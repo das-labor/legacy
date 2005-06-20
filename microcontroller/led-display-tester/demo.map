@@ -1,0 +1,319 @@
+Archive member included because of file (symbol)
+
+/usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a(_copy_data.o)
+                              demo.o (__do_copy_data)
+/usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a(_clear_bss.o)
+                              demo.o (__do_clear_bss)
+
+Allocating common symbols
+Common symbol       size              file
+
+DELAY2              0x1               demo.o
+RUN1                0x1               demo.o
+STOP1               0x1               demo.o
+RUN2                0x1               demo.o
+RUN3                0x1               demo.o
+DELAY3              0x1               demo.o
+STOP2               0x1               demo.o
+DELAY1              0x1               demo.o
+STOP3               0x1               demo.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+text             0x00000000         0x00020000         xr
+data             0x00800060         0x0000ffa0         rw !x
+eeprom           0x00810000         0x00010000         rw !x
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/crtm32.o
+LOAD demo.o
+LOAD display.o
+LOAD /usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a
+LOAD /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/libc.a
+LOAD /usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a
+
+.hash
+ *(.hash)
+
+.dynsym
+ *(.dynsym)
+
+.dynstr
+ *(.dynstr)
+
+.gnu.version
+ *(.gnu.version)
+
+.gnu.version_d
+ *(.gnu.version_d)
+
+.gnu.version_r
+ *(.gnu.version_r)
+
+.rel.init
+ *(.rel.init)
+
+.rela.init
+ *(.rela.init)
+
+.rel.text
+ *(.rel.text)
+ *(.rel.text.*)
+ *(.rel.gnu.linkonce.t*)
+
+.rela.text
+ *(.rela.text)
+ *(.rela.text.*)
+ *(.rela.gnu.linkonce.t*)
+
+.rel.fini
+ *(.rel.fini)
+
+.rela.fini
+ *(.rela.fini)
+
+.rel.rodata
+ *(.rel.rodata)
+ *(.rel.rodata.*)
+ *(.rel.gnu.linkonce.r*)
+
+.rela.rodata
+ *(.rela.rodata)
+ *(.rela.rodata.*)
+ *(.rela.gnu.linkonce.r*)
+
+.rel.data
+ *(.rel.data)
+ *(.rel.data.*)
+ *(.rel.gnu.linkonce.d*)
+
+.rela.data
+ *(.rela.data)
+ *(.rela.data.*)
+ *(.rela.gnu.linkonce.d*)
+
+.rel.ctors
+ *(.rel.ctors)
+
+.rela.ctors
+ *(.rela.ctors)
+
+.rel.dtors
+ *(.rel.dtors)
+
+.rela.dtors
+ *(.rela.dtors)
+
+.rel.got
+ *(.rel.got)
+
+.rela.got
+ *(.rela.got)
+
+.rel.bss
+ *(.rel.bss)
+
+.rela.bss
+ *(.rela.bss)
+
+.rel.plt
+ *(.rel.plt)
+
+.rela.plt
+ *(.rela.plt)
+
+.text           0x00000000      0x508
+ *(.vectors)
+ .vectors       0x00000000       0x54 /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/crtm32.o
+                0x00000000                __vectors
+                0x00000000                __vector_default
+                0x00000054                __ctors_start = .
+ *(.ctors)
+                0x00000054                __ctors_end = .
+                0x00000054                __dtors_start = .
+ *(.dtors)
+                0x00000054                __dtors_end = .
+ *(.progmem.gcc*)
+ *(.progmem*)
+                0x00000054                . = ALIGN (0x2)
+ *(.init0)
+ *(.init1)
+ *(.init2)
+ .init2         0x00000054        0xc /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/crtm32.o
+ *(.init3)
+ *(.init4)
+ .init4         0x00000060       0x16 /usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a(_copy_data.o)
+                0x00000060                __do_copy_data
+ .init4         0x00000076       0x10 /usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a(_clear_bss.o)
+                0x00000076                __do_clear_bss
+ *(.init5)
+ *(.init6)
+ *(.init7)
+ *(.init8)
+ *(.init9)
+ .init9         0x00000086        0x4 /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/crtm32.o
+ *(.text)
+ .text          0x0000008a        0x4 /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/crtm32.o
+                0x0000008a                __vector_1
+                0x0000008a                __vector_12
+                0x0000008a                __bad_interrupt
+                0x0000008a                __vector_6
+                0x0000008a                __vector_3
+                0x0000008a                __vector_11
+                0x0000008a                __vector_13
+                0x0000008a                __vector_17
+                0x0000008a                __vector_19
+                0x0000008a                __vector_7
+                0x0000008a                __vector_5
+                0x0000008a                __vector_4
+                0x0000008a                __vector_9
+                0x0000008a                __vector_2
+                0x0000008a                __vector_15
+                0x0000008a                __vector_8
+                0x0000008a                __vector_14
+                0x0000008a                __vector_16
+                0x0000008a                __vector_18
+                0x0000008a                __vector_20
+ .text          0x0000008e      0x34e demo.o
+                0x00000284                timer0_off
+                0x00000274                timer0_on
+                0x00000288                init_Ports
+                0x0000029a                wait
+                0x000002c0                main
+                0x0000008e                __vector_10
+ .text          0x000003dc      0x12c display.o
+                0x000004b4                display_clear_line
+                0x0000048a                display_print
+                0x00000454                display_char
+                0x000004a6                display_set_cursor
+                0x000004f6                display_init
+                0x00000430                display_clear
+                0x00000508                . = ALIGN (0x2)
+ *(.text.*)
+                0x00000508                . = ALIGN (0x2)
+ *(.fini9)
+ *(.fini8)
+ *(.fini7)
+ *(.fini6)
+ *(.fini5)
+ *(.fini4)
+ *(.fini3)
+ *(.fini2)
+ *(.fini1)
+ *(.fini0)
+                0x00000508                _etext = .
+
+.data           0x00800060       0x9c load address 0x00000508
+                0x00800060                PROVIDE (__data_start, .)
+ *(.data)
+ .data          0x00800060       0x9b demo.o
+ *(.gnu.linkonce.d*)
+                0x008000fc                . = ALIGN (0x2)
+ *fill*         0x008000fb        0x1 00
+                0x008000fc                _edata = .
+                0x008000fc                PROVIDE (__data_end, .)
+
+.bss            0x008000fc       0x16
+                0x008000fc                PROVIDE (__bss_start, .)
+ *(.bss)
+ .bss           0x008000fc        0xc demo.o
+ .bss           0x00800108        0x1 display.o
+                0x00800108                ADDRESS
+ *(COMMON)
+ COMMON         0x00800109        0x9 demo.o
+                                  0x0 (size before relaxing)
+                0x00800109                DELAY2
+                0x0080010a                RUN1
+                0x0080010b                STOP1
+                0x0080010c                RUN2
+                0x0080010d                RUN3
+                0x0080010e                DELAY3
+                0x0080010f                STOP2
+                0x00800110                DELAY1
+                0x00800111                STOP3
+                0x00800112                PROVIDE (__bss_end, .)
+                0x00000508                __data_load_start = LOADADDR (.data)
+                0x000005a4                __data_load_end = (__data_load_start + SIZEOF (.data))
+
+.noinit         0x00800112        0x0
+                0x00800112                PROVIDE (__noinit_start, .)
+ *(.noinit*)
+                0x00800112                PROVIDE (__noinit_end, .)
+                0x00800112                _end = .
+                0x00800112                PROVIDE (__heap_start, .)
+
+.eeprom         0x00810000        0x0 load address 0x000005a4
+ *(.eeprom*)
+                0x00810000                __eeprom_end = .
+
+.stab           0x00000000     0x1248
+ *(.stab)
+ .stab          0x00000000      0x2a0 /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/crtm32.o
+ .stab          0x000002a0      0xa80 demo.o
+                                0xa8c (size before relaxing)
+ .stab          0x00000d20      0x528 display.o
+                                0x5f4 (size before relaxing)
+
+.stabstr        0x00000000      0x98a
+ *(.stabstr)
+ .stabstr       0x00000000      0x98a /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/crtm32.o
+                                  0x0 (size before relaxing)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment
+ *(.comment)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges
+ *(.debug_aranges)
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info
+ *(.debug_info)
+ *(.gnu.linkonce.wi.*)
+
+.debug_abbrev
+ *(.debug_abbrev)
+
+.debug_line
+ *(.debug_line)
+
+.debug_frame
+ *(.debug_frame)
+
+.debug_str
+ *(.debug_str)
+
+.debug_loc
+ *(.debug_loc)
+
+.debug_macinfo
+ *(.debug_macinfo)
+OUTPUT(demo.elf elf32-avr)
