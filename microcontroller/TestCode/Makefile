@@ -3,6 +3,9 @@ OBJ            = demo.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 
+FLASHCMD       = uisp -dprog=bsd -dlpt=/dev/parport1 --upload if=demo.hex
+ERASECMD       = uisp -dprog=bsd -dlpt=/dev/parport1 --erase
+
 DEFS           =
 LIBS           =
 
@@ -27,6 +30,10 @@ $(PRG).elf: $(OBJ)
 clean:
 	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak 
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
+
+flash:
+	$(ERASECMD)
+	$(FLASHCMD)
 
 lst:  $(PRG).lst
 
