@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 #include <avr/io.h>
+#include "uart.h"
 
 int main (void)
 {	
@@ -16,9 +17,13 @@ int main (void)
 	PORTC = 0x01;   //1 LED on to start of Patterns
 	
 	int x, delay=10000; char mode=0, ud=0;
-		
+	
+	uart_init();
+	
 	for ( ;; ){		//for ever
-		
+	
+		uart_putc('T');
+	
 		//this is a time delay loop
 		for(x=0; x< delay; x++){
 		//The volatile qualifier tells the compiler not to optimize 
