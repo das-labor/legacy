@@ -1,9 +1,9 @@
-PRG            = demo
-OBJ            = demo.o
+PRG            = main
+OBJ            = main.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 
-FLASHCMD       = uisp -dprog=bsd -dlpt=/dev/parport1 --upload if=demo.hex
+FLASHCMD       = uisp -dprog=bsd -dlpt=/dev/parport1 --upload if=$(PRG).hex
 ERASECMD       = uisp -dprog=bsd -dlpt=/dev/parport1 --erase
 
 DEFS           =
