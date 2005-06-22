@@ -3,10 +3,21 @@
 #include <avr/io.h>
 #include <avr/signal.h>
 #include <avr/interrupt.h>
-#include "display.h"
+#include <stdlib.h>
+//#include "display.h"
+
+#include "hd44780.h"
+#define display_init hd44780_init
+#define display_print hd44780_print
+#define display_set_cursor hd44780_set_cursor
+#define display_clear_line hd44780_clear_line
+
+
+#include "faxfront.h"
 
 unsigned char DELAY1, DELAY2, DELAY3, RUN1, RUN2, RUN3, STOP1, STOP2, STOP3;
 
+unsigned char STEP_FUZZ1;
 
 SIGNAL(SIG_OUTPUT_COMPARE0)
 {
@@ -38,6 +49,7 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 			if( ((step1%4)==0) && ls1 ){
 				ls1 = 0;
 				
+				if(!STEP_FUZZ1) STEP_FUZZ1 = step1;
 				//PORTC = (PORTC & 0x07)|((step1<<1)&0xF8);
 				PORTC&=0x7F;
 				step1 = 0;
@@ -182,12 +194,12 @@ unsigned char * wheel_table1[] = {"1","1", "1,20","0,80", "0,60","0,40", "1","0,
 
 	display_init();
 	
-	//display_print("Hello   World!");
+	display_print("Hello   World!");
 	
 	timer0_on();
 	sei();
 
-	
+	fax_init();
 	
 	for(;;){
 	
@@ -195,6 +207,8 @@ unsigned char * wheel_table1[] = {"1","1", "1,20","0,80", "0,60","0,40", "1","0,
 	
 		char x = 0;
 		for(x=0; x<48; x+=4){
+		
+		fax_led_on(x>>2);
 		
 		//PORTC=(PORTC&0x87)|(x/4)<<3;  //LEDS show number of field
 		
@@ -227,6 +241,12 @@ unsigned char * wheel_table1[] = {"1","1", "1,20","0,80", "0,60","0,40", "1","0,
 		
 		
 		wait(1500);
+		
+		char muh[3];
+		itoa(STEP_FUZZ1, muh, 10);
+		//display_set_cursor(0,6);
+		//display_print(muh);
+		STEP_FUZZ1 = 0;
 		
 		
 		STOP1 = x;
