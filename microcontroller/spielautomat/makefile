@@ -1,5 +1,5 @@
-PRG            = demo
-OBJ            = demo.o display.o
+PRG            = spiel
+OBJ            = main.o hd44780.o faxfront.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -O2
 

@@ -9,7 +9,6 @@
 unsigned char ADDRESS=0; 
 
 
-
 static void setletter(unsigned char disp, unsigned char addr, unsigned char data){
 	DISP_PORT = data>>2;
 	DISP_PORT |= 0x20;
