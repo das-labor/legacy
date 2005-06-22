@@ -1,9 +1,12 @@
-PRG            = spiel
-OBJ            = main.o hd44780.o faxfront.o
+PRG            = uart
+OBJ            = main.o hd44780.o
 MCU_TARGET     = atmega32
-OPTIMIZE       = -O2
+OPTIMIZE       = -Os
 
-DEFS           =
+FLASHCMD       = uisp -dprog=bsd --upload if=$(PRG).hex
+ERASECMD       = uisp -dprog=bsd --erase
+
+DEFS           = -DF_CPU=16000000
 LIBS           =
 
 # You should not have to change anything below here.
@@ -12,8 +15,7 @@ CC             = avr-gcc
 
 # Override is only needed by avr-lib build system.
 
-override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) 
-$(DEFS)
+override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS)
 override LDFLAGS       = -Wl,-Map,$(PRG).map
 
 OBJCOPY        = avr-objcopy
@@ -27,6 +29,10 @@ $(PRG).elf: $(OBJ)
 clean:
 	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak 
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
+
+flash:
+	$(ERASECMD)
+	$(FLASHCMD)
 
 lst:  $(PRG).lst
 

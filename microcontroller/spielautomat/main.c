@@ -199,7 +199,7 @@ unsigned char * wheel_table1[] = {"1","1", "1,20","0,80", "0,60","0,40", "1","0,
 	timer0_on();
 	sei();
 
-	fax_init();
+	//fax_init();
 	
 	for(;;){
 	
@@ -208,7 +208,7 @@ unsigned char * wheel_table1[] = {"1","1", "1,20","0,80", "0,60","0,40", "1","0,
 		char x = 0;
 		for(x=0; x<48; x+=4){
 		
-		fax_led_on(x>>2);
+		//fax_led_on(x>>2);
 		
 		//PORTC=(PORTC&0x87)|(x/4)<<3;  //LEDS show number of field
 		
