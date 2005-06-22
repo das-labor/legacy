@@ -16,13 +16,13 @@ int main (void)
 	DDRC = 0xFF; 	//Port C all outputs
 	PORTC = 0x01;   //1 LED on to start of Patterns
 	
-	int x, delay=10000; char mode=0, ud=0;
+	int x, delay=1000; char mode=0, ud=0;
 	
 	uart_init();
 	
 	for ( ;; ){		//for ever
 	
-		uart_putc('T');
+		uart_putc(uart_getc());
 	
 		//this is a time delay loop
 		for(x=0; x< delay; x++){
