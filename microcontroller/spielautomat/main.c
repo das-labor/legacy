@@ -4,7 +4,13 @@
 #include <avr/signal.h>
 #include <avr/interrupt.h>
 #include <stdlib.h>
+#include "config.h"
 //#include "display.h"
+
+
+#ifdef FAXFRONT
+#include "faxfront.h"
+#endif
 
 #include "hd44780.h"
 #define display_init hd44780_init
@@ -12,8 +18,6 @@
 #define display_set_cursor hd44780_set_cursor
 #define display_clear_line hd44780_clear_line
 
-
-#include "faxfront.h"
 
 unsigned char DELAY1, DELAY2, DELAY3, RUN1, RUN2, RUN3, STOP1, STOP2, STOP3;
 
@@ -199,7 +203,8 @@ unsigned char * wheel_table1[] = {"1","1", "1,20","0,80", "0,60","0,40", "1","0,
 	timer0_on();
 	sei();
 
-	//fax_init();
+	fax_init();
+	
 	
 	for(;;){
 	
@@ -208,10 +213,18 @@ unsigned char * wheel_table1[] = {"1","1", "1,20","0,80", "0,60","0,40", "1","0,
 		char x = 0;
 		for(x=0; x<48; x+=4){
 		
-		//fax_led_on(x>>2);
-		
-		//PORTC=(PORTC&0x87)|(x/4)<<3;  //LEDS show number of field
-		
+		char y;
+		for(y=0;y<11;y++){
+	
+			fax_led_on(y);
+			wait(50);
+		}
+	
+		for(y=0;y<11;y++){
+			fax_led_off(y);
+			wait(50);
+		}
+			
 		
 		PORTC = PORTC|0x04;
 		STOP1 = 0xFF;	//Stop off;

@@ -6,12 +6,15 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include "hd44780.h"
-
+#include "config.h"
 //set this for 4bit mode
 //The Data Lines 7:4 shall be connected to the Display Port 3:0 then
 
-//#define IF4BIT
+#define IF4BIT
 
+#ifdef FAXFRONT
+
+#undef IF4BIT
 #define PIN_RS PD7
 #define PIN_E  PD6
 #define PIN_RW PD5
@@ -24,6 +27,23 @@
 //Port, to which the Control Lines of the Display are connected
 #define DISP_DDR_C DDRD
 #define DISP_PORT_C PORTD
+
+#else
+
+#define PIN_RS PA5
+#define PIN_RW PA6
+#define PIN_E  PA7
+
+//Port, to which the Datalines of the Display are connected
+#define DISP_DDR_D DDRA
+#define DISP_PORT_D PORTA
+#define DISP_PIN PINA
+
+//Port, to which the Control Lines of the Display are connected
+#define DISP_DDR_C DDRA
+#define DISP_PORT_C PORTA
+
+#endif
 
 
 /* Instructions */
@@ -186,7 +206,9 @@ void hd44780_init(){
 #ifdef IF4BIT
 	hd44780_send_nobusy(0x33);
 	hd44780_send_nobusy(0x32);// Put Display in 4bit mode
+	hd44780_send_nobusy(0x28);// Put Display in 4bit mode
 	hd44780_command(0x28);// 2 Lines 5x7 DOT
+	
 #else
 	hd44780_send_nobusy(0x30);
 	hd44780_send_nobusy(0x30);

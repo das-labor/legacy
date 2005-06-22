@@ -1,28 +1,29 @@
 Archive member included because of file (symbol)
 
-/usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a(_udivmodqi4.o)
-                              demo.o (__udivmodqi4)
-/usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a(_divmodhi4.o)
-                              demo.o (__divmodhi4)
 /usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a(_copy_data.o)
-                              demo.o (__do_copy_data)
+                              main.o (__do_copy_data)
 /usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a(_clear_bss.o)
-                              demo.o (__do_clear_bss)
+                              main.o (__do_clear_bss)
+/usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/libc.a(itoa.o)
+                              main.o (itoa)
+/usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/libc.a(strrev.o)
+                              /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/libc.a(itoa.o) (strrev)
 /usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a(_udivmodhi4.o)
-                              /usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a(_divmodhi4.o) (__udivmodhi4)
+                              /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/libc.a(itoa.o) (__udivmodhi4)
 
 Allocating common symbols
 Common symbol       size              file
 
-DELAY2              0x1               demo.o
-RUN1                0x1               demo.o
-STOP1               0x1               demo.o
-RUN2                0x1               demo.o
-RUN3                0x1               demo.o
-DELAY3              0x1               demo.o
-STOP2               0x1               demo.o
-DELAY1              0x1               demo.o
-STOP3               0x1               demo.o
+DELAY2              0x1               main.o
+STEP_FUZZ1          0x1               main.o
+RUN1                0x1               main.o
+STOP1               0x1               main.o
+RUN2                0x1               main.o
+RUN3                0x1               main.o
+DELAY3              0x1               main.o
+STOP2               0x1               main.o
+DELAY1              0x1               main.o
+STOP3               0x1               main.o
 
 Memory Configuration
 
@@ -35,7 +36,9 @@ eeprom           0x00810000         0x00010000         rw !x
 Linker script and memory map
 
 LOAD /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/crtm32.o
-LOAD demo.o
+LOAD main.o
+LOAD hd44780.o
+LOAD faxfront.o
 LOAD /usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a
 LOAD /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/libc.a
 LOAD /usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a
@@ -130,7 +133,7 @@ LOAD /usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0x3d6
+.text           0x00000000      0x720
  *(.vectors)
  .vectors       0x00000000       0x54 /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/crtm32.o
                 0x00000000                __vectors
@@ -182,23 +185,42 @@ LOAD /usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a
                 0x0000008a                __vector_16
                 0x0000008a                __vector_18
                 0x0000008a                __vector_20
- .text          0x0000008e      0x2e2 demo.o
-                0x00000296                timer0_off
-                0x00000286                timer0_on
-                0x0000029a                init_Ports
-                0x000002ae                wait
-                0x000002d4                main
+ .text          0x0000008e      0x390 main.o
+                0x00000276                timer0_off
+                0x00000266                timer0_on
+                0x0000027a                init_Ports
+                0x0000028c                wait
+                0x000002b2                main
                 0x0000008e                __vector_10
-                0x00000370                . = ALIGN (0x2)
+ .text          0x0000041e      0x1d2 hd44780.o
+                0x000004f8                hd44780_set_cursor
+                0x000004a2                hd44780_data
+                0x0000041e                wait50ms
+                0x00000440                hd44780_send
+                0x0000047a                hd44780_read
+                0x000004aa                hd44780_init
+                0x0000056c                hd44780_print
+                0x00000544                hd44780_clear_line
+                0x00000436                wait200us
+                0x0000049a                hd44780_command
+                0x000005ac                hd44780_load_font_P
+                0x00000588                hd44780_print_P
+                0x0000050a                hd44780_backspace
+                0x0000046e                hd44780_send_nobusy
+ .text          0x000005f0       0x9e faxfront.o
+                0x00000626                fax_led_on
+                0x0000064e                fax_led_off
+                0x0000067a                fax_init
+                0x00000618                fax_led_set_pattern
+ .text          0x0000068e       0x4a /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/libc.a(itoa.o)
+                0x0000068e                itoa
+ .text          0x000006d8       0x20 /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/libc.a(strrev.o)
+                0x000006d8                strrev
+                0x000006f8                . = ALIGN (0x2)
  *(.text.*)
- .text.libgcc   0x00000370       0x18 /usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a(_udivmodqi4.o)
-                0x00000370                __udivmodqi4
- .text.libgcc   0x00000388       0x26 /usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a(_divmodhi4.o)
-                0x00000388                __divmodhi4
-                0x00000388                _div
- .text.libgcc   0x000003ae       0x28 /usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a(_udivmodhi4.o)
-                0x000003ae                __udivmodhi4
-                0x000003d6                . = ALIGN (0x2)
+ .text.libgcc   0x000006f8       0x28 /usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a(_udivmodhi4.o)
+                0x000006f8                __udivmodhi4
+                0x00000720                . = ALIGN (0x2)
  *(.fini9)
  *(.fini8)
  *(.fini7)
@@ -209,57 +231,67 @@ LOAD /usr/share/avr/lib/gcc-lib/avr/3.3.1/avr5/libgcc.a
  *(.fini2)
  *(.fini1)
  *(.fini0)
-                0x000003d6                _etext = .
+                0x00000720                _etext = .
 
-.data           0x00800060       0x46 load address 0x000003d6
+.data           0x00800060       0xaa load address 0x00000720
                 0x00800060                PROVIDE (__data_start, .)
  *(.data)
- .data          0x00800060       0x46 demo.o
+ .data          0x00800060       0xaa main.o
  *(.gnu.linkonce.d*)
-                0x008000a6                . = ALIGN (0x2)
-                0x008000a6                _edata = .
-                0x008000a6                PROVIDE (__data_end, .)
+                0x0080010a                . = ALIGN (0x2)
+                0x0080010a                _edata = .
+                0x0080010a                PROVIDE (__data_end, .)
 
-.bss            0x008000a6       0x15
-                0x008000a6                PROVIDE (__bss_start, .)
+.bss            0x0080010a       0x18
+                0x0080010a                PROVIDE (__bss_start, .)
  *(.bss)
- .bss           0x008000a6        0xc demo.o
+ .bss           0x0080010a        0xc main.o
+ .bss           0x00800116        0x2 faxfront.o
  *(COMMON)
- COMMON         0x008000b2        0x9 demo.o
+ COMMON         0x00800118        0xa main.o
                                   0x0 (size before relaxing)
-                0x008000b2                DELAY2
-                0x008000b3                RUN1
-                0x008000b4                STOP1
-                0x008000b5                RUN2
-                0x008000b6                RUN3
-                0x008000b7                DELAY3
-                0x008000b8                STOP2
-                0x008000b9                DELAY1
-                0x008000ba                STOP3
-                0x008000bb                PROVIDE (__bss_end, .)
-                0x000003d6                __data_load_start = LOADADDR (.data)
-                0x0000041c                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00800118                DELAY2
+                0x00800119                STEP_FUZZ1
+                0x0080011a                RUN1
+                0x0080011b                STOP1
+                0x0080011c                RUN2
+                0x0080011d                RUN3
+                0x0080011e                DELAY3
+                0x0080011f                STOP2
+                0x00800120                DELAY1
+                0x00800121                STOP3
+                0x00800122                PROVIDE (__bss_end, .)
+                0x00000720                __data_load_start = LOADADDR (.data)
+                0x000007ca                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x008000bb        0x0
-                0x008000bb                PROVIDE (__noinit_start, .)
+.noinit         0x00800122        0x0
+                0x00800122                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x008000bb                PROVIDE (__noinit_end, .)
-                0x008000bb                _end = .
-                0x008000bb                PROVIDE (__heap_start, .)
+                0x00800122                PROVIDE (__noinit_end, .)
+                0x00800122                _end = .
+                0x00800122                PROVIDE (__heap_start, .)
 
-.eeprom         0x00810000        0x0 load address 0x0000041c
+.eeprom         0x00810000        0x0 load address 0x000007ca
  *(.eeprom*)
                 0x00810000                __eeprom_end = .
 
-.stab           0x00000000      0xbe8
+.stab           0x00000000     0x1efc
  *(.stab)
  .stab          0x00000000      0x2a0 /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/crtm32.o
- .stab          0x000002a0      0x948 demo.o
-                                0x954 (size before relaxing)
+ .stab          0x000002a0      0xc6c main.o
+                                0xc78 (size before relaxing)
+ .stab          0x00000f0c      0x9d8 hd44780.o
+                                0xb4c (size before relaxing)
+ .stab          0x000018e4      0x360 faxfront.o
+                                0x438 (size before relaxing)
+ .stab          0x00001c44      0x1e0 /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/libc.a(itoa.o)
+                                0x1ec (size before relaxing)
+ .stab          0x00001e24       0xd8 /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/libc.a(strrev.o)
+                                 0xe4 (size before relaxing)
 
-.stabstr        0x00000000      0x812
+.stabstr        0x00000000      0xecc
  *(.stabstr)
- .stabstr       0x00000000      0x812 /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/crtm32.o
+ .stabstr       0x00000000      0xecc /usr/share/avr/lib/gcc-lib/avr/3.3.1/../../../../avr/lib/avr5/crtm32.o
                                   0x0 (size before relaxing)
 
 .stab.excl
