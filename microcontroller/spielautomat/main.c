@@ -196,15 +196,24 @@ unsigned char * wheel_table1[] = {"1","1", "1,20","0,80", "0,60","0,40", "1","0,
 
 	init_Ports();
 
-	display_init();
+	//display_init();
 	
-	display_print("Hello   World!");
+	//display_print("Hello   World!");
 	
 	timer0_on();
 	sei();
 
 	fax_init();
 	
+/*	for(;;){
+		char blah[4];
+		itoa(fax_get_key(),blah,10);
+		display_clear_line(0);
+		display_print(blah);
+		wait(100);	
+	
+	}
+*/	
 	
 	for(;;){
 	

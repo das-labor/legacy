@@ -2,10 +2,14 @@
 #include <avr/io.h>
 #include "faxfront.h"
 
-#define FAXPORT_D_DDR DDRA
+//Data Port
+#define FAXDDR_D DDRA
 #define FAXPORT_D PORTA
+#define FAXPIN_D PINA
+
+//Control Port
 #define FAXPORT_C PORTD
-#define FAXPORT_C_DDR DDRD
+#define FAXDDR_C DDRD
 
 
 #define CLK_U1_PIN PD4
@@ -40,12 +44,39 @@ void fax_led_off(unsigned char num){
 	set_leds();
 }
 
+unsigned char fax_get_key(){
+	unsigned char pin, mask, x, y;
+	for(x=0;x<4;x++){
+		FAXPORT_D = ~((unsigned char)LEDS|(1<<x));
+		FAXPORT_C |= 1<<CLK_U2_PIN;
+		FAXPORT_C &= ~(1<<CLK_U2_PIN);
+	
+		FAXDDR_D = 0;
+		FAXPORT_C &= ~(1<<NOE_U3_PIN);
+		asm volatile ("nop\n\tnop\n\t"::);
+		pin = FAXPIN_D;
+		FAXPORT_C |= 1<<NOE_U3_PIN;
+		FAXDDR_D = 0xFF;
+
+		mask = 0x01;
+		for(y=0;y<8;y++){
+			if(~pin & mask){
+				return((x<<3) + y +1);
+			}
+			mask<<=1;
+		}
+	}
+	return 0;
+}
+
 void fax_init(){
 	FAXPORT_C |= 1<<NOE_U3_PIN ;
 	FAXPORT_C &= ~((1<<CLK_U1_PIN)|(1<<CLK_U2_PIN));
 
-	FAXPORT_C_DDR |= (1<<CLK_U1_PIN)|(1<<CLK_U2_PIN)|(1<<NOE_U3_PIN);
+	FAXDDR_C |= (1<<CLK_U1_PIN)|(1<<CLK_U2_PIN)|(1<<NOE_U3_PIN);
 
+	FAXDDR_D = 0xFF;
+	
 	set_leds();
 }
 

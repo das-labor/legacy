@@ -1,6 +1,6 @@
 PRG            = spiel
 OBJ            = main.o hd44780.o faxfront.o
-MCU_TARGET     = atmega32
+MCU_TARGET     = atmega128
 OPTIMIZE       = -Os
 
 FLASHCMD       = uisp -dprog=bsd --upload if=$(PRG).hex
