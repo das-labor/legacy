@@ -3,8 +3,8 @@ OBJ            = main.o uart.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 
-FLASHCMD       = uisp -dprog=bsd -dlpt=/dev/parport1 --upload if=$(PRG).hex
-ERASECMD       = uisp -dprog=bsd -dlpt=/dev/parport1 --erase
+FLASHCMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --upload if=$(PRG).hex
+ERASECMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --erase
 
 DEFS           = -DF_CPU=16000000
 LIBS           =
