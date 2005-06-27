@@ -2,13 +2,12 @@
 #include "pixel.h"
 
 extern void wait(int);
-extern unsigned char pixmap[];
 
 void test1(){
 unsigned char x,y;
 	for (y=0;y<8;y++){
 		for (x=0;x<8;x++){
-			setpixel((pixel){x,y});
+			setpixel((pixel){x,y}, 3);
 			wait(100);
 		}
 	}
@@ -113,7 +112,7 @@ void snake(){
 
 		if(!dead){
 			*head = next_pixel(old_head, dir);
-			setpixel(*head);
+			setpixel(*head, 3);
 		
 			if(random()<80){
 				dir = random()%4;
@@ -141,7 +140,7 @@ void snake(){
 		
 		for(j=0;j<apple_num;j++){
 			if(x%2){
-				setpixel(apples[j]);
+				setpixel(apples[j], 3);
 			}else{
 				clearpixel(apples[j]);
 			}
@@ -157,14 +156,14 @@ void joern1(){
 unsigned char i, j;
 	for(i = 0; i< 80;i++){
 		for(j = 0 ;j < 8; j++){
-			pixmap[i%8]=shl_table[j];	
-			pixmap[(i+1)%8]=shl_table[(j+1)%8];
-			pixmap[(i+2)%8]=shl_table[(j+2)%8];
-			pixmap[(i+3)%8]=shl_table[(j+3)%8];
-			pixmap[(i+4)%8]=shl_table[(j+4)%8];
-			pixmap[(i+5)%8]=shl_table[(j+5)%8];
-			pixmap[(i+6)%8]=shl_table[(j+6)%8];
-			pixmap[(i+7)%8]=shl_table[(j+7)%8];
+			pixmap[0][i%8]=shl_table[j];	
+			pixmap[0][(i+1)%8]=shl_table[(j+1)%8];
+			pixmap[0][(i+2)%8]=shl_table[(j+2)%8];
+			pixmap[0][(i+3)%8]=shl_table[(j+3)%8];
+			pixmap[0][(i+4)%8]=shl_table[(j+4)%8];
+			pixmap[0][(i+5)%8]=shl_table[(j+5)%8];
+			pixmap[0][(i+6)%8]=shl_table[(j+6)%8];
+			pixmap[0][(i+7)%8]=shl_table[(j+7)%8];
 		}
 		wait(50);
 	}
@@ -173,23 +172,23 @@ unsigned char i, j;
 void joern2(){
 	unsigned char i;
 	for(i=0;i<20;i++){
-		pixmap[0] = 0x0f;
-		pixmap[1] = 0xf0;
-		pixmap[2] = 0x0f;
-		pixmap[3] = 0xf0;
-		pixmap[4] = 0x0f;
-		pixmap[5] = 0xf0;
-		pixmap[6] = 0x0f;
-		pixmap[7] = 0xf0;
+		pixmap[0][0] = 0x0f;
+		pixmap[0][1] = 0xf0;
+		pixmap[0][2] = 0x0f;
+		pixmap[0][3] = 0xf0;
+		pixmap[0][4] = 0x0f;
+		pixmap[0][5] = 0xf0;
+		pixmap[0][6] = 0x0f;
+		pixmap[0][7] = 0xf0;
 		wait (50);
-		pixmap[0] = 0xf0;
-                pixmap[1] = 0x0f;
-                pixmap[2] = 0xf0;
-                pixmap[3] = 0x0f;
-                pixmap[4] = 0xf0;
-                pixmap[5] = 0x0f;
-                pixmap[6] = 0xf0;
-                pixmap[7] = 0x0f;
+		pixmap[0][0] = 0xf0;
+                pixmap[0][1] = 0x0f;
+                pixmap[0][2] = 0xf0;
+                pixmap[0][3] = 0x0f;
+                pixmap[0][4] = 0xf0;
+                pixmap[0][5] = 0x0f;
+                pixmap[0][6] = 0xf0;
+                pixmap[0][7] = 0x0f;
 		wait (50);
 	}
 }
@@ -222,11 +221,11 @@ void schachbrett(unsigned char times){
 	for(j=0;j<times;j++){
 		unsigned char i;
 		for(i = 0; i<8; i++){
-			pixmap[i] = 0x55<<(i&0x01);
+			pixmap[0][i] = 0x55<<(i&0x01);
 		}
 		wait(100);
 		for(i = 0; i<8; i++){
-			pixmap[i] = 0xAA>>(i&0x01);
+			pixmap[0][i] = 0xAA>>(i&0x01);
 		}
 		wait(100);
 	}

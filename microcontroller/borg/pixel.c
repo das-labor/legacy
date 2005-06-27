@@ -7,22 +7,33 @@ unsigned char shl_table[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
 
 void clear_screen(unsigned char value){
 	unsigned char x;
-	for(x=0;x<8;x++){
-		pixmap[x] = 0;
+	unsigned char plane;
+	for(plane=0; plane<NUMPLANE; plane++) {
+		for(x=0;x<8;x++){
+			pixmap[plane][x] = 0;
+		}
 	}
-
 }
 
-void setpixel(pixel p){
-	pixmap[p.y%8] |= shl_table[p.x%8];
+void setpixel(pixel p, unsigned char value ){
+	signed char plane;
+
+	for(plane=0; plane<NUMPLANE; plane++) {
+		if ( plane < value )
+			pixmap[plane][p.y%8] |= shl_table[p.x%8];
+		else
+			pixmap[plane][p.y%8] &= ~shl_table[p.x%8];
+	}
 }
 
 void clearpixel(pixel p){
-	pixmap[p.y%8] &= ~shl_table[p.x%8];
+	unsigned char plane;
+	for(plane=0; plane<NUMPLANE; plane++)
+		pixmap[plane][p.y%8] &= ~shl_table[p.x%8];
 }
 
-unsigned char get_pixel(pixel p){
-	return ( (pixmap[p.y%8] & shl_table[p.x%8]) ? 1:0);
+unsigned char get_pixel(pixel p){ // XXX
+	return ( (pixmap[0][p.y%8] & shl_table[p.x%8]) ? 1:0);
 }
 
 
@@ -70,7 +81,7 @@ void set_cursor(cursor* cur, pixel p){
 			clearpixel(p);
 			break;
 		case set:
-			setpixel(p);
+			setpixel(p,3);
 			break;
 	}
 }

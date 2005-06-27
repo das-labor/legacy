@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "config.h"
 #include "scrolltext.h"
-
+#include "pixel.h"
 #include "programm.h"
 
 #define ROWPORT  PORTA
@@ -23,24 +23,40 @@ charmap pix_G = {5,{0x00,0x0E,0x11,0x10,0x17,0x11,0x11,0x0E}};
 
 
 
-unsigned char pixmap[] = {0x00,
-			  0x00,
-			  0x00,
-			  0x00,
-			  0x00,
-			  0x00,
-			  0x00,
-			  0x00};
+unsigned char pixmap[NUMPLANE][8] = {
+	{ 0x00,
+	  0x00,
+	  0x00,
+	  0x00,
+	  0x00,
+	  0x00,
+	  0x00,
+	  0x00 },
+	{ 0x00, 
+	  0x00,
+	  0x00,
+	  0x00,
+	  0x00,
+	  0x00,
+	  0x00,
+	  0x00 }
+};
 
 SIGNAL(SIG_OUTPUT_COMPARE0)
 {
+	static unsigned char plane = 0;
 	static unsigned char count = 0;
+	
 	count ++;
 	if ((COLPORT <<= 1) == 0){
 		count = 0;
 		COLPORT =1;
+
+		if ( ++plane == NUMPLANE ) 
+			plane = 0;
+
 	}
-	ROWPORT = pixmap[count];
+	ROWPORT = pixmap[plane][count];
 }
 
 void timer0_on(){
@@ -56,7 +72,7 @@ void timer0_on(){
 */
 	TCCR0 = 0x0B;	// CTC Mode, clk/8
 	TCNT0 = 0;	// reset timer
-	OCR0 = 0xFF;	// Compare with this value
+	OCR0  = 0x10;	// Compare with this value
 	TIMSK = 0x02;	// Compare match Interrupt on
 }
 
@@ -114,6 +130,7 @@ void labor_borg(){
 
 int
 main (void){
+	clear_screen(0);
 	init_Ports();
 	timer0_on();
 	sei();
