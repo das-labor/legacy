@@ -7,6 +7,8 @@
 #include "config.h"
 #include "scrolltext.h"
 
+#include "programm.h"
+
 #define ROWPORT  PORTA
 #define ROWDDR   DDRA
 #define COLPORT  PORTC
@@ -29,7 +31,6 @@ unsigned char pixmap[] = {0x00,
 			  0x00,
 			  0x00,
 			  0x00};
-unsigned char shl_table[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
 
 SIGNAL(SIG_OUTPUT_COMPARE0)
 {
@@ -90,140 +91,7 @@ void init_Ports(){
 	COLPORT = 0;
 }
 
-
-
-void joern1(){
-unsigned char i;
-		unsigned char j;
-		for(i = 0; i< 255;i++){
-			for(j = 0 ;j < 8; j++){
-				pixmap[i]=shl_table[j];	
-				pixmap[(i+1)%8]=shl_table[(j+1)%8];
-				pixmap[(i+2)%8]=shl_table[(j+2)%8];
-				pixmap[(i+3)%8]=shl_table[(j+3)%8];
-				pixmap[(i+4)%8]=shl_table[(j+4)%8];
-				pixmap[(i+5)%8]=shl_table[(j+5)%8];
-				pixmap[(i+6)%8]=shl_table[(j+6)%8];
-				pixmap[(i+7)%8]=shl_table[(j+7)%8];
-			}
-				wait(50);
-		}
-		pixmap[0] = 0x01;
-		pixmap[1] = 0x00;
-		pixmap[2] = 0x00;
-		pixmap[3] = 0x00;
-		pixmap[4] = 0x00;
-		pixmap[5] = 0x00;
-		pixmap[6] = 0x00;
-		pixmap[7] = 0x00;
-		wait (500);
-		pixmap[7] = 0xf0;
-                pixmap[0] = 0x0f;
-                pixmap[1] = 0xf0;
-                pixmap[2] = 0x0f;
-                pixmap[3] = 0xf0;
-                pixmap[4] = 0x0f;
-                pixmap[5] = 0xf0;
-                pixmap[6] = 0x0f;
-		wait(500);
-
-}
-
-void clear_screen(unsigned char value){
-	unsigned char x;
-	for(x=0;x<8;x++){
-		pixmap[x]=value;
-	}
-}
-
-
-void setpixel(unsigned char x, unsigned char y){
-	pixmap[y%8] |= shl_table[x%8];
-}
-
-void clearpixel(unsigned char x, unsigned char y){
-	pixmap[y%8] &= ~shl_table[x%8];
-}
-
-unsigned char get_pixel(unsigned char x, unsigned char y){
-	if (pixmap[y%8] & shl_table[x%8])return 1;
-	return 0;
-}
-
-
-struct{
-	unsigned char x;
-	unsigned char y;
-	enum{clear, set} mode;
-	enum{right,left,up,down} direction;
-}CURSOR;
-
-void set_cursor(unsigned char x, unsigned char y){
-	CURSOR.x = x;
-	CURSOR.y = y;
-	switch (CURSOR.mode){
-		case clear:
-			clearpixel(x,y);
-			break;
-		case set:
-			setpixel(x,y);
-			break;
-	}
-}
-
-void walk(unsigned char steps, unsigned int delay){
-	unsigned char x;
-	if(steps > 0){
-		for(x=0;x<steps;x++){
-			switch (CURSOR.direction){
-				case right:
-					set_cursor(CURSOR.x+1, CURSOR.y);
-					break;
-				case left:
-					set_cursor(CURSOR.x-1, CURSOR.y);
-					break;
-				case down:
-					set_cursor(CURSOR.x, CURSOR.y+1);
-					break;
-				case up:
-					set_cursor(CURSOR.x, CURSOR.y-1);
-					break;
-	
-			}
-			wait(delay);
-		}
-	}
-	else {
-		set_cursor (CURSOR.x,CURSOR.y);
-	}
-}
-
-unsigned char get_next_pixel(){
-	switch (CURSOR.direction){
-		case right:
-			return get_pixel(CURSOR.x+1,CURSOR.y);
-			break;
-		case left:
-			return get_pixel(CURSOR.x-1,CURSOR.y);
-			break;	
-		case up:
-			return get_pixel(CURSOR.x,CURSOR.y-1);
-			break;
-		case down:
-			return get_pixel(CURSOR.x,CURSOR.y+1);
-			break;
-	}
-}
-
-
-
-int
-main (void){
-	init_Ports();
-	timer0_on();
-	sei();
-	for(;;){
-
+void labor_borg(){
 	unsigned int delay = 40;
 
 	shift_in(&pix_L, delay);
@@ -240,10 +108,25 @@ main (void){
 	shift_in(&pix_G, delay);
 	
 	shift_out(16,delay);
+}
 
-//		joern2();
-//		schachbrett(20);
-//		tixiv1();
+
+
+int
+main (void){
+	init_Ports();
+	timer0_on();
+	sei();
+	for(;;){
+
+		joern1();
+		snake();
+		joern2();
+		schachbrett(20);
+		spirale(20);
+		labor_borg();
+
+
 //		testline();
 //		test1();
 //		draw_l();
@@ -251,4 +134,4 @@ main (void){
 //		clear_screen;
 //     		wait(500);	
 	}
- }
+}
