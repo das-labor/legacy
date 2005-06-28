@@ -291,7 +291,7 @@ typedef struct{
 }streamer;
 
 void matrix1(){
-	int counter = 1000;//run 1000 cycles
+	int counter = 500;//run 1000 cycles
 	streamer streamers[STREAMER_NUM];
 	unsigned char which_s[8][8];
 	unsigned char x, y;
