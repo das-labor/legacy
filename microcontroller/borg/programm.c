@@ -291,6 +291,7 @@ typedef struct{
 }streamer;
 
 void matrix1(){
+	int counter = 1000;//run 1000 cycles
 	streamer streamers[STREAMER_NUM];
 	unsigned char which_s[8][8];
 	unsigned char x, y;
@@ -302,7 +303,7 @@ void matrix1(){
 	unsigned char draw;
 
 	unsigned char streamer_num = 0;
-	while(1){
+	while(counter--){
 		unsigned char i, j;
 		for(i=0;i<streamer_num;i++){
 			streamer str = streamers[i];
@@ -332,11 +333,14 @@ void matrix1(){
 			};
 						
 		}
-		if(streamer_num<STREAMER_NUM){
-			unsigned char sy = random()%16;
-			if (sy>7) sy=0;
-			streamers[streamer_num] = (streamer){{random()%8, sy}, 0, (random()%8)+8, index++};
-			streamer_num++;	
+		unsigned char nsc;
+		for(nsc=0;nsc<6;nsc++){
+			if(streamer_num<STREAMER_NUM){
+				unsigned char sy = random()%16;
+				if (sy>7) sy=0;
+				streamers[streamer_num] = (streamer){{random()%8, sy}, 0, (random()%8)+12, index++};
+				streamer_num++;	
+			}
 		}
 		wait(40);	
 		
