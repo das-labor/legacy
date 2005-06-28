@@ -135,7 +135,8 @@ main (void){
 	timer0_on();
 	sei();
 	for(;;){
-
+		matrix1();
+		fadein();
 		joern1();
 		snake();
 		joern2();

@@ -230,3 +230,117 @@ void schachbrett(unsigned char times){
 		wait(100);
 	}
 }
+
+void fadein()
+{
+	unsigned char value, x, y;
+
+	for(value=1; value < 4; value++) {
+	 	for(y=0; y<8; y++)
+			for(x=0; x<8; x++) {
+				setpixel( (pixel){x,y}, value );
+				wait(20);
+			}
+	}
+
+}
+void matrix(){
+
+	struct line_t{
+		signed char start;
+		signed char end;
+
+		unsigned char speed;
+	} ;
+
+	struct line_t line;
+
+	line.start = 0;
+       	line.end = -4;	
+
+	while (1){
+		while (line.end < 8){
+			unsigned char i;
+			unsigned char begin = line.end < 0 ? 0 : line.end;
+
+			if (line.end >= 0){
+				setpixel((pixel){0,line.end},0);
+			}
+		       	
+			for(i = begin ; i< line.start; i++){
+				setpixel((pixel){0,i},3);
+				wait(25);
+			}
+			line.start++;
+			line.end++;
+		
+		}
+	
+	}
+		
+
+}
+
+#define STREAMER_NUM 20
+
+typedef struct{
+	pixel start;
+	unsigned char len;
+	unsigned char decay;
+	unsigned char index;
+}streamer;
+
+void matrix1(){
+	streamer streamers[STREAMER_NUM];
+	unsigned char which_s[8][8];
+	unsigned char x, y;
+	for(x=0;x<8;x++)
+		for(y=0;y<8;y++)
+			which_s[x][y]=0;
+	unsigned char index = 0;
+
+	unsigned char draw;
+
+	unsigned char streamer_num = 0;
+	while(1){
+		unsigned char i, j;
+		for(i=0;i<streamer_num;i++){
+			streamer str = streamers[i];
+			
+			if(str.len+str.start.y<8){
+				which_s[str.start.x][str.len+str.start.y] = str.index;
+			}
+
+			unsigned char bright = 255; draw = 0;
+			for(j=str.len;j!=0xFF;j--){ //Draw streamer
+				if(j+str.start.y<8){
+					if(which_s[str.start.x][j+str.start.y]==str.index){
+						setpixel((pixel){str.start.x, str.start.y+j}, bright>>6);
+						if(bright>>6) draw = 1;
+					}
+				}
+				bright-=((bright>>5)*str.decay);
+			}
+			++str.len;
+			streamers[i] = str;
+			if(!draw){
+				for(j=i;j<streamer_num-1;j++){
+					streamers[j] = streamers[j+1];
+				}
+				streamer_num--;
+				i--;
+			};
+						
+		}
+		if(streamer_num<STREAMER_NUM){
+			unsigned char sy = random()%16;
+			if (sy>7) sy=0;
+			streamers[streamer_num] = (streamer){{random()%8, sy}, 0, (random()%8)+8, index++};
+			streamer_num++;	
+		}
+		wait(40);	
+		
+	
+	
+	}
+}
