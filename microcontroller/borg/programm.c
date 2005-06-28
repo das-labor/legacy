@@ -344,3 +344,37 @@ void matrix1(){
 	
 	}
 }
+
+void feuer()
+{
+	unsigned char y, x;
+	unsigned int  t;
+	unsigned char world[8][16];   // double buffer
+
+	for(t=0; t<800; t++) {
+		// diffuse
+		for(y=1; y<16; y++) {
+			for(x=1; x<7; x++) {
+				world[x][y-1] = (2*world[x-1][y] + 8*world[x][y] + 2*world[x+1][y]) / 14;
+			};
+
+			world[0][y-1] = (2*world[7][y] + 8*world[0][y] + 2*world[1][y]) / 15;
+			world[7][y-1] = (2*world[0][y] + 8*world[7][y] + 2*world[6][y]) / 15;
+		};
+
+		// update lowest line
+		for(x=0; x<8; x++) {
+			world[x][15] = random();
+		};
+	
+		// copy to screen
+		for(y=0; y<8; y++) {
+			for(x=0; x<8; x++) {
+				setpixel( (pixel){x,y}, (world[x][y+5] / 40) );
+			}		
+		};
+
+		wait(35);
+	}
+}
+

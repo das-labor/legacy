@@ -143,6 +143,7 @@ main (void){
 		schachbrett(20);
 		spirale(20);
 		labor_borg();
+		feuer();
 
 
 //		testline();
