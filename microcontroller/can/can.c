@@ -67,6 +67,7 @@
 #define RXB0DLC 0x65
 #define RXB0D0 0x66 
 
+typedef enum { normal, sleep, loopback, listenonly, config }mcp_mode_t ;
 
 
 
@@ -128,8 +129,55 @@ void mcp_read_b(unsigned char reg, unsigned char *buf, unsigned char len){
 	PORT_SPI |= (1<<PIN_SS);
 }
 
+/* Management */
+
+void mcp_setmode( mcp_mode_t mode ) {
+	unsigned char val = mode << 5;  
+	val |= 0x04;  // CLKEN
+
+	mcp_write( CANCTRL, val );
+}
+
+
+void mcp_setfilter() {
+	mcp_write(RXB0CTRL, 0x60);
+}
+
 
 void can_init(){
 	mcp_reset();
+	
+	/*
+	 * timing = 100kbps 
+	 */
+	mcp_write( CNF1, 0x44 );
+	mcp_write( CNF2, 0xf1 );
+	mcp_write( CNF3, 0x05 );
+
+	mcp_setfilter();
+	mcp_setmode(normal);
 }
+
+
+void ping(){
+	mcp_write( TXB0SIDL, 0x88 );
+	mcp_write( TXB0SIDH, 0xF0 );
+
+
+	mcp_write( TXB0CTRL, 0x03 );
+	mcp_write_b( TXB0D0, "fnord", 6 );
+	mcp_write( TXB0DLC, 0x06 );
+	mcp_write( TXB0CTRL, 0x0b );
+}
+
+char *can_rcvpacket()
+{
+	static char buf[8];
+
+	while( !(mcp_read(CANINTF) & 0x01) ) ;
+	mcp_read_b(RXB0D0, buf, 7);
+	mcp_write(CANINTF, 0x00);
+	return buf;
+}
+
 
