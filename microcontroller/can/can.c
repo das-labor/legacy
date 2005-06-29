@@ -147,12 +147,14 @@ void mcp_setfilter() {
 void can_init(){
 	mcp_reset();
 	
+	wait( 1 );
 	/*
 	 * timing = 100kbps 
 	 */
 	mcp_write( CNF1, 0x44 );
 	mcp_write( CNF2, 0xf1 );
 	mcp_write( CNF3, 0x05 );
+
 
 	mcp_setfilter();
 	mcp_setmode(normal);
