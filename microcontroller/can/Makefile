@@ -1,5 +1,5 @@
 PRG            = uart
-OBJ            = can.o spi.o uart.o main.o
+OBJ            = can.o spi.o uart.o main.o util.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 

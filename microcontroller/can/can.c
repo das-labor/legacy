@@ -160,8 +160,8 @@ void can_init(){
 
 
 void ping(){
-	mcp_write( TXB0SIDL, 0x88 );
-	mcp_write( TXB0SIDH, 0xF0 );
+	mcp_write( TXB0SIDL, 0xF0 );
+	mcp_write( TXB0SIDH, 0x88 );
 
 
 	mcp_write( TXB0CTRL, 0x03 );
