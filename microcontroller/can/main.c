@@ -1,5 +1,6 @@
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <stdlib.h>
 #include "util.h"
 #include "uart.h"
@@ -11,10 +12,13 @@ int main(){
 	spi_init();
 	can_init();
 
+	sei();
+	DDRC = 0xff;
+
 	uart_putc('*');
 
 	while(1) {
-		uart_putstr("!");
+		uart_putstr("Ohne M4te? 0xff 0x88 0x44 0x22 0x11\n");
 		ping();
 	
 		wait(1000);
