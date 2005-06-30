@@ -18,14 +18,14 @@ int main (void)
 	PORTC = 0x00;   //1 LED on to start of Patterns
 	
 	uart_init();
-	uart_putstr( "\n" );
-	uart_putstr( "**********************************\n" );
-	uart_putstr( "*** INTERRUPT DRIVEN UART TEST ***\n" );
-	uart_putstr( "*\n" );
-	uart_putstr( "* PORTC.LED1: TX interrupt\n" );
-	uart_putstr( "* PORTC.LED2: RX interrupt\n" );
-	uart_putstr( "* PORTC.LED5: Mainloop step\n" );
-	uart_putstr( "*\n" );
+	uart_putstr( "\n\r" );
+	uart_putstr( "**********************************\n\r" );
+	uart_putstr( "*** INTERRUPT DRIVEN UART TEST ***\n\r" );
+	uart_putstr( "*\n\r" );
+	uart_putstr( "* PORTC.LED1: TX interrupt\n\r" );
+	uart_putstr( "* PORTC.LED2: RX interrupt\n\r" );
+	uart_putstr( "* PORTC.LED5: Mainloop step\n\r" );
+	uart_putstr( "*\n\r" );
 	uart_putstr( "ECHO TEST> " );
 	
 	for ( ;; ){		//for ever
