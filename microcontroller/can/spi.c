@@ -26,10 +26,10 @@ void spi_init(){
 	// 1        0       ck/64
 	// 1        1       ck/128
 	
-	//Interrupt disable, SPI enable, MSB first, master, clk low idle, data valid on rising edge, ck/128
+	//Interrupt disable, SPI enable, MSB first, master, clk low idle, data valid on rising edge, ck/4
 	SPCR = (0<<SPIE) | (1<<SPE) | (0<<DORD) | (1<<MSTR) | (0<<CPOL) | (0<<CPHA) | (0<<SPR1) | (0<<SPR0);
 
-	//Double speed off
+	//Double speed on
 	SPSR = (1<<SPI2X);
 }
 
