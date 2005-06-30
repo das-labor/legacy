@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <avr/io.h>
 #include "uart.h"
+#include "util.h"
 
 int main (void)
 {	
@@ -16,74 +17,19 @@ int main (void)
 	DDRC = 0xFF; 	//Port C all outputs
 	PORTC = 0x01;   //1 LED on to start of Patterns
 	
-	int x, delay=1000; char mode=0, ud=0;
-	
 	uart_init();
+	uart_putstr( "\n" );
+	uart_putstr( "**********************************\n" );
+	uart_putstr( "*** INTERRUPT DRIVEN UART TEST ***\n" );
+	uart_putstr( "*\n" );
+	uart_putstr( "* PORTC.LED1: TX interrupt\n" );
+	uart_putstr( "* PORTC.LED1: TX interrupt\n" );
+	uart_putstr( "* PORTC.LED5: Mainloop step\n" );
+	uart_putstr( "*\n" );
+	uart_putstr( "ECHO TEST> " );
 	
 	for ( ;; ){		//for ever
-	
-		uart_putc(uart_getc());
-	
-		//this is a time delay loop
-		for(x=0; x< delay; x++){
-		//The volatile qualifier tells the compiler not to optimize 
-		//it away.
-			volatile int y = 0;
-		};
-		
-		if(!mode){
-			//knight rider mode
-			switch (ud){
-				case 0: 		//shift light left
-					if( (PORTC<<=1) == 0x80 ){ //until bit7 is reached
-						ud = 1;
-					};
-					break;
-				case 1:			//shift bit right
-					if( (PORTC>>=1) == 0x01 ){ //until bit0 is reached
-						ud = 0;
-					};
-					break;
-			};
-		}else{
-			//scroll mode
-			switch (ud){
-				case 0:
-					PORTC|=(PORTC<<1);//shift additional ones in from left
-					if(PORTC & 0x80)  //until bit7 is reached
-						ud = 1;
-					break;
-				case 1:
-					PORTC<<=1;	//shift zeros in
-					if (PORTC == 0){//until all zeros
-						ud = 0;
-						PORTC = 0x01;//start over
-					}
-					break;
-			
-			};
-		
-		}
-		
-		switch(PINB&0x0f){
-			case 0x0E:	//Button 1 pressed
-				if (delay<30000){
-					delay += 100;
-				}
-				break;
-			case 0x0D:	//Button 2 pressed
-				if (delay>1000){
-					delay -= 100;
-				}
-				break;
-			case 0x0B:	//Button 3 pressed
-				mode = 0;
-				break;
-			case 0x07:	//Button 4 pressed	
-				mode = 1;
-				break;
-		}; 
-	
-	
+		uart_putc(uart_getc());   // Echo char
+		PORTC ^= 0x10;            // Toggle LED
 	};	
 }
