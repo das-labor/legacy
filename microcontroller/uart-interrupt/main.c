@@ -15,7 +15,7 @@ int main (void)
 	PORTB = 0x0F;	//Internal Pullups on on key inputs
 	
 	DDRC = 0xFF; 	//Port C all outputs
-	PORTC = 0x01;   //1 LED on to start of Patterns
+	PORTC = 0x00;   //1 LED on to start of Patterns
 	
 	uart_init();
 	uart_putstr( "\n" );
@@ -23,7 +23,7 @@ int main (void)
 	uart_putstr( "*** INTERRUPT DRIVEN UART TEST ***\n" );
 	uart_putstr( "*\n" );
 	uart_putstr( "* PORTC.LED1: TX interrupt\n" );
-	uart_putstr( "* PORTC.LED1: TX interrupt\n" );
+	uart_putstr( "* PORTC.LED2: RX interrupt\n" );
 	uart_putstr( "* PORTC.LED5: Mainloop step\n" );
 	uart_putstr( "*\n" );
 	uart_putstr( "ECHO TEST> " );

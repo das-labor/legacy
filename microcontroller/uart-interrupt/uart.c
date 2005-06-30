@@ -5,6 +5,8 @@
 #define UART_BAUD_RATE 19200
 #define UART_BAUD_CALC(UART_BAUD_RATE,F_OSC) ((F_CPU)/((UART_BAUD_RATE)*16L)-1)
 
+#define UART_LEDS           /* LED1 and LED2 toggle on tx and rx interrupt */
+
 #include <avr/io.h>
 #include <avr/signal.h>
 #include <avr/interrupt.h>
@@ -20,8 +22,10 @@ volatile static char *volatile txhead, *volatile txtail;
 
 
 SIGNAL(SIG_UART_DATA) {
+#ifdef UART_LEDS	
 	PORTC ^= 0x01;
-
+#endif
+	
 	if ( txhead == txtail ) {
 		UCSRB &= ~(1 << UDRIE);		/* disable data register empty IRQ */
 	} else {
@@ -33,8 +37,10 @@ SIGNAL(SIG_UART_DATA) {
 SIGNAL(SIG_UART_RECV) {
 	int diff; 
 
+#ifdef UART_LEDS
 	PORTC ^= 0x02;
-
+#endif
+	
 	/* buffer full? */
 	diff = rxhead - rxtail;
 	if ( diff < 0 ) diff += UART_RXBUFSIZE;
