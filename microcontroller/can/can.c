@@ -161,14 +161,14 @@ void can_init(){
 }
 
 
-void ping(){
+void can_send(char *buf, unsigned char len){
 	mcp_write( TXB0SIDL, 0xF0 );
 	mcp_write( TXB0SIDH, 0x88 );
 
 
 	mcp_write( TXB0CTRL, 0x03 );
-	mcp_write_b( TXB0D0, "fnord", 6 );
-	mcp_write( TXB0DLC, 0x06 );
+	mcp_write_b( TXB0D0, buf, len );
+	mcp_write( TXB0DLC, len );
 	mcp_write( TXB0CTRL, 0x0b );
 }
 

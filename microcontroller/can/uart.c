@@ -18,9 +18,6 @@ volatile static char *volatile txhead, *volatile txtail;
 
 
 SIGNAL(SIG_UART_DATA) {
-	PORTC |= 0x01;
-	PORTC ^= 0x02;
-
 	if ( txhead == txtail ) {
 		UCSRB &= ~(1 << UDRIE);		/* disable data register empty IRQ */
 	} else {
@@ -28,6 +25,25 @@ SIGNAL(SIG_UART_DATA) {
 		if (++txtail == (txbuf + UART_BUFSIZE)) txtail = txbuf;
 	}
 }
+
+SIGNAL(SIG_UART_RECV) {
+	int diff; 
+
+	PORTC |= 0x01;
+	PORTC ^= 0x02;
+
+	/* buffer full? */
+	diff = rxhead - rxtail;
+	if ( diff < 0 ) diff += UART_BUFSIZE;
+	if (diff < UART_BUFSIZE -1) {
+		// buffer NOT full
+		*rxhead = UDR;
+		if (++rxhead == (rxbuf + UART_BUFSIZE)) rxhead = rxbuf;
+	} else {
+		volatile char c = UDR;
+	}
+}
+
 
 void uart_init() {
 	PORTD |= 0x01;				//Pullup an RXD an
@@ -43,6 +59,9 @@ void uart_init() {
 	// init buffers
 	rxhead = rxtail = rxbuf;
 	txhead = txtail = txbuf;
+
+	// activate rx IRQ
+	UCSRB |= (1 << RXCIE);		/* disable data register empty IRQ */
 }
 
 void uart_putc(char c) {
@@ -50,9 +69,7 @@ void uart_putc(char c) {
 
 	/* buffer full? */
 	do {
-	cli();
 		diff = txhead - txtail;
-	sei();
 		if ( diff < 0 ) diff += UART_BUFSIZE;
 	} while ( diff >= UART_BUFSIZE -1 );
 
@@ -70,6 +87,30 @@ void uart_putstr(char *str) {
 	}
 }
 
+char uart_getc()
+{
+	char val;
+
+	while(rxhead==rxtail) ;
+
+	val = *rxtail;
+ 	if (++rxtail == (rxbuf + UART_BUFSIZE)) rxtail = rxbuf;
+
+	return val;
+}
+
+unsigned char uart_getc_nb(char *c)
+{
+	if (rxhead==rxtail) return 0;
+
+	*c = *rxtail;
+ 	if (++rxtail == (rxbuf + UART_BUFSIZE)) rxtail = rxbuf;
+
+	return 1;
+}
+
+
+
 //
 //void uart_putc(uint8_t c){
 //	while (!(UCSRA & (1<<UDRE))); /* warten bis Senden moeglich                   */
@@ -79,8 +120,8 @@ void uart_putstr(char *str) {
 
 
 /* Zeichen empfangen */
-uint8_t uart_getc(){
-    while (!(UCSRA & (1<<RXC)));  // warten bis Zeichen verfuegbar
-    return UDR;                   // Zeichen aus UDR an Aufrufer zurueckgeben
-}
+// uint8_t uart_getc(){
+//     while (!(UCSRA & (1<<RXC)));  // warten bis Zeichen verfuegbar
+//     return UDR;                   // Zeichen aus UDR an Aufrufer zurueckgeben
+// }
 

@@ -18,10 +18,15 @@ int main(){
 	uart_putc('*');
 
 	while(1) {
-		uart_putstr("Ohne M4te? 0xff 0x88 0x44 0x22 0x11\n");
-		ping();
-	
-		wait(1000);
+		char c = uart_getc();
+
+//		uart_putstr("Ohne M4te? 0xff 0x88 0x44 0x22 0x11\n");
+//
+		
+		uart_putc(c);
+		can_send(&c, 1);
+		
+//		wait(1000);
 //		char *rcv = can_rcvpacket();
 //		uart_putstr(rcv);
 	}
