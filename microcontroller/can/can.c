@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include "can.h"
 #include "util.h"
 #include "spi.h"
 
@@ -69,11 +70,6 @@
 #define RXB0DLC 0x65
 #define RXB0D0 0x66 
 
-typedef enum { normal, sleep, loopback, listenonly, config }mcp_mode_t ;
-
-
-
-
 //Command Bytes
 #define RESET 0xC0
 #define READ 0x03
@@ -132,7 +128,6 @@ void mcp_read_b(unsigned char reg, unsigned char *buf, unsigned char len){
 }
 
 /* Management */
-
 void mcp_setmode( mcp_mode_t mode ) {
 	unsigned char val = mode << 5;  
 	val |= 0x04;  // CLKEN

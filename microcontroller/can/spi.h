@@ -1,4 +1,4 @@
-#ifdef SPI_h
+#ifndef SPI_h
 #define SPI_h
 
 void spi_init();

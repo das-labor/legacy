@@ -8,37 +8,40 @@
 #include <avr/io.h>
 #include <avr/signal.h>
 #include <avr/interrupt.h>
+#include "uart.h"
 
-#define UART_BUFSIZE 10
+#define UART_RXBUFSIZE 16
+#define UART_TXBUFSIZE 16
 
-volatile static char rxbuf[UART_BUFSIZE];
-volatile static char txbuf[UART_BUFSIZE];
+volatile static char rxbuf[UART_RXBUFSIZE];
+volatile static char txbuf[UART_TXBUFSIZE];
 volatile static char *volatile rxhead, *volatile rxtail;
 volatile static char *volatile txhead, *volatile txtail;
 
 
 SIGNAL(SIG_UART_DATA) {
+	PORTC ^= 0x01;
+
 	if ( txhead == txtail ) {
 		UCSRB &= ~(1 << UDRIE);		/* disable data register empty IRQ */
 	} else {
 		UDR = *txtail;                   /* schreibt das Zeichen x auf die Schnittstelle */
-		if (++txtail == (txbuf + UART_BUFSIZE)) txtail = txbuf;
+		if (++txtail == (txbuf + UART_TXBUFSIZE)) txtail = txbuf;
 	}
 }
 
 SIGNAL(SIG_UART_RECV) {
 	int diff; 
 
-	PORTC |= 0x01;
 	PORTC ^= 0x02;
 
 	/* buffer full? */
 	diff = rxhead - rxtail;
-	if ( diff < 0 ) diff += UART_BUFSIZE;
-	if (diff < UART_BUFSIZE -1) {
+	if ( diff < 0 ) diff += UART_RXBUFSIZE;
+	if (diff < UART_RXBUFSIZE -1) {
 		// buffer NOT full
 		*rxhead = UDR;
-		if (++rxhead == (rxbuf + UART_BUFSIZE)) rxhead = rxbuf;
+		if (++rxhead == (rxbuf + UART_RXBUFSIZE)) rxhead = rxbuf;
 	} else {
 		volatile char c = UDR;
 	}
@@ -70,12 +73,12 @@ void uart_putc(char c) {
 	/* buffer full? */
 	do {
 		diff = txhead - txtail;
-		if ( diff < 0 ) diff += UART_BUFSIZE;
-	} while ( diff >= UART_BUFSIZE -1 );
+		if ( diff < 0 ) diff += UART_TXBUFSIZE;
+	} while ( diff >= UART_TXBUFSIZE -1 );
 
 	cli();
 	*txhead = c;
- 	if (++txhead == (txbuf + UART_BUFSIZE)) txhead = txbuf;
+ 	if (++txhead == (txbuf + UART_TXBUFSIZE)) txhead = txbuf;
 
 	UCSRB |= (1 << UDRIE);		/* enable data register empty IRQ */
 	sei();
@@ -94,7 +97,7 @@ char uart_getc()
 	while(rxhead==rxtail) ;
 
 	val = *rxtail;
- 	if (++rxtail == (rxbuf + UART_BUFSIZE)) rxtail = rxbuf;
+ 	if (++rxtail == (rxbuf + UART_RXBUFSIZE)) rxtail = rxbuf;
 
 	return val;
 }
@@ -104,24 +107,8 @@ unsigned char uart_getc_nb(char *c)
 	if (rxhead==rxtail) return 0;
 
 	*c = *rxtail;
- 	if (++rxtail == (rxbuf + UART_BUFSIZE)) rxtail = rxbuf;
+ 	if (++rxtail == (rxbuf + UART_RXBUFSIZE)) rxtail = rxbuf;
 
 	return 1;
 }
-
-
-
-//
-//void uart_putc(uint8_t c){
-//	while (!(UCSRA & (1<<UDRE))); /* warten bis Senden moeglich                   */
-//	UDR = c;                      /* schreibt das Zeichen x auf die Schnittstelle */
-//
-//}
-
-
-/* Zeichen empfangen */
-// uint8_t uart_getc(){
-//     while (!(UCSRA & (1<<RXC)));  // warten bis Zeichen verfuegbar
-//     return UDR;                   // Zeichen aus UDR an Aufrufer zurueckgeben
-// }
 
