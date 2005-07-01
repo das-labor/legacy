@@ -6,6 +6,8 @@
 void uart_init();
 void uart_putc(char c);
 char uart_getc();
+unsigned char uart_getc_nb(char *c);
+
 void uart_putstr(char * str);
 
 char * uart_getline_nb();

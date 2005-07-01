@@ -1,7 +1,7 @@
 PRG            = uart
 OBJ            = main.o uart.o console.o
 MCU_TARGET     = atmega32
-OPTIMIZE       = -Os
+OPTIMIZE       = -Os -fshort-enums
 
 FLASHCMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --upload if=$(PRG).hex
 ERASECMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --erase
