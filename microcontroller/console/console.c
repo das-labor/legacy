@@ -13,6 +13,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define CONSOLE_C
+#include "console.h"
 
 #ifdef CONSOLE_UART
 #include "uart.h"
@@ -22,74 +24,10 @@
 #define stdout_putstr_P uart_putstr_P
 #endif
 
-enum command_type {table, function};
-
-typedef struct{
-	enum command_type type;
-	PGM_P  name;
-	void * target;	
-}command;
-#define CMD_P command * PROGMEM
-
-typedef struct{
-	unsigned char size;
-	const command * PROGMEM commands[];
-}command_table;
-#define CMD_T_P command_table * PROGMEM
-
-typedef enum{
-	vd, c, uc, i, ui, str
-}argument_type;
-
-const static char str__void[] PROGMEM = "void";
-const static char str__char[] PROGMEM = "char";
-const static char str__uchar[] PROGMEM = "uchar";
-const static char str__int[] PROGMEM = "int";
-const static char str__uint[] PROGMEM = "uint";
-const static char str__string[] PROGMEM = "string";
-
-const char * argument_type_names[] PROGMEM ={
-str__void, str__char, str__uchar, str__int, str__uint, str__string
-};
-
-typedef struct{
-	argument_type type;
-	PGM_P name;
-}argument;
-
-typedef struct{
-	void (*call)(void);
-	argument ret_type;
-	unsigned char arg_num;
-	argument arguments[];
-}c_function;
-#define C_FKT_P c_function * PROGMEM
+extern const command_table main_table PROGMEM;
 
 static char buffer[BUFFER_SIZE];
 
-
-char echo(char zahl){
-	char buf[10];
-	utoa(zahl, buf, 10);
-	uart_putstr(buf);
-	return(zahl);
-}
-
-const static char str__paramname[] PROGMEM = "zahl";
-
-c_function cf_echo PROGMEM={
-	(void(*)(void))&echo, {c, 0}, 1,{{c, str__paramname}}
-};
-
-const static char str__echo[] PROGMEM = "echo";
-
-const static command c_echo PROGMEM={
-	function, str__echo, (void *)&cf_echo
-};
-
-const static command_table main_table PROGMEM={
-	1, {&c_echo}
-};
 
 void command_table_print(CMD_T_P tbl){
 	unsigned char x;
@@ -348,21 +286,22 @@ void console(){
 	
 	while(uart_getc_nb(&tmp)){
 		if(tmp == '\r'){
-			*buf_pos = 0;	//terminate line
-			buf_pos = buffer;   //reset pointer
-			stdout_putstr_P(PSTR("\r\n"));
-			switch(resolve_command(buffer, &rest, &target)){
-				case r_incomplete:
-					stdout_putstr_P(PSTR("Error: No such command"));
-					break;
-				case r_table:
-					stdout_putstr_P(PSTR("Error: Command incomplete"));
-					break;
-				case r_function:
-					function_call(target, rest);
-					break;
+			if(buf_pos != buffer){
+				*buf_pos = 0;	//terminate line
+				buf_pos = buffer;   //reset pointer
+				stdout_putstr_P(PSTR("\r\n"));
+				switch(resolve_command(buffer, &rest, &target)){
+					case r_incomplete:
+						stdout_putstr_P(PSTR("Error: No such command"));
+						break;
+					case r_table:
+						stdout_putstr_P(PSTR("Error: Command incomplete"));
+						break;
+					case r_function:
+						function_call(target, rest);
+						break;
+				}
 			}
-			//stdout_putstr(buffer);
 			stdout_putstr_P(PSTR(PROMPT));
 		}else if(tmp == '\t'){
 			*buf_pos = 0;

@@ -1,5 +1,5 @@
 PRG            = uart
-OBJ            = main.o uart.o console.o
+OBJ            = main.o uart.o util.o console.o function_table.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os -fshort-enums
 
@@ -29,6 +29,9 @@ $(PRG).elf: $(OBJ)
 clean:
 	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak 
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
+
+fct_table:
+	./mk_function_table.pl *.h >function_table.c
 
 flash:
 	$(ERASECMD)
