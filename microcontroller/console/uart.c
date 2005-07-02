@@ -50,7 +50,7 @@ SIGNAL(SIG_UART_RECV) {
 		*rxhead = UDR;
 		if (++rxhead == (rxbuf + UART_RXBUFSIZE)) rxhead = rxbuf;
 	} else {
-		volatile char c = UDR;
+		UDR; //reads the buffer to clear the interrupt condition
 	}
 }
 
@@ -71,7 +71,7 @@ void uart_init() {
 	txhead = txtail = txbuf;
 
 	// activate rx IRQ
-	UCSRB |= (1 << RXCIE);		/* disable data register empty IRQ */
+	UCSRB |= (1 << RXCIE);
 }
 
 void uart_putc(char c) {

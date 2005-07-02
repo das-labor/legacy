@@ -6,6 +6,8 @@
 
 #include <inttypes.h>
 #include <avr/io.h>
+#include <avr/interrupt.h>
+#include <stdlib.h>
 #include "uart.h"
 #include "util.h"
 #include "console.h"
@@ -19,7 +21,14 @@ int main (void)
 	PORTC = 0x00;   //1 LED on to start of Patterns
 	
 	uart_init();
-	uart_putc('*');
+	sei();
+	
+	//uart_putc('*');
+	
+	//char buf[10];
+	//itoa(uart_getc(), buf, 16);
+	//uart_putstr(buf);
+	
 	
 	
 			
