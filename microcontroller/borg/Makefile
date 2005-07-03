@@ -1,5 +1,5 @@
 PRG            = borg
-OBJ            = main.o scrolltext.o programm.o pixel.o
+OBJ            = main.o util.o scrolltext.o programm.o pixel.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 

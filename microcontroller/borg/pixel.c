@@ -2,6 +2,8 @@
 #define PIXEL_C
 #include "pixel.h"
 
+#include "util.h"
+
 unsigned char shl_table[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
 
 
@@ -102,7 +104,7 @@ pixel next_pixel(pixel pix, direction dir){
 				break;
 	
 			}
-			
+	return (pixel){0,0};
 }
 
 void walk(cursor* cur, unsigned char steps, unsigned int delay){
