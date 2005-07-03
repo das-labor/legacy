@@ -1,14 +1,13 @@
 
 #include "pixel.h"
-
-extern void wait(int);
+#include "util.h"
 
 void test1(){
 unsigned char x,y;
 	for (y=0;y<8;y++){
 		for (x=0;x<8;x++){
 			setpixel((pixel){x,y}, 3);
-			wait(100);
+			wait(200);
 		}
 	}
 }
@@ -133,7 +132,7 @@ void snake(){
 			while(tail != head){
 				clearpixel(*tail);
 				if((++tail)>pixels+64) tail = pixels;
-				wait (30);
+				wait (60);
 			}
 			break;
 		}
@@ -146,7 +145,7 @@ void snake(){
 			}
 		}
 		
-		wait (50);
+		wait (100);
 	}
 
 }
@@ -165,7 +164,7 @@ unsigned char i, j;
 			pixmap[0][(i+6)%8]=shl_table[(j+6)%8];
 			pixmap[0][(i+7)%8]=shl_table[(j+7)%8];
 		}
-		wait(50);
+		wait(100);
 	}
 }
 
@@ -180,7 +179,7 @@ void joern2(){
 		pixmap[0][5] = 0xf0;
 		pixmap[0][6] = 0x0f;
 		pixmap[0][7] = 0xf0;
-		wait (50);
+		wait (100);
 		pixmap[0][0] = 0xf0;
                 pixmap[0][1] = 0x0f;
                 pixmap[0][2] = 0xf0;
@@ -189,7 +188,7 @@ void joern2(){
                 pixmap[0][5] = 0x0f;
                 pixmap[0][6] = 0xf0;
                 pixmap[0][7] = 0x0f;
-		wait (50);
+		wait (100);
 	}
 }
 
@@ -210,7 +209,7 @@ void testline(){
 	unsigned char i;
 	for(i = 0; i<255; i++){
 		draw_line(0,i);
-		wait(50);
+		wait(100);
 		clear_screen(0);
 	}
 		
@@ -223,11 +222,11 @@ void schachbrett(unsigned char times){
 		for(i = 0; i<8; i++){
 			pixmap[0][i] = 0x55<<(i&0x01);
 		}
-		wait(100);
+		wait(200);
 		for(i = 0; i<8; i++){
 			pixmap[0][i] = 0xAA>>(i&0x01);
 		}
-		wait(100);
+		wait(200);
 	}
 }
 
@@ -269,7 +268,7 @@ void matrix(){
 		       	
 			for(i = begin ; i< line.start; i++){
 				setpixel((pixel){0,i},3);
-				wait(25);
+				wait(50);
 			}
 			line.start++;
 			line.end++;
@@ -342,7 +341,7 @@ void matrix1(){
 				streamer_num++;	
 			}
 		}
-		wait(40);	
+		wait(80);	
 		
 	
 	
@@ -378,7 +377,7 @@ void feuer()
 			}		
 		};
 
-		wait(35);
+		wait(70);
 	}
 }
 

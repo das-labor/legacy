@@ -75,7 +75,7 @@ void shift_out(unsigned char cols, unsigned int delay){
 }
 
 void labor_borg(){
-	unsigned int delay = 40;
+	unsigned int delay = 70;
 
 	shift_in(&pix_L, delay);
 	shift_in(&pix_A, delay);
