@@ -38,7 +38,9 @@ foreach (@ARGV){
 				
 				my $argtype = "ptr";
 				$argnames .= "const static char ".$c_prefix.$name."_".$argname."[] PROGMEM = \"$2\";\n";
-				if (!($1 =~ /\*/ )){
+				if ($1 =~ /^\s*char\s*\*/){
+					$argtype = "str";
+				}elsif (!($1 =~ /\*/ )){
 					if($1 =~ /unsigned\s*char/){
 						$argtype = "uc";
 					}elsif($1 =~ /unsigned\s*int/){
@@ -54,7 +56,9 @@ foreach (@ARGV){
 				$argstruct.="{".$argtype.",".$c_prefix.$name."_".$argname."},";
 			};
 			my $argtype = "ptr";
-			if (!($ret =~ /\*/ )){
+				if ($ret =~ /^\s*char\s*\*/){
+					$argtype = "str";
+				}elsif (!($ret =~ /\*/ )){
 					if($ret =~ /unsigned\s*char/){
 						$argtype = "uc";
 					}elsif($ret =~ /unsigned\s*int/){
