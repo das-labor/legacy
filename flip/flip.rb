@@ -190,14 +190,15 @@ class BoxedWin
 		if parent.nil? then @win = WINDOW.new(h,w,y,x); end
 		if parent.kind_of?(BoxedWin) then @win = parent.content; end
 		
+		debug( "win: #{@win}" )
 		@win.derwin(h,w,y,x)
 		@win.bkgd(bkgd) if !bkgd.nil?
 		@win.box(ACS_VLINE,ACS_HLINE)
-#		@content=derwin(@win,h-2,w-2,1,1)
-#		@content.keypad(true)
-#		@content.bkgd(bkgd) if !bkgd.nil?
-#		@content.move(0,0)
-		@win.refresh; @content.refresh
+		@content=@win.derwin(h-2,w-2,1,1)
+		@content.keypad(true)
+		@content.bkgd(bkgd) if !bkgd.nil?
+		@content.move(0,0)
+		@win.refresh; 
 	end
 	def title(s,align=:CENTER)
 		@win.box(ACS_VLINE,ACS_HLINE)
@@ -233,10 +234,14 @@ class ListBox < BoxedWin
 	attr_reader :items, :win, :first, :selected
 	
 	def initialize(win)
+		debug "HAAAAALOOO *********** HUHU!!! ***"
+		debug win;
+
+
 		@win=(win.kind_of?(BoxedWin) ? win.content : win)
 		@showSelected=true # visually highlight the selected row
 		empty
-		@win.clear; @win.refresh
+#		@win.clear; @win.refresh
 	end
 	# add item(s)
 	def add(arg, arg2=nil)
@@ -386,83 +391,15 @@ class CursesUI <UI
 				# Directory
 				case c
 				when 9 # TAB
-					next if @entryListBox.items.length==0
-					selectListBox(@entryListBox)
-					editEntry(@dirListBox.selected)
-					@entryOrig=@entry.dup
 				when ?c, ?C
-					next if @dirListBox.selected==0 
-					s=getVal("Copy #{@dirListBox.key} entry to",@dirListBox.key)
-					if s==@dirListBox.key
-						error("The source and destination dn cannot be the same!")
-						next
-					end
-					next if !copyEntry(@dirListBox.selected,s)
-					@browser.chDir(LDAPBrowser.parent(s))
-					listDir(0,1000); @dirListBox.find(s); listAttrs; refreshUI
 				when ?r, ?R
-					next if @dirListBox.selected==0 
-					s=getVal("Rename #{@dirListBox.key} entry to (enter relative dn)", @dirListBox.key.sub(/^([^,]*).*/,'\1'))
-					if s==@dirListBox.key
-						error("The source and destination dn cannot be the same!")
-						next
-					end
-					next if !renameEntry(@dirListBox.selected,s)
-					listDir(0,1000); @dirListBox.find("#{s},#{@browser.curDir}"); listAttrs; refreshUI
 				when ?a, ?A
-					dn=getVal("Enter new entry (relative) dn under #{@browser.curDir} (format: <attr>=<value>)")
-					arr=dn.split("="); arr.each {|s| s.strip!}
-					(error("#{s} is not a relative dn!"); next) if arr.length!=2
-					addEntry(dn); addAttr(arr[0],arr[1])
-					selectListBox(@entryListBox); listAttrs; refreshUI
 				when ?d, ?D
-					i=@dirListBox.selected
-					next if i==0
-					if deleteEntry(i)
-						listDir(0,1000); @dirListBox.select(i-1); listAttrs
-					end
 				when KEY_ENTER, 13 # Enter
 					debug("Enter. Selected==#{@dirListBox.selected}")
-					i=@dirListBox.selected
-					dn=@browser.curDir if i==0 # change to parent
-					chDir(@dirListBox.selected); listDir(0,1000)
-					@dirListBox.find(dn) if i==0
-					listAttrs
 				end
 			else # active == @entryListBox
-				# Entry
-				case c
-				when 9 # TAB
-					if @entry.modified==true
-						error("The contents of the entry has been modified. Use 'Save' or 'Revert' commands before leaving the attributes panel!")
-						next
-					end
-					selectListBox(@dirListBox); @state=:MAIN
-				when ?a, ?A
-					s=getVal("Enter new attribute in '<attr>=<value>' form")
-					arr=s.split("="); arr.each {|s| s.strip!}
-					(error("Invalid format!"); next) if arr.length!=2
-					addAttr(arr[0],arr[1])
-					listAttrs; @entryListBox.find("#{arr[0]} = #{arr[1]}"); refreshUI
-				when ?m, ?M
-					key,val=@entryListBox.value
-					s=getVal("Enter new value for #{key}",val)
-					(error("Empty string is not a valid value!"); next) if s.length==0
-					modifyAttr(@entryListBox.selected+1,s)
-					listAttrs; @entryListBox.find("#{key} = #{s}"); refreshUI
-				when ?d, ?D
-					deleteAttr(@entryListBox.selected+1)
-				when ?s, ?s # save, then reload everything
-					saveAttrs
-				when ?r, ?R
-					if @state==:EDIT
-						@entry=@entryOrig.dup
-					else
-						selectListBox(@dirListBox)
-						@state=:MAIN
-					end
-					listAttrs
-				end
+				# jaja XXX
 			end
 		end
 		endwin
@@ -497,12 +434,12 @@ class CursesUI <UI
 		freerows=4
 		@dirPanel=BoxedWin.new(nil,Ncurses.LINES-freerows,Ncurses.COLS/2,0,0,ATTR_NORMAL)
 		@dirListBox=ListBox.new(@dirPanel)
-		@entryPanel=BoxedWin.new(nil,Ncurses.LINES-freerows,Ncurses.COLS-Ncurses.COLS/2,0,Ncurses.COLS/2,ATTR_NORMAL)
-		@entryListBox=ListBox.new(@entryPanel)
-		@entryListBox.showSelected(false)
-		@statusRow=WINDOW.new(1,Ncurses.COLS,Ncurses.LINES-freerows,0)
-		@statusRow.bkgd(ATTR_NORMAL); @statusRow.refresh
-		@commandWin=BoxedWin.new(nil,freerows-1,Ncurses.COLS,Ncurses.LINES-freerows+1,0,ATTR_NORMAL)
+#		@entryPanel=BoxedWin.new(nil,Ncurses.LINES-freerows,Ncurses.COLS-Ncurses.COLS/2,0,Ncurses.COLS/2,ATTR_NORMAL)
+#		@entryListBox=ListBox.new(@entryPanel)
+#		@entryListBox.showSelected(false)
+#		@statusRow=WINDOW.new(1,Ncurses.COLS,Ncurses.LINES-freerows,0)
+#		@statusRow.bkgd(ATTR_NORMAL); @statusRow.refresh
+#		@commandWin=BoxedWin.new(nil,freerows-1,Ncurses.COLS,Ncurses.LINES-freerows+1,0,ATTR_NORMAL)
 		@active=@dirListBox
 	end
 	
