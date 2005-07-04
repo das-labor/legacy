@@ -125,7 +125,7 @@ module NcursesEx
 		return [y[0],x[0]]
 	end
 	def myGetMaxYX(w)
-		x=[]; y=[]; getmaxyx(w,y,x)
+		x=[]; y=[]; w.getmaxyx(y,x)
 		return [y[0],x[0]]
 	end
 end
@@ -367,7 +367,7 @@ class CursesUI <UI
 	def getCommand
 		mkWins if ! defined?(@dirListBox)
 		updateCommandRow "(C)opy (R)ename (A)dd (D)elete (Q)uit"
-		listDir(0,1000); listAttrs
+		listDir(0,1000); 
 		finished=false; processed=false
 		while (true)
 			break if finished
@@ -378,7 +378,7 @@ class CursesUI <UI
 			break if finished
 			next if processed
 			processed=navigate(@active,c)
-			listAttrs if @active==@dirListBox && processed
+#			listAttrs if @active==@dirListBox && processed
 			next if processed
 			case c
 			when ?\C-L # ^L
@@ -401,7 +401,7 @@ class CursesUI <UI
 				# jaja XXX
 			end
 		end
-		endwin
+		Ncurses.endwin
 		exit(0)
 	end
 
@@ -436,7 +436,7 @@ class CursesUI <UI
 #		@entryPanel=BoxedWin.new(nil,Ncurses.LINES-freerows,Ncurses.COLS-Ncurses.COLS/2,0,Ncurses.COLS/2,ATTR_NORMAL)
 #		@entryListBox=ListBox.new(@entryPanel)
 #		@entryListBox.showSelected(false)
-#		@statusRow=WINDOW.new(1,Ncurses.COLS,Ncurses.LINES-freerows,0)
+		@statusRow=WINDOW.new(1,Ncurses.COLS,Ncurses.LINES-freerows,0)
 #		@statusRow.bkgd(ATTR_NORMAL); @statusRow.refresh
 		@commandWin=BoxedWin.new(nil,freerows-1,Ncurses.COLS,Ncurses.LINES-freerows+1,0,ATTR_NORMAL)
 		@active=@dirListBox
@@ -453,12 +453,9 @@ class CursesUI <UI
 
 	# refresh @dirListBox
 	def listDir(first,last)
-		@dirPanel.title(@browser.curDir,:LEFT)
+#		@dirPanel.title("Available Access Points",:LEFT)
 		@dirListBox.empty; @dirListBox.add("..",{})
-		dir(first,last) {|eorig|
-			e=eorig.dup; dn=e.delete("dn")[0]
-			@dirListBox.add(dn,e)
-		}
+		@dirListBox.add("Huhu","fnord")
 		@dirListBox.refresh
 	end
 
@@ -583,7 +580,7 @@ class TxtUI < UI
 		begin
 			case cmd
 				when "L"
-					listAttrs()
+#					listAttrs()
 				when "A"
 					line=~ /^. ([^=]*)=(.*)$/
 					addAttr($1,$2)
