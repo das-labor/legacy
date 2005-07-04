@@ -210,15 +210,15 @@ class BoxedWin
 		end
 		@win.refresh
 	end
-#	def x; return myGetYX(@content)[1]; end
-#	def y; return myGetYX(@content)[0]; end
-#	def maxX; return myGetMaxYX(@content)[1]; end
-#	def maxY; return myGetMaxYX(@content)[0]; end
-#	def refresh; @win.wnoutrefresh; @content.wnoutrefresh; doupdate end
-#	def redrawwin; @win.redrawwin; @content.redrawwin; refresh end
-#	def destroy; @content.delwin; @win.delwin end
+	def x; return myGetYX(@content)[1]; end
+	def y; return myGetYX(@content)[0]; end
+	def maxX; return myGetMaxYX(@content)[1]; end
+	def maxY; return myGetMaxYX(@content)[0]; end
+	def refresh; @win.wnoutrefresh; @content.wnoutrefresh; end
+	def redrawwin; @win.redrawwin; @content.redrawwin; refresh end
+	def destroy; @content.delwin; @win.delwin end
 	def method_missing(sym,*args)
-#		@content.send sym,*args
+		@content.send sym,*args
 	end
 end
 
