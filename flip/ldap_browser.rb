@@ -7,12 +7,15 @@
 # 2003-06-16: v0.02
 #   updated to work with slapd 2.1.x (re-read dn after saving a new entry)
 
-require "ldap"
-require "ncurses"
+require 'ncurses'
 
-END {
-	Ncurses.endwin
-}
+include Ncurses
+include Ncurses::Form
+
+# END {
+# 	Ncurses.endwin
+# }
+
 
 def debug(s)
 	begin
@@ -173,39 +176,27 @@ class UI
 	def copyEntry(i,newname); @browser.copyEntry(i-1,newname); end
 	def renameEntry(i,newname); @browser.renameEntry(i-1,newname) end
 	def deleteEntry(i); @browser.deleteEntry(i-1) end
-
-	#Attribute handling
-	def attrs; @entry.attributes { |attr,val| yield(attr,val) } end
-	def addAttr(key,value)
-		(error("Invalid add command!"); return false) if key.nil? || value.nil?
-		@entry.addAttribute(key,value); listAttrs
-	end
-	def modifyAttr(i,newval)
-		(error("Invalid modify command!"); return) if newval.nil?
-		@entry.modifyAttribute(i-1,newval); listAttrs
-	end
-	def deleteAttr(i)
-		@entry.deleteAttribute(i-1); listAttrs
-	end
-	def saveAttrs
-		return @state==:ADD ? @browser.addEntry(@entry) : @browser.modifyEntry(@entry)
-	end
 end
 
 # BoxedWin consists of two windows: one for the 1-char wide border (@win), one for the content (@content)
 class BoxedWin
 	include NcursesEx
+	include Ncurses
+
 	attr_reader :win, :content
 	# parent: can be nil, BoxedWin or Ncurses::WINDOW
 	def initialize(parent,h,w,y,x,bkgd=nil)
-		@win=parent.nil? ? WINDOW.new(h,w,y,x) :
-			(parent.kind_of?(BoxedWin) ? parent.content : parent).derwin(h,w,y,x)
+		@win = parent
+		if parent.nil? then @win = WINDOW.new(h,w,y,x); end
+		if parent.kind_of?(BoxedWin) then @win = parent.content; end
+		
+		@win.derwin(h,w,y,x)
 		@win.bkgd(bkgd) if !bkgd.nil?
 		@win.box(ACS_VLINE,ACS_HLINE)
-		@content=derwin(@win,h-2,w-2,1,1)
-		@content.keypad(true)
-		@content.bkgd(bkgd) if !bkgd.nil?
-		@content.move(0,0)
+#		@content=derwin(@win,h-2,w-2,1,1)
+#		@content.keypad(true)
+#		@content.bkgd(bkgd) if !bkgd.nil?
+#		@content.move(0,0)
 		@win.refresh; @content.refresh
 	end
 	def title(s,align=:CENTER)
@@ -219,15 +210,15 @@ class BoxedWin
 		end
 		@win.refresh
 	end
-	def x; return myGetYX(@content)[1]; end
-	def y; return myGetYX(@content)[0]; end
-	def maxX; return myGetMaxYX(@content)[1]; end
-	def maxY; return myGetMaxYX(@content)[0]; end
-	def refresh; @win.wnoutrefresh; @content.wnoutrefresh; doupdate end
-	def redrawwin; @win.redrawwin; @content.redrawwin; refresh end
-	def destroy; @content.delwin; @win.delwin end
+#	def x; return myGetYX(@content)[1]; end
+#	def y; return myGetYX(@content)[0]; end
+#	def maxX; return myGetMaxYX(@content)[1]; end
+#	def maxY; return myGetMaxYX(@content)[0]; end
+#	def refresh; @win.wnoutrefresh; @content.wnoutrefresh; doupdate end
+#	def redrawwin; @win.redrawwin; @content.redrawwin; refresh end
+#	def destroy; @content.delwin; @win.delwin end
 	def method_missing(sym,*args)
-		@content.send sym,*args
+#		@content.send sym,*args
 	end
 end
 
@@ -360,7 +351,12 @@ class CursesUI <UI
 		  end
 		end
 		@state=:MAIN
-		initscr; cbreak; noecho; nonl; Ncurses.stdscr.intrflush(false); stdscr.keypad(true)
+		Ncurses.initscr; 
+		Ncurses.cbreak; 
+		Ncurses.noecho; 
+		Ncurses.nonl; 
+		Ncurses.stdscr.intrflush(false); 
+		Ncurses.stdscr.keypad(true)
 	end
 
 	# getCommand: main loop of execution. Returns only on the end request of the program (Quit).
@@ -530,43 +526,11 @@ class CursesUI <UI
 		@dirListBox.refresh
 	end
 
-	# refresh @entryListBox. Uses @dirListBox.value if navigating in the directory,
-	# @entry if navigating between the attributes. In the latter case, @entry may 
-	# hold changes to the given entry in-memory.
-	def listAttrs
-		@entryListBox.empty
-		if @active==@dirListBox # there is no modified @entry
-			arr=[] # sort @dirListBox.value
-			@dirListBox.value.each {|key,vals|
-				vals.each { |val| arr.push([key,val]) }
-			}
-			arr.sort!
-			arr.each {|a| @entryListBox.add("#{a[0]} = #{a[1]}",[a[0],a[1]])}
-		else # @entry holds current data (may be modified)
-			@entry.attributes {|key,val|
-				@entryListBox.add("#{key} = #{val}",[key,val])
-			}
-		end
-		@entryListBox.refresh
-	end
-
 	def navigate(listbox,ch)
 		processed=false
 		(listbox.next; processed=true) if ch==KEY_DOWN
 		(listbox.prev; processed=true) if ch==KEY_UP
 		return processed
-	end
-	
-	# save @entry's changes to LDAP, then refresh @dirListBox and @entryListBox
-	def saveAttrs
-		return false if !super
-		@browser.chDir(@browser.curDir) # reload entries
-		listDir(0,1000); @dirListBox.find(@entry.dn)
-		debug("saveAttrs - @dirListBox.selected==#{@dirListBox.selected}")
-		listAttrs
-		editEntry(@dirListBox.selected) # we remain in edit mode
-		@entryOrig=@entry.dup # for easy reverting
-		return true
 	end
 	
 	# change selected listbox (to TAB key)
@@ -696,7 +660,6 @@ class TxtUI < UI
 					i=toInt($1,"Invalid parameter. Example: #{cmd} 3")
 					deleteAttr(i)
 				when "S"
-					saveAttrs
 					@entry=nil; @state=:MAIN
 				when "E"
 					@entry=nil; @state=:MAIN
@@ -707,15 +670,6 @@ class TxtUI < UI
 		return :SUCCESS
 	end
 	
-	def listAttrs
-		i=1
-		attrs {|attr,val| printf("%3d -> %14s=%s\n",i,attr,val); i+=1 }
-	end
-	def listDir(first,last)
-		puts "#{@browser.curDir}\n#{'-'*@browser.curDir.size}"
-		i=1
-		dir(first,last) {|e| printf("%3d -> %s\n",i,e["dn"]); i+=1 }
-	end
 	def displayEntry(i)
 		puts "#{entryDN(i)}\n#{'-'*entryDN(i).size}"
 		entryDetails(i) {|key,val| printf("%-14s -> %s\n",key,val) }
@@ -773,13 +727,13 @@ class LDAPEntry
 	# if called with 2 args, they are the [key, value] of the item needed to delete
 	def deleteAttribute(*args)
 		@modified=true
-		return @attrs.delete_at (args[0]) if args.size==1
+		return @attrs.delete_at(args[0]) if args.size==1
 		return @attrs.delete([args[0],args[1]])
 	end
 	def modifyAttribute(i,newVal)
 		@modified=true
 		key=@attrs[i][0]
-		@attrs.delete_at (i)
+		@attrs.delete_at(i)
 		@attrs.push([key,newVal]); @attrs.sort!
 	end
 	def getAttrsHash
@@ -795,189 +749,15 @@ class LDAPEntry
 	end
 end
 
-# Holds the current LDAP dir and its entries' attributes.
-class LDAPBrowser
-	# the current directory
-	attr_reader :curDir
-
-	def LDAPBrowser.parent(dn)
-		ar=dn.split(/,/); ar.shift; return ar.join(",")
-	end
-	
-	# conn: LDAP::Conn. dn: distinguished name of the root dir.
-	# ui: needed for its error() method.
-	# (It could raise exceptions instead of using the @ui.error())
-	def initialize(conn,dn,ui)
-		@conn=conn; @ui=ui; @curDir=dn
-		@cache=nil
-	end
-	
-	# Change dirextory. If dn is "..", change to the parent dir.
-	# If dn is an integer, change to the given entry.
-	# If dn is a string, an absolute dn is assumed.
-	def chDir(dn)
-		debug("LDAPBrowser.chDir(#{dn})")
-		old=@curDir
-		if (dn.kind_of?(Integer))
-			getEntries if @cache.nil?
-			(@ui.error("The specified entry does not exist."); return false) if (dn>=@cache.size)
-			debug("LDAPBrowser.chDir -> #{@cache[dn].inspect}")
-			@curDir=@cache[dn]["dn"][0]
-		else
-			dn=LDAPBrowser.parent(@curDir) if dn==".."
-			@curDir=dn
-		end
-		begin
-			@cache=nil; getEntries
-		rescue
-			@ui.error("The specified directory does not exist: "+@conn.err2string(@conn.err))
-			@curDir=old
-			return false
-		end
-		return true
-	end
-
-	# If dn is an integer, return dn of the given entry.
-	# If dn is a string, return it without modification.
-	def resolveDN(dn)
-		dn=@curDir if dn.nil?
-		if (dn.kind_of?(Integer))
-			getEntries if @cache.nil?
-			if (dn>=@cache.size || dn<0)
-				@ui.error("The specified entry does not exist.")
-				return nil
-			end
-			dn=@cache[dn]["dn"][0]
-		end
-		return dn
-	end
-
-	# If dn is an integer, return data (search2 output) of the given entry.
-	# If dn is a string, an absolute dn is assumed.
-	def getEntry(dn=@curDir)
-		dn=@curDir if dn.nil?
-		if (dn.kind_of?(Integer))
-			getEntries if @cache.nil?
-			(@ui.error("The specified entry does not exist."); return nil) if (dn>=@cache.size || dn<0)
-			return @cache[dn]
-		else
-			begin
-				return @conn.search2(dn,LDAP::LDAP_SCOPE_BASE,"(objectclass=*)")[0]
-			rescue
-				@ui.error("Cannot display the specified entry: "+@conn.err2string(@conn.err))
-				return nil
-			end
-		end
-	end
-
-	# Return an array of hashes containing the childs of the current dir.
-	def getEntries(limit=0,&bl) # limit is not implemented (yet)
-		@cache=@conn.search2(@curDir,LDAP::LDAP_SCOPE_ONELEVEL,"(objectclass=*)") if @cache.nil?
-		return @cache if bl.nil?
-		@cache.each { |h| yield(h) }
-	end
-
-	def addEntry(entry)
-		(@ui.error "LDAPBrowser.addEntry error: not an LDAPEntry!"; return false) if !entry.is_a?(LDAPEntry)
-		debug "LDAPBrowser.addEntry: entry.dn==#{entry.dn}"
-		begin
-			@conn.add(entry.dn, entry.getAttrsHash)
-		rescue
-			@ui.error("Error in add: "+@conn.err2string(@conn.err)); return false
-		end
-		@cache=nil; getEntries
-		# update entry.dn to the value which is stored in ldap (whitespace alteration can occur)
-		e=getEntry("#{entry.dn}"); entry.correctDN(e["dn"][0])
-		return true
-	end
-	def modifyEntry(entry)
-		debug("modifyEntry(#{entry.dn})")
-		e=getEntry(entry.dn); dn=e["dn"][0]; e.delete("dn")
-		old=LDAPEntry.new(dn,e)
-		(@ui.error "Cannot get the original version of entry #{entry.dn}!"; return false) if old.nil?
-		(@ui.error "LDAPBrowser.modifyEntry error: not an LDAPEntry!"; return false) if !entry.is_a? LDAPEntry
-		deletefailed=false
-		if !deleteEntry(entry.dn)
-			deletefailed=true
-			@ui.error "Deleting old version failed. Maybe there was an unsuccessful save before? Trying to save the new version..."
-		end
-		if !addEntry(entry)
-			debug ("addEntry failed")
-			if !deletefailed # restore the original...
-				debug "Restoring the original: #{old.inspect}"
-				if !addEntry(old)
-					@ui.error "Fatal error: when modifying the entry, the old version "+
-					"was deleted, and nor the new, nor the original version could not be saved! The entry is currently deleted!"
-				end
-			else 
-				debug("deletefailed: #{deletefailed.inspect}")
-			end
-			@ui.error "Modify failed."
-			return false
-		end
-		return true
-	end
-	def copyEntry(dn,newname)
-		h=getEntry(dn).dup; h.delete("dn")
-		e=LDAPEntry.new(newname,h)
-		return false if !addEntry(e)
-		@cache=nil; getEntries; return true
-	end
-	def renameEntry(dn,newname)
-		dn=resolveDN(dn)
-		begin
-			debug("rename dn==#{dn}\nnew==#{newname}")
-			@conn.modrdn(dn,newname,true)
-		rescue
-			@ui.error("Error in rename: "+@conn.err2string(@conn.err))
-			return false
-		end
-		@cache=nil; getEntries; return true
-	end
-	def deleteEntry(dn=@curDir)
-		dn=resolveDN(dn)
-		begin
-			@conn.delete(dn)
-		rescue
-			@ui.error("Error in delete: "+@conn.err2string(@conn.err))
-			return false
-		end
-		@cache=nil; getEntries; return true
-	end
-end
-
 # Program initialization. The real work is passed to @ui.
 class Program
-	def initialize(uitype, host, name, pass, base)
+	def initialize(uitype)
 		@ui=uitype==:CURSES ? CursesUI.new() : TxtUI.new()
-		getInitData(host, name, pass, base)
-		browser=LDAPBrowser.new(@ldapConn,@suffix,@ui)
-		@ui.browser=browser
 		cmd=nil
+		# XXX Datastructs XXX 
 		while cmd!=:QUIT
 			cmd=@ui.getCommand
 		end
-	end
-
-	# todo: get defaults from the slapd.conf
-	def getInitData(host,name,pass,base)
-		#~ conffile="/etc/ldap/slapd.conf"
-		if host.nil? 
-			@ldapConn = LDAP::Conn.new
-		else
-			h,p=host.split(":"); p=p.to_i
-			@ldapConn = LDAP::Conn.new(h,p==0 ? LDAP::LDAP_PORT : p)
-		end
-		name=@ui.getVal("Login dn","cn=admin,dc=circum,dc=hu") if name.nil?
-		name="cn=admin,dc=circum,dc=hu" if name.empty?
-		pass=@ui.getVal("Password") if pass.nil?
-		begin
-			@ldapConn.bind(name,pass)
-		rescue
-			@ui.error("Bind error: "+@ldapConn.err2string(@ldapConn.err))
-		end
-		@suffix=base if !base.nil?
-		@suffix=@ui.getVal("Base of directory","dc=circum,dc=hu") if base.nil?
 	end
 end
 
@@ -1008,5 +788,5 @@ if __FILE__==$0
 			exit 1
 		end
 	}
-	p=Program.new(ARGV[0].nil? ? :CURSES : ARGV[0].upcase.intern, host, name, pass, base)
+	p=Program.new(ARGV[0].nil? ? :CURSES : ARGV[0].upcase.intern)
 end
