@@ -433,11 +433,11 @@ class CursesUI <UI
 		freerows=4
 		@dirPanel=BoxedWin.new(nil,Ncurses.LINES-freerows,Ncurses.COLS/2,0,0,ATTR_NORMAL)
 		@dirListBox=ListBox.new(@dirPanel)
-#		@entryPanel=BoxedWin.new(nil,Ncurses.LINES-freerows,Ncurses.COLS-Ncurses.COLS/2,0,Ncurses.COLS/2,ATTR_NORMAL)
-#		@entryListBox=ListBox.new(@entryPanel)
-#		@entryListBox.showSelected(false)
+		@entryPanel=BoxedWin.new(nil,Ncurses.LINES-freerows,Ncurses.COLS-Ncurses.COLS/2,0,Ncurses.COLS/2,ATTR_NORMAL)
+		@entryListBox=ListBox.new(@entryPanel)
+		@entryListBox.showSelected(false)
 		@statusRow=WINDOW.new(1,Ncurses.COLS,Ncurses.LINES-freerows,0)
-#		@statusRow.bkgd(ATTR_NORMAL); @statusRow.refresh
+		@statusRow.bkgd(ATTR_NORMAL); @statusRow.refresh
 		@commandWin=BoxedWin.new(nil,freerows-1,Ncurses.COLS,Ncurses.LINES-freerows+1,0,ATTR_NORMAL)
 		@active=@dirListBox
 	end
@@ -451,11 +451,13 @@ class CursesUI <UI
 		@commandWin.mvaddstr(0,0,s); @commandWin.clrtoeol; @commandWin.refresh
 	end
 
-	# refresh @dirListBox
+	#refresh @dirListBox
 	def listDir(first,last)
-#		@dirPanel.title("Available Access Points",:LEFT)
-		@dirListBox.empty; @dirListBox.add("..",{})
-		@dirListBox.add("Huhu","fnord")
+		@dirPanel.title("Available Access Points",:LEFT)
+		@dirListBox.empty; 
+		@dirListBox.add("..", {})
+		@dirListBox.add("Huhu", {})
+		@dirListBox.add("Fnord","fnord")
 		@dirListBox.refresh
 	end
 
