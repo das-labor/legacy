@@ -190,7 +190,6 @@ class BoxedWin
 		if parent.nil? then @win = WINDOW.new(h,w,y,x); end
 		if parent.kind_of?(BoxedWin) then @win = parent.content; end
 		
-		debug( "win: #{@win}" )
 		@win.derwin(h,w,y,x)
 		@win.bkgd(bkgd) if !bkgd.nil?
 		@win.box(ACS_VLINE,ACS_HLINE)
@@ -439,7 +438,7 @@ class CursesUI <UI
 #		@entryListBox.showSelected(false)
 #		@statusRow=WINDOW.new(1,Ncurses.COLS,Ncurses.LINES-freerows,0)
 #		@statusRow.bkgd(ATTR_NORMAL); @statusRow.refresh
-#		@commandWin=BoxedWin.new(nil,freerows-1,Ncurses.COLS,Ncurses.LINES-freerows+1,0,ATTR_NORMAL)
+		@commandWin=BoxedWin.new(nil,freerows-1,Ncurses.COLS,Ncurses.LINES-freerows+1,0,ATTR_NORMAL)
 		@active=@dirListBox
 	end
 	
