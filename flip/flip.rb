@@ -363,6 +363,7 @@ class CursesUI <UI
 		Ncurses.stdscr.keypad(true)
 	end
 
+
 	# getCommand: main loop of execution. Returns only on the end request of the program (Quit).
 	def getCommand
 		mkWins if ! defined?(@dirListBox)
@@ -378,7 +379,7 @@ class CursesUI <UI
 			break if finished
 			next if processed
 			processed=navigate(@active,c)
-#			listAttrs if @active==@dirListBox && processed
+			showAPInfo if @active==@dirListBox && processed
 			next if processed
 			case c
 			when ?\C-L # ^L
@@ -451,13 +452,12 @@ class CursesUI <UI
 		@commandWin.mvaddstr(0,0,s); @commandWin.clrtoeol; @commandWin.refresh
 	end
 
-	#refresh @dirListBox
 	def listDir(first,last)
 		@dirPanel.title("Available Access Points",:LEFT)
 		@dirListBox.empty; 
-		@dirListBox.add("..", {})
-		@dirListBox.add("Huhu", {})
-		@dirListBox.add("Fnord","fnord")
+		@dirListBox.add("..", "Ich bin zwei doppelpunkt" )
+		@dirListBox.add("Huhu", "Ich bin 4 Buchstabig" )
+		@dirListBox.add("Fnord","wissen schon")
 		@dirListBox.refresh
 	end
 
@@ -476,6 +476,13 @@ class CursesUI <UI
 		dirCmds="(C)opy (R)ename (A)dd (D)elete (Q)uit"
 		entryCmds="(A)dd (M)odify (D)elete (S)ave (R)evert (Q)uit"
 		updateCommandRow(@active==@dirListBox ? dirCmds : entryCmds)
+	end
+
+	def showAPInfo
+		@entryListBox.empty
+		@entryListBox.add( "Somthin .. again...#{@dirListBox.value}", {});
+		@entryListBox.refresh;
+
 	end
 end
 
