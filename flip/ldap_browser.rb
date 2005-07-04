@@ -12,9 +12,9 @@ require 'ncurses'
 include Ncurses
 include Ncurses::Form
 
-# END {
-# 	Ncurses.endwin
-# }
+END {
+	Ncurses.endwin
+}
 
 
 def debug(s)
