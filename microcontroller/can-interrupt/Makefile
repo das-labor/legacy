@@ -1,12 +1,12 @@
-PRG            = main
-OBJ            = main.o
+PRG            = uart
+OBJ            = can.o spi.o uart.o main.o util.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 
-FLASHCMD       = uisp -dprog=bsd --upload if=$(PRG).hex
-ERASECMD       = uisp -dprog=bsd --erase
+FLASHCMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --upload if=$(PRG).hex
+ERASECMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --erase
 
-DEFS           =
+DEFS           = -DF_CPU=16000000
 LIBS           =
 
 # You should not have to change anything below here.
@@ -15,8 +15,7 @@ CC             = avr-gcc
 
 # Override is only needed by avr-lib build system.
 
-override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) 
-$(DEFS)
+override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS)
 override LDFLAGS       = -Wl,-Map,$(PRG).map
 
 OBJCOPY        = avr-objcopy

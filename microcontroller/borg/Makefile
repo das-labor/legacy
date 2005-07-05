@@ -3,8 +3,8 @@ OBJ            = main.o util.o scrolltext.o programm.o pixel.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 
-FLASHCMD       = uisp -dprog=bsd --upload if=$(PRG).hex
-ERASECMD       = uisp -dprog=bsd --erase
+FLASHCMD       = uisp -dprog=bsd --upload if=$(PRG).hex 
+ERASECMD       = uisp -dprog=bsd --erase 
 
 DEFS           = -DF_CPU=16000000
 LIBS           =
