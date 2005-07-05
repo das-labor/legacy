@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include <avr/signal.h>
 #include "can.h"
 #include "util.h"
 #include "spi.h"
@@ -70,7 +71,6 @@
 #define RXB0DLC 0x65
 #define RXB0D0 0x66 
 
-
 //Command Bytes
 #define RESET 0xC0
 #define READ 0x03
@@ -80,12 +80,36 @@
 #define RTS 0x80
 #define READ_STATUS 0xA0
 #define RX_STATUS 0xB0
-#define BIT_MODIFY
+#define BIT_MODIFY 0x05
+
+
+SIGNAL(SIG_INTERRUPT0) {
+	unsigned char rxstatus = mcp_rx_status();
+
+	if ( rxstatus & 0x40 ) {	// Message in RX0
+		PORTC ^= 0x04;
+	} else 
+
+	if ( rxstatus & 0x80 ) {	// Message in RX1
+		PORTC ^= 0x04;
+	}
+}
+
 
 
 void mcp_reset(){
 	PORT_SPI &= ~(1<<PIN_SS);
 	spi_data(RESET);
+	PORT_SPI |= (1<<PIN_SS);
+}
+
+void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val)
+{
+	PORT_SPI &= ~(1<<PIN_SS);
+	spi_data(BIT_MODIFY);
+	spi_data(reg);
+	spi_data(mask);
+	spi_data(val);
 	PORT_SPI |= (1<<PIN_SS);
 }
 
@@ -128,6 +152,25 @@ void mcp_read_b(unsigned char reg, unsigned char *buf, unsigned char len){
 	PORT_SPI |= (1<<PIN_SS);
 }
 
+unsigned char mcp_status()
+{
+	PORT_SPI &= ~(1<<PIN_SS);
+	spi_data(READ_STATUS);
+	unsigned char d = spi_data(0);
+	PORT_SPI |= (1<<PIN_SS);
+	return d;
+}
+
+unsigned char mcp_rx_status()
+{
+	PORT_SPI &= ~(1<<PIN_SS);
+	spi_data(RX_STATUS);
+	unsigned char d = spi_data(0);
+	PORT_SPI |= (1<<PIN_SS);
+	return d;
+}
+
+
 /* Management */
 void mcp_setmode( mcp_mode_t mode ) {
 	unsigned char val = mode << 5;  
@@ -153,8 +196,12 @@ void can_init(){
 	mcp_write( CNF2, 0xf1 );
 	mcp_write( CNF3, 0x05 );
 
+	// configure IRQ
+	mcp_write( CANINTE, 0x81 );
+	GICR |= 0x40;
+
 	mcp_setfilter();
-	mcp_setmode(normal);
+	mcp_setmode(loopback);
 }
 
 
