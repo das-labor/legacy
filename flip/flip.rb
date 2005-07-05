@@ -340,11 +340,11 @@ end
 # CursesUI: Ncurses-based user interface.
 # After calling getCommand(), it returns only when the program is to be terminated.
 # Instance variables:
-# @dirListBox: holds items of current dir, associated with the attrs of the items
+# @apListBox: holds items of current dir, associated with the attrs of the items
 # @entryListBox: hold the selected dir's attrs
-# @active: the active listbox (@dirListBox or @entryListBox)
+# @active: the active listbox (@apListBox or @entryListBox)
 # @entryOrig: when editing an entry, this one holds the original attrs for fast reverting
-# @dirPanel, @entryPanel, @statusRow, @commandWin: windows of the UI
+# @apPanel, @entryPanel, @statusRow, @commandWin: windows of the UI
 class CursesUI <UI
 	include Util
 	include NcursesEx
@@ -366,7 +366,7 @@ class CursesUI <UI
 
 	# getCommand: main loop of execution. Returns only on the end request of the program (Quit).
 	def getCommand
-		mkWins if ! defined?(@dirListBox)
+		mkWins if ! defined?(@apListBox)
 		updateCommandRow "(C)opy (R)ename (A)dd (D)elete (Q)uit"
 		listDir(0,1000); 
 		finished=false; processed=false
@@ -379,7 +379,7 @@ class CursesUI <UI
 			break if finished
 			next if processed
 			processed=navigate(@active,c)
-			showAPInfo if @active==@dirListBox && processed
+			showAPInfo if @active==@apListBox && processed
 			next if processed
 			case c
 			when ?\C-L # ^L
@@ -387,7 +387,7 @@ class CursesUI <UI
 			when ?q, ?Q
 				finished=true; next
 			end
-			if (@active==@dirListBox)
+			if (@active==@apListBox)
 				# Directory
 				case c
 				when 9 # TAB
@@ -396,7 +396,7 @@ class CursesUI <UI
 				when ?a, ?A
 				when ?d, ?D
 				when KEY_ENTER, 13 # Enter
-					debug("Enter. Selected==#{@dirListBox.selected}")
+					debug("Enter. Selected==#{@apListBox.selected}")
 				end
 			else # active == @entryListBox
 				# jaja XXX
@@ -424,23 +424,23 @@ class CursesUI <UI
 		return ret
 	end
 
-	def error(s); showMessage(s); refreshUI if defined? @dirPanel end
+	def error(s); showMessage(s); refreshUI if defined? @apPanel end
  private
-	def refreshUI; @dirPanel.redrawwin; @entryPanel.redrawwin end
+	def refreshUI; @apPanel.redrawwin; @entryPanel.redrawwin end
 	def finalize; endwin end
 	def onsig(sig); endwin; exit(sig) end
 
 	def mkWins
 		freerows=4
-		@dirPanel=BoxedWin.new(nil,Ncurses.LINES-freerows,Ncurses.COLS/2,0,0,ATTR_NORMAL)
-		@dirListBox=ListBox.new(@dirPanel)
+		@apPanel=BoxedWin.new(nil,Ncurses.LINES-freerows,Ncurses.COLS/2,0,0,ATTR_NORMAL)
+		@apListBox=ListBox.new(@apPanel)
 		@entryPanel=BoxedWin.new(nil,Ncurses.LINES-freerows,Ncurses.COLS-Ncurses.COLS/2,0,Ncurses.COLS/2,ATTR_NORMAL)
 		@entryListBox=ListBox.new(@entryPanel)
 		@entryListBox.showSelected(false)
 		@statusRow=WINDOW.new(1,Ncurses.COLS,Ncurses.LINES-freerows,0)
 		@statusRow.bkgd(ATTR_NORMAL); @statusRow.refresh
 		@commandWin=BoxedWin.new(nil,freerows-1,Ncurses.COLS,Ncurses.LINES-freerows+1,0,ATTR_NORMAL)
-		@active=@dirListBox
+		@active=@apListBox
 	end
 	
 	def updateStatusRow(s)
@@ -453,12 +453,12 @@ class CursesUI <UI
 	end
 
 	def listDir(first,last)
-		@dirPanel.title("Available Access Points",:LEFT)
-		@dirListBox.empty; 
-		@dirListBox.add("..", "Ich bin zwei doppelpunkt" )
-		@dirListBox.add("Huhu", "Ich bin 4 Buchstabig" )
-		@dirListBox.add("Fnord","wissen schon")
-		@dirListBox.refresh
+		@apPanel.title("Available Access Points",:LEFT)
+		@apListBox.empty; 
+		@apListBox.add("..", "Ich bin zwei doppelpunkt" )
+		@apListBox.add("Huhu", "Ich bin 4 Buchstabig" )
+		@apListBox.add("Fnord","wissen schon")
+		@apListBox.refresh
 	end
 
 	def navigate(listbox,ch)
@@ -475,12 +475,12 @@ class CursesUI <UI
 		@active=panel; @active.showSelected
 		dirCmds="(C)opy (R)ename (A)dd (D)elete (Q)uit"
 		entryCmds="(A)dd (M)odify (D)elete (S)ave (R)evert (Q)uit"
-		updateCommandRow(@active==@dirListBox ? dirCmds : entryCmds)
+		updateCommandRow(@active==@apListBox ? dirCmds : entryCmds)
 	end
 
 	def showAPInfo
 		@entryListBox.empty
-		@entryListBox.add( "Somthin .. again...#{@dirListBox.value}", {});
+		@entryListBox.add( "Somthin .. again...#{@apListBox.value}", {});
 		@entryListBox.refresh;
 
 	end
