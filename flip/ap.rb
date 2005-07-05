@@ -1,12 +1,11 @@
-
-
+PATH="tmp/aps"
 
 class APList
-	attr_reader :path, :aps
+	attr_reader :path, :apHash
 
-	def initialize( path )
-		@path = path;
-		@aps = Hash.new;
+	def initialize()
+		@path = PATH;
+		@apHash = Hash.new;
 		refresh
 	end
 
@@ -15,23 +14,23 @@ class APList
 			# skip non MAC entries
 			if not (/\S{6}/ =~ entry) then next; end
 
-			ap = AccessPoint.new( @path+"/"+entry );
-			aps[ap.mac] = ap;
+			ap = AccessPoint.new(entry);
+			apHash[ap.mac] = ap;
 		}
 	end
 
         def method_missing(sym,*args)
-                @aps.send sym,*args
+                @apHash.send sym,*args
         end
 end
 
 
 class AccessPoint 
-	attr_reader :ip, :hostname_line
+	attr_reader :ip, :hostname_line, :mac
 
-	def initialize(path)
-		@path = path;
-		puts "Building from #{path}";
+	def initialize(mac)
+		@mac = mac;
+		@path = PATH + "/" + mac;
 		read_hostname
 	end
 
@@ -49,30 +48,26 @@ class AccessPoint
 		end
 	end
 
-	def mac
-		return "112233445566";
-	end
-
 	def get_clients
-		puts execute "w"
+		return execute( "w; ifconfig -a " );
 	end
 
 	def info
-		return get_clients
+		return get_clients;
 	end
 
 private
 	def execute( cmd )
-		return `ssh #{ip} #{cmd}`;
+		return `ssh #{ip} "#{cmd}"`;
 	end
 end
 
-
-apList = APList.new( "tmp/aps" );
-
-apHash = apList.aps;
-
-
-apHash.each_value do  |ap|
-	puts ap.info
-end
+# 
+# apList = APList.new( "tmp/aps" );
+# 
+# apHash = apList.apHash;
+# 
+# 
+# apHash.each_value do  |ap|
+# 	puts ap.info
+# end

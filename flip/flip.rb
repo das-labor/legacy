@@ -8,6 +8,7 @@
 #   updated to work with slapd 2.1.x (re-read dn after saving a new entry)
 
 require 'ncurses'
+require 'ap.rb'
 
 include Ncurses
 include Ncurses::Form
@@ -146,36 +147,6 @@ end
 # This is the user interface of the program.
 # Abstract class, use TxtUI or CursesUI
 class UI
-	# instance variables:
-	# @browser: object for navigating in the LDAP directory
-	# @entry: the entry's object which is currently under edited
-	# @state: :MAIN, :ADD (in adding an attr), :EDIT (in editing an attr)
-	attr_writer :browser # set by Program
-	# Directory handling.
-	# dir: first, last are not implemented.
-	def dir(first,last)
-		@browser.getEntries {|e| yield(e)	}
-	end
-	def chDir(i); @browser.chDir(i==0 ? ".." : i-1) end
-	# passes (key,value) pairs to its block
-	def entryDetails(i)
-		h=@browser.getEntry(i==0 ? nil : i-1)
-		(error("entryDetails error"); return) if h.nil?
-		h.each {|key,valarr|
-			valarr.each {|val| yield(key,val)}
-		}
-	end
-	def entryDN(i); return @browser.resolveDN(i==0 ? nil : i-1) end
-	def addEntry(dn)
-		@state=:ADD; @entry=LDAPEntry.new(dn+", "+@browser.curDir,{})
-	end
-	def editEntry(i)
-		@state=:EDIT; e=@browser.getEntry(i-1).dup; e.delete("dn")
-		@entry=LDAPEntry.new(@browser.resolveDN(i-1),e)
-	end
-	def copyEntry(i,newname); @browser.copyEntry(i-1,newname); end
-	def renameEntry(i,newname); @browser.renameEntry(i-1,newname) end
-	def deleteEntry(i); @browser.deleteEntry(i-1) end
 end
 
 # BoxedWin consists of two windows: one for the 1-char wide border (@win), one for the content (@content)
@@ -354,6 +325,8 @@ class CursesUI <UI
 		    trap(i) {|sig| onsig(sig) }
 		  end
 		end
+		@apList = APList.new( "tmp/aps/" );
+
 		@state=:MAIN
 		Ncurses.initscr; 
 		Ncurses.cbreak; 
@@ -455,9 +428,15 @@ class CursesUI <UI
 	def listDir(first,last)
 		@apPanel.title("Available Access Points",:LEFT)
 		@apListBox.empty; 
-		@apListBox.add("..", "Ich bin zwei doppelpunkt" )
-		@apListBox.add("Huhu", "Ich bin 4 Buchstabig" )
-		@apListBox.add("Fnord","wissen schon")
+		@apList.refresh;
+		apHash = @apList.apHash;
+		apHash.each_value { |ap|
+			@apListBox.add( ap.mac, ap );
+		}
+#		
+#		@apListBox.add("..", "Ich bin zwei doppelpunkt" )
+#		@apListBox.add("Huhu", "Ich bin 4 Buchstabig" )
+#		@apListBox.add("Fnord","wissen schon")
 		@apListBox.refresh
 	end
 
@@ -479,8 +458,12 @@ class CursesUI <UI
 	end
 
 	def showAPInfo
+		curAP = @apListBox.value;
 		@entryListBox.empty
-		@entryListBox.add( "Somthin .. again...#{@apListBox.value}", {});
+		a = curAP.info.split( "\n" );
+		a.each { |line|
+			@entryListBox.add( "#{line}", {});
+		}
 		@entryListBox.refresh;
 
 	end
