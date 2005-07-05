@@ -70,7 +70,7 @@ int main (void){
 	sei();
 	
 	for(;;){
-		labor_borg();
+		//labor_borg();
 		matrix1();
 		fadein();
 		joern1();
