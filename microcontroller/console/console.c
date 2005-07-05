@@ -374,22 +374,23 @@ void history_save(unsigned char * string){
 	unsigned char tmp;
 	do{
 		*history_pos++ = tmp = *string++;
-		if(history_pos > history_buf+HISTORY_SIZE) history_pos = history_buf;
+		if(history_pos == history_buf+HISTORY_SIZE) history_pos = history_buf;
 	}while(tmp);
 }
 
 void history_load(unsigned char * buffer, unsigned char ** bufend, unsigned char num){
-	unsigned char * pos = history_pos-1;
+	unsigned char * pos = history_pos;
 	unsigned char tmp;
 	unsigned char x;
-	for(x=0;x<num;x++){
+	for(x=0;x<num+1;x++){
 		do{
-			if(--pos<history_buf) pos = history_buf+HISTORY_SIZE;
+			if(--pos<history_buf) pos = history_buf+HISTORY_SIZE-1;
 		}while(*pos);
 	}
-	pos++;
+	if(++pos == history_buf+HISTORY_SIZE) pos = history_buf;
 	do{
-		tmp = *pos++;
+		tmp = *pos;
+		if(++pos == history_buf+HISTORY_SIZE) pos = history_buf;
 		*buffer++ = tmp;
 	}while(tmp);
 	*bufend = buffer-1;
@@ -467,4 +468,10 @@ void console(){
 			stdout_putc (tmp);
 		}
 	}		
+}
+
+void console_init(){
+	history_init();
+	uart_init();
+
 }
