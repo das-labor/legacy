@@ -1,0 +1,381 @@
+
+kbd-demo.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000234  00000000  00000000  000000b4  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000002  00800060  00000234  000002e8  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000106  00800062  00800062  000002ea  2**0
+                  ALLOC
+  3 .noinit       00000000  00800168  00800168  000002ea  2**0
+                  CONTENTS
+  4 .eeprom       00000000  00810000  00810000  000002ea  2**0
+                  CONTENTS
+  5 .stab         00000a68  00000000  00000000  000002ec  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  6 .stabstr      00000770  00000000  00000000  00000d54  2**0
+                  CONTENTS, READONLY, DEBUGGING
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54 <__ctors_end>
+   4:	0c 94 45 00 	jmp	0x8a <__bad_interrupt>
+   8:	0c 94 45 00 	jmp	0x8a <__bad_interrupt>
+   c:	0c 94 5e 00 	jmp	0xbc <__vector_3>
+  10:	0c 94 45 00 	jmp	0x8a <__bad_interrupt>
+  14:	0c 94 45 00 	jmp	0x8a <__bad_interrupt>
+  18:	0c 94 45 00 	jmp	0x8a <__bad_interrupt>
+  1c:	0c 94 45 00 	jmp	0x8a <__bad_interrupt>
+  20:	0c 94 45 00 	jmp	0x8a <__bad_interrupt>
+  24:	0c 94 45 00 	jmp	0x8a <__bad_interrupt>
+  28:	0c 94 45 00 	jmp	0x8a <__bad_interrupt>
+  2c:	0c 94 45 00 	jmp	0x8a <__bad_interrupt>
+  30:	0c 94 45 00 	jmp	0x8a <__bad_interrupt>
+  34:	0c 94 45 00 	jmp	0x8a <__bad_interrupt>
+  38:	0c 94 45 00 	jmp	0x8a <__bad_interrupt>
+  3c:	0c 94 45 00 	jmp	0x8a <__bad_interrupt>
+  40:	0c 94 45 00 	jmp	0x8a <__bad_interrupt>
+  44:	0c 94 45 00 	jmp	0x8a <__bad_interrupt>
+  48:	0c 94 45 00 	jmp	0x8a <__bad_interrupt>
+  4c:	0c 94 45 00 	jmp	0x8a <__bad_interrupt>
+  50:	0c 94 45 00 	jmp	0x8a <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d8 e0       	ldi	r29, 0x08	; 8
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+
+00000060 <__do_copy_data>:
+  60:	10 e0       	ldi	r17, 0x00	; 0
+  62:	a0 e6       	ldi	r26, 0x60	; 96
+  64:	b0 e0       	ldi	r27, 0x00	; 0
+  66:	e4 e3       	ldi	r30, 0x34	; 52
+  68:	f2 e0       	ldi	r31, 0x02	; 2
+  6a:	02 c0       	rjmp	.+4      	; 0x70 <.do_copy_data_start>
+
+0000006c <.do_copy_data_loop>:
+  6c:	05 90       	lpm	r0, Z+
+  6e:	0d 92       	st	X+, r0
+
+00000070 <.do_copy_data_start>:
+  70:	a2 36       	cpi	r26, 0x62	; 98
+  72:	b1 07       	cpc	r27, r17
+  74:	d9 f7       	brne	.-10     	; 0x6c <.do_copy_data_loop>
+
+00000076 <__do_clear_bss>:
+  76:	11 e0       	ldi	r17, 0x01	; 1
+  78:	a2 e6       	ldi	r26, 0x62	; 98
+  7a:	b0 e0       	ldi	r27, 0x00	; 0
+  7c:	01 c0       	rjmp	.+2      	; 0x80 <.do_clear_bss_start>
+
+0000007e <.do_clear_bss_loop>:
+  7e:	1d 92       	st	X+, r1
+
+00000080 <.do_clear_bss_start>:
+  80:	a8 36       	cpi	r26, 0x68	; 104
+  82:	b1 07       	cpc	r27, r17
+  84:	e1 f7       	brne	.-8      	; 0x7e <.do_clear_bss_loop>
+  86:	0c 94 d9 00 	jmp	0x1b2 <main>
+
+0000008a <__bad_interrupt>:
+  8a:	0c 94 00 00 	jmp	0x0 <__heap_end>
+
+0000008e <kbd_init>:
+*/
+
+void kbd_init(){
+	int i;
+	for (i=0; i<KBD_BUFFER_SIZE; ++i)
+  8e:	e7 e6       	ldi	r30, 0x67	; 103
+  90:	f0 e0       	ldi	r31, 0x00	; 0
+  92:	9f 01       	movw	r18, r30
+  94:	21 50       	subi	r18, 0x01	; 1
+  96:	3f 4f       	sbci	r19, 0xFF	; 255
+		kbd_buffer[i]=KBD_BUFFER_UNUSED;
+  98:	8f ef       	ldi	r24, 0xFF	; 255
+  9a:	81 93       	st	Z+, r24
+  9c:	2e 17       	cp	r18, r30
+  9e:	3f 07       	cpc	r19, r31
+  a0:	dc f7       	brge	.-10     	; 0x98 <kbd_init+0xa>
+	KBD_CLOCK_DDR &= ~(1<<KBD_CLOCK_BIT);
+  a2:	ba 98       	cbi	0x17, 2	; 23
+	KBD_DATA_DDR  &= ~(1<<KBD_DATA_BIT);
+  a4:	88 98       	cbi	0x11, 0	; 17
+	cli();
+  a6:	f8 94       	cli
+	GICR |= (1<<INT2);		//enable INT2 in General Interupt Control Register (GICR)
+  a8:	8b b7       	in	r24, 0x3b	; 59
+  aa:	80 62       	ori	r24, 0x20	; 32
+  ac:	8b bf       	out	0x3b, r24	; 59
+	MCUCSR &= ~(1<<ISC2); 	//stitch to trigger on falling edge
+  ae:	84 b7       	in	r24, 0x34	; 52
+  b0:	8f 7b       	andi	r24, 0xBF	; 191
+  b2:	84 bf       	out	0x34, r24	; 52
+	GIFR=(1<<5);		//clear INT2-Flag
+  b4:	80 e2       	ldi	r24, 0x20	; 32
+  b6:	8a bf       	out	0x3a, r24	; 58
+	sei();
+  b8:	78 94       	sei
+}
+  ba:	08 95       	ret
+
+000000bc <__vector_3>:
+
+//KBD-Clock-Down Handler
+/*
+
+*/
+
+INTERRUPT(SIG_INTERRUPT2){
+  bc:	78 94       	sei
+  be:	1f 92       	push	r1
+  c0:	0f 92       	push	r0
+  c2:	0f b6       	in	r0, 0x3f	; 63
+  c4:	0f 92       	push	r0
+  c6:	11 24       	eor	r1, r1
+  c8:	2f 93       	push	r18
+  ca:	3f 93       	push	r19
+  cc:	4f 93       	push	r20
+  ce:	5f 93       	push	r21
+  d0:	6f 93       	push	r22
+  d2:	7f 93       	push	r23
+  d4:	8f 93       	push	r24
+  d6:	9f 93       	push	r25
+  d8:	af 93       	push	r26
+  da:	bf 93       	push	r27
+  dc:	ef 93       	push	r30
+  de:	ff 93       	push	r31
+	static byte c=0; //c counter
+	static byte t=0, paraty=0;	//c temporary var. //paraty
+	
+	byte b=KBD_DATA_IN;
+  e0:	30 b3       	in	r19, 0x10	; 16
+  e2:	31 70       	andi	r19, 0x01	; 1
+	
+	++c;
+  e4:	20 91 64 00 	lds	r18, 0x0064
+  e8:	2f 5f       	subi	r18, 0xFF	; 255
+  ea:	20 93 64 00 	sts	0x0064, r18
+	
+	switch (c) {
+  ee:	82 2f       	mov	r24, r18
+  f0:	99 27       	eor	r25, r25
+  f2:	8a 30       	cpi	r24, 0x0A	; 10
+  f4:	91 05       	cpc	r25, r1
+  f6:	34 f4       	brge	.+12     	; 0x104 <__vector_3+0x48>
+  f8:	82 30       	cpi	r24, 0x02	; 2
+  fa:	91 05       	cpc	r25, r1
+  fc:	7c f4       	brge	.+30     	; 0x11c <__vector_3+0x60>
+  fe:	01 97       	sbiw	r24, 0x01	; 1
+ 100:	39 f0       	breq	.+14     	; 0x110 <__vector_3+0x54>
+ 102:	38 c0       	rjmp	.+112    	; 0x174 <__vector_3+0xb8>
+ 104:	8a 30       	cpi	r24, 0x0A	; 10
+ 106:	91 05       	cpc	r25, r1
+ 108:	99 f0       	breq	.+38     	; 0x130 <__vector_3+0x74>
+ 10a:	0b 97       	sbiw	r24, 0x0b	; 11
+ 10c:	b9 f0       	breq	.+46     	; 0x13c <__vector_3+0x80>
+ 10e:	32 c0       	rjmp	.+100    	; 0x174 <__vector_3+0xb8>
+		case 1:		//c start bit, start condition if data line low
+			paraty = 0;
+ 110:	10 92 66 00 	sts	0x0066, r1
+			c -= b;	//c if data line is high (no start bit) go here again
+ 114:	23 1b       	sub	r18, r19
+ 116:	20 93 64 00 	sts	0x0064, r18
+			break;
+ 11a:	2c c0       	rjmp	.+88     	; 0x174 <__vector_3+0xb8>
+		case  2:	//c data bit 1
+		case  3:	//c data bit 2
+		case  4:	//c data bit 3
+		case  5:	//c data bit 4
+		case  6:	//c data bit 5
+		case  7:	//c data bit 6
+		case  8:	//c data bit 7
+		case  9:	//c data bit 8
+			t >>= 1;	
+ 11c:	80 91 65 00 	lds	r24, 0x0065
+ 120:	86 95       	lsr	r24
+ 122:	80 93 65 00 	sts	0x0065, r24
+			t |= b?0x80:0;
+ 126:	99 27       	eor	r25, r25
+ 128:	31 11       	cpse	r19, r1
+ 12a:	80 68       	ori	r24, 0x80	; 128
+ 12c:	80 93 65 00 	sts	0x0065, r24
+		case 10:	//c paraty relevant bit
+			paraty ^= b;
+ 130:	80 91 66 00 	lds	r24, 0x0066
+ 134:	83 27       	eor	r24, r19
+ 136:	80 93 66 00 	sts	0x0066, r24
+			break;
+ 13a:	1c c0       	rjmp	.+56     	; 0x174 <__vector_3+0xb8>
+		case 11:	//c stop bit
+			if (b==1){	//c stop condition is data line high
+ 13c:	31 30       	cpi	r19, 0x01	; 1
+ 13e:	d1 f4       	brne	.+52     	; 0x174 <__vector_3+0xb8>
+				c=0;	//c reset counter
+ 140:	10 92 64 00 	sts	0x0064, r1
+				if (paraty == ODD_PARATY){
+ 144:	80 91 66 00 	lds	r24, 0x0066
+ 148:	81 30       	cpi	r24, 0x01	; 1
+ 14a:	a1 f4       	brne	.+40     	; 0x174 <__vector_3+0xb8>
+					//c insert byte to ringbuffer
+					kbd_buffer[++kbd_buffer_index & KBD_BUFFER_MASK] = t;
+ 14c:	90 91 60 00 	lds	r25, 0x0060
+ 150:	9f 5f       	subi	r25, 0xFF	; 255
+ 152:	90 93 60 00 	sts	0x0060, r25
+ 156:	e9 2f       	mov	r30, r25
+ 158:	ff 27       	eor	r31, r31
+ 15a:	e9 59       	subi	r30, 0x99	; 153
+ 15c:	ff 4f       	sbci	r31, 0xFF	; 255
+ 15e:	80 91 65 00 	lds	r24, 0x0065
+ 162:	80 83       	st	Z, r24
+					if (kbd_event_handler)	//c call user defined keyboard event handler
+ 164:	e0 91 62 00 	lds	r30, 0x0062
+ 168:	f0 91 63 00 	lds	r31, 0x0063
+ 16c:	30 97       	sbiw	r30, 0x00	; 0
+ 16e:	11 f0       	breq	.+4      	; 0x174 <__vector_3+0xb8>
+						kbd_event_handler(kbd_buffer_index);
+ 170:	89 2f       	mov	r24, r25
+ 172:	09 95       	icall
+
+				} else {
+					//c lets simply ignore it
+				}
+			}
+			break;
+	}
+}
+ 174:	ff 91       	pop	r31
+ 176:	ef 91       	pop	r30
+ 178:	bf 91       	pop	r27
+ 17a:	af 91       	pop	r26
+ 17c:	9f 91       	pop	r25
+ 17e:	8f 91       	pop	r24
+ 180:	7f 91       	pop	r23
+ 182:	6f 91       	pop	r22
+ 184:	5f 91       	pop	r21
+ 186:	4f 91       	pop	r20
+ 188:	3f 91       	pop	r19
+ 18a:	2f 91       	pop	r18
+ 18c:	0f 90       	pop	r0
+ 18e:	0f be       	out	0x3f, r0	; 63
+ 190:	0f 90       	pop	r0
+ 192:	1f 90       	pop	r1
+ 194:	18 95       	reti
+
+00000196 <my_kbd_handler>:
+byte display_index;
+
+
+void my_kbd_handler(byte index){
+	display_index=index;
+ 196:	80 93 67 01 	sts	0x0167, r24
+	PORTC=kbd_buffer[display_index & KBD_BUFFER_MASK];
+ 19a:	e7 e6       	ldi	r30, 0x67	; 103
+ 19c:	f0 e0       	ldi	r31, 0x00	; 0
+ 19e:	e8 0f       	add	r30, r24
+ 1a0:	f1 1d       	adc	r31, r1
+ 1a2:	80 81       	ld	r24, Z
+ 1a4:	85 bb       	out	0x15, r24	; 21
+}
+ 1a6:	08 95       	ret
+
+000001a8 <wait>:
+
+void wait(int x){
+	while (x)
+ 1a8:	00 97       	sbiw	r24, 0x00	; 0
+ 1aa:	11 f0       	breq	.+4      	; 0x1b0 <wait+0x8>
+		--x;
+ 1ac:	01 97       	sbiw	r24, 0x01	; 1
+ 1ae:	f1 f7       	brne	.-4      	; 0x1ac <wait+0x4>
+}
+ 1b0:	08 95       	ret
+
+000001b2 <main>:
+
+int main (void)
+{
+ 1b2:	cf e5       	ldi	r28, 0x5F	; 95
+ 1b4:	d8 e0       	ldi	r29, 0x08	; 8
+ 1b6:	de bf       	out	0x3e, r29	; 62
+ 1b8:	cd bf       	out	0x3d, r28	; 61
+        
+	DDRC = 0xFF; //Port C all outputs
+ 1ba:	8f ef       	ldi	r24, 0xFF	; 255
+ 1bc:	84 bb       	out	0x14, r24	; 20
+	PORTC= 0x00;
+ 1be:	15 ba       	out	0x15, r1	; 21
+    DDRB = 0x00; //Port B all inputs
+ 1c0:	17 ba       	out	0x17, r1	; 23
+    PORTB = 0xFF; // interne Pull-Ups an  
+ 1c2:	88 bb       	out	0x18, r24	; 24
+	
+	kbd_init();
+ 1c4:	0e 94 47 00 	call	0x8e <kbd_init>
+	kbd_event_handler=my_kbd_handler;
+ 1c8:	8b ec       	ldi	r24, 0xCB	; 203
+ 1ca:	90 e0       	ldi	r25, 0x00	; 0
+ 1cc:	90 93 63 00 	sts	0x0063, r25
+ 1d0:	80 93 62 00 	sts	0x0062, r24
+	
+	while(1){
+			/*c it would be unwise to use KEY_C since it also puts the clockline down */
+			switch (PINB&0x0f){
+ 1d4:	86 b3       	in	r24, 0x16	; 22
+ 1d6:	99 27       	eor	r25, r25
+ 1d8:	8f 70       	andi	r24, 0x0F	; 15
+ 1da:	90 70       	andi	r25, 0x00	; 0
+ 1dc:	8d 30       	cpi	r24, 0x0D	; 13
+ 1de:	91 05       	cpc	r25, r1
+ 1e0:	81 f0       	breq	.+32     	; 0x202 <main+0x50>
+ 1e2:	8e 30       	cpi	r24, 0x0E	; 14
+ 1e4:	91 05       	cpc	r25, r1
+ 1e6:	1c f4       	brge	.+6      	; 0x1ee <main+0x3c>
+ 1e8:	07 97       	sbiw	r24, 0x07	; 7
+ 1ea:	99 f0       	breq	.+38     	; 0x212 <main+0x60>
+ 1ec:	1a c0       	rjmp	.+52     	; 0x222 <main+0x70>
+ 1ee:	0e 97       	sbiw	r24, 0x0e	; 14
+ 1f0:	c1 f4       	brne	.+48     	; 0x222 <main+0x70>
+				case PRESSED(KEY_A):
+					wait (30000);
+ 1f2:	80 e3       	ldi	r24, 0x30	; 48
+ 1f4:	95 e7       	ldi	r25, 0x75	; 117
+ 1f6:	0e 94 d4 00 	call	0x1a8 <wait>
+					--display_index;
+ 1fa:	80 91 67 01 	lds	r24, 0x0167
+ 1fe:	81 50       	subi	r24, 0x01	; 1
+ 200:	0e c0       	rjmp	.+28     	; 0x21e <main+0x6c>
+					break;
+				case PRESSED(KEY_B):
+					wait (30000);
+ 202:	80 e3       	ldi	r24, 0x30	; 48
+ 204:	95 e7       	ldi	r25, 0x75	; 117
+ 206:	0e 94 d4 00 	call	0x1a8 <wait>
+					++display_index;
+ 20a:	80 91 67 01 	lds	r24, 0x0167
+ 20e:	8f 5f       	subi	r24, 0xFF	; 255
+ 210:	06 c0       	rjmp	.+12     	; 0x21e <main+0x6c>
+					break;
+				case PRESSED(KEY_D):
+					wait (30000);
+ 212:	80 e3       	ldi	r24, 0x30	; 48
+ 214:	95 e7       	ldi	r25, 0x75	; 117
+ 216:	0e 94 d4 00 	call	0x1a8 <wait>
+					display_index=kbd_buffer_index;
+ 21a:	80 91 60 00 	lds	r24, 0x0060
+ 21e:	80 93 67 01 	sts	0x0167, r24
+			}
+			PORTC=kbd_buffer[display_index & KBD_BUFFER_MASK];
+ 222:	80 91 67 01 	lds	r24, 0x0167
+ 226:	e8 2f       	mov	r30, r24
+ 228:	ff 27       	eor	r31, r31
+ 22a:	e9 59       	subi	r30, 0x99	; 153
+ 22c:	ff 4f       	sbci	r31, 0xFF	; 255
+ 22e:	80 81       	ld	r24, Z
+ 230:	85 bb       	out	0x15, r24	; 21
+ 232:	d0 cf       	rjmp	.-96     	; 0x1d4 <main+0x22>
