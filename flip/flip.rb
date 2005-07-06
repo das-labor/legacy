@@ -352,7 +352,7 @@ class CursesUI <UI
 			break if finished
 			next if processed
 			processed=navigate(@active,c)
-			showAPInfo if @active==@apListBox && processed
+#			showAPInfo if @active==@apListBox && processed
 			next if processed
 			case c
 			when ?\C-L # ^L
@@ -367,6 +367,7 @@ class CursesUI <UI
 					next if @entryListBox.items.length==0
 					selectListBox(@entryListBox)
 				when ?c, ?C
+					showAPInfo #if @active==@apListBox && processed
 				when ?r, ?R
 				when ?a, ?A
 				when ?d, ?D
