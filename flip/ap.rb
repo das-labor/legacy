@@ -3,10 +3,9 @@ PATH="tmp/aps"
 class APList
 	attr_reader :path, :apHash
 
-	def initialize()
-		@path = PATH;
+	def initialize(path)
+		@path = path 
 		@apHash = Hash.new;
-		refresh
 	end
 
 	def refresh

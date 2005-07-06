@@ -325,7 +325,7 @@ class CursesUI <UI
 		    trap(i) {|sig| onsig(sig) }
 		  end
 		end
-		@apList = APList.new( "tmp/aps/" );
+		@apList = APList.new( "tmp/aps" );
 
 		@state=:MAIN
 		Ncurses.initscr; 
