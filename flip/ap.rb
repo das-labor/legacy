@@ -6,6 +6,7 @@ class APList
 	def initialize(path)
 		@path = path 
 		@apHash = Hash.new;
+		refresh
 	end
 
 	def refresh
@@ -48,7 +49,8 @@ class AccessPoint
 	end
 
 	def get_clients
-		return execute( "w; ifconfig -a " );
+#		return execute( "w; ifconfig -a " );
+		return execute( "brconfig bridge0 " );
 	end
 
 	def info
@@ -57,7 +59,7 @@ class AccessPoint
 
 private
 	def execute( cmd )
-		return `ssh #{ip} "#{cmd}"`;
+		return `ssh -l root -i soekris.dsa #{ip} "#{cmd}"`;
 	end
 end
 

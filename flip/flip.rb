@@ -364,6 +364,8 @@ class CursesUI <UI
 				# Directory
 				case c
 				when 9 # TAB
+					next if @entryListBox.items.length==0
+					selectListBox(@entryListBox)
 				when ?c, ?C
 				when ?r, ?R
 				when ?a, ?A
