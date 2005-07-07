@@ -5,12 +5,17 @@
 
 typedef enum { normal, sleep, loopback, listenonly, config } mcp_mode_t ;
 
+typedef struct{
+	unsigned char flags;
+	unsigned char addr_src;
+	unsigned char addr_dest;
+	unsigned char port_src;
+	unsigned char port_dest;
+	unsigned char dlc;
+	unsigned char data[8];
 
-volatile static char rxbuf[CAN_RXBUFSIZE];
-volatile static char *volatile rxhead, *volatile rxtail;
+}can_message;
 
-// volatile static char *volatile txhead, *volatile txtail;
-// volatile static char txbuf[CAN_TXBUFSIZE];
 
 /* MCP */
 void mcp_reset();
@@ -28,6 +33,11 @@ void mcp_setfilter();
 void  can_init();
 void  can_send(char *buf, unsigned char len);
 char *can_rcvpacket();
+
+can_message * can_buffer_get();
+void can_transmit();
+can_message * can_message_get_nb();
+
 
 
 #endif

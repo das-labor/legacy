@@ -6,9 +6,11 @@
 #include "uart.h"
 #include "spi.h"
 #include "can.h"
+#include "console.h"
 
 int main(){
 	uart_init();
+	console_init();
 	spi_init();
 	can_init();
 
@@ -18,16 +20,7 @@ int main(){
 	uart_putc('*');
 
 	while(1) {
-		char c = uart_getc();
-		can_send(&c, 1);
-
-//		uart_putstr("Ohne M4te? 0xff 0x88 0x44 0x22 0x11\n");
-//
-		
-//		uart_putc(c);
-//		char *rcv = can_rcvpacket();
-//		uart_putstr(rcv);
+		console();
 	}
-
 	return 0;
 }

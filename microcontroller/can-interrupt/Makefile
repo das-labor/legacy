@@ -1,12 +1,12 @@
 PRG            = uart
-OBJ            = can.o spi.o uart.o main.o util.o
+OBJ            = main.o uart.o util.o console.o function_table.o can.o spi.o foo.o
 MCU_TARGET     = atmega32
-OPTIMIZE       = -Os
+OPTIMIZE       = -Os -fshort-enums
 
 FLASHCMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --upload if=$(PRG).hex
 ERASECMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --erase
 
-DEFS           = -DF_CPU=16000000
+DEFS           = -DF_CPU=8000000
 LIBS           =
 
 # You should not have to change anything below here.
@@ -29,6 +29,9 @@ $(PRG).elf: $(OBJ)
 clean:
 	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak 
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
+
+fct_table:
+	./mk_function_table.pl *.h >function_table.c
 
 flash:
 	$(ERASECMD)

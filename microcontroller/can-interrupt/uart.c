@@ -5,6 +5,8 @@
 #define UART_BAUD_RATE 19200
 #define UART_BAUD_CALC(UART_BAUD_RATE,F_OSC) ((F_CPU)/((UART_BAUD_RATE)*16L)-1)
 
+#define UART_LEDS           /* LED1 and LED2 toggle on tx and rx interrupt */
+
 #include <avr/io.h>
 #include <avr/signal.h>
 #include <avr/interrupt.h>
@@ -12,6 +14,7 @@
 
 #define UART_RXBUFSIZE 16
 #define UART_TXBUFSIZE 16
+#define LINE_BUFFER_SIZE 40
 
 volatile static char rxbuf[UART_RXBUFSIZE];
 volatile static char txbuf[UART_TXBUFSIZE];
@@ -20,8 +23,10 @@ volatile static char *volatile txhead, *volatile txtail;
 
 
 SIGNAL(SIG_UART_DATA) {
+#ifdef UART_LEDS	
 	PORTC ^= 0x01;
-
+#endif
+	
 	if ( txhead == txtail ) {
 		UCSRB &= ~(1 << UDRIE);		/* disable data register empty IRQ */
 	} else {
@@ -33,8 +38,10 @@ SIGNAL(SIG_UART_DATA) {
 SIGNAL(SIG_UART_RECV) {
 	int diff; 
 
+#ifdef UART_LEDS
 	PORTC ^= 0x02;
-
+#endif
+	
 	/* buffer full? */
 	diff = rxhead - rxtail;
 	if ( diff < 0 ) diff += UART_RXBUFSIZE;
@@ -43,7 +50,7 @@ SIGNAL(SIG_UART_RECV) {
 		*rxhead = UDR;
 		if (++rxhead == (rxbuf + UART_RXBUFSIZE)) rxhead = rxbuf;
 	} else {
-		volatile char c = UDR;
+		UDR; //reads the buffer to clear the interrupt condition
 	}
 }
 
@@ -64,7 +71,7 @@ void uart_init() {
 	txhead = txtail = txbuf;
 
 	// activate rx IRQ
-	UCSRB |= (1 << RXCIE);		/* disable data register empty IRQ */
+	UCSRB |= (1 << RXCIE);
 }
 
 void uart_putc(char c) {
@@ -90,6 +97,14 @@ void uart_putstr(char *str) {
 	}
 }
 
+void uart_putstr_P(PGM_P str) {
+	char tmp;
+	while((tmp = pgm_read_byte(str))) {
+		uart_putc(tmp);
+		str++;
+	}
+}
+
 char uart_getc()
 {
 	char val;
@@ -102,6 +117,7 @@ char uart_getc()
 	return val;
 }
 
+//returns 1 on success
 unsigned char uart_getc_nb(char *c)
 {
 	if (rxhead==rxtail) return 0;
@@ -112,3 +128,23 @@ unsigned char uart_getc_nb(char *c)
 	return 1;
 }
 
+//get one Cariage return terminated line
+//echo charakters back on Uart
+//returns buffer with zero terminated line on success, 0 pointer otherwise
+char * uart_getline_nb(){
+	static char buffer[LINE_BUFFER_SIZE];
+	static char * pos = buffer;
+	char tmp;
+	while(uart_getc_nb(&tmp)){
+		if(tmp == '\r'){
+			*pos = 0;	//terminate line
+			pos = buffer;   //reset pointer
+			return buffer;  //and return the buffer
+		}
+		if(pos < buffer+LINE_BUFFER_SIZE-1){ //buffer full?
+			*pos++ = tmp;		//no: write character to buffer
+			uart_putc (tmp);
+		}
+	}
+	return 0;
+}
