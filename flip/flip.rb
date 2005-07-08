@@ -204,14 +204,14 @@ class ListBox < BoxedWin
 	attr_reader :items, :win, :first, :selected
 	
 	def initialize(win)
-		debug "HAAAAALOOO *********** HUHU!!! ***"
-		debug win;
+#		debug "HAAAAALOOO *********** HUHU!!! ***"
+#		debug win;
 
 
 		@win=(win.kind_of?(BoxedWin) ? win.content : win)
 		@showSelected=true # visually highlight the selected row
 		empty
-#		@win.clear; @win.refresh
+		@win.clear; @win.refresh
 	end
 	# add item(s)
 	def add(arg, arg2=nil)
@@ -340,7 +340,7 @@ class CursesUI <UI
 	# getCommand: main loop of execution. Returns only on the end request of the program (Quit).
 	def getCommand
 		mkWins if ! defined?(@apListBox)
-		updateCommandRow "(C)opy (R)ename (A)dd (D)elete (Q)uit"
+		updateCommandRow "Commands==> (I)nfo (C)lients (Q)uit"
 		listDir(0,1000); 
 		finished=false; processed=false
 		while (true)
@@ -352,7 +352,6 @@ class CursesUI <UI
 			break if finished
 			next if processed
 			processed=navigate(@active,c)
-#			showAPInfo if @active==@apListBox && processed
 			next if processed
 			case c
 			when ?\C-L # ^L
@@ -366,16 +365,25 @@ class CursesUI <UI
 				when 9 # TAB
 					next if @entryListBox.items.length==0
 					selectListBox(@entryListBox)
+				when ?i, ?I
+					showMessage ( "Current selected AP information" );
+					refreshUI; 
+					showAPInfo; 
 				when ?c, ?C
-					showAPInfo #if @active==@apListBox && processed
-				when ?r, ?R
-				when ?a, ?A
-				when ?d, ?D
+					showMessage ( "Current Clients on AP" ); 
+					refreshUI;
+					showAPClients;
 				when KEY_ENTER, 13 # Enter
 					debug("Enter. Selected==#{@apListBox.selected}")
 				end
-			else # active == @entryListBox
-				# jaja XXX
+			else (@active==@entryListBox)
+				case c
+				when 9 # TAB 
+					next if @apListBox.items.length==0
+					selectListBox(@apListBox)
+				when KEY_ENTER, 13 # Enter
+					debug("Enter. Selected==#{@apListBox.selected}")
+				end
 			end
 		end
 		Ncurses.endwin
@@ -436,10 +444,6 @@ class CursesUI <UI
 		apHash.each_value { |ap|
 			@apListBox.add( ap.mac, ap );
 		}
-#		
-#		@apListBox.add("..", "Ich bin zwei doppelpunkt" )
-#		@apListBox.add("Huhu", "Ich bin 4 Buchstabig" )
-#		@apListBox.add("Fnord","wissen schon")
 		@apListBox.refresh
 	end
 
@@ -455,8 +459,8 @@ class CursesUI <UI
 		return if panel==@active
 		@active.showSelected(false); @active.refresh
 		@active=panel; @active.showSelected
-		dirCmds="(C)opy (R)ename (A)dd (D)elete (Q)uit"
-		entryCmds="(A)dd (M)odify (D)elete (S)ave (R)evert (Q)uit"
+		dirCmds="Commands==> (I)nfo (C)lients (Q)uit"
+		entryCmds="Commands==> (Q)uit"
 		updateCommandRow(@active==@apListBox ? dirCmds : entryCmds)
 	end
 
@@ -468,7 +472,16 @@ class CursesUI <UI
 			@entryListBox.add( "#{line}", {});
 		}
 		@entryListBox.refresh;
-
+	end
+	
+	def showAPClients
+		curAP = @apListBox.value;
+                @entryListBox.empty
+		a = curAP.clients.split( "\n" );
+		a.each { |line|
+			@entryListBox.add( "#{line}", {});
+		}
+		@entryListBox.refresh;
 	end
 end
 

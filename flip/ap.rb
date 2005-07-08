@@ -26,7 +26,7 @@ end
 
 
 class AccessPoint 
-	attr_reader :ip, :hostname_line, :mac
+	attr_reader :ip, :hostname_line, :mac, :connected_clients, :client
 
 	def initialize(mac)
 		@mac = mac;
@@ -49,11 +49,18 @@ class AccessPoint
 	end
 
 	def get_clients
-#		return execute( "w; ifconfig -a " );
-		return execute( "brconfig bridge0 " );
+		return execute( "brconfig bridge0 " ) 
+	end
+	
+	def get_basic_information
+		return execute( "hostname; uptime;" );
 	end
 
 	def info
+		return get_basic_information;
+	end
+
+	def clients
 		return get_clients;
 	end
 
