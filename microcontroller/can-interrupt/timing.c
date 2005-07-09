@@ -40,7 +40,18 @@ void timing_test()
 		PORTC &= ~0x10;
 		
 		msg = can_message_get_nb();
-		//wait(1);
+		wait(1);
+	}
+}
+
+void r_test(){
+	
+	can_message *msg = can_message_get_nb();
+	while(1){
+		if(msg){
+			hex_dump(msg->addr_src,2);
+	
+		}
 	}
 }
 
