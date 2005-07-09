@@ -170,7 +170,7 @@ SIGNAL(SIG_INTERRUPT0) {
 	unsigned char x;
 	
 	if ( status & 0x01 ) {	// Message in RX0
-		PORTC ^= 0x04;
+		PORTC |= 0x04;
 		
 		PORT_SPI &= ~(1<<PIN_SS);
 		SPDR = READ;
@@ -204,6 +204,7 @@ SIGNAL(SIG_INTERRUPT0) {
 		if( ++RX_HEAD == RX_BUFFER+RX_BUFFER_SIZE) RX_HEAD = RX_BUFFER;
 		
 		mcp_bitmod(CANINTF, (1<<RX0IF), 0x00);
+		PORTC &= ~0x04;
 	}
 
 	if ( status & 0x08 ) {	// TX1 empty
