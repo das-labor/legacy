@@ -112,6 +112,14 @@ static can_message TX_BUFFER[TX_BUFFER_SIZE], *TX_HEAD=TX_BUFFER, *TX_TAIL=TX_BU
 static volatile unsigned char TX_INT;
 
 
+inline unsigned char spi_data(unsigned char c){
+	SPDR = c;
+	while(!(SPSR & (1<<SPIF)));
+	c = SPDR;
+	return (c);
+}
+
+
 inline unsigned char mcp_rx_status(){
 	PORT_SPI &= ~(1<<PIN_SS);
 	spi_data(RX_STATUS);
@@ -303,7 +311,7 @@ void can_init(){
 	GICR |= 0x40;
 
 	mcp_setfilter();
-	mcp_setmode(loopback);
+	mcp_setmode(normal);
 }
 
 

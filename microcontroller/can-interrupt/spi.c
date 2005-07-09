@@ -33,9 +33,11 @@ void spi_init(){
 	SPSR = (1<<SPI2X);
 }
 
+/*
 unsigned char spi_data(unsigned char c){
 	SPDR = c;
 	while(!(SPSR & (1<<SPIF)));
 	c = SPDR;
 	return (c);
 }
+*/

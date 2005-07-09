@@ -6,7 +6,7 @@ OPTIMIZE       = -Os -fshort-enums
 FLASHCMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --upload if=$(PRG).hex
 ERASECMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --erase
 
-DEFS           = -DF_CPU=16000000
+DEFS           = -DF_CPU=8000000
 LIBS           =
 
 # You should not have to change anything below here.
