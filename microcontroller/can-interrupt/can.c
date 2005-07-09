@@ -173,17 +173,31 @@ SIGNAL(SIG_INTERRUPT0) {
 		PORTC ^= 0x04;
 		
 		PORT_SPI &= ~(1<<PIN_SS);
-		spi_data(READ);
-		spi_data(RXB0SIDH);
-		RX_HEAD->addr_src = spi_data(0);				//SID10:3
-		tmp1 = spi_data(0);
-		tmp2 = spi_data(0);
+		SPDR = READ;
+		wait_spi();
+		SPDR = RXB0SIDH;
+		wait_spi();
+		SPDR = 0;
+		wait_spi();
+		RX_HEAD->addr_src = SPDR;					//SID10:3
+		SPDR = 0;
+		wait_spi();
+		tmp1 = SPDR;
+		SPDR = 0;
+		wait_spi();
+		tmp2 = SPDR;
+		SPDR = 0;
 		RX_HEAD->port_src = ((tmp1&0x03)<<1)|((tmp1>>2)&0x38)|(tmp2>>7);//SID2:0 : EID17:15
 		RX_HEAD->port_dest = tmp2 & 0x7F; 				//EID14:8
-		RX_HEAD->addr_dest = spi_data(0);				//EID7:0
-		RX_HEAD->dlc = spi_data(0) & 0x0F;				//DLC
+		wait_spi();
+		RX_HEAD->addr_dest = SPDR;					//EID7:0
+		SPDR = 0;
+		wait_spi();
+		RX_HEAD->dlc = SPDR & 0x0F;					//DLC
 		for(x=0;x<RX_HEAD->dlc;x++){
-			RX_HEAD->data[x] = spi_data(0);
+			SPDR = 0;
+			wait_spi();
+			RX_HEAD->data[x] = SPDR;
 		}
 		PORT_SPI |= (1<<PIN_SS);
 		
