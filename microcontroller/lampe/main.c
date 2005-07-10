@@ -13,12 +13,18 @@
 #define FKT_PING 0
 #define FKT_REBOOT 1
 
+
+#define stdout_putc     uart_putc
+#define stdout_putstr   uart_putstr
+#define stdout_putstr_P uart_putstr_P
+
 typedef enum { PORT_MGT=0x30, PORT_LAMPE=0x20 }   ports;
 typedef enum { FKT_MGT_PING=0x00, FKT_MGT_REBOOT=0x01 }     fkts_mgt;
 typedef enum { FKT_LAMPE_SET=0x00, FKT_LAMPE_SETMASK=0x01 } fkts_lampe;
 
 void set_lampe(unsigned char lampe, unsigned char val)
 {
+	PORTC ^= (1<<8);
 	if (val) {
 		PORTC |= (1<<lampe);
 	} else {
@@ -26,33 +32,29 @@ void set_lampe(unsigned char lampe, unsigned char val)
 	}
 }
 
-void hexdump(char *buf, unsigned char len)
-{
-	char *c = buf;
-	char str[3];
-	while(c < buf+len) {
-		itoa(*c, str, 16);
-		uart_putstr(str);
-		c++;
+void hex_dump(unsigned char * addr, unsigned char size){
+	unsigned char x=0, sbuf[3];
+	
+	while(size--){
+		itoa(*addr++, sbuf, 16);
+		if (sbuf[1] == 0) stdout_putc(' ');
+		stdout_putstr(sbuf);
+		stdout_putc(' ');
+		if(++x == 16){
+			stdout_putstr_P(PSTR("\r\n"));
+			x = 0;
+		}
 	}
 }
 
 
-int main(){
-	uart_init();
-//	console_init();
-	spi_init();
-	can_init();
-
-	uart_putstr("\nLAMPE> ");
-
-	sei();
-	DDRC = 0xff;
-
+void eventloop()
+{
 	while(1) {
 		can_message *msg= can_get();
+		PORTC ^= (1<<7);
 
-		hexdump((char *)msg, 10);
+		hex_dump((char *)msg, 10);
 
 		switch(msg->port_dest) {
 		case PORT_MGT:
@@ -90,4 +92,43 @@ int main(){
 			}
 		}
 	}
+}
+
+void testing()
+{
+	while(1) {
+		pdo_message *msg = (pdo_message *) can_buffer_get();
+		msg->addr_src  = 0x00;
+		msg->addr_dest = 0xaa;
+		msg->port_src  = 0x00;
+		msg->port_dest = PORT_LAMPE;
+		msg->dlc = 4;
+		msg->fkt_id = FKT_LAMPE_SET; 
+		msg->data[0] = 5;
+		msg->data[1] = 255;
+		msg->flags = 0x01;
+
+		can_transmit();
+
+		wait(1000);
+	}
+
+
+	
+}
+
+
+int main(){
+	uart_init();
+	spi_init();
+	can_init();
+
+	DDRC = 0xff;
+
+	uart_putstr("\nLAMPE> ");
+
+	sei();
+
+//	eventloop();
+	testing();
 }

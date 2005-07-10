@@ -1,4 +1,4 @@
-PRG            = uart
+PRG            = lampe
 OBJ            = main.o util.o can.o spi.o uart.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os -fshort-enums
