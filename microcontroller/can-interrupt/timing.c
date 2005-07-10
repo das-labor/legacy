@@ -16,7 +16,6 @@ void timing_test()
 		PORTC &= ~0x10;
 
 		can_message *msg = can_buffer_get();
-		msg = can_buffer_get();
 		msg->addr_src = i;
 		msg->addr_dest = ~i;
 		msg->port_src = 0x11;
@@ -40,7 +39,7 @@ void timing_test()
 		PORTC &= ~0x10;
 		
 		msg = can_message_get_nb();
-		wait(1);
+		wait(3);
 	}
 }
 

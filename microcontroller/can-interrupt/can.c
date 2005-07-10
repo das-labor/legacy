@@ -216,9 +216,10 @@ SIGNAL(SIG_INTERRUPT0) {
 	}
 
 	if ( status & 0x08 ) {	// TX1 empty
-		PORTC ^= 0x08;
+		PORTC ^= 0x04;
 		message_load();
 		mcp_bitmod(CANINTF, (1<<TX0IF), 0x00);
+		PORTC &= ~0x04;
 	}
 }
 
