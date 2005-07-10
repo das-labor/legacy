@@ -39,6 +39,5 @@ void can_transmit();
 
 can_message *can_get();
 can_message *can_get_nb();
-// can_message *can_message_get_nb();
 
 #endif

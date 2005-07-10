@@ -107,8 +107,8 @@
 
 #define RX_BUFFER_SIZE 10
 #define TX_BUFFER_SIZE 10
-static can_message RX_BUFFER[RX_BUFFER_SIZE], *RX_HEAD=RX_BUFFER, *RX_TAIL=RX_BUFFER;
-static can_message TX_BUFFER[TX_BUFFER_SIZE], *TX_HEAD=TX_BUFFER, *TX_TAIL=TX_BUFFER;
+static can_message RX_BUFFER[RX_BUFFER_SIZE], *volatile RX_HEAD=RX_BUFFER, *volatile RX_TAIL=RX_BUFFER;
+static can_message TX_BUFFER[TX_BUFFER_SIZE], *volatile TX_HEAD=TX_BUFFER, *volatile TX_TAIL=TX_BUFFER;
 static volatile unsigned char TX_INT;
 
 
@@ -360,15 +360,11 @@ can_message * can_get_nb(){
 can_message * can_get()
 {
 	can_message *p;
-	can_message *volatile*volatile rx_head = &RX_HEAD;
-	can_message *volatile*volatile rx_tail = &RX_TAIL;
-	can_message *volatile*volatile tx_tail = &TX_TAIL;
 
+	while(RX_HEAD == RX_TAIL) { };
 
-	while(*rx_head == *tx_tail) { };
-
-	p = *rx_tail;
-	if(++(*rx_tail) == RX_BUFFER+RX_BUFFER_SIZE) (*rx_tail) = RX_BUFFER;
+	p = RX_TAIL;
+	if(++RX_TAIL == RX_BUFFER+RX_BUFFER_SIZE) RX_TAIL = RX_BUFFER;
 
 	return p;
 }
