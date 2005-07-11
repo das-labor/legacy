@@ -1,6 +1,6 @@
-PRG            = uart
-OBJ            = main.o uart.o util.o console.o function_table.o
-MCU_TARGET     = atmega32
+PRG            = lampe
+OBJ            = can.o main.o util.o spi.o
+MCU_TARGET     = at90s2313
 OPTIMIZE       = -Os -fshort-enums
 
 FLASHCMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --upload if=$(PRG).hex
@@ -15,7 +15,7 @@ CC             = avr-gcc
 
 # Override is only needed by avr-lib build system.
 
-override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS)
+override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) 
 override LDFLAGS       = -Wl,-Map,$(PRG).map
 
 OBJCOPY        = avr-objcopy
@@ -35,6 +35,7 @@ fct_table:
 
 flash:
 	$(ERASECMD)
+	sleep 1
 	$(FLASHCMD)
 
 lst:  $(PRG).lst

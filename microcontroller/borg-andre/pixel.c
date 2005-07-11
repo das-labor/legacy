@@ -3,15 +3,16 @@
 #include "pixel.h"
 
 #include "util.h"
+#include "config.h"
 
-unsigned char shl_table[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
+unsigned int shl_table[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80, 0x100, 0x200, 0x400, 0x800, 0x1000, 0x2000, 0x4000, 0x8000};
 
 
 void clear_screen(unsigned char value){
 	unsigned char x;
 	unsigned char plane;
 	for(plane=0; plane<NUMPLANE; plane++) {
-		for(x=0;x<8;x++){
+		for(x=0;x<NUM_ROWS;x++){
 			pixmap[plane][x] = 0;
 		}
 	}
@@ -22,21 +23,21 @@ void setpixel(pixel p, unsigned char value ){
 
 	for(plane=0; plane<NUMPLANE; plane++) {
 		if ( plane < value )
-			pixmap[plane][p.y%8] |= shl_table[p.x%8];
+			pixmap[plane][p.y%NUM_ROWS] |= shl_table[p.x%NUM_COLS];
 		else
-			pixmap[plane][p.y%8] &= ~shl_table[p.x%8];
+			pixmap[plane][p.y%NUM_ROWS] &= ~shl_table[p.x%NUM_COLS];
 	}
 }
 
 void clearpixel(pixel p){
 	unsigned char plane;
 	for(plane=0; plane<NUMPLANE; plane++)
-		pixmap[plane][p.y%8] &= ~shl_table[p.x%8];
+		pixmap[plane][p.y%NUM_ROWS] &= ~shl_table[p.x%NUM_COLS];
 }
 
 unsigned char get_pixel(pixel p){
 
-	if( (p.x > 7) || (p.y> 7 ) ){
+	if( (p.x > (NUM_COLS-1)) || (p.y> (NUM_ROWS-1)) ){
 		return 0xff;
 	}else{
 		return ( (pixmap[0][p.y] & shl_table[p.x]) ? 1:0);
