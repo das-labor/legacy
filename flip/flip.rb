@@ -62,7 +62,7 @@ class CursesUI <UI
 		while (true)
 			break if finished
 			processed=false
-			updateStatusRow(@active.key)
+			#updateStatusRow(@active.key)
 			c=@active.getch
 			c,processed,finished=global_hook_keypressed(c) if defined?(global_hook_keypressed)
 			break if finished
@@ -82,13 +82,21 @@ class CursesUI <UI
 					next if @entryListBox.items.length==0
 					selectListBox(@entryListBox)
 				when ?i, ?I
-					showMessage ( "Current selected AP information" );
+					showMessage ( "Current selected AP information" ); 
 					refreshUI; 
 					showAPInfo; 
 				when ?c, ?C
 					showMessage ( "Current Clients on AP" ); 
 					refreshUI;
 					showAPClients;
+				when ?l
+					cmd = getVal(":",":" ); 
+					showMessage ( cmd );
+					refreshUI; 
+				when ?L
+					showMessage ( "all" );
+					refreshUI;
+					
 				when KEY_ENTER, 13 # Enter
 					debug("Enter. Selected==#{@apListBox.selected}")
 				end
@@ -118,7 +126,7 @@ class CursesUI <UI
 		edt=BoxedWin.new(w,3,width-4,2,1)
 		#~ sub.bkgd(?A)
 		ret=getLine(edt,default).chomp
-		edt.destroy
+		#edt.destroy
 		w.destroy
 		#~ refresh
 		return ret
@@ -126,7 +134,7 @@ class CursesUI <UI
 
 	def error(s); showMessage(s); refreshUI if defined? @apPanel end
  private
-	def refreshUI; @apPanel.redrawwin; @entryPanel.redrawwin end
+	def refreshUI; @apPanel.redrawwin; @apListBox.refresh; @entryPanel.redrawwin; @entryListBox.refresh;  end
 	def finalize; endwin end
 	def onsig(sig); endwin; exit(sig) end
 
