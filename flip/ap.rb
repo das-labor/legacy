@@ -18,6 +18,22 @@ class APList
 		}
 	end
 
+	def execute_local_all(cmd)
+		ret = Hash.new;
+		@apHash.each_value{ |ap|
+			ret[ap.mac] = ap.execute_local(cmd);
+		}
+		return ret;
+	end
+
+	def execute_remote_all(cmd)
+		ret = Hash.new;
+		@apHash.each_value{ |ap|
+			ret[ap.ip] = ap.execute_remote(cmd);
+		}
+		return ret;
+	end
+
         def method_missing(sym,*args)
                 @apHash.send sym,*args
         end
@@ -70,11 +86,11 @@ class AccessPoint
 		Dir.chdir(last)
 		return ret
 	end
-private
 
 	def execute_remote( cmd )
 		return `ssh -l root -i soekris.dsa #{ip} "#{cmd}"`;
 	end
+private
 end
 
 # 

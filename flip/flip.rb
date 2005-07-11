@@ -92,14 +92,11 @@ class CursesUI <UI
 				when ?l
 					execute_local;
 				when ?L
-					cmd = getVal("exec-local-ALL");
-					refreshUI;
+					execute_local_all;
 				when ?r 
-					cmd = getVal("exec-remote");
-					refreshUI;
+					execute_remote;
 				when ?R 
-					cmd = getVal("exec-remote-ALL");
-					refreshUI;
+					execute_remote_all;
 				when KEY_ENTER, 13 # Enter
 					debug("Enter. Selected==#{@apListBox.selected}")
 				end
@@ -200,9 +197,48 @@ class CursesUI <UI
 			@entryListBox.add( "#{line}", {});
 		}
 		
-		
-
 		refreshUI; 
+	end
+
+	def execute_remote
+		curAp = @apListBox.value;
+		cmd = getVal("exec-remote on #{curAp.ip}");
+		@entryListBox.empty
+		a = curAp.execute_remote(cmd).split( "\n" ) if cmd != "";
+		a.each { |line|
+			@entryListBox.add( "#{line}", {});
+		}
+		refreshUI;
+	end
+
+	def execute_local_all
+		cmd = getVal("exec-local-all"); 
+		return if cmd == ""
+		output = @apList.execute_local_all(cmd);
+		@entryListBox.empty
+		output.each_key { |mac|
+			lines = output[mac].split("\n");
+			@entryListBox.add( "===>> #{mac} <<===" );
+			lines.each { |line|
+				@entryListBox.add( "#{line}", {});
+			}
+		}
+		refreshUI; 
+	end
+
+	def execute_remote_all
+		cmd = getVal("exec-remote-all");
+		return if cmd == ""
+		output = @apList.execute_remote_all(cmd);
+		@entryListBox.empty
+		output.each_key { |ip|
+			lines = output[ip].split("\n");
+			@entryListBox.add( "===>> #{ip} <<===" );
+			lines.each { |line|
+				@entryListBox.add( "#{line}", {});
+			}
+		}
+		refreshUI;
 	end
 
 	def showAPInfo
