@@ -91,7 +91,7 @@ module NcursesEx
 	end
 	def wrapString(aString,maxlen)
 		s=aString.dup
-		arr=[]
+		arr = Array.new;
 		while s.length>maxlen
 			i=s[0..maxlen].rindex(" ")
 			arr.push s.slice!(0..(i.nil? ? maxlen : i))

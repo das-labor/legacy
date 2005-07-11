@@ -90,8 +90,8 @@ class CursesUI <UI
 					refreshUI;
 					showAPClients;
 				when ?l
-					cmd = getVal(":",":" ); 
-					showMessage ( cmd );
+					cmd = getVal("exec-local"); 
+					
 					refreshUI; 
 				when ?L
 					showMessage ( "all" );
@@ -116,12 +116,11 @@ class CursesUI <UI
 
 	# get a string from the user
 	def getVal(prompt,default="")
-		prompt+=":"
-		width=[[prompt.length+4,Ncurses.COLS-4].min,40].max
-		promptArr=wrapString(prompt,width)
-		h=6+promptArr.length
+#		width=[[prompt.length+4,Ncurses.COLS-4].min,40].max
+		width=[[prompt.length+80,Ncurses.COLS-4].min,40].max
+		h = 7;
 		w=BoxedWin.new(nil,h,width,(Ncurses.LINES-h)/2,(Ncurses.COLS-width)/2,ATTR_NORMAL)
-		promptArr.each_index {|i| w.mvaddstr(i,1,promptArr[i])}
+		w.title( " "+prompt+" ");
 		w.refresh
 		edt=BoxedWin.new(w,3,width-4,2,1)
 		#~ sub.bkgd(?A)
