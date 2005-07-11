@@ -97,7 +97,7 @@ void eventloop()
 	}
 }
 
-/*
+
 void testing()
 {
 	while(1) {
@@ -108,7 +108,7 @@ void testing()
 		msg->port_dest = PORT_LAMPE;
 		msg->dlc = 4;
 		msg->fkt_id = FKT_LAMPE_SET; 
-		msg->data[0] = 6;
+		msg->data[0] = 1;
 		msg->data[1] = 255;
 		msg->flags = 0x01;
 
@@ -117,7 +117,7 @@ void testing()
 		wait(1000);
 	}
 }
-*/
+
 
 
 int main(){
@@ -133,8 +133,8 @@ int main(){
 
 	sei();
 
-	eventloop();
-	return 0;
-//	testing();
+	//eventloop();
+	//return 0;
+	testing();
 }
 

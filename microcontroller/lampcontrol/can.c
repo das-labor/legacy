@@ -298,7 +298,7 @@ void can_init(){
 	wait( 1 );
 	
 	// 100kbps 
-	mcp_write( CNF1, 0x44 );
+	mcp_write( CNF1, 0x40 | 0x03);
 	mcp_write( CNF2, 0xf1 );
 	mcp_write( CNF3, 0x05 );
 

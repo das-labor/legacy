@@ -245,22 +245,38 @@ void fadein()
 }
 
 
-#define STREAMER_NUM 30
+#define STREAMER_NUM 20
 
 typedef struct{
 	pixel start;
 	unsigned char len;
 	unsigned char decay;
-	unsigned char index;
 	unsigned char speed;
 }streamer;
+
+
+void flash(){
+	unsigned char x, y, z;
+	
+	for(z=0;z<100;z++){
+		for(x=0;x<8;x++)
+			for(y=0;y<8;y++) 
+				setpixel((pixel){x,y}, 3);
+		wait(50);
+		for(x=0;x<8;x++)
+			for(y=0;y<8;y++) 
+				setpixel((pixel){x,y}, 0);
+		wait(50);
+	}
+
+}
 
 void matrix1(){
 	int counter = 500;//run 1000 cycles
 	streamer streamers[STREAMER_NUM];
 	unsigned char matrix_bright[8][8];
 	unsigned char x, y;
-	unsigned char index = 0;
+	
 
 	unsigned char draw;
 
@@ -301,7 +317,7 @@ void matrix1(){
 			if(streamer_num<STREAMER_NUM){
 				unsigned char sy = random()%16;
 				if (sy>7) sy=0;
-				streamers[streamer_num] = (streamer){{random()%8, sy}, 0, (random()%8)+12, index++,(random()%16)+3};
+				streamers[streamer_num] = (streamer){{random()%8, sy}, 0, (random()%8)+8,(random()%16)+5};
 				streamer_num++;	
 			}
 		}

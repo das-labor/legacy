@@ -71,6 +71,7 @@ int main (void){
 	
 	for(;;){
 		//labor_borg();
+		flash();
 		matrix1();
 		fadein();
 		joern1();
