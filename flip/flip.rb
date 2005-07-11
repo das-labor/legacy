@@ -90,13 +90,21 @@ class CursesUI <UI
 					refreshUI;
 					showAPClients;
 				when ?l
-					cmd = getVal("exec-local"); 
-					
+					curAp = @apListBox.value;
+
+					cmd = getVal("exec-local on #{curAp.ip}", ); 
+					curAp.exec_local(cmd) if cmd != "";
+
 					refreshUI; 
 				when ?L
-					showMessage ( "all" );
+					cmd = getVal("exec-local-ALL");
 					refreshUI;
-					
+				when ?r 
+					cmd = getVal("exec-remote");
+					refreshUI;
+				when ?R 
+					cmd = getVal("exec-remote-ALL");
+					refreshUI;
 				when KEY_ENTER, 13 # Enter
 					debug("Enter. Selected==#{@apListBox.selected}")
 				end
