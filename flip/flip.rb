@@ -92,7 +92,7 @@ class CursesUI <UI
 				when ?l
 					curAp = @apListBox.value;
 
-					cmd = getVal("exec-local on #{curAp.ip}", ); 
+					cmd = getVal("exec-local in #{curAp.mac}"); 
 					curAp.exec_local(cmd) if cmd != "";
 
 					refreshUI; 
@@ -173,7 +173,7 @@ class CursesUI <UI
 		@apList.refresh;
 		apHash = @apList.apHash;
 		apHash.each_value { |ap|
-			@apListBox.add( ap.mac, ap );
+			@apListBox.add( "MACADDR: #{ap.mac} IPADDR: #{ap.ip}", ap );
 		}
 		@apListBox.refresh
 	end
