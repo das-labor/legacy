@@ -79,6 +79,15 @@ class AccessPoint
 		return get_clients;
 	end
 
+	def build_config_tgz( dstpath )
+		if !File.exists?( "#{dstpath}/#{@mac}" ) then
+			 Dir.mkdir( "#{dstpath}/#{@mac}", 493 )    # KEINER VERSTEHT DIE ZAHL
+		end
+		
+
+		execute_local( "tar -czf #{dstpath}/#{@mac}/config.tgz ." );
+	end
+
 	def execute_local( cmd )
 		last = Dir.pwd
 		Dir.chdir(@path)

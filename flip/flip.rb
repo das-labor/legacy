@@ -90,13 +90,15 @@ class CursesUI <UI
 					refreshUI;
 					showAPClients;
 				when ?l
-					execute_local;
+					execute_local
 				when ?L
-					execute_local_all;
+					execute_local_all
 				when ?r 
-					execute_remote;
+					execute_remote
 				when ?R 
-					execute_remote_all;
+					execute_remote_all
+				when ?b, ?B
+					build_config_tgz
 				when KEY_ENTER, 13 # Enter
 					debug("Enter. Selected==#{@apListBox.selected}")
 				end
@@ -186,7 +188,15 @@ class CursesUI <UI
 		entryCmds="Commands==> (Q)uit"
 		updateCommandRow(@active==@apListBox ? dirCmds : entryCmds)
 	end
+
+	######################################################################
+	# FUNCTIONALITY
 	
+	def build_config_tgz
+		curAp = @apListBox.value;
+		ret = curAp.build_config_tgz( "/tmp" );
+	end
+
 	def execute_local
 		curAp = @apListBox.value;
 		cmd = getVal("exec-local in #{curAp.mac}"); 
