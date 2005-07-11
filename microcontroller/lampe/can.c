@@ -112,7 +112,7 @@ static can_message TX_BUFFER[TX_BUFFER_SIZE], *volatile TX_HEAD=TX_BUFFER, *vola
 static volatile unsigned char TX_INT;
 
 
-inline unsigned char spi_data(unsigned char c){
+unsigned char spi_data(unsigned char c){
 	SPDR = c;
 	while(!(SPSR & (1<<SPIF)));
 	c = SPDR;
@@ -136,7 +136,7 @@ inline unsigned char mcp_status(){
 	return d;
 }
 
-inline void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val){
+void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val){
 	PORT_SPI &= ~(1<<PIN_SS);
 	spi_data(BIT_MODIFY);
 	spi_data(reg);
@@ -145,7 +145,7 @@ inline void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val)
 	PORT_SPI |= (1<<PIN_SS);
 }
 
-inline void message_load(){
+void message_load(){
 	unsigned char x;
 	if( (TX_HEAD != TX_TAIL) && (TX_TAIL->flags & 0x01) ){
 		TX_INT = 1;
@@ -178,8 +178,6 @@ SIGNAL(SIG_INTERRUPT0) {
 	unsigned char x;
 	
 	if ( status & 0x01 ) {	// Message in RX0
-		PORTC |= 0x04;
-		
 		PORT_SPI &= ~(1<<PIN_SS);
 		SPDR = READ;
 		wait_spi();
@@ -212,14 +210,11 @@ SIGNAL(SIG_INTERRUPT0) {
 		if( ++RX_HEAD == RX_BUFFER+RX_BUFFER_SIZE) RX_HEAD = RX_BUFFER;
 		
 		mcp_bitmod(CANINTF, (1<<RX0IF), 0x00);
-		PORTC &= ~0x04;
 	}
 
 	if ( status & 0x08 ) {	// TX1 empty
-		PORTC ^= 0x04;
 		message_load();
 		mcp_bitmod(CANINTF, (1<<TX0IF), 0x00);
-		PORTC &= ~0x04;
 	}
 }
 

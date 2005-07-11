@@ -5,7 +5,7 @@
 #define UART_BAUD_RATE 19200
 #define UART_BAUD_CALC(UART_BAUD_RATE,F_OSC) ((F_CPU)/((UART_BAUD_RATE)*16L)-1)
 
-#define UART_LEDS           /* LED1 and LED2 toggle on tx and rx interrupt */
+// #define UART_LEDS           /* LED1 and LED2 toggle on tx and rx interrupt */
 
 #include <avr/io.h>
 #include <avr/signal.h>

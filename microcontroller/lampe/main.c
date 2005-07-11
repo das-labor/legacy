@@ -3,28 +3,26 @@
 #include <avr/interrupt.h>
 #include <stdlib.h>
 #include "util.h"
-#include "uart.h"
 #include "spi.h"
 #include "can.h"
-//#include "console.h"
 #include "lap.h"
 
-#define NUM_LAMPE 4
-#define FKT_PING 0
-#define FKT_REBOOT 1
+#ifdef DEBUG
+ #include "uart.h"
+#endif
 
+#define NUM_LAMPE 4
 
 #define stdout_putc     uart_putc
 #define stdout_putstr   uart_putstr
 #define stdout_putstr_P uart_putstr_P
 
-typedef enum { PORT_MGT=0x30, PORT_LAMPE=0x20 }   ports;
-typedef enum { FKT_MGT_PING=0x00, FKT_MGT_REBOOT=0x01 }     fkts_mgt;
+typedef enum { PORT_MGT=0x30, PORT_LAMPE=0x20 }             ports;
+typedef enum { FKT_MGT_PING=0x00, FKT_MGT_RESET=0x01 }      fkts_mgt;
 typedef enum { FKT_LAMPE_SET=0x00, FKT_LAMPE_SETMASK=0x01 } fkts_lampe;
 
 void set_lampe(unsigned char lampe, unsigned char val)
 {
-	PORTC ^= (1<<8);
 	if (val) {
 		PORTC |= (1<<lampe);
 	} else {
@@ -32,6 +30,7 @@ void set_lampe(unsigned char lampe, unsigned char val)
 	}
 }
 
+#ifdef DEBUG
 void hex_dump(unsigned char * addr, unsigned char size){
 	unsigned char x=0, sbuf[3];
 	
@@ -46,15 +45,19 @@ void hex_dump(unsigned char * addr, unsigned char size){
 		}
 	}
 }
+#endif
 
 
 void eventloop()
 {
 	while(1) {
-		can_message *msg= can_get();
-		PORTC ^= (1<<7);
+		can_message *msg = can_get();
 
+#ifdef DEBUG
+		// XXX DEBUG XXX
+		uart_putstr( "CAN: " );
 		hex_dump((char *)msg, 10);
+#endif
 
 		switch(msg->port_dest) {
 		case PORT_MGT:
@@ -63,7 +66,7 @@ void eventloop()
 			case FKT_MGT_PING:
 				// send pong
 				break;
-			case FKT_MGT_REBOOT:
+			case FKT_MGT_RESET:
 				// reboot
 				break;
 			}
@@ -94,6 +97,7 @@ void eventloop()
 	}
 }
 
+/*
 void testing()
 {
 	while(1) {
@@ -104,7 +108,7 @@ void testing()
 		msg->port_dest = PORT_LAMPE;
 		msg->dlc = 4;
 		msg->fkt_id = FKT_LAMPE_SET; 
-		msg->data[0] = 5;
+		msg->data[0] = 6;
 		msg->data[1] = 255;
 		msg->flags = 0x01;
 
@@ -112,23 +116,25 @@ void testing()
 
 		wait(1000);
 	}
-
-
-	
 }
+*/
 
 
 int main(){
-	uart_init();
+	DDRC = 0xff;
 	spi_init();
 	can_init();
 
-	DDRC = 0xff;
 
-	uart_putstr("\nLAMPE> ");
+#ifdef DEBUG
+	uart_init();
+	uart_putstr("\n<LAMPE>\n");
+#endif
 
 	sei();
 
-//	eventloop();
-	testing();
+	eventloop();
+	return 0;
+//	testing();
 }
+

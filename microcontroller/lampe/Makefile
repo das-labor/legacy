@@ -1,5 +1,5 @@
 PRG            = lampe
-OBJ            = main.o util.o can.o spi.o uart.o
+OBJ            = main.o util.o can.o spi.o 
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os -fshort-enums
 
@@ -15,7 +15,7 @@ CC             = avr-gcc
 
 # Override is only needed by avr-lib build system.
 
-override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS)
+override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) 
 override LDFLAGS       = -Wl,-Map,$(PRG).map
 
 OBJCOPY        = avr-objcopy
