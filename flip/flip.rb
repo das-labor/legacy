@@ -90,12 +90,7 @@ class CursesUI <UI
 					refreshUI;
 					showAPClients;
 				when ?l
-					curAp = @apListBox.value;
-
-					cmd = getVal("exec-local in #{curAp.mac}"); 
-					curAp.exec_local(cmd) if cmd != "";
-
-					refreshUI; 
+					execute_local;
 				when ?L
 					cmd = getVal("exec-local-ALL");
 					refreshUI;
@@ -141,7 +136,7 @@ class CursesUI <UI
 
 	def error(s); showMessage(s); refreshUI if defined? @apPanel end
  private
-	def refreshUI; @apPanel.redrawwin; @apListBox.refresh; @entryPanel.redrawwin; @entryListBox.refresh;  end
+	def refreshUI; @apPanel.redrawwin; @entryPanel.redrawwin; @entryListBox.refresh; @apListBox.refresh end
 	def finalize; endwin end
 	def onsig(sig); endwin; exit(sig) end
 
@@ -193,6 +188,21 @@ class CursesUI <UI
 		dirCmds="Commands==> (I)nfo (C)lients (Q)uit"
 		entryCmds="Commands==> (Q)uit"
 		updateCommandRow(@active==@apListBox ? dirCmds : entryCmds)
+	end
+	
+	def execute_local
+		curAp = @apListBox.value;
+		cmd = getVal("exec-local in #{curAp.mac}"); 
+		@entryListBox.empty
+		a = curAp.execute_local(cmd).split( "\n" ) if cmd != "";
+
+		a.each { |line|
+			@entryListBox.add( "#{line}", {});
+		}
+		
+		
+
+		refreshUI; 
 	end
 
 	def showAPInfo

@@ -63,10 +63,14 @@ class AccessPoint
 		return get_clients;
 	end
 
-private
 	def execute_local( cmd )
-		return `cd @path; #{cmd}`;
+		last = Dir.pwd
+		Dir.chdir(@path)
+		ret = `#{cmd}`
+		Dir.chdir(last)
+		return ret
 	end
+private
 
 	def execute_remote( cmd )
 		return `ssh -l root -i soekris.dsa #{ip} "#{cmd}"`;
