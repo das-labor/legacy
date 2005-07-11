@@ -1,4 +1,3 @@
-PATH="tmp/aps"
 
 class APList
 	attr_reader :path, :apHash
@@ -14,7 +13,7 @@ class APList
 			# skip non MAC entries
 			if not (/\S{6}/ =~ entry) then next; end
 
-			ap = AccessPoint.new(entry);
+			ap = AccessPoint.new(@path, entry);
 			apHash[ap.mac] = ap;
 		}
 	end
@@ -28,9 +27,9 @@ end
 class AccessPoint 
 	attr_reader :ip, :hostname_line, :mac, :connected_clients, :client
 
-	def initialize(mac)
+	def initialize(path, mac)
 		@mac = mac;
-		@path = PATH + "/" + mac;
+		@path = path + "/" + mac;
 		read_hostname
 	end
 
@@ -49,11 +48,11 @@ class AccessPoint
 	end
 
 	def get_clients
-		return execute( "brconfig bridge0 " ) 
+		return execute_remote( "brconfig bridge0 " ) 
 	end
 	
 	def get_basic_information
-		return execute( "hostname; uptime;" );
+		return execute_remote( "hostname; uptime;" );
 	end
 
 	def info
@@ -65,7 +64,11 @@ class AccessPoint
 	end
 
 private
-	def execute( cmd )
+	def execute_local( cmd )
+		return `cd @path; #{cmd}`;
+	end
+
+	def execute_remote( cmd )
 		return `ssh -l root -i soekris.dsa #{ip} "#{cmd}"`;
 	end
 end

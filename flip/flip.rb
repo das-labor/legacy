@@ -10,6 +10,9 @@
 require 'ncurses'
 require 'ap.rb'
 
+
+PATH = "tmp/aps";
+
 include Ncurses
 include Ncurses::Form
 
@@ -325,7 +328,7 @@ class CursesUI <UI
 		    trap(i) {|sig| onsig(sig) }
 		  end
 		end
-		@apList = APList.new( "tmp/aps" );
+		@apList = APList.new(PATH);
 
 		@state=:MAIN
 		Ncurses.initscr; 
