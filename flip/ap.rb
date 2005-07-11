@@ -83,7 +83,6 @@ class AccessPoint
 		if !File.exists?( "#{dstpath}/#{@mac}" ) then
 			 Dir.mkdir( "#{dstpath}/#{@mac}", 493 )    # KEINER VERSTEHT DIE ZAHL
 		end
-		
 
 		execute_local( "tar -czf #{dstpath}/#{@mac}/config.tgz ." );
 	end
