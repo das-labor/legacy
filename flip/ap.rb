@@ -79,6 +79,62 @@ class AccessPoint
 		return get_clients;
 	end
 
+	def collect_statistics
+		stat = Hash.new;
+		ret = execute_remote( "ifconfig -a ; brconfig bridge0 ; pfctl -s label" );
+
+		# extract connected clients
+		wi0Clients = Array.new;
+		ath0Clients = Array.new;
+		ath1Clients = Array.new;
+
+		lines = ret.split("\n");
+		wi0Re  = /^\s*(\S\S:\S\S:\S\S:\S\S:\S\S:\S\S) wi0 .*flags=/;
+		ath0Re = /^\s*(\S\S:\S\S:\S\S:\S\S:\S\S:\S\S) ath0 .*flags=/;
+		ath1Re = /^\s*(\S\S:\S\S:\S\S:\S\S:\S\S:\S\S) vlan0 .*flags=/;
+		lines.each { |line|
+			wi0Clients.push  m[1] if (m = wi0Re.match(line))
+			ath0Clients.push m[1] if (m = ath0Re.match(line))
+			ath1Clients.push m[1] if (m = ath1Re.match(line))
+		}
+
+		stat["wi0Clients"]  = wi0Clients;
+		stat["ath0Clients"] = ath0Clients;
+		stat["ath1Clients"] = ath1Clients;
+
+
+		stat["pf"] = Hash.new if stat["pf"].nil?
+		pf = stat["pf"];
+
+		# pf log 
+		pfRe = /^<PF> (.+on.+) (\d+) (\d+) (\d+) (\d+) (\d+) (\d+) (\d+)$/;
+		lines.each { |line|
+			if (m = pfRe.match(line)) then
+				if pf[m[1]].nil?  then
+					pf[m[1]] = Hash.new 
+					pf[m[1]]["eval"]      = 0;
+					pf[m[1]]["pkt"]       = 0;
+					pf[m[1]]["bytes"]     = 0;
+					pf[m[1]]["pkt_in"]    = 0;
+					pf[m[1]]["bytes_in"]  = 0;
+					pf[m[1]]["pkt_out"]   = 0;
+					pf[m[1]]["bytes_out"] = 0;
+				end
+				
+				pf[m[1]]["eval"]      += m[2].to_i; 
+				pf[m[1]]["pkt"]       += m[3].to_i;
+				pf[m[1]]["bytes"]     += m[4].to_i;
+				pf[m[1]]["pkt_in"]    += m[5].to_i;
+				pf[m[1]]["bytes_in"]  += m[6].to_i;
+				pf[m[1]]["pkt_out"]   += m[7].to_i;
+				pf[m[1]]["bytes_out"] += m[8].to_i;
+			end
+		}
+
+
+		return stat
+	end
+
 	def build_config_tgz( dstpath )
 		if !File.exists?( "#{dstpath}/#{@mac}" ) then
 			 Dir.mkdir( "#{dstpath}/#{@mac}", 493 )    # KEINER VERSTEHT DIE ZAHL
