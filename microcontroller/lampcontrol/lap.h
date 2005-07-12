@@ -15,14 +15,18 @@ typedef struct{
 typedef struct{
 	unsigned char flags;
 	unsigned char addr_src;
-	unsigned char addr_dest;
+	unsigned char addr_dst;
 	unsigned char port_src;
-	unsigned char port_dest;
+	unsigned char port_dst;
 	unsigned char dlc;
 	unsigned int  fkt_id; 
 	unsigned char data[6];	
 }pdo_message;
 
+/* known ports */
+typedef enum { PORT_MGT=0x30, PORT_LAMPE=0x20 }             ports;
+
+typedef enum { FKT_MGT_PING=0x00, FKT_MGT_RESET=0x01 }      lap_mgt_fkts;
 
 /* SDO */
 unsigned char *sdo_readbuf(sdo_message *first_message, 
