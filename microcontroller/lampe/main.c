@@ -6,6 +6,7 @@
 #include "spi.h"
 #include "can.h"
 #include "lap.h"
+#include "dimmer.h"
 
 #ifdef DEBUG
  #include "uart.h"
@@ -23,12 +24,7 @@ typedef enum { FKT_LAMPE_SET=0x00, FKT_LAMPE_SETMASK=0x01 } fkts_lampe;
 
 void set_lampe(unsigned char lampe, unsigned char val)
 {
-	lampe &= 0x03;
-	if (val) {
-		PORTD |= (1<<lampe);
-	} else {
-		PORTD &= ~(1<<lampe);
-	}
+	BRIGHT[lampe] = val;
 }
 
 #ifdef DEBUG
@@ -124,7 +120,9 @@ void testing()
 
 int main(){
 	DDRD = 0x73;
-	PORTD = 0x01;
+	DDRB = 0x0F;//rest will be set by spi_init
+	PORTD = 0x02;
+	
 	
 	spi_init();
 	can_init();
@@ -136,6 +134,8 @@ int main(){
 	uart_init();
 	uart_putstr("\n<LAMPE>\n");
 #endif
+
+	dimmer_init();
 
 	sei();
 
