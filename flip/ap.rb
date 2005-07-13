@@ -1,3 +1,7 @@
+#####################################################
+#
+# Classes File for ap specific methods
+#
 
 class APList
 	attr_reader :path, :apHash
@@ -43,11 +47,20 @@ end
 class AccessPoint 
 	attr_reader :ip, :hostname_line, :mac, :connected_clients, :client
 
+	#
+	# accesspoints initialisieren 
+	#
+
 	def initialize(path, mac)
 		@mac = mac;
 		@path = path + "/" + mac;
 		read_hostname
 	end
+
+	#
+	# aus lokaler information ip addresse des accesspoints extrahieren
+	# und verfuegbar machen 
+	#
 
 	def read_hostname
 		File.open( "#{@path}/etc/hostname.sis0" ) do |f|
@@ -78,6 +91,11 @@ class AccessPoint
 	def clients
 		return get_clients;
 	end
+
+	#
+	# methode die von flipd.rd genutzt wird um von allen accesspoints 
+	# die angegebene information zu beziehen und diese geparsed auszugeben.
+	#
 
 	def collect_statistics
 		stat = Hash.new;
@@ -135,6 +153,11 @@ class AccessPoint
 		return stat
 	end
 
+	#
+	# erstellen des config.tgz das von den Clients in der Konfigurationsphase
+	# geladen und ausgfuehrt wird.
+	# 
+
 	def build_config_tgz( dstpath )
 		if !File.exists?( "#{dstpath}/#{@mac}" ) then
 			 Dir.mkdir( "#{dstpath}/#{@mac}", 493 )    # KEINER VERSTEHT DIE ZAHL
@@ -142,6 +165,10 @@ class AccessPoint
 
 		execute_local( "tar -czf #{dstpath}/#{@mac}/config.tgz ." );
 	end
+
+	#
+	# ausfuehren lokaler kommandos auf einem uebergeben Pfad
+	#
 
 	def execute_local( cmd )
 		last = Dir.pwd
@@ -151,18 +178,14 @@ class AccessPoint
 		return ret
 	end
 
+	#
+	# ausfuehren von commandos auf einer soekris Boc
+	# 
+
 	def execute_remote( cmd )
 		return `ssh -l root -i soekris.dsa #{ip} "#{cmd}"`;
 	end
-private
-end
 
-# 
-# apList = APList.new( "tmp/aps" );
-# 
-# apHash = apList.apHash;
-# 
-# 
-# apHash.each_value do  |ap|
-# 	puts ap.info
-# end
+private
+
+end
