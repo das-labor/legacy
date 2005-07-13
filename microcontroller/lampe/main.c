@@ -24,7 +24,7 @@ typedef enum { FKT_LAMPE_SET=0x00, FKT_LAMPE_SETMASK=0x01 } fkts_lampe;
 
 void set_lampe(unsigned char lampe, unsigned char val)
 {
-	BRIGHT[lampe] = val;
+	BRIGHT[lampe] = 64-(val>>2);
 }
 
 #ifdef DEBUG
@@ -127,9 +127,6 @@ int main(){
 	spi_init();
 	can_init();
 
-
-	
-	
 #ifdef DEBUG
 	uart_init();
 	uart_putstr("\n<LAMPE>\n");

@@ -9,12 +9,17 @@ unsigned char BRIGHT[4];
 
 SIGNAL(SIG_INTERRUPT1) {
 	TCNT0 = 256-20;
-	COUNT = 2;
+	COUNT = 0;
 }
 
 
 SIGNAL(SIG_OVERFLOW0) {
 	TCNT0 = 256-20;
+	
+	if(COUNT == 0){
+		PORTB |= 0x0F;
+	}
+	
 	
 	unsigned char x, rol=0x08;
 	for(x=0;x<4;x++){
@@ -24,12 +29,6 @@ SIGNAL(SIG_OVERFLOW0) {
 		rol>>=1;
 	}
 	
-	
-		
-	if(COUNT == 0){
-	
-		PORTB |= 0x0F;
-	}
 	
 	if(++COUNT == 64){
 		COUNT = 0;
