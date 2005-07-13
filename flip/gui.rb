@@ -1,12 +1,14 @@
 ###############################################################################
-# Ncurses GUI borrowed from ldap_*.rb
+# Ncurses GUI for flip.rb 
 
 require 'ncurses'
 
 include Ncurses
 include Ncurses::Form
 
-
+#
+# open debug.log and specify command for including information into the logfile
+#
 
 def debug(s)
 	begin
@@ -15,7 +17,10 @@ def debug(s)
 	end
 end
 
+#
 # Useful functions for ncurses
+#
+
 module NcursesEx
 	include Ncurses
 	ATTR_NORMAL=A_NORMAL
@@ -99,6 +104,11 @@ module NcursesEx
 		arr.push s if s.length>0
 		return arr
 	end
+
+	#
+	# show a message in the center of the viewarea and kill it with a pressed button
+	#
+
 	def showMessage(msg)
 		width=[[msg.length+4,60].min,20].max
 		msgarr=wrapString(msg,width-4)
@@ -111,10 +121,20 @@ module NcursesEx
 		w.getch
 		w.destroy
 	end
+
+	#
+	# return y and x coordinates 
+	#
+
 	def myGetYX(w)
 		x=[]; y=[]; getyx(w,y,x)
 		return [y[0],x[0]]
 	end
+
+	#
+	# return maximal y and x coordinates
+	#
+
 	def myGetMaxYX(w)
 		x=[]; y=[]; w.getmaxyx(y,x)
 		return [y[0],x[0]]
