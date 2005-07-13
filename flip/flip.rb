@@ -1,11 +1,8 @@
 #!/usr/bin/ruby
 
-# ldap_browser.rb: NCurses-based LDAP browser.
 #
-# Changelog
+# flip.rd 
 #
-# 2003-06-16: v0.02
-#   updated to work with slapd 2.1.x (re-read dn after saving a new entry)
 
 require 'ap.rb'
 require 'gui.rb'
@@ -118,7 +115,6 @@ class CursesUI <UI
 
 	# get a string from the user
 	def getVal(prompt,default="")
-#		width=[[prompt.length+4,Ncurses.COLS-4].min,40].max
 		width=[[prompt.length+80,Ncurses.COLS-4].min,40].max
 		h = 7;
 		w=BoxedWin.new(nil,h,width,(Ncurses.LINES-h)/2,(Ncurses.COLS-width)/2,ATTR_NORMAL)
@@ -135,9 +131,18 @@ class CursesUI <UI
 
 	def error(s); showMessage(s); refreshUI if defined? @apPanel end
  private
+
+	#
+	# redraw the complete window frameset 
+	#
+
 	def refreshUI; @apPanel.redrawwin; @entryPanel.redrawwin; @entryListBox.refresh; @apListBox.refresh end
 	def finalize; endwin end
 	def onsig(sig); endwin; exit(sig) end
+
+	#
+	# complete window framset that comes up initialy
+	#
 
 	def mkWins
 		freerows=4
@@ -152,14 +157,27 @@ class CursesUI <UI
 		@active=@apListBox
 	end
 	
+	#
+	# fill the status row with a string 
+	#
+
 	def updateStatusRow(s)
 		s="" if s.nil?
 		@statusRow.mvaddstr(0,0,s); @statusRow.clrtoeol; @statusRow.refresh
 	end
+
+	#
+	# fill the command row with a string
+	#
+
 	def updateCommandRow(s)
 		s="" if s.nil?
 		@commandWin.mvaddstr(0,0,s); @commandWin.clrtoeol; @commandWin.refresh
 	end
+
+	#
+	# show all available accesspoints in the left listbox and have refrence to it 
+	#
 
 	def listDir(first,last)
 		@apPanel.title("Available Access Points",:LEFT)
@@ -172,14 +190,21 @@ class CursesUI <UI
 		@apListBox.refresh
 	end
 
+	#
+	# navigate through the selected listbox and aktivate selected item
+	#
+
 	def navigate(listbox,ch)
 		processed=false
 		(listbox.next; processed=true) if ch==KEY_DOWN
 		(listbox.prev; processed=true) if ch==KEY_UP
 		return processed
 	end
-	
-	# change selected listbox (to TAB key)
+
+	#	
+	# change selected listbox (to TAB key) 
+	# 
+
 	def selectListBox(panel)
 		return if panel==@active
 		@active.showSelected(false); @active.refresh
@@ -192,10 +217,19 @@ class CursesUI <UI
 	######################################################################
 	# FUNCTIONALITY
 	
+
+	#
+	# build the config.tgz for the currently selected accesspoint
+	# 
+
 	def build_config_tgz
 		curAp = @apListBox.value;
 		ret = curAp.build_config_tgz( "/tmp" );
 	end
+
+	#
+	# execute a command in the local selected accesspoint directory 
+	#
 
 	def execute_local
 		curAp = @apListBox.value;
@@ -210,6 +244,10 @@ class CursesUI <UI
 		refreshUI; 
 	end
 
+	#
+	# execute a command remote on the selected accesspoint
+	#
+
 	def execute_remote
 		curAp = @apListBox.value;
 		cmd = getVal("exec-remote on #{curAp.ip}");
@@ -220,6 +258,10 @@ class CursesUI <UI
 		}
 		refreshUI;
 	end
+
+	#
+	# execute a command for all accesspoints locally
+	# 
 
 	def execute_local_all
 		cmd = getVal("exec-local-all"); 
@@ -236,6 +278,10 @@ class CursesUI <UI
 		refreshUI; 
 	end
 
+	#
+	# execute a command for all accesspoints remote on the accesspoints
+	#
+
 	def execute_remote_all
 		cmd = getVal("exec-remote-all");
 		return if cmd == ""
@@ -251,6 +297,10 @@ class CursesUI <UI
 		refreshUI;
 	end
 
+	#
+	# show a basic inofrmation about the selected accesspoints
+	#
+
 	def showAPInfo
 		curAP = @apListBox.value;
 		@entryListBox.empty
@@ -261,6 +311,10 @@ class CursesUI <UI
 		@entryListBox.refresh;
 	end
 	
+	#
+	# show the connected clients on the selected accesspoint
+	# 
+
 	def showAPClients
 		curAP = @apListBox.value;
                 @entryListBox.empty
