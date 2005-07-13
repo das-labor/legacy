@@ -1,7 +1,14 @@
 #!/usr/bin/env ruby
 
+#
+# Basic deamon for collecting important information from the known accesspoints
+#
+
 require 'ap.rb'
 
+#
+# get all new accesspoints 
+#
 
 def checkForNewAps( apList )
 	usedIps = Array.new;
@@ -11,6 +18,10 @@ def checkForNewAps( apList )
 	}
 
 end
+
+#
+# poll the status from the access points and return them periodicly
+#
 
 def pollStatus( apList )
 	apList.apHash.each_value { |ap|
