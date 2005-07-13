@@ -45,7 +45,8 @@ end
 
 
 class AccessPoint 
-	attr_reader :ip, :hostname_line, :mac, :connected_clients, :client
+	attr :statistics;
+	attr_reader :ip, :hostname_line, :mac, :connected_clients, :client, :path;
 
 	#
 	# accesspoints initialisieren 
@@ -57,11 +58,21 @@ class AccessPoint
 		read_hostname
 	end
 
-	#
+	def save_statistics
+		File.open( @path + "/statistics.dump", "w" ) { |f|
+			Marshal.dump(@statistics, f);
+		}
+	end
+
+	def load_statistics
+		File.open( @path + "/statistics.dump", "r" ) {
+			@statistics = Marshal.load(f);
+		}
+	end
+
+	####
 	# aus lokaler information ip addresse des accesspoints extrahieren
 	# und verfuegbar machen 
-	#
-
 	def read_hostname
 		File.open( "#{@path}/etc/hostname.sis0" ) do |f|
 			@hostname_line = f.readline
