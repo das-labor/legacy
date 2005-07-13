@@ -94,6 +94,7 @@ void function_info_print(C_FKT_P func){
 		if((tmp = (PGM_P) pgm_read_word(&func->arguments[x].name )) != 0){
 			stdout_putstr_P(tmp);
 		}
+		stdout_putc(',');
 	}
 	stdout_putc(')');
 }
