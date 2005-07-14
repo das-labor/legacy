@@ -28,8 +28,7 @@ SIGNAL(SIG_OVERFLOW0) {
 		}
 		rol>>=1;
 	}
-	
-	
+		
 	if(++COUNT == 64){
 		COUNT = 0;
 	}	
