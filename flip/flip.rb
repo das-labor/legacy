@@ -53,7 +53,7 @@ class CursesUI <UI
 	# getCommand: main loop of execution. Returns only on the end request of the program (Quit).
 	def getCommand
 		mkWins if ! defined?(@apListBox)
-		updateCommandRow "Commands==> (I)nfo (C)lients (Q)uit"
+		updateCommandRow "Commands==> (I)nfo (C)lients (Q)uit exec-(l)ocal exec-(r)emote (B)uild-config"
 		listDir(0,1000); 
 		finished=false; processed=false
 		while (true)
@@ -209,14 +209,13 @@ class CursesUI <UI
 		return if panel==@active
 		@active.showSelected(false); @active.refresh
 		@active=panel; @active.showSelected
-		dirCmds="Commands==> (I)nfo (C)lients (Q)uit"
+		dirCmds="Commands==> (I)nfo (C)lients (Q)uit exec-(l)ocal exec-(r)emote (B)uild-config"
 		entryCmds="Commands==> (Q)uit"
 		updateCommandRow(@active==@apListBox ? dirCmds : entryCmds)
 	end
 
 	######################################################################
 	# FUNCTIONALITY
-	
 
 	#
 	# build the config.tgz for the currently selected accesspoint
@@ -224,7 +223,16 @@ class CursesUI <UI
 
 	def build_config_tgz
 		curAp = @apListBox.value;
-		ret = curAp.build_config_tgz( "/tmp" );
+		@entryListBox.empty
+		ret = curAp.build_config_tgz( "/tftpboot" ).split( "\n" );
+		@entryListBox.add( " Building config.tgz for #{curAp.mac} " )
+		
+
+		ret.each { |line|
+			@entryListBox.add( "-> #{line}", {});
+		}
+		refreshUI;
+		
 	end
 
 	#

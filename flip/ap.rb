@@ -159,8 +159,6 @@ class AccessPoint
 				pf[m[1]]["bytes_out"] += m[8].to_i;
 			end
 		}
-
-
 		return stat
 	end
 
@@ -171,10 +169,14 @@ class AccessPoint
 
 	def build_config_tgz( dstpath )
 		if !File.exists?( "#{dstpath}/#{@mac}" ) then
-			 Dir.mkdir( "#{dstpath}/#{@mac}", 493 )    # KEINER VERSTEHT DIE ZAHL
+			 Dir.mkdir( "#{dstpath}/#{@mac}", 0755 )   # will only work with superuser privs
+								   # Normal Umask for Directory creation 
 		end
-
-		execute_local( "tar -czf #{dstpath}/#{@mac}/config.tgz ." );
+		if File.exists?( "#{dstpath}/#{@mac}/config.tgz" ) then
+			File.rename( "#{dstpath}/#{@mac}/config.tgz", "#{dstpath}/#{@mac}/config.tgz.old" )
+		end
+		execute_local( "tar -cvzf #{dstpath}/#{@mac}/config.tgz ." );
+			
 	end
 
 	#
