@@ -1,5 +1,0 @@
-
-include ../make-lib/*.mk
-
-
-
