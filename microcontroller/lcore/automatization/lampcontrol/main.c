@@ -6,6 +6,7 @@
 #include "spi.h"
 #include "can.h"
 #include "lap.h"
+#include "proto_lampe.h"
 
 #ifdef DEBUG
  #include "uart.h"
