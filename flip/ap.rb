@@ -42,35 +42,60 @@ class APList
 	# informations bezug und extrahieren der information 
 	# aus von den accesspoints nach /tftpboot geladenen informations
 	# files
-	#
+	# An expected file looks like this: 
+	# sis0: 000024c341e4
+	# ath0: 00026f20f9b5
+	# wi0: 00026f34e3df
 
 	def gather_new(gatpath)
 		last = Dir.pwd
 		Dir.foreach("#{gatpath}") { |entry|
-			if not (/\S{12}\.\w{7}\.\w{3}/ =~ entry) then next; end
-			IO.foreach( "#{gatpath}/" + entry ) { |f|
+			regx = /\S{12}\.\w{7}\.\w{3}/
+			if ( regx.match(entry) ) then 
+				IO.foreach( "#{gatpath}/" + entry ) { |f|
 
-				rex1 = /^sis0\:\s+((?:\S{12}))/
-				rex2 = /^wi0\:\s+(?:\S{12})/
-				rex3 = /^ath0\:\s+(?:\S{12})/
-				rex4 = /^ath1\:\s+(?:\S{12})/
+					sis0 = /^sis0\:\s+((?:\S{12}))/
+					wi0 = /^wi0\:\s+(?:\S{12})/
+					ath0 = /^ath0\:\s+(?:\S{12})/
+					ath1 = /^ath1\:\s+(?:\S{12})/
+					pdir = "#{path}/../parent/"
 
-				if ( rex1.match(f) ) then 
-					array = rex1.match(f)
-					if not array.nil? then 
-						debug("array0 " + array[0]);
-						debug("array1 " + array[1]);
+					if ( sis0.match(f) ) then 
+						array = sis0.match(f)
+						@info = array[1]
+						if not array.nil? then 
+							Dir.mkdir( "#{path}/#{info}", 0755 );
+							Dir.mkdir( "#{path}/#{info}/etc", 0755 );
+							File.copy( "#{pdir}/etc/hostname.sis0", "#{path}/#{info}/etc/" );
+							File.copy( "#{pdir}/etc/hostname.vlan0", "#{path}/#{info}/etc/" )
+							File.copy( "#{pdir}/etc/rc.local", "#{path}/#{info}/etc/" )
+							File.copy( "#{pdir}/etc/motd", "#{path}/#{info}/etc/" )
+							Dir.mkdir( "#{path}/#{info}/etc/ssh", 0755 )
+							`ssh-keygen -q -t rsa -f #{path}/#{info}/etc/ssh/ssh_host_dsa_key -N ''`
+							`ssh-keygen -q -t rsa -f #{path}/#{info}/etc/ssh/ssh_host_rsa_key -N ''`
+							`ssh-keygen -q -t rsa1 -f #{path}/#{info}/etc/ssh/ssh_host_key -N ''`
+							Dir.mkdir( "#{path}/#{info}/root" , 0700 )
+							Dir.mkdir( "#{path}/#{info}/root/.ssh/" , 0700 )
+							File.copy( "#{pdir}/soekris.dsa.pub", "#{path}/#{info}/root/.ssh/authorized_keys" ); 
+						end
+						debug( "#{pdir}" )
+					elsif ( wi0.match(f) ) then 
+						File.copy( "#{pdir}/etc/hostname.wi0", "#{path}/#{info}/etc/" );
+						File.copy( "#{pdir}/etc/bridgename.bridge0", "#{path}/#{info}/etc/" );
+					elsif ( ath0.match(f) ) then
+						File.copy( "#{pdir}/etc/hostname.ath0", "#{path}/#{info}/etc/" );
+						File.copy( "#{pdir}/etc/bridgename.bridge1", "#{path}/#{info}/etc/" );
+					elsif ( ath1.match(f) ) then 
+						File.copy( "#{pdir}/etc/hostname.ath1", "#{path}/#{info}/etc/" );
+						File.copy( "#{pdir}/etc/bridgename.bridge2", "#{path}/#{info}/etc/" );
 					end
-					debug(">>1"+ f); 
-				elsif ( rex2.match(f) ) then 
-					debug(">>2"+ f); 
-				elsif ( rex3.match(f) ) then
-					 debug(">>3"+ f); 
-				elsif ( rex4.match(f) ) then 
-					debug(">>4"+ f); 
-				end
-			}
+				}
+				File.delete( "#{gatpath}/" + entry )
+			else
+				next;
+			end
 		}
+		Dir.chdir(last)
 	end
 
         def method_missing(sym,*args)

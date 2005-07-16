@@ -6,6 +6,7 @@
 
 require 'ap.rb'
 require 'gui.rb'
+require 'ftools'
 
 PATH = "tmp/aps";
 
@@ -98,6 +99,9 @@ class CursesUI <UI
 					build_config_tgz
 				when ?g
 					gather_new
+					@apList.refresh
+					listDir(0,1000)
+					refreshUI
 				when KEY_ENTER, 13 # Enter
 					debug("Enter. Selected==#{@apListBox.selected}")
 				end
