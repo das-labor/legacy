@@ -1,0 +1,1 @@
+../../lcore/lib/proto_lampe.h
