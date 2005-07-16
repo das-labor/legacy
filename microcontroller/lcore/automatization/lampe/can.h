@@ -1,1 +1,1 @@
-../../lcore/include/can.h
+../../lcore/lib/can.h

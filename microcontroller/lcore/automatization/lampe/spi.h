@@ -1,1 +1,1 @@
-../../lcore/include/spi.h
+../../lcore/lib/spi.h
