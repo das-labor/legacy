@@ -1,5 +1,5 @@
 PRG            = uart
-OBJ            = main.o uart.o util.o console.o function_table.o
+OBJ            = main.o uart.o util.o console.o function_table.o foo.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os -fshort-enums
 
