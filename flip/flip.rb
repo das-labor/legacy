@@ -96,6 +96,8 @@ class CursesUI <UI
 					execute_remote_all
 				when ?b, ?B
 					build_config_tgz
+				when ?g
+					gather_new
 				when KEY_ENTER, 13 # Enter
 					debug("Enter. Selected==#{@apListBox.selected}")
 				end
@@ -225,7 +227,7 @@ class CursesUI <UI
 		curAp = @apListBox.value;
 		@entryListBox.empty
 		ret = curAp.build_config_tgz( "/tftpboot" ).split( "\n" );
-		@entryListBox.add( " Building config.tgz for #{curAp.mac} " )
+		@entryListBox.add( " Building config.tgz for #{curAp.mac} in /tftpboot" )
 		
 
 		ret.each { |line|
@@ -234,6 +236,11 @@ class CursesUI <UI
 		refreshUI;
 		
 	end
+
+	def gather_new
+		@entryListBox.empty
+		@apList.gather_new( "/tftpboot" )
+	end	
 
 	#
 	# execute a command in the local selected accesspoint directory 

@@ -4,7 +4,7 @@
 #
 
 class APList
-	attr_reader :path, :apHash
+	attr_reader :path, :apHash, :info;
 
 	def initialize(path)
 		@path = path 
@@ -36,6 +36,41 @@ class APList
 			ret[ap.ip] = ap.execute_remote(cmd);
 		}
 		return ret;
+	end
+
+	#
+	# informations bezug und extrahieren der information 
+	# aus von den accesspoints nach /tftpboot geladenen informations
+	# files
+	#
+
+	def gather_new(gatpath)
+		last = Dir.pwd
+		Dir.foreach("#{gatpath}") { |entry|
+			if not (/\S{12}\.\w{7}\.\w{3}/ =~ entry) then next; end
+			IO.foreach( "#{gatpath}/" + entry ) { |f|
+
+				rex1 = /^sis0\:\s+((?:\S{12}))/
+				rex2 = /^wi0\:\s+(?:\S{12})/
+				rex3 = /^ath0\:\s+(?:\S{12})/
+				rex4 = /^ath1\:\s+(?:\S{12})/
+
+				if ( rex1.match(f) ) then 
+					array = rex1.match(f)
+					if not array.nil? then 
+						debug("array0 " + array[0]);
+						debug("array1 " + array[1]);
+					end
+					debug(">>1"+ f); 
+				elsif ( rex2.match(f) ) then 
+					debug(">>2"+ f); 
+				elsif ( rex3.match(f) ) then
+					 debug(">>3"+ f); 
+				elsif ( rex4.match(f) ) then 
+					debug(">>4"+ f); 
+				end
+			}
+		}
 	end
 
         def method_missing(sym,*args)
@@ -70,9 +105,11 @@ class AccessPoint
 		}
 	end
 
-	####
+	#
 	# aus lokaler information ip addresse des accesspoints extrahieren
 	# und verfuegbar machen 
+	#
+
 	def read_hostname
 		File.open( "#{@path}/etc/hostname.sis0" ) do |f|
 			@hostname_line = f.readline
@@ -178,6 +215,7 @@ class AccessPoint
 		execute_local( "tar -cvzf #{dstpath}/#{@mac}/config.tgz ." );
 			
 	end
+
 
 	#
 	# ausfuehren lokaler kommandos auf einem uebergeben Pfad
