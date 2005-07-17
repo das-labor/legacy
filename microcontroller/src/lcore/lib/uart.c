@@ -120,7 +120,7 @@ char uart_getc()
 }
 
 //returns 1 on success
-unsigned char uart_getc_nb(char *c)
+char uart_getc_nb(char *c)
 {
 	if (rxhead==rxtail) return 0;
 
