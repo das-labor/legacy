@@ -1,7 +1,10 @@
 #ifndef CAN_H
 #define CAN_H
 
-#define CAN_RXBUFSIZE 128
+/**
+ * #define CAN_RXBUFSIZE 128
+ *
+ */
 
 typedef enum { normal, sleep, loopback, listenonly, config } mcp_mode_t ;
 
@@ -13,7 +16,6 @@ typedef struct{
 	unsigned char port_dest;
 	unsigned char dlc;
 	unsigned char data[8];
-
 }can_message;
 
 

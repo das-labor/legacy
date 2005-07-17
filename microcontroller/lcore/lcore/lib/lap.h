@@ -1,6 +1,17 @@
 #ifndef LAP_H
 #define LAP_H
 
+#include "config.h"
+#include "can.h"
+
+/**
+ * LaborAlthingProtocol
+ * 
+ */
+
+/**
+ * "inherits" from can_message 
+ */
 typedef struct{
 	unsigned char flags;
 	unsigned char addr_src;
@@ -12,6 +23,9 @@ typedef struct{
 	unsigned char data[6];	
 }sdo_message;
 
+/**
+ * "inherits" from can_message 
+ */
 typedef struct{
 	unsigned char flags;
 	unsigned char addr_src;
@@ -23,8 +37,15 @@ typedef struct{
 	unsigned char data[6];	
 }pdo_message;
 
+/**
+ * Known ports 
+ */
+typedef enum { PORT_MGT=0x30, PORT_LAMPE=0x20 }             ports;
+typedef enum { FKT_MGT_PING=0x00, FKT_MGT_RESET=0x01 }      lap_mgt_fkts;
 
-/* SDO */
+/**
+ * ServiceDataObject routinen
+ */
 unsigned char *sdo_readbuf(sdo_message *first_message, 
 		unsigned char length, unsigned char *actuallength);
 
