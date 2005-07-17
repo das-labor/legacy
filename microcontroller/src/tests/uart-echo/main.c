@@ -10,10 +10,12 @@
 
 int main (void)
 {	
+	uart_init();
+
 	DDRC = 0xFF; 	// Port C all outputs
 	PORTC = 0x04;   // Start LED 3 -- LEDs1+2 machen interrupt debugging
-	
-	uart_init();
+
+	uart_putc('*');
 	
 	for ( ;; ){		//for ever
 		uart_putc(uart_getc());
