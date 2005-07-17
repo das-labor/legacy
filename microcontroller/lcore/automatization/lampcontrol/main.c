@@ -2,6 +2,8 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdlib.h>
+
+#include "config.h"
 #include "util.h"
 #include "spi.h"
 #include "can.h"
@@ -10,13 +12,11 @@
 
 #ifdef DEBUG
  #include "uart.h"
+
+ #define stdout_putc     uart_putc
+ #define stdout_putstr   uart_putstr
+ #define stdout_putstr_P uart_putstr_P
 #endif
-
-#define NUM_LAMPE 4
-
-#define stdout_putc     uart_putc
-#define stdout_putstr   uart_putstr
-#define stdout_putstr_P uart_putstr_P
 
 void set_lampe(unsigned char lampe, unsigned char val)
 {
@@ -28,7 +28,7 @@ void set_lampe(unsigned char lampe, unsigned char val)
 }
 
 #ifdef DEBUG
-void hex_dump(unsigned char * addr, unsigned char size){
+void hexdump(unsigned char * addr, unsigned char size){
 	unsigned char x=0, sbuf[3];
 	
 	while(size--){
@@ -53,7 +53,7 @@ void eventloop()
 #ifdef DEBUG
 		// XXX DEBUG XXX
 		uart_putstr( "CAN: " );
-		hex_dump((char *)msg, 10);
+		hexdump((char *)msg, 10);
 #endif
 
 		switch(msg->port_dest) {
