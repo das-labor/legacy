@@ -2,7 +2,7 @@
 #define CAN_H
 
 /**
- * 
+ * Simple CAN Library
  *
  * #define CAN_INTERRUPT 1	//set this to enable interrupt driven and buffering version
  * #define CAN_RX_BUFFER_SIZE 2	//only used for Interrupt
@@ -36,11 +36,9 @@ void mcp_setfilter();
 
 /* CAN */ 
 void  can_init();
-void  can_send(char *buf, unsigned char len);
-char *can_rcvpacket();
 
 can_message * can_buffer_get();
-void can_transmit();
+void can_transmit( can_message *msg );
 
 can_message *can_get();
 can_message *can_get_nb();

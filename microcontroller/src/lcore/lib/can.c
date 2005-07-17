@@ -362,7 +362,7 @@ void can_transmit(can_message * msg){
 can_message RX_MESSAGE, TX_MESSAGE;
 
 can_message * can_get_nb(){
-	if(PINPORT_MCP_INT & (1<<SPI_PIN_MCP_INT)){
+	if(SPI_PIN_MCP_INT & (1<<SPI_PIN_MCP_INT)){
 		return 0;
 	}else{
 		//So the MCP Generates an RX Interrupt
@@ -373,7 +373,7 @@ can_message * can_get_nb(){
 
 can_message * can_get(){
 	//wait while the MCP doesn't generate an RX Interrupt
-	while(PINPORT_MCP_INT & (1<<SPI_PIN_MCP_INT)) { };
+	while(SPI_PIN_MCP_INT & (1<<SPI_PIN_MCP_INT)) { };
 	
 	message_fetch(RX_MESSAGE);
 	return RX_MESSAGE;
