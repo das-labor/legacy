@@ -1,23 +1,18 @@
-
-#include "uart.h"
-
 /* USART-Init beim ATmegaXX */
 
-#ifndef F_CPU
-#define F_CPU 16000000           /* Oszillator-Frequenz in Hz */
-#endif
-#define UART_BAUD_RATE 19200
-#define UART_BAUD_CALC(UART_BAUD_RATE,F_OSC) ((F_CPU)/((UART_BAUD_RATE)*16L)-1)
+#include "config.h"
 
 #include <avr/io.h>
 #include <avr/signal.h>
 #include <avr/interrupt.h>
+
 #include "uart.h"
 
-#define UART_RXBUFSIZE 16
-#define UART_TXBUFSIZE 16
-#define UART_LINE_BUFFER_SIZE 40
 
+#define UART_BAUD_CALC(UART_BAUD_RATE,F_OSC) ((F_CPU)/((UART_BAUD_RATE)*16L)-1)
+
+
+#ifdef UART_INTERRUPT
 volatile static char rxbuf[UART_RXBUFSIZE];
 volatile static char txbuf[UART_TXBUFSIZE];
 volatile static char *volatile rxhead, *volatile rxtail;
@@ -32,7 +27,7 @@ SIGNAL(SIG_UART_DATA) {
 	if ( txhead == txtail ) {
 		UCSRB &= ~(1 << UDRIE);		/* disable data register empty IRQ */
 	} else {
-		UDR = *txtail;                   /* schreibt das Zeichen x auf die Schnittstelle */
+		UDR = *txtail;			/* schreibt das Zeichen x auf die Schnittstelle */
 		if (++txtail == (txbuf + UART_TXBUFSIZE)) txtail = txbuf;
 	}
 }
@@ -52,9 +47,11 @@ SIGNAL(SIG_UART_RECV) {
 		*rxhead = UDR;
 		if (++rxhead == (rxbuf + UART_RXBUFSIZE)) rxhead = rxbuf;
 	} else {
-		UDR; //reads the buffer to clear the interrupt condition
+		UDR;				//reads the buffer to clear the interrupt condition
 	}
 }
+
+#endif // UART_INTERRUPT
 
 
 void uart_init() {
@@ -66,18 +63,21 @@ void uart_init() {
 	UCSRB |= ( 1 << RXEN );			//Uart RX einschalten
 
 	UBRRH=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU)>>8);
-	UBRRL=(uint8_t)UART_BAUD_CALC(UART_BAUD_RATE,F_CPU);
+	UBRRL=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU));
 
+#ifdef UART_INTERRUPT
 	// init buffers
 	rxhead = rxtail = rxbuf;
 	txhead = txtail = txbuf;
 
 	// activate rx IRQ
 	UCSRB |= (1 << RXCIE);
+#endif // UART_INTERRUPT
 }
 
+#ifdef UART_INTERRUPT
 void uart_putc(char c) {
-	volatile int diff ;
+	volatile int diff;
 
 	/* buffer full? */
 	do {
@@ -92,6 +92,13 @@ void uart_putc(char c) {
 	UCSRB |= (1 << UDRIE);		/* enable data register empty IRQ */
 	sei();
 }
+#else  // WITHOUT INTERRUPT
+void uart_putc(char c) {
+	while (!(UCSRA & (1<<UDRE))); /* warten bis Senden moeglich                   */
+	UDR = c;                      /* schreibt das Zeichen x auf die Schnittstelle */
+}
+#endif // UART_INTERRUPT
+
 
 void uart_putstr(char *str) {
 	while(*str) {
@@ -107,6 +114,7 @@ void uart_putstr_P(PGM_P str) {
 	}
 }
 
+#ifdef UART_INTERRUPT
 char uart_getc()
 {
 	char val;
@@ -118,8 +126,16 @@ char uart_getc()
 
 	return val;
 }
+#else  // WITHOUT INTERRUPT
+char uart_getc()
+{
+	while (!(UCSRA & (1<<RXC)));	// warten bis Zeichen verfuegbar
+	return UDR;			// Zeichen aus UDR zurueckgeben
+}
+#endif // UART_INTERRUPT
 
-//returns 1 on success
+// returns 1 on success
+#ifdef UART_INTERRUPT
 char uart_getc_nb(char *c)
 {
 	if (rxhead==rxtail) return 0;
@@ -129,6 +145,17 @@ char uart_getc_nb(char *c)
 
 	return 1;
 }
+#else  // WITHOUT INTERRUPT
+char uart_getc_nb(char *c)
+{
+	if (UCSRA & (1<<RXC)) {		// Zeichen verfuegbar
+		*c = UDR;
+		return 1;
+	}
+
+	return 0;
+}
+#endif // UART_INTERRUPT
 
 //get one Cariage return terminated line
 //echo charakters back on Uart
