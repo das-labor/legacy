@@ -2,7 +2,7 @@
 #define CONFIG_H
 
 // util.[ch] defines
-#define F_CPU 16000000         // Oszillator-Frequenz in Hz
+// #define F_CPU 16000000         // Oszillator-Frequenz in Hz
 
 // uart.[ch] defines
 #define UART_BAUD_RATE 19200
