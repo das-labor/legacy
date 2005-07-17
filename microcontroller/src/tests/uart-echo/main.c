@@ -20,10 +20,6 @@ int main (void)
 	for ( ;; ){		//for ever
 		uart_putc(uart_getc());
 
-		if( PORTC == 0x80 ) { 
-			PORTC = 0x04;
-		} else {
-			PORTC <<= 1;
-		}
+		PORTC ^= 0x04;
 	};	
 }
