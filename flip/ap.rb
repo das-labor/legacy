@@ -98,9 +98,9 @@ class APList
 		Dir.chdir(last)
 	end
 
-        def method_missing(sym,*args)
-                @apHash.send sym,*args
-        end
+	def method_missing(sym,*args)
+		@apHash.send sym,*args
+	end
 end
 
 
@@ -182,7 +182,7 @@ class AccessPoint
 		lines = ret.split("\n");
 		wi0Re  = /^\s*(\S\S:\S\S:\S\S:\S\S:\S\S:\S\S) wi0 .*flags=/;
 		ath0Re = /^\s*(\S\S:\S\S:\S\S:\S\S:\S\S:\S\S) ath0 .*flags=/;
-		ath1Re = /^\s*(\S\S:\S\S:\S\S:\S\S:\S\S:\S\S) vlan0 .*flags=/;
+		ath1Re = /^\s*(\S\S:\S\S:\S\S:\S\S:\S\S:\S\S) ath1 .*flags=/;
 		lines.each { |line|
 			wi0Clients.push  m[1] if (m = wi0Re.match(line))
 			ath0Clients.push m[1] if (m = ath0Re.match(line))
@@ -234,9 +234,11 @@ class AccessPoint
 			 Dir.mkdir( "#{dstpath}/#{@mac}", 0755 )   # will only work with superuser privs
 								   # Normal Umask for Directory creation 
 		end
+
 		if File.exists?( "#{dstpath}/#{@mac}/config.tgz" ) then
 			File.rename( "#{dstpath}/#{@mac}/config.tgz", "#{dstpath}/#{@mac}/config.tgz.old" )
 		end
+
 		execute_local( "tar -cvzf #{dstpath}/#{@mac}/config.tgz ." );
 			
 	end
