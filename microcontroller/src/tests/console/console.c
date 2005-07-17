@@ -1,0 +1,1 @@
+../../lcore/lib/console.c
