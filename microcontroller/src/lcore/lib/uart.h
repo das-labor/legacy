@@ -5,6 +5,7 @@
  * UART Library
  *
  * #define F_CPU 16000000         // Oszillator-Frequenz in Hz
+ * #define UART_INTERRUPT 1
  * #define UART_BAUD_RATE 19200
  * #define UART_RXBUFSIZE 16
  * #define UART_TXBUFSIZE 16
@@ -20,14 +21,16 @@
 
 void uart_init();
 
-char uart_getc();
-char uart_getc_nb(char *c);
-
-char * uart_getline_nb();
-
 void uart_putc(char c);
 void uart_putstr(char * str);
 void uart_putstr_P(PGM_P str);
 
+char uart_getc();
+char uart_getc_nb(char *c);		// returns 1 on success
+
+//get one Cariage return terminated line
+//echo charakters back on Uart
+//returns buffer with zero terminated line on success, 0 pointer otherwise
+char * uart_getline_nb();
 
 #endif
