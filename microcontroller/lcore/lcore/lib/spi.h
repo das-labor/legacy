@@ -1,5 +1,5 @@
-#ifndef SPI_h
-#define SPI_h
+#ifndef SPI_H
+#define SPI_H
 
 #include "config.h"
 

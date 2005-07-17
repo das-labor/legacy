@@ -9,7 +9,6 @@
 #define PORT_SPI PORTB
 #define PIN_SS PB4
 
-
 //Registers
 #define RXF0SIDH 0x00
 #define RXF0SIDL 0x01
