@@ -1,11 +1,13 @@
+
+#include "uart.h"
+
 /* USART-Init beim ATmegaXX */
+
 #ifndef F_CPU
 #define F_CPU 16000000           /* Oszillator-Frequenz in Hz */
 #endif
 #define UART_BAUD_RATE 19200
 #define UART_BAUD_CALC(UART_BAUD_RATE,F_OSC) ((F_CPU)/((UART_BAUD_RATE)*16L)-1)
-
-#define UART_LEDS           /* LED1 and LED2 toggle on tx and rx interrupt */
 
 #include <avr/io.h>
 #include <avr/signal.h>
@@ -14,7 +16,7 @@
 
 #define UART_RXBUFSIZE 16
 #define UART_TXBUFSIZE 16
-#define LINE_BUFFER_SIZE 40
+#define UART_LINE_BUFFER_SIZE 40
 
 volatile static char rxbuf[UART_RXBUFSIZE];
 volatile static char txbuf[UART_TXBUFSIZE];
@@ -132,7 +134,7 @@ unsigned char uart_getc_nb(char *c)
 //echo charakters back on Uart
 //returns buffer with zero terminated line on success, 0 pointer otherwise
 char * uart_getline_nb(){
-	static char buffer[LINE_BUFFER_SIZE];
+	static char buffer[UART_LINE_BUFFER_SIZE];
 	static char * pos = buffer;
 	char tmp;
 	while(uart_getc_nb(&tmp)){
@@ -141,7 +143,7 @@ char * uart_getline_nb(){
 			pos = buffer;   //reset pointer
 			return buffer;  //and return the buffer
 		}
-		if(pos < buffer+LINE_BUFFER_SIZE-1){ //buffer full?
+		if(pos < buffer+UART_LINE_BUFFER_SIZE-1){ //buffer full?
 			*pos++ = tmp;		//no: write character to buffer
 			uart_putc (tmp);
 		}
