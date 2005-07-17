@@ -7,6 +7,8 @@
 #include <inttypes.h>
 #include <avr/io.h>
 
+#include "util.h"
+
 int main (void)
 {	
 	DDRB = 0; 	//Port B all inputs
@@ -15,17 +17,13 @@ int main (void)
 	DDRC = 0xFF; 	//Port C all outputs
 	PORTC = 0x01;   //1 LED on to start of Patterns
 	
-	int x, delay=10000; char mode=0, ud=0;
+	int delay = 200;
+	char mode=0, ud=0;
 		
 	for ( ;; ){		//for ever
 		
-		//this is a time delay loop
-		for(x=0; x< delay; x++){
-		//The volatile qualifier tells the compiler not to optimize 
-		//it away.
-			volatile int y = 0;
-		};
-		
+		wait(delay);
+
 		if(!mode){
 			//knight rider mode
 			switch (ud){
@@ -62,13 +60,13 @@ int main (void)
 		
 		switch(PINB&0x0f){
 			case 0x0E:	//Button 1 pressed
-				if (delay<30000){
-					delay += 100;
+				if (delay < 1000){
+					delay += 10;
 				}
 				break;
 			case 0x0D:	//Button 2 pressed
-				if (delay>1000){
-					delay -= 100;
+				if (delay > 10){
+					delay -= 10;
 				}
 				break;
 			case 0x0B:	//Button 3 pressed

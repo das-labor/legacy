@@ -1,5 +1,5 @@
 PRG            = main
-OBJ            = main.o
+OBJ            = main.o util.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 
