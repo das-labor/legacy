@@ -22,7 +22,7 @@
 void spi_init();
 
 #ifdef SPI_HARDWARE
-inline unsigned char spi_data(unsigned char c){
+static inline unsigned char spi_data(unsigned char c) {
 	SPDR = c;
 	while(!(SPSR & (1<<SPIF)));
 	c = SPDR;
