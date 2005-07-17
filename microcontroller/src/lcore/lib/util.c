@@ -1,8 +1,6 @@
 #include <avr/io.h>
 
-#ifndef F_CPU
-#define F_CPU 16000000
-#endif
+#include "util.h"
 
 void wait(int ms){
 /* 	TCCR2: FOC2 WGM20 COM21 COM20 WGM21 CS22 CS21 CS20
@@ -23,5 +21,4 @@ void wait(int ms){
 		TIFR=0x80;		//reset flag
 	}
 }
-
 

@@ -2,8 +2,11 @@
 #define CAN_H
 
 /**
- * #define CAN_RXBUFSIZE 128
+ * 
  *
+ * #define CAN_INTERRUPT 1	//set this to enable interrupt driven and buffering version
+ * #define CAN_RX_BUFFER_SIZE 2	//only used for Interrupt
+ * #define CAN_TX_BUFFER_SIZE 2	//only used for Interrupt
  */
 
 typedef enum { normal, sleep, loopback, listenonly, config } mcp_mode_t ;
