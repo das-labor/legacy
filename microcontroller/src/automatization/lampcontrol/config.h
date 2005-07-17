@@ -5,14 +5,13 @@
 #define NUM_LAMPE 4
 
 // util.[ch] defines
-// lap.[ch] defines
+#define F_CPU 16000000         // Oszillator-Frequenz in Hz
+
 
 // can.[ch] defines
-#undef CAN_INTERRUPT		//set this to enable interrupt driven and buffering version
+#undef  CAN_INTERRUPT		//set this to enable interrupt driven and buffering version
 #define CAN_RX_BUFFER_SIZE 2	//only used for Interrupt
 #define CAN_TX_BUFFER_SIZE 2	//only used for Interrupt
-
-#define CAN_RXBUFSIZE 128
 
 // spi.[ch] defines
 #undef SPI_HARDWARE 
@@ -28,6 +27,7 @@
 //interrupt pin of MCP2515 for non interrupt drive can
 #define SPI_PIN_MCP_INT PD2
 	
+// lap.[ch] defines
 
 // 
 

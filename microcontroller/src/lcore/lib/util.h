@@ -4,9 +4,10 @@
 #include "config.h"
 
 /**
+ * Utility Library
+ *
  * #define F_CPU 16000000
  */
-
 
 #ifndef F_CPU
   #define F_CPU 16000000
