@@ -37,10 +37,13 @@ typedef struct{
 }pdo_message;
 
 /**
- * Known ports 
+ * Known ports and services
  */
-typedef enum { PORT_MGT=0x30, PORT_LAMPE=0x20 }             ports;
-typedef enum { FKT_MGT_PING=0x00, FKT_MGT_RESET=0x01 }      lap_mgt_fkts;
+typedef enum { PORT_MGT=0x30, PORT_LAMPE=0x20 }             		ports;
+
+typedef enum { FKT_MGT_PING=0x00, FKT_MGT_ALIVE=0x01, 
+		FKT_MGT_RESET=0x02 }					lap_mgt_fkts;
+typedef enum { FKT_LAMPE_SET=0x00, FKT_LAMPE_SETMASK=0x01 }		lap_lampe_fkts;
 
 /**
  * ServiceDataObject routinen

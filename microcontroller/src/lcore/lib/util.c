@@ -2,6 +2,7 @@
 
 #include "util.h"
 
+#ifdef ATMEGA	
 void wait(int ms){
 /* 	TCCR2: FOC2 WGM20 COM21 COM20 WGM21 CS22 CS21 CS20
 		CS22 CS21 CS20
@@ -21,4 +22,19 @@ void wait(int ms){
 		TIFR=0x80;		//reset flag
 	}
 }
+#else // XXX
+void wait(int ms){
+
+	for(;ms>0;ms--){
+ 		unsigned int i;
+		volatile char v;
+
+		for(i=F_CPU/2; i>0; i--) {
+			v++;
+		}
+	}
+	
+}
+
+#endif //ATMEGA
 
