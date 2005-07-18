@@ -15,12 +15,21 @@
 SIGNAL(SIG_OUTPUT_COMPARE0)
 {
 	static int count = 0;
+	static char z = 0;
 
 	if ( count++ > 0x40 ) {
 		count = 0;
 		PORTC ^= 0x08;
 
 		can_message *msg = can_buffer_get();
+
+		msg->addr_src  = 0x11;
+		msg->addr_dest = 0x22;
+		msg->port_src  = 0x01;
+		msg->port_dest = 0x02;
+		msg->dlc       = 4;
+		msg->data[0]   = z++;
+
 		can_transmit(msg);
 	}
 }
@@ -58,7 +67,9 @@ int main(){
 
 	while(1) {
 		can_message *msg = can_get();
-		uart_putc('!');
+
+		uart_putstr("\r\n");
+		uart_hexdump(msg, 16 );
 	}
 
 	return 0;

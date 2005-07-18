@@ -30,8 +30,8 @@
 
 // can.[ch] defines
 #define CAN_INTERRUPT 1		//set this to enable interrupt driven and buffering version
-#define CAN_RX_BUFFER_SIZE 2	//only used for Interrupt
-#define CAN_TX_BUFFER_SIZE 2	//only used for Interrupt
+#define CAN_RX_BUFFER_SIZE 8	//only used for Interrupt
+#define CAN_TX_BUFFER_SIZE 8	//only used for Interrupt
 
 
 // lap.[ch] defines
