@@ -1,7 +1,9 @@
+#include "config.h"
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdlib.h>
+
 #include "util.h"
 #include "spi.h"
 #include "can.h"
@@ -9,23 +11,17 @@
 #include "dimmer.h"
 
 #define NUM_LAMPS 4
-
+#define NUM_LAMPE 4
 #define PORT_LEDS PORTD
-
 
 #ifdef DEBUG
  #include "uart.h"
 #endif
 
-#define NUM_LAMPE 4
 
 #define stdout_putc     uart_putc
 #define stdout_putstr   uart_putstr
 #define stdout_putstr_P uart_putstr_P
-
-typedef enum { PORT_MGT=0x30, PORT_LAMPE=0x20 }             ports;
-typedef enum { FKT_MGT_PING=0x00, FKT_MGT_RESET=0x01 }      fkts_mgt;
-typedef enum { FKT_LAMPE_SET=0x00, FKT_LAMPE_SETMASK=0x01 } fkts_lampe;
 
 void set_lampe(unsigned char lampe, unsigned char val)
 {
