@@ -138,7 +138,6 @@ void message_load(can_message * msg){
 
 	spi_data( (msg->port_src << 2) | (msg->port_dest >> 4 ) );
 	spi_data( ((msg->port_dest & 0x0C) << 3) | (1<<EXIDE) | (msg->port_dest & 0x03) );
-
 	spi_data(msg->addr_src);
 	spi_data(msg->addr_dest);
 	spi_data(msg->dlc);
@@ -166,9 +165,9 @@ void message_fetch(can_message * msg){
 	tmp2 = spi_data(0);
 	msg->port_dest = ((tmp1 & 0x03) << 4) | ((tmp2 & 0x60) >> 3) | (tmp2 & 0x03);
 
-	msg->addr_src = spi_data(0);					//SID10:3
-	msg->addr_dest = spi_data(0);					//EID7:0
-	msg->dlc = spi_data(0) & 0x0F;					//DLC
+	msg->addr_src = spi_data(0);
+	msg->addr_dest = spi_data(0);
+	msg->dlc = spi_data(0) & 0x0F;	
 	for(x=0;x<msg->dlc;x++){
 		msg->data[x] = spi_data(0);
 	}
@@ -311,7 +310,6 @@ void can_init(){
 #endif //CAN_INTERRUPT
 }
 
-
 #ifdef CAN_INTERRUPT
 //returns next can message in buffer, or 0 Pointer if Buffer is empty
 can_message * can_get_nb(){
@@ -354,11 +352,13 @@ void can_transmit(can_message * msg){
 		if( (TX_HEAD != TX_TAIL) && (TX_TAIL->flags & 0x01) ){
 			TX_INT = 1;
 			message_load(TX_TAIL);
-			if(++TX_TAIL == TX_BUFFER+CAN_TX_BUFFER_SIZE) TX_TAIL = TX_BUFFER;
+			if(++TX_TAIL == TX_BUFFER+CAN_TX_BUFFER_SIZE)	
+				TX_TAIL = TX_BUFFER;
 		}
 	}
 }
-#else
+
+#else  // NON INTERRUPT VERSION 
 
 can_message RX_MESSAGE, TX_MESSAGE;
 
@@ -367,8 +367,8 @@ can_message * can_get_nb(){
 		return 0;
 	}else{
 		//So the MCP Generates an RX Interrupt
-		message_fetch(RX_MESSAGE);
-		return RX_MESSAGE;
+		message_fetch(&RX_MESSAGE);
+		return &RX_MESSAGE;
 	}
 }
 
@@ -376,18 +376,17 @@ can_message * can_get(){
 	//wait while the MCP doesn't generate an RX Interrupt
 	while(SPI_PIN_MCP_INT & (1<<SPI_PIN_MCP_INT)) { };
 	
-	message_fetch(RX_MESSAGE);
-	return RX_MESSAGE;
+	message_fetch(&RX_MESSAGE);
+	return &RX_MESSAGE;
 }
 
 	//only for compatibility with Interrupt driven Version
 can_message * can_buffer_get(){
-	return TX_MESSAGE;
+	return &TX_MESSAGE;
 }
 
 void can_transmit(can_message * msg){
-	
+	message_load(msg);
 }
 
 #endif
-
