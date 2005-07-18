@@ -5,6 +5,7 @@
 #include <avr/io.h>
 #include <avr/signal.h>
 #include <avr/interrupt.h>
+#include <stdlib.h>
 
 #include "uart.h"
 
@@ -113,6 +114,23 @@ void uart_putstr_P(PGM_P str) {
 		str++;
 	}
 }
+
+void uart_hexdump(char *buf, int len)
+{
+	unsigned char x=0, sbuf[3];
+
+	while(len--){
+		itoa(*buf++, sbuf, 16);
+		if (sbuf[1] == 0) uart_putc(' ');
+		uart_putstr(sbuf);
+		uart_putc(' ');
+		if(++x == 16) {
+			uart_putstr_P(PSTR("\r\n"));
+			x = 0;
+		}
+	}
+}
+
 
 #ifdef UART_INTERRUPT
 char uart_getc()

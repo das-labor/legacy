@@ -135,9 +135,11 @@ void message_load(can_message * msg){
 	SPI_PORT &= ~(1<<SPI_PIN_SS);
 	spi_data(WRITE);
 	spi_data(TXB0SIDH);
+
+	spi_data( (msg->port_src << 2) | (msg->port_dest >> 4 ) );
+	spi_data( ((msg->port_dest & 0x0C) << 3) | (1<<EXIDE) | (msg->port_dest & 0x03) );
+
 	spi_data(msg->addr_src);
-	spi_data(  ((msg->port_src<<2)&0x1F) |  ((msg->port_src>>1)&0x03) | (1<<EXIDE) );
-	spi_data( (msg->port_dest) | (msg->port_src<<7) );
 	spi_data(msg->addr_dest);
 	spi_data(msg->dlc);
 	for(x=0;x<msg->dlc;x++){
@@ -159,11 +161,12 @@ void message_fetch(can_message * msg){
 	SPI_PORT &= ~(1<<SPI_PIN_SS);
 	spi_data(READ);
 	spi_data(RXB0SIDH);
-	msg->addr_src = spi_data(0);					//SID10:3
 	tmp1 = spi_data(0);
+	msg->port_src = tmp1 >> 2;
 	tmp2 = spi_data(0);
-	msg->port_src = ((tmp1&0x03)<<1)|((tmp1>>2)&0x38)|(tmp2>>7);//SID2:0 : EID17:15
-	msg->port_dest = tmp2 & 0x7F; 				//EID14:8
+	msg->port_dest = ((tmp1 & 0x03) << 4) | ((tmp2 & 0x60) >> 3) | (tmp2 & 0x03);
+
+	msg->addr_src = spi_data(0);					//SID10:3
 	msg->addr_dest = spi_data(0);					//EID7:0
 	msg->dlc = spi_data(0) & 0x0F;					//DLC
 	for(x=0;x<msg->dlc;x++){
@@ -173,8 +176,6 @@ void message_fetch(can_message * msg){
 	
 	mcp_bitmod(CANINTF, (1<<RX0IF), 0x00);
 }
-
-
 #ifdef CAN_INTERRUPT
 
 static can_message RX_BUFFER[CAN_RX_BUFFER_SIZE], *volatile RX_HEAD=RX_BUFFER, *volatile RX_TAIL=RX_BUFFER;
