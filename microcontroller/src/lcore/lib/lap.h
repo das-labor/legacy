@@ -33,7 +33,7 @@ typedef struct{
 	unsigned char port_dest;
 	unsigned char dlc;
 	unsigned int  fkt_id; 
-	unsigned char data[6];	
+	char data[6];	
 }pdo_message;
 
 /**
