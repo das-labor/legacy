@@ -240,10 +240,6 @@ class CursesUI <UI
 		refreshUI;
 		
 	end
-	def foobar
-		@entryListBox.empty
-		@apList.foobar
-	end
 
 	def gather_new
 		@entryListBox.empty
