@@ -1,0 +1,2 @@
+up
+!ifconfig \$if vlan 14 vlandev sis0

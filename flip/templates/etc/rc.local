@@ -1,0 +1,3 @@
+#!/bin/sh
+ifconfig sis0 down
+. $NETSTART
