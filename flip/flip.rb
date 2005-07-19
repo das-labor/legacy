@@ -191,7 +191,7 @@ class CursesUI <UI
 		@apList.refresh;
 		apHash = @apList.apHash;
 		apHash.each_value { |ap|
-			@apListBox.add( "MACADDR: #{ap.mac} IPADDR: #{ap.ip}", ap );
+			@apListBox.add( "MAC: #{ap.mac} IP: #{ap.ip}", ap );
 		}
 		@apListBox.refresh
 	end
