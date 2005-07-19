@@ -50,26 +50,30 @@ class APList
 	def gather_new(gatpath, templates)
 		lastd = Dir.pwd
 		Dir.foreach("#{gatpath}") { |entry|
-
+			debug(entry)
+			refresh
 			array = Array.new
-			@apHash.each_value{ |ap|
-				a, b, c, d = ap.ip.split(".")
-				intip = a.to_i * 16777216 + b.to_i * 65536 + c.to_i * 256 + d.to_i
-				array.push(intip)
-			}
-			if array.nil? then
-				intip = 10 * 16777216 + 0 * 65536 + 0 * 256 + 1
+				@apHash.each_value{ |ap|
+					a, b, c, d = ap.ip.split(".")
+					intip = a.to_i * 16777216 + b.to_i * 65536 + c.to_i * 256 + d.to_i
+					array.push(intip)
+				}
+			debug("3")
+			if array[0]==nil then
+				debug("4")
+				intip = 167772161 
 				array.push(intip)
 			end
 			array.sort!
 			last = array.last
+			debug(intip)
+			debug(array[0])
 			new = last + 1
 			d = new % 256
 			c = (new >> 8) % 256
 			b = (new >> 16) % 256
 			a = new >> 24
 			dottetip = a.to_s + "." + b.to_s + "." + c.to_s + "." + d.to_s
-			
 			regx = /\S{12}\.\w{7}\.\w{3}/
 			if ( regx.match(entry) ) then 
 				IO.foreach( "#{gatpath}/" + entry ) { |f|
