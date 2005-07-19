@@ -47,9 +47,29 @@ class APList
 	# ath0: 00026f20f9b5
 	# wi0: 00026f34e3df
 
-	def gather_new(gatpath)
-		last = Dir.pwd
+	def gather_new(gatpath, templates)
+		lastd = Dir.pwd
 		Dir.foreach("#{gatpath}") { |entry|
+
+			array = Array.new
+			@apHash.each_value{ |ap|
+				a, b, c, d = ap.ip.split(".")
+				intip = a.to_i * 16777216 + b.to_i * 65536 + c.to_i * 256 + d.to_i
+				array.push(intip)
+			}
+			if array.nil? then
+				intip = 10 * 16777216 + 0 * 65536 + 0 * 256 + 1
+				array.push(intip)
+			end
+			array.sort!
+			last = array.last
+			new = last + 1
+			d = new % 256
+			c = (new >> 8) % 256
+			b = (new >> 16) % 256
+			a = new >> 24
+			dottetip = a.to_s + "." + b.to_s + "." + c.to_s + "." + d.to_s
+			
 			regx = /\S{12}\.\w{7}\.\w{3}/
 			if ( regx.match(entry) ) then 
 				IO.foreach( "#{gatpath}/" + entry ) { |f|
@@ -58,7 +78,6 @@ class APList
 					wi0 = /^wi0\:\s+(?:\S{12})/
 					ath0 = /^ath0\:\s+(?:\S{12})/
 					ath1 = /^ath1\:\s+(?:\S{12})/
-					pdir = "#{path}/../parent/"
 
 					if ( sis0.match(f) ) then 
 						array = sis0.match(f)
@@ -66,28 +85,34 @@ class APList
 						if not array.nil? then 
 							Dir.mkdir( "#{path}/#{info}", 0755 );
 							Dir.mkdir( "#{path}/#{info}/etc", 0755 );
-							File.copy( "#{pdir}/etc/hostname.sis0", "#{path}/#{info}/etc/" );
-							File.copy( "#{pdir}/etc/hostname.vlan0", "#{path}/#{info}/etc/" )
-							File.copy( "#{pdir}/etc/rc.local", "#{path}/#{info}/etc/" )
-							File.copy( "#{pdir}/etc/motd", "#{path}/#{info}/etc/" )
+							File.open( "#{templates}/etc/hostname.sis0", "r" ) do |read|
+								File.open( "#{path}/#{info}/etc/hostname.sis0" , "w" ) do |write|
+									line = read.readline
+									line.sub!(/IP-ADDRESS/ , dottetip )
+									write.puts(line)
+								end
+							end
+
+							File.copy( "#{templates}/etc/hostname.vlan0", "#{path}/#{info}/etc/" )
+							File.copy( "#{templates}/etc/rc.local", "#{path}/#{info}/etc/" )
+							File.copy( "#{templates}/etc/motd", "#{path}/#{info}/etc/" )
 							Dir.mkdir( "#{path}/#{info}/etc/ssh", 0755 )
 							`ssh-keygen -q -t rsa -f #{path}/#{info}/etc/ssh/ssh_host_dsa_key -N ''`
 							`ssh-keygen -q -t rsa -f #{path}/#{info}/etc/ssh/ssh_host_rsa_key -N ''`
 							`ssh-keygen -q -t rsa1 -f #{path}/#{info}/etc/ssh/ssh_host_key -N ''`
 							Dir.mkdir( "#{path}/#{info}/root" , 0700 )
 							Dir.mkdir( "#{path}/#{info}/root/.ssh/" , 0700 )
-							File.copy( "#{pdir}/soekris.dsa.pub", "#{path}/#{info}/root/.ssh/authorized_keys" ); 
+							File.copy( "#{templates}/soekris.dsa.pub", "#{path}/#{info}/root/.ssh/authorized_keys" ); 
 						end
-						debug( "#{pdir}" )
 					elsif ( wi0.match(f) ) then 
-						File.copy( "#{pdir}/etc/hostname.wi0", "#{path}/#{info}/etc/" );
-						File.copy( "#{pdir}/etc/bridgename.bridge0", "#{path}/#{info}/etc/" );
+						File.copy( "#{templates}/etc/hostname.wi0", "#{path}/#{info}/etc/" );
+						File.copy( "#{templates}/etc/bridgename.bridge0", "#{path}/#{info}/etc/" );
 					elsif ( ath0.match(f) ) then
-						File.copy( "#{pdir}/etc/hostname.ath0", "#{path}/#{info}/etc/" );
-						File.copy( "#{pdir}/etc/bridgename.bridge1", "#{path}/#{info}/etc/" );
+						File.copy( "#{templates}/etc/hostname.ath0", "#{path}/#{info}/etc/" );
+						File.copy( "#{templates}/etc/bridgename.bridge1", "#{path}/#{info}/etc/" );
 					elsif ( ath1.match(f) ) then 
-						File.copy( "#{pdir}/etc/hostname.ath1", "#{path}/#{info}/etc/" );
-						File.copy( "#{pdir}/etc/bridgename.bridge2", "#{path}/#{info}/etc/" );
+						File.copy( "#{templates}/etc/hostname.ath1", "#{path}/#{info}/etc/" );
+						File.copy( "#{templates}/etc/bridgename.bridge2", "#{path}/#{info}/etc/" );
 					end
 				}
 				File.delete( "#{gatpath}/" + entry )
@@ -95,7 +120,7 @@ class APList
 				next;
 			end
 		}
-		Dir.chdir(last)
+		Dir.chdir(lastd)
 	end
 
 	def method_missing(sym,*args)
