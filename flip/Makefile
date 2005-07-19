@@ -141,7 +141,9 @@ create-tmp:
 		mv tmp tmp.old ; \
 		echo '==>  creating tmp dir'; \
 		mkdir tmp ; \
+		mkdir tmp/aps ; \
 	else \
 		echo '==>  creating tmp dir'; \
 		mkdir tmp ; \
+		mkdir tmp/aps ; \
 	fi
