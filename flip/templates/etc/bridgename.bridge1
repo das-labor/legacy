@@ -1,0 +1,3 @@
+add ath0
+add vlan0
+up
