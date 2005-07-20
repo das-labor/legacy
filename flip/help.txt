@@ -8,12 +8,24 @@ c,C: show the connected clients on the selected accesspoint.
 
 l: execute a command locally on the selected accesspoint.
 
-L: execute a command locally on all accesspoints.
+L: execute a command locally on all accesspoints if enabled.
 
 r: execute a command remote on the selected accesspoint
 
-R: execute a command remote on all accesspoints.
+R: execute a command remote on all accesspoints if enabled.
 
 b,B: build the configuration of the selected accesspoint.
 
-g: retrive information about newly connected accesspoints. 
+e,E: toggle the enable flag of the selected accesspoint
+
+h,H: display this help file
+
+GUI: 
+
+In the left Window all available accesspoints are listed the following Format: 
+
+< EnabledFlag >< UpFlag >< MACADDRESS >< IPADDRESS >
+
+In the right Window the output of commands is listed. 
+
+

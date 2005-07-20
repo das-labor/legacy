@@ -92,7 +92,7 @@ class CursesUI <UI
 					execute_remote_all
 				when ?e
 					@apListBox.value.enable( !@apListBox.value.enabled? );
-					puts "Enabled: #{@apListBox.value.enabled?}"
+					#puts "Enabled: #{@apListBox.value.enabled?}"
 				when ?b, ?B
 					build_config_tgz
 					refreshAps

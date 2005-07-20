@@ -229,17 +229,17 @@ class AccessPoint
 	def clients
 		str = "wi0 Clients\n"
 			@statistics["wi0Clients"].each { |c|
-			str += c;
+			str += c + "\n";
 		}
 
 		str += "ath0 Clients\n"
 		@statistics["ath0Clients"].each { |c|
-			str += c;
+			str += c + "\n";
 		}
 
 		str += "ath1 Clients\n"
 		@statistics["ath1Clients"].each { |c|
-			str += c;
+			str += c + "\n";
 		}
 
 		return  str;
@@ -260,18 +260,18 @@ class AccessPoint
 		ath1Clients = Array.new;
 
 		lines = ret.split("\n");
-		wi0Re  = /^\s*(\S\S:\S\S:\S\S:\S\S:\S\S:\S\S) wi0 .*flags=/;
-		ath0Re = /^\s*(\S\S:\S\S:\S\S:\S\S:\S\S:\S\S) ath0 .*flags=/;
-		ath1Re = /^\s*(\S\S:\S\S:\S\S:\S\S:\S\S:\S\S) ath1 .*flags=/;
+		wi0Re  = /^\s*(\S\S:\S\S:\S\S:\S\S:\S\S:\S\S) (wi0) .*flags=/;
+		ath0Re = /^\s*(\S\S:\S\S:\S\S:\S\S:\S\S:\S\S) (ath0) .*flags=/;
+		ath1Re = /^\s*(\S\S:\S\S:\S\S:\S\S:\S\S:\S\S) (ath1) .*flags=/;
 		lines.each { |line|
 			m = wi0Re.match(line);
-			wi0Clients.push(m[0]) if !m.nil?;
+			wi0Clients.push(m[1]) if !m.nil?;
 
 			m = ath0Re.match(line)
-			ath0Clients.push(m[0]) if !m.nil? 
+			ath0Clients.push(m[1]) if !m.nil? 
 
 			m = ath1Re.match(line)
-			ath1Clients.push(m[0]) if !m.nil?
+			ath1Clients.push(m[1]) if !m.nil?
 		}
 
 		stat["wi0Clients"]  = wi0Clients;
