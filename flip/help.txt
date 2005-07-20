@@ -1,0 +1,19 @@
+HELP and Command reference for flip
+
+Command:
+
+i,I: show a basic information about the selected accesspoint.
+
+c,C: show the connected clients on the selected accesspoint.
+
+l: execute a command locally on the selected accesspoint.
+
+L: execute a command locally on all accesspoints.
+
+r: execute a command remote on the selected accesspoint
+
+R: execute a command remote on all accesspoints.
+
+b,B: build the configuration of the selected accesspoint.
+
+g: retrive information about newly connected accesspoints. 
