@@ -136,7 +136,7 @@ end
 
 
 class AccessPoint 
-	attr :statistics;
+	attr :statistics, :up;
 	attr_reader :ip, :hostname_line, :mac, :connected_clients, :client, :path;
 
 	#
@@ -147,6 +147,7 @@ class AccessPoint
 		@mac = mac;
 		@path = path + "/" + mac;
 
+		@up = false;
 		refresh
 	end
 
@@ -183,6 +184,22 @@ class AccessPoint
 				puts "Could not parse IP";
 			end
 		end
+	end
+
+	def enable(val)
+		if val then
+			File.open( @path + "/enabled", "w" ) { };
+		else
+			File.unlink( @path + "/enabled" );
+		end
+	end
+
+	def enabled?
+		return File.exists?( @path + "/enabled" );
+	end
+
+	def up?
+		return @up;
 	end
 
 	def get_clients

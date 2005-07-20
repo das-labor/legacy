@@ -55,7 +55,6 @@ class CursesUI <UI
 	def getCommand
 		mkWins if ! defined?(@apListBox)
 		updateCommandRow "Commands==> (I)nfo (C)lients (Q)uit exec-(l)ocal exec-(r)emote (B)uild-config"
-		listDir(0,1000); 
 		refreshAps;
 		finished=false; processed=false
 		while (true)
@@ -95,6 +94,9 @@ class CursesUI <UI
 					execute_remote
 				when ?R 
 					execute_remote_all
+				when ?e
+					@apListBox.value.enable( !@apListBox.value.enabled? );
+					puts "Enabled: #{@apListBox.value.enabled?}"
 				when ?b, ?B
 					build_config_tgz
 					refreshAps
@@ -158,6 +160,8 @@ class CursesUI <UI
 		@statusRow.bkgd(ATTR_NORMAL); @statusRow.refresh
 		@commandWin=BoxedWin.new(nil,freerows-1,Ncurses.COLS,Ncurses.LINES-freerows+1,0,ATTR_NORMAL)
 		@active=@apListBox
+
+		@apPanel.title( "Available Accesspoints", :LEFT );
 	end
 	
 	#
@@ -176,21 +180,6 @@ class CursesUI <UI
 	def updateCommandRow(s)
 		s="" if s.nil?
 		@commandWin.mvaddstr(0,0,s); @commandWin.clrtoeol; @commandWin.refresh
-	end
-
-	#
-	# show all available accesspoints in the left listbox and have refrence to it 
-	#
-
-	def listDir(first,last)
-		@apPanel.title("Available Access Points",:LEFT)
-		@apListBox.empty; 
-		@apList.refresh;
-		apHash = @apList.apHash;
-		apHash.each_value { |ap|
-			@apListBox.add( "MAC: #{ap.mac} IP: #{ap.ip}", ap );
-		}
-		@apListBox.refresh
 	end
 
 	#
