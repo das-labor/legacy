@@ -11,12 +11,7 @@ require 'ap.rb'
 #
 
 def check_new_aps( apList )
-	usedIps = Array.new;
-
-	apList.each_value { |ap|
-		usedIps += ap.ip;
-	}
-
+		apList.gather_new( "/tftpboot", "config/templates"  )
 end
 
 ###############################################################################
@@ -60,12 +55,14 @@ while true do
 	apList.refresh;
 
 	puts "Cheking for APs ..."
-#	check_new_aps(apList);
+	check_new_aps(apList);
 
 	puts "Polling Statistics"
 	poll_statistics(apList);
 
 	puts "Saving Statistics"
 	save_statistics(apList);
+
+	sleep 1
 end
 

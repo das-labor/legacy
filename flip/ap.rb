@@ -17,8 +17,12 @@ class APList
 			# skip non MAC entries
 			if not (/\S{6}/ =~ entry) then next; end
 
-			ap = AccessPoint.new(@path, entry);
-			apHash[ap.mac] = ap;
+			if @apHash.has_key?(entry) then
+				@apHash[entry].refresh;
+			else
+				ap = AccessPoint.new(@path, entry);
+				@apHash[ap.mac] = ap;
+			end
 		}
 	end
 
@@ -50,7 +54,6 @@ class APList
 	def gather_new(gatpath, templates)
 		lastd = Dir.pwd
 		Dir.foreach("#{gatpath}") { |entry|
-			debug(entry)
 			refresh
 			array = Array.new
 				@apHash.each_value{ |ap|
@@ -58,16 +61,12 @@ class APList
 					intip = a.to_i * 16777216 + b.to_i * 65536 + c.to_i * 256 + d.to_i
 					array.push(intip)
 				}
-			debug("3")
 			if array[0]==nil then
-				debug("4")
 				intip = 167772161 
 				array.push(intip)
 			end
 			array.sort!
 			last = array.last
-			debug(intip)
-			debug(array[0])
 			new = last + 1
 			d = new % 256
 			c = (new >> 8) % 256
@@ -144,6 +143,11 @@ class AccessPoint
 	def initialize(path, mac)
 		@mac = mac;
 		@path = path + "/" + mac;
+
+		refresh
+	end
+
+	def refresh
 		read_hostname
 	end
 

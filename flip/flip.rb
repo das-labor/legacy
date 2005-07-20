@@ -97,9 +97,6 @@ class CursesUI <UI
 					execute_remote_all
 				when ?b, ?B
 					build_config_tgz
-				when ?g
-					gather_new
-					@apList.refresh
 					listDir(0,1000)
 					refreshUI
 				when KEY_ENTER, 13 # Enter
@@ -241,9 +238,9 @@ class CursesUI <UI
 		
 	end
 
-	def gather_new
-		@entryListBox.empty
-		@apList.gather_new( "/tftpboot", "config/templates"  )
+	def refreshAps
+		@apHash.refresh
+		listDir(0,1000); 
 	end	
 
 	#
