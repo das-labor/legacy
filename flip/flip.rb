@@ -56,8 +56,10 @@ class CursesUI <UI
 		mkWins if ! defined?(@apListBox)
 		updateCommandRow "Commands==> (I)nfo (C)lients (Q)uit exec-(l)ocal exec-(r)emote (B)uild-config"
 		listDir(0,1000); 
+		refreshAps;
 		finished=false; processed=false
 		while (true)
+			refreshAps;
 			break if finished
 			processed=false
 			#updateStatusRow(@active.key)
@@ -81,11 +83,9 @@ class CursesUI <UI
 					selectListBox(@entryListBox)
 				when ?i, ?I
 					showMessage ( "Current selected AP information" ); 
-					refreshUI; 
 					showAPInfo; 
 				when ?c, ?C
 					showMessage ( "Current Clients on AP" ); 
-					refreshUI;
 					showAPClients;
 				when ?l
 					execute_local
@@ -97,11 +97,11 @@ class CursesUI <UI
 					execute_remote_all
 				when ?b, ?B
 					build_config_tgz
-					listDir(0,1000)
-					refreshUI
+					refreshAps
 				when KEY_ENTER, 13 # Enter
 					debug("Enter. Selected==#{@apListBox.selected}")
 				end
+				refreshUI
 			else (@active==@entryListBox)
 				case c
 				when 9 # TAB 
@@ -239,8 +239,15 @@ class CursesUI <UI
 	end
 
 	def refreshAps
-		@apHash.refresh
-		listDir(0,1000); 
+		@apList.refresh
+
+		apHash = @apList.apHash;
+		apHash.each_value { |ap|
+			next if @apListBox.has_value?(ap);
+
+			@apListBox.add( "MAC: #{ap.mac} IP: #{ap.ip}", ap );
+		}
+		@apListBox.refresh
 	end	
 
 	#
@@ -250,14 +257,13 @@ class CursesUI <UI
 	def execute_local
 		curAp = @apListBox.value;
 		cmd = getVal("exec-local in #{curAp.mac}"); 
-		@entryListBox.empty
-		a = curAp.execute_local(cmd).split( "\n" ) if cmd != "";
+		return if cmd.nil? or cmd == "";
 
+		a = curAp.execute_local(cmd).split( "\n" );
+		@entryListBox.empty
 		a.each { |line|
 			@entryListBox.add( "#{line}", {});
 		}
-		
-		refreshUI; 
 	end
 
 	#
@@ -267,12 +273,13 @@ class CursesUI <UI
 	def execute_remote
 		curAp = @apListBox.value;
 		cmd = getVal("exec-remote on #{curAp.ip}");
+		return if cmd.nil? or cmd == "";
+
+		a = curAp.execute_remote(cmd).split( "\n" );
 		@entryListBox.empty
-		a = curAp.execute_remote(cmd).split( "\n" ) if cmd != "";
 		a.each { |line|
 			@entryListBox.add( "#{line}", {});
 		}
-		refreshUI;
 	end
 
 	#
