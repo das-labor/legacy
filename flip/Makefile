@@ -7,7 +7,7 @@ SHELL= /bin/sh
 PERL= /usr/bin/perl
 SUDO= /usr/bin/sudo
 
-install: check-files check-templates create-tmp ruby-check
+install: check-files check-templates create-tmp ruby-check tools-check
 	@echo '==> intalling flip ...'
 
 
@@ -23,6 +23,15 @@ ruby-check:
 		echo '==>  ruby-ncurses found'; \
 	else \
 		echo '==>  ruby-ncurses not found'; \
+		exit 1; \
+	fi
+
+tools-check:
+	@echo '==> checking fping support'
+	@if `pkg_info | grep fping > /dev/null 2>&1`; then \
+		echo '==>  fping found'; \
+	else \
+		echo '==>  fping not found'; \
 		exit 1; \
 	fi
 
