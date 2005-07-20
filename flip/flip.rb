@@ -81,11 +81,7 @@ class CursesUI <UI
 					next if @entryListBox.items.length==0
 					selectListBox(@entryListBox)
 				when ?i, ?I
-					showMessage ( "Current selected AP information" ); 
 					showAPInfo; 
-				when ?c, ?C
-					showMessage ( "Current Clients on AP" ); 
-					showAPClients;
 				when ?l
 					execute_local
 				when ?L
@@ -232,9 +228,11 @@ class CursesUI <UI
 
 		apHash = @apList.apHash;
 		apHash.each_value { |ap|
-			next if @apListBox.has_value?(ap);
-
-			@apListBox.add( "MAC: #{ap.mac} IP: #{ap.ip}", ap );
+			if !@apListBox.has_value?(ap) then
+				@apListBox.add( ap.status_line, ap );
+			else 
+				@apListBox.change( ap.status_line, ap)
+			end
 		}
 		@apListBox.refresh
 	end	
@@ -314,23 +312,12 @@ class CursesUI <UI
 	#
 
 	def showAPInfo
+
 		curAP = @apListBox.value;
 		@entryListBox.empty
-		a = curAP.info.split( "\n" );
-		a.each { |line|
-			@entryListBox.add( "#{line}", {});
-		}
-		@entryListBox.refresh;
-	end
-	
-	#
-	# show the connected clients on the selected accesspoint
-	# 
 
-	def showAPClients
-		curAP = @apListBox.value;
-                @entryListBox.empty
-		a = curAP.clients.split( "\n" );
+		curAP.load_statistics;
+		a = curAP.info.split( "\n" );
 		a.each { |line|
 			@entryListBox.add( "#{line}", {});
 		}

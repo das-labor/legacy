@@ -32,6 +32,7 @@ class APList
 	def execute_local_all(cmd)
 		ret = Hash.new;
 		@apHash.each_value{ |ap|
+			next if !ap.enabled?
 			ret[ap.mac] = ap.execute_local(cmd);
 		}
 		return ret;
@@ -40,6 +41,7 @@ class APList
 	def execute_remote_all(cmd)
 		ret = Hash.new;
 		@apHash.each_value{ |ap|
+			next if !ap.enabled?
 			ret[ap.ip] = ap.execute_remote(cmd);
 		}
 		return ret;
@@ -136,7 +138,7 @@ end
 
 
 class AccessPoint 
-	attr :statistics, :up;
+	attr :statistics;
 	attr_reader :ip, :hostname_line, :mac, :connected_clients, :client, :path;
 
 	#
@@ -147,7 +149,7 @@ class AccessPoint
 		@mac = mac;
 		@path = path + "/" + mac;
 
-		@up = false;
+		up(false);
 		refresh
 	end
 
@@ -156,13 +158,14 @@ class AccessPoint
 	end
 
 	def save_statistics
+		puts "dsa #{@statistics}"
 		File.open( @path + "/statistics.dump", "w" ) { |f|
-			Marshal.dump(@statistics, f);
+			f.write( Marshal.dump(@statistics) );
 		}
 	end
 
 	def load_statistics
-		File.open( @path + "/statistics.dump", "r" ) {
+		File.open( @path + "/statistics.dump", "r+" ) { |f|
 			@statistics = Marshal.load(f);
 		}
 	end
@@ -190,32 +193,56 @@ class AccessPoint
 		if val then
 			File.open( @path + "/enabled", "w" ) { };
 		else
-			File.unlink( @path + "/enabled" );
+			File.unlink( @path + "/enabled" ) if enabled?;
 		end
 	end
 
 	def enabled?
-		return File.exists?( @path + "/enabled" );
+		return File.exists?( @path + "/enabled" ) && File.exists?( "/tftpboot/" + @mac + "/config.tgz" );
+	end
+
+	def up(val)
+		if val then
+			File.open( @path + "/up", "w" ) { };
+		else 
+			File.unlink( @path + "/up" ) if up?;
+		end
 	end
 
 	def up?
-		return @up;
+		return File.exists?( @path + "/up" );
 	end
 
-	def get_clients
-		return execute_remote( "brconfig bridge0 " ) 
-	end
-	
-	def get_basic_information
-		return execute_remote( "hostname; uptime;" );
+	def status_line
+			
+			str =  enabled? ? "  " : "!E";
+			str += up? ? "  " : "!U";
+
+			str += " MAC: #{@mac} IP: #{@ip}";
+			return str;
 	end
 
 	def info
-		return get_basic_information;
+		return clients; 
 	end
 
 	def clients
-		return get_clients;
+		str = "wi0 Clients\n"
+			@statistics["wi0Clients"].each { |c|
+			str += c;
+		}
+
+		str += "ath0 Clients\n"
+		@statistics["ath0Clients"].each { |c|
+			str += c;
+		}
+
+		str += "ath1 Clients\n"
+		@statistics["ath1Clients"].each { |c|
+			str += c;
+		}
+
+		return  str;
 	end
 
 	#
@@ -237,9 +264,14 @@ class AccessPoint
 		ath0Re = /^\s*(\S\S:\S\S:\S\S:\S\S:\S\S:\S\S) ath0 .*flags=/;
 		ath1Re = /^\s*(\S\S:\S\S:\S\S:\S\S:\S\S:\S\S) ath1 .*flags=/;
 		lines.each { |line|
-			wi0Clients.push  m[1] if (m = wi0Re.match(line))
-			ath0Clients.push m[1] if (m = ath0Re.match(line))
-			ath1Clients.push m[1] if (m = ath1Re.match(line))
+			m = wi0Re.match(line);
+			wi0Clients.push(m[0]) if !m.nil?;
+
+			m = ath0Re.match(line)
+			ath0Clients.push(m[0]) if !m.nil? 
+
+			m = ath1Re.match(line)
+			ath1Clients.push(m[0]) if !m.nil?
 		}
 
 		stat["wi0Clients"]  = wi0Clients;
@@ -274,6 +306,9 @@ class AccessPoint
 				pf[m[1]]["bytes_out"] += m[8].to_i;
 			end
 		}
+
+		@statistics = stat;
+
 		return stat
 	end
 
@@ -314,8 +349,7 @@ class AccessPoint
 	# 
 
 	def execute_remote( cmd )
-#		return `ssh -l root -i config/templates/soekris.dsa #{ip} "#{cmd}"`;
-		return "haha, does not work!";
+		return `ssh -l root -i config/templates/soekris.dsa #{ip} "#{cmd}"`;
 	end
 
 private

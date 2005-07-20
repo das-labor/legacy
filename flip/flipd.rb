@@ -10,21 +10,36 @@ require 'ap.rb'
 # get all new accesspoints 
 #
 
-def check_new_aps( apList )
-		apList.gather_new( "/tftpboot", "config/templates"  )
+def check_aps( apList )
+	apList.gather_new( "/tftpboot", "config/templates"  )
+
+	ips = Array.new;
+	apList.apHash.each_value { |ap|
+		ips.push(ap.ip);
+	}
+	
+	str = ips.join(" ");
+	lines = `fping -a -A #{str}`
+	
+	lines.each { |line|
+		line.chomp!
+		puts "#{line} is alive"
+		
+		apList.apHash.each_value { |ap|
+			ap.up(true) if ap.ip == line;
+		}
+	}
 end
 
 ###############################################################################
 # poll the status from the access points and return them periodicly
 def poll_statistics( apList )
 	apList.apHash.each_value { |ap|
-		stat = ap.collect_statistics;
-#		ap.statistics = stat;
-#		puts stat["wi0Clients"];
-#		puts stat["ath0Clients"];
-#	 	puts stat["ath1Clients"];
+		next if !ap.up? || !ap.enabled?
 
-#		puts stat["pf"]["PASS: IN ALL on sis0"]["bytes"];
+		puts "Polling #{ap.ip}"
+		stat = ap.collect_statistics;
+		ap.save_statistics;
 	}
 end
 
@@ -34,12 +49,6 @@ end
 def load_statistics( apList ) 
 	apList.apHash.each_value { |ap|
 		ap.load_statistics;
-	}
-end
-
-def save_statistics( apList ) 
-	apList.apHash.each_value { |ap|
-		ap.save_statistics;
 	}
 end
 
@@ -55,13 +64,10 @@ while true do
 	apList.refresh;
 
 	puts "Cheking for APs ..."
-	check_new_aps(apList);
+	check_aps(apList);
 
 	puts "Polling Statistics"
 	poll_statistics(apList);
-
-	puts "Saving Statistics"
-	save_statistics(apList);
 
 	sleep 1
 end

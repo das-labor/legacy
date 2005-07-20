@@ -220,6 +220,15 @@ class ListBox < BoxedWin
 		else @items.push([arg,arg2])
 		end
 	end
+	# This is a ugly, (year, really ugly API) function
+	def change( key, value)
+		@items.each { |item|
+			if item[1] == value then
+				item[0] = key 
+				return 
+			end
+		}
+	end
 	# selected item's key and value
 	def key; return @items.size>0 ? @items[@selected][0] : nil end
 	def value; return @items.size>0 ? @items[@selected][1] : nil end
