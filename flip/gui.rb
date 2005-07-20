@@ -223,6 +223,18 @@ class ListBox < BoxedWin
 	# selected item's key and value
 	def key; return @items.size>0 ? @items[@selected][0] : nil end
 	def value; return @items.size>0 ? @items[@selected][1] : nil end
+	def has_key?(key) 
+		@items.each { |item|
+			return true if key == item[0] 
+		}
+		return false;
+	end
+	def has_value?(val)
+		@items.each { |item|
+			return true if val == item[1] 
+		}
+		return false;
+	end
 	def empty
 		@items=[]; @selected=0; @first=0
 	end

@@ -3,6 +3,9 @@
 # Classes File for ap specific methods
 #
 
+require 'ftools'
+
+
 class APList
 	attr_reader :path, :apHash, :info;
 
@@ -294,7 +297,8 @@ class AccessPoint
 	# 
 
 	def execute_remote( cmd )
-		return `ssh -l root -i soekris.dsa #{ip} "#{cmd}"`;
+#		return `ssh -l root -i config/templates/soekris.dsa #{ip} "#{cmd}"`;
+		return "haha, does not work!";
 	end
 
 private
