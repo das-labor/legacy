@@ -5,7 +5,7 @@
 #include "util.h"
 #include "spi.h"
 
-// #include "mcp2515.inc"
+//#include "mcp2515.inc"
 
 //Registers
 #define RXF0SIDH 0x00
@@ -101,6 +101,21 @@
 #define RX_STATUS 0xB0
 #define BIT_MODIFY 0x05
 
+typedef struct{
+ can_message msg;
+ unsigned char flags;
+}can_message_x;
+
+/* MCP */
+void mcp_reset();
+void mcp_write(unsigned char reg, unsigned char data);
+void mcp_write_b(unsigned char reg, unsigned char *buf, unsigned char len);
+unsigned char mcp_read(unsigned char reg);
+void mcp_read_b(unsigned char reg, unsigned char *buf, unsigned char len);
+void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val);
+unsigned char mcp_status();
+unsigned char mcp_rx_status();
+
 // Functions
 
 inline unsigned char mcp_rx_status(){
@@ -129,20 +144,20 @@ void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val){
 }
 
 //load a message to mcp2515 and start transmission
-void message_load(can_message * msg){
+void message_load(can_message_x * msg){
 	unsigned char x;
 	
 	SPI_PORT &= ~(1<<SPI_PIN_SS);
 	spi_data(WRITE);
 	spi_data(TXB0SIDH);
 
-	spi_data( (msg->port_src << 2) | (msg->port_dest >> 4 ) );
-	spi_data( ((msg->port_dest & 0x0C) << 3) | (1<<EXIDE) | (msg->port_dest & 0x03) );
-	spi_data(msg->addr_src);
-	spi_data(msg->addr_dest);
-	spi_data(msg->dlc);
-	for(x=0;x<msg->dlc;x++){
-		spi_data(msg->data[x]);
+	spi_data( (msg->msg.port_src << 2) | (msg->msg.port_dest >> 4 ) );
+	spi_data( ((msg->msg.port_dest & 0x0C) << 3) | (1<<EXIDE) | (msg->msg.port_dest & 0x03) );
+	spi_data(msg->msg.addr_src);
+	spi_data(msg->msg.addr_dest);
+	spi_data(msg->msg.dlc);
+	for(x=0;x<msg->msg.dlc;x++){
+		spi_data(msg->msg.data[x]);
 	}
 	SPI_PORT |= (1<<SPI_PIN_SS);
 	SPI_PORT &= ~(1<<SPI_PIN_SS);
@@ -153,7 +168,7 @@ void message_load(can_message * msg){
 }
 
 //get a message from mcp2515 and disable RX interrupt Condition
-void message_fetch(can_message * msg){
+void message_fetch(can_message_x * msg){
 	unsigned char tmp1, tmp2;
 	unsigned char x;
 
@@ -161,15 +176,15 @@ void message_fetch(can_message * msg){
 	spi_data(READ);
 	spi_data(RXB0SIDH);
 	tmp1 = spi_data(0);
-	msg->port_src = tmp1 >> 2;
+	msg->msg.port_src = tmp1 >> 2;
 	tmp2 = spi_data(0);
-	msg->port_dest = ((tmp1 & 0x03) << 4) | ((tmp2 & 0x60) >> 3) | (tmp2 & 0x03);
+	msg->msg.port_dest = ((tmp1 & 0x03) << 4) | ((tmp2 & 0x60) >> 3) | (tmp2 & 0x03);
 
-	msg->addr_src = spi_data(0);
-	msg->addr_dest = spi_data(0);
-	msg->dlc = spi_data(0) & 0x0F;	
-	for(x=0;x<msg->dlc;x++){
-		msg->data[x] = spi_data(0);
+	msg->msg.addr_src = spi_data(0);
+	msg->msg.addr_dest = spi_data(0);
+	msg->msg.dlc = spi_data(0) & 0x0F;	
+	for(x=0;x<msg->msg.dlc;x++){
+		msg->msg.data[x] = spi_data(0);
 	}
 	SPI_PORT |= (1<<SPI_PIN_SS);
 	
@@ -177,8 +192,8 @@ void message_fetch(can_message * msg){
 }
 #ifdef CAN_INTERRUPT
 
-static can_message RX_BUFFER[CAN_RX_BUFFER_SIZE], *volatile RX_HEAD=RX_BUFFER, *volatile RX_TAIL=RX_BUFFER;
-static can_message TX_BUFFER[CAN_TX_BUFFER_SIZE], *volatile TX_HEAD=TX_BUFFER, *volatile TX_TAIL=TX_BUFFER;
+static can_message_x RX_BUFFER[CAN_RX_BUFFER_SIZE], *volatile RX_HEAD=RX_BUFFER, *volatile RX_TAIL=RX_BUFFER;
+static can_message_x TX_BUFFER[CAN_TX_BUFFER_SIZE], *volatile TX_HEAD=TX_BUFFER, *volatile TX_TAIL=TX_BUFFER;
 static volatile unsigned char TX_INT;
 
 SIGNAL(SIG_INTERRUPT0) {
@@ -253,7 +268,7 @@ void mcp_read_b(unsigned char reg, unsigned char *buf, unsigned char len){
 
 
 /* Management */
-void mcp_setmode( mcp_mode_t mode ) {
+void can_setmode( can_mode_t mode ) {
 	unsigned char val = mode << 5;  
 	val |= 0x04;  // CLKEN
 
@@ -261,7 +276,7 @@ void mcp_setmode( mcp_mode_t mode ) {
 }
 
 
-void mcp_setfilter() {
+void can_setfilter() {
 	//RXM1   RXM0
 	//  0      0     receive matching filter
 	//  0      1     " only 11bit Identifier
@@ -280,8 +295,8 @@ void can_init(){
 	// 0x01 : 125kbit/8MHz
 	// 0x03 : 125kbit/16MHz
 	
-	// 100kbps 
-	mcp_write( CNF1, 0x40 | 0x01 );
+	// 125kbps 
+	mcp_write( CNF1, 0x40 | 0x03 );
 	mcp_write( CNF2, 0xf1 );
 	mcp_write( CNF3, 0x05 );
 
@@ -289,20 +304,22 @@ void can_init(){
 	// this only configures the INT Output of the mcp2515, not the int on the Atmel
 	mcp_write( CANINTE, (1<<RX0IE) | (1<<TX0IE) );
 
-	mcp_setfilter();
-	mcp_setmode(normal);
+	can_setfilter();
+	can_setmode(normal);
 
 #ifdef CAN_INTERRUPT
 	// configure IRQ
 	// this only configures the INT Output of the mcp2515, not the int on the Atmel
 	mcp_write( CANINTE, (1<<RX0IE) | (1<<TX0IE) );
+	
 	//this turns on INT0 on the Atmel
 #ifdef ATMEGA	
 	GICR |= (1<<INT0);
-#else
+#else  //ATMEGA
 	MCUCR |=  (1<<ISC01);
 	GIMSK |= (1<<INT0);
 #endif //ATMEGA
+
 #else  //CAN_INTERRUPT
 	// configure IRQ
 	// this only configures the INT Output of the mcp2515, not the int on the Atmel
@@ -313,38 +330,39 @@ void can_init(){
 #ifdef CAN_INTERRUPT
 //returns next can message in buffer, or 0 Pointer if Buffer is empty
 can_message * can_get_nb(){
-	can_message *p;
+	can_message_x *p;
 	if(RX_HEAD == RX_TAIL){
 		return 0;
 	}else{
 		p = RX_TAIL;
 		if(++RX_TAIL == RX_BUFFER+CAN_RX_BUFFER_SIZE) RX_TAIL = RX_BUFFER;
-		return p;
+		return &(p->msg);
 	}
 }
 
 can_message * can_get(){
-	can_message *p;
+	can_message_x *p;
 
 	while(RX_HEAD == RX_TAIL) { };
 
 	p = RX_TAIL;
 	if(++RX_TAIL == RX_BUFFER+CAN_RX_BUFFER_SIZE) RX_TAIL = RX_BUFFER;
 
-	return p;
+	return &(p->msg);
 }
 
 //returns pointer to the next can TX buffer
 can_message * can_buffer_get(){
-	can_message *p;
+	can_message_x *p;
 	p = TX_HEAD;
 	p->flags = 0;
 	if(++TX_HEAD == TX_BUFFER+CAN_TX_BUFFER_SIZE) TX_HEAD = TX_BUFFER;
-	return p;
+	return &(p->msg);
 }
 
 //start transmitting can messages, and mark message msg as transmittable
-void can_transmit(can_message * msg){
+void can_transmit(can_message* msg2){
+	can_message_x* msg=(can_message_x*)msg2;
 	if(msg){
 		msg->flags |= 0x01;
 	}
@@ -360,33 +378,34 @@ void can_transmit(can_message * msg){
 
 #else  // NON INTERRUPT VERSION 
 
-can_message RX_MESSAGE, TX_MESSAGE;
+can_message_x RX_MESSAGE, TX_MESSAGE;
 
 can_message * can_get_nb(){
-	if(SPI_PIN_MCP_INT & (1<<SPI_PIN_MCP_INT)){
+	//check the pin, that the MCP's Interrup output connects to
+	if(SPI_REG_PIN_MCP_INT & (1<<SPI_PIN_MCP_INT)){
 		return 0;
 	}else{
 		//So the MCP Generates an RX Interrupt
 		message_fetch(&RX_MESSAGE);
-		return &RX_MESSAGE;
+		return &(RX_MESSAGE.msg);
 	}
 }
 
 can_message * can_get(){
 	//wait while the MCP doesn't generate an RX Interrupt
-	while(SPI_PIN_MCP_INT & (1<<SPI_PIN_MCP_INT)) { };
+	while(SPI_REG_PIN_MCP_INT & (1<<SPI_PIN_MCP_INT)) { };
 	
 	message_fetch(&RX_MESSAGE);
-	return &RX_MESSAGE;
+	return &(RX_MESSAGE.msg);
 }
 
 	//only for compatibility with Interrupt driven Version
 can_message * can_buffer_get(){
-	return &TX_MESSAGE;
+	return &(TX_MESSAGE.msg);
 }
 
 void can_transmit(can_message * msg){
-	message_load(msg);
+	message_load((can_message_x*)msg);
 }
 
 #endif

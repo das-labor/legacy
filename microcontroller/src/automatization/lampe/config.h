@@ -25,6 +25,7 @@
 #define SPI_PIN_SS PB4		// for slave select
 
 //interrupt pin of MCP2515 for non interrupt drive can
+#define SPI_REG_PIN_MCP_INT PIND
 #define SPI_PIN_MCP_INT PD2
 	
 

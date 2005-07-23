@@ -6,9 +6,10 @@
 
 // uart.[ch] defines
 #define UART_INTERRUPT 1
-#define UART_BAUD_RATE 19200
+// Buffers only for Interrupts!!
 #define UART_RXBUFSIZE 16
 #define UART_TXBUFSIZE 16
+#define UART_BAUD_RATE 19200
 #define UART_LINE_BUFFER_SIZE 40
 #define UART_LEDS 1
 
@@ -25,11 +26,12 @@
 #define SPI_PIN_SS PB4		// for slave select
 
 //interrupt pin of MCP2515 for non interrupt drive can
+#define SPI_REG_PIN_MCP_INT PIND
 #define SPI_PIN_MCP_INT PD2
 	
 
 // can.[ch] defines
-#define CAN_INTERRUPT 1		//set this to enable interrupt driven and buffering version
+//#define CAN_INTERRUPT 1		//set this to enable interrupt driven and buffering version
 #define CAN_RX_BUFFER_SIZE 8	//only used for Interrupt
 #define CAN_TX_BUFFER_SIZE 8	//only used for Interrupt
 
