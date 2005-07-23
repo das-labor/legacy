@@ -12,7 +12,6 @@
  * "inherits" from can_message 
  */
 typedef struct{
-	unsigned char flags;
 	unsigned char addr_src;
 	unsigned char addr_dest;
 	unsigned char port_src;
@@ -26,7 +25,6 @@ typedef struct{
  * "inherits" from can_message 
  */
 typedef struct{
-	unsigned char flags;
 	unsigned char addr_src;
 	unsigned char addr_dest;
 	unsigned char port_src;

@@ -56,7 +56,7 @@ int main(){
 	uart_init();
 	spi_init();
 	can_init();
-	mcp_setmode(normal);
+	can_setmode(loopback);
 
 	sei();
 	DDRC = 0xff;
