@@ -287,16 +287,33 @@ void can_setfilter() {
 
 
 /*******************************************************************/
+void delayloop(){
+	unsigned char x;
+	for(x=0;x<255;x++){
+		asm volatile ("nop");
+	}
+
+}
+
 void can_init(){
 	mcp_reset();
 	
-	wait( 1 );
+	delayloop();
 	
 	// 0x01 : 125kbit/8MHz
 	// 0x03 : 125kbit/16MHz
+
+#if F_CPU == 16000000
+#define CNF1_T 0x03
+#elif F_CPU == 8000000
+#define CNF1_T 0x01
+#else
+#error Can Baudrate is only defined for 8 and 16 MHz
+#endif
+	
 	
 	// 125kbps 
-	mcp_write( CNF1, 0x40 | 0x03 );
+	mcp_write( CNF1, 0x40 | CNF1_T );
 	mcp_write( CNF2, 0xf1 );
 	mcp_write( CNF3, 0x05 );
 

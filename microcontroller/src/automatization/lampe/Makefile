@@ -1,5 +1,5 @@
 PRG            = lampe
-OBJ            = can.o main.o util.o spi.o dimmer.o
+OBJ            = can.o main.o spi.o dimmer.o
 MCU_TARGET     = at90s2313
 OPTIMIZE       = -Os -fshort-enums
 

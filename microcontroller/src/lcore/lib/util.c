@@ -2,7 +2,7 @@
 
 #include "util.h"
 
-#ifdef ATMEGA	
+#ifdef UTIL_TIMER_HW
 void wait(int ms){
 /* 	TCCR2: FOC2 WGM20 COM21 COM20 WGM21 CS22 CS21 CS20
 		CS22 CS21 CS20
@@ -27,14 +27,13 @@ void wait(int ms){
 
 	for(;ms>0;ms--){
  		unsigned int i;
-		volatile char v;
 
-		for(i=F_CPU/2; i>0; i--) {
-			v++;
+		for(i=65535; i>0; i--) {
+			asm volatile("nop");
 		}
 	}
 	
 }
 
-#endif //ATMEGA
+#endif //UTIL_TIMER_HW
 

@@ -29,7 +29,7 @@ void spi_init(){
 
 #ifndef SPI_HARDWARE
 unsigned char spi_data(unsigned char c){
-	unsigned char x, d;
+	unsigned char x, d=d;
 	for(x=0;x<8;x++){
 		if(c & 0x80){
 			SPI_PORT |= (1<<SPI_PIN_MOSI);
@@ -38,7 +38,9 @@ unsigned char spi_data(unsigned char c){
 		}
 		SPI_PORT |= (1<<SPI_PIN_SCK);
 		d<<=1;
-		d |= (SPI_PIN & (1<<SPI_PIN_MISO))?1:0;
+		if(SPI_PIN & (1<<SPI_PIN_MISO)){
+			d|=1;
+		}
 		SPI_PORT &= ~(1<<SPI_PIN_SCK);
 		c<<=1;
 	}

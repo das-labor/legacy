@@ -24,15 +24,15 @@
 #define SPI_PIN_SCK PB7
 #define SPI_PIN_SS PB4		// for slave select
 
-//interrupt pin of MCP2515 for non interrupt drive can
-#define SPI_REG_PIN_MCP_INT PIND
-#define SPI_PIN_MCP_INT PD2
-	
 
 // can.[ch] defines
 #undef  CAN_INTERRUPT		//set this to enable interrupt driven and buffering version
 #define CAN_RX_BUFFER_SIZE 2	//only used for Interrupt
 #define CAN_TX_BUFFER_SIZE 2	//only used for Interrupt
+
+//interrupt pin of MCP2515 for non interrupt driven can
+#define SPI_REG_PIN_MCP_INT PIND
+#define SPI_PIN_MCP_INT PD2
 
 
 // lap.[ch] defines
