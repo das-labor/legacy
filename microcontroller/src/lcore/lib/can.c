@@ -102,8 +102,8 @@
 #define BIT_MODIFY 0x05
 
 typedef struct{
- can_message msg;
- unsigned char flags;
+	unsigned char flags;
+	can_message msg;
 }can_message_x;
 
 /* MCP */
