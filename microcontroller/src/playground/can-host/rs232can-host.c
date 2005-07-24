@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "uart-host.h"
+#include "uart.h"
 #include "rs232can.h"
 
 
@@ -82,6 +82,8 @@ rs232can_msg * rs232can_can2pkt(can_message *msg)
 {
 	static rs232can_msg out_msg;
 	
+	msg->flags = 0x01;			// ready to send
+
 	out_msg.cmd = RS232CAN_PKT;
 	out_msg.len = sizeof(can_message);
 	
