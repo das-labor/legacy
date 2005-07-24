@@ -25,7 +25,7 @@ void rs232can_reset();
 rs232can_msg * rs232can_get();
 void rs232can_put(rs232can_msg *msg);
 
-void rs232can_setmode(can_mode_t mode);
+void rs232can_setmode(mcp_mode_t mode);
 can_message *  rs232can_pkt2can(rs232can_msg *msg);
 rs232can_msg * rs232can_can2pkt(can_message *msg);
 
