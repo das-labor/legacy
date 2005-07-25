@@ -1,8 +1,9 @@
 #include <avr/io.h>
 
 #include "util.h"
-
+#include "config.h"
 #ifdef UTIL_TIMER_HW
+
 void wait(int ms){
 /* 	TCCR2: FOC2 WGM20 COM21 COM20 WGM21 CS22 CS21 CS20
 		CS22 CS21 CS20
