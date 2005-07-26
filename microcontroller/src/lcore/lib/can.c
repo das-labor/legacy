@@ -357,7 +357,7 @@ can_message * can_get_nb(){
 	}
 }
 
-can_message * can_get(){
+can_message * can_get(){ //XXX Vermeiden, das Messages überschrieben werden bevor benutzt
 	can_message_x *p;
 
 	while(RX_HEAD == RX_TAIL) { };
@@ -379,7 +379,7 @@ can_message * can_buffer_get(){
 
 //start transmitting can messages, and mark message msg as transmittable
 void can_transmit(can_message* msg2){
-	can_message_x* msg=(can_message_x*)msg2;
+	can_message_x* msg=(can_message_x*)(((char*) msg2)-1);
 	if(msg){
 		msg->flags |= 0x01;
 	}
