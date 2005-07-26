@@ -102,8 +102,8 @@
 #define BIT_MODIFY 0x05
 
 typedef struct{
-	unsigned char flags;
 	can_message msg;
+	unsigned char flags;
 }can_message_x;
 
 /* MCP */
@@ -379,7 +379,7 @@ can_message * can_buffer_get(){
 
 //start transmitting can messages, and mark message msg as transmittable
 void can_transmit(can_message* msg2){
-	can_message_x* msg=(can_message_x*)(((char*) msg2)-1);
+	can_message_x* msg=(can_message_x*) msg2;
 	if(msg){
 		msg->flags |= 0x01;
 	}
