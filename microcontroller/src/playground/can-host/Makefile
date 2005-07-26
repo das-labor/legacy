@@ -1,8 +1,8 @@
 PRG            = uart
-OBJ            = main.o uart-host.o util.o can.o rs232can.o
+OBJ            = main.o uart-host.o can.o rs232can.o
 OPTIMIZE       = 
 
-DEFS           = -DF_CPU=16000000
+DEFS           =
 LIBS           =
 
 # You should not have to change anything below here.
