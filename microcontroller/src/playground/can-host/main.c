@@ -40,7 +40,7 @@ int main(){
 		can_message  *can_msg;
 
 
-		uart_msg = rs232can_get();
+		uart_msg = rs232can_get_nb();
 		if (uart_msg) {
 			printf( "Got Packet!\n" );
 		}
