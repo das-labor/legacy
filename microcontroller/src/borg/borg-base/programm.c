@@ -120,7 +120,7 @@ void snake(){
 			}
 
 			if( (apple_num<9) && (random()<10) ){
-				pixel new_apple = (pixel){random()%NUM_ROWS,random()%NUM_COLS};
+				pixel new_apple = (pixel){random()%NUM_COLS,random()%NUM_ROWS};
 				if(!get_pixel(new_apple)){
 					apples[apple_num++]=new_apple;
 				}
@@ -268,7 +268,7 @@ void matrix1(){
 	}
 }
 
-#define FEUER_Y (NUM_ROWS + 8)
+#define FEUER_Y (NUM_ROWS + 3)
 #define FEUER_S 30
 #define FEUER_N 5
 #define FEUER_DIV 44
@@ -297,7 +297,7 @@ void feuer()
 		// copy to screen
 		for(y=0; y<NUM_ROWS; y++) {
 			for(x=0; x<NUM_COLS; x++) {
-				setpixel( (pixel){x,y}, (world[x][y+5] >> 5) );
+				setpixel( (pixel){x,y}, (world[x][y] >> 5) );
 			}		
 		};
 

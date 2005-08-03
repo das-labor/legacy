@@ -46,8 +46,8 @@ void shift_in(charmap * cm, unsigned int delay){
 	ror = shl_table[cm->len-1];
 	for(i=0;i<cm->len;i++){
 		shift_pixmap_l();
-		for(y=0;y<8;y++){
-			setpixel((pixel){NUM_COLS-1, y}, (cm->pix[y] & ror)?3:0 );
+		for(y=0;y<7;y++){
+			setpixel((pixel){NUM_COLS-1, y}, (cm->pix[y+1] & ror)?3:0 );
 		}
 		ror>>=1;
 		wait(delay);
@@ -69,6 +69,7 @@ void shift_out(unsigned char cols, unsigned int delay){
 }
 
 void labor_borg(){
+	clear_screen(0);
 	unsigned int delay = 70;
 
 	shift_in(&pix_L, delay);
@@ -118,6 +119,6 @@ void labor_borg(){
 	shift_in(&pix_O, delay);
 	shift_in(&pix_S, delay);
 			
-	shift_out(16,delay);
+	shift_out(NUM_COLS+8,delay);
 }
 

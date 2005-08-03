@@ -2,9 +2,11 @@
 #include <avr/io.h>
 #include <avr/signal.h>
 #include <avr/interrupt.h>
+#include "dimmer.h"
+
 
 static unsigned char COUNT;
-unsigned char BRIGHT[4];
+unsigned char Bright[NUM_LAMPS] = {0,44,};
 
 
 SIGNAL(SIG_INTERRUPT1) {
@@ -13,17 +15,53 @@ SIGNAL(SIG_INTERRUPT1) {
 }
 
 
+typedef struct{
+	unsigned char delay;
+	unsigned char timer;
+	unsigned char delta[NUM_LAMPS];
+}dimmer_ramp_t;
+
+static dimmer_ramp_t Dimmer_ramp[5]={
+	{0x50,43,{1,-1,}},
+	{0x50,43,{-1,1,}},
+	{0x50,43,{0,-1,}},
+	{0x50,43,{1,1,}},
+	{0x50,43,{-1,0,}},
+};
+
 SIGNAL(SIG_OVERFLOW0) {
+	
+	static unsigned char delay, delay_rl, timer, ramp_count=4;
+	
+	static dimmer_ramp_t *ramps = Dimmer_ramp;
+	
 	TCNT0 = 256-20;
 	
 	if(COUNT == 0){
 		PORTB |= 0x0F;
 	}
 	
+	if(!(COUNT %8)){
+		if(!delay--){
+			if (!(timer--)){
+				if(++ramp_count == 5) ramp_count = 0;
+				delay_rl = ramps[ramp_count].delay;
+				timer = ramps[ramp_count].timer;
+			}
+			
+			unsigned char x;
+			for(x=0; x<NUM_LAMPS;x++){
+				Bright[x] += ramps[ramp_count].delta[x];
+			}
+			
+			delay = delay_rl;
+		}
+	}
+	
 	
 	unsigned char x, rol=0x08;
-	for(x=0;x<4;x++){
-		if(BRIGHT[x] == COUNT){
+	for(x=0;x<NUM_LAMPS;x++){
+		if(Bright[x] == COUNT){
 			PORTB &= ~rol;
 		}
 		rol>>=1;
