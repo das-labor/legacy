@@ -1,9 +1,9 @@
-PRG            = uart
-OBJ            = main.o uart-host.o can.o rs232can.o
+PRG            = can-host
+OBJ            = main.o uart-host.o can-host.o rs232can.o
 OPTIMIZE       = 
 
 DEFS           =
-LIBS           =
+LIBS           = -lezV24
 
 # You should not have to change anything below here.
 
@@ -23,7 +23,7 @@ $(PRG): $(OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 clean:
-	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak 
+	rm -rf *.o $(PRG) *.eps *.png *.pdf *.bak 
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
 
 fct_table:
