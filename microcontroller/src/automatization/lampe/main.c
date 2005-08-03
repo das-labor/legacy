@@ -25,7 +25,7 @@
 
 void set_lampe(unsigned char lampe, unsigned char val)
 {
-	BRIGHT[lampe] = 64-(val>>2);
+	Bright[lampe] = 64-(val>>2);
 }
 
 #ifdef DEBUG
@@ -83,7 +83,7 @@ void blink_leds(){
 void relais_check(){
 	unsigned char x, on = 0;
 	for(x=0;x<NUM_LAMPS;x++){
-		if(BRIGHT[x] != 64){
+		if(Bright[x] != 64){
 			on = 1;
 		}
 	}

@@ -18,7 +18,7 @@ typedef struct{
 	unsigned char data[8];
 }can_message;
 
-typedef enum { normal, sleep, loopback, listenonly, config } can_mode_t ;
+typedef enum { normal, mode_sleep, loopback, listenonly, config } can_mode_t ;
 
 /* CAN */ 
 void  can_init();
