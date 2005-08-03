@@ -5,16 +5,16 @@
 // #define F_CPU 16000000         // Oszillator-Frequenz in Hz
 
 // uart.[ch] defines
-#define UART_INTERRUPT 1
-#define UART_BAUD_RATE 19200
-#define UART_RXBUFSIZE 16
-#define UART_TXBUFSIZE 16
+#define UART_INTERRUPT
+#define UART_BAUD_RATE 57600
+#define UART_RXBUFSIZE 50
+#define UART_TXBUFSIZE 50
 #define UART_LINE_BUFFER_SIZE 40
-#define UART_LEDS 1
+#define UART_LEDS
 
 
 // spi.[ch] defines
-#define SPI_HARDWARE 1
+#define SPI_HARDWARE
 #define SPI_PORT PORTB		//for slave select
 #define SPI_PIN PINB		//for slave select
 #define SPI_DDR DDRB
@@ -29,7 +29,7 @@
 	
 
 // can.[ch] defines
-#define CAN_INTERRUPT 1		//set this to enable interrupt driven and buffering version
+#define CAN_INTERRUPT		//set this to enable interrupt driven and buffering version
 #define CAN_RX_BUFFER_SIZE 8	//only used for Interrupt
 #define CAN_TX_BUFFER_SIZE 8	//only used for Interrupt
 
