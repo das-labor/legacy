@@ -52,30 +52,28 @@ void timer0_on(){
 	TIMSK = 0x02;	// Compare match Interrupt on
 }
 
-static mcp_mode_t mcp_mode = normal;
-
-void process_uart_msg( rs232can_msg *msg )
+void process_rs232_msg( rs232can_msg *msg )
 {
-	switch((rs232can_cmd)msg->cmd) {
-	case RS232CAN_SETFILTER:
-		break;
-	case RS232CAN_SETMODE:
-		mcp_mode = (mcp_mode_t)(msg->data[0]);
-		mcp_setmode(mcp_mode);
-		break;
-	case RS232CAN_PKT:
-//		can_message *can_msg = rs232can_pkt2can(msg);
-//		can_transmit(can_msg);
-		break;
+	switch(msg->cmd) {
+		case RS232CAN_SETFILTER:
+			break;
+		case RS232CAN_SETMODE:
+			;can_mode_t can_mode;
+			can_mode = (can_mode_t)(msg->data[0]);
+			can_setmode(can_mode);
+			break;
+		case RS232CAN_PKT:
+			;can_message *cmsg = can_buffer_get();
+			rs232can_rs2can(cmsg, msg);
+			can_transmit(cmsg);
+			break;
 	}
 }
 
-void process_can_msg(can_message *msg)
-{
-	rs232can_msg *uart_msg;
-
-	uart_msg = rs232can_can2pkt(msg);
-	rs232can_put(uart_msg);
+void process_can_msg(can_message *msg){
+	rs232can_msg rmsg;
+	rs232can_can2rs(&rmsg, msg);
+	rs232can_put(&rmsg);
 }
 
 int main(){
@@ -90,20 +88,22 @@ int main(){
 
 	sei();
 	rs232can_reset();
-	mcp_setmode(mcp_mode);
+	can_setmode(normal);
 
 	while(1) {
-		rs232can_msg *uart_msg;
-		can_message  *can_msg;
+		rs232can_msg *rmsg;
+		can_message  *cmsg;
 
 
-		uart_msg = rs232can_get();
-		if (uart_msg) 
-			process_uart_msg(uart_msg);
+		rmsg = rs232can_get_nb();
+		if (rmsg){ 
+			process_rs232_msg(rmsg);
+		}
 		
-		can_msg = can_get_nb();
-		if (can_msg)
-			process_can_msg(can_msg);
+		cmsg = can_get_nb();
+		if (cmsg){
+			process_can_msg(cmsg);
+		}
 	}
 
 	return 0;
