@@ -201,8 +201,6 @@ void fadein()
 }
 
 
-#define STREAMER_NUM 30
-
 typedef struct{
 	pixel start;
 	unsigned char len;
@@ -211,8 +209,8 @@ typedef struct{
 	unsigned char speed;
 }streamer;
 
-void matrix1(){
-	int counter = 500;//run 1000 cycles
+void matrix(){
+	unsigned int counter = 500;//run 500 cycles
 	streamer streamers[STREAMER_NUM];
 	unsigned char matrix_bright[NUM_COLS][NUM_ROWS];
 	unsigned char x, y;
@@ -235,7 +233,7 @@ void matrix1(){
 				if(j+str.start.y<NUM_ROWS){
 					if(bright>>6) draw = 1;
 					if(bright > matrix_bright[str.start.x][str.start.y+j]){
-						setpixel((pixel){str.start.x, str.start.y+j}, bright>>6);
+						//setpixel((pixel){str.start.x, str.start.y+j}, bright>>6);
 						matrix_bright[str.start.x][str.start.y+j] = bright;
 					}
 				}
@@ -252,6 +250,11 @@ void matrix1(){
 			};
 						
 		}
+		
+		for(y=0;y<NUM_ROWS;y++)
+			for(x=0;x<NUM_COLS;x++)
+				setpixel((pixel){x,y}, matrix_bright[x][y]>>6);
+		
 		unsigned char nsc;
 		for(nsc=0;nsc<6;nsc++){
 			if(streamer_num<STREAMER_NUM){
@@ -261,7 +264,7 @@ void matrix1(){
 				streamer_num++;	
 			}
 		}
-		wait(80);	
+		//wait(80);	
 		
 	
 	

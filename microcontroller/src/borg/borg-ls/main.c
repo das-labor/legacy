@@ -14,8 +14,10 @@ int main (void){
 	sei();
 	
 	for(;;){
-		matrix1();
-		fadein();
+		matrix();
+		//fadein();
+		
+		//wait(5000);
 		joern1();
 		//test1();
 		snake();
