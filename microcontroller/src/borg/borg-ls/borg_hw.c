@@ -5,12 +5,14 @@
 
 #include "borg_hw.h"
 
-#define LSPORT  PORTC
-#define LSDDR   DDRC
+#define ROWPORT  PORTB
+#define ROWDDR DDRB
 
+#define COLPORT PORTD
+#define COLDDR DDRD
 
-#define PIN_DATA     PC3
-#define PIN_CLK      PC4 /*active low*/
+#define PIN_DATA     PC4
+#define PIN_CLK      PC6 /*active low*/
 #define PIN_LINE_EN  PC5 /*active low*/
 
 
@@ -18,9 +20,9 @@ unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
 
 inline void rowshow(unsigned char row, unsigned char plane){
-	LSPORT |= (1<<PIN_LINE_EN);//blank display
+	COLPORT |= (1<<PIN_LINE_EN);//blank display
 		
-	LSPORT = (LSPORT & 0xF8) | row;
+	ROWPORT = (ROWPORT & 0xF8) | row;
 	
 	if (row == 0){
 		switch (plane){
@@ -40,17 +42,17 @@ inline void rowshow(unsigned char row, unsigned char plane){
 		d = pixmap[plane][row][b];
 		for(x=0;x<8;x++){
 			if(d & 0x80){
-				LSPORT |= (1<<PIN_DATA);
+				COLPORT |= (1<<PIN_DATA);
 			}else{
-				LSPORT &= ~(1<<PIN_DATA);
+				COLPORT &= ~(1<<PIN_DATA);
 			}
 			d<<=1;
-			LSPORT &= ~(1<<PIN_CLK);
-			LSPORT |= (1<<PIN_CLK);
+			COLPORT &= ~(1<<PIN_CLK);
+			COLPORT |= (1<<PIN_CLK);
 		}
 	}
 	
-	LSPORT &= ~(1<<PIN_LINE_EN);//unblank display
+	COLPORT &= ~(1<<PIN_LINE_EN);//unblank display
 	
 }
 
@@ -87,8 +89,11 @@ void timer0_on(){
 }
 
 void borg_hw_init(){
-	LSPORT |= (1<<PIN_CLK) | (1<<PIN_LINE_EN);
-	LSDDR |= 0x3F;
+	COLPORT |= (1<<PIN_CLK) | (1<<PIN_LINE_EN);
+	COLDDR |= (1<<PIN_CLK) | (1<<PIN_LINE_EN) | (1<<PIN_DATA);
+	
+	ROWDDR |= 0x07;
+	
 	timer0_on();
 }
 

@@ -6,6 +6,6 @@ void draw_line( unsigned char yabs, signed char delta);
 void schachbrett(unsigned char times);
 void test1();
 void snake();
-void matrix1();
+void matrix();
 void fadein();
 void feuer();
