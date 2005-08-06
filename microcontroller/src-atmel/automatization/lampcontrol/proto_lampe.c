@@ -1,1 +1,1 @@
-../../lcore/lib/proto_lampe.c
+../../../lib/proto_lampe.c
