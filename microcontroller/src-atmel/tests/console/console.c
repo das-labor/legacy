@@ -1,1 +1,1 @@
-../../lcore/lib/console.c
+../../../lib/console.c

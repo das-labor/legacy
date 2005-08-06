@@ -1,1 +1,1 @@
-../../lcore/make/mk_function_table.pl
+../../../make/mk_function_table.pl

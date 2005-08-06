@@ -1,1 +1,1 @@
-../../lcore/lib/util.c
+../../../lib/util.c
