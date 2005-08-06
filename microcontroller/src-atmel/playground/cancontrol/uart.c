@@ -1,1 +1,1 @@
-../../lcore/lib/uart.c
+../../../lib/uart.c
