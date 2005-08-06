@@ -33,27 +33,73 @@ void wait(int ms){
 	}
 }
 
+template t class List<t> {
+	class<t-1> rest;
+	int   member
+
+	int dosomething()
+	{
+		return member + rest.dosomething();
+	}
+}
+
+template t class List<1> {
+	int member;
+
+	int dothomthing()
+	{
+		return member;
+	}
+}
+
+
+
+List<4>
+
+
+
+
+
+
+
+Liste<4> intList;
+
+
 
 
 int
 main (void){
 	display_init();
-	
-	for(;;){
-		display_clear_line(1);
-		display_clear_line(0);
-		display_print("Hello World!");
-	
-		wait(2000);
-
-		unsigned char x, y;
-		for(x=0;x<2;x++){
-			display_set_cursor(x,0);
-			for(y=0;y<24;y++){
-				display_print("X");
-				wait(200);
-			}	
 		
-		}
-	}
+	// char bits[4];
+static	unsigned int  bits[2];
+static	unsigned int res[2];
+
+	bits[0] = PORTB;
+
+	res[0] = (bits[0] >> 1); 
+	res[1] = (bits[1] >> 1) | (bits[0] & 0x01) * 0x80;
+	
+	PORTB = res[0];
+	return res[1];
+
+	
+//	for(;;){
+//		display_clear_line(1);
+//		display_clear_line(0);
+//		display_print("Hello World!");
+//	
+//		wait(2000);
+//
+//		unsigned char x, y;
+//		for(x=0;x<2;x++){
+//			display_set_cursor(x,0);
+//			for(y=0;y<24;y++){
+//				display_print("X");
+//				wait(200);
+//			}	
+//		
+//		}
+//	}
+//	*/
 }
