@@ -1,1 +1,1 @@
-../../lcore/lib/lap.h
+../../lib/lap.h
