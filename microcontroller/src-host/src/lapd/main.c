@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <getopt.h>
+
+
+// Atmel ; LAP includes
 
 #include "config.h"
 
@@ -9,6 +13,29 @@
 #include "can.h"
 #include "rs232can.h"
 
+static char *progname;
+
+static char *optstring = "hdv::s:p:";
+struct option longopts[] =
+{
+  { "help", no_argument, NULL, 'h' },
+  { "daemon", no_argument, NULL, 'd' },
+  { "verbose", optional_argument, NULL, 'v' },
+  { "serial", required_argument, NULL, 's' },
+  { "port", required_argument, NULL, 'p' },
+  { NULL, 0, NULL, 0 }
+};
+
+void help()
+{
+	printf("\nUsage: %s [OPTIONS]\n", progname);
+	printf("\
+   -h, --help              display this help and exit\n\
+   -v, --verbose           be more verbose and display a CAN packet dump\n\
+   -d, --daemon            become daemon\n\
+   -s, --serial PORT       use specified serial port (default: /dev/ttyS0)\n\
+   -p, --port PORT         use specified TCP/IP port (default: 2342)\n" );
+}
 
 void print_packets(){
 	while(1) {
@@ -19,12 +46,43 @@ void print_packets(){
 }
 
 
-int main(int argc, char *argv[]){
-	if(argc < 2){
-		printf("usage: command [param1, param2...] ");
-		exit(1);
-	}
+int main(int argc, char *argv[])
+{
+	int v = 0;                   // verbose
+	int d = 0;                   // daemon
+	int tcpport  = 2342;         // TCP Port
+	char *serial = "/dev/ttyS0"; // serial port
+	int optc;
+
+	progname = argv[0];
+
+	while ((optc=getopt_long(argc, argv, optstring, longopts, (int *)0))
+		!= EOF) {
+		switch (optc) {
+			case 'v':
+				if (optarg)
+					v = atoi(optarg);
+				else 
+					v = 1;
+				break;
+			case 'd':
+				d = 1;
+				break;
+			case 's':
+				break;
+			case 'p':
+				break;
+			case 'h':
+				help();
+				exit(0);
+			default:
+				help();
+				exit(1);
+		}
+	} // while
+
 	
+
 	uart_init();
 	can_init();
 

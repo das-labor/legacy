@@ -9,6 +9,7 @@ AC_CONFIG_HEADER([config.h])
 
 # Checks for programs.
 AC_PROG_CC
+AC_ISC_POSIX
 
 # Checks for libraries.
 AC_CHECK_LIB([ezV24], [v24Getc], [], AC_MSG_ERROR([libezV24 not found]) )
@@ -24,9 +25,11 @@ AC_FUNC_MALLOC
 AC_TYPE_SIGNAL
 
 ## AC_CONFIG_FILES([Makefile lap-dump/Makefile])
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 playground/Makefile
 src/Makefile
 src/lapd/Makefile
 ])
+
+AC_OUTPUT
