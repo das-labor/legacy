@@ -11,7 +11,7 @@
 #include "config.h"
 
 
-void uart_init();
+void uart_init(char *sport);
 
 void uart_putc(char c);
 void uart_putstr(char * str);
