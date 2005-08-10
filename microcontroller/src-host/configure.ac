@@ -24,4 +24,9 @@ AC_FUNC_MALLOC
 AC_TYPE_SIGNAL
 
 ## AC_CONFIG_FILES([Makefile lap-dump/Makefile])
-AC_OUTPUT([Makefile src/Makefile src/lapd/Makefile])
+AC_OUTPUT([
+Makefile
+playground/Makefile
+src/Makefile
+src/lapd/Makefile
+])

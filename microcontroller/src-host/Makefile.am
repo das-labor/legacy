@@ -1,2 +1,2 @@
 
-SUBDIRS = lap-dump
+SUBDIRS = src playground
