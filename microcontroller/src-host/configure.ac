@@ -3,16 +3,15 @@
 
 AC_PREREQ(2.59)
 AC_INIT(lap-host, 0.1)
-AC_CONFIG_SRCDIR(lap-dump/main.c)
 AM_INIT_AUTOMAKE
+AC_CONFIG_SRCDIR(src/lapd/main.c)
 AC_CONFIG_HEADER([config.h])
 
 # Checks for programs.
 AC_PROG_CC
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lezV24':
-AC_CHECK_LIB([ezV24], [main])
+AC_CHECK_LIB([ezV24], [v24Getc], [], AC_MSG_ERROR([libezV24 not found]) )
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -25,4 +24,4 @@ AC_FUNC_MALLOC
 AC_TYPE_SIGNAL
 
 ## AC_CONFIG_FILES([Makefile lap-dump/Makefile])
-AC_OUTPUT([Makefile lap-dump/Makefile])
+AC_OUTPUT([Makefile src/Makefile src/lapd/Makefile])
