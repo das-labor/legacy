@@ -21,11 +21,11 @@ static void install_signalhandler ( void )
 
 
 
-void uart_init() {
+void uart_init(char *sport) {
 	install_signalhandler();
-	Port=v24OpenPort("/dev/usb/tts/0",V24_NON_BLOCK);
+	Port=v24OpenPort(sport, V24_NON_BLOCK);
 	if ( Port==0 ){
-        	fputs("error: couldn't open port\n",stderr);
+        	fprintf(stderr, "error: could not open serial port %s\n", sport);
         	exit(1);
 	}
 	int rc = v24SetParameters(Port, V24_B57600, V24_8BIT, V24_NONE);

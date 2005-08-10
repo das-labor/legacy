@@ -6,7 +6,6 @@
 
 
 // Atmel ; LAP includes
-
 #include "config.h"
 
 #include "uart-host.h"
@@ -34,7 +33,7 @@ void help()
    -v, --verbose           be more verbose and display a CAN packet dump\n\
    -d, --daemon            become daemon\n\
    -s, --serial PORT       use specified serial port (default: /dev/ttyS0)\n\
-   -p, --port PORT         use specified TCP/IP port (default: 2342)\n" );
+   -p, --port PORT         use specified TCP/IP port (default: 2342)\n\n" );
 }
 
 void print_packets(){
@@ -69,8 +68,10 @@ int main(int argc, char *argv[])
 				d = 1;
 				break;
 			case 's':
+				serial = optarg;
 				break;
 			case 'p':
+				tcpport = atoi(optarg);
 				break;
 			case 'h':
 				help();
@@ -82,11 +83,18 @@ int main(int argc, char *argv[])
 	} // while
 
 	
-
-	uart_init();
+	// setup serial communication
+	uart_init(serial);
 	can_init();
-
 	rs232can_reset();
+	debug(1, "CAN communication established..." );
+
+	// setup network socket
+	int socket = socket(AF_INET, SOCK_STREAM, 0);
+
+	debug(1, "Listenig for network connections..." );
+
+
 
 	if(!strcmp(argv[1], "p")){
 		print_packets();
