@@ -80,3 +80,12 @@ char uart_getc(void)
 	while (! uart_getc_nb(&c) );
 	return c;
 }
+
+int uart_fdset(fd_set *set)
+{
+	int fd = v24QueryFileHandle(Port);
+
+	FD_SET(fd, set);
+	return fd;
+}
+
