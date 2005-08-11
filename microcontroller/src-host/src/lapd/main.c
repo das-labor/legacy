@@ -3,7 +3,9 @@
 #include <unistd.h>
 #include <string.h>
 #include <getopt.h>
-
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
 
 // Atmel ; LAP includes
 #include "config.h"
@@ -12,7 +14,13 @@
 #include "can.h"
 #include "rs232can.h"
 
+#ifndef max
+ #define max(a,b) (((a) > (b)) ? (a) : (b))
+#endif
+
+
 static char *progname;
+static int verbose = 0;
 
 static char *optstring = "hdv::s:p:";
 struct option longopts[] =
@@ -24,6 +32,13 @@ struct option longopts[] =
   { "port", required_argument, NULL, 'p' },
   { NULL, 0, NULL, 0 }
 };
+
+void debug(int level, char *msg)
+{
+	if (level >= verbose) {
+		fprintf(stderr, msg);
+	}
+}
 
 void help()
 {
@@ -47,7 +62,6 @@ void print_packets(){
 
 int main(int argc, char *argv[])
 {
-	int v = 0;                   // verbose
 	int d = 0;                   // daemon
 	int tcpport  = 2342;         // TCP Port
 	char *serial = "/dev/ttyS0"; // serial port
@@ -60,9 +74,9 @@ int main(int argc, char *argv[])
 		switch (optc) {
 			case 'v':
 				if (optarg)
-					v = atoi(optarg);
+					verbose = atoi(optarg);
 				else 
-					v = 1;
+					verbose = 3;
 				break;
 			case 'd':
 				d = 1;
@@ -87,12 +101,36 @@ int main(int argc, char *argv[])
 	uart_init(serial);
 	can_init();
 	rs232can_reset();
-	debug(1, "CAN communication established..." );
+	debug(1, "CAN communication established...\n" );
 
 	// setup network socket
-	int socket = socket(AF_INET, SOCK_STREAM, 0);
+	net_init(tcpport);
+	debug(1, "Listenig for network connections...\n" );
 
-	debug(1, "Listenig for network connections..." );
+	// eventloop
+	for(;;) {
+		int num;
+		int highfd;
+		fd_set rset;
+
+		FD_ZERO(&rset);
+
+		highfd = uart_fdset(&rset);
+		highfd = max(highfd, net_fdset(&rset));
+
+		num = select(highfd+1, &rset, (fd_set *)NULL, &rset, NULL);
+
+		debug(9, "Select returned\n");
+
+		if (num == 0) continue;
+		if (num < 0) {
+			perror("select failed: ");
+			exit(2);
+		}
+
+		
+	}
+
 
 
 
