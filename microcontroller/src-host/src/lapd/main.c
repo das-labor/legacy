@@ -112,13 +112,14 @@ int main(int argc, char *argv[])
 		int num;
 		int highfd;
 		fd_set rset;
+		connection_t conn;
 
 		FD_ZERO(&rset);
 
 		highfd = uart_fdset(&rset);
 		highfd = max(highfd, net_fdset(&rset));
 
-		num = select(highfd+1, &rset, (fd_set *)NULL, &rset, NULL);
+		num = select(highfd+1, &rset, (fd_set *)NULL, (fd_set *)NULL, NULL);
 
 		debug(9, "Select returned\n");
 
@@ -128,7 +129,8 @@ int main(int argc, char *argv[])
 			exit(2);
 		}
 
-		
+		while( conn = net_after_select(&rset) ) {
+		}
 	}
 
 
