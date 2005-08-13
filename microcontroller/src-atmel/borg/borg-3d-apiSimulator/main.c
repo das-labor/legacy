@@ -1,5 +1,5 @@
 #include <GL/glut.h>   // for gl* glu* glut*
-#include <pthread.h>
+#include <pthread.h>   // for threads in linux
 #include "pixel3d.h"
 #include "programm.h"
 
@@ -23,7 +23,6 @@ void drawLED(int color, float pos_x, float pos_y, float pos_z) {
 	gluSphere(quad, 0.25, 8, 8);          
 	glPopMatrix();
 }
-
 
 void display(void){
   	int x, y, z;
@@ -57,7 +56,6 @@ void keyboard(unsigned char key, int x, int y){
 }
 
 /* change view angle */
-/* ARGSUSED1*/
 static void special(int k, int x, int y)
 {
   switch (k) {
