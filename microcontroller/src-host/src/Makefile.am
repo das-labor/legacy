@@ -1,2 +1,2 @@
 
-SUBDIRS = lapd lap-cxx
+SUBDIRS = lapd
