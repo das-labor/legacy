@@ -41,7 +41,7 @@ unsigned char get_next_pixel3d(pixel3d p, direction dir) {
 			tmp = (pixel3d){p.x, p.y-1, p.z};
 			break;			
 	}
-	if ((tmp.x>2) || (tmp.y>2) || (tmp.z>2)) {
+	if ((tmp.x>BORGSIZE-1) || (tmp.y>BORGSIZE-1) || (tmp.z>BORGSIZE-1)) {
 		return 0xFF;
 	} else {
 		return get_pixel3d(tmp);
