@@ -7,6 +7,8 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
+#include "inet.h"
+
 // Atmel ; LAP includes
 #include "config.h"
 
@@ -59,6 +61,65 @@ void print_packets(){
 	}
 }
 
+void process_rs232_msg( rs232can_msg *msg )
+{
+	// XXX
+}
+
+void process_client_msg( net_client_t *client, rs232can_msg *msg )
+{
+	// XXX
+}
+
+void new_client( net_client_t *client )
+{
+	// XXX
+}
+
+void event_loop()
+{
+	for(;;) {
+		int num;
+		int highfd;
+		fd_set rset;
+		net_client_t *client;
+
+		FD_ZERO(&rset);
+
+		highfd = uart_fd();
+		FD_SET(uart_fd(), &rset);
+		highfd = max(highfd, net_fdset(&rset));
+
+		num = select(highfd+1, &rset, (fd_set *)NULL, (fd_set *)NULL, NULL);
+		if (num == 0) continue;
+		if (num < 0) {
+			perror("select failed: ");
+			exit(2);
+		}
+
+		// check activity on uart_fd
+		if (FD_ISSET(uart_fd(), &rset)) {
+			rs232can_msg *msg = rs232can_get_nb();
+			if (msg) {
+				process_rs232_msg(msg);
+			}
+		}
+		
+		// new connections
+		while( client = net_new_connection(&rset) ) {
+			new_client(client);
+		}
+
+		// check client activity 
+		while( client = net_client_activity(&rset) ) {
+			rs232can_msg *msg = net_get_nb(client);
+			if(msg) {
+				process_client_msg(client, msg);
+			}
+		}
+	}
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -107,33 +168,12 @@ int main(int argc, char *argv[])
 	net_init(tcpport);
 	debug(1, "Listenig for network connections...\n" );
 
-	// eventloop
-	for(;;) {
-		int num;
-		int highfd;
-		fd_set rset;
-		connection_t conn;
+	event_loop();  // does not return
 
-		FD_ZERO(&rset);
+	return 1;  
+}
 
-		highfd = uart_fdset(&rset);
-		highfd = max(highfd, net_fdset(&rset));
-
-		num = select(highfd+1, &rset, (fd_set *)NULL, (fd_set *)NULL, NULL);
-
-		debug(9, "Select returned\n");
-
-		if (num == 0) continue;
-		if (num < 0) {
-			perror("select failed: ");
-			exit(2);
-		}
-
-		while( conn = net_after_select(&rset) ) {
-		}
-	}
-
-
+/*
 
 
 	if(!strcmp(argv[1], "p")){
@@ -160,7 +200,5 @@ int main(int argc, char *argv[])
 	}
 	
 	
-	
+	*/
 
-	return 0;
-}
