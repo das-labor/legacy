@@ -1,7 +1,7 @@
 PRG = borg3dSim
 OBJ = main.o pixel3d.o programm.o
 OPTIMIZE = -O2
-LIBS = -lglut -lpthread
+LIBS = -lglut -lpthread -lGL -lGLU
 CC = gcc
 
 OPTIMIZE = -O2
