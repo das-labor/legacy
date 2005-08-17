@@ -27,10 +27,10 @@ $(PRG).elf: $(OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 clean:
-	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak 
+	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak function_table.c
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
 
-fct_table:
+function_table.c:
 	./mk_function_table.pl *.h >function_table.c
 
 flash:

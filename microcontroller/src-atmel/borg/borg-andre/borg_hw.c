@@ -95,7 +95,7 @@ void timer0_on(){
 		 1    0    1       clk/1024
 	
 */
-	TCCR0 = 0x0B;	// CTC Mode, clk/8
+	TCCR0 = 0x0B;	// CTC Mode, clk/64
 	TCNT0 = 0;	// reset timer
 	OCR0  = 0x20;	// Compare with this value
 	TIMSK = 0x02;	// Compare match Interrupt on

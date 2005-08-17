@@ -29,6 +29,7 @@
 #undef  CAN_INTERRUPT		//set this to enable interrupt driven and buffering version
 #define CAN_RX_BUFFER_SIZE 2	//only used for Interrupt
 #define CAN_TX_BUFFER_SIZE 2	//only used for Interrupt
+#define F_MCP F_CPU
 
 //interrupt pin of MCP2515 for non interrupt driven can
 #define SPI_REG_PIN_MCP_INT PIND
