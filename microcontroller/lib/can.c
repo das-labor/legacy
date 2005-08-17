@@ -1,8 +1,12 @@
+#include "config.h"
+
+#ifndef __C64__
 #include <avr/io.h>
 #include <avr/signal.h>
-#include "config.h"
+#define asm asm volatile
+#endif
+
 #include "can.h"
-#include "util.h"
 #include "spi.h"
 
 //#include "mcp2515.inc"
@@ -106,6 +110,7 @@ typedef struct{
 	unsigned char flags;
 }can_message_x;
 
+
 /* MCP */
 void mcp_reset();
 void mcp_write(unsigned char reg, unsigned char data);
@@ -118,36 +123,38 @@ unsigned char mcp_rx_status();
 
 // Functions
 
-inline unsigned char mcp_rx_status(){
-	SPI_PORT &= ~(1<<SPI_PIN_SS);
+unsigned char mcp_rx_status(){
+	unsigned char d;
+	spi_set_ss();
 	spi_data(RX_STATUS);
-	unsigned char d = spi_data(0);
-	SPI_PORT |= (1<<SPI_PIN_SS);
+	d = spi_data(0);
+	spi_clear_ss();
 	return d;
 }
 
-inline unsigned char mcp_status(){
-	SPI_PORT &= ~(1<<SPI_PIN_SS);
+unsigned char mcp_status(){
+	unsigned char d;
+	spi_set_ss();
 	spi_data(READ_STATUS);
-	unsigned char d = spi_data(0);
-	SPI_PORT |= (1<<SPI_PIN_SS);
+	d = spi_data(0);
+	spi_clear_ss();
 	return d;
 }
 
 void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val){
-	SPI_PORT &= ~(1<<SPI_PIN_SS);
+	spi_set_ss();
 	spi_data(BIT_MODIFY);
 	spi_data(reg);
 	spi_data(mask);
 	spi_data(val);
-	SPI_PORT |= (1<<SPI_PIN_SS);
+	spi_clear_ss();
 }
 
 //load a message to mcp2515 and start transmission
 void message_load(can_message_x * msg){
 	unsigned char x;
 	
-	SPI_PORT &= ~(1<<SPI_PIN_SS);
+	spi_set_ss();
 	spi_data(WRITE);
 	spi_data(TXB0SIDH);
 
@@ -159,12 +166,12 @@ void message_load(can_message_x * msg){
 	for(x=0;x<msg->msg.dlc;x++){
 		spi_data(msg->msg.data[x]);
 	}
-	SPI_PORT |= (1<<SPI_PIN_SS);
-	SPI_PORT &= ~(1<<SPI_PIN_SS);
+	spi_clear_ss();
+	spi_set_ss();
 	spi_data(WRITE);
 	spi_data(TXB0CTRL);
 	spi_data( (1<<TXREQ) );
-	SPI_PORT |= (1<<SPI_PIN_SS);
+	spi_clear_ss();
 }
 
 //get a message from mcp2515 and disable RX interrupt Condition
@@ -172,7 +179,7 @@ void message_fetch(can_message_x * msg){
 	unsigned char tmp1, tmp2;
 	unsigned char x;
 
-	SPI_PORT &= ~(1<<SPI_PIN_SS);
+	spi_set_ss();
 	spi_data(READ);
 	spi_data(RXB0SIDH);
 	tmp1 = spi_data(0);
@@ -186,7 +193,7 @@ void message_fetch(can_message_x * msg){
 	for(x=0;x<msg->msg.dlc;x++){
 		msg->msg.data[x] = spi_data(0);
 	}
-	SPI_PORT |= (1<<SPI_PIN_SS);
+	spi_clear_ss();
 	
 	mcp_bitmod(CANINTF, (1<<RX0IF), 0x00);
 }
@@ -197,7 +204,6 @@ static can_message_x TX_BUFFER[CAN_TX_BUFFER_SIZE], *volatile TX_HEAD=TX_BUFFER,
 static volatile unsigned char TX_INT;
 
 SIGNAL(SIG_INTERRUPT0) {
-	PORTD ^=0x10;
 	unsigned char status = mcp_status();
 		
 	if ( status & 0x01 ) {	// Message in RX0
@@ -206,7 +212,7 @@ SIGNAL(SIG_INTERRUPT0) {
 	}
 
 	if ( status & 0x08 ) {	// TX1 empty
-		if( (TX_HEAD != TX_TAIL) && (TX_TAIL->flags & 0x01) ){
+		if( (TX_HEAD != TX_TAIL) && (((can_message_x*)TX_TAIL)->flags & 0x01) ){
 			TX_INT = 1;
 			message_load(TX_TAIL);
 			if(++TX_TAIL == TX_BUFFER+CAN_TX_BUFFER_SIZE) TX_TAIL = TX_BUFFER;
@@ -221,48 +227,49 @@ SIGNAL(SIG_INTERRUPT0) {
 
 
 void mcp_reset(){
-	SPI_PORT &= ~(1<<SPI_PIN_SS);
+	spi_set_ss();
 	spi_data(RESET);
-	SPI_PORT |= (1<<SPI_PIN_SS);
+	spi_clear_ss();
 }
 
 void mcp_write(unsigned char reg, unsigned char data){
-	SPI_PORT &= ~(1<<SPI_PIN_SS);
+	spi_set_ss();
 	spi_data(WRITE);
 	spi_data(reg);
 	spi_data(data);
-	SPI_PORT |= (1<<SPI_PIN_SS);
+	spi_clear_ss();
 }
 
 void mcp_write_b(unsigned char reg, unsigned char *buf, unsigned char len){
-	SPI_PORT &= ~(1<<SPI_PIN_SS);
+	unsigned char x;
+	spi_set_ss();
 	spi_data(WRITE);
 	spi_data(reg);
-	unsigned char x;
 	for(x=0;x<len;x++){
 		spi_data(buf[x]);
 	}
-	SPI_PORT |= (1<<SPI_PIN_SS);
+	spi_clear_ss();
 }
 
 unsigned char mcp_read(unsigned char reg){
-	SPI_PORT &= ~(1<<SPI_PIN_SS);
+	unsigned char d;
+	spi_set_ss();
 	spi_data(READ);
 	spi_data(reg);
-	unsigned char d = spi_data(0);
-	SPI_PORT |= (1<<SPI_PIN_SS);
+	d = spi_data(0);
+	spi_clear_ss();
 	return d;
 }
 
 void mcp_read_b(unsigned char reg, unsigned char *buf, unsigned char len){
-	SPI_PORT &= ~(1<<SPI_PIN_SS);
+	unsigned char x;
+	spi_set_ss();
 	spi_data(READ);
 	spi_data(reg);
-	unsigned char x;
 	for(x=0;x<len;x++){
 		buf[x] = spi_data(0);
 	}
-	SPI_PORT |= (1<<SPI_PIN_SS);
+	spi_clear_ss();
 }
 
 
@@ -289,8 +296,8 @@ void can_setfilter() {
 /*******************************************************************/
 void delayloop(){
 	unsigned char x;
-	for(x=0;x<255;x++){
-		asm volatile ("nop");
+	for(x=0;x<255;x++){		
+		asm ("nop");
 	}
 
 }
@@ -303,10 +310,12 @@ void can_init(){
 	// 0x01 : 125kbit/8MHz
 	// 0x03 : 125kbit/16MHz
 
-#if F_CPU == 16000000
+#if F_MCP == 16000000
 #define CNF1_T 0x03
-#elif F_CPU == 8000000
+#elif F_MCP == 8000000
 #define CNF1_T 0x01
+#elif F_MCP == 20000000
+#define CNF1_T 0x04
 #else
 #error Can Baudrate is only defined for 8 and 16 MHz
 #endif
@@ -329,10 +338,14 @@ void can_init(){
 	// this only configures the INT Output of the mcp2515, not the int on the Atmel
 	mcp_write( CANINTE, (1<<RX0IE) | (1<<TX0IE) );
 	
-	//this turns on INT0 on the Atmel
-#ifdef ATMEGA	
+	
+#ifdef __C64__
+	#error not implemented yet
+#elif ATMEGA
+	//this turns on INT0 on the Atmega	
 	GICR |= (1<<INT0);
-#else  //ATMEGA
+#else
+	//this turns on INT0 on the Atmel
 	MCUCR |=  (1<<ISC01);
 	GIMSK |= (1<<INT0);
 #endif //ATMEGA
@@ -384,7 +397,7 @@ void can_transmit(can_message* msg2){
 		msg->flags |= 0x01;
 	}
 	if(!TX_INT){
-		if( (TX_HEAD != TX_TAIL) && (TX_TAIL->flags & 0x01) ){
+		if( (TX_HEAD != TX_TAIL) && (((can_message_x*)TX_TAIL)->flags & 0x01) ){
 			TX_INT = 1;
 			message_load(TX_TAIL);
 			if(++TX_TAIL == TX_BUFFER+CAN_TX_BUFFER_SIZE)	
