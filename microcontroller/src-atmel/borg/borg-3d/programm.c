@@ -13,7 +13,7 @@ void test1() {
 		for (y = 0; y < BORGSIZE; y++) {
 			for (x = 0; x < BORGSIZE; x++) {
 				setpixel3d((pixel3d){x,y,z}, 3);
-				wait(50);
+				mWait(50);
 			}
 		}
 	}
@@ -27,7 +27,7 @@ void test2() {
 				setpixel3d((pixel3d){i,j,k}, 3);
 			}
 		}
-		wait(100);
+		mWait(40);
 		for (j = 0; j < 8; j++) {
 			for (k = 0; k < 8; k++) {
 				setpixel3d((pixel3d){i,j,k}, 0);
@@ -40,7 +40,7 @@ void test2() {
 				setpixel3d((pixel3d){j,k,i}, 3);
 			}
 		}
-		wait(100);
+		mWait(40);
 		for (j = 0; j < 8; j++) {
 			for (k = 0; k < 8; k++) {
 				setpixel3d((pixel3d){j,k,i}, 0);
@@ -53,20 +53,20 @@ void test2() {
 				setpixel3d((pixel3d){k,i,j}, 3);
 			}
 		}
-		wait(100);
+		mWait(50);
 		for (j = 0; j < 8; j++) {
 			for (k = 0; k < 8; k++) {
 				setpixel3d((pixel3d){k,i,j}, 0);
 			}
 		}
 	}
-	for (i = 0; i < 8; i++) {
+	for (i = 7; i < 8; i--) {
 		for (j = 0; j < 8; j++) {
 			for (k = 0; k < 8; k++) {
 				setpixel3d((pixel3d){k,j,i}, 3);
 			}
 		}
-		wait(100);
+		mWait(40);
 		for (j = 0; j < 8; j++) {
 			for (k = 0; k < 8; k++) {
 				setpixel3d((pixel3d){k,j,i}, 0);
@@ -75,13 +75,12 @@ void test2() {
 	}
 }
 
-
 #define BIT_S(var,b) ((var&(1<<b))?1:0)
 
 unsigned char myrandom(){
 	static unsigned int muh = 0xAA;
 	unsigned char x;
-	for(x=0;x<8;x++){
+	for (x=0; x<8; x++) {
 		muh = (muh<<1) ^ BIT_S(muh,1) ^ BIT_S(muh,8) ^ BIT_S(muh,9) ^ BIT_S(muh,13) ^ BIT_S(muh,15);
 	}
 	return (unsigned char) muh;
@@ -112,7 +111,7 @@ void snake3d(){
 		unsigned char apple_found = 0, j;
 		for(j=0;j<apple_num;j++){
 			unsigned char i;
-			for(i=0;i<6;i++){
+			for(i=0;i<6;i++) {
 				if ((next_pixel3d(old_head, i).x == apples[j].x) && 
 					(next_pixel3d(old_head, i).y == apples[j].y) &&
 				    (next_pixel3d(old_head, i).z == apples[j].z)) {
@@ -152,32 +151,33 @@ void snake3d(){
 				pixel3d new_apple = (pixel3d){myrandom()%BORGSIZE,
 					                          myrandom()%BORGSIZE,
 					                          myrandom()%BORGSIZE};
-				if (!get_pixel3d(new_apple)){
+				if (!get_pixel3d(new_apple)) {
 					apples[apple_num++] = new_apple;
 				}
 			}
 
-			if(!apple_found){
+			if  (!apple_found) {
 				clearpixel3d(*tail);
 				if(++tail == pixels + 64) tail = pixels;
 			}
 		} else {
-			while(tail != head){
+			while (tail != head) {
 				clearpixel3d(*tail);
-				if((++tail)>pixels+64) tail = pixels;
-				wait(60);
+				if ((++tail)>pixels+64) 
+					tail = pixels;
+				mWait(60);
 			}
 			break;
 		}
 		
 		for (j = 0; j < apple_num; j++) {
-			if (x % 2){
+			if (x % 2) {
 				setpixel3d(apples[j], 3);
 			} else {
 				clearpixel3d(apples[j]);
 			}
 		}
-		wait(100);
+		mWait(100);
 	}
 
 }

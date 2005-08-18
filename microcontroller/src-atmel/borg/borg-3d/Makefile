@@ -3,11 +3,11 @@ OBJ            = borg_hw.o main.o util.o pixel.o programm.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 
-FLASHCMD       = uisp -dprog=bsd --upload if=$(PRG).hex 
-ERASECMD       = uisp -dprog=bsd --erase 
+FLASHCMD       = uisp -dprog=bsd --erase --upload if=$(PRG).hex 
+FLASHCMDWIN    = uisp -dprog=bsd -dlpt=1 --erase --upload if=$(PRG).hex 
 
-DEFS           = -DF_CPU=24000000 -fnew-ra
-LIBS           =
+DEFS           = 
+LIBS           = -DF_CPU=16000000 -fnew-ra
 
 # You should not have to change anything below here.
 
@@ -31,8 +31,11 @@ clean:
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
 
 flash:
-	$(ERASECMD)
 	$(FLASHCMD)
+
+flashwin:
+	$(FLASHCMDWIN)
+
 
 lst:  $(PRG).lst
 

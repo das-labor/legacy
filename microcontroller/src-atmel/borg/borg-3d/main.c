@@ -1,4 +1,3 @@
-
 #include <avr/interrupt.h>
 #include "config.h"
 #include "scrolltext.h"
@@ -13,11 +12,7 @@ int main (void){
 	borg_hw_init();
 	sei();
 	
-
 	clear_screen(0);
-
-	//setpixel3d((pixel3d){0,0,0}, 3);
-	
 
 	for(;;) {
 		test2();
@@ -26,6 +21,5 @@ int main (void){
 		test2();
 		test1();
 		snake3d();	
-		
 	}
 }

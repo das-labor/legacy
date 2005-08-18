@@ -64,7 +64,6 @@ inline void rowshow(unsigned char row, unsigned char plane){
 		CTRLPORT &= ~(1<<PIN_CLK_DATA);
 	}
 	CTRLPORT &= ~(1<<PIN_OE_DATA);
-	
 }
 
 
@@ -74,15 +73,15 @@ SIGNAL(SIG_OUTPUT_COMPARE0) {
 	
 	rowshow(row, plane);
 	
-	if(++row == NUM_PLANES){
+	if (++row == NUM_PLANES) {
 		row = 0;
-		if(++plane==NUM_LEVELS) 
-			plane=0;
+		if (++plane==NUM_LEVELS) 
+			plane = 0;
 	}
 }
 
 
-void timer0_on(){
+void timer0_on() {
 /* 	TCCR0: FOC0 WGM00 COM01 COM00 WGM01 CS02 CS01 CS00
 		CS02 CS01 CS00
 		 0    0    0	       stop
@@ -99,11 +98,11 @@ void timer0_on(){
 	TIMSK = 0x02;	// Compare match Interrupt on
 }
 
-void borg_hw_init(){
+void borg_hw_init() {
 	CTRLPORT = (1<<PIN_OE_DATA);
 	DATAPORT = 0x00;
 	CTRLDDR = 0xFF;
 	DATADDR = 0xFF;
-	timer0_on();
+	timer0_on ();
 }
 
