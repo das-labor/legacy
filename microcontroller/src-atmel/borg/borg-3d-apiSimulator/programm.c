@@ -8,7 +8,7 @@ void test1() {
 		for (y = 0; y < NUM_ROWS; y++) {
 			for (x = 0; x < NUM_COLS; x++) {
 				setpixel3d((pixel3d){x,y,z}, 3);
-				wait(20);
+				wait(15);
 			}
 		}
 	}
@@ -70,6 +70,78 @@ void test2() {
 	}
 }
 
+void growingCubeFilled() {
+	unsigned char x, y, z;
+	unsigned char min = 3, max = 4;
+	while (min < NUM_PLANES && max < NUM_PLANES) {
+		for (x = min; x <= max; x++) {
+			for (y = min; y <= max; y++) {
+				for (z = min; z <= max; z++) {
+					setpixel3d((pixel3d){x,y,z}, 3);
+				}
+			}
+		}
+		wait(150);
+		min--;
+		max++;
+	}
+	min = 0;
+	max = 7;
+	while (min < 5 && max > 3) {
+		for (x = min; x <= max; x++) {
+			for (y = min; y <= max; y++) {
+				for (z = min; z <= max; z++) {
+					if (x == min || x == max || y == min || y == max || z == min || z == max)
+						setpixel3d((pixel3d){x,y,z}, 0);
+				}
+			}
+	
+		}
+		wait(150);
+		min++;
+		max--;
+	}	
+}
+
+void coolAnim() {
+	unsigned char x, y, z;
+	unsigned char min = 3, max = 4;
+	while (min < NUM_PLANES && max < NUM_PLANES) {
+		for (x = 0; x <= 8; x++) {
+			for (y = 0; y <= 8; y++) {
+				for (z = 0; z <= 8; z++) {
+					if (x == min || x == max || y == min || y == max || z == min || z == max)
+						setpixel3d((pixel3d){x,y,z}, 3);
+					else 
+						setpixel3d((pixel3d){x,y,z}, 0);
+				}
+			}
+		}
+		wait(150);
+		min--;
+		max++;
+	}
+	min = 0;
+	max = 7;
+	while (min < 5 && max > 3) {
+		for (x = 0; x <= 8; x++) {
+			for (y = 0; y <= 8; y++) {
+				for (z = 0; z <= 8; z++) {
+					if (x == min || x == max || y == min || y == max || z == min || z == max)
+						setpixel3d((pixel3d){x,y,z}, 3);
+					else 
+						setpixel3d((pixel3d){x,y,z}, 0);
+				}
+			}
+	
+		}
+		wait(150);
+		min++;
+		max--;
+	}	
+}
+
+
 #define BIT_S(var,b) ((var&(1<<b))?1:0)
 
 unsigned char myrandom(){
@@ -79,7 +151,6 @@ unsigned char myrandom(){
 		muh = (muh<<1) ^ BIT_S(muh,1) ^ BIT_S(muh,8) ^ BIT_S(muh,9) ^ BIT_S(muh,13) ^ BIT_S(muh,15);
 	}
 	return (unsigned char) muh;
-
 }
 
 void snake3d(){
@@ -168,21 +239,22 @@ void snake3d(){
 	}
 }
 
-void gameOfLife() {
-	pixel3d cursor;
-	unsigned char x, y, z;
-	
-	
-	
-	
+void waves() {
 	
 }
 
 void *display_loop(void * unused) {
 	printf("Display Thread started \n");
 	while (1) {
+		coolAnim();
+		growingCubeFilled();
+		growingCubeFilled();
+		coolAnim();
 		test2();
-		snake3d();
+		test2();
+		test2();
 		test1();
+		snake3d();
+		
 	}
 }

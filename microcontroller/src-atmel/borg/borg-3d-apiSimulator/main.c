@@ -8,6 +8,8 @@
 #include "pixel3d.h"
 #include "programm.h"
 
+unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
+
 int view_rotx = 0, view_roty = 0, view_rotz = 0;
 int win;
 pthread_t simthread;

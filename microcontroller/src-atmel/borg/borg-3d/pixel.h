@@ -23,4 +23,3 @@ pixel3d next_pixel3d(pixel3d pix, direction dir);
 direction direction_r(direction dir);
 
 void shift_pixmap_l();
-
