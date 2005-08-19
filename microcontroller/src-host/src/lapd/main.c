@@ -8,6 +8,7 @@
 #include <sys/types.h>
 
 #include "inet.h"
+#include "debug.h"
 
 // Atmel ; LAP includes
 #include "config.h"
@@ -22,7 +23,6 @@
 
 
 static char *progname;
-static int verbose = 0;
 
 static char *optstring = "hdv::s:p:";
 struct option longopts[] =
@@ -34,13 +34,6 @@ struct option longopts[] =
   { "port", required_argument, NULL, 'p' },
   { NULL, 0, NULL, 0 }
 };
-
-void debug(int level, char *msg)
-{
-	if (level >= verbose) {
-		fprintf(stderr, msg);
-	}
-}
 
 void help()
 {
@@ -91,14 +84,12 @@ void event_loop()
 		highfd = max(highfd, net_fdset(&rset));
 
 		num = select(highfd+1, &rset, (fd_set *)NULL, (fd_set *)NULL, NULL);
-		if (num == 0) continue;
-		if (num < 0) {
-			perror("select failed: ");
-			exit(2);
-		}
+		debug_assert( num >= 0, "select faild" );
+		debug( 10, "Select returned %d", num);
 
 		// check activity on uart_fd
 		if (FD_ISSET(uart_fd(), &rset)) {
+			debug( 10, "Activity on uart_fd" );
 			rs232can_msg *msg = rs232can_get_nb();
 			if (msg) {
 				process_rs232_msg(msg);
@@ -106,8 +97,8 @@ void event_loop()
 		}
 		
 		// new connections
-		while( client = net_new_connection(&rset) ) {
-			new_client(client);
+		if( client = net_new_connection(&rset) ) {
+			debug( 2, "New connection (fd=%d)", client->fd );
 		}
 
 		// check client activity 
@@ -117,6 +108,9 @@ void event_loop()
 				process_client_msg(client, msg);
 			}
 		}
+
+		// close errorous connections
+		net_close_errors();
 	}
 }
 
@@ -135,9 +129,9 @@ int main(int argc, char *argv[])
 		switch (optc) {
 			case 'v':
 				if (optarg)
-					verbose = atoi(optarg);
+					debug_level = atoi(optarg);
 				else 
-					verbose = 3;
+					debug_level = 3;
 				break;
 			case 'd':
 				d = 1;
@@ -162,11 +156,11 @@ int main(int argc, char *argv[])
 	uart_init(serial);
 	can_init();
 	rs232can_reset();
-	debug(1, "CAN communication established...\n" );
+	debug(1, "CAN communication established" );
 
 	// setup network socket
 	net_init(tcpport);
-	debug(1, "Listenig for network connections...\n" );
+	debug(1, "Listenig for network connections" );
 
 	event_loop();  // does not return
 
