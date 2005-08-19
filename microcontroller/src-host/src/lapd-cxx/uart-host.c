@@ -81,11 +81,8 @@ char uart_getc(void)
 	return c;
 }
 
-int uart_fdset(fd_set *set)
+int uart_fd()
 {
-	int fd = v24QueryFileHandle(Port);
-
-	FD_SET(fd, set);
-	return fd;
+	return  v24QueryFileHandle(Port);
 }
 

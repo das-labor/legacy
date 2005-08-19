@@ -7,6 +7,11 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
+#include <iostream>
+#include <string>
+
+#include "inet.h"
+
 // Atmel ; LAP includes
 #include "config.h"
 
@@ -18,11 +23,11 @@
  #define max(a,b) (((a) > (b)) ? (a) : (b))
 #endif
 
-
+static InetConnections *conns;
 static char *progname;
 static int verbose = 0;
 
-static char *optstring = "hdv::s:p:";
+static char *optstring = "hdv::s:p:l";
 struct option longopts[] =
 {
   { "help", no_argument, NULL, 'h' },
@@ -30,6 +35,7 @@ struct option longopts[] =
   { "verbose", optional_argument, NULL, 'v' },
   { "serial", required_argument, NULL, 's' },
   { "port", required_argument, NULL, 'p' },
+  { "loopback", no_argument, NULL, 'l' },
   { NULL, 0, NULL, 0 }
 };
 
@@ -48,7 +54,8 @@ void help()
    -v, --verbose           be more verbose and display a CAN packet dump\n\
    -d, --daemon            become daemon\n\
    -s, --serial PORT       use specified serial port (default: /dev/ttyS0)\n\
-   -p, --port PORT         use specified TCP/IP port (default: 2342)\n\n" );
+   -p, --port PORT         use specified TCP/IP port (default: 2342)\n\
+   -l, --loopback          set CAN gateway to loopback mode\n\n" );
 }
 
 void print_packets(){
@@ -60,11 +67,22 @@ void print_packets(){
 }
 
 
+void process_rs232_msg(rs232can_msg *msg)
+{
+	conns->sendPacket(msg);
+}
+
+void process_inet_msg(LapClient *client, rs232can_msg *msg)
+{
+	conns->sendPacket(msg);
+}
+
 int main(int argc, char *argv[])
 {
 	int d = 0;                   // daemon
 	int tcpport  = 2342;         // TCP Port
 	char *serial = "/dev/ttyS0"; // serial port
+	bool loopback = false;       // activate loopback
 	int optc;
 
 	progname = argv[0];
@@ -87,6 +105,9 @@ int main(int argc, char *argv[])
 			case 'p':
 				tcpport = atoi(optarg);
 				break;
+			case 'l':
+				loopback = true;
+				break;
 			case 'h':
 				help();
 				exit(0);
@@ -104,10 +125,12 @@ int main(int argc, char *argv[])
 	debug(1, "CAN communication established...\n" );
 
 	// setup network socket
-	net_init(tcpport);
+	conns = new InetConnections(tcpport);
+	conns->addWatchFd(uart_fd());
 	debug(1, "Listenig for network connections...\n" );
 
 	// eventloop
+	/*
 	for(;;) {
 		int num;
 		int highfd;
@@ -132,10 +155,33 @@ int main(int argc, char *argv[])
 		while( conn = net_after_select(&rset) ) {
 		}
 	}
+	*/
 
+	for(;;) {
+		conns->waitForActivity();
 
+		// data on uart?
+		if (conns->fdHasActivity(uart_fd())) {
+			rs232can_msg *msg = rs232can_get_nb();
+			if (msg) {
+				// complete packet arrived
+				process_rs232_msg(msg);
+			}
+		}
 
+		// handle inet connections
+		for(InetConnections::ClientList::iterator i = conns->clients.begin(); i != conns->clients.end(); i++) {
+			if (!conns->hasActivity(*i)) continue;
 
+			rs232can_msg *msg = (*i)->getPacket();
+			if (msg) {
+				// complete packet arrived
+				process_inet_msg(*i, msg);
+			}
+		}
+	}
+
+	/*
 	if(!strcmp(argv[1], "p")){
 		print_packets();
 	}else if(!strcmp(argv[1], "g")){
@@ -159,7 +205,7 @@ int main(int argc, char *argv[])
 	
 	}
 	
-	
+	*/
 	
 
 	return 0;
