@@ -1,25 +1,58 @@
 #include "pixel3d.h"
 
+
+unsigned char shl_table[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
+
+
 void clear_screen(unsigned char value){
-	int x;
-	for (x = 0; x < BORGLEDS; x++) {
-		data[x] = value;
+	unsigned char p, x, y, v=0xFF;
+	for(p=0; p<NUM_LEVELS; p++) {
+		if(p == value) v=0;
+		for(y=0;y<NUM_PLANES;y++){
+			for(x=0;x<PLANEBYTES ;x++){
+				pixmap[p][y][x] = v;
+			}
+		}
 	}
 }
 
-void setpixel3d(pixel3d p, unsigned char value ) {
-	data[p.x+BORGSIZE*p.y+BORGSIZE*BORGSIZE*p.z] = value;
+void setpixel3d(pixel3d p, unsigned char value ){
+	unsigned char plane;
+	
+	for (plane=0; plane < NUM_LEVELS; plane++) {
+		if (plane < value)
+			pixmap[plane][p.x%NUM_PLANES][p.y%PLANEBYTES] |=  shl_table[p.z%NUM_ROWS];
+		else
+			pixmap[plane][p.x%NUM_PLANES][p.y%PLANEBYTES] &= ~shl_table[p.z%NUM_ROWS];
+	}
 }
 
-void clearpixel3d(pixel3d p){
-	data[p.x+BORGSIZE*p.y+BORGSIZE*BORGSIZE*p.z] = 0;
+//shifts pixmap left. It is really shifted right, but because col0 is left in the Display it's left.
+// may be incorect or not useful for borg-3d   not tested
+void shift_pixmap_l(){
+	unsigned char plane, row, byte;
+	
+	for(plane=0; plane<NUM_LEVELS; plane++){
+		for(row=0;row<NUM_ROWS; row++){
+			for(byte=0;byte<PLANEBYTES-1;byte++){
+				pixmap[plane][row][byte] >>= 1;
+				pixmap[plane][row][byte] |= (pixmap[plane][row][byte+1] & 0x01) * 0x80;;
+			}
+			pixmap[plane][row][PLANEBYTES-1] >>= 1;
+		}
+	}
 }
 
-unsigned char get_pixel3d(pixel3d p){ // XXX
-	return data[p.x+BORGSIZE*p.y+BORGSIZE*BORGSIZE*p.z];	
+unsigned char get_pixel3d(pixel3d p){
+
+	if ((p.x > (NUM_ROWS-1)) || (p.y > (NUM_ROWS-1)) || (p.z > (NUM_ROWS-1))) {
+		return 0xff;
+	} else {
+		return (pixmap[0][p.x%NUM_PLANES][p.y%PLANEBYTES] & shl_table[p.z%8]) ? 1:0;
+	}
 }
 
-unsigned char get_next_pixel3d(pixel3d p, direction dir) {
+unsigned char get_next_pixel3d(pixel3d p, direction dir){
 	pixel3d tmp;
 	switch (dir) {
 		case right:
@@ -41,31 +74,26 @@ unsigned char get_next_pixel3d(pixel3d p, direction dir) {
 			tmp = (pixel3d){p.x, p.y-1, p.z};
 			break;			
 	}
-	if ((tmp.x>BORGSIZE-1) || (tmp.y>BORGSIZE-1) || (tmp.z>BORGSIZE-1)) {
-		return 0xFF;
-	} else {
-		return get_pixel3d(tmp);
-	}
+	return get_pixel3d(tmp);
 }
 
 direction direction_r(direction dir){
 	switch (dir) {
 		case right:
-			return(back);
+			return back;
 		case down:
-			return(left);
+			return left;
 		case left:
-			return(up);
+			return up;
 		case up:
-			return (forward);	
+			return forward;	
 		case back:
-			return (down);
+			return down;
 		case forward:
-			return (right);				
+			return right;					
 	}
-	return(0);
+	return 0;
 }
-
 
 pixel3d next_pixel3d(pixel3d pix, direction dir){
 	switch (dir){
@@ -89,8 +117,4 @@ pixel3d next_pixel3d(pixel3d pix, direction dir){
 			break;
 	}
 	return (pixel3d){0,0,0};
-}
-
-void wait(unsigned int ms) {
-	usleep(ms*1000);
 }

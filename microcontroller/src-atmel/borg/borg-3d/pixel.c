@@ -25,8 +25,8 @@ void clear_screen(unsigned char value){
 void setpixel3d(pixel3d p, unsigned char value ){
 	unsigned char plane;
 	
-	for (plane=0; plane<NUM_PLANES; plane++) {
-		if ( plane < value )
+	for (plane=0; plane < NUM_LEVELS; plane++) {
+		if (plane < value)
 			pixmap[plane][p.x%NUM_PLANES][p.y%PLANEBYTES] |=  shl_table[p.z%NUM_ROWS];
 		else
 			pixmap[plane][p.x%NUM_PLANES][p.y%PLANEBYTES] &= ~shl_table[p.z%NUM_ROWS];
@@ -34,10 +34,11 @@ void setpixel3d(pixel3d p, unsigned char value ){
 }
 
 //shifts pixmap left. It is really shifted right, but because col0 is left in the Display it's left.
+// may be incorect or not useful for borg-3d   not tested
 void shift_pixmap_l(){
 	unsigned char plane, row, byte;
 	
-	for(plane=0; plane<NUM_PLANES; plane++){
+	for(plane=0; plane<NUM_LEVELS; plane++){
 		for(row=0;row<NUM_ROWS; row++){
 			for(byte=0;byte<PLANEBYTES-1;byte++){
 				pixmap[plane][row][byte] >>= 1;

@@ -1,4 +1,3 @@
-
 #include "pixel.h"
 #include "util.h"
 
@@ -11,7 +10,6 @@ unsigned char x,y;
 		}
 	}
 }
-
 
 void spirale(unsigned int delay){
 	clear_screen(0);
@@ -276,10 +274,7 @@ void matrix1(){
 	streamer streamers[STREAMER_NUM];
 	unsigned char matrix_bright[8][8];
 	unsigned char x, y;
-	
-
 	unsigned char draw;
-
 	unsigned char streamer_num = 0;
 	while(counter--){
 		unsigned char i, j;

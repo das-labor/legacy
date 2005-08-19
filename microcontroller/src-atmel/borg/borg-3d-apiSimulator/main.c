@@ -1,8 +1,12 @@
 #include <GL/glut.h>   // for gl* glu* glut*
 #include <pthread.h>   // for threads in linux
+#include <stdlib.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include "pixel3d.h"
 #include "programm.h"
-
 
 int view_rotx = 0, view_roty = 0, view_rotz = 0;
 int win;
@@ -25,19 +29,25 @@ void drawLED(int color, float pos_x, float pos_y, float pos_z) {
 }
 
 void display(void){
-  	int x, y, z;
+  	int x, y, z, level, color;
   	glClear(GL_COLOR_BUFFER_BIT);
   	glPushMatrix();
-	glTranslatef(BORGSIZE*2., BORGSIZE*2., BORGSIZE*2.);
+	glTranslatef(NUM_PLANES*2., NUM_ROWS*2., NUM_COLS*2.);
   	glRotatef(view_rotx, 1.0, 0.0, 0.0);
   	glRotatef(view_roty, 0.0, 1.0, 0.0);
 	glRotatef(view_roty, 0.0, 0.0, 1.0);
-	glTranslatef(-BORGSIZE*2., -BORGSIZE*2., -BORGSIZE*2.);
-  	for (x = 0; x < BORGSIZE; x++) {
-		for (y = 0; y < BORGSIZE; y++) { 
-			for (z = 0; z < BORGSIZE; z++) {
-				drawLED(data[x+BORGSIZE*y+BORGSIZE*BORGSIZE*z],
-						(float)x*4.0, (float)y*4.0, (float)z*4.);
+	glTranslatef(-NUM_PLANES*2., -NUM_ROWS*2., -NUM_COLS*2.);
+  	for (x = 0; x < NUM_PLANES; x++) {
+		for (y = 0; y < NUM_ROWS; y++) { 
+			for (z = 0; z < NUM_COLS; z++) {
+				color = 0;
+				for (level = 0; level < NUM_LEVELS; level++) {
+					if (pixmap[level][x%NUM_PLANES][y%PLANEBYTES] 
+						& (1 << z%NUM_ROWS)) {
+						color = level;		
+					}
+				}
+				drawLED(color, (float)x*4.0, (float)y*4.0, (float)z*4.);
 			}
 		}
   	}
@@ -79,9 +89,7 @@ static void special(int k, int x, int y)
 
 int main(int argc, char **argv){
   int i;	
-  for (i = 0; i < BORGLEDS; i++) {
-	data[i] = 0;
-  }
+
   glutInit(&argc,argv);
   glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
   glutInitWindowSize(800, 600);
@@ -96,8 +104,8 @@ int main(int argc, char **argv){
   // clearcolor & main loop
   glClearColor(0.1,0.1,0.1,0.1);
   gluPerspective(60.0, 800./600., 5., 1000.);
-  gluLookAt(BORGSIZE*2., BORGSIZE*2.+50., BORGSIZE*2.,
-            BORGSIZE*2., BORGSIZE*2., BORGSIZE*2.,
+  gluLookAt(NUM_PLANES*2., NUM_ROWS*2.+50., NUM_COLS*2.,
+            NUM_PLANES*2., NUM_ROWS*2., NUM_COLS*2.,
             0.0, 0.0, 1.0); 
   // start display_loop thread
   pthread_create(&simthread, NULL, display_loop, NULL);
