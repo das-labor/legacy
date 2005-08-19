@@ -13,14 +13,14 @@ DIE=0
 
 (autoconf --version) < /dev/null > /dev/null 2>&1 || {
   echo
-  echo "**Error**: You must have Autoconf' installed
+  echo "**Error**: You must have Autoconf' installed"
   echo "Get version 2.57 or higher from ftp://ftp.gnu.org/pub/gnu/"
   DIE=1
 }
 
 (automake --version) < /dev/null > /dev/null 2>&1 || {
   echo
-  echo "**Error**: You must have Automake' installed
+  echo "**Error**: You must have Automake' installed"
   echo "Get version 1.7 or higher from ftp://ftp.gnu.org/pub/gnu/"
   DIE=1
   NO_AUTOMAKE=yes

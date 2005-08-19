@@ -4,7 +4,7 @@
 AC_PREREQ(2.59)
 AC_INIT(lap-host, 0.1)
 AM_INIT_AUTOMAKE
-AC_CONFIG_SRCDIR(src/lapd/main.c)
+AC_CONFIG_SRCDIR(src/cand/main.c)
 AC_CONFIG_HEADER([config.h])
 
 # Checks for programs.
@@ -30,7 +30,8 @@ AC_CONFIG_FILES([
 Makefile
 playground/Makefile
 src/Makefile
-src/lapd/Makefile
+src/cand/Makefile
+src/lapd-cxx/Makefile
 ])
 
 AC_OUTPUT
