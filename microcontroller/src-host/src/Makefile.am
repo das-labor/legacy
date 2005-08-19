@@ -1,2 +1,2 @@
 
-SUBDIRS = lapd
+SUBDIRS = cand
