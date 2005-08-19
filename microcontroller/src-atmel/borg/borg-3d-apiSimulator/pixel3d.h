@@ -2,7 +2,7 @@
 #include "util.h"
 #include "config.h"
 
-unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
+extern unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
 
 typedef struct {
 	unsigned char x;
