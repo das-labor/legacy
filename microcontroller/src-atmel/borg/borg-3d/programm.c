@@ -75,6 +75,78 @@ void test2() {
 	}
 }
 
+void growingCubeFilled() {
+	unsigned char x, y, z;
+	unsigned char min = 3, max = 4;
+	while (min < NUM_PLANES && max < NUM_PLANES) {
+		for (x = min; x <= max; x++) {
+			for (y = min; y <= max; y++) {
+				for (z = min; z <= max; z++) {
+					setpixel3d((pixel3d){x,y,z}, 3);
+				}
+			}
+		}
+		mWait(150);
+		min--;
+		max++;
+	}
+	min = 0;
+	max = 7;
+	while (min < 5 && max > 3) {
+		for (x = min; x <= max; x++) {
+			for (y = min; y <= max; y++) {
+				for (z = min; z <= max; z++) {
+					if (x == min || x == max || y == min || y == max || z == min || z == max)
+						setpixel3d((pixel3d){x,y,z}, 0);
+				}
+			}
+	
+		}
+		mWait(150);
+		min++;
+		max--;
+	}	
+}
+
+void coolAnim() {
+	unsigned char x, y, z;
+	unsigned char min = 3, max = 4;
+	while (min < NUM_PLANES && max < NUM_PLANES) {
+		for (x = 0; x <= 8; x++) {
+			for (y = 0; y <= 8; y++) {
+				for (z = 0; z <= 8; z++) {
+					if (x == min || x == max || y == min || y == max || z == min || z == max)
+						setpixel3d((pixel3d){x,y,z}, 3);
+					else 
+						setpixel3d((pixel3d){x,y,z}, 0);
+				}
+			}
+		}
+		mWait(150);
+		min--;
+		max++;
+	}
+	min = 0;
+	max = 7;
+	while (min < 5 && max > 3) {
+		for (x = 0; x <= 8; x++) {
+			for (y = 0; y <= 8; y++) {
+				for (z = 0; z <= 8; z++) {
+					if (x == min || x == max || y == min || y == max || z == min || z == max)
+						setpixel3d((pixel3d){x,y,z}, 3);
+					else 
+						setpixel3d((pixel3d){x,y,z}, 0);
+				}
+			}
+	
+		}
+		mWait(150);
+		min++;
+		max--;
+	}	
+}
+
+
 #define BIT_S(var,b) ((var&(1<<b))?1:0)
 
 unsigned char myrandom(){

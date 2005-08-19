@@ -15,6 +15,10 @@ int main (void){
 	clear_screen(0);
 
 	for(;;) {
+		coolAnim();
+		growingCubeFilled();
+		growingCubeFilled();
+		coolAnim();
 		test2();
 		test2();
 		test2();
