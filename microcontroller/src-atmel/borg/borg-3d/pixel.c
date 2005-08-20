@@ -52,7 +52,7 @@ void shift_pixmap_l(){
 
 unsigned char get_pixel3d(pixel3d p){
 
-	if ((p.x > (NUM_COLS-1)) || (p.y> (NUM_ROWS-1))) {
+	if ((p.x>NUM_PLANES-1) || (p.y>NUM_ROWS-1) || (p.z>NUM_COLS-1)) {
 		return 0xff;
 	} else {
 		return (pixmap[0][p.x%NUM_PLANES][p.y%PLANEBYTES] & shl_table[p.z%8]) ? 1:0;
@@ -82,12 +82,9 @@ unsigned char get_next_pixel3d(pixel3d p, direction dir){
 			tmp = (pixel3d){p.x, p.y-1, p.z};
 			break;			
 	}
-	if ((tmp.x>NUM_ROWS-1) || (tmp.y>NUM_ROWS-1) || (tmp.z>NUM_ROWS-1)) {
-		return 0xFF;
-	} else {
-		return get_pixel3d(tmp);
-	}
+	return get_pixel3d(tmp);
 }
+
 
 direction direction_r(direction dir){
 	switch (dir) {
@@ -103,6 +100,79 @@ direction direction_r(direction dir){
 			return down;
 		case forward:
 			return right;					
+	}
+	return 0;
+}
+
+direction turn_right(direction dir){
+	switch (dir) {
+		case right:
+			return back;
+		case down:
+			return right;
+		case left:
+			return forward;
+		case up:
+			return left;	
+		case back:
+			return left;
+		case forward:
+			return right;					
+	}
+	return 0;
+}
+
+
+direction turn_left(direction dir){
+	switch (dir) {
+		case right:
+			return forward;
+		case down:
+			return left;
+		case left:
+			return back;
+		case up:
+			return left;	
+		case back:
+			return right;
+		case forward:
+			return left;					
+	}
+	return 0;
+}
+
+direction turn_up(direction dir){
+	switch (dir) {
+		case right:
+			return up;
+		case down:
+			return forward;
+		case left:
+			return up;
+		case up:
+			return back;	
+		case back:
+			return up;
+		case forward:
+			return up;					
+	}
+	return 0;
+}
+
+direction turn_down(direction dir){
+	switch (dir) {
+		case right:
+			return down;
+		case down:
+			return back;
+		case left:
+			return down;
+		case up:
+			return forward;	
+		case back:
+			return down;
+		case forward:
+			return down;					
 	}
 	return 0;
 }

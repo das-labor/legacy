@@ -48,8 +48,7 @@ inline void rowshow(unsigned char row, unsigned char plane){
 	}
 	// clear
 	// clear data[0] shift_data clk !clk !shift_data data[1] clk !clk ...
-	
-	
+
 	CTRLPORT &= ~(1<<PIN_CLEAR_DATA);
 	CTRLPORT |=  (1<<PIN_CLEAR_DATA);
 	DATAPORT = pixmap[plane][row][0];

@@ -5,8 +5,6 @@
 #include "borg_hw.h"
 #include "pixel.h"
 
-
-
 int main (void){
 	clear_screen(0);
 	borg_hw_init();
@@ -15,6 +13,9 @@ int main (void){
 	clear_screen(0);
 
 	for(;;) {
+		matrix();
+	 	//snake3dJoystick();
+		test3();
 		coolAnim();
 		growingCubeFilled();
 		growingCubeFilled();
@@ -23,7 +24,6 @@ int main (void){
 		test2();
 		test2();
 		test2();
-		test1();
 		snake3d();	
 	}
 }
