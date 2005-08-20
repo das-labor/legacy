@@ -239,9 +239,6 @@ void snake3d(){
 	}
 }
 
-void waves() {
-	
-}
 
 void *display_loop(void * unused) {
 	printf("Display Thread started \n");

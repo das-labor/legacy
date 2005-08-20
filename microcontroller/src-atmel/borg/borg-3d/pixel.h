@@ -21,5 +21,9 @@ unsigned char get_next_pixel3d(pixel3d p, direction dir);
 pixel3d next_pixel3d(pixel3d pix, direction dir);
 
 direction direction_r(direction dir);
+direction turn_right(direction dir);
+direction turn_left(direction dir);
+direction turn_up(direction dir);
+direction turn_down(direction dir);
 
 void shift_pixmap_l();

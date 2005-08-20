@@ -4,3 +4,5 @@
 
 #define NUM_ROWS 8
 #define NUM_COLS 8
+
+#define STREAMER_NUM 30
