@@ -1,6 +1,6 @@
 
-bin_PROGRAMS = lapd
+bin_PROGRAMS = cand
 
-lapd_SOURCES = main.c uart-host.c can-host.c rs232can.c inet.c debug.c
+cand_SOURCES = main.c uart-host.c can-host.c rs232can.c cann.c debug.c
 
 

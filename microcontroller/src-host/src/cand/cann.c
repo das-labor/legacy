@@ -9,18 +9,18 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#include "inet.h"
+#include "cann.h"
 
 
 int listen_socket;
-net_client_t *net_clients_head = NULL;
+cann_conn_t *cann_conns_head = NULL;
 
 
 #ifndef max
  #define max(a,b) (((a) > (b)) ? (a) : (b))
 #endif
 
-void net_init(int port)
+void cann_init(int port)
 {
 struct sockaddr_in serv_addr;
 	int ret;
@@ -46,9 +46,9 @@ struct sockaddr_in serv_addr;
 
 }
 
-int net_fdset(fd_set *set)
+int cann_fdset(fd_set *set)
 {
-	net_client_t *client = net_clients_head;
+	cann_conn_t *client = cann_conns_head;
 	int maxfd = listen_socket;
 
 	// socket for new connections
@@ -65,9 +65,9 @@ int net_fdset(fd_set *set)
 	return maxfd;
 }
 
-net_client_t *net_new_connection(fd_set *set)
+cann_conn_t *cann_new_connection(fd_set *set)
 {
-	net_client_t *client;
+	cann_conn_t *client;
 
 	// activity on listen_socket?
 	if ( !FD_ISSET(listen_socket, set) ) 	
@@ -83,23 +83,23 @@ net_client_t *net_new_connection(fd_set *set)
 	fcntl(fd, F_SETFL, O_NONBLOCK);
 
 	// initialize client struct
-	client = (net_client_t *)malloc(sizeof(net_client_t));
-	client->next  = net_clients_head;
+	client = (cann_conn_t *)malloc(sizeof(cann_conn_t));
+	client->next  = cann_conns_head;
 	client->fd    = fd;
 	client->missing_bytes = 0;
 	client->error = 0;
-	net_clients_head = client;
+	cann_conns_head = client;
 
 	return client;
 }
 
-void net_close_errors()
+void cann_close_errors()
 {
-	net_client_t **client = &net_clients_head;
+	cann_conn_t **client = &cann_conns_head;
 
 	while(*client) {
 		if ( (*client)->error) {
-			net_client_t *del = (*client);
+			cann_conn_t *del = (*client);
 
 			*client = del->next;
 			client = &(del->next);
@@ -114,9 +114,9 @@ void net_close_errors()
 	}
 }
 
-net_client_t *net_client_activity(fd_set *set)
+cann_conn_t *cann_activity(fd_set *set)
 {
-	net_client_t *client = net_clients_head;
+	cann_conn_t *client = cann_conns_head;
 
 	while(client) {
 		if (!(client->error) && FD_ISSET(client->fd, set) ) {
@@ -130,13 +130,13 @@ net_client_t *net_client_activity(fd_set *set)
 }
 
 /* nonblocking read on netwock socket -- returns msg if complete msg arrived */
-rs232can_msg *net_get_nb(net_client_t *client)
+rs232can_msg *cann_get_nb(cann_conn_t *client)
 {
 	int ret; 
 
 	// sanity
 	debug_assert( !(client->error), 
-			"net_get_nb() with error (%d)", client->error );
+			"cann_get_nb() with error (%d)", client->error );
 
 	// start new packet and read length?
 	if (client->missing_bytes == 0) {
@@ -165,11 +165,11 @@ rs232can_msg *net_get_nb(net_client_t *client)
 	if (ret <= 0)
 		goto error;
 		
-	debug(10, "fd %d: recived %d bytes, %d missing",
-			client->fd, ret, client->missing_bytes);
-
 	client->missing_bytes -= ret;
 	client->rcv_ptr       += ret;
+
+	debug(10, "fd %d: recived %d bytes, %d missing",
+			client->fd, ret, client->missing_bytes);
 
 	// message complete?
 	if (client->missing_bytes == 0)
