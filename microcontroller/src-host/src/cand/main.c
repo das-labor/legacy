@@ -7,7 +7,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
-#include "inet.h"
+#include "cann.h"
 #include "debug.h"
 
 // Atmel ; LAP includes
@@ -59,12 +59,28 @@ void process_rs232_msg( rs232can_msg *msg )
 	// XXX
 }
 
-void process_client_msg( net_client_t *client, rs232can_msg *msg )
+void process_client_msg( cann_conn_t *client, rs232can_msg *msg )
 {
-	// XXX
+	can_message *cmsg;
+	int x;
+
+	debug(3, "Processing message from network..." );
+
+	switch(msg->cmd) {
+		case RS232CAN_PKT:
+		default:
+       			cmsg = can_buffer_get();
+//			rs232can_rs2can(cmsg, msg);
+			cmsg->dlc = 4;
+			cmsg->addr_src = 0x00;
+			cmsg->addr_dest = 0x00;
+			cmsg->port_src = 0x00;
+			cmsg->port_dest = 0x20;
+			can_transmit(cmsg);
+	}
 }
 
-void new_client( net_client_t *client )
+void new_client( cann_conn_t *client )
 {
 	// XXX
 }
@@ -75,13 +91,13 @@ void event_loop()
 		int num;
 		int highfd;
 		fd_set rset;
-		net_client_t *client;
+		cann_conn_t *client;
 
 		FD_ZERO(&rset);
 
 		highfd = uart_fd();
 		FD_SET(uart_fd(), &rset);
-		highfd = max(highfd, net_fdset(&rset));
+		highfd = max(highfd, cann_fdset(&rset));
 
 		num = select(highfd+1, &rset, (fd_set *)NULL, (fd_set *)NULL, NULL);
 		debug_assert( num >= 0, "select faild" );
@@ -97,20 +113,20 @@ void event_loop()
 		}
 		
 		// new connections
-		if( client = net_new_connection(&rset) ) {
+		if( client = cann_new_connection(&rset) ) {
 			debug( 2, "New connection (fd=%d)", client->fd );
 		}
 
 		// check client activity 
-		while( client = net_client_activity(&rset) ) {
-			rs232can_msg *msg = net_get_nb(client);
+		while( client = cann_activity(&rset) ) {
+			rs232can_msg *msg = cann_get_nb(client);
 			if(msg) {
 				process_client_msg(client, msg);
 			}
 		}
 
 		// close errorous connections
-		net_close_errors();
+		cann_close_errors();
 	}
 }
 
@@ -151,7 +167,6 @@ int main(int argc, char *argv[])
 		}
 	} // while
 
-	
 	// setup serial communication
 	uart_init(serial);
 	can_init();
@@ -159,16 +174,14 @@ int main(int argc, char *argv[])
 	debug(1, "CAN communication established" );
 
 	// setup network socket
-	net_init(tcpport);
+	cann_init(tcpport);
 	debug(1, "Listenig for network connections" );
 
 	event_loop();  // does not return
 
 	return 1;  
-}
 
-/*
-
+old:
 
 	if(!strcmp(argv[1], "p")){
 		print_packets();
@@ -194,5 +207,5 @@ int main(int argc, char *argv[])
 	}
 	
 	
-	*/
 
+}
