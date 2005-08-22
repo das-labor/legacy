@@ -1,10 +1,13 @@
-#ifndef CANN
-#define CANN
+#ifndef CANN_H
+#define CANN_H
 
-/*****************************************************************************
- * can messages over TCP/IP low level functions
+/******************************************************************************
+ * CAN messages over TCP/IP -- low level functions
  *
- * needs rs232can.h to encapsulate can packates
+ *
+ * Needs can-encap.* to encapsulate can packates
+ *
+ * HOST ONLY
  */
 #include "can.h"
 #include "can-encap.h"
@@ -14,7 +17,10 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-struct cann_conn {
+/*****************************************************************************
+ * Structures
+ */
+typedef struct cann_conn {
 	int			fd;
 	struct sockaddr_in	inet_addr;
 	struct cann_conn	*next;
@@ -23,15 +29,16 @@ struct cann_conn {
 	char			*rcv_ptr;
 	int			missing_bytes;
 	int			error;
-};
-
-typedef struct cann_conn cann_conn_t;
-
-extern int listen_socket;
-extern cann_conn_t *cann_conn_head;
+} cann_conn_t;
 
 /*****************************************************************************
- * connection management
+ * Global variables
+ */
+extern int listen_socket;
+extern cann_conn_t *cann_conns_head;
+
+/*****************************************************************************
+ * Connection management
  */
 
 /* open listening socket and initialize */
@@ -66,7 +73,8 @@ rs232can_msg *cann_get(cann_conn_t *client);
  * transmit
  */
 
-void cann_tranmit(rs232can_msg *msg);
+/* transmit and free message */
+void cann_transmit(cann_conn_t *connt, rs232can_msg *msg);
 
 #endif
 

@@ -26,24 +26,24 @@ cann_conn_t *cann_conns_head = NULL;
  * Utility functions -- not exportet
  */
 struct in_addr *atoaddr(char *address) {
-  struct hostent *host;
-  static struct in_addr saddr;
+	struct hostent *host;
+	static struct in_addr saddr;
 
-  /* First try it as aaa.bbb.ccc.ddd. */
-  saddr.s_addr = inet_addr(address);
-  if (saddr.s_addr != -1) {
-    return &saddr;
-  }
+	/* First try it as aaa.bbb.ccc.ddd. */
+	saddr.s_addr = inet_addr(address);
+	if (saddr.s_addr != -1) {
+		return &saddr;
+	}
 
-  host = gethostbyname(address);
-  if (host != NULL) {
-    return (struct in_addr *) *host->h_addr_list;
-  }
-  return NULL;
+	host = gethostbyname(address);
+	if (host != NULL) {
+		return (struct in_addr *) *host->h_addr_list;
+	}
+	return NULL;
 }
 
 /*****************************************************************************
- * connection management
+ * Connection management
  */
 
 
@@ -93,8 +93,14 @@ cann_conn_t *cann_connect(char *server, int port)
 	// connect
 	memcpy( &(addr.sin_addr), atoaddr(server), sizeof(in_addr_t) );
 	addr.sin_port = port;
+	addr.sin_family = AF_INET;
 
-	connect( client->fd, (struct sock_addr *)&addr, sizeof(addr) );
+	if ( connect(client->fd, (struct sockaddr *)&addr, sizeof(addr)) <0 ) {
+		debug_perror( 0, "Connect failed" );
+		exit(1);
+	}
+
+	return client;
 }
 
 /* set bits in fd_set */
@@ -181,6 +187,10 @@ cann_conn_t *cann_activity(fd_set *set)
 	return NULL;
 }
 
+/*****************************************************************************
+ * rcv
+ */
+
 /* nonblocking read on netwock socket -- returns msg if complete msg arrived */
 rs232can_msg *cann_get_nb(cann_conn_t *client)
 {
@@ -233,7 +243,67 @@ error:
 	debug_perror( 5, "Error readig fd %d (ret==%d)", client->fd, ret );
 	client->error = 1;
 	return NULL;
-
 }
 
+rs232can_msg *cann_get(cann_conn_t *client)
+{
+	int ret;
+	int complete = 0;
+
+	// sanity
+	debug_assert( !(client->error), 
+			"cann_get_nb() with error (%d)", client->error );
+
+	while(1) {
+		// XXX select XXX
+
+		if (client->missing_bytes == 0) {
+		}
+
+		// read data
+		ret = read(client->fd, client->rcv_ptr, client->missing_bytes);
+
+		if ((ret < 0) && (errno == EAGAIN))
+			continue;
+
+		if (ret <= 0)
+			goto error;
+		
+		client->missing_bytes -= ret;
+		client->rcv_ptr       += ret;
+
+		debug(10, "fd %d: recived %d bytes, %d missing",
+			client->fd, ret, client->missing_bytes);
+
+		// message complete?
+		if (client->missing_bytes == 0)
+			return &(client->msg);
+	}
+
+error:
+	debug_perror( 5, "Error readig fd %d (ret==%d)", client->fd, ret );
+	client->error = 1;
+	return NULL;
+}
+
+
+/*****************************************************************************
+ * transmit
+ */
+
+/* transmit and free message */
+void cann_transmit(cann_conn_t *conn, rs232can_msg *msg)
+{
+	int ret;
+	int len;
+
+	// sanity
+	debug_assert( !(conn->error), 
+			"cann_get_nb() with error (%d)", conn->error );
+
+	len = msg->len + 2;
+	if( write(conn->fd, msg, len) != len ) {
+		debug_perror( 5, "Error writing fd %d", conn->fd );
+	}
+}
 
