@@ -1,11 +1,56 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "util.h"
+// #include "util.h"
 #include "can.h"
 #include "lap.h"
 
+/****************************************************************************
+ * STUBS: LAP Core Services 
+ */
 
+// send ping to dst
+void lap_ping( can_addr dst )
+{
+	pdo_message *msg = (pdo_message *)can_buffer_get();
+
+	msg->addr_src = 0;
+	msg->addr_dst = dst;
+	msg->port_src = PORT_MGT;
+	msg->port_dst = PORT_MGT;
+	msg->dlc      = 1;
+	msg->fkt_id   = FKT_MGT_PING;
+
+	can_transmit( (can_message *)msg );
+}
+
+// send reset request to dst
+void lap_reset( can_addr dst )
+{
+	pdo_message *msg = (pdo_message *)can_buffer_get();
+
+	msg->addr_src = 0;
+	msg->addr_dst = dst;
+	msg->port_src = PORT_MGT;
+	msg->port_dst = PORT_MGT;
+	msg->dlc      = 1;
+	msg->fkt_id   = FKT_MGT_RESET;
+
+	can_transmit( (can_message *)msg );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 char *sdo_readbuf(lap_message *first_msg, 
 		unsigned char int length, unsigned char &reallength)
 {
@@ -76,4 +121,4 @@ unsigned char sdo_sendbuf_nb(lap_message *fst_msg, unsigned char *buf, unsigned 
 	// XXX wait for ACK
 
 }
-
+*/
