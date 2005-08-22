@@ -1,31 +1,18 @@
 #ifndef RS232CAN_H
 #define RS232CAN_H
 
+/*****************************************************************************
+ * Send encapsulated CAN packets via UART
+ */
+
 #include "config.h"
 #include "can.h"
-#include "lap.h"
+#include "can-encap.h"
 
-#define RS232CAN_MAXLENGTH 20
-
-typedef enum { RS232CAN_RESET=0x00,
-		RS232CAN_SETFILTER=0x10, RS232CAN_PKT=0x11, RS232CAN_SETMODE=0x12
-} rs232can_cmd;
-
-
-typedef struct {
-	unsigned char cmd;
-	unsigned char len;
-	char data[RS232CAN_MAXLENGTH];
-} rs232can_msg;
-
-
+// syncronize line
 void rs232can_reset();
 
 rs232can_msg * rs232can_get_nb();
-void rs232can_put(rs232can_msg *msg);
-
-//void rs232can_setmode(can_mode_t mode);
-void rs232can_rs2can(can_message *cmsg, rs232can_msg *rmsg);
-void rs232can_can2rs(rs232can_msg *rmsg, can_message *cmsg);
+void rs232can_transmit(rs232can_msg *msg);
 
 #endif
