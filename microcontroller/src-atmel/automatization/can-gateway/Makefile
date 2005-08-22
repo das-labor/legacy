@@ -1,5 +1,5 @@
-PRG            = lap-gateway
-OBJ            = main.o uart.o util.o can.o spi.o rs232can.o
+PRG            = can-gateway
+OBJ            = main.o uart.o util.o can.o can-encap.o spi.o rs232can.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os -fshort-enums
 
