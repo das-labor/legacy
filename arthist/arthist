@@ -408,11 +408,15 @@ while (1) {
         html_span('state_change'," $d"));
   }
   $laststatus=$newstatus;
+  #
+  # added the following lines as said in the mpd blog. is ugly, crude system stuff and does not work yet...
+  #  
   system("cp $config{filename} $config{filename}.bak");
   system("cp $config{filename}.blank $config{filename}");
   system("cat $config{filename}.history >> $config{filename}.bak");
   system("cp $config{filename}.bak $config{filename}.history");
   system("cat $config{filename}.template $config{filename}.bak > $config{filename}.html")
+  # end of should-be improvement
 }
 exit(0); # never reached!
 
