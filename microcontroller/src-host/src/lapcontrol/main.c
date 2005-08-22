@@ -7,14 +7,13 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
+#include "can.h"
 #include "cann.h"
 #include "debug.h"
 
 // Atmel ; LAP includes
-#include "config.h"
+// #include "config.h"
 
-#include "can.h"
-#include "rs232can.h"
 
 #ifndef max
  #define max(a,b) (((a) > (b)) ? (a) : (b))

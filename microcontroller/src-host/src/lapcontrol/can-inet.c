@@ -1,7 +1,7 @@
 
 #include "can.h"
+#include "can-encap.h"
 #include "cann.h"
-#include "rs232can.h"
 
 static can_message Cmsg;
 static cann_conn_t *conn;
