@@ -31,4 +31,11 @@ can_message *can_get_nb();
 void can_setfilter();
 void can_setmode(can_mode_t);
 
+#include "config.h"
+
+#ifndef CAN_INTERRUPT
+//this is only needed for Interrupt driven Version
+#define can_free(m)
+#endif
+
 #endif
