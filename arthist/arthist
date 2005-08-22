@@ -408,6 +408,11 @@ while (1) {
         html_span('state_change'," $d"));
   }
   $laststatus=$newstatus;
+  system("cp $config{filename} $config{filename}.bak");
+  system("cp $config{filename}.blank $config{filename}");
+  system("cat $config{filename}.history >> $config{filename}.bak");
+  system("cp $config{filename}.bak $config{filename}.history");
+  system("cat $config{filename}.template $config{filename}.bak > $config{filename}.html")
 }
 exit(0); # never reached!
 
