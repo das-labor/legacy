@@ -10,9 +10,9 @@
 #include "spi.h"
 #include "can.h"
 
-#include "can-encap.h"
 #include "uart.h"
-#include "rs232can.h"
+#include "can-uart.h"
+#include "can-encap.h"
 
 // Timer Interrupt
 SIGNAL(SIG_OUTPUT_COMPARE0)
@@ -77,8 +77,9 @@ void process_rs232_msg( rs232can_msg *msg )
 
 void process_can_msg(can_message *msg){
 	rs232can_msg rmsg;
+
 	rs232can_can2rs(&rmsg, msg);
-	rs232can_transmit(&rmsg);
+	canu_transmit(&rmsg);
 }
 
 int main(){
@@ -87,12 +88,10 @@ int main(){
 	can_init();
 
 	DDRC = 0xff;
-	// uart_putc('*');
-	// timer0_on();
-
 
 	sei();
-	rs232can_reset();
+
+	canu_reset();
 	can_setmode(normal);
 
 	while(1) {
@@ -100,7 +99,7 @@ int main(){
 		can_message  *cmsg;
 
 
-		rmsg = rs232can_get_nb();
+		rmsg = canu_get_nb();
 		if (rmsg){ 
 			process_rs232_msg(rmsg);
 		}
