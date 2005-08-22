@@ -1,4 +1,4 @@
-#include "config.h"
+#include "can.h"
 
 #ifndef __C64__
 #include <avr/io.h>
@@ -6,7 +6,7 @@
 #define asm asm volatile
 #endif
 
-#include "can.h"
+
 #include "spi.h"
 
 //#include "mcp2515.inc"
@@ -107,7 +107,7 @@
 
 typedef struct{
 	can_message msg;
-	unsigned char flags;
+	volatile unsigned char flags;
 }can_message_x;
 
 
@@ -199,23 +199,31 @@ void message_fetch(can_message_x * msg){
 }
 #ifdef CAN_INTERRUPT
 
-static can_message_x RX_BUFFER[CAN_RX_BUFFER_SIZE], *volatile RX_HEAD=RX_BUFFER, *volatile RX_TAIL=RX_BUFFER;
-static can_message_x TX_BUFFER[CAN_TX_BUFFER_SIZE], *volatile TX_HEAD=TX_BUFFER, *volatile TX_TAIL=TX_BUFFER;
+static can_message_x RX_BUFFER[CAN_RX_BUFFER_SIZE], TX_BUFFER[CAN_TX_BUFFER_SIZE];
+unsigned char RX_HEAD=0;volatile unsigned char RX_TAIL=0;
+unsigned char TX_HEAD= 0;volatile unsigned char TX_TAIL=0;
 static volatile unsigned char TX_INT;
 
 SIGNAL(SIG_INTERRUPT0) {
 	unsigned char status = mcp_status();
 		
 	if ( status & 0x01 ) {	// Message in RX0
-		message_fetch(RX_HEAD);
-		if( ++RX_HEAD == RX_BUFFER+CAN_RX_BUFFER_SIZE) RX_HEAD = RX_BUFFER;
+		if ( !(((can_message_x*)&RX_BUFFER[RX_TAIL])->flags & 0x01) ) {
+			message_fetch(&RX_BUFFER[RX_HEAD]);
+			if( ++RX_HEAD == CAN_RX_BUFFER_SIZE) RX_HEAD = 0;
+			RX_BUFFER[RX_HEAD].flags |= 0x01;//mark buffer as used
+		}else{
+			//buffer overflow
+			//just clear the Interrupt condition, and lose the message
+			mcp_bitmod(CANINTF, (1<<RX0IF), 0x00);
+		}
 	}
 
 	if ( status & 0x08 ) {	// TX1 empty
-		if( (TX_HEAD != TX_TAIL) && (((can_message_x*)TX_TAIL)->flags & 0x01) ){
+		if(((can_message_x*)&TX_BUFFER[TX_TAIL])->flags & 0x01) {
 			TX_INT = 1;
-			message_load(TX_TAIL);
-			if(++TX_TAIL == TX_BUFFER+CAN_TX_BUFFER_SIZE) TX_TAIL = TX_BUFFER;
+			message_load(&TX_BUFFER[TX_TAIL]);
+			if(++TX_TAIL == CAN_TX_BUFFER_SIZE) TX_TAIL = 0;
 		}else{
 			TX_INT = 0;
 		}
@@ -303,13 +311,24 @@ void delayloop(){
 }
 
 void can_init(){
+#ifdef CAN_INTERRUPT	
+	unsigned char x;
+	for(x=0;x<CAN_RX_BUFFER_SIZE;x++){
+		RX_BUFFER[x].flags = 0;
+	}
+	for(x=0;x<CAN_TX_BUFFER_SIZE;x++){
+		TX_BUFFER[x].flags = 0;
+	}
+#endif	
+	
 	mcp_reset();
 	
 	delayloop();
 	
 	// 0x01 : 125kbit/8MHz
 	// 0x03 : 125kbit/16MHz
-
+	// 0x04 : 125kbit/20MHz
+	
 #if F_MCP == 16000000
 #define CNF1_T 0x03
 #elif F_MCP == 8000000
@@ -317,7 +336,7 @@ void can_init(){
 #elif F_MCP == 20000000
 #define CNF1_T 0x04
 #else
-#error Can Baudrate is only defined for 8 and 16 MHz
+#error Can Baudrate is only defined for 8,16 and 20 MHz
 #endif
 	
 	
@@ -334,6 +353,7 @@ void can_init(){
 	can_setmode(normal);
 
 #ifdef CAN_INTERRUPT
+
 	// configure IRQ
 	// this only configures the INT Output of the mcp2515, not the int on the Atmel
 	mcp_write( CANINTE, (1<<RX0IE) | (1<<TX0IE) );
@@ -364,31 +384,40 @@ can_message * can_get_nb(){
 	if(RX_HEAD == RX_TAIL){
 		return 0;
 	}else{
-		p = RX_TAIL;
-		if(++RX_TAIL == RX_BUFFER+CAN_RX_BUFFER_SIZE) RX_TAIL = RX_BUFFER;
+		p = &RX_BUFFER[RX_TAIL];
+		if(++RX_TAIL == CAN_RX_BUFFER_SIZE) RX_TAIL = 0;
 		return &(p->msg);
 	}
 }
 
-can_message * can_get(){ //XXX Vermeiden, das Messages überschrieben werden bevor benutzt
+can_message * can_get(){
 	can_message_x *p;
 
 	while(RX_HEAD == RX_TAIL) { };
 
-	p = RX_TAIL;
-	if(++RX_TAIL == RX_BUFFER+CAN_RX_BUFFER_SIZE) RX_TAIL = RX_BUFFER;
+	p = &RX_BUFFER[RX_TAIL];
+	if(++RX_TAIL == CAN_RX_BUFFER_SIZE) RX_TAIL = 0;
 
 	return &(p->msg);
 }
+
+
+//marks a receive buffer as unused again so it can be overwritten in Interrupt
+void can_free(can_message * msg){
+	can_message_x * msg_x = (can_message_x *) msg;
+	msg_x->flags = 0;
+}
+
 
 //returns pointer to the next can TX buffer
 can_message * can_buffer_get(){
 	can_message_x *p;
-	p = TX_HEAD;
-	p->flags = 0;
-	if(++TX_HEAD == TX_BUFFER+CAN_TX_BUFFER_SIZE) TX_HEAD = TX_BUFFER;
+	p = &TX_BUFFER[TX_HEAD];
+	while (p->flags&0x01); //wait until buffer is free
+	if(++TX_HEAD == CAN_TX_BUFFER_SIZE) TX_HEAD = 0;
 	return &(p->msg);
 }
+
 
 //start transmitting can messages, and mark message msg as transmittable
 void can_transmit(can_message* msg2){
@@ -397,11 +426,11 @@ void can_transmit(can_message* msg2){
 		msg->flags |= 0x01;
 	}
 	if(!TX_INT){
-		if( (TX_HEAD != TX_TAIL) && (((can_message_x*)TX_TAIL)->flags & 0x01) ){
+		if( (TX_HEAD != TX_TAIL) && (((can_message_x*)&TX_BUFFER[TX_TAIL])->flags & 0x01) ){
 			TX_INT = 1;
-			message_load(TX_TAIL);
-			if(++TX_TAIL == TX_BUFFER+CAN_TX_BUFFER_SIZE)	
-				TX_TAIL = TX_BUFFER;
+			message_load(&TX_BUFFER[TX_TAIL]);
+			if(++TX_TAIL == CAN_TX_BUFFER_SIZE)	
+				TX_TAIL = 0;
 		}
 	}
 }
