@@ -3,13 +3,22 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "can.h"
+#include "can-encap.h"
+
 #ifdef UART_HOST
 #include "uart-host.h"
 #else
 #include "uart.h"
 #endif
 
-#include "rs232can.h"
+// resets
+void rs232can_reset()
+{  
+	unsigned char i;
+	for(i=RS232CAN_MAXLENGTH+3; i>0; i--)
+		uart_putc( (char)0x00 );
+}
 
 
 //tries to assemble a rs232can_msg from the chars received on the Uart.
@@ -52,7 +61,7 @@ rs232can_msg * rs232can_get_nb(){
 	return 0;
 }
 
-void rs232can_put(rs232can_msg *msg)
+void rs232can_transmit(rs232can_msg *msg)
 {
 	char *ptr = (char *)msg;
 	unsigned char i;
@@ -65,22 +74,3 @@ void rs232can_put(rs232can_msg *msg)
 }
 
 
-void rs232can_reset()
-{  
-	unsigned char i;
-	for(i=RS232CAN_MAXLENGTH+3; i>0; i--)
-		uart_putc( (char)0x00 );
-}
-
-void rs232can_rs2can(can_message *cmsg, rs232can_msg *rmsg)
-{
-	memcpy(cmsg, rmsg->data, sizeof(can_message) );
-}
-
-
-void rs232can_can2rs(rs232can_msg *rmsg, can_message *cmsg)
-{
-	rmsg->cmd = RS232CAN_PKT;
-	rmsg->len = (sizeof(can_message)-8) + cmsg->dlc;
-	memcpy(&rmsg->data, cmsg, rmsg->len);
-}

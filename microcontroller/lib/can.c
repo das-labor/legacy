@@ -1,4 +1,3 @@
-#include "can.h"
 
 #ifndef __C64__
 #include <avr/io.h>
@@ -7,6 +6,8 @@
 #endif
 
 
+#include "config.h"
+#include "can.h"
 #include "spi.h"
 
 //#include "mcp2515.inc"

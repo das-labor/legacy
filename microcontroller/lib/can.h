@@ -42,6 +42,7 @@ void can_transmit( can_message *msg );
 
 can_message *can_get();
 can_message *can_get_nb();
+void can_free(can_message * msg);
 
 #include "config.h"
 
