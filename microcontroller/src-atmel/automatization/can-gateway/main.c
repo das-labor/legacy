@@ -103,6 +103,7 @@ int main(){
 		cmsg = can_get_nb();
 		if (cmsg){
 			process_can_msg(cmsg);
+			can_free(cmsg);
 		}
 	}
 
