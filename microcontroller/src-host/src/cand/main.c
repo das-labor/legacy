@@ -14,8 +14,7 @@
 #include "config.h"
 
 #include "uart-host.h"
-#include "can.h"
-#include "rs232can.h"
+#include "can-uart.h"
 
 #ifndef max
  #define max(a,b) (((a) > (b)) ? (a) : (b))
@@ -46,37 +45,38 @@ void help()
    -p, --port PORT         use specified TCP/IP port (default: 2342)\n\n" );
 }
 
-void print_packets(){
-	while(1) {
-		can_message *msg = can_get_nb();
-		if(msg)printf("\nmsg from %X:%X\tto %X:%X\t dlc %d\tdata %X\n",msg->addr_src, msg->port_src, msg->addr_dest, msg->port_dest, msg->dlc, msg->data[0]);
-		sleep(1);
-	}
-}
-
-void process_rs232_msg( rs232can_msg *msg )
+void process_uart_msg( rs232can_msg *msg )
 {
-	// XXX
 }
 
 void process_client_msg( cann_conn_t *client, rs232can_msg *msg )
 {
-	can_message *cmsg;
+	cann_conn_t *ac;
 	int x;
 
 	debug(3, "Processing message from network..." );
 
 	switch(msg->cmd) {
+		case RS232CAN_SETFILTER:
+			/* XXX */
+			break;
+		case RS232CAN_SETMODE:
+			/* XXX */
+			break;
 		case RS232CAN_PKT:
 		default:
-       			cmsg = can_buffer_get();
-//			rs232can_rs2can(cmsg, msg);
-			cmsg->dlc = 4;
-			cmsg->addr_src = 0x00;
-			cmsg->addr_dest = 0x00;
-			cmsg->port_src = 0x00;
-			cmsg->port_dest = 0x20;
-			can_transmit(cmsg);
+			// to UART
+			canu_transmit(msg);
+
+			// foreach client
+			ac = cann_conns_head;
+			while(ac) {
+//XXX				if ( cann_match_filter(ac, msg) ) 
+				if ( ac != client )
+					cann_transmit(ac, msg);
+
+				ac = ac->next;
+			}
 	}
 }
 
@@ -106,9 +106,10 @@ void event_loop()
 		// check activity on uart_fd
 		if (FD_ISSET(uart_fd(), &rset)) {
 			debug( 10, "Activity on uart_fd" );
-			rs232can_msg *msg = rs232can_get_nb();
+			rs232can_msg *msg = canu_get_nb();
 			if (msg) {
-				process_rs232_msg(msg);
+				process_uart_msg(msg);
+				free(msg);
 			}
 		}
 		
@@ -122,6 +123,7 @@ void event_loop()
 			rs232can_msg *msg = cann_get_nb(client);
 			if(msg) {
 				process_client_msg(client, msg);
+				free(msg);
 			}
 		}
 
@@ -168,14 +170,12 @@ int main(int argc, char *argv[])
 	} // while
 
 	// setup serial communication
-	uart_init(serial);
-	can_init();
-	rs232can_reset();
-	debug(1, "CAN communication established" );
+	canu_init(serial);
+	debug(1, "Serial CAN communication established" );
 
 	// setup network socket
 	cann_listen(tcpport);
-	debug(1, "Listenig for network connections" );
+	debug(1, "Listenig for network connections on port %d", tcpport );
 
 	event_loop();  // does not return
 
