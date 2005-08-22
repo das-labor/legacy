@@ -1,0 +1,38 @@
+body
+{
+    background: #125;
+}
+div.main
+{
+    padding: 12px;
+    margin-left: 8%;
+    margin-right: 8%;
+    background: #cce;
+}
+div.log_entry
+{
+    background: #bbd;
+    margin-bottom: 2px;
+    padding: 1px 4px 1px 4px;
+}
+.timestamps
+{
+    font-family: monospace;
+    font-weight: bold;
+    color: #125;
+}
+.state_change
+{
+    font-weight: bold;
+    color: #a21;
+}
+.play_title
+{
+    font-weight: bold;
+    color: #160;
+}
+.play_info
+{
+    font-style: italic;
+}
+

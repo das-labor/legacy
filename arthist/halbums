@@ -1,0 +1,73 @@
+#!/usr/bin/perl
+use strict;
+use MusicLinks;
+
+## Insert this into MusicLinks
+##    sub get_cache { return \%amazon_cache; }
+##
+
+## Try this as both 1 and zero. Formatting of verbose is ugly IMHO
+##
+my $verbose_list=0;
+
+my $cachefile = shift ||
+  die "$0 <cache_file> > albums.html";
+
+my $amaz=MusicLinks::new();
+my $ok = $amaz->load_amazoncache('file' => $cachefile);
+die "Unable to load cache!" unless $ok;
+my $cache=$amaz->get_cache();
+
+my %seen;
+my %albums;
+my %tracklist;
+
+for my $item (keys %{$cache}) {
+  my ($art,$alb,$typ) = split(/\t/,$item);
+  if ($typ =~ /url_med/) {
+    my $url = $cache->{$item};
+    if (! $seen{$url}) {
+      $albums{"$art\t$alb"} = $url;
+    }
+  }
+  if ($typ =~ /tracklist/) {
+    my $tracks = $cache->{$item};
+    $tracklist{"$art\t$alb"} = $tracks;
+  }
+}
+
+print qq!<html><title>halbum List</title>\n!;
+
+my $top_index='';
+my $doc_body='';
+
+
+my $lastletter='';
+
+for my $thing (sort keys %albums) {
+  my $url=$albums{$thing};
+  my $tracks = $tracklist{$thing};
+  $tracks =~ s/\t/<br>/g;
+  my ($artist,$album) = split(/\t/,$thing);
+
+  my $letter=uc(substr($artist,0,1));
+
+  if ($letter ne $lastletter) {
+    $doc_body .= qq!<a name="$letter"><h3>$letter</h3></a>\n!;
+    $top_index .= qq!\n<a href="#$letter">$letter</a> -!;
+    $lastletter=$letter;
+  }
+  if ($verbose_list) {
+
+  $doc_body .= qq!<table>
+<TR><TH COLSPAN="2"><h2>$artist- $album</h2></TH><TH></TR>
+<TR><TD><img src="$url" vspace=5 align=top></TD><TD><h5>$tracks</h5></TD><TR>
+</table>\n!;
+  } else {
+  $doc_body .= qq!<h3><img src="$url" vspace=5 align=middle>! .
+               qq!$artist - $album</h3><br>\n!;
+  }
+}
+
+$top_index =~ s/-$//;
+print $top_index . "\n" . "$doc_body" . "\n";

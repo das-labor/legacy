@@ -1,0 +1,548 @@
+#!/usr/bin/perl -w
+
+use strict;
+use CGI::Enurl;
+use POSIX;
+use Pod::Usage;
+die("MPD.pm not found!\n") unless -f "MPD.pm";
+require("MPD.pm");
+die("MusicLinks.pm not found!\n") unless -f "MusicLinks.pm";
+require 'MusicLinks.pm';
+
+my $VERSION='0.3.1';
+
+# Configuration
+# -------------
+
+my %config = (
+
+# THIS WILL REPORT YOUR CACHE STATISTICS BACK TO MSELLS THROUGH
+# A FAKE IMG TAG IN THE IN YOUR OUTPUT.  PARANOID PEOPLE SET IT
+# TO 0, NICE PEOPLE LEAVE IT AT 1. IT ONLY REPORTS CACHE INFO AND
+# YOUR PID SO I CAN FIGURE OUT WHAT'S WHAT
+
+  'enable_tracking'  => 0,
+  'track_all'        => 0,  # this will track the inline statistics too
+
+  'mpd_host'           => 'localhost',
+  'mpd_port'           => '6600',
+  'poll_interval'      => '2',
+  'filename'           => '/var/www/restricted/mpdblog/index.html',
+
+  'link_allmusic'      => 1,
+
+#  'inline_stylesheet'  => 'arthist.css',  # set to a local filename
+#      ____OR____ 
+ 'inline_stylesheet'  => '',             # when empty the below URL
+ 'stylesheet'         => 'arthist.css',  # will be used
+
+  'report_repeat'      => 1,
+  'report_random'      => 1,
+  'report_xfade'       => 0,
+  'report_state'       => 0,
+  'report_song'        => 1,
+  'report_volume'      => 0,
+  'report_bitrate'     => 0,
+  'report_playlist'    => 0,
+
+  'long_datestamp'     => '%A %D at %T',
+  'short_datestamp'    => '%T',
+  'change_datestamp'   => '%A %D',
+
+  'show_album_covers'   => 1,
+  'amazon_cache'        => 'amazon.cache',
+  'dump_cache'          => 300,   # interval in seconds
+  'always_show_albums'  => 1,
+  'cover_url'         => 'url_medcover', # url_(small|med|large)cover
+);
+
+my $doc_header = qq!
+<html><head>
+<title>arthist - MPD Play History for $config{mpd_host}:$config{mpd_port}</title>
+!;
+
+if ($config{inline_stylesheet}) {
+  my $ss_contents = `cat $config{inline_stylesheet}`;
+  $doc_header .= qq~<style type="text/css">
+                    <!-- $ss_contents --></style>\n~;
+} else {
+  $doc_header .= qq!<link rel="stylesheet" type="text/css"
+                    href="$config{stylesheet}">
+                    </head> <body> <div class="main">!;
+}
+#
+# ----- NOTHING BELOW HERE SHOULD REQUIRE CHANGES --
+#
+
+# it's important that state is listed first so changes in
+# state don't also report the rest
+
+my @statuskeys = qw(
+  state volume repeat random 
+  playlist playlistlength
+  xfade
+);
+
+my @playingkeys = qw(bitrate audio song); # time not included
+
+# Initialization
+# --------------
+
+my $last_timestamp='none';  # eeek! a global!
+my $amaz=MusicLinks::new(); # eeek! another global!
+my $last_cache_status=0;    # eeek! but necessary for SIGHUP
+$amaz->load_amazoncache('file' => $config{amazon_cache}) or
+  warn "Loading of amazon cache failed! - $!!\n";
+$SIG{INT} = \&shutdown;
+$SIG{HUP} = \&statsanddump;
+$SIG{USR1} = \&statsnow;
+
+
+# Subroutines
+# ------------
+
+# If we have it enabled for that type return a piece
+# of HTML with the appropriate IMG tag. If it's disabled
+# return an empty string
+#
+sub statistics_html {
+  my ($type) = @_;
+  return "" if (! $config{enable_tracking});
+  return "" if ( (! $config{track_all}) && ($type=~/running/));
+  my $cache_stats=$amaz->cache_stats;
+  return qq!<img width=1 height=1 border=0 ! .
+         qq!src="http://www.studiosells.net/arthist/webbug/$$/$type/! .
+         join('/', map { "$_-$cache_stats->{$_}"; } (keys %$cache_stats)) .
+         qq!">!;
+}
+
+# Return a string in a <span> with the proper class
+#
+sub html_span {
+  my ($class,$message) = @_;
+  $message =~ s/^\s*(.*)\s*$/$1/;
+  return qq!<span class="$class">$message</span>!;
+}
+
+# Wrap a log entry in a html <div> tag
+#
+sub entry_div {
+    my $contents = $_[0];
+    return "<div class=\"log_entry\">\n" . $contents . "\n</div>\n\n";
+}
+
+
+# Return HTML for of our current timestamp
+# This includes the color mapping as well as the handling of
+# the change_datestamp logic
+#
+sub html_timestamp {
+  my $ischanged = strftime($config{change_datestamp},localtime());
+  my $timestamp;
+
+  $timestamp = ($ischanged eq $last_timestamp) ?
+    strftime($config{short_datestamp},localtime()) :
+    strftime($config{long_datestamp},localtime());
+  $last_timestamp=$ischanged;
+  return html_span('timestamps',$timestamp);
+}
+
+# Given a mpd handle return status in string form.
+# Mostly used to tell if something has changed
+#
+sub status_string {
+  my ($mpdh) = @_;
+  my $result='';
+  for my $itm (@statuskeys) {
+    $result .= "$itm:$mpdh->{$itm};";
+  }
+  for my $itm (@playingkeys) {
+    if ($mpdh->{state} eq 'play') {
+      $result .= "$itm:$mpdh->{$itm};";
+    } else {
+      $result .= "$itm:unknown;";
+    }
+  }
+ 
+  return $result;
+}
+
+# Compare two status strings and return a list of observed
+# changes. This does a fair bit of logic on the two states
+# so if you're making changes to mpdhist here is probably
+# the place.
+#
+sub diff_status {
+  my ($old,$new) = @_;
+  my @oldstate=split(/;/,$old);
+  my @newstate=split(/;/,$new);
+  my @results;
+
+  for my $lcv (0 .. $#newstate) {
+    next if ($oldstate[$lcv] eq $newstate[$lcv]);
+    my ($newname,$newval) = split(/:/,$newstate[$lcv]);
+    my ($oldname,$oldval) = split(/:/,$oldstate[$lcv]);
+    if (! defined($config{"report_$newname"})) {
+      warn "diff_status : Undefined report_$newname\n";
+      next;
+    }
+
+    next if ($config{"report_$newname"} == 0);
+
+    # handle the boolean ones
+    if ($newname =~ /(random|repeat|xfade)/) {
+      # these are booleans so just report as 'turned off|on'
+      $newname =~ s/^(.)/uc($1)/e;
+      push(@results,"$newname turned off") if ($newval =~ /0/);
+      push(@results,"$newname turned on")  if ($newval =~ /1/);
+
+    # handle status
+    } elsif ($newstate[$lcv] =~ /song:/) {
+      push(@results,"Nextsong");
+      return @results;
+    } elsif ($newstate[$lcv] =~ /state:play|song:/) {
+      push(@results,"Playing");
+      return @results;
+    } elsif ($newstate[$lcv] =~ /state:pause/) {
+      push(@results,"Paused");
+      return @results;
+    } elsif ($newstate[$lcv] =~ /state:stop/) {
+      push(@results,"Stopped");
+      return @results;
+    } else {
+      push(@results,"$newname changed from $oldval to $newval");
+    }
+  }
+  return @results;
+}
+
+sub song_info {
+  my @info = @_;
+  my %result;
+
+  for my $line (@info) {
+    $result{artist} = $1 if $line =~ /^Artist:\s(.+)$/;
+    $result{album} = $1 if $line =~ /^Album:\s(.+)$/;
+    $result{title} = $1 if $line =~ /^Title:\s(.+)$/;
+    $result{file} = $1 if($line =~ /^file:\s(.+)$/);
+    $result{track} = $1 if $line =~ /^Track:\s(.+)$/;
+  }
+  $result{title} = $result{file} unless $result{title};
+
+  $amaz->set('artist' => $result{artist}, 'album' => $result{album});
+  for my $afield ('url_allmusicartist', 'url_allmusicalbum') {
+    $result{$afield} = $amaz->{$afield};
+  }
+
+  if ($config{show_album_covers}) {
+    my $amazresult = $amaz->get_amazoninfo();
+    if ($amazresult) {
+      for my $afield ('url_medcover', 'url_smallcover', 'url_largecover') {
+        $result{$afield} = $amaz->{$afield};
+      }
+    }
+  }
+
+  my $txt_nolinks=html_span('play_title',$result{title}) . ' ';
+
+  if ( ($result{artist}) && ($result{album}) ) {
+    $txt_nolinks .= html_span('play_info',
+      "[artist $result{artist}, album $result{album}]") ."\n";
+  } elsif ( (! $result{artist}) ) {
+    $txt_nolinks .= html_span('play_info',
+      "[album $result{album}]") ."\n";
+  } elsif ( (! $result{album}) ) {
+    $txt_nolinks .= html_span('play_info',
+      "[artist $result{artist}]") ."\n";
+  }
+  $result{txt_nolinks} = $txt_nolinks;
+
+  my $txt_links=html_span('play_title',$result{title}) . ' ';
+  if ( ($result{artist}) && ($result{album}) ) {
+    $txt_links .= html_span('play_info',
+      qq! [artist $result{url_allmusicartist}$result{artist}</a>,! .
+      qq! album $result{url_allmusicalbum}$result{album}</a>]!);
+  } elsif ( (! $result{artist}) ) {
+    $txt_links .= html_span('play_info',
+      qq! [album $result{url_allmusicalbum}$result{album}</a>]!);
+  } elsif ( (! $result{album}) ) {
+    $txt_links .= html_span('play_info',
+      qq! [artist $result{url_allmusicartist}$result{artist}</a>]!);
+  }
+  $result{txt_links} = $txt_links;
+
+  #for my $itm (keys %result) {
+  #  print STDERR "$itm => $result{$itm}\n";
+  #}
+  return \%result;
+}
+
+sub statsnow { $SIG{USR1} = \&statsnow; $last_cache_status=0; return; }
+sub statsanddump { $SIG{HUP} = \&statsanddump; $last_cache_status=-1; return; }
+
+sub shutdown {
+  $SIG{INT} = \&shutdown;
+  warn "Shutting down....\n";
+  if ($config{show_album_covers}) {
+    warn "Saving amaozn cache...\n";
+    my $ok = $amaz->save_amazoncache(
+        'overwrite' => 1,
+        'file' => $config{amazon_cache});
+    warn "Save of amazon cache successfull!\n" if ( $ok);
+    warn "Save of amazon cache failed!\n" if (! $ok);
+  }
+  warn "Your output is in $config{filename}\n";
+  my $cache_stats=$amaz->cache_stats;
+  warn "Cache: " . join (', ',
+    map { "$_=$cache_stats->{$_}"; } (keys %$cache_stats)) . "\n";
+  print OUTFILE entry_div(&html_timestamp . ": " .
+      html_span('state_change'," Cache status: " .
+      join(', ', map { "$_=$cache_stats->{$_}"; } (keys %$cache_stats))
+    ));
+
+  my $statshtml=statistics_html('final');
+  print OUTFILE entry_div(&html_timestamp . ": ".html_span('state_change',
+      qq!Ending $statshtml!));
+  exit(0);
+}
+
+# main()
+# ------
+
+# Handle args
+#
+$config{filename} = $ARGV[0] if ($#ARGV >=0);
+if ($config{filename}=~/-h|help/) {
+  pod2usage({-verbose => 2});
+  exit(1);
+}
+die "$0 -help would be a good start!\n" if (! $config{filename});
+
+# Open our output
+#
+my $print_header=! (-f $config{filename});
+open(OUTFILE,">>$config{filename}")
+  or die "Can't output file $config{filename} to append - $!!\n";
+OUTFILE->autoflush(1);
+print OUTFILE "$doc_header\n\n" if ($print_header);
+print OUTFILE entry_div(&html_timestamp . ": " .
+  html_span('state_change',
+  qq!<a href="http://www.studiosells.net/arthist/">arthist</a>! .
+  qq! $VERSION starting!));
+
+# Setup our MPD conection
+#
+$config{mpd_host} = $ENV{MPD_HOST} if ($ENV{MPD_HOST});
+$config{mpd_port} = $ENV{MPD_PORT} if ($ENV{MPD_PORT});
+my $mpd_handle = MPD->new($config{mpd_host},$config{mpd_port});
+$mpd_handle->connect();
+print OUTFILE entry_div(&html_timestamp . ": " .
+  html_span('state_change',
+    " Connected to $config{mpd_host}:$config{mpd_port}"));
+
+# Set laststatus to unknown so we get the current song
+# $lastalbart is used if we only want to show cover art once
+my $lastalbart='';
+my $laststatus='';
+for my $itm (@statuskeys,@playingkeys) {
+  $laststatus .= "$itm:unknown;";
+}
+
+# Infinite loop....
+#
+
+while (1) {
+  if ( (time() - $last_cache_status) > $config{dump_cache}) {
+    if ($last_cache_status == -1) {
+      my $ok = $amaz->save_amazoncache(
+         'overwrite' => 1,
+        'file' => $config{amazon_cache});
+      my $msg = "Save of cache successfull";
+      $msg = "Save of cache failed!" if (! $ok);
+      print OUTFILE entry_div(&html_timestamp . ": " .
+        html_span('state_change'," $msg "));
+    }
+    $last_cache_status=time();
+    my $cache_stats=$amaz->cache_stats;
+
+    my $statshtml=statistics_html('interm');
+
+#commented out <- annoyed
+#  print OUTFILE entry_div(&html_timestamp . ": " .
+#      html_span('state_change'," Cache status: " . $statshtml .
+#      join(', ', map { "$_=$cache_stats->{$_}"; } (keys %$cache_stats))
+#    ));
+  }
+
+  $mpd_handle->getstatus;
+  my $newstatus=status_string($mpd_handle);
+  if ($newstatus eq $laststatus) {
+    sleep($config{poll_interval});
+    next;
+  }
+
+  my @diffs = diff_status($laststatus,$newstatus);
+  for my $d (@diffs) {
+    if (($d eq "Nextsong") || ($d eq "Playing")) {
+      my @info=$mpd_handle->getsonginfo;
+      my $songinfo = song_info(@info);
+      my $html='';
+
+      if ($config{show_album_covers}) {
+        my $coverurl=$songinfo->{$config{cover_url}};
+        if (defined($coverurl) && ($config{always_show_albums} || ($coverurl ne $lastalbart))) {
+          $html .= qq!<img src="$coverurl" align=middle vspace=5>\n!;
+        }
+        $lastalbart='';
+        $lastalbart=$coverurl if defined($coverurl);
+      }
+
+      $html .= $songinfo->{txt_links} if ($config{link_allmusic});
+      $html .= $songinfo->{txt_nolinks} if (! $config{link_allmusic});
+
+      print OUTFILE entry_div(html_timestamp . ": $html");
+
+      next if ($d eq "Nextsong");
+    }
+    print OUTFILE entry_div(html_timestamp . ": " .
+        html_span('state_change'," $d"));
+  }
+  $laststatus=$newstatus;
+}
+exit(0); # never reached!
+
+=pod
+=head1 NAME
+arthist - MPD client that blogs your MPD activity with inline album art
+
+=head2 What is it
+
+B<arthist> - Perl MPD client for generating/maintaining HTML page with
+your MPD activity. Date stamps as well as colors used in the output
+can be configured.  It also generates links to http://www.allmusic.com/
+from the song tags as well as B<inline album cover pictures!>
+
+=head2 Download
+
+tar file
+http://www.studiosells.net/msells/arthist/$$VERSION/arthist-0.3.tar
+
+sample output
+http://www.studiosells.net/msells/arthist/sample.html
+
+
+=head2 Usage
+
+C<arthist <output_filename>> will B<append> to output_filename.
+C<arthist -help> will show this help message.
+
+=head2 Requirements
+
+Three packages are required to use arthist.
+
+=over 14
+
+=item * CGI::Enurl
+
+CGI::Enurl can be found at http://jenda.krynicky.cz/perl/Enurl.pm.html
+A quick way to get & install this is:
+
+C<perl -MCPAN -e 'install CGI::Enurl'>
+
+Assuming you have CPAN which most of the civilized world does
+
+=item * A modified MPD.pl
+
+The one in SVN still has _one_ bug but it's close...
+
+=item * Net::Amazon
+
+A quick way to get & install this is:
+
+C<perl -MCPAN -e 'install Net::Amazon'>
+
+Assuming you have CPAN which most of the civilized world does
+
+=back
+
+=head2 Configuration
+
+It's possible to control the format of the datestamps as well
+as what events are reported. Since you will likley only do this
+once these are stored in the script itself in two hashes:
+
+=over 8
+
+=item * config{mpd_host}, config{mpd_port}
+
+Specifies which MPD server to connect to.
+
+B<I<IMPORTANT: MPD_HOST and MPD_PORT in your environment take precedence over these.>>
+
+=item * config{filename}
+
+Filename to write output to if none given on command line.
+
+=item * config{poll_interval}
+
+How often in seconds to poll MPD
+
+=item * config{show_album_covers}
+
+Set to 1 if you want inline album covers.
+
+=item * config{amazon_cache}
+
+Filename to use as a cache for album cover info
+
+=item * config{always_show_albums}
+
+If set to 0 album covers are only shown if they are different than the
+revious one.
+
+=item * config{cover_url}
+
+Determines the size of inline cover art. Valid values are:
+url_smallcover, url_medcover, url_largecover. I've found medium to work
+nicely so that's the default.
+
+=item * config{report_I<*>}
+
+Controls which events are reported on. The default settings don't
+report changes in bitrate since this is probably noisy and not of interest.
+
+=item * config{I<*>_datestamp}
+
+Specifies the format of datestamps. See I< man strftime>
+for valid format specs.
+
+The concept of config{change_datestamp} is to allow a shorter
+datestamp to appear when change_datestamp remains the
+same. The defaults values will report day/date only when
+they change.
+
+=back
+
+=head2 To Do
+
+=over 8
+
+
+=item * Make it it's own web server (!TRT?)
+
+=item * Somehow put new stuff at the B<top> of the file
+
+=back
+
+
+=head2 Version History
+
+v0.2 Initial release Sat Apr 24 23:34:11 EDT 2004
+
+v0.3 Many bug fixes from #mpd people
+
+     Now using CSS (thanks mackstann)
+
+     Released Sun Apr 25 03:13:47 EDT 2004
+
+=cut
