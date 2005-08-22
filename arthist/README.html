@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>arthist - MPD client that blogs your MPD activity with inline album art</title>
+<link rev="made" href="mailto:root@midas.slackware.lan" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+
+<ul>
+
+	<ul>
+
+		<li><a href="#what_is_it">What is it</a></li>
+		<li><a href="#download">Download</a></li>
+		<li><a href="#usage">Usage</a></li>
+		<li><a href="#requirements">Requirements</a></li>
+		<li><a href="#configuration">Configuration</a></li>
+		<li><a href="#to_do">To Do</a></li>
+		<li><a href="#version_history">Version History</a></li>
+	</ul>
+
+</ul>
+<!-- INDEX END -->
+
+<hr />
+<p>
+</p>
+<h2><a name="what_is_it">What is it</a></h2>
+<p><strong>arthist</strong> - Perl MPD client for generating/maintaining HTML page with
+your MPD activity. Date stamps as well as colors used in the output
+can be configured.  It also generates links to <a href="http://www.allmusic.com/">http://www.allmusic.com/</a>
+from the song tags as well as <strong>inline album cover pictures!</strong></p>
+<p>
+</p>
+<h2><a name="download">Download</a></h2>
+<p>tar file
+<a href="http://www.studiosells.net/msells/arthist/$$VERSION/arthist-0.3.tar">http://www.studiosells.net/msells/arthist/$$VERSION/arthist-0.3.tar</a></p>
+<p>sample output
+<a href="http://www.studiosells.net/msells/arthist/sample.html">http://www.studiosells.net/msells/arthist/sample.html</a></p>
+<p>
+</p>
+<h2><a name="usage">Usage</a></h2>
+<p><code>arthist &lt;output_filename</code>&gt; will <strong>append</strong> to output_filename.
+<code>arthist -help</code> will show this help message.</p>
+<p>
+</p>
+<h2><a name="requirements">Requirements</a></h2>
+<p>Three packages are required to use arthist.</p>
+<ul>
+<li><strong><a name="item_cgi%3a%3aenurl">CGI::Enurl</a></strong><br />
+</li>
+CGI::Enurl can be found at <a href="http://jenda.krynicky.cz/perl/Enurl.pm.html">http://jenda.krynicky.cz/perl/Enurl.pm.html</a>
+A quick way to get &amp; install this is:
+<p><code>perl -MCPAN -e 'install CGI::Enurl'</code></p>
+<p>Assuming you have CPAN which most of the civilized world does</p>
+<p></p>
+<li><strong><a name="item_a_modified_mpd%2epl">A modified MPD.pl</a></strong><br />
+</li>
+The one in SVN still has _one_ bug but it's close...
+<p></p>
+<li><strong><a name="item_net%3a%3aamazon">Net::Amazon</a></strong><br />
+</li>
+A quick way to get &amp; install this is:
+<p><code>perl -MCPAN -e 'install Net::Amazon'</code></p>
+<p>Assuming you have CPAN which most of the civilized world does</p>
+<p></p></ul>
+<p>
+</p>
+<h2><a name="configuration">Configuration</a></h2>
+<p>It's possible to control the format of the datestamps as well
+as what events are reported. Since you will likley only do this
+once these are stored in the script itself in two hashes:</p>
+<ul>
+<li><strong><a name="item_config">config{mpd_host}, config{mpd_port}</a></strong><br />
+</li>
+Specifies which MPD server to connect to.
+<p><strong><em>IMPORTANT: MPD_HOST and MPD_PORT in your environment take precedence over these.</em></strong></p>
+<p></p>
+<li><strong>config{filename}</strong><br />
+</li>
+Filename to write output to if none given on command line.
+<p></p>
+<li><strong>config{poll_interval}</strong><br />
+</li>
+How often in seconds to poll MPD
+<p></p>
+<li><strong>config{show_album_covers}</strong><br />
+</li>
+Set to 1 if you want inline album covers.
+<p></p>
+<li><strong>config{amazon_cache}</strong><br />
+</li>
+Filename to use as a cache for album cover info
+<p></p>
+<li><strong>config{always_show_albums}</strong><br />
+</li>
+If set to 0 album covers are only shown if they are different than the
+revious one.
+<p></p>
+<li><strong>config{cover_url}</strong><br />
+</li>
+Determines the size of inline cover art. Valid values are:
+url_smallcover, url_medcover, url_largecover. I've found medium to work
+nicely so that's the default.
+<p></p>
+<li><strong>config{report_<em>*</em>}</strong><br />
+</li>
+Controls which events are reported on. The default settings don't
+report changes in bitrate since this is probably noisy and not of interest.
+<p></p>
+<li><strong>config{<em>*</em>_datestamp}</strong><br />
+</li>
+Specifies the format of datestamps. See <em> man strftime</em>
+for valid format specs.
+<p>The concept of config{change_datestamp} is to allow a shorter
+datestamp to appear when change_datestamp remains the
+same. The defaults values will report day/date only when
+they change.</p>
+<p></p></ul>
+<p>
+</p>
+<h2><a name="to_do">To Do</a></h2>
+<ul>
+<li><strong><a name="item_server">Make it it's own web server (!TRT?)</a></strong><br />
+</li>
+<li><strong><a name="item_somehow_put_new_stuff_at_the_top_of_the_file">Somehow put new stuff at the <strong>top</strong> of the file</a></strong><br />
+</li>
+</ul>
+<p>
+</p>
+<h2><a name="version_history">Version History</a></h2>
+<p>v0.2 Initial release Sat Apr 24 23:34:11 EDT 2004</p>
+<p>v0.3 Many bug fixes from #mpd people</p>
+<pre>
+     Now using CSS (thanks mackstann)</pre>
+<pre>
+     Released Sun Apr 25 03:13:47 EDT 2004</pre>
+
+</body>
+
+</html>
