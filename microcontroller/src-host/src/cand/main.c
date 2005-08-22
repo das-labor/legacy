@@ -113,7 +113,7 @@ void event_loop()
 		}
 		
 		// new connections
-		if( client = cann_new_connection(&rset) ) {
+		if( client = cann_accept(&rset) ) {
 			debug( 2, "New connection (fd=%d)", client->fd );
 		}
 
@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
 	debug(1, "CAN communication established" );
 
 	// setup network socket
-	cann_init(tcpport);
+	cann_listen(tcpport);
 	debug(1, "Listenig for network connections" );
 
 	event_loop();  // does not return
