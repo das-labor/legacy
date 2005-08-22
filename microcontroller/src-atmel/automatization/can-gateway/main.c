@@ -4,12 +4,14 @@
 #include <avr/signal.h>
 #include <stdlib.h>
 
-#include "config.h"
 
+#include "config.h"
 #include "util.h"
-#include "uart.h"
 #include "spi.h"
 #include "can.h"
+
+#include "can-encap.h"
+#include "uart.h"
 #include "rs232can.h"
 
 // Timer Interrupt
@@ -52,18 +54,21 @@ void timer0_on(){
 	TIMSK = 0x02;	// Compare match Interrupt on
 }
 
+
 void process_rs232_msg( rs232can_msg *msg )
 {
+	can_mode_t  can_mode;
+	can_message *cmsg;
+
 	switch(msg->cmd) {
 		case RS232CAN_SETFILTER:
 			break;
 		case RS232CAN_SETMODE:
-			;can_mode_t can_mode;
 			can_mode = (can_mode_t)(msg->data[0]);
 			can_setmode(can_mode);
 			break;
 		case RS232CAN_PKT:
-			;can_message *cmsg = can_buffer_get();
+			cmsg = can_buffer_get();
 			rs232can_rs2can(cmsg, msg);
 			can_transmit(cmsg);
 			break;
@@ -73,7 +78,7 @@ void process_rs232_msg( rs232can_msg *msg )
 void process_can_msg(can_message *msg){
 	rs232can_msg rmsg;
 	rs232can_can2rs(&rmsg, msg);
-	rs232can_put(&rmsg);
+	rs232can_transmit(&rmsg);
 }
 
 int main(){
