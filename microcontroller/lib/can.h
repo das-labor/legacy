@@ -20,16 +20,28 @@ typedef struct{
 
 typedef enum { normal, mode_sleep, loopback, listenonly, config } can_mode_t ;
 
-/* CAN */ 
-void  can_init();
+/*****************************************************************************
+ * Management
+ */
+
+void can_init();
+void can_setfilter();
+void can_setmode(can_mode_t);
+
+/*****************************************************************************
+ * Sending
+ */
 
 can_message * can_buffer_get();
 void can_transmit( can_message *msg );
 
+
+/*****************************************************************************
+ * Receiving
+ */
+
 can_message *can_get();
 can_message *can_get_nb();
-void can_setfilter();
-void can_setmode(can_mode_t);
 
 #include "config.h"
 
