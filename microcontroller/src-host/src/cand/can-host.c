@@ -57,5 +57,5 @@ can_message * can_buffer_get(){
 void can_transmit(can_message* msg){
 	rs232can_msg rmsg;
 	rs232can_can2rs(&rmsg, msg);
-	rs232can_put(&rmsg);
+	rs232can_transmit(&rmsg);
 }

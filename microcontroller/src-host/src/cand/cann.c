@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <sys/select.h>
 #include <netinet/in.h>
+#include <netdb.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -20,9 +21,36 @@ cann_conn_t *cann_conns_head = NULL;
  #define max(a,b) (((a) > (b)) ? (a) : (b))
 #endif
 
-void cann_init(int port)
+
+/*****************************************************************************
+ * Utility functions -- not exportet
+ */
+struct in_addr *atoaddr(char *address) {
+  struct hostent *host;
+  static struct in_addr saddr;
+
+  /* First try it as aaa.bbb.ccc.ddd. */
+  saddr.s_addr = inet_addr(address);
+  if (saddr.s_addr != -1) {
+    return &saddr;
+  }
+
+  host = gethostbyname(address);
+  if (host != NULL) {
+    return (struct in_addr *) *host->h_addr_list;
+  }
+  return NULL;
+}
+
+/*****************************************************************************
+ * connection management
+ */
+
+
+/* open listening socket and initialize */
+void cann_listen(int port)
 {
-struct sockaddr_in serv_addr;
+	struct sockaddr_in serv_addr;
 	int ret;
 	char one=1; 
 
@@ -46,6 +74,30 @@ struct sockaddr_in serv_addr;
 
 }
 
+/* open connect to cand */
+cann_conn_t *cann_connect(char *server, int port)
+{
+	int ret;
+	cann_conn_t *client;
+	struct sockaddr_in addr;
+	
+	// initialize client struct
+	client = (cann_conn_t *)malloc(sizeof(cann_conn_t));
+	client->missing_bytes = 0;
+	client->error = 0;
+
+	// get socket
+	ret = client->fd = socket(AF_INET, SOCK_STREAM, 0);
+	debug_assert( ret >= 0, "Could not open socket: ");
+
+	// connect
+	memcpy( &(addr.sin_addr), atoaddr(server), sizeof(in_addr_t) );
+	addr.sin_port = port;
+
+	connect( client->fd, (struct sock_addr *)&addr, sizeof(addr) );
+}
+
+/* set bits in fd_set */
 int cann_fdset(fd_set *set)
 {
 	cann_conn_t *client = cann_conns_head;
@@ -65,7 +117,7 @@ int cann_fdset(fd_set *set)
 	return maxfd;
 }
 
-cann_conn_t *cann_new_connection(fd_set *set)
+cann_conn_t *cann_accept(fd_set *set)
 {
 	cann_conn_t *client;
 
@@ -183,4 +235,5 @@ error:
 	return NULL;
 
 }
+
 
