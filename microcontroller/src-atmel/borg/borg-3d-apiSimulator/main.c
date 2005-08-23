@@ -104,8 +104,6 @@ static void special(int k, int x, int y)
 }
 
 int main(int argc, char **argv){
-    int i;	
-    
     glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
     glutInitWindowSize(800, 600);

@@ -87,7 +87,7 @@ direction direction_r(direction dir){
 			return forward;	
 		case back:
 			return down;
-		case forward:
+		default:
 			return right;					
 	}
 }
