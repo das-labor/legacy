@@ -89,6 +89,7 @@ int main(int argc, char *argv[])
 
 //	can_message *msg = can_buffer_get();
 //	can_transmit(msg);
+	cann_close(0);
 
 	return 0;
 }
