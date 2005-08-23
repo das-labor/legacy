@@ -250,11 +250,11 @@ void snake3d(){
 		for(j=0;j<apple_num;j++){
 			unsigned char i;
 			for(i=0;i<6;i++){
-				if ((next_pixel3d(old_head, i).x == apples[j].x) && 
-					(next_pixel3d(old_head, i).y == apples[j].y) &&
-				    (next_pixel3d(old_head, i).z == apples[j].z)) {
+				if ((next_pixel3d(old_head, (direction)i).x == apples[j].x) && 
+					(next_pixel3d(old_head, (direction)i).y == apples[j].y) &&
+				    (next_pixel3d(old_head, (direction)i).z == apples[j].z)) {
 					apple_found = 1;
-					dir = i;
+					dir = (direction)i;
 					for(; j < apple_num-1; j++){
 						apples[j] = apples[j+1];
 					}
@@ -278,7 +278,7 @@ void snake3d(){
 			*head = next_pixel3d(old_head, dir);
 			setpixel3d(*head, 3);
 			if (myrandom() < 80) {
-				dir = myrandom() % 6;
+				dir = (direction) (myrandom() % 6);
 			}
 			if((apple_num<10) && (myrandom()<10)) {
 				pixel3d new_apple = (pixel3d){myrandom()%NUM_PLANES,
@@ -509,10 +509,10 @@ void drawLineZ(char x1, char y1, char x2, char y2, char z, char level) {
 }	  
 
 void drawLineZAngle(unsigned char angle, unsigned char z, unsigned char value) {
-	unsigned char x1[14] = {3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3};
-	unsigned char y1[14] = {0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7};
-	unsigned char x2[14] = {4, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4};
-	unsigned char y2[14] = {7, 7, 7, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0};
+	unsigned char x1[14] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
+	unsigned char y1[14] = {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7};
+	unsigned char x2[14] = {7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1};
+	unsigned char y2[14] = {7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0};
 	drawLineZ(x1[angle], y1[angle], x2[angle], y2[angle], z, value);	
 }
 
@@ -539,8 +539,8 @@ void spirale2() {
 	for (count = 0, angleAdd = 0; angleAdd < 8; count++) {
 		for (angle = 0; angle < 14; angle++) {
 			for (z = 0; z < 8; z++) {
-				drawLineZAngle((angle+(angleAdd*z/4))%14, z, 3);
-				drawLineZAngle((angle+7+(angleAdd*z/4))%14, z, 3);
+				drawLineZAngle((angle+((angleAdd*z)/4))%14, z, 3);
+				drawLineZAngle((angle+7+((angleAdd*z)/4))%14, z, 3);
 				
 			}
 			wait(40);
@@ -553,6 +553,7 @@ void spirale2() {
 	 	}
 	}
 }
+
 
 void *display_loop(void * unused) {
 	while (1) {

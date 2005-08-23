@@ -1,17 +1,27 @@
 #include <GL/glut.h>   // for gl* glu* glut*
-#include <pthread.h>   // for threads in linux
-#include <stdlib.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
+
+#ifdef _WIN32
+#  include <windows.h>
+#  include <process.h>
+#  define pthread_t int
+#else
+#  include <pthread.h>   // for threads in linux
+#  include <stdlib.h>
+#  include <sys/time.h>
+#  include <sys/types.h>
+#  include <unistd.h>
+#endif
 
 #include "pixel3d.h"
 #include "programm.h"
 
 unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
 
-int view_rotx = 0, view_roty = 0, view_rotz = 0;
+float view_rotx = 0, view_roty = 0, view_rotz = 0;
 int win;
+
+
+
 pthread_t simthread;
 GLUquadric* quad;
 
@@ -55,7 +65,11 @@ void display(void){
   	}
 	glPopMatrix();
 	glutSwapBuffers();
-	usleep(3500);	
+#ifdef _WIN32
+    Sleep(3);
+#else
+    usleep(3500);
+#endif	
 }
 
 void keyboard(unsigned char key, int x, int y){
@@ -90,29 +104,33 @@ static void special(int k, int x, int y)
 }
 
 int main(int argc, char **argv){
-  int i;	
-
-  glutInit(&argc,argv);
-  glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
-  glutInitWindowSize(800, 600);
-  win = glutCreateWindow("Borg 3D Simulator");
-  
-  // callback
-  glutDisplayFunc(display);
-  glutIdleFunc(display);
-  glutKeyboardFunc(keyboard);
-  glutSpecialFunc(special);
- 
-  // clearcolor & main loop
-  glClearColor(0.1,0.1,0.1,0.1);
-  gluPerspective(60.0, 800./600., 5., 1000.);
-  gluLookAt(NUM_PLANES*2., NUM_ROWS*2.+50., NUM_COLS*2.,
-            NUM_PLANES*2., NUM_ROWS*2., NUM_COLS*2.,
+    int i;	
+    
+    glutInit(&argc,argv);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
+    glutInitWindowSize(800, 600);
+    win = glutCreateWindow("Borg 3D Simulator");
+    
+    // callback
+    glutDisplayFunc(display);
+    glutIdleFunc(display);
+    glutKeyboardFunc(keyboard);
+    glutSpecialFunc(special);
+    
+    // clearcolor & main loop
+    glClearColor(0.1,0.1,0.1,0.1);
+    gluPerspective(60.0, 800./600., 5., 1000.);
+    gluLookAt(NUM_PLANES*2., NUM_ROWS*2.+50., NUM_COLS*2.,
+              NUM_PLANES*2., NUM_ROWS*2., NUM_COLS*2.,
             0.0, 0.0, 1.0); 
-  // start display_loop thread
-  pthread_create(&simthread, NULL, display_loop, NULL);
-  printf("Starting MainLoop\n");
-  quad = gluNewQuadric();
-  glutMainLoop();
-  return 0;
+    // start display_loop thread 
+#ifdef _WIN32
+    _beginthread((void (*)(void*))display_loop, 0, NULL);   
+#else
+    pthread_create(&simthread, NULL, display_loop, NULL);
+#endif
+    printf("Starting MainLoop\n");
+    quad = gluNewQuadric();
+    glutMainLoop();
+    return 0;
 }
