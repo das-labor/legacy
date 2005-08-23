@@ -123,7 +123,7 @@ void event_loop()
 			rs232can_msg *msg = cann_get_nb(client);
 			if(msg) {
 				process_client_msg(client, msg);
-				free(msg);
+				// free(msg);
 			}
 		}
 

@@ -1,5 +1,6 @@
 #include <unistd.h>
-
+#include <stdlib.h>
+#include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -83,6 +84,7 @@ cann_conn_t *cann_connect(char *server, int port)
 	
 	// initialize client struct
 	client = (cann_conn_t *)malloc(sizeof(cann_conn_t));
+	client->state = CANN_LEN;
 	client->missing_bytes = 0;
 	client->error = 0;
 
@@ -145,6 +147,7 @@ cann_conn_t *cann_accept(fd_set *set)
 	client->next  = cann_conns_head;
 	client->fd    = fd;
 	client->missing_bytes = 0;
+	client->state = CANN_LEN;
 	client->error = 0;
 	cann_conns_head = client;
 
@@ -171,6 +174,22 @@ void cann_close_errors()
 		}
 	}
 }
+
+void cann_close(cann_conn_t *conn)
+{
+	// close all connections?
+	if (!conn) {
+		conn = cann_conns_head;
+		while(conn) {
+			cann_conn_t *oldconn = conn;
+			
+			close(conn->fd);
+			conn = conn->next;
+			free(oldconn);
+		}
+	}
+}
+
 
 cann_conn_t *cann_activity(fd_set *set)
 {
@@ -224,6 +243,7 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 		if (val == 0)
 			return NULL;
 
+		debug(10, "Next packet on %d: length=%d", client->fd, val);
 		client->msg.len        = val;
 		client->missing_bytes  = val;
 		client->rcv_ptr        = client->msg.data;
@@ -239,6 +259,7 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 		if (ret == 0)
 			return NULL;
 
+		debug(10, "Next packet on %d: cmd=%d", client->fd, client->msg.cmd);
 		client->state = CANN_PAYLOAD;
 	}
 	
@@ -327,10 +348,10 @@ void cann_transmit(cann_conn_t *conn, rs232can_msg *msg)
 	debug_assert( !(conn->error), 
 			"cann_get_nb() with error (%d)", conn->error );
 
-	if( write(conn->fd, &(msg->cmd), 1) != 1 ) 
+	if( write(conn->fd, &(msg->len), 1) != 1 ) 
 		goto error;
 	
-	if( write(conn->fd, &(msg->len), 1) != 1 )
+	if( write(conn->fd, &(msg->cmd), 1) != 1 )
 		goto error;
 
 	if( write(conn->fd, msg->data, msg->len) != msg->len )
