@@ -33,40 +33,6 @@ void wait(int ms){
 	}
 }
 
-template t class List<t> {
-	class<t-1> rest;
-	int   member
-
-	int dosomething()
-	{
-		return member + rest.dosomething();
-	}
-}
-
-template t class List<1> {
-	int member;
-
-	int dothomthing()
-	{
-		return member;
-	}
-}
-
-
-
-List<4>
-
-
-
-
-
-
-
-Liste<4> intList;
-
-
-
-
 int
 main (void){
 	display_init();
