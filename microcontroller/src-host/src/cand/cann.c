@@ -191,33 +191,57 @@ cann_conn_t *cann_activity(fd_set *set)
  * rcv
  */
 
-/* nonblocking read on netwock socket -- returns msg if complete msg arrived */
+/* nonblocking read on netwok -- returns msg if complete msg arrived */
 rs232can_msg *cann_get_nb(cann_conn_t *client)
 {
 	int ret; 
+	unsigned char val; 
+	static enum {STATE_START, STATE_LEN, STATE_PAYLOAD} state = STATE_START;
 
 	// sanity
 	debug_assert( !(client->error), 
-			"cann_get_nb() with error (%d)", client->error );
+			"cann_get_nb() with error %d on %d", 
+			client->error, client->fd );
 
-	// start new packet and read length?
-	if (client->missing_bytes == 0) {
-		if (read(client->fd, &(client->missing_bytes), 1) < 0)
+	// XXX das alles geht auch einfacher XXX
+	if (client->state == CANN_LEN) {
+		ret = read(client->fd, &val, 1);
+		       
+		if (ret < 0)
 			goto error;
 
+		if (ret == 0)
+			return NULL;
+
 		// check msg length
-		if (client->missing_bytes > sizeof(client->msg)) {
+		if (val > sizeof(client->msg.data)) {
 			debug( 2, "Protocol error on fd %d (size=%d)", 
 					client->fd, client->missing_bytes );
 			client->error = 1;
 			return NULL;
-		};
-			
-		client->rcv_ptr = client->msg.data;
-		client->msg.len = client->missing_bytes;
+		}
 
-	};
+		if (val == 0)
+			return NULL;
 
+		client->msg.len        = val;
+		client->missing_bytes  = val;
+		client->rcv_ptr        = client->msg.data;
+		client->state          = CANN_CMD;
+	}
+
+	if (client->state == CANN_CMD) {
+		ret = read(client->fd, &(client->msg.cmd), 1);
+		       
+		if (ret < 0)
+			goto error;
+
+		if (ret == 0)
+			return NULL;
+
+		client->state = CANN_PAYLOAD;
+	}
+	
 	// read data
 	ret = read(client->fd, client->rcv_ptr, client->missing_bytes);
 
@@ -247,6 +271,7 @@ error:
 
 rs232can_msg *cann_get(cann_conn_t *client)
 {
+	/*
 	int ret;
 	int complete = 0;
 
@@ -284,6 +309,8 @@ error:
 	debug_perror( 5, "Error readig fd %d (ret==%d)", client->fd, ret );
 	client->error = 1;
 	return NULL;
+	*/
+	debug(0, "cann_get()..");
 }
 
 
@@ -294,16 +321,26 @@ error:
 /* transmit and free message */
 void cann_transmit(cann_conn_t *conn, rs232can_msg *msg)
 {
-	int ret;
 	int len;
 
 	// sanity
 	debug_assert( !(conn->error), 
 			"cann_get_nb() with error (%d)", conn->error );
 
-	len = msg->len + 2;
-	if( write(conn->fd, msg, len) != len ) {
-		debug_perror( 5, "Error writing fd %d", conn->fd );
-	}
+	if( write(conn->fd, &(msg->cmd), 1) != 1 ) 
+		goto error;
+	
+	if( write(conn->fd, &(msg->len), 1) != 1 )
+		goto error;
+
+	if( write(conn->fd, msg->data, msg->len) != msg->len )
+		goto error;
+
+	return;
+error:
+	conn->error = 1;
+	debug_perror( 5, "Error writing fd %d", conn->fd );
+	return;
+
 }
 

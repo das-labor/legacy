@@ -63,7 +63,7 @@ rs232can_msg * canu_get_nb(){
 		case STATE_PAYLOAD:
 			if(uartpkt_len--){
 				*(uartpkt_data++) = c;
-			}else{
+			} else {
 				uartpkt_state = STATE_START;
 				//check CRC
 				if(c == 0x23){ // XXX CRC
@@ -77,7 +77,7 @@ rs232can_msg * canu_get_nb(){
 }
 
 /*****************************************************************************
- * transmit
+ * Transmit
  */
 void canu_transmit(rs232can_msg *msg)
 {

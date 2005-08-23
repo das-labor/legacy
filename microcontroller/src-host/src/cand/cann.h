@@ -20,6 +20,9 @@
 /*****************************************************************************
  * Structures
  */
+
+typedef enum {CANN_LEN, CANN_CMD, CANN_PAYLOAD} cann_state;
+
 typedef struct cann_conn {
 	int			fd;
 	struct sockaddr_in	inet_addr;
@@ -27,7 +30,8 @@ typedef struct cann_conn {
 
 	rs232can_msg		msg;
 	char			*rcv_ptr;
-	int			missing_bytes;
+	unsigned char		missing_bytes;
+	cann_state		state;
 	int			error;
 } cann_conn_t;
 
