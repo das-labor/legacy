@@ -92,7 +92,7 @@ cann_conn_t *cann_connect(char *server, int port)
 
 	// connect
 	memcpy( &(addr.sin_addr), atoaddr(server), sizeof(in_addr_t) );
-	addr.sin_port = port;
+	addr.sin_port = htons( port );
 	addr.sin_family = AF_INET;
 
 	if ( connect(client->fd, (struct sockaddr *)&addr, sizeof(addr)) <0 ) {

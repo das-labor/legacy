@@ -36,8 +36,8 @@ void can_transmit(can_message *cmsg)
 {
 	rs232can_msg rmsg;
 
-	rs232_can2rs(&rmsg, cmsg);
-	cann_transmit(&rmsg);
+	rs232can_can2rs(&rmsg, cmsg);
+	cann_transmit(conn, &rmsg);
 }
 
 /****************************************************************************
@@ -52,7 +52,7 @@ can_message * can_get_nb(){
 	rmsg = cann_get_nb(conn);
 
 	cmsg = (can_message *)malloc(sizeof(can_message));
-	rs232_rs2can(cmsg, rmsg);
+	rs232can_rs2can(cmsg, rmsg);
 
 	return cmsg;
 }
@@ -65,7 +65,7 @@ can_message * can_get(){
 	rmsg = cann_get(conn);
 
 	cmsg = (can_message *)malloc(sizeof(can_message));
-	rs232_rs2can(cmsg, rmsg);
+	rs232can_rs2can(cmsg, rmsg);
 
 	return cmsg;
 }
