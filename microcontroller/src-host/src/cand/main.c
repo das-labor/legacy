@@ -192,9 +192,9 @@ old:
 			can_message *msg = can_buffer_get();
 			msg->dlc = num;
 			msg->addr_src = sa;
-			msg->addr_dest = da;
+			msg->addr_dst = da;
 			msg->port_src = sp;
-			msg->port_dest = dp;
+			msg->port_dst = dp;
 			unsigned int x;
 			for(x=0;x<8;x++){
 				msg->data[x] = (unsigned char) d[x];
