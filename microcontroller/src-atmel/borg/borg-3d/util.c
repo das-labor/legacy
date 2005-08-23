@@ -4,7 +4,7 @@
 #define F_CPU 16000000
 #endif
 
-void mWait(int ms) {
+void wait(int ms) {
 /* 	TCCR2: FOC2 WGM20 COM21 COM20 WGM21 CS22 CS21 CS20
 		CS22 CS21 CS20
 		 0    0    0	       stop
@@ -23,5 +23,3 @@ void mWait(int ms) {
 		TIFR=0x80;				//reset flag
 	}
 }
-
-
