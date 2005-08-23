@@ -14,7 +14,7 @@ void test1() {
 		for (y = 0; y < NUM_ROWS; y++) {
 			for (x = 0; x < NUM_PLANES; x++) {
 				setpixel3d((pixel3d){x,y,z}, 3);
-				mWait(15);
+				wait(15);
 			}
 		}
 	}
@@ -28,7 +28,7 @@ void test2() {
 				setpixel3d((pixel3d){i,j,k}, 3);
 			}
 		}
-		mWait(40);
+		wait(40);
 		for (j = 0; j < 8; j++) {
 			for (k = 0; k < 8; k++) {
 				setpixel3d((pixel3d){i,j,k}, 0);
@@ -41,7 +41,7 @@ void test2() {
 				setpixel3d((pixel3d){j,k,i}, 3);
 			}
 		}
-		mWait(40);
+		wait(40);
 		for (j = 0; j < 8; j++) {
 			for (k = 0; k < 8; k++) {
 				setpixel3d((pixel3d){j,k,i}, 0);
@@ -54,7 +54,7 @@ void test2() {
 				setpixel3d((pixel3d){k,i,j}, 3);
 			}
 		}
-		mWait(50);
+		wait(50);
 		for (j = 0; j < 8; j++) {
 			for (k = 0; k < 8; k++) {
 				setpixel3d((pixel3d){k,i,j}, 0);
@@ -67,7 +67,7 @@ void test2() {
 				setpixel3d((pixel3d){k,j,i}, 3);
 			}
 		}
-		mWait(40);
+		wait(40);
 		for (j = 0; j < 8; j++) {
 			for (k = 0; k < 8; k++) {
 				setpixel3d((pixel3d){k,j,i}, 0);
@@ -84,7 +84,7 @@ void test3() {
 				setpixel3d((pixel3d){i,j,k}, 3);
 			}
 		}
-		mWait(40);
+		wait(40);
 	}
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
@@ -92,7 +92,7 @@ void test3() {
 				setpixel3d((pixel3d){i,j,k}, 0);
 			}
 		}
-		mWait(40);
+		wait(40);
 	}
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
@@ -100,7 +100,7 @@ void test3() {
 				setpixel3d((pixel3d){j,k,i}, 3);
 			}
 		}
-		mWait(40);
+		wait(40);
 	}
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
@@ -108,7 +108,7 @@ void test3() {
 				setpixel3d((pixel3d){j,k,i}, 0);
 			}
 		}
-		mWait(40);
+		wait(40);
 	}
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
@@ -116,7 +116,7 @@ void test3() {
 				setpixel3d((pixel3d){k,i,j}, 3);
 			}
 		}
-		mWait(50);
+		wait(50);
 	}
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
@@ -124,7 +124,7 @@ void test3() {
 				setpixel3d((pixel3d){k,i,j}, 0);
 			}
 		}
-		mWait(50);
+		wait(50);
 	}
 	for (i = 7; i < 8; i--) {
 		for (j = 0; j < 8; j++) {
@@ -132,7 +132,7 @@ void test3() {
 				setpixel3d((pixel3d){k,j,i}, 3);
 			}
 		}
-		mWait(40);
+		wait(40);
 	}
 	for (i = 7; i < 8; i--) {
 		for (j = 0; j < 8; j++) {
@@ -140,7 +140,7 @@ void test3() {
 				setpixel3d((pixel3d){k,j,i}, 0);
 			}
 		}
-		mWait(40);
+		wait(40);
 	}
 }
 
@@ -156,7 +156,7 @@ void growingCubeFilled() {
 				}
 			}
 		}
-		mWait(150);
+		wait(150);
 		min--;
 		max++;
 	}
@@ -172,7 +172,7 @@ void growingCubeFilled() {
 			}
 	
 		}
-		mWait(150);
+		wait(150);
 		min++;
 		max--;
 	}	
@@ -192,7 +192,7 @@ void coolAnim() {
 				}
 			}
 		}
-		mWait(150);
+		wait(150);
 		min--;
 		max++;
 	}
@@ -210,7 +210,7 @@ void coolAnim() {
 			}
 	
 		}
-		mWait(150);
+		wait(150);
 		min++;
 		max--;
 	}	
@@ -302,7 +302,7 @@ void snake3d(){
 			while(tail != head){
 				clearpixel3d(*tail);
 				if((++tail)>pixels+SNAKE_LEN) tail = pixels;
-				mWait(60);
+				wait(60);
 			}
 			break;
 		}
@@ -313,7 +313,7 @@ void snake3d(){
 				clearpixel3d(apples[j]);
 			}
 		}
-		mWait(5);
+		wait(5);
 	}
 }
 
@@ -389,7 +389,7 @@ void snake3dJoystick(){
 			while (tail != head){
 				clearpixel3d(*tail);
 				if ((++tail)>pixels+64) tail = pixels;
-				mWait(60);
+				wait(60);
 			}
 			break;
 		}
@@ -400,7 +400,7 @@ void snake3dJoystick(){
 				clearpixel3d(apples[j]);
 			}
 		}
-		mWait(200);
+		wait(200);
 	}
 }
 
@@ -467,10 +467,9 @@ void matrix(){
 				streamer_num++;	
 			}
 		}
-		mWait(80);	
+		wait(80);	
 		
 	
 	
 	}
 }
-
