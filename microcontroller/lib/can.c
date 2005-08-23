@@ -159,10 +159,10 @@ void message_load(can_message_x * msg){
 	spi_data(WRITE);
 	spi_data(TXB0SIDH);
 
-	spi_data( (msg->msg.port_src << 2) | (msg->msg.port_dest >> 4 ) );
-	spi_data( ((msg->msg.port_dest & 0x0C) << 3) | (1<<EXIDE) | (msg->msg.port_dest & 0x03) );
+	spi_data( (msg->msg.port_src << 2) | (msg->msg.port_dst >> 4 ) );
+	spi_data( ((msg->msg.port_dst & 0x0C) << 3) | (1<<EXIDE) | (msg->msg.port_dst & 0x03) );
 	spi_data(msg->msg.addr_src);
-	spi_data(msg->msg.addr_dest);
+	spi_data(msg->msg.addr_dst);
 	spi_data(msg->msg.dlc);
 	for(x=0;x<msg->msg.dlc;x++){
 		spi_data(msg->msg.data[x]);
@@ -186,10 +186,10 @@ void message_fetch(can_message_x * msg){
 	tmp1 = spi_data(0);
 	msg->msg.port_src = tmp1 >> 2;
 	tmp2 = spi_data(0);
-	msg->msg.port_dest = ((tmp1 & 0x03) << 4) | ((tmp2 & 0x60) >> 3) | (tmp2 & 0x03);
+	msg->msg.port_dst = ((tmp1 & 0x03) << 4) | ((tmp2 & 0x60) >> 3) | (tmp2 & 0x03);
 
 	msg->msg.addr_src = spi_data(0);
-	msg->msg.addr_dest = spi_data(0);
+	msg->msg.addr_dst = spi_data(0);
 	msg->msg.dlc = spi_data(0) & 0x0F;	
 	for(x=0;x<msg->msg.dlc;x++){
 		msg->msg.data[x] = spi_data(0);

@@ -27,9 +27,9 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 		can_message *msg = can_buffer_get();
 
 		msg->addr_src  = 0x11;
-		msg->addr_dest = 0x22;
+		msg->addr_dst  = 0x22;
 		msg->port_src  = 0x01;
-		msg->port_dest = 0x02;
+		msg->port_dst  = 0x02;
 		msg->dlc       = 4;
 		msg->data[0]   = z++;
 

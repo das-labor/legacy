@@ -103,7 +103,7 @@ void eventloop()
 		can_message *msg = can_get_nb();
 		if(msg){
 			FLAGS |= F_RCV_CAN;
-			switch(msg->port_dest) {
+			switch(msg->port_dst) {
 			case PORT_MGT:
 				// Management
 				switch(((pdo_message*)msg)->fkt_id) {

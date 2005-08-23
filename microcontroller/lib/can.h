@@ -10,6 +10,8 @@
  * #define CAN_TX_BUFFER_SIZE 2	//only used for Interrupt
  */
 
+#include "config.h"
+
 /*****************************************************************************
  * Types
  */
@@ -19,9 +21,9 @@ typedef unsigned char can_port;
 
 typedef struct{
 	can_addr      addr_src;
-	can_addr      addr_dest;
+	can_addr      addr_dst;
 	can_port      port_src;
-	can_port      port_dest;
+	can_port      port_dst;
 	unsigned char dlc;
 	unsigned char data[8];
 }can_message;
@@ -50,13 +52,15 @@ void can_transmit( can_message *msg );
 
 can_message *can_get();
 can_message *can_get_nb();
-void can_free(can_message * msg);
 
-#include "config.h"
-
+// this is only needed for Interrupt driven Version
 #ifndef CAN_INTERRUPT
-//this is only needed for Interrupt driven Version
-#define can_free(m)
+#  define can_free(m)
+#else
+  void can_free(can_message * msg);
 #endif
+
+
+
 
 #endif
