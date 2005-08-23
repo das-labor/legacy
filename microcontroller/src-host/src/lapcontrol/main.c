@@ -84,8 +84,11 @@ int main(int argc, char *argv[])
 	can_init(server, tcpport);
 	debug(1, "CAN communication established" );
 
-	can_message *msg = can_buffer_get();
-	can_transmit(msg);
+
+	lap_ping( 0xff );
+
+//	can_message *msg = can_buffer_get();
+//	can_transmit(msg);
 
 	return 0;
 }

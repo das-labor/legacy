@@ -31,7 +31,7 @@ Makefile
 playground/Makefile
 src/Makefile
 src/cand/Makefile
-src/lapd-cxx/Makefile
+src/lapcontrol/Makefile
 ])
 
 AC_OUTPUT

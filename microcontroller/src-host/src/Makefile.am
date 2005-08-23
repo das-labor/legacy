@@ -1,2 +1,2 @@
 
-SUBDIRS = cand
+SUBDIRS = cand lapcontrol
