@@ -399,6 +399,7 @@ void snake3dJoystick(){
 	}
 }
 */
+
 typedef struct {
 	pixel3d start;
 	unsigned char len;
@@ -475,12 +476,12 @@ void drawLineZ(char x1, char y1, char x2, char y2, char z, char level) {
 	
 	dx = x2 - x1;      /* the horizontal distance of the line */
 	dy = y2 - y1;      /* the vertical distance of the line */
-	dxabs = dx >= 0 ? dx: -dx;
-	dyabs = dy >= 0 ? dy: -dy;
-	sdx = dx >= 0 ? 1: -1;
-	sdy = dy >= 0 ? 1: -1;
-	x = dyabs>>1;
-	y = dxabs>>1;
+	dxabs = dx >= 0 ? dx: -dx; //abs
+	dyabs = dy >= 0 ? dy: -dy; //abs
+	sdx = dx >= 0 ? 1: -1;     //sgn
+	sdy = dy >= 0 ? 1: -1;     //sgn
+	x = dyabs >> 1;
+	y = dxabs >> 1;
 	px = x1;
 	py = y1;
 	
@@ -569,6 +570,5 @@ void *display_loop(void * unused) {
 		test2();
 		test2();
 		snake3d();
-		
 	}
 }
