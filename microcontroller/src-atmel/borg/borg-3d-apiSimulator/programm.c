@@ -472,10 +472,10 @@ void matrix() {
 } 
 
 void drawLineZ(char x1, char y1, char x2, char y2, char z, char level) {
-	signed char i, dx, dy, sdx, sdy, dxabs, dyabs, x, y, px, py;
+	int i, dx, dy, sdx, sdy, dxabs, dyabs, x, y, px, py;
 	
-	dx = x2 - x1;      /* the horizontal distance of the line */
-	dy = y2 - y1;      /* the vertical distance of the line */
+	dx = x2 - x1;      // the horizontal distance of the line
+	dy = y2 - y1;      // the vertical distance of the line 
 	dxabs = dx >= 0 ? dx: -dx; //abs
 	dyabs = dy >= 0 ? dy: -dy; //abs
 	sdx = dx >= 0 ? 1: -1;     //sgn
@@ -484,8 +484,8 @@ void drawLineZ(char x1, char y1, char x2, char y2, char z, char level) {
 	y = dxabs >> 1;
 	px = x1;
 	py = y1;
-	
-	if (dxabs >= dyabs) { /* the line is more horizontal than vertical */  
+	setpixel3d((pixel3d){x1, y1, z}, level);
+	if (dxabs >= dyabs) { // the line is more horizontal than vertical  
 		for (i = 0; i < dxabs; i++) {
 			y += dyabs; 
 			if (y >= dxabs) {
@@ -495,7 +495,7 @@ void drawLineZ(char x1, char y1, char x2, char y2, char z, char level) {
 			px += sdx;
 			setpixel3d((pixel3d){px, py, z}, level);
 		}
-	} else { /* the line is more vertical than horizontal */
+	} else { // the line is more vertical than horizontal
 		for (i = 0; i < dyabs; i++) {
 			x += dxabs;
 			if (x >= dyabs) {
@@ -509,6 +509,7 @@ void drawLineZ(char x1, char y1, char x2, char y2, char z, char level) {
 }	  
 
 void drawLineZAngle(unsigned char angle, unsigned char z, unsigned char value) {
+	// could be optimised in programcode
 	unsigned char x1[14] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
 	unsigned char y1[14] = {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7};
 	unsigned char x2[14] = {7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1};
@@ -556,7 +557,7 @@ void spirale2() {
 
 
 void *display_loop(void * unused) {
-	while (1) {
+	while (1) {	
 		spirale();
 		spirale2();
 		matrix();
