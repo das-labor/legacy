@@ -2,7 +2,7 @@
 #define CANN_H
 
 /******************************************************************************
- * CAN messages over TCP/IP -- low level functions
+ * Encapsulated CAN messages over TCP/IP -- low level functions
  *
  *
  * Needs can-encap.* to encapsulate can packates
@@ -63,15 +63,24 @@ void cann_close(cann_conn_t *client);
 /* check rset for activity on existing client connections */
 cann_conn_t *cann_activity(fd_set *set);
 
+
+/*****************************************************************************
+ * Memory Management
+ */
+rs232can_msg *cann_buffer_get();
+void cann_free(rs232can_msg *);
+
+
 /*****************************************************************************
  * rcv
  */
 
-/* nonblocking read on netwock socket -- returns msg if complete msg arrived */
+/* nonblocking read from netwock -- returns 0 if no complete msg arrived */
 rs232can_msg *cann_get_nb(cann_conn_t *client);
 
 /* blocking read on netwock socket -- returns msg if complete msg arrived */
 rs232can_msg *cann_get(cann_conn_t *client);
+
 
 /*****************************************************************************
  * transmit

@@ -23,13 +23,13 @@
 
 static char *progname;
 
-static char *optstring = "hdv::s:p:";
+static char *optstring = "hdv::S:p:";
 struct option longopts[] =
 {
   { "help", no_argument, NULL, 'h' },
   { "daemon", no_argument, NULL, 'd' },
   { "verbose", optional_argument, NULL, 'v' },
-  { "serial", required_argument, NULL, 's' },
+  { "serial", required_argument, NULL, 'S' },
   { "port", required_argument, NULL, 'p' },
   { NULL, 0, NULL, 0 }
 };
@@ -41,19 +41,27 @@ void help()
    -h, --help              display this help and exit\n\
    -v, --verbose           be more verbose and display a CAN packet dump\n\
    -d, --daemon            become daemon\n\
-   -s, --serial PORT       use specified serial port (default: /dev/ttyS0)\n\
+   -S, --serial PORT       use specified serial port (default: /dev/ttyS0)\n\
    -p, --port PORT         use specified TCP/IP port (default: 2342)\n\n" );
 }
 
-void process_uart_msg( rs232can_msg *msg )
+void process_uart_msg()
 {
+	debug( 10, "Activity on uart_fd" );
+
+	rs232can_msg *msg = canu_get_nb();
+
+	// XXX do stuff XXX
+
+	canu_free(msg);
 }
 
-void process_client_msg( cann_conn_t *client, rs232can_msg *msg )
+void process_client_msg( cann_conn_t *client )
 {
 	cann_conn_t *ac;
 	int x;
 
+	rs232can_msg *msg = cann_get_nb(client);
 	debug(3, "Processing message from network..." );
 
 	switch(msg->cmd) {
@@ -104,27 +112,17 @@ void event_loop()
 		debug( 10, "Select returned %d", num);
 
 		// check activity on uart_fd
-		if (FD_ISSET(uart_fd(), &rset)) {
-			debug( 10, "Activity on uart_fd" );
-			rs232can_msg *msg = canu_get_nb();
-			if (msg) {
-				process_uart_msg(msg);
-				free(msg);
-			}
-		}
-		
+		if (FD_ISSET(uart_fd(), &rset))
+			process_uart_msg();
+
+		// check client activity 
+		while( client = cann_activity(&rset) )
+			process_client_msg(client);
+
+	
 		// new connections
 		if( client = cann_accept(&rset) ) {
 			debug( 2, "New connection (fd=%d)", client->fd );
-		}
-
-		// check client activity 
-		while( client = cann_activity(&rset) ) {
-			rs232can_msg *msg = cann_get_nb(client);
-			if(msg) {
-				process_client_msg(client, msg);
-				// free(msg);
-			}
 		}
 
 		// close errorous connections
@@ -154,7 +152,7 @@ int main(int argc, char *argv[])
 			case 'd':
 				d = 1;
 				break;
-			case 's':
+			case 'S':
 				serial = optarg;
 				break;
 			case 'p':

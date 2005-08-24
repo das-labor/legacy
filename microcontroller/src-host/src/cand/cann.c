@@ -47,7 +47,6 @@ struct in_addr *atoaddr(char *address) {
  * Connection management
  */
 
-
 /* open listening socket and initialize */
 void cann_listen(int port)
 {
@@ -204,6 +203,21 @@ cann_conn_t *cann_activity(fd_set *set)
 	}
 
 	return NULL;
+}
+
+
+/*****************************************************************************
+ * Memory Management
+ */
+
+rs232can_msg *cann_buffer_get()
+{
+	return (rs232can_msg *)malloc( sizeof(rs232can_msg) );
+}
+
+void cann_free(rs232can_msg *rmsg)
+{
+	free(rmsg);
 }
 
 /*****************************************************************************
