@@ -5,6 +5,13 @@
 #include "can-encap.h"
 #include "cann.h"
 
+/************************************************************************+**
+ * Implement can.h for posix systems 
+ *
+ * Uses cann.[hc] for cand or can-uart.[hc] 
+ */
+
+
 static can_message Cmsg;
 static cann_conn_t *conn;
 
