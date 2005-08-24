@@ -14,6 +14,17 @@
 #endif
 
 /*****************************************************************************
+ * Global variables
+ */
+
+typedef enum {STATE_START, STATE_LEN, STATE_PAYLOAD} canu_rcvstate_t;
+
+rs232can_msg	canu_rcvpkt;
+canu_rcvstate_t	canu_rcvstate = STATE_START;
+unsigned char 	canu_rcvlen   = 0;
+
+
+/*****************************************************************************
  * Connection management
  */
 
@@ -32,42 +43,53 @@ void canu_reset()
 		uart_putc( (char)0x00 );
 }
 
+/*****************************************************************************
+ * Memory Management
+ */
+
+rs232can_msg *canu_buffer_get()
+{
+	return (rs232can_msg *)malloc( sizeof(rs232can_msg) );
+}
+
+void canu_free(rs232can_msg *rmsg)
+{
+	if (rmsg != &canu_rcvpkt)
+		free(rmsg);
+}
 
 /*****************************************************************************
  * rcv
  */
 
-//Returns Message or 0 if there is no complete message.
+// Returns Message or 0 if there is no complete message.
 rs232can_msg * canu_get_nb(){
-	static enum {STATE_START, STATE_LEN, STATE_PAYLOAD} uartpkt_state;
-	static unsigned char uartpkt_len;
-	static rs232can_msg  uartpkt;
 	static char *uartpkt_data;
 
 	char c;
 	
 	while (uart_getc_nb(&c)) {
-		switch (uartpkt_state) {
+		switch (canu_rcvstate) {
 		case STATE_START:
 			if (c) {
-				uartpkt_state = STATE_LEN;
-				uartpkt.cmd   = c;
+				canu_rcvstate = STATE_LEN;
+				canu_rcvpkt.cmd = c;
 			}
 			break;
 		case STATE_LEN:
-			uartpkt_state = STATE_PAYLOAD;
-			uartpkt_len   = (unsigned char)c;
-			uartpkt.len   = c;
-			uartpkt_data  = &uartpkt.data[0];
+			canu_rcvstate     = STATE_PAYLOAD;
+			canu_rcvlen       = (unsigned char)c;
+			canu_rcvpkt.len   = c;
+			uartpkt_data      = &canu_rcvpkt.data[0];
 			break;
 		case STATE_PAYLOAD:
-			if(uartpkt_len--){
+			if(canu_rcvlen--){
 				*(uartpkt_data++) = c;
 			} else {
-				uartpkt_state = STATE_START;
+				canu_rcvstate = STATE_START;
 				//check CRC
 				if(c == 0x23){ // XXX CRC
-					return &uartpkt;
+					return &canu_rcvpkt;
 				}
 			}
 			break;
@@ -75,6 +97,11 @@ rs232can_msg * canu_get_nb(){
 	}
 	return 0;
 }
+
+
+// rs232can_msg * canu_get(){
+//    XXX 
+// }
 
 /*****************************************************************************
  * Transmit
