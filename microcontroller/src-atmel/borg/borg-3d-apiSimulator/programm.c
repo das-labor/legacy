@@ -472,7 +472,7 @@ void matrix() {
 } 
 
 void drawLineZ(char x1, char y1, char x2, char y2, char z, char level) {
-	int i, dx, dy, sdx, sdy, dxabs, dyabs, x, y, px, py;
+	signed char i, dx, dy, sdx, sdy, dxabs, dyabs, x, y, px, py;
 	
 	dx = x2 - x1;      // the horizontal distance of the line
 	dy = y2 - y1;      // the vertical distance of the line 

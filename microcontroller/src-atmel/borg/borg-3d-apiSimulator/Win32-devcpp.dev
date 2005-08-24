@@ -17,7 +17,7 @@ IsCpp=1
 Icon=
 ExeOutput=
 ObjectOutput=
-OverrideOutput=0
+OverrideOutput=1
 OverrideOutputName=borg-3d-apiSimulator.exe
 HostApplication=
 Folders=
@@ -27,7 +27,7 @@ CustomMakefile=
 IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
-CompilerSettings=0000000000001000000000
+CompilerSettings=0000000001001000000000
 
 [Unit1]
 FileName=main.c
