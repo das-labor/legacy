@@ -4,11 +4,13 @@
 #include "can.h"
 #include "can-encap.h"
 #include "cann.h"
+#include "can-uart.h"
 
-/************************************************************************+**
+/***************************************************************************
  * Implement can.h for posix systems 
  *
- * Uses cann.[hc] for cand or can-uart.[hc] 
+ * Uses cann.[hc] for cand or can-uart.[hc] according to first call to 
+ * can_init( ... );
  */
 
 
@@ -19,15 +21,16 @@ static cann_conn_t *conn;
  * Management 
  */
 
+void can_init(cann_conn_t *aconn){
+	conn = aconn;
+}
+
 void can_setmode( can_mode_t mode ) {
+	// XXX
 }
 
 void can_setfilter() {
-}
-
-// open connection to cand
-void can_init( char *server, int port ){
-	conn = cann_connect(server, port);
+	// XXX
 }
 
 /****************************************************************************
@@ -46,7 +49,11 @@ void can_transmit(can_message *cmsg)
 	rs232can_msg rmsg;
 
 	rs232can_can2rs(&rmsg, cmsg);
-	cann_transmit(conn, &rmsg);
+
+	if (conn)
+		cann_transmit(conn, &rmsg);
+	else
+		canu_transmit(&rmsg);
 }
 
 /****************************************************************************
@@ -58,7 +65,10 @@ can_message * can_get_nb(){
 	rs232can_msg *rmsg;
 	can_message  *cmsg;
 
-	rmsg = cann_get_nb(conn);
+	if (conn)
+		rmsg = cann_get_nb(conn);
+	else
+		rmsg = canu_get_nb();
 
 	cmsg = (can_message *)malloc(sizeof(can_message));
 	rs232can_rs2can(cmsg, rmsg);
@@ -71,7 +81,10 @@ can_message * can_get(){
 	rs232can_msg *rmsg;
 	can_message  *cmsg;
 
-	rmsg = cann_get(conn);
+	if (conn)
+		rmsg = cann_get(conn);
+	else
+		rmsg = canu_get();
 
 	cmsg = (can_message *)malloc(sizeof(can_message));
 	rs232can_rs2can(cmsg, rmsg);

@@ -65,7 +65,6 @@ void canu_free(rs232can_msg *rmsg)
 // Returns Message or 0 if there is no complete message.
 rs232can_msg * canu_get_nb(){
 	static char *uartpkt_data;
-
 	char c;
 	
 	while (uart_getc_nb(&c)) {
@@ -95,13 +94,45 @@ rs232can_msg * canu_get_nb(){
 			break;
 		}
 	}
-	return 0;
+
+	return NULL;
 }
 
 
-// rs232can_msg * canu_get(){
-//    XXX 
-// }
+rs232can_msg * canu_get(){
+	static char *uartpkt_data;
+	char c;
+	
+	for(;;) {
+		c = uart_getc();
+
+		switch (canu_rcvstate) {
+		case STATE_START:
+			if (c) {
+				canu_rcvstate = STATE_LEN;
+				canu_rcvpkt.cmd = c;
+			}
+			break;
+		case STATE_LEN:
+			canu_rcvstate     = STATE_PAYLOAD;
+			canu_rcvlen       = (unsigned char)c;
+			canu_rcvpkt.len   = c;
+			uartpkt_data      = &canu_rcvpkt.data[0];
+			break;
+		case STATE_PAYLOAD:
+			if(canu_rcvlen--){
+				*(uartpkt_data++) = c;
+			} else {
+				canu_rcvstate = STATE_START;
+				//check CRC
+				if(c == 0x23){ // XXX CRC
+					return &canu_rcvpkt;
+				}
+			}
+			break;
+		}
+	}
+}
 
 /*****************************************************************************
  * Transmit

@@ -34,10 +34,10 @@ void canu_free(rs232can_msg *);
  */
 
 /* nonblocking read from uart -- returns 0 if no complete msg arrived */
-rs232can_msg * canu_get_nb();
+rs232can_msg *canu_get_nb();
 
 /* blocking read from uart */
-rs232can_msg * canu_get();
+rs232can_msg *canu_get();
 
 
 /*****************************************************************************

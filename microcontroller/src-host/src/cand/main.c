@@ -178,32 +178,4 @@ int main(int argc, char *argv[])
 	event_loop();  // does not return
 
 	return 1;  
-
-old:
-
-	if(!strcmp(argv[1], "p")){
-		print_packets();
-	}else if(!strcmp(argv[1], "g")){
-		int sa,da,sp,dp,d[8];
-		int num = sscanf(argv[2], "%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x",&sa,&sp,&da,&dp,&d[0],&d[1],&d[2],&d[3],&d[4],&d[5],&d[6],&d[7]) - 4;
-		if(num >= 0){
-			can_message *msg = can_buffer_get();
-			msg->dlc = num;
-			msg->addr_src = sa;
-			msg->addr_dst = da;
-			msg->port_src = sp;
-			msg->port_dst = dp;
-			unsigned int x;
-			for(x=0;x<8;x++){
-				msg->data[x] = (unsigned char) d[x];
-			}
-			can_transmit(msg);
-		}else{
-			printf("error: not enough bytes provided");
-		}
-	
-	}
-	
-	
-
 }
