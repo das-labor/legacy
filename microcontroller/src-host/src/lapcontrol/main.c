@@ -11,6 +11,8 @@
 #include "cann.h"
 #include "debug.h"
 
+#include "cmds-base.h"
+
 // Atmel ; LAP includes
 // #include "config.h"
 
@@ -18,6 +20,25 @@
 #ifndef max
  #define max(a,b) (((a) > (b)) ? (a) : (b))
 #endif
+
+/**
+ * Available commands array
+ */
+typedef struct {
+	void (*fkt)(int, char**);
+	char *cmd;
+	char *sig;
+	char *desc;
+} cmd_t;
+
+cmd_t cmds[] = {
+  { &fkt_dump,   "dump", "dump", "Packet dump from CAN bus" },
+  { &fkt_reset,  "reset", "reset <addr>", "Send reset to <addr>" },
+  { &fkt_ping,   "ping", "ping <addr>", "Send ping to <addr>" },
+  { &fkt_packet, "packet", "packet <src> <dst> <data>", "Send arbitrary packets" },
+//  { &ftk_lampe, "lampe", "lampe ...",  "Control lampe-device" }
+  { NULL, NULL, NULL, NULL }
+};
 
 
 static char *progname;
@@ -31,55 +52,6 @@ struct option longopts[] =
   { "serial", required_argument, NULL, 'S' },
   { "port", required_argument, NULL, 'p' },
   { NULL, 0, NULL, 0 }
-};
-
-/**
- * Available commands   (XXX move to seperate *.[ch] XXX)
- */
-void fkt_ping(int argc, char *argv[]) 
-{
-	can_addr addr = atoi(argv[1]);
-	lap_ping(addr);
-};
-
-void fkt_reset(int argc, char *argv[]) 
-{
-};
-
-void fkt_dump(int argc, char *argv[]) 
-{
-	can_message *msg;
-
-	while(1) {
-		msg = can_get_nb();
-		
-		if (msg) {
-			printf( "%10d: %02x:%02x -> %02x:%02x\n", localtime(),
-					msg->addr_src, msg->port_src,
-					msg->addr_dst, msg->port_dst );
-
-			can_free(msg);
-		}
-	}
-};
-
-/**
- * Available commands array
- */
-
-typedef struct {
-	void (*fkt)(int, char**);
-	char *cmd;
-	char *sig;
-	char *desc;
-} cmd_t;
-
-cmd_t cmds[] = {
-  { &fkt_dump,  "dump", "dump", "Packet dump from CAN bus" },
-  { &fkt_reset, "reset", "reset <addr>", "Send reset to <addr>" },
-  { &fkt_ping,  "ping",	"ping <addr>", "Send ping to <addr>" },
-//  { &ftk_lampe, "lampe", "lampe ...",  "Control lampe-device" }
-  { NULL, NULL, NULL, NULL }
 };
 
 
@@ -99,7 +71,7 @@ Commands:\n\n" );
 
 	ncmd = cmds;
 	while(ncmd->fkt) {
-		printf( "   %-20s       %s\n", ncmd->sig, ncmd->desc );
+		printf( "   %-30s %s\n", ncmd->sig, ncmd->desc );
 		ncmd++;
 	}
 	printf( "\n" );
