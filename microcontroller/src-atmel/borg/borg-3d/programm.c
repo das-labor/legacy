@@ -461,15 +461,122 @@ void matrix(){
 		unsigned char nsc;
 		for(nsc=0;nsc<6;nsc++){
 			if(streamer_num<STREAMER_NUM){
-				unsigned char sy = random()%(2*NUM_COLS);
+				unsigned char sy = myrandom()%(2*NUM_COLS);
 				if (sy>NUM_COLS-1) sy=0;
-				streamers[streamer_num] = (streamer){{random()%(NUM_ROWS*NUM_PLANES), sy}, 0, (random()%8)+12, index++,(random()%16)+3};
+				streamers[streamer_num] = (streamer){{myrandom()%(NUM_ROWS*NUM_PLANES), sy}, 0, (myrandom()%8)+12, index++,(myrandom()%16)+3};
 				streamer_num++;	
 			}
 		}
-		wait(80);	
+		wait(80);		
+	}
+}
+
+void drawLineZ(char x1, char y1, char x2, char y2, char z, char level) {
+	signed char i, dx, dy, sdx, sdy, dxabs, dyabs, x, y, px, py;
+	
+	dx = x2 - x1;      // the horizontal distance of the line
+	dy = y2 - y1;      // the vertical distance of the line 
+	dxabs = dx >= 0 ? dx: -dx; //abs
+	dyabs = dy >= 0 ? dy: -dy; //abs
+	sdx = dx >= 0 ? 1: -1;     //sgn
+	sdy = dy >= 0 ? 1: -1;     //sgn
+	x = dyabs >> 1;
+	y = dxabs >> 1;
+	px = x1;
+	py = y1;
+	setpixel3d((pixel3d){x1, y1, z}, level);
+	if (dxabs >= dyabs) { // the line is more horizontal than vertical  
+		for (i = 0; i < dxabs; i++) {
+			y += dyabs; 
+			if (y >= dxabs) {
+				y -= dxabs;
+				py += sdy;
+			}
+			px += sdx;
+			setpixel3d((pixel3d){px, py, z}, level);
+		}
+	} else { // the line is more vertical than horizontal
+		for (i = 0; i < dyabs; i++) {
+			x += dxabs;
+			if (x >= dyabs) {
+				x -= dyabs;
+				px += sdx;
+			}
+			py += sdy;
+			setpixel3d((pixel3d){px, py, z}, level);
+		}
+	}
+}	  
+
+void drawLineZAngle(unsigned char angle, unsigned char z, unsigned char value) {
+	// could be optimised in programcode
+	unsigned char x1[14] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
+	unsigned char y1[14] = {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7};
+	unsigned char x2[14] = {7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1};
+	unsigned char y2[14] = {7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0};
+	drawLineZ(x1[angle], y1[angle], x2[angle], y2[angle], z, value);	
+}
+
+void spirale() {
+	unsigned char z, angle, count = 0, angleAdd;
+	for (angleAdd = 0; angleAdd < 12; count++) {
+		for (angle = 0; angle < 14; angle++) {
+			for (z = 0; z < 8; z++) {
+				drawLineZAngle((angle+(angleAdd*z/4))%14, z, 3);		
+			}
+			wait(30);
+			clear_screen(0);
 		
-	
-	
+			if (count > 5) { 
+				angleAdd++;
+				count = 0;
+			}
+		}
+	}
+}
+
+void spirale2() {
+	unsigned char z, angle, count, angleAdd;
+	for (count = 0, angleAdd = 0; angleAdd < 8; count++) {
+		for (angle = 0; angle < 14; angle++) {
+			for (z = 0; z < 8; z++) {
+				drawLineZAngle((angle+((angleAdd*z)/4))%14, z, 3);
+				drawLineZAngle((angle+7+((angleAdd*z)/4))%14, z, 3);
+				setpixel3d((pixel3d){3, 3, z}, 0);
+				setpixel3d((pixel3d){3, 4, z}, 0);
+				setpixel3d((pixel3d){4, 3, z}, 0);
+				setpixel3d((pixel3d){4, 4, z}, 0);				
+			}
+			wait(40);
+			clear_screen(0);
+			if (count > 5) { 
+				angleAdd++;
+				count = 0;
+			}
+	 	}
+	}
+}
+
+void waves() {
+	signed char sin[12] = {64, 55, 32, 0, -32. -55, -64, -55, -32, 0, 32, 55};
+	signed char data[8][8];
+	unsigned char i, j, k;
+	for (i = 0; i < 128; i++) {
+		for (j = 0; j < 8; j++) {
+			data[j][0] = sin[(i+j)%12];
+			data[0][j] = sin[(i+j)%12];
+		}
+		for (j = 1; j < 8; j++) {
+			for (k = 1; k < 8; k++) {
+				data[j][k] = (data[j-1][k] + data[j][k-1] + data[j-1][k-1])/3;
+			}
+		}
+		for (j = 0; j < 8; j++) {
+			for (k = 0; k < 8; k++) {
+				setpixel3d((pixel3d){j, k, (data[j][k]+64)/16}, 3);
+			}
+		}
+		wait(40);
+		clear_screen(0);
 	}
 }
