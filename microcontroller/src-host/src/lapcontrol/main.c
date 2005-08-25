@@ -57,8 +57,9 @@ void fkt_dump(int argc, char *argv[])
 			printf( "%10d: %02x:%02x -> %02x:%02x\n", localtime(),
 					msg->addr_src, msg->port_src,
 					msg->addr_dst, msg->port_dst );
+
+			can_free(msg);
 		}
-		can_free(msg);
 	}
 };
 
@@ -149,13 +150,16 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	can_init();
 	if (serial) {
 		debug(1, "Trying to establish CAN communication via serial %s", serial );
 		canu_init(serial);
+		can_init(NULL);		// use serial
 	} else {
+		cann_conn_t *conn;
+
 		debug(1, "Trying to establish CAN communication via cand (%s:%d)", server, tcpport );
-		cann_connect(server, tcpport);
+		conn = cann_connect(server, tcpport);
+		can_init(conn);		// use specified connection to cand
 	}
 
 	char *arg = argv[optind];
