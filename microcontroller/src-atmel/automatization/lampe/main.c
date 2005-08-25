@@ -16,7 +16,7 @@
 #define stdout_putstr   uart_putstr
 #define stdout_putstr_P uart_putstr_P
 
-void set_lampe(unsigned char lampe, unsigned char val)
+static inline void set_lampe(unsigned char lampe, unsigned char val)
 {
 	Bright[lampe] = 64-(val>>2);
 }
@@ -34,7 +34,7 @@ unsigned char FLAGS;
 
 #define LED_GREEN PD1
 
-void blink_leds(){
+static inline void blink_leds(){
 	static unsigned char rol;
 	if(TIFR & (1<<OCF1A)){
 		TIFR = (1<<OCF1A); //clear flag
@@ -56,7 +56,7 @@ void blink_leds(){
 	}
 }
 
-void relais_check(){
+static inline void relais_check(){
 	unsigned char x, on = 0;
 	for(x=0;x<NUM_LAMPS;x++){
 		if(Bright[x] != 64){
@@ -112,15 +112,18 @@ void eventloop()
 						}
 						break;
 					}
-					case 2:{
-						if (msg->dlc != 3) continue;
-						unsigned int value;
+					case FKT_LAMPE_SETDELAY:{
+						if (msg->dlc != 4) continue;
+						union{
+							unsigned int i;
+							unsigned char c[2];
+						}value;
 						unsigned char lampe;
 						lampe = ((pdo_message*)msg)->data[0];
-						value = ((pdo_message*)msg)->data[1];
-			
-						Ramp.delay[lampe] = value;
-						Ramp.delay_rl[lampe] = value;
+						value.c[1] = ((pdo_message*)msg)->data[1];
+						value.c[0] = ((pdo_message*)msg)->data[2];
+						Ramp.delay_rl[lampe] = value.i;
+						Ramp.delay[lampe] = value.i;
 						break;
 					}
 				}
@@ -131,7 +134,7 @@ void eventloop()
 	}
 }
 
-void timer1_init(){
+static inline void timer1_init(){
 	ICR1 = 8000;
 	TCCR1B = 0x03 | (1<<CTC1); //CTC Mode, clk/64
 	OCR1A = 0x6000;
@@ -153,5 +156,6 @@ int main(){
 	sei();
 	
 	eventloop();
+	return 0;
 }
 
