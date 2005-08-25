@@ -28,20 +28,14 @@ struct option longopts[] =
   { "help", no_argument, NULL, 'h' },
   { "verbose", optional_argument, NULL, 'v' },
   { "server", required_argument, NULL, 's' },
+  { "serial", required_argument, NULL, 'S' },
   { "port", required_argument, NULL, 'p' },
   { NULL, 0, NULL, 0 }
 };
 
 /**
- * Available Subcommands
+ * Available commands   (XXX move to seperate *.[ch] XXX)
  */
-typedef struct {
-	void (*fkt)(int, char**);
-	char *cmd;
-	char *sig;
-	char *desc;
-} cmd_t;
-
 void fkt_ping(int argc, char *argv[]) 
 {
 	can_addr addr = atoi(argv[1]);
@@ -68,7 +62,16 @@ void fkt_dump(int argc, char *argv[])
 	}
 };
 
+/**
+ * Available commands array
+ */
 
+typedef struct {
+	void (*fkt)(int, char**);
+	char *cmd;
+	char *sig;
+	char *desc;
+} cmd_t;
 
 cmd_t cmds[] = {
   { &fkt_dump,  "dump", "dump", "Packet dump from CAN bus" },
@@ -89,28 +92,26 @@ Options:\n\n\
    -h, --help              display this help and exit\n\
    -v, --verbose           be more verbose and display a CAN packet dump\n\
    -s, --server HOST       use specified server (default: localhost)\n\
-   -p, --port PORT         use specified TCP/IP port (default: 2342)\n\n\
+   -p, --port PORT         use specified TCP/IP port (default: 2342)\n\
+   -S, --serial PORT       use specified serial port\n\n\
 Commands:\n\n" );
 
 	ncmd = cmds;
 	while(ncmd->fkt) {
 		printf( "   %-20s       %s\n", ncmd->sig, ncmd->desc );
-
 		ncmd++;
 	}
+	printf( "\n" );
 }
 
-void print_packets(){
-//	while(1) {
-//		can_message *msg = can_get_nb();
-//		if(msg)printf("\nmsg from %X:%X\tto %X:%X\t dlc %d\tdata %X\n",msg->addr_src, msg->port_src, msg->addr_dest, msg->port_dest, msg->dlc, msg->data[0]);
-//		sleep(1);
-//	}
-}
+/**
+ * Main
+ */
 int main(int argc, char *argv[])
 {
 	int tcpport  = 2342;         // TCP Port
 	char *server = "localhost"; 
+	char *serial = NULL;
 	int optc;
 
 	progname = argv[0];
@@ -123,6 +124,9 @@ int main(int argc, char *argv[])
 					debug_level = atoi(optarg);
 				else 
 					debug_level = 3;
+				break;
+			case 'S':
+				serial = optarg;
 				break;
 			case 's':
 				server = optarg;
@@ -145,8 +149,14 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	can_init(server, tcpport);
-	debug(1, "CAN communication established" );
+	can_init();
+	if (serial) {
+		debug(1, "Trying to establish CAN communication via serial %s", serial );
+		canu_init(serial);
+	} else {
+		debug(1, "Trying to establish CAN communication via cand (%s:%d)", server, tcpport );
+		cann_connect(server, tcpport);
+	}
 
 	char *arg = argv[optind];
 
