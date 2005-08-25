@@ -5,75 +5,58 @@
 #include "dimmer.h"
 
 
-static unsigned char COUNT;
-unsigned char Bright[NUM_LAMPS] = {0,44,};
+unsigned char Count;
+unsigned char Bright[NUM_LAMPS];
 
+dimmer_ramp Ramp;
 
 SIGNAL(SIG_INTERRUPT1) {
 	TCNT0 = 256-20;
-	COUNT = 0;
+	Count = 2;
 }
 
 
-typedef struct{
-	unsigned char delay;
-	unsigned char timer;
-	unsigned char delta[NUM_LAMPS];
-}dimmer_ramp_t;
-
-static dimmer_ramp_t Dimmer_ramp[5]={
-	{0x50,43,{1,-1,}},
-	{0x50,43,{-1,1,}},
-	{0x50,43,{0,-1,}},
-	{0x50,43,{1,1,}},
-	{0x50,43,{-1,0,}},
-};
-
 SIGNAL(SIG_OVERFLOW0) {
-	
-	static unsigned char delay, delay_rl, timer, ramp_count=4;
-	
-	static dimmer_ramp_t *ramps = Dimmer_ramp;
-	
+	unsigned char x, rol;
 	TCNT0 = 256-20;
 	
-	if(COUNT == 0){
+	if(Count == 0){
 		PORTB |= 0x0F;
 	}
 	
-	if(!(COUNT %8)){
-		if(!delay--){
-			if (!(timer--)){
-				if(++ramp_count == 5) ramp_count = 0;
-				delay_rl = ramps[ramp_count].delay;
-				timer = ramps[ramp_count].timer;
-			}
-			
-			unsigned char x;
-			for(x=0; x<NUM_LAMPS;x++){
-				Bright[x] += ramps[ramp_count].delta[x];
-			}
-			
-			delay = delay_rl;
-		}
-	}
-	
-	
-	unsigned char x, rol=0x08;
-	for(x=0;x<NUM_LAMPS;x++){
-		if(Bright[x] == COUNT){
+	for(x=0,rol=0x08;x<NUM_LAMPS;x++){
+		if(Bright[x] <= Count){
 			PORTB &= ~rol;
 		}
 		rol>>=1;
 	}
-		
-	if(++COUNT == 64){
-		COUNT = 0;
-	}	
+	
+	if(++Count == 64){
+		Count = 0;
+	};
+	
+	for(x=0;x<NUM_LAMPS;x++){
+		if(--Ramp.delay[x]==0){
+			Ramp.delay[x] = Ramp.delay_rl[x];
+			if(Ramp.end_bright[x]>Bright[x]){
+				Bright[x]++;
+			}else if(Ramp.end_bright[x]<Bright[x]){
+				Bright[x]--;
+			}
+		}
+	}
 }
 
 
 void dimmer_init(){
+	unsigned char x;
+	for(x=0;x<NUM_LAMPS;x++){
+		Bright[x] = 64;
+		Ramp.end_bright[x] = 64;
+		Ramp.delay_rl[x] = 1;
+		Ramp.delay[x] = 1;
+	}
+	
 	MCUCR |=  (1<<ISC11) | (1<<ISC10);
 	GIMSK |= (1<<INT1);
 
