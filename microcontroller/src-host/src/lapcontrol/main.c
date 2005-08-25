@@ -22,7 +22,7 @@
 
 static char *progname;
 
-static char *optstring = "hv::s:p:";
+static char *optstring = "hv::S:s:p:";
 struct option longopts[] =
 {
   { "help", no_argument, NULL, 'h' },
