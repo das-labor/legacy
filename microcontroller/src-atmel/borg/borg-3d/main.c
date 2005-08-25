@@ -13,6 +13,9 @@ int main (void){
 	clear_screen(0);
 
 	for(;;) {
+		waves();
+        spirale();
+		spirale2();
 		matrix();
 	 	//snake3dJoystick();
 		test3();
