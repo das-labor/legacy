@@ -1,0 +1,98 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <can.h>
+#include <lap.h>
+
+#include "cmds-base.h"
+
+
+void fkt_ping(int argc, char *argv[]) 
+{
+	int addr;
+
+	if (argc != 2) goto argerror;
+       	if (sscanf(argv[1], "%i", &addr) != 1)
+		goto argerror;
+
+	lap_ping(addr);
+	return;
+argerror:
+	debug(0, "ping <addr>");
+};
+
+void fkt_reset(int argc, char *argv[]) 
+{
+	int addr;
+
+	if (argc != 2) goto argerror;
+       	if (sscanf(argv[1], "%i", &addr) != 1)
+		goto argerror;
+
+	lap_reset(addr);
+	return;
+argerror:
+	debug(0, "reset <addr>");
+};
+
+void fkt_dump(int argc, char *argv[]) 
+{
+	can_message *msg;
+
+	while(1) {
+		msg = can_get_nb();
+		
+		if (msg) {
+			printf( "%10d: %02x:%02x -> %02x:%02x\n", localtime(),
+					msg->addr_src, msg->port_src,
+					msg->addr_dst, msg->port_dst );
+
+			can_free(msg);
+		}
+	}
+};
+
+
+void fkt_packet(int argc, char *argv[]) 
+{
+	int src_addr, src_port;
+	int dst_addr, dst_port;
+	int i;
+	char *tok;
+	can_message *msg;
+
+	if (argc != 4) 
+		goto argerror;
+
+	if ( sscanf( argv[1], "%i:%i", &src_addr, &src_port ) != 2 )
+		goto argerror;
+
+	if ( sscanf( argv[2], "%i:%i", &dst_addr, &dst_port ) != 2 )
+		goto argerror;
+
+	msg = can_buffer_get();
+	msg->addr_src = src_addr;
+	msg->addr_dst = dst_addr;
+	msg->port_src = src_port;
+	msg->port_dst = dst_port;
+	msg->dlc = 0;
+
+	tok = strtok( argv[3], ",");
+	while(tok) {
+		if ( msg->dlc >= 8 ) goto argerror;
+		if ( sscanf(tok, "%i", &i) != 1 ) goto argerror;
+		msg->data[msg->dlc++] = i;
+
+		tok = strtok(NULL, ",");
+	}
+
+	printf( "%02x:%02x -> %02x:%02x (length=%d)\n", src_addr, src_port, dst_addr, dst_port, msg->dlc );
+	can_transmit(msg);
+
+	return;
+argerror:
+	debug( 0, "packet <src-addr>:<src-port> <dst-addr>:<dst-port> <data>,<data>,...." );
+}
+
+
