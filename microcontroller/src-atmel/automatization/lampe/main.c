@@ -10,14 +10,7 @@
 #include "lap.h"
 #include "dimmer.h"
 
-#define NUM_LAMPS 4
-#define NUM_LAMPE 4
 #define PORT_LEDS PORTD
-
-#ifdef DEBUG
- #include "uart.h"
-#endif
-
 
 #define stdout_putc     uart_putc
 #define stdout_putstr   uart_putstr
@@ -27,23 +20,6 @@ void set_lampe(unsigned char lampe, unsigned char val)
 {
 	Bright[lampe] = 64-(val>>2);
 }
-
-#ifdef DEBUG
-void hex_dump(unsigned char * addr, unsigned char size){
-	unsigned char x=0, sbuf[3];
-	
-	while(size--){
-		itoa(*addr++, sbuf, 16);
-		if (sbuf[1] == 0) stdout_putc(' ');
-		stdout_putstr(sbuf);
-		stdout_putc(' ');
-		if(++x == 16){
-			stdout_putstr_P(PSTR("\r\n"));
-			x = 0;
-		}
-	}
-}
-#endif
 
 #define LED_B1 0xF0
 #define LED_B2 0xCC
@@ -60,8 +36,8 @@ unsigned char FLAGS;
 
 void blink_leds(){
 	static unsigned char rol;
-	if(TIFR & (1<<TOV1)){
-		TIFR = (1<<TOV1); //clear flag
+	if(TIFR & (1<<OCF1A)){
+		TIFR = (1<<OCF1A); //clear flag
 		if((rol>>=1) == 0) rol = 0x80;
 		if(FLAGS & F_RCV_CAN){
 			FLAGS &= ~ F_RCV_CAN;
@@ -70,7 +46,7 @@ void blink_leds(){
 			if(FLAGS & F_MODE_ON){
 				PORT_LEDS |= (1<<LED_GREEN);
 			}else{
-				if(rol & LED_B4){
+				if(rol & LED_B6){
 					PORT_LEDS |= (1<<LED_GREEN);
 				}else{
 					PORT_LEDS &= ~(1<<LED_GREEN);
@@ -117,25 +93,36 @@ void eventloop()
 			case PORT_LAMPE:
 				// Lampen steuern
 				switch(((pdo_message*)msg)->fkt_id) {
-				case FKT_LAMPE_SET: {
-					if (msg->dlc != 4) continue;
-					unsigned char value;
-					unsigned char lampe;
-					lampe = ((pdo_message*)msg)->data[0];
-					value = ((pdo_message*)msg)->data[1];
-	
-					set_lampe(lampe, value);
-					break;
-				}
-				case FKT_LAMPE_SETMASK: {
-					unsigned char i;
-					if (msg->dlc != NUM_LAMPE+2) continue;
-					for(i=0; i<NUM_LAMPE; i++) {
-						unsigned char value = ((pdo_message*)msg)->data[i];
-						set_lampe(i, value);
+					case FKT_LAMPE_SET: {
+						if (msg->dlc != 3) continue;
+						unsigned char value;
+						unsigned char lampe;
+						lampe = ((pdo_message*)msg)->data[0];
+						value = ((pdo_message*)msg)->data[1];
+			
+						Ramp.end_bright[lampe] = value;
+						break;
 					}
-					break;
-				}
+					case FKT_LAMPE_SETMASK: {
+						unsigned char i;
+						if (msg->dlc != NUM_LAMPS+2) continue;
+						for(i=0; i<NUM_LAMPS; i++) {
+							unsigned char value = ((pdo_message*)msg)->data[i];
+							set_lampe(i, value);
+						}
+						break;
+					}
+					case 2:{
+						if (msg->dlc != 3) continue;
+						unsigned int value;
+						unsigned char lampe;
+						lampe = ((pdo_message*)msg)->data[0];
+						value = ((pdo_message*)msg)->data[1];
+			
+						Ramp.delay[lampe] = value;
+						Ramp.delay_rl[lampe] = value;
+						break;
+					}
 				}
 			}
 		}
@@ -144,36 +131,12 @@ void eventloop()
 	}
 }
 
-
-/*
-void testing()
-{
-	while(1) {
-		pdo_message *msg = (pdo_message *) can_buffer_get();
-		msg->addr_src  = 0x00;
-		msg->addr_dest = 0xaa;
-		msg->port_src  = 0x00;
-		msg->port_dest = PORT_LAMPE;
-		msg->dlc = 4;
-		msg->fkt_id = FKT_LAMPE_SET; 
-		msg->data[0] = 6;
-		msg->data[1] = 255;
-		msg->flags = 0x01;
-
-		can_transmit();
-
-		wait(1000);
-	}
-}
-*/
-
 void timer1_init(){
 	ICR1 = 8000;
-	TCCR1B = 0x02 ;//| (1<<CTC1); //CTC Mode, clk/1024
+	TCCR1B = 0x03 | (1<<CTC1); //CTC Mode, clk/64
+	OCR1A = 0x6000;
 	TCNT1 = 0;
 }
-
-
 
 int main(){
 	DDRD = 0x73;
@@ -185,19 +148,10 @@ int main(){
 	spi_init();
 	can_init();
 
-#ifdef DEBUG
-	uart_init();
-	uart_putstr("\n<LAMPE>\n");
-#endif
-
 	dimmer_init();
 
 	sei();
-
-	
 	
 	eventloop();
-	return 0;
-//	testing();
 }
 
