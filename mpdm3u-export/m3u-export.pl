@@ -18,11 +18,20 @@
 ## 5. Execute this scipt as a user allowed to use mpc, to read the playlists and to write to the destination folder
 
 use File::Copy;
+use Getopt::Long;
 
+my $help = '';   # option variable with default value (false)
+my $short = '';       # option variable with default value (false)
+GetOptions ('help' => \$help, 'short' => \$short);
 
-$musicpath="/MusicPath/"; #path to mp3 files ending with a '/'
-$m3upath="/MusicPath/.mpd/playlists/"; #path to mpd's m3u playlists ending with a '/'
-$destination="/tmp/"; # destination directory of the media files ending with a '/'
+if ($help == 1){
+	print "Usage: m3u-export.pl for normal mode, m3u-export.pl --short for exporting files to the solid old 8.3 format\n\n";
+}
+else {
+
+$musicpath="/MusicPath/"; #path to mp3 files
+$m3upath="/MusicPath/.mpd/playlists/"; #path to mpd's m3u playlists
+$destination="/tmp/"; # destination directory of the media files
 
 system("mpc save tmp");
 
@@ -50,6 +59,16 @@ while ( <$f> ) {
 	$basename = $1;
 	$basename =~ tr/ /_/;
 
+### 8.3 format
+	if ($short == 1){
+		$basename =~ s/(.mp3|.MP3|.Mp3|.mP3)+$//;
+		$basename = substr($basename,0 , 3);
+		$basename = $basename.".mp3";
+
+	}
+### end 8.3 format  
+
+
 #	print $basename."\n";
 	
 	$srcfile = $musicpath.$_;
@@ -59,3 +78,5 @@ while ( <$f> ) {
 }
 
 system("mpc rm tmp");
+
+}
