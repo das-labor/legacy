@@ -25,8 +25,18 @@ void can_init(cann_conn_t *aconn){
 	conn = aconn;
 }
 
-void can_setmode( can_mode_t mode ) {
-	// XXX
+void can_setmode( can_mode_t mode )
+{
+	rs232can_msg rmsg;
+
+	rmsg.len     = 1; 
+	rmsg.cmd     = RS232CAN_SETMODE;
+	rmsg.data[0] = (char)mode;
+
+	if (conn)
+		cann_transmit(conn, &rmsg);
+	else
+		canu_transmit(&rmsg);
 }
 
 void can_setfilter() {
@@ -38,10 +48,10 @@ void can_setfilter() {
  */
 
 //returns pointer to the next can TX buffer
-can_message * can_buffer_get(){
+can_message * can_buffer_get()
+{
 	return &Cmsg;
 }
-
 
 //transmit a can message
 void can_transmit(can_message *cmsg)
@@ -70,10 +80,13 @@ can_message * can_get_nb(){
 	else
 		rmsg = canu_get_nb();
 
-	cmsg = (can_message *)malloc(sizeof(can_message));
+	if (!rmsg) return 0;
+
+	cmsg = can_buffer_get();
 	rs232can_rs2can(cmsg, rmsg);
 
 	return cmsg;
+
 }
 
 //returns next can message
@@ -86,7 +99,7 @@ can_message * can_get(){
 	else
 		rmsg = canu_get();
 
-	cmsg = (can_message *)malloc(sizeof(can_message));
+	cmsg = can_buffer_get();
 	rs232can_rs2can(cmsg, rmsg);
 
 	return cmsg;

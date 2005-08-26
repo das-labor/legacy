@@ -2,13 +2,14 @@
 #define CMDSBASE_H
 
 /**
- * Some available commands  
+ * Available commands  
  */
 
-void fkt_ping(int argc, char *argv[]);
-void fkt_reset(int argc, char *argv[]);
-void fkt_dump(int argc, char *argv[]);
-void fkt_packet(int argc, char *argv[]);
+void cmd_loopback(int argc, char *argv[]);
+void cmd_ping(int argc, char *argv[]);
+void cmd_reset(int argc, char *argv[]);
+void cmd_dump(int argc, char *argv[]);
+void cmd_packet(int argc, char *argv[]);
 
 
 #endif // CMDSBASE_H

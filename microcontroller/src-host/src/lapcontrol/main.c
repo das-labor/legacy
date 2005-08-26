@@ -12,6 +12,7 @@
 #include "debug.h"
 
 #include "cmds-base.h"
+#include "cmds-test.h"
 
 // Atmel ; LAP includes
 // #include "config.h"
@@ -32,10 +33,12 @@ typedef struct {
 } cmd_t;
 
 cmd_t cmds[] = {
-  { &fkt_dump,   "dump", "dump", "Packet dump from CAN bus" },
-  { &fkt_reset,  "reset", "reset <addr>", "Send reset to <addr>" },
-  { &fkt_ping,   "ping", "ping <addr>", "Send ping to <addr>" },
-  { &fkt_packet, "packet", "packet <src> <dst> <data>", "Send arbitrary packets" },
+  { &cmd_loopback,   "loopback", "loopback [0|1]", "Enable/disable loopback mode" },
+  { &cmd_test, "test", "test ...", "Test commands" },
+  { &cmd_packet, "packet", "packet <src> <dst> <data>", "Send arbitrary packets" },
+  { &cmd_dump,   "dump", "dump", "Packet dump from CAN bus" },
+  { &cmd_reset,  "reset", "reset <addr>", "Send reset to <addr>" },
+  { &cmd_ping,   "ping", "ping <addr>", "Send ping to <addr>" },
 //  { &ftk_lampe, "lampe", "lampe ...",  "Control lampe-device" }
   { NULL, NULL, NULL, NULL }
 };

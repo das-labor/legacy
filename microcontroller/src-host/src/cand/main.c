@@ -86,6 +86,7 @@ void process_client_msg( cann_conn_t *client )
 				ac = ac->next;
 			}
 	}
+	debug(3, "...processing done.");
 }
 
 void new_client( cann_conn_t *client )
