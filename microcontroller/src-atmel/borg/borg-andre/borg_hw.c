@@ -21,9 +21,6 @@
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
 
-#define BORG_ANDRE
-
-#ifdef BORG_ANDRE
 inline void rowshow(unsigned char row, unsigned char plane){
 	COLPORT1 = 0;
 	COLPORT2 = 0;
@@ -60,12 +57,6 @@ inline void rowshow(unsigned char row, unsigned char plane){
 	COLPORT1 = pixmap[plane][row][0];
 	COLPORT2 = pixmap[plane][row][1];
 }
-#elif BORG_LS
-
-#error jeah
-
-#endif
-
 
 
 

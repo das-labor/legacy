@@ -33,7 +33,7 @@ typedef struct{
 	can_port port_dst;
 	unsigned char dlc;
 	unsigned char  fkt_id; 
-	char data[7];	
+	unsigned char data[7];	
 }pdo_message;
 
 /****************************************************************************
