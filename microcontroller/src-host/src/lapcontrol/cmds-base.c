@@ -7,8 +7,30 @@
 
 #include "cmds-base.h"
 
+void cmd_loopback(int argc, char *argv[]) 
+{
+	int mode;
 
-void fkt_ping(int argc, char *argv[]) 
+	if (argc != 2) goto argerror;
+
+	if ( sscanf(argv[1], "%i", &mode) != 1)
+		goto argerror;
+
+	if (mode) {
+		printf( "Activating loopack mode\n" );
+		can_setmode(loopback);
+	} else {
+		printf( "Deativating loopack mode\n" );
+		can_setmode(normal);
+	}
+	return;
+
+argerror:
+	debug(0, "loopback [0|1]");
+}
+
+
+void cmd_ping(int argc, char *argv[]) 
 {
 	int addr;
 
@@ -22,7 +44,7 @@ argerror:
 	debug(0, "ping <addr>");
 };
 
-void fkt_reset(int argc, char *argv[]) 
+void cmd_reset(int argc, char *argv[]) 
 {
 	int addr;
 
@@ -36,7 +58,7 @@ argerror:
 	debug(0, "reset <addr>");
 };
 
-void fkt_dump(int argc, char *argv[]) 
+void cmd_dump(int argc, char *argv[]) 
 {
 	can_message *msg;
 
@@ -54,7 +76,7 @@ void fkt_dump(int argc, char *argv[])
 };
 
 
-void fkt_packet(int argc, char *argv[]) 
+void cmd_packet(int argc, char *argv[]) 
 {
 	int src_addr, src_port;
 	int dst_addr, dst_port;
