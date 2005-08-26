@@ -20,17 +20,30 @@
 use File::Copy;
 
 
-$musicpath="/data/music1/"; #path to mp3 files
-$m3upath="/data/.mpd/playlists/"; #path to mpd's m3u playlists
-$destination="/tmp/"; # destination directory of the media files
+$musicpath="/MusicPath/"; #path to mp3 files ending with a '/'
+$m3upath="/MusicPath/.mpd/playlists/"; #path to mpd's m3u playlists ending with a '/'
+$destination="/tmp/"; # destination directory of the media files ending with a '/'
 
 system("mpc save tmp");
 
 open( $f, $m3upath."tmp.m3u" );
-
+$i = 0;
 while ( <$f> ) {
+	$i++;
+	if($i < 1000){
+	  $num = "0".$i;
+	  if($i < 100){
+	    $num = "00".$i;
+	    if($i < 10){
+	 	  $num = "000".$i;
+	    }
+	  }
+	}
+	else {
+	  $num = $i;
+	}
 	chomp;
-	print "Copying ".$_."\n";
+	print "Copying file number ".$num.": ".$_."\n";
 
 	/.+\/([^\/]+)$/;
 
@@ -38,9 +51,9 @@ while ( <$f> ) {
 	$basename =~ tr/ /_/;
 
 #	print $basename."\n";
-
+	
 	$srcfile = $musicpath.$_;
-	$dstfile = $destination.$basename;
+	$dstfile = $destination.$num."_".$basename;
 
 	copy( $srcfile,  $dstfile );
 }
