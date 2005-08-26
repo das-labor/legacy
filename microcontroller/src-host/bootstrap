@@ -9,6 +9,8 @@
 # It doesn't work with automake-1.4 or 1.5 
 # It also requires at least and autoconf-2.54
 
+export WANT_AUTOMAKE=1.7
+
 DIE=0
 
 (autoconf --version) < /dev/null > /dev/null 2>&1 || {

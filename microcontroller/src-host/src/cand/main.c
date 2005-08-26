@@ -47,13 +47,31 @@ void help()
 
 void process_uart_msg()
 {
+	cann_conn_t *ac;
 	debug( 10, "Activity on uart_fd" );
 
 	rs232can_msg *msg = canu_get_nb();
-
-	// XXX do stuff XXX
-
+	if(!msg) return;
+	
+	debug(3, "Processing message from uart..." );
+	
+	if(msg->cmd != RS232CAN_PKT){
+		debug(0, "Whats going on? Received other than PKT type on Uart");
+		canu_free(msg);
+		return;
+	}
+	
+	// foreach client
+	ac = cann_conns_head;
+	while(ac) {
+//XXX		if ( cann_match_filter(ac, msg) ) 
+		cann_transmit(ac, msg);
+		
+		ac = ac->next;
+	}
+	
 	canu_free(msg);
+	debug(3, "...processing done.");
 }
 
 void process_client_msg( cann_conn_t *client )
@@ -62,6 +80,8 @@ void process_client_msg( cann_conn_t *client )
 	int x;
 
 	rs232can_msg *msg = cann_get_nb(client);
+	if(!msg) return;
+	
 	debug(3, "Processing message from network..." );
 
 	switch(msg->cmd) {
@@ -86,6 +106,7 @@ void process_client_msg( cann_conn_t *client )
 				ac = ac->next;
 			}
 	}
+	cann_free(msg);
 	debug(3, "...processing done.");
 }
 
