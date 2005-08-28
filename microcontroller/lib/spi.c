@@ -46,4 +46,11 @@ unsigned char spi_data(unsigned char c){
 	}
 	return d;
 }
+#else
+unsigned char spi_data(unsigned char c) {
+	SPDR = c;
+	while(!(SPSR & (1<<SPIF)));
+	c = SPDR;
+	return (c);
+}
 #endif
