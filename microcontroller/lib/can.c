@@ -123,7 +123,7 @@ unsigned char mcp_status();
 unsigned char mcp_rx_status();
 
 // Functions
-
+/*
 unsigned char mcp_rx_status(){
 	unsigned char d;
 	spi_set_ss();
@@ -132,6 +132,7 @@ unsigned char mcp_rx_status(){
 	spi_clear_ss();
 	return d;
 }
+*/
 
 unsigned char mcp_status(){
 	unsigned char d;
@@ -250,6 +251,7 @@ void mcp_write(unsigned char reg, unsigned char data){
 	spi_clear_ss();
 }
 
+/*
 void mcp_write_b(unsigned char reg, unsigned char *buf, unsigned char len){
 	unsigned char x;
 	spi_set_ss();
@@ -260,6 +262,7 @@ void mcp_write_b(unsigned char reg, unsigned char *buf, unsigned char len){
 	}
 	spi_clear_ss();
 }
+*/
 
 unsigned char mcp_read(unsigned char reg){
 	unsigned char d;
@@ -271,6 +274,7 @@ unsigned char mcp_read(unsigned char reg){
 	return d;
 }
 
+/*
 void mcp_read_b(unsigned char reg, unsigned char *buf, unsigned char len){
 	unsigned char x;
 	spi_set_ss();
@@ -281,7 +285,7 @@ void mcp_read_b(unsigned char reg, unsigned char *buf, unsigned char len){
 	}
 	spi_clear_ss();
 }
-
+*/
 
 
 /* Management */
@@ -338,7 +342,7 @@ void can_init(){
 #elif F_MCP == 20000000
 #define CNF1_T 0x04
 #else
-#error Can Baudrate is only defined for 8,16 and 20 MHz
+#error Can Baudrate is only defined for 8, 16 and 20 MHz
 #endif
 	
 	
