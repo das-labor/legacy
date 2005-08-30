@@ -1,4 +1,8 @@
-#include <GL/glut.h>   // for gl* glu* glut*
+#ifdef OSX_
+#  include <GLUT/glut.h>
+#else
+#  include <GL/glut.h>  
+#endif
 
 #ifdef _WIN32
 #  include <windows.h>

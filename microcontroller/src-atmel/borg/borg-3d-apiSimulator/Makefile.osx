@@ -1,0 +1,18 @@
+PRG = borg3dSim
+OBJ = main.o pixel3d.o programm.o util.o
+OPTIMIZE = -O2
+LIBS =  -lpthread -framework Carbon -framework GLUT -framework OpenGL -framework Foundation
+CC = gcc
+
+OPTIMIZE = -O2 
+override CFLAGS        = -g -Wall $(OPTIMIZE) -DOSX_
+$(DEFS)
+override LDFLAGS       = -Wl
+
+all: $(PRG) 
+
+$(PRG): $(OBJ)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+clean:
+	rm -rf *.o $(PRG) $(PRG).map
