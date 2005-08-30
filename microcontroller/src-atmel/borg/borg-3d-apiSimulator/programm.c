@@ -8,7 +8,7 @@ void test1() {
 		for (y = 0; y < NUM_ROWS; y++) {
 			for (x = 0; x < NUM_PLANES; x++) {
 				setpixel3d((pixel3d){x,y,z}, 3);
-				wait(15);
+				_wait(15);
 			}
 		}
 	}
@@ -22,7 +22,7 @@ void test2() {
 				setpixel3d((pixel3d){i,j,k}, 3);
 			}
 		}
-		wait(40);
+		_wait(40);
 		for (j = 0; j < 8; j++) {
 			for (k = 0; k < 8; k++) {
 				setpixel3d((pixel3d){i,j,k}, 0);
@@ -35,7 +35,7 @@ void test2() {
 				setpixel3d((pixel3d){j,k,i}, 3);
 			}
 		}
-		wait(40);
+		_wait(40);
 		for (j = 0; j < 8; j++) {
 			for (k = 0; k < 8; k++) {
 				setpixel3d((pixel3d){j,k,i}, 0);
@@ -48,7 +48,7 @@ void test2() {
 				setpixel3d((pixel3d){k,i,j}, 3);
 			}
 		}
-		wait(50);
+		_wait(50);
 		for (j = 0; j < 8; j++) {
 			for (k = 0; k < 8; k++) {
 				setpixel3d((pixel3d){k,i,j}, 0);
@@ -61,7 +61,7 @@ void test2() {
 				setpixel3d((pixel3d){k,j,i}, 3);
 			}
 		}
-		wait(40);
+		_wait(40);
 		for (j = 0; j < 8; j++) {
 			for (k = 0; k < 8; k++) {
 				setpixel3d((pixel3d){k,j,i}, 0);
@@ -78,7 +78,7 @@ void test3() {
 				setpixel3d((pixel3d){i,j,k}, 3);
 			}
 		}
-		wait(40);
+		_wait(40);
 	}
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
@@ -86,7 +86,7 @@ void test3() {
 				setpixel3d((pixel3d){i,j,k}, 0);
 			}
 		}
-		wait(40);
+		_wait(40);
 	}
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
@@ -94,7 +94,7 @@ void test3() {
 				setpixel3d((pixel3d){j,k,i}, 3);
 			}
 		}
-		wait(40);
+		_wait(40);
 	}
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
@@ -102,7 +102,7 @@ void test3() {
 				setpixel3d((pixel3d){j,k,i}, 0);
 			}
 		}
-		wait(40);
+		_wait(40);
 	}
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
@@ -110,7 +110,7 @@ void test3() {
 				setpixel3d((pixel3d){k,i,j}, 3);
 			}
 		}
-		wait(50);
+		_wait(50);
 	}
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
@@ -118,7 +118,7 @@ void test3() {
 				setpixel3d((pixel3d){k,i,j}, 0);
 			}
 		}
-		wait(50);
+		_wait(50);
 	}
 	for (i = 7; i < 8; i--) {
 		for (j = 0; j < 8; j++) {
@@ -126,7 +126,7 @@ void test3() {
 				setpixel3d((pixel3d){k,j,i}, 3);
 			}
 		}
-		wait(40);
+		_wait(40);
 	}
 	for (i = 7; i < 8; i--) {
 		for (j = 0; j < 8; j++) {
@@ -134,7 +134,7 @@ void test3() {
 				setpixel3d((pixel3d){k,j,i}, 0);
 			}
 		}
-		wait(40);
+		_wait(40);
 	}
 }
 
@@ -150,7 +150,7 @@ void growingCubeFilled() {
 				}
 			}
 		}
-		wait(150);
+		_wait(150);
 		min--;
 		max++;
 	}
@@ -166,7 +166,7 @@ void growingCubeFilled() {
 			}
 	
 		}
-		wait(150);
+		_wait(150);
 		min++;
 		max--;
 	}	
@@ -186,7 +186,7 @@ void coolAnim() {
 				}
 			}
 		}
-		wait(150);
+		_wait(150);
 		min--;
 		max++;
 	}
@@ -204,7 +204,7 @@ void coolAnim() {
 			}
 	
 		}
-		wait(150);
+		_wait(150);
 		min++;
 		max--;
 	}	
@@ -296,7 +296,7 @@ void snake3d(){
 			while(tail != head){
 				clearpixel3d(*tail);
 				if((++tail)>pixels+SNAKE_LEN) tail = pixels;
-				wait(60);
+				_wait(60);
 			}
 			break;
 		}
@@ -307,7 +307,7 @@ void snake3d(){
 				clearpixel3d(apples[j]);
 			}
 		}
-		wait(5);
+		_wait(5);
 	}
 }
 
@@ -384,7 +384,7 @@ void snake3dJoystick(){
 			while (tail != head){
 				clearpixel3d(*tail);
 				if ((++tail)>pixels+64) tail = pixels;
-				wait(60);
+				_wait(60);
 			}
 			break;
 		}
@@ -395,7 +395,7 @@ void snake3dJoystick(){
 				clearpixel3d(apples[j]);
 			}
 		}
-		wait(200);
+		_wait(200);
 	}
 }
 */
@@ -467,7 +467,7 @@ void matrix() {
 				streamer_num++;	
 			}
 		}
-		wait(80);	
+		_wait(80);	
 	}
 } 
 
@@ -526,7 +526,7 @@ void spirale() {
 			for (z = 0; z < 8; z++) {
 				drawLineZAngle((angle+(angleAdd*z/4))%14, z, 3);		
 			}
-			wait(30);
+			_wait(30);
 			clear_screen(0);
 		
 			if (count > 5) { 
@@ -546,7 +546,7 @@ void spirale2() {
 				drawLineZAngle((angle+7+((angleAdd*z)/4))%14, z, 3);
 				
 			}
-			wait(40);
+			_wait(40);
 			clear_screen(0);
 		
 			if (count > 5) { 
@@ -572,7 +572,7 @@ void gameOfLife() {
 	setpixel3d((pixel3d){5, 4, 4}, 3);
 	
 	for (gen = 0; gen < 28; gen++) {
-		wait(500);	
+		_wait(500);	
 		for (x = 1; x < NUM_PLANES; x++) {	
 			for (y = 1; y < NUM_ROWS; y++) {
 				for (z = 1; z < NUM_COLS; z++) {
