@@ -8,6 +8,7 @@
 
 #define BORGSIZE 8
 
+
 void serialStream() {
 	unsigned char i, j, k, tmp, esc = 0;
 	int count = 0;
@@ -32,6 +33,7 @@ void serialStream() {
 	}
 }
 
+
 void test1() {
 	unsigned char x, y, z;
 	clear_screen(0);
@@ -44,6 +46,7 @@ void test1() {
 		}
 	}
 }
+
 
 void test2() {
 	unsigned char i, j, k;
@@ -100,6 +103,7 @@ void test2() {
 		}
 	}
 }
+
 
 void test3() {
 	unsigned char i, j, k;
@@ -254,16 +258,23 @@ unsigned char myrandom(){
 
 }
 
+
 #define SNAKE_LEN 256
 
 void snake3d(){
-	pixel3d pixels[SNAKE_LEN] = {{1, 1, 0},{1, 2, 0}};
+	pixel3d pixels[SNAKE_LEN]; 
 	pixel3d *head = &pixels[1];
 	pixel3d *tail = &pixels[0];
 	pixel3d old_head;
 
 	pixel3d apples[10];
 	unsigned char apple_num = 0;
+	pixels[0].x = 1; 
+	pixels[0].y = 1;
+	pixels[0].z = 0;
+	pixels[1].x = 1; 
+	pixels[1].y = 2;
+	pixels[1].z = 0;
 	
 	direction dir = forward;
 
@@ -342,6 +353,8 @@ void snake3d(){
 	}
 }
 
+
+
 #define JOYUP		PD0	
 #define JOYDOWN		PD1
 #define JOYRIGHT	PD2
@@ -352,7 +365,7 @@ void snake3d(){
 #define JOYDDR  	DDRD
 
 void snake3dJoystick(){
-	pixel3d pixels[64] = {{1, 1, 0},{1, 2, 0}};
+	pixel3d pixels[64];
 	pixel3d *head = &pixels[1];
 	pixel3d *tail = &pixels[0];
 	pixel3d old_head;
@@ -365,6 +378,13 @@ void snake3dJoystick(){
 	unsigned char apple_num = 0, tmp, j;
 	unsigned char x = 0, dead = 0;
 	unsigned char apple_found = 0;
+
+	pixels[0].x = 1; 
+	pixels[0].y = 1;
+	pixels[0].z = 0;
+	pixels[1].x = 1; 
+	pixels[1].y = 2;
+	pixels[1].z = 0;
 
 	direction dir = forward;
 
@@ -428,6 +448,7 @@ void snake3dJoystick(){
 		wait(200);
 	}
 }
+
 
 typedef struct {
 	pixel3d start;
@@ -586,6 +607,7 @@ void spirale2() {
 	}
 }
 
+
 void waves() {
 	signed char sin[12] = {64, 55, 32, 0, -32. -55, -64, -55, -32, 0, 32, 55};
 	signed char data[8][8];
@@ -609,6 +631,7 @@ void waves() {
 		clear_screen(0);
 	}
 }
+
 
 void gameOfLife() {
 	unsigned char gen, erg;
