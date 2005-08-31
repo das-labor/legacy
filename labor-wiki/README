@@ -2,6 +2,18 @@
 Unter htdocs liegt die komplette mediawiki installation fuer 
  wiki.das-labor.org
 
+Install
+
+$ ssh roulette.das-labor.org
+$ mkdir public_html; cd public_html
+$ cvs co https://roulette.das-labor.org/cvs/labor-wiki
+$ vi labor-wiki/htdocs/LocalSettings.php
+   [ $IP=... und $wgScriptPath=... euren Anforderungen anpassen ]
+
+Finally:  http://roulette.das-labor.org/~USERNAME/labor-wiki/htdocs besuchen
+
+
+
 Achtung:
 
   Tatsaechlich handelt es sich um ein CVS checkout des mediawiki's -- inc.
