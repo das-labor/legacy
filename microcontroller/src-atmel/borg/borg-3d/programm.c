@@ -9,9 +9,9 @@
 #define BORGSIZE 8
 
 void serialStream() {
-	unsigned char i, j, k, tmp, esc = 0, stream = 1;
+	unsigned char i, j, k, tmp, esc = 0;
 	int count = 0;
-	while (count++ < 500 && stream) {
+	while (count++ < 500) {
 		tmp = uart_getc();
 		if (esc && tmp == UART_SOI) {
 			for (i = 0; i < NUM_LEVELS; i++) {
@@ -281,11 +281,11 @@ void snake3d(){
 		for(j=0;j<apple_num;j++){
 			unsigned char i;
 			for(i=0;i<6;i++){
-				if ((next_pixel3d(old_head, i).x == apples[j].x) && 
-					(next_pixel3d(old_head, i).y == apples[j].y) &&
-				    (next_pixel3d(old_head, i).z == apples[j].z)) {
+				if ((next_pixel3d(old_head, (direction)i).x == apples[j].x) && 
+					(next_pixel3d(old_head, (direction)i).y == apples[j].y) &&
+				    (next_pixel3d(old_head, (direction)i).z == apples[j].z)) {
 					apple_found = 1;
-					dir = i;
+					dir = (direction)i;
 					for(; j < apple_num-1; j++){
 						apples[j] = apples[j+1];
 					}
@@ -309,7 +309,7 @@ void snake3d(){
 			*head = next_pixel3d(old_head, dir);
 			setpixel3d(*head, 3);
 			if (myrandom() < 80) {
-				dir = myrandom() % 6;
+				dir = (direction) (myrandom() % 6);
 			}
 			if((apple_num<10) && (myrandom()<10)) {
 				pixel3d new_apple = (pixel3d){myrandom()%NUM_PLANES,
@@ -429,72 +429,76 @@ void snake3dJoystick(){
 	}
 }
 
-typedef struct{
+typedef struct {
 	pixel3d start;
 	unsigned char len;
 	unsigned char decay;
 	unsigned char index;
 	unsigned char speed;
-}streamer;
+} streamer;
 
-void matrix(){
-	unsigned int counter = 500;//run 500 cycles
+void matrix() {
+	unsigned int counter = 500; //run 500 cycles
 	streamer streamers[STREAMER_NUM];
 	unsigned char matrix_bright[NUM_PLANES*NUM_ROWS][NUM_COLS];
 	unsigned char x, y;
 	unsigned char index = 0;
-
 	unsigned char draw;
-
 	unsigned char streamer_num = 0;
-	while(counter--){
+	
+	while (counter--) {
 		unsigned char i, j;
-		for(x=0;x<(NUM_ROWS*NUM_PLANES);x++)
-			for(y=0;y<(NUM_COLS);y++)
-				matrix_bright[x][y]=0;
+		for (x = 0; x < (NUM_ROWS * NUM_PLANES); x++)
+			for (y = 0; y < (NUM_COLS); y++)
+				matrix_bright[x][y] = 0;
 		
-		for(i=0;i<streamer_num;i++){
+		for (i = 0; i < streamer_num; i++) {
 			streamer str = streamers[i];
 			
 			unsigned char bright = 255; draw = 0;
-			for(j=(str.len>>3);j!=0xFF;j--){ //Draw streamer
-				if(j+str.start.y<(NUM_COLS)){
-					if(bright>>6) draw = 1;
-					if(bright > matrix_bright[str.start.x][str.start.y+j]){
-						//setpixel((pixel){str.start.x, str.start.y+j}, bright>>6);
+			for(j = (str.len >> 3); j != 0xFF; j--) { //Draw streamer
+				if (j+str.start.y < (NUM_COLS)){
+					if (bright >> 6) 
+						draw = 1;
+					if (bright > matrix_bright[str.start.x][str.start.y+j]) {
 						matrix_bright[str.start.x][str.start.y+j] = bright;
 					}
 				}
-				bright-=((bright>>5)*str.decay);
+				bright -= ((bright >> 5) * str.decay);
 			}
-			str.len+=str.speed>>1;
+			str.len += str.speed>>1;
 			streamers[i] = str;
-			if(!draw){
+			if (!draw) {
 				for(j=i;j<streamer_num-1;j++){
 					streamers[j] = streamers[j+1];
 				}
 				streamer_num--;
 				i--;
-			};
-						
+			}			
 		}
 		
-		for(y=0;y<NUM_COLS;y++)
-			for(x=0;x<(NUM_ROWS*NUM_PLANES);x++)
-				setpixel3d((pixel3d){x%NUM_ROWS,x/NUM_PLANES,NUM_COLS-y-1}, matrix_bright[x][y]>>6);
+		for (y = 0; y < NUM_COLS; y++)
+			for (x = 0; x < (NUM_ROWS*NUM_PLANES); x++)
+				setpixel3d((pixel3d){x % NUM_ROWS, x / NUM_PLANES, NUM_COLS-y-1}, 
+				                     matrix_bright[x][y] >> 6);
 		
 		unsigned char nsc;
-		for(nsc=0;nsc<6;nsc++){
-			if(streamer_num<STREAMER_NUM){
-				unsigned char sy = myrandom()%(2*NUM_COLS);
-				if (sy>NUM_COLS-1) sy=0;
-				streamers[streamer_num] = (streamer){{myrandom()%(NUM_ROWS*NUM_PLANES), sy}, 0, (myrandom()%8)+12, index++,(myrandom()%16)+3};
+		for (nsc = 0; nsc < 6; nsc++) {
+			if (streamer_num < STREAMER_NUM){
+				unsigned char sy = myrandom() % (2*NUM_COLS);
+				if (sy > NUM_COLS-1) 
+					sy=0;
+				streamers[streamer_num] = 
+				 			  (streamer){{myrandom()%(NUM_ROWS*NUM_PLANES), sy}, 
+				                         0, (myrandom()%8)+12, index++,
+										 (myrandom()%16)+3
+										};
 				streamer_num++;	
 			}
 		}
-		wait(80);		
+		wait(80);	
 	}
-}
+} 
 
 void drawLineZ(char x1, char y1, char x2, char y2, char z, char level) {
 	signed char i, dx, dy, sdx, sdy, dxabs, dyabs, x, y, px, py;
