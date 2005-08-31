@@ -13,6 +13,13 @@ int main (void){
 	clear_screen(0);
 
 	for(;;) {
+		gameOfLife();
+		growingCubeFilled();
+		growingCubeFilled();
+		growingCubeFilled();
+		growingCubeFilled();
+		growingCubeFilled();
+		growingCubeFilled();
 		waves();
         spirale();
 		spirale2();
