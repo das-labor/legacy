@@ -1,13 +1,13 @@
 PRG            = borg
-OBJ            = borg_hw.o main.o util.o pixel.o programm.o
+OBJ            = borg_hw.o main.o util.o uart.o pixel.o programm.o
 MCU_TARGET     = atmega32
-OPTIMIZE       = -Os
+OPTIMIZE       = -Os -DF_CPU=16000000
 
 FLASHCMD       = uisp -dprog=bsd --erase --upload if=$(PRG).hex 
 FLASHCMDWIN    = uisp -dprog=bsd -dlpt=1 --erase --upload if=$(PRG).hex 
 
 DEFS           = 
-LIBS           = -DF_CPU=16000000 -fnew-ra
+LIBS           = -fnew-ra
 
 # You should not have to change anything below here.
 

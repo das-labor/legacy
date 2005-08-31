@@ -2,10 +2,35 @@
 #include "util.h"
 #include "config.h"
 #include "borg_hw.h"
+#include "uart.h"
 
 #include <avr/io.h>
 
 #define BORGSIZE 8
+
+void serialStream() {
+	unsigned char i, j, k, tmp, esc = 0, stream = 1;
+	int count = 0;
+	while (count++ < 500 && stream) {
+		tmp = uart_getc();
+		if (esc && tmp == UART_SOI) {
+			for (i = 0; i < NUM_LEVELS; i++) {
+				uart_getc();
+				uart_getc();
+				for (j = 0; j < NUM_PLANES; j++) {
+					for (k = 0; k < PLANEBYTES; k++) {
+						pixmap[i][j][k] = uart_getc();
+					}
+				} 
+			}
+			count = 0;
+		}
+		if (tmp == UART_ESCAPE)
+			esc = 1;
+		else
+			esc = 0;
+	}
+}
 
 void test1() {
 	unsigned char x, y, z;

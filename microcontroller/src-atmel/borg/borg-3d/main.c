@@ -4,15 +4,16 @@
 #include "programm.h"
 #include "borg_hw.h"
 #include "pixel.h"
+#include "uart.h"
 
 int main (void){
 	clear_screen(0);
 	borg_hw_init();
+	uart_init();
 	sei();
-	
 	clear_screen(0);
-
 	for(;;) {
+		serialStream();
 		gameOfLife();
 		growingCubeFilled();
 		growingCubeFilled();

@@ -5,4 +5,16 @@
 #define NUM_ROWS 8
 #define NUM_COLS 8
 
+#define UART_INTERRUPT 0
+#define UART_BAUD_RATE 57600
+#define UART_RXBUFSIZE 16
+#define UART_TXBUFSIZE 16
+#define UART_LINE_BUFFER_SIZE 40
+#define UART_LEDS 0
+
 #define STREAMER_NUM 30
+
+#define UART_ESCAPE 0x42
+#define UART_SOI 1
+#define UART_SOF 2
+#define UART_SS 3
