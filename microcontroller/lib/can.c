@@ -115,12 +115,12 @@ typedef struct{
 /* MCP */
 void mcp_reset();
 void mcp_write(unsigned char reg, unsigned char data);
-void mcp_write_b(unsigned char reg, unsigned char *buf, unsigned char len);
+//void mcp_write_b(unsigned char reg, unsigned char *buf, unsigned char len);
 unsigned char mcp_read(unsigned char reg);
-void mcp_read_b(unsigned char reg, unsigned char *buf, unsigned char len);
+//void mcp_read_b(unsigned char reg, unsigned char *buf, unsigned char len);
 void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val);
 unsigned char mcp_status();
-unsigned char mcp_rx_status();
+//unsigned char mcp_rx_status();
 
 // Functions
 /*
@@ -306,6 +306,9 @@ void can_setfilter() {
 	mcp_write(RXB0CTRL, (1<<RXM1) | (1<<RXM0));
 }
 
+void can_setled(unsigned char led, unsigned char state){
+	mcp_bitmod(BFPCTRL, 0x10<<led, state?0xff:0);
+}
 
 /*******************************************************************/
 void delayloop(){
@@ -331,6 +334,8 @@ void can_init(){
 	
 	delayloop();
 	
+	mcp_write(BFPCTRL,0x0C);//RXBF Pins to Output
+	
 	// 0x01 : 125kbit/8MHz
 	// 0x03 : 125kbit/16MHz
 	// 0x04 : 125kbit/20MHz
@@ -343,10 +348,7 @@ void can_init(){
 #define CNF1_T 0x04
 #else
 #error Can Baudrate is only defined for 8, 16 and 20 MHz
-#endif
-	
-	
-	// 125kbps 
+#endif 
 	mcp_write( CNF1, 0x40 | CNF1_T );
 	mcp_write( CNF2, 0xf1 );
 	mcp_write( CNF3, 0x05 );
@@ -432,11 +434,10 @@ void can_transmit(can_message* msg2){
 		msg->flags |= 0x01;
 	}
 	if(!TX_INT){
-		if( (TX_HEAD != TX_TAIL) && (((can_message_x*)&TX_BUFFER[TX_TAIL])->flags & 0x01) ){
+		if(((can_message_x*)&TX_BUFFER[TX_TAIL])->flags & 0x01){
 			TX_INT = 1;
 			message_load(&TX_BUFFER[TX_TAIL]);
-			if(++TX_TAIL == CAN_TX_BUFFER_SIZE)	
-				TX_TAIL = 0;
+			if(++TX_TAIL == CAN_TX_BUFFER_SIZE) TX_TAIL = 0;
 		}
 	}
 }
