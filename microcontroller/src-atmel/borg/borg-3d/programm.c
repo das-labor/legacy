@@ -580,3 +580,61 @@ void waves() {
 		clear_screen(0);
 	}
 }
+
+void gameOfLife() {
+	unsigned char gen, erg;
+	signed char x, y, z, neighC, r1 = 3, r2 = 4, r3 = 3, r4 = 2;
+	signed char i, j, k;
+	char neighs[NUM_PLANES][NUM_ROWS][NUM_COLS];
+	
+	// spielfeld initialieseieren
+	clear_screen(0);
+	setpixel3d((pixel3d){3, 4, 4}, 3);
+	setpixel3d((pixel3d){4, 4, 4}, 3);
+	setpixel3d((pixel3d){5, 4, 4}, 3);
+	
+	for (gen = 0; gen < 28; gen++) {
+		wait(500);	
+		for (x = 1; x < NUM_PLANES; x++) {	
+			for (y = 1; y < NUM_ROWS; y++) {
+				for (z = 1; z < NUM_COLS; z++) {
+					neighC = 0;
+					for (i = -1; i < 2; i++) {
+						for (j = -1; j < 2; j++) {
+							for (k = -1; k < 2; k++) {
+								if (i != 0 || j != 0 || k != 0) {
+									if ((x+i >= 1 && x+i < NUM_COLS) && 
+										(y+j >= 1 && y+j < NUM_ROWS) && 
+										(z+k >= 1 && z+k < NUM_PLANES)) {
+										erg = get_pixel3d((pixel3d){x+i, y+j, z+k});
+									} else {
+										erg = 0;
+									}
+									if (erg && erg != 255) {
+										neighC++;	
+									}									
+								}
+							}
+						}
+					}
+					neighs[x][y][z] = neighC;
+				}
+			}
+		}
+		for (x = 1; x < NUM_PLANES; x++) {	
+			for (y = 1; y < NUM_ROWS; y++) {
+				for (z = 1; z < NUM_COLS; z++) {
+					if (get_pixel3d((pixel3d){x, y, z})) { // Feld gesetzt
+						if (neighs[x][y][z] > r3 || neighs[x][y][z] < r4) {
+							setpixel3d((pixel3d){x, y, z}, 0);
+						} 
+					} else {
+						if (neighs[x][y][z] >= r1 && neighs[x][y][z] <= r2) {
+							setpixel3d((pixel3d){x, y, z}, 3);
+						}
+					}
+				}
+			}
+		}
+	}			
+}
