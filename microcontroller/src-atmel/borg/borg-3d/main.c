@@ -13,7 +13,7 @@ int main (void){
 	sei();
 	clear_screen(0);
 	for(;;) {
-		serialStream();
+		//serialStream();
 		gameOfLife();
 		growingCubeFilled();
 		growingCubeFilled();
