@@ -22,7 +22,7 @@ if ( $wgCommandLineMode ) {
 
 $wgSitename         = "LaborWiki";
 
-$wgScriptPath	    = "/~felix/wiki";
+$wgScriptPath	    = "/~felix/labor-wiki/htdocs";
 $wgScript           = "$wgScriptPath/index.php";
 $wgRedirectScript   = "$wgScriptPath/redirect.php";
 
