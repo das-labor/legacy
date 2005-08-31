@@ -4,7 +4,7 @@
 # If you make manual changes, please keep track in case you need to
 # recreate them later.
 
-$IP = "/data/home/joerg/public_html/labor-wiki/htdocs";
+$IP = "/home/felix/public_html/labor-wiki/htdocs";
 ini_set( "include_path", ".:$IP:$IP/includes:$IP/languages" );
 require_once( "includes/DefaultSettings.php" );
 
@@ -22,7 +22,7 @@ if ( $wgCommandLineMode ) {
 
 $wgSitename         = "LaborWiki";
 
-$wgScriptPath	    = "/~joerg/wiki";
+$wgScriptPath	    = "/~felix/wiki";
 $wgScript           = "$wgScriptPath/index.php";
 $wgRedirectScript   = "$wgScriptPath/redirect.php";
 
@@ -55,7 +55,7 @@ $wgEmailAuthentication = true;
 $wgDBserver         = "localhost";
 $wgDBname           = "laborwiki";
 $wgDBuser           = "laborwiki";
-$wgDBpassword       = "KillAllM4te";
+$wgDBpassword       = "mightymightymate";
 $wgDBprefix         = "";
 
 # If you're on MySQL 3.x, this next line must be FALSE:
