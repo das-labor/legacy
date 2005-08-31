@@ -19,11 +19,17 @@
 #include "pixel3d.h"
 #include "programm.h"
 
+enum objs {
+	LED_OFF = 0,
+	LED_1,
+	LED_2,
+	LED_3
+};
+
 unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
 
 float view_rotx = 0, view_roty = 0, view_rotz = 0;
 int win;
-
 
 
 pthread_t simthread;
@@ -32,15 +38,7 @@ GLUquadric* quad;
 void drawLED(int color, float pos_x, float pos_y, float pos_z) {
 	glPushMatrix();
 	glTranslatef(pos_x, pos_y, pos_z);
-	switch (color) {
-		case 1 : glColor4f(0.45, 0., 0., 1.); break;
-		case 2 : glColor4f(0.70, 0., 0., 1.); break;
-		case 3 : glColor4f(1.00, 0., 0., 1.); break;
-		default: glColor4f(0.20, 0., 0., 1.); break;
-	}
-	gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
-    glTranslatef(0., 0., 1.);
-	gluSphere(quad, 0.25, 8, 8);          
+	glCallList(color);
 	glPopMatrix();
 }
 
@@ -125,14 +123,41 @@ int main(int argc, char **argv){
     gluLookAt(NUM_PLANES*2., NUM_ROWS*2.+50., NUM_COLS*2.,
               NUM_PLANES*2., NUM_ROWS*2., NUM_COLS*2.,
             0.0, 0.0, 1.0); 
-    // start display_loop thread 
+
+	// init Call List for LED	
+	quad = gluNewQuadric();
+	glNewList(0, GL_COMPILE);
+		glColor4f(0.20, 0., 0., 1.);
+	  	gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
+		glTranslatef(0., 0., 1.);
+		gluSphere(quad, 0.25, 8, 8);		
+	glEndList();
+	glNewList(1, GL_COMPILE);
+		glColor4f(0.45, 0., 0., 1.);
+		gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
+		glTranslatef(0., 0., 1.);
+		gluSphere(quad, 0.25, 8, 8);
+	glEndList();
+	glNewList(2, GL_COMPILE);
+		glColor4f(0.70, 0., 0., 1.);
+		gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
+		glTranslatef(0., 0., 1.);
+		gluSphere(quad, 0.25, 8, 8);
+	glEndList();
+	glNewList(3, GL_COMPILE);
+		glColor4f(1.00, 0., 0., 1.);
+		gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
+		glTranslatef(0., 0., 1.);
+		gluSphere(quad, 0.25, 8, 8);
+	glEndList();
+		
+	// start display_loop thread 
 #ifdef _WIN32
     _beginthread((void (*)(void*))display_loop, 0, NULL);   
 #else
     pthread_create(&simthread, NULL, display_loop, NULL);
 #endif
     printf("Starting MainLoop\n");
-    quad = gluNewQuadric();
     glutMainLoop();
     return 0;
 }
