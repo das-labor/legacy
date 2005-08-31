@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include <can.h>
 #include <lap.h>
@@ -83,17 +84,21 @@ void cmd_dump(int argc, char *argv[])
 		msg = can_get_nb();
 		
 		if (msg) {
+			time_t muh = time(0);
+			struct tm *tme = localtime(&muh);
 			if(debug_level){
-				printf( "%10d: %02x:%02x -> %02x:%02x    ", localtime(),
+				printf( "%02d:%02d.%02d:  %02x:%02x -> %02x:%02x    ",
+						tme->tm_hour, tme->tm_min, tme->tm_sec,
 						msg->addr_src, msg->port_src,
 						msg->addr_dst, msg->port_dst );
 				hexdump(msg->data, msg->dlc);
-				printf(" \n");
+				printf("\n");
 			}else{
-				printf( "%10d: %02x:%02x -> %02x:%02x\n", localtime(),
+				printf( "%02d:%02d.%02d:  %02x:%02x -> %02x:%02x    ",
+						tme->tm_hour, tme->tm_min, tme->tm_sec,
 						msg->addr_src, msg->port_src,
 						msg->addr_dst, msg->port_dst );
-			}
+				}
 			
 			can_free(msg);
 		}
