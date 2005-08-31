@@ -1,0 +1,12 @@
+
+Unter htdocs liegt die komplette mediawiki installation fuer 
+ wiki.das-labor.org
+
+Achtung:
+
+  Tatsaechlich handelt es sich um ein CVS checkout des mediawiki's -- inc.
+  allerlei CVS metadaten.
+  Ein "cvs update -r <TAG>" aktualisiert also vom MediaWiki CVS Server
+
+
+
