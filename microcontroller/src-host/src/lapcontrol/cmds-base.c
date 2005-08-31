@@ -58,6 +58,21 @@ argerror:
 	debug(0, "reset <addr>");
 };
 
+
+void hexdump(unsigned char * addr, unsigned char size){
+	unsigned char x=0, sbuf[3];
+	
+	while(size--){
+		itoa(*addr++, sbuf, 16);
+		if (sbuf[1] == 0) printf(" ");
+		printf("%s ",sbuf);
+		if(++x == 16){
+			printf("\n");
+			x = 0;
+		}
+	}
+}
+
 void cmd_dump(int argc, char *argv[]) 
 {
 	can_message *msg;
@@ -66,10 +81,19 @@ void cmd_dump(int argc, char *argv[])
 		msg = can_get_nb();
 		
 		if (msg) {
-			printf( "%10d: %02x:%02x -> %02x:%02x\n", localtime(),
-					msg->addr_src, msg->port_src,
-					msg->addr_dst, msg->port_dst );
-
+			if(debug_level){
+				printf( "%10d: %02x:%02x -> %02x:%02x   ", localtime(),
+						msg->addr_src, msg->port_src,
+						msg->addr_dst, msg->port_dst );
+				hexdump(msg->data, msg->dlc);
+				printf("\n");
+			
+			}else{
+				printf( "%10d: %02x:%02x -> %02x:%02x\n", localtime(),
+						msg->addr_src, msg->port_src,
+						msg->addr_dst, msg->port_dst );
+			}
+			
 			can_free(msg);
 		}
 	}
