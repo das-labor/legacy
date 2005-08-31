@@ -435,6 +435,7 @@ void can_transmit(can_message* msg2){
 	}
 	if(!TX_INT){
 		if(((can_message_x*)&TX_BUFFER[TX_TAIL])->flags & 0x01){
+			((can_message_x*)&TX_BUFFER[TX_TAIL])->flags &= ~0x01;
 			TX_INT = 1;
 			message_load(&TX_BUFFER[TX_TAIL]);
 			if(++TX_TAIL == CAN_TX_BUFFER_SIZE) TX_TAIL = 0;
