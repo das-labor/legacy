@@ -18,13 +18,9 @@
 
 #include "pixel3d.h"
 #include "programm.h"
+#include "trackball.h"
 
-enum objs {
-	LED_OFF = 0,
-	LED_1,
-	LED_2,
-	LED_3
-};
+int WindWidth, WindHeight;
 
 unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
 
@@ -44,9 +40,11 @@ void drawLED(int color, float pos_x, float pos_y, float pos_z) {
 
 void display(void){
   	int x, y, z, level, color;
+  	tbReshape(WindWidth, WindHeight);
   	glClear(GL_COLOR_BUFFER_BIT);
   	glPushMatrix();
 	glTranslatef(NUM_PLANES*2., NUM_ROWS*2., NUM_COLS*2.);
+	tbMatrix();
   	glRotatef(view_rotx, 1.0, 0.0, 0.0);
   	glRotatef(view_roty, 0.0, 1.0, 0.0);
 	glRotatef(view_rotz, 0.0, 0.0, 1.0);
@@ -83,6 +81,37 @@ void keyboard(unsigned char key, int x, int y){
 	}
 }
 
+void mouse(int button, int state, int x, int y)
+{
+  tbMouse(button, state, x, y);
+}
+
+void motion(int x, int y)
+{
+  tbMotion(x, y);
+}
+
+void Reshape(int width, int height)
+{
+  
+  tbReshape(width, height);
+
+  glViewport(0, 0, width, height);
+  
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluPerspective(60.0, (float)WindWidth/(float)WindWidth, 5., 1000.);
+  gluLookAt(NUM_PLANES*2., NUM_ROWS*2.+50., NUM_COLS*2.,
+            NUM_PLANES*2., NUM_ROWS*2., NUM_COLS*2.,
+            0.0, 0.0, 1.0); 
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
+  WindWidth = width;
+  WindHeight = height;
+}
+
+
 /* change view angle */
 static void special(int k, int x, int y)
 {
@@ -106,20 +135,25 @@ static void special(int k, int x, int y)
 }
 
 int main(int argc, char **argv){
+    WindHeight = 800;
+    WindWidth = 600;         
     glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
-    glutInitWindowSize(800, 600);
+    glutInitWindowSize(WindHeight, WindWidth);
     win = glutCreateWindow("Borg 3D Simulator");
     
     // callback
+    //glutReshapeFunc(display);
     glutDisplayFunc(display);
     glutIdleFunc(display);
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(special);
+    glutMouseFunc(mouse);
+    glutMotionFunc(motion);
     
     // clearcolor & main loop
     glClearColor(0.1,0.1,0.1,0.1);
-    gluPerspective(60.0, 800./600., 5., 1000.);
+    gluPerspective(60.0, (float)WindWidth/(float)WindWidth, 5., 1000.);
     gluLookAt(NUM_PLANES*2., NUM_ROWS*2.+50., NUM_COLS*2.,
               NUM_PLANES*2., NUM_ROWS*2., NUM_COLS*2.,
             0.0, 0.0, 1.0); 
@@ -150,7 +184,10 @@ int main(int argc, char **argv){
 		glTranslatef(0., 0., 1.);
 		gluSphere(quad, 0.25, 8, 8);
 	glEndList();
-		
+	
+   tbInit(GLUT_LEFT_BUTTON);
+   tbAnimate(GL_FALSE);
+	
 	// start display_loop thread 
 #ifdef _WIN32
     _beginthread((void (*)(void*))display_loop, 0, NULL);   
