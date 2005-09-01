@@ -11,7 +11,7 @@
 #include "resource.h"
 
 char szAppName[] = "Borg 3D Visualisation"; // Our window class, etc
-
+char comPort[5] = "COM1";
 
 // configuration declarations
 int config_x=50, config_y=50;	// screen X position and Y position, repsectively
@@ -25,17 +25,19 @@ winampVisModule *getModule(int which);
 // "member" functions
 void config(struct winampVisModule *this_mod); // configuration dialog
 int init(struct winampVisModule *this_mod);	   // initialization for module
-int render1(struct winampVisModule *this_mod);  // rendering for module 1
-int render2(struct winampVisModule *this_mod);  // rendering for module 2
+//int render1(struct winampVisModule *this_mod);  // rendering for module 1
+//int render2(struct winampVisModule *this_mod);  // rendering for module 2
 int render3(struct winampVisModule *this_mod);  // rendering for module 3
 void quit(struct winampVisModule *this_mod);   // deinitialization for module
 int random_presets_flag = 0;
 
+int bSimulator = 1;
+int bStreaming = 0;
+
+
 // our window procedure
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 HWND hMainWnd; // main window handle
-HWND hConfig;  // config dialog handle
-HINSTANCE hDllInstance;  // dll handle
 
 // Double buffering data
 HDC memDC;		// memory device context
@@ -46,6 +48,7 @@ HBITMAP	memBM,  // memory bitmap (for memDC)
 // Module header, includes version, description, and address of the module retriever function
 winampVisHeader hdr = { VIS_HDRVER, "Borg-3d Streamer", getModule };
 
+/*
 // first module (oscilliscope)
 winampVisModule mod1 =
 {
@@ -85,6 +88,7 @@ winampVisModule mod2 =
 	render2, 
 	quit
 };
+*/
 
 // third module (VU meter)
 winampVisModule mod3 =
@@ -126,9 +130,9 @@ winampVisModule *getModule(int which)
 {
 	switch (which)
 	{
-		case 0: return &mod1;
-		case 1: return &mod2;
-		case 2: return &mod3;
+		//case 0: return &mod1;
+		//case 1: return &mod2;
+		case 0: return &mod3;
 		default:return NULL;
 	}
 }
@@ -141,30 +145,31 @@ LRESULT CALLBACK ConfigProc( HWND hDlg, UINT uMsg,
 // config1(), config2(), etc...)
 void config(struct winampVisModule *this_mod)
 {
-     char tmp[50];
-     
-     //hConfig = CreateDialog(hDllInstance, MAKEINTRESOURCE(IDD_CONFIGDIALOG), hMainWnd, (DLGPROC)ConfigProc);
-     MessageBox(hMainWnd, itoa((int) hConfig, tmp, 16) ,0,0);
-     ShowWindow(hConfig, SW_SHOW);
-     
+     DialogBox(this_mod->hDllInstance, MAKEINTRESOURCE(IDD_CONFIGDIALOG), this_mod->hwndParent, (DLGPROC)ConfigProc);     
 }
 
 //Nachrichtenverarbeitung für die "Listbox
 LRESULT CALLBACK ConfigProc( HWND hDlg, UINT uMsg,
                                WPARAM wParam, LPARAM lParam )
-{
-	switch( uMsg )
-	{
+{                               
+	switch( uMsg ){
 		case WM_INITDIALOG:
-			
-				return TRUE;
+			SetDlgItemText(hDlg, IDC_COMPORT, comPort);
+            CheckDlgButton(hDlg, IDC_SIMULATOR, bSimulator);
+            CheckDlgButton(hDlg, IDC_SERIALSTREAMING, bStreaming);
+			return TRUE;
 
 		case WM_COMMAND:
-			if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL) 
-			{
+			if (LOWORD(wParam) == IDOK) {
+                GetDlgItemText(hDlg, IDC_COMPORT, comPort, 5);
+                bSimulator = IsDlgButtonChecked(hDlg, IDC_SIMULATOR);
+                bStreaming = IsDlgButtonChecked(hDlg, IDC_SERIALSTREAMING);
 				EndDialog(hDlg, LOWORD(wParam));
 				return TRUE;
-			}
+			} else if (LOWORD(wParam) == IDCANCEL) {
+				EndDialog(hDlg, LOWORD(wParam));
+				return TRUE;
+			}						
 			break;
 	}
     return FALSE;
@@ -197,9 +202,9 @@ int init(struct winampVisModule *this_mod)
 
 	config_read(this_mod);
 
-    hConfig = CreateDialog(this_mod->hDllInstance, MAKEINTRESOURCE(IDD_CONFIGDIALOG), NULL, (DLGPROC)ConfigProc);
-    if (hConfig == 0)
-       MessageBox(parent, "Init error",0,0);
+    //hConfig = CreateDialog(this_mod->hDllInstance, MAKEINTRESOURCE(IDD_CONFIGDIALOG), NULL, (DLGPROC)ConfigProc);
+    //if (hConfig == 0)
+   //  /  MessageBox(parent, "Init error",0,0);
 	
 
 
@@ -281,11 +286,11 @@ int init(struct winampVisModule *this_mod)
   }
 
 	// show the window
-	ShowWindow(parent,SW_SHOWNORMAL);
-	uart_init("COM1");
+	//ShowWindow(parent,SW_SHOWNORMAL);
+	uart_init(comPort);
 	return 0;
 }
-
+/*
 // render function for oscilliscope. Returns 0 if successful, 1 if visualization should end.
 int render1(struct winampVisModule *this_mod)
 {
@@ -331,7 +336,7 @@ int render2(struct winampVisModule *this_mod)
 	}
 	return 0;
 }
-
+*/
 
 
 // render function for VU meter. Returns 0 if successful, 1 if visualization should end.
