@@ -676,12 +676,13 @@ void gameOfLife() {
 		for (x = 1; x < NUM_PLANES; x++) {	
 			for (y = 1; y < NUM_ROWS; y++) {
 				for (z = 1; z < NUM_COLS; z++) {
+					neighC = neighs[x][y][z];
 					if (get_pixel3d((pixel3d){x, y, z})) { // Feld gesetzt
-						if (neighs[x][y][z] > r3 || neighs[x][y][z] < r4) {
+						if (neighC > r3 || neighC < r4) {
 							setpixel3d((pixel3d){x, y, z}, 0);
 						} 
 					} else {
-						if (neighs[x][y][z] >= r1 && neighs[x][y][z] <= r2) {
+						if (neighC >= r1 && neighC <= r2) {
 							setpixel3d((pixel3d){x, y, z}, 3);
 						}
 					}
