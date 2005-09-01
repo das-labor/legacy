@@ -86,19 +86,12 @@ void cmd_dump(int argc, char *argv[])
 		if (msg) {
 			time_t muh = time(0);
 			struct tm *tme = localtime(&muh);
-			if(debug_level){
-				printf( "%02d:%02d.%02d:  %02x:%02x -> %02x:%02x    ",
-						tme->tm_hour, tme->tm_min, tme->tm_sec,
-						msg->addr_src, msg->port_src,
-						msg->addr_dst, msg->port_dst );
-				hexdump(msg->data, msg->dlc);
-				printf("\n");
-			}else{
-				printf( "%02d:%02d.%02d:  %02x:%02x -> %02x:%02x    ",
-						tme->tm_hour, tme->tm_min, tme->tm_sec,
-						msg->addr_src, msg->port_src,
-						msg->addr_dst, msg->port_dst );
-				}
+			printf( "%02d:%02d.%02d:  %02x:%02x -> %02x:%02x    ",
+				tme->tm_hour, tme->tm_min, tme->tm_sec,
+				msg->addr_src, msg->port_src,
+				msg->addr_dst, msg->port_dst );
+			hexdump(msg->data, msg->dlc);
+			printf("\n");
 			
 			can_free(msg);
 		}

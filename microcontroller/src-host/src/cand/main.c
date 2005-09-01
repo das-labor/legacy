@@ -21,7 +21,8 @@
 #endif
 
 
-static char *progname;
+char *progname;
+char *serial = "/dev/ttyS0"; // serial port
 
 static char *optstring = "hdv::S:p:";
 struct option longopts[] =
@@ -43,6 +44,21 @@ void help()
    -d, --daemon            become daemon\n\
    -S, --serial PORT       use specified serial port (default: /dev/ttyS0)\n\
    -p, --port PORT         use specified TCP/IP port (default: 2342)\n\n" );
+}
+
+
+void hexdump(unsigned char * addr, int size){
+	unsigned char x=0, sbuf[3];
+	
+	printf( "Size: %d\n", size);
+	while(size--){
+		printf("%02x ", *addr++);
+		if(++x == 16){
+			printf("\n");
+			x = 0;
+		}
+	}
+	printf("\n");
 }
 
 void process_uart_msg()
@@ -79,10 +95,14 @@ void process_client_msg( cann_conn_t *client )
 	cann_conn_t *ac;
 	int x;
 
+	debug( 10, "Activity on client %d", client->fd );
+
 	rs232can_msg *msg = cann_get_nb(client);
 	if(!msg) return;
 	
 	debug(3, "Processing message from network..." );
+	if (debug_level >= 3) hexdump((void *)msg, msg->len + 2);
+
 
 	switch(msg->cmd) {
 		case RS232CAN_SETFILTER:
@@ -94,7 +114,7 @@ void process_client_msg( cann_conn_t *client )
 		case RS232CAN_PKT:
 		default:
 			// to UART
-			canu_transmit(msg);
+			if (serial) canu_transmit(msg);
 
 			// foreach client
 			ac = cann_conns_head;
@@ -106,7 +126,7 @@ void process_client_msg( cann_conn_t *client )
 				ac = ac->next;
 			}
 	}
-	cann_free(msg);
+//	cann_free(msg);
 	debug(3, "...processing done.");
 }
 
@@ -119,22 +139,24 @@ void event_loop()
 {
 	for(;;) {
 		int num;
-		int highfd;
+		int highfd = 0;;
 		fd_set rset;
 		cann_conn_t *client;
 
 		FD_ZERO(&rset);
 
-		highfd = uart_fd();
-		FD_SET(uart_fd(), &rset);
-		highfd = max(highfd, cann_fdset(&rset));
+		if (serial) {
+			highfd = uart_fd();
+			FD_SET(uart_fd(), &rset);
+		};
+			highfd = max(highfd, cann_fdset(&rset));
 
 		num = select(highfd+1, &rset, (fd_set *)NULL, (fd_set *)NULL, NULL);
 		debug_assert( num >= 0, "select faild" );
 		debug( 10, "Select returned %d", num);
 
 		// check activity on uart_fd
-		if (FD_ISSET(uart_fd(), &rset))
+		if (serial && FD_ISSET(uart_fd(), &rset))
 			process_uart_msg();
 
 		// check client activity 
@@ -157,7 +179,6 @@ int main(int argc, char *argv[])
 {
 	int d = 0;                   // daemon
 	int tcpport  = 2342;         // TCP Port
-	char *serial = "/dev/ttyS0"; // serial port
 	int optc;
 
 	progname = argv[0];
@@ -190,8 +211,13 @@ int main(int argc, char *argv[])
 	} // while
 
 	// setup serial communication
-	canu_init(serial);
-	debug(1, "Serial CAN communication established" );
+	if (strcmp(serial, "-")) {
+		canu_init(serial);
+		debug(1, "Serial CAN communication established" );
+	} else {
+		serial = NULL;
+		debug(1, "Not listening on serial port" );
+	}
 
 	// setup network socket
 	cann_listen(tcpport);

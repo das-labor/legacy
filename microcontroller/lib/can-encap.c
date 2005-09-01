@@ -11,6 +11,6 @@ void rs232can_rs2can(can_message *cmsg, rs232can_msg *rmsg)
 void rs232can_can2rs(rs232can_msg *rmsg, can_message *cmsg)
 {
 	rmsg->cmd = RS232CAN_PKT;
-	rmsg->len = (sizeof(can_message)-8) + cmsg->dlc;
-	memcpy(&rmsg->data, cmsg, rmsg->len);
+	rmsg->len = sizeof(can_message) + cmsg->dlc - 8;
+	memcpy(rmsg->data, cmsg, rmsg->len);
 }

@@ -99,6 +99,8 @@ can_message * can_get(){
 	else
 		rmsg = canu_get();
 
+	if (!rmsg) return 0;
+
 	cmsg = can_buffer_get();
 	rs232can_rs2can(cmsg, rmsg);
 
