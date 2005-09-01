@@ -240,11 +240,8 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 	if (client->state == CANN_LEN) {
 		ret = read(client->fd, &val, 1);
 		       
-		if (ret < 0)
+		if (ret <= 0)
 			goto error;
-
-		if (ret == 0)
-			return NULL;
 
 		// check msg length
 		if (val > sizeof(client->msg.data)) {
@@ -267,11 +264,8 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 	if (client->state == CANN_CMD) {
 		ret = read(client->fd, &(client->msg.cmd), 1);
 		       
-		if (ret < 0)
+		if (ret <= 0)
 			goto error;
-
-		if (ret == 0)
-			return NULL;
 
 		debug(10, "Next packet on %d: cmd=%d", client->fd, client->msg.cmd);
 		client->state = CANN_PAYLOAD;
@@ -279,9 +273,6 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 	
 	// read data
 	ret = read(client->fd, client->rcv_ptr, client->missing_bytes);
-
-	if ((ret < 0) && (errno == EAGAIN))
-		return NULL;	// blocking IO: no data available
 
 	if (ret <= 0)
 		goto error;
@@ -293,12 +284,20 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 			client->fd, ret, client->missing_bytes);
 
 	// message complete?
-	if (client->missing_bytes == 0)
-			return &(client->msg);
+	if (client->missing_bytes == 0) {
+		rs232can_msg *rmsg = cann_buffer_get();
+
+		memcpy(rmsg, &(client->msg), sizeof(rs232can_msg));
+		client->state = CANN_LEN;
+		return rmsg;
+	}
 
 	return NULL;
 
 error:
+	if ((errno == EAGAIN) || (errno==0)) 
+		return NULL;     // nb read -- no data available
+
 	debug_perror( 5, "Error readig fd %d (ret==%d)", client->fd, ret );
 	client->error = 1;
 	return NULL;
