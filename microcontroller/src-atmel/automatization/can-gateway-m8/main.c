@@ -14,48 +14,6 @@
 #include "can-uart.h"
 #include "can-encap.h"
 
-// Timer Interrupt
-SIGNAL(SIG_OUTPUT_COMPARE2)
-{
-	static int count = 0;
-	static char z = 0;
-
-	if ( count++ > 0x40 ) {
-		count = 0;
-		PORTC ^= 0x08;
-
-		can_message *msg = can_buffer_get();
-
-		msg->addr_src  = 0x11;
-		msg->addr_dst  = 0x22;
-		msg->port_src  = 0x01;
-		msg->port_dst  = 0x02;
-		msg->dlc       = 4;
-		msg->data[0]   = z++;
-
-		can_transmit(msg);
-	}
-}
-
-void timer0_on(){
-/* 	TCCR0: FOC0 WGM00 COM01 COM00 WGM01 CS02 CS01 CS00
-		CS02 CS01 CS00
-		 0    0    0	       stop
-		 0    0    1       clk
-		 0    1    0       clk/8
-		 0    1    1       clk/64
-		 1    0    0       clk/256
-		 1    0    1       clk/1024
-	
-*/
-	TCCR2 = 0x08 | 0x05 ;// CTC Mode, clk/1024
-	TCNT2 = 0;	// reset timer
-	OCR2  = 0xff;	// Compare with this value
-	TIMSK = 0x80;	// Compare match Interrupt on
-}
-
-
-
 
 void process_rs232_msg( rs232can_msg *msg )
 {
@@ -84,11 +42,40 @@ void process_can_msg(can_message *msg){
 	canu_transmit(&rmsg);
 }
 
+
+#define PORT_LEDS PORTD
+#define DDR_LEDS DDRD
+#define PIN_LEDCL PD5
+#define PIN_LEDCK PD6
+#define PIN_LEDD PD7
+
+
+void led_init(){
+	DDR_LEDS |= (1<<PIN_LEDD)|(1<<PIN_LEDCL)|(1<<PIN_LEDCK);
+	PORT_LEDS |= (1<<PIN_LEDCL);
+}
+
+void led_set(unsigned int stat){
+	unsigned char x;
+	for(x=0;x<16;x++){
+		if(stat & 0x01){
+			PORT_LEDS |= (1<<PIN_LEDD);
+		}else{
+			PORT_LEDS &= ~(1<<PIN_LEDD);
+		}
+		stat>>=1;
+		PORT_LEDS |= (1<<PIN_LEDCK);
+		PORT_LEDS &= ~(1<<PIN_LEDCK);
+	}
+}
+
 int main(){
 	uart_init();
 	spi_init();
 	can_init();
-
+	
+	led_init();
+	
 	DDRC = 0xff;
 
 	sei();
@@ -97,11 +84,11 @@ int main(){
 	can_setmode(normal);
 	
 	can_setled(0,1);
-
-	timer0_on();
 	
-	while(1);
+	unsigned int muh=0x01;
 	
+	led_set(0xFFFF);
+		
 	while(1) {
 		rs232can_msg *rmsg;
 		can_message  *cmsg;
@@ -109,6 +96,8 @@ int main(){
 
 		rmsg = canu_get_nb();
 		if (rmsg){ 
+			led_set(muh);
+			if ((muh<<=1)==0) muh = 1;
 			process_rs232_msg(rmsg);
 		}
 		
