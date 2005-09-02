@@ -66,10 +66,10 @@ void display(void){
 	glPopMatrix();
 	glutSwapBuffers();
 #ifdef _WIN32
-    Sleep(3);
+	Sleep(20);
 #else
-    usleep(3500);
-#endif	
+	usleep(20000);
+#endif
 }
 
 void keyboard(unsigned char key, int x, int y){
@@ -91,7 +91,7 @@ void motion(int x, int y)
   tbMotion(x, y);
 }
 
-void Reshape(int width, int height)
+void reshape(int width, int height)
 {
   
   tbReshape(width, height);
@@ -111,10 +111,8 @@ void Reshape(int width, int height)
   WindHeight = height;
 }
 
-
 /* change view angle */
-static void special(int k, int x, int y)
-{
+static void special(int k, int x, int y) {
   switch (k) {
   case GLUT_KEY_UP:
     view_rotx += 5.0;
@@ -133,17 +131,22 @@ static void special(int k, int x, int y)
   }
   glutPostRedisplay();
 }
+/*
+void timf(int value) {
+  glutPostRedisplay();
+  glutTimerFunc(1, timf, 0);
+}*/
 
 int main(int argc, char **argv){
-    WindHeight = 800;
-    WindWidth = 600;         
+    WindHeight = 700;
+    WindWidth = 700;         
     glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
     glutInitWindowSize(WindHeight, WindWidth);
     win = glutCreateWindow("Borg 3D Simulator");
     
     // callback
-    //glutReshapeFunc(display);
+    //glutReshapeFunc(reshape);
     glutDisplayFunc(display);
     glutIdleFunc(display);
     glutKeyboardFunc(keyboard);
@@ -194,7 +197,7 @@ int main(int argc, char **argv){
 #else
     pthread_create(&simthread, NULL, display_loop, NULL);
 #endif
-    printf("Starting MainLoop\n");
+    //glutTimerFunc(40, timf, 0); // Set up timer for 40ms, about 25 fps
     glutMainLoop();
     return 0;
 }
