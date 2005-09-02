@@ -13,7 +13,7 @@ int main (void){
 	sei();
 	clear_screen(0);
 	for(;;) {
-		//serialStream();
+		serialStream();
 		gameOfLife();
 		growingCubeFilled();
 		growingCubeFilled();
@@ -25,7 +25,7 @@ int main (void){
         spirale();
 		spirale2();
 		matrix();
-	 	snake3dJoystick();
+	 	//snake3dJoystick();
 		test3();
 		coolAnim();
 		growingCubeFilled();

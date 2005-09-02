@@ -14,18 +14,26 @@ void serialStream() {
 	int count = 0;
 	while (count++ < 500) {
 		tmp = uart_getc();
-		if (esc && tmp == UART_SOI) {
+		if (esc && tmp == UART_SOF) {
 			for (i = 0; i < NUM_LEVELS; i++) {
-				uart_getc();
-				uart_getc();
 				for (j = 0; j < NUM_PLANES; j++) {
 					for (k = 0; k < PLANEBYTES; k++) {
+						if (tmp == UART_ESCAPE) {
+							tmp = uart_getc();
+							if (tmp == UART_SS) {
+								return;
+							}
+						}
+						if (tmp)
 						pixmap[i][j][k] = uart_getc();
 					}
 				} 
 			}
 			count = 0;
+		} else if (esc && tmp == UART_SS) {
+			return;
 		}
+		
 		if (tmp == UART_ESCAPE)
 			esc = 1;
 		else

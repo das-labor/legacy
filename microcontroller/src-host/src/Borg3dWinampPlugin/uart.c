@@ -29,9 +29,6 @@ void uart_init(char *portName) {
 	SetCommState(serialPortHandle, &serialConfig);
 }
 
-void uart_delete() {
-     CloseHandle(serialPortHandle);
-}
 
 void put_c(const char inChar) {
 	char buffer = inChar;
@@ -44,6 +41,17 @@ int put_str(char *inBuffer) {
 	WriteFile(serialPortHandle, inBuffer, strlen(inBuffer), &charsWritten, NULL);
 	return charsWritten;
 }
+
+void uart_sendStopp() {
+     put_c(UART_ESCAPE);
+	 put_c(UART_SS);
+}
+
+void uart_delete() {
+     uart_sendStopp();
+     CloseHandle(serialPortHandle);
+}
+
 
 void drawBar(char quater, char value) {
 	char minx, maxx, miny, maxy, x, y, z;
@@ -75,13 +83,39 @@ void drawBar(char quater, char value) {
 	}
 }
 
+
+#define BIT_S(var,b) ((var&(1<<b))?1:0)
+
+unsigned char myrandom(){
+	static unsigned int muh = 0xAA;
+	unsigned char x;
+	for (x=0; x<8; x++) {
+		muh = (muh<<1) ^ BIT_S(muh,1) ^ BIT_S(muh,8) ^ BIT_S(muh,9) ^ BIT_S(muh,13) ^ BIT_S(muh,15);
+	}
+	return (unsigned char) muh;
+
+}
+
+
+void growingCubeFilled(unsigned char value) {
+	unsigned char x, y, z;
+	unsigned char min = 4 - value/2 - value%2;
+	unsigned char max = 3 + value/2 + value%2;
+	for (x = min; x <= max; x++) {
+		for (y = min; y <= max; y++) {
+			for (z = min; z <= max; z++) {
+				setpixel3d((pixel3d){x,y,z}, myrandom()%3);
+			}
+		}
+	}
+
+}
+
 void sendPixmap() {
 	char i, j, k;
 	put_c(UART_ESCAPE);
-	put_c(UART_SOI);
+	put_c(UART_SOF);
 	for (i = 0; i < 3; i++) {
-        put_c(UART_ESCAPE);
-		put_c(UART_SOF);
 		for (j = 0; j < NUM_PLANES; j++) {
 			for (k = 0; k  < PLANEBYTES; k++) {
 				if (pixmap[i][j][k] == UART_ESCAPE)

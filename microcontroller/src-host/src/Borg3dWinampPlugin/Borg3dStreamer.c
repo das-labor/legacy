@@ -98,8 +98,8 @@ winampVisModule mod3 =
 	NULL,	// hDllInstance
 	0,		// sRate
 	0,		// nCh
-	50,		// latencyMS
-	50,		// delayMS
+	25,		// latencyMS
+	25,		// delayMS
 	0,		// spectrumNch
 	2,		// waveformNch
 	{ 0, },	// spectrumData
@@ -338,7 +338,7 @@ int render2(struct winampVisModule *this_mod)
 }
 */
 
-
+int count = 0;
 // render function for VU meter. Returns 0 if successful, 1 if visualization should end.
 int render3(struct winampVisModule *this_mod)
 {
@@ -349,18 +349,32 @@ int render3(struct winampVisModule *this_mod)
 	for (y = 0; y < 2; y ++)
 	{
 		int last=this_mod->waveformData[y][0];
-		int total=0;
+		int total=0, total2;
 		for (x = 1; x < 576; x ++)
 		{
 			total += abs(last - this_mod->waveformData[y][x]);
+			total2 += this_mod->waveformData[y][x];
 			last = this_mod->waveformData[y][x];
 		}
 		total /= 288;
 		if (total > 127) total = 127;
 		total /= 16;
-		if (y) drawBar(0, total % 8);
-		else drawBar(3, total % 8);
+		
+        if (count++ > 10000) {
+        	if (y) {
+               drawBar(0, total % 8);
+               drawBar(1, (total2/288) % 8);
+            } else {
+                   drawBar(3, total % 8);
+                   drawBar(2, (total2/288) % 8);
+            }
+        } else {
+ 	           if (y) growingCubeFilled(total % 8); 
+        }
 	}
+	if (count == 20000) {
+       uart_sendStopp();
+    } 
 	sendPixmap();
 	return 0;
 }
