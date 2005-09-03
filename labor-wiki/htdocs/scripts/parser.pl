@@ -40,6 +40,5 @@ foreach (@events){
 	print $hash{"Link"};
 	print '</link>';
 	print '</event>';
-	print '</start>'
-
 }
+print '</start>';
