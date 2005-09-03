@@ -1,0 +1,44 @@
+RSS-Shuffle
+
+
+ABOUT: 
+
+This php regex-orgy shuffles through the content of a given set of rss feeds. 
+The intended use was something screensaverlike via a browser and xscreensaver, as there is
+NO single program out there, that just does this. 
+Come on, is it that extraordinary wanting to watch the full content of some rss feeds  on 
+your screenwhile your computer is idle?
+
+
+CONFIGURATION:
+
+Not that much. Make config.inc.php fit to your needs by setting your feeds, 
+the pagetitle and the refresh time.
+
+
+PROBLEMS:
+
+At the moment we still encounter problems with sites having a absolute link to their stylesheet.
+'Bullshit' you might think, the other way round should be problematic. No. The script was
+primarily targeted on pixelpost, which uses relative one and slashdot, which uses none :)
+As we testet it with wordpress, which links absolutely, we get something like
+http://wordpressblog/template/css/http://wordpressblog/template/css/style.css
+instead of just http://wordpressblog/template/css/style.css
+
+If you like, think of a fast(!) solution.
+
+TODO:
+
+Fix wp problem
+
+
+AUTHORS:
+
+sh at 3dots dot de
+
+tilman at frosch dot org dot uk
+
+
+LICENSE:
+
+Published under the GNU General Public License (http://www.gnu.org/copyleft/gpl.html)
