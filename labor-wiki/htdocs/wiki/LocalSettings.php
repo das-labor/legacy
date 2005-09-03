@@ -4,7 +4,7 @@
 # If you make manual changes, please keep track in case you need to
 # recreate them later.
 
-$IP = "/home/felix/public_html/labor-wiki/htdocs/wiki";
+$IP = "/home/joerg/public_html/labor-wiki/htdocs/wiki";
 ini_set( "include_path", ".:$IP:$IP/includes:$IP/languages" );
 require_once( "includes/DefaultSettings.php" );
 
@@ -22,7 +22,7 @@ if ( $wgCommandLineMode ) {
 
 $wgSitename         = "LaborWiki";
 
-$wgScriptPath	    = "/~felix/labor-wiki/htdocs/wiki";
+$wgScriptPath	    = "/~joerg/labor-wiki/htdocs/wiki";
 $wgScript           = "$wgScriptPath/index.php";
 $wgRedirectScript   = "$wgScriptPath/redirect.php";
 
