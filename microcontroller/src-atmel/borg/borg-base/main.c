@@ -14,7 +14,8 @@ int main (void){
 	sei();
 	
 	for(;;){
-		matrix1();
+		tetris();
+		matrix();
 		fadein();
 		joern1();
 		//test1();
