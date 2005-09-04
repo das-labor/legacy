@@ -24,7 +24,10 @@ unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 inline void rowshow(unsigned char row, unsigned char plane){
 	COLPORT1 = 0;
 	COLPORT2 = 0;
-	
+	unsigned char i;
+	for(i=0;i<20;i++){
+		asm volatile("nop");
+	}
 	if (row == 0){
 		ROWPORT&= ~(1<<PIN_RST);
 		ROWPORT|= (1<<PIN_RST);
@@ -34,7 +37,7 @@ inline void rowshow(unsigned char row, unsigned char plane){
 		ROWPORT&= ~(1<<PIN_SHFT1);
 		switch (plane){
 			case 0:
-				OCR0 = 2;
+				OCR0 = 5;
 				break;
 			case 1:
 				OCR0 = 8;
@@ -54,6 +57,9 @@ inline void rowshow(unsigned char row, unsigned char plane){
 		ROWPORT&= ~(1<<PIN_CLK);
 	}
 	
+	for(i=0;i<20;i++){
+		asm volatile("nop");
+	}
 	COLPORT1 = pixmap[plane][row][0];
 	COLPORT2 = pixmap[plane][row][1];
 }
