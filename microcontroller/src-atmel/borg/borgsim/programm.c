@@ -391,18 +391,58 @@ void tetris(){
 				}
 			}
 	}
+	void checklines(void){
+		unsigned char i,j,k,c=0;
+		for(i=0;i<NUM_ROWS;i++){
+			k=0;
+			for(j=0;j<TET_WIDTH;j++){
+				unsigned char l;
+				l = get_pixel((pixel){j,i});
+				if(l==3){
+						  k++;
+				}
+			}
+			if (k==TET_WIDTH){
+				c++;
+				for(j=0;j<TET_WIDTH;j++){
+						  setpixel((pixel){j,i},0);
+				}
+			}
+		
+		}
+		for(j=0;j<TET_WIDTH;j++){
+			for(i=NUM_ROWS;i>0;i++){
+			  	if(!get_pixel((pixel){j,i})){
+					continue;
+			 	}else if (get_pixel((pixel){j,i})==3){
+						
+				}
+			}	
+		}
+	}
 	dropin(square);	
-
+	checklines();
 	dropin(line);
+	checklines();
 	dropin(left);
+	checklines();
 	dropin(square);	
+	checklines();
 	dropin(square);	
+	checklines();
 	dropin(line);
+	checklines();
 	dropin(left);
+	checklines();
 	dropin(square);	
+	checklines();
 	dropin(line);
+	checklines();
 	dropin(left);
+	checklines();
 	dropin(line);
+	checklines();
 	dropin(left);
+	checklines();
 }
 
