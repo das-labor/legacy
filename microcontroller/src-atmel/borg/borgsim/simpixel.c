@@ -65,14 +65,14 @@ unsigned char get_next_pixel(pixel p, direction dir){
 			tmp = (pixel){p.x, p.y-1};
 			break;
 	}
-	return (char)get_pixel(tmp);
+	return get_pixel(tmp);
 }
 unsigned char get_pixel(pixel p){
 
 	if( (p.x > (NUM_COLS-1)) || (p.y> (NUM_ROWS-1)) ){
 		return 0xff;
 	}else{
-		int c = mvgetch(p.y,p.x);
+		int c = mvinch(p.y,p.x);
 		if (c == ' '){
 			return 0;
 		}
@@ -86,4 +86,35 @@ unsigned char get_pixel(pixel p){
 			return 3;
 		}
 	}
+}
+pixel next_pixel(pixel pix, direction dir){
+	switch (dir){
+			case right:
+				return((pixel){pix.x+1, pix.y});
+				break;
+			case left:
+				return((pixel){pix.x-1, pix.y});
+				break;
+			case down:
+				return((pixel){pix.x, pix.y+1});
+				break;
+			case up:
+				return((pixel){pix.x, pix.y-1});
+				break;
+	
+			}
+	return (pixel){0,0};
+}
+direction direction_r(direction dir){
+	switch (dir){
+			case right:
+				return(down);
+			case down:
+				return(left);
+			case left:
+				return(up);
+			case up:
+				return (right);	
+		}
+	return(0);
 }
