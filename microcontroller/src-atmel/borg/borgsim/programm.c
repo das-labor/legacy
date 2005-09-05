@@ -2,6 +2,7 @@
 #include "util.h"
 #include "config.h"
 #include "borg_hw.h"
+#include <curses.h>
 //#include <avr/io.h>
 void test1(){
 unsigned char x,y;
@@ -307,24 +308,23 @@ void feuer()
 	}
 }
 
-/*
+#define TET_WIDTH 8
 void tetris(){
-	PORTB = 0x0f;
 	clear_screen(0);
 	unsigned char i;
 	for (i=0;i<NUM_ROWS;i++){
-		setpixel((pixel){8,i},3);
+		setpixel((pixel){TET_WIDTH,i},3);
 	}
 	struct block{
 		pixel pix[4];
 	};	
-	struct block press (struct block foobar,unsigned char taste){
+	struct block press (struct block foobar,int taste){
 			unsigned char go;
 			struct block aktuell=foobar;
 			if(taste == 14){
 			
 			}
-			if(taste == 7){
+			if(taste == 's'){
 				for(i=0;i<4;i++){
 					if((get_pixel((pixel){aktuell.pix[i].x+1,aktuell.pix[i].y}))){
 						go=0;
@@ -340,7 +340,7 @@ void tetris(){
 					}
 				}
 			}
-			if(taste == 11){
+			if(taste == 'a'){
 				for(i=0;i<4;i++){
 					if(aktuell.pix[i].x==0){
 						go=0;
@@ -366,13 +366,13 @@ void tetris(){
 		struct block aktuell = foobar;
 			unsigned char i;
 			unsigned char h=1;
-			unsigned char taste = PINB & 0x0F;
+			int taste = getch();
 			aktuell = press(aktuell,taste);
 			struct block next=aktuell;
 			for(i=0;i<4;i++){
 				setpixel(aktuell.pix[i],3);
 			}
-			wait(450);
+			wait(10000);
 			for(i=0;i<4;i++){
 				clearpixel(aktuell.pix[i]);
 			}
@@ -392,6 +392,7 @@ void tetris(){
 			}
 	}
 	dropin(square);	
+
 	dropin(line);
 	dropin(left);
 	dropin(square);	
@@ -404,4 +405,4 @@ void tetris(){
 	dropin(line);
 	dropin(left);
 }
-*/
+

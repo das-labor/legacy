@@ -13,7 +13,7 @@ typedef enum{right,left,up,down} direction;
 typedef struct{
 	pixel pos;
 	direction dir;
-	enum{clear=0, set=1} mode;
+	enum{cclear=0, set=1} mode;
 }cursor;
 
 
