@@ -47,6 +47,7 @@ void spirale(unsigned int delay){
 		}
 	}
 }
+*/
 
 #define BIT_S(var,b) ((var&(1<<b))?1:0)
 
@@ -59,7 +60,6 @@ unsigned char random(){
 	return (unsigned char) muh;
 
 }
-
 void snake(){
 	pixel pixels[64] = {{4,6},{4,5}};
 	pixel * head = &pixels[1];
@@ -151,7 +151,7 @@ void snake(){
 
 }
 
-
+/*
 void joern1(){
 unsigned char i, j, x;
 	unsigned char rolr=0x01 , rol;
