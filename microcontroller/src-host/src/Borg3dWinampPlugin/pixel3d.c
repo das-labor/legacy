@@ -1,5 +1,6 @@
 #include "pixel3d.h"
 
+unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
 unsigned char shl_table[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
 
 void clear_screen(unsigned char value){
