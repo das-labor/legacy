@@ -76,14 +76,8 @@ unsigned char get_pixel(pixel p){
 		if (c == ' '){
 			return 0;
 		}
-		if	(c == '.'){
+		if	(c == '.'||c=='o'||c=='O'){
 			return 1;
-		}
-		if (c == 'o'){
-			return 2;
-		}
-		if (c == 'O'){
-			return 3;
 		}
 	}
 }
