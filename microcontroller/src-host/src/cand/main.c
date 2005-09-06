@@ -22,7 +22,7 @@
 
 
 char *progname;
-char *serial = "/dev/ttyS0"; // serial port
+char *serial; 
 
 static char *optstring = "hdv::S:p:";
 struct option longopts[] =
@@ -42,7 +42,7 @@ void help()
    -h, --help              display this help and exit\n\
    -v, --verbose           be more verbose and display a CAN packet dump\n\
    -d, --daemon            become daemon\n\
-   -S, --serial PORT       use specified serial port (default: /dev/ttyS0)\n\
+   -S, --serial PORT       use specified serial port\n\
    -p, --port PORT         use specified TCP/IP port (default: 2342)\n\n" );
 }
 
@@ -166,7 +166,7 @@ void event_loop()
 	
 		// new connections
 		if( client = cann_accept(&rset) ) {
-			debug( 2, "New connection (fd=%d)", client->fd );
+			debug( 2, "===> New connection (fd=%d)", client->fd );
 		}
 
 		// close errorous connections
@@ -211,13 +211,10 @@ int main(int argc, char *argv[])
 	} // while
 
 	// setup serial communication
-	if (strcmp(serial, "-")) {
+	if (serial) {
 		canu_init(serial);
 		debug(1, "Serial CAN communication established" );
-	} else {
-		serial = NULL;
-		debug(1, "Not listening on serial port" );
-	}
+	};
 
 	// setup network socket
 	cann_listen(tcpport);
