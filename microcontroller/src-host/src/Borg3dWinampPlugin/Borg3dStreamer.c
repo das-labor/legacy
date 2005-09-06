@@ -3,18 +3,20 @@
 // Feel free to base any plugins on this "framework"...
 
 #include <windows.h>
+#include <process.h>
 #include "winamp\wa_ipc.h"
 
-#include "vis.h"
-#include "uart.h"
-#include "pixel3d.h"
 #include "resource.h"
+#include "vis.h"
+#include "pixel3d.h"
+#include "uart.h"
+#include "animations.h"
+#include "Borg3dSimulator.h"
 
 char szAppName[] = "Borg 3D Visualisation"; // Our window class, etc
-char comPort[5] = "COM1";
 
 // configuration declarations
-int config_x=50, config_y=50;	// screen X position and Y position, repsectively
+int config_x, config_y;	// screen X position and Y position, repsectively
 void config_read(struct winampVisModule *this_mod);		// reads the configuration
 void config_write(struct winampVisModule *this_mod);	// writes the configuration
 void config_getinifn(struct winampVisModule *this_mod, char *ini_file); // makes the .ini file filename
@@ -31,13 +33,18 @@ int render3(struct winampVisModule *this_mod);  // rendering for module 3
 void quit(struct winampVisModule *this_mod);   // deinitialization for module
 int random_presets_flag = 0;
 
-int bSimulator = 1;
-int bStreaming = 0;
-
+// config variables (read and set through config_read and config_write)
+struct winampVisModule *configVisMod;
+char comPort[6];
+int bSimulator;
+int bStreaming;
 
 // our window procedure
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 HWND hMainWnd; // main window handle
+
+// config window procedure
+LRESULT CALLBACK ConfigProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
 // Double buffering data
 HDC memDC;		// memory device context
@@ -98,8 +105,8 @@ winampVisModule mod3 =
 	NULL,	// hDllInstance
 	0,		// sRate
 	0,		// nCh
-	25,		// latencyMS
-	25,		// delayMS
+	0,		// latencyMS
+	50,		// delayMS
 	0,		// spectrumNch
 	2,		// waveformNch
 	{ 0, },	// spectrumData
@@ -138,13 +145,14 @@ winampVisModule *getModule(int which)
 }
 
 
-LRESULT CALLBACK ConfigProc( HWND hDlg, UINT uMsg,
-                               WPARAM wParam, LPARAM lParam );
+
 // configuration. Passed this_mod, as a "this" parameter. Allows you to make one configuration
 // function that shares code for all your modules (you don't HAVE to use it though, you can make
 // config1(), config2(), etc...)
 void config(struct winampVisModule *this_mod)
 {
+     configVisMod = this_mod;
+     config_read(configVisMod);
      DialogBox(this_mod->hDllInstance, MAKEINTRESOURCE(IDD_CONFIGDIALOG), this_mod->hwndParent, (DLGPROC)ConfigProc);     
 }
 
@@ -161,9 +169,10 @@ LRESULT CALLBACK ConfigProc( HWND hDlg, UINT uMsg,
 
 		case WM_COMMAND:
 			if (LOWORD(wParam) == IDOK) {
-                GetDlgItemText(hDlg, IDC_COMPORT, comPort, 5);
+                GetDlgItemText(hDlg, IDC_COMPORT, comPort, 6);
                 bSimulator = IsDlgButtonChecked(hDlg, IDC_SIMULATOR);
                 bStreaming = IsDlgButtonChecked(hDlg, IDC_SERIALSTREAMING);
+                config_write(configVisMod);
 				EndDialog(hDlg, LOWORD(wParam));
 				return TRUE;
 			} else if (LOWORD(wParam) == IDCANCEL) {
@@ -185,12 +194,17 @@ winampVisModule *g_mod = NULL;
 int width;
 int height;
 
+HANDLE *simThread = NULL;
+
 
 // initialization. Registers our window class, creates our window, etc. Again, this one works for
 // both modules, but you could make init1() and init2()...
 // returns 0 on success, 1 on failure.
 int init(struct winampVisModule *this_mod)
 {	
+   LPDWORD simThreadId;
+   config_read(this_mod);
+/*
   int styles;
   HWND parent = NULL;
   HWND (*e)(embedWindowState *v);
@@ -200,7 +214,7 @@ int init(struct winampVisModule *this_mod)
 
   g_mod = this_mod;
 
-	config_read(this_mod);
+
 
     //hConfig = CreateDialog(this_mod->hDllInstance, MAKEINTRESOURCE(IDD_CONFIGDIALOG), NULL, (DLGPROC)ConfigProc);
     //if (hConfig == 0)
@@ -267,11 +281,11 @@ int init(struct winampVisModule *this_mod)
 
 	SetWindowLong(hMainWnd,GWL_USERDATA,(LONG)this_mod); // set our user data to a "this" pointer
 
-/*	{	// adjust size of window to make the client area exactly width x height
+	{	// adjust size of window to make the client area exactly width x height
 		RECT r;
 		GetClientRect(hMainWnd,&r);
 		SetWindowPos(hMainWnd,0,0,0,width*2-r.right,height*2-r.bottom,SWP_NOMOVE|SWP_NOZORDER);
-	}*/
+	}
 
   SendMessage(this_mod->hwndParent, WM_WA_IPC, (int)hMainWnd, IPC_SETVISWND);
 
@@ -287,6 +301,9 @@ int init(struct winampVisModule *this_mod)
 
 	// show the window
 	//ShowWindow(parent,SW_SHOWNORMAL);
+	*/
+	if (bSimulator)
+       simThread = CreateThread(NULL, NULL, simthread, NULL, NULL, simThreadId);
 	uart_init(comPort);
 	return 0;
 }
@@ -349,7 +366,7 @@ int render3(struct winampVisModule *this_mod)
 	for (y = 0; y < 2; y ++)
 	{
 		int last=this_mod->waveformData[y][0];
-		int total=0, total2;
+		int total = 0, total2 = 0;
 		for (x = 1; x < 576; x ++)
 		{
 			total += abs(last - this_mod->waveformData[y][x]);
@@ -372,23 +389,30 @@ int render3(struct winampVisModule *this_mod)
  	           if (y) growingCubeFilled(total % 8); 
         }
 	}
-	if (count == 20000) {
+	if (count == 25000) {
        uart_sendStopp();
+       count = 0;
     } 
-	sendPixmap();
+    if (bStreaming)
+    	uartSendPixmap();
 	return 0;
 }
 
 // cleanup (opposite of init()). Destroys the window, unregisters the window class
 void quit(struct winampVisModule *this_mod)
 {
-  SendMessage(this_mod->hwndParent, WM_WA_IPC, 0, IPC_SETVISWND);
+     int exitCode;
+     SendMessage(this_mod->hwndParent, WM_WA_IPC, 0, IPC_SETVISWND);
 
 	config_write(this_mod);		// write configuration
 	SelectObject(memDC,oldBM);	// delete our doublebuffer
 	DeleteObject(memDC);
 	DeleteObject(memBM);
-    uart_delete();	
+    uart_delete();
+    if (simThread) {
+       TerminateThread(simThread, exitCode);
+    }
+       
   // delete our window
   if (myWindowState.me) 
   {
@@ -466,7 +490,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 				EndPaint(hwnd,&ps);
 			}
 		return 0;
-		case WM_DESTROY: PostQuitMessage(0); return 0;
+		case WM_DESTROY: 
+             PostQuitMessage(0); 
+             return 0;
 		case WM_KEYDOWN: // pass keyboard messages to main winamp window (for processing)
 		case WM_KEYUP:
 			{	// get this_mod from our window's user data
@@ -538,19 +564,25 @@ void config_read(struct winampVisModule *this_mod)
 {
 	char ini_file[MAX_PATH];
 	config_getinifn(this_mod,ini_file);
-	config_x = GetPrivateProfileInt(this_mod->description,"Screen_x",config_x,ini_file);
-	config_y = GetPrivateProfileInt(this_mod->description,"Screen_y",config_y,ini_file);
+	config_x = GetPrivateProfileInt(this_mod->description,"Screen_x",700,ini_file);
+	config_y = GetPrivateProfileInt(this_mod->description,"Screen_y",700,ini_file);
+	bSimulator = GetPrivateProfileInt(this_mod->description,"Simulator",FALSE,ini_file);
+	bStreaming = GetPrivateProfileInt(this_mod->description,"Streaming",TRUE,ini_file);
+	GetPrivateProfileString(this_mod->description,"ComPort","COM1", comPort, 6, ini_file);
 }
 
 void config_write(struct winampVisModule *this_mod)
 {
 	char string[32];
 	char ini_file[MAX_PATH];
-
 	config_getinifn(this_mod,ini_file);
-
 	wsprintf(string,"%d",config_x);
 	WritePrivateProfileString(this_mod->description,"Screen_x",string,ini_file);
 	wsprintf(string,"%d",config_y);
 	WritePrivateProfileString(this_mod->description,"Screen_y",string,ini_file);
+	wsprintf(string,"%d",bSimulator);
+	WritePrivateProfileString(this_mod->description,"Simulator",string,ini_file);
+	wsprintf(string,"%d",bStreaming);
+	WritePrivateProfileString(this_mod->description,"Streaming",string,ini_file);
+	WritePrivateProfileString(this_mod->description,"ComPort", comPort, ini_file);
 }
