@@ -81,7 +81,7 @@ void cmd_dump(int argc, char *argv[])
 	can_message *msg;
 
 	while(1) {
-		msg = can_get_nb();
+		msg = can_get();
 		
 		if (msg) {
 			time_t muh = time(0);

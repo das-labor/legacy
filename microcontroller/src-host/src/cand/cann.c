@@ -43,15 +43,6 @@ struct in_addr *atoaddr(char *address) {
 	return NULL;
 }
 
-void nondelay(int fd)
-{
-	int flags;
-
-	flags = fcntl( fd, F_GETFL, 0 );
-	fcntl( fd, F_SETFL, flags | O_NDELAY );
-}
-
-
 /*****************************************************************************
  * Connection management
  */
@@ -252,8 +243,6 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 	debug_assert( !(client->error), 
 			"cann_get_nb() with error %d on %d", 
 			client->error, client->fd );
-
-	nondelay(client->fd);
 
 	// XXX das alles geht auch einfacher XXX
 	if (client->state == CANN_LEN) {
