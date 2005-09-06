@@ -362,6 +362,7 @@ void tetris(){
 	struct block line = {{{0,0},{0,1},{0,2},{0,3}}};
 	struct block square={{{0,0},{0,1},{1,0},{1,1}}};	
 	struct block left={{{1,0},{1,1},{0,1},{0,2}}};
+	struct block right={{{1,0},{1,1},{0,1},{0,2}}};
 	void dropin(struct block foobar){
 		struct block aktuell = foobar;
 			unsigned char i;
@@ -391,33 +392,41 @@ void tetris(){
 				}
 			}
 	}
+	void move_down(unsigned char l){
+		unsigned char i,j;
+		unsigned char k=0;
+		for(i=l;i>1;i--){
+			for(j=0;j<TET_WIDTH;j++){
+				setpixel((pixel){j,i},get_pixel((pixel){j,i-1})*3);
+			}	
+		} 
+		for(i=0;i<TET_WIDTH;i++){
+			setpixel((pixel){0,i},0);
+		}
+		for(j=0;j<TET_WIDTH;j++){
+			i = get_pixel((pixel){j,l});
+			if(i == 1){
+					  k++;
+			}
+		}
+		if (k==TET_WIDTH){
+			move_down(l);
+		}
+	}
 	void checklines(void){
-		unsigned char i,j,k,c=0;
-		for(i=0;i<NUM_ROWS;i++){
+		unsigned char i,j,k=0;
+		for(i=NUM_ROWS;i>0;i--){
 			k=0;
 			for(j=0;j<TET_WIDTH;j++){
 				unsigned char l;
 				l = get_pixel((pixel){j,i});
-				if(l==3){
+				if(l == 1){
 						  k++;
 				}
 			}
 			if (k==TET_WIDTH){
-				c++;
-				for(j=0;j<TET_WIDTH;j++){
-						  setpixel((pixel){j,i},0);
-				}
+				move_down(i);
 			}
-		
-		}
-		for(j=0;j<TET_WIDTH;j++){
-			for(i=NUM_ROWS;i>0;i++){
-			  	if(!get_pixel((pixel){j,i})){
-					continue;
-			 	}else if (get_pixel((pixel){j,i})==3){
-						
-				}
-			}	
 		}
 	}
 	dropin(square);	

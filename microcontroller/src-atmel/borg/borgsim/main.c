@@ -13,18 +13,18 @@ int main (void){
 	//sei();
 	
 //	for(;;){
-//		snake();
+		tetris();
+		feuer();
+		matrix();
+		snake();
 		tetris();
 		tetris();
-		tetris();
-//		matrix();
 //		fadein();
 //		joern1();
 //test1();
 //		schachbrett(20);
 //		spirale(20);
 //		labor_borg();
-//		feuer();
 		
 
 //		testline();
