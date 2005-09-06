@@ -325,47 +325,21 @@ eof:
 
 rs232can_msg *cann_get(cann_conn_t *client)
 {
-	/*
 	int ret;
-	int complete = 0;
+	fd_set rset;
+	rs232can_msg *rmsg;
 
-	// sanity
-	debug_assert( !(client->error), 
-			"cann_get_nb() with error (%d)", client->error );
+	for(;;) {
+		FD_ZERO(&rset);
+		FD_SET(client->fd, &rset);
 
-	while(1) {
-		// XXX select XXX
+		ret = select(client->fd + 1, &rset, (fd_set*)NULL, (fd_set*)NULL, NULL);
+		debug_assert( ret >= 0, "cann_get: select failed" );
 
-		if (client->missing_bytes == 0) {
-		}
-
-		// read data
-		ret = read(client->fd, client->rcv_ptr, client->missing_bytes);
-
-		if ((ret < 0) && (errno == EAGAIN))
-			continue;
-
-		if (ret <= 0)
-			goto error;
-		
-		client->missing_bytes -= ret;
-		client->rcv_ptr       += ret;
-
-		debug(10, "fd %d: recived %d bytes, %d missing",
-			client->fd, ret, client->missing_bytes);
-
-		// message complete?
-		if (client->missing_bytes == 0)
-			return &(client->msg);
+		rmsg = cann_get_nb(client);
+		if (rmsg)
+			return rmsg;
 	}
-
-error:
-	debug_perror( 5, "Error readig fd %d (ret==%d)", client->fd, ret );
-	client->error = 1;
-	return NULL;
-	*/
-	nondelay(client->fd);
-	debug(0, "cann_get()..");
 }
 
 
