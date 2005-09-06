@@ -43,6 +43,15 @@ struct in_addr *atoaddr(char *address) {
 	return NULL;
 }
 
+void nondelay(int fd)
+{
+	int flags;
+
+	flags = fcntl( fd, F_GETFL, 0 );
+	fcntl( fd, F_SETFL, flags | O_NDELAY );
+}
+
+
 /*****************************************************************************
  * Connection management
  */
@@ -51,7 +60,7 @@ struct in_addr *atoaddr(char *address) {
 void cann_listen(int port)
 {
 	struct sockaddr_in serv_addr;
-	int ret;
+	int ret, flags;
 	char one=1; 
 
 	ret = listen_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -68,6 +77,9 @@ void cann_listen(int port)
 	ret = bind(listen_socket, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
 	debug_assert( ret >= 0, "Could not bind listening socket"  );
 	
+	 flags = fcntl( listen_socket, F_GETFL, 0 );
+	 fcntl( listen_socket, F_SETFL, flags | O_NDELAY );
+
 	/* specify queue */ 
 	listen(listen_socket, 5); 
 	debug_assert( ret >= 0, "Could listen() listening socket"  );
@@ -100,6 +112,7 @@ cann_conn_t *cann_connect(char *server, int port)
 		debug_perror( 0, "Connect failed" );
 		exit(1);
 	}
+	fcntl(client->fd, F_SETFL, O_NONBLOCK);
 
 	return client;
 }
@@ -139,7 +152,9 @@ cann_conn_t *cann_accept(fd_set *set)
 	struct sockaddr_in remote;
 	len = sizeof(struct sockaddr_in);
 	fd = accept(listen_socket, (struct sockaddr*)&remote, &len);
+
 	fcntl(fd, F_SETFL, O_NONBLOCK);
+	fcntl(fd, F_SETFL, 1);
 
 	// initialize client struct
 	client = (cann_conn_t *)malloc(sizeof(cann_conn_t));
@@ -164,7 +179,7 @@ void cann_close_errors()
 			*client = del->next;
 			client = &(del->next);
 
-			debug(2, "Closing fd %d", del->fd);
+			debug(2, "===> Closing fd %d", del->fd);
 			close(del->fd);
 			free(del);
 
@@ -182,6 +197,7 @@ void cann_close(cann_conn_t *conn)
 		while(conn) {
 			cann_conn_t *oldconn = conn;
 			
+			shutdown(conn->fd, SHUT_RDWR);
 			close(conn->fd);
 			conn = conn->next;
 			free(oldconn);
@@ -194,8 +210,9 @@ cann_conn_t *cann_activity(fd_set *set)
 {
 	cann_conn_t *client = cann_conns_head;
 
+
 	while(client) {
-		if (!(client->error) && FD_ISSET(client->fd, set) ) {
+		if (FD_ISSET(client->fd, set) ) {
 			FD_CLR(client->fd, set);
 			return client;
 		}
@@ -236,12 +253,14 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 			"cann_get_nb() with error %d on %d", 
 			client->error, client->fd );
 
+	nondelay(client->fd);
+
 	// XXX das alles geht auch einfacher XXX
 	if (client->state == CANN_LEN) {
 		ret = read(client->fd, &val, 1);
 		       
-		if (ret <= 0)
-			goto error;
+		if (ret == 0) goto eof;
+		if (ret < 0) goto error;
 
 		// check msg length
 		if (val > sizeof(client->msg.data)) {
@@ -264,8 +283,8 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 	if (client->state == CANN_CMD) {
 		ret = read(client->fd, &(client->msg.cmd), 1);
 		       
-		if (ret <= 0)
-			goto error;
+		if (ret == 0) goto eof;
+		if (ret < 0) goto error;
 
 		debug(10, "Next packet on %d: cmd=%d", client->fd, client->msg.cmd);
 		client->state = CANN_PAYLOAD;
@@ -274,8 +293,8 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 	// read data
 	ret = read(client->fd, client->rcv_ptr, client->missing_bytes);
 
-	if (ret <= 0)
-		goto error;
+	if (ret == 0) goto eof;
+	if (ret < 0) goto error;
 		
 	client->missing_bytes -= ret;
 	client->rcv_ptr       += ret;
@@ -296,8 +315,9 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 
 error:
 	if ((errno == EAGAIN) || (errno==0)) 
-		return NULL;     // nb read -- no data available
+		return NULL;
 
+eof:
 	debug_perror( 5, "Error readig fd %d (ret==%d)", client->fd, ret );
 	client->error = 1;
 	return NULL;
@@ -344,6 +364,7 @@ error:
 	client->error = 1;
 	return NULL;
 	*/
+	nondelay(client->fd);
 	debug(0, "cann_get()..");
 }
 
