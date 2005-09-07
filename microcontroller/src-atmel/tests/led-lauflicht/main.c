@@ -20,6 +20,7 @@ int main (void)
 	int delay = 200;
 	char mode=0, ud=0;
 		
+	
 	for ( ;; ){		//for ever
 		
 		wait(delay);

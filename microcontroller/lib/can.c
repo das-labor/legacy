@@ -210,10 +210,10 @@ SIGNAL(SIG_INTERRUPT0) {
 	unsigned char status = mcp_status();
 		
 	if ( status & 0x01 ) {	// Message in RX0
-		if ( !(((can_message_x*)&RX_BUFFER[RX_TAIL])->flags & 0x01) ) {
+		if ( !(((can_message_x*)&RX_BUFFER[RX_HEAD])->flags & 0x01) ) {
 			message_fetch(&RX_BUFFER[RX_HEAD]);
-			if( ++RX_HEAD == CAN_RX_BUFFER_SIZE) RX_HEAD = 0;
 			RX_BUFFER[RX_HEAD].flags |= 0x01;//mark buffer as used
+			if( ++RX_HEAD == CAN_RX_BUFFER_SIZE) RX_HEAD = 0;
 		}else{
 			//buffer overflow
 			//just clear the Interrupt condition, and lose the message

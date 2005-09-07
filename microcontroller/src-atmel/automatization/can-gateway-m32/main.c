@@ -106,6 +106,7 @@ int main(){
 		
 		cmsg = can_get_nb();
 		if (cmsg){
+			PORTC ^= 0x80;
 			process_can_msg(cmsg);
 			can_free(cmsg);
 		}
