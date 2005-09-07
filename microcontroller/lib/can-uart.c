@@ -100,37 +100,20 @@ rs232can_msg * canu_get_nb(){
 
 
 rs232can_msg * canu_get(){
-	static char *uartpkt_data;
-	char c;
-	
-	for(;;) {
-		c = uart_getc();
+	int ret;
+	fd_set rset;
+	rs232can_msg *rmsg;
 
-		switch (canu_rcvstate) {
-		case STATE_START:
-			if (c) {
-				canu_rcvstate = STATE_LEN;
-				canu_rcvpkt.cmd = c;
-			}
-			break;
-		case STATE_LEN:
-			canu_rcvstate     = STATE_PAYLOAD;
-			canu_rcvlen       = (unsigned char)c;
-			canu_rcvpkt.len   = c;
-			uartpkt_data      = &canu_rcvpkt.data[0];
-			break;
-		case STATE_PAYLOAD:
-			if(canu_rcvlen--){
-				*(uartpkt_data++) = c;
-			} else {
-				canu_rcvstate = STATE_START;
-				//check CRC
-				if(c == 0x23){ // XXX CRC
-					return &canu_rcvpkt;
-				}
-			}
-			break;
-		}
+	for(;;) {
+		FD_ZERO(&rset);
+		FD_SET(uart_fd(), &rset);
+
+		ret = select(uart_fd() + 1, &rset, (fd_set*)NULL, (fd_set*)NULL, NULL);
+		debug_assert( ret >= 0, "canu_get: select failed" );
+
+		rmsg = canu_get_nb();
+		if (rmsg)
+			return rmsg;
 	}
 }
 
