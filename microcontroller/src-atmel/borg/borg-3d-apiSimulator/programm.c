@@ -233,20 +233,21 @@ void snake3d(){
 
 	pixel3d apples[10];
 	unsigned char apple_num = 0;
+	unsigned char x = 0, dead = 0;
+	unsigned char dead_cnt;
+	unsigned char apple_found = 0, j;
 	
 	direction dir = forward;
 
 	clear_screen(0);
-
-	unsigned char x = 0, dead = 0;
+	
 	while (1) {
 		x++;
 		old_head = *head;
 		if(++head == pixels + SNAKE_LEN) head = pixels;
 		
-		unsigned char dead_cnt=0;
-		
-		unsigned char apple_found = 0, j;
+		dead_cnt=0;
+		apple_found = 0;
 		for(j=0;j<apple_num;j++){
 			unsigned char i;
 			for(i=0;i<6;i++){
@@ -416,6 +417,8 @@ void matrix() {
 	unsigned char index = 0;
 	unsigned char draw;
 	unsigned char streamer_num = 0;
+	unsigned char nsc;
+	unsigned char bright;
 	
 	while (counter--) {
 		unsigned char i, j;
@@ -426,7 +429,8 @@ void matrix() {
 		for (i = 0; i < streamer_num; i++) {
 			streamer str = streamers[i];
 			
-			unsigned char bright = 255; draw = 0;
+			bright = 255;
+			draw = 0;
 			for(j = (str.len >> 3); j != 0xFF; j--) { //Draw streamer
 				if (j+str.start.y < (NUM_COLS)){
 					if (bright >> 6) 
@@ -453,7 +457,7 @@ void matrix() {
 				setpixel3d((pixel3d){x % NUM_ROWS, x / NUM_PLANES, NUM_COLS-y-1}, 
 				                     matrix_bright[x][y] >> 6);
 		
-		unsigned char nsc;
+		
 		for (nsc = 0; nsc < 6; nsc++) {
 			if (streamer_num < STREAMER_NUM){
 				unsigned char sy = myrandom() % (2*NUM_COLS);

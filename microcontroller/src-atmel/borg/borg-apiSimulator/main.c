@@ -16,13 +16,15 @@
 #  include <unistd.h>
 #endif
 
-#include "pixel3d.h"
+#include <stdio.h>
+#include "config.h"
+#include "pixel.h"
 #include "programm.h"
 #include "trackball.h"
 
 int WindWidth, WindHeight;
 
-unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
+unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
 float view_rotx = 0, view_roty = 0, view_rotz = 0;
 int win;
@@ -43,23 +45,22 @@ void display(void){
   	tbReshape(WindWidth, WindHeight);
   	glClear(GL_COLOR_BUFFER_BIT);
   	glPushMatrix();
-	glTranslatef(NUM_PLANES*2., NUM_ROWS*2., NUM_COLS*2.);
+	glTranslatef(NUM_ROWS*2., 0., NUM_COLS*2.);
 	tbMatrix();
   	glRotatef(view_rotx, 1.0, 0.0, 0.0);
   	glRotatef(view_roty, 0.0, 1.0, 0.0);
 	glRotatef(view_rotz, 0.0, 0.0, 1.0);
-	glTranslatef(-NUM_PLANES*2., -NUM_ROWS*2., -NUM_COLS*2.);
-  	for (x = 0; x < NUM_PLANES; x++) {
+	glTranslatef(-NUM_ROWS*2, 0., -NUM_COLS*2.);
+  	for (x = 0; x < 1; x++) {
 		for (y = 0; y < NUM_ROWS; y++) { 
 			for (z = 0; z < NUM_COLS; z++) {
 				color = 0;
-				for (level = 0; level < NUM_LEVELS; level++) {
-					if (pixmap[level][x%NUM_PLANES][y%PLANEBYTES] 
-						& (1 << z%NUM_ROWS)) {
+				for (level = 0; level < NUMPLANE; level++) {
+					if (pixmap[level][z%NUM_ROWS][y/8] & (1 << y % 8)) {
 						color = level+1;		
 					}
 				}
-				drawLED(color, (float)x*4.0, (float)y*4.0, (float)z*4.);
+				drawLED(color, (float)(NUM_ROWS-1-y)*4.0, (float)x*4.0, (float)(NUM_COLS-1-z)*4.);
 			}
 		}
   	}
@@ -100,9 +101,9 @@ void reshape(int width, int height)
   
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  gluPerspective(60.0, (float)WindHeight/(float)WindWidth, 5., 1000.);
-  gluLookAt(NUM_PLANES*2., NUM_ROWS*2.+50., NUM_COLS*2.,
-            NUM_PLANES*2., NUM_ROWS*2., NUM_COLS*2.,
+  gluPerspective(60.0, (float)WindWidth/(float)WindWidth, 5., 1000.);
+  gluLookAt(NUM_ROWS*2., NUM_ROWS*2.+50., NUM_COLS*2.,
+            NUM_ROWS*2., NUM_ROWS*2., NUM_COLS*2.,
             0.0, 0.0, 1.0); 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -137,13 +138,27 @@ void timf(int value) {
   glutTimerFunc(1, timf, 0);
 }*/
 
+void *display_loop(void * unused) {
+	while (1) {	
+        matrix();
+		fadein();
+		joern1();
+		//test1();
+		snake();
+		schachbrett(20);
+		spirale(20);
+		labor_borg();
+        feuer();
+	}
+}
+
 int main(int argc, char **argv){
     WindHeight = 700;
     WindWidth = 700;         
     glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
     glutInitWindowSize(WindHeight, WindWidth);
-    win = glutCreateWindow("Borg 3D Simulator");
+    win = glutCreateWindow("16x16 Borg Simulator");
     
     // callback
     //glutReshapeFunc(reshape);
@@ -156,37 +171,29 @@ int main(int argc, char **argv){
     
     // clearcolor & main loop
     glClearColor(0.1,0.1,0.1,0.1);
-    gluPerspective(60.0, (float)WindHeight/(float)WindWidth, 5., 1000.);
-    gluLookAt(NUM_PLANES*2., NUM_ROWS*2.+50., NUM_COLS*2.,
-              NUM_PLANES*2., NUM_ROWS*2., NUM_COLS*2.,
+    gluPerspective(60.0, (float)WindWidth/(float)WindWidth, 5., 1000.);
+    gluLookAt(NUM_ROWS*2., NUM_ROWS*2.+50., NUM_COLS*2.,
+              NUM_ROWS*2., NUM_ROWS*2., NUM_COLS*2.,
             0.0, 0.0, 1.0); 
 
 	// init Call List for LED	
 	quad = gluNewQuadric();
 	glNewList(0, GL_COMPILE);
 		glColor4f(0.20, 0., 0., 1.);
-	  	gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
-		glTranslatef(0., 0., 1.);
-		gluSphere(quad, 0.25, 8, 8);		
+		gluSphere(quad, 1.2, 12, 12);		
 	glEndList();
 	glNewList(1, GL_COMPILE);
 		glColor4f(0.45, 0., 0., 1.);
-		gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
-		glTranslatef(0., 0., 1.);
-		gluSphere(quad, 0.25, 8, 8);
-	glEndList();
+		gluSphere(quad, 1.1, 12, 12);	
+    glEndList();
 	glNewList(2, GL_COMPILE);
 		glColor4f(0.70, 0., 0., 1.);
-		gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
-		glTranslatef(0., 0., 1.);
-		gluSphere(quad, 0.25, 8, 8);
-	glEndList();
+		gluSphere(quad, 1.0, 12, 12);	
+    glEndList();
 	glNewList(3, GL_COMPILE);
 		glColor4f(1.00, 0., 0., 1.);
-		gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
-		glTranslatef(0., 0., 1.);
-		gluSphere(quad, 0.25, 8, 8	);
-	glEndList();
+	    gluSphere(quad, 1.0, 12, 12);
+    glEndList();
 	
    tbInit(GLUT_LEFT_BUTTON);
    tbAnimate(GL_FALSE);
