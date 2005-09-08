@@ -25,6 +25,7 @@
 int WindWidth, WindHeight;
 
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
+unsigned char joystick;
 
 float view_rotx = 0, view_roty = 0, view_rotz = 0;
 int win;
@@ -71,6 +72,7 @@ void display(void){
 #else
 	usleep(20000);
 #endif
+    joystick = 255;
 }
 
 void keyboard(unsigned char key, int x, int y){
@@ -140,7 +142,7 @@ void timf(int value) {
 
 void *display_loop(void * unused) {
 	while (1) {	
-        matrix();
+		matrix();
 		fadein();
 		joern1();
 		//test1();
@@ -148,7 +150,7 @@ void *display_loop(void * unused) {
 		schachbrett(20);
 		spirale(20);
 		labor_borg();
-        feuer();
+		feuer();
 	}
 }
 
