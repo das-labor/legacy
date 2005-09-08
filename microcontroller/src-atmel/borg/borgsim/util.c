@@ -1,4 +1,6 @@
-void wait(int ms){
+#define wait myWait
+
+void myWait(int ms){
 	usleep(ms*1000);
 }
 
