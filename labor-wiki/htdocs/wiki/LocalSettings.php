@@ -4,7 +4,7 @@
 # If you make manual changes, please keep track in case you need to
 # recreate them later.
 
-$IP = "/home/joerg/public_html/labor-wiki/htdocs/wiki";
+$IP = "/home/felix/public_html/labor-wiki/htdocs/wiki";
 ini_set( "include_path", ".:$IP:$IP/includes:$IP/languages" );
 require_once( "includes/DefaultSettings.php" );
 
@@ -22,7 +22,7 @@ if ( $wgCommandLineMode ) {
 
 $wgSitename         = "LaborWiki";
 
-$wgScriptPath	    = "/~joerg/labor-wiki/htdocs/wiki";
+$wgScriptPath	    = "/~felix/labor-wiki/htdocs/wiki";
 $wgScript           = "$wgScriptPath/index.php";
 $wgRedirectScript   = "$wgScriptPath/redirect.php";
 
@@ -93,7 +93,7 @@ $wgProxyKey = "c9db961d768a399b9fc9c9072ee0de8c66fbe07d9e89cd5965ddfd9bbd9c29eb"
 
 ## Default skin: you can change the default skin. Use the internal symbolic
 ## names, ie 'standard', 'nostalgia', 'cologneblue', 'monobook':
-# $wgDefaultSkin = 'monobook';
+$wgDefaultSkin = 'labor3';
 
 ## For attaching licensing metadata to pages, and displaying an
 ## appropriate copyright notice / icon. GNU Free Documentation
