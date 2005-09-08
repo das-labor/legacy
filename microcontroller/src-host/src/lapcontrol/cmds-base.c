@@ -86,7 +86,7 @@ void cmd_dump(int argc, char *argv[])
 		if (msg) {
 			time_t muh = time(0);
 			struct tm *tme = localtime(&muh);
-			printf( "%02d:%02d.%02d:  %02x:%02x -> %02x:%02x    ",
+			printf( "%02d:%02d.%02d.%02d:  %02x:%02x -> %02x:%02x    ",
 				tme->tm_hour, tme->tm_min, tme->tm_sec,
 				msg->addr_src, msg->port_src,
 				msg->addr_dst, msg->port_dst );

@@ -60,7 +60,6 @@ void push_page( can_addr dst, uint8_t *buf, size_t offset, size_t size )
 	int missing = size;
 
 	while(missing > 0) {
-		//XXX check addr
 		while(1) {
 			can_message *incoming = can_get();
 			if (incoming->data[0]  == SDO_CMD_WRITE_BLK_ACK &&
