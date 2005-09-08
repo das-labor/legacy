@@ -19,7 +19,7 @@ void lap_ping( can_addr dst )
 	msg->port_src = PORT_MGT;
 	msg->port_dst = PORT_MGT;
 	msg->dlc      = 1;
-	msg->fkt_id   = FKT_MGT_PING;
+	msg->cmd      = FKT_MGT_PING;
 
 	can_transmit( (can_message *)msg );
 }
@@ -34,7 +34,7 @@ void lap_reset( can_addr dst )
 	msg->port_src = PORT_MGT;
 	msg->port_dst = PORT_MGT;
 	msg->dlc      = 1;
-	msg->fkt_id   = FKT_MGT_RESET;
+	msg->cmd      = FKT_MGT_RESET;
 
 	can_transmit( (can_message *)msg );
 }
