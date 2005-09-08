@@ -70,7 +70,7 @@ void display(void){
 	glPopMatrix();
 	glutSwapBuffers();
 #ifdef _WIN32
-	Sleep(20);
+	Sleep(10);
 #else
 	usleep(20000);
 #endif
@@ -144,12 +144,12 @@ void timf(int value) {
 
 void *display_loop(void * unused) {
 	while (1) {	
-        scrolltext("Dies ist die neue SCROLLTEXT Engine von martin ongsiek alias madex ---- LABOR BORG  WIEDERSTAND IST ZWECKLOS !!!! ^'$%##", 35);
+        scrolltext("Dies ist die neue SCROLLTEXT Engine von martin ongsiek alias <-=mAdEx=-> ---- LABOR BORG  WIEDERSTAND IST ZWECKLOS !!!! ^'$%##", 50);
         //labor_borg();
 		matrix();
 		fadein();
 		joern1();
-		//test1();
+		test1();
 		snake();
 		schachbrett(20);
 		spirale(20);
@@ -176,7 +176,7 @@ int main(int argc, char **argv){
     glutMotionFunc(motion);
     
     // clearcolor & main loop
-    glClearColor(0.1,0.1,0.1,0.1);
+    glClearColor(0.9,0.9,0.9,1.0);
     gluPerspective(60.0, (float)WindWidth/(float)WindWidth, 5., 1000.);
     gluLookAt(NUM_ROWS*2., NUM_ROWS*2.+50., NUM_COLS*2.,
               NUM_ROWS*2., NUM_ROWS*2., NUM_COLS*2.,
@@ -185,19 +185,19 @@ int main(int argc, char **argv){
 	// init Call List for LED	
 	quad = gluNewQuadric();
 	glNewList(0, GL_COMPILE);
-		glColor4f(0.20, 0., 0., 1.);
+		glColor4f(0.9, 0.9, 0.9, 1.);
 		gluSphere(quad, 1.2, 12, 12);		
 	glEndList();
 	glNewList(1, GL_COMPILE);
-		glColor4f(0.45, 0., 0., 1.);
+		glColor4f(1.0, 0.8, 0.8, 1.);
 		gluSphere(quad, 1.1, 12, 12);	
     glEndList();
 	glNewList(2, GL_COMPILE);
-		glColor4f(0.70, 0., 0., 1.);
+		glColor4f(1.0, 0.5, 0.5, 1.);
 		gluSphere(quad, 1.0, 12, 12);	
     glEndList();
 	glNewList(3, GL_COMPILE);
-		glColor4f(1.00, 0., 0., 1.);
+		glColor4f(1.00, 0.0, 0.0, 1.);
 	    gluSphere(quad, 1.0, 12, 12);
     glEndList();
 	
