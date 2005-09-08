@@ -1,0 +1,9 @@
+<div id='content'>
+  <div id='topbar'></div>
+  <div id='article'>
+    <div class="editsection" style="float:right;margin-left:5px;"></div>
+    <div class="editsection" style="float:right;margin-left:5px;"></div>
+    <div class="printfooter"></div>
+  </div>
+  <div id='footer'></div>
+</div>
