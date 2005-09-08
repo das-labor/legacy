@@ -8,6 +8,10 @@
 
 #### Needed Stuff ####
 ## Applications: music123/music321 for oggdec, ogginfo. id3tool. lame (or similar. better lame).
+## Be shure to edit $LAMEOPTS according to the needs of your m3-player. Those are not very good but quite failsave
+##
+## TODO:
+## Find out, why ogg tag to mp3 tag export is not working. Any hints anyone? Still probs setting mp3 tag.
 
 
 use strict;
