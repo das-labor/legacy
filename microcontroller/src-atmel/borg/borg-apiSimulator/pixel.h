@@ -23,9 +23,6 @@ typedef struct{
 	commands mode;
 } cursor;
 
-
-
-
 void clear_screen(unsigned char value);
 
 void setpixel(pixel p, unsigned char value);

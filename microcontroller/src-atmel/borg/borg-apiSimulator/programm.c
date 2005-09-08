@@ -261,10 +261,7 @@ void matrix() {
 				streamer_num++;	
 			}
 		}
-		//wait(80);	
-		
-	
-	
+		wait(5);	
 	}
 }
 
