@@ -158,7 +158,7 @@ sub ogg2mp3 {
   # Handle outdir if specified
   if ($outdir) {
     $mp3 =~ s|.*/||g;
-    $mp3 = "$outdir/$mp3";
+    $mp3 = "$outdir$mp3";
   }
 
   print "$ogg -> $mp3\n";
