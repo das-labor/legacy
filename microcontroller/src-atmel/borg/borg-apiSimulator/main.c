@@ -22,6 +22,8 @@
 #include "programm.h"
 #include "trackball.h"
 
+#include "scrolltext2.h"
+
 int WindWidth, WindHeight;
 
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
@@ -142,6 +144,8 @@ void timf(int value) {
 
 void *display_loop(void * unused) {
 	while (1) {	
+        scrolltext("Dies ist die neue SCROLLTEXT Engine von martin ongsiek alias madex ---- LABOR BORG  WIEDERSTAND IST ZWECKLOS !!!! ^'$%##", 35);
+        //labor_borg();
 		matrix();
 		fadein();
 		joern1();
@@ -149,7 +153,7 @@ void *display_loop(void * unused) {
 		snake();
 		schachbrett(20);
 		spirale(20);
-		labor_borg();
+		//labor_borg();
 		feuer();
 	}
 }
