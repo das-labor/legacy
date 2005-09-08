@@ -13,6 +13,7 @@
 
 #include "cmds-base.h"
 #include "cmds-test.h"
+#include "cmds-flash.h"
 
 // Atmel ; LAP includes
 // #include "config.h"
@@ -39,6 +40,7 @@ cmd_t cmds[] = {
   { &cmd_dump,   "dump", "dump", "Packet dump from CAN bus" },
   { &cmd_reset,  "reset", "reset <addr>", "Send reset to <addr>" },
   { &cmd_ping,   "ping", "ping <addr>", "Send ping to <addr>" },
+  { &cmd_flash,  "flash", "flash <addr> <file>" ,"flash file to device"},
 //  { &ftk_lampe, "lampe", "lampe ...",  "Control lampe-device" }
   { NULL, NULL, NULL, NULL }
 };
@@ -147,6 +149,9 @@ int main(int argc, char *argv[])
 		}
 		cmd++;
 	}
+
+	debug(0, "Command not understood" );
+	help();
 
 done:
 	cann_close(0);

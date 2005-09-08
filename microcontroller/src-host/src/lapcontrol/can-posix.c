@@ -14,7 +14,6 @@
  */
 
 
-static can_message Cmsg;
 static cann_conn_t *conn;
 
 /************************************************************************+**
@@ -50,7 +49,7 @@ void can_setfilter() {
 //returns pointer to the next can TX buffer
 can_message * can_buffer_get()
 {
-	return &Cmsg;
+	return (can_message*)malloc(sizeof(can_message));
 }
 
 //transmit a can message
@@ -64,12 +63,16 @@ void can_transmit(can_message *cmsg)
 		cann_transmit(conn, &rmsg);
 	else
 		canu_transmit(&rmsg);
+
+	free(cmsg);
 }
 
 /****************************************************************************
  * reciving
  */
 
+// XXX must free messages
+	
 //returns next can message, or 0 if no Message was received.
 can_message * can_get_nb(){
 	rs232can_msg *rmsg;
@@ -106,4 +109,9 @@ can_message * can_get(){
 
 	return cmsg;
 }
+
+void can_free(can_message *msg){
+	free(msg);
+}
+
 

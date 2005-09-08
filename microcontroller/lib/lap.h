@@ -6,6 +6,8 @@
  *
  */
 
+#include <inttypes.h>
+
 #include "config.h"
 #include "can.h"
 
@@ -21,8 +23,10 @@ typedef struct {
 	can_port port_src;
 	can_port port_dst;
 	unsigned char dlc;
-	unsigned char fkt_id; 
-	unsigned char data[7];	
+	unsigned char cmd; 
+	uint16_t index;
+	uint16_t size;
+	uint16_t address;
 } sdo_message;
 
 // "inherits" from can_message 
@@ -32,20 +36,42 @@ typedef struct{
 	can_port port_src;
 	can_port port_dst;
 	unsigned char dlc;
-	unsigned char  fkt_id; 
+	unsigned char cmd; 
 	unsigned char data[7];	
-}pdo_message;
+} pdo_message;
 
 /****************************************************************************
  * Known ports and services
  */
 
-typedef enum { PORT_MGT=0x30, PORT_LAMPE=0x20 }             	ports;
+typedef enum { PORT_MGT=0x30, PORT_LAMPE=0x20, PORT_SDO=0x15 }             	ports;
 
 typedef enum { FKT_MGT_PING=0x00, FKT_MGT_ALIVE=0x01, 
-		FKT_MGT_RESET=0x02 }				lap_mgt_fkts;
+		FKT_MGT_RESET=0x02, FKT_MGT_AWAKE=0x03 }	lap_mgt_fkts;
 typedef enum { FKT_LAMPE_SET=0x00, FKT_LAMPE_SETMASK=0x01, 
 		FKT_LAMPE_SETDELAY=0x02 }			lap_lampe_fkts;
+
+
+#define SDO_CMD_READ 		0x20
+#define SDO_CMD_REPLY 		0x21
+#define SDO_CMD_INFO 		0x22
+#define SDO_CMD_READ_BLK	0x40
+#define SDO_CMD_READ_BLK_ACK	0x41
+#define SDO_CMD_WRITE_BLK	0x48
+#define SDO_CMD_WRITE_BLK_ACK	0x49
+
+
+#define SDO_CMD_ERROR_INDEX 	0x80
+
+#define SDO_TYPE_UINT8_RO	 0x00
+#define SDO_TYPE_UINT8_RW	 0x01
+#define SDO_TYPE_UINT16_RO 	 0x04
+#define SDO_TYPE_UINT16_RW 	 0x05
+#define SDO_TYPE_UINT32_RO 	 0x08
+#define SDO_TYPE_UINT32_RW  	 0x09
+#define SDO_TYPE_STRING_RO	 0x80
+#define SDO_TYPE_STRING_RW	 0x81
+#define SDO_TYPE_STRING_WO	 0x82
 
 
 /****************************************************************************

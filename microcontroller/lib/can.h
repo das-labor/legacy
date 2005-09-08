@@ -56,7 +56,8 @@ can_message *can_get_nb();
 
 // this is only needed for Interrupt driven Version
 #ifndef CAN_INTERRUPT
-#  define can_free(m)
+// #  define can_free(m)
+  void can_free(can_message * msg);
 #else
   void can_free(can_message * msg);
 #endif
