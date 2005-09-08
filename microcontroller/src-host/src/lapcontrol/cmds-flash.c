@@ -15,9 +15,9 @@ uint8_t *read_buf_from_hex(FILE *f, size_t *size, size_t *dst)
 	uint8_t *buf;
 
 	fscanf(f, ":%2x", &length);
-	printf( "Length: %x\n", length);
+	//printf( "Length: %x\n", length);
 	fscanf(f, "%4x", dst);
-	printf( "Destination: %x\n", *dst);
+	//printf( "Destination: %x\n", *dst);
 	fscanf(f, "%2x", &tt);
 
 	if(tt == 1) return 0;
@@ -186,7 +186,7 @@ void cmd_flash(int argc, char *argv[])
 	size_t size, dst;
 	uint8_t *buf;
 	while ((buf = read_buf_from_hex(fd, &size, &dst)) != 0) {
-		printf( "%2x %2x %2x...\n", buf[0], buf[1], buf[2] );
+	//	printf( "%2x %2x %2x...\n", buf[0], buf[1], buf[2] );
 		memcpy( &mem[dst], buf, size);
 		memset( &mask[dst], 0xff, size );
 	}
@@ -203,6 +203,16 @@ void cmd_flash(int argc, char *argv[])
 			}
 		}
 	}
+	printf("Sendig reset\n");
+	smsg->addr_dst = msg->addr_src;
+	smsg->addr_src = 0x00;  
+	smsg->port_src = PORT_SDO;
+	smsg->port_dst = PORT_SDO;
+	smsg->dlc      = 3;
+	smsg->cmd      = SDO_CMD_READ;
+	smsg->index    = 0xff02;
+
+	can_transmit( (can_message *)smsg);
 
 	return ;
 	
