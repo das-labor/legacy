@@ -1,3 +1,5 @@
 #include <avr/boot.h>
 
-int bootloader(void) BOOTLOADER_SECTION; 
+extern unsigned char Station_id;
+
+int bootloader(void) BOOTLOADER_SECTION __attribute__ ((naked)); 

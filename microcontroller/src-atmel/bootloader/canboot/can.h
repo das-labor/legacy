@@ -36,13 +36,19 @@ extern can_message Rx_msg, Tx_msg;
 
 
 /*****************************************************************************
+ * MCP
+ */
+
+void mcp_write(unsigned char reg, unsigned char data) BOOTLOADER_SECTION;
+
+/*****************************************************************************
  * Management
  */
 
 void can_init() BOOTLOADER_SECTION;
-void can_setfilter() BOOTLOADER_SECTION;
 void can_setmode(can_mode_t) BOOTLOADER_SECTION;
-void can_setled(unsigned char led, unsigned char state) BOOTLOADER_SECTION;
+#define BFPCTRL 0x0C
+
 
 /*****************************************************************************
  * Sending

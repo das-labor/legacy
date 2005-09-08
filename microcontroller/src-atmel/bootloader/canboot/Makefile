@@ -1,5 +1,5 @@
 PRG            = bootloader
-OBJ            = bootloader.o can.o spi.o main.o
+OBJ            = bootloader.o util.o can.o main.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os -fshort-enums
 
@@ -10,11 +10,13 @@ OPTIMIZE       = -Os -fshort-enums
 #BOOTLOADER_START = 0xE000
 
 # this is for atmega32
-BOOTLOADER_START = 0x7000
+BOOTLOADER_START = 0x7C00
+PROGDATA_START = 0x7FC8
 
 
 FLASHCMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --upload if=$(PRG).hex
 ERASECMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --erase
+FUSECMD        = uisp -dprog=bsd --wr_fuse_h=0xcc
 
 DEFS           = -DF_CPU=16000000
 LIBS           =
@@ -26,7 +28,7 @@ CC             = avr-gcc
 # Override is only needed by avr-lib build system.
 
 override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) 
-override LDFLAGS       = -Wl,-Map,$(PRG).map,--section-start=.bootloader=$(BOOTLOADER_START)
+override LDFLAGS       = -Wl,-Map,$(PRG).map,--section-start=.bootloader=$(BOOTLOADER_START),--section-start=.progdata=$(PROGDATA_START)
 
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
@@ -48,6 +50,9 @@ flash:
 	sleep 1
 	$(FLASHCMD)
 
+fuse:
+	$(FUSECMD)
+	
 lst:  $(PRG).lst
 
 %.lst: %.elf
@@ -62,13 +67,13 @@ bin:  $(PRG).bin
 srec: $(PRG).srec
 
 %.hex: %.elf
-	$(OBJCOPY) -j .text -j .data -j .bootloader -O ihex $< $@
+	$(OBJCOPY) -j .text -j .data -j .bootloader -j .progdata -O ihex $< $@
 
 %.srec: %.elf
-	$(OBJCOPY) -j .text -j .data -j .bootloader -O srec $< $@
+	$(OBJCOPY) -j .text -j .data -j .bootloader -j .progdata -O srec $< $@
 
 %.bin: %.elf
-	$(OBJCOPY) -j .text -j .data -j .bootloader -O binary $< $@
+	$(OBJCOPY) -j .text -j .data -j .bootloader -j .progdata -O binary $< $@
 
 # Rules for building the .eeprom rom images
 
