@@ -1,5 +1,5 @@
 PRG = borgSim
-OBJ = main.o pixel.o programm.o util.o  scrolltext.o  trackball.o
+OBJ = main.o pixel.o programm.o util.o  scrolltext2.o  trackball.o
 OPTIMIZE = -O2
 LIBS = -lglut -lpthread -lGL -lGLU
 CC = gcc
