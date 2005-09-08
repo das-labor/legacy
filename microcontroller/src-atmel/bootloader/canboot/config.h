@@ -13,8 +13,7 @@
 #define UART_LEDS
 
 // Bootloader defines
-#define PORT_WAKEUP 0x38
-
+#define EEPR_ADDR_NODE 0x00
 
 // spi.[ch] defines
 #define SPI_HARDWARE

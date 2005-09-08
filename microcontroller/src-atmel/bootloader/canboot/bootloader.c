@@ -11,11 +11,12 @@
 
 #include "spi.h"
 #include "can.h"
+#include "util.h"
 
-void delay_100ms() BOOTLOADER_SECTION;
-void boot_program_page (uint16_t page, uint8_t *buf) BOOTLOADER_SECTION;
+#define PORT_MGT 0x30
+#define FKT_MGT_AWAKE 0x03
 
-unsigned char Station_id;
+unsigned char Station_id __attribute__ ((section (".eeprom"))) = 0x34;
 
 #define SDO_CMD_READ 		0x20
 #define SDO_CMD_REPLY 		0x21
@@ -50,8 +51,7 @@ typedef struct{
 }sdo_data_message;
 
 
-
-unsigned char Device_info_msg[] PROGMEM ={
+unsigned char Device_info_msg[] __attribute__ ((section (".progdata"))) ={
 	SDO_CMD_REPLY,
 	SDO_TYPE_UINT32_RO,
 	(unsigned char)SPM_PAGESIZE,
@@ -60,41 +60,60 @@ unsigned char Device_info_msg[] PROGMEM ={
 	0
 };
 
-unsigned char Flash_info_msg[] PROGMEM ={
+unsigned char Flash_info_msg[] __attribute__ ((section (".progdata"))) ={
 	SDO_CMD_REPLY,
 	SDO_TYPE_STRING_WO,
 	(unsigned char)((unsigned char)FLASHEND+1),
 	((unsigned int)FLASHEND+1)>>8
 };
 
-int bootloader(void) {
+static inline void delay_100ms(){
+	unsigned int x;
+	for(x=0;x<65535;x++){
+		asm volatile("nop");
+	}
+}
+
+unsigned char Station_id;
+
+
+int bootloader(void){
 	uint16_t Address;
 	uint16_t Size;
-	
 	unsigned char x;
 	
 	cli();
 	
-	Station_id = 0x35;
+	asm volatile(
+		"out 0x3e, %A0\n\t"
+		"out 0x3d, %B0\n\t"
+		::"w" (RAMEND)
+	);
+	
+	EEAR = EEPR_ADDR_NODE;
+	EECR = (1<<EERE);
+	Station_id = EEDR;
 		
 	can_init();
 	
-	Tx_msg.addr_src = Station_id;
+	Tx_msg.addr_src = EEDR;
 	Tx_msg.addr_dst = 0;
-	Tx_msg.port_src = PORT_WAKEUP;
-	Tx_msg.port_dst = PORT_WAKEUP;
-	Tx_msg.dlc = 0;
+	Tx_msg.port_src = PORT_MGT;
+	Tx_msg.port_dst = PORT_MGT;
+	Tx_msg.dlc = 1;
+	Tx_msg.data[0] = FKT_MGT_AWAKE;
 	
 	can_transmit();
 	
-	unsigned char count=20;
+	unsigned char count=20, toggle=0x0C;
 	while(count--){
+		mcp_write(BFPCTRL, toggle);
+		toggle ^= 0x10;
+		delay_100ms();
+		
 		if(can_get_nb()){
 			goto sdo_server;
 		}
-		
-		can_setled(0,count&0x01);
-		delay_100ms();
 	}
 	asm volatile("jmp 0");
 	
@@ -112,16 +131,16 @@ int bootloader(void) {
 			if(msg->cmd == SDO_CMD_READ){
 				switch(msg->index){
 					case 0xFF00:	//device information
-						memcpy_P(Tx_msg.data, Device_info_msg, sizeof(Device_info_msg));
+						my_memcpy_P(sizeof(Device_info_msg), Tx_msg.data, Device_info_msg);
 						Tx_msg.dlc = sizeof(Device_info_msg);
 						break;
 					case 0xFF01:	//upload flash
-						memcpy_P(Tx_msg.data, Flash_info_msg, sizeof(Flash_info_msg));
+						my_memcpy_P(sizeof(Flash_info_msg), Tx_msg.data, Flash_info_msg);
 						Tx_msg.dlc = sizeof(Flash_info_msg);
 						break;
 					default:
 						Tx_msg.dlc = 1;
-						Tx_msg.data[0] = SDO_CMD_ERROR_INDEX;	
+						Tx_msg.data[0] = SDO_CMD_ERROR_INDEX;
 						break;
 				}
 				can_transmit();
@@ -142,7 +161,6 @@ int bootloader(void) {
 			
 			}
 		}
-		
 		while(!can_get_nb());
 	}
 	
@@ -170,42 +188,3 @@ int bootloader(void) {
 		}
 	}
 }
-
-/*
-void boot_program_page (uint16_t page, uint8_t *buf)
-    {
-        uint16_t i;
-
-        eeprom_busy_wait ();
-
-        
-
-        for (i=0; i<SPM_PAGESIZE; i+=2)
-        {
-            // Set up little-endian word.
-
-            uint16_t w = *buf++;
-            w += (*buf++) << 8;
-
-            boot_page_fill (page + i, w);
-        }
-	
-	boot_page_erase (page);
-        boot_spm_busy_wait ();      // Wait until the memory is erased.
-        boot_page_write (page);     // Store buffer in flash page.
-        boot_spm_busy_wait();       // Wait until the memory is written.
-
-        // Reenable RWW-section again. We need this if we want to jump back
-        // to the application after bootloading.
-
-        boot_rww_enable ();
-}
-*/
-
-void delay_100ms(){
-	unsigned int x;
-	for(x=0;x<65535;x++){
-		asm volatile("nop");
-	}
-}
-

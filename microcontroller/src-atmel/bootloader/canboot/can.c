@@ -2,6 +2,7 @@
 #ifndef __C64__
 #include <avr/io.h>
 #include <avr/signal.h>
+#include <avr/pgmspace.h>
 #define asm asm volatile
 #endif
 
@@ -25,7 +26,6 @@
 #define RXF2SIDL 0x09
 #define RXF2EID8 0x0A
 #define RXF2EID0 0x0B
-#define BFPCTRL 0x0C
 #define TXRTSCTRL 0x0D
 #define CANSTAT 0x0E
 #define CANCTRL 0x0F
@@ -109,19 +109,25 @@
 can_message Rx_msg, Tx_msg;
 
 /* MCP */
-//void mcp_reset() BOOTLOADER_SECTION;
 void mcp_write(unsigned char reg, unsigned char data) BOOTLOADER_SECTION;
+void mcp_write_b(PGM_P stream) BOOTLOADER_SECTION;
 unsigned char mcp_read(unsigned char reg) BOOTLOADER_SECTION;
-void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val) BOOTLOADER_SECTION;
 unsigned char mcp_status()  BOOTLOADER_SECTION;
 
-
 void message_load() BOOTLOADER_SECTION;
-//static inline void message_fetch()  BOOTLOADER_SECTION;
-//void delayloop() BOOTLOADER_SECTION;
-
 
 // Functions
+
+#define spi_clear_ss() SPI_PORT |= (1<<SPI_PIN_SS)
+#define spi_set_ss() SPI_PORT &= ~(1<<SPI_PIN_SS)
+
+unsigned char spi_data(unsigned char c) BOOTLOADER_SECTION;
+
+unsigned char spi_data(unsigned char c){
+	SPDR = c;
+	while(!(SPSR & (1<<SPIF)));
+	return(SPDR);
+}
 
 unsigned char mcp_status(){
 	unsigned char d;
@@ -132,7 +138,8 @@ unsigned char mcp_status(){
 	return d;
 }
 
-void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val){
+
+inline static void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val){
 	spi_set_ss();
 	spi_data(BIT_MODIFY);
 	spi_data(reg);
@@ -140,6 +147,12 @@ void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val){
 	spi_data(val);
 	spi_clear_ss();
 }
+
+
+
+unsigned char mcp_txreq_str[] __attribute__ ((section (".progdata"))) ={
+	2, TXB0CTRL, (1<<TXREQ), 0,0
+};
 
 //load a message to mcp2515 and start transmission
 void can_transmit(){
@@ -158,12 +171,18 @@ void can_transmit(){
 		spi_data(Tx_msg.data[x]);
 	}
 	spi_clear_ss();
+	
+	mcp_write_b(mcp_txreq_str);
+	
+	/*
 	spi_set_ss();
 	spi_data(WRITE);
 	spi_data(TXB0CTRL);
 	spi_data( (1<<TXREQ) );
 	spi_clear_ss();
+	*/
 }
+
 
 //get a message from mcp2515 and disable RX interrupt Condition
 static inline void message_fetch(){
@@ -205,6 +224,21 @@ void mcp_write(unsigned char reg, unsigned char data){
 	spi_clear_ss();
 }
 
+void mcp_write_b(PGM_P stream){
+	unsigned char len;
+	
+	while(( len = pgm_read_byte(stream++) )){
+		spi_set_ss();
+		spi_data(WRITE);
+		while(len--){
+			spi_data(pgm_read_byte(stream++));
+		}
+		spi_clear_ss();
+	}
+}
+
+
+
 unsigned char mcp_read(unsigned char reg){
 	unsigned char d;
 	spi_set_ss();
@@ -227,7 +261,7 @@ void can_setmode( can_mode_t mode ) {
 
 extern unsigned char Station_id;
 
-static inline void can_setfilter() {
+
 #define FLT_PORT_SRC 0
 #define FLT_PORT_DST1 PORT_SDO_CMD
 #define FLT_PORT_DST2 PORT_SDO_DATA
@@ -237,46 +271,8 @@ static inline void can_setfilter() {
 #define MSK_PORT_DST 0x3F
 #define MSK_ADDR_SRC 0
 #define MSK_ADDR_DST 0xFF
-	
-	
-	//RXM1   RXM0
-	//  0      0     receive matching filter
-	//  0      1     " only 11bit Identifier
-	//  1      0     " only 29bit Identifier
-	//  1      1     any
-	mcp_write(RXB0CTRL, (0<<RXM1) | (0<<RXM0));
-	
-	spi_set_ss();
-	spi_data(WRITE);
-	spi_data(RXF0SIDH);
 
-	spi_data( (FLT_PORT_SRC << 2) | (FLT_PORT_DST1 >> 4 ) );
-	spi_data( ((FLT_PORT_DST1 & 0x0C) << 3) | (1<<EXIDE) | (FLT_PORT_DST1 & 0x03) );
-	spi_data(FLT_ADDR_SRC);
-	spi_data(Station_id);//Filter only Packets to me
 
-	spi_data( (FLT_PORT_SRC << 2) | (FLT_PORT_DST2 >> 4 ) );
-	spi_data( ((FLT_PORT_DST2 & 0x0C) << 3) | (1<<EXIDE) | (FLT_PORT_DST2 & 0x03) );
-	spi_data(FLT_ADDR_SRC);
-	spi_data(Station_id);//Filter only Packets to me
-	spi_clear_ss();
-	
-	spi_set_ss();
-	spi_data(WRITE);
-	spi_data(RXM0SIDH);
-	
-	spi_data( (MSK_PORT_SRC << 2) | (MSK_PORT_DST >> 4 ) );
-	spi_data( ((MSK_PORT_DST & 0x0C) << 3) | (MSK_PORT_DST & 0x03) );
-	spi_data(MSK_ADDR_SRC);
-	spi_data(MSK_ADDR_DST);//Filter only Packets to me
-	spi_clear_ss();
-
-	
-}
-
-void can_setled(unsigned char led, unsigned char state){
-	mcp_bitmod(BFPCTRL, 0x10<<led, state?0xff:0);
-}
 
 /*******************************************************************/
 static inline void delayloop(){
@@ -313,18 +309,9 @@ static inline void spi_init(){
 }
 
 
-void can_init(){
-	spi_init();
-	mcp_reset();
-	
-	delayloop();
-	
-	mcp_write(BFPCTRL,0x0C);//RXBF Pins to Output
-	
-	// 0x01 : 125kbit/8MHz
-	// 0x03 : 125kbit/16MHz
-	// 0x04 : 125kbit/20MHz
-	
+// 0x01 : 125kbit/8MHz
+// 0x03 : 125kbit/16MHz
+// 0x04 : 125kbit/20MHz
 #if F_MCP == 16000000
 #define CNF1_T 0x03
 #elif F_MCP == 8000000
@@ -334,17 +321,53 @@ void can_init(){
 #else
 #error Can Baudrate is only defined for 8, 16 and 20 MHz
 #endif 
-	mcp_write( CNF1, 0x40 | CNF1_T );
-	mcp_write( CNF2, 0xf1 );
-	mcp_write( CNF3, 0x05 );
 
-	can_setfilter();
+
+unsigned char mcp_config_str1[] __attribute__ ((section (".progdata"))) ={
+	2, BFPCTRL, 0x0C,		//RXBF Pins to Output
+	4, CNF3,
+		0x05,			//CNF3
+		0xf1,			//CNF2
+		0x40 | CNF1_T,		//CNF1
+		
+	2, RXB0CTRL,(0<<RXM1) | (0<<RXM0),
+	9, RXF0SIDH,
+		(FLT_PORT_SRC << 2) | (FLT_PORT_DST1 >> 4 ),
+		((FLT_PORT_DST1 & 0x0C) << 3) | (1<<EXIDE) | (FLT_PORT_DST1 & 0x03),
+		FLT_ADDR_SRC,
+		0x35,
+		(FLT_PORT_SRC << 2) | (FLT_PORT_DST2 >> 4 ),
+		((FLT_PORT_DST2 & 0x0C) << 3) | (1<<EXIDE) | (FLT_PORT_DST2 & 0x03),
+		FLT_ADDR_SRC,
+		0x35,
+	5, RXM0SIDH,
+		(MSK_PORT_SRC << 2) | (MSK_PORT_DST >> 4 ),
+		((MSK_PORT_DST & 0x0C) << 3) | (MSK_PORT_DST & 0x03),
+		MSK_ADDR_SRC,
+		MSK_ADDR_DST,
+	0
+};
 	
-	mcp_write( CANCTRL, 0 ); //set mode normal
+	
+unsigned char mcp_config_str2[] __attribute__ ((section (".progdata"))) ={	
+	2, CANCTRL, 0,
+	2, CANINTE, (1<<RX0IE),
+	0
+};
 
-	// configure IRQ
-	// this only configures the INT Output of the mcp2515, not the int on the Atmel
-	mcp_write( CANINTE, (1<<RX0IE) ); //only turn RX int on
+void can_init(){
+	spi_init();
+	mcp_reset();
+	
+	delayloop();
+	
+	mcp_write_b(mcp_config_str1);
+
+	unsigned char tmp = Station_id;
+	mcp_write(RXF0EID0, tmp );
+	mcp_write(RXF1EID0, tmp );
+
+	mcp_write_b(mcp_config_str2);	
 }
 
 
