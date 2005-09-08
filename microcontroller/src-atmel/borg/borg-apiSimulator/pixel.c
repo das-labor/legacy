@@ -88,7 +88,7 @@ direction direction_r(direction dir){
 			case up:
 				return (right);	
 		}
-	return(0);
+	return (direction) 0;
 }
 
 void set_cursor(cursor* cur, pixel p){

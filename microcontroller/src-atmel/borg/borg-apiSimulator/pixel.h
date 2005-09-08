@@ -15,10 +15,12 @@ typedef struct{
 
 typedef enum{right,left,up,down} direction;
 
+typedef enum{clear=0, set=1} commands;
+
 typedef struct{
 	pixel pos;
 	direction dir;
-	enum{clear=0, set=1} mode;
+	commands mode;
 } cursor;
 
 

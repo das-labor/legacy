@@ -1,7 +1,7 @@
 [Project]
 FileName=Win32-devcpp.dev
 Name=borg-apiSimulator
-UnitCount=10
+UnitCount=12
 Type=0
 Ver=1
 ObjFiles=
@@ -27,7 +27,7 @@ CustomMakefile=
 IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
-CompilerSettings=0000000001001000000000
+CompilerSettings=1110000001001000000000
 
 [Unit1]
 FileName=main.c
@@ -39,18 +39,8 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit2]
-FileName=pixel.c
-CompileCpp=1
-Folder=Projekt1
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
 [Unit3]
-FileName=pixel3d.h
+FileName=programm.h
 CompileCpp=1
 Folder=Projekt1
 Compile=1
@@ -60,7 +50,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit4]
-FileName=programm.c
+FileName=config.h
 CompileCpp=1
 Folder=Projekt1
 Compile=1
@@ -70,7 +60,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit5]
-FileName=programm.h
+FileName=util.c
 CompileCpp=1
 Folder=Projekt1
 Compile=1
@@ -98,26 +88,6 @@ ProductVersion=
 AutoIncBuildNr=0
 
 [Unit6]
-FileName=config.h
-CompileCpp=1
-Folder=Projekt1
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit7]
-FileName=util.c
-CompileCpp=1
-Folder=Projekt1
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit8]
 FileName=util.h
 CompileCpp=1
 Folder=Projekt1
@@ -127,7 +97,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit9]
+[Unit7]
 FileName=trackball.c
 CompileCpp=1
 Folder=borg-3d-apiSimulator
@@ -137,10 +107,60 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit10]
+[Unit8]
 FileName=trackball.h
 CompileCpp=1
 Folder=borg-3d-apiSimulator
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit9]
+FileName=scrolltext.c
+CompileCpp=1
+Folder=borg-apiSimulator
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit10]
+FileName=pixel.h
+CompileCpp=1
+Folder=borg-apiSimulator
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit11]
+FileName=scrolltext.h
+CompileCpp=1
+Folder=borg-apiSimulator
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit12]
+FileName=pixel.c
+CompileCpp=1
+Folder=borg-apiSimulator
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit2]
+FileName=programm.c
+CompileCpp=1
+Folder=Projekt1
 Compile=1
 Link=1
 Priority=1000
