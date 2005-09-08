@@ -144,7 +144,7 @@ void timf(int value) {
 
 void *display_loop(void * unused) {
 	while (1) {	
-        scrolltext("Dies ist die neue SCROLLTEXT Engine von martin ongsiek alias <-=mAdEx=-> ---- LABOR BORG  WIEDERSTAND IST ZWECKLOS !!!! ^'$%##", 50);
+        scrolltext("Dies ist die neue SCROLLTEXT Engine von martin ongsiek alias <-=mAdEx=-> ---- LABOR BORG  WIEDERSTAND IST ZWECKLOS !!!! ^'$%##", 60);
         //labor_borg();
 		matrix();
 		fadein();
@@ -186,19 +186,19 @@ int main(int argc, char **argv){
 	quad = gluNewQuadric();
 	glNewList(0, GL_COMPILE);
 		glColor4f(0.9, 0.9, 0.9, 1.);
-		gluSphere(quad, 1.2, 12, 12);		
+		gluSphere(quad, 1.0, 12, 12);		
 	glEndList();
 	glNewList(1, GL_COMPILE);
 		glColor4f(1.0, 0.8, 0.8, 1.);
-		gluSphere(quad, 1.1, 12, 12);	
+		gluSphere(quad, 1.4, 12, 12);	
     glEndList();
 	glNewList(2, GL_COMPILE);
 		glColor4f(1.0, 0.5, 0.5, 1.);
-		gluSphere(quad, 1.0, 12, 12);	
+		gluSphere(quad, 1.55, 12, 12);	
     glEndList();
 	glNewList(3, GL_COMPILE);
 		glColor4f(1.00, 0.0, 0.0, 1.);
-	    gluSphere(quad, 1.0, 12, 12);
+	    gluSphere(quad, 1.7, 12, 12);
     glEndList();
 	
    tbInit(GLUT_LEFT_BUTTON);
