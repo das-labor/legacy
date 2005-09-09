@@ -82,7 +82,7 @@ void eventloop()
 			switch(msg->port_dst) {
 			case PORT_MGT:
 				// Management
-				switch(((pdo_message*)msg)->fkt_id) {
+				switch(((pdo_message*)msg)->cmd) {
 				case FKT_MGT_PING:
 					// send pong
 					break;
@@ -92,7 +92,7 @@ void eventloop()
 				}
 			case PORT_LAMPE:
 				// Lampen steuern
-				switch(((pdo_message*)msg)->fkt_id) {
+				switch(((pdo_message*)msg)->cmd) {
 					case FKT_LAMPE_SET: {
 						if (msg->dlc != 3) continue;
 						unsigned char value;

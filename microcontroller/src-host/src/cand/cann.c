@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <sys/select.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <netdb.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -103,7 +104,15 @@ cann_conn_t *cann_connect(char *server, int port)
 		debug_perror( 0, "Connect failed" );
 		exit(1);
 	}
+
+	// set some options on socket
 	fcntl(client->fd, F_SETFL, O_NONBLOCK);
+	int flag = 1;
+	setsockopt(client->fd,  
+		   IPPROTO_TCP,     /* set option at TCP level */
+		   TCP_NODELAY,     /* name of option */
+		   (char *) &flag,  /* the cast is historical cruft */
+	           sizeof(int));    /* length of option value */
 
 	return client;
 }
@@ -144,8 +153,14 @@ cann_conn_t *cann_accept(fd_set *set)
 	len = sizeof(struct sockaddr_in);
 	fd = accept(listen_socket, (struct sockaddr*)&remote, &len);
 
+	// set some options on socket
 	fcntl(fd, F_SETFL, O_NONBLOCK);
-	fcntl(fd, F_SETFL, 1);
+	int flag = 1;
+	setsockopt(fd,  
+		   IPPROTO_TCP,     /* set option at TCP level */
+		   TCP_NODELAY,     /* name of option */
+		   (char *) &flag,  /* the cast is historical cruft */
+	           sizeof(int));    /* length of option value */
 
 	// initialize client struct
 	client = (cann_conn_t *)malloc(sizeof(cann_conn_t));
