@@ -67,6 +67,7 @@ unsigned char Flash_info_msg[] __attribute__ ((section (".progdata"))) ={
 	((unsigned int)FLASHEND+1)>>8
 };
 
+
 static inline void delay_100ms(){
 	unsigned int x;
 	for(x=0;x<65535;x++){
@@ -105,7 +106,7 @@ int bootloader(void){
 	
 	can_transmit();
 	
-	unsigned char count=20, toggle=0x0C;
+	unsigned char count=20, toggle=0x1C;
 	while(count--){
 		mcp_write(BFPCTRL, toggle);
 		toggle ^= 0x10;
@@ -115,6 +116,8 @@ int bootloader(void){
 			goto sdo_server;
 		}
 	}
+	
+	start_app:
 	asm volatile("jmp 0");
 	
 	sdo_server:
@@ -138,6 +141,8 @@ int bootloader(void){
 						my_memcpy_P(sizeof(Flash_info_msg), Tx_msg.data, Flash_info_msg);
 						Tx_msg.dlc = sizeof(Flash_info_msg);
 						break;
+					case 0xFF02:
+						goto start_app;
 					default:
 						Tx_msg.dlc = 1;
 						Tx_msg.data[0] = SDO_CMD_ERROR_INDEX;

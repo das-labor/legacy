@@ -11,7 +11,7 @@ OPTIMIZE       = -Os -fshort-enums
 
 # this is for atmega32
 BOOTLOADER_START = 0x7C00
-PROGDATA_START = 0x7FC8
+PROGDATA_START = 0x7FCE
 
 
 FLASHCMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --upload if=$(PRG).hex
