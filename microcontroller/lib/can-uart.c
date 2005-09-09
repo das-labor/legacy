@@ -98,7 +98,7 @@ rs232can_msg * canu_get_nb(){
 	return NULL;
 }
 
-
+#ifdef UART_HOST
 rs232can_msg * canu_get(){
 	int ret;
 	fd_set rset;
@@ -116,6 +116,18 @@ rs232can_msg * canu_get(){
 			return rmsg;
 	}
 }
+#else
+rs232can_msg * canu_get() {
+	rs232can_msg *rmsg;
+
+	for(;;) {
+		rmsg = canu_get_nb();
+		if (rmsg)
+			return rmsg;
+	}
+}
+#endif
+
 
 /*****************************************************************************
  * Transmit
