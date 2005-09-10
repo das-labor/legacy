@@ -3,7 +3,7 @@
 /*
 
 Pixelpost version 1.4.1
-RSS picture feed addon version .1
+RSS picture feed addon version 0.3
 Addon developer: Tilman Frosch
 
 Pixelpost www: http://www.pixelpost.org/
@@ -11,23 +11,16 @@ Pixelpost www: http://www.pixelpost.org/
 // usage
 1) copy the addon to addons folder of Pixelpost
 
-2) Use this tag to show the latest thumbnail of Pixelpost photblog on other pages on the web!
-	<img src='http://www.your_photoblog.com/index.php?showthumb=latest&thumbtag=image' />
+2) Use this URL to access the rss-feed containing the direct links to your images
+	http://www.your_photoblog.com/index.php?x=picrss
 
-	you can make a link to it as
-	<a href='http://www.your_photoblog.com/' ><img src='http://www.your_photoblog.com/index.php?showthumb=latest&thumbtag=image' /> </a>
-
-	don't forget to replace the http://www.your_photoblog.com/ with you photblog address!
-
-
-// TODO for future versions:
-	Showing title of the latest post as a tool tip on the image
+This addon is meant for easy scripting things like rss-based picture screensavers, slideshows and so on
 
 
 */
 
-$addon_name = "Pure images as rss feed";
-$addon_description = "rss picture feed.";
+$addon_name = "RSS Picture Feed";
+$addon_description = "Pure images as rss feed.";
 $addon_version = "0.3";
 
 
