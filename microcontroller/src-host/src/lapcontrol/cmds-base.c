@@ -7,7 +7,7 @@
 #include <lap.h>
 
 #include "cmds-base.h"
-
+#include "proto_lampe.h"
 void cmd_loopback(int argc, char *argv[]) 
 {
 	int mode;
@@ -86,7 +86,7 @@ void cmd_dump(int argc, char *argv[])
 		if (msg) {
 			time_t muh = time(0);
 			struct tm *tme = localtime(&muh);
-			printf( "%02d:%02d.%02d.%02d:  %02x:%02x -> %02x:%02x    ",
+			printf( "%02d:%02d.%02d:  %02x:%02x -> %02x:%02x    ",
 				tme->tm_hour, tme->tm_min, tme->tm_sec,
 				msg->addr_src, msg->port_src,
 				msg->addr_dst, msg->port_dst );
@@ -151,21 +151,11 @@ void cmd_lamp(int argc,char *argv[]){
 	sscanf(argv[1],"%x",&dst);
 	sscanf(argv[2],"%x",&lamp);
 	sscanf(argv[3],"%x",&value);
-	
-	pdo_message * msg  = (pdo_message *) can_buffer_get();
-       	
-	msg->port_dst = PORT_LAMPE;
-	msg->port_src = PORT_MGT;
-	msg->addr_dst = dst;
-	msg->addr_src =	0x00;
-	msg->cmd      = FKT_LAMPE_SET;
-	msg->dlc      = 0x03;
-	msg->data[0]  = lamp;
-	msg->data[1]  = value;	
 
-		
-	can_transmit((can_message *)msg);
+	lampe_set_lampe((can_addr)dst, lamp, value);
+
 	return;
+
 argerror:
 	debug( 0, "lamp <addr> <lamp> <value>" );
 }
