@@ -140,4 +140,32 @@ argerror:
 	debug( 0, "packet <src-addr>:<src-port> <dst-addr>:<dst-port> <data>,<data>,...." );
 }
 
+void cmd_lamp(int argc,char *argv[]){
 
+	if (argc != 4) 
+		goto argerror;
+	
+	int dst   ;
+	int lamp  ;
+	int value ;
+	sscanf(argv[1],"%x",&dst);
+	sscanf(argv[2],"%x",&lamp);
+	sscanf(argv[3],"%x",&value);
+	
+	pdo_message * msg  = (pdo_message *) can_buffer_get();
+       	
+	msg->port_dst = PORT_LAMPE;
+	msg->port_src = PORT_MGT;
+	msg->addr_dst = dst;
+	msg->addr_src =	0x00;
+	msg->cmd      = FKT_LAMPE_SET;
+	msg->dlc      = 0x03;
+	msg->data[0]  = lamp;
+	msg->data[1]  = value;	
+
+		
+	can_transmit((can_message *)msg);
+	return;
+argerror:
+	debug( 0, "lamp <addr> <lamp> <value>" );
+}
