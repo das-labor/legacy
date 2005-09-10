@@ -41,6 +41,7 @@ cmd_t cmds[] = {
   { &cmd_reset,  "reset", "reset <addr>", "Send reset to <addr>" },
   { &cmd_ping,   "ping", "ping <addr>", "Send ping to <addr>" },
   { &cmd_flash,  "flash", "flash <addr> <file>" ,"flash file to device"},
+  { &cmd_lamp,  "lamp", "lamp <addr> <lamp> <value>" ,"set lamp on device to value"},
 //  { &ftk_lampe, "lampe", "lampe ...",  "Control lampe-device" }
   { NULL, NULL, NULL, NULL }
 };
