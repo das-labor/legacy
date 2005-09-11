@@ -160,8 +160,8 @@ void message_load(can_message_x * msg){
 	spi_data(WRITE);
 	spi_data(TXB0SIDH);
 
-	spi_data( (msg->msg.port_src << 2) | (msg->msg.port_dst >> 4 ) );
-	spi_data( ((msg->msg.port_dst & 0x0C) << 3) | (1<<EXIDE) | (msg->msg.port_dst & 0x03) );
+	spi_data( ((unsigned char)(msg->msg.port_src << 2)) | (msg->msg.port_dst >> 4 ) );
+	spi_data( (unsigned char)((msg->msg.port_dst & 0x0C) << 3) | (1<<EXIDE) | (msg->msg.port_dst & 0x03) );
 	spi_data(msg->msg.addr_src);
 	spi_data(msg->msg.addr_dst);
 	spi_data(msg->msg.dlc);
@@ -178,7 +178,7 @@ void message_load(can_message_x * msg){
 
 //get a message from mcp2515 and disable RX interrupt Condition
 void message_fetch(can_message_x * msg){
-	unsigned char tmp1, tmp2;
+	unsigned char tmp1, tmp2, tmp3;
 	unsigned char x;
 
 	spi_set_ss();
@@ -187,8 +187,8 @@ void message_fetch(can_message_x * msg){
 	tmp1 = spi_data(0);
 	msg->msg.port_src = tmp1 >> 2;
 	tmp2 = spi_data(0);
-	msg->msg.port_dst = ((tmp1 & 0x03) << 4) | ((tmp2 & 0x60) >> 3) | (tmp2 & 0x03);
-
+	tmp3 = (unsigned char)((unsigned char)(tmp2 >> 3) & 0x0C);
+	msg->msg.port_dst = ((unsigned char)(tmp1 <<4 ) & 0x30) | tmp3 | (unsigned char)(tmp2 & 0x03);
 	msg->msg.addr_src = spi_data(0);
 	msg->msg.addr_dst = spi_data(0);
 	msg->msg.dlc = spi_data(0) & 0x0F;	
