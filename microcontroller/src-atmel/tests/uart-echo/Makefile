@@ -1,12 +1,12 @@
 PRG            = uart
 OBJ            = main.o uart.o
-MCU_TARGET     = atmega32
+MCU_TARGET     = atmega128
 OPTIMIZE       = -Os
 
 FLASHCMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --upload if=$(PRG).hex
 ERASECMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --erase
 
-DEFS           = -DF_CPU=16000000
+DEFS           = -DF_CPU=14745000
 LIBS           =
 
 # You should not have to change anything below here.

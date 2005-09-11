@@ -12,9 +12,7 @@
 
 #define PORT_LEDS PORTD
 
-#define stdout_putc     uart_putc
-#define stdout_putstr   uart_putstr
-#define stdout_putstr_P uart_putstr_P
+unsigned char Station_id;
 
 static inline void set_lampe(unsigned char lampe, unsigned char val)
 {
@@ -76,13 +74,12 @@ static inline void relais_check(){
 void eventloop()
 {
 	while(1) {
-		can_message *msg = can_get_nb();
-		if(msg){
+		if(can_get_nb()){
 			FLAGS |= F_RCV_CAN;
-			switch(msg->port_dst) {
+			switch(Rx_msg.port_dst) {
 			case PORT_MGT:
 				// Management
-				switch(((pdo_message*)msg)->cmd) {
+				switch(((pdo_message*)&Rx_msg)->cmd) {
 				case FKT_MGT_PING:
 					// send pong
 					break;
@@ -92,36 +89,36 @@ void eventloop()
 				}
 			case PORT_LAMPE:
 				// Lampen steuern
-				switch(((pdo_message*)msg)->cmd) {
+				switch(((pdo_message*)&Rx_msg)->cmd) {
 					case FKT_LAMPE_SET: {
-						if (msg->dlc != 3) continue;
+						if (Rx_msg.dlc != 3) continue;
 						unsigned char value;
 						unsigned char lampe;
-						lampe = ((pdo_message*)msg)->data[0];
-						value = ((pdo_message*)msg)->data[1];
+						lampe = ((pdo_message*)&Rx_msg)->data[0];
+						value = ((pdo_message*)&Rx_msg)->data[1];
 			
 						Ramp.end_bright[lampe] = value;
 						break;
 					}
 					case FKT_LAMPE_SETMASK: {
 						unsigned char i;
-						if (msg->dlc != NUM_LAMPS+2) continue;
+						if (Rx_msg.dlc != NUM_LAMPS+2) continue;
 						for(i=0; i<NUM_LAMPS; i++) {
-							unsigned char value = ((pdo_message*)msg)->data[i];
+							unsigned char value = ((pdo_message*)&Rx_msg)->data[i];
 							set_lampe(i, value);
 						}
 						break;
 					}
 					case FKT_LAMPE_SETDELAY:{
-						if (msg->dlc != 4) continue;
+						if (Rx_msg.dlc != 4) continue;
 						union{
 							unsigned int i;
 							unsigned char c[2];
 						}value;
 						unsigned char lampe;
-						lampe = ((pdo_message*)msg)->data[0];
-						value.c[1] = ((pdo_message*)msg)->data[1];
-						value.c[0] = ((pdo_message*)msg)->data[2];
+						lampe = ((pdo_message*)&Rx_msg)->data[0];
+						value.c[1] = ((pdo_message*)&Rx_msg)->data[1];
+						value.c[0] = ((pdo_message*)&Rx_msg)->data[2];
 						Ramp.delay_rl[lampe] = value.i;
 						Ramp.delay[lampe] = value.i;
 						break;
@@ -147,6 +144,8 @@ int main(){
 	PORTD = 0x12;
 	
 	timer1_init();
+	
+	Station_id = 0x35;
 	
 	spi_init();
 	can_init();
