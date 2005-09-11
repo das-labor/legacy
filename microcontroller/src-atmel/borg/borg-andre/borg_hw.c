@@ -2,7 +2,7 @@
 #include <avr/signal.h>
 #include <avr/interrupt.h>
 #include <avr/io.h>
-
+#include <avr/wdt.h>
 #include "borg_hw.h"
 
 #define COLPORT1  PORTA
@@ -13,10 +13,10 @@
 
 #define ROWPORT PORTD
 #define ROWDDR   DDRD
-#define PIN_RST  PD0
-#define PIN_CLK  PD1
-#define PIN_SHFT1 PD2
-#define PIN_SHFT2 PD3
+#define PIN_RST  PD4
+#define PIN_CLK  PD5
+#define PIN_SHFT1 PD6
+#define PIN_SHFT2 PD7
 
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
@@ -71,12 +71,33 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 	static unsigned char plane = 0;
 	static unsigned char row = 0;
 	
+	wdt_reset();
 	rowshow(row, plane);
 	
 	if(++row == NUM_ROWS){
 		row = 0;
 		if(++plane==NUMPLANE) plane=0;
 	}
+}
+
+
+void watchdog_enable()
+{
+	wdt_reset();
+	wdt_enable(0x00);  // 17ms
+
+}
+
+
+void timer0_off(){
+	cli();
+
+	COLPORT1 = 0;
+	COLPORT2 = 0;
+	ROWPORT = 0;
+
+	TCCR0 = 0x00;	// CTC Mode, clk/64
+	sei();
 }
 
 
@@ -101,10 +122,11 @@ void timer0_on(){
 void borg_hw_init(){
 	COLDDR1 = 0xFF;
 	COLDDR2 = 0xFF;
-	ROWDDR = 0xFF;
+	ROWDDR = (1<<PIN_RST) | (1<<PIN_CLK) | (1<< PIN_SHFT1) | (1<<PIN_SHFT2);
 	COLPORT1 = 0;
 	COLPORT2 = 0;
 	ROWPORT = 0;
+	watchdog_enable();
 	timer0_on();
 }
 
