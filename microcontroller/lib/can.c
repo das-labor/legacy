@@ -475,4 +475,7 @@ void can_transmit(can_message * msg){
 	message_load((can_message_x*)msg);
 }
 
+void can_free(can_message * msg){
+}
+
 #endif

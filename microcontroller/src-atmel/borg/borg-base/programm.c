@@ -169,6 +169,7 @@ unsigned char i, j, x;
 }
 
 void schachbrett(unsigned char times){
+	clear_screen(0);
 	unsigned char j;
 	for(j=0;j<times;j++){
 		unsigned char i, x;
@@ -262,7 +263,7 @@ void matrix() {
 				streamer_num++;	
 			}
 		}
-		//wait(80);	
+		wait(80);	
 		
 	
 	

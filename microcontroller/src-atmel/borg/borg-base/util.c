@@ -1,10 +1,16 @@
 #include <avr/io.h>
+#include "config.h"
 
 #ifndef F_CPU
 #define F_CPU 16000000
 #endif
 
 void wait(int ms){
+
+#ifdef BORG_CAN
+	borg_idle();
+#endif
+
 /* 	TCCR2: FOC2 WGM20 COM21 COM20 WGM21 CS22 CS21 CS20
 		CS22 CS21 CS20
 		 0    0    0	       stop
@@ -22,6 +28,10 @@ void wait(int ms){
 		while(!(TIFR&0x80));	//wait for compare matzch flag
 		TIFR=0x80;		//reset flag
 	}
+
+#ifdef BORG_CAN
+	borg_idle();
+#endif
 }
 
 
