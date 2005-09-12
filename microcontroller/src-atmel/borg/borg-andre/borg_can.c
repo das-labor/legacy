@@ -11,7 +11,8 @@ can_addr myaddr;
 
 
 
-void init_can(void){
+void bcan_init() 
+{
 	can_init();
 
 	myaddr = eeprom_read_byte(0x00);
@@ -63,7 +64,7 @@ void process_borg_msg(pdo_message *msg)
 	}
 }
 
-void borg_idle()
+void bcan_process_messages()
 {
 	pdo_message *msg = (pdo_message*) can_get_nb();
 
@@ -73,8 +74,10 @@ void borg_idle()
 
 		if(msg->addr_dst == myaddr && msg->port_dst == PORT_MGT) 
 			process_mgt_msg(msg);
+
 		if(msg->addr_dst == myaddr && msg->port_dst == PORT_BORG) 
 			process_borg_msg(msg);
+
 		msg = (pdo_message*) can_get_nb();
 	};
 
