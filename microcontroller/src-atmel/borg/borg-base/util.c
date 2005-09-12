@@ -1,15 +1,16 @@
 #include <avr/io.h>
+
 #include "config.h"
+
+#ifdef BORG_CAN
+#include "borg_can.h"
+#endif
 
 #ifndef F_CPU
 #define F_CPU 16000000
 #endif
 
 void wait(int ms){
-
-#ifdef BORG_CAN
-	borg_idle();
-#endif
 
 /* 	TCCR2: FOC2 WGM20 COM21 COM20 WGM21 CS22 CS21 CS20
 		CS22 CS21 CS20
@@ -25,13 +26,15 @@ void wait(int ms){
 	TCCR2 = 0x0D;	//CTC Mode, clk/128
 	OCR2 = (F_CPU/128000);	//1000Hz 
 	for(;ms>0;ms--){
+
+#ifdef BORG_CAN
+		bcan_process_messages();
+#endif
+
 		while(!(TIFR&0x80));	//wait for compare matzch flag
 		TIFR=0x80;		//reset flag
 	}
 
-#ifdef BORG_CAN
-	borg_idle();
-#endif
 }
 
 
