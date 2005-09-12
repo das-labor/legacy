@@ -34,12 +34,23 @@ argerror:
 void cmd_ping(int argc, char *argv[]) 
 {
 	int addr;
+	can_message *msg;
 
 	if (argc != 2) goto argerror;
        	if (sscanf(argv[1], "%i", &addr) != 1)
 		goto argerror;
 
 	lap_ping(addr);
+
+	for(;;) {
+		msg = can_get();
+
+		if (msg->addr_src == addr) {
+			printf( "Pong from %d\n", addr );
+			return;
+		}
+	}
+
 	return;
 argerror:
 	debug(0, "ping <addr>");
