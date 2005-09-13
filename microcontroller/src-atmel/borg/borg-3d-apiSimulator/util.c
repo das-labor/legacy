@@ -7,7 +7,7 @@
 #	include <windows.h>
 #endif
 
-void _wait(unsigned int ms) {
+void myWait(unsigned int ms) {
 #ifdef _WIN32
 	Sleep(ms);
 #else

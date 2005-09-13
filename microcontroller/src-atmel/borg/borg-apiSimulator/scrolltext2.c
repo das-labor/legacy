@@ -887,7 +887,7 @@ unsigned char PROGMEM five_dot_glyph_table[] = {
 };
 
 unsigned char PROGMEM five_dot_width_table[] = {
-		 2, /* ' ' */
+		 3, /* ' ' */
 		 2, /* '!' */
 		 4, /* '"' */
 		 8, /* '#' */
@@ -992,13 +992,13 @@ void shift_in(char glyph, unsigned int delay){
 	if ((glyph < font.glyph_beg) || (glyph > font.glyph_end)) {
             glyph = font.glyph_def;
     } 
-	glyph -= ' ';
+	glyph -= font.glyph_beg;
 	len = pgm_read_byte(font.width_table+glyph);
 	ror = (1 << 7);
 	for (i = 0; i < len; i++) {
 		shift_pixmap_l();
 		for (y = 0; y < font.glyph_height; y++) {
-			setpixel((pixel){NUM_COLS-1, y},(pgm_read_byte(font.glyph_table+y+glyph*font.glyph_height) & ror) ?3:0 );
+			setpixel((pixel){NUM_COLS-1, y},(pgm_read_byte(font.glyph_table+y+glyph*font.glyph_height) & ror)?3:0 );
 		}
 		ror >>= 1;
 		wait(delay);
