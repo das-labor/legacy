@@ -1,1 +1,3 @@
-void _wait(unsigned int ms);
+#define wait myWait
+
+void myWait(unsigned int ms);

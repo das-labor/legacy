@@ -8,7 +8,7 @@ void test1() {
 		for (y = 0; y < NUM_ROWS; y++) {
 			for (x = 0; x < NUM_PLANES; x++) {
 				setpixel3d((pixel3d){x,y,z}, 3);
-				_wait(15);
+				wait(15);
 			}
 		}
 	}
@@ -22,7 +22,7 @@ void test2() {
 				setpixel3d((pixel3d){i,j,k}, 3);
 			}
 		}
-		_wait(40);
+		wait(40);
 		for (j = 0; j < 8; j++) {
 			for (k = 0; k < 8; k++) {
 				setpixel3d((pixel3d){i,j,k}, 0);
@@ -35,7 +35,7 @@ void test2() {
 				setpixel3d((pixel3d){j,k,i}, 3);
 			}
 		}
-		_wait(40);
+		wait(40);
 		for (j = 0; j < 8; j++) {
 			for (k = 0; k < 8; k++) {
 				setpixel3d((pixel3d){j,k,i}, 0);
@@ -48,7 +48,7 @@ void test2() {
 				setpixel3d((pixel3d){k,i,j}, 3);
 			}
 		}
-		_wait(50);
+		wait(50);
 		for (j = 0; j < 8; j++) {
 			for (k = 0; k < 8; k++) {
 				setpixel3d((pixel3d){k,i,j}, 0);
@@ -61,7 +61,7 @@ void test2() {
 				setpixel3d((pixel3d){k,j,i}, 3);
 			}
 		}
-		_wait(40);
+		wait(40);
 		for (j = 0; j < 8; j++) {
 			for (k = 0; k < 8; k++) {
 				setpixel3d((pixel3d){k,j,i}, 0);
@@ -78,7 +78,7 @@ void test3() {
 				setpixel3d((pixel3d){i,j,k}, 3);
 			}
 		}
-		_wait(40);
+		wait(40);
 	}
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
@@ -86,7 +86,7 @@ void test3() {
 				setpixel3d((pixel3d){i,j,k}, 0);
 			}
 		}
-		_wait(40);
+		wait(40);
 	}
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
@@ -94,7 +94,7 @@ void test3() {
 				setpixel3d((pixel3d){j,k,i}, 3);
 			}
 		}
-		_wait(40);
+		wait(40);
 	}
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
@@ -102,7 +102,7 @@ void test3() {
 				setpixel3d((pixel3d){j,k,i}, 0);
 			}
 		}
-		_wait(40);
+		wait(40);
 	}
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
@@ -110,7 +110,7 @@ void test3() {
 				setpixel3d((pixel3d){k,i,j}, 3);
 			}
 		}
-		_wait(50);
+		wait(50);
 	}
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
@@ -118,7 +118,7 @@ void test3() {
 				setpixel3d((pixel3d){k,i,j}, 0);
 			}
 		}
-		_wait(50);
+		wait(50);
 	}
 	for (i = 7; i < 8; i--) {
 		for (j = 0; j < 8; j++) {
@@ -126,7 +126,7 @@ void test3() {
 				setpixel3d((pixel3d){k,j,i}, 3);
 			}
 		}
-		_wait(40);
+		wait(40);
 	}
 	for (i = 7; i < 8; i--) {
 		for (j = 0; j < 8; j++) {
@@ -134,7 +134,7 @@ void test3() {
 				setpixel3d((pixel3d){k,j,i}, 0);
 			}
 		}
-		_wait(40);
+		wait(40);
 	}
 }
 
@@ -150,7 +150,7 @@ void growingCubeFilled() {
 				}
 			}
 		}
-		_wait(150);
+		wait(150);
 		min--;
 		max++;
 	}
@@ -166,7 +166,7 @@ void growingCubeFilled() {
 			}
 	
 		}
-		_wait(150);
+		wait(150);
 		min++;
 		max--;
 	}	
@@ -186,7 +186,7 @@ void coolAnim() {
 				}
 			}
 		}
-		_wait(150);
+		wait(150);
 		min--;
 		max++;
 	}
@@ -204,7 +204,7 @@ void coolAnim() {
 			}
 	
 		}
-		_wait(150);
+		wait(150);
 		min++;
 		max--;
 	}	
@@ -297,7 +297,7 @@ void snake3d(){
 			while(tail != head){
 				clearpixel3d(*tail);
 				if((++tail)>pixels+SNAKE_LEN) tail = pixels;
-				_wait(60);
+				wait(60);
 			}
 			break;
 		}
@@ -308,7 +308,7 @@ void snake3d(){
 				clearpixel3d(apples[j]);
 			}
 		}
-		_wait(5);
+		wait(5);
 	}
 }
 
@@ -385,7 +385,7 @@ void snake3dJoystick(){
 			while (tail != head){
 				clearpixel3d(*tail);
 				if ((++tail)>pixels+64) tail = pixels;
-				_wait(60);
+				wait(60);
 			}
 			break;
 		}
@@ -396,7 +396,7 @@ void snake3dJoystick(){
 				clearpixel3d(apples[j]);
 			}
 		}
-		_wait(200);
+		wait(200);
 	}
 }
 */
@@ -471,7 +471,7 @@ void matrix() {
 				streamer_num++;	
 			}
 		}
-		_wait(80);	
+		wait(80);	
 	}
 } 
 
@@ -530,7 +530,7 @@ void spirale() {
 			for (z = 0; z < 8; z++) {
 				drawLineZAngle((angle+(angleAdd*z/4))%14, z, 3);		
 			}
-			_wait(30);
+			wait(30);
 			clear_screen(0);
 		
 			if (count > 5) { 
@@ -550,7 +550,7 @@ void spirale2() {
 				drawLineZAngle((angle+7+((angleAdd*z)/4))%14, z, 3);
 				
 			}
-			_wait(40);
+			wait(40);
 			clear_screen(0);
 		
 			if (count > 5) { 
@@ -561,10 +561,27 @@ void spirale2() {
 	}
 }
 
+void joern1(){
+unsigned char i, j, x;
+	unsigned char rolr=1 , rol, rol2;
+	clear_screen(1);
+	for (i = 0; i< 80;i++){
+		rol2 = rolr;
+		for (j = 0; j < NUM_PLANES; j++) {
+			rol = rol2;
+            for (x=0; x < PLANEBYTES; x++) { 
+				pixmap[2][j][x] = rol;
+			    if((rol<<=1)==0) rol = 1;
+            }
+            if((rol2<<=1)==0) rol2 = 1;
+		}
+		if ((rolr<<=1) == 0) rolr = 1;
+		wait(100);
+	}
+}
 
-
-void gameOfLife(unsigned char anim) {
-	unsigned char gen, erg, maxGen, seven = 1;;
+void gameOfLife(unsigned char anim, unsigned int delay) {
+	unsigned char gen, erg, seven = 1, maxGen;
 	signed char x, y, z, neighC, r1 = 3, r2 = 4, r3 = 3, r4 = 2;
 	signed char i, j, k;
 	char neighs[NUM_PLANES][NUM_ROWS][NUM_COLS];
@@ -577,14 +594,14 @@ void gameOfLife(unsigned char anim) {
 		setpixel3d((pixel3d){4, 4, 4}, 3);
 		setpixel3d((pixel3d){5, 4, 4}, 3);
 		break;
-	case 1:	maxGen = 100; // other rules
+	case 1:	maxGen = 30; // other rules
 		r3 = 2;
 		r4 = 1;
 		setpixel3d((pixel3d){3, 4, 4}, 3);
 		setpixel3d((pixel3d){4, 4, 4}, 3);
 		setpixel3d((pixel3d){5, 4, 4}, 3);
 		break;
-	case 2: maxGen = 60;
+	case 2: maxGen = 200;
 		seven = 0;
 		setpixel3d((pixel3d){2, 4, 4}, 3);
 		setpixel3d((pixel3d){3, 4, 4}, 3);
@@ -594,8 +611,8 @@ void gameOfLife(unsigned char anim) {
 		break;
 
 	}
-	for (gen = 0; gen < 28; gen++) {
-		_wait(500);	
+	for (gen = 0; gen < maxGen; gen++) {
+		wait(delay);	
 		for (x = seven; x < NUM_PLANES; x++) {	
 			for (y = seven; y < NUM_ROWS; y++) {
 				for (z = seven; z < NUM_COLS; z++) {
@@ -646,13 +663,14 @@ void gameOfLife(unsigned char anim) {
 
 void *display_loop(void * unused) {
 	while (1) {	
-		gameOfLife(2);
+        joern1();
 		growingCubeFilled();
-		gameOfLife(1);
+		gameOfLife(1, 400);
 		growingCubeFilled();
-		gameOfLife(0);
+		gameOfLife(0, 400);
 		growingCubeFilled();
 		growingCubeFilled();
+		gameOfLife(2, 150);
 		growingCubeFilled();
 		growingCubeFilled();
 		growingCubeFilled();
