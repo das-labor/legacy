@@ -4,12 +4,12 @@
 #include "config.h"
 #include "borg_can.h"
 
+#include <setjmp.h>
 #include <avr/interrupt.h>
 #include <avr/eeprom.h>
 
 can_addr myaddr;
-
-
+extern jmp_buf newmode_jmpbuf;
 
 void bcan_init() 
 {
@@ -29,7 +29,6 @@ void bcan_init()
 
 	can_transmit((can_message *)msg);
 }
-
 
 void process_mgt_msg(pdo_message *msg)
 {
@@ -59,7 +58,7 @@ void process_borg_msg(pdo_message *msg)
 {
 	switch(msg->cmd) {
 	case FKT_BORG_MODE:
-		borg_mode = msg->data[0];
+		longjmp(newmode_jmpbuf, msg->data[0]);
 		break;
 	}
 }
