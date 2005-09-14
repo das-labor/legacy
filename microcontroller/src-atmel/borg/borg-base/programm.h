@@ -1,4 +1,5 @@
 
+void off();
 void spirale(unsigned int delay);
 void joern1();
 void joern2();
