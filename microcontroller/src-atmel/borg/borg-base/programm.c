@@ -14,6 +14,15 @@ unsigned char x,y;
 }
 
 
+void off()
+{
+	clear_screen(0);
+
+	while(1)
+		wait(100);
+
+}
+
 void spirale(unsigned int delay){
 	clear_screen(0);
 
