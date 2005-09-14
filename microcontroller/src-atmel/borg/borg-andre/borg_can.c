@@ -11,6 +11,9 @@
 can_addr myaddr;
 extern jmp_buf newmode_jmpbuf;
 
+char scrolltext_text[128] = "LABOR";
+
+
 void bcan_init() 
 {
 	can_init();
@@ -53,12 +56,31 @@ void process_mgt_msg(pdo_message *msg)
 	}
 }
 
-
 void process_borg_msg(pdo_message *msg)
 {
+	unsigned char i, j;
+
 	switch(msg->cmd) {
 	case FKT_BORG_MODE:
 		longjmp(newmode_jmpbuf, msg->data[0]);
+		break;
+	case FKT_BORG_SCROLLTEXT_RESET:
+		for(i=0; i < msg->dlc-1; i++) {
+			scrolltext_text[i] = msg->data[i];
+		}
+
+		scrolltext_text[i+1] = 0;
+		break;
+	case FKT_BORG_SCROLLTEXT_APPEND:
+		j=0;
+		while(scrolltext_text[j]) j++;
+
+		for(i=0; i < msg->dlc-1; i++) {
+			scrolltext_text[i+j] = msg->data[i];
+		}
+	
+		scrolltext_text[i+1] = 0;
+
 		break;
 	}
 }
