@@ -1,3 +1,5 @@
+#include "config.h"
+
 #ifdef AVR
 #   include <avr/pgmspace.h>
 #else 
@@ -7,7 +9,6 @@
 
 #define SCROLLTEXT_C
 
-#include "config.h"
 #include "scrolltext.h"
 #ifdef AVR
 #   include "borg_hw.h"
@@ -26,8 +27,6 @@ struct FONT_DEF
    unsigned char glyph_end;				 /* end ascii offset in table */
    unsigned char glyph_def;				 /* code for undefined glyph code */
 };
-
-
 
 unsigned char PROGMEM five_dot_glyph_table[] = {
 		/* ' ' charwidth: 2 */
