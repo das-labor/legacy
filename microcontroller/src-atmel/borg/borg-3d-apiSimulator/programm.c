@@ -564,7 +564,7 @@ void spirale2() {
 void joern1(){
 unsigned char i, j, x;
 	unsigned char rolr=1 , rol, rol2;
-	clear_screen(1);
+	clear_screen(0);
 	for (i = 0; i< 80;i++){
 		rol2 = rolr;
 		for (j = 0; j < NUM_PLANES; j++) {
@@ -631,7 +631,6 @@ void gameOfLife(unsigned char anim, unsigned int delay) {
 									if (erg && erg != 255) {
 										neighC++;	
 									}
-									//printf("- %d %d %d  neigh=%d erg=%d\n", x+i, y+j, z+k, neighC, erg);
 								}
 							}
 						}
@@ -643,8 +642,6 @@ void gameOfLife(unsigned char anim, unsigned int delay) {
 		for (x = 1; x < NUM_PLANES; x++) {	
 			for (y = 1; y < NUM_ROWS; y++) {
 				for (z = 1; z < NUM_COLS; z++) {
-					//if (neighs[x][y][z])		
-					//	printf("%d %d %d neigh=%d %d\n", x, y, z, neighs[x][y][z], get_pixel3d((pixel3d){x, y, z}));
 					if (get_pixel3d((pixel3d){x, y, z})) { // Feld gesetzt
 						if (neighs[x][y][z] > r3 || neighs[x][y][z] < r4) {
 							setpixel3d((pixel3d){x, y, z}, 0);
@@ -657,7 +654,6 @@ void gameOfLife(unsigned char anim, unsigned int delay) {
 				}
 			}
 		}
-		//printf("============ Gerneration %d \n", gen);
 	}			
 }
 

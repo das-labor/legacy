@@ -7,6 +7,7 @@
 #define STREAMER_NUM 30
 
 #define BORG_CAN
+#define AVR
 
 // spi.[ch] defines
 #define SPI_HARDWARE
