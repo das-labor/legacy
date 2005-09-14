@@ -1,6 +1,7 @@
 #include <avr/signal.h>
 #include <avr/interrupt.h>
 #include <avr/io.h>
+#include <avr/wdt.h>
 
 #include "borg_hw.h"
 
@@ -56,6 +57,8 @@ SIGNAL(SIG_OUTPUT_COMPARE0) {
 	static unsigned char plane = 0;
 	static unsigned char row = 0;
 	
+	wdt_reset();
+
 	rowshow(row, plane);
 	
 	if (++row == NUM_PLANES) {
@@ -89,5 +92,8 @@ void borg_hw_init() {
 	CTRLDDR = 0xFF;
 	DATADDR = 0xFF;
 	timer0_on ();
+
+	wdt_reset();
+	wdt_enable(0x00);  // 17ms Watchdog
 }
 
