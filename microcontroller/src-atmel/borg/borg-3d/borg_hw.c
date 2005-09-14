@@ -4,20 +4,6 @@
 
 #include "borg_hw.h"
 
-#define CTRLPORT  PORTA
-#define CTRLDDR   DDRA
-
-#define DATAPORT  PORTC
-#define DATADDR   DDRC
-
-#define PIN_OE_DATA    	 PA0
-#define PIN_SHIFT_DATA   PA1
-#define PIN_CLEAR_DATA 	 PA2
-#define PIN_CLK_DATA 	 PA3
-#define PIN_SHIFT_PLANE  PA4
-#define PIN_CLK_PLANE    PA5
-#define PIN_CLEAR_PLANE  PA6
-
 
 unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
 

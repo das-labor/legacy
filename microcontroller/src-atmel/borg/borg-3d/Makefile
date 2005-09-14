@@ -1,5 +1,5 @@
 PRG            = borg
-OBJ            = borg_hw.o main.o util.o uart.o pixel.o programm.o
+OBJ            = borg_hw.o main.o util.o uart.o pixel.o programm.o spi.o lap.o can.o borg_can.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os -DF_CPU=16000000
 
