@@ -9,29 +9,42 @@
 #include "cmds-flash.h"
 
 
-uint8_t *read_buf_from_hex(FILE *f, size_t *size, size_t *dst)
+uint8_t *read_buf_from_hex(FILE *f, size_t *size, size_t *offset)
 {
-	int length, tt;
+	int i, tt;
 	uint8_t *buf;
 
-	fscanf(f, ":%2x", &length);
-	//printf( "Length: %x\n", length);
-	fscanf(f, "%4x", dst);
-	//printf( "Destination: %x\n", *dst);
-	fscanf(f, "%2x", &tt);
+	if (fscanf(f, ":%2x", size) != 1)
+		goto error;
 
-	if(tt == 1) return 0;
+	if (fscanf(f, "%4x", offset) != 1)
+		goto error;
 
-	*size = length;
-	buf = malloc(length);
-	uint8_t *ptr = buf;
-	for(;length > 0; length--) {
-		fscanf(f, "%2x", ptr++);
+	if (fscanf(f, "%2x", &tt) != 1)
+		goto error;
+
+	if(tt == 1) {
+		*size  = 0;
+		return 0;
 	}
-	fscanf(f, "%2x", &tt); // junk
+
+	i = *size;
+	buf = malloc(*size);
+	uint8_t *ptr = buf;
+	for(;i > 0; i--) {
+		if (fscanf(f, "%2x", ptr++) != 1)
+			goto error;
+	}
+	if (fscanf(f, "%2x", &tt) != 1)	 // checksum
+		goto error;
+
 	fscanf(f, "\n");
 
 	return buf;
+
+error:
+	*size = -1;
+	return 0;
 }
 
 void push_page( can_addr dst, uint8_t *buf, size_t offset, size_t size )
@@ -180,16 +193,17 @@ void cmd_flash(int argc, char *argv[])
 
 	printf( "Flashing file: %s\n", argv[2] );
 	FILE *fd = fopen(argv[2],"r");
-	//TODO error handling
 	
 	
 	size_t size, dst;
 	uint8_t *buf;
 	while ((buf = read_buf_from_hex(fd, &size, &dst)) != 0) {
-	//	printf( "%2x %2x %2x...\n", buf[0], buf[1], buf[2] );
 		memcpy( &mem[dst], buf, size);
 		memset( &mask[dst], 0xff, size );
 	}
+
+	if (size != 0)
+		goto fileerror;
 
 	int i,j;
 
@@ -203,6 +217,7 @@ void cmd_flash(int argc, char *argv[])
 			}
 		}
 	}
+
 	printf("Sendig reset\n");
 	smsg->addr_dst = msg->addr_src;
 	smsg->addr_src = 0x00;  
@@ -214,10 +229,15 @@ void cmd_flash(int argc, char *argv[])
 
 	can_transmit( (can_message *)smsg);
 
-	return ;
+	return;
 	
 argerror:
 	debug(0, "flash <addr> file.hex");
+	return;
+
+fileerror:
+	debug(0, "Given file is not in Intel Hex format");
+	return;
 }
 
 

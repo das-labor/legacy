@@ -46,7 +46,7 @@ void cmd_ping(int argc, char *argv[])
 		msg = can_get();
 
 		if (msg->addr_src == addr) {
-			printf( "Pong from %d\n", addr );
+			printf( "Pong from 0x%x\n", addr );
 			return;
 		}
 	}

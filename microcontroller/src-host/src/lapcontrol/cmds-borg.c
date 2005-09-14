@@ -48,6 +48,7 @@ argerror:
 void cmd_borg_scroll(int argc, char *argv[]) 
 {
 	pdo_message *msg;
+	char *src, *dst;
 	int i;
 
 	if (argc != 3) goto argerror;
@@ -58,15 +59,22 @@ void cmd_borg_scroll(int argc, char *argv[])
 	msg->addr_dst = 0x00;
 	msg->port_src = 0x23;
 	msg->port_dst = 0x23;
-	msg->dlc      = 2;
+	msg->dlc      = 1;
 	msg->cmd      = 1;
-	msg->data[0]  = 0;
 
 	// dst
 	if ( sscanf(argv[1], "%x", &i) != 1)
 		goto argerror;
 	msg->addr_dst = i;
 
+	src = argv[3];
+	dst = msg->data;
+	while( (*src) && (msg->dlc < 9)) {
+		*dst++ = *src++;
+		msg->dlc++;
+	};
+		
+	// first packet
 	can_transmit((can_message*)msg);
 
 	return;
