@@ -51,7 +51,8 @@ typedef enum { FKT_MGT_PING=0x00, FKT_MGT_PONG=0x01,
 typedef enum { FKT_LAMPE_SET=0x00, FKT_LAMPE_SETMASK=0x01, 
 		FKT_LAMPE_SETDELAY=0x02 }			lap_lampe_fkts;
 
-typedef enum { FKT_BORG_INFO=0x00, FKT_BORG_MODE=0x01 }			lap_borg_fkts;
+typedef enum { FKT_BORG_INFO=0x00, FKT_BORG_MODE=0x01, FKT_BORG_SCROLLTEXT_RESET=0x02, 
+		FKT_BORG_SCROLLTEXT_APPEND=0x03 } lap_borg_fkts;
 
 #define SDO_CMD_READ 		0x20
 #define SDO_CMD_REPLY 		0x21
