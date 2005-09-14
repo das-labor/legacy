@@ -1,5 +1,5 @@
-#ifndef CMDSTEST
-#define CMDSTEST
+#ifndef CMDSTEST_H
+#define CMDSTEST_H
 
 void cmd_test(int argc, char **argv);
 
