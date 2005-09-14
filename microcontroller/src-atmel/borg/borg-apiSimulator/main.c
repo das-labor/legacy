@@ -144,7 +144,7 @@ void timf(int value) {
 
 void *display_loop(void * unused) {
 	while (1) {	
-        scrolltext("Dies ist die neue SCROLLTEXT Engine ---- LABOR BORG  WIEDERSTAND IST ZWECKLOS !!!! ^'$%##", 60);
+        scrolltext("Dies ist die neue SCROLLTEXT Engine ---- LABOR BORG  WIEDERSTAND IST ZWECKLOS !!!! ^'$%##", 1, 60);
         //labor_borg();
 		matrix();
 		fadein();
