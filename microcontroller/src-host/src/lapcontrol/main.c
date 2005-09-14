@@ -13,6 +13,7 @@
 
 #include "cmds-base.h"
 #include "cmds-test.h"
+#include "cmds-borg.h"
 #include "cmds-flash.h"
 
 // Atmel ; LAP includes
@@ -42,6 +43,7 @@ cmd_t cmds[] = {
   { &cmd_ping,   "ping", "ping <addr>", "Send ping to <addr>" },
   { &cmd_flash,  "flash", "flash <addr> <file>" ,"flash file to device"},
   { &cmd_lamp,  "lamp", "lamp <addr> <lamp> <value>" ,"set lamp on device to value"},
+  { &cmd_borg,  "borg", "borg ..." ,"control bord device"},
 //  { &ftk_lampe, "lampe", "lampe ...",  "Control lampe-device" }
   { NULL, NULL, NULL, NULL }
 };
