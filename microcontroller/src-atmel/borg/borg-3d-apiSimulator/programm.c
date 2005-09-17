@@ -1,5 +1,6 @@
 #include "pixel3d.h"
 #include "programm.h"
+#include "scrolltext2.h"
 
 void test1() {
 	unsigned char x, y, z;
@@ -565,7 +566,7 @@ void joern1(){
 unsigned char i, j, x;
 	unsigned char rolr=1 , rol, rol2;
 	clear_screen(0);
-	for (i = 0; i< 80;i++){
+	for (i = 0; i< 150;i++){
 		rol2 = rolr;
 		for (j = 0; j < NUM_PLANES; j++) {
 			rol = rol2;
@@ -578,6 +579,7 @@ unsigned char i, j, x;
 		if ((rolr<<=1) == 0) rolr = 1;
 		wait(100);
 	}
+	clear_screen(0);
 }
 
 void gameOfLife(unsigned char anim, unsigned int delay) {
@@ -657,8 +659,65 @@ void gameOfLife(unsigned char anim, unsigned int delay) {
 	}			
 }
 
+
+void movingArrows() {
+     unsigned char i, j, cnt;
+     for (cnt = 0; cnt < 100; cnt++) {
+         shift3d(up);
+         for (i = 0; i < NUM_ROWS; i++) {
+             for (j = 0; j < NUM_COLS; j++) {
+                 setpixel3d((pixel3d) {i, j, 0}, ((3-i == cnt%4 || i-4 == cnt%4) && (3-j == cnt%4 || j-4 == cnt%4))?3:0);
+             }
+         }
+         wait(120);
+     }
+     clear_screen(0);
+
+}
+
+#define FEUER_Y (NUM_ROWS + 3)
+#define FEUER_S 30
+#define FEUER_N 5
+#define FEUER_DIV 47;
+void feuer()
+{
+	unsigned char y, x;
+	unsigned int  t;
+	unsigned char world[NUM_COLS*NUM_ROWS][FEUER_Y];   // double buffer
+
+	for(t=0; t<800; t++) {
+		// diffuse
+		for(y=1; y<FEUER_Y; y++) {
+			for(x=1; x<NUM_COLS*NUM_ROWS; x++) {
+				world[x][y-1] = (FEUER_N*world[x-1][y] + FEUER_S*world[x][y] + FEUER_N*world[x+1][y]) / FEUER_DIV;
+			};
+
+			world[0][y-1] = (FEUER_N*world[NUM_COLS-1][y] + FEUER_S*world[0][y] + FEUER_N*world[1][y]) / FEUER_DIV;
+			world[NUM_COLS-1][y-1] = (FEUER_N*world[0][y] + FEUER_S*world[NUM_COLS-1][y] + FEUER_N*world[NUM_COLS-2][y]) / FEUER_DIV;
+		};
+
+		// update lowest line
+		for(x=0; x<NUM_COLS*NUM_ROWS; x++) {
+			world[x][FEUER_Y-1] = myrandom();
+		};
+	
+		// copy to screen
+		for(y=0; y<NUM_ROWS; y++) {
+			for(x=0; x<NUM_COLS*NUM_ROWS; x++) {
+				setpixel3d( (pixel3d){x/8,x%8,7-y}, (world[x][y] >> 5) );
+			}		
+		};
+		wait(70);
+	}
+}
+
+
 void *display_loop(void * unused) {
 	while (1) {	
+        movingArrows();
+        growingCubeFilled();
+        scrolltext("b0rg3d wIeD3rStanD ist ZWECKLOS !!! from: martin@labor", 120);
+        growingCubeFilled();
         joern1();
 		growingCubeFilled();
 		gameOfLife(1, 400);
@@ -672,7 +731,7 @@ void *display_loop(void * unused) {
 		growingCubeFilled();
 		growingCubeFilled();
 		spirale();
-		spirale2();
+		//spirale2();
 		matrix();
 		//snake3dJoystick();
 		test3();
@@ -685,5 +744,6 @@ void *display_loop(void * unused) {
 		test2();
 		test2();
 		snake3d();
+		feuer();
 	}
 }
