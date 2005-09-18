@@ -11,6 +11,8 @@ void spirale2();
 void drawLineZAngle(unsigned char angle, unsigned char z, unsigned char value);
 void drawLineZ(char x1, char y1, char x2, char y2, char z, char level);
 void waves();
-void gameOfLife();
-
+void gameOfLife(unsigned char, unsigned int);
+void joern1();
 void serialStream();
+void movingArrows();
+void feuer();

@@ -25,5 +25,4 @@ direction turn_right(direction dir);
 direction turn_left(direction dir);
 direction turn_up(direction dir);
 direction turn_down(direction dir);
-
-void shift_pixmap_l();
+void shift3d(direction dir);

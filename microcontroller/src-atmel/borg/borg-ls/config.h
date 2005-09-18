@@ -10,6 +10,7 @@
 #define SCROLLTXT_DELAY 50
 
 #define BORG_CAN
+#define AVR
 
 // spi.[ch] defines
 #define SPI_HARDWARE
