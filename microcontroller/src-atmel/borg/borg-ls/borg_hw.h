@@ -10,5 +10,6 @@ extern unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
 
 void borg_hw_init();
+void timer0_off();
 
 #endif

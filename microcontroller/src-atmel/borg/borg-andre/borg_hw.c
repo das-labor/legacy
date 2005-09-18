@@ -96,7 +96,7 @@ void timer0_off(){
 	COLPORT2 = 0;
 	ROWPORT = 0;
 
-	TCCR0 = 0x00;	// CTC Mode, clk/64
+	TCCR0 = 0x00;
 	sei();
 }
 

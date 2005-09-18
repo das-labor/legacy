@@ -2,6 +2,7 @@
 #include <avr/signal.h>
 #include <avr/interrupt.h>
 #include <avr/io.h>
+#include <avr/wdt.h>
 
 #include "borg_hw.h"
 
@@ -67,6 +68,7 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 		row = 0;
 		if(++plane==NUMPLANE) plane=0;
 	}
+	wdt_reset();
 }
 
 
@@ -88,12 +90,29 @@ void timer0_on(){
 	TIMSK = 0x02;	// Compare match Interrupt on
 }
 
+void timer0_off(){
+	cli();
+
+	COLPORT |= (1<<PIN_LINE_EN);//blank display
+	
+	TCCR0 = 0x00;
+	sei();
+}
+
+void watchdog_enable()
+{
+	wdt_reset();
+	wdt_enable(0x00);  // 17ms
+
+}
+
 void borg_hw_init(){
 	COLPORT |= (1<<PIN_CLK) | (1<<PIN_LINE_EN);
 	COLDDR |= (1<<PIN_CLK) | (1<<PIN_LINE_EN) | (1<<PIN_DATA);
 	
 	ROWDDR |= 0x07;
 	
+	watchdog_enable();
 	timer0_on();
 }
 
