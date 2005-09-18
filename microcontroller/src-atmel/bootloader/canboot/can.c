@@ -151,7 +151,7 @@ inline static void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned ch
 
 
 unsigned char mcp_txreq_str[] __attribute__ ((section (".progdata"))) ={
-	2, TXB0CTRL, (1<<TXREQ), 0,0
+	2, TXB0CTRL, (1<<TXREQ), 0, 0
 };
 
 //load a message to mcp2515 and start transmission
