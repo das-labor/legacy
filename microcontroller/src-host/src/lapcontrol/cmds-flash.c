@@ -118,6 +118,8 @@ void cmd_flash(int argc, char *argv[])
        	if (sscanf(argv[1], "%i", &addr) != 1)
 		goto argerror;
 
+	lap_reset(addr);
+
 	for(;;) {
 		msg = (pdo_message *)can_get();
 
