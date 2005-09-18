@@ -73,6 +73,7 @@ static inline void relais_check(){
 
 void eventloop()
 {
+	Tx_msg.addr_src = Station_id;
 	while(1) {
 		if(can_get_nb()){
 			FLAGS |= F_RCV_CAN;
@@ -81,10 +82,16 @@ void eventloop()
 				// Management
 				switch(((pdo_message*)&Rx_msg)->cmd) {
 				case FKT_MGT_PING:
-					// send pong
-					break;
+					{pdo_message *rmsg = (pdo_message *)&Tx_msg;
+					rmsg->addr_dst = Rx_msg.addr_src;
+					rmsg->port_dst = Rx_msg.port_src;
+					rmsg->port_src = PORT_MGT;
+					rmsg->cmd = FKT_MGT_PONG;
+					rmsg->dlc = 1;
+					can_transmit();
+					break;}
 				case FKT_MGT_RESET:
-					// reboot
+					asm volatile("rjmp __vectors");
 					break;
 				}
 			case PORT_LAMPE:
