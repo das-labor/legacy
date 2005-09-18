@@ -41,7 +41,7 @@ void cmd_borg_mode(int argc, char *argv[])
 	return;
 
 argerror:
-	debug(0, "mode <number>");
+	debug(0, "borg mode <addr> <number>");
 }
 
 
@@ -49,27 +49,26 @@ void cmd_borg_scroll(int argc, char *argv[])
 {
 	pdo_message *msg;
 	char *src, *dst;
-	int i;
+	int addr;
 
 	if (argc != 3) goto argerror;
+
+	// dst
+	if ( sscanf(argv[1], "%x", &addr) != 1)
+		goto argerror;
 
 	msg = (pdo_message *)can_buffer_get();
 
 	msg->addr_src = 0x00;
-	msg->addr_dst = 0x00;
+	msg->addr_dst = addr;
 	msg->port_src = 0x23;
 	msg->port_dst = 0x23;
 	msg->dlc      = 1;
-	msg->cmd      = 1;
+	msg->cmd      = 2;
 
-	// dst
-	if ( sscanf(argv[1], "%x", &i) != 1)
-		goto argerror;
-	msg->addr_dst = i;
-
-	src = argv[3];
+	src = argv[2];
 	dst = msg->data;
-	while( (*src) && (msg->dlc < 9)) {
+	while( (*src) && (msg->dlc < 8)) {
 		*dst++ = *src++;
 		msg->dlc++;
 	};
@@ -77,10 +76,30 @@ void cmd_borg_scroll(int argc, char *argv[])
 	// first packet
 	can_transmit((can_message*)msg);
 
+	while(*src) {
+		msg = (pdo_message *)can_buffer_get();
+
+		msg->addr_src = 0x00;
+		msg->addr_dst = addr;
+		msg->port_src = 0x23;
+		msg->port_dst = 0x23;
+		msg->dlc      = 1;
+		msg->cmd      = 3;
+
+		dst = msg->data;
+		while( (*src) && (msg->dlc < 8)) {
+			*dst++ = *src++;
+			msg->dlc++;
+		};
+		
+		can_transmit((can_message*)msg);
+	}
+
+
 	return;
 
 argerror:
-	debug(0, "borg scroll <number>");
+	debug(0, "borg scroll <addr> <number>");
 };
 
 /**
