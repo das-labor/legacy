@@ -33,20 +33,84 @@ void setpixel3d(pixel3d p, unsigned char value ){
 	}
 }
 
-//shifts pixmap left. It is really shifted right, but because col0 is left in the Display it's left.
-// may be incorect or not useful for borg-3d   not tested
-void shift_pixmap_l(){
-	unsigned char plane, row, byte;
-	
-	for(plane=0; plane<NUM_LEVELS; plane++){
-		for(row=0;row<NUM_ROWS; row++){
-			for(byte=0;byte<PLANEBYTES-1;byte++){
-				pixmap[plane][row][byte] >>= 1;
-				pixmap[plane][row][byte] |= (pixmap[plane][row][byte+1] & 0x01) * 0x80;;
-			}
-			pixmap[plane][row][PLANEBYTES-1] >>= 1;
-		}
-	}
+void shift3d(direction dir) {
+     unsigned char i, j, k;
+     switch (dir) {
+     case right:
+          for (i = 1; i < NUM_PLANES; i ++) {
+              for (j = 0; j < NUM_ROWS; j++) {
+                  for (k = 0; k < NUM_LEVELS; k++) {
+                      pixmap[k][i-1][j] = pixmap[k][i][j]; 
+                  }
+              }
+          }
+          for (j = 0; j < NUM_ROWS; j++) {
+              for (k = 0; k < NUM_LEVELS; k++) {
+                  pixmap[k][NUM_PLANES-1][j] = 0; 
+              }
+          }
+          break;
+     case left:
+          for (i = NUM_PLANES-2; i < NUM_PLANES; i--) {
+              for (j = NUM_ROWS-1; j < NUM_ROWS; j--) {
+                  for (k = 0; k < NUM_LEVELS; k++) {
+                      pixmap[k][i+1][j] = pixmap[k][i][j]; 
+                  }
+              }
+          }
+          for (j = NUM_ROWS-1; j < NUM_ROWS; j--) {
+              for (k = 0; k < NUM_LEVELS; k++) {
+                  pixmap[k][0][j] = 0;
+              }
+          }
+          break;
+     case forward:
+          for (i = 0; i < NUM_PLANES; i ++) {
+              for (j = 1; j < NUM_ROWS; j++) {
+                  for (k = 0; k < NUM_LEVELS; k++) {
+                      pixmap[k][i][j-1] = pixmap[k][i][j]; 
+                  }
+              }
+          }
+          for (j = 0; j < NUM_PLANES; j++) {
+              for (k = 0; k < NUM_LEVELS; k++) {
+                  pixmap[k][j][NUM_PLANES-1] = 0; 
+              }
+          }
+          break;
+     case back:
+          for (i = NUM_PLANES-1; i < NUM_PLANES; i--) {
+              for (j = NUM_ROWS-2; j < NUM_ROWS; j--) {
+                  for (k = 0; k < NUM_LEVELS; k++) {
+                      pixmap[k][i][j+1] = pixmap[k][i][j]; 
+                  }
+              }
+          }
+          for (j = NUM_PLANES-1; j < NUM_ROWS; j--) {
+              for (k = 0; k < NUM_LEVELS; k++) {
+                  pixmap[k][j][0] = 0;
+              }
+          }
+          break;
+     case up:
+          for (i = 0; i < NUM_PLANES; i ++) {
+              for (j = 0; j < NUM_ROWS; j++) {
+                  for (k = 0; k < NUM_LEVELS; k++) {
+                      pixmap[k][i][j] = pixmap[k][i][j] << 1; 
+                  }
+              }
+          }
+          break;
+     case down:
+          for (i = 0; i < NUM_PLANES; i ++) {
+              for (j = 0; j < NUM_ROWS; j++) {
+                  for (k = 0; k < NUM_LEVELS; k++) {
+                      pixmap[k][i][j] = pixmap[k][i][j] >> 1;                   
+                  }
+              }
+          }
+          break;
+     }     
 }
 
 unsigned char get_pixel3d(pixel3d p){

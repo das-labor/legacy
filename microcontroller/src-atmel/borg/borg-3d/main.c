@@ -7,7 +7,7 @@
 #include "pixel.h"
 #include "uart.h"
 #include "borg_can.h"
-
+#include "scrolltext2.h"
 
 jmp_buf newmode_jmpbuf;
 
@@ -19,19 +19,27 @@ int main (void){
 	bcan_init();
 	clear_screen(0);
 	for(;;) {
-		//serialStream();
-		gameOfLife();
+        movingArrows();
+        growingCubeFilled();
+        scrolltext("<<--== BORG 3D WIDERSTAND ist ZWECKLOS !!!", 0, 120);
+        growingCubeFilled();
+        //scrolltext("So sieht fetter Text aus.", 1, 120);
+	joern1();
+		growingCubeFilled();
+		gameOfLife(1, 400);
+		growingCubeFilled();
+		gameOfLife(0, 400);
+		growingCubeFilled();
+		growingCubeFilled();
+		gameOfLife(2, 150);
 		growingCubeFilled();
 		growingCubeFilled();
 		growingCubeFilled();
 		growingCubeFilled();
-		growingCubeFilled();
-		growingCubeFilled();
-		waves();
-        	spirale();
-		spirale2();
+		spirale();
+		//spirale2();
 		matrix();
-	 	//snake3dJoystick();
+		//snake3dJoystick();
 		test3();
 		coolAnim();
 		growingCubeFilled();
@@ -41,7 +49,8 @@ int main (void){
 		test2();
 		test2();
 		test2();
-		snake3d();	
+		snake3d();
+		feuer();
 	}
 }
 

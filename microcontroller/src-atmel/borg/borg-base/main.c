@@ -45,7 +45,7 @@ int main (void){
 			snake();
 			break;
 		case 7:
-			scrolltext(scrolltext_text, 60);
+			scrolltext(scrolltext_text,1,60);
 			break;
 		case 8:
 			feuer();
