@@ -20,8 +20,10 @@
 #define UART_SS 3
 
 #define BORG_CAN
- 
-#define AVR
+
+#ifndef AVR
+#	define AVR
+#endif
 
 // spi.[ch] defines
 #define SPI_HARDWARE

@@ -2143,7 +2143,7 @@ void shift_in(char glyph, unsigned char fontNr, unsigned int delay){
 	len = pgm_read_byte(font[fontNr].width_table+glyph);
 	ror = (1 << 7);
 	for (i = 0; i < len; i++) {
-		//shift3d(left);
+		shift3d(left);
 		shift3d(forward);
 		if (i > 7) ror = (1 <<  7 -(i - 8));
 		for (y = 0; y < font[fontNr].glyph_height; y++) {
@@ -2159,7 +2159,7 @@ void shift_in(char glyph, unsigned char fontNr, unsigned int delay){
 void shift_out(unsigned char cols, unsigned int delay){
 	unsigned char i;
 	for(i=0;i<cols;i++){
-		//shift3d(left);
+		shift3d(left);
 		shift3d(forward);
 		wait(delay);
 	}
