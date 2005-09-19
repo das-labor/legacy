@@ -23,6 +23,7 @@
 
 extern unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
 
+void timer0_off();
 
 void borg_hw_init();
 

@@ -86,6 +86,18 @@ void timer0_on() {
 	TIMSK = 0x02;	// Compare match Interrupt on
 }
 
+
+void timer0_off(){
+	cli();
+
+	CTRLPORT = 0;
+	DATAPORT = 0;
+
+	TCCR0 = 0x00;
+	sei();
+}
+
+
 void borg_hw_init() {
 	CTRLPORT = (1<<PIN_OE_DATA);
 	DATAPORT = 0x00;

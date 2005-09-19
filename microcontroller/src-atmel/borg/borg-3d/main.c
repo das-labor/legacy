@@ -4,6 +4,7 @@
 #include "scrolltext.h"
 #include "programm.h"
 #include "borg_hw.h"
+#include "borg_can.h"
 #include "pixel.h"
 #include "uart.h"
 #include "borg_can.h"
@@ -12,45 +13,76 @@
 jmp_buf newmode_jmpbuf;
 
 int main (void){
-	clear_screen(0);
+	unsigned char mode;
+
 	borg_hw_init();
 	uart_init();
 	sei();
 	bcan_init();
 	clear_screen(0);
+	mode = setjmp(newmode_jmpbuf);
 	for(;;) {
-        movingArrows();
-        growingCubeFilled();
-        scrolltext("<<--== BORG 3D WIDERSTAND ist ZWECKLOS !!!", 0, 120);
-        growingCubeFilled();
-        //scrolltext("So sieht fetter Text aus.", 1, 120);
-	joern1();
-		growingCubeFilled();
-		gameOfLife(1, 400);
-		growingCubeFilled();
-		gameOfLife(0, 400);
-		growingCubeFilled();
-		growingCubeFilled();
-		gameOfLife(2, 150);
-		growingCubeFilled();
-		growingCubeFilled();
-		growingCubeFilled();
-		growingCubeFilled();
-		spirale();
-		//spirale2();
-		matrix();
-		//snake3dJoystick();
-		test3();
-		coolAnim();
-		growingCubeFilled();
-		growingCubeFilled();
-		coolAnim();
-		test2();
-		test2();
-		test2();
-		test2();
-		snake3d();
-		feuer();
+		switch(mode++) {
+		case 0:
+			clear_screen(0);
+			while (1) wait(5);
+			break;
+		case 1:
+        		movingArrows();
+        		growingCubeFilled();
+			break;
+		case 2:
+			scrolltext(scrolltext_text, 0, 120);
+        		growingCubeFilled();
+        		break;
+		case 3:
+			joern1();
+			growingCubeFilled();
+			break;
+		case 4:
+			gameOfLife(1, 400);
+			growingCubeFilled();
+			break;
+		case 5:
+			gameOfLife(0, 400);
+			growingCubeFilled();
+			growingCubeFilled();
+			break;
+		case 6:
+			gameOfLife(2, 150);
+			growingCubeFilled();
+			growingCubeFilled();
+			growingCubeFilled();
+			growingCubeFilled();
+			break;
+		case 7:
+			spirale();
+			//spirale2();
+			break;
+		case 8:
+			matrix();
+			//snake3dJoystick();
+			break;
+		case 9:
+			test3();
+			coolAnim();
+			growingCubeFilled();
+			growingCubeFilled();
+			coolAnim();
+			test2();
+			test2();
+			test2();
+			test2();
+			break;
+		case 10:
+			snake3d();
+			break;
+		case 11:
+			feuer();
+			break;
+		default:
+			mode = 1;
+		}
 	}
 }
 
