@@ -1,5 +1,5 @@
 PRG            = shell
-OBJ            = main.o anim3d.o display.o uart.o util.o pixel.o 
+OBJ            = main.o anim3d.o display.o util.o pixel.o 
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 
