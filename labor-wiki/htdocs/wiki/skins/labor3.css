@@ -357,12 +357,17 @@ table.exif td.spacer {
  height: 180px;
 }
 
+#kopf-bg {
+  position: absolute;
+  width: 760px;
+}
+
 #kopf p.logo {
-    padding: 10px 35px 10px 10px;
-    margin: 0;
-    text-align: right;
-    border: 0;
-    background: #9191FF; /* variabel3 */
+  padding: 10px 35px 10px 10px;
+  margin: 0;
+  text-align: right;
+  border: 0;
+  background: #9191FF; /* variabel3 */
 }
 
 #leveleins {
@@ -405,6 +410,7 @@ table.exif td.spacer {
   margin: -23px 0 0 0;
   text-transform: lowercase;
   font: bold 16px/16px "Georgia", "Times New Roman", "Times", serif;
+  float: right;
   }
 
 #levelzwo a:link, #levelzwo a:visited {
@@ -426,7 +432,7 @@ table.exif td.spacer {
 
 #boxc, #boxd, #boxz {
   border-top: 1px solid #fff;
-  background: #9191FF; /* variabel3 */
+  background: #6666FF; /* variabel3  FIXED by fg*/
   }
 
 #boxa {
@@ -478,20 +484,20 @@ body {
  width: 140px; top: 18ex; padding: 2px; visibility: visible; z-index: 99;
 }
 #article {
-  margin: 0 0 0 20px;
+  margin: 20px 0 0 20px;
   text-align: justify;
 }
 
 #article, #article td, #article th, #article p {
- font-family: Verdana, Arial, sans-serif;
- font-size: 10pt; color: black;
+  font: normal 10px/16px "Lucida Grande", "Lucida Sans Unicode", Tahoma, Verdana, Arial, sans-serif;
+  color: black;
 }
 #article p {
  padding-top: 0; padding-bottom: 0;
  margin-top: 1ex; margin-bottom: 0;
 }
 p, pre, td, th, li, dd, dt { line-height: 12pt; }
-textarea { overflow: auto; }
+textarea { width: 600px; overflow: auto; }
 
 #footer {
   width: 748px !important;
