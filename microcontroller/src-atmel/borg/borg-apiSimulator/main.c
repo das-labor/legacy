@@ -144,7 +144,7 @@ void timf(int value) {
 
 void *display_loop(void * unused) {
 	while (1) {	
-        scrolltext("Dies ist die neue SCROLLTEXT Engine ---- LABOR BORG <-=-> WIDERSTAND IST ZWECKLOS", 1, 60);
+        scrolltext("Dies ist Arial Schriftgroesse 8. Man kann jetzt schriftarten konfortabel mit dem fontConverter konvertieren und einbinden.", 0, 70);
 		matrix();
 		fadein();
 		joern1();

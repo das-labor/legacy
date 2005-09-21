@@ -8,7 +8,7 @@
 #define SCROLLTEXT_C
 
 #include "config.h"
-#include "scrolltext.h"
+#include "scrolltext2.h"
 #ifdef AVR
 #   include "borg_hw.h"
 #endif
