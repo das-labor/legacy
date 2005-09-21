@@ -97,7 +97,7 @@ unsigned int PROGMEM fontIndex_arial8[] = {
                                     430, /* } */
                                     434, /* ~ */
 									439
-}
+};
 
 unsigned char PROGMEM fontData_arial8[] = {
                                 0x00, 0x00, /*                  */
@@ -541,4 +541,4 @@ unsigned char PROGMEM fontData_arial8[] = {
                                 0x00, 0x20, /*           #      */
 };
 
-font font_arial8 = {13, fontIndex_arial8, fontData_arial8, 2};
+font font_arial8 = {13, fontIndex_arial8, fontData_arial8, ' ', '~', '.', 2};

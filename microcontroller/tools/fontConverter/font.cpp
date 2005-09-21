@@ -741,7 +741,7 @@ void MyFrame::OnConvert(wxCommandEvent& WXUNUSED(event))
     if (charHeight > 16)
        store_bytes++;
     wxColour colour;
-    fprintf(headerFile, "char storebytes = %d;\nchar fontHeight = %d;\n\nunsigned char PROGMEM fontIndex[] = {", store_bytes, charHeight);
+    fprintf(headerFile, "#include \"font.h\"\n\nunsigned char PROGMEM fontIndex_[] = {");
     for (c = ' '; c <= '~'; c++) {
         dc.Clear();
         //dc.GetTextExtent(c, &charWidth, &charHeight);
@@ -768,7 +768,7 @@ void MyFrame::OnConvert(wxCommandEvent& WXUNUSED(event))
         fontIndex += maxCharWidth + 1;
          
     }
-    fprintf(headerFile, "\t%d\n}\n\nunsigned char PROGMEM font[] = {\n", fontIndex);
+    fprintf(headerFile, "\t%d\n}\n\nunsigned char PROGMEM fontData_[] = {\n", fontIndex);
     for (i = 0; i < fontIndex; i++) {
         //if (i % 15 == 0 && i)
         //   fprintf(headerFile, "\n                                ");
@@ -796,7 +796,7 @@ void MyFrame::OnConvert(wxCommandEvent& WXUNUSED(event))
             fprintf(headerFile, "                                0x%02x, 0x%02x, 0x%02x, /* %s */\n",encodedFont[(2*i)+2] , encodedFont[(2*i)+1], encodedFont[2*i], helpStr);
         }
     }
-    fprintf(headerFile, "};\n\n");
+    fprintf(headerFile, "};\nfont font_ = {%d, fontIndex_, fontData_, ' ', '~', '.', %d}\n", charHeight, store_bytes);
     fclose(headerFile);
     m_canvas->Refresh();
 }
