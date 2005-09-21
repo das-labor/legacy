@@ -38,10 +38,12 @@ class SkinLabor3 extends Skin {
      */
     $s .= "<div id=\"kopf\">\n";
     // embedde 3 bilder vom pblog als header
+    $s .= "<div id=\"kopf-bg\">";
     for($i = 0; $i < 3; $i++) {
       $s .= "<img src=\"http://www.das-labor.org/pblog/index.php?showthumb=latest_few&thumbtag=image&lim=".rand(0,10)."\">";
     }
-    $s .= "<p class=\"logo\"><a href=\"/weblog/\"><img src=\"\"></a></p>\n</div>\n\n";
+    $s .= "</div>";
+    $s .= "<p class=\"logo\"><a href=\"http://www.das-labor.org\"><img src=\"http://www.das-labor.org/weblog/wp-content/themes/labor/images/logo.gif\"></a></p>\n</div>\n\n";
     
     $s .= "<div id='leveleins'>\n<p><a href='http://www.das-labor.org'>weblog</a> &nbsp; <a href='http://wiki.das-labor.org'>wiki</a> &nbsp;  &nbsp; <a href='http://www.das-labor.org/weblog/index.php/labor/'>&uuml;ber uns</a></p>\n</div>\n\n";
 
@@ -49,7 +51,7 @@ class SkinLabor3 extends Skin {
      *     LEVELZWO
      */
     $s .= "\n<div id='levelzwo'>";
-    $s .= "\n<div id='boxa'>";
+    $s .= "\n<div id='boxa'><h3>artikel</h3>";
 
     if ( $wgUser->getNewtalk() ) {
     # do not show "You have new messages" text when we are viewing our
@@ -105,23 +107,52 @@ class SkinLabor3 extends Skin {
         }
       }
       if ( $wgTitle->getArticleId() ) {
-        $s .= $sep ;
-        if($wgUser->isAllowed('delete')) { $s .= $this->deleteThisPage(); }
+        if($wgUser->isAllowed('delete')) { $s .= $sep . $this->deleteThisPage(); }
         if($wgUser->isAllowed('protect')) { $s .= $sep . $this->protectThisPage(); }
         if($wgUser->isAllowed('move')) { $s .= $sep . $this->moveThisPage(); }
       }
       $s .= $sep . $this->otherLanguages();
     }
-    $s .= $this->printableLink();
+
+    //$s .= $this->printableLink();
 
     $s .= "\n</div>";
 
     /*
      *     BOXB
      */
-    $s .= "\n<div id='boxb'>";
-		$s .= $sep . $this->pageStats();
+    $s .= "\n<div id='boxb'><h3>benutzer</h3>";
+
+    if ( $wgUser->isLoggedIn() ) {
+      $name = $wgUser->getName();
+      $tl = $this->makeKnownLinkObj( $wgUser->getTalkPage(),
+        wfMsg( 'mytalk' ) );
+      if ( $wgUser->getNewtalk() ) {
+        $tl .= " *";
+      }
+
+      $s .= $this->makeKnownLinkObj( $wgUser->getUserPage(),
+        wfMsg( "mypage" ) )
+        . $sep . $tl
+        . $sep . $this->specialLink( "watchlist" )
+        . $sep . $this->makeKnownLinkObj( Title::makeTitle( NS_SPECIAL, "Contributions" ),
+          wfMsg( "mycontris" ), "target=" . wfUrlencode($wgUser->getName() ) )
+          . $sep . $this->specialLink( "preferences" )
+          . $sep . $this->specialLink( "userlogout" );
+    } else {
+      $s .= $this->specialLink( "userlogin" );
+    }
+
+
+
+    $s .= "\n</div>";
+
+    /*
+     *     BOXC
+     */
+    $s .= "\n<div id='boxc'><h3>mehr</h3>";
 		$s .= $sep . $this->aboutLink();
+		$s .= $sep . $this->pageStats();
 		$s .= $sep . $this->searchForm();
 		$s .= "\n</div>\n";
 		$s .= "\n</div>\n";
@@ -130,30 +161,10 @@ class SkinLabor3 extends Skin {
 		return $s;
 	}
 
-	function topLinks() {
-		global $wgOut, $wgUser;
-		$sep = " |\n";
-
-		$s = $this->mainPageLink() . $sep
-		  . $this->specialLink( "recentchanges" );
-
-		if ( $wgOut->isArticle() ) {
-			$s .=  $sep . $this->editThisPage()
-			  . $sep . $this->historyLink();
-		}
-		if ( $wgUser->isAnon() ) {
-			$s .= $sep . $this->specialLink( "userlogin" );
-		} else {
-			$s .= $sep . $this->specialLink( "userlogout" );
-		}
-		$s .= $sep . $this->specialPagesList();
-
-		return $s;
-	}
-
 	function doAfterContent() {
 		$s = "\n</div>\n";
 		$s .= "\n<div id='footer'>";
+		$s .= $this->specialPagesList();
 		$s .= "\n</div>\n</div>\n";
 
 		return $s;

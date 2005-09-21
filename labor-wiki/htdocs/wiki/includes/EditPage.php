@@ -553,10 +553,13 @@ class EditPage {
 
 		$rows = $wgUser->getOption( 'rows' );
 		$cols = $wgUser->getOption( 'cols' );
+    // hack by felix
+		$cols = 40;
 
 		$ew = $wgUser->getOption( 'editwidth' );
 		if ( $ew ) $ew = " style=\"width:100%\"";
 		else $ew = '';
+    $ew = " style=\"width: 500px\"";
 
 		$q = 'action=submit';
 		#if ( "no" == $redirect ) { $q .= "&redirect=no"; }
