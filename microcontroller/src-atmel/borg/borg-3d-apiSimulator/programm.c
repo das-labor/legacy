@@ -719,7 +719,7 @@ void feuer()
 void pong() {
 	// ToDo
 	/*
-	 Als erstes muss die Steuerfläche geprogt werden, zuerst eine mit tastatursteuerung.
+	 Als erstes muss die Steuerfl‰che geprogt werden, zuerst eine mit tastatursteuerung.
 	   ok dann mach ich halt den Ball zuerst.
 	 Als zweites kommt der Ball dran
 	   einfachen algorithmus für die flugbahn des Balles
@@ -736,32 +736,93 @@ void pong() {
 	 und andere Abpreall winkel für die ecken den schlägers
  	 
 	 */
-	
-	pixel3d ballPos64 = {3*8, 3*8, 3*8}, ballPos, ballDir = {6, 3, 0};
+    int erg;
+    
+    unsigned char posy1 = 4, posz1 = 3;
+    
+    
+    char ran, diff, i, j, comp;	
+	pixel3d ballPos128 = {3*16, 3*16, 3*16}, ballPos, ballPosOld, ballDir = {4, 2, 1};
+	//scrolltext("Do you want to play with PONG3D ??? Then press Fire the joystick." , 70);
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            setpixel3d((pixel3d) {0, posy1+i, posz1+j}, 1);   
+        }
+    }
 	while (1) {
-		// überprüfen ob das pixel sich am Rand befindet.q
-		ballPos.x = ballPos64.x >> 3;  // /8
-		ballPos.y = ballPos64.y >> 3;  // /8
-		ballPos.z = ballPos64.z >> 3;  // /8
-		if (ballPos.x == 0 || ballPos.x == 7)
-			ballDir.x = - ballDir.x;
+		ballPos.x = ballPos128.x+8 >> 4; 
+		ballPos.y = ballPos128.y+8 >> 4;  
+		ballPos.z = ballPos128.z+8 >> 4;
+		
+		if (ballPos.x == 0 || ballPos.x == 7) 
+			ballDir.x = - ballDir.x;			
 		if (ballPos.y == 0 || ballPos.y == 7)
 			ballDir.y = - ballDir.y;
 		if (ballPos.z == 0 || ballPos.z == 7)
 			ballDir.z = - ballDir.z;
-		//ballDir.z -= 2;
-		ballPos64.x += ballDir.x;
-		ballPos64.y += ballDir.y;
-		ballPos64.z += ballDir.z;
+		
 		setpixel3d(ballPos, 3);
-		wait(60);
+		// keine gute idee
+		/*
+		if ((ran = myrandom()) > 80) {
+           switch (ran%2) {
+           case 0: 
+                ballDir.y = ballDir.y + myrandom()%2 ? 1:-1;
+                break;
+           case 1: 
+                ballDir.z = ballDir.z + myrandom()%2 ? 1:-1;
+                break;                           
+           }
+           //erg = ballDir.y * ballDir.y + ballDir.z * ballDir.z;
+           // normalize, so that the speed not changes    has bad effect nor correct
+           //for (comp = 0, i = 0; i < 8 || (erg - comp >= 0 ? erg - comp: comp - erg) > 4 ; i++, comp += 8);
+           //ballDir.x = i - 1; 
+        }
+		*/
+		// display schl‰ger 1
+		
+		
+		
+		if (joy1_up > 0 || joy1_down > 0 || joy1_right > 0 || joy1_left > 0) {
+        	for (i = 0; i < 3; i++) {
+                for (j = 0; j < 3; j++) {
+                    setpixel3d((pixel3d) {0, posy1+i, posz1+j}, 0);   
+                }
+            }
+            if (joy1_up > 0) {
+               if (posz1 < 5) posz1++;
+               joy1_up = 0;
+            }
+            if (joy1_down > 0) {
+               if (posz1 > 0) posz1--;
+               joy1_down = 0;
+            }             
+            if (joy1_right > 0) {
+               if (posy1 < 5) posy1++;
+               joy1_right = 0;
+            }
+            if (joy1_left > 0) {
+               if (posy1 > 0) posy1--;
+               joy1_left = 0;
+            }
+           	for (i = 0; i < 3; i++) {
+                for (j = 0; j < 3; j++) {
+                    setpixel3d((pixel3d) {0, posy1+i, posz1+j}, 1);   
+                }
+            }            
+        }
+        wait(30);
+        ballPos128.x += ballDir.x;
+		ballPos128.y += ballDir.y;
+		ballPos128.z += ballDir.z ;
 		clearpixel3d(ballPos);
+		//ballPosOld = ballPos;
 	}
 }
 
 void *display_loop(void * unused) {
 	while (1) {
-		//pong();
+		pong();
         movingArrows();
         growingCubeFilled();
         scrolltext("b0rg3d wID3rStanD ist ZWECKLOS !!! from: martin@labor", 120);
