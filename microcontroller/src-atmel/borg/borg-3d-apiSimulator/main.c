@@ -27,6 +27,7 @@ unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
 float view_rotx = 0, view_roty = 0, view_rotz = 0;
 int win;
 
+char joy1_up = 0, joy1_down = 0, joy1_right = 0, joy1_left = 0;
 
 pthread_t simthread;
 GLUquadric* quad;
@@ -126,6 +127,18 @@ static void special(int k, int x, int y) {
   case GLUT_KEY_RIGHT:
     view_rotz -= 5.0;
     break;
+  case 'w':
+	  joy1_up = 1;
+	  break;
+  case 's':
+	  joy1_down = 1;
+	  break;
+  //case 'd':	
+	  joy1_right = 1;
+	  break;
+  case 'a':
+	  joy1_left = 1;
+	  break;
   default:
     return;
   }

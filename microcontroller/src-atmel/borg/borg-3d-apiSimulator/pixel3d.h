@@ -5,9 +5,9 @@
 extern unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
 
 typedef struct {
-	unsigned char x;
-	unsigned char y;
-	unsigned char z;
+	char x;
+	char y;
+	char z;
 } pixel3d;
 
 typedef enum {right, left, forward, back, up, down} direction;
