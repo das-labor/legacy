@@ -2,6 +2,8 @@
 #include "programm.h"
 #include "scrolltext2.h"
 
+extern char joy1_up, joy1_down, joy1_right, joy1_left;
+
 void test1() {
 	unsigned char x, y, z;
 	clear_screen(0);
@@ -712,11 +714,57 @@ void feuer()
 }
 
 
+
+
+void pong() {
+	// ToDo
+	/*
+	 Als erstes muss die SteuerflŠche geprogt werden, zuerst eine mit tastatursteuerung.
+	   ok dann mach ich halt den Ball zuerst.
+	 Als zweites kommt der Ball dran
+	   einfachen algorithmus fŸr die flugbahn des Balles
+	   sowie des Aufprall- und Abprallwinkel.
+	   an wenden sowie beim schlŠger abprallen
+	 Game over gewinner
+	 geschicktes einbauen der scrolltextengine
+	 SpielflŠche 1 und 2 durch feststehende Zahlen kennzeichen.
+
+	 Die Ballpositionn ist genauer als die Auflšsung      gravity ist abhŠngig von x
+	 
+	 Direction ist ein auf 8 Normierter Vectoren
+	 irgentwie die gravitation mit einbauen
+	 und andere Abpreall winkel fŸr die ecken den schlŠgers
+ 	 
+	 */
+	
+	pixel3d ballPos64 = {3*8, 3*8, 3*8}, ballPos, ballDir = {6, 3, 0};
+	while (1) {
+		// ŸberprŸfen ob das pixel sich am Rand befindet.q
+		ballPos.x = ballPos64.x >> 3;  // /8
+		ballPos.y = ballPos64.y >> 3;  // /8
+		ballPos.z = ballPos64.z >> 3;  // /8
+		if (ballPos.x == 0 || ballPos.x == 7)
+			ballDir.x = - ballDir.x;
+		if (ballPos.y == 0 || ballPos.y == 7)
+			ballDir.y = - ballDir.y;
+		if (ballPos.z == 0 || ballPos.z == 7)
+			ballDir.z = - ballDir.z;
+		//ballDir.z -= 2;
+		ballPos64.x += ballDir.x;
+		ballPos64.y += ballDir.y;
+		ballPos64.z += ballDir.z;
+		setpixel3d(ballPos, 3);
+		wait(60);
+		clearpixel3d(ballPos);
+	}
+}
+
 void *display_loop(void * unused) {
-	while (1) {	
+	while (1) {
+		//pong();
         movingArrows();
         growingCubeFilled();
-        scrolltext("b0rg3d wIeD3rStanD ist ZWECKLOS !!! from: martin@labor", 120);
+        scrolltext("b0rg3d wID3rStanD ist ZWECKLOS !!! from: martin@labor", 120);
         growingCubeFilled();
         joern1();
 		growingCubeFilled();
