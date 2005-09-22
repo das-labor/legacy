@@ -79,6 +79,18 @@ void keyboard(unsigned char key, int x, int y){
     		glutDestroyWindow(win);
     		exit(0); 
 			break;
+        case 'w':
+    	    joy1_up++;
+   	        break;
+        case 's':
+   	        joy1_down++;
+     	    break;
+        case 'd':	
+   	        joy1_right++;
+     	    break;
+        case 'a':
+     	    joy1_left++;
+     	    break;
 	}
 }
 
@@ -127,18 +139,6 @@ static void special(int k, int x, int y) {
   case GLUT_KEY_RIGHT:
     view_rotz -= 5.0;
     break;
-  case 'w':
-	  joy1_up = 1;
-	  break;
-  case 's':
-	  joy1_down = 1;
-	  break;
-  //case 'd':	
-	  joy1_right = 1;
-	  break;
-  case 'a':
-	  joy1_left = 1;
-	  break;
   default:
     return;
   }
@@ -177,7 +177,7 @@ int main(int argc, char **argv){
 	// init Call List for LED	
 	quad = gluNewQuadric();
 	glNewList(0, GL_COMPILE);
-		glColor4f(0.20, 0., 0., 1.);
+		glColor4f(0.30, 0., 0., 1.);
 	  	gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
 		glTranslatef(0., 0., 1.);
 		gluSphere(quad, 0.25, 8, 8);		
