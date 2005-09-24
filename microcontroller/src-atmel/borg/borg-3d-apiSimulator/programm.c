@@ -2,6 +2,10 @@
 #include "programm.h"
 #include "scrolltext2.h"
 
+#ifndef AVR
+#	define itoa(buf,i) sprintf(buf, "%d", i)
+#endif
+
 extern char joy1_up, joy1_down, joy1_right, joy1_left;
 
 void test1() {
@@ -738,26 +742,41 @@ void pong() {
  	 
 	 */
     int erg;
-    
-    unsigned char posy1 = 4, posz1 = 3;
-    
-    
-    char ran, diff, i, j, comp;	
-	pixel3d ballPos128 = {3*16, 3*16, 3*16}, ballPos, ballPosOld, ballDir = {4, 2, 1};
-	//scrolltext("Do you want to play with PONG3D ??? Then press Fire the joystick." , 70);
-    for (i = 0; i < 3; i++) {
+    unsigned char posy1 = 4, posz1 = 3, lives = 3;
+	char ran, diff, i, j, comp, hstr[10] = "3 lives left";	
+	pixel3d ballPos128 = {3*16, 4*16, 5*16}, ballPos, ballPosOld, ballDir = {4, 2, 1};
+	scrolltext("play PONG3D?  Then press UP" , 70);
+	while (!joy1_up) wait(5);
+	for (i = 5; i >= 0; i--) {
+		itoa(hstr, i);
+		scrolltext(hstr, 110);
+		wait(30);
+	}
+	for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
             setpixel3d((pixel3d) {0, posy1+i, posz1+j}, 1);   
         }
     }
-	while (1) {
-		ballPos.x = ballPos128.x+8 >> 4; 
-		ballPos.y = ballPos128.y+8 >> 4;  
+	while (lives) {
+		ballPos.x = ballPos128.x+8 >> 4;
+		ballPos.y = ballPos128.y+8 >> 4;
 		ballPos.z = ballPos128.z+8 >> 4;
-		
+		if (ballDir.z > -7)
+			ballDir.z--;
 		if (ballPos.x == 0)
-           if (ballPos) 
-			ballDir.x = - ballDir.x;			
+            if (ballPos.y >= posy1 && ballPos.y < posy1+4 && ballPos.z >= posz1 && ballPos.z < posz1+4) {
+				ballDir.x = - ballDir.x;
+			} else {
+				if (--lives) {
+					hstr[0] = lives + '0';
+					hstr[1] = ' ';
+					scrolltext(hstr, 110);
+					ballPos128 = (pixel3d) 	{3*16, 4*16, 5*16};
+					ballDir = (pixel3d) {4, 2, 1};
+				} else {
+					scrolltext("GAME OVER", 110);
+				}
+			}
 		if (ballPos.x == 7) 
 			ballDir.x = - ballDir.x;			
 		if (ballPos.y == 0 || ballPos.y == 7)
@@ -765,6 +784,8 @@ void pong() {
 		if (ballPos.z == 0 || ballPos.z == 7)
 			ballDir.z = - ballDir.z;
 		
+		//printf("x=%d y=%d z=%d   dirz = %d \n", ballPos.x, ballPos.y, ballPos.z, ballDir.z);
+
 		setpixel3d(ballPos, 3);
 		// keine gute idee
 		/*
@@ -784,8 +805,6 @@ void pong() {
         }
 		*/
 		// display schläger 1
-		
-		
 		
 		if (joy1_up > 0 || joy1_down > 0 || joy1_right > 0 || joy1_left > 0) {
         	for (i = 0; i < 3; i++) {
