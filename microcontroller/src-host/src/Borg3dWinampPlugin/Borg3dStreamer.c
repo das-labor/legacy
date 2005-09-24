@@ -107,7 +107,7 @@ winampVisModule mod3 =
 	0,		// nCh
 	0,		// latencyMS
 	50,		// delayMS
-	0,		// spectrumNch
+	1,		// spectrumNch
 	2,		// waveformNch
 	{ 0, },	// spectrumData
 	{ 0, },	// waveformData
@@ -143,8 +143,6 @@ winampVisModule *getModule(int which)
 		default:return NULL;
 	}
 }
-
-
 
 // configuration. Passed this_mod, as a "this" parameter. Allows you to make one configuration
 // function that shares code for all your modules (you don't HAVE to use it though, you can make
@@ -302,8 +300,10 @@ int init(struct winampVisModule *this_mod)
 	// show the window
 	//ShowWindow(parent,SW_SHOWNORMAL);
 	*/
-	if (bSimulator)
+	if (bSimulator) {
        simThread = CreateThread(NULL, NULL, simthread, NULL, NULL, simThreadId);
+       SendMessage(this_mod->hwndParent, WM_WA_IPC, (int)simthread, IPC_SETVISWND);
+    }
 	uart_init(comPort);
 	return 0;
 }
@@ -363,7 +363,7 @@ int render3(struct winampVisModule *this_mod)
 	// clear background
 	clear_screen(0);
 	// draw VU meter
-	for (y = 0; y < 2; y ++)
+	for (y = 0; y < 2; y++)
 	{
 		int last=this_mod->waveformData[y][0];
 		int total = 0, total2 = 0;
@@ -377,7 +377,7 @@ int render3(struct winampVisModule *this_mod)
 		if (total > 127) total = 127;
 		total /= 16;
 		
-        if (count++ > 10000) {
+        if (++count > 5000) {
         	if (y) {
                drawBar(0, total % 8);
                drawBar(1, (total2/288) % 8);

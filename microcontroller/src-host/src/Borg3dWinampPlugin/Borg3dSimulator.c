@@ -169,5 +169,6 @@ DWORD WINAPI simthread() {
 	
     //glutTimerFunc(40, timf, 0); // Set up timer for 40ms, about 25 fps
     glutMainLoop();
+    
     return 0;
 }
