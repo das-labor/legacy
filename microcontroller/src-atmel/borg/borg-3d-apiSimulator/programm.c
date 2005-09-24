@@ -611,12 +611,10 @@ void gameOfLife(unsigned char anim, unsigned int delay) {
 		setpixel3d((pixel3d){3, 4, 4}, 3);
 		setpixel3d((pixel3d){4, 4, 4}, 3);
 		setpixel3d((pixel3d){5, 4, 4}, 3);
-
 		break;
-
 	}
-	for (gen = 0; gen < maxGen; gen++) {
-		wait(delay);	
+	
+	for (gen = 0; gen < maxGen; gen++) {	
 		for (x = seven; x < NUM_PLANES; x++) {	
 			for (y = seven; y < NUM_ROWS; y++) {
 				for (z = seven; z < NUM_COLS; z++) {
@@ -658,6 +656,7 @@ void gameOfLife(unsigned char anim, unsigned int delay) {
 				}
 			}
 		}
+		wait(delay);
 	}			
 }
 
@@ -713,7 +712,9 @@ void feuer()
 	}
 }
 
-
+void creativity() {
+     // is not there
+}
 
 
 void pong() {
@@ -754,7 +755,10 @@ void pong() {
 		ballPos.y = ballPos128.y+8 >> 4;  
 		ballPos.z = ballPos128.z+8 >> 4;
 		
-		if (ballPos.x == 0 || ballPos.x == 7) 
+		if (ballPos.x == 0)
+           if (ballPos) 
+			ballDir.x = - ballDir.x;			
+		if (ballPos.x == 7) 
 			ballDir.x = - ballDir.x;			
 		if (ballPos.y == 0 || ballPos.y == 7)
 			ballDir.y = - ballDir.y;
@@ -789,20 +793,20 @@ void pong() {
                     setpixel3d((pixel3d) {0, posy1+i, posz1+j}, 0);   
                 }
             }
-            if (joy1_up > 0) {
+            if (joy1_up) {
                if (posz1 < 5) posz1++;
                joy1_up = 0;
             }
-            if (joy1_down > 0) {
+            if (joy1_down) {
                if (posz1 > 0) posz1--;
                joy1_down = 0;
             }             
-            if (joy1_right > 0) {
-               if (posy1 < 5) posy1++;
+            if (joy1_right) {
+               if (posy1 > 0) posy1--;
                joy1_right = 0;
             }
-            if (joy1_left > 0) {
-               if (posy1 > 0) posy1--;
+            if (joy1_left) {
+               if (posy1 < 5) posy1++;
                joy1_left = 0;
             }
            	for (i = 0; i < 3; i++) {
