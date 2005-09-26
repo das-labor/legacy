@@ -43,7 +43,7 @@ $wgExtensionCredits['other'][] = array(
 ); 
 
 #change this according to your magpie installation!
-require_once('../../stuff/magpierss/rss_fetch.inc'); 
+require_once('../stuff/magpierss/rss_fetch.inc');
 
 #install extension hook
 $wgExtensionFunctions[] = "wfRssExtension"; 
@@ -122,7 +122,7 @@ function renderRss( $input ) {
    $title= iconv($charset,$wgOutputEncoding,$rss->channel['title']);
    if ($rss->channel['link']) $title= "<a href='".$rss->channel['link']."'>$title</a>";
    
-   $output="<h3>$title</h3>";
+#   $output="<h3>$title</h3>";
     if ($reverse) $rss->items = array_reverse($rss->items);
     $description = False; 
    foreach ($rss->items as $item) {

@@ -1,6 +1,8 @@
 #!/usr/bin/perl -w
 # Wiki Termine 2 rss 
 # Joern Bratzke <joern@bratzke.info>
+#
+# Usage: "lynx --dump http://wiki.das-labor.org/wiki | parser.pl > termine.xml"
 # $Id$
 
 while (<STDIN>){
