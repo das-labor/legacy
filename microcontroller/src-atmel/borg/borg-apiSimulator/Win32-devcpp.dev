@@ -1,7 +1,7 @@
 [Project]
 FileName=Win32-devcpp.dev
 Name=borg-apiSimulator
-UnitCount=12
+UnitCount=14
 Type=0
 Ver=1
 ObjFiles=
@@ -117,20 +117,10 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit11]
-FileName=scrolltext2.c
-CompileCpp=1
-Folder=
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
 [Unit12]
-FileName=scrolltext2.h
+FileName=scrolltext3.c
 CompileCpp=1
-Folder=
+Folder=borg-apiSimulator
 Compile=1
 Link=1
 Priority=1000
@@ -148,9 +138,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit13]
-FileName=scrolltext2.c
+FileName=font-arial8.h
 CompileCpp=1
-Folder=
+Folder=borg-apiSimulator
 Compile=1
 Link=1
 Priority=1000
@@ -158,9 +148,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit14]
-FileName=scrolltext2.h
+FileName=font.h
 CompileCpp=1
-Folder=
+Folder=borg-apiSimulator
 Compile=1
 Link=1
 Priority=1000
@@ -181,6 +171,16 @@ BuildCmd=
 FileName=pixel.c
 CompileCpp=1
 Folder=borg-apiSimulator
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit11]
+FileName=scrolltext2.h
+CompileCpp=1
+Folder=
 Compile=1
 Link=1
 Priority=1000

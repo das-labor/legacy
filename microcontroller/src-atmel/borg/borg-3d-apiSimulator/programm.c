@@ -743,14 +743,13 @@ void pong() {
 	 */
     int erg;
     unsigned char posy1 = 4, posz1 = 3, lives = 3;
-	char ran, diff, i, j, comp, hstr[10] = "3 lives left";	
+	char ran, diff, i, j, comp, hstr[] = "3 lives left";	
 	pixel3d ballPos128 = {3*16, 4*16, 5*16}, ballPos, ballPosOld, ballDir = {4, 2, 1};
-	scrolltext("play PONG3D?  Then press UP" , 70);
+	//scrolltext("play PONG3D?  Then press UP" , 70);
 	while (!joy1_up) wait(5);
-	for (i = 5; i >= 0; i--) {
+ 	for (i = 5; i >= 0; i--) {
 		itoa(hstr, i);
 		scrolltext(hstr, 110);
-		wait(30);
 	}
 	for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
@@ -758,14 +757,26 @@ void pong() {
         }
     }
 	while (lives) {
-		ballPos.x = ballPos128.x+8 >> 4;
-		ballPos.y = ballPos128.y+8 >> 4;
-		ballPos.z = ballPos128.z+8 >> 4;
+		ballPos.x = ballPos128.x+8 / 16; // /16
+		ballPos.y = ballPos128.y+8 / 16;
+		ballPos.z = ballPos128.z+8 / 16;
 		if (ballDir.z > -7)
 			ballDir.z--;
 		if (ballPos.x == 0)
             if (ballPos.y >= posy1 && ballPos.y < posy1+4 && ballPos.z >= posz1 && ballPos.z < posz1+4) {
 				ballDir.x = - ballDir.x;
+				/*switch (ballPos.y - posy1) {
+                    case 0: ballDir.y -= ballDir.y > -7 ? 1 : 0; 
+                            ballDir.z += ballDir.z <  7 ? 1 : 0; break;
+                    case 2: ballDir.y += ballDir.y <  7 ? 1 : 0;
+                            ballDir.z -= ballDir.z > -7 ? 1 : 0; break;
+                }
+                switch (ballPos.z - posz1) {
+                    case 0: ballDir.z -= ballDir.z > -7 ? 1 : 0;
+                            ballDir.x += ballDir.x <  7 ? 1 : 0; break;
+                    case 2: ballDir.z += ballDir.z <  7 ? 1 : 0;
+                            ballDir.x -= ballDir.x > -7 ? 1 : 0; break;
+                }*/
 			} else {
 				if (--lives) {
 					hstr[0] = lives + '0';
@@ -787,24 +798,6 @@ void pong() {
 		//printf("x=%d y=%d z=%d   dirz = %d \n", ballPos.x, ballPos.y, ballPos.z, ballDir.z);
 
 		setpixel3d(ballPos, 3);
-		// keine gute idee
-		/*
-		if ((ran = myrandom()) > 80) {
-           switch (ran%2) {
-           case 0: 
-                ballDir.y = ballDir.y + myrandom()%2 ? 1:-1;
-                break;
-           case 1: 
-                ballDir.z = ballDir.z + myrandom()%2 ? 1:-1;
-                break;                           
-           }
-           //erg = ballDir.y * ballDir.y + ballDir.z * ballDir.z;
-           // normalize, so that the speed not changes    has bad effect nor correct
-           //for (comp = 0, i = 0; i < 8 || (erg - comp >= 0 ? erg - comp: comp - erg) > 4 ; i++, comp += 8);
-           //ballDir.x = i - 1; 
-        }
-		*/
-		// display schläger 1
 		
 		if (joy1_up > 0 || joy1_down > 0 || joy1_right > 0 || joy1_left > 0) {
         	for (i = 0; i < 3; i++) {
@@ -834,7 +827,7 @@ void pong() {
                 }
             }            
         }
-        wait(30);
+        wait(120);
         ballPos128.x += ballDir.x;
 		ballPos128.y += ballDir.y;
 		ballPos128.z += ballDir.z ;
