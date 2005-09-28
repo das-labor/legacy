@@ -50,8 +50,10 @@ int main (void){
 		case 8:
 			feuer();
 			break;
+/*
 		case 9:
 			matrix();
+*/
 			break;
 		default:
 			mode = 1;
