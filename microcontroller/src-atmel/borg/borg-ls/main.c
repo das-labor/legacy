@@ -43,10 +43,10 @@ int main (void){
 			break;
 		case 8:
 			feuer();
+			mode = 1;
 			break;
 		case 9:
 			matrix();
-			mode = 1;
 			break;
 		case 31:
 			test_level1();
