@@ -3,6 +3,7 @@
 #include "config.h"
 #include "borg_hw.h"
 #include <avr/io.h>
+
 void test1(){
 	unsigned char x,y;
 	for (y=0;y<NUM_ROWS;y++){
