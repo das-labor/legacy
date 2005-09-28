@@ -32,14 +32,8 @@ int main (void){
 		case 2:
 			spirale(20);
 			break;
-		case 3:
-			fadein();
-			break;
 		case 4:
 			joern1();
-			break;
-		case 5:
-			test1();
 			break;
 		case 6:
 			snake();
@@ -52,9 +46,25 @@ int main (void){
 			break;
 		case 9:
 			matrix();
+			mode = 1;
+			break;
+		case 31:
+			test_level1();
+			break;
+		case 32:
+			test_level2();
+			break;
+		case 33:
+			test_level3();
+			break;
+		case 34:
+			fadein();
+			break;
+		case 35:
+			test1();
 			break;
 		default:
-			mode = 1;
+			break;
 		}
 	}
 }

@@ -4,7 +4,7 @@
 #include "borg_hw.h"
 #include <avr/io.h>
 void test1(){
-unsigned char x,y;
+	unsigned char x,y;
 	for (y=0;y<NUM_ROWS;y++){
 		for (x=0;x<NUM_COLS;x++){
 			setpixel((pixel){x,y}, 3);
@@ -12,6 +12,40 @@ unsigned char x,y;
 		}
 	}
 }
+
+void test_level1(){
+	unsigned char x,y;
+	for (y=0;y<NUM_ROWS;y++){
+		for (x=0;x<NUM_COLS;x++){
+			setpixel((pixel){x,y}, 1);
+			wait(5);
+		}
+	}
+	for(;;) wait(100);
+}
+
+void test_level2(){
+	unsigned char x,y;
+	for (y=0;y<NUM_ROWS;y++){
+		for (x=0;x<NUM_COLS;x++){
+			setpixel((pixel){x,y}, 2);
+			wait(5);
+		}
+	}
+	for(;;) wait(100);
+}
+
+void test_level3(){
+	unsigned char x,y;
+	for (y=0;y<NUM_ROWS;y++){
+		for (x=0;x<NUM_COLS;x++){
+			setpixel((pixel){x,y}, 3);
+			wait(5);
+		}
+	}
+	for(;;) wait(100);
+}
+
 
 
 void off()

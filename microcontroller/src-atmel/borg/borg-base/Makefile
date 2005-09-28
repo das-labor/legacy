@@ -6,7 +6,8 @@ OPTIMIZE       = -Os
 FLASHCMD       = uisp -dprog=bsd --upload if=$(PRG).hex 
 ERASECMD       = uisp -dprog=bsd --erase 
 
-DEFS           = -DF_CPU=16000000 -fnew-ra
+DEFS           = -DF_CPU=16000000
+#-fnew-ra
 LIBS           =
 
 # You should not have to change anything below here.
