@@ -4,11 +4,11 @@
 #include <inttypes.h>
 
 
+#define FONT_HEIGHT 8
+
 struct FONT_DEF 
 {
-   unsigned char store_width;            /* glyph storage width in bytes */
-   unsigned char glyph_height;           /* glyph height for storage */
-   const uint16_t *glyph_table;     /* font table start address in memory */
+   const uint16_t *glyph_table;          /* font table start address in memory */
    const unsigned char *width_table;     /* variable width table start adress */
    unsigned char glyph_beg;              /* start ascii offset in table */
    unsigned char glyph_end;              /* end ascii offset in table */
