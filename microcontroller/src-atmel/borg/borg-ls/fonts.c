@@ -7,6 +7,18 @@
 #   define pgm_read_byte(B) *(B)      
 #endif
 
+/****************************************************************************
+ * Three different fonts in here:
+ *
+ *  five_dot_glyph_table    (~ at line 20)
+ *  six_dot_glyph_table     (~ at line 980)
+ *  seven_dot_glyph_table   (~ at line 2030)
+ *
+ */
+
+/****************************************************************************
+ * 1st Font
+ */
 unsigned char PROGMEM five_dot_glyph_table[] = {
 		/* ' ' charwidth: 2 */
 		0x00, 	/*  [  ]  */
@@ -962,6 +974,9 @@ unsigned char PROGMEM five_dot_width_table[] = {
 		 7, /* '~' */
 };
 
+/****************************************************************************
+ * 2nd Font
+ */
 unsigned char PROGMEM six_dot_glyph_table[] = {
 		/* ' ' charwidth: 2 */
 		0x00, 0x00, 	/*  [  ]  */
@@ -2013,7 +2028,9 @@ unsigned char PROGMEM six_dot_width_table[] = {
 		 7, /* '~' */
 };
 
-
+/****************************************************************************
+ * 3rd Font
+ */
 unsigned char PROGMEM seven_dot_glyph_table[] = {
 		/* ' ' charwidth: 5 */
 		0x00, 0x00, 	/*  [     ]  */

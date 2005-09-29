@@ -51,7 +51,7 @@ void shift_out(unsigned char cols, unsigned int delay){
 
 */
 
-uint8_t get_next_byte(char *str) {
+uint8_t get_next_bits(char *str) {
 	static char *nxchar;
 	static uint8_t left;
 

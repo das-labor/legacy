@@ -3,7 +3,7 @@
 #include <avr/interrupt.h>
 
 #include "config.h"
-#include "scrolltext2.h"
+#include "scrolltext.h"
 #include "programm.h"
 #include "borg_hw.h"
 #include "pixel.h"
