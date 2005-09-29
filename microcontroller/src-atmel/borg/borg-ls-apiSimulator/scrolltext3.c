@@ -9,13 +9,15 @@
 #include "pixel.h"
 #include "util.h"
 //#include "font-arial8.h"
-#include "font-small6.h"
+//#include "font-small6.h"
+//#include "font-v5.h"
+#include "font-uni53.h"
 
 #define MAX_FONTS 1
 font fonts[MAX_FONTS];
 
 
-void shift_in(char glyph, unsigned char fontNr, unsigned int delay){
+void shift_in(unsigned char glyph, unsigned char fontNr, unsigned int delay){
 	unsigned char  y, s, len;
 	unsigned int i;
 	if (fontNr >= MAX_FONTS) 
@@ -49,7 +51,7 @@ void shift_out(unsigned char cols, unsigned int delay){
 }
 
 void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
-	 fonts[0] = font_small6;
+	 fonts[0] = font_uni53;
      char *tmp = str;
      while (*tmp) {
         shift_in(*tmp++, fontNr, delay);

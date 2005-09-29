@@ -9,8 +9,8 @@ typedef struct{
 	unsigned char fontHeight;
 	unsigned int* fontIndex;
 	unsigned char* fontData;
-	char glyph_beg;
-	char glyph_end;
-	char glyph_def;
+	unsigned char glyph_beg;
+	unsigned char glyph_end;
+	unsigned char glyph_def;
 	unsigned char storebytes;
 } font;
