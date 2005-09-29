@@ -106,7 +106,7 @@ void reshape(int width, int height)
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(60.0, (float)WindWidth/(float)WindWidth, 5., 1000.);
-  gluLookAt(NUM_ROWS*2., NUM_ROWS*2.+50., NUM_COLS*2.,
+  gluLookAt(NUM_ROWS*2., NUM_ROWS*2.+150., NUM_COLS*2.,
             NUM_ROWS*2., NUM_ROWS*2., NUM_COLS*2.,
             0.0, 0.0, 1.0); 
   glMatrixMode(GL_MODELVIEW);
@@ -177,7 +177,7 @@ int main(int argc, char **argv){
     // clearcolor & main loop
     glClearColor(0.8,0.8,0.8,1.0);
     gluPerspective(60.0, (float)WindWidth/(float)WindWidth, 5., 1000.);
-    gluLookAt(NUM_COLS*2., NUM_COLS*2.+50., NUM_ROWS*2.,
+    gluLookAt(NUM_COLS*2., NUM_COLS*2.+150., NUM_ROWS*2.,
               NUM_COLS*2., NUM_COLS*2., NUM_ROWS*2.,
             0.0, 0.0, 1.0); 
 
