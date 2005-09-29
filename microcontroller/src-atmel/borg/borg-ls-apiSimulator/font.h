@@ -3,6 +3,7 @@
 #else 
 #   define PROGMEM
 #   define pgm_read_byte(B) *(B)      
+#   define pgm_read_word(B) *(B)  
 #endif
 
 typedef struct{
