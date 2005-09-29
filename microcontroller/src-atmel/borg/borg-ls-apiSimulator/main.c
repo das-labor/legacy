@@ -63,7 +63,7 @@ void display(void){
 						color = level+1;		
 					}
 				}
-				drawLED(color, (float)(NUM_COLS-1-y)*4.0, (float)x*4.0, (float)(NUM_ROWS-1-z)*4.);
+				drawLED(color, (float)(y)*4.0, (float)x*4.0, (float)(NUM_ROWS-1-z)*4.);
 			}
 		}
   	}
