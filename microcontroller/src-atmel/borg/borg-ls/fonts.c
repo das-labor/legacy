@@ -32,6 +32,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x0000, 	/*  [  ]  */
 		0x0000, 	/*  [  ]  */
 		0x0000, 	/*  [  ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '!' charwidth: 2 */
 		0x0000, 	/*  [  ]  */
@@ -40,6 +41,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x8000, 	/*  [* ]  */
 		0x0000, 	/*  [  ]  */
 		0x8000, 	/*  [* ]  */
+		0x0000, 	/*  [  ]  */
 		0x0000, 	/*  [  ]  */
 		
 		/* '"' charwidth: 4 */
@@ -50,6 +52,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x0000, 	/*  [    ]  */
 		0x0000, 	/*  [    ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '#' charwidth: 8 */
 		0x0000, 	/*  [        ]  */
@@ -59,6 +62,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0xFC00, 	/*  [******  ]  */
 		0x5000, 	/*  [ * *    ]  */
 		0x0000, 	/*  [        ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '$' charwidth: 4 */
 		0x4000, 	/*  [ *  ]  */
@@ -68,6 +72,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x2000, 	/*  [  * ]  */
 		0xC000, 	/*  [**  ]  */
 		0x4000, 	/*  [ *  ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '%' charwidth: 8 */
 		0x0000, 	/*  [        ]  */
@@ -77,6 +82,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x2A00, 	/*  [  * * * ]  */
 		0x4C00, 	/*  [ *  **  ]  */
 		0x0000, 	/*  [        ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '&' charwidth: 6 */
 		0x0000, 	/*  [      ]  */
@@ -86,11 +92,13 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9800, 	/*  [*  ** ]  */
 		0x6000, 	/*  [ **   ]  */
 		0x0000, 	/*  [      ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* ''' charwidth: 2 */
 		0x0000, 	/*  [  ]  */
 		0x8000, 	/*  [* ]  */
 		0x8000, 	/*  [* ]  */
+		0x0000, 	/*  [  ]  */
 		0x0000, 	/*  [  ]  */
 		0x0000, 	/*  [  ]  */
 		0x0000, 	/*  [  ]  */
@@ -104,6 +112,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x8000, 	/*  [*  ]  */
 		0x8000, 	/*  [*  ]  */
 		0x4000, 	/*  [ * ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* ')' charwidth: 3 */
 		0x8000, 	/*  [*  ]  */
@@ -113,6 +122,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x4000, 	/*  [ * ]  */
 		0x4000, 	/*  [ * ]  */
 		0x8000, 	/*  [*  ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '*' charwidth: 6 */
 		0x0000, 	/*  [      ]  */
@@ -122,6 +132,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x2000, 	/*  [  *   ]  */
 		0x5000, 	/*  [ * *  ]  */
 		0x0000, 	/*  [      ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '+' charwidth: 6 */
 		0x0000, 	/*  [      ]  */
@@ -131,6 +142,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x2000, 	/*  [  *   ]  */
 		0x2000, 	/*  [  *   ]  */
 		0x0000, 	/*  [      ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* ',' charwidth: 3 */
 		0x0000, 	/*  [   ]  */
@@ -140,6 +152,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x4000, 	/*  [ * ]  */
 		0x4000, 	/*  [ * ]  */
 		0x8000, 	/*  [*  ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '-' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -149,6 +162,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x0000, 	/*  [    ]  */
 		0x0000, 	/*  [    ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '.' charwidth: 2 */
 		0x0000, 	/*  [  ]  */
@@ -157,6 +171,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x0000, 	/*  [  ]  */
 		0x0000, 	/*  [  ]  */
 		0x8000, 	/*  [* ]  */
+		0x0000, 	/*  [  ]  */
 		0x0000, 	/*  [  ]  */
 		
 		/* '/' charwidth: 4 */
@@ -167,6 +182,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x8000, 	/*  [*   ]  */
 		0x8000, 	/*  [*   ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '0' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -176,6 +192,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0x6000, 	/*  [ **  ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '1' charwidth: 3 */
 		0x0000, 	/*  [   ]  */
@@ -185,6 +202,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x4000, 	/*  [ * ]  */
 		0x4000, 	/*  [ * ]  */
 		0x0000, 	/*  [   ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '2' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -194,6 +212,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x4000, 	/*  [ *   ]  */
 		0xF000, 	/*  [**** ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '3' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -203,6 +222,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0x6000, 	/*  [ **  ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '4' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -212,6 +232,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0xF000, 	/*  [**** ]  */
 		0x2000, 	/*  [  *  ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '5' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -221,6 +242,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x2000, 	/*  [  * ]  */
 		0xC000, 	/*  [**  ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '6' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -230,6 +252,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0x6000, 	/*  [ **  ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '7' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -239,6 +262,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x4000, 	/*  [ *  ]  */
 		0x4000, 	/*  [ *  ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '8' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -248,6 +272,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0x6000, 	/*  [ **  ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '9' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -257,6 +282,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x2000, 	/*  [  *  ]  */
 		0x4000, 	/*  [ *   ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* ':' charwidth: 2 */
 		0x0000, 	/*  [  ]  */
@@ -265,6 +291,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x0000, 	/*  [  ]  */
 		0x0000, 	/*  [  ]  */
 		0x8000, 	/*  [* ]  */
+		0x0000, 	/*  [  ]  */
 		0x0000, 	/*  [  ]  */
 		
 		/* ';' charwidth: 3 */
@@ -275,6 +302,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x4000, 	/*  [ * ]  */
 		0x4000, 	/*  [ * ]  */
 		0x8000, 	/*  [*  ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '<' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -284,6 +312,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x4000, 	/*  [ *  ]  */
 		0x2000, 	/*  [  * ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '=' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -293,6 +322,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0xF000, 	/*  [**** ]  */
 		0x0000, 	/*  [     ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '>' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -302,6 +332,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x4000, 	/*  [ *  ]  */
 		0x8000, 	/*  [*   ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '?' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -311,6 +342,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x0000, 	/*  [    ]  */
 		0x4000, 	/*  [ *  ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '@' charwidth: 8 */
 		0x3800, 	/*  [  ***   ]  */
@@ -320,6 +352,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0xB400, 	/*  [* ** *  ]  */
 		0x4000, 	/*  [ *      ]  */
 		0x3000, 	/*  [  **    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'A' charwidth: 6 */
 		0x0000, 	/*  [      ]  */
@@ -329,6 +362,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x7000, 	/*  [ ***  ]  */
 		0x8800, 	/*  [*   * ]  */
 		0x0000, 	/*  [      ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'B' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -338,6 +372,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0xE000, 	/*  [***  ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'C' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -347,6 +382,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0x6000, 	/*  [ **  ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'D' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -356,6 +392,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0xE000, 	/*  [***  ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'E' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -365,6 +402,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x8000, 	/*  [*   ]  */
 		0xE000, 	/*  [*** ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'F' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -374,6 +412,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x8000, 	/*  [*   ]  */
 		0x8000, 	/*  [*   ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'G' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -383,6 +422,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0x7000, 	/*  [ *** ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'H' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -392,6 +432,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0x9000, 	/*  [*  * ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'I' charwidth: 2 */
 		0x0000, 	/*  [  ]  */
@@ -400,6 +441,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x8000, 	/*  [* ]  */
 		0x8000, 	/*  [* ]  */
 		0x8000, 	/*  [* ]  */
+		0x0000, 	/*  [  ]  */
 		0x0000, 	/*  [  ]  */
 		
 		/* 'J' charwidth: 5 */
@@ -410,6 +452,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0x6000, 	/*  [ **  ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'K' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -419,6 +462,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0xA000, 	/*  [* *  ]  */
 		0x9000, 	/*  [*  * ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'L' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -428,6 +472,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x8000, 	/*  [*   ]  */
 		0xE000, 	/*  [*** ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'M' charwidth: 6 */
 		0x0000, 	/*  [      ]  */
@@ -437,6 +482,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x8800, 	/*  [*   * ]  */
 		0x8800, 	/*  [*   * ]  */
 		0x0000, 	/*  [      ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'N' charwidth: 6 */
 		0x0000, 	/*  [      ]  */
@@ -446,6 +492,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9800, 	/*  [*  ** ]  */
 		0x8800, 	/*  [*   * ]  */
 		0x0000, 	/*  [      ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'O' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -455,6 +502,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0x6000, 	/*  [ **  ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'P' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -464,6 +512,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x8000, 	/*  [*    ]  */
 		0x8000, 	/*  [*    ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'Q' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -473,6 +522,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0x6000, 	/*  [ **  ]  */
 		0x1000, 	/*  [   * ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'R' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -482,6 +532,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0xA000, 	/*  [* *  ]  */
 		0x9000, 	/*  [*  * ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'S' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -491,6 +542,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x2000, 	/*  [  * ]  */
 		0xC000, 	/*  [**  ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'T' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -500,6 +552,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x4000, 	/*  [ *  ]  */
 		0x4000, 	/*  [ *  ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'U' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -509,6 +562,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0x6000, 	/*  [ **  ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'V' charwidth: 6 */
 		0x0000, 	/*  [      ]  */
@@ -518,6 +572,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x2000, 	/*  [  *   ]  */
 		0x2000, 	/*  [  *   ]  */
 		0x0000, 	/*  [      ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'W' charwidth: 8 */
 		0x0000, 	/*  [        ]  */
@@ -527,6 +582,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x2800, 	/*  [  * *   ]  */
 		0x2800, 	/*  [  * *   ]  */
 		0x0000, 	/*  [        ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'X' charwidth: 6 */
 		0x0000, 	/*  [      ]  */
@@ -536,6 +592,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x5000, 	/*  [ * *  ]  */
 		0x8800, 	/*  [*   * ]  */
 		0x0000, 	/*  [      ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'Y' charwidth: 6 */
 		0x0000, 	/*  [      ]  */
@@ -545,6 +602,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x2000, 	/*  [  *   ]  */
 		0x2000, 	/*  [  *   ]  */
 		0x0000, 	/*  [      ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'Z' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -554,6 +612,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x8000, 	/*  [*   ]  */
 		0xE000, 	/*  [*** ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '[' charwidth: 3 */
 		0xC000, 	/*  [** ]  */
@@ -563,6 +622,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x8000, 	/*  [*  ]  */
 		0x8000, 	/*  [*  ]  */
 		0xC000, 	/*  [** ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '\' charwidth: 4 */
 		0x8000, 	/*  [*   ]  */
@@ -572,6 +632,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x2000, 	/*  [  * ]  */
 		0x2000, 	/*  [  * ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* ']' charwidth: 3 */
 		0xC000, 	/*  [** ]  */
@@ -581,6 +642,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x4000, 	/*  [ * ]  */
 		0x4000, 	/*  [ * ]  */
 		0xC000, 	/*  [** ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '^' charwidth: 6 */
 		0x0000, 	/*  [      ]  */
@@ -590,6 +652,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x0000, 	/*  [      ]  */
 		0x0000, 	/*  [      ]  */
 		0x0000, 	/*  [      ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '_' charwidth: 6 */
 		0x0000, 	/*  [      ]  */
@@ -599,6 +662,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x0000, 	/*  [      ]  */
 		0x0000, 	/*  [      ]  */
 		0xF800, 	/*  [***** ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '`' charwidth: 3 */
 		0x0000, 	/*  [   ]  */
@@ -608,6 +672,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x0000, 	/*  [   ]  */
 		0x0000, 	/*  [   ]  */
 		0x0000, 	/*  [   ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'a' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -617,6 +682,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0x7000, 	/*  [ *** ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'b' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -626,6 +692,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0xE000, 	/*  [***  ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'c' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -635,6 +702,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x8000, 	/*  [*   ]  */
 		0x6000, 	/*  [ ** ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'd' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -644,6 +712,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0x7000, 	/*  [ *** ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'e' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -653,6 +722,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0xC000, 	/*  [**  ]  */
 		0x6000, 	/*  [ ** ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'f' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -662,6 +732,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x8000, 	/*  [*   ]  */
 		0x8000, 	/*  [*   ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'g' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -671,6 +742,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x7000, 	/*  [ *** ]  */
 		0x1000, 	/*  [   * ]  */
 		0x6000, 	/*  [ **  ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'h' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -680,6 +752,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0x9000, 	/*  [*  * ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'i' charwidth: 2 */
 		0x8000, 	/*  [* ]  */
@@ -688,6 +761,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x8000, 	/*  [* ]  */
 		0x8000, 	/*  [* ]  */
 		0x8000, 	/*  [* ]  */
+		0x0000, 	/*  [  ]  */
 		0x0000, 	/*  [  ]  */
 		
 		/* 'j' charwidth: 3 */
@@ -698,6 +772,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x4000, 	/*  [ * ]  */
 		0x4000, 	/*  [ * ]  */
 		0x8000, 	/*  [*  ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'k' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -707,6 +782,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0xA000, 	/*  [* *  ]  */
 		0x9000, 	/*  [*  * ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'l' charwidth: 2 */
 		0x0000, 	/*  [  ]  */
@@ -715,6 +791,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x8000, 	/*  [* ]  */
 		0x8000, 	/*  [* ]  */
 		0x8000, 	/*  [* ]  */
+		0x0000, 	/*  [  ]  */
 		0x0000, 	/*  [  ]  */
 		
 		/* 'm' charwidth: 6 */
@@ -725,6 +802,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0xA800, 	/*  [* * * ]  */
 		0xA800, 	/*  [* * * ]  */
 		0x0000, 	/*  [      ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'n' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -734,6 +812,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0x9000, 	/*  [*  * ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'o' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -743,6 +822,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0x6000, 	/*  [ **  ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'p' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -752,6 +832,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0xE000, 	/*  [***  ]  */
 		0x8000, 	/*  [*    ]  */
 		0x8000, 	/*  [*    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'q' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -761,6 +842,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x7000, 	/*  [ *** ]  */
 		0x1000, 	/*  [   * ]  */
 		0x1000, 	/*  [   * ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'r' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -770,6 +852,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x8000, 	/*  [*   ]  */
 		0x8000, 	/*  [*   ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 's' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -779,6 +862,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x2000, 	/*  [  * ]  */
 		0xC000, 	/*  [**  ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 't' charwidth: 3 */
 		0x0000, 	/*  [   ]  */
@@ -788,6 +872,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x8000, 	/*  [*  ]  */
 		0x4000, 	/*  [ * ]  */
 		0x0000, 	/*  [   ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'u' charwidth: 5 */
 		0x0000, 	/*  [     ]  */
@@ -797,6 +882,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x9000, 	/*  [*  * ]  */
 		0x7000, 	/*  [ *** ]  */
 		0x0000, 	/*  [     ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'v' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -806,6 +892,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x4000, 	/*  [ *  ]  */
 		0x4000, 	/*  [ *  ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'w' charwidth: 6 */
 		0x0000, 	/*  [      ]  */
@@ -815,6 +902,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x5000, 	/*  [ * *  ]  */
 		0x5000, 	/*  [ * *  ]  */
 		0x0000, 	/*  [      ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'x' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -824,6 +912,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x4000, 	/*  [ *  ]  */
 		0xA000, 	/*  [* * ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'y' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -833,6 +922,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x4000, 	/*  [ *  ]  */
 		0x8000, 	/*  [*   ]  */
 		0x8000, 	/*  [*   ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* 'z' charwidth: 4 */
 		0x0000, 	/*  [    ]  */
@@ -842,6 +932,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x8000, 	/*  [*   ]  */
 		0xE000, 	/*  [*** ]  */
 		0x0000, 	/*  [    ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '{' charwidth: 4 */
 		0x2000, 	/*  [  * ]  */
@@ -851,6 +942,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x4000, 	/*  [ *  ]  */
 		0x4000, 	/*  [ *  ]  */
 		0x2000, 	/*  [  * ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '|' charwidth: 2 */
 		0x8000, 	/*  [* ]  */
@@ -859,6 +951,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x8000, 	/*  [* ]  */
 		0x8000, 	/*  [* ]  */
 		0x8000, 	/*  [* ]  */
+		0x0000, 	/*  [  ]  */
 		0x0000, 	/*  [  ]  */
 		
 		/* '}' charwidth: 4 */
@@ -869,6 +962,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x4000, 	/*  [ *  ]  */
 		0x4000, 	/*  [ *  ]  */
 		0x8000, 	/*  [*   ]  */
+		0x0000, 	/*  [  ]  */
 		
 		/* '~' charwidth: 7 */
 		0x0000, 	/*  [       ]  */
@@ -878,6 +972,7 @@ uint16_t PROGMEM five_dot_glyph_table[] = {
 		0x0000, 	/*  [       ]  */
 		0x0000, 	/*  [       ]  */
 		0x0000, 	/*  [       ]  */
+		0x0000, 	/*  [  ]  */
 };
 
 unsigned char PROGMEM five_dot_width_table[] = {
@@ -3085,8 +3180,8 @@ unsigned char PROGMEM seven_dot_width_table[] = {
 		 8, /* '~' */
 };
 
-struct FONT_DEF font[] = {{1,  7, five_dot_glyph_table, five_dot_width_table,' ','~','.'},
-                          {2,  8, six_dot_glyph_table, six_dot_width_table,' ','~','.'},
-                          {2,  8, seven_dot_glyph_table, seven_dot_width_table,' ','~','.'}};
+struct FONT_DEF font[] = {{five_dot_glyph_table, five_dot_width_table,' ','~','.'},
+                          {six_dot_glyph_table, six_dot_width_table,' ','~','.'},
+                          {seven_dot_glyph_table, seven_dot_width_table,' ','~','.'}};
 
 
