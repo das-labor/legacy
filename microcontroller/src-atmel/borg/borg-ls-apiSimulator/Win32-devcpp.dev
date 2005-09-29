@@ -1,7 +1,7 @@
 [Project]
 FileName=Win32-devcpp.dev
 Name=borg-apiSimulator
-UnitCount=17
+UnitCount=16
 Type=0
 Ver=1
 ObjFiles=
@@ -138,7 +138,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit13]
-FileName=font-arial8.h
+FileName=font.h
 CompileCpp=1
 Folder=borg-apiSimulator
 Compile=1
@@ -148,7 +148,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit14]
-FileName=font.h
+FileName=font-small6.h
 CompileCpp=1
 Folder=borg-apiSimulator
 Compile=1
@@ -188,7 +188,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit15]
-FileName=font-small6.h
+FileName=font-v5.h
 CompileCpp=1
 Folder=borg-apiSimulator
 Compile=1
@@ -198,7 +198,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit16]
-FileName=font-v5.h
+FileName=font-uni53.h
 CompileCpp=1
 Folder=borg-apiSimulator
 Compile=1
