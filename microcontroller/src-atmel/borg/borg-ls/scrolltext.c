@@ -3,12 +3,12 @@
 #else 
 #   define PROGMEM
 #   define pgm_read_byte(B) *(B)      
+#   define pgm_read_word(B) *(B)      
 #endif
 
 #define SCROLLTEXT_C
 
 #include "config.h"
-#include "fliptable.h"
 #include "scrolltext.h"
 #ifdef AVR
 #   include "borg_hw.h"
@@ -51,16 +51,55 @@ void shift_out(unsigned char cols, unsigned int delay){
 
 */
 
-uint8_t get_next_bits(char *str) {
-	static char *nxchar;
-	static uint8_t left;
+#define max(a,b) ((a>b)? a : b)
+
+uint8_t get_next_bits(char *str, uint8_t offset, uint8_t y, uint8_t len, char **astr, uint8_t *aoffset) {
+	char    glyph;
+	uint8_t ret = 0, glen;
+	static uint16_t bitsleft;
+	static uint8_t  bitsleftc;
+	static uint8_t  fontNr = 0;
 
 	if (str) {
-		nxchar = str;
-		left = 0x00;
-	};
-}
+		*astr    = str;
+		*aoffset = offset;
 
+		// skip glyphs until offset reached
+		glyph = **astr - font[fontNr].glyph_beg;
+		glen = pgm_read_byte(font[fontNr].width_table+glyph);
+		while(*aoffset > glen) {
+			*aoffset -= glen;
+			glyph = **astr - font[fontNr].glyph_beg;
+			glen = pgm_read_byte(font[fontNr].width_table+glyph);
+		}
+
+		bitsleftc = glen;
+		bitsleft  = pgm_read_word(
+				font[fontNr].glyph_table +                                   // table start
+				glyph*font[fontNr].glyph_height*font[fontNr].store_width +   // glyph offset
+		       	        y*font[fontNr].store_width ); 
+	};
+
+	while(len) {
+		glen = max(len, bitsleftc);
+		ret <<= glen;
+		ret |= (uint8_t)(bitsleft >> (16-glen));
+		bitsleft  <<= glen;
+		bitsleftc -= glen;
+
+		if (!bitsleft) {
+			glyph = *(*astr++) - font[fontNr].glyph_beg;
+			bitsleftc = pgm_read_byte(font[fontNr].width_table+glyph);
+			*aoffset  -= bitsleftc;
+			bitsleft  = pgm_read_word(
+				font[fontNr].glyph_table +                                   // table start
+				glyph*font[fontNr].glyph_height*font[fontNr].store_width +   // glyph offset
+		       	        y*font[fontNr].store_width ); 
+		}
+	}
+
+	return ret;
+}
 
 void repaint(char *txt, uint8_t offset) {
 	char *nextchar, glyph;
@@ -81,8 +120,6 @@ void repaint(char *txt, uint8_t offset) {
 					glyph*font[fontNr].glyph_height*font[fontNr].store_width +   // glyph offset
 			       	        y*font[fontNr].store_width );                                // row offset
 
-			bits = fliptable[bits];
-			
 			pixmap[0][y][x] = bits;
 			pixmap[1][y][x] = bits;
 			pixmap[2][y][x] = bits;
