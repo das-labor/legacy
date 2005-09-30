@@ -12,6 +12,7 @@
 //#include "font-small6.h"
 //#include "font-v5.h"
 #include "font-uni53.h"
+#include <stdio.h>
 
 #define MAX_FONTS 1
 font fonts[MAX_FONTS];
@@ -75,7 +76,7 @@ unsigned int getLen(char *str, unsigned char fontNr, unsigned char space) {
 }
 
 
-               // Pos
+           
 void draw_Text(char *str, int posx, char posy, unsigned char fontNr, unsigned char space, unsigned char color) {
 	unsigned char byte;
     char x, y, glyph = *str;
@@ -92,6 +93,23 @@ void draw_Text(char *str, int posx, char posy, unsigned char fontNr, unsigned ch
 	charEnd = pgm_read_word(fonts[fontNr].fontIndex+glyph+1);
 	if (fontNr >= MAX_FONTS) 
 		fontNr = MAX_FONTS - 1;
+	printf("%d\n", posx);
+	while (posx > NUM_COLS) {
+	    if (charC < charEnd) {                  
+            charC++;
+        } 
+        if (charC >= charEnd) {
+            x -= space;
+            if (!(glyph = *++str)) return;      
+            if ((glyph < fonts[fontNr].glyph_beg) || (glyph > fonts[fontNr].glyph_end)) {      
+               glyph = fonts[fontNr].glyph_def;
+            } 
+            glyph -= fonts[fontNr].glyph_beg;   
+            charC = pgm_read_word(fonts[fontNr].fontIndex+glyph);
+            charEnd = pgm_read_word(fonts[fontNr].fontIndex+glyph+1);
+        }
+        posx--;
+    }
 	for (x = posx; x >= 0; x--) {
         byte = pgm_read_byte(fonts[fontNr].fontData+fonts[fontNr].storebytes*charC);
 		for (y = posy; y < NUM_ROWS; y++) {

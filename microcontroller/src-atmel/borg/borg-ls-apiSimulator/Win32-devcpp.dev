@@ -2,7 +2,7 @@
 FileName=Win32-devcpp.dev
 Name=borg-apiSimulator
 UnitCount=16
-Type=0
+Type=1
 Ver=1
 ObjFiles=
 Includes=

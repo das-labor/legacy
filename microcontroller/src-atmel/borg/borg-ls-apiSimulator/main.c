@@ -144,7 +144,7 @@ void timf(int value) {
 
 void *display_loop(void * unused) {
 	while (1) {	
-        scrolltext("Neue tolle Schrift. gyle", 0, 70);
+        scrolltext("Dies ist mal ein etwas laengerer SCHRIFTZUG um zu testen obs probs gibt.", 0, 70);
 		matrix();
 		fadein();
 		joern1();
