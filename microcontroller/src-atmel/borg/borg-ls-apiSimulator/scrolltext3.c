@@ -77,7 +77,7 @@ unsigned int getLen(char *str, unsigned char fontNr, unsigned char space) {
 
 
            
-void draw_Text(char *str, int posx, char posy, unsigned char fontNr, unsigned char space, unsigned char color) {
+void draw_Text(char *str, unsigned int posx, char posy, unsigned char fontNr, unsigned char space, unsigned char color) {
 	unsigned char byte;
     char x, y, glyph = *str;
 	unsigned int charC, charEnd;
@@ -93,7 +93,6 @@ void draw_Text(char *str, int posx, char posy, unsigned char fontNr, unsigned ch
 	charEnd = pgm_read_word(fonts[fontNr].fontIndex+glyph+1);
 	if (fontNr >= MAX_FONTS) 
 		fontNr = MAX_FONTS - 1;
-	printf("%d\n", posx);
 	while (posx > NUM_COLS) {
 	    if (charC < charEnd) {                  
             charC++;

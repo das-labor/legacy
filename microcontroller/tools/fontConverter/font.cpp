@@ -724,8 +724,8 @@ void MyFrame::OnConvert(wxCommandEvent& WXUNUSED(event))
     // prepare to draw the font
     dc.SetFont(m_canvas->m_font);
     dc.SetTextForeground(*wxBLACK);
-#   define SKIPHEIGHT 2
-#   define SKIPWIDTH 1
+#   define SKIPHEIGHT 3
+#   define SKIPWIDTH 0
     // the size of one cell (Normally biggest char + small margin)
     wxChar c;
     wxChar charWidth = 20, maxCharWidth;
@@ -742,7 +742,7 @@ void MyFrame::OnConvert(wxCommandEvent& WXUNUSED(event))
     if (charHeight > 16)
        store_bytes++;
     wxColour colour;
-    fprintf(headerFile, "#include \"font.h\"\n\nunsigned char PROGMEM fontIndex_[] = {");
+    fprintf(headerFile, "#include \"font.h\"\n\nunsigned int PROGMEM fontIndex_[] = {");
     for (c = ' '; c <= 254; c++) {
         dc.Clear();
         //dc.GetTextExtent(c, &charWidth, &charHeight);
@@ -769,7 +769,7 @@ void MyFrame::OnConvert(wxCommandEvent& WXUNUSED(event))
         fontIndex += maxCharWidth+1;
          
     }
-    fprintf(headerFile, "\t%d\n}\n\nunsigned char PROGMEM fontData_[] = {\n", fontIndex);
+    fprintf(headerFile, "\t%d\n};\n\nunsigned char PROGMEM fontData_[] = {\n", fontIndex);
     for (i = 0; i < fontIndex; i++) {
         //if (i % 15 == 0 && i)
         //   fprintf(headerFile, "\n                                ");
@@ -797,7 +797,7 @@ void MyFrame::OnConvert(wxCommandEvent& WXUNUSED(event))
             fprintf(headerFile, "                                0x%02x, 0x%02x, 0x%02x, /* %s */\n",encodedFont[(2*i)+2] , encodedFont[(2*i)+1], encodedFont[2*i], helpStr);
         }
     }
-    fprintf(headerFile, "};\nfont font_ = {%d, fontIndex_, fontData_, ' ', '~', '.', %d}\n", charHeight, store_bytes);
+    fprintf(headerFile, "};\nfont font_ = {%d, fontIndex_, fontData_, ' ', '~', '.', %d};\n", charHeight, store_bytes);
     fclose(headerFile);
     m_canvas->Refresh();
 }
