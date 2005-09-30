@@ -52,7 +52,7 @@ void shift_out(unsigned char cols, unsigned int delay){
 }
 
 void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
-     unsigned char x, y;
+     char x, y;
      //char *tmp = str;
      //while (*tmp) {
      //   shift_in(*tmp++, fontNr, delay);
@@ -63,7 +63,7 @@ void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
      wait(3000);
      clear_screen(0);
      for (x = 0; x < 80; x++) {
-         draw_Text(str, x, 0, 0, 1, x%2?1:3);
+         draw_Text(str, x, 0, 0, 1, 3);
          wait(100-x);
          clear_screen(0);
      }
@@ -73,6 +73,12 @@ void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
      for (x = 80; x > 60; x--) {
          draw_Text(str, x, 0, 0, 1, 3);
          wait(70);
+         clear_screen(0);
+     }
+     for (x = -7; x < 8; x++) {
+         draw_Text(str, 70, x, 0, 1, 3);
+         if (!x) wait(500);
+         wait(150);
          clear_screen(0);
      }
 }
@@ -93,10 +99,10 @@ void draw_Text(char *str, char posx, char posy, unsigned char fontNr, unsigned c
 	charEnd = pgm_read_word(fonts[fontNr].fontIndex+glyph+1);
 	if (fontNr >= MAX_FONTS) 
 		fontNr = MAX_FONTS - 1;
-	for (x = posx; x; x--) {
+	for (x = posx; x >= 0; x--) {
         byte = pgm_read_byte(fonts[fontNr].fontData+fonts[fontNr].storebytes*charC);
 		for (y = posy; y < NUM_ROWS; y++) {
-			if (byte & (1 << (y-posy))) {	
+			if (byte & (1 << (y-posy)) && y-posy >= 0 && y >= 0) {	
                setpixel((pixel){x, y}, color);
 			}	
 		}
