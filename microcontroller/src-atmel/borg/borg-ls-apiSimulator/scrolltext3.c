@@ -55,6 +55,25 @@ void shift_out(unsigned char cols, unsigned int delay){
 	}
 }
 
+unsigned int getLen(char *str, unsigned char fontNr, unsigned char space) {
+    char glyph;
+    unsigned int strLen = 0;	
+    if (fontNr >= MAX_FONTS) 
+    	fontNr = MAX_FONTS - 1;
+	
+    while ((glyph = *str++)) {
+        if ((glyph < fonts[fontNr].glyph_beg) || (glyph > fonts[fontNr].glyph_end)) {
+           glyph = fonts[fontNr].glyph_def;
+        } 
+        glyph -= fonts[fontNr].glyph_beg;
+        strLen += pgm_read_word(fonts[fontNr].fontIndex+glyph+1) -
+                  pgm_read_word(fonts[fontNr].fontIndex+glyph); 
+        strLen += space;
+    }      
+    return strLen-space; // den letzten space wieder abziehen
+}
+
+
 void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
 	fonts[0] = font_uni53;
 	char x, y;
@@ -64,7 +83,7 @@ void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
      //}
      //shift_out(NUM_COLS+8, delay);
      clear_screen(0);
-     draw_Text(str, 72, 1, 0, 1, 5);
+     draw_Text(str, getLen(str, 0, 1)/2+NUM_COLS/2, 1, 0, 1, 5);
      wait(3000);
      clear_screen(0);
      for (x = 0; x < 80; x++) {
