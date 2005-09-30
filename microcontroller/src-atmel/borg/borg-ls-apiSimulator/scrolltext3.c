@@ -20,7 +20,7 @@ unsigned char PROGMEM colorTable[MAX_SPECIALCOLORS*NUM_ROWS] = {1, 1, 2, 3, 3, 2
                                                                 3, 3, 2, 1, 1, 2, 3, 3,    
                                                                 3, 3, 2, 2, 3, 3, 2, 2};
 
-
+/*
 void shift_in(unsigned char glyph, unsigned char fontNr, unsigned int delay){
 	unsigned char  y, s, len, byte;
 	unsigned int i;
@@ -54,6 +54,7 @@ void shift_out(unsigned char cols, unsigned int delay){
 		wait(delay);
 	}
 }
+*/
 
 unsigned int getLen(char *str, unsigned char fontNr, unsigned char space) {
     char glyph;
@@ -73,37 +74,6 @@ unsigned int getLen(char *str, unsigned char fontNr, unsigned char space) {
     return strLen-space; // den letzten space wieder abziehen
 }
 
-
-void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
-	fonts[0] = font_uni53;
-	char x;
-    unsigned int posx = (getLen(str, 0, 1)+NUM_COLS)/2;
-     //char *tmp = str;
-     //while (*tmp) {
-     //   shift_in(*tmp++, fontNr, delay);
-     //}
-     //shift_out(NUM_COLS+8, delay);
-     clear_screen(0);
-     draw_Text(str, posx, 0, 0, 1, 5);
-     wait(3000);
-     clear_screen(0);
-     for (x = 0; x < 80; x++) {
-         draw_Text(str, x, 0, 0, 1, 7);
-         wait(100-x);
-         clear_screen(0);
-     }
-     for (x = 80; x > 60; x--) {
-         draw_Text(str, x, 0, 0, 1, 4);
-         wait(70);
-         clear_screen(0);
-     }
-     for (x = -7; x < 8; x++) {
-         draw_Text(str, posx, x, 0, 1, 5);
-         if (!x) wait(500);
-         wait(150);
-         clear_screen(0);
-     }
-}
 
                // Pos
 void draw_Text(char *str, int posx, char posy, unsigned char fontNr, unsigned char space, unsigned char color) {
@@ -145,3 +115,36 @@ void draw_Text(char *str, int posx, char posy, unsigned char fontNr, unsigned ch
         }
 	}	
 }
+
+
+void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
+	fonts[0] = font_uni53;
+	char x;
+    unsigned int posx = (getLen(str, 0, 1)+NUM_COLS)/2;
+     //char *tmp = str;
+     //while (*tmp) {
+     //   shift_in(*tmp++, fontNr, delay);
+     //}
+     //shift_out(NUM_COLS+8, delay);
+     clear_screen(0);
+     draw_Text(str, posx, 0, 0, 1, 5);
+     wait(3000);
+     clear_screen(0);
+     for (x = 0; x < 80; x++) {
+         draw_Text(str, x, 0, 0, 1, 7);
+         wait(100-x);
+         clear_screen(0);
+     }
+     for (x = 80; x > 60; x--) {
+         draw_Text(str, x, 0, 0, 1, 4);
+         wait(70);
+         clear_screen(0);
+     }
+     for (x = -7; x < 8; x++) {
+         draw_Text(str, posx, x, 0, 1, 5);
+         if (!x) wait(500);
+         wait(150);
+         clear_screen(0);
+     }
+}
+
