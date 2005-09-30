@@ -1,6 +1,6 @@
 PRG = borgSim
 APP = $(PRG).app/Contents/MacOS/$(PRG)
-OBJ = main.o pixel.o programm.o util.o scrolltext2.o trackball.o 
+OBJ = main.o pixel.o programm.o util.o scrolltext3.o trackball.o 
 OPTIMIZE = -O2
 LIBS =  -lpthread -framework Carbon -framework GLUT -framework OpenGL -framework Foundation -framework AppKit
 CC = gcc

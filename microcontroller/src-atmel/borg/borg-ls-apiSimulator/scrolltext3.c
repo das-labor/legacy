@@ -14,7 +14,7 @@
 #include "font-uni53.h"
 
 #define MAX_FONTS 1
-font fonts[MAX_FONTS] = {font_uni53};
+font fonts[MAX_FONTS];
 
 
 void shift_in(unsigned char glyph, unsigned char fontNr, unsigned int delay){
@@ -52,7 +52,8 @@ void shift_out(unsigned char cols, unsigned int delay){
 }
 
 void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
-     char x, y;
+	fonts[0] = font_uni53;
+	char x, y;
      //char *tmp = str;
      //while (*tmp) {
      //   shift_in(*tmp++, fontNr, delay);
