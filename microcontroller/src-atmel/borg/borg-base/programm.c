@@ -105,7 +105,10 @@ unsigned char random(){
 }
 
 void snake(){
-	pixel pixels[64] = {{4,6},{4,5}};
+	pixel pixels[64];
+	pixels[0] = (pixel){NUM_COLS/2, NUM_ROWS/2};
+	pixels[1] = (pixel){NUM_COLS/2, (NUM_ROWS/2)-1};
+	
 	pixel * head = &pixels[1];
 	pixel * tail = &pixels[0];
 	pixel old_head;
