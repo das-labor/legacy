@@ -163,5 +163,8 @@ void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
          wait(150);
          clear_screen(0);
      }
+     clear_screen(3);
+     draw_Text(str, posx, 0, 0, 1, 0);
+     wait(3000);
 }
 
