@@ -76,18 +76,19 @@ unsigned int getLen(char *str, unsigned char fontNr, unsigned char space) {
 
 void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
 	fonts[0] = font_uni53;
-	char x, y;
+	char x;
+    unsigned int posx = (getLen(str, 0, 1)+NUM_COLS)/2;
      //char *tmp = str;
      //while (*tmp) {
      //   shift_in(*tmp++, fontNr, delay);
      //}
      //shift_out(NUM_COLS+8, delay);
      clear_screen(0);
-     draw_Text(str, getLen(str, 0, 1)/2+NUM_COLS/2, 1, 0, 1, 5);
+     draw_Text(str, posx, 0, 0, 1, 5);
      wait(3000);
      clear_screen(0);
      for (x = 0; x < 80; x++) {
-         draw_Text(str, x, 0, 0, 1, 6);
+         draw_Text(str, x, 0, 0, 1, 7);
          wait(100-x);
          clear_screen(0);
      }
@@ -97,7 +98,7 @@ void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
          clear_screen(0);
      }
      for (x = -7; x < 8; x++) {
-         draw_Text(str, 70, x, 0, 1, 5);
+         draw_Text(str, posx, x, 0, 1, 5);
          if (!x) wait(500);
          wait(150);
          clear_screen(0);
@@ -105,19 +106,18 @@ void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
 }
 
                // Pos
-void draw_Text(char *str, char posx, char posy, unsigned char fontNr, unsigned char space, unsigned char color) {
+void draw_Text(char *str, int posx, char posy, unsigned char fontNr, unsigned char space, unsigned char color) {
 	unsigned char byte;
-
     char x, y, glyph = *str;
 	unsigned int charC, charEnd;
-	
+	if (color > NUMPLANE+MAX_SPECIALCOLORS) 
+	   color = 3;
     if (fontNr >= MAX_FONTS) 
 		fontNr = MAX_FONTS - 1;
 	if ((glyph < fonts[fontNr].glyph_beg) || (glyph > fonts[fontNr].glyph_end)) {
        glyph = fonts[fontNr].glyph_def;
     } 
 	glyph -= fonts[fontNr].glyph_beg;
-	
 	charC = pgm_read_word(fonts[fontNr].fontIndex+glyph);
 	charEnd = pgm_read_word(fonts[fontNr].fontIndex+glyph+1);
 	if (fontNr >= MAX_FONTS) 
@@ -126,8 +126,8 @@ void draw_Text(char *str, char posx, char posy, unsigned char fontNr, unsigned c
         byte = pgm_read_byte(fonts[fontNr].fontData+fonts[fontNr].storebytes*charC);
 		for (y = posy; y < NUM_ROWS; y++) {
 			if (byte & (1 << (y-posy)) && y-posy >= 0 && y >= 0 && x < NUM_COLS) {	
-               setpixel((pixel){x, y}, color < 4? color: 
-                                                  pgm_read_byte(colorTable+(color-4)*NUM_ROWS+y-posy));
+               setpixel((pixel){x, y}, color <= NUMPLANE? color: 
+                                       pgm_read_byte(colorTable+(color-NUMPLANE-1)*NUM_ROWS+y-posy));
 			}	
 		}
 		if (charC < charEnd) {                  
