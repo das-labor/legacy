@@ -15,6 +15,10 @@
 
 #define MAX_FONTS 1
 font fonts[MAX_FONTS];
+#define MAX_SPECIALCOLORS 3
+unsigned char PROGMEM colorTable[MAX_SPECIALCOLORS*NUM_ROWS] = {1, 1, 2, 3, 3, 2, 1, 1,   
+                                                                3, 3, 2, 1, 1, 2, 3, 3,    
+                                                                3, 3, 2, 2, 3, 3, 2, 2};
 
 
 void shift_in(unsigned char glyph, unsigned char fontNr, unsigned int delay){
@@ -60,24 +64,21 @@ void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
      //}
      //shift_out(NUM_COLS+8, delay);
      clear_screen(0);
-     draw_Text(str, 72, 1, 0, 1, 3);
+     draw_Text(str, 72, 1, 0, 1, 5);
      wait(3000);
      clear_screen(0);
      for (x = 0; x < 80; x++) {
-         draw_Text(str, x, 0, 0, 1, 3);
+         draw_Text(str, x, 0, 0, 1, 6);
          wait(100-x);
          clear_screen(0);
      }
-     draw_Text(str, 80, 3, 0, 1, 3);
-     wait(70);
-     clear_screen(0);
      for (x = 80; x > 60; x--) {
-         draw_Text(str, x, 0, 0, 1, 3);
+         draw_Text(str, x, 0, 0, 1, 4);
          wait(70);
          clear_screen(0);
      }
      for (x = -7; x < 8; x++) {
-         draw_Text(str, 70, x, 0, 1, 3);
+         draw_Text(str, 70, x, 0, 1, 5);
          if (!x) wait(500);
          wait(150);
          clear_screen(0);
@@ -87,9 +88,11 @@ void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
                // Pos
 void draw_Text(char *str, char posx, char posy, unsigned char fontNr, unsigned char space, unsigned char color) {
 	unsigned char byte;
+
     char x, y, glyph = *str;
 	unsigned int charC, charEnd;
-	if (fontNr >= MAX_FONTS) 
+	
+    if (fontNr >= MAX_FONTS) 
 		fontNr = MAX_FONTS - 1;
 	if ((glyph < fonts[fontNr].glyph_beg) || (glyph > fonts[fontNr].glyph_end)) {
        glyph = fonts[fontNr].glyph_def;
@@ -103,8 +106,9 @@ void draw_Text(char *str, char posx, char posy, unsigned char fontNr, unsigned c
 	for (x = posx; x >= 0; x--) {
         byte = pgm_read_byte(fonts[fontNr].fontData+fonts[fontNr].storebytes*charC);
 		for (y = posy; y < NUM_ROWS; y++) {
-			if (byte & (1 << (y-posy)) && y-posy >= 0 && y >= 0) {	
-               setpixel((pixel){x, y}, color);
+			if (byte & (1 << (y-posy)) && y-posy >= 0 && y >= 0 && x < NUM_COLS) {	
+               setpixel((pixel){x, y}, color < 4? color: 
+                                                  pgm_read_byte(colorTable+(color-4)*NUM_ROWS+y-posy));
 			}	
 		}
 		if (charC < charEnd) {                  
