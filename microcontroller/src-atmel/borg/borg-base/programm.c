@@ -318,14 +318,13 @@ void matrix() {
 }
 
 #define FEUER_Y (NUM_ROWS + 3)
-#define FEUER_S 30
-#define FEUER_N 5
-#define FEUER_DIV 44
+
 void feuer()
 {
 	unsigned char y, x;
 	unsigned int  t;
 	unsigned char world[NUM_COLS][FEUER_Y];   // double buffer
+	
 
 	for(t=0; t<800; t++) {
 		// diffuse
@@ -350,7 +349,7 @@ void feuer()
 			}		
 		};
 
-		wait(70);
+		wait(FEUER_DELAY);
 	}
 }
 

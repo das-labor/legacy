@@ -7,6 +7,7 @@
 #include <setjmp.h>
 #include <avr/interrupt.h>
 #include <avr/eeprom.h>
+#include <string.h>
 
 can_addr myaddr;
 extern jmp_buf newmode_jmpbuf;
