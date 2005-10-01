@@ -81,12 +81,6 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 }
 
 
-void watchdog_enable()
-{
-	wdt_reset();
-	wdt_enable(0x00);  // 17ms
-
-}
 
 
 void timer0_off(){
@@ -126,7 +120,9 @@ void borg_hw_init(){
 	COLPORT1 = 0;
 	COLPORT2 = 0;
 	ROWPORT = 0;
-	watchdog_enable();
-	timer0_on();
+	timer0_on();		
+
+	wdt_reset();
+	wdt_enable(0x00);	// 17ms Watchdog
 }
 
