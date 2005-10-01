@@ -6,8 +6,12 @@
 #define SCROLLTXT_DELAY 60
 #define STREAMER_NUM 30
 
+#define FEUER_N 5
+#define FEUER_S 30
+#define FEUER_DIV 44
+#define FEUER_DELAY 50
+
 #define BORG_CAN
-#define AVR
 
 // spi.[ch] defines
 #define SPI_HARDWARE
