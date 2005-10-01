@@ -1,9 +1,4 @@
-#define NUM_ROWS 8
-#define NUM_COLS 96
-#define NUM_PLANES 1
-#define NUMPLANE 3
 
-// ** programm.c  **
 // for matrix
 #define STREAMER_NUM 100
 
@@ -16,6 +11,13 @@
 
 #define BORG_CAN
 
+// borg_hw.[ch] defines
+#define NUM_ROWS 8
+#define NUM_COLS 96
+#define NUM_PLANES 1
+#define NUMPLANE 3
+
+// ** programm.c  **
 // spi.[ch] defines
 #define SPI_HARDWARE
 #define SPI_PORT PORTB		//for slave select
