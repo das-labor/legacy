@@ -25,6 +25,33 @@ inline void rowshow(unsigned char row, unsigned char plane){
 		
 	ROWPORT = (ROWPORT & 0xF8) | row;
 	
+
+	unsigned char b, d, x;
+//	for(b=LINEBYTES-1;b!=0xFF;b--){
+	for(b=0;b<LINEBYTES;b++){
+		d = pixmap[plane][row][b];
+		for(x=0;x<8;x++){
+//			if(d & 0x80){
+			if(d & 0x01){
+				COLPORT |= (1<<PIN_DATA);
+			}else{
+				COLPORT &= ~(1<<PIN_DATA);
+			}
+//			d<<=1;
+			d>>=1;
+			COLPORT &= ~(1<<PIN_CLK);
+			COLPORT |= (1<<PIN_CLK);
+		}
+	}
+	
+	COLPORT &= ~(1<<PIN_LINE_EN);//unblank display
+}
+
+SIGNAL(SIG_OUTPUT_COMPARE0)
+{
+	static unsigned char plane = 0;
+	static unsigned char row = 0;
+
 	if (row == 0){
 		switch (plane){
 			case 0:
@@ -37,30 +64,6 @@ inline void rowshow(unsigned char row, unsigned char plane){
 				OCR0 = 20;
 		}
 	}
-	
-	unsigned char b, d, x;
-	for(b=LINEBYTES-1;b!=0xFF;b--){
-		d = pixmap[plane][row][b];
-		for(x=0;x<8;x++){
-			if(d & 0x80){
-				COLPORT |= (1<<PIN_DATA);
-			}else{
-				COLPORT &= ~(1<<PIN_DATA);
-			}
-			d<<=1;
-			COLPORT &= ~(1<<PIN_CLK);
-			COLPORT |= (1<<PIN_CLK);
-		}
-	}
-	
-	COLPORT &= ~(1<<PIN_LINE_EN);//unblank display
-	
-}
-
-SIGNAL(SIG_OUTPUT_COMPARE0)
-{
-	static unsigned char plane = 0;
-	static unsigned char row = 0;
 	
 	rowshow(row, plane);
 	
