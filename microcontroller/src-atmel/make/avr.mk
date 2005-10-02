@@ -1,6 +1,6 @@
 
 # Default values
-OUT           ?= flashimage
+OUT           ?= image
 MCU_TARGET    ?= atmega32
 MCU_CC        ?= avr-gcc
 OPTIMIZE      ?= -Os
@@ -9,6 +9,7 @@ DEFS          ?= -DF_CPU=16000000
 CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) 
 #CFLAGS        += -fnew-ra
 LDFLAGS        = -Wl,-Map,$(OUT).map
+CANADDR       ?= XXX
 
 # External Tools
 OBJCOPY       ?= avr-objcopy
