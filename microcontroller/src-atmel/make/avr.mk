@@ -1,14 +1,14 @@
 
 # Default values
-OUT           ?= borg
+OUT           ?= flashimage
 MCU_TARGET    ?= atmega32
 MCU_CC        ?= avr-gcc
 OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall
 DEFS          ?= -DF_CPU=16000000
-CFLAGS        += -mmcu=$(MCU_TARGET) $(MCU_OPTIMIZE) $(MCU_WARNINGS) $(MCU_DEFS) 
+CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) 
 #CFLAGS        += -fnew-ra
-LDFLAGS        = -Wl,-Map,$(MCU_PRG).map
+LDFLAGS        = -Wl,-Map,$(OUT).map
 
 # External Tools
 OBJCOPY       ?= avr-objcopy
@@ -19,6 +19,8 @@ LAPFLASHCMD   ?= lapcontrol -s roulette
 
 #############################################################################
 # Rules
+all: $(OUT).elf lst text eeprom
+
 clean:
 	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec
 	rm -rf *.srec $(OUT).elf
@@ -31,9 +33,7 @@ canflash: $(OUT).hex
 	$(LAPFLASHCMD) flash $(CANADDR) $(OUT).hex
 
 #############################################################################
-# Rules for MCU
-all: $(OUT).elf lst text eeprom
-
+# Building Rules 
 $(OUT).elf: $(OBJ)
 	$(MCU_CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
