@@ -1,55 +1,57 @@
 
 # Default values
-MCU_TARGET     = atmega32
-OPTIMIZE       = -Os
+OUT           ?= borg
+MCU_TARGET    ?= atmega32
+MCU_CC        ?= avr-gcc
+OPTIMIZE      ?= -Os
+WARNINGS      ?= -Wall
+DEFS          ?= -DF_CPU=16000000
+CFLAGS        += -mmcu=$(MCU_TARGET) $(MCU_OPTIMIZE) $(MCU_WARNINGS) $(MCU_DEFS) 
+#CFLAGS        += -fnew-ra
+LDFLAGS        = -Wl,-Map,$(MCU_PRG).map
 
-FLASHCMD       = uisp -dprog=bsd --upload if=$(PRG).hex 
-ERASECMD       = uisp -dprog=bsd --erase 
-LAPFLASHCMD    = lapcontrol -s roulette
+# External Tools
+OBJCOPY       ?= avr-objcopy
+OBJDUMP       ?= avr-objdump
+FLASHCMD      ?= uisp -dprog=bsd --upload if=$(OUT).hex 
+ERASECMD      ?= uisp -dprog=bsd --erase 
+LAPFLASHCMD   ?= lapcontrol -s roulette
 
-DEFS           = -DF_CPU=16000000
-#-fnew-ra
-LIBS           =
-
-# You should not have to change anything below here.
-
-CC             = avr-gcc
-
-# Override is only needed by avr-lib build system.
-override CFLAGS        = -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS)
-override LDFLAGS       = -Wl,-Map,$(PRG).map
-
-OBJCOPY        = avr-objcopy
-OBJDUMP        = avr-objdump
-
-all: $(PRG).elf lst text eeprom
-
-$(PRG).elf: $(OBJ) $(MCU_OBJ)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
-
+#############################################################################
+# Rules
 clean:
-	rm -rf *.o $(PRG) $(PRG).elf *.eps *.png *.pdf *.bak 
-	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
+	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec
+	rm -rf *.srec $(OUT).elf
 
-flash:
+flash: $(OUT).hex
 	$(ERASECMD)
 	$(FLASHCMD)
 
-canflash: $(PRG).hex
-	$(LAPFLASHCMD) flash $(CANADDR) $(PRG).hex
+canflash: $(OUT).hex
+	$(LAPFLASHCMD) flash $(CANADDR) $(OUT).hex
 
-lst:  $(PRG).lst
+#############################################################################
+# Rules for MCU
+all: $(OUT).elf lst text eeprom
+
+$(OUT).elf: $(OBJ)
+	$(MCU_CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+%.o: %.c
+	$(MCU_CC) $(CFLAGS) -c $<
+
+
+lst: $(OUT).lst
 
 %.lst: %.elf
 	$(OBJDUMP) -h -S $< > $@
 
 # Rules for building the .text rom images
-
 text: hex bin srec
 
-hex:  $(PRG).hex
-bin:  $(PRG).bin
-srec: $(PRG).srec
+hex:  $(OUT).hex
+bin:  $(OUT).bin
+srec: $(OUT).srec
 
 %.hex: %.elf
 	$(OBJCOPY) -j .text -j .data -O ihex $< $@
@@ -64,9 +66,9 @@ srec: $(PRG).srec
 
 eeprom: ehex ebin esrec
 
-ehex:  $(PRG)_eeprom.hex
-ebin:  $(PRG)_eeprom.bin
-esrec: $(PRG)_eeprom.srec
+ehex:  $(OUT)_eeprom.hex
+ebin:  $(OUT)_eeprom.bin
+esrec: $(OUT)_eeprom.srec
 
 %_eeprom.hex: %.elf
 	$(OBJCOPY) -j .eeprom --change-section-lma .eeprom=0 -O ihex $< $@
@@ -77,23 +79,3 @@ esrec: $(PRG)_eeprom.srec
 %_eeprom.bin: %.elf
 	$(OBJCOPY) -j .eeprom --change-section-lma .eeprom=0 -O binary $< $@
 
-# Every thing below here is used by avr-libc's build system and can be ignored
-# by the casual user.
-
-FIG2DEV                 = fig2dev
-EXTRA_CLEAN_FILES       = *.hex *.bin *.srec
-
-dox: eps png pdf
-
-eps: $(PRG).eps
-png: $(PRG).png
-pdf: $(PRG).pdf
-
-%.eps: %.fig
-	$(FIG2DEV) -L eps $< $@
-
-%.pdf: %.fig
-	$(FIG2DEV) -L pdf $< $@
-
-%.png: %.fig
-	$(FIG2DEV) -L png $< $@
