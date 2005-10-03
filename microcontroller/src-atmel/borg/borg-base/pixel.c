@@ -1,4 +1,3 @@
-
 #define PIXEL_C
 #include "pixel.h"
 
@@ -8,7 +7,7 @@
 #include "config.h"
 
 unsigned char shl_table[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
-
+unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
 void clear_screen(unsigned char value){
 	unsigned char p, x, y, v=0xFF;

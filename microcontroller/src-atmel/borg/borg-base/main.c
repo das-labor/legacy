@@ -3,7 +3,6 @@
 #include <avr/interrupt.h>
 
 #include "config.h"
-#include "scrolltext2.h"
 #include "programm.h"
 #include "borg_hw.h"
 #include "pixel.h"
@@ -45,7 +44,6 @@ int main (void){
 			snake();
 			break;
 		case 7:
-			scrolltext(scrolltext_text,1,60);
 			break;
 		case 8:
 			feuer();

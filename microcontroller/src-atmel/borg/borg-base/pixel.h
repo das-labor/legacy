@@ -1,26 +1,29 @@
-#ifndef PIXEL_C
-extern unsigned char shl_table[];
-#endif
+#ifndef PIXEL_H
+#define PIXEL_H
 
-typedef struct{
+#include "config.h"
+#define LINEBYTES (((NUM_COLS-1)/8)+1)
+
+extern unsigned char shl_table[];
+extern unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
+
+typedef struct {
 	unsigned char x;
 	unsigned char y;
-}pixel;
+} pixel;
 
 
-typedef enum{right,left,up,down} direction;
-
-typedef struct{
+typedef enum {right,left,up,down} direction;
+typedef struct {
 	pixel pos;
 	direction dir;
 	enum{clear=0, set=1} mode;
-}cursor;
+} cursor;
 
-
-
-
+/****************************************************************************
+ * Pixel routines
+ */
 void clear_screen(unsigned char value);
-
 void setpixel(pixel p, unsigned char value);
 #define clearpixel(p) setpixel(p, 0);
 
@@ -38,3 +41,5 @@ void set_cursor(cursor* cur, pixel p);
 
 //this is deprecated
 void walk(cursor* cur, unsigned char steps, unsigned int delay);
+
+#endif // PIXEL_H

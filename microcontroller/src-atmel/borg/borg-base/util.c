@@ -3,7 +3,7 @@
 #include "config.h"
 
 #ifdef BORG_CAN
-#include "borg_can.h"
+#  include "borg_can.h"
 #endif
 
 #ifndef F_CPU
