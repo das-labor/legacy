@@ -1,2 +1,2 @@
 
-SUBDIRS = cand lapcontrol
+SUBDIRS = cand lapcontrol liblap
