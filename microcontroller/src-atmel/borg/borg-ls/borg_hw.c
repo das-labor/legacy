@@ -55,13 +55,13 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 	if (row == 0){
 		switch (plane){
 			case 0:
-				OCR0 = 8;
+				OCR0 = 7;
 				break;
 			case 1:
-				OCR0 = 13;
+				OCR0 = 20;
 				break;
 			case 2:
-				OCR0 = 20;
+				OCR0 = 40;
 		}
 	}
 	
@@ -89,7 +89,7 @@ void timer0_on(){
 */
 	TCCR0 = 0x08 |0x04;	// CTC Mode, clk/256
 	TCNT0 = 0;	// reset timer
-	OCR0  = 0x20;	// Compare with this value
+	OCR0  = 0x30;	// Compare with this value
 	TIMSK = 0x02;	// Compare match Interrupt on
 }
 

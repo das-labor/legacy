@@ -1,7 +1,7 @@
 #define SCROLLTEXT_C
 
 #include "config.h"
-#include "scrolltext.h"
+#include "scrolltext.h"/
 #ifdef AVR
 #   include "borg_hw.h"
 #endif
@@ -75,8 +75,7 @@ unsigned int getLen(char *str, unsigned char fontNr, unsigned char space) {
 }
 
 
-               // Pos
-void draw_Text(char *str, int posx, char posy, unsigned char fontNr, unsigned char space, unsigned char color) {
+void draw_Text(char *str, unsigned int posx, char posy, unsigned char fontNr, unsigned char space, unsigned char color) {
 	unsigned char byte;
     char x, y, glyph = *str;
 	unsigned int charC, charEnd;
@@ -92,6 +91,22 @@ void draw_Text(char *str, int posx, char posy, unsigned char fontNr, unsigned ch
 	charEnd = pgm_read_word(fonts[fontNr].fontIndex+glyph+1);
 	if (fontNr >= MAX_FONTS) 
 		fontNr = MAX_FONTS - 1;
+	while (posx > NUM_COLS) {
+	    if (charC < charEnd) {                  
+            charC++;
+        } 
+        if (charC >= charEnd) {
+            x -= space;
+            if (!(glyph = *++str)) return;      
+            if ((glyph < fonts[fontNr].glyph_beg) || (glyph > fonts[fontNr].glyph_end)) {      
+               glyph = fonts[fontNr].glyph_def;
+            } 
+            glyph -= fonts[fontNr].glyph_beg;   
+            charC = pgm_read_word(fonts[fontNr].fontIndex+glyph);
+            charEnd = pgm_read_word(fonts[fontNr].fontIndex+glyph+1);
+        }
+        posx--;
+    }
 	for (x = posx; x >= 0; x--) {
         byte = pgm_read_byte(fonts[fontNr].fontData+fonts[fontNr].storebytes*charC);
 		for (y = posy; y < NUM_ROWS; y++) {
@@ -113,14 +128,13 @@ void draw_Text(char *str, int posx, char posy, unsigned char fontNr, unsigned ch
             charC = pgm_read_word(fonts[fontNr].fontIndex+glyph);
             charEnd = pgm_read_word(fonts[fontNr].fontIndex+glyph+1);
         }
-	}	
+    }	
 }
-
 
 void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
 	fonts[0] = font_uni53;
 	char x;
-    unsigned int posx = (getLen(str, 0, 1)+NUM_COLS)/2;
+     unsigned int posx = (getLen(str, 0, 1)+NUM_COLS)/2;
      //char *tmp = str;
      //while (*tmp) {
      //   shift_in(*tmp++, fontNr, delay);
@@ -146,5 +160,53 @@ void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
          wait(150);
          clear_screen(0);
      }
+     clear_screen(3);
+     draw_Text(str, posx, 0, 0, 1, 0);
+     wait(3000);
 }
 
+
+/* Konzept
+   =======
+Text wird in Token unterteilt, jeder Token bekommt einen Command-String.
+z.B.
+
+LABOR#b<#
+
+Es werden die Zeiger aus dem Eingabestring direkt übernommen, mit Stinglen.
+Wenn der Command abgearbeitet ist wird automatisch das nächste Token eingelesen.
+
+Commands:
+	
+ */
+typedef struct {
+	char *str;
+	char strLen;
+	char *commands;
+	char commandLen;
+	unsigned int posx;
+	char posy;
+	unsigned int tox;
+	char toy;
+	unsigned char fontNr:3, bink:1, space:3, color:4;
+} stringToken;	
+
+#define ESC_CHAR '#'
+#define MAX_TOKEN 256
+
+void textAnim(char *str) {
+	stringToken tokens[MAX_TOKEN];	
+	unsigned char i, j;
+	i = 0;
+	j = 0;
+	while (str[i+1] && str[i] != '#') {
+		i++; 
+		j++;
+	}
+	  	
+	
+	// parse string token
+	while (1) {
+			
+	}
+} 
