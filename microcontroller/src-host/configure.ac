@@ -11,6 +11,7 @@ AC_CONFIG_HEADER([config.h])
 AC_PROG_CC
 AC_PROG_CXX
 AC_ISC_POSIX
+AC_PROG_LIBTOOL
 
 # Checks for libraries.
 AC_CHECK_LIB([ezV24], [v24Getc], [], AC_MSG_ERROR([libezV24 not found]) )
@@ -32,6 +33,7 @@ playground/Makefile
 src/Makefile
 src/cand/Makefile
 src/lapcontrol/Makefile
+src/liblap/Makefile
 ])
 
 AC_OUTPUT
