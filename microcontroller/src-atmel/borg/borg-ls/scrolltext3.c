@@ -20,42 +20,6 @@ unsigned char PROGMEM colorTable[MAX_SPECIALCOLORS*NUM_ROWS] = {1, 1, 2, 3, 3, 2
                                                                 3, 3, 2, 1, 1, 2, 3, 3,    
                                                                 3, 3, 2, 2, 3, 3, 2, 2};
 
-/*
-void shift_in(unsigned char glyph, unsigned char fontNr, unsigned int delay){
-	unsigned char  y, s, len, byte;
-	unsigned int i;
-	if (fontNr >= MAX_FONTS) 
-		fontNr = MAX_FONTS - 1;
-	if ((glyph < fonts[fontNr].glyph_beg) || (glyph > fonts[fontNr].glyph_end)) {
-            glyph = fonts[fontNr].glyph_def;
-    } 
-	glyph -= fonts[fontNr].glyph_beg;
-	for (i = pgm_read_word(fonts[fontNr].fontIndex+glyph); i < pgm_read_word(fonts[fontNr].fontIndex+glyph+1); i++) {
-		shift_pixmap_l();
-		for (s = 0; s < fonts[fontNr].storebytes; s++) {
-            byte = pgm_read_byte(fonts[fontNr].fontData+fonts[fontNr].storebytes*i+s);
-			for (y = 7; y < 8; y--) {
-				if (byte & (1 << y)) {	
-						setpixel((pixel){NUM_COLS-1, y+(fonts[fontNr].storebytes-1-s)*8}, 3);
-				}
-			}
-		}
-		wait(delay);
-	}
-	shift_pixmap_l();
-	wait(delay);
-}
-
-
-void shift_out(unsigned char cols, unsigned int delay){
-	unsigned char i;
-	for(i=0;i<cols;i++){
-		shift_pixmap_l();
-		wait(delay);
-	}
-}
-*/
-
 unsigned int getLen(char *str, unsigned char fontNr, unsigned char space) {
     char glyph;
     unsigned int strLen = 0;	
@@ -179,20 +143,67 @@ Wenn der Command abgearbeitet ist wird automatisch das nächste Token eingelesen
 Commands:
 	
  */
+ 
+ #define DIRECTION_RIGHT 0x01
 typedef struct {
 	char *str;
 	char strLen;
 	char *commands;
 	char commandLen;
-	unsigned int posx;
+	enum waitfor_e waitfor;
+	unsigned char lastCommand;
+	int sizex;
+	int posx;
 	char posy;
-	unsigned int tox;
+	int tox;
 	char toy;
+	unsigned char delayx, delayx_rld;
+	unsigned char delayy, delayy_rld;
+	unsigned char direction;
+	unsigned char wait_timer;
 	unsigned char fontNr:3, bink:1, space:3, color:4;
-} stringToken;	
+} blob_t;	
 
 #define ESC_CHAR '#'
 #define MAX_TOKEN 256
+
+unsigned char blobNextCommand(blob_t * blob){
+	if(commandLen == 0){
+		return 1;
+	}else switch (*commands){
+		case '
+	
+	}
+}
+
+unsigned char updateBlob(blob_t * blob){
+	
+	if(blob->delayx && (!(--blob->delayx)){
+		blob->delayx = blob->delayx_rld;
+		(direction & DIRECTION_RIGHT)?blob->posx--:blob->posx++;
+	}
+	
+	unsigned char done=0;
+	switch (blob->waitfor){
+		case wait_posy:
+			if (blob->posy == blob->toy)done = 1;
+			break;
+		case wait_posx:
+			if (blob->posx == blob->tox)done = 1;
+			break;
+		case wait_out:
+			if((blob->posx - blob->sizex) > NUM_COLS || blob->posx < 0) done = 1;
+		default:
+			break;
+	}
+	if(done){
+		if(blobNextCommand(blob)){
+			return 1; //this blob is finished, and can be deleted
+		}
+	}
+
+}
+
 
 void textAnim(char *str) {
 	stringToken tokens[MAX_TOKEN];	
@@ -209,4 +220,4 @@ void textAnim(char *str) {
 	while (1) {
 			
 	}
-} 
+}
