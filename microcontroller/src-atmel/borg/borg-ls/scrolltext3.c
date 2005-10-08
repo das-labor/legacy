@@ -1,7 +1,8 @@
 #define SCROLLTEXT_C
 
+#include <stdlib.h>
 #include "config.h"
-#include "scrolltext.h"/
+#include "scrolltext.h"
 #ifdef AVR
 #   include "borg_hw.h"
 #endif
@@ -41,26 +42,26 @@ unsigned int getLen(char *str, unsigned char fontNr, unsigned char space) {
 
 void draw_Text(char *str, unsigned int posx, char posy, unsigned char fontNr, unsigned char space, unsigned char color) {
 	unsigned char byte;
-    char x, y, glyph = *str;
+	char x, y, glyph = *str;
 	unsigned int charC, charEnd;
 	if (color > NUMPLANE+MAX_SPECIALCOLORS) 
-	   color = 3;
+		color = 3;
     if (fontNr >= MAX_FONTS) 
 		fontNr = MAX_FONTS - 1;
 	if ((glyph < fonts[fontNr].glyph_beg) || (glyph > fonts[fontNr].glyph_end)) {
-       glyph = fonts[fontNr].glyph_def;
-    } 
+		glyph = fonts[fontNr].glyph_def;
+	}
 	glyph -= fonts[fontNr].glyph_beg;
 	charC = pgm_read_word(fonts[fontNr].fontIndex+glyph);
 	charEnd = pgm_read_word(fonts[fontNr].fontIndex+glyph+1);
 	if (fontNr >= MAX_FONTS) 
 		fontNr = MAX_FONTS - 1;
 	while (posx > NUM_COLS) {
-	    if (charC < charEnd) {                  
-            charC++;
-        } 
-        if (charC >= charEnd) {
-            x -= space;
+		if (charC < charEnd) {                  
+			charC++;
+		} 
+		if (charC >= charEnd) {
+			x -= space;
             if (!(glyph = *++str)) return;      
             if ((glyph < fonts[fontNr].glyph_beg) || (glyph > fonts[fontNr].glyph_end)) {      
                glyph = fonts[fontNr].glyph_def;
@@ -95,9 +96,14 @@ void draw_Text(char *str, unsigned int posx, char posy, unsigned char fontNr, un
     }	
 }
 
+void textAnim(char *str);
+
 void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
 	fonts[0] = font_uni53;
 	char x;
+	
+	textAnim(str);
+	return;
      unsigned int posx = (getLen(str, 0, 1)+NUM_COLS)/2;
      //char *tmp = str;
      //while (*tmp) {
@@ -143,15 +149,25 @@ Wenn der Command abgearbeitet ist wird automatisch das nächste Token eingelesen
 Commands:
 	
  */
+
+enum waitfor_e{
+	wait_posy,
+	wait_posx,
+	wait_out,
+	wait_timer
+};
  
- #define DIRECTION_RIGHT 0x01
-typedef struct {
+#define DIRECTION_RIGHT 0x01
+
+struct blob_t_struct;
+
+typedef struct blob_t_struct{
+	struct blob_t_struct * next, * last;
 	char *str;
 	char strLen;
 	char *commands;
 	char commandLen;
 	enum waitfor_e waitfor;
-	unsigned char lastCommand;
 	int sizex;
 	int posx;
 	char posy;
@@ -160,27 +176,95 @@ typedef struct {
 	unsigned char delayx, delayx_rld;
 	unsigned char delayy, delayy_rld;
 	unsigned char direction;
-	unsigned char wait_timer;
+	unsigned int timer;
 	unsigned char fontNr:3, bink:1, space:3, color:4;
-} blob_t;	
+} blob_t;
+
 
 #define ESC_CHAR '#'
 #define MAX_TOKEN 256
 
-unsigned char blobNextCommand(blob_t * blob){
-	if(commandLen == 0){
-		return 1;
-	}else switch (*commands){
-		case '
+unsigned int getnum(blob_t * blob){
+	unsigned int num=0;
+	unsigned char gotnum = 0;
 	
+	while( (blob->commandLen != 0) && (*blob->commands >= 0) && (*blob->commands <=9) ){
+		gotnum = 1;
+		num *= 10;
+		num += *blob->commands - '0';
+		blob->commands++;
+		blob->commandLen--;
+	}
+	
+	if(gotnum){
+		return num;
+	}else{
+		return 0xffff;
 	}
 }
 
+unsigned char blobNextCommand(blob_t * blob){
+	unsigned int tmp;
+	unsigned char retval = 0;
+	while(blob->commandLen != 0){
+		blob->commandLen--;
+		switch (*blob->commands++){
+		case '<':
+			blob->direction &= ~DIRECTION_RIGHT;
+			if((tmp = getnum(blob)) != 0xFFFF){ 
+				blob->delayx_rld = tmp;
+			}else{
+				blob->delayx_rld = 5;
+			}
+			blob->delayx = blob->delayx_rld;
+			break;
+		case '>':
+			blob->direction |= DIRECTION_RIGHT;
+			if((tmp = getnum(blob)) != 0xFFFF){ 
+				blob->delayx_rld = tmp;
+			}else{
+				blob->delayx_rld = 5;
+			}
+			blob->delayx = blob->delayx_rld;
+			break;
+		case '|':
+			if((tmp = getnum(blob)) != 0xFFFF){ 
+				blob->tox = tmp;
+			}else{
+				blob->tox =  NUM_COLS/2 + blob->sizex/2;
+			}
+			blob->waitfor = wait_posx;
+			return retval;
+			break;
+		case 'p':
+			blob->delayx_rld = 0;
+			blob->delayy_rld = 0;
+			if((tmp = getnum(blob)) != 0xFFFF){ 
+				blob->timer = tmp*64;
+			}else{
+				blob->timer =  30*64;
+			}
+			blob->waitfor = wait_timer;
+			return retval;
+			break;
+		case '/':
+			blob->waitfor = wait_out;
+			return retval;
+			break;
+		case '+':
+			retval = 2;
+			break;
+		}
+	}
+	return 1;//this blob is finished, and can be deleted.
+}
+
+
 unsigned char updateBlob(blob_t * blob){
 	
-	if(blob->delayx && (!(--blob->delayx)){
+	if(blob->delayx_rld && (!(blob->delayx--))){
 		blob->delayx = blob->delayx_rld;
-		(direction & DIRECTION_RIGHT)?blob->posx--:blob->posx++;
+		(blob->direction & DIRECTION_RIGHT)?blob->posx--:blob->posx++;
 	}
 	
 	unsigned char done=0;
@@ -193,31 +277,48 @@ unsigned char updateBlob(blob_t * blob){
 			break;
 		case wait_out:
 			if((blob->posx - blob->sizex) > NUM_COLS || blob->posx < 0) done = 1;
+			break;
+		case wait_timer:
+			if(0 == blob->timer--){
+				done = 1;
+			}
+			break;
 		default:
 			break;
 	}
 	if(done){
-		if(blobNextCommand(blob)){
-			return 1; //this blob is finished, and can be deleted
-		}
+		return (blobNextCommand(blob));
 	}
+	return 0;
+}
 
+void drawBlob(blob_t * blob){
+	draw_Text(blob->str, blob->posx, blob->posy, 0, 1, 7);
 }
 
 
 void textAnim(char *str) {
-	stringToken tokens[MAX_TOKEN];	
-	unsigned char i, j;
-	i = 0;
-	j = 0;
-	while (str[i+1] && str[i] != '#') {
-		i++; 
-		j++;
-	}
-	  	
+	blob_t * startblob;
+
+	startblob = malloc(sizeof (blob_t));
 	
-	// parse string token
-	while (1) {
-			
+	startblob->str = str;
+	startblob->commands = "<|p3</";
+	startblob->commandLen = 6;
+	startblob->sizex = getLen(str, 0, 1);
+	startblob->posx = 0;
+	startblob->posy = 0;
+	startblob->delayx_rld = 0;
+	
+	blobNextCommand(startblob);
+	
+	while(1){
+		if(updateBlob(startblob)==1){
+			free(startblob);
+		 	return;
+		}
+		clear_screen(0);
+		drawBlob(startblob);
+		wait(10);
 	}
 }
