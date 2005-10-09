@@ -39,62 +39,61 @@ unsigned int getLen(char *str, unsigned char fontNr, unsigned char space) {
     return strLen-space; // den letzten space wieder abziehen
 }
 
+#define PW(a) pgm_read_word(&(a))
 
 void draw_Text(char *str, unsigned int posx, char posy, unsigned char fontNr, unsigned char space, unsigned char color) {
-	unsigned char byte;
-	char x, y, glyph = *str;
-	unsigned int charC, charEnd;
+	char x, y; 
+	unsigned char byte, glyph = *str;
+	unsigned int charPos, charEnd;
 	if (color > NUMPLANE+MAX_SPECIALCOLORS) 
 		color = 3;
-    if (fontNr >= MAX_FONTS) 
+	if (fontNr >= MAX_FONTS) 
 		fontNr = MAX_FONTS - 1;
+	
 	if ((glyph < fonts[fontNr].glyph_beg) || (glyph > fonts[fontNr].glyph_end)) {
 		glyph = fonts[fontNr].glyph_def;
 	}
 	glyph -= fonts[fontNr].glyph_beg;
-	charC = pgm_read_word(fonts[fontNr].fontIndex+glyph);
-	charEnd = pgm_read_word(fonts[fontNr].fontIndex+glyph+1);
-	if (fontNr >= MAX_FONTS) 
-		fontNr = MAX_FONTS - 1;
+	charPos = PW(fonts[fontNr].fontIndex[glyph]);
+	charEnd = PW(fonts[fontNr].fontIndex[glyph+1]);
+
 	while (posx > NUM_COLS) {
-		if (charC < charEnd) {                  
-			charC++;
-		} 
-		if (charC >= charEnd) {
-			x -= space;
-            if (!(glyph = *++str)) return;      
-            if ((glyph < fonts[fontNr].glyph_beg) || (glyph > fonts[fontNr].glyph_end)) {      
-               glyph = fonts[fontNr].glyph_def;
-            } 
-            glyph -= fonts[fontNr].glyph_beg;   
-            charC = pgm_read_word(fonts[fontNr].fontIndex+glyph);
-            charEnd = pgm_read_word(fonts[fontNr].fontIndex+glyph+1);
-        }
-        posx--;
-    }
+		if (charPos < charEnd) {                  
+			charPos++;
+		}else{
+			if (!(glyph = *++str)) return;      
+			if ((glyph < fonts[fontNr].glyph_beg) || (glyph > fonts[fontNr].glyph_end)) {      
+				glyph = fonts[fontNr].glyph_def;
+			} 
+			glyph -= fonts[fontNr].glyph_beg;
+			charPos = PW(fonts[fontNr].fontIndex[glyph]);
+			charEnd = PW(fonts[fontNr].fontIndex[glyph+1]);
+		}
+		posx--;
+	}
 	for (x = posx; x >= 0; x--) {
-        byte = pgm_read_byte(fonts[fontNr].fontData+fonts[fontNr].storebytes*charC);
+		byte = pgm_read_byte(fonts[fontNr].fontData+fonts[fontNr].storebytes*charPos);
 		for (y = posy; y < NUM_ROWS; y++) {
 			if (byte & (1 << (y-posy)) && y-posy >= 0 && y >= 0 && x < NUM_COLS) {	
                setpixel((pixel){x, y}, color <= NUMPLANE? color: 
                                        pgm_read_byte(colorTable+(color-NUMPLANE-1)*NUM_ROWS+y-posy));
 			}	
 		}
-		if (charC < charEnd) {                  
-            charC++;
-        } 
-        if (charC >= charEnd) {
-            x -= space;
-            if (!(glyph = *++str)) return;      
-            if ((glyph < fonts[fontNr].glyph_beg) || (glyph > fonts[fontNr].glyph_end)) {      
-               glyph = fonts[fontNr].glyph_def;
-            } 
-            glyph -= fonts[fontNr].glyph_beg;   
-            charC = pgm_read_word(fonts[fontNr].fontIndex+glyph);
-            charEnd = pgm_read_word(fonts[fontNr].fontIndex+glyph+1);
-        }
-    }	
+		if (charPos < charEnd) {                  
+			charPos++;
+		}else{
+			x -= space;
+			if (!(glyph = *++str)) return;      
+			if ((glyph < fonts[fontNr].glyph_beg) || (glyph > fonts[fontNr].glyph_end)) {      
+				glyph = fonts[fontNr].glyph_def;
+			} 
+			glyph -= fonts[fontNr].glyph_beg;   
+			charPos = pgm_read_word(fonts[fontNr].fontIndex+glyph);
+			charEnd = pgm_read_word(fonts[fontNr].fontIndex+glyph+1);
+		}
+	}
 }
+
 
 void textAnim(char *str);
 
@@ -141,13 +140,11 @@ void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
 Text wird in Token unterteilt, jeder Token bekommt einen Command-String.
 z.B.
 
-LABOR#b<#
+#b<#LABOR
 
 Es werden die Zeiger aus dem Eingabestring direkt übernommen, mit Stinglen.
 Wenn der Command abgearbeitet ist wird automatisch das nächste Token eingelesen.
 
-Commands:
-	
  */
 
 enum waitfor_e{
@@ -156,7 +153,7 @@ enum waitfor_e{
 	wait_out,
 	wait_timer
 };
- 
+
 #define DIRECTION_RIGHT 0x01
 
 struct blob_t_struct;
@@ -164,9 +161,7 @@ struct blob_t_struct;
 typedef struct blob_t_struct{
 	struct blob_t_struct * next, * last;
 	char *str;
-	char strLen;
 	char *commands;
-	char commandLen;
 	enum waitfor_e waitfor;
 	int sizex;
 	int posx;
@@ -177,8 +172,10 @@ typedef struct blob_t_struct{
 	unsigned char delayy, delayy_rld;
 	unsigned char direction;
 	unsigned int timer;
-	unsigned char fontNr:3, bink:1, space:3, color:4;
-} blob_t;
+	
+	const uint16_t *glyph_table;
+	const unsigned char *width_table;
+}blob_t;
 
 
 #define ESC_CHAR '#'
