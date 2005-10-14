@@ -143,8 +143,9 @@ void timf(int value) {
 }*/
 
 void *display_loop(void * unused) {
+	unsigned char text[] = "<5|p2+</#Hallo Labor Borg#7<1|+>10/#T#e#s#t#i#n#g#";
 	while (1) {	
-        scrolltext("!!Laufschrift Borg!!", 0, 70);
+        	scrolltext(text, 0, 70);
 		matrix();
 		fadein();
 		joern1();

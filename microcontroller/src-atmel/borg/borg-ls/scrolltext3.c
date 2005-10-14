@@ -29,7 +29,7 @@ unsigned char PROGMEM colorTable[MAX_SPECIALCOLORS*NUM_ROWS] = {1, 1, 2, 3, 3, 2
 Text wird in Token unterteilt, jeder Token bekommt einen Command-String.
 z.B.
 
-#b<#LABOR
+#b</#LABOR
 
 Es werden die Zeiger aus dem Eingabestring direkt übernommen, mit Stinglen.
 Wenn der Command abgearbeitet ist wird automatisch das nächste Token eingelesen.
@@ -75,6 +75,7 @@ enum waitfor_e{
 	wait_col_l,
 };
 #define DIRECTION_RIGHT 0x01
+#define DIRECTION_DOWN 0x02
 
 struct blob_t_struct;
 typedef struct blob_t_struct{
@@ -83,6 +84,7 @@ typedef struct blob_t_struct{
 	char *commands;
 	enum waitfor_e waitfor;
 	int sizex;
+	char sizey;
 	int posx;
 	char posy;
 	int tox;
@@ -184,6 +186,24 @@ unsigned char blobNextCommand(blob_t * blob){
 			}
 			blob->delayx = blob->delayx_rld;
 			break;
+		case 'd':
+			blob->direction |= DIRECTION_DOWN;
+			if((tmp = getnum(blob)) != 0xFFFF){ 
+				blob->delayy_rld = tmp;
+			}else{
+				blob->delayy_rld = 5;
+			}
+			blob->delayy = blob->delayy_rld;
+			break;
+		case 'u':
+			blob->direction &= ~DIRECTION_DOWN;
+			if((tmp = getnum(blob)) != 0xFFFF){ 
+				blob->delayy_rld = tmp;
+			}else{
+				blob->delayy_rld = 5;
+			}
+			blob->delayy = blob->delayy_rld;
+			break;	
 		case '|':
 			if((tmp = getnum(blob)) != 0xFFFF){ 
 				blob->tox = tmp;
@@ -191,6 +211,15 @@ unsigned char blobNextCommand(blob_t * blob){
 				blob->tox =  NUM_COLS/2 + blob->sizex/2;
 			}
 			blob->waitfor = wait_posx;
+			return retval;
+			break;
+		case '-':
+			if((tmp = getnum(blob)) != 0xFFFF){ 
+				blob->toy = tmp;
+			}else{
+				blob->toy =  0;
+			}
+			blob->waitfor = wait_posy;
 			return retval;
 			break;
 		case 'p':
@@ -226,6 +255,7 @@ blob_t * setupBlob(unsigned char * str){
 	static unsigned char chop_cnt;
 	static char *last; static char delim[] = "#";
 	static unsigned char *lastcommands;
+	unsigned int tmp;
 	
 	if(str){
 		chop_cnt = 0;
@@ -237,7 +267,6 @@ blob_t * setupBlob(unsigned char * str){
 		blob->commands = strtok_r (str, delim, &last);
 		if( blob->commands == 0) goto fail;
 		
-		unsigned int tmp;
 		if((tmp = getnum(blob)) != 0xFFFF){
 			chop_cnt = tmp;
 			lastcommands = blob->commands;
@@ -256,14 +285,14 @@ blob_t * setupBlob(unsigned char * str){
 	blob->fontIndex = fonts[0].fontIndex;
 	blob->fontData = fonts[0].fontData;
 	
-	unsigned char tmp, *strg = blob->str;
+	unsigned char tmp1, *strg = blob->str;
 	unsigned char glyph_beg = fonts[0].glyph_beg;
 	unsigned char glyph_end = fonts[0].glyph_end;
 
 	//translate the string: subtract 1 to get offset in Table
-	while((tmp = *strg)){
-		if((tmp>=glyph_beg) && (tmp<glyph_end)){
-			*strg = 1 + tmp - glyph_beg;
+	while((tmp1 = *strg)){
+		if((tmp1>=glyph_beg) && (tmp1<glyph_end)){
+			*strg = 1 + tmp1 - glyph_beg;
 		}else{
 			*strg = 1;
 		}
@@ -272,6 +301,7 @@ blob_t * setupBlob(unsigned char * str){
 	
 	blob->space = 1;
 	
+	blob->sizey = 8;
 	blob->sizex = getLen(blob);
 	if(*blob->commands == '<'){
 		blob->posx = 0;
@@ -279,6 +309,20 @@ blob_t * setupBlob(unsigned char * str){
 	}else if(*blob->commands == '>'){
 		blob->posx = NUM_COLS+blob->sizex;
 		blob->posy = 0;
+	}else if(*blob->commands == 'd'){
+		blob->posy = -blob->sizey;
+		if((tmp = getnum(blob)) != 0xFFFF){ 
+			blob->posx = tmp;
+		}else{
+			blob->posx = NUM_COLS/2 + blob->sizex/2;
+		}
+	}else if(*blob->commands == 'u'){
+		blob->posy = blob->sizey;
+		if((tmp = getnum(blob)) != 0xFFFF){ 
+			blob->posx = tmp;
+		}else{
+			blob->posx = NUM_COLS/2 + blob->sizex/2;
+		}
 	}
 	
 	blob->delayx_rld = 0;
@@ -301,6 +345,11 @@ unsigned char updateBlob(blob_t * blob){
 		(blob->direction & DIRECTION_RIGHT)?blob->posx--:blob->posx++;
 	}
 	
+	if(blob->delayy_rld && (!(blob->delayy--))){
+		blob->delayy = blob->delayy_rld;
+		(blob->direction & DIRECTION_DOWN)?blob->posy++:blob->posy--;
+	}
+	
 	unsigned char done=0;
 	switch (blob->waitfor){
 		case wait_posy:
@@ -311,6 +360,7 @@ unsigned char updateBlob(blob_t * blob){
 			break;
 		case wait_out:
 			if((blob->posx - blob->sizex) > NUM_COLS || blob->posx < 0) done = 1;
+			if((blob->posy) > NUM_ROWS || (blob->posy + blob->sizey) <0 ) done = 1;
 			break;
 		case wait_timer:
 			if(0 == blob->timer--){
