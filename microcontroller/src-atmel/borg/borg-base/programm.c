@@ -163,7 +163,7 @@ void snake(){
 		
 			if(random()<80){
 				unsigned char j;
-				unsigned char nextapple=0, distx, disty, shortdist=255, xy;
+				unsigned char nextapple=0, distx, disty, shortdist=255, xy=0;
 				if(!apple_num){
 					dir = random()%4;
 				}else{
