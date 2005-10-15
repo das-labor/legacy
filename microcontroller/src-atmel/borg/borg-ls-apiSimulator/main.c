@@ -142,10 +142,13 @@ void timf(int value) {
   glutTimerFunc(1, timf, 0);
 }*/
 
+
+char animation[] = ">+p8>15/#Willkommen#<;+>15/# im#<;>15/# LABOR"; 
+
 void *display_loop(void * unused) {
-	unsigned char text[] = "<5|p2+</#Hallo Labor Borg#7<1|+>10/#T#e#s#t#i#n#g#";
+	unsigned char text[] = "<5|p2+</#Hallo Labor Borg#7<1|+>10/#T#e#s#t#i#n#g#d50-u50/d50-/u50-p50#www.das-labor.org";
 	while (1) {	
-        	scrolltext(text, 0, 70);
+        scrolltext(text, 0, 89);
 		matrix();
 		fadein();
 		joern1();
