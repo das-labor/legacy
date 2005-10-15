@@ -49,13 +49,22 @@ void process_mgt_msg(pdo_message *msg)
 
 void process_mood_msg(pdo_message *msg)
 {
-
+	uint8_t selectmood;
 	switch(msg->cmd) {
 	case FKT_MOOD_SET:
-		bright[0] = msg->data[0];
-		bright[1] = msg->data[1];
-		bright[2] = msg->data[2];
-		bright[3] = msg->data[3];
+		selectmood = msg->data[0];
+		if(selectmood == 0){
+			bright[0]  = msg->data[1];
+			bright[1]  = msg->data[2];
+			bright[2]  = msg->data[3];
+			bright[3]  = msg->data[4];
+		}
+		if (selectmood == 1){
+			bright[4]  = msg->data[1];
+			bright[5]  = msg->data[2];
+			bright[6]  = msg->data[3];
+			bright[7]  = msg->data[4];
+		}
 		break;
 	case FKT_MOOD_GET:
 		break;
