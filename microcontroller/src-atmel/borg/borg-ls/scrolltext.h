@@ -1,1 +1,0 @@
-void scrolltext(char *str);
