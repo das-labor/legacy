@@ -1,0 +1,16 @@
+<Combine name="AllMacht" fileversion="2.0">
+  <Configurations>
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry build="True" name="AllMacht" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry build="True" name="AllMacht" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="AllMacht" single="True">
+    <Execute type="None" entry="AllMacht" />
+  </StartMode>
+  <Entries>
+    <Entry filename="./AllMacht.mdp" />
+  </Entries>
+</Combine>
