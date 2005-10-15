@@ -58,20 +58,6 @@
       </child>
 
       <child>
-	<widget class="GtkColorSelection" id="ledfoo1">
-	  <property name="width_request">300</property>
-	  <property name="height_request">200</property>
-	  <property name="visible">True</property>
-	  <property name="has_opacity_control">True</property>
-	  <property name="has_palette">False</property>
-	</widget>
-	<packing>
-	  <property name="x">16</property>
-	  <property name="y">328</property>
-	</packing>
-      </child>
-
-      <child>
 	<widget class="GtkVScale" id="scale2">
 	  <property name="width_request">48</property>
 	  <property name="height_request">296</property>
@@ -91,21 +77,30 @@
       </child>
 
       <child>
-	<widget class="GtkVScale" id="scale3">
-	  <property name="width_request">48</property>
-	  <property name="height_request">296</property>
+	<widget class="GtkColorSelection" id="ledfoo1">
+	  <property name="width_request">300</property>
+	  <property name="height_request">200</property>
 	  <property name="visible">True</property>
-	  <property name="can_focus">True</property>
-	  <property name="draw_value">True</property>
-	  <property name="value_pos">GTK_POS_TOP</property>
-	  <property name="digits">1</property>
-	  <property name="update_policy">GTK_UPDATE_CONTINUOUS</property>
-	  <property name="inverted">False</property>
-	  <property name="adjustment">0 0 0 0 0 0</property>
+	  <property name="has_opacity_control">False</property>
+	  <property name="has_palette">True</property>
 	</widget>
 	<packing>
-	  <property name="x">136</property>
-	  <property name="y">8</property>
+	  <property name="x">8</property>
+	  <property name="y">320</property>
+	</packing>
+      </child>
+
+      <child>
+	<widget class="GtkColorSelection" id="ledfoo2">
+	  <property name="width_request">0</property>
+	  <property name="height_request">0</property>
+	  <property name="visible">True</property>
+	  <property name="has_opacity_control">False</property>
+	  <property name="has_palette">True</property>
+	</widget>
+	<packing>
+	  <property name="x">8</property>
+	  <property name="y">536</property>
 	</packing>
       </child>
 
@@ -123,7 +118,26 @@
 	  <property name="adjustment">0 0 0 0 0 0</property>
 	</widget>
 	<packing>
-	  <property name="x">192</property>
+	  <property name="x">136</property>
+	  <property name="y">8</property>
+	</packing>
+      </child>
+
+      <child>
+	<widget class="GtkVScale" id="scale3">
+	  <property name="width_request">48</property>
+	  <property name="height_request">296</property>
+	  <property name="visible">True</property>
+	  <property name="can_focus">True</property>
+	  <property name="draw_value">True</property>
+	  <property name="value_pos">GTK_POS_TOP</property>
+	  <property name="digits">1</property>
+	  <property name="update_policy">GTK_UPDATE_CONTINUOUS</property>
+	  <property name="inverted">False</property>
+	  <property name="adjustment">0 0 0 0 0 0</property>
+	</widget>
+	<packing>
+	  <property name="x">168</property>
 	  <property name="y">8</property>
 	</packing>
       </child>

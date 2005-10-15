@@ -7,7 +7,10 @@ public class GladeApp
 {
 	Lampe lampe;
 	Mood MyMood;
+	Borg borg;
 	
+	[Widget] Gtk.Entry	entry1;
+	[Widget] Gtk.Button button1;
 	[Widget] Gtk.ColorSelection ledfoo1;
 	[Widget] Gtk.ColorSelection ledfoo2;
 	[Widget] Gtk.VScale scale1;
@@ -29,6 +32,7 @@ public class GladeApp
 		
 		lampe  = new Lampe(0x35);
 		MyMood = new Mood(0x1);
+		borg   = new Borg(0x24);
 		ledfoo1.ColorChanged += new EventHandler(OnColorChanged);
 		ledfoo2.ColorChanged += new EventHandler(OnColorChanged);
 		scale1.ValueChanged += new EventHandler(OnScaleChange);
@@ -47,7 +51,9 @@ public class GladeApp
 		scale4.ValueChanged += new EventHandler(OnScaleChange);
 		scale4.Adjustment.Lower = 0;
 		scale4.Adjustment.Upper = 0x40;
-
+		
+		button1.Clicked += new EventHandler(OnButton);
+		
 		Application.Run ();
 	}
 
@@ -92,6 +98,9 @@ public class GladeApp
 		Console.Out.WriteLine(foo);
 		
 		
+	}
+	public void OnButton(object sender, EventArgs a){
+		borg.SetScroll(entry1.Text);
 	}
 }
 

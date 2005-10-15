@@ -36,6 +36,11 @@ class LibLap {
 	/* Mood */
 	[DllImport("liblap.so")]
 	public static extern int mood_set_mood(int addr,int mood, int val1, int val2,int val3,int val4);
+	/* Borg */	
+	[DllImport("liblap.so")]
+	public static extern int borg_scroll_borg(int addr,string String);
+	[DllImport("liblap.so")]
+	public static extern int borg_fire_borg(int addr);
 }
 		
 
@@ -80,3 +85,15 @@ class Mood{
 	}
 
 }	
+class Borg{
+	int _addr;
+	
+	public Borg(int addr){
+		_addr = addr;
+	}
+	public void SetScroll(string String){
+
+		LibLap.borg_scroll_borg(_addr,String);
+		LibLap.borg_fire_borg(_addr);
+	}
+}
