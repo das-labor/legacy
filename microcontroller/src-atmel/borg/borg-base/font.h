@@ -1,3 +1,5 @@
+#ifndef FONT_H
+#define FONT_H
 #ifdef AVR
 #   include <avr/pgmspace.h>
 #else 
@@ -15,3 +17,5 @@ typedef struct{
 	unsigned char glyph_def;
 	unsigned char storebytes;
 } font;
+
+#endif //FONT_H
