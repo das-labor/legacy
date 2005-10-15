@@ -27,24 +27,24 @@ int main (void){
 			off();
 			break;
 		case 1:
-			scrolltext(scrolltext_text,1,60);
+			scrolltext(scrolltext_text);
 			break;
 		case 2:
-			spirale(20);
+			spirale(5);
 			break;
-		case 4:
+		case 3:
 			joern1();
 			break;
-		case 6:
+		case 4:
 			snake();
 			break;
-		case 7:
+		case 5:
 			schachbrett(20);
 			break;
-		case 8:
+		case 6:
 			feuer();
 			break;
-		case 9:
+		case 7:
 			matrix();
 			mode = 1;
 			break;
