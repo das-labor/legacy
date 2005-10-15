@@ -17,7 +17,7 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 
 	for(i=0;i<8;i++){
 		if (cycle<bright[i])
-			newval |=	mask;  
+			newval |= mask;  
 		mask <<= 1;
 	}
 	PORTA=newval;
