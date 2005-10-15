@@ -22,7 +22,10 @@
 #include "programm.h"
 #include "trackball.h"
 
-#include "scrolltext2.h"
+#include "scrolltext.h"
+
+#include <setjmp.h>
+jmp_buf newmode_jmpbuf;
 
 int WindWidth, WindHeight;
 
@@ -57,10 +60,10 @@ void display(void){
   	for (x = 0; x < 1; x++) {
 		for (y = 0; y < NUM_COLS; y++) { 
 			for (z = 0; z < NUM_ROWS; z++) {
-				color = 0;
+				color = 1;
 				for (level = 0; level < NUMPLANE; level++) {
 					if (pixmap[level][z%NUM_ROWS][y/8] & (1 << y % 8)) {
-						color = level+1;		
+						color ++;
 					}
 				}
 				drawLED(color, (float)(y)*4.0, (float)x*4.0, (float)(NUM_ROWS-1-z)*4.);
@@ -142,13 +145,10 @@ void timf(int value) {
   glutTimerFunc(1, timf, 0);
 }*/
 
-
-char animation[] = ">+p8>15/#Willkommen#<;+>15/# im#<;>15/# LABOR"; 
-
 void *display_loop(void * unused) {
-	unsigned char text[] = "<5|p2+</#Hallo Labor Borg#7<1|+>10/#T#e#s#t#i#n#g#d50-u50/d50-/u50-p50#www.das-labor.org";
+	unsigned char text[] = "<5|p2+</#Hallo Labor Borg#7<1|+>10/#T#e#s#t#i#n#g#";
 	while (1) {	
-        scrolltext(text, 0, 89);
+        	scrolltext(text);
 		matrix();
 		fadein();
 		joern1();
@@ -167,7 +167,7 @@ int main(int argc, char **argv){
     glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
     glutInitWindowSize(WindHeight, WindWidth);
-    win = glutCreateWindow("16x16 Borg Simulator");
+    win = glutCreateWindow("Laufschrift Borg Simulator");
     
     // callback
     //glutReshapeFunc(reshape);
@@ -179,7 +179,7 @@ int main(int argc, char **argv){
     glutMotionFunc(motion);
     
     // clearcolor & main loop
-    glClearColor(0.8,0.8,0.8,1.0);
+    glClearColor(0.0,0.0,0.0,1.0);
     gluPerspective(60.0, (float)WindWidth/(float)WindWidth, 5., 1000.);
     gluLookAt(NUM_COLS*2., NUM_COLS*2.+150., NUM_ROWS*2.,
               NUM_COLS*2., NUM_COLS*2., NUM_ROWS*2.,
@@ -187,19 +187,19 @@ int main(int argc, char **argv){
 
 	// init Call List for LED	
 	quad = gluNewQuadric();
-	glNewList(0, GL_COMPILE);
-		glColor4f(0.8, 0.8, 0.8, 1.);
-		gluSphere(quad, 1.0, 12, 12);		
-	glEndList();
 	glNewList(1, GL_COMPILE);
-		glColor4f(1.0, 0.7, 0.7, 1.);
+		glColor4f(0.2, 0.0, 0.0, 1.);
+		gluSphere(quad, 1.4, 12, 12);		
+	glEndList();
+	glNewList(2, GL_COMPILE);
+		glColor4f(0.5, 0.0, 0.0, 1.);
 		gluSphere(quad, 1.4, 12, 12);	
     glEndList();
-	glNewList(2, GL_COMPILE);
-		glColor4f(1.0, 0.5, 0.5, 1.);
+	glNewList(3, GL_COMPILE);
+		glColor4f(0.7, 0.0, 0.0, 1.);
 		gluSphere(quad, 1.55, 12, 12);	
     glEndList();
-	glNewList(3, GL_COMPILE);
+	glNewList(4, GL_COMPILE);
 		glColor4f(1.00, 0.0, 0.0, 1.);
 	    gluSphere(quad, 1.7, 12, 12);
     glEndList();
