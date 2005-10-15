@@ -64,7 +64,7 @@ void spirale(unsigned int delay){
 	cursor cur;
 	cur.dir = right;
 	cur.mode = set;
-	set_cursor (&cur, (pixel){0,0});
+	set_cursor (&cur, (pixel){NUM_COLS-1,0});
 	
 	unsigned char clearbit=0;
 	while(clearbit == 0){
@@ -74,7 +74,7 @@ void spirale(unsigned int delay){
 			clearbit = 0;
 			walk(&cur, 1, delay);
 		}
-		cur.dir = direction_r(cur.dir);	
+		cur.dir = direction_r(cur.dir);
 	}
 
 	cur.mode = clear;
@@ -162,7 +162,34 @@ void snake(){
 			setpixel(*head, 3);
 		
 			if(random()<80){
-				dir = random()%4;
+				unsigned char j;
+				unsigned char nextapple=0, distx, disty, shortdist=255, xy;
+				if(!apple_num){
+					dir = random()%4;
+				}else{
+					for(j=0;j<apple_num;j++){
+						if(head->x > apples[j].x){
+							distx = head->x - apples[j].x;
+						}else{
+							distx = apples[j].x - head->x;
+						}
+						if(head->y > apples[j].y){
+							disty = head->y - apples[j].y;
+						}else{
+							disty = apples[j].y - head->y;
+						}
+						if ((distx + disty) < shortdist){
+							shortdist = distx + disty;
+							nextapple = j;
+							xy = (distx > disty)?1:0;
+						}
+					}
+					if(xy){
+						dir = (apples[nextapple].x > head->x)?left:right;
+					}else{
+						dir = (apples[nextapple].y > head->y)?down:up;
+					}
+				}
 			}
 
 			if( (apple_num<9) && (random()<10) ){
@@ -193,7 +220,7 @@ void snake(){
 			}
 		}
 		
-		wait (100);
+		wait (SNAKE_DELAY);
 	}
 
 }
