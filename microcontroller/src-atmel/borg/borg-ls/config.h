@@ -13,6 +13,9 @@
 #define FEUER_DELAY 30
 
 #define SCROLLTXT_DELAY 50
+#define SCROLLTEXT_STRING_SIZE 128
+
+#define SNAKE_DELAY 50
 
 #define BORG_CAN
 
