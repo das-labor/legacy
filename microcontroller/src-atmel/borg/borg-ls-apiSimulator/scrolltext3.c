@@ -29,7 +29,7 @@ unsigned char PROGMEM colorTable[MAX_SPECIALCOLORS*NUM_ROWS] = {1, 1, 2, 3, 3, 2
 Text wird in Token unterteilt, jeder Token bekommt einen Command-String.
 z.B.
 
-#b<#LABOR
+#b</#LABOR
 
 Es werden die Zeiger aus dem Eingabestring direkt übernommen, mit Stinglen.
 Wenn der Command abgearbeitet ist wird automatisch das nächste Token eingelesen.
@@ -37,14 +37,45 @@ Wenn der Command abgearbeitet ist wird automatisch das nächste Token eingelesen
  */
 
 
+unsigned char text_pixmap[NUM_ROWS][LINEBYTES];
+
+void text_setpixel(pixel p, unsigned char value ){
+	if(value){
+		text_pixmap[p.y%NUM_ROWS][p.x/8] |= shl_table[p.x%8];
+	}
+}
+
+void clear_text_pixmap(unsigned char value){
+	unsigned char y, z;
+	for(y=0;y<NUM_ROWS;y++){
+		for(z=0;z<LINEBYTES;z++){
+			text_pixmap[y][z] = 0;
+		}
+	}
+	
+}
+
+void update_pixmap(){
+	unsigned char x, y, z;
+	for(x=0;x<NUMPLANE;x++){
+		for(y=0;y<NUM_ROWS;y++){
+			for(z=0;z<LINEBYTES;z++){
+				pixmap[x][y][z] = text_pixmap[y][z];
+			}
+		}
+	}
+}
+
 enum waitfor_e{
 	wait_new,
 	wait_posy,
 	wait_posx,
 	wait_out,
-	wait_timer
+	wait_timer,
+	wait_col_l,
 };
 #define DIRECTION_RIGHT 0x01
+#define DIRECTION_DOWN 0x02
 
 struct blob_t_struct;
 typedef struct blob_t_struct{
@@ -53,6 +84,7 @@ typedef struct blob_t_struct{
 	char *commands;
 	enum waitfor_e waitfor;
 	int sizex;
+	char sizey;
 	int posx;
 	char posy;
 	int tox;
@@ -68,6 +100,7 @@ typedef struct blob_t_struct{
 }blob_t;
 
 
+/*
 void showBlob(blob_t * blob){
 	unsigned char * str = blob->str;
 	unsigned char tmp[200], x=0;
@@ -90,6 +123,8 @@ void showBlob(blob_t * blob){
 	printf("timer\t%d\n",blob->timer);
 	printf("\n");
 }
+*/
+
 
 #define PW(a) pgm_read_word(&(a))
 #define PB(a) pgm_read_byte(&(a))
@@ -151,6 +186,24 @@ unsigned char blobNextCommand(blob_t * blob){
 			}
 			blob->delayx = blob->delayx_rld;
 			break;
+		case 'd':
+			blob->direction |= DIRECTION_DOWN;
+			if((tmp = getnum(blob)) != 0xFFFF){ 
+				blob->delayy_rld = tmp;
+			}else{
+				blob->delayy_rld = 5;
+			}
+			blob->delayy = blob->delayy_rld;
+			break;
+		case 'u':
+			blob->direction &= ~DIRECTION_DOWN;
+			if((tmp = getnum(blob)) != 0xFFFF){ 
+				blob->delayy_rld = tmp;
+			}else{
+				blob->delayy_rld = 5;
+			}
+			blob->delayy = blob->delayy_rld;
+			break;	
 		case '|':
 			if((tmp = getnum(blob)) != 0xFFFF){ 
 				blob->tox = tmp;
@@ -158,6 +211,15 @@ unsigned char blobNextCommand(blob_t * blob){
 				blob->tox =  NUM_COLS/2 + blob->sizex/2;
 			}
 			blob->waitfor = wait_posx;
+			return retval;
+			break;
+		case '-':
+			if((tmp = getnum(blob)) != 0xFFFF){ 
+				blob->toy = tmp;
+			}else{
+				blob->toy =  0;
+			}
+			blob->waitfor = wait_posy;
 			return retval;
 			break;
 		case 'p':
@@ -175,6 +237,10 @@ unsigned char blobNextCommand(blob_t * blob){
 			blob->waitfor = wait_out;
 			return retval;
 			break;
+		case ';':
+			blob->waitfor = wait_col_l;
+			return (retval);
+			break;
 		case '+':
 			retval = 2;
 			break;
@@ -189,6 +255,7 @@ blob_t * setupBlob(unsigned char * str){
 	static unsigned char chop_cnt;
 	static char *last; static char delim[] = "#";
 	static unsigned char *lastcommands;
+	unsigned int tmp;
 	
 	if(str){
 		chop_cnt = 0;
@@ -200,7 +267,6 @@ blob_t * setupBlob(unsigned char * str){
 		blob->commands = strtok_r (str, delim, &last);
 		if( blob->commands == 0) goto fail;
 		
-		unsigned int tmp;
 		if((tmp = getnum(blob)) != 0xFFFF){
 			chop_cnt = tmp;
 			lastcommands = blob->commands;
@@ -219,14 +285,14 @@ blob_t * setupBlob(unsigned char * str){
 	blob->fontIndex = fonts[0].fontIndex;
 	blob->fontData = fonts[0].fontData;
 	
-	unsigned char tmp, *strg = blob->str;
+	unsigned char tmp1, *strg = blob->str;
 	unsigned char glyph_beg = fonts[0].glyph_beg;
 	unsigned char glyph_end = fonts[0].glyph_end;
 
 	//translate the string: subtract 1 to get offset in Table
-	while((tmp = *strg)){
-		if((tmp>=glyph_beg) && (tmp<glyph_end)){
-			*strg = 1 + tmp - glyph_beg;
+	while((tmp1 = *strg)){
+		if((tmp1>=glyph_beg) && (tmp1<glyph_end)){
+			*strg = 1 + tmp1 - glyph_beg;
 		}else{
 			*strg = 1;
 		}
@@ -235,6 +301,7 @@ blob_t * setupBlob(unsigned char * str){
 	
 	blob->space = 1;
 	
+	blob->sizey = 8;
 	blob->sizex = getLen(blob);
 	if(*blob->commands == '<'){
 		blob->posx = 0;
@@ -242,6 +309,20 @@ blob_t * setupBlob(unsigned char * str){
 	}else if(*blob->commands == '>'){
 		blob->posx = NUM_COLS+blob->sizex;
 		blob->posy = 0;
+	}else if(*blob->commands == 'd'){
+		blob->posy = -blob->sizey;
+		if((tmp = getnum(blob)) != 0xFFFF){ 
+			blob->posx = tmp;
+		}else{
+			blob->posx = NUM_COLS/2 + blob->sizex/2;
+		}
+	}else if(*blob->commands == 'u'){
+		blob->posy = blob->sizey;
+		if((tmp = getnum(blob)) != 0xFFFF){ 
+			blob->posx = tmp;
+		}else{
+			blob->posx = NUM_COLS/2 + blob->sizex/2;
+		}
 	}
 	
 	blob->delayx_rld = 0;
@@ -264,6 +345,11 @@ unsigned char updateBlob(blob_t * blob){
 		(blob->direction & DIRECTION_RIGHT)?blob->posx--:blob->posx++;
 	}
 	
+	if(blob->delayy_rld && (!(blob->delayy--))){
+		blob->delayy = blob->delayy_rld;
+		(blob->direction & DIRECTION_DOWN)?blob->posy++:blob->posy--;
+	}
+	
 	unsigned char done=0;
 	switch (blob->waitfor){
 		case wait_posy:
@@ -274,9 +360,19 @@ unsigned char updateBlob(blob_t * blob){
 			break;
 		case wait_out:
 			if((blob->posx - blob->sizex) > NUM_COLS || blob->posx < 0) done = 1;
+			if((blob->posy) > NUM_ROWS || (blob->posy + blob->sizey) <0 ) done = 1;
 			break;
 		case wait_timer:
 			if(0 == blob->timer--){
+				done = 1;
+			}
+			break;
+		case wait_col_l:
+			if(blob->last){
+				if((blob->last->posx - blob->last->sizex) == blob->posx){
+					done=1;
+				}
+			}else{
 				done = 1;
 			}
 			break;
@@ -323,8 +419,7 @@ void drawBlob(blob_t *blob) {
 		for (y = posy; y < NUM_ROWS; y++) {
 			
 			if ((byte & mask) && y >= 0 ) {	
-					setpixel((pixel){x, y}, color <= NUMPLANE? color: 
-					pgm_read_byte(colorTable+(color-NUMPLANE-1)*NUM_ROWS+y-posy));
+					text_setpixel((pixel){x, y},1);
 			}
 			mask <<= 1;
 		}
@@ -349,7 +444,7 @@ void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
 	blob_t *startblob, *aktblob, *nextblob;
 
 	startblob = setupBlob(str);
-	showBlob(startblob);
+	//showBlob(startblob);
 	
 	unsigned char retval;
 	do{
@@ -388,12 +483,13 @@ void scrolltext(char *str, unsigned char fontNr, unsigned int delay) {
 			}
 						
 			aktblob = startblob;
-			clear_screen(0);
+			clear_text_pixmap(0);
 			while(aktblob){
 				drawBlob(aktblob);
 				aktblob = aktblob->next;
 			}
-			wait(10);
+			update_pixmap();
+			wait(2);
 			
 		};
 		startblob = setupBlob(0);
