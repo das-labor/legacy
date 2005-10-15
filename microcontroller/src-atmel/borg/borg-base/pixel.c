@@ -62,10 +62,10 @@ unsigned char get_next_pixel(pixel p, direction dir){
 	pixel tmp;
 	switch (dir){
 		case right:
-			tmp = (pixel){p.x+1, p.y};
+			tmp = (pixel){p.x-1, p.y};
 			break;
 		case left:
-			tmp = (pixel){p.x-1, p.y};
+			tmp = (pixel){p.x+1, p.y};
 			break;	
 		case down:
 			tmp = (pixel){p.x, p.y+1};
@@ -106,10 +106,10 @@ void set_cursor(cursor* cur, pixel p){
 pixel next_pixel(pixel pix, direction dir){
 	switch (dir){
 			case right:
-				return((pixel){pix.x+1, pix.y});
+				return((pixel){pix.x-1, pix.y});
 				break;
 			case left:
-				return((pixel){pix.x-1, pix.y});
+				return((pixel){pix.x+1, pix.y});
 				break;
 			case down:
 				return((pixel){pix.x, pix.y+1});
