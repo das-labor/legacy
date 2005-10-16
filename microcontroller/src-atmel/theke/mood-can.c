@@ -50,6 +50,7 @@ void process_mgt_msg(pdo_message *msg)
 void process_mood_msg(pdo_message *msg)
 {
 	uint8_t selectmood;
+	pdo_message * rmsg;
 	switch(msg->cmd) {
 	case FKT_MOOD_SET:
 		selectmood = msg->data[0];
@@ -67,6 +68,19 @@ void process_mood_msg(pdo_message *msg)
 		}
 		break;
 	case FKT_MOOD_GET:
+		rmsg = (pdo_message *)can_buffer_get();
+		rmsg->addr_dst = msg->addr_src;
+		rmsg->addr_src = myaddr;
+		rmsg->port_dst = msg->port_src;
+		rmsg->port_src = msg->port_dst;
+		rmsg->cmd = FKT_MOOD_GET;
+		rmsg->dlc = 6;
+		rmsg->data[0] = 0;
+		rmsg->data[1] = bright[0];
+		rmsg->data[2] = bright[1];
+		rmsg->data[3] = bright[2];
+		rmsg->data[4] = bright[3];
+		can_transmit((can_message *)rmsg);
 		break;
 	}
 }
