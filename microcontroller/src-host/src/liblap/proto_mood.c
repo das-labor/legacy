@@ -23,7 +23,7 @@ unsigned char mood_set_mood( can_addr dst, unsigned char mood,unsigned char val1
 }
 
 
-void mood_get_mood(can_addr dst,uint8_t mood,uint8_t * val1,uint8_t * val2,uint8_t * val3,uint8_t * val4){
+void mood_get_mood(can_addr dst,uint8_t mood,int * val1,int * val2,int * val3,int * val4){
 	pdo_message * msg  = (pdo_message *) can_buffer_get();
        	
 	msg->port_dst = PORT_MOOD;
