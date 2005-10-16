@@ -3,6 +3,7 @@
 using System;
 using System.Runtime.InteropServices;
 
+		
 class LibLap {
 	/* CANN */
 	[DllImport("liblap.so")]
@@ -36,6 +37,8 @@ class LibLap {
 	/* Mood */
 	[DllImport("liblap.so")]
 	public static extern int mood_set_mood(int addr,int mood, int val1, int val2,int val3,int val4);
+	[DllImport("liblap.so")]
+	public static extern int mood_get_mood(int addr,int mood,int moodled);
 	/* Borg */	
 	[DllImport("liblap.so")]
 	public static extern int borg_scroll_borg(int addr,string String);
@@ -71,8 +74,8 @@ class Lampe {
 		LibLap.lampe_set_lampe(_addr, nr, val);
 	}
 }
-
 class Mood{
+	
 	int _addr;	
 
 	public Mood(int addr) {
@@ -83,7 +86,12 @@ class Mood{
 	{
 		LibLap.mood_set_mood(_addr,mood, val1, val2, val3, val4);
 	}
-
+	public  int GetMood(int mood,int moodled){
+		int moody;
+		moody = LibLap.mood_get_mood(_addr,mood,moodled);
+		return moody;
+	}
+	
 }	
 class Borg{
 	int _addr;
