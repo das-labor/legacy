@@ -25,7 +25,7 @@ public class GladeApp
 	public GladeApp (string[] args) 
 	{
 		Application.Init ();
-
+		
 		Glade.XML gxml = new Glade.XML (null, "gui.glade", "window1", null);
 		gxml.Autoconnect (this);
 		CanConnection conn = new CanConnection("rl", 2342 );
@@ -33,6 +33,7 @@ public class GladeApp
 		lampe  = new Lampe(0x35);
 		MyMood = new Mood(0x1);
 		borg   = new Borg(0x24);
+		InitMoods();
 		ledfoo1.ColorChanged += new EventHandler(OnColorChanged);
 		ledfoo2.ColorChanged += new EventHandler(OnColorChanged);
 		scale1.ValueChanged += new EventHandler(OnScaleChange);
@@ -95,12 +96,15 @@ public class GladeApp
 		int blue  = (int)(foo.Blue * factor);
 		int green = (int)(foo.Green * factor);
 		MyMood.SetMood(mood,blue,green,red,0x00);
-		Console.Out.WriteLine(foo);
-		
 		
 	}
 	public void OnButton(object sender, EventArgs a){
 		borg.SetScroll(entry1.Text);
+	}
+	private void InitMoods(){
+		int blue = MyMood.GetMood(0,3);
+		System.Console.WriteLine(blue);
+	
 	}
 }
 
