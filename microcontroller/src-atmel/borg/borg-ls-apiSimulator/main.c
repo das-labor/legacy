@@ -15,7 +15,7 @@
 #  include <sys/types.h>
 #  include <unistd.h>
 #endif
-
+#include <string.h>
 #include <stdio.h>
 #include "config.h"
 #include "pixel.h"
@@ -75,7 +75,7 @@ void display(void){
 #ifdef _WIN32
 	Sleep(10);
 #else
-	usleep(20000);
+	usleep(10000);
 #endif
     joystick = 255;
 }
@@ -108,7 +108,7 @@ void reshape(int width, int height)
   
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  gluPerspective(60.0, (float)WindWidth/(float)WindWidth, 5., 1000.);
+  gluPerspective(60.0, (float)WindHeight/(float)WindWidth, 5., 1000.);
   gluLookAt(NUM_ROWS*2., NUM_ROWS*2.+150., NUM_COLS*2.,
             NUM_ROWS*2., NUM_ROWS*2., NUM_COLS*2.,
             0.0, 0.0, 1.0); 
@@ -145,8 +145,9 @@ void timf(int value) {
   glutTimerFunc(1, timf, 0);
 }*/
 
+unsigned char text[128] = "<5|p2+</#Hallo Labor Borg#7<1|+>10/#T#e#s#t#i#n#g#";
+
 void *display_loop(void * unused) {
-	unsigned char text[] = "<5|p2+</#Hallo Labor Borg#7<1|+>10/#T#e#s#t#i#n#g#";
 	while (1) {	
         	scrolltext(text);
 		matrix();
@@ -162,8 +163,10 @@ void *display_loop(void * unused) {
 }
 
 int main(int argc, char **argv){
-    WindHeight = 700;
-    WindWidth = 700;         
+    if (argc > 1)
+		strncpy(text, argv[1], 128);
+	WindHeight = 500;
+    WindWidth = 500;         
     glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
     glutInitWindowSize(WindHeight, WindWidth);
@@ -180,10 +183,10 @@ int main(int argc, char **argv){
     
     // clearcolor & main loop
     glClearColor(0.0,0.0,0.0,1.0);
-    gluPerspective(60.0, (float)WindWidth/(float)WindWidth, 5., 1000.);
+    gluPerspective(60.0, (float)WindHeight/(float)WindWidth, 5., 1000.);
     gluLookAt(NUM_COLS*2., NUM_COLS*2.+150., NUM_ROWS*2.,
               NUM_COLS*2., NUM_COLS*2., NUM_ROWS*2.,
-            0.0, 0.0, 1.0); 
+              0.0, 0.0, 1.0); 
 
 	// init Call List for LED	
 	quad = gluNewQuadric();
