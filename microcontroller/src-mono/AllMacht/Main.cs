@@ -99,11 +99,11 @@ public class GladeApp
 		
 	}
 	public void OnButton(object sender, EventArgs a){
-		borg.SetScroll(entry1.Text);
+		borg.SetScroll(entry1.Text );
 	}
 	private void InitMoods(){
-		int blue = MyMood.GetMood(0,3);
-		System.Console.WriteLine(blue);
+		//int blue = MyMood.GetMood(0,2);
+		//System.Console.WriteLine(blue);
 	
 	}
 }

@@ -30,28 +30,97 @@ GtkWidget*
 create_window1 (void)
 {
   GtkWidget *window1;
-  GtkWidget *fixed1;
-  GtkWidget *fixed2;
-  GtkWidget *vscale1;
+  GtkWidget *notebook1;
+  GtkWidget *hbox1;
+  GtkWidget *scale1;
+  GtkWidget *scale2;
+  GtkWidget *scale3;
+  GtkWidget *scale4;
+  GtkWidget *label1;
+  GtkWidget *vbox1;
+  GtkWidget *ledfoo1;
+  GtkWidget *ledfoo2;
+  GtkWidget *label2;
+  GtkWidget *vbox2;
+  GtkWidget *scrolledwindow1;
+  GtkWidget *entry1;
+  GtkWidget *button1;
+  GtkWidget *label3;
 
   window1 = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (window1), _("Glade Window"));
+  gtk_window_set_title (GTK_WINDOW (window1), _("AllMacht"));
   gtk_window_set_position (GTK_WINDOW (window1), GTK_WIN_POS_CENTER);
   gtk_window_set_default_size (GTK_WINDOW (window1), 256, 256);
 
-  fixed1 = gtk_fixed_new ();
-  gtk_widget_show (fixed1);
-  gtk_container_add (GTK_CONTAINER (window1), fixed1);
+  notebook1 = gtk_notebook_new ();
+  gtk_widget_show (notebook1);
+  gtk_container_add (GTK_CONTAINER (window1), notebook1);
 
-  fixed2 = gtk_fixed_new ();
-  gtk_widget_show (fixed2);
-  gtk_fixed_put (GTK_FIXED (fixed1), fixed2, 8, 24);
-  gtk_widget_set_size_request (fixed2, 24, 320);
+  hbox1 = gtk_hbox_new (FALSE, 0);
+  gtk_widget_show (hbox1);
+  gtk_container_add (GTK_CONTAINER (notebook1), hbox1);
 
-  vscale1 = gtk_vscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (0, 0, 0, 0, 0, 0)));
-  gtk_widget_show (vscale1);
-  gtk_fixed_put (GTK_FIXED (fixed2), vscale1, 0, 8);
-  gtk_widget_set_size_request (vscale1, 19, 54);
+  scale1 = gtk_vscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (0, 0, 0, 0, 0, 0)));
+  gtk_widget_show (scale1);
+  gtk_box_pack_start (GTK_BOX (hbox1), scale1, TRUE, TRUE, 0);
+
+  scale2 = gtk_vscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (0, 0, 0, 0, 0, 0)));
+  gtk_widget_show (scale2);
+  gtk_box_pack_start (GTK_BOX (hbox1), scale2, TRUE, TRUE, 0);
+
+  scale3 = gtk_vscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (0, 0, 0, 0, 0, 0)));
+  gtk_widget_show (scale3);
+  gtk_box_pack_start (GTK_BOX (hbox1), scale3, TRUE, TRUE, 0);
+
+  scale4 = gtk_vscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (0, 0, 0, 0, 0, 0)));
+  gtk_widget_show (scale4);
+  gtk_box_pack_start (GTK_BOX (hbox1), scale4, TRUE, TRUE, 0);
+
+  label1 = gtk_label_new (_("Lampen"));
+  gtk_widget_show (label1);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 0), label1);
+
+  vbox1 = gtk_vbox_new (FALSE, 0);
+  gtk_widget_show (vbox1);
+  gtk_container_add (GTK_CONTAINER (notebook1), vbox1);
+
+  ledfoo1 = gtk_color_selection_new ();
+  gtk_widget_show (ledfoo1);
+  gtk_box_pack_start (GTK_BOX (vbox1), ledfoo1, TRUE, TRUE, 0);
+  gtk_color_selection_set_has_opacity_control (GTK_COLOR_SELECTION (ledfoo1), FALSE);
+  gtk_color_selection_set_has_palette (GTK_COLOR_SELECTION (ledfoo1), TRUE);
+
+  ledfoo2 = gtk_color_selection_new ();
+  gtk_widget_show (ledfoo2);
+  gtk_box_pack_start (GTK_BOX (vbox1), ledfoo2, TRUE, TRUE, 0);
+  gtk_color_selection_set_has_opacity_control (GTK_COLOR_SELECTION (ledfoo2), FALSE);
+  gtk_color_selection_set_has_palette (GTK_COLOR_SELECTION (ledfoo2), TRUE);
+
+  label2 = gtk_label_new (_("Moodlight"));
+  gtk_widget_show (label2);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 1), label2);
+
+  vbox2 = gtk_vbox_new (FALSE, 0);
+  gtk_widget_show (vbox2);
+  gtk_container_add (GTK_CONTAINER (notebook1), vbox2);
+
+  scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
+  gtk_widget_show (scrolledwindow1);
+  gtk_box_pack_start (GTK_BOX (vbox2), scrolledwindow1, TRUE, TRUE, 0);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow1), GTK_POLICY_NEVER, GTK_POLICY_NEVER);
+  gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (scrolledwindow1), GTK_SHADOW_IN);
+
+  entry1 = gtk_text_view_new ();
+  gtk_widget_show (entry1);
+  gtk_container_add (GTK_CONTAINER (scrolledwindow1), entry1);
+
+  button1 = gtk_button_new_with_mnemonic (_("Send to Borg"));
+  gtk_widget_show (button1);
+  gtk_box_pack_start (GTK_BOX (vbox2), button1, FALSE, FALSE, 0);
+
+  label3 = gtk_label_new (_("Borg"));
+  gtk_widget_show (label3);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 2), label3);
 
   g_signal_connect ((gpointer) window1, "delete_event",
                     G_CALLBACK (OnWindowDeleteEvent),
@@ -59,9 +128,22 @@ create_window1 (void)
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (window1, window1, "window1");
-  GLADE_HOOKUP_OBJECT (window1, fixed1, "fixed1");
-  GLADE_HOOKUP_OBJECT (window1, fixed2, "fixed2");
-  GLADE_HOOKUP_OBJECT (window1, vscale1, "vscale1");
+  GLADE_HOOKUP_OBJECT (window1, notebook1, "notebook1");
+  GLADE_HOOKUP_OBJECT (window1, hbox1, "hbox1");
+  GLADE_HOOKUP_OBJECT (window1, scale1, "scale1");
+  GLADE_HOOKUP_OBJECT (window1, scale2, "scale2");
+  GLADE_HOOKUP_OBJECT (window1, scale3, "scale3");
+  GLADE_HOOKUP_OBJECT (window1, scale4, "scale4");
+  GLADE_HOOKUP_OBJECT (window1, label1, "label1");
+  GLADE_HOOKUP_OBJECT (window1, vbox1, "vbox1");
+  GLADE_HOOKUP_OBJECT (window1, ledfoo1, "ledfoo1");
+  GLADE_HOOKUP_OBJECT (window1, ledfoo2, "ledfoo2");
+  GLADE_HOOKUP_OBJECT (window1, label2, "label2");
+  GLADE_HOOKUP_OBJECT (window1, vbox2, "vbox2");
+  GLADE_HOOKUP_OBJECT (window1, scrolledwindow1, "scrolledwindow1");
+  GLADE_HOOKUP_OBJECT (window1, entry1, "entry1");
+  GLADE_HOOKUP_OBJECT (window1, button1, "button1");
+  GLADE_HOOKUP_OBJECT (window1, label3, "label3");
 
   return window1;
 }

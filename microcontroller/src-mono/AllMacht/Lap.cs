@@ -86,7 +86,7 @@ class Mood{
 	{
 		LibLap.mood_set_mood(_addr,mood, val1, val2, val3, val4);
 	}
-	public  int GetMood(int mood,int moodled){
+	public int GetMood(int mood,int moodled){
 		int moody;
 		moody = LibLap.mood_get_mood(_addr,mood,moodled);
 		return moody;
