@@ -1,8 +1,10 @@
 #include "pixel.h"
 #include "util.h"
 #include "config.h"
-#include "borg_hw.h"
-#include <avr/io.h>
+
+#ifdef AVR
+	#include <avr/io.h>
+#endif
 
 void test1(){
 	unsigned char x,y;
