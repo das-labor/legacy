@@ -12,7 +12,7 @@
 jmp_buf newmode_jmpbuf;
 
 int main (void){
-	unsigned char mode = 0;
+	unsigned char mode = 1;
 
 	clear_screen(0);
 	borg_hw_init();

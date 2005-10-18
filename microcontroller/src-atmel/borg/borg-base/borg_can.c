@@ -4,6 +4,7 @@
 #include "config.h"
 #include "borg_can.h"
 
+#include <avr/pgmspace.h>
 #include <setjmp.h>
 #include <avr/interrupt.h>
 #include <avr/eeprom.h>
@@ -12,11 +13,14 @@
 can_addr myaddr;
 extern jmp_buf newmode_jmpbuf;
 
-char scrolltext_text[128] = "LABOR";
+
+char default_text[] PROGMEM = ">5+:<5|90>6:<6|78>:p10d50/#Labor#<5;>5|30<6;>6|40<6;p10+d50/# Borg#2d50-+/#Widerstand#ist#d50-b20p15#ZWECKLOS !";
+char scrolltext_text[128];
 
 
 void bcan_init() 
 {
+	strcpy_P(scrolltext_text, default_text);
 	can_init();
 
 	myaddr = eeprom_read_byte(0x00);
