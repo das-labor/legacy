@@ -23,6 +23,7 @@ public class GladeApp
 		new GladeApp (args);
 	}
 
+	// .ctor
 	public GladeApp (string[] args) 
 	{
 		Application.Init ();
