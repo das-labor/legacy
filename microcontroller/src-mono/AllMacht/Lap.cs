@@ -34,11 +34,13 @@ class LibLap {
 	/* Lampe */
 	[DllImport("liblap.so")]
 	public static extern int lampe_set_lampe(int addr, int lampe, int val);
+	
 	/* Mood */
 	[DllImport("liblap.so")]
 	public static extern int mood_set_mood(int addr,int mood, int val1, int val2,int val3,int val4);
 	[DllImport("liblap.so")]
 	public static extern int mood_get_mood(int addr,int mood,int moodled);
+	
 	/* Borg */	
 	[DllImport("liblap.so")]
 	public static extern int borg_scroll_borg(int addr,string String);
@@ -75,7 +77,6 @@ class Lampe {
 	}
 }
 class Mood{
-	
 	int _addr;	
 
 	public Mood(int addr) {
