@@ -11,6 +11,10 @@
 #define FEUER_DIV 44
 #define FEUER_DELAY 50
 
+#define SNAKE_DELAY 100
+
+#define SCROLLTEXT_STRING_SIZE 128
+
 #define BORG_CAN
 
 // spi.[ch] defines

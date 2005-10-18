@@ -3,6 +3,8 @@
 
 #include "config.h"
 
+//Linebytes gibt die Zahl der Bytes pro Zeile in der
+//Pixmap an, also Spaltenzahl/8 aufgerundet
 #define LINEBYTES (((NUM_COLS-1)/8)+1)
 
 
