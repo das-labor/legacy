@@ -48,7 +48,6 @@ class LibLap {
 	public static extern int borg_fire_borg(int addr);
 }
 		
-
 class CanConnection {
 	private IntPtr _conn;
 	
@@ -76,10 +75,12 @@ class Lampe {
 		LibLap.lampe_set_lampe(_addr, nr, val);
 	}
 }
+
 class Mood{
 	int _addr;	
 
-	public Mood(int addr) {
+	public Mood(int addr) 
+	{
 		_addr = addr;
 	}
 	
@@ -87,21 +88,24 @@ class Mood{
 	{
 		LibLap.mood_set_mood(_addr,mood, val1, val2, val3, val4);
 	}
+	
 	public int GetMood(int mood,int moodled){
 		int moody;
 		moody = LibLap.mood_get_mood(_addr,mood,moodled);
 		return moody;
 	}
+}
 	
-}	
 class Borg{
 	int _addr;
 	
-	public Borg(int addr){
+	public Borg(int addr)
+	{
 		_addr = addr;
 	}
-	public void SetScroll(string String){
-
+	
+	public void SetScroll(string String)
+	{
 		LibLap.borg_scroll_borg(_addr,String);
 		LibLap.borg_fire_borg(_addr);
 	}
