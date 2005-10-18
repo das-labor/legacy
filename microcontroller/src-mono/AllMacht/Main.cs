@@ -6,17 +6,18 @@ using Glade;
 public class GladeApp
 {
 	Lampe lampe;
-	Mood MyMood;
-	Borg borg;
+	Mood  mood;
+	Borg  borg;
 	
 	[Widget] Gtk.Entry	entry1;
 	[Widget] Gtk.Button button1;
 	[Widget] Gtk.ColorSelection ledfoo1;
 	[Widget] Gtk.ColorSelection ledfoo2;
-	[Widget] Gtk.VScale scale1;
-	[Widget] Gtk.VScale scale2;
-	[Widget] Gtk.VScale scale3;
-	[Widget] Gtk.VScale scale4;
+	[Widget] Gtk.VScale lampe1Scale;
+	[Widget] Gtk.VScale lampe2Scale;
+	[Widget] Gtk.VScale lampe3Scale;
+	[Widget] Gtk.VScale lampe4Scale;
+	
 	public static void Main (string[] args)
 	{
 		new GladeApp (args);
@@ -30,81 +31,98 @@ public class GladeApp
 		gxml.Autoconnect (this);
 		CanConnection conn = new CanConnection("rl", 2342 );
 		
-		lampe  = new Lampe(0x35);
-		MyMood = new Mood(0x1);
-		borg   = new Borg(0x24);
 		InitMoods();
-		ledfoo1.ColorChanged += new EventHandler(OnColorChanged);
-		ledfoo2.ColorChanged += new EventHandler(OnColorChanged);
-		scale1.ValueChanged += new EventHandler(OnScaleChange);
-		scale1.Adjustment.Lower = 0;
-		scale1.Adjustment.Upper = 0x40;
-
-		scale2.ValueChanged += new EventHandler(OnScaleChange);
-		scale2.Adjustment.Lower = 0;
-		scale2.Adjustment.Upper = 0x40;
-
-		scale3.ValueChanged += new EventHandler(OnScaleChange);
-		scale3.Adjustment.Lower = 0;
-		scale3.Adjustment.Upper = 0x40;
-
-
-		scale4.ValueChanged += new EventHandler(OnScaleChange);
-		scale4.Adjustment.Lower = 0;
-		scale4.Adjustment.Upper = 0x40;
-		
-		button1.Clicked += new EventHandler(OnButton);
-		
+		InitLampe();
+		InitBorg();
+	
 		Application.Run ();
 	}
 
-	// Connect the Signals defined in Glade
+	// Quit event
 	private void OnWindowDeleteEvent (object sender, DeleteEventArgs a) 
 	{
 		Application.Quit ();
 		a.RetVal = true;
 	}
+	
+	// Lampe Scale events
 	private void OnScaleChange(object sender, EventArgs a)
 	{
-		if (sender == scale1) {
-			System.Console.WriteLine( "scale1" );
-			lampe.lampe(0, (int)scale1.Adjustment.Value);
-		} else if (sender == scale2) {
-			System.Console.WriteLine( "scale2" );
-			lampe.lampe(1, (int)scale2.Adjustment.Value);
-		} else if (sender == scale3) {
-			System.Console.WriteLine( "scale3" );
-			lampe.lampe(3, (int)scale3.Adjustment.Value);
-		} else if (sender == scale4) {
-			System.Console.WriteLine( "scale4" );
-			lampe.lampe(2, (int)scale4.Adjustment.Value);
+		if (sender == lampe1Scale) {
+			lampe.lampe(0, (int)lampe1Scale.Adjustment.Value);
+		} else if (sender == lampe2Scale) {
+			lampe.lampe(1, (int)lampe2Scale.Adjustment.Value);
+		} else if (sender == lampe3Scale) {
+			lampe.lampe(3, (int)lampe3Scale.Adjustment.Value);
+		} else if (sender == lampe4Scale) {
+			lampe.lampe(2, (int)lampe4Scale.Adjustment.Value);
 		}
 	}
+	
+	// Mood color changer
 	private void OnColorChanged(object sender, EventArgs a){
 		double factor =	0.000984615;
-		int mood=0;
+		int    module=0;
+		
 		Gdk.Color foo=ledfoo1.CurrentColor;
 		if(sender == ledfoo1){
 			foo=ledfoo1.CurrentColor;
-			mood=0;
+			module=0;
 		}
 		if(sender == ledfoo2){
 			foo=ledfoo2.CurrentColor;
-			mood=1;
+			module=1;
 		}
 		int red   = (int)(foo.Red * factor);
 		int blue  = (int)(foo.Blue * factor);
 		int green = (int)(foo.Green * factor);
-		MyMood.SetMood(mood,blue,green,red,0x00);
+		mood.SetMood(module,blue,green,red,0x00);
 		
 	}
+	
+	// Borg button
 	public void OnButton(object sender, EventArgs a){
 		borg.SetScroll(entry1.Text );
 	}
-	private void InitMoods(){
+
+	// Initialize GUI 
+	private void InitMoods()
+	{
+		mood = new Mood(0x1);
+
 		//int blue = MyMood.GetMood(0,2);
 		//System.Console.WriteLine(blue);
+		
+		ledfoo1.ColorChanged += new EventHandler(OnColorChanged);
+		ledfoo2.ColorChanged += new EventHandler(OnColorChanged);
+	}
 	
+	private void InitLampe() 
+	{
+		lampe  = new Lampe(0x35);
+	
+		lampe1Scale.ValueChanged  += new EventHandler(OnScaleChange);
+		lampe1Scale.Adjustment.Lower = 0;
+		lampe1Scale.Adjustment.Upper = 0x40;
+
+		lampe2Scale.ValueChanged += new EventHandler(OnScaleChange);
+		lampe2Scale.Adjustment.Lower = 0;
+		lampe2Scale.Adjustment.Upper = 0x40;
+
+		lampe3Scale.ValueChanged += new EventHandler(OnScaleChange);
+		lampe3Scale.Adjustment.Lower = 0;
+		lampe3Scale.Adjustment.Upper = 0x40;
+
+		lampe4Scale.ValueChanged += new EventHandler(OnScaleChange);
+		lampe4Scale.Adjustment.Lower = 0;
+		lampe4Scale.Adjustment.Upper = 0x40;
+	}
+	
+	private void InitBorg()
+	{
+		borg   = new Borg(0x24);
+	
+		button1.Clicked += new EventHandler(OnButton);
 	}
 }
 

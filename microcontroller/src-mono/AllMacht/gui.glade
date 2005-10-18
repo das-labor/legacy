@@ -39,7 +39,7 @@
 	  <property name="spacing">0</property>
 
 	  <child>
-	    <widget class="GtkVScale" id="scale1">
+	    <widget class="GtkVScale" id="lampe1Scale">
 	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="draw_value">True</property>
@@ -57,7 +57,7 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkVScale" id="scale2">
+	    <widget class="GtkVScale" id="lampe2Scale">
 	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="draw_value">True</property>
@@ -75,7 +75,7 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkVScale" id="scale3">
+	    <widget class="GtkVScale" id="lampe3Scale">
 	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="draw_value">True</property>
@@ -93,7 +93,7 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkVScale" id="scale4">
+	    <widget class="GtkVScale" id="lampe4Scale">
 	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="draw_value">True</property>
