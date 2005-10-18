@@ -12,7 +12,7 @@
 jmp_buf newmode_jmpbuf;
 
 int main (void){
-	unsigned char mode = 1;
+	unsigned char mode;
 
 	clear_screen(0);
 	borg_hw_init();
@@ -20,12 +20,9 @@ int main (void){
 	sei();
 
 	mode = setjmp(newmode_jmpbuf);
-
+	
 	for(;;){
 		switch(mode++) {
-		case 0:
-			off();
-			break;
 		case 1:
 			scrolltext(scrolltext_text);
 			break;
@@ -62,6 +59,9 @@ int main (void){
 			break;
 		case 35:
 			test1();
+			break;
+		case 0xFF:
+			off();
 			break;
 		default:
 			break;
