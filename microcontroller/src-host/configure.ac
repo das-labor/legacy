@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(lap-host, 0.1)
+AC_INIT(lap-host, 0.0.1)
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR(src/cand/main.c)
 AM_CONFIG_HEADER(config.h)
