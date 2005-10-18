@@ -5,36 +5,51 @@
 #include <avr/wdt.h>
 #include "borg_hw.h"
 
+// 16 Spalten insgesamt direkt gesteuert, dafür 2 Ports
 #define COLPORT1  PORTA
 #define COLDDR1   DDRA
 
 #define COLPORT2  PORTC
 #define COLDDR2   DDRC
 
+// Der andere Port übernimmt die Steuerung der Schieberegister
 #define ROWPORT PORTD
 #define ROWDDR   DDRD
-#define PIN_RST  PD4
+// Clock und reset gehen gemeinsam an beide Schieberegister
+// der reset pin ist negiert
+#define PIN_RST  PD4  
 #define PIN_CLK  PD5
+//das dier sind die individuellen Dateneingänge für die Schieberegister
 #define PIN_SHFT1 PD6
 #define PIN_SHFT2 PD7
 
+//Der Puffer, in dem das aktuelle Bild gespeichert wird
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
 
+//Eine Zeile anzeigen
 inline void rowshow(unsigned char row, unsigned char plane){
+	//Die Zustände von der vorherigen Zeile löschen
 	COLPORT1 = 0;
 	COLPORT2 = 0;
+	
+	//kurze Warteschleife, damit die Treiber auch wirklich ausschalten
 	unsigned char i;
 	for(i=0;i<20;i++){
 		asm volatile("nop");
 	}
+	
+	
 	if (row == 0){
+		//Zeile 0: Das erste Schieberegister initialisieren
 		ROWPORT&= ~(1<<PIN_RST);
 		ROWPORT|= (1<<PIN_RST);
 		ROWPORT|= (1<<PIN_SHFT1);
 		ROWPORT|= (1<<PIN_CLK);
 		ROWPORT&= ~(1<<PIN_CLK);
 		ROWPORT&= ~(1<<PIN_SHFT1);
+		
+		//Je nachdem, welche der Ebenen wir Zeichnen, die Zeile verschieden lange Anzeigen
 		switch (plane){
 			case 0:
 				OCR0 = 5;
@@ -46,6 +61,7 @@ inline void rowshow(unsigned char row, unsigned char plane){
 				OCR0 = 20;
 		}
 	}else if(row == 8){
+		//Zeile 8: Das Zweite Schieberegister initialisieren
 		ROWPORT&= ~(1<<PIN_RST);
 		ROWPORT|= (1<<PIN_RST);
 		ROWPORT|= (1<<PIN_SHFT2);
@@ -53,34 +69,40 @@ inline void rowshow(unsigned char row, unsigned char plane){
 		ROWPORT&= ~(1<<PIN_CLK);
 		ROWPORT&= ~(1<<PIN_SHFT2);
 	}else{
+		//In jeder anderen Zeile einfach nur einen weiter schieben
 		ROWPORT|= (1<<PIN_CLK);
 		ROWPORT&= ~(1<<PIN_CLK);
 	}
 	
+	//ncoh eine Warteschleife, damit die Zeilentreiber bereit sind
 	for(i=0;i<20;i++){
 		asm volatile("nop");
 	}
+	
+	//die Daten für die aktuelle Zeile auf die Spaltentreiber ausgeben
 	COLPORT1 = pixmap[plane][row][0];
 	COLPORT2 = pixmap[plane][row][1];
 }
 
 
-
+//Dieser Interrupt wird je nach Ebene mit 50kHz 31,25kHz oder 12,5kHz ausgeführt
 SIGNAL(SIG_OUTPUT_COMPARE0)
 {
 	static unsigned char plane = 0;
 	static unsigned char row = 0;
 	
+	//Watchdog zurücksetzen
 	wdt_reset();
+	
+	//Die aktuelle Zeile in der aktuellen Ebene ausgeben
 	rowshow(row, plane);
 	
+	//Zeile und Ebene inkrementieren
 	if(++row == NUM_ROWS){
 		row = 0;
 		if(++plane==NUMPLANE) plane=0;
 	}
 }
-
-
 
 
 void timer0_off(){
@@ -95,7 +117,7 @@ void timer0_off(){
 }
 
 
-
+// Den Timer, der denn Interrupt auslöst, initialisieren
 void timer0_on(){
 /* 	TCCR0: FOC0 WGM00 COM01 COM00 WGM01 CS02 CS01 CS00
 		CS02 CS01 CS00
@@ -109,19 +131,28 @@ void timer0_on(){
 */
 	TCCR0 = 0x0B;	// CTC Mode, clk/64
 	TCNT0 = 0;	// reset timer
-	OCR0  = 0x20;	// Compare with this value
+	OCR0  = 20;	// Compare with this value
 	TIMSK = 0x02;	// Compare match Interrupt on
 }
 
 void borg_hw_init(){
+	//Spalten Ports auf Ausgang
 	COLDDR1 = 0xFF;
 	COLDDR2 = 0xFF;
+	
+	//Pins am Zeilenport auf Ausgang
 	ROWDDR = (1<<PIN_RST) | (1<<PIN_CLK) | (1<< PIN_SHFT1) | (1<<PIN_SHFT2);
+	
+	//Alle Spalten erstmal aus
 	COLPORT1 = 0;
 	COLPORT2 = 0;
+	
+	//Schieberegister für Zeilen zurücksetzen
 	ROWPORT = 0;
-	timer0_on();		
+	
+	timer0_on();
 
+	//Watchdog Timer aktivieren
 	wdt_reset();
 	wdt_enable(0x00);	// 17ms Watchdog
 }
