@@ -35,16 +35,20 @@ Date: 21.03.2005
 */
 
 /*
-History:
+History (DD.MM.YYYY):
 16.03.2005:	first release as byte-count to discuss@das-labor.org
 		containig a few stupid mistakes wich luckily didn't cause bugs
 21.03.2005:	increasing speed by avoiding if-constructs by using multiple functions
 		and pointer to functions
+17.10.2005:	committed to labor svn
+18.10.2005:	replaced exit by return to avoid warning
 */
 
 /*
 Todo:
  * speed-up
+   * support for kernel functions
+   * replace printf by own function
  * multi-threading
  * advancing Output for stderr on terminals
  * showing rates
@@ -213,7 +217,7 @@ int main(int argc, char **argv) {
     	bytes_in_buffer = fread  (buffer, sizeof(byte), BUFFER_SIZE, stdin);
 		
 		if (bytes_in_buffer != fwrite (buffer, sizeof(byte), bytes_in_buffer, stdout)){
-	    	exit(-1);
+	    	return(-1);
 		}
 	
 		count += bytes_in_buffer;
