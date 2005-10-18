@@ -74,6 +74,7 @@ enum waitfor_e{
 	wait_out,
 	wait_timer,
 	wait_col_l,
+	wait_col_r
 };
 #define DIRECTION_RIGHT 0x01
 #define DIRECTION_DOWN 0x02
@@ -92,6 +93,8 @@ typedef struct blob_t_struct{
 	char toy;
 	unsigned char delayx, delayx_rld;
 	unsigned char delayy, delayy_rld;
+	unsigned char delayb, delayb_rld;
+	unsigned char visible;
 	unsigned char direction;
 	unsigned int timer;
 	
@@ -174,7 +177,7 @@ unsigned char blobNextCommand(blob_t * blob){
 			if((tmp = getnum(blob)) != 0xFFFF){ 
 				blob->delayx_rld = tmp;
 			}else{
-				blob->delayx_rld = 5;
+				blob->delayx_rld = 10;
 			}
 			blob->delayx = blob->delayx_rld;
 			break;
@@ -183,7 +186,7 @@ unsigned char blobNextCommand(blob_t * blob){
 			if((tmp = getnum(blob)) != 0xFFFF){ 
 				blob->delayx_rld = tmp;
 			}else{
-				blob->delayx_rld = 5;
+				blob->delayx_rld = 10;
 			}
 			blob->delayx = blob->delayx_rld;
 			break;
@@ -192,7 +195,7 @@ unsigned char blobNextCommand(blob_t * blob){
 			if((tmp = getnum(blob)) != 0xFFFF){ 
 				blob->delayy_rld = tmp;
 			}else{
-				blob->delayy_rld = 5;
+				blob->delayy_rld = 10;
 			}
 			blob->delayy = blob->delayy_rld;
 			break;
@@ -201,10 +204,30 @@ unsigned char blobNextCommand(blob_t * blob){
 			if((tmp = getnum(blob)) != 0xFFFF){ 
 				blob->delayy_rld = tmp;
 			}else{
-				blob->delayy_rld = 5;
+				blob->delayy_rld = 10;
 			}
 			blob->delayy = blob->delayy_rld;
-			break;	
+			break;
+		case 'x'://Place string at this x Position
+			if((tmp = getnum(blob)) != 0xFFFF){ 
+				blob->posx = tmp;
+			}else{
+				blob->posx =  NUM_COLS/2 + blob->sizex/2;
+			}
+			break;
+		case 'y'://Place string at this y Position
+			if((tmp = getnum(blob)) != 0xFFFF){ 
+				blob->posy = tmp - blob->sizey;
+			}
+			break;
+		case 'b'://blink blob
+			if((tmp = getnum(blob)) != 0xFFFF){ 
+				blob->delayb_rld = tmp;
+			}else{
+				blob->delayb_rld = 50;
+			}
+			blob->delayb = blob->delayb_rld;
+			break;
 		case '|':
 			if((tmp = getnum(blob)) != 0xFFFF){ 
 				blob->tox = tmp;
@@ -240,6 +263,10 @@ unsigned char blobNextCommand(blob_t * blob){
 			break;
 		case ';':
 			blob->waitfor = wait_col_l;
+			return (retval);
+			break;
+		case ':':
+			blob->waitfor = wait_col_r;
 			return (retval);
 			break;
 		case '+':
@@ -312,22 +339,15 @@ blob_t * setupBlob(unsigned char * str){
 		blob->posy = 0;
 	}else if(*blob->commands == 'd'){
 		blob->posy = -blob->sizey;
-		if((tmp = getnum(blob)) != 0xFFFF){ 
-			blob->posx = tmp;
-		}else{
-			blob->posx = NUM_COLS/2 + blob->sizex/2;
-		}
+		blob->posx = NUM_COLS/2 + blob->sizex/2;
 	}else if(*blob->commands == 'u'){
 		blob->posy = blob->sizey;
-		if((tmp = getnum(blob)) != 0xFFFF){ 
-			blob->posx = tmp;
-		}else{
-			blob->posx = NUM_COLS/2 + blob->sizex/2;
-		}
+		blob->posx = NUM_COLS/2 + blob->sizex/2;
 	}
 	
 	blob->delayx_rld = 0;
 	blob->delayy_rld = 0;
+	blob->delayb_rld = 0;
 	
 	blob->waitfor = wait_new;
 	
@@ -349,6 +369,15 @@ unsigned char updateBlob(blob_t * blob){
 	if(blob->delayy_rld && (!(blob->delayy--))){
 		blob->delayy = blob->delayy_rld;
 		(blob->direction & DIRECTION_DOWN)?blob->posy++:blob->posy--;
+	}
+	
+	if(blob->delayb_rld){
+		if(!(blob->delayb--)){
+			blob->delayb = blob->delayb_rld;
+			blob->visible ^= 1;
+		}
+	}else{
+		blob->visible = 1;
 	}
 	
 	unsigned char done=0;
@@ -377,6 +406,15 @@ unsigned char updateBlob(blob_t * blob){
 				done = 1;
 			}
 			break;
+		case wait_col_r:
+			if(blob->next){
+				if(blob->next->posx == (blob->posx - blob->sizex)){
+					done=1;
+				}
+			}else{
+				done = 1;
+			}
+			break;
 		default:
 			done = 1;
 			break;
@@ -393,7 +431,9 @@ void drawBlob(blob_t *blob) {
 	unsigned int charPos, charEnd;
 	
 	unsigned int posx; unsigned char posy;
-	//unsigned char color = 3;
+	
+	if(!blob->visible) return;
+	
 	unsigned char * str = blob->str;
 	posx = blob->posx;
 	posy = blob->posy;
