@@ -16,3 +16,4 @@ void joern1();
 void serialStream();
 void movingArrows();
 void feuer();
+void rotatePixmap();
