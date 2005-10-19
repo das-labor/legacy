@@ -792,4 +792,77 @@ void feuer()
 	}
 }
 
+void drawPixmapZ(char x1, char y1, char x2, char y2, unsigned char* pixmap, char level) {
+	signed char i, dx, dy, sdx, sdy, dxabs, dyabs, x, y, px, py;
+	unsigned char z, j=0;
+	dx = x2 - x1;      // the horizontal distance of the line
+	dy = y2 - y1;      // the vertical distance of the line 
+	dxabs = dx >= 0 ? dx: -dx; //abs
+	dyabs = dy >= 0 ? dy: -dy; //abs
+	sdx = dx >= 0 ? 1: -1;     //sgn
+	sdy = dy >= 0 ? 1: -1;     //sgn
+	x = dyabs >> 1;
+	y = dxabs >> 1;
+	px = x1;
+	py = y1;
+	for (z = 0; z < 8; z++) {
+		if (pixmap[z] & shl_table[j])
+			setpixel3d((pixel3d){x1, y1, z}, level);
+	}
+	j++;
+	
+	if (dxabs >= dyabs) { // the line is more horizontal than vertical  
+		for (i = 0; i < dxabs; i++) {
+			y += dyabs; 
+			if (y >= dxabs) {
+				y -= dxabs;
+				py += sdy;
+			}
+			px += sdx;
+			for (z = 0; z < 8; z++) {
+				if (pixmap[z] & shl_table[j])
+					setpixel3d((pixel3d){px, py, z}, level);
+			}
+			j++;
+		}
+	} else { // the line is more vertical than horizontal
+		for (i = 0; i < dyabs; i++) {
+			x += dxabs;
+			if (x >= dyabs) {
+				x -= dyabs;
+				px += sdx;
+			}
+			py += sdy;
+			for (z = 0; z < 8; z++) {
+				if (pixmap[z] & shl_table[j])
+					setpixel3d((pixel3d){px, py, z}, level);	
+			}
+			j++;
+		}
+	}
+}	  
+
+void drawPixmapZAngle(unsigned char angle, unsigned char* pixmap, unsigned char value) {
+	// could be optimised in programcode
+	unsigned char x1[14] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
+	unsigned char y1[14] = {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7};
+	unsigned char x2[14] = {7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1};
+	unsigned char y2[14] = {7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0};
+	drawPixmapZ(x1[angle], y1[angle], x2[angle], y2[angle], pixmap, value);	
+}
+
+
+
+// Rotate pixmap
+void rotatePixmap() {
+	// Eine super tolle neue Animation
+	char pixmap[8] = {0x18,0x3c,0x7e,0xff,0xff, 0xff,0x66,0x00}; 
+	unsigned int i;
+	for (i = 0; i < 1000; i++) {
+		drawPixmapZAngle(i%14, pixmap, 3);
+		wait(50);
+		clear_screen(0);
+	} 		
+}
+
 

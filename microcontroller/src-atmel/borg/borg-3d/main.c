@@ -80,6 +80,9 @@ int main (void){
 		case 11:
 			feuer();
 			break;
+		case 12:
+			rotatePixmap();
+			break;
 		default:
 			mode = 1;
 		}
