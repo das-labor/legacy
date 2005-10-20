@@ -21,6 +21,8 @@
 
 #define BORG_CAN
 
+#define SCROLLTEXT_STRING_SIZE 128
+
 #ifndef AVR
 #	define AVR
 #endif
