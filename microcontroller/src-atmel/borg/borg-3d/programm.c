@@ -757,40 +757,47 @@ void movingArrows() {
 }
 
 #define FEUER_Y (NUM_ROWS + 3)
-#define FEUER_S 30
-#define FEUER_N 5
-#define FEUER_DIV 47;
+#define FEUER_S 26
+#define FEUER_N 3
+#define FEUER_DIV 44;
+
 void feuer()
 {
-	unsigned char y, x;
+	char z, y, x;
 	unsigned int  t;
-	unsigned char world[NUM_COLS*NUM_ROWS][FEUER_Y];   // double buffer
+	unsigned char world[NUM_COLS][NUM_ROWS][FEUER_Y];   // double buffer
 
 	for(t=0; t<800; t++) {
-		// diffuse
-		for(y=1; y<FEUER_Y; y++) {
-			for(x=1; x<NUM_COLS*NUM_ROWS; x++) {
-				world[x][y-1] = (FEUER_N*world[x-1][y] + FEUER_S*world[x][y] + FEUER_N*world[x+1][y]) / FEUER_DIV;
-			};
-
-			world[0][y-1] = (FEUER_N*world[NUM_COLS-1][y] + FEUER_S*world[0][y] + FEUER_N*world[1][y]) / FEUER_DIV;
-			world[NUM_COLS-1][y-1] = (FEUER_N*world[0][y] + FEUER_S*world[NUM_COLS-1][y] + FEUER_N*world[NUM_COLS-2][y]) / FEUER_DIV;
-		};
-
 		// update lowest line
-		for(x=0; x<NUM_COLS*NUM_ROWS; x++) {
-			world[x][FEUER_Y-1] = myrandom();
-		};
-	
+		for(x=0; x<NUM_COLS; x++) {
+            for(y=0; y<NUM_ROWS; y++) {
+                world[x][y][FEUER_Y-1] = myrandom();
+            }
+		}
+
+		// diffuse
+		for(z=1; z<FEUER_Y; z++) {
+			for(x=0; x<NUM_COLS; x++) {
+                for (y=0; y<NUM_ROWS; y++) {
+					world[x][y][z-1] = (FEUER_N*world[(x-1)%8][y][z] + FEUER_N*world[(x+1)%8][y][z] +
+						 FEUER_N*world[x][(y-1)%8][z] + FEUER_N*world[x][(y+1)%8][z] +
+						 FEUER_S*world[x][y][z]) / FEUER_DIV;
+                }
+			}
+		}
+
 		// copy to screen
-		for(y=0; y<NUM_ROWS; y++) {
-			for(x=0; x<NUM_COLS*NUM_ROWS; x++) {
-				setpixel3d( (pixel3d){x/8,x%8,7-y}, (world[x][y] >> 5) );
-			}		
-		};
-		wait(60);
+		for(z=0; z<NUM_ROWS; z++) {
+			for(x=0; x<NUM_COLS; x++) {
+                for(y=0; y<NUM_ROWS; y++) {
+					setpixel3d((pixel3d){x,y,7-z}, world[x][y][z] >> 5 );
+                }
+			}
+		}
+		wait(70);
 	}
 }
+
 
 void drawPixmapZ(char x1, char y1, char x2, char y2, unsigned char* pixmap, char level) {
 	signed char i, dx, dy, sdx, sdy, dxabs, dyabs, x, y, px, py;
@@ -844,10 +851,10 @@ void drawPixmapZ(char x1, char y1, char x2, char y2, unsigned char* pixmap, char
 
 void drawPixmapZAngle(unsigned char angle, unsigned char* pixmap, unsigned char value) {
 	// could be optimised in programcode
-	unsigned char x1[14] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
-	unsigned char y1[14] = {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7};
-	unsigned char x2[14] = {7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1};
-	unsigned char y2[14] = {7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0};
+	unsigned char x1[] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1};
+	unsigned char y1[] = {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0};
+	unsigned char x2[] = {7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
+	unsigned char y2[] = {7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7};
 	drawPixmapZ(x1[angle], y1[angle], x2[angle], y2[angle], pixmap, value);	
 }
 
@@ -859,7 +866,7 @@ void rotatePixmap() {
 	char pixmap[8] = {0x18,0x3c,0x7e,0xff,0xff, 0xff,0x66,0x00}; 
 	unsigned int i;
 	for (i = 0; i < 1000; i++) {
-		drawPixmapZAngle(i%14, pixmap, 3);
+		drawPixmapZAngle(i%28, pixmap, 3);
 		wait(50);
 		clear_screen(0);
 	} 		
