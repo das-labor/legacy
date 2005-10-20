@@ -8,7 +8,6 @@
 #include "pixel.h"
 #include "uart.h"
 #include "borg_can.h"
-#include "scrolltext2.h"
 
 jmp_buf newmode_jmpbuf;
 
@@ -32,7 +31,7 @@ int main (void){
         		growingCubeFilled();
 			break;
 		case 2:
-			scrolltext(scrolltext_text, 0, 120);
+			scrolltext(scrolltext_text);
         		growingCubeFilled();
         		break;
 		case 3:
