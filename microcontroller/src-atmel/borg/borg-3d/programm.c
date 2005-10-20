@@ -763,7 +763,7 @@ void movingArrows() {
 
 void feuer()
 {
-	char z, y, x;
+	unsigned char z, y, x;
 	unsigned int  t;
 	unsigned char world[NUM_COLS][NUM_ROWS][FEUER_Y];   // double buffer
 
@@ -779,8 +779,8 @@ void feuer()
 		for(z=1; z<FEUER_Y; z++) {
 			for(x=0; x<NUM_COLS; x++) {
                 for (y=0; y<NUM_ROWS; y++) {
-					world[x][y][z-1] = (FEUER_N*world[(x-1)%8][y][z] + FEUER_N*world[(x+1)%8][y][z] +
-						 FEUER_N*world[x][(y-1)%8][z] + FEUER_N*world[x][(y+1)%8][z] +
+					world[x][y][z-1] = (FEUER_N*world[(x-1)%NUM_COLS][y][z] + FEUER_N*world[(x+1)%NUM_COLS][y][z] +
+						 FEUER_N*world[x][(y-1)%NUM_ROWS][z] + FEUER_N*world[x][(y+1)%NUM_ROWS][z] +
 						 FEUER_S*world[x][y][z]) / FEUER_DIV;
                 }
 			}
