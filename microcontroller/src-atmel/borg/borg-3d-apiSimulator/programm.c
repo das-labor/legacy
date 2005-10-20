@@ -1,7 +1,7 @@
 #include "pixel3d.h"
 #include "programm.h"
 #include "scrolltext2.h"
-
+extern unsigned char shl_table[];
 #ifndef AVR
 #	define itoa(buf,i) sprintf(buf, "%d", i)
 #endif
@@ -681,37 +681,43 @@ void movingArrows() {
 }
 
 #define FEUER_Y (NUM_ROWS + 3)
-#define FEUER_S 30
-#define FEUER_N 5
-#define FEUER_DIV 47;
+#define FEUER_S 26
+#define FEUER_N 3
+#define FEUER_DIV 44;
+
 void feuer()
 {
-	unsigned char y, x;
+	char z, y, x;
 	unsigned int  t;
-	unsigned char world[NUM_COLS*NUM_ROWS][FEUER_Y];   // double buffer
+	unsigned char world[NUM_COLS][NUM_ROWS][FEUER_Y];   // double buffer
 
 	for(t=0; t<800; t++) {
-		// diffuse
-		for(y=1; y<FEUER_Y; y++) {
-			for(x=1; x<NUM_COLS*NUM_ROWS; x++) {
-				world[x][y-1] = (FEUER_N*world[x-1][y] + FEUER_S*world[x][y] + FEUER_N*world[x+1][y]) / FEUER_DIV;
-			};
-
-			world[0][y-1] = (FEUER_N*world[NUM_COLS-1][y] + FEUER_S*world[0][y] + FEUER_N*world[1][y]) / FEUER_DIV;
-			world[NUM_COLS-1][y-1] = (FEUER_N*world[0][y] + FEUER_S*world[NUM_COLS-1][y] + FEUER_N*world[NUM_COLS-2][y]) / FEUER_DIV;
-		};
-
 		// update lowest line
-		for(x=0; x<NUM_COLS*NUM_ROWS; x++) {
-			world[x][FEUER_Y-1] = myrandom();
-		};
-	
+		for(x=0; x<NUM_COLS; x++) {
+            for(y=0; y<NUM_ROWS; y++) {
+                world[x][y][FEUER_Y-1] = myrandom();
+            }
+		}
+
+		// diffuse
+		for(z=1; z<FEUER_Y; z++) {
+			for(x=0; x<NUM_COLS; x++) {
+                for (y=0; y<NUM_ROWS; y++) {
+    				world[x][y][z-1] = (FEUER_N*world[(x-1)%8][y][z] + FEUER_N*world[(x+1)%8][y][z] + 
+                                        FEUER_N*world[x][(y-1)%8][z] + FEUER_N*world[x][(y+1)%8][z] +
+                                        FEUER_S*world[x][y][z]) / FEUER_DIV;
+                }
+			}
+		}
+
 		// copy to screen
-		for(y=0; y<NUM_ROWS; y++) {
-			for(x=0; x<NUM_COLS*NUM_ROWS; x++) {
-				setpixel3d( (pixel3d){x/8,x%8,7-y}, (world[x][y] >> 5) );
+		for(z=0; z<NUM_ROWS; z++) {
+			for(x=0; x<NUM_COLS; x++) {
+                for(y=0; y<NUM_ROWS; y++) {
+				    setpixel3d((pixel3d){x,y,7-z}, world[x][y][z] >> 5 );
+                }
 			}		
-		};
+		}
 		wait(70);
 	}
 }
@@ -728,7 +734,7 @@ void pong() {
 	   ok dann mach ich halt den Ball zuerst.
 	 Als zweites kommt der Ball dran
 	   einfachen algorithmus fŸr die flugbahn des Balles
-	   sowie des Aufprall- und Abprallwinkel.
+	   soie des Aufprall- und Abprallwinkel.
 	   an wenden sowie beim schlŠger abprallen
 	 Game over gewinner
 	 geschicktes einbauen der scrolltextengine
@@ -836,21 +842,98 @@ void pong() {
 	}
 }
 
+void drawPixmapZ(char x1, char y1, char x2, char y2, unsigned char* pixmap, char level) {
+	signed char i, dx, dy, sdx, sdy, dxabs, dyabs, x, y, px, py;
+	unsigned char z, j=0;
+	dx = x2 - x1;      // the horizontal distance of the line
+	dy = y2 - y1;      // the vertical distance of the line 
+	dxabs = dx >= 0 ? dx: -dx; //abs
+	dyabs = dy >= 0 ? dy: -dy; //abs
+	sdx = dx >= 0 ? 1: -1;     //sgn
+	sdy = dy >= 0 ? 1: -1;     //sgn
+	x = dyabs >> 1;
+	y = dxabs >> 1;
+	px = x1;
+	py = y1;
+	for (z = 0; z < 8; z++) {
+		if (pixmap[z] & shl_table[j])
+			setpixel3d((pixel3d){x1, y1, z}, level);
+	}
+	j++;
+	
+	if (dxabs >= dyabs) { // the line is more horizontal than vertical  
+		for (i = 0; i < dxabs; i++) {
+			y += dyabs; 
+			if (y >= dxabs) {
+				y -= dxabs;
+				py += sdy;
+			}
+			px += sdx;
+			for (z = 0; z < 8; z++) {
+				if (pixmap[z] & shl_table[j])
+					setpixel3d((pixel3d){px, py, z}, level);
+			}
+			j++;
+		}
+	} else { // the line is more vertical than horizontal
+		for (i = 0; i < dyabs; i++) {
+			x += dxabs;
+			if (x >= dyabs) {
+				x -= dyabs;
+				px += sdx;
+			}
+			py += sdy;
+			for (z = 0; z < 8; z++) {
+				if (pixmap[z] & shl_table[j])
+					setpixel3d((pixel3d){px, py, z}, level);	
+			}
+			j++;
+		}
+	}
+}	  
+
+void drawPixmapZAngle(unsigned char angle, unsigned char* pixmap, unsigned char value) {
+	// could be optimised in programcode
+	unsigned char x1[] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1};
+	unsigned char y1[] = {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0};
+	unsigned char x2[] = {7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
+	unsigned char y2[] = {7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7};
+	drawPixmapZ(x1[angle], y1[angle], x2[angle], y2[angle], pixmap, value);	
+}
+
+
+
+// Rotate pixmap
+void rotatePixmap() {
+	// Eine super tolle neue Animation
+	unsigned char pixmap[8] = {0x18,0x3c,0x7e,0xff,0xff, 0xff,0x66,0x00}; 
+	unsigned int i;
+	for (i = 0; i < 1000; i++) {
+		drawPixmapZAngle(i%28, pixmap, 3);
+		wait(50);
+		clear_screen(0);
+	} 		
+}
+
+
+
 void *display_loop(void * unused) {
 	while (1) {
-		pong();
+		//pong();
+		feuer();
+		rotatePixmap();
         movingArrows();
         growingCubeFilled();
-        scrolltext("b0rg3d wID3rStanD ist ZWECKLOS !!! from: martin@labor", 120);
+        scrolltext("b0rg3d wID3rStanD ist ZWECKLOS !!!", 120);
         growingCubeFilled();
         joern1();
 		growingCubeFilled();
-		gameOfLife(1, 400);
+		//gameOfLife(1, 400);
 		growingCubeFilled();
 		gameOfLife(0, 400);
 		growingCubeFilled();
 		growingCubeFilled();
-		gameOfLife(2, 150);
+		//gameOfLife(2, 150);
 		growingCubeFilled();
 		growingCubeFilled();
 		growingCubeFilled();
