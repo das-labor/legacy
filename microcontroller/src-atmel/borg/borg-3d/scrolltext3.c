@@ -60,7 +60,7 @@ void clear_text_pixmap(unsigned char value){
 
 void update_pixmap(){
 	unsigned char x, y, z, buf, i;
-	for(x=0;x<NUM_LEVELS;x++){
+	//for(x=0;x<NUM_LEVELS;x++){
 		for(y=0;y<NUM_ROWS;y++){
 			for(z=0;z<22;){
 				buf = (*text_pixmap)[y][z/8];
@@ -87,7 +87,7 @@ void update_pixmap(){
 				}
 			}
 		}
-	}
+	//}
 }
 
 enum waitfor_e{
@@ -578,7 +578,7 @@ void scrolltext(char *str) {
 				aktblob = aktblob->next;
 			}
 			update_pixmap();
-			wait(1);	
+			wait(2);	
 		};
 		startblob = setupBlob(0);
 		//showBlob(startblob);
