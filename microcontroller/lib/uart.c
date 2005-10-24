@@ -183,24 +183,3 @@ char uart_getc_nb(char *c)
 	return 0;
 }
 #endif // UART_INTERRUPT
-
-//get one Cariage return terminated line
-//echo charakters back on Uart
-//returns buffer with zero terminated line on success, 0 pointer otherwise
-char * uart_getline_nb(){
-	static char buffer[UART_LINE_BUFFER_SIZE];
-	static char * pos = buffer;
-	char tmp;
-	while(uart_getc_nb(&tmp)){
-		if(tmp == '\r'){
-			*pos = 0;	//terminate line
-			pos = buffer;   //reset pointer
-			return buffer;  //and return the buffer
-		}
-		if(pos < buffer+UART_LINE_BUFFER_SIZE-1){ //buffer full?
-			*pos++ = tmp;		//no: write character to buffer
-			uart_putc (tmp);
-		}
-	}
-	return 0;
-}
