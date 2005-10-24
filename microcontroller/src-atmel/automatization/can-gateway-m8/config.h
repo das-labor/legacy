@@ -6,11 +6,10 @@
 
 // uart.[ch] defines
 #define UART_INTERRUPT
-#define UART_BAUD_RATE 57600
+#define UART_BAUD_RATE 115200
 #define UART_RXBUFSIZE 50
 #define UART_TXBUFSIZE 50
-#define UART_LINE_BUFFER_SIZE 40
-#define UART_LEDS
+#undef  UART_LEDS
 
 
 // spi.[ch] defines
@@ -32,7 +31,7 @@
 #define CAN_INTERRUPT		//set this to enable interrupt driven and buffering version
 #define CAN_RX_BUFFER_SIZE 8	//only used for Interrupt
 #define CAN_TX_BUFFER_SIZE 8	//only used for Interrupt
-#define F_MCP F_CPU
+#define F_MCP 16000000
 
 
 // lap.[ch] defines
