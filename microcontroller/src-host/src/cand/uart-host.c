@@ -28,7 +28,7 @@ void uart_init(char *sport) {
         	fprintf(stderr, "error: could not open serial port %s\n", sport);
         	exit(1);
 	}
-	int rc = v24SetParameters(Port, V24_B57600, V24_8BIT, V24_NONE);
+	int rc = v24SetParameters(Port, V24_B115200, V24_8BIT, V24_NONE);
 	if ( rc!=V24_E_OK )
 	{
 		fputs("error: setup of the port failed!\n",stderr);

@@ -50,7 +50,7 @@ int main (void){
 			break;
 /*
 		case 9:
-			matrix();
+			//matrix();
 */
 			break;
 		default:
