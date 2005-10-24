@@ -50,6 +50,15 @@ void process_can_msg(can_message *msg){
 #define PIN_LEDD PD7
 
 
+#define PORT_BUSPOWER PORTD
+#define DDR_BUSPOWER DDRD
+#define BIT_BUSPOWER PD4
+
+void buspower_on(){
+	DDR_BUSPOWER |= (1<<BIT_BUSPOWER);
+	PORT_BUSPOWER |= (1<<BIT_BUSPOWER);
+}
+
 void led_init(){
 	DDR_LEDS |= (1<<PIN_LEDD)|(1<<PIN_LEDCL)|(1<<PIN_LEDCK);
 	PORT_LEDS |= (1<<PIN_LEDCL);
@@ -69,12 +78,24 @@ void led_set(unsigned int stat){
 	}
 }
 
+void adc_init(){
+	DDRC = 0xCF;
+	ADMUX = 0;
+	ADCSRA = 0x07; //slowest adc clock
+	ADCSRA |= (1<<ADEN) | (1<<ADSC) | (1<<ADIF);
+}
+
+
 int main(){
 	uart_init();
 	spi_init();
-	can_init();
 	
-	led_init();
+	adc_init();
+	
+	led_init();	
+	led_set(0xFF);
+	
+	can_init();
 	
 	DDRC = 0xff;
 
@@ -87,7 +108,6 @@ int main(){
 	
 	unsigned int muh=0x01;
 	
-	led_set(0xFFFF);
 		
 	while(1) {
 		rs232can_msg *rmsg;
