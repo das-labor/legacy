@@ -7,6 +7,8 @@
 #include "lap.h"
 #include "mood-hw.h"
 
+extern uint8_t bright[20][4];
+
 can_addr myaddr;
 
 void mcan_init() 
@@ -32,7 +34,8 @@ void process_mgt_msg(pdo_message *msg)
 
 	switch(msg->cmd) {
 	case FKT_MGT_RESET:
-		wdt_enable(0x00);  // 17ms
+		timer0_off(); // 17ms
+		for (;;);
 		break;
 	case FKT_MGT_PING:
 		rmsg = (pdo_message *)can_buffer_get();
@@ -49,24 +52,19 @@ void process_mgt_msg(pdo_message *msg)
 
 void process_mood_msg(pdo_message *msg)
 {
-	uint8_t selectmood;
+	uint8_t module, led, value;
 	pdo_message * rmsg;
+
 	switch(msg->cmd) {
 	case FKT_MOOD_SET:
-		selectmood = msg->data[0];
-		if(selectmood == 0){
-			bright[0]  = msg->data[1];
-			bright[1]  = msg->data[2];
-			bright[2]  = msg->data[3];
-			bright[3]  = msg->data[4];
-		}
-		if (selectmood == 1){
-			bright[4]  = msg->data[1];
-			bright[5]  = msg->data[2];
-			bright[6]  = msg->data[3];
-			bright[7]  = msg->data[4];
-		}
+		module = msg->data[0];
+		led    = msg->data[1];
+		value  = msg->data[2];
+
+		bright[module][led] = value;
+
 		break;
+/*
 	case FKT_MOOD_GET:
 		rmsg = (pdo_message *)can_buffer_get();
 		rmsg->addr_dst = msg->addr_src;
@@ -76,12 +74,9 @@ void process_mood_msg(pdo_message *msg)
 		rmsg->cmd = FKT_MOOD_GET;
 		rmsg->dlc = 6;
 		rmsg->data[0] = 0;
-		rmsg->data[1] = bright[0];
-		rmsg->data[2] = bright[1];
-		rmsg->data[3] = bright[2];
-		rmsg->data[4] = bright[3];
 		can_transmit((can_message *)rmsg);
 		break;
+*/
 	}
 }
 
