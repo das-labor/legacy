@@ -57,3 +57,16 @@ void debug_assert( int test, char *format, ... )
 	exit(1);
 }
 
+void debug_assert2(char *format, ... )
+{
+	va_list ap;
+
+	va_start(ap, format);
+	fprintf(stderr, "ERROR: ");
+	vfprintf(stderr, format, ap);
+	fprintf(stderr, " (%s)\n", strerror(errno) );
+	va_end(ap);
+
+	exit(1);
+}
+
