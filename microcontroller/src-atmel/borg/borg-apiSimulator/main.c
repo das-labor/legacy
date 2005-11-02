@@ -175,7 +175,7 @@ int main(int argc, char **argv){
     glutMotionFunc(motion);
     
     // clearcolor & main loop
-    glClearColor(0.8,0.8,0.8,1.0);
+    glClearColor(0.3,0.3,0.3,1.0);
     gluPerspective(60.0, (float)WindWidth/(float)WindWidth, 5., 1000.);
     gluLookAt(NUM_COLS*2., NUM_COLS*2.+50., NUM_ROWS*2.,
               NUM_COLS*2., NUM_COLS*2., NUM_ROWS*2.,
@@ -188,15 +188,15 @@ int main(int argc, char **argv){
 		gluSphere(quad, 1.0, 12, 12);		
 	glEndList();
 	glNewList(1, GL_COMPILE);
-		glColor4f(1.0, 0.7, 0.7, 1.);
+		glColor4f(0.5, 0.3, 0.3, 1.);
 		gluSphere(quad, 1.4, 12, 12);	
     glEndList();
 	glNewList(2, GL_COMPILE);
-		glColor4f(1.0, 0.5, 0.5, 1.);
+		glColor4f(0.7, 0.3, 0.3, 1.);
 		gluSphere(quad, 1.55, 12, 12);	
     glEndList();
 	glNewList(3, GL_COMPILE);
-		glColor4f(1.00, 0.0, 0.0, 1.);
+		glColor4f(1.00, 0.3, 0.3, 1.);
 	    gluSphere(quad, 1.7, 12, 12);
     glEndList();
 	

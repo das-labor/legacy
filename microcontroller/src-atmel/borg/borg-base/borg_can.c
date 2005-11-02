@@ -14,7 +14,7 @@ can_addr myaddr;
 extern jmp_buf newmode_jmpbuf;
 
 
-char default_text[] PROGMEM = ">5+:<5|90>6:<6|78>:p10d50/#Labor#<5;>5|30<6;>6|40<6;p10+d50/# Borg#2d50-+/#Widerstand#ist#d50-b20p15#ZWECKLOS !";
+char default_text[] PROGMEM = SCROLLTEXT_DEFAULT;
 char scrolltext_text[128];
 
 

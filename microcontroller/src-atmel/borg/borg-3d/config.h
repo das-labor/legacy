@@ -22,6 +22,7 @@
 #define BORG_CAN
 
 #define SCROLLTEXT_STRING_SIZE 128
+#define SCROLLTEXT_DEFAULT "<25/#3d Borg"
 
 #ifndef AVR
 #	define AVR
