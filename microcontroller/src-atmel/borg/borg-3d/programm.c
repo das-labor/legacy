@@ -661,7 +661,7 @@ unsigned char i, j, x;
 }
 
 void gameOfLife(unsigned char anim, unsigned int delay) {
-	unsigned char gen, erg, seven = 1, maxGen;
+	unsigned char gen, erg, seven = 1, maxGen = 0;
 	signed char x, y, z, neighC, r1 = 3, r2 = 4, r3 = 3, r4 = 2;
 	signed char i, j, k;
 	char neighs[NUM_PLANES][NUM_ROWS][NUM_COLS];

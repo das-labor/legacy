@@ -86,19 +86,25 @@ void adc_init(){
 }
 
 
+
 int main(){
+	unsigned int x;
+	for(x=0;x<60000;x++){
+		asm volatile ("nop");
+	};
+	
 	uart_init();
 	spi_init();
 	
-	adc_init();
+	//adc_init();
 	
 	led_init();	
-	led_set(0xFF);
+	led_set(0xFFFF);
+	
+	buspower_on();
 	
 	can_init();
 	
-	DDRC = 0xff;
-
 	sei();
 
 	canu_reset();

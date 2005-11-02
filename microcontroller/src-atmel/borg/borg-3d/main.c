@@ -8,6 +8,7 @@
 #include "pixel.h"
 #include "uart.h"
 #include "borg_can.h"
+#include "util.h"
 
 jmp_buf newmode_jmpbuf;
 
@@ -22,7 +23,7 @@ int main (void){
 	mode = setjmp(newmode_jmpbuf);
 	for(;;) {
 		switch(mode++) {
-		case 0:
+		case 0xff:
 			clear_screen(0);
 			while (1) wait(5);
 			break;
@@ -39,13 +40,13 @@ int main (void){
 			growingCubeFilled();
 			break;
 		case 4:
-			gameOfLife(1, 400);
-			growingCubeFilled();
+			//gameOfLife(1, 400);
+			//growingCubeFilled();
 			break;
 		case 5:
-			gameOfLife(0, 400);
-			growingCubeFilled();
-			growingCubeFilled();
+			//gameOfLife(0, 400);
+			//growingCubeFilled();
+			//growingCubeFilled();
 			break;
 		case 6:
 			gameOfLife(2, 150);
@@ -82,8 +83,6 @@ int main (void){
 		case 12:
 			rotatePixmap();
 			break;
-		default:
-			mode = 1;
 		}
 	}
 }
