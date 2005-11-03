@@ -479,7 +479,7 @@ void drawBlob(blob_t *blob) {
 
 extern jmp_buf newmode_jmpbuf;
 
-void scrolltext(char *str) {
+void scrolltext(unsigned char *str) {
 	jmp_buf tmp_jmpbuf;
 	unsigned char tmp_str[SCROLLTEXT_STRING_SIZE];
 	int ljmp_retval;

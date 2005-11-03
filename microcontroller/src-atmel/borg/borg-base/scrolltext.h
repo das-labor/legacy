@@ -1,1 +1,1 @@
-void scrolltext(char *str);
+void scrolltext(unsigned char *str);
