@@ -149,7 +149,7 @@ unsigned char text[128] = "<5|p2+</#Hallo Labor Borg#7<1|+>10/#T#e#s#t#i#n#g#";
 
 void *display_loop(void * unused) {
 	while (1) {	
-        	scrolltext(text);
+        //scrolltext(text);
 		matrix();
 		fadein();
 		joern1();
@@ -165,8 +165,8 @@ void *display_loop(void * unused) {
 int main(int argc, char **argv){
     if (argc > 1)
 		strncpy(text, argv[1], 128);
-	WindHeight = 500;
-    WindWidth = 500;         
+    WindHeight = 700;
+    WindWidth = 700;         
     glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
     glutInitWindowSize(WindHeight, WindWidth);
