@@ -7,25 +7,14 @@
 
 uint8_t bright[20][4];
 
-void bright_calc();
+void bright_calc(uint8_t module);
 
 
 int main (void)
 {
 	mood_init();
-	PORTC = 0x01;
 	mcan_init();
-	PORTC = 0x03;
 	sei();
-	PORTC = 0x07;
-
-	bright[6][0] = 0;
-	bright[6][1] = 0;
-	bright[6][2] = 0;
-	bright[6][3] = 65;
-	bright_calc();
-
-
 
 	while(1){
 		mcan_process_messages();
@@ -37,17 +26,40 @@ void bright_init()
 {
 	uint8_t i,j;
 
-	for (i=0; i<20; i++)
+	for (i=0; i<20; i++) {
 		for(j=0; j<4; j++)
 			bright[i][j] = 0;
-
-	bright_calc();
+		bright_calc(i);
+	}
 }
 
-void bright_calc()
+
+void bright_calc(uint8_t module)
 {
-	uint8_t led,row;
+	uint8_t led, rbright,row,mask;
 	uint8_t cycle;
+	for (led=0;led<4;led++){
+		// calc effective bright (val/32)^2
+		rbright = (bright[module][led]/32); 
+		rbright *= rbright;
+
+		//2 Stränge pro Port
+		row  = module & 0x03;
+		mask = 1 << led;
+//		if (module & 0x04) 
+//			mask <<= 4;
+		
+		// set mask to bright_a
+		for(cycle=0; cycle<64; cycle++) {
+			if (cycle < rbright)
+				bright_a[cycle][row] |= mask;
+			else
+				bright_a[cycle][row] &= ~mask;
+		}
+	};
+
+
+/* old stuff
 	
 	for(cycle=0; cycle < 64; cycle++) {
 		for(row=0; row < 4; row++) {
@@ -68,10 +80,8 @@ void bright_calc()
 				// port 2 high nibble
 				if (bright[4+row][3-led] > cycle)
 					bright_b[cycle][row] |= 1 << (led+4);
+*/
 
-
-			}
-		}
-	}
 }
+
 

@@ -8,7 +8,7 @@
 #include "lap.h"
 #include "mood-hw.h"
 
-extern uint8_t bright[20][4];
+extern uint8_t bright[20][4];   // 0x00 - 0xFF
 
 can_addr myaddr;
 
@@ -60,11 +60,14 @@ void process_mood_msg(pdo_message *msg)
 	switch(msg->cmd) {
 	case FKT_MOOD_SET:
 		module = msg->data[0];
-		led    = msg->data[1];
-		value  = msg->data[2];
 
-		bright[module][led] = value;
+		bright[module][0] = msg->data[1];
+		bright[module][1] = msg->data[2];
+		bright[module][2] = msg->data[3];
+		bright[module][3] = msg->data[4];
 
+		bright_calc(module);		
+		
 		break;
 /*
 	case FKT_MOOD_GET:
@@ -100,4 +103,5 @@ void mcan_process_messages()
 	};
 
 }
+
 
