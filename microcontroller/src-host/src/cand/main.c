@@ -149,28 +149,48 @@ void event_loop()
 			highfd = uart_fd();
 			FD_SET(uart_fd(), &rset);
 		};
-			highfd = max(highfd, cann_fdset(&rset));
+		highfd = max(highfd, cann_fdset(&rset));
+
+
+		debug( 9, "VOR SELECT" );
+		cann_dumpconn();
 
 		num = select(highfd+1, &rset, (fd_set *)NULL, (fd_set *)NULL, NULL);
-		debug_assert( num >= 0, "select faild" );
+		debug_assert( num >= 0, "select failed" );
 		debug( 10, "Select returned %d", num);
+		cann_dumpconn();
 
 		// check activity on uart_fd
 		if (serial && FD_ISSET(uart_fd(), &rset))
 			process_uart_msg();
 
-		// check client activity 
-		while( client = cann_activity(&rset) )
-			process_client_msg(client);
+		debug( 9, "AFTER UART" );
+		cann_dumpconn();
 
-	
+		// check client activity 
+		//
+		while( client = cann_activity(&rset) ) {
+			debug(5, "CANN actiity found" );
+			process_client_msg(client);
+		}
+
+		debug( 9, "AFTER CANN ACTIVITY" );
+		cann_dumpconn();
+
 		// new connections
 		if( client = cann_accept(&rset) ) {
 			debug( 2, "===> New connection (fd=%d)", client->fd );
 		}
 
+		debug( 9, "AFTER CANN NEWCONN" );
+		cann_dumpconn();
+
+
 		// close errorous connections
 		cann_close_errors();
+
+		debug( 9, "AFTER CANN CLOSE" );
+		cann_dumpconn();
 	}
 }
 
