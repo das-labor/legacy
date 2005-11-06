@@ -69,9 +69,7 @@ public class GladeApp
 	private void OnColorChanged(object sender, EventArgs a){
 		int module = (int)spinmood1.Value-1 ;
 		Gdk.Color foo=ledfoo1.CurrentColor;
-		foo=ledfoo1.CurrentColor;
-		mood.SetMood(module,foo.Red,foo.Green,foo.Blue,0x00);
-		System.Console.WriteLine(module);
+		mood.SetMood(module, foo.Red/256, foo.Green/256, foo.Blue/256, 0x00);
 	}
 	
 	// Borg button
