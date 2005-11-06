@@ -10,17 +10,21 @@ uint8_t bright[20][4];
 void bright_calc();
 
 
-int main (void){
-
+int main (void)
+{
 	mood_init();
+	PORTC = 0x01;
 	mcan_init();
+	PORTC = 0x03;
 	sei();
+	PORTC = 0x07;
 
 	bright[6][0] = 0;
 	bright[6][1] = 0;
 	bright[6][2] = 0;
 	bright[6][3] = 65;
 	bright_calc();
+
 
 
 	while(1){

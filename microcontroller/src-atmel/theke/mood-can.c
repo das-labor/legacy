@@ -2,6 +2,7 @@
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
 
+#include "spi.h"
 #include "util.h"
 #include "can.h"
 #include "lap.h"
@@ -13,6 +14,7 @@ can_addr myaddr;
 
 void mcan_init() 
 {
+	spi_init();
 	can_init();
 
 	myaddr = eeprom_read_byte(0x00);

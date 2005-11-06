@@ -11,6 +11,9 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 	static uint8_t module=1;
 	static uint8_t cycle=0;
 
+
+	PORTC ^= 0x02;
+
 	// calc next parameters
 	wdt_reset();
 	module <<= 1;
