@@ -8,11 +8,16 @@ public class GladeApp
 	Lampe lampe;
 	Mood  mood;
 	Borg  borg;
-	
+	 
 	[Widget] Gtk.Entry	entry1;
+	[Widget] Gtk.Entry	entry2;
+	[Widget] Gtk.SpinButton spinmood1;
+	
+	[Widget] Gtk.Label	label5;
+	[Widget] Gtk.Label  label6;
 	[Widget] Gtk.Button button1;
+	[Widget] Gtk.Button button2;
 	[Widget] Gtk.ColorSelection ledfoo1;
-	[Widget] Gtk.ColorSelection ledfoo2;
 	[Widget] Gtk.VScale lampe1Scale;
 	[Widget] Gtk.VScale lampe2Scale;
 	[Widget] Gtk.VScale lampe3Scale;
@@ -30,12 +35,12 @@ public class GladeApp
 		
 		Glade.XML gxml = new Glade.XML (null, "gui.glade", "window1", null);
 		gxml.Autoconnect (this);
-		CanConnection conn = new CanConnection("rl", 2342 );
+		CanConnection conn = new CanConnection("roulette", 2342 );
 		
+
 		InitMoods();
 		InitLampe();
 		InitBorg();
-	
 		Application.Run ();
 	}
 
@@ -62,23 +67,11 @@ public class GladeApp
 	
 	// Mood color changer
 	private void OnColorChanged(object sender, EventArgs a){
-		double factor =	0.000984615;
-		int    module=0;
-		
+		int module = (int)spinmood1.Value-1 ;
 		Gdk.Color foo=ledfoo1.CurrentColor;
-		if(sender == ledfoo1){
-			foo=ledfoo1.CurrentColor;
-			module=0;
-		}
-		if(sender == ledfoo2){
-			foo=ledfoo2.CurrentColor;
-			module=1;
-		}
-		int red   = (int)(foo.Red * factor);
-		int blue  = (int)(foo.Blue * factor);
-		int green = (int)(foo.Green * factor);
-		mood.SetMood(module,blue,green,red,0x00);
-		
+		foo=ledfoo1.CurrentColor;
+		mood.SetMood(module,foo.Red,foo.Green,foo.Blue,0x00);
+		System.Console.WriteLine(module);
 	}
 	
 	// Borg button
@@ -86,16 +79,24 @@ public class GladeApp
 		borg.SetScroll(entry1.Text );
 	}
 
-	// Initialize GUI 
+	public void OnPingButton(object sender, EventArgs a){
+		int toping = 0;
+		try{
+			toping = Int16.Parse(entry2.Text);
+		}
+		catch(Exception e){
+
+		}
+		Ping ping = new Ping(toping);
+		ping.PingDevice();
+	}
+
 	private void InitMoods()
 	{
-		mood = new Mood(0x1);
-
-		//int blue = MyMood.GetMood(0,2);
-		//System.Console.WriteLine(blue);
-		
+		mood = new Mood(0xff);
+				
 		ledfoo1.ColorChanged += new EventHandler(OnColorChanged);
-		ledfoo2.ColorChanged += new EventHandler(OnColorChanged);
+		
 	}
 	
 	private void InitLampe() 

@@ -31,6 +31,14 @@ class LibLap {
 	[DllImport("liblap.so")]
 	public static extern void can_free(IntPtr msg);
 
+	/*Ping*/
+	[DllImport("liblap.so")]
+	public static extern void lap_ping(int addr);
+	 /*Pong*/
+	 [DllImport("liblap.so")]
+	 public static extern int lap_getpong(int addr);
+	
+
 	/* Lampe */
 	[DllImport("liblap.so")]
 	public static extern int lampe_set_lampe(int addr, int lampe, int val);
@@ -108,5 +116,18 @@ class Borg{
 	{
 		LibLap.borg_scroll_borg(_addr,String);
 		LibLap.borg_fire_borg(_addr);
+	}
+}
+class Ping{
+	int _addr;
+	
+	public Ping(int addr){
+		_addr = addr;
+	}
+	public void PingDevice(){
+		LibLap.lap_ping(_addr);
+	}
+	public int GetPong(){
+		return LibLap.lap_getpong(_addr);
 	}
 }
