@@ -2,13 +2,7 @@
 #include "lap.h"
 #include "proto_mood.h"
 
-struct moodvals{
-uint8_t v1;
-uint8_t v2;
-uint8_t v3;
-uint8_t v4;
-};
-unsigned char mood_set_mood( can_addr dst, unsigned char mood,unsigned char val1, unsigned char val2, unsigned char val3, unsigned char val4 )
+unsigned char mood_set_mood( can_addr dst,unsigned char mood, unsigned char val1, unsigned char val2, unsigned char val3, unsigned char val4 )
 {	
 	pdo_message * msg  = (pdo_message *) can_buffer_get();
        	

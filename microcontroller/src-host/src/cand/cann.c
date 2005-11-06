@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <signal.h>
 
 #include "cann.h"
 
@@ -54,6 +55,8 @@ void cann_listen(int port)
 	struct sockaddr_in serv_addr;
 	int ret, flags;
 	char one=1; 
+
+	signal(SIGPIPE, SIG_IGN);
 
 	ret = listen_socket = socket(AF_INET, SOCK_STREAM, 0);
 	debug_assert( ret >= 0, "Could not open listeing socket: ");
@@ -216,9 +219,8 @@ cann_conn_t *cann_activity(fd_set *set)
 {
 	cann_conn_t *client = cann_conns_head;
 
-
 	while(client) {
-		if (FD_ISSET(client->fd, set) ) {
+		if (FD_ISSET(client->fd, set) && !client->error) {
 			FD_CLR(client->fd, set);
 			return client;
 		}
@@ -242,6 +244,19 @@ void cann_free(rs232can_msg *rmsg)
 {
 	free(rmsg);
 }
+
+
+void cann_dumpconn()
+{
+	cann_conn_t *client = cann_conns_head;
+
+	while(client) {
+		debug(9, "CANN connection: fd=%d error=%d", client->fd, client->error);
+		client = client->next;
+	}
+}
+
+
 
 /*****************************************************************************
  * rcv
@@ -357,22 +372,24 @@ void cann_transmit(cann_conn_t *conn, rs232can_msg *msg)
 	int len;
 
 	// sanity
-	debug_assert( !(conn->error), 
-			"cann_get_nb() with error (%d)", conn->error );
+	if (conn->error) {
+		debug(5, "cann_transmit: not transmiting on errorous connection fd=%d", conn->fd);
+		return;
+	}
 
-	if( write(conn->fd, &(msg->len), 1) != 1 ) 
+	if( send(conn->fd, &(msg->len), 1, MSG_NOSIGNAL) != 1 ) 
 		goto error;
 	
-	if( write(conn->fd, &(msg->cmd), 1) != 1 )
+	if( send(conn->fd, &(msg->cmd), 1, MSG_NOSIGNAL) != 1 )
 		goto error;
 
-	if( write(conn->fd, msg->data, msg->len) != msg->len )
+	if(send(conn->fd, msg->data, msg->len, MSG_NOSIGNAL) != msg->len )
 		goto error;
 
 	return;
 error:
 	conn->error = 1;
-	debug_perror( 5, "Error writing fd %d", conn->fd );
+	debug_perror( 5, "Error sending fd %d", conn->fd );
 	return;
 
 }
