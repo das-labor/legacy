@@ -8,23 +8,28 @@ uint8_t bright_b[64][4];
 
 SIGNAL(SIG_OUTPUT_COMPARE0)
 {
-	static uint8_t module=1;
+	static uint8_t row=0;
 	static uint8_t cycle=0;
-
-
-	PORTC ^= 0x02;
-
-	// calc next parameters
+	uint8_t rowmask;
+	
 	wdt_reset();
-	module <<= 1;
-	if (module >= 0x10){
-		cycle = (cycle +1) & 63;
-		module = 1;
+	
+	PORTA = 0x00;
+	
+	if (++row > 3){
+		row = 0;
+		if (++cycle>63)
+			cycle=0;
 	}
 
-	// SET
-	PORTC = (module <<4);
-	PORTA = bright_a[cycle][module];
+	// calc row-mask
+	rowmask = 1 << (row + 4);
+	
+	PORTC = rowmask;
+	
+	
+	// set values
+	PORTA = bright_a[cycle][row];
 }
 
 void timer0_off(){
@@ -48,7 +53,7 @@ void timer0_on(){
 		 1    0    1       clk/1024
 	
 */
-	TCCR0 = 0x0A;	// CTC Mode, clk/64
+	TCCR0 = 0x0A;	// CTC Mode, clk/8
 	TCNT0 = 0;	// reset timer
 	OCR0  = 128;	// Compare with this value
 	TIMSK = 0x02;	// Compare match Interrupt on
@@ -62,4 +67,5 @@ void mood_init()
 	wdt_enable(0x00);
 	timer0_on();
 }
+
 
