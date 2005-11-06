@@ -37,7 +37,7 @@ int mood_get_mood(can_addr dst,int mood,int moodled){
 	
 	pdo_message * rmsg =(pdo_message*) can_get();
 	while(rmsg->addr_src != dst && rmsg->addr_dst != 0x00 && rmsg->cmd != FKT_MOOD_GET){
-		mv=msg->data[moodled];
+		mv=rmsg->data[moodled];
 	}
 	return  mv;
 }
