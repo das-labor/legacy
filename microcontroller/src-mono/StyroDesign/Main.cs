@@ -5,11 +5,20 @@ using Glade;
 
 public class GladeApp
 {
-	// Dies ist nur ein dummer Kommentar
 	[Widget] private Gtk.Button buttonAdd;
 	[Widget] private Gtk.TreeView treeview1;
 	private TreeStore store;
-	
+	private float zoom;
+
+	public float Zoom {
+		get {
+			return zoom;
+		}
+		set {
+			if (value > 0.01 && value < 10)
+				zoom = value;
+		}
+	}
 
 	public static void Main (string[] args)
 	{
@@ -17,7 +26,7 @@ public class GladeApp
 	}
 
 	public GladeApp (string[] args) 
-	{
+	{ 
 		Application.Init ();
 		
 		Glade.XML gxml = new Glade.XML (null, "gui.glade", "window1", null);
@@ -41,6 +50,7 @@ public class GladeApp
 		store.AppendValues("LineTo 342 3423");
 	}
 
+
 	// Connect the Signals defined in Glade
 	private void OnWindowDeleteEvent (object sender, DeleteEventArgs a) 
 	{
@@ -48,4 +58,11 @@ public class GladeApp
 		a.RetVal = true;
 	}
 }
-//02366-43437
+
+interface DrawNode : TreeNode {
+	string getChainCode();
+	vo
+
+}
+
+

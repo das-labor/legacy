@@ -14,7 +14,7 @@ AC_ISC_POSIX
 AC_PROG_LIBTOOL
 
 # Checks for libraries.
-AC_CHECK_LIB([ezV24], [v24Getc], [], AC_MSG_ERROR([libezV24 not found]) )
+#AC_CHECK_LIB([ezV24], [v24Getc], [], AC_MSG_ERROR([libezV24 not found]) )
 
 # Checks for header files.
 AC_HEADER_STDC
