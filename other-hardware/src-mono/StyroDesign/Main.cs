@@ -58,11 +58,10 @@ public class GladeApp
 		a.RetVal = true;
 	}
 }
-
+/*
 interface DrawNode : TreeNode {
 	string getChainCode();
-	vo
 
 }
-
+*/
 
