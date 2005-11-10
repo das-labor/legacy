@@ -1,0 +1,16 @@
+<Combine name="StyroDesign" fileversion="2.0">
+  <Configurations>
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry build="True" name="StyroDesign" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry build="True" name="StyroDesign" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="StyroDesign" single="True">
+    <Execute type="None" entry="StyroDesign" />
+  </StartMode>
+  <Entries>
+    <Entry filename="./StyroDesign.mdp" />
+  </Entries>
+</Combine>
