@@ -7,7 +7,6 @@
 #include <curses.h>
 
 
-
 #define NOP     0x80
 #define CLK_ON  0x01
 #define CLK_OFF 0x02
@@ -55,7 +54,7 @@ int seq_mess[] = {
 	CLK_ON + SPL,
 	CLK_OFF,				// t_conv (7)
 	CLK_ON + SPL + PRINT,
-	CLK_ON + DIN_OFF,		// ~CS
+	CLK_ON + DIN_OFF,			// ~CS
 	DIN_ON,					// ~CS
 	0
 };
