@@ -1,0 +1,10 @@
+
+* What's in here?
+
+Host-PC based software to control a LTC1290 based ADC
+(Analog->Digital Converter) board via a serial RS232 interface:
+
+* 8 Channels 12 bit resolution
+* powered via serial port
+* communication via DTR/RTS and CTR
+
