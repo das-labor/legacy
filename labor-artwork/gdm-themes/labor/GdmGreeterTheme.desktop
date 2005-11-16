@@ -4,8 +4,8 @@
 [GdmGreeterTheme]
 Encoding=UTF-8
 Greeter=labor.xml
-Name=LABOR
-Description=LABOR GDM Theme
+Name=Das Labor 
+Description=See http://www.das-labor.org/
 Author=Joerg Bornschein <joerg@zilium.de>
 Copyright=creative commons
 Screenshot=screenshot.jpg
