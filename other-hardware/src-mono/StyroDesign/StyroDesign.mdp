@@ -28,5 +28,6 @@
     <File name="./gui.glade" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Main.cs" subtype="Code" buildaction="Compile" />
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./EmptyCSharpfile.cs" subtype="Code" buildaction="Compile" />
   </Contents>
 </Project>
