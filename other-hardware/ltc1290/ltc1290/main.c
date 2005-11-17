@@ -72,19 +72,22 @@ int main(int argc, char *argv[])
 
 	// argv[optind];
 
-	ltc1290_plan_t plan;
+	ltc1290_plan_t plan[2];
 
-	plan.single   = 1;
-	plan.unipolar = 1;
-	plan.channel  = 7;
+	plan[0].single   = 1;
+	plan[0].unipolar = 1;
+	plan[0].channel  = 6;
+	plan[1].single   = 1;
+	plan[1].unipolar = 1;
+	plan[1].channel  = 7;
 
 	ltc1290_open(port);
 	usleep(1000 * interval);
-	ltc1290_measure(&plan, 1);
+	ltc1290_measure(plan, 2);
 	usleep(1000 * interval);
 	while(1) {
-		ltc1290_measure(&plan, 1);
-		printf("%01.3f\n", plan.dvalue);
+		ltc1290_measure(plan, 2);
+		printf("%01.3f \t %01.3f\n", plan[1].dvalue, plan[0].dvalue);
 		fflush(stdout);
 
 		usleep(1000 * interval);

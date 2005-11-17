@@ -107,7 +107,28 @@ void ltc1290_measure(ltc1290_plan_t plan[], int count)
 	ltc1290_csoff();
 
 	i++;
+	while(i<count) {
+		val = 0;
+		val = (val<<1) + ltc1290_clk(plan[i].single);
+		val = (val<<1) + ltc1290_clk(plan[i].channel & 0x01);
+		val = (val<<1) + ltc1290_clk((plan[i].channel >> 2) & 0x01);
+		val = (val<<1) + ltc1290_clk((plan[i].channel >> 1) & 0x01);
+		val = (val<<1) + ltc1290_clk(plan[i].unipolar);
+		val = (val<<1) + ltc1290_clk(1);                     // MSB
+		val = (val<<1) + ltc1290_clk(1);                     // 12 Bit
+		val = (val<<1) + ltc1290_clk(0);                     // 12 Bit
+		val = (val<<1) + ltc1290_clk(0);                     // STUFF
+		val = (val<<1) + ltc1290_clk(1);                     // STUFF
+		val = (val<<1) + ltc1290_clk(0);                     // STUFF
+		val = (val<<1) + ltc1290_clk(1);                     // STUFF
 
+		plan[i-1].value  = val << 4;
+		plan[i-1].dvalue = (5.0 * val) / (1<<12);
+
+		i++;
+	}
+
+	val = 0;
 	val = (val<<1) + ltc1290_clk(0);
 	val = (val<<1) + ltc1290_clk(0);
 	val = (val<<1) + ltc1290_clk(0);
