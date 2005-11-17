@@ -2,35 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <inttypes.h>
 #include <sys/termios.h>
 #include <sys/ioctl.h>
 
-#define LTCSLEEP 500
-
-/**
- * - Differential == 0
- *      Channel directly addresses a input channel 
- *
- * - Differential == 1
- *      Channel      0 1 2 3 4 5 6 7
- *         0         + -
- *         1         - +
- *         2             + -
- *         3             - +
- *         4                 + -
- *         5                 - +
- *         6                     + -
- *         7                     - +
- *
- */
-typedef struct ltc1290_plan {
-	int      differential;
-	int      channel;
-	int      bipolar;
-	uint16_t value;
-	double   dvalue;
-} ltc1290_plan_t;
+#include "ltc1290.h"
 
 int ltcfd = 0;
 
@@ -112,8 +87,43 @@ int ltc1290_clk(int din)
 	return ret;
 }
 
-void ltc1290_measure(ltc1290_plan_t *plan)
+void ltc1290_measure(ltc1290_plan_t plan[], int count)
 {
-	
+	int i = 0;
+	int val;
+
+	ltc1290_clk(plan[i].single);
+	ltc1290_clk(plan[i].channel & 0x01);
+	ltc1290_clk((plan[i].channel >> 2) & 0x01);
+	ltc1290_clk((plan[i].channel >> 1) & 0x01);
+	ltc1290_clk(plan[i].unipolar);
+	ltc1290_clk(1);                     // MSB
+	ltc1290_clk(1);                     // 12 Bit
+	ltc1290_clk(0);                     // 12 Bit
+	ltc1290_clk(0);                     // STUFF
+	ltc1290_clk(1);                     // STUFF
+	ltc1290_clk(0);                     // STUFF
+	ltc1290_clk(1);                     // STUFF
+	ltc1290_csoff();
+
+	i++;
+
+	val = (val<<1) + ltc1290_clk(0);
+	val = (val<<1) + ltc1290_clk(0);
+	val = (val<<1) + ltc1290_clk(0);
+	val = (val<<1) + ltc1290_clk(0);
+	val = (val<<1) + ltc1290_clk(1);
+	val = (val<<1) + ltc1290_clk(1);                     // MSB
+	val = (val<<1) + ltc1290_clk(1);                     // 12 Bit
+	val = (val<<1) + ltc1290_clk(0);                     // 12 Bit
+	val = (val<<1) + ltc1290_clk(0);                     // STUFF
+	val = (val<<1) + ltc1290_clk(1);                     // STUFF
+	val = (val<<1) + ltc1290_clk(0);                     // STUFF
+	val = (val<<1) + ltc1290_clk(1);                     // STUFF
+
+	plan[i-1].value  = val << 4;
+	plan[i-1].dvalue = (5.0 * val) / (1<<12);
+
+	ltc1290_csoff();
 }
 
