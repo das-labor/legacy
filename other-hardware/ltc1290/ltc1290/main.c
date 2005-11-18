@@ -31,9 +31,110 @@ Options\n\n\
     -p, --port PORT         serial port (default: /dev/ttyS0)\n\
     -i, --interval MSEC     interval between two measurements in milliseconds\n\
     -c, --count NUMBER      number of iterations\n\
-    -o, --out FILENAME      output file\n\n");
+    -o, --out FILENAME      output file\n\n\
+Channel-Plan:\n\n\
+    Multiple channel specs:\n\
+    <Channel>[u/b]          channel number followed by u (unipolar) or\n\
+	                                               b (bipolar)\n\
+Example:\n\n\
+    ltc1290 1u 2u 3b 4u  -- measure channel 1, 2 and 4 unipolar, channel 3 bipolar.\n\
+    ltc1290 12b 34u      -- measure difference between chan 1 and 2 in bipolar mode;\n\
+                            difference between 3 and 4 in unipolar mode.\n\n");
 
+}
 
+int parse_chanspec(char *str, ltc1290_plan_t *plan)
+{
+	if (!strncmp("12", str, 2)) {
+		plan->channel = 0;
+		plan->single = 0;
+		str += 2;
+	} else if (!strncmp("21", str,2)) {
+		plan->channel = 1;
+		plan->single = 0;
+		str += 2;
+	} else if (!strncmp("34", str,2)) {
+		plan->channel = 2;
+		plan->single = 0;
+		str += 2;
+	} else if (!strncmp("43", str,2)) {
+		plan->channel = 3;
+		plan->single = 0;
+		str += 2;
+	} else if (!strncmp("56", str,2)) {
+		plan->channel = 4;
+		plan->single = 0;
+		str += 2;
+	} else if (!strncmp("65", str,2)) {
+		plan->channel = 5;
+		plan->single = 0;
+		str += 2;
+	} else if (!strncmp("78", str,2)) {
+		plan->channel = 6;
+		plan->single = 0;
+		str += 2;
+	} else if (!strncmp("87", str,2)) {
+		plan->channel = 7;
+		plan->single = 0;
+		str += 2;
+	} else if (!strncmp("1", str, 1)) {
+		plan->channel = 0;
+		plan->single = 1;
+		str += 1;
+	} else if (!strncmp("2", str, 1)) {
+		plan->channel = 1;
+		plan->single = 1;
+		str += 1;
+	} else if (!strncmp("3", str, 1)) {
+		plan->channel = 2;
+		plan->single = 1;
+		str += 1;
+	} else if (!strncmp("4", str, 1)) {
+		plan->channel = 3;
+		plan->single = 1;
+		str += 1;
+	} else if (!strncmp("5", str, 1)) {
+		plan->channel = 4;
+		plan->single = 1;
+		str += 1;
+	} else if (!strncmp("6", str, 1)) {
+		plan->channel = 5;
+		plan->single = 1;
+		str += 1;
+	} else if (!strncmp("7", str, 1)) {
+		plan->channel = 6;
+		plan->single = 1;
+		str += 1;
+	} else if (!strncmp("8", str, 1)) {
+		plan->channel = 7;
+		plan->single = 1;
+		str += 1;
+	} else {
+		fprintf(stderr, "Could not parse channel spec.: %s\n", str);
+		return -1;
+	}
+
+	if ((*str == 0) || !strcmp("b", str)) {
+		plan->unipolar = 0;
+	} else if (!strcmp("u", str)) {
+		plan->unipolar = 1;
+	} else {
+		fprintf(stderr, "Could not parse channel spec.: %s (uni/bipolar?)\n", str);
+		return -1;
+	}
+
+	return 0;
+}	
+
+void print_values(ltc1290_plan_t *plan, int numchan)
+{
+	int i;
+	for(i=0; i<numchan; i++) {
+		printf("% 01.3f \t", plan[i].dvalue);
+	}
+
+	printf("\n");
+	fflush(stdout);
 }
 
 int main(int argc, char *argv[])
@@ -71,24 +172,24 @@ int main(int argc, char *argv[])
 	} // while
 
 	// argv[optind];
+	int numchan, i;
+	ltc1290_plan_t plan[10];
 
-	ltc1290_plan_t plan[2];
+	numchan = argc - optind;
+	for(i=0; i<numchan; i++) {
+		if (parse_chanspec(argv[optind+i], &plan[i]))
+			return 1;
+	}
 
-	plan[0].single   = 1;
-	plan[0].unipolar = 1;
-	plan[0].channel  = 6;
-	plan[1].single   = 1;
-	plan[1].unipolar = 1;
-	plan[1].channel  = 7;
+	printf( "numchan: %d\n", numchan );
 
 	ltc1290_open(port);
 	usleep(1000 * interval);
-	ltc1290_measure(plan, 2);
+	ltc1290_measure(plan, numchan);
 	usleep(1000 * interval);
 	while(1) {
-		ltc1290_measure(plan, 2);
-		printf("%01.3f \t %01.3f\n", plan[1].dvalue, plan[0].dvalue);
-		fflush(stdout);
+		ltc1290_measure(plan, numchan);
+		print_values(plan, numchan);
 
 		usleep(1000 * interval);
 	}

@@ -123,7 +123,12 @@ void ltc1290_measure(ltc1290_plan_t plan[], int count)
 		val = (val<<1) + ltc1290_clk(1);                     // STUFF
 
 		plan[i-1].value  = val << 4;
-		plan[i-1].dvalue = (5.0 * val) / (1<<12);
+		if (plan[i-1].unipolar) {
+			plan[i-1].dvalue = (5.0 * (uint16_t)(val << 4)) / (1<<16);
+		} else {
+			plan[i-1].dvalue = (5.0 * ( int16_t)(val << 4)) / (1<<15);
+		}
+
 
 		i++;
 	}
@@ -143,7 +148,12 @@ void ltc1290_measure(ltc1290_plan_t plan[], int count)
 	val = (val<<1) + ltc1290_clk(1);                     // STUFF
 
 	plan[i-1].value  = val << 4;
-	plan[i-1].dvalue = (5.0 * val) / (1<<12);
+	if (plan[i-1].unipolar) {
+		plan[i-1].dvalue = (5.0 * (uint16_t)(val << 4)) / (1<<16);
+	} else {
+		plan[i-1].dvalue = (5.0 * ( int16_t)(val << 4)) / (1<<15);
+	}
+
 
 	ltc1290_csoff();
 }
