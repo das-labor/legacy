@@ -3,7 +3,6 @@ using System;
 using System.Drawing;
 using Gtk;
 
-
 public class StryroDesign {
 	private ListStore store;
 	
@@ -88,13 +87,15 @@ public class StryroDesign {
 		treeview1.Model = store;
 		
 		window.ShowAll();
-		Application.Run();			
+		Application.Run();
 	}
 	
 
 	private void OnAddClicked(object sender, EventArgs args) {	
 		store.AppendValues(entry1.Text);
 		drawing.QueueClear();
+		Console.WriteLine(drawing.getChainCode());
+		Console.WriteLine(" ");
 	}
 	
 	
