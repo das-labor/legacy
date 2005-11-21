@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 // you compile.
 
 [assembly: AssemblyTitle("StyroDesign")]
-[assembly: AssemblyDescription("GUI für die Styroporschneidemaschine.")]
+[assembly: AssemblyDescription("GUI fuer die Styroporschneidemaschine.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("")]
