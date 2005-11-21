@@ -29,7 +29,7 @@ class Display : DrawingArea {
 	private StringBuilder chain;
 	
 	public Display(float zoom, int height, int width, ListStore treestore) {
-		this.zoom = 0.25f;
+		this.zoom = zoom;
 		this.store = treestore;
 		this.SetSizeRequest((int)(zoom*(float)height), (int) (zoom*(float)width));
 		CurrentPoint = new Point(0.0f, 0.0f);
@@ -81,8 +81,10 @@ class Display : DrawingArea {
 
 	private void drawLineTo(Point p, Graphics g) {
 		Pen pen = new Pen(Color.Black, 1.0f);
-		g.DrawLine(pen, (int)(CurrentPoint.x+0.5), (int)(CurrentPoint.y+0.5),
-		                (int)(p.x+0.5), (int)(p.y+0.5));
+		g.DrawLine(pen, (int)(zoom*CurrentPoint.x+0.5), 
+		                (int)(zoom*CurrentPoint.y+0.5),
+		                (int)(zoom*p.x+0.5), 
+		                (int)(zoom*p.y+0.5));
 		CurrentPoint = p;
 	}
 	

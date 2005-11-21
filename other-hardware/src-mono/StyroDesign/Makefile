@@ -1,7 +1,6 @@
 SRC=AssemblyInfo.cs Main.cs Display.cs
 PRG=StyroDesign.exe
-LIBS=-pkg:glade-sharp -pkg:glade-sharp -resource:gui.glade
-
+LIBS=
 
 all:${SRC}
 	mcs ${LIBS} -out:${PRG} ${SRC}
