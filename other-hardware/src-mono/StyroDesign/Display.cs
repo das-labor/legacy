@@ -35,6 +35,7 @@ class Display : DrawingArea {
 		CurrentPoint = new Point(0.0f, 0.0f);
 		chainLevel = 10;
 		drawLevel = 6;
+		chain = new StringBuilder();
 	}
 	
 	public float Zoom {
@@ -78,7 +79,7 @@ class Display : DrawingArea {
 		}
 		return true;
 	}
-
+	
 	private void drawLineTo(Point p, Graphics g) {
 		Pen pen = new Pen(Color.Black, 1.0f);
 		g.DrawLine(pen, (int)(zoom*CurrentPoint.x+0.5), 
@@ -114,6 +115,32 @@ class Display : DrawingArea {
 	        drawBezierRec(l1, l2, l3, l4, level-1, g);
 	        drawBezierRec(r1, r2, r3, r4, level-1, g);
 	    }
+	}
+	
+	public string getChainCode() {
+		foreach (object[] row in store) {
+			string a = row[0]+"" ;
+			string[] ps = a.Split(new Char [] {' '});
+			switch (ps[0].ToLower().ToCharArray()[0]){
+				case 's': {
+					CurrentPoint.x = Single.Parse(ps[1]);
+					CurrentPoint.y = Single.Parse(ps[2]);
+					startChain((int)CurrentPoint.x, (int)CurrentPoint.y);
+					break;
+				} 
+				case 'l': {
+					chainLineTo(new Point(Single.Parse(ps[1]), Single.Parse(ps[2])));
+					break;
+				}
+				case 'c': {
+					chainBezier(new Point(Single.Parse(ps[1]), Single.Parse(ps[2])),
+						        new Point(Single.Parse(ps[3]), Single.Parse(ps[4])),
+						        new Point(Single.Parse(ps[5]), Single.Parse(ps[6])));
+					break;		                                  
+				}
+			}
+		}
+		return this.chain.ToString();
 	}
 	
 	private void chainLineTo(Point p) {
@@ -216,8 +243,9 @@ class Display : DrawingArea {
 	        addChain = 'X';
 	    }
 
-	    if (skip)
+	    if (!skip) {
 	    	chain.Append(addChain);
+	    }
 	    
 	    chainPosX = px;
 	    chainPosY = py;
