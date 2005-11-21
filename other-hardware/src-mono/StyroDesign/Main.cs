@@ -94,6 +94,7 @@ public class StryroDesign {
 
 	private void OnAddClicked(object sender, EventArgs args) {	
 		store.AppendValues(entry1.Text);
+		drawing.QueueClear();
 	}
 	
 	
