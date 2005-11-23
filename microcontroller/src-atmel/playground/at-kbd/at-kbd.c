@@ -9,7 +9,6 @@
 #include <avr/io.h>
 #include <avr/signal.h>
 
-#include "at-kbd.h"
 
 #define 	cli()   __asm__ __volatile__ ("cli" ::)
 #define 	sei()   __asm__ __volatile__ ("sei" ::)
