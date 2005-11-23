@@ -5,6 +5,9 @@ What it does:
 	You can navigate throu the ringbuffer with key-A (backwards), key-B (forwards) and key-D (goto last installed byte)
 */
 
+
+#include "config.h"
+#include "debug.h"
 #include <inttypes.h>
 #include <avr/io.h>
 #include "at-kbd.h"
@@ -25,7 +28,8 @@ void wait(int x){
 
 int main (void)
 {
-        
+ 	DEBUG_INIT();
+ 	       
 	DDRC = 0xFF; //Port C all outputs
 	PORTC= 0x00;
     DDRB = 0x00; //Port B all inputs
@@ -39,11 +43,22 @@ int main (void)
 			switch (PINB&0x0f){
 				case PRESSED(KEY_A):
 					wait (30000);
-					--display_index;
+				//	--display_index;
+					{
+					//	send_kbd_byte(0xFF);
+						
+						byte oldstate=display_index;
+						send_kbd_byte(0xED); //c LED status func
+					//	while (oldstate==display_index)
+					//		;
+						_delay_ms(100);
+						send_kbd_byte(0x02); //c turn NUM-Lock LED on
+					
+					}
 					break;
 				case PRESSED(KEY_B):
 					wait (30000);
-					++display_index;
+					--display_index;
 					break;
 				case PRESSED(KEY_D):
 					wait (30000);

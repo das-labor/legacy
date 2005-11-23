@@ -4,11 +4,11 @@
 #define __AT_KBD__H__
 
 #ifndef F_CPU
- #define F_CPU 1000000UL // 1 MHz  
+ #define F_CPU 16000000UL // 1 MHz  
 #endif
  #include <avr/delay.h>
 
-
+#include "at-kbd-config.h"
 
 /*
 About the keyboard:
@@ -28,19 +28,37 @@ typedef void(t_kbd_event_handler)(byte);
 
 #define EVEN_PARATY	0
 #define ODD_PARATY	1
-
-#define KBD_DATA_DDR	DDRD
-#define KBD_DATA_OUT_PORT	PORTD
-#define KBD_DATA_IN_PORT	PIND
-#define KBD_DATA_BIT	0
 #define KBD_DATA_IN (((KBD_DATA_IN_PORT) & (1<<(KBD_DATA_BIT)))>>(KBD_DATA_BIT))
 
-#define KBD_CLOCK_DDR	DDRB
-#define KBD_CLOCK_OUT_PORT PORTB
-#define KBD_CLOCK_IN_PORT PINB
-#define KBD_CLOCK_BIT	2
 #define KBD_CLOCK_IN (((KBD_CLOCK_IN_PORT) & (1<<(KBD_CLOCK_BIT)))>>(KBD_CLOCK_BIT))
 
+
+#define KBD_SET_DATA_HIGH()	{/*KBD_DATA_OUT_PORT |=  (1<<KBD_DATA_BIT);*/ \
+							 KBD_DATA_DDR 	   &= ~(1<<KBD_DATA_BIT);} 
+
+#define KBD_SET_DATA_LOW()	{/*KBD_DATA_OUT_PORT &= ~(1<<KBD_DATA_BIT);*/ \
+							 KBD_DATA_DDR 	   |=  (1<<KBD_DATA_BIT);} 
+
+#define KBD_SET_CLOCK_HIGH()	{/*KBD_CLOCK_OUT_PORT |=  (1<<KBD_CLOCK_BIT);*/ \
+							  	 KBD_CLOCK_DDR 	    &= ~(1<<KBD_CLOCK_BIT);}
+#define KBD_SET_CLOCK_LOW()		{/*KBD_CLOCK_OUT_PORT &= ~(1<<KBD_CLOCK_BIT);*/ \
+								 KBD_CLOCK_DDR	    |=  (1<<KBD_CLOCK_BIT);} 
+
+
+#define KBD_SET_DATA(x)  if((x)) KBD_SET_DATA_HIGH()  else KBD_SET_DATA_LOW()
+#define KBD_SET_CLOCK(x) if((x)) KBD_SET_CLOCK_HIGH() else KBD_SET_CLOCK_LOW()
+
+#define KBD_SET_CLOCK_INPUT()	KBD_SET_CLOCK_HIGH()
+#define KBD_SET_DATA_INPUT()	KBD_SET_DATA_HIGH()
+
+
+
+
+//c wait for falling edge on clock line
+// #define KBD_WAIT_CLOCK_SIG() while(!KBD_CLOCK_IN); while(KBD_CLOCK_IN);
+#define KBD_WAIT_SCAN_SIG() while(!KBD_CLOCK_IN); while(KBD_CLOCK_IN);
+//c wait for riseing edge on clock line
+#define KBD_WAIT_SET_SIG() while(KBD_CLOCK_IN); while(!KBD_CLOCK_IN);
 
 #define KBD_BUFFER_MASK 0xff
 #define KBD_BUFFER_SIZE (KBD_BUFFER_MASK+1) //c size of the ringbuffer in bytes must
