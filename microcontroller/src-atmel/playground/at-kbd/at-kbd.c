@@ -3,6 +3,8 @@
 #define __AT_KBD__C__
 
 
+#include "config.h"
+#include "debug.h"
 #include <inttypes.h>
 #include <avr/io.h>
 #include <avr/signal.h>
@@ -30,8 +32,10 @@ void kbd_init(){
 	int i;
 	for (i=0; i<KBD_BUFFER_SIZE; ++i)
 		kbd_buffer[i]=KBD_BUFFER_UNUSED;
-	KBD_CLOCK_DDR &= ~(1<<KBD_CLOCK_BIT);
-	KBD_DATA_DDR  &= ~(1<<KBD_DATA_BIT);
+	KBD_CLOCK_OUT_PORT &= ~(1<<KBD_CLOCK_BIT);
+	KBD_SET_CLOCK_INPUT();
+	KBD_DATA_OUT_PORT  &= ~(1<<KBD_DATA_BIT);
+	KBD_SET_DATA_INPUT();
 	cli();
 	GICR |= (1<<INT2);		//enable INT2 in General Interupt Control Register (GICR)
 	MCUCSR &= ~(1<<ISC2); 	//stitch to trigger on falling edge
@@ -77,6 +81,9 @@ INTERRUPT(SIG_INTERRUPT2){
 					//c insert byte to ringbuffer
 					kbd_buffer[++kbd_buffer_index & KBD_BUFFER_MASK] = t;
 					if (kbd_event_handler)	//c call user defined keyboard event handler
+						DEBUG_S("Recived 0x");
+						DEBUG_B(t);
+						DEBUG_S("\r\n");
 						kbd_event_handler(kbd_buffer_index);
 
 				} else {
@@ -85,6 +92,67 @@ INTERRUPT(SIG_INTERRUPT2){
 			}
 			break;
 	}
+}
+
+/*
+ send kbd-command
+*/
+/*
+-deactivate interupts
+-put clock down
+-wait
+-poll clock and transmit data
+-wait for ack
+-activate interupts
+*/
+void send_kbd_byte(byte data){
+	
+	DEBUG_S("Sending 0x");
+	DEBUG_B(data);
+	
+	byte i,m=1,d[9];
+
+	KBD_SET_DATA(LOW);
+	KBD_SET_CLOCK(LOW);
+
+	/* prepare data array */
+	d[8]=ODD_PARATY; //our paraty bit
+	
+	for (i=0; i<8; ++i){
+		d[i]  = (data&m)?1:0;
+		d[8] ^= (data&m)?1:0;
+		m<<=1;
+	}	
+	
+	cli();
+
+//c kbd_clock is low
+	_delay_us (100);
+	KBD_SET_DATA_LOW();
+	KBD_SET_CLOCK_INPUT();
+	
+	KBD_WAIT_SET_SIG();
+	KBD_SET_DATA_LOW();
+
+	for (i=0; i<=8; ++i){
+		KBD_WAIT_SET_SIG();
+		KBD_SET_DATA(d[i]);
+	}
+
+	KBD_WAIT_SET_SIG();
+	KBD_SET_DATA_INPUT();
+		
+	//c wait for ack
+
+	while (KBD_DATA_IN)
+		KBD_WAIT_SCAN_SIG();
+	
+	//c wait until clock line is up again
+	while (!KBD_CLOCK_IN)
+		;
+	sei();
+
+	DEBUG_S(".\r\n");
 }
 
 

@@ -1,5 +1,5 @@
 PRG	    = kbd-demo
-OBJ	    = at-kbd.o main.o
+OBJ	    = at-kbd.o main.o debug.o uart.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 
