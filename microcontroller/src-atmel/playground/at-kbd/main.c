@@ -6,7 +6,7 @@ What it does:
 */
 
 
-#include "config.h"
+#include "config.h"b
 #include "debug.h"
 #include <inttypes.h>
 #include <avr/io.h>

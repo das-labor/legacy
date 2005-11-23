@@ -8,7 +8,6 @@
 #endif
  #include <avr/delay.h>
 
-#include "at-kbd-config.h"
 
 /*
 About the keyboard:
