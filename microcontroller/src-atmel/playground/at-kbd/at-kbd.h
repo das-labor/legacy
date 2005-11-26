@@ -3,6 +3,8 @@
 #ifndef __AT_KBD__H__
 #define __AT_KBD__H__
 
+#include "config.h"
+
 #ifndef F_CPU
  #define F_CPU 16000000UL // 1 MHz  
 #endif
