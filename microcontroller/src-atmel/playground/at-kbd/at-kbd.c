@@ -2,8 +2,15 @@
 
 #define __AT_KBD__C__
 
+//Hello
 
 #include "config.h"
+
+#ifndef KBD_DATA_BIT
+#error "Bla1"
+#endif
+
+#include "at-kbd.h"
 #include "debug.h"
 #include <inttypes.h>
 #include <avr/io.h>

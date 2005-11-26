@@ -6,7 +6,7 @@ What it does:
 */
 
 
-#include "config.h"b
+#include "config.h"
 #include "debug.h"
 #include <inttypes.h>
 #include <avr/io.h>
@@ -42,19 +42,9 @@ int main (void)
 			/*c it would be unwise to use KEY_C since it also puts the clockline down */
 			switch (PINB&0x0f){
 				case PRESSED(KEY_A):
-					wait (30000);
-				//	--display_index;
-					{
-					//	send_kbd_byte(0xFF);
-						
-						byte oldstate=display_index;
-						send_kbd_byte(0xED); //c LED status func
-					//	while (oldstate==display_index)
-					//		;
-						_delay_ms(100);
-						send_kbd_byte(0x02); //c turn NUM-Lock LED on
-					
-					}
+					send_kbd_byte(0xED); //c LED status func
+					_delay_ms(100);
+					send_kbd_byte(0x02); //c turn NUM-Lock LED on
 					break;
 				case PRESSED(KEY_B):
 					wait (30000);

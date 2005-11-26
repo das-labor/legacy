@@ -1,6 +1,5 @@
 /* USART-Init beim ATmegaXX */
 
-#include "config.h"
 
 #include <avr/io.h>
 #include <avr/signal.h>
