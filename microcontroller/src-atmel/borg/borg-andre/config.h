@@ -14,6 +14,7 @@
 #define SNAKE_DELAY 100
 
 #define SCROLLTEXT_STRING_SIZE 128
+#define SCROLLTEXT_DEFAULT "</#Hallo Welt"
 
 #define BORG_CAN
 
