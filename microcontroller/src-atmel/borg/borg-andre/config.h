@@ -15,6 +15,8 @@
 
 #define SCROLLTEXT_STRING_SIZE 128
 #define SCROLLTEXT_DEFAULT "</#Hallo Welt"
+#define SCROLL_X_SPEED 20
+#define SCROLL_Y_SPEED 20
 
 #define BORG_CAN
 

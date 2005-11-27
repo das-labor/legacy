@@ -80,7 +80,7 @@ void spirale(unsigned int delay){
 	}
 
 	cur.mode = clear;
-	set_cursor(&cur, (pixel){NUM_COLS/2,(NUM_ROWS/2)-1});
+	set_cursor(&cur, (pixel){(NUM_COLS/2)-1,(NUM_ROWS/2)-1});
 	
 	for(clearbit=0;clearbit==0;){
 		if( get_next_pixel(cur.pos, direction_r(cur.dir)) ){
