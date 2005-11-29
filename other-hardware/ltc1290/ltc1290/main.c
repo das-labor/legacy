@@ -8,6 +8,8 @@
 
 #include "ltc1290.h"
 
+FILE *outfile = NULL;
+
 char *progname;
 
 static char *optstring = "hvi:c:p:o:";
@@ -37,8 +39,8 @@ Channel-Plan:\n\n\
     <Channel>[u/b]          channel number followed by u (unipolar) or\n\
 	                                               b (bipolar)\n\
 Example:\n\n\
-    ltc1290 1u 2u 3b 4u  -- measure channel 1, 2 and 4 unipolar, channel 3 bipolar.\n\
-    ltc1290 12b 34u      -- measure difference between chan 1 and 2 in bipolar mode;\n\
+    ltc1290 1u 2u 3b 4u     measure channel 1, 2 and 4 unipolar, channel 3 bipolar.\n\
+    ltc1290 12b 34u         measure difference between chan 1 and 2 in bipolar mode;\n\
                             difference between 3 and 4 in unipolar mode.\n\n");
 
 }
@@ -129,20 +131,31 @@ int parse_chanspec(char *str, ltc1290_plan_t *plan)
 void print_values(ltc1290_plan_t *plan, int numchan)
 {
 	int i;
+
+	// To screen 
 	for(i=0; i<numchan; i++) {
 		printf("% 01.3f \t", plan[i].dvalue);
 	}
-
 	printf("\n");
 	fflush(stdout);
+
+	// Outfile?
+	if(outfile) {
+		for(i=0; i<numchan; i++) {
+			fprintf(outfile, "% 01.3f \t", plan[i].dvalue);
+		}
+		fprintf(outfile, "\n");
+		fflush(outfile);
+	}
 }
 
 int main(int argc, char *argv[])
 {
 	char *port    = "/dev/ttyS0";
-	char *outfile = NULL;
+	char *outname = NULL;
 	int  verbose  = 0;
 	int  interval = 500;
+	int  count    = 0;
 	int  optc;
 
 	progname = argv[0];
@@ -150,8 +163,8 @@ int main(int argc, char *argv[])
 	while ((optc=getopt_long(argc, argv, optstring, longopts, (int *)0))
 		!= EOF) {
 		switch (optc) {
-			case 'v':
-				verbose = 1;
+		case 'v':
+			verbose = 1;
 				break;
 			case 'i':
 				interval = atoi(optarg);
@@ -160,7 +173,10 @@ int main(int argc, char *argv[])
 				port = optarg;
 				break;
 			case 'o':
-				outfile = optarg;
+				outname = optarg;
+				break;
+			case 'c':
+				count = atoi(optarg);
 				break;
 			case 'h':
 				help();
@@ -175,15 +191,30 @@ int main(int argc, char *argv[])
 	int numchan, i;
 	ltc1290_plan_t plan[10];
 
+	// parse chan-spec arguments 
 	numchan = argc - optind;
+	if(!numchan) {
+		help();
+		return 1;
+	}
 	for(i=0; i<numchan; i++) {
 		if (parse_chanspec(argv[optind+i], &plan[i]))
 			return 1;
 	}
 
-	printf( "numchan: %d\n", numchan );
+	// Output file?
+	if (outname) {
+		outfile = fopen(outname, "w");
+		if (!outfile) {
+			perror("Could not open output file");
+			return 2;
+		}
+	}
 
-	ltc1290_open(port);
+	// Go!
+	if (ltc1290_open(port) < 0) 
+		return 3;
+
 	usleep(1000 * interval);
 	ltc1290_measure(plan, numchan);
 	usleep(1000 * interval);
