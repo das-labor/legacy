@@ -17,7 +17,7 @@ int ltc1290_getlines()
 	if(ioctl(ltcfd,TIOCMGET,&lines)!=-1)
 		return lines;
 
-	perror("Fehler bei TIOCMGET: ");
+	perror("Error using serial port (TIOCMGET)");
 	return -1;
 }
 
@@ -26,13 +26,13 @@ void ltc1290_setlines(int lines)
 	if(ioctl(ltcfd,TIOCMSET,&lines)!=-1) 
 		return;
 
-	perror("Fehler bei TIOCMSET: ");
+	perror("Error using serial port (TIOCMSET)");
 }
 
 int ltc1290_open(char *port)
 {
 	if((ltcfd=open(port,O_RDWR|O_NOCTTY)) == -1) {
-		perror("Fehler bei open: ");
+		perror("Error opening serial port");
 		return -1;
 	}
 
