@@ -681,13 +681,14 @@ void movingArrows() {
 }
 
 #define FEUER_Y (NUM_ROWS + 3)
-#define FEUER_S 26
-#define FEUER_N 3
-#define FEUER_DIV 44;
+#define FEUER_S 25
+#define FEUER_N 2
+#define FEUER_N2 1
+#define FEUER_DIV 42;
 
 void feuer()
 {
-	char z, y, x;
+	unsigned char z, y, x;
 	unsigned int  t;
 	unsigned char world[NUM_COLS][NUM_ROWS][FEUER_Y];   // double buffer
 
@@ -703,8 +704,10 @@ void feuer()
 		for(z=1; z<FEUER_Y; z++) {
 			for(x=0; x<NUM_COLS; x++) {
                 for (y=0; y<NUM_ROWS; y++) {
-    				world[x][y][z-1] = (FEUER_N*world[(x-1)%8][y][z] + FEUER_N*world[(x+1)%8][y][z] + 
-                                        FEUER_N*world[x][(y-1)%8][z] + FEUER_N*world[x][(y+1)%8][z] +
+    				world[x][y][z-1] = (FEUER_N*world[(x-1)%NUM_COLS][y][z] + FEUER_N*world[(x+1)%NUM_COLS][y][z] + 
+                                        FEUER_N*world[x][(y-1)%NUM_ROWS][z] + FEUER_N*world[x][(y+1)%NUM_ROWS][z] +
+                                        FEUER_N2*world[(x-1)%NUM_COLS][(y-1)%NUM_ROWS][z] + FEUER_N2*world[(x+1)%NUM_COLS][(y-1)%NUM_ROWS][z] + 
+                                        FEUER_N2*world[(x-1)%NUM_COLS][(y+1)%NUM_ROWS][z] + FEUER_N2*world[(x+1)%NUM_COLS][(y+1)%NUM_ROWS][z] + 
                                         FEUER_S*world[x][y][z]) / FEUER_DIV;
                 }
 			}
@@ -718,7 +721,7 @@ void feuer()
                 }
 			}		
 		}
-		wait(70);
+		wait(80);
 	}
 }
 
@@ -901,27 +904,56 @@ void drawPixmapZAngle(unsigned char angle, unsigned char* pixmap, unsigned char 
 	drawPixmapZ(x1[angle], y1[angle], x2[angle], y2[angle], pixmap, value);	
 }
 
-
-
 // Rotate pixmap
-void rotatePixmap() {
+void rotatePixmap(char animatioNo) {
 	// Eine super tolle neue Animation
-	unsigned char pixmap[8] = {0x18,0x3c,0x7e,0xff,0xff, 0xff,0x66,0x00}; 
-	unsigned int i;
-	for (i = 0; i < 1000; i++) {
+	                          //unten                              oben                                                           
+	unsigned char yingYang[8] = {0x3c, 0x46, 0xa7, 0x8f, 0x9f, 0x9b, 0x5e, 0x3c}; 
+	unsigned char heart[8] =    {0x18, 0x3c, 0x7e, 0xff, 0xff, 0xff, 0x66, 0x00}; 
+    unsigned char L[8] =        {0xff, 0x81, 0xf9, 0xf9, 0xf9, 0xf9, 0xf9, 0xff};
+	unsigned char* pixmap;
+	unsigned char i;
+	
+	switch (animatioNo) {
+           case  0: pixmap = heart; break;
+           case  1: pixmap = L; break;
+           default: pixmap = yingYang; break;
+    }
+	
+	for (i = 0; i < 255; i++) {
 		drawPixmapZAngle(i%28, pixmap, 3);
 		wait(50);
 		clear_screen(0);
-	} 		
+	}
+    drawPixmapZAngle(i%28, pixmap, 3);
+	wait(50);
+	clear_screen(0);
+    wait(50);
+    drawPixmapZAngle(i%28, pixmap, 3);
+	wait(50);
+    clear_screen(0);
+    wait(50);
+    drawPixmapZAngle(i%28, pixmap, 3);
+   	wait(50);
+    clear_screen(0);
+    wait(50);
+    drawPixmapZAngle(i%28, pixmap, 3);
+	wait(500);
+	clear_screen(0);
 }
 
+void rotateCube() {
+     
+}
 
 
 void *display_loop(void * unused) {
 	while (1) {
 		//pong();
-		feuer();
-		rotatePixmap();
+		//feuer();
+		rotatePixmap(1);
+		growingCubeFilled();
+		rotatePixmap(0);
         movingArrows();
         growingCubeFilled();
         scrolltext("b0rg3d wID3rStanD ist ZWECKLOS !!!", 120);
