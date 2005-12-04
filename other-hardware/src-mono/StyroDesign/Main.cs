@@ -1,6 +1,5 @@
 // project created on 27.10.2005 at 20:19
 using System;
-using System.Drawing;
 using Gtk;
 
 public class StryroDesign {
@@ -63,7 +62,7 @@ public class StryroDesign {
 		vbuttonbox1.Add(entry1);
 		
 		buttonAdd = new Button();
-		buttonAdd.Label = "Hinzufügen";
+		buttonAdd.Label = "Hinzufgen";
 		vbuttonbox1.Add(buttonAdd);
 		vbuttonbox1.Layout = ButtonBoxStyle.Start;
 		          
@@ -90,14 +89,12 @@ public class StryroDesign {
 		Application.Run();
 	}
 	
-
 	private void OnAddClicked(object sender, EventArgs args) {	
 		store.AppendValues(entry1.Text);
-		drawing.QueueClear();
+		drawing.QueueDraw();
 		Console.WriteLine(drawing.getChainCode());
 		Console.WriteLine(" ");
 	}
-	
 	
 	void Window_Delete (object obj, DeleteEventArgs args)
 	{

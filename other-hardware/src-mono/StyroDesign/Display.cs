@@ -1,8 +1,7 @@
-using System;
-using System.Drawing;
-using System.Text;
 using Gtk;
-
+using Gdk;
+using System;
+using System.Text;
 /** 
  * Stores a Point
  */
@@ -24,13 +23,13 @@ class Display : DrawingArea {
 	private int chainLevel;
 	
 	private ListStore store;
-	
+	private Pixmap pixmap;
 	private Point CurrentPoint;
 	private StringBuilder chain;
 	
-	public Display(float zoom, int height, int width, ListStore treestore) {
+	public Display(float zoom, int height, int width, ListStore liststore) {
 		this.zoom = zoom;
-		this.store = treestore;
+		this.store = liststore;
 		this.SetSizeRequest((int)(zoom*(float)height), (int) (zoom*(float)width));
 		CurrentPoint = new Point(0.0f, 0.0f);
 		chainLevel = 10;
@@ -43,12 +42,12 @@ class Display : DrawingArea {
 			return zoom;
 		}
 		set {
-			
 			if (value > 0.01 && value < 10)
 				zoom = value;
 		}
 	}
 	
+	/*
 	protected override bool OnExposeEvent (Gdk.EventExpose args)
 	{
 		using (Graphics g = Gtk.DotNet.Graphics.FromDrawable (args.Window)){
@@ -79,7 +78,72 @@ class Display : DrawingArea {
 		}
 		return true;
 	}
+	*/
 	
+	protected override void OnConfigure(object o, ConfigureEventArgs args) {
+		EventConfigure eventConfigure = args.Event;
+		Gdk.Window window = eventConfigure.Window;
+		pixmap = new Pixmap (window,
+							Allocation.Width,
+							Allocation.Height,
+							-1);  	
+		// Initialize the pixmap to white
+		pixmap.DrawRectangle (Style.WhiteGC, true, 0, 0,
+					Allocation.Width, Allocation.Height);
+		// We've handled the configure event, no need for further processing.
+		args.RetVal = true;
+	}
+	
+	protected override void OnExpose(object o, ExposeEventArgs args)
+	{
+		Gdk.GC gc1;
+		Gdk.Color color = new Gdk.Color();
+		
+		EventExpose eventExpose = args.Event;
+		Gdk.Window window = eventExpose.Window;
+		gc1 = new Gdk.GC(window);
+
+		color.Red   = 0;
+		color.Green = 0;
+		color.Blue  = 0;
+		gc1.RgbFgColor = color;
+		
+		color.Red = 65535;
+		color.Green = 65535;
+		color.Blue = 65535;
+		gc1.RgbBgColor = color;
+		
+		window.DrawLine(gc1, 20, 20, 350, 399);
+		
+		/*
+		using (Graphics g = args.Window){
+			Pen p = new Pen (Color.Black, 1.0f);
+			
+			foreach (object[] row in store) {
+				string a = row[0]+"" ;
+				string[] ps = a.Split(new Char [] {' '});
+				switch (ps[0].ToLower().ToCharArray()[0]){
+					case 's': {
+						CurrentPoint.x = Single.Parse(ps[1]);
+						CurrentPoint.y = Single.Parse(ps[2]);
+						break;
+					} 
+					case 'l': {
+						drawLineTo(new Point(Single.Parse(ps[1]), Single.Parse(ps[2])), g);
+						break;
+					}
+					case 'c': {
+						drawBezier(new Point(Single.Parse(ps[1]), Single.Parse(ps[2])),
+							       new Point(Single.Parse(ps[3]), Single.Parse(ps[4])),
+							       new Point(Single.Parse(ps[5]), Single.Parse(ps[6])),
+							       g);
+						break;		                                  
+					}
+				}
+			}
+		}*/
+	}
+	/*
 	private void drawLineTo(Point p, Graphics g) {
 		Pen pen = new Pen(Color.Black, 1.0f);
 		g.DrawLine(pen, (int)(zoom*CurrentPoint.x+0.5), 
@@ -89,15 +153,10 @@ class Display : DrawingArea {
 		CurrentPoint = p;
 	}
 	
-	private Point midpoint(Point p1, Point p2) {
-		return new Point((p1.x+p2.x)/2, (p1.y+p2.y)/2);
-	} 
-	
 	private void drawBezier(Point p2, Point p3, Point p4, Graphics g) {
 		drawBezierRec(CurrentPoint, p2, p3, p4, drawLevel, g);
 		CurrentPoint = p4;
 	}
-	
 	
 	private void drawBezierRec(Point p1, Point p2, Point p3, Point p4, int level, Graphics g) {
 	    if (level == 0) {
@@ -116,12 +175,17 @@ class Display : DrawingArea {
 	        drawBezierRec(r1, r2, r3, r4, level-1, g);
 	    }
 	}
+	*/
+	
+	private Point midpoint(Point p1, Point p2) {
+		return new Point((p1.x+p2.x)/2, (p1.y+p2.y)/2);
+	} 	
 	
 	public string getChainCode() {
-		foreach (object[] row in store) {
-			string a = row[0]+"" ;
+		/*foreach (object[] row in store) {
+			string a = row[0] + "";
 			string[] ps = a.Split(new Char [] {' '});
-			switch (ps[0].ToLower().ToCharArray()[0]){
+			switch (ps[0].ToLower().ToCharArray()[0]) {
 				case 's': {
 					CurrentPoint.x = Single.Parse(ps[1]);
 					CurrentPoint.y = Single.Parse(ps[2]);
@@ -139,10 +203,10 @@ class Display : DrawingArea {
 					break;		                                  
 				}
 			}
-		}
+		}*/ 
 		return this.chain.ToString();
 	}
-	
+
 	private void chainLineTo(Point p) {
 	    int i, dx, dy, sdx, sdy, dxabs, dyabs, x, y, px, py;
 	    dx = (int)(p.x+0.5) - (int)(CurrentPoint.x+0.5);
@@ -246,12 +310,9 @@ class Display : DrawingArea {
 	    if (!skip) {
 	    	chain.Append(addChain);
 	    }
-	    
 	    chainPosX = px;
 	    chainPosY = py;
 	}
-	
-	
 }
 
 
