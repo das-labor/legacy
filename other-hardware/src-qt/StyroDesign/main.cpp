@@ -1,27 +1,48 @@
 #include <QApplication>
 #include <QGridLayout>
 #include <QPushButton>
+#include <QListView>
+#include <QWidget>
+#include <QScrollArea>
 
 #include "display.h"
 
 class MyWidget : public QWidget
 {
+private:
+	QGridLayout *gridLayout;
+	DrawArea *drawArea;
+	QPushButton *quit;
+	QScrollArea *scroll;
+	
 public:
 	MyWidget(QWidget *parent = 0);
+	~MyWidget();
 };
 
 MyWidget::MyWidget(QWidget *parent)
 	: QWidget(parent)
 {
-	QPushButton *quit = new QPushButton("Quit");
+	quit = new QPushButton("Quit");
 	connect(quit, SIGNAL(clicked()), qApp, SLOT(quit()));
-	DrawArea *drawArea = new DrawArea;
+	scroll = new QScrollArea;
+	
+	drawArea = new DrawArea(scroll);
 
-	QGridLayout *gridLayout = new QGridLayout;
+	
+	scroll->setWidget(drawArea);
+	
+	gridLayout = new QGridLayout;
 	gridLayout->addWidget(quit, 0, 0);
-	gridLayout->addWidget(drawArea, 1, 1, 2, 1);
+	gridLayout->addWidget(scroll, 1, 1, 2, 1);
 	gridLayout->setColumnStretch(1, 10);
 	setLayout(gridLayout);
+}
+
+MyWidget::~MyWidget() {
+	delete gridLayout;
+	delete drawArea;
+	delete quit;
 }
 
 int main(int argc, char *argv[])
