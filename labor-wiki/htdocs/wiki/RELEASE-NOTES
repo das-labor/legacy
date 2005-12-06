@@ -3,6 +3,23 @@
 Security reminder: MediaWiki does not require PHP's register_globals
 setting since version 1.2.0. If you have it on, turn it *off* if you can.
 
+== MediaWiki 1.5.3 ==
+
+December 4, 2005
+
+MediaWiki 1.5.3 is a security and bugfix maintenance release.
+
+Validation of the user language option was broken by a code change in
+May 2005, opening the possibility of remote code execution as this
+parameter is used in forming a class name dynamically created with
+eval().
+
+The validation has been corrected in this version. All prior 1.5 release
+and prelease versions are affected; 1.4 and earlier and not affected.
+
+Additionally several bugs have been fixed; see the changelog later in
+this file for a complete list.
+
 
 == MediaWiki 1.5.2 ==
 
@@ -901,6 +918,25 @@ of MediaWiki:Newpagetext) to &action=edit, if page is new.
   talk notification on PHP 5.0.5
 * (bug 3845) Update attribute.php for 1.5 schema
 * Fix Parser::unstrip on PHP 4.4.1 and PHP 5.1.0RC4
+
+
+=== Changes since 1.5.2 ===
+
+* (bug 3612) Remove old broken version of maintenance/compressOld.php
+  The working version is in maintenance/storage/compressOld.php
+* (bug 2740) Accept image deletions on 'enter' submit from MSIE
+* (bug 3933) specify XML namespace for Atom 0.3 feeds
+* (bug 3939) Don't try to load text for interwiki redirect target
+* (bug 3948) Avoid notice warning in debug statement in bad search
+* Recognize Special:Search consistently so read whitelist works
+* (bug 4013) typo in fr
+* (bug 3996) Fix text for new entries in RC RSS/Atom feed
+* (bug 2894) Enhanced Recent Changes link fixes
+* (bug 3065) Update both watched namespaces when renaming pages
+* Move parentheses out of <a> link in Special:Contributions
+* (bug 4071) Generate passwords long enough for $wgMinimalPasswordLength
+* (bug 4035) Fix prev/next revision links on edit page
+* (bug 4165) Correct validation for user language selection (data taint)
 
 
 === Caveats ===
