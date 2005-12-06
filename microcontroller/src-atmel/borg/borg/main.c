@@ -20,9 +20,11 @@ unsigned char pixmap[NUMPLANE][8];
 
 SIGNAL(SIG_OUTPUT_COMPARE0)
 {
+	unsigned char x;
+	
 	static unsigned char plane = 0;
 	static unsigned char count = 0;
-	
+	ROWPORT = 0;
 	count ++;
 	if ((COLPORT <<= 1) == 0){
 		count = 0;
@@ -32,6 +34,11 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 			plane = 0;
 
 	}
+	
+	for(x=0;x<10;x++){
+		asm volatile ("nop");
+	}
+	
 	ROWPORT = pixmap[plane][count];
 }
 
@@ -76,6 +83,7 @@ int main (void){
 		fadein();
 		joern1();
 		snake();
+		clear_screen(0);
 		joern2();
 		schachbrett(20);
 		spirale(20);
@@ -87,7 +95,7 @@ int main (void){
 //		test1();
 //		draw_l();
 
-//		clear_screen;
+//		clear_screen(0);
 //     		wait(500);	
 	}
 }

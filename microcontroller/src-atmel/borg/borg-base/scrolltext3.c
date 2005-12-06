@@ -11,10 +11,10 @@
 
 #include "pixel.h"
 #include "util.h"
-//#include "font-arial8.h"
-//#include "font-small6.h"
+#include "font_arial8.h"
+#include "font_small6.h"
 //#include "font-v5.h"
-#include "font-uni53.h"
+#include "font_uni53.h"
 
 #define MAX_FONTS 1
 font fonts[MAX_FONTS];
@@ -100,6 +100,7 @@ typedef struct blob_t_struct{
 	
 	const unsigned int* fontIndex;
 	const unsigned char* fontData;
+	unsigned char font_storebytes;/*bytes per char*/
 	unsigned char space;
 }blob_t;
 
@@ -144,7 +145,7 @@ unsigned int getLen(blob_t *blob) {
 			PW(blob->fontIndex[glyph]); 
 			strLen += blob->space;
 	}      
-	return strLen;
+	return strLen/blob->font_storebytes;
 }
 
 
@@ -312,6 +313,7 @@ blob_t * setupBlob(unsigned char * str){
 
 	blob->fontIndex = fonts[0].fontIndex;
 	blob->fontData = fonts[0].fontData;
+	blob->font_storebytes = fonts[0].storebytes;
 	
 	unsigned char tmp1, *strg = blob->str;
 	unsigned char glyph_beg = fonts[0].glyph_beg;
@@ -329,7 +331,7 @@ blob_t * setupBlob(unsigned char * str){
 	
 	blob->space = 1;
 	
-	blob->sizey = 8;
+	blob->sizey = fonts[0].fontHeight;
 	blob->sizex = getLen(blob);
 	if(*blob->commands == '<'){
 		blob->posx = 0;
@@ -427,52 +429,59 @@ unsigned char updateBlob(blob_t * blob){
 
 void drawBlob(blob_t *blob) {
 	char x, y; 
-	unsigned char byte, glyph; 
+	unsigned char byte=0, glyph, storebytes; 
 	unsigned int charPos, charEnd;
 	
-	unsigned int posx; unsigned char posy;
+	unsigned int posx; unsigned char posy, toy;
 	
 	if(!blob->visible) return;
 	
 	unsigned char * str = blob->str;
 	posx = blob->posx;
 	posy = blob->posy;
+	toy = posy + blob->sizey;
+	storebytes = blob->font_storebytes;
 	
 	glyph = (*blob->str)-1;
 	charPos = PW(blob->fontIndex[glyph]);
-	charEnd = PW(blob->fontIndex[glyph+1]) -1 ;
+	charEnd = PW(blob->fontIndex[glyph+1]);
 
 	while (posx >= NUM_COLS) {
+		charPos += storebytes;
 		if (charPos < charEnd) {                  
-			charPos++;
 			posx--;
 		}else{
 			posx -= blob->space + 1;
 			if (!(glyph = *++str)) return;      
 			glyph -= 1;
 			charPos = PW(blob->fontIndex[glyph]);
-			charEnd = PW(blob->fontIndex[glyph+1]) - 1;
+			charEnd = PW(blob->fontIndex[glyph+1]);
 		}
 	}
 	for (x = posx; x >= 0; x-- ) {
-		unsigned char mask = 0x01;
-		byte = PB(blob->fontData[charPos]);
-		for (y = posy; y < NUM_ROWS; y++) {
+		unsigned char mask = 0;
+		unsigned int datpos;
+		datpos = charPos;
+		
+		for (y = posy; (y < NUM_ROWS) && (y < toy); y++) {
 			
+			if((mask<<=1) == 0){
+				mask = 0x01;
+				byte = PB(blob->fontData[datpos++]);
+			}
+				
 			if ((byte & mask) && y >= 0 ) {	
 					text_setpixel((pixel){x, y},1);
 			}
-			mask <<= 1;
 		}
-		
-		if (charPos < charEnd) {                  
-			charPos++;
+		charPos += storebytes;
+		if (charPos < charEnd) {
 		}else{
 			x -= blob->space;
 			if (!(glyph = *++str)) return;       
 			glyph -= 1;   
 			charPos = PW(blob->fontIndex[glyph]);
-			charEnd = PW(blob->fontIndex[glyph+1]) - 1;
+			charEnd = PW(blob->fontIndex[glyph+1]);
 		}
 	}
 }
@@ -484,7 +493,7 @@ void scrolltext(unsigned char *str) {
 	unsigned char tmp_str[SCROLLTEXT_STRING_SIZE];
 	int ljmp_retval;
 	
-	fonts[0] = font_uni53;
+	fonts[0] = SCROLLTEXT_FONT;
 	
 	text_pixmap = malloc(NUM_ROWS * LINEBYTES);
 	
