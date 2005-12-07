@@ -219,9 +219,7 @@ SIGNAL(SIG_INTERRUPT0) {
 			//just clear the Interrupt condition, and lose the message
 			mcp_bitmod(CANINTF, (1<<RX0IF), 0x00);
 		}
-	}
-
-	if ( status & 0x08 ) {	// TX1 empty
+	} else if ( status & 0x08 ) {	// TX1 empty
 		if(((can_message_x*)&TX_BUFFER[TX_TAIL])->flags & 0x01) {
 			((can_message_x*)&TX_BUFFER[TX_TAIL])->flags &= ~0x01;
 			TX_INT = 1;
@@ -231,6 +229,16 @@ SIGNAL(SIG_INTERRUPT0) {
 			TX_INT = 0;
 		}
 		mcp_bitmod(CANINTF, (1<<TX0IF), 0x00);
+	} else {
+#ifdef CAN_HANDLEERROR
+		status = mcp_read(EFLG);
+
+		if(!status) { // we've got a error condition
+			can_error = status;
+
+			mcp_write(EFLG, 0);
+		}
+#endif // CAN_HANDLEERROR
 	}
 }
 
@@ -328,6 +336,11 @@ void can_init(){
 	for(x=0;x<CAN_TX_BUFFER_SIZE;x++){
 		TX_BUFFER[x].flags = 0;
 	}
+
+#endif	
+
+#ifdef CAN_HANDLEERROR
+	can_error = 0;
 #endif	
 	
 	mcp_reset();
@@ -386,7 +399,7 @@ void can_init(){
 }
 
 #ifdef CAN_INTERRUPT
-//returns next can message in buffer, or 0 Pointer if Buffer is empty
+//returns next can message in buffer, or 0 Pointer if buffer is empty
 can_message * can_get_nb(){
 	can_message_x *p;
 	if(RX_HEAD == RX_TAIL){

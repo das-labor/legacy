@@ -42,6 +42,17 @@ void process_can_msg(can_message *msg){
 	canu_transmit(&rmsg);
 }
 
+void send_error( unsigned char status )
+{
+	rs232can_msg rmsg;
+
+	rmsg.cmd     = RS232CAN_ERROR;
+	rmsg.len     = 1;
+	rmsg.data[0] = status;
+
+	canu_transmit(&rmsg);
+}
+
 
 #define PORT_LEDS PORTD
 #define DDR_LEDS DDRD
@@ -131,6 +142,11 @@ int main(){
 		if (cmsg){
 			process_can_msg(cmsg);
 			can_free(cmsg);
+		}
+
+		if (can_error) {
+			send_error(can_error);
+			can_error = 0;
 		}
 	}
 
