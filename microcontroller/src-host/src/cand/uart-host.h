@@ -21,5 +21,5 @@ char uart_getc();
 char uart_getc_nb(char *c);		// returns 1 on success
 
 /* UART-Host specific */
-int uart_fd();
+int uart_fd;
 #endif

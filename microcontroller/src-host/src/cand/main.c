@@ -146,8 +146,8 @@ void event_loop()
 		FD_ZERO(&rset);
 
 		if (serial) {
-			highfd = uart_fd();
-			FD_SET(uart_fd(), &rset);
+			highfd = uart_fd;
+			FD_SET(uart_fd, &rset);
 		};
 		highfd = max(highfd, cann_fdset(&rset));
 
@@ -161,7 +161,7 @@ void event_loop()
 		cann_dumpconn();
 
 		// check activity on uart_fd
-		if (serial && FD_ISSET(uart_fd(), &rset))
+		if (serial && FD_ISSET(uart_fd, &rset))
 			process_uart_msg();
 
 		debug( 9, "AFTER UART" );
