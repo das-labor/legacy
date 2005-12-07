@@ -30,6 +30,15 @@ typedef struct{
 
 typedef enum { normal, mode_sleep, loopback, listenonly, config } can_mode_t ;
 
+
+/*****************************************************************************
+ * Global variables
+ */
+#ifndef CAN_HANDLEERROR
+  unsigned char can_error;
+#endif
+
+
 /*****************************************************************************
  * Management
  */
@@ -61,7 +70,6 @@ can_message *can_get_nb();
 #else
   void can_free(can_message * msg);
 #endif
-
 
 
 
