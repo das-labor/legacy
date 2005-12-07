@@ -1,28 +1,80 @@
 #include <QPainter>
+#include <QStringListIterator>
+#include <iostream>
+using namespace std;
+
 
 #include "display.h"
 
-DrawArea::DrawArea(QWidget *parent)
+DrawArea::DrawArea(QTextEdit *textedit, QWidget *parent)
 	: QWidget(parent)
 {
+	width = 2000;
+	height = 2000;
 	currentAngle = 45;
+	text = textedit;
+	drawLevel = 6;
+	chainLevel = 6;
+	list << "s 45 64" << "l 445 433" << "c 23 32 344 2 533 1890";
 	setPalette(QPalette(QColor(255, 255, 255)));
+	setZoom(1.0);
+	//cout << getChainCode().toAscii().data() << endl;
+}
+
+DrawArea::~DrawArea() {
 }
 
 void DrawArea::paintEvent(QPaintEvent * /* event */)
 {
 	QPainter painter(this);
-
-	painter.setPen(Qt::NoPen);
+	//painter.setPen(Qt::NoPen);
 	painter.setBrush(Qt::black);
 
-	painter.translate(0, rect().height());
-	painter.drawPie(QRect(-35, -35, 70, 70), 0, 90 * 16);
-	painter.rotate(-currentAngle);
-	painter.drawRect(QRect(33, -4, 15, 8));
-
+	QStringListIterator i(list);
+	while (i.hasNext())  {
+		QStringList ps = i.next().split(' ');
+		switch ((ps.at(0).toAscii())[0]) {
+			case 's': {
+				if (ps.size() >= 3) {
+					CurrentPoint.x = ps.at(1).toFloat();
+					CurrentPoint.y = ps.at(2).toFloat();
+				}
+				break;
+			} 
+			case 'l': {
+				if (ps.size() >= 3) {
+					drawLineTo((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()}, &painter);
+				}
+				break;
+			}
+			case 'c': {
+				if (ps.size() >= 7) {
+				drawBezier((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()},
+						   (Point) {ps.at(3).toFloat(), ps.at(4).toFloat()},
+						   (Point) {ps.at(5).toFloat(), ps.at(6).toFloat()},
+							&painter);
+				}
+				break;		                                  
+			}
+		}
+	}	
 }
 
+void DrawArea::setZoom(float zoom) {
+	this->zoom = zoom;
+	resize((int)(zoom*height), (int)(zoom*width));
+}
+
+float DrawArea::getZoom() {
+	return zoom;
+}
+
+
+void DrawArea::checkAndDraw() {
+	//QString textStr = text->toPlainText();
+	//QStringList lines = text->toPlainText().split(;
+	
+}
 
 void DrawArea::drawLineTo(Point p, QPainter *g) {
 	g->drawLine((int)(zoom*CurrentPoint.x+0.5), 
@@ -61,30 +113,35 @@ Point DrawArea::midpoint(Point p1, Point p2) {
 } 	
 
 QString DrawArea::getChainCode() {
-/*
-	foreach (object[] row in store) {
-		string a = row[0] + "";
-		string[] ps = a.Split(new Char [] {' '});
-		switch (ps[0].ToLower().ToCharArray()[0]) {
+	QStringListIterator i(list);
+	
+	while (i.hasNext())  {
+		QStringList ps = i.next().split(' ');
+		switch ((ps.at(0).toAscii())[0]) {
 			case 's': {
-				CurrentPoint.x = Single.Parse(ps[1]);
-				CurrentPoint.y = Single.Parse(ps[2]);
-				startChain((int)CurrentPoint.x, (int)CurrentPoint.y);
+				if (ps.size() >= 3) {
+					CurrentPoint.x = ps.at(1).toFloat();
+					CurrentPoint.y = ps.at(2).toFloat();
+					startChain((int)(CurrentPoint.x), (int)(CurrentPoint.y));
+				}
 				break;
 			} 
 			case 'l': {
-				chainLineTo(new Point(Single.Parse(ps[1]), Single.Parse(ps[2])));
+				if (ps.size() >= 3) {
+					chainLineTo((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()});
+				}
 				break;
 			}
 			case 'c': {
-				chainBezier(new Point(Single.Parse(ps[1]), Single.Parse(ps[2])),
-							new Point(Single.Parse(ps[3]), Single.Parse(ps[4])),
-							new Point(Single.Parse(ps[5]), Single.Parse(ps[6])));
+				if (ps.size() >= 7) {
+				chainBezier((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()},
+							(Point) {ps.at(3).toFloat(), ps.at(4).toFloat()},
+							(Point) {ps.at(5).toFloat(), ps.at(6).toFloat()});
+				}
 				break;		                                  
 			}
 		}
-	}
-	*/
+	}	
 	return chain;
 }
 
@@ -159,6 +216,7 @@ void DrawArea::startChain(int px, int py) {
 }
 
 void DrawArea::addToChain(int px, int py) {
+	getchar();
 	int dx = px - chainPosX;
 	int dy = py - chainPosY;
 	char addChain = ' ';

@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QString>
+#include <QStringList>
+#include <QTextEdit>
 
 typedef struct {
 	float x;
@@ -13,10 +15,16 @@ class DrawArea : public QWidget {
 	Q_OBJECT
 
 public:
-	DrawArea(QWidget *parent = 0);
+	DrawArea(QTextEdit *textedit, QWidget *parent);
+	~DrawArea();
+	void setZoom(float zoom);
+	float getZoom();
 
 protected:
 	void paintEvent(QPaintEvent *event);
+
+public slots:
+	void checkAndDraw();
 
 private:
 	void drawLineTo(Point p, QPainter *g);
@@ -31,14 +39,16 @@ private:
 	void addToChain(int px, int py);
 
 	QString chain;
+	QStringList list;
 	int currentAngle;
+  	int height, width;
 	float zoom;
 	int chainPosX;
 	int chainPosY;
 	int drawLevel;
 	int chainLevel;
 	Point CurrentPoint;
-	
+	QTextEdit *text;
 };
 
 #endif // DISPLAY_H
