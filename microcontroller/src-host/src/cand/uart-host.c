@@ -2,15 +2,18 @@
 
 
 #include <stdio.h>
-#include <ezV24/ezV24.h>
+#include <string.h>
+#include <unistd.h>
 #include <signal.h>
+#include <fcntl.h>
+#include <termios.h>
 
-v24_port_t *Port = 0;
+int uart_fd;
+
 
 static void mySignalHandler ( int reason )
 {
-    v24ClosePort(Port);
-    exit(99);
+	// XXX
 }
 
 static void install_signalhandler ( void )
@@ -22,29 +25,56 @@ static void install_signalhandler ( void )
 
 
 void uart_init(char *sport) {
+	int rc;
+	struct termios options;
+
 	install_signalhandler();
-	Port=v24OpenPort(sport, V24_NON_BLOCK);
-	if ( Port==0 ){
-        	fprintf(stderr, "error: could not open serial port %s\n", sport);
-        	exit(1);
+	
+	/**
+	 * O_NOCTTY -- ttyS is not our controlling terminal: 
+	 *   kernel, do not do fancy stuff! We're not getty, stupid!
+	 *
+	 * O_NDELAY -- don't block for DTR, we're not talking to a modem
+	 */
+	uart_fd = open(sport, O_RDWR | O_NOCTTY | O_NDELAY);
+	if ( uart_fd == -1 ){
+        	debug_perror("Error opening serial port %s", sport);
 	}
-	int rc = v24SetParameters(Port, V24_B115200, V24_8BIT, V24_NONE);
-	if ( rc!=V24_E_OK )
-	{
-		fputs("error: setup of the port failed!\n",stderr);
-		v24ClosePort(Port);
-		exit(1);
+
+	// set some options on socket
+	fcntl(uart_fd, F_SETFL, O_NONBLOCK);
+
+	// set serial options
+	tcgetattr(uart_fd, &options);
+
+	cfsetispeed(&options, B115200);
+	cfsetospeed(&options, B115200);
+
+	options.c_cflag &= ~(PARENB | CSTOPB | CSIZE | CRTSCTS);
+	options.c_cflag |= (CS8 | CLOCAL | CREAD);
+
+	options.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
+
+	options.c_iflag &= ~(INPCK | PARMRK | BRKINT | INLCR | ICRNL | IUCLC | IXANY);
+	options.c_iflag |= IGNBRK;
+
+	options.c_oflag &= ~(OPOST | ONLCR);
+
+	rc = tcsetattr(uart_fd, TCSANOW, &options);
+
+	if (rc == -1) {
+		debug_perror(0, "Error setting serial options");
+		close(uart_fd);
 	}
 }
 
 void uart_close(){
-	v24ClosePort(Port);
+	close(uart_fd);
 }
 
 void uart_putc(char c) {
-	v24Putc(Port, c);
+	write(uart_fd, &c, 1);
 }
-
 
 void uart_putstr(char *str) {
 	while(*str) {
@@ -54,35 +84,28 @@ void uart_putstr(char *str) {
 
 unsigned char uart_getc_nb(char *c)
 {
-	int tmp = v24HaveData( Port );
-	if(tmp>0){
-		int i = v24Getc(Port);
-		if(i<0){
-			fputs("error: receive char failed!\n",stderr);
-			v24ClosePort(Port);
-			exit (1);
-		}else{
-			*c = (char) i;
-			return 1;
-		}
-	}else if(tmp == 0){
-		return 0;
-	}else{
-		fputs("error: have data failed!\n",stderr);
-		v24ClosePort(Port);
-		exit (1);
-	}
+	int ret;
+
+	ret = read(uart_fd, c, 1);
+		       
+	if (ret<=0) return 0;
+
+	return 1;
 }
 
 char uart_getc(void)
 {
 	char c;
-	while (! uart_getc_nb(&c) );
+	int ret;
+	fd_set rset;
+
+	FD_ZERO(&rset);
+	FD_SET(uart_fd, &rset);
+
+	ret = select(uart_fd + 1, &rset, (fd_set*)NULL, (fd_set*)NULL, NULL);
+	debug_assert( ret >= 0, "uart-host.c: select failed" );
+
+	uart_getc_nb(&c);
+
 	return c;
 }
-
-int uart_fd()
-{
-	return v24QueryFileHandle(Port);
-}
-

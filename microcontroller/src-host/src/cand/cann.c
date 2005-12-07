@@ -72,8 +72,8 @@ void cann_listen(int port)
 	ret = bind(listen_socket, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
 	debug_assert( ret >= 0, "Could not bind listening socket"  );
 	
-	 flags = fcntl( listen_socket, F_GETFL, 0 );
-	 fcntl( listen_socket, F_SETFL, flags | O_NDELAY );
+	flags = fcntl( listen_socket, F_GETFL, 0 );
+	fcntl( listen_socket, F_SETFL, flags | O_NDELAY );
 
 	/* specify queue */ 
 	listen(listen_socket, 5); 
