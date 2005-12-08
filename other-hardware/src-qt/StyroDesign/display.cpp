@@ -16,15 +16,15 @@ DrawArea::DrawArea(QTextEdit *textedit, QWidget *parent)
 	text = textedit;
 	drawLevel = 8;
 	chainLevel = 8;
-	list << "s 45 64" << "l 445 433" << "c 222 32 344 10 1999 1890";
+	list << "s 1 1" << "l 100 100" << "c 200 200 22 10 10 1000";
 	setPalette(QPalette(QColor(255, 255, 255)));
 	setZoom(1.0);
+	
+	connect(textedit, SIGNAL(textChanged()), this, SLOT(checkAndDraw()));
 }
 
 DrawArea::~DrawArea() {
 }
-
-
 
 void DrawArea::paintEvent(QPaintEvent * /* event */)
 {
@@ -60,8 +60,8 @@ void DrawArea::paintEvent(QPaintEvent * /* event */)
 			}
 		}
 	}
-	//getChainCode();
-	//cout << chain.toAscii().data() << endl;	
+	getChainCode();
+	cout << chain.toAscii().data() << endl;	
 }
 
 void DrawArea::setZoom(float zoom) {
@@ -75,9 +75,9 @@ float DrawArea::getZoom() {
 
 
 void DrawArea::checkAndDraw() {
-	//QString textStr = text->toPlainText();
-	//QStringList lines = text->toPlainText().split(;
-	
+	QString textStr = text->toPlainText();
+	list = textStr.split("\n");
+	repaint();
 }
 
 void DrawArea::drawLineTo(Point p, QPainter *g) {
