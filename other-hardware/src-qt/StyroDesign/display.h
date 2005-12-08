@@ -31,7 +31,7 @@ private:
 	void drawBezier(Point p2, Point p3, Point p4, QPainter *g);
 	void drawBezierRec(Point p1, Point p2, Point p3, Point p4, int level, QPainter *g);
 	Point midpoint(Point p1, Point p2);
-	QString getChainCode();
+	void getChainCode();
 	void chainLineTo(Point p);
 	void chainBezier(Point p2, Point p3, Point p4);
 	void chainBezierRec(Point p1, Point p2, Point p3, Point p4, int level);

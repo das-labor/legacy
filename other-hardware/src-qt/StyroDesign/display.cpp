@@ -1,8 +1,9 @@
 #include <QPainter>
 #include <QStringListIterator>
+#include <QChar>
 #include <iostream>
-using namespace std;
 
+using namespace std;
 
 #include "display.h"
 
@@ -13,16 +14,17 @@ DrawArea::DrawArea(QTextEdit *textedit, QWidget *parent)
 	height = 2000;
 	currentAngle = 45;
 	text = textedit;
-	drawLevel = 6;
-	chainLevel = 6;
-	list << "s 45 64" << "l 445 433" << "c 23 32 344 2 533 1890";
+	drawLevel = 8;
+	chainLevel = 8;
+	list << "s 45 64" << "l 445 433" << "c 222 32 344 10 1999 1890";
 	setPalette(QPalette(QColor(255, 255, 255)));
 	setZoom(1.0);
-	//cout << getChainCode().toAscii().data() << endl;
 }
 
 DrawArea::~DrawArea() {
 }
+
+
 
 void DrawArea::paintEvent(QPaintEvent * /* event */)
 {
@@ -57,7 +59,9 @@ void DrawArea::paintEvent(QPaintEvent * /* event */)
 				break;		                                  
 			}
 		}
-	}	
+	}
+	//getChainCode();
+	//cout << chain.toAscii().data() << endl;	
 }
 
 void DrawArea::setZoom(float zoom) {
@@ -112,7 +116,7 @@ Point DrawArea::midpoint(Point p1, Point p2) {
 	return (Point) {(p1.x+p2.x)/2.0, (p1.y+p2.y)/2.0};
 } 	
 
-QString DrawArea::getChainCode() {
+void DrawArea::getChainCode() {
 	QStringListIterator i(list);
 	
 	while (i.hasNext())  {
@@ -142,7 +146,6 @@ QString DrawArea::getChainCode() {
 			}
 		}
 	}	
-	return chain;
 }
 
 void DrawArea::chainLineTo(Point p) {
@@ -158,7 +161,7 @@ void DrawArea::chainLineTo(Point p) {
 	px = (int)(CurrentPoint.x+0.5);
 	py = (int)(CurrentPoint.y+0.5);
 	addToChain(px, py);
-	if (dxabs >= dyabs) { // the line is more horizontal than vertical
+	if (dxabs >= dyabs) { 	  // the line is more horizontal than vertical
 		for (i = 0; i < dxabs; i++) {
 			y += dyabs;
 			if (y >= dxabs) {
@@ -168,7 +171,7 @@ void DrawArea::chainLineTo(Point p) {
 			px += sdx;
 			addToChain(px, py);
 		}
-	} else { // the line is more vertical than horizontal
+	} else { 				 // the line is more vertical than horizontal
 		for (i = 0; i < dyabs; i++) {
 			x += dxabs;
 			if (x >= dyabs) {
@@ -207,19 +210,19 @@ void DrawArea::chainBezierRec(Point p1, Point p2, Point p3, Point p4, int level)
 
 void DrawArea::startChain(int px, int py) {
 	chain = "";
-	chain.append(px);
+	QString help;
+	chain.append(help.setNum(px));
 	chain.append(';');
-	chain.append(py);
+	chain.append(help.setNum(py));
 	
 	chainPosX = px;
 	chainPosY = py;
 }
 
 void DrawArea::addToChain(int px, int py) {
-	getchar();
 	int dx = px - chainPosX;
 	int dy = py - chainPosY;
-	char addChain = ' ';
+	QChar addChain = ' ';
 	bool skip = false;	
 	if (dy == -1) {
 		switch (dx) {

@@ -25,8 +25,6 @@ public:
 MyWidget::MyWidget(QWidget *parent)
 	: QWidget(parent)
 {
-	
-	
 	quit = new QPushButton("Quit");
 	connect(quit, SIGNAL(clicked()), qApp, SLOT(quit()));
 	scroll = new QScrollArea;
