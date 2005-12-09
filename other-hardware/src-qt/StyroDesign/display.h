@@ -5,11 +5,9 @@
 #include <QString>
 #include <QStringList>
 #include <QTextEdit>
+#include <QList>
 
-typedef struct {
-	float x;
-	float y;
-} Point;
+#include "controllPoint.h"
 
 class DrawArea : public QWidget {
 	Q_OBJECT
@@ -22,13 +20,16 @@ public:
 
 protected:
 	void paintEvent(QPaintEvent *event);
+	void mousePressEvent(QMouseEvent * e);
+	void mouseReleaseEvent(QMouseEvent * e);
+	
 
 public slots:
 	void checkAndDraw();
 
 private:
-	void drawLineTo(Point p, QPainter *g);
-	void drawBezier(Point p2, Point p3, Point p4, QPainter *g);
+	void drawLineTo(Point p, QPainter *g, int lineNo);
+	void drawBezier(Point p2, Point p3, Point p4, QPainter *g, int lineNo);
 	void drawBezierRec(Point p1, Point p2, Point p3, Point p4, int level, QPainter *g);
 	Point midpoint(Point p1, Point p2);
 	void getChainCode();
@@ -37,7 +38,10 @@ private:
 	void chainBezierRec(Point p1, Point p2, Point p3, Point p4, int level);
 	void startChain(int px, int py);
 	void addToChain(int px, int py);
+	void addControlPoint(Point p, int line, int firstElement, QPainter *g);
+	void deleteControlPoints();
 
+	QList<ControllPoint*> controllPoints;
 	QString chain;
 	QStringList list;
 	int currentAngle;
@@ -50,18 +54,5 @@ private:
 	Point CurrentPoint;
 	QTextEdit *text;
 };
-/*
-class ControllPoint {
-	int getLine();
-	int getElement();
-	
-	ControllPoint();
-	
-private: 
-	Point p;
-	
-	int lineNo;
-	int elementNo;
-}
-*/
+
 #endif // DISPLAY_H
