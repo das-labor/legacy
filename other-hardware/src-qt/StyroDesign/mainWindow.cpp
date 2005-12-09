@@ -1,3 +1,7 @@
+#include <QFile>
+#include <QTextStream>
+#include <QFileDialog>
+
 #include "mainWindow.h"
 
 MyWidget::MyWidget(QWidget *parent): QMainWindow(parent)
@@ -6,16 +10,23 @@ MyWidget::MyWidget(QWidget *parent): QMainWindow(parent)
 	widget = new QWidget;
 	widget->setGeometry(100, 100, 500, 355);
 
-	connect(toolbar->addAction("Zoom in"), SIGNAL(triggered()), 
+	connect(toolbar->addAction(tr("Zoom in")), SIGNAL(triggered()), 
 			this, SLOT(zoomInc()));
-	
-	connect(toolbar->addAction("Zoom out"), SIGNAL(triggered()),
+	connect(toolbar->addAction(tr("Zoom out")), SIGNAL(triggered()),
 			this, SLOT(zoomDec()));	
-
+	connect(toolbar->addAction(tr("100%")), SIGNAL(triggered()),
+			this, SLOT(zoom100()));	
+	connect(toolbar->addAction(tr("Open")), SIGNAL(triggered()),
+			this, SLOT(open()));	
+	connect(toolbar->addAction(tr("Save")), SIGNAL(triggered()),
+			this, SLOT(save()));	
+	connect(toolbar->addAction(tr("SaveAs")), SIGNAL(triggered()),
+			this, SLOT(saveAs()));	
+	
 	setCentralWidget(widget);
 	addToolBar(toolbar);
 	
-	quit = new QPushButton("Quit");
+	quit = new QPushButton(tr("Quit"));
 	connect(quit, SIGNAL(clicked()), qApp, SLOT(quit()));
 	scroll = new QScrollArea;
 	text = new QTextEdit;
@@ -42,9 +53,44 @@ MyWidget::~MyWidget() {
 }
 
 void MyWidget::zoomInc() {
-	drawArea->setZoom(drawArea->getZoom()+0.1);
+	drawArea->setZoom(drawArea->getZoom()*1.1);
 }
 
 void MyWidget::zoomDec() {
-	drawArea->setZoom(drawArea->getZoom()-0.1);
+	drawArea->setZoom(drawArea->getZoom()*0.9);
+}
+
+void MyWidget::zoom100() {
+	drawArea->setZoom(1.0);
+}
+
+void MyWidget::open() {
+	if (fileName.isNull()) {
+		fileName = QFileDialog::getOpenFileName(this,
+			tr("Open File"), "", "StyroDesignData (*.sdd)");
+	}
+	if (!fileName.isEmpty()) {
+		QFile file(fileName);
+		if (file.open(QFile::ReadOnly | QFile::Text)) {
+			text->setPlainText(file.readAll());
+		}
+	}
+}
+
+void MyWidget::save() {
+	if (!fileName.isNull()) {
+		QFile file(fileName);
+		if (file.open(QFile::WriteOnly | QFile::Text)) {
+			 QTextStream out(&file);
+        	 out << text->toPlainText();
+		}
+		
+	}
+}
+
+void MyWidget::saveAs() {
+	fileName = QFileDialog::getSaveFileName(this,
+				tr("Open File"), "", "StyroDesignData (*.sdd)");
+	fileName += ".sdd";
+	save();
 }

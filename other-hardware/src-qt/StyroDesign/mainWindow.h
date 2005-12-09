@@ -11,8 +11,10 @@
 #include <QToolBar>
 #include <QMainWindow>
 #include <QAction>
+#include <QList>
 
 #include "display.h"
+#include "controllPoint.h"
 
 class MyWidget : public QMainWindow
 {
@@ -25,8 +27,13 @@ public:
 public slots:
 	void zoomInc();
 	void zoomDec();
+	void zoom100();
+	void open();
+	void save();
+	void saveAs();
 
 private:
+	QString fileName;
 	QGridLayout *gridLayout;
 	QPushButton *quit;
 	QScrollArea *scroll;
@@ -34,7 +41,6 @@ private:
 	DrawArea *drawArea;
 	QWidget *widget;
 	QToolBar *toolbar;
-
 };
 
 #endif // MAINWINDOW_H

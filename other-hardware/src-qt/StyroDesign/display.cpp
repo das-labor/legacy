@@ -6,17 +6,6 @@
 using namespace std;
 
 #include "display.h"
-/*
-ControllPoint::ControllPoint() {
-}
-
-int ControllPoint::getLine() {
-}
-
-int ControllPoint::getElement() {
-}
-
-*/
 
 DrawArea::DrawArea(QTextEdit *textedit, QWidget *parent)
 	: QWidget(parent)
@@ -25,9 +14,8 @@ DrawArea::DrawArea(QTextEdit *textedit, QWidget *parent)
 	height = 2000;
 	currentAngle = 45;
 	text = textedit;
-	drawLevel = 8;
-	chainLevel = 8;
-	list << "s 1 1" << "l 100 100" << "c 200 200 22 10 10 1000";
+	drawLevel = 7;
+	chainLevel = 7;
 	setPalette(QPalette(QColor(255, 255, 255)));
 	setZoom(1.0);
 	
@@ -39,8 +27,8 @@ DrawArea::~DrawArea() {
 
 void DrawArea::paintEvent(QPaintEvent * /* event */)
 {
+	int j = 0;
 	QPainter painter(this);
-	//painter.setPen(Qt::NoPen);
 	painter.setBrush(Qt::black);
 
 	QStringListIterator i(list);
@@ -49,30 +37,31 @@ void DrawArea::paintEvent(QPaintEvent * /* event */)
 		switch ((ps.at(0).toAscii())[0]) {
 			case 's': {
 				if (ps.size() >= 3) {
+					deleteControlPoints();
 					CurrentPoint.x = ps.at(1).toFloat();
 					CurrentPoint.y = ps.at(2).toFloat();
+					addControlPoint(CurrentPoint, j, 1, &painter);
 				}
 				break;
 			} 
 			case 'l': {
 				if (ps.size() >= 3) {
-					drawLineTo((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()}, &painter);
+					drawLineTo((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()}, &painter, j);
 				}
 				break;
 			}
 			case 'c': {
 				if (ps.size() >= 7) {
-				drawBezier((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()},
-						   (Point) {ps.at(3).toFloat(), ps.at(4).toFloat()},
-						   (Point) {ps.at(5).toFloat(), ps.at(6).toFloat()},
-							&painter);
+					drawBezier((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()},
+							   (Point) {ps.at(3).toFloat(), ps.at(4).toFloat()},
+							   (Point) {ps.at(5).toFloat(), ps.at(6).toFloat()},
+								&painter, j);
 				}
 				break;		                                  
 			}
 		}
+		j++;
 	}
-	getChainCode();
-	cout << chain.toAscii().data() << endl;	
 }
 
 void DrawArea::setZoom(float zoom) {
@@ -91,22 +80,29 @@ void DrawArea::checkAndDraw() {
 	repaint();
 }
 
-void DrawArea::drawLineTo(Point p, QPainter *g) {
+void DrawArea::drawLineTo(Point p, QPainter *g, int lineNo) {
 	g->drawLine((int)(zoom*CurrentPoint.x+0.5), 
 			    (int)(zoom*CurrentPoint.y+0.5),
 			    (int)(zoom*p.x+0.5), 
 		   	    (int)(zoom*p.y+0.5));
+	if (lineNo != -1) {	
+		addControlPoint(CurrentPoint, lineNo, 1, g);
+		addControlPoint(p, lineNo, 3, g);
+	}
 	CurrentPoint = p;
 }
 
-void DrawArea::drawBezier(Point p2, Point p3, Point p4, QPainter *g) {
+void DrawArea::drawBezier(Point p2, Point p3, Point p4, QPainter *g, int lineNo) {
 	drawBezierRec(CurrentPoint, p2, p3, p4, drawLevel, g);
+	addControlPoint(p2, lineNo, 1, g);
+	addControlPoint(p3, lineNo, 3, g);
+	addControlPoint(p4, lineNo, 5, g);
 	CurrentPoint = p4;
 }
 
 void DrawArea::drawBezierRec(Point p1, Point p2, Point p3, Point p4, int level, QPainter *g) {
 	if (level == 0) {
-		drawLineTo(p4, g);
+		drawLineTo(p4, g, -1);
 	} else {
 		Point l1 = p1;
 		Point l2 = midpoint(p1, p2);
@@ -122,6 +118,15 @@ void DrawArea::drawBezierRec(Point p1, Point p2, Point p3, Point p4, int level, 
 	}
 }
 
+void DrawArea::addControlPoint(Point p, int line, int firstElement, QPainter *g) {
+	controllPoints.append(new ControllPoint(p, line, firstElement));
+	g->drawRect((int)(zoom*p.x+0.5)-2,(int)(zoom*p.y+0.5)-2, 4, 4);
+}
+
+void DrawArea::deleteControlPoints() {
+	while (!controllPoints.isEmpty())
+        delete controllPoints.takeFirst();
+}
 
 Point DrawArea::midpoint(Point p1, Point p2) {
 	return (Point) {(p1.x+p2.x)/2.0, (p1.y+p2.y)/2.0};
@@ -244,10 +249,10 @@ void DrawArea::addToChain(int px, int py) {
 		}
 	} else if (dy == 0) {
 		switch (dx) {
-			case -1: addChain = 'G'; break;
+			case -1: addChain = 'G';  break;
 			case  0: skip     = true; break;
-			case  1: addChain = 'C'; break;
-			default: addChain = 'X'; break;
+			case  1: addChain = 'C';  break;
+			default: addChain = 'X';  break;
 		}
 	} else if (dy == 1) {
 		switch (dx) {
@@ -265,4 +270,11 @@ void DrawArea::addToChain(int px, int py) {
 	}
 	chainPosX = px;
 	chainPosY = py;
+}
+
+
+void DrawArea::mousePressEvent(QMouseEvent * e) {
+}
+
+void DrawArea::mouseReleaseEvent(QMouseEvent * e) {
 }
