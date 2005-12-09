@@ -6,11 +6,22 @@
 using namespace std;
 
 #include "display.h"
+/*
+ControllPoint::ControllPoint() {
+}
+
+int ControllPoint::getLine() {
+}
+
+int ControllPoint::getElement() {
+}
+
+*/
 
 DrawArea::DrawArea(QTextEdit *textedit, QWidget *parent)
 	: QWidget(parent)
 {
-	width = 2000;
+	width  = 2000;
 	height = 2000;
 	currentAngle = 45;
 	text = textedit;
