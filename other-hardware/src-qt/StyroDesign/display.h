@@ -50,5 +50,18 @@ private:
 	Point CurrentPoint;
 	QTextEdit *text;
 };
-
+/*
+class ControllPoint {
+	int getLine();
+	int getElement();
+	
+	ControllPoint();
+	
+private: 
+	Point p;
+	
+	int lineNo;
+	int elementNo;
+}
+*/
 #endif // DISPLAY_H
