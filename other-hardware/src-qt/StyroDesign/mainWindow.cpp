@@ -65,10 +65,9 @@ void MyWidget::zoom100() {
 }
 
 void MyWidget::open() {
-	if (fileName.isNull()) {
-		fileName = QFileDialog::getOpenFileName(this,
-			tr("Open File"), "", "StyroDesignData (*.sdd)");
-	}
+	fileName = QFileDialog::getOpenFileName(this,
+		tr("Open File"), "", "StyroDesign Data (*.sdd)");
+
 	if (!fileName.isEmpty()) {
 		QFile file(fileName);
 		if (file.open(QFile::ReadOnly | QFile::Text)) {
@@ -85,12 +84,14 @@ void MyWidget::save() {
         	 out << text->toPlainText();
 		}
 		
+	} else {
+		saveAs();
 	}
 }
 
 void MyWidget::saveAs() {
 	fileName = QFileDialog::getSaveFileName(this,
-				tr("Open File"), "", "StyroDesignData (*.sdd)");
+				tr("Open File"), "", "StyroDesign Data (*.sdd)");
 	fileName += ".sdd";
 	save();
 }

@@ -2,6 +2,8 @@
 #include <QStringListIterator>
 #include <QChar>
 #include <iostream>
+#include <QMouseEvent>
+#include <math.h>
 
 using namespace std;
 
@@ -18,6 +20,7 @@ DrawArea::DrawArea(QTextEdit *textedit, QWidget *parent)
 	chainLevel = 7;
 	setPalette(QPalette(QColor(255, 255, 255)));
 	setZoom(1.0);
+	drag = false;
 	
 	connect(textedit, SIGNAL(textChanged()), this, SLOT(checkAndDraw()));
 }
@@ -86,8 +89,7 @@ void DrawArea::drawLineTo(Point p, QPainter *g, int lineNo) {
 			    (int)(zoom*p.x+0.5), 
 		   	    (int)(zoom*p.y+0.5));
 	if (lineNo != -1) {	
-		addControlPoint(CurrentPoint, lineNo, 1, g);
-		addControlPoint(p, lineNo, 3, g);
+		addControlPoint(p, lineNo, 1, g);
 	}
 	CurrentPoint = p;
 }
@@ -217,7 +219,7 @@ void DrawArea::chainBezierRec(Point p1, Point p2, Point p3, Point p4, int level)
 		Point r4 = p4;
 		Point l3 = midpoint(l2, h);
 		Point r2 = midpoint(r3, h);
-		Point l4 = midpoint(l3, r2);
+		Point l4 = midpoint(l3, r2);void mouseMoveEvent(QMouseEvent * e);
 		Point r1 = l4;
 		chainBezierRec(l1, l2, l3, l4, level-1);
 		chainBezierRec(r1, r2, r3, r4, level-1);
@@ -274,7 +276,36 @@ void DrawArea::addToChain(int px, int py) {
 
 
 void DrawArea::mousePressEvent(QMouseEvent * e) {
+	float x = e->x()/zoom;
+	float y = e->y()/zoom;
+	 for (int i = 0; i < controllPoints.size(); ++i) {
+        if (fabs(controllPoints.at(i)->getPoint().x-x) < 5 && 
+			fabs(controllPoints.at(i)->getPoint().y-y) < 5) {
+				
+			dragLine = controllPoints.at(i)->getLine();
+			dragElement = controllPoints.at(i)->getElement();
+			drag = true;
+			dragCount = 0;
+			break;
+		}
+    }
 }
 
 void DrawArea::mouseReleaseEvent(QMouseEvent * e) {
+	drag = false;
+}
+
+void DrawArea::mouseMoveEvent(QMouseEvent * e) {	
+	if ((dragCount % 10) == 0) {
+		float x = e->x()/zoom;
+		float y = e->y()/zoom;
+		QString str = text->toPlainText();
+		QStringList lines = str.split("\n");
+		QStringList line = lines.at(dragLine).split(" ");
+		line[dragElement]   = str.setNum(x);
+		line[dragElement+1] = str.setNum(y);
+		lines[dragLine] = line.join(" ");
+		text->setPlainText(lines.join("\n"));
+	}
+	++dragCount;
 }
