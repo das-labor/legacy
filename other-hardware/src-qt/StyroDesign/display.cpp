@@ -95,7 +95,16 @@ void DrawArea::drawLineTo(Point p, QPainter *g, int lineNo) {
 }
 
 void DrawArea::drawBezier(Point p2, Point p3, Point p4, QPainter *g, int lineNo) {
+	Point help = CurrentPoint;
 	drawBezierRec(CurrentPoint, p2, p3, p4, drawLevel, g);
+
+	g->setPen(Qt::red);
+	CurrentPoint = help;
+	drawLineTo(p2, g, -1);
+	CurrentPoint = p3;
+	drawLineTo(p4, g, -1);
+	g->setPen(Qt::black);
+
 	addControlPoint(p2, lineNo, 1, g);
 	addControlPoint(p3, lineNo, 3, g);
 	addControlPoint(p4, lineNo, 5, g);
@@ -122,7 +131,9 @@ void DrawArea::drawBezierRec(Point p1, Point p2, Point p3, Point p4, int level, 
 
 void DrawArea::addControlPoint(Point p, int line, int firstElement, QPainter *g) {
 	controllPoints.append(new ControllPoint(p, line, firstElement));
+	g->setBrush(Qt::green);
 	g->drawRect((int)(zoom*p.x+0.5)-2,(int)(zoom*p.y+0.5)-2, 4, 4);
+	g->setBrush(Qt::black);
 }
 
 void DrawArea::deleteControlPoints() {
@@ -219,7 +230,7 @@ void DrawArea::chainBezierRec(Point p1, Point p2, Point p3, Point p4, int level)
 		Point r4 = p4;
 		Point l3 = midpoint(l2, h);
 		Point r2 = midpoint(r3, h);
-		Point l4 = midpoint(l3, r2);void mouseMoveEvent(QMouseEvent * e);
+		Point l4 = midpoint(l3, r2);
 		Point r1 = l4;
 		chainBezierRec(l1, l2, l3, l4, level-1);
 		chainBezierRec(r1, r2, r3, r4, level-1);
@@ -274,7 +285,6 @@ void DrawArea::addToChain(int px, int py) {
 	chainPosY = py;
 }
 
-
 void DrawArea::mousePressEvent(QMouseEvent * e) {
 	float x = e->x()/zoom;
 	float y = e->y()/zoom;
@@ -296,7 +306,7 @@ void DrawArea::mouseReleaseEvent(QMouseEvent * e) {
 }
 
 void DrawArea::mouseMoveEvent(QMouseEvent * e) {	
-	if ((dragCount % 10) == 0) {
+	if (drag && (dragCount % 10) == 0) {
 		float x = e->x()/zoom;
 		float y = e->y()/zoom;
 		QString str = text->toPlainText();
