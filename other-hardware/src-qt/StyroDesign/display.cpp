@@ -373,4 +373,5 @@ void DrawArea::setImage(QString fileName) {
 	image.load(fileName);
 	imageBegin = (Point) {5.0, 5.0};
 	imageEnd = (Point) {image.width()+5.0, image.height()+5.0};
+	repaint();
 }
