@@ -3,8 +3,6 @@
 
 #include <QObject>
 
-#include "display.h"
-
 typedef struct {
 	float x;
 	float y;
