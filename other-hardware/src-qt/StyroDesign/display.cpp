@@ -5,6 +5,10 @@
 #include <QMouseEvent>
 #include <math.h>
 
+#define DRAG_START 1
+#define DRAG_END 2
+#define DRAG_IMAGE 3
+
 using namespace std;
 
 #include "display.h"
@@ -21,6 +25,7 @@ DrawArea::DrawArea(QTextEdit *textedit, QWidget *parent)
 	setPalette(QPalette(QColor(255, 255, 255)));
 	setZoom(1.0);
 	drag = false;
+	dragImage = 0;
 	
 	connect(textedit, SIGNAL(textChanged()), this, SLOT(checkAndDraw()));
 }
@@ -34,6 +39,18 @@ void DrawArea::paintEvent(QPaintEvent * /* event */)
 	QPainter painter(this);
 	painter.setBrush(Qt::black);
 
+	
+	if (!image.isNull()) {
+		painter.drawImage((int)(zoom*imageBegin.x+0.5), 
+			    		  (int)(zoom*imageBegin.y+0.5), 
+						  image.scaled((int)(zoom*(imageEnd.x-imageBegin.x)+0.5),
+									   (int)(zoom*(imageEnd.y-imageBegin.y)+0.5)));
+		painter.setBrush(Qt::green);
+		painter.drawRect((int)(zoom*imageBegin.x+0.5)-2,(int)(zoom*imageBegin.y+0.5)-2, 4, 4);
+		painter.drawRect((int)(zoom*imageEnd.x+0.5)-2,  (int)(zoom*imageEnd.y+0.5)-2, 4, 4);
+		painter.setBrush(Qt::black);
+	}
+	
 	QStringListIterator i(list);
 	while (i.hasNext())  {
 		QStringList ps = i.next().split(' ');
@@ -299,16 +316,28 @@ void DrawArea::mousePressEvent(QMouseEvent * e) {
 			break;
 		}
     }
+	if (fabs(imageBegin.x-x) < 5 && 
+		fabs(imageBegin.y-y) < 5) {
+			dragImage = DRAG_START;
+	} else if (fabs(imageEnd.x-x) < 5 && 
+			   fabs(imageEnd.y-y) < 5) {
+			dragImage = DRAG_END;
+	} else if (x >= imageBegin.x && x <= imageEnd.x &&
+			   y >= imageBegin.y && y <= imageEnd.y) {
+			dragImage = DRAG_IMAGE;
+			imageLastPos = (Point) {x, y};
+	}
 }
 
 void DrawArea::mouseReleaseEvent(QMouseEvent * e) {
 	drag = false;
+	dragImage = 0;
 }
 
 void DrawArea::mouseMoveEvent(QMouseEvent * e) {	
-	if (drag && (dragCount % 10) == 0) {
-		float x = e->x()/zoom;
-		float y = e->y()/zoom;
+	float x = e->x()/zoom;
+	float y = e->y()/zoom;
+	if (drag) { //&& (dragCount % 10) == 0
 		QString str = text->toPlainText();
 		QStringList lines = str.split("\n");
 		QStringList line = lines.at(dragLine).split(" ");
@@ -317,5 +346,31 @@ void DrawArea::mouseMoveEvent(QMouseEvent * e) {
 		lines[dragLine] = line.join(" ");
 		text->setPlainText(lines.join("\n"));
 	}
-	++dragCount;
+	switch (dragImage) {
+	case DRAG_START:
+		imageBegin = (Point) {x, y};
+		repaint();
+		break;
+	case DRAG_END:
+		imageEnd = (Point) {x, y};
+		repaint();
+		break;
+	case DRAG_IMAGE:
+		float dx = x - imageLastPos.x;
+		float dy = y - imageLastPos.y;
+		imageBegin.x += dx;
+		imageBegin.y += dy;
+		imageEnd.x += dx;
+		imageEnd.y += dy;
+		imageLastPos = (Point) {x, y};
+		repaint();
+		break;
+	}
+	//++dragCount;
+}
+
+void DrawArea::setImage(QString fileName) {
+	image.load(fileName);
+	imageBegin = (Point) {5.0, 5.0};
+	imageEnd = (Point) {image.width()+5.0, image.height()+5.0};
 }
