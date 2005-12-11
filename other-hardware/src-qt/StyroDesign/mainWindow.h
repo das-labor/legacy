@@ -31,6 +31,7 @@ public slots:
 	void open();
 	void save();
 	void saveAs();
+	void openImage();
 
 private:
 	QString fileName;

@@ -22,6 +22,9 @@ MyWidget::MyWidget(QWidget *parent): QMainWindow(parent)
 			this, SLOT(save()));	
 	connect(toolbar->addAction(tr("SaveAs")), SIGNAL(triggered()),
 			this, SLOT(saveAs()));	
+	connect(toolbar->addAction(tr("OpenImage")), SIGNAL(triggered()),
+			this, SLOT(openImage()));	
+	
 	
 	setCentralWidget(widget);
 	addToolBar(toolbar);
@@ -94,4 +97,10 @@ void MyWidget::saveAs() {
 				tr("Open File"), "", "StyroDesign Data (*.sdd)");
 	fileName += ".sdd";
 	save();
+}
+
+void MyWidget::openImage() {
+	fileName = QFileDialog::getOpenFileName(this,
+		tr("Open File"), "", "Image (*.png)");
+	drawArea->setImage(fileName);
 }

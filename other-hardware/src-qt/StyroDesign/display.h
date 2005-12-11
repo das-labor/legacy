@@ -6,6 +6,7 @@
 #include <QStringList>
 #include <QTextEdit>
 #include <QList>
+#include <QImage>
 
 #include "controllPoint.h"
 
@@ -17,6 +18,7 @@ public:
 	~DrawArea();
 	void setZoom(float zoom);
 	float getZoom();
+	void setImage(QString fileName);
 
 protected:
 	void paintEvent(QPaintEvent *event);
@@ -57,7 +59,11 @@ private:
 	int dragElement;
 	int dragCount;
 	bool drag;
+	int dragImage;
 	QTextEdit *text;
+	QImage image;
+	Point imageBegin, imageEnd, imageLastPos;
+
 };
 
 #endif // DISPLAY_H
