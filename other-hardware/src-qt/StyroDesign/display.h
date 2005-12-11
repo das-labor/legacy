@@ -22,6 +22,7 @@ protected:
 	void paintEvent(QPaintEvent *event);
 	void mousePressEvent(QMouseEvent * e);
 	void mouseReleaseEvent(QMouseEvent * e);
+	void mouseMoveEvent(QMouseEvent * e);
 	
 
 public slots:
@@ -52,6 +53,10 @@ private:
 	int drawLevel;
 	int chainLevel;
 	Point CurrentPoint;
+	int dragLine;
+	int dragElement;
+	int dragCount;
+	bool drag;
 	QTextEdit *text;
 };
 
