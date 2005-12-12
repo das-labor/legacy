@@ -305,7 +305,7 @@ void DrawArea::addToChain(int px, int py) {
 void DrawArea::mousePressEvent(QMouseEvent * e) {
 	float x = e->x()/zoom;
 	float y = e->y()/zoom;
-	 for (int i = 0; i < controllPoints.size(); ++i) {
+	for (int i = 0; i < controllPoints.size(); ++i) {
         if (fabs(controllPoints.at(i)->getPoint().x-x) < 5 && 
 			fabs(controllPoints.at(i)->getPoint().y-y) < 5) {
 				
@@ -316,20 +316,24 @@ void DrawArea::mousePressEvent(QMouseEvent * e) {
 			break;
 		}
     }
-	if (fabs(imageBegin.x-x) < 5 && 
-		fabs(imageBegin.y-y) < 5) {
-			dragImage = DRAG_START;
-	} else if (fabs(imageEnd.x-x) < 5 && 
-			   fabs(imageEnd.y-y) < 5) {
-			dragImage = DRAG_END;
-	} else if (x >= imageBegin.x && x <= imageEnd.x &&
-			   y >= imageBegin.y && y <= imageEnd.y) {
-			dragImage = DRAG_IMAGE;
-			imageLastPos = (Point) {x, y};
+  if (!drag) {
+		if (fabs(imageBegin.x-x) < 5 && 
+			fabs(imageBegin.y-y) < 5) {
+				dragImage = DRAG_START;
+		} else if (fabs(imageEnd.x-x) < 5 && 
+				   fabs(imageEnd.y-y) < 5) {
+				dragImage = DRAG_END;
+		} else if (x >= imageBegin.x && x <= imageEnd.x &&
+				   y >= imageBegin.y && y <= imageEnd.y) {
+				dragImage = DRAG_IMAGE;
+				imageLastPos = (Point) {x, y};
+		}
 	}
 }
 
 void DrawArea::mouseReleaseEvent(QMouseEvent * e) {
+	if (drag)
+		text->setPlainText(list.join("\n"));
 	drag = false;
 	dragImage = 0;
 }
@@ -337,14 +341,13 @@ void DrawArea::mouseReleaseEvent(QMouseEvent * e) {
 void DrawArea::mouseMoveEvent(QMouseEvent * e) {	
 	float x = e->x()/zoom;
 	float y = e->y()/zoom;
+	QString str;
 	if (drag) { //&& (dragCount % 10) == 0
-		QString str = text->toPlainText();
-		QStringList lines = str.split("\n");
-		QStringList line = lines.at(dragLine).split(" ");
+		QStringList line = list.at(dragLine).split(" ");
 		line[dragElement]   = str.setNum(x);
 		line[dragElement+1] = str.setNum(y);
-		lines[dragLine] = line.join(" ");
-		text->setPlainText(lines.join("\n"));
+		list[dragLine] = line.join(" ");
+		repaint();
 	}
 	switch (dragImage) {
 	case DRAG_START:
