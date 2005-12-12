@@ -10,17 +10,6 @@ uint8_t bright[20][4];
 void bright_calc(uint8_t module);
 
 
-int main (void)
-{
-	mood_init();
-	mcan_init();
-	sei();
-
-	while(1){
-		mcan_process_messages();
-	}
-}
-
 
 void bright_init() 
 {
@@ -28,7 +17,7 @@ void bright_init()
 
 	for (i=0; i<20; i++) {
 		for(j=0; j<4; j++)
-			bright[i][j] = 0;
+			bright[i][j] = 0x88;
 		bright_calc(i);
 	}
 }
@@ -48,6 +37,7 @@ void bright_calc(uint8_t module)
 		mask = 1 << led;
 //		if (module & 0x04) 
 //			mask <<= 4;
+		mask = 0xff;
 		
 		// set mask to bright_a
 		for(cycle=0; cycle<64; cycle++) {
@@ -82,6 +72,18 @@ void bright_calc(uint8_t module)
 					bright_b[cycle][row] |= 1 << (led+4);
 */
 
+}
+
+int main (void)
+{
+	bright_init();
+	mood_init();
+	mcan_init();
+	sei();
+
+	while(1){
+		mcan_process_messages();
+	}
 }
 
 
