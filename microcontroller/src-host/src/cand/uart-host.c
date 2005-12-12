@@ -88,6 +88,7 @@ unsigned char uart_getc_nb(char *c)
 
 	ret = read(uart_fd, c, 1);
 		       
+	debug(3, "%d\n", c);
 	if (ret<=0) return 0;
 
 	return 1;
