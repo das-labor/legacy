@@ -1,6 +1,8 @@
 #ifndef CAN_H
 #define CAN_H
 
+#include "config.h"
+
 /*****************************************************************************
  * Simple CAN Library
  *
@@ -34,7 +36,7 @@ typedef enum { normal, mode_sleep, loopback, listenonly, config } can_mode_t ;
 /*****************************************************************************
  * Global variables
  */
-#ifndef CAN_HANDLEERROR
+#ifdef CAN_HANDLEERROR
   unsigned char can_error;
 #endif
 
