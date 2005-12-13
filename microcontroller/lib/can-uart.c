@@ -67,6 +67,7 @@ rs232can_msg * canu_get_nb(){
 	static char *uartpkt_data;
 	char c;
 	
+	debug( 3, "getting...." );
 	while (uart_getc_nb(&c)) {
 		switch (canu_rcvstate) {
 		case STATE_START:
@@ -106,9 +107,9 @@ rs232can_msg * canu_get(){
 
 	for(;;) {
 		FD_ZERO(&rset);
-		FD_SET(uart_fd(), &rset);
+		FD_SET(uart_fd, &rset);
 
-		ret = select(uart_fd() + 1, &rset, (fd_set*)NULL, (fd_set*)NULL, NULL);
+		ret = select(uart_fd + 1, &rset, (fd_set*)NULL, (fd_set*)NULL, NULL);
 		debug_assert( ret >= 0, "canu_get: select failed" );
 
 		rmsg = canu_get_nb();
