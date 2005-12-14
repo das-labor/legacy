@@ -19,6 +19,7 @@ public:
 	void setZoom(float zoom);
 	float getZoom();
 	void setImage(QString fileName);
+	void setShowControlElements(bool state);
 
 protected:
 	void paintEvent(QPaintEvent *event);
@@ -57,11 +58,13 @@ private:
 	Point CurrentPoint;
 	int dragLine;
 	int dragElement;
-	int dragCount;
 	bool drag;
 	int dragImage;
+	bool imageScaleChanged;
+	bool showControlElements;
 	QTextEdit *text;
 	QImage image;
+	QImage imageBuf;
 	Point imageBegin, imageEnd, imageLastPos;
 
 };

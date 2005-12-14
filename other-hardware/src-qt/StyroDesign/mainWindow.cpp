@@ -8,7 +8,7 @@ MyWidget::MyWidget(QWidget *parent): QMainWindow(parent)
 {
 	toolbar = new QToolBar;
 	widget = new QWidget;
-	widget->setGeometry(100, 100, 500, 355);
+	widget->setGeometry(50, 50, 800, 600);
 
 	connect(toolbar->addAction(tr("Zoom in")), SIGNAL(triggered()), 
 			this, SLOT(zoomInc()));
@@ -23,36 +23,39 @@ MyWidget::MyWidget(QWidget *parent): QMainWindow(parent)
 	connect(toolbar->addAction(tr("SaveAs")), SIGNAL(triggered()),
 			this, SLOT(saveAs()));	
 	connect(toolbar->addAction(tr("OpenImage")), SIGNAL(triggered()),
-			this, SLOT(openImage()));	
+			this, SLOT(openImage()));
+	connect(toolbar->addAction(tr("HideControlPoints")), SIGNAL(triggered()),
+			this, SLOT(switchControlView()));
 	
 	
 	setCentralWidget(widget);
 	addToolBar(toolbar);
 	
-	quit = new QPushButton(tr("Quit"));
-	connect(quit, SIGNAL(clicked()), qApp, SLOT(quit()));
 	scroll = new QScrollArea;
 	text = new QTextEdit;
 	drawArea = new DrawArea(text, scroll);
 	
 	scroll->setWidget(drawArea);
-	
-	gridLayout = new QGridLayout;
-	gridLayout->addWidget(quit, 1, 0);
-	gridLayout->addWidget(scroll, 0, 1, 2, 1);
-	gridLayout->addWidget(text, 0, 0);
-	gridLayout->setColumnStretch(1, 10);
-	widget->setLayout(gridLayout);
+	split = new QSplitter;
+	split->addWidget(text);
+	split->addWidget(scroll);
+	 
+	layout = new QHBoxLayout;
+	layout->addWidget(split);
+	widget->setLayout(layout);
+	showControlElements = true;
 	
 }
 
 MyWidget::~MyWidget() {
-	delete gridLayout;
+	/*
+	delete split;
 	delete drawArea;
-	delete quit;
 	delete scroll;
 	delete text;
+	delete layout;
 	delete widget;
+	*/
 }
 
 void MyWidget::zoomInc() {
@@ -103,4 +106,9 @@ void MyWidget::openImage() {
 	fileName = QFileDialog::getOpenFileName(this,
 		tr("Open File"), "", "Image (*.png)");
 	drawArea->setImage(fileName);
+}
+
+void MyWidget::switchControlView() {
+	showControlElements = showControlElements ? false : true;
+	drawArea->setShowControlElements(showControlElements);
 }

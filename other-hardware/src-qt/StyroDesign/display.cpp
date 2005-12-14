@@ -25,6 +25,8 @@ DrawArea::DrawArea(QTextEdit *textedit, QWidget *parent)
 	setPalette(QPalette(QColor(255, 255, 255)));
 	setZoom(1.0);
 	drag = false;
+	imageScaleChanged = false;
+	showControlElements = true;
 	dragImage = 0;
 	
 	connect(textedit, SIGNAL(textChanged()), this, SLOT(checkAndDraw()));
@@ -41,14 +43,20 @@ void DrawArea::paintEvent(QPaintEvent * /* event */)
 
 	
 	if (!image.isNull()) {
+		if (imageScaleChanged) {
+			imageBuf = image.scaled((int)(zoom*(imageEnd.x-imageBegin.x)+0.5),
+									(int)(zoom*(imageEnd.y-imageBegin.y)+0.5));
+			imageScaleChanged = false;
+		}
+		
 		painter.drawImage((int)(zoom*imageBegin.x+0.5), 
-			    		  (int)(zoom*imageBegin.y+0.5), 
-						  image.scaled((int)(zoom*(imageEnd.x-imageBegin.x)+0.5),
-									   (int)(zoom*(imageEnd.y-imageBegin.y)+0.5)));
-		painter.setBrush(Qt::green);
-		painter.drawRect((int)(zoom*imageBegin.x+0.5)-2,(int)(zoom*imageBegin.y+0.5)-2, 4, 4);
-		painter.drawRect((int)(zoom*imageEnd.x+0.5)-2,  (int)(zoom*imageEnd.y+0.5)-2, 4, 4);
-		painter.setBrush(Qt::black);
+			    		  (int)(zoom*imageBegin.y+0.5), imageBuf);
+		if (showControlElements) {
+			painter.setBrush(Qt::green);
+			painter.drawRect((int)(zoom*imageBegin.x+0.5)-2,(int)(zoom*imageBegin.y+0.5)-2, 4, 4);
+			painter.drawRect((int)(zoom*imageEnd.x+0.5)-2,  (int)(zoom*imageEnd.y+0.5)-2, 4, 4);
+			painter.setBrush(Qt::black);
+		}
 	}
 	
 	QStringListIterator i(list);
@@ -87,6 +95,7 @@ void DrawArea::paintEvent(QPaintEvent * /* event */)
 void DrawArea::setZoom(float zoom) {
 	this->zoom = zoom;
 	resize((int)(zoom*height), (int)(zoom*width));
+	imageScaleChanged = true;
 }
 
 float DrawArea::getZoom() {
@@ -114,13 +123,15 @@ void DrawArea::drawLineTo(Point p, QPainter *g, int lineNo) {
 void DrawArea::drawBezier(Point p2, Point p3, Point p4, QPainter *g, int lineNo) {
 	Point help = CurrentPoint;
 	drawBezierRec(CurrentPoint, p2, p3, p4, drawLevel, g);
-
-	g->setPen(Qt::red);
-	CurrentPoint = help;
-	drawLineTo(p2, g, -1);
-	CurrentPoint = p3;
-	drawLineTo(p4, g, -1);
-	g->setPen(Qt::black);
+	
+	if (showControlElements) {
+		g->setPen(Qt::red);
+		CurrentPoint = help;
+		drawLineTo(p2, g, -1);
+		CurrentPoint = p3;
+		drawLineTo(p4, g, -1);
+		g->setPen(Qt::black);
+	}
 
 	addControlPoint(p2, lineNo, 1, g);
 	addControlPoint(p3, lineNo, 3, g);
@@ -148,9 +159,11 @@ void DrawArea::drawBezierRec(Point p1, Point p2, Point p3, Point p4, int level, 
 
 void DrawArea::addControlPoint(Point p, int line, int firstElement, QPainter *g) {
 	controllPoints.append(new ControllPoint(p, line, firstElement));
-	g->setBrush(Qt::green);
-	g->drawRect((int)(zoom*p.x+0.5)-2,(int)(zoom*p.y+0.5)-2, 4, 4);
-	g->setBrush(Qt::black);
+	if (showControlElements) {
+		g->setBrush(Qt::green);
+		g->drawRect((int)(zoom*p.x+0.5)-2,(int)(zoom*p.y+0.5)-2, 4, 4);
+		g->setBrush(Qt::black);
+	}
 }
 
 void DrawArea::deleteControlPoints() {
@@ -312,7 +325,6 @@ void DrawArea::mousePressEvent(QMouseEvent * e) {
 			dragLine = controllPoints.at(i)->getLine();
 			dragElement = controllPoints.at(i)->getElement();
 			drag = true;
-			dragCount = 0;
 			break;
 		}
     }
@@ -352,9 +364,11 @@ void DrawArea::mouseMoveEvent(QMouseEvent * e) {
 	switch (dragImage) {
 	case DRAG_START:
 		imageBegin = (Point) {x, y};
+		imageScaleChanged = true;
 		repaint();
 		break;
 	case DRAG_END:
+		imageScaleChanged = true;
 		imageEnd = (Point) {x, y};
 		repaint();
 		break;
@@ -369,12 +383,17 @@ void DrawArea::mouseMoveEvent(QMouseEvent * e) {
 		repaint();
 		break;
 	}
-	//++dragCount;
 }
 
 void DrawArea::setImage(QString fileName) {
 	image.load(fileName);
 	imageBegin = (Point) {5.0, 5.0};
 	imageEnd = (Point) {image.width()+5.0, image.height()+5.0};
+	imageScaleChanged = true;
+	repaint();
+}
+
+void DrawArea::setShowControlElements(bool state) {
+	showControlElements = state;
 	repaint();
 }

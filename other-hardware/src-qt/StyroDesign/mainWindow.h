@@ -12,6 +12,8 @@
 #include <QMainWindow>
 #include <QAction>
 #include <QList>
+#include <QSplitter>
+#include <QHBoxLayout>
 
 #include "display.h"
 #include "controllPoint.h"
@@ -32,16 +34,18 @@ public slots:
 	void save();
 	void saveAs();
 	void openImage();
+	void switchControlView();
 
 private:
 	QString fileName;
-	QGridLayout *gridLayout;
-	QPushButton *quit;
+	QSplitter *split;
 	QScrollArea *scroll;
 	QTextEdit *text;
 	DrawArea *drawArea;
 	QWidget *widget;
 	QToolBar *toolbar;
+	QHBoxLayout *layout;
+	bool showControlElements;
 };
 
 #endif // MAINWINDOW_H
