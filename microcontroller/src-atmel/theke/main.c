@@ -17,7 +17,7 @@ void bright_init()
 
 	for (i=0; i<20; i++) {
 		for(j=0; j<4; j++)
-			bright[i][j] = 0x88;
+			bright[i][j] = 0xff;
 		bright_calc(i);
 	}
 }
@@ -37,7 +37,6 @@ void bright_calc(uint8_t module)
 		mask = 1 << led;
 //		if (module & 0x04) 
 //			mask <<= 4;
-		mask = 0xff;
 		
 		// set mask to bright_a
 		for(cycle=0; cycle<64; cycle++) {
@@ -47,31 +46,6 @@ void bright_calc(uint8_t module)
 				bright_a[cycle][row] &= ~mask;
 		}
 	};
-
-
-/* old stuff
-	
-	for(cycle=0; cycle < 64; cycle++) {
-		for(row=0; row < 4; row++) {
-			bright_a[cycle][row] = 0;
-			for(led=0; led < 4; led++) {
-				// port 1 low nibble
-				if (bright[row][3-led] > cycle)
-					bright_a[cycle][row] |= 1 << led;
-
-				// port 1 high nibble
-				if (bright[4+row][3-led] > cycle)
-					bright_a[cycle][row] |= 1 << (led+4);
-
-				// port 2 low nibble 
-				if (bright[row][3-led] > cycle)
-					bright_b[cycle][row] |= 1 << led;
-
-				// port 2 high nibble
-				if (bright[4+row][3-led] > cycle)
-					bright_b[cycle][row] |= 1 << (led+4);
-*/
-
 }
 
 int main (void)
