@@ -20,6 +20,7 @@ public:
 	float getZoom();
 	void setImage(QString fileName);
 	void setShowControlElements(bool state);
+	QString getChainCode();
 
 protected:
 	void paintEvent(QPaintEvent *event);
@@ -27,7 +28,6 @@ protected:
 	void mouseReleaseEvent(QMouseEvent * e);
 	void mouseMoveEvent(QMouseEvent * e);
 	
-
 public slots:
 	void checkAndDraw();
 
@@ -36,7 +36,7 @@ private:
 	void drawBezier(Point p2, Point p3, Point p4, QPainter *g, int lineNo);
 	void drawBezierRec(Point p1, Point p2, Point p3, Point p4, int level, QPainter *g);
 	Point midpoint(Point p1, Point p2);
-	void getChainCode();
+	
 	void chainLineTo(Point p);
 	void chainBezier(Point p2, Point p3, Point p4);
 	void chainBezierRec(Point p1, Point p2, Point p3, Point p4, int level);
@@ -50,7 +50,7 @@ private:
 	QStringList list;
 	int currentAngle;
   	int height, width;
-	float zoom;
+	float zoom, scale;
 	int chainPosX;
 	int chainPosY;
 	int drawLevel;
@@ -66,7 +66,6 @@ private:
 	QImage image;
 	QImage imageBuf;
 	Point imageBegin, imageEnd, imageLastPos;
-
 };
 
 #endif // DISPLAY_H

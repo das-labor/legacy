@@ -35,6 +35,7 @@ public slots:
 	void saveAs();
 	void openImage();
 	void switchControlView();
+	void saveChainCode();
 
 private:
 	QString fileName;

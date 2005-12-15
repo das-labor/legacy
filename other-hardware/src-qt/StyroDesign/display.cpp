@@ -18,10 +18,11 @@ DrawArea::DrawArea(QTextEdit *textedit, QWidget *parent)
 {
 	width  = 2000;
 	height = 2000;
+	scale = 10.0;
 	currentAngle = 45;
 	text = textedit;
 	drawLevel = 7;
-	chainLevel = 7;
+	chainLevel = 10;
 	setPalette(QPalette(QColor(255, 255, 255)));
 	setZoom(1.0);
 	drag = false;
@@ -175,7 +176,7 @@ Point DrawArea::midpoint(Point p1, Point p2) {
 	return (Point) {(p1.x+p2.x)/2.0, (p1.y+p2.y)/2.0};
 } 	
 
-void DrawArea::getChainCode() {
+QString DrawArea::getChainCode() {
 	QStringListIterator i(list);
 	
 	while (i.hasNext())  {
@@ -183,28 +184,29 @@ void DrawArea::getChainCode() {
 		switch ((ps.at(0).toAscii())[0]) {
 			case 's': {
 				if (ps.size() >= 3) {
-					CurrentPoint.x = ps.at(1).toFloat();
-					CurrentPoint.y = ps.at(2).toFloat();
+					CurrentPoint.x = ps.at(1).toFloat()*scale;
+					CurrentPoint.y = ps.at(2).toFloat()*scale;
 					startChain((int)(CurrentPoint.x), (int)(CurrentPoint.y));
 				}
 				break;
 			} 
 			case 'l': {
 				if (ps.size() >= 3) {
-					chainLineTo((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()});
+					chainLineTo((Point) {ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale});
 				}
 				break;
 			}
 			case 'c': {
 				if (ps.size() >= 7) {
-				chainBezier((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()},
-							(Point) {ps.at(3).toFloat(), ps.at(4).toFloat()},
-							(Point) {ps.at(5).toFloat(), ps.at(6).toFloat()});
+				chainBezier((Point) {ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale},
+							(Point) {ps.at(3).toFloat()*scale, ps.at(4).toFloat()*scale},
+							(Point) {ps.at(5).toFloat()*scale, ps.at(6).toFloat()*scale});
 				}
 				break;		                                  
 			}
 		}
-	}	
+	}
+	return chain;
 }
 
 void DrawArea::chainLineTo(Point p) {

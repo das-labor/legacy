@@ -26,6 +26,8 @@ MyWidget::MyWidget(QWidget *parent): QMainWindow(parent)
 			this, SLOT(openImage()));
 	connect(toolbar->addAction(tr("HideControlPoints")), SIGNAL(triggered()),
 			this, SLOT(switchControlView()));
+	connect(toolbar->addAction(tr("SaveChainCode")), SIGNAL(triggered()),
+			this, SLOT(saveChainCode()));
 	
 	
 	setCentralWidget(widget);
@@ -111,4 +113,16 @@ void MyWidget::openImage() {
 void MyWidget::switchControlView() {
 	showControlElements = showControlElements ? false : true;
 	drawArea->setShowControlElements(showControlElements);
+}
+
+void MyWidget::saveChainCode() {
+	if (fileName.isNull()) {
+		fileName = "test";
+	}
+	QString newName = fileName + ".code";
+	QFile file(newName);
+	if (file.open(QFile::WriteOnly | QFile::Text)) {
+		 QTextStream out(&file);
+       	 out << drawArea->getChainCode();
+	}
 }
