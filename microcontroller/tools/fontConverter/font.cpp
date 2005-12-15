@@ -715,7 +715,8 @@ void MyFrame::OnConvert(wxCommandEvent& WXUNUSED(event))
     // set background
     dc.SetBackground(wxBrush(wxT("white"), wxSOLID));
     dc.Clear();
-    FILE* headerFile = fopen("font.h", "w");
+
+    FILE* headerFile = fopen("font_.c", "w");
     wxCoord hLine = dc.GetCharHeight();
 
     // the current text origin
@@ -724,7 +725,7 @@ void MyFrame::OnConvert(wxCommandEvent& WXUNUSED(event))
     // prepare to draw the font
     dc.SetFont(m_canvas->m_font);
     dc.SetTextForeground(*wxBLACK);
-#   define SKIPHEIGHT 3
+#   define SKIPHEIGHT 0
 #   define SKIPWIDTH 0
     // the size of one cell (Normally biggest char + small margin)
     wxChar c;
@@ -742,8 +743,8 @@ void MyFrame::OnConvert(wxCommandEvent& WXUNUSED(event))
     if (charHeight > 16)
        store_bytes++;
     wxColour colour;
-    fprintf(headerFile, "#include \"font.h\"\n\nunsigned int PROGMEM fontIndex_[] = {");
-    for (c = ' '; c <= 254; c++) {
+    fprintf(headerFile, "#include \"font.h\"\n\nunsigned int PROGMEM fontIndex_[] = {\n");
+    for (c = ' '; c <= '~'; c++) {
         dc.Clear();
         //dc.GetTextExtent(c, &charWidth, &charHeight);
         dc.DrawText(c, 0, 0);
@@ -765,11 +766,11 @@ void MyFrame::OnConvert(wxCommandEvent& WXUNUSED(event))
              }    
         }
 
-        fprintf(headerFile, "                                    %d, /* %c */\n", fontIndex, c);
+        fprintf(headerFile, "                                    %d, /* %c */\n", fontIndex*store_bytes, c);
         fontIndex += maxCharWidth+1;
          
     }
-    fprintf(headerFile, "\t%d\n};\n\nunsigned char PROGMEM fontData_[] = {\n", fontIndex);
+    fprintf(headerFile, "                                    %d\n};\n\nunsigned char PROGMEM fontData_[] = {\n", fontIndex*store_bytes);
     for (i = 0; i < fontIndex; i++) {
         //if (i % 15 == 0 && i)
         //   fprintf(headerFile, "\n                                ");
@@ -875,7 +876,6 @@ void MyCanvas::OnPaint( wxPaintEvent &WXUNUSED(event) )
     dc.GetTextExtent(wxT("W"), &maxCharWidth, &maxCharHeight);
     int w = maxCharWidth + 5,
         h = maxCharHeight + 4;
-
 
     // print all font symbols from 32 to 256 in 7 rows of 32 chars each
     for ( int i = 0; i < 7; i++ )
