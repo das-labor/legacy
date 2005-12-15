@@ -860,16 +860,55 @@ void drawPixmapZAngle(unsigned char angle, unsigned char* pixmap, unsigned char 
 
 
 
-// Rotate pixmap
-void rotatePixmap() {
+void rotatePixmap(char animatioNo) {
 	// Eine super tolle neue Animation
-	char pixmap[8] = {0x18,0x3c,0x7e,0xff,0xff, 0xff,0x66,0x00}; 
-	unsigned int i;
-	for (i = 0; i < 1000; i++) {
+	                          //unten                              oben                                                           
+	unsigned char yingYang[8] = {0x3c, 0x46, 0xa7, 0x8f, 0x9f, 0x9b, 0x5e, 0x3c}; 
+	unsigned char heart[8] =    {0x18, 0x3c, 0x7e, 0xff, 0xff, 0xff, 0x66, 0x00}; 
+    unsigned char L[8] =        {0xff, 0x81, 0xf9, 0xf9, 0xf9, 0xf9, 0xf9, 0xff};
+	unsigned char* pixmap;
+	unsigned char i;
+	
+	switch (animatioNo) {
+           case  0: pixmap = heart; break;
+           case  1: pixmap = L; break;
+           default: pixmap = yingYang; break;
+    }
+	
+	for (i = 0; i < 255; i++) {
 		drawPixmapZAngle(i%28, pixmap, 3);
 		wait(50);
 		clear_screen(0);
-	} 		
+	}
+    drawPixmapZAngle(i%28, pixmap, 3);
+	wait(50);
+	clear_screen(0);
+    wait(50);
+    drawPixmapZAngle(i%28, pixmap, 3);
+	wait(50);
+    clear_screen(0);
+    wait(50);
+    drawPixmapZAngle(i%28, pixmap, 3);
+   	wait(50);
+    clear_screen(0);
+    wait(50);
+    drawPixmapZAngle(i%28, pixmap, 3);
+	wait(500);
+	clear_screen(0);
 }
 
-
+void laborZylinder() {
+	unsigned char indexX[] = {1, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 6, 5, 4, 3, 2};
+	unsigned char indexY[] = {1, 2, 3, 4, 5, 6 ,7, 7, 7, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0};
+	unsigned char i, j;
+		
+	clear_screen(0);
+	for (i = 0; i < 200; i++) {
+		for (j = 0; j < 20; j++) {
+			if (j < 6 || (j < 14 && j > 9))
+				setpixel3d((pixel3d) {indexX[(j+i)%20], indexY[(j+i)%20], 0}, 3);
+		}
+		wait(50);
+		shift3d(up);
+	}
+}

@@ -28,22 +28,24 @@ int main (void){
 			while (1) wait(5);
 			break;
 		case 1:
-        		movingArrows();
-        		growingCubeFilled();
+        	movingArrows();
+        	growingCubeFilled();
 			break;
 		case 2:
 			scrolltext(scrolltext_text);
-        		growingCubeFilled();
-        		break;
+        	growingCubeFilled();
+        	break;
 		case 3:
 			joern1();
 			growingCubeFilled();
 			break;
 		case 4:
+			rotatePixmap(1);
 			//gameOfLife(1, 400);
 			//growingCubeFilled();
 			break;
 		case 5:
+			laborZylinder();
 			//gameOfLife(0, 400);
 			//growingCubeFilled();
 			//growingCubeFilled();
@@ -81,9 +83,11 @@ int main (void){
 			feuer();
 			break;
 		case 12:
-			rotatePixmap();
+			rotatePixmap(0);
+			break;
+		case 13:
+			rotatePixmap(2);
 			break;
 		}
 	}
 }
-
