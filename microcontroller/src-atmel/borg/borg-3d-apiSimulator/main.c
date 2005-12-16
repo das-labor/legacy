@@ -151,8 +151,8 @@ void timf(int value) {
 }*/
 
 int main(int argc, char **argv){
-    WindHeight = 700;
-    WindWidth = 700;         
+    WindHeight = 500;
+    WindWidth = 500;         
     glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
     glutInitWindowSize(WindHeight, WindWidth);
@@ -172,7 +172,7 @@ int main(int argc, char **argv){
     gluPerspective(60.0, (float)WindHeight/(float)WindWidth, 5., 1000.);
     gluLookAt(NUM_PLANES*2., NUM_ROWS*2.+50., NUM_COLS*2.,
               NUM_PLANES*2., NUM_ROWS*2., NUM_COLS*2.,
-            0.0, 0.0, 1.0); 
+              0.0, 0.0, 1.0); 
 
 	// init Call List for LED	
 	quad = gluNewQuadric();

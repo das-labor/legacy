@@ -33,8 +33,8 @@ int main (void){
 			break;
 		case 2:
 			scrolltext(scrolltext_text);
-        	growingCubeFilled();
-        	break;
+        		growingCubeFilled();
+	        	break;
 		case 3:
 			joern1();
 			growingCubeFilled();
@@ -87,6 +87,12 @@ int main (void){
 			break;
 		case 13:
 			rotatePixmap(2);
+			break;
+		case 20:
+			planeAnimation2(80);
+			break;
+		case 42:
+			mode = 1;
 			break;
 		}
 	}

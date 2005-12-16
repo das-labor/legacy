@@ -16,7 +16,7 @@ OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
 FLASHCMD      ?= uisp -dprog=bsd --upload if=$(OUT).hex 
 ERASECMD      ?= uisp -dprog=bsd --erase 
-LAPFLASHCMD   ?= lapcontrol -s roulette
+LAPFLASHCMD   ?= lapcontrol -s rl
 
 #############################################################################
 # Rules

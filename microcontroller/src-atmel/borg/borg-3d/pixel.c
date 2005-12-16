@@ -261,3 +261,91 @@ direction turn_down(direction dir){
 	}
 	return 0;
 }
+
+void set_plane(direction dir, unsigned char num, unsigned char color)
+{
+	unsigned char pindex = 0;
+	//Hardcore PORN!
+	int p, y, x;
+	unsigned char v = 0xFF;
+
+	switch (dir) {
+		
+		//pixmap[p][rl][byte]
+		case right:
+			pindex = NUM_PLANES-(num+1);
+			for(x=0;x<PLANEBYTES ;x++) {
+				for(p=0; p<NUM_LEVELS; p++) {
+					if ( p < color)
+						pixmap[p][pindex][x] = v;
+					else
+						pixmap[p][pindex][x] &= ~v;
+				}
+			 }			
+			break;
+			
+		case left:
+			 pindex = num;			 
+			 for(x=0;x<PLANEBYTES ;x++) {
+				for(p=0; p<NUM_LEVELS; p++) {
+					if ( p < color)
+						pixmap[p][pindex][x] = v;
+					else
+						pixmap[p][pindex][x] &= ~v;
+				}
+			 }
+			break;
+			
+		case forward:
+			pindex = NUM_PLANES-(num+1);
+			for(y=0;y<NUM_PLANES ;y++) {
+				for(p=0; p<NUM_LEVELS; p++) {
+					if ( p < color)
+						pixmap[p][y][pindex] = v;
+					else
+						pixmap[p][y][pindex] &= ~v;				
+				}
+			 }
+			break;
+			
+		case back:
+			pindex = num;
+			for(y=0;y<NUM_PLANES ;y++) {
+				for(p=0; p<NUM_LEVELS; p++) {
+					if ( p < color)
+						pixmap[p][y][pindex] = v;
+					else
+						pixmap[p][y][pindex] &= ~v;				
+				}
+			 }
+			break;
+			
+		case down:
+			v = shl_table[NUM_ROWS - (num+1)];
+			for(p=0; p<NUM_LEVELS; p++) {
+					for(y=0; y<NUM_PLANES ;y++) {
+						for(x=0; x<PLANEBYTES ;x++) {
+							if ( p < color)
+								pixmap[p][y][x] |= v;
+							else
+								pixmap[p][y][x] &= ~v;				
+					}
+				}
+			}
+			break;
+			
+		case up:
+			v = shl_table[num];
+			for(p=0; p<NUM_LEVELS; p++) {
+					for(y=0; y<NUM_PLANES ;y++) {
+						for(x=0; x<PLANEBYTES ;x++) {
+							if ( p < color)
+								pixmap[p][y][x] |= v;
+							else
+								pixmap[p][y][x] &= ~v;				
+					}
+				}
+			}
+			break;
+	} //end switch(dir)
+}

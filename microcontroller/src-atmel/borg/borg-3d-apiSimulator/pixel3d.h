@@ -20,3 +20,4 @@ unsigned char get_next_pixel3d(pixel3d p, direction dir);
 pixel3d next_pixel3d(pixel3d pix, direction dir);
 direction direction_r(direction dir);
 void shift3d(direction dir);
+void set_plane(direction dir, unsigned char num, unsigned char color);

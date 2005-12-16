@@ -26,3 +26,4 @@ direction turn_left(direction dir);
 direction turn_up(direction dir);
 direction turn_down(direction dir);
 void shift3d(direction dir);
+void set_plane(direction dir, unsigned char num, unsigned char color);
