@@ -174,7 +174,7 @@ void DrawArea::deleteControlPoints() {
 
 Point DrawArea::midpoint(Point p1, Point p2) {
 	return (Point) {(p1.x+p2.x)/2.0, (p1.y+p2.y)/2.0};
-} 	
+}	
 
 QString DrawArea::getChainCode() {
 	QStringListIterator i(list);
@@ -329,8 +329,8 @@ void DrawArea::mousePressEvent(QMouseEvent * e) {
 			drag = true;
 			break;
 		}
-    }
-  if (!drag) {
+    	}
+  	if (!drag) {
 		if (fabs(imageBegin.x-x) < 5/zoom && 
 			fabs(imageBegin.y-y) < 5/zoom) {
 				dragImage = DRAG_START;
