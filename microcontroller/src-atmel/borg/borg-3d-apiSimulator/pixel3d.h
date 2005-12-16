@@ -21,3 +21,8 @@ pixel3d next_pixel3d(pixel3d pix, direction dir);
 direction direction_r(direction dir);
 void shift3d(direction dir);
 void set_plane(direction dir, unsigned char num, unsigned char color);
+
+#define Cos(a) Sin((a)+16)
+char Sin(unsigned char a);
+void rotate(unsigned char a, unsigned char b, unsigned char c, pixel3d* points, 
+			pixel3d* resPoints, int numPoint, pixel3d rotP);
