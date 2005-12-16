@@ -17,3 +17,5 @@ void serialStream();
 void movingArrows();
 void feuer();
 void rotatePixmap();
+void laborZylinder();
+void planeAnimation2(unsigned char ms);

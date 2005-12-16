@@ -9,4 +9,6 @@ all:${SRC}
 clean:
 	rm -f *.exe
 
-
+install:
+	cp allmacht.exe /usr/bin
+	

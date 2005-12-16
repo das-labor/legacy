@@ -14,7 +14,7 @@
 //#include "font-arial8.h"
 //#include "font-small6.h"
 //#include "font-v5.h"
-#include "font-uni53.h"
+#include "font_uni53.h"
 
 #define MAX_FONTS 1
 font fonts[MAX_FONTS];

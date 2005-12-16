@@ -321,8 +321,8 @@ void DrawArea::mousePressEvent(QMouseEvent * e) {
 	float x = e->x()/zoom;
 	float y = e->y()/zoom;
 	for (int i = 0; i < controllPoints.size(); ++i) {
-        if (fabs(controllPoints.at(i)->getPoint().x-x) < 5 && 
-			fabs(controllPoints.at(i)->getPoint().y-y) < 5) {
+        if (fabs(controllPoints.at(i)->getPoint().x-x) < 5/zoom && 
+			fabs(controllPoints.at(i)->getPoint().y-y) < 5/zoom) {
 				
 			dragLine = controllPoints.at(i)->getLine();
 			dragElement = controllPoints.at(i)->getElement();
@@ -331,11 +331,11 @@ void DrawArea::mousePressEvent(QMouseEvent * e) {
 		}
     }
   if (!drag) {
-		if (fabs(imageBegin.x-x) < 5 && 
-			fabs(imageBegin.y-y) < 5) {
+		if (fabs(imageBegin.x-x) < 5/zoom && 
+			fabs(imageBegin.y-y) < 5/zoom) {
 				dragImage = DRAG_START;
-		} else if (fabs(imageEnd.x-x) < 5 && 
-				   fabs(imageEnd.y-y) < 5) {
+		} else if (fabs(imageEnd.x-x) < 5/zoom  && 
+				   fabs(imageEnd.y-y) < 5/zoom ) {
 				dragImage = DRAG_END;
 		} else if (x >= imageBegin.x && x <= imageEnd.x &&
 				   y >= imageBegin.y && y <= imageEnd.y) {

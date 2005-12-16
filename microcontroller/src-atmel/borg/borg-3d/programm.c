@@ -905,10 +905,39 @@ void laborZylinder() {
 	clear_screen(0);
 	for (i = 0; i < 200; i++) {
 		for (j = 0; j < 20; j++) {
-			if (j < 6 || (j < 14 && j > 9))
+			if (j < 5 || (j < 15 && j > 9))
 				setpixel3d((pixel3d) {indexX[(j+i)%20], indexY[(j+i)%20], 0}, 3);
 		}
 		wait(50);
 		shift3d(up);
+	}
+}
+
+#define BWIDTH 8
+void fadedPlaneScan(direction dir, unsigned char i)
+{
+		if(i < BWIDTH) set_plane(dir, 	i, 	3);
+		if(i >= 1 && i < BWIDTH+1) set_plane(dir, 	i-1, 	2);
+		if(i >= 2 && i < BWIDTH+2) set_plane(dir, 	i-2, 	1);
+		if(i >= 3 && i < BWIDTH+3) set_plane(dir, 	i-3, 	0);
+}
+
+void planeAnimation2(unsigned char ms)
+{
+	unsigned char i, j; 
+	for (j = 0; j < 4; ++j) {
+		for(i=0; i < BWIDTH + 3; ++i) {
+			fadedPlaneScan(left, i);
+			fadedPlaneScan(down, i);
+			fadedPlaneScan(back, i);
+			wait(ms);
+		}
+		
+		for(i=0; i < BWIDTH + 3; ++i) {
+			fadedPlaneScan(right, i);
+			fadedPlaneScan(up, i);
+			fadedPlaneScan(forward, i);
+			wait(ms);
+		}
 	}
 }
