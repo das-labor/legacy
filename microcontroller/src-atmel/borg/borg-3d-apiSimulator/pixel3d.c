@@ -16,13 +16,15 @@ void clear_screen(unsigned char value){
 
 void setpixel3d(pixel3d p, unsigned char value ){
 	unsigned char plane;
-	
-	for (plane=0; plane < NUM_LEVELS; plane++) {
-		if (plane < value)
-			pixmap[plane][p.x%NUM_PLANES][p.y%PLANEBYTES] |=  shl_table[p.z%NUM_ROWS];
-		else
-			pixmap[plane][p.x%NUM_PLANES][p.y%PLANEBYTES] &= ~shl_table[p.z%NUM_ROWS];
-	}
+	if (p.x < 8 && p.y < 8 && p.z < 8 &&
+		p.x >= 0 && p.y >= 0 && p.z >= 0) { 
+		for (plane=0; plane < NUM_LEVELS; plane++) {
+			if (plane < value)
+				pixmap[plane][p.x][p.y] |=  shl_table[p.z];
+			else
+				pixmap[plane][p.x][p.y] &= ~shl_table[p.z];
+		}
+	}	
 }
 
 void shift3d(direction dir) {
@@ -288,11 +290,11 @@ char Sin(unsigned char a) {
 }	
 
 
-pixel3d mulMatrixPoint(int *mat, pixel3d *p) {
+pixel3d mulMatrixPoint(char *mat, pixel3d *p) {
 	return (pixel3d) {
-		(mat[0]*p->x)/128 + (mat[1]*p->y)/128 + (mat[2]*p->z)/128 + mat[3],
-		(mat[4]*p->x)/128 + (mat[5]*p->y)/128 + (mat[6]*p->z)/128 + mat[7],
-		(mat[8]*p->x)/128 + (mat[9]*p->y)/128 + (mat[10]*p->z)/128 + mat[11],
+		(mat[0]*p->x)/127 + (mat[1]*p->y)/127 + (mat[2]*p->z)/127 + mat[3],
+		(mat[4]*p->x)/127 + (mat[5]*p->y)/127 + (mat[6]*p->z)/127 + mat[7],
+		(mat[8]*p->x)/127 + (mat[9]*p->y)/127 + (mat[10]*p->z)/127 + mat[11],
 	};
 }
 
@@ -304,35 +306,39 @@ Matrix Format
   8  9 10 11
 (12 13 14 15) are not exist  because normally 0 0 0 1
               but we work intern with homogen coordiantes
-
 */
+
 void rotate(unsigned char a, unsigned char b, unsigned char c, pixel3d* points, 
 			pixel3d* resPoints, int numPoint, pixel3d rotP) {
-	int mat[12];
+	char mat[12];
 	unsigned char i;
 					
 	// Initialiesierung der Rotationsmatrix				
-	mat[0] = (Cos(b)*Cos(c))/128;
-	mat[1] = (-Cos(b)*Sin(c))/128;
+	mat[0] = (Cos(b)*Cos(c))/127;
+	mat[1] = (-Cos(b)*Sin(c))/127;
 	mat[2] = -Sin(b);
 		
-	mat[4] = (((-Sin(a)*Sin(b))/128)*Cos(c))/128 + (Cos(a)*Sin(c))/128;
-	mat[5] = (((Sin(a)*Sin(b))/128)*Sin(c))/128 + (Cos(a)*Cos(c))/128;
-	mat[6] = (-Sin(a)*Cos(b))/128;
+	mat[4] = (((-Sin(a)*Sin(b))/127)*Cos(c))/127 + (Cos(a)*Sin(c))/127;
+	mat[5] = (((Sin(a)*Sin(b))/127)*Sin(c))/127 + (Cos(a)*Cos(c))/127;
+	mat[6] = (-Sin(a)*Cos(b))/127;
 		
-	mat[8]  = (((Cos(a)*Sin(b))/128)*Cos(c))/128 + (Sin(a)*Sin(c))/128;
-	mat[9]  = (((-Cos(a)*Sin(b))/128)*Sin(c))/128 + (Sin(a)*Cos(c))/128;
-	mat[10] = (Cos(a)*Cos(b))/128;
+	mat[8]  = (((Cos(a)*Sin(b))/127)*Cos(c))/127 + (Sin(a)*Sin(c))/127;
+	mat[9]  = (((-Cos(a)*Sin(b))/127)*Sin(c))/127 + (Sin(a)*Cos(c))/127;
+	mat[10] = (Cos(a)*Cos(b))/127;
 					
 	if (rotP.x == 0 && rotP.y == 0 && rotP.z == 0) {
 		mat[3]  = 0;
 		mat[7]  = 0;
 		mat[11] = 0;
 	} else {
-		mat[3]  = rotP.x - ((mat[0]*rotP.x)/128 + (mat[1]*rotP.y)/128 + (mat[2]*rotP.z)/128);
-		mat[7]  = rotP.y - ((mat[4]*rotP.x)/128 + (mat[5]*rotP.y)/128 + (mat[6]*rotP.z)/128);
-		mat[11] = rotP.z - ((mat[8]*rotP.x)/128 + (mat[9]*rotP.y)/128 + (mat[10]*rotP.z)/128);
+		mat[3]  = rotP.x - ((mat[0]*rotP.x)/127 + (mat[1]*rotP.y)/127 + (mat[2]*rotP.z)/127);
+		mat[7]  = rotP.y - ((mat[4]*rotP.x)/127 + (mat[5]*rotP.y)/127 + (mat[6]*rotP.z)/127);
+		mat[11] = rotP.z - ((mat[8]*rotP.x)/127 + (mat[9]*rotP.y)/127 + (mat[10]*rotP.z)/127);
 	}
+	/*
+	for (i = 0; i < 3; i++) {
+		printf("%d\t%d\t%d\t%d\n", mat[(i*4)], mat[(i*4)+1], mat[(i*4)+2], mat[(i*4)+3]);
+	}*/
 	
 	for (i = 0; i < numPoint; i++) {
 		resPoints[i] = mulMatrixPoint(mat, &points[i]);
