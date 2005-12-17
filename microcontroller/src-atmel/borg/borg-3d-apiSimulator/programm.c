@@ -990,23 +990,28 @@ void planeAnimation2(unsigned char ms)
 	}
 }
 
-#define NPOINTS 5
+#define NPOINTS 9
 void testRotate() {
-	pixel3d org[NPOINTS] = {{4, 4, 4},
-  						    {5, 5, 5},
-							{6, 6, 6},
-							{3, 4, 4},
-							{2, 4, 4}}; 
+	pixel3d org[NPOINTS] = {{40, 40, 40},
+							{50, 50, 40},
+							{60, 60, 40},
+							{30, 50, 40},
+							{20, 60, 40},
+							{40, 30, 50},
+							{40, 20, 60},
+							{40, 30, 30},
+							{40, 20, 20}}; 
 	pixel3d rot[NPOINTS]; 
-	unsigned char a, i;
-	for (a = 0; a < 64; a++) {
-		rotate(0, 0, a, org, rot, NPOINTS, (pixel3d) {4, 4, 4});
+	unsigned char i;
+	int a;
+	for (a = 0; a < 4000; a++) {
+		rotate(a, a, 2*a, org, rot, NPOINTS, (pixel3d) {30, 45, 50});
 		//printf("\na = %d\n", a);
 		for (i = 0; i < NPOINTS; i++) {
-			setpixel3d(rot[i], 3);
+			setpixel3d((pixel3d) {(rot[i].x+5)/10, (rot[i].y+5)/10, (rot[i].z+5)/10}, 3);
 			//printf("%d %d %d\n", rot[i].x, rot[i].y, rot[i].z);
 		}
-		wait(50);
+		wait(15);
 		clear_screen(0);
 	}				 
 }
@@ -1015,7 +1020,8 @@ void testRotate() {
 void *display_loop(void * unused) {
 	while (1) {
 		testRotate();
-		planeAnimation2(80);
+		wait(30);
+		/*planeAnimation2(80);
 		newCoolAnim();
 		//pong();
 		//feuer();
@@ -1053,6 +1059,6 @@ void *display_loop(void * unused) {
 		test2();
 		test2();
 		snake3d();
-		feuer();
+		feuer();*/
 	}
 }

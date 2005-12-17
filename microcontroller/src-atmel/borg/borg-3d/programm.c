@@ -941,3 +941,29 @@ void planeAnimation2(unsigned char ms)
 		}
 	}
 }
+
+#define NPOINTS 9
+void testRotate() {
+	pixel3d org[NPOINTS] = {{40, 40, 40},
+							{50, 50, 40},
+							{60, 60, 40},
+							{30, 50, 40},
+							{20, 60, 40},
+							{40, 30, 50},
+							{40, 20, 60},
+							{40, 30, 30},
+							{40, 20, 20}}; 
+	pixel3d rot[NPOINTS]; 
+	unsigned char i;
+	int a;
+	for (a = 0; a < 4000; a++) {
+		rotate(a, a, 2*a, org, rot, NPOINTS, (pixel3d) {30, 45, 50});
+		//printf("\na = %d\n", a);
+		for (i = 0; i < NPOINTS; i++) {
+			setpixel3d((pixel3d) {(rot[i].x+5)/10, (rot[i].y+5)/10, (rot[i].z+5)/10}, 3);
+			//printf("%d %d %d\n", rot[i].x, rot[i].y, rot[i].z);
+		}
+		wait(15);
+		clear_screen(0);
+	}				 
+}

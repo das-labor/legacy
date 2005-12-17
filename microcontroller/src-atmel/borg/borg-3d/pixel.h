@@ -25,5 +25,10 @@ direction turn_right(direction dir);
 direction turn_left(direction dir);
 direction turn_up(direction dir);
 direction turn_down(direction dir);
+char Sin(unsigned char a);
+#define Cos(a) Sin((a)+16)
 void shift3d(direction dir);
 void set_plane(direction dir, unsigned char num, unsigned char color);
+			   pixel3d mulMatrixPoint(char *mat, pixel3d *p);
+void rotate(unsigned char a, unsigned char b, unsigned char c, pixel3d* points, 
+			pixel3d* resPoints, int numPoint, pixel3d rotP);

@@ -88,6 +88,8 @@ int main (void){
 		case 13:
 			rotatePixmap(2);
 			break;
+		case 14:
+			testRotate();
 		case 20:
 			planeAnimation2(80);
 			break;
