@@ -990,30 +990,76 @@ void planeAnimation2(unsigned char ms)
 	}
 }
 
-#define NPOINTS 9
+#define NPOINTS 32
 void testRotate() {
-	pixel3d org[NPOINTS] = {{40, 40, 40},
-							{50, 50, 40},
-							{60, 60, 40},
-							{30, 50, 40},
-							{20, 60, 40},
-							{40, 30, 50},
-							{40, 20, 60},
-							{40, 30, 30},
-							{40, 20, 20}}; 
+	pixel3d org[NPOINTS] = {{0x20, 0x20, 0x20},
+							{0x30, 0x20, 0x20},
+							{0x40, 0x20, 0x20},
+							{0x50, 0x20, 0x20},
+							{0x50, 0x30, 0x20},
+							{0x50, 0x40, 0x20},
+							{0x50, 0x50, 0x20},
+							{0x40, 0x50, 0x20},
+							{0x30, 0x50, 0x20},
+							{0x20, 0x50, 0x20},
+							{0x20, 0x40, 0x20},
+							{0x20, 0x30, 0x20},
+							{0x20, 0x20, 0x50},
+							{0x30, 0x20, 0x50},
+							{0x40, 0x20, 0x50},
+							{0x50, 0x20, 0x50},
+							{0x50, 0x30, 0x50},
+							{0x50, 0x40, 0x50},
+							{0x50, 0x50, 0x50},
+							{0x40, 0x50, 0x50},
+							{0x30, 0x50, 0x50},
+							{0x20, 0x50, 0x50},
+							{0x20, 0x40, 0x50},
+							{0x20, 0x30, 0x50},
+							{0x20, 0x20, 0x30},
+							{0x20, 0x20, 0x40},
+							{0x20, 0x50, 0x30},
+							{0x20, 0x50, 0x40},
+							{0x50, 0x20, 0x30},
+							{0x50, 0x20, 0x40},
+							{0x50, 0x50, 0x30},
+							{0x50, 0x50, 0x40}}; 
 	pixel3d rot[NPOINTS]; 
 	unsigned char i;
 	int a;
-	for (a = 0; a < 4000; a++) {
-		rotate(a, a, 2*a, org, rot, NPOINTS, (pixel3d) {30, 45, 50});
-		//printf("\na = %d\n", a);
+	for (a = 0; a < 196; a++) {
+		rotate(a, 0, 0, org, rot, NPOINTS, (pixel3d) {0x47, 0x47, 0x47});
 		for (i = 0; i < NPOINTS; i++) {
-			setpixel3d((pixel3d) {(rot[i].x+5)/10, (rot[i].y+5)/10, (rot[i].z+5)/10}, 3);
-			//printf("%d %d %d\n", rot[i].x, rot[i].y, rot[i].z);
+			setpixel3d((pixel3d) {(rot[i].x+5)/16, (rot[i].y+5)/16, (rot[i].z+5)/16}, 3);
 		}
 		wait(15);
 		clear_screen(0);
-	}				 
+	}	
+	for (a = 0; a < 196; a++) {
+		rotate(0, a, 0, org, rot, NPOINTS, (pixel3d) {0x47, 0x47, 0x47});
+		for (i = 0; i < NPOINTS; i++) {
+			setpixel3d((pixel3d) {(rot[i].x+5)/16, (rot[i].y+5)/16, (rot[i].z+5)/16}, 3);
+		}
+		wait(15);
+		clear_screen(0);
+	}
+	for (a = 0; a < 196; a++) {
+		rotate(0, 0, a, org, rot, NPOINTS, (pixel3d) {0x47, 0x47, 0x47});
+		for (i = 0; i < NPOINTS; i++) {
+			setpixel3d((pixel3d) {(rot[i].x+5)/16, (rot[i].y+5)/16, (rot[i].z+5)/16}, 3);
+		}
+		wait(15);
+		clear_screen(0);
+	}
+	for (a = 0; a < 196; a++) {
+		rotate(0, a, a, org, rot, NPOINTS, (pixel3d) {0x47, 0x47, 0x47});
+		for (i = 0; i < NPOINTS; i++) {
+			setpixel3d((pixel3d) {(rot[i].x+5)/16, (rot[i].y+5)/16, (rot[i].z+5)/16}, 3);
+		}
+		wait(25);
+		clear_screen(0);
+	}	
+	
 }
 
 
