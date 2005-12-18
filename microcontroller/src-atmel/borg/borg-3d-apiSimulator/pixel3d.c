@@ -294,7 +294,7 @@ pixel3d mulMatrixPoint(char *mat, pixel3d *p) {
 	return (pixel3d) {
 		(mat[0]*p->x)/127 + (mat[1]*p->y)/127 + (mat[2]*p->z)/127 + mat[3],
 		(mat[4]*p->x)/127 + (mat[5]*p->y)/127 + (mat[6]*p->z)/127 + mat[7],
-		(mat[8]*p->x)/127 + (mat[9]*p->y)/127 + (mat[10]*p->z)/127 + mat[11],
+		(mat[8]*p->x)/127 + (mat[9]*p->y)/127 + (mat[10]*p->z)/127 + mat[11]
 	};
 }
 

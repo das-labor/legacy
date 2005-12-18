@@ -1025,12 +1025,12 @@ void testRotate() {
 							{0x50, 0x50, 0x30},
 							{0x50, 0x50, 0x40}}; 
 	pixel3d rot[NPOINTS]; 
-	unsigned char i;
+	unsigned char i, hx, hy, hz;
 	int a;
 	for (a = 0; a < 196; a++) {
 		rotate(a, 0, 0, org, rot, NPOINTS, (pixel3d) {0x47, 0x47, 0x47});
 		for (i = 0; i < NPOINTS; i++) {
-			setpixel3d((pixel3d) {(rot[i].x+5)/16, (rot[i].y+5)/16, (rot[i].z+5)/16}, 3);
+			setpixel3d((pixel3d) {(rot[i].x+7)/16, (rot[i].y+7)/16, (rot[i].z+7)/16}, 3);
 		}
 		wait(15);
 		clear_screen(0);
@@ -1038,7 +1038,7 @@ void testRotate() {
 	for (a = 0; a < 196; a++) {
 		rotate(0, a, 0, org, rot, NPOINTS, (pixel3d) {0x47, 0x47, 0x47});
 		for (i = 0; i < NPOINTS; i++) {
-			setpixel3d((pixel3d) {(rot[i].x+5)/16, (rot[i].y+5)/16, (rot[i].z+5)/16}, 3);
+			setpixel3d((pixel3d) {(rot[i].x+7)/16, (rot[i].y+7)/16, (rot[i].z+7)/16}, 3);
 		}
 		wait(15);
 		clear_screen(0);
@@ -1046,7 +1046,7 @@ void testRotate() {
 	for (a = 0; a < 196; a++) {
 		rotate(0, 0, a, org, rot, NPOINTS, (pixel3d) {0x47, 0x47, 0x47});
 		for (i = 0; i < NPOINTS; i++) {
-			setpixel3d((pixel3d) {(rot[i].x+5)/16, (rot[i].y+5)/16, (rot[i].z+5)/16}, 3);
+			setpixel3d((pixel3d) {(rot[i].x+7)/16, (rot[i].y+7)/16, (rot[i].z+7)/16}, 3);
 		}
 		wait(15);
 		clear_screen(0);
@@ -1054,7 +1054,10 @@ void testRotate() {
 	for (a = 0; a < 196; a++) {
 		rotate(0, a, a, org, rot, NPOINTS, (pixel3d) {0x47, 0x47, 0x47});
 		for (i = 0; i < NPOINTS; i++) {
-			setpixel3d((pixel3d) {(rot[i].x+5)/16, (rot[i].y+5)/16, (rot[i].z+5)/16}, 3);
+			hx = rot[i].x;
+			hy = rot[i].y;
+			hz = rot[i].z;
+			setpixel3d((pixel3d) {(hx+7)/16, (hy+7)/16, (hz+7)/16}, 3);
 		}
 		wait(25);
 		clear_screen(0);
