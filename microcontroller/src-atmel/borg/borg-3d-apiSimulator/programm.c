@@ -1025,41 +1025,46 @@ void testRotate() {
 							{0x50, 0x50, 0x30},
 							{0x50, 0x50, 0x40}}; 
 	pixel3d rot[NPOINTS]; 
-	unsigned char i, hx, hy, hz;
-	int a;
+	unsigned char i, hx, hy, hz, a;
+	//int a;
+	
 	for (a = 0; a < 196; a++) {
-		rotate(a, 0, 0, org, rot, NPOINTS, (pixel3d) {0x47, 0x47, 0x47});
+		rotate(a, 0, 0, org, rot, NPOINTS, (pixel3d) {0x48, 0x48, 0x48});
 		for (i = 0; i < NPOINTS; i++) {
-			setpixel3d((pixel3d) {(rot[i].x+7)/16, (rot[i].y+7)/16, (rot[i].z+7)/16}, 3);
+			setpixel3d((pixel3d) {(rot[i].x+8)/16, (rot[i].y+8)/16, (rot[i].z+8)/16}, 3);
 		}
 		wait(15);
 		clear_screen(0);
 	}	
 	for (a = 0; a < 196; a++) {
-		rotate(0, a, 0, org, rot, NPOINTS, (pixel3d) {0x47, 0x47, 0x47});
+		rotate(0, a, 0, org, rot, NPOINTS, (pixel3d) {0x48, 0x48, 0x48});
 		for (i = 0; i < NPOINTS; i++) {
-			setpixel3d((pixel3d) {(rot[i].x+7)/16, (rot[i].y+7)/16, (rot[i].z+7)/16}, 3);
+			setpixel3d((pixel3d) {(rot[i].x+8)/16, (rot[i].y+8)/16, (rot[i].z+7)/16}, 3);
 		}
 		wait(15);
 		clear_screen(0);
 	}
 	for (a = 0; a < 196; a++) {
-		rotate(0, 0, a, org, rot, NPOINTS, (pixel3d) {0x47, 0x47, 0x47});
+		rotate(0, 0, a, org, rot, NPOINTS, (pixel3d) {0x48, 0x48, 0x48});
 		for (i = 0; i < NPOINTS; i++) {
-			setpixel3d((pixel3d) {(rot[i].x+7)/16, (rot[i].y+7)/16, (rot[i].z+7)/16}, 3);
+			setpixel3d((pixel3d) {(rot[i].x+8)/16, (rot[i].y+8)/16, (rot[i].z+8)/16}, 3);
 		}
 		wait(15);
 		clear_screen(0);
 	}
 	for (a = 0; a < 196; a++) {
-		rotate(0, a, a, org, rot, NPOINTS, (pixel3d) {0x47, 0x47, 0x47});
+		rotate(a/4, a/2, a, org, rot, NPOINTS, (pixel3d) {0x48, 0x48, 0x48});
 		for (i = 0; i < NPOINTS; i++) {
-			hx = rot[i].x;
-			hy = rot[i].y;
-			hz = rot[i].z;
-			setpixel3d((pixel3d) {(hx+7)/16, (hy+7)/16, (hz+7)/16}, 3);
+			/*
+			hx = rot[i].x % 16;
+			hy = rot[i].y % 16;
+			hz = rot[i].z % 16;
+			hx = hx > 4 ? 5 - hx: hx;
+			hx += hy > 4 ? 5 - hy: hy;
+			hx += hz > 4 ? 5 - hz: hz; */
+			setpixel3d((pixel3d) {(rot[i].x+8)/16, (rot[i].y+8)/16, (rot[i].z+8)/16}, 3);
 		}
-		wait(25);
+		wait(20);
 		clear_screen(0);
 	}	
 	
