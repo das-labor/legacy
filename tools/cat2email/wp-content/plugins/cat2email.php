@@ -34,7 +34,7 @@ foreach ($cats as $cat) {
 }
 
 // Set sender details
-$headers = "From: " . $myname . " <" . $myemailadd . ">\r\n";
+$headers = "From: Labor eV <info@das-labor.org>";
 
 // Set email subject
 $subject = $postdata['Title'];
@@ -50,13 +50,12 @@ if ('html' == get_option('c2e_format')) {
 	$content = apply_filters('the_content', $content);
 	$content = str_replace(']]>', ']]&gt;', $content);
 	$mailtext .= $content;
+	$mailtext .= "</body></html>";
 } else {
+	// Reformat Contente
 	$mailtext = $postdata['Content'];
 }
 
-if ('html' == get_option('c2e_format')) {
-	$mailtext .= "</body></html>";
-}
 // And away we go...
 if (isset($_POST['publish'])) { // we only want to send on publish
 	mail($to, $subject, $mailtext, $headers);
