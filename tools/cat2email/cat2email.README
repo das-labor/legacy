@@ -1,0 +1,24 @@
+== cat2email ==
+
+Tags: category, email
+copyright (c) 2004 Scott Merrill
+skippy@skippy.net | http://skippy.net/
+Released under the terms of the GNU General Public License.
+
+This plugin is distributed with no warranty.  Use it at your own risk.
+
+This plugin allows blog administrators to define an email recipient for each category in the blog.  Whenever a new post is published, the specified recipient will receive an email.  The email will contain the entire contents of the post, and will appear to have been sent by the author of the post.
+Blog owners may choose to send these emails as plaintext or HTML.
+
+== INSTALLATION ==
+
+1) Copy the cat2email.php file into your /wp-content/plugins/ directory.
+2) Activate the plugin.
+3) Click the "Manage" admin menu link, and select "Category2Email".
+4) Select plaintext or HTML email, and assign recipients to your categories.
+
+== ADDITIONAL INFORMATION ==
+
+This plugin was written with mailing lists in mind.  By assignign a mailing list address to a category, that mailing list will receive all posts to that category for distribution to the list members.  List members will see the incoming mail as though it were created by the person who authored the post.
+
+
