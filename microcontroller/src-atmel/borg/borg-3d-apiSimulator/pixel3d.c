@@ -272,10 +272,9 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 	} //end switch(dir)
 }
 
-// 127 = sin(90°) = 1
-char sinTab[] = {0, 12, 25, 37, 49, 60, 71, 81, 90, 98, 
-	             106, 112, 117, 122, 125, 126, 127};
-				 
+// 64 = sin(90°) = 1
+char sinTab[] = {0, 6, 12, 19, 24, 30, 36, 41, 45, 49, 53, 56, 59, 61, 63, 64, 64};
+		 
 char Sin(unsigned char a) {
 	a %= 64;
 	if (a < 17) {
@@ -292,9 +291,9 @@ char Sin(unsigned char a) {
 
 pixel3d mulMatrixPoint(char *mat, pixel3d *p) {
 	return (pixel3d) {
-		(mat[0]*p->x)/127 + (mat[1]*p->y)/127 + (mat[2]*p->z)/127 + mat[3],
-		(mat[4]*p->x)/127 + (mat[5]*p->y)/127 + (mat[6]*p->z)/127 + mat[7],
-		(mat[8]*p->x)/127 + (mat[9]*p->y)/127 + (mat[10]*p->z)/127 + mat[11]
+		(mat[0]*p->x)/64 + (mat[1]*p->y)/64 + (mat[2]*p->z)/64 + mat[3],
+		(mat[4]*p->x)/64 + (mat[5]*p->y)/64 + (mat[6]*p->z)/64 + mat[7],
+		(mat[8]*p->x)/64 + (mat[9]*p->y)/64 + (mat[10]*p->z)/64 + mat[11]
 	};
 }
 
@@ -314,26 +313,26 @@ void rotate(unsigned char a, unsigned char b, unsigned char c, pixel3d* points,
 	unsigned char i;
 					
 	// Initialiesierung der Rotationsmatrix				
-	mat[0] = (Cos(b)*Cos(c))/127;
-	mat[1] = (-Cos(b)*Sin(c))/127;
+	mat[0] = (Cos(b)*Cos(c))/64;
+	mat[1] = (-Cos(b)*Sin(c))/64;
 	mat[2] = -Sin(b);
 		
-	mat[4] = (((-Sin(a)*Sin(b))/127)*Cos(c))/127 + (Cos(a)*Sin(c))/127;
-	mat[5] = (((Sin(a)*Sin(b))/127)*Sin(c))/127 + (Cos(a)*Cos(c))/127;
-	mat[6] = (-Sin(a)*Cos(b))/127;
+	mat[4] = (((-Sin(a)*Sin(b))/64)*Cos(c))/64 + (Cos(a)*Sin(c))/64;
+	mat[5] = (((Sin(a)*Sin(b))/64)*Sin(c))/64 + (Cos(a)*Cos(c))/64;
+	mat[6] = (-Sin(a)*Cos(b))/64;
 		
-	mat[8]  = (((Cos(a)*Sin(b))/127)*Cos(c))/127 + (Sin(a)*Sin(c))/127;
-	mat[9]  = (((-Cos(a)*Sin(b))/127)*Sin(c))/127 + (Sin(a)*Cos(c))/127;
-	mat[10] = (Cos(a)*Cos(b))/127;
+	mat[8]  = (((Cos(a)*Sin(b))/64)*Cos(c))/64 + (Sin(a)*Sin(c))/64;
+	mat[9]  = (((-Cos(a)*Sin(b))/64)*Sin(c))/64 + (Sin(a)*Cos(c))/64;
+	mat[10] = (Cos(a)*Cos(b))/64;
 					
 	if (rotP.x == 0 && rotP.y == 0 && rotP.z == 0) {
 		mat[3]  = 0;
 		mat[7]  = 0;
 		mat[11] = 0;
 	} else {
-		mat[3]  = rotP.x - ((mat[0]*rotP.x)/127 + (mat[1]*rotP.y)/127 + (mat[2]*rotP.z)/127);
-		mat[7]  = rotP.y - ((mat[4]*rotP.x)/127 + (mat[5]*rotP.y)/127 + (mat[6]*rotP.z)/127);
-		mat[11] = rotP.z - ((mat[8]*rotP.x)/127 + (mat[9]*rotP.y)/127 + (mat[10]*rotP.z)/127);
+		mat[3]  = rotP.x - ((mat[0]*rotP.x)/64 + (mat[1]*rotP.y)/64 + (mat[2]*rotP.z)/64);
+		mat[7]  = rotP.y - ((mat[4]*rotP.x)/64 + (mat[5]*rotP.y)/64 + (mat[6]*rotP.z)/64);
+		mat[11] = rotP.z - ((mat[8]*rotP.x)/64 + (mat[9]*rotP.y)/64 + (mat[10]*rotP.z)/64);
 	}
 	/*
 	for (i = 0; i < 3; i++) {

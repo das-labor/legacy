@@ -1055,8 +1055,7 @@ void testRotate() {
 	for (a = 0; a < 196; a++) {
 		rotate(a/4, a/2, a, org, rot, NPOINTS, (pixel3d) {0x48, 0x48, 0x48});
 		for (i = 0; i < NPOINTS; i++) {
-			/*
-			hx = rot[i].x % 16;
+			/*hx = rot[i].x % 16;
 			hy = rot[i].y % 16;
 			hz = rot[i].z % 16;
 			hx = hx > 4 ? 5 - hx: hx;
