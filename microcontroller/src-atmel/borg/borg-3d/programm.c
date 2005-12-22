@@ -1021,3 +1021,28 @@ void testRotate() {
 	}	
 	
 }
+
+#include "joystick.h"
+
+void joystick_test(){
+	clear_screen(0);
+	setpixel3d((pixel3d) {5,5,5}, 3);
+	while(1){
+		wait(1);
+		JOYUSE0();
+		if(JOYISUP) setpixel3d ((pixel3d){0,0,1}, 3); else setpixel3d ((pixel3d){0,0,1}, 0);
+		if(JOYISDOWN) setpixel3d ((pixel3d){0,2,1}, 3); else setpixel3d ((pixel3d){0,2,1}, 0);
+		if(JOYISLEFT) setpixel3d ((pixel3d){0,1,0}, 3); else setpixel3d ((pixel3d){0,1,0}, 0);
+		if(JOYISRIGHT) setpixel3d ((pixel3d){0,1,2}, 3); else setpixel3d ((pixel3d){0,1,2}, 0);
+		if(JOYISFIRE) setpixel3d ((pixel3d){0,1,1}, 3); else setpixel3d ((pixel3d){0,1,1}, 0);
+		
+		JOYUSE1();
+		if(JOYISUP) setpixel3d ((pixel3d){1,0,1}, 3); else setpixel3d ((pixel3d){1,0,1}, 0);
+		if(JOYISDOWN) setpixel3d ((pixel3d){1,2,1}, 3); else setpixel3d ((pixel3d){1,2,1}, 0);
+		if(JOYISLEFT) setpixel3d ((pixel3d){1,1,0}, 3); else setpixel3d ((pixel3d){1,1,0}, 0);
+		if(JOYISRIGHT) setpixel3d ((pixel3d){1,1,2}, 3); else setpixel3d ((pixel3d){1,1,2}, 0);
+		if(JOYISFIRE) setpixel3d ((pixel3d){1,1,1}, 3); else setpixel3d ((pixel3d){1,1,1}, 0);
+	}
+}
+
+
