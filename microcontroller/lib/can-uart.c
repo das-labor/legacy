@@ -67,7 +67,6 @@ rs232can_msg * canu_get_nb(){
 	static char *uartpkt_data;
 	char c;
 	
-	debug( 3, "getting...." );
 	while (uart_getc_nb(&c)) {
 		switch (canu_rcvstate) {
 		case STATE_START:
