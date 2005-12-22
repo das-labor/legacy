@@ -6,6 +6,7 @@ typedef struct {
 	unsigned char x;
 	unsigned char y;
 	unsigned char z;
+//	unsigned char dummy;
 } pixel3d;
 
 typedef enum{right,left,forward, back,up,down} direction;

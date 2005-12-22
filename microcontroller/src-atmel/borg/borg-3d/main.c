@@ -21,6 +21,10 @@ int main (void){
 	bcan_init();
 	clear_screen(0);
 	mode = setjmp(newmode_jmpbuf);
+	
+	joy_init();
+	joystick_test();
+	
 	for(;;) {
 		switch(mode++) {
 		case 0xff:
