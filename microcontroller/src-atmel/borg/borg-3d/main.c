@@ -9,53 +9,55 @@
 #include "uart.h"
 #include "borg_can.h"
 #include "util.h"
+#include "joystick.h"
 
 jmp_buf newmode_jmpbuf;
 
-int main (void){
-	unsigned char mode;
+volatile unsigned char oldMode, oldOldmode, mode;
 
+int main (void){
+	//unsigned char mode;
+	
 	borg_hw_init();
 	uart_init();
-	sei();
-	bcan_init();
-	clear_screen(0);
-	mode = setjmp(newmode_jmpbuf);
-	
 	joy_init();
-	joystick_test();
-	
+	sei();
+	//bcan_init();
+	clear_screen(0);
+
+	mode = setjmp(newmode_jmpbuf);
+	oldOldmode = oldMode;
+	waitForFire = 1;
 	for(;;) {
+		oldMode = mode;
 		switch(mode++) {
 		case 0xff:
 			clear_screen(0);
 			while (1) wait(5);
 			break;
 		case 1:
-        	movingArrows();
+			waves();
         	growingCubeFilled();
 			break;
 		case 2:
 			scrolltext(scrolltext_text);
-        		growingCubeFilled();
-	        	break;
+        	growingCubeFilled();
+	        break;
 		case 3:
 			joern1();
 			growingCubeFilled();
 			break;
 		case 4:
 			rotatePixmap(1);
-			//gameOfLife(1, 400);
-			//growingCubeFilled();
+			growingCubeFilled();
 			break;
 		case 5:
 			laborZylinder();
-			//gameOfLife(0, 400);
-			//growingCubeFilled();
-			//growingCubeFilled();
+			growingCubeFilled();
+			growingCubeFilled();
 			break;
 		case 6:
-			gameOfLife(2, 150);
+			gameOfLife(0, 150);
 			growingCubeFilled();
 			growingCubeFilled();
 			growingCubeFilled();
@@ -63,11 +65,9 @@ int main (void){
 			break;
 		case 7:
 			spirale();
-			//spirale2();
 			break;
 		case 8:
 			matrix();
-			//snake3dJoystick();
 			break;
 		case 9:
 			test3();
@@ -94,11 +94,19 @@ int main (void){
 			break;
 		case 14:
 			testRotate();
+			break;
+		case 15:
+			movingArrows();
+			break;
 		case 20:
 			planeAnimation2(80);
 			break;
 		case 42:
 			mode = 1;
+			break;
+		case 43:
+			pong();
+			mode = oldOldmode;
 			break;
 		}
 	}

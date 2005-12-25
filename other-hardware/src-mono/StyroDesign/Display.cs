@@ -46,8 +46,8 @@ class Display : DrawingArea {
 				zoom = value;
 		}
 	}
-	
-	/*
+
+
 	protected override bool OnExposeEvent (Gdk.EventExpose args)
 	{
 		using (Graphics g = Gtk.DotNet.Graphics.FromDrawable (args.Window)){
@@ -78,7 +78,7 @@ class Display : DrawingArea {
 		}
 		return true;
 	}
-	*/
+	
 	
 	protected override void OnConfigure(object o, ConfigureEventArgs args) {
 		EventConfigure eventConfigure = args.Event;
@@ -115,7 +115,7 @@ class Display : DrawingArea {
 		
 		window.DrawLine(gc1, 20, 20, 350, 399);
 		
-		/*
+		
 		using (Graphics g = args.Window){
 			Pen p = new Pen (Color.Black, 1.0f);
 			
@@ -141,9 +141,9 @@ class Display : DrawingArea {
 					}
 				}
 			}
-		}*/
+		}
 	}
-	/*
+	
 	private void drawLineTo(Point p, Graphics g) {
 		Pen pen = new Pen(Color.Black, 1.0f);
 		g.DrawLine(pen, (int)(zoom*CurrentPoint.x+0.5), 
@@ -175,14 +175,14 @@ class Display : DrawingArea {
 	        drawBezierRec(r1, r2, r3, r4, level-1, g);
 	    }
 	}
-	*/
+	
 	
 	private Point midpoint(Point p1, Point p2) {
 		return new Point((p1.x+p2.x)/2, (p1.y+p2.y)/2);
 	} 	
 	
 	public string getChainCode() {
-		/*foreach (object[] row in store) {
+		foreach (object[] row in store) {
 			string a = row[0] + "";
 			string[] ps = a.Split(new Char [] {' '});
 			switch (ps[0].ToLower().ToCharArray()[0]) {
@@ -203,7 +203,7 @@ class Display : DrawingArea {
 					break;		                                  
 				}
 			}
-		}*/ 
+		}
 		return this.chain.ToString();
 	}
 
@@ -317,36 +317,34 @@ class Display : DrawingArea {
 
 
 /*
- 
-	// Connect the Signals defined in Glade
-	private void OnWindowDeleteEvent (object sender, DeleteEventArgs a) 
-	{
-		Application.Quit ();
-		a.RetVal = true;
-	}
-	
-	Point CurrentPoint;
-		
-	void drawChain(HDC hdc) {
-	    char *ch = chain;
-	    int px = atoi(ch), py;
-	    while (*++ch != ',');
-	    py = atoi(++ch);
-	    while (*ch) {
-	        SetPixel(hdc, px, py, 0);
-	        switch (*ch) {
-	            case 'A':       py--; break;
-	            case 'B': px++; py--; break;
-	            case 'C': px++;       break;
-	            case 'D': px++; py++; break;
-	            case 'E':       py++; break;
-	            case 'F': px--; py++; break;
-	            case 'G': px--;       break;
-	            case 'H': px--; py--; break;
-	        }
-	        ch++;
-	    }
-	}
-	
 
-	*/
+// Connect the Signals defined in Glade
+private void OnWindowDeleteEvent (object sender, DeleteEventArgs a) 
+{
+	Application.Quit ();
+	a.RetVal = true;
+}
+
+Point CurrentPoint;
+	
+void drawChain(HDC hdc) {
+	char *ch = chain;
+	int px = atoi(ch), py;
+	while (*++ch != ',');
+	py = atoi(++ch);
+	while (*ch) {
+		SetPixel(hdc, px, py, 0);
+		switch (*ch) {
+			case 'A':       py--; break;
+			case 'B': px++; py--; break;
+			case 'C': px++;       break;
+			case 'D': px++; py++; break;
+			case 'E':       py++; break;
+			case 'F': px--; py++; break;
+			case 'G': px--;       break;
+			case 'H': px--; py--; break;
+		}
+		ch++;
+	}
+}
+*/
