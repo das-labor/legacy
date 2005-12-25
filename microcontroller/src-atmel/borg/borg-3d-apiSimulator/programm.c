@@ -728,54 +728,37 @@ void feuer()
 	}
 }
 
-void creativity() {
-     // is not there
-}
 
 
 void pong() {
-	// ToDo
-	/*
-	 Als erstes muss die Steuerfläche geprogt werden, zuerst eine mit tastatursteuerung.
-	   ok dann mach ich halt den Ball zuerst.
-	 Als zweites kommt der Ball dran
-	   einfachen algorithmus fŸr die flugbahn des Balles
-	   soie des Aufprall- und Abprallwinkel.
-	   an wenden sowie beim schlŠger abprallen
-	 Game over gewinner
-	 geschicktes einbauen der scrolltextengine
-	 SpielflŠche 1 und 2 durch feststehende Zahlen kennzeichen.
-
-	 Die Ballpositionn ist genauer als die Auflšsung      gravity ist abhŠngig von x
-	 
-	 Direction ist ein auf 8 Normierter Vectoren
-	 irgentwie die gravitation mit einbauen
-	 und andere Abpreall winkel fŸr die ecken den schlŠgers
- 	 
-	 */
     int erg;
     unsigned char posy1 = 4, posz1 = 3, lives = 3;
 	char ran, diff, i, j, comp, hstr[] = "3 lives left";	
 	pixel3d ballPos128 = {3*16, 4*16, 5*16}, ballPos, ballPosOld, ballDir = {4, 2, 1};
 	//scrolltext("play PONG3D?  Then press UP" , 70);
 	while (!joy1_up) wait(5);
- 	for (i = 5; i >= 0; i--) {
+ 	/*for (i = 5; i >= 0; i--) {
 		itoa(hstr, i);
 		scrolltext(hstr, 110);
-	}
+	}*/
 	for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
             setpixel3d((pixel3d) {0, posy1+i, posz1+j}, 1);   
         }
     }
 	while (lives) {
-		ballPos.x = ballPos128.x+8 / 16; // /16
-		ballPos.y = ballPos128.y+8 / 16;
-		ballPos.z = ballPos128.z+8 / 16;
-		if (ballDir.z > -7)
-			ballDir.z--;
+		ballPos.x = (ballPos128.x+8) / 16;
+		ballPos.y = (ballPos128.y+8) / 16;
+		ballPos.z = (ballPos128.z+8) / 16;
+		//if (ballDir.z > -7)
+		//	ballDir.z--;
 		if (ballPos.x == 0)
-            if (ballPos.y >= posy1 && ballPos.y < posy1+4 && ballPos.z >= posz1 && ballPos.z < posz1+4) {
+            if (ballPos.y >= posy1 && ballPos.y < posy1+4 && 
+				ballPos.z >= posz1 && ballPos.z < posz1+4) {
+
+				ballDir.y += ballPos.y - posy1 + 1;					
+				ballDir.z += ballPos.z - posz1 + 1;
+					
 				ballDir.x = - ballDir.x;
 				/*switch (ballPos.y - posy1) {
                     case 0: ballDir.y -= ballDir.y > -7 ? 1 : 0; 
@@ -811,6 +794,8 @@ void pong() {
 
 		setpixel3d(ballPos, 3);
 		
+		JOYUSE0()
+		
 		if (joy1_up > 0 || joy1_down > 0 || joy1_right > 0 || joy1_left > 0) {
         	for (i = 0; i < 3; i++) {
                 for (j = 0; j < 3; j++) {
@@ -839,12 +824,12 @@ void pong() {
                 }
             }            
         }
-        wait(120);
+        wait(70);
         ballPos128.x += ballDir.x;
 		ballPos128.y += ballDir.y;
 		ballPos128.z += ballDir.z ;
 		clearpixel3d(ballPos);
-		//ballPosOld = ballPos;
+		ballPosOld = ballPos;
 	}
 }
 
@@ -900,10 +885,14 @@ void drawPixmapZ(char x1, char y1, char x2, char y2, unsigned char* pixmap, char
 
 void drawPixmapZAngle(unsigned char angle, unsigned char* pixmap, unsigned char value) {
 	// could be optimised in programcode
-	unsigned char x1[] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1};
-	unsigned char y1[] = {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0};
-	unsigned char x2[] = {7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
-	unsigned char y2[] = {7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7};
+	unsigned char x1[] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 
+						  7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1};
+	unsigned char y1[] = {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, 
+		                  7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0};
+	unsigned char x2[] = {7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1, 
+		                  0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
+	unsigned char y2[] = {7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 
+		                  0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7};
 	drawPixmapZ(x1[angle], y1[angle], x2[angle], y2[angle], pixmap, value);	
 }
 
@@ -1072,8 +1061,11 @@ void testRotate() {
 
 void *display_loop(void * unused) {
 	while (1) {
-		testRotate();
 		wait(30);
+		pong();
+		
+		growingCubeFilled();
+		//testRotate();
 		/*planeAnimation2(80);
 		newCoolAnim();
 		//pong();

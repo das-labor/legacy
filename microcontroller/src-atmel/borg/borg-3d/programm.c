@@ -3,6 +3,8 @@
 #include "config.h"
 #include "borg_hw.h"
 #include "uart.h"
+#include "joystick.h"
+#include "scrolltext.h"
 
 #include <avr/io.h>
 
@@ -361,8 +363,187 @@ void snake3d(){
 	}
 }
 
+void drawPanel(unsigned char posx,unsigned char pos128y, unsigned char pos128z) {
+	unsigned char i, j;
+	for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            setpixel3d((pixel3d) {posx, (pos128y+8)/16+i, (pos128z+8)/16+j}, 1);   
+        }
+    }
+}
 
 
+void pong() {
+    unsigned char posy1 = 64, posz1 = 64, posy2 = 64, posz2 = 64, lives = 5;
+	unsigned char counter = 15, joy1 = 0, joy2 = 0;
+	pixel3d ballPos128 = {3*16, 4*16, 5*16}, ballPos, ballPosOld, ballDir = {4, 2, 1};
+	waitForFire = 0;
+	clear_screen(0);
+
+	
+	while (lives) {
+		if (!joy1) {
+			JOYUSE0();
+			JOYUSE0();
+			if (JOYISUP || JOYISDOWN || JOYISRIGHT || JOYISLEFT) {
+				joy1 = 1;
+			}
+		}
+		if (!joy2) {
+			JOYUSE1();
+			JOYUSE1();
+			if (JOYISUP || JOYISDOWN || JOYISRIGHT || JOYISLEFT) {
+				joy2 = 1;
+			}
+		}	
+		
+		
+		if (!--counter) {
+			ballPos.x = (ballPos128.x+8) / 16;
+			ballPos.y = (ballPos128.y+8) / 16;
+			ballPos.z = (ballPos128.z+8) / 16;
+			if (ballPos.x == 0 && !joy1) {
+				ballDir.x = - ballDir.x;
+			}
+			if (ballPos.x == 0 && joy1) {
+				if (ballPos128.y >= posy1 && ballPos128.y < posy1+48 && 
+					ballPos128.z >= posz1 && ballPos128.z < posz1+48) {
+	
+					ballDir.y += ballPos.y - (posy1+8)/16 + 1;					
+					ballDir.z += ballPos.z - (posz1+8)/16 + 1;
+						
+					ballDir.x = - ballDir.x;
+				} else {
+					if (--lives) {
+						set_plane(left, 0, 3);
+						wait(30);
+						set_plane(left, 0, 0);
+						wait(30);
+						set_plane(left, 0, 3);
+						wait(20);
+						set_plane(left, 0, 2);
+						wait(20);
+						set_plane(left, 0, 1);
+						wait(20);
+						set_plane(left, 0, 0);
+						ballPos128 = (pixel3d) 	{3*16, 4*16, 5*16};
+						ballDir = (pixel3d) {4, 2, 1};
+						wait(800);
+					} else {
+						set_plane(left, 0, 3);
+						wait(100);
+						set_plane(left, 0, 0);
+						wait(100);
+						set_plane(left, 0, 3);
+						wait(100);
+						set_plane(left, 0, 0);
+						wait(100);
+					}
+				}
+			}
+			if (ballPos.x == 7 && !joy2) 
+				ballDir.x = - ballDir.x;
+			if (ballPos.x == 7 && joy2) {
+				if (ballPos128.y >= posy2 && ballPos128.y < posy2+48 && 
+					ballPos128.z >= posz2 && ballPos128.z < posz2+48) {
+	
+					ballDir.y += ballPos.y - (posy2+8)/16 + 1;					
+					ballDir.z += ballPos.z - (posz2+8)/16 + 1;
+						
+					ballDir.x = - ballDir.x;
+				} else {
+					if (--lives) {
+						set_plane(left, 7, 3);
+						wait(30);
+						set_plane(left, 7, 0);
+						wait(30);
+						set_plane(left, 7, 3);
+						wait(20);
+						set_plane(left, 7, 2);
+						wait(20);
+						set_plane(left, 7, 1);
+						wait(20);
+						set_plane(left, 7, 0);
+						ballPos128 = (pixel3d) 	{3*16, 4*16, 5*16};
+						ballDir = (pixel3d) {4, 2, 1};
+						wait(800);
+					} else {
+						set_plane(left, 7, 3);
+						wait(100);
+						set_plane(left, 7, 0);
+						wait(100);
+						set_plane(left, 7, 3);
+						wait(100);
+						set_plane(left, 7, 0);
+						wait(100);
+					}
+				}
+			}
+			if (ballPos.y == 0 || ballPos.y == 7)
+				ballDir.y = - ballDir.y;
+			if (ballPos.z == 0 || ballPos.z == 7)
+				ballDir.z = - ballDir.z;
+		
+		}	
+		
+		setpixel3d(ballPos, 3);
+		
+		if (joy1) {
+			JOYUSE0();
+			JOYUSE0();
+			if (JOYISUP || JOYISDOWN || JOYISRIGHT || JOYISLEFT) {
+				set_plane(left, 0, 0);
+				if (JOYISUP) {
+				   if (posz1 < 80) posz1++;
+				}
+				if (JOYISDOWN) {
+				   if (posz1 > 0) posz1--;
+				}             
+				if (JOYISLEFT) {
+				   if (posy1 > 0) posy1--;
+				}
+				if (JOYISRIGHT) {
+				   if (posy1 < 80) posy1++;
+				}
+        	}
+			drawPanel(0, posy1, posz1);
+		}
+		if (joy2) {
+			JOYUSE1();
+			JOYUSE1();
+			if (JOYISUP || JOYISDOWN || JOYISRIGHT || JOYISLEFT) {
+				set_plane(left, 7, 0);
+				if (JOYISUP) {
+				   if (posz2 < 80) posz2++;
+				}
+				if (JOYISDOWN) {
+				   if (posz2 > 0) posz2--;
+				}             
+				if (JOYISRIGHT) {
+				   if (posy2 > 0) posy2--;
+				}
+				if (JOYISLEFT) {
+				   if (posy2 < 80) posy2++;
+				}
+        	}
+			drawPanel(7, posy2, posz2);
+		}
+		
+        wait(5);
+		if (!counter) {
+			ballPos128.x += ballDir.x;
+			ballPos128.y += ballDir.y;
+			ballPos128.z += ballDir.z;
+			counter = 12;
+		}
+		clearpixel3d(ballPos);
+		ballPosOld = ballPos;
+	}
+	waitForFire = 1;
+}
+
+
+/*
 #define JOYUP		PD0	
 #define JOYDOWN		PD1
 #define JOYRIGHT	PD2
@@ -456,7 +637,7 @@ void snake3dJoystick(){
 		wait(200);
 	}
 }
-
+*/
 
 typedef struct {
 	pixel3d start;
@@ -593,37 +774,13 @@ void spirale() {
 	}
 }
 
-void spirale2() {
-	unsigned char z, angle, count, angleAdd;
-	for (count = 0, angleAdd = 0; angleAdd < 8; count++) {
-		for (angle = 0; angle < 14; angle++) {
-			for (z = 0; z < 8; z++) {
-				drawLineZAngle((angle+((angleAdd*z)/4))%14, z, 3);
-				drawLineZAngle((angle+7+((angleAdd*z)/4))%14, z, 3);
-				setpixel3d((pixel3d){3, 3, z}, 0);
-				setpixel3d((pixel3d){3, 4, z}, 0);
-				setpixel3d((pixel3d){4, 3, z}, 0);
-				setpixel3d((pixel3d){4, 4, z}, 0);				
-			}
-			wait(40);
-			clear_screen(0);
-			if (count > 5) { 
-				angleAdd++;
-				count = 0;
-			}
-	 	}
-	}
-}
-
-
 void waves() {
-	signed char sin[12] = {64, 55, 32, 0, -32. -55, -64, -55, -32, 0, 32, 55};
 	signed char data[8][8];
 	unsigned char i, j, k;
-	for (i = 0; i < 128; i++) {
+	for (i = 0; i < 254; i++) {
 		for (j = 0; j < 8; j++) {
-			data[j][0] = sin[(i+j)%12];
-			data[0][j] = sin[(i+j)%12];
+			data[j][0] = Sin((i+j)%16 *4);
+			data[0][j] = Sin((i+j)%16 *4);
 		}
 		for (j = 1; j < 8; j++) {
 			for (k = 1; k < 8; k++) {
@@ -635,7 +792,7 @@ void waves() {
 				setpixel3d((pixel3d){j, k, (data[j][k]+64)/16}, 3);
 			}
 		}
-		wait(40);
+		wait(80);
 		clear_screen(0);
 	}
 }
@@ -747,7 +904,12 @@ void movingArrows() {
          shift3d(up);
          for (i = 0; i < NUM_ROWS; i++) {
              for (j = 0; j < NUM_COLS; j++) {
-                 setpixel3d((pixel3d) {i, j, 0}, ((3-i == cnt%4 || i-4 == cnt%4) && (3-j == cnt%4 || j-4 == cnt%4))?3:0);
+                 setpixel3d((pixel3d) {i, j, 0}, 
+				 	(j == cnt%4 && i >= cnt%4 && i < 7 - cnt%4) ||
+				 	(j == 7 - cnt%4 && i >= cnt%4 && i < 7 - cnt%4) ||
+				 	(i == cnt%4 && j >= cnt%4 && j < 7 - cnt%4) ||
+				 	(i == 7 - cnt%4 && j >= cnt%4 && j < 7 - cnt%4)
+				 	?cnt%3+1:0);
              }
          }
          wait(120);
@@ -977,7 +1139,8 @@ void testRotate() {
 							{0x50, 0x50, 0x30},
 							{0x50, 0x50, 0x40}}; 
 	pixel3d rot[NPOINTS]; 
-	unsigned char i, hx, hy, hz, a;
+	unsigned char i, a;
+	//unsigned char hx, hy, hz;
 	//int a;
 	
 	for (a = 0; a < 196; a++) {
@@ -1022,8 +1185,8 @@ void testRotate() {
 	
 }
 
-#include "joystick.h"
 
+/*
 void joystick_test(){
 	clear_screen(0);
 	setpixel3d((pixel3d) {5,5,5}, 3);
@@ -1044,5 +1207,4 @@ void joystick_test(){
 		if(JOYISFIRE) setpixel3d ((pixel3d){1,1,1}, 3); else setpixel3d ((pixel3d){1,1,1}, 0);
 	}
 }
-
-
+*/

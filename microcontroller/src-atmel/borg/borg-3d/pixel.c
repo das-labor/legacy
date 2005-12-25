@@ -1,9 +1,7 @@
 
 #define PIXEL_C
 #include "pixel.h"
-
 #include "borg_hw.h"
-
 #include "util.h"
 #include "config.h"
 
@@ -23,8 +21,7 @@ void clear_screen(unsigned char value){
 
 void setpixel3d(pixel3d p, unsigned char value ){
 	unsigned char plane;
-	if (p.x < 8 && p.y < 8 && p.z < 8 &&
-		p.x >= 0 && p.y >= 0 && p.z >= 0) { 
+	if (p.x < 8 && p.y < 8 && p.z < 8) { 
 		for (plane=0; plane < NUM_LEVELS; plane++) {
 			if (plane < value)
 				pixmap[plane][p.x][p.y] |=  shl_table[p.z];

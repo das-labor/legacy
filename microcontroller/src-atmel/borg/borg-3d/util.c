@@ -1,6 +1,10 @@
 #include <avr/io.h>
 
 #include "config.h"
+#include "joystick.h"
+
+#include <setjmp.h>
+extern jmp_buf newmode_jmpbuf;
 
 #ifdef BORG_CAN
 #include "borg_can.h"
@@ -30,11 +34,16 @@ void wait(int ms){
 #ifdef BORG_CAN
 		bcan_process_messages();
 #endif
-
+		if (waitForFire) {
+			PORTJOYGND &= ~(1<<BITJOY0);
+			PORTJOYGND &= ~(1<<BITJOY1);
+			
+			if (JOYISFIRE) {
+				longjmp(newmode_jmpbuf, 43);
+			}
+		}
 		while(!(TIFR&0x80));	//wait for compare matzch flag
 		TIFR=0x80;		//reset flag
 	}
 
 }
-
-

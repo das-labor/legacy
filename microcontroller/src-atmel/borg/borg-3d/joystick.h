@@ -1,3 +1,7 @@
+#ifndef JOYSTICK_H
+#define JOYSTICK_H
+
+extern unsigned char waitForFire;
 
 #define PORTJOYGND PORTB
 #define DDRJOYGND DDRB
@@ -13,16 +17,6 @@
 #define BITRIGHT PD7
 #define BITFIRE PD3
 
-
-inline void joy_init(){
-	DDRJOYGND |= (1<<BITJOY0)|(1<<BITJOY1);
-	PORTJOYGND |= (1<<BITJOY0)|(1<<BITJOY1);
-
-	PORTJOYDIRS |= (1<<BITUP)|(1<<BITDOWN)|(1<<BITLEFT)|(1<<BITRIGHT)|(1<<BITFIRE);
-}
-
-
-
 #define JOYUSE0() PORTJOYGND |= (1<<BITJOY1); PORTJOYGND &= ~(1<<BITJOY0);
 #define JOYUSE1() PORTJOYGND |= (1<<BITJOY0); PORTJOYGND &= ~(1<<BITJOY1);
 
@@ -32,4 +26,4 @@ inline void joy_init(){
 #define JOYISRIGHT (!(PINJOYDIRS & (1<<BITRIGHT)))
 #define JOYISFIRE (!(PINJOYDIRS & (1<<BITFIRE)))
 
-
+#endif // JOYSTICK_H
