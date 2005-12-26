@@ -3,6 +3,7 @@
 #include "borg_hw.h"
 #include "config.h"
 #include "borg_can.h"
+#include "spi.h"
 
 #include <avr/pgmspace.h>
 #include <setjmp.h>
@@ -21,6 +22,7 @@ char scrolltext_text[128];
 void bcan_init() 
 {
 	strcpy_P(scrolltext_text, default_text);
+	spi_init();
 	can_init();
 
 	myaddr = eeprom_read_byte(0x00);
