@@ -22,7 +22,7 @@ int main (void){
 	uart_init();
 	joy_init();
 	sei();
-	//bcan_init();
+	bcan_init();
 	clear_screen(0);
 
 	mode = setjmp(newmode_jmpbuf);
