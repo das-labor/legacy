@@ -729,7 +729,7 @@ void feuer()
 }
 
 
-
+/*
 void pong() {
     int erg;
     unsigned char posy1 = 4, posz1 = 3, lives = 3;
@@ -740,7 +740,7 @@ void pong() {
  	/*for (i = 5; i >= 0; i--) {
 		itoa(hstr, i);
 		scrolltext(hstr, 110);
-	}*/
+	}*//*
 	for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
             setpixel3d((pixel3d) {0, posy1+i, posz1+j}, 1);   
@@ -752,7 +752,7 @@ void pong() {
 		ballPos.z = (ballPos128.z+8) / 16;
 		//if (ballDir.z > -7)
 		//	ballDir.z--;
-		if (ballPos.x == 0)
+		if (ballPos.x == 0) 
             if (ballPos.y >= posy1 && ballPos.y < posy1+4 && 
 				ballPos.z >= posz1 && ballPos.z < posz1+4) {
 
@@ -760,7 +760,7 @@ void pong() {
 				ballDir.z += ballPos.z - posz1 + 1;
 					
 				ballDir.x = - ballDir.x;
-				/*switch (ballPos.y - posy1) {
+				switch (ballPos.y - posy1) {
                     case 0: ballDir.y -= ballDir.y > -7 ? 1 : 0; 
                             ballDir.z += ballDir.z <  7 ? 1 : 0; break;
                     case 2: ballDir.y += ballDir.y <  7 ? 1 : 0;
@@ -771,7 +771,7 @@ void pong() {
                             ballDir.x += ballDir.x <  7 ? 1 : 0; break;
                     case 2: ballDir.z += ballDir.z <  7 ? 1 : 0;
                             ballDir.x -= ballDir.x > -7 ? 1 : 0; break;
-                }*/
+                }
 			} else {
 				if (--lives) {
 					hstr[0] = lives + '0';
@@ -793,8 +793,6 @@ void pong() {
 		//printf("x=%d y=%d z=%d   dirz = %d \n", ballPos.x, ballPos.y, ballPos.z, ballDir.z);
 
 		setpixel3d(ballPos, 3);
-		
-		JOYUSE0()
 		
 		if (joy1_up > 0 || joy1_down > 0 || joy1_right > 0 || joy1_left > 0) {
         	for (i = 0; i < 3; i++) {
@@ -832,7 +830,7 @@ void pong() {
 		ballPosOld = ballPos;
 	}
 }
-
+*/
 void drawPixmapZ(char x1, char y1, char x2, char y2, unsigned char* pixmap, char level) {
 	signed char i, dx, dy, sdx, sdy, dxabs, dyabs, x, y, px, py;
 	unsigned char z, j=0;
@@ -1062,11 +1060,11 @@ void testRotate() {
 void *display_loop(void * unused) {
 	while (1) {
 		wait(30);
-		pong();
+		//pong();
 		
 		growingCubeFilled();
-		//testRotate();
-		/*planeAnimation2(80);
+		testRotate();
+		planeAnimation2(80);
 		newCoolAnim();
 		//pong();
 		//feuer();
@@ -1104,6 +1102,6 @@ void *display_loop(void * unused) {
 		test2();
 		test2();
 		snake3d();
-		feuer();*/
+		feuer();
 	}
 }
