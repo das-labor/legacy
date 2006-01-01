@@ -19,13 +19,14 @@ typedef struct {
 	unsigned char type;
 	union {
 		can_message_t msg;
-	}
-} cantun_msg;
+		can_mode_t    mode;
+	};
+} cantun_msg_t;
 
 
 
 //void rs232can_setmode(can_mode_t mode);
-void cantun_wrap(cantun_msg *outmsg, can_message *inmsg);
-void cantun_unwrap(can_message *outmsg, cantun_msg *inmsg);
+void cantun_wrap  (cantun_msg_t *outmsg,  can_msg_t    *inmsg);
+void cantun_unwrap(can_msg_t    *outmsg,  cantun_msg_t *inmsg);
 
 #endif

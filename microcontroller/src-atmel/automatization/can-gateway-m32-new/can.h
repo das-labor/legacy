@@ -19,10 +19,10 @@
  */
 
 typedef struct{
-	unsigned long id;
-	bool          rtr;
-	unsigned char dlc;
-	unsigned char data[8];
+	uint32_t id;
+	uint8_t  rtr;
+	uint8_t  dlc;
+	uint8_t  data[8];
 }can_message_t;
 
 typedef enum { normal, mode_sleep, loopback, listenonly, config } can_mode_t ;
@@ -49,25 +49,18 @@ void can_setled(unsigned char led, unsigned char state);
  * Sending
  */
 
-can_message * can_buffer_get();
-void can_transmit( can_message *msg );
+can_message_t * can_buffer_get();
+void can_transmit( can_message_t *msg );
 
 
 /*****************************************************************************
  * Receiving
  */
 
-can_message *can_get();
-can_message *can_get_nb();
+can_message_t *can_get();
+can_message_t *can_get_nb();
 
-// this is only needed for Interrupt driven Version
-#ifndef CAN_INTERRUPT
-// #  define can_free(m)
-  void can_free(can_message * msg);
-#else
-  void can_free(can_message * msg);
-#endif
-
+void can_free(can_message_t * msg);
 
 
 #endif
