@@ -11,75 +11,33 @@
 #include "can.h"
 
 #include "uart.h"
+#include "cantun.h"
 #include "can-uart.h"
-#include "can-encap.h"
 
-// Timer Interrupt
-SIGNAL(SIG_OUTPUT_COMPARE0)
+void process_cantun_msg(cantun_msg_t *msg)
 {
-	static int count = 0;
-	static char z = 0;
+	can_mode_t    can_mode;
+	can_message_t *cmsg;
 
-	if ( count++ > 0x40 ) {
-		count = 0;
-		PORTC ^= 0x08;
-
-		can_message *msg = can_buffer_get();
-
-		msg->addr_src  = 0x11;
-		msg->addr_dst  = 0x22;
-		msg->port_src  = 0x01;
-		msg->port_dst  = 0x02;
-		msg->dlc       = 4;
-		msg->data[0]   = z++;
-
-		can_transmit(msg);
-	}
-}
-
-void timer0_on(){
-/* 	TCCR0: FOC0 WGM00 COM01 COM00 WGM01 CS02 CS01 CS00
-		CS02 CS01 CS00
-		 0    0    0	       stop
-		 0    0    1       clk
-		 0    1    0       clk/8
-		 0    1    1       clk/64
-		 1    0    0       clk/256
-		 1    0    1       clk/1024
-	
-*/
-	TCCR0 = 0x08 | 0x05 ;// CTC Mode, clk/1024
-	TCNT0 = 0;	// reset timer
-	OCR0  = 0xff;	// Compare with this value
-	TIMSK = 0x02;	// Compare match Interrupt on
-}
-
-
-void process_rs232_msg( rs232can_msg *msg )
-{
-	can_mode_t  can_mode;
-	can_message *cmsg;
-
-	switch(msg->cmd) {
-		case RS232CAN_SETFILTER:
+	switch(msg->type) {
+		case CANTUN_SETFILTER:
 			break;
-		case RS232CAN_SETMODE:
-			can_mode = (can_mode_t)(msg->data[0]);
-			can_setmode(can_mode);
+		case CANTUN_SETMODE:
+			can_setmode(msg->mode);
 			break;
-		case RS232CAN_PKT:
+		case CANTUN_PKT:
 			cmsg = can_buffer_get();
-			rs232can_rs2can(cmsg, msg);
+			cantun_unwrap(cmsg, msg);
 			can_transmit(cmsg);
 			break;
 	}
 }
 
-void process_can_msg(can_message *msg){
-	rs232can_msg rmsg;
+void process_can_msg(can_message_t *msg){
+	cantun_msg_t tunmsg;
 
-	rs232can_can2rs(&rmsg, msg);
-	canu_transmit(&rmsg);
+	cantun_wrap(&tunmsg, msg);
+	canu_transmit(&tunmsg);
 }
 
 int main(){
@@ -95,7 +53,7 @@ int main(){
 	can_setmode(normal);
 
 	while(1) {
-		rs232can_msg *rmsg;
+		cantun_msg *rmsg;
 		can_message  *cmsg;
 
 
