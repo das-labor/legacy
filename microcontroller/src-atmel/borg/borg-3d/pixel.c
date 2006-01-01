@@ -34,7 +34,7 @@ void setpixel3d(pixel3d p, unsigned char value ){
 void shift3d(direction dir) {
      unsigned char i, j, k;
      switch (dir) {
-     case right:
+     case back:
           for (i = 1; i < NUM_PLANES; i ++) {
               for (j = 0; j < NUM_ROWS; j++) {
                   for (k = 0; k < NUM_LEVELS; k++) {
@@ -48,7 +48,7 @@ void shift3d(direction dir) {
               }
           }
           break;
-     case left:
+     case forward:
           for (i = NUM_PLANES-2; i < NUM_PLANES; i--) {
               for (j = NUM_ROWS-1; j < NUM_ROWS; j--) {
                   for (k = 0; k < NUM_LEVELS; k++) {
@@ -62,7 +62,7 @@ void shift3d(direction dir) {
               }
           }
           break;
-     case forward:
+     case right:
           for (i = 0; i < NUM_PLANES; i ++) {
               for (j = 1; j < NUM_ROWS; j++) {
                   for (k = 0; k < NUM_LEVELS; k++) {
@@ -76,7 +76,7 @@ void shift3d(direction dir) {
               }
           }
           break;
-     case back:
+     case left:
           for (i = NUM_PLANES-1; i < NUM_PLANES; i--) {
               for (j = NUM_ROWS-2; j < NUM_ROWS; j--) {
                   for (k = 0; k < NUM_LEVELS; k++) {
@@ -123,10 +123,10 @@ unsigned char get_pixel3d(pixel3d p){
 unsigned char get_next_pixel3d(pixel3d p, direction dir){
 	pixel3d tmp;
 	switch (dir) {
-		case right:
+		case back:
 			tmp = (pixel3d){p.x+1, p.y, p.z};
 			break;
-		case left:
+		case forward:
 			tmp = (pixel3d){p.x-1, p.y, p.z};
 			break;
 		case up:
@@ -135,10 +135,10 @@ unsigned char get_next_pixel3d(pixel3d p, direction dir){
 		case down:
 			tmp = (pixel3d){p.x, p.y, p.z-1};
 			break;
-		case forward:
+		case right:
 			tmp = (pixel3d){p.x, p.y+1, p.z};
 			break;
-		case back:
+		case left:
 			tmp = (pixel3d){p.x, p.y-1, p.z};
 			break;			
 	}
@@ -164,10 +164,10 @@ direction direction_r(direction dir){
 
 pixel3d next_pixel3d(pixel3d pix, direction dir){
 	switch (dir){
-		case right:
+		case back:
 			return((pixel3d){pix.x+1, pix.y, pix.z});
 			break;
-		case left:
+		case forward:
 			return((pixel3d){pix.x-1, pix.y, pix.z});
 			break;
 		case down:
@@ -176,10 +176,10 @@ pixel3d next_pixel3d(pixel3d pix, direction dir){
 		case up:
 			return((pixel3d){pix.x, pix.y, pix.z+1});
 			break;
-		case back:
+		case left:
 			return((pixel3d){pix.x, pix.y-1, pix.z});
 			break;
-		case forward:
+		case right:
 			return((pixel3d){pix.x, pix.y+1, pix.z});
 			break;
 	}
@@ -263,14 +263,13 @@ direction turn_down(direction dir){
 void set_plane(direction dir, unsigned char num, unsigned char color)
 {
 	unsigned char pindex = 0;
-	//Hardcore PORN!
 	int p, y, x;
 	unsigned char v = 0xFF;
 
 	switch (dir) {
 		
 		//pixmap[p][rl][byte]
-		case right:
+		case back:
 			pindex = NUM_PLANES-(num+1);
 			for(x=0;x<PLANEBYTES ;x++) {
 				for(p=0; p<NUM_LEVELS; p++) {
@@ -282,7 +281,7 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			 }			
 			break;
 			
-		case left:
+		case forward:
 			 pindex = num;			 
 			 for(x=0;x<PLANEBYTES ;x++) {
 				for(p=0; p<NUM_LEVELS; p++) {
@@ -294,7 +293,7 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			 }
 			break;
 			
-		case forward:
+		case right:
 			pindex = NUM_PLANES-(num+1);
 			for(y=0;y<NUM_PLANES ;y++) {
 				for(p=0; p<NUM_LEVELS; p++) {
@@ -306,7 +305,7 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			 }
 			break;
 			
-		case back:
+		case left:
 			pindex = num;
 			for(y=0;y<NUM_PLANES ;y++) {
 				for(p=0; p<NUM_LEVELS; p++) {
