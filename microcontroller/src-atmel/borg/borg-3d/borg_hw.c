@@ -12,7 +12,7 @@ inline void rowshow(unsigned char row, unsigned char plane){
 	unsigned char i;	
 	CTRLPORT |= (1<<PIN_OE_DATA);
 
-	if (row == 0){
+	if (row == 7){
 		switch (plane){
 			case 0:
 				OCR0 = 8;
@@ -45,8 +45,8 @@ inline void rowshow(unsigned char row, unsigned char plane){
 	CTRLPORT &= ~(1<<PIN_SHIFT_DATA);
 
 	for (i = 1; i < NUM_PLANES; i++) {
-		DATAPORT = pixmap[plane][row][i];	
-		CTRLPORT |=  (1<<PIN_CLK_DATA);		
+		DATAPORT =  pixmap[plane][row][i];
+		CTRLPORT |=  (1<<PIN_CLK_DATA);
 		CTRLPORT &= ~(1<<PIN_CLK_DATA);
 	}
 	CTRLPORT &= ~(1<<PIN_OE_DATA);
@@ -55,14 +55,14 @@ inline void rowshow(unsigned char row, unsigned char plane){
 
 SIGNAL(SIG_OUTPUT_COMPARE0) {
 	static unsigned char plane = 0;
-	static unsigned char row = 0;
+	static unsigned char row = 7;
 	
 	wdt_reset();
 
 	rowshow(row, plane);
 	
-	if (++row == NUM_PLANES) {
-		row = 0;
+	if (row-- == 0) {
+		row = 7;
 		if (++plane==NUM_LEVELS) 
 			plane = 0;
 	}

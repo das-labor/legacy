@@ -108,6 +108,15 @@ int main (void){
 			pong();
 			mode = oldOldmode;
 			break;
+		case 50:
+			test1();
+			break;
+		case 51:
+			setplane_test();
+			break;
+		case 52:
+			joystick_test();
+			break;	
 		}
 	}
 }

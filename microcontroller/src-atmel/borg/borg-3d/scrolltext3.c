@@ -37,9 +37,9 @@ Wenn der Command abgearbeitet ist wird automatisch das nächste Token eingelesen
 
  */
 
-#define LINEBYTES 3
+#define LINEBYTES 1
 #undef NUM_COLS
-#define NUM_COLS 22
+#define NUM_COLS 8
 unsigned char (*text_pixmap)[NUM_ROWS][LINEBYTES];
 
 void text_setpixel(pixel3d p, unsigned char value ){
@@ -55,34 +55,15 @@ void clear_text_pixmap(unsigned char value){
 			(*text_pixmap)[y][z] = 0;
 		}
 	}
-	
 }
 
 void update_pixmap(){
 	unsigned char y, z, buf, i;
 	for(y=0;y<NUM_ROWS;y++){
-		for(z=0;z<22;){
-			buf = (*text_pixmap)[y][z/8];
-			if (z < 8) {
-				for (i = 0; i < 8; i++) {
-					setpixel3d((pixel3d){i,0,7-y}, buf&shl_table[i]?3:0);
-				}
-				z+=8;
-			} else if (z < 14) {
-				for (i = 0; i < 7; i++) {
-					setpixel3d((pixel3d){7,i+1,7-y}, buf&shl_table[i]?3:0);
-				}
-				z+=7;						
-			} else {
-				setpixel3d((pixel3d){6,7,7-y},buf&shl_table[7]?3:0);
-				buf = (*text_pixmap)[y][2];
-				setpixel3d((pixel3d){5,7,7-y},buf&shl_table[0]?3:0);
-				setpixel3d((pixel3d){4,7,7-y},buf&shl_table[1]?3:0);
-				setpixel3d((pixel3d){3,7,7-y},buf&shl_table[2]?3:0);
-				setpixel3d((pixel3d){2,7,7-y},buf&shl_table[3]?3:0);
-				setpixel3d((pixel3d){1,7,7-y},buf&shl_table[4]?3:0);
-				setpixel3d((pixel3d){0,7,7-y},buf&shl_table[5]?3:0);
-				z+=7;
+		for(z=0;z<8;z++){
+			buf = (*text_pixmap)[y][0];
+			for (i = 0; i < 8; i++) {
+				setpixel3d((pixel3d){7-i, i, 7-y}, buf&shl_table[i]?3:0);
 			}
 		}
 	}

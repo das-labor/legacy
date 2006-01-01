@@ -51,7 +51,7 @@ void test1() {
 		for (y = 0; y < NUM_ROWS; y++) {
 			for (x = 0; x < NUM_PLANES; x++) {
 				setpixel3d((pixel3d){x,y,z}, 3);
-				wait(15);
+				wait(50);
 			}
 		}
 	}
@@ -88,7 +88,7 @@ void test2() {
 	}
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
-			for (k = 0; k < 8; k++) {
+			for (k = 0; k < 8; k++) {//sets blah
 				setpixel3d((pixel3d){k,i,j}, 3);
 			}
 		}
@@ -363,56 +363,97 @@ void snake3d(){
 	}
 }
 
-void drawPanel(unsigned char posx,unsigned char pos128y, unsigned char pos128z) {
+void drawPanel(unsigned char posy, unsigned char pos128x, unsigned char pos128z) {
 	unsigned char i, j;
 	for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
-            setpixel3d((pixel3d) {posx, (pos128y+8)/16+i, (pos128z+8)/16+j}, 1);   
+            setpixel3d((pixel3d) {(pos128x+8)/16+i, posy,  (pos128z+8)/16+j}, 3);
         }
     }
 }
 
 
+#define LEN_Y 8
+
 void pong() {
-    unsigned char posy1 = 64, posz1 = 64, posy2 = 64, posz2 = 64, lives = 5;
-	unsigned char counter = 15, joy1 = 0, joy2 = 0;
-	pixel3d ballPos128 = {3*16, 4*16, 5*16}, ballPos, ballPosOld, ballDir = {4, 2, 1};
+    unsigned char posx1 = 64, posz1 = 64, posx2 = 64, posz2 = 64, lives = 5, ballblink = 0;
+	unsigned char counter = 8, joy0 = 0, joy1 = 0;
+	pixel3d ballPos128 = {4*16, 4*16, 4*16}, ballPos, ballPosOld, ballDir = {2, 4, 1};
 	waitForFire = 0;
 	clear_screen(0);
 
 	
 	while (lives) {
-		if (!joy1) {
+		if (!joy0) {
 			JOYUSE0();
 			JOYUSE0();
-			if (JOYISUP || JOYISDOWN || JOYISRIGHT || JOYISLEFT) {
-				joy1 = 1;
+			if (JOYISFIRE) {
+				joy0 = 1;
 			}
 		}
-		if (!joy2) {
+		if (!joy1) {
 			JOYUSE1();
 			JOYUSE1();
-			if (JOYISUP || JOYISDOWN || JOYISRIGHT || JOYISLEFT) {
-				joy2 = 1;
+			if (JOYISFIRE) {
+				joy1 = 1;
 			}
 		}	
 		
 		
 		if (!--counter) {
-			ballPos.x = (ballPos128.x+8) / 16;
-			ballPos.y = (ballPos128.y+8) / 16;
-			ballPos.z = (ballPos128.z+8) / 16;
-			if (ballPos.x == 0 && !joy1) {
-				ballDir.x = - ballDir.x;
+			ballPos.x = ballPos128.x / 16;
+			ballPos.y = ballPos128.y / 16;
+			ballPos.z = ballPos128.z / 16;
+			if (ballPos128.y >= (LEN_Y*16-9) && !joy0) {
+				ballDir.y = - ballDir.y;
 			}
-			if (ballPos.x == 0 && joy1) {
-				if (ballPos128.y >= posy1 && ballPos128.y < posy1+48 && 
+			if (ballPos128.y >= (LEN_Y*16-17) && joy0) {
+				if (ballPos128.x >= posx1 && ballPos128.x < posx1+48 && 
 					ballPos128.z >= posz1 && ballPos128.z < posz1+48) {
 	
-					ballDir.y += ballPos.y - (posy1+8)/16 + 1;					
+					ballDir.x += ballPos.x - (posx1+8)/16 + 1;					
 					ballDir.z += ballPos.z - (posz1+8)/16 + 1;
 						
-					ballDir.x = - ballDir.x;
+					ballDir.y = - ballDir.y;
+				} else {
+					if (--lives) {
+						set_plane(right, 0, 3);
+		
+						wait(30);
+						set_plane(right, 0, 0);
+						wait(30);
+						set_plane(right, 0, 3);
+						wait(20);
+						set_plane(right, 0, 2);
+						wait(20);
+						set_plane(right, 0, 1);
+						wait(20);
+						set_plane(right, 0, 0);
+						ballPos128 = (pixel3d) 	{4*16, 4*16, 4*16};
+						ballDir = (pixel3d) {2, 4, 1};
+						wait(800);
+					} else {
+						set_plane(right, 0, 3);
+						wait(100);
+						set_plane(right, 0, 0);
+						wait(100);
+						set_plane(right, 0, 3);
+						wait(100);
+						set_plane(right, 0, 0);
+						wait(100);
+					}
+				}
+			}
+			if (ballPos128.y <= 8 && !joy1) 
+				ballDir.y = - ballDir.y;
+			if (ballPos128.y <= 16 && joy1) {
+				if (ballPos128.x >= posx2 && ballPos128.x < posx2+48 && 
+					ballPos128.z >= posz2 && ballPos128.z < posz2+48) {
+	
+					ballDir.x += ballPos.x - (posx2+8)/16 + 1;					
+					ballDir.z += ballPos.z - (posz2+8)/16 + 1;
+						
+					ballDir.y = - ballDir.y;
 				} else {
 					if (--lives) {
 						set_plane(left, 0, 3);
@@ -441,100 +482,69 @@ void pong() {
 					}
 				}
 			}
-			if (ballPos.x == 7 && !joy2) 
+			if (ballPos128.x <= 8 || ballPos128.x >= (LEN_Y*16-9) )
 				ballDir.x = - ballDir.x;
-			if (ballPos.x == 7 && joy2) {
-				if (ballPos128.y >= posy2 && ballPos128.y < posy2+48 && 
-					ballPos128.z >= posz2 && ballPos128.z < posz2+48) {
-	
-					ballDir.y += ballPos.y - (posy2+8)/16 + 1;					
-					ballDir.z += ballPos.z - (posz2+8)/16 + 1;
-						
-					ballDir.x = - ballDir.x;
-				} else {
-					if (--lives) {
-						set_plane(left, 7, 3);
-						wait(30);
-						set_plane(left, 7, 0);
-						wait(30);
-						set_plane(left, 7, 3);
-						wait(20);
-						set_plane(left, 7, 2);
-						wait(20);
-						set_plane(left, 7, 1);
-						wait(20);
-						set_plane(left, 7, 0);
-						ballPos128 = (pixel3d) 	{3*16, 4*16, 5*16};
-						ballDir = (pixel3d) {4, 2, 1};
-						wait(800);
-					} else {
-						set_plane(left, 7, 3);
-						wait(100);
-						set_plane(left, 7, 0);
-						wait(100);
-						set_plane(left, 7, 3);
-						wait(100);
-						set_plane(left, 7, 0);
-						wait(100);
-					}
-				}
-			}
-			if (ballPos.y == 0 || ballPos.y == 7)
-				ballDir.y = - ballDir.y;
-			if (ballPos.z == 0 || ballPos.z == 7)
+			if (ballPos128.z <=8 || ballPos128.z >= (LEN_Y*16-9) )
 				ballDir.z = - ballDir.z;
 		
 		}	
 		
-		setpixel3d(ballPos, 3);
 		
+		if(ballblink > 4){
+			setpixel3d(ballPos, 3);
+		}
+
+		if(++ballblink>15){
+			ballblink = 0;
+		}
+			
+		if (joy0) {
+			JOYUSE0();
+			JOYUSE0();
+			
+			if (JOYISUP) {
+			   if (posz1 < 80) posz1++;
+			}
+			if (JOYISDOWN) {
+			   if (posz1 > 0) posz1--;
+			}             
+			if (JOYISLEFT) {
+				if (posx1 < 80) posx1++;
+			}
+			if (JOYISRIGHT) {
+				if (posx1 > 0) posx1--;
+			}
+        	
+			set_plane(right, 0, 0);
+			drawPanel(LEN_Y-1, posx1, posz1);
+		}
 		if (joy1) {
-			JOYUSE0();
-			JOYUSE0();
-			if (JOYISUP || JOYISDOWN || JOYISRIGHT || JOYISLEFT) {
-				set_plane(left, 0, 0);
-				if (JOYISUP) {
-				   if (posz1 < 80) posz1++;
-				}
-				if (JOYISDOWN) {
-				   if (posz1 > 0) posz1--;
-				}             
-				if (JOYISLEFT) {
-				   if (posy1 > 0) posy1--;
-				}
-				if (JOYISRIGHT) {
-				   if (posy1 < 80) posy1++;
-				}
-        	}
-			drawPanel(0, posy1, posz1);
-		}
-		if (joy2) {
 			JOYUSE1();
 			JOYUSE1();
-			if (JOYISUP || JOYISDOWN || JOYISRIGHT || JOYISLEFT) {
-				set_plane(left, 7, 0);
-				if (JOYISUP) {
-				   if (posz2 < 80) posz2++;
-				}
-				if (JOYISDOWN) {
-				   if (posz2 > 0) posz2--;
-				}             
-				if (JOYISRIGHT) {
-				   if (posy2 > 0) posy2--;
-				}
-				if (JOYISLEFT) {
-				   if (posy2 < 80) posy2++;
-				}
-        	}
-			drawPanel(7, posy2, posz2);
+		
+			if (JOYISUP) {
+			   if (posz2 < 80) posz2++;
+			}
+			if (JOYISDOWN) {
+			   if (posz2 > 0) posz2--;
+			}             
+			if (JOYISRIGHT) {
+			   if (posx2 < 80) posx2++; 
+			}
+			if (JOYISLEFT) {
+			   if (posx2 > 0) posx2--;
+			}
+        	
+			set_plane(left, 0, 0);
+			drawPanel(0, posx2, posz2);
 		}
 		
-        wait(5);
+        	wait(5);
 		if (!counter) {
 			ballPos128.x += ballDir.x;
 			ballPos128.y += ballDir.y;
 			ballPos128.z += ballDir.z;
-			counter = 12;
+			counter = 8;
 		}
 		clearpixel3d(ballPos);
 		ballPosOld = ballPos;
@@ -1186,7 +1196,23 @@ void testRotate() {
 }
 
 
-/*
+void setplane_test(){
+	set_plane(up, 0, 3);
+	wait(1000);
+	set_plane(down, 0, 3);
+	wait(1000);
+	set_plane(forward, 0, 3);
+	wait(1000);
+	set_plane(right, 0, 3);
+	wait(1000);
+	set_plane(back, 0, 3);
+	wait(1000);
+	set_plane(left, 0, 3);
+	wait(1000);
+}
+
+
+
 void joystick_test(){
 	clear_screen(0);
 	setpixel3d((pixel3d) {5,5,5}, 3);
@@ -1207,4 +1233,4 @@ void joystick_test(){
 		if(JOYISFIRE) setpixel3d ((pixel3d){1,1,1}, 3); else setpixel3d ((pixel3d){1,1,1}, 0);
 	}
 }
-*/
+
