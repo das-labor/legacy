@@ -9,59 +9,6 @@
 #define    PWM11        1
 #define    PWM10        0
 
-#//define FOSC 3686400L
-
-/*
-int main(void) {
-  // Setzt das Richtungsregister des Ports B auf 0xff 
-  //(alle Pins als Ausgang):
-  DDRC = 0xff;
-  // Setzt PortB auf 0x03, Bit 0 und 1 "high", restliche "low": 
-  PORTC = 0xff;
-  unsigned long int i;
-  while(1) {
-
-      PORTC = 0xff;
-      for(i = 0; i <= 5000; i++) {
-	    asm volatile ("nop"::);
-	  }
-	  PORTC = 0xfe;
-	  for(i = 0; i <= 5000; i++) {
-	    asm volatile ("nop"::);
-	  }
-  }
-
-  return 0;
-}
-/*
-int main(void) {
-  unsigned long int i, e;
-  TCCR1A = (0<<PWM11)|(1<<PWM10)|(1<<COM1A1);
-  
-  TCCR1B = (1<<CS11) ;
-
-  DDRB = 0xff;
-  PORTB = 0xff;
-  while(1) {
-
-      //PORTC = 0xff;
-      for(i = 0; i <= 255; i++) {
-	    OCR1A = i;
-        for(e = 0; e <= 500; e++) {
-	      asm volatile ("nop"::);
-	    }
-	  }
-	  //PORTC = 0xfe;
-	  for(i = 255; i >= 1; i--) {
-	    OCR1A = i;
-		for(e = 0; e <= 500; e++) {
-	      asm volatile ("nop"::);
-	    }
-	  }
-  }
-}
-*/
-
 #define PIN_RED 1
 #define PIN_GREEN 3
 #define PIN_BLUE 5
@@ -144,15 +91,37 @@ void wait(int ms){
 		 1    1    0       clk/256
 		 1    1    1       clk/1024	
 */
-	TCCR2 = 0x0D;	//CTC Mode, clk/128
+	TCCR2 = 0x0D;			//CTC Mode, clk/128
 	OCR2 = (F_CPU/128000);	//1000Hz 
 	for(;ms>0;ms--){
-		while(!(TIFR&0x80));//while(i--) asm volatile ("nop");	//wait for compare matzch flag
-		TIFR=0x80;		//reset flag
+		while(!(TIFR&0x80));//while(i--) asm volatile ("nop");	//wait for compare match flag
+		TIFR=0x80;			//reset flag
 	}
 
 }
 
+void fadeToColor(uint8_t *fadeColor, uint8_t steps) {
+	uint8_t i;
+	int16_t helpColor[3], addColor[3];
+	
+	helpColor[0] = color[0]*128;
+	helpColor[1] = color[1]*128;
+	helpColor[2] = color[2]*128;
+	
+	addColor[0] = ((fadeColor[0]*128)-helpColor[0])/steps;
+	addColor[1] = ((fadeColor[1]*128)-helpColor[1])/steps;
+	addColor[2] = ((fadeColor[2]*128)-helpColor[2])/steps;
+	
+	for (i = 0; i < steps; i++) {
+		helpColor[0] += addColor[0];
+		helpColor[1] += addColor[1];
+		helpColor[2] += addColor[2];
+		color[0] = helpColor[0]/128;
+		color[1] = helpColor[1]/128;
+		color[2] = helpColor[2]/128;
+		wait(4);
+	}		
+}
 
 int main(void) {
 
