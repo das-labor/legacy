@@ -1,21 +1,21 @@
-
 #include <inttypes.h>
 #include <avr/io.h>
 #include <avr/eeprom.h>
 #include <avr/interrupt.h>
 #include <avr/signal.h>
 #include <avr/sleep.h>
+#include <avr/pgmspace.h>
 
 #define MASK_RED 0x07
 #define MASK_GREEN 0x18
 #define MASK_BLUE 0x60
 
+#define PW(a) pgm_read_word(&(a))
 
 #define PORTFL PORTA
 #define DDRFL DDRA
 
-
-uint16_t timeTable [] = { 0, 0, 0, 0, 0, 0, 0, 0, 210, 56, 62, 69, 75, 82, 89, 95, 102, 108, 115, 121, 128, 
+uint16_t PROGMEM timeTable [] = { 0, 0, 0, 0, 0, 0, 0, 0, 210, 56, 62, 69, 75, 82, 89, 95, 102, 108, 115, 121, 128, 
  								  135, 141, 148, 154, 161, 167, 174, 180, 187, 194, 200, 207, 
 								  213, 220, 226, 233, 239, 246, 253, 259, 266, 272, 279, 285, 
 								  292, 299, 305, 312, 318, 325, 331, 338, 344, 351, 358, 364, 
@@ -40,13 +40,13 @@ uint16_t timeTable [] = { 0, 0, 0, 0, 0, 0, 0, 0, 210, 56, 62, 69, 75, 82, 89, 9
 								  1657, 1663, 1670
 								};
 
-uint8_t color[3] = {255, 0, 0}; 
+uint8_t color[3] = {0, 0, 0}; 
 
 
 SIGNAL(SIG_OUTPUT_COMPARE1A) {
 	static uint8_t bright = 7;
 	TCNT1 = 0;
-	OCR1A  = timeTable[++bright];
+	OCR1A  = PW(timeTable[++bright]);
 
 	if (bright < color[0]) { // red
 		PORTFL |= MASK_RED;
@@ -80,87 +80,111 @@ void timer1_on() {
 }
 
 void wait(int ms){
-	//uint16_t i = 0xffff;
-/* 	TCCR2: FOC2 WGM20 COM21 COM20 WGM21 CS22 CS21 CS20
-		CS22 CS21 CS20
-		 0    0    0	       stop
-		 0    0    1       clk
-		 0    1    0       clk/8
-		 0    1    1       clk/32
-		 1    0    0       clk/64
-		 1    0    1       clk/128
-		 1    1    0       clk/256
-		 1    1    1       clk/1024	
-*/
 	TCCR2 = 0x0D;			//CTC Mode, clk/128
 	OCR2 = (F_CPU/128000);	//1000Hz 
 	for(;ms>0;ms--){
 		while(!(TIFR&0x80));//while(i--) asm volatile ("nop");	//wait for compare match flag
 		TIFR=0x80;			//reset flag
 	}
-
 }
 
 void fadeToColor(uint8_t *fadeColor, uint8_t steps) {
 	uint8_t i;
 	int16_t helpColor[3], addColor[3];
 	
+	if (!steps)
+		return;
+	
 	helpColor[0] = color[0]*128;
 	helpColor[1] = color[1]*128;
 	helpColor[2] = color[2]*128;
 	
-	addColor[0] = ((fadeColor[0]*128)-helpColor[0])/steps;
-	addColor[1] = ((fadeColor[1]*128)-helpColor[1])/steps;
-	addColor[2] = ((fadeColor[2]*128)-helpColor[2])/steps;
+	addColor[0] = ((fadeColor[0]*128)-helpColor[0])/(int16_t)steps;
+	addColor[1] = ((fadeColor[1]*128)-helpColor[1])/(int16_t)steps;
+	addColor[2] = ((fadeColor[2]*128)-helpColor[2])/(int16_t)steps;
 	
-	for (i = 0; i < steps; i++) {
+	for (i = 0; i < steps; ++i) {
 		helpColor[0] += addColor[0];
 		helpColor[1] += addColor[1];
 		helpColor[2] += addColor[2];
-		color[0] = helpColor[0]/128;
-		color[1] = helpColor[1]/128;
-		color[2] = helpColor[2]/128;
-		wait(4);
-	}		
+		color[0] = (helpColor[0]+64)/128;
+		color[1] = (helpColor[1]+64)/128;
+		color[2] = (helpColor[2]+64)/128;
+		wait(20);
+	}
+	color[0] = fadeColor[0];
+	color[1] = fadeColor[1];
+	color[2] = fadeColor[2];
 }
 
 void mainColors() {
     uint8_t i;
-   		for (i = 0; i < 255; i++) {
-			color[0] = 255-i;
-			color[1] = i;
-			wait(4);
-		} 			
-		for (i = 0; i < 255; i++) {
-			color[1] = 255-i;
-			color[2] = i;
-			wait(4);
-		}
-		for (i = 0; i < 255; i++) {
-			color[2] = 255-i;
-			color[0] = i;
-			wait(4);
-		}
+	fadeToColor((uint8_t[]){255, 0, 0}, 128);
+	for (i = 0; i < 255; i++) {
+		color[0] = 255-i;
+		color[1] = i;
+		wait(20);
+	} 			
+	for (i = 0; i < 255; i++) {
+		color[1] = 255-i;
+		color[2] = i;
+		wait(20);
+	}
+	for (i = 0; i < 255; i++) {
+		color[2] = 255-i;
+		color[0] = i;
+		wait(20);
+	}
+}
+
+void someColors() {
+	fadeToColor((uint8_t[]){255, 255, 255}, 128);
+	wait(3000);
+	fadeToColor((uint8_t[]){150, 34, 44}, 128);
+	wait(3000);
+	fadeToColor((uint8_t[]){255, 255, 0}, 128);
+	wait(3000);
+	fadeToColor((uint8_t[]){255, 0, 255}, 128);
+	wait(3000);
+	fadeToColor((uint8_t[]){0, 255, 255}, 128);
+	wait(3000);
+	fadeToColor((uint8_t[]){255, 0, 0}, 128);
+}
+
+#define BIT_S(var,b) ((var&(1<<b))?1:0)
+
+uint8_t myrandom(){
+	static uint16_t muh = 0xAA;
+	uint8_t x;
+	for (x=0; x<8; x++) {
+		muh = (muh<<1) ^ BIT_S(muh,1) ^ BIT_S(muh,8) ^ BIT_S(muh,9) ^ BIT_S(muh,13) ^ BIT_S(muh,15);
+	}
+	return (uint8_t) muh;
+}
+
+void randomColors() {
+	uint8_t i;
+	for (i = 0; i < 100; i++) {
+		fadeToColor((uint8_t[]){myrandom(), myrandom(), myrandom()}, 128);
+		wait(1000);
+	}
+		
 }
 
 int main(void) {
-
-	// Setzt das Richtungsregister des Ports B auf 0xff 
-	//(alle Pins als Ausgang):
+	// Initialiesierung
 	DDRFL = 0xff;
-	// Setzt PortB auf : 
 	PORTFL = 0x00;
 	
 	timer1_on();
 
-	while(1) {
+	while (1) {
         mainColors();
         mainColors();
         mainColors();
-        fadeToColor((uint8_t[]){255, 255, 255}, 255);
-        fadeToColor((uint8_t[]){255, 34, 44}, 255);
-        fadeToColor((uint8_t[]){100, 34, 255}, 255);
-        fadeToColor((uint8_t[]){160, 23, 111}, 255);
+		someColors();
+		randomColors();		
+	
 	}
 	  
 }
