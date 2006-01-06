@@ -6,12 +6,13 @@
 #include <avr/signal.h>
 #include <avr/sleep.h>
 
-#define    PWM11        1
-#define    PWM10        0
+#define MASK_RED 0x07
+#define MASK_GREEN 0x18
+#define MASK_BLUE 0x60
 
-#define PIN_RED 1
-#define PIN_GREEN 3
-#define PIN_BLUE 5
+
+#define PORTFL PORTA
+#define DDRFL DDRA
 
 
 uint16_t timeTable [] = { 0, 0, 0, 0, 0, 0, 0, 0, 210, 56, 62, 69, 75, 82, 89, 95, 102, 108, 115, 121, 128, 
@@ -43,34 +44,34 @@ uint8_t color[3] = {255, 0, 0};
 
 
 SIGNAL(SIG_OUTPUT_COMPARE1A) {
-	static uint8_t bright = 8;
+	static uint8_t bright = 7;
 	TCNT1 = 0;
 	OCR1A  = timeTable[++bright];
 
 	if (bright < color[0]) { // red
-		PORTB |= (1 << PIN_RED);
+		PORTFL |= MASK_RED;
 	} else {
-	    PORTB &= ~(1 << PIN_RED);
+	    PORTFL &= ~MASK_RED;
 	}
 	if (bright < color[1]) { // green
-		PORTB |= (1 << PIN_GREEN);
+		PORTFL |= MASK_GREEN;
 	} else {
-		PORTB &= ~(1 << PIN_GREEN);
+		PORTFL &= ~MASK_GREEN;
 	} 
 	if (bright < color[2]) { // blue
-		PORTB |= (1 << PIN_BLUE);
+		PORTFL |= MASK_BLUE;
 	} else {
-		PORTB &= ~(1 << PIN_BLUE);
+		PORTFL &= ~MASK_BLUE;
 	}
-	if(bright==255)
-		bright=8;
+	if (bright == 255)
+		bright = 7;
 }
 
 
 void timer1_on() {
 	TCCR1A = 0; 			
 	TCCR1B = 1;		// Counter clk
-	OCR1A  = timeTable[8];		
+	OCR1A  = 100;		
 	TCNT1  = 0;
 	TIFR   = (1 << OCF1A);
 	TIMSK  = (1 << OCIE1A);
@@ -123,18 +124,9 @@ void fadeToColor(uint8_t *fadeColor, uint8_t steps) {
 	}		
 }
 
-int main(void) {
-
-	// Setzt das Richtungsregister des Ports B auf 0xff 
-	//(alle Pins als Ausgang):
-	DDRB = 0xff;
-	// Setzt PortB auf : 
-	PORTB = 0x00;
-	uint8_t i;
-	timer1_on();
-
-	while(1) {
-		for (i = 0; i < 255; i++) {
+void mainColors() {
+    uint8_t i;
+   		for (i = 0; i < 255; i++) {
 			color[0] = 255-i;
 			color[1] = i;
 			wait(4);
@@ -149,7 +141,26 @@ int main(void) {
 			color[0] = i;
 			wait(4);
 		}
+}
 
+int main(void) {
+
+	// Setzt das Richtungsregister des Ports B auf 0xff 
+	//(alle Pins als Ausgang):
+	DDRFL = 0xff;
+	// Setzt PortB auf : 
+	PORTFL = 0x00;
+	
+	timer1_on();
+
+	while(1) {
+        mainColors();
+        mainColors();
+        mainColors();
+        fadeToColor((uint8_t[]){255, 255, 255}, 255);
+        fadeToColor((uint8_t[]){255, 34, 44}, 255);
+        fadeToColor((uint8_t[]){100, 34, 255}, 255);
+        fadeToColor((uint8_t[]){160, 23, 111}, 255);
 	}
 	  
 }
