@@ -5,11 +5,10 @@
 #include <avr/wdt.h>
 #include "borg_hw.h"
 
-// 16 Spalten insgesamt direkt gesteuert, dafür 2 Ports
+//Datenport für das Panel
 #define COLPORT  PORTA
 #define COLDDR   DDRA
 
-// Der andere Port übernimmt die Steuerung der Schieberegister
 #define CTRLPORT PORTC
 #define CTRLDDR   DDRC
 
@@ -34,7 +33,8 @@ inline void busywait() {
 
 //Eine Zeile anzeigen
 inline void rowshow(unsigned char row, unsigned char plane){
-	//Die Zustände von der vorherigen Zeile löschen
+	CTRLPORT |= (1<<PIN_SHOW);//blank
+	
 	COLPORT  = pixmap[plane][row][0];
 	busywait();
 	CTRLPORT |=  (1<<PIN_CP1);
@@ -49,17 +49,7 @@ inline void rowshow(unsigned char row, unsigned char plane){
 	CTRLPORT &= ~(1<<PIN_CP2);
 	busywait();
 
-//	COLPORT  = pixmap[plane][row][2];
-//	busywait();
-//	CTRLPORT |=  (1<<PIN_CP4);
-//	busywait();
-//	CTRLPORT &= ~(1<<PIN_CP4);
-//	busywait();
-
-
 	COLPORT  = row;
-	busywait();
-	CTRLPORT |=  (1<<PIN_SHOW);
 	busywait();
 	CTRLPORT &= ~(1<<PIN_SHOW);
 	busywait();
@@ -72,6 +62,7 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 	static unsigned char plane = 0;
 	static unsigned char row = 0;
 	
+
 	//Watchdog zurücksetzen
 	wdt_reset();
 	
@@ -82,6 +73,17 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 	if(++row == NUM_ROWS){
 		row = 0;
 		if(++plane==NUMPLANE) plane=0;
+		switch(plane){
+			case 0: 
+					OCR0 = 5;
+					break;
+			case 1:
+					OCR0 = 12;
+					break;
+			case 2:
+					OCR0 = 20;
+					break;
+		}
 	}
 }
 
@@ -128,4 +130,3 @@ void borg_hw_init(){
 	wdt_reset();
 	wdt_enable(0x00);	// 17ms Watchdog
 }
-

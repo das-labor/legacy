@@ -21,7 +21,8 @@ int main (void){
 
 	uart_init();
 
-	unsigned char pos=0, buf[10];
+		clear_screen(0);
+	unsigned char pos=0, buf[10], bright=3;
 	while(1){
 		unsigned char c=uart_getc();
 		switch (c){
@@ -31,12 +32,28 @@ int main (void){
 				case '+':
 						pos++;
 						break;	
+				case 't':
+						if (bright++ == 3) bright = 0;
+						break;
+				case '#':
+					{
+					unsigned int x;
+					unsigned char buf[10];
+					for(x=0;x<65535;x++){
+						itoa(x,buf,16);
+						seg_print(buf);
+						wait(10);
+						
+						}
+					
+					}
+					break;
+				
 		}
 		itoa(pos, buf, 16);
 		uart_putstr(buf);
 		uart_putstr_P(PSTR("\n\r"));
-		clear_screen(0);
-		setpixel(pos, 3);
+		setpixel(pos, bright);
 	
 	}
 	
