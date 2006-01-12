@@ -8,7 +8,11 @@ gcc sample3.c -lMesaGLU -lMesaGL -lXext -lX11 -lm -lglut -lXi -lXmu \
 #   include <windows.h>
 #endif 
 
-#include <GL/glut.h>
+#ifdef OSX_
+#  include <GLUT/glut.h>
+#else
+#  include <GL/glut.h>  
+#endif
 
 GLenum         polygonMode=GL_LINE;
 GLenum         shadingMode=GL_SMOOTH;
