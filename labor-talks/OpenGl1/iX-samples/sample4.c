@@ -13,7 +13,11 @@ gcc sample4.cpp -lMesaGLU -lMesaGL -lXext -lX11 -lm -lglut -lXi -lXmu -B/usr/X11
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <GL/glut.h>
+#ifdef OSX_
+#  include <GLUT/glut.h>
+#else
+#  include <GL/glut.h>  
+#endif
 
 #include "textures.h"
 

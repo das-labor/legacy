@@ -2,6 +2,17 @@
 
 \documentclass{beamer}
 
+\usepackage{graphicx}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\newcommand{\It}[1]{\textit{#1}}
+\newcommand{\Bf}[1]{\textbf{#1}}
+\newcommand{\Tt}[1]{\texttt{#1}}
+\newcommand{\mat}[1]{\mathbf{#1}}
+\newcommand{\ten}[1]{\mathcal{#1}}
+\newcommand{\set}[1]{\mathbb{#1}}
+\renewcommand{\Vec}[1]{\overrightarrow{#1}}
+
 % Diese Datei enthält eine Lösungsvorlage für:
 
 
@@ -64,7 +75,7 @@
 % - Keep it simple, niemand interessiert sich für die genau Adresse.
 
 \date[] % (optional)
-{12.01.2006 @ www.das-labor.org}
+{12.01.2006 - www.das-labor.org}
 
 
 \subject{Informatik}
@@ -124,102 +135,197 @@
 % - Pro Rahmen sollte man zwischen 30s und 2min reden. Es sollte also
 %   15 bis 30 Rahmen geben.
 
+\newcommand{\cx}{\cos(\alpha)}
+\newcommand{\sx}{\sin(\alpha)}
+\newcommand{\cy}{\cos(\beta)}
+\newcommand{\sy}{\sin(\beta)}
+\newcommand{\cz}{\cos(\gamma)}
+\newcommand{\sz}{\sin(\gamma)}
 
 
-\section{Einleitung}
+\section{Einführung}
 
-\subsection[Kurzversion des ersten Unterabschnittstitels]
-{Erster Unterabschnittstitel}
+\subsection{Ein wennig Mathematik}
 
 \begin{frame}
-  \frametitle{Überschriften müssen informativ sein.\\
-    Korrekte Groß-/Kleinschreibung beachten.}
-  \framesubtitle{Untertitel sind optional.}
-  % - Eine Überschrift fasst einen Rahmen verständlich zusammen. Man
-  %   muss sie verstehen können, selbst wenn man nicht den Rest des
-  %   Rahmens versteht.
+\frametitle{Das OpenGl Koordinatensystem}
+\begin{center}
+        \includegraphics[width=10cm]{images/bild02.jpg}
+\end{center}
 
-  \begin{itemize}
-  \item
-    Viel \texttt{itemize} benutzen.
-  \item
-    Sehr kurze Sätze oder Satzglieder verwenden.
-  \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Überschriften müssen informativ sein.}
+\frametitle{Homogene Koordinaten}
+			\begin{equation}
+				P = \left( \begin{array}{c}p_x\\p_y\\p_z\\p_w \end{array}\right)
+			\end{equation}
+\pause
+\begin{itemize}
+    \item $p_w$ ist üblicherweise $1$
+    \pause
+    \item Uniforme Behandlung von geometrischen Transformationen durch eine $4 \times 4$ Matrix
+    \pause
+    \item komplexe Transformationen können durch die Kombination von elementaren 
+          Transformationen gebildet werden
+\end{itemize}
 
-  Man kann Overlays erzeugen\dots
-  \begin{itemize}
-  \item mit dem \texttt{pause}-Befehl:
-    \begin{itemize}
-    \item
-      Erster Punkt.
-      \pause
-    \item    
-      Zweiter Punkt.
-    \end{itemize}
-  \item
-    mittels Overlay-Spezifikationen:
-    \begin{itemize}
-    \item<3->
-      Erster Punkt.
-    \item<4->
-      Zweiter Punkt.
-    \end{itemize}
-  \item
-    mit dem allgemeinen \texttt{uncover}-Befehl:
-    \begin{itemize}
-      \uncover<5->{\item
-        Erster Punkt.}
-      \uncover<6->{\item
-        Zweiter Punkt.}
-    \end{itemize}
-  \end{itemize}
 \end{frame}
 
 
-\subsection{Zweiter Unterabschnittstitel}
-
 \begin{frame}
-  \frametitle{Überschriften müssen informativ sein.}
+\frametitle{Translatieren}
+            glTranslate($t_x$, $t_y$, $t_z$);
+            \pause    
+			\begin{equation}
+				\mat{T}(t_x, t_y, t_z) ~=~ \left( \begin{array}{cccc}
+				1&  0&  0&  t_x\\
+				0&  1&  0&  t_y\\
+				0&  0&  1&  t_z\\
+				0&  0&  0&  1
+				\end{array} \right)
+			\end{equation} 
 \end{frame}
 
 \begin{frame}
-  \frametitle{Überschriften müssen informativ sein.}
+\frametitle{Skalieren}
+        glScale($s_x$, $s_y$, $s_z$);
+        \pause    
+        \begin{equation}
+				\mat{S}(s_x, s_y, s_z) ~=~ \left( \begin{array}{cccc}
+				s_x &0   &0   &0\\
+				0   &s_y &0   &0\\
+				0   &0   &s_z &0\\
+				0   &0   &0   &1
+				\end{array} \right)
+        \end{equation} 
 \end{frame}
 
-\section*{Zusammenfassung}
+\begin{frame}
+\frametitle{Rotieren}
+            glRotate(<Winkel in °>, <Anteil x>, <Anteil y>, <Anteil z>);
+            \pause
+			\begin{eqnarray}
+			\mat{RX}(\alpha) &=& \left( \begin{array}{cccc}
+				1    &0    &0    &0\\
+				0    &\cx  &-\sx &0\\
+				0	 &\sx  &\cx	 &0\\
+				0	 &0	   &0	 &1
+				\end{array} \right) \\
+				\pause
+			\mat{RY}(\beta) &=& \left( \begin{array}{cccc}
+				\cy	 &0	   &\sy	 &0\\
+				0	 &1	   &0	 &0\\
+				-\sy &0	   &\cy	 &0\\
+				0	 &0	   &0	 &1
+				\end{array} \right)\\
+				\pause
+			\mat{RZ}(\gamma) &=& \left( \begin{array}{cccc}
+				\cz	 &-\sz &0	 &0\\
+				\sz	 &\cz  &0    &0\\
+				0	 &0	   &1	 &0\\
+				0	 &0	   &0	 &1
+				\end{array} \right)
+			\end{eqnarray}
+\end{frame}
+
+\subsection{Dreidimensional malen}
 
 \begin{frame}
-  \frametitle<presentation>{Zusammenfassung}
+\frametitle{OpenGL Befehlssatz}
 
-  % Die Zusammenfassung sollte sehr kurz sein.
-  \begin{itemize}
-  \item
-    Die \alert{erste Hauptbotschaft} des Vortrags in ein bis zwei Zeilen.
-  \item
-    Die \alert{zweite Hauptbotschaft} des Vortrags in ein bis zwei Zeilen.
-  \item
-    Eventuell noch eine \alert{dritte Botschaft}, aber nicht noch mehr.
-  \end{itemize}
-  
-  % Der folgende Ausblick ist optional.
-  \vskip0pt plus.5fill
-  \begin{itemize}
-  \item
-    Ausblick
-    \begin{itemize}
-    \item
-      Etwas, was wir noch nicht lösen konnten.
-    \item
-      Nochwas, das wir noch nicht lösen konnten.
-    \end{itemize}
-  \end{itemize}
+\begin{itemize}
+	\item In Specifikation 1.1 ca. 150 recht simplen Funktionen
+	\pause
+	\item Arbeitet intern als State-Maschine
+	\pause
+	\item Alle Funktionen fangen mit gl an. Makros mit GL\_
+	\pause
+	\item Funktionen mit meheren Datentypen.
+	\pause
+	\item Suffix mit Anzahl und Art der Parameter. Z.B. glVertex3f(), glVertex4d()
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Prinzip}
+Man schreibt Punktkoordinaten \\
+glVertex*($x$, $y$, $z$);\\
+\pause
+glBegin(GL\_POINTS);\\ 
+... hier hinein 	\\
+glEnd(GL\_POINTS);\\ 		
+\pause
+um Punkte zu malen.
+\end{frame}
+
+\begin{frame}
+\frametitle{Mehr als nur Punkte malen}
+
+\begin{center}
+        \includegraphics[width=12cm]{images/bild01.jpg}
+\end{center}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Oben und Unten?}
+\pause
+Punkte müssen gegen der Uhrzeigersinn, also in mathematische positiver Richtung definiert werden, damit OpenGl weiß, welche Seite oben ist und daher sichtbar sind.
+\end{frame}
+
+\begin{frame}
+\frametitle{Problem bei Polygonen mit mehr als 3 Ecken}
+\begin{itemize}
+\item Alle Punkte müssen auf einer Ebene liegen.
+\pause
+\item Nur stumpfe Winkeln bei Polygonen mit mehr als 4 Ecken. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Einfärben}
+Mit glColor4f($c_R$, $c_G$, $c_B$, $c_A$); \\
+setz man die aktuelle Farbe. 
+\pause
+\begin{itemize}
+\item Farbwerte sind im Bereich $0 \le c \le 1$ definiert
+\pause
+\item Farbwert gilt bis zum erneuten setzen
+\end{itemize}
+
+\end{frame}
+
+\subsection{Objekte miteinander verknüpfen}
+
+\begin{frame}
+\frametitle{Pivotpunkt}
+\begin{itemize}
+\item Der Pivotpunkt dient als Ausgangspunkt für Transformationen. 
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Matrix Stack}
+
+\begin{itemize}
+\item glPushMatrix()
+\pause
+\item glPopMatrix();
+\pause
+\end{itemize}
+Benötigt man, wenn an einem Objekt mehrere Teilobjekte hängen. 
+\end{frame}
+
+\section{Erweiterte Funktionen}
+
+\begin{frame}
+\frametitle{}
 \end{frame}
 
 
 \end{document}
-
 
