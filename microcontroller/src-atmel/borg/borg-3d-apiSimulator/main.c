@@ -151,8 +151,8 @@ void timf(int value) {
 }*/
 
 int main(int argc, char **argv){
-    WindHeight = 500;
-    WindWidth = 500;         
+    WindHeight = 600;
+    WindWidth = 600;         
     glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
     glutInitWindowSize(WindHeight, WindWidth);

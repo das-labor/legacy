@@ -1,7 +1,9 @@
 #include "pixel3d.h"
 #include "programm.h"
 #include "scrolltext2.h"
+
 extern unsigned char shl_table[];
+
 #ifndef AVR
 #	define itoa(buf,i) sprintf(buf, "%d", i)
 #endif
@@ -217,19 +219,6 @@ void coolAnim() {
 	}	
 }
 
-
-#define BIT_S(var,b) ((var&(1<<b))?1:0)
-
-unsigned char myrandom(){
-	static unsigned int muh = 0xAA;
-	unsigned char x;
-	for (x=0; x<8; x++) {
-		muh = (muh<<1) ^ BIT_S(muh,1) ^ BIT_S(muh,8) ^ BIT_S(muh,9) ^ BIT_S(muh,13) ^ BIT_S(muh,15);
-	}
-	return (unsigned char) muh;
-
-}
-
 #define SNAKE_LEN 256
 
 void snake3d(){
@@ -285,13 +274,13 @@ void snake3d(){
 		if (!dead) {
 			*head = next_pixel3d(old_head, dir);
 			setpixel3d(*head, 3);
-			if (myrandom() < 80) {
-				dir = (direction) (myrandom() % 6);
+			if (easyRandom() < 80) {
+				dir = (direction) (easyRandom() % 6);
 			}
-			if((apple_num<10) && (myrandom()<10)) {
-				pixel3d new_apple = (pixel3d){myrandom()%NUM_PLANES,
-					                          myrandom()%NUM_ROWS,
-					                          myrandom()%NUM_COLS};
+			if((apple_num<10) && (easyRandom()<10)) {
+				pixel3d new_apple = (pixel3d){easyRandom()%NUM_PLANES,
+					                          easyRandom()%NUM_ROWS,
+					                          easyRandom()%NUM_COLS};
 				if (!get_pixel3d(new_apple)){
 					apples[apple_num++] = new_apple;
 				}
@@ -376,10 +365,10 @@ void snake3dJoystick(){
 				}
 			}
 
-			if ((apple_num<10) && (myrandom()<10)) {
-				pixel3d new_apple = (pixel3d){myrandom()%NUM_PLANES,
-					                          myrandom()%NUM_ROWS,
-					                          myrandom()%NUM_COLS};
+			if ((apple_num<10) && (easyRandom()<10)) {
+				pixel3d new_apple = (pixel3d){easyRandom()%NUM_PLANES,
+					                          easyRandom()%NUM_ROWS,
+					                          easyRandom()%NUM_COLS};
 				if (!get_pixel3d(new_apple)){
 					apples[apple_num++] = new_apple;
 				}
@@ -467,59 +456,20 @@ void matrix() {
 		
 		for (nsc = 0; nsc < 6; nsc++) {
 			if (streamer_num < STREAMER_NUM){
-				unsigned char sy = myrandom() % (2*NUM_COLS);
+				unsigned char sy = easyRandom() % (2*NUM_COLS);
 				if (sy > NUM_COLS-1) 
 					sy=0;
 				streamers[streamer_num] = 
-				 			  (streamer){{myrandom()%(NUM_ROWS*NUM_PLANES), sy}, 
-				                         0, (myrandom()%8)+12, index++,
-										 (myrandom()%16)+3
+				 			  (streamer){{easyRandom()%(NUM_ROWS*NUM_PLANES), sy}, 
+				                         0, (easyRandom()%8)+12, index++,
+										 (easyRandom()%16)+3
 										};
 				streamer_num++;	
 			}
 		}
 		wait(80);	
 	}
-} 
-
-void drawLineZ(char x1, char y1, char x2, char y2, char z, char level) {
-	signed char i, dx, dy, sdx, sdy, dxabs, dyabs, x, y, px, py;
-	
-	dx = x2 - x1;      // the horizontal distance of the line
-	dy = y2 - y1;      // the vertical distance of the line 
-	dxabs = dx >= 0 ? dx: -dx; //abs
-	dyabs = dy >= 0 ? dy: -dy; //abs
-	sdx = dx >= 0 ? 1: -1;     //sgn
-	sdy = dy >= 0 ? 1: -1;     //sgn
-	x = dyabs >> 1;			   // *2
-	y = dxabs >> 1;
-	px = x1;
-	py = y1;
-	
-	setpixel3d((pixel3d){x1, y1, z}, level);
-	
-	if (dxabs >= dyabs) { // the line is more horizontal than vertical  
-		for (i = 0; i < dxabs; i++) {
-			y += dyabs; 
-			if (y >= dxabs) {
-				y -= dxabs;
-				py += sdy;
-			}
-			px += sdx;
-			setpixel3d((pixel3d){px, py, z}, level);
-		}
-	} else { // the line is more vertical than horizontal
-		for (i = 0; i < dyabs; i++) {
-			x += dxabs;
-			if (x >= dyabs) {
-				x -= dyabs;
-				px += sdx;
-			}
-			py += sdy;
-			setpixel3d((pixel3d){px, py, z}, level);
-		}
-	}
-}	  
+}   
 
 void drawLineZAngle(unsigned char angle, unsigned char z, unsigned char value) {
 	// could be optimised in programcode
@@ -527,7 +477,7 @@ void drawLineZAngle(unsigned char angle, unsigned char z, unsigned char value) {
 	unsigned char y1[14] = {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7};
 	unsigned char x2[14] = {7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1};
 	unsigned char y2[14] = {7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0};
-	drawLineZ(x1[angle], y1[angle], x2[angle], y2[angle], z, value);	
+	drawLine3D(x1[angle], y1[angle], z, x2[angle], y2[angle], z, value);	
 }
 
 void spirale() {
@@ -699,7 +649,7 @@ void feuer()
 		// update lowest line
 		for(x=0; x<NUM_COLS; x++) {
             for(y=0; y<NUM_ROWS; y++) {
-                world[x][y][FEUER_Y-1] = myrandom();
+                world[x][y][FEUER_Y-1] = easyRandom();
             }
 		}
 
@@ -737,7 +687,7 @@ void pong() {
 	pixel3d ballPos128 = {3*16, 4*16, 5*16}, ballPos, ballPosOld, ballDir = {4, 2, 1};
 	//scrolltext("play PONG3D?  Then press UP" , 70);
 	while (!joy1_up) wait(5);
- 	/*for (i = 5; i >= 0; i--) {
+ 	for (i = 5; i >= 0; i--) {
 		itoa(hstr, i);
 		scrolltext(hstr, 110);
 	}*//*
@@ -977,93 +927,85 @@ void planeAnimation2(unsigned char ms)
 	}
 }
 
-#define NPOINTS 32
+#define NPOINTS 8
+#define NLINES 12
 void testRotate() {
-	pixel3d org[NPOINTS] = {{0x20, 0x20, 0x20},
-							{0x30, 0x20, 0x20},
-							{0x40, 0x20, 0x20},
-							{0x50, 0x20, 0x20},
-							{0x50, 0x30, 0x20},
-							{0x50, 0x40, 0x20},
-							{0x50, 0x50, 0x20},
-							{0x40, 0x50, 0x20},
-							{0x30, 0x50, 0x20},
-							{0x20, 0x50, 0x20},
-							{0x20, 0x40, 0x20},
-							{0x20, 0x30, 0x20},
-							{0x20, 0x20, 0x50},
-							{0x30, 0x20, 0x50},
-							{0x40, 0x20, 0x50},
-							{0x50, 0x20, 0x50},
-							{0x50, 0x30, 0x50},
-							{0x50, 0x40, 0x50},
-							{0x50, 0x50, 0x50},
-							{0x40, 0x50, 0x50},
-							{0x30, 0x50, 0x50},
-							{0x20, 0x50, 0x50},
-							{0x20, 0x40, 0x50},
-							{0x20, 0x30, 0x50},
-							{0x20, 0x20, 0x30},
-							{0x20, 0x20, 0x40},
-							{0x20, 0x50, 0x30},
-							{0x20, 0x50, 0x40},
-							{0x50, 0x20, 0x30},
-							{0x50, 0x20, 0x40},
-							{0x50, 0x50, 0x30},
-							{0x50, 0x50, 0x40}}; 
-	pixel3d rot[NPOINTS]; 
-	unsigned char i, hx, hy, hz, a;
-	//int a;
+	pixel3d org[NPOINTS] = {{0x60, 0x60, 0x60}, // 0
+							{0xB0, 0x60, 0x60}, // 1
+							{0xB0, 0xB0, 0x60}, // 2 
+							{0x60, 0xB0, 0x60}, // 3
+							{0x60, 0x60, 0xB0}, // 4
+							{0xB0, 0x60, 0xB0}, // 5
+							{0xB0, 0xB0, 0xB0}, // 6
+							{0x60, 0xB0, 0xB0}  // 7
+							};							
+	unsigned char drawlist[NLINES*2] = {0, 1,
+										0, 4,
+										1, 2,
+										1, 5,
+										2, 3,
+										2, 6,
+										3, 0,
+										3, 7,
+										4, 5,
+										5, 6,
+										6, 7,
+										7, 4
+										};		
 	
-	for (a = 0; a < 196; a++) {
-		rotate(a, 0, 0, org, rot, NPOINTS, (pixel3d) {0x48, 0x48, 0x48});
-		for (i = 0; i < NPOINTS; i++) {
-			setpixel3d((pixel3d) {(rot[i].x+8)/16, (rot[i].y+8)/16, (rot[i].z+8)/16}, 3);
+	pixel3d rot[NPOINTS], sca[NPOINTS], h1, h2; 
+	unsigned int  a;
+	unsigned char i;								
+											
+	for (a = 0; a < 1500; a++) {
+		scale(a/35+40, a/35+40, a/35+40, org, sca, NPOINTS, (pixel3d) {0x90, 0x90, 0x90});
+		rotate(a/3, a/5 , a/4, sca, rot, NPOINTS, (pixel3d) {0x98, 0x98, 0x98});
+		
+		for (i = 0; i < NLINES*2; i += 2) {
+			h1 = rot[drawlist[i]];
+			h2 = rot[drawlist[i+1]];
+			drawLine3D((h1.x+8-0x60)/16, (h1.y+8-0x60)/16, (h1.z+8-0x60)/16,
+					   (h2.x+8-0x60)/16, (h2.y+8-0x60)/16, (h2.z+8-0x60)/16, 3);
 		}
-		wait(15);
+		wait(10); 
 		clear_screen(0);
 	}	
-	for (a = 0; a < 196; a++) {
-		rotate(0, a, 0, org, rot, NPOINTS, (pixel3d) {0x48, 0x48, 0x48});
-		for (i = 0; i < NPOINTS; i++) {
-			setpixel3d((pixel3d) {(rot[i].x+8)/16, (rot[i].y+8)/16, (rot[i].z+7)/16}, 3);
-		}
-		wait(15);
-		clear_screen(0);
-	}
-	for (a = 0; a < 196; a++) {
-		rotate(0, 0, a, org, rot, NPOINTS, (pixel3d) {0x48, 0x48, 0x48});
-		for (i = 0; i < NPOINTS; i++) {
-			setpixel3d((pixel3d) {(rot[i].x+8)/16, (rot[i].y+8)/16, (rot[i].z+8)/16}, 3);
-		}
-		wait(15);
-		clear_screen(0);
-	}
-	for (a = 0; a < 196; a++) {
-		rotate(a/4, a/2, a, org, rot, NPOINTS, (pixel3d) {0x48, 0x48, 0x48});
-		for (i = 0; i < NPOINTS; i++) {
-			/*hx = rot[i].x % 16;
-			hy = rot[i].y % 16;
-			hz = rot[i].z % 16;
-			hx = hx > 4 ? 5 - hx: hx;
-			hx += hy > 4 ? 5 - hy: hy;
-			hx += hz > 4 ? 5 - hz: hz; */
-			setpixel3d((pixel3d) {(rot[i].x+8)/16, (rot[i].y+8)/16, (rot[i].z+8)/16}, 3);
-		}
-		wait(20);
-		clear_screen(0);
-	}	
-	
 }
+
+void testLine3D() {
+	
+	
+	
+	
+	/*drawLine3D(-3, -3, -3, 9, 9, 9, 3);
+	wait(2000); 
+	clear_screen(0);	
+	drawLine3D(0, 3, 0, 3, 7, 7, 3);
+	wait(2000);
+	clear_screen(0);	
+	drawLine3D(-2, -1, -5, 9, 8, 9, 3);
+	wait(2000); 
+	clear_screen(0);
+	drawLine3D(0, 0, 0, 7, 7, 7, 3);
+	wait(2000); 
+	clear_screen(0);
+	*/
+}
+
 
 
 void *display_loop(void * unused) {
 	while (1) {
+		//spirale();
+		//testLine3D();
+		
+		testRotate();
+		/*
 		wait(30);
 		//pong();
 		
 		growingCubeFilled();
-		testRotate();
+		
 		planeAnimation2(80);
 		newCoolAnim();
 		//pong();
@@ -1102,6 +1044,6 @@ void *display_loop(void * unused) {
 		test2();
 		test2();
 		snake3d();
-		feuer();
+		feuer();*/
 	}
 }
