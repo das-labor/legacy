@@ -44,7 +44,8 @@ void pong() {
 				joy1 = 1;
 			}
 		}	
-		
+		if((!joy0) && (!joy1))
+				break;//no player, so there was a glitch on the fire line.
 		
 		if (!--counter) {
 			ballPos.x = ballPos128.x / 16;
