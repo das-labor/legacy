@@ -3,43 +3,105 @@
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
+
 #include "config.h"
 #include "scrolltext.h"
+#include "pixel.h"
+#include "util.h"
+#include "font_uni53.h"
+
 #ifdef AVR
 #   include "borg_hw.h"
 #endif
 
-#include "pixel.h"
-#include "util.h"
-//#include "font-arial8.h"
-//#include "font-small6.h"
-//#include "font-v5.h"
-#include "font_uni53.h"
-
 #define MAX_FONTS 1
 font fonts[MAX_FONTS];
 #define MAX_SPECIALCOLORS 3
-unsigned char PROGMEM colorTable[MAX_SPECIALCOLORS*NUM_ROWS] = {1, 1, 2, 3, 3, 2, 1, 1,   
-                                                                3, 3, 2, 1, 1, 2, 3, 3,    
-                                                                3, 3, 2, 2, 3, 3, 2, 2
-};
+
+/** 
+BorgTextAnim
+============
+
+Dies ist eine einfache Sprache, die extra dafür entwickelt wurde, um in einer 
+möglichst kompakten und einfach zu interpretierenden Schreibweise hübsche 
+Text-Animationen zu ermöglichen.
+
+Animationen bestehen aus Textblöcken die immer aus einem Kommandoteil und 
+einen Textteil zusammengesetzt sind. Kommandoteil, Textteil und die Textblöcke 
+untereinander werden durch das Zeichen # getrennt.
+
+Der Kommandoteil besteht aus Befehlen und aus Warte Anweisungen. Der Befehl 
+oder die Befehle werden solange ausgeführt bis man sie widerruft. Folgt eine 
+Zahl nach einen Befehl, wird diese als Parameter verwendet.
+
+Der erste Befehl in einem Textblock hat eine Zusatzfunktion.
+
+Befehle:
+
+ <  Nach links scrollen. [Parameter gibt die Scrollgeschwindigkeit an]
+ >  Nach rechts scrollen. [Parameter gibt die Scrollgeschwindigkeit an]
+ u  Nach oben scrollen. [Parameter gibt die Scrollgeschwindigkeit an] 
+ d  Nach unten scrollen. [Parameter gibt die Scrollgeschwindigkeit an]
+
+ x  Text an dieser x Position erscheinen lassen.
+ y  Text an dieser y Position erscheinen lassen.
+
+ b  Lässt den Text mit angegebener Blinkgeschwindigkeit blinken.
+ p  Scrollen stoppen und warten. Parameter gibt die Wartezeit an.
+
+ +  Lässt den nächsten Textblock zusätzlich ausführen.
 
 
-/* Konzept
-   =======
-Text wird in Token unterteilt, jeder Token bekommt einen Command-String.
-z.B.
+Erster Befehl
+=============
+Steht als erstes eine Zahl, so gibt diese an, auf wieviele Textteile die 
+nachfolgenden Befehle angewendet werden sollen. D.h. wenn mehrere 
+aufeinanderfolgende Textblöcke den gleichen Komandoteil haben, so brauch man 
+nun den Komandoteil nur einmal schreiben.
 
-#b</#LABOR
+<1|+<30/#LABOR #<1|+<30/#Borg
 
-Es werden die Zeiger aus dem Eingabestring direkt übernommen, mit Stinglen.
-Wenn der Command abgearbeitet ist wird automatisch das nächste Token eingelesen.
+kann somit durch
+
+2<1|+<30/#LABOR #Borg
+
+abgekürzt werden.
+
+Die Richtungsscrollbefehle < > u d positionieren den Textblock an passender 
+Position(so, dass er von aussen rein läuft).
+
+
+Warte Anweisungen
+=================
+ p  Scrollen stoppen und warten. Parameter gibt die Wartezeit an.
+ /  Warten, bis der Text aus dem Bildschirm heraus ist.
+ |  Warten, bis Text in der x Mitte ist, oder bei Parameter bis er an der 
+    angegebenen x Position steht.
+ -  Warten, bis der Text in y Richtung in der Mitte ist.
+ ;  Warten, bis der Block links am VORHERIGEN anschlägt.
+ :  Warten, bis der Block rechts am NÄCHSTEN anschlägt.
+
+
+
+Beispiele
+=========
+Erstmal einfach: Einen Text von links nach rechts durchscrollen lassen: 
+</#Hello World ! 
+
+Von links und rechts ein Wort herein laufen lassen, dann blinken, warten, 
+aufhören zu blinken, und nach unten verschwinden: 
+>+:bp10b0d50/#Hallo #<;bp10b0d50/#Labor
+
+ganz abgefahren: 
+<5|p2+</#Hallo Labor Borg#16<1|+>10/#L#a#u#f#s#c#h#r#i#f#t#-#B#o#r#g#d50-u50
+/d50-/u50->5|80<5|30#www.das-labor.org
 
  */
 
 #define LINEBYTES 1
 #undef NUM_COLS
 #define NUM_COLS 8
+
 unsigned char (*text_pixmap)[NUM_ROWS][LINEBYTES];
 
 void text_setpixel(pixel3d p, unsigned char value ){
@@ -78,6 +140,7 @@ enum waitfor_e{
 	wait_col_l,
 	wait_col_r
 };
+
 #define DIRECTION_RIGHT 0x01
 #define DIRECTION_DOWN 0x02
 
@@ -172,77 +235,77 @@ unsigned int getnum(blob_t * blob){
 unsigned char blobNextCommand(blob_t * blob){
 	unsigned int tmp;
 	unsigned char retval = 0;
-	while(*blob->commands != 0){
-		switch (*blob->commands++){
+	while(*blob->commands != 0) {
+		switch (*blob->commands++) {
 		case '<':
 			blob->direction &= ~DIRECTION_RIGHT;
-			if((tmp = getnum(blob)) != 0xFFFF){ 
+			if ((tmp = getnum(blob)) != 0xFFFF) { 
 				blob->delayx_rld = tmp;
-			}else{
+			} else {
 				blob->delayx_rld = 10;
 			}
 			blob->delayx = blob->delayx_rld;
 			break;
 		case '>':
 			blob->direction |= DIRECTION_RIGHT;
-			if((tmp = getnum(blob)) != 0xFFFF){ 
+			if ((tmp = getnum(blob)) != 0xFFFF) { 
 				blob->delayx_rld = tmp;
-			}else{
+			} else {
 				blob->delayx_rld = 10;
 			}
 			blob->delayx = blob->delayx_rld;
 			break;
 		case 'd':
 			blob->direction |= DIRECTION_DOWN;
-			if((tmp = getnum(blob)) != 0xFFFF){ 
+			if ((tmp = getnum(blob)) != 0xFFFF) { 
 				blob->delayy_rld = tmp;
-			}else{
+			} else {
 				blob->delayy_rld = 10;
 			}
 			blob->delayy = blob->delayy_rld;
 			break;
 		case 'u':
 			blob->direction &= ~DIRECTION_DOWN;
-			if((tmp = getnum(blob)) != 0xFFFF){ 
+			if ((tmp = getnum(blob)) != 0xFFFF) { 
 				blob->delayy_rld = tmp;
-			}else{
+			} else {
 				blob->delayy_rld = 10;
 			}
 			blob->delayy = blob->delayy_rld;
 			break;
 		case 'x'://Place string at this x Position
-			if((tmp = getnum(blob)) != 0xFFFF){ 
+			if ((tmp = getnum(blob)) != 0xFFFF) { 
 				blob->posx = tmp;
-			}else{
+			} else {
 				blob->posx =  NUM_COLS/2 + blob->sizex/2;
 			}
 			break;
 		case 'y'://Place string at this y Position
-			if((tmp = getnum(blob)) != 0xFFFF){ 
+			if ((tmp = getnum(blob)) != 0xFFFF) { 
 				blob->posy = tmp - blob->sizey;
 			}
 			break;
 		case 'b'://blink blob
-			if((tmp = getnum(blob)) != 0xFFFF){ 
+			if ((tmp = getnum(blob)) != 0xFFFF) { 
 				blob->delayb_rld = tmp;
-			}else{
+			} else {
 				blob->delayb_rld = 50;
 			}
 			blob->delayb = blob->delayb_rld;
 			break;
 		case '|':
-			if((tmp = getnum(blob)) != 0xFFFF){ 
+			if ((tmp = getnum(blob)) != 0xFFFF) { 
 				blob->tox = tmp;
-			}else{
+			} else {
 				blob->tox =  NUM_COLS/2 + blob->sizex/2;
 			}
 			blob->waitfor = wait_posx;
 			return retval;
 			break;
 		case '-':
-			if((tmp = getnum(blob)) != 0xFFFF){ 
+			if ((tmp = getnum(blob)) != 0xFFFF) { 
 				blob->toy = tmp;
-			}else{
+			} else { 
 				blob->toy =  0;
 			}
 			blob->waitfor = wait_posy;
@@ -293,11 +356,12 @@ blob_t * setupBlob(unsigned char * str){
 	
 	blob_t *blob = malloc(sizeof (blob_t));
 	
-	if(!chop_cnt){
+	if (!chop_cnt) {
 		blob->commands = strtok_r (str, delim, &last);
-		if( blob->commands == 0) goto fail;
+		if ( blob->commands == 0) 
+			goto fail;
 		
-		if((tmp = getnum(blob)) != 0xFFFF){
+		if ((tmp = getnum(blob)) != 0xFFFF) {
 			chop_cnt = tmp;
 			lastcommands = blob->commands;
 		}
@@ -308,9 +372,9 @@ blob_t * setupBlob(unsigned char * str){
 		blob->commands = lastcommands;
 	}
 	
-	blob->str = strtok_r (0, delim, &last);
+	blob->str = strtok_r(0, delim, &last);
 
-	if ( blob->str == 0) goto fail;
+	if (blob->str == 0) goto fail;
 
 	blob->fontIndex = fonts[0].fontIndex;
 	blob->fontData = fonts[0].fontData;
@@ -320,10 +384,10 @@ blob_t * setupBlob(unsigned char * str){
 	unsigned char glyph_end = fonts[0].glyph_end;
 
 	//translate the string: subtract 1 to get offset in Table
-	while((tmp1 = *strg)){
-		if((tmp1>=glyph_beg) && (tmp1<glyph_end)){
+	while ((tmp1 = *strg)) {
+		if ((tmp1>=glyph_beg) && (tmp1<glyph_end)) {
 			*strg = 1 + tmp1 - glyph_beg;
-		}else{
+		} else {
 			*strg = 1;
 		}
 		strg++;
@@ -333,16 +397,16 @@ blob_t * setupBlob(unsigned char * str){
 	
 	blob->sizey = 8;
 	blob->sizex = getLen(blob);
-	if(*blob->commands == '<'){
+	if (*blob->commands == '<') {
 		blob->posx = 0;
 		blob->posy = 0;
-	}else if(*blob->commands == '>'){
+	} else if(*blob->commands == '>') {
 		blob->posx = NUM_COLS+blob->sizex;
 		blob->posy = 0;
-	}else if(*blob->commands == 'd'){
+	} else if(*blob->commands == 'd') {
 		blob->posy = -blob->sizey;
 		blob->posx = NUM_COLS/2 + blob->sizex/2;
-	}else if(*blob->commands == 'u'){
+	} else if(*blob->commands == 'u') {
 		blob->posy = blob->sizey;
 		blob->posx = NUM_COLS/2 + blob->sizex/2;
 	}
@@ -363,57 +427,61 @@ fail:
 
 unsigned char updateBlob(blob_t * blob){
 	
-	if(blob->delayx_rld && (!(blob->delayx--))){
+	if (blob->delayx_rld && (!(blob->delayx--))) {
 		blob->delayx = blob->delayx_rld;
-		(blob->direction & DIRECTION_RIGHT)?blob->posx--:blob->posx++;
+		(blob->direction & DIRECTION_RIGHT) ? blob->posx-- : blob->posx++;
 	}
 	
-	if(blob->delayy_rld && (!(blob->delayy--))){
+	if (blob->delayy_rld && (!(blob->delayy--))) {
 		blob->delayy = blob->delayy_rld;
-		(blob->direction & DIRECTION_DOWN)?blob->posy++:blob->posy--;
+		(blob->direction & DIRECTION_DOWN) ? blob->posy++ : blob->posy--;
 	}
 	
-	if(blob->delayb_rld){
-		if(!(blob->delayb--)){
+	if (blob->delayb_rld) {
+		if (!(blob->delayb--)) {
 			blob->delayb = blob->delayb_rld;
 			blob->visible ^= 1;
 		}
-	}else{
+	} else {
 		blob->visible = 1;
 	}
 	
 	unsigned char done=0;
-	switch (blob->waitfor){
+	switch (blob->waitfor) {
 		case wait_posy:
-			if (blob->posy == blob->toy)done = 1;
+			if (blob->posy == blob->toy)
+				done = 1;
 			break;
 		case wait_posx:
-			if (blob->posx == blob->tox)done = 1;
+			if (blob->posx == blob->tox)
+				done = 1;
 			break;
 		case wait_out:
-			if((blob->posx - blob->sizex) > NUM_COLS || blob->posx < 0) done = 1;
-			if((blob->posy) > NUM_ROWS || (blob->posy + blob->sizey) <0 ) done = 1;
+			if ((blob->posx - blob->sizex) > NUM_COLS || blob->posx < 0) 
+				done = 1;
+			if ((blob->posy) > NUM_ROWS || (blob->posy + blob->sizey) <0 ) 
+				done = 1;			
 			break;
 		case wait_timer:
-			if(0 == blob->timer--){
+			if (0 == blob->timer--) {
 				done = 1;
 			}
 			break;
 		case wait_col_l:
-			if(blob->last){
-				if((blob->last->posx - blob->last->sizex) == blob->posx){
+			if (blob->last) {
+				if ((blob->last->posx - blob->last->sizex) == blob->posx) {
 					done=1;
 				}
-			}else{
+			} else {
 				done = 1;
 			}
 			break;
 		case wait_col_r:
-			if(blob->next){
-				if(blob->next->posx == (blob->posx - blob->sizex)){
+			if (blob->next) {
+				if (blob->next->posx == (blob->posx - blob->sizex)) {
 					done=1;
 				}
-			}else{
+			} else {
 				done = 1;
 			}
 			break;
@@ -432,9 +500,11 @@ void drawBlob(blob_t *blob) {
 	unsigned char byte, glyph; 
 	unsigned int charPos, charEnd;
 	
-	unsigned int posx; unsigned char posy;
+	unsigned int posx; 
+	unsigned char posy;
 	
-	if(!blob->visible) return;
+	if(!blob->visible) 
+		return;
 	
 	unsigned char * str = blob->str;
 	posx = blob->posx;
@@ -448,9 +518,10 @@ void drawBlob(blob_t *blob) {
 		if (charPos < charEnd) {                  
 			charPos++;
 			posx--;
-		}else{
+		} else {
 			posx -= blob->space + 1;
-			if (!(glyph = *++str)) return;      
+			if (!(glyph = *++str)) 
+				return;      
 			glyph -= 1;
 			charPos = PW(blob->fontIndex[glyph]);
 			charEnd = PW(blob->fontIndex[glyph+1]) - 1;
@@ -469,7 +540,7 @@ void drawBlob(blob_t *blob) {
 		
 		if (charPos < charEnd) {                  
 			charPos++;
-		}else{
+		} else {
 			x -= blob->space;
 			if (!(glyph = *++str)) return;       
 			glyph -= 1;   
@@ -496,11 +567,11 @@ void scrolltext(char *str) {
 	
 	blob_t *startblob=0, *aktblob, *nextblob=0;
 
-	memcpy (tmp_jmpbuf, newmode_jmpbuf, sizeof(jmp_buf));
+	memcpy(tmp_jmpbuf, newmode_jmpbuf, sizeof(jmp_buf));
 	
 	
-	if((ljmp_retval = setjmp(newmode_jmpbuf))){
-		while(startblob){
+	if ((ljmp_retval = setjmp(newmode_jmpbuf))) {
+		while (startblob) {
 			aktblob = startblob;
 			startblob = aktblob->next;
 			free(aktblob);
@@ -515,32 +586,32 @@ void scrolltext(char *str) {
 	}
 	
 	unsigned char retval;
-	do{
+	do {
 		startblob->next = 0;
 		startblob->last = 0;
-		while(startblob){
+		while (startblob) {
 			aktblob = startblob;
-			while(aktblob){
+			while (aktblob) {
 				retval = updateBlob(aktblob);
-				if(!retval){
+				if (!retval) {
 					nextblob = aktblob->next;
-				}else if(retval == 1){
-					if(aktblob == startblob){
+				} else if (retval == 1){
+					if (aktblob == startblob){
 						startblob = aktblob->next;
-					}else{
+					} else {
 						aktblob->last->next = aktblob->next;
 					}
-					if(aktblob->next){
+					if (aktblob->next){
 						aktblob->next->last = aktblob->last;
 					}
 					nextblob = aktblob->next;
 					free(aktblob);
-			 	}else if(retval == 2){
+			 	} else if (retval == 2){
 					blob_t * newblob = setupBlob(0);
 					if (newblob){
 						newblob->last = aktblob;
 						newblob->next = aktblob->next;
-						if(aktblob->next){
+						if (aktblob->next){
 							aktblob->next->last = newblob;
 						}
 						aktblob->next = newblob;
@@ -552,7 +623,7 @@ void scrolltext(char *str) {
 						
 			aktblob = startblob;
 			clear_text_pixmap(0);
-			while(aktblob){
+			while (aktblob) {
 				drawBlob(aktblob);
 				aktblob = aktblob->next;
 			}
@@ -561,7 +632,7 @@ void scrolltext(char *str) {
 		};
 		startblob = setupBlob(0);
 		//showBlob(startblob);
-	}while(startblob);
+	} while (startblob);
 	
 exit:	
 	free(text_pixmap);

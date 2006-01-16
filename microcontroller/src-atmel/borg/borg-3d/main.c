@@ -2,7 +2,6 @@
 #include <avr/interrupt.h>
 #include "config.h"
 #include "scrolltext.h"
-#include "programm.h"
 #include "borg_hw.h"
 #include "borg_can.h"
 #include "pixel.h"
@@ -10,6 +9,7 @@
 #include "borg_can.h"
 #include "util.h"
 #include "joystick.h"
+#include "programs.h"
 
 jmp_buf newmode_jmpbuf;
 
@@ -30,7 +30,8 @@ int main (void){
 	waitForFire = 1;
 	for(;;) {
 		oldMode = mode;
-		switch(mode++) {
+		switch(mode++) {clear_screen(0);
+
 		case 0xff:
 			clear_screen(0);
 			while (1) wait(5);
