@@ -1,5 +1,5 @@
-
 #define PIXEL_C
+
 #include "pixel.h"
 #include "borg_hw.h"
 #include "util.h"
@@ -378,10 +378,9 @@ Matrix Format
   0  1  2  3
   4  5  6  7  
   8  9 10 11
-(12 13 14 15) are not exist  because normally 0 0 0 1
-              but we work intern with homogen coordiantes
+(12 13 14 15) not exist  because normally 0 0 0 1
+              but works intern with homogen coordiantes
 */
-
 void rotate(unsigned char a, unsigned char b, unsigned char c, pixel3d* points, 
 			pixel3d* resPoints, int numPoint, pixel3d rotP) {
 	char mat[12];
@@ -417,4 +416,26 @@ void rotate(unsigned char a, unsigned char b, unsigned char c, pixel3d* points,
 	for (i = 0; i < numPoint; i++) {
 		resPoints[i] = mulMatrixPoint(mat, &points[i]);
 	}	
+}
+
+void scale(unsigned char sx, unsigned char sy, unsigned char sz, pixel3d* points, 
+			pixel3d* resPoints, int numPoint, pixel3d scaleP) {
+	char mat[12] = {sx,  0,  0,  scaleP.x - (sx*scaleP.x)/64,
+					 0, sy,  0,  scaleP.y - (sy*scaleP.y)/64,
+					 0,  0, sz,  scaleP.z - (sz*scaleP.z)/64};
+	unsigned char i;
+ 	for (i = 0; i < numPoint; i++) {
+		resPoints[i] = mulMatrixPoint(mat, &points[i]);
+	}			
+}				
+
+#define BIT_S(var,b) ((var&(1<<b))?1:0)
+
+unsigned char easyRandom() {
+	static unsigned int muh = 0xAA;
+	unsigned char x;
+	for(x=0;x<8;x++){
+		muh = (muh<<1) ^ BIT_S(muh,1) ^ BIT_S(muh,8) ^ BIT_S(muh,9) ^ BIT_S(muh,13) ^ BIT_S(muh,15);
+	}
+	return (unsigned char) muh;
 }

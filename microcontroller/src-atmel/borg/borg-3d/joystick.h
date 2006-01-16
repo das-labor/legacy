@@ -2,6 +2,7 @@
 #define JOYSTICK_H
 
 extern unsigned char waitForFire;
+inline void joy_init();
 
 #define PORTJOYGND PORTB
 #define DDRJOYGND DDRB

@@ -17,12 +17,12 @@
 #define UART_ESCAPE 0x42
 #define UART_SOI 1
 #define UART_SOF 2
-#define UART_SS 3
+#define UART_SS  3
 
 #define BORG_CAN
 
 #define SCROLLTEXT_STRING_SIZE 128
-#define SCROLLTEXT_DEFAULT "<25/#3d Borg"
+#define SCROLLTEXT_DEFAULT "<25/#Borg 3D"
 
 #ifndef AVR
 #	define AVR
@@ -48,5 +48,3 @@
 #define CAN_RX_BUFFER_SIZE 2    //only used for Interrupt
 #define CAN_TX_BUFFER_SIZE 2    //only used for Interrupt
 #define F_MCP F_CPU
-
-
