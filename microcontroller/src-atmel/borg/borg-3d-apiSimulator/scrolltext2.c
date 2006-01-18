@@ -995,8 +995,8 @@ void shift_in(char glyph, unsigned int delay){
 	len = pgm_read_byte(font.width_table+glyph);
 	ror = (1 << 7);
 	for (i = 0; i < len; i++) {
-		shift3d(left);
 		shift3d(forward);
+		shift3d(right);
 		for (y = 0; y < font.glyph_height; y++) {
 			setpixel3d((pixel3d){0, NUM_COLS-1 ,NUM_ROWS-y-1},(pgm_read_byte(font.glyph_table+y+glyph*font.glyph_height) & ror)?3:0 );
 		}
@@ -1009,8 +1009,8 @@ void shift_in(char glyph, unsigned int delay){
 void shift_out(unsigned char cols, unsigned int delay){
 	unsigned char i;
 	for(i=0;i<cols;i++){
-		shift3d(left);
 		shift3d(forward);
+		shift3d(right);
 		wait(delay);
 	}
 }
