@@ -1000,7 +1000,7 @@ void *display_loop(void * unused) {
 		//testLine3D();
 		
 		testRotate();
-		/*
+		
 		wait(30);
 		//pong();
 		
@@ -1044,6 +1044,6 @@ void *display_loop(void * unused) {
 		test2();
 		test2();
 		snake3d();
-		feuer();*/
+		feuer();
 	}
 }
