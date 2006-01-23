@@ -10,7 +10,8 @@
 #include "can.h"
 #include "spi.h"
 
-//#include "mcp2515.inc"
+#define spi_clear_ss() SPI_PORT |= (1<<SPI_PIN_SS)
+#define spi_set_ss() SPI_PORT &= ~(1<<SPI_PIN_SS)
 
 //Registers
 #define RXF0SIDH 0x00
@@ -233,7 +234,7 @@ SIGNAL(SIG_INTERRUPT0) {
 #ifdef CAN_HANDLEERROR
 		status = mcp_read(EFLG);
 
-		if(!status) { // we've got a error condition
+		if(status) { // we've got a error condition
 			can_error = status;
 
 			mcp_write(EFLG, 0);
@@ -328,6 +329,9 @@ void delayloop(){
 }
 
 void can_init(){
+	//set Slave select high
+	SPI_PORT |= (1<<SPI_PIN_SS);
+	
 #ifdef CAN_INTERRUPT	
 	unsigned char x;
 	for(x=0;x<CAN_RX_BUFFER_SIZE;x++){

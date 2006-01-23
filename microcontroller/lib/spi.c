@@ -5,8 +5,6 @@ void spi_init(){
 	//set output SPI pins to output
 	SPI_DDR |= (1<<SPI_PIN_MOSI) | (1<<SPI_PIN_SCK) | (1<<SPI_PIN_SS);
 
-	//set Slave select high
-	SPI_PORT |= (1<<SPI_PIN_SS);
 #ifdef SPI_HARDWARE
 	//          0             1
 	//DORD   msb first     lsb first

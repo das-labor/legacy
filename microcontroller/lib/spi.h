@@ -21,11 +21,6 @@
 
 void spi_init();
 
-#define spi_clear_ss() SPI_PORT |= (1<<SPI_PIN_SS)
-#define spi_set_ss() SPI_PORT &= ~(1<<SPI_PIN_SS)
-
-
-
 unsigned char spi_data(unsigned char c);
 
 
