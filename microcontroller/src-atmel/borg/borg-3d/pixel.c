@@ -439,3 +439,76 @@ unsigned char easyRandom() {
 	}
 	return (unsigned char) muh;
 }
+
+void drawLine3D(char px1, char py1, char pz1, 
+ 			    char px2, char py2, char pz2, unsigned char value) {
+    char i, dx, dy, dz, l, m, n, x_inc, y_inc, z_inc, err_1, err_2, dx2, dy2, dz2;
+    char curx = px1, cury = py1, curz = pz1;
+    dx = (px2 - px1);
+    dy = (py2 - py1);
+    dz = (pz2 - pz1);
+    x_inc = (dx < 0) ? -1 : 1;	// sign
+    l = dx >= 0 ? dx : -dx;    	// abs
+    y_inc = (dy < 0) ? -1 : 1;  
+    m = dy >= 0 ? dy : -dy;
+    z_inc = (dz < 0) ? -1 : 1;
+    n = dz >= 0 ? dz : -dz;
+    dx2 = l << 1;
+    dy2 = m << 1;
+    dz2 = n << 1;
+
+    if ((l >= m) && (l >= n)) {
+        err_1 = dy2 - l;
+        err_2 = dz2 - l;
+        for (i = 0; i < l; i++) {
+            setpixel3d((pixel3d) {curx, cury, curz}, value);
+            if (err_1 > 0) {
+                cury += y_inc;
+                err_1 -= dx2;
+            }
+            if (err_2 > 0) {
+                curz += z_inc;
+                err_2 -= dx2;
+            }
+            err_1 += dy2;
+            err_2 += dz2;
+            curx += x_inc;
+        }
+    } else if ((m >= l) && (m >= n)) {
+        err_1 = dx2 - m;
+        err_2 = dz2 - m;
+        for (i = 0; i < m; i++) {
+            setpixel3d((pixel3d) {curx, cury, curz}, value);
+            if (err_1 > 0) {
+                curx += x_inc;
+                err_1 -= dy2;
+            }
+            if (err_2 > 0) {
+                curz += z_inc;
+                err_2 -= dy2;
+            }
+            err_1 += dx2;
+            err_2 += dz2;
+            cury += y_inc;
+        }
+    } else {
+        err_1 = dy2 - n;
+        err_2 = dx2 - n;
+        for (i = 0; i < n; i++) {
+            setpixel3d((pixel3d) {curx, cury, curz}, value);
+            if (err_1 > 0) {
+                cury += y_inc;
+                err_1 -= dz2;
+            }
+            if (err_2 > 0) {
+                curx += x_inc;
+                err_2 -= dz2;
+            }
+            err_1 += dy2;
+            err_2 += dx2;
+            curz += z_inc;
+        }
+    }
+   	setpixel3d((pixel3d) {curx, cury, curz}, value);
+}
+

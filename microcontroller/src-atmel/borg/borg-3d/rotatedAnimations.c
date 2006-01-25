@@ -9,6 +9,52 @@
 
 #include <avr/io.h>
 
+
+#define NPOINTS 8
+#define NLINES 12
+void rotatedScaledCube() {
+	pixel3d org[NPOINTS] = {{0x60, 0x60, 0x60}, // 0
+							{0xB0, 0x60, 0x60}, // 1
+							{0xB0, 0xB0, 0x60}, // 2 
+							{0x60, 0xB0, 0x60}, // 3
+							{0x60, 0x60, 0xB0}, // 4
+							{0xB0, 0x60, 0xB0}, // 5
+							{0xB0, 0xB0, 0xB0}, // 6
+							{0x60, 0xB0, 0xB0}  // 7
+							};							
+	unsigned char drawlist[NLINES*2] = {0, 1,
+										0, 4,
+										1, 2,
+										1, 5,
+										2, 3,
+										2, 6,
+										3, 0,
+										3, 7,
+										4, 5,
+										5, 6,
+										6, 7,
+										7, 4
+										};		
+	
+	pixel3d rot[NPOINTS], sca[NPOINTS], h1, h2; 
+	unsigned int  a;
+	unsigned char i;								
+											
+	for (a = 0; a < 1500; a++) {
+		scale(a/35+40, a/35+40, a/35+40, org, sca, NPOINTS, (pixel3d) {0x90, 0x90, 0x90});
+		rotate(a/3, a/5 , a/4, sca, rot, NPOINTS, (pixel3d) {0x98, 0x98, 0x98});
+		
+		for (i = 0; i < NLINES*2; i += 2) {
+			h1 = rot[drawlist[i]];
+			h2 = rot[drawlist[i+1]];
+			drawLine3D((h1.x+8-0x60)/16, (h1.y+8-0x60)/16, (h1.z+8-0x60)/16,
+					   (h2.x+8-0x60)/16, (h2.y+8-0x60)/16, (h2.z+8-0x60)/16, 3);
+		}
+		wait(10); 
+		clear_screen(0);
+	}	
+}
+
 #define NPOINTS 32
 void testRotate() {
 	pixel3d org[NPOINTS] = {{0x20, 0x20, 0x20},
@@ -91,52 +137,13 @@ void testRotate() {
 }
 
 
-void drawLineZ(char x1, char y1, char x2, char y2, char z, char level) {
-	signed char i, dx, dy, sdx, sdy, dxabs, dyabs, x, y, px, py;
-	
-	dx = x2 - x1;      // the horizontal distance of the line
-	dy = y2 - y1;      // the vertical distance of the line 
-	dxabs = dx >= 0 ? dx: -dx; //abs
-	dyabs = dy >= 0 ? dy: -dy; //abs
-	sdx = dx >= 0 ? 1: -1;     //sgn
-	sdy = dy >= 0 ? 1: -1;     //sgn
-	x = dyabs >> 1;
-	y = dxabs >> 1;
-	px = x1;
-	py = y1;
-	setpixel3d((pixel3d){x1, y1, z}, level);
-	if (dxabs >= dyabs) { // the line is more horizontal than vertical  
-		for (i = 0; i < dxabs; i++) {
-			y += dyabs; 
-			if (y >= dxabs) {
-				y -= dxabs;
-				py += sdy;
-			}
-			px += sdx;
-			setpixel3d((pixel3d){px, py, z}, level);
-		}
-	} else { // the line is more vertical than horizontal
-		for (i = 0; i < dyabs; i++) {
-			x += dxabs;
-			if (x >= dyabs) {
-				x -= dyabs;
-				px += sdx;
-			}
-			py += sdy;
-			setpixel3d((pixel3d){px, py, z}, level);
-		}
-	}
-}	  
-
-
-
 void drawLineZAngle(unsigned char angle, unsigned char z, unsigned char value) {
 	// could be optimised in programcode
 	unsigned char x1[14] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
 	unsigned char y1[14] = {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7};
 	unsigned char x2[14] = {7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1};
 	unsigned char y2[14] = {7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0};
-	drawLineZ(x1[angle], y1[angle], x2[angle], y2[angle], z, value);	
+	drawLine3D(x1[angle], y1[angle], z, x2[angle], y2[angle], z, value);	
 }
 
 void spirale() {
@@ -156,7 +163,6 @@ void spirale() {
 		}
 	}
 }
-
 
 void drawPixmapZ(char x1, char y1, char x2, char y2, unsigned char* pixmap, char level) {
 	signed char i, dx, dy, sdx, sdy, dxabs, dyabs, x, y, px, py;

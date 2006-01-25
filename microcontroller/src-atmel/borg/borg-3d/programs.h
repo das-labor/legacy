@@ -14,6 +14,7 @@ void feuer();
 void spirale();
 void rotatePixmap(char animatioNo);
 void laborZylinder();
+void rotatedScaledCube(); 
 void testRotate();
 
 //games

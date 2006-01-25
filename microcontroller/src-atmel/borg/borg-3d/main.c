@@ -15,9 +15,7 @@ jmp_buf newmode_jmpbuf;
 
 volatile unsigned char oldMode, oldOldmode, mode;
 
-int main (void){
-	//unsigned char mode;
-	
+int main (void) {
 	borg_hw_init();
 	uart_init();
 	joy_init();
@@ -28,9 +26,9 @@ int main (void){
 	mode = setjmp(newmode_jmpbuf);
 	oldOldmode = oldMode;
 	waitForFire = 1;
-	for(;;) {
+	for (;;) {
 		oldMode = mode;
-		switch(mode++) {clear_screen(0);
+		switch(mode++) {
 
 		case 0xff:
 			clear_screen(0);
@@ -101,6 +99,9 @@ int main (void){
 			break;
 		case 20:
 			planeAnimation2(80);
+			break;
+		case 21:
+			rotatedScaledCube(); 
 			break;
 		case 42:
 			mode = 1;
