@@ -40,3 +40,6 @@ void scale(unsigned char sx, unsigned char sy, unsigned char sz, pixel3d* points
 		   pixel3d* resPoints, int numPoint, pixel3d scaleP);
 void rotate(unsigned char a, unsigned char b, unsigned char c, pixel3d* points, 
 			pixel3d* resPoints, int numPoint, pixel3d rotP);
+void drawLine3D(char px1, char py1, char pz1, 
+ 			    char px2, char py2, char pz2, unsigned char value);			
+			
