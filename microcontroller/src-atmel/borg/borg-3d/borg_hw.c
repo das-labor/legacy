@@ -5,10 +5,9 @@
 
 #include "borg_hw.h"
 
-
 unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
 
-inline void rowshow(unsigned char row, unsigned char plane){
+inline void rowshow(unsigned char row, unsigned char plane) {
 	unsigned char i;	
 	CTRLPORT |= (1<<PIN_OE_DATA);
 
@@ -86,7 +85,6 @@ void timer0_on() {
 	TIMSK = 0x02;	// Compare match Interrupt on
 }
 
-
 void timer0_off(){
 	cli();
 
@@ -96,7 +94,6 @@ void timer0_off(){
 	TCCR0 = 0x00;
 	sei();
 }
-
 
 void borg_hw_init() {
 	CTRLPORT = (1<<PIN_OE_DATA);
@@ -108,4 +105,3 @@ void borg_hw_init() {
 	wdt_reset();
 	wdt_enable(0x00);  // 17ms Watchdog
 }
-
