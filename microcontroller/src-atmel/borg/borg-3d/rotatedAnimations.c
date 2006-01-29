@@ -9,7 +9,6 @@
 
 #include <avr/io.h>
 
-
 #define NPOINTS 8
 #define NLINES 12
 void rotatedScaledCube() {
@@ -222,8 +221,6 @@ void drawPixmapZAngle(unsigned char angle, unsigned char* pixmap, unsigned char 
 	unsigned char y2[] = {7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7};
 	drawPixmapZ(x1[angle], y1[angle], x2[angle], y2[angle], pixmap, value);	
 }
-
-
 
 void rotatePixmap(char animatioNo) {
 	// Eine super tolle neue Animation

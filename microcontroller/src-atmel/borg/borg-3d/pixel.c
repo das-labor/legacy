@@ -5,14 +5,15 @@
 #include "util.h"
 #include "config.h"
 
+
 unsigned char shl_table[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
 
 void clear_screen(unsigned char value){
 	unsigned char p, x, y, v=0xFF;
 	for(p=0; p<NUM_LEVELS; p++) {
 		if(p == value) v=0;
-		for(y=0;y<NUM_PLANES;y++){
-			for(x=0;x<PLANEBYTES ;x++){
+		for(y=0; y<NUM_PLANES; y++){
+			for(x=0; x<PLANEBYTES; x++){
 				pixmap[p][y][x] = v;
 			}
 		}
@@ -366,9 +367,9 @@ char Sin(unsigned char a) {
 
 pixel3d mulMatrixPoint(char *mat, pixel3d *p) {
 	return (pixel3d) {
-		(mat[0]*p->x)/64 + (mat[1]*p->y)/64 + (mat[2]*p->z)/64 + mat[3],
-		(mat[4]*p->x)/64 + (mat[5]*p->y)/64 + (mat[6]*p->z)/64 + mat[7],
-		(mat[8]*p->x)/64 + (mat[9]*p->y)/64 + (mat[10]*p->z)/64 + mat[11]
+		(mat[0]*(char)p->x)/64 + (mat[1]*(char)p->y)/64 + (mat[2]*(char)p->z)/64 + mat[3],
+		(mat[4]*(char)p->x)/64 + (mat[5]*(char)p->y)/64 + (mat[6]*(char)p->z)/64 + mat[7],
+		(mat[8]*(char)p->x)/64 + (mat[9]*(char)p->y)/64 + (mat[10]*(char)p->z)/64 + mat[11]
 	};
 }
 
@@ -511,4 +512,3 @@ void drawLine3D(char px1, char py1, char pz1,
     }
    	setpixel3d((pixel3d) {curx, cury, curz}, value);
 }
-
