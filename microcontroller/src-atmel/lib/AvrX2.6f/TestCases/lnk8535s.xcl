@@ -1,0 +1,68 @@
+/*                      - lnk8535.xcl -
+ *
+ *   XLINK command file for the ICCAVR C-compiler using the --cpu=8535, -ms
+ *   options. Segments are defined for an AT90S8535 without external memory.
+ *
+ *   Usage: xlink your_file(s) -f lnk8535
+ *
+ *   File version:   $Name:  $
+ */
+
+/*
+ * Modify the lines below to alter the size of the RSTACK, CSTACK and HEAP
+ * segments. These need to be fine tuned to suit your specific application.
+ * The '_..X_' prefix is used by C-SPY as an indication that the label should
+ * not be displayed in the dissassembly window.
+ *
+ * AVRX can't use the CSTACK, so set it to zero for main() and kernel contexts.
+ */
+-D_..X_CSTACK_SIZE=00   /* 64 bytes for auto variables and register save. */
+-D_..X_RSTACK_SIZE=60   /* 80 bytes for return addresses + 2 x context save */
+-D_..X_HEAP_SIZE=10     /* 16 bytes of heap. */
+
+/* Define CPU */
+-ca90
+
+/*
+ * The following segments are located in the internal memory of
+ * the AT90S8535. Do not change these lines.
+ */
+
+/* Code memory */
+-Z(CODE)INTVEC=0-22 /* 17 Interrupt vectors * 2 bytes each */
+
+/* Fill unused interrupt vector's with RETI */
+/*-H1895 -h(CODE)0-21*/
+
+-Z(CODE)TINY_F=22-0FF
+-Z(CODE)SWITCH,INITTAB,DIFUNCT=22-1FFF
+-Z(CODE)CODE=22-1FFF
+-Z(CODE)NEAR_F=22-1FFF
+-Z(CODE)TINY_ID,NEAR_ID=22-1FFF
+
+/* Data memory */
+
+-Z(DATA)TINY_I,TINY_Z,TINY_N=60-FF
+-Z(DATA)NEAR_I,NEAR_Z,NEAR_N=60-25F
+-Z(DATA)RSTACK+_..X_RSTACK_SIZE=60-25F
+-Z(DATA)CSTACK+_..X_CSTACK_SIZE=60-25F
+-Z(DATA)HEAP+_..X_HEAP_SIZE=60-25F
+-Z(DATA)DATA=60-25F
+
+/* Internal eeprom memory */
+-Z(XDATA)EEPROM_I,EEPROM_N,EEPROM_AN=0-1FF
+
+/*  Select reduced "printf" support to reduce library size.
+    See configuration section in manual concerning printf/sprintf. */
+-e_Printf_1=_Printf
+
+/*  Disable floating-point support in "scanf" to reduce library size.
+    See configuration section in manual concerning scanf/sscanf */
+-e_Scanf_1=_Scanf
+
+/* Suppress one warning which is not relevant for this processor */
+-w29
+
+/* Code will now reside in file aout.a90 or aout.d90, unless -o is specified */
+/* .d90 is the default if debug system is linked (option -r) */
+/* .a90 is the default without debugging. Default format is -Fmotorola */
