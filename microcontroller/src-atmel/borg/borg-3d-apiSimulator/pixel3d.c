@@ -194,10 +194,9 @@ direction turn_right(direction dir){
 			return left;	
 		case back:
 			return left;
-		case forward:
+		default:
 			return right;					
 	}
-	return 0;
 }
 
 
@@ -213,10 +212,9 @@ direction turn_left(direction dir){
 			return left;	
 		case back:
 			return right;
-		case forward:
+		default:
 			return left;					
 	}
-	return 0;
 }
 
 direction turn_up(direction dir){
@@ -231,10 +229,9 @@ direction turn_up(direction dir){
 			return back;	
 		case back:
 			return up;
-		case forward:
+		default:
 			return up;					
 	}
-	return 0;
 }
 
 direction turn_down(direction dir){
@@ -249,10 +246,9 @@ direction turn_down(direction dir){
 			return forward;	
 		case back:
 			return down;
-		case forward:
+		default:
 			return down;					
 	}
-	return 0;
 }
 
 void set_plane(direction dir, unsigned char num, unsigned char color)
