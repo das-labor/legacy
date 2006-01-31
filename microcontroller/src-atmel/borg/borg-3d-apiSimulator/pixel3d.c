@@ -6,8 +6,8 @@ void clear_screen(unsigned char value){
 	unsigned char p, x, y, v=0xFF;
 	for(p=0; p<NUM_LEVELS; p++) {
 		if(p == value) v=0;
-		for(y=0;y<NUM_PLANES;y++){
-			for(x=0;x<PLANEBYTES ;x++){
+		for(y=0; y<NUM_PLANES; y++){
+			for(x=0; x<PLANEBYTES; x++){
 				pixmap[p][y][x] = v;
 			}
 		}
@@ -133,7 +133,7 @@ unsigned char get_next_pixel3d(pixel3d p, direction dir){
 		case right:
 			tmp = (pixel3d){p.x, p.y+1, p.z};
 			break;
-		default:
+		case left:
 			tmp = (pixel3d){p.x, p.y-1, p.z};
 			break;			
 	}
@@ -357,9 +357,9 @@ char Sin(unsigned char a) {
 
 pixel3d mulMatrixPoint(char *mat, pixel3d *p) {
 	return (pixel3d) {
-		(mat[0]*p->x)/64 + (mat[1]*p->y)/64 + (mat[2]*p->z)/64 + mat[3],
-		(mat[4]*p->x)/64 + (mat[5]*p->y)/64 + (mat[6]*p->z)/64 + mat[7],
-		(mat[8]*p->x)/64 + (mat[9]*p->y)/64 + (mat[10]*p->z)/64 + mat[11]
+		(mat[0]*(char)p->x)/64 + (mat[1]*(char)p->y)/64 + (mat[2]*(char)p->z)/64 + mat[3],
+		(mat[4]*(char)p->x)/64 + (mat[5]*(char)p->y)/64 + (mat[6]*(char)p->z)/64 + mat[7],
+		(mat[8]*(char)p->x)/64 + (mat[9]*(char)p->y)/64 + (mat[10]*(char)p->z)/64 + mat[11]
 	};
 }
 
@@ -411,14 +411,10 @@ void rotate(unsigned char a, unsigned char b, unsigned char c, pixel3d* points,
 
 void scale(unsigned char sx, unsigned char sy, unsigned char sz, pixel3d* points, 
 			pixel3d* resPoints, int numPoint, pixel3d scaleP) {
-	unsigned char i;
 	char mat[12] = {sx,  0,  0,  scaleP.x - (sx*scaleP.x)/64,
 					 0, sy,  0,  scaleP.y - (sy*scaleP.y)/64,
 					 0,  0, sz,  scaleP.z - (sz*scaleP.z)/64};
-	/*
-	for (i = 0; i < 3; i++) {
-		printf("%d\t%d\t%d\t%d\n", mat[(i*4)], mat[(i*4)+1], mat[(i*4)+2], mat[(i*4)+3]);
-	}*/
+	unsigned char i;
  	for (i = 0; i < numPoint; i++) {
 		resPoints[i] = mulMatrixPoint(mat, &points[i]);
 	}			

@@ -929,9 +929,10 @@ void planeAnimation2(unsigned char ms)
 	}
 }
 
+
 #define NPOINTS 8
 #define NLINES 12
-void testRotate() {
+void rotatedScaledCube() {
 	pixel3d org[NPOINTS] = {{0x60, 0x60, 0x60}, // 0
 							{0xB0, 0x60, 0x60}, // 1
 							{0xB0, 0xB0, 0x60}, // 2 
@@ -969,17 +970,16 @@ void testRotate() {
 			drawLine3D((h1.x+8-0x60)/16, (h1.y+8-0x60)/16, (h1.z+8-0x60)/16,
 					   (h2.x+8-0x60)/16, (h2.y+8-0x60)/16, (h2.z+8-0x60)/16, 3);
 		}
-		wait(10); 
+		wait(30); 
 		clear_screen(0);
 	}	
 }
 
+
+
 void testLine3D() {
-	
-	
-	
-	
-	/*drawLine3D(-3, -3, -3, 9, 9, 9, 3);
+	clear_screen(0);
+	drawLine3D(-3, -3, -3, 9, 9, 9, 3);
 	wait(2000); 
 	clear_screen(0);	
 	drawLine3D(0, 3, 0, 3, 7, 7, 3);
@@ -991,7 +991,7 @@ void testLine3D() {
 	drawLine3D(0, 0, 0, 7, 7, 7, 3);
 	wait(2000); 
 	clear_screen(0);
-	*/
+	
 }
 
 void drawPanel(unsigned char posy, unsigned char pos128x, unsigned char pos128z) {
@@ -1014,7 +1014,7 @@ char waitForFire = 0;
 void pong() {
     unsigned char posx0 = 64, posz0 = 64, posx1 = 64, posz1 = 64;
 	unsigned char lives0 = 5, lives1 = 5, ballblink = 0, score = 0;
-	unsigned char counter = 8, joy0 = 0, joy1 = 0, ballV;
+	unsigned char counter = 8, joy0 = 0, joy1 = 0, ballV, i;
 	ball ballPos128 = {4*128, 2*128, 4*128};
 	pixel3d helpDir, ballDir = INIT_DIR, ballPos, ballPosOld;
 	waitForFire = 0;
@@ -1091,33 +1091,28 @@ void pong() {
 			if (ballPos128.y <= 150 && joy1) {
 				if (ballPos128.x >= posx1 && ballPos128.x < posx1+48 && 
 					ballPos128.z >= posz1 && ballPos128.z < posz1+48) {			
-					rotate(((char)ballPos.x - ((char)posx1+8)/16 + 1)*2, 0, 
-						   ((char)ballPos.z - ((char)posz1+8)/16 + 1)*2,
+					rotate(((char)ballPos.z - ((char)posz1+8)/16 + 1)*4, 0, 
+						   ((char)ballPos.x - ((char)posx1+8)/16 + 1)*4,
 						   &ballDir, &helpDir, 1, (pixel3d) {0, 0, 0});
 					ballDir = helpDir;
 				    ballDir.y = (char)-ballDir.y;
 					score++;
 				} else {
 					if (--lives1) {
-						set_plane(left, 0, 3);
-						wait(30);
-						set_plane(left, 0, 0);
-						wait(30);
-						set_plane(left, 0, 3);
-						wait(20);
-						set_plane(left, 0, 2);
-						wait(20);
-						set_plane(left, 0, 1);
-						wait(20);	
-						set_plane(left, 0, 0);
+					    for (i = lives1+1; i; --i) {
+							set_plane(left, 0, 3);
+							wait(50);
+							set_plane(left, 0, 0);
+							wait(75);
+						}
 						ballPos128 = (ball) {4*128, 2*128, 4*128};
 						ballDir = (pixel3d) INIT_DIR;
 						wait(800);
 					} else {
 						set_plane(left, 0, 3);
-						wait(100);
+						wait(150);
 						set_plane(left, 0, 0);
-						wait(100);
+						wait(150);
 						set_plane(left, 0, 3);
 						wait(100);
 						set_plane(left, 0, 0);
@@ -1125,9 +1120,9 @@ void pong() {
 					}
 				}
 			}
-			if (ballPos128.x <= 64 || ballPos128.x >= (LEN_Y*16-64) )
+			if (ballPos128.x <= 64 || ballPos128.x >= (LEN_Y*128-64) )
 				ballDir.x = (char)-ballDir.x;
-			if (ballPos128.z <=64 || ballPos128.z >= (LEN_Y*16-64) )
+			if (ballPos128.z <=64 || ballPos128.z >= (LEN_Y*128-64) )
 				ballDir.z = (char)-ballDir.z;
 		}	
 		
@@ -1175,17 +1170,19 @@ void pong() {
 			if (JOYISLEFT) {
 			   if (posx1 > 0) posx1--;
 			}
-        	
 			set_plane(left, 0, 0);
 			drawPanel(0, posx1, posz1);
 		}
 		
-        wait(5);
+        wait(23);
 		if (!counter) {
-			printf("");
-			ballPos128.x += ((char)ballDir.x * ballV + 32)/4;
-			ballPos128.y += ((char)ballDir.y * ballV + 32)/4;
-			ballPos128.z += ((char)ballDir.z * ballV + 32)/4;
+			printf("%d %d %d pos %d %d %d dir %d %d %d addDirV %d %d %d v %d\n", 
+					ballPos.x, ballPos.y, ballPos.z, ballPos128.x, ballPos128.y, ballPos128.z, 
+					ballDir.x, ballDir.y, ballDir.z, ((char)ballDir.x * ballV)/4,
+					((char)ballDir.y * ballV)/4, ((char)ballDir.z * ballV)/4, ballV);
+			ballPos128.x += ((char)ballDir.x * ballV)/4;
+			ballPos128.y += ((char)ballDir.y * ballV)/4;
+			ballPos128.z += ((char)ballDir.z * ballV)/4;
 			counter = 8;
 		}
 		clearpixel3d(ballPos);
@@ -1198,9 +1195,9 @@ void *display_loop(void * unused) {
 	while (1) {
 		pong();
 		//spirale();
-		//testLine3D();
+		testLine3D();
 		
-		testRotate();
+		rotatedScaledCube();
 		
 		wait(30);
 		//pong();
