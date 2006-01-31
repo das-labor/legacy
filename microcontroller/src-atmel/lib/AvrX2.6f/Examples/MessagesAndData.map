@@ -1,0 +1,688 @@
+Archive member included because of file (symbol)
+
+../avrx/avrx.a(monitor.o)     MessagesAndData.o (Monitor)
+../avrx/avrx.a(avrx_tasking.o)
+                              MessagesAndData.o (IntProlog)
+../avrx/avrx.a(avrx_semaphores.o)
+                              MessagesAndData.o (AvrXWaitMessageAck)
+../avrx/avrx.a(avrx_singlestep.o)
+                              ../avrx/avrx.a(monitor.o) (AvrXStepNext)
+../avrx/avrx.a(avrx_terminate.o)
+                              ../avrx/avrx.a(monitor.o) (AvrXTerminate)
+../avrx/avrx.a(avrx_suspend.o)
+                              ../avrx/avrx.a(monitor.o) (AvrXSuspend)
+../avrx/avrx.a(avrx_message.o)
+                              MessagesAndData.o (AvrXSendMessage)
+../avrx/avrx.a(avrx_timequeue.o)
+                              MessagesAndData.o (AvrXDelay)
+../avrx/avrx.a(avrx_canceltimer.o)
+                              ../avrx/avrx.a(monitor.o) (AvrXCancelTimer)
+../avrx/avrx.a(avrx_eeprom.o)
+                              MessagesAndData.o (EEPromMutex)
+../avrx/avrx.a(avrx_resetsemaphore.o)
+                              ../avrx/avrx.a(avrx_timequeue.o) (AvrXIntResetObjectSemaphore)
+/usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_copy_data.o)
+                              MessagesAndData.o (__do_copy_data)
+/usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_clear_bss.o)
+                              MessagesAndData.o (__do_clear_bss)
+
+Allocating common symbols
+Common symbol       size              file
+
+_TimerQueue         0x2               ../avrx/avrx.a(avrx_timequeue.o)
+TxIntFlag           0x2               ../avrx/serialio.o
+_TimQLevel          0x1               ../avrx/avrx.a(avrx_timequeue.o)
+MonitorStk          0x37              MessagesAndData.o
+task2Pid            0x6               MessagesAndData.o
+AvrXKernelData      0x7               ../avrx/avrx.a(avrx_tasking.o)
+MyQueue             0x4               MessagesAndData.o
+SioFlags            0x1               ../avrx/serialio.o
+MyTimer             0x6               MessagesAndData.o
+MonitorPid          0x6               MessagesAndData.o
+task2Stk            0x2d              MessagesAndData.o
+EEPromMutex         0x2               ../avrx/avrx.a(avrx_eeprom.o)
+RxC_Flag            0x2               ../avrx/serialio.o
+_RxByte             0x1               ../avrx/serialio.o
+task1Pid            0x6               MessagesAndData.o
+task1Stk            0x2d              MessagesAndData.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+text             0x00000000         0x00020000         xr
+data             0x00800060         0x0000ffa0         rw !x
+eeprom           0x00810000         0x00010000         rw !x
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+LOAD MessagesAndData.o
+LOAD ../avrx/serialio.o
+LOAD ../avrx/avrx.a
+LOAD /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libm.a
+LOAD /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a
+LOAD /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a
+LOAD /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a
+
+.hash
+ *(.hash)
+
+.dynsym
+ *(.dynsym)
+
+.dynstr
+ *(.dynstr)
+
+.gnu.version
+ *(.gnu.version)
+
+.gnu.version_d
+ *(.gnu.version_d)
+
+.gnu.version_r
+ *(.gnu.version_r)
+
+.rel.init
+ *(.rel.init)
+
+.rela.init
+ *(.rela.init)
+
+.rel.text
+ *(.rel.text)
+ *(.rel.text.*)
+ *(.rel.gnu.linkonce.t*)
+
+.rela.text
+ *(.rela.text)
+ *(.rela.text.*)
+ *(.rela.gnu.linkonce.t*)
+
+.rel.fini
+ *(.rel.fini)
+
+.rela.fini
+ *(.rela.fini)
+
+.rel.rodata
+ *(.rel.rodata)
+ *(.rel.rodata.*)
+ *(.rel.gnu.linkonce.r*)
+
+.rela.rodata
+ *(.rela.rodata)
+ *(.rela.rodata.*)
+ *(.rela.gnu.linkonce.r*)
+
+.rel.data
+ *(.rel.data)
+ *(.rel.data.*)
+ *(.rel.gnu.linkonce.d*)
+
+.rela.data
+ *(.rela.data)
+ *(.rela.data.*)
+ *(.rela.gnu.linkonce.d*)
+
+.rel.ctors
+ *(.rel.ctors)
+
+.rela.ctors
+ *(.rela.ctors)
+
+.rel.dtors
+ *(.rel.dtors)
+
+.rela.dtors
+ *(.rela.dtors)
+
+.rel.got
+ *(.rel.got)
+
+.rela.got
+ *(.rela.got)
+
+.rel.bss
+ *(.rel.bss)
+
+.rela.bss
+ *(.rela.bss)
+
+.rel.plt
+ *(.rel.plt)
+
+.rela.plt
+ *(.rela.plt)
+
+.text           0x00000000      0xbe2
+ *(.vectors)
+ .vectors       0x00000000       0x54 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+                0x00000000                __vectors
+                0x00000000                __vector_default
+                0x00000054                __ctors_start = .
+ *(.ctors)
+                0x00000054                __ctors_end = .
+                0x00000054                __dtors_start = .
+ *(.dtors)
+                0x00000054                __dtors_end = .
+ *(.progmem.gcc*)
+ *(.progmem*)
+ .progmem.data  0x00000054       0x15 MessagesAndData.o
+                0x0000005b                task1Tcb
+                0x00000054                task2Tcb
+                0x00000062                MonitorTcb
+                0x0000006a                . = ALIGN (0x2)
+ *fill*         0x00000069        0x1 00
+ *(.init0)
+ *(.init1)
+ *(.init2)
+ .init2         0x0000006a        0xc /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+ *(.init3)
+ *(.init4)
+ .init4         0x00000076       0x16 /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_copy_data.o)
+                0x00000076                __do_copy_data
+ .init4         0x0000008c       0x10 /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_clear_bss.o)
+                0x0000008c                __do_clear_bss
+ *(.init5)
+ *(.init6)
+ *(.init7)
+ *(.init8)
+ *(.init9)
+ .init9         0x0000009c        0x4 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+ *(.text)
+ .text          0x000000a0        0x4 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+                0x000000a0                __vector_1
+                0x000000a0                __vector_12
+                0x000000a0                __bad_interrupt
+                0x000000a0                __vector_6
+                0x000000a0                __vector_3
+                0x000000a0                __vector_17
+                0x000000a0                __vector_19
+                0x000000a0                __vector_7
+                0x000000a0                __vector_5
+                0x000000a0                __vector_4
+                0x000000a0                __vector_9
+                0x000000a0                __vector_2
+                0x000000a0                __vector_15
+                0x000000a0                __vector_8
+                0x000000a0                __vector_10
+                0x000000a0                __vector_16
+                0x000000a0                __vector_18
+                0x000000a0                __vector_20
+ .text          0x000000a4       0xae MessagesAndData.o
+                0x000000a4                __vector_11
+                0x000000b4                task1
+                0x000000ca                task2
+                0x000000fe                main
+                0x00000152                . = ALIGN (0x2)
+ *(.text.*)
+ .text.avrx.serialio
+                0x00000152      0x162 ../avrx/serialio.o
+                0x00000162                GetChar
+                0x00000184                PutCR
+                0x0000018c                _PrintString
+                0x00000276                _PutHex
+                0x00000264                IsWhite
+                0x000001e8                _GetHex
+                0x0000023a                GetHexChar
+                0x000001ac                InitSerialIO
+                0x000001c0                __vector_13
+                0x00000188                PutSpace
+                0x00000180                _GetChar
+                0x0000023e                IsHex
+                0x00000152                PushChar
+                0x00000232                GetHexWord
+                0x000002b0                PutHexByte
+                0x000001d4                PutChar
+                0x000002ac                PutHexWord
+                0x00000236                GetHexByte
+                0x000001b4                __vector_14
+ .text.avrx.monitor
+                0x000002b4      0x3e8 ../avrx/avrx.a(monitor.o)
+                0x000003da                DebugMonitor
+                0x00000518                _DumpMemory
+                0x000004ac                GetDumpLength
+                0x0000064a                GetByteWord
+                0x0000066c                PutByteWord
+                0x000003ac                Monitor
+                0x00000496                GetObjectID
+                0x00000558                _ModifyMemory
+                0x000004be                GetFlagsAndAddress
+                0x000005d4                _PrintContext
+ .text.avrx.avrx_tasking
+                0x0000069c      0x1d4 ../avrx/avrx.a(avrx_tasking.o)
+                0x000007be                AvrXRunTask
+                0x00000808                AvrXResume
+                0x00000738                _Epilog
+                0x000007c2                AvrXInitTask
+                0x0000069c                IntProlog
+                0x000007a6                AvrXSetKernelStack
+                0x00000824                _QueuePid
+                0x00000734                Epilog
+ .text.avrx.avrx_semaphores
+                0x00000870       0xe2 ../avrx/avrx.a(avrx_semaphores.o)
+                0x00000870                AvrXWaitTimer
+                0x0000089e                AvrXSetObjectSemaphore
+                0x0000089e                AvrXAckMessage
+                0x00000870                AvrXWaitObjectSemaphore
+                0x00000874                AvrXWaitSemaphore
+                0x000008bc                AvrXIntSetSemaphore
+                0x0000092c                _RemoveObjectAt
+                0x00000870                AvrXWaitMessageAck
+                0x000008b8                AvrXIntSetObjectSemaphore
+                0x00000920                _RemoveFirstObject
+                0x00000870                AvrXWaitTask
+                0x000008f2                _AppendObject
+                0x0000090e                _RemoveObject
+                0x000008a2                AvrXSetSemaphore
+ .text.avrx.avrx_singlestep
+                0x00000952       0x50 ../avrx/avrx.a(avrx_singlestep.o)
+                0x00000952                AvrXSingleStepNext
+                0x0000097c                AvrXStepNext
+ .text.avrx.avrx_terminate
+                0x000009a2       0x2c ../avrx/avrx.a(avrx_terminate.o)
+                0x000009a2                AvrXTaskExit
+                0x000009b2                AvrXTerminate
+ .text.avrx.avrx_suspend
+                0x000009ce       0x42 ../avrx/avrx.a(avrx_suspend.o)
+                0x000009e4                AvrXSuspend
+                0x000009ce                AvrXBreakpoint
+ .text.avrx.avrx_message
+                0x00000a10       0x2e ../avrx/avrx.a(avrx_message.o)
+                0x00000a1a                AvrXIntSendMessage
+                0x00000a22                AvrXWaitMessage
+                0x00000a10                AvrXSendMessage
+ .text.avrx.avrx_timequeue
+                0x00000a3e       0xe4 ../avrx/avrx.a(avrx_timequeue.o)
+                0x00000a3e                AvrXDelay
+                0x00000a42                AvrXStartTimer
+                0x00000a4a                CountNotZero
+                0x00000a9a                AvrXTimerHandler
+ .text.avrx.avrx_canceltimer
+                0x00000b22       0x36 ../avrx/avrx.a(avrx_canceltimer.o)
+                0x00000b22                AvrXCancelTimer
+ .text.avrx.avrx_eeprom
+                0x00000b58       0x68 ../avrx/avrx.a(avrx_eeprom.o)
+                0x00000b58                AvrXReadEEProm
+                0x00000ba4                AvrXWriteEEProm
+                0x00000b76                AvrXReadEEPromWord
+ .text.avrx.avrx_resetsemaphore
+                0x00000bc0       0x22 ../avrx/avrx.a(avrx_resetsemaphore.o)
+                0x00000bc0                AvrXResetObjectSemaphore
+                0x00000bc8                AvrXIntResetSemaphore
+                0x00000bc8                AvrXResetSemaphore
+                0x00000bc0                AvrXIntResetObjectSemaphore
+                0x00000be2                . = ALIGN (0x2)
+ *(.fini9)
+ *(.fini8)
+ *(.fini7)
+ *(.fini6)
+ *(.fini5)
+ *(.fini4)
+ *(.fini3)
+ *(.fini2)
+ *(.fini1)
+ *(.fini0)
+                0x00000be2                _etext = .
+
+.data           0x00800060        0x0 load address 0x00000be2
+                0x00800060                PROVIDE (__data_start, .)
+ *(.data)
+ *(.gnu.linkonce.d*)
+                0x00800060                . = ALIGN (0x2)
+                0x00800060                _edata = .
+                0x00800060                PROVIDE (__data_end, .)
+
+.bss            0x00800060       0xca
+                0x00800060                PROVIDE (__bss_start, .)
+ *(.bss)
+ .bss           0x00800060        0x5 MessagesAndData.o
+ *(COMMON)
+ COMMON         0x00800065       0xad MessagesAndData.o
+                                  0x0 (size before relaxing)
+                0x00800065                MonitorStk
+                0x0080009c                task2Pid
+                0x008000a2                MyQueue
+                0x008000a6                MyTimer
+                0x008000ac                MonitorPid
+                0x008000b2                task2Stk
+                0x008000df                task1Pid
+                0x008000e5                task1Stk
+ COMMON         0x00800112        0x7 ../avrx/serialio.o
+                                  0x0 (size before relaxing)
+                0x00800112                TxIntFlag
+                0x00800114                SioFlags
+                0x00800116                RxC_Flag
+                0x00800118                _RxByte
+ *fill*         0x00800119        0x3 00
+ COMMON         0x0080011c        0x7 ../avrx/avrx.a(avrx_tasking.o)
+                                  0x0 (size before relaxing)
+                0x0080011c                AvrXKernelData
+ *fill*         0x00800123        0x1 00
+ COMMON         0x00800124        0x3 ../avrx/avrx.a(avrx_timequeue.o)
+                                  0x0 (size before relaxing)
+                0x00800124                _TimerQueue
+                0x00800126                _TimQLevel
+ *fill*         0x00800127        0x1 00
+ COMMON         0x00800128        0x2 ../avrx/avrx.a(avrx_eeprom.o)
+                                  0x0 (size before relaxing)
+                0x00800128                EEPromMutex
+                0x0080012a                PROVIDE (__bss_end, .)
+                0x00000be2                __data_load_start = LOADADDR (.data)
+                0x00000be2                __data_load_end = (__data_load_start + SIZEOF (.data))
+
+.noinit         0x0080012a        0x0
+                0x0080012a                PROVIDE (__noinit_start, .)
+ *(.noinit*)
+                0x0080012a                PROVIDE (__noinit_end, .)
+                0x0080012a                _end = .
+                0x0080012a                PROVIDE (__heap_start, .)
+
+.eeprom         0x00810000        0x0 load address 0x00000be2
+ *(.eeprom*)
+                0x00810000                __eeprom_end = .
+
+.stab           0x00000000     0x45fc
+ *(.stab)
+ .stab          0x00000000      0x2a0 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+ .stab          0x000002a0      0x5ac MessagesAndData.o
+                                0x5b8 (size before relaxing)
+ .stab          0x0000084c      0x9d8 ../avrx/serialio.o
+                                0x9e4 (size before relaxing)
+ .stab          0x00001224     0x1110 ../avrx/avrx.a(monitor.o)
+                               0x111c (size before relaxing)
+ .stab          0x00002334      0xbc4 ../avrx/avrx.a(avrx_tasking.o)
+                                0xbd0 (size before relaxing)
+ .stab          0x00002ef8      0x654 ../avrx/avrx.a(avrx_semaphores.o)
+                                0x660 (size before relaxing)
+ .stab          0x0000354c      0x204 ../avrx/avrx.a(avrx_singlestep.o)
+                                0x210 (size before relaxing)
+ .stab          0x00003750      0x114 ../avrx/avrx.a(avrx_terminate.o)
+                                0x120 (size before relaxing)
+ .stab          0x00003864      0x198 ../avrx/avrx.a(avrx_suspend.o)
+                                0x1a4 (size before relaxing)
+ .stab          0x000039fc      0x168 ../avrx/avrx.a(avrx_message.o)
+                                0x174 (size before relaxing)
+ .stab          0x00003b64      0x534 ../avrx/avrx.a(avrx_timequeue.o)
+                                0x540 (size before relaxing)
+ .stab          0x00004098      0x168 ../avrx/avrx.a(avrx_canceltimer.o)
+                                0x174 (size before relaxing)
+ .stab          0x00004200      0x2dc ../avrx/avrx.a(avrx_eeprom.o)
+                                0x2e8 (size before relaxing)
+ .stab          0x000044dc      0x120 ../avrx/avrx.a(avrx_resetsemaphore.o)
+                                0x12c (size before relaxing)
+
+.stabstr        0x00000000     0x10e5
+ *(.stabstr)
+ .stabstr       0x00000000     0x10e5 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+                                  0x0 (size before relaxing)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment
+ *(.comment)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges
+ *(.debug_aranges)
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info
+ *(.debug_info)
+ *(.gnu.linkonce.wi.*)
+
+.debug_abbrev
+ *(.debug_abbrev)
+
+.debug_line
+ *(.debug_line)
+
+.debug_frame
+ *(.debug_frame)
+
+.debug_str
+ *(.debug_str)
+
+.debug_loc
+ *(.debug_loc)
+
+.debug_macinfo
+ *(.debug_macinfo)
+OUTPUT(MessagesAndData.elf elf32-avr)
+
+Cross Reference Table
+
+Symbol                                            File
+AvrXAckMessage                                    ../avrx/avrx.a(avrx_semaphores.o)
+                                                  MessagesAndData.o
+AvrXBreakpoint                                    ../avrx/avrx.a(avrx_suspend.o)
+AvrXCancelTimer                                   ../avrx/avrx.a(avrx_canceltimer.o)
+                                                  ../avrx/avrx.a(monitor.o)
+AvrXDelay                                         ../avrx/avrx.a(avrx_timequeue.o)
+                                                  MessagesAndData.o
+AvrXInitTask                                      ../avrx/avrx.a(avrx_tasking.o)
+                                                  ../avrx/avrx.a(monitor.o)
+AvrXIntResetObjectSemaphore                       ../avrx/avrx.a(avrx_resetsemaphore.o)
+                                                  ../avrx/avrx.a(avrx_timequeue.o)
+AvrXIntResetSemaphore                             ../avrx/avrx.a(avrx_resetsemaphore.o)
+AvrXIntSendMessage                                ../avrx/avrx.a(avrx_message.o)
+                                                  ../avrx/avrx.a(avrx_timequeue.o)
+AvrXIntSetObjectSemaphore                         ../avrx/avrx.a(avrx_semaphores.o)
+                                                  ../avrx/avrx.a(avrx_canceltimer.o)
+                                                  ../avrx/avrx.a(avrx_timequeue.o)
+                                                  ../avrx/avrx.a(avrx_message.o)
+AvrXIntSetSemaphore                               ../avrx/avrx.a(avrx_semaphores.o)
+                                                  ../avrx/serialio.o
+AvrXKernelData                                    ../avrx/avrx.a(avrx_suspend.o)
+                                                  ../avrx/avrx.a(avrx_terminate.o)
+                                                  ../avrx/avrx.a(avrx_singlestep.o)
+                                                  ../avrx/avrx.a(avrx_semaphores.o)
+                                                  ../avrx/avrx.a(avrx_tasking.o)
+AvrXReadEEProm                                    ../avrx/avrx.a(avrx_eeprom.o)
+                                                  ../avrx/avrx.a(monitor.o)
+AvrXReadEEPromWord                                ../avrx/avrx.a(avrx_eeprom.o)
+                                                  ../avrx/avrx.a(monitor.o)
+AvrXResetObjectSemaphore                          ../avrx/avrx.a(avrx_resetsemaphore.o)
+                                                  ../avrx/avrx.a(avrx_message.o)
+AvrXResetSemaphore                                ../avrx/avrx.a(avrx_resetsemaphore.o)
+AvrXResume                                        ../avrx/avrx.a(avrx_tasking.o)
+                                                  ../avrx/avrx.a(monitor.o)
+AvrXRunTask                                       ../avrx/avrx.a(avrx_tasking.o)
+                                                  MessagesAndData.o
+AvrXSendMessage                                   ../avrx/avrx.a(avrx_message.o)
+                                                  MessagesAndData.o
+AvrXSetKernelStack                                ../avrx/avrx.a(avrx_tasking.o)
+                                                  MessagesAndData.o
+AvrXSetObjectSemaphore                            ../avrx/avrx.a(avrx_semaphores.o)
+                                                  ../avrx/avrx.a(avrx_timequeue.o)
+AvrXSetSemaphore                                  ../avrx/avrx.a(avrx_semaphores.o)
+                                                  ../avrx/avrx.a(avrx_eeprom.o)
+                                                  ../avrx/avrx.a(monitor.o)
+                                                  MessagesAndData.o
+AvrXSingleStepNext                                ../avrx/avrx.a(avrx_singlestep.o)
+AvrXStartTimer                                    ../avrx/avrx.a(avrx_timequeue.o)
+AvrXStepNext                                      ../avrx/avrx.a(avrx_singlestep.o)
+                                                  ../avrx/avrx.a(monitor.o)
+AvrXSuspend                                       ../avrx/avrx.a(avrx_suspend.o)
+                                                  ../avrx/avrx.a(monitor.o)
+AvrXTaskExit                                      ../avrx/avrx.a(avrx_terminate.o)
+AvrXTerminate                                     ../avrx/avrx.a(avrx_terminate.o)
+                                                  ../avrx/avrx.a(monitor.o)
+AvrXTimerHandler                                  ../avrx/avrx.a(avrx_timequeue.o)
+                                                  MessagesAndData.o
+AvrXWaitMessage                                   ../avrx/avrx.a(avrx_message.o)
+                                                  MessagesAndData.o
+AvrXWaitMessageAck                                ../avrx/avrx.a(avrx_semaphores.o)
+                                                  MessagesAndData.o
+AvrXWaitObjectSemaphore                           ../avrx/avrx.a(avrx_semaphores.o)
+                                                  ../avrx/avrx.a(avrx_message.o)
+AvrXWaitSemaphore                                 ../avrx/avrx.a(avrx_semaphores.o)
+                                                  ../avrx/avrx.a(avrx_eeprom.o)
+                                                  ../avrx/serialio.o
+AvrXWaitTask                                      ../avrx/avrx.a(avrx_semaphores.o)
+AvrXWaitTimer                                     ../avrx/avrx.a(avrx_semaphores.o)
+                                                  ../avrx/avrx.a(avrx_timequeue.o)
+AvrXWriteEEProm                                   ../avrx/avrx.a(avrx_eeprom.o)
+                                                  ../avrx/avrx.a(monitor.o)
+CountNotZero                                      ../avrx/avrx.a(avrx_timequeue.o)
+DebugMonitor                                      ../avrx/avrx.a(monitor.o)
+EEPromMutex                                       ../avrx/avrx.a(avrx_eeprom.o)
+                                                  ../avrx/avrx.a(monitor.o)
+                                                  MessagesAndData.o
+Epilog                                            ../avrx/avrx.a(avrx_tasking.o)
+                                                  MessagesAndData.o
+GetByteWord                                       ../avrx/avrx.a(monitor.o)
+GetChar                                           ../avrx/serialio.o
+GetDumpLength                                     ../avrx/avrx.a(monitor.o)
+GetFlagsAndAddress                                ../avrx/avrx.a(monitor.o)
+GetHexByte                                        ../avrx/serialio.o
+                                                  ../avrx/avrx.a(monitor.o)
+GetHexChar                                        ../avrx/serialio.o
+GetHexWord                                        ../avrx/serialio.o
+                                                  ../avrx/avrx.a(monitor.o)
+GetObjectID                                       ../avrx/avrx.a(monitor.o)
+InitSerialIO                                      ../avrx/serialio.o
+                                                  MessagesAndData.o
+IntProlog                                         ../avrx/avrx.a(avrx_tasking.o)
+                                                  ../avrx/avrx.a(avrx_canceltimer.o)
+                                                  ../avrx/avrx.a(avrx_timequeue.o)
+                                                  ../avrx/avrx.a(avrx_message.o)
+                                                  ../avrx/avrx.a(avrx_suspend.o)
+                                                  ../avrx/avrx.a(avrx_terminate.o)
+                                                  ../avrx/avrx.a(avrx_singlestep.o)
+                                                  ../avrx/avrx.a(avrx_semaphores.o)
+                                                  ../avrx/serialio.o
+                                                  MessagesAndData.o
+IsHex                                             ../avrx/serialio.o
+IsWhite                                           ../avrx/serialio.o
+                                                  ../avrx/avrx.a(monitor.o)
+Monitor                                           ../avrx/avrx.a(monitor.o)
+                                                  MessagesAndData.o
+MonitorPid                                        MessagesAndData.o
+MonitorStk                                        MessagesAndData.o
+MonitorTcb                                        MessagesAndData.o
+MyQueue                                           MessagesAndData.o
+MyTimer                                           MessagesAndData.o
+PushChar                                          ../avrx/serialio.o
+PutByteWord                                       ../avrx/avrx.a(monitor.o)
+PutCR                                             ../avrx/serialio.o
+                                                  ../avrx/avrx.a(monitor.o)
+PutChar                                           ../avrx/serialio.o
+                                                  ../avrx/avrx.a(monitor.o)
+PutHexByte                                        ../avrx/serialio.o
+                                                  ../avrx/avrx.a(monitor.o)
+PutHexWord                                        ../avrx/serialio.o
+                                                  ../avrx/avrx.a(monitor.o)
+PutSpace                                          ../avrx/serialio.o
+                                                  ../avrx/avrx.a(monitor.o)
+RxC_Flag                                          ../avrx/serialio.o
+SioFlags                                          ../avrx/serialio.o
+TxIntFlag                                         ../avrx/serialio.o
+_AppendObject                                     ../avrx/avrx.a(avrx_semaphores.o)
+                                                  ../avrx/avrx.a(avrx_message.o)
+_DumpMemory                                       ../avrx/avrx.a(monitor.o)
+_Epilog                                           ../avrx/avrx.a(avrx_tasking.o)
+                                                  ../avrx/avrx.a(avrx_canceltimer.o)
+                                                  ../avrx/avrx.a(avrx_timequeue.o)
+                                                  ../avrx/avrx.a(avrx_message.o)
+                                                  ../avrx/avrx.a(avrx_suspend.o)
+                                                  ../avrx/avrx.a(avrx_terminate.o)
+                                                  ../avrx/avrx.a(avrx_singlestep.o)
+                                                  ../avrx/avrx.a(avrx_semaphores.o)
+                                                  ../avrx/serialio.o
+_GetChar                                          ../avrx/serialio.o
+                                                  ../avrx/avrx.a(monitor.o)
+_GetHex                                           ../avrx/serialio.o
+_ModifyMemory                                     ../avrx/avrx.a(monitor.o)
+_PrintContext                                     ../avrx/avrx.a(monitor.o)
+_PrintString                                      ../avrx/serialio.o
+                                                  ../avrx/avrx.a(monitor.o)
+_PutHex                                           ../avrx/serialio.o
+_QueuePid                                         ../avrx/avrx.a(avrx_tasking.o)
+                                                  ../avrx/avrx.a(avrx_singlestep.o)
+                                                  ../avrx/avrx.a(avrx_semaphores.o)
+_RemoveFirstObject                                ../avrx/avrx.a(avrx_semaphores.o)
+                                                  ../avrx/avrx.a(avrx_message.o)
+_RemoveObject                                     ../avrx/avrx.a(avrx_semaphores.o)
+                                                  ../avrx/avrx.a(avrx_canceltimer.o)
+                                                  ../avrx/avrx.a(avrx_suspend.o)
+                                                  ../avrx/avrx.a(avrx_terminate.o)
+_RemoveObjectAt                                   ../avrx/avrx.a(avrx_semaphores.o)
+_RxByte                                           ../avrx/avrx.a(monitor.o)
+                                                  ../avrx/serialio.o
+_TimQLevel                                        ../avrx/avrx.a(avrx_timequeue.o)
+_TimerQueue                                       ../avrx/avrx.a(avrx_canceltimer.o)
+                                                  ../avrx/avrx.a(avrx_timequeue.o)
+__bad_interrupt                                   /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__bss_end                                         /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_clear_bss.o)
+__bss_start                                       /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_clear_bss.o)
+__data_end                                        /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_copy_data.o)
+__data_load_start                                 /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_copy_data.o)
+__data_start                                      /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_copy_data.o)
+__do_clear_bss                                    /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_clear_bss.o)
+                                                  MessagesAndData.o
+__do_copy_data                                    /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_copy_data.o)
+                                                  MessagesAndData.o
+__heap_end                                        /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__init                                            /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__stack                                           /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+                                                  MessagesAndData.o
+__vector_1                                        /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_10                                       /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_11                                       MessagesAndData.o
+                                                  /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_12                                       /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_13                                       ../avrx/serialio.o
+                                                  /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_14                                       ../avrx/serialio.o
+                                                  /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_15                                       /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_16                                       /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_17                                       /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_18                                       /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_19                                       /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_2                                        /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_20                                       /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_3                                        /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_4                                        /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_5                                        /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_6                                        /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_7                                        /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_8                                        /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_9                                        /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vector_default                                  /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+__vectors                                         /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+main                                              MessagesAndData.o
+                                                  /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+task1                                             MessagesAndData.o
+task1Pid                                          MessagesAndData.o
+task1Stk                                          MessagesAndData.o
+task1Tcb                                          MessagesAndData.o
+task2                                             MessagesAndData.o
+task2Pid                                          MessagesAndData.o
+task2Stk                                          MessagesAndData.o
+task2Tcb                                          MessagesAndData.o

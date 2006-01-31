@@ -1,0 +1,414 @@
+   1               		.file	"MessageTimersAlt.c"
+   2               		.arch atmega32
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  11               		.text
+  12               	.Ltext0:
+  80               	.global	switcherTcb
+  81               		.section	.progmem.data,"a",@progbits
+  84               	switcherTcb:
+  85 0000 0000      		.word	switcherStk+44
+  86 0002 0000      		.word	pm(switcher)
+  87 0004 0000      		.word	switcherPid
+  88 0006 03        		.byte	3
+  89               	.global	flasherTcb
+  92               	flasherTcb:
+  93 0007 0000      		.word	flasherStk+54
+  94 0009 0000      		.word	pm(flasher)
+  95 000b 0000      		.word	flasherPid
+  96 000d 02        		.byte	2
+  97               	.global	MonitorTcb
+ 100               	MonitorTcb:
+ 101 000e 0000      		.word	MonitorStk+54
+ 102 0010 0000      		.word	pm(Monitor)
+ 103 0012 0000      		.word	MonitorPid
+ 104 0014 00        		.byte	0
+ 105               		.text
+ 107               	.global	__vector_11
+ 109               	__vector_11:
+   1:MessageTimersAlt.c **** /*
+   2:MessageTimersAlt.c ****     Alternative Timer Message Example
+   3:MessageTimersAlt.c **** 
+   4:MessageTimersAlt.c ****     This example is identical to "MessageTimers.c" except that
+   5:MessageTimersAlt.c ****     it uses the function AvrXCancelTimerMessage() to remove the
+   6:MessageTimersAlt.c ****     timer from the time queue manager and restart it.
+   7:MessageTimersAlt.c **** 
+   8:MessageTimersAlt.c **** */
+   9:MessageTimersAlt.c **** //#define ENABLE_BIT_DEFINITIONS
+  10:MessageTimersAlt.c **** //#define _SFR_ASM_COMPAT 1
+  11:MessageTimersAlt.c **** #include <avrx-io.h>
+  12:MessageTimersAlt.c **** #include <avrx-signal.h>
+  13:MessageTimersAlt.c **** #include "avrx.h"               // AvrX System calls/data structures
+  14:MessageTimersAlt.c **** #include "serialio.h"           // From AvrX...
+  15:MessageTimersAlt.c **** #include "hardware.h"           // Sample code hardware defines
+  16:MessageTimersAlt.c **** 
+  17:MessageTimersAlt.c **** // Declare all my AvrX data structures
+  18:MessageTimersAlt.c **** 
+  19:MessageTimersAlt.c **** AVRX_IAR_TASK(Monitor, 0, 20, 0);       // External Task: Debug Monitor
+  20:MessageTimersAlt.c **** AVRX_GCC_TASK(Monitor, 20, 0);          // External Task: Debug Monitor
+  21:MessageTimersAlt.c **** 
+  22:MessageTimersAlt.c **** TimerControlBlock SwTimer;      // Plain vanilla timer
+  23:MessageTimersAlt.c **** TimerMessageBlock Timer;        // TimerMessage timer (just a timer with a
+  24:MessageTimersAlt.c ****                                 // message queue pointer appended)
+  25:MessageTimersAlt.c **** 
+  26:MessageTimersAlt.c **** // This is how you build up a message element that transports data
+  27:MessageTimersAlt.c **** 
+  28:MessageTimersAlt.c **** typedef struct MyMessage
+  29:MessageTimersAlt.c **** {
+  30:MessageTimersAlt.c ****     MessageControlBlock mcb;
+  31:MessageTimersAlt.c ****     unsigned char data;
+  32:MessageTimersAlt.c **** }
+  33:MessageTimersAlt.c **** *pMyMessage, MyMessage;
+  34:MessageTimersAlt.c **** 
+  35:MessageTimersAlt.c **** MyMessage SwitchMsg;            // Declare the actual message
+  36:MessageTimersAlt.c **** MessageQueue MyQueue;           // The message queue itself
+  37:MessageTimersAlt.c **** 
+  38:MessageTimersAlt.c **** /*
+  39:MessageTimersAlt.c ****  Timer 0 Overflow Interrupt Handler
+  40:MessageTimersAlt.c **** 
+  41:MessageTimersAlt.c ****  Prototypical Interrupt handler:
+  42:MessageTimersAlt.c ****  . Switch to kernel context
+  43:MessageTimersAlt.c ****  . handle interrupt
+  44:MessageTimersAlt.c ****  . switch back to interrupted context.
+  45:MessageTimersAlt.c ****  */
+  46:MessageTimersAlt.c **** #pragma optimize=z 4
+  47:MessageTimersAlt.c **** AVRX_SIGINT(SIG_OVERFLOW0)
+  48:MessageTimersAlt.c **** {
+ 111               	.LM1:
+ 112               	/* prologue: frame size=0 */
+ 113               	/* prologue: naked */
+ 114               	/* prologue end (size=0) */
+  49:MessageTimersAlt.c ****     IntProlog();                // Save interrupted context, switch stacks
+ 116               	.LM2:
+ 117 0000 0E94 0000 		call IntProlog
+  50:MessageTimersAlt.c ****     TCNT0 = TCNT0_INIT;
+ 119               	.LM3:
+ 120 0004 81EC      		ldi r24,lo8(-63)
+ 121 0006 82BF      		out 82-0x20,r24
+  51:MessageTimersAlt.c **** //    outp(TCNT0_INIT, TCNT0);    // Reload the timer counter
+  52:MessageTimersAlt.c ****     AvrXTimerHandler();         // Process Timer queue
+ 123               	.LM4:
+ 124 0008 0E94 0000 		call AvrXTimerHandler
+  53:MessageTimersAlt.c ****     Epilog();                   // Restore context of next running task
+ 126               	.LM5:
+ 127 000c 0E94 0000 		call Epilog
+ 128               	/* epilogue: frame size=0 */
+ 129               	/* epilogue: naked */
+ 130               	/* epilogue end (size=0) */
+ 131               	/* function __vector_11 size 8 (8) */
+ 133               	.Lscope0:
+ 135               	.global	flasher
+ 137               	flasher:
+  54:MessageTimersAlt.c **** }
+  55:MessageTimersAlt.c **** 
+  56:MessageTimersAlt.c **** AVRX_IAR_TASKDEF(flasher, 4, 16, 2)
+  57:MessageTimersAlt.c **** AVRX_GCC_TASKDEF(flasher, 20, 2)    // Note I added r_stack and c_stack!
+  58:MessageTimersAlt.c **** {
+ 139               	.LM6:
+ 140               	/* prologue: frame size=0 */
+ 141               	/* prologue end (size=0) */
+  59:MessageTimersAlt.c ****     unsigned char led = 0;
+ 143               	.LM7:
+ 144 0010 C0E0      		ldi r28,lo8(0)
+  60:MessageTimersAlt.c ****     pMyMessage pMsg;
+  61:MessageTimersAlt.c **** 
+  62:MessageTimersAlt.c **** 	LEDDDR = 0xFF;
+ 146               	.LM8:
+ 147 0012 8FEF      		ldi r24,lo8(-1)
+ 148 0014 84BB      		out 52-0x20,r24
+ 149               	.L13:
+  63:MessageTimersAlt.c **** //    outp(0xFF, LEDDDR);            // Initialize LED port to outputs
+  64:MessageTimersAlt.c **** 
+  65:MessageTimersAlt.c ****     while(1)
+  66:MessageTimersAlt.c ****     {
+  67:MessageTimersAlt.c **** 
+  68:MessageTimersAlt.c ****         AvrXStartTimerMessage(&Timer, 150, &MyQueue);
+ 151               	.LM9:
+ 152 0016 40E0      		ldi r20,lo8(MyQueue)
+ 153 0018 50E0      		ldi r21,hi8(MyQueue)
+ 154 001a 66E9      		ldi r22,lo8(150)
+ 155 001c 70E0      		ldi r23,hi8(150)
+ 156 001e 80E0      		ldi r24,lo8(Timer)
+ 157 0020 90E0      		ldi r25,hi8(Timer)
+ 158 0022 0E94 0000 		call AvrXStartTimerMessage
+  69:MessageTimersAlt.c ****         LED = ~led;
+ 160               	.LM10:
+ 161 0026 8C2F      		mov r24,r28
+ 162 0028 8095      		com r24
+ 163 002a 85BB      		out 53-0x20,r24
+  70:MessageTimersAlt.c **** //        outp(~led, LED);
+  71:MessageTimersAlt.c ****         pMsg = (pMyMessage)AvrXWaitMessage(&MyQueue);
+ 165               	.LM11:
+ 166 002c 80E0      		ldi r24,lo8(MyQueue)
+ 167 002e 90E0      		ldi r25,hi8(MyQueue)
+ 168 0030 0E94 0000 		call AvrXWaitMessage
+ 169 0034 9C01      		movw r18,r24
+  72:MessageTimersAlt.c ****         if (pMsg == &SwitchMsg)
+ 171               	.LM12:
+ 172 0036 80E0      		ldi r24,hi8(SwitchMsg)
+ 173 0038 2030      		cpi r18,lo8(SwitchMsg)
+ 174 003a 3807      		cpc r19,r24
+ 175 003c 89F4      		brne .L5
+  73:MessageTimersAlt.c ****         {
+  74:MessageTimersAlt.c ****             led ^= ~(pMsg->data);
+ 177               	.LM13:
+ 178 003e 8091 0000 		lds r24,SwitchMsg+4
+ 179 0042 8095      		com r24
+ 180 0044 C827      		eor r28,r24
+  75:MessageTimersAlt.c ****             AvrXAckMessage(&pMsg->mcb);
+ 182               	.LM14:
+ 183 0046 C901      		movw r24,r18
+ 184 0048 0E94 0000 		call AvrXAckMessage
+  76:MessageTimersAlt.c ****             if (AvrXCancelTimerMessage(&Timer, &MyQueue) != &Timer.u.mcb)
+ 186               	.LM15:
+ 187 004c 60E0      		ldi r22,lo8(MyQueue)
+ 188 004e 70E0      		ldi r23,hi8(MyQueue)
+ 189 0050 80E0      		ldi r24,lo8(Timer)
+ 190 0052 90E0      		ldi r25,hi8(Timer)
+ 191 0054 0E94 0000 		call AvrXCancelTimerMessage
+ 192 0058 8050      		subi r24,lo8(Timer)
+ 193 005a 9040      		sbci r25,hi8(Timer)
+ 194 005c E1F2      		breq .L13
+ 195 005e 07C0      		rjmp .L8
+ 196               	.L5:
+  77:MessageTimersAlt.c ****                 AvrXHalt();     // The timer should always be found...
+  78:MessageTimersAlt.c ****         }
+  79:MessageTimersAlt.c ****         else if ((pTimerMessageBlock)pMsg == &Timer)
+ 198               	.LM16:
+ 199 0060 2050      		subi r18,lo8(Timer)
+ 200 0062 3040      		sbci r19,hi8(Timer)
+ 201 0064 21F4      		brne .L8
+  80:MessageTimersAlt.c ****         {
+  81:MessageTimersAlt.c **** #ifdef __IAR_SYSTEMS_ICC__
+  82:MessageTimersAlt.c ****             led = led+led+((led & 0x80)?1:0);
+  83:MessageTimersAlt.c **** #else
+  84:MessageTimersAlt.c ****             asm("rol %0\n"\
+ 203               	.LM17:
+ 204               	/* #APP */
+ 205 0066 CC1F      		rol r28
+ 206 0068 08F4      		brcc .+2
+ 207 006a C395      		inc r28
+ 208               	
+ 209               	/* #NOAPP */
+ 210 006c D4CF      		rjmp .L13
+ 211               	.L8:
+  85:MessageTimersAlt.c ****                 "\tbrcc .+2\n"\
+  86:MessageTimersAlt.c ****                 "\tinc %0\n"  ::"r" (led));
+  87:MessageTimersAlt.c **** #endif
+  88:MessageTimersAlt.c ****         }
+  89:MessageTimersAlt.c ****         else
+  90:MessageTimersAlt.c ****         {
+  91:MessageTimersAlt.c ****             AvrXHalt();
+ 213               	.LM18:
+ 214 006e 0E94 0000 		call AvrXHalt
+ 215 0072 D1CF      		rjmp .L13
+ 216               	/* epilogue: frame size=0 */
+ 217               	/* epilogue: noreturn */
+ 218               	/* epilogue end (size=0) */
+ 219               	/* function flasher size 57 (57) */
+ 225               	.Lscope1:
+ 227               	.global	switcher
+ 229               	switcher:
+  92:MessageTimersAlt.c ****         }
+  93:MessageTimersAlt.c ****     }
+  94:MessageTimersAlt.c **** }
+  95:MessageTimersAlt.c **** AVRX_IAR_TASKDEF(switcher, 4, 16, 3)
+  96:MessageTimersAlt.c **** AVRX_GCC_TASKDEF(switcher, 10, 3)
+  97:MessageTimersAlt.c **** {
+ 231               	.LM19:
+ 232               	/* prologue: frame size=0 */
+ 233               	/* prologue end (size=0) */
+  98:MessageTimersAlt.c **** //    outp(0xFF, SWITCHP);            // Enable pullups on switch inputs
+  99:MessageTimersAlt.c ****     SWITCHP = 0xFF;            // Enable pullups on switch inputs
+ 235               	.LM20:
+ 236 0074 8FEF      		ldi r24,lo8(-1)
+ 237 0076 88BB      		out 56-0x20,r24
+ 238               	.L21:
+ 100:MessageTimersAlt.c ****     while(1)
+ 101:MessageTimersAlt.c ****     {
+ 102:MessageTimersAlt.c ****         AvrXDelay(&SwTimer, 10);    // Delay 10 milliseconds
+ 240               	.LM21:
+ 241 0078 6AE0      		ldi r22,lo8(10)
+ 242 007a 70E0      		ldi r23,hi8(10)
+ 243 007c 80E0      		ldi r24,lo8(SwTimer)
+ 244 007e 90E0      		ldi r25,hi8(SwTimer)
+ 245 0080 0E94 0000 		call AvrXDelay
+ 103:MessageTimersAlt.c **** //        if (SwitchMsg.data != inp(SWITCH)) // On change, send message
+ 104:MessageTimersAlt.c ****         if (SwitchMsg.data != SWITCH) // On change, send message
+ 247               	.LM22:
+ 248 0084 9091 0000 		lds r25,SwitchMsg+4
+ 249 0088 86B3      		in r24,54-0x20
+ 250 008a 9817      		cp r25,r24
+ 251 008c A9F3      		breq .L21
+ 105:MessageTimersAlt.c ****         {
+ 106:MessageTimersAlt.c **** //            SwitchMsg.data = inp(SWITCH);
+ 107:MessageTimersAlt.c ****             SwitchMsg.data = SWITCH;
+ 253               	.LM23:
+ 254 008e 86B3      		in r24,54-0x20
+ 255 0090 8093 0000 		sts SwitchMsg+4,r24
+ 108:MessageTimersAlt.c ****             AvrXSendMessage(&MyQueue, &SwitchMsg.mcb);
+ 257               	.LM24:
+ 258 0094 60E0      		ldi r22,lo8(SwitchMsg)
+ 259 0096 70E0      		ldi r23,hi8(SwitchMsg)
+ 260 0098 80E0      		ldi r24,lo8(MyQueue)
+ 261 009a 90E0      		ldi r25,hi8(MyQueue)
+ 262 009c 0E94 0000 		call AvrXSendMessage
+ 109:MessageTimersAlt.c ****             AvrXWaitMessageAck(&SwitchMsg.mcb);
+ 264               	.LM25:
+ 265 00a0 80E0      		ldi r24,lo8(SwitchMsg)
+ 266 00a2 90E0      		ldi r25,hi8(SwitchMsg)
+ 267 00a4 0E94 0000 		call AvrXWaitMessageAck
+ 268 00a8 E7CF      		rjmp .L21
+ 269               	/* epilogue: frame size=0 */
+ 270               	/* epilogue: noreturn */
+ 271               	/* epilogue end (size=0) */
+ 272               	/* function switcher size 27 (27) */
+ 274               	.Lscope2:
+ 276               	.global	main
+ 278               	main:
+ 110:MessageTimersAlt.c ****         }
+ 111:MessageTimersAlt.c ****     }
+ 112:MessageTimersAlt.c **** }
+ 113:MessageTimersAlt.c **** 
+ 114:MessageTimersAlt.c **** int main(void)
+ 115:MessageTimersAlt.c **** {
+ 280               	.LM26:
+ 281               	/* prologue: frame size=0 */
+ 282 00aa C0E0      		ldi r28,lo8(__stack - 0)
+ 283 00ac D0E0      		ldi r29,hi8(__stack - 0)
+ 284 00ae DEBF      		out __SP_H__,r29
+ 285 00b0 CDBF      		out __SP_L__,r28
+ 286               	/* prologue end (size=4) */
+ 116:MessageTimersAlt.c ****     AvrXSetKernelStack(0);
+ 288               	.LM27:
+ 289 00b2 80E0      		ldi r24,lo8(0)
+ 290 00b4 90E0      		ldi r25,hi8(0)
+ 291 00b6 0E94 0000 		call AvrXSetKernelStack
+ 117:MessageTimersAlt.c ****     MCUCR = 1<<SE;
+ 293               	.LM28:
+ 294 00ba 80E8      		ldi r24,lo8(-128)
+ 295 00bc 85BF      		out 85-0x20,r24
+ 118:MessageTimersAlt.c ****     TCNT0 = TCNT0_INIT;
+ 297               	.LM29:
+ 298 00be 81EC      		ldi r24,lo8(-63)
+ 299 00c0 82BF      		out 82-0x20,r24
+ 119:MessageTimersAlt.c ****     TCCR0 = TMC8_CK256;
+ 301               	.LM30:
+ 302 00c2 84E0      		ldi r24,lo8(4)
+ 303 00c4 83BF      		out 83-0x20,r24
+ 120:MessageTimersAlt.c ****     TIMSK = 1<<TOIE0;
+ 305               	.LM31:
+ 306 00c6 81E0      		ldi r24,lo8(1)
+ 307 00c8 89BF      		out 89-0x20,r24
+ 121:MessageTimersAlt.c **** /*
+ 122:MessageTimersAlt.c ****     outp((1<<SE) , MCUCR);      // Enable "sleep" mode (low power when idle)
+ 123:MessageTimersAlt.c ****     outp(TCNT0_INIT, TCNT0);    // Load overflow counter of timer0
+ 124:MessageTimersAlt.c ****     outp(TMC8_CK256 , TCCR0);   // Set Timer0 to CPUCLK/256
+ 125:MessageTimersAlt.c ****     outp((1<<TOIE0), TIMSK);    // Enable interrupt flag
+ 126:MessageTimersAlt.c **** */
+ 127:MessageTimersAlt.c ****     AvrXRunTask(TCB(flasher));
+ 309               	.LM32:
+ 310 00ca 80E0      		ldi r24,lo8(flasherTcb)
+ 311 00cc 90E0      		ldi r25,hi8(flasherTcb)
+ 312 00ce 0E94 0000 		call AvrXRunTask
+ 128:MessageTimersAlt.c ****     AvrXRunTask(TCB(switcher));
+ 314               	.LM33:
+ 315 00d2 80E0      		ldi r24,lo8(switcherTcb)
+ 316 00d4 90E0      		ldi r25,hi8(switcherTcb)
+ 317 00d6 0E94 0000 		call AvrXRunTask
+ 129:MessageTimersAlt.c ****     AvrXRunTask(TCB(Monitor));
+ 319               	.LM34:
+ 320 00da 80E0      		ldi r24,lo8(MonitorTcb)
+ 321 00dc 90E0      		ldi r25,hi8(MonitorTcb)
+ 322 00de 0E94 0000 		call AvrXRunTask
+ 130:MessageTimersAlt.c **** 
+ 131:MessageTimersAlt.c ****     AvrXSetSemaphore(&EEPromMutex); // Enables EEPROM access in monitor
+ 324               	.LM35:
+ 325 00e2 80E0      		ldi r24,lo8(EEPromMutex)
+ 326 00e4 90E0      		ldi r25,hi8(EEPromMutex)
+ 327 00e6 0E94 0000 		call AvrXSetSemaphore
+ 132:MessageTimersAlt.c ****     InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
+ 329               	.LM36:
+ 330 00ea 83E3      		ldi r24,lo8(51)
+ 331 00ec 90E0      		ldi r25,hi8(51)
+ 332 00ee 0E94 0000 		call InitSerialIO
+ 133:MessageTimersAlt.c **** 
+ 134:MessageTimersAlt.c ****     Epilog();                   // Switch from AvrX Stack to first task
+ 334               	.LM37:
+ 335 00f2 0E94 0000 		call Epilog
+ 135:MessageTimersAlt.c ****     return 0;
+ 136:MessageTimersAlt.c **** }
+ 337               	.LM38:
+ 338 00f6 80E0      		ldi r24,lo8(0)
+ 339 00f8 90E0      		ldi r25,hi8(0)
+ 340               	/* epilogue: frame size=0 */
+ 341 00fa 0C94 0000 		jmp exit
+ 342               	/* epilogue end (size=2) */
+ 343               	/* function main size 42 (36) */
+ 345               	.Lscope3:
+ 346               		.comm MonitorStk,55,1
+ 347               		.comm MonitorPid,6,1
+ 348               		.comm SwTimer,6,1
+ 349               		.comm Timer,8,1
+ 350               		.comm SwitchMsg,5,1
+ 351               		.comm MyQueue,4,1
+ 352               		.comm flasherStk,55,1
+ 353               		.comm flasherPid,6,1
+ 354               		.comm switcherStk,45,1
+ 355               		.comm switcherPid,6,1
+ 369               		.text
+ 371               	Letext:
+ 372               	/* File "MessageTimersAlt.c": code  134 = 0x0086 ( 128), prologues   4, epilogues   2 */
+DEFINED SYMBOLS
+                            *ABS*:00000000 MessageTimersAlt.c
+                            *ABS*:0000003f __SREG__
+                            *ABS*:0000003e __SP_H__
+                            *ABS*:0000003d __SP_L__
+                            *ABS*:00000000 __tmp_reg__
+                            *ABS*:00000001 __zero_reg__
+     /tmp/ccaNw38k.s:84     .progmem.data:00000000 switcherTcb
+                            *COM*:0000002d switcherStk
+     /tmp/ccaNw38k.s:229    .text:00000074 switcher
+                            *COM*:00000006 switcherPid
+     /tmp/ccaNw38k.s:92     .progmem.data:00000007 flasherTcb
+                            *COM*:00000037 flasherStk
+     /tmp/ccaNw38k.s:137    .text:00000010 flasher
+                            *COM*:00000006 flasherPid
+     /tmp/ccaNw38k.s:100    .progmem.data:0000000e MonitorTcb
+                            *COM*:00000037 MonitorStk
+                            *COM*:00000006 MonitorPid
+     /tmp/ccaNw38k.s:109    .text:00000000 __vector_11
+                            *COM*:00000004 MyQueue
+                            *COM*:00000008 Timer
+                            *COM*:00000005 SwitchMsg
+                            *COM*:00000006 SwTimer
+     /tmp/ccaNw38k.s:278    .text:000000aa main
+     /tmp/ccaNw38k.s:371    .text:000000fe Letext
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+Monitor
+IntProlog
+AvrXTimerHandler
+Epilog
+AvrXStartTimerMessage
+AvrXWaitMessage
+AvrXAckMessage
+AvrXCancelTimerMessage
+AvrXHalt
+AvrXDelay
+AvrXSendMessage
+AvrXWaitMessageAck
+__stack
+AvrXSetKernelStack
+AvrXRunTask
+EEPromMutex
+AvrXSetSemaphore
+InitSerialIO
+exit
