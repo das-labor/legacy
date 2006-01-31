@@ -4,6 +4,10 @@
 
 extern unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
 
+#ifndef PIXEL_C
+extern unsigned char shl_table[];
+#endif
+
 typedef struct {
 	unsigned char x;
 	unsigned char y;
@@ -33,14 +37,14 @@ unsigned char easyRandom();
 
 void shift3d(direction dir);
 void set_plane(direction dir, unsigned char num, unsigned char color);
-			   pixel3d mulMatrixPoint(char *mat, pixel3d *p);
+pixel3d mulMatrixPoint(char *mat, pixel3d *p);
 
 char Sin(unsigned char a);
 #define Cos(a) Sin((a)+16)
 
 void scale(unsigned char sx, unsigned char sy, unsigned char sz, pixel3d* points, 
-			pixel3d* resPoints, int numPoint, pixel3d scaleP);
+		   pixel3d* resPoints, int numPoint, pixel3d scaleP);
 void rotate(unsigned char a, unsigned char b, unsigned char c, pixel3d* points, 
 			pixel3d* resPoints, int numPoint, pixel3d rotP);
-
-void drawLine3D(char px1, char py1, char pz1, char px2, char py2, char pz2, unsigned char value);
+void drawLine3D(char px1, char py1, char pz1, 
+ 			    char px2, char py2, char pz2, unsigned char value);

@@ -38,6 +38,6 @@ int joyisleft() {
 #define JOYISDOWN joyisdown()
 #define JOYISLEFT joyisleft()
 #define JOYISRIGHT joyisright()
-#define JOYISFIRE 0
+#define JOYISFIRE joy_en0
 
 #endif // JOYSTICK_H
