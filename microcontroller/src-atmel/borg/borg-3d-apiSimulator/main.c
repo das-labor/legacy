@@ -27,7 +27,7 @@ unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
 float view_rotx = 0, view_roty = 0, view_rotz = 0;
 int win;
 
-char joy1_up = 0, joy1_down = 0, joy1_right = 0, joy1_left = 0;
+char joy1_up = 0, joy1_down = 0, joy1_right = 0, joy1_left = 0, joy_en0 = 0;
 
 pthread_t simthread;
 GLUquadric* quad;
