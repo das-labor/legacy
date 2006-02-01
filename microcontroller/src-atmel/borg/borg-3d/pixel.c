@@ -348,7 +348,7 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 	} //end switch(dir)
 }
 
-// 64 = sin(90°) = 1
+// 16 = sin(90°) = 1
 char sinTab[] = {0, 6, 12, 19, 24, 30, 36, 41, 45, 49, 53, 56, 59, 61, 63, 64, 64};
 		 
 char Sin(unsigned char a) {
