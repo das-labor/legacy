@@ -99,6 +99,7 @@ end
 class PgpCard 
   attr_writer :d, :e, :n, :p, :q
 
+  # bits == sqrt(keysize)
   def gen_key(bits)
      max = (2**bits) - 1;
      @p = get_prime(max);
@@ -141,16 +142,14 @@ end
 
 
 card = PgpCard.new;
-card.gen_key(512);
+card.gen_key(32);
 puts card;
 
-#card.n = 23*17;
-#card.e = 5;
-#card.d = 5;
+m1_in = 23;
 
-#m1 = 6;
-#sig = card.sign(m1)
-#puts card.verify(sig) 
+sig    = card.sign(m1_in)
+m1_out = card.verify(sig) 
+puts "Signing message m=#{m1_in} ; sig(m)=#{sig} ; verify(sig)=#{m1_out}"
 
 
 
