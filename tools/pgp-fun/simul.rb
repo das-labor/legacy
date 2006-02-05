@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
 
+#  apt-get install libopenssl-ruby
+require "openssl"
+include OpenSSL
+
 # Values from joern Card
 e=0xbe0df275
 n=0xba82f2abc9ac0495dbecbfb953b14bf2e4030e904d74332dcdcc6cc54010b29320c704865026bf94723b15cf40f8208d5249712912081a52c29862716b74c34e0f79cc8ac59ffd17760c347531f583ac1f7da32702c7973a3621cb9a311eb312d00b7ce479b9e6b96587b9c7b03a432e0dad8d5e53e2fac6787d9a338b6bd11d
@@ -29,9 +33,11 @@ end
 ####
 # Primzahlentest
 def prime?(p)
-  [2].inject(true) { |is_prime,w| 
-    is_prime && (modpow(w,p-1,p)==1)
-  }
+  bn = BN.new(p.to_s);
+  return bn.prime?(100);
+#  [2,3,5,7].inject(true) { |is_prime,w| 
+#    is_prime && (modpow(w,p-1,p)==1)
+#  }
 end
 
 ####
@@ -54,6 +60,8 @@ def gcd(a,b)
   end
   return a;
 end
+
+
 
 
 
@@ -95,18 +103,23 @@ class PgpCard
      max = (2**bits) - 1;
      @p = get_prime(max);
      @q = get_prime(max);
+     while (@p == @q) do
+       @q = get_prime(max);
+     end
 
      euler = (@p-1) * (@q-1);
 
      begin
        e = rand(euler-1) + 1;
        xe = XEuclid.new( -euler, e );
-       puts "1=#{xe.d} , d=#{xe.t}";
-     end while( xe.d!=1)
+     end while(xe.d!=1)
+#     puts "#{xe.d} = #{xe.a}*#{xe.s} + #{xe.b}*#{xe.t} , d=#{xe.t}   ";
 
      @n = @p * @q;
      @d = xe.t;
      @e = e;
+
+     if (@d < 0) then @d = @d % euler; end
   end
 
   def sign(m)
@@ -127,15 +140,8 @@ class PgpCard
 end
 
 
-30.times {
-  puts get_prime(20);
-}
-
-
-
-
 card = PgpCard.new;
-card.gen_key(3);
+card.gen_key(512);
 puts card;
 
 #card.n = 23*17;
