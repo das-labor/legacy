@@ -97,7 +97,7 @@ end
 #####
 #  Simulated OpenPGP Card
 class PgpCard 
-  attr_writer :d, :e, :n, :p, :q
+  attr_reader :d, :e, :n, :p, :q
 
   # bits == sqrt(keysize)
   def gen_key(bits)
@@ -145,13 +145,26 @@ card = PgpCard.new;
 card.gen_key(32);
 puts card;
 
-m1_in = 23;
+m1   = 7*5*3;
+sig1 = card.sign(m1)
+mo1  = card.verify(sig1) 
+puts "Signing message m=#{m1} ; sig(m)=#{sig1} ; verify(sig)=#{mo1}"
 
-sig    = card.sign(m1_in)
-m1_out = card.verify(sig) 
-puts "Signing message m=#{m1_in} ; sig(m)=#{sig} ; verify(sig)=#{m1_out}"
+m2   = 7*5*2;
+sig2 = card.sign(m2)
+mo2  = card.verify(sig2) 
+puts "Signing message m=#{m2} ; sig(m)=#{sig2} ; verify(sig)=#{mo2}"
+
+m3   = 7*5;
+sig3 = card.sign(m3)
+mo3  = card.verify(sig3) 
+puts "Signing message m=#{m3} ; sig(m)=#{sig3} ; verify(sig)=#{mo3}"
 
 
+puts "------------"
+puts gcd(m1, m2)
+puts gcd(sig1, sig2)
+puts gcd(sig2, sig3)
 
 #puts power(val2, e, n);
 #puts power(11,3,1000);
