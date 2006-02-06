@@ -933,14 +933,14 @@ void planeAnimation2(unsigned char ms)
 #define NPOINTS 8
 #define NLINES 12
 void rotatedScaledCube() {
-	pixel3d org[NPOINTS] = {{0x60, 0x60, 0x60}, // 0
-							{0xB0, 0x60, 0x60}, // 1
-							{0xB0, 0xB0, 0x60}, // 2 
-							{0x60, 0xB0, 0x60}, // 3
-							{0x60, 0x60, 0xB0}, // 4
-							{0xB0, 0x60, 0xB0}, // 5
-							{0xB0, 0xB0, 0xB0}, // 6
-							{0x60, 0xB0, 0xB0}  // 7
+	pixel3d org[NPOINTS] = {{0x10, 0x10, 0x10}, // 0
+							{0x60, 0x10, 0x10}, // 1
+							{0x60, 0x60, 0x10}, // 2 
+							{0x10, 0x60, 0x10}, // 3
+							{0x10, 0x10, 0x60}, // 4
+							{0x60, 0x10, 0x60}, // 5
+							{0x60, 0x60, 0x60}, // 6
+							{0x10, 0x60, 0x60}  // 7
 							};							
 	unsigned char drawlist[NLINES*2] = {0, 1,
 										0, 4,
@@ -961,16 +961,19 @@ void rotatedScaledCube() {
 	unsigned char i;								
 											
 	for (a = 0; a < 1500; a++) {
-		scale(a/35+40, a/35+40, a/35+40, org, sca, NPOINTS, (pixel3d) {0x90, 0x90, 0x90});
-		rotate(a/3, a/5 , a/4, sca, rot, NPOINTS, (pixel3d) {0x98, 0x98, 0x98});
+		scale(a/35+40, a/35+40, a/35+40, org, sca, NPOINTS, (pixel3d) {0x30, 0x30, 0x30});
+		rotate(a/3, a/5 , a/4, sca, rot, NPOINTS, (pixel3d) {0x38, 0x38, 0x38});
 		
 		for (i = 0; i < NLINES*2; i += 2) {
 			h1 = rot[drawlist[i]];
 			h2 = rot[drawlist[i+1]];
-			drawLine3D((h1.x+8-0x60)/16, (h1.y+8-0x60)/16, (h1.z+8-0x60)/16,
-					   (h2.x+8-0x60)/16, (h2.y+8-0x60)/16, (h2.z+8-0x60)/16, 3);
+			//printf("%d %d %d %d %d %d \n", (h1.x+8+0x40)/16-4, (h1.y+8+0x40)/16-4, 
+            //      (h1.z+8+0x40)/16-4, (h2.x+8+0x40)/16-4, (h2.y+8+0x40)/16-4, 
+            //       (h2.z+8+0x40)/16-4);
+			drawLine3D(((char)h1.x+8)/16, ((char)h1.y+8)/16, ((char)h1.z+8)/16,
+					   ((char)h2.x+8)/16, ((char)h2.y+8)/16, ((char)h2.z+8)/16, 3);
 		}
-		wait(30); 
+		wait(5); 
 		clear_screen(0);
 	}	
 }
@@ -1193,9 +1196,9 @@ void pong() {
 
 void *display_loop(void * unused) {
 	while (1) {
-		pong();
+		//pong();
 		//spirale();
-		testLine3D();
+		//testLine3D();
 		
 		rotatedScaledCube();
 		
