@@ -3,6 +3,7 @@
 #  apt-get install libopenssl-ruby
 require "openssl"
 require "pgpcard.rb"
+require "factorize.rb"
 include OpenSSL
 
 # Values from joern Card
@@ -11,6 +12,9 @@ n=0xba82f2abc9ac0495dbecbfb953b14bf2e4030e904d74332dcdcc6cc54010b29320c704865026
 
 val2=0x8723D6BEC9201B35ADB39131E74C6E0DF339C6F379E4F890885550293F0D51C9FA2F2D5693B963F83DAFA61ABDCA57F1B47094732220F7935C4DE6E9057E8872FCE808367E55DF55BE902E0EF76904F9A39F76B854FBF616C8F50B24BCAAC4C022DDA7893B43BA4F5AC42D498EDF7220AD8267600C3233B6E9FC2A0E91082500;
 val4=0x6895681E10C8B3D2893F8B08FEA84FA870BE754020A036BB9B5452758DB79A796E14B67A24DB8E4598DECF945216A94793C65658066DE63FF7BD3B18ABCFDCB1367A9B7E400BA7E7424AD5CC418D4184396B85AF30F1E2D54E1F87F57F2E069CC7A9C5C785EA341F2DE7E90CEE75F2FB5E63B0B9B320BBE594A8B75E06BBFDB3;
+
+
+
 
 
 card = PgpCard.new;
@@ -28,11 +32,50 @@ sig1 = card.sign(pad + m1)
 mo1  = card.verify(sig1) - pad
 printf "Signing message m=%x, sig(m)=%x, verify(sig)=%x\n", m1, sig1, mo1
 
+m1   = 2;
+sig1 = card.sign(pad + m1)
+mo1  = card.verify(sig1) - pad
+printf "Signing message m=%x, sig(m)=%x, verify(sig)=%x\n", m1, sig1, mo1
+
 xe = XEuclid.new(sig1, card.n);
 pad1 = xe.s % card.n;
 
+hist = Hash.new;
+hist.default = 0;
+
+numbers = [2,3]
 
 
+durch=0;
+10.times {
+
+n = 1;
+c = 0;
+
+while n < 0xffffff0000 do
+  n = numbers[rand(numbers.length)] * n % 0xffffffffff;
+  printf "0x%016X\n", n
+  c += 1;
+end
+
+printf "FOUND %10d 0x%016X\n", c, n
+durch += c;
+}
+
+puts "Durchschnittlich: #{durch/10}"
+
+exit 1
+0xff0000.upto(0xffffff) { |n|
+  if (n % 0xff == 0) then puts n; end
+  fh = factorize(n)
+  fh.each { |factor,exponent|
+    hist[factor] += 1;
+  }
+}
+
+hist.sort.each { |prime,count|
+  puts "#{prime}, #{count}"
+}
 
 exit 1
 

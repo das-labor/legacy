@@ -52,10 +52,14 @@ sig(4):
 verify(sign(4)):
 0001ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff003021300906052b0e03021a050004140000000000000000000000000000000000000004
 
-Aufteilung der zu signierenden m:
+
+PKCS#1 V1.5  ==  00|0F| PS | HID | M
+
+Aufteilung der zu signierenden m
 
 0001FF...FF003021300906052b0e03021a050004140000000000000000000000000000000000000004
 |16|| 720 ||          128                 ||              160                     |    == 1024 Bits
+|                864                      ||              160                     |
 
 
 * .plan
