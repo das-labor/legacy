@@ -29,7 +29,7 @@ typedef struct {
 #define RES3 ((RES*3)/4)
 void pong() {
     unsigned char posx0 = 64, posz0 = 64, posx1 = 64, posz1 = 64;
-	unsigned char lives0 = 5, lives1 = 5, ballblink = 0, score = 0;
+	unsigned char lives0 = 5, lives1 = 5, score = 0;
 	unsigned char counter = 8, joy0 = 0, joy1 = 0, ballV, i;
 	ball ballPos128 = {4*128, 2*128, 4*128};
 	pixel3d helpDir, ballDir = INIT_DIR, ballPos, ballPosOld;
@@ -60,14 +60,14 @@ void pong() {
 			ballPos.x = (ballPos128.x + 64) / 128;
 			ballPos.y = (ballPos128.y + 64) / 128;
 			ballPos.z = (ballPos128.z + 64) / 128;
-			if (ballPos128.y >= (LEN_Y*128-RES2) && !joy0) {
-				if (ballPos128.y >= LEN_Y*128)
-					ballPos128.y = LEN_Y*128 - RES2;
+			if (ballPos128.y >= ((LEN_Y-1)*128-RES2) && !joy0) {
+				if (ballPos128.y >= (LEN_Y-1)*128)
+					ballPos128.y = (LEN_Y-1)*128 - RES2;
 				ballDir.y = (char)-ballDir.y;
 			}
-			if (ballPos128.y >= (LEN_Y*128-RES3) && joy0) {
-				if (ballPos128.y >= LEN_Y*128)
-					ballPos128.y = LEN_Y*128 - RES2;
+			if (ballPos128.y >= ((LEN_Y-1)*128-RES3) && joy0) {
+				if (ballPos128.y >= (LEN_Y-1)*128)
+					ballPos128.y = (LEN_Y-1)*128 - RES2;
 				if ((ballPos128.x+4)/8 >= posx0 - 8 && (ballPos128.x+4)/8 < posx0+56  && 
 					(ballPos128.z+4)/8 >= posz0 - 8 && (ballPos128.z+4)/8 < posz0+56) {
 					rotate(1-((char)ballPos.z - ((char)posz1+8)/16), 0, 
