@@ -25,11 +25,12 @@ typedef struct {
 #define LEN_Y 8
 #define INIT_DIR {28, 56, 14} 
 #define RES 128
-#define RES2 ((RES*2)/3)
+#define RES2 (RES/3)
 #define RES3 ((RES*3)/4)
+#define AGRESSIVENES 40 // lower <=> agressiver
 void pong() {
     unsigned char posx0 = 64, posz0 = 64, posx1 = 64, posz1 = 64;
-	unsigned char lives0 = 5, lives1 = 5, score = 0;
+	unsigned char lives0 = 5, lives1 = 5, score0 = 0, score1 = 0;
 	unsigned char counter = 8, joy0 = 0, joy1 = 0, ballV, i;
 	ball ballPos128 = {4*128, 2*128, 4*128};
 	pixel3d helpDir, ballDir = INIT_DIR, ballPos, ballPosOld;
@@ -54,8 +55,8 @@ void pong() {
 			}
 		}	
 		if((!joy0) && (!joy1))
-				break;//no player, so there was a glitch on the fire line.
-		ballV = 3 + score % 2;
+			break;//no player, so there was a glitch on the fire line.
+		ballV = 4 + (score0 > score1 ? score0 : score1)/3;
 		if (!--counter) {
 			ballPos.x = (ballPos128.x + 64) / 128;
 			ballPos.y = (ballPos128.y + 64) / 128;
@@ -70,12 +71,12 @@ void pong() {
 					ballPos128.y = (LEN_Y-1)*128 - RES2;
 				if ((ballPos128.x+4)/8 >= posx0 - 8 && (ballPos128.x+4)/8 < posx0+56  && 
 					(ballPos128.z+4)/8 >= posz0 - 8 && (ballPos128.z+4)/8 < posz0+56) {
-					rotate(1-((char)ballPos.z - ((char)posz1+8)/16), 0, 
-					   	   1-((char)ballPos.x - ((char)posx1+8)/16),
-					       &ballDir, &helpDir, 1, (pixel3d) {0, 0, 0});
+					rotate((8-(ballPos128.z+4)/8 - ((char)posz1+8))/AGRESSIVENES, 0, 
+						   (8-(ballPos128.x+4)/8 - ((char)posx1+8))/AGRESSIVENES,
+						   &ballDir, &helpDir, 1, (pixel3d) {0, 0, 0});
 					ballDir = helpDir;						   
-					ballDir.y = (char)-ballDir.y;
-					score++;
+					ballDir.y = (char) -ballDir.y;
+					score0++;
 				} else {
 					if (--lives0) {
 					    for (i = lives0+1; i; --i) {
@@ -109,12 +110,12 @@ void pong() {
 					ballPos128.y = RES2;
 				if ((ballPos128.x+4)/8 >= posx1 - 8	&& (ballPos128.x+4)/8 < posx1+56 && 
 					(ballPos128.z+4)/8 >= posz1 - 8 && (ballPos128.z+4)/8 < posz1+56) {			
-					rotate(1-((char)ballPos.z - ((char)posz1+8)/16), 0, 
-						   1-((char)ballPos.x - ((char)posx1+8)/16),
+					rotate((8-(ballPos128.z+4)/8 - ((char)posz1+8))/AGRESSIVENES, 0, 
+						   (8-(ballPos128.x+4)/8 - ((char)posx1+8))/AGRESSIVENES,
 						   &ballDir, &helpDir, 1, (pixel3d) {0, 0, 0});
 					ballDir = helpDir;
 				    ballDir.y = (char) -ballDir.y;
-					score++;
+					score1++;
 				} else {
 					if (--lives1) {
 					    for (i = lives1+1; i; --i) {
@@ -142,20 +143,20 @@ void pong() {
 				ballDir.x = (char) -ballDir.x;
 				if (ballPos128.x < 0)
 					ballPos128.x = RES2;
-			} else if (ballPos128.x >= (LEN_Y*128 - RES2)) {
+			} else if (ballPos128.x >= ((LEN_Y-1)*128 - RES2)) {
 				ballDir.x = (char) -ballDir.x;
-				if (ballPos128.x >= LEN_Y*128)
-					ballPos128.x = LEN_Y*128 - RES2;
+				if (ballPos128.x >= (LEN_Y-1)*128)
+					ballPos128.x = (LEN_Y-1)*128 - RES2;
 			}
 			
 			if (ballPos128.z <= RES2) { 
 				ballDir.z = (char) -ballDir.z;
 				if (ballPos128.z < 0)
 					ballPos128.z = RES2;
-			} else if (ballPos128.z >= (LEN_Y*128 - RES2)) {
+			} else if (ballPos128.z >= ((LEN_Y-1)*128 - RES2)) {
 				ballDir.z = (char) -ballDir.z;
-				if (ballPos128.z >= LEN_Y*128)
-					ballPos128.z = LEN_Y*128 - RES2;
+				if (ballPos128.z >= (LEN_Y-1)*128)
+					ballPos128.z = (LEN_Y-1)*128 - RES2;
 			}
 		}	
 		
@@ -216,7 +217,7 @@ void pong() {
 			ballPos128.x += ((char)ballDir.x * ballV)/4;
 			ballPos128.y += ((char)ballDir.y * ballV)/4;
 			ballPos128.z += ((char)ballDir.z * ballV)/4;
-			counter = 12;
+			counter = 15;
 		}
 		clearpixel3d(ballPos);
 		ballPosOld = ballPos;

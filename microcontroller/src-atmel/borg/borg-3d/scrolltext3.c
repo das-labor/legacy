@@ -5,7 +5,7 @@
 #include <setjmp.h>
 
 #include "config.h"
-#include "scrolltext.h"
+#include "scrolltext2.h"
 #include "pixel.h"
 #include "util.h"
 #include "font_uni53.h"
