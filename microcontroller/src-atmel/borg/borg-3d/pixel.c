@@ -382,7 +382,7 @@ Matrix Format
 (12 13 14 15) not exist  because normally 0 0 0 1
               but works intern with homogen coordiantes
 */
-void rotate(unsigned char a, unsigned char b, unsigned char c, pixel3d* points, 
+void rotate(char a, char b, char c, pixel3d* points, 
 			pixel3d* resPoints, int numPoint, pixel3d rotP) {
 	char mat[12];
 	unsigned char i;
@@ -405,9 +405,9 @@ void rotate(unsigned char a, unsigned char b, unsigned char c, pixel3d* points,
 		mat[7]  = 0;
 		mat[11] = 0;
 	} else {
-		mat[3]  = rotP.x - ((mat[0]*rotP.x)/64 + (mat[1]*rotP.y)/64 + (mat[2]*rotP.z)/64);
-		mat[7]  = rotP.y - ((mat[4]*rotP.x)/64 + (mat[5]*rotP.y)/64 + (mat[6]*rotP.z)/64);
-		mat[11] = rotP.z - ((mat[8]*rotP.x)/64 + (mat[9]*rotP.y)/64 + (mat[10]*rotP.z)/64);
+		mat[3]  = rotP.x - ((mat[0]*(char)rotP.x)/64 + (mat[1]*(char)rotP.y)/64 + (mat[2]*(char)rotP.z)/64);
+		mat[7]  = rotP.y - ((mat[4]*(char)rotP.x)/64 + (mat[5]*(char)rotP.y)/64 + (mat[6]*(char)rotP.z)/64);
+		mat[11] = rotP.z - ((mat[8]*(char)rotP.x)/64 + (mat[9]*(char)rotP.y)/64 + (mat[10]*(char)rotP.z)/64);
 	}
 	/*
 	for (i = 0; i < 3; i++) {
@@ -419,7 +419,7 @@ void rotate(unsigned char a, unsigned char b, unsigned char c, pixel3d* points,
 	}	
 }
 
-void scale(unsigned char sx, unsigned char sy, unsigned char sz, pixel3d* points, 
+void scale(char sx, char sy, char sz, pixel3d* points, 
 			pixel3d* resPoints, int numPoint, pixel3d scaleP) {
 	char mat[12] = {sx,  0,  0,  scaleP.x - (sx*scaleP.x)/64,
 					 0, sy,  0,  scaleP.y - (sy*scaleP.y)/64,
@@ -428,7 +428,7 @@ void scale(unsigned char sx, unsigned char sy, unsigned char sz, pixel3d* points
  	for (i = 0; i < numPoint; i++) {
 		resPoints[i] = mulMatrixPoint(mat, &points[i]);
 	}			
-}				
+}					
 
 #define BIT_S(var,b) ((var&(1<<b))?1:0)
 
