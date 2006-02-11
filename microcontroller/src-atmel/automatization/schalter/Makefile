@@ -42,6 +42,7 @@ FALSE	= 0
 MCU = atmega8
 
 TARGET = main
+CANADDR = 1
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
@@ -317,7 +318,10 @@ gccversion :
 program: $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
 
+LAPFLASHCMD   = lapcontrol -s rl
 
+canflash: $(TARGET).hex
+	$(LAPFLASHCMD) flash $(CANADDR) $(TARGET).hex
 
 
 # Convert ELF to COFF for use in debugging / simulating in AVR Studio or VMLAB.

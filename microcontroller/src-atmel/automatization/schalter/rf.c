@@ -78,13 +78,13 @@ AVRX_SIGINT(SIG_OUTPUT_COMPARE1B)
 	Epilog();
 }
 
-uint8_t rf_time2code(rf_code_t * code, uint8_t * time){
-	uint8_t byte, t0, t1, tmp, msk = 0x80;	
-	for(byte=0;byte<3;byte++){
+uint8_t rf_time2code(rf_code_t * code, uint8_t * time, uint8_t numbits){
+	uint8_t byte, bit=0, t0, t1, tmp, msk;	
+	while(bit < numbits){
 		tmp = 0;
 		msk = 0x80;
 		
-		while(msk){
+		while(msk && (bit < numbits)){
 			t0 = *time, t1=*(time+1);
 			if((t0>1) && (t0<0x0a) && (t1>0x09) && (t1<0x12)){
 				//tmp|=msk;
@@ -95,8 +95,9 @@ uint8_t rf_time2code(rf_code_t * code, uint8_t * time){
 			}
 			time+=2;
 			msk>>=1;
+			bit++;
 		}
-		code->b[byte] = tmp;
+		code->b[byte++] = tmp;
 	}
 	return 0;
 }
@@ -118,6 +119,10 @@ void lampedim(uint8_t lampe, int8_t d){
 	can_put(&msg);
 }
 
+
+
+
+
 AVRX_GCC_TASKDEF(rfrxtask, 50, 6)
 {
 	OCR1A = 120;
@@ -129,7 +134,8 @@ AVRX_GCC_TASKDEF(rfrxtask, 50, 6)
 	static can_message_t msg={0,0xff,PORT_REMOTE,PORT_REMOTE};
 	msg.addr_src = myaddr;
 	
-	uint32_t code, lastcode=0;
+	uint32_t code=0, lastcode=0;
+	uint8_t gotcode;
 	
     while (1)
     {
@@ -139,7 +145,19 @@ AVRX_GCC_TASKDEF(rfrxtask, 50, 6)
 			rfrxbuf.buf[x]=0;
 		GICR |= (1<<INT1);
 		AvrXWaitSemaphore(&rfin_mutex);
-		if(!rf_time2code((rf_code_t*)&code, rfrxbuf.buf)){
+		
+		gotcode=0;
+		if(rfrxbuf.p == 49){
+			if(!rf_time2code((rf_code_t*)&code, rfrxbuf.buf, 24))
+				gotcode = 1;
+			((rf_code_t*)&code)->b[3] = 0;
+		}else if(rfrxbuf.p == 25){
+			if(!rf_time2code((rf_code_t*)&code, &rfrxbuf.buf[1], 12))
+				gotcode = 1;
+			((rf_code_t*)&code)->b[3] = 1;
+		}
+		
+		if(gotcode){
 			msg.dlc = 4;
 			memcpy(msg.data, &code, 4);
 			can_put(&msg);
@@ -147,49 +165,58 @@ AVRX_GCC_TASKDEF(rfrxtask, 50, 6)
 			if(code==lastcode) new=0; else new=1;
 			
 			switch (code){
+				case 0x0015050d: //A 1 on
 				case 0x00510550: //switch a on
 					if(new) AvrXPutFifo(rftxfifo, 0x010000C0); //Fluter an
 					break;
+				case 0x0014050d: //A 1 off
 				case 0x00540550: //switch a off
 					if(new) AvrXPutFifo(rftxfifo, 0x01000040); //Fluter aus
 					break;
+				case 0x0015450d: //A 2 on
 				case 0x00511150: //switch b on
+					if(new) AvrXPutFifo(rftxfifo, 0x00154515); //Türfluter an
+					break;
+				case 0x0014450d: //A 2 off
+				case 0x00541150: //switch b off
+					if(new) AvrXPutFifo(rftxfifo, 0x00144515); //Türfluter aus
+					break;
+				case 0x0015054d: //B 1 on
+				case 0x00511450: //switch c on
 					lampedim(0,2);
 					lampedim(1,2);
 					lampedim(2,2);
 					lampedim(3,2);
 					break;
-				case 0x00541150: //switch b off
+				case 0x0014054d: //B 1 off
+				case 0x00541450: //switch c off
 					lampedim(0,-2);
 					lampedim(1,-2);
 					lampedim(2,-2);
 					lampedim(3,-2);
 					break;
-				case 0x00511450: //switch c on
-					lampedim(0,2);
-					break;
-				case 0x00541450: //switch c off
-					lampedim(0,-2);
-					break;
+				case 0x0015454d: //B 2 on
 				case 0x00111550: //switch d on
-					lampedim(1,2);
-					lampedim(2,2);
-					break;
-				case 0x00141550: //switch d off
-					lampedim(1,-2);
-					lampedim(2,-2);
-					break;
-				case 0x00411550: //switch e on
 					if(new) AvrXPutFifo(rftxfifo, 0x00150515); //Theke an
 					break;
-				case 0x00441550: //switch e off
+				case 0x0014454d: //B 2 off
+				case 0x00141550: //switch d off
 					if(new) AvrXPutFifo(rftxfifo, 0x00140515); //Theke aus
+					break;
+				case 0x00411550: //switch e on
+				case 0x0015051d: //C 1 on
+					if(new) AvrXPutFifo(rftxfifo, 0x00150555); //Bastelecken Licht an
+					break;
+				case 0x00441550: //switch e off
+				case 0x0014051d: //C 1 off
+					if(new) AvrXPutFifo(rftxfifo, 0x00140555); //Bastelecken Licht aus
 					break;
 			}
 			lastcode = code;
 		}
-		msg.dlc = 8;
 		/*
+		if (rfrxbuf.p >24){
+			msg.dlc = 8;
 			memcpy(msg.data, rfrxbuf.buf, 8);
 			can_put(&msg);
 			memcpy(msg.data, &rfrxbuf.buf[8], 8);
@@ -206,8 +233,9 @@ AVRX_GCC_TASKDEF(rfrxtask, 50, 6)
 			can_put(&msg);
 			memcpy(msg.data, &rfrxbuf.buf[56], 8);
 			can_put(&msg);
-		msg.dlc = 0;
-		can_put(&msg);
+			msg.dlc = 0;
+			can_put(&msg);
+		}
 		*/
     }
 }
@@ -288,7 +316,7 @@ AVRX_GCC_TASKDEF(rftxtask, 100, 2){
 		tmp = GICR & (1<<INT1);
 		GICR &= ~(1<<INT1);					//turn off receive Interrupt
 		
-		for(x=0;x<20;x++){
+		for(x=0;x<14;x++){
 			code_tx(*(rf_code_t*)&code);
 		}
 		
