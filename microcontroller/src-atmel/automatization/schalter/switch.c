@@ -28,12 +28,13 @@ void labor_on(){
 	AvrXPutFifo(rftxfifo, 0x00510500);//Steckdose A (Couch)
 	AvrXPutFifo(rftxfifo, 0x00511400);//Steckdose C (Bastelecke)
 	
-	AvrXPutFifo(rftxfifo, 0x010000C0); //Fluter an
+	AvrXPutFifo(rftxfifo, 0x010000C0); //Fluter1 an
 	
 }
 
 void labor_off(){
-	AvrXPutFifo(rftxfifo, 0x01000040); //Fluter aus
+	AvrXPutFifo(rftxfifo, 0x01000040); //Fluter1 aus
+	AvrXPutFifo(rftxfifo, 0x00144515); //Fluter2 aus
 	
 	AvrXPutFifo(rftxfifo, 0x00541400);//Steckdose C (Bastelecke)
 	AvrXPutFifo(rftxfifo, 0x00540500);//Steckdose A (Couch)
