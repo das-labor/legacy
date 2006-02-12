@@ -5,14 +5,11 @@
 
 #include "config.h"
 
-#define LED PORTC           // Change this per your hardware and jumper setup
-#define LEDDDR DDRC
-
 
 AVRX_SIGINT(SIG_OVERFLOW0)
 {
     IntProlog();                // Save interrupted context, switch stacks
-    TCNT0 = TCNT0_INIT;			// Reload the timer counter
+    TCNT0 = TCNT0_INIT;		// Reload the timer counter
     AvrXTimerHandler();         // Process Timer queue
     Epilog();                   // Restore context of next running task
 };
@@ -26,12 +23,10 @@ AVRX_GCC_TASKDEF(task1, 8, 3)
     {
         AvrXStartTimer(&timer1, 800);       // 800 ms delay
         AvrXWaitTimer(&timer1);
-        LED = LED ^ 0x01;
-//        outp(inp(LED) ^ 0x01, LED);
+        PORTC ^= 0x01;
         AvrXStartTimer(&timer1, 200);       // 200 ms delay
         AvrXWaitTimer(&timer1);
-        LED = LED ^ 0x01;
-//        outp(inp(LED) ^ 0x01, LED);
+        PORTC ^= 0x01;
     }
 }
 
