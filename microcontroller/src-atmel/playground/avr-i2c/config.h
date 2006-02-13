@@ -16,7 +16,6 @@
 
 // i2c defines
 
-#define I2C_EXTERNAL_PULLUP
+//#define I2C_EXTERNAL_PULLUP
 
 #endif
-

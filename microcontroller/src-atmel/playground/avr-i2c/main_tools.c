@@ -5,7 +5,7 @@
 #include "uart.h"
 #include <inttypes.h>
 #include <avr/io.h>
-#include <util/delay.h>
+//#include <util/delay.h>
 #include <stdio.h> // itoa()
 #include "24Cxxx.h"
 #include "i2c_tools.h"
@@ -245,18 +245,3 @@ void thermo_dump(i2c_addr_t dev){
 	
 	uart_putstr("\r\n");
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
