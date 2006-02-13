@@ -4,7 +4,7 @@
 #include "config.h"
 
 
-#include <util/twi.h>
+//#include <util/twi.h>
 
 #define TWI_WAIT_READY() while (! (_BV(TWINT) & TWCR))
 /* keep acknowlege state! */
@@ -23,12 +23,12 @@
 
 #define I2C_SPEED_100			72,0
 #define I2C_SPEED_SLOWEST		255,3
-#define I2C_SPEED_FASTEST		0,0		
+#define I2C_SPEED_FASTEST		10,0		
 
 
 typedef uint8_t i2c_addr_t;
 typedef uint8_t i2c_status_t;
-typedef enum {I2C_MT, I2C_MR, I2C_ST, I2C_SR, I2C_STOPED} i2c_mode_t;
+typedef enum {I2C_MT, I2C_MR, I2C_ST, I2C_SR, I2C_STOPPED} i2c_mode_t;
 
 #ifndef __BOOL__
 #ifndef BOOL

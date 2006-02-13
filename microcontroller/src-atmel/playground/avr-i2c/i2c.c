@@ -23,7 +23,7 @@
 #include "debug.h"
 #include <stdint.h>
 #include <avr/io.h>
-#include <util/delay.h>
+//#include <util/delay.h>
 
 bool			i2c_ack_flag;
 i2c_mode_t	i2c_mode;
@@ -32,16 +32,15 @@ i2c_mode_t	i2c_mode;
  *  i2c_init()
  * **************************************************/
 void			i2c_init(){
-	DDRC 	&= ~(_BV(0) | _BV(1)); // clears bit 0&1 and make them inputs
 	#ifdef I2C_EXTERNAL_PULLUP
 		PORTC 	&= ~(_BV(0) | _BV(1));
 	#else
 		PORTC 	|=  (_BV(0) | _BV(1));
 	#endif
-	TWCR &= ~ _BV(TWEN);
 	i2c_do_ack();
 	i2c_set_speed(I2C_SPEED_SLOWEST);
-	i2c_mode = I2C_STOPED; 	
+	i2c_mode = I2C_STOPPED;
+	TWCR = _BV(TWEN); 	
 }
 
 
@@ -87,10 +86,9 @@ i2c_status_t		i2c_start (i2c_addr_t addr){
 	DEBUG_B(addr);;
 	DEBUG_S(")\r\n");
  	SHOW_STATUS("start-0");
-	if ( (i2c_mode != I2C_STOPED)){
-//		DEBUG_S("going xtra stop loop\r\n");
-		while (! (TWCR & _BV(TWINT)))
-			;
+	if ( (i2c_mode != I2C_STOPPED)){
+		DEBUG_S("going xtra stop loop\r\n");
+		while (! (TWCR & _BV(TWINT)));
 	}
 	TWCR = _BV(TWINT) | _BV(TWSTA) | _BV(TWEN);
 
@@ -134,7 +132,7 @@ i2c_status_t 	i2c_stop(){
 		;
 	}
 	SHOW_STATUS("stop+1");
-	i2c_mode = I2C_STOPED;
+	i2c_mode = I2C_STOPPED;
 	//TWCR = 0;	
 	/* place error-handler here */
 	return TWSR;
@@ -220,4 +218,3 @@ i2c_status_t i2c_start_a (i2c_addr_t devaddr){
 i2c_status_t i2c_restart_a(i2c_addr_t devaddr){
 	return i2c_restart(devaddr);
 }
-
