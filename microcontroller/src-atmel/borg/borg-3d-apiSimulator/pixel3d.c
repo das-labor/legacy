@@ -1,7 +1,16 @@
+/** This is the api of the borg-3d.
+ *  The same api is used by the Simulator and the real one. 
+ */
+
 #include "pixel3d.h"
 
+/** faster shifting (eat this, Fefe!)
+ */
 unsigned char shl_table[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
 
+/** sets the brightness value to alle pixels. Its fast because its works directly on 
+ *  the image memory.
+ */
 void clear_screen(unsigned char value){
 	unsigned char p, x, y, v=0xFF;
 	for(p=0; p<NUM_LEVELS; p++) {
@@ -14,6 +23,8 @@ void clear_screen(unsigned char value){
 	}
 }
 
+/** sets a three-dimentional Point at the position p with the brithness value 
+ */
 void setpixel3d(pixel3d p, unsigned char value ){
 	unsigned char plane;
 	if (p.x < 8 && p.y < 8 && p.z < 8) { 
@@ -26,6 +37,9 @@ void setpixel3d(pixel3d p, unsigned char value ){
 	}	
 }
 
+/** shifts all pixel to the direction dir. The pixels, who are shiftet out
+ *  are lost. Its fast because it works directly with the image memory.
+ */
 void shift3d(direction dir) {
      unsigned char i, j, k;
      switch (dir) {
@@ -106,8 +120,10 @@ void shift3d(direction dir) {
      }     
 }
 
-unsigned char get_pixel3d(pixel3d p){
-
+/** returns 1 if the pixel p is not off. 0 if its off and 0xff if the pixel is not valid.
+ *  FIXME: Does it really make sense to return 0xff in this case.
+ */
+unsigned char get_pixel3d(pixel3d p) {
 	if ((p.x > (NUM_ROWS-1)) || (p.y > (NUM_ROWS-1)) || (p.z > (NUM_ROWS-1))) {
 		return 0xff;
 	} else {
@@ -115,7 +131,10 @@ unsigned char get_pixel3d(pixel3d p){
 	}
 }
 
-unsigned char get_next_pixel3d(pixel3d p, direction dir){
+/** Gets the pixel, witch lays in the direction dir of the pixel p. The return values 
+ *  are the same as unsigned char get_pixel3d(pixel3d p).
+ */
+unsigned char get_next_pixel3d(pixel3d p, direction dir) {
 	pixel3d tmp;
 	switch (dir) {
 		case back:
@@ -140,7 +159,10 @@ unsigned char get_next_pixel3d(pixel3d p, direction dir){
 	return get_pixel3d(tmp);
 }
 
-direction direction_r(direction dir){
+/** Lets the direction turn right. Its programed for snake3d.
+ *  Its also turns right in a circle.
+ */
+direction direction_r(direction dir) {
 	switch (dir) {
 		case right:
 			return back;
@@ -157,7 +179,10 @@ direction direction_r(direction dir){
 	}
 }
 
-pixel3d next_pixel3d(pixel3d pix, direction dir){
+/** gets the pixel, which is in the directions dir next to pixel pix
+ *
+ */
+pixel3d next_pixel3d(pixel3d pix, direction dir) {
 	switch (dir){
 		case back:
 			return((pixel3d){pix.x+1, pix.y, pix.z});
@@ -181,7 +206,7 @@ pixel3d next_pixel3d(pixel3d pix, direction dir){
 	return (pixel3d){0,0,0};
 }
 
-
+/** turns the dir right */
 direction turn_right(direction dir){
 	switch (dir) {
 		case right:
@@ -199,7 +224,7 @@ direction turn_right(direction dir){
 	}
 }
 
-
+/** turns the dir left */
 direction turn_left(direction dir){
 	switch (dir) {
 		case right:
@@ -217,6 +242,7 @@ direction turn_left(direction dir){
 	}
 }
 
+/** turns the dir up */
 direction turn_up(direction dir){
 	switch (dir) {
 		case right:
@@ -234,7 +260,8 @@ direction turn_up(direction dir){
 	}
 }
 
-direction turn_down(direction dir){
+/** turns the dir down */
+direction turn_down(direction dir) {
 	switch (dir) {
 		case right:
 			return down;
@@ -251,15 +278,25 @@ direction turn_down(direction dir){
 	}
 }
 
+/** sets a whole plane to the brightness color. 
+ *  The 64 LED of the plane, which is defined by the direction dir and the 
+ *  num.
+ *           back
+ *         -------
+ *        / up  / |             |_______________|     
+ *       -------  | right        0 1 2 3 4 5 6 7
+ * left  |front|  |             dir
+ *       |     | /
+ *       -------
+ *         down
+ */
 void set_plane(direction dir, unsigned char num, unsigned char color)
 {
 	unsigned char pindex = 0;
 	int p, y, x;
 	unsigned char v = 0xFF;
-
+	
 	switch (dir) {
-		
-		//pixmap[p][rl][byte]
 		case back:
 			pindex = NUM_PLANES-(num+1);
 			for(x=0;x<PLANEBYTES ;x++) {
@@ -338,9 +375,16 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 	} //end switch(dir)
 }
 
-// 64 = sin(90°) = 1
+/** Table for the calculation of sinus. It only has one half wave, because
+ *  the others can be generated of it.
+ *  
+ *  64 = sin(90 grad) = 1.0 = sinTab[16]
+ */
 char sinTab[] = {0, 6, 12, 19, 24, 30, 36, 41, 45, 49, 53, 56, 59, 61, 63, 64, 64};
-		 
+
+/** Sin(64) = sin(360 grad) represents a angle of 360 grad. Its using the one halfwave
+ *  of sinTab to generate a whole sinus. 
+ */		 
 char Sin(unsigned char a) {
 	a %= 64;
 	if (a < 17) {
@@ -354,7 +398,16 @@ char Sin(unsigned char a) {
 	}
 }	
 
-
+/** Multiplicates a point p with the tranformationmatrix mat.
+ *  The matrix must be a char array with the following format:
+ *    0  1  2  3
+ *    4  5  6  7
+ *    8  9 10 11
+ *  (12 13 14 15) not exist because normally 0 0 0 1
+ *				  but works intern with homogen coordiantes
+ *   all coordinates are converted to signed ones. 
+ *   64 represents 1.0.
+ */
 pixel3d mulMatrixPoint(char *mat, pixel3d *p) {
 	return (pixel3d) {
 		(mat[0]*(char)p->x)/64 + (mat[1]*(char)p->y)/64 + (mat[2]*(char)p->z)/64 + mat[3],
@@ -363,21 +416,18 @@ pixel3d mulMatrixPoint(char *mat, pixel3d *p) {
 	};
 }
 
-/*
-Matrix Format
-
-  0  1  2  3
-  4  5  6  7  
-  8  9 10 11
-(12 13 14 15) not exist  because normally 0 0 0 1
-              but works intern with homogen coordiantes
-*/
+/** Rotateds numPoints many 3d-points of points with the angel a arount the x axis, the
+ *  angle b arount the y-axis and with the angle c arount the z-axis. (The angeles are
+ *  documentated in Sin(..) dokumentation.). The result is stored in resPoints.
+ *  64 = 1.0
+ *  The point rotP is the centrum of rotation.
+ */
 void rotate(char a, char b, char c, pixel3d* points, 
 			pixel3d* resPoints, int numPoint, pixel3d rotP) {
 	char mat[12];
 	unsigned char i;
 					
-	// Initialiesierung der Rotationsmatrix				
+	// init the rotationmatrix			
 	mat[0] = (Cos(b)*Cos(c))/64;
 	mat[1] = (-Cos(b)*Sin(c))/64;
 	mat[2] = -Sin(b);
@@ -389,7 +439,7 @@ void rotate(char a, char b, char c, pixel3d* points,
 	mat[8]  = (((Cos(a)*Sin(b))/64)*Cos(c))/64 + (Sin(a)*Sin(c))/64;
 	mat[9]  = (((-Cos(a)*Sin(b))/64)*Sin(c))/64 + (Sin(a)*Cos(c))/64;
 	mat[10] = (Cos(a)*Cos(b))/64;
-					
+	// skippes the calculation of the translation part				
 	if (rotP.x == 0 && rotP.y == 0 && rotP.z == 0) {
 		mat[3]  = 0;
 		mat[7]  = 0;
@@ -399,7 +449,7 @@ void rotate(char a, char b, char c, pixel3d* points,
 		mat[7]  = rotP.y - ((mat[4]*(char)rotP.x)/64 + (mat[5]*(char)rotP.y)/64 + (mat[6]*(char)rotP.z)/64);
 		mat[11] = rotP.z - ((mat[8]*(char)rotP.x)/64 + (mat[9]*(char)rotP.y)/64 + (mat[10]*(char)rotP.z)/64);
 	}
-	/*
+	/* // debug output
 	for (i = 0; i < 3; i++) {
 		printf("%d\t%d\t%d\t%d\n", mat[(i*4)], mat[(i*4)+1], mat[(i*4)+2], mat[(i*4)+3]);
 	}*/
@@ -409,6 +459,9 @@ void rotate(char a, char b, char c, pixel3d* points,
 	}	
 }
 
+/** Scales the numPoints many points points with the factors sx/64, sy/64, sz/64.
+ *  Its scaled around the point scaleP and the result is stored in resPoints.
+ */
 void scale(char sx, char sy, char sz, pixel3d* points, 
 			pixel3d* resPoints, int numPoint, pixel3d scaleP) {
 	char mat[12] = {sx,  0,  0,  scaleP.x - (sx*scaleP.x)/64,
@@ -422,15 +475,21 @@ void scale(char sx, char sy, char sz, pixel3d* points,
 
 #define BIT_S(var,b) ((var&(1<<b))?1:0)
 
+/** An very easy but useful randomgenrator for randomAnimaions.
+ *  It returns a pseudorandom number between 0 and 255.
+ */
 unsigned char easyRandom() {
 	static unsigned int muh = 0xAA;
 	unsigned char x;
-	for(x=0;x<8;x++){
+	for (x = 0; x < 8 ;x++) {
 		muh = (muh<<1) ^ BIT_S(muh,1) ^ BIT_S(muh,8) ^ BIT_S(muh,9) ^ BIT_S(muh,13) ^ BIT_S(muh,15);
 	}
 	return (unsigned char) muh;
 }
 
+/** Draws a treedimentional line with the bressenham 3d algrorthmus form the point
+  * px1, py1, xz1 to the point px2, py2, pz2 with the brightness value.
+  */
 void drawLine3D(char px1, char py1, char pz1, 
  			    char px2, char py2, char pz2, unsigned char value) {
     char i, dx, dy, dz, l, m, n, x_inc, y_inc, z_inc, err_1, err_2, dx2, dy2, dz2;

@@ -1200,7 +1200,7 @@ void *display_loop(void * unused) {
 		//spirale();
 		//testLine3D();
 		
-		rotatedScaledCube();
+		//rotatedScaledCube();
 		
 		wait(30);
 		//pong();

@@ -8,11 +8,12 @@ extern unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
 extern unsigned char shl_table[];
 #endif
 
+/** stores a three-dimentional pixel */
 typedef struct {
 	unsigned char x;
 	unsigned char y;
 	unsigned char z;
-//	unsigned char dummy;
+//	unsigned char dummy;  // the optimation for of the avr-gcc could be better
 } pixel3d;
 
 typedef enum {right, left, forward, back, up, down} direction;
