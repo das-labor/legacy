@@ -2,6 +2,29 @@
 #include "util.h"
 #include "config.h"
 
+// Please read the comments of c-file
+
+/** These array stores the pixels with brithness informations.
+ *  I start with the coordinatesystem:
+ *
+ *     z |   /
+ *       |  / y           
+ *  left | /   down       
+ *     0 |/________
+ *        0       x
+ *         front
+ *
+ *  The brithness informaition is stored, using 3 equaly bitarrays.
+ *  A pixel is off, if its not set in each of the 3 bitarrays
+ *  Its 1 then its only in the first, 2 then its set in the first and 
+ *  the secound and its 3 then its set in all bitarrays.
+ *  Other possibilitys are not allowed, because there are different 
+ *  handeled in the simulator and the real borg.
+ *  These format is needed by the real one.
+ *  
+ *  pixmap[<bitarray number>][<y-coordinate>][<x-coordinate>] = z_bits
+ *  z_bits & (1<<z-coordinate) => value of coordinate (x,y,z) 
+ */
 extern unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
 
 #ifndef PIXEL_C
@@ -13,14 +36,15 @@ typedef struct {
 	unsigned char x;
 	unsigned char y;
 	unsigned char z;
-//	unsigned char dummy;  // the optimation for of the avr-gcc could be better
+//	unsigned char dummy;  // the optimation of the avr-gcc could be better
 } pixel3d;
 
+/** see the set_plane(..) comment in the c-file. */
 typedef enum {right, left, forward, back, up, down} direction;
 
 void clear_screen(unsigned char value);
 void setpixel3d(pixel3d p, unsigned char value);
- 
+/* be carefull clearpixel3d() is only a macro */ 
 #define clearpixel3d(p) setpixel3d(p, 0);
 
 unsigned char get_pixel3d(pixel3d p);

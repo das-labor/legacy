@@ -299,9 +299,9 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 	switch (dir) {
 		case back:
 			pindex = NUM_PLANES-(num+1);
-			for(x=0;x<PLANEBYTES ;x++) {
-				for(p=0; p<NUM_LEVELS; p++) {
-					if ( p < color)
+			for (x=0; x<PLANEBYTES; x++) {
+				for (p=0; p<NUM_LEVELS; p++) {
+					if (p < color)
 						pixmap[p][pindex][x] = v;
 					else
 						pixmap[p][pindex][x] &= ~v;
@@ -311,8 +311,8 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			
 		case forward:
 			 pindex = num;			 
-			 for(x=0;x<PLANEBYTES ;x++) {
-				for(p=0; p<NUM_LEVELS; p++) {
+			 for (x=0; x<PLANEBYTES; x++) {
+				for (p=0; p<NUM_LEVELS; p++) {
 					if ( p < color)
 						pixmap[p][pindex][x] = v;
 					else
@@ -323,8 +323,8 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			
 		case right:
 			pindex = NUM_PLANES-(num+1);
-			for(y=0;y<NUM_PLANES ;y++) {
-				for(p=0; p<NUM_LEVELS; p++) {
+			for (y=0; y<NUM_PLANES; y++) {
+				for (p=0; p<NUM_LEVELS; p++) {
 					if ( p < color)
 						pixmap[p][y][pindex] = v;
 					else
@@ -335,8 +335,8 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			
 		case left:
 			pindex = num;
-			for(y=0;y<NUM_PLANES ;y++) {
-				for(p=0; p<NUM_LEVELS; p++) {
+			for (y=0;y<NUM_PLANES; y++) {
+				for (p=0; p<NUM_LEVELS; p++) {
 					if ( p < color)
 						pixmap[p][y][pindex] = v;
 					else
@@ -347,27 +347,27 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			
 		case down:
 			v = shl_table[NUM_ROWS - (num+1)];
-			for(p=0; p<NUM_LEVELS; p++) {
-					for(y=0; y<NUM_PLANES ;y++) {
-						for(x=0; x<PLANEBYTES ;x++) {
-							if ( p < color)
-								pixmap[p][y][x] |= v;
-							else
-								pixmap[p][y][x] &= ~v;				
+			for (p=0; p<NUM_LEVELS; p++) {
+				for (y=0; y<NUM_PLANES; y++) {
+					for(x=0; x<PLANEBYTES ;x++) {
+						if ( p < color)
+							pixmap[p][y][x] |= v;
+						else
+							pixmap[p][y][x] &= ~v;				
 					}
 				}
 			}
 			break;
-			
+
 		case up:
 			v = shl_table[num];
 			for(p=0; p<NUM_LEVELS; p++) {
-					for(y=0; y<NUM_PLANES ;y++) {
-						for(x=0; x<PLANEBYTES ;x++) {
-							if ( p < color)
-								pixmap[p][y][x] |= v;
-							else
-								pixmap[p][y][x] &= ~v;				
+				for (y=0; y<NUM_PLANES; y++) {
+					for (x=0; x<PLANEBYTES; x++) {
+						if ( p < color)
+							pixmap[p][y][x] |= v;
+						else
+							pixmap[p][y][x] &= ~v;				
 					}
 				}
 			}
@@ -382,8 +382,8 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
  */
 char sinTab[] = {0, 6, 12, 19, 24, 30, 36, 41, 45, 49, 53, 56, 59, 61, 63, 64, 64};
 
-/** Sin(64) = sin(360 grad) represents a angle of 360 grad. Its using the one halfwave
- *  of sinTab to generate a whole sinus. 
+/** Sin(64) = sin(360 grad) and sin(90 grad) = Sin(16) = 64. Its using the one halfwave
+ *  of sinTab to generate a whole sinus. It e
  */		 
 char Sin(unsigned char a) {
 	a %= 64;
@@ -449,10 +449,6 @@ void rotate(char a, char b, char c, pixel3d* points,
 		mat[7]  = rotP.y - ((mat[4]*(char)rotP.x)/64 + (mat[5]*(char)rotP.y)/64 + (mat[6]*(char)rotP.z)/64);
 		mat[11] = rotP.z - ((mat[8]*(char)rotP.x)/64 + (mat[9]*(char)rotP.y)/64 + (mat[10]*(char)rotP.z)/64);
 	}
-	/* // debug output
-	for (i = 0; i < 3; i++) {
-		printf("%d\t%d\t%d\t%d\n", mat[(i*4)], mat[(i*4)+1], mat[(i*4)+2], mat[(i*4)+3]);
-	}*/
 	
 	for (i = 0; i < numPoint; i++) {
 		resPoints[i] = mulMatrixPoint(mat, &points[i]);
