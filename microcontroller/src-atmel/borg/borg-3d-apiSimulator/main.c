@@ -1,9 +1,26 @@
+/** This is the main file of Simulator and includes the opengl code. 
+ *  Only the trackball, for rotating the cube with the mouse is defined 
+ *  "trackball.c" and "trackball.h".
+ *  The program has two parts, witch are running in saperate threads.
+ *
+ *  1. The simulator visualisates the the imagebuffer pixmap in OpenGl. 
+ *     It has the same format as the orginal one. Its compareable to the
+ *     Interrupt-Service-Routine of the real one.
+ *  2. display_loop() is the secound thread and it includes the animationsprogramms.
+ *     actually its at the end of program.c. It normaly contains a for ever loop
+ *     with all animationprograms
+ */
+
+// type make -f Makefile.osx
+// to compile the simulator for MacOSX (tested on 10.2, 10.3, 10.4)
 #ifdef OSX_
 #  include <GLUT/glut.h>
 #else
 #  include <GL/glut.h>  
 #endif
 
+
+// please use for windows the DevCpp projectfile. _WIN32 is set there
 #ifdef _WIN32
 #  include <windows.h>
 #  include <process.h>
@@ -17,21 +34,35 @@
 #endif
 
 #include "pixel3d.h"
-#include "programm.h"
+#include "programs.h"
 #include "trackball.h"
 
+// variables for the simulator screensize
 int WindWidth, WindHeight;
 
+/** 
+ *
+ */
 unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
 
+// rotations variables for keyboardrotation
 float view_rotx = 0, view_roty = 0, view_rotz = 0;
+// stores the glut window 
 int win;
-
+// manage the joystick -> please look at joystick.h 
 char joy1_up = 0, joy1_down = 0, joy1_right = 0, joy1_left = 0, joy_en0 = 0;
 
+// variable for the thread
 pthread_t simthread;
+// its needed to draw spheres
 GLUquadric* quad;
 
+
+/** drwas a LED to the position (pos_x, pos_y, poy_z) to the screen.
+ *  It has the brightness color. 0 = off -> 3 = full on. Its done by 
+ *  using glCallLists. They a defined in main() and because they were put 
+ *  onto the graficcard, are much more faster.
+ */
 void drawLED(int color, float pos_x, float pos_y, float pos_z) {
 	glPushMatrix();
 	glTranslatef(pos_x, pos_y, pos_z);
@@ -39,13 +70,17 @@ void drawLED(int color, float pos_x, float pos_y, float pos_z) {
 	glPopMatrix();
 }
 
+
+/** This is the most importend function, because it puts the virtual LEDs 
+ *  onto the screen.
+ */
 void display(void){
   	int x, y, z, level, color;
   	tbReshape(WindWidth, WindHeight);
   	glClear(GL_COLOR_BUFFER_BIT);
   	glPushMatrix();
 	glTranslatef(NUM_PLANES*2., NUM_ROWS*2., NUM_COLS*2.);
-	tbMatrix();
+	tbMatrix(); // Adds the rotationspart of the trackball 
   	glRotatef(view_rotx, 1.0, 0.0, 0.0);
   	glRotatef(view_roty, 0.0, 1.0, 0.0);
 	glRotatef(view_rotz, 0.0, 0.0, 1.0);
@@ -54,18 +89,22 @@ void display(void){
 		for (y = 0; y < NUM_ROWS; y++) { 
 			for (z = 0; z < NUM_COLS; z++) {
 				color = 0;
+				// checks what level the LED has got.
 				for (level = 0; level < NUM_LEVELS; level++) {
 					if (pixmap[level][x%NUM_PLANES][y%PLANEBYTES] 
 						& (1 << z%NUM_ROWS)) {
 						color = level+1;		
 					}
 				}
+				// display the LEDs in a the original size raster
+				// in the real one are also 4cm beetween the LEDs
 				drawLED(color, (float)x*4.0, (float)y*4.0, (float)z*4.);
 			}
 		}
   	}
 	glPopMatrix();
 	glutSwapBuffers();
+	// waits. If this value is lower, only the CPU-time rises. you cant see it.
 #ifdef _WIN32
 	Sleep(20);
 #else
@@ -73,6 +112,9 @@ void display(void){
 #endif
 }
 
+/** gets the joystick-keys, and the exit key.
+ *
+ */
 void keyboard(unsigned char key, int x, int y){
 	switch (key) {  
 		case 'q': printf("Quit\n");
@@ -94,6 +136,7 @@ void keyboard(unsigned char key, int x, int y){
 	}
 }
 
+// this is needed by the trackball
 void mouse(int button, int state, int x, int y)
 {
   tbMouse(button, state, x, y);
@@ -104,9 +147,11 @@ void motion(int x, int y)
   tbMotion(x, y);
 }
 
+/** if the size of the viewingarea changes, this function will be
+ *  started
+ */
 void reshape(int width, int height)
 {
-  
   tbReshape(width, height);
 
   glViewport(0, 0, width, height);
@@ -144,13 +189,15 @@ static void special(int k, int x, int y) {
   }
   glutPostRedisplay();
 }
-/*
+/* // tried it out, but it didn«t function.
 void timf(int value) {
   glutPostRedisplay();
   glutTimerFunc(1, timf, 0);
-}*/
+}
+*/
 
-int main(int argc, char **argv){
+int main(int argc, char **argv) {
+    // init
     WindHeight = 600;
     WindWidth = 600;         
     glutInit(&argc,argv);
@@ -158,7 +205,7 @@ int main(int argc, char **argv){
     glutInitWindowSize(WindHeight, WindWidth);
     win = glutCreateWindow("Borg 3D Simulator");
     
-    // callback
+    // callback functions
     //glutReshapeFunc(reshape);
     glutDisplayFunc(display);
     glutIdleFunc(display);
@@ -174,7 +221,8 @@ int main(int argc, char **argv){
               NUM_PLANES*2., NUM_ROWS*2., NUM_COLS*2.,
               0.0, 0.0, 1.0); 
 
-	// init Call List for LED	
+	// init Call List for LED. The List number is
+	// the brightnessnumber of the LED	
 	quad = gluNewQuadric();
 	glNewList(0, GL_COMPILE);
 		glColor4f(0.30, 0., 0., 1.);
