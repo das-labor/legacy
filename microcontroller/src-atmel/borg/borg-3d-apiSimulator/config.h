@@ -22,5 +22,3 @@
 /** This defines how many Streams in matrix are used.
  *  FIXME: Better define directly above the animation-program. */
 #define STREAMER_NUM 30
-
-// FIXME: Here should be the uart parametration too. And what about can and the canadress.
