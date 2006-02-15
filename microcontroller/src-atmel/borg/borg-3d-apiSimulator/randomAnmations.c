@@ -1,17 +1,3 @@
-#ifdef AVR
-#  include "config.h"
-#  include "borg_hw.h"
-#  include "uart.h"
-#  include "pixel.h"
-#  include "scrolltext.h"
-#  include <avr/io.h>
-#else
-#  include "pixel3d.h"
-#  include "scrolltext2.h"
-#endif
-
-#include "util.h"
-#include "joystick.h"
 #include "programs.h"
 
 typedef struct {

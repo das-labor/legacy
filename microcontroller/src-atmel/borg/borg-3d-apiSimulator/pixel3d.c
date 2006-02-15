@@ -1,7 +1,6 @@
 /** This is the api of the borg-3d.
  *  The same api is used by the Simulator and the real one. 
  */
-
 #include "pixel3d.h"
 
 /** faster shifting (eat this, Fefe!)
