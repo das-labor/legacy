@@ -1,8 +1,11 @@
+#ifndef PIXEL3D_H
+#define PIXEL3D_H
+
 #include <stdio.h>
 #include "util.h"
 #include "config.h"
 
-// Please read the comments of c-file
+// Please read the comments of the c-file
 
 /** These array stores the pixels with brithness informations.
  *  I start with the coordinatesystem:
@@ -73,3 +76,5 @@ void rotate(char a, char b, char c, pixel3d* points,
 			pixel3d* resPoints, int numPoint, pixel3d rotP);
 void drawLine3D(char px1, char py1, char pz1, 
  			    char px2, char py2, char pz2, unsigned char value);
+
+#endif // PIXEL3D_H
