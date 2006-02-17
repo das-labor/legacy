@@ -19,7 +19,12 @@
 #  include <GL/glut.h>  
 #endif
 
-
+// To Compile the Simulator on Windows, you have to install DevCpp
+// And also the glut.devpack for DevCpp
+// You can download it there:
+//   http://www.bloodshed.net/dev/devcpp.html
+//   http://vis.computer.org/vis2005contest/hand/glut.3.7.6+.DevPak
+// 
 // please use for windows the DevCpp projectfile. _WIN32 is set there
 #ifdef _WIN32
 #  include <windows.h>
