@@ -42,7 +42,7 @@ int main(void)
 
     DDRC = 0xFF;
 	
-    //InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
+    InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
     //AvrXRunTask(TCB(Monitor));
     AvrXRunTask(TCB(task1));
 
