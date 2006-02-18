@@ -78,8 +78,10 @@ AVRX_SIGINT(SIG_OUTPUT_COMPARE1B)
 	Epilog();
 }
 
+//convert a stream of bittimes to a binary code
 uint8_t rf_time2code(rf_code_t * code, uint8_t * time, uint8_t numbits){
-	uint8_t byte, bit=0, t0, t1, tmp, msk;	
+	uint8_t byte=0, bit=0, t0, t1, tmp, msk;
+	*(uint32_t*)code = 0;	
 	while(bit < numbits){
 		tmp = 0;
 		msk = 0x80;
