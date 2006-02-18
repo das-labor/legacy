@@ -8,20 +8,24 @@
 #include "borg_hw.h"
 #include "pixel.h"
 #include "borg_can.h"
+#include "joystick.h"
+
+volatile unsigned char oldMode, oldOldmode, mode;
 
 jmp_buf newmode_jmpbuf;
 
 int main (void){
-	unsigned char mode;
-
 	clear_screen(0);
 	borg_hw_init();
-	bcan_init();	
+	bcan_init();
+	joy_init();	
 	sei();
 
 	mode = setjmp(newmode_jmpbuf);
-	
+	oldOldmode = oldMode;
+	waitForFire = 1;	
 	for(;;){
+		oldMode = mode;
 		switch(mode++) {
 		case 1:
 			scrolltext(scrolltext_text);
@@ -63,6 +67,9 @@ int main (void){
 		case 0xFF:
 			off();
 			break;
+		case 43:
+			snakeJoystick();
+			mode = oldOldmode;
 		default:
 			break;
 		}
