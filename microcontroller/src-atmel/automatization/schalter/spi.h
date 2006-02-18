@@ -1,1 +1,1 @@
-../../lib/can/spi.h
+../../lib/spi/spi.h
