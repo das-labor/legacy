@@ -156,4 +156,3 @@ void borg_hw_init(){
 	wdt_reset();
 	wdt_enable(0x00);	// 17ms Watchdog
 }
-
