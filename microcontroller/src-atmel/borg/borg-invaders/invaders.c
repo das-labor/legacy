@@ -154,12 +154,11 @@ void moveInvaders(Invaders* iv) {
 
 void userAction(Cannon* cn, pixel* shot, unsigned char ctrl) {
 
-		if(JOYISRIGHT) {
+		if(JOYISLEFT) {
 			if(cn->pos != RIGHT_BORDER) {
 				cn->pos++;
 			}
-		} else if (JOYISLEFT) {
-
+		} else if (JOYISRIGHT) {
 			if(cn->pos != LEFT_BORDER) {
 				cn->pos--;
 			}				

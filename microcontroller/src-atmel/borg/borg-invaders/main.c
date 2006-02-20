@@ -15,19 +15,44 @@ volatile unsigned char oldMode, oldOldmode, mode;
 jmp_buf newmode_jmpbuf;
 
 int main (void){
-	uint8_t r,p,l;
 	clear_screen(0);
 	borg_hw_init();
 	bcan_init();
 	joy_init();	
 	sei();
 
-	
-
-
 	mode = setjmp(newmode_jmpbuf);
 	oldOldmode = oldMode;
 	waitForFire = 1;	
+
+	/*
+        while(1) {
+          if (JOYISFIRE) 
+		setpixel((pixel){0,1}, 3);
+	  else
+		setpixel((pixel){0,1}, 0);
+
+          if (JOYISLEFT) 
+		setpixel((pixel){0,2}, 3);
+	  else
+		setpixel((pixel){0,2}, 0);
+
+          if (JOYISRIGHT) 
+		setpixel((pixel){0,3}, 3);
+	  else
+		setpixel((pixel){0,3}, 0);
+
+          if (JOYISUP) 
+		setpixel((pixel){0,4}, 3);
+	  else
+		setpixel((pixel){0,4}, 0);
+
+          if (JOYISDOWN) 
+		setpixel((pixel){0,5}, 3);
+	  else
+		setpixel((pixel){0,5}, 0);
+	}
+	*/
 
 
         borg_invaders();

@@ -6,24 +6,16 @@
 extern unsigned char waitForFire;
 inline void joy_init();
 
-#define PORTJOYDIRS PORTB
-#define DDRJOYDIRS  DDRB
-#define PINJOYDIRS  PINB
+#define BITFIRE  PD0
+#define BITUP    PB0  
+#define BITDOWN  PB1
+#define BITLEFT  PB2
+#define BITRIGHT PB3   
 
-#define PORTJOYFIRE PORTD
-#define DDRJOYFIRE  DDRD
-#define PINJOYFIRE  PIND
-
-#define BITUP    PB3
-#define BITDOWN  PB2
-#define BITLEFT  PB1
-#define BITRIGHT PB0
-#define BITFIRE  PD3
-
-#define JOYISUP    (!(PINJOYDIRS & (1<<BITUP)))
-#define JOYISDOWN  (!(PINJOYDIRS & (1<<BITDOWN)))
-#define JOYISLEFT  (!(PINJOYDIRS & (1<<BITLEFT)))
-#define JOYISRIGHT (!(PINJOYDIRS & (1<<BITRIGHT)))
-#define JOYISFIRE  (!(PINJOYDIRS & (1<<BITFIRE)))
+#define JOYISFIRE  (!(PIND & (1<<BITFIRE)))
+#define JOYISLEFT  (!(PINB & (1<<BITLEFT)))
+#define JOYISRIGHT (!(PINB & (1<<BITRIGHT)))
+#define JOYISDOWN  (!(PINB & (1<<BITDOWN)))    
+#define JOYISUP    (!(PINB & (1<<BITUP)))
 
 #endif // JOYSTICK_H
