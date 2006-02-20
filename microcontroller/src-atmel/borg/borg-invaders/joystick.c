@@ -5,9 +5,9 @@ unsigned char waitForFire;
 
 
 inline void joy_init(){
-	DDRJOYDIRS  &= ~((1<<BITUP)|(1<<BITDOWN)|(1<<BITLEFT)|(1<<BITRIGHT));
-	PORTJOYDIRS |= (1<<BITUP)|(1<<BITDOWN)|(1<<BITLEFT)|(1<<BITRIGHT);
+	DDRB  &= ~((1<<BITUP)|(1<<BITDOWN)|(1<<BITLEFT)|(1<<BITRIGHT));
+	PORTB |=   (1<<BITUP)|(1<<BITDOWN)|(1<<BITLEFT)|(1<<BITRIGHT);
 
-	DDRJOYFIRE  &= ~(1<<BITUP);
-	PORTJOYFIRE |= (1<<BITUP);
+	DDRD  &= ~(1<<BITFIRE);
+	PORTD |=  (1<<BITFIRE);
 }
