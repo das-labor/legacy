@@ -9,6 +9,8 @@
 #define DRAG_END 2
 #define DRAG_IMAGE 3
 
+#define PI 3.1415926535897932384626433832795
+ 
 using namespace std;
 
 #include "display.h"
@@ -88,6 +90,13 @@ void DrawArea::paintEvent(QPaintEvent * /* event */)
 				}
 				break;		                                  
 			}
+			case 'k': {
+				if (ps.size() >= 4) {
+					drawCircle((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()},
+							   ps.at(3).toFloat(), &painter, j);
+				}
+				break;		                                  
+			}
 		}
 		j++;
 	}
@@ -140,6 +149,114 @@ void DrawArea::drawBezier(Point p2, Point p3, Point p4, QPainter *g, int lineNo)
 	CurrentPoint = p4;
 }
 
+void DrawArea::drawCircle(Point p2, float angle, QPainter *g, int lineNo) {
+    float curAngle, addAngle, oldAngle = 0.0, helpAngle;
+    float radius = sqrt((p2.x-CurrentPoint.x)*(p2.x-CurrentPoint.x) + 
+	                    (p2.y-CurrentPoint.y)*(p2.y-CurrentPoint.y)), radius2;
+    Point n1, n2, n3;
+    float n1e, n2e, n3e;
+    radius2 = zoom * zoom * radius * radius;
+    int x, y;
+    
+	angle = fmodf(angle, 720.);
+	
+	oldAngle = fmodf(atan2(p2.y - CurrentPoint.y, p2.x - CurrentPoint.x)*180./PI + 360., 360.);
+		
+    // center 
+	addControlPoint(p2, lineNo, 1, g);
+	
+	x = (int) (zoom*CurrentPoint.x + 0.5);
+	y = (int) (zoom*CurrentPoint.y + 0.5);
+	
+    while (1) {
+        curAngle = fmod(atan2((float)((int) (zoom*p2.y + 0.5) - y), 
+							  (float)((int) (zoom*p2.x + 0.5) - x))*180./PI + 360., 360.);
+		if (((helpAngle = curAngle - oldAngle)) < -180.)
+			addAngle += helpAngle + 360.;
+		else if (helpAngle > 180.)
+			addAngle += helpAngle - 360.;
+		else 
+			addAngle += helpAngle;
+
+        switch ((int) (curAngle/45.) % 8) {
+            case 7:
+            case 0:
+                 n1.x = -1;
+                 n1.y = -1;
+                 n2.x =  0;
+                 n2.y = -1;
+                 n3.x =  1;
+                 n3.y = -1;        
+                 break;
+            case 1:
+            case 2:
+                 n1.x =  1;
+                 n1.y =  1;
+                 n2.x =  1;
+                 n2.y =  0;
+                 n3.x =  1;
+                 n3.y = -1;
+                 break;
+            case 3: 
+            case 4: 
+                 n1.x = -1;
+                 n1.y =  1;
+                 n2.x =  0;
+                 n2.y =  1;
+                 n3.x =  1;
+                 n3.y =  1;
+                 break;
+            case 5:
+            case 6:
+                 n1.x = -1;
+                 n1.y =  1;
+                 n2.x = -1;
+                 n2.y =  0;
+                 n3.x = -1;
+                 n3.y = -1;
+                 break;
+        }  
+        if (angle < 0.0) {
+             n1.x = -n1.x;
+             n1.y = -n1.y;
+             n2.x = -n2.x;
+             n2.y = -n2.y;
+             n3.x = -n3.x;
+             n3.y = -n3.y;             
+        }
+        n1e =  fabs((zoom*p2.x-(n1.x+(float) x))*(zoom*p2.x-(n1.x+(float) x)) + 
+                    (zoom*p2.y-(n1.y+(float) y))*(zoom*p2.y-(n1.y+(float) y)) - radius2);
+        n2e =  fabs((zoom*p2.x-(n2.x+(float) x))*(zoom*p2.x-(n2.x+(float) x)) +  
+                    (zoom*p2.y-(n2.y+(float) y))*(zoom*p2.y-(n2.y+(float) y)) - radius2);
+        n3e =  fabs((zoom*p2.x-(n3.x+(float) x))*(zoom*p2.x-(n3.x+(float) x)) + 
+                    (zoom*p2.y-(n3.y+(float) y))*(zoom*p2.y-(n3.y+(float) y)) - radius2);
+        if (n1e < n2e) {
+           if (n3e < n1e) {
+              x += (int) n3.x;
+              y += (int) n3.y;
+           } else {
+              x += (int) n1.x;
+              y += (int) n1.y;
+           }
+        } else {
+           if (n3e < n2e) {
+              x += (int) n3.x;
+              y += (int) n3.y;
+           } else {
+              x += (int) n2.x;
+              y += (int) n2.y;
+           }
+        }
+		g->drawPoint(x, y);
+		if (fabs(addAngle) >= fabs(angle))
+           break;
+		oldAngle = curAngle;
+    } 	
+	CurrentPoint.x = x/zoom;
+	CurrentPoint.y = y/zoom;
+	addControlPoint(CurrentPoint, lineNo, 3, g, true, angle);
+}
+
 void DrawArea::drawBezierRec(Point p1, Point p2, Point p3, Point p4, int level, QPainter *g) {
 	if (level == 0) {
 		drawLineTo(p4, g, -1);
@@ -158,11 +275,11 @@ void DrawArea::drawBezierRec(Point p1, Point p2, Point p3, Point p4, int level, 
 	}
 }
 
-void DrawArea::addControlPoint(Point p, int line, int firstElement, QPainter *g) {
-	controllPoints.append(new ControllPoint(p, line, firstElement));
+void DrawArea::addControlPoint(Point p, int line, int firstElement, QPainter *g, bool hasAngle, float angle) {
+	controllPoints.append(new ControllPoint(p, line, firstElement, hasAngle, angle));
 	if (showControlElements) {
 		g->setBrush(Qt::green);
-		g->drawRect((int)(zoom*p.x+0.5)-2,(int)(zoom*p.y+0.5)-2, 4, 4);
+		g->drawRect((int)(zoom*p.x + 0.5) - 2, (int)(zoom*p.y + 0.5) - 2, 4, 4);
 		g->setBrush(Qt::black);
 	}
 }
@@ -198,9 +315,16 @@ QString DrawArea::getChainCode() {
 			}
 			case 'c': {
 				if (ps.size() >= 7) {
-				chainBezier((Point) {ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale},
-							(Point) {ps.at(3).toFloat()*scale, ps.at(4).toFloat()*scale},
-							(Point) {ps.at(5).toFloat()*scale, ps.at(6).toFloat()*scale});
+					chainBezier((Point) {ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale},
+								(Point) {ps.at(3).toFloat()*scale, ps.at(4).toFloat()*scale},
+								(Point) {ps.at(5).toFloat()*scale, ps.at(6).toFloat()*scale});
+				}
+				break;		                                  
+			}
+			case 'k': {
+				if (ps.size() >= 4) {
+					chainCircle((Point) {ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale},
+							    ps.at(3).toFloat());
 				}
 				break;		                                  
 			}
@@ -219,8 +343,8 @@ void DrawArea::chainLineTo(Point p) {
 	sdy = dy >= 0 ? 1: -1;     //sign
 	x = dyabs >> 1;
 	y = dxabs >> 1;
-	px = (int)(CurrentPoint.x+0.5);
-	py = (int)(CurrentPoint.y+0.5);
+	px = (int) (CurrentPoint.x + 0.5);
+	py = (int) (CurrentPoint.y + 0.5);
 	addToChain(px, py);
 	if (dxabs >= dyabs) { 	  // the line is more horizontal than vertical
 		for (i = 0; i < dxabs; i++) {
@@ -267,6 +391,110 @@ void DrawArea::chainBezierRec(Point p1, Point p2, Point p3, Point p4, int level)
 		chainBezierRec(l1, l2, l3, l4, level-1);
 		chainBezierRec(r1, r2, r3, r4, level-1);
 	}
+}
+
+void DrawArea::chainCircle(Point p2, float angle) {
+    float curAngle, addAngle, oldAngle = 0.0, helpAngle;
+    float radius = sqrt((p2.x-CurrentPoint.x)*(p2.x-CurrentPoint.x) + 
+	                    (p2.y-CurrentPoint.y)*(p2.y-CurrentPoint.y)), radius2;
+    Point n1, n2, n3;
+    float n1e, n2e, n3e;
+    radius2 = radius * radius;
+    int x, y;
+    
+	angle = fmodf(angle, 720.);
+	
+	oldAngle = fmodf(atan2(p2.y - CurrentPoint.y, p2.x - CurrentPoint.x)*180./PI + 360., 360.);
+	
+	x = (int) (CurrentPoint.x + 0.5);
+	y = (int) (CurrentPoint.y + 0.5);
+	addToChain(x, y);
+    while (1) {
+        curAngle = fmod(atan2((float)((int) (p2.y + 0.5) - y), 
+							  (float)((int) (p2.x + 0.5) - x))*180./PI + 360., 360.);
+		if (((helpAngle = curAngle - oldAngle)) < -180.)
+			addAngle += helpAngle + 360.;
+		else if (helpAngle > 180.)
+			addAngle += helpAngle - 360.;
+		else 
+			addAngle += helpAngle;
+
+        switch ((int) (curAngle/45.) % 8) {
+            case 7:
+            case 0:
+                 n1.x = -1;
+                 n1.y = -1;
+                 n2.x =  0;
+                 n2.y = -1;
+                 n3.x =  1;
+                 n3.y = -1;        
+                 break;
+            case 1:
+            case 2:
+                 n1.x =  1;
+                 n1.y =  1;
+                 n2.x =  1;
+                 n2.y =  0;
+                 n3.x =  1;
+                 n3.y = -1;
+                 break;
+            case 3: 
+            case 4: 
+                 n1.x = -1;
+                 n1.y =  1;
+                 n2.x =  0;
+                 n2.y =  1;
+                 n3.x =  1;
+                 n3.y =  1;
+                 break;
+            case 5:
+            case 6:
+                 n1.x = -1;
+                 n1.y =  1;
+                 n2.x = -1;
+                 n2.y =  0;
+                 n3.x = -1;
+                 n3.y = -1;
+                 break;
+        }  
+        if (angle < 0.0) {
+             n1.x = -n1.x;
+             n1.y = -n1.y;
+             n2.x = -n2.x;
+             n2.y = -n2.y;
+             n3.x = -n3.x;
+             n3.y = -n3.y;             
+        }
+        n1e =  fabs((p2.x-(n1.x+(float) x))*(p2.x-(n1.x+(float) x)) + 
+                    (p2.y-(n1.y+(float) y))*(p2.y-(n1.y+(float) y)) - radius2);
+        n2e =  fabs((p2.x-(n2.x+(float) x))*(p2.x-(n2.x+(float) x)) +  
+                    (p2.y-(n2.y+(float) y))*(p2.y-(n2.y+(float) y)) - radius2);
+        n3e =  fabs((p2.x-(n3.x+(float) x))*(p2.x-(n3.x+(float) x)) + 
+                    (p2.y-(n3.y+(float) y))*(p2.y-(n3.y+(float) y)) - radius2);
+        if (n1e < n2e) {
+           if (n3e < n1e) {
+              x += (int) n3.x;
+              y += (int) n3.y;
+           } else {
+              x += (int) n1.x;
+              y += (int) n1.y;
+           }
+        } else {
+           if (n3e < n2e) {
+              x += (int) n3.x;
+              y += (int) n3.y;
+           } else {
+              x += (int) n2.x;
+              y += (int) n2.y;
+           }
+        }
+		addToChain(x, y);
+		if (fabs(addAngle) >= fabs(angle))
+           break;
+		oldAngle = curAngle;
+    } 
+	CurrentPoint.x = x;
+	CurrentPoint.y = y;
 }
 
 void DrawArea::startChain(int px, int py) {
@@ -320,16 +548,19 @@ void DrawArea::addToChain(int px, int py) {
 void DrawArea::mousePressEvent(QMouseEvent * e) {
 	float x = e->x()/zoom;
 	float y = e->y()/zoom;
+	DragPoint.x = x;
+	DragPoint.y = y;
 	for (int i = 0; i < controllPoints.size(); ++i) {
         if (fabs(controllPoints.at(i)->getPoint().x-x) < 5/zoom && 
 			fabs(controllPoints.at(i)->getPoint().y-y) < 5/zoom) {
-				
+			dragHasAngle = controllPoints.at(i)->isAngle();	
+			dragAngle = controllPoints.at(i)->getAngle();	
 			dragLine = controllPoints.at(i)->getLine();
 			dragElement = controllPoints.at(i)->getElement();
 			drag = true;
 			break;
 		}
-    	}
+	}
   	if (!drag) {
 		if (fabs(imageBegin.x-x) < 5/zoom && 
 			fabs(imageBegin.y-y) < 5/zoom) {
@@ -358,10 +589,16 @@ void DrawArea::mouseMoveEvent(QMouseEvent * e) {
 	QString str;
 	if (drag) { //&& (dragCount % 10) == 0
 		QStringList line = list.at(dragLine).split(" ");
-		line[dragElement]   = str.setNum(x);
-		line[dragElement+1] = str.setNum(y);
-		list[dragLine] = line.join(" ");
-		repaint();
+		if (!dragHasAngle) {
+			line[dragElement]   = str.setNum(x);
+			line[dragElement+1] = str.setNum(y);
+			list[dragLine] = line.join(" ");
+			repaint();
+		} else {
+			line[dragElement] = str.setNum(dragAngle + DragPoint.y - y);
+			list[dragLine] = line.join(" ");
+			repaint();
+		}	
 	}
 	switch (dragImage) {
 	case DRAG_START:

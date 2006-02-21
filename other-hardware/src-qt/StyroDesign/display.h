@@ -35,14 +35,17 @@ private:
 	void drawLineTo(Point p, QPainter *g, int lineNo);
 	void drawBezier(Point p2, Point p3, Point p4, QPainter *g, int lineNo);
 	void drawBezierRec(Point p1, Point p2, Point p3, Point p4, int level, QPainter *g);
+	void drawCircle(Point p2, float angle, QPainter *g, int lineNo);
+	
 	Point midpoint(Point p1, Point p2);
 	
 	void chainLineTo(Point p);
 	void chainBezier(Point p2, Point p3, Point p4);
 	void chainBezierRec(Point p1, Point p2, Point p3, Point p4, int level);
+	void chainCircle(Point p2, float angle);
 	void startChain(int px, int py);
 	void addToChain(int px, int py);
-	void addControlPoint(Point p, int line, int firstElement, QPainter *g);
+	void addControlPoint(Point p, int line, int firstElement, QPainter *g, bool hasAngle = false, float angle = 0.0);
 	void deleteControlPoints();
 
 	QList<ControllPoint*> controllPoints;
@@ -56,10 +59,13 @@ private:
 	int drawLevel;
 	int chainLevel;
 	Point CurrentPoint;
+	Point DragPoint;
 	int dragLine;
 	int dragElement;
+	bool dragHasAngle;
 	bool drag;
 	int dragImage;
+	float dragAngle;
 	bool imageScaleChanged;
 	bool showControlElements;
 	QTextEdit *text;
