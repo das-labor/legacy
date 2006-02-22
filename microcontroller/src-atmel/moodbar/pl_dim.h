@@ -1,8 +1,5 @@
-#ifndef MOOD_CAN_H
-#define MOOD_CAN_H
 
-void mcan_init();
-void mcan_process_messages();
+#include <inttypes.h>
 
 typedef struct{
 	uint16_t zeroval;
@@ -12,5 +9,5 @@ typedef struct{
 	int8_t cal;
 }pl_param_t;
 
-
-#endif  // MOOD_CAN_H
+void lampe_set(uint8_t lampe, uint8_t bright);
+void lampe_dim(uint8_t lampe, int8_t d);

@@ -1,30 +1,50 @@
-#include <avr/interrupt.h>
-#include <avr/signal.h>
 
-#include "mood-can.h"
-#include "util.h"
+#include <avr/io.h>
+
+#include <avrx-io.h>
+#include <avrx-signal.h>
+#include "avrx.h"               // AvrX System calls/data structures
+#include "serialio.h"           // From AvrX...
+
 #include "tlv5604.h"
 
-uint8_t bright[20][4];
+#include "config.h"
+#include "xcan.h"
+#include "xlap.h"
+#include "mood.h"
 
-extern pl_param_t pl;
+//AVRX_GCC_TASK(Monitor, 20, 0);          // External Task: Debug Monitor
 
-int main (void)
+
+AVRX_SIGINT(SIG_OVERFLOW0)
 {
-	da_init();
-	mcan_init();
-	sei();
+    IntProlog();                // Save interrupted context, switch stacks
+    TCNT0 = TCNT0_INIT;			// Reload the timer counter
+    AvrXTimerHandler();         // Process Timer queue
+    Epilog();                   // Restore context of next running task
+};
 
-	while(1){
-		//mcan_process_messages();
-		unsigned char x;
-		for(x=0;x!=255;x++){
-			da_set(0, bright_calc(&pl, x));
-			wait(20);
-		}
-		for(x=0;x!=255;x++){
-			da_set(0, bright_calc(&pl, 255-x));
-			wait(20);
-		}
-	}
-}
+int main(void)
+{
+    AvrXSetKernelStack(0);
+
+    MCUCR = 1<<SE;      	// Enable "sleep" mode (low power when idle)
+    TCNT0 = TCNT0_INIT;		// Load overflow counter of timer0
+    TCCR0 = TMC8_CK256;		// Set Timer0 to CPUCLK/256
+    TIMSK = 1<<TOIE0;		// Enable interrupt flag
+	
+    //InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
+	da_init();
+	xlap_init();
+    //AvrXRunTask(TCB(Monitor));
+	AvrXRunTask(TCB(laptask));
+	AvrXRunTask(TCB(moodtask));
+	
+
+    /* Needed for EEPROM access in monitor */
+	AvrXSetSemaphore(&EEPromMutex);
+	
+
+    Epilog();                   // Switch from AvrX Stack to first task
+    while(1);
+};
