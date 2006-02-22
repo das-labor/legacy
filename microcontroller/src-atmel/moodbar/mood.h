@@ -1,0 +1,2 @@
+
+AVRX_EXTERNTASK(moodtask);
