@@ -6,6 +6,8 @@
 #define IEC_HW_C
 #include "iec_hw.h"
 
+//#define MONITOR_MODE
+
 #define IEC_CLK_OUT  PB2
 #define IEC_DATA_OUT PB4
 #define PIN_ATN_IN PIND
@@ -25,13 +27,12 @@
 #define DATAOUT_SET PORTB |= (1<<IEC_DATA_OUT)
 #define DATAOUT_CLEAR PORTB &= ~(1<<IEC_DATA_OUT)
 
-AVRX_DECL_FIFO(iec_rx_fifo, 5);
-AVRX_DECL_FIFO(iec_tx_fifo, 5);
 
+Mutex iec_tx_mutex, iec_rx_mutex;
 
 static void iecDelay80 (void) {
 	TCNT2 = 0;
-	while (TCNT2 < 80);
+	while (TCNT2 < 100);
 }
 
 iec_word_t iecGetByte() {
@@ -54,9 +55,13 @@ iec_word_t iecGetByte() {
 		if (TCNT2 > 230) {
 			word.flags |= FLAG_EOI;
 			/* acknowledge if eoi */
-			//DATAOUT_CLEAR;
+#			ifndef MONITOR_MODE
+			DATAOUT_CLEAR;
 			iecDelay80();
-			//DATAOUT_SET;
+			DATAOUT_SET;
+#			else
+			iecDelay80();
+#			endif
 			/* wait for talker */
 			loop_until_bit_is_clear (PINB, IEC_CLK_IN);
 		}
@@ -86,9 +91,20 @@ iec_word_t iecGetByte() {
 			loop_until_bit_is_clear (PINB, IEC_CLK_IN);
 		}
 		/* acknowledge byte received */
-		//DATAOUT_CLEAR;
+#		ifndef MONITOR_MODE
+		DATAOUT_CLEAR;
+#		endif
 	}
 	return word;
+}
+
+void iecTurnAround(){
+	/* do turn-around sequence */
+	loop_until_bit_is_set (PIN_ATN_IN, BIT_ATN_IN);
+	loop_until_bit_is_set (PINB, IEC_CLK_IN);
+	DATAOUT_SET;
+	CLKOUT_CLEAR;
+	iecDelay80();	
 }
 
 void iecPutByte (iec_word_t word) {
@@ -136,39 +152,43 @@ void iecPutByte (iec_word_t word) {
 }
 
 volatile uint8_t iec_mode;
+volatile iec_word_t iec_tx_word, iec_rx_word;
 
 AVRX_GCC_TASKDEF(iecComTask, 200, 3){
-	uint16_t x;
 	LED_PORT ^= (1<<LED_BIT);
-	iec_word_t word;
-	iec_mode = MODE_LISTEN;
-	while(1){
-		if(iec_mode == MODE_LISTEN){
-			word = iecGetByte();
-			AvrXWaitPutFifo(iec_rx_fifo, *(uint16_t*)&word);
-		}else if(iec_mode == MODE_TALK){
-			uint16_t x;
-			x = AvrXWaitPullFifo(iec_tx_fifo);
-			iecPutByte(*(iec_word_t*)&x);
-		}else{
-			CLKOUT_SET;
-			DATAOUT_SET;			
-		}	
+	iec_mode = LISTEN;
+	while(iec_mode == LISTEN){
+			iec_rx_word = iecGetByte();
+			AvrXSetSemaphore(&iec_rx_mutex);
+	};
+	if(iec_mode == TALK){
+		iecTurnAround();
 	}
+	while(iec_mode == TALK){
+		AvrXWaitSemaphore(&iec_tx_mutex);
+		iecPutByte(iec_tx_word);
+		iec_rx_word.flags = FLAG_TXOK;
+		AvrXSetSemaphore(&iec_rx_mutex);
+	}
+	CLKOUT_SET;
+	DATAOUT_SET;			
+	while(1);	
 }
 
 Mutex atnMutex;
 
 AVRX_SIGINT(SIG_INTERRUPT0){
-	IntProlog();
-	
-	TCNT2 = 0;
-	while (TCNT2 < 5);
-	loop_until_bit_is_clear (PINB, IEC_CLK_IN);
 	/* set IEC DATA */
 	DATAOUT_CLEAR;
 	/* release IEC CLK */
 	CLKOUT_SET;
+	
+	IntProlog();
+	
+	//TCNT2 = 0;
+	//while (TCNT2 < 5);
+	//loop_until_bit_is_clear (PINB, IEC_CLK_IN);
+	
 	/* wait for talker holdoff */
 	loop_until_bit_is_clear (PINB, IEC_CLK_IN);
 
@@ -176,19 +196,22 @@ AVRX_SIGINT(SIG_INTERRUPT0){
 	Epilog();                // Return to tasks
 }
 
-AVRX_GCC_TASKDEF(iecAtnTask, 100, 2){
+AVRX_GCC_TASKDEF(iecAtnTask, 100, 1){
 	
 	while(1){
 		AvrXWaitSemaphore(&atnMutex);
 		AvrXTerminate(PID(iecComTask));
-		AvrXWaitPutFifo(iec_rx_fifo, *(uint16_t*)&(iec_word_t){0,FLAG_BREAK});
+		
+		iec_rx_word.flags = FLAG_BREAK;
+		iec_rx_word.data = 0;
+		AvrXSetSemaphore(&iec_rx_mutex);
+		
 		AvrXRunTask(TCB(iecComTask));
 	}	
 }
 
 void iec_hw_init(){
 	AvrXResetSemaphore(&atnMutex);
-	AVRX_INIT_FIFO(iec_tx_fifo);
-	AVRX_INIT_FIFO(iec_rx_fifo);
-	
+	AvrXResetSemaphore(&iec_rx_mutex);
+	AvrXResetSemaphore(&iec_tx_mutex);
 }
