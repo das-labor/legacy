@@ -1,6 +1,6 @@
 
 AVRXHOME       = ../lib/AvrX2.6f/avrx/
-SRC            = main.c iec_hw.c fifo.c AvrXBufferedSerial.c
+SRC            = main.c iec_hw.c iec.c fifo.c AvrXBufferedSerial.c
 MCU_TARGET     = atmega162
 
 FLASHCMD      = avrdude -p m162 -c xa1541 -D -U flash:w:$(OUT).hex

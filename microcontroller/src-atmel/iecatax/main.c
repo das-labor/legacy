@@ -3,9 +3,10 @@
 #include <stdio.h>
 #include "avrx.h"
 
-#include "AvrXSerialIo.h"
+
 
 #include "iec_hw.h"
+#include "iec.h"
 
 
 
@@ -58,28 +59,7 @@ void myputs_P(int (*putch)(char), const uint8_t * psz)
 // This task uses GCC Libc stdio facility and needs an additional 60-80 bytes of stack
 // for processing the strings.  Longer strings probably need more stack.
 
-AVRX_GCC_TASKDEF(task0, 200, 1)
-{
-	TimerControlBlock timer;
 
-//	InitSerial0(BAUD(115200));	// Note: this only works with 12mhz or baud rate crystal
-	InitSerial0(BAUD(38400));
-    fdevopen(put_char0, get_c0, 0);		// Set up standard I/O
-	while(1)
-	{
-		int c;
-		uint16_t word;
-		BOOL bGotACharacter = FALSE;
-
-		printf_P(PSTR("<IECATA>\r"));
-		
-		while(1){
-			word = AvrXWaitPullFifo(iec_rx_fifo);
-			printf_P(PSTR("%x\r"), word);
-		}
-		
-	}
-}
 
 
 int main(void)
@@ -114,7 +94,7 @@ int main(void)
 	iec_hw_init();
 
 	AvrXRunTask(TCB(iecAtnTask));
-	AvrXRunTask(TCB(task0));
+	AvrXRunTask(TCB(iec_task));
 
 	Epilog();
 	while(1);
