@@ -27,11 +27,12 @@ DrawArea::DrawArea(QTextEdit *textedit, QWidget *parent)
 	chainLevel = 10;
 	setPalette(QPalette(QColor(255, 255, 255)));
 	setZoom(1.0);
+	setFocusPolicy(Qt::WheelFocus);
 	drag = false;
 	imageScaleChanged = false;
 	showControlElements = true;
 	dragImage = 0;
-	
+	dragAbort = false;
 	connect(textedit, SIGNAL(textChanged()), this, SLOT(checkAndDraw()));
 }
 
@@ -63,40 +64,45 @@ void DrawArea::paintEvent(QPaintEvent * /* event */)
 	}
 	
 	QStringListIterator i(list);
+	identety();
 	while (i.hasNext())  {
 		QStringList ps = i.next().split(' ');
-		switch ((ps.at(0).toAscii())[0]) {
-			case 's': {
-				if (ps.size() >= 3) {
-					deleteControlPoints();
-					CurrentPoint.x = ps.at(1).toFloat();
-					CurrentPoint.y = ps.at(2).toFloat();
-					addControlPoint(CurrentPoint, j, 1, &painter);
-				}
-				break;
-			} 
-			case 'l': {
-				if (ps.size() >= 3) {
-					drawLineTo((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()}, &painter, j);
-				}
-				break;
-			}
-			case 'c': {
-				if (ps.size() >= 7) {
-					drawBezier((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()},
-							   (Point) {ps.at(3).toFloat(), ps.at(4).toFloat()},
-							   (Point) {ps.at(5).toFloat(), ps.at(6).toFloat()},
-								&painter, j);
-				}
-				break;		                                  
-			}
-			case 'k': {
-				if (ps.size() >= 4) {
-					drawCircle((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()},
-							   ps.at(3).toFloat(), &painter, j);
-				}
-				break;		                                  
-			}
+		QString compare = ps.at(0);
+		if ((compare == "start" || compare == "s") && ps.size() >= 3) {
+			deleteControlPoints();
+			Point P = transform((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()});
+			CurrentPoint.x = P.x;
+			CurrentPoint.y = P.y;
+			addControlPoint(CurrentPoint, j, 1, &painter);
+		} else if ((compare == "line" || compare == "l") && ps.size() >= 3) {
+			drawLineTo(transform((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()}), 
+			           &painter, j);
+		} else if ((compare == "curve" || compare == "b") && ps.size() >= 7) {
+			drawBezier(transform((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()}),
+					   transform((Point) {ps.at(3).toFloat(), ps.at(4).toFloat()}),
+					   transform((Point) {ps.at(5).toFloat(), ps.at(6).toFloat()}),
+					   &painter, j);
+		} else if ((compare == "circle" || compare == "c") && ps.size() >= 4) {
+			drawCircle(transform((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()}),
+					   ps.at(3).toFloat(), &painter, j);
+		} else if ((compare == "scale" || compare == "sc") && ps.size() >= 5) {
+			scaleP(ps.at(1).toFloat(), ps.at(2).toFloat(),
+				   (Point) {ps.at(3).toFloat(), ps.at(4).toFloat()});
+		} else if ((compare == "translate" || compare == "t") && ps.size() >= 3) {
+			translate((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()});
+		} else if ((compare == "rotate" || compare == "r") && ps.size() >= 4) {
+			rotateP(ps.at(3).toFloat(), (Point) {ps.at(1).toFloat(), ps.at(2).toFloat()});
+		} else if ((compare == "identety" || compare == "i") && ps.size() >= 1) {
+			identety();
+		} else if ((compare == "size" || compare == "si") && ps.size() >= 3) {
+			height = ps.at(1).toInt();
+			width =  ps.at(2).toInt();
+			if (height <= 0) 
+				height = 1;
+			if (width <= 0) 
+				width = 1;
+			resize((int)(zoom*height), (int)(zoom*width));
+			imageScaleChanged = true;
 		}
 		j++;
 	}
@@ -375,6 +381,69 @@ void DrawArea::chainBezier(Point p2, Point p3, Point p4) {
 	CurrentPoint = p4;
 }
 
+void DrawArea::scaleP(float sx, float sy, Point scaleP) {
+	float scaleMatrix[9] = {sx,  0., scaleP.x - sx*scaleP.x,
+	                        0.,  sy, scaleP.y - sy*scaleP.y,
+							0.,  0., 1.};
+	float result[9];
+	multMatrix(scaleMatrix, curTrans, result);
+	for (int i = 0; i < 9; i++) {
+		curTrans[i] = result[i];
+	}
+}
+
+void DrawArea::rotateP(float a, Point rotateP) {
+	float b  = a/180. * PI;
+	float rotateMatrix[9] = {cos(b), -sin(b), rotateP.x - cos(b)*rotateP.x + sin(b)*rotateP.y,
+	                         sin(b),  cos(b), rotateP.y - sin(b)*rotateP.x - cos(b)*rotateP.y,
+							 0.,      0.,     1.};
+	float result[9];
+	multMatrix(rotateMatrix, curTrans, result);
+	for (int i = 0; i < 9; i++) {
+		curTrans[i] = result[i];
+	}
+}
+
+void DrawArea::identety() {
+	curTrans[0] = 1.;
+	curTrans[1] = 0.;
+	curTrans[2] = 0.;
+	curTrans[3] = 0.;
+	curTrans[4] = 1.;
+	curTrans[5] = 0.;
+	curTrans[6] = 0.;
+	curTrans[7] = 0.;
+	curTrans[8] = 1.;
+}
+
+void DrawArea::multMatrix(float *mat1, float *mat2, float *resultMatrix) {
+	resultMatrix[0] = mat1[0]*mat2[0] + mat1[1]*mat2[3] + mat1[2]*mat2[6];
+	resultMatrix[1] = mat1[0]*mat2[1] + mat1[1]*mat2[4] + mat1[2]*mat2[7];
+	resultMatrix[2] = mat1[0]*mat2[2] + mat1[1]*mat2[5] + mat1[2]*mat2[8];
+	resultMatrix[3] = mat1[3]*mat2[0] + mat1[4]*mat2[3] + mat1[5]*mat2[6];
+	resultMatrix[4] = mat1[3]*mat2[1] + mat1[4]*mat2[4] + mat1[5]*mat2[7];
+	resultMatrix[5] = mat1[3]*mat2[2] + mat1[4]*mat2[5] + mat1[5]*mat2[8];
+	resultMatrix[6] = mat1[6]*mat2[0] + mat1[7]*mat2[3] + mat1[8]*mat2[6];
+	resultMatrix[7] = mat1[6]*mat2[1] + mat1[7]*mat2[4] + mat1[8]*mat2[7];
+	resultMatrix[8] = mat1[6]*mat2[2] + mat1[7]*mat2[5] + mat1[8]*mat2[8];
+}
+
+void DrawArea::translate(Point p) {
+	float translateMatrix[9] = {1., 0., p.x,
+							    0., 1., p.y,
+								0., 0., 1.};
+	float result[9];
+	multMatrix(translateMatrix, curTrans, result);
+	for (int i = 0; i < 9; i++) {
+		curTrans[i] = result[i];
+	}
+}
+
+Point DrawArea::transform(Point p) {
+	return (Point) {p.x*curTrans[0] + p.y*curTrans[1] + curTrans[2],
+	                p.x*curTrans[3] + p.y*curTrans[4] + curTrans[5]};
+}
+
 void DrawArea::chainBezierRec(Point p1, Point p2, Point p3, Point p4, int level) {
 	if (level == 0) {
 		chainLineTo(p4);
@@ -577,10 +646,24 @@ void DrawArea::mousePressEvent(QMouseEvent * e) {
 }
 
 void DrawArea::mouseReleaseEvent(QMouseEvent * e) {
-	if (drag)
-		text->setPlainText(list.join("\n"));
+	if (drag) {
+		if (dragAbort) {
+			checkAndDraw();
+		} else {
+			text->setPlainText(list.join("\n"));
+		}
+	} 
 	drag = false;
 	dragImage = 0;
+	
+}
+
+void DrawArea::keyPressEvent(QKeyEvent * e) {
+	if (drag && e->key() == Qt::Key_Escape) {
+		dragAbort = true;
+		drag = false;
+		checkAndDraw();
+	}
 }
 
 void DrawArea::mouseMoveEvent(QMouseEvent * e) {	
