@@ -25,6 +25,7 @@ public:
 protected:
 	void paintEvent(QPaintEvent *event);
 	void mousePressEvent(QMouseEvent * e);
+	void keyPressEvent(QKeyEvent * e);
 	void mouseReleaseEvent(QMouseEvent * e);
 	void mouseMoveEvent(QMouseEvent * e);
 	
@@ -47,7 +48,20 @@ private:
 	void addToChain(int px, int py);
 	void addControlPoint(Point p, int line, int firstElement, QPainter *g, bool hasAngle = false, float angle = 0.0);
 	void deleteControlPoints();
+	
+	void scaleP(float sx, float sy, Point scaleP);
+	void rotateP(float a, Point rotateP);
+	void identety();
+	void translate(Point p);
+	void multMatrix(float *mat1, float *mat2, float *resultMatrix);
+	Point transform(Point p);
 
+	/*  0 1 2
+		3 4 5
+		6 7 8
+	 */
+	float curTrans[9];
+	
 	QList<ControllPoint*> controllPoints;
 	QString chain;
 	QStringList list;
@@ -62,8 +76,9 @@ private:
 	Point DragPoint;
 	int dragLine;
 	int dragElement;
-	bool dragHasAngle;
 	bool drag;
+	bool dragHasAngle;
+	bool dragAbort;
 	int dragImage;
 	float dragAngle;
 	bool imageScaleChanged;
