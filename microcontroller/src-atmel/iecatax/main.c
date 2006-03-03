@@ -4,19 +4,21 @@
 #include "avrx.h"
 
 
-
 #include "iec_hw.h"
 #include "iec.h"
+#include "config.h"
+#include "ata.h"
+#include "dos.h"
 
+void init_xram (void) __attribute__ ((naked)) \
+    __attribute__ ((section (".init1")));
 
-
-enum
+void init_xram (void)
 {
-	FALSE,
-	TRUE
-};
+	/* enable external SRAM */
+	MCUCR |= (1<<SRE);
+}
 
-typedef unsigned char BOOL;
 
 // Peripheral initialization
 
@@ -31,6 +33,8 @@ typedef unsigned char BOOL;
  . handle interrupt
  . switch back to interrupted context.
  */
+
+/*
 AVRX_SIGINT(SIG_OVERFLOW0)
 {
     IntProlog();                // Switch to kernel stack/context
@@ -38,43 +42,28 @@ AVRX_SIGINT(SIG_OVERFLOW0)
     AvrXTimerHandler();         // Call Time queue manager
     Epilog();                   // Return to tasks
 }
-
-// Super simple string printers...
-
-// PutString from RAM
-void myputs(int (*putch)(char), const uint8_t * psz)
-{
-	while (*psz != 0)
-		(*putch)(*psz++);
-}
-
-// PutString from FLASH
-void myputs_P(int (*putch)(char), const uint8_t * psz)
-{
-	while (__LPM(psz) != 0)
-		(*putch)(__LPM(psz++));
-}
-
-
-// This task uses GCC Libc stdio facility and needs an additional 60-80 bytes of stack
-// for processing the strings.  Longer strings probably need more stack.
-
-
+*/
 
 
 int main(void)
 {
     AvrXSetKernelStack(0);
 
+		
 	DDRA = 0;
 	PORTA = 0;  
 	DDRB = 0x57;
 	PORTB = 0x57;
 	DDRC = 0;
 	PORTC = 0;
+#ifdef ATA_ADDRESSLATCH	
+	DDRD = 0xF8;
+	PORTD = 0xF8;
+#else
 	DDRD = 0xFB;
 	PORTD = 0xFB;
-	DDRE = 0x04;
+#endif
+	DDRE = 0x06;
 	PORTE = 0x04;
 	
 	/* setup interrupt */
@@ -83,15 +72,28 @@ int main(void)
   	sbi (GICR, INT0);
 	
 	MCUCR |= _BV(SE);
-	TCNT0 = TCNT0_INIT;
+	//TCNT0 = TCNT0_INIT;
 	// Most other chips...  Note: some are TCCR0 and some are TCCR0B...
-	TCCR0 =  (1<<CS02);
+	//TCCR0 =  (1<<CS02);
 
-	TIMSK |= _BV(TOIE0);
+	//TIMSK |= _BV(TOIE0);
 
 	TCCR2 = (1<<CS21);//clk/8
 
 	iec_hw_init();
+	
+	LED_ON;
+	error = INIT_ERROR;
+	/* init submodules */
+#ifdef ATA	
+	if (ataInit()) {
+		if (dosInit()) {
+			error = VERSION_ERROR;
+		}
+	}
+#endif
+	
+	LED_OFF;
 
 	AvrXRunTask(TCB(iecAtnTask));
 	AvrXRunTask(TCB(iec_task));

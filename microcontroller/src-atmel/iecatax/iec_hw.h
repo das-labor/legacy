@@ -20,6 +20,13 @@ typedef struct{
 #define CLOSE     0xe0
 #define DATA      0x60
 
+
+#define MODE_RELEASE		0
+#define MODE_LISTEN			1
+#define MODE_TALK			2
+#define MODE_TALK_RELEASE	3
+
+
 #ifndef IEC_HW_C
 AVRX_EXTERNTASK(iecAtnTask);
 
