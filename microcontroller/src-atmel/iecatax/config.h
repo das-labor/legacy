@@ -9,7 +9,9 @@
 
 
 //Debug over RS232
+
 #define DEBUG
+#define USART_CHANNELS 1
 
 //Device has ATA connected
 #define ATA

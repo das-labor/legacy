@@ -16,10 +16,10 @@
 #include <avrx.h>
 #include <stdio.h>
 #include <avr/pgmspace.h>
-#include "AvrXSerialIo.h"
 #include "iec_hw.h"
 #include "config.h"
 #include "types.h"
+#include "AvrXSerialIo.h"
 #include "iecata.h"
 #include "dos.h"
 #include "iec.h"

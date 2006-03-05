@@ -147,7 +147,7 @@ AVRX_SIGINT(SIG_USART0_DATA)
 }
 #endif	// USART_CHANNELS & CHANNEL_0
 //------------------------------------------------------------------------
-#if USART_CHANNELS & CHANNEL_1
+#if 0
 
 AVRX_DECL_FIFO(Rx1Buf, RX1_BUFSZ);
 AVRX_DECL_FIFO(Tx1Buf, TX1_BUFSZ);
@@ -232,3 +232,4 @@ AVRX_SIGINT(SIG_UART1_DATA)
 	Epilog();
 }
 #endif	// USART_CHANNELS & CHANNEL_1
+
