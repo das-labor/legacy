@@ -16,7 +16,7 @@
 // to enable sections of code.
 
 #define CHANNEL_0 (1<<0)
-//#define CHANNEL_1 (1<<1)
+#define CHANNEL_1 (1<<1)
 
 #if !defined(USART_CHANNELS)
 #if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__) || defined(__AVR_ATcan128__) || \
@@ -56,8 +56,6 @@
 #ifndef _AVRXSERIALIO_C_	// Don't comingle this macro
 	AVRX_EXT_FIFO(Rx0Buf);	// with the declaration macro.
 	AVRX_EXT_FIFO(Tx0Buf);	// This block only active in
-	AVRX_EXT_FIFO(Rx1Buf);	// non-serialio driver code.
-	AVRX_EXT_FIFO(Tx1Buf);
 #endif
 
 int get_c0(void);		// Non blocking, returns -1 when empty
@@ -65,13 +63,7 @@ int get_char0(void);	// Blocking, always returns character
 int put_c0(char c);		// Non blocking, returns -1 when full
 int put_char0(char c);	// Blocking, always returns 0.
 
-int get_c1(void);		// Non blocking, returns -1 when empty
-int get_char1(void);	// Blocking, always returns character
-int put_c1(char c);		// Non blocking, returns -1 when full
-int put_char1(char c);	// Blocking, always returns 0.
-
 void InitSerial0(uint16_t ubrr);
-void InitSerial1(uint16_t ubrr);
 
 // If only one channel defined, then use simpler "get_c()" notation
 // This probably doesn't work...
