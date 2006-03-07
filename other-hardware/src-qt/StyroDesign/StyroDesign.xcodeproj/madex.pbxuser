@@ -230,7 +230,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "DrawArea::mouseMoveEvent";
 		rLen = 24;
-		rLoc = 21308;
+		rLoc = 21302;
 		rType = 0;
 		vrLen = 996;
 		vrLoc = 11251;
@@ -271,7 +271,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 483";
 		rLen = 0;
-		rLoc = 21700;
+		rLoc = 21694;
 		rType = 0;
 		vrLen = 984;
 		vrLoc = 11752;
@@ -292,7 +292,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 441";
 		rLen = 0;
-		rLoc = 19978;
+		rLoc = 19972;
 		rType = 0;
 		vrLen = 1010;
 		vrLoc = 11179;
@@ -465,7 +465,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 486";
 		rLen = 0;
-		rLoc = 21771;
+		rLoc = 21765;
 		rType = 0;
 		vrLen = 1026;
 		vrLoc = 11840;
@@ -486,7 +486,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "void DrawArea::mousePressEvent(QMouseEvent * e) {";
 		rLen = 50;
-		rLoc = 19850;
+		rLoc = 19844;
 		rType = 0;
 		vrLen = 641;
 		vrLoc = 11140;
@@ -640,7 +640,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 441";
 		rLen = 0;
-		rLoc = 19982;
+		rLoc = 19976;
 		rType = 0;
 		vrLen = 890;
 		vrLoc = 11348;
@@ -685,7 +685,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 441";
 		rLen = 0;
-		rLoc = 19982;
+		rLoc = 19976;
 		rType = 0;
 		vrLen = 890;
 		vrLoc = 11374;
@@ -720,7 +720,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 441";
 		rLen = 0;
-		rLoc = 19982;
+		rLoc = 19976;
 		rType = 0;
 		vrLen = 765;
 		vrLoc = 3966;
@@ -745,7 +745,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 488";
 		rLen = 0;
-		rLoc = 21777;
+		rLoc = 21771;
 		rType = 0;
 		vrLen = 644;
 		vrLoc = 12376;
@@ -770,7 +770,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 488";
 		rLen = 0;
-		rLoc = 21777;
+		rLoc = 21771;
 		rType = 0;
 		vrLen = 635;
 		vrLoc = 12376;
@@ -810,7 +810,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 488";
 		rLen = 0;
-		rLoc = 21777;
+		rLoc = 21771;
 		rType = 0;
 		vrLen = 917;
 		vrLoc = 12326;
@@ -835,7 +835,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 599";
 		rLen = 0;
-		rLoc = 21777;
+		rLoc = 21771;
 		rType = 0;
 		vrLen = 995;
 		vrLoc = 15265;
@@ -885,7 +885,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 591";
 		rLen = 0;
-		rLoc = 21296;
+		rLoc = 21290;
 		rType = 0;
 		vrLen = 900;
 		vrLoc = 15202;
@@ -968,7 +968,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "dragAbort = true;";
 		rLen = 54;
-		rLoc = 21243;
+		rLoc = 21237;
 		rType = 0;
 		vrLen = 826;
 		vrLoc = 15621;
@@ -1047,7 +1047,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 595";
 		rLen = 54;
-		rLoc = 21243;
+		rLoc = 21237;
 		rType = 0;
 		vrLen = 820;
 		vrLoc = 15658;
@@ -1107,7 +1107,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 595";
 		rLen = 54;
-		rLoc = 21243;
+		rLoc = 21237;
 		rType = 0;
 		vrLen = 753;
 		vrLoc = 16492;
@@ -1122,7 +1122,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 595";
 		rLen = 54;
-		rLoc = 21243;
+		rLoc = 21237;
 		rType = 0;
 		vrLen = 753;
 		vrLoc = 16492;
@@ -1147,7 +1147,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 595";
 		rLen = 54;
-		rLoc = 21243;
+		rLoc = 21237;
 		rType = 0;
 		vrLen = 453;
 		vrLoc = 16492;
@@ -1847,7 +1847,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 699";
 		rLen = 0;
-		rLoc = 21411;
+		rLoc = 21405;
 		rType = 0;
 		vrLen = 860;
 		vrLoc = 19278;
@@ -1920,7 +1920,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 699";
 		rLen = 0;
-		rLoc = 21411;
+		rLoc = 21405;
 		rType = 0;
 		vrLen = 860;
 		vrLoc = 19278;
@@ -1980,7 +1980,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 699";
 		rLen = 0;
-		rLoc = 21411;
+		rLoc = 21405;
 		rType = 0;
 		vrLen = 860;
 		vrLoc = 19278;
@@ -2040,7 +2040,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 699";
 		rLen = 0;
-		rLoc = 21411;
+		rLoc = 21405;
 		rType = 0;
 		vrLen = 860;
 		vrLoc = 19278;
@@ -2100,7 +2100,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 699";
 		rLen = 0;
-		rLoc = 21411;
+		rLoc = 21405;
 		rType = 0;
 		vrLen = 860;
 		vrLoc = 19278;
@@ -2160,7 +2160,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 699";
 		rLen = 0;
-		rLoc = 21411;
+		rLoc = 21405;
 		rType = 0;
 		vrLen = 860;
 		vrLoc = 19278;
@@ -2220,7 +2220,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 699";
 		rLen = 0;
-		rLoc = 21411;
+		rLoc = 21405;
 		rType = 0;
 		vrLen = 860;
 		vrLoc = 19278;
@@ -2278,7 +2278,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 468";
 		rLen = 0;
-		rLoc = 15139;
+		rLoc = 15133;
 		rType = 0;
 		vrLen = 887;
 		vrLoc = 13307;
@@ -2308,7 +2308,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "return (Point) {p.x*inverse[0] + p.y*inverse[1] + inverse[2],";
 		rLen = 63;
-		rLoc = 15140;
+		rLoc = 15134;
 		rType = 0;
 		vrLen = 756;
 		vrLoc = 13276;
@@ -2338,7 +2338,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "return (Point) {p.x*inverse[0] + p.y*inverse[1] + inverse[2],";
 		rLen = 63;
-		rLoc = 15140;
+		rLoc = 15134;
 		rType = 0;
 		vrLen = 756;
 		vrLoc = 13276;
@@ -2388,7 +2388,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: transformBack";
 		rLen = 0;
-		rLoc = 15087;
+		rLoc = 15081;
 		rType = 0;
 		vrLen = 1110;
 		vrLoc = 13087;
@@ -2418,7 +2418,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 468";
 		rLen = 0;
-		rLoc = 15139;
+		rLoc = 15133;
 		rType = 0;
 		vrLen = 887;
 		vrLoc = 13307;
@@ -2488,7 +2488,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: transformBack";
 		rLen = 0;
-		rLoc = 15087;
+		rLoc = 15081;
 		rType = 0;
 		vrLen = 1110;
 		vrLoc = 13087;
@@ -2538,7 +2538,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: transformBack";
 		rLen = 0;
-		rLoc = 15087;
+		rLoc = 15081;
 		rType = 0;
 		vrLen = 1112;
 		vrLoc = 13087;
@@ -2578,7 +2578,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: transformBack";
 		rLen = 0;
-		rLoc = 15087;
+		rLoc = 15081;
 		rType = 0;
 		vrLen = 1112;
 		vrLoc = 13087;
@@ -2618,7 +2618,7 @@
 		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
 		name = "display.cpp: 657";
 		rLen = 0;
-		rLoc = 20476;
+		rLoc = 20470;
 		rType = 0;
 		vrLen = 1187;
 		vrLoc = 18322;
@@ -2645,9 +2645,9 @@
 	};
 	793D5F310C3A17983C7CA8AA /* display.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {790, 12400}}";
-			sepNavSelRange = "{18948, 0}";
-			sepNavVisRect = "{{0, 10278}, {735, 613}}";
+			sepNavIntBoundsRect = "{{0, 0}, {839, 12608}}";
+			sepNavSelRange = "{9397, 28}";
+			sepNavVisRect = "{{0, 4442}, {775, 413}}";
 			sepNavWindowFrame = "{{50, 4}, {774, 742}}";
 		};
 	};
