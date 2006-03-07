@@ -31,6 +31,7 @@ public slots:
 	void zoomDec();
 	void zoom100();
 	void open();
+	void plot();
 	void save();
 	void saveAs();
 	void openImage();

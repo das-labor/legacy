@@ -28,6 +28,8 @@ MyWidget::MyWidget(QWidget *parent): QMainWindow(parent)
 			this, SLOT(switchControlView()));
 	connect(toolbar->addAction(tr("SaveChainCode")), SIGNAL(triggered()),
 			this, SLOT(saveChainCode()));
+	connect(toolbar->addAction(tr("Plot")), SIGNAL(triggered()),
+			this, SLOT(plot()));
 	
 	
 	setCentralWidget(widget);
@@ -113,6 +115,10 @@ void MyWidget::openImage() {
 void MyWidget::switchControlView() {
 	showControlElements = showControlElements ? false : true;
 	drawArea->setShowControlElements(showControlElements);
+}
+
+void MyWidget::plot() {
+	
 }
 
 void MyWidget::saveChainCode() {

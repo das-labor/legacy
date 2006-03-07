@@ -349,7 +349,7 @@ QString DrawArea::getChainCode() {
 		} else if ((compare == STR_TRANSLATE || compare == STR_TRANSLATE_SHORT) && ps.size() >= 3) {
 			translate((Point) {ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale});
 		} else if ((compare == STR_ROTATE || compare == STR_ROTATE_SHORT) && ps.size() >= 4) {
-			rotateP(ps.at(3).toFloat()*scale, (Point) {ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale});
+			rotateP(ps.at(3).toFloat(), (Point) {ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale});
 		} else if ((compare == STR_IDENTITY || compare == STR_IDENTITY_SHORT) && ps.size() >= 1) {
 			identity();
 		}
