@@ -1,0 +1,596 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1345FB1D37793533D7F7B526 /* moc_display.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E946256D0B80E7C6DD5308F4 /* moc_display.cpp */; settings = {ATTRIBUTES = (); }; };
+		297AF074462948FF7A178623 /* display.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 793D5F310C3A17983C7CA8AA /* display.cpp */; settings = {ATTRIBUTES = (); }; };
+		2B093CA6F071B023A473CED0 /* main.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 118FCBAABA162BA17933C789 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
+		545CC49FE7944B3A0039B230 /* controllPoint.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = F50307C087DB0AFB4C84C446 /* controllPoint.cpp */; settings = {ATTRIBUTES = (); }; };
+		73672E7209AA6EC500F82244 /* StyroDesign.app in Project Copy */ = {isa = PBXBuildFile; fileRef = 73672E6F09AA6EC500F82244 /* StyroDesign.app */; };
+		73672F5709AA6FB800F82244 /* QtCore.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 73672F5609AA6FB800F82244 /* QtCore.framework */; };
+		73672F5B09AA6FEA00F82244 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 73672F5A09AA6FEA00F82244 /* QtGui.framework */; };
+		A6FD49F6C258A505C9742C98 /* mainWindow.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 86B26EDE2FE672340F83FFDB /* mainWindow.cpp */; settings = {ATTRIBUTES = (); }; };
+		B15CFED8AB1B507EA9CFE3EB /* moc_mainWindow.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 219ABDD29F250EBA2C28ED9D /* moc_mainWindow.cpp */; settings = {ATTRIBUTES = (); }; };
+		C8FD4A1AAA37CF2CA2824CCF /* Carbon.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA138F75C9F545CDAE7FB264 /* Carbon.framework */; };
+		C970DEE26C28766E9311E00E /* QuickTime.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = A93DF979D20C91D1A15D9625 /* QuickTime.framework */; };
+		F9E76E570E10AF14870553A7 /* ApplicationServices.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 27AE7A480FD6C52FCA80FECD /* ApplicationServices.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildStyle section */
+		26DE8D2AEA4B3714B41E931F /* Release */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+			};
+			name = Release;
+		};
+		2C641C3335766025DD51B7BD /* Debug */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+			};
+			name = Debug;
+		};
+/* End PBXBuildStyle section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		F6069D5A5DA8AA28EDB8B3C6 /* Project Copy */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "/Users/madex/svn/other-hardware/src-qt/StyroDesign";
+			dstSubfolderSpec = 0;
+			files = (
+				73672E7209AA6EC500F82244 /* StyroDesign.app in Project Copy */,
+			);
+			name = "Project Copy";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		118FCBAABA162BA17933C789 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		218874654D4ABEB18D4B5E7B /* StyroDesign.pro */ = {isa = PBXFileReference; lastKnownFileType = text; path = StyroDesign.pro; sourceTree = "<group>"; };
+		219ABDD29F250EBA2C28ED9D /* moc_mainWindow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_mainWindow.cpp; sourceTree = "<group>"; };
+		27AE7A480FD6C52FCA80FECD /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
+		434016518D5B58E424C1B966 /* mainWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mainWindow.h; sourceTree = "<group>"; };
+		51EF5E81981A3695E8F89509 /* controllPoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = controllPoint.h; sourceTree = "<group>"; };
+		73672E6F09AA6EC500F82244 /* StyroDesign.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StyroDesign.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		73672F5609AA6FB800F82244 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = "../../../../Desktop/Downloads/qt-mac-opensource-src-4.1.0/lib/QtCore.framework"; sourceTree = SOURCE_ROOT; };
+		73672F5A09AA6FEA00F82244 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "../../../../Desktop/Downloads/qt-mac-opensource-src-4.1.0/lib/QtGui.framework"; sourceTree = SOURCE_ROOT; };
+		793D5F310C3A17983C7CA8AA /* display.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = display.cpp; sourceTree = "<group>"; };
+		7BB7C180F7354098BEA41E73 /* display.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = display.h; sourceTree = "<group>"; };
+		86B26EDE2FE672340F83FFDB /* mainWindow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mainWindow.cpp; sourceTree = "<group>"; };
+		A93DF979D20C91D1A15D9625 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
+		DA138F75C9F545CDAE7FB264 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		E946256D0B80E7C6DD5308F4 /* moc_display.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_display.cpp; sourceTree = "<group>"; };
+		F50307C087DB0AFB4C84C446 /* controllPoint.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = controllPoint.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2A1043669E6E5A7426EA502A /* Frameworks & Libraries */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C8FD4A1AAA37CF2CA2824CCF /* Carbon.framework in Frameworks & Libraries */,
+				C970DEE26C28766E9311E00E /* QuickTime.framework in Frameworks & Libraries */,
+				F9E76E570E10AF14870553A7 /* ApplicationServices.framework in Frameworks & Libraries */,
+				73672F5709AA6FB800F82244 /* QtCore.framework in Frameworks & Libraries */,
+				73672F5B09AA6FEA00F82244 /* QtGui.framework in Frameworks & Libraries */,
+			);
+			name = "Frameworks & Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		05596AB53D8D521C69802C27 /* StyroDesign */ = {
+			isa = PBXGroup;
+			children = (
+				FB61758D0F0FDA4BA867C3D5 /* Sources */,
+				46E892BBB6BB6952967E0561 /* Temporary Sources */,
+				883D7615C4D2DE3FA1218F12 /* Headers */,
+				7CABE3C80E79AD2B307756D2 /* Sources [qmake] */,
+				ED1E82605DD74B483AF3C982 /* External Frameworks and Libraries */,
+				73672E7009AA6EC500F82244 /* Products */,
+			);
+			name = StyroDesign;
+			sourceTree = "<group>";
+		};
+		46E892BBB6BB6952967E0561 /* Temporary Sources */ = {
+			isa = PBXGroup;
+			children = (
+				E946256D0B80E7C6DD5308F4 /* moc_display.cpp */,
+				219ABDD29F250EBA2C28ED9D /* moc_mainWindow.cpp */,
+			);
+			name = "Temporary Sources";
+			sourceTree = "<group>";
+		};
+		73672E7009AA6EC500F82244 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				73672E6F09AA6EC500F82244 /* StyroDesign.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7CABE3C80E79AD2B307756D2 /* Sources [qmake] */ = {
+			isa = PBXGroup;
+			children = (
+				218874654D4ABEB18D4B5E7B /* StyroDesign.pro */,
+			);
+			name = "Sources [qmake]";
+			sourceTree = "<group>";
+		};
+		883D7615C4D2DE3FA1218F12 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				51EF5E81981A3695E8F89509 /* controllPoint.h */,
+				7BB7C180F7354098BEA41E73 /* display.h */,
+				434016518D5B58E424C1B966 /* mainWindow.h */,
+			);
+			name = Headers;
+			sourceTree = "<group>";
+		};
+		ED1E82605DD74B483AF3C982 /* External Frameworks and Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				73672F5A09AA6FEA00F82244 /* QtGui.framework */,
+				73672F5609AA6FB800F82244 /* QtCore.framework */,
+				DA138F75C9F545CDAE7FB264 /* Carbon.framework */,
+				A93DF979D20C91D1A15D9625 /* QuickTime.framework */,
+				27AE7A480FD6C52FCA80FECD /* ApplicationServices.framework */,
+			);
+			name = "External Frameworks and Libraries";
+			sourceTree = "<group>";
+		};
+		FB61758D0F0FDA4BA867C3D5 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				F50307C087DB0AFB4C84C446 /* controllPoint.cpp */,
+				793D5F310C3A17983C7CA8AA /* display.cpp */,
+				118FCBAABA162BA17933C789 /* main.cpp */,
+				86B26EDE2FE672340F83FFDB /* mainWindow.cpp */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6233B4E33034550C8251230B /* StyroDesign */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 73672E7D09AA6EE600F82244 /* Build configuration list for PBXNativeTarget "StyroDesign" */;
+			buildPhases = (
+				D7BA7D76DAB5DD13389D6332 /* Qt Qmake */,
+				A0A52A2ADF7A1E2A99738674 /* Qt Preprocessors */,
+				F6069D5A5DA8AA28EDB8B3C6 /* Project Copy */,
+				C29B8785722055ED95EF7B57 /* Build Sources */,
+				2A1043669E6E5A7426EA502A /* Frameworks & Libraries */,
+				3787F99312C85FF0073FD7BA /* Bundle Resources */,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				BUILD_ROOT = "/Users/madex/svn/other-hardware/src-qt/StyroDesign";
+				CC = "";
+				CPLUSPLUS = "";
+				DYLIB_COMPATIBILITY_VERSION = 1.0;
+				DYLIB_CURRENT_VERSION = 1.0.0;
+				FRAMEWORK_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = (
+					"/usr/local/Trolltech/Qt-4.1.0/lib/QtCore.framework/Versions/4.0/Headers",
+					"/usr/local/Trolltech/Qt-4.1.0/lib/QtGui.framework/Versions/4.0/Headers",
+					"/usr/local/Trolltech/Qt-4.1.0/include",
+					.,
+					.,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"/usr/local/Trolltech/Qt-4.1.0/mkspecs/macx-xcode",
+				);
+				INFOPLIST_FILE = Info.plist;
+				LEXFLAGS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"/usr/local/Trolltech/Qt-4.1.0/lib",
+					"/Users/madex/Desktop/Downloads/qt-mac-opensource-src-4.1.0/lib",
+				);
+				OPTIMIZATION_CFLAGS = "";
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-F/usr/local/Trolltech/Qt-4.1.0/lib",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-F/usr/local/Trolltech/Qt-4.1.0/lib",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_LDFLAGS = (
+					"-headerpad_max_install_names",
+					"-F/usr/local/Trolltech/Qt-4.1.0/lib",
+					"-L/usr/local/Trolltech/Qt-4.1.0/lib",
+					"-framework",
+					QtGui,
+					"-F/Users/madex/Desktop/Downloads/qt-mac-opensource-src-4.1.0/lib",
+					"-L/Users/madex/Desktop/Downloads/qt-mac-opensource-src-4.1.0/lib",
+					"-framework",
+					QtCore,
+					"-lz",
+					"-lm",
+				);
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = StyroDesign;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "";
+				YACCFLAGS = "-d";
+			};
+			dependencies = (
+			);
+			name = StyroDesign;
+			productName = StyroDesign;
+			productReference = 73672E6F09AA6EC500F82244 /* StyroDesign.app */;
+			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+	<key>CFBundleExecutable</key>
+	<string>StyroDesign</string>
+	<key>CFBundleGetInfoString</key>
+	<string>Created by Qt/QMake</string>
+	<key>CFBundleIconFile</key>
+	<string></string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>NOTE</key>
+	<string>Please, do NOT change this file -- It was generated by Qt/QMake.</string>
+</dict>
+</plist>
+";
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		91B15E841AA80083484172DE /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 2A951308CDB28F104D0A4BD2 /* Build configuration list for PBXProject "StyroDesign" */;
+			buildSettings = {
+			};
+			buildStyles = (
+				2C641C3335766025DD51B7BD /* Debug */,
+				26DE8D2AEA4B3714B41E931F /* Release */,
+			);
+			hasScannedForEncodings = 1;
+			mainGroup = 05596AB53D8D521C69802C27 /* StyroDesign */;
+			productRefGroup = 73672E7009AA6EC500F82244 /* Products */;
+			projectDirPath = "";
+			targets = (
+				6233B4E33034550C8251230B /* StyroDesign */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3787F99312C85FF0073FD7BA /* Bundle Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "Bundle Resources";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A0A52A2ADF7A1E2A99738674 /* Qt Preprocessors */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "Qt Preprocessors";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Users/madex/svn/other-hardware/src-qt/StyroDesign -f StyroDesign.xcodeproj/qt_preprocess.mak";
+		};
+		D7BA7D76DAB5DD13389D6332 /* Qt Qmake */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "Qt Qmake";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Users/madex/svn/other-hardware/src-qt/StyroDesign -f StyroDesign.xcodeproj/qt_makeqmake.mak";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C29B8785722055ED95EF7B57 /* Build Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				545CC49FE7944B3A0039B230 /* controllPoint.cpp in Build Sources */,
+				297AF074462948FF7A178623 /* display.cpp in Build Sources */,
+				2B093CA6F071B023A473CED0 /* main.cpp in Build Sources */,
+				A6FD49F6C258A505C9742C98 /* mainWindow.cpp in Build Sources */,
+				1345FB1D37793533D7F7B526 /* moc_display.cpp in Build Sources */,
+				B15CFED8AB1B507EA9CFE3EB /* moc_mainWindow.cpp in Build Sources */,
+			);
+			name = "Build Sources";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		73672E7E09AA6EE600F82244 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_ROOT = "/Users/madex/svn/other-hardware/src-qt/StyroDesign";
+				CC = "";
+				COPY_PHASE_STRIP = NO;
+				CPLUSPLUS = "";
+				DYLIB_COMPATIBILITY_VERSION = 1.0;
+				DYLIB_CURRENT_VERSION = 1.0.0;
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/../../../../Desktop/Downloads/qt-mac-opensource-src-4.1.0/lib\"";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					"/usr/local/Trolltech/Qt-4.1.0/lib/QtCore.framework/Versions/4.0/Headers",
+					"/usr/local/Trolltech/Qt-4.1.0/lib/QtGui.framework/Versions/4.0/Headers",
+					"/usr/local/Trolltech/Qt-4.1.0/include",
+					.,
+					.,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"/usr/local/Trolltech/Qt-4.1.0/mkspecs/macx-xcode",
+				);
+				INFOPLIST_FILE = Info.plist;
+				LEXFLAGS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"/usr/local/Trolltech/Qt-4.1.0/lib",
+					"/Users/madex/Desktop/Downloads/qt-mac-opensource-src-4.1.0/lib",
+				);
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-F/usr/local/Trolltech/Qt-4.1.0/lib",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-F/usr/local/Trolltech/Qt-4.1.0/lib",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_LDFLAGS = (
+					"-headerpad_max_install_names",
+					"-F/usr/local/Trolltech/Qt-4.1.0/lib",
+					"-L/usr/local/Trolltech/Qt-4.1.0/lib",
+					"-framework",
+					QtGui,
+					"-F/Users/madex/Desktop/Downloads/qt-mac-opensource-src-4.1.0/lib",
+					"-L/Users/madex/Desktop/Downloads/qt-mac-opensource-src-4.1.0/lib",
+					"-framework",
+					QtCore,
+					"-lz",
+					"-lm",
+				);
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = StyroDesign;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "";
+				YACCFLAGS = "-d";
+			};
+			name = Debug;
+		};
+		73672E7F09AA6EE600F82244 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_ROOT = "/Users/madex/svn/other-hardware/src-qt/StyroDesign";
+				CC = "";
+				COPY_PHASE_STRIP = YES;
+				CPLUSPLUS = "";
+				DYLIB_COMPATIBILITY_VERSION = 1.0;
+				DYLIB_CURRENT_VERSION = 1.0.0;
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/../../../../Desktop/Downloads/qt-mac-opensource-src-4.1.0/lib\"";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				HEADER_SEARCH_PATHS = (
+					"/usr/local/Trolltech/Qt-4.1.0/lib/QtCore.framework/Versions/4.0/Headers",
+					"/usr/local/Trolltech/Qt-4.1.0/lib/QtGui.framework/Versions/4.0/Headers",
+					"/usr/local/Trolltech/Qt-4.1.0/include",
+					.,
+					.,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"/usr/local/Trolltech/Qt-4.1.0/mkspecs/macx-xcode",
+				);
+				INFOPLIST_FILE = Info.plist;
+				LEXFLAGS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"/usr/local/Trolltech/Qt-4.1.0/lib",
+					"/Users/madex/Desktop/Downloads/qt-mac-opensource-src-4.1.0/lib",
+				);
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-F/usr/local/Trolltech/Qt-4.1.0/lib",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-F/usr/local/Trolltech/Qt-4.1.0/lib",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_LDFLAGS = (
+					"-headerpad_max_install_names",
+					"-F/usr/local/Trolltech/Qt-4.1.0/lib",
+					"-L/usr/local/Trolltech/Qt-4.1.0/lib",
+					"-framework",
+					QtGui,
+					"-F/Users/madex/Desktop/Downloads/qt-mac-opensource-src-4.1.0/lib",
+					"-L/Users/madex/Desktop/Downloads/qt-mac-opensource-src-4.1.0/lib",
+					"-framework",
+					QtCore,
+					"-lz",
+					"-lm",
+				);
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = StyroDesign;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "";
+				YACCFLAGS = "-d";
+			};
+			name = Release;
+		};
+		73672E8009AA6EE600F82244 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_ROOT = "/Users/madex/svn/other-hardware/src-qt/StyroDesign";
+				CC = "";
+				CPLUSPLUS = "";
+				DYLIB_COMPATIBILITY_VERSION = 1.0;
+				DYLIB_CURRENT_VERSION = 1.0.0;
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/../../../../Desktop/Downloads/qt-mac-opensource-src-4.1.0/lib\"";
+				HEADER_SEARCH_PATHS = (
+					"/usr/local/Trolltech/Qt-4.1.0/lib/QtCore.framework/Versions/4.0/Headers",
+					"/usr/local/Trolltech/Qt-4.1.0/lib/QtGui.framework/Versions/4.0/Headers",
+					"/usr/local/Trolltech/Qt-4.1.0/include",
+					.,
+					.,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"/usr/local/Trolltech/Qt-4.1.0/mkspecs/macx-xcode",
+				);
+				INFOPLIST_FILE = Info.plist;
+				LEXFLAGS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"/usr/local/Trolltech/Qt-4.1.0/lib",
+					"/Users/madex/Desktop/Downloads/qt-mac-opensource-src-4.1.0/lib",
+				);
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-F/usr/local/Trolltech/Qt-4.1.0/lib",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-F/usr/local/Trolltech/Qt-4.1.0/lib",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_LDFLAGS = (
+					"-headerpad_max_install_names",
+					"-F/usr/local/Trolltech/Qt-4.1.0/lib",
+					"-L/usr/local/Trolltech/Qt-4.1.0/lib",
+					"-framework",
+					QtGui,
+					"-F/Users/madex/Desktop/Downloads/qt-mac-opensource-src-4.1.0/lib",
+					"-L/Users/madex/Desktop/Downloads/qt-mac-opensource-src-4.1.0/lib",
+					"-framework",
+					QtCore,
+					"-lz",
+					"-lm",
+				);
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = StyroDesign;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "";
+				YACCFLAGS = "-d";
+			};
+			name = Default;
+		};
+		8DB1DD96F65B1BF1FFC506E0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+			};
+			name = Debug;
+		};
+		95E1EB2E5DDD587BE5B3E548 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2A951308CDB28F104D0A4BD2 /* Build configuration list for PBXProject "StyroDesign" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8DB1DD96F65B1BF1FFC506E0 /* Debug */,
+				95E1EB2E5DDD587BE5B3E548 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		73672E7D09AA6EE600F82244 /* Build configuration list for PBXNativeTarget "StyroDesign" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				73672E7E09AA6EE600F82244 /* Debug */,
+				73672E7F09AA6EE600F82244 /* Release */,
+				73672E8009AA6EE600F82244 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 91B15E841AA80083484172DE /* Project object */;
+}

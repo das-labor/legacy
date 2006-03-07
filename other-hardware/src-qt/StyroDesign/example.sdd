@@ -1,0 +1,8 @@
+size 300 300
+translate -50 100
+rotate 50 50 -45
+start 100.939 47.7225
+line 120 120
+arc 129 27 118
+identity
+curve 29 56 245 26 120 118

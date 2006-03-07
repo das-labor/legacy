@@ -51,16 +51,22 @@ private:
 	
 	void scaleP(float sx, float sy, Point scaleP);
 	void rotateP(float a, Point rotateP);
-	void identety();
+	void identity();
+	void identityInverse();
+	
 	void translate(Point p);
 	void multMatrix(float *mat1, float *mat2, float *resultMatrix);
 	Point transform(Point p);
-
+	void calcInverse();
+	Point transformBack(Point p, float* inverse);
+	
 	/*  0 1 2
 		3 4 5
 		6 7 8
 	 */
 	float curTrans[9];
+	float curTransInverse[9];
+	float dragInverse[9];
 	
 	QList<ControllPoint*> controllPoints;
 	QString chain;
@@ -68,6 +74,7 @@ private:
 	int currentAngle;
   	int height, width;
 	float zoom, scale;
+	
 	int chainPosX;
 	int chainPosY;
 	int drawLevel;
