@@ -9,6 +9,26 @@
 #define DRAG_END 2
 #define DRAG_IMAGE 3
 
+#define STR_LINE		      "line"
+#define STR_LINE_SHORT		  "l"
+#define STR_ARC	              "arc"
+#define STR_ARC_SHORT         "a"
+#define STR_START		      "start"
+#define STR_START_SHORT       "s"
+#define STR_CURVE		      "curve"
+#define STR_CURVE_SHORT       "c"
+
+#define STR_IDENTITY	      "identity"
+#define STR_IDENTITY_SHORT    "i"
+#define STR_ROTATE	          "rotate"
+#define STR_ROTATE_SHORT      "r"
+#define STR_TRANSLATE	      "translate"
+#define STR_TRANSLATE_SHORT   "t"
+#define STR_SCALE	          "scale"
+#define STR_SCALE_SHORT       "sc"
+#define STR_SIZE	          "size"
+#define STR_SIZE_SHORT        "si"
+
 #define PI 3.1415926535897932384626433832795
  
 using namespace std;
@@ -44,7 +64,8 @@ void DrawArea::paintEvent(QPaintEvent * /* event */)
 	int j = 0;
 	QPainter painter(this);
 	painter.setBrush(Qt::black);
-
+	identity();
+	identityInverse();
 	
 	if (!image.isNull()) {
 		if (imageScaleChanged) {
@@ -64,37 +85,41 @@ void DrawArea::paintEvent(QPaintEvent * /* event */)
 	}
 	
 	QStringListIterator i(list);
-	identety();
+	
 	while (i.hasNext())  {
 		QStringList ps = i.next().split(' ');
 		QString compare = ps.at(0);
-		if ((compare == "start" || compare == "s") && ps.size() >= 3) {
+		if ((compare == STR_START|| compare == STR_START_SHORT) && ps.size() >= 3) {
 			deleteControlPoints();
 			Point P = transform((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()});
 			CurrentPoint.x = P.x;
 			CurrentPoint.y = P.y;
 			addControlPoint(CurrentPoint, j, 1, &painter);
-		} else if ((compare == "line" || compare == "l") && ps.size() >= 3) {
+		} else if ((compare == STR_LINE || compare == STR_LINE_SHORT) && ps.size() >= 3) {
 			drawLineTo(transform((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()}), 
 			           &painter, j);
-		} else if ((compare == "curve" || compare == "b") && ps.size() >= 7) {
+		} else if ((compare == STR_CURVE || compare == STR_CURVE_SHORT) && ps.size() >= 7) {
 			drawBezier(transform((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()}),
 					   transform((Point) {ps.at(3).toFloat(), ps.at(4).toFloat()}),
 					   transform((Point) {ps.at(5).toFloat(), ps.at(6).toFloat()}),
 					   &painter, j);
-		} else if ((compare == "circle" || compare == "c") && ps.size() >= 4) {
+		} else if ((compare == STR_ARC || compare == STR_ARC_SHORT) && ps.size() >= 4) {
 			drawCircle(transform((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()}),
 					   ps.at(3).toFloat(), &painter, j);
-		} else if ((compare == "scale" || compare == "sc") && ps.size() >= 5) {
+		} else if ((compare == STR_SCALE || compare == STR_SCALE_SHORT) && ps.size() >= 5) {
 			scaleP(ps.at(1).toFloat(), ps.at(2).toFloat(),
 				   (Point) {ps.at(3).toFloat(), ps.at(4).toFloat()});
-		} else if ((compare == "translate" || compare == "t") && ps.size() >= 3) {
+			calcInverse();
+		} else if ((compare == STR_TRANSLATE || compare == STR_TRANSLATE_SHORT) && ps.size() >= 3) {
 			translate((Point) {ps.at(1).toFloat(), ps.at(2).toFloat()});
-		} else if ((compare == "rotate" || compare == "r") && ps.size() >= 4) {
+			calcInverse();
+		} else if ((compare == STR_ROTATE || compare == STR_ROTATE_SHORT) && ps.size() >= 4) {
 			rotateP(ps.at(3).toFloat(), (Point) {ps.at(1).toFloat(), ps.at(2).toFloat()});
-		} else if ((compare == "identety" || compare == "i") && ps.size() >= 1) {
-			identety();
-		} else if ((compare == "size" || compare == "si") && ps.size() >= 3) {
+			calcInverse();
+		} else if ((compare == STR_IDENTITY || compare == STR_IDENTITY_SHORT) && ps.size() >= 1) {
+			identity();
+			calcInverse();
+		} else if ((compare == STR_SIZE || compare == STR_SIZE_SHORT) && ps.size() >= 3) {
 			height = ps.at(1).toInt();
 			width =  ps.at(2).toInt();
 			if (height <= 0) 
@@ -282,7 +307,7 @@ void DrawArea::drawBezierRec(Point p1, Point p2, Point p3, Point p4, int level, 
 }
 
 void DrawArea::addControlPoint(Point p, int line, int firstElement, QPainter *g, bool hasAngle, float angle) {
-	controllPoints.append(new ControllPoint(p, line, firstElement, hasAngle, angle));
+	controllPoints.append(new ControllPoint(p, line, firstElement, curTransInverse, hasAngle, angle));
 	if (showControlElements) {
 		g->setBrush(Qt::green);
 		g->drawRect((int)(zoom*p.x + 0.5) - 2, (int)(zoom*p.y + 0.5) - 2, 4, 4);
@@ -301,39 +326,32 @@ Point DrawArea::midpoint(Point p1, Point p2) {
 
 QString DrawArea::getChainCode() {
 	QStringListIterator i(list);
-	
+	identity();
 	while (i.hasNext())  {
 		QStringList ps = i.next().split(' ');
-		switch ((ps.at(0).toAscii())[0]) {
-			case 's': {
-				if (ps.size() >= 3) {
-					CurrentPoint.x = ps.at(1).toFloat()*scale;
-					CurrentPoint.y = ps.at(2).toFloat()*scale;
-					startChain((int)(CurrentPoint.x), (int)(CurrentPoint.y));
-				}
-				break;
-			} 
-			case 'l': {
-				if (ps.size() >= 3) {
-					chainLineTo((Point) {ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale});
-				}
-				break;
-			}
-			case 'c': {
-				if (ps.size() >= 7) {
-					chainBezier((Point) {ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale},
-								(Point) {ps.at(3).toFloat()*scale, ps.at(4).toFloat()*scale},
-								(Point) {ps.at(5).toFloat()*scale, ps.at(6).toFloat()*scale});
-				}
-				break;		                                  
-			}
-			case 'k': {
-				if (ps.size() >= 4) {
-					chainCircle((Point) {ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale},
-							    ps.at(3).toFloat());
-				}
-				break;		                                  
-			}
+		QString compare = ps.at(0);
+		if ((compare == STR_START|| compare == STR_START_SHORT) && ps.size() >= 3) {
+			Point P = transform((Point) {ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale});
+			CurrentPoint.x = P.x;
+			CurrentPoint.y = P.y;
+			startChain((int)(CurrentPoint.x), (int)(CurrentPoint.y));
+		} else if ((compare == STR_LINE || compare == STR_LINE_SHORT) && ps.size() >= 3) {
+			chainLineTo(transform((Point) {ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale}));
+		} else if ((compare == STR_CURVE || compare == STR_CURVE_SHORT) && ps.size() >= 7) {
+			chainBezier(transform((Point) {ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale}),
+					   transform((Point) {ps.at(3).toFloat()*scale, ps.at(4).toFloat()*scale}),
+					   transform((Point) {ps.at(5).toFloat()*scale, ps.at(6).toFloat()*scale}));
+		} else if ((compare == STR_ARC || compare == STR_ARC_SHORT) && ps.size() >= 4) {
+			chainCircle(transform((Point) {ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale}), ps.at(3).toFloat());
+		} else if ((compare == STR_SCALE || compare == STR_SCALE_SHORT) && ps.size() >= 5) {
+			scaleP(ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale,
+				   (Point) {ps.at(3).toFloat()*scale, ps.at(4).toFloat()*scale});
+		} else if ((compare == STR_TRANSLATE || compare == STR_TRANSLATE_SHORT) && ps.size() >= 3) {
+			translate((Point) {ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale});
+		} else if ((compare == STR_ROTATE || compare == STR_ROTATE_SHORT) && ps.size() >= 4) {
+			rotateP(ps.at(3).toFloat()*scale, (Point) {ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale});
+		} else if ((compare == STR_IDENTITY || compare == STR_IDENTITY_SHORT) && ps.size() >= 1) {
+			identity();
 		}
 	}
 	return chain;
@@ -394,9 +412,10 @@ void DrawArea::scaleP(float sx, float sy, Point scaleP) {
 
 void DrawArea::rotateP(float a, Point rotateP) {
 	float b  = a/180. * PI;
-	float rotateMatrix[9] = {cos(b), -sin(b), rotateP.x - cos(b)*rotateP.x + sin(b)*rotateP.y,
-	                         sin(b),  cos(b), rotateP.y - sin(b)*rotateP.x - cos(b)*rotateP.y,
-							 0.,      0.,     1.};
+	float sb = sin(b), cb = cos(b);
+	float rotateMatrix[9] = {cb, -sb, rotateP.x - cb*rotateP.x + sb*rotateP.y,
+	                         sb,  cb, rotateP.y - sb*rotateP.x - cb*rotateP.y,
+							 0.,  0., 1.};
 	float result[9];
 	multMatrix(rotateMatrix, curTrans, result);
 	for (int i = 0; i < 9; i++) {
@@ -404,7 +423,7 @@ void DrawArea::rotateP(float a, Point rotateP) {
 	}
 }
 
-void DrawArea::identety() {
+void DrawArea::identity() {
 	curTrans[0] = 1.;
 	curTrans[1] = 0.;
 	curTrans[2] = 0.;
@@ -415,6 +434,19 @@ void DrawArea::identety() {
 	curTrans[7] = 0.;
 	curTrans[8] = 1.;
 }
+
+void DrawArea::identityInverse() {
+	curTransInverse[0] = 1.;
+	curTransInverse[1] = 0.;
+	curTransInverse[2] = 0.;
+	curTransInverse[3] = 0.;
+	curTransInverse[4] = 1.;
+	curTransInverse[5] = 0.;
+	curTransInverse[6] = 0.;
+	curTransInverse[7] = 0.;
+	curTransInverse[8] = 1.;
+}
+
 
 void DrawArea::multMatrix(float *mat1, float *mat2, float *resultMatrix) {
 	resultMatrix[0] = mat1[0]*mat2[0] + mat1[1]*mat2[3] + mat1[2]*mat2[6];
@@ -442,6 +474,13 @@ void DrawArea::translate(Point p) {
 Point DrawArea::transform(Point p) {
 	return (Point) {p.x*curTrans[0] + p.y*curTrans[1] + curTrans[2],
 	                p.x*curTrans[3] + p.y*curTrans[4] + curTrans[5]};
+}
+
+Point DrawArea::transformBack(Point p, float* inverse) {
+	if (!inverse)
+		return (Point) {0., 0.};
+	return (Point) {p.x*inverse[0] + p.y*inverse[1] + inverse[2],
+  	                p.x*inverse[3] + p.y*inverse[4] + inverse[5]};
 }
 
 void DrawArea::chainBezierRec(Point p1, Point p2, Point p3, Point p4, int level) {
@@ -626,6 +665,10 @@ void DrawArea::mousePressEvent(QMouseEvent * e) {
 			dragAngle = controllPoints.at(i)->getAngle();	
 			dragLine = controllPoints.at(i)->getLine();
 			dragElement = controllPoints.at(i)->getElement();
+			float *helpMatrix = controllPoints.at(i)->getInverse();
+			for (int i = 0; i < 9; i++) {
+				dragInverse[i] = helpMatrix[i]; 
+			}
 			drag = true;
 			break;
 		}
@@ -649,6 +692,7 @@ void DrawArea::mouseReleaseEvent(QMouseEvent * e) {
 	if (drag) {
 		if (dragAbort) {
 			checkAndDraw();
+			dragAbort = false;
 		} else {
 			text->setPlainText(list.join("\n"));
 		}
@@ -667,45 +711,67 @@ void DrawArea::keyPressEvent(QKeyEvent * e) {
 }
 
 void DrawArea::mouseMoveEvent(QMouseEvent * e) {	
-	float x = e->x()/zoom;
-	float y = e->y()/zoom;
+	Point p =  {e->x()/zoom, e->y()/zoom}, t;
 	QString str;
+	
 	if (drag) { //&& (dragCount % 10) == 0
+		t = transformBack(p, dragInverse);
 		QStringList line = list.at(dragLine).split(" ");
 		if (!dragHasAngle) {
-			line[dragElement]   = str.setNum(x);
-			line[dragElement+1] = str.setNum(y);
+			line[dragElement]   = str.setNum(t.x);
+			line[dragElement+1] = str.setNum(t.y);
 			list[dragLine] = line.join(" ");
 			repaint();
 		} else {
-			line[dragElement] = str.setNum(dragAngle + DragPoint.y - y);
+			line[dragElement] = str.setNum(dragAngle + DragPoint.y - p.y);
 			list[dragLine] = line.join(" ");
 			repaint();
 		}	
 	}
 	switch (dragImage) {
 	case DRAG_START:
-		imageBegin = (Point) {x, y};
+		imageBegin = (Point) {p.x, p.y};
 		imageScaleChanged = true;
 		repaint();
 		break;
 	case DRAG_END:
 		imageScaleChanged = true;
-		imageEnd = (Point) {x, y};
+		imageEnd = (Point) {p.x, p.y};
 		repaint();
 		break;
 	case DRAG_IMAGE:
-		float dx = x - imageLastPos.x;
-		float dy = y - imageLastPos.y;
+		float dx = t.x - imageLastPos.x;
+		float dy = t.y - imageLastPos.y;
 		imageBegin.x += dx;
 		imageBegin.y += dy;
 		imageEnd.x += dx;
 		imageEnd.y += dy;
-		imageLastPos = (Point) {x, y};
+		imageLastPos = (Point) {p.x, p.y};
 		repaint();
 		break;
 	}
 }
+/* Matrixformat
+   0 1 2|0 1  -0  3 -6
+   3 4 5|3 4   1 -4  7
+   6 7 8|6 7  -2  5 -8
+*/
+void DrawArea::calcInverse() {
+	float det = curTrans[0]*curTrans[4]*curTrans[8] + curTrans[1]*curTrans[5]*curTrans[6] +
+				curTrans[2]*curTrans[3]*curTrans[7] - curTrans[6]*curTrans[4]*curTrans[2] -
+				curTrans[7]*curTrans[5]*curTrans[0] - curTrans[8]*curTrans[3]*curTrans[1];
+	if (det !=  0.0) {
+		curTransInverse[0] =  (curTrans[4]*curTrans[8] - curTrans[5]*curTrans[7])/det;
+		curTransInverse[1] = -(curTrans[1]*curTrans[8] - curTrans[2]*curTrans[7])/det;
+		curTransInverse[2] =  (curTrans[1]*curTrans[5] - curTrans[2]*curTrans[4])/det;
+		curTransInverse[3] = -(curTrans[3]*curTrans[8] - curTrans[5]*curTrans[6])/det;
+		curTransInverse[4] =  (curTrans[0]*curTrans[8] - curTrans[2]*curTrans[6])/det;
+		curTransInverse[5] = -(curTrans[0]*curTrans[5] - curTrans[2]*curTrans[3])/det;
+		curTransInverse[6] =  (curTrans[3]*curTrans[7] - curTrans[4]*curTrans[6])/det;
+		curTransInverse[7] = -(curTrans[0]*curTrans[7] - curTrans[1]*curTrans[6])/det;
+		curTransInverse[8] =  (curTrans[0]*curTrans[4] - curTrans[1]*curTrans[3])/det;
+	}
+} 
 
 void DrawArea::setImage(QString fileName) {
 	image.load(fileName);
