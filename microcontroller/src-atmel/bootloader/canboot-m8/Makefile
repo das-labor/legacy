@@ -13,6 +13,7 @@ PROGDATA_START = 0x1FCE
 
 
 FLASHCMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --upload if=$(PRG).hex
+FLASHCMD_EEPR  = uisp -dprog=bsd --segment=eeprom --upload if=$(PRG)_eeprom.hex
 ERASECMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --erase
 FUSECMD        = uisp -dprog=bsd --wr_fuse_h=0xc2
 
@@ -47,6 +48,9 @@ flash:
 	$(ERASECMD)
 	sleep 1
 	$(FLASHCMD)
+
+flashe:
+	$(FLASHCMD_EEPR)
 
 fuse:
 	$(FUSECMD)

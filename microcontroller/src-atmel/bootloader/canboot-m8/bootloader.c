@@ -16,7 +16,7 @@
 #define PORT_MGT 0x30
 #define FKT_MGT_AWAKE 0x03
 
-unsigned char Station_id __attribute__ ((section (".eeprom"))) = 0x34;
+unsigned char Station_id __attribute__ ((section (".eeprom"))) = CAN_ADDR;
 
 #define SDO_CMD_READ 		0x20
 #define SDO_CMD_REPLY 		0x21
