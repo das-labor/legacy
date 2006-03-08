@@ -19,6 +19,7 @@
 			sepNavIntBoundsRect = "{{0, 0}, {775, 848}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRect = "{{0, 0}, {775, 609}}";
+			sepNavWindowFrame = "{{15, -1}, {774, 742}}";
 		};
 	};
 	51EF5E81981A3695E8F89509 /* controllPoint.h */ = {
@@ -2643,27 +2644,45 @@
 		vrLen = 876;
 		vrLoc = 1277;
 	};
+	73C9A38B09BF7F60008BE822 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		comments = "warning: unused parameter 'e'";
+		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
+		rLen = 1;
+		rLoc = 690;
+		rType = 1;
+	};
+	73C9A38C09BF7F60008BE822 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 793D5F310C3A17983C7CA8AA /* display.cpp */;
+		name = "display.cpp: 352";
+		rLen = 0;
+		rLoc = 11441;
+		rType = 0;
+		vrLen = 1841;
+		vrLoc = 9777;
+	};
 	793D5F310C3A17983C7CA8AA /* display.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {839, 12608}}";
-			sepNavSelRange = "{9397, 28}";
-			sepNavVisRect = "{{0, 4442}, {775, 413}}";
+			sepNavIntBoundsRect = "{{0, 0}, {983, 12608}}";
+			sepNavSelRange = "{11441, 0}";
+			sepNavVisRect = "{{0, 5197}, {983, 482}}";
 			sepNavWindowFrame = "{{50, 4}, {774, 742}}";
 		};
 	};
 	7BB7C180F7354098BEA41E73 /* display.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {839, 1600}}";
-			sepNavSelRange = "{1842, 0}";
-			sepNavVisRect = "{{0, 768}, {711, 613}}";
+			sepNavSelRange = "{1844, 0}";
+			sepNavVisRect = "{{0, 404}, {711, 613}}";
 			sepNavWindowFrame = "{{15, -1}, {750, 742}}";
 		};
 	};
 	86B26EDE2FE672340F83FFDB /* mainWindow.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {775, 2064}}";
+			sepNavIntBoundsRect = "{{0, 0}, {775, 2160}}";
 			sepNavSelRange = "{0, 0}";
-			sepNavVisRect = "{{0, 992}, {775, 604}}";
+			sepNavVisRect = "{{0, 992}, {775, 413}}";
 			sepNavWindowFrame = "{{15, -1}, {750, 742}}";
 		};
 	};
@@ -3042,6 +3061,8 @@
 			73C9A37A09BDF3FE008BE822 /* PBXTextBookmark */ = 73C9A37A09BDF3FE008BE822 /* PBXTextBookmark */;
 			73C9A37B09BDF3FE008BE822 /* PBXTextBookmark */ = 73C9A37B09BDF3FE008BE822 /* PBXTextBookmark */;
 			73C9A37C09BDF3FE008BE822 /* PBXTextBookmark */ = 73C9A37C09BDF3FE008BE822 /* PBXTextBookmark */;
+			73C9A38B09BF7F60008BE822 /* PBXTextBookmark */ = 73C9A38B09BF7F60008BE822 /* PBXTextBookmark */;
+			73C9A38C09BF7F60008BE822 /* PBXTextBookmark */ = 73C9A38C09BF7F60008BE822 /* PBXTextBookmark */;
 		};
 		sourceControlManager = 73672E8109AA6EE600F82244 /* Source Control */;
 		userBookmarkGroup = 73672E6D09AA6EC500F82244 /* PBXBookmarkGroup */;

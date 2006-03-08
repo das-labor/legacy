@@ -740,8 +740,8 @@ void DrawArea::mouseMoveEvent(QMouseEvent * e) {
 		repaint();
 		break;
 	case DRAG_IMAGE:
-		float dx = t.x - imageLastPos.x;
-		float dy = t.y - imageLastPos.y;
+		float dx = p.x - imageLastPos.x;
+		float dy = p.y - imageLastPos.y;
 		imageBegin.x += dx;
 		imageBegin.y += dy;
 		imageEnd.x += dx;
