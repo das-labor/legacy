@@ -5,7 +5,11 @@
 // #define F_CPU 16000000         // Oszillator-Frequenz in Hz
 
 // Bootloader defines
+//location of can Address in eeprom
 #define EEPR_ADDR_NODE 0x00
+
+//the node number this device is supposed to be
+#define CAN_ADDR 0x31
 
 // spi.[ch] defines
 #define SPI_HARDWARE
