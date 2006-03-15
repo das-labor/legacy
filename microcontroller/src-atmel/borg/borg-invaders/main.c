@@ -10,6 +10,8 @@
 #include "borg_can.h"
 #include "joystick.h"
 
+#include "invaders2.h"
+
 volatile unsigned char oldMode, oldOldmode, mode;
 
 jmp_buf newmode_jmpbuf;
@@ -55,7 +57,7 @@ int main (void){
 	*/
 
 
-        borg_invaders();
+       // borg_invaders();
 
 	for(;;){
 		oldMode = mode;
@@ -99,6 +101,10 @@ int main (void){
 			break;
 		case 0xFF:
 			off();
+			break;
+		case 43:
+			borg_invaders();
+			mode = oldOldmode;
 			break;
 		default:
 			break;
