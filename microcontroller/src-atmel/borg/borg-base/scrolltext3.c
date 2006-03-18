@@ -143,7 +143,7 @@ unsigned int getLen(blob_t *blob) {
 		glyph -= 1;
 		strLen += PW(blob->fontIndex[glyph+1]) -
 			PW(blob->fontIndex[glyph]); 
-			strLen += blob->space;
+			strLen += blob->space*2;//BUGBUG
 	}      
 	return strLen/blob->font_storebytes;
 }
