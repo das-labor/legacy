@@ -37,10 +37,17 @@ void wait(int ms){
 #endif
 		if (waitForFire) {
 			//PORTJOYGND &= ~(1<<BITJOY0);
-			//PORTJOYGND &= ~(1<<BITJOY1);			
+			//PORTJOYGND &= ~(1<<BITJOY1);		
+		#ifndef RHEINFIRECONTROL	
 			if (JOYISFIRE) {
 				longjmp(newmode_jmpbuf, 43);
 			}
+		#else
+			if (JOYISUP) {
+				waitForFire=0;
+				longjmp(newmode_jmpbuf, 43);
+			}
+		#endif
 		}
 
 		while(!(TIFR&0x80));	//wait for compare matzch flag

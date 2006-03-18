@@ -348,6 +348,7 @@ void matrix() {
 
 #define FEUER_Y (NUM_ROWS + 3)
 
+
 void feuer()
 {
 	unsigned char y, x;
