@@ -17,6 +17,7 @@
 
 #include "display.h"
 #include "controllPoint.h"
+#include "machine.h"
 
 class MyWidget : public QMainWindow
 {
@@ -39,6 +40,7 @@ public slots:
 	void saveChainCode();
 
 private:
+	MachineDialog *machineDialog;
 	QString fileName;
 	QSplitter *split;
 	QScrollArea *scroll;

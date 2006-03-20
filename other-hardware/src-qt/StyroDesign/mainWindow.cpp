@@ -3,6 +3,7 @@
 #include <QFileDialog>
 
 #include "mainWindow.h"
+#include "machine.h"
 
 MyWidget::MyWidget(QWidget *parent): QMainWindow(parent)
 {
@@ -38,6 +39,7 @@ MyWidget::MyWidget(QWidget *parent): QMainWindow(parent)
 	scroll = new QScrollArea;
 	text = new QTextEdit;
 	drawArea = new DrawArea(text, scroll);
+	machineDialog = new MachineDialog(this);
 	
 	scroll->setWidget(drawArea);
 	split = new QSplitter;
@@ -118,7 +120,7 @@ void MyWidget::switchControlView() {
 }
 
 void MyWidget::plot() {
-	
+	machineDialog->show();
 }
 
 void MyWidget::saveChainCode() {
