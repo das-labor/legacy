@@ -20,10 +20,13 @@ class MachineDialog : public QDialog
 		void moveSpeedChanged(int);	
 		void plotSpeedChanged(int);	
 	
+		void heaterChanged(bool state);
+	
 		void pressedUp();
 		void pressedDown();
 		void pressedLeft();
 		void pressedRight();
+		void pressedPlot();
 		void stop();
 	
 	
@@ -34,9 +37,14 @@ class MachineDialog : public QDialog
 		
 		
 		DrawArea * drawArea;
+		QString chainCode;
+	
 		Oktobus* oktobus;
+		
 		bool isUp, isDown, isRight, isLeft;
 		QTimer *timer, *plotTimer;
+	
+		
 		Ui::MachineDialog ui;
 };
 
