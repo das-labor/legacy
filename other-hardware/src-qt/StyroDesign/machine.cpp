@@ -21,10 +21,14 @@ MachineDialog::MachineDialog(QWidget *parent, DrawArea *drawarea)
 	connect(ui.pushButtonDown, SIGNAL(pressed()), this, SLOT(pressedDown()));
 	connect(ui.pushButtonLeft, SIGNAL(pressed()), this, SLOT(pressedLeft()));
 	connect(ui.pushButtonRight, SIGNAL(pressed()), this, SLOT(pressedRight()));
+	connect(ui.pushButtonPlot, SIGNAL(pressed()), this, SLOT(pressedPlot()));
 	connect(ui.pushButtonUp, SIGNAL(released()), this, SLOT(stop()));
 	connect(ui.pushButtonDown, SIGNAL(released()), this, SLOT(stop()));
 	connect(ui.pushButtonLeft, SIGNAL(released()), this, SLOT(stop()));
 	connect(ui.pushButtonRight, SIGNAL(released()), this, SLOT(stop()));
+	connect(ui.pushButtonHeater, SIGNAL(toggled(bool)), this, SLOT(heaterChanged(bool)));
+	
+	
 	connect(ui.sliderMoveSpeed, SIGNAL(valueChanged(int)), this, SLOT(moveSpeedChanged(int)));
 	connect(ui.sliderPlotSpeed, SIGNAL(valueChanged(int)), this, SLOT(plotSpeedChanged(int)));
 	
@@ -75,6 +79,10 @@ void MachineDialog::pressedRight() {
 	timer->start();
 }
 
+void MachineDialog::heaterChanged(bool state) {
+	oktobus->setOutput(0, state);
+}
+
 
 void MachineDialog::moveSpeedChanged(int speed) {
 	if(speed){
@@ -91,7 +99,6 @@ void MachineDialog::plotSpeedChanged(int speed) {
 		plotTimer->setInterval(1000000);
 	}
 }
-
 
 
 void MachineDialog::stop() {
@@ -114,7 +121,48 @@ void MachineDialog::update() {
 	
 }
 
+
+void MachineDialog::pressedPlot() {
+	ui.pushButtonHeater->setChecked(1);
+	chainCode = drawArea->getChainCode();
+	plotTimer->start();
+}
+
 void MachineDialog::doPlot() {
-	QString muh;	
-	muh = drawArea->getChainCode();
+
+	if(chainCode.size() >0){
+
+		char c = chainCode[0].toAscii();
+		chainCode.remove(0,1);
+	
+		switch (c){
+            case 'A':
+            case 'B':
+            case 'H':
+                oktobus->motorStep(1,1);
+                break;
+            case 'D':
+            case 'E':
+            case 'F':
+                oktobus->motorStep(1,0);
+                break;
+        }
+
+        switch(c){
+            case 'B':
+            case 'C':
+            case 'D':
+                oktobus->motorStep(2,1);
+                break;
+            case 'F':
+            case 'G':
+            case 'H':
+                oktobus->motorStep(2,0);
+                break;
+
+        }
+    }else{
+		plotTimer->stop();
+		ui.pushButtonHeater->setChecked(0);		
+	}
 }

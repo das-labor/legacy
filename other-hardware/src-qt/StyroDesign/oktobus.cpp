@@ -56,8 +56,8 @@ void Oktobus::motorStep(uint8_t motor, bool dir){
 
 void Oktobus::setOutput(uint8_t output, bool value) {
 	if(value){
-		ppi_set(fd, PPIDATA, output);
+		ppi_set(fd, PPIDATA, (1<<output));
 	}else{
-		ppi_clr(fd, PPIDATA, output);
+		ppi_clr(fd, PPIDATA, (1<<output));
 	}
 }
