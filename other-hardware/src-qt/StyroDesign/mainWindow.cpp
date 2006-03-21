@@ -39,7 +39,7 @@ MyWidget::MyWidget(QWidget *parent): QMainWindow(parent)
 	scroll = new QScrollArea;
 	text = new QTextEdit;
 	drawArea = new DrawArea(text, scroll);
-	machineDialog = new MachineDialog(this);
+	machineDialog = new MachineDialog(this, drawArea);
 	
 	scroll->setWidget(drawArea);
 	split = new QSplitter;

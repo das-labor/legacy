@@ -1,13 +1,18 @@
+#ifndef OKTOBUS_H
+#define OKTOBUS_H
 
+#include <QObject>
 
-
-class oktobus : public QObject{
+class Oktobus : public QObject{
+	
+	Q_OBJECT
+	
 	public:
-		oktobus();
+		Oktobus();
 		
 		int init(QString pardev);
 	
-		void motorStep(int motor, bool dir);
+		void motorStep(uint8_t motor, bool dir);
 		void setOutput(uint8_t output, bool value);
 		uint8_t readInputs();
 	
@@ -16,8 +21,14 @@ class oktobus : public QObject{
 		//Parport File Descriptor
 		int fd;
 		//stepcounters for motors
-		int stepcount[2];
+		int stepcount[3];
 	
-	public slots:
+	signals:
+	
+        void motor0Changed(int);
+	    void motor1Changed(int);
+	    void motor2Changed(int);
 		
-}
+};
+
+#endif // OKTOBUS_H

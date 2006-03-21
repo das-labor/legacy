@@ -7,6 +7,6 @@ DEPENDPATH += .
 INCLUDEPATH += .
 
 # Input
-HEADERS += controllPoint.h display.h mainWindow.h machine.h
-SOURCES += controllPoint.cpp display.cpp main.cpp mainWindow.cpp machine.cpp ppi.c
+HEADERS += controllPoint.h display.h mainWindow.h machine.h oktobus.h
+SOURCES += controllPoint.cpp display.cpp main.cpp mainWindow.cpp machine.cpp ppi.cpp oktobus.cpp
 FORMS += machine.ui
