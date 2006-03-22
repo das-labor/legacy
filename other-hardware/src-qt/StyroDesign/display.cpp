@@ -1,4 +1,4 @@
-#include <QPainter>
+r#include <QPainter>
 #include <QStringListIterator>
 #include <QChar>
 #include <iostream>
@@ -344,7 +344,7 @@ QString DrawArea::getChainCode() {
 		} else if ((compare == STR_ARC || compare == STR_ARC_SHORT) && ps.size() >= 4) {
 			chainCircle(transform((Point) {ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale}), ps.at(3).toFloat());
 		} else if ((compare == STR_SCALE || compare == STR_SCALE_SHORT) && ps.size() >= 5) {
-			scaleP(ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale,
+			scaleP(ps.at(1).toFloat(), ps.at(2).toFloat(),
 				   (Point) {ps.at(3).toFloat()*scale, ps.at(4).toFloat()*scale});
 		} else if ((compare == STR_TRANSLATE || compare == STR_TRANSLATE_SHORT) && ps.size() >= 3) {
 			translate((Point) {ps.at(1).toFloat()*scale, ps.at(2).toFloat()*scale});
