@@ -1,0 +1,434 @@
+Archive member included because of file (symbol)
+
+/usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_udivmodqi4.o)
+                              rhein.o (__udivmodqi4)
+/usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_udivmodhi4.o)
+                              scrolltext3.o (__udivmodhi4)
+/usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_divmodhi4.o)
+                              programm.o (__divmodhi4)
+/usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_copy_data.o)
+                              borg_hw.o (__do_copy_data)
+/usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_clear_bss.o)
+                              borg_hw.o (__do_clear_bss)
+/usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(malloc.o)
+                              scrolltext3.o (malloc)
+/usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(memcpy.o)
+                              programm.o (memcpy)
+/usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(setjmp.o)
+                              main.o (setjmp)
+/usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(strtok_r.o)
+                              scrolltext3.o (strtok_r)
+
+Allocating common symbols
+Common symbol       size              file
+
+pixmap              0x60              borg_hw.o
+__brkval            0x2               /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(malloc.o)
+waitForFire         0x1               joystick.o
+oldOldmode          0x1               main.o
+mode                0x1               main.o
+oldMode             0x1               main.o
+newmode_jmpbuf      0x19              main.o
+fonts               0x9               scrolltext3.o
+__flp               0x2               /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(malloc.o)
+text_pixmap         0x2               scrolltext3.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+text             0x00000000         0x00020000         xr
+data             0x00800060         0x0000ffa0         rw !x
+eeprom           0x00810000         0x00010000         rw !x
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+LOAD borg_hw.o
+LOAD main.o
+LOAD util.o
+LOAD pixel.o
+LOAD programm.o
+LOAD scrolltext3.o
+LOAD font_arial8.o
+LOAD joystick.o
+LOAD rhein.o
+LOAD /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a
+LOAD /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a
+LOAD /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a
+
+.hash
+ *(.hash)
+
+.dynsym
+ *(.dynsym)
+
+.dynstr
+ *(.dynstr)
+
+.gnu.version
+ *(.gnu.version)
+
+.gnu.version_d
+ *(.gnu.version_d)
+
+.gnu.version_r
+ *(.gnu.version_r)
+
+.rel.init
+ *(.rel.init)
+
+.rela.init
+ *(.rela.init)
+
+.rel.text
+ *(.rel.text)
+ *(.rel.text.*)
+ *(.rel.gnu.linkonce.t*)
+
+.rela.text
+ *(.rela.text)
+ *(.rela.text.*)
+ *(.rela.gnu.linkonce.t*)
+
+.rel.fini
+ *(.rel.fini)
+
+.rela.fini
+ *(.rela.fini)
+
+.rel.rodata
+ *(.rel.rodata)
+ *(.rel.rodata.*)
+ *(.rel.gnu.linkonce.r*)
+
+.rela.rodata
+ *(.rela.rodata)
+ *(.rela.rodata.*)
+ *(.rela.gnu.linkonce.r*)
+
+.rel.data
+ *(.rel.data)
+ *(.rel.data.*)
+ *(.rel.gnu.linkonce.d*)
+
+.rela.data
+ *(.rela.data)
+ *(.rela.data.*)
+ *(.rela.gnu.linkonce.d*)
+
+.rel.ctors
+ *(.rel.ctors)
+
+.rela.ctors
+ *(.rela.ctors)
+
+.rel.dtors
+ *(.rel.dtors)
+
+.rela.dtors
+ *(.rela.dtors)
+
+.rel.got
+ *(.rel.got)
+
+.rela.got
+ *(.rela.got)
+
+.rel.bss
+ *(.rel.bss)
+
+.rela.bss
+ *(.rela.bss)
+
+.rel.plt
+ *(.rel.plt)
+
+.rela.plt
+ *(.rela.plt)
+
+.text           0x00000000     0x3422
+ *(.vectors)
+ .vectors       0x00000000       0x54 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+                0x00000000                __vectors
+                0x00000000                __vector_default
+                0x00000054                __ctors_start = .
+ *(.ctors)
+                0x00000054                __ctors_end = .
+                0x00000054                __dtors_start = .
+ *(.dtors)
+                0x00000054                __dtors_end = .
+ *(.progmem.gcc*)
+ *(.progmem*)
+ .progmem.data  0x00000054       0x30 scrolltext3.o
+                0x00000054                colorTable
+ .progmem.data  0x00000084      0x42e font_arial8.o
+                0x00000084                fontData_arial8
+                0x000003f2                fontIndex_arial8
+ .progmem.data  0x000004b2      0x196 rhein.o
+                0x000004b2                player
+                0x00000548                rhein
+                0x000004ee                numbers
+                0x00000648                . = ALIGN (0x2)
+ *(.init0)
+ *(.init1)
+ *(.init2)
+ .init2         0x00000648        0xc /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+ *(.init3)
+ *(.init4)
+ .init4         0x00000654       0x16 /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_copy_data.o)
+                0x00000654                __do_copy_data
+ .init4         0x0000066a       0x10 /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_clear_bss.o)
+                0x0000066a                __do_clear_bss
+ *(.init5)
+ *(.init6)
+ *(.init7)
+ *(.init8)
+ *(.init9)
+ .init9         0x0000067a        0x4 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+ *(.text)
+ .text          0x0000067e        0x4 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+                0x0000067e                __vector_1
+                0x0000067e                __vector_12
+                0x0000067e                __bad_interrupt
+                0x0000067e                __vector_6
+                0x0000067e                __vector_3
+                0x0000067e                __vector_11
+                0x0000067e                __vector_13
+                0x0000067e                __vector_17
+                0x0000067e                __vector_19
+                0x0000067e                __vector_7
+                0x0000067e                __vector_5
+                0x0000067e                __vector_4
+                0x0000067e                __vector_9
+                0x0000067e                __vector_2
+                0x0000067e                __vector_15
+                0x0000067e                __vector_8
+                0x0000067e                __vector_14
+                0x0000067e                __vector_16
+                0x0000067e                __vector_18
+                0x0000067e                __vector_20
+ .text          0x00000682      0x196 borg_hw.o
+                0x000007d0                timer0_off
+                0x000007de                timer0_on
+                0x00000682                rowshow
+                0x000007ee                borg_hw_init
+                0x000006fe                __vector_10
+ .text          0x00000818      0x132 main.o
+                0x00000818                main
+ .text          0x0000094a       0x3e util.o
+                0x0000094a                wait
+ .text          0x00000988      0x268 pixel.o
+                0x00000a2c                shift_pixmap_l
+                0x00000ae2                get_next_pixel
+                0x00000b54                set_cursor
+                0x00000b1e                direction_r
+                0x00000bb2                walk
+                0x00000b7a                next_pixel
+                0x00000a9a                get_pixel
+                0x00000988                clear_screen
+                0x000009ba                setpixel
+ .text          0x00000bf0     0x11e0 programm.o
+                0x00000e0e                snake
+                0x00000d9c                random
+                0x0000169e                feuer
+                0x00000c4c                test_level2
+                0x000012cc                schachbrett
+                0x00000bf0                test1
+                0x00000c1c                test_level1
+                0x00001bf8                tetris
+                0x00000cbc                spirale
+                0x0000136e                fadein
+                0x000013a6                matrix
+                0x00000c7c                test_level3
+                0x00000cac                off
+                0x00001282                joern1
+ .text          0x00001dd0      0xadc scrolltext3.o
+                0x0000261e                scrolltext
+                0x00001e38                update_pixmap
+                0x00002450                drawBlob
+                0x00001e88                getLen
+                0x000022f2                updateBlob
+                0x00001f4e                blobNextCommand
+                0x00001e0e                clear_text_pixmap
+                0x00001dd0                text_setpixel
+                0x0000217a                setupBlob
+                0x00001ef8                getnum
+ .text          0x000028ac       0x12 joystick.o
+                0x000028ac                joy_init
+ .text          0x000028be      0x7e0 rhein.o
+                0x00002af8                showScores
+                0x00002a2a                running
+                0x00002918                drawNumber
+                0x000028be                rhein_fire_logo
+                0x00002d54                rhein_matrix
+                0x00002b70                rhein_fire
+                0x000029ec                test
+                0x000029c2                drawRow
+                0x00002998                drawLine
+ .text          0x0000309e      0x222 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(malloc.o)
+                0x0000309e                malloc
+                0x000031fc                free
+ .text          0x000032c0       0x12 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(memcpy.o)
+                0x000032c0                memcpy
+ .text          0x000032d2       0x86 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(setjmp.o)
+                0x00003314                longjmp
+                0x000032d2                setjmp
+ .text          0x00003358       0x64 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(strtok_r.o)
+                0x00003358                strtok_r
+                0x000033bc                . = ALIGN (0x2)
+ *(.text.*)
+ .text.libgcc   0x000033bc       0x18 /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_udivmodqi4.o)
+                0x000033bc                __udivmodqi4
+ .text.libgcc   0x000033d4       0x28 /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_udivmodhi4.o)
+                0x000033d4                __udivmodhi4
+ .text.libgcc   0x000033fc       0x26 /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_divmodhi4.o)
+                0x000033fc                __divmodhi4
+                0x000033fc                _div
+                0x00003422                . = ALIGN (0x2)
+ *(.fini9)
+ *(.fini8)
+ *(.fini7)
+ *(.fini6)
+ *(.fini5)
+ *(.fini4)
+ *(.fini3)
+ *(.fini2)
+ *(.fini1)
+ *(.fini0)
+                0x00003422                _etext = .
+
+.data           0x00800060       0x9c load address 0x00003422
+                0x00800060                PROVIDE (__data_start, .)
+ *(.data)
+ .data          0x00800060       0x4e main.o
+ .data          0x008000ae        0x8 pixel.o
+                0x008000ae                shl_table
+ .data          0x008000b6       0x1a programm.o
+ .data          0x008000d0        0x2 scrolltext3.o
+ .data          0x008000d2        0x9 font_arial8.o
+                0x008000d2                font_arial8
+ .data          0x008000db       0x1a rhein.o
+ .data          0x008000f5        0x6 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(malloc.o)
+                0x008000f7                __malloc_heap_start
+                0x008000f5                __malloc_heap_end
+                0x008000f9                __malloc_margin
+ *(.gnu.linkonce.d*)
+                0x008000fc                . = ALIGN (0x2)
+ *fill*         0x008000fb        0x1 00
+                0x008000fc                _edata = .
+                0x008000fc                PROVIDE (__data_end, .)
+
+.bss            0x008000fc       0x93
+                0x008000fc                PROVIDE (__bss_start, .)
+ *(.bss)
+ .bss           0x008000fc        0x2 borg_hw.o
+ .bss           0x008000fe        0x5 scrolltext3.o
+ *(COMMON)
+ COMMON         0x00800103       0x60 borg_hw.o
+                                  0x0 (size before relaxing)
+                0x00800103                pixmap
+ COMMON         0x00800163       0x1c main.o
+                                  0x0 (size before relaxing)
+                0x00800163                oldOldmode
+                0x00800164                mode
+                0x00800165                oldMode
+                0x00800166                newmode_jmpbuf
+ COMMON         0x0080017f        0xb scrolltext3.o
+                                  0x0 (size before relaxing)
+                0x0080017f                fonts
+                0x00800188                text_pixmap
+ COMMON         0x0080018a        0x1 joystick.o
+                                  0x0 (size before relaxing)
+                0x0080018a                waitForFire
+ COMMON         0x0080018b        0x4 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(malloc.o)
+                                  0x0 (size before relaxing)
+                0x0080018b                __brkval
+                0x0080018d                __flp
+                0x0080018f                PROVIDE (__bss_end, .)
+                0x00003422                __data_load_start = LOADADDR (.data)
+                0x000034be                __data_load_end = (__data_load_start + SIZEOF (.data))
+
+.noinit         0x0080018f        0x0
+                0x0080018f                PROVIDE (__noinit_start, .)
+ *(.noinit*)
+                0x0080018f                PROVIDE (__noinit_end, .)
+                0x0080018f                _end = .
+                0x0080018f                PROVIDE (__heap_start, .)
+
+.eeprom         0x00810000        0x0 load address 0x000034be
+ *(.eeprom*)
+                0x00810000                __eeprom_end = .
+
+.stab           0x00000000      0xf54
+ *(.stab)
+ .stab          0x00000000      0x2a0 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+ .stab          0x000002a0      0x684 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(malloc.o)
+                                0x690 (size before relaxing)
+ .stab          0x00000924       0x84 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(memcpy.o)
+                                 0x90 (size before relaxing)
+ .stab          0x000009a8      0x33c /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(setjmp.o)
+                                0x348 (size before relaxing)
+ .stab          0x00000ce4      0x270 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(strtok_r.o)
+                                0x27c (size before relaxing)
+
+.stabstr        0x00000000      0x847
+ *(.stabstr)
+ .stabstr       0x00000000      0x847 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+                                  0x0 (size before relaxing)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment
+ *(.comment)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges
+ *(.debug_aranges)
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info
+ *(.debug_info)
+ *(.gnu.linkonce.wi.*)
+
+.debug_abbrev
+ *(.debug_abbrev)
+
+.debug_line
+ *(.debug_line)
+
+.debug_frame
+ *(.debug_frame)
+
+.debug_str
+ *(.debug_str)
+
+.debug_loc
+ *(.debug_loc)
+
+.debug_macinfo
+ *(.debug_macinfo)
+OUTPUT(image.elf elf32-avr)
