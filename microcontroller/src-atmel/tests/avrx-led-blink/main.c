@@ -9,7 +9,7 @@
 AVRX_SIGINT(SIG_OVERFLOW0)
 {
     IntProlog();                // Save interrupted context, switch stacks
-    TCNT0 = TCNT0_INIT;		// Reload the timer counter
+    TCNT0 = TCNT0_INIT;			// Reload the timer counter
     AvrXTimerHandler();         // Process Timer queue
     Epilog();                   // Restore context of next running task
 };
@@ -42,8 +42,8 @@ int main(void)
 
     DDRC = 0xFF;
 	
-    InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
-    //AvrXRunTask(TCB(Monitor));
+	// InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
+    // AvrXRunTask(TCB(Monitor));
     AvrXRunTask(TCB(task1));
 
     Epilog();                   // Switch from AvrX Stack to first task
