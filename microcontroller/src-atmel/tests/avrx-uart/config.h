@@ -1,6 +1,8 @@
 
 #define F_CPU 16000000L
 #define F_MCP F_CPU
+#define CPUCLK F_CPU
+
 
 #define TICKRATE   2500
 #define TCNT0_INIT (0xFF-F_CPU/256/TICKRATE)
