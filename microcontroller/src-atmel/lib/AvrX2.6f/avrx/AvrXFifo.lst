@@ -362,14 +362,14 @@ DEFINED SYMBOLS
                             *ABS*:0000003d __SP_L__
                             *ABS*:00000000 __tmp_reg__
                             *ABS*:00000001 __zero_reg__
-     /tmp/ccxpOwv0.s:87     .text:00000000 AvrXPutFifo
-     /tmp/ccxpOwv0.s:154    .text:0000003a AvrXPullFifo
-     /tmp/ccxpOwv0.s:226    .text:0000007c AvrXWaitPutFifo
-     /tmp/ccxpOwv0.s:265    .text:000000a6 AvrXWaitPullFifo
-     /tmp/ccxpOwv0.s:303    .text:000000c8 AvrXFlushFifo
-     /tmp/ccxpOwv0.s:338    .text:000000e6 AvrXPeekFifo
-     /tmp/ccxpOwv0.s:375    .text:00000102 AvrXStatFifo
-     /tmp/ccxpOwv0.s:425    .text:00000124 Letext
+     /tmp/ccmz2xGd.s:87     .text:00000000 AvrXPutFifo
+     /tmp/ccmz2xGd.s:154    .text:0000003a AvrXPullFifo
+     /tmp/ccmz2xGd.s:226    .text:0000007c AvrXWaitPutFifo
+     /tmp/ccmz2xGd.s:265    .text:000000a6 AvrXWaitPullFifo
+     /tmp/ccmz2xGd.s:303    .text:000000c8 AvrXFlushFifo
+     /tmp/ccmz2xGd.s:338    .text:000000e6 AvrXPeekFifo
+     /tmp/ccmz2xGd.s:375    .text:00000102 AvrXStatFifo
+     /tmp/ccmz2xGd.s:425    .text:00000124 Letext
 
 UNDEFINED SYMBOLS
 __do_copy_data
