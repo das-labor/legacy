@@ -17,6 +17,7 @@ volatile unsigned char oldMode, oldOldmode, mode;
 jmp_buf newmode_jmpbuf;
 
 int main (void){
+  unsigned char ani_cnt=1; 
 	clear_screen(0);
 	borg_hw_init();
 	joy_init();	
@@ -63,43 +64,71 @@ int main (void){
 		case 1:
 			clear_screen(0);
 			//running();		
+			//scrolltext("</#D~sseldorf Rhein Fire");			
 			break;
 		case 2:
-			//spirale(5);
-			scrolltext("</#FIRE vs. GALAXY");
-			
+		  scrolltext("</#Rhein Fire");
+		  scrolltext("d/#@");
+		  scrolltext("</#Berlin Thunder");
+			// scrolltext("</#Rhein  Fire");
 			break;
 		case 3:
-			//joern1();
-			//rhein_fire();
-			rhein_matrix();
+		  rhein_fire_logo(5000);
 			break;
 		case 4:
-			scrolltext("</>2/#RHEIN FIRE");
-			rhein_fire_logo(2000);
-			scrolltext("b>10/<#RHEIN#</#FIRE");
+		  scrolltext("</#Rhein Fire");
+		  scrolltext("u/#@");
+		  scrolltext("</#Berlin Thunder");
+		  //scrolltext("10u30-2+/#R#H#E#I#N# #F#I#R#E");
+		  //scrolltext(">/#@");
+		  //scrolltext("14d30-0+/#B#E#R#L#I#N# #T#H#U#N#D#E#R");
 			break;
-		case 5:
-			schachbrett(20);
+		case 5:		  
+			rhein_fire(100);
 			break;
 		case 6:
-			rhein_fire();
+		  scrolltext("</#www.das-labor.org");
+		  scrolltext("</#Bochum");
 			break;
 		case 7:
-			matrix();
+		  schachbrett(20);			
 			break;
 		case 8:	
-			scrolltext("</#www.das-labor.org");
+		  scrolltext("</#D~sseldorf Rhein Fire");			
 			break;
-		case 9:
-			feuer();
+		case 9:	
+		  break;
+		case 10:		  
+		  switch (ani_cnt) {
+		    case 1:
+		      //scrolltext("<20/#Ani 1");
+			    feuer();
+			    break;
+		    case 2:
+		      //scrolltext("<20/#Ani 2");
+			    matrix();
+			    break;
+		    case 3:
+		      //scrolltext("<20/#Ani 3");
+    			spirale(5);
+    			break;
+    		case 4:
+    		  //scrolltext("<20/#Ani 4");
+			    joern1();
+			    break;
+		    case 5:
+		      //scrolltext("<20/#Ani 5");
+			    rhein_fire(1000);
+			    ani_cnt=0;
+			    break;
+			}
+			ani_cnt++;
 			break;
-
-		case 14:
+		case 11:
 			mode=1;
 			break;
 		case 0xFF:
-			off();
+			//off();
 			break;
 		case 43:
 			//scrolltext("</#...");
@@ -108,6 +137,8 @@ int main (void){
 		default:
 			break;
 		}
+		// JOYISDOWN ist der Mode-Halten Schalter
+		// JOYISUP ist der Taster, der die Modes weiterschaltet		
 		if((!JOYISDOWN) || JOYISUP){
 			while(JOYISUP) VERPEIL HIER;
 			waitForFire = 1;
