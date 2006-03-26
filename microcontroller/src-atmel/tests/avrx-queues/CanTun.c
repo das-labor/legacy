@@ -5,7 +5,7 @@
 
 #include "config.h"
 
-#include "AvrXSerialIo.h"
+#include "Serial.h"
 #include "CanTun.h"
 
 #define RESET_STR "*can-gw*0.1*\n"
