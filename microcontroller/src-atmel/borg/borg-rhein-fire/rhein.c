@@ -253,14 +253,14 @@ void showScores(unsigned char home, unsigned char guest) {
 #undef FEUER_DIV 
 #define FEUER_DIV 41
 
- void rhein_fire()
- {
+ void rhein_fire(int duration){
+
  	unsigned char y, x;
 	unsigned int  t;
 	unsigned char world[NUM_COLS][FEUER_Y];   // double buffer
 	
 	clear_screen(0);
-	for(t=0; t<800; t++) {
+	for(t=0; t<duration; t++) {
 		// diffuse
 		for(y=1; y<FEUER_Y; y++) {
 			for(x=1; x<NUM_COLS-1; x++) {
@@ -275,8 +275,6 @@ void showScores(unsigned char home, unsigned char guest) {
 		for(x=0; x<NUM_COLS; x++) {
 			world[x][FEUER_Y-1] = random();
 		};
-	
-		
 
 		// copy to screen
 		for(y=0; y<NUM_ROWS; y++) {
@@ -286,7 +284,6 @@ void showScores(unsigned char home, unsigned char guest) {
 				}
 			}		
 		};
-
 		wait(FEUER_DELAY);
 	}
  }
