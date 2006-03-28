@@ -1,0 +1,958 @@
+   1               		.file	"grafiklcd.c"
+   2               		.arch atmega32
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  11               		.text
+  12               	.Ltext0:
+  77               	.global	dispSetPix
+  79               	dispSetPix:
+   1:grafiklcd.c   **** #include <avr/io.h>
+   2:grafiklcd.c   **** #include "s1d1565.h"
+   3:grafiklcd.c   **** #include "grafiklcd.h"
+   4:grafiklcd.c   **** 
+   5:grafiklcd.c   **** void dispSetPix(uint8_t x, uint8_t y, uint8_t color)
+   6:grafiklcd.c   **** {
+  81               	.LM1:
+  82               	/* prologue: frame size=0 */
+  83 0000 0F93      		push r16
+  84 0002 1F93      		push r17
+  85 0004 CF93      		push r28
+  86               	/* prologue end (size=3) */
+  87 0006 182F      		mov r17,r24
+  88 0008 062F      		mov r16,r22
+  89 000a C42F      		mov r28,r20
+   7:grafiklcd.c   **** 	if (x < NUM_COLS && y < NUM_ROWS) {
+  91               	.LM2:
+  92 000c 87FD      		sbrc r24,7
+  93 000e 38C0      		rjmp .L1
+  95               	.LM3:
+  96 0010 6034      		cpi r22,lo8(64)
+  97 0012 B0F5      		brsh .L1
+   8:grafiklcd.c   **** 		
+   9:grafiklcd.c   **** 		DISPSETPAGE(y / 8);
+  99               	.LM4:
+ 100 0014 862F      		mov r24,r22
+ 101 0016 8695      		lsr r24
+ 102 0018 8695      		lsr r24
+ 103 001a 8695      		lsr r24
+ 104 001c 806B      		ori r24,lo8(-80)
+ 105 001e 0E94 0000 		call dispWriteCommand
+  10:grafiklcd.c   **** 
+  11:grafiklcd.c   **** 		//set read/mod/write (read doesn't increment column)
+  12:grafiklcd.c   **** 		dispWriteCommand(0xe0);
+ 107               	.LM5:
+ 108 0022 80EE      		ldi r24,lo8(-32)
+ 109 0024 0E94 0000 		call dispWriteCommand
+  13:grafiklcd.c   **** 
+  14:grafiklcd.c   **** 		// select column addr
+  15:grafiklcd.c   **** 		dispWriteCommand(0x10|(x/16));
+ 111               	.LM6:
+ 112 0028 812F      		mov r24,r17
+ 113 002a 8295      		swap r24
+ 114 002c 8F70      		andi r24,0x0f
+ 115 002e 8061      		ori r24,lo8(16)
+ 116 0030 0E94 0000 		call dispWriteCommand
+  16:grafiklcd.c   **** 		dispWriteCommand(x&15);
+ 118               	.LM7:
+ 119 0034 812F      		mov r24,r17
+ 120 0036 8F70      		andi r24,lo8(15)
+ 121 0038 0E94 0000 		call dispWriteCommand
+  17:grafiklcd.c   **** 
+  18:grafiklcd.c   **** 		//dummy read
+  19:grafiklcd.c   **** 		dispReadByte();
+ 123               	.LM8:
+ 124 003c 0E94 0000 		call dispReadByte
+ 125 0040 602F      		mov r22,r16
+ 126 0042 6770      		andi r22,lo8(7)
+  20:grafiklcd.c   **** 		//write pix
+  21:grafiklcd.c   **** 		dispWriteByte(color?(0x01 << (y % 8)) | dispReadByte():
+ 128               	.LM9:
+ 129 0044 CC23      		tst r28
+ 130 0046 59F0      		breq .L3
+ 131 0048 01E0      		ldi r16,lo8(1)
+ 132 004a 10E0      		ldi r17,hi8(1)
+ 133 004c 02C0      		rjmp 2f
+ 134 004e 000F      	1:	lsl r16
+ 135 0050 111F      		rol r17
+ 136 0052 6A95      	2:	dec r22
+ 137 0054 E2F7      		brpl 1b
+ 138 0056 0E94 0000 		call dispReadByte
+ 139 005a 802B      		or r24,r16
+ 140 005c 0CC0      		rjmp .L4
+ 141               	.L3:
+ 142 005e 81E0      		ldi r24,lo8(1)
+ 143 0060 90E0      		ldi r25,hi8(1)
+ 144 0062 02C0      		rjmp 2f
+ 145 0064 880F      	1:	lsl r24
+ 146 0066 991F      		rol r25
+ 147 0068 6A95      	2:	dec r22
+ 148 006a E2F7      		brpl 1b
+ 149 006c 182F      		mov r17,r24
+ 150 006e 1095      		com r17
+ 151 0070 0E94 0000 		call dispReadByte
+ 152 0074 8123      		and r24,r17
+ 153               	.L4:
+ 154 0076 0E94 0000 		call dispWriteByte
+  22:grafiklcd.c   **** 	                        ~(0x01 << (y % 8)) & dispReadByte());
+  23:grafiklcd.c   **** 
+  24:grafiklcd.c   **** 		//end read/mod/write
+  25:grafiklcd.c   **** 		dispWriteCommand(0xee);
+ 156               	.LM10:
+ 157 007a 8EEE      		ldi r24,lo8(-18)
+ 158 007c 0E94 0000 		call dispWriteCommand
+ 159               	.L1:
+ 160               	/* epilogue: frame size=0 */
+ 161 0080 CF91      		pop r28
+ 162 0082 1F91      		pop r17
+ 163 0084 0F91      		pop r16
+ 164 0086 0895      		ret
+ 165               	/* epilogue end (size=4) */
+ 166               	/* function dispSetPix size 70 (63) */
+ 168               	.Lscope0:
+ 174               	.global	dispHLine
+ 176               	dispHLine:
+  26:grafiklcd.c   **** 	}
+  27:grafiklcd.c   **** }
+  28:grafiklcd.c   **** 
+  29:grafiklcd.c   **** 
+  30:grafiklcd.c   **** //drav horizontal line, x & x2 inclusive
+  31:grafiklcd.c   **** void dispHLine(uint8_t x, uint8_t y, uint8_t x2, uint8_t color)
+  32:grafiklcd.c   **** {
+ 178               	.LM11:
+ 179               	/* prologue: frame size=0 */
+ 180 0088 DF92      		push r13
+ 181 008a EF92      		push r14
+ 182 008c FF92      		push r15
+ 183 008e 0F93      		push r16
+ 184 0090 1F93      		push r17
+ 185 0092 CF93      		push r28
+ 186               	/* prologue end (size=6) */
+ 187 0094 C82F      		mov r28,r24
+ 188 0096 E62E      		mov r14,r22
+ 189 0098 F42E      		mov r15,r20
+ 190 009a D22E      		mov r13,r18
+  33:grafiklcd.c   **** 	//set read/mod/write (read doesn't increment column)
+  34:grafiklcd.c   **** 	dispWriteCommand(0xe0);
+ 192               	.LM12:
+ 193 009c 80EE      		ldi r24,lo8(-32)
+ 194 009e 0E94 0000 		call dispWriteCommand
+  35:grafiklcd.c   **** 
+  36:grafiklcd.c   **** 	DISPSETPAGE(y / 8);
+ 196               	.LM13:
+ 197 00a2 8E2D      		mov r24,r14
+ 198 00a4 8695      		lsr r24
+ 199 00a6 8695      		lsr r24
+ 200 00a8 8695      		lsr r24
+ 201 00aa 806B      		ori r24,lo8(-80)
+ 202 00ac 0E94 0000 		call dispWriteCommand
+  37:grafiklcd.c   **** 
+  38:grafiklcd.c   **** 	// select column addr
+  39:grafiklcd.c   **** 	dispWriteCommand(0x10|(x/16));
+ 204               	.LM14:
+ 205 00b0 8C2F      		mov r24,r28
+ 206 00b2 8295      		swap r24
+ 207 00b4 8F70      		andi r24,0x0f
+ 208 00b6 8061      		ori r24,lo8(16)
+ 209 00b8 0E94 0000 		call dispWriteCommand
+  40:grafiklcd.c   **** 	dispWriteCommand(x&15);
+ 211               	.LM15:
+ 212 00bc 8C2F      		mov r24,r28
+ 213 00be 8F70      		andi r24,lo8(15)
+ 214 00c0 0E94 0000 		call dispWriteCommand
+  41:grafiklcd.c   **** 
+  42:grafiklcd.c   **** 	uint8_t mask = 1 << (y%8);
+ 216               	.LM16:
+ 217 00c4 2E2D      		mov r18,r14
+ 218 00c6 2770      		andi r18,lo8(7)
+ 219 00c8 81E0      		ldi r24,lo8(1)
+ 220 00ca 90E0      		ldi r25,hi8(1)
+ 221 00cc 182F      		mov r17,r24
+ 222 00ce 01C0      		rjmp 2f
+ 223 00d0 110F      	1:	lsl r17
+ 224 00d2 2A95      	2:	dec r18
+ 225 00d4 EAF7      		brpl 1b
+ 226 00d6 9C2F      		mov r25,r28
+ 227 00d8 9F5F      		subi r25,lo8(-(1))
+  43:grafiklcd.c   **** 
+  44:grafiklcd.c   **** 	if(color){
+ 229               	.LM17:
+ 230 00da DD20      		tst r13
+ 231 00dc 71F0      		breq .L6
+  45:grafiklcd.c   **** 		while(x++<=x2)
+  46:grafiklcd.c   **** 		{
+  47:grafiklcd.c   **** 			//dummy read
+  48:grafiklcd.c   **** 			dispReadByte();
+  49:grafiklcd.c   **** 			//write pix
+  50:grafiklcd.c   **** 			dispWriteByte( mask | dispReadByte() );
+ 233               	.LM18:
+ 234 00de 8C2F      		mov r24,r28
+ 235 00e0 C92F      		mov r28,r25
+ 236               	.L24:
+ 237 00e2 F816      		cp r15,r24
+ 238 00e4 C8F0      		brlo .L10
+ 240               	.LM19:
+ 241 00e6 0E94 0000 		call dispReadByte
+ 243               	.LM20:
+ 244 00ea 0E94 0000 		call dispReadByte
+ 245 00ee 812B      		or r24,r17
+ 246 00f0 0E94 0000 		call dispWriteByte
+ 247 00f4 8C2F      		mov r24,r28
+ 248 00f6 CF5F      		subi r28,lo8(-(1))
+ 249 00f8 F4CF      		rjmp .L24
+ 250               	.L6:
+  51:grafiklcd.c   **** 		}
+  52:grafiklcd.c   **** 	}else{
+  53:grafiklcd.c   **** 		mask = ~mask;
+ 252               	.LM21:
+ 253 00fa 1095      		com r17
+  54:grafiklcd.c   **** 		while(x++<=x2)
+  55:grafiklcd.c   **** 			{
+  56:grafiklcd.c   **** 			//dummy read
+  57:grafiklcd.c   **** 			dispReadByte();
+  58:grafiklcd.c   **** 			//write pix
+  59:grafiklcd.c   **** 			dispWriteByte( mask & dispReadByte() );
+ 255               	.LM22:
+ 256 00fc 8C2F      		mov r24,r28
+ 257 00fe C92F      		mov r28,r25
+ 258               	.L25:
+ 259 0100 F816      		cp r15,r24
+ 260 0102 50F0      		brlo .L10
+ 262               	.LM23:
+ 263 0104 0E94 0000 		call dispReadByte
+ 265               	.LM24:
+ 266 0108 0E94 0000 		call dispReadByte
+ 267 010c 8123      		and r24,r17
+ 268 010e 0E94 0000 		call dispWriteByte
+ 269 0112 8C2F      		mov r24,r28
+ 270 0114 CF5F      		subi r28,lo8(-(1))
+ 271 0116 F4CF      		rjmp .L25
+ 272               	.L10:
+  60:grafiklcd.c   **** 		}
+  61:grafiklcd.c   **** 	}
+  62:grafiklcd.c   **** 
+  63:grafiklcd.c   **** 	while(x++<=x2)
+  64:grafiklcd.c   **** 	{
+  65:grafiklcd.c   **** 		//dummy read
+  66:grafiklcd.c   **** 		dispReadByte();
+  67:grafiklcd.c   **** 		//write pix
+  68:grafiklcd.c   **** 		dispWriteByte(color?(0x01 << (y % 8)) | dispReadByte():
+ 274               	.LM25:
+ 275 0118 8C2F      		mov r24,r28
+ 276 011a CF5F      		subi r28,lo8(-(1))
+ 277 011c F816      		cp r15,r24
+ 278 011e 00F1      		brlo .L23
+ 280               	.LM26:
+ 281 0120 0E94 0000 		call dispReadByte
+ 282 0124 2E2D      		mov r18,r14
+ 283 0126 2770      		andi r18,lo8(7)
+ 285               	.LM27:
+ 286 0128 DD20      		tst r13
+ 287 012a 59F0      		breq .L16
+ 288 012c 01E0      		ldi r16,lo8(1)
+ 289 012e 10E0      		ldi r17,hi8(1)
+ 290 0130 02C0      		rjmp 2f
+ 291 0132 000F      	1:	lsl r16
+ 292 0134 111F      		rol r17
+ 293 0136 2A95      	2:	dec r18
+ 294 0138 E2F7      		brpl 1b
+ 295 013a 0E94 0000 		call dispReadByte
+ 296 013e 802B      		or r24,r16
+ 297 0140 0CC0      		rjmp .L17
+ 298               	.L16:
+ 299 0142 81E0      		ldi r24,lo8(1)
+ 300 0144 90E0      		ldi r25,hi8(1)
+ 301 0146 02C0      		rjmp 2f
+ 302 0148 880F      	1:	lsl r24
+ 303 014a 991F      		rol r25
+ 304 014c 2A95      	2:	dec r18
+ 305 014e E2F7      		brpl 1b
+ 306 0150 182F      		mov r17,r24
+ 307 0152 1095      		com r17
+ 308 0154 0E94 0000 		call dispReadByte
+ 309 0158 8123      		and r24,r17
+ 310               	.L17:
+ 311 015a 0E94 0000 		call dispWriteByte
+ 312 015e DCCF      		rjmp .L10
+ 313               	.L23:
+  69:grafiklcd.c   **** 	                        ~(0x01 << (y % 8)) & dispReadByte());
+  70:grafiklcd.c   **** 	}
+  71:grafiklcd.c   **** 	//end read/mod/write
+  72:grafiklcd.c   **** 	dispWriteCommand(0xee);
+ 315               	.LM28:
+ 316 0160 8EEE      		ldi r24,lo8(-18)
+ 317 0162 0E94 0000 		call dispWriteCommand
+ 318               	/* epilogue: frame size=0 */
+ 319 0166 CF91      		pop r28
+ 320 0168 1F91      		pop r17
+ 321 016a 0F91      		pop r16
+ 322 016c FF90      		pop r15
+ 323 016e EF90      		pop r14
+ 324 0170 DF90      		pop r13
+ 325 0172 0895      		ret
+ 326               	/* epilogue end (size=7) */
+ 327               	/* function dispHLine size 121 (108) */
+ 332               	.Lscope1:
+ 337               	.global	dispVLine
+ 339               	dispVLine:
+  73:grafiklcd.c   **** }
+  74:grafiklcd.c   **** 
+  75:grafiklcd.c   **** //drav vertical line, x & x2 inclusive
+  76:grafiklcd.c   **** void dispVLine(uint8_t x, uint8_t y, uint8_t y2) 
+  77:grafiklcd.c   **** {
+ 341               	.LM29:
+ 342               	/* prologue: frame size=0 */
+ 343 0174 EF92      		push r14
+ 344 0176 FF92      		push r15
+ 345 0178 0F93      		push r16
+ 346 017a 1F93      		push r17
+ 347 017c CF93      		push r28
+ 348               	/* prologue end (size=5) */
+ 349 017e E82E      		mov r14,r24
+ 350 0180 162F      		mov r17,r22
+ 351 0182 F42E      		mov r15,r20
+  78:grafiklcd.c   **** 	uint8_t sp, ep, mask;
+  79:grafiklcd.c   **** 	sp=y/8;
+ 353               	.LM30:
+ 354 0184 C62F      		mov r28,r22
+ 355 0186 C695      		lsr r28
+ 356 0188 C695      		lsr r28
+ 357 018a C695      		lsr r28
+  80:grafiklcd.c   **** 	ep=y2/8;
+ 359               	.LM31:
+ 360 018c 042F      		mov r16,r20
+ 361 018e 0695      		lsr r16
+ 362 0190 0695      		lsr r16
+ 363 0192 0695      		lsr r16
+  81:grafiklcd.c   **** 
+  82:grafiklcd.c   **** 	//set read/mod/write (read doesn't increment column)
+  83:grafiklcd.c   **** 	dispWriteCommand(0xe0);
+ 365               	.LM32:
+ 366 0194 80EE      		ldi r24,lo8(-32)
+ 367 0196 0E94 0000 		call dispWriteCommand
+  84:grafiklcd.c   **** 
+  85:grafiklcd.c   **** 
+  86:grafiklcd.c   **** 	mask = 0xff << (y%8);
+ 369               	.LM33:
+ 370 019a 1770      		andi r17,lo8(7)
+ 371 019c 8FEF      		ldi r24,lo8(255)
+ 372 019e 90E0      		ldi r25,hi8(255)
+ 373 01a0 01C0      		rjmp 2f
+ 374 01a2 880F      	1:	lsl r24
+ 375 01a4 1A95      	2:	dec r17
+ 376 01a6 EAF7      		brpl 1b
+ 377 01a8 182F      		mov r17,r24
+ 378               	.L33:
+  87:grafiklcd.c   **** 	
+  88:grafiklcd.c   **** 	while(sp <= ep){
+  89:grafiklcd.c   **** 		if(sp == ep){
+  90:grafiklcd.c   **** 			mask &= 0xff >> (7-(y2%8));		
+  91:grafiklcd.c   **** 		}
+  92:grafiklcd.c   **** 		DISPSETPAGE(sp);
+  93:grafiklcd.c   **** 		// select column addr		dispWriteCommand(0x10|(x/16));
+  94:grafiklcd.c   **** 		dispWriteCommand(x&15);
+  95:grafiklcd.c   **** 		//dummy read
+  96:grafiklcd.c   **** 		dispReadByte();
+  97:grafiklcd.c   **** 		//write pix
+  98:grafiklcd.c   **** 		dispWriteByte(mask | dispReadByte());
+  99:grafiklcd.c   **** 		mask = 0xff;
+ 100:grafiklcd.c   **** 		sp++;
+ 101:grafiklcd.c   **** 	}
+ 380               	.LM34:
+ 381 01aa 0C17      		cp r16,r28
+ 382 01ac 40F1      		brlo .L32
+ 384               	.LM35:
+ 385 01ae C017      		cp r28,r16
+ 386 01b0 71F4      		brne .L29
+ 388               	.LM36:
+ 389 01b2 8F2D      		mov r24,r15
+ 390 01b4 8770      		andi r24,lo8(7)
+ 391 01b6 27E0      		ldi r18,lo8(7)
+ 392 01b8 30E0      		ldi r19,hi8(7)
+ 393 01ba 281B      		sub r18,r24
+ 394 01bc 3109      		sbc r19,__zero_reg__
+ 395 01be 8FEF      		ldi r24,lo8(255)
+ 396 01c0 90E0      		ldi r25,hi8(255)
+ 397 01c2 02C0      		rjmp 2f
+ 398 01c4 9595      	1:	asr r25
+ 399 01c6 8795      		ror r24
+ 400 01c8 2A95      	2:	dec r18
+ 401 01ca E2F7      		brpl 1b
+ 402 01cc 1823      		and r17,r24
+ 403               	.L29:
+ 405               	.LM37:
+ 406 01ce 8C2F      		mov r24,r28
+ 407 01d0 806B      		ori r24,lo8(-80)
+ 408 01d2 0E94 0000 		call dispWriteCommand
+ 410               	.LM38:
+ 411 01d6 8E2D      		mov r24,r14
+ 412 01d8 8295      		swap r24
+ 413 01da 8F70      		andi r24,0x0f
+ 414 01dc 8061      		ori r24,lo8(16)
+ 415 01de 0E94 0000 		call dispWriteCommand
+ 417               	.LM39:
+ 418 01e2 8E2D      		mov r24,r14
+ 419 01e4 8F70      		andi r24,lo8(15)
+ 420 01e6 0E94 0000 		call dispWriteCommand
+ 422               	.LM40:
+ 423 01ea 0E94 0000 		call dispReadByte
+ 425               	.LM41:
+ 426 01ee 0E94 0000 		call dispReadByte
+ 427 01f2 812B      		or r24,r17
+ 428 01f4 0E94 0000 		call dispWriteByte
+ 430               	.LM42:
+ 431 01f8 1FEF      		ldi r17,lo8(-1)
+ 433               	.LM43:
+ 434 01fa CF5F      		subi r28,lo8(-(1))
+ 435 01fc D6CF      		rjmp .L33
+ 436               	.L32:
+ 102:grafiklcd.c   **** 	//end read/mod/write
+ 103:grafiklcd.c   **** 	dispWriteCommand(0xee);
+ 104:grafiklcd.c   **** }
+ 438               	.LM44:
+ 439 01fe 8EEE      		ldi r24,lo8(-18)
+ 440 0200 0E94 0000 		call dispWriteCommand
+ 441               	/* epilogue: frame size=0 */
+ 442 0204 CF91      		pop r28
+ 443 0206 1F91      		pop r17
+ 444 0208 0F91      		pop r16
+ 445 020a FF90      		pop r15
+ 446 020c EF90      		pop r14
+ 447 020e 0895      		ret
+ 448               	/* epilogue end (size=6) */
+ 449               	/* function dispVLine size 80 (69) */
+ 456               	.Lscope2:
+ 463               	.global	fillRect
+ 465               	fillRect:
+ 105:grafiklcd.c   **** 
+ 106:grafiklcd.c   **** void fillRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t color) 
+ 107:grafiklcd.c   **** {
+ 108:grafiklcd.c   **** 	uint8_t sp, ep, mask;
+ 467               	.LM45:
+ 468               	/* prologue: frame size=0 */
+ 469 0210 7F92      		push r7
+ 470 0212 8F92      		push r8
+ 471 0214 9F92      		push r9
+ 472 0216 AF92      		push r10
+ 473 0218 BF92      		push r11
+ 474 021a CF92      		push r12
+ 475 021c DF92      		push r13
+ 476 021e EF92      		push r14
+ 477 0220 FF92      		push r15
+ 478 0222 0F93      		push r16
+ 479 0224 1F93      		push r17
+ 480 0226 CF93      		push r28
+ 481 0228 DF93      		push r29
+ 482               	/* prologue end (size=13) */
+ 483 022a 782E      		mov r7,r24
+ 484 022c 162F      		mov r17,r22
+ 485 022e 842E      		mov r8,r20
+ 486 0230 D22E      		mov r13,r18
+ 487 0232 902E      		mov r9,r16
+ 109:grafiklcd.c   **** 	uint8_t y2 = y + height - 1;
+ 110:grafiklcd.c   **** 	sp=y/8;
+ 489               	.LM46:
+ 490 0234 D60E      		add r13,r22
+ 491 0236 DA94      		dec r13
+ 111:grafiklcd.c   **** 	ep=y2/8;
+ 493               	.LM47:
+ 494 0238 F62E      		mov r15,r22
+ 495 023a F694      		lsr r15
+ 496 023c F694      		lsr r15
+ 497 023e F694      		lsr r15
+ 112:grafiklcd.c   **** 
+ 499               	.LM48:
+ 500 0240 CD2C      		mov r12,r13
+ 501 0242 C694      		lsr r12
+ 502 0244 C694      		lsr r12
+ 503 0246 C694      		lsr r12
+ 113:grafiklcd.c   **** 	//set read/mod/write (read doesn't increment column)
+ 114:grafiklcd.c   **** 	dispWriteCommand(0xe0);
+ 115:grafiklcd.c   **** 	
+ 505               	.LM49:
+ 506 0248 80EE      		ldi r24,lo8(-32)
+ 507 024a 0E94 0000 		call dispWriteCommand
+ 116:grafiklcd.c   **** 	mask = 0xff << (y%8);
+ 117:grafiklcd.c   **** 	
+ 509               	.LM50:
+ 510 024e 1770      		andi r17,lo8(7)
+ 511 0250 8FEF      		ldi r24,lo8(255)
+ 512 0252 90E0      		ldi r25,hi8(255)
+ 513 0254 E82E      		mov r14,r24
+ 514 0256 01C0      		rjmp 2f
+ 515 0258 EE0C      	1:	lsl r14
+ 516 025a 1A95      	2:	dec r17
+ 517 025c EAF7      		brpl 1b
+ 518               	.L49:
+ 118:grafiklcd.c   **** 	while(sp <= ep){
+ 119:grafiklcd.c   **** 		uint8_t xi;
+ 120:grafiklcd.c   **** 		if(sp == ep){
+ 121:grafiklcd.c   **** 			mask &= 0xff >> (7-(y2%8));		
+ 122:grafiklcd.c   **** 		}
+ 123:grafiklcd.c   **** 		DISPSETPAGE(sp);
+ 124:grafiklcd.c   **** 		// select column addr		
+ 125:grafiklcd.c   **** 		for(xi = x; xi < x+width; xi++){		
+ 126:grafiklcd.c   **** 			dispWriteCommand(0x10|(xi/16));
+ 127:grafiklcd.c   **** 			dispWriteCommand(xi&15);
+ 128:grafiklcd.c   **** 			//dummy read
+ 129:grafiklcd.c   **** 			dispReadByte();
+ 130:grafiklcd.c   **** 			//write pix
+ 131:grafiklcd.c   **** 			if(color){
+ 132:grafiklcd.c   **** 				dispWriteByte(mask | dispReadByte());
+ 133:grafiklcd.c   **** 			}else{
+ 134:grafiklcd.c   **** 				dispWriteByte(~mask & dispReadByte());
+ 135:grafiklcd.c   **** 			}		
+ 136:grafiklcd.c   **** 		}
+ 137:grafiklcd.c   **** 		mask = 0xff;
+ 138:grafiklcd.c   **** 		sp++;
+ 139:grafiklcd.c   **** 	}
+ 140:grafiklcd.c   **** 	//end read/mod/write	dispWriteCommand(0xee);
+ 520               	.LM51:
+ 521 025e CF14      		cp r12,r15
+ 522 0260 08F4      		brsh .+2
+ 523 0262 45C0      		rjmp .L46
+ 524               	.LBB2:
+ 526               	.LM52:
+ 527 0264 FC14      		cp r15,r12
+ 528 0266 71F4      		brne .L37
+ 530               	.LM53:
+ 531 0268 8D2D      		mov r24,r13
+ 532 026a 8770      		andi r24,lo8(7)
+ 533 026c 27E0      		ldi r18,lo8(7)
+ 534 026e 30E0      		ldi r19,hi8(7)
+ 535 0270 281B      		sub r18,r24
+ 536 0272 3109      		sbc r19,__zero_reg__
+ 537 0274 8FEF      		ldi r24,lo8(255)
+ 538 0276 90E0      		ldi r25,hi8(255)
+ 539 0278 02C0      		rjmp 2f
+ 540 027a 9595      	1:	asr r25
+ 541 027c 8795      		ror r24
+ 542 027e 2A95      	2:	dec r18
+ 543 0280 E2F7      		brpl 1b
+ 544 0282 E822      		and r14,r24
+ 545               	.L37:
+ 547               	.LM54:
+ 548 0284 8F2D      		mov r24,r15
+ 549 0286 806B      		ori r24,lo8(-80)
+ 550 0288 0E94 0000 		call dispWriteCommand
+ 552               	.LM55:
+ 553 028c 072D      		mov r16,r7
+ 554 028e C72D      		mov r28,r7
+ 555 0290 DD27      		clr r29
+ 556 0292 A82C      		mov r10,r8
+ 557 0294 BB24      		clr r11
+ 558 0296 CE01      		movw r24,r28
+ 559 0298 8A0D      		add r24,r10
+ 560 029a 9B1D      		adc r25,r11
+ 561 029c C817      		cp r28,r24
+ 562 029e D907      		cpc r29,r25
+ 563 02a0 14F5      		brge .L48
+ 564               	.L43:
+ 566               	.LM56:
+ 567 02a2 802F      		mov r24,r16
+ 568 02a4 8295      		swap r24
+ 569 02a6 8F70      		andi r24,0x0f
+ 570 02a8 8061      		ori r24,lo8(16)
+ 571 02aa 0E94 0000 		call dispWriteCommand
+ 573               	.LM57:
+ 574 02ae 802F      		mov r24,r16
+ 575 02b0 8F70      		andi r24,lo8(15)
+ 576 02b2 0E94 0000 		call dispWriteCommand
+ 578               	.LM58:
+ 579 02b6 0E94 0000 		call dispReadByte
+ 581               	.LM59:
+ 582 02ba 9920      		tst r9
+ 583 02bc 21F0      		breq .L41
+ 585               	.LM60:
+ 586 02be 0E94 0000 		call dispReadByte
+ 587 02c2 8E29      		or r24,r14
+ 588 02c4 05C0      		rjmp .L50
+ 589               	.L41:
+ 591               	.LM61:
+ 592 02c6 1E2D      		mov r17,r14
+ 593 02c8 1095      		com r17
+ 594 02ca 0E94 0000 		call dispReadByte
+ 595 02ce 8123      		and r24,r17
+ 596               	.L50:
+ 597 02d0 0E94 0000 		call dispWriteByte
+ 599               	.LM62:
+ 600 02d4 0F5F      		subi r16,lo8(-(1))
+ 601 02d6 202F      		mov r18,r16
+ 602 02d8 3327      		clr r19
+ 603 02da CE01      		movw r24,r28
+ 604 02dc 8A0D      		add r24,r10
+ 605 02de 9B1D      		adc r25,r11
+ 606 02e0 2817      		cp r18,r24
+ 607 02e2 3907      		cpc r19,r25
+ 608 02e4 F4F2      		brlt .L43
+ 609               	.L48:
+ 611               	.LM63:
+ 612 02e6 8FEF      		ldi r24,lo8(-1)
+ 613 02e8 E82E      		mov r14,r24
+ 615               	.LM64:
+ 616 02ea F394      		inc r15
+ 617 02ec B8CF      		rjmp .L49
+ 618               	.L46:
+ 619               	.LBE2:
+ 141:grafiklcd.c   **** }
+ 142:grafiklcd.c   **** 
+ 143:grafiklcd.c   **** 
+ 621               	.LM65:
+ 622 02ee 8EEE      		ldi r24,lo8(-18)
+ 623 02f0 0E94 0000 		call dispWriteCommand
+ 624               	/* epilogue: frame size=0 */
+ 625 02f4 DF91      		pop r29
+ 626 02f6 CF91      		pop r28
+ 627 02f8 1F91      		pop r17
+ 628 02fa 0F91      		pop r16
+ 629 02fc FF90      		pop r15
+ 630 02fe EF90      		pop r14
+ 631 0300 DF90      		pop r13
+ 632 0302 CF90      		pop r12
+ 633 0304 BF90      		pop r11
+ 634 0306 AF90      		pop r10
+ 635 0308 9F90      		pop r9
+ 636 030a 8F90      		pop r8
+ 637 030c 7F90      		pop r7
+ 638 030e 0895      		ret
+ 639               	/* epilogue end (size=14) */
+ 640               	/* function fillRect size 130 (103) */
+ 651               	.Lscope3:
+ 658               	.global	dispDrawRect
+ 660               	dispDrawRect:
+ 144:grafiklcd.c   **** 
+ 145:grafiklcd.c   **** void dispDrawRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t color) {
+ 146:grafiklcd.c   **** 	  	
+ 147:grafiklcd.c   **** 	dispHLine(x, y, x + width, color);		// top
+ 148:grafiklcd.c   **** 	dispHLine(x, y+height, x + width, color);	// bottom
+ 662               	.LM66:
+ 663               	/* prologue: frame size=0 */
+ 664 0310 DF92      		push r13
+ 665 0312 EF92      		push r14
+ 666 0314 FF92      		push r15
+ 667 0316 0F93      		push r16
+ 668 0318 1F93      		push r17
+ 669               	/* prologue end (size=5) */
+ 670 031a E82E      		mov r14,r24
+ 671 031c D62E      		mov r13,r22
+ 672 031e F42E      		mov r15,r20
+ 673 0320 122F      		mov r17,r18
+ 149:grafiklcd.c   **** 	dispVLine(x, y , y + height);			// left
+ 150:grafiklcd.c   **** 	dispVLine(x+width, y, y + height);		// right
+ 675               	.LM67:
+ 676 0322 F80E      		add r15,r24
+ 677 0324 202F      		mov r18,r16
+ 678 0326 4F2D      		mov r20,r15
+ 679 0328 0E94 0000 		call dispHLine
+ 151:grafiklcd.c   **** }
+ 681               	.LM68:
+ 682 032c 1D0D      		add r17,r13
+ 683 032e 202F      		mov r18,r16
+ 684 0330 4F2D      		mov r20,r15
+ 685 0332 612F      		mov r22,r17
+ 686 0334 8E2D      		mov r24,r14
+ 687 0336 0E94 0000 		call dispHLine
+ 152:grafiklcd.c   **** 
+ 689               	.LM69:
+ 690 033a 412F      		mov r20,r17
+ 691 033c 6D2D      		mov r22,r13
+ 692 033e 8E2D      		mov r24,r14
+ 693 0340 0E94 0000 		call dispVLine
+ 153:grafiklcd.c   **** void drawLine(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t color) {
+ 695               	.LM70:
+ 696 0344 412F      		mov r20,r17
+ 697 0346 6D2D      		mov r22,r13
+ 698 0348 8F2D      		mov r24,r15
+ 699 034a 0E94 0000 		call dispVLine
+ 700               	/* epilogue: frame size=0 */
+ 701 034e 1F91      		pop r17
+ 702 0350 0F91      		pop r16
+ 703 0352 FF90      		pop r15
+ 704 0354 EF90      		pop r14
+ 705 0356 DF90      		pop r13
+ 706 0358 0895      		ret
+ 707               	/* epilogue end (size=6) */
+ 708               	/* function dispDrawRect size 37 (26) */
+ 710               	.Lscope4:
+ 717               	.global	drawLine
+ 719               	drawLine:
+ 154:grafiklcd.c   **** 	signed int i, dx, dy, sdx, sdy, dxabs, dyabs, x, y, px, py;
+ 155:grafiklcd.c   **** 	dx = x2 - x1;      // the horizontal distance of the line
+ 156:grafiklcd.c   **** 	dy = y2 - y1;      // the vertical distance of the line 
+ 721               	.LM71:
+ 722               	/* prologue: frame size=3 */
+ 723 035a 2F92      		push r2
+ 724 035c 3F92      		push r3
+ 725 035e 4F92      		push r4
+ 726 0360 5F92      		push r5
+ 727 0362 6F92      		push r6
+ 728 0364 7F92      		push r7
+ 729 0366 8F92      		push r8
+ 730 0368 9F92      		push r9
+ 731 036a AF92      		push r10
+ 732 036c BF92      		push r11
+ 733 036e CF92      		push r12
+ 734 0370 DF92      		push r13
+ 735 0372 EF92      		push r14
+ 736 0374 FF92      		push r15
+ 737 0376 0F93      		push r16
+ 738 0378 1F93      		push r17
+ 739 037a CF93      		push r28
+ 740 037c DF93      		push r29
+ 741 037e CDB7      		in r28,__SP_L__
+ 742 0380 DEB7      		in r29,__SP_H__
+ 743 0382 2397      		sbiw r28,3
+ 744 0384 0FB6      		in __tmp_reg__,__SREG__
+ 745 0386 F894      		cli
+ 746 0388 DEBF      		out __SP_H__,r29
+ 747 038a 0FBE      		out __SREG__,__tmp_reg__
+ 748 038c CDBF      		out __SP_L__,r28
+ 749               	/* prologue end (size=26) */
+ 750 038e 0983      		std Y+1,r16
+ 157:grafiklcd.c   **** 	dxabs = dx >= 0 ? dx: -dx; //abs
+ 158:grafiklcd.c   **** 	dyabs = dy >= 0 ? dy: -dy; //abs
+ 752               	.LM72:
+ 753 0390 5527      		clr r21
+ 754 0392 E82F      		mov r30,r24
+ 755 0394 FF27      		clr r31
+ 756 0396 4E1B      		sub r20,r30
+ 757 0398 5F0B      		sbc r21,r31
+ 159:grafiklcd.c   **** 	sdx = dx >= 0 ? 1: -1;     //sgn
+ 759               	.LM73:
+ 760 039a 3327      		clr r19
+ 761 039c 7727      		clr r23
+ 762 039e 261B      		sub r18,r22
+ 763 03a0 370B      		sbc r19,r23
+ 160:grafiklcd.c   **** 	sdy = dy >= 0 ? 1: -1;     //sgn
+ 765               	.LM74:
+ 766 03a2 6A01      		movw r12,r20
+ 767 03a4 57FF      		sbrs r21,7
+ 768 03a6 04C0      		rjmp .L53
+ 770               	.LM75:
+ 771 03a8 D094      		com r13
+ 772 03aa C194      		neg r12
+ 773 03ac D108      		sbc r13,__zero_reg__
+ 774 03ae D394      		inc r13
+ 775               	.L53:
+ 161:grafiklcd.c   **** 	x = dyabs >> 1;
+ 777               	.LM76:
+ 778 03b0 8901      		movw r16,r18
+ 779 03b2 37FF      		sbrs r19,7
+ 780 03b4 03C0      		rjmp .L54
+ 781 03b6 1095      		com r17
+ 782 03b8 0195      		neg r16
+ 783 03ba 1F4F      		sbci r17,lo8(-1)
+ 784               	.L54:
+ 162:grafiklcd.c   **** 	y = dxabs >> 1;
+ 786               	.LM77:
+ 787 03bc 57FD      		sbrc r21,7
+ 788 03be 04C0      		rjmp .L55
+ 789 03c0 A1E0      		ldi r26,lo8(1)
+ 790 03c2 2A2E      		mov r2,r26
+ 791 03c4 312C      		mov r3,__zero_reg__
+ 792 03c6 03C0      		rjmp .L56
+ 793               	.L55:
+ 794 03c8 5FEF      		ldi r21,lo8(-1)
+ 795 03ca 252E      		mov r2,r21
+ 796 03cc 352E      		mov r3,r21
+ 797               	.L56:
+ 163:grafiklcd.c   **** 	px = x1;
+ 799               	.LM78:
+ 800 03ce 37FD      		sbrc r19,7
+ 801 03d0 04C0      		rjmp .L57
+ 802 03d2 41E0      		ldi r20,lo8(1)
+ 803 03d4 442E      		mov r4,r20
+ 804 03d6 512C      		mov r5,__zero_reg__
+ 805 03d8 03C0      		rjmp .L58
+ 806               	.L57:
+ 807 03da 3FEF      		ldi r19,lo8(-1)
+ 808 03dc 432E      		mov r4,r19
+ 809 03de 532E      		mov r5,r19
+ 810               	.L58:
+ 164:grafiklcd.c   **** 	py = y1;
+ 812               	.LM79:
+ 813 03e0 3801      		movw r6,r16
+ 814 03e2 7594      		asr r7
+ 815 03e4 6794      		ror r6
+ 165:grafiklcd.c   ****     dispSetPix(px, py, color);
+ 817               	.LM80:
+ 818 03e6 5601      		movw r10,r12
+ 819 03e8 B594      		asr r11
+ 820 03ea A794      		ror r10
+ 166:grafiklcd.c   **** 	
+ 822               	.LM81:
+ 823 03ec 7F01      		movw r14,r30
+ 167:grafiklcd.c   **** 	if (dxabs >= dyabs) { // the line is more horizontal than vertical  
+ 825               	.LM82:
+ 826 03ee 7B83      		std Y+3,r23
+ 827 03f0 6A83      		std Y+2,r22
+ 168:grafiklcd.c   **** 		for (i = 0; i < dxabs; i++) {
+ 829               	.LM83:
+ 830 03f2 4981      		ldd r20,Y+1
+ 831 03f4 6A81      		ldd r22,Y+2
+ 832 03f6 8E2F      		mov r24,r30
+ 833 03f8 0E94 0000 		call dispSetPix
+ 169:grafiklcd.c   **** 			y += dyabs; 
+ 170:grafiklcd.c   **** 			if (y >= dxabs) {
+ 835               	.LM84:
+ 836 03fc C016      		cp r12,r16
+ 837 03fe D106      		cpc r13,r17
+ 838 0400 04F1      		brlt .L59
+ 171:grafiklcd.c   **** 				y -= dxabs;
+ 840               	.LM85:
+ 841 0402 8824      		clr r8
+ 842 0404 9924      		clr r9
+ 843 0406 8C14      		cp r8,r12
+ 844 0408 9D04      		cpc r9,r13
+ 845 040a D4F5      		brge .L52
+ 846               	.L64:
+ 172:grafiklcd.c   **** 				py += sdy;
+ 848               	.LM86:
+ 849 040c A00E      		add r10,r16
+ 850 040e B11E      		adc r11,r17
+ 173:grafiklcd.c   **** 			}
+ 852               	.LM87:
+ 853 0410 AC14      		cp r10,r12
+ 854 0412 BD04      		cpc r11,r13
+ 855 0414 44F0      		brlt .L63
+ 174:grafiklcd.c   **** 			px += sdx;
+ 857               	.LM88:
+ 858 0416 AC18      		sub r10,r12
+ 859 0418 BD08      		sbc r11,r13
+ 175:grafiklcd.c   **** 			dispSetPix(px, py, color);
+ 861               	.LM89:
+ 862 041a 8A81      		ldd r24,Y+2
+ 863 041c 9B81      		ldd r25,Y+3
+ 864 041e 840D      		add r24,r4
+ 865 0420 951D      		adc r25,r5
+ 866 0422 9B83      		std Y+3,r25
+ 867 0424 8A83      		std Y+2,r24
+ 868               	.L63:
+ 176:grafiklcd.c   **** 		}
+ 177:grafiklcd.c   **** 	} else { // the line is more vertical than horizontal
+ 870               	.LM90:
+ 871 0426 E20C      		add r14,r2
+ 872 0428 F31C      		adc r15,r3
+ 178:grafiklcd.c   **** 		for (i = 0; i < dyabs; i++) {
+ 874               	.LM91:
+ 875 042a 4981      		ldd r20,Y+1
+ 876 042c 6A81      		ldd r22,Y+2
+ 877 042e 8E2D      		mov r24,r14
+ 878 0430 0E94 0000 		call dispSetPix
+ 880               	.LM92:
+ 881 0434 0894      		sec
+ 882 0436 811C      		adc r8,__zero_reg__
+ 883 0438 911C      		adc r9,__zero_reg__
+ 884 043a 8C14      		cp r8,r12
+ 885 043c 9D04      		cpc r9,r13
+ 886 043e 34F3      		brlt .L64
+ 887 0440 1FC0      		rjmp .L52
+ 888               	.L59:
+ 179:grafiklcd.c   **** 			x += dxabs;
+ 180:grafiklcd.c   **** 			if (x >= dyabs) {
+ 181:grafiklcd.c   **** 				x -= dyabs;
+ 890               	.LM93:
+ 891 0442 8824      		clr r8
+ 892 0444 9924      		clr r9
+ 893 0446 8016      		cp r8,r16
+ 894 0448 9106      		cpc r9,r17
+ 895 044a D4F4      		brge .L52
+ 896               	.L70:
+ 182:grafiklcd.c   **** 				px += sdx;
+ 898               	.LM94:
+ 899 044c 6C0C      		add r6,r12
+ 900 044e 7D1C      		adc r7,r13
+ 183:grafiklcd.c   **** 			}
+ 902               	.LM95:
+ 903 0450 6016      		cp r6,r16
+ 904 0452 7106      		cpc r7,r17
+ 905 0454 24F0      		brlt .L69
+ 184:grafiklcd.c   **** 			py += sdy;
+ 907               	.LM96:
+ 908 0456 601A      		sub r6,r16
+ 909 0458 710A      		sbc r7,r17
+ 185:grafiklcd.c   **** 			dispSetPix(px, py, color);
+ 911               	.LM97:
+ 912 045a E20C      		add r14,r2
+ 913 045c F31C      		adc r15,r3
+ 914               	.L69:
+ 186:grafiklcd.c   **** 		}
+ 187:grafiklcd.c   **** 	}
+ 916               	.LM98:
+ 917 045e EA81      		ldd r30,Y+2
+ 918 0460 FB81      		ldd r31,Y+3
+ 919 0462 E40D      		add r30,r4
+ 920 0464 F51D      		adc r31,r5
+ 921 0466 FB83      		std Y+3,r31
+ 922 0468 EA83      		std Y+2,r30
+ 188:grafiklcd.c   **** }	  
+ 924               	.LM99:
+ 925 046a 4981      		ldd r20,Y+1
+ 926 046c 6A81      		ldd r22,Y+2
+ 927 046e 8E2D      		mov r24,r14
+ 928 0470 0E94 0000 		call dispSetPix
+ 930               	.LM100:
+ 931 0474 0894      		sec
+ 932 0476 811C      		adc r8,__zero_reg__
+ 933 0478 911C      		adc r9,__zero_reg__
+ 934 047a 8016      		cp r8,r16
+ 935 047c 9106      		cpc r9,r17
+ 936 047e 34F3      		brlt .L70
+ 937               	.L52:
+ 938               	/* epilogue: frame size=3 */
+ 939 0480 2396      		adiw r28,3
+ 940 0482 0FB6      		in __tmp_reg__,__SREG__
+ 941 0484 F894      		cli
+ 942 0486 DEBF      		out __SP_H__,r29
+ 943 0488 0FBE      		out __SREG__,__tmp_reg__
+ 944 048a CDBF      		out __SP_L__,r28
+ 945 048c DF91      		pop r29
+ 946 048e CF91      		pop r28
+ 947 0490 1F91      		pop r17
+ 948 0492 0F91      		pop r16
+ 949 0494 FF90      		pop r15
+ 950 0496 EF90      		pop r14
+ 951 0498 DF90      		pop r13
+ 952 049a CF90      		pop r12
+ 953 049c BF90      		pop r11
+ 954 049e AF90      		pop r10
+ 955 04a0 9F90      		pop r9
+ 956 04a2 8F90      		pop r8
+ 957 04a4 7F90      		pop r7
+ 958 04a6 6F90      		pop r6
+ 959 04a8 5F90      		pop r5
+ 960 04aa 4F90      		pop r4
+ 961 04ac 3F90      		pop r3
+ 962 04ae 2F90      		pop r2
+ 963 04b0 0895      		ret
+ 964               	/* epilogue end (size=25) */
+ 965               	/* function drawLine size 172 (121) */
+ 980               	.Lscope5:
+ 981               		.text
+ 983               	Letext:
+ 984               	/* File "grafiklcd.c": code  610 = 0x0262 ( 490), prologues  58, epilogues  62 */
+DEFINED SYMBOLS
+                            *ABS*:00000000 grafiklcd.c
+     /tmp/cc69tL2z.s:3      *ABS*:0000003f __SREG__
+     /tmp/cc69tL2z.s:4      *ABS*:0000003e __SP_H__
+     /tmp/cc69tL2z.s:5      *ABS*:0000003d __SP_L__
+     /tmp/cc69tL2z.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cc69tL2z.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cc69tL2z.s:79     .text:00000000 dispSetPix
+     /tmp/cc69tL2z.s:176    .text:00000088 dispHLine
+     /tmp/cc69tL2z.s:339    .text:00000174 dispVLine
+     /tmp/cc69tL2z.s:465    .text:00000210 fillRect
+     /tmp/cc69tL2z.s:660    .text:00000310 dispDrawRect
+     /tmp/cc69tL2z.s:719    .text:0000035a drawLine
+     /tmp/cc69tL2z.s:983    .text:000004b2 Letext
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+dispWriteCommand
+dispReadByte
+dispWriteByte
