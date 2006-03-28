@@ -1,0 +1,87 @@
+   1               		.file	"keys.c"
+   2               		.arch atmega32
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  11               		.text
+  12               	.Ltext0:
+ 124               	.global	keysTcb
+ 125               		.section	.progmem.data,"a",@progbits
+ 128               	keysTcb:
+ 129 0000 0000      		.word	keysStk+54
+ 130 0002 0000      		.word	pm(keys)
+ 131 0004 0000      		.word	keysPid
+ 132 0006 04        		.byte	4
+ 133               	.global	mprog
+ 134               		.data
+ 137               	mprog:
+ 138 0000 01        		.byte	1
+ 139               		.text
+ 141               	.global	keys
+ 143               	keys:
+   1:keys.c        **** 
+   2:keys.c        **** #include <avr/io.h>
+   3:keys.c        **** #include <string.h>
+   4:keys.c        **** 
+   5:keys.c        **** #include <avrx-io.h>
+   6:keys.c        **** #include <avrx-signal.h>
+   7:keys.c        **** #include "avrx.h"               // AvrX System calls/data structures
+   8:keys.c        **** 
+   9:keys.c        **** #include "xcan.h"
+  10:keys.c        **** #include "xlap.h"
+  11:keys.c        **** #include "keys.h"
+  12:keys.c        **** 
+  13:keys.c        **** 
+  14:keys.c        **** TimerControlBlock switchtimer;
+  15:keys.c        **** uint8_t mprog = 1;
+  16:keys.c        **** 
+  17:keys.c        **** AVRX_GCC_TASKDEF(keys, 20, 4) {
+ 145               	.LM1:
+ 146               	/* prologue: frame size=0 */
+ 147               	/* prologue end (size=0) */
+ 148               	.L2:
+  18:keys.c        **** 
+  19:keys.c        **** 	while(1) {
+  20:keys.c        **** 
+  21:keys.c        **** 		AvrXDelay(&switchtimer, 20);
+ 150               	.LM2:
+ 151 0000 64E1      		ldi r22,lo8(20)
+ 152 0002 70E0      		ldi r23,hi8(20)
+ 153 0004 80E0      		ldi r24,lo8(switchtimer)
+ 154 0006 90E0      		ldi r25,hi8(switchtimer)
+ 155 0008 0E94 0000 		call AvrXDelay
+ 156 000c F9CF      		rjmp .L2
+ 157               	/* epilogue: frame size=0 */
+ 158               	/* epilogue: noreturn */
+ 159               	/* epilogue end (size=0) */
+ 160               	/* function keys size 7 (7) */
+ 162               	.Lscope0:
+ 163               		.comm keysPid,6,1
+ 164               		.comm switchtimer,6,1
+ 165               		.comm keysStk,55,1
+ 171               		.text
+ 173               	Letext:
+ 174               	/* File "keys.c": code    7 = 0x0007 (   7), prologues   0, epilogues   0 */
+DEFINED SYMBOLS
+                            *ABS*:00000000 keys.c
+     /tmp/ccp7TSYa.s:3      *ABS*:0000003f __SREG__
+     /tmp/ccp7TSYa.s:4      *ABS*:0000003e __SP_H__
+     /tmp/ccp7TSYa.s:5      *ABS*:0000003d __SP_L__
+     /tmp/ccp7TSYa.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccp7TSYa.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccp7TSYa.s:128    .progmem.data:00000000 keysTcb
+                            *COM*:00000037 keysStk
+     /tmp/ccp7TSYa.s:143    .text:00000000 keys
+                            *COM*:00000006 keysPid
+     /tmp/ccp7TSYa.s:137    .data:00000000 mprog
+                            *COM*:00000006 switchtimer
+     /tmp/ccp7TSYa.s:173    .text:0000000e Letext
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+AvrXDelay

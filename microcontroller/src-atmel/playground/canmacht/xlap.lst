@@ -1,0 +1,438 @@
+   1               		.file	"xlap.c"
+   2               		.arch atmega32
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  11               		.text
+  12               	.Ltext0:
+ 128               	.global	laptaskTcb
+ 129               		.section	.progmem.data,"a",@progbits
+ 132               	laptaskTcb:
+ 133 0000 0000      		.word	laptaskStk+89
+ 134 0002 0000      		.word	pm(laptask)
+ 135 0004 0000      		.word	laptaskPid
+ 136 0006 03        		.byte	3
+ 137               		.data
+ 140               	msg.0:
+ 141 0000 00        		.byte	0
+ 142 0001 00        		.byte	0
+ 143 0002 30        		.byte	48
+ 144 0003 30        		.byte	48
+ 145 0004 01        		.byte	1
+ 146 0005 01        		.byte	1
+ 147 0006 0000 0000 		.skip 7,0
+ 147      0000 00
+ 148               		.text
+ 150               	.global	process_mgt_msg
+ 152               	process_mgt_msg:
+   1:xlap.c        **** 
+   2:xlap.c        **** #include <avr/wdt.h>
+   3:xlap.c        **** #include <avr/io.h>
+   4:xlap.c        **** #include <avr/eeprom.h>
+   5:xlap.c        **** 
+   6:xlap.c        **** #include <avrx-io.h>
+   7:xlap.c        **** #include <avrx-signal.h>
+   8:xlap.c        **** #include "avrx.h"               // AvrX System calls/data structures
+   9:xlap.c        **** 
+  10:xlap.c        **** #include "config.h"
+  11:xlap.c        **** #include "spi.h"
+  12:xlap.c        **** #include "xcan.h"
+  13:xlap.c        **** #include "lap.h"
+  14:xlap.c        **** #include "string.h"
+  15:xlap.c        **** #include "menu.h"
+  16:xlap.c        **** 
+  17:xlap.c        **** uint8_t myaddr;
+  18:xlap.c        **** 
+  19:xlap.c        **** 
+  20:xlap.c        **** void process_mgt_msg() {
+ 154               	.LM1:
+ 155               	/* prologue: frame size=0 */
+ 156               	/* prologue end (size=0) */
+  21:xlap.c        **** 	static can_message_t msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
+  22:xlap.c        **** 	switch(rx_msg.data[0]) {
+ 158               	.LM2:
+ 159 0000 8091 0000 		lds r24,rx_msg+5
+ 160 0004 9927      		clr r25
+ 161 0006 8230      		cpi r24,2
+ 162 0008 9105      		cpc r25,__zero_reg__
+ 163 000a 49F0      		breq .L3
+ 165               	.LM3:
+ 166 000c 8330      		cpi r24,3
+ 167 000e 9105      		cpc r25,__zero_reg__
+ 168 0010 1CF4      		brge .L8
+ 169 0012 892B      		or r24,r25
+ 170 0014 71F0      		breq .L6
+ 171 0016 0895      		ret
+ 172               	.L8:
+ 173 0018 0497      		sbiw r24,4
+ 174 001a A1F0      		breq .L7
+ 175 001c 0895      		ret
+ 176               	.L3:
+  23:xlap.c        **** 		case FKT_MGT_RESET:
+  24:xlap.c        **** 			wdt_enable(0);
+ 178               	.LM4:
+ 179 001e 88E1      		ldi r24,lo8(24)
+ 180 0020 90E0      		ldi r25,hi8(24)
+ 181 0022 28E0      		ldi r18,lo8(8)
+ 182               	/* #APP */
+ 183 0024 0FB6      		in __tmp_reg__,__SREG__
+ 184 0026 F894      		cli
+ 185 0028 A895      		wdr
+ 186 002a 81BD      		out 33,r24
+ 187 002c 0FBE      		out __SREG__,__tmp_reg__
+ 188 002e 21BD      		out 33,r18
+ 189               	/* #NOAPP */
+ 190               	.L4:
+  25:xlap.c        **** 			while(1);
+ 192               	.LM5:
+ 193 0030 FFCF      		rjmp .L4
+ 194               	.L6:
+  26:xlap.c        **** 		case FKT_MGT_PING:
+  27:xlap.c        **** 			msg.addr_src = myaddr;
+ 196               	.LM6:
+ 197 0032 8091 0000 		lds r24,myaddr
+ 198 0036 8093 0000 		sts msg.0,r24
+  28:xlap.c        **** 			msg.addr_dst = rx_msg.addr_src;
+ 200               	.LM7:
+ 201 003a 8091 0000 		lds r24,rx_msg
+ 202 003e 8093 0000 		sts msg.0+1,r24
+ 203 0042 11C0      		rjmp .L9
+ 204               	.L7:
+  29:xlap.c        **** 			can_put(&msg);
+  30:xlap.c        **** 			break;
+  31:xlap.c        **** 		case FKT_MGT_DESC:
+  32:xlap.c        **** 			msg.addr_src = myaddr;
+ 206               	.LM8:
+ 207 0044 8091 0000 		lds r24,myaddr
+ 208 0048 8093 0000 		sts msg.0,r24
+  33:xlap.c        **** 			msg.addr_dst = rx_msg.addr_src;
+ 210               	.LM9:
+ 211 004c 8091 0000 		lds r24,rx_msg
+ 212 0050 8093 0000 		sts msg.0+1,r24
+  34:xlap.c        **** 			msg.dlc = 2;
+ 214               	.LM10:
+ 215 0054 82E0      		ldi r24,lo8(2)
+ 216 0056 8093 0000 		sts msg.0+4,r24
+  35:xlap.c        **** 			msg.data[2] = PORT_MOOD;
+ 218               	.LM11:
+ 219 005a 87E1      		ldi r24,lo8(23)
+ 220 005c 8093 0000 		sts msg.0+7,r24
+  36:xlap.c        **** 			msg.data[1] = PORT_TEMP;
+ 222               	.LM12:
+ 223 0060 83E2      		ldi r24,lo8(35)
+ 224 0062 8093 0000 		sts msg.0+6,r24
+ 225               	.L9:
+  37:xlap.c        **** 			can_put(&msg);
+ 227               	.LM13:
+ 228 0066 80E0      		ldi r24,lo8(msg.0)
+ 229 0068 90E0      		ldi r25,hi8(msg.0)
+ 230 006a 0E94 0000 		call can_put
+ 231 006e 0895      		ret
+ 232               	/* epilogue: frame size=0 */
+ 233               	/* epilogue: noreturn */
+ 234               	/* epilogue end (size=0) */
+ 235               	/* function process_mgt_msg size 63 (63) */
+ 240               	.Lscope0:
+ 242               	.global	laptask
+ 244               	laptask:
+  38:xlap.c        **** 			break;
+  39:xlap.c        **** 	}	
+  40:xlap.c        **** }
+  41:xlap.c        **** 
+  42:xlap.c        **** 
+  43:xlap.c        **** AVRX_GCC_TASKDEF(laptask, 55, 3) {
+ 246               	.LM14:
+ 247               	/* prologue: frame size=0 */
+ 248               	/* prologue end (size=0) */
+ 249               	.L18:
+  44:xlap.c        **** 	while (1) {
+  45:xlap.c        **** 		can_get();			//get next canmessage in rx_msg
+ 251               	.LM15:
+ 252 0070 0E94 0000 		call can_get
+  46:xlap.c        **** 		if(rx_msg.addr_dst == myaddr) {
+ 254               	.LM16:
+ 255 0074 9091 0000 		lds r25,rx_msg+1
+ 256 0078 8091 0000 		lds r24,myaddr
+ 257 007c 9817      		cp r25,r24
+ 258 007e C1F7      		brne .L18
+  47:xlap.c        **** 			if(rx_msg.port_dst == PORT_MGT) {
+ 260               	.LM17:
+ 261 0080 8091 0000 		lds r24,rx_msg+3
+ 262 0084 8033      		cpi r24,lo8(48)
+ 263 0086 A1F7      		brne .L18
+  48:xlap.c        **** 				process_mgt_msg();	
+ 265               	.LM18:
+ 266 0088 0E94 0000 		call process_mgt_msg
+ 267 008c F1CF      		rjmp .L18
+ 268               	/* epilogue: frame size=0 */
+ 269               	/* epilogue: noreturn */
+ 270               	/* epilogue end (size=0) */
+ 271               	/* function laptask size 15 (15) */
+ 273               	.Lscope1:
+ 275               	.global	xlap_init
+ 277               	xlap_init:
+  49:xlap.c        **** 			}
+  50:xlap.c        **** 		}
+  51:xlap.c        **** 	}
+  52:xlap.c        **** };
+  53:xlap.c        **** 
+  54:xlap.c        **** void xlap_init() {
+ 279               	.LM19:
+ 280               	/* prologue: frame size=0 */
+ 281               	/* prologue end (size=0) */
+ 282               	.LBB2:
+ 284               	.Ltext1:
+   1:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** /* Copyright (c) 2002, 2003, 2004 Marek Michalkiewicz
+   2:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****    Copyright (c) 2005, Bjoern Haase
+   3:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****    All rights reserved.
+   4:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+   5:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****    Redistribution and use in source and binary forms, with or without
+   6:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****    modification, are permitted provided that the following conditions are met:
+   7:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+   8:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****    * Redistributions of source code must retain the above copyright
+   9:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      notice, this list of conditions and the following disclaimer.
+  10:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+  11:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****    * Redistributions in binary form must reproduce the above copyright
+  12:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      notice, this list of conditions and the following disclaimer in
+  13:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      the documentation and/or other materials provided with the
+  14:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      distribution.
+  15:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+  16:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****    * Neither the name of the copyright holders nor the names of
+  17:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      contributors may be used to endorse or promote products derived
+  18:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      from this software without specific prior written permission.
+  19:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+  20:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  21:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  22:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  23:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  24:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  25:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  26:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  27:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  28:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  29:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  30:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  31:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+  32:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** /* $Id: eeprom.h,v 1.17 2005/09/13 13:29:54 joerg_wunsch Exp $ */
+  33:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+  34:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** /*
+  35:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****    eeprom.h
+  36:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+  37:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****    Contributors:
+  38:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      Created by Marek Michalkiewicz <marekm@linux.org.pl>
+  39:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      eeprom_write_word and eeprom_write_block added by Artur Lipowski 
+  40:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      <LAL@pro.onet.pl>
+  41:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      Complete rewrite using the original interface by Bjoern Haase 
+  42:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      <bjoern.haase@de.bosch.com>. 
+  43:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****  */
+  44:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+  45:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #ifndef _EEPROM_H_
+  46:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #define _EEPROM_H_ 1
+  47:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+  48:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #define __need_size_t
+  49:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #include <stddef.h>
+  50:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #include <inttypes.h>
+  51:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+  52:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+  53:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #ifdef __AVR_MEGA__
+  54:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #define XCALL "call"
+  55:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #else
+  56:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #define XCALL "rcall"
+  57:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #endif
+  58:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+  59:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #include <avr/io.h>
+  60:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #ifndef __EEPROM_REG_LOCATIONS__
+  61:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** /** \def __EEPROM_REG_LOCATIONS__
+  62:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     \ingroup avr_eeprom
+  63:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      In order to be able to work without a requiring a multilib 
+  64:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      approach for dealing with controllers having the EEPROM registers
+  65:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      at different positions in memory space, the eeprom functions evaluate
+  66:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      __EEPROM_REG_LOCATIONS__: It is assumed to be defined by
+  67:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      the device io header and contains 6 uppercase hex digits encoding the 
+  68:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      addresses of EECR,EEDR and EEAR. 
+  69:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      First two letters:  EECR address.
+  70:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      Second two letters: EEDR address.
+  71:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      Last two letters:   EEAR address.
+  72:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      The default 1C1D1E corresponds to the
+  73:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      register location that is valid for most controllers. The value
+  74:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      of this define symbol is used for appending it to the base name of the
+  75:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      assembler functions.  */
+  76:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #define __EEPROM_REG_LOCATIONS__ 1C1D1E
+  77:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #endif
+  78:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #define _STR2(EXP) _STR1(EXP)
+  79:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #define _STR1(EXP) #EXP
+  80:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #define _REG_LOCATION_SUFFIX _STR2(__EEPROM_REG_LOCATIONS__)
+  81:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+  82:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #ifndef CR_TAB
+  83:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #define CR_TAB "\n\t"
+  84:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #endif
+  85:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+  86:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+  87:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** /** \defgroup avr_eeprom <avr/eeprom.h>: EEPROM handling
+  88:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     \code #include <avr/eeprom.h> \endcode
+  89:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+  90:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     This header file declares the interface to some simple library
+  91:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     routines suitable for handling the data EEPROM contained in the
+  92:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     AVR microcontrollers.  The implementation uses a simple polled
+  93:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     mode interface.  Applications that require interrupt-controlled
+  94:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     EEPROM access to ensure that no time will be wasted in spinloops
+  95:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     will have to deploy their own implementation.
+  96:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+  97:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     \note All of the read/write functions first make sure the EEPROM
+  98:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      is ready to be accessed.  Since this may cause long delays if a
+  99:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      write operation is still pending, time-critical applications
+ 100:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      should first poll the EEPROM e. g. using eeprom_is_ready() before
+ 101:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      attempting any actual I/O.
+ 102:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 103:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     \note This header file declares inline functions that call the
+ 104:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      assembler subroutines directly. This prevents that the compiler
+ 105:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      generates push/pops for the call-clobbered registers. This way
+ 106:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      also a specific calling convention could be used for the eeprom
+ 107:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      routines e.g. by passing values in __tmp_reg__, eeprom addresses in
+ 108:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      X and memory addresses in Z registers. Method is optimized for code 
+ 109:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      size.
+ 110:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 111:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     \note Presently supported are two locations of the EEPROM register
+ 112:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      set: 0x1F,0x20,0x21 and 0x1C,0x1D,0x1E 
+ 113:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      (see ::__EEPROM_REG_LOCATIONS__).
+ 114:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 115:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     \note As these functions modify IO registers, they are known to be
+ 116:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      non-reentrant.  If any of these functions are used from both,
+ 117:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      standard and interrupt context, the applications must ensure
+ 118:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      proper protection (e.g. by disabling interrupts before accessing
+ 119:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      them).
+ 120:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 121:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** */
+ 122:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 123:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 124:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** /* forward declarations of the inline functions so that doxygen does
+ 125:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****    not get confused by the attribute expression.  */
+ 126:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 127:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** static inline uint8_t __attribute__ ((always_inline))
+ 128:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** eeprom_read_byte (const uint8_t *addr);
+ 129:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 130:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** static inline uint16_t __attribute__ ((always_inline)) 
+ 131:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** eeprom_read_word (const uint16_t *addr);
+ 132:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 133:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** static inline void __attribute__ ((always_inline))
+ 134:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** eeprom_read_block (void *pointer_ram,
+ 135:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****                    const void *pointer_eeprom,
+ 136:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****                    size_t size);
+ 137:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 138:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** static inline void __attribute__ ((always_inline))
+ 139:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** eeprom_write_byte (uint8_t *addr,uint8_t value);
+ 140:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 141:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** static inline void __attribute__ ((always_inline))
+ 142:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** eeprom_write_word (uint16_t *addr,uint16_t value);
+ 143:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 144:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** static inline void __attribute__ ((always_inline))
+ 145:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** eeprom_write_block (const void *pointer_ram,
+ 146:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****                     void *pointer_eeprom,
+ 147:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****                     size_t size);
+ 148:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 149:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** /** \name avr-libc declarations */
+ 150:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 151:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** /*@{*/
+ 152:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 153:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** /** \def EEMEM
+ 154:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     \ingroup avr_eeprom
+ 155:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     Attribute expression causing a variable to be allocated within the .eeprom
+ 156:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****      section.  */
+ 157:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #define EEMEM __attribute__((section(".eeprom")))
+ 158:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 159:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** /** \def eeprom_is_ready
+ 160:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     \ingroup avr_eeprom
+ 161:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     \returns 1 if EEPROM is ready for a new read/write operation, 0 if not. */
+ 162:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 163:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #if defined(__DOXYGEN__)
+ 164:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** # define eeprom_is_ready()
+ 165:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #elif defined(EEWE)
+ 166:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** # define eeprom_is_ready() bit_is_clear(EECR, EEWE)
+ 167:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #elif defined(EEPE)
+ 168:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** # define eeprom_is_ready() bit_is_clear(EECR, EEPE)
+ 169:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #elif defined(DEECR) && defined(EEL)
+ 170:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** # define eeprom_is_ready() bit_is_clear(DEECR, EEL)
+ 171:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #else
+ 172:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** # error "No write enable bit known for this device's EEPROM."
+ 173:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #endif
+ 174:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 175:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** /** \def eeprom_busy_wait
+ 176:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     \ingroup avr_eeprom
+ 177:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 178:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     Loops until the eeprom is no longer busy.
+ 179:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 180:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     \returns Nothing. */
+ 181:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 182:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** #define eeprom_busy_wait() do {} while (!eeprom_is_ready())
+ 183:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 184:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 185:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** /** \ingroup avr_eeprom
+ 186:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****     Read one byte from EEPROM address \c addr. */
+ 187:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** 
+ 188:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** uint8_t 
+ 189:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** eeprom_read_byte (const uint8_t *addr) 
+ 190:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h **** {
+ 286               	.LM20:
+ 287 008e A0E0      		ldi r26,lo8(0)
+ 288 0090 B0E0      		ldi r27,hi8(0)
+ 289               	.LBB3:
+ 191:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****   uint8_t result;
+ 192:/usr/lib/gcc/avr/3.4.6/../../../../avr/include/avr/eeprom.h ****   asm volatile
+ 291               	.LM21:
+ 292               	/* #APP */
+ 293 0092 0E94 0000 		call __eeprom_read_byte_1C1D1E
+ 294 0096 802D      		mov r24,__tmp_reg__
+ 295               	/* #NOAPP */
+ 296               	.LBE3:
+ 297               	.LBE2:
+ 299               	.LM22:
+ 300 0098 8093 0000 		sts myaddr,r24
+ 302               	.Ltext2:
+  55:xlap.c        **** 	myaddr = eeprom_read_byte(0x00);
+  56:xlap.c        **** 	spi_init();
+ 304               	.LM23:
+ 305 009c 0E94 0000 		call spi_init
+  57:xlap.c        **** 	can_init();
+ 307               	.LM24:
+ 308 00a0 0E94 0000 		call can_init
+ 309               	/* epilogue: frame size=0 */
+ 310 00a4 0895      		ret
+ 311               	/* epilogue end (size=1) */
+ 312               	/* function xlap_init size 13 (12) */
+ 320               	.Lscope2:
+ 321               		.comm myaddr,1,1
+ 322               		.comm laptaskStk,90,1
+ 323               		.comm laptaskPid,6,1
+ 328               		.text
+ 330               	Letext:
+ 331               	/* File "xlap.c": code   91 = 0x005b (  90), prologues   0, epilogues   1 */
+DEFINED SYMBOLS
+                            *ABS*:00000000 xlap.c
+     /tmp/ccqQy3ti.s:3      *ABS*:0000003f __SREG__
+     /tmp/ccqQy3ti.s:4      *ABS*:0000003e __SP_H__
+     /tmp/ccqQy3ti.s:5      *ABS*:0000003d __SP_L__
+     /tmp/ccqQy3ti.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccqQy3ti.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccqQy3ti.s:132    .progmem.data:00000000 laptaskTcb
+                            *COM*:0000005a laptaskStk
+     /tmp/ccqQy3ti.s:244    .text:00000070 laptask
+                            *COM*:00000006 laptaskPid
+     /tmp/ccqQy3ti.s:140    .data:00000000 msg.0
+     /tmp/ccqQy3ti.s:152    .text:00000000 process_mgt_msg
+                            *COM*:00000001 myaddr
+     /tmp/ccqQy3ti.s:277    .text:0000008e xlap_init
+     /tmp/ccqQy3ti.s:330    .text:000000a6 Letext
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+rx_msg
+can_put
+can_get
+__eeprom_read_byte_1C1D1E
+spi_init
+can_init
