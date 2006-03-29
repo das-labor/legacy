@@ -11,9 +11,15 @@ typedef struct {
 
 typedef struct {
 	char *name;
-	uint16_t size;
+	uint8_t size;
 	menu_item_t **items;
 } menu_t;
+
+typedef struct {
+	char *name;
+	
+	uint8_t adr;
+} mood_ctrl_t;
 
 extern menu_t root;
 
