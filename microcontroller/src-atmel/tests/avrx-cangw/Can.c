@@ -196,6 +196,8 @@ AVRX_SIGINT(SIG_INTERRUPT0)
 	IntProlog();             // Switch to kernel stack/context
 	GICR &= ~(1<<INT0);
 	EndCritical();
+
+
 	unsigned char status = mcp_status();
 
 	if ( status & 0x01 ) {		// Message in RX0
@@ -203,6 +205,7 @@ AVRX_SIGINT(SIG_INTERRUPT0)
 		AvrXIntSetSemaphore(&canRxData);
 	} else if ( status & 0x08 ) {	// TX0 empty
 		mcp_bitmod(CANINTF, (1<<TX0IF), 0x00); //clear interrupt condition
+		mcp_bitmod(CANINTF, (1<<RX0IF), 0x00); //clear interrupt condition
 		AvrXIntSetSemaphore(&canTxEmpty);
 	}
 	GICR |= (1<<INT0);
@@ -244,10 +247,7 @@ void delayloop(){
 /*******************************************************************/
 
 /* Management */
-
-
 void CanInit(){
-	cli();
 	//set Slave select high
 	SPI_PORT |= (1<<SPI_PIN_SS);
 	
@@ -278,15 +278,7 @@ void CanInit(){
 	mcp_write( CNF2, 0xf1 );
 	mcp_write( CNF3, 0x05 );
 
-
-	// configure IRQ
-	// this only configures the INT Output of the mcp2515, not the int on the Atmel
-	mcp_write( CANINTE, (1<<RX0IE) );
-
-	//the TX Interrupt is enabled when needed, so set flag that buffer is empty
-	mcp_bitmod( CANINTF, (1<<TX0IF), 0xff );
-
-	//CanSetFilter();
+	CanSetFilter();
 	CanSetMode(normal);
 
 #ifdef CLASSIC_ATMEL
@@ -298,8 +290,10 @@ void CanInit(){
 	//MCUCR |=  (1<<ISC01);
 	GICR |= (1<<INT0);
 #endif
-
-	sei();
+	
+	// configure IRQ
+	// this only configures the INT Output of the mcp2515, not the int on the Atmel
+	mcp_write( CANINTE, (1<<RX0IE) );
 }
 
 void CanSetMode( can_mode_t mode ) {
@@ -324,11 +318,11 @@ void CanSetLED(unsigned char led, unsigned char state){
 
 void CanGet(CanMessage *msg)
 {
-        PORTC &=  ~0x01;
+        PORTC &=  ~0x02;
 	AvrXWaitSemaphore(&canRxData);
 	message_fetch(msg);
 	mcp_bitmod( CANINTE, (1<<RX0IE), 0xff); //interrupt back on
-        PORTC |=  0x01;
+        PORTC |=  0x02;
 }
 
 char CanGetNB(CanMessage *msg)
@@ -346,9 +340,11 @@ void CanSend(CanMessage *msg)
 {
 }
 
+/*
 char CanSendNB(CanMessage *msg)
 {
 }
+*/
 
 
 /*

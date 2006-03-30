@@ -112,6 +112,12 @@ int  SerialPutNB(char c)
 	return retc;
 }
 
+void SerialPutStr(char *str)
+{
+	while (*str != 0)
+		SerialPut(*str++);
+}
+
 // We don't care if the buffer is full.  Just signal we got one.
 // The task may attempt one extra time to get data out of an empyt
 // buffer (getc(), but so what.  Eventually it will block waiting

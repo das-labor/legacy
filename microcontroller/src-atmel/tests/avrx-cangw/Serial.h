@@ -78,5 +78,6 @@ void SerialGet(char *c);
 int  SerialGetNB(char *c);
 void SerialPut(char c);
 int  SerialPutNB(char c);
+void SerialPutStr(char *str);
 
 #endif //_SERIAL_H_
