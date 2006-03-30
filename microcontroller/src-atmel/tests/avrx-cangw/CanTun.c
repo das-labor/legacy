@@ -8,63 +8,76 @@
 #include "Serial.h"
 #include "CanTun.h"
 
-#define RESET_STR "*can-gw*0.1*\n"
-
-void putstr(char *str)
-{
-	while (*str != 0)
-		(*str++);
-}
-
-MessageQueue canTunTxQueue;
-MessageQueue canTunRxQueue;
+#define CANTUN_HELLO_STR "*can-gw*0.1*\n"
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CAN TX Task
-AVRX_GCC_TASKDEF(canTunTxTask, 10, 3)
-{
-	CanTunMsg *msg;
-
-    while (1)
-    {
-        msg = (CanTunMsg *)AvrXWaitMessage(&canTunTxQueue);
-
-		switch(msg->type) {
-		case CanTunReset:
-		case CanTunVersion:
-			SerialPut('*');
-			putstr(((CanTunMsgVersion *)msg)->name);		
-			SerialPut('*');
-			putstr(((CanTunMsgVersion *)msg)->version);		
-			putstr("*\n");
-			break;
-		case CanTunPacket:
-			SerialPut('P');
-			break;
-		case CanTunFilter:
-			SerialPut('P');
-		case CanTunStats:
-			SerialPut('P');
-			break;
-		};
-
-        PORTC ^= 0x02;		
-
-        AvrXAckMessage((MessageControlBlock *)msg);
-		free(msg);
-    }
-}
-
+// AVRX_GCC_TASKDEF(canTunRxTask, 10, 3)
+// {
+// 	CanTunMsg *msg;
+// 
+//   while (1)
+// {
+//      msg = (CanTunMsg *)AvrXWaitMessage(&canTunTxQueue);
+//
+// 		switch(msg->type) {
+// 		case CanTunReset:
+// 		case CanTunVersion:
+// 			SerialPut('*');
+// 			putstr(((CanTunMsgVersion *)msg)->name);		
+// 			SerialPut('*');
+// 			putstr(((CanTunMsgVersion *)msg)->version);		
+// 			putstr("*\n");
+// 			break;
+// 		case CanTunPacket:
+// 			SerialPut('P');
+// 			break;
+// 		case CanTunFilter:
+// 			SerialPut('P');
+// 		case CanTunStats:
+// 			SerialPut('P');
+// 			break;
+// 		};
+// 
+  //       PORTC ^= 0x02;		
+// 
+  //       AvrXAckMessage((MessageControlBlock *)msg);
+// 		free(msg);
+  //   }
+// }
+// 
 /////////////////////////////////////////////////////////////////////////////
 // Interface
 void CanTunInit()
 {
 	SerialInit(BAUD(57600));
-	AvrXRunTask(TCB(canTunTxTask));
+//	AvrXRunTask(TCB(canTunRxTask));
 }
 
-void CanTunSend(CanTunMsg *msg)
+void CanTunGet(CanMessage *msg)
 {
-	AvrXSendMessage(&canTunTxQueue, &(msg->mcb));
+}
+
+char CanTunGetNB(CanMessage *msg)
+{
+	return -1;
+}
+
+void CanTunSend(CanMessage *msg)
+{
+	SerialPut('*');
+	SerialPut('\r');
+}
+
+void CanTunReset()
+{
+	uint8_t i;
+	for(i=0; i<16; i++) 
+		SerialPut(0);
+}
+
+void CanTunHello()
+{
+	SerialPutStr(CANTUN_HELLO_STR);
 }

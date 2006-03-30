@@ -28,7 +28,7 @@ typedef enum { normal, mode_sleep, loopback, listenonly, config } can_mode_t;
  */
 
 void CanInit();
-void CanSetfilter();
+void CanSetFilter();
 void CanSetMode(can_mode_t);
 void CanSetLED(unsigned char led, unsigned char state);
 
