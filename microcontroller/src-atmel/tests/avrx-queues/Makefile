@@ -1,6 +1,6 @@
 
 AVRXHOME       = ../../lib/AvrX2.6f/avrx/
-SRC            = main.c AvrXBufferedSerial.c CanTun.c
+SRC            = main.c Serial.c CanTun.c
 
 # LIBS           = $(AVRXHOME)/serialio.o
 
