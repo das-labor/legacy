@@ -1,16 +1,16 @@
-#ifndef _AvrXSerialIo_h_
-#define _AvrXSerialIo_h_
+#ifndef _SERIAL_H_
+#define _SERIAL_H_
 #include "AvrXFifo.h"
 /*
-	AvrSerialIo.h
+	Serial.h
 
-	Sample code for fully buffered interrupt driven serial I/O for the
-	AVR processor.  Uses the AvrXFifo facility.
+	SerialIO for AvrX
 
-	Author: Larry Barello (larry@barello.net)
+	Heavily based on:
+  		Sample code for fully buffered interrupt driven serial I/O for the
+		AVR processor.  Uses the AvrXFifo facility.
 
-	Revision History:
-
+		Author: Larry Barello (larry@barello.net)
 */
 
 // UTILITY
@@ -71,34 +71,12 @@ typedef unsigned char BOOL;
 	AVRX_EXT_FIFO(Tx1Buf);
 #endif
 
-int get_c0(void);		// Non blocking, returns -1 when empty
-int get_char0(void);	// Blocking, always returns character
-int put_c0(char c);		// Non blocking, returns -1 when full
-int put_char0(char c);	// Blocking, always returns 0.
 
-int get_c1(void);		// Non blocking, returns -1 when empty
-int get_char1(void);	// Blocking, always returns character
-int put_c1(char c);		// Non blocking, returns -1 when full
-int put_char1(char c);	// Blocking, always returns 0.
+void SerialInit(uint16_t ubrr);
 
-void InitSerial0(uint16_t ubrr);
-void InitSerial1(uint16_t ubrr);
+void SerialGet(char *c);
+int  SerialGetNB(char *c);
+void SerialPut(char c);
+int  SerialPutNB(char c);
 
-// If only one channel defined, then use simpler "get_c()" notation
-// This probably doesn't work...
-
-#if ((USART_CHANNELS & CHANNEL_0) == CHANNEL_0)
-#	define get_c get_c0
-#	define get_char get_char0
-#	define put_c put_c0
-#	define put_char put_char0
-#endif
-
-#if ((USART_CHANNELS & CHANNEL_1) == CHANNEL_1)
-#	define get_c get_c1
-#	define get_char get_char1
-#	define put_c put_c1
-#	define put_char put_char1
-#endif
-
-#endif //_AvrSerialIo_h_
+#endif //_SERIAL_H_

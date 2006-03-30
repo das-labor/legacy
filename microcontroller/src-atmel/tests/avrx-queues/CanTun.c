@@ -13,7 +13,7 @@
 void putstr(char *str)
 {
 	while (*str != 0)
-		put_char0(*str++);
+		(*str++);
 }
 
 MessageQueue canTunTxQueue;
@@ -32,19 +32,19 @@ AVRX_GCC_TASKDEF(canTunTxTask, 10, 3)
 
 		switch(msg->type) {
 		case CanTunVersion:
-			put_char0('*');
+			SerialPut('*');
 			putstr(((CanTunMsgVersion *)msg)->name);		
-			put_char0('*');
+			SerialPut('*');
 			putstr(((CanTunMsgVersion *)msg)->version);		
 			putstr("*\n");
 			break;
 		case CanTunPacket:
-			put_char0('P');
+			SerialPut('P');
 			break;
 		case CanTunFilter:
-			put_char0('P');
+			SerialPut('P');
 		case CanTunStats:
-			put_char0('P');
+			SerialPut('P');
 			break;
 		};
 
@@ -59,7 +59,7 @@ AVRX_GCC_TASKDEF(canTunTxTask, 10, 3)
 // Interface
 void CanTunInit()
 {
-	InitSerial0(BAUD(57600));
+	SerialInit(BAUD(57600));
 	AvrXRunTask(TCB(canTunTxTask));
 }
 
