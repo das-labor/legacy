@@ -13,6 +13,8 @@
 // Serial.[ch] defines
 #define BAUDRATE 57600L     // Debug monitor baudrate
 #define UBRR_INIT (F_CPU/(16*BAUDRATE)-1)
+#define TX0_BUFSZ 48
+#define RX0_BUFSZ 10
 
 // spi.[ch] defines
 #define SPI_HARDWARE 1
