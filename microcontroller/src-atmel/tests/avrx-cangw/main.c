@@ -30,6 +30,8 @@ AVRX_GCC_TASKDEF(task1, 40, 3)
 
 	CanInit();
 	CanTunInit();
+	CanTunReset();
+	CanTunHello();
 
 	while(1)
 	{

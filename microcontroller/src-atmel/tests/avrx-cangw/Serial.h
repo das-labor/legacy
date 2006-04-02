@@ -1,6 +1,6 @@
 #ifndef _SERIAL_H_
 #define _SERIAL_H_
-#include "AvrXFifo.h"
+
 /*
 	Serial.h
 
@@ -13,6 +13,8 @@
 		Author: Larry Barello (larry@barello.net)
 */
 
+#include "AvrXFifo.h"
+#include "config.h"
 // UTILITY
 enum
 {
@@ -56,12 +58,6 @@ typedef unsigned char BOOL;
 #endif
 
 #define BAUD(A) ((CPUCLK/BAUDX/(A))-1)
-
-// Buffer size can be any thing from 2 to 250
-#define TX0_BUFSZ 32
-#define RX0_BUFSZ 32
-#define TX1_BUFSZ 32
-#define RX1_BUFSZ 32
 
 // Forward declarations
 #ifndef _AVRXSERIALIO_C_	// Don't comingle this macro
