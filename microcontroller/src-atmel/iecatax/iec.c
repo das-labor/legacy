@@ -32,17 +32,34 @@ volatile uint8_t error;
 // iec flags, if terminated by bus
 uint8_t iecListen(uint8_t *buf, uint16_t *index, uint16_t size){
 	iec_word_t word;
+#ifdef DEBUG
+		printf_P(PSTR("listen:\r"));
+#endif
+
 	while(size--){
-		AvrXWaitSemaphore(&iec_rx_mutex);
-		word = iec_rx_word;
+		//Ask iec_hw task to receive a byte
+		AvrXPutFifo(iec_tx_fifo, (iec_word_t){0, FLAG_MODE|MODE_LISTEN});
+		//wait for our byte
+		word = AvrXWaitPullFifo(iec_rx_fifo);
+		//The byte can be buffered, if no flag but EOI is set.
 		if(!(word.flags & (~FLAG_EOI))){
 			buf[*index] = word.data;
 			(*index)++;
 		}
 #ifdef DEBUG
-		printf_P(PSTR("l %x"), *(uint16_t*)&word);
+		printf_P(PSTR(" %x"), *(uint16_t*)&word);
+		if ((*index)%16 == 0)
+			printf_P(PSTR("\r"));		
 #endif
-		if (word.flags) return word.flags;
+		if (word.flags & FLAG_EOI){
+			//EOI received, so we can release the bus.
+			AvrXPutFifo(iec_tx_fifo, (iec_word_t){0, FLAG_MODE|MODE_RELEASE});
+		}
+		
+		if (word.flags){
+			//we've got flags, so we end the transmission
+			return word.flags;	
+		}
 	}
 	return 0;
 }
@@ -54,20 +71,43 @@ uint8_t iecTalk ( struct channelTableStruct * channel, bool_t eoi) {
 	volatile bufferSize_t (*bufferPtr);
 	bufferPtr = &channel->bufferPtr; 
 
-	iec_tx_word.flags = 0;
+	iec_word_t tx_word, rx_word;
+	
+	tx_word.flags = 0;
 	
 	while (*bufferPtr < channel->endOfBuffer) {
 		
 		if (( (channel->endOfBuffer - (*bufferPtr)) == 1 ) && eoi)
-			iec_tx_word.flags = FLAG_EOI;
+			tx_word.flags = FLAG_EOI;
 		
-		iec_tx_word.data = channel->buffer[*bufferPtr];
-		/* start transmission */
-		AvrXSetSemaphore(&iec_tx_mutex);
+		tx_word.data = channel->buffer[*bufferPtr];
+		
+#ifdef DEBUG		
+		printf_P(PSTR(" %x"), tx_word.data);
+#endif
+
+		// start transmission
+		AvrXWaitPutFifo(iec_tx_fifo, tx_word);
 		/* wait for result */
-		AvrXWaitSemaphore(&iec_rx_mutex);
-	
-		if( !(iec_rx_word.flags & FLAG_TXOK) ) return iec_rx_word.flags;
+		rx_word = AvrXWaitPullFifo(iec_rx_fifo);
+			
+		if(tx_word.flags & FLAG_EOI){
+			//release bus if this was the last byte.
+			AvrXWaitPutFifo(iec_tx_fifo, (iec_word_t){0, FLAG_MODE|MODE_RELEASE});
+		}
+		
+		if( !(rx_word.flags & FLAG_TXOK) ){
+#ifdef DEBUG		
+			printf_P(PSTR("!"));			
+#endif
+			return rx_word.flags;
+		}
+		
+#ifdef DEBUG		
+		printf_P(PSTR("."));
+		if (!(*bufferPtr % 16))
+			printf_P(PSTR("\r"));		
+#endif
 
 		/* increment byte counter */
 		(*bufferPtr)++;
@@ -127,7 +167,7 @@ void iecToFile(struct channelTableStruct *channel){
 	} else {
 		error = NOT_OPEN_ERROR;
 		/* release bus */
-		iec_mode = 0;
+		AvrXWaitPutFifo(iec_tx_fifo, (iec_word_t){0, FLAG_MODE|MODE_RELEASE});
 	}
 }
 
@@ -140,12 +180,13 @@ void iec_execute(uint8_t mode, uint8_t param){
 	channel = &channelTable[channelNumber];
 	
 	if(mode == TALK){
-		printf_P(PSTR("t %d"), channelNumber);
+#ifdef DEBUG
+		printf_P(PSTR("talk c %d\r"), channelNumber);
+#endif
 		if (!error || (channelNumber == COMMAND_CHANNEL)) {
-			iec_mode = MODE_TALK;
 			fileToIec(channelNumber);
 		}else{
-			iec_mode = MODE_TALK_RELEASE;
+			AvrXWaitPutFifo(iec_tx_fifo, (iec_word_t){0, FLAG_MODE|MODE_TALK_RELEASE});
 		}
 	}else if(mode == LISTEN){
 		if(command == OPEN){
@@ -181,62 +222,84 @@ void iec_execute(uint8_t mode, uint8_t param){
 				iecToFile(channel);	
 			}
 		}else{
-			iec_mode = 0;	
+			AvrXWaitPutFifo(iec_tx_fifo, (iec_word_t){0, FLAG_MODE|MODE_RELEASE});
 		}
 	}else{
-		iec_mode = 0;	
+		AvrXWaitPutFifo(iec_tx_fifo, (iec_word_t){0, FLAG_MODE|MODE_RELEASE});
 	}
 }
 
-
+//This task runs all the command parsing and Data transfer logic.
+//It communicates with the iec_hw_task using two fifos:
+// iec_rx_fifo and iec_tx_fifo.
+//The routines for the ATA device are just called from this function.
+//The iec_hw routine always blocks on iec_tx_fifo waiting for new instructions from
+//this task. 
 AVRX_GCC_TASKDEF(iec_task, 200, 1)
 {
 #ifdef DEBUG
 	InitSerial0(BAUD(37000));
-    fdevopen(put_char0, get_c0, 0);		// Set up standard I/O
+    fdevopen(put_char0, 0, 0);		// Set up standard I/O
 #endif
 	
 
 	iec_word_t word;
-	
 #ifdef DEBUG
 	printf_P(PSTR("<IECATA>\r"));
 #endif
 
 	while(1){
-		AvrXWaitSemaphore(&iec_rx_mutex);
-		word = iec_rx_word;
+		//wait for first byte received, this is supposed to be either
+		//FLAG_BREAK or the first byte under ATN
+		word = AvrXWaitPullFifo(iec_rx_fifo);
+		
 #ifdef DEBUG
-		printf_P(PSTR("%x\r"), word);
+		printf_P(PSTR("\ra1: %x\r"), word);
 #endif
 		if(word.flags & FLAG_BREAK){
-			/* do nothing */
+			// Break received, so we just wait for the next byte
 		}else if(word.flags & FLAG_ATN){
 				if (word.data == UNLISTEN || word.data == UNTALK){
 					/* release bus */
-					iec_mode = 0;
+					AvrXWaitPutFifo(iec_tx_fifo, (iec_word_t){0, FLAG_MODE|MODE_RELEASE});
 				}else if((word.data & 0x1f) == DEVICENUMBER){
+					//o.k. - so the master addresses us
+					//the mode the master requests is in the first byte
 					uint8_t mode = word.data & 0xf0;
-					AvrXWaitSemaphore(&iec_rx_mutex);
-					word = iec_rx_word;
+					
+					//get second byte (command and channel) from master
+					AvrXWaitPutFifo(iec_tx_fifo, (iec_word_t){0, FLAG_MODE|MODE_LISTEN});
+					word = AvrXWaitPullFifo(iec_rx_fifo);
+					
 #ifdef DEBUG
-					printf_P(PSTR("a %x\r"), word);
+					printf_P(PSTR("a2: %x\r"), word);
 #endif
 					if(word.flags & FLAG_ATN){
-						/* do the transfer requested */
+						//Now we've got our command, and can execute it.
 						iec_execute(mode, word.data);
 					}else{
-						iec_mode = 0;	
+						//No ATN? Something is wrong. Release Bus.
+						AvrXWaitPutFifo(iec_tx_fifo, (iec_word_t){0, FLAG_MODE|MODE_RELEASE});	
 					}
 				}else{
-					/* release bus */
-					iec_mode = 0;
+					//The Command is not for us. Release Bus
+					AvrXWaitPutFifo(iec_tx_fifo, (iec_word_t){0, FLAG_MODE|MODE_RELEASE});
 				}
 			
 		}else{
-			/* Middle of Data Transfer? */
-			iec_mode = 0;	
+			/* Middle of Data Transfer? We should never get here. */
+			AvrXWaitPutFifo(iec_tx_fifo, (iec_word_t){0, FLAG_MODE|MODE_RELEASE});	
 		}
 		
 	}
+}
+
+TimerControlBlock led_timer;
+
+AVRX_GCC_TASKDEF(led_task, 20, 10)
+{
+	while(1){
+		AvrXDelay(&led_timer, 1000);
+
+		}
 }

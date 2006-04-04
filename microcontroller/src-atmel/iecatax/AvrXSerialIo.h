@@ -47,8 +47,8 @@
 #define BAUD(A) ((F_CPU/BAUDX/(A))-1)
 
 // Buffer size can be any thing from 2 to 250
-#define TX0_BUFSZ 32
-#define RX0_BUFSZ 32
+#define TX0_BUFSZ 100
+#define RX0_BUFSZ 10
 #define TX1_BUFSZ 32
 #define RX1_BUFSZ 32
 

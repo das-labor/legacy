@@ -34,7 +34,7 @@ void init_xram (void)
  . switch back to interrupted context.
  */
 
-/*
+
 AVRX_SIGINT(SIG_OVERFLOW0)
 {
     IntProlog();                // Switch to kernel stack/context
@@ -42,7 +42,7 @@ AVRX_SIGINT(SIG_OVERFLOW0)
     AvrXTimerHandler();         // Call Time queue manager
     Epilog();                   // Return to tasks
 }
-*/
+
 
 
 int main(void)
@@ -53,7 +53,7 @@ int main(void)
 	DDRA = 0;
 	PORTA = 0;  
 	DDRB = 0x57;
-	PORTB = 0x57;
+	PORTB = 0x7f;
 	DDRC = 0;
 	PORTC = 0;
 #ifdef ATA_ADDRESSLATCH	
@@ -72,9 +72,9 @@ int main(void)
   	sbi (GICR, INT0);
 	
 	MCUCR |= _BV(SE);
-	//TCNT0 = TCNT0_INIT;
+	TCNT0 = TCNT0_INIT;
 	// Most other chips...  Note: some are TCCR0 and some are TCCR0B...
-	//TCCR0 =  (1<<CS02);
+	TCCR0 =  (1<<CS02);
 
 	//TIMSK |= _BV(TOIE0);
 
@@ -97,6 +97,7 @@ int main(void)
 
 	AvrXRunTask(TCB(iecAtnTask));
 	AvrXRunTask(TCB(iec_task));
+	//AvrXRunTask(TCB(led_task));
 
 	Epilog();
 	while(1);

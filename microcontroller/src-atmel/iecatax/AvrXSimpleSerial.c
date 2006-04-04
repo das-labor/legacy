@@ -1,8 +1,18 @@
 /*
-	AvrXBufferedSerial.c
+	AvrXSimpleSerial.c
 
-	Sample code for fully buffered interrupt driven serial I/O for the
-	AVR processor.  Uses the AvrXFifo facility.
+	Sample code for simple unbuffered (except for hardware)
+	serial I/O for most (all?) Avr single and dual U(S)ART
+	capable processors with >= 8k FLASH.
+
+	There is a natural three charactor buffer for Rx data: the hardware is
+	double buffered and the input shift register.  The Tx is double
+	buffered in hardware.  It is easy to make Rx triple buffered by reading
+	in UDR in the interrupt handler and using that stored value instead of UDR
+	in the get_c and get_char routines.
+
+	NB: The value in the shift register will be overwritten by additional
+	incoming data.
 
 	Author: Larry Barello (larry@barello.net)
 
@@ -14,13 +24,12 @@
 //------------------------------------------------------------------------------
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#define _AVRXSERIALIO_C_
+#include "avrx.h"
 #include "AvrXSerialIo.h"
 
 #if USART_CHANNELS & CHANNEL_0
 
-AVRX_DECL_FIFO(Rx0Buf, RX0_BUFSZ);
-AVRX_DECL_FIFO(Tx0Buf, TX0_BUFSZ);
+Mutex Rx0Ready, Tx0Ready;
 
 void InitSerial0(uint16_t ubrr)
 {
@@ -29,19 +38,17 @@ void InitSerial0(uint16_t ubrr)
 	UBRR0L = ubrr;
 	UBRR0H = (uint8_t)(ubrr>>8);
 	UCSR0A = (BAUDX == 8)?(1<<U2X):0;
-	UCSR0B = ((1<<TXEN) | (1<<RXEN) | (1<<RXCIE));
+	UCSR0B = ((1<<TXEN) | (1<<RXEN) | (1<<RXCIE) | (1<<UDRIE));
 	UCSR0C = ((1<<UCSZ1) | (1<<UCSZ0));
 
 // Dual USART, old shared UCSRC & UBRRH
 #elif defined(__AVR_ATmega162__) | defined(__AVR_ATmega161__)
-	#define UDRIE UDRIE0
-	#define RXCIE RXCIE0
 	UBRR0L = ubrr;
 	UBRR0H = (uint8_t)(ubrr>>8);
 	UCSR0A = (BAUDX == 8)?(1<<U2X):0;
-	UCSR0B = ((1<<TXEN0) | (1<<RXEN0) | (1<<RXCIE0));
-#	if defined(__AVR_ATmega162__)
-	UCSR0C = ((1<<URSEL0) | (1<<UCSZ01) | (1<<UCSZ00));
+	UCSR0B = ((1<<TXEN0) | (1<<RXEN0) | (1<<RXCIE0) | (1<<UDRIE0));
+#	ifdef (__AVR_ATmega162__)
+	UCSR0C = (1<<URSEL0) | (1<<UCSZ1) | (1<<UCSZ0);
 #	endif
 
 // One UART (note the missing C register)
@@ -49,7 +56,7 @@ void InitSerial0(uint16_t ubrr)
 	UBRR   = ubrr;
 	UBRRHI = (uint8_t)(ubrr>>8);
 	UCSRA  = (BAUDX == 8)?(1<<U2X):0;
-	UCSRB  = ((1<<TXEN) | (1<<RXEN) | (1<<RXCIE));
+	UCSRB  = ((1<<TXEN) | (1<<RXEN) | (1<<RXCIE) | (1<<UDRIE));
 
 // One UART, (Classic)
 #elif defined(__AVR_AT90S4414__) | defined(__AVR_AT90S8515__)| defined(__AVR_AT90S8535__)
@@ -63,7 +70,7 @@ void InitSerial0(uint16_t ubrr)
 	UBRRL = ubrr;
 	UBRRH = (uint8_t)(ubrr>>8);
 	UCSRA = (BAUDX == 8)?(1<<U2X):0;
-	UCSRB = ((1<<TXEN) | (1<<RXEN) | (1<<RXCIE));
+	UCSRB = ((1<<TXEN) | (1<<RXEN) | (1<<RXCIE) | (1<<UDRIE));
 	UCSRC = ((1<<URSEL) | (1<<UCSZ1) | (1<<UCSZ0));
 
 // One USART, (C register not shared)
@@ -71,7 +78,7 @@ void InitSerial0(uint16_t ubrr)
 	UBRRL = ubrr;
 	UBRRH = (uint8_t)(ubrr>>8);
 	UCSRA = (BAUDX == 8)?(1<<U2X):0;
-	UCSRB = ((1<<TXEN) | (1<<RXEN) | (1<<RXCIE));
+	UCSRB = ((1<<TXEN) | (1<<RXEN) | (1<<RXCIE) | (1<<UDRIE));
 	UCSRC = ((1<<URSEL) | (1<<UCSZ1) | (1<<UCSZ0));
 #else
 #   ERROR Dont know about that CPU!
@@ -82,77 +89,82 @@ void InitSerial0(uint16_t ubrr)
 #ifndef UDR
 #	define UDR UDR0
 #endif
-	AVRX_INIT_FIFO(Rx0Buf);
-	AVRX_INIT_FIFO(Tx0Buf);
 }
 
 int put_c0(char c)	// Non blocking output
 {
-	int retc;
-	retc = AvrXPutFifo(Tx0Buf, (iec_word_t){c, 0});
-	UCSRB |= (1<<UDRIE);
-	return retc;
+	if (AvrXTestSemaphore(&Tx0Ready) == SEM_DONE)
+	{
+		UDR = c;
+		UCSRB |= (1<<UDRIE);
+		return 0;
+	}
+	else
+		return FIFO_ERR;
 }
 
 int put_char0( char c)	// Blocking output
 {
-	AvrXWaitPutFifo(Tx0Buf, (iec_word_t){c, 0});
+	AvrXWaitSemaphore(&Tx0Ready);
+	UDR = c;
 	UCSRB |= (1<<UDRIE);
 	return 0;
 }
 
-
 int get_c0(void)	// Non blocking, return status outside of char range
 {
-	iec_word_t word;
-	word = AvrXPullFifo(Rx0Buf);
-	if(word.flags) return -1;
-	return word.data;
+	if (AvrXTestSemaphore(&Rx0Ready) == SEM_DONE)
+	{
+		uint8_t c = UDR;
+		UCSRB |= (1<<RXCIE);	// Enable getting the next charactor
+		return c;
+	}
+	else
+		return FIFO_ERR;
 }
 
 int get_char0(void)	// Blocks waiting for something
 {
-	return AvrXWaitPullFifo(Rx0Buf).data;
+	AvrXWaitSemaphore(&Rx0Ready);
+	uint8_t c = UDR;
+	UCSRB |= (1<<RXCIE);	// Enable getting the next charactor
+	return c;
 }
-// We don't care if the buffer is full.  Just signal we got one.
-// The task may attempt one extra time to get data out of an empyt
-// buffer (getc(), but so what.  Eventually it will block waiting
-// for another character to be received.
+/*
+This handler will buffer up to three characters in hardware. (double buffer +
+input shift register).  The semaphore is used to signal the task that one or more
+characters are ready.  The task routines re-enables the interrupt to fetch the next
+character.  By using SetSemaphore & TestSemaphore the processing overhead is very
+light.  The only time it gets heavy is when the receiving task blocks.
+*/
 
 #if defined(SIG_UART_RECV) && !defined(SIG_UART0_RECV)
-#  define SIG_UART0_RECV SIG_UART_RECV		// This covers old single UART chips
+#  define SIG_UART0_RECV SIG_UART_RECV
 #  define SIG_UART0_DATA SIG_UART_DATA
 #endif
 
-AVRX_SIGINT(SIG_USART0_RECV)
+AVRX_SIGINT(SIG_UART0_RECV)
 {
     IntProlog();
     UCSRB &= ~(1<<RXCIE);	// Disable Rx interrupt
-    //sei();					// Allow other interrupt activity to occur
-	AvrXPutFifo(Rx0Buf, (iec_word_t){UDR,0});// This resets the Rx Interrupt
-	UCSRB |= (1<<RXCIE);	// Re-enable.
+    sei();					// Allow other interrupt activity to occur
+	AvrXSetSemaphore(&Rx0Ready);
 	Epilog();
 }
 
-AVRX_SIGINT(SIG_USART0_DATA)
+AVRX_SIGINT(SIG_UART0_DATA)
 {
     IntProlog();
     UCSRB &= ~(1<<UDRIE);			// Disable UDRE interrupt
-    //sei();							// Allow other stuff to happen
-	iec_word_t word = AvrXPullFifo(Tx0Buf);
-	if (!word.flags)
-	{
-		UDR = word.data;
-		UCSRB |= (1<<UDRIE);
-	}
+    sei();							// Allow other stuff to happen
+	AvrXSetSemaphore(&Tx0Ready);
 	Epilog();
 }
 #endif	// USART_CHANNELS & CHANNEL_0
 //------------------------------------------------------------------------
-#if 0
+#if USART_CHANNELS & CHANNEL_1
 
-AVRX_DECL_FIFO(Rx1Buf, RX1_BUFSZ);
-AVRX_DECL_FIFO(Tx1Buf, TX1_BUFSZ);
+Mutex Rx1Ready, Tx1Ready;
 
 void InitSerial1(uint16_t ubrr)
 {
@@ -161,7 +173,7 @@ void InitSerial1(uint16_t ubrr)
 	UBRR1L = ubrr;
 	UBRR1H = (uint8_t)(ubrr>>8);
 	UCSR1A = (BAUDX == 8)?(1<<U2X):0;
-	UCSR1B = ((1<<TXEN) | (1<<RXEN) | (1<<RXCIE));
+	UCSR1B = ((1<<TXEN) | (1<<RXEN) | (1<<RXCIE) | (1<<UDRIE));
 	UCSR1C = ((1<<UCSZ1) | (1<<UCSZ0));
 
 // Dual USART, old shared UCSRC & UBRRH
@@ -169,54 +181,71 @@ void InitSerial1(uint16_t ubrr)
 	UBRR1L = ubrr;
 	UBRR1H = (uint8_t)(ubrr>>8);
 	UCSR1A = (BAUDX == 8)?(1<<U2X):0;
-	UCSR1B = ((1<<TXEN) | (1<<RXEN) | (1<<RXCIE));
+	UCSR1B = ((1<<TXEN) | (1<<RXEN) | (1<<RXCIE) | (1<<UDRIE));
 #	ifdef (__AVR_ATmega162__)	// No C register on the 161
 	UCSR1C = (1<<URSEL0) | (1<<UCSZ1) | (1<<UCSZ0);
 #	endif
 #else
 #   ERROR Unknown CPU or CPU does not support two USARTs
 #endif
-	AVRX_INIT_FIFO(Rx1Buf);
-	AVRX_INIT_FIFO(Tx1Buf);
 }
 
 int put_c1(char c)	// Non blocking output
 {
-	int retc;
-	retc = AvrXPutFifo(Tx1Buf, c);
-	UCSR1B |= (1<<UDRIE);
-	return retc;
+	if (AvrXTestSemaphore(&Tx1Ready) == SEM_DONE)
+	{
+		UDR1 = c;
+		UCSR1B |= (1<<UDRIE);
+		return 0;
+	}
+	else
+		return FIFO_ERR;
 }
 
 int put_char1( char c)	// Blocking output
 {
-	AvrXWaitPutFifo(Tx1Buf, c);
+	AvrXWaitSemaphore(&Tx1Ready);
+	UDR1 = c;
 	UCSR1B |= (1<<UDRIE);
 	return 0;
 }
 
 int get_c1(void)	// Non blocking, return status outside of char range
 {
-	int retc = AvrXPullFifo(Rx1Buf);
-	return retc;
+	if (AvrXTestSemaphore(&Rx1Ready) == SEM_DONE)
+	{
+		uint8_t c = UDR1;
+		UCSR1B |= (1<<RXCIE);	// Enable getting the next charactor
+		return c;
+	}
+	else
+		return FIFO_ERR;
 }
 
 int get_char1(void)	// Blocks waiting for something
 {
-	return AvrXWaitPullFifo(Rx1Buf);
+	AvrXWaitSemaphore(&Rx1Ready);
+	uint8_t c = UDR1;
+	UCSR1B |= (1<<RXCIE);	// Enable getting the next charactor
+	return c;
 }
-// We don't care if the buffer is full.  Just signal we got one.
-// The task may attempt one extra time to get data out of an empyt
-// buffer (getc(), but so what.  Eventually it will block waiting
-// for another character to be received.
-
+/*
+This handler will buffer up to three characters in hardware. (double buffer +
+input shift register).  The semaphore is used to signal the task that one or more
+characters are ready.  The task routines re-enables the interrupt to fetch the next
+character.  By using SetSemaphore & TestSemaphore the processing overhead is very
+light.  The only time it gets heavy is when the receiving task blocks.
+*/
+#if !defined(SIG_UART1_RECV) && defined(SIG_USART1_RECV)
+#	define SIG_UART1_RECV SIG_USART1_RECV)
+#	define SIG_UART1_DATA SIG_USART1_DATA)
+#endif
 AVRX_SIGINT(SIG_UART1_RECV)
 {
     IntProlog();
     UCSR1B &= ~(1<<RXCIE);	// Disable Rx interrupt
     sei();					// Allow other interrupt activity to occur
-	AvrXPutFifo(Rx1Buf, UDR1);// This resets the Rx Interrupt
-	UCSR1B |= (1<<RXCIE);	// Re-enable.
+	AvrXSetSemaphore(&Rx1Ready);
 	Epilog();
 }
 
@@ -225,13 +254,7 @@ AVRX_SIGINT(SIG_UART1_DATA)
     IntProlog();
     UCSR1B &= ~(1<<UDRIE);			// Disable UDRE interrupt
     sei();							// Allow other stuff to happen
-	int c = AvrXPullFifo(Tx1Buf);	// Return -1 if empty (enables interrupts)
-	if (c >= 0)						// Tricky tight code: only checking sign
-	{
-		UDR1 = c;
-		UCSR1B |= (1<<UDRIE);
-	}
+	AvrXSetSemaphore(&Tx1Ready);
 	Epilog();
 }
 #endif	// USART_CHANNELS & CHANNEL_1
-

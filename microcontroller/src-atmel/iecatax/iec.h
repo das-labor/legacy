@@ -13,5 +13,6 @@ extern volatile uint8_t error;
 #define VERSION_ERROR    0x73
 
 AVRX_EXTERNTASK(iec_task);
+AVRX_EXTERNTASK(led_task);
 
 uint8_t iecListen(uint8_t *buf, uint16_t *index, uint16_t size);

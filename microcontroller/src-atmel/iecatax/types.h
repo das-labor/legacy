@@ -59,6 +59,10 @@ struct channelTableStruct {
   block_t inode[BLOCKSIZE / sizeof (block_t)];
 };
 
+typedef struct{
+	uint8_t data;
+	uint8_t flags;
+}iec_word_t;
 
 
 #endif //TYPES_H

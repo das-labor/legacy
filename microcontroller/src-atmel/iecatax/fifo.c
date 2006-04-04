@@ -34,9 +34,12 @@ int16_t AvrXPutFifo(pAvrXFifo p, fifo_data_t c)
 
 fifo_data_t AvrXPullFifo(pAvrXFifo p)
 {
-	if (p->in == p->out)	// isEmpty()
-		return FIFO_ERR;
-	fifo_data_t c = p->buf[p->out];
+	fifo_data_t c;
+	if (p->in == p->out){	// isEmpty()
+		c.flags = FIFO_ERR;
+		return c;
+	}
+	c = p->buf[p->out];
 	uint8_t t = p->out+1;
 	if (t >= p->size)
 		t = 0;
@@ -54,7 +57,7 @@ void AvrXWaitPutFifo(pAvrXFifo p, fifo_data_t c)
 fifo_data_t AvrXWaitPullFifo(pAvrXFifo p)
 {
 	fifo_data_t c;
-	while ((c = AvrXPullFifo(p)) == FIFO_ERR)
+	while ((c = AvrXPullFifo(p)).flags == FIFO_ERR)
 		AvrXWaitSemaphore(&p->Producer);
 	return c;
 }
@@ -71,9 +74,11 @@ void AvrXFlushFifo(pAvrXFifo p)
 
 fifo_data_t AvrXPeekFifo(pAvrXFifo p)
 {
-	if (p->in == p->out)
-		return FIFO_ERR;
-	else
+	if (p->in == p->out){
+		fifo_data_t c;
+		c.flags = FIFO_ERR;
+		return c;
+	}else
 		return p->buf[p->out];
 }
 
