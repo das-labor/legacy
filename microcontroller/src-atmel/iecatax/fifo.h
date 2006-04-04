@@ -12,7 +12,9 @@
 	The fifo needs to be both declared and initialized.
 */
 
-typedef uint16_t fifo_data_t;
+#include "types.h"
+
+typedef iec_word_t fifo_data_t;
 
 typedef struct AvrXFifo
 {
@@ -28,7 +30,7 @@ AvrXFifo, *pAvrXFifo;
 enum
 {
 	FIFO_OK,
-	FIFO_ERR = -1	// Same as stdio EOF
+	FIFO_ERR = 0xff
 };
 
 #define AVRX_DECL_FIFO(Name, Size)					\

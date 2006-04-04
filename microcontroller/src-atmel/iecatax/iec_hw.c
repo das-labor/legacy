@@ -7,6 +7,11 @@
 #define IEC_HW_C
 #include "iec_hw.h"
 
+
+#include <avr/pgmspace.h>
+#include <stdio.h>
+
+
 //#define MONITOR_MODE
 
 #define IEC_CLK_OUT  PB2
@@ -24,8 +29,9 @@
 #define DATAOUT_SET PORTB |= (1<<IEC_DATA_OUT)
 #define DATAOUT_CLEAR PORTB &= ~(1<<IEC_DATA_OUT)
 
-volatile uint8_t iec_mode;
-Mutex iec_tx_mutex, iec_rx_mutex;
+AVRX_DECL_FIFO(iec_rx_fifo, 2);
+AVRX_DECL_FIFO(iec_tx_fifo, 2);
+
 
 void iecDelay80 (void) {
 	TCNT2 = 0;
@@ -37,9 +43,15 @@ iec_word_t iecGetByte() {
 	word.data = 0;
 	word.flags= 0;
 
-	UCSR0B &= ~(1<<UDRIE0);			// Disable UDRE interrupt
 	/* wait for Talker */
 	loop_until_bit_is_set (PINB, IEC_CLK_IN);
+	{/* check ATN */
+		if(bit_is_clear (PIN_ATN_IN, BIT_ATN_IN)){
+			word.flags |= FLAG_ATN;
+		}
+	}
+	UCSR0B &= ~(1<<UDRIE0);
+	TIMSK &= ~_BV(TOIE0);//Timer int off
 	/* signal ready to listen */
 	DATAOUT_SET;
     
@@ -50,7 +62,6 @@ iec_word_t iecGetByte() {
 	TCNT2 = 0;
 	while (! (word.flags & FLAG_EOI)) {
 		if (TCNT2 > 230) {
-			iec_mode = 0;
 			word.flags |= FLAG_EOI;
 			/* acknowledge if eoi */
 #			ifndef MONITOR_MODE
@@ -65,12 +76,6 @@ iec_word_t iecGetByte() {
 		}
 		if (bit_is_clear (PINB, IEC_CLK_IN)) {
 			break;
-		}
-	}
-	
-	{/* check ATN */
-		if(bit_is_clear (PIN_ATN_IN, BIT_ATN_IN)){
-			word.flags |= FLAG_ATN;
 		}
 	}
 	
@@ -89,11 +94,14 @@ iec_word_t iecGetByte() {
 			loop_until_bit_is_clear (PINB, IEC_CLK_IN);
 		}
 		/* acknowledge byte received */
-#		ifndef MONITOR_MODE
+#ifndef MONITOR_MODE
 		DATAOUT_CLEAR;
-#		endif
+#endif
+#ifdef DEBUG
+		UCSR0B |= (1<<UDRIE0);
+#endif
+		//TIMSK |= _BV(TOIE0);//Timer int back on
 	}
-	UCSR0B |= (1<<UDRIE0);			// Re Enable UDRE interrupt
 	return word;
 }
 
@@ -107,8 +115,12 @@ void iecTurnAround(){
 }
 
 void iecPutByte (iec_word_t word) {
+	UCSR0B &= ~(1<<UDRIE0);
+	TIMSK &= ~_BV(TOIE0);//Timer int off
+	
 	/*Talker ready to send */
 	CLKOUT_SET;
+	
 	/* wait for listener */
 	loop_until_bit_is_set (PINB, IEC_DATA_IN);
 	
@@ -149,33 +161,58 @@ void iecPutByte (iec_word_t word) {
 		if (word.flags & FLAG_EOI) {
 			/* wait for listener line release */
 			loop_until_bit_is_set (PINB, IEC_DATA_IN);
-			iec_mode = 0;
 		}
 	}
+#ifdef DEBUG
+	UCSR0B |= (1<<UDRIE0);
+#endif
+	//TIMSK |= _BV(TOIE0);//Timer int on
 }
 
 
 volatile iec_word_t iec_tx_word, iec_rx_word;
 
 AVRX_GCC_TASKDEF(iecComTask, 200, 3){
-	LED_PORT ^= (1<<LED_BIT);
-	iec_mode = MODE_LISTEN;
-	while(iec_mode == MODE_LISTEN){
-			iec_rx_word = iecGetByte();
-			AvrXSetSemaphore(&iec_rx_mutex);
-	};
-	if((iec_mode == MODE_TALK) || (iec_mode == MODE_TALK_RELEASE)){
-		iecTurnAround();
-	}
-	while(iec_mode == MODE_TALK){
-		AvrXWaitSemaphore(&iec_tx_mutex);
-		iecPutByte(iec_tx_word);
-		iec_rx_word.flags = FLAG_TXOK;
-		AvrXSetSemaphore(&iec_rx_mutex);
-	}
-	CLKOUT_SET;
-	DATAOUT_SET;			
-	while(1);	
+	iec_word_t word;
+	//mode we are in right now
+	uint8_t mode = MODE_LISTEN;
+	
+	//The first byte is returned without request. It should
+	//be the first byte of an atn sequence.
+	//PORT_LED ^= (1<<BIT_LED);
+	word = iecGetByte();
+	AvrXWaitPutFifo(iec_rx_fifo, word);
+	
+	while(1){
+		//get our next command
+		word = AvrXWaitPullFifo(iec_tx_fifo);	
+		if (word.flags == (FLAG_MODE | MODE_LISTEN)){
+			//listen for a byte requested
+			word = iecGetByte();
+			AvrXWaitPutFifo(iec_rx_fifo, word);
+		}else if(word.flags == (FLAG_MODE | MODE_RELEASE)){
+			//system line release requested
+			CLKOUT_SET;
+			DATAOUT_SET;			
+			while(1);
+		}else if(word.flags == (FLAG_MODE | MODE_TALK_RELEASE)){
+			//do turnaround sequence and then release
+			//this is used, when there is an error on opening a file for reading
+			iecTurnAround();
+			CLKOUT_SET;
+			DATAOUT_SET;
+			while(1);
+		}else{
+			//default: talk mode - send the word
+			if(mode == MODE_LISTEN){
+				//do turnaround if we were listening
+				iecTurnAround();
+				mode = MODE_TALK;
+			}
+			iecPutByte(word);
+			AvrXWaitPutFifo(iec_rx_fifo, (iec_word_t){0,FLAG_TXOK});			
+		}
+	}	
 }
 
 Mutex atnMutex;
@@ -200,10 +237,19 @@ AVRX_GCC_TASKDEF(iecAtnTask, 100, 2){
 	while(1){
 		AvrXWaitSemaphore(&atnMutex);
 		AvrXTerminate(PID(iecComTask));
+		//Turn Timer int on again, in case it was left 
+		//off by iecComTask
+		//TIMSK |= _BV(TOIE0);
+#ifdef DEBUG
+		//same for UART int
+		UCSR0B |= (1<<UDRIE0);
+#endif		
+		AvrXFlushFifo(iec_tx_fifo);
 		
-		iec_rx_word.flags = FLAG_BREAK;
-		iec_rx_word.data = 0;
-		AvrXSetSemaphore(&iec_rx_mutex);
+		iec_word_t word;
+		word.flags = FLAG_BREAK;
+		word.data = 0;
+		AvrXWaitPutFifo(iec_rx_fifo, word);
 		
 		AvrXRunTask(TCB(iecComTask));
 	}	
@@ -211,6 +257,6 @@ AVRX_GCC_TASKDEF(iecAtnTask, 100, 2){
 
 void iec_hw_init(){
 	AvrXResetSemaphore(&atnMutex);
-	AvrXResetSemaphore(&iec_rx_mutex);
-	AvrXResetSemaphore(&iec_tx_mutex);
+	AVRX_INIT_FIFO(iec_tx_fifo);
+	AVRX_INIT_FIFO(iec_rx_fifo);
 }

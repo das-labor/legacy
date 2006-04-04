@@ -1,15 +1,12 @@
+#ifndef IEC_HW_H
+#define IEC_HW_H
 
 #include <inttypes.h>
+#include "fifo.h"
 
-typedef struct{
-	uint8_t data;
-	uint8_t flags;
-}iec_word_t;
 
-#define FLAG_EOI   0x01
-#define FLAG_ATN   0x02
-#define FLAG_BREAK 0x04
-#define FLAG_TXOK  0x08
+
+
 
 #define LISTEN    0x20
 #define TALK      0x40
@@ -20,6 +17,11 @@ typedef struct{
 #define CLOSE     0xe0
 #define DATA      0x60
 
+#define FLAG_EOI   0x01
+#define FLAG_ATN   0x02
+#define FLAG_BREAK 0x04
+#define FLAG_TXOK  0x08
+#define FLAG_MODE  0x80
 
 #define MODE_RELEASE		0
 #define MODE_LISTEN			1
@@ -29,11 +31,12 @@ typedef struct{
 
 #ifndef IEC_HW_C
 AVRX_EXTERNTASK(iecAtnTask);
+AVRX_EXT_FIFO(iec_rx_fifo);
+AVRX_EXT_FIFO(iec_tx_fifo);
 
-extern volatile uint8_t iec_mode;
-volatile iec_word_t iec_tx_word, iec_rx_word;
-extern Mutex iec_tx_mutex, iec_rx_mutex;
 
 void iec_hw_init();
 
 #endif
+
+#endif //IEC_HW_H

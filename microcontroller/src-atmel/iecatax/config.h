@@ -1,9 +1,9 @@
 #define BLOCKSIZE            512
 
-#define LED_BIT 2
-#define LED_PORT PORTE
-#define LED_OFF LED_PORT|=(1<<LED_BIT);
-#define LED_ON LED_PORT&=~(1<<LED_BIT);
+#define BIT_LED 2
+#define PORT_LED PORTE
+#define LED_OFF PORT_LED|=(1<<BIT_LED);
+#define LED_ON PORT_LED&=~(1<<BIT_LED);
 
 
 

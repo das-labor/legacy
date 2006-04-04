@@ -93,8 +93,6 @@ bool_t readDir (uint8_t channelNumber) {
   uint8_t *buffer = channel->buffer;
   static entryIndex_t entryIndex;
   static uint8_t writtenEntries;
-  
-  printf_P(PSTR("readDir\n"));
 
   if (channel->readDirState == READ_DIR_BEGIN) {
     if (channelNumber == 0) {
@@ -341,12 +339,12 @@ void parseCommand (void) {
 	uint8_t *cmdArg2;
 
   { /* get message */
-	bufferSize_t bytesReceived;
+	bufferSize_t bytesReceived = 0;
     
-    iecListen (command, &bytesReceived, 255);
+    iecListen (command, &bytesReceived, 254);
 
-	if(!bytesReceived) return;
-	  
+	if(!bytesReceived) return;	
+	
     /* make message a proper string */
     command[bytesReceived] = '\0';
 #ifdef DEBUG
