@@ -9,9 +9,10 @@
 
 */
 
-
-//#define setPixel(_X, _Y, _V) setpixel( (pixel){15 - _X, _Y}, _V)
+#define FRAMESPEED 100
+#define LINESPEED 10
 #define setPixel(_X, _Y, _V) if(((unsigned char)(_Y)) < 16 ) setpixel( (pixel){15 - _X, _Y}, _V)
+//#define setPixel(_X, _Y, _V) setpixel( (pixel){15 - _X, _Y}, _V)
 
 unsigned char random();
 
@@ -35,9 +36,9 @@ unsigned char rhein[16][16] PROGMEM= {
   { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2, 2, 2, 3, 0 },
   { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 0, 0 },
   };
+
   
-  
- void rhein_fire_logo(int ms)
+void rhein_fire_logo(int ms)
  {
  	clear_screen(0);
  	
@@ -52,9 +53,10 @@ unsigned char rhein[16][16] PROGMEM= {
  	wait(ms);
  }
 
-
-unsigned char numbers[6][5][3] PROGMEM =
+// Kleine Nummern an den 10 Yard Linien
+unsigned char numbers[7][5][3] PROGMEM =
 {
+	// 0 
 	{	{3,3,3},
 		{3,0,3},
 		{3,0,3},
@@ -62,6 +64,7 @@ unsigned char numbers[6][5][3] PROGMEM =
 		{3,3,3}
 	},
 
+	// 1 
 	{	{0,3,3},
 		{3,0,3},
 		{0,0,3},
@@ -69,7 +72,7 @@ unsigned char numbers[6][5][3] PROGMEM =
 		{0,0,3}
 	},
 
-
+	// 2 
 	{	{3,3,3},
 		{0,0,3},
 		{0,3,0},
@@ -77,7 +80,7 @@ unsigned char numbers[6][5][3] PROGMEM =
 		{3,3,3}
 	},
 
-
+	// 3 
 	{	{3,3,3},
 		{0,0,3},
 		{0,3,3},
@@ -85,6 +88,7 @@ unsigned char numbers[6][5][3] PROGMEM =
 		{3,3,3}
 	},
 
+	// 4 
 	{	{3,0,3},
 		{3,0,3},
 		{3,3,3},
@@ -92,11 +96,20 @@ unsigned char numbers[6][5][3] PROGMEM =
 		{0,0,3}
 	},
 
+	// 5 
 	{	{3,3,3},
 		{3,0,0},
 		{3,3,3},
 		{0,0,3},
 		{3,3,3}
+	},
+
+	// G 
+	{	{2,3,2},
+		{3,0,0},
+		{3,2,3},
+		{3,0,3},
+		{2,3,2}
 	}
 };
  
@@ -115,13 +128,11 @@ unsigned char player[4][5][3] PROGMEM =
 	{2,2,0},
 	{0,1,0}},
 
-/*
-	{{0,1,0},
-	{0,2,0},
-	{0,3,0},
-	{0,2,0},
-	{0,1,0}},
-*/
+//	{{0,1,0},
+//	{0,2,0},
+//	{0,3,0},
+//	{0,2,0},
+//	{0,1,0}},
 
 	{{1,0,0},
 	{0,2,0},
@@ -133,29 +144,34 @@ unsigned char player[4][5][3] PROGMEM =
 	{2,2,0},
 	{0,3,0},
 	{0,2,0},
-	{0,1,0}},
+	{0,1,0}}
 
 };
 
+unsigned char player2[2][3][4] PROGMEM = 
+{
+	{{0,3,0,0},
+	{3,3,3,0},
+	{0,0,3,3}},
+
+	{{0,0,3,3},
+	{3,3,3,0},
+	{0,3,0,0}}
+};
 
 void drawNumber(unsigned char num, signed char ax, signed char ay) {
-	if(num > 5) return;
-	//if(pos.y > 15) return;
+	if(num > 6) return;
 	unsigned char x, y;
 	for(x = 0; x < 5; ++x){
 		for(y = 0; y < 3; ++y){
 				setPixel(x+ax, y+ay,  pgm_read_byte(&numbers[num][4-x][y]));
 		}
 	}	
-
 }
-
 
 void drawLine(unsigned char y) {
 	unsigned char x;
 	if(y > 15) return;
-	
-
 	for(x = 0; x < 16; ++x) {
 		setPixel(x, y, 3);
 	}
@@ -164,8 +180,6 @@ void drawLine(unsigned char y) {
 void drawRow(unsigned char y) {
 	unsigned char x;
 	if(y > 15) return;
-	
-
 	for(x = 0; x < 16; ++x) {
 		setPixel(y, x, 3);
 	}
@@ -184,39 +198,153 @@ void test() {
 		drawRow(x);
 		wait(800);
 	}
-	
 }
 
 
-#define LINESPEED 20
+// Zeichnet das Spielfeld, jeweils mit dem aktuellen Yardstand in Zeile 0
+// Halfyard 0-240 sein: 
+//   0 = Tochdownzone Ende
+//  20 = Tochdownzone Anfang
+// 120 = 50 Yard linie
+void drawField(unsigned char halfyard) {
+	unsigned char x;
+        unsigned char y;
+        unsigned char n;
 
-void running() {
-	
-	
-	pixel plPos = {7,7};
-	unsigned char x,y,t, py, n;
-	t=0;
-	n = 5;
-	while(t < 255) {
-		clear_screen(0);
-		py = t%LINESPEED;
-		
-		drawLine(py);
-		drawLine(py+8);
-		drawNumber(n, 15, py-4);
-		//drawNumber(0, 15, ((py+4)%LINESPEED)-2);
-		if(py ==0) n--;
-		for(x = 0; x < 5; ++x){
-			for(y = 0; y < 3; ++y){
-				if(pgm_read_byte(&player[t%4][x][y])) {
-					setPixel(x+plPos.x, y+plPos.y,  pgm_read_byte(&player[t%4][x][y]));
+	// Alle 5 Yard eine Linie
+	for(y = 0; y < 16; ++y){
+		if ((( halfyard + 20 + y ) % 10 ) == 0 )
+			if ((( halfyard + y) / 10 ) !=0)
+				drawLine(y);		
+	}	
+	// Die Null unter jeder 10er Linie	
+	for(y = 0; y < 19; ++y){
+		if ((( halfyard + 20 + y - 4 ) % 20 ) == 0 ){
+			if ((( halfyard + 20 + y - 4 ) / 20 ) > 2)
+				drawNumber(0, 15, y - 2);
+			if ((( halfyard + 20 + y - 4 ) / 20 ) == 2)
+				drawNumber(6, 15, y - 2);
+		}
+	}	
+
+	// Die Zahl über jeder 10er Linie	
+	for(y = 0; y < 19; ++y){
+		if ((( halfyard + 20 + y - 18 ) % 20 ) == 0 ){
+			n = (( halfyard + 20 + y - 18 ) / 20 ) - 1;
+			if (n > 0)
+				drawNumber(n, 15, y - 2);
+		}
+	}	
+	// Endzone
+	if ( halfyard < 20 ){
+		for(y = 0; y < 16; ++y){
+			if ((( halfyard + y) < 20) && (( halfyard + y) > 10)){
+				for(x = ((( halfyard + y ) % 2 ) * 2); x < 16; x+=4){
+					setPixel(x, y, 1);		
 				}
 			}
-		}	
-		t++;
-		if(n > 5) break;
-		wait(150);
+		}
 	}
+}
+/*		for(y = 0; y < 16; ++y){
+			if (( halfyard + y) < 20){
+				if ((( halfyard + y) % 4 ) == 0){
+					setPixel(1, ( halfyard + y), 1);
+					setPixel(5, ( halfyard + y), 1);
+					setPixel(9, ( halfyard + y), 1);
+					setPixel(13, ( halfyard + y), 1);
+				} 
+				if (((( halfyard + y) % 4 ) +2 ) == 0){
+					setPixel(3, ( halfyard + y), 1);
+					setPixel(7, ( halfyard + y), 1);
+					setPixel(11, ( halfyard + y), 1);
+					setPixel(15, ( halfyard + y), 1);
+				}
+
+			}
+		}
+*/
+
+void running() {
+
+	// Deklarationen
+	pixel         player_pos;	
+	unsigned char yard;
+	unsigned char x;
+	unsigned char y;
+	unsigned char t;
+
+	// ***************************************************************
+	// *** Zuerst dern Player von unten in das Bild laufen lassen  ***
+	// ***************************************************************
+	// Hier läuft der Player von der 60 zur 55 Yard linie und in den letzten 
+	// 5 Schritten, sollte die Linie zusammen mit der Null von oben reinscrollen.
+	player_pos.x = 7;
+	player_pos.y = 19;
+	t=0;
+	
+	while(player_pos.y > 7){
+		// Matrix löschen
+		clear_screen(0);
+
+		drawField(109);
+
+		// Stepcounter
+		t++;
+
+		// Y-Position vom Player von unten bis hin zur Mitte
+		player_pos.y--;	
+
+		// Animation vom laufenden Player 
+		// 4 verschiedene Player Bilder der Größe 5 * 3
+		for(x = 0; x < 5; x++){
+			for(y = 0; y < 3; y++){
+				if(pgm_read_byte(&player[t%4][x][y])) {
+					setPixel(x+player_pos.x, y+player_pos.y, pgm_read_byte(&player[t%4][x][y]));
+				}
+			}
+		}
+
+		// Pause
+		wait(FRAMESPEED);
+	}
+	
+	// ***************************************************
+	// *** Jetzt ist der Player auf (7, 7)             ***
+	// *** und oben im Bild ist die 45 Yard Linie      ***
+	// ***************************************************	
+	t=0;
+	yard=109;
+	while(t < 255) {
+		clear_screen(0);
+
+		drawField(yard);
+
+		// Animation vom laufenden Player
+		// 4 verschiedene Player Bilder der Größe 5 * 3
+		for(x = 0; x < 5; x++){
+			for(y = 0; y < 3; y++){
+				if(pgm_read_byte(&player[t%4][x][y])) {
+					setPixel(x+player_pos.x, y+player_pos.y, pgm_read_byte(&player[t%4][x][y]));
+				}
+			}
+		}
+
+//		// Animation vom laufenden Player 2		
+//		for(x = 0; x < 3; x++){
+//			for(y = 0; y < 4; y++){
+//				if(pgm_read_byte(&player2[t%2][x][y])) {
+//					setPixel(x+player_pos.x, y+player_pos.y, pgm_read_byte(&player2[t%2][x][y]));
+//				}
+//			}
+//		}
+
+		if(yard < 8) break;
+		yard--;
+		t++;		
+		wait(FRAMESPEED);
+	}
+	wait(1000);
 }
 
 
@@ -237,12 +365,6 @@ void showScores(unsigned char home, unsigned char guest) {
 	scrolltext(tmp);
 
 }
-
-
-
-
-
-
 
 
 
