@@ -68,7 +68,7 @@ int main (void){
 			off();
 			break;
 		case 43:
-			snakeJoystick();
+		//	snakeJoystick();
 			mode = oldOldmode;
 		default:
 			break;
