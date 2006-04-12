@@ -112,9 +112,9 @@ uint8_t GetDCFBitValue(uint8_t);
 #define BitSet(Byte, BitNo)     Byte |= (1<<BitNo)
 #define BitClear(Byte, BitNo)   Byte &= ~(1<<BitNo)
 
-const uint8_t aDCFValues[] PROGMEM ={                                        \
-  0x1,0x2,0x4,0x8,0xA,0x14,0x28,  0x0,0x1,0x2,0x4,0x8,0xA,0x14,              \
-  0x0,0x1,0x2,0x4,0x8,0xA,0x14,   0x1,0x2,0x4,                               \
+const uint8_t aDCFValues[] PROGMEM ={
+  0x1,0x2,0x4,0x8,0xA,0x14,0x28,  0x0,0x1,0x2,0x4,0x8,0xA,0x14,
+  0x0,0x1,0x2,0x4,0x8,0xA,0x14,   0x1,0x2,0x4,
   0x1,0x2,0x4,0x8,0xA,            0x1,0x2,0x4,0x8,0xA,0x14,0x28,0x50,0x0};
 
 volatile uint8_t cntDcf;                // 10ms counter for DCF pulse measure
@@ -179,6 +179,12 @@ SIGNAL (SIG_OUTPUT_COMPARE1A){
 	NixZiffer >>= 4;
   }
   
+  uint8_t x;
+  for(x=0;x<100;x++){
+  	asm volatile("nop");
+  }
+
+
   PORTD &= 3;               // Reset BCD-Values
   PORTD |= (NixZiffer<<3);  // BCD-Value to Nixie at PD 3-6
   PORTB |= msk;      		// Turn on actual Nixie
@@ -236,6 +242,12 @@ int main (void)
       BitSet (CtrlReg, CtrlSecPuls);  // set Flag second
     }
 
+	if(! (PIND & 0x01)){
+		hNib = DcfSigLen / 10;
+        lNib = DcfSigLen % 10;
+        NixieS = (16 * hNib + lNib);
+	}
+	
     // Set Values to be displayed on Nixies
     if (CtrlReg & (1<<CtrlSecPuls)) {
       // Nixie 1 + 2
@@ -247,20 +259,22 @@ int main (void)
       lNib = ITCMin - hNib * 10;
       NixieM = (16 * hNib + lNib);
       // Nixie 5 + 6
-      hNib = ITCSec / 10;
-      lNib = ITCSec - hNib * 10;
-      NixieS = (16 * hNib + lNib);
-    }
+      if(PIND & 0x01){
+	    hNib = ITCSec / 10;
+        lNib = ITCSec - hNib * 10;
+        NixieS = (16 * hNib + lNib);
+	  }
+	}
 
     // DCF-Signal: Status changed
     if (LastSigVal != DcfSigVal) {
       LastSigVal = DcfSigVal;
       if (DcfSigVal==DCFPulse) {
         // Pulse received
-        if ((DcfSigLen>DCFLowMin) & (DcfSigLen<DCFLowMax)){
+        if ((DcfSigLen>=DCFLowMin) & (DcfSigLen<=DCFLowMax)){
           DCFBitReceived(0);
         } else {
-          if ((DcfSigLen>DCFHighMin) & (DcfSigLen<DCFHighMax)) {
+          if ((DcfSigLen>=DCFHighMin) & (DcfSigLen<=DCFHighMax)) {
             DCFBitReceived(1);
           } else {
             BitSet (ErrorReg, ErrDcfBit);
@@ -318,8 +332,9 @@ void InitChip (void) {
   PORTB = 0;                // clear all (activ High)
 
   // Port D: Input
-  DDRD = 120;               // PortD: 0,1,2 In - 3,4,5,6 Out
-  PORTD = (1<<2);           // activate Pull-Up on PD3
+  
+  DDRD = 0x78;               // PortD: 0,1,2 In - 3,4,5,6 Out
+  PORTD = 0x07;           // activate Pull-Up on PD0,1 and 2
 
   // Int0: Interrupt
   //  - ISC01 (on falling edge )   //  - INT0  (enable external int0)
@@ -333,6 +348,7 @@ void InitChip (void) {
   //  - OCIE1 (Output Compare Interrupt Enable)
   TCCR1A = 0;                               // No Output, No PWM
   TCCR1B = (1<<CS11)|(1<<CS10)|(1<<CTC1);    // CK/64 , CTC1
+//  TCCR1B = (1<<CS12)|(1<<CS10)|(1<<CTC1);    // CK/1024 , CTC1
   OCR = 2 * CRYSTAL_FREQ / 64000L;          // 2ms: 5A0h = 1440d
   TIMSK = (1<<OCIE1A);                      // Interrupt Enable
 
@@ -414,26 +430,26 @@ void DCFBitReceived(uint8_t nBit){
     case 29:
     case 36:
       DcfParity=(nBit & 1);                   // Reset Parity h, m, date
-    break;
+      break;
     case 27:
       DCFMin=DcfValue;                        // set DCF-Minute
       DcfValue=0;
-    break;
+      break;
     case 34:
       DCFHour = DcfValue;                     // set DCF-Hour
       DcfValue=0;
-    break;
+      break;
     case 41:
       DCFDay=DcfValue;                        // set DCF-Day
       DcfValue=0;
-    break;
+      break;
     case 44:
       DcfValue=0;                             // Reset DcfValue
-    break;
+      break;
     case 49:
       DCFMonth=DcfValue;                      // set DCF-Month
       DcfValue=0;
-    break;
+      break;
     case 28:
     case 35:
     case 58:
