@@ -35,11 +35,13 @@ int main(void)
     TIMSK = 1<<TOIE0;		// Enable interrupt flag
 
 //	PORTD = 0xff;
+	PORTB = 0x0f; // Tastenport
+	DDRB = 0x00;
     //InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
-	dispInit(); // Display initialisierung
 	xlap_init();
-	//PORTA = 0xff; // Tastenport
-	//DDRA = 0x00;
+	dispInit(); // Display initialisierung
+
+
 	
 	AvrXRunTask(TCB(laptask));
 	//AvrXRunTask(TCB(keys));

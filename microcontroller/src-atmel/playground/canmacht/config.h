@@ -33,4 +33,4 @@
 #define STATIC_SCRIPTS	1
 
 #define KS0108		1
-#define SED1565		0
+//#define SED1565		0
