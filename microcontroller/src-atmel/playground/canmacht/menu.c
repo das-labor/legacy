@@ -8,6 +8,7 @@
 #include "xcan.h"
 #include "menu.h"
 #include "text.h"
+
 #include "grafiklcd.h"
 
 struct {
@@ -20,40 +21,46 @@ extern menu_t root;
 menu_item_t mi_i0 = {&show_menu, &menu_handler, &root}; // nur zum testen
 menu_item_t *bla[] = {&mi_i0};				// "
 
-//menu_item_t *its_all[] = {&iadr};
-menu_t madr = {"all", 1, bla};
-menu_item_t iadr = {&show_menu, &menu_handler, &madr};
+//menu_item_t *its_setup[] = {&bla};
+menu_t msetup = {"setup", 1, bla};
+menu_item_t isetup = {&show_menu, &menu_handler, &msetup};
 
-menu_item_t *its_adr[] = {&iadr};
-menu_t mtemp = {"temp", 1, its_adr};
+//menu_item_t *its_all[] = {&iadr};
+menu_t mtempadr = {"alle", 1, bla};
+menu_item_t itempadr = {&show_menu, &menu_handler, &mtempadr};
+
+menu_item_t *its_tempadr[] = {&itempadr};
+menu_t mtemp = {"temp", 1, its_tempadr};
 menu_item_t itemp = {&show_menu, &menu_handler, &mtemp};
 
 menu_item_t *its_info[] = {&itemp};
 menu_t minfo = {"wissen", 1, its_info};
 menu_item_t iinfo = {&show_menu, &menu_handler, &minfo};
 
-menu_t mmood = {"mood", 1, bla};
+menu_t mmoodadr = {"alle", 1, bla};
+menu_item_t imoodadr = {&show_menu, &menu_handler, &mmoodadr};
+
+menu_item_t *its_moodadr[] = {&imoodadr};
+menu_t mmood = {"mood", 1, its_moodadr};
 menu_item_t imood = {&show_menu, &menu_handler, &mmood};
 
 menu_item_t *its_ctrl[] = {&imood};
 menu_t mctrl = {"macht", 1, its_ctrl};
 menu_item_t ictrl = {&show_menu, &menu_handler, &mctrl};
 
-menu_item_t *items_root[] = {&ictrl, &iinfo};
-menu_t root = {"/", 2, items_root};
+menu_item_t *items_root[] = {&ictrl, &iinfo, &isetup};
+menu_t root = {"/", 3, items_root};
 
 TimerControlBlock switchtimer;
 
 AVRX_GCC_TASKDEF(menu, 100, 5) {
-//	uint8_t state, oldstate = 0;
 	menu_handler(&root);
 	while (1) {
 	}
 }
 uint8_t getKey() {
-	AvrXDelay(&switchtimer, 600);
+	AvrXDelay(&switchtimer, 550);
 	while(1) {
-
 		if(!(PINA & (1 << PA0))) {
 			return 0;
 		}
@@ -73,10 +80,10 @@ void menu_handler(void *data) {
 	menu_t *menu = data;
 	uint8_t i, key;
 	int8_t sel = 0;
-	DRAW_MEN:  // sprung nach 
+	DRAW_MEN:  // sprung für neuzeichnung
 	pos.y = 0;
 
-	fillRect(pos.y, pos.x, 41, 10*menu->size, 0);
+	dispFillRect(pos.y, pos.x, 41, 10*menu->size, 0);
 
 	for(i = 0; i < menu->size; i++) {
 		menu->items[i]->show(menu->items[i]->data, (sel==i));
@@ -88,7 +95,7 @@ void menu_handler(void *data) {
 		key = getKey();
 		// enter
 		if(key == 2) {
-			fillRect(0, pos.x, 41, 10*menu->size, 0);
+			dispFillRect(0, pos.x, 41, 10*menu->size, 0);
 			//pos.x += 20;
 			menu->items[sel]->enter(menu->items[sel]->data); // enter	
 			goto DRAW_MEN;
@@ -122,7 +129,7 @@ void menu_handler(void *data) {
 void show_menu(void *data, uint8_t selected) {
 	menu_t *menu = data;
 	dispDrawRect(pos.x, pos.y, 40, 9, 1);
-	fillRect(pos.x+1, pos.y+1, 39, 8, selected);
+	dispFillRect(pos.x+1, pos.y+1, 39, 8, selected);
 	draw_Text(menu->name, pos.x+2, pos.y+2, 0, 1, !selected);
 }
 
@@ -134,7 +141,7 @@ void show_text(void *data, uint8_t selected) {
 void show_mood(void *data, uint8_t selected) {
 	menu_t *menu = data;
 	dispDrawRect(50, pos.y, 65, 9, 1);
-	fillRect(pos.x+1, pos.y+1, 39, 8, selected);
+	dispFillRect(pos.x+1, pos.y+1, 39, 8, selected);
 }
 
 void ctrl_mood(void *data) {
@@ -157,3 +164,32 @@ void ctrl_mood(void *data) {
 		}
 	}
 }
+
+/*
+setup
+scan
+	remove entrys
+	scan + add entrys
+	backlight // kontrast
+*/
+/*
+// adds an entry to a menu structure at pos
+void menu_add_entry(menu **menu_pt, menu_entry * entry, uint16_t pos){
+	(*menu_pt) = realloc((*menu_pt), 4+((*menu_pt)->entry_num+1)*sizeof(menu_entry) );
+	uint16_t x;
+	for(x=(*menu_pt)->entry_num; x>=(pos+1); x--){
+		(*menu_pt)->entries[x] = (*menu_pt)->entries[x-1];
+	}
+	(*menu_pt)->entries[pos] = *entry;
+	(*menu_pt)->entry_num++;
+}
+
+void menu_remove_entry(menu **menu_pt, uint16_t pos){
+	uint16_t x;
+	for(x=pos; x < (*menu_pt)->entry_num-1; x++){
+		(*menu_pt)->entries[x] = (*menu_pt)->entries[x+1];
+	}
+	(*menu_pt)->entry_num--;	                                
+	(*menu_pt) = realloc((*menu_pt), 4+((*menu_pt)->entry_num)*sizeof(menu_entry) );
+}
+*/

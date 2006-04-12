@@ -11,7 +11,8 @@
 #include "xlap.h"
 #include "keys.h"
 #include "menu.h"
-#include "s1d1565.h"
+
+#include "grafiklcd.h"
 
 //AVRX_GCC_TASK(Monitor, 20, 0);          // External Task: Debug Monitor
 

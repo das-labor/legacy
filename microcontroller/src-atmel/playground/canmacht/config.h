@@ -30,6 +30,9 @@
 #endif
 
 //Number of Messages in Can TX Buffer
-#define TX_SIZE 10
+#define TX_SIZE		10
 
-#define STATIC_SCRIPTS 1
+#define STATIC_SCRIPTS	1
+
+#define KS0108		1
+#define SED1565		0
