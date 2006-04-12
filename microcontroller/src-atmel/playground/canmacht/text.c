@@ -5,7 +5,21 @@
 #define MAX_FONTS 1
 
 font fonts[MAX_FONTS];
-
+/*
+unsigned int getLen(blob_t *blob) {
+	unsigned char glyph;
+	unsigned int strLen = 0;
+	unsigned char * str = blob->str;
+	
+	while ((glyph = *str++)) {
+		glyph -= 1;
+		strLen += PW(blob->fontIndex[glyph+1]) -
+			PW(blob->fontIndex[glyph]); 
+			strLen += blob->space;
+	}      
+	return strLen;
+}
+*/
 
 void draw_Text(char *str, unsigned int posx, char posy, unsigned char fontNr, 
                unsigned char space, unsigned char color) {
