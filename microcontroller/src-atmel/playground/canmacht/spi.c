@@ -3,6 +3,7 @@
 
 void spi_init(){
 	//set output SPI pins to output
+	SPCR = 0;
 	SPI_DDR |= (1<<SPI_PIN_MOSI) | (1<<SPI_PIN_SCK) | (1<<SPI_PIN_SS);
 
 #ifdef SPI_HARDWARE
