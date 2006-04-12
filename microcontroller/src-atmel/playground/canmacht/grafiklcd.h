@@ -12,4 +12,5 @@
 #define NUM_ROWS 64
 #define NUM_COLS 128
 
-extern void drawLine(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t color);
+void drawLine(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t color);
+

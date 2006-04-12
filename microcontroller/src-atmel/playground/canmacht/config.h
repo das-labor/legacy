@@ -10,8 +10,6 @@
 
 #define TICKRATE 2500
 
-#define MEGA8
-
 #ifdef MEGA8
 #	define SPI_PORT PORTB
 #	define SPI_PIN_SS PB2

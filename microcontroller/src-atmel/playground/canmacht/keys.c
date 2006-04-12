@@ -11,14 +11,14 @@
 #include "keys.h"
 
 
-TimerControlBlock switchtimer;
+TimerControlBlock switchtimer2;
 uint8_t mprog = 1;
 
 AVRX_GCC_TASKDEF(keys, 20, 4) {
 
 	while(1) {
 
-		AvrXDelay(&switchtimer, 20);
+		AvrXDelay(&switchtimer2, 20);
 		
 	
 
