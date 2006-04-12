@@ -17,14 +17,15 @@
 
 static void dispEnable() {
 	PORT_CMD |= (1 << EN);					// EN high level width: min. 450ns
-/*	asm volatile("nop\n\t"
-				 "nop\n\t"
-				 "nop\n\t"
-				 ::);
-*/
+	asm volatile("nop\n\t"
+			"nop\n\t"
+			"nop\n\t"
+			::);
+
 	PORT_CMD &= ~(1 << EN);
-	//volatile uint8_t i;
-	//for(i=0; i<8; i++);							// a little delay loop (faster than reading the busy flag)
+	volatile uint8_t i;
+	for(i=0; i<8; i++);							// a little delay loop (faster than reading the busy flag)
+		asm volatile ("nop");
 }
 
 
@@ -46,7 +47,7 @@ static void dispWriteData(uint8_t data) {
 
 static uint8_t dispReadData() {
 	uint8_t data;
-	//volatie uint8_t i;
+	volatile uint8_t i;
 	PORT_DATA = 0x00;
 	DDR_DATA = 0x00;								// data port is input
 	
@@ -62,7 +63,7 @@ static uint8_t dispReadData() {
 	data = PIN_DATA;								// read Data			 
 	
 	PORT_CMD &= ~(0x01 << EN);
-	//for(i=0; i<8; i++);								// a little delay loop (faster than reading the busy flag)
+	for(i=0; i<8; i++);								// a little delay loop (faster than reading the busy flag)
 	return data;
 }
 
@@ -121,10 +122,11 @@ void dispClear(){
 void dispInit() {
 	
 	//set control pins to output
-	DDR_CMD |= (1<<R_W) | (1<<EN) | (1<<CSEL0) | (1<<CSEL1) | (1<<D_I);
+	DDR_CMD |= (1<<R_W) | (1<<EN) | (1<<CSEL0) | (1<<CSEL1) | (1<<D_I) | (1<<RESET) | (1 << PC7);
 	
 	//set enable to idle state
-	PORT_CMD |= (1<<EN);
+	PORT_CMD |= (1<<EN) | (1<<RESET);
+	PORT_CMD &=  ~(1 << PC7);
 	
 	SELECT_ALL();
 	dispCommand(LCD_ON);

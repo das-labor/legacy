@@ -59,18 +59,19 @@ AVRX_GCC_TASKDEF(menu, 100, 5) {
 	}
 }
 uint8_t getKey() {
-	AvrXDelay(&switchtimer, 550);
+	
 	while(1) {
-		if(!(PINA & (1 << PA0))) {
+		//AvrXDelay(&switchtimer, 550);
+		if(!(PINA & (1 << PB0))) {
 			return 0;
 		}
-		if(!(PINA & (1 << PA1))) {
+		if(!(PINA & (1 << PB1))) {
 			return 1;
 		}
-		if(!(PINA & (1 << PA2))) {
+		if(!(PINA & (1 << PB2))) {
 			return 2;
 		}
-		if(!(PINA & (1 << PA3))) {
+		if(!(PINA & (1 << PB3))) {
 			return 3;
 		}
 	}

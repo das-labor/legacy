@@ -37,11 +37,11 @@ int main(void)
 //	PORTD = 0xff;
     //InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
 	dispInit(); // Display initialisierung
-	//xlap_init();
-	PORTA = 0xff; // Tastenport
-	DDRA = 0x00;
+	xlap_init();
+	//PORTA = 0xff; // Tastenport
+	//DDRA = 0x00;
 	
-	//AvrXRunTask(TCB(laptask));
+	AvrXRunTask(TCB(laptask));
 	//AvrXRunTask(TCB(keys));
 	AvrXRunTask(TCB(menu));
 
