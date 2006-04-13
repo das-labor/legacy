@@ -13,6 +13,8 @@
 
 // If Testmode 1 then only first Sub is executed
 #define TESTMODE 0
+#define SPEED "30"
+#define SPEEDQUICK "20"
 
 volatile unsigned char oldMode, oldOldmode, mode;
 
@@ -69,62 +71,84 @@ int main (void){
 			// scrolltext("</#Hier k\x80nnte Ihre Werbung stehen");
 			break;
 		case 2:
-			scrolltext("</#Rhein Fire");
-			scrolltext("d/#vs");
-			scrolltext("</#Sea Devils");
+			scrolltext("<"SPEED"/#Rhein Fire Fans on Tour");
+			wait(250);
+			scrolltext("<"SPEED"/#Amsterdam, April 15th");
+			wait(250);
 			break;
 		case 3:
 			rhein_fire_logo(5000);
 			break;
 		case 4:
-			scrolltext("</#Sea Devils");
-			scrolltext("u/#@");
-			scrolltext("</#Rhein Fire");
+			scrolltext("<"SPEED"/#D\x81sseldorf Rhein Fire");
+			scrolltext("d/#@");
+			scrolltext("<"SPEED"/#Amsterdam Admirals");
+			scrolltext("<"SPEED"/#Samstag 15. April 15:00");
+			scrolltext("<"SPEED"/#Amsterdam ArenA");
 			break;
 		case 5:
 			rhein_fire(100);
 			break;
 		case 6:
-			scrolltext("</#Das Labor - Bochum");
-			scrolltext("</#www.das-labor.org");
+			scrolltext("<"SPEEDQUICK"/#Fire Jacket Borg");
+			scrolltext("<"SPEEDQUICK"/#idea  and  realisation  by");
+			scrolltext("<"SPEEDQUICK"/#Das Labor - Bochum");
+			scrolltext("<"SPEEDQUICK"/#source code available at");
+			scrolltext("<"SPEEDQUICK"/#www.das-labor.org");
 			break;
 		case 7:
 			schachbrett(20);
 			break;
 		case 8:
-			scrolltext("</#D\x81sseldorf");
-			scrolltext("</#Samstag 8. April 19:00 Uhr");
+			scrolltext("<"SPEED"/#Rhein Fire Fans on Tour");
+			scrolltext("<"SPEED"/#Amsterdam ArenA");
+			scrolltext("<"SPEED"/#saturday, april 15th 15:00");
+			scrolltext("<"SPEED"/#D\x81sseldorf Rhein Fire");
+			scrolltext("d/#@");
+			scrolltext("<"SPEED"/#Amsterdam Admirals");
 			break;
 		case 9:
 			running();
-			scrolltext("</#!!! TOUCHDOWN !!!");
+			scrolltext("<"SPEED"/#!!! TOUCHDOWN !!!");
 			break;
 		case 10:
-			scrolltext("</#Road to Worldbowl XIV");
-			scrolltext("</#18.3. Fire vs. Galaxy");
+			scrolltext("<"SPEED"/#Road to Worldbowl XIV");
+			scrolltext("<"SPEED"/#18.3. Fire vs. Galaxy");
 			scrolltext("d/#10:6");
+			wait(250);
 			//rhein_fire(10);
-			scrolltext("</#25.3. Fire @ Thunder");
+			scrolltext("<"SPEED"/#25.3. Fire @ Thunder");
 			scrolltext(">/#22:0");
+			wait(250);
 			//rhein_fire(10);
-			scrolltext("</#2.4. Fire @ Centurions");
+			scrolltext("<"SPEED"/#2.4. Fire @ Centurions");
 			scrolltext(">/#20:10");
+			wait(250);
 			//rhein_fire(10);
-			scrolltext("</#8.4. Fire vs. Sea Devils");
+			scrolltext("<"SPEED"/#8.4. Fire vs. Sea Devils");
+			scrolltext(">/#31:21");
+			wait(250);
 			//rhein_fire(10);
-			scrolltext("</#15.4. Fire @ Admirals");
+			scrolltext("<"SPEED"/#15.4. Fire @ Admirals");
+			wait(250);
 			//rhein_fire(10);
-			scrolltext("</#22.4. Fire vs. Admirals");
+			scrolltext("<"SPEED"/#22.4. Fire vs. Admirals");
+			wait(250);
 			//rhein_fire(10);
-			scrolltext("</#29.4. Fire vs. Thunder");
+			scrolltext("<"SPEED"/#29.4. Fire vs. Thunder");
+			wait(250);
 			//rhein_fire(10);
-			scrolltext("</#6.5. Fire @ Galaxy");
+			scrolltext("<"SPEED"/#6.5. Fire @ Galaxy");
+			wait(250);
 			//rhein_fire(10);
-			scrolltext("</#14.5. Fire @ Sea Devils");
+			scrolltext("<"SPEED"/#14.5. Fire @ Sea Devils");
+			wait(250);
 			//rhein_fire(10);
-			scrolltext("</#20.5. Fire vs. Centurions");
+			scrolltext("<"SPEED"/#20.5. Fire vs. Centurions");
+			wait(250);
 			//rhein_fire(10);
-			scrolltext("</#27.5. World Bowl XIV");
+			scrolltext("<"SPEED"/#27.5. World Bowl XIV");
+			wait(250);
 			break;
 		case 11:
 			spirale(5);

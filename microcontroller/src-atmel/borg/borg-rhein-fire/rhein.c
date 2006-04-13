@@ -208,14 +208,14 @@ void test() {
 // 120 = 50 Yard linie
 void drawField(unsigned char halfyard) {
 	unsigned char x;
-        unsigned char y;
-        unsigned char n;
+	unsigned char y;
+	unsigned char n;
 
 	// Alle 5 Yard eine Linie
 	for(y = 0; y < 16; ++y){
 		if ((( halfyard + 20 + y ) % 10 ) == 0 )
 			if ((( halfyard + y) / 10 ) !=0)
-				drawLine(y);		
+				drawLine(y);
 	}	
 	// Die Null unter jeder 10er Linie	
 	for(y = 0; y < 19; ++y){
