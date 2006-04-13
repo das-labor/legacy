@@ -44,7 +44,7 @@ static void writeData(uint8_t data) {
 	enable();
 }
 
-static uint8_t readData(){
+static uint8_t doReadData(){
 	uint8_t data;
 	volatile uint8_t i;
 	
@@ -67,11 +67,17 @@ static uint8_t readData(){
 	return data;
 }
 
-static void setAddress(uint8_t x, uint8_t page) {
+static uint8_t readData(){
+	//dummy read
+	doReadData();
+	return doReadData();
+}
+
+//select column and controller accordingly
+static void setColumn(uint8_t x) {
 	
 	//validate coordinates
 	x %= 128;
-	page %= 8;
 		
 	if(x >= 64) {									// select the chip to use
 		x -= 64;
@@ -81,45 +87,31 @@ static void setAddress(uint8_t x, uint8_t page) {
 	}
 	
 	command(LCD_SET_ADD | x);						// set x address on active chip
-	
-	command(LCD_SET_PAGE | page);					// set Page
+}
+
+static void setPage(uint8_t page) {
+	page %= 8;
+	command(LCD_SET_PAGE | page);					// set Page on chip selected at the moment
 }
 
 
-void setPixel(uint8_t x, uint8_t y, uint8_t color) {
-	uint8_t data, msk;
-	
-	msk = (1<<(y%8));
-	
-	setAddress(x,y/8);
-	readData();
-	
-	data = readData();
-	if(color){
-		data |= msk;
-	}else{
-		data &= ~msk;
-	}
-	
-	setAddress(x,y/8);
-	writeData(data);
-}
-
-void clear(){
+void dispClear(){
 	uint8_t x, page;
 	for(page=0;page<8;page++){
-		setAddress(0, page);
+		setColumn(0);
+		setPage(page);
 		for(x=0;x<64;x++){
 			writeData(0);
 		}
-		setAddress(64, page);
+		setColumn(64);
+		setPage(page);
 		for(x=0;x<64;x++){
 			writeData(0);
 		}		
 	}
 }
 
-void displayInit() {
+void dispInit() {
 	
 	//set control pins to output
 	DDR_CMD |= (1<<R_W) | (1<<EN) | (1<<CSEL0) | (1<<CSEL1) | (1<<D_I);
@@ -130,5 +122,125 @@ void displayInit() {
 	SELECT_ALL();
 	command(LCD_ON);
 	command(LCD_DISP_START);						// display start line = 0
-	clear();
+	dispClear();
+}
+
+
+
+void dispSetPix(uint8_t x, uint8_t y, uint8_t color) {
+	uint8_t data, msk;
+	
+	msk = (1<<(y%8));
+	
+	setColumn(x);
+	setPage(y/8);
+	
+	data = readData();
+	if(color){
+		data |= msk;
+	}else{
+		data &= ~msk;
+	}
+	
+	setColumn(x);
+	writeData(data);
+}
+
+//draw vertical line, x & x2 inclusive
+void dispVLine(uint8_t x, uint8_t y, uint8_t y2) 
+{
+	uint8_t sp, ep, mask, data;
+	sp=y/8;
+	ep=y2/8;
+
+	mask = 0xff << (y%8);
+	
+	while(sp <= ep){
+		if(sp == ep){
+			mask &= 0xff >> (7-(y2%8));		
+		}
+		
+		setColumn(x);
+		setPage(sp);
+		data = readData();
+		
+		//write pix
+		setColumn(x);
+		writeData(mask | data);
+		mask = 0xff;
+		sp++;
+	}
+}
+
+//draw horizontal line, x & x2 inclusive
+void dispHLine(uint8_t x, uint8_t y, uint8_t x2, uint8_t color)
+{
+	uint8_t data;
+	uint8_t mask = 1 << (y%8);
+	
+	SELECT_ALL();
+	setPage(y/8);
+	
+	for(;x<=x2;x++)
+	{
+		setColumn(x);
+		data = readData();
+		
+		if(color)
+			data |= mask;	
+		else
+			data &= ~mask;
+		
+		//write pix
+		setColumn(x);
+		writeData( data );
+	}
+}
+
+void dispFillRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t color){
+	uint8_t sp, ep, mask, data, xi, y2;
+	y2 = y + height -1;
+	sp=y/8;
+	ep=y2/8;
+
+	mask = 0xff << (y%8);
+	
+	//for each page the rectangle is in
+	while(sp <= ep){
+		if(sp == ep){
+			//calculate mask for last page
+			mask &= 0xff >> (7-(y2%8));		
+		}
+		
+		//set page on both controllers
+		SELECT_ALL();
+		setPage(sp);
+		
+		//for each column
+		for(xi = x; xi < x+width; xi++){
+			setColumn(xi);
+			data = readData();
+		
+			if(color)
+				data |= mask;	
+			else
+				data &= ~mask;
+			
+			//write pix
+			setColumn(xi);
+			writeData(data);
+		}
+		mask = 0xff;
+		sp++;
+	}
+}
+
+
+
+void dispDrawRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t color) {
+	width--; height--;
+	dispHLine(x, y, x + width, color);		// top
+	dispHLine(x, y+height, x + width, color);	// bottom
+	dispVLine(x, y , y + height);			// left
+	dispVLine(x+width, y, y + height);		// right
 }

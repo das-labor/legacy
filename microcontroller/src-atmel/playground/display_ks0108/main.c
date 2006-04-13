@@ -22,16 +22,30 @@ int main(void) {
 	volatile uint16_t i;
 	for(i=0; i<15000; i++);
 		
-	displayInit();
+	dispInit();
 	
-	setPixel(5,5, 1);
-	setPixel(5,6,1);
-	setPixel(5,7,1);
-	setPixel(6,5,1);
-	setPixel(7,5,1);
-	setPixel(8,5,1);
-	setPixel(9,5,1);
+	dispSetPix(5,5, 1);
+	dispSetPix(5,6,1);
+	dispSetPix(5,7,1);
+	dispSetPix(6,5,1);
+	dispSetPix(7,5,1);
+	dispSetPix(8,5,1);
+	dispSetPix(9,5,1);
 	
+	dispVLine(10,3,28);
+	dispVLine(78,4,29);
+	
+	dispHLine(3, 17, 110, 1);
+	
+	dispHLine(1, 63, 4, 1);
+	
+	
+	dispDrawRect(30, 23, 10, 10, 1);
+	
+	dispFillRect(45, 23, 10, 10, 1);
+
+	dispFillRect(30, 38, 2, 2, 1);
+
 
 /*	
 	// Initialize the LCD
