@@ -13,7 +13,7 @@
 
 // If Testmode 1 then only first Sub is executed
 #define TESTMODE 0
-#define SPEED "30"
+#define SPEED "25"
 #define SPEEDQUICK "20"
 
 volatile unsigned char oldMode, oldOldmode, mode;
@@ -50,7 +50,6 @@ int main (void){
 		
 	}
 */
-
 	for(;;){
 		if(JOYISRIGHT){
 			test();
@@ -64,16 +63,19 @@ int main (void){
 		// Switch Subprogram
 		switch(mode) {
 		case 1:
+			break;
 			clear_screen(0);
-			// test();
-			// running();
-			// scrolltext("</#!!! TOUCHDOWN !!!");
-			// scrolltext("</#Hier k\x80nnte Ihre Werbung stehen");
+			dropSmiley(SMILING);
+    		dropSmiley(SAD);
+			//test();
+			running();
+			scrolltext("</#!!! TOUCHDOWN !!!");
+			scrolltext("</#Hier k\x80nnte Ihre Werbung stehen");
 			break;
 		case 2:
-			scrolltext("<"SPEED"/#Rhein Fire Fans on Tour");
+			scrolltext("<"SPEED"/#D\x81sseldorf Rhein Fire");
 			wait(250);
-			scrolltext("<"SPEED"/#Amsterdam, April 15th");
+			scrolltext("<"SPEED"/#LTU Arena, 22. April");
 			wait(250);
 			break;
 		case 3:
@@ -81,25 +83,25 @@ int main (void){
 			break;
 		case 4:
 			scrolltext("<"SPEED"/#D\x81sseldorf Rhein Fire");
-			scrolltext("d/#@");
+			scrolltext("d/#vs");
 			scrolltext("<"SPEED"/#Amsterdam Admirals");
-			scrolltext("<"SPEED"/#Samstag 15. April 15:00");
-			scrolltext("<"SPEED"/#Amsterdam ArenA");
+			scrolltext("<"SPEED"/#Samstag 22. April, 19:00");
+			scrolltext("<"SPEED"/#LTU Arena, D\x81sseldorf");
 			break;
 		case 5:
 			rhein_fire(100);
 			break;
 		case 6:
-			scrolltext("<"SPEEDQUICK"/#Fire Jacket Borg");
+			scrolltext("<"SPEEDQUICK"/#Rhein Fire Borg Jacket");
 			scrolltext("<"SPEEDQUICK"/#idea  and  realisation  by");
-			scrolltext("<"SPEEDQUICK"/#Das Labor - Bochum");
-			scrolltext("<"SPEEDQUICK"/#source code available at");
+			scrolltext("<"SPEEDQUICK"/#DAS LABOR - Bochum");
 			scrolltext("<"SPEEDQUICK"/#www.das-labor.org");
 			break;
 		case 7:
 			schachbrett(20);
 			break;
 		case 8:
+			break;
 			scrolltext("<"SPEED"/#Rhein Fire Fans on Tour");
 			scrolltext("<"SPEED"/#Amsterdam ArenA");
 			scrolltext("<"SPEED"/#saturday, april 15th 15:00");
@@ -115,21 +117,27 @@ int main (void){
 			scrolltext("<"SPEED"/#Road to Worldbowl XIV");
 			scrolltext("<"SPEED"/#18.3. Fire vs. Galaxy");
 			scrolltext("d/#10:6");
+			dropSmiley(SMILING);
 			wait(250);
 			//rhein_fire(10);
 			scrolltext("<"SPEED"/#25.3. Fire @ Thunder");
 			scrolltext(">/#22:0");
+			dropSmiley(SMILING);
 			wait(250);
 			//rhein_fire(10);
 			scrolltext("<"SPEED"/#2.4. Fire @ Centurions");
 			scrolltext(">/#20:10");
+			dropSmiley(SMILING);
 			wait(250);
 			//rhein_fire(10);
 			scrolltext("<"SPEED"/#8.4. Fire vs. Sea Devils");
 			scrolltext(">/#31:21");
+			dropSmiley(SMILING);
 			wait(250);
 			//rhein_fire(10);
 			scrolltext("<"SPEED"/#15.4. Fire @ Admirals");
+			scrolltext(">/#35:31");
+		    dropSmiley(SAD);
 			wait(250);
 			//rhein_fire(10);
 			scrolltext("<"SPEED"/#22.4. Fire vs. Admirals");
