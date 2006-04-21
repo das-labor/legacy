@@ -6,3 +6,7 @@ void rhein_matrix();
 void showScores(unsigned char home, unsigned char guest);
 void running();
 void test();
+
+#define SMILING 1
+#define SAD 2
+

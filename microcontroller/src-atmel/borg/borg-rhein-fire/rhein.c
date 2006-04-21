@@ -2,6 +2,7 @@
 #include "util.h"
 #include "scrolltext.h"
 #include <avr/pgmspace.h>
+#include "rhein.h"
 
 /*
 
@@ -11,6 +12,7 @@
 
 #define FRAMESPEED 100
 #define LINESPEED 10
+//#define setPixel(_X, _Y, _V) if((((unsigned char)(_X)) < 16) && (((unsigned char)(_Y)) < 16 )) setpixel( (pixel){15 - _X, _Y}, _V)
 #define setPixel(_X, _Y, _V) if(((unsigned char)(_Y)) < 16 ) setpixel( (pixel){15 - _X, _Y}, _V)
 //#define setPixel(_X, _Y, _V) setpixel( (pixel){15 - _X, _Y}, _V)
 
@@ -37,7 +39,62 @@ unsigned char rhein[16][16] PROGMEM= {
   { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 0, 0 },
   };
 
-  
+unsigned char Smile1[8][8] PROGMEM= { 
+  { 0, 0, 2, 2, 2, 2, 0, 0, },
+  { 0, 2, 0, 0, 0, 0, 2, 0, },
+  { 2, 0, 3, 0, 0, 3, 0, 2, },
+  { 2, 0, 0, 0, 0, 0, 0, 2, },
+  { 2, 0, 3, 0, 0, 3, 0, 2, },
+  { 2, 0, 0, 3, 3, 0, 0, 2, },
+  { 0, 2, 0, 0, 0, 0, 2, 0, },
+  { 0, 0, 2, 2, 2, 2, 0, 0, }
+  };
+
+unsigned char Smile2[8][8] PROGMEM= { 
+  { 0, 0, 2, 2, 2, 2, 0, 0, },
+  { 0, 2, 0, 0, 0, 0, 2, 0, },
+  { 2, 0, 3, 0, 0, 3, 0, 2, },
+  { 2, 0, 0, 0, 0, 0, 0, 2, },
+  { 2, 0, 0, 3, 3, 0, 0, 2, },
+  { 2, 0, 3, 0, 0, 3, 0, 2, },
+  { 0, 2, 0, 0, 0, 0, 2, 0, },
+  { 0, 0, 2, 2, 2, 2, 0, 0, }
+  };
+
+void drawSmiley(signed char off_x, signed char off_y, unsigned char smil[8][8] ) {
+	unsigned char x,y;
+
+	clear_screen(0);
+	for(x = 0; x < 8; x++) {
+ 		for(y = 0; y < 8; y++) {
+ 			setPixel(x + off_x, y+ off_y, pgm_read_byte(&smil[y][x]));
+ 		}
+ 	}
+ 
+
+}
+
+void dropSmiley(unsigned char smil)
+{
+	unsigned char *smiley = &Smile1;
+	switch(smil) {
+		case SMILING: 
+				smiley = &Smile1;
+				break;
+		case SAD:
+				smiley = &Smile2;
+				break;
+	}
+
+	signed char i = -8;
+
+	for(i = -8; i < 23; i++) {
+		drawSmiley( 12, i, smiley);
+		wait(80);		
+	}
+
+}
+
 void rhein_fire_logo(int ms)
  {
  	clear_screen(0);
@@ -227,7 +284,7 @@ void drawField(unsigned char halfyard) {
 		}
 	}	
 
-	// Die Zahl über jeder 10er Linie	
+	// Die Zahl ber jeder 10er Linie	
 	for(y = 0; y < 19; ++y){
 		if ((( halfyard + 20 + y - 18 ) % 20 ) == 0 ){
 			n = (( halfyard + 20 + y - 18 ) / 20 ) - 1;
@@ -277,14 +334,14 @@ void running() {
 	// ***************************************************************
 	// *** Zuerst dern Player von unten in das Bild laufen lassen  ***
 	// ***************************************************************
-	// Hier läuft der Player von der 60 zur 55 Yard linie und in den letzten 
+	// Hier l?t der Player von der 60 zur 55 Yard linie und in den letzten 
 	// 5 Schritten, sollte die Linie zusammen mit der Null von oben reinscrollen.
 	player_pos.x = 7;
 	player_pos.y = 19;
 	t=0;
 	
 	while(player_pos.y > 7){
-		// Matrix löschen
+		// Matrix lschen
 		clear_screen(0);
 
 		drawField(109);
@@ -296,7 +353,7 @@ void running() {
 		player_pos.y--;	
 
 		// Animation vom laufenden Player 
-		// 4 verschiedene Player Bilder der Größe 5 * 3
+		// 4 verschiedene Player Bilder der Gr? 5 * 3
 		for(x = 0; x < 5; x++){
 			for(y = 0; y < 3; y++){
 				if(pgm_read_byte(&player[t%4][x][y])) {
@@ -321,7 +378,7 @@ void running() {
 		drawField(yard);
 
 		// Animation vom laufenden Player
-		// 4 verschiedene Player Bilder der Größe 5 * 3
+		// 4 verschiedene Player Bilder der Gr? 5 * 3
 		for(x = 0; x < 5; x++){
 			for(y = 0; y < 3; y++){
 				if(pgm_read_byte(&player[t%4][x][y])) {
