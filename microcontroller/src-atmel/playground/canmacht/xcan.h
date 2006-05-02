@@ -15,19 +15,19 @@
 typedef unsigned char can_addr;
 typedef unsigned char can_port;
 
-typedef struct{
-	can_addr      addr_src;
-	can_addr      addr_dst;
-	can_port      port_src;
-	can_port      port_dst;
+typedef struct {
+	can_addr	addr_src;
+	can_addr	addr_dst;
+	can_port	port_src;
+	can_port	port_dst;
 	unsigned char dlc;
 	unsigned char data[8];
 }can_message_t;
 
-typedef struct{
-	uint8_t in;
-	uint8_t out;
-	uint8_t size;
+typedef struct {
+	uint8_t	in;
+	uint8_t	out;
+	uint8_t	size;
 	can_message_t buf[10];
 }can_fifo_t;
 

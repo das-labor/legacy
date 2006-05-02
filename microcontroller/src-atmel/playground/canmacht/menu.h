@@ -6,6 +6,7 @@ typedef struct {
 	void (*show)(void *data, uint8_t selected);
 	void (*enter)(void *data);
 	void *data;
+	uint8_t type;
 } menu_item_t;
 
 
@@ -23,7 +24,6 @@ typedef struct {
 
 extern menu_t root;
 
-extern void menu_handler(void *data);
-extern void show_menu(void *data, uint8_t selected);
-extern void menu_update(uint8_t act);
-extern void show_text(void* data, uint8_t selected);
+
+
+

@@ -21,6 +21,7 @@ void process_mgt_msg() {
 	static can_message_t msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
 	switch(rx_msg.data[0]) {
 		case FKT_MGT_RESET:
+			TCCR2 =0;
 			wdt_enable(0);
 			while(1);
 		case FKT_MGT_PING:

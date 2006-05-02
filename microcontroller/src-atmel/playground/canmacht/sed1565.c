@@ -116,8 +116,7 @@ void dispSetPix(uint8_t x, uint8_t y, uint8_t color)
 
 
 //drav horizontal line, x & x2 inclusive
-void dispHLine(uint8_t x, uint8_t y, uint8_t x2, uint8_t color)
-{
+void dispHLine(uint8_t x, uint8_t y, uint8_t x2, uint8_t color) {
 	//set read/mod/write (read doesn't increment column)
 	dispWriteCommand(0xe0);
 
@@ -129,40 +128,29 @@ void dispHLine(uint8_t x, uint8_t y, uint8_t x2, uint8_t color)
 
 	uint8_t mask = 1 << (y%8);
 
-	if(color){
-		while(x++<=x2)
-		{
+	if(color) {
+		while(x++<=x2) {
 			//dummy read
 			dispReadByte();
 			//write pix
 			dispWriteByte( mask | dispReadByte() );
 		}
-	}else{
+	}
+	else {
 		mask = ~mask;
-		while(x++<=x2)
-			{
+		while(x++<=x2) {
 			//dummy read
 			dispReadByte();
 			//write pix
 			dispWriteByte( mask & dispReadByte() );
 		}
 	}
-
-	while(x++<=x2)
-	{
-		//dummy read
-		dispReadByte();
-		//write pix
-		dispWriteByte(color?(0x01 << (y % 8)) | dispReadByte():
-	                        ~(0x01 << (y % 8)) & dispReadByte());
-	}
 	//end read/mod/write
 	dispWriteCommand(0xee);
 }
 
 //drav vertical line, x & x2 inclusive
-void dispVLine(uint8_t x, uint8_t y, uint8_t y2) 
-{
+void dispVLine(uint8_t x, uint8_t y, uint8_t y2) {
 	uint8_t sp, ep, mask;
 	sp=y/8;
 	ep=y2/8;
@@ -173,8 +161,8 @@ void dispVLine(uint8_t x, uint8_t y, uint8_t y2)
 
 	mask = 0xff << (y%8);
 	
-	while(sp <= ep){
-		if(sp == ep){
+	while(sp <= ep) {
+		if(sp == ep) {
 			mask &= 0xff >> (7-(y2%8));		
 		}
 		DISPSETPAGE(sp);
@@ -191,8 +179,7 @@ void dispVLine(uint8_t x, uint8_t y, uint8_t y2)
 	dispWriteCommand(0xee);
 }
 
-void dispFillRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t color) 
-{
+void dispFillRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t color) {
 	uint8_t sp, ep, mask;
 	uint8_t y2 = y + height - 1;
 	sp=y/8;
@@ -203,9 +190,9 @@ void dispFillRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t c
 	
 	mask = 0xff << (y%8);
 	
-	while(sp <= ep){
+	while(sp <= ep) {
 		uint8_t xi;
-		if(sp == ep){
+		if(sp == ep) {
 			mask &= 0xff >> (7-(y2%8));		
 		}
 		DISPSETPAGE(sp);
@@ -227,14 +214,3 @@ void dispFillRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t c
 	}
 	//end read/mod/write	dispWriteCommand(0xee);
 }
-
-
-
-void dispDrawRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t color) {
-	  	
-	dispHLine(x, y, x + width, color);		// top
-	dispHLine(x, y+height, x + width, color);	// bottom
-	dispVLine(x, y , y + height);			// left
-	dispVLine(x+width, y, y + height);		// right
-}
-
