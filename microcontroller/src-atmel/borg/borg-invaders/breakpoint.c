@@ -109,11 +109,15 @@ void breakpoint() {
 			wait(45);
 		}
 		wait(100);
+		drawPixmapPos(56, 1);
+		wait(100);
 		for (i = 56; i >= 8 ; i--) {
-			drawPixmapPos(i, 1)	;
+			drawPixmapPos(i, 2)	;
 			wait(45);
 		}
-		wait(100);	
+		wait(100);
+		drawPixmapPos(8, 1);
+		wait(100);		
 	}
 	wait(900);
 		for (x = 0; x < 4; x++) {
