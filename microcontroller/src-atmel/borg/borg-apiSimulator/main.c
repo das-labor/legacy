@@ -63,7 +63,9 @@ void display(void){
 						color = level+1;		
 					}
 				}
-				drawLED(color, (float)(NUM_COLS-1-y)*4.0, (float)x*4.0, (float)(NUM_ROWS-1-z)*4.);
+				drawLED(color, (float)y*4.0, 
+				               (float)x*4.0, 
+							   (float)(NUM_ROWS-1-z)*4.0);
 			}
 		}
   	}
@@ -144,6 +146,8 @@ void timf(int value) {
 
 void *display_loop(void * unused) {
 	while (1) {	
+		schwarzesLoch();
+		breakpoint();
         scrolltext("Scrolltext3 Test.~", 0, 70);
 		matrix();
 		fadein();
