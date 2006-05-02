@@ -63,7 +63,7 @@ pthread_t simthread;
 GLUquadric* quad;
 
 
-/** drwas a LED to the position (pos_x, pos_y, poy_z) to the screen.
+/** draws a LED to the position (pos_x, pos_y, poy_z) to the screen.
  *  It has the brightness color. 0 = off -> 3 = full on. Its done by 
  *  using glCallLists. They a defined in main() and because they were put 
  *  onto the graficcard, are much more faster.
