@@ -47,7 +47,7 @@ CANADDR = 67
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
 
-SRC = main.c xcan.c spi.c keys.c xlap.c text.c font_small6.c grafiklcd.c ks0108.c menu.c
+SRC = main.c xcan.c spi.c xlap.c text.c font_small6.c grafiklcd.c ks0108.c menu.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
