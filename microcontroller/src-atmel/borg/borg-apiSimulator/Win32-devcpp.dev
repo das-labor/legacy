@@ -1,7 +1,7 @@
 [Project]
 FileName=Win32-devcpp.dev
 Name=borg-apiSimulator
-UnitCount=15
+UnitCount=16
 Type=0
 Ver=1
 ObjFiles=
@@ -189,6 +189,16 @@ BuildCmd=
 
 [Unit15]
 FileName=font-small6.h
+CompileCpp=1
+Folder=borg-apiSimulator
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit16]
+FileName=breakpoint.c
 CompileCpp=1
 Folder=borg-apiSimulator
 Compile=1
