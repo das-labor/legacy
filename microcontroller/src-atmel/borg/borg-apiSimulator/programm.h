@@ -11,3 +11,6 @@ void labor_borg();
 void matrix1();
 void fadein();
 void feuer();
+void breakpoint();
+void schwarzesLoch();
+void schwarzesLoch2();

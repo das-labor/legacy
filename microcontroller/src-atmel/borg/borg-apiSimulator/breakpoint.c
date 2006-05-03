@@ -115,7 +115,7 @@ void breakpoint() {
 	wait(100);
 }
 
-void drawDrachen(point p1, po);
+//void drawDrachen(point p1, po);
 
 
 /************************************************************************/
