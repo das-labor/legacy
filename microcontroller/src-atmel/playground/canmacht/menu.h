@@ -1,3 +1,5 @@
+#include <AvrXFifo.h>
+
 AVRX_EXTERNTASK(menu);
 
 #define _TIMSK_TIMER1 TIMSK
@@ -24,6 +26,10 @@ typedef struct {
 
 extern menu_t root;
 
-
+extern unsigned char bla[8];
+extern Mutex rx_mutex;
+#ifndef MENU
+AVRX_EXT_FIFO(rftxfifo); 
+#endif
 
 
