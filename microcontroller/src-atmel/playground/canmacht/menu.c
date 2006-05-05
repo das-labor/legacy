@@ -6,12 +6,15 @@
 #include "avrx.h"               // AvrX System calls/data structures
 #include "config.h"
 #include "xcan.h"
+#define MENU
 #include "menu.h"
 #include "text.h"
 #include "lap.h"
 #include "grafiklcd.h"
 #include "stdlib.h"
 #include "string.h"
+
+#define mc_POS_DIV(a, b)  ( (a)/(b) +  ( ( (a) % (b) >= (b)/2 ) ? 1 : 0 ) )
 
 struct {
 	int8_t x;
@@ -22,6 +25,10 @@ extern menu_t root;
 int8_t blightstat;
 
 uint8_t scriptstat;
+
+unsigned char bla[8];
+
+Mutex rx_mutex;
 
 void make_basemenu();
 menu_item_t *make_item(void *show, void *enter, menu_t *menu, uint8_t type) ;
@@ -34,6 +41,8 @@ void menu_update(uint8_t act);
 void show_text(void* data, uint8_t selected);
 void show_mood(void *data, uint8_t selected);
 void switch_script();
+void temp(void *data);
+void ctrl_mood(void *data);
 /*
 menu_item_t mi_i0 = {&show_menu, &menu_handler, &root}; // nur zum testen
 menu_item_t *bla[] = {&mi_i0};				// "
@@ -87,9 +96,11 @@ menu_t root = {"/", 0, 0};
 TimerControlBlock switchtimer;
 
 AVRX_GCC_TASKDEF(menu, 100, 5)  {
+
 	DDRD |= (1 << PD7);
   	TCCR2 = (1<<WGM21) | (1<<WGM20) | (1 << COM21) | (1 << COM20) | (1 << CS22) | (1 << CS21) | (0 << CS20);
 	OCR2 = 0;
+
 	make_basemenu();
 	menu_handler(&root);
 	while (1);
@@ -98,16 +109,19 @@ AVRX_GCC_TASKDEF(menu, 100, 5)  {
 void make_basemenu() {	
 	menu_add_item(&root, make_item(&show_menu, &menu_handler, make_menu("setup"), 0), 0);
 	menu_add_item(root.items[0]->data, make_item(&show_menu, &switch_blight, make_menu("bglight"), 1), 0);
+
 	menu_add_item(&root, make_item(&show_menu, &menu_handler, make_menu("ctrl"), 0), 1);
 	menu_add_item(root.items[1]->data, make_item(&show_menu, &menu_handler, make_menu("mood"), 0), 0);
 	menu_t * ctrl = root.items[1]->data;
 	menu_add_item(ctrl->items[0]->data, make_item(&show_menu, &switch_script, make_menu("script"), 1), 0);
+	menu_add_item(ctrl->items[0]->data, make_item(&show_menu, &ctrl_mood, make_menu("dimm"), 1), 1);
+
 	menu_add_item(&root, make_item(&show_menu, &menu_handler, make_menu("info"), 0), 2);
-	
+	menu_add_item(root.items[2]->data, make_item(&show_menu, &temp, make_menu("temp"), 0), 0);
 }
 
-uint8_t getKey() {  // keyport in header
-	AvrXDelay(&switchtimer, 550);
+uint8_t getKey(uint16_t delay) {  // keyport in header
+	AvrXDelay(&switchtimer, delay);
 	while(1) {
 		
 		if(!(PINB & (1 << PB0))) { // up
@@ -132,35 +146,36 @@ void menu_handler(void *data) {
 	DRAW_MEN:  // sprung für neuzeichnung
 	pos.y = 0;
 
-	dispFillRect(pos.y, pos.x, 41, 10*menu->size, 0);
+	//dispFillRect(0, 0, 40, 11*menu->size, 0);
 
 	for(i = 0; i < menu->size; i++) {
 		menu->items[i]->show(menu->items[i]->data, (sel==i));
-		pos.y += 9;
+		pos.y += 11;
 		if(i >= 6)
 			break;
 	}
 	while(1) {  // keyhandeling
-		key = getKey();
+		key = getKey(550);
 		// enter
 		if(key == 2) {
-			if(!menu->items[sel]->type&0x01)
-				dispFillRect(0, pos.x, 41, 10*menu->size, 0);
+			if(!(menu->items[sel]->type & 0x01))
+				dispFillRect(0, 0, 40, 11*menu->size+1, 0);
 			//pos.x += 20;
-			menu->items[sel]->enter(menu->items[sel]->data); // enter	
+			menu->items[sel]->enter(menu->items[sel]->data); // enter
 			goto DRAW_MEN;
 		}
 
 	// zurück
 		if(key == 3) {
-			//fillRect(0, pos.x, 41, 10*menu->size, 1);
 			//pos.x -= 20;
-			if(menu->name != "/") // nicht aus Hauptmenu springen
+			if(menu->name != "/") { // nicht aus Hauptmenu springen
+				dispFillRect(0, 0, 40, 11*menu->size+1, 0);
 				return;
+			}
 		}
 	//	up down
 		if(key < 2) {
-			pos.y = sel*9;
+			pos.y = sel*11;
 			menu->items[sel]->show(menu->items[sel]->data, 0);
 			if(key == 1)
 				sel++;
@@ -170,7 +185,7 @@ void menu_handler(void *data) {
 				sel = 0;
 			if(sel < 0)
 				sel = menu->size - 1;
-			pos.y = sel*9;
+			pos.y = sel*11;
 			menu->items[sel]->show(menu->items[sel]->data, 1);
 		}
 	}
@@ -178,8 +193,8 @@ void menu_handler(void *data) {
 
 void show_menu(void *data, uint8_t selected) {
 	menu_t *menu = data;
-	dispDrawRect(pos.x, pos.y, 40, 9, 1);
-	dispFillRect(pos.x+1, pos.y+1, 39, 8, selected);
+	dispDrawRect(pos.x, pos.y, 40, 12, 1);
+	dispFillRect(pos.x+1, pos.y+1, 38, 10, selected);
 	draw_Text(menu->name, pos.x+2, pos.y+2, 0, 1, !selected);
 }
 /*
@@ -233,10 +248,10 @@ menu_item_t *make_item(void *show, void *enter, menu_t *menu, uint8_t type) {
 
 void switch_blight(void *data, uint8_t selected) {
 	uint8_t key;
-	dispDrawRect(50, 15, 31, 4, 1);
+	dispDrawRect(50, 15, 32, 5, 1);
 	dispFillRect(51, 16, blightstat*3, 3, 1);
 	while(1) {  // keyhandeling
-		key = getKey();
+		key = getKey(550);
 		if(key == 3) {
 			dispFillRect(50, 15, 32, 5, 0);
 			return;
@@ -269,58 +284,92 @@ void switch_script() {
 	else
 		scriptstat=1;
 }
-/*
+
+void temp(void *data) {
+	menu_t *menu = data;
+	static can_message_t msg={0xa0, 0xa1, PORT_REMOTE, PORT_TEMP};
+	//msg.addr_src = 0xa0;
+	
+	msg.dlc = 1;
+	msg.data[0] = 0x90;
+	while(1) {  // keyhandeling
+		AvrXDelay(&switchtimer, 550);
+		if(!(PINB & (1 << PB3))) { // ok
+			dispFillRect(50, 30, 30, 8, 0);
+			return;
+		}
+		dispFillRect(50, 30, 30, 8, 0);
+		can_put(&msg);
+		AvrXWaitSemaphore(&rx_mutex);
+		draw_Text(bla, 50, 30, 0, 1, 1);
+	}
+}
+
 void ctrl_mood(void *data) {
 	menu_t *menu = data;
 	uint8_t i, key;
-	static can_message_t msg={0xa0, 0xa1, PORT_REMOTE, PORT_MOOD, 0};
+	can_message_t msg = {0xa0, 0xa1, PORT_REMOTE, PORT_MOOD, 0};
 	//msg.addr_src = 0xa0;
 	
-	//msg.dlc = 1;
-	//msg.data[0] = FKT_MOOD_GET_B;
-	//can_put(&msg);
-
+	msg.dlc = 1;
+	msg.data[0] = FKT_MOOD_GET_B;
+	can_put(&msg);
+	AvrXWaitSemaphore(&rx_mutex);
+	uint8_t val[8];
+	strcpy(val, bla);
+	for(i=0;i<3;i++) {
+		dispDrawRect(50, (10*i), 30, 5, 1);
+		dispFillRect(51, (10*i)+1, mc_POS_DIV(val[i], 9), 3, 1);
+	 }
+	
+	
+	msg.dlc = 3;
+	msg.data[0] = FKT_MOOD_SET_B;
+	i=0;
+	dispFillRect(45, 1, 3, 3, 1);
+	AvrXDelay(&switchtimer, 500);
 	while(1) {  // keyhandeling
-		key = getKey();
-		// enter
-		if(key == 0) {
-			// dunkeler balken --
-		}
-		if(key == 1) {
-			msg.dlc = 3;
-			msg.data[0] = FKT_MOOD_SET_B;
-			msg.data[1] = 0x00;
-			msg.data[2] = 0x45;
+		key = getKey(60);
+		if(key < 2) {
+			dispFillRect(51, (10*i)+1, mc_POS_DIV(val[i], 9), 3, 0);
+			if(key == 1 && val[i] != 0)
+				val[i]--;
+			if(key == 0 && val[i] != 255)
+				val[i]++;
+			dispFillRect(51, (10*i)+1, mc_POS_DIV(val[i], 9), 3, 1);
+			msg.data[1] = i;
+			msg.data[2] = val[i];
 			can_put(&msg);
 		}
 		if(key == 2) {
-			// sel balken?
+			AvrXDelay(&switchtimer, 500);
+			dispFillRect(45, (10*i)+1, 3, 3, 0);
+			i++;
+			if(i == 3)
+				i=0;
+			AvrXDelay(&switchtimer, 500);
+			dispFillRect(45, (10*i)+1, 3, 3, 1);
 		}
 		if(key == 3) {
-			// back
+			dispFillRect(45, (10*i)+1, 3, 3, 0);
+			for(i=0;i<3;i++) {
+				dispFillRect(50, 10*i, 30, 5, 0);
+	 		}
+			return;
 		}
 		
 	}
 }
-*/
 /*
 setup
 scan
 	remove entrys
 	scan + add entrys
-	backlight // kontrast
+	// kontrast
 */
 /*
 // adds an entry to a menu structure at pos
-void menu_add_entry(menu **menu_pt, menu_entry * entry, uint16_t pos){
-	(*menu_pt) = realloc((*menu_pt), 4+((*menu_pt)->entry_num+1)*sizeof(menu_entry) );
-	uint16_t x;
-	for(x=(*menu_pt)->entry_num; x>=(pos+1); x--){
-		(*menu_pt)->entries[x] = (*menu_pt)->entries[x-1];
-	}
-	(*menu_pt)->entries[pos] = *entry;
-	(*menu_pt)->entry_num++;
-}
+
 
 void menu_remove_entry(menu **menu_pt, uint16_t pos){
 	uint16_t x;
