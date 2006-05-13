@@ -34,6 +34,7 @@
 # IPTables::IPv4::IPQueue
 # NetPacket::IP
 # Net::RawSock http://www.hsc.fr/ressources/outils/rawsock/index.html.enk
+# Regexp::Parser
 #
 # Contributors
 # ------------
@@ -74,6 +75,7 @@ use NetPacket::ICMP;
 use NetPacket::UDP;
 use NetPacket::TCP;
 use Net::RawSock;
+use Regexp::Parser;
 use constant TIMEOUT => 1_000_000 * 2;    # 2 seconds
 
 #
@@ -133,9 +135,16 @@ sub rverify
         /x;
 
     bug("proto:$1 src:$2 port:$3 direction:$4 dst:$5 port:$6 regex:'$7'",8);
-    eval " $7 " or bug("die in eval regex $7: $@",8);
-    bug("error in regex $7: $@",8) if($@);
+    if(validateregex($7)) {
+      bug("sucess",8);
+      return 1;
+    } else {
+      bug("err",8);
+      return 0;
+    }
 }
+
+# testing eval of regex XXX
 exit;
 
 #
@@ -163,6 +172,44 @@ while (1) {
 #
 # helper subs
 #
+sub validateregex {
+  my $test = shift;
+  my ($code, $simple, $quanti, $regexp);
+
+  $code = qr/(?: (?:
+      [^{}]                  # not a curly brackets
+  |   \{ (??{ $code }) \}    # balanced curly brackets
+  )* )/x;
+
+  $simple = qr/(?:
+      \\ [pP] \{ \w+ \}                                       # \p{Prop}
+  |   \\.                                                     # escape
+  |   \[ (?: \\. | [^\]] )+ \]                                # [range]
+  |   \( \? \# [^)]+ \)                                       # (?#text)
+  |   \( \? [imsx]* -? [imsx]* (?: : (??{ $regexp }) )? \)    # (?imsx-imsx)
+  |   \( \? (?: [:=!>] | <[=!] ) (??{ $regexp }) \)           # (?=pattern)
+  |   \( \? \?? \{ (??{ $code }) \} \)                        # (?{ code })
+  |   \( \? \( (?: \d+ | \? [=!<] (??{ $regexp }) | \? \{ (??{ $code }) \} ) \)
+          (??{ $regexp }) (?: \| (??{ $regexp }) )? \)        # (?(1)y|n)
+  |   \( (??{ $regexp }) \)                                   # parenthesis
+  |   [^\\|()\[\]*+?{}]                                       # single char
+  )/x;
+
+  $quanti = qr/(?:
+      (?: $simple (?: [+*?] \?? | \{ \d+ (?: , \d* )? \} \?? )?
+  )* )/x;
+
+  $regexp = qr/(?:
+      $quanti (?: \| $quanti )*
+  )/x;
+
+  if($test =~ /^$regexp$/) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
 sub bug {
     my $info  = shift;
     my $level = shift;
@@ -351,3 +398,5 @@ sub phandle
 }
 
 #eof
+
+
