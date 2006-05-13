@@ -83,18 +83,16 @@ use constant TIMEOUT => 1_000_000 * 2;    # 2 seconds
 #
 
 # general options
-my %o = (
-    debug_level => 9
-);
+my %o = ( debug_level => 9 );
 
 # colors
 my %c = (
-    normal      => "\x1b\x5b" . "m",
-    debug       => "\x1b\x5b" . "31m",
-    ipsrc       => "\x1b\x5b" . "35m",
-    tcpdst      => "\x1b\x5b" . "36m",
-    mark        => "\x1b\x5b" . "37m:",
-    unimportant => "\x1b\x5b" . "37m"
+  normal      => "\x1b\x5b" . "m",
+  debug       => "\x1b\x5b" . "31m",
+  ipsrc       => "\x1b\x5b" . "35m",
+  tcpdst      => "\x1b\x5b" . "36m",
+  mark        => "\x1b\x5b" . "37m:",
+  unimportant => "\x1b\x5b" . "37m"
 );
 
 # rules
@@ -102,71 +100,59 @@ my %c = (
 #
 my @r = [];
 radd("tcp any:any <> any:any s/felix/xilef/i");
-radd("tcp any:any <> any:any s///i");
-radd("tcp any:any <> any:any s/asdf(as/df/i");
+radd("tcp any:any <> any:any s/felix/xilef/i");
+radd("tcp any:any <> any:any s/asdf/fdaslef/i");
+radd("tcp any:any <> any:any s/asdf(as/df/i"); # invalid
 
 #
 # rule subs
 #
-sub radd
-{
-    my $rule = shift;
-    if ( rverify($rule) ) {
-        push @r, $rule;
-        return 1;
-    } else {
-        return 0;
-    }
-}
+sub radd {
+  my $string = shift;
+  my $hash = {};
 
-sub rverify
-{
-    my $rule = shift;
-    bug("verifying rule $rule",8);
-
-    $rule =~ m/
+  if (
+    $string =~ m/
         (tcp|udp|icmp)\s #proto
-        (any|[0-9\*]\.[0-9\*]\.[0-9\*]\.[0-9\*]): # ip1
-        (any|[0-9]{})\s #port1
+        (any|\d+\.\d+\.\d+\.\d+): # ip1
+        (any|\d+)\s #port1
         (\>|\<|\<\>)\s #direction
-        (any|[0-9\*]\.[0-9\*]\.[0-9\*]\.[0-9\*]): # ip2
-        (any|[0-9])\s #port2
+        (any|\d+\.\d+\.\d+\.\d+): # ip2
+        (any|\d+)\s #port2
         (.*$) #regex
-        /x;
-
-    bug("proto:$1 src:$2 port:$3 direction:$4 dst:$5 port:$6 regex:'$7'",8);
-    if(validateregex($7)) {
-      bug("sucess",8);
+        /x
+    )
+  {
+    if ( validateregex($7) ) { # everything is valid
+      push @r, [$1, $2, $3, $4, $5, $6, $7];
       return 1;
-    } else {
-      bug("err",8);
-      return 0;
     }
+  }
+
+  return 0;
 }
 
-# testing eval of regex XXX
-exit;
 
 #
 # main loop
 #
 my $swap;
 my $queue = new IPTables::IPv4::IPQueue(
-    copy_mode  => IPQ_COPY_PACKET,
-    copy_range => 2048
+  copy_mode  => IPQ_COPY_PACKET,
+  copy_range => 2048
   )
   or die IPTables::IPv4::IPQueue->errstr;
 
 while (1) {
-    my $msg = $queue->get_message(TIMEOUT);
-    if ( !defined $msg ) {
-        next if IPTables::IPv4::IPQueue->errstr eq 'Timeout';
-        die IPTables::IPv4::IPQueue->errstr;
-    }
+  my $msg = $queue->get_message(TIMEOUT);
+  if ( !defined $msg ) {
+    next if IPTables::IPv4::IPQueue->errstr eq 'Timeout';
+    die IPTables::IPv4::IPQueue->errstr;
+  }
 
-    if ( $msg->data_len() ) {    # skip empty packets
-        phandle($msg);
-    }
+  if ( $msg->data_len() ) {    # skip empty packets
+    phandle($msg);
+  }
 }
 
 #
@@ -174,7 +160,7 @@ while (1) {
 #
 sub validateregex {
   my $test = shift;
-  my ($code, $simple, $quanti, $regexp);
+  my ( $code, $simple, $quanti, $regexp );
 
   $code = qr/(?: (?:
       [^{}]                  # not a curly brackets
@@ -203,21 +189,22 @@ sub validateregex {
       $quanti (?: \| $quanti )*
   )/x;
 
-  if($test =~ /^$regexp$/) {
+  if ( $test =~ /^$regexp$/ ) {
     return 1;
-  } else {
+  }
+  else {
     return 0;
   }
 }
 
 sub bug {
-    my $info  = shift;
-    my $level = shift;
-    if ( $info and $level le $o{debug_level} ) {
-        print $c{debug};
-        print "[debug] $info";
-        print $c{normal} . "\n";
-    }
+  my $info  = shift;
+  my $level = shift;
+  if ( $info and $level le $o{debug_level} ) {
+    print $c{debug};
+    print "[debug] $info";
+    print $c{normal} . "\n";
+  }
 }
 
 #
@@ -226,55 +213,55 @@ sub bug {
 
 # take a binary string and dump it in ascii or ^s
 sub dump_ascii {
-    my $input = shift;
-    my ( $i, $char, $return );
-    $return = " ";
+  my $input = shift;
+  my ( $i, $char, $return );
+  $return = " ";
 
-    for ( $i = 0 ; $i < length $input ; $i++ ) {
-        $char = substr( $input, $i, 1 );
-        if ( ord $char > 31 ) {
-            $return = $return . $c{normal} . $char;
-        }
-        elsif ( ord $char == 9 ) {
-            $return = $return . $c{unimportant} . "\\t" . $c{normal};
-        }
-        elsif ( ord $char == 10 ) {
-            $return = $return . $c{unimportant} . "\\n" . $c{normal};
-        }
-        else {
-            $return = $return . $c{unimportant} . "^" . $c{normal};
-        }
+  for ( $i = 0 ; $i < length $input ; $i++ ) {
+    $char = substr( $input, $i, 1 );
+    if ( ord $char > 31 ) {
+      $return = $return . $c{normal} . $char;
     }
-    return $return;
+    elsif ( ord $char == 9 ) {
+      $return = $return . $c{unimportant} . "\\t" . $c{normal};
+    }
+    elsif ( ord $char == 10 ) {
+      $return = $return . $c{unimportant} . "\\n" . $c{normal};
+    }
+    else {
+      $return = $return . $c{unimportant} . "^" . $c{normal};
+    }
+  }
+  return $return;
 }
 
 sub dump_tcp_nice {
-    my ( $payload, $ip, $tcp );
-    $payload = shift;
+  my ( $payload, $ip, $tcp );
+  $payload = shift;
 
-    $ip  = NetPacket::IP->decode($payload);
-    $tcp = NetPacket::TCP->decode( $ip->{data} );
+  $ip  = NetPacket::IP->decode($payload);
+  $tcp = NetPacket::TCP->decode( $ip->{data} );
 
-    if ( $tcp->{data} ) {    # skip empty tcp packets
-        print "[tcp] "
-          . $c{ipsrc}
-          . $ip->{src_ip}
-          . $c{mark}
-          . $c{tcpdst}
-          . $tcp->{dest_port}
-          . $c{mark}
-          . dump_ascii( $tcp->{data} )
-          . $c{normal} . "\n";
-    }
+  if ( $tcp->{data} ) {    # skip empty tcp packets
+    print "[tcp] "
+      . $c{ipsrc}
+      . $ip->{src_ip}
+      . $c{mark}
+      . $c{tcpdst}
+      . $tcp->{dest_port}
+      . $c{mark}
+      . dump_ascii( $tcp->{data} )
+      . $c{normal} . "\n";
+  }
 }
 
 sub dump_packet {
-    my ( $payload, $ip );
-    $payload = shift;
+  my ( $payload, $ip );
+  $payload = shift;
 
-    $ip = NetPacket::IP->decode($payload);
+  $ip = NetPacket::IP->decode($payload);
 
-    print <<EOT;
+  print <<EOT;
 [IP Header]
 Version           : $ip->{ver}
 Header Length     : $ip->{hlen}
@@ -294,9 +281,9 @@ EOT
 }
 
 sub dump_meta {
-    my $msg = shift;
+  my $msg = shift;
 
-    print <<EOT;
+  print <<EOT;
 [Metadata]
 Packet ID         : @{[ $msg->packet_id() ]}
 Mark              : @{[ $msg->mark() ]}
@@ -316,87 +303,71 @@ EOT
 #
 # packet handling
 #
-sub pdrop
-{
-    my $msg = shift;
-    bug( "dropped " . $msg->packet_id, 5 );
-    $queue->set_verdict( $msg->packet_id, NF_DROP );
+sub pdrop {
+  my $msg = shift;
+  bug( "dropped " . $msg->packet_id, 5 );
+  $queue->set_verdict( $msg->packet_id, NF_DROP );
 }
 
-sub paccept
-{
-    my $msg = shift;
-    bug( "acceptd " . $msg->packet_id, 5 );
-    $queue->set_verdict( $msg->packet_id, NF_ACCEPT );
+sub paccept {
+  my $msg = shift;
+  bug( "acceptd " . $msg->packet_id, 5 );
+  $queue->set_verdict( $msg->packet_id, NF_ACCEPT );
 }
 
-sub pinject
-{
-    my $pkt = shift;
-    bug( "injected packet",5);
-    Net::RawSock::write_ip($pkt);
+sub pinject {
+  my $pkt = shift;
+  bug( "injected packet", 5 );
+  Net::RawSock::write_ip($pkt);
 }
 
-sub phandle
-{
-    my $msg = shift;
-    bug( "got ".$msg->data_len." byte packet ".$msg->packet_id." on device ".$msg->indev_name."/".$msg->outdev_name." with hook ". $msg->hook, 5 );
+sub phandle {
+  my $msg = shift;
+  my ($x, $y);
 
-    my $ip = NetPacket::IP->decode( $msg->payload() );
+  bug(
+    "got "
+      . $msg->data_len
+      . " byte packet "
+      . $msg->packet_id
+      . " on device "
+      . $msg->indev_name . "/"
+      . $msg->outdev_name
+      . " with hook "
+      . $msg->hook,
+    5
+  );
 
-    if ( $ip->{proto} == 1 ) { # icmp packets
-        my $icmp = NetPacket::ICMP->decode( $ip->{data} );
+  my $ip = NetPacket::IP->decode( $msg->payload() );
 
-        if ( $icmp->{type} == 8 ) {    # icmp echo request
-            pdrop($msg);
+  if ( $ip->{proto} == 1 ) {    # icmp packets
+  }
+  elsif ( $ip->{proto} == 58 ) {    # udp
+  }
+  elsif ( $ip->{proto} == 6 ) {     # tcp
+    my $tcp = NetPacket::TCP->decode( $ip->{data} );
 
-            #
-            # sample icmp ping reply faker/injector
-            #
+    if ( $tcp->{data} ) {
+      dump_tcp_nice( $msg->payload() );
 
-            # change packet
-            $icmp->{type}  = 0;
-            $icmp->{cksum} = 0;
+      bug( "testing packet for modification", 5 );
 
-            $ip->{data}    = $icmp->encode;
-            $swap          = $ip->{dest_ip};
-            $ip->{dest_ip} = $ip->{src_ip};
-            $ip->{src_ip}  = $swap;
-
-            bug( "injected fake echo reply", 5 );
-            pinject( $ip->encode );
-
-            return;
+      # print the whole thing with indices
+      for $x ( 0 .. $#r ) {
+        for $y ( 1 .. ( scalar $r[$x] ) ) { ### XXX stepping through rules does not work
+          print "$x $y ".$r[$x][$y-1]."\n";
         }
-    }
-    elsif ( $ip->{proto} == 58 ) {    # udp
-    }
-    elsif ( $ip->{proto} == 6 ) {     # tcp
-        my $tcp = NetPacket::TCP->decode( $ip->{data} );
+        print "\n";
+      }
 
-        dump_tcp_nice( $msg->payload() );
-
-        if( $tcp->{data} ) {
-            bug( "testing packet for modification", 5);
-            $tcp->{data} =~ s/felix/xilef/g;
-            if(length $&) { # XXX is this the correct var?
-                bug( "modifying packet", 5);
-                $ip->{data} = $tcp->encode($ip); # build tcp packet
-                pdrop($msg);
-                pinject($ip->encode); # build ip packet
-            }
-
-            paccept($msg);
-
-            return;
-        }
-
+      paccept($msg);
+      return;
     }
 
-    # accept any other packages
-    paccept($msg);
+  }
+
+  # accept any other packages
+  paccept($msg);
 }
 
 #eof
-
-
