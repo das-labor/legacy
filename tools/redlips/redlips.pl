@@ -306,7 +306,7 @@ sub pinject {
 
 sub phandle {
   my $msg = shift;
-  my $rule;
+  my ( $rule, $data );
   my $ip = NetPacket::IP->decode( $msg->payload() );
 
   bug(
@@ -327,6 +327,7 @@ sub phandle {
   if ( $ip->{proto} == 58 ) {    # udp
     my $udp = NetPacket::UDP->decode( $ip->{data} );
     if ( $udp->{data} ) {
+      $data = $udp->{data};
       print "[udp] "
         . $c{src_ip}
         . $ip->{src_ip}
@@ -346,6 +347,7 @@ sub phandle {
   elsif ( $ip->{proto} == 6 ) {    # tcp
     my $tcp = NetPacket::TCP->decode( $ip->{data} );
     if ( $tcp->{data} ) {
+      $data = $tcp->{data};
       print "[tcp] "
         . $c{src_ip}
         . $ip->{src_ip}
@@ -389,12 +391,29 @@ sub phandle {
       next;
     }
 
-    if ( $r[$rule][4] eq "<>"
-      and ( $r[$rule][1] eq ( $ip->{src_ip} or $ip->{dest_ip} ) ) )
+#    if (
+#      ( $r[$rule][3] eq "<>"
+#       and (
+#         ( ( $r[$rule][1] eq $ip->{src_ip} or $r[$rule][1] eq "any" ) and ( $r[$rule][4] eq $ip->{dest_ip} or $r[$rule][4] eq "any" ) ) or 
+#         ( ( $r[$rule][4] eq $ip->{src_ip} or $r[$rule][4] eq "any" ) and ( $r[$rule][1] eq $ip->{dest_ip} or $r[$rule][1] eq "any" ) )
+#       )
+#
+#       ) or ( $r[$rule][3] eq ">" and (
+#       
+#       ) )
+#    {
+#    }
+
+
+  # network options match, now apply the regex
+
+
+  # reassemble the packet
 
   }
 
-  # accept any other packages
+
+  # accept non-matching packages
   paccept($msg);
 }
 
