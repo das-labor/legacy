@@ -293,6 +293,34 @@ Data Length       : @{[ $msg->data_len() ]}
 EOT
 }
 
+# print the ip, tp and data
+sub dump_itd {
+  my ( $msg, $ip, $tp, $data ) = @_;
+  my $string;
+
+  $string = "[udp] " if ( $ip->{proto} == 58 );
+  $string = "[tcp] " if ( $ip->{proto} == 6 );
+
+  $string .=
+      $c{src_ip}
+    . $ip->{src_ip}
+    . $c{mark}
+    . $c{src_port}
+    . $tp->{src_port}
+    . $c{normal} . " > "
+    . $c{dest_ip}
+    . $ip->{dest_ip}
+    . $c{mark}
+    . $c{dest_port}
+    . $tp->{dest_port} . " ";
+
+  print $string . dump_ascii( $tp->{data} ) . $c{normal} . "\n";
+
+  if ($data) {
+    print "[modified] " . $string . dump_ascii($data) . $c{normal} . "\n";
+  }
+}
+
 #
 # packet handling
 #
@@ -302,22 +330,40 @@ sub pdrop {
   $queue->set_verdict( $msg->packet_id, NF_DROP );
 }
 
-sub paccept {
-  my $msg = shift;
-  bug( "acceptd " . $msg->packet_id, 5 );
-  $queue->set_verdict( $msg->packet_id, NF_ACCEPT );
-}
-
 sub pinject {
   my $pkt = shift;
   bug( "injected packet", 5 );
   Net::RawSock::write_ip($pkt);
 }
 
+sub paccept {
+  my $msg = shift;
+  bug( "acceptd " . $msg->packet_id, 5 );
+  $queue->set_verdict( $msg->packet_id, NF_ACCEPT );
+}
+
+sub preassemble {
+  my ( $msg, $ip, $tp, $data ) = @_;
+  my $raw;
+
+#  bless $ip, NetPacket::IP;
+#  bless $tp, NetPacket::TCP if ( $ip->{proto} == 6 );
+#  bless $tp, NetPacket::UDP if ( $ip->{proto} == 58 );
+
+  $tp->{data} = $data;
+  $ip->{data} = $tp->encode($ip);
+  $raw        = $ip->encode;
+
+  dump_itd( $msg, $ip, $tp, $data );
+
+  $queue->set_verdict( $msg->packet_id, NF_ACCEPT, length($raw), $raw );
+}
+
 sub phandle {
   my $msg = shift;
   my ( $rule, $data );
   my $ip = NetPacket::IP->decode( $msg->payload() );
+  my $tp;
 
   bug(
     "recieved "
@@ -328,7 +374,7 @@ sub phandle {
       . $msg->indev_name . "/"
       . $msg->outdev_name
       . " with hook "
-      . $msg->hook . " "
+      . $msg->hook . " and ip layer: "
       . $ip->{src_ip} . " > "
       . $ip->{dest_ip},
     7
@@ -338,24 +384,11 @@ sub phandle {
     my $tp = NetPacket::UDP->decode( $ip->{data} );
     if ( $tp->{data} ) {
       $data = $tp->{data};
-      print "[udp] "
-        . $c{src_ip}
-        . $ip->{src_ip}
-        . $c{mark}
-        . $c{src_port}
-        . $tp->{src_port}
-        . $c{normal} . " > "
-        . $c{dest_ip}
-        . $ip->{dest_ip}
-        . $c{mark}
-        . $c{dest_port}
-        . $tp->{dest_port} . " "
-        . dump_ascii( $tp->{data} )
-        . $c{normal} . "\n";
+      dump_itd( $msg, $ip, $tp );
     }
     else {
       bug( "skipping empty packet", 7 );
-      paccept($msg);    # skipt empty packets
+      paccept($msg);             # skipt empty packets
       return;
     }
   }
@@ -363,24 +396,11 @@ sub phandle {
     my $tp = NetPacket::TCP->decode( $ip->{data} );
     if ( $tp->{data} ) {
       $data = $tp->{data};
-      print "[tcp] "
-        . $c{src_ip}
-        . $ip->{src_ip}
-        . $c{mark}
-        . $c{src_port}
-        . $tp->{src_port}
-        . $c{normal} . " > "
-        . $c{dest_ip}
-        . $ip->{dest_ip}
-        . $c{mark}
-        . $c{dest_port}
-        . $tp->{dest_port} . " "
-        . dump_ascii( $tp->{data} )
-        . $c{normal} . "\n";
+      dump_itd( $msg, $ip, $tp );
     }
     else {
       bug( "skipping empty packet", 7 );
-      paccept($msg);    #skip empty packets (syn)
+      paccept($msg);               #skip empty packets (syn)
       return;
     }
   }
@@ -453,9 +473,7 @@ sub phandle {
     }
 
     # network options match, now apply the regex
-    bug( "rule matches!", 7 );
-
-    eval "\$data =~ $re";
+    eval "\$data =~ $r[$rule][6]";
 
     if ( length $@ ) {
       bug(
@@ -468,7 +486,8 @@ sub phandle {
     }
 
     # reassemble and re-inject the packet
-    preassemble( $ip, $tp, $data );
+    bug( "rule matches ... reassemble", 7 );
+    preassemble( $msg, $ip, $tp, $data );
 
   }
 
