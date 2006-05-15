@@ -27,6 +27,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
+# Security Warning
+# ----------------
+# Due to an eval of user-defined perl code (regular expressions) the user can
+# execute system() calls. Do not setuid this script and do not screen it away
+# for everyone to attach.
+#
 # Requirements
 # ------------
 # CONFIG_IP_NF_QUEUE
@@ -55,8 +61,12 @@
 # Todo
 # ----
 # gute abkuerzung fuer red
-# copyright & license
 # optimieren von NetPacket-> aufrufe
+# term::console
+# nfnetlink_queue
+# log to file
+# unified output sub
+# better dump_ascii escape non printable perl like \x0f
 #
 
 #
@@ -86,8 +96,8 @@ my %c = (
   normal      => "\x1b\x5b" . "m",
   debug       => "\x1b\x5b" . "31m",
   src_ip      => "\x1b\x5b" . "35m",
-  src_port    => "\x1b\x5b" . "35m",
-  dest_ip     => "\x1b\x5b" . "36m",
+  src_port    => "\x1b\x5b" . "36m",
+  dest_ip     => "\x1b\x5b" . "35m",
   dest_port   => "\x1b\x5b" . "36m",
   mark        => "\x1b\x5b" . "37m:",
   unimportant => "\x1b\x5b" . "37m"
@@ -310,7 +320,7 @@ sub phandle {
   my $ip = NetPacket::IP->decode( $msg->payload() );
 
   bug(
-    "got "
+    "recieved "
       . $msg->data_len
       . " byte packet "
       . $msg->packet_id
@@ -318,24 +328,29 @@ sub phandle {
       . $msg->indev_name . "/"
       . $msg->outdev_name
       . " with hook "
-      . $msg->hook,
+      . $msg->hook . " "
+      . $ip->{src_ip} . " > "
+      . $ip->{dest_ip},
     7
   );
 
-  bug( "ip: " . $ip->{src_ip} . " > " . $ip->{dest_ip}, 7 );
-
   if ( $ip->{proto} == 58 ) {    # udp
-    my $udp = NetPacket::UDP->decode( $ip->{data} );
-    if ( $udp->{data} ) {
-      $data = $udp->{data};
+    my $tp = NetPacket::UDP->decode( $ip->{data} );
+    if ( $tp->{data} ) {
+      $data = $tp->{data};
       print "[udp] "
         . $c{src_ip}
         . $ip->{src_ip}
         . $c{mark}
-        . $c{dest_port}
-        . $udp->{dest_port}
+        . $c{src_port}
+        . $tp->{src_port}
+        . $c{normal} . " > "
+        . $c{dest_ip}
+        . $ip->{dest_ip}
         . $c{mark}
-        . dump_ascii( $udp->{data} )
+        . $c{dest_port}
+        . $tp->{dest_port} . " "
+        . dump_ascii( $tp->{data} )
         . $c{normal} . "\n";
     }
     else {
@@ -345,22 +360,22 @@ sub phandle {
     }
   }
   elsif ( $ip->{proto} == 6 ) {    # tcp
-    my $tcp = NetPacket::TCP->decode( $ip->{data} );
-    if ( $tcp->{data} ) {
-      $data = $tcp->{data};
+    my $tp = NetPacket::TCP->decode( $ip->{data} );
+    if ( $tp->{data} ) {
+      $data = $tp->{data};
       print "[tcp] "
         . $c{src_ip}
         . $ip->{src_ip}
         . $c{mark}
         . $c{src_port}
-        . $tcp->{src_port}
+        . $tp->{src_port}
         . $c{normal} . " > "
         . $c{dest_ip}
         . $ip->{dest_ip}
         . $c{mark}
         . $c{dest_port}
-        . $tcp->{dest_port} . " "
-        . dump_ascii( $tcp->{data} )
+        . $tp->{dest_port} . " "
+        . dump_ascii( $tp->{data} )
         . $c{normal} . "\n";
     }
     else {
@@ -391,27 +406,71 @@ sub phandle {
       next;
     }
 
-#    if (
-#      ( $r[$rule][3] eq "<>"
-#       and (
-#         ( ( $r[$rule][1] eq $ip->{src_ip} or $r[$rule][1] eq "any" ) and ( $r[$rule][4] eq $ip->{dest_ip} or $r[$rule][4] eq "any" ) ) or 
-#         ( ( $r[$rule][4] eq $ip->{src_ip} or $r[$rule][4] eq "any" ) and ( $r[$rule][1] eq $ip->{dest_ip} or $r[$rule][1] eq "any" ) )
-#       )
-#
-#       ) or ( $r[$rule][3] eq ">" and (
-#       
-#       ) )
-#    {
-#    }
+    unless (
+      (
+        $r[$rule][3] eq "<>"
+        and (
+          (
+                ( $r[$rule][1] eq $ip->{src_ip}  or $r[$rule][1] eq "any" )
+            and ( $r[$rule][4] eq $ip->{dest_ip} or $r[$rule][4] eq "any" )
+          )
+          or (  ( $r[$rule][4] eq $ip->{src_ip} or $r[$rule][4] eq "any" )
+            and ( $r[$rule][1] eq $ip->{dest_ip} or $r[$rule][1] eq "any" ) )
+        )
+      )
+      or (
+        $r[$rule][3] eq ">"
+        and ( ( $r[$rule][1] eq $ip->{src_ip} or $r[$rule][1] eq "any" )
+          and ( $r[$rule][4] eq $ip->{dest_ip} or $r[$rule][4] eq "any" ) )
+      )
+      )
+    {
+      bug( "skipping rule: wrong network layer", 7 );
+      next;
+    }
 
+    unless (
+      (
+        $r[$rule][3] eq "<>"
+        and (
+          (
+                ( $r[$rule][2] eq $tp->{src_port}  or $r[$rule][2] eq "any" )
+            and ( $r[$rule][5] eq $tp->{dest_port} or $r[$rule][5] eq "any" )
+          )
+          or (  ( $r[$rule][5] eq $tp->{src_port} or $r[$rule][5] eq "any" )
+            and ( $r[$rule][2] eq $tp->{dest_port} or $r[$rule][2] eq "any" ) )
+        )
+      )
+      or (
+        $r[$rule][3] eq ">"
+        and ( ( $r[$rule][2] eq $tp->{src_port} or $r[$rule][2] eq "any" )
+          and ( $r[$rule][5] eq $tp->{dest_port} or $r[$rule][5] eq "any" ) )
+      )
+      )
+    {
+      bug( "skipping rule: wrong transport layer", 7 );
+      next;
+    }
 
-  # network options match, now apply the regex
+    # network options match, now apply the regex
+    bug( "rule matches!", 7 );
 
+    eval "\$data =~ $re";
 
-  # reassemble the packet
+    if ( length $@ ) {
+      bug(
+        "skipping rule: error in eval of rule number " . $rule
+          . " regex "
+          . $r[$rule][6] . ": $@",
+        2
+      );
+      next;
+    }
+
+    # reassemble and re-inject the packet
+    preassemble( $ip, $tp, $data );
 
   }
-
 
   # accept non-matching packages
   paccept($msg);
