@@ -351,7 +351,8 @@ sub preassemble {
 #  bless $tp, NetPacket::UDP if ( $ip->{proto} == 58 );
 
   $tp->{data} = $data;
-  $ip->{data} = $tp->encode($ip);
+  $ip->{data} = $tp->NetPacket::TCP::encode($ip) if ( $ip->{proto} == 6 );
+  $ip->{data} = $tp->NetPacket::UDP::encode($ip) if ( $ip->{proto} == 58 );
   $raw        = $ip->encode;
 
   dump_itd( $msg, $ip, $tp, $data );
@@ -364,6 +365,7 @@ sub phandle {
   my ( $rule, $data );
   my $ip = NetPacket::IP->decode( $msg->payload() );
   my $tp;
+  my $return;
 
   bug(
     "recieved "
@@ -452,14 +454,15 @@ sub phandle {
     unless (
       (
         $r[$rule][3] eq "<>"
-        and (
-          (
-                ( $r[$rule][2] eq $tp->{src_port}  or $r[$rule][2] eq "any" )
-            and ( $r[$rule][5] eq $tp->{dest_port} or $r[$rule][5] eq "any" )
-          )
-          or (  ( $r[$rule][5] eq $tp->{src_port} or $r[$rule][5] eq "any" )
-            and ( $r[$rule][2] eq $tp->{dest_port} or $r[$rule][2] eq "any" ) )
-        )
+
+#        and (
+#          (
+#                ( $r[$rule][2] eq $tp->{src_port}  or $r[$rule][2] eq "any" )
+#            and ( $r[$rule][5] eq $tp->{dest_port} or $r[$rule][5] eq "any" )
+#          )
+#          or (  ( $r[$rule][5] eq $tp->{src_port} or $r[$rule][5] eq "any" )
+#            and ( $r[$rule][2] eq $tp->{dest_port} or $r[$rule][2] eq "any" ) )
+#        )
       )
       or (
         $r[$rule][3] eq ">"
@@ -473,7 +476,7 @@ sub phandle {
     }
 
     # network options match, now apply the regex
-    eval "\$data =~ $r[$rule][6]";
+    $return = eval "\$data =~ $r[$rule][6]";
 
     if ( length $@ ) {
       bug(
@@ -483,12 +486,12 @@ sub phandle {
         2
       );
       next;
+    } elsif ( $return gt 0 ) {
+      bug( "rule matches ... reassemble", 7 );
+      preassemble( $msg, $ip, $tp, $data );
+    } else {
+      bug( "rule substitution not matching", 7 );
     }
-
-    # reassemble and re-inject the packet
-    bug( "rule matches ... reassemble", 7 );
-    preassemble( $msg, $ip, $tp, $data );
-
   }
 
   # accept non-matching packages
