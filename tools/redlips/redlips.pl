@@ -62,11 +62,13 @@
 # ----
 # gute abkuerzung fuer red
 # optimieren von NetPacket-> aufrufe
-# term::console
+# oo?
+# term::console / userinput
 # nfnetlink_queue
 # log to file
-# unified output sub
-# better dump_ascii escape non printable perl like \x0f
+# better dump_ascii string escaping \\ (for reuse in ruby/perl/python)
+#
+# duplicate packets? tag with evil bit?
 #
 
 #
@@ -108,7 +110,7 @@ my %c = (
 #
 my @r;
 radd("tcp any:any <> any:any s/felix/xilef/i");
-radd("tcp any:any <> any:any s/felix/xilef/i");
+radd("tcp 127.0.0.1:any > any:111 s/felix/xilef/i");
 radd("tcp any:any > any:any s/foobar/barfoo/i");
 radd("tcp any:any <> any:any s/asdf/fdaslef/i");
 radd("tcp any:any <> any:any s/asdf(as/df/i");    # invalid
@@ -152,7 +154,7 @@ my $queue = new IPTables::IPv4::IPQueue(
   )
   or die IPTables::IPv4::IPQueue->errstr;
 
-bug( "starting packet while loop", 7 );
+bug( "starting packet while loop", 5 );
 
 while (1) {
   my $msg = $queue->get_message(TIMEOUT);
@@ -227,12 +229,12 @@ sub bug {
 # take a binary string and dump it in ascii or ^s
 sub dump_ascii {
   my $input = shift;
-  my ( $i, $char, $return );
-  $return = " ";
+  my ( $i, $char );
+  my $return = "";
 
   for ( $i = 0 ; $i < length $input ; $i++ ) {
     $char = substr( $input, $i, 1 );
-    if ( ord $char > 31 ) {
+    if ( ord $char > 31 and ord $char < 127 ) {
       $return = $return . $c{normal} . $char;
     }
     elsif ( ord $char == 9 ) {
@@ -242,7 +244,10 @@ sub dump_ascii {
       $return = $return . $c{unimportant} . "\\n" . $c{normal};
     }
     else {
-      $return = $return . $c{unimportant} . "^" . $c{normal};
+      $return = $return
+        . $c{unimportant} . "\\x"
+        . sprintf( "%x", ord $char )
+        . $c{normal};
     }
   }
   return $return;
@@ -295,13 +300,10 @@ EOT
 
 # print the ip, tp and data
 sub dump_itd {
-  my ( $msg, $ip, $tp, $data ) = @_;
-  my $string;
+  my ( $msg, $ip, $tp, $new_data ) = @_;
+  my ( $layers, $proto );
 
-  $string = "[udp] " if ( $ip->{proto} == 58 );
-  $string = "[tcp] " if ( $ip->{proto} == 6 );
-
-  $string .=
+  $layers .=
       $c{src_ip}
     . $ip->{src_ip}
     . $c{mark}
@@ -314,10 +316,13 @@ sub dump_itd {
     . $c{dest_port}
     . $tp->{dest_port} . " ";
 
-  print $string . dump_ascii( $tp->{data} ) . $c{normal} . "\n";
-
-  if ($data) {
-    print "[modified] " . $string . dump_ascii($data) . $c{normal} . "\n";
+  if ($new_data) {
+    print "[mod] " . $layers . dump_ascii($new_data) . $c{normal} . "\n";
+  }
+  else {
+    $proto = "[udp] " if ( $ip->{proto} == 58 );
+    $proto = "[tcp] " if ( $ip->{proto} == 6 );
+    print $proto . $layers . dump_ascii( $tp->{data} ) . $c{normal} . "\n";
   }
 }
 
@@ -331,9 +336,22 @@ sub pdrop {
 }
 
 sub pinject {
-  my $pkt = shift;
+  my ( $msg, $ip, $tp, $data ) = @_;
+  my $raw;
+
+  $tp->{data} = $data;
+  $ip->{data} = $tp->NetPacket::TCP::encode($ip) if ( $ip->{proto} == 6 );
+  $ip->{data} = $tp->NetPacket::UDP::encode($ip) if ( $ip->{proto} == 58 );
+  $raw        = $ip->encode;
+
+  dump_itd( $msg, $ip, $tp, $data );
+
+  # drop the original packet
+  $queue->set_verdict( $msg->packet_id, NF_DROP );
+
+  # and inject the raw copy
+  Net::RawSock::write_ip($raw);
   bug( "injected packet", 5 );
-  Net::RawSock::write_ip($pkt);
 }
 
 sub paccept {
@@ -342,13 +360,9 @@ sub paccept {
   $queue->set_verdict( $msg->packet_id, NF_ACCEPT );
 }
 
-sub preassemble {
+sub passemble {
   my ( $msg, $ip, $tp, $data ) = @_;
   my $raw;
-
-#  bless $ip, NetPacket::IP;
-#  bless $tp, NetPacket::TCP if ( $ip->{proto} == 6 );
-#  bless $tp, NetPacket::UDP if ( $ip->{proto} == 58 );
 
   $tp->{data} = $data;
   $ip->{data} = $tp->NetPacket::TCP::encode($ip) if ( $ip->{proto} == 6 );
@@ -362,10 +376,11 @@ sub preassemble {
 
 sub phandle {
   my $msg = shift;
-  my ( $rule, $data );
+  my ( $rule_string, $rule, $data );
   my $ip = NetPacket::IP->decode( $msg->payload() );
-  my $tp;
-  my $return;
+  my $return;    # helper
+  my $tp;        # transport layer object
+  my $modified = 0;    # determines whether this packet was modified
 
   bug(
     "recieved "
@@ -376,61 +391,66 @@ sub phandle {
       . $msg->indev_name . "/"
       . $msg->outdev_name
       . " with hook "
-      . $msg->hook . " and ip layer: "
+      . $msg->hook
+      . " and ip layer "
       . $ip->{src_ip} . " > "
       . $ip->{dest_ip},
-    7
+    5
   );
 
+  # generate transport $tp object and print the contents
+  #
   if ( $ip->{proto} == 58 ) {    # udp
-    my $tp = NetPacket::UDP->decode( $ip->{data} );
+    $tp = NetPacket::UDP->decode( $ip->{data} );
     if ( $tp->{data} ) {
       $data = $tp->{data};
       dump_itd( $msg, $ip, $tp );
     }
     else {
-      bug( "skipping empty packet", 7 );
+      bug( "skipping empty packet", 6 );
       paccept($msg);             # skipt empty packets
       return;
     }
   }
   elsif ( $ip->{proto} == 6 ) {    # tcp
-    my $tp = NetPacket::TCP->decode( $ip->{data} );
+    $tp = NetPacket::TCP->decode( $ip->{data} );
     if ( $tp->{data} ) {
       $data = $tp->{data};
       dump_itd( $msg, $ip, $tp );
     }
     else {
-      bug( "skipping empty packet", 7 );
+      bug( "skipping empty packet", 6 );
       paccept($msg);               #skip empty packets (syn)
       return;
     }
   }
 
   # walk through rules
+  #
   for $rule ( 0 .. $#r ) {
-    bug(
-      "rule: "
-        . $r[$rule][0] . " "
-        . $r[$rule][1] . ":"
-        . $r[$rule][2] . " "
-        . $r[$rule][3] . " "
-        . $r[$rule][4] . ":"
-        . $r[$rule][5] . " "
-        . $r[$rule][6],
-      7
-    );
+    $rule_string = "rule: "
+      . $r[$rule][0] . " "
+      . $r[$rule][1] . ":"
+      . $r[$rule][2] . " "
+      . $r[$rule][3] . " "
+      . $r[$rule][4] . ":"
+      . $r[$rule][5] . " "
+      . $r[$rule][6];
 
+    # check for protocol
+    #
     if ( ( $r[$rule][0] eq "tcp" and $ip->{proto} == 58 )
       or ( $r[$rule][0] eq "udp" and $ip->{proto} == 6 ) )
     {
-      bug( "skipping rule: wrong proto", 7 );
+      bug( $rule_string . " skipping: wrong proto", 7 );
       next;
     }
 
+    # check for ip layer dest/src
+    #
     unless (
       (
-        $r[$rule][3] eq "<>"
+        $r[$rule][3] eq '<>'
         and (
           (
                 ( $r[$rule][1] eq $ip->{src_ip}  or $r[$rule][1] eq "any" )
@@ -441,37 +461,39 @@ sub phandle {
         )
       )
       or (
-        $r[$rule][3] eq ">"
+        $r[$rule][3] eq '>'
         and ( ( $r[$rule][1] eq $ip->{src_ip} or $r[$rule][1] eq "any" )
           and ( $r[$rule][4] eq $ip->{dest_ip} or $r[$rule][4] eq "any" ) )
       )
       )
     {
-      bug( "skipping rule: wrong network layer", 7 );
+      bug( $rule_string . " skipping: wrong network layer", 7 );
       next;
     }
 
+    # check for tp layer dest/src
+    #
     unless (
       (
-        $r[$rule][3] eq "<>"
+        $r[$rule][3] eq '<>'
 
-#        and (
-#          (
-#                ( $r[$rule][2] eq $tp->{src_port}  or $r[$rule][2] eq "any" )
-#            and ( $r[$rule][5] eq $tp->{dest_port} or $r[$rule][5] eq "any" )
-#          )
-#          or (  ( $r[$rule][5] eq $tp->{src_port} or $r[$rule][5] eq "any" )
-#            and ( $r[$rule][2] eq $tp->{dest_port} or $r[$rule][2] eq "any" ) )
-#        )
+        and (
+          (
+                ( $r[$rule][2] eq $tp->{src_port}  or $r[$rule][2] eq "any" )
+            and ( $r[$rule][5] eq $tp->{dest_port} or $r[$rule][5] eq "any" )
+          )
+          or (  ( $r[$rule][5] eq $tp->{src_port} or $r[$rule][5] eq "any" )
+            and ( $r[$rule][2] eq $tp->{dest_port} or $r[$rule][2] eq "any" ) )
+        )
       )
       or (
-        $r[$rule][3] eq ">"
+        $r[$rule][3] eq '>'
         and ( ( $r[$rule][2] eq $tp->{src_port} or $r[$rule][2] eq "any" )
           and ( $r[$rule][5] eq $tp->{dest_port} or $r[$rule][5] eq "any" ) )
       )
       )
     {
-      bug( "skipping rule: wrong transport layer", 7 );
+      bug( $rule_string . " skipping: wrong transport layer", 7 );
       next;
     }
 
@@ -479,23 +501,29 @@ sub phandle {
     $return = eval "\$data =~ $r[$rule][6]";
 
     if ( length $@ ) {
-      bug(
-        "skipping rule: error in eval of rule number " . $rule
-          . " regex "
-          . $r[$rule][6] . ": $@",
-        2
-      );
+      bug( $rule_string . " skipping: error in eval $@", 1 );
       next;
-    } elsif ( $return gt 0 ) {
-      bug( "rule matches ... reassemble", 7 );
-      preassemble( $msg, $ip, $tp, $data );
-    } else {
-      bug( "rule substitution not matching", 7 );
+    }
+    elsif ( $return gt 0 ) {
+      bug( $rule_string . " rule applied successfully", 7 );
+      $modified = 1;
+    }
+    else {
+      bug( $rule_string . " skipping: substitution not matching", 7 );
+      next;
     }
   }
 
-  # accept non-matching packages
-  paccept($msg);
+  if ( $modified == 1 ) {
+
+    # reassemble modified packet
+    passemble( $msg, $ip, $tp, $data );
+  }
+  else {
+
+    # accept non-modified packages
+    paccept($msg);
+  }
 }
 
 #eof
