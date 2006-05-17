@@ -109,10 +109,13 @@ my %c = (
 #
 #
 my @r;
-radd("tcp any:any <> any:any s/felix/xilef/i");
+
+#radd("tcp any:any <> any:any s/felix/xilef/i");
 radd("tcp 127.0.0.1:any > any:111 s/felix/xilef/i");
+radd("tcp 127.0.0.1:1234 > any:1234 s/felix/xilef/i");
 radd("tcp any:any > any:any s/foobar/barfoo/i");
-radd("tcp any:any <> any:any s/asdf/fdaslef/i");
+radd("tcp any:any <> any:any s/asdf/qwerty/i");
+radd("tcp any:any <> any:any s/\\d/Z/gi");
 radd("tcp any:any <> any:any s/asdf(as/df/i");    # invalid
 radd("udp any:any <> any:any s/AAAAA/BBBBBB/i");
 
@@ -428,21 +431,21 @@ sub phandle {
   # walk through rules
   #
   for $rule ( 0 .. $#r ) {
-    $rule_string = "rule: "
+    $rule_string = " ( rule: "
       . $r[$rule][0] . " "
       . $r[$rule][1] . ":"
       . $r[$rule][2] . " "
       . $r[$rule][3] . " "
       . $r[$rule][4] . ":"
       . $r[$rule][5] . " "
-      . $r[$rule][6];
+      . $r[$rule][6] . " ) ";
 
     # check for protocol
     #
     if ( ( $r[$rule][0] eq "tcp" and $ip->{proto} == 58 )
       or ( $r[$rule][0] eq "udp" and $ip->{proto} == 6 ) )
     {
-      bug( $rule_string . " skipping: wrong proto", 7 );
+      bug( "skipping: wrong proto" . $rule_string, 7 );
       next;
     }
 
@@ -467,7 +470,7 @@ sub phandle {
       )
       )
     {
-      bug( $rule_string . " skipping: wrong network layer", 7 );
+      bug( "skipping: wrong network layer" . $rule_string, 7 );
       next;
     }
 
@@ -493,7 +496,7 @@ sub phandle {
       )
       )
     {
-      bug( $rule_string . " skipping: wrong transport layer", 7 );
+      bug( "skipping: wrong transport layer" . $rule_string, 7 );
       next;
     }
 
@@ -501,15 +504,15 @@ sub phandle {
     $return = eval "\$data =~ $r[$rule][6]";
 
     if ( length $@ ) {
-      bug( $rule_string . " skipping: error in eval $@", 1 );
+      bug( "skipping: error in eval $@" . $rule_string, 1 );
       next;
     }
     elsif ( $return gt 0 ) {
-      bug( $rule_string . " rule applied successfully", 7 );
+      bug( "rule applied successfully" . $rule_string, 7 );
       $modified = 1;
     }
     else {
-      bug( $rule_string . " skipping: substitution not matching", 7 );
+      bug( "skipping: substitution not matching" . $rule_string, 7 );
       next;
     }
   }
