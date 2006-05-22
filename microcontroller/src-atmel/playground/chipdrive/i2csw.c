@@ -1,186 +1,237 @@
-/*! \file i2csw.c \brief Software I2C interface using port pins. */
-//*****************************************************************************
-//
-// File Name	: 'i2csw.c'
-// Title		: Software I2C interface using port pins
-// Author		: Pascal Stang
-// Created		: 11/22/2000
-// Revised		: 5/2/2002
-// Version		: 1.1
-// Target MCU	: Atmel AVR series
-// Editor Tabs	: 4
-//
-// This code is distributed under the GNU Public License
-//		which can be found at http://www.gnu.org/licenses/gpl.txt
-//
-//*****************************************************************************
 
 #include <avr/io.h>
 #include "i2csw.h"
 
-// Standard I2C bit rates are:
-// 100KHz for slow speed
-// 400KHz for high speed
-
-//#define QDEL	delay(5)		// i2c quarter-bit delay
-//#define HDEL	delay(10)		// i2c half-bit delay
-
-// i2c quarter-bit delay
-//#define QDEL	asm volatile("nop"); asm volatile("nop"); asm volatile("nop"); asm volatile("nop"); asm volatile("nop");
-// i2c half-bit delay
-//#define HDEL	asm volatile("nop"); asm volatile("nop"); asm volatile("nop"); asm volatile("nop"); asm volatile("nop"); asm volatile("nop"); asm volatile("nop"); asm volatile("nop"); asm volatile("nop"); asm volatile("nop");
+// This Library uses slow (100kHz) Bus timing
 
 
-void delay(){
-	u16 x;
-	for(x=0;x<2000;x++){
-	    asm volatile("nop");
-	}   
-    
+void delay_5u(){
+	asm volatile(
+	"delay_5u_lp:\n\t"
+		"dec	%0	\n\t"
+		"brne	delay_5u_lp	\n\t"
+		::"r" ((u08)((5ul*F_CPU)/(3ul*1000000ul))) ); 
+}
+
+void delay_2u5(){
+	asm volatile(
+	"delay_2u5_lp:\n\t"
+		"dec	%0	\n\t"
+		"brne	delay_2u5_lp	\n\t"
+		::"r" ((u08)((2.5*F_CPU)/(3ul*1000000ul))) ); 
 }
 
 
-#define QDEL delay();
-#define HDEL delay();
+#define QDEL() delay_2u5()
+#define HDEL() delay_5u()
 
-#define I2C_SDL_LO      sbi( SDADDR, SDA)
-#define I2C_SDL_HI      cbi( SDADDR, SDA)
+//Control I2C bus with DDR register to simulate open collector behavior
+#define SDA_LO()      SDADDR |=  (1<<SDA)
+#define SDA_HI()      SDADDR &= ~(1<<SDA)
 
-#define I2C_SCL_LO      sbi( SCLDDR, SCL); 
-#define I2C_SCL_HI      cbi( SCLDDR, SCL); 
+#define SCL_LO()      SDADDR |=  (1<<SCL) 
+#define SCL_HI()      SDADDR &= ~(1<<SCL) 
 
-#define I2C_SCL_TOGGLE  HDEL; I2C_SCL_HI; HDEL; I2C_SCL_LO;
-#define I2C_START       I2C_SDL_LO; QDEL; I2C_SCL_LO; HDEL; 
-#define I2C_STOP        I2C_SDL_LO; HDEL; I2C_SCL_HI; QDEL; I2C_SDL_HI; HDEL;
 
 // defines and constants
 #define READ		0x01	// I2C READ bit
 
 
+//generate a start or repeated start condition
 void i2cStart(){
-	I2C_START;    
+	QDEL();
+	SDA_HI();
+	HDEL();
+	SCL_HI();
+	HDEL();
+	SDA_LO();
+	HDEL();
+	SCL_LO();
 }
 
 void i2cStop(){
-	I2C_STOP;    
+	HDEL();
+	SCL_HI();
+	HDEL();
+	SDA_HI();
 }
 
-
-s16 i2cPutbyte(u08 b)
+u08 i2cPutbyte(u08 b)
 {
 	u08 i, ack;
 	
-	for (i=0;i<8;i++)
-	{
+	for (i=0;i<8;i++){
+		QDEL();
 		if ( b & 0x80 ){
-			I2C_SDL_HI;
+			SDA_HI();
 		}else{
-			I2C_SDL_LO;			// address bit
+			SDA_LO();
 		}
 		
-		HDEL;
-		I2C_SCL_HI;
-		HDEL;
-		I2C_SCL_LO;
-		HDEL;
+		QDEL();
+		SCL_HI();	//clock out bit
+		HDEL();
+		SCL_LO();
 		b <<= 1;
 	}
 
-	I2C_SDL_HI;					// leave SDL HI
-	HDEL;
-	I2C_SCL_HI;					// clock back up
+	QDEL();
+	SDA_HI();		//release SDA to be able to get ack
+	QDEL();
+	SCL_HI();		//clock in ack
   	
-	HDEL;
-	ack = inb(SDAPIN) & (1<<SDA);	// get the ACK bit
+	QDEL();
+	ack = SDAPIN & (1<<SDA);	// get the ACK bit
+	QDEL();
 
-	I2C_SCL_LO;					// not really ??
-	HDEL;
+	SCL_LO();
+	QDEL();
+	SDA_LO();					//leave with SDA low
 	return (ack == 0);			// return ACK value
 }
 
 
-u08 i2cGetbyte(u08 last)
+u08 i2cGetbyte(u08 ack)
 {
-	u08 i;
-	u08 c,b = 0;
+	u08 i, b = 0;
     
-	HDEL;
-	I2C_SDL_HI;
+	QDEL();
+	SDA_HI();
     
-    	for(i=0;i<8;i++)
-	{
-		HDEL;
-		I2C_SCL_HI;				// clock HI
-	  	HDEL;
-	    	c = inb(SDAPIN) & (1<<SDA);  
+	for(i=0;i<8;i++){
+		HDEL();
 		b <<= 1;
-		if(c) b |= 1;
-    		I2C_SCL_LO;				// clock LO
+		SCL_HI();				//clock in bit
+	  	HDEL();
+		if(SDAPIN & (1<<SDA)) b |= 1;//read bit
+		SCL_LO();
 	}
   
-	HDEL;
-	if (last)
-		I2C_SDL_HI;				// set NAK
-	else
-		I2C_SDL_LO;				// set ACK
+	QDEL();
 
-	HDEL;
-	I2C_SCL_HI;
-	HDEL;
-	I2C_SCL_LO;
+	//only ack if requested
+	if (ack){
+		SDA_LO();
+	}
+	
+	QDEL();
+	SCL_HI();
+	HDEL();
+	SCL_LO();
 
 	return b;					// return received byte
 }
 
-
-//************************
-//* I2C public functions *
-//************************
-
-//! Initialize I2C communication
+//this is a dummy for now
 void i2cInit(void)
 {
-        I2C_SDL_HI;					// set I/O state and pull-ups
-	I2C_SCL_HI;					// set I/O state and pull-ups
 }
 
-//! Send a byte sequence on the I2C bus
-void i2cSend(u08 device, u08 subAddr, u08 length, u08 *data)
+//write to i2c eeprom in multibyte write mode
+s08 i2cEeWrite(u16 address, u16 len, u08 *data)
 {
-	I2C_START;      		// do start transition
-	i2cPutbyte(device); 		// send DEVICE address
-	i2cPutbyte(subAddr);		// and the subaddress
+	u08 ack;
+	union{u08 b[2]; u16 w;} addr;
+	addr.w = address;
+	
+	while(len){
+		i2cStart();
+		//set start address
+		if (! i2cPutbyte(EEPROM_ADDRESS|(addr.b[1]<<1))) goto error;
+		if (! i2cPutbyte(addr.b[0])) goto error;
 
-	// send the data
-	while (length--)
-		i2cPutbyte(*data++);
-
-	I2C_SDL_LO;					// clear data line and
-	I2C_STOP;					// send STOP transition
+		do{
+			len--;
+			if(! i2cPutbyte(*data++) ) goto error;
+			addr.w++;
+		//keep writing until a 4 byte boundary in eeprom is reached
+		}while(len && (addr.b[0] % 4));
+	
+		//initiate and wait for internal write cycle
+		do{
+			i2cStop();
+			i2cStart();
+			ack = i2cPutbyte(EEPROM_ADDRESS);
+		}while(!ack);
+	
+		i2cPutbyte(0);
+		i2cStop();		
+	}
+	
+	return 0;
+	
+error:
+	i2cStop();
+	return -1;
 }
 
-//! Retrieve a byte sequence on the I2C bus
-void i2cReceive(u08 device, u08 subAddr, u08 length, u08 *data)
+//read bytes from eeprom to buffer
+void i2cEeRead(u16 address, u16 len, u08 *data)
 {
-	int j = length;
-	u08 *p = data;
+	u08 ack;
+	union{u08 b[2]; u16 w;} addr;
+	addr.w = address;
+	
+	while(len){
+		i2cStart();
+		//setup address
+		i2cPutbyte(EEPROM_ADDRESS | (addr.b[1]<<1) );
+		i2cPutbyte(addr.b[0]);
+	
+		//do a repeated start condition
+		i2cStart();
+	
+		i2cPutbyte(EEPROM_ADDRESS | READ | (addr.b[1]<<1) );
 
-	I2C_START;					// do start transition
-	i2cPutbyte(device);			// send DEVICE address
-	i2cPutbyte(subAddr);   		// and the subaddress
-	HDEL;
-    
-	I2C_SCL_HI;      			// do a repeated START
-    	//I2C_STOP;
-    	HDEL;
-    	I2C_START;					// transition
+		do{
+			//keep on going until all bytes are sent, or the end of a field is reached
+			ack = (len != 1) && (addr.b[0] != 0xff); 
+			*data++ = i2cGetbyte(ack);//send no ack on last byte
+			addr.w++;
+			len--;
+		}while (ack);
+		
+		i2cStop();
+	}
+}
 
-	i2cPutbyte(device | READ);	// resend DEVICE, with READ bit set
 
-	// receive data bytes
-	while (j--)
-		*p++ = i2cGetbyte(j == 0);
+//Probes if a device with this address acks
+u08 i2cProbe(addr){
+	u08 ack;
+	i2cStart();
+	ack = i2cPutbyte(addr);
+	i2cStop();
+	return ack;
+}
 
-	I2C_SDL_LO;					// clear data line and
-	I2C_STOP;					// send STOP transition
+//detect if there is a valid i2c eeprom card inserted
+//returns card size in sectors of 256 bytes
+//a return value of zero means no valid card
+u08 i2cEeDetect(){
+	u08 retval;
+	HDEL();
+	if( !(SDAPIN & (1<<SDA)) ){
+		//SDA is low, so this can't be an i2c card
+		return 0;		
+	}
+	
+	if(i2cProbe(0x23)){
+		//device 0x23 shouldn't be present, so this is not a valid card
+		return 0;		
+	}
+	
+	//find out size of card by probing sub addresses - max 2kiB
+	for(retval=0;retval<8;retval++){
+		if( ! i2cProbe(0xa0|(retval<<1)) )
+			break;			
+	}
+	
+	if(i2cProbe(0x67)){
+		//device 0x67 shouldn't be present, so this is not a valid card
+		return 0;	
+	}
+	
+	//seems to be a valid card, so we return the size
+	return retval;
 }

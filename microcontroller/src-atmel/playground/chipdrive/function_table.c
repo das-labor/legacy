@@ -1,34 +1,12 @@
 #include "console.h"
 #include <avr/pgmspace.h>
 #include "uart.h"
+#include "types.h"
 #include "i2csw.h"
 #include "i2cswconf.h"
-#include "global.h"
 #include "foo.h"
 #include "console.h"
 #include "config.h"
-#include "avrlibtypes.h"
-#include "avrlibdefs.h"
-const static command_table fkt__avrlibdefs__table PROGMEM={
-	0, {}
-};
- 
-const static char fkt__avrlibdefs____table__name[] PROGMEM = "avrlibdefs";
- 
-const static command fkt__avrlibdefs____table__command PROGMEM={
-	table, fkt__avrlibdefs____table__name, (void *)&fkt__avrlibdefs__table
-};
- 
-const static command_table fkt__avrlibtypes__table PROGMEM={
-	0, {}
-};
- 
-const static char fkt__avrlibtypes____table__name[] PROGMEM = "avrlibtypes";
- 
-const static command fkt__avrlibtypes____table__command PROGMEM={
-	table, fkt__avrlibtypes____table__name, (void *)&fkt__avrlibtypes__table
-};
- 
 const static command_table fkt__config__table PROGMEM={
 	0, {}
 };
@@ -111,16 +89,6 @@ const static command fkt__foo____table__command PROGMEM={
 	table, fkt__foo____table__name, (void *)&fkt__foo__table
 };
  
-const static command_table fkt__global__table PROGMEM={
-	0, {}
-};
- 
-const static char fkt__global____table__name[] PROGMEM = "global";
- 
-const static command fkt__global____table__command PROGMEM={
-	table, fkt__global____table__name, (void *)&fkt__global__table
-};
- 
 const static command_table fkt__i2cswconf__table PROGMEM={
 	0, {}
 };
@@ -189,44 +157,54 @@ const static command fkt__i2csw__i2cInit__command PROGMEM={
 	function, fkt__i2csw__i2cInit__name, (void *)&fkt__i2csw__i2cInit__cfkt
 };
  
-const static char fkt__i2csw__i2cSend_device[] PROGMEM = "device";
-const static char fkt__i2csw__i2cSend_sub[] PROGMEM = "sub";
-const static char fkt__i2csw__i2cSend_length[] PROGMEM = "length";
-const static char fkt__i2csw__i2cSend_data[] PROGMEM = "data";
+const static char fkt__i2csw__i2cEeWrite_address[] PROGMEM = "address";
+const static char fkt__i2csw__i2cEeWrite_len[] PROGMEM = "len";
+const static char fkt__i2csw__i2cEeWrite_data[] PROGMEM = "data";
  
-c_function fkt__i2csw__i2cSend__cfkt PROGMEM={
-	(void(*)(void))&i2cSend, {vd, 0},4,{{ptr,fkt__i2csw__i2cSend_device},{ptr,fkt__i2csw__i2cSend_sub},{ptr,fkt__i2csw__i2cSend_length},{ptr,fkt__i2csw__i2cSend_data},}
+c_function fkt__i2csw__i2cEeWrite__cfkt PROGMEM={
+	(void(*)(void))&i2cEeWrite, {ptr, 0},3,{{ui,fkt__i2csw__i2cEeWrite_address},{ui,fkt__i2csw__i2cEeWrite_len},{ptr,fkt__i2csw__i2cEeWrite_data},}
 };
  
-const static char fkt__i2csw__i2cSend__name[] PROGMEM = "i2cSend";
+const static char fkt__i2csw__i2cEeWrite__name[] PROGMEM = "i2cEeWrite";
  
-const static command fkt__i2csw__i2cSend__command PROGMEM={
-	function, fkt__i2csw__i2cSend__name, (void *)&fkt__i2csw__i2cSend__cfkt
+const static command fkt__i2csw__i2cEeWrite__command PROGMEM={
+	function, fkt__i2csw__i2cEeWrite__name, (void *)&fkt__i2csw__i2cEeWrite__cfkt
 };
  
-const static char fkt__i2csw__i2cReceive_device[] PROGMEM = "device";
-const static char fkt__i2csw__i2cReceive_sub[] PROGMEM = "sub";
-const static char fkt__i2csw__i2cReceive_length[] PROGMEM = "length";
-const static char fkt__i2csw__i2cReceive_data[] PROGMEM = "data";
+const static char fkt__i2csw__i2cEeRead_address[] PROGMEM = "address";
+const static char fkt__i2csw__i2cEeRead_len[] PROGMEM = "len";
+const static char fkt__i2csw__i2cEeRead_data[] PROGMEM = "data";
  
-c_function fkt__i2csw__i2cReceive__cfkt PROGMEM={
-	(void(*)(void))&i2cReceive, {vd, 0},4,{{ptr,fkt__i2csw__i2cReceive_device},{ptr,fkt__i2csw__i2cReceive_sub},{ptr,fkt__i2csw__i2cReceive_length},{ptr,fkt__i2csw__i2cReceive_data},}
+c_function fkt__i2csw__i2cEeRead__cfkt PROGMEM={
+	(void(*)(void))&i2cEeRead, {vd, 0},3,{{ui,fkt__i2csw__i2cEeRead_address},{ui,fkt__i2csw__i2cEeRead_len},{ptr,fkt__i2csw__i2cEeRead_data},}
 };
  
-const static char fkt__i2csw__i2cReceive__name[] PROGMEM = "i2cReceive";
+const static char fkt__i2csw__i2cEeRead__name[] PROGMEM = "i2cEeRead";
  
-const static command fkt__i2csw__i2cReceive__command PROGMEM={
-	function, fkt__i2csw__i2cReceive__name, (void *)&fkt__i2csw__i2cReceive__cfkt
+const static command fkt__i2csw__i2cEeRead__command PROGMEM={
+	function, fkt__i2csw__i2cEeRead__name, (void *)&fkt__i2csw__i2cEeRead__cfkt
+};
+ 
+ 
+c_function fkt__i2csw__i2cEeDetect__cfkt PROGMEM={
+	(void(*)(void))&i2cEeDetect, {ptr, 0},0,{}
+};
+ 
+const static char fkt__i2csw__i2cEeDetect__name[] PROGMEM = "i2cEeDetect";
+ 
+const static command fkt__i2csw__i2cEeDetect__command PROGMEM={
+	function, fkt__i2csw__i2cEeDetect__name, (void *)&fkt__i2csw__i2cEeDetect__cfkt
 };
  
 const static command_table fkt__i2csw__table PROGMEM={
-	7, {	&fkt__i2csw__i2cStart__command,
+	8, {	&fkt__i2csw__i2cStart__command,
 	&fkt__i2csw__i2cStop__command,
 	&fkt__i2csw__i2cPutbyte__command,
 	&fkt__i2csw__i2cGetbyte__command,
 	&fkt__i2csw__i2cInit__command,
-	&fkt__i2csw__i2cSend__command,
-	&fkt__i2csw__i2cReceive__command,
+	&fkt__i2csw__i2cEeWrite__command,
+	&fkt__i2csw__i2cEeRead__command,
+	&fkt__i2csw__i2cEeDetect__command,
 }
 };
  
@@ -234,6 +212,16 @@ const static char fkt__i2csw____table__name[] PROGMEM = "i2csw";
  
 const static command fkt__i2csw____table__command PROGMEM={
 	table, fkt__i2csw____table__name, (void *)&fkt__i2csw__table
+};
+ 
+const static command_table fkt__types__table PROGMEM={
+	0, {}
+};
+ 
+const static char fkt__types____table__name[] PROGMEM = "types";
+ 
+const static command fkt__types____table__command PROGMEM={
+	table, fkt__types____table__name, (void *)&fkt__types__table
 };
  
  
@@ -349,14 +337,12 @@ const static command fkt__uart____table__command PROGMEM={
 };
  
 const command_table main_table PROGMEM={
-	9 ,{	&fkt__avrlibdefs____table__command,
-	&fkt__avrlibtypes____table__command,
-	&fkt__config____table__command,
+	7 ,{	&fkt__config____table__command,
 	&fkt__console____table__command,
 	&fkt__foo____table__command,
-	&fkt__global____table__command,
 	&fkt__i2cswconf____table__command,
 	&fkt__i2csw____table__command,
+	&fkt__types____table__command,
 	&fkt__uart____table__command,
 	}
 }; 
