@@ -1,0 +1,29 @@
+HiMed Chipkartenkontaktierer 896
+
+Smart Card contacts are wirde to 16 pin connector like this:
+
+       ___________________________
+       |  VCC        |  GND       |
+       |         8   |      7     |
+       |-------------|------------|
+       |             |            |
+       |         6   |      5     |
+       |-------------|------------|
+       | SCL         |    SDA     |
+       |         4   |      3     |
+       |-------------|------------|
+       |             |  (MODE)    |
+       |         2   |      1     |
+       |_____________|____________|
+
+rest of the contacts:
+9  - S1
+10 - GND
+11 - S2
+12 - 
+13 - S3
+14 - +12V
+15 - dir1    has  10k pullup
+16 - dir2    has  10k pullup
+
+
