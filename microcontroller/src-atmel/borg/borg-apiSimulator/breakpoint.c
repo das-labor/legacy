@@ -167,7 +167,9 @@ void schwarzesLoch2() {
 					circlePoints[i][j].y = 64 + (Sin(angle + i*8 + 4)*helpRadius)/64;
 				} 
 				// only for testing
-				setpixel((pixel) {circlePoints[i][j].x/8, circlePoints[i][j].y/8}, 3);
+				if (circlePoints[i][j].x < 64 &&
+				    circlePoints[i][j].y < 64)
+					setpixel((pixel) {circlePoints[i][j].x/8, circlePoints[i][j].y/8}, 3);
 			}
 			helpRadius = (helpRadius*2)/3; 
 		}
@@ -201,7 +203,8 @@ void schwarzesLoch() {
 				} 
 				x = circlePoints[i][j].x/8;
 				y = circlePoints[i][j].y/8;
-				setpixel((pixel) {x, y}, 3);
+				if (x < 16 && y < 16)
+					setpixel((pixel) {x, y}, 3);
 			}
 			helpRadius = (helpRadius*2)/3; 
 		}
