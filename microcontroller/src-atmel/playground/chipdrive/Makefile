@@ -1,8 +1,6 @@
 
-OBJ            = main.o i2csw.c console.o uart.o foo.o function_table.o
-CANADDR        = 0
+AVRXHOME       = ../../lib/AvrX2.6f/avrx/
+SRC            = main.c i2csw.c
+MCU_TARGET     = atmega32
 
-include ../../make/avr.mk
-
-function_table.c:
-	./mk_function_table.pl *.h >function_table.c
+include ../../make/avrx.mk
