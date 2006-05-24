@@ -1,56 +1,44 @@
+
 #include <avr/io.h>
 
-#include "console.h"
+#include <avrx-io.h>
+#include <avrx-signal.h>
+#include "avrx.h"               // AvrX System calls/data structures
+#include "serialio.h"           // From AvrX...
 
-#define PORT_MOTOR PORTC
-#define DDR_MOTOR DDRC
-#define BIT_MOTOR_IN PC2
-#define BIT_MOTOR_OUT PC3
+#include "config.h"
 
-#define PIN_SWITCH PINB
-#define BIT_SWITCH1 PB0
-#define BIT_SWITCH2 PB1
-#define BIT_SWITCH3 PB2
+//AVRX_GCC_TASK(Monitor, 20, 0);          // External Task: Debug Monitor
 
 
-void chipdrive_init(){
-	PORT_MOTOR |= (1<<BIT_MOTOR_IN)|(1<<BIT_MOTOR_OUT);
-	DDR_MOTOR |= (1<<BIT_MOTOR_IN)|(1<<BIT_MOTOR_OUT);
-}
+AVRX_SIGINT(SIG_OVERFLOW0)
+{
+    IntProlog();                // Save interrupted context, switch stacks
+    TCNT0 = TCNT0_INIT;			// Reload the timer counter
+    AvrXTimerHandler();         // Process Timer queue
+    Epilog();                   // Restore context of next running task
+};
 
-void chipdrive_load(){
-	PORT_MOTOR &= ~(1<<BIT_MOTOR_IN);
-	while(PIN_SWITCH & (1<<BIT_SWITCH3));
-	PORT_MOTOR |= (1<<BIT_MOTOR_IN);
-}
+int main(void)
+{
+    AvrXSetKernelStack(0);
 
-void chipdrive_eject(){
-	PORT_MOTOR &= ~(1<<BIT_MOTOR_OUT);
-	while( !(PIN_SWITCH & (1<<BIT_SWITCH2)) );
-	PORT_MOTOR |= (1<<BIT_MOTOR_OUT);
-}
+    MCUCR = 1<<SE;      	// Enable "sleep" mode (low power when idle)
+    TCNT0 = TCNT0_INIT;		// Load overflow counter of timer0
+    TCCR0 = TMC8_CK256;		// Set Timer0 to CPUCLK/256
+    TIMSK = 1<<TOIE0;		// Enable interrupt flag
+	
+    //InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
 
-#define CHIPDRIVE_SENSE_CARD !(PIN_SWITCH & (1<<BIT_SWITCH1))
+	//AvrXRunTask(TCB(Monitor));
+	AvrXRunTask(TCB(laptask));
+	AvrXRunTask(TCB(moodtask));
+	
 
-int main(){
-		unsigned char card=0;
-		
-		PORTB = 0x08;
-		chipdrive_init();
-    		console_init();
-		
-		while(1){
-			if(CHIPDRIVE_SENSE_CARD){
-				chipdrive_load();
-				card = 1;
-			}
-			if( !(PINB & (1<<3)) ){
-				if(card){
-					card = 0;
-					chipdrive_eject();
-					while(CHIPDRIVE_SENSE_CARD);
-				}
-			}
-			console();
-		}
-}
+    /* Needed for EEPROM access in monitor */
+	AvrXSetSemaphore(&EEPromMutex);
+	
+
+    Epilog();                   // Switch from AvrX Stack to first task
+    while(1);
+};
