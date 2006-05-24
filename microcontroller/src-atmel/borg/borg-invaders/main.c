@@ -34,7 +34,7 @@ int main (void){
 			breakpoint();
 			break;
 		case 2:
-			BProtationgPoints();
+			BProtatingPoints();
 			break;
 		case 3:
 			scrolltext(scrolltext_text);

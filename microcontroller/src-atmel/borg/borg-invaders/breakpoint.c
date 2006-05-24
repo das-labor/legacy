@@ -5,8 +5,7 @@
 #define PW(a) pgm_read_word(&(a))
 #define PB(a) pgm_read_byte(&(a))
 
-
-unsigned char bp_image[3][18][8] PROGMEM = {
+unsigned char bp_image[3][18][8] PROGMEM  = {
   {{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xF9, 0xFF}
  , {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xF9, 0xFF}
  , {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xF8, 0xFF}
@@ -64,7 +63,6 @@ unsigned char bp_image[3][18][8] PROGMEM = {
  , {0xFF, 0x3F, 0xCE, 0x19, 0x07, 0x3C, 0x00, 0xBF}
  , {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x0F, 0xFE}}
  };
-
  
 // Position in 
 //	  i[][0][0]	i[][0][1]
@@ -78,14 +76,12 @@ unsigned char bp_image[3][18][8] PROGMEM = {
 
 void drawPixmapPos(int x, int y) {
 	unsigned char p, i;
-	union{uint32_t l; uint8_t b[4];} buf;
-	
+	union{uint32_t l; uint8_t b[4];}  buf;
 	for (p = 0; p < 3; p++) {
 			for (i = 0; i < 16; i++) {
 				buf.b[0] = 0;
-				buf.b[1] = PB(bp_image[p][(i+y)][(x/8)]);
+				buf.b[1] = PB(bp_image[p][(i+y)][(0 + x/8)]);
 				buf.b[2] = 0;
-				
 				if (x < 58)
 					buf.b[2] = PB(bp_image[p][(i+y)][(1 + x/8)]); 
 				if (x > 7)
@@ -97,13 +93,13 @@ void drawPixmapPos(int x, int y) {
 }
 
 void breakpoint() {
-	unsigned char p, x, i, runs=2;
+	unsigned char p, x, i, runs = 2;
 	clear_screen(3);
 	for (i = 63; i >= 8; i--) {
 		drawPixmapPos(i, 0)	;
 		wait(45);
-	}	
-	while (runs-- >= 1){
+	}
+	while (runs-- >= 1) {
 		for (i = 8; i <= 56; i++) {
 			drawPixmapPos(i, 0)	;
 			wait(45);
@@ -111,30 +107,32 @@ void breakpoint() {
 		wait(100);
 		drawPixmapPos(56, 1);
 		wait(100);
-		for (i = 56; i >= 8 ; i--) {
+		for (i = 56; i >= 8; i--) {
 			drawPixmapPos(i, 2)	;
 			wait(45);
 		}
 		wait(100);
 		drawPixmapPos(8, 1);
-		wait(100);		
+		wait(100);
 	}
 	wait(900);
-		for (x = 0; x < 4; x++) {
-			for (p = 0; p < 3; p++) {
-				for (i = 0; i < 16; i++) {
-					pixmap[p][i][0] = ((pixmap[p][i][0]) & 0xf0) << 1 |
-					                  ((pixmap[p][i][0]) & 0x0f) >> 1;
-					pixmap[p][i][1] = ((pixmap[p][i][1]) & 0xf0) << 1 |
-					                  ((pixmap[p][i][1]) & 0x0f) >> 1;				  
-									
-				}
+	for (x = 0; x < 4; x++) {
+		for (p = 0; p < 3; p++) {
+			for (i = 0; i < 16; i++) {
+				pixmap[p][i][0] = (pixmap[p][i][0] & 0xf0) << 1 |
+				                  (pixmap[p][i][0] & 0x0f) >> 1;
+				pixmap[p][i][1] = (pixmap[p][i][1] & 0xf0) << 1 |
+				                  (pixmap[p][i][1] & 0x0f) >> 1;				  
+								
+			}
 		}
 		wait(200);
 	}
 	clear_screen(0);
 	wait(100);
 }
+
+//void drawDrachen(point p1, po);
 
 
 /************************************************************************/
@@ -166,35 +164,41 @@ inline char Cos(unsigned char a) {
 	return Sin(a+16);
 }
 
-#define NUM_CIRCLE 5
+#define NUM_CIRCLE 7
 
-void BProtationgPoints() {
+
+void BProtatingPoints() {
 	pixel circlePoints[NUM_CIRCLE][8];
-	unsigned char  i, j, firstRadius = 80, helpRadius, angle = 0;
+	unsigned char  add = 0, i, j, firstRadius = 80, helpRadius, angle = 0, x, y;
 	unsigned int k;
 	// init data
-	for (k = 0; k < 400; k++) {	
+	for (k = 0; k < 800; k++) {
+		if (k > 300)
+			add = k / 16;
 		helpRadius = firstRadius;
 		for (i = 0; i < NUM_CIRCLE; i++) {
 			for (j = 0; j < 8; j++) {
-				if (i & 1) {
-					circlePoints[i][j].x = 64 + (Cos(angle + i*8)*helpRadius)/64;
-					circlePoints[i][j].y = 64 + (Sin(angle + i*8)*helpRadius)/64;
+				if (j & 1) {
+					circlePoints[i][j].x = 64 + (Cos(angle + j*8)*helpRadius)/64;
+					circlePoints[i][j].y = 64 + (Sin(angle + add + j*8)*helpRadius)/64;
 				
 				} else {
-					circlePoints[i][j].x = 64 + (Cos(angle + i*8 + 4)*helpRadius)/64;
-					circlePoints[i][j].y = 64 + (Sin(angle + i*8 + 4)*helpRadius)/64;
+					circlePoints[i][j].x = 64 + (Cos(angle + j*8 + 4)*helpRadius)/64;
+					circlePoints[i][j].y = 64 + (Sin(angle + add + j*8 + 4)*helpRadius)/64;
 				} 
-				// only for testing
-				setpixel((pixel) {circlePoints[i][j].x/8, circlePoints[i][j].y/8}, 3);
+				x = circlePoints[i][j].x/8;
+				y = circlePoints[i][j].y/8;
+				if (x < 16 && y < 16)
+					setpixel((pixel) {x, y}, 3);
 			}
 			helpRadius = (helpRadius*2)/3; 
 		}
-		wait(50);
+		wait(30);
 		clear_screen(0);
 		angle++;
-		firstRadius += 5;
+		firstRadius += 2;
 		if (firstRadius > 119)
 			firstRadius = 80;
 	}
 }
+
