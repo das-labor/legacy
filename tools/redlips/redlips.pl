@@ -47,10 +47,9 @@
 #
 # Usage
 # -----
-# iptables -A INPUT -p tcp --dport 1234 -j QUEUE
 # sudo perl redlips.pl
-# nc -l -v -v -p 1234
-# nc localhost 1234
+#
+# if you need to kill it, kill with -9 or ctrl-c
 #
 # ChangeLog
 # ---------
@@ -86,6 +85,23 @@ use NetPacket::TCP;
 use Net::RawSock;
 use constant TIMEOUT => 1_000_000 * 2;    # 2 seconds
 
+my @r;
+
+open(L, ">>redlips.log") or die $!; # appending logfile
+
+system("/usr/local/sbin/iptables -I INPUT 1 -p tcp --dport 1234 -j QUEUE") or die "error in system(): $!";
+
+$SIG{'INT'} = 'signal_catcher';
+$SIG{'KILL'} = 'signal_catcher';
+
+sub signal_catcher {
+  debug("caught signal...",1);
+  close L or die $!;
+  system("/usr/local/sbin/iptables -D INPUT 1") or die "error in system(): $!";
+  debug("exiting cleanly...",1);
+  exit;
+}
+
 #
 # config
 #
@@ -105,19 +121,41 @@ my %c = (
   unimportant => "\x1b\x5b" . "37m"
 );
 
+#
 # rules
 #
-#
-my @r;
-
 #radd("tcp any:any <> any:any s/felix/xilef/i");
-radd("tcp 127.0.0.1:any > any:111 s/felix/xilef/i");
-radd("tcp 127.0.0.1:1234 > any:1234 s/felix/xilef/i");
-radd("tcp any:any > any:any s/foobar/barfoo/i");
-radd("tcp any:any <> any:any s/asdf/qwerty/i");
-radd("tcp any:any <> any:any s/\\d/Z/gi");
-radd("tcp any:any <> any:any s/asdf(as/df/i");    # invalid
-radd("udp any:any <> any:any s/AAAAA/BBBBBB/i");
+#radd("tcp 127.0.0.1:any > any:111 s/felix/xilef/i");
+radd("tcp 127.0.0.1:any > any:1234 s/felix/xilef/i");
+#radd("tcp any:any > any:any s/foobar/barfoo/i");
+#radd("tcp any:any <> any:any s/asdf/qwerty/i");
+#radd("tcp any:any <> any:any s/\\d/Z/gi");
+#radd("tcp any:any <> any:any s/asdf(as/df/i");    # invalid
+#radd("udp any:any <> any:any s/AAAAA/BBBBBB/i");
+
+#
+# main loop
+#
+my $swap;
+my $queue = new IPTables::IPv4::IPQueue(
+  copy_mode  => IPQ_COPY_PACKET,
+  copy_range => 2048
+  )
+  or die IPTables::IPv4::IPQueue->errstr;
+
+bug( "starting packet while loop", 5 );
+
+while (1) {
+  my $msg = $queue->get_message(TIMEOUT);
+  if ( !defined $msg ) {
+    next if IPTables::IPv4::IPQueue->errstr eq 'Timeout';
+    die IPTables::IPv4::IPQueue->errstr;
+  }
+
+  if ( $msg->data_len() ) {    # skip empty packets
+    phandle($msg);
+  }
+}
 
 #
 # rule subs
@@ -145,30 +183,6 @@ sub radd {
   }
 
   return 0;
-}
-
-#
-# main loop
-#
-my $swap;
-my $queue = new IPTables::IPv4::IPQueue(
-  copy_mode  => IPQ_COPY_PACKET,
-  copy_range => 2048
-  )
-  or die IPTables::IPv4::IPQueue->errstr;
-
-bug( "starting packet while loop", 5 );
-
-while (1) {
-  my $msg = $queue->get_message(TIMEOUT);
-  if ( !defined $msg ) {
-    next if IPTables::IPv4::IPQueue->errstr eq 'Timeout';
-    die IPTables::IPv4::IPQueue->errstr;
-  }
-
-  if ( $msg->data_len() ) {    # skip empty packets
-    phandle($msg);
-  }
 }
 
 #
@@ -219,9 +233,9 @@ sub bug {
   my $info  = shift;
   my $level = shift;
   if ( $info and $level le $o{debug_level} ) {
-    print $c{debug};
-    print "[debug] $info";
-    print $c{normal} . "\n";
+    print L $c{debug};
+    print L "[debug] $info";
+    print L $c{normal} . "\n";
   }
 }
 
@@ -262,7 +276,7 @@ sub dump_packet {
 
   $ip = NetPacket::IP->decode($payload);
 
-  print <<EOT;
+  print L <<EOT;
 [IP Header]
 Version           : $ip->{ver}
 Header Length     : $ip->{hlen}
@@ -284,7 +298,7 @@ EOT
 sub dump_meta {
   my $msg = shift;
 
-  print <<EOT;
+  print L <<EOT;
 [Metadata]
 Packet ID         : @{[ $msg->packet_id() ]}
 Mark              : @{[ $msg->mark() ]}
@@ -320,12 +334,12 @@ sub dump_itd {
     . $tp->{dest_port} . " ";
 
   if ($new_data) {
-    print "[mod] " . $layers . dump_ascii($new_data) . $c{normal} . "\n";
+    print L "[mod] " . $layers . dump_ascii($new_data) . $c{normal} . "\n";
   }
   else {
     $proto = "[udp] " if ( $ip->{proto} == 58 );
     $proto = "[tcp] " if ( $ip->{proto} == 6 );
-    print $proto . $layers . dump_ascii( $tp->{data} ) . $c{normal} . "\n";
+    print L $proto . $layers . dump_ascii( $tp->{data} ) . $c{normal} . "\n";
   }
 }
 
