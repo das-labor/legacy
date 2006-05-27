@@ -1,4 +1,3 @@
-
 #include <setjmp.h>
 #include <avr/interrupt.h>
 
@@ -27,6 +26,7 @@ int main (void){
 	joy_init();	
 	sei();
 
+	int pattern;
 	mode = setjmp(newmode_jmpbuf);
 	oldOldmode = oldMode;
 	waitForFire = 1;	
@@ -51,111 +51,120 @@ int main (void){
 	}
 */
 	for(;;){
-		if(JOYISRIGHT){
-			test();
-			wait(120);
+		pattern = 0;
+		if (JOYISDOWN)  pattern += 100;
+		if (JOYISLEFT)  pattern += 10;
+		if (JOYISRIGHT) pattern += 1;
+		// 100
+		switch(pattern) {
+		case 001:
+			running();
+			scrolltext("<"SPEED"/#!!! TOUCHDOWN !!!");
+			break;
+		case 010:
+                        scrolltext("</#Wer nicht h\x81pft der ist ein  \x83LNER");
+                        wait(250);
+			scrolltext(">/#hey");
+                        wait(150);
+			scrolltext("</#hey");
+			break;
+		case 100:
+			rhein_fire(10000);
+			break;
+		case 110:
+			scrolltext("<"SPEED"/#World Bowl Campion 2006:");
+			scrolltext("<"SPEED"/#Frankfurt  Gay - Leck - Sie");
+			wait(500);
+			break;
+		case 111:
+			scrolltext("<"SPEED"/#World Bowl Campion 2006:");
+			scrolltext("<"SPEED"/#Amsterdam Admirals");
+			wait(500);
+			break;
 		}
-
 		oldMode = mode;
-		// In Testmode only Subprogram 1
-		if (TESTMODE == 1)
+		// In Testmode Controlled by DEFINE only Subprogram 1
+		if (TESTMODE == 1){
 			mode = 1;
+		} 
 		// Switch Subprogram
 		switch(mode) {
 		case 1:
 			break;
-			clear_screen(0);
-			dropSmiley(SMILING);
-    		dropSmiley(SAD);
-			//test();
-			running();
-			scrolltext("</#!!! TOUCHDOWN !!!");
-			scrolltext("</#Hier k\x80nnte Ihre Werbung stehen");
-			break;
 		case 2:
-			scrolltext("<"SPEED"/#D\x81sseldorf Rhein Fire");
-			wait(250);
-			scrolltext("<"SPEED"/#LTU Arena, 22. April");
+                        scrolltext("<"SPEED"/#World Bowl XIV");
+			scrolltext("<"SPEED"/#Rhein Fire");
+			scrolltext("d/#vs");
+			scrolltext("<"SPEED"/#Amsterdam Admirals");
 			wait(250);
 			break;
 		case 3:
-			rhein_fire_logo(5000);
+			running();
+			scrolltext("<"SPEED"/#!!! TOUCHDOWN !!!");
 			break;
 		case 4:
-			scrolltext("<"SPEED"/#D\x81sseldorf Rhein Fire");
-			scrolltext("d/#vs");
-			scrolltext("<"SPEED"/#Amsterdam Admirals");
-			scrolltext("<"SPEED"/#Samstag 22. April, 19:00");
-			scrolltext("<"SPEED"/#LTU Arena, D\x81sseldorf");
+			scrolltext("<"SPEEDQUICK"/#idea  and  realisation");
+			scrolltext("<"SPEEDQUICK"/#DAS LABOR - Bochum");
+			scrolltext("<"SPEEDQUICK"/#www.das-labor.org");
 			break;
 		case 5:
 			rhein_fire(100);
 			break;
 		case 6:
-			scrolltext("<"SPEEDQUICK"/#Rhein Fire Borg Jacket");
-			scrolltext("<"SPEEDQUICK"/#idea  and  realisation  by");
-			scrolltext("<"SPEEDQUICK"/#DAS LABOR - Bochum");
-			scrolltext("<"SPEEDQUICK"/#www.das-labor.org");
 			break;
 		case 7:
-			schachbrett(20);
+			schachbrett(10);
 			break;
 		case 8:
-			break;
-			scrolltext("<"SPEED"/#Rhein Fire Fans on Tour");
-			scrolltext("<"SPEED"/#Amsterdam ArenA");
-			scrolltext("<"SPEED"/#saturday, april 15th 15:00");
-			scrolltext("<"SPEED"/#D\x81sseldorf Rhein Fire");
-			scrolltext("d/#@");
-			scrolltext("<"SPEED"/#Amsterdam Admirals");
-			break;
+                        break;
 		case 9:
 			running();
 			scrolltext("<"SPEED"/#!!! TOUCHDOWN !!!");
 			break;
 		case 10:
+			break;
 			scrolltext("<"SPEED"/#Road to Worldbowl XIV");
 			scrolltext("<"SPEED"/#18.3. Fire vs. Galaxy");
 			scrolltext("d/#10:6");
 			dropSmiley(SMILING);
 			wait(250);
-			//rhein_fire(10);
 			scrolltext("<"SPEED"/#25.3. Fire @ Thunder");
 			scrolltext(">/#22:0");
 			dropSmiley(SMILING);
 			wait(250);
-			//rhein_fire(10);
 			scrolltext("<"SPEED"/#2.4. Fire @ Centurions");
 			scrolltext(">/#20:10");
 			dropSmiley(SMILING);
 			wait(250);
-			//rhein_fire(10);
 			scrolltext("<"SPEED"/#8.4. Fire vs. Sea Devils");
 			scrolltext(">/#31:21");
 			dropSmiley(SMILING);
 			wait(250);
-			//rhein_fire(10);
 			scrolltext("<"SPEED"/#15.4. Fire @ Admirals");
-			scrolltext(">/#35:31");
-		    dropSmiley(SAD);
+			scrolltext(">/#31:35");
+			dropSmiley(SAD);
 			wait(250);
-			//rhein_fire(10);
 			scrolltext("<"SPEED"/#22.4. Fire vs. Admirals");
+			scrolltext(">/#21:30");
+			dropSmiley(SAD);
 			wait(250);
-			//rhein_fire(10);
 			scrolltext("<"SPEED"/#29.4. Fire vs. Thunder");
+			scrolltext(">/#27:24");
+			dropSmiley(SMILING);
 			wait(250);
-			//rhein_fire(10);
 			scrolltext("<"SPEED"/#6.5. Fire @ Galaxy");
+			scrolltext(">/#14:16");
+                        dropSmiley(SAD);
 			wait(250);
-			//rhein_fire(10);
 			scrolltext("<"SPEED"/#14.5. Fire @ Sea Devils");
+			scrolltext(">/#13:16");
+                        dropSmiley(SAD);
 			wait(250);
-			//rhein_fire(10);
 			scrolltext("<"SPEED"/#20.5. Fire vs. Centurions");
+			//scrolltext(">/#21:30");
 			wait(250);
-			//rhein_fire(10);
 			scrolltext("<"SPEED"/#27.5. World Bowl XIV");
+			//scrolltext(">/#21:30");
 			wait(250);
 			break;
 		case 11:
@@ -191,10 +200,11 @@ int main (void){
 		}
 		// JOYISDOWN ist der Mode-Halten Schalter
 		// JOYISUP ist der Taster, der die Modes weiterschaltet		
-		if((!JOYISDOWN) || JOYISUP){
+		//if((!JOYISDOWN) || JOYISUP){
+		//if((!JOYISDOWN) || (!JOYISLEFT) || (!JOYISRIGHT) || JOYISUP){
 			while(JOYISUP) VERPEIL HIER;
 			waitForFire = 1;
 			mode++;
-		}
+		//}
 	}
 }

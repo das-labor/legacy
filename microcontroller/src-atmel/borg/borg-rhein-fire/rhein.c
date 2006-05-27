@@ -20,7 +20,7 @@ unsigned char random();
 
 //extern unsigned char rhein[16][16] PROGMEM;
 
-unsigned char rhein[16][16] PROGMEM= { 
+unsigned char rhein[16][16] PROGMEM= {
  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
   { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
   { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -39,7 +39,7 @@ unsigned char rhein[16][16] PROGMEM= {
   { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 0, 0 },
   };
 
-unsigned char Smile1[8][8] PROGMEM= { 
+unsigned char Smile1[8][8] PROGMEM= {
   { 0, 0, 2, 2, 2, 2, 0, 0, },
   { 0, 2, 0, 0, 0, 0, 2, 0, },
   { 2, 0, 3, 0, 0, 3, 0, 2, },
@@ -50,7 +50,7 @@ unsigned char Smile1[8][8] PROGMEM= {
   { 0, 0, 2, 2, 2, 2, 0, 0, }
   };
 
-unsigned char Smile2[8][8] PROGMEM= { 
+unsigned char Smile2[8][8] PROGMEM= {
   { 0, 0, 2, 2, 2, 2, 0, 0, },
   { 0, 2, 0, 0, 0, 0, 2, 0, },
   { 2, 0, 3, 0, 0, 3, 0, 2, },
@@ -60,6 +60,22 @@ unsigned char Smile2[8][8] PROGMEM= {
   { 0, 2, 0, 0, 0, 0, 2, 0, },
   { 0, 0, 2, 2, 2, 2, 0, 0, }
   };
+
+unsigned char Smile3[12][12] PROGMEM= {
+  { 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, },
+  { 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, },
+  { 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 0, 0, },
+  { 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, },
+  { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, },
+  { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, },
+  { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, },
+  { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, },
+  { 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, },
+  { 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 0, 0, },
+  { 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, },
+  { 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, }
+  };
+
 
 void drawSmiley(signed char off_x, signed char off_y, unsigned char smil[8][8] ) {
 	unsigned char x,y;
@@ -70,15 +86,38 @@ void drawSmiley(signed char off_x, signed char off_y, unsigned char smil[8][8] )
  			setPixel(x + off_x, y+ off_y, pgm_read_byte(&smil[y][x]));
  		}
  	}
- 
+}
+
+
+void drawBig(signed char off_x, signed char off_y, unsigned char img[12][12]) {
+	unsigned char x,y;
+
+	clear_screen(0);
+	for(x = 0; x < 12; x++) {
+		for(y = 0; y < 12; y++) {
+			setPixel(x + off_x, y+ off_y, pgm_read_byte(&img[y][x]));
+		}
+	}
+}
+
+void BigSmiley()
+{
+	unsigned char *smiley = &Smile3;
+	signed char i;
+
+	for(i = -8; i < 23; i++) {
+		drawBig( 14, i, smiley);
+		wait(1800);
+	}
 
 }
+
 
 void dropSmiley(unsigned char smil)
 {
 	unsigned char *smiley = &Smile1;
 	switch(smil) {
-		case SMILING: 
+		case SMILING:
 				smiley = &Smile1;
 				break;
 		case SAD:
@@ -90,7 +129,7 @@ void dropSmiley(unsigned char smil)
 
 	for(i = -8; i < 23; i++) {
 		drawSmiley( 12, i, smiley);
-		wait(80);		
+		wait(80);
 	}
 
 }
@@ -98,22 +137,22 @@ void dropSmiley(unsigned char smil)
 void rhein_fire_logo(int ms)
  {
  	clear_screen(0);
- 	
+
  	unsigned char x, y;
- 
+
  	for(x = 0; x < 16; x++) {
  		for(y = 0; y < 16; y++) {
  			setPixel(x, y, pgm_read_byte(&rhein[y][x]));
  		}
  	}
- 
+
  	wait(ms);
  }
 
 // Kleine Nummern an den 10 Yard Linien
 unsigned char numbers[7][5][3] PROGMEM =
 {
-	// 0 
+	// 0
 	{	{3,3,3},
 		{3,0,3},
 		{3,0,3},
@@ -121,7 +160,7 @@ unsigned char numbers[7][5][3] PROGMEM =
 		{3,3,3}
 	},
 
-	// 1 
+	// 1
 	{	{0,3,3},
 		{3,0,3},
 		{0,0,3},
@@ -129,7 +168,7 @@ unsigned char numbers[7][5][3] PROGMEM =
 		{0,0,3}
 	},
 
-	// 2 
+	// 2
 	{	{3,3,3},
 		{0,0,3},
 		{0,3,0},
@@ -137,7 +176,7 @@ unsigned char numbers[7][5][3] PROGMEM =
 		{3,3,3}
 	},
 
-	// 3 
+	// 3
 	{	{3,3,3},
 		{0,0,3},
 		{0,3,3},
@@ -145,7 +184,7 @@ unsigned char numbers[7][5][3] PROGMEM =
 		{3,3,3}
 	},
 
-	// 4 
+	// 4
 	{	{3,0,3},
 		{3,0,3},
 		{3,3,3},
@@ -153,7 +192,7 @@ unsigned char numbers[7][5][3] PROGMEM =
 		{0,0,3}
 	},
 
-	// 5 
+	// 5
 	{	{3,3,3},
 		{3,0,0},
 		{3,3,3},
@@ -161,7 +200,7 @@ unsigned char numbers[7][5][3] PROGMEM =
 		{3,3,3}
 	},
 
-	// G 
+	// G
 	{	{2,3,2},
 		{3,0,0},
 		{3,2,3},
@@ -169,9 +208,9 @@ unsigned char numbers[7][5][3] PROGMEM =
 		{2,3,2}
 	}
 };
- 
 
-unsigned char player[4][5][3] PROGMEM = 
+
+unsigned char player[4][5][3] PROGMEM =
 {
 	{{0,1,0},
 	{0,2,2},
@@ -205,7 +244,7 @@ unsigned char player[4][5][3] PROGMEM =
 
 };
 
-unsigned char player2[2][3][4] PROGMEM = 
+unsigned char player2[2][3][4] PROGMEM =
 {
 	{{0,3,0,0},
 	{3,3,3,0},
@@ -223,7 +262,7 @@ void drawNumber(unsigned char num, signed char ax, signed char ay) {
 		for(y = 0; y < 3; ++y){
 				setPixel(x+ax, y+ay,  pgm_read_byte(&numbers[num][4-x][y]));
 		}
-	}	
+	}
 }
 
 void drawLine(unsigned char y) {
@@ -259,7 +298,7 @@ void test() {
 
 
 // Zeichnet das Spielfeld, jeweils mit dem aktuellen Yardstand in Zeile 0
-// Halfyard 0-240 sein: 
+// Halfyard 0-240 sein:
 //   0 = Tochdownzone Ende
 //  20 = Tochdownzone Anfang
 // 120 = 50 Yard linie
@@ -273,8 +312,8 @@ void drawField(unsigned char halfyard) {
 		if ((( halfyard + 20 + y ) % 10 ) == 0 )
 			if ((( halfyard + y) / 10 ) !=0)
 				drawLine(y);
-	}	
-	// Die Null unter jeder 10er Linie	
+	}
+	// Die Null unter jeder 10er Linie
 	for(y = 0; y < 19; ++y){
 		if ((( halfyard + 20 + y - 4 ) % 20 ) == 0 ){
 			if ((( halfyard + 20 + y - 4 ) / 20 ) > 2)
@@ -282,22 +321,22 @@ void drawField(unsigned char halfyard) {
 			if ((( halfyard + 20 + y - 4 ) / 20 ) == 2)
 				drawNumber(6, 15, y - 2);
 		}
-	}	
+	}
 
-	// Die Zahl ber jeder 10er Linie	
+	// Die Zahl ber jeder 10er Linie
 	for(y = 0; y < 19; ++y){
 		if ((( halfyard + 20 + y - 18 ) % 20 ) == 0 ){
 			n = (( halfyard + 20 + y - 18 ) / 20 ) - 1;
 			if (n > 0)
 				drawNumber(n, 15, y - 2);
 		}
-	}	
+	}
 	// Endzone
 	if ( halfyard < 20 ){
 		for(y = 0; y < 16; ++y){
 			if ((( halfyard + y) < 20) && (( halfyard + y) > 10)){
 				for(x = ((( halfyard + y ) % 2 ) * 2); x < 16; x+=4){
-					setPixel(x, y, 1);		
+					setPixel(x, y, 1);
 				}
 			}
 		}
@@ -310,7 +349,7 @@ void drawField(unsigned char halfyard) {
 					setPixel(5, ( halfyard + y), 1);
 					setPixel(9, ( halfyard + y), 1);
 					setPixel(13, ( halfyard + y), 1);
-				} 
+				}
 				if (((( halfyard + y) % 4 ) +2 ) == 0){
 					setPixel(3, ( halfyard + y), 1);
 					setPixel(7, ( halfyard + y), 1);
@@ -325,7 +364,7 @@ void drawField(unsigned char halfyard) {
 void running() {
 
 	// Deklarationen
-	pixel         player_pos;	
+	pixel         player_pos;
 	unsigned char yard;
 	unsigned char x;
 	unsigned char y;
@@ -334,12 +373,12 @@ void running() {
 	// ***************************************************************
 	// *** Zuerst dern Player von unten in das Bild laufen lassen  ***
 	// ***************************************************************
-	// Hier l?t der Player von der 60 zur 55 Yard linie und in den letzten 
+	// Hier l?t der Player von der 60 zur 55 Yard linie und in den letzten
 	// 5 Schritten, sollte die Linie zusammen mit der Null von oben reinscrollen.
 	player_pos.x = 7;
 	player_pos.y = 19;
 	t=0;
-	
+
 	while(player_pos.y > 7){
 		// Matrix lschen
 		clear_screen(0);
@@ -350,9 +389,9 @@ void running() {
 		t++;
 
 		// Y-Position vom Player von unten bis hin zur Mitte
-		player_pos.y--;	
+		player_pos.y--;
 
-		// Animation vom laufenden Player 
+		// Animation vom laufenden Player
 		// 4 verschiedene Player Bilder der Gr? 5 * 3
 		for(x = 0; x < 5; x++){
 			for(y = 0; y < 3; y++){
@@ -365,11 +404,11 @@ void running() {
 		// Pause
 		wait(FRAMESPEED);
 	}
-	
+
 	// ***************************************************
 	// *** Jetzt ist der Player auf (7, 7)             ***
 	// *** und oben im Bild ist die 45 Yard Linie      ***
-	// ***************************************************	
+	// ***************************************************
 	t=0;
 	yard=109;
 	while(t < 255) {
@@ -387,7 +426,7 @@ void running() {
 			}
 		}
 
-//		// Animation vom laufenden Player 2		
+//		// Animation vom laufenden Player 2
 //		for(x = 0; x < 3; x++){
 //			for(y = 0; y < 4; y++){
 //				if(pgm_read_byte(&player2[t%2][x][y])) {
@@ -398,7 +437,7 @@ void running() {
 
 		if(yard < 8) break;
 		yard--;
-		t++;		
+		t++;
 		wait(FRAMESPEED);
 	}
 	wait(1000);
@@ -408,7 +447,7 @@ void running() {
 
 void showScores(unsigned char home, unsigned char guest) {
 	char* hometxt = "</#FIRE";
-	
+
 	scrolltext(hometxt);
 	char* tmp = "xp10#xx";
 	tmp[5]= (home / 10)+0x30;
@@ -429,7 +468,7 @@ void showScores(unsigned char home, unsigned char guest) {
 //#define FEUER_Y (NUM_ROWS +3 ) -9
 //#define FEUER_S 30
 //#define FEUER_N 5
-#undef FEUER_DIV 
+#undef FEUER_DIV
 #define FEUER_DIV 41
 
  void rhein_fire(int duration){
@@ -437,7 +476,7 @@ void showScores(unsigned char home, unsigned char guest) {
  	unsigned char y, x;
 	unsigned int  t;
 	unsigned char world[NUM_COLS][FEUER_Y];   // double buffer
-	
+
 	clear_screen(0);
 	for(t=0; t<duration; t++) {
 		// diffuse
@@ -461,7 +500,7 @@ void showScores(unsigned char home, unsigned char guest) {
 				if(pgm_read_byte(&rhein[y][x]) != 0) {
 					setPixel(x, y, (world[x][y] >> 5) );
 				}
-			}		
+			}
 		};
 		wait(FEUER_DELAY);
 	}
@@ -491,10 +530,10 @@ void rhein_matrix() {
 		for(x=0;x<NUM_COLS;x++)
 			for(y=0;y<NUM_ROWS;y++)
 				matrix_bright[x][y]=0;
-		
+
 		for(i=0;i<streamer_num;i++){
 			streamer str = streamers[i];
-			
+
 			unsigned char bright = 255; draw = 0;
 			for(j=(str.len>>3);j!=0xFF;j--){ //Draw streamer
 				if(j+str.start.y<NUM_ROWS){
@@ -515,9 +554,9 @@ void rhein_matrix() {
 				streamer_num--;
 				i--;
 			};
-						
+
 		}
-		
+
 		//clear_screen(0);
 		for(y=0;y<NUM_ROWS;y++) {
 			for(x=0;x<NUM_COLS;x++) {
@@ -538,14 +577,14 @@ void rhein_matrix() {
 				unsigned char sy = random()%(2*NUM_ROWS);
 				if (sy>NUM_ROWS-1) sy=0;
 				streamers[streamer_num] = (streamer){{random()%NUM_COLS, sy}, 0, (random()%8)+12, index++,(random()%16)+3};
-				streamer_num++;	
+				streamer_num++;
 			}
 		}
-		wait(80);	
-		
-	
-	
+		wait(80);
+
+
+
 	}
 
 }
- 
+
