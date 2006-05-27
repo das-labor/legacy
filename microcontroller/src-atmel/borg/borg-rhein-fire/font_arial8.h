@@ -1,1 +1,2 @@
-../borg-base/font_arial8.h
+ude "font.h"
+extern font font_arial8;

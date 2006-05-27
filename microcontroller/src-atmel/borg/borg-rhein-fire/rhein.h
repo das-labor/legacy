@@ -1,4 +1,3 @@
-
 void rhein_fire_logo(int ms);
 void rhein_fire(int duration);
 void rhein_fire2();
