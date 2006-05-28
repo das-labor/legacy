@@ -60,14 +60,14 @@
 # Todo
 # ----
 # gute abkuerzung fuer red
-# optimieren von NetPacket-> aufrufe
 # oo?
 # term::console / userinput
 # nfnetlink_queue
 # log to file
 # better dump_ascii string escaping \\ (for reuse in ruby/perl/python)
-#
 # duplicate packets? tag with evil bit?
+# $packet_counter for logfile
+# check iptables rules -> no duplicate --jump QUEUE
 #
 
 #
@@ -86,19 +86,20 @@ use Net::RawSock;
 use constant TIMEOUT => 1_000_000 * 2;    # 2 seconds
 
 my @r;
+my $packet_counter;
 
-open(L, ">>redlips.log") or die $!; # appending logfile
+open(L, ">>lips.log") or die $!; # appending logfile
 
-system("/usr/local/sbin/iptables -I INPUT 1 -p tcp --dport 1234 -j QUEUE") or die "error in system(): $!";
+#exec("/usr/local/sbin/iptables -I INPUT 1 -p tcp --dport 1234 -j QUEUE") or die "error in system(): $!";
 
-$SIG{'INT'} = 'signal_catcher';
-$SIG{'KILL'} = 'signal_catcher';
+$SIG{'INT'} = \&signal_catcher;
+$SIG{'KILL'} = \&signal_catcher;
 
 sub signal_catcher {
-  debug("caught signal...",1);
+  print "caught signal...\n";
   close L or die $!;
-  system("/usr/local/sbin/iptables -D INPUT 1") or die "error in system(): $!";
-  debug("exiting cleanly...",1);
+  #system("/usr/local/sbin/iptables -D INPUT 1") or die "error in system(): $!";
+  print "exiting cleanly...\n";
   exit;
 }
 
