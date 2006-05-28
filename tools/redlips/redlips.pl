@@ -88,16 +88,17 @@ use constant TIMEOUT => 1_000_000 * 2;    # 2 seconds
 my @r;
 my $packet_counter;
 
-open(L, ">>lips.log") or die $!; # appending logfile
+open( L, ">>lips.log" ) or die $!;        # appending logfile
 
 #exec("/usr/local/sbin/iptables -I INPUT 1 -p tcp --dport 1234 -j QUEUE") or die "error in system(): $!";
 
-$SIG{'INT'} = \&signal_catcher;
+$SIG{'INT'}  = \&signal_catcher;
 $SIG{'KILL'} = \&signal_catcher;
 
 sub signal_catcher {
   print "caught signal...\n";
   close L or die $!;
+
   #system("/usr/local/sbin/iptables -D INPUT 1") or die "error in system(): $!";
   print "exiting cleanly...\n";
   exit;
@@ -128,6 +129,7 @@ my %c = (
 #radd("tcp any:any <> any:any s/felix/xilef/i");
 #radd("tcp 127.0.0.1:any > any:111 s/felix/xilef/i");
 radd("tcp 127.0.0.1:any > any:1234 s/felix/xilef/i");
+
 #radd("tcp any:any > any:any s/foobar/barfoo/i");
 #radd("tcp any:any <> any:any s/asdf/qwerty/i");
 #radd("tcp any:any <> any:any s/\\d/Z/gi");
