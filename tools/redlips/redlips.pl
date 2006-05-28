@@ -90,7 +90,8 @@ my $packet_counter;
 
 open( L, ">>lips.log" ) or die $!;        # appending logfile
 
-#exec("/usr/local/sbin/iptables -I INPUT 1 -p tcp --dport 1234 -j QUEUE") or die "error in system(): $!";
+system("/usr/local/sbin/iptables -I INPUT 1 -p tcp --dport 1234 -j QUEUE")
+  or die "error in system(): $!";
 
 $SIG{'INT'}  = \&signal_catcher;
 $SIG{'KILL'} = \&signal_catcher;
@@ -99,7 +100,7 @@ sub signal_catcher {
   print "caught signal...\n";
   close L or die $!;
 
-  #system("/usr/local/sbin/iptables -D INPUT 1") or die "error in system(): $!";
+  system("/usr/local/sbin/iptables -D INPUT 1") or die "error in system(): $!";
   print "exiting cleanly...\n";
   exit;
 }
