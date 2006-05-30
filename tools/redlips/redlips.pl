@@ -44,6 +44,7 @@
 # Contributors
 # ------------
 # Felix Groebert <redlips@baraddur.de>
+# Dennis
 #
 # Usage
 # -----
