@@ -296,7 +296,7 @@ void CanInit(){
 	mcp_write( CANINTE, (1<<RX0IE) );
 }
 
-void CanSetMode( can_mode_t mode ) {
+void CanSetMode( CanMode mode ) {
 	unsigned char val = mode << 5;  
 	val |= 0x04;  // CLKEN
 
@@ -312,17 +312,15 @@ void CanSetFilter() {
 	mcp_write(RXB0CTRL, (1<<RXM1) | (1<<RXM0));
 }
 
-void CanSetLED(unsigned char led, unsigned char state){
+void CanSetLED(uint8_t led, uint8_t state){
 	mcp_bitmod(BFPCTRL, 0x10<<led, state?0xff:0);
 }
 
 void CanGet(CanMessage *msg)
 {
-        PORTC &=  ~0x02;
 	AvrXWaitSemaphore(&canRxData);
 	message_fetch(msg);
 	mcp_bitmod( CANINTE, (1<<RX0IE), 0xff); //interrupt back on
-        PORTC |=  0x02;
 }
 
 char CanGetNB(CanMessage *msg)
