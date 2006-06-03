@@ -18,9 +18,9 @@ typedef struct{
 	CanId		id;
 	uint8_t		dlc;
 	uint8_t		data[8];
-}CanMessage;
+} CanMessage;
 
-typedef enum { normal, mode_sleep, loopback, listenonly, config } can_mode_t;
+typedef enum { normal, mode_sleep, loopback, listenonly, config } CanMode;
 
 
 /*****************************************************************************
@@ -29,8 +29,8 @@ typedef enum { normal, mode_sleep, loopback, listenonly, config } can_mode_t;
 
 void CanInit();
 void CanSetFilter();
-void CanSetMode(can_mode_t);
-void CanSetLED(unsigned char led, unsigned char state);
+void CanSetMode(CanMode);
+void CanSetLED(uint8_t led, uint8_t state);
 
 /*****************************************************************************
  * Global Message Buffer

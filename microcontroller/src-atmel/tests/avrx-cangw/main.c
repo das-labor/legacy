@@ -20,26 +20,30 @@ AVRX_SIGINT(SIG_OVERFLOW0)
 };
 
 
-// AVRX_IAR_TASK(Monitor, 0, 20, 0);      // external Debug Monitor
 // AVRX_GCC_TASK(Monitor, 20, 0);      // external Debug Monitor
 
-AVRX_GCC_TASKDEF(task1, 40, 3)
+AVRX_GCC_TASKDEF(TaskCan2Tun, 40, 1)
 {
-	TimerControlBlock   timer;
 	CanMessage cmsg;
 
-	CanInit();
-	CanTunInit();
-	CanTunReset();
 	CanTunHello();
+//	CanTunReset();
 
-	while(1)
-	{
+	while(1) {
 		CanGet(&cmsg);
 		CanTunSend(&cmsg);
 	}
 }
 
+AVRX_GCC_TASKDEF(TaskTun2Can, 40, 1)
+{
+	CanMessage cmsg;
+
+	while(1) {
+		CanTunGet(&cmsg);
+		CanSend(&cmsg);
+	}
+}
 
 int main(void)
 {
@@ -54,8 +58,12 @@ int main(void)
     TCCR0 = TMC8_CK256;		// Set Timer0 to CPUCLK/256
     TIMSK = 1<<TOIE0;		// Enable interrupt flag
 
-    AvrXRunTask(TCB(task1));
+    CanInit();
+    CanTunInit();
+
+    AvrXRunTask(TCB(TaskCan2Tun));
+    AvrXRunTask(TCB(TaskTun2Can));
 
     Epilog();                   // Switch from AvrX Stack to first task
-    while(1);
 };
+
