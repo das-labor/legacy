@@ -24,7 +24,7 @@ MessageQueue canTunRxQueue;
 // CAN TX Task
 AVRX_GCC_TASKDEF(canTunTxTask, 10, 3)
 {
-	CanTunMsg *msg;
+    CanTunMsg *msg;
 
     while (1)
     {
