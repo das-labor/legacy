@@ -1,1 +1,0 @@
-scrolltext(unsigned char *str);
