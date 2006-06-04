@@ -336,6 +336,8 @@ char CanGetNB(CanMessage *msg)
 
 void CanSend(CanMessage *msg)
 {
+	AvrXWaitSemaphore(&canRxData);
+	message_load(msg);
 }
 
 /*
