@@ -12,6 +12,17 @@
 	Revision History:
 
 */
+
+
+// UTILITY
+enum
+{
+	FALSE,
+	TRUE
+};
+
+typedef unsigned char BOOL;
+
 // Control & configuration section.  Define USART_CHANNELS with 1, 2 or both
 // to enable sections of code.
 

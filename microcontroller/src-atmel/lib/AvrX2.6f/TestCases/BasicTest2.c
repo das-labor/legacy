@@ -1,4 +1,4 @@
-//#define ENABLE_BIT_DEFINITIONS
+#//#define ENABLE_BIT_DEFINITIONS
 //#define _SFR_ASM_COMPAT 1
 #include <avrx-io.h>
 #include "avrx.h"
