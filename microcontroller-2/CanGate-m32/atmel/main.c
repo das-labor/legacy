@@ -22,20 +22,25 @@ AVRX_SIGINT(SIG_OVERFLOW0)
 
 // AVRX_GCC_TASK(Monitor, 20, 0);      // external Debug Monitor
 
-AVRX_GCC_TASKDEF(TaskCan2Tun, 40, 1)
+AVRX_GCC_TASKDEF(TaskCan2Tun, 60, 1)
 {
 	CanMessage cmsg;
 
-	CanTunHello();
-//	CanTunReset();
+//	CanTunHello();
+	CanTunReset();
 
 	while(1) {
 		CanGet(&cmsg);
+		cmsg.dlc = 4;
+		cmsg.data[0] = cmsg.id[3];
+		cmsg.data[1] = cmsg.id[3];
+		cmsg.data[2] = cmsg.id[3];
+		cmsg.data[3] = cmsg.id[3];
 		CanTunSend(&cmsg);
 	}
 }
 
-AVRX_GCC_TASKDEF(TaskTun2Can, 40, 1)
+AVRX_GCC_TASKDEF(TaskTun2Can, 60, 1)
 {
 	CanMessage cmsg;
 

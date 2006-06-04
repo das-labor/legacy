@@ -12,8 +12,6 @@
 #define CANTUN_HELLO_STR "*can-gw*0.1*\n"
 
 
-
-
 // MessageQueue canTunTxQueue;
 
 // Recieving messages
@@ -98,9 +96,19 @@ char CanTunGetNB(CanMessage *msg)
 
 void CanTunSend(CanMessage *msg)
 {
+	char *p;
+	uint8_t len, i;
+	       
+	len = 1 + 4 + 1 + msg->dlc;   // len = cmd + id[4] + dlc + data
+
 	AvrXWaitSemaphore(&canTunTxData);
-	SerialPut('*');
-	SerialPut('\r');
+	SerialPut(len);
+	SerialPut(1);
+
+	p = (char *)msg;
+        for (i=len-1; i>0; i--)
+                SerialPut(*(p++));
+
 	AvrXSetSemaphore(&canTunTxData);
 }
 
@@ -109,14 +117,8 @@ void CanTunReset()
 	uint8_t i;
 
 	AvrXWaitSemaphore(&canTunTxData);
-	for(i=0; i<16; i++) 
+	for(i=0; i<1; i++) 
 		SerialPut(0);
 	AvrXSetSemaphore(&canTunTxData);
 }
 
-void CanTunHello()
-{
-	AvrXWaitSemaphore(&canTunTxData);
-	SerialPutStr(CANTUN_HELLO_STR);
-	AvrXSetSemaphore(&canTunTxData);
-}

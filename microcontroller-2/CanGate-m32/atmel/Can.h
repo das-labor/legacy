@@ -12,10 +12,8 @@
  * Types
  */
 
-typedef uint32_t CanId;
-
 typedef struct{
-	CanId		id;
+	uint8_t		id[4];
 	uint8_t		dlc;
 	uint8_t		data[8];
 } CanMessage;
