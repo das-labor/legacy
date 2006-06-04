@@ -8,14 +8,13 @@
 #include <sys/types.h>
 
 // #include "cann.h"
-#include "uart-host.h"
 #include "debug.h"
 
 // Atmel ; LAP includes
 #include "config.h"
 
-// #include "uart-host.h"
-// #include "can-uart.h"
+#include "uart-host.h"
+#include "can-uart.h"
 
 #ifndef max
  #define max(a,b) (((a) > (b)) ? (a) : (b))
@@ -236,7 +235,7 @@ int main(int argc, char *argv[])
 	// setup serial communication
 	if (serial) {
 		uart_init(serial);
-	// 	canu_init(serial);
+	 	canu_init(serial);
 		debug(1, "Serial CAN communication established" );
 	};
 
