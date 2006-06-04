@@ -25,7 +25,7 @@ void canu_reset();
  */
 
 /* nonblocking read from uart -- returns -1 if no complete msg arrived */
-int  canu_get_nb(can_message *msg);
+int  canu_get_nb(can_message_t *msg);
 
 /* blocking read from uart */
 void canu_get(can_message_t *msg);

@@ -141,24 +141,20 @@ void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val){
 }
 
 //load a message to mcp2515 and start transmission
-void message_load(CanMessage * tx_msg){
+void message_load(CanMessage * msg){
 	unsigned char x;
 	
 	spi_set_ss();
 	spi_data(WRITE);
 	spi_data(TXB0SIDH);
 
-//	spi_data( ((unsigned char)(tx_msg->port_src << 2)) | (tx_msg->port_dst >> 4 ) );
-//	spi_data( (unsigned char)((tx_msg->port_dst & 0x0C) << 3) | (1<<EXIDE) | (tx_msg->port_dst & 0x03) );
-//	spi_data(tx_msg->addr_src);
-//	spi_data(tx_msg->addr_dst);
-	spi_data(1);
-	spi_data(2 | (1<<EXIDE));
-	spi_data(3);
-	spi_data(4);
-	spi_data(tx_msg->dlc);
-	for(x=0;x<tx_msg->dlc;x++){
-		spi_data(tx_msg->data[x]);
+	spi_data(msg->id[0]);
+	spi_data(msg->id[1]);
+	spi_data(msg->id[2]);
+	spi_data(msg->id[3]);
+	spi_data(msg->dlc);
+	for(x=0;x<msg->dlc;x++){
+		spi_data(msg->data[x]);
 	}
 	spi_clear_ss();
 	spi_set_ss();
@@ -175,11 +171,11 @@ void message_fetch(CanMessage *msg){
 	spi_set_ss();
 	spi_data(READ);
 	spi_data(RXB0SIDH);
-	msg->id =  spi_data(0);
-	msg->id += spi_data(0) << 8;
-	msg->id += spi_data(0) << 8;
-	msg->id += spi_data(0) << 8;
-	msg->dlc = spi_data(0) & 0x0F;	
+	msg->id[0] = spi_data(0);
+	msg->id[1] = spi_data(0);
+	msg->id[2] = spi_data(0);
+	msg->id[3] = spi_data(0);
+	msg->dlc   = spi_data(0) & 0x0F;	
 
 	for(x=0;x<msg->dlc;x++){
 		msg->data[x] = spi_data(0);

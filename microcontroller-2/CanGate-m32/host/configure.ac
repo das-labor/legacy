@@ -32,7 +32,6 @@ Makefile
 playground/Makefile
 src/Makefile
 src/cand/Makefile
-src/cand2/Makefile
 src/lapcontrol/Makefile
 src/liblap/Makefile
 ])

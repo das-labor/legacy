@@ -234,15 +234,15 @@ int main(int argc, char *argv[])
 
 	// setup serial communication
 	if (serial) {
-		uart_init(serial);
 	 	canu_init(serial);
 		debug(1, "Serial CAN communication established" );
 	};
 
+	can_message_t msg;
 	while(1) {
 		char c;
-		c = uart_getc();
-		hexdump(&c, 1);
+		canu_get(&msg);
+		hexdump(&msg, 4+1+msg.dlc );
 	}
 
 #ifdef FOO
