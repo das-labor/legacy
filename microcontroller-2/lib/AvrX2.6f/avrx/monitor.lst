@@ -1,0 +1,2074 @@
+   1               	# 1 "monitor.S"
+   2               	# 1 "<built-in>"
+   1               	#include        "avrx.inc"
+   0               	
+   0               	
+   1               	#ifndef __AVRXINC
+   2               	#define __AVRXINC
+   3               	#include "avrx-ctoasm.inc"
+   1               	/*
+   2               	 C to ASM
+   3               	
+   4               	*/
+   4               	/*
+   5               	
+   6               	Copyright ©1998-2002 Larry Barello
+   7               	
+   8               	Author: Larry Barello
+   9               	        larry@barello.net
+  10               	
+  11               	20020907 - Added _IOMACRO_H_ definition to prevent older GCC io.h files
+  12               		   from including C only header information
+  13               	
+  14               		 - Added #defines for _SFR_IO_ADDR() macro to make it a NOP for
+  15               		   pre GCC 3.2 compilers and for IAR (I wonder what they do for
+  16               		   extended I/O access?)
+  17               	
+  18               		   THIS works because avrx.inc loads "io.h" which loads "sfr-defs.h"
+  19               		   which defines _SFR_IO_ADDR() macro on the 3.2 compiler.
+  20               	*/
+  21               	// Define _IOMACROS_H_ to prevent GCC 3.02 io.h from including this
+  22               	// C only file when using io.h for assembly code.  io.h called within
+  23               	// avrx-io.h
+  24               	#define _IOMACROS_H_
+  25               	#include "avrx-io.h"
+   1               	// 20021123 - Changed <io.h> to <avr/io.h> for 3.3 compiler
+   2               	
+   3               	#if !defined(__IAR_SYSTEMS_ICC__) && !defined(__IAR_SYSTEMS_ASM__)
+   4               	#include <avr/io.h>
+   1               	/* Copyright (c) 2002,2003 Marek Michalkiewicz, Joerg Wunsch
+   2               	   All rights reserved.
+   3               	
+   4               	   Redistribution and use in source and binary forms, with or without
+   5               	   modification, are permitted provided that the following conditions are met:
+   6               	
+   7               	   * Redistributions of source code must retain the above copyright
+   8               	     notice, this list of conditions and the following disclaimer.
+   9               	
+  10               	   * Redistributions in binary form must reproduce the above copyright
+  11               	     notice, this list of conditions and the following disclaimer in
+  12               	     the documentation and/or other materials provided with the
+  13               	     distribution.
+  14               	
+  15               	   * Neither the name of the copyright holders nor the names of
+  16               	     contributors may be used to endorse or promote products derived
+  17               	     from this software without specific prior written permission.
+  18               	
+  19               	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  20               	  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  21               	  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  22               	  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  23               	  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  24               	  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  25               	  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  26               	  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  27               	  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  28               	  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  29               	  POSSIBILITY OF SUCH DAMAGE. */
+  30               	
+  31               	/* $Id: io.h,v 1.14 2004/11/24 18:57:36 troth Exp $ */
+  32               	
+  33               	/** \defgroup avr_io AVR device-specific IO definitions
+  34               	    \code #include <avr/io.h> \endcode
+  35               	
+  36               	    This header file includes the apropriate IO definitions for the
+  37               	    device that has been specified by the <tt>-mmcu=</tt> compiler
+  38               	    command-line switch.  This is done by diverting to the appropriate
+  39               	    file <tt>&lt;avr/io</tt><em>XXXX</em><tt>.h&gt;</tt> which should
+  40               	    never be included directly.  Some register names common to all
+  41               	    AVR devices are defined directly within <tt>&lt;avr/io.h&gt;</tt>,
+  42               	    but most of the details come from the respective include file.
+  43               	
+  44               	    Note that this file always includes
+  45               	    \code #include <avr/sfr_defs.h> \endcode
+  46               	    See \ref avr_sfr for the details.
+  47               	
+  48               	    Included are definitions of the IO register set and their
+  49               	    respective bit values as specified in the Atmel documentation.
+  50               	    Note that Atmel is not very consistent in its naming conventions,
+  51               	    so even identical functions sometimes get different names on
+  52               	    different devices.
+  53               	
+  54               	    Also included are the specific names useable for interrupt
+  55               	    function definitions as documented
+  56               	    \ref avr_signames "here".
+  57               	
+  58               	    Finally, the following macros are defined:
+  59               	
+  60               	    - \b RAMEND
+  61               	    <br>
+  62               	    A constant describing the last on-chip RAM location.
+  63               	    <br>
+  64               	    - \b XRAMEND
+  65               	    <br>
+  66               	    A constant describing the last possible location in RAM.
+  67               	    This is equal to RAMEND for devices that do not allow for
+  68               	    external RAM.
+  69               	    <br>
+  70               	    - \b E2END
+  71               	    <br>
+  72               	    A constant describing the address of the last EEPROM cell.
+  73               	    <br>
+  74               	    - \b FLASHEND
+  75               	    <br>
+  76               	    A constant describing the last byte address in flash ROM.
+  77               	    <br>
+  78               	    - \b SPM_PAGESIZE
+  79               	    <br>
+  80               	    For devices with bootloader support, the flash pagesize
+  81               	    (in bytes) to be used for the \c SPM instruction. */
+  82               	
+  83               	#ifndef _AVR_IO_H_
+  84               	#define _AVR_IO_H_
+  85               	
+  86               	#include <avr/sfr_defs.h>
+   1               	/* Copyright (c) 2002, Marek Michalkiewicz <marekm@amelek.gda.pl>
+   2               	   All rights reserved.
+   3               	
+   4               	   Redistribution and use in source and binary forms, with or without
+   5               	   modification, are permitted provided that the following conditions are met:
+   6               	
+   7               	   * Redistributions of source code must retain the above copyright
+   8               	     notice, this list of conditions and the following disclaimer.
+   9               	
+  10               	   * Redistributions in binary form must reproduce the above copyright
+  11               	     notice, this list of conditions and the following disclaimer in
+  12               	     the documentation and/or other materials provided with the
+  13               	     distribution.
+  14               	
+  15               	   * Neither the name of the copyright holders nor the names of
+  16               	     contributors may be used to endorse or promote products derived
+  17               	     from this software without specific prior written permission.
+  18               	
+  19               	   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  20               	   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  21               	   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  22               	   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  23               	   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  24               	   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  25               	   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  26               	   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  27               	   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  28               	   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  29               	   POSSIBILITY OF SUCH DAMAGE.  */
+  30               	
+  31               	/* avr/sfr_defs.h - macros for accessing AVR special function registers */
+  32               	
+  33               	/* $Id: sfr_defs.h,v 1.14.2.1 2005/01/07 19:25:25 arcanum Exp $ */
+  34               	
+  35               	#ifndef _AVR_SFR_DEFS_H_
+  36               	#define _AVR_SFR_DEFS_H_ 1
+  37               	
+  38               	/** \defgroup avr_sfr_notes Additional notes from <avr/sfr_defs.h>
+  39               	    \ingroup avr_sfr
+  40               	
+  41               	   The \c <avr/sfr_defs.h> file is included by all of the \c <avr/ioXXXX.h>
+  42               	   files, which use macros defined here to make the special function register
+  43               	   definitions look like C variables or simple constants, depending on the
+  44               	   <tt>_SFR_ASM_COMPAT</tt> define.  Some examples from \c <avr/iom128.h> to
+  45               	   show how to define such macros:
+  46               	
+  47               	\code
+  48               	#define PORTA _SFR_IO8(0x1b)
+  49               	#define TCNT1 _SFR_IO16(0x2c)
+  50               	#define PORTF _SFR_MEM8(0x61)
+  51               	#define TCNT3 _SFR_MEM16(0x88)
+  52               	\endcode
+  53               	
+  54               	   If \c _SFR_ASM_COMPAT is not defined, C programs can use names like
+  55               	   <tt>PORTA</tt> directly in C expressions (also on the left side of
+  56               	   assignment operators) and GCC will do the right thing (use short I/O
+  57               	   instructions if possible).  The \c __SFR_OFFSET definition is not used in
+  58               	   any way in this case.
+  59               	
+  60               	   Define \c _SFR_ASM_COMPAT as 1 to make these names work as simple constants
+  61               	   (addresses of the I/O registers).  This is necessary when included in
+  62               	   preprocessed assembler (*.S) source files, so it is done automatically if
+  63               	   \c __ASSEMBLER__ is defined.  By default, all addresses are defined as if
+  64               	   they were memory addresses (used in \c lds/sts instructions).  To use these
+  65               	   addresses in \c in/out instructions, you must subtract 0x20 from them.
+  66               	
+  67               	   For more backwards compatibility, insert the following at the start of your
+  68               	   old assembler source file:
+  69               	
+  70               	\code
+  71               	#define __SFR_OFFSET 0
+  72               	\endcode
+  73               	
+  74               	   This automatically subtracts 0x20 from I/O space addresses, but it's a
+  75               	   hack, so it is recommended to change your source: wrap such addresses in
+  76               	   macros defined here, as shown below.  After this is done, the
+  77               	   <tt>__SFR_OFFSET</tt> definition is no longer necessary and can be removed.
+  78               	
+  79               	   Real example - this code could be used in a boot loader that is portable
+  80               	   between devices with \c SPMCR at different addresses.
+  81               	
+  82               	\verbatim
+  83               	<avr/iom163.h>: #define SPMCR _SFR_IO8(0x37)
+  84               	<avr/iom128.h>: #define SPMCR _SFR_MEM8(0x68)
+  85               	\endverbatim
+  86               	
+  87               	\code
+  87               	
+  88               	/*
+  89               	 * Registers common to all AVR devices.
+  90               	 */
+  91               	
+  92               	#if __AVR_ARCH__ != 1
+  93               	/*
+  94               	 * AVR architecture 1 has no RAM, thus no stack pointer.
+  95               	 *
+  96               	 * All other archs do have a stack pointer.  Some devices have only
+  97               	 * less than 256 bytes of possible RAM locations (128 Bytes of SRAM
+  98               	 * and no option for external RAM), thus SPH is officially "reserved"
+  99               	 * for them.  We catch this case below after including the
+ 100               	 * device-specific ioXXXX.h file, by examining XRAMEND, and
+ 101               	 * #undef-ining SP and SPH in that case.
+ 102               	 */
+ 103               	/* Stack Pointer */
+ 104               	#define SP        _SFR_IO16(0x3D)
+ 105               	#define SPL       _SFR_IO8(0x3D)
+ 106               	#define SPH       _SFR_IO8(0x3E)
+ 107               	#endif /* #if __AVR_ARCH__ != 1 */
+ 108               	
+ 109               	/* Status REGister */
+ 110               	#define SREG      _SFR_IO8(0x3F)
+ 111               	
+ 112               	/* Status Register - SREG */
+ 113               	#define    SREG_I       7
+ 114               	#define    SREG_T       6
+ 115               	#define    SREG_H       5
+ 116               	#define    SREG_S       4
+ 117               	#define    SREG_V       3
+ 118               	#define    SREG_N       2
+ 119               	#define    SREG_Z       1
+ 120               	#define    SREG_C       0
+ 121               	
+ 122               	/* Pointer definition */
+ 123               	#if __AVR_ARCH__ != 1
+ 124               	/* avr1 has only the Z pointer */
+ 125               	#define    XL           r26
+ 126               	#define    XH           r27
+ 127               	#define    YL           r28
+ 128               	#define    YH           r29
+ 129               	#endif /* #if __AVR_ARCH__ != 1 */
+ 130               	#define    ZL           r30
+ 131               	#define    ZH           r31
+ 132               	
+ 133               	/*
+ 134               	 * Only few devices come without EEPROM.  In order to assemble the
+ 135               	 * EEPROM library components without defining a specific device, we
+ 136               	 * keep the EEPROM-related definitions here, and catch the devices
+ 137               	 * without EEPROM (E2END == 0) below.  Obviously, the EEPROM library
+ 138               	 * functions will not work for them. ;-)
+ 139               	 */
+ 140               	/* EEPROM Control Register */
+ 141               	#define EECR	_SFR_IO8(0x1C)
+ 142               	
+ 143               	/* EEPROM Data Register */
+ 144               	#define EEDR	_SFR_IO8(0x1D)
+ 145               	
+ 146               	/* EEPROM Address Register */
+ 147               	#define EEAR	_SFR_IO16(0x1E)
+ 148               	#define EEARL	_SFR_IO8(0x1E)
+ 149               	#define EEARH	_SFR_IO8(0x1F)
+ 150               	
+ 151               	/* EEPROM Control Register */
+ 152               	#define    EERIE        3
+ 153               	#define    EEMWE        2
+ 154               	#define    EEWE         1
+ 155               	#define    EERE         0
+ 156               	
+ 157               	#if defined (__AVR_AT94K__)
+ 158               	#  include <avr/ioat94k.h>
+ 159               	#elif defined (__AVR_AT43USB320__)
+ 160               	#  include <avr/io43u32x.h>
+ 161               	#elif defined (__AVR_AT43USB355__)
+ 162               	#  include <avr/io43u35x.h>
+ 163               	#elif defined (__AVR_AT76C711__)
+ 164               	#  include <avr/io76c711.h>
+ 165               	#elif defined (__AVR_AT86RF401__)
+ 166               	#  include <avr/io86r401.h>
+ 167               	#elif defined (__AVR_ATmega128__)
+ 168               	#  include <avr/iom128.h>
+ 169               	#elif defined (__AVR_AT90CAN128__)
+ 170               	#  include <avr/iocan128.h>
+ 171               	#elif defined (__AVR_ATmega64__)
+ 172               	#  include <avr/iom64.h>
+ 173               	#elif defined (__AVR_ATmega645__)
+ 174               	#  include <avr/iom645.h>
+ 175               	#elif defined (__AVR_ATmega6450__)
+ 176               	#  include <avr/iom6450.h>
+ 177               	#elif defined (__AVR_ATmega103__)
+ 178               	#  include <avr/iom103.h>
+ 179               	#elif defined (__AVR_ATmega32__)
+ 180               	#  include <avr/iom32.h>
+   1               	/* Copyright (c) 2002, Steinar Haugen
+   2               	   All rights reserved.
+   3               	
+   4               	   Redistribution and use in source and binary forms, with or without
+   5               	   modification, are permitted provided that the following conditions are met:
+   6               	
+   7               	   * Redistributions of source code must retain the above copyright
+   8               	     notice, this list of conditions and the following disclaimer.
+   9               	
+  10               	   * Redistributions in binary form must reproduce the above copyright
+  11               	     notice, this list of conditions and the following disclaimer in
+  12               	     the documentation and/or other materials provided with the
+  13               	     distribution.
+  14               	
+  15               	   * Neither the name of the copyright holders nor the names of
+  16               	     contributors may be used to endorse or promote products derived
+  17               	     from this software without specific prior written permission.
+  18               	
+  19               	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  20               	  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  21               	  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  22               	  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  23               	  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  24               	  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  25               	  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  26               	  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  27               	  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  28               	  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  29               	  POSSIBILITY OF SUCH DAMAGE. */
+  30               	
+  31               	/* $Id: iom32.h,v 1.7 2004/12/21 17:32:54 arcanum Exp $ */
+  32               	
+  33               	/* avr/iom32.h - definitions for ATmega32 */
+  34               	
+  35               	#ifndef _AVR_IOM32_H_
+  36               	#define _AVR_IOM32_H_ 1
+  37               	
+  38               	/* This file should only be included from <avr/io.h>, never directly. */
+  39               	
+  40               	#ifndef _AVR_IO_H_
+  41               	#  error "Include <avr/io.h> instead of this file."
+  42               	#endif
+  43               	
+  44               	#ifndef _AVR_IOXXX_H_
+  45               	#  define _AVR_IOXXX_H_ "iom32.h"
+  46               	#else
+  47               	#  error "Attempt to include more than one <avr/ioXXX.h> file."
+  48               	#endif 
+  49               	
+  50               	/* I/O registers */
+  51               	
+  52               	/* TWI stands for "Two Wire Interface" or "TWI Was I2C(tm)" */
+  53               	#define TWBR    _SFR_IO8(0x00)
+  54               	#define TWSR    _SFR_IO8(0x01)
+  55               	#define TWAR    _SFR_IO8(0x02)
+  56               	#define TWDR    _SFR_IO8(0x03)
+  57               	
+  58               	/* ADC */
+  59               	#ifndef __ASSEMBLER__
+  60               	#define ADC     _SFR_IO16(0x04)
+  61               	#endif
+  62               	#define ADCW    _SFR_IO16(0x04)
+  63               	#define ADCL    _SFR_IO8(0x04)
+  64               	#define ADCH    _SFR_IO8(0x05)
+  65               	#define ADCSRA  _SFR_IO8(0x06)
+  66               	#define ADMUX   _SFR_IO8(0x07)
+  67               	
+  68               	/* analog comparator */
+  69               	#define ACSR    _SFR_IO8(0x08)
+  70               	
+  71               	/* USART */
+  72               	#define UBRRL   _SFR_IO8(0x09)
+  73               	#define UCSRB   _SFR_IO8(0x0A)
+  74               	#define UCSRA   _SFR_IO8(0x0B)
+  75               	#define UDR     _SFR_IO8(0x0C)
+  76               	
+  77               	/* SPI */
+  78               	#define SPCR    _SFR_IO8(0x0D)
+  79               	#define SPSR    _SFR_IO8(0x0E)
+  80               	#define SPDR    _SFR_IO8(0x0F)
+  81               	
+  82               	/* Port D */
+  83               	#define PIND    _SFR_IO8(0x10)
+  84               	#define DDRD    _SFR_IO8(0x11)
+  85               	#define PORTD   _SFR_IO8(0x12)
+  86               	
+  87               	/* Port C */
+  88               	#define PINC    _SFR_IO8(0x13)
+  89               	#define DDRC    _SFR_IO8(0x14)
+  90               	#define PORTC   _SFR_IO8(0x15)
+  91               	
+  92               	/* Port B */
+  93               	#define PINB    _SFR_IO8(0x16)
+  94               	#define DDRB    _SFR_IO8(0x17)
+  95               	#define PORTB   _SFR_IO8(0x18)
+  96               	
+  97               	/* Port A */
+  98               	#define PINA    _SFR_IO8(0x19)
+  99               	#define DDRA    _SFR_IO8(0x1A)
+ 100               	#define PORTA   _SFR_IO8(0x1B)
+ 101               	
+ 102               	/* 0x1C..0x1F EEPROM */
+ 103               	
+ 104               	#define UBRRH   _SFR_IO8(0x20)
+ 105               	#define UCSRC   UBRRH
+ 106               	
+ 107               	#define WDTCR   _SFR_IO8(0x21)
+ 108               	
+ 109               	#define ASSR    _SFR_IO8(0x22)
+ 110               	
+ 111               	/* Timer 2 */
+ 112               	#define OCR2    _SFR_IO8(0x23)
+ 113               	#define TCNT2   _SFR_IO8(0x24)
+ 114               	#define TCCR2   _SFR_IO8(0x25)
+ 115               	
+ 116               	/* Timer 1 */
+ 117               	#define ICR1    _SFR_IO16(0x26)
+ 118               	#define ICR1L   _SFR_IO8(0x26)
+ 119               	#define ICR1H   _SFR_IO8(0x27)
+ 120               	#define OCR1B   _SFR_IO16(0x28)
+ 121               	#define OCR1BL  _SFR_IO8(0x28)
+ 122               	#define OCR1BH  _SFR_IO8(0x29)
+ 123               	#define OCR1A   _SFR_IO16(0x2A)
+ 124               	#define OCR1AL  _SFR_IO8(0x2A)
+ 125               	#define OCR1AH  _SFR_IO8(0x2B)
+ 126               	#define TCNT1   _SFR_IO16(0x2C)
+ 127               	#define TCNT1L  _SFR_IO8(0x2C)
+ 128               	#define TCNT1H  _SFR_IO8(0x2D)
+ 129               	#define TCCR1B  _SFR_IO8(0x2E)
+ 130               	#define TCCR1A  _SFR_IO8(0x2F)
+ 131               	
+ 132               	#define SFIOR   _SFR_IO8(0x30)
+ 133               	
+ 134               	#define OSCCAL  _SFR_IO8(0x31)
+ 135               	#define OCDR    OSCCAL
+ 136               	
+ 137               	/* Timer 0 */
+ 138               	#define TCNT0   _SFR_IO8(0x32)
+ 139               	#define TCCR0   _SFR_IO8(0x33)
+ 140               	
+ 141               	#define MCUSR   _SFR_IO8(0x34)
+ 142               	#define MCUCSR  MCUSR
+ 143               	#define MCUCR   _SFR_IO8(0x35)
+ 144               	
+ 145               	#define TWCR    _SFR_IO8(0x36)
+ 146               	
+ 147               	#define SPMCR   _SFR_IO8(0x37)
+ 148               	
+ 149               	#define TIFR    _SFR_IO8(0x38)
+ 150               	#define TIMSK   _SFR_IO8(0x39)
+ 151               	
+ 152               	#define GIFR    _SFR_IO8(0x3A)
+ 153               	#define GIMSK   _SFR_IO8(0x3B)
+ 154               	#define GICR    GIMSK
+ 155               	
+ 156               	#define OCR0    _SFR_IO8(0x3C)
+ 157               	
+ 158               	/* 0x3D..0x3E SP */
+ 159               	
+ 160               	/* 0x3F SREG */
+ 161               	
+ 162               	/* Interrupt vectors */
+ 163               	
+ 164               	#define SIG_INTERRUPT0          _VECTOR(1)
+ 165               	#define SIG_INTERRUPT1          _VECTOR(2)
+ 166               	#define SIG_INTERRUPT2          _VECTOR(3)
+ 167               	#define SIG_OUTPUT_COMPARE2     _VECTOR(4)
+ 168               	#define SIG_OVERFLOW2           _VECTOR(5)
+ 169               	#define SIG_INPUT_CAPTURE1      _VECTOR(6)
+ 170               	#define SIG_OUTPUT_COMPARE1A    _VECTOR(7)
+ 171               	#define SIG_OUTPUT_COMPARE1B    _VECTOR(8)
+ 172               	#define SIG_OVERFLOW1           _VECTOR(9)
+ 173               	#define SIG_OUTPUT_COMPARE0     _VECTOR(10)
+ 174               	#define SIG_OVERFLOW0           _VECTOR(11)
+ 175               	#define SIG_SPI                 _VECTOR(12)
+ 176               	#define SIG_USART_RECV          _VECTOR(13)
+ 177               	#define SIG_UART_RECV           _VECTOR(13) /* For backwards compatibility */
+ 178               	#define SIG_USART_DATA          _VECTOR(14)
+ 179               	#define SIG_UART_DATA           _VECTOR(14) /* For backwards compatibility */
+ 180               	#define SIG_USART_TRANS         _VECTOR(15)
+ 181               	#define SIG_UART_TRANS          _VECTOR(15) /* For backwards compatibility */
+ 181               	#elif defined (__AVR_ATmega323__)
+ 182               	#  include <avr/iom323.h>
+ 183               	#elif defined (__AVR_ATmega325__)
+ 184               	#  include <avr/iom325.h>
+ 185               	#elif defined (__AVR_ATmega3250__)
+ 186               	#  include <avr/iom3250.h>
+ 187               	#elif defined (__AVR_ATmega16__)
+ 188               	#  include <avr/iom16.h>
+ 189               	#elif defined (__AVR_ATmega161__)
+ 190               	#  include <avr/iom161.h>
+ 191               	#elif defined (__AVR_ATmega162__)
+ 192               	#  include <avr/iom162.h>
+ 193               	#elif defined (__AVR_ATmega163__)
+ 194               	#  include <avr/iom163.h>
+ 195               	#elif defined (__AVR_ATmega165__)
+ 196               	#  include <avr/iom165.h>
+ 197               	#elif defined (__AVR_ATmega168__)
+ 198               	#  include <avr/iom168.h>
+ 199               	#elif defined (__AVR_ATmega169__)
+ 200               	#  include <avr/iom169.h>
+ 201               	#elif defined (__AVR_ATmega8__)
+ 202               	#  include <avr/iom8.h>
+ 203               	#elif defined (__AVR_ATmega48__)
+ 204               	#  include <avr/iom48.h>
+ 205               	#elif defined (__AVR_ATmega88__)
+ 206               	#  include <avr/iom88.h>
+ 207               	#elif defined (__AVR_ATmega8515__)
+ 208               	#  include <avr/iom8515.h>
+ 209               	#elif defined (__AVR_ATmega8535__)
+ 210               	#  include <avr/iom8535.h>
+ 211               	#elif defined (__AVR_AT90S8535__)
+ 212               	#  include <avr/io8535.h>
+ 213               	#elif defined (__AVR_AT90C8534__)
+ 214               	#  include <avr/io8534.h>
+ 215               	#elif defined (__AVR_AT90S8515__)
+ 216               	#  include <avr/io8515.h>
+ 217               	#elif defined (__AVR_AT90S4434__)
+ 218               	#  include <avr/io4434.h>
+ 219               	#elif defined (__AVR_AT90S4433__)
+ 220               	#  include <avr/io4433.h>
+ 221               	#elif defined (__AVR_AT90S4414__)
+ 222               	#  include <avr/io4414.h>
+ 223               	#elif defined (__AVR_ATtiny22__)
+ 224               	#  include <avr/iotn22.h>
+ 225               	#elif defined (__AVR_ATtiny26__)
+ 226               	#  include <avr/iotn26.h>
+ 227               	#elif defined (__AVR_AT90S2343__)
+ 228               	#  include <avr/io2343.h>
+ 229               	#elif defined (__AVR_AT90S2333__)
+ 230               	#  include <avr/io2333.h>
+ 231               	#elif defined (__AVR_AT90S2323__)
+ 232               	#  include <avr/io2323.h>
+ 233               	#elif defined (__AVR_AT90S2313__)
+ 234               	#  include <avr/io2313.h>
+ 235               	#elif defined (__AVR_ATtiny2313__)
+ 236               	#  include <avr/iotn2313.h>
+ 237               	#elif defined (__AVR_ATtiny13__)
+ 238               	#  include <avr/iotn13.h>
+ 239               	/* avr1: the following only supported for assembler programs */
+ 240               	#elif defined (__AVR_ATtiny28__)
+ 241               	#  include <avr/iotn28.h>
+ 242               	#elif defined (__AVR_AT90S1200__)
+ 243               	#  include <avr/io1200.h>
+ 244               	#elif defined (__AVR_ATtiny15__)
+ 245               	#  include <avr/iotn15.h>
+ 246               	#elif defined (__AVR_ATtiny12__)
+ 247               	#  include <avr/iotn12.h>
+ 248               	#elif defined (__AVR_ATtiny11__)
+ 249               	#  include <avr/iotn11.h>
+ 250               	#else
+ 251               	#  if !defined(__COMPILING_AVR_LIBC__)
+ 252               	#    warning "device type not defined"
+ 253               	#  endif
+ 254               	#endif
+ 255               	
+ 256               	#include <avr/portpins.h>
+   1               	/* Copyright (c) 2003  Theodore A. Roth
+   2               	   All rights reserved.
+   3               	
+   4               	   Redistribution and use in source and binary forms, with or without
+   5               	   modification, are permitted provided that the following conditions are met:
+   6               	
+   7               	   * Redistributions of source code must retain the above copyright
+   8               	     notice, this list of conditions and the following disclaimer.
+   9               	
+  10               	   * Redistributions in binary form must reproduce the above copyright
+  11               	     notice, this list of conditions and the following disclaimer in
+  12               	     the documentation and/or other materials provided with the
+  13               	     distribution.
+  14               	
+  15               	   * Neither the name of the copyright holders nor the names of
+  16               	     contributors may be used to endorse or promote products derived
+  17               	     from this software without specific prior written permission.
+  18               	
+  19               	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  20               	  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  21               	  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  22               	  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  23               	  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  24               	  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  25               	  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  26               	  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  27               	  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  28               	  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  29               	  POSSIBILITY OF SUCH DAMAGE. */
+  30               	
+  31               	/* $Id: portpins.h,v 1.3 2004/11/02 18:16:07 arcanum Exp $ */
+  32               	
+  33               	#ifndef _AVR_PORTPINS_H_
+  34               	#define _AVR_PORTPINS_H_ 1
+  35               	
+  36               	/* This file should only be included from <avr/io.h>, never directly. */
+  37               	
+  38               	#ifndef _AVR_IO_H_
+  39               	#  error "Include <avr/io.h> instead of this file."
+  40               	#endif
+  41               	
+  42               	/* Define Generic PORTn, DDn, and PINn values. */
+  43               	
+  44               	/* Port Data Register (generic) */
+  45               	#define    PORT7        7
+  46               	#define    PORT6        6
+  47               	#define    PORT5        5
+  48               	#define    PORT4        4
+  49               	#define    PORT3        3
+  50               	#define    PORT2        2
+  51               	#define    PORT1        1
+  52               	#define    PORT0        0
+  53               	
+  54               	/* Port Data Direction Register (generic) */
+  55               	#define    DD7          7
+  56               	#define    DD6          6
+  57               	#define    DD5          5
+  58               	#define    DD4          4
+  59               	#define    DD3          3
+  60               	#define    DD2          2
+  61               	#define    DD1          1
+  62               	#define    DD0          0
+  63               	
+  64               	/* Port Input Pins (generic) */
+  65               	#define    PIN7         7
+  66               	#define    PIN6         6
+  67               	#define    PIN5         5
+  68               	#define    PIN4         4
+  69               	#define    PIN3         3
+  70               	#define    PIN2         2
+  71               	#define    PIN1         1
+  72               	#define    PIN0         0
+  73               	
+  74               	/* Define PORTxn values for all possible port pins. */
+  75               	
+  76               	/* PORT A */
+  77               	
+  78               	#if defined(PA0)
+  79               	#  define PORTA0 PA0
+  80               	#endif
+  81               	#if defined(PA1)
+  82               	#  define PORTA1 PA1
+  83               	#endif
+  84               	#if defined(PA2)
+  85               	#  define PORTA2 PA2
+  86               	#endif
+  87               	#if defined(PA3)
+  88               	#  define PORTA3 PA3
+  89               	#endif
+  90               	#if defined(PA4)
+  91               	#  define PORTA4 PA4
+  92               	#endif
+  93               	#if defined(PA5)
+  94               	#  define PORTA5 PA5
+  95               	#endif
+  96               	#if defined(PA6)
+  97               	#  define PORTA6 PA6
+  98               	#endif
+  99               	#if defined(PA7)
+ 100               	#  define PORTA7 PA7
+ 101               	#endif
+ 102               	
+ 103               	/* PORT B */
+ 104               	
+ 105               	#if defined(PB0)
+ 106               	#  define PORTB0 PB0
+ 107               	#endif
+ 108               	#if defined(PB1)
+ 109               	#  define PORTB1 PB1
+ 110               	#endif
+ 111               	#if defined(PB2)
+ 112               	#  define PORTB2 PB2
+ 113               	#endif
+ 114               	#if defined(PB3)
+ 115               	#  define PORTB3 PB3
+ 116               	#endif
+ 117               	#if defined(PB4)
+ 118               	#  define PORTB4 PB4
+ 119               	#endif
+ 120               	#if defined(PB5)
+ 121               	#  define PORTB5 PB5
+ 122               	#endif
+ 123               	#if defined(PB6)
+ 124               	#  define PORTB6 PB6
+ 125               	#endif
+ 126               	#if defined(PB7)
+ 127               	#  define PORTB7 PB7
+ 128               	#endif
+ 129               	
+ 130               	/* PORT C */
+ 131               	
+ 132               	#if defined(PC0)
+ 133               	#  define PORTC0 PC0
+ 134               	#endif
+ 135               	#if defined(PC1)
+ 136               	#  define PORTC1 PC1
+ 137               	#endif
+ 138               	#if defined(PC2)
+ 139               	#  define PORTC2 PC2
+ 140               	#endif
+ 141               	#if defined(PC3)
+ 142               	#  define PORTC3 PC3
+ 143               	#endif
+ 144               	#if defined(PC4)
+ 145               	#  define PORTC4 PC4
+ 146               	#endif
+ 147               	#if defined(PC5)
+ 148               	#  define PORTC5 PC5
+ 149               	#endif
+ 150               	#if defined(PC6)
+ 151               	#  define PORTC6 PC6
+ 152               	#endif
+ 153               	#if defined(PC7)
+ 154               	#  define PORTC7 PC7
+ 155               	#endif
+ 156               	
+ 157               	/* PORT D */
+ 158               	
+ 159               	#if defined(PD0)
+ 160               	#  define PORTD0 PD0
+ 161               	#endif
+ 162               	#if defined(PD1)
+ 163               	#  define PORTD1 PD1
+ 164               	#endif
+ 165               	#if defined(PD2)
+ 166               	#  define PORTD2 PD2
+ 167               	#endif
+ 168               	#if defined(PD3)
+ 169               	#  define PORTD3 PD3
+ 170               	#endif
+ 171               	#if defined(PD4)
+ 172               	#  define PORTD4 PD4
+ 173               	#endif
+ 174               	#if defined(PD5)
+ 175               	#  define PORTD5 PD5
+ 176               	#endif
+ 177               	#if defined(PD6)
+ 178               	#  define PORTD6 PD6
+ 179               	#endif
+ 180               	#if defined(PD7)
+ 181               	#  define PORTD7 PD7
+ 182               	#endif
+ 183               	
+ 184               	/* PORT E */
+ 185               	
+ 186               	#if defined(PE0)
+ 187               	#  define PORTE0 PE0
+ 188               	#endif
+ 189               	#if defined(PE1)
+ 190               	#  define PORTE1 PE1
+ 191               	#endif
+ 192               	#if defined(PE2)
+ 193               	#  define PORTE2 PE2
+ 194               	#endif
+ 195               	#if defined(PE3)
+ 196               	#  define PORTE3 PE3
+ 197               	#endif
+ 198               	#if defined(PE4)
+ 199               	#  define PORTE4 PE4
+ 200               	#endif
+ 201               	#if defined(PE5)
+ 202               	#  define PORTE5 PE5
+ 203               	#endif
+ 204               	#if defined(PE6)
+ 205               	#  define PORTE6 PE6
+ 206               	#endif
+ 207               	#if defined(PE7)
+ 208               	#  define PORTE7 PE7
+ 209               	#endif
+ 210               	
+ 211               	/* PORT F */
+ 212               	
+ 213               	#if defined(PF0)
+ 214               	#  define PORTF0 PF0
+ 215               	#endif
+ 216               	#if defined(PF1)
+ 217               	#  define PORTF1 PF1
+ 218               	#endif
+ 219               	#if defined(PF2)
+ 220               	#  define PORTF2 PF2
+ 221               	#endif
+ 222               	#if defined(PF3)
+ 223               	#  define PORTF3 PF3
+ 224               	#endif
+ 225               	#if defined(PF4)
+ 226               	#  define PORTF4 PF4
+ 227               	#endif
+ 228               	#if defined(PF5)
+ 229               	#  define PORTF5 PF5
+ 230               	#endif
+ 231               	#if defined(PF6)
+ 232               	#  define PORTF6 PF6
+ 233               	#endif
+ 234               	#if defined(PF7)
+ 235               	#  define PORTF7 PF7
+ 236               	#endif
+ 237               	
+ 238               	/* PORT G */
+ 239               	
+ 240               	#if defined(PG0)
+ 241               	#  define PORTG0 PG0
+ 242               	#endif
+ 243               	#if defined(PG1)
+ 244               	#  define PORTG1 PG1
+ 245               	#endif
+ 246               	#if defined(PG2)
+ 247               	#  define PORTG2 PG2
+ 248               	#endif
+ 249               	#if defined(PG3)
+ 250               	#  define PORTG3 PG3
+ 251               	#endif
+ 252               	#if defined(PG4)
+ 253               	#  define PORTG4 PG4
+ 254               	#endif
+ 255               	#if defined(PG5)
+ 256               	#  define PORTG5 PG5
+ 257               	#endif
+ 257               	
+   5               	#else
+   6               	#include <ioavr.h>
+   7               	#endif
+   8               	
+   9               	...
+  26               	
+  27               	#ifdef __IAR_SYSTEMS_ASM__
+  28               	
+  29               	__global  MACRO Label, Size
+  30               	//        EXTERN  `?<Segment init: NEAR_Z>`
+  31               	//	REQUIRE `?<Segment init: NEAR_Z>`
+  32               	        PUBLIC Label
+  33               	        RSEG NEAR_Z:DATA:NOROOT(0)
+  34               	Label:  DS Size
+  35               	        ENDM
+  36               	
+  37               	__static MACRO Label, Size
+  38               	//        EXTERN  `?<Segment init: NEAR_Z>`
+  39               	//	REQUIRE `?<Segment init: NEAR_Z>`
+  40               	        RSEG NEAR_Z:DATA:NOROOT(0)
+  41               	Label:  DS Size
+  42               	        ENDM
+  43               	
+  44               	#  define _GLOBAL(Label, Size) __global Label, Size
+  45               	#  define _STATIC(Label, Size) __static Label, Size
+  46               	#  define _DATASECTION RSEG AVRXDATA:DATA
+  47               	#  define _CODESECTION RSEG CODE:CODE
+  48               	#  define _FUNCTION(A) PUBLIC A
+  49               	#  define _ENDFUNC
+  50               	#  define _PUBLIC(A) PUBLIC A
+  51               	#  define _EXTERN(A) EXTERN A
+  52               	#  define _MODULE(A) MODULE A
+  53               	#  define _ENDMOD ENDMOD
+  54               	#  define _END END
+  55               	#  define lo8_pm(A) LOW(A/2)
+  56               	#  define hi8_pm(A) HIGH(A/2)
+  57               	#  define lo8(A) LOW(A)
+  58               	#  define hi8(A) HIGH(A)
+  59               	#  define _DB DB
+  60               	#  define _EQU(A,B) A: EQU B
+  61               	#  define _ALIGN EVEN
+  62               	#  define _SFR_IO_ADDR(A) (A)   /* IAR does not use this */
+  63               	
+  64               	#else   /*avr-gcc*/
+  65               	
+  66               	#  if !defined(_SFR_IO_ADDR)      /* GCC 3.2 compatibility */
+  67               	#    define _SFR_IO_ADDR(A) (A)   /* earlier compilers do not use this */
+  68               	#  endif
+  69               	#  define _GLOBAL(Label, Size) .comm Label, Size
+  70               	#  define _STATIC(Label, Size) .lcomm Label, Size
+  71               	#  define _DATASECTION
+  72               	#  define _CODESECTION
+  73               	#  define _FUNCTION(A) \
+  74               	        .global A $ \
+  75               	        .func   A
+  76               	#  define _ENDFUNC .endfunc
+  77               	#  define _PUBLIC(A) .global A
+  78               	#  define _EXTERN(A)
+  79               	#  define _MODULE(A) .section .text.avrx.A
+  80               	#  define _ENDMOD
+  81               	#  define _END
+  82               	#  define _DB .asciz
+  83               	#  define MACRO .macro
+  84               	#  define ENDM .endm
+  85               	#  define _EQU(A,B) .equ A, B
+  86               	#  define _ALIGN .balign 2
+  87               	
+  88               	#endif
+  89               	
+  90               	#ifndef BV
+  91               	#define BV(A) (1<<A)
+  92               	#endif
+  93               	
+  94               	/*
+  95               	 Frame Pointer Offsets for various registers after the return from
+  96               	 a call to _Prolog
+  97               	
+  98               	 Used mainly to restore registers used internally (rather than saving
+  99               	 and restoring) and to stuff return values across _Epilog.
+ 100               	
+ 101               	*/
+ 102               	#define _RetLo  33      /* Return address on stack big endian */
+ 103               	#define _R31    33      /* Registers saved in order (little endian) */
+ 104               	#define _RetHi  32
+ 105               	#define _R30    32
+ 106               	#define _R29    31
+ 107               	#define _R28    30
+ 108               	#define _R27    29
+ 109               	#define _R26    28
+ 110               	#define _R25    27
+ 111               	#define _R24    26
+ 112               	#define _R23    25
+ 113               	#define _R22    24
+ 114               	#define _R0     2
+ 115               	#define _SREG   1       /* SP points below last saved item */
+ 116               	
+ 117               	#ifdef __IAR_SYSTEMS_ASM__
+ 118               	
+ 119               	#  define _p1l     18
+ 120               	#  define _p1h     19
+ 121               	#  define _p2l     22
+ 122               	#  define _p2h     23
+ 123               	#  define _r1l     18
+ 124               	#  define _r1h     19
+ 125               	
+ 126               	#else   /* avr-gcc */
+ 127               	
+ 128               	#  define _p1l     26
+ 129               	#  define _p1h     27
+ 130               	#  define _p2l     24
+ 131               	#  define _p2h     25
+ 132               	#  define _r1l     26
+ 133               	#  define _r1h     27
+ 134               	
+ 135               	#endif
+ 136               	
+ 137               	/* ******** AVRX kernel data structure offsets
+ 138               	   These are offsets into a slab of memory called "AvrXKernelData"
+ 139               	   defined in avrx_tasking.s
+ 140               	
+ 141               	   NB: CODE depends upon RunQueue being the FIRST item!
+ 142               	*/
+ 143               	
+ 144               	#define RunQueue 0	/* Head of the run queue */
+ 145               	#define Running 2	/* Current running task */
+ 146               	#define AvrXStack 4	/* User defined stack location */
+ 147               	#define SysLevel 6	/* re-entry counter into kernel context */
+ 148               	#define AvrXCStack 7	/* IAR/ICC C Parameter stack */
+ 149               	
+ 150               	#ifdef  __IAR_SYSTEMS_ASM__
+ 151               	#	define AvrXKernelDataSz 9
+ 152               	#else
+ 153               	#	define AvrXKernelDataSz 7
+ 154               	#endif
+ 155               	
+ 156               	/* ******** TCB (Task Control Block) offsets */
+ 157               	
+ 158               	#define TaskSP          0       /* Stack pointer */
+ 159               	#define TaskMain        2       /* Entry point of process */
+ 160               	#define TaskPid         4       /* Pointer to Process ID */
+ 161               	#define TaskFlags       6       /* Priority */
+ 162               	
+ 163               	#define TaskSz  7
+ 164               	
+ 165               	/* All objects have same link list structure
+ 166               	   Change this to convert to big-endian for direct C access
+ 167               	*/
+ 168               	
+ 169               	#define NextL 0		/* Big-endian for C compatibility */
+ 170               	#define NextH 1
+ 171               	
+ 172               	/******** PID (Process ID) block offsets */
+ 173               	
+ 174               	#define PidNext         0       /* Next item on list (semaphore, run) */
+ 175               	#define PidState        2       /* Upper Nibble: Task flags, Lower Nibble :Priority */
+ 176               	#define PidPriority     3
+ 177               	#define PidSP           4       /* Context Pointer */
+ 178               	#ifdef SINGLESTEPSUPPORT
+ 179               	#   define bp1          6       /* Make room for two breakpoints/task */
+ 180               	#   define bp2          8
+ 181               	#   define PidSz        10
+ 182               	#else
+ 183               	#   define PidSz        6
+ 184               	#endif
+ 185               	
+ 186               	/* ******* PID (Process ID) BLOCK BIT DEFINITIONS ******* */
+ 187               	
+ 188               	/* PID.State  */
+ 189               	
+ 190               	#define IdleBit         4       /* Dead Task, don't schedule, resume or step */
+ 191               	#define SuspendBit      5       /* Mark task for suspension (may be blocked elsewhere) */
+ 192               	#define SuspendedBit    6       /* Mark task suspended (it was removed from the run queue) */
+ 193               	#define SingleStep      7       /* Enable single step debug support */
+ 194               	
+ 195               	/*+ --------------------------------------------------
+ 196               	SEMAPHORE BIT DEFINITIONS
+ 197               	
+ 198               	 General Semaphore Flags.  When a task is waiting on the
+ 199               	 semaphore, the semaphore is set to the TASK ID.  Otherwise
+ 200               	 _PEND means the semaphore is set and _DONE means it has
+ 201               	 been triggered.  A task will only block if it tries to
+ 202               	 grab a _PEND semaphore.  Semaphores are initialized in the
+ 203               	 _PEND state and are left in the _PEND state after each
+ 204               	 complete operation.  Processes are allowed to queue on
+ 205               	 a semaphore.  This effectively make the semaphore a Mutex
+ 206               	 when it has been "set" prior to the first call.  When a process
+ 207               	 done with the mutex, it releases it by "setting" it again.
+ 208               	-*/
+ 209               	#define _PEND           0
+ 210               	#define _DONE           1
+ 211               	
+ 212               	#define MtxSz           2
+ 213               	
+ 214               	#define MUTEX(A) _GLOBAL(A, 2)
+ 215               	
+ 216               	/*+ --------------------------------------------------
+ 217               	
+ 218               	 Events
+ 219               	
+ 220               	 Events replace PID's in semaphores.  The kernel recognizes
+ 221               	 semaphore values (contents) < 0x60 as events, indexes into
+ 222               	 a table and calls a routine.  Macros and segments are used
+ 223               	 to build the table.
+ 224               	
+ 225               	 */
+ 226               	#define TIMERMESSAGE_EV 2
+ 227               	#define PERIODICTIMER_EV 3      /* Not implemented */
+ 228               	#define _LASTEV 0x5F
+ 229               	
+ 230               	/* Timers */
+ 231               	
+ 232               	#define TcbNext         0       /* Pointer in linked list */
+ 233               	#define TcbSemaphore    2       /* Associated semaphore */
+ 234               	#define TcbCount        4       /* Timer ticks till expired */
+ 235               	#define TcbQueue        6
+ 236               	#define TcbSz           6       /* Primitive Timer */
+ 237               	#define TmbSz           8       /* Timer Message */
+ 238               	
+ 239               	#define TIMER(A) _GLOBAL(A, TcbSz)
+ 240               	
+ 241               	#define TIMERMESSAGE(A) _GLOBAL(A, TmbSz)
+ 242               	
+ 243               	/* Message Queue */
+ 244               	
+ 245               	#define MsqSz           4       /* Head of message queue */
+ 246               	
+ 247               	#define MsqMessage      0       /* Head of list of messages */
+ 248               	#define MsqPid          2       /* Head of list of waiting processes */
+ 249               	
+ 250               	#define QcbSz           4       /* Queue Block Size (No data) */
+ 251               	
+ 252               	#define QcbNext         0
+ 253               	#define QcbSemaphore    2       /* Return Receipt Semaphore */
+ 254               	#define QcbData         4       /* pointer to data/or data */
+ 255               	
+ 256               	#define MESSAGEQ(A) _GLOBAL(A, MsqSz)
+ 257               	
+ 258               	/* Fifos */
+ 259               	
+ 260               	#define FifoSz 4        /* Size of AvrX Fifo Data Struct */
+ 261               	
+ 262               	#define WriteSemaphore 0
+ 263               	#define ReadSemaphore 2
+ 264               	#define fBuffer 4
+ 265               	
+ 266               	/* User Section */
+ 267               	
+ 268               	#define f_buffersz 4    /* Size of buffer header */
+ 269               	
+ 270               	#define f_Size 0
+ 271               	#define f_Count 1
+ 272               	#define f_In 2
+ 273               	#define f_Out 3
+ 274               	#define f_Data 4        /* Variable length */
+ 275               	
+ 276               	#define FIFO(A, B, Size) \
+ 277               	        _GLOBAL(A, FifoSz) \
+ 278               	        _GLOBAL(B, (Size+f_Buffersz))
+ 279               	
+ 280               	#ifndef AVRXCHEADER
+ 281               	/*+ --------------------------------------------------
+ 282               	 Handy Macros
+ 283               	
+ 284               	 DEBUG statements are diagnostics for twiddling and output port bit
+ 285               	 to reflect the I bit state (interrupt latency) and when AvrX is in
+ 286               	 the Idle loop
+ 287               	-*/
+ 288               	#ifdef  DEBUG           /* DEBUG is set to a PORT{ABCD} value (for twiddling output bits) */
+ 289               	
+ 290               	#ifndef ILED
+ 291               	#define ILED            PB0
+ 292               	#endif
+ 293               	
+ 294               	#ifndef IDLELED
+ 295               	#define IDLELED         PB4
+ 296               	#endif
+ 297               	
+ 298               	#define DEBUG_DDR       (DEBUG-1)
+ 299               	
+ 300               	#endif  /* DEBUG */
+ 301               	
+ 302               	        MACRO  Breakpoint
+ 303               	#ifdef  DEBUG
+ 304               	        rcall   AvrXBreakpoint
+ 305               	#endif  /* DEBUG */
+ 306               	        ENDM
+ 307               	
+ 308               	        MACRO  BeginInterrupt
+ 309               	#ifdef  DEBUG
+ 310               	        cbi     DEBUG, ILED
+ 311               	        sbi     DEBUG, IDLELED  /* Obviously not idle... */
+ 312               	#endif  /* DEBUG */
+ 313               	        ENDM
+ 314               	
+ 315               	        MACRO  EndInterrupt
+ 316               	#ifdef  DEBUG
+ 317               	        sbi     DEBUG, ILED
+ 318               	#endif  /* DEBUG */
+ 319               	        reti
+ 320               	        ENDM
+ 321               	
+ 322               	        MACRO BeginCritical
+ 323               	#ifdef  DEBUG
+ 324               	        cbi     DEBUG, ILED
+ 325               	#endif  /* DEBUG */
+ 326               	        cli     ;
+ 327               	        ENDM
+ 328               	
+ 329               	        MACRO  EndCritical
+ 330               	#ifdef  DEBUG
+ 331               	        sbi     DEBUG, ILED
+ 332               	#endif  /* DEBUG */
+ 333               	        sei
+ 334               	        ENDM
+ 335               	
+ 336               	#define EndCriticalReturn EndInterrupt
+ 337               	
+ 338               	        MACRO  BeginIdle
+ 339               	snore:
+ 340               	#ifdef  DEBUG
+ 341               	        cbi     DEBUG, IDLELED
+ 342               	#endif  /* DEBUG */
+ 343               	        ENDM
+ 344               	
+ 345               	        MACRO  EndIdle
+ 346               	snooze:
+ 347               	#ifdef  DEBUG
+ 348               	        sbi     DEBUG, IDLELED
+ 349               	#endif  /* DEBUG */
+ 350               	        ENDM
+ 351               	
+ 352               	        MACRO  INIT_DEBUG
+ 353               	#ifdef  DEBUG
+ 354               	        ldi     Xl, (1<<ILED | 1<<IDLELED)
+ 355               	        out     DEBUG_DDR, Xl
+ 356               	        out     DEBUG, Xl
+ 357               	#endif  /* DEBUG */
+ 358               	        ENDM
+ 359               	
+ 360               	/*+ --------------------------------------------------
+ 361               	 Handy macros for common assembly chores
+ 362               	-*/
+ 363               	        MACRO  SignExtend Dest, Source
+ 364               	        clr     Dest
+ 365               	        sbrc    Source, 7
+ 366               	        com     Dest
+ 367               	        ENDM
+ 368               	
+ 369               	        MACRO  addi reg, val
+ 370               	        subi    reg, -(val)
+ 371               	        ENDM
+ 372               	
+ 373               	        MACRO  adci reg, val
+ 374               	        sbci    reg, -(val)
+ 375               	        ENDM
+ 376               	
+ 377               	        MACRO  tstw reg
+ 378               	        adiw    reg, 0
+ 379               	        ENDM
+ 380               	
+ 381               	        MACRO  negw regh, regl
+ 382               	        com     regh
+ 383               	        neg     regl
+ 384               	        sbci    regh, -1
+ 385               	        ENDM
+ 386               	/*
+ 387               	 Use this macro rather than a call to _Prolog, see
+ 388               	 version notes in AvrX.asm
+ 389               	*/
+ 390               	        MACRO  AVRX_Prolog
+ 391               	        BeginCritical
+ 392               	        rcall   IntProlog
+ 393               	        EndCritical
+ 394               	        ENDM
+ 395               	/*
+   2               	/*
+   3               	File:   Monitor.asm
+   4               	
+   5               	Copyright ©1998 - 2002 Larry Barello (larry@barello.net)
+   6               	
+   7               	This library is free software; you can redistribute it and/or
+   8               	modify it under the terms of the GNU Library General Public
+   9               	License as published by the Free Software Foundation; either
+  10               	version 2 of the License, or (at your option) any later version.
+  11               	
+  12               	This library is distributed in the hope that it will be useful,
+  13               	but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14               	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  15               	Library General Public License for more details.
+  16               	
+  17               	You should have received a copy of the GNU Library General Public
+  18               	License along with this library; if not, write to the
+  19               	Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+  20               	Boston, MA  02111-1307, USA.
+  21               	
+  22               	http://www.gnu.org/copyleft/lgpl.html
+  23               	
+  24               	Author: Larry Barello
+  25               	        larry@barello.net
+  26               	
+  27               	        REVISION HISTORY
+  28               	9/13/2005 - Added _EXTERN(AvrXTerminate)
+  29               	
+  30               	6/4/2002 - Fixed memory address increment bug in modify memory command
+  31               		- added command to terminate a process
+  32               	
+  33               	5/2001 - rewrote to be mostly C compatible.  R4-R15
+  34               	used for locals (no statics)
+  35               	
+  36               	*/
+  37               	;------------------------------------------------
+  38               	;
+  39               	        _MODULE(monitor)
+  40               	
+  41               	        _EXTERN(EEPromMutex)
+  42               	        _EXTERN(AvrXSetSemaphore)
+  43               	        _EXTERN(AvrXWriteEEProm)
+  44               	        _EXTERN(AvrXReadEEProm)
+  45               	        _EXTERN(AvrXReadEEPromWord)
+  46               	        _EXTERN(PutHexByte)
+  47               	        _EXTERN(PutHexWord)
+  48               	        _EXTERN(GetHexByte)
+  49               	        _EXTERN(GetHexWord)
+  50               	        _EXTERN(AvrXInitTask)
+  51               	        _EXTERN(AvrXSingleStepNext)
+  52               	        _EXTERN(AvrXStepNext)
+  53               	        _EXTERN(AvrXCancelTimer)
+  54               	        _EXTERN(AvrXResume)
+  55               	        _EXTERN(AvrXSuspend)
+  56               	        _EXTERN(AvrXTerminate)
+  57               	        _EXTERN(PutChar)
+  58               	        _EXTERN(AvrXHalt)
+  59               	        _EXTERN(PutSpace)
+  60               	        _EXTERN(PutCR)
+  61               	        _EXTERN(_GetChar)
+  62               	        _EXTERN(_PrintString)
+  63               	        _EXTERN(IsWhite)
+  64               	        _EXTERN(IsHex)
+  65               	
+  66               	        _EXTERN(_RxByte)        /* From serial.c */
+  67               	
+  68               	#define Addressl        R4
+  69               	#define Addressh        R5
+  70               	#define EEAddressl      R6
+  71               	#define EEAddressh      R7
+  72               	#define ObjectIDl       R8
+  73               	#define ObjectIDh       R9
+  74               	#define DumpLength      R10
+  75               	#define MonFlags        R11
+  76               	#define TempWl          R12
+  77               	#define TempWh          R13
+  78               	#define TempB           R14
+  79               	
+  80               	#define WORDFLAG 0
+  81               	#define EEFLAG 1
+  82               	#define NL "\n"
+  83               	#define CR "\r"
+  84               	
+  85               	        _CODESECTION
+  86               	;-------------------------------------------------
+  87               	; Monitor: program for examining and modifying
+  88               	; registers, data, i/o and eeprom.
+  89               	;
+  90               	; NB    {opt, opt}      Must select one of the options
+  91               	;       [opt, opt]      Optional input - can be ignored
+  92               	;
+  93               	; Command summary:
+  94               	;
+  95               	;       cmd                     Action
+  96               	;       --------------------    ------
+  97               	;       m{s,e}[w][aaaa]         Modify SRAM/EEram by byte/word starting at AAAA
+  98               	;       d{s,e}[w][aaaa] [xx]    Dump XX Bytes/Words of Sram/EERam, starting at AAAA
+  99               	;       h[XX]                   Halt process XX
+ 100               	;       s[XX]                   Step Process XX (run until next kernel entry)
+ 101               	;       n[XX]                   Step Process till next instruction
+ 102               	;       r[XX]                   Resume Process XX
+ 103               	;       x[XX]                   display context of XX (use 's' to modify)
+ 104               	;       i[xx]                   Signal (set) Semaphore
+ 105               	;       c[xx]                   cancel timer XX
+ 106               	;	k[xx]			Kill process XX
+ 107               	;       p[xxxx]                 Initialize Process (AvrXInitTask)
+ 108               	;
+ 109               	;
+ 110               	; Stack Usage:
+ 111               	;       12 or more bytes
+ 112               	;
+ 113               	; Register Usage:
+ 114               	;       Everything
+ 115               	;
+ 116               	; Global data information
+ 117               	;
+ 118               	;
+ 119 0000 0D00      	Hello:  _DB  CR
+ 120 0002 4176 7258 	        _DB  "AvrX Monitor V2", CR
+ 120      204D 6F6E 
+ 120      6974 6F72 
+ 120      2056 3200 
+ 120      0D00 
+ 121 0014 0D00      	        _DB  CR
+ 122 0016 4D6F 6469 	        _DB  "Modify = m{s,e}[w][aaaa]", CR
+ 122      6679 203D 
+ 122      206D 7B73 
+ 122      2C65 7D5B 
+ 122      775D 5B61 
+ 123 0031 4475 6D70 	        _DB  "Dump   = d{s,e}[w][aaaa] [xx]", CR
+ 123      2020 203D 
+ 123      2064 7B73 
+ 123      2C65 7D5B 
+ 123      775D 5B61 
+ 124 0051 4861 6C74 	        _DB  "Halt   = h[oooo]", CR
+ 124      2020 203D 
+ 124      2068 5B6F 
+ 124      6F6F 6F5D 
+ 124      000D 00
+ 125 0064 5374 6570 	        _DB  "Step   = s[oooo]", CR
+ 125      2020 203D 
+ 125      2073 5B6F 
+ 125      6F6F 6F5D 
+ 125      000D 00
+ 126               	#ifdef  SINGLESTEPSUPPORT
+ 127               	        _DB  "Next   = n[oooo]", CR
+ 128               	#endif
+ 129 0077 5265 7375 	        _DB  "Resume = r[oooo]", CR
+ 129      6D65 203D 
+ 129      2072 5B6F 
+ 129      6F6F 6F5D 
+ 129      000D 00
+ 130 008a 436F 6E74 	        _DB  "Context= x[oooo]", CR
+ 130      6578 743D 
+ 130      2078 5B6F 
+ 130      6F6F 6F5D 
+ 130      000D 00
+ 131 009d 5369 676E 	        _DB  "Signal = i[oooo]", CR
+ 131      616C 203D 
+ 131      2069 5B6F 
+ 131      6F6F 6F5D 
+ 131      000D 00
+ 132 00b0 4361 6E63 	        _DB  "Cancel = c[oooo]", CR
+ 132      656C 203D 
+ 132      2063 5B6F 
+ 132      6F6F 6F5D 
+ 132      000D 00
+ 133 00c3 4B69 6C6C 	        _DB  "KillTsk= k[oooo]",CR
+ 133      5473 6B3D 
+ 133      206B 5B6F 
+ 133      6F6F 6F5D 
+ 133      000D 00
+ 134 00d6 496E 6974 	        _DB  "Initask= p[aaaa]", CR
+ 134      6173 6B3D 
+ 134      2070 5B61 
+ 134      6161 615D 
+ 134      000D 00
+ 135 00e9 5175 6974 	        _DB  "Quit   = q", CR
+ 135      2020 203D 
+ 135      2071 000D 
+ 135      00
+ 136 00f6 0000      	        _DB  "\000"
+ 137               	        _ALIGN
+ 138               	
+ 139               	        _FUNCTION(Monitor)
+ 140               	
+ 141               	Monitor:
+ 142:monitor.S     ****         ldi     p1l, lo8(EEPromMutex)
+ 143:monitor.S     ****         ldi     p1h, hi8(EEPromMutex)
+ 144:monitor.S     ****         rcall   AvrXSetSemaphore        ; Initialize EEProm Mutex
+ 145               	
+ 146:monitor.S     ****         ldi     p1l, lo8(Hello)
+ 147:monitor.S     ****         ldi     p1h, hi8(Hello)
+ 148               	Hello1:
+ 149:monitor.S     ****         rcall   _PrintString
+ 150:monitor.S     ****         subi    r1l, lo8(-1)
+ 151:monitor.S     ****         sbci    r1h, hi8(-1)            ; Keep looping until
+ 152:monitor.S     ****         mov     Zl, r1l
+ 153:monitor.S     ****         mov     Zh, r1h
+ 154:monitor.S     ****         lpm                             ; until all strings out.
+ 155:monitor.S     ****         tst     R0
+ 156:monitor.S     ****         brne    Hello1
+ 157               	
+ 158:monitor.S     ****         ldi     tmp0, lo8(0x60)
+ 159:monitor.S     ****         mov     Addressl, tmp0
+ 160:monitor.S     ****         ldi     tmp0, hi8(0x60)
+ 161:monitor.S     ****         mov     Addressh, tmp0
+ 162:monitor.S     ****         clr     ObjectIDl
+ 163:monitor.S     ****         clr     ObjectIDh
+ 164:monitor.S     ****         clr     MonFlags
+ 165:monitor.S     ****         clr     DumpLength
+ 166:monitor.S     ****         clr     EEAddressl
+ 167:monitor.S     ****         clr     EEAddressh
+ 168               	        _ENDFUNC
+ 169               	
+ 170               	        _FUNCTION(DebugMonitor)
+ 171               	
+ 172               	DebugMonitor:
+ 173:monitor.S     ****         rcall   PutCR
+ 174:monitor.S     ****         ldi     p1l, '>'
+ 175:monitor.S     ****         rcall   PutChar
+ 176:monitor.S     ****         rcall   m_Parse
+ 177:monitor.S     ****         rjmp    DebugMonitor
+ 178               	
+ 179               	m_Parse:
+ 180:monitor.S     ****         rcall   _GetChar
+ 181:monitor.S     ****         cpi     r1l, 'm'     ; Modify Memory
+ 182:monitor.S     ****         breq    m_ModifyMemory
+ 183:monitor.S     ****         cpi     r1l, 'd'     ; Dump RAM
+ 184:monitor.S     ****         breq    m_DumpMemory
+ 185:monitor.S     ****         cpi     r1l, 'h'     ; Halt (suspend) Process
+ 186:monitor.S     ****         breq    m_HaltProcess
+ 187:monitor.S     ****         cpi     r1l, 's'     ; Step process
+ 188:monitor.S     ****         breq    m_StepProcess
+ 189:monitor.S     ****         cpi	r1l, 'k'     ; Terminate Process
+ 190:monitor.S     ****         breq	m_Terminate
+ 191               	#ifdef  SINGLESTEPSUPPORT
+ 192               	        cpi     r1l, 'n'     ; Next instruction
+ 193               	        breq    m_SingleStep
+ 194               	#endif
+ 195:monitor.S     ****         cpi     r1l, 'r'     ; Resume Process
+ 196:monitor.S     ****         breq    m_ResumeProcess
+ 197:monitor.S     ****         cpi     r1l, 'i'     ; Signal Semaphore
+ 198:monitor.S     ****         breq    m_SetSemaphore
+ 199:monitor.S     ****         cpi     r1l, 'c'     ;
+ 200:monitor.S     ****         breq    m_CancelTimer
+ 201:monitor.S     ****         cpi     r1l, 'x'
+ 202:monitor.S     ****         breq    m_PrintProcessContext
+ 203:monitor.S     ****         cpi     r1l, 'p'
+ 204:monitor.S     ****         breq    m_InitTask
+ 205:monitor.S     ****         cpi     r1l, 'q'
+ 206:monitor.S     ****         breq    m_quit
+ 207               	m_err:
+ 208:monitor.S     ****         ldi     p1l, '?'
+ 209:monitor.S     ****         rjmp    PutChar
+ 210               	
+ 211               	m_quit:
+ 212:monitor.S     ****         pop     Xl      ; Hack to allow user i/f to call monitor
+ 213:monitor.S     ****         pop     Xl
+ 214:monitor.S     ****         ret
+ 215               	
+ 216               	m_ModifyMemory:
+ 217:monitor.S     ****         rcall   GetFlagsAndAddress
+ 218:monitor.S     ****         brtc    m_err
+ 219:monitor.S     ****         rjmp    _ModifyMemory
+ 220               	m_DumpMemory:
+ 221:monitor.S     ****         rcall   GetFlagsAndAddress
+ 222:monitor.S     ****         mov     TempWl, p1l
+ 223:monitor.S     ****         mov     TempWh, p1h
+ 224:monitor.S     ****         brtc    m_err           ; Flags in Xh, Addr in Z
+ 225:monitor.S     ****         lds     tmp0, _RxByte
+ 226:monitor.S     ****         cpi     tmp0, 0x0D       ; See if terminated with a CR
+ 227:monitor.S     ****         breq    m1b
+ 228:monitor.S     ****         rcall   GetDumpLength   ; Leave count in Xl
+ 229:monitor.S     ****         brtc    m_err
+ 230               	m1b:
+ 231:monitor.S     ****         mov     p2l, TempWl
+ 232:monitor.S     ****         mov     p2h, TempWh
+ 233:monitor.S     ****         mov     p1l, DumpLength
+ 234:monitor.S     ****         rjmp    _DumpMemory
+ 235               	
+ 236               	m_InitTask:
+ 237:monitor.S     ****         rcall   GetHexWord      ; This is a word address, not byte.
+ 238:monitor.S     ****         brtc    m_err
+ 239:monitor.S     ****         rjmp    AvrXInitTask
+ 240               	
+ 241               	m_HaltProcess:
+ 242:monitor.S     ****         rcall   GetObjectID
+ 243:monitor.S     ****         brtc    m_err
+ 244:monitor.S     ****         rjmp    AvrXSuspend
+ 245               	
+ 246               	m_ResumeProcess:
+ 247:monitor.S     ****         rcall   GetObjectID
+ 248:monitor.S     ****         brtc    m_err
+ 249:monitor.S     ****         rjmp    AvrXResume
+ 250               	
+ 251               	m_CancelTimer:
+ 252:monitor.S     ****         rcall   GetObjectID
+ 253:monitor.S     ****         brtc    m_err
+ 254:monitor.S     ****         rjmp    AvrXCancelTimer
+ 255               	
+ 256               	m_PrintProcessContext:
+ 257:monitor.S     ****         rcall   GetObjectID
+ 258:monitor.S     ****         brtc    m_err
+ 259:monitor.S     ****         rjmp    _PrintContext
+ 260               	
+ 261               	m_SetSemaphore:
+ 262:monitor.S     ****         rcall   GetObjectID
+ 263:monitor.S     ****         brtc    m_err
+ 264:monitor.S     ****         rjmp    AvrXSetSemaphore
+ 265               	
+ 266               	m_Terminate:
+ 267:monitor.S     **** 	rcall	GetObjectID
+ 268:monitor.S     **** 	brtc	m_err
+ 269:monitor.S     **** 	rjmp	AvrXTerminate
+ 270               	
+ 271               	m_StepProcess:
+ 272:monitor.S     ****         rcall   GetObjectID
+ 273:monitor.S     ****         brtc    m_err
+ 274:monitor.S     ****         rcall   AvrXStepNext
+ 275:monitor.S     ****         tst     r1l
+ 276:monitor.S     ****         brne    ms_NOTSUSPENDED
+ 277:monitor.S     ****         ret
+ 278               	
+ 279               	#ifdef  SINGLESTEPSUPPORT
+ 280               	
+ 281               	m_SingleStep:
+ 282               	        rcall   GetObjectID
+ 283               	        brtc    m_err
+ 284               	NextStep:
+ 285               	        rcall   AvrXSingleStepNext      ; This will return after
+ 286               	        tst     r1l
+ 287               	        brne    ms_NOTSUSPENDED         ; the step is done
+ 288               	
+ 289               	        mov     Zh, ObjectIDh
+ 290               	        mov     Zl, ObjectIDl
+ 291               	        ldd     Yl, Z+PidSP+NextL       ; Y = Frame Pointer
+ 292               	        ldd     Yh, Z+PidSP+NextH
+ 293               	
+ 294               	        ldd     p1l, Y+_RetLo+2         ; Y = Address of Next inst
+ 295               	        ldd     p1h, Y+_RetHi+2
+ 296               	
+ 297               	        ldd     Xh, Z+bp1+NextH         ; Breakpoints are stored in
+ 298               	        ldd     Xl, Z+bp1+NextL         ; the PID..
+ 299               	        adiw    Xl, 0
+ 300               	        breq    BreakPoint
+ 301               	        cp      p1l, Xl
+ 302               	        cpc     p1h, Xh
+ 303               	        breq    BreakPoint
+ 304               	
+ 305               	        ldd     Xh, Z+bp2+NextH
+ 306               	        ldd     Xl, Z+bp2+NextL
+ 307               	        adiw    Xl, 0
+ 308               	        breq    NextStep                ; If we dont hit the breakpoint
+ 309               	        cp      p1l, Xl                 ; the monitor hangs here
+ 310               	        cpc     p1h, Xh
+ 311               	        brne    NextStep
+ 312               	
+ 313               	BreakPoint:
+ 314               	        rjmp    PutHexWord              ; Print out our breakpoint address
+ 315               	#endif
+ 316               	
+ 317               	ms_NOTSUSPENDED:
+ 318:monitor.S     ****         rcall   PutCR
+ 319:monitor.S     ****         mov	p1l, ObjectIDl
+ 320:monitor.S     ****         mov	p1h, ObjectIDh
+ 321:monitor.S     ****         rcall   PutHexWord
+ 322:monitor.S     ****         ldi     p1l, lo8(NotSuspended)
+ 323:monitor.S     ****         ldi     p1h, hi8(NotSuspended)
+ 324:monitor.S     ****         rjmp    _PrintString
+ 325               	        _ENDFUNC
+ 326               	
+ 327               	NotSuspended:
+ 328 01ce 202D 204E 	        _DB  " - Not Suspended!\r"
+ 328      6F74 2053 
+ 328      7573 7065 
+ 328      6E64 6564 
+ 328      210D 00
+ 329 01e1 00        	        _ALIGN
+ 330               	;
+ 331               	; void * GetObjectID()
+ 332               	;
+ 333               	; Little helper routine to get and return a byte value with
+ 334               	; carry set if all Ok.  e.g. entered 2 hex digits, or terminated
+ 335               	; with whitespace.
+ 336               	;
+ 337               	; Puts the ID in the R25:R24 register because that is what all the
+ 338               	; AvrX routines expect.
+ 339               	;
+ 340               	        _FUNCTION(GetObjectID)
+ 341               	GetObjectID:
+ 342:monitor.S     ****         rcall   GetHexWord
+ 343:monitor.S     ****         brts    goi00
+ 344:monitor.S     ****         rcall   IsWhite
+ 345:monitor.S     ****         brtc    goi02
+ 346               	goi00:
+ 347:monitor.S     ****         tst     p2l
+ 348:monitor.S     ****         brne    goi01           ;
+ 349:monitor.S     ****         mov     p1l, ObjectIDl  ; Restore default
+ 350:monitor.S     ****         mov     p1h, ObjectIDh
+ 351               	goi01:
+ 352:monitor.S     ****         mov     ObjectIDl, p1l
+ 353:monitor.S     ****         mov     ObjectIDh, p1h
+ 354               	goi02:
+ 355:monitor.S     ****         ret
+ 356               	        _ENDFUNC
+ 357               	;
+ 358               	; unsigned char GetDumpLength()
+ 359               	;
+ 360               	; Another helper to manage defaults with the dump length
+ 361               	; counter
+ 362               	;
+ 363               	        _FUNCTION(GetDumpLength)
+ 364               	GetDumpLength:
+ 365:monitor.S     ****         rcall   GetHexByte      ; get a dump counter
+ 366:monitor.S     ****         brts    gdl00           ; If term invalid,
+ 367:monitor.S     ****         rcall   IsWhite         ;    check for whitespace
+ 368:monitor.S     ****         brtc    gdl02
+ 369               	gdl00:
+ 370:monitor.S     ****         tst     p2l             ; If no user entry
+ 371:monitor.S     ****         brne    gdl01
+ 372:monitor.S     ****         mov     p1l, DumpLength  ;   load up default
+ 373               	gdl01:
+ 374:monitor.S     ****         mov     DumpLength, p1l
+ 375               	gdl02:
+ 376:monitor.S     ****         ret
+ 377               	        _ENDFUNC
+ 378               	;
+ 379               	; void * GetFlagsAndAddress()
+ 380               	;
+ 381               	; Parse input stream for byte/word flag and address.  All are optional
+ 382               	; as long as the input stream is terminated with whitespace.
+ 383               	;
+ 384               	        _FUNCTION(GetFlagsAndAddress)
+ 385               	GetFlagsAndAddress:
+ 386:monitor.S     ****         clt
+ 387:monitor.S     ****         rcall   _GetChar
+ 388:monitor.S     ****         mov     tmp0, MonFlags
+ 389:monitor.S     ****         cpi     r1l, 's'
+ 390:monitor.S     ****         brne    gbTRYEERAM
+ 391:monitor.S     ****         cbr     tmp0, 1<<EEFLAG; If "s" , clear flag
+ 392:monitor.S     ****         rjmp    gbCONTINUE
+ 393               	gbTRYEERAM:
+ 394:monitor.S     ****         cpi     r1l, 'e'     ; if "e", set flag
+ 395:monitor.S     ****         brne    gbDONE
+ 396:monitor.S     ****         sbr     tmp0, 1<<EEFLAG
+ 397               	gbCONTINUE:
+ 398:monitor.S     ****         mov     MonFlags, tmp0
+ 399:monitor.S     ****         rcall   GetHexWord      ; Go for the address
+ 400:monitor.S     ****         mov     tmp0, MonFlags
+ 401:monitor.S     ****         brtc    gbCHECKWORDFLAG
+ 402:monitor.S     ****         cbr     tmp0, 1<<WORDFLAG; Full address entered, no "w"
+ 403:monitor.S     ****         mov     MonFlags, tmp0
+ 404:monitor.S     ****         rjmp    gbUPDATEADDRESS
+ 405               	gbCHECKWORDFLAG:
+ 406:monitor.S     ****         cbr     tmp0, 1<<WORDFLAG
+ 407:monitor.S     ****         mov     MonFlags, tmp0
+ 408:monitor.S     ****         lds     tmp1, _RxByte
+ 409:monitor.S     ****         cpi     tmp1, 'w'
+ 410:monitor.S     ****         brne    gbCHECKFORWHITESPACE; Only "w" allowed if not address
+ 411:monitor.S     ****         sbr     tmp0, 1<<WORDFLAG
+ 412:monitor.S     ****         mov     MonFlags, tmp0
+ 413:monitor.S     ****         rcall   GetHexWord      ; Try again for address
+ 414:monitor.S     ****         brts    gbUPDATEADDRESS
+ 415               	gbCHECKFORWHITESPACE:
+ 416:monitor.S     ****         rcall   IsWhite
+ 417:monitor.S     ****         brtc    gbDONE          ; Error if not whitespace
+ 418               	gbUPDATEADDRESS:
+ 419:monitor.S     ****         tst     p2l             ; see if any user input
+ 420:monitor.S     ****         breq    gbDONE
+ 421:monitor.S     ****         sbrs    MonFlags, EEFLAG
+ 422:monitor.S     ****         rjmp    gbAddress
+ 423:monitor.S     ****         mov     EEAddressl, p1l
+ 424:monitor.S     ****         mov     EEAddressh, p1h
+ 425:monitor.S     ****         rjmp    gbDONE
+ 426               	gbAddress:
+ 427:monitor.S     ****         mov     Addressl, p1l
+ 428:monitor.S     ****         mov     Addressh, p1h
+ 429               	gbDONE:
+ 430:monitor.S     ****         mov     p1l, Addressl   ; Restore previous...
+ 431:monitor.S     ****         mov     p1h, Addressh
+ 432:monitor.S     ****         sbrc    MonFlags, EEFLAG
+ 433:monitor.S     ****         mov     p1l, EEAddressl
+ 434:monitor.S     ****         sbrc    MonFlags, EEFLAG
+ 435:monitor.S     ****         mov     p1h, EEAddressh
+ 436:monitor.S     ****         ret
+ 437               	        _ENDFUNC
+ 438               	;
+ 439               	;---------------------------------------------
+ 440               	; void _DumpMemory(char, void *)
+ 441               	;
+ 442               	; Passed:       p1 = Start Address
+ 443               	;               p2 = number of bytes to dump
+ 444               	; Returns:      Nothing
+ 445               	; Uses:         MonFlags (register)
+ 446               	;
+ 447               	        _FUNCTION(_DumpMemory)
+ 448               	_DumpMemory:
+ 449:monitor.S     ****         sbrs    MonFlags, WORDFLAG
+ 450:monitor.S     ****         rjmp    m10f
+ 451               	
+ 452:monitor.S     ****         cbr     p2l, 0x01        ; force even address to start.
+ 453:monitor.S     ****         sbrc    p1l, 0x00        ; Add one for even count
+ 454:monitor.S     ****         inc     p1l
+ 455               	m10f:
+ 456:monitor.S     ****         mov     TempWl, p2l
+ 457:monitor.S     ****         mov     TempWh, p2h
+ 458:monitor.S     ****         mov     R1, p1l
+ 459               	m10c:
+ 460:monitor.S     ****         rcall   PutCR
+ 461:monitor.S     ****         mov     p1h, TempWh          ; Spit out address
+ 462:monitor.S     ****         mov     p1l, TempWl
+ 463:monitor.S     ****         rcall   PutHexWord
+ 464               	m10d:
+ 465:monitor.S     ****         rcall   PutSpace
+ 466:monitor.S     ****         rcall   GetByteWord
+ 467:monitor.S     ****         sbrc    MonFlags, WORDFLAG
+ 468:monitor.S     ****         rjmp    m11
+ 469:monitor.S     ****         rcall   PutHexByte
+ 470:monitor.S     ****         ldi     p1l, lo8(1)
+ 471:monitor.S     ****         ldi     p1h, hi8(1)
+ 472:monitor.S     ****         rjmp    m12
+ 473               	m11:
+ 474:monitor.S     ****         rcall   PutHexWord
+ 475:monitor.S     ****         ldi     p1l, lo8(2)
+ 476:monitor.S     ****         ldi     p1h, hi8(2)
+ 477               	m12:
+ 478:monitor.S     ****         add     TempWl, p1l
+ 479:monitor.S     ****         adc     TempWh, p1h
+ 480:monitor.S     ****         sub     R1, p1l
+ 481:monitor.S     ****         breq    m10exit
+ 482               	m10e:
+ 483:monitor.S     ****         mov     Zl, TempWl
+ 484:monitor.S     ****         cbr     Zl, 0xF0
+ 485:monitor.S     ****         breq    m10c            ; New line every 16 bytes.
+ 486:monitor.S     ****         rjmp    m10d
+ 487               	m10exit:
+ 488:monitor.S     ****         ret
+ 489               	        _ENDFUNC
+ 490               	;
+ 491               	; void _ModifyMemory(void *)
+ 492               	;
+ 493               	; PASSED:       p1 = address
+ 494               	;
+ 495               	; Uses:         MonFlags (register)
+ 496               	;
+ 497               	        _FUNCTION(_ModifyMemory)
+ 498               	_ModifyMemory:
+ 499:monitor.S     ****         mov     TempWl, p1l
+ 500:monitor.S     ****         mov     TempWh, p1h
+ 501               	_ModifyMemory_:
+ 502:monitor.S     ****         rcall   PutCR
+ 503:monitor.S     ****         mov     p1l, TempWl
+ 504:monitor.S     ****         mov     p1h, TempWh
+ 505:monitor.S     ****         rcall   PutHexWord
+ 506:monitor.S     ****         rcall   PutSpace
+ 507               	_mmNEXT:
+ 508:monitor.S     ****         rcall   GetByteWord
+ 509:monitor.S     ****         sbrc    MonFlags, WORDFLAG
+ 510:monitor.S     ****         rcall   PutHexWord
+ 511:monitor.S     ****         sbrs    MonFlags, WORDFLAG
+ 512:monitor.S     ****         rcall   PutHexByte
+ 513               	_mmGETDATA:
+ 514:monitor.S     ****         ldi     p1l, '-'
+ 515:monitor.S     ****         rcall   PutChar
+ 516:monitor.S     ****         sbrs    MonFlags, WORDFLAG
+ 517:monitor.S     ****         rcall   GetHexByte
+ 518:monitor.S     ****         sbrc    MonFlags, WORDFLAG
+ 519:monitor.S     ****         rcall   GetHexWord
+ 520:monitor.S     ****         brtc    _mmNODATA
+ 521               	_mmWRITE:
+ 522:monitor.S     ****         rcall   PutByteWord
+ 523:monitor.S     ****         rcall   PutSpace
+ 524               	_mmGOTONEXT:
+ 525:monitor.S     ****         ldi     Zl, lo8(1)
+ 526:monitor.S     ****         ldi     Zh, hi8(1)
+ 527:monitor.S     ****         sbrc    MonFlags, WORDFLAG
+ 528:monitor.S     ****         adiw    Zl, 1
+ 529:monitor.S     ****         add     TempWl, Zl
+ 530:monitor.S     ****         adc     TempWh, Zh
+ 531:monitor.S     ****         mov     Zl, TempWl
+ 532:monitor.S     ****         cbr     Zl, 0xF0
+ 533:monitor.S     ****         breq    _ModifyMemory_   ; Start a new line every 16 bytes
+ 534:monitor.S     ****         rjmp    _mmNEXT
+ 535               	_mmNODATA:
+ 536:monitor.S     ****         rcall   IsWhite
+ 537:monitor.S     ****         brtc    _mmDONE         ; If not white, then error
+ 538:monitor.S     ****         tst     p2l
+ 539:monitor.S     ****         brne    _mmWRITE        ; If some data entered, then write
+ 540:monitor.S     ****         lds     tmp0, _RxByte
+ 541:monitor.S     ****         cpi     tmp0, 0x0D       ; if CR then exit
+ 542:monitor.S     ****         brne    _mmGOTONEXT     ; otherwize, just go to next byte
+ 543               	_mmDONE:
+ 544:monitor.S     ****         ret
+ 545               	        _ENDFUNC
+ 546               	;----------------------------------------------
+ 547               	; void _PrintContext(ObjectID *)
+ 548               	;
+ 549               	; Prints a pretty picture of the context of a process.
+ 550               	;
+ 551               	; PASSED:       nothing
+ 552               	; RETURNS:
+ 553               	; USES:         ObjectID (register)
+ 554               	;
+ 555 02f4 0D50 4944 	ctdt0:  _DB  "\rPID Flg Pri Frame SR\r"
+ 555      2046 6C67 
+ 555      2050 7269 
+ 555      2046 7261 
+ 555      6D65 2053 
+ 556 030b 5230 2020 	ctdt1:  _DB  "R0  "
+ 556      00
+ 557 0310 5231 3620 	ctdt2:  _DB  "R16 "
+ 557      00
+ 558 0315 0D20 2020 	ctdt3:  _DB  "\r     PC  "
+ 558      2020 5043 
+ 558      2020 00
+ 559               	        _ALIGN
+ 560               	
+ 561               	        _FUNCTION(_PrintContext)
+ 562               	_PrintContext:
+ 563               	
+ 564:monitor.S     ****         ldi     p1h, hi8(ctdt0)
+ 565:monitor.S     ****         ldi     p1l, lo8(ctdt0)
+ 566:monitor.S     ****         rcall   _PrintString
+ 567               	
+ 568:monitor.S     ****         mov     p1l, ObjectIDl
+ 569:monitor.S     ****         mov     p1h, ObjectIDh
+ 570:monitor.S     ****         rcall   PutHexWord      ; Print PID
+ 571:monitor.S     ****         rcall   PutSpace
+ 572               	
+ 573:monitor.S     ****         mov     Zl, ObjectIDl
+ 574:monitor.S     ****         mov     Zh, ObjectIDh
+ 575:monitor.S     ****         ldd     p1l, Z+PidState
+ 576:monitor.S     ****         rcall   PutHexByte
+ 577:monitor.S     ****         rcall   PutSpace
+ 578:monitor.S     ****         mov     Zl, ObjectIDl
+ 579:monitor.S     ****         mov     Zh, ObjectIDh
+ 580:monitor.S     ****         ldd     p1l, Z+PidPriority
+ 581:monitor.S     ****         rcall   PutHexByte
+ 582:monitor.S     ****         rcall   PutSpace
+ 583:monitor.S     ****         rcall   PutSpace
+ 584               	
+ 585:monitor.S     ****         mov     Zl, ObjectIDl
+ 586:monitor.S     ****         mov     Zh, ObjectIDh
+ 587:monitor.S     ****         ldd     Yl, Z+PidSP+NextL   ; Z -> Frame
+ 588:monitor.S     ****         ldd     Yh, Z+PidSP+NextH
+ 589:monitor.S     ****         mov     p1l, Yl
+ 590:monitor.S     ****         mov     p1h, Yh
+ 591:monitor.S     ****         rcall   PutHexWord      ; Print Frame Pointer
+ 592:monitor.S     ****         rcall   PutSpace
+ 593:monitor.S     ****         rcall   PutSpace
+ 594               	
+ 595:monitor.S     ****         adiw    Yl, 1           ; Remember Stack are post dec!
+ 596               	
+ 597:monitor.S     ****         ld      p1l, Y+         ; SREG
+ 598:monitor.S     ****         rcall   PutHexByte
+ 599               	        ;
+ 600               	        ; Print R0-R15
+ 601               	        ;
+ 602               	Loop:
+ 603:monitor.S     ****         rcall   Print16RegPre
+ 604:monitor.S     ****         ldi     p1h, hi8(ctdt1)
+ 605:monitor.S     ****         ldi     p1l, lo8(ctdt1)
+ 606:monitor.S     ****         rcall   Print16Reg
+ 607:monitor.S     ****         rcall   Print16RegPre
+ 608:monitor.S     ****         ldi     p1h, hi8(ctdt2)
+ 609:monitor.S     ****         ldi     p1l, lo8(ctdt2)
+ 610:monitor.S     ****         rcall   Print16Reg
+ 611:monitor.S     ****         ldi     p1h, hi8(ctdt3)
+ 612:monitor.S     ****         ldi     p1l, lo8(ctdt3)
+ 613:monitor.S     ****         rcall   _PrintString
+ 614:monitor.S     ****         ld      p1h, Y+
+ 615:monitor.S     ****         ld      p1l, Y
+ 616:monitor.S     ****         rcall   PutHexWord
+ 617:monitor.S     ****         ret
+ 618               	
+ 619               	Print16RegPre:
+ 620:monitor.S     ****         rcall   PutCR
+ 621:monitor.S     ****         mov     p1l, Yl
+ 622:monitor.S     ****         mov     p1h, Yh
+ 623:monitor.S     ****         rcall   PutHexWord
+ 624:monitor.S     ****         rjmp    PutSpace
+ 625               	
+ 626               	Print16Reg:
+ 627:monitor.S     ****         rcall   _PrintString
+ 628:monitor.S     ****         ldi     Zl, 16
+ 629:monitor.S     ****         mov     R1, Zl
+ 630               	p16r0:
+ 631:monitor.S     ****         ld      p1l, Y+
+ 632:monitor.S     ****         rcall   PutHexByte
+ 633:monitor.S     ****         rcall   PutSpace
+ 634:monitor.S     ****         dec     R1
+ 635:monitor.S     ****         brne    p16r0
+ 636:monitor.S     ****         ret
+ 637               	        _ENDFUNC
+ 638               	;-----------------------------------------------
+ 639               	; unsigned GetByteWord(void *)
+ 640               	;
+ 641               	; PASSED:       p1 = address
+ 642               	; RETURNS:      r1 = data
+ 643               	; USES:         MonFlags
+ 644               	;
+ 645               	        _FUNCTION(GetByteWord)
+ 646               	GetByteWord:
+ 647:monitor.S     ****         sbrc    MonFlags, EEFLAG
+ 648:monitor.S     ****         rjmp    gbwEEPROM
+ 649               	
+ 650:monitor.S     ****         mov     Zl, TempWl
+ 651:monitor.S     ****         mov     Zh, TempWh
+ 652               	
+ 653:monitor.S     ****         ldd     r1l, Z+0
+ 654:monitor.S     ****         sbrs    MonFlags, WORDFLAG
+ 655:monitor.S     ****         ret
+ 656               	
+ 657:monitor.S     ****         ldd     r1h, Z+NextH
+ 658:monitor.S     ****         ldd     r1l, Z+NextL
+ 659:monitor.S     ****         ret
+ 660               	gbwEEPROM:                      // With new calls must preserve Z
+ 661:monitor.S     ****         mov     p1h, TempWh
+ 662:monitor.S     ****         mov     p1l, TempWl
+ 663:monitor.S     ****         sbrs    MonFlags, WORDFLAG
+ 664:monitor.S     ****         rcall   AvrXReadEEProm
+ 665:monitor.S     ****         sbrc    MonFlags, WORDFLAG
+ 666:monitor.S     ****         rcall   AvrXReadEEPromWord
+ 667               	gwbEXIT:
+ 668:monitor.S     ****         ret
+ 669               	        _ENDFUNC
+ 670               	;
+ 671               	; void PutByteWord(unsigned, void *)
+ 672               	;
+ 673               	; Passed:       p1 - value
+ 674               	;               p2 - pointer
+ 675               	; Returned      void
+ 676               	; Uses          MonFlags (eeprom vs RAM)
+ 677               	;
+ 678               	        _FUNCTION(PutByteWord)
+ 679               	PutByteWord:
+ 680:monitor.S     ****         sbrc    MonFlags, EEFLAG
+ 681:monitor.S     ****         rjmp    pbwEEPROM
+ 682               	
+ 683:monitor.S     ****         mov     Zl, TempWl
+ 684:monitor.S     ****         mov     Zh, TempWh
+ 685:monitor.S     ****         std     Z+0, p1l
+ 686:monitor.S     ****         sbrs    MonFlags, WORDFLAG
+ 687:monitor.S     ****         ret
+ 688               	
+ 689:monitor.S     ****         std     Z+NextH, p1h
+ 690:monitor.S     ****         std     Z+NextL, p1l
+ 691:monitor.S     ****         ret
+ 692               	pbwEEPROM:
+ 693:monitor.S     ****         mov     TempB, p1h
+ 694:monitor.S     ****         mov     p2l, p1l
+ 695:monitor.S     ****         mov     p1h, TempWh
+ 696:monitor.S     ****         mov     p1l, TempWl
+ 697:monitor.S     ****         rcall   AvrXWriteEEProm
+ 698:monitor.S     ****         sbrs    MonFlags, WORDFLAG
+ 699:monitor.S     ****         rjmp    pbwEXIT
+ 700               	
+ 701:monitor.S     ****         mov     p1l, TempWl
+ 702:monitor.S     ****         mov     p1h, TempWh
+ 703:monitor.S     ****         subi    p1l, lo8(-1)
+ 704:monitor.S     ****         sbci    p1h, hi8(-1)
+ 705:monitor.S     ****         mov     p2l, TempB
+ 706:monitor.S     ****         rcall   AvrXWriteEEProm
+ 707               	pbwEXIT:
+ 708:monitor.S     ****         ret
+ 709               	        _ENDFUNC
+ 710               	
+ 711               	        _END
+DEFINED SYMBOLS
+                            *ABS*:00000000 monitor.S
+                            *ABS*:00000000 avrx.inc
+                            *ABS*:00000000 avrx-io.h
+                            *ABS*:00000000 /usr/lib/gcc/avr/3.4.3/../../../../avr/include/avr/io.h
+                            *ABS*:00000000 /usr/lib/gcc/avr/3.4.3/../../../../avr/include/avr/portpins.h
+                            *ABS*:00000000 /usr/lib/gcc/avr/3.4.3/../../../../avr/include/avr/io.h
+                            *ABS*:00000000 /usr/lib/gcc/avr/3.4.3/../../../../avr/include/avr/iom32.h
+                            *ABS*:00000000 /usr/lib/gcc/avr/3.4.3/../../../../avr/include/avr/io.h
+                            *ABS*:00000000 /usr/lib/gcc/avr/3.4.3/../../../../avr/include/avr/sfr_defs.h
+                            *ABS*:00000000 /usr/lib/gcc/avr/3.4.3/../../../../avr/include/avr/io.h
+                            *ABS*:00000000 avrx-io.h
+                            *ABS*:00000000 avrx.inc
+                            *ABS*:00000000 avrx-ctoasm.inc
+                            *ABS*:00000000 avrx.inc
+                            *ABS*:00000000 monitor.S
+                            *ABS*:00000000 <command line>
+                            *ABS*:00000000 <built-in>
+                            *ABS*:00000000 monitor.S
+           monitor.S:119    .text.avrx.monitor:00000000 Hello
+           monitor.S:141    .text.avrx.monitor:000000f8 Monitor
+           monitor.S:148    .text.avrx.monitor:00000102 Hello1
+           monitor.S:172    .text.avrx.monitor:00000126 DebugMonitor
+           monitor.S:179    .text.avrx.monitor:00000130 m_Parse
+           monitor.S:216    .text.avrx.monitor:00000168 m_ModifyMemory
+           monitor.S:220    .text.avrx.monitor:0000016e m_DumpMemory
+           monitor.S:241    .text.avrx.monitor:00000190 m_HaltProcess
+           monitor.S:271    .text.avrx.monitor:000001b4 m_StepProcess
+           monitor.S:266    .text.avrx.monitor:000001ae m_Terminate
+           monitor.S:246    .text.avrx.monitor:00000196 m_ResumeProcess
+           monitor.S:261    .text.avrx.monitor:000001a8 m_SetSemaphore
+           monitor.S:251    .text.avrx.monitor:0000019c m_CancelTimer
+           monitor.S:256    .text.avrx.monitor:000001a2 m_PrintProcessContext
+           monitor.S:236    .text.avrx.monitor:0000018a m_InitTask
+           monitor.S:211    .text.avrx.monitor:00000162 m_quit
+           monitor.S:207    .text.avrx.monitor:0000015e m_err
+           monitor.S:385    .text.avrx.monitor:0000020a GetFlagsAndAddress
+           monitor.S:498    .text.avrx.monitor:000002a4 _ModifyMemory
+           monitor.S:230    .text.avrx.monitor:00000182 m1b
+           monitor.S:364    .text.avrx.monitor:000001f8 GetDumpLength
+           monitor.S:448    .text.avrx.monitor:00000264 _DumpMemory
+           monitor.S:341    .text.avrx.monitor:000001e2 GetObjectID
+           monitor.S:562    .text.avrx.monitor:00000320 _PrintContext
+           monitor.S:317    .text.avrx.monitor:000001c0 ms_NOTSUSPENDED
+           monitor.S:327    .text.avrx.monitor:000001ce NotSuspended
+           monitor.S:346    .text.avrx.monitor:000001ea goi00
+           monitor.S:354    .text.avrx.monitor:000001f6 goi02
+           monitor.S:351    .text.avrx.monitor:000001f2 goi01
+           monitor.S:369    .text.avrx.monitor:00000200 gdl00
+           monitor.S:375    .text.avrx.monitor:00000208 gdl02
+           monitor.S:373    .text.avrx.monitor:00000206 gdl01
+           monitor.S:393    .text.avrx.monitor:00000218 gbTRYEERAM
+           monitor.S:397    .text.avrx.monitor:0000021e gbCONTINUE
+           monitor.S:429    .text.avrx.monitor:00000256 gbDONE
+           monitor.S:405    .text.avrx.monitor:0000022c gbCHECKWORDFLAG
+           monitor.S:418    .text.avrx.monitor:00000244 gbUPDATEADDRESS
+           monitor.S:415    .text.avrx.monitor:00000240 gbCHECKFORWHITESPACE
+           monitor.S:426    .text.avrx.monitor:00000252 gbAddress
+           monitor.S:455    .text.avrx.monitor:0000026e m10f
+           monitor.S:459    .text.avrx.monitor:00000274 m10c
+           monitor.S:464    .text.avrx.monitor:0000027c m10d
+           monitor.S:646    .text.avrx.monitor:00000396 GetByteWord
+           monitor.S:473    .text.avrx.monitor:0000028c m11
+           monitor.S:477    .text.avrx.monitor:00000292 m12
+           monitor.S:487    .text.avrx.monitor:000002a2 m10exit
+           monitor.S:482    .text.avrx.monitor:0000029a m10e
+           monitor.S:501    .text.avrx.monitor:000002a8 _ModifyMemory_
+           monitor.S:507    .text.avrx.monitor:000002b2 _mmNEXT
+           monitor.S:513    .text.avrx.monitor:000002bc _mmGETDATA
+           monitor.S:535    .text.avrx.monitor:000002e2 _mmNODATA
+           monitor.S:521    .text.avrx.monitor:000002ca _mmWRITE
+           monitor.S:679    .text.avrx.monitor:000003b8 PutByteWord
+           monitor.S:524    .text.avrx.monitor:000002ce _mmGOTONEXT
+           monitor.S:543    .text.avrx.monitor:000002f2 _mmDONE
+           monitor.S:555    .text.avrx.monitor:000002f4 ctdt0
+           monitor.S:556    .text.avrx.monitor:0000030b ctdt1
+           monitor.S:557    .text.avrx.monitor:00000310 ctdt2
+           monitor.S:558    .text.avrx.monitor:00000315 ctdt3
+           monitor.S:602    .text.avrx.monitor:0000035c Loop
+           monitor.S:619    .text.avrx.monitor:0000037a Print16RegPre
+           monitor.S:626    .text.avrx.monitor:00000384 Print16Reg
+           monitor.S:630    .text.avrx.monitor:0000038a p16r0
+           monitor.S:660    .text.avrx.monitor:000003aa gbwEEPROM
+           monitor.S:667    .text.avrx.monitor:000003b6 gwbEXIT
+           monitor.S:692    .text.avrx.monitor:000003cc pbwEEPROM
+           monitor.S:707    .text.avrx.monitor:000003e6 pbwEXIT
+
+UNDEFINED SYMBOLS
+EEPromMutex
+AvrXSetSemaphore
+_PrintString
+PutCR
+PutChar
+_GetChar
+_RxByte
+GetHexWord
+AvrXInitTask
+AvrXSuspend
+AvrXResume
+AvrXCancelTimer
+AvrXTerminate
+AvrXStepNext
+PutHexWord
+IsWhite
+GetHexByte
+PutSpace
+PutHexByte
+AvrXReadEEProm
+AvrXReadEEPromWord
+AvrXWriteEEProm

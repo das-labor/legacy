@@ -1,0 +1,379 @@
+   1               		.file	"AvrXFifo.c"
+   2               		.arch atmega32
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  11               		.text
+  12               	.Ltext0:
+  85               	.global	AvrXPutFifo
+  87               	AvrXPutFifo:
+   1:AvrXFifo.c    **** /*
+   2:AvrXFifo.c    ****     Buffered BYTE oriented FIFO
+   3:AvrXFifo.c    **** 
+   4:AvrXFifo.c    **** 	Uses providers/consumer model.  When an interrupt
+   5:AvrXFifo.c    **** 	drives the consumer/provider side use the interrupt calls
+   6:AvrXFifo.c    **** 
+   7:AvrXFifo.c    **** 	The fifo needs to be both declared and initialized.
+   8:AvrXFifo.c    **** */
+   9:AvrXFifo.c    **** #include <avr/io.h>
+  10:AvrXFifo.c    **** #include <avr/interrupt.h>
+  11:AvrXFifo.c    **** #include "avrx.h"
+  12:AvrXFifo.c    **** #include "AvrXFifo.h"
+  13:AvrXFifo.c    **** 
+  14:AvrXFifo.c    **** typedef uint8_t BOOL;
+  15:AvrXFifo.c    **** 
+  16:AvrXFifo.c    **** // Since there is only one process modifying each side of the
+  17:AvrXFifo.c    **** // FIFO, I am pretty sure critical sections are not needed.
+  18:AvrXFifo.c    **** // The only race is if the out pointer changes after the load
+  19:AvrXFifo.c    **** // and before the test. But this is not a race that will cause
+  20:AvrXFifo.c    **** // fifo corruption.
+  21:AvrXFifo.c    **** 
+  22:AvrXFifo.c    **** int16_t AvrXPutFifo(pAvrXFifo p, uint8_t c)
+  23:AvrXFifo.c    **** {
+  89               	.LM1:
+  90               	/* prologue: frame size=0 */
+  91               	/* prologue end (size=0) */
+  92 0000 DC01      		movw r26,r24
+  24:AvrXFifo.c    **** 	uint8_t t = p->in+1;
+  94               	.LM2:
+  95 0002 FC01      		movw r30,r24
+  96 0004 2481      		ldd r18,Z+4
+  97 0006 922F      		mov r25,r18
+  98 0008 9F5F      		subi r25,lo8(-(1))
+  25:AvrXFifo.c    **** 	if (t >= p->size)
+ 100               	.LM3:
+ 101 000a 8681      		ldd r24,Z+6
+ 102 000c 9817      		cp r25,r24
+ 103 000e 08F0      		brlo .L2
+  26:AvrXFifo.c    **** 		t = 0;
+ 105               	.LM4:
+ 106 0010 90E0      		ldi r25,lo8(0)
+ 107               	.L2:
+  27:AvrXFifo.c    **** 	if (t == p->out)	// isFull()
+ 109               	.LM5:
+ 110 0012 FD01      		movw r30,r26
+ 111 0014 8581      		ldd r24,Z+5
+ 112 0016 9817      		cp r25,r24
+ 113 0018 19F4      		brne .L3
+  28:AvrXFifo.c    **** 		return FIFO_ERR;
+ 115               	.LM6:
+ 116 001a 8FEF      		ldi r24,lo8(-1)
+ 117 001c 9FEF      		ldi r25,hi8(-1)
+ 118 001e 0895      		ret
+ 119               	.L3:
+  29:AvrXFifo.c    **** 	p->buf[p->in] = c;
+ 121               	.LM7:
+ 122 0020 FD01      		movw r30,r26
+ 123 0022 E20F      		add r30,r18
+ 124 0024 F11D      		adc r31,__zero_reg__
+ 125 0026 6783      		std Z+7,r22
+  30:AvrXFifo.c    **** 	p->in = t;
+ 127               	.LM8:
+ 128 0028 FD01      		movw r30,r26
+ 129 002a 9483      		std Z+4,r25
+  31:AvrXFifo.c    **** 	AvrXSetSemaphore(&p->Producer);
+ 131               	.LM9:
+ 132 002c CD01      		movw r24,r26
+ 133 002e 0E94 0000 		call AvrXSetSemaphore
+  32:AvrXFifo.c    **** 	return FIFO_OK;
+ 135               	.LM10:
+ 136 0032 80E0      		ldi r24,lo8(0)
+ 137 0034 90E0      		ldi r25,hi8(0)
+  33:AvrXFifo.c    **** }
+ 139               	.LM11:
+ 140 0036 0895      		ret
+ 141               	/* epilogue: frame size=0 */
+ 142 0038 0895      		ret
+ 143               	/* epilogue end (size=1) */
+ 144               	/* function AvrXPutFifo size 29 (28) */
+ 149               	.Lscope0:
+ 152               	.global	AvrXPullFifo
+ 154               	AvrXPullFifo:
+  34:AvrXFifo.c    **** 
+  35:AvrXFifo.c    **** int16_t AvrXPullFifo(pAvrXFifo p)
+  36:AvrXFifo.c    **** {
+ 156               	.LM12:
+ 157               	/* prologue: frame size=0 */
+ 158 003a CF93      		push r28
+ 159 003c DF93      		push r29
+ 160               	/* prologue end (size=2) */
+ 161 003e DC01      		movw r26,r24
+  37:AvrXFifo.c    **** 	if (p->in == p->out)	// isEmpty()
+ 163               	.LM13:
+ 164 0040 FC01      		movw r30,r24
+ 165 0042 8481      		ldd r24,Z+4
+ 166 0044 9581      		ldd r25,Z+5
+ 167 0046 8917      		cp r24,r25
+ 168 0048 19F4      		brne .L5
+  38:AvrXFifo.c    **** 		return FIFO_ERR;
+ 170               	.LM14:
+ 171 004a 8FEF      		ldi r24,lo8(-1)
+ 172 004c 9FEF      		ldi r25,hi8(-1)
+ 173 004e 13C0      		rjmp .L4
+ 174               	.L5:
+  39:AvrXFifo.c    **** 	uint16_t c = p->buf[p->out];
+ 176               	.LM15:
+ 177 0050 FD01      		movw r30,r26
+ 178 0052 E90F      		add r30,r25
+ 179 0054 F11D      		adc r31,__zero_reg__
+ 180 0056 8781      		ldd r24,Z+7
+ 181 0058 C82F      		mov r28,r24
+ 182 005a DD27      		clr r29
+  40:AvrXFifo.c    **** 	uint8_t t = p->out+1;
+ 184               	.LM16:
+ 185 005c 9F5F      		subi r25,lo8(-(1))
+  41:AvrXFifo.c    **** 	if (t >= p->size)
+ 187               	.LM17:
+ 188 005e FD01      		movw r30,r26
+ 189 0060 8681      		ldd r24,Z+6
+ 190 0062 9817      		cp r25,r24
+ 191 0064 08F0      		brlo .L6
+  42:AvrXFifo.c    **** 		t = 0;
+ 193               	.LM18:
+ 194 0066 90E0      		ldi r25,lo8(0)
+ 195               	.L6:
+  43:AvrXFifo.c    **** 	p->out = t;
+ 197               	.LM19:
+ 198 0068 FD01      		movw r30,r26
+ 199 006a 9583      		std Z+5,r25
+  44:AvrXFifo.c    **** 	AvrXSetSemaphore(&p->Consumer);
+ 201               	.LM20:
+ 202 006c CD01      		movw r24,r26
+ 203 006e 0296      		adiw r24,2
+ 204 0070 0E94 0000 		call AvrXSetSemaphore
+  45:AvrXFifo.c    **** 	return c;
+ 206               	.LM21:
+ 207 0074 CE01      		movw r24,r28
+ 208               	.L4:
+ 209               	/* epilogue: frame size=0 */
+ 210 0076 DF91      		pop r29
+ 211 0078 CF91      		pop r28
+ 212 007a 0895      		ret
+ 213               	/* epilogue end (size=3) */
+ 214               	/* function AvrXPullFifo size 33 (28) */
+ 220               	.Lscope1:
+ 224               	.global	AvrXWaitPutFifo
+ 226               	AvrXWaitPutFifo:
+  46:AvrXFifo.c    **** }
+  47:AvrXFifo.c    **** 
+  48:AvrXFifo.c    **** void AvrXWaitPutFifo(pAvrXFifo p, uint8_t c)
+  49:AvrXFifo.c    **** {
+ 228               	.LM22:
+ 229               	/* prologue: frame size=0 */
+ 230 007c 1F93      		push r17
+ 231 007e CF93      		push r28
+ 232 0080 DF93      		push r29
+ 233               	/* prologue end (size=3) */
+ 234 0082 EC01      		movw r28,r24
+ 235 0084 162F      		mov r17,r22
+  50:AvrXFifo.c    **** 	while (AvrXPutFifo(p, c) == FIFO_ERR)
+ 237               	.LM23:
+ 238 0086 04C0      		rjmp .L8
+ 239               	.L10:
+  51:AvrXFifo.c    **** 		AvrXWaitSemaphore(&p->Consumer);
+ 241               	.LM24:
+ 242 0088 CE01      		movw r24,r28
+ 243 008a 0296      		adiw r24,2
+ 244 008c 0E94 0000 		call AvrXWaitSemaphore
+ 245               	.L8:
+ 246 0090 612F      		mov r22,r17
+ 247 0092 CE01      		movw r24,r28
+ 248 0094 0E94 0000 		call AvrXPutFifo
+ 249 0098 8F5F      		subi r24,lo8(-1)
+ 250 009a 9F4F      		sbci r25,hi8(-1)
+ 251 009c A9F3      		breq .L10
+ 252               	/* epilogue: frame size=0 */
+ 253 009e DF91      		pop r29
+ 254 00a0 CF91      		pop r28
+ 255 00a2 1F91      		pop r17
+ 256 00a4 0895      		ret
+ 257               	/* epilogue end (size=4) */
+ 258               	/* function AvrXWaitPutFifo size 22 (15) */
+ 260               	.Lscope2:
+ 263               	.global	AvrXWaitPullFifo
+ 265               	AvrXWaitPullFifo:
+  52:AvrXFifo.c    **** }
+  53:AvrXFifo.c    **** 
+  54:AvrXFifo.c    **** int16_t AvrXWaitPullFifo(pAvrXFifo p)
+  55:AvrXFifo.c    **** {
+ 267               	.LM25:
+ 268               	/* prologue: frame size=0 */
+ 269 00a6 CF93      		push r28
+ 270 00a8 DF93      		push r29
+ 271               	/* prologue end (size=2) */
+ 272 00aa EC01      		movw r28,r24
+  56:AvrXFifo.c    **** 	int16_t c;
+  57:AvrXFifo.c    **** 	while ((c = AvrXPullFifo(p)) == FIFO_ERR)
+ 274               	.LM26:
+ 275 00ac 03C0      		rjmp .L12
+ 276               	.L14:
+  58:AvrXFifo.c    **** 		AvrXWaitSemaphore(&p->Producer);
+ 278               	.LM27:
+ 279 00ae CE01      		movw r24,r28
+ 280 00b0 0E94 0000 		call AvrXWaitSemaphore
+ 281               	.L12:
+ 282 00b4 CE01      		movw r24,r28
+ 283 00b6 0E94 0000 		call AvrXPullFifo
+ 284 00ba 2FEF      		ldi r18,hi8(-1)
+ 285 00bc 8F3F      		cpi r24,lo8(-1)
+ 286 00be 9207      		cpc r25,r18
+ 287 00c0 B1F3      		breq .L14
+ 288               	/* epilogue: frame size=0 */
+ 289 00c2 DF91      		pop r29
+ 290 00c4 CF91      		pop r28
+ 291 00c6 0895      		ret
+ 292               	/* epilogue end (size=3) */
+ 293               	/* function AvrXWaitPullFifo size 17 (12) */
+ 298               	.Lscope3:
+ 301               	.global	AvrXFlushFifo
+ 303               	AvrXFlushFifo:
+  59:AvrXFifo.c    **** 	return c;
+  60:AvrXFifo.c    **** }
+  61:AvrXFifo.c    **** 
+  62:AvrXFifo.c    **** void AvrXFlushFifo(pAvrXFifo p)
+  63:AvrXFifo.c    **** {
+ 305               	.LM28:
+ 306               	/* prologue: frame size=0 */
+ 307 00c8 0F93      		push r16
+ 308 00ca 1F93      		push r17
+ 309               	/* prologue end (size=2) */
+ 310 00cc 8C01      		movw r16,r24
+  64:AvrXFifo.c    **** 	p->in = 0;
+ 312               	.LM29:
+ 313 00ce FC01      		movw r30,r24
+ 314 00d0 1482      		std Z+4,__zero_reg__
+  65:AvrXFifo.c    **** 	p->out = 0;
+ 316               	.LM30:
+ 317 00d2 1582      		std Z+5,__zero_reg__
+  66:AvrXFifo.c    **** 	AvrXResetSemaphore(&p->Consumer);
+ 319               	.LM31:
+ 320 00d4 0296      		adiw r24,2
+ 321 00d6 0E94 0000 		call AvrXResetSemaphore
+  67:AvrXFifo.c    **** 	AvrXResetSemaphore(&p->Producer);
+ 323               	.LM32:
+ 324 00da C801      		movw r24,r16
+ 325 00dc 0E94 0000 		call AvrXResetSemaphore
+ 326               	/* epilogue: frame size=0 */
+ 327 00e0 1F91      		pop r17
+ 328 00e2 0F91      		pop r16
+ 329 00e4 0895      		ret
+ 330               	/* epilogue end (size=3) */
+ 331               	/* function AvrXFlushFifo size 15 (10) */
+ 333               	.Lscope4:
+ 336               	.global	AvrXPeekFifo
+ 338               	AvrXPeekFifo:
+  68:AvrXFifo.c    **** }
+  69:AvrXFifo.c    **** 
+  70:AvrXFifo.c    **** // Return next character to be removed (without removing it)
+  71:AvrXFifo.c    **** 
+  72:AvrXFifo.c    **** int16_t AvrXPeekFifo(pAvrXFifo p)
+  73:AvrXFifo.c    **** {
+ 340               	.LM33:
+ 341               	/* prologue: frame size=0 */
+ 342               	/* prologue end (size=0) */
+ 343 00e6 FC01      		movw r30,r24
+  74:AvrXFifo.c    **** 	if (p->in == p->out)
+ 345               	.LM34:
+ 346 00e8 8481      		ldd r24,Z+4
+ 347 00ea 9581      		ldd r25,Z+5
+ 348 00ec 8917      		cp r24,r25
+ 349 00ee 19F4      		brne .L17
+  75:AvrXFifo.c    **** 		return FIFO_ERR;
+ 351               	.LM35:
+ 352 00f0 8FEF      		ldi r24,lo8(-1)
+ 353 00f2 9FEF      		ldi r25,hi8(-1)
+ 354 00f4 0895      		ret
+ 355               	.L17:
+  76:AvrXFifo.c    **** 	else
+  77:AvrXFifo.c    **** 		return p->buf[p->out];
+ 357               	.LM36:
+ 358 00f6 E90F      		add r30,r25
+ 359 00f8 F11D      		adc r31,__zero_reg__
+ 360 00fa 8781      		ldd r24,Z+7
+ 361 00fc 9927      		clr r25
+  78:AvrXFifo.c    **** }
+ 363               	.LM37:
+ 364 00fe 0895      		ret
+ 365               	/* epilogue: frame size=0 */
+ 366 0100 0895      		ret
+ 367               	/* epilogue end (size=1) */
+ 368               	/* function AvrXPeekFifo size 14 (13) */
+ 370               	.Lscope5:
+ 373               	.global	AvrXStatFifo
+ 375               	AvrXStatFifo:
+  79:AvrXFifo.c    **** 
+  80:AvrXFifo.c    **** // Return size of FIFO (difference between in & out
+  81:AvrXFifo.c    **** 
+  82:AvrXFifo.c    **** int16_t AvrXStatFifo(pAvrXFifo p)
+  83:AvrXFifo.c    **** {
+ 377               	.LM38:
+ 378               	/* prologue: frame size=0 */
+ 379               	/* prologue end (size=0) */
+ 380 0102 FC01      		movw r30,r24
+  84:AvrXFifo.c    **** 	uint8_t sreg = SREG;
+ 382               	.LM39:
+ 383 0104 8FB7      		in r24,95-0x20
+  85:AvrXFifo.c    **** 	cli();
+ 385               	.LM40:
+ 386               	/* #APP */
+ 387 0106 F894      		cli
+  86:AvrXFifo.c    **** 	int16_t c = (uint16_t)p->in - (uint16_t)p->out;
+ 389               	.LM41:
+ 390               	/* #NOAPP */
+ 391 0108 9481      		ldd r25,Z+4
+ 392 010a 292F      		mov r18,r25
+ 393 010c 3327      		clr r19
+ 394 010e 9581      		ldd r25,Z+5
+ 395 0110 291B      		sub r18,r25
+ 396 0112 3109      		sbc r19,__zero_reg__
+  87:AvrXFifo.c    **** 	SREG = sreg;
+ 398               	.LM42:
+ 399 0114 8FBF      		out 95-0x20,r24
+  88:AvrXFifo.c    **** 	if (c < 0)
+ 401               	.LM43:
+ 402 0116 37FF      		sbrs r19,7
+ 403 0118 03C0      		rjmp .L20
+  89:AvrXFifo.c    **** 		c += p->size;
+ 405               	.LM44:
+ 406 011a 8681      		ldd r24,Z+6
+ 407 011c 280F      		add r18,r24
+ 408 011e 311D      		adc r19,__zero_reg__
+ 409               	.L20:
+  90:AvrXFifo.c    **** 	return c;
+  91:AvrXFifo.c    **** }
+ 411               	.LM45:
+ 412 0120 C901      		movw r24,r18
+ 413               	/* epilogue: frame size=0 */
+ 414 0122 0895      		ret
+ 415               	/* epilogue end (size=1) */
+ 416               	/* function AvrXStatFifo size 18 (17) */
+ 422               	.Lscope6:
+ 423               		.text
+ 425               	Letext:
+ 426               	/* File "AvrXFifo.c": code  148 = 0x0094 ( 123), prologues   9, epilogues  16 */
+DEFINED SYMBOLS
+                            *ABS*:00000000 AvrXFifo.c
+                            *ABS*:0000003f __SREG__
+                            *ABS*:0000003e __SP_H__
+                            *ABS*:0000003d __SP_L__
+                            *ABS*:00000000 __tmp_reg__
+                            *ABS*:00000001 __zero_reg__
+     /tmp/ccmz2xGd.s:87     .text:00000000 AvrXPutFifo
+     /tmp/ccmz2xGd.s:154    .text:0000003a AvrXPullFifo
+     /tmp/ccmz2xGd.s:226    .text:0000007c AvrXWaitPutFifo
+     /tmp/ccmz2xGd.s:265    .text:000000a6 AvrXWaitPullFifo
+     /tmp/ccmz2xGd.s:303    .text:000000c8 AvrXFlushFifo
+     /tmp/ccmz2xGd.s:338    .text:000000e6 AvrXPeekFifo
+     /tmp/ccmz2xGd.s:375    .text:00000102 AvrXStatFifo
+     /tmp/ccmz2xGd.s:425    .text:00000124 Letext
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+AvrXSetSemaphore
+AvrXWaitSemaphore
+AvrXResetSemaphore
