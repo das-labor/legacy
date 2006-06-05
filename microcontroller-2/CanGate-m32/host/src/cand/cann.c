@@ -90,7 +90,6 @@ cann_conn_t *cann_connect(char *server, int port)
 	
 	// initialize client struct
 	client = (cann_conn_t *)malloc(sizeof(cann_conn_t));
-	client->state = CANN_LEN;
 	client->missing_bytes = 0;
 	client->error = 0;
 
@@ -170,7 +169,6 @@ cann_conn_t *cann_accept(fd_set *set)
 	client->next  = cann_conns_head;
 	client->fd    = fd;
 	client->missing_bytes = 0;
-	client->state = CANN_LEN;
 	client->error = 0;
 	cann_conns_head = client;
 
@@ -231,21 +229,6 @@ cann_conn_t *cann_activity(fd_set *set)
 }
 
 
-/*****************************************************************************
- * Memory Management
- */
-
-rs232can_msg *cann_buffer_get()
-{
-	return (rs232can_msg *)malloc( sizeof(rs232can_msg) );
-}
-
-void cann_free(rs232can_msg *rmsg)
-{
-	free(rmsg);
-}
-
-
 void cann_dumpconn()
 {
 	cann_conn_t *client = cann_conns_head;
@@ -262,91 +245,68 @@ void cann_dumpconn()
  * rcv
  */
 
-/* nonblocking read on netwok -- returns msg if complete msg arrived */
-rs232can_msg *cann_get_nb(cann_conn_t *client)
+// Nonblocking read from netwock 
+//   Returns 1 on succsess, 0 if there is no complete message and -1 on error.
+int cann_get_nb(cann_conn_t *client, can_message_t *msg)
 {
-	int ret; 
-	unsigned char val; 
-	static enum {STATE_START, STATE_LEN, STATE_PAYLOAD} state = STATE_START;
+	int     ret; 
+	uint8_t c; 
 
 	// sanity
 	debug_assert( !(client->error), 
 			"cann_get_nb() with error %d on %d", 
 			client->error, client->fd );
 
-	// XXX das alles geht auch einfacher XXX
-	if (client->state == CANN_LEN) {
-		ret = read(client->fd, &val, 1);
-		       
-		if (ret == 0) goto eof;
-		if (ret < 0) goto error;
-
-		// check msg length
-		if (val > sizeof(client->msg.data)) {
-			debug( 2, "Protocol error on fd %d (size=%d)", 
-					client->fd, client->missing_bytes );
-			client->error = 1;
-			return NULL;
+	while((ret=read(client->fd, &c, 1)) == 1) { // recieved 1 byte
+		if (client->missing_bytes == 0) {
+			if (c >= 16) {
+				debug( 2, "Protocol error on fd %d (size=%d)", 
+				       client->fd, client->missing_bytes );
+				client->error = 1;
+				return -1;
+			}
+			debug(10, "Next packet on %d: length=%d", client->fd, c);
+			client->rcv_ptr = client->buf;
+			client->missing_bytes = c;
+			continue;
 		}
 
-		if (val == 0)
-			return NULL;
+		*(client->rcv_ptr) = c;
+		client->rcv_ptr++;
+		client->missing_bytes--;
 
-		debug(10, "Next packet on %d: length=%d", client->fd, val);
-		client->msg.len        = val;
-		client->missing_bytes  = val;
-		client->rcv_ptr        = client->msg.data;
-		client->state          = CANN_CMD;
+		if (client->missing_bytes == 0) {
+			switch (client->buf[0]) {
+			case 0: // NOP
+				break;
+			case 1:
+				memcpy(msg, client->buf+1, sizeof(can_message_t));
+				return 1;
+			default:
+				debug( 2, "Protocol error on fd %d (cmd=%d)", 
+				       client->fd, client->buf[0]);
+				client->error = 1;
+				return -1;
+			}
+		}
 	}
 
-	if (client->state == CANN_CMD) {
-		ret = read(client->fd, &(client->msg.cmd), 1);
-		       
-		if (ret == 0) goto eof;
-		if (ret < 0) goto error;
-
-		debug(10, "Next packet on %d: cmd=%d", client->fd, client->msg.cmd);
-		client->state = CANN_PAYLOAD;
+	if (ret == 0) {
+		debug_perror( 5, "Error readig fd %d (ret==%d)", client->fd, ret );
+		client->error = 1;
+		return -1;
+	} else if (ret < 0) {
+		if ((errno == EAGAIN) || (errno==0)) 
+			return 0;
 	}
-	
-	// read data
-	ret = read(client->fd, client->rcv_ptr, client->missing_bytes);
-
-	if (ret == 0) goto eof;
-	if (ret < 0) goto error;
-		
-	client->missing_bytes -= ret;
-	client->rcv_ptr       += ret;
-
-	debug(10, "fd %d: recived %d bytes, %d missing",
-			client->fd, ret, client->missing_bytes);
-
-	// message complete?
-	if (client->missing_bytes == 0) {
-		rs232can_msg *rmsg = cann_buffer_get();
-
-		memcpy(rmsg, &(client->msg), sizeof(rs232can_msg));
-		client->state = CANN_LEN;
-		return rmsg;
-	}
-
-	return NULL;
-
-error:
-	if ((errno == EAGAIN) || (errno==0)) 
-		return NULL;
-
-eof:
-	debug_perror( 5, "Error readig fd %d (ret==%d)", client->fd, ret );
-	client->error = 1;
-	return NULL;
 }
 
-rs232can_msg *cann_get(cann_conn_t *client)
+// blocking read on netwock socket 
+//   Returns 1 on succsess; -1 on error.
+int cann_get(cann_conn_t *client, can_message_t *msg)
 {
 	int ret;
 	fd_set rset;
-	rs232can_msg *rmsg;
 
 	for(;;) {
 		FD_ZERO(&rset);
@@ -355,21 +315,24 @@ rs232can_msg *cann_get(cann_conn_t *client)
 		ret = select(client->fd + 1, &rset, (fd_set*)NULL, (fd_set*)NULL, NULL);
 		debug_assert( ret >= 0, "cann_get: select failed" );
 
-		rmsg = cann_get_nb(client);
-		if (rmsg)
-			return rmsg;
+		ret = cann_get_nb(client, msg);
+		if (ret == 0) 
+				continue;
+
+		return ret;
 	}
 }
 
 
 /*****************************************************************************
- * transmit
+ * send
  */
 
-/* transmit and free message */
-void cann_transmit(cann_conn_t *conn, rs232can_msg *msg)
+/* transmit message */
+void cann_send(cann_conn_t *conn, can_message_t *msg)
 {
-	int len;
+	uint8_t len;
+	uint8_t cmd = 1;
 
 	// sanity
 	if (conn->error) {
@@ -377,13 +340,15 @@ void cann_transmit(cann_conn_t *conn, rs232can_msg *msg)
 		return;
 	}
 
-	if( send(conn->fd, &(msg->len), 1, MSG_NOSIGNAL) != 1 ) 
-		goto error;
-	
-	if( send(conn->fd, &(msg->cmd), 1, MSG_NOSIGNAL) != 1 )
+	len = 1 + 4 + 1 + msg->dlc;   // len = cmd + id[4] + dlc + data 
+
+	if( send(conn->fd, &len, 1, MSG_NOSIGNAL) != 1 ) 
 		goto error;
 
-	if(send(conn->fd, msg->data, msg->len, MSG_NOSIGNAL) != msg->len )
+	if( send(conn->fd, &cmd, 1, MSG_NOSIGNAL) != 1 )
+		goto error;
+
+	if(send(conn->fd, msg, len-1, MSG_NOSIGNAL) != len-1 )
 		goto error;
 
 	return;

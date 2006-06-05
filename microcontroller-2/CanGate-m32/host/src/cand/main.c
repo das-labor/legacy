@@ -15,6 +15,7 @@
 
 #include "uart-host.h"
 #include "can-uart.h"
+#include "cann.h"
 
 #ifndef max
  #define max(a,b) (((a) > (b)) ? (a) : (b))
@@ -60,73 +61,59 @@ void hexdump(unsigned char * addr, int size){
 	printf("\n");
 }
 
-#ifdef FOO
 void process_uart_msg()
 {
+	int ret;
+	can_message_t msg;
 	cann_conn_t *ac;
+
 	debug( 10, "Activity on uart_fd" );
 
-	rs232can_msg *msg = canu_get_nb();
-	if(!msg) return;
-	
-	debug(3, "Processing message from uart..." );
-	
-	if(msg->cmd != RS232CAN_PKT){
-		debug(0, "Whats going on? Received other than PKT type on Uart");
-		canu_free(msg);
+	if(canu_get_nb(&msg) != 1)
 		return;
-	}
 	
+	debug(3, "Processing message from uart:" );
+	if (debug_level >= 3) hexdump((char *)&msg, sizeof(can_message_t));
+
 	// foreach client
 	ac = cann_conns_head;
 	while(ac) {
 //XXX		if ( cann_match_filter(ac, msg) ) 
-		cann_transmit(ac, msg);
+		cann_send(ac, &msg);
 		
 		ac = ac->next;
 	}
 	
-	canu_free(msg);
 	debug(3, "...processing done.");
 }
 
 void process_client_msg( cann_conn_t *client )
 {
+	can_message_t msg;
 	cann_conn_t *ac;
 	int x;
 
 	debug( 10, "Activity on client %d", client->fd );
 
-	rs232can_msg *msg = cann_get_nb(client);
-	if(!msg) return;
+	if(cann_get_nb(client, &msg) != 1)
+		return;
 	
-	debug(3, "Processing message from network..." );
-	if (debug_level >= 3) hexdump((void *)msg, msg->len + 2);
+	debug(3, "Processing message from networki:" );
+	if (debug_level >= 3) hexdump((char *)&msg, sizeof(can_message_t));
 
+	// to UART
+	if (serial) canu_send(&msg);
 
-	switch(msg->cmd) {
-		case RS232CAN_SETFILTER:
-			/* XXX */
-			break;
-		case RS232CAN_SETMODE:
-			/* XXX */
-			break;
-		case RS232CAN_PKT:
-		default:
-			// to UART
-			if (serial) canu_transmit(msg);
+	// foreach client
+	ac = cann_conns_head;
+	while(ac) {
+//XXX		if ( cann_match_filter(ac, msg) ) 
+		if ( ac != client )
+			cann_send(ac, &msg);
 
-			// foreach client
-			ac = cann_conns_head;
-			while(ac) {
-//XXX				if ( cann_match_filter(ac, msg) ) 
-				if ( ac != client )
-					cann_transmit(ac, msg);
-
-				ac = ac->next;
-			}
+		ac = ac->next;
 	}
-//	cann_free(msg);
+
 	debug(3, "...processing done.");
 }
 
@@ -134,6 +121,7 @@ void new_client( cann_conn_t *client )
 {
 	// XXX
 }
+
 
 void event_loop()
 {
@@ -168,7 +156,6 @@ void event_loop()
 		cann_dumpconn();
 
 		// check client activity 
-		//
 		while( client = cann_activity(&rset) ) {
 			debug(5, "CANN actiity found" );
 			process_client_msg(client);
@@ -194,7 +181,6 @@ void event_loop()
 	}
 }
 
-#endif
 
 int main(int argc, char *argv[])
 {
@@ -237,20 +223,11 @@ int main(int argc, char *argv[])
 		debug(1, "Serial CAN communication established" );
 	};
 
-	can_message_t msg;
-	while(1) {
-		char c;
-		canu_get(&msg);
-		hexdump(&msg, sizeof(can_message_t) );
-	}
-
-#ifdef FOO
 	// setup network socket
 	cann_listen(tcpport);
 	debug(1, "Listenig for network connections on port %d", tcpport );
 
 	event_loop();  // does not return
-#endif
 
 	return 1;  
 }

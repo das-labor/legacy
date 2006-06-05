@@ -36,7 +36,7 @@ void canu_reset()
  * rcv
  */
 
-// Returns 0 on succsess or -1 if there is no complete message.
+//   Returns 1 on succsess, 0 if there is no complete message and -1 on error.
 int canu_get_nb(can_message_t *msg){
 	static char buf[16];
 	static uint8_t len = 0;
@@ -45,9 +45,8 @@ int canu_get_nb(can_message_t *msg){
 	
 	while (uart_getc_nb(&c)) {
 		if (len == 0) {
-		 	len = (uint8_t)c;
 			p = buf;
-			if (len > 16) len = 0;
+			if ((uint8_t)c < 16) len = c;
 			continue;
 		}
 
@@ -59,7 +58,7 @@ int canu_get_nb(can_message_t *msg){
 				break;
 			case 1: // rvc packet
 				memcpy( msg, buf+1, sizeof(can_message_t) );
-				return 0;
+				return 1;
 			default:
 				canu_reset();
 				break;
@@ -67,7 +66,7 @@ int canu_get_nb(can_message_t *msg){
 		}
 	}
 
-	return -1;
+	return 0;
 }
 
 void canu_get(can_message_t *msg){
