@@ -16,7 +16,6 @@
 
 void process_cantun_msg(cantun_msg_t *msg)
 {
-	can_mode_t    can_mode;
 	can_message_t *cmsg;
 
 	switch(msg->type) {
@@ -53,13 +52,13 @@ int main(){
 	can_setmode(normal);
 
 	while(1) {
-		cantun_msg *rmsg;
-		can_message  *cmsg;
+		cantun_msg_t  *rmsg;
+		can_message_t *cmsg;
 
 
 		rmsg = canu_get_nb();
 		if (rmsg){ 
-			process_rs232_msg(rmsg);
+			process_cantun_msg(rmsg);
 		}
 		
 		cmsg = can_get_nb();

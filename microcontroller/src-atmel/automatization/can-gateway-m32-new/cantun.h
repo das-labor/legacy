@@ -26,7 +26,7 @@ typedef struct {
 
 
 //void rs232can_setmode(can_mode_t mode);
-void cantun_wrap  (cantun_msg_t *outmsg,  can_msg_t    *inmsg);
-void cantun_unwrap(can_msg_t    *outmsg,  cantun_msg_t *inmsg);
+void cantun_wrap  (cantun_msg_t  *outmsg,  can_message_t *inmsg);
+void cantun_unwrap(can_message_t *outmsg,  cantun_msg_t  *inmsg);
 
 #endif

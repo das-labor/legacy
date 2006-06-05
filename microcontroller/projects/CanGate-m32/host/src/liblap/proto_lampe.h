@@ -1,1 +1,0 @@
-../../../lib/proto_lampe.h
