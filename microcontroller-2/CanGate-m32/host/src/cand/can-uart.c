@@ -39,13 +39,13 @@ void canu_reset()
 // Returns 0 on succsess or -1 if there is no complete message.
 int canu_get_nb(can_message_t *msg){
 	static char buf[16];
-	static uint8_t len;
-	char c, *p;
+	static uint8_t len = 0;
+	static char *p;
+	char c;
 	
 	while (uart_getc_nb(&c)) {
 		if (len == 0) {
 		 	len = (uint8_t)c;
-			printf( "newpkt, len: %d\n", len );
 			p = buf;
 			if (len > 16) len = 0;
 			continue;

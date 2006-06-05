@@ -24,18 +24,15 @@ AVRX_SIGINT(SIG_OVERFLOW0)
 
 AVRX_GCC_TASKDEF(TaskCan2Tun, 60, 1)
 {
+	int i = 0;
 	CanMessage cmsg;
 
 //	CanTunHello();
 	CanTunReset();
 
 	while(1) {
+		i++;
 		CanGet(&cmsg);
-		cmsg.dlc = 4;
-		cmsg.data[0] = cmsg.id[3];
-		cmsg.data[1] = cmsg.id[3];
-		cmsg.data[2] = cmsg.id[3];
-		cmsg.data[3] = cmsg.id[3];
 		CanTunSend(&cmsg);
 	}
 }
