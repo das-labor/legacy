@@ -107,10 +107,10 @@
 #define RX_STATUS 0xB0
 #define BIT_MODIFY 0x05
 
-typedef struct {
-	can_message_t msg;
+typedef struct{
+	can_message msg;
 	volatile unsigned char flags;
-} can_message_x;
+}can_message_x;
 
 
 /* MCP */
