@@ -20,52 +20,83 @@ AVRX_SIGINT(SIG_OVERFLOW0)
 };
 
 
-// AVRX_GCC_TASK(Monitor, 20, 0);      // external Debug Monitor
+//////////////////////////////////////////////////////////////////////////////
+// 
 
-AVRX_GCC_TASKDEF(TaskCan2Tun, 60, 1)
+typedef struct {
+	MessageControlBlock	mcb;
+	CanMessage		msg;
+} QueuedMessage;
+
+MessageQueue msgQueue;
+
+AVRX_GCC_TASKDEF(TaskLAP, 60, 23)
 {
-	int i = 0;
-	CanMessage cmsg;
+	QueuedMessage *qmsg;
+	CanMessage    *msg;
 
-//	CanTunHello();
+	for(;;) {
+		qmsg = (QueuedMessage*)AvrXWaitMessage(&msgQueue);
+		msg  = &(qmsg->msg);
+
+		PORTC ^= 1;
+		free(qmsg);
+	}
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Gateway Tasks
+AVRX_GCC_TASKDEF(TaskCan2Tun, 30, 2)
+{
+	CanMessage msg;
+	QueuedMessage *qmsg;
+
 	CanTunReset();
+	for(;;) {
+		CanGet(&msg);
+		CanTunSend(&msg);
 
-	while(1) {
-		i++;
-		CanGet(&cmsg);
-		CanTunSend(&cmsg);
+		if ((qmsg=malloc(sizeof(QueuedMessage)))) {
+			memcpy(&(qmsg->msg), &msg, sizeof(CanMessage));
+			AvrXSendMessage(&msgQueue, qmsg);
+		}
 	}
 }
 
-AVRX_GCC_TASKDEF(TaskTun2Can, 60, 1)
+AVRX_GCC_TASKDEF(TaskTun2Can, 30, 2)
 {
-	CanMessage cmsg;
+	CanMessage   msg;
 
-	while(1) {
-		CanTunGet(&cmsg);
-		CanSend(&cmsg);
+	for(;;) {
+		CanTunGet(&msg);
+		CanSend(&msg);
 	}
 }
+
+//////////////////////////////////////////////////////////////////////////////
+// Main
 
 int main(void)
 {
-    AvrXSetKernelStack(0);
+	AvrXSetKernelStack(0);
 
-    DDRC = 0xFF;
+ 	DDRC = 0xFF;
 
-    spi_init();
+	spi_init();
 
-    MCUCR = 1<<SE;      	// Enable "sleep" mode (low power when idle)
-    TCNT0 = TCNT0_INIT;		// Load overflow counter of timer0
-    TCCR0 = TMC8_CK256;		// Set Timer0 to CPUCLK/256
-    TIMSK = 1<<TOIE0;		// Enable interrupt flag
+	MCUCR = 1<<SE;      	// Enable "sleep" mode (low power when idle)
+	TCNT0 = TCNT0_INIT;		// Load overflow counter of timer0
+	TCCR0 = TMC8_CK256;		// Set Timer0 to CPUCLK/256
+	TIMSK = 1<<TOIE0;		// Enable interrupt flag
 
-    CanInit();
-    CanTunInit();
+	CanInit();
+	CanTunInit();
 
-    AvrXRunTask(TCB(TaskCan2Tun));
-    AvrXRunTask(TCB(TaskTun2Can));
+	AvrXRunTask(TCB(TaskCan2Tun));
+	AvrXRunTask(TCB(TaskTun2Can));
+	AvrXRunTask(TCB(TaskLAP));
 
-    Epilog();                   // Switch from AvrX Stack to first task
+	Epilog();                   // Switch from AvrX Stack to first task
 };
 

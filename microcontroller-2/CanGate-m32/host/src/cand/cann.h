@@ -10,7 +10,7 @@
  * HOST ONLY
  */
 #include "can.h"
-#include "can-encap.h"
+// #include "can-encap.h"
 
 // for select
 #include <sys/types.h>
@@ -21,17 +21,14 @@
  * Structures
  */
 
-typedef enum {CANN_LEN, CANN_CMD, CANN_PAYLOAD} cann_state;
-
 typedef struct cann_conn {
 	int			fd;
 	struct sockaddr_in	inet_addr;
 	struct cann_conn	*next;
 
-	rs232can_msg		msg;
+	char			buf[16];
 	char			*rcv_ptr;
 	unsigned char		missing_bytes;
-	cann_state		state;
 	int			error;
 } cann_conn_t;
 
@@ -65,21 +62,16 @@ cann_conn_t *cann_activity(fd_set *set);
 
 
 /*****************************************************************************
- * Memory Management
- */
-rs232can_msg *cann_buffer_get();
-void cann_free(rs232can_msg *);
-
-
-/*****************************************************************************
  * rcv
  */
 
-/* nonblocking read from netwock -- returns 0 if no complete msg arrived */
-rs232can_msg *cann_get_nb(cann_conn_t *client);
+// nonblocking read from netwock 
+//   Returns 1 on succsess; 0 if there is no complete message and -1 on error.
+int cann_get_nb(cann_conn_t *client, can_message_t *msg);
 
-/* blocking read on netwock socket -- returns msg if complete msg arrived */
-rs232can_msg *cann_get(cann_conn_t *client);
+// blocking read on netwock socket 
+//   Returns 1 on succsess; -1 on error.
+int cann_get(cann_conn_t *client, can_message_t *msg);
 
 
 /*****************************************************************************
@@ -87,7 +79,7 @@ rs232can_msg *cann_get(cann_conn_t *client);
  */
 
 /* transmit and free message */
-void cann_transmit(cann_conn_t *connt, rs232can_msg *msg);
+void cann_send(cann_conn_t *connt, can_message_t *msg);
 
 #endif
 
