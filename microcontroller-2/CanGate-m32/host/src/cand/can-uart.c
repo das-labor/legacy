@@ -80,7 +80,6 @@ void canu_get(can_message_t *msg){
 
 		ret = select(uart_fd + 1, &rset, (fd_set*)NULL, (fd_set*)NULL, NULL);
 		debug_assert( ret >= 0, "canu_get: select failed" );
-//		debug(5, "canu_get: select returned" );
 
 		if (!canu_get_nb(msg))
 			return;

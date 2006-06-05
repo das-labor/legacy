@@ -1,2 +1,2 @@
 
-SUBDIRS = src playground
+SUBDIRS = src

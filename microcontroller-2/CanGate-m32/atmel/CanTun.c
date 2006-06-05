@@ -41,8 +41,7 @@ AVRX_GCC_TASKDEF(canTunRxTask, 20, 3)
 	SerialGet(&cmd);
 
 	switch(cmd) {
-	case 0:  // reset serial stream
-		CanTunReset();
+	case 0:  // NOP
 		break;
 	case 1:  // rcv. packet 
 		p = &canTunRxMsg;
