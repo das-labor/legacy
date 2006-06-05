@@ -50,7 +50,6 @@ void help()
 void hexdump(unsigned char * addr, int size){
 	unsigned char x=0, sbuf[3];
 	
-	printf( "Size: %d\n", size);
 	while(size--){
 		printf("%02x ", *addr++);
 		if(++x == 16){
@@ -242,7 +241,7 @@ int main(int argc, char *argv[])
 	while(1) {
 		char c;
 		canu_get(&msg);
-		hexdump(&msg, 4+1+msg.dlc );
+		hexdump(&msg, sizeof(can_message_t) );
 	}
 
 #ifdef FOO
