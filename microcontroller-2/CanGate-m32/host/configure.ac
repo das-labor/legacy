@@ -29,7 +29,6 @@ AC_CHECK_HEADERS([stdlib.h string.h unistd.h])
 ## AC_CONFIG_FILES([Makefile lap-dump/Makefile])
 AC_CONFIG_FILES([
 Makefile
-playground/Makefile
 src/Makefile
 src/cand/Makefile
 src/lapcontrol/Makefile
