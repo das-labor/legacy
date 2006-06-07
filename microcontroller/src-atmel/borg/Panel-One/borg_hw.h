@@ -10,6 +10,8 @@
 
 extern unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
+extern uint8_t keys[8];
+
 void watchdog_enable();
 void borg_hw_init();
 void timer0_off();

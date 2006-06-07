@@ -20,8 +20,17 @@ int main (void){
 	sei();
 
 	uart_init();
+	uart_putstr("Hallo\r\n");
 
 		clear_screen(0);
+	
+	unsigned char x;
+	for(x=0;x!=255;x++){
+		setpixel(x,3);
+		wait(20);
+	}	
+		
+		
 	unsigned char pos=0, buf[10], bright=3;
 	while(1){
 		unsigned char c=uart_getc();
@@ -54,7 +63,9 @@ int main (void){
 		uart_putstr(buf);
 		uart_putstr_P(PSTR("\n\r"));
 		setpixel(pos, bright);
-	
+
+		itoa(keys[pos],buf,16);
+		seg_print(buf);
 	}
 	
 }

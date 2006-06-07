@@ -5,23 +5,53 @@
 #include <avr/wdt.h>
 #include "borg_hw.h"
 
+/* Steckerbelegung Flachbandkabel am Panel
+ * (die Nummerierung ist in wirklichkeit umgekehrt)
+ * 
+ * 1-3		GND
+ * 4		+5V für Logic
+ * 5-8		+12V
+ * 9-10		GND
+ * 11		CP3
+ * 12		CP2
+ * 13		CP1
+ * 14		/show
+ * 15		CP4
+ * 16		/EO3
+ * 17-18	GND
+ * 19-26	D0-D7
+ *
+ * Die LEDs sind in einer 12*16 Matrix angeordnet
+ * Die Werte für die LED spalten Werden mit CP1 und CP2 in die 
+ * Latches übernommen (insgesammt 16 Spalten)
+ * Die Zeile wird beim löschen von /show übernommen???
+ *
+ * Die Tasten sind in einer 8*8 Matrix angeordnet.
+ * Über Latch 4 werden die Zeilen gesetzt, über Latch 3 können dann die
+ * Spalten gelesen werden.
+ * 
+ */
+
 //Datenport für das Panel
 #define COLPORT  PORTA
 #define COLDDR   DDRA
+#define COLPIN	PIND
 
 #define CTRLPORT PORTC
 #define CTRLDDR   DDRC
 
 // PINs on CTRLPORT
-#define PIN_EO3  PC5
-#define PIN_CP4  PC4
-#define PIN_SHOW PC3
-#define PIN_CP1  PC2
-#define PIN_CP2  PC1
-#define PIN_CP3  PC0
+#define PIN_EO3  PC7
+#define PIN_CP4  PC6
+#define PIN_SHOW PC5
+#define PIN_CP1  PC4
+#define PIN_CP2  PC3
+#define PIN_CP3  PC2
 
 //Der Puffer, in dem das aktuelle Bild gespeichert wird
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
+
+uint8_t keys[8];
 
 inline void busywait() {
 	unsigned char i;
@@ -52,9 +82,34 @@ inline void rowshow(unsigned char row, unsigned char plane){
 	COLPORT  = row;
 	busywait();
 	CTRLPORT &= ~(1<<PIN_SHOW);
-	busywait();
 }
 
+inline void checkkeys(uint8_t row){
+	static uint8_t mask;
+	if(row == 0){
+		mask = 1;
+	}else{
+		//read keyboard cols into latch
+		CTRLPORT |= (1<<PIN_CP3);
+		busywait();
+		CTRLPORT &= ~(1<<PIN_CP3);
+		busywait();
+		COLDDR = 0;
+		CTRLPORT &= ~(1<<PIN_EO3);
+		busywait();
+		keys[row-1] = COLPIN;
+		CTRLPORT |= (1<<PIN_EO3);
+		busywait();
+		COLDDR = 0xFF;
+	}
+	
+	COLPORT  = mask;
+	mask <<= 1;
+	busywait();
+	CTRLPORT |= (1<<PIN_CP4);
+	busywait();
+	CTRLPORT &= ~(1<<PIN_CP4);
+}
 
 //Dieser Interrupt wird je nach Ebene mit 50kHz 31,25kHz oder 12,5kHz ausgeführt
 SIGNAL(SIG_OUTPUT_COMPARE0)
@@ -68,6 +123,8 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 	
 	//Die aktuelle Zeile in der aktuellen Ebene ausgeben
 	rowshow(row, plane);
+
+	if( (plane == 2) && (row<9) ) checkkeys(row);
 	
 	//Zeile und Ebene inkrementieren
 	if(++row == NUM_ROWS){
