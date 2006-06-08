@@ -1,4 +1,17 @@
 //Beispiel für die Nutzung eines Digitalen IOs als ADC
+//
+//Schaltung:
+//         220 Ohm         100k
+//  PC0 ---RRRRR----+------RRRRR----O  Input
+//                  |
+//                 --- 100n
+//                 ---
+//                  |
+//                  |
+//                 --- 
+//
+
+
 
 #include <avr/io.h>
 #include <stdlib.h>
