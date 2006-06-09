@@ -36,10 +36,14 @@ volatile static char *volatile txhead, *volatile txtail;
  *****************************************************************************/
 
 SIGNAL(SIG_UART_DATA) {
-#ifdef UART_LEDS	
+#	ifdef UART_LEDS	
 	PORTC ^= 0x01;
-#endif
+#	endif
 	
+#	ifdef UART_HWFLOWCONTROL	
+	while ((UART_CTS_PIN & _BV(UART_CTS_BIT)))
+		;
+#	endif
 	if ( txhead == txtail ) {
 		UCSRB &= ~(1 << UDRIE);		/* disable data register empty IRQ */
 	} else {

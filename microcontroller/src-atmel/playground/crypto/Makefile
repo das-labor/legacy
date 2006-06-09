@@ -1,5 +1,5 @@
 PRG	    = cryptotest
-OBJ	    = main.o debug.o uart.o serial-tools.o sha256-asm.o xtea-asm.o
+OBJ	    = main.o debug.o uart.o serial-tools.o sha256-asm.o xtea-asm.o  arcfour-asm.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 

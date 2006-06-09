@@ -1,4 +1,3 @@
-// main.c
 /*
  * crypto-test
  * 
@@ -35,6 +34,7 @@
 
 #include "sha256-asm.h"
 #include "xtea.h"
+#include "arcfour.h"
 
 #include <stdint.h>
 #include <string.h>
@@ -126,6 +126,46 @@ void testrun_xtea(){
 	uart_hexdump(block, 8);
 }
 
+void testrun_arcfour(){
+	arcfour_ctx_t s;
+	char *b;
+	/* using wikipedia test-vectors:
+	 *	RC4( "Key", "Plaintext" ) == "bbf316e8 d940af0a d3"
+	 *	RC4( "Wiki", "pedia" ) == "1021bf0420"
+	 *	RC4( "Secret", "Attack at dawn" ) == "45a01f64 5fc35b38 3552544b 9bf5"
+	 **/
+	
+	uart_putstr("\r\narcfour(\"Plaintext\", \"Key\")=");
+	arcfour_init(&s, "Key", 3);
+	b="Plaintext";
+	while (*b)
+		*b++ ^= arcfour_gen(&s);
+	uart_hexdump(b-9, 9);
+	
+	uart_putstr("\r\narcfour(\"pedia\", \"Wiki\")=");
+	arcfour_init(&s, "Wiki", 4);
+	b="pedia";
+	while (*b)
+		*b++ ^= arcfour_gen(&s);
+	uart_hexdump(b-5, 5);
+	
+	uart_putstr("\r\narcfour(\"Attack at dawn\", \"Secret\")=");
+	arcfour_init(&s, "Secret", 6);
+	b="Attack at dawn";
+	while (*b)
+		*b++ ^= arcfour_gen(&s);
+	uart_hexdump(b-14, 14);
+	
+	uart_putstr("\r\narcfour(00.00.00.00.00.00.00.00, 01.23.45.67.89.AB.CD.EF)=");
+	arcfour_init(&s, "\x01\x23\x45\x67\x89\xAB\xCD\xEF", 8);
+	int i=0;
+	uint8_t a[8];
+	memset(a, 0 , 8);
+	while (i < 8)
+		a[i++] ^= arcfour_gen(&s);
+	uart_hexdump(a, 8);	
+}
+
 /*****************************************************************************
  *  main																		 *
 *****************************************************************************/
@@ -151,9 +191,11 @@ restart:
 		if (strcmp(str, "SHA256")) {
 			if (strcmp(str, "test")){DEBUG_S("DBG: 1d\r\n"); goto error;};
 			/* use some fixed test-vectors and all Algos */
-				uart_putstr("\r\n intergrated selftests:\r\n");
+					uart_putstr("\r\n intergrated selftests:\r\n");
 				testrun_xtea();
-				uart_putstr("\r\n");
+					uart_putstr("\r\n");
+				testrun_arcfour();
+					uart_putstr("\r\n");
 				testrun_sha256();
 			goto restart;
 		}
