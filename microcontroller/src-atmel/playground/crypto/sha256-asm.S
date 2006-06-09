@@ -95,6 +95,34 @@ SREG = 0x3F
 
 ;###########################################################	
 
+.global sha256_ctx2hash
+; === sha256_lastBlock ===
+; this function does padding & Co. for calculating SHA-256 hashes
+;  param1: the 16-bit destination pointer
+;	given in r25,r24 (r25 is most significant)
+;  param2: the 16-bit pointer to sha256_ctx structure
+;	given in r23,r22
+sha256_ctx2hash:
+	movw r26, r22
+	movw r30, r24
+	ldi r21, 8
+	sbiw r26, 4
+1:	
+	ldi r20, 4
+	adiw r26, 8
+2:	
+		ld r0, -X
+		st Z+, r0	
+	dec r20
+	brne 2b
+	
+	dec r21
+	brne 1b
+	
+	ret
+
+;###########################################################	
+
 .global sha256
 ; === sha256 ===
 ; this function calculates SHA-256 hashes from messages in RAM
@@ -135,7 +163,7 @@ sha256_prolog:
 	movw r12, r22	/* backup pf msg-ptr */
 	
 	movw r24, r16
-	call sha256_init
+	rcall sha256_init
 	/* if length >= 512 */
 1:
 	tst r11
@@ -148,7 +176,7 @@ sha256_prolog:
 	
 	movw r24, r16
 	movw r22, r12
-	call sha256_nextBlock
+	rcall sha256_nextBlock
 	ldi r19, 0x64
 	add r22, r19
 	adc r23, r1
@@ -163,12 +191,12 @@ sha256_prolog:
 	movw r24, r16
 	movw r22, r12
 	movw r20, r8
-	call sha256_lastBlock
+	rcall sha256_lastBlock
 	
 	pop r24
 	pop r25
 	movw r22, r16
-	call sha256_ctx2hash	
+	rcall sha256_ctx2hash	
 	
 sha256_epilog:
 	in r30, SPL
@@ -187,34 +215,6 @@ sha256_epilog:
 	pop r10
 	pop r9
 	pop r8
-	ret
-
-;###########################################################	
-
-.global sha256_ctx2hash
-; === sha256_lastBlock ===
-; this function does padding & Co. for calculating SHA-256 hashes
-;  param1: the 16-bit destination pointer
-;	given in r25,r24 (r25 is most significant)
-;  param2: the 16-bit pointer to sha256_ctx structure
-;	given in r23,r22
-sha256_ctx2hash:
-	movw r26, r22
-	movw r30, r24
-	ldi r21, 8
-	sbiw r26, 4
-1:	
-	ldi r20, 4
-	adiw r26, 8
-2:	
-		ld r0, -X
-		st Z+, r0	
-	dec r20
-	brne 2b
-	
-	dec r21
-	brne 1b
-	
 	ret
 
 ;###########################################################	
@@ -243,7 +243,7 @@ sha256_lastBlock:
 	push r24
 	push r23
 	push r22
-	call sha256_nextBlock
+	rcall sha256_nextBlock
 	pop r22
 	pop r23
 	pop r24
@@ -323,7 +323,7 @@ sha256_lastBlock_insert_stuffing_bit:
 	push r24
 	push r21
 	push r20
-	call sha256_nextBlock
+	rcall sha256_nextBlock
 	pop r20
 	pop r21
 	pop r24
@@ -379,7 +379,7 @@ sha256_lastBlock_insert_length:
 
 	sbiw r30, 64-8
 	movw r22, r30
-	call sha256_nextBlock
+	rcall sha256_nextBlock
 
 sha256_lastBlock_epilog:
 	in r30, SPL
@@ -507,13 +507,13 @@ sha256_nextBlock_wcalcloop:
 	mov Func3, Bck4
 	mov Func4, Bck1  /* prerotated by 8 */
 	ldi r20, 1
-	call bitrotl
+	rcall bitrotl
 	movw XAccu1, Func1
 	movw XAccu3, Func3	 /* store ROTR(w[i-15],7) in xor accu */
 	movw Func1, Bck3
 	movw Func3, Bck1 /* prerotated by 16 */
 	ldi r20, 2
-	call bitrotr
+	rcall bitrotr
 	eor XAccu1, Func1  /* xor ROTR(w[i-15], 18)*/
 	eor XAccu2, Func2
 	eor XAccu3, Func3
@@ -550,13 +550,13 @@ sigma0_shr:
 	movw Func1, Bck3
 	movw Func3, Bck1 /* prerotated by 16 */
 	ldi r20, 1
-	call bitrotr
+	rcall bitrotr
 	movw XAccu3, Func3
 	movw XAccu1, Func1	 /* store in ROTR(w[i-2], 17) xor accu */
 ;	movw Func1, Bck3
 ;	movw Func3, Bck1 /* prerotated by 16 */
 	ldi r20, 2
-	call bitrotr
+	rcall bitrotr
 	eor XAccu1, Func1  /* xor ROTR(w[i-2], 19)*/
 	eor XAccu2, Func2
 	eor XAccu3, Func3
@@ -581,26 +581,11 @@ sigma1_shr:
 	st X+, Accu3
 	st X+, Accu4
 	dec LoopC
-	breq butzefoo ;sbis SREG, 1 ; skip if zero
-	jmp sha256_nextBlock_wcalcloop
-butzefoo:
+	breq 3f  ; skip if zero
+	rjmp sha256_nextBlock_wcalcloop
+3:
 	/* we are finished with w array X points one byte post w */
-/* Debug  soweit korrekt /	
-	push r26
-	push r27
-	subi r26, lo8(64*4)
-	sbci r27, hi8(64*4)
-	dbg_hexdump 64*4
-	pop r27
-	pop r26
-/* end debug */
 /* init a array */
-/*	pop r25
-	pop r24
-	push r24
-	push r25
-	movw r30, r24
-*/ /* now we do the same but better */
 	pop r31
 	pop r30
 	push r30
@@ -611,15 +596,6 @@ init_a_array:
 	st X+, r1
 	dec r25
 	brne init_a_array
-/* Debug  /	
-	push r26
-	push r27
-	subi r26, lo8(8*4)
-	sbci r27, hi8(8*4)
-	dbg_hexdump 8*4
-	pop r27
-	pop r26
-/* end debug */
 	
 /* now the real fun begins */
 /* for (i=0; i<64; ++i){
@@ -670,27 +646,27 @@ sha256_main_loop:
 	eor T4, Bck4 /* done, CH(x,y,z) is in T */
 	/* now SIGMA1(a[4]) */
 	ldd Bck4, Y+4*4		/* think about using it from Func reg above*/
-	ldd Bck1, Y+4*4+1
+	ldd Bck1, Y+4*4+1	
 	ldd Bck2, Y+4*4+2
 	ldd Bck3, Y+4*4+3 /* load prerotate by 8-bit */	
 	movw Func1, Bck1
 	movw Func3, Bck3
 	ldi r20, 2 
-	call bitrotl		/* rotr(x,6) */ 
+	rcall bitrotl		/* rotr(x,6) */ 
 	movw XAccu1, Func1
 	movw XAccu3, Func3
 	movw Func1, Bck1
 	movw Func3, Bck3
 	ldi r20, 3 
-	call bitrotr 	/* rotr(x,11) */
+	rcall bitrotr 	/* rotr(x,11) */
 	eor XAccu1, Func1
 	eor XAccu2, Func2
 	eor XAccu3, Func3
-	eor XAccu4, Func4
+c	eor XAccu4, Func4
 	movw Func1, Bck3 /* this prerotates furteh 16 bits*/
 	movw Func3, Bck1 /* so we have now prerotated by 24 bits*/
 	ldi r20, 1 
-	call bitrotr 	/* rotr(x,11) */
+	rcall bitrotr 	/* rotr(x,11) */
 	eor XAccu1, Func1
 	eor XAccu2, Func2
 	eor XAccu3, Func3
@@ -770,13 +746,13 @@ sha256_main_loop:
 	movw Func1, Bck1
 	movw Func3, Bck3
 	ldi r20, 2
-	call bitrotr
+	rcall bitrotr
 	movw Accu1, Func1
 	movw Accu3, Func3 /* Accu = shr(a[0], 2) */
 	movw Func1, Bck3 
 	movw Func3, Bck1 /* prerotate by 16 bits */
 	ldi r20, 3
-	call bitrotl
+	rcall bitrotl
 	eor Accu1, Func1
 	eor Accu2, Func2
 	eor Accu3, Func3
@@ -786,7 +762,7 @@ sha256_main_loop:
 	mov Func3, Bck2
 	mov Func4, Bck3  /* prerotate by 24 bits */
 	ldi r20, 2
-	call bitrotl
+	rcall bitrotl
 	eor Accu1, Func1
 	eor Accu2, Func2
 	eor Accu3, Func3
@@ -797,16 +773,7 @@ sha256_main_loop:
 	adc Accu4, XAccu4
 	/* now we are finished with the computing stuff (t1 in T, t2 in Accu)*/
 	/* a[7]=a[6]; a[6]=a[5]; a[5]=a[4]; a[4]=a[3]; a[3]=a[2]; a[2]=a[1]; a[1]=a[0]; */
-/* Debug: dump a  array/	
-	push r26
-	push r27
-	movw r26, r28
-	dbg_hexdump 8*4
-	pop r27
-	pop r26
-/* end debug */
-;	push r28
-;	push r29
+
 	ldi r21, 7*4
 	adiw r28, 7*4
 a_shift_loop:
@@ -814,19 +781,7 @@ a_shift_loop:
 	std Y+4, r25
 	dec r21
 	brne a_shift_loop
-;	pop r29
-;	pop r28
-/* Debug: dump a  array/	
-	push r26
-	push r27
-	movw r26, r28
-	dbg_hexdump 8*4
-	pop r27
-	pop r26
-/* end debug */
-	/* Y points to a[0]*/
-/*	a[4] += t1;
-	a[0] = t1 + t2; */
+
 	ldd Bck1, Y+4*4+0
 	ldd Bck2, Y+4*4+1
 	ldd Bck3, Y+4*4+2
@@ -847,19 +802,11 @@ a_shift_loop:
 	std Y+4*0+1, Accu2
 	std Y+4*0+2, Accu3
 	std Y+4*0+3, Accu4 /* a array updated */
-/* Debug: dump a  array/	
-	push r26
-	push r27
-	movw r26, r28
-	dbg_hexdump 8*4
-	pop r27
-	pop r26
-/* end debug */
 	
 	
 	dec LoopC
 	breq update_state
-	jmp sha256_main_loop ;brne sha256_main_loop
+	rjmp sha256_main_loop ;brne sha256_main_loop
 update_state:	
 	/* update state */
 	/* pointers to state should still exist on the stack ;-) */
@@ -904,14 +851,7 @@ sha256_nexBlock_fix_length:
 ; EPILOG
 sha256_nextBlock_epilog:
 /* now we should clean up the stack */
-/*
-	in r20, SPL
-	in r21, SPH
-	ldi r22, lo8(sha256_nextBlock_localSpace) 
-	ldi r23, hi8(sha256_nextBlock_localSpace) 
-	add r20, r22
-	adc r21, r23
-*/	
+	
 	pop r21
 	pop r20
 	in r0, SREG
