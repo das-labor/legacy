@@ -50,27 +50,27 @@ AVRX_GCC_TASKDEF(TaskLAP, 60, 23)
 AVRX_GCC_TASKDEF(TaskCan2Tun, 30, 2)
 {
 	CanMessage msg;
-	QueuedMessage *qmsg;
 
 	CanTunReset();
 	for(;;) {
 		CanGet(&msg);
 		CanTunSend(&msg);
-
-		if ((qmsg=malloc(sizeof(QueuedMessage)))) {
-			memcpy(&(qmsg->msg), &msg, sizeof(CanMessage));
-			AvrXSendMessage(&msgQueue, qmsg);
-		}
 	}
 }
 
 AVRX_GCC_TASKDEF(TaskTun2Can, 30, 2)
 {
 	CanMessage   msg;
+	QueuedMessage *qmsg;
 
 	for(;;) {
 		CanTunGet(&msg);
 		CanSend(&msg);
+
+		if ((qmsg=malloc(sizeof(QueuedMessage)))) {
+			memcpy(&(qmsg->msg), &msg, sizeof(CanMessage));
+			AvrXSendMessage(&msgQueue, qmsg);
+		}
 	}
 }
 
