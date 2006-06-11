@@ -30,8 +30,6 @@ AC_CHECK_HEADERS([stdlib.h string.h unistd.h])
 AC_CONFIG_FILES([
 Makefile
 src/Makefile
-src/cand/Makefile
-src/lapcontrol/Makefile
 src/liblap/Makefile
 ])
 
