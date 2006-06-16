@@ -92,7 +92,7 @@ use IO::Handle;
 use constant TIMEOUT => 1_000_000 * 2;    # 2 seconds
 
 my @r;
-my $packet_counter;
+my $packet_counter = 1;
 
 open( L, ">>lips.log" ) or die $!;        # appending logfile
 autoflush L 1;
@@ -249,9 +249,19 @@ sub bug {
   my $level = shift;
   if ( $info and $level le $o{debug_level} ) {
     print L $c{debug};
-    print L "[", scalar localtime, "][$$][debug$level] $info";
+    print L ltime()."[$$][debug$level] $info";
     print L $c{normal} . "\n";
   }
+}
+
+sub ltime {
+  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+  return "[$hour:$min:$sec]";
+}
+
+sub pc {
+  $packet_counter++;
+  return "[pc".sprintf("%8d",$packet_counter)."]";
 }
 
 #
@@ -352,18 +362,16 @@ sub dump_itd {
     . $tp->{dest_port} . " ";
 
   if ($new_data) {
-    print L "[pc$packet_counter][mod] " . $layers
+    print L ltime().pc()."[mod] " . $layers
       . dump_ascii($new_data)
       . $c{normal} . "\n";
-    $packet_counter++;
   }
   else {
     $proto = "[udp] " if ( $ip->{proto} == 58 );
     $proto = "[tcp] " if ( $ip->{proto} == 6 );
-    print L "[pc$packet_counter]" . $proto . $layers
+    print L ltime(). pc() . $proto . $layers
       . dump_ascii( $tp->{data} )
       . $c{normal} . "\n";
-    $packet_counter++;
   }
 }
 
