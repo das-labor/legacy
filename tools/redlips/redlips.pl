@@ -62,14 +62,16 @@
 # Todo
 # ----
 # term::console / userinput
-# duplicate packets? tag with evil bit?
-# tcp sync
+# mark modified, reinjected packets -> no reapplying of rules -> tag with evil bit?
+# tcp sync (ACK lost segment)
+#   substitute felix -> xilef works
+#   substitute felix -> xxiilleeff does not
 #
 # Future
 # ------
 # acronym for red
 # no more eval, lex?
-# nfnetlink_queue
+# nfnetlink_queue (passemble instead of pinject, no dep on rawsock)
 # oo
 # manage iptables rules -> no duplicate --jump QUEUE
 #
@@ -138,7 +140,7 @@ my %c = (
 #
 #radd("tcp any:any <> any:any s/felix/xilef/i");
 #radd("tcp 127.0.0.1:any > any:111 s/felix/xilef/i");
-radd("tcp any:any > any:any s/felix/xilef/i");
+radd("tcp any:any > any:any s/felix/xxiilleeff/i");
 
 #radd("tcp any:any > any:any s/foobar/barfoo/i");
 #radd("tcp any:any <> any:any s/asdf/qwerty/i");
@@ -384,6 +386,12 @@ sub pdrop {
   $queue->set_verdict( $msg->packet_id, NF_DROP );
 }
 
+sub paccept {
+  my $msg = shift;
+  bug( "acceptd " . $msg->packet_id, 5 );
+  $queue->set_verdict( $msg->packet_id, NF_ACCEPT );
+}
+
 sub pinject {
   my ( $msg, $ip, $tp, $data ) = @_;
   my $raw;
@@ -401,12 +409,6 @@ sub pinject {
   # and inject the raw copy
   Net::RawSock::write_ip($raw);
   bug( "injected packet", 5 );
-}
-
-sub paccept {
-  my $msg = shift;
-  bug( "acceptd " . $msg->packet_id, 5 );
-  $queue->set_verdict( $msg->packet_id, NF_ACCEPT );
 }
 
 sub passemble {
@@ -566,7 +568,7 @@ sub phandle {
   if ( $modified == 1 ) {
 
     # reassemble modified packet
-    passemble( $msg, $ip, $tp, $data );
+    pinject( $msg, $ip, $tp, $data );
   }
   else {
 
