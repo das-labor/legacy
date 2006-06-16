@@ -66,6 +66,7 @@
 # tcp sync (ACK lost segment)
 #   substitute felix -> xilef works
 #   substitute felix -> xxiilleeff does not
+# missing packets from server?
 #
 # Future
 # ------
@@ -95,6 +96,7 @@ use constant TIMEOUT => 1_000_000 * 2;    # 2 seconds
 
 my @r;
 my $packet_counter = 1;
+my %connections;
 
 open( L, ">>lips.log" ) or die $!;        # appending logfile
 autoflush L 1;
@@ -251,19 +253,23 @@ sub bug {
   my $level = shift;
   if ( $info and $level le $o{debug_level} ) {
     print L $c{debug};
-    print L ltime()."[$$][debug$level] $info";
+    print L ltime() . "[$$][debug$level] $info";
     print L $c{normal} . "\n";
   }
 }
 
 sub ltime {
-  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
-  return "[$hour:$min:$sec]";
+  my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) =
+    localtime(time);
+  return "["
+    . sprintf( "%.2d", $hour ) . ":"
+    . sprintf( "%.2d", $min ) . ":"
+    . sprintf( "%.2d", $sec ) . "]";
 }
 
 sub pc {
   $packet_counter++;
-  return "[pc".sprintf("%8d",$packet_counter)."]";
+  return "[pc" . sprintf( "%.8d", $packet_counter ) . "]";
 }
 
 #
@@ -364,14 +370,20 @@ sub dump_itd {
     . $tp->{dest_port} . " ";
 
   if ($new_data) {
-    print L ltime().pc()."[mod] " . $layers
+    print L ltime()
+      . pc()
+      . "[mod] "
+      . $layers
       . dump_ascii($new_data)
       . $c{normal} . "\n";
   }
   else {
     $proto = "[udp] " if ( $ip->{proto} == 58 );
     $proto = "[tcp] " if ( $ip->{proto} == 6 );
-    print L ltime(). pc() . $proto . $layers
+    print L ltime()
+      . pc()
+      . $proto
+      . $layers
       . dump_ascii( $tp->{data} )
       . $c{normal} . "\n";
   }
@@ -432,6 +444,7 @@ sub phandle {
   my $return;    # helper
   my $tp;        # transport layer object
   my $modified = 0;    # determines whether this packet was modified
+  my $conn;            # connection string
 
   bug(
     "recieved "
@@ -469,9 +482,29 @@ sub phandle {
       $data = $tp->{data};
       dump_itd( $msg, $ip, $tp );
     }
+    elsif ( $tp->{flags} eq 0x0010 ) {    # ack watch
+
+      $conn =
+          $ip->{src_ip} . ":"
+        . $tp->{src_port} . "-"
+        . $ip->{dest_ip} . ":"
+        . $tp->{dest_port};
+
+      if ( exists( $connections{$conn} ) ) {
+        bug( "ack: inspecting known connection", 7 );
+      }
+      else {
+        bug( "ack: learnend new connection", 7 );
+        $connections{$conn} = [ $tp->{acknum}, $tp->{seqnum} ];
+      }
+
+      paccept($msg);
+      return;
+
+    }
     else {
-      bug( "skipping empty packet", 6 );
-      paccept($msg);               #skip empty packets (syn)
+      bug( "skipping empty tcp packet", 6 );
+      paccept($msg);    #skip empty packets (syn)
       return;
     }
   }
