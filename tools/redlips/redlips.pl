@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+# vim:tw=82:ts=2
 
 # redlips.pl - red live intrusion prevention system
 # -------------------------------------------------
@@ -37,7 +38,7 @@
 # ------------
 # CONFIG_IP_NF_QUEUE
 # iptables
-# IPTables::IPv4::IPQueue
+# IPTables::IPv4::IPQueue 1.25
 # NetPacket::IP
 # Net::RawSock http://www.hsc.fr/ressources/outils/rawsock/index.html.enk
 #
@@ -60,15 +61,18 @@
 #
 # Todo
 # ----
-# gute abkuerzung fuer red
-# oo?
 # term::console / userinput
-# nfnetlink_queue
-# log to file
-# better dump_ascii string escaping \\ (for reuse in ruby/perl/python)
 # duplicate packets? tag with evil bit?
-# $packet_counter for logfile
-# check iptables rules -> no duplicate --jump QUEUE
+# tcp sync
+#
+# Future
+# ------
+# acronym for red
+# no more eval, lex?
+# nfnetlink_queue
+# oo
+# manage iptables rules -> no duplicate --jump QUEUE
+#
 #
 
 #
@@ -84,15 +88,18 @@ use NetPacket::ICMP;
 use NetPacket::UDP;
 use NetPacket::TCP;
 use Net::RawSock;
+use IO::Handle;
 use constant TIMEOUT => 1_000_000 * 2;    # 2 seconds
 
 my @r;
 my $packet_counter;
 
 open( L, ">>lips.log" ) or die $!;        # appending logfile
+autoflush L 1;
 
-system("/usr/local/sbin/iptables -I INPUT 1 -p tcp --dport 1234 -j QUEUE")
-  or die "error in system(): $!";
+# FIXME
+#system("/usr/local/sbin/iptables -I INPUT 1 -p tcp --dport 1234 -j QUEUE")
+#  or die "error in system(): $!";
 
 $SIG{'INT'}  = \&signal_catcher;
 $SIG{'KILL'} = \&signal_catcher;
@@ -101,7 +108,8 @@ sub signal_catcher {
   print "caught signal...\n";
   close L or die $!;
 
-  system("/usr/local/sbin/iptables -D INPUT 1") or die "error in system(): $!";
+  # FIXME
+  #system("/usr/local/sbin/iptables -D INPUT 1") or die "error in system(): $!";
   print "exiting cleanly...\n";
   exit;
 }
@@ -130,7 +138,7 @@ my %c = (
 #
 #radd("tcp any:any <> any:any s/felix/xilef/i");
 #radd("tcp 127.0.0.1:any > any:111 s/felix/xilef/i");
-radd("tcp 127.0.0.1:any > any:1234 s/felix/xilef/i");
+radd("tcp any:any > any:any s/felix/xilef/i");
 
 #radd("tcp any:any > any:any s/foobar/barfoo/i");
 #radd("tcp any:any <> any:any s/asdf/qwerty/i");
@@ -149,11 +157,13 @@ my $queue = new IPTables::IPv4::IPQueue(
   or die IPTables::IPv4::IPQueue->errstr;
 
 bug( "starting packet while loop", 5 );
+bug( "--------------------------", 5 );
 
 while (1) {
   my $msg = $queue->get_message(TIMEOUT);
   if ( !defined $msg ) {
     next if IPTables::IPv4::IPQueue->errstr eq 'Timeout';
+    bug( "iptables error: " . IPTables::IPv4::IPQueue->errstr, 1 );
     die IPTables::IPv4::IPQueue->errstr;
   }
 
@@ -239,7 +249,7 @@ sub bug {
   my $level = shift;
   if ( $info and $level le $o{debug_level} ) {
     print L $c{debug};
-    print L "[debug] $info";
+    print L "[", scalar localtime, "][$$][debug$level] $info";
     print L $c{normal} . "\n";
   }
 }
@@ -275,50 +285,53 @@ sub dump_ascii {
   return $return;
 }
 
-sub dump_packet {
-  my ( $payload, $ip );
-  $payload = shift;
-
-  $ip = NetPacket::IP->decode($payload);
-
-  print L <<EOT;
-[IP Header]
-Version           : $ip->{ver}
-Header Length     : $ip->{hlen}
-Flags             : $ip->{flags}
-Frag. Offset      : $ip->{foffset}
-TOS               : $ip->{tos}
-Length            : $ip->{len}
-ID                : $ip->{id}
-TTL               : $ip->{ttl}
-Protocol          : $ip->{proto}
-Checksum          : $ip->{cksum}
-Source IP         : $ip->{src_ip}
-Destination IP    : $ip->{dest_ip}
-Options           : $ip->{options}
-
-EOT
-}
-
-sub dump_meta {
-  my $msg = shift;
-
-  print L <<EOT;
-[Metadata]
-Packet ID         : @{[ $msg->packet_id() ]}
-Mark              : @{[ $msg->mark() ]}
-Timestamp (sec)   : @{[ $msg->timestamp_sec() ]}
-Timestamp (usec)  : @{[ $msg->timestamp_usec() ]}
-Hook              : @{[ $msg->hook() ]}
-In Device         : @{[ $msg->indev_name() ]}
-Out Device        : @{[ $msg->outdev_name() ]}
-HW Protocol       : @{[ $msg->hw_protocol() ]}
-HW Type           : @{[ $msg->hw_type() ]}
-HW Address Length : @{[ $msg->hw_addrlen() ]}
-HW Address        : @{[ unpack('H*', $msg->hw_addr()) ]}
-Data Length       : @{[ $msg->data_len() ]}
-EOT
-}
+#
+# OBSOLETE
+#
+#sub dump_packet {
+#  my ( $payload, $ip );
+#  $payload = shift;
+#
+#  $ip = NetPacket::IP->decode($payload);
+#
+#  print L <<EOT;
+#[IP Header]
+#Version           : $ip->{ver}
+#Header Length     : $ip->{hlen}
+#Flags             : $ip->{flags}
+#Frag. Offset      : $ip->{foffset}
+#TOS               : $ip->{tos}
+#Length            : $ip->{len}
+#ID                : $ip->{id}
+#TTL               : $ip->{ttl}
+#Protocol          : $ip->{proto}
+#Checksum          : $ip->{cksum}
+#Source IP         : $ip->{src_ip}
+#Destination IP    : $ip->{dest_ip}
+#Options           : $ip->{options}
+#
+#EOT
+#}
+#
+#sub dump_meta {
+#  my $msg = shift;
+#
+#  print L <<EOT;
+#[Metadata]
+#Packet ID         : @{[ $msg->packet_id() ]}
+#Mark              : @{[ $msg->mark() ]}
+#Timestamp (sec)   : @{[ $msg->timestamp_sec() ]}
+#Timestamp (usec)  : @{[ $msg->timestamp_usec() ]}
+#Hook              : @{[ $msg->hook() ]}
+#In Device         : @{[ $msg->indev_name() ]}
+#Out Device        : @{[ $msg->outdev_name() ]}
+#HW Protocol       : @{[ $msg->hw_protocol() ]}
+#HW Type           : @{[ $msg->hw_type() ]}
+#HW Address Length : @{[ $msg->hw_addrlen() ]}
+#HW Address        : @{[ unpack('H*', $msg->hw_addr()) ]}
+#Data Length       : @{[ $msg->data_len() ]}
+#EOT
+#}
 
 # print the ip, tp and data
 sub dump_itd {
@@ -339,12 +352,18 @@ sub dump_itd {
     . $tp->{dest_port} . " ";
 
   if ($new_data) {
-    print L "[mod] " . $layers . dump_ascii($new_data) . $c{normal} . "\n";
+    print L "[pc$packet_counter][mod] " . $layers
+      . dump_ascii($new_data)
+      . $c{normal} . "\n";
+    $packet_counter++;
   }
   else {
     $proto = "[udp] " if ( $ip->{proto} == 58 );
     $proto = "[tcp] " if ( $ip->{proto} == 6 );
-    print L $proto . $layers . dump_ascii( $tp->{data} ) . $c{normal} . "\n";
+    print L "[pc$packet_counter]" . $proto . $layers
+      . dump_ascii( $tp->{data} )
+      . $c{normal} . "\n";
+    $packet_counter++;
   }
 }
 
