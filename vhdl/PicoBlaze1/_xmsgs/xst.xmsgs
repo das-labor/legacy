@@ -1,0 +1,812 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- IMPORTANT: This is an internal file that has been generated
+     by the Xilinx ISE software.  Any direct editing or
+     changes made to this file may result in unpredictable
+     behavior or data corruption.  It is strongly advised that
+     users do not edit the contents of this file. -->
+<messages>
+<msg type="info" file="Xst" num="1304" delta="unknown" >Contents of register &lt;<arg fmt="%s" index="1">uart0_status&lt;4&gt;</arg>&gt; in unit &lt;<arg fmt="%s" index="2">Main</arg>&gt; never changes during circuit operation. The register is replaced by logic.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">289</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">t_state_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">332</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">int_pulse_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">371</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">int_update_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">381</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">int_value_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">403</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">move_group_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">413</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">condition_met_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">423</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">normal_count_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">432</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">call_type_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">442</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">push_pop_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">452</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">valid_move_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">468</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">flag_type_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">483</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">flag_enable_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">493</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">low_zero_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">503</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">high_zero_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">525</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">sel_shadow_zero_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">554</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">low_parity_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">564</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">high_parity_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">587</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">sel_parity_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">597</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">sel_arith_carry_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">606</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">sel_shift_carry_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">614</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">sel_shadow_carry_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">682</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">vector_select_mux0</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">691</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">value_select_mux0</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">682</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">vector_select_mux1</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">691</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">value_select_mux1</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">682</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">vector_select_mux2</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">691</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">value_select_mux2</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">682</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">vector_select_mux3</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">691</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">value_select_mux3</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">682</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">vector_select_mux4</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">691</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">value_select_mux4</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">682</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">vector_select_mux5</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">691</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">value_select_mux5</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">682</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">vector_select_mux6</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">691</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">value_select_mux6</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">682</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">vector_select_mux7</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">691</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">value_select_mux7</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">682</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">vector_select_mux8</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">691</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">value_select_mux8</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">682</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">vector_select_mux9</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">691</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">value_select_mux9</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">794</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">register_type_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">809</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">register_enable_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">828</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">register_bit00</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">846</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">operand_select_mux0</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">828</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">register_bit10</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">846</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">operand_select_mux1</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">828</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">register_bit20</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">846</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">operand_select_mux2</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">828</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">register_bit30</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">846</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">operand_select_mux3</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">828</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">register_bit40</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">846</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">operand_select_mux4</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">828</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">register_bit50</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">846</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">operand_select_mux5</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">828</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">register_bit60</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">846</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">operand_select_mux6</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">828</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">register_bit70</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">846</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">operand_select_mux7</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">871</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">memory_type_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">886</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">memory_enable_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">906</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">memory_bit0</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">906</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">memory_bit1</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">906</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">memory_bit2</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">906</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">memory_bit3</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">906</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">memory_bit4</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">906</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">memory_bit5</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">906</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">memory_bit6</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">906</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">memory_bit7</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">937</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">sel_logical_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">956</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">logical_lut0</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">956</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">logical_lut1</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">956</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">logical_lut2</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">956</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">logical_lut3</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">956</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">logical_lut4</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">956</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">logical_lut5</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">956</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">logical_lut6</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">956</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">logical_lut7</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">989</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">high_shift_in_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">998</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">low_shift_in_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1015</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">shift_carry_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1041</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">shift_mux_lut0</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1061</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">shift_mux_lut1</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1061</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">shift_mux_lut2</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1061</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">shift_mux_lut3</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1061</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">shift_mux_lut4</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1061</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">shift_mux_lut5</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1061</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">shift_mux_lut6</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1081</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">shift_mux_lut7</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1109</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">sel_arith_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1136</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">arith_carry_in_lut0</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1220</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">arith_lut0</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1220</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">arith_lut1</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1220</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">arith_lut2</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1220</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">arith_lut3</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1220</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">arith_lut4</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1220</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">arith_lut5</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1220</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">arith_lut6</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1200</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">arith_carry_out_lut7</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1220</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">arith_lut7</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1244</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">input_fetch_type_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1269</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">or_lut0</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1278</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">mux_lut0</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1269</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">or_lut1</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1278</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">mux_lut1</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1269</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">or_lut2</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1278</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">mux_lut2</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1269</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">or_lut3</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1278</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">mux_lut3</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1269</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">or_lut4</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1278</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">mux_lut4</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1269</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">or_lut5</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1278</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">mux_lut5</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1269</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">or_lut6</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1278</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">mux_lut6</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1269</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">or_lut7</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1278</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">mux_lut7</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1301</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">io_decode_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1311</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">write_active_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1327</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">read_active_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1368</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">stack_bit0</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1368</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">stack_bit1</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1368</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">stack_bit2</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1368</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">stack_bit3</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1368</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">stack_bit4</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1368</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">stack_bit5</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1368</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">stack_bit6</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1368</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">stack_bit7</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1368</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">stack_bit8</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1368</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">stack_bit9</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1415</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">count_lut0</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1448</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">count_lut1</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1448</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">count_lut2</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1448</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">count_lut3</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">1482</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">count_lut4</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INITP_00</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INITP_01</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INITP_02</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INITP_03</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INITP_04</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INITP_05</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INITP_06</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INITP_07</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_00</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_01</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_02</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_03</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_04</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_05</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_06</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_07</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_08</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_09</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_0A</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_0B</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_0C</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_0D</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_0E</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_0F</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_10</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_11</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_12</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_13</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_14</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_15</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_16</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_17</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_18</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_19</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_1A</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_1B</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_1C</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_1D</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_1E</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_1F</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_20</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_21</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_22</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_23</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_24</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_25</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_26</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_27</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_28</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_29</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_2A</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_2B</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_2C</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_2D</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_2E</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_2F</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_30</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_31</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_32</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_33</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_34</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_35</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_36</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_37</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_38</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_39</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_3A</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_3B</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_3C</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_3D</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_3E</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/mpu_rom.vhd</arg>&quot; line <arg fmt="%d" index="2">183</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT_3F</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ram_1024_x_18</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">141</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">delay15_srl0</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">141</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">delay15_srl1</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">141</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">delay15_srl2</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">141</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">delay15_srl3</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">141</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">delay15_srl4</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">141</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">delay15_srl5</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">141</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">delay15_srl6</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">163</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">delay15_srl7</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">192</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">start_srl</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">215</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">edge_srl</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">236</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">valid_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">254</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">purge_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">284</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">delay15_srl00</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">306</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">delay16_srl1</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">306</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">delay16_srl2</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">306</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">delay16_srl3</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">306</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">delay16_srl4</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">306</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">delay16_srl5</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">306</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">delay16_srl6</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">306</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">delay16_srl7</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">306</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">delay16_srl8</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_rx.vhd</arg>&quot; line <arg fmt="%d" index="2">331</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">strobe_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/bbfifo_16x8.vhd</arg>&quot; line <arg fmt="%d" index="2">124</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">data_srl0</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/bbfifo_16x8.vhd</arg>&quot; line <arg fmt="%d" index="2">124</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">data_srl1</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/bbfifo_16x8.vhd</arg>&quot; line <arg fmt="%d" index="2">124</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">data_srl2</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/bbfifo_16x8.vhd</arg>&quot; line <arg fmt="%d" index="2">124</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">data_srl3</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/bbfifo_16x8.vhd</arg>&quot; line <arg fmt="%d" index="2">124</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">data_srl4</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/bbfifo_16x8.vhd</arg>&quot; line <arg fmt="%d" index="2">124</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">data_srl5</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/bbfifo_16x8.vhd</arg>&quot; line <arg fmt="%d" index="2">124</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">data_srl6</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/bbfifo_16x8.vhd</arg>&quot; line <arg fmt="%d" index="2">124</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">data_srl7</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/bbfifo_16x8.vhd</arg>&quot; line <arg fmt="%d" index="2">158</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">count_lut0</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/bbfifo_16x8.vhd</arg>&quot; line <arg fmt="%d" index="2">158</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">count_lut1</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/bbfifo_16x8.vhd</arg>&quot; line <arg fmt="%d" index="2">158</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">count_lut2</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/bbfifo_16x8.vhd</arg>&quot; line <arg fmt="%d" index="2">158</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">count_lut3</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/bbfifo_16x8.vhd</arg>&quot; line <arg fmt="%d" index="2">215</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">zero_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/bbfifo_16x8.vhd</arg>&quot; line <arg fmt="%d" index="2">226</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">full_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/bbfifo_16x8.vhd</arg>&quot; line <arg fmt="%d" index="2">239</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">dp_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/bbfifo_16x8.vhd</arg>&quot; line <arg fmt="%d" index="2">257</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">valid_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_tx.vhd</arg>&quot; line <arg fmt="%d" index="2">133</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">mux1_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_tx.vhd</arg>&quot; line <arg fmt="%d" index="2">143</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">mux2_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_tx.vhd</arg>&quot; line <arg fmt="%d" index="2">153</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">mux3_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_tx.vhd</arg>&quot; line <arg fmt="%d" index="2">163</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">mux4_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_tx.vhd</arg>&quot; line <arg fmt="%d" index="2">221</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">count_lut0</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_tx.vhd</arg>&quot; line <arg fmt="%d" index="2">221</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">count_lut1</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_tx.vhd</arg>&quot; line <arg fmt="%d" index="2">221</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">count_lut2</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_tx.vhd</arg>&quot; line <arg fmt="%d" index="2">270</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">ready_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_tx.vhd</arg>&quot; line <arg fmt="%d" index="2">281</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">start_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_tx.vhd</arg>&quot; line <arg fmt="%d" index="2">300</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">run_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_tx.vhd</arg>&quot; line <arg fmt="%d" index="2">318</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">hot_state_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_tx.vhd</arg>&quot; line <arg fmt="%d" index="2">333</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">delay14_srl</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_tx.vhd</arg>&quot; line <arg fmt="%d" index="2">354</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">stop_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcuart_tx.vhd</arg>&quot; line <arg fmt="%d" index="2">372</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">complete_lut</arg>&gt; set by attribute.
+</msg>
+
+<msg type="warning" file="Xst" num="646" delta="unknown" >Signal &lt;<arg fmt="%s" index="1">interrupt_ack</arg>&gt; is assigned but never used.
+</msg>
+
+<msg type="warning" file="Xst" num="1780" delta="unknown" >Signal &lt;<arg fmt="%s" index="1">uart0_rxack</arg>&gt; is never used or assigned.
+</msg>
+
+<msg type="warning" file="Xst" num="646" delta="unknown" >Signal &lt;<arg fmt="%s" index="1">read_strobe</arg>&gt; is assigned but never used.
+</msg>
+
+<msg type="warning" file="Xst" num="653" delta="unknown" >Signal &lt;<arg fmt="%s" index="1">interrupt</arg>&gt; is used but never assigned. Tied to value <arg fmt="%s" index="2">0</arg>.
+</msg>
+
+<msg type="warning" file="Xst" num="646" delta="unknown" >Signal &lt;<arg fmt="%s" index="1">port_id&lt;7:4&gt;</arg>&gt; is assigned but never used.
+</msg>
+
+<msg type="warning" file="Xst" num="1780" delta="unknown" >Signal &lt;<arg fmt="%s" index="1">cpucount</arg>&gt; is never used or assigned.
+</msg>
+
+<msg type="warning" file="Xst" num="653" delta="unknown" >Signal &lt;<arg fmt="%s" index="1">uart0_status&lt;5&gt;</arg>&gt; is used but never assigned. Tied to value <arg fmt="%s" index="2">0</arg>.
+</msg>
+
+<msg type="warning" file="Xst" num="653" delta="unknown" >Signal &lt;<arg fmt="%s" index="1">uart0_status&lt;0&gt;</arg>&gt; is used but never assigned. Tied to value <arg fmt="%s" index="2">0</arg>.
+</msg>
+
+</messages>

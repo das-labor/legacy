@@ -1,0 +1,17 @@
+        CONSTANT port_code0,       0
+        CONSTANT port_code1,       1
+	CONSTANT port_btn,         2
+	CONSTANT port_sw,          3
+	CONSTANT port_uart_status, 4
+	CONSTANT port_uart_rx,     5
+	CONSTANT port_uart_tx,     6
+	CONSTANT port_led,         7
+
+start:  LOAD s2, 1
+loop:
+	INPUT  s3, port_uart_status
+	INPUT  s4, port_btn
+        OUTPUT s3, port_code0
+	OUTPUT s4, port_code1
+        JUMP loop
+

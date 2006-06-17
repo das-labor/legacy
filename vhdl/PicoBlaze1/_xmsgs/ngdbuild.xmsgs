@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- IMPORTANT: This is an internal file that has been generated
+     by the Xilinx ISE software.  Any direct editing or
+     changes made to this file may result in unpredictable
+     behavior or data corruption.  It is strongly advised that
+     users do not edit the contents of this file. -->
+<messages>
+<msg type="warning" file="NgdBuild" num="443" delta="unknown" >SFF primitive &apos;<arg fmt="%s" index="1">processor/read_strobe_flop</arg>&apos; has unconnected output pin
+</msg>
+
+</messages>
