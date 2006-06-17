@@ -146,7 +146,8 @@ my %c = (
 #
 #radd("tcp any:any <> any:any s/felix/xilef/i");
 #radd("tcp 127.0.0.1:any > any:111 s/felix/xilef/i");
-radd("tcp any:any <> any:any s/felix/xxiilleeff/i");
+radd("tcp any:any <> any:any s/66666/ssssss/i");
+radd("tcp any:any <> any:any s/44444/vvvv/i");
 
 #radd("tcp any:any > any:any s/foobar/barfoo/i");
 #radd("tcp any:any <> any:any s/asdf/qwerty/i");
@@ -284,7 +285,7 @@ sub pc {
 sub dump_ascii {
   my $input = shift;
   my ( $i, $char );
-  my $return = "";
+  my $return = $c{string};
 
   for ( $i = 0 ; $i < length $input ; $i++ ) {
     $char = substr( $input, $i, 1 );
