@@ -70,7 +70,6 @@
 # tcp sync (ACK lost segment)
 #   substitute felix -> xilef works
 #   substitute felix -> xxiilleeff does not
-# missing packets from server?
 # connection reference + per connection color
 #
 # Future
