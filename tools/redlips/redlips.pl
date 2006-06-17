@@ -36,7 +36,7 @@
 #
 # Requirements
 # ------------
-# CONFIG_IP_NF_QUEUE
+# Linux kernel with CONFIG_IP_NF_QUEUE
 # iptables
 # IPTables::IPv4::IPQueue 1.25
 # NetPacket::IP
@@ -61,20 +61,25 @@
 #
 # Todo
 # ----
+# manage iptables rules
+#   -> no duplicate --jump QUEUE
+#   mark modules
+#   working traffic when app not running!
 # term::console / userinput
 # mark modified, reinjected packets -> no reapplying of rules -> tag with evil bit?
 # tcp sync (ACK lost segment)
 #   substitute felix -> xilef works
 #   substitute felix -> xxiilleeff does not
 # missing packets from server?
+# connection reference + per connection color
 #
 # Future
 # ------
+# internal tcp proxy
 # acronym for red
 # no more eval, lex?
 # nfnetlink_queue (passemble instead of pinject, no dep on rawsock)
 # oo
-# manage iptables rules -> no duplicate --jump QUEUE
 #
 #
 
@@ -95,8 +100,7 @@ use IO::Handle;
 use constant TIMEOUT => 1_000_000 * 2;    # 2 seconds
 
 my @r;
-my $packet_counter = 1;
-my %connections;
+my $packet_counter = 0;
 
 open( L, ">>lips.log" ) or die $!;        # appending logfile
 autoflush L 1;
@@ -128,6 +132,7 @@ my %o = ( debug_level => 9 );
 # colors
 my %c = (
   normal      => "\x1b\x5b" . "m",
+  string      => "\x1b\x5b" . "33m",
   debug       => "\x1b\x5b" . "31m",
   src_ip      => "\x1b\x5b" . "35m",
   src_port    => "\x1b\x5b" . "36m",
@@ -142,7 +147,7 @@ my %c = (
 #
 #radd("tcp any:any <> any:any s/felix/xilef/i");
 #radd("tcp 127.0.0.1:any > any:111 s/felix/xilef/i");
-radd("tcp any:any > any:any s/felix/xxiilleeff/i");
+radd("tcp any:any <> any:any s/felix/xxiilleeff/i");
 
 #radd("tcp any:any > any:any s/foobar/barfoo/i");
 #radd("tcp any:any <> any:any s/asdf/qwerty/i");
@@ -268,8 +273,8 @@ sub ltime {
 }
 
 sub pc {
-  $packet_counter++;
-  return "[pc" . sprintf( "%.8d", $packet_counter ) . "]";
+  $packet_counter = ( $packet_counter + 1 ) % 99999999;
+  return "[" . sprintf( "%.8d", $packet_counter ) . "p]";
 }
 
 #
@@ -285,71 +290,20 @@ sub dump_ascii {
   for ( $i = 0 ; $i < length $input ; $i++ ) {
     $char = substr( $input, $i, 1 );
     if ( ord $char > 31 and ord $char < 127 ) {
-      $return = $return . $c{normal} . $char;
+      $return = $return . $char;
     }
     elsif ( ord $char == 9 ) {
-      $return = $return . $c{unimportant} . "\\t" . $c{normal};
+      $return = $return . "\\t";
     }
     elsif ( ord $char == 10 ) {
-      $return = $return . $c{unimportant} . "\\n" . $c{normal};
+      $return = $return . "\\n";
     }
     else {
-      $return = $return
-        . $c{unimportant} . "\\x"
-        . sprintf( "%x", ord $char )
-        . $c{normal};
+      $return = $return . "\\x" . sprintf( "%x", ord $char );
     }
   }
   return $return;
 }
-
-#
-# OBSOLETE
-#
-#sub dump_packet {
-#  my ( $payload, $ip );
-#  $payload = shift;
-#
-#  $ip = NetPacket::IP->decode($payload);
-#
-#  print L <<EOT;
-#[IP Header]
-#Version           : $ip->{ver}
-#Header Length     : $ip->{hlen}
-#Flags             : $ip->{flags}
-#Frag. Offset      : $ip->{foffset}
-#TOS               : $ip->{tos}
-#Length            : $ip->{len}
-#ID                : $ip->{id}
-#TTL               : $ip->{ttl}
-#Protocol          : $ip->{proto}
-#Checksum          : $ip->{cksum}
-#Source IP         : $ip->{src_ip}
-#Destination IP    : $ip->{dest_ip}
-#Options           : $ip->{options}
-#
-#EOT
-#}
-#
-#sub dump_meta {
-#  my $msg = shift;
-#
-#  print L <<EOT;
-#[Metadata]
-#Packet ID         : @{[ $msg->packet_id() ]}
-#Mark              : @{[ $msg->mark() ]}
-#Timestamp (sec)   : @{[ $msg->timestamp_sec() ]}
-#Timestamp (usec)  : @{[ $msg->timestamp_usec() ]}
-#Hook              : @{[ $msg->hook() ]}
-#In Device         : @{[ $msg->indev_name() ]}
-#Out Device        : @{[ $msg->outdev_name() ]}
-#HW Protocol       : @{[ $msg->hw_protocol() ]}
-#HW Type           : @{[ $msg->hw_type() ]}
-#HW Address Length : @{[ $msg->hw_addrlen() ]}
-#HW Address        : @{[ unpack('H*', $msg->hw_addr()) ]}
-#Data Length       : @{[ $msg->data_len() ]}
-#EOT
-#}
 
 # print the ip, tp and data
 sub dump_itd {
@@ -444,7 +398,6 @@ sub phandle {
   my $return;    # helper
   my $tp;        # transport layer object
   my $modified = 0;    # determines whether this packet was modified
-  my $conn;            # connection string
 
   bug(
     "recieved "
@@ -482,29 +435,9 @@ sub phandle {
       $data = $tp->{data};
       dump_itd( $msg, $ip, $tp );
     }
-    elsif ( $tp->{flags} eq 0x0010 ) {    # ack watch
-
-      $conn =
-          $ip->{src_ip} . ":"
-        . $tp->{src_port} . "-"
-        . $ip->{dest_ip} . ":"
-        . $tp->{dest_port};
-
-      if ( exists( $connections{$conn} ) ) {
-        bug( "ack: inspecting known connection", 7 );
-      }
-      else {
-        bug( "ack: learnend new connection", 7 );
-        $connections{$conn} = [ $tp->{acknum}, $tp->{seqnum} ];
-      }
-
-      paccept($msg);
-      return;
-
-    }
     else {
       bug( "skipping empty tcp packet", 6 );
-      paccept($msg);    #skip empty packets (syn)
+      paccept($msg);               #skip empty packets (syn)
       return;
     }
   }
@@ -599,14 +532,10 @@ sub phandle {
   }
 
   if ( $modified == 1 ) {
-
-    # reassemble modified packet
-    pinject( $msg, $ip, $tp, $data );
+    pinject( $msg, $ip, $tp, $data );    # reassemble modified packet
   }
   else {
-
-    # accept non-modified packages
-    paccept($msg);
+    paccept($msg);                       # accept non-modified packages
   }
 }
 
