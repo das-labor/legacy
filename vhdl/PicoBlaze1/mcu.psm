@@ -7,11 +7,18 @@
 	CONSTANT port_uart_tx,     6
 	CONSTANT port_led,         7
 
-start:  LOAD s2, 1
+start:  LOAD s1, 41
 loop:
-	INPUT  s3, port_uart_status
-	INPUT  s4, port_btn
-        OUTPUT s3, port_code0
-	OUTPUT s4, port_code1
+	INPUT  s1, port_uart_status
+        ;OUTPUT s1, port_code0
+	INPUT  s2, port_btn
+	OUTPUT s2, port_code0
+
+	; Test for UART Data
+	TEST   s1, 01
+	JUMP   Z, loop
+	; UART Data present
+	INPUT  s2, port_uart_rx
+	OUTPUT s2, port_uart_tx
         JUMP loop
 
