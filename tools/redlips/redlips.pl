@@ -98,35 +98,14 @@ use Net::RawSock;
 use IO::Handle;
 use constant TIMEOUT => 1_000_000 * 2;    # 2 seconds
 
-my @r;
-my $packet_counter = 0;
-
-open( L, ">>lips.log" ) or die $!;        # appending logfile
-autoflush L 1;
-
-# FIXME
-#system("/usr/local/sbin/iptables -I INPUT 1 -p tcp --dport 1234 -j QUEUE")
-#  or die "error in system(): $!";
-
-$SIG{'INT'}  = \&signal_catcher;
-$SIG{'KILL'} = \&signal_catcher;
-
-sub signal_catcher {
-  print "caught signal...\n";
-  close L or die $!;
-
-  # FIXME
-  #system("/usr/local/sbin/iptables -D INPUT 1") or die "error in system(): $!";
-  print "exiting cleanly...\n";
-  exit;
-}
-
 #
 # config
 #
 
 # general options
-my %o = ( debug_level => 9 );
+my %o = ( debug_level => 9,
+logfile => "lips.log",
+);
 
 # colors
 my %c = (
@@ -141,13 +120,30 @@ my %c = (
   unimportant => "\x1b\x5b" . "37m"
 );
 
+
+
+
+#
+# init
+#
+my @r;
+my $packet_counter = 0;
+
+open( L, ">>".$o{logfile} ) or die $!;        # appending logfile
+autoflush L 1;
+
+$SIG{'INT'}  = \&signal_catcher;
+$SIG{'KILL'} = \&signal_catcher;
+
+ipt("start");
+
 #
 # rules
 #
-#radd("tcp any:any <> any:any s/felix/xilef/i");
+radd("tcp any:any <> any:any s/felix/xilef/i");
 #radd("tcp 127.0.0.1:any > any:111 s/felix/xilef/i");
-radd("tcp any:any <> any:any s/66666/ssssss/i");
-radd("tcp any:any <> any:any s/44444/vvvv/i");
+#radd("tcp any:any <> any:any s/66666/ssssss/i");
+#radd("tcp any:any <> any:any s/44444/vvvv/i");
 
 #radd("tcp any:any > any:any s/foobar/barfoo/i");
 #radd("tcp any:any <> any:any s/asdf/qwerty/i");
@@ -163,7 +159,7 @@ my $queue = new IPTables::IPv4::IPQueue(
   copy_mode  => IPQ_COPY_PACKET,
   copy_range => 2048
   )
-  or die IPTables::IPv4::IPQueue->errstr;
+  or mydie("init IPQueue", IPTables::IPv4::IPQueue->errstr);
 
 bug( "starting packet while loop", 5 );
 bug( "--------------------------", 5 );
@@ -173,7 +169,7 @@ while (1) {
   if ( !defined $msg ) {
     next if IPTables::IPv4::IPQueue->errstr eq 'Timeout';
     bug( "iptables error: " . IPTables::IPv4::IPQueue->errstr, 1 );
-    die IPTables::IPv4::IPQueue->errstr;
+    mydie("get_message",IPTables::IPv4::IPQueue->errstr);
   }
 
   if ( $msg->data_len() ) {    # skip empty packets
@@ -212,6 +208,35 @@ sub radd {
 #
 # helper subs
 #
+sub ipt {
+  my $command = shift;
+  if($command eq "start") {
+    system("/usr/local/sbin/iptables -I INPUT 1 -p tcp --dport 1234 -j QUEUE");
+  } elsif($command eq "stop") {
+    system("/usr/local/sbin/iptables -D INPUT 1");
+  }
+}
+
+sub signal_catcher {
+  print "caught signal...\n";
+
+  close L;
+  ipt("stop");
+  print "exiting cleanly...\n";
+  exit;
+}
+
+sub mydie {
+  my ($error, $errorstring) = @_;
+  bug( "dying ($error): $errorstring", 1);
+  print "dying ($error): $errorstring\n";
+
+  close L;
+  ipt("stop");
+  print "exiting cleanly...\n";
+  exit 1;
+}
+
 sub validateregex {
 
   # http://www.perlmonks.org/?node_id=359606
