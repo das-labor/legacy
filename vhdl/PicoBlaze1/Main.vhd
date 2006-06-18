@@ -130,7 +130,8 @@ signal baudcount      : INTEGER RANGE 0 TO 55 := 0;
 signal uart0_rxdata   : STD_LOGIC_VECTOR(7 downto 0);
 signal uart0_txdata   : STD_LOGIC_VECTOR(7 downto 0);
 signal uart0_status   : STD_LOGIC_VECTOR(7 downto 0);
-signal uart0_rxack    : STD_LOGIC;
+signal uart0_rxready  : STD_LOGIC;
+signal uart0_txready  : STD_LOGIC;
 
 -- 7 Segment Display
 signal digit0         : STD_LOGIC_VECTOR(3 downto 0);
@@ -166,18 +167,18 @@ program: mpu_rom
 uart0_rx: uart_rx
    port map (      serial_in => uart_rxd,
                     data_out => uart0_rxdata,
-                 read_buffer => uart0_status(0),
+                 read_buffer => uart0_rxready,
                 reset_buffer => RESET,
-         buffer_data_present => uart0_status(1),
-                 buffer_full => uart0_status(2),
-            buffer_half_full => uart0_status(3),
+         buffer_data_present => uart0_status(0),
+                 buffer_full => uart0_status(1),
+            buffer_half_full => uart0_status(2),
                 en_16_x_baud => baudclk,
                          clk => cpuclk
    );
    
 uart0_tx: uart_tx
    Port map (        data_in  => uart0_txdata,
-                 write_buffer => uart0_status(4),
+                 write_buffer => uart0_txready,
                  reset_buffer => RESET,
                  en_16_x_baud => baudclk,
                    serial_out => uart_txd,
@@ -209,15 +210,6 @@ begin
    end if;
 end process;
 
--- MCU Processes
--- MCUPROC: process(clk)
---begin
---   if clk='1' and clk'event then
---      cpucount <= cpucount + 1;
---      cpuclk <= cpucount(0);
---   end if;
---end process;
-
 INPORTPROC: process(clk)
 begin
    if clk='1' and clk'event then
@@ -227,37 +219,39 @@ begin
          when "0011" => in_port <= SW;
          -- UART
          when "0100" => in_port <= uart0_status;
-         when "0101" => in_port <= uart0_rxdata;
+         when "0101" => in_port <= uart0_rxdata; 
          -- Others         
-         when others => in_port <= "10101010";
+         when others => null;
       end case;
-     end if;
- end process;
+   end if;
+end process;
+
+-- Make UART FIFO happy
+uart0_rxready <= not port_id(3) and port_id(2) and 
+                 not port_id(1) and port_id(0) and read_strobe;
   
 OUTPORTPROC: process(clk)
 begin
    if clk='1' and clk'event then
-   if write_strobe='1' then
-      uart0_status(4)<='1';
       case port_id(3 downto 0) is
          -- Status display
          when "0000" => digit1 <= out_port(7 downto 4); digit0 <= out_port(3 downto 0);
          when "0001" => digit3 <= out_port(7 downto 4); digit2 <= out_port(3 downto 0);         
 --         when "0111" => led    <= out_port;
          -- UART
-         when "0101" => null;
+         when "0110" => uart0_txdata <= out_port; 
          -- Others
          when others => null;  
       end case;
    end if;
-   end if;
 end process;
 
+-- Make UART happy
+uart0_txready <= not port_id(0) and port_id(1) and 
+                 port_id(2) and not port_id(3) and write_strobe;         
          
--- led(7 downto 2) <= (others => '0');  
-uart0_txdata <= "01000001";
 RESET  <= BTN(3);
 led  <= uart0_status;
-puclk <= clk;
+cpuclk <= clk;
 end Behavioral;
 

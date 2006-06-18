@@ -5,9 +5,6 @@
      behavior or data corruption.  It is strongly advised that
      users do not edit the contents of this file. -->
 <messages>
-<msg type="info" file="Xst" num="1304" delta="unknown" >Contents of register &lt;<arg fmt="%s" index="1">uart0_status&lt;4&gt;</arg>&gt; in unit &lt;<arg fmt="%s" index="2">Main</arg>&gt; never changes during circuit operation. The register is replaced by logic.
-</msg>
-
 <msg type="warning" file="Xst" num="2185" delta="unknown" >&quot;<arg fmt="%s" index="1">/home/gast/labor-svn/vhdl/PicoBlaze1/kcpsm3.vhd</arg>&quot; line <arg fmt="%d" index="2">289</arg>: Possible simulation mismatch on property &lt;<arg fmt="%s" index="3">INIT</arg>&gt; of instance &lt;<arg fmt="%s" index="4">t_state_lut</arg>&gt; set by attribute.
 </msg>
 
@@ -788,12 +785,6 @@
 <msg type="warning" file="Xst" num="646" delta="unknown" >Signal &lt;<arg fmt="%s" index="1">interrupt_ack</arg>&gt; is assigned but never used.
 </msg>
 
-<msg type="warning" file="Xst" num="1780" delta="unknown" >Signal &lt;<arg fmt="%s" index="1">uart0_rxack</arg>&gt; is never used or assigned.
-</msg>
-
-<msg type="warning" file="Xst" num="646" delta="unknown" >Signal &lt;<arg fmt="%s" index="1">read_strobe</arg>&gt; is assigned but never used.
-</msg>
-
 <msg type="warning" file="Xst" num="653" delta="unknown" >Signal &lt;<arg fmt="%s" index="1">interrupt</arg>&gt; is used but never assigned. Tied to value <arg fmt="%s" index="2">0</arg>.
 </msg>
 
@@ -803,10 +794,7 @@
 <msg type="warning" file="Xst" num="1780" delta="unknown" >Signal &lt;<arg fmt="%s" index="1">cpucount</arg>&gt; is never used or assigned.
 </msg>
 
-<msg type="warning" file="Xst" num="653" delta="unknown" >Signal &lt;<arg fmt="%s" index="1">uart0_status&lt;5&gt;</arg>&gt; is used but never assigned. Tied to value <arg fmt="%s" index="2">0</arg>.
-</msg>
-
-<msg type="warning" file="Xst" num="653" delta="unknown" >Signal &lt;<arg fmt="%s" index="1">uart0_status&lt;0&gt;</arg>&gt; is used but never assigned. Tied to value <arg fmt="%s" index="2">0</arg>.
+<msg type="warning" file="Xst" num="653" delta="unknown" >Signal &lt;<arg fmt="%s" index="1">uart0_status&lt;5:3&gt;</arg>&gt; is used but never assigned. Tied to value <arg fmt="%s" index="2">000</arg>.
 </msg>
 
 </messages>
