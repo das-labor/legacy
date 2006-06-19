@@ -103,8 +103,9 @@ use constant TIMEOUT => 1_000_000 * 2;    # 2 seconds
 #
 
 # general options
-my %o = ( debug_level => 9,
-logfile => "lips.log",
+my %o = (
+  debug_level => 9,
+  logfile     => "lips.log",
 );
 
 # colors
@@ -120,16 +121,13 @@ my %c = (
   unimportant => "\x1b\x5b" . "37m"
 );
 
-
-
-
 #
 # init
 #
 my @r;
 my $packet_counter = 0;
 
-open( L, ">>".$o{logfile} ) or die $!;        # appending logfile
+open( L, ">>" . $o{logfile} ) or die $!;    # appending logfile
 autoflush L 1;
 
 $SIG{'INT'}  = \&signal_catcher;
@@ -141,6 +139,7 @@ ipt("start");
 # rules
 #
 radd("tcp any:any <> any:any s/felix/xilef/i");
+
 #radd("tcp 127.0.0.1:any > any:111 s/felix/xilef/i");
 #radd("tcp any:any <> any:any s/66666/ssssss/i");
 #radd("tcp any:any <> any:any s/44444/vvvv/i");
@@ -159,7 +158,7 @@ my $queue = new IPTables::IPv4::IPQueue(
   copy_mode  => IPQ_COPY_PACKET,
   copy_range => 2048
   )
-  or mydie("init IPQueue", IPTables::IPv4::IPQueue->errstr);
+  or mydie( "init IPQueue", IPTables::IPv4::IPQueue->errstr );
 
 bug( "starting packet while loop", 5 );
 bug( "--------------------------", 5 );
@@ -169,7 +168,7 @@ while (1) {
   if ( !defined $msg ) {
     next if IPTables::IPv4::IPQueue->errstr eq 'Timeout';
     bug( "iptables error: " . IPTables::IPv4::IPQueue->errstr, 1 );
-    mydie("get_message",IPTables::IPv4::IPQueue->errstr);
+    mydie( "get_message", IPTables::IPv4::IPQueue->errstr );
   }
 
   if ( $msg->data_len() ) {    # skip empty packets
@@ -210,9 +209,10 @@ sub radd {
 #
 sub ipt {
   my $command = shift;
-  if($command eq "start") {
+  if ( $command eq "start" ) {
     system("/usr/local/sbin/iptables -I INPUT 1 -p tcp --dport 1234 -j QUEUE");
-  } elsif($command eq "stop") {
+  }
+  elsif ( $command eq "stop" ) {
     system("/usr/local/sbin/iptables -D INPUT 1");
   }
 }
@@ -227,8 +227,8 @@ sub signal_catcher {
 }
 
 sub mydie {
-  my ($error, $errorstring) = @_;
-  bug( "dying ($error): $errorstring", 1);
+  my ( $error, $errorstring ) = @_;
+  bug( "dying ($error): $errorstring", 1 );
   print "dying ($error): $errorstring\n";
 
   close L;
