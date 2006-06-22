@@ -470,12 +470,14 @@ sub phandle {
     }
     else {
       bug( "skipping empty tcp packet", 6 );
-      paccept($msg);               #skip empty packets (syn)
+      paccept($msg);
       return;
     }
   }
   else {
     bug( "skipping non tcp, non udp packet (proto " . $ip->{proto} . ")", 6 );
+    paccept($msg);
+    return;
   }
 
   # walk through rules
