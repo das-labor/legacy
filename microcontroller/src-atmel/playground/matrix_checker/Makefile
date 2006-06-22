@@ -1,5 +1,5 @@
 
-DEFS = -DF_CPU=8000000
+DEFS = -DF_CPU=8000000l
 OBJ = main.o uart.o util.o
 
 
@@ -9,9 +9,7 @@ MCU_TARGET    ?= atmega8515
 MCU_CC        ?= avr-gcc
 OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall
-DEFS          ?= -DF_CPU=8000000
-CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) 
-#CFLAGS        += -fnew-ra
+CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS)
 LDFLAGS        = -Wl,-Map,$(OUT).map
 CANADDR       ?= XXX
 

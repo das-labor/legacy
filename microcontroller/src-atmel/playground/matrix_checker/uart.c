@@ -69,15 +69,17 @@ void uart_init() {
 	UCSRB |= (1<<TXEN);			//UART TX einschalten
 	UCSRC |= (1<<URSEL)|(3<<UCSZ0);		//Asynchron 8N1
 
-	UCSRB |= ( 1 << RXEN );			//Uart RX einschalten
+	UCSRB |= (1<<RXEN);			//Uart RX einschalten
 
 	UBRRH=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU)>>8);
 	UBRRL=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU));
 
 #ifdef UART_INTERRUPT
 	// init buffers
-	rxhead = rxtail = rxbuf;
-	txhead = txtail = txbuf;
+	rxhead = rxbuf;
+	rxtail = rxbuf;
+	txhead = txbuf;
+	txtail = txbuf;
 
 	// activate rx IRQ
 	UCSRB |= (1 << RXCIE);
