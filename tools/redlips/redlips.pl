@@ -210,16 +210,18 @@ sub radd {
 #
 sub ipt {
   my $command = shift;
-  if ($o{do_iptables} == 1) {
-    bug ( "modifying iptables rules", 2);
+  if ( $o{do_iptables} == 1 ) {
+    bug( "modifying iptables rules", 2 );
     if ( $command eq "start" ) {
-      system("/usr/local/sbin/iptables -I INPUT 1 -p tcp --dport 1234 -j QUEUE");
+      system(
+        "/usr/local/sbin/iptables -I INPUT 1 -p tcp --dport 1234 -j QUEUE");
     }
     elsif ( $command eq "stop" ) {
       system("/usr/local/sbin/iptables -D INPUT 1");
     }
-  } else {
-    bug ( "not modifying iptables rules", 2);
+  }
+  else {
+    bug( "not modifying iptables rules", 2 );
   }
 }
 
@@ -471,6 +473,9 @@ sub phandle {
       paccept($msg);               #skip empty packets (syn)
       return;
     }
+  }
+  else {
+    bug( "skipping non tcp, non udp packet (proto " . $ip->{proto} . ")", 6 );
   }
 
   # walk through rules
