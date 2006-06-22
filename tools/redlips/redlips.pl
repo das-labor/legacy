@@ -104,6 +104,7 @@ use constant TIMEOUT => 1_000_000 * 2;    # 2 seconds
 
 # general options
 my %o = (
+  do_iptables => 0,
   debug_level => 9,
   logfile     => "lips.log",
 );
@@ -209,19 +210,24 @@ sub radd {
 #
 sub ipt {
   my $command = shift;
-  if ( $command eq "start" ) {
-    system("/usr/local/sbin/iptables -I INPUT 1 -p tcp --dport 1234 -j QUEUE");
-  }
-  elsif ( $command eq "stop" ) {
-    system("/usr/local/sbin/iptables -D INPUT 1");
+  if ($o{do_iptables} == 1) {
+    bug ( "modifying iptables rules", 2);
+    if ( $command eq "start" ) {
+      system("/usr/local/sbin/iptables -I INPUT 1 -p tcp --dport 1234 -j QUEUE");
+    }
+    elsif ( $command eq "stop" ) {
+      system("/usr/local/sbin/iptables -D INPUT 1");
+    }
+  } else {
+    bug ( "not modifying iptables rules", 2);
   }
 }
 
 sub signal_catcher {
   print "caught signal...\n";
 
-  close L;
   ipt("stop");
+  close L;
   print "exiting cleanly...\n";
   exit;
 }
