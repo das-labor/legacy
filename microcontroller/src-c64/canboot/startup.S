@@ -28,14 +28,58 @@
 ; Actual code
 
 startup:
-	
+;copy cartridge and basic to ram
+	ldy	#$00
+	sty	$fb
+	ldx	#$80
+bccpylp1:	
+	stx	$fc
+bccpylp:
+	lda	($fb),y
+	sta	($fb),y
+	iny
+	bne	bccpylp
+	inx
+	cpx	#$c0
+	bne	bccpylp1
 
+;copy kernal to ram
+	ldx	#$e0
+kcpylp1:	
+	stx	$fc
+kcpylp:
+	lda	($fb),y
+	sta	($fb),y
+	iny
+	bne	kcpylp
+	inx
+	bne	kcpylp1
 
+;patch kernal to not alter the memory configuration
+	lda	#$ea ;nop
+	sta	$fdd7
+	sta	$fdd8
+;patch kernal to jump to us when basic has booted
+	lda	#$4c ;jmp abs
+	sta	$e5cd
+	lda	#<startupwt
+	sta	$e5ce
+	lda	#>startupwt
+	sta	$e5cf
 
+;change memory configuration to cart, basic and kernal from ram
+	lda	#$e5
+	sta	$01
+	lda	#$2f
+	sta	$00
+;continue reset as if there was no cartridge
+	ldx	#$05
+	jmp	$fcef
 
-
-
-
+startupwt:
+	lda #$41
+	sta $400
+	jmp	startupwt
 
 	ldx    	#zpspace-1
 L1:	lda	sp,x
