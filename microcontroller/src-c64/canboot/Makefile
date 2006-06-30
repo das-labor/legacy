@@ -5,20 +5,21 @@
 #
 
 PRG	=	c64can
-OBJ	=	spi.o can.o main.o
+OBJ	=	startup.o spi.o can.o main.o
 
-# Enter the target system here
-SYS	= c64
+CC65PATH = ../../../packages/c64/cc65-2.10.1
 
-CC65PATH = ~/packages/c64/cc65-2.10.1
-
-CRT0   	= $(CC65PATH)/libsrc/$(SYS).o
+#CRT0   	= $(CC65PATH)/libsrc/$(SYS).o
 CLIB	= $(CC65PATH)/libsrc/$(SYS).lib
 CC	= $(CC65PATH)/src/cc65/cc65
 CL	= $(CC65PATH)/src/cl65/cl65
 AS	= $(CC65PATH)/src/ca65/ca65
 LD	= $(CC65PATH)/src/ld65/ld65
 C1541  	= c1541
+
+SYS = c64
+
+ASFLAGS = -I$(CC65PATH)/asminc -I$(CC65PATH)/libsrc/c64
 
 
 # --------------------------------------------------------------------------
@@ -29,9 +30,9 @@ C1541  	= c1541
 	$(CC) -Oirs -T  --codesize 500 -g -t $(SYS) -I $(CC65PATH)/include/ $<
 	$(AS) $(basename $<).s
 
-.s.o:
+.S.o:
 	@echo $<
-	@$(AS) $(basename $<).s
+	$(AS) $(ASFLAGS) $(basename $<).S
 
 
 # --------------------------------------------------------------------------
@@ -41,7 +42,7 @@ all: $(PRG).prg
 
 
 $(PRG).prg: 	$(CRT0) $(OBJ) $(CLIB)
-	$(LD) -t $(SYS) -m $(basename $@).map -o $@ $^
+	$(LD) -C cartridge.cfg -m $(basename $@).map -o $@ $^
 
 
 # --------------------------------------------------------------------------
@@ -66,11 +67,3 @@ samples.d64:	all
 .PHONY:	clean
 clean:
 	$(RM) *~ *.map *.o *.s *.lbl $(PRG).prg
-
-.PHONY:	zap
-zap:	clean
-	$(RM) $(EXELIST) samples.d64
-
-
-
-
