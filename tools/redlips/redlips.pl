@@ -61,16 +61,16 @@
 #
 # Todo
 # ----
+# mark modified, reinjected packets -> no reapplying of rules -> tag with evil bit?
+# connection reference + per connection color
 # manage iptables rules
 #   -> no duplicate --jump QUEUE
 #   mark modules
 #   working traffic when app not running!
 # term::console / userinput
-# mark modified, reinjected packets -> no reapplying of rules -> tag with evil bit?
 # tcp sync (ACK lost segment)
 #   substitute felix -> xilef works
 #   substitute felix -> xxiilleeff does not
-# connection reference + per connection color
 #
 # Future
 # ------
