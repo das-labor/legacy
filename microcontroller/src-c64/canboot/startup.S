@@ -77,6 +77,11 @@ kcpylp:
 	jmp	$fcef
 
 startupwt:
+;now we copy the code and data segment to the ram under the kernal
+	sei
+	
+	
+	
 	lda #$41
 	sta $400
 	jmp	startupwt
@@ -85,7 +90,7 @@ startupwt:
 L1:	lda	sp,x
    	sta	zpsave,x	; Save the zero page locations we need
 	dex
-       	bpl	L1
+	bpl	L1
 
 ; Close open files
 
