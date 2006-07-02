@@ -79,6 +79,18 @@ kcpylp:
 startupwt:
 ;now we copy the code and data segment to the ram under the kernal
 	sei
+	lda	#<(__CODE_START__)
+	sta	$fb
+	lda	#>(__CODE_START__)
+	sta	$fc
+	lda	#<(__CODE_RUN__)
+	sta	$fd
+	lda	#>(__CODE_RUN__)
+	sta	$fe
+	ldy	#$00
+	lda	($fb),y
+	sta	($fd),y
+	iny
 	
 	
 	
