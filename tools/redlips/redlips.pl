@@ -189,9 +189,9 @@ share(@r);
 share($packet_loop_flag);
 
 $thread_ui->join();
-$thread_packets->detach;
+$thread_packets->detach;    # XXX not very clean
 
-ipt("stop");    # also check signal_catcher
+ipt("stop");                # also check signal_catcher
 print "exiting from shell command...\n";
 bug( "exiting from shell command", 1 );
 close L;
@@ -297,7 +297,7 @@ sub ui {
     history_file => $o{history},
     history_max  => 10000
   );
-  print 'Using ' . $term->{term}->ReadLine . "\n";
+  bug( 'Using ' . $term->{term}->ReadLine, 5 );
   $term->run();
   print "closing redlips shell...\n";
   $packet_loop_flag = 0;
