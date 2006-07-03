@@ -6,6 +6,13 @@
 # redlips.pl is a frontend for viewing and modifying packets
 # in real time. It suits best as a layer 7 filter in capture
 # the flag style linux deathmatchs.
+#
+# Features
+# --------
+# modification of tcp and udp packets with perl regular expressions
+# support for IP evil bit tagging
+#
+#
 
 # License
 # -------
@@ -34,6 +41,15 @@
 # execute system() calls. Do not setuid this script and do not screen it away
 # for everyone to attach.
 #
+# Bugs
+# ----
+# Please send bug reports to <redlips@baraddur.de>.
+#
+# FAQ
+# ---
+# Q: Whats wrong "Failed to send netlink message: Connection refused"?
+# A: modprobe ip_queue
+#
 # Requirements
 # ------------
 # Linux kernel with CONFIG_IP_NF_QUEUE
@@ -61,16 +77,7 @@
 #
 # Todo
 # ----
-# mark modified, reinjected packets -> no reapplying of rules -> tag with evil bit?
-# connection reference + per connection color
-# manage iptables rules
-#   -> no duplicate --jump QUEUE
-#   mark modules
-#   working traffic when app not running!
 # term::console / userinput
-# tcp sync (ACK lost segment)
-#   substitute felix -> xilef works
-#   substitute felix -> xxiilleeff does not
 #
 # Future
 # ------
@@ -79,6 +86,12 @@
 # no more eval, lex?
 # nfnetlink_queue (passemble instead of pinject, no dep on rawsock)
 # oo
+# manage iptables rules with IPTables::IPv4
+#   -> no duplicate --jump QUEUE
+#   mark modules
+#   mark modified packets (with iptables / evil bit)
+#   working traffic when app not running!
+# ipv6
 #
 #
 
@@ -104,9 +117,11 @@ use constant TIMEOUT => 1_000_000 * 2;    # 2 seconds
 
 # general options
 my %o = (
-  do_iptables => 0,
+  do_iptables => 1,                       # alter iptables
+  mode        => "local",                 # local or forward
   debug_level => 9,
   logfile     => "lips.log",
+  sstr        => "X",
 );
 
 # colors
@@ -140,6 +155,8 @@ ipt("start");
 # rules
 #
 radd("tcp any:any <> any:any s/felix/xilef/i");
+radd("tcp any:any <> any:any s/qwer/ytrewq/i");
+radd("tcp any:any <> any:any s/asdf/as/i");
 
 #radd("tcp 127.0.0.1:any > any:111 s/felix/xilef/i");
 #radd("tcp any:any <> any:any s/66666/ssssss/i");
@@ -210,14 +227,24 @@ sub radd {
 #
 sub ipt {
   my $command = shift;
+  my $chain;
+
+  if ( $o{mode} eq "forward" ) {
+    $chain = "-t nat -I FORWARD 1";
+  }
+  elsif ( $o{mode} eq "local" ) {
+    $chain = "-t filter -I INPUT 1";
+  }
+
   if ( $o{do_iptables} == 1 ) {
     bug( "modifying iptables rules", 2 );
     if ( $command eq "start" ) {
-      system(
-        "/usr/local/sbin/iptables -I INPUT 1 -p tcp --dport 1234 -j QUEUE");
+      system( "/usr/local/sbin/iptables " . $chain
+          . " -p tcp --dport 1234 -j QUEUE" );
     }
     elsif ( $command eq "stop" ) {
-      system("/usr/local/sbin/iptables -D INPUT 1");
+      $chain =~ s/-I/-D/;
+      system( "/usr/local/sbin/iptables " . $chain );
     }
   }
   else {
@@ -307,7 +334,20 @@ sub ltime {
 
 sub pc {
   $packet_counter = ( $packet_counter + 1 ) % 99999999;
-  return "[" . sprintf( "%.8d", $packet_counter ) . "p]";
+  return "[p" . sprintf( "%.8d", $packet_counter ) . "]";
+}
+
+sub getevilbit {
+  my $raw = shift;
+  return substr( unpack( "B*", $raw ), 48, 16 );
+}
+
+sub setevilbit {
+  my $raw = shift;
+  my $bin = unpack( "B*", $raw );
+  my $bit = ( substr( $bin, 51, 1 ) + 1 ) % 2;
+  substr( $bin, 51, 1, $bit );
+  return pack( "B*", $bin );
 }
 
 #
@@ -394,20 +434,49 @@ sub paccept {
 sub pinject {
   my ( $msg, $ip, $tp, $data ) = @_;
   my $raw;
+  my $diff;
+  my $nl;
 
+  # watch out for tcp length manipulations and correct them
+  if ( length($data) != length( $tp->{data} ) ) {
+    bug(
+      "found length modification (new "
+        . length($data)
+        . " vs orig "
+        . length( $tp->{data} ) . ")",
+      1
+    );
+
+    $nl = ( substr( $data, length($data) - 1, 1 ) eq "\n" ) ? 1 : 0;
+
+    if ( length $data > length $tp->{data} ) {
+      $diff = length($data) - length( $tp->{data} );
+      substr( $data, length($data) - $diff - $nl, $diff, "" );
+    }
+    elsif ( length $data < length $tp->{data} ) {
+      $diff = length( $tp->{data} ) - length($data);
+      substr( $data, length($data) - 1 - $nl,
+        1, ( substr( $data, length($data) - 1 - $nl, 1 ) . $o{sstr} x $diff ) );
+    }
+  }
+
+  # construct the new packet
   $tp->{data} = $data;
   $ip->{data} = $tp->NetPacket::TCP::encode($ip) if ( $ip->{proto} == 6 );
   $ip->{data} = $tp->NetPacket::UDP::encode($ip) if ( $ip->{proto} == 58 );
   $raw        = $ip->encode;
 
+  # print the modifications
   dump_itd( $msg, $ip, $tp, $data );
 
   # drop the original packet
   $queue->set_verdict( $msg->packet_id, NF_DROP );
 
   # and inject the raw copy
-  Net::RawSock::write_ip($raw);
-  bug( "injected packet", 5 );
+  bug( "injecting packet", 5 );
+
+  #Net::RawSock::write_ip(setevilbit($raw));
+  Net::RawSock::write_ip( ($raw) );
 }
 
 sub passemble {
@@ -447,6 +516,13 @@ sub phandle {
       . $ip->{dest_ip},
     5
   );
+
+  #bug(
+  #      "get evil bit debug: "
+  #    . getevilbit( $msg->payload() ) . " "
+  #    . $ip->{flags} . "
+  #" . $ip->{foffset}, 1
+  #);
 
   # generate transport $tp object and print the contents
   #
