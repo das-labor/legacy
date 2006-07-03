@@ -10,7 +10,8 @@
 
 #include "spi.h"
 
-void spi_init(){
+unsigned char spi_init(){
+	unsigned char i=255;
 	outb(SPI_PORT, inb(SPI_PORT)|(1<<SPI_PIN_SS));
 	outb(SPI_DDR, inb(SPI_DDR)|(1<<SPI_PIN_SS));
 
@@ -21,7 +22,15 @@ void spi_init(){
 	outb(CIA1+CIA_CRA, inb(CIA1+CIA_CRA) | 0x40);//serial is input
 	outb(CIA1+CIA_CRA, inb(CIA1+CIA_CRA) & ~0x40);//serial is input
 
-
+	asm ("sei");//interrupts are a bad idea here
+	outb(CIA2+CIA_SDR, 0);//send char out on CIA2
+	//if CIA1 doesn't receive a char from the hardware now, the CIAs aren't
+	//connected, so the Harware isn't present
+	while(!(inb(CIA1+CIA_ICR)&0x08)){
+		i--;
+		if(i == 0) return 0xff;
+	};
+	return 0;
 }
 
 unsigned char spi_data(unsigned char c){
