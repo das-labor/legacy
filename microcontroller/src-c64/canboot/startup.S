@@ -10,6 +10,8 @@
 	.import	     	callmain
         .import         RESTOR, BSOUT, CLRCH
 	.import		__RAM_START__, __RAM_SIZE__	; Linker generated
+	.import		__CODE_LOAD__,__CODE_RUN__;
+	.import		__CODE_SIZE__,__RODATA_SIZE__,__DATA_SIZE__;
 
         .include        "zeropage.inc"
 	.include     	"c64.inc"
@@ -59,13 +61,13 @@ kcpylp:
 	lda	#$ea ;nop
 	sta	$fdd7
 	sta	$fdd8
-;patch kernal to jump to us when basic has booted
+;patch basic to jump to us when boot is finished
 	lda	#$4c ;jmp abs
-	sta	$e5cd
+	sta	$a480
 	lda	#<startupwt
-	sta	$e5ce
+	sta	$a481
 	lda	#>startupwt
-	sta	$e5cf
+	sta	$a482
 
 ;change memory configuration to cart, basic and kernal from ram
 	lda	#$e5
@@ -79,56 +81,44 @@ kcpylp:
 startupwt:
 ;now we copy the code and data segment to the ram under the kernal
 	sei
-	lda	#<(__CODE_START__)
+	lda	#<(__CODE_LOAD__)
 	sta	$fb
-	lda	#>(__CODE_START__)
+	lda	#>(__CODE_LOAD__)
 	sta	$fc
 	lda	#<(__CODE_RUN__)
 	sta	$fd
 	lda	#>(__CODE_RUN__)
 	sta	$fe
 	ldy	#$00
+	ldx	#>(__CODE_SIZE__+__RODATA_SIZE__+__DATA_SIZE__)
+scpylp:
 	lda	($fb),y
 	sta	($fd),y
 	iny
-	
-	
-	
-	lda #$41
-	sta $400
-	jmp	startupwt
+	bne	scpylp
+	inc	$fc
+	inc	$fe
+	dex
+	bne scpylp
+scpylp1:
+	lda	($fb),y
+	sta	($fd),y
+	iny
+	cpy	#<(__CODE_SIZE__+__RODATA_SIZE__+__DATA_SIZE__)
+	bne	scpylp1
 
+;now we do the rest of the C startup stuff
 	ldx    	#zpspace-1
 L1:	lda	sp,x
    	sta	zpsave,x	; Save the zero page locations we need
 	dex
 	bpl	L1
 
-; Close open files
-
-	jsr	CLRCH
-
-; Switch to second charset
-
-	lda	#14
-	jsr	BSOUT
-
-; Switch off the BASIC ROM
-
-	lda	$01
-       	pha                     ; Remember the value
-	and	#$F8
-       	ora	#$06		; Enable kernal+I/O, disable basic
-	sta	$01
-
 ; Clear the BSS data
 
 	jsr	zerobss
 
 ; Save system settings and setup the stack
-
-        pla
-        sta	mmusave      	; Save the memory configuration
 
        	tsx
        	stx    	spsave 		; Save the system stack ptr
@@ -142,10 +132,15 @@ L1:	lda	sp,x
 
 	jsr	initlib
 
-; Push arguments and call main
-
-        jsr     callmain
-
+;push return address in code segment and callmain
+	lda #>(finished-1)
+	pha
+	lda #<(finished-1)
+	pha
+	jmp callmain
+	
+.code
+	finished:
 ; Call module destructors. This is also the _exit entry.
 
 _exit:	jsr	donelib		; Run module destructors
@@ -154,9 +149,7 @@ _exit:	jsr	donelib		; Run module destructors
 
   	ldx	spsave
 	txs	   	  	; Restore stack pointer
-       	lda    	mmusave
-	sta	$01	  	; Restore memory configuration
-
+    
 ; Copy back the zero page stuff
 
        	ldx	#zpspace-1
@@ -165,9 +158,24 @@ L2:	lda	zpsave,x
 	dex
        	bpl	L2
 
-; Reset changed vectors, back to basic
+;put "sta $01" to location $febf, because $fec1 will have a
+;rti when the memory config is switched back.
+	lda #$85
+	sta $febf
+	lda #$01
+	sta $fec0
 
-	jmp	RESTOR
+;location of the ready & warmstart routine
+	lda #>($a474)
+	pha
+	lda #<($a474)
+	pha
+	lda #$00;all flags 0
+	pha
+
+;switch memory configuration back to normal and return to the keyget loop
+	lda #$e7
+	jmp	$febf
 
 
 ; ------------------------------------------------------------------------
@@ -180,4 +188,3 @@ zpsave:	.res	zpspace
 .bss
 
 spsave:	.res	1
-mmusave:.res	1

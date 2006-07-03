@@ -5,7 +5,7 @@
 #
 
 PRG	=	c64can
-OBJ	=	startup.o spi.o can.o main.o
+OBJ	=	startup.o simpleio.o spi.o can.o main.o
 
 CC65PATH = ../../../packages/c64/cc65-2.10.1
 
@@ -43,6 +43,8 @@ all: $(PRG).prg
 
 $(PRG).prg: 	$(CRT0) $(OBJ) $(CLIB)
 	$(LD) -C cartridge.cfg -m $(basename $@).map -o $@ $^
+	perl -e 'print "\xff" x 8192'>>crt.bin
+	dd bs=1024 count=8 if=crt.bin of=cart.bin
 
 
 # --------------------------------------------------------------------------
