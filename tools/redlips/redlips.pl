@@ -83,6 +83,7 @@
 # "A thread exited while 2 threads were running.
 # ticks do not get passed via shell -> add -> radd
 # variable sharing
+# splice lock?
 # command addtoport 1234 s/sd//
 #
 #
