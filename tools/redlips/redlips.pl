@@ -82,6 +82,8 @@
 # -----------
 # "A thread exited while 2 threads were running.
 # ticks do not get passed via shell -> add -> radd
+# variable sharing
+# command addtoport 1234 s/sd//
 #
 #
 # Todo
@@ -185,13 +187,10 @@ my $packet_loop_flag = 1;
 my $thread_ui        = threads->create("ui");
 my $thread_packets   = threads->create("packets");
 
-share(@r);
-share($packet_loop_flag);
-
 $thread_ui->join();
-$thread_packets->detach;    # XXX not very clean
+$thread_packets->detach;
 
-ipt("stop");                # also check signal_catcher
+ipt("stop");    # also check signal_catcher
 print "exiting from shell command...\n";
 bug( "exiting from shell command", 1 );
 close L;
