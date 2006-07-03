@@ -10,7 +10,7 @@
 # Features
 # --------
 # modification of tcp and udp packets with perl regular expressions
-# support for IP evil bit tagging
+# colorized sniffing
 #
 #
 
@@ -18,8 +18,8 @@
 # -------
 # Copyright (C) 2006 Felix Groebert <redlips@baraddur.de>
 # version 0.1
-# Homepage:
-# Download:
+# Homepage: https://roulette.das-labor.org/svn/tools/redlips/redlips.pl
+# Download: https://roulette.das-labor.org/svn/tools/redlips/redlips.pl
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -57,17 +57,20 @@
 # IPTables::IPv4::IPQueue 1.25
 # NetPacket::IP
 # Net::RawSock http://www.hsc.fr/ressources/outils/rawsock/index.html.enk
+# Term::ShellUI (maybe also Term::ReadLine::Gnu)
 #
 # Contributors
 # ------------
 # Felix Groebert <redlips@baraddur.de>
 # Dennis
+# Joern
+# Tim
 #
 # Usage
 # -----
 # sudo perl redlips.pl
-#
-# if you need to kill it, kill with -9 or ctrl-c
+#   type "help" to get a list of commands
+#   if you need to kill it, kill with -9 or ctrl-c
 #
 # ChangeLog
 # ---------
@@ -75,12 +78,14 @@
 #   - initial release
 #
 #
+# Urgent Todo
+# -----------
+# "A thread exited while 2 threads were running.
+# ticks do not get passed via shell -> add -> radd
+#
+#
 # Todo
 # ----
-# term::console / userinput
-#
-# Future
-# ------
 # internal tcp proxy
 # acronym for red
 # no more eval, lex?
@@ -100,6 +105,9 @@
 #
 package redlips;
 use strict;
+use threads;
+use threads::shared;
+
 $^W = 1;
 
 use IPTables::IPv4::IPQueue qw(:constants);
@@ -109,6 +117,7 @@ use NetPacket::UDP;
 use NetPacket::TCP;
 use Net::RawSock;
 use IO::Handle;
+use Term::ShellUI;
 use constant TIMEOUT => 1_000_000 * 2;    # 2 seconds
 
 #
@@ -121,7 +130,8 @@ my %o = (
   mode        => "local",                 # local or forward
   debug_level => 9,
   logfile     => "lips.log",
-  sstr        => "X",
+  history     => "lips.history",
+  sstr => "X",    # substitution string for length modification in tcp  packets
 );
 
 # colors
@@ -142,6 +152,7 @@ my %c = (
 #
 my @r;
 my $packet_counter = 0;
+my $queue;
 
 open( L, ">>" . $o{logfile} ) or die $!;    # appending logfile
 autoflush L 1;
@@ -161,7 +172,6 @@ radd("tcp any:any <> any:any s/asdf/as/i");
 #radd("tcp 127.0.0.1:any > any:111 s/felix/xilef/i");
 #radd("tcp any:any <> any:any s/66666/ssssss/i");
 #radd("tcp any:any <> any:any s/44444/vvvv/i");
-
 #radd("tcp any:any > any:any s/foobar/barfoo/i");
 #radd("tcp any:any <> any:any s/asdf/qwerty/i");
 #radd("tcp any:any <> any:any s/\\d/Z/gi");
@@ -169,29 +179,158 @@ radd("tcp any:any <> any:any s/asdf/as/i");
 #radd("udp any:any <> any:any s/AAAAA/BBBBBB/i");
 
 #
+# threads
+#
+my $packet_loop_flag = 1;
+my $thread_ui        = threads->create("ui");
+my $thread_packets   = threads->create("packets");
+
+share(@r);
+share($packet_loop_flag);
+
+$thread_ui->join();
+$thread_packets->detach;
+
+ipt("stop");    # also check signal_catcher
+print "exiting from shell command...\n";
+bug( "exiting from shell command", 1 );
+close L;
+exit;
+
+#
+# ui
+#
+sub ui {
+  my $term = new Term::ShellUI(
+    commands => {
+      "p" => {
+        syn                     => "print",
+        exclude_from_completion => 1
+      },
+      "print" => {
+        desc    => "print current rules",
+        minargs => 0,
+        maxargs => 0,
+        proc    => sub {
+          my $rule;
+          my $i = 0;
+          for $rule ( 0 .. $#r ) {
+            print "[$i]\t"
+              . $r[$rule][0] . " "
+              . $r[$rule][1] . ":"
+              . $r[$rule][2] . " "
+              . $r[$rule][3] . " "
+              . $r[$rule][4] . ":"
+              . $r[$rule][5] . " "
+              . $r[$rule][6] . "\n";
+            $i++;
+          }
+          }
+      },
+      "add" => {
+        desc    => "add a rule",
+        minargs => 5,
+        maxargs => 100,
+        proc    => sub { radd("@_"); }
+      },
+      "flush" => {
+        desc    => "flush all rules",
+        minargs => 0,
+        maxargs => 0,
+        proc    => sub { splice( @r, 0, $#r + 1 ); }
+      },
+      "del" => {
+        desc    => "delete a rule",
+        minargs => 1,
+        maxargs => 1,
+        proc    => sub { splice( @r, shift, 1 ); }
+      },
+      "save" => {
+        desc    => "save current rules to a file",
+        minargs => 1,
+        maxargs => 1,
+        proc    => sub {
+          my $rule;
+          open( F, ">" . shift ) or return;
+          for $rule ( 0 .. $#r ) {
+            print F $r[$rule][0] . " "
+              . $r[$rule][1] . ":"
+              . $r[$rule][2] . " "
+              . $r[$rule][3] . " "
+              . $r[$rule][4] . ":"
+              . $r[$rule][5] . " "
+              . $r[$rule][6] . "\n";
+          }
+          close F;
+          }
+      },
+      "load" => {
+        desc    => "add rules from a file",
+        minargs => 1,
+        maxargs => 1,
+        proc    => sub {
+          my $rule;
+          open( F, "<" . shift ) or return;
+          while (<F>) {
+            radd($_);
+          }
+          close F;
+          }
+
+      },
+      "help" => {
+        desc   => "print helpful information",
+        args   => sub { shift->help_args( undef, @_ ); },
+        method => sub { shift->help_call( undef, @_ ); }
+      },
+      "h" => {
+        syn                     => "help",
+        exclude_from_completion => 1
+      },
+      "quit" => {
+        desc    => "Quit using redlips",
+        minargs => 0,
+        maxargs => 0,
+        method  => sub { shift->exit_requested(1); },
+      }
+    },
+    history_file => $o{history},
+    history_max  => 10000
+  );
+  print 'Using ' . $term->{term}->ReadLine . "\n";
+  $term->run();
+  print "closing redlips shell...\n";
+  $packet_loop_flag = 0;
+  return 0;
+}
+
+#
 # main loop
 #
-my $swap;
-my $queue = new IPTables::IPv4::IPQueue(
-  copy_mode  => IPQ_COPY_PACKET,
-  copy_range => 2048
-  )
-  or mydie( "init IPQueue", IPTables::IPv4::IPQueue->errstr );
+sub packets {
+  $queue = new IPTables::IPv4::IPQueue(
+    copy_mode  => IPQ_COPY_PACKET,
+    copy_range => 2048
+    )
+    or mydie( "init IPQueue", IPTables::IPv4::IPQueue->errstr );
 
-bug( "starting packet while loop", 5 );
-bug( "--------------------------", 5 );
+  bug( "starting packet while loop", 5 );
+  bug( "--------------------------", 5 );
 
-while (1) {
-  my $msg = $queue->get_message(TIMEOUT);
-  if ( !defined $msg ) {
-    next if IPTables::IPv4::IPQueue->errstr eq 'Timeout';
-    bug( "iptables error: " . IPTables::IPv4::IPQueue->errstr, 1 );
-    mydie( "get_message", IPTables::IPv4::IPQueue->errstr );
+  while ($packet_loop_flag) {
+    my $msg = $queue->get_message(TIMEOUT);
+    if ( !defined $msg ) {
+      next if IPTables::IPv4::IPQueue->errstr eq 'Timeout';
+      bug( "iptables error: " . IPTables::IPv4::IPQueue->errstr, 1 );
+      mydie( "get_message", IPTables::IPv4::IPQueue->errstr );
+    }
+
+    if ( $msg->data_len() ) {    # skip empty packets
+      phandle($msg);
+    }
   }
-
-  if ( $msg->data_len() ) {    # skip empty packets
-    phandle($msg);
-  }
+  print "closing redlips packet loop...\n";
+  return 0;
 }
 
 #
@@ -200,6 +339,8 @@ while (1) {
 sub radd {
   my $string = shift;
   my $hash   = {};
+
+  chomp($string);
 
   if (
     $string =~ m/
@@ -214,9 +355,16 @@ sub radd {
     )
   {
     if ( validateregex($7) ) {    # everything is valid
+      bug( "adding rule: $string", 5 );
       push @r, [ $1, $2, $3, $4, $5, $6, $7 ];
       return 1;
     }
+    else {
+      bug( "error adding rule: regex incorrect", 5 );
+    }
+  }
+  else {
+    bug( "error adding rule: network option incorrect", 5 );
   }
 
   return 0;
