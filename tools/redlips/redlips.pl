@@ -205,9 +205,7 @@ exit;
 sub ui {
   my $term = new Term::ShellUI(
     commands => {
-      "p" => {
-        syn                     => "print",
-      },
+      "p"     => { syn => "print", },
       "print" => {
         desc    => "print current rules (short: p)",
         minargs => 0,
@@ -228,11 +226,9 @@ sub ui {
           }
           }
       },
-      "atp" => {
-          syn   => "addtoport",
-      },
+      "atp"       => { syn => "addtoport", },
       "addtoport" => {
-        desc    => "add a rule beginning with \"tcp any:any > any:\" (short: atp)",
+        desc => "add a rule beginning with \"tcp any:any > any:\" (short: atp)",
         minargs => 2,
         proc    => sub {
           radd("tcp any:any > any:@_");
