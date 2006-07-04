@@ -89,6 +89,7 @@
 #
 # Todo
 # ----
+# debug levels / categories
 # internal tcp proxy
 # acronym for red
 # no more eval, lex?
@@ -135,6 +136,7 @@ my %o = (
   logfile     => "lips.log",
   history     => "lips.history",
   sstr => "X",    # substitution string for length modification in tcp  packets
+  rule_splitter => "\x00\x01\x00",
 );
 
 # colors
@@ -184,12 +186,15 @@ radd("tcp any:any <> any:any s/asdf/as/i");
 #
 # threads
 #
-my $packet_loop_flag = 1;
-my $thread_ui        = threads->create("ui");
-my $thread_packets   = threads->create("packets");
+my $packet_loop_flag : shared = 1;
+my $shared_rules : shared     = 0;
+
+my $thread_ui      = threads->create("ui");
+my $thread_packets = threads->create("packets");
 
 $thread_ui->join();
-$thread_packets->detach;
+$packet_loop_flag = 0;
+$thread_packets->join();
 
 ipt("stop");    # also check signal_catcher
 print "exiting from shell command...\n";
@@ -231,19 +236,28 @@ sub ui {
         desc    => "add a rule",
         minargs => 5,
         maxargs => 100,
-        proc    => sub { radd("@_"); }
+        proc    => sub {
+          radd("@_");
+          set_shared_rules();    # sync the threads
+          }
       },
       "flush" => {
         desc    => "flush all rules",
         minargs => 0,
         maxargs => 0,
-        proc    => sub { splice( @r, 0, $#r + 1 ); }
+        proc    => sub {
+          splice( @r, 0, $#r + 1 );
+          set_shared_rules();    # sync the threads
+          }
       },
       "del" => {
         desc    => "delete a rule",
         minargs => 1,
         maxargs => 1,
-        proc    => sub { splice( @r, shift, 1 ); }
+        proc    => sub {
+          splice( @r, shift, 1 );
+          set_shared_rules();    # sync the threads
+          }
       },
       "save" => {
         desc    => "save current rules to a file",
@@ -275,8 +289,8 @@ sub ui {
             radd($_);
           }
           close F;
+          set_shared_rules();    # sync the threads
           }
-
       },
       "help" => {
         desc   => "print helpful information",
@@ -300,7 +314,6 @@ sub ui {
   bug( 'Using ' . $term->{term}->ReadLine, 5 );
   $term->run();
   print "closing redlips shell...\n";
-  $packet_loop_flag = 0;
   return 0;
 }
 
@@ -319,6 +332,9 @@ sub packets {
 
   while ($packet_loop_flag) {
     my $msg = $queue->get_message(TIMEOUT);
+
+    get_shared_rules();    # sync the threads
+
     if ( !defined $msg ) {
       next if IPTables::IPv4::IPQueue->errstr eq 'Timeout';
       bug( "iptables error: " . IPTables::IPv4::IPQueue->errstr, 1 );
@@ -368,6 +384,56 @@ sub radd {
   }
 
   return 0;
+}
+
+#
+# sharing rules
+#
+sub set_shared_rules {
+  my ( $return, $rule );
+
+  for $rule ( 0 .. $#r ) {
+    $return .=
+        $r[$rule][0] . " "
+      . $r[$rule][1] . ":"
+      . $r[$rule][2] . " "
+      . $r[$rule][3] . " "
+      . $r[$rule][4] . ":"
+      . $r[$rule][5] . " "
+      . $r[$rule][6]
+      . $o{rule_splitter};
+  }
+
+  $shared_rules = $return;
+}
+
+sub get_shared_rules {
+  my ( $rule, $string, $newrule );
+  my $exists = 0;
+
+  if ($shared_rules) {
+    splice( @r, 0, $#r + 1 );    #remove old rules
+    foreach ( split( /$o{rule_splitter}/, $shared_rules ) ) {
+      $newrule = $_;
+      $exists  = 0;
+
+      for $rule ( 0 .. $#r ) {
+        $string =
+            $r[$rule][0] . " "
+          . $r[$rule][1] . ":"
+          . $r[$rule][2] . " "
+          . $r[$rule][3] . " "
+          . $r[$rule][4] . ":"
+          . $r[$rule][5] . " "
+          . $r[$rule][6];
+        $exists = 1 if ( $newrule eq $rule );
+      }
+
+      radd($newrule) unless $exists;    # this is pure bloat
+    }
+  }
+
+  $shared_rules = 0;
 }
 
 #
