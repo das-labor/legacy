@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -106,6 +107,203 @@ void push_page( can_addr dst, uint8_t *buf, size_t offset, size_t size )
 	}
 }
 
+
+void flash_atmel(unsigned char addr, unsigned int pagesize, char * filename){
+	sdo_message *smsg = (sdo_message *)can_buffer_get();
+	smsg->addr_dst = addr;
+	smsg->addr_src = 0x00;  
+	smsg->port_src = PORT_SDO;
+	smsg->port_dst = PORT_SDO;
+	smsg->dlc      = 3;
+	smsg->cmd      = SDO_CMD_READ;
+	smsg->index    = 0xff01;
+
+	can_transmit( (can_message *)smsg);
+
+	for(;;) {
+		smsg = (sdo_message *)can_get();
+
+		if (smsg->port_dst == PORT_SDO && smsg->addr_src == addr) {
+			break;
+		}
+	}
+
+	can_message *msg3 = (can_message *)smsg;
+	uint16_t flashsize = (uint16_t)(msg3->data[3]<<8) + (uint16_t)msg3->data[2];
+	printf("Flash Size: 0x%x\n",flashsize);
+	
+	// allocate ATMega memory
+	uint8_t *mem  = malloc(flashsize);
+	uint8_t *mask = malloc(flashsize);
+	memset( mem,  0xff, flashsize );
+	memset( mask, 0x00, flashsize );
+
+
+	printf( "Flashing file: %s\n", filename );
+	FILE *fd = fopen(filename,"r");
+	
+	
+	size_t size, dst;
+	uint8_t *buf;
+	while ((buf = read_buf_from_hex(fd, &size, &dst)) != 0) {
+		memcpy( &mem[dst], buf, size);
+		memset( &mask[dst], 0xff, size );
+	}
+
+	if (size != 0)
+		goto fileerror;
+
+	int i,j;
+
+	for( i=0; i<flashsize; i += pagesize) {
+		for(j=i; j<i+pagesize; j++) {
+			if (mask[j] == 0xff) {
+				// trasfer page stating at i
+				printf("Transmitting %4x...\n", i);
+				push_page(addr, &(mem[i]), i, pagesize);
+				break;
+			}
+		}
+	}
+
+	printf("Sendig reset\n");
+	smsg->addr_dst = addr;
+	smsg->addr_src = 0x00;  
+	smsg->port_src = PORT_SDO;
+	smsg->port_dst = PORT_SDO;
+	smsg->dlc      = 3;
+	smsg->cmd      = SDO_CMD_READ;
+	smsg->index    = 0xff02;
+
+	can_transmit( (can_message *)smsg);
+
+	return;
+
+fileerror:
+	debug(0, "Given file is not in Intel Hex format");
+	return;
+
+}
+
+
+
+void flash_commodore(unsigned char addr, char * filename){
+	sdo_message *smsg = (sdo_message *)can_buffer_get();
+	smsg->addr_dst = addr;
+	smsg->addr_src = 0x00;  
+	smsg->port_src = PORT_SDO;
+	smsg->port_dst = PORT_SDO;
+	smsg->dlc      = 3;
+	smsg->cmd      = SDO_CMD_READ;
+	smsg->index    = 0xff01;
+
+	can_transmit( (can_message *)smsg);
+
+	for(;;) {
+		smsg = (sdo_message *)can_get();
+
+		if (smsg->port_dst == PORT_SDO && smsg->addr_src == addr) {
+			break;
+		}
+	}
+
+	can_message *msg3 = (can_message *)smsg;
+	uint16_t flashsize = (uint16_t)(msg3->data[3]<<8) + (uint16_t)msg3->data[2];
+	printf("Free Memory Size: 0x%x\n",flashsize);
+	
+	printf( "Flashing file: %s\n", filename );
+	FILE *fd = fopen(filename,"r");
+	
+	if(!fd) goto fileerror;
+	
+	struct stat mystat;
+	stat(filename, &mystat);
+	
+	unsigned int size = mystat.st_size-2;
+	unsigned int offset = 0;
+	fread(&offset, 2, 1, fd);
+	
+	printf("uploading from %X to %X\n", offset, offset+size-1);
+	
+	can_message *msg = can_buffer_get();
+
+	msg->addr_src = 0x00;
+	msg->addr_dst = addr;
+	msg->port_src = PORT_SDO;
+	msg->port_dst = PORT_SDO;
+	msg->dlc = 7;
+	msg->data[0]  = SDO_CMD_WRITE_BLK;
+	msg->data[1]  = 0x01;
+	msg->data[2]  = 0xff;
+	msg->data[3]  = size & (0xff);
+	msg->data[4]  = size>>8;
+	msg->data[5]  = offset & (0xff);
+	msg->data[6]  = offset>>8;
+	
+	can_transmit(msg);
+
+	unsigned int missing = size;
+	unsigned int count = 0;
+
+	while(missing > 0) {
+		while(1) {
+			can_message *incoming = can_get();
+			if (incoming->data[0]  == SDO_CMD_WRITE_BLK_ACK &&
+			    incoming->addr_src == addr)
+				break;
+		}
+		
+		if((count%0x400) == 0){
+			printf("Transmitting %X\n", offset+count);
+		}
+
+		can_message *to_transmit = can_buffer_get();
+		to_transmit->addr_src = 0x00;
+		to_transmit->addr_dst = addr;
+		to_transmit->port_src = PORT_SDO;
+		to_transmit->port_dst = PORT_SDO_DATA;
+		if (missing > 8)
+			to_transmit->dlc   = 8;
+		else
+			to_transmit->dlc   = missing;
+		fread(to_transmit->data, 1, to_transmit->dlc, fd);
+
+		count += to_transmit->dlc;
+		missing -= to_transmit->dlc;
+
+		can_transmit(to_transmit);
+	}
+
+	while(1) {
+		can_message *incoming = can_get();
+		if (incoming->data[0]  == SDO_CMD_WRITE_BLK_ACK &&
+		    incoming->addr_src == addr)
+			break;
+	}
+	
+
+	printf("Sendig boot command\n");
+	smsg->addr_dst = addr;
+	smsg->addr_src = 0x00;  
+	smsg->port_src = PORT_SDO;
+	smsg->port_dst = PORT_SDO;
+	smsg->dlc      = 3;
+	smsg->cmd      = SDO_CMD_READ;
+	smsg->index    = 0xff02;
+
+	can_transmit( (can_message *)smsg);
+
+	return;
+
+fileerror:
+	debug(0, "could not open file");
+	return;
+
+}
+
+
+
+
 void cmd_flash(int argc, char *argv[]) 
 {
 	can_addr addr;
@@ -147,7 +345,7 @@ void cmd_flash(int argc, char *argv[])
 	for(;;) {
 		smsg = (sdo_message *)can_get();
 
-		if (smsg->port_dst == PORT_SDO && smsg->addr_src == msg->addr_src) {
+		if (smsg->port_dst == PORT_SDO && smsg->addr_src == addr) {
 			break;
 		}
 	}
@@ -160,86 +358,21 @@ void cmd_flash(int argc, char *argv[])
 	can_message *msg2 = (can_message *)smsg;
 	uint16_t pagesize = (uint16_t)(msg2->data[3]<<8) + (uint16_t)msg2->data[2];
 
-	printf("Hardware: ATMEGA %d\n", msg2->data[4]);
-	printf("Pagesize: 0x%x\n",pagesize);
-
-
-	smsg->addr_dst = msg->addr_src;
-	smsg->addr_src = 0x00;  
-	smsg->port_src = PORT_SDO;
-	smsg->port_dst = PORT_SDO;
-	smsg->dlc      = 3;
-	smsg->cmd      = SDO_CMD_READ;
-	smsg->index    = 0xff01;
-
-	can_transmit( (can_message *)smsg);
-
-	for(;;) {
-		smsg = (sdo_message *)can_get();
-
-		if (smsg->port_dst == PORT_SDO && smsg->addr_src == msg->addr_src) {
-			break;
-		}
-	}
-
-	can_message *msg3 = (can_message *)smsg;
-	uint16_t flashsize = (uint16_t)(msg3->data[3]<<8) + (uint16_t)msg3->data[2];
-	printf("Flashsize: 0x%x\n",flashsize);
+	if(msg2->data[5] == 0){
+		printf("Hardware: ATMEGA %d\n", msg2->data[4]);
+		printf("Pagesize: 0x%x\n",pagesize);
+		flash_atmel(addr, pagesize, argv[2]);
+	}else if(msg2->data[5] == 1){
+		printf("Hardware: Commodore %d\n", msg2->data[4]);
+		flash_commodore(addr, argv[2]);
+	}else goto wronghardware;
 	
-	// allocate ATMega memory
-	uint8_t *mem  = malloc(flashsize);
-	uint8_t *mask = malloc(flashsize);
-	memset( mem,  0xff, flashsize );
-	memset( mask, 0x00, flashsize );
-
-
-	printf( "Flashing file: %s\n", argv[2] );
-	FILE *fd = fopen(argv[2],"r");
-	
-	
-	size_t size, dst;
-	uint8_t *buf;
-	while ((buf = read_buf_from_hex(fd, &size, &dst)) != 0) {
-		memcpy( &mem[dst], buf, size);
-		memset( &mask[dst], 0xff, size );
-	}
-
-	if (size != 0)
-		goto fileerror;
-
-	int i,j;
-
-	for( i=0; i<flashsize; i += pagesize) {
-		for(j=i; j<i+pagesize; j++) {
-			if (mask[j] == 0xff) {
-				// trasfer page stating at i
-				printf("Transmitting %4x...\n", i);
-				push_page(addr, &(mem[i]), i, pagesize);
-				break;
-			}
-		}
-	}
-
-	printf("Sendig reset\n");
-	smsg->addr_dst = msg->addr_src;
-	smsg->addr_src = 0x00;  
-	smsg->port_src = PORT_SDO;
-	smsg->port_dst = PORT_SDO;
-	smsg->dlc      = 3;
-	smsg->cmd      = SDO_CMD_READ;
-	smsg->index    = 0xff02;
-
-	can_transmit( (can_message *)smsg);
-
 	return;
 	
 argerror:
 	debug(0, "flash <addr> file.hex");
 	return;
-
-fileerror:
-	debug(0, "Given file is not in Intel Hex format");
+wronghardware:
+	debug(0, "Hardware unkonown");
 	return;
 }
-
-
