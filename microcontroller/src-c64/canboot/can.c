@@ -1,16 +1,19 @@
 
 #ifndef __C64__
-#include <avr/io.h>
-#include <avr/signal.h>
-#define spi_clear_ss() SPI_PORT |= (1<<SPI_PIN_SS)
-#define spi_set_ss() SPI_PORT &= ~(1<<SPI_PIN_SS)
-#define asm asm volatile
+#	include <avr/io.h>
+#	include <avr/signal.h>
+#	define spi_clear_ss() SPI_PORT |= (1<<SPI_PIN_SS)
+#	define spi_set_ss() SPI_PORT &= ~(1<<SPI_PIN_SS)
+#	define asm asm volatile
+#else
+#	define pgm_read_byte(b) (*(b))
 #endif
 
 
 #include "config.h"
 #include "can.h"
 #include "spi.h"
+#include "lap-constants.h"
 
 //Registers
 #define RXF0SIDH 0x00
@@ -115,24 +118,11 @@ typedef struct{
 /* MCP */
 void mcp_reset();
 void mcp_write(unsigned char reg, unsigned char data);
-//void mcp_write_b(unsigned char reg, unsigned char *buf, unsigned char len);
 unsigned char mcp_read(unsigned char reg);
-//void mcp_read_b(unsigned char reg, unsigned char *buf, unsigned char len);
 void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val);
 unsigned char mcp_status();
-//unsigned char mcp_rx_status();
 
 // Functions
-/*
-unsigned char mcp_rx_status(){
-	unsigned char d;
-	spi_set_ss();
-	spi_data(RX_STATUS);
-	d = spi_data(0);
-	spi_clear_ss();
-	return d;
-}
-*/
 
 unsigned char mcp_status(){
 	unsigned char d;
@@ -259,18 +249,6 @@ void mcp_write(unsigned char reg, unsigned char data){
 	spi_clear_ss();
 }
 
-/*
-void mcp_write_b(unsigned char reg, unsigned char *buf, unsigned char len){
-	unsigned char x;
-	spi_set_ss();
-	spi_data(WRITE);
-	spi_data(reg);
-	for(x=0;x<len;x++){
-		spi_data(buf[x]);
-	}
-	spi_clear_ss();
-}
-*/
 
 unsigned char mcp_read(unsigned char reg){
 	unsigned char d;
@@ -282,43 +260,83 @@ unsigned char mcp_read(unsigned char reg){
 	return d;
 }
 
-/*
-void mcp_read_b(unsigned char reg, unsigned char *buf, unsigned char len){
-	unsigned char x;
-	spi_set_ss();
-	spi_data(READ);
-	spi_data(reg);
-	for(x=0;x<len;x++){
-		buf[x] = spi_data(0);
+void mcp_write_b(unsigned char * stream){
+	unsigned char len;
+	
+	while(( len = pgm_read_byte(stream++) )){
+		spi_set_ss();
+		spi_data(WRITE);
+		while(len--){
+			spi_data(pgm_read_byte(stream++));
+		}
+		spi_clear_ss();
 	}
-	spi_clear_ss();
-}
-*/
-
-
-/* Management */
-void can_setmode( can_mode_t mode ) {
-	unsigned char val = mode << 5;  
-	val |= 0x04;  // CLKEN
-
-	mcp_write( CANCTRL, val );
 }
 
 
-void can_setfilter() {
+/* Configuration */
+
+#define FLT_PORT_SRC 0
+#define FLT_PORT_DST1 PORT_SDO
+#define FLT_PORT_DST2 PORT_SDO_DATA
+#define FLT_ADDR_SRC 0	
+
+#define MSK_PORT_SRC 0
+#define MSK_PORT_DST 0x3F
+#define MSK_ADDR_SRC 0
+#define MSK_ADDR_DST 0xFF
+
+
+	// 0x01 : 125kbit/8MHz
+	// 0x03 : 125kbit/16MHz
+	// 0x04 : 125kbit/20MHz
+	
+#if F_MCP == 16000000
+#define CNF1_T 0x03
+#elif F_MCP == 8000000
+#define CNF1_T 0x01
+#elif F_MCP == 20000000
+#define CNF1_T 0x04
+#else
+#error Can Baudrate is only defined for 8, 16 and 20 MHz
+#endif 
+
+
+unsigned char mcp_config_str1[] ={
+	2, BFPCTRL, 0x0C,		//RXBF Pins to Output
+	4, CNF3,
+		0x05,			//CNF3
+		0xf1,			//CNF2
+		0x40 | CNF1_T,		//CNF1		
 	//RXM1   RXM0
 	//  0      0     receive matching filter
 	//  0      1     " only 11bit Identifier
 	//  1      0     " only 29bit Identifier
 	//  1      1     any
-	mcp_write(RXB0CTRL, (1<<RXM1) | (1<<RXM0));
-}
+	2, RXB0CTRL,(0<<RXM1) | (0<<RXM0),
+	9, RXF0SIDH,
+		(FLT_PORT_SRC << 2) | (FLT_PORT_DST1 >> 4 ),
+		((FLT_PORT_DST1 & 0x0C) << 3) | (1<<EXIDE) | (FLT_PORT_DST1 & 0x03),
+		FLT_ADDR_SRC,
+		0x35,
+		(FLT_PORT_SRC << 2) | (FLT_PORT_DST2 >> 4 ),
+		((FLT_PORT_DST2 & 0x0C) << 3) | (1<<EXIDE) | (FLT_PORT_DST2 & 0x03),
+		FLT_ADDR_SRC,
+		0x35,
+	5, RXM0SIDH,
+		(MSK_PORT_SRC << 2) | (MSK_PORT_DST >> 4 ),
+		((MSK_PORT_DST & 0x0C) << 3) | (MSK_PORT_DST & 0x03),
+		MSK_ADDR_SRC,
+		MSK_ADDR_DST,
+	0
+};
+	
+	
+unsigned char mcp_config_str2[] ={	
+	2, CANCTRL, 0,
+	0
+};
 
-void can_setled(unsigned char led, unsigned char state){
-	mcp_bitmod(BFPCTRL, 0x10<<led, state?0xff:0);
-}
-
-/*******************************************************************/
 void delayloop(){
 	unsigned char x;
 	for(x=0;x<255;x++){		
@@ -327,7 +345,17 @@ void delayloop(){
 
 }
 
+void can_setled(unsigned char led, unsigned char state){
+	mcp_bitmod(BFPCTRL, 0x10<<led, state?0xff:0);
+}
+
+/*******************************************************************/
+
+
+extern unsigned char Station_id;
+
 void can_init(){
+	unsigned char tmp;
 	
 #ifdef CAN_INTERRUPT	
 	unsigned char x;
@@ -343,36 +371,18 @@ void can_init(){
 #ifdef CAN_HANDLEERROR
 	can_error = 0;
 #endif	
-	
+
 	mcp_reset();
 	
 	delayloop();
 	
-	mcp_write(BFPCTRL,0x0C);//RXBF Pins to Output
-	
-	// 0x01 : 125kbit/8MHz
-	// 0x03 : 125kbit/16MHz
-	// 0x04 : 125kbit/20MHz
-	
-#if F_MCP == 16000000
-#define CNF1_T 0x03
-#elif F_MCP == 8000000
-#define CNF1_T 0x01
-#elif F_MCP == 20000000
-#define CNF1_T 0x04
-#else
-#error Can Baudrate is only defined for 8, 16 and 20 MHz
-#endif 
-	mcp_write( CNF1, 0x40 | CNF1_T );
-	mcp_write( CNF2, 0xf1 );
-	mcp_write( CNF3, 0x05 );
+	mcp_write_b(mcp_config_str1);
 
-	// configure IRQ
-	// this only configures the INT Output of the mcp2515, not the int on the Atmel
-	mcp_write( CANINTE, (1<<RX0IE) | (1<<TX0IE) );
+	tmp = Station_id;
+	mcp_write(RXF0EID0, tmp );
+	mcp_write(RXF1EID0, tmp );
 
-	can_setfilter();
-	can_setmode(normal);
+	mcp_write_b(mcp_config_str2);	
 
 #ifdef CAN_INTERRUPT
 

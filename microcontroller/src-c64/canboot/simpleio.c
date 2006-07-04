@@ -8,6 +8,10 @@
 #define TBLX (*(unsigned char *)0xd6)
 
 
+void curs_left(unsigned char cols){
+	PNTR-=cols;	
+}
+
 void print(char * txt){
 	char c;
 	while(c = *txt++){
