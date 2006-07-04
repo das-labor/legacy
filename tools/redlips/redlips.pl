@@ -82,9 +82,6 @@
 # -----------
 # "A thread exited while 2 threads were running.
 # backticks & ticks do not get passed via shell -> add -> radd
-# variable sharing
-# splice lock?
-# command addtoport 1234 s/sd//
 #
 #
 # Todo
@@ -210,10 +207,9 @@ sub ui {
     commands => {
       "p" => {
         syn                     => "print",
-        exclude_from_completion => 1
       },
       "print" => {
-        desc    => "print current rules",
+        desc    => "print current rules (short: p)",
         minargs => 0,
         maxargs => 0,
         proc    => sub {
@@ -232,10 +228,20 @@ sub ui {
           }
           }
       },
+      "atp" => {
+          syn   => "addtoport",
+      },
+      "addtoport" => {
+        desc    => "add a rule beginning with \"tcp any:any > any:\" (short: atp)",
+        minargs => 2,
+        proc    => sub {
+          radd("tcp any:any > any:@_");
+          set_shared_rules();    # sync the threads
+          }
+      },
       "add" => {
         desc    => "add a rule",
         minargs => 5,
-        maxargs => 100,
         proc    => sub {
           radd("@_");
           set_shared_rules();    # sync the threads
@@ -376,11 +382,11 @@ sub radd {
       return 1;
     }
     else {
-      bug( "error adding rule: regex incorrect", 5 );
+      bug( "error adding rule: regex incorrect ($string)", 5 );
     }
   }
   else {
-    bug( "error adding rule: network option incorrect", 5 );
+    bug( "error adding rule: network option incorrect ($string)", 5 );
   }
 
   return 0;
