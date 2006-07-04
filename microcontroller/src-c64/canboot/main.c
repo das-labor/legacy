@@ -1,17 +1,12 @@
 #include "can.h"
 #include "spi.h"
+#include "config.h"
+#include "lap-constants.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include "simpleio.h"
 
-#define PORT_SDO_CMD 21
-#define PORT_SDO_DATA 22
-
-
-
-#define PORT_MGT 0x30
-#define FKT_MGT_AWAKE 0x03
 
 #define SDO_CMD_READ 		0x20
 #define SDO_CMD_REPLY 		0x21
@@ -45,18 +40,18 @@ typedef struct{
 	unsigned char data[8];
 }sdo_data_message;
 
-#define SPM_PAGESIZE 1024
+#define PAGESIZE 0
 
 unsigned char Device_info_msg[] ={
 	SDO_CMD_REPLY,
 	SDO_TYPE_UINT32_RO,
-	0,//(unsigned char)SPM_PAGESIZE,
-	4,//(unsigned char)(SPM_PAGESIZE/256),
+	(unsigned char)PAGESIZE,
+	(unsigned char)(PAGESIZE/256),
 	64,
-	0
+	1
 };
 
-#define FLASHEND 51216
+#define FLASHEND 51216u
 
 unsigned char Flash_info_msg[] ={
 	SDO_CMD_REPLY,
@@ -68,65 +63,23 @@ unsigned char Flash_info_msg[] ={
 
 void delay_100ms(){
 	unsigned int x;
-	for(x=0;x<0x4000;x++){
+	for(x=0;x<0x0400;x++){
 		asm ("nop");
 	}
 }
 
-
-
 unsigned char Station_id=0x64;
 
-/*
-
-void hexdump(unsigned char * addr, unsigned char size){
-	unsigned char x=0, sbuf[3];
-	
-	while(size--){
-		itoa(*addr++, sbuf, 16);
-		if (sbuf[1] == 0) print("0");
-		print(sbuf);
-		print(" ");
-		if(++x == 16){
-			print("\n");
-			x = 0;
-		}
-	}
-}
-
-
-void dump(){
-	print("Can Dump:\n");
-	while(1){
-		cm = can_get_nb();
-		if(cm){
-			print("Received Message:\n");
-			hexdump((void*)cm, (cm->dlc)+5);
-			print("\n");
-		}
-	
-	}	
-}
-
-*/
-
-void boot_page_fill(unsigned int address, unsigned char c){
-	static unsigned int addresss = 0x801;
-	(*(unsigned char*)addresss) = c;
-	addresss++;
-}
 
 can_message Tx_msg, *Rx_msg;
 
 int main(){
-	can_message * cm;
-	unsigned int Address;
-	unsigned int Size;
-	unsigned char count=20, toggle=1;
-	
-	
-	asm ("sei");
-	
+	char txtbuf[10];
+	unsigned char x;
+	unsigned int Address, Size, bcount;
+	sdo_message * msg;
+	unsigned char count;
+	unsigned char toggle=0;
 	
 	print("\nC64 CAN Bootloader by TIXIV\n\n");
 	print("SPI Init...");
@@ -135,8 +88,10 @@ int main(){
 		return 0;		
 	}
 	
-	print("\nCAN Init...\n");
+	print("O.K.\nCAN Init...");
 	can_init();
+	
+	print("O.K.\nWaiting for server ");
 
 	Tx_msg.addr_src = Station_id;
 	Tx_msg.addr_dst = 0;
@@ -146,15 +101,32 @@ int main(){
 	Tx_msg.data[0] = FKT_MGT_AWAKE;
 	
 	
-	
 	while(1){
 		can_transmit(&Tx_msg);
+		count = 20;
 		while(count--){
-			//blink LED
-			can_setled(0, toggle);
-			toggle ^= 1;
-			delay_100ms();
+			switch(toggle){
+				case 0:
+					print(".   ");
+					break;
+				case 1:
+					print(" .  ");
+					break;
+				case 2:
+					print("  . ");
+					break;
+				case 3:
+					print("   .");
+					break;
+			}
+			curs_left(4);
 		
+			//blink LED	
+			can_setled(0, toggle&1);
+			toggle += 1;
+			toggle &= 0x03;
+			delay_100ms();
+			
 			if(Rx_msg = can_get_nb()){
 				goto sdo_server;
 			}
@@ -164,10 +136,10 @@ int main(){
 	sdo_server:
 	
 	while(1){
-		if(Rx_msg->port_dst == PORT_SDO_CMD){
-			sdo_message * msg = (sdo_message*)Rx_msg->data;
+		if(Rx_msg->port_dst == PORT_SDO){
+			msg = (sdo_message*)Rx_msg->data;
 			
-			Tx_msg.port_src = PORT_SDO_CMD;
+			Tx_msg.port_src = PORT_SDO;
 			Tx_msg.addr_dst = Rx_msg->addr_src;
 			Tx_msg.port_dst = Rx_msg->port_src;
 			
@@ -183,6 +155,11 @@ int main(){
 						Tx_msg.dlc = sizeof(Flash_info_msg);
 						break;
 					case 0xFF02:
+						*(unsigned char*)0xc6 = 4;//4 keys in keyboard buffer
+						*(unsigned char*)0x277 = 'r';
+						*(unsigned char*)0x278 = 'u';
+						*(unsigned char*)0x279 = 'n';
+						*(unsigned char*)0x27a = 13;//return
 						return(0);
 					default:
 						Tx_msg.dlc = 1;
@@ -202,9 +179,7 @@ int main(){
 					Tx_msg.dlc = 1;
 					Tx_msg.data[0] = SDO_CMD_ERROR_INDEX;
 					can_transmit(&Tx_msg);
-				}
-			
-			
+				}		
 			}
 		}
 		while(!can_get_nb());
@@ -212,20 +187,31 @@ int main(){
 	
 	programm:
 	
+	itoa(Address, txtbuf, 16);
+	print("\nLoading from $");
+	print(txtbuf);
+	print(" to $");
+	itoa(Address+Size,txtbuf,16);
+	print(txtbuf);
+	print("\n");
+	
+	bcount = 0;
+	
 	while(1){
 		while(!can_get_nb());
 		if(Rx_msg->port_dst != PORT_SDO_DATA){
 			goto sdo_server;
 		}else{
-			unsigned char x;
-			for(x=0;x<8;x++){
-				boot_page_fill (Address,((sdo_data_message*)Rx_msg->data)->data[x] );
-				Address += 1;
-			}
-			
 			can_transmit(&Tx_msg);//this will repeat the ACK message
+			for(x=0;x<8;x++){
+				*(unsigned char *)Address = ((sdo_data_message*)Rx_msg->data)->data[x];
+				Address++;
+			}
+			bcount+=8;
+			if(bcount>=254){
+				bcount -= 254;
+				print(".");
+			}
 		}
 	}
-	
-
 }

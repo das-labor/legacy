@@ -10,8 +10,14 @@
 
 // can.[ch] defines
 #undef CAN_INTERRUPT		//set this to enable interrupt driven and buffering version
-#define CAN_RX_BUFFER_SIZE 2	//only used for Interrupt
-#define CAN_TX_BUFFER_SIZE 2	//only used for Interrupt
+
+//for can bootloader
+#define PORT_MGT 0x30
+#define FKT_MGT_AWAKE 0x03
+
+#define PORT_MGT 0x30
+#define FKT_MGT_AWAKE 0x03
+
 
 #define F_MCP 20000000
 
