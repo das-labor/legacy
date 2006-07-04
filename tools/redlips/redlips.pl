@@ -81,7 +81,7 @@
 # Urgent Todo
 # -----------
 # "A thread exited while 2 threads were running.
-# ticks do not get passed via shell -> add -> radd
+# backticks & ticks do not get passed via shell -> add -> radd
 # variable sharing
 # splice lock?
 # command addtoport 1234 s/sd//
@@ -130,8 +130,8 @@ use constant TIMEOUT => 1_000_000 * 2;    # 2 seconds
 
 # general options
 my %o = (
-  do_iptables => 1,                       # alter iptables
-  mode        => "local",                 # local or forward
+  do_iptables => 0,                       # alter iptables
+  mode        => "forward",               # local or forward
   debug_level => 9,
   logfile     => "lips.log",
   history     => "lips.history",
@@ -444,7 +444,7 @@ sub ipt {
   my $chain;
 
   if ( $o{mode} eq "forward" ) {
-    $chain = "-t nat -I FORWARD 1";
+    $chain = "-t filter -I FORWARD 1";
   }
   elsif ( $o{mode} eq "local" ) {
     $chain = "-t filter -I INPUT 1";
@@ -453,8 +453,7 @@ sub ipt {
   if ( $o{do_iptables} == 1 ) {
     bug( "modifying iptables rules", 2 );
     if ( $command eq "start" ) {
-      system( "/usr/local/sbin/iptables " . $chain
-          . " -p tcp --dport 1234 -j QUEUE" );
+      system( "/usr/local/sbin/iptables " . $chain . " -j QUEUE" );
     }
     elsif ( $command eq "stop" ) {
       $chain =~ s/-I/-D/;
