@@ -49,12 +49,12 @@ typedef enum { PORT_MGT=0x30, PORT_LAMPE=0x20, PORT_SDO=0x15, PORT_SDO_DATA=0x16
 typedef enum { FKT_MGT_PING=0x00, FKT_MGT_PONG=0x01, 
 		FKT_MGT_RESET=0x02, FKT_MGT_AWAKE=0x03 }	lap_mgt_fkts;
 typedef enum { FKT_LAMPE_SET=0x00, FKT_LAMPE_SETMASK=0x01, 
-		FKT_LAMPE_SETDELAY=0x02 }			lap_lampe_fkts;
+		FKT_LAMPE_SETDELAY=0x02, FKT_LAMPE_ADD=0x03 }			lap_lampe_fkts;
 
 typedef enum { FKT_BORG_INFO=0x00, FKT_BORG_MODE=0x01, FKT_BORG_SCROLLTEXT_RESET=0x02, 
 		FKT_BORG_SCROLLTEXT_APPEND=0x03 } lap_borg_fkts;
 
-typedef enum { FKT_MOOD_INFO=0x00, FKT_MOOD_GET=0x01, FKT_MOOD_SET=0x02,} lap_mood_fkts;
+typedef enum { FKT_MOOD_INFO=0x00, FKT_MOOD_GET=0x01, FKT_MOOD_SET=0x02, FKT_MOOD_ONOFF=0x03} lap_mood_fkts;
 #define SDO_CMD_READ 		0x20
 #define SDO_CMD_REPLY 		0x21
 #define SDO_CMD_INFO 		0x22

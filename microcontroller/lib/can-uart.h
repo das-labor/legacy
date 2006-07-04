@@ -9,7 +9,7 @@
 
 #include "config.h"
 #include "can.h"
-#include "cantun.h"
+#include "can-encap.h"
 
 /*****************************************************************************
  * Connection management
@@ -25,8 +25,8 @@ void canu_reset();
 /*****************************************************************************
  * Memory Management
  */
-cantun_msg_t *canu_buffer_get();
-void canu_free(cantun_msg_t *);
+rs232can_msg *canu_buffer_get();
+void canu_free(rs232can_msg *);
 
 
 /*****************************************************************************
@@ -34,15 +34,15 @@ void canu_free(cantun_msg_t *);
  */
 
 /* nonblocking read from uart -- returns 0 if no complete msg arrived */
-cantun_msg_t *canu_get_nb();
+rs232can_msg *canu_get_nb();
 
 /* blocking read from uart */
-cantun_msg_t *canu_get();
+rs232can_msg *canu_get();
 
 
 /*****************************************************************************
  * transmit
  */
-void canu_transmit(cantun_msg_t *msg);
+void canu_transmit(rs232can_msg *msg);
 
 #endif
