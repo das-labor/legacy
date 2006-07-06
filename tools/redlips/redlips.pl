@@ -129,6 +129,7 @@ use constant TIMEOUT => 1_000_000 * 2;    # 2 seconds
 my %o = (
   do_iptables => 0,                       # alter iptables
   mode        => "forward",               # local or forward
+  ui          => "shell",                 # shell or curses
   debug_level => 9,
   logfile     => "lips.log",
   history     => "lips.history",
@@ -186,7 +187,7 @@ radd("tcp any:any <> any:any s/asdf/as/i");
 my $packet_loop_flag : shared = 1;
 my $shared_rules : shared     = 0;
 
-my $thread_ui      = threads->create("ui");
+my $thread_ui      = threads->create($o{ui});
 my $thread_packets = threads->create("packets");
 
 $thread_ui->join();
@@ -202,7 +203,7 @@ exit;
 #
 # ui
 #
-sub ui {
+sub shell {
   my $term = new Term::ShellUI(
     commands => {
       "p"     => { syn => "print", },
