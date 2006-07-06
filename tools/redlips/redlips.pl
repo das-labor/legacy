@@ -72,6 +72,19 @@
 #   type "help" to get a list of commands
 #   if you need to kill it, kill with -9 or ctrl-c
 #
+# Debug Level Categories
+# ----------------------
+# 1
+# 2
+# 3
+# 4
+# 5
+# 6
+# 7
+# 8
+# 9
+#
+#
 # ChangeLog
 # ---------
 # 0.1
@@ -81,12 +94,14 @@
 # Urgent Todo
 # -----------
 # "A thread exited while 2 threads were running.
-# backticks & ticks do not get passed via shell -> add -> radd
+# backticks & ticks \"' do not get passed via shell
+#   -> escape them
+# debug levels / categories
 #
 #
 # Todo
 # ----
-# debug levels / categories
+# better dump_ascii (indent \n, check for binary proto)
 # internal tcp proxy
 # acronym for red
 # no more eval, lex?
@@ -133,7 +148,7 @@ my %o = (
   debug_level => 9,
   logfile     => "lips.log",
   history     => "lips.history",
-  sstr => "X",    # substitution string for length modification in tcp  packets
+  sstr => "\x00",  # substitution string for length modification in tcp  packets
   rule_splitter => "\x00\x01\x00",
 );
 
@@ -184,10 +199,11 @@ radd("tcp any:any <> any:any s/asdf/as/i");
 #
 # threads
 #
-my $packet_loop_flag : shared = 1;
-my $shared_rules : shared     = 0;
+my $packet_loop_flag : shared  = 1;
+my $shared_rules : shared      = 0;
+my $shared_rules_flag : shared = 0;
 
-my $thread_ui      = threads->create($o{ui});
+my $thread_ui      = threads->create( $o{ui} );
 my $thread_packets = threads->create("packets");
 
 $thread_ui->join();
@@ -311,8 +327,10 @@ sub shell {
         method  => sub { shift->exit_requested(1); },
       }
     },
-    history_file => $o{history},
-    history_max  => 10000
+    history_file                => $o{history},
+    history_max                 => 10000,
+    keep_quotes                 => 1,
+    backslash_continues_command => 0,
   );
   bug( 'Using ' . $term->{term}->ReadLine, 5 );
   $term->run();
@@ -357,6 +375,7 @@ sub packets {
 #
 sub radd {
   my $string = shift;
+  my $quiet  = shift;
   my $hash   = {};
 
   chomp($string);
@@ -374,16 +393,17 @@ sub radd {
     )
   {
     if ( validateregex($7) ) {    # everything is valid
-      bug( "adding rule: $string", 5 );
+      bug( "adding rule: $string", 5 ) unless $quiet;
       push @r, [ $1, $2, $3, $4, $5, $6, $7 ];
       return 1;
     }
     else {
-      bug( "error adding rule: regex incorrect ($string)", 5 );
+      bug( "error adding rule: regex incorrect ($string)", 5 ) unless $quiet;
     }
   }
   else {
-    bug( "error adding rule: network option incorrect ($string)", 5 );
+    bug( "error adding rule: network option incorrect ($string)", 5 )
+      unless $quiet;
   }
 
   return 0;
@@ -407,36 +427,41 @@ sub set_shared_rules {
       . $o{rule_splitter};
   }
 
-  $shared_rules = $return;
+  $shared_rules_flag = 1;
+  $shared_rules      = $return;
 }
 
 sub get_shared_rules {
   my ( $rule, $string, $newrule );
   my $exists = 0;
 
-  if ($shared_rules) {
+  if ($shared_rules_flag) {
     splice( @r, 0, $#r + 1 );    #remove old rules
-    foreach ( split( /$o{rule_splitter}/, $shared_rules ) ) {
-      $newrule = $_;
-      $exists  = 0;
 
-      for $rule ( 0 .. $#r ) {
-        $string =
-            $r[$rule][0] . " "
-          . $r[$rule][1] . ":"
-          . $r[$rule][2] . " "
-          . $r[$rule][3] . " "
-          . $r[$rule][4] . ":"
-          . $r[$rule][5] . " "
-          . $r[$rule][6];
-        $exists = 1 if ( $newrule eq $rule );
+    if ( defined($shared_rules) ) {    #might be empty
+      foreach ( split( /$o{rule_splitter}/, $shared_rules ) ) {
+        $newrule = $_;
+        $exists  = 0;
+
+        for $rule ( 0 .. $#r ) {
+          $string =
+              $r[$rule][0] . " "
+            . $r[$rule][1] . ":"
+            . $r[$rule][2] . " "
+            . $r[$rule][3] . " "
+            . $r[$rule][4] . ":"
+            . $r[$rule][5] . " "
+            . $r[$rule][6];
+          $exists = 1 if ( $newrule eq $rule );
+        }
+
+        radd( $newrule, 1 ) unless $exists;    # this is pure bloat
       }
-
-      radd($newrule) unless $exists;    # this is pure bloat
     }
   }
 
-  $shared_rules = 0;
+  $shared_rules_flag = 0;
+  $shared_rules      = 0;
 }
 
 #
@@ -587,8 +612,11 @@ sub dump_ascii {
     elsif ( ord $char == 10 ) {
       $return = $return . "\\n";
     }
+    elsif ( ord $char == 13 ) {
+      $return = $return . "\\r";
+    }
     else {
-      $return = $return . "\\x" . sprintf( "%x", ord $char );
+      $return = $return . "\\x" . sprintf( "%.2x", ord $char );
     }
   }
   return $return;
