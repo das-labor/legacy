@@ -74,15 +74,15 @@
 #
 # Debug Level Categories
 # ----------------------
-# 1
-# 2
-# 3
-# 4
-# 5
-# 6
-# 7
-# 8
-# 9
+# 1 ui
+# 2 ip_queue
+# 3 redlips process
+# 4 packet manipulation
+# 5 packet info
+# 6 rules
+# 7 reserved
+# 8 reserved
+# 9 reserved
 #
 #
 # ChangeLog
@@ -93,10 +93,9 @@
 #
 # Urgent Todo
 # -----------
-# "A thread exited while 2 threads were running.
+# "A thread exited while 2 threads were running. ++ double free"
 # backticks & ticks \"' do not get passed via shell
 #   -> escape them
-# debug levels / categories
 #
 #
 # Todo
@@ -212,7 +211,7 @@ $thread_packets->join();
 
 ipt("stop");    # also check signal_catcher
 print "exiting from shell command...\n";
-bug( "exiting from shell command", 1 );
+bug( "exiting from shell command", 3 );
 close L;
 exit;
 
@@ -332,7 +331,7 @@ sub shell {
     keep_quotes                 => 1,
     backslash_continues_command => 0,
   );
-  bug( 'Using ' . $term->{term}->ReadLine, 5 );
+  bug( 'Using ' . $term->{term}->ReadLine, 1 );
   $term->run();
   print "closing redlips shell...\n";
   return 0;
@@ -348,8 +347,8 @@ sub packets {
     )
     or mydie( "init IPQueue", IPTables::IPv4::IPQueue->errstr );
 
-  bug( "starting packet while loop", 5 );
-  bug( "--------------------------", 5 );
+  bug( "starting packet while loop", 2 );
+  bug( "--------------------------", 2 );
 
   while ($packet_loop_flag) {
     my $msg = $queue->get_message(TIMEOUT);
@@ -358,7 +357,7 @@ sub packets {
 
     if ( !defined $msg ) {
       next if IPTables::IPv4::IPQueue->errstr eq 'Timeout';
-      bug( "iptables error: " . IPTables::IPv4::IPQueue->errstr, 1 );
+      bug( "iptables error: " . IPTables::IPv4::IPQueue->errstr, 2 );
       mydie( "get_message", IPTables::IPv4::IPQueue->errstr );
     }
 
@@ -393,16 +392,16 @@ sub radd {
     )
   {
     if ( validateregex($7) ) {    # everything is valid
-      bug( "adding rule: $string", 5 ) unless $quiet;
+      bug( "adding rule: $string", 6 ) unless $quiet;
       push @r, [ $1, $2, $3, $4, $5, $6, $7 ];
       return 1;
     }
     else {
-      bug( "error adding rule: regex incorrect ($string)", 5 ) unless $quiet;
+      bug( "error adding rule: regex incorrect ($string)", 6 ) unless $quiet;
     }
   }
   else {
-    bug( "error adding rule: network option incorrect ($string)", 5 )
+    bug( "error adding rule: network option incorrect ($string)", 6 )
       unless $quiet;
   }
 
@@ -479,7 +478,7 @@ sub ipt {
   }
 
   if ( $o{do_iptables} == 1 ) {
-    bug( "modifying iptables rules", 2 );
+    bug( "modifying iptables rules", 3 );
     if ( $command eq "start" ) {
       system( "/usr/local/sbin/iptables " . $chain . " -j QUEUE" );
     }
@@ -489,7 +488,7 @@ sub ipt {
     }
   }
   else {
-    bug( "not modifying iptables rules", 2 );
+    bug( "not modifying iptables rules", 3 );
   }
 }
 
@@ -504,7 +503,7 @@ sub signal_catcher {
 
 sub mydie {
   my ( $error, $errorstring ) = @_;
-  bug( "dying ($error): $errorstring", 1 );
+  bug( "dying ($error): $errorstring", 3 );
   print "dying ($error): $errorstring\n";
 
   close L;
@@ -688,7 +687,7 @@ sub pinject {
         . length($data)
         . " vs orig "
         . length( $tp->{data} ) . ")",
-      1
+      4
     );
 
     $nl = ( substr( $data, length($data) - 1, 1 ) eq "\n" ) ? 1 : 0;
@@ -777,7 +776,7 @@ sub phandle {
       dump_itd( $msg, $ip, $tp );
     }
     else {
-      bug( "skipping empty packet", 6 );
+      bug( "skipping empty packet", 5 );
       paccept($msg);             # skipt empty packets
       return;
     }
@@ -789,13 +788,13 @@ sub phandle {
       dump_itd( $msg, $ip, $tp );
     }
     else {
-      bug( "skipping empty tcp packet", 6 );
+      bug( "skipping empty tcp packet", 5 );
       paccept($msg);
       return;
     }
   }
   else {
-    bug( "skipping non tcp, non udp packet (proto " . $ip->{proto} . ")", 6 );
+    bug( "skipping non tcp, non udp packet (proto " . $ip->{proto} . ")", 5 );
     paccept($msg);
     return;
   }
@@ -817,7 +816,7 @@ sub phandle {
     if ( ( $r[$rule][0] eq "tcp" and $ip->{proto} == 58 )
       or ( $r[$rule][0] eq "udp" and $ip->{proto} == 6 ) )
     {
-      bug( "skipping: wrong proto" . $rule_string, 7 );
+      bug( "skipping: wrong proto" . $rule_string, 6 );
       next;
     }
 
@@ -842,7 +841,7 @@ sub phandle {
       )
       )
     {
-      bug( "skipping: wrong network layer" . $rule_string, 7 );
+      bug( "skipping: wrong network layer" . $rule_string, 6 );
       next;
     }
 
@@ -868,7 +867,7 @@ sub phandle {
       )
       )
     {
-      bug( "skipping: wrong transport layer" . $rule_string, 7 );
+      bug( "skipping: wrong transport layer" . $rule_string, 6 );
       next;
     }
 
@@ -876,15 +875,15 @@ sub phandle {
     $return = eval "\$data =~ $r[$rule][6]";
 
     if ( length $@ ) {
-      bug( "skipping: error in eval $@" . $rule_string, 1 );
+      bug( "skipping: error in eval $@" . $rule_string, 6 );
       next;
     }
     elsif ( $return gt 0 ) {
-      bug( "rule applied successfully" . $rule_string, 7 );
+      bug( "rule applied successfully" . $rule_string, 6 );
       $modified = 1;
     }
     else {
-      bug( "skipping: substitution not matching" . $rule_string, 7 );
+      bug( "skipping: substitution not matching" . $rule_string, 6 );
       next;
     }
   }
