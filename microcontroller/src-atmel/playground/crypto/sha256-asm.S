@@ -662,7 +662,7 @@ sha256_main_loop:
 	eor XAccu1, Func1
 	eor XAccu2, Func2
 	eor XAccu3, Func3
-c	eor XAccu4, Func4
+	eor XAccu4, Func4
 	movw Func1, Bck3 /* this prerotates furteh 16 bits*/
 	movw Func3, Bck1 /* so we have now prerotated by 24 bits*/
 	ldi r20, 1 
