@@ -93,9 +93,6 @@
 #
 # Urgent Todo
 # -----------
-# "A thread exited while 2 threads were running. ++ double free"
-# backticks & ticks \"' do not get passed via shell
-#   -> escape them
 #
 #
 # Todo
@@ -104,7 +101,7 @@
 # internal tcp proxy
 # acronym for red
 # no more eval, lex?
-# nfnetlink_queue (passemble instead of pinject, no dep on rawsock)
+# nfnetlink_queue (passemble instead of pinject, no dependency on rawsock)
 # oo
 # manage iptables rules with IPTables::IPv4
 #   -> no duplicate --jump QUEUE
@@ -112,6 +109,8 @@
 #   mark modified packets (with iptables / evil bit)
 #   working traffic when app not running!
 # ipv6
+# shellui: need closing quote (atp 1234 s/a'sdf/asdf/)
+# *** glibc detected *** double free or corruption (!prev): 0x086bde88 ***
 #
 #
 
@@ -141,12 +140,13 @@ use constant TIMEOUT => 1_000_000 * 2;    # 2 seconds
 
 # general options
 my %o = (
-  do_iptables => 0,                       # alter iptables
+  do_iptables => 1,                       # alter iptables
+  ipt_script  => "ipt",                   # run this script with {start|stop}
   mode        => "forward",               # local or forward
   ui          => "shell",                 # shell or curses
   debug_level => 9,
   logfile     => "lips.log",
-  history     => "lips.history",
+  history     => "history",
   sstr => "\x00",  # substitution string for length modification in tcp  packets
   rule_splitter => "\x00\x01\x00",
 );
@@ -173,6 +173,7 @@ my $queue;
 
 open( L, ">>" . $o{logfile} ) or die $!;    # appending logfile
 autoflush L 1;
+bug("----------------starting redlips----------------",3);
 
 $SIG{'INT'}  = \&signal_catcher;
 $SIG{'KILL'} = \&signal_catcher;
@@ -182,10 +183,9 @@ ipt("start");
 #
 # rules
 #
-radd("tcp any:any <> any:any s/felix/xilef/i");
-radd("tcp any:any <> any:any s/qwer/ytrewq/i");
-radd("tcp any:any <> any:any s/asdf/as/i");
-
+#radd("tcp any:any <> any:any s/felix/xilef/i");
+#radd("tcp any:any <> any:any s/qwer/ytrewq/i");
+#radd("tcp any:any <> any:any s/asdf/as/i");
 #radd("tcp 127.0.0.1:any > any:111 s/felix/xilef/i");
 #radd("tcp any:any <> any:any s/66666/ssssss/i");
 #radd("tcp any:any <> any:any s/44444/vvvv/i");
@@ -246,16 +246,20 @@ sub shell {
       "addtoport" => {
         desc => "add a rule beginning with \"tcp any:any > any:\" (short: atp)",
         minargs => 2,
-        proc    => sub {
-          radd("tcp any:any > any:@_");
+        method  => sub {
+          my $cmd = $_[1]{rawline};
+          $cmd =~ s/^\w*\s(.*)$/$1/;
+          radd("tcp any:any > any:$cmd");
           set_shared_rules();    # sync the threads
           }
       },
       "add" => {
         desc    => "add a rule",
         minargs => 5,
-        proc    => sub {
-          radd("@_");
+        method  => sub {
+          my $cmd = $_[1]{rawline};
+          $cmd =~ s/^\w*\s(.*)$/$1/;
+          radd("$cmd");
           set_shared_rules();    # sync the threads
           }
       },
@@ -331,7 +335,7 @@ sub shell {
     keep_quotes                 => 1,
     backslash_continues_command => 0,
   );
-  bug( 'Using ' . $term->{term}->ReadLine, 1 );
+  bug( 'shellui: using ' . $term->{term}->ReadLine, 1 );
   $term->run();
   print "closing redlips shell...\n";
   return 0;
@@ -348,7 +352,6 @@ sub packets {
     or mydie( "init IPQueue", IPTables::IPv4::IPQueue->errstr );
 
   bug( "starting packet while loop", 2 );
-  bug( "--------------------------", 2 );
 
   while ($packet_loop_flag) {
     my $msg = $queue->get_message(TIMEOUT);
@@ -479,12 +482,17 @@ sub ipt {
 
   if ( $o{do_iptables} == 1 ) {
     bug( "modifying iptables rules", 3 );
-    if ( $command eq "start" ) {
-      system( "/usr/local/sbin/iptables " . $chain . " -j QUEUE" );
-    }
-    elsif ( $command eq "stop" ) {
-      $chain =~ s/-I/-D/;
-      system( "/usr/local/sbin/iptables " . $chain );
+
+    if ( $o{ipt_script} ) {
+      system( "/bin/bash " . $o{ipt_script} ." " . $command );
+    } else {
+      if ( $command eq "start" ) {
+        system( "/usr/local/sbin/iptables " . $chain . " -j QUEUE" );
+      }
+      elsif ( $command eq "stop" ) {
+        $chain =~ s/-I/-D/;
+        system( "/usr/local/sbin/iptables " . $chain );
+      }
     }
   }
   else {
