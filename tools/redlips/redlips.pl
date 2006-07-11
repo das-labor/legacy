@@ -583,7 +583,7 @@ sub ltime {
 
 sub pc {
   $packet_counter = ( $packet_counter + 1 ) % 99999999;
-  return "[p" . sprintf( "%.8d", $packet_counter ) . "]";
+  return "[p" . sprintf( "%.8d", $packet_counter ) . "p]";
 }
 
 sub getevilbit {
