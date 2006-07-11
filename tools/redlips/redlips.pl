@@ -173,7 +173,7 @@ my $queue;
 
 open( L, ">>" . $o{logfile} ) or die $!;    # appending logfile
 autoflush L 1;
-bug("----------------starting redlips----------------",3);
+bug( "----------------starting redlips----------------", 3 );
 
 $SIG{'INT'}  = \&signal_catcher;
 $SIG{'KILL'} = \&signal_catcher;
@@ -484,8 +484,9 @@ sub ipt {
     bug( "modifying iptables rules", 3 );
 
     if ( $o{ipt_script} ) {
-      system( "/bin/bash " . $o{ipt_script} ." " . $command );
-    } else {
+      system( "/bin/bash " . $o{ipt_script} . " " . $command );
+    }
+    else {
       if ( $command eq "start" ) {
         system( "/usr/local/sbin/iptables " . $chain . " -j QUEUE" );
       }
