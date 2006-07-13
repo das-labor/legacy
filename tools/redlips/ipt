@@ -1,6 +1,8 @@
 #!/bin/bash
 
-PORTS="1234 4321"
+PORTS="1234"
+IMAGE="10.1.1.14"
+OURNET="10.1.1.0/255.255.255.0"
 
 case $1 in
 start)
@@ -12,8 +14,8 @@ iptables -I FORWARD -j REDLIPS
 for p in $PORTS
 do
 
-iptables -A REDLIPS -i tun+ -s ! 10.1.1.0/255.255.255.0 -p tcp --dport $p -j QUEUE
-iptables -A REDLIPS -o tun+ -s 10.1.1.3 -p tcp --sport $p -j QUEUE
+iptables -A REDLIPS -i tun+ -s ! $OURNET -p tcp --dport $p -j QUEUE
+iptables -A REDLIPS -o tun+ -s $IMAGE -p tcp --sport $p -j QUEUE
 
 done
 
