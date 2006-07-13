@@ -1,8 +1,21 @@
 #!/bin/bash
 
+PORTS="1234 4321"
+
 case $1 in
 start)
 logger "$0 starting"
+
+iptables -N REDLIPS
+iptables -I FORWARD -j REDLIPS
+
+for p in $PORTS
+do
+
+iptables -A REDLIPS -i tun+ -s ! 10.1.1.0/255.255.255.0 -p tcp --dport $p -j QUEUE
+iptables -A REDLIPS -o tun+ -s 10.1.1.3 -p tcp --sport $p -j QUEUE
+
+done
 
 
 ;;
@@ -10,6 +23,9 @@ logger "$0 starting"
 stop)
 logger "$0 stopping"
 
+iptables -D FORWARD -j REDLIPS
+iptables -F REDLIPS
+iptables -X REDLIPS
 
 ;;
 
