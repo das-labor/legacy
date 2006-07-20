@@ -48,7 +48,7 @@ class LaborTermine
     proxy = ENV['HTTP_PROXY']
     clnt  = HTTPAccess2::Client.new(proxy)
     txt   = clnt.get(WIKIURL, { "pages" => WIKIPAGE, "action" => "submit", "curonly" => "true" }).content
-    return txt.decode_entities;
+    return HTMLEntities.decode_entities(txt);
   end
 
   def parseLine(line)
