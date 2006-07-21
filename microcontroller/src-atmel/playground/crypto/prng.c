@@ -1,29 +1,31 @@
 /**
- * File:		rng.c
- * Author:	Daniel Otte
+ * File:		prng.c
+ * Author:		Daniel Otte
  * Date:		17.05.2006
- * License:	GPL
+ * License:		GPL
  * Description:	This file contains an implementaition of a pseudo-random-number generator.
- * 
+ * Extension 1:
+ * 	rndCore is expanded to 512 bits for more security.
  **/
+
 
 /*
  * 
- *                      ############################################################################
- *                      #																	       #
- * 					    #		  +-------------------+										 	   #
- * 					    #	  	  |				      |											   #
- * 					    #		  V				      |				  							   #
- *                      #      (concat)	    		      |											   #
- *  +---------------+   #    o---------o          +---------+      o---------o       o---------o   #    +--------------+
- *  | entropy Block | -----> | sha-256 | --->(xor)| rndCore | ---> | sha-256 | --+-> | sha-256 | -----> | random Block |
- *  +---------------+   #    o---------o          +---------+      o---------o   |   o---------o   #    +--------------+
- * 						#					         (xor)						 |				   #
- * 						#						       ^						     |				   #
- * 						#						       |						     |				   #
- * 						#						       +-------------------------+				   #
- * 						#																	       #
- *						############################################################################
+ *                      ####################################################################################
+ *                      #        																	       #
+ *					    #		  +---------------------------+										 	   #
+ * 					    #	  	  |	        			      |											   #
+ * 					    #		  V				              |				  							   #
+ *                      #      (concat)	            		  |											   #
+ *  +---------------+   #    o---------o             (xor)+---------+      o---------o       o---------o   #    +--------------+
+ *  | entropy Block | -----> | sha-256 | --(offset)-<     | rndCore | ---> | sha-256 | --+-> | sha-256 | -----> | random Block |
+ *  +---------------+   #    o---------o             (xor)+---------+      o---------o   |   o---------o   #    +--------------+
+ * 						#        					      (xor)	(xor)					 |				   #
+ * 						#		        				    ^	  ^						 |				   #
+ * 						#				        		     \   /						 |				   #
+ * 						#						            (offset)---------------------+				   #
+ * 						#		        															       #
+ *						####################################################################################
  * 
  */
 
@@ -34,28 +36,20 @@
 
 
 
-uint32_t rndCore[8]; /* secret */
+uint32_t rndCore[16]; /* secret */
 
 /*
  * idea is: hash the message and add it via xor to rndCore
  *
  * length in bits 
  * 
- * we do not use real concatenation. we just use rndCore and pad it with 0x42 to 
- * the blocksize of the hash-function and hash the block, then entropy block gets
- * hashed.
+ * we simply first "hash" rndCore, then entropy.
  */
 void addEntropy(unsigned length, void* data){
 	sha256_ctx_t s;
-	uint8_t block[SHA256_BLOCK_BITS/8];
-	
-	memset(block, 'B', SHA256_BLOCK_BITS/8);
+	static uint8_t offset=0; /* selects if higher or lower half gets updated */
 	sha256_starts(&s);
-	memcpy(block, rndCore, SHA256_HASH_BITS/8);
-	sha256_nextBlock(&s, block);
-#if defined SECURE_WIPE_BUFFER	
-	memset(block, 'B', SHA256_BLOCK_BITS/8); /* just to leave no secret shit on stack */
-#endif
+	sha256_nextBlock(&s, rndCore);
 	while (length>=512){
 		sha256_nextBlock(&s, data);
 		data += 512/8;
@@ -64,24 +58,29 @@ void addEntropy(unsigned length, void* data){
 	sha256_lastBlock(&s, data, length);
 	uint8_t i;
 	for (i=0; i<8; ++i){
-		rndCore[i] ^= s.h[i]
+		rndCore[i+offset] ^= s.h[i]
 	}
+	offset ^= 8; /* hehe */
 }
  
 void getRandomBlock(uint32_t *b){
 	sha256_ctx_t s;
+	uint8_t offset=8;
+	
 	sha256_start(&s);
-	sha256_lastBlock(&s, rndCore, 256); /* remeber the byte order! */
+	sha256_lastBlock(&s, rndCore, 512); /* remeber the byte order! */
 	uint8_t i;
 	for (i=0; i<8; ++i){
-		rndCore[i] ^= s.h[i]
+		rndCore[i+offset] ^= s.h[i]
 	}
+	offset ^= 8; /* hehe */
 	memcpy(b, s.h, 32); /* back up first hash in b */
 	sha256_start(&s);
 	sha256_lastBlock(&s, b, 256);
 	memcpy(b, s.h, 32);
 }
  
+/* this does some simple buffering */
 uint8_t getRandomByte(){
 	static uint8_t block[32];
 	static uint8_t i=32;
