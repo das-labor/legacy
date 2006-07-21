@@ -28,6 +28,7 @@ class Termin
 end
 
 
+timestamp = Time.now.to_i
 
 doc = REXML::Document.new( File.new( XMLSOURCE ));
 at = Array.new
@@ -65,7 +66,9 @@ rss20out.puts "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?> \n
 
 
 at.each { |term|
+  if term.date > Date.today-1 then
     rss20out.puts "<item>\n<title>#{term.text}</title>\n<description>#{term}</description>\n<link>#{term.link}</link>\n</item>\n\n"
+  end
 }
 
 rss20out.puts "</channel> \n</rss>"
@@ -76,29 +79,43 @@ rss20out.close
 
 icalout = File.new( ARGV[0]+"/LABOR-Termine.ics", "w" );
 
-icalout.puts "BEGIN:VCALENDAR \n
-VERSION:2.0\n
-PRODID:-//LABOR//Termine//DE\n
-CALSCALE:GREGORIAN\n
-METHOD:PUBLISH\n
-X-WR-CALDESC;VALUE=TEXT:LABOR Bochum - Termine\n
-X-WR-CALNAME;VALUE=TEXT:LABOR Bochum - Termine\n
-X-WR-TIMEZONE;VALUE=TEXT:Europe/Berlin"
+icalout.puts "BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//LABOR/Terminparser//-
+X-WR-CALNAME:LABOR-Termine
+X-WR-RELCALID:5644223456g
+X-WR-TIMEZONE:Europe/Berlin
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VTIMEZONE
+BEGIN:DAYLIGHT
+DTSTART:20060326T020000
+TZOFFSETTO:+0200
+TZOFFSETFROM:+0000
+TZNAME:CEST
+END:DAYLIGHT
+BEGIN:STANDARD
+DTSTART:20061029T020000
+TZOFFSETTO:+0000
+TZOFFSETFROM:+0100
+TZNAME:GMT
+END:STANDARD
+END:VTIMEZONE"
 
 
 at.each { |term|
-    icalout.puts "BEGIN:VEVENT 
-    METHOD:PUBLISH
-    DTSTART;TZID=Europe/Berlin:#{term.year}#{term.month}#{term.day}T190000
-    DURATION:PT120M
-    SUMMARY:#{term.text}
-    DESCRIPTION:#{term}
-    CLASS:PUBLIC
-    STATUS:CONFIRMED
-    URL:#{term.link}
-    LOCATION:LABOR
-    END:VEVENT \n\n"
-     
+    icalout.puts "BEGIN:VEVENT
+UID:#{timestamp}#{term.year}#{term.month}#{term.day}@labor
+SUMMARY:#{term.text}
+LOCATION:Labor
+DTSTART:#{term.year}#{term.month}#{term.day}T190000Z
+DTSTAMP:#{timestamp}
+LAST-MODIFIED:#{timestamp}
+DESCRIPTION:#{term}
+URL;VALUE=URI:#{term.link}
+CLASS:PUBLIC
+END:VEVENT\n"
+
 }
 
 
