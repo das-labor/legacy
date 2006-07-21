@@ -64,7 +64,7 @@ rss20out.puts "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?> \n
 <link>http://www.das-labor.org</link> \n 
 <description>Terminfeed des LABORs</description> \n 
 <language>de-de</language> \n
-<pubDate>#{Date.today}</pubDate>"
+<pubDate>#{Time.now.strftime("%a, %d %b %Y %H:%M:%S %Z")}</pubDate>"
 
 
 at.each { |term|
