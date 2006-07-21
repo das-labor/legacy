@@ -19,6 +19,8 @@ class Termin
     @year += 2000 if @year < 2000;
 
     @date  = Date.new( @year, @month, @day );
+    @month = @date.strftime("%m") 
+    @day = @date.strftime("%d") 
     @datestr = "#{@day}.#{@month}.#{@year} (#{@wday})"
   end
 
@@ -108,7 +110,8 @@ at.each { |term|
 UID:#{timestamp}#{term.year}#{term.month}#{term.day}@labor
 SUMMARY:#{term.text}
 LOCATION:Labor
-DTSTART:#{term.year}#{term.month}#{term.day}T190000Z
+DTSTART;VALUE=DATE:#{term.year}#{term.month}#{term.day}
+DTEND;VALUE=DATE:#{term.year}#{term.month}#{term.day}
 DTSTAMP:#{timestamp}
 LAST-MODIFIED:#{timestamp}
 DESCRIPTION:#{term}
