@@ -71,3 +71,38 @@ at.each { |term|
 rss20out.puts "</channel> \n</rss>"
 
 rss20out.close
+
+
+
+icalout = File.new( ARGV[0]+"/LABOR-Termine.ics", "w" );
+
+icalout.puts "BEGIN:VCALENDAR \n
+VERSION:2.0\n
+PRODID:-//LABOR//Termine//DE\n
+CALSCALE:GREGORIAN\n
+METHOD:PUBLISH\n
+X-WR-CALDESC;VALUE=TEXT:LABOR Bochum - Termine\n
+X-WR-CALNAME;VALUE=TEXT:LABOR Bochum - Termine\n
+X-WR-TIMEZONE;VALUE=TEXT:Europe/Berlin"
+
+
+at.each { |term|
+    icalout.puts "BEGIN:VEVENT 
+    METHOD:PUBLISH
+    DTSTART;TZID=Europe/Berlin:#{term.year}#{term.month}#{term.day}T190000
+    DURATION:PT120M
+    SUMMARY:#{term.text}
+    DESCRIPTION:#{term}
+    CLASS:PUBLIC
+    STATUS:CONFIRMED
+    URL:#{term.link}
+    LOCATION:LABOR
+    END:VEVENT \n\n"
+     
+}
+
+
+icalout.puts "END:VCALENDAR"
+
+icalout.close
+
