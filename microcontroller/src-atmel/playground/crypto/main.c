@@ -23,6 +23,7 @@
  * 	-skipjack (???)
  * 	-idea (???)
  *  -kasumi---
+ *  -camellia
  * modes: cbc, ecb, ...
  *  need Hashes, asymetrics, signatures, ...
  */
