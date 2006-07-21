@@ -50,3 +50,24 @@ at.each { |term|
 }
 
 htmlout.close
+
+
+rss20out = File.new( ARGV[0]+"/rss20", "w" );
+
+rss20out.puts "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?> \n 
+<rss version=\"2.0\"> \n 
+<channel> \n 
+<title>LABOR Bochum: Termine</title> \n
+<link>http://www.das-labor.org</link> \n 
+<description>Terminfeed des LABORs</description> \n 
+<language>de-de</language> \n
+<pubDate>#{Date.today}</pubDate>"
+
+
+at.each { |term|
+    rss20out.puts "<item>\n<title>#{term.text}</title>\n<description>#{term}</description>\n<link>#{term.link}</link>\n</item>\n\n"
+}
+
+rss20out.puts "</channel> \n</rss>"
+
+rss20out.close
