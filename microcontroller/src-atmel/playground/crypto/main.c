@@ -5,16 +5,17 @@
 
 /* implemented:
  *  
- * xtea (C + ASM)
+ * xtea (C+ASM)
  * SHA256 (C+ASM)
+ * ARCFOUR (C+ASM)
  * HMAC-SHA256 (C)
+ * PRNG (C)
  * 
  */
 
 /* to implement:
  *  -aes
- * 	-seal (broken?)
- *  -arcfour aka RC4 (broken) 
+ * 	-seal (broken?) 
  *  -serpent
  *  -cast
  *  -des (???)
@@ -36,6 +37,7 @@
 #include "sha256-asm.h"
 #include "xtea.h"
 #include "arcfour.h"
+#include "prng.h"
 
 #include <stdint.h>
 #include <string.h>
@@ -167,6 +169,16 @@ void testrun_arcfour(){
 	uart_hexdump(a, 8);	
 }
 
+void testrun_prng(void){
+	uint8_t i,block[32];
+	uart_putstr("\r\naddEntropy(32, 0x00000000)");
+	addEntropy(32,"\x00\x00\x00\x00");
+	for(i=0;i<12;++i){
+		getRandomBlock(block);
+		uart_hexdump(block, 32);
+	}
+}
+
 /*****************************************************************************
  *  main																		 *
 *****************************************************************************/
@@ -194,6 +206,8 @@ restart:
 			/* use some fixed test-vectors and all Algos */
 					uart_putstr("\r\n intergrated selftests:\r\n");
 				testrun_xtea();
+					uart_putstr("\r\n");
+				testrun_prng();
 					uart_putstr("\r\n");
 				testrun_arcfour();
 					uart_putstr("\r\n");
