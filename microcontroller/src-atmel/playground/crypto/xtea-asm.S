@@ -26,7 +26,7 @@ Func1 = 22
 Func2 = 23
 Func3 = 24
 Func4 = 25
-C = 28 /* der kleine Zaehler fuer zwischenurch */
+C = 28 /* der kleine Zaehler fuer zwischendurch */
 
 .global xtea_enc
 ; == xtea_enc ==
@@ -194,9 +194,9 @@ xtea_enc:
 
 ;####################################################################
  
- #ifndef TWO_IN_ONE	
+ /* #endif TWO_IN_ONE */	
  
- #ifdef TWO_IN_ONE
+ /* #ifdef TWO_IN_ONE */
  /* now we use the same base-structure for enc- and decryption
  	to indicate operation mode we use the highest bit of param3 (16 bit pointer to key),
  	this is ok, since even the larges atmel today has "only" 8k of ram,
@@ -376,7 +376,7 @@ xtea_dec:
  	pop r2
  	ret
  	
- #endif
+ /* #endif */
 
 ;####################################################################
  

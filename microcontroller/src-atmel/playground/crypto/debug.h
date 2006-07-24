@@ -14,7 +14,7 @@
 #endif
 
 
-void debug_init();
+void debug_init(void);
 void debug_char(char);
 void debug_str(char*);
 void debug_byte(char);
