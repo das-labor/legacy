@@ -174,7 +174,8 @@ void testrun_prng(void){
 	uart_putstr("\r\naddEntropy(32, 0x00000000)");
 	addEntropy(32,"\x00\x00\x00\x00");
 	for(i=0;i<12;++i){
-		getRandomBlock(block);
+		getRandomBlock((void*)block);
+		uart_putstr("\r\n");
 		uart_hexdump(block, 32);
 	}
 }
