@@ -1,0 +1,109 @@
+gtk_ext_button.o gtk_ext_button.o: gtk_ext_button.c gtk_ext_button.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h /usr/include/gtk-1.2/gdk/gdk.h \
+  /usr/include/gtk-1.2/gdk/gdktypes.h /usr/include/glib-1.2/glib.h \
+  /usr/lib/glib/include/glibconfig.h \
+  /usr/lib/gcc/i486-linux-gnu/4.0.2/include/limits.h \
+  /usr/lib/gcc/i486-linux-gnu/4.0.2/include/syslimits.h \
+  /usr/include/limits.h /usr/include/features.h /usr/include/sys/cdefs.h \
+  /usr/include/gnu/stubs.h /usr/include/bits/posix1_lim.h \
+  /usr/include/bits/local_lim.h /usr/include/linux/limits.h \
+  /usr/include/bits/posix2_lim.h \
+  /usr/lib/gcc/i486-linux-gnu/4.0.2/include/float.h \
+  /usr/lib/gcc/i486-linux-gnu/4.0.2/include/stdarg.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkmain.h /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h
+
+gtk_ext_button.h:
+
+/usr/include/gtk-1.2/gtk/gtkbutton.h:
+
+/usr/include/gtk-1.2/gdk/gdk.h:
+
+/usr/include/gtk-1.2/gdk/gdktypes.h:
+
+/usr/include/glib-1.2/glib.h:
+
+/usr/lib/glib/include/glibconfig.h:
+
+/usr/lib/gcc/i486-linux-gnu/4.0.2/include/limits.h:
+
+/usr/lib/gcc/i486-linux-gnu/4.0.2/include/syslimits.h:
+
+/usr/include/limits.h:
+
+/usr/include/features.h:
+
+/usr/include/sys/cdefs.h:
+
+/usr/include/gnu/stubs.h:
+
+/usr/include/bits/posix1_lim.h:
+
+/usr/include/bits/local_lim.h:
+
+/usr/include/linux/limits.h:
+
+/usr/include/bits/posix2_lim.h:
+
+/usr/lib/gcc/i486-linux-gnu/4.0.2/include/float.h:
+
+/usr/lib/gcc/i486-linux-gnu/4.0.2/include/stdarg.h:
+
+/usr/include/gtk-1.2/gdk/gdkcursors.h:
+
+/usr/include/gtk-1.2/gdk/gdkrgb.h:
+
+/usr/include/gtk-1.2/gtk/gtkbin.h:
+
+/usr/include/gtk-1.2/gtk/gtkcontainer.h:
+
+/usr/include/gtk-1.2/gtk/gtkenums.h:
+
+/usr/include/gtk-1.2/gtk/gtkwidget.h:
+
+/usr/include/gtk-1.2/gtk/gtkaccelgroup.h:
+
+/usr/include/gtk-1.2/gtk/gtkobject.h:
+
+/usr/include/gtk-1.2/gtk/gtkarg.h:
+
+/usr/include/gtk-1.2/gtk/gtktypeutils.h:
+
+/usr/include/gtk-1.2/gtk/gtktypebuiltins.h:
+
+/usr/include/gtk-1.2/gtk/gtkdebug.h:
+
+/usr/include/gtk-1.2/gtk/gtkadjustment.h:
+
+/usr/include/gtk-1.2/gtk/gtkdata.h:
+
+/usr/include/gtk-1.2/gtk/gtkstyle.h:
+
+/usr/include/gtk-1.2/gtk/gtkmenu.h:
+
+/usr/include/gtk-1.2/gtk/gtkmenushell.h:
+
+/usr/include/gtk-1.2/gtk/gtklabel.h:
+
+/usr/include/gtk-1.2/gtk/gtkmisc.h:
+
+/usr/include/gtk-1.2/gtk/gtkmain.h:
+
+/usr/include/gtk-1.2/gtk/gtksignal.h:
+
+/usr/include/gtk-1.2/gtk/gtkmarshal.h:

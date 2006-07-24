@@ -1,0 +1,1221 @@
+network-status-version 2
+dir-source moria 18.244.0.188 9031
+fingerprint FFCB46DB1339DA84674C70D7CB586434C4370441
+contact 1024D/28988BF5 Roger Dingledine <arma@mit.edu>
+published 2006-02-18 23:13:07
+dir-options Names Versions
+client-versions 0.1.0.16,0.1.0.17,0.1.1.11-alpha,0.1.1.12-alpha,0.1.1.12-alpha-cvs,0.1.1.13-alpha,0.1.1.13-alpha-cvs
+server-versions 0.1.0.16,0.1.0.17,0.1.1.8-alpha,0.1.1.12-alpha,0.1.1.12-alpha-cvs,0.1.1.13-alpha,0.1.1.13-alpha-cvs
+dir-signing-key
+-----BEGIN RSA PUBLIC KEY-----
+MIGJAoGBAMHa0ZC/jo2Q2DrwKYF/6ZbmZ27PFYG91u4gUzzmZ/VXLpZ8wNzEV3oW
+nt+I61048fBiC1frT1/DZ351n2bLSk9zJbB6jyGZJn0380FPRX3+cXyXS0Gq8Ril
+xkhMQf5XuNFUb8UmYPSOH4WErjvYjKvU+gfjbK/82Jo9SuHpYz+BAgMBAAE=
+-----END RSA PUBLIC KEY-----
+
+r moria1 /8tG2xM52oRnTHDXy1hkNMQ3BEE GkuJrpRgwHMvLMYKmeXcIArAt/8 2006-02-18 19:05:22 18.244.0.188 9001 9031
+s Authority Fast Guard Named Stable Running Valid V2Dir
+r anselcomputers Ae26CRLewls3F3lfLJ0JffdnIBk edZiBdRfHTuA40Gmnn7RuqEflhU 2006-02-18 22:38:24 68.206.115.47 9001 0
+s Fast Guard Stable Running Valid
+r h679643 /rWsorsGlgSPQ+D1HRPUEad8aHw 2bwM3lkiJA7mKEuc0ZnZFTNteoY 2006-02-18 17:40:33 85.214.29.61 9001 9030
+s Fast Guard Stable Running Valid
+r nycbug A22mSb8m1tXtaflBFfdLJqsKeFM xtAtasC+2+2mKUJ2LyTOu3M25pU 2006-02-18 22:47:36 64.90.179.108 443 80
+s Fast Guard Stable Running Valid
+r r4g3 aaPBEiLGhKH+4zGjgjQCvAX69FM UGQPcueADg5L8FZ09eMuh3UTyWU 2006-02-18 20:30:05 80.130.217.118 12320 0
+s Running Valid
+r myholeinspace BVbgTGpD2rf1E4vJ9ihdvoKyj5c MVtt5Q0X0FMQHytq3LE32FNc/AQ 2006-02-18 17:38:38 208.201.238.46 9090 9091
+s Fast Guard Stable Running Valid
+r gamma BbSVzp+fJ3Uf9dCRCEqWbgyifpw JpoHdXyOi151Q1h9CpYol9Ag0Cs 2006-02-18 21:09:07 216.55.149.21 9001 9030
+s Fast Guard Named Stable Running Valid
+r lostwizard BcGtNeXS1GuJx9B8gw7ZtY1rC6w dslGf2SeksG+CBelpJqjZ7i8R/A 2006-02-18 20:47:48 198.161.91.196 31943 32943
+s Fast Guard Stable Running Valid
+r S5 FHA/bO9gxBLxysWQPYLk395ZNC8 aSsNHfpP4dIxms+hrKXjbaTEtuk 2006-02-18 15:17:22 68.63.175.251 443 80
+s Fast Valid V2Dir
+r tux BvvD4BclD5eY2M4bdgMbNSIySJo xVHe33Co95Un74xtthEq669131w 2006-02-18 23:02:19 213.114.29.49 9001 9030
+s Fast Guard Stable Running Valid
+r SEC CBAa0STDsQ4vHxjfK1H0kB44UXA rf1VGqXK0XppJH6omaor1EGEgqM 2006-02-18 17:06:34 192.42.113.248 9001 9030
+s Fast Guard Stable Running Valid
+r swampserver /tKCFjlIAo2r5ebfTjhAvFqCAew 2iRyzROtIIG5PO8e5LFMkL4Pjgs 2006-02-18 22:05:28 80.127.66.162 9001 9030
+s Fast Running Valid
+r jap CFspEoJX2NxiSNPB3At3EUoJTgo kT7fUJfjvlK+17yWLXrIX9aA+EU 2006-02-18 17:37:22 141.76.46.90 9001 0
+s Fast Guard Named Stable Running Valid
+r stnv CSi6RnBWxKaJ/uTvXXFIK2KJw9U aHhN7n0Wjc8IgpFTHVdq//r8cFo 2006-02-18 14:27:00 84.16.236.173 9001 0
+s Named Valid
+r kronic2 CVEDjEupPdg4MLzK8l3gDUTNmg4 moLAX10uPOhvuxPIyQ/HXDpS8CM 2006-02-18 23:10:14 85.10.210.46 9010 9030
+s Fast Valid
+r peregrinedontmooo 11iKi46TDHkKqS3l6w8mWZuq4ig mIPrB6WnQjfz2Vrq3nmeri7kEWU 2006-02-18 11:50:53 217.147.80.73 9001 9030
+s Fast Valid V2Dir
+r nggrplz CehYL/Dm+F4rjkHA3AucncRuaWg 19RGC/1ptzAXzqd6MFftA+mWJf8 2006-02-18 05:28:16 194.109.109.109 9001 0
+s Fast Guard Stable Running Valid
+r DigitalRhapsody2 Cf72wrcEzTW7dnRCSM5X6DJzk3o KuhYtx18PRHWKuN+1VBmFBAPfRk 2006-02-18 22:58:58 64.5.53.220 9001 0
+s Valid
+r theblacksun Cr070HTECMrjHrqXvmcT+vWuaOc xl7kr58gbxKZaZYaBexHX0NU3Lk 2006-02-18 22:44:48 70.225.170.45 9001 9030
+s Fast Running Valid
+r CrackedAcTOR Csg2U7FJ7aF60/oxb5b/4yejGA8 lU8ybb9ONXUxnkWLE8CDApkgYbk 2006-02-18 07:13:16 83.245.82.184 9001 0
+s Fast Guard Stable Running Valid
+r cyclicfatalistNO wO6p7ahndJdAcUkyb4dWpv3yB5w 4T9X2OHeDlJOr73OpSqTPZdgzFE 2006-02-18 20:41:44 67.165.19.18 9001 0
+s Valid
+r 45238746238746 CwToN2ZpSJesy0IrdXrmwfJKvwU 4agqU6TeRMiiPAvCjNFv579vZ1E 2006-02-18 16:14:47 83.243.88.133 9001 9030
+s Fast Running Valid
+r aNpnYm C9sOmdLrP1gGa1zmNL0sKwi5Y20 CKFOOM+IB8JussEwrN+M3yuuy7Q 2006-02-18 14:40:49 217.160.177.118 9001 9030
+s Fast Guard Stable Running Valid
+r biz18 DEOo5kNUj33mFzF4/Qt9ijMIA28 OYSSuUbH7rAf6uRlTGfpc7qVnGc 2006-02-18 22:56:11 84.167.14.44 9001 9030
+s Fast Running Valid
+r bitemyshinymetalass DGVX8qdTyGCtrAlo874JhlrMC+4 cA+x+RUD+LCXdAuoz4TCItEQR6U 2006-02-18 20:26:59 217.30.80.251 9001 9030
+s Fast Guard Stable Running Valid V2Dir
+r arghDOTorg DJs33xegILAv3r08dCi/7kcE+r0 HDICiXJYUXuv77cJCuwMrdnmCK8 2006-02-18 20:06:01 213.200.97.98 9001 9030
+s Fast Running Valid
+r cipheralgo DKOoGFINunYT2+LRwlIce4FSIaM vU4dNYasPhvBl/ji9H6T9Seyav4 2006-02-18 22:28:26 64.122.12.107 9001 9030
+s Exit Fast Guard Stable Running Valid
+r GreenEyesHome DQNEfABSSIXGtK8BcMcT70Z6kSg QMvIRiz3dkrWOYsH4auHhrD8OQY 2006-02-18 23:12:33 84.163.185.208 9001 9030
+s Fast Running Valid
+r undertaker1 DSQWw7BqRPjHaSROjVXYMpeGJeI RkvqtNrd2pUAf4Q3QQzPeuqrlvM 2006-02-18 14:10:13 128.213.49.23 9001 9002
+s Fast Guard Stable Running Valid
+r bifroest KWZrdcYcKve5Yj1W5ZmktiyX2Pw s9mMedZcMvdf5yv2fBfFg/mETEg 2006-02-18 19:26:11 213.54.179.4 7777 0
+s Exit Valid
+r twosixsix DhaTmTVhOBrAEYVXp70xqM+QONg gA+bNJPLaHcpW3lQgvyl7omayZs 2006-02-18 20:02:10 74.0.33.114 9001 0
+s Fast Running Valid
+r Timon Dre4rKAJ1tWyN1j1BMsJZvVHwlw IN0ZFBjEEhlJ8Wd40i8z0rmUS9w 2006-02-18 21:28:09 150.135.84.18 9001 9030
+s Fast Guard Stable Running Valid
+r Newton DvH7oHmQPCnYsZc+DUV9qAG8A2M yDEeVEKhmnaZGmVqve7SUaT/X8Y 2006-02-18 16:54:18 82.183.192.131 9001 9002
+s Fast Running Valid
+r JucHadCod8 DvO4gnESGDfq+o3vkZI788ryoOI AQ6ijKHUry44Xyo64WztrvjCV10 2006-02-18 00:43:35 213.239.212.133 9001 0
+s Stable Valid
+r Emzy DxWUdyBN6sEBZXkLGsk8TA9QFCk jfQ58HLIRUkbXGJJeK2nuM0t5rM 2006-02-18 18:45:59 212.112.242.21 443 80
+s Fast Guard Stable Running Valid
+r markuspurkki D2B35Jf506PZR5QrBdZr09Do+6c E0LBTbppzjLYoix6a36pYwji9cc 2006-02-18 22:44:33 82.141.90.219 9001 0
+s Fast Running Valid
+r neverland D59xPzli6ujVKj55Fv4ixWw8x8Y nppMHD751ybt57KBNcbJtJ74Yy0 2006-02-18 20:59:42 85.15.185.38 9001 0
+s Valid
+r toaster D91bO/rHwZ3uQIrLkVbymK8h8vM iseC0TjnPw7iIN01P24B57/msDo 2006-02-18 11:45:28 67.165.17.208 9001 9030
+s Fast Guard Stable Valid
+r bitnatter Ea6AhNgJ5p8yqjZGKHy4nUaNzIU 6AtIJxAHm2Ldd8AYcTWZKp9vJWA 2006-02-18 16:20:06 212.202.53.93 59001 59030
+s Fast Valid
+r mMpeYycC1R EdsiPn2l5apR3c5lJVpkkqblpDE ay4pjsZg9bK1O82TKs0D5B8727s 2006-02-18 14:50:13 62.142.71.120 9001 9030
+s Fast Guard Stable Running Valid
+r 1898 EgRN6qS6DMAK+vpS0wJVwmHX3SI vXq+RxuavCxUv0S5LrfzX7oEZwQ 2006-02-18 20:37:33 85.178.197.159 443 8080
+s Fast Running Valid V2Dir
+r furrywannabe 2L5aQl5hZnmglmoszL4wGDAZNS0 i+jFo2F+PBR5disa/5YDZvoTzvo 2006-02-18 22:03:54 71.210.131.125 9000 9031
+s Fast Running Valid
+r barf Ez2xST/bDejnAO1pDiZB0GBeYnY y7l8NL/jN3dLlJoEj4Jn+YQS1DM 2006-02-18 11:27:42 69.70.228.88 443 0
+s Fast Named Running Valid
+r MilkyA64 E1pYHAcHDkpA+WhvErmAPoT7g4Y KncRZt6b/eKsBlbtA4TVPCw5Z1M 2006-02-18 21:24:06 84.72.104.77 9001 0
+s Fast Guard Stable Running Valid
+r MichiK2 FAEFsMygDS9ROc+s9wE91JUp8/s lcBcNMbZ7KxGnmqL+jQSb/fmCZ8 2006-02-18 21:02:14 80.237.160.201 4223 0
+s Fast Guard Stable Running Valid
+r takethepowerback VUfM7lbsJw2iwvXy3NcE2LIAiiE yJCXoFd0LpYYzLmRF4r3XnLKJ1U 2006-02-18 17:57:13 84.60.124.109 9001 0
+s Fast Valid
+r benice E23+QtkZ4k1lbYyIe+iINAtxhAY XxVYWR63Rpjm1gr2nRPJzvcvxUI 2006-02-18 22:40:23 69.142.154.210 10001 10002
+s Fast Running Valid V2Dir
+r gtisc FPw2rXISOe5PtM9typA89VvoxzU 6IopRmzRCMfzX/U5JMFYD6R8TdM 2006-02-18 11:56:36 199.77.129.53 9001 9030
+s Fast Running Valid V2Dir
+r Ficke EFpBFsNMt9xQjHslyosy5+gPPdE YQIz5wM4yefKR0Jh0CibK9Ovz8I 2006-02-18 07:46:13 212.99.205.46 45789 0
+s Fast Running Valid
+r thunaer FtSMyreFYIzVaDN4v8CmyIohwIY d+yVA6Ehr0+yjHqN+K7evPI/B5U 2006-02-18 11:21:36 217.160.169.57 9001 0
+s Valid
+r nobodyeditedaconfig FvKA3nh4x26DGoog56nEHHOUjGI knWxpDQ5i/6UPfPHvdxRnQZLbck 2006-02-18 20:07:10 85.10.194.117 9001 9030
+s Fast Named Running Valid
+r stugsDOTcom GDWkxmvwjfyLdSPnlun+T70VXuI RfjcojU0rktfpFa5IqoBEv1uecA 2006-02-18 22:55:52 198.252.201.22 9001 9030
+s Fast Named Running Valid
+r dustpuppy GJ5pllIXZkcZaDqZ9GB1mJf5I/o 3d6hdNEQwyFsMPWmDuEYvizvp1Q 2006-02-18 17:38:07 213.9.1.108 28276 0
+s Stable Valid
+r swift r6GIp2FXe9Lwo8ptvOsJUH7LZyI 5tHeTyPyvI2zKmsM+y4JSDhc574 2006-02-18 18:59:02 81.190.201.167 443 80
+s Fast Running Valid
+r greybeard95a GSTxjvvO+acgOHfCreU2ML9cLq4 vS2bZ0pgbPLdnSf+ylgsN/ZHFOs 2006-02-18 20:34:10 66.93.170.242 9001 9030
+s Fast Guard Named Stable Running Valid
+r nKrapfen Gb9Wc0uk4XEQMm5141DPl961sds 5BFfEun7vCGhx+9QHJLTRWoYfr8 2006-02-18 13:13:55 193.201.52.56 9001 0
+s Fast Guard Stable Running Valid
+r MonkeyMagic Gk3pJ0cdo+KHx5U8AgY3+JRm5HU PvjSpqQD5UL1NvMOZLTFkTvnSeU 2006-02-18 19:10:58 60.36.181.86 9001 9030
+s Fast Named Running Valid
+r 0verture Gt9XAbfPfked/co/KUurewvr6zw QlzCLeeJjwlodO5bUgx3QW4AtsY 2006-02-18 20:43:27 212.24.170.230 8117 0
+s Fast Guard Stable Running Valid
+r MartinScorsese GutD8ZF0zSAfZblfjeXZYPvXuMI wKuBmGtWEG1c63SRoGGhF7guINA 2006-02-18 22:23:22 71.32.251.76 11100 0
+s Fast Guard Stable Running Valid
+r TORIFFIC420 G3gmc2mss0Y+KXIML+rRs6sGG0w wRBhCyTQtYIAir0Hyoyi5SxkQeU 2006-02-19 01:02:55 67.9.73.103 420 0
+s Fast Running Valid
+r chimaera G5Unhv/rKue02ORafeomUHZX+9M SwwtFO7bu9719LouStDRQjr3No8 2006-02-18 13:32:48 212.112.241.137 17142 17143
+s Fast Guard Stable Running Valid
+r maewdsa HC5rlttp44rz83KjBZo1Jdj1qMU BUbftoUDU9Q32pVW7WrCrRDsIUE 2006-02-18 22:43:36 83.233.97.28 19001 9030
+s Fast Running Valid
+r Zwiebel2 HKFqRP7jZyonmmYqRO8o8zAjdvE zF1GKligAQS+hxsYTk7KkZYhWvY 2006-02-18 12:18:46 83.133.126.131 9001 0
+s Named Valid
+r theseed HOdi6z3KZKgXJLfGTKxafHMqmVk EXM9YhkdiiCaxYzpWgg692EyRVo 2006-02-18 11:43:31 24.250.192.233 9051 0
+s Fast Guard Named Stable Running Valid
+r capiasTor HSfmbQhZTNVWHqvKv5xUJZpnvvg JnDHSbx8dOAQr8AX/dvl6ygrrCI 2006-02-18 16:48:22 63.85.194.6 9001 9030
+s Fast Guard Named Stable Running Valid
+r ndhtormanspkn12006 HSsA9O5QOQAVNQ1DXltxqZnOhsU GLP3NztNN4Nuf1etDAVnn3cbB/M 2006-02-18 22:36:18 71.36.246.29 9001 0
+s Running Valid
+r nbx HTy3RKYCcWohdzbnO1m8DXAcA/U cGN729syM2f2oocjV8otksXZFoc 2006-02-18 14:38:06 64.142.31.83 9001 0
+s Fast Guard Named Stable Running Valid
+r Krombianschniedschn 37/EJkCyANWBsD2JDd/MlcmiacU 6usJBFTP+WAT209YSpl/FwMYzgw 2006-02-18 21:30:59 212.202.77.108 443 80
+s Fast Valid
+r golem Hyk3ZemX7dsZhTZlTCuOP7ti+Ak WHdAuKB3N+2pIYjixiGGPNcxejY 2006-02-18 23:01:40 128.83.114.63 9001 0
+s Fast Running Valid
+r dao H2q9CG9AuJCjPJPMRgbuaLMclVY 8h+DTAmZ8bgf2Z6sFJS5p8TILUo 2006-02-18 17:26:19 216.12.165.46 9001 0
+s Valid
+r kefjeij34osj H6WDGsfD1rPyHp13ZQu8955Ydtg eKx+yl2AiC7Gi+XGy9rWVav2GsQ 2006-02-18 22:37:29 70.113.32.120 22 0
+s Fast Guard Stable Running Valid
+r qrouter IEQEdif82JIcx9dmvArTFlSdwbc YQtNnjQM+gJyyGW0xJTbYsLzr10 2006-02-18 16:02:09 80.126.37.100 9001 9030
+s Fast Guard Stable Running Valid
+r CAU IL2uCdXqbTEtsJsvyEhiM1poB8g 6IJ5NTd6NYJcqgE0ymwbLOQ4zpM 2006-02-18 13:11:56 216.130.255.201 9001 9030
+s Fast Guard Stable Running Valid
+r iljhar IVoN7xBU0vYm6TAOgRXY1qFg3vM lF2vuAX2eBBMyP19aOOHBvu0Bvw 2006-02-18 05:33:48 68.35.231.249 443 80
+s Fast Guard Stable Running Valid V2Dir
+r daisytor IhrucPsP2rE30ALZxNsZ0hB3qFI nRJUTzWHOw3Ykur/jQ7WFNws2Hg 2006-02-18 22:59:56 209.196.107.141 9001 9002
+s Fast Guard Stable Running Valid
+r elbamanTorServer w3gc1wfzfSe8Z+3CVgEpoxKubHE esrfQH+tItkE/7iHQDhdpWWcEcE 2006-02-18 22:39:12 82.59.76.164 9001 0
+s Fast Guard Stable Running Valid
+r qltor IwoH1umXgHKLJ35FUJmm3sRRHDQ Or+APaoR4aOv960v6RGzPbe2ZGg 2006-02-18 13:01:04 202.166.24.240 9001 9030
+s Fast Running Valid
+r secretagenda I3S2NUeoUwsqtOz12yL6aj6fzqo PUeaGPZOiMBIx5j4mXqf16vRh6E 2006-02-18 20:08:24 24.30.67.89 9001 9030
+s Exit Fast Named Running Valid
+r vapaus2006 JKxvkuGyjMppcXXC5BwLKHl9NAE kkiWGmsD/g4EDUHmNhhgJhhycwA 2006-02-18 22:51:38 84.248.19.49 443 9030
+s Fast Running Valid V2Dir
+r moria4 ul4SALR3eENhbIhk3gzR/stSzjw Ans/AsuPB0MW2WotmMPkc3m6Cd8 2006-02-18 01:29:49 18.244.0.188 9004 9034
+s Fast Named Valid
+r unterwachung Jq2zoZ4XNrP3vTsujN0llruZq3w QpC2J3+YzeZzEkIdMGovh8FO77g 2006-02-18 15:53:32 213.239.212.206 9001 0
+s Valid
+r Janus3 Jv5N881yKX/PpNl28gxZQ4hmX1Y QZWWrOVSbtADXjYFiWRIFtaDdZI 2006-02-18 12:10:12 66.70.10.53 17401 9030
+s Fast Guard Stable Running Valid
+r dungbeetle mJ1cXJCivb/QQWBBuHMHmMtanz0 +V/OcQetEW4ilWBEZqKhaCr/YiM 2006-02-18 22:42:03 70.189.232.20 14332 9030
+s Fast Running Valid
+r tormonkeys FZHp5nUdshZwo924uv/fCvbhiME RVtREQCvL851BFOVYrJqgGQqJQ4 2006-02-18 15:06:04 216.128.228.129 9001 0
+s Valid
+r clanspum KQsyanw1uZy0OsWbcEVttRdqUgM fXF07pGqfXfAc1rKhyep1cJSrjA 2006-02-18 23:06:55 82.165.180.112 9001 9030
+s Named Stable Running Valid
+r historserver KU9veefXmhPF/Ldg/wadLM26b6Q 9R/8BlDPbbp9YmnMD/6xY/EeoAc 2006-02-18 11:41:39 212.202.233.2 9001 9030
+s Fast Guard Named Stable Running Valid
+r tetra4tor CPyuFUuRBFPNjgo03Cknwl/lHb0 kwU73VTH581xSjRayn1PJIxeKVs 2006-02-18 22:38:51 159.149.105.125 9001 9030
+s Fast Running Valid
+r seventreasures Ke6kcS9iLWwWjp7uhniNRI4xVoo u4CXE++B2IykfP2ya4ubpKEtVFs 2006-02-18 23:11:51 68.171.51.78 9001 9030
+s Fast Guard Stable Running Valid
+r HansHugo JIbxYVkXcQoLdP1FHC5S7+ZWrKE o1fI3SIIw801RDBXv0QdjV1ofEI 2006-02-18 19:13:47 84.144.119.25 443 80
+s Fast Valid V2Dir
+r tortuga K03nWccvER1OtYZNPyzPSrOJlPU Su4LIeMwVXfopFrVKkaSXRAu07k 2006-02-18 22:11:21 62.48.34.110 443 80
+s Fast Guard Stable Running Valid
+r olivehomeunixorg LRekQOzFjlc0/CqA928GXFTNMxo BmGkkghwBRUamgePIs0anO4/x64 2006-02-18 20:26:34 71.137.240.249 9001 9030
+s Stable Valid
+r Valadares KTS9yS2mXSTSaNizxxxQved+FxQ rmgFSE8rK6vZKk1R6HEr1L2ML0Y 2006-02-18 02:07:55 201.50.182.162 9001 9030
+s Fast Valid
+r YetAnotherTorServer LmluST1AbvYXKiu916ov36uCIJs kCNkyGZeJ+ekIyA13fl1QqZMOrU 2006-02-18 14:23:21 193.201.54.32 443 0
+s Valid
+r hippie L6Gz8PIHty+65UMHF0HD1HlFNSg 2XBUMwJxZa+ZQd0PLbZSrsXHaEA 2006-02-18 23:44:25 207.241.238.149 9001 9030
+s Exit Fast Named Running Valid
+r AIConstruct L6MQADZyes2BQmHoxzOt4Zh6sVY Gwkw1jhb9lntYKpebe7/hxB9KEo 2006-02-18 21:53:01 70.131.144.217 9001 9030
+s Valid
+r TorJapan L7nHfaL66fn2SBB1S1toPGCtIW8 loHae/ZFEwL2wZKSwCUlGAKXFXA 2006-02-18 23:08:53 219.105.111.74 9001 0
+s Fast Running Valid
+r toratcdtmde L+SXGhPBH0e3Ur6CMBDfS9P6dMM OHCEDZ+mlAnQx+28GVwDtR6R81E 2006-02-18 21:48:33 129.187.150.131 9001 9030
+s Fast Named Running Valid
+r prezebs MAGiWb1EYxL0IvrNRpP0gaPvn74 VjFg8c9XCsl5TcftPYTWdZymsqM 2006-02-18 07:38:20 62.121.31.116 9001 0
+s Fast Guard Stable Running Valid
+r yonkeltron MD437LF4S4qkRoXSS6PrtxbwIEE jmyEmpURZCBJS065kv0czfpJEj0 2006-02-18 21:41:16 68.80.155.150 9001 0
+s Fast Guard Stable Running Valid
+r turdburglar MIly4kkzUYo2Y6M19oTJoKv99uk htCNqyB6NzNLa6UnJcGpv0HkYkw 2006-02-18 22:13:02 137.186.203.38 9001 0
+s Valid
+r blacklight MKOh9dxIXJwR1hl57HtgPZlEZ6M 413X2GlIbul5QQS14Q7T6OFvw3Q 2006-02-18 20:08:22 209.172.34.176 9001 0
+s Named Valid
+r fredproxy ajfv97uKiL0VquMt5tZjKDhtzaA 6rjTpM19c3YkpttTJVW73yRG2jo 2006-02-18 22:19:18 64.4.231.146 9001 0
+s Valid
+r nobody Mh9TLuOA7/G2LGMoBFVTj4cuhWA tGhKTGGxjCTG0d8wReicgrhkqV4 2006-02-18 10:13:38 217.122.5.208 9090 0
+s Valid
+r Giuly JY7VOXOz1RE22qjkI+Dxb92kauw derhr0OpQz9/Pd7dAIhlWIRNBCk 2006-02-18 14:32:48 217.195.47.250 9001 0
+s Fast Running Valid
+r EnochRoot 3FkktF52+6SMXydjQKiMGlpBUOo CiQZxJUp/g0DNFIX33pbG7J2yCk 2006-02-18 21:34:56 141.166.213.66 9001 9030
+s Fast Running Valid
+r charon NT4n379BJRBY1+5Y5nS5XZIqg7E gEkP3nrGDTNG7pQlJ4KQC7fDMR4 2006-02-18 14:55:31 195.158.168.91 9001 0
+s Fast Guard Named Stable Running Valid
+r cavuztor NvDcBpfAbkGYJLFs9X/RzEtYHGc o915GYmfXbE9GQpZsZBEiJdP3BU 2006-02-18 17:29:57 201.37.131.211 9001 9030
+s Fast Valid
+r acteam O9nKMT5lR4LhD7wxGZL8mZl7mdA yqH5J7M7L6UDA/DfSguTxvXauzM 2006-02-18 11:31:31 83.246.116.90 9001 9030
+s Fast Valid
+r django sI5SSPFni5dh/+vI15XiaQQJB2g G90JiJp2chLDeZnAqlMmQFHB18g 2006-02-18 19:17:34 84.139.2.181 9001 0
+s Valid
+r lefkada ONT1/PexAjIouJXqVu3n1czcrzI 6ClOKvLL7poZCJw9C1oV5WcsluQ 2006-02-18 17:53:47 140.247.60.64 9001 0
+s Fast Guard Named Stable Running Valid
+r pax OQI0v0paupLlMFIuIp4QJO8VUVw QLiXfQEtnMkU+JXx9Y5TqeLE1kQ 2006-02-18 19:20:17 217.172.183.219 9001 9030
+s Fast Running Valid
+r coconut OTuYh4gXCjfgIW+vSk4GEZO8Ayw cSpYdhicwIEnL1Uutxh1FeuqZWw 2006-02-18 23:04:47 69.30.208.78 443 9030
+s Fast Guard Stable Running
+r fgsinternet S7F1+NkGphEVFW/9cY0SAxv7SAM F1GCa3J1LOt/w/uxDbXPg++9UPg 2006-02-18 13:45:06 211.94.188.225 12988 31951
+s Fast Running Valid V2Dir
+r nsatormonitor OZceAv//TRQWkRSAEYmFHc2UyGM uuWKSht5fx9DgQGrNiddu6mNctw 2006-02-18 21:25:09 84.174.88.201 9001 9030
+s Fast Valid
+r NotAnotherServer OcAKx4TqGowSaQXTwxnZpRkxGss XSMpR20J2xQNkVrjqR5d6hhUMv8 2006-02-18 16:21:22 80.190.242.130 9001 0
+s Valid
+r nanelmoth ZQobJwfM+55H2pB5YFWfUiQ/e60 axiNQ6MK7iskDiWrTI/QUJPbKFs 2006-02-18 01:12:40 8.7.49.235 9001 9030
+s Fast Valid V2Dir
+r ChrisM Oj+odu/S6A5Q6/q6OE2U/Y5sv0o atPU35YnVkh0LDXmfeNcMAAJcmg 2006-02-18 15:39:28 217.160.135.169 9001 0
+s Valid
+r swordsman OoNmkIJ3VBkOnFXpTc/sQGhx1As ACazvoL4aBf7CNTNGyCzeIIXJfU 2006-02-18 22:26:40 81.186.252.150 9001 0
+s Fast Guard Stable Running Valid
+r mushin OtaQoiCjFrCPv7rPh1fJLaADO1c zerDwe7ZAsGXGWKKvgepEXHOOAA 2006-02-18 22:04:04 18.152.2.242 9001 9030
+s Fast Guard Named Stable Valid
+r QnetAnonProxy Oy+64aHD5jrnR+nx20OuZZsRt4U jaXZfQPpI+fk3Zv9hwaAUMNa8gU 2006-02-18 21:22:42 209.221.193.39 9001 9030
+s Fast Guard Named Stable Running Valid
+r pb qluaSuqRAhbLLjOpX/oYQhCbaU0 Pz3rH1xBeSWAzu+8yPvwaXuhKWI 2006-02-18 09:42:26 211.30.179.41 9001 0
+s Valid
+r Obrii O44EvzyYx4WXvhAckQ/GZqc7uws enxlxalY0imiAdMXuX4iaFljYMI 2006-02-18 22:16:41 62.2.174.20 9001 0
+s Fast Guard Stable Running Valid
+r bobo 37kMGcWX+t/ByfRJY2gSDy6ptWo jvgL+MtEQL9s6xVmw/hTiwJnPpY 2006-02-18 16:41:28 68.165.137.2 9001 0
+s Fast Running Valid
+r Dutor Pb5RAfGr8p/gnbxIKSuBK7k5WnA kCRvakleBoVAOahDALofhaLNh+Y 2006-02-18 20:30:02 83.160.194.169 9001 9030
+s Fast Running Valid
+r iapetus PeFMqo54u0Iq7Z8482GHYlveu5Y EyEHnz5tlUXT/qXq6r4rpZNt808 2006-02-18 19:00:55 134.130.58.205 9001 9030
+s Fast Guard Stable Running Valid
+r KyushoTor PeYf9UGDX+OjDkAOUeGuRHIl3is f9fQhkmCxXzTxFFojzyI3m6mvDw 2006-02-18 11:44:19 216.240.0.14 9001 0
+s Fast Guard Stable Running Valid
+r krypton Pi9j4jVvUjGLU2oStkRTc4CKXWw bal/ynVtA0SZm+Aj/GKgeA7eSc0 2006-02-18 11:57:38 212.37.39.59 8000 0
+s Valid
+r XxX utZhK0nI8W5dX0ez/oZ1qMh8xDs PQkPSKqCOJ2ALKd5CM9kN3s0iSE 2006-02-18 19:37:40 212.202.192.26 1984 80
+s Fast Running Valid V2Dir
+r illithid P+V0TiGgnNe7sXofLzk6Py+KFzc cjKDPJifBUgXDA7Hgb+2qDPSscc 2006-02-18 15:20:09 208.40.218.131 9001 9030
+s Exit Fast Guard Stable Running Valid
+r m QQPenxhVGQ4Xrb7ZPD1ZEbd/okQ x+nR1KH9VVFJ9PbTaoG7zeJ+F4A 2006-02-18 06:25:04 69.163.32.140 9001 0
+s Fast Running Valid
+r POGO V0AvLpG21Jq8kRGEEICY0ziQFEQ 3WXp2zCkeilRKabVHr7HFvXhS1E 2006-02-18 12:10:23 59.167.97.222 9001 9030
+s Fast Valid V2Dir
+r err QfBHbJzwPy4jMhi9/4rBrpgVM+A ftZTd1K8qPtSlnVkouFHnFgVo1s 2006-02-18 22:51:32 128.2.141.33 9001 9030
+s Fast Guard Named Stable Running Valid
+r dali QlqhVACxR+CpO8QOY3rse8IDVTo MQN3P9Cb4MsQEqY/aj37cmNFoTM 2006-02-18 21:41:56 141.20.103.68 9001 9030
+s Fast Guard Named Stable Running Valid
+r sipbtor QrfJDmUxBSlk5lynAu52fE15OVs F5MGC58NCos0qVSjprBbb8mo7vQ 2006-02-18 22:35:57 18.187.1.68 9001 9030
+s Fast Guard Stable Running Valid
+r theclubchill QwYPjqUDrisUArE7/aiidfE5Afs 9nrgEH1MyBT14t0Gq9+FQQZjOpc 2006-02-18 00:41:12 24.99.140.249 8000 0
+s Fast Valid
+r denix Q5oAWTaGDe27N6SYJFx12rI1ceA BPnDplSpx1OjnIVvF8tdqeppJjo 2006-02-18 21:21:28 69.143.149.231 9001 0
+s Fast Running Valid
+r MiaBonkers RCJHhV44SLkPlsEFAtS2B4GYZe0 t2+/dijUcAXmvB+jw5o/x2C1zgg 2006-02-18 12:54:39 212.187.48.185 9001 9030
+s Fast Guard Stable Running Valid
+r Crenshaw RFsE5Y0DQFk0zWeTfEBPlyN7zW8 tM15RzdzMEr2Oo4+i5WjEsCipfE 2006-02-18 20:19:19 70.110.70.238 9001 9030
+s Fast Guard Stable Running Valid
+r ned RKR0n+wAYAnnihGq7nR9kadQOLE at7IQb6YW2C6GQSfKtkJ7xxNgGo 2006-02-18 17:55:29 80.190.251.24 9002 0
+s Exit Fast Guard Named Stable Running Valid
+r crazyNikNik RMuaFyDv/eIjRODiQTGcRxGF11M +uGJXtLwiGo+PE+8ak+ZnC0GQsU 2006-02-18 13:22:47 131.212.128.101 9001 9030
+s Fast Guard Stable Running Valid
+r gunthaaasa RTKEf8lX7purPDVve6TsgidC+yY BUvStv4HUtXHdVy7VC4WT1u/iCk 2006-02-18 01:43:52 24.110.46.122 9001 0
+s Stable Valid
+r nexus RVjfefZpJZBwhu/w3c5gya6fcvY Od9fY26cIWh+Kbi8MfbmgGbFxcE 2006-02-18 21:36:12 202.173.141.155 9001 0
+s Valid
+r GingkoBiloba RWkOlelAODsGZgd8dnXWDfjZNh4 wKbcduIADSPPsdlm7oeEeyrGEFY 2006-02-18 11:27:32 216.239.81.171 19001 0
+s Fast Named Running Valid
+r jms1 Rh31aiAY9ZjhJNce0e/c3ZX2pdU s6p8wzCxiuYHtxs/RPhVoznau2s 2006-02-18 21:29:04 209.114.200.129 9001 9030
+s Fast Guard Stable Running Valid
+r NewOrleansLA 6zOb/8q9LeDfetzQ8g/rclgn5QY VxPpEtOBwqHkhPEUPbRMCoYQLHE 2006-02-18 23:06:30 68.222.11.222 9001 0
+s Valid
+r FartKnocker RlpOkQHNvmBFCu8n62pHrfjHrK0 i5789oeaS8okRBg6QkmTbOeD4dw 2006-02-18 11:27:38 64.95.64.86 9001 0
+s Valid
+r ubuntor R/+o8lnK/romAYLOwBTi8NFF/bU fwyuZVlR8Ng+RZ6fYyK6uUt3W64 2006-02-18 22:20:46 81.57.158.21 9001 0
+s Fast Guard Stable Running Valid
+r superblock SCGLiwSifnDJeHzIFRDKzVwkH9k tsRZm3TO+K5caQf1NVrPxTodb3Y 2006-02-18 19:40:32 209.242.32.13 443 80
+s Fast Valid
+r zeusefftorserver SMxXCGTLwJiYL2kyBYIQPqyWbXM bCwhTp6y5crmax13xJlQC3suUXk 2006-02-18 13:30:57 69.92.94.253 9001 9030
+s Stable
+r hobodave EK9q9INhPf5bfcsiHitdP3xa+Uo 7IF1c7H3vUQiagT5bv6NEVQ4OXY 2006-02-18 13:37:24 68.49.211.223 9001 0
+s Fast Named Running Valid
+r keop 7+7QNh/IOxmGOWbwt/cPzT9HgRA 7FJ9smQwx7mQ9ZVw0W3PANb3LJY 2006-02-18 18:54:58 207.236.3.195 9001 9030
+s Fast Running Valid
+r LiZ SaUwE3hFuDT0tPsFOGr73UC0Hwo 7tX/JvZs5E+8ZJCuHdOlt9sFGpw 2006-02-18 22:56:43 213.114.191.87 9090 9030
+s Fast Running Valid
+r TorNSD GOSi9n9Qklu8qrn9LnUj7xrCgI0 hNpf+rWNAKaY6u97nEY80ohPhlU 2006-02-18 22:48:23 24.94.2.121 9001 9030
+s Fast Valid
+r Tonga SgzNLdx5lQg9c/XWZxAMilgx8W0 ywzUeqRoaD+hvcNww6t5r065xcU 2006-02-18 15:33:08 82.94.251.206 443 80
+s Fast Guard Named Stable Running Valid
+r jhohnbalance SpfXGU10ZdNdo9sQqKzsg6c+dqk Y3dx/nKlDJndZGB5IA6za6pNMqA 2006-02-18 19:10:35 195.72.0.6 6667 9030
+s Exit Fast Guard Named Stable Running Valid
+r waq MU7Q/pU3QTxHPz5lDxLem3Tboik gQxz7FpimdZZXo0gE4XcmsEOPgo 2006-02-18 13:19:32 203.81.209.84 9001 9030
+s Fast Valid
+r thehub wCFEaOvKNtepAmNE6UVuBKEVzoc u24rdqXn8YR8ph351Z+iWvntW9w 2006-02-18 23:04:47 129.174.183.171 56473 56474
+s Fast Running Valid V2Dir
+r flutic SwoLIaoIW/Zu9mX6mWi3HXjZqwI MbOtPSLWaw7RT1tddwvQTQ8vtnA 2006-02-18 21:30:44 195.62.29.176 9001 0
+s Valid
+r omgwtfdie S7mJ93RhkM6xrcK7kO+uNdfg8yU Gse8rd0/UiCHbvHW2m2I0YS8Mb0 2006-02-18 23:01:18 217.20.115.110 9001 0
+s Fast Valid
+r sahkarirane S7m6KSz3knzIpHL2TXe0IctOKFs LbRxzW0U2lcDdXkVlyzaRK9Yd5g 2006-02-18 21:51:52 85.76.22.76 9001 0
+s Stable Valid
+r phobos S8lzj0Sn/b2uonONgh4RdUS5X40 J6g0LHRAdy6Yr7Woq+BIJCM2osM 2006-02-18 05:39:12 65.254.37.163 443 0
+s Fast Guard Named Stable Running Valid
+r mackeditedtheconfig 4X3J6whkwJOrAiKI6yTsjtB31CI Z3YSPYvoJ2QNqWxGELYM0901DB0 2006-02-18 02:53:11 69.17.24.10 9001 0
+s Named Valid
+r markoer S+RsvooIUqBSNJo72dl2DKoAGdA 4r/OwVmN/sInBRFYah72SzGbQT0 2006-02-18 16:07:58 64.90.191.94 443 0
+s Fast Guard Stable Valid
+r awesomo TTB7or+/JTNftmROf5gIQDlTDb8 39YD8i4lIJz7OftsGoHnJQsPn0w 2006-02-18 13:31:44 85.119.156.237 9001 0
+s Valid
+r infotechtrends TY6TEf5c3O1BK4ZggsPIv9K+8Yw Q16vAxrqkYRWA3zxKcaEdiNNNGA 2006-02-18 19:59:15 69.93.89.162 9001 0
+s Stable Valid
+r minotor ThUImIy5SrjbPJO3yW+tVHdB6cM 0Fi1/ts1hVeR3qf03dwo6lGZA8Y 2006-02-18 15:48:17 71.242.124.82 9001 9030
+s Fast Running Valid
+r ryuu CCCLNT4XAhhqDpCg3pdThm7kMbc i+fJUEks3mQVVzqcQK5wFl8SenU 2006-02-18 22:42:18 213.196.196.72 9001 9030
+s Exit Fast Running Valid
+r pisen1 TwiLrzMIbWhmrlnGT/mrC+Olijs n12Rln65j2Im5cHj3fr942b3nJY 2006-02-18 21:15:24 82.165.233.43 9001 9030
+s Fast Guard Named Stable Running Valid
+r darthik T4ifFVbRTl3iuYizNSxDB8Oa5Bg 4I7qPNnBoClaKkI7lBSWytwRfI4 2006-02-18 22:46:05 69.60.123.22 9001 0
+s Named Stable Valid
+r toronaise T6NwQeyxdsKOfjvGJlc16sObD+Q Tlp+K4N/wXAxJdRisdUpGD0HaBA 2006-02-18 17:08:32 137.120.180.50 9128 1984
+s Fast Guard Stable Running Valid
+r reflex UOuh/bLunEH0Q8bvLJONh5zQzbc mSd0+LwgTr0XURWapiLizmstPZI 2006-02-18 21:22:21 194.109.217.74 9001 0
+s Fast Named Running Valid
+r yam28 4Ayyp4he3irOj2vYfpQcPB1E6kQ 6K1Q8lKJB5dkgdSX5mo7z6Qxncc 2006-02-18 23:10:47 83.36.202.36 9001 9030
+s Fast Running Valid
+r karotte UQ3USZzOvtZdH40XpU38YSsDJgo 2j353KVphFMve6ma77CCwXL5feU 2006-02-18 05:37:00 88.198.253.18 9001 0
+s Fast Guard Named Stable Running Valid
+r lostpackets UURkGRxbw1u8XezpcomjtYtlmBA zmWK1DTOZKyLEFrmF2tz8KCqgow 2006-02-18 17:48:41 81.169.180.180 9001 9030
+s Fast Guard Stable Running Valid
+r Gizmoguy UVBjPvEoWFD1z17QStCu17tUhi0 UNLDfuTcnm0Q0scLROIoBrgLaa0 2006-02-18 18:10:23 217.155.230.230 9001 0
+s Valid
+r gnunet UdiKLBMkKDwATvsu+LQ5sSrwv+A j5DiIm59arfaSrZpaxosXP9LSvs 2006-02-18 22:33:59 131.179.224.133 9001 0
+s Exit Fast Running Valid
+r obabakoak UiXM3rUXslXOY5SRUUlux7AtGyQ rP2FqT+KhM+1foLVN6oMxnxO5LQ 2006-02-18 13:00:04 194.21.56.6 9001 9030
+s Fast Guard Stable Running Valid
+r nullify UtkWtfPDve0+dGJ4dUlpae6mUgY 9rCM/idQADxJn7Ri5ZkhCRs1Ijg 2006-02-18 18:51:50 69.93.158.203 443 80
+s Fast Guard Named Stable Running Valid
+r idideditheconf UzUxf0/gZxJQJzp8EBy+p0BXBkE G9JuKsKJII+OTKtcO9S8K4Vvx9k 2006-02-18 17:30:08 217.76.81.4 9021 9030
+s Fast Running Valid
+r romanofski UzZkCLYH71kGEEg5jZD91chV20Q V8nmykRbghNMJlEoiizz5Y3iKKI 2006-02-18 21:26:01 86.56.26.161 9001 0
+s Fast Running Valid
+r TapThisAssholes U2xFrT/K+ojXC4MLmzIyhM3gE6o 3aZ0uvWO+ziCTE7pmpbNjJL30Q8 2006-02-18 15:41:44 71.245.96.70 9001 9030
+s Fast Valid
+r privacyshark U6liRDYX/dYe/PB/MVJwCpw7hio LE6hCSV8JoK42giw+9AdWWjDw6Y 2006-02-18 18:26:22 139.142.184.213 9090 9091
+s Fast Guard Stable Running Valid
+r sentient U9Nm2ki4wnSTQP6Wn+9bLdBzr2k 7s/hdwvqKZcRHLVwkXgVNiO2L8Y 2006-02-18 19:14:04 81.1.125.206 9001 0
+s Fast Valid
+r nvuuieu84hui389ji U/YlrFKWoTn1zSI/B2A8zZ78gfQ mBv9HN3vGn37vgiAwa/vRXckX0Y 2006-02-18 12:46:43 217.160.132.150 9001 0
+s Fast Guard Stable Running Valid
+r duster10 EFUUVXVyF0RD+NFlpHvOOIdU/vc oZYbbG1zPdeS3l3YjWS5JkAvvOs 2006-02-18 07:57:01 64.94.44.51 80 9030
+s Fast Running Valid V2Dir
+r myaingfulloone Q2OVv0A99Ga0MgsnFM97DplqkT4 ldtXDgDw/Y/lMCd+U6FFzvB+moE 2006-02-18 18:24:56 194.145.162.162 59001 59030
+s Fast Valid
+r 42 fVDHcSfaEW0CAcl7HdsW8NoPr78 KrwyPVM7sEPZDcMhP3urEsYoTEI 2006-02-18 16:20:36 213.114.96.217 5462 0
+s Fast Valid
+r dasTorZurWelt Vbx5pGECEvVvR19OzWZ9upq1pDM qQwDpKjYDVx7Y378vi19Dfl3nBg 2006-02-18 23:07:49 87.123.112.162 9001 0
+s Fast Running Valid
+r middleman VdMXINOBPsenqcjJO2fLlWxAxCg xh5E5xgisajyEtOYJDByMsbYE3Y 2006-02-18 11:56:48 68.40.171.66 9001 0
+s Fast Running Valid
+r spoon V99rHNmqVaZ8GMCa0MCWBMd+3TY vh5usAe1SrpmkcKryIj1gcqxcac 2006-02-18 11:37:38 128.30.28.19 9001 9030
+s Fast Named Running Valid
+r EServ f8wXdI3FFGsPUi3BGQUkoi97z9k RYM4OTBCu9zm2B0uXVT/vL9gCyE 2006-02-18 22:58:22 71.254.173.250 56473 56474
+s Fast Running Valid V2Dir
+r waerternet WVYNzrF29ZGHp6Er5jNvhgtiyCg nmohUOc0oIlSmtoLfVfqg2rL3cs 2006-02-18 21:58:53 217.160.109.40 8000 8002
+s Fast Running Valid
+r g6ch4net WaUq0NuDd3WiS/+lXgsC4cCuDH0 VrHy2y+hsujvwPhaenmbOYKE8oc 2006-02-18 14:22:19 80.188.120.29 9001 9030
+s Fast Guard Stable Running Valid V2Dir
+r morgentau Wg/4lNwyNRTni7ZniXySTUTl2qg 2dWuYGU2/239G6W1dQN90KOBzgo 2006-02-18 07:48:09 83.171.180.39 9001 0
+s Fast Running Valid
+r beatrice WnPOm6wwRBF/b+kSPgQr+4hZRrw 8qC9Sg1Pqr5/2eJPrde3F75c3Ss 2006-02-18 18:26:37 146.115.46.123 9001 9030
+s Fast Running Valid
+r DOGFY WnvrmLxWLmANR5/PuA/pZOi9hUk kfxfLhOlYeOdxvMwQpdHlQomODI 2006-02-18 23:10:11 212.114.250.252 9669 9999
+s Fast Guard Stable Running Valid
+r FreeDaemonTor WzbA6eHs7pUlGXgfoV2z5BO7Kf4 KU467v5C9RU61xlkM5F6vWZPZQ8 2006-02-18 14:50:40 66.210.104.251 9001 9030
+s Fast Guard Named Stable Running Valid
+r flubber XCEk5sXddcPBfAPupaUYEnc95nE qxkmgrYdOumb8PBpS6M2ObqWecE 2006-02-18 19:39:17 83.160.255.58 9001 9030
+s Fast Guard Named Stable Running Valid
+r frell2 XEBfScXozRokS/KOIaUQHTigEQA ymGFoaD3SH8t/bdTB2bHJUz6xsg 2006-02-18 22:34:05 85.10.240.250 443 80
+s Fast Named Running Valid
+r troglomatix XJIW+8Xl8fePmGMXdzS95j6ZVss FIN245NeKVOPMPvl8AL4uGRFEQQ 2006-02-18 20:34:43 72.3.249.87 9001 9030
+s Fast Guard Stable Running Valid
+r NOTEXITNODEDENMARK XQLJnM+EFJWgrL+Regp1C5ZG240 HtbBXdBzMPz+laLMqAKqHYifF+Q 2006-02-18 21:26:56 62.243.85.164 666 80
+s Fast Guard Stable Running Valid
+r gentor XRTLsneanV48pM7RLDhcW1aaZsI nn7bYRchJQpCxkyBsIL3MNvTKmM 2006-02-18 23:00:20 66.165.28.148 9001 9030
+s Fast Guard Stable Running Valid
+r warnet XUk6fwSnZFJJqWhG1VpayqY4VHo wyvZWX93XbVUyT8BIeScv6hqYXk 2006-02-18 21:46:42 80.78.242.241 9001 9030
+s Fast Guard Stable Running Valid V2Dir
+r fioyaZ3iuthaihiera XXBtyEWfh09CsHStXfUc3bptCpM +Q5YyRvJ/UdBfp0o0Lo7j0inP4g 2006-02-18 22:58:36 131.155.71.110 9001 9030
+s Fast Guard Stable Running Valid
+r redemmas XcX+bhQMmwiUSV48QN4Nuis00Ws N0ZP4DYYiLxtIzHcR+Lq3zvWBm0 2006-02-18 19:29:44 66.93.119.120 9001 9030
+s Exit Stable Running
+r jpicktor XfByXRKf5NkHvM0amZgK0wFw9Fo RGTHQ0+TsC4LCBTFRKi3DJax9rQ 2006-02-18 12:32:01 208.185.251.121 9001 0
+s Named Valid
+r todinformation XqSZQPZMmS9i8OneA6+hd9ARmbg 9iqphmM62Aw3ZDb72iMyaq++v/4 2006-02-18 21:47:48 213.112.252.71 9001 9030
+s Fast Guard Stable Running Valid
+r sasquatch X0Nz19pGbtGvB39n7e+JS7t1mhU c0F4aQT3aEBkjunk70GjRwwAT/Q 2006-02-18 14:43:13 207.44.180.3 9001 0
+s Exit Fast Guard Stable Running Valid
+r Hazel X4qxn1yzC3CpUwpCaEZUjyQBeW8 gosNnLf/kx2QVOLwF2ZxRS91X2Q 2006-02-18 10:51:22 85.57.139.185 9001 9030
+s Fast Valid
+r amethystdeceiver X7wGoF8wsBJk8YNCH3jRlQ7OkLE mIxK9bPCXuB7MxZUhnuv3yKJyck 2006-02-18 12:03:52 217.67.20.124 443 0
+s Exit Named Stable Valid
+r Aeaea YD9LhXroObRF0+Bthjfddf8o8po o7tOOoTYpehv8ie2sz2W29yAriU 2006-02-18 02:10:04 71.125.156.97 9001 0
+s Fast Valid
+r Expander YERCjDrZXcuAhOez5tuyDCGQ56E rDVpKKBqkVMqbQWAgohQ9JRSOe4 2006-02-18 13:23:46 212.129.150.55 9001 0
+s Valid
+r transisTor YEXKk/F8yx+sKb53KNMJZBYcsLw uG8P11UD82WoJsNTDib81UV8Xu4 2006-02-18 17:10:27 68.117.143.4 9001 0
+s Fast Running Valid
+r outerspace iXWfySZEsEcI7mgau1Lpbf6jzJc J8VT0e8vsvQD42qSGGuyAQgFEVE 2006-02-18 18:18:57 131.155.141.98 9001 0
+s Valid
+r sorot YeFmOAUBi13TxEDE2wekuxDXwnM OsktkQ4NFwItHlFhNZ7IzG9Gsbc 2006-02-18 21:39:32 217.20.118.52 9001 0
+s Named Running Valid
+r underhill M27fM+NIzCff1ICg1Ia1FMM0s6g 81ZU+k1q4k5F8W65HZI0GLiyzro 2006-02-18 19:27:13 216.39.137.58 6883 0
+s Valid
+r molly YqdfbyaHJnRpVz0p3DfDv49lapY MdItV5bfwvuFqoF8llI9RDv0Cv0 2006-02-18 17:31:53 151.8.40.35 9001 9030
+s Fast Guard Named Stable Running Valid
+r twentyfiveohone YrcJp4Y78OlZPROV2vbg7T2y58s a+rm9d14nqo+GFWR4KoGCBIw9Fw 2006-02-18 18:06:35 68.121.110.75 443 0
+s Fast Running Valid
+r MidaTor Y70ntp6/u0Mc9Jtr+Q0r3ZH3T6I PpBQb2ISP8JwFs37/+U6f4Vhfgo 2006-02-18 21:47:36 24.9.185.227 9001 9030
+s Fast Named Running Valid
+r kallistigold Y+zTWLFuPYlTBPsiq5Qi5D0vlUE /UaR2JZiI+TeXm+4jjZf3F90SyM 2006-02-18 16:59:58 193.28.225.8 24242 9030
+s Fast Running Valid
+r Armageddon Ryc37CvBvGeYJlnrUUtUeFvQpfE GRzcGeM0qpUiH8LDdIu+e0SH7/Q 2006-02-18 18:17:00 70.133.197.77 443 9030
+s Fast Valid V2Dir
+r buddhaWouldBeProud ZOoD5aXO8wsT5elQu3fkVtmp/SQ Hw6ynDb130TOAYsRvRsEyY377T4 2006-02-18 22:14:12 64.142.74.86 9001 9030
+s Fast Guard Stable Running Valid
+r schnarpf2nd ZPfy0bn2EWG1UBA+2VcAUhdNshU GlnK/yxle2QXjFL3hja3r2OEjuE 2006-02-18 16:25:34 195.37.132.28 9001 9091
+s Fast Guard Named Stable Running Valid
+r f00 ZSaq1S3UN/AvNtfM43BG+cK8Wkg 3+Yx/k+h34D4DLBKS1aichbsTG8 2006-02-18 23:11:01 84.16.234.49 9001 0
+s Fast Running Valid
+r BinaryMIXER ZfOhqioPAjzOcfqhFY96ZiSmUh8 cqzHwjibfJOu70r7BSsnLDB5Sls 2006-02-18 12:58:45 71.133.227.217 9090 9091
+s Fast Guard Named Stable Running Valid
+r insertend heGR4jl3k2U69FmN2PftaLqcRjM ELBhdoy7sYNuK9kPm3prPM0Ucsw 2006-02-18 17:29:51 81.8.218.244 8866 0
+s Fast Running Valid
+r idideditheconfig 6jTswlj+BpGtErezRMdq8908YYI xMsNh2B/QByUzPkWkrWABumaCgs 2006-02-18 17:42:25 83.248.67.218 9001 0
+s Valid
+r anonymousbalsercc Z8ZTrt3ju8FCdADJHMkeKJ3qjbY Bc/YMvgFl8hoZ1grTvQY8IPX+sA 2006-02-18 21:31:12 62.75.129.201 9001 9030
+s Fast Running Valid
+r Slippery Z8ahBqSqas8/V/EqxzPm+5syzsQ Gx5OwvE5uWXVV7c+bxwO8B4y0GM 2006-02-18 23:02:36 84.221.99.205 9991 9992
+s Fast Running Valid
+r nickap aZLZAqe99OXu3xP5fvIUlzGgyqg 9c86oHxwRUubbnLTqdSQ5pt73kU 2006-02-18 11:44:01 82.57.13.119 9001 0
+s Valid
+r zauberpony aEuFGktPs7WW3u6mVU5C3qpX4Jo 2vbz/OHdEBBypEtxN5HjrHb3gTM 2006-02-18 23:12:18 212.227.20.171 9001 9030
+s Fast Running Valid
+r spooky aGrqTlkilymI/3HKQxW8NOTkfbA +y3FGS7Jd4LCSrCEKlIcTannm94 2006-02-18 20:13:34 84.56.83.2 9001 0
+s Fast Valid
+r ztor3 ahfP4uLYoXmn8B0ybdnd396HYCo qdL8wivt80qqjTLu5gkc4aZXyco 2006-02-18 12:41:26 217.160.203.26 9001 9030
+s Fast Running Valid
+r monrovia gnpkBQt9zfy/0SHjyahy66iz/NM ZaojNKt0oT364m5xotHTluhJsPo 2006-02-18 10:43:32 68.67.213.59 9090 0
+s Fast Valid
+r jobbyjobber KE3WTcb3M+2jhDWy301uOjKlHis VIiVJv8r2LlsXi3/Z/yzt5hLUv4 2006-02-18 17:19:51 70.56.16.165 12320 12321
+s Fast Valid V2Dir
+r beershakes a8pdGrBEKZjib72LEt5M1J60S/w IQtykeWacKe74AQoy8FzL4sFtr8 2006-02-18 23:12:18 213.239.202.232 9001 0
+s Valid
+r hackshaven bBhU3NOOa9OgF8mrGkW3+kZeZNk vXFyuEBoedISnuPwJnog9auF+WY 2006-02-18 23:04:22 64.81.100.208 443 0
+s Fast Running Valid
+r commodore64 bOLlIk0gOtk2lJG88v0ZLG2PLkg WU0STf7hfZu21vqZYQWPxgdwhg0 2006-02-18 15:59:13 137.226.59.249 9090 9030
+s Fast Guard Named Stable Running Valid
+r visnator RUoE04LLiaKeABYDguFUaF4ytWo P+7HB1k+pfeeEzL/Qj4F26QVd04 2006-02-18 22:49:56 85.10.226.188 9001 9030
+s Fast Running Valid
+r Patra bVosIRIgUGAvp3O64cQcZXiR32w WZZbjQY3jcCN5enBossHnGUf5Rc 2006-02-18 22:13:19 150.140.191.102 40987 40898
+s Fast Guard Named Stable Running Valid
+r fsd13d24bge bc2ei8co0PSVGcax01Awec6yIC4 EA5SNNjwKqaiQDtqqMZxl6r8NNE 2006-02-18 05:29:16 84.141.187.202 9001 9030
+s Fast Running Valid V2Dir
+r eripax bdmb0AAuL6DsJ/ABwOe9ENURmzQ UZdz9Y/49l2pyfrm68BKGyN22ws 2006-02-18 15:34:38 83.227.72.118 9001 9030
+s Fast Running Valid
+r BigBadBert zKr4u21oAo/IEw+XBJn+iRQl7oE L8ZskyXJ+ATBIgcClaWZCA/GQxk 2006-02-18 20:04:21 84.56.170.216 443 80
+s Fast Valid V2Dir
+r iipsytesnet CsvlD6yedrjDupG7oKGn1yylGRU WjodS/Cg1JPTOjNvD/ZMbwLeYzk 2006-02-18 17:48:19 82.48.18.188 9001 9030
+s Fast Valid
+r Doppelganger bsXOXFsc/iw8w915Sz1gvpvBwhc UzT6xayRAns+zGCkHTn36TrZh7U 2006-02-18 21:52:18 68.127.162.54 9001 0
+s Fast Guard Stable Running Valid
+r LaboratoryBeeker bu0v3yl84NGFkfYX8JjUTdkoHCk Sq4S3mi3W6JWW7uyuoGZ6c9O/30 2006-02-18 22:07:01 128.2.132.175 9001 0
+s Named Valid
+r sharktooth byM47aGejKdXl8MICsAiFV3w3TE D/veXhr+TU6GU+wvDPEElPQdQ/8 2006-02-18 20:53:58 213.239.194.175 9001 0
+s Named Running Valid
+r NeUrOmAnCeR b1Wng3eDaJ1HM4OJbRbeRgn/Sno 8Xi9mi+zKcRuGcPfT+CRyGiN+zI 2006-02-18 20:36:30 68.100.47.107 9001 0
+s Fast Guard Stable Running Valid
+r toratgmcto b19URApjZrVPS/cWnjqcUVUINuU sLPIXIk1RdjzpJRKVkEs5bDCZ8I 2006-02-18 17:25:05 70.84.253.4 9001 9030
+s Fast Running Valid
+r madonna kXT6VGCcKw+DHJ1ni7Qtq/cWXoc Cb9Rlmp3LUCHxgwrd9ULozu22iE 2006-02-18 21:27:35 85.226.102.120 9001 0
+s Running Valid
+r ephemer cPAU7gmd1lmo0OgAXUI773k9z+c qdrpOVcmDJXAa2eMOA9pgztl8Sc 2006-02-18 21:00:29 128.232.110.15 9001 0
+s Named Valid
+r woog czf48pem/VIemcaS+L+we3MIKDg wjrgfA62vI/RfuysDFHrIlqA8eM 2006-02-18 17:42:39 66.75.246.142 9001 0
+s Fast Guard Stable Running Valid
+r nemeinFiGW c73UCksTWEbXMJVOD8EOC5ImGUY iduPY02+ThUa0i+myR0cVhtW3pA 2006-02-18 16:40:49 84.34.133.217 443 80
+s Fast Guard Stable Running Valid
+r distro c9+YiaS+4So2mv2TPtLgm+T/EyA tO7EProUK9W4IMa60Nj5ny77Eug 2006-02-18 20:38:39 61.242.102.18 9001 9030
+s Fast Guard Stable Running
+r nightspear dG5IIKUlQO8v2+kmH7YC3z2LUa4 HS/ZXkSZ9dLD4+WddYQPxXLIQcM 2006-02-18 14:23:27 193.16.154.187 10001 10002
+s Fast Named Running Valid
+r peterp1701 dRRX3QTBDdXe/bmefvHExP7kQTA ceAtcCjtk0jJ8HoM7EU4nuFP8Ec 2006-02-18 12:57:15 212.227.108.114 443 0
+s Valid
+r foobar42 215M2+lObGVv4/daluiTVVMosyo kBEBUlO2n8ScFoLGo0inCUSWEt8 2006-02-18 19:52:47 71.153.234.10 9001 9030
+s Fast Valid
+r camperquake dnkuWhQftMOLwPtc/C5++fiwoOA i0UsfAoVzThe+qWzghFqeiRdYrQ 2006-02-18 23:05:39 212.51.10.6 8000 8002
+s Fast Valid
+r Babylon5 dtctK14FI/yrdaXt15Xna2xGuEM xW30GxLNlMykI9EKsAHzH91CUcI 2006-02-18 17:36:49 217.172.187.46 9001 9030
+s Exit Fast Guard Stable Running Valid
+r fengor dw2MhNTtC/qsqj0gf+K1SHHwXfc 379DUwI/EGmDHaOZ17g6HMYuwEM 2006-02-18 19:44:10 81.169.176.178 9001 9030
+s Fast Guard Stable Running Valid
+r b9IVvwkf774fF2N7Cvk d3Hx4lw2E2n3DXZnjKrM9TyCseE 1eJy8Z2Ov6ghfBkR1BfoOqe6bGQ 2006-02-18 21:27:00 81.169.183.70 9001 0
+s Fast Running Valid
+r Elysium d/QW8EofWo6PlAdIJigrmZRKku4 pnyENlc8Eaqi72RAyLELNDsx0Os 2006-02-18 22:24:51 68.5.123.151 443 22
+s Fast Running Valid V2Dir
+r holyfreakingcrap eGeo+HEupCc9NIn/nsoBD+n+gms UIAjTR23QKEs+pDPbLyKxCKfV6A 2006-02-18 15:00:48 208.14.31.5 10001 10010
+s Fast Running Valid
+r Eymerich eGijali6XemJ8QUztc6t1+Ghvbc fa/n3jElx0t8o1bb4A/M4nYc05U 2006-02-18 22:11:40 131.175.189.134 9001 9030
+s Fast Guard Named Stable Running Valid
+r torlla eIv3xF8sEEc1qiBW9b+lUGNcSHQ W8lFzXlTfz3b2iDCJjoZOUj8jSM 2006-02-18 20:37:45 213.199.120.94 9001 0
+s Valid
+r ProBastion ecOUBXmL4QozZEFiF7Ed7qLgNY4 f5UkyD5mSVhRWvivyvuZhTAKq8s 2006-02-18 23:07:53 24.248.42.6 9001 0
+s Running Valid
+r raybanana e99h1TEXmBAZQkUP2EYL1xMRQjY bEzYKXmkvPrHzVS4PBSISuP6esQ 2006-02-18 23:08:53 217.20.119.144 19001 0
+s Valid
+r x31 +l79b7bwFe8ggdQIOk5cuwkZXJI 2YulTI8XX7LU1P8WtD0IueZMyMI 2006-02-18 20:36:59 69.250.159.76 443 80
+s Fast Running Valid
+r gondor1 fIPKcNSGejPhXMWeLyAnFUIdF3c e+NAuLy2Jl4iod/dsdueoShkov0 2006-02-18 12:14:32 217.160.142.69 9001 0
+s Fast Running Valid
+r Azetab fL7fKM5JF1Yi+4/LEH5zSWHEfwE t4TBHa3n2+9a94g96HJMNEASeW4 2006-02-18 18:12:49 68.173.37.136 443 80
+s Fast Valid V2Dir
+r winnie fRpNzluH9AY8SN4TlOjpCBeGZVQ V6uEq2uxUZzRd1j+oSsOsl9Ea5M 2006-02-18 18:40:45 64.115.210.23 9001 9030
+s Fast Named Running Valid
+r drecksprovider fXI8ydIKvvmUIvFtoQORH6yWHyc tz7g6kJBthESdzgmzOa1E3I6DPU 2006-02-18 17:21:03 217.160.204.97 9001 0
+s Valid
+r graze fbl8HHaIekDIO9lL66A3rXlU5eg A4XpiLBx1j2JS5gwd7BAbalBw8g 2006-02-18 20:19:31 71.116.93.118 2484 0
+s Fast Valid
+r vineland fhsz8q3tTbVaoBy+ZxMZUfRqTVg Jr7MZHuP+IC7IdA6tB0K2vgC2mk 2006-02-18 11:45:02 134.53.24.52 9001 9030
+s Fast Guard Stable Running Valid
+r dizum fqbq1v2DCDxTj0QDi7+gd1h911U Jr3o/u1Fso3/U58atd0LGYA99AA 2006-02-18 20:59:44 194.109.206.212 9001 9030
+s Fast Named Running Valid
+r locke rgyrC28W0cH6wnx8/EIBRVhKMd8 TczICyzYT0m7UtBfKRr2wjqzpc0 2006-02-18 16:07:07 24.9.53.101 9001 0
+s Fast Running Valid
+r Yo gHC/t9sRMzwY6AQ9SI919HA/T/E Eu93alWtTeAGIzIZ+AoA7qqr/GM 2006-02-18 08:27:32 168.150.251.36 9091 9092
+s Fast Guard Named Stable Running Valid V2Dir
+r heaven gJ3E8NPvMiMJ4HS1vtJQfSZK/J8 FrKzeXRQDPEUVNOj8j2l07lvATc 2006-02-18 15:46:09 193.239.165.73 9001 0
+s Valid
+r n37gu3r1lla gPMtc4aTTk36Aj0w88oETckNs3c 4mt3RUChSohfCgcQ2uoUkOoGjaY 2006-02-18 17:03:16 62.203.22.157 9001 0
+s Stable
+r littleshit gP34UK6wPGUlm13JGAJvD8fcqbs nd6Up29CU50T2buhLCQd7F03sic 2006-02-18 21:48:13 67.176.204.108 9001 0
+s Fast Running Valid
+r yoshtor gbx3epvrYeQtkTHHqnL1iodu5bM F2/DXxZIi0gcDZeYbe0h7dieRak 2006-02-18 22:41:06 66.236.18.180 9001 9030
+s Fast Guard Stable Running Valid
+r ididnteditheconfig grB5qH50JIJGk7IvihFvmBv2ZLM RWHnEqCOTrKMwIPVhJ7HZ29XWqY 2006-02-18 14:58:10 63.246.145.70 9001 0
+s Fast Guard Stable Running Valid
+r thruvu gydNtjf0X7IKnRjakd7JsRzc4dY HQSKgAlxdtiwHj7CpkqaSeR0XcY 2006-02-18 20:29:50 209.172.52.78 9001 9030
+s Fast Guard Stable Running Valid
+r paliandroid gzyO8PHkUSFPxeQf4/uFKfSIAtU bIZxGokmj+6OBa5sgPvH+g7cRCI 2006-02-18 23:09:05 64.230.60.143 443 80
+s Fast Guard Named Stable Running Valid
+r dudley g1PL/kAtTvvxuGPaArWSGjng+gg NSOY/LBx17QgcZwfjR6ZxOYTII8 2006-02-18 05:58:57 198.53.171.191 9001 9030
+s Fast Valid
+r manetherendrelle g3MdVeMASD9ZHCyjqJYlHocU+W4 WvBzInFhck5MWNtzC/OB7a5GUiU 2006-02-18 11:44:25 83.219.212.101 9001 9030
+s Fast Guard Stable Running Valid
+r fastfashion hGOX+uCJo4XlwFIxEay/MHRkLxI GFIBi1fvQDhvJZZAiJiXGaY3xjc 2006-02-18 11:39:28 212.112.228.2 9001 0
+s Fast Guard Stable Running Valid
+r tor26 hHsfhQNE14dkkaVIkvkEk05OuF0 +qGEIGNA3unZf8i3zz02r4zIi2A 2006-02-18 20:17:24 86.59.21.38 443 80
+s Authority Fast Guard Named Stable Running Valid V2Dir
+r aragorn hXyzO92JgJ9Z/p6SW6PLsrEmF5Q BwZQj0i+ALX4NWLXZbFk216+m08 2006-02-18 19:42:05 81.56.58.94 443 80
+s Fast Running Valid
+r bender qjQIgUi6Bpgx3/cZvAz1iY7+Qz8 7YKdaozY4kDkuR7EEfy0oMpIetQ 2006-02-18 14:30:34 207.150.167.67 9001 0
+s Fast Named Running Valid
+r PrisTor h7cDLi85JCVONGk6McZY/63IGsQ SBEgAO8e8nbqYk7b1cD0MMHFbyE 2006-02-18 22:35:32 80.57.244.213 9001 0
+s Valid
+r x0x8767aff jcXLIAoD5KiOIiM/IRmToMuf5Ks sgZkAE0LyVk1hUqI2SA6NEcDt+0 2006-02-18 22:59:23 70.241.115.134 443 80
+s Fast Running Valid
+r Agent0013 iJpmnF33FJvKNU7u5xGI+MfqvSg DuMRuk3U7tdVKP2ZRwuMQTlNvA0 2006-02-18 23:14:04 69.47.148.53 9001 0
+s Fast Guard Stable Running Valid
+r ben iMxnzceBgQhsif7hwJN5JVY5txo bTsfNZGt0a0pBInsWCU+kYSU/1k 2006-02-18 18:55:13 84.41.143.100 9001 9030
+s Fast Valid
+r theprocess iPnxpRP6FvRGs0rtD3uv9L2Eg/U MTtcygjCIc351GVlAAE28WFSymI 2006-02-18 20:04:48 82.165.144.169 9001 9030
+s Fast Running Valid
+r arg0 iU99d4n/66iTkaF1JYf1Z0dzbvA /pTOiKh1f+vAMloIcUaCBj9suR8 2006-02-18 18:01:00 64.246.50.101 9001 9030
+s Fast Named Running Valid
+r Zenten Mxtyt4TL87jM7jj3NpkfhEyAsN4 jNZrlUlvykl2AZNBpCiFOW/7cfc 2006-02-18 23:00:37 70.27.5.5 9001 0
+s Fast Running Valid
+r attalus Zk9KyamLn0kb3UchMHh7eQIrLYY dcw2I0yLRcbjQNOFswWj38B0M4w 2006-02-18 10:59:50 216.254.30.234 443 80
+s Fast Running Valid V2Dir
+r augrime icMQZmeFpUJbHOZgesPwE4XoF3Q 8Bf7P+/KXr3vpxP3M09h9uvmGM4 2006-02-18 22:37:31 18.246.2.33 9001 9030
+s Fast Guard Stable Running Valid
+r newTorServerOfMine idpkC5rJ6h8wdbw4kT+edjV+JqQ r81EKtK0oOvlkbtDYYs9kH3rWpE 2006-02-18 14:48:02 24.136.12.209 9215 9315
+s Fast Guard Named Stable Running Valid
+r rastafarisingalong yz3Mz2HOVEMyTJzOC9D+SQsPhZE y9Jwu2wTnLRWqk/l0E5rQTuTEAE 2006-02-18 13:19:15 83.233.97.209 9001 0
+s Fast Valid
+r JykeTORserver42 jNTAje3fefAZcZwZFLSyC0MlxN0 ELu9ZKZatJ+XjDnxrZ6MjSZvU6Y 2006-02-18 19:19:33 85.76.189.225 9042 0
+s Fast Running Valid
+r ANTiECHELON jbT9wTOQ1mdX3fsRtgt4rxALYC4 mk1oA6B+nhkrdA0ofHgZCykJLr4 2006-02-18 15:44:38 213.61.151.217 9001 9030
+s Fast Guard Stable Running Valid
+r NetWorkXXIII jhpCYFMPMEsfgWyJbzIxdRuo6m0 S5fGLfK5i9SWRXr4H1ebDZhp3TU 2006-02-18 20:34:25 194.95.224.201 9001 80
+s Fast Guard Named Stable Running Valid
+r vm jlKH6k5w2aJPinUZsxd2U6UOT54 qeloWVHfhzbtCYYuebT1xzX+nYk 2006-02-18 14:16:10 38.99.66.86 9001 9030
+s Fast Guard Stable Running Valid
+r voltz 62CGyj/yrOdR1V7Fxmedaq5bM0k 9XQTWmuXCmIrs1vQkRhhna7W81E 2006-02-18 09:50:58 151.37.130.171 9001 9030
+s Fast Valid
+r Widdershins TQX++oRV/1XZYTtHruKEAXkSiqw x1WjXxyzSrmoICohkm8U80Fnj0U 2006-02-18 05:51:05 24.33.94.29 9001 0
+s Fast Running Valid
+r PlanetLabTorTest1 kQb0rXHpQaXor9iX6Cg9Hql/qVw 8aW9Bz4wyysOQhU41QkWDgob3UE 2006-02-18 21:58:54 128.112.139.71 9029 0
+s Valid
+r koehntopp2 kRoxg2oHu5q0F8wyNPYadzKISwY PbV62CkSzIy9VZZCCfPvEvkkPnc 2006-02-18 23:09:10 85.214.44.126 8000 8002
+s Fast Valid
+r eigentor kWZm18jTbtOHjNQPcsDn91YjwHQ yb+lxhvPngCEYYDkVQZxtZvi8ZY 2006-02-18 17:41:13 80.190.250.139 9001 9030
+s Fast Guard Named Stable Running Valid
+r Netizen kdV0hPWj/I4rLsLtFwLdg+SwJgM PkW2pM+W/hePZ0q4kt4fORO4g+s 2006-02-18 21:13:25 87.123.72.163 9001 9030
+s Fast Running Valid
+r baphomet knUfmbDNArjhAu/tM48UIZXVMgg k6OD08BlaKVQnAW/b0rQL1azYXQ 2006-02-18 19:25:15 81.169.136.161 9001 9030
+s Fast Guard Stable Running Valid V2Dir
+r arigatto kpUkMIWvpvB32RDGRqKLr9EW/no Y5rdCCxx8gwysx2rLuaYVrTUq4w 2006-02-18 17:35:47 212.239.118.83 9001 9030
+s Fast Guard Stable Running Valid
+r JIZBOMB kvuXQtuwvfT3D+SDjCMVO0bOn/g HYk72pv3kEBc53/y7/0QOFftJmk 2006-02-18 11:19:24 141.149.128.197 6969 6966
+s Fast Guard Stable Running Valid
+r cgiirc k8DMrN+NS2fVWd4l0sLn/Nvmj+I eZWPvXjGcT5OSBQ/tii9YQwlHlg 2006-02-18 16:33:03 69.60.122.49 48139 0
+s Fast Guard Stable Running Valid
+r road2nowhere fmNOy9Bn6lv/Fmw35+X/C95DmgY IrC64cX1DgNzaoZxqQIHoaQLGAg 2006-02-18 14:13:55 88.134.98.42 53421 0
+s Valid
+r KeiTH xTDWwMugfH38UKlNVlnAiPGzzmA R0XG5OlUlsgJOXb3ZwAMFf/V+/A 2006-02-18 22:51:33 151.41.149.119 9060 0
+s Running Valid
+r banana lLNX+LrZefxoJMI2tqpBfitj608 GiOqGGHYwWiItY0aZQ8WwcosJbk 2006-02-18 11:25:36 72.21.33.202 9001 0
+s Fast Guard Named Stable Running Valid
+r genetikayos lLi8jDjGdJYTIMIvps0EG0pB1Qo F8MY1R6IFGU1KP9JGtZlLgBY+Kw 2006-02-18 12:18:21 64.246.26.190 9001 0
+s Named Stable Valid
+r gotclue lhLg2Vr8P0ScVjHLks2NWLU+Lnw TjJUMjxlX84WQPU7G1Pih5OM4Xg 2006-02-18 20:57:50 216.32.80.75 9001 9030
+s Fast Guard Stable Running Valid
+r gb3 lniPsTl0X2L19PKqLmDZywxXmWo eO9X3w5G0DhHZXYG7dUpwrOJQ7w 2006-02-18 11:40:17 131.128.57.15 9001 0
+s Valid
+r nopryingeyes loJwJLbgWjCnRzZNwouI7L7CILo mBLv+K7FiPQ+Kej4nvmCIZOrOZQ 2006-02-18 06:41:22 69.12.128.32 9001 9030
+s Fast Guard Stable Running Valid V2Dir
+r pup l0DdQVB5plTveG3Ot+epS1BDB2c a9tWZ0LZVsKV12Q83QZ8340P5v0 2006-02-18 15:29:48 67.173.143.46 9001 9030
+s Exit Fast Guard Named Stable Running Valid
+r LincolnOne l3xu5hTuoHHP/gxOqI28nVVWvAw pkCPaU0693HeGwBju/X15yE+DIE 2006-02-18 12:23:19 216.152.242.200 443 80
+s Fast Guard Stable Valid
+r makemefree l6BiXUFQbasgBuwrhGEOkErlaa4 VSqvVWaIbNWlgLXmNyM8SYCxFbw 2006-02-18 18:00:17 80.242.195.68 9001 0
+s Fast Guard Stable Running Valid
+r comfortablynumb mBgRkB/ZSs8zfQ8wkA//SkV/sJA iASw8b03Ussu2YxuOQXZqd6fcnc 2006-02-18 22:44:12 216.194.67.53 9001 0
+s Valid
+r ThorServer Q3idfn3eDNflqXA4J2IrOsZBR1M 8GvORtrgZCZ16V2y+Yav1aYN7TA 2006-02-18 14:52:47 213.66.3.248 443 80
+s Fast Running Valid V2Dir
+r XTL mUSwCWTu52Ld3YNj0/x6psKKCqY e2hqjsDnPs+aalKqLjCMAIA9LrI 2006-02-18 21:58:18 82.128.214.247 9001 0
+s Fast Guard Stable Running Valid
+r freedomfromtyranny mZqEYOS+LQjo5ng/3t9k/p0ccTw Sc+JICriUG5ujXBLNbqhnzeV7yI 2006-02-18 16:31:37 63.226.50.201 9001 9030
+s Stable
+r centralsystem mcDzUaSA7UrP8EKp2s9bhMCqhas V6NMOI4If7aLT2xc4UyR+vmISK0 2006-02-18 17:48:48 85.176.211.159 12121 12122
+s Fast Running Valid V2Dir
+r sparky mmlA+EOmvMJ9cHW8Zmq6d/nF15A wfmanf2M8xasDpjM4Z4a8oFF0Go 2006-02-18 23:59:27 69.12.145.165 443 80
+s Fast Guard Stable Running Valid
+r silverstar nBLrBATdq1o8W0h93ZI8yIZa7MI tfK86QaYeU+iblFltQ+jZ/45Myc 2006-02-18 12:05:44 65.7.136.249 9001 9030
+s Fast Running Valid
+r SpongeBob nJFBHWkjTC7yG9y9m2DW6+Wb3LU WQLrE6A/1DWDDCAPKalnn2skr1c 2006-02-18 18:13:13 62.241.240.86 9001 9030
+s Fast Guard Named Stable Running Valid
+r spanktacular n8A+tzb7zaxADnjT311qFmRw8hE 5jPBnjdJnOXXDNAleJxnNKy24bc 2006-02-18 21:22:06 65.34.4.116 9001 9030
+s Fast Named Running Valid
+r ed209 oUZpYx8ar97S/gZ7s1dQqrU9LVM RKAXyzdZVmr4puR72lWLqWxqKiE 2006-02-18 19:20:54 24.155.82.33 9001 9030
+s Fast Running Valid
+r zwiebelfissh oYnp6c7M3a0j2zEWc+nnbWKgdg4 B1hrZKCHaA5g8L0HToNdYnF5sac 2006-02-18 23:02:25 217.160.176.49 9000 9001
+s Fast Valid
+r xjobbsweden elliQtqydUACMR0rivoMzn9R1d8 9Oca8igIi00DHqA1ISLPAR2nVbw 2006-02-18 07:45:24 130.243.83.4 19001 19030
+s Fast Running Valid V2Dir
+r Mystiqx o928WR1mxNr4B5PBZ/WQ2eeI3NI QBF49y4MtUu81f7EG4fFONx8rvE 2006-02-18 23:04:02 217.84.25.67 9090 9091
+s Fast Running Valid
+r jipjipjip2 pDjMjp+RdQ4rGD+Ax0G7SLVhGqU PZd5JghP8liaPijj6VqC38FE/Ik 2006-02-18 20:52:51 85.178.42.10 9001 0
+s Fast Running Valid
+r neotextus pNRo0TXy+D1srNyFl1tWK97zqTY EhlfLOrxRivKmvJVd2ikAz1i3jU 2006-02-18 23:04:25 24.22.104.31 9001 9030
+s Fast Named Running Valid
+r MannIndustries pPdrAagMA3i4RW+Uanrf//nDLkA fToX03gUWcaOJVY+ng3WHHO1JB8 2006-02-18 20:59:19 24.175.184.12 7777 7788
+s Fast Running Valid
+r Lanista e6iNOuGl0nwFz5ChOQDN91vNvJg BmSZLWbMLOyldfQez3OT4OAvsJk 2006-02-18 23:01:57 81.3.47.47 9001 9030
+s Fast Running Valid
+r einstein pPyQxIdjPymVqjI2eyatsAPWn4k 5CHLhErv+sn2NNr4/fx42cy8thc 2006-02-18 12:23:20 66.92.68.250 9001 0
+s Stable Valid
+r aaf9200ab4053a5d19c phDn0geh9Ror6GhxfLOZIVtmBz0 QEVlCwEDndMhYkUdy8prWCxg6I4 2006-02-18 21:54:36 82.135.5.234 9001 9030
+s Fast Running Valid
+r cebolla43 phobjIC+0MTuHuDVxXewupF/jQo nXZInEmLQfSruKAvPhDKvEv+khQ 2006-02-18 18:16:21 200.121.55.151 9001 0
+s Fast Guard Named Stable Running Valid
+r nentis pkbcMYPLK1kVeErlbpg/rFaDdso nexP47uhF3OLelm+krBVHagwEok 2006-02-18 17:06:30 69.30.99.210 9090 9030
+s Fast Guard Stable Running Valid
+r tenacity pkizRc6wKdB2O6hrJtyX9uRK2Yg hgRL0k/EoBIuqh1zXZZh6A3S8/c 2006-02-18 21:11:07 154.35.1.8 9001 9030
+s Exit Fast Guard Stable Running Valid
+r IdealWorld pptuGk6B7pWLp0lDoHomxhrSbcI eobQnaktcgKEBQyDdCPW32ejlLg 2006-02-18 21:43:10 68.236.70.84 9001 9030
+s Fast Running Valid
+r frx774 p01d99AHNsDRVWT30yVDPzz7igo LI4UN0DFS5Ry1RY51gox7Rk9/go 2006-02-18 05:19:47 69.238.171.145 443 80
+s Fast Valid
+r gondwanaland qEIwrZerFw373SFjLH1X3t5jwMc DN5DaL7bcMHI86l7O6EEueM5Kuw 2006-02-18 15:53:38 64.5.53.33 9001 0
+s Named Valid
+r Fno42rd qcXAQJPzbD9lxKJNdSgs/6Z3VdE cPFne4au2gbHeW/zJ0QTa6LbTr8 2006-02-18 21:11:02 217.14.64.70 9001 9030
+s Fast Running Valid
+r sparced qku+BrATHR4RkqAC8bH8pe7zQD8 XaF0B1BcMF8xmT23rgHG2bz6y5Y 2006-02-18 18:47:13 217.160.170.132 9001 9030
+s Fast Guard Named Stable Running Valid
+r tornyet 73qf2NGSR51nB2OgYc9wIgS2nvw 3Gysl5fCy8c0mhtcZos4VWkOFrw 2006-02-18 07:30:47 137.120.180.65 9001 9030
+s Fast Running Valid V2Dir
+r PzyCrow pvK4CeK9bm3WmMpybGsa5lGzjg4 bnwqvbtwKrFofVa/i4xPmKqunqY 2006-02-18 18:40:45 83.227.230.228 9001 0
+s Fast Running Valid
+r OptimusBob bkveqxFksv83Wwkp/ApME1b6fhY 1sFemCSVAAyKpIiXB5H/vLlCnQE 2006-02-18 08:40:18 202.173.132.201 20000 20001
+s Fast Running Valid V2Dir
+r AnemoneNemorosa q2HzT7Q3wtQI+69W0p3JphSkIn8 GvsXVF4DGOGdD39UjjoHKPgEP44 2006-02-17 23:26:05 80.202.94.130 9001 9030
+s Fast Guard Stable Running Valid V2Dir
+r Qazwsxedcrfvtgb rU5DxeWELVzHidNOJpo9Y7QFa2M kiSxdsAryFjcY/TT0VzsJcvC0fg 2006-02-18 22:47:47 65.95.81.226 9001 0
+s Fast Running Valid
+r bluebirdZenith rWsuucO1lsIgzHt7AHb0eFYEWe4 wfyQZxI2lGpNj0poCNDr0NrGT5Y 2006-02-18 22:39:33 203.87.60.80 9001 0
+s Valid
+r blorchmonster rmb+HT1GKGFB9qA+Ic5KBFpifeE 3iFsciNxcL9VEbKvTlEJJ79KhIU 2006-02-18 22:51:47 68.42.67.5 10391 10392
+s Fast Running Valid
+r XieXie FB0egJe4MZZT0xd+/TvL2T+fl+A YBnNpvZ4Iv/pOlx+ANqiUYHsHSY 2006-02-18 04:32:09 70.31.42.165 9003 9032
+s Valid V2Dir
+r hutorfun r2N28Q+Bgq5NDsRoCEA0O1C8JTw hmZBZYX7ftmbf1HRfl2pwhZ1tCw 2006-02-18 14:21:37 213.253.212.105 9001 9030
+s Fast Guard Stable Running Valid
+r idideditheconfig249 sRN+91G4RnIASJnZusuoW7kvAiM deqLKHAxVeRZ2f4jviOi809oFWc 2006-02-18 21:32:29 82.18.34.146 9001 0
+s Running Valid
+r rgnadkzin bpRKFqIYaPDN5R30U+SNcAEiM9s PX98n2W90vY4kxYylYdjapn5Nl0 2006-02-18 14:58:41 68.96.229.202 9001 9030
+s Fast Running Valid
+r dataretentionsucks skA2Jm4VPdsAdLVfdm36kOxoVb0 bZ8jLJviF0TfFV5XIlBMwQrjMtM 2006-02-18 20:48:58 88.72.36.191 9001 9030
+s Fast Running Valid
+r gurkenbeet soaRU9Kyf2cwo5B7ReOFexWOp9E Q0doLMzFWVlKmImkHHodPP11t/U 2006-02-18 20:34:12 62.75.151.195 9001 9030
+s Fast Running Valid
+r Pegdymmiv2 symK3tI4XZ0oNl9mICGMW/l4JEo b9+sgjvfFn7TgRZnGgs6R9fFBSY 2006-02-18 05:39:18 213.239.206.174 9001 0
+s Stable Valid
+r federal s13c9NEJZ4kBHCToqvUZ2oF+YpM gsplwKGUHsiUYMLdJGWTQNn1aFU 2006-02-18 14:25:50 66.173.227.152 443 0
+s Fast Guard Named Stable Running Valid
+r DarkElf109 s52exwzbNY1b3tnBaC6ih1Euyro fk+dUyUMOqxfuC6x8VKU7Z9glvU 2006-02-18 13:29:30 68.98.18.98 9002 9032
+s Fast Guard Named Stable Running Valid
+r morgana tBUODMB4Lad3FvwH4f6XOqk5vuw IA0uC0/FpuZ+4HtwFZM0juiqRRY 2006-02-18 21:40:32 213.84.43.3 9001 9002
+s Fast Guard Named Stable Running Valid
+r DigitalBrains tB44R0mSNIdGiLLzVMZ2S4WJ6vg 3TCugGjU8X3xdRT+CbMZSFiV3xo 2006-02-18 21:45:03 82.92.225.162 443 80
+s Fast Guard Named Stable Running Valid
+r prospero tbfPI4MoJRIy4l1hplmRe4MQKUc MUt6mVkwty+RYXbulNuRB/Jx68w 2006-02-18 22:27:46 83.223.108.108 8443 8080
+s Fast Running Valid
+r rbsTorServer tr4SVf+YcT3Gsvevn/MI05K8H+c sLm8zgh67/6Biz5QQiIXNUtvbcY 2006-02-18 22:06:34 68.147.200.77 9001 9030
+s Fast Guard Stable Running Valid
+r smegandtheheads ts3WK9kTpknGIDP4kj6H+dC3blg 6T11ctvY7iwNs+wzQ3M7kjy23w8 2006-02-18 22:49:32 59.167.37.175 9001 0
+s Valid
+r oululife tuFgliOaIH9D4ppJbUPnfZKg7oA nbaBgCas67oykgRqXdDD+ggvbwY 2006-02-18 22:49:27 82.128.217.202 9001 0
+s Fast Running Valid
+r proxyrutimkade t0402kUm/JsmYwwgFE2Bjn6Li3A Gh+EZBquY23My2rBXR4JhD46Ji0 2006-02-18 12:50:39 212.224.22.39 443 80
+s Fast Guard Stable Running
+r scout 97ICjfXYvd59ZOUtQtVGjIAnAmY whgy9l87WVKKy0OlkoedO8QqxOE 2006-02-18 22:53:09 87.78.20.209 9001 9030
+s Fast Running Valid
+r anonettorserver uGxYLufltYHlrMgIM4jfh04Ge5s 0NZJErjBXK2Eg4+R1c+3MXicFQ0 2006-02-18 23:11:52 70.187.87.248 9001 9030
+s Fast Guard Named Stable Running Valid
+r NiHaoMa uHQEDTVPgjj5S6v+aJltxxHLu6g QPjop5arziirB9Whj+3L0VlVYgk 2006-02-18 20:20:25 70.31.42.165 9001 0
+s Valid
+r irulanshands uL6duXsSxo0HAABo5YPe6/qoKUI bVsZ/NL1+N0hsiPu/ycSHNtB4vA 2006-02-18 18:54:50 81.56.27.175 9001 0
+s Fast Guard Stable Running Valid
+r siliconverl uXl19r1xDsa9dEkOqTZ7MPrJCPw TCa5S91IW+ksu2VhWtU8sND6/oI 2006-02-18 17:51:24 195.71.99.214 9001 9002
+s Fast Guard Stable Running Valid
+r b17a21c8 uc/r5BW80H5mK3VawLOjlgrL2uY SPhxJ7E6Ui3ab5FblF6CNFswkQQ 2006-02-18 21:57:09 80.74.144.159 9001 0
+s Valid
+r olden uglMvkk7PadjJxONWeuDW0IHdQM 6sO/HUL34hB7xrILOOX75m7kHbU 2006-02-18 17:31:27 64.81.60.157 443 0
+s Valid
+r jturntor OptEhsQ5CFKW9DdDvQPjC/mAhVo 3vUxWzVK5whi/KYhtrL1+bIwC40 2006-02-18 20:08:30 85.226.125.227 9001 9030
+s Fast Running Valid
+r miller um5GW2WdXl8uXRxeumhJyRL/5mI lIoFrwRFHqc+DuRS8sQBce6HyvU 2006-02-18 18:47:16 193.110.91.7 9001 9030
+s Exit Fast Guard Stable Running Valid
+r panopticon QAY04ISG0q2kkWG/uQkQd7cuo64 X+bwiZnsopkwDAsIsZWwCCOPSVw 2006-02-18 22:41:12 68.174.141.133 9001 0
+s Running Valid
+r vader u6jVjoL2bJXCQzzXM+Gf/BUgFCQ 7GVAviB0SfUkvZBF3KfnHylK1GM 2006-02-18 17:23:16 149.9.0.21 9001 9030
+s Exit Fast Guard Stable Running Valid
+r KrandunTor dfGsSvBFgHgZjAbSXk2/LzZFKJ8 CfgYZsG4PNCuMfBq7g9603e2tN4 2006-02-18 07:57:39 24.26.229.212 443 80
+s Fast Running Valid V2Dir
+r berenonion vCK272GltzTy7i4Y1GOXpMMtBWM X+PZuhF2Rtxs6cksXDa3FMpIIVM 2006-02-18 19:18:34 65.254.53.253 9001 0
+s Valid
+r Euripides vDPmQ41egBTfMXc5KSRY6EUZ6fw AbBToCXq2AKR0XQO8tXFFKycV5E 2006-02-18 23:07:26 62.178.28.11 9001 9030
+s Fast Guard Stable Running Valid
+r serifos OZHJOd7aQDFOQs3mCUFsJT/xI+Y dDnGFEXutH+fjvGoepuiyb3j4GY 2006-02-18 17:28:19 140.247.62.119 9001 9030
+s Fast Guard Named Stable Running Valid V2Dir
+r Nihilanth vS5kXcsmK+ZsWszjll6D2r1UHkg KQBLeRl5vPULSVF6BFYAkWvcTjw 2006-02-18 23:04:30 83.171.160.74 9001 9030
+s Fast Guard Stable Running Valid
+r Clarity vXtQSDTacgImJ/ZeASC+wilkp0E uSKh5QtBwTnyeargG/xmCYJhis4 2006-02-18 11:19:47 65.196.226.32 9001 0
+s Fast Named Running Valid
+r waagtor vbaeYhuDVWAhm/zLaQFNoxNFVG0 ht1DJTpMbRbHu7wKA/eHmpGFuQk 2006-02-18 13:57:26 195.169.149.45 9001 9030
+s Fast Guard Named Stable Running Valid
+r devilproxytor vd4DRMKYy7eonVPVi3RhPQkFiOE XBVW0DKEZ5SnMgEH6iubc6ZjQEE 2006-02-18 18:20:58 80.171.230.251 9001 0
+s Fast Named Running Valid
+r jnz veDg6NCBWBn3IeQXp3LePDyBgD0 fd3ZtZ6jy7YDWfrUIONkhcj6DxU 2006-02-18 22:23:20 85.31.187.84 9001 0
+s Fast Guard Stable Running Valid
+r serenity veK3eGrmtzQNObeMxrfs/Dc+884 Bx09TpCpDzeFiilz9XzImjUo/O4 2006-02-18 22:28:36 82.182.109.115 9001 0
+s Fast Guard Stable Running Valid
+r neskaya vjgTVVJSbPQyMLYa85WV1++tjNs xTtTj5D8LUV1i4RxFhYhEcD3IYA 2006-02-18 14:15:54 81.169.181.10 9001 0
+s Exit Running Valid
+r xbox vy19wOUavJ3kMAIg3yjL1IDVu8g JEsUeORcjbDfEk2ARayNnEaOoVI 2006-02-18 23:09:34 84.221.73.20 9001 9030
+s Fast Guard Named Stable Running Valid
+r hcpnet v4aHae2q/bk9lZevQ8KuXXaeKzY 7/A9PsrVldiGOGqI6RZJRHJw9v0 2006-02-18 15:01:56 65.174.217.58 9001 9030
+s Fast Guard Named Stable Running Valid
+r sbz v8q4RJdOux8+VgpIeb+3MuSRHYg dO/nE3HzYs0zpAK78zVExGxVYOk 2006-02-18 14:02:16 217.160.105.23 8001 0
+s Fast Guard Stable Running Valid
+r iraq v+kweTrDi6alObKFuF8lNONHsPg NiUVXyfVZpGcNBTrGGGErms5E70 2006-02-18 19:33:41 81.0.225.179 443 80
+s Fast Running Valid V2Dir
+r LooseMoose v+75zCuVQBctO3PYRk1XPTaYnHc KNL7fiiTVjMHJmw1PcpGu7Si2jc 2006-02-18 22:07:32 206.174.19.25 9001 0
+s Fast Guard Stable Running Valid
+r netzhure wExbyS3wuNE6Ab3YRUwy0QTo4hc eLcLBjGkqKn9Cmvde7XKz1eWqFo 2006-02-18 13:07:02 83.151.25.186 4223 0
+s Fast Guard Stable Running Valid
+r wokwaixtor wH7TGDLjgLci/i9sSQQSeIQHiHQ yiaRAq7OZrNLf1fCTFLJXAcZyPk 2006-02-18 23:02:39 203.59.146.65 9001 9030
+s Fast Named Running Valid
+r sneeze 444TaqwnkqeswooZGoFeTMftu3c CvjYcOn6zACIqAshgar9EN5XKj8 2006-02-18 04:05:57 24.8.195.218 9001 9030
+s Fast Valid V2Dir
+r planck wMQ/ggmXsCG2Pza4WC3kHbUecjU e9hrBmJDG7S3n7MNU1HGUHiITSo 2006-02-18 15:18:11 68.167.210.150 9001 9030
+s Exit Fast Guard Named Stable Running Valid
+r gunstorproxy wNRI/ZEZMD0hHBiYO4wG9A9mkDg irAKYmZCP17u6wk6FB/7+KwFHQU 2006-02-18 22:52:02 84.177.177.138 9001 9030
+s Fast Running Valid
+r Feh wZ6npWiJnTtJrZAxUQ1CMXhmIDg YJ/SqhzCRUBqEpzIHiMKwQIBjxU 2006-02-18 17:22:09 217.160.108.109 4321 0
+s Valid
+r WhatTheTor weYC16BTL39+NMbrNOtp6JyxziM RXD9GAFh7UiLGx0ltJu+fpKOhrw 2006-02-18 22:53:21 68.72.18.101 9001 9030
+s Fast Running Valid
+r morph3uz werTagcV8RoTaY+VfriVioMVVTs TJHYOJQ+blDNWKgVthD7zvna/eg 2006-02-18 14:11:14 82.51.34.4 44679 44680
+s Fast Valid V2Dir
+r gnutten wnHYB24/c85Z/WqCISWkvWzPNRU 5eBrt9Z11VWYIvDHWCUbVsswG0M 2006-02-18 17:44:52 213.113.166.200 9001 9030
+s Fast Guard Stable Running Valid V2Dir
+r LivingColour w3yCYzQa9x6/glDKKrjpGyBhnSc VVoa5iFAD6L0uWR9dJ8k1Mg5Xgg 2006-02-18 19:42:51 69.12.134.80 9001 0
+s Fast Guard Named Stable Running Valid
+r torproxynantes a2KXSGnsgmFdlNvfGFy7DvMdAts SMIDHIlO2+zEGFhP7w+ncoBarkQ 2006-02-18 21:21:35 82.67.125.23 443 80
+s Fast Running Valid
+r s601 T2xwDbOpOQPjxI+CdflG1hrNsXU NlXJS5M5PsU9zLosZ5btc9eSqWM 2006-02-18 17:35:56 85.25.20.114 9001 9030
+s Exit Fast Running Valid
+r andromeda xVboelkQDdCVdIqzr379sEzs/kw qQLthHp8Lb3gOfHBAdR+eb8k5Sk 2006-02-18 19:24:03 80.190.233.18 443 0
+s Named Stable Valid
+r chromakey xc2345UaAWqMJHQ7ScP/bymprbU HZItTZH80FsV4g23Mlyc6Q9lhZI 2006-02-18 06:25:36 70.84.114.153 9001 9030
+s Fast Valid V2Dir
+r squadra xgvRrni82mHiJCqKzbPfhOv8PgU VPeKMBG+8nnDJ9Whw91mXaYJgyo 2006-02-18 22:42:46 213.202.217.41 9001 0
+s Fast Running Valid
+r MichiK xhDUfrc+2YK6icKaqnGylTpYESg Vc+e99Ih5mlJMxlz6e40I4XAeIU 2006-02-18 20:24:41 84.16.235.143 4223 0
+s Fast Guard Stable Running Valid
+r bubbator xkfAO9ALUX7A0cxd8RByBolgdxQ o8Y0j8NYhCWTEFtuRdwlOZSPNFU 2006-02-18 22:05:37 70.107.183.65 443 0
+s Fast Running Valid
+r steveinusa 3xr8R9wiA48+4cXrVJ7WV5OadhI EcFH8imQlAV/B/tEeWCQ+9x4wV8 2006-02-18 21:46:32 70.154.240.195 9001 0
+s Fast Running Valid
+r omgkthnxblue x1/dnBzKEhWufC9kBtRAeRWmDTg breKVHeLmhxKv8qlPUoswl7q4p4 2006-02-18 21:20:25 71.39.113.14 9001 0
+s Fast Guard Stable Running Valid
+r spongyola x2gV+pEqaylUtw2k/wM5AsxPBlA 9Sq8COs3gyFwbxCxp2X3LPAZ8Jk 2006-02-18 11:32:33 193.202.88.3 9001 0
+s Fast Guard Stable Running Valid
+r TorNLV yS28BZvqpLeviarVyPJ9Y/z9myg AdOdD0epD0v9ThQzoYJrb5nHNtw 2006-02-18 22:03:35 65.28.107.89 9001 9030
+s Fast Guard Stable Running Valid
+r swedishmordor mOxn8NlnHH6aK8ITdLcaUgRFx1U fZOEKJ1i0h7WTm+Irw/j3GgQXfE 2006-02-18 17:39:41 82.117.124.169 10486 10487
+s Fast Valid V2Dir
+r puddlejumper yWxmYyv9uXhWdeYcMHebN9JWLHs lz9IXVNK5mbWBMEaPDpQqNaQe0Q 2006-02-18 14:46:32 66.240.226.11 9001 9030
+s Fast Guard Stable Running Valid
+r cgull yZakQwKiPT203D7QLvZmY+4pQBU d/gG1RPM8Ymfe5aOrCwkofvgRfI 2006-02-18 22:18:27 24.18.9.231 7070 0
+s Fast Guard Named Stable Running Valid
+r ice ya0hW2noWqw76MrcGDTwzFWOChA JoCPixBH+cjwJfUrT+ZKgU0ofkY 2006-02-18 05:21:45 66.119.199.39 9001 0
+s Named Valid
+r mbop yhlZYbLZgX/GeRipmIJKb7sRrHw wd4frmBYzelDYSNg9KJ4MrvAYcg 2006-02-18 09:38:47 85.225.170.233 9001 9030
+s Exit Fast Running Valid V2Dir
+r caliban yiwFxUtuU62paQI8oQQUDscUUio U70lhut219mPCFX8+R6RjuEgI3Y 2006-02-18 23:05:07 66.93.38.182 9001 9030
+s Fast Guard Stable Running Valid
+r rainbow ynR8RduOMF1a5yb55B3302YchQs kReCsn+wB4EOixTE2RT86gDdOPw 2006-02-18 18:48:33 80.243.60.137 9001 9030
+s Fast Guard Stable Running Valid
+r LurchTor ynX6mQKiAO5cK0HqEQVfa9ZiRFc siGtVEB6YqJRjN+6ijmHDXAfFzY 2006-02-18 20:39:31 82.214.2.226 9001 9003
+s Fast Running Valid V2Dir
+r flynns jQgSO5Uzee9NwRWObLJYYnwxUn8 coqtyJj+DCRiHTC57+l24/eqJQk 2006-02-18 19:39:46 65.27.237.240 443 80
+s Fast Running Valid V2Dir
+r Swiffle2001 C0knLbX94S5jbxlJnhRJkBBaYFs wkF3JQ0LLZRCKSVucnITaw5xVuc 2006-02-18 02:10:05 83.104.39.29 9001 0
+s Valid
+r nomeata TJ/gH3sN4q9R8++92w1K6Rq0qyY UKcEulPZl/DBnG90YC3IqGxc/hk 2006-02-18 14:49:04 83.133.81.20 9001 0
+s Named Valid
+r waerter za/zzAeavZfNmzd6GEl/1iwIL40 QeYQBk4wFNrv5AA2o26GEuJ2rpA 2006-02-18 17:29:16 84.179.36.201 8000 8002
+s Fast Valid
+r topaz zge1KRHe85XyUaj/ZNL9QXKXx7c 0qAOrIQOat7BxuxODObCjppEcpQ 2006-02-18 22:04:59 217.115.192.218 9001 0
+s Named Stable Valid
+r 23foobar42 zhuTqZjeAP2ViwbVpEoZpygpGn0 AMZgK8MyBsiKMCiOKk1myWc62OA 2006-02-18 22:55:38 80.143.135.114 6968 0
+s Fast Running Valid
+r t06mi7e0tn gjgzj08sXVDWNp+D+PaXq6wNhG4 xeAFcylext9RZUJF6xwxYGLIqys 2006-02-18 22:45:27 209.205.169.19 12822 12823
+s Fast Running Valid
+r fpletz Rfi4md1tQ/XwWU8jN27zZeTLZYQ C6UEBmMmRd4ejjc0FFJ3IAdacSU 2006-02-18 12:27:50 195.225.105.154 9001 9030
+s Valid
+r Seattlite805 0fysrCYGLnLs3/BWb4rNL1ewqRE nsR/zlNSghgwVQiKWCXbeuzhpIs 2006-02-18 22:16:55 67.160.81.217 14300 0
+s Fast Running Valid
+r lillemy 0mS6R7I1CO4zPFtcgaIMFhvbpQ8 2xaf2ncobLCcfG6U35gMQYbXO1g 2006-02-18 23:04:24 66.199.240.50 9001 9030
+s Fast Running Valid
+r yt1n1rt 05s2UxpbWFMs0itQOtLPPErfmBE ZE0XbnOG3TqA+SKaqAuuT6dSlGY 2006-02-18 23:02:14 203.218.52.193 443 9030
+s Fast Named Running Valid
+r nemesisL7 1MRR9iCXgV145qNwjxGx2ujU4tU Yb0QVsTpYtk19YwXOR9upuIOUS8 2006-02-18 22:51:18 84.58.142.203 9001 0
+s Fast Running Valid
+r DSENET 1b9wUdruyuF4ZSPd4dG3uh/h8BE W7XSsddQgR0JSotpxr7JE9ooehY 2006-02-18 15:55:33 24.49.13.143 9001 9030
+s Fast Named Valid
+r krebbkey z4Xc2OwoZAwn+5z567rbeIygtbg pbTciqHcOaNsYxi3Wfd5lSJCxtQ 2006-02-18 06:52:46 85.176.9.122 9090 9091
+s Fast Valid
+r pleasant 1vE4rHyZnrvCYg2GffRjssrtZ+0 HiYCan5b6pSwA/EUsar3dstq4fs 2006-02-18 14:58:17 66.92.65.81 9001 0
+s Named Valid
+r middleofnowhere 1vLbFx+lEHm1axbUFbPmYvzMm/c 01SVPoDv2Wazj5g9cYk4Md1rWy0 2006-02-18 12:48:35 144.120.8.219 9001 0
+s Valid
+r Kuanckik5 irldx5vFIbAOV09CbctUQVYNE+Q VKep3xS3fl8MoKKN94PC2dPRgok 2006-02-18 23:09:22 81.53.43.138 443 80
+s Fast Running Valid
+r cromacServer 7hZGxRTvp1IlihKdX8rAaxhrmhg 3OVg6ip8E6ToGafEJKtylBxnD9w 2006-02-18 13:06:18 81.169.171.90 9001 0
+s Valid
+r HTTPDNet 15gAI/QxL5t9pzXThYJN4WUqLX8 lnVHxrp+H9M+7ahNOU/AhXYf4S0 2006-02-18 17:04:05 66.90.89.162 9001 9030
+s Fast Guard Stable Running Valid
+r Ratatosk 16MkbQzJ6FQpYxBLdiExatrwxXc IbQ8KK6YXCnB2E2EAwJZsKJW2Lw 2006-02-18 22:36:02 213.100.254.163 443 80
+s Fast Running Valid
+r kamisori /KBX7MHRxuHsNgbhc8xa205vfEc N+CDZE8hbgMohhQpNmPc3dVmfIk 2006-02-17 23:13:12 137.226.239.164 45674 45677
+s Fast Valid V2Dir
+r torebror 17vJ0bCK5ZM7CKIWECBZQNaXyPI q+zuU8RJVfHUuzcSHT2kFxx6dQk 2006-02-18 20:48:35 81.227.243.7 9001 0
+s Fast Guard Stable Running Valid
+r arbitrary z1JAWSog/pjMhDL1csv5lHR1EGQ Yq+Yi89+Srw8Nir9Gl9BOFzHQPo 2006-02-18 17:20:21 213.139.167.121 9001 9030
+s Fast Running Valid
+r nosuchagency 2Tl2CO0tfdkCGHaaWsZWPOBlmsI lOukbvjCliuwQmfwpSUVPV6Tjb0 2006-02-18 19:43:21 64.142.114.146 9001 9030
+s Fast Guard Stable Running Valid
+r squirrel 2b7HJzKkyQTCtxO9RWXEOBk1IuU C7pEDE5soc2c4AslF5gvYbIRiak 2006-02-18 12:50:27 213.146.114.96 9001 0
+s Fast Running Valid
+r NFGtor 2kL6EBdNBIKoAXguTa6sH7aYeTM 22k4AxMRWBXHbmCCGA7bY1B6G8Y 2006-02-18 20:42:27 219.121.56.122 9001 9030
+s Fast Guard Named Stable Running Valid
+r dory 2k64wE5H7Zn8lfo+ACUgD2Q0FJQ 7TIoQz/0/Alsh5JQJAtCnNQb108 2006-02-18 22:27:53 81.227.74.110 9001 9030
+s Fast Running Valid
+r enantiodromia 2yb8ufYoI0hoy1u6kfSHIp1ngZk 3DmivwgU+SyCDZvm0lDyLZe8Ooo 2006-02-18 16:28:39 67.163.165.50 9001 0
+s Fast Guard Stable Running Valid
+r leviathan 3FmCeWFtq72QTIYtOHZMZZlFu0I 2VDFRrEsqOZ0Gn/QeKe/W9DIuK4 2006-02-18 22:36:04 83.149.97.103 9001 0
+s Valid
+r torture 3jqZ86PIisI6esBKiRVVfyPbLhg 02P1cLzgBd/qxmwIPBZB89Je5KU 2006-02-18 21:09:32 209.237.225.244 9001 9030
+s Fast Guard Stable Running Valid
+r RandomBox 3zzN4dQINL0ROht0iLFhEFaZeag v97RYFZdIwlcB9tdAQeQ+RLDxo4 2006-02-18 12:02:31 24.10.127.243 443 80
+s Fast Running Valid V2Dir
+r tele3 31GUP9aUkI9zjPT+N/cMbLP11uA WtMnd99DKkgwW6PB9CHRC84VkCs 2006-02-18 11:42:43 217.28.206.143 9001 9030
+s Fast Guard Stable Running Valid
+r itlnettor1 35QvnXiSRxcsaVerTeVBWN0pfdY 4jfHm35HVOvDQ1j038ATQV7Ghek 2006-02-18 23:00:59 62.75.218.130 9001 0
+s Stable Valid
+r DigitalRhapsody1 38ewVrusD88N6CZ0FpsJb8cMQGo fRb2wsaBF6hQhWzRGx1JaKsgbuA 2006-02-18 18:29:55 64.34.171.70 9001 9030
+s Fast Guard Stable Running Valid
+r lanroamer 384gfB+2sUDgMTaAkY5ms4RWP24 8CFTPNL8QholOGCDIs2cz8N/W/E 2006-02-18 06:51:22 212.227.21.133 9001 0
+s Valid
+r tomiboy igC2jRxYJciD1dxICZmZw1c9ojk 7RrdNBTiTNV+vvB2esUqmsyyYYI 2006-02-18 16:32:17 213.23.154.111 9001 0
+s Fast Valid
+r datenhalde 4EIIAtcywy94na4tGCejbZ/+Pz4 jxNqv+39tEy9Lari5nhsZA7UYrw 2006-02-18 21:29:11 212.112.235.83 9001 9030
+s Fast Guard Named Stable Running Valid
+r mini 4YlM5Q32LcatW47RXn/2VXNOVEs KUG4df4LVzuoD9qRI/HsU9p+ZpY 2006-02-18 17:27:31 82.227.61.106 13254 0
+s Fast Guard Stable Running Valid
+r deuxpi 4ZFTSWz3mcFZqKsKOLzlWin7BrA JNMcE1IuNRYFO9+v7tvb0IErNXo 2006-02-18 14:54:54 66.11.179.38 9001 0
+s Fast Named Running Valid
+r linuxonthebrain 4dFqU9sv3ej2F+jgXfazhJW0qM8 N8nHu4EKuVo5lad3l7+5lzPMPHI 2006-02-18 21:10:10 216.137.65.86 9001 9030
+s Fast Guard Named Stable Running Valid
+r 1yp62ZBHmShGIj3uFm iXLT1Y1P2sFvdssgoMt5IRRm6G0 /YXF8fmgQEUYDQfeqtrR+hs+DEU 2006-02-18 22:07:25 84.159.54.105 6882 0
+s Valid
+r mytor654321 4iU1bge4EZRxtD00GJFDOK6vEUM c6/nv66/MoocKmMT3wqKaf144wg 2006-02-18 22:55:57 72.0.207.216 9001 0
+s Fast Running Valid
+r k 4oR1kDukRqzPhvGcjYuKOZ9KRp0 +2+dRbyILWgd1fjYEnW77jgKHL0 2006-02-18 23:12:12 85.8.136.101 9001 9030
+s Fast Guard Stable Running Valid V2Dir
+r harko /3RsPy6G8R+q8TSDv9dgF7nGoZo oIYq2LvBnFCQyXIzJoqsdgG2xvw 2006-02-18 23:32:40 85.179.28.64 9010 9030
+s Fast Named Running Valid
+r ThunderLight 4oqvMZMiui6eWUY6aLXTZsxeplA NR0Jno2GWINK5BxSpv8AToBNtHY 2006-02-18 22:55:00 213.114.249.104 9081 9030
+s Fast Guard Stable Running Valid
+r Carbo 4t6nK/UIA6Dj/yDES3AGwmX3aVc liQM9qdJ8x5qlYTotvNTp+5IuvM 2006-02-18 19:01:35 24.30.166.167 8100 0
+s Fast Running Valid
+r 4564131254154641 /byvd1XCyUFJqwKs8fBslNXuZR8 rqgRQBeQ20OSeWB9n80rq1RNQhw 2006-02-18 15:27:45 80.171.59.21 9001 0
+s Fast Valid
+r snuffy 1GeEvFz/F9FpQJVQVmgV8REQml4 OuH/Ez7+JIrTO10JGUZbNwGqCX4 2006-02-18 16:36:44 69.24.161.198 41010 41011
+s Fast Named Valid
+r tirwhan 5RwA6JNLCkZd5e9TdSpTTxXF82w lhlt2lBPui3LA9qonjcQxSF4x54 2006-02-18 11:18:51 88.198.0.177 9001 0
+s Fast Named Running Valid
+r ouagadougou 5SL/zwuyY+ktU78jdE4H212XcpM HPGKnN9c6XfCcJRWsYXVwy5wQjE 2006-02-18 11:38:54 213.239.212.45 9001 9030
+s Fast Guard Named Stable Running Valid
+r sphere 5UtYzlHIpKlFcj0W2Ue3FUbMBi0 d6fcllhJW02Q0DjXbJ+K/ftz+Ac 2006-02-18 14:25:57 213.228.241.143 9001 0
+s Fast Guard Stable Running Valid
+r Privacy4All CslvXJuRRDE5j2jC/vsaxV1ivKA 6rpxGtcIAe+A6iVQ8c5SdIzBGak 2006-02-18 20:01:12 84.154.59.17 40017 40018
+s Fast Valid V2Dir
+r torHuntFamilyNet1 5dCXQ8zba5TM7+iS4vplF/JYvLY qliZPEOYurECqGcUl0ZdRd7p6Nk 2006-02-18 22:40:51 66.133.254.180 9001 9030
+s Fast Running Valid
+r starling 5kqujEPtnzhCZdxm+n1thJZbmX0 tmbNYnenO5fxzRiL0a0XB4rab8M 2006-02-18 14:18:18 69.51.152.43 9001 9030
+s Fast Running Valid
+r wannabe 5k6fXJo83K+Y/FFjc2CYuUJvpTI 8euUqDfp4IeeX1QxKrOPIrJJd6U 2006-02-18 14:13:14 195.137.213.113 9001 0
+s Named Running Valid
+r random 5naD3wIwvLKP6sr+HW0uMH6v544 XXiqUDo420CQ6r/+hW9YUcxJ9XU 2006-02-18 13:44:33 209.8.40.177 9001 9030
+s Fast Guard Named Stable Running Valid
+r dragon 5xC3sbzGX+zlujRc7IuBvqIWMY8 Ylupwio5h8sZ/Al1QYhFhELbPwM 2006-02-18 22:12:23 70.113.92.185 9001 0
+s Fast Guard Stable Running Valid
+r clueless 5yqKkzoX1vXjMTyoBSdF/9yT0Jg hvde+Xyey+tU+cOQNsdVPphSve4 2006-02-18 20:02:13 131.188.185.41 9001 9030
+s Fast Guard Stable Running Valid
+r torrigauci 59hExMAfSz7Ip8/Tou5g8LzPkaY Xkl+Koy3RaJoO+Z4c7P9Mwg9rpU 2006-02-18 20:44:00 213.217.203.247 9001 0
+s Named Valid
+r ztor2 5+F153Gi/dvXmHI/3U7Ud+TolpE DvB7/N9WMaxTctUToh86y7bx3Kc 2006-02-18 20:37:03 81.169.158.102 9001 9030
+s Fast Running Valid
+r bolanda 6GFHf0k3h3++7aKE+82qhD4Pizs HIxu7mv8nyuFsNs7MzL9jAsP9zM 2006-02-18 23:02:12 193.219.28.245 9001 0
+s Named Valid
+r leftover 6QFEXZLfmchaZmyoiWuX2E9b3Lo k7X/1VvwF0e2mIOBogFSPSvwbL0 2006-02-18 15:09:42 196.11.98.20 443 80
+s Fast Running Valid
+r ghewgill 6hX9Z/2HOYyXCCW4BFcykm5VjDI fjAZ41kz1ZAem+mrReeZqg96Y3E 2006-02-18 13:47:55 69.41.174.196 9001 9030
+s Fast Guard Named Stable Running Valid
+r d261790c 2aQ4bMu+A2X3eoXWKtLaBTO3KsU /rAZD6m4OMLTPiL9cUmjCCUBdN4 2006-02-18 17:50:31 192.35.100.7 9001 9030
+s Fast Running Valid
+r tonealdon 67HYR3xzH0b/yJNORjRl1OvU7ew iytUZiZfDQUiz2fEWOmtoFalvA8 2006-02-18 21:55:03 69.155.123.77 9001 0
+s Fast Running Valid
+r rootkit 7AeH+eqIBBy0aOMtOeTx44qSI9g yXRW3JW1w8os88U/SRHY0l2D6L0 2006-02-18 14:28:24 213.203.214.130 443 80
+s Fast Guard Named Stable Running Valid
+r borism 7PLUYqPMYUZ5HRVLGwEDkcDUbF4 neVpuNhThA+/eI0naQaTn9qdZ14 2006-02-18 22:20:17 82.131.7.57 9001 9030
+s Fast Named Running Valid
+r zio 7o/H9ouGkgAlw5kbFRU0dOH4HMA JXuOStWZ6CRXsVjfqxThS8TChMc 2006-02-18 11:41:51 84.222.33.119 443 80
+s Fast Valid
+r HomerJSimpson 8ACU3mU+lHWYrmjNicr0vMZAIE8 XXsb/pkFNC3Dd9X2ZKp7xGRmyP4 2006-02-18 18:13:20 84.73.12.12 59333 0
+s Fast Guard Stable Running Valid
+r notorious 8YqbMANsKJsKKFaK16NWDCiaJCE oTEOSceZJFqbU21QFIbMHCDLkMs 2006-02-18 18:48:18 198.82.143.115 9001 9030
+s Fast Guard Named Stable Running Valid
+r da5f0b3fb227 8v7xWr3VPgAJV7JIpIGULYtkfY0 1QsEeBfNscYS9ndBQp4A+R0QSlk 2006-02-18 13:13:21 194.254.163.170 9001 9030
+s Fast Guard Stable Running Valid
+r xsteadfastx 9lixhYxR0AX0EOFtnK74UJRSZTo 5HCTUHZcSDu0FCea1XNA3yvmMGo 2006-02-18 22:28:51 85.25.66.203 9001 0
+s Fast Running Valid
+r Pascal 9nxdjNucOc53jrmnKDSSAAj0/WQ Jr8U9wF0mfnFFk2MpYAIIBzaIZ0 2006-02-18 23:01:10 70.230.73.20 443 80
+s Fast Guard Stable Running Valid
+r cce12eb07e2d92a7 9rU6ZF3VeRIFgJjrMenQ1rHjGH4 sOakC0ABanaFKFd8ZxYK6EzMM80 2006-02-18 19:45:24 213.133.99.185 9001 9030
+s Fast Running Valid
+r lunkwillstor 91+HRnV/J7xWjPHaSPWZEXRrvx0 KXTv6pe4sVidSMY/Y+j7c35tn2Y 2006-02-18 16:38:14 84.56.87.46 9001 9030
+s Stable Valid
+r Peter VXMHIB67sRyEjxj+5emEz4kYWwU S15Uk6JySxTw6Xq46SNPhfQOTgA 2006-02-18 18:06:48 213.47.47.252 9001 0
+s Valid
+r sabotage +MDNuJLFoubPsEEBjvgnz/9OzO0 PmONW7HK0KX22aqZthE9pVytal0 2006-02-18 22:52:52 195.85.225.145 9001 9030
+s Fast Guard Named Stable Running Valid
+r Merkur +djaRiY3fKjGlnWsJkJQzznTZ/o oSl02IVileNxasWbauNaRN/kCd0 2006-02-18 01:12:38 70.174.161.159 9001 9030
+s Stable Valid
+r wtf +mCReT3yL8OkliRIesJ+IdBM/Yk piNxt5su/Va5uxExMhyvpZTrm0A 2006-02-18 21:16:04 72.36.210.245 9001 0
+s Fast Guard Stable Running Valid
+r zachsplaceorg R3yuo1Z5CQLl7bOUB7zVL7ayANk QjXzPOFmjh32Uver30tsc4AbzpY 2006-02-18 14:58:54 66.219.59.183 9001 9030
+s Fast Running Valid
+r cqas03 +wZlOffi7Irz2dsBr5EeJtHxdU4 CzybvLtHe2x8kjwKTATGNPVNoLs 2006-02-18 13:39:54 129.21.228.88 9001 9030
+s Exit Fast Guard Stable Running Valid
+r paraZiteorg +4kakufDG00qhKq1s0/XLkAa1qs SgYUR36NpMk7LAbwvvmeMnBmHNE 2006-02-18 13:23:19 85.76.77.6 9001 9030
+s Fast Guard Named Stable Running Valid
+r TechFinesse /DXgfqJCc6fo96J27D1szKJ0wF8 XeWja+fjQJZglCiTruSHUHfqG2c 2006-02-18 18:10:35 64.135.207.45 9001 0
+s Valid
+r anonrouter /LQRk03umywf4bkMdaL1hYM7PmY //lrZe+BmuIhvzFmLrUmK3tdzZk 2006-02-18 12:41:51 85.77.12.12 9183 0
+s Fast Guard Stable Running Valid
+r cubanraul Fw3e/rTgU5m9DTHfo3QfDGkIZLc L6JUbVc5OJ8pfQSt7bjftEHtZtc 2006-02-18 07:29:29 24.13.27.176 2799 2800
+s Valid V2Dir
+r ghettocluster /qwfQlk17cpKtI53xkAot2sHl8E J8c5lA2YgLy304NTRXg1vBATPuo 2006-02-18 21:10:58 70.92.81.85 9001 0
+s Fast Guard Named Stable Running Valid
+r darkridge ASDM+vXH/+2NhrNWqD4CdzuXSSg mmXp2YwbRMoybbUGVGBIi/PguCw 2006-02-18 18:05:12 64.90.164.74 9001 0
+s Fast Guard Named Stable Running Valid
+r Scooby BP+mmBAav03YaCUjypZzww3kr6k N1U46R9zOSi6s6NCvtSZUPcDC+I 2006-02-18 17:01:07 72.60.167.126 9090 0
+s Fast Running Valid
+r Narnia SWK35Jas1dOhkQdvpbSPgolf4nM La3Vg6ALmotgKcCI50g0FsGEEqc 2006-02-18 22:59:58 85.119.156.72 9001 0
+s Valid
+r BeeHive UQkXuvMO0vLkWAByeMgJda9Cn6I th8zFhqHY5qbTnwS4T7CuVIhwtM 2006-02-18 18:06:37 216.127.67.122 443 80
+s Fast Guard Stable Running Valid V2Dir
+r asdfmoon G5w51XbIqv9hr9BXx13EOS4KOss YTGPL5lRWFmEggqgTyUih/i3qoA 2006-02-18 05:27:54 209.198.114.4 9001 0
+s Stable Valid
+r peacetime cKCMdry5reVZBwKbg9tokZV6ySw E/OXfktr5Him9acB4/S87rGzvdA 2006-02-18 08:00:09 18.244.0.188 9100 9199
+s Fast Guard Named Stable Running Valid V2Dir
+r hamcavetor QNMZ4rLjReahGqUEiV0K5i9x/tM uMDdCx1vlPnbvgXI2Rptlp0U8cw 2006-02-18 08:12:28 66.92.13.212 9001 0
+s Fast Guard Stable Running Valid
+r sdpeaecpe Fy/5PnKH2YrSl/HkYi5JuMUfWSA 7jDXU0vUjdgbjaNCMrecUuaiHs8 2006-02-18 20:50:15 68.95.2.108 9001 9030
+s Fast Running Valid
+r boinc SKR0HVDhcMyf0gqgDrRSvqkycQM 7DdKwZim7tocsNbCC7NtMyJDWpg 2006-02-18 07:33:01 84.73.180.96 9001 0
+s Fast Guard Stable Running Valid
+r marvin Tz8qeASJ9GxhY1sIUIP0knZqFPk dSPCDhx5w1lFKR08ydRw8tobblA 2006-02-18 21:58:43 80.190.242.122 9001 9030
+s Fast Named Running Valid V2Dir
+r TorResearch1 08BjsceOorKSZ3uf8XWQQHmjm5E edm86r9lL7ORjuyzTgIWkNlYikI 2006-02-18 12:06:20 130.126.141.153 9001 0
+s Stable Running Valid
+r topinambour qW9nE9ROv9Z2tBeUGonP6sw0WlE eDs+hC8PDhvljZyY3MPhLhPnIZM 2006-02-18 18:33:20 83.154.45.253 443 80
+s Fast Valid V2Dir
+r nifelheim 8TvVrIyaagu6ZZQkbXBiaCE4z0s Xs52LjICMsUc+3eHaDJlL0c1veU 2006-02-18 18:01:52 83.151.31.59 9001 0
+s Valid
+r Snark WwhruXGmfEr9/QRUZqT8ZQ0z5kY w7rCntXpuUHDSxiM1oUL6Q7zOIg 2006-02-18 16:53:27 138.236.226.221 9001 9030
+s Exit Fast Running Valid V2Dir
+r middleguy mXxhPliBCzcSm7qXy7c8CwllPlk 4kFak7Gd/4zbodEb+UkjYNhamag 2006-02-18 01:16:11 84.249.227.96 29427 0
+s Fast Guard Stable Valid
+r wuschelpuschel 8rviJ3dPt5v1+NOOVXSWZD7R10g DxPCMTw+cub36qnfmWWREVkxV0M 2006-02-18 09:58:32 212.112.235.78 10001 0
+s Fast Guard Named Stable Running Valid
+r actinidia YPgtTB884U1AJGYm8fZIWvvdZZs J4R0PwbjEddw3E/r1sbjxctEnk8 2006-02-18 12:19:35 193.109.42.108 8050 0
+s Fast Running Valid
+r Jennyforward lD4i957kEa6AsaRbRXLiynUQnVo WXMzVZ8Akgmw2xcl48mq0jlArso 2006-02-18 19:31:15 68.160.154.205 5120 0
+s Valid
+r moria2 cZvkXeIktgfFNwfQ4hQ+LUI+dM8 z0lSDiCLSMCZ9gY1l0RUNkqTmy4 2006-02-18 19:05:58 18.244.0.114 443 80
+s Authority Fast Guard Named Stable Running Valid V2Dir
+r farpointstation06 diqYnMOBtddHvgwAVJWoczeeGYo c8DRcxIknzk0RDRGA2tdGwKIvN0 2006-02-18 21:13:56 82.83.87.27 80 0
+s Fast Running Valid
+r AnonIsGood d/AHdMcX2BH5iLCjN3X5jXEweNQ Sh3aOlWiJCVQfvp1Ws387FCP+Pg 2006-02-18 16:25:41 24.26.168.120 9001 0
+s Fast Named Running Valid
+r 1492santamaria gJG7WfaOzkBmuthEJDzL8ZTKCyQ wECNzWk6eAvYvPjQvCFeBS5BM3o 2006-02-18 21:40:49 70.163.0.106 7777 0
+s Valid
+r phobostest kaN59e9APmJCvLkPuWIkZzMLUd4 pIkToAcMorkKNaFrQcxXaY/Decc 2006-02-18 22:28:34 65.254.45.209 9001 9030
+s Fast Named Running Valid
+r violentsushi BJrVy1Ew53CFX47RTU5Ar9L9FXE VT62+fQe/NiD8KMnOizbzZLEJO4 2006-02-18 19:57:16 212.202.57.176 443 9030
+s Fast Valid V2Dir
+r OblivioN ypGXBD1ZywsKPZGkLkvGTLOLh0E fYqb4UqtJqTolv019ZWcNFt7rmw 2006-02-18 07:52:57 87.89.99.153 9001 9030
+s Fast Valid
+r confidence 08n4KQoNXg7vvJuvahTqeRHMoZ0 S9wyHApH0tSGG5Ck+Xe8c/CW9cg 2006-02-18 11:46:41 204.253.162.11 9001 0
+s Fast Guard Named Stable Running Valid
+r IPeend 33CSQN/Ip28IltYNBS+iLsZPNHc TZCSQRuWDIHTCdugVLt2eVOuJRY 2006-02-18 09:05:53 192.150.94.242 9001 9030
+s Fast Running Valid V2Dir
+r torzone2 2ReWQTN+uO85PG43RLfLWsOK7sg yrptasA5PHJcd4ZEfnwB52hzHtE 2006-02-18 11:33:45 128.39.141.245 9001 9030
+s Fast Guard Named Stable Running Valid V2Dir
+r rodos 3/HWYyThzQLcellOt9xfVzzdveA fn7eOoyBnNfOJ3Bi3GyD+9tCfGE 2006-02-18 17:31:07 140.247.62.121 9001 80
+s Fast Guard Named Stable Running Valid V2Dir
+r csutor 84dHA7VMURmNLBVFCwj9rUYRFE4 3klBaWPAdK/+Gn6/bHF8DpZviJc 2006-02-18 18:54:43 137.148.5.13 443 80
+s Fast Running Valid V2Dir
+r 999xunil999 8Bi4CyZoGD4ntV+w1K1iY8GfHlY vBeQ3vh9gXIuIMs9tJqRVrgX+jQ 2006-02-18 18:50:29 67.23.145.190 443 0
+s Exit Fast Guard Stable Running Valid
+r rubbeldiekatz Gwh17Wm/N42we71Nlw0n9y1enk4 QvpmbPBsp2DgthXTTebYy0HCUNs 2006-02-18 20:31:33 84.157.176.198 9001 9002
+s Fast Running Valid V2Dir
+r EmoryVaut 8osupaWirosRlHz9FdfXYXarNKU vquo2i30gAhjy7KHMm5ZBoXxwAc 2006-02-18 07:31:54 170.140.8.149 5221 5222
+s Fast Guard Stable Running Valid V2Dir
+r onionizer sZFN2l22vyBHrmWRXjcZXeI0S48 yePoZi3+g4Z/+POfD62TzhC3ypY 2006-02-18 22:07:15 217.79.181.118 9001 0
+s Fast Guard Named Stable Running Valid
+r omgwtf 0SvVUMyxerFCEQJWVZGMgiCOm7A G2GFs2MizP8MGEdrDBvfTJwU4kE 2006-02-18 06:01:19 64.81.240.144 9001 0
+s Fast Guard Named Stable Running Valid
+r dib0 9Ehfi9vRNsuRX/3iYNECzDyXrKM l4yqxei6Dhx7nN9w+yevM2h6s6Y 2006-02-18 11:38:56 217.19.27.52 9001 0
+s Fast Guard Stable Running Valid
+r b0red rSWFwBnlNBp70ArpQo6mwMwfNUE L6jPXCur4qsEzk6lgnHN9IvFMwI 2006-02-18 19:56:25 80.190.250.83 9001 0
+s Fast Guard Named Stable Running Valid
+r phrenograph ks1eXPBMAkJuacMuqToUnDNcu3Q cTB57DZpnmpEqH1OtOy4lHGZqtc 2006-02-18 08:47:21 66.167.239.183 9001 0
+s Fast Named Running Valid
+r cherubim ZyKux6PK4KuG6QnhqPYI7Cjtxx8 aN4Z57KM+2piU2nhEhL8XMBPa0w 2006-02-18 06:28:07 18.78.1.38 9001 0
+s Fast Guard Stable Running Valid
+r godzilla /4hFBG20SdqYmwJa6h0Q4Z5wkWY Px+MacpccUEzP2h2lDwiRQzob/o 2006-02-18 12:19:46 80.203.228.236 9001 0
+s Fast Running Valid
+r thor01 V4nJ8+Kb4uRxA7v9GyGQolrjkfI Gx6Acjjl6opAYQr/vcOr2pg1Xww 2006-02-18 14:19:52 213.152.49.145 8666 0
+s Fast Running Valid
+r penfold VQrJF5TOIIlFsFG6tS9q7AjU5Cg O3vdVzlH/8RQPQD6uFBv1H3lOek 2006-02-18 17:26:15 195.137.53.121 9090 9030
+s Fast Valid
+r uncreativenick12345 XvYgxTkMyR4fYYbLH4Ad6jqErMo mbn7eTcEdBimdMFPFpEkk6Zxzmo 2006-02-18 20:45:49 128.61.33.204 9001 9030
+s Fast Valid
+r Barde ZE9prcbV37y5iKQqsl9wlI6MPfQ 0j6VVgO1mL7zdzHZj8gDQwotpng 2006-02-18 21:21:16 195.4.37.107 443 80
+s Valid V2Dir
+r redserver 8g+I3BapB7/6N4sGdk7Q5nknNPU vou4QL82FhCtMCEKj+FeknKN2c0 2006-02-18 00:59:32 80.145.178.39 9001 0
+s Exit Valid
+r eugman FXm5D6IluYHaPZmlhBpf4Zgyc7s FTmC0nUDjmQN7HeBenOFfAjjPQ0 2006-02-18 22:53:47 67.171.89.103 9001 9030
+s Fast Running Valid
+r altron ipGV5/W+EAR5WuWBSxA9ILkZE1o futZWgKajZBA27NUTVr8URN2sr0 2006-02-18 20:52:58 85.214.38.21 8000 8002
+s Fast Running Valid V2Dir
+r InfoNest AyVdu9OSh5YjMEnY+xmKUA1Jq4I cHokdIfi+oHkYbjIxSwbpIL7I1c 2006-02-18 20:11:53 204.116.4.238 9001 9030
+s Fast Running Valid V2Dir
+r scheelov ZMRKXviJDt1TnPN0p7smTMH+5aI tO04zZ36RAr6KixAm3Ndj3FNWIo 2006-02-18 08:23:04 81.216.128.130 9001 9030
+s Fast Valid
+r PhobosLabs UD9IcLwD/H4Ug81Dn4vstdJmW+Y kKrfvYqmkyBSp9ranWPe40zsb8E 2006-02-18 16:19:41 71.248.176.135 9001 0
+s Fast Running Valid
+r auhwwk my2bv8/giTkGj+LEEHG1ZsAOP2Q qPz0a5x979h6n6iwVjhO4sNvWF4 2006-02-18 10:05:47 82.135.84.85 9001 9030
+s Fast Valid V2Dir
+r Wintermute MmsyXVI7+EN+NiFWBwZ210N6QY0 5jf9jzqS5i6tgx6idEGHMe7LiN0 2006-02-18 03:49:01 70.131.144.217 9001 9030
+s Fast Valid
+r 8xspeed 6lWsPxB4aXNyho2iaI/t2HClvaE jw7ModX2QeWaRacwX6ePA//oX68 2006-02-18 18:40:43 65.25.220.178 443 0
+s Valid
+r ghost ZZpjeFjRaaOF18IhFdJGGFJ3R1o r3PhIiIMyZ62M5O3dZDYYW0x8JM 2006-02-18 23:03:48 68.0.133.9 3030 3031
+s Fast Running Valid
+r phoenix UPoTbjTDFv7bjeiC09bHuUbJKpw PUcBZkUkgspSsYTTsD+/Cb4QfqI 2006-02-18 20:12:53 70.162.65.208 9001 9030
+s Exit Fast Running Valid
+r thefifthelement YGmPBR5Ton5LiHL0LxrPe6oLhDY gnzW2t0NuE/r2UwX/BVT/Jx2fnk 2006-02-18 21:20:07 72.240.243.151 9001 0
+s Fast Named Running Valid
+r rikspolisen 7azUWKMSN7HpwBd5XFkGJy2hcak YX00HHKwZhvNpIkRJGczUopWcLA 2006-02-18 18:24:51 81.228.152.243 443 80
+s Fast Valid V2Dir
+r Sivusto9022 +80/G2VIx7GQktSUR70q+LcpJHY fgNO2VxJ7zsQkbOEU1RMWG/HLpU 2006-02-18 23:03:48 80.221.104.21 9001 9030
+s Fast Running Valid
+r Damdid KfDI/PtW7MD848C1dlFKKS1QnWI Pg7fZkeg2suo8WUYf6kQxIGhnWI 2006-02-18 17:18:43 82.66.131.125 9001 0
+s Valid
+r BrimStone 8ychHZqRpAdf2eYi0O4sHc+X1QQ Xbg08LkGkrbIMLPd74cZXa9DZP4 2006-02-18 20:40:19 24.63.99.6 9060 9061
+s Fast Valid V2Dir
+r inap1 Sb0l7cfTIcdqC8yJruce9ubUxY0 Ia1mXnrwjRKYUOklgXYsm3SNaTs 2006-02-18 22:11:12 64.74.207.50 9001 9030
+s Fast Named Running Valid
+r BianFu oktFAW01F8R+yVqqtrNMVSVTCvc 9s3FzV5hcv9i8tCpqIgvUslqDQE 2006-02-18 20:17:49 193.201.53.118 443 0
+s Valid
+r tortest21 hlf/r/Ob/A0tTslpTa6QGOIKk3A WpCPjFMfe7fLi+kEvyriGNjMw60 2006-02-18 19:27:31 217.160.21.203 9001 9030
+s Fast Running Valid
+r noneedforprivacy DZchK4F6VGnVVyjJp2P8tBe/9os bY1hqbcX3xeZu8WmqOKLjHyZRes 2006-02-18 22:00:11 217.149.34.124 443 80
+s Fast Named Running Valid
+r Armageddon wpnF7lMG/poK5x1hpt4w58PR6F0 0gkZxaCHnT9xEzQCiacrI0nqMKo 2006-02-18 07:10:25 70.133.197.77 1258 7456
+s Valid V2Dir
+r kronic1 t8wvAqjy/nSozx5wKJmOmQT3w3w /boxKV0njWF45gkzZajPaDolpsA 2006-02-18 03:21:23 62.75.149.130 9010 9030
+s Fast Running Valid
+r darkmoon iZiPRf+iPZGVc7CsPyqPpmgoxr4 eg+e5wgohjedFYgECmM/9SrP/ZA 2006-02-18 17:02:34 84.220.75.80 9001 0
+s Fast Running Valid
+r sprucemoose R/2Z5JjLA8/Gs7Mf6jaR/Xd0npA MgQpl7VAUwMOzQHp9ajsXn6lWqA 2006-02-18 19:01:19 217.160.173.52 9001 0
+s Valid
+r XxX p0jHpjJR1rEBTq84/U5gHUbZNQE O7SqgOIlmKce40muH9X4FUnjPdQ 2006-02-18 00:20:27 212.202.192.26 1984 0
+s Fast Valid
+r PricelessFreedom +utHzR4231DA04bSMVuGEue+mAY PcfjwWtBZGSaeVdzWwbVbWqW7Mc 2006-02-18 00:14:58 67.162.245.33 443 80
+s Fast Valid
+r bhnoc xsBnlO9b+e0pUh9yCkDGzjfgfKg 8R0ozejNoyaXvmQuX9iqSMK54Yg 2006-02-18 08:49:30 70.84.75.116 9001 9030
+s Fast Valid
+r hpeterstorserver R7efNa9L9DC5POqzm0iH5CC4nTA Hfx0cBVp2riVI2H0anwGW3s7Vis 2006-02-18 23:04:20 24.111.174.178 443 80
+s Running Valid
+r Runebane N54hLzRDZm+F/JakZ4gMYbM08tw mH9cvnuCCo7ZANLyuQOqSQtibZU 2006-02-18 19:20:55 64.81.227.88 9001 9030
+s Fast Valid V2Dir
+r legalizeIT G5D2g4V08BLMSe6gJcZaV+coeEU NwIqawund2yf/sRPO3d/VXANGNY 2006-02-17 23:24:39 70.104.49.168 9001 0
+s Fast Valid
+r thebigcheeseofall xtWzk4RpooJaAuQgyIjZP8rPFbw Nba4UQqjebxXegfiYl8RBhwwIaQ 2006-02-18 19:42:52 209.181.56.100 9001 0
+s Fast Running Valid
+r KbDJowF2HA 19DlcebV/hH58DpqMfd6TqN+72U D2cJf2mTIdH2aze6EQupm+uYIl0 2006-02-18 22:35:21 212.105.103.202 9001 9030
+s Fast Valid
+r leela +KB4vQuxz16wNSQrirm3d37TUPU N7J2PRWs2CuV+bINsgsxoGWwjRM 2006-02-18 18:56:02 66.111.43.137 9001 0
+s Fast Named Running Valid
+r cweiske A8F+i42hBp7rrq7Fs6njDt8caQw pPQdDzuz8RBQjVtb14ceXBJZl1Q 2006-02-18 23:05:08 80.237.146.62 9001 9030
+s Fast Valid
+r maximatornew +pyyTwuDM1sEKAOFYKJM2GYdF2c qJfB+vBKqZu+MLms+c/uOzKIP1o 2006-02-18 10:07:17 212.112.242.159 443 0
+s Valid
+r MoreFreedom jTwtBKXOBjvkAvpnbNxu+2v5N0w bOTu9KycCtn4ZiUyoejM20dXth4 2006-02-18 22:18:09 212.202.193.46 443 80
+s Fast Running Valid V2Dir
+r bifroest 4lMsjXMD7cm1jmJnWKvg33sckJc dgN/MN7KsFq5VE3Yz2wCL58SwuE 2006-02-18 21:12:14 213.54.179.4 7777 0
+s Exit Valid
+r noneofyourbusiness QZuvWQGrSnYmOWFux5lckuY7bis V79i9Nc0VfN8UDcH+DnOwu5wq4Q 2006-02-18 14:13:52 209.250.100.100 9001 9030
+s Fast Running Valid
+r vmo1 5JaiHyJleO9jziSMhefkq2jlFx8 4p/1HRHl6Ljq2VsUjrRI4GpEgT0 2006-02-18 23:07:29 130.161.82.41 9001 0
+s Exit Running Valid
+directory-signature moria1
+-----BEGIN SIGNATURE-----
+mWG3BbD2t3QBG1EqLqXB9W7iUuqUDK/CWwBdehVPEUugmBalADQ17GPBcrBRKTZG
+2U7THJv0oNJA5CIWk7UuKKJd1/qaT3JN4Na+mDa4qkYuF2OEcpB4RFRV1YFbWySG
+TJpcfyA8vLMsNrQPlMYNi0CEPsI+8uEYpHELnkwcYO8=
+-----END SIGNATURE-----

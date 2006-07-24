@@ -1,0 +1,38 @@
+
+ OK, here we are:
+
+
+ --------------------------------------------------------------------------
+       FILE                    DESCRIPTION                   STATE
+ --------------------------------------------------------------------------
+   NC_design.txt       Naming&Coding design (Be sure to     Current
+                       read it before any other doc)
+   Dillo.txt           General overview of the program      Current
+   IO.txt              Extensive introduction               Current
+   Cache.txt           Informative description              Current
+   Images.txt          Image handling and processing        Current
+   HtmlParser.txt      A versatile parser                   Current
+   Dw.txt              The New Dillo Widget (Overview)      Current
+   DwWidget.txt        The base object of Dw                Current
+   DwImage.txt         Dillo Widget image handling          Incomplete
+   DwPage.txt          Dillo Widget page (shortly)          Incomplete
+   DwStyle.txt         Styles of Dillo Widgets              Pending
+   DwTable.txt         Tables in dillo                      Current
+   Selection.txt       Selections, and link activation      Current (?)
+   Cookies.txt         Explains how to enable cookies       Current
+   Dpid.txt            Dillo plugin daemon                  Current
+ --------------------------------------------------------------------------
+ [This documents cover dillo's internal working. They're NOT a user manual]
+ --------------------------------------------------------------------------
+
+
+ * Ah!, there's a small program (srch) within the src/ dir. It searches
+ tokens within the whole code (*.[ch]). It has proven very useful.
+ Ex:  ./srch a_Image_write
+      ./srch todo:
+
+ * Please submit your patches with 'diff -pru'.
+
+
+ Happy coding!  
+ --Jcid
