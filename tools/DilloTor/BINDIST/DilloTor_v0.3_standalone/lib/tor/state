@@ -1,0 +1,30 @@
+# Tor state file last generated on 2006-02-19 01:09:50
+# You *do not* need to edit this file.
+
+# How many bytes have we read in this accounting period?
+AccountingBytesReadInInterval 0
+# How many bytes have we written in this accounting period?
+AccountingBytesWrittenInInterval 0
+# How many bytes did we expect to use per minute? (0 for no estimate.)
+AccountingExpectedUsage 0
+# How long have we been awake in this period?
+AccountingSecondsActive 0
+EntryGuard Eymerich 7868A36A58BA5DE989F10533B5CEADD7E1A1BDB7
+EntryGuard tenacity A648B345CEB029D0763BA86B26DC97F6E44AD988
+EntryGuard tor26 847B1F850344D7876491A54892F904934E4EB85D
+# When does the last-recorded read-interval end?
+BWHistoryReadEnds 2006-02-19 00:24:40
+# How long is each read-interval (in seconds)?
+BWHistoryReadInterval 900
+# Number of bytes read in each interval.
+BWHistoryReadValues 
+# When does the last-recorded write-interval end?
+BWHistoryWriteEnds 2006-02-19 00:24:40
+# How long is each write-interval (in seconds)?
+BWHistoryWriteInterval 900
+# Number of bytes written in each interval.
+BWHistoryWriteValues 
+# Which version of Tor generated this state file?
+TorVersion Tor 0.1.1.12-alpha
+# When was this state file last regenerated?
+LastWritten 2006-02-19 00:09:50

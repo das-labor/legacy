@@ -1,0 +1,116 @@
+=======
+ Dillo
+=======
+
+
+  If  you're  using  libc5,  don't worry, I used to use libc5! If
+you're  brave,  edit  'dns.c'  and  uncomment  line  45, pray and
+compile.  If  it  doesn't  work, email me (most probably a header
+include problem); if you succeed, report it to me anyway!
+
+  Dillo needs the following packages:
+       glib
+       GTK+-1.2.x (2.0 will not compile).
+       jpeg, png (for displaying images).
+       wget (for getting files via ftp; wget is not compiled into
+             the dillo binaries)
+       
+  If  you  get an error that dillo can't load the shared library,
+try "setenv LD_LIBRARY_PATH /usr/local/lib", or wherever you have
+your gtk+ libs.
+
+  Dillo  can  be  invoked  with  command  line options. Just type
+'dillo --help' to know about them.
+
+  You  may  experience  some  font handling problems derived from
+locale  handling (for instance if you use LC_ALL=sv_SE). Just try
+LC_ALL=POSIX and it will be fine.
+
+  Once  you  have dillo running for the first time, the next step
+is to read the help! (there's a link from the splash screen).
+
+  This is release should be regarded as "very stable beta".
+
+
+  Here's a list of some well known problems:
+
+      * no FRAMES rendering
+      * no https            -- read the FAQ to enable a protoype.
+
+
+------------
+Dpi programs
+------------
+
+  These  are  installed by "make install". If you don't have root
+access,  copy  "dillo"  and "dpid" to some directory in your path
+and  install  the  dpis by running "./install-dpi-local" from the
+top directory (they will be installed under ~/.dillo).
+
+-----
+Linux
+-----
+
+  There's  a  small  chance  of experiencing dillo "freezes" with
+certain  linux  kernels. This is a _kernel bug_, inside the 2.2.x
+series  up to 2.4.8. From 2.4.9 it has been corrected. The bug is
+inside poll() and the best that you can do is to upgrade.
+  If  you  can't upgrade the kernel though, this workaround patch
+for dillo may help you:
+  http://www.ime.usp.br/~livio/dillo/patches/poll-fix-fast.diff
+
+----
+*BSD
+----
+
+  Dillo  compiles  on *BSD systems; Starting from dillo-0.6.5, we
+included special detection code (at ./configure time) that should
+arrange  everything  for  a  clean  compile, but please note that
+you'll need GNU make.
+
+  From  OpenBSD  >=  3.3,  gethost* calls are not thread safe. If
+your  dillo  crashes  or locks, just comment line 40 in dns.c, so
+dillo uses a single thread for name resolving.
+
+
+-------
+Solaris
+-------
+
+  Dillo compiles and runs OK on Solaris but:
+
+    * use gmake (a symbolic link make -> gmake works OK)
+    * If you have trouble with GTK and GLIB from the Freeware
+      Companion CD, get the ones at www.sunfreeware.com instead.
+
+  These environment vars may help setting yours:
+
+PATH=/usr/bin:/usr/sbin:/usr/dt/bin:/usr/openwin/bin:/usr/local/b
+in:/opt/sfw/bi:/usr/ccs/bin:/usr/ucb
+LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib:/usr/local/lib/glib:
+/opt/sfw/lib:/usr/ucblib
+
+  Solaris is very inconsistent so you may need to add/remove:
+
+  -lrt -lposix4
+
+  at link time.
+
+
+---
+gcc
+---
+
+  gcc 2.95.2 has problems with -O2:
+     "-O2 -mcpu=pentium"                works fine.
+     "-O0 -mcpu=k6 -march=pentium -g3"  works fine also.
+     "-O -mcpu=k6 -march=pentium -g3"   works fine as well, but
+     "-O2 -mcpu=k6 -march=pentium -g3"  doesn't work. Then again
+     "-O6 -mcpu=pentium -march=pentium -g3" DOES work.
+
+
+
+    
+Jorge.-
+(jcid@dillo.org)
+Jan 06, 2005

@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+# Find a token within source files ( *.[ch] )
+# Enjoy!
+# Jorge.-
+
+if [ ! $# = 1 ]; then
+  echo "Usage:"
+  echo "   srch <token>"
+else
+#  find "./" -name "*.[ch]" -print -exec grep $1 {} \;
+  egrep "$1" *.[ch]
+  egrep "$1" IO/*.[ch]
+  egrep -H "$1" ../dpi/*.[ch]
+  egrep -H "$1" ../dpid/*.[ch]
+fi

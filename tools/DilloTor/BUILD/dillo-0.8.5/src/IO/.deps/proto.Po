@@ -1,0 +1,1 @@
+proto.o proto.o: proto.c
