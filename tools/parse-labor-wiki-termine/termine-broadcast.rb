@@ -83,40 +83,25 @@ icalout = File.new( ARGV[0]+"/LABOR-Termine.ics", "w" );
 
 icalout.puts "BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//LABOR/Terminparser//-
 X-WR-CALNAME:LABOR-Termine
+PRODID:-//Apple Computer\, Inc//iCal 2.0//EN
 X-WR-RELCALID:5644223456g
 X-WR-TIMEZONE:Europe/Berlin
 CALSCALE:GREGORIAN
-METHOD:PUBLISH
-BEGIN:VTIMEZONE
-BEGIN:DAYLIGHT
-DTSTART:20060326T020000
-TZOFFSETTO:+0200
-TZOFFSETFROM:+0000
-TZNAME:CEST
-END:DAYLIGHT
-BEGIN:STANDARD
-DTSTART:20061029T020000
-TZOFFSETTO:+0000
-TZOFFSETFROM:+0100
-TZNAME:GMT
-END:STANDARD
-END:VTIMEZONE"
-
+METHOD:PUBLISH"
 
 at.each { |term|
     icalout.puts "BEGIN:VEVENT
-UID:#{timestamp}#{term.year}#{term.month}#{term.day}@labor
-SUMMARY:#{term.text}
 LOCATION:Labor
-DTSTART;VALUE=DATE:#{term.year}#{term.month}#{term.day}
-DTEND;VALUE=DATE:#{term.year}#{term.month}#{term.day}
-DTSTAMP:#{timestamp}
+DTSTAMP:#{timestamp}Z
+UID:#{timestamp}#{term.year}#{term.month}#{term.day}@labor
+SEQUENCE:10
+URL;VALUE=URI:#{term.link}
+DTSTART;TZID=Europe/Berlin:#{term.year}#{term.month}#{term.day}T190000
+SUMMARY:#{term.text}
+DTEND;TZID=Europe/Berlin:#{term.year}#{term.month}#{term.day}T210000
 LAST-MODIFIED:#{timestamp}
 DESCRIPTION:#{term}
-URL;VALUE=URI:#{term.link}
-CLASS:PUBLIC
 END:VEVENT\n"
 
 }
