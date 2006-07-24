@@ -1,5 +1,5 @@
 PRG	    = cryptotest
-OBJ	    = main.o debug.o uart.o serial-tools.o sha256-asm.o xtea-asm.o  arcfour-asm.o A5_1.o
+OBJ	    = main.o debug.o uart.o serial-tools.o sha256-asm.o xtea-asm.o  arcfour-asm.o A5_1.o prng.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 
@@ -12,7 +12,7 @@ CC	     = avr-gcc
 
 # Override is only needed by avr-lib build system.
 
-override CFLAGS	= -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) 
+override CFLAGS	= -Wall -Wstrict-prototypes  $(OPTIMIZE) -mmcu=$(MCU_TARGET) 
 $(DEFS)
 override LDFLAGS       = -Wl,-Map,$(PRG).map
 override ASFLAGS = -mmcu=$(MCU_TARGET)
