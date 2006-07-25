@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+#  uncool und geht im prinzip viel besser
 
 require 'rexml/document'
 require 'date'
@@ -6,7 +7,7 @@ require 'date'
 XMLSOURCE=ARGV[0]+"/termine.xml";
 
 class Termin
-  attr_reader :day, :wday, :month, :year, :text, :link, :date, :datestr;
+  attr_reader :day, :wday, :month, :year, :text, :link, :date, :datestr, :hour, :min;
 
   def initialize(xml)
     @day   = xml.elements["day"].text.to_i;
@@ -15,7 +16,9 @@ class Termin
     @year  = xml.elements["year"].text.to_i;
     @text  = xml.elements["text"].text;
     @link  = xml.elements["link"].text;
-
+    @hour  = xml.elements["hour"].text;
+    @min   = xml.elements["min"].text;
+    
     @year += 2000 if @year < 2000;
 
     @date  = Date.new( @year, @month, @day );
@@ -97,9 +100,9 @@ DTSTAMP:#{timestamp}Z
 UID:#{timestamp}#{term.year}#{term.month}#{term.day}@labor
 SEQUENCE:10
 URL;VALUE=URI:#{term.link}
-DTSTART;TZID=Europe/Berlin:#{term.year}#{term.month}#{term.day}T190000
+DTSTART;TZID=Europe/Berlin:#{term.year}#{term.month}#{term.day}T#{term.hour}#{term.min}00
 SUMMARY:#{term.text}
-DTEND;TZID=Europe/Berlin:#{term.year}#{term.month}#{term.day}T210000
+DTEND;TZID=Europe/Berlin:#{term.year}#{term.month}#{term.day}T235900
 LAST-MODIFIED:#{timestamp}
 DESCRIPTION:#{term}
 END:VEVENT\n"
