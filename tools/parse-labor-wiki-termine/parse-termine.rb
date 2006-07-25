@@ -25,8 +25,8 @@ EOF
 
 WIKILINES = [
 #  /\W+(?:<DATE>\d{2}.\d{2}.\d{2})\W+(?:<DAY>\w\w)\W+(?:<TEXT>.*)/,
-  /^\s*\*\W+(?:<DAY>\d{2}).(?:<MONTH>\d{2}).(?:<YEAR>\d{2})\W+(?:<WDAY>\w\w)\W+(?:<TIME>[\d:,.]+)[ ,;-]+(?:<TEXT>.*)/,
-  /^\s*\*\W+(?:<WDAY>\w\w)\W+(?:<DAY>\d{2}).(?:<MONTH>\d{2}).(?:<YEAR>\d{2})\W+(?:<TIME>[\d:,.]+)[ ,;-]+(?:<TEXT>.*)/
+  /^\s*\*\W+(?:<DAY>\d{2}).(?:<MONTH>\d{2}).(?:<YEAR>\d{2})\W+(?:<WDAY>\w\w)\W+(?:<HOUR>\d{1,2}):(?:<MIN>\d{2})[ ,;-]+(?:<TEXT>.*)/,
+  /^\s*\*\W+(?:<WDAY>\w\w)\W+(?:<DAY>\d{2}).(?:<MONTH>\d{2}).(?:<YEAR>\d{2})\W+(?:<HOUR>\d{1,2}):(?:<MIN>\d{2})[ ,;-]+(?:<TEXT>.*)/
 ]
 
 #############################################################################
@@ -69,7 +69,7 @@ class LaborTermine
       m = parseLine(line);
       if m then
         aterm = Hash.new;
-	m.each { |a|
+  	m.each { |a|
 		aterm[a[0].downcase] = a[1];
 	}
 	lr = /\[\[\s*(.*?)\s*\]\]/;
@@ -113,6 +113,7 @@ lt = LaborTermine.new;
 lt.run;
 
 
+puts "<termine>"
 lt.termine.each { |termin|
 	puts "<termin>"
 	termin.each { |key,val|
@@ -120,6 +121,7 @@ lt.termine.each { |termin|
 	}
 	puts "</termin>"
 }
+puts "</termine>"
 
 exit
 
