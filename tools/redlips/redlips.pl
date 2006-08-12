@@ -1,23 +1,240 @@
 #!/usr/bin/perl
 # vim:tw=82:ts=2
 
-# redlips.pl - red live intrusion prevention system
-# -------------------------------------------------
-# redlips.pl is a frontend for viewing and modifying packets
-# in real time. It suits best as a layer 7 filter in capture
-# the flag style linux deathmatchs.
+# redlips.pl
+# Rabies-infected Elephant Disguised as a Live Intrusion Prevention System
+# ------------------------------------------------------------------------
+# redlips is a small tool to view and modify traffic in real time. It suits
+# best as a intrusion prevention system or layer seven filter in capture the
+# flag style linux deathmatches.
+
 #
-# Features
-# --------
-# modification of tcp and udp packets with perl regular expressions
-# colorized sniffing
-#
+# Users read this
 #
 
+# Requirements
+# ------------
+# Linux kernel with CONFIG_IP_NF_QUEUE
+# iptables
+# IPTables::IPv4::IPQueue 1.25
+# NetPacket::IP
+# Term::ShellUI (maybe also Term::ReadLine::Gnu)
+# Net::RawSock http://www.hsc.fr/ressources/outils/rawsock/index.html.enk
+#
+# Usage
+# -----
+# sudo perl redlips.pl
+#   type "help" to get a list of commands
+#   if you need to kill it, kill with -9 or ^c
+#
+# Mini Howto
+# ----------
+# Okay, this is a mini howto to get redlips working for you. You need roughly 20
+# minutes, a Linux system with a 2.6 kernel and perl 5.8.x.
+#
+# Download newest iptables and install with developer components:
+#
+#   $ wget http://www.iptables.org/projects/iptables/files/iptables-1.3.5.tar.bz2
+#   $ md5sum iptables-1.3.5.tar.bz2 && echo 00fb916fa8040ca992a5ace56d905ea5
+#   $ tar xjf iptables-1.3.5.tar.bz2
+#   $ cd iptables-1.3.5
+#   $ sudo make install-devel
+#
+# You can install modules the with the recommended tools of your distribution,
+# like
+#
+#   $ sudo apt-get install libterm-readline-gnu-perl # ubuntu
+#
+# or
+#
+#   $ sudo g-cpan -i IPTables::IPv4::IPQueue # gentoo
+#
+# or you get the required modules with CPAN:
+#
+#   $ sudo cpan
+#   > install IPTables::IPv4::IPQueue
+#   > install Term::ShellUI
+#   > install NetPacket::IP
+#
+# You need the modules listed in the Requirements section above.
+# 
+# Then install Net::RawSock to write raw packets on the interface:
+#
+#   $ wget \
+#   http://www.hsc.fr/ressources/outils/rawsock/download/Net-RawSock-1.0.tar.gz
+#   $ md5sum Net-RawSock-1.0.tar.gz && echo 3da41c4705c56a5cd3d6a1587a3a72c1
+#   $ tar xzf Net-RawSock-1.0.tar.gz
+#   $ cd Net-RawSock-1.0
+#   $ perl Makefile.PL && make && sudo make install
+#
+# Alright, this was the installation. Deposit the redlips.pl script in a working
+# directory $PWD of your choice.
+#
+# Then run
+#
+#   $ sudo modprobe ip_queue
+#
+# to load the module which queues packets into userspace so redlips can either
+# accept or drop them.
+# 
+# Run redlips
+#
+#   $ cd $PWD
+#   $ sudo perl redlips.pl
+# 
+# If all modules were installed correctly you should now have the redlips shell
+# prompt:
+#
+#   redlips.pl> 
+#
+# Open a second terminal and cd to the $PWD. There is a file called 'lips.log'
+# which contains all activities by redlips. Run a 'tail -f' on this file to see
+# what's going on.
+#
+# As mentioned above redlips needs the netfilter ip_queue module to recieve
+# packets from the kernel. Thus you must add some rules to your existing
+# iptables chains to hand over packets to redlips. If you have no idea where to
+# put these targets I would suggest you do the following for testing purposes:
+#
+#   $ sudo iptables -I OUTPUT -d irc.freenet.de -p tcp --dport 6667 -j QUEUE
+# 
+# This queues all packets originating from your machine to the host
+# irc.freenet.de with tcp destination port 6667 into userland. If an application
+# like redlips runs in userland it can either drop or accept the packets going to
+# irc.freenet.de. If redlips is not running the default for ip_queue is to drop
+# the packets.
+# Of course the location of the iptables rule depends on the goals you want
+# achieve with redlips.
+#
+# Enter help at the redlips prompt:
+#
+#   redlips.pl> help
+#
+# Some commands are listed to modify the redlips ruleset. Rules look like this:
+#
+#   tcp any:any > any:6667 s/cia/nsa/i
+# 
+# This example rule applies the regular expression 'substitute cia with nsa, case
+# insensitive' to all tcp packets going to port 6667.
+#
+# Add the rule with
+#
+#   redlips.pl> radd tcp any:any > any:6667 s/cia/nsa/i
+#
+# to redlips. Or use the atp command, implemented for lazy people
+#
+#   redlips.pl> atp 6667 s/cia/nsa/i
+#
+# Now if redlips sees a tcp packet to port 6667 with the string 'cia' it is
+# subtituted with 'nsa'.
+#
+# Beware of TCP sequence numbers. redlips does not implement TCP sequence numbers
+# yet, so if you apply a rule with s/911/fake/ TCP gets out of sync. Also, redlips
+# does not stop when a substitution matches, so rules like s/911/911-fake/ or two
+# rules with s/911/123/ and s/123/911/ result in massive packet generation.
+# redlips is still alpha software. Although there currently exists a work around
+# which fixes the length modification of packets by either cutting or padding the
+# packet to the original size.
+#
+# Back to our example, see how the magic works with
+#
+#   $ irssi -c irc.freenet.de
+#
+# Your debug log should now show lines like
+#
+# [20:21:27][p00000002p][tcp] 172.16.0.23:56555 > 194.97.2.2:6667
+#                             PING freenet.de\r\n
+#
+# The output sould be self explanatory. Note, that non printable characters are
+# replaced by \n, \r, or the hexadecimal equivalent, \x00.
+#
+#   irssi: /join #cia
+#   20:24 -!- Irssi: #nsa
+#
+# [20:24:58][p00000006p][tcp] 172.16.0.23:56555 > 194.97.2.2:6667
+#                             JOIN #cia\r\n
+# [20:24:58][p00000007p][mod] 172.16.0.23:56555 > 194.97.2.2:6667
+#                             JOIN #nsa\r\n
+# [20:24:58][p00000008p][tcp] 172.16.0.23:56555 > 194.97.2.2:6667
+#                             JOIN #nsa\r\n
+#
+# The first log entry is the original packet. The next shows the modification,
+# indicated by [mod], followed by the modified reinjected packet.
+#
+# Feel free to play around with the rules. Try s/\x90{50,}/\x00/ to filter out big
+# nop pads, and rewrite your 0days to prevent this rule. Have fun!
+#
+# FAQ
+# ---
+# Q: Whats wrong "Failed to send netlink message: Connection refused"?
+# A: modprobe ip_queue
+#
+# Q: "glibc detected double free or corruption (!prev): 0x086bde88" is a error
+#    which I get on some systems upon exiting the redlips shell.
+# A: just ignore
+#
+# Security Warning
+# ----------------
+# Due to an eval of user-defined perl code (regular expressions) the user can
+# execute system() calls. Do not setuid this script and do not screen it away
+# for everyone to attach.
+
+#
+# Developer Documentation
+#
+
+# Bugs
+# ----
+# Many. Please send bug reports to <redlips@baraddur.de>.
+#
+# Urgent Todo
+# -----------
+#
+#
+# Todo
+# ----
+# better dump_ascii (indent \n, check for binary proto -> complete hexdump)
+# internal tcp proxy for seq/ack numbers
+# acronym for red
+# nfnetlink_queue (passemble instead of pinject, no dependency on rawsock)
+# object orientation (python rewrite?)
+# manage iptables rules with IPTables::IPv4
+#   -> no duplicate --jump QUEUE
+#   mark modules
+#   mark modified packets (with iptables / evil bit)
+#   working traffic when app not running!
+# ipv6
+# shellui: need closing quote (atp 1234 s/a'sdf/asdf/)
+#
+# Debug Level Categories
+# ----------------------
+# 1 ui
+# 2 ip_queue
+# 3 redlips process
+# 4 packet manipulation
+# 5 packet info
+# 6 rules
+# 7 reserved
+# 8 reserved
+# 9 reserved
+#
+# ChangeLog
+# ---------
+# 0.1
+#   - initial release
+# 0.2
+#   - documentation
+#   - minor fixes & clean up
+#
+# Contributors
+# ------------
+# Felix Groebert <redlips@baraddur.de>
+# Dennis, Joern, Tim
+#
 # License
 # -------
 # Copyright (C) 2006 Felix Groebert <redlips@baraddur.de>
-# version 0.1
+# version 0.2
 # Homepage: https://roulette.das-labor.org/svn/tools/redlips/redlips.pl
 # Download: https://roulette.das-labor.org/svn/tools/redlips/redlips.pl
 #
@@ -35,84 +252,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
-# Security Warning
-# ----------------
-# Due to an eval of user-defined perl code (regular expressions) the user can
-# execute system() calls. Do not setuid this script and do not screen it away
-# for everyone to attach.
-#
-# Bugs
-# ----
-# Please send bug reports to <redlips@baraddur.de>.
-#
-# FAQ
-# ---
-# Q: Whats wrong "Failed to send netlink message: Connection refused"?
-# A: modprobe ip_queue
-#
-# Requirements
-# ------------
-# Linux kernel with CONFIG_IP_NF_QUEUE
-# iptables
-# IPTables::IPv4::IPQueue 1.25
-# NetPacket::IP
-# Net::RawSock http://www.hsc.fr/ressources/outils/rawsock/index.html.enk
-# Term::ShellUI (maybe also Term::ReadLine::Gnu)
-#
-# Contributors
-# ------------
-# Felix Groebert <redlips@baraddur.de>
-# Dennis
-# Joern
-# Tim
-#
-# Usage
-# -----
-# sudo perl redlips.pl
-#   type "help" to get a list of commands
-#   if you need to kill it, kill with -9 or ctrl-c
-#
-# Debug Level Categories
-# ----------------------
-# 1 ui
-# 2 ip_queue
-# 3 redlips process
-# 4 packet manipulation
-# 5 packet info
-# 6 rules
-# 7 reserved
-# 8 reserved
-# 9 reserved
-#
-#
-# ChangeLog
-# ---------
-# 0.1
-#   - initial release
-#
-#
-# Urgent Todo
-# -----------
-#
-#
-# Todo
-# ----
-# better dump_ascii (indent \n, check for binary proto)
-# internal tcp proxy
-# acronym for red
-# no more eval, lex?
-# nfnetlink_queue (passemble instead of pinject, no dependency on rawsock)
-# oo
-# manage iptables rules with IPTables::IPv4
-#   -> no duplicate --jump QUEUE
-#   mark modules
-#   mark modified packets (with iptables / evil bit)
-#   working traffic when app not running!
-# ipv6
-# shellui: need closing quote (atp 1234 s/a'sdf/asdf/)
-# *** glibc detected *** double free or corruption (!prev): 0x086bde88 ***
-#
-#
+
 
 #
 # init
@@ -140,7 +280,7 @@ use constant TIMEOUT => 1_000_000 * 2;    # 2 seconds
 
 # general options
 my %o = (
-  do_iptables => 1,                       # alter iptables
+  do_iptables => 0,                       # alter iptables
   ipt_script  => "ipt",                   # run this script with {start|stop}
   mode        => "forward",               # local or forward
   ui          => "shell",                 # shell or curses
