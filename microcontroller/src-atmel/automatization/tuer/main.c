@@ -7,10 +7,6 @@
 #include "serialio.h"           // From AvrX...
 
 #include "config.h"
-#include "xcan.h"
-#include "xlap.h"
-#include "rf.h"
-#include "switch.h"
 
 //AVRX_GCC_TASK(Monitor, 20, 0);          // External Task: Debug Monitor
 
@@ -35,13 +31,8 @@ int main(void)
 	DDRC = 0xFF;
 	
     //InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
-	xlap_init();
-	rf_init();
     //AvrXRunTask(TCB(Monitor));
 	AvrXRunTask(TCB(laptask));
-	AvrXRunTask(TCB(rfrxtask));
-	AvrXRunTask(TCB(rftxtask));
-	AvrXRunTask(TCB(switchtask));
 
     /* Needed for EEPROM access in monitor */
 	AvrXSetSemaphore(&EEPromMutex);
@@ -50,3 +41,4 @@ int main(void)
     Epilog();                   // Switch from AvrX Stack to first task
     while(1);
 };
+
