@@ -9,9 +9,10 @@
 
 #include <avr/io.h>
 
-#define NPOINTS 8
+#define NPOINTS 9
 #define NLINES 12
 void rotatedScaledCube() {
+	// Drehender Quader
 	pixel3d org[NPOINTS] = {{0x10, 0x10, 0x10}, // 0
 							{0x60, 0x10, 0x10}, // 1
 							{0x60, 0x60, 0x10}, // 2 
@@ -19,7 +20,8 @@ void rotatedScaledCube() {
 							{0x10, 0x10, 0x60}, // 4
 							{0x60, 0x10, 0x60}, // 5
 							{0x60, 0x60, 0x60}, // 6
-							{0x10, 0x60, 0x60}  // 7
+							{0x10, 0x60, 0x60}, // 7
+							{0x00, 0x00, 0x00}  // 8
 							};							
 	unsigned char drawlist[NLINES*2] = {0, 1,
 										0, 4,
@@ -40,7 +42,7 @@ void rotatedScaledCube() {
 	unsigned char i;								
 											
 	for (a = 0; a < 1500; a++) {
-		scale(a/35+40, a/35+40, a/35+40, org, sca, NPOINTS, (pixel3d) {0x30, 0x30, 0x30});
+		scale(a/35+40, a/35+40, a/35+40, org, sca, 8, (pixel3d) {0x30, 0x30, 0x30});
 		rotate(a/3, a/5 , a/4, sca, rot, NPOINTS, (pixel3d) {0x38, 0x38, 0x38});
 		
 		for (i = 0; i < NLINES*2; i += 2) {
@@ -49,9 +51,60 @@ void rotatedScaledCube() {
 			drawLine3D(((char)h1.x+8)/16, ((char)h1.y+8)/16, ((char)h1.z+8)/16,
 					   ((char)h2.x+8)/16, ((char)h2.y+8)/16, ((char)h2.z+8)/16, 3);
 		}
-		wait(5); 
+		wait(6); 
 		clear_screen(0);
+	}
+	wait(20);
+	// Drehende Phyramide
+	org[2] = (pixel3d) {0x37, 0x54, 0x10};
+	org[3] = (pixel3d) {0x37, 0x37, 0x48};
+	drawlist[0]  = 0; drawlist[1]  = 1;
+	drawlist[2]  = 1; drawlist[3]  = 2;
+	drawlist[4]  = 2; drawlist[5]  = 0;
+	drawlist[6]  = 0; drawlist[7]  = 3;
+	drawlist[8]  = 1; drawlist[9]  = 3;
+	drawlist[10] = 2; drawlist[11] = 3;	
+	for (a = 0; a < 1500; a++) {
+		scale(a/35+40, a/35+40, a/35+40, org, sca, 4, (pixel3d) {0x30, 0x30, 0x30});
+		rotate(a/3, a/4 , a/5, sca, rot, 4, (pixel3d) {0x38, 0x38, 0x38});
+		
+		for (i = 0; i < 12; i += 2) {
+			h1 = rot[drawlist[i]];
+			h2 = rot[drawlist[i+1]];
+			drawLine3D(((char)h1.x+8)/16, ((char)h1.y+8)/16, ((char)h1.z+8)/16,
+					   ((char)h2.x+8)/16, ((char)h2.y+8)/16, ((char)h2.z+8)/16, 3);
+		}
+		wait(6); 
+		clear_screen(0);
+	}
+	wait(20);
+	for (a = 0	; a < 4; a++) {
+		org[a].x += 9;
+		org[a].y += 9;
+		org[a].z += 20;
 	}	
+	org[4] = (pixel3d) {0x40, 0x40, 0x40};
+	scale(40, 40, 40, org, &org[5], 3, org[4]);
+	drawlist[0]  = 0; drawlist[1]  = 4;
+	drawlist[2]  = 1; drawlist[3]  = 4;
+	drawlist[4]  = 2; drawlist[5]  = 4;
+	drawlist[6]  = 3; drawlist[7]  = 4;
+	drawlist[8]  = 0; drawlist[9]  = 5;
+	drawlist[10] = 1; drawlist[11] = 6;	
+	drawlist[12] = 2; drawlist[13] = 7;	
+	drawlist[14] = 3; drawlist[15] = 8;	
+	for (a = 0; a < 3000; a++) {
+		rotate(a/3,  a/3 , a/4	,  org, rot, NPOINTS, org[4]);		
+		rotate(a/20, a/20, a/20, &rot[5], &rot[5], 3, org[4]);
+		for (i = 0; i < 16; i += 2) {
+			h1 = rot[drawlist[i]];
+			h2 = rot[drawlist[i+1]];
+			drawLine3D(((char)h1.x+8)/16, ((char)h1.y+8)/16, ((char)h1.z+8)/16,
+					   ((char)h2.x+8)/16, ((char)h2.y+8)/16, ((char)h2.z+8)/16, 3);
+		}
+		wait(6); 
+		clear_screen(0);
+	}
 }
 
 #undef NPOINTS
