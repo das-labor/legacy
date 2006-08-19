@@ -56,7 +56,7 @@ void pong() {
 		}	
 		if((!joy0) && (!joy1))
 			break;//no player, so there was a glitch on the fire line.
-		ballV = 4 + (score0 > score1 ? score0 : score1)/3;
+		ballV = 6 + (score0 > score1 ? score0 : score1)/3;
 		if (!--counter) {
 			ballPos.x = (ballPos128.x + 64) / 128;
 			ballPos.y = (ballPos128.y + 64) / 128;
@@ -217,7 +217,7 @@ void pong() {
 			ballPos128.x += ((char)ballDir.x * ballV)/4;
 			ballPos128.y += ((char)ballDir.y * ballV)/4;
 			ballPos128.z += ((char)ballDir.z * ballV)/4;
-			counter = 15;
+			counter = 24;
 		}
 		clearpixel3d(ballPos);
 		ballPosOld = ballPos;
