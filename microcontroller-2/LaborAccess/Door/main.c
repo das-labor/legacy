@@ -4,12 +4,65 @@
 #include <avrx-io.h>
 #include <avrx-signal.h>
 #include "avrx.h"               // AvrX System calls/data structures
-#include "serialio.h"           // From AvrX...
 
 #include "config.h"
 #include "serial.h"
 
-//AVRX_GCC_TASK(Monitor, 20, 0);          // External Task: Debug Monitor
+#define LINESIZE 16
+
+#define IDLE    0
+#define OPENING 1
+#define CLOSING 2
+
+#define RAISEING 0
+#define FALLING  1
+
+int8_t schranke_state;
+int8_t motor_state;
+
+
+
+
+
+AVRX_GCC_TASKDEF(MotorCtl, 20, 0)       
+{
+	uint8_t step = 0;
+	uint8_t steps[] = { 0x01, 0x03, 0x02, 0x06, 0x04, 0x0C, 0x08, 0x09 };
+	uint8_t val;
+	TimerControlBlock timer;
+
+	motor_state = IDLE;
+	AvrXDelay(&timer, 500);
+
+	for(;;) {
+		val = 0;
+		val |= (steps[step] & 0x01) ? 0x00:0x80;
+		val |= (steps[step] & 0x02) ? 0x00:0x40;
+		val |= (steps[step] & 0x04) ? 0x00:0x08;
+		val |= (steps[step] & 0x08) ? 0x00:0x04;
+		AvrXDelay(&timer, 500);
+	}
+}
+
+//AVRX_GCC_TASKDEF(SchrankeCtl, 20, 0)       
+//{
+//	TimerControlBlock timer;
+//	uint16_t value;
+//
+//	schranke_state = 0;
+//
+//	for(;;) {
+//		AvrXDelay(&timer, 500);
+//		
+//	};
+//}
+
+
+
+AVRX_GCC_TASKDEF(SerialComm, 20, 0)
+{
+};
+
 
 
 AVRX_SIGINT(SIG_OVERFLOW0)
@@ -31,8 +84,8 @@ int main(void)
 
 	DDRC = 0xFF;
 	
-    //InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
-    //AvrXRunTask(TCB(Monitor));
+    SerialInit(UBRR_INIT);  // Initialize USART baud rate generator
+    AvrXRunTask(TCB(MotorCtl));
 
     /* Needed for EEPROM access in monitor */
 	AvrXSetSemaphore(&EEPromMutex);
