@@ -1,0 +1,80 @@
+This is pdfTeX, Version 3.14159-1.10b (Web2C 7.4.5) (format=pdftex 2006.7.24)  28 AUG 2006 22:37
+**Monatspr.tex
+(./Monatspr.tex{/usr/share/texmf/pdftex/config/pdftex.cfg}
+Babel <v3.7h> and hyphenation patterns for american, french, german, ngerman, n
+ohyphenation, loaded.
+\fullhsize=\dimen16
+\leftcolumn=\box16
+\midcolumn=\box17
+
+Overfull \hbox (19.09653pt too wide) in paragraph at lines 99--99
+/cmr10/nicht Deine Kon-sumge-wohn-heiten f^^?ur ein paar Ra-battpunkte|
+
+\hbox(6.94444+1.94444)x241.84842, glue set - 1.0
+./cmr10/n
+./cmr10/i
+./cmr10/c
+.\kern-0.27779
+./cmr10/h
+.etc.
+
+
+Overfull \hbox (1.17049pt too wide) in paragraph at lines 99--99
+/cmr10/EU-B^^?urger alles falsch machen kann? Keinen in-ter-essiert|
+
+\hbox(6.94444+1.94444)x241.84842, glue set - 1.0
+./cmr10/E
+./cmr10/U
+./cmr10/-
+.\discretionary
+./cmr10/B
+.etc.
+
+Missing character: There is no ^^e2 in font cmr10!
+Missing character: There is no ^^80 in font cmr10!
+Missing character: There is no ^^98 in font cmr10!
+Missing character: There is no ^^ef in font cmr10!
+Missing character: There is no ^^ac in font cmr10!
+Missing character: There is no ^^82 in font cmr10!
+Missing character: There is no ^^e2 in font cmr10!
+Missing character: There is no ^^80 in font cmr10!
+Missing character: There is no ^^99 in font cmr10!
+Missing character: There is no ^^e2 in font cmr10!
+Missing character: There is no ^^80 in font cmr10!
+Missing character: There is no ^^9d in font cmr10!
+Missing character: There is no ^^e2 in font cmr10!
+Missing character: There is no ^^80 in font cmr10!
+Missing character: There is no ^^9c in font cmr10!
+Missing character: There is no ^^c3 in font cmr10!
+Missing character: There is no ^^9f in font cmr10!
+Missing character: There is no ^^e2 in font cmr10!
+Missing character: There is no ^^80 in font cmr10!
+Missing character: There is no ^^9d in font cmr10!
+Missing character: There is no ^^e2 in font cmr10!
+Missing character: There is no ^^80 in font cmr10!
+Missing character: There is no ^^9c in font cmr10!
+Missing character: There is no ^^e2 in font cmr10!
+Missing character: There is no ^^80 in font cmr10!
+Missing character: There is no ^^9c in font cmr10!
+
+Overfull \hbox (15.42987pt too wide) in paragraph at lines 100--100
+/cmr10/RFID- Er-fas-sungs-ger^^?ate an Fug^^?angerampeln?, "Wie k^^?onnen|
+
+\hbox(6.94444+1.94444)x241.84842, glue set - 1.0
+./cmr10/R
+./cmr10/F
+./cmr10/I
+./cmr10/D
+./cmr10/-
+.etc.
+
+! Undefined control sequence.
+l.103 \psfig
+            {file=fig1.eps,width=\textwidth}
+? 
+! Emergency stop.
+l.103 \psfig
+            {file=fig1.eps,width=\textwidth}
+End of file on the terminal!
+
+No pages of output.
