@@ -1,10 +1,38 @@
-\documentclass[10pt,landscape]{article}
+% Labor Monatsprogramm
+%
+% LaTeX Code under GPL
+% tw=80
+%
+% Todo:
+%
+%
+%
+
+\documentclass[10pt,landscape,a4paper]{article}
 \usepackage{multicol}
 \usepackage{calc}
+\usepackage{graphicx}
 
 
 % Don't print section numbers
 \setcounter{secnumdepth}{0}
+
+% All this page size stuff is a hack, but it seems to work
+% Turn off header and footer
+\pagestyle{empty}
+
+\setlength{\oddsidemargin}{0.25in}
+\setlength{\evensidemargin}{0.5in}
+\setlength{\textwidth}{10in}
+
+
+\setlength{\topmargin}{-0.75in}
+\setlength{\textheight}{7.25in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+
+
+
 
 % termin options: time title text
 \def\termin#1#2#3{\vskip 0.2cm {\it#1\dotfill#2\/}\\#3\par}
@@ -39,34 +67,88 @@
 \termin{SOCCA 2}{06.09.2006 --- 19:30}{}
 
 
+% ABOUT US
 \section{\"Uber uns}
 
 {\bf Konsumgewohnheiten vs. Rabattpunkte}\\
-Alle Menschen verschenken ihre Privatsph\"are f\"ur ein paar Merchandising-Artikel? Keiner versteht, dass Du nicht Deine Konsumgewohnheiten f\"ur ein paar Rabattpunkte offenlegen m\"ochtest? Keiner denkt dar\"uber nach, was man mit einer zentralen Fingerabdruckdatenbank aller EU-B\"urger alles falsch machen kann? Keinen interessiert es, dass jeder Informationsseitenabruf und -kontakt bald jahrelang gespeichert wird? Denkst DU! Wir sollten uns dar\"uber unterhalten!\\
-Dar\"uber, und auch \"uber Fragen wie "Kann das Konzept der ‘Kulturﬂatrate’ \"uberhaupt funktionieren oder stirbt die kulturelle Vielfalt dann gleich mit?”, “Was bringen RFID- Erfassungsger\"ate an Fußg\"angerampeln?”, "Wie k\"onnen offene B\"urgernetze als Alternative zum Internet gestaltet werden?" oder auch “Kann man mit einem Trusted Platform Module auch was Sinnvolles anfangen?“\\
-\vskip1cm
-
-% XXX \psfig{file=fig1.eps,width=\textwidth}
+Alle Menschen verschenken ihre Privatsph\"are f\"ur ein paar
+Merchandising-Artikel? Keiner versteht, dass Du nicht Deine
+Konsumgewohnheiten f\"ur ein paar Rabattpunkte offenlegen m\"ochtest? Keiner
+denkt dar\"uber nach, was man mit einer zentralen Fingerabdruckdatenbank
+aller EU-B\"urger alles falsch machen kann? Keinen interessiert es, dass
+jeder Informationsseitenabruf und -kontakt bald jahrelang gespeichert
+wird? Denkst DU! Wir sollten uns dar\"uber unterhalten!\\
+Dar\"uber, und auch \"uber Fragen wie "Kann das Konzept der
+‘Kulturﬂatrate’ \"uberhaupt funktionieren oder stirbt die kulturelle
+Vielfalt dann gleich mit?”, “Was bringen RFID- Erfassungsger\"ate an
+Fußg\"angerampeln?”, "Wie k\"onnen offene B\"urgernetze als Alternative
+zum Internet gestaltet werden?" oder auch “Kann man mit einem Trusted
+Platform Module auch was Sinnvolles anfangen?“\\
+\\
+% grafik: eip
 
 {\bf Wer bastelt hat Recht}\\
-Das LABOR ist ein Ort, an dem in erster Linie gemacht und gedacht wird: Wir benutzen und entwickeln freie Software; wir l\"oten, \"atzen und programmieren Mikrocontrollerschaltungen; basteln Antennen; denken uns praktikable L\"osungen f\"ur einen gesellschaftlichen Umgang mit vorhandener oder sich entwickelnder Technik aus - wir haben den Anspruch mit Technologie Neues und Sinnvolles zu gestalten.\\
-Das LABOR ist dynamisch, seine Strukturen nicht fest. Was in und mit ihm passiert, h\"angt auch von Dir ab. Du willst etwas ver\"andern oder verbessern? Technik ausprobieren oder \"uber deren Einsatzm\"oglichkeiten lernen? - Oder einfach nur Leute kennenlernen, die das auch tun? - Dann komm' vorbei und mach mit - das LABOR entwickelt sich mit Dir!\\
+Das LABOR ist ein Ort, an dem in erster Linie gemacht und gedacht wird:
+Wir benutzen und entwickeln freie Software; wir l\"oten, \"atzen und
+programmieren Mikrocontrollerschaltungen; basteln Antennen; denken uns
+praktikable L\"osungen f\"ur einen gesellschaftlichen Umgang mit vorhandener
+oder sich entwickelnder Technik aus - wir haben den Anspruch mit Technologie
+Neues und Sinnvolles zu gestalten.\\
+Das LABOR ist dynamisch, seine Strukturen nicht fest. Was in und mit
+ihm passiert, h\"angt auch von Dir ab. Du willst etwas ver\"andern oder
+verbessern? Technik ausprobieren oder \"uber deren Einsatzm\"oglichkeiten
+lernen? - Oder einfach nur Leute kennenlernen, die das auch tun? - Dann
+komm' vorbei und mach mit - das LABOR entwickelt sich mit Dir!\\
 {\bf Lerne die Regeln, damit du weißt, wie man sie bricht}\\
-Wichtiger als Hardware und Equipment sind Menschen, die wissen, wie das alles funktioniert. Im Labor gibt es Vortr\"age, Workshops und Diskussionen zu den unterschiedlichsten Technologien. Wenn keine Veranstaltung stattﬁndet, bastelt man - zusammen oder alleine. Aber immer tauscht man sein Wissen: Denn alles, was Dir zeigt, wie die Welt funktioniert, hat hier seinen Platz.\\
-\vskip1cm
+Wichtiger als Hardware und Equipment sind Menschen, die wissen, wie das alles
+funktioniert. Im Labor gibt es Vortr\"age, Workshops und Diskussionen zu
+den unterschiedlichsten Technologien. Wenn keine Veranstaltung stattﬁndet,
+bastelt man - zusammen oder alleine. Aber immer tauscht man sein Wissen: Denn
+alles, was Dir zeigt, wie die Welt funktioniert, hat hier seinen Platz.\\
+\\
 {\bf N\"achster Termin f\"ur Hereingucker}\\
-Komm doch einfach zu einem unserer Open Meetings vorbei! Am besten n\"achsten Mittwoch abends so ab 19.30 Uhr.\\
-\vskip1cm
+Komm doch einfach zu einem unserer Open Meetings vorbei! Am besten n\"achsten
+Mittwoch abends so ab 19.30 Uhr.\\
+\\
+\section{freifunk}
+Der Bochumer Freifunk ist eine nicht-kommerzielle, für jeden
+offene Initiative zur Installation eines öffentlich zugänglichen
+W-Lan-Netzes in Bochum sowie am Campus und den Studierendenwohnheimen
+der Ruhr-Universität. Die Vision der Freifunk-Communtiy FREIFUNK.net ist
+die Demokratisierung der Kommunikationsmedien und die Förderung lokaler
+Sozialstrukturen durch freie InternetNetzwerke durch die Luft mittels
+Wireless Lan. Zum Aufbau dieses Netzes treffen wir uns regelmäßig
+im Bochumer Labor. Du lernst mit vielen anderen wie man Antennen baut,
+Wirless am Laptop und PC einsetzt, Router einrichtet, Bionade, Mate und
+Afrikola trinkt oder trägt sowie sich am Bochumer Funknetz beteiligen
+kann mit seinem Router. Immer Montags im Labor.\\
 
-Programm Juli 2006
-Jetzt! Schnell! Terminkalender aufschlagen! In der Hand h\"altst du den Veranstaltungskalender des LABORs. Du solltest besser mal reinschauen, Dir einen Stift schnappen und Dir vormerken, wann DU vorbeischaust! \\
-Das LABOR ist Dein Raum in Bochums Innenstadt, in dem Platz ist f\"ur Dinge, die Du zu Hause nicht tun kannst. Hier triffst Du andere Leute, die mit Technik kreativ, konstruktiv und kritisch umgehen. Hier ist Deine Infrastruktur, Dein WLAN, Dein L\"otkolben, Deine Bastelecke. Du kannst Vortr\"age h\"oren, an Workshops teilnehmen, oder selber welche veranstalten. Join us! \\
 
-% footer
+
+% AUFMACHER
+
+% grafik: logo
+\section{Programm September 2006} % dyna
+Jetzt! Schnell! Terminkalender aufschlagen! In der Hand h\"altst du den
+Veranstaltungskalender des LABORs. Du solltest besser mal reinschauen,
+Dir einen Stift schnappen und Dir vormerken, wann DU vorbeischaust! \\
+\\
+Das LABOR ist Dein Raum in Bochums Innenstadt, in dem Platz ist f\"ur
+Dinge, die Du zu Hause nicht tun kannst. Hier triffst Du andere Leute,
+die mit Technik kreativ, konstruktiv und kritisch umgehen. Hier ist
+Deine Infrastruktur, Dein WLAN, Dein L\"otkolben, Deine Bastelecke. Du
+kannst Vortr\"age h\"oren, an Workshops teilnehmen, oder selber welche
+veranstalten. Join us! \\
+
+% grafik: kabels
+
+% RECHTLICHES
 Monats-Programm LABOR, Ausgabe Nr. 2006-09 \\ % dyna
 Herausgeber: LABOR e.V., Rottstr. 31, 44793 Bochum \\
 ViSdP/Chefredaktion: Felix Gr\"obert.\\
 http://das-labor.org/
+
+% grafik: anfahrt
 
 
 \end{multicols}
