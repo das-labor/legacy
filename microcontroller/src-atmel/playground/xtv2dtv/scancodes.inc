@@ -1,0 +1,106 @@
+
+
+// normal keys
+#define PS2_KEY_F5            0x03
+#define PS2_KEY_F3            0x04
+#define PS2_KEY_F1            0x05
+#define PS2_KEY_F2            0x06
+#define PS2_KEY_F8            0x0a
+#define PS2_KEY_F6            0x0b
+#define PS2_KEY_F4            0x0c
+#define PS2_KEY_TAB           0x0d
+#define PS2_KEY_BACKQUOTE     0x0e
+#define PS2_KEY_ALT           0x11
+#define PS2_KEY_LSHIFT        0x12
+#define PS2_KEY_LCTRL         0x14
+#define PS2_KEY_Q             0x15
+#define PS2_KEY_1             0x16
+#define PS2_KEY_Z             0x1a
+#define PS2_KEY_S             0x1b
+#define PS2_KEY_A             0x1c
+#define PS2_KEY_W             0x1d
+#define PS2_KEY_2             0x1e
+#define PS2_KEY_LGUI		0x1f
+#define PS2_KEY_C             0x21
+#define PS2_KEY_X             0x22
+#define PS2_KEY_D             0x23
+#define PS2_KEY_E             0x24
+#define PS2_KEY_4             0x25
+#define PS2_KEY_3             0x26
+#define PS2_KEY_SPACE         0x29
+#define PS2_KEY_V             0x2a
+#define PS2_KEY_F             0x2b
+#define PS2_KEY_T             0x2c
+#define PS2_KEY_R             0x2d
+#define PS2_KEY_5             0x2e
+#define PS2_KEY_N             0x31
+#define PS2_KEY_B             0x32
+#define PS2_KEY_H             0x33
+#define PS2_KEY_G             0x34
+#define PS2_KEY_Y             0x35
+#define PS2_KEY_6             0x36
+
+#define PS2_KEY_M             0x3a
+#define PS2_KEY_J             0x3b
+#define PS2_KEY_U             0x3c
+#define PS2_KEY_7             0x3d
+#define PS2_KEY_8             0x3e
+#define PS2_KEY_COMMA         0x41
+#define PS2_KEY_K             0x42
+#define PS2_KEY_I             0x43
+#define PS2_KEY_O             0x44
+#define PS2_KEY_0             0x45
+#define PS2_KEY_9             0x46
+#define PS2_KEY_PERIOD        0x49
+#define PS2_KEY_SLASH         0x4a
+#define PS2_KEY_L             0x4b
+#define PS2_KEY_SEMICOLON     0x4c
+#define PS2_KEY_P             0x4d
+#define PS2_KEY_MINUS         0x4e
+#define PS2_KEY_APOSTROPHE    0x52
+#define PS2_KEY_LBRACKET      0x54
+#define PS2_KEY_EQUALS        0x55
+#define PS2_KEY_CAPS_LOCK     0x58
+#define PS2_KEY_RSHIFT        0x59
+#define PS2_KEY_ENTER         0x5a
+#define PS2_KEY_RBRACKET      0x5b
+#define PS2_KEY_BACKSLASH     0x5d
+#define PS2_KEY_BS            0x66
+#define PS2_KEY_NUM_1         0x69
+#define PS2_KEY_NUM_4         0x6b
+#define PS2_KEY_NUM_7         0x6c
+#define PS2_KEY_NUM_0         0x70
+#define PS2_KEY_DEL           0x71
+#define PS2_KEY_NUM_2         0x72
+#define PS2_KEY_NUM_6         0x74
+#define PS2_KEY_NUM_8         0x75
+#define PS2_KEY_ESC           0x76
+#define PS2_KEY_NUM_LOCK      0x77
+#define PS2_KEY_NUM_3         0x7a
+#define PS2_KEY_NUM_9         0x7d
+#define PS2_KEY_F7            0x83
+
+#define PS2_KEY_KP_STAR			0x7c
+#define PS2_KEY_KP_MINUS		0x7b
+#define PS2_KEY_KP_PLUS			0x79
+ 
+
+
+// extended keys
+#define PS2_KEY_ECTRL         0x112
+#define PS2_KEY_RCTRL         0x114
+#define PS2_KEY_END           0x169
+#define PS2_KEY_CRSR_LEFT     0x16b
+#define PS2_KEY_HOME          0x16c
+#define PS2_KEY_INSERT        0x170
+#define PS2_KEY_DELETE        0x171
+#define PS2_KEY_CRSR_DOWN     0x172
+#define PS2_KEY_CRSR_RIGHT    0x174
+#define PS2_KEY_CRSR_UP       0x175
+#define PS2_KEY_PAGE_DOWN     0x17a
+#define PS2_KEY_PRINT_SCREEN  0x17c
+#define PS2_KEY_PAGE_UP       0x17d
+
+#define PS2_KEY_BREAK_1       0x114
+#define PS2_KEY_BREAK_2       0x177
+
