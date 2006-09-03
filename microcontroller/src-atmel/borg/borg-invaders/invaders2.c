@@ -109,9 +109,9 @@ void borg_invaders() {
 	
 	clearScreen();
 	//wait(5000);
-	//char text[64];
-	//snprintf(text, 64, "points: %d", pl.points);
-	//scrolltext("</#alles ist doof");//text);
+	char text[64];
+	snprintf(text, 64, "</#points: %d", pl.points);
+	scrolltext(text);
 	//printf("scores: %d\n", pl.points);
 
 	

@@ -13,7 +13,7 @@
 #define USE_ORIGINAL_PIXEL_API
 
 /*CONNECTION TO SIMULATOR*/
-extern char fkey;
+//extern char fkey;
 
 /* TEST PARTS NEW API */
 
@@ -92,17 +92,17 @@ extern unsigned char peter [8][11];
 
 
 #define MAX_SHOTS 		5
-#define MIN_SPEED		50
+#define MIN_SPEED		40
 #define SPEED_INC_RATE 	2
 #define SPEED_INC_VALUE 2
 #define MAX_LEVEL		3
 
 #define SHOOTING_RATE 	5
-#define INVADER_SHOOTING_SPEED 8
-#define CANNON_SHOOTING_SPEED  2
+#define INVADER_SHOOTING_SPEED 6
+#define CANNON_SHOOTING_SPEED  1
 #define SPACESHIP_SPEED	16
 
-#define WAIT_MS 		25
+#define WAIT_MS 		37
 //#define WAIT_MS 		20
 
 
