@@ -54,7 +54,7 @@ void draw(				Invaders* iv,
 		setPixel(sc->pos, SPACESHIP_LINE, sc->lives);
 	}
 	if(sc->pos -1 < RIGHT_BORDER) {
-		setPixel(sc->pos - 1 , SPACESHIP_LINE, sc->lives);
+		setPixel(sc->pos + 1 , SPACESHIP_LINE, sc->lives);
 	}
 
 
