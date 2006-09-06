@@ -235,7 +235,7 @@ void iec_execute(uint8_t mode, uint8_t param){
 //The routines for the ATA device are just called from this function.
 //The iec_hw routine always blocks on iec_tx_fifo waiting for new instructions from
 //this task. 
-AVRX_GCC_TASKDEF(iec_task, 200, 1)
+AVRX_GCC_TASKDEF(iec_task, 200, 3)
 {
 #ifdef DEBUG
 	InitSerial0(BAUD(37000));
