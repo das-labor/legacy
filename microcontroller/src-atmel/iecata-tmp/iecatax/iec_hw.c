@@ -172,7 +172,7 @@ void iecPutByte (iec_word_t word) {
 
 volatile iec_word_t iec_tx_word, iec_rx_word;
 
-AVRX_GCC_TASKDEF(iecComTask, 200, 3){
+AVRX_GCC_TASKDEF(iecComTask, 200, 2){
 	iec_word_t word;
 	//mode we are in right now
 	uint8_t mode = MODE_LISTEN;
@@ -232,7 +232,7 @@ AVRX_SIGINT(SIG_INTERRUPT0){
 	Epilog();                // Return to tasks
 }
 
-AVRX_GCC_TASKDEF(iecAtnTask, 100, 2){
+AVRX_GCC_TASKDEF(iecAtnTask, 100, 1){
 	
 	while(1){
 		AvrXWaitSemaphore(&atnMutex);
