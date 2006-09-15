@@ -50,12 +50,12 @@ sort:
 		st  X,   work1
 		
 		;sortieren
+		ldi work1, 6
 sort_for_a:			
-		ldi Xl, lo8(masks) 
-		ldi Xh, hi8(masks)
-		ldi Zl, lo8(values) 
-		ldi Zh, hi8(values)
-		ldi work1, 7	
+		ldi Xl, lo8(values) 
+		ldi Xh, hi8(values)
+		ldi Zl, lo8(masks) 
+		ldi Zh, hi8(masks)	
 		clr work2
 sort_for_i:
 		ld value1, X+
@@ -70,13 +70,13 @@ sort_for_i:
 		ld  value1, Z
 		st -Z,  value1
 		st Z+,  value1
-		st  Z,   tmp
+		st Z,   tmp
 sort_for_i2:			
 		inc work2
 		cp work1, work2
-		brlo sort_for_i
+		brsh sort_for_i
 		dec work1
-		brvc sort_for_a
+		brmi sort_for_a
 		
 	    pop Zh
 		pop Zl

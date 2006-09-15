@@ -9,9 +9,10 @@
 #include "uart.h"
 
 #ifdef ATMEGA128
+#define UCSRA UCSR0A
 #define UCSRB UCSR0B
 #define UCSRC UCSR0C
-#define UDR UDR0
+#define UDR   UDR0
 #define UBRRH UBRR0H
 #define UBRRL UBRR0L
 #define URSEL UMSEL
