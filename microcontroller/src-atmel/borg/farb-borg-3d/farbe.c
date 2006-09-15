@@ -4,6 +4,7 @@
 #include <avr/wdt.h>
 #include <stdlib.h>
 
+
 #include "config.h"
 #include "uart.h"
 #include "util.h"
@@ -26,10 +27,16 @@
 
 #define MAX_BRITH 64
 
-//#define DEBUG_PROCLATCH
+#define DEBUG_PROCLATCH
 
 unsigned char pixmap[MAX_Z][MAX_Y][MAX_X][COLORS];
 
+volatile unsigned char values[9];
+volatile unsigned char masks[9];
+
+extern volatile void sort();
+
+/*
 typedef struct {
 	unsigned char value;
 	unsigned char bitmask;
@@ -37,20 +44,24 @@ typedef struct {
 
 BuildData buildLatch[9];
 
+
 void sort() {
-	unsigned char i, j;
+	unsigned char i, j, swap = 1;
 	BuildData temp, *pbuildLatch0, *pbuildLatch1;
-	for (i = 6; i < 7; --i) { // unsigned ist schneller daher < 7 anstatt >= 0
+	for (i = 6; swap && i < 7; --i) { // unsigned ist schneller daher < 7 anstatt >= 0
 		pbuildLatch0  = buildLatch;
 		pbuildLatch1  = buildLatch + 1;
+		swap = 0;
 		for (j = 0; j <= i; ++j, ++pbuildLatch0, ++pbuildLatch1)
 			if ((*pbuildLatch0).value > (*pbuildLatch1).value) {
 				temp            = *pbuildLatch0; 
 				*pbuildLatch0   = *pbuildLatch1; 
 				*pbuildLatch1   = temp;
+				swap = 1;
 			}
 	}
 }
+*/
 /* needs 26 ticks more than bubblesort
 void gnomesort() {
     unsigned char i = 0;
@@ -68,6 +79,8 @@ void gnomesort() {
     }
 }
 */
+
+
 void procLatch() {
 	unsigned char b, i = 0, j = 0, value, mask;
 	sort();
@@ -78,22 +91,22 @@ void procLatch() {
 	char help[6];
 	for (b = 0; b < 9; b++) {
 		uart_putstr("Value : ");
-		itoa(buildLatch[b].value, help, 10);
+		itoa(values[b], help, 10);
 		uart_putstr(help);
-		uart_putstr(" \tBitmask : ");
-		itoa(buildLatch[b].bitmask, help, 16);
+			uart_putstr(" \tBitmask : ");
+		itoa(masks[b], help, 16);
 		uart_putstr(help);
 		uart_putstr("\r\n");
 	}
 #endif // DEBUG_PROCLATCH		
 	
 	//PORT_CONTROL &= ~(1 << PORT_CONTROL_N_WE);
-	value = buildLatch[0].value;
+	value = values[0];
 	for (b = 0; b < MAX_BRITH; ++b) {
 		while (value <= b) {
-			mask  &= buildLatch[i].bitmask;
+			mask  &= masks[i];
 			PORT_DATA = mask;	
-			value  = buildLatch[++i].value;
+			value  = values[++i];
 		}
 		//PORT_CONTROL |=  (1 << PORT_CONTROL_N_WE);
 		
@@ -115,18 +128,20 @@ void procLatch() {
 	}
 }
 
+
+// kann noch deutlich vereinfacht werden.
 void procData() {
 	unsigned char x, y, z, c, i = 0;
 	unsigned char *pix = pixmap;
-	buildLatch[8].value = 255; 
+	//buildLatch[8].value = 255; 
 	for (z = 0; z < MAX_Z; z++) {
 		//for (y = 0; y < MAX_Y; y++) {
-		for (y = 0; y < MAX_Y*MAX_Z*COLORS; y++) {
-			//for (x = 0; x < MAX_Z; x++) {
+		for (y = 0; y < MAX_Y*MAX_X*COLORS; y++) {
+			//for (x = 0; x < MAX_X; x++) {
 				//for (c = 0; c < COLORS; c++) {
 					//buildLatch[i].value = pixmap[z][y][x][c];
-					buildLatch[i].value = *pix++;
-					buildLatch[i].bitmask = ~(1 << i);
+					//buildLatch[i].value = *pix++;
+					//buildLatch[i].bitmask = ~(1 << i);
 					if (++i == 8)  {
 						procLatch();
 						i = 0;
@@ -142,6 +157,7 @@ void procData() {
 #define TEST_DATA_SIZE 64
 
 void procLatch_Test() {
+	/*
 	buildLatch[0].bitmask = ~(1 << 0); 
 	buildLatch[0].value   = 2;
 	buildLatch[1].bitmask = ~(1 << 1); 
@@ -159,7 +175,18 @@ void procLatch_Test() {
 	buildLatch[7].bitmask = ~(1 << 7); 
 	buildLatch[7].value   = 12;
 	// end marker  
-	buildLatch[8].value = 255;	
+	buildLatch[8].value = 255;
+	*/
+	values[0] = 2;
+	values[1] = 1;
+	values[2] = 0;
+	values[3] = 3;
+	values[4] = 4;
+	values[5] = 63;
+	values[6] = 0;
+	values[7] = 12;
+	values[8] = 255;
+	
 	procLatch();
 	// in the memory should be written
 	// bbb9 b8b0 a0a0 a0a0 a0a0 a0a0 2020 2020 
@@ -168,6 +195,10 @@ void procLatch_Test() {
 	// 2020 2020 2020 2020 2020 2020 2020 2000
 
 }
+
+
+
+
 
 int main() {
 	//unsigned char test[TEST_DATA_SIZE], i;
