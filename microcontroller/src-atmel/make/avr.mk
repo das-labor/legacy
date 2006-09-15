@@ -6,8 +6,10 @@ MCU_CC        ?= avr-gcc
 OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall
 DEFS          ?= -DF_CPU=16000000
-CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) 
+CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS)
 #CFLAGS        += -fnew-ra
+ASFLAGS       ?=  
+ASFLAGS       += $(DEFS) 
 LDFLAGS        = -Wl,-Map,$(OUT).map
 CANADDR       ?= XXX
 
@@ -41,6 +43,8 @@ $(OUT).elf: $(OBJ)
 %.o: %.c
 	$(MCU_CC) $(CFLAGS) -c $<
 
+%.o: %.S
+	$(MCU_CC) -mmcu=$(MCU_TARGET) $(ASFLAGS) -c $<
 
 lst: $(OUT).lst
 
