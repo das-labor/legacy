@@ -1,3 +1,9 @@
+#define MAX_BRITH 64
+#define PORT_DATA PORTC
+#define PORT_ADRESS PORTA
+; config.h einbinden..
+
+
 #include <avr/io.h>
 
 #define         Xl              R26
@@ -7,56 +13,57 @@
 #define         Zl              R30
 #define         Zh              R31
 
-work1  = 16
-work2  = 17
+cnt1   = 16
+cnt2   = 17
 value1 = 18
 value2 = 19
 tmp    = 20
+mask   = 21 
 
 
-
-.global sort
-.func sort
-sort:
-        push work1
-		push work2
+.global writeRam
+.func writeRam
+writeRam:
+        push cnt1
+		push cnt2
 		push value1
 		push value2
 		push tmp
+		push mask
 		push Xl
 		push Xh
 		push Zl
 		push Zh
-		
+; SORT		
 		;bitmask initialisieren
-		ldi work1, 0xfe
+		ldi mask, 0xfe
 		ldi Xl, lo8(masks) 
 		ldi Xh, hi8(masks) 
-		st  X+, work1
+		st  X+, mask
 		sec
-		rol work1
-		st  X+,  work1
-		rol work1
-		st  X+,  work1
-		rol work1
-		st  X+,  work1
-		rol work1
-		st  X+,  work1
-		rol work1
-		st  X+,  work1
-		rol work1
-		st  X+,  work1
-		rol work1
-		st  X,   work1
+		rol mask
+		st  X+,  mask
+		rol mask
+		st  X+,  mask
+		rol mask
+		st  X+,  mask
+		rol mask
+		st  X+,  mask
+		rol mask
+		st  X+,  mask
+		rol mask
+		st  X+,  mask
+		rol mask
+		st  X,   mask
 		
-		;sortieren
-		ldi work1, 6
+		;sortieren mit Bubblesort
+		ldi cnt1, 6
 sort_for_a:			
 		ldi Xl, lo8(values) 
 		ldi Xh, hi8(values)
 		ldi Zl, lo8(masks) 
 		ldi Zh, hi8(masks)	
-		clr work2
+		clr cnt2
 sort_for_i:
 		ld value1, X+
 		ld value2, X
@@ -64,28 +71,52 @@ sort_for_i:
 		cp value2, value1
 		brsh sort_for_i2
 		; tausche die Werte
-		st  -X, value2
+		st -X,  value2
 		st  X+, value2
 		st  X,  value1
 		ld  value1, Z
 		st -Z,  value1
-		st Z+,  value1
-		st Z,   tmp
+		st  Z+, value1
+		st  Z,  tmp
 sort_for_i2:			
-		inc work2
-		cp work1, work2
-		brsh sort_for_i
-		dec work1
-		brmi sort_for_a
+		inc  cnt2
+		cp   cnt1, cnt2
+		brpl sort_for_i
+		dec  cnt1
+		brpl sort_for_a
+; Writedata for one Latch to RAM		
+		ldi mask, 0xff
+		out PORT_DATA, mask
+		ldi cnt1, 0xff
+		ldi Xl, lo8(values) 
+		ldi Xh, hi8(values)
+		ldi Zl, lo8(masks) 
+		ldi Zh, hi8(masks)
+		ld  value1, X+ 
 		
+writeRamLoop:
+		inc cnt1
+		out PORT_ADRESS, cnt1
+		cpi cnt1, MAX_BRITH
+		brsh end
+writeRamLoop1:
+ 		cp  cnt1, value1
+		brmi writeRamLoop
+		ld tmp, Z+ 
+		or mask, tmp 
+		out PORT_DATA, mask
+		ld value1, X+
+		rjmp writeRamLoop1
+end:		
 	    pop Zh
 		pop Zl
 		pop Xh
 		pop Xl
+		pop mask
 		pop tmp
 		pop value2
 		pop value1
-		pop work2
-		pop work1
+		pop cnt2
+		pop cnt1
 		ret
 .endfunc
