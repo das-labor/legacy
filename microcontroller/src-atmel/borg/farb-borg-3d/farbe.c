@@ -14,7 +14,7 @@
 #define MAX_Z 5
 #define COLORS 3
 
-#define PORT_DATA PORTC
+#define PORT_DATA PORTC	
 #define PIN_DATA PINC
 #define DDR_DATA DDRC
 #define PORT_ADRESS PORTA
@@ -27,14 +27,14 @@
 
 #define MAX_BRITH 64
 
-#define DEBUG_PROCLATCH
+//#define DEBUG_PROCLATCH
 
 unsigned char pixmap[MAX_Z][MAX_Y][MAX_X][COLORS];
 
 volatile unsigned char values[9];
 volatile unsigned char masks[9];
 
-extern volatile void sort();
+extern volatile void writeRam();
 
 /*
 typedef struct {
@@ -80,7 +80,7 @@ void gnomesort() {
 }
 */
 
-
+/*
 void procLatch() {
 	unsigned char b, i = 0, j = 0, value, mask;
 	sort();
@@ -127,8 +127,9 @@ void procLatch() {
 		//wait(1);
 	}
 }
+*/
 
-
+/*
 // kann noch deutlich vereinfacht werden.
 void procData() {
 	unsigned char x, y, z, c, i = 0;
@@ -153,6 +154,7 @@ void procData() {
 		i = 0;
 	}
 }
+*/
 
 #define TEST_DATA_SIZE 64
 
@@ -187,7 +189,7 @@ void procLatch_Test() {
 	values[7] = 12;
 	values[8] = 255;
 	
-	procLatch();
+	writeRam();
 	// in the memory should be written
 	// bbb9 b8b0 a0a0 a0a0 a0a0 a0a0 2020 2020 
 	// 2020 2020 2020 2020 2020 2020 2020 2020
