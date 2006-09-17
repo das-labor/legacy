@@ -6,10 +6,10 @@ MCU_CC        ?= avr-gcc
 OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall
 DEFS          ?= -DF_CPU=16000000
-CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS)
+CFLAGS        += -g -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS)
 #CFLAGS        += -fnew-ra
 ASFLAGS       ?=  
-ASFLAGS       += $(DEFS) 
+ASFLAGS       += -g $(DEFS) 
 LDFLAGS        = -Wl,-Map,$(OUT).map
 CANADDR       ?= XXX
 
@@ -18,6 +18,7 @@ OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
 FLASHCMD      ?= uisp -dprog=bsd --upload if=$(OUT).hex 
 ERASECMD      ?= uisp -dprog=bsd --erase 
+FLASHUSBCMD   ?= avrdude -c avr910 -p m32 -P $(AVRPROGDEV) -e -U flash:w:image.hex
 LAPFLASHCMD   ?= lapcontrol -s rl
 
 #############################################################################
@@ -31,6 +32,9 @@ clean:
 flash: $(OUT).hex
 	$(ERASECMD)
 	$(FLASHCMD)
+
+flashusb: $(OUT).hex
+	$(FLASHUSBCMD)
 
 canflash: $(OUT).hex
 	$(LAPFLASHCMD) flash $(CANADDR) $(OUT).hex
