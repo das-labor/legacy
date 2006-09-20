@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Tor: Istruzioni per installare Tor su Linux/BSD/Unix</title>
+  <meta name="Author" content="Roger Dingledine">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+</head>
+<body>
+<div class="center">
+<table class="banner" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+        <td class="banner-left"></td>
+        <td class="banner-middle">
+	<a href="../index.html.it">Home</a>
+<a href="../overview.html.it">Panoramica</a>
+<a href="../download.html.it">Scarica</a>
+<a href="../documentation.html.it">Documentazione</a>
+<a href="../volunteer.html.it">Partecipa</a>
+<a href="../people.html.it">Persone</a>
+<a href="../donate.html.it">Donazioni</a>
+        </td>
+        <td class="banner-right">
+	<img src="../images/green-flagspace.png" alt="" width="24" height="16"> <a href="tor-doc-unix.html.en"><img src="../images/en.png" alt="English" width="24" height="16"></a> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <a href="tor-doc-unix.html.fr"><img src="../images/fr.png" alt="fran&ccedil;ais" width="24" height="16"></a> <img src="../images/it.png" alt="Italiano" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16">
+        </td>
+    </tr>
+</table>
+<div class="center">
+<div class="main-column">
+<h1>Usare il client <a href="../index.html.it">Tor</a> su Linux/BSD/Unix</h1>
+<br>
+<p>
+<b>Queste sono le istruzioni per installare e usare un client Tor.
+Se invece vuoi donare banda e traffico per aiutare a fare crescere
+la rete Tor (s&igrave; per favore), leggi la guida <a
+href="../docs/tor-doc-server.html.it">Configurare un server</a>.</b>
+</p>
+<hr>
+<a id="installing"></a>
+<h2><a class="anchor" href="#installing">Uno: scarica e installa Tor</a></h2>
+<br>
+<p>
+L'ultima versione di Tor si trova sulla pagina <a
+href="../download.html.it">scarica</a>. Ci sono anche pacchetti per Debian,
+Red Hat, Gentoo, *BSD, etc.
+</p>
+<p>Se compili dai sorgenti, installa prima <a
+href="http://www.monkey.org/~provos/libevent/">libevent</a>, e
+controlla di avere openssl e zlib (inclui i pacchetti -devel se
+necessario). Poi esegui <tt>tar xzf tor-0.1.0.15.tar.gz;
+cd tor-0.1.0.15</tt>. In seguito <tt>./configure &amp;&amp; make</tt>. Ora
+puoi eseguire tor come <tt>src/or/tor</tt>, oppure puoi eseguire <tt>make install</tt>
+(come root, se necessario) per installarlo in /usr/local/. Infine, puoi
+avviare Tor eseguendo <tt>tor</tt>.
+</p>
+<p>In partenza, Tor &egrave; configurato sempre come client e usa un file di
+configurazione di default, di cui la maggior parte delle persone non dovr&agrave;
+modificare i valori. Dopo queste operazioni, Tor &egrave; installato.
+</p>
+<hr>
+<a id="privoxy"></a>
+<h2><a class="anchor" href="#privoxy">Due: installa Privoxy per navigare sul web</a></h2>
+<br>
+<p>Dopo avere installato Tor, occorre configurare i programmi affinch&eacute; lo usino.
+</p>
+<p>
+Per prima cosa va configurata la navigazione web. Inizia installando <a
+href="http://www.privoxy.org/">Privoxy</a>: fai clic su 'recent releases'
+e scegli il tuo pacchetto preferito, o installa dai sorgenti. Privoxy &egrave;
+un filtro proxy web che si integra bene con Tor.
+</p>
+<p>Una volta installato Privoxy (da un pacchetto o dai sorgenti),
+<b>dovrai configurare Privoxy per usare Tor</b>.
+Apri il file 'config' di Privoxy (cerca in /etc/privoxy/ o /usr/local/etc/)
+e aggiungi questa riga <br>
+<tt>forward-socks4a / localhost:9050 .</tt><br>
+in cima al file di configurazione. Non dimenticare il punto a fine riga.
+</p>
+<p>Privoxy conserva un file di log per tutto ci&ograve; che vi passa attraverso. Per
+impedirlo occorre commentare via due righe inserendo un
+# a inizio linea. Le due righe sono:<br>
+<tt>logfile logfile</tt><br>
+e<br>
+<tt>jarfile jarfile</tt><br>
+</p>
+<p>Dovrai riavviare Privoxy perch&eacute; le modifiche abbiano effetto.</p>
+<hr>
+<a id="using"></a>
+<h2><a class="anchor" href="#using">Tre: configura i tuoi programmi per usare Tor</a></h2>
+<br>
+<p>Dopo aver installato Tor e Privoxy, devi configurare i tuoi programmi per
+usarli. Il primo passo è la configurazione della navigazione web.</p>
+<p>Se usi Firefox (noi lo consigliamo), controlla il <a
+href="http://freehaven.net/~squires/torbutton/">plugin Torbutton
+</a>e configura tutto ci&ograve; che serve. Se pensi di usare Firefox
+su un computer diverso da quello su cui gira Tor, leggi il <a
+href="../docs/tor-switchproxy.html.it">Tor SwitchProxy howto</a> per installare
+un plugin che semplifica il passaggio tra l'uso di Tor e l'uso di una
+connessione diretta.</p>
+<p>Altrimenti devi configuare manualmente il proxy del
+tuo browser.
+In Mozilla, &egrave; in Modifica|Preferenze|Avanzate|Proxy.
+In Opera 7.5x &egrave; in Strumenti|Preferenze|Rete|Proxy server.</p>
+<p>
+Devi scrivere "localhost" e
+"8118" per fare puntare i primi quattro protocolli a Privoxy, come mostrato qui. (Anche
+se Privoxy non supporta FTP e Gopher, <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#FtpProxy">devi
+configurarli ugualmente</a>.) Devi compilare anche la voce per il proxy socks in
+modo che punti direttamente a Tor ("localhost", "9050", e socks5)
+cos&igrave; da coprire altri protocolli oltre ai primi quattro. Poi fai clic su "OK".</p>.
+<p>&#200; <strong>necessario</strong> usare privoxy perch&eacute; <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#SOCKSAndDNS">i browser
+rivelano le tue richieste DNS se usano un SOCKS proxy direttamente</a>, cosa
+che riduce il tuo anonimato. Privoxy rimuove inoltre certi header
+pericolosi dalle tue richieste web, e blocca certi fastidiosi siti
+pubblicitari come Doubleclick.</p>
+<p>Per torificare altri programmi che supportino un proxy HTTP, basta
+farli puntare a Privoxy (ovvero, a localhost porta 8118). Per usare SOCKS
+direttamente (per instant messaging, Jabber, IRC, etc), puoi puntare
+l'applicazione direttamente a Tor (localhost porta 9050), ma leggi <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#SOCKSAndDNS">questa
+FAQ</a> per capire perch&eacute; ci&ograve; pu&ograve; essere pericoloso. Per i programmi
+che non supportano n&eacute; SOCKS ne&eacute; HTTP, dai un'occhiata a <a
+href="http://tsocks.sourceforge.net/">tsocks</a> o a <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorifyHOWTO#socat">socat</a>.
+</p>
+<p>Per informazioni su come torificare altre applicazioni, leggi il
+<a href="http://wiki.noreply.org/wiki/TheOnionRouter/TorifyHOWTO">Torify
+HOWTO</a>.
+</p>
+<hr>
+<a id="verify"></a>
+<h2><a class="anchor" href="#verify">Quattro: controlla che tutto funzioni</a></h2>
+<br>
+<p>
+Ora prova ad usare il tuo browser con Tor e controlla
+che il tuo indirizzo IP sia anonimo. Fai clic sul <a
+href="http://serifos.eecs.harvard.edu/cgi-bin/ipaddr.pl?tor=1">Tor
+detector</a> e controlla se secondo lui stai usando Tor o no.
+(Se questo sito non risponde, vedi <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#IsMyConnectionPrivate">questa
+FAQ</a> per conoscere altri modi di verificare il tuo Tor.)
+</p>
+<p>Se usi un personal firewall che limita le connessioni del tuo computer
+verso se stesso (compreso ad esempio SELinux su
+Fedora Core 4), devi consentire le connessioni dalla
+tua applicazione locale a Privoxy (porta locale 8118) ed a Tor (porta locale
+9050). Se
+il tuo firewall blocca le connessioni in uscita, abilita almeno
+le connessioni alle porte TCP 80 e 443, e poi vedi <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#FirewalledClient">questa
+FAQ</a>. Se la tua configurazione di SELinux non permette a tor o privoxy di
+girare correttamente, crea un file di nome booleans.local nella directory
+/etc/selinux/targeted. Modifica questo file con un editor di testo e
+inserisci "allow_ypbind=1". Riavvia la macchina perch&eacute; questa modifica abbia
+effetto.
+</p>
+<p>Se ancora non funziona, leggi <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#ItDoesntWork">questa
+FAQ</a> per altre indicazioni.</p>
+<hr>
+<a id="server"></a>
+<h2><a class="anchor" href="#server">Cinque: configura Tor come server</a></h2>
+<br>
+<p>La rete Tor si fonda sulla banda donata da volontari. Pi&ugrave;
+persone aprono un server, pi&ugrave; veloce sar&agrave; la rete Tor. Se hai almeno
+20 kilobyte/s sia up che down, per favore aiuta la rete Tor e configura
+il tuo Tor server. Ci sono molte funzionalit&agrave; che facilitano la gestione
+di un server Tor, come la limitazione della banda, exit policy per
+ridurre il rischio di abusi e lamentele, ed il supporto per indirizzi
+IP dinamici.</p>
+<p>Con molti server sparsi in luoghi diversi di Internet gli utenti
+Tor sono pi&ugrave; sicuri. <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#ServerAnonymity">Puoi
+anche avere un anonimato pi&ugrave; forte tu stesso</a>,
+dato che i siti remoti non potranno sapere se le connessioni nascono
+dal tuo computer o provengono da altrove.</p>
+<p>Puoi approfondire leggendo la nostra guida <a href="../docs/tor-doc-server.html.it">Configurare un server</a>.
+</p>
+<hr>
+<p>Se hai dei suggerimenti per migliorare questo documento, per favore <a
+href="../contact.html.it">contattaci</a>. Grazie!</p>
+  </div><!-- #main -->
+</div>
+</div>
+  <div class="bottom" id="bottom">
+     <p>
+     <i><a href="../contact.html.it" class="smalllink">Webmaster</a></i> -
+      Ultima modifica: Wed May 3 15:27:03 2006
+      -
+      Ultima compilazione: Sat Jul 8 02:04:05 2006
+     </p>
+     <p>
+       Questa pagina &egrave; disponibile anche nelle lingue seguenti:
+       <a href="tor-doc-unix.html.en">English</a>, <a href="tor-doc-unix.html.fr">fran&ccedil;ais</a>.<br>
+       Come configurare <a href="http://www.debian.org/intro/cn#howtoset">la lingua predefinita per i documenti</a>.
+     </p>
+     <p>Questa traduzione non &egrave; stata controllata dagli sviluppatori di
+      Tor e da EFF. Pu&ograve; risultare obsoleta o errata. Il sito
+      ufficiale di Tor &egrave; in inglese, all'indirizzo http://tor.eff.org/
+     </p>
+  </div>
+</body>
+</html>
