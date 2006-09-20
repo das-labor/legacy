@@ -1,6 +1,6 @@
 #define MAX_BRITH 64
-#define PORT_DATA PORTC
-#define PORT_ADRESS PORTA
+#define PORT_DATA 0x15
+#define PORT_ADRESS 0x1B
 ; config.h einbinden..
 
 
@@ -96,19 +96,20 @@ sort_for_i2:
 		
 writeRamLoop:
 		inc cnt1
-		out PORT_ADRESS, cnt1
 		cpi cnt1, MAX_BRITH
 		brsh end
+		out PORT_ADRESS, cnt1
+
 writeRamLoop1:
  		cp  cnt1, value1
 		brmi writeRamLoop
 		ld tmp, Z+ 
-		or mask, tmp 
+		and mask, tmp 
 		out PORT_DATA, mask
 		ld value1, X+
 		rjmp writeRamLoop1
 end:		
-	    pop Zh
+	    	pop Zh
 		pop Zl
 		pop Xh
 		pop Xl

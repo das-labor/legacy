@@ -189,7 +189,6 @@ void procLatch_Test() {
 	values[7] = 12;
 	values[8] = 255;
 	
-	writeRam();
 	// in the memory should be written
 	// bbb9 b8b0 a0a0 a0a0 a0a0 a0a0 2020 2020 
 	// 2020 2020 2020 2020 2020 2020 2020 2020
@@ -229,8 +228,9 @@ int main() {
 	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_CS);
 	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_WE);
 	
+	procLatch_Test();	// Testdaten intitialisieren
 	time0 = TCNT1;
-	procLatch_Test();
+	writeRam();
 	time1 = TCNT1;
 	
 	uart_putstr("end procLatch_Test()  ticks : ");
