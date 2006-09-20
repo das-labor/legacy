@@ -1,0 +1,244 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Tor: Mac OS X Install Instructions</title>
+  <meta name="Author" content="Roger Dingledine">
+  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+</head>
+<body>
+<div class="center">
+<table class="banner" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+        <td class="banner-left"></td>
+        <td class="banner-middle">
+	<a href="../index.html.en">Home</a>
+<a href="../overview.html.en">Overview</a>
+<a href="../download.html.en">Download</a>
+<a href="../documentation.html.en">Docs</a>
+<a href="../volunteer.html.en">Volunteer</a>
+<a href="../people.html.en">People</a>
+<a href="../donate.html.en">Donate!</a>
+        </td>
+        <td class="banner-right">
+	<img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/en.png" alt="English" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <a href="tor-doc-osx.html.fr"><img src="../images/fr.png" alt="fran&ccedil;ais" width="24" height="16"></a> <a href="tor-doc-osx.html.it"><img src="../images/it.png" alt="Italiano" width="24" height="16"></a> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16">
+        </td>
+    </tr>
+</table>
+<div class="center">
+<div class="main-column">
+<h1>Running the <a href="../index.html.en">Tor</a> client on Mac OS X</h1>
+<br>
+<p>
+<b>Note that these are the installation instructions for running a Tor client on
+  Mac OS X. If you want to relay traffic for others to help the network
+  grow (please do), read the <a
+  href="../docs/tor-doc-server.html.en">Configuring a server</a> guide.</b>
+</p>
+<hr>
+<a id="installing"></a>
+<h2><a class="anchor" href="#installing">Step One: Download and Install Tor</a></h2>
+<br>
+<p>
+The latest stable and experimental releases of Tor for Macintosh
+OS X bundle <a href="../index.html.en">Tor</a>,
+<a href="http://www.vidalia-project.net/">Vidalia</a> (a GUI for Tor),
+and <a href="http://www.privoxy.org/">Privoxy</a> (a filtering web proxy)
+into one package, pre-configured to work together.
+<a href="../download.html.en">Download one from the download
+page</a>.
+</p>
+<p>Our Tor installer should make everything pretty simple. Below is a
+screenshot of the setup page:
+</p>
+<img alt="tor installer splash page"
+src="../img/screenshot-osx-installer-splash.png"
+border="1" width="620" height="440">
+<p>When the installer is finished, you can start Vidalia by selecting its icon
+from your Applications folder. A dark onion with a red X in your dock means
+Tor is not currently running. You can start Tor by selecting Start from the
+"Tor" menu at the top of your screen.
+</p>
+<p>When Tor is running, Vidalia's dock icon will look like the following:
+</p>
+<img alt="vidalia running tor"
+src="../img/screenshot-osx-vidalia.png"
+border="1" width="223" height="100">
+<p>Privoxy is installed as part of the Tor bundle package
+installer. Once it is installed, it will start automatically when your
+computer is restarted.
+You do not need to configure Privoxy to use Tor &mdash; a custom Privoxy
+configuration for Tor has been installed as part of the installer package.
+</p>
+<hr>
+<a id="using"></a>
+<h2><a class="anchor" href="#using">Step Two: Configure your applications to use Tor</a></h2>
+<br>
+<p>After installing Tor and Privoxy, you need to configure your
+applications to use them. The first step is to set up web browsing.</p>
+<p>If you're using Firefox (we recommend it), check out the <a
+href="http://freehaven.net/~squires/torbutton/">Torbutton
+plugin</a> that sets everything up for you. If you plan to run Firefox
+on a different computer than Tor, read our <a
+href="../docs/tor-switchproxy.html.en">Tor SwitchProxy howto</a> to set up
+a plugin that makes it easy to switch between using Tor and using a
+direct connection.</p>
+<h3>Mozilla Firefox</h3>
+<p>Otherwise, you need to manually configure your browser's proxy
+settings. In Firefox, this is in the Firefox | Preferences menu item,
+and then click Connection Settings... in the General tab.</p>
+<img src="../img/screenshot-firefox-preferences-1.png" border="1" alt="" width="290" height="245">
+<br><br>
+<img src="../img/screenshot-firefox-preferences-2.png" border="1" alt="" width="643" height="446">
+<br><br>
+<p>
+You should fill in "localhost"
+and "8118" to point the top four protocols to Privoxy, as shown here. (Even
+though Privoxy doesn't support FTP and Gopher, <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#FtpProxy">you
+should set them up anyway</a>.) You should also fill out the socks proxy entry to point directly to Tor ("localhost", "9050", and socks5)
+to cover protocols besides the first four. Then click "OK".</p>
+</p>
+<img src="../img/screenshot-firefox-proxy-settings.png" border="1"
+ alt="" width="658" height="508"> <br><br>
+<h3>Apple Safari</h3>
+<p>If you want to use Tor with Safari, you need to change your
+Network Settings. Select your Network Preferences from the Apple |
+Location menu:</p>
+<img alt="Network settings"
+src="../img/screenshot-osx-choose-network.png"
+border="1" width="421" height="321">
+<p>Select the Network Interface on which you want to enable Tor. If you use
+more than one Interface you must change the proxy settings for each
+individually.</p>
+<img alt="Network preferences"
+src="../img/screenshot-osx-choose-interface.png"
+border="1" width="595" height="577">
+<p>
+<p>Select and enter 127.0.0.1 and port 8118 for both
+Web Proxy (HTTP) and your Secure Web Proxy (HTTPS).
+You should also do this for "FTP Proxy" and "Gopher Proxy"; see <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#FtpProxy">this
+note</a> about Tor and ftp proxies. Leave your Use Passive FTP Mode
+(PASV) setting as is.</p>
+<img alt="Proxy settings"
+src="../img/screenshot-osx-proxy-settings.png"
+border="1" width="595" height="577">
+<p>Using privoxy is <strong>necessary</strong> because <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#SOCKSAndDNS">browsers
+leak your
+DNS requests when they use a SOCKS proxy directly</a>, which is bad for
+your anonymity. Privoxy also removes certain dangerous headers from your
+web requests, and blocks obnoxious ad sites like Doubleclick.</p>
+<p>To Torify other applications that support HTTP proxies, just
+point them at Privoxy (that is, localhost port 8118). To use SOCKS
+directly (for instant messaging, Jabber, IRC, etc), you can point
+your application directly at Tor (localhost port 9050), but see <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#SOCKSAndDNS">this
+FAQ entry</a> for why this may be dangerous. For applications
+that support neither SOCKS nor HTTP, take a look at <a
+href="http://www.taiyo.co.jp/~gotoh/ssh/connect.html">connect</a> or
+<a href="http://www.dest-unreach.org/socat/">socat</a>.</p>
+<p>For information on how to Torify other applications, check out the
+<a href="http://wiki.noreply.org/wiki/TheOnionRouter/TorifyHOWTO">Torify
+HOWTO</a>.
+</p>
+<hr>
+<a id="verify"></a>
+<h2><a class="anchor" href="#verify">Step Three: Make sure it's working</a></h2>
+<br>
+<p>
+Next, you should try using your browser with Tor and make
+sure that your IP address is being anonymized. Click on the <a
+href="http://serifos.eecs.harvard.edu/cgi-bin/ipaddr.pl?tor=1">Tor
+detector</a> and see whether it thinks you're using Tor or not.
+(If that site is down, see <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#IsMyConnectionPrivate">this
+FAQ entry</a> for more suggestions on how to test your Tor.)
+</p>
+<p>If you have a personal firewall that limits your computer's
+ability to connect to itself, be sure to allow connections from
+your local applications to local port 8118 and port 9050. If
+your firewall blocks outgoing connections, punch a hole so
+it can connect to at least TCP ports 80 and 443, and then see <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#FirewalledClient">this
+FAQ entry</a>.
+</p>
+<p>If it's still not working, look at <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#ItDoesntWork">this
+FAQ entry</a> for hints.</p>
+<hr>
+<a id="server"></a>
+<h2><a class="anchor" href="#server">Step Four: Configure it as a server</a></h2>
+<br>
+<p>The Tor network relies on volunteers to donate bandwidth. The more
+people who run servers, the faster the Tor network will be. If you have
+at least 20 kilobytes/s each way, please help out Tor by configuring your
+Tor to be a server too. We have many features that make Tor servers easy
+and convenient, including rate limiting for bandwidth, exit policies so
+you can limit your exposure to abuse complaints, and support for dynamic
+IP addresses.</p>
+<p>Having servers in many different places on the Internet is what
+makes Tor users secure. <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#ServerAnonymity">You
+may also get stronger anonymity yourself</a>,
+since remote sites can't know whether connections originated at your
+computer or were relayed from others.</p>
+<p>Read more at our <a href="../docs/tor-doc-server.html.en">Configuring a server</a>
+guide.</p>
+<hr>
+<a id="uninstall"></a>
+<h2><a class="anchor" href="#uninstall">How To Uninstall Tor and Privoxy</a></h2>
+<br>
+<p>The Tor 0.1.0.x series and beyond have a command line or
+Terminal-based uninstaller. If you want to remove Tor on OSX, here's how:</p>
+<p>Change your application proxy settings back to their original values.
+   If you just want to stop using Tor, you can end at this point.</p>
+<p>If you want to completely remove Tor, and your account has Admin
+Privileges, then proceed as follows:</p>
+<ol>
+<li> Open up a Terminal or x-term session.</li>
+<li> cd /Library/Tor</li>
+<li> sudo -s</li>
+<li> ./uninstall_tor_bundle.sh</li>
+</ol>
+<p>Tor and Privoxy are now completely removed from your system.</p>
+<p>If you're using a version of the Tor installer that doesn't come
+with the uninstall_tor_bundle script, you will need to manually
+delete the following:</p>
+<ul>
+<li>/Library/Tor</li>
+<li>/Library/Privoxy</li>
+<li>/usr/bin/tor</li>
+<li>/usr/bin/tor_resolve</li>
+<li>/var/log/tor</li>
+<li>/usr/share/man/man1/tor.1</li>
+<li>/usr/share/man/man1/tor-resolve.1</li>
+<li>/usr/share/man/man1/torify.1</li>
+<li>/Library/Receipts/Privoxy.pkg/</li>
+<li>/Library/Receipts/privoxyconf.pkg/</li>
+<li>/Library/Receipts/Tor.pkg/</li>
+<li>/Library/Receipts/torstartup.pkg/</li>
+</ul>
+<hr>
+<p>If you have suggestions for improving this document, please <a
+href="../contact.html.en">send them to us</a>. Thanks!</p>
+  </div><!-- #main -->
+</div>
+</div>
+  <div class="bottom" id="bottom">
+     <p>
+     <i><a href="../contact.html.en" class="smalllink">Webmaster</a></i> -
+      Last modified: Sun Jul 23 01:43:49 2006
+      -
+      Last compiled: Sun Jul 23 01:43:52 2006
+     </p>
+     <p>
+       This page is also available in the following languages:
+       <a href="tor-doc-osx.html.fr">fran&ccedil;ais</a>, <a href="tor-doc-osx.html.it">Italiano</a>.<br>
+       How to set <a href="http://www.debian.org/intro/cn#howtoset">the default document language</a>.
+     </p>
+  </div>
+</body>
+</html>

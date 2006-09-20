@@ -1,0 +1,274 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Tor: Istruzioni per configurare un Hidden Service</title>
+  <meta name="Author" content="Roger Dingledine">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+</head>
+<body>
+<div class="center">
+<table class="banner" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+        <td class="banner-left"></td>
+        <td class="banner-middle">
+	<a href="../index.html.it">Home</a>
+<a href="../overview.html.it">Panoramica</a>
+<a href="../download.html.it">Scarica</a>
+<a href="../documentation.html.it">Documentazione</a>
+<a href="../volunteer.html.it">Partecipa</a>
+<a href="../people.html.it">Persone</a>
+<a href="../donate.html.it">Donazioni</a>
+        </td>
+        <td class="banner-right">
+	<img src="../images/green-flagspace.png" alt="" width="24" height="16"> <a href="tor-hidden-service.html.en"><img src="../images/en.png" alt="English" width="24" height="16"></a> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/it.png" alt="Italiano" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16">
+        </td>
+    </tr>
+</table>
+<div class="center">
+<div class="main-column">
+<h1>Configurare i servizi nascosti (Hidden Service) per <a href="../index.html.it">Tor</a></h1>
+<hr>
+<p>Tor permette a client e server di offrire dei "servizi nascosti" (hidden service). In altre parole,
+puoi realizzare un server web, un server SSH, etc., senza rivelare il tuo
+IP agli altri utenti. Di fatto, non usando un indirizzo IP pubblico,
+puoi avere un hidden service anche da dietro il tuo firewall.
+</p>
+<p>Se hai installato Tor e Privoxy, puoi vedere dei servizi nascoti
+dal vivo visitando <a href="http://6sxoyfb3h2nvok2d.onion/">the
+hidden wiki</a>.
+</p>
+<p>Questa guida spiega come realizzare il proprio sito web come hidden
+service.
+</p>
+<hr>
+<a id="zero"></a>
+<h2><a class="anchor" href="#zero">Zero: installa Tor e Privoxy</a></h2>
+<br>
+<p>Prima di iniziare occorre che 1) Tor sia attivo e funzioni correttamente,
+2) Privoxy sia attivo, 3) Privoxy sia configurato per puntare a
+Tor, e che 4) l'installazione sia corretta e funzionante.</p>
+<p>Gli utenti Windows possono seguire il <a
+href="../docs/tor-doc-win32.html.it">Windows
+howto</a>, gli utenti OS X possono seguire il <a
+href="../docs/tor-doc-osx.html.it">OS
+X howto</a>, e infine gli utenti Linux/BSD/Unix possono seguire lo <a
+href="../docs/tor-doc-unix.html.it">Unix howto</a>.
+</p>
+<p>Una volta installati e configurati Tor e Privoxy,
+puoi vedere i hidden service dal vivo seguendo questo link al <a
+href="http://6sxoyfb3h2nvok2d.onion/">hidden wiki</a>.
+Ci impieger&agrave; di solito 10-60 secondi a caricare
+(o a decidere che non &egrave; raggiungibile al momento). Se d&agrave; un errore
+subito e il tuo browser mostra un messaggio che dice
+"Impossibile trovare www.6sxoyfb3h2nvok2d.onion , controlla l'indirizzo
+e riprova", significa che Tor e Privoxy non sono configurati correttamente; leggi <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#ItDoesntWork">questa
+FAQ</a> per aiuto e suggerimenti.
+</p>
+<hr>
+<a id="one"></a>
+<h2><a class="anchor" href="#one">Uno: configura un servizio nascosto di esempio</a></h2>
+<br>
+<p>In questa sezione configurerai un hidden service che punta
+a www.google.com. In questo modo si pu&ograve; essere sicuri che il tutto funzioni
+prima di passare a realizzare localmente un server web vero e proprio.
+</p>
+<p>Per prima cosa, apri il file torrc con un editor di testo. (Vedi <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#torrc">questa
+FAQ</a> se hai dei dubbi.) Vai alla sezione intermedia del file e
+cerca la riga</p>
+<pre>
+############### This section is just for location-hidden services ###
+</pre>
+<p>
+Questa sezione del file contiene un gruppo di righe che rappresentano ciascuna
+un hidden service. Per ora sono tutte commentate via (le linee
+iniziano con #), infatti i hidden service sono disabilitati. Ogni gruppo di righe
+consiste in una riga HiddenServiceDir e una o pi&ugrave; righe HiddenServicePort:
+</p>
+<ul>
+<li><b>HiddenServiceDir</b> &egrave; una directory dove Tor metter&agrave; le informazioni
+su quel hidden service. In particolare Tor vi creer&agrave; un file di nome
+<i>hostname</i> che indica l'onion URL. Non occorre aggiungere
+altri file a questa directory.</li>
+<li><b>HiddenServicePort</b> permette di specificare una porta virtuale (ovvero, la porta
+che chi accede al servizio creder&agrave; di usare), e un
+indirizzo IP e una porta per redirigere le connessioni verso questa porta virtuale.</li>
+</ul>
+<p>In questo esempio realizzaremo un hidden service che punta a
+Google. Aggiungi le seguenti righe a torrc:
+</p>
+<pre>
+HiddenServiceDir /Library/Tor/var/lib/tor/hidden_service/
+HiddenServicePort 80 www.google.com:80
+</pre>
+<p>Sar&agrave; necessario modificare la riga HiddenServiceDir in modo che punti
+a una directory vera che sia leggibile e scrivibile dall'utente con cui
+gira Tor. L'esempio sopra dovrebbe funzionare con il pacchetto Tor
+per OS X. In Unix, prova "/home/nomeutente/hidserv/" e metti il tuo nome
+utente al posto di "nomeutente". Su Windows puoi provare:</p>
+<pre>
+HiddenServiceDir C:\Documents and Settings\nomeutente\Dati applicazioni\hidden_service\
+HiddenServicePort 80 www.google.com:80
+</pre>
+<p>Ora salva il file torrc, chiudi
+Tor e riavvialo. (Vedi <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#Restarting">questa
+FAQ</a> con dei suggerimenti per riavviare Tor.)
+</p>
+<p>Se Tor riparte, bene. Altrimenti c'&egrave; qualcosa che non va. Dai
+un'occhiata al file torrc per eventuali errori di battitura. Ricontrolla che la
+directory scelta sia veramente scrivibile dall'utente. Se ancora non
+funziona, controlla i log di Tor per ulteriori informazioni. (Vedi <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#Logs">questa
+FAQ</a> se non sai come abilitare o trovare i file di log.)
+</p>
+<p>Quando Tor parte creer&agrave; automaticamente la HiddenServiceDir
+che hai indicato (se serve), e vi creer&agrave; due file.
+Anzitutto creer&agrave; un nuovo paio di chiavi
+pubbliche/private per il hidden service e lo registrer&agrave; in un
+file di nome "private_key". Non dare questa chiave a nessuno -- altrimenti
+qualcun altro potrebbe impersonare il tuo hidden service.
+</p>
+<p>L'altro file che Tor creer&agrave; &egrave; "hostname". Contiene
+un breve sommario della tua chiave pubblica -- qualcosa di smile a
+<tt>6sxoyfb3h2nvok2d.onion</tt>. &#200; il nome pubblico del tuo servizio
+e puoi comunicarlo a tutti, pubblicarlo su siti web, scriverlo sul biglietto
+da visita, etc. (Se Tor gira con un utente diverso dal tuo, ad esempio su
+OS X, Debian, o Red Hat, forse devi diventare root per leggere
+questi file.)
+</p>
+<p>Ora che hai riavviato Tor, lui cerca degli introduction point
+nella rete Tor, generando un cosiddetto "hidden service
+descriptor", che &egrave; una lista firmata di introduction point e della chiave
+pubblica del servizio. Tor pubblica anonimamente questa descrizione
+ai directory server, cos&igrave; gli altri possono prelevarla anonimamente dai
+directory server quando cercano di accedere al tuo servizio.
+</p>
+<p>Ora fai una prova: copia e incolla il contenuto del file hostname nel tuo
+browser. Se funziona vedrai la home page di google, ma l'URL nel tuo
+browser sar&agrave; quello del tuo hidden service. Se non funziona
+guarda nei log e fai altre prove e modifiche finch&eacute; non andr&agrave; in porto.
+</p>
+<hr>
+<a id="two"></a>
+<h2><a class="anchor" href="#two">Due: ora installa localmente un server web</a></h2>
+<br>
+<p>Ora che hai un have hidden service funzionante su Tor, puoi
+realizzare un web server locale. Realizzare un server web &egrave; un'operazione
+complessa, qui passeremo in rassegna solo le fasi di base. Se ti trovi in difficolt&agrave;
+o vuoi fare di pi&ugrave;, fatti aiutare da un amico. &#200; bene
+installare un nuovo web server separato per il tuo hidden service, perch&eacute; se ne
+avessi gi&agrave; uno installato potresti volerlo usare (ora o
+in futuro) per un sito web vero e proprio.
+</p>
+<p>Se usi Unix o OS X e sei a tuo agio con
+la linea di comando, la cosa pi&ugrave; semplice &egrave; installare <a
+href="http://www.acme.com/software/thttpd/">thttpd</a>. Scarica
+l'ultimo tarball, estrailo (creer&agrave; la sua propria directory), ed esegui
+./configure &amp;&amp; make. Poi mkdir hidserv, cd hidserv, ed esegui
+"../thttpd -p 5222 -h localhost". Ti restituir&agrave; il prompt
+ed ora avrai un webserver sulla porta 5222. Puoi mettere dei file
+da pubblicare nella directory hidserv.
+</p>
+<p>Se usi Windows, ...cosa si potrebbe proporre? C'&egrave; qualche
+buon server web per Windows che sia semplice e sia <a href="http://www.fsf.org/">software libero</a>
+(non solo "freeware")? Se lo sai, per favore
+dicci cosa potremmo scrivere. Nel frattempo guarda
+<a href="http://httpd.apache.org/">apache</a>
+e configuralo per
+ascoltare solo su localhost. Devi anche capire su quale porta
+&egrave; in ascolto, dato che dovrai usarla pi&ugrave; sotto.
+</p>
+<p>(Il motivo per cui il web server deve ascoltare solo su localhost &egrave; che
+non deve essere accessibile pubblicamente. Se lo si potesse raggiungere direttamente,
+si avrebbe la conferma che &egrave; il tuo computer ad offrire quel hidden
+service.)
+</p>
+<p>Una volta messo su il server web, controlla che funzioni: col tuo
+browser vai a <a
+href="http://localhost:5222/">http://localhost:5222/</a>. Poi
+prova a mettere un file
+nella directory html principale e controlla che sia visibile
+quando apri il sito.
+</p>
+<hr>
+<a id="three"></a>
+<h2><a class="anchor" href="#three">Tre: collega il tuo server web al tuo hidden service</a></h2>
+<br>
+<p>Questa parte &egrave; molto semplice. Riapri torrc con un editor e cambia la
+linea HiddenServicePort da "www.google.com:80" a "localhost:5222".
+Poi <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#Restarting">riavvia
+Tor</a>. Controlla che funzioni ricaricando l'hostname del tuo hidden
+service col tuo browser.
+</p>
+<hr>
+<a id="four"></a>
+<h2><a class="anchor" href="#four">Quattro: argomenti avanzati</a></h2>
+<br>
+<p>Se pensi di rendere disponibile a lungo il tuo servizio, dovresti fare
+una copia di backup del file private_key.
+</p>
+<p>Nell'esempio sopra abbiamo evitato di proposito Apache, a) perch&eacute; molti
+potrebbero gi&agrave; usarlo per un server web pubblico sul loro computer, e b)
+perch&eacute; &egrave; una grande applicazione
+che ha molti posti in cui potrebbe rivelare il tuo vero indirizzo IP o altre
+informazioni atte a identificarti, ad esempio nelle pagine 404. Per chi avesse bisogno
+di pi&ugrave; funzionalit&agrave;, Apache potrebbe essere la soluzione giusta. Puoi
+scrivere una lista di azioni per blindare Apache quando lo si usa come
+hidden service?
+</p>
+<p>Se vuoi inoltrare pi&ugrave; porte virtuali a un unico hidden
+service, basta aggiungere altre righe HiddenServicePort.
+Se vuoi gestire pi&ugrave; hidden services dallo stesso client Tor,
+aggiungi un'altra riga HiddenServiceDir. Tutte le seguenti righe
+HiddenServicePort si riferiscono a questa riga HiddenServiceDir, fino
+a quando non aggiungi un'altra riga HiddenServiceDir:
+</p>
+<pre>
+HiddenServiceDir /usr/local/etc/tor/hidden_service/
+HiddenServicePort 80 127.0.0.1:8080
+
+HiddenServiceDir /usr/local/etc/tor/other_hidden_service/
+HiddenServicePort 6667 127.0.0.1:6667
+HiddenServicePort 22 127.0.0.1:22
+</pre>
+<p>Alcuni problemi di anonimato da tenere a mente:
+</p>
+<ul>
+<li>Come detto sopra, fai attenzione che il server web non riveli
+informazioni che possano identificare te, il tuo computer, la tua posizione.
+Ad esempio, un visitatore potr&agrave; probabilmente capire se si tratta di thttpd o
+di Apache e che sistema operativo usi.</li>
+<li>Se il tuo computer non &egrave; sempre online, non lo sar&agrave; nemmeno il tuo
+hidden service. Questo rivela informazioni all'osservazione di un avversario.</li>
+<!-- increased risks over time -->
+</ul>
+<hr>
+<p>se hai suggerimenti per migliorare questo documento, per favore <a
+href="../contact.html.it">scrivici</a>. Grazie!</p>
+  </div><!-- #main -->
+</div>
+</div>
+  <div class="bottom" id="bottom">
+     <p>
+     <i><a href="../contact.html.it" class="smalllink">Webmaster</a></i> -
+      Ultima modifica: Thu Apr 27 08:14:17 2006
+      -
+      Ultima compilazione: Sat Jul 8 02:04:06 2006
+     </p>
+     <p>
+       Questa pagina &egrave; disponibile anche nelle lingue seguenti:
+       <a href="tor-hidden-service.html.en">English</a>.<br>
+       Come configurare <a href="http://www.debian.org/intro/cn#howtoset">la lingua predefinita per i documenti</a>.
+     </p>
+     <p>Questa traduzione non &egrave; stata controllata dagli sviluppatori di
+      Tor e da EFF. Pu&ograve; risultare obsoleta o errata. Il sito
+      ufficiale di Tor &egrave; in inglese, all'indirizzo http://tor.eff.org/
+     </p>
+  </div>
+</body>
+</html>

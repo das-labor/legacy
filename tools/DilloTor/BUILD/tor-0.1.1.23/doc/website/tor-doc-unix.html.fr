@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Tor: Guide d'installation pour Linux/BSD/Unix</title>
+  <meta name="Author" content="Roger Dingledine">
+  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+</head>
+<body>
+<div class="center">
+<table class="banner" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+        <td class="banner-left"></td>
+        <td class="banner-middle">
+	<a href="../index.html.fr">Accueil</a>
+<a href="../overview.html.fr">Vue d'ensemble</a>
+<a href="../download.html.fr">T&eacute;l&eacute;chargement</a>
+<a href="../documentation.html.fr">Docs</a>
+<a href="../volunteer.html.fr">Contribuer</a>
+<a href="../people.html.fr">Auteurs</a>
+<a href="../donate.html.fr">Dons!</a>
+        </td>
+        <td class="banner-right">
+	<img src="../images/green-flagspace.png" alt="" width="24" height="16"> <a href="tor-doc-unix.html.en"><img src="../images/en.png" alt="English" width="24" height="16"></a> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/fr.png" alt="fran&ccedil;ais" width="24" height="16"> <a href="tor-doc-unix.html.it"><img src="../images/it.png" alt="Italiano" width="24" height="16"></a> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16">
+        </td>
+    </tr>
+</table>
+<div class="center">
+<div class="main-column">
+<h1>Installer un client <a href="../index.html.fr">Tor</a> sur système Linux/BSD/Unix</h1>
+<br>
+<p>
+<b>Ces instructions ne s'appliquent qu'à l'installation d'un client Tor.
+Si vous voulez aider à la croissance du réseau Tor en relayant du trafic pour les autres
+(ce qui est une très bonne idée), lisez le guide sur la <a
+href="../docs/tor-doc-server.html">configuration d'un serveur</a>.</b>
+</p>
+<hr>
+<a id="installing"></a>
+<h2><a class="anchor" href="#installing">Étape 1&nbsp;: Télécharger et Installer Tor</a></h2>
+<br>
+<p>
+Vous pouvez trouver la dernière version de Tor sur la page de <a
+href="../download.html.fr">téléchargement</a>. Nous avons ici des paquets pour Debian,
+Red Hat, Gentoo, *BSD, etc.
+</p>
+<p>Si vous installez depuis le code source, installez d'abord
+<a href="http://www.monkey.org/~provos/libevent/">libevent</a>, et assurez vous de bien
+avoir openssl et zlib (avec les paquets -devel). Tapez ensuite
+<tt>tar xzf tor-0.1.0.15.tar.gz; cd tor-0.1.0.15</tt>. Puis <tt>./configure &amp;&amp;
+make</tt>. Vous pouvez maintenant lancer tor depuis <tt>src/or/tor</tt>, ou vous pouvez
+l'installer dans /usr/local/ avec <tt>make install</tt> (en root si nécessaire), ce qui
+vous permettra de le lancer en tapant simplement <tt>tor</tt>.
+</p>
+<p>Tor est préconfiguré par défaut en tant que client. Le fichier de
+configuration qu'il utilise par défaut conviendra à la plupart des
+utilisateurs. Tor est maintenant installé. </p>
+<hr>
+<a id="privoxy"></a>
+<h2><a class="anchor" href="#privoxy">Étape 2&nbsp;: Installer Privoxy pour la navigation
+web</a></h2>
+<br>
+<p>Une fois Tor installé, vous devez configurer vos applications pour l'utiliser.
+</p>
+<p>
+Il faut tout d'abord s'occuper de la navigation web. Commencez par installer
+<a href="http://www.privoxy.org/">Privoxy</a>&nbsp;: sélectionnez «&nbsp;recent
+releases&nbsp;», et choisissez votre paquet, ou installez depuis le code source. Privoxy
+est un proxy web filtrant qui s'intègre très bien avec Tor.
+</p>
+<p>Une fois Privoxy installé (par un paquet, ou par les sources),
+<b>il vous faudra configurer Privoxy pour utiliser Tor</b>.
+Ouvrez le fichier de configuration de Privoxy (regardez dans /etc/privoxy/ ou dans
+/usr/local/etc/), et ajoutez la ligne
+<br>
+<tt>forward-socks4a / localhost:9050 .</tt><br>
+au début de ce fichier. N'oubliez pas le point en fin de ligne.
+</p>
+<p>Privoxy garde dans un fichier de log des traces de tout ce qu'il retransmet. Afin de prévenir cela, vous
+pouvez commenter (en insérant # en début de ligne) ces deux lignes&nbsp;:
+<br>
+<tt>logfile logfile</tt><br>
+et <br>
+<tt>jarfile jarfile</tt><br>
+</p>
+<p>Vous devrez redémarrer Privoxy pour que les modifications prennent effet.</p>
+<hr>
+<a id="using"></a>
+<h2><a class="anchor" href="#using">Étape 3&nbsp;: Configurer vos applications pour utiliser Tor</a></h2>
+<br>
+<p>Une fois Tor installé, vous devez configurer vos applications pour l'utiliser.</p>
+<p>Si vous utilisez Firefox (nous vous le conseillons), vous pouvez installer
+<a href="http://freehaven.net/~squires/torbutton/">l'extension Torbutton</a> qui effectue
+tous les réglages pour vous. Si vous avez l'intention d'utiliser Firefox sur un autre
+ordinateur que Tor, consultez notre <a href="../docs/tor-switchproxy.html">howto Tor
+SwitchProxy</a> pour installer une extension qui facilitera le va-et-vient entre
+une connexion via Tor et une connexion directe.</p>
+<p>Sinon, vous pouvez configurer manuellement les réglages du proxy dans votre navigateur.
+Pour Mozilla, c'est dans Édition|Préférences|Avancé|Proxys.
+Pour Opera 7.5x c'est dans Outils|Préférences|Réseau|Serveurs Proxy.</p>
+<p>Vous devez indiquer "localhost" et "8118" pour faire pointer les quatre premiers
+protocoles sur Privoxy. (Bien que Privoxy ne gère ni le FTP, in Gopher, <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#FtpProxy">vous devez quand
+même les régler</a>.) Vous devriez également remplir la ligne socks pour la faire pointer
+directement sur Tor ("localhost", "9050", et socks5) afin de couvrir les protocoles autres
+que les quatre premiers. Validez ensuite par "OK".</p>
+<p>Il est <strong>nécessaire</strong> d'utiliser Privoxy car <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#SOCKSAndDNS">les
+navigateurs ne cachent pas vos requêtes DNS lorsque vous utilisez SOCKS
+directement</a>, ce qui est mauvais pour votre anonymat. Privoxy supprime aussi
+de vos requêtes web certains en-têtes dangereux, et bloque les infectes
+publicités de sites comme doubleclick.</p>
+<p>Pour Tor-iffier d'autres applications qui gèrent les proxies HTTP, faites les
+simplement utiliser Privoxy (c'est à dire, localhost port 8118). Pour utiliser SOCKS
+directement (pour la messagerie instantanée, Jabber, IRC, etc), faites pointer votre
+application directement sur Tor (localhost port 9050), mais consultez
+<a href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#SOCKSAndDNS">cet article de
+la FAQ</a> pour comprendre en quoi cela peut être dangereux. Pour les applications qui ne
+gèrent ni SOCKS, ni le HTTP, vous pouvez utiliser <a
+href="http://tsocks.sourceforge.net/">tsocks</a> ou <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorifyHOWTO#socat">socat</a>.
+</p>
+<p>Vous pouvez trouver des informations sur la Tor-iffication d'autres applications
+sur le <a href="http://wiki.noreply.org/wiki/TheOnionRouter/TorifyHOWTO">HOWTO Tor-iffication</a>.
+</p>
+<hr>
+<a id="verify"></a>
+<h2><a class="anchor" href="#verify">Étape 4&nbsp;: Vérifier que ça fonctionne</a></h2>
+<br>
+<p>Vous devriez ensuite essayer d'utiliser votre navigateur avec Tor, et vérifier que votre adresse
+IP est anonyme. Rendez vous sur le
+<a href="http://serifos.eecs.harvard.edu/cgi-bin/ipaddr.pl?tor=1">détecteur Tor</a>, vous
+verrez s'il pense que vous utilisez Tor ou non. (Si ce site ne marche pas, voyez <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#IsMyConnectionPrivate">cet
+article de la FAQ</a> pour des suggestions supplémentaires sur la manière de tester Tor.)
+</p>
+<p>Si vous avez un pare-feu personnel qui limite la possibilité de votre ordinateur à se
+connecter en local (par exemple SELinux sur Fedora Core 4), assurez vous de permettre les
+connexions de vos applications vers Privoxy (local port 8118) et tor (local port 9050). Si
+votre pare-feu bloque les connexions sortantes, faites une brèche dedans pour pouvoir vous
+connecter au moins sur les ports 80 et 443, et consultez ensuite <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#FirewalledClient">cet
+article de la FAQ</a>. Si votre configuration de SELinux ne permet pas à tor ou privoxy de
+fonctionner correctement, créez un fichier nommé booleans.local dans votre répertoire
+/etc/selinux/targeted. Éditez le avec votre éditeur de texte favori, et écrivez
+"allow_ypbind=1". Redémarrez votre machine pour que cette modification prenne effet.
+</p>
+<p>Si cela ne fonctionne toujours pas, consultez <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#ItDoesntWork">cet article de
+la FAQ</a>.</p>
+<hr>
+<a id="server"></a>
+<h2><a class="anchor" href="#server">Étape 5&nbsp;: Configurer Tor en tant que serveur</a></h2>
+<br>
+<p>Le réseau Tor se base sur des volontaires qui donnent de leur bande passante.
+Plus il y a de monde qui fait tourner de serveurs, plus le réseau Tor sera rapide. Si vous
+disposez d'au moins 20 Ko/s en upload et en download, vous pouvez aider Tor en configurant
+Tor pour être un serveur lui aussi. Nous avons beaucoup de fonctionnalités qui rendent les
+serveurs Tor simples et pratiques, comme la gestion des adresses IP dynamiques, ou la
+limitation de la bande passante maximale et les politiques de sortie afin que vous
+puissiez limiter votre vulnérabilité aux possibles plaintes suite à des abus.</p>
+<p>Tor est un système dont la sécurité dépend de la diversité des lieux géographiques où tournent
+les serveurs.
+<a href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#ServerAnonymity">Faire
+tourner un serveur renforce votre anonymat</a>, car les sites distants ne peuvent pas
+savoir si les connexions proviennent de votre ordinateur, ou si vous les avez juste
+relayé depuis un autre endroit.</p>
+<p>Pour en savoir plus, voir le guide de <a href="../docs/tor-doc-server.html">configuration
+d'un serveur</a>.</p>
+<hr>
+<p>Si vous avez des suggestions pour améliorer ce document, <a
+href="../contact.html.fr">envoyez les nous</a> s'il vous plaît. Merci&nbsp;!</p>
+  </div><!-- #main -->
+</div>
+</div>
+  <div class="bottom" id="bottom">
+     <p>
+     <i><a href="../contact.html.fr" class="smalllink">Webmaster</a></i> -
+      Dernière modification&nbsp;: Sat May 13 08:46:26 2006
+      -
+      Dernière compilation&nbsp;: Sat Jul 8 02:04:07 2006
+     </p>
+     <p>
+       Cette page est aussi disponible dans les langues suivantes&nbsp;:
+       <a href="tor-doc-unix.html.en">English</a>, <a href="tor-doc-unix.html.it">Italiano</a>.<br>
+       Comment configurer la <a href="http://www.debian.org/intro/cn#howtoset">langue par d&eacute;faut du document</a>.
+     </p>
+  </div>
+</body>
+</html>

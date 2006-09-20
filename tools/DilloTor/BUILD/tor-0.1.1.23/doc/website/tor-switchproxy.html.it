@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Tor: Istruzioni per installare SwitchProxy</title>
+  <meta name="Author" content="Roger Dingledine">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+</head>
+<body>
+<div class="center">
+<table class="banner" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+        <td class="banner-left"></td>
+        <td class="banner-middle">
+	<a href="../index.html.it">Home</a>
+<a href="../overview.html.it">Panoramica</a>
+<a href="../download.html.it">Scarica</a>
+<a href="../documentation.html.it">Documentazione</a>
+<a href="../volunteer.html.it">Partecipa</a>
+<a href="../people.html.it">Persone</a>
+<a href="../donate.html.it">Donazioni</a>
+        </td>
+        <td class="banner-right">
+	<img src="../images/green-flagspace.png" alt="" width="24" height="16"> <a href="tor-switchproxy.html.en"><img src="../images/en.png" alt="English" width="24" height="16"></a> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/it.png" alt="Italiano" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <img src="../images/green-flagspace.png" alt="" width="24" height="16">
+        </td>
+    </tr>
+</table>
+<div class="center">
+<div class="main-column">
+<p>Nota: SwitchProxy non &egrave; pi&ugrave; il plugin raccomandato
+per usare Tor con Firefox. <b>Al suo posto, usa il plugin <a
+href="http://freehaven.net/~squires/torbutton/"> Torbutton</a>
+.</b> Lasceremo nella pagina le istruzioni per SwitchProxy
+per coloro che preferiscono il vecchio metodo (che &egrave; pi&ugrave; difficile) o che hanno
+esigenze pi&ugrave; complesse, come usare Tor su un computer diverso da
+quello su cui usi Firefox.</p>
+<h1>Installare SwitchProxy per <a href="../index.html.it">Tor</a></h1>
+<hr>
+<p>
+SwitchProxy &egrave; un plugin per Firefox che aiuta a passare dalla navigazione
+con un proxy alla connessione diretta ai siti.</p>
+<p>In questa guida imparerai a configurare SwitchProxy per passare
+da Tor ad una connessione diretta. Si suppone che tu abbia gi&agrave;
+installato Firefox e che esso funzioni.</p>
+<p>Le immagini delle schermate sono pensate per utenti Windows, ma
+SwitchProxy funziona ovunque giri Firefox. Tutti dovrebbero riuscire quindi a seguire
+queste istruzioni senza grossi problemi.</p>
+<hr>
+<a id="zero"></a>
+<h2><a class="anchor" href="#zero">Zero: scarica e installa Tor e Privoxy</a></h2>
+<br>
+<p>Prima di cominciare, occorre che 1) Tor sia installato e funzionante,
+2) Privoxy sia installato e funzionante, e che 3) Privoxy sia configurato per
+puntare a Tor.</p>
+<p>Gli utenti Windows dovranno seguire il <a
+href="../docs/tor-doc-win32.html.it#installing">punto uno</a>
+della guida per installare Tor su Windows, e utenti Mac OS X dovranno seguire il <a
+href="../docs/tor-doc-osx.html.it#installing">passo uno</a>
+della guida di installazione Tor su OS X, installando i nostri pacchetti Win32 e OS X che contengono
+Privoxy gi&agrave; configurato. Gli utenti Linux/BSD/Unix dovrebbero invece seguire il <a
+href="../docs/tor-doc-unix.html.it#installing">passo uno</a>
+ed il <a href="../docs/tor-doc-unix.html.it#privoxy">passo
+due</a> della guida per installare Tor su Unix.
+</p>
+<hr>
+<a id="one"></a>
+<h2><a class="anchor" href="#one">Uno: scarica e installa SwitchProxy</a></h2>
+<br>
+<p>SwitchProxy &egrave; un plugin per Firefox e va quindi installato
+come tutti i nuovi plugin. Per prima cosa vai alla pagina web di <a
+href="https://addons.mozilla.org/addon.php?id=125">
+SwitchProxy</a>.
+Abilita i JavaScript temporaneamente e fai clic su "Install Now":</p>
+<img alt="switchproxy web page"
+src="../img/screenshot-switchproxy-webpage.jpg" width="698" height="527">
+<p>Comparir&agrave; una finestra di conferma del permesso per installare il plugin.
+Fai clic sul pulsante "Install Now":
+</p>
+<img alt="firefox plugin warning"
+src="../img/screenshot-switchproxy-plugin-starting.jpg" width="405" height="359">
+<p>Quando il programa di installazione sar&agrave; terminato, chiudi tutte le finestre aperte di Firefox,
+poi riavvia Firefox.</p>
+<img alt="firefox plugin finished"
+src="../img/screenshot-switchproxy-plugin-finished.jpg" width="450" height="171">
+<hr>
+<a id="two"></a>
+<h2><a class="anchor" href="#two">Due: configura SwitchProxy</a></h2>
+<br>
+<p>Dop il riavvio di Firefox noterai una nuova barra di strumenti
+per controllare i proxy. Ora occorre creare una nuova configurazione proxy
+per Tor. Fai clic su "Add" nella nuova barra dei proxy:</p>
+<img alt="new toolbar"
+src="../img/screenshot-switchproxy-toolbar.jpg" width="651" height="535">
+<p>Ti chieder&agrave; di indicare un tipo di proxy. Selezionare
+"Standard." (C'&egrave; anche un tipo di proxy "anonimo" che
+usa una serie di proxy ad hoc. Non sceglierlo,
+perch&eacute; questi altri proxy "anonimi" <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#ComparisonProxyAggregators">sono
+molto pi&ugrave; insicuri e deboli di Tor</a>.)
+</p>
+<img alt="standard proxy"
+src="../img/screenshot-switchproxy-proxytype.jpg" width="309" height="208">
+<p>Ora mostrer&agrave; la normale finestra di configurazione del proxy in Firefox.
+Chiama questa configurazione "tor". Inserisci "localhost"
+e "8118" per puntare i primi quattro protocolli a Privoxy, come mostrato qui. (Anche
+se Privoxy non supporta FTP e Gopher, <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#FtpProxy">configurali
+lo stesso</a>.) Compila anche il socks
+proxy per puntarlo direttamente a Tor ("localhost", "9050", e socks5)
+in modo da coprire gli altri protocolli dopo i primi quattro. Poi fai clic su "OK":</p>
+<img alt="proxy config"
+src="../img/screenshot-switchproxy-proxyconfig.jpg" width="430" height="434">
+<p>Ora hai creato un proxy chiamato "tor", ma non lo stai ancora usando.
+Fai clic sul menu di selezione e scegli tor, come mostrato qui:</p>
+<img alt="switch to tor"
+src="../img/screenshot-switchproxy-switch.jpg" width="671" height="558">
+<p>Ce l'hai quasi fatta. fai clic su "Apply" perch&eacute; il cambiamento abbia effetto:</p>
+<img alt="apply"
+src="../img/screenshot-switchproxy-apply.jpg" width="729" height="535">
+<p>Ecco fatto! Firefox ricaricher&agrave; la pagina corrente. In
+questa schermata di esempio, ricarica la pagina e <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#GoogleLanguage">ottiene
+un exit node tedesco</a>:</p>
+<img alt="german google"
+src="../img/screenshot-switchproxy-german.jpg" width="671" height="558">
+<hr>
+<a id="three"></a>
+<h2><a class="anchor" href="#three">Tre: controlla che funzioni</a></h2>
+<br>
+<p>Ora che Firefox usa Privoxy come proxy HTTP, Privoxy si appoggia a Tor come
+proxy socks4a, e Tor esegue le connessioni dirette a Internet.</p>
+<p>Nell'esempio qui sopra &egrave; evidente che funziona, perch&eacute; la
+pagina web &egrave; stata ricaricata in una lingua diversa, in base al nodo di uscita. In altri
+casi per&ograve; potresti volere verificare che la configurazione funzioni davvero. Segui il
+<a href="../docs/tor-doc-win32.html.it#verify">passo tre</a>
+della guida di installazione Tor per Windows, oppure il
+<a href="../docs/tor-doc-osx.html.it#verify">passo tre</a>
+della guida di installazione Tor per OS X.</p>
+<p>Fai attenzione a un dettaglio del tuo anonimato: passando dall'uso di
+Tor a una connessione diretta (o viceversa), di default la pagina
+attiva viene ricaricata con il nuovo proxy.
+Perci&ograve; assicurati di stare su una pagina non sensibile o importante prima di passare
+da un proxy all'altro. (Puoi anche configurare appositamente SwitchProxy nel menu "Options |
+Preferences".)</p>
+<hr>
+<p>Se hai dei suggerimenti per migliorare questo documento, per favore <a
+href="../contact.html.it">scrivici</a>. Grazie!</p>
+  </div><!-- #main -->
+</div>
+</div>
+  <div class="bottom" id="bottom">
+     <p>
+     <i><a href="../contact.html.it" class="smalllink">Webmaster</a></i> -
+      Ultima modifica: Wed May 3 15:27:03 2006
+      -
+      Ultima compilazione: Sat Jul 8 02:04:06 2006
+     </p>
+     <p>
+       Questa pagina &egrave; disponibile anche nelle lingue seguenti:
+       <a href="tor-switchproxy.html.en">English</a>.<br>
+       Come configurare <a href="http://www.debian.org/intro/cn#howtoset">la lingua predefinita per i documenti</a>.
+     </p>
+     <p>Questa traduzione non &egrave; stata controllata dagli sviluppatori di
+      Tor e da EFF. Pu&ograve; risultare obsoleta o errata. Il sito
+      ufficiale di Tor &egrave; in inglese, all'indirizzo http://tor.eff.org/
+     </p>
+  </div>
+</body>
+</html>

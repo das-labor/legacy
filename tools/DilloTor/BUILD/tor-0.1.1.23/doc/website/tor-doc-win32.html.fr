@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Tor: Installation : MS Windows </title>
+  <meta name="Author" content="Roger Dingledine">
+  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+</head>
+<body>
+<div class="center">
+<table class="banner" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+        <td class="banner-left"></td>
+        <td class="banner-middle">
+	<a href="../index.html.fr">Accueil</a>
+<a href="../overview.html.fr">Vue d'ensemble</a>
+<a href="../download.html.fr">T&eacute;l&eacute;chargement</a>
+<a href="../documentation.html.fr">Docs</a>
+<a href="../volunteer.html.fr">Contribuer</a>
+<a href="../people.html.fr">Auteurs</a>
+<a href="../donate.html.fr">Dons!</a>
+        </td>
+        <td class="banner-right">
+	<img src="../images/green-flagspace.png" alt="" width="24" height="16"> <a href="tor-doc-win32.html.en"><img src="../images/en.png" alt="English" width="24" height="16"></a> <a href="tor-doc-win32.html.es"><img src="../images/es.png" alt="espa&ntilde;ol" width="24" height="16"></a> <img src="../images/fr.png" alt="fran&ccedil;ais" width="24" height="16"> <a href="tor-doc-win32.html.it"><img src="../images/it.png" alt="Italiano" width="24" height="16"></a> <img src="../images/green-flagspace.png" alt="" width="24" height="16"> <a href="tor-doc-win32.html.pt"><img src="../images/pt.png" alt="Portugu&ecirc;s" width="24" height="16"></a> <a href="tor-doc-win32.html.ru"><img src="../images/ru.png" alt="&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;&nbsp;(Russkij)" width="24" height="16"></a> <img src="../images/green-flagspace.png" alt="" width="24" height="16">
+        </td>
+    </tr>
+</table>
+<div class="center">
+<div class="main-column">
+<h1>Installer et utiliser le client <a href="../index.html.fr">Tor</a> sous MS Windows</h1>
+<br>
+<p>
+<b>Notez que ce sont les instructions d'installation pour utiliser le client Tor sous MS Windows
+(98, 98SE, NT4, 2000, XP, Server).
+Si vous voulez installer un relai Tor pour aider à faire grandir le réseau (n'hésitez pas !), lisez la page
+<a href="../docs/tor-doc-server.html">Configurer un serveur</a>
+.</b>
+</p>
+<hr>
+<a id="installing"></a>
+<h2><a class="anchor" href="#installing">Etape Un : Télécharger et installer Tor</a></h2>
+<br>
+<p>
+L'installateur pour MS Windows contient <a href="../index.html.fr">Tor</a>,
+<a href="http://www.vidalia-project.net/">Vidalia</a> (Une inteface graphique pour Tor), et <a
+href="http://www.privoxy.org">Privoxy</a> (un proxy web filtrant) en un seul paquet, avec ces trois applications pré-configurées pour fonctionner ensemble.
+<a href="../download.html.fr">Téléchargez la version expérimentale depuis la page de téléchargement</a>.
+<p>Si le paquet précédent ne fonctionne pas, vous pouvez télécharger Tor seul, depuis la page de téléchargement
+<a href="../download.html.fr">page de téléchargement</a>, puis <a
+href="../docs/tor-doc-unix.html.fr#privoxy">installer
+et configurer Privoxy vous-même</a>.
+</p>
+<img alt="tor installer splash page"
+src="../img/screenshot-win32-installer-splash.png" width="503" height="386">
+<p>Si vous aviez précédemment installé Tor, Vidalia ou Privoxy, vous pouvez les désélectionner dans la phase de dialogue homme-machine présentée ci-dessous.</p>
+<img alt="select components to install"
+src="../img/screenshot-win32-installer-components.png" width="503" height="386">
+<p>Une fois que vous aurez terminé de répondre aux questions de l'installateur, les composants logiciels que vous avez sélectionnés seront automatiquement installés et et démarrés.
+</p>
+<hr>
+<a id="using"></a>
+<h2><a class="anchor" href="#using">Etape Deux : Configurer vos applications pour utiliser Tor</a></h2>
+<br>
+<p>Après avoir installé Tor et Privoxy, vous devez configurer vos applications pour les utiliser. La prochaine action consiste à configurer le navigateur web.
+</p>
+<p>Si vous utilisez Firefox (ce que nous vous recommandons), regardez du côté du <a
+href="http://freehaven.net/~squires/torbutton/">plugin Torbutton
+</a> qui peut tout configurer pour vous. Si vous prévoyez d'utiliser un Firefox installé sur un autre ordinateur que celui où vous avez installé Tor, lisez notre
+<a href="../docs/tor-switchproxy.html">Tor SwitchProxy howto</a> pour configurer le plugin permettant de passer facilement du mode "Tor" au mode "connexion directe à internet"</p>
+<p>Si vous le souhaitez, vous pouvez manuellement faire la configuration des paramètres proxy de votre navigateur web.
+Dans Mozilla et Firefox, c'est dans Edition|Préférences|Avancé|Proxy.
+Dans Opera 7.5x c'est Outils|Préférences|Réseau|Serveurs Proxy.
+Dans IE, c'est Outils|Options Internet|Connexions|Configuration Réseau|Avancé.</p>
+<img alt="Proxy settings in Firefox"
+src="../img/screenshot-win32-firefox-proxies.jpg" width="525" height="505">
+<p>
+Il faut mettre commme indiqué "localhost" et "8118" pour que les quatres premiers protocoles passent par Privoxy.
+ (Même si Privoxy ne gère pas le FTP et Gopher, <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#FtpProxy"> il faut les configurer
+</a>.) Il faut aussi renseigner les entrées du proxy de socks pour le faire passer directement par Tor ("localhost", "9050", et socks5)
+pour prendre en compte les protocoles au-dela des quatres premiers. Ensuite, cliquer sur "OK".</p>
+<p>L'utilisation de Privoxy est <strong>nécessaire</strong> car <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#SOCKSAndDNS">le navigateur laisse passer des informations lorsqu'il fait des requêtes DNS en utilisant le proxy SOCKS directement,
+</a>, ce qui est mauvais pour votre anonymat. De plus Privoxy enlève certains en-têtes dangereux de vos requêtes web, et bloque certains sites pénibles comme Doubleclick.</p>
+<p>Pour torréfier d'autres application qui savent utiliser des proxys HTTP, il suffit de leur indiquer de passer par Privoxy (c'est à dire "localhost" sur le port "8118"). Pour celles qui utilisent SOCKS directement (messagerie instantannée, Jabber, IRC, etc.), vous pouvez les faire passer directement par Tor ("localhost", prot "9050"), mais regardez d'abord
+<a href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#SOCKSAndDNS">cette entrée de la FAQ
+</a> qui vous dira les risques que cela comporte. Pour les applications qui n'utilisent ni SOCKS ni HTTP, jetez un oeil à <a
+href="http://www.socks.permeo.com/Download/SocksCapDownload/index.asp">SocksCap</a> ou à
+<a href="http://www.freecap.ru/eng/">FreeCap</a>.
+(FreeCap est un logiciel libre; SocksCap est propriétaire.)</p>
+<p>Pour davantage d'informations sur "comment torréfier d'autres applications", regardez le
+<a href="http://wiki.noreply.org/wiki/TheOnionRouter/TorifyHOWTO">Torréfaction
+HOWTO</a>.
+</p>
+<hr>
+<a id="verify"></a>
+<h2><a class="anchor" href="#verify">Etape Trois: S'assurer que ça fonctionne</a></h2>
+<br>
+<p>
+Vérifiez que Privoxy et Vidalia fonctionnent. L'icone de Privoxy est un cercle bleu ou vert avec un "P" dedans, et Vidalia s'affiche comme un petit oignon vert lorsque Tor est en fonction, et un petit oignon noir avec une croix rouge lorsque ce n'est pas le cas. Vous pouvez lancer ou arrêter Tor en "cliquant-droit" sur l'icone de Vidalia dans votre barre des tâches et en sélectionnant "Start" ou "Stop" du menu présenté ci-dessous:
+</p>
+<img alt="Icone Vidalia"
+src="../img/screenshot-win32-vidalia.png" width="161" height="215">
+<p>
+À présent, vous devriez essayer votre navigateur web avec Tor activé pour vous assurer que votre adresse IP est anonymisée. Cliquez sur le
+<a
+href="http://serifos.eecs.harvard.edu/cgi-bin/ipaddr.pl?tor=1">Tor
+detector</a> et voyez si vous utilisez bien Tor ou non.
+(Si le site n'est pas disponible, regardez cette <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#IsMyConnectionPrivate">rubrique de la FAQ
+</a> pour trouver d'autres moyens de tester le fonctionnement de votre client Tor.)
+</p>
+<p>Si vous avez un pare-feu personnel qui empêche votre ordinateur de se connecter à lui-même, assurez-vous d'autoriser les connexions depuis vos applications locales vers les ports local "8118" et "9050". Si votre pare-feu bloque les connexions sortantes, ouvrez-le un peu, au moins pour les ports "TCP 80" et "TCP 443", et ensuite regardez
+<a href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#FirewalledClient"> cette entrée de la FAQ</a>.
+</p>
+<p>Si ça ne marche toujours pas, allez-voir cette <a
+href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#ItDoesntWork">entrée de la FAQ
+</a> pour trouver des indices.</p>
+<hr>
+<a id="server"></a>
+<h2><a class="anchor" href="#server">Etape Quatre : Configurez Tor en mode Serveur</a></h2>
+<br>
+<p>Le réseau Tor repose sur les personnes volontaires pour donner de la bande passante. Plus il y aura de personnes qui hébergent des serveurs Tor, plus le réseau Tor sera rapide.
+Si vous avez au moins 20ko/s symétriques, aidez le réseau Tor en configurant votre Tor en mode serveur également. Nous avons implanté de nombreuses options pour faire que ce ne soit pas une grosse contrainte, par exemple la possibilité de fixer la bande-passante utilisée, celle de définir les règles de sorties du réseau Tor de manière à limiter les risques d'être ennuyé-e par des plaintes, ainsi que la gestion des connexions à adresses IP dynamiques.
+</p>
+<p>C'est le fait d'avoir des serveurs partout sur internet qui sécurise son utilisation.
+<a href="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#ServerAnonymity">C'est aussi avantageux pour son propre anonymat d'héberger un noeud Tor
+</a>,
+car les sites distants auxquels vous vous connectez personnellement ne pourront pas savoir si c'est vous qui vous connectez ou si vous ne faites que relayer les connexions d'autres.</p>
+<p>Pour plus d'infos, lire le guide : <a href="../docs/tor-doc-server.html">Configurer un Serveur</a>
+</p>
+<hr>
+<p>Si vous avez des suggestions à faire pour améliorer ce document, <a
+href="../contact.html.fr">envoyez-nous un message !</a>. Merci !</p>
+  </div><!-- #main -->
+</div>
+</div>
+  <div class="bottom" id="bottom">
+     <p>
+     <i><a href="../contact.html.fr" class="smalllink">Webmaster</a></i> -
+      Dernière modification&nbsp;: Fri Jun 16 19:28:33 2006
+      -
+      Dernière compilation&nbsp;: Mon Jul 24 03:18:57 2006
+     </p>
+     <p>
+      Attention: Cette tradcution peut &ecirc;tre obsol&egrave;te. La version anglaise originale est la
+      1.13 alors que la version traduite est bas&eacute;e sur la
+      1.12.
+     </p>
+     <p>
+       Cette page est aussi disponible dans les langues suivantes&nbsp;:
+       <a href="tor-doc-win32.html.en">English</a>, <a href="tor-doc-win32.html.es">espa&ntilde;ol</a>, <a href="tor-doc-win32.html.it">Italiano</a>, <a href="tor-doc-win32.html.pt">Portugu&ecirc;s</a>, <a href="tor-doc-win32.html.ru">&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;&nbsp;(Russkij)</a>.<br>
+       Comment configurer la <a href="http://www.debian.org/intro/cn#howtoset">langue par d&eacute;faut du document</a>.
+     </p>
+  </div>
+</body>
+</html>
