@@ -9,16 +9,19 @@
 #include "uart.h"
 #include "util.h"
 
-#define MAX_X 5
-#define MAX_Y 5
+#define MAX_X 3
+#define MAX_Y 3
 #define MAX_Z 5
 #define COLORS 3
 
 #define PORT_DATA PORTC	
 #define PIN_DATA PINC
 #define DDR_DATA DDRC
-#define PORT_ADRESS PORTA
-#define DDR_ADRESS DDRA
+#define PORT_ADRESS_L PORTA
+#define DDR_ADRESS_L  DDRA
+#define PORT_ADRESS_H PORTB
+#define DDR_ADRESS_H  DDRB
+
 #define PORT_CONTROL PORTD
 #define DDR_CONTROL DDRD
 #define PORT_CONTROL_N_WE PORTD2
@@ -26,6 +29,8 @@
 #define PORT_CONTROL_N_CS PORTD4
 
 #define MAX_BRITH 64
+
+
 
 //#define DEBUG_PROCLATCH
 
@@ -129,34 +134,27 @@ void procLatch() {
 }
 */
 
-/*
-// kann noch deutlich vereinfacht werden.
-void procData() {
-	unsigned char x, y, z, c, i = 0;
-	unsigned char *pix = pixmap;
-	//buildLatch[8].value = 255; 
-	for (z = 0; z < MAX_Z; z++) {
-		//for (y = 0; y < MAX_Y; y++) {
-		for (y = 0; y < MAX_Y*MAX_X*COLORS; y++) {
-			//for (x = 0; x < MAX_X; x++) {
-				//for (c = 0; c < COLORS; c++) {
-					//buildLatch[i].value = pixmap[z][y][x][c];
-					//buildLatch[i].value = *pix++;
-					//buildLatch[i].bitmask = ~(1 << i);
-					if (++i == 8)  {
-						procLatch();
-						i = 0;
-					}
-				//}
-			//}
-		}
-		procLatch();
+
+
+void writeFrame() {
+	unsigned char z, y, i, help;
+	unsigned char * pix = (unsigned char *) pixmap;
+	values[8] = 255;
+	for (z = 0; z < MAX_Z; ++z) {
 		i = 0;
+		for (y = 0; y < MAX_Y * MAX_X * COLORS; ++y) {
+			help      = *pix++;
+			values[i] = help;
+			if (++i == 8)  {
+				writeRam();
+				i = 0;
+			}
+		}
+		writeRam();
 	}
 }
-*/
 
-#define TEST_DATA_SIZE 64
+#define TEST_DATA_SIZE 250
 
 void procLatch_Test() {
 	/*
@@ -198,7 +196,11 @@ void procLatch_Test() {
 }
 
 
-
+void writeRamTest() {
+	unsigned char * pix = (unsigned char *) pixmap, i;
+	for (i = 0; i < 100; i++)
+			pix[i] = i;
+}
 
 
 int main() {
@@ -210,8 +212,11 @@ int main() {
 	uart_putstr("INIT\r\n");
 	PORT_DATA     = 0;
 	DDR_DATA      = 0xff;  // data output
-	PORT_ADRESS   = 0;
-	DDR_ADRESS    = 0xff; 
+	PORT_ADRESS_L = 0;
+	DDR_ADRESS_L  = 0xff; 
+
+	PORT_ADRESS_H = 0;
+	DDR_ADRESS_H  = 0xff; 
 	
 	// Timer 2 zur Preformance Messung initialisieren
 	TCCR1B = 1;	// kein precale also 16 Mhz
@@ -222,9 +227,8 @@ int main() {
 	
 	PORT_CONTROL |= (1 << PORT_CONTROL_N_OE);
 	PORT_CONTROL |= (1 << PORT_CONTROL_N_CS);
-	
-	//procData();
-	uart_putstr("begin procLatch_Test()\r\n");
+	/*
+	uart_putstr("begin writeRam()\r\n");
 	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_CS);
 	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_WE);
 	
@@ -232,25 +236,45 @@ int main() {
 	time0 = TCNT1;
 	writeRam();
 	time1 = TCNT1;
-	
-	uart_putstr("end procLatch_Test()  ticks : ");
+
+	uart_putstr("end writeRam()  ticks : ");
 	itoa(time1 -= time0, help, 10);
 	uart_putstr(help);
 	uart_putstr(" = ");
 	itoa(time1 >> 4, help, 10);
 	uart_putstr(help);
 	uart_putstr("E-06 s\r\n");
+	*/
+	uart_putstr("begin writeFrame()\r\n");
+	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_CS);
+	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_WE);
 	
+	writeRamTest();	// Testdaten intitialisieren
+	time0 = TCNT1;
+	writeFrame();
+	time1 = TCNT1;
+
+	uart_putstr("end writeRam()  ticks : ");
+	itoa(time1 -= time0, help, 10);
+	uart_putstr(help);
+	uart_putstr(" = ");
+	itoa(time1 >> 4, help, 10);
+	uart_putstr(help);
+	uart_putstr("E-06 s\r\n");
+
+
 	DDR_DATA      = 0; // Dataport auf Eingang stellen
 	PORT_CONTROL |=  (1 << PORT_CONTROL_N_WE);
 	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_CS);
 	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_OE);
-	
-	PORT_ADRESS   = 0;
+	unsigned int adr = 0;
 	for (i = 0; i < TEST_DATA_SIZE; i++) {
 		itoa(PIN_DATA, help, 16);
 		PORT_CONTROL |=  (1 << PORT_CONTROL_N_OE);
-		PORT_ADRESS++;
+		adr++;
+		PORT_ADRESS_H = adr >> 8;
+		PORT_ADRESS_L = adr;
+		
 		//PORT_CONTROL |=  (1 << PORT_CONTROL_N_CS);
 		//PORT_CONTROL &= ~(1 << PORT_CONTROL_N_CS);
 		PORT_CONTROL &= ~(1 << PORT_CONTROL_N_OE);
