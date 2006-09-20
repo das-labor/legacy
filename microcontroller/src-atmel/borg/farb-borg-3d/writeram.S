@@ -102,7 +102,7 @@ writeRamLoop:
 
 writeRamLoop1:
  		cp  cnt1, value1
-		brmi writeRamLoop
+		brcs writeRamLoop
 		ld tmp, Z+ 
 		and mask, tmp 
 		out PORT_DATA, mask
