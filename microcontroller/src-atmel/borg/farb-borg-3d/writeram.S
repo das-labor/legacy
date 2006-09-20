@@ -1,6 +1,7 @@
 #define MAX_BRITH 64
 #define PORT_DATA 0x15
-#define PORT_ADRESS 0x1B
+#define PORT_ADRESS_L 0x1B	// PORTA
+#define PORT_ADRESS_H 0x18	// PORTB
 ; config.h einbinden..
 
 
@@ -14,10 +15,10 @@
 #define         Zh              R31
 
 cnt1   = 16
-cnt2   = 17
+cnt2   = 25
 value1 = 18
-value2 = 19
-tmp    = 20
+value2 = 24
+tmp    = 17
 mask   = 21 
 
 
@@ -92,14 +93,18 @@ sort_for_i2:
 		ldi Xh, hi8(values)
 		ldi Zl, lo8(masks) 
 		ldi Zh, hi8(masks)
+		in value2, PORT_ADRESS_L
+		in cnt2, PORT_ADRESS_H
 		ld  value1, X+ 
 		
 writeRamLoop:
 		inc cnt1
 		cpi cnt1, MAX_BRITH
 		brsh end
-		out PORT_ADRESS, cnt1
-
+		adiw value2, 1
+		out PORT_ADRESS_H, cnt2
+		out PORT_ADRESS_L, value2
+		
 writeRamLoop1:
  		cp  cnt1, value1
 		brcs writeRamLoop
@@ -109,7 +114,7 @@ writeRamLoop1:
 		ld value1, X+
 		rjmp writeRamLoop1
 end:		
-	    	pop Zh
+	    pop Zh
 		pop Zl
 		pop Xh
 		pop Xl
