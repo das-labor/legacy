@@ -86,9 +86,6 @@ sort_for_i2:
 		dec  cnt1
 		brpl sort_for_a
 ; Writedata for one Latch to RAM		
-		ldi mask, 0xff
-		out PORT_DATA, mask
-		ldi cnt1, 0xff
 		ldi Xl, lo8(values) 
 		ldi Xh, hi8(values)
 		ldi Zl, lo8(masks) 
@@ -96,14 +93,17 @@ sort_for_i2:
 		in value2, PORT_ADRESS_L
 		in cnt2, PORT_ADRESS_H
 		ld  value1, X+ 
+		ldi cnt1, 0xff
+		ldi mask, 0xff
+		out PORT_DATA, mask
 		
 writeRamLoop:
 		inc cnt1
 		cpi cnt1, MAX_BRITH
 		brsh end
-		adiw value2, 1
 		out PORT_ADRESS_H, cnt2
 		out PORT_ADRESS_L, value2
+		adiw value2, 1
 		
 writeRamLoop1:
  		cp  cnt1, value1
