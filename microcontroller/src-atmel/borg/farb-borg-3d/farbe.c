@@ -9,8 +9,8 @@
 #include "uart.h"
 #include "util.h"
 
-#define MAX_X 3
-#define MAX_Y 3
+#define MAX_X 5 
+#define MAX_Y 5
 #define MAX_Z 5
 #define COLORS 3
 
@@ -134,8 +134,6 @@ void procLatch() {
 }
 */
 
-
-
 void writeFrame() {
 	unsigned char z, y, i, help;
 	unsigned char * pix = (unsigned char *) pixmap;
@@ -197,25 +195,33 @@ void procLatch_Test() {
 
 
 void writeRamTest() {
-	unsigned char * pix = (unsigned char *) pixmap, i;
-	for (i = 0; i < 100; i++)
-			pix[i] = i;
+	unsigned char * pix = (unsigned char *) pixmap;
+	unsigned int i;
+	for (i = 0; i < MAX_Y*MAX_Z*COLORS; i++)
+			*pix++ = 1;
+	for (i = 0; i < MAX_Y*MAX_Z*COLORS; i++)
+			*pix++ = 2;
+	for (i = 0; i < MAX_Y*MAX_Z*COLORS; i++)
+			*pix++ = 3;
+	for (i = 0; i < MAX_Y*MAX_Z*COLORS; i++)
+			*pix++ = 4;
+	for (i = 0; i < MAX_Y*MAX_Z*COLORS; i++)
+			*pix++ = 5;
 }
 
 
 int main() {
 	//unsigned char test[TEST_DATA_SIZE], i;
-	unsigned char i, j = 0, help[8];
-	unsigned int time0, time1;
+	unsigned char j = 0, help[8];
+	unsigned int time0, time1, i;
 	uart_init();
 
 	uart_putstr("INIT\r\n");
 	PORT_DATA     = 0;
 	DDR_DATA      = 0xff;  // data output
-	PORT_ADRESS_L = 0;
-	DDR_ADRESS_L  = 0xff; 
-
-	PORT_ADRESS_H = 0;
+	PORT_ADRESS_L = 0x01;
+	DDR_ADRESS_L  = 0xff;
+	PORT_ADRESS_H = 0x3E;
 	DDR_ADRESS_H  = 0xff; 
 	
 	// Timer 2 zur Preformance Messung initialisieren
@@ -227,7 +233,7 @@ int main() {
 	
 	PORT_CONTROL |= (1 << PORT_CONTROL_N_OE);
 	PORT_CONTROL |= (1 << PORT_CONTROL_N_CS);
-	/*
+	
 	uart_putstr("begin writeRam()\r\n");
 	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_CS);
 	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_WE);
@@ -244,7 +250,7 @@ int main() {
 	itoa(time1 >> 4, help, 10);
 	uart_putstr(help);
 	uart_putstr("E-06 s\r\n");
-	*/
+	/*
 	uart_putstr("begin writeFrame()\r\n");
 	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_CS);
 	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_WE);
@@ -262,13 +268,13 @@ int main() {
 	uart_putstr(help);
 	uart_putstr("E-06 s\r\n");
 
-
+	*/
 	DDR_DATA      = 0; // Dataport auf Eingang stellen
 	PORT_CONTROL |=  (1 << PORT_CONTROL_N_WE);
 	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_CS);
 	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_OE);
-	unsigned int adr = 0;
-	for (i = 0; i < TEST_DATA_SIZE; i++) {
+	unsigned int adr = 0x3f00;
+	for (i = 0; i < MAX_X*MAX_Y*MAX_Z*COLORS*8; i++) {
 		itoa(PIN_DATA, help, 16);
 		PORT_CONTROL |=  (1 << PORT_CONTROL_N_OE);
 		adr++;
