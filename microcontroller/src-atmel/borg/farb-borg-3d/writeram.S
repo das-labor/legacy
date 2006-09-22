@@ -98,6 +98,7 @@ sort_for_i2:
 		out PORT_DATA, mask
 		
 writeRamLoop:
+
 		inc cnt1
 		cpi cnt1, MAX_BRITH
 		brsh end
@@ -109,12 +110,14 @@ writeRamLoop1:
  		cp  cnt1, value1
 		brcs writeRamLoop
 		ld tmp, Z+ 
-		and mask, tmp 
+		and mask, tmp
 		out PORT_DATA, mask
 		ld value1, X+
 		rjmp writeRamLoop1
 end:		
-	    pop Zh
+	  out PORT_ADRESS_H, cnt2
+		out PORT_ADRESS_L, value2
+	  pop Zh
 		pop Zl
 		pop Xh
 		pop Xl
