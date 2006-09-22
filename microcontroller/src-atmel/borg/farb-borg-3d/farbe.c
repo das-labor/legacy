@@ -198,15 +198,15 @@ void writeRamTest() {
 	unsigned char * pix = (unsigned char *) pixmap;
 	unsigned int i;
 	for (i = 0; i < MAX_Y*MAX_Z*COLORS; i++)
-			*pix++ = 1;
+			*pix++ = i/8;
 	for (i = 0; i < MAX_Y*MAX_Z*COLORS; i++)
-			*pix++ = 2;
+			*pix++ = i/8;
 	for (i = 0; i < MAX_Y*MAX_Z*COLORS; i++)
-			*pix++ = 3;
+			*pix++ = i/8;
 	for (i = 0; i < MAX_Y*MAX_Z*COLORS; i++)
-			*pix++ = 4;
+			*pix++ = i/8;
 	for (i = 0; i < MAX_Y*MAX_Z*COLORS; i++)
-			*pix++ = 5;
+			*pix++ = i/8;
 }
 
 
@@ -219,9 +219,9 @@ int main() {
 	uart_putstr("INIT\r\n");
 	PORT_DATA     = 0;
 	DDR_DATA      = 0xff;  // data output
-	PORT_ADRESS_L = 0x01;
+	PORT_ADRESS_L = 0x00;
 	DDR_ADRESS_L  = 0xff;
-	PORT_ADRESS_H = 0x3E;
+	PORT_ADRESS_H = 0x00;
 	DDR_ADRESS_H  = 0xff; 
 	
 	// Timer 2 zur Preformance Messung initialisieren
@@ -233,7 +233,7 @@ int main() {
 	
 	PORT_CONTROL |= (1 << PORT_CONTROL_N_OE);
 	PORT_CONTROL |= (1 << PORT_CONTROL_N_CS);
-	
+	/*
 	uart_putstr("begin writeRam()\r\n");
 	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_CS);
 	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_WE);
@@ -250,7 +250,7 @@ int main() {
 	itoa(time1 >> 4, help, 10);
 	uart_putstr(help);
 	uart_putstr("E-06 s\r\n");
-	/*
+	*/
 	uart_putstr("begin writeFrame()\r\n");
 	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_CS);
 	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_WE);
@@ -268,22 +268,22 @@ int main() {
 	uart_putstr(help);
 	uart_putstr("E-06 s\r\n");
 
-	*/
+	
 	DDR_DATA      = 0; // Dataport auf Eingang stellen
 	PORT_CONTROL |=  (1 << PORT_CONTROL_N_WE);
 	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_CS);
 	PORT_CONTROL &= ~(1 << PORT_CONTROL_N_OE);
-	unsigned int adr = 0x3f00;
-	for (i = 0; i < MAX_X*MAX_Y*MAX_Z*COLORS*8; i++) {
-		itoa(PIN_DATA, help, 16);
-		PORT_CONTROL |=  (1 << PORT_CONTROL_N_OE);
-		adr++;
+	//PORT_CONTROL &= ~(1 << PORT_CONTROL_N_OE);
+	unsigned int adr = 0x0000;
+	for (i = 0; i < 5*10*64; i++) {
+		//PORT_CONTROL &= ~(1 << PORT_CONTROL_N_OE);
 		PORT_ADRESS_H = adr >> 8;
 		PORT_ADRESS_L = adr;
-		
+		adr++;
 		//PORT_CONTROL |=  (1 << PORT_CONTROL_N_CS);
 		//PORT_CONTROL &= ~(1 << PORT_CONTROL_N_CS);
-		PORT_CONTROL &= ~(1 << PORT_CONTROL_N_OE);
+		
+		itoa(PIN_DATA, help, 16);
 		uart_putstr(help);
 		if ((j & 1) == 1)
 			uart_putc(' ');
@@ -291,7 +291,7 @@ int main() {
 			j = 0;
 			uart_putstr("\r\n"); 
 		}
-		wait(1);
+		//wait(1);
 	}
 	
 	//uart_hexdump(test, TEST_DATA_SIZE);
