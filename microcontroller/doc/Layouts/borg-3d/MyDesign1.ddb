@@ -1,57 +1,21 @@
 [Design Root]
 Version=1.0.0
 [Directory]
-Sheet1.REP=Text
-Sheet1.cfg=Text
-Sheet1.ERC=Text
-Sheet1.NET=Text
-europlatine.PCB=PCB
-layout.PCB=PCB
-Place1.Plc=Placer
-Preview Copy of layout.PPC=PCBPrint
 HighSide.Sch=Sch
 LowSide.Sch=Sch
-LowSide.REP=Text
-LowSide.cfg=Text
 HighSide.NET=Text
 Highside.PCB=PCB
-Preview Highside.PPC=PCBPrint
 LowSide.NET=Text
 Lowside.PCB=PCB
-Preview Lowside.PPC=PCBPrint
-[Sheet1.REP]
-Editor Kind=Text
-[Sheet1.cfg]
-Editor Kind=Text
-[Sheet1.ERC]
-Editor Kind=Text
-[Sheet1.NET]
-Editor Kind=Text
-[europlatine.PCB]
-Editor Kind=PCB
-[layout.PCB]
-Editor Kind=PCB
-[Place1.Plc]
-Editor Kind=Placer
-[Preview Copy of layout.PPC]
-Editor Kind=PCBPrint
 [HighSide.Sch]
 Editor Kind=Sch
 [LowSide.Sch]
 Editor Kind=Sch
-[LowSide.REP]
-Editor Kind=Text
-[LowSide.cfg]
-Editor Kind=Text
 [HighSide.NET]
 Editor Kind=Text
 [Highside.PCB]
 Editor Kind=PCB
-[Preview Highside.PPC]
-Editor Kind=PCBPrint
 [LowSide.NET]
 Editor Kind=Text
 [Lowside.PCB]
 Editor Kind=PCB
-[Preview Lowside.PPC]
-Editor Kind=PCBPrint
