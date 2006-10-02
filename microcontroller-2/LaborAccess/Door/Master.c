@@ -1,4 +1,3 @@
-
 #include "avrx.h"
 
 #define TypeError           0x0000
