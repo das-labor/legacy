@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="ISO-8859-1"?> 
+ 
+<rss version="2.0"> 
+ 
+<channel> 
+ 
+<title>LABOR Bochum: Termine</title> 
+
+<link>http://www.das-labor.org</link> 
+ 
+<description>Terminfeed des LABORs</description> 
+ 
+<language>de-de</language> 
+
+<pubDate>Mon, 02 Oct 2006 21:42:03 CEST</pubDate>
+<item>
+<title> Bochumer GNU/Linux User Group</title>
+<description>02.10.2006 (Mo) -  Bochumer GNU/Linux User Group</description>
+<link>http://www.bglug.de/</link>
+</item>
+
+<item>
+<title> CCC-RP :: Treffen</title>
+<description>03.10.2006 (Di) -  CCC-RP :: Treffen</description>
+<link>http://www.chaos-west.de/wiki/index.php?title=ChaosInBochum</link>
+</item>
+
+<item>
+<title>Open Meeting</title>
+<description>04.10.2006 (Mi) - Open Meeting</description>
+<link>http://wiki.das-labor.org/wiki/index.php?title=Open_Meeting</link>
+</item>
+
+<item>
+<title>L4 Microkernel Design</title>
+<description>10.10.2006 (Di) - L4 Microkernel Design</description>
+<link>http://wiki.das-labor.org/wiki/index.php?title=L4_Microkernel_Design</link>
+</item>
+
+<item>
+<title>Bootstrap Meeting</title>
+<description>11.10.2006 (Mi) - Bootstrap Meeting</description>
+<link>http://wiki.das-labor.org/wiki/index.php?title=Bootstrap_Meeting</link>
+</item>
+
+<item>
+<title> Bochumer GNU/Linux User Group</title>
+<description>16.10.2006 (Mo) -  Bochumer GNU/Linux User Group</description>
+<link>http://www.bglug.de/</link>
+</item>
+
+<item>
+<title>Open Meeting</title>
+<description>18.10.2006 (Mi) - Open Meeting</description>
+<link>http://wiki.das-labor.org/wiki/index.php?title=Open_Meeting</link>
+</item>
+
+<item>
+<title>C.I.P.H.E.R.-Review </title>
+<description>24.10.2006 (Di) - C.I.P.H.E.R.-Review </description>
+<link>http://wiki.das-labor.org/wiki/index.php?title=C.I.P.H.E.R.-Review</link>
+</item>
+
+<item>
+<title>Open Meeting</title>
+<description>25.10.2006 (Mi) - Open Meeting</description>
+<link>http://wiki.das-labor.org/wiki/index.php?title=Open_Meeting</link>
+</item>
+
+<item>
+<title> Bochumer GNU/Linux User Group</title>
+<description>30.10.2006 (Mo) -  Bochumer GNU/Linux User Group</description>
+<link>http://www.bglug.de/</link>
+</item>
+
+<item>
+<title>Spass mit Web 2.0</title>
+<description>31.10.2006 (Di) - Spass mit Web 2.0</description>
+<link>http://wiki.das-labor.org/wiki/index.php?title=Spass_mit_Web_2.0</link>
+</item>
+
+</channel> 
+</rss>
