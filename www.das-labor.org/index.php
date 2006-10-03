@@ -70,7 +70,7 @@ a:hover   { color: #555555; background-color: none; text-decoration: none; }
 <li><a href="http://wiki.das-labor.org/wiki/index.php?title=Kontakt">Kontakt</a></li>
 <li><a href="http://wiki.das-labor.org/wiki/index.php?title=Projekte">Projekte</a></li>
 <li><a href="http://wiki.das-labor.org/wiki/index.php?title=Wegbeschreibung">Wegbeschreibung</a></li>
-<li><a href="http://wiki.das-labor.org/wiki/index.php?title=%C3%9Cber">&Uuml;ber uns</a></li>
+<li><a href="http://wiki.das-labor.org/wiki/index.php?title=%C3%9Cber">&Uuml;ber uns</a> (<em><a href="download/LABOR-Flyer.pdf">pdf</a></em>) (<em><a href="download/LABOR-Flyer.png">png</a></em>)</li>
 <li><a href="impressum.html">Impressum</a></li>
 <br />
 <li><a href="http://blog.das-labor.org/">weblog</a></li>
