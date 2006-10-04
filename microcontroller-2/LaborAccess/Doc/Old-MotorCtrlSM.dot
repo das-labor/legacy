@@ -1,0 +1,56 @@
+digraph MotorControlStateMachine	{
+  rankdir=LR	 
+  node [shape=circle fixedsize=true width=1.5];
+
+  
+  Closed [group="main"];
+  Open [group="main"];
+
+  Closing_1 [group="main"];
+  Closing_2 [group="main"];
+
+  Opening_1 [group="main"];
+  Opening_2 [group="main"];
+  
+  Messed [group="Messed" ];
+  Recover_Open [group="Messed" ];
+  Recover_Close [group="Messed" ];
+  
+  
+//  {rank=min; Closed;}
+//  {rank=max; Open;}  
+//   {rank=same; Opening_1; Closing_2;}
+//   {rank=same; Opening_2; Closing_1;}
+//  {rank=same; Messed;}
+//   {rank=max; Recover_Open}
+//   {rank=min; Recover_Close}
+  
+  subgraph cluster0 {
+
+    Closed      -> Opening_1  [ label = "Open Button" ];
+    Opening_1   -> Opening_2  [ label = "edge = -1" ];
+    Opening_2   -> Open       [ label = "edge = -1" ];
+  
+    Open        -> Closing_1  [ label = "Close Button" ];
+    Opening_1   -> Closing_2  [ label = "timeout"];
+    Opening_2   -> Closing_1  [ label = "timeout"];
+  
+    Closing_1   -> Closing_2  [ label = "edge = 1"];
+    Closing_2   -> Closed  [ label = "edge = 1"];
+  
+    Open        -> Messed [ label = "edge" ];
+    Closed      -> Messed [ label = "edge" ];
+  
+
+    Recover_Open -> Open [label ="timeout"];
+    Recover_Close -> Closed [label ="timeout"];
+    
+  }
+  
+    Messed      -> Recover_Open [ label= "Open Button"];
+    Messed      -> Recover_Close [ label= "Close Button"];
+     
+
+  
+}
+
