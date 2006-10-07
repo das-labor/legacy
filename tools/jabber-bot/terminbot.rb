@@ -2,6 +2,7 @@
 
 require 'xmpp4r'
 require 'xmpp4r/roster/helper/roster'
+require 'xmpp4r/vcard/helper/vcard'
 require 'rexml/document'
 require 'date'
 
@@ -93,53 +94,37 @@ end
 #puts(listall(at))
 
 # Mit Jabber-Server verbinden
-client = Jabber::Client.new(Jabber::JID.new('terminbot@das-labor.org/LABOR-Termine'))
-client.connect
-client.auth('foobar23')
-
-client.send(Jabber::Presence.new.set_show(:chat).set_status('LABOR-Termine'))
-#client.send(Jabber::Presence.new(:chat, 'LABOR-Termine'))
+@client = Jabber::Client.new(Jabber::JID.new('terminbot@das-labor.org/LABOR-Veranstaltungen'))
+@client.connect
+@client.auth('foobar23')
 
 
-# So, eigentlich macht das hier einen Roster, und acceptet alle Subscriptions
-# tut's aber nicht.
-roster = Jabber::Roster::Helper.new(client)
+# Roster bauen
+@roster = Jabber::Roster::Helper.new(@client)
 
-roster.add_subscription_request_callback{ |pres|
-     my_roster.accept_subscription(pres.from)
-	 puts("Subscription request from #{name}")
+# Alle subscription requests akzeptieren und ebenfalls subscription requesten
+@roster.add_subscription_request_callback { |item, presence|
+	if presence.type == :subscribe
+    	@roster.accept_subscription(presence.from)
+#		puts("subscribed")
+		item.subscribe()
+	end
 }
 
-
-# Items aus dem Roster lesen und Empfängerliste erstellen
-def recipients 
-	jids = String.new("")
-	roster.groups.each { |group|
-		roster.find_by_group(group).each { |item|
-    		jids << "#{item.jid} "
-		}
-	}
-	return jids
-end
-
-# Terminerinnerung an alle User im Roster
-def reminder(at)
-	morgen = String.new("Morgen im LABOR: \n")
-	at.each { |term|
-	if term.date == Date.today+1 then
-        morgen << "\n#{term}  #{term.link}";
+# Wenn ein User unsubscribet, also die Authorisation zurückzieht,
+# entferne diesen User aus dem Roster des Bots
+@roster.add_subscription_callback { |item, presence|
+    if presence.type == :unsubscribed
+#        puts("unsubscribed")
+        item.remove()
     end
-    }
-	if morgen != "Morgen im LABOR: \n"
-		msg = Jabber::Message.new(jids)
-		msg.type = :chat
-		msg.set_body(morgen)
-		client.send(msg)
-	end
-end
+}
+
+@client.send(Jabber::Presence.new.set_show(:chat).set_status('waiting for your requests'))
+#@client.send(Jabber::Presence.new(:chat, 'LABOR-Termine'))
 
 
-client.add_message_callback { |m|
+@client.add_message_callback { |m|
 #	puts(m.body())
 #	puts Date.today
 	if m.body == "tomorrow" then
@@ -147,22 +132,24 @@ client.add_message_callback { |m|
 			answer = Jabber::Message.new(m.from)
 			answer.type = :chat
 			answer.set_body(tomorrow(at))
-			client.send(answer)
+			@client.send(answer)
 		end
     elsif m.body == "today" then
 		if(today(at))
 	        answer = Jabber::Message.new(m.from)
     	    answer.type = :chat
         	answer.set_body(today(at))
-	        client.send(answer)
+	        @client.send(answer)
 		end
     elsif m.body == "all" then
         if(listall(at))
             answer = Jabber::Message.new(m.from)
             answer.type = :chat
             answer.set_body(listall(at))
-            client.send(answer)
+            @client.send(answer)
         end
+    elsif m.body == "unsubscribe" then
+		remove_jid(m.from)
 	elsif
 		answer = Jabber::Message.new(m.from)
 		answer.type = :chat
@@ -174,8 +161,10 @@ today		Shows todays events
 tomorrow	Shows tomorrows events
 ")
 
-        client.send(answer)
+        @client.send(answer)
 	end
 }
 
 Thread.stop
+
+@client.close
