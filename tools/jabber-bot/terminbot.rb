@@ -1,10 +1,31 @@
+##########################################################################
+## Terminbot
+##
+## Author: til ät das-labor döt org
+##
+## WORKS: 
+## * subscripe unsubscribe users
+## * respond to certain messages
+## * reminde subscribers of events (reminder.rb)
+## * keep-alive by sending version-requests to the server
+##
+## TODO:
+## * some proper keep-alive routine
+###########################################################################
+
+
+
+
 #!/usr/bin/env ruby
 
 require 'xmpp4r'
 require 'xmpp4r/roster/helper/roster'
+require 'xmpp4r/version/iq/version'
 require 'rexml/document'
 require 'date'
 
+#keep-alive interval
+@interval=30
 
 XMLSOURCE=ARGV[0]+"/termine.xml";
 
@@ -101,6 +122,7 @@ end
 # Roster bauen
 @roster = Jabber::Roster::Helper.new(@client)
 
+
 # Alle subscription requests akzeptieren und ebenfalls subscription requesten
 @roster.add_subscription_request_callback { |item, presence|
 	if presence.type == :subscribe
@@ -134,19 +156,15 @@ The bot will remind you one day, and again 4h before any event. Furthermore it k
 #	puts(m.body())
 #	puts Date.today
 	if m.body == "tomorrow" then
-		if(tomorrow(at))
-			answer = Jabber::Message.new(m.from)
-			answer.type = :chat
-			answer.set_body(tomorrow(at))
-			@client.send(answer)
-		end
+		answer = Jabber::Message.new(m.from)
+		answer.type = :chat
+		answer.set_body(tomorrow(at))
+		@client.send(answer)
     elsif m.body == "today" then
-		if(today(at))
-	        answer = Jabber::Message.new(m.from)
-    	    answer.type = :chat
-        	answer.set_body(today(at))
-	        @client.send(answer)
-		end
+        answer = Jabber::Message.new(m.from)
+   	    answer.type = :chat
+       	answer.set_body(today(at))
+        @client.send(answer)
     elsif m.body == "all" then
         if(listall(at))
             answer = Jabber::Message.new(m.from)
@@ -164,13 +182,28 @@ Command not known!
 I know the following commands:
 all			Shows all events
 today		Shows todays events
-tomorrow	Shows tomorrows events
+tomorrow	shows tomorrows events
+
+To unsubscribe from my service, just revoke my authorization or delete me from your roster.
 ")
 
         @client.send(answer)
 	end
 }
 
+# Die Verbindung bricht ständig weg.
+# Wir brauchen etwas, das wenig, aber regelmäßig Traffic macht
+def keepalive
+	loop {
+		iq = Jabber::Version::IqQueryVersion.new()
+#		puts("#{iq}")
+		@client.send(iq)
+#		puts("sent")
+		sleep(@interval)
+	}
+end
+
+keepalive()
 Thread.stop
 
 @client.close
