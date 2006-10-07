@@ -2,7 +2,6 @@
 
 require 'xmpp4r'
 require 'xmpp4r/roster/helper/roster'
-require 'xmpp4r/vcard/helper/vcard'
 require 'rexml/document'
 require 'date'
 
@@ -108,6 +107,13 @@ end
     	@roster.accept_subscription(presence.from)
 #		puts("subscribed")
 		item.subscribe()
+# Dem User erklären, warum er den Bot authorisieren muss und was der Bot kann
+		instruction = Jabber::Message.new(item.jid)
+		instruction.type = :chat
+		instruction.set_body("Welcome to the event reminder service!\n
+For the bot to work properly (including being able to unsubscribe from the bot!), you have to grant your authorization. 
+The bot will remind you one day, and again 4h before any event. Furthermore it knows the following commands: today, tomorrow, all")
+		@client.send(instruction)
 	end
 }
 
