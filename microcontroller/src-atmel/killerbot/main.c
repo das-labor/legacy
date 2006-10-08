@@ -159,32 +159,27 @@ ISR(TIMER0_OVF_vect)
 	/*** (1) TIMETABLE READING ***
 	 * Reads the timetable and stores changes/actions in the
 	 * temporary motor instruction register.
-	 *
+	 * TODO: write the above... some time
 	 */
 
-	/*** MOTOR & MECHANICS FUCKUP PROTECTION ***
+	/*** (2) MOTOR & MECHANICS FUCKUP PROTECTION ***
 	 * if portc0 (block-pin) is set to low, disable
 	 * all ports and add currently running commands
 	 * to list of forbidden commands to prevent their
 	 * execution in the next cycle.
 	 */
-	// If adc has a value for us...
 	if ( ~PINC & _BV(PC0) )
 	{
 		#ifdef DBG
 			uart_putstr("\r\n* MOTOR BLOCKED! ");
 		#endif
-		// Motor(s) is (are) blocking
-		// disable them in the next execution round &
-		// leave the rest (timed actions) as they are,
-		// unless they are prone to conflicts.
 		MIR = temp_mir & ~(MIR);
 	} else
 	{
 		MIR = temp_mir;
 	}
 
-	// ( 3 ) EXECUTION OF COMMANDS: read MIR and execute it.
+	// (3) EXECUTION OF COMMANDS: read MIR and execute it.
 	/* ARMS CONTROL */
 	if (MIR & B_ARMS_ON)
 	{
