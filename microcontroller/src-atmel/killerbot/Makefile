@@ -23,6 +23,7 @@ LAPFLASHCMD   ?= lapcontrol -s rl
 #############################################################################
 # Rules
 all: $(OUT).elf lst text eeprom
+	cp ../../lib/uart.{h,c} ./
 
 clean:
 	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec

@@ -3,26 +3,9 @@
 #include <stdint.h>
 
 #include "util.h"
-#include "../../lib/uart.h"
+#include "uart.h"
 
 #define TIMETABLE_SIZE 32
-
-#define M_LEFT	_BV(PB1)
-#define M_RIGHT _BV(PB3)
-#define M_BOTH  (M_LEFT + M_RIGHT)
-#define M_FW 0x00
-#define M_BW 0x01
-
-#define ARMS _BV(PD6)
-#define ARMS_OPEN 0x01
-#define ARMS_CLOSE 0x00
-
-#ifndef F_CPU
-	#define F_CPU 8000000
-#endif
-#define UART_UBRR_CALC(BAUD_,FREQ_) ((FREQ_)/((BAUD_)*16L)-1)
-#define UART_BAUD_RATE 9600
-
 
 /* VARIABLES AS STORED IN MIR */
 #define B_ARMS_ON			0x80  // right; bit #7
@@ -61,11 +44,6 @@
 
 #define DBG	1
 
-
-
-// switch motors off (see isr_motopwm)
-//volatile uint8_t speed_ml=0;
-//volatile uint8_t speed_mr=0;
 
 volatile uint8_t MIR = 0x00; // mechanics/motor instruction register
 volatile uint8_t timetable[TIMETABLE_SIZE] = {0x00};
@@ -299,9 +277,6 @@ uint8_t add_action ( uint8_t in_action, uint8_t in_delay )
 }
 
 void main (void){
-	uint16_t adcval;
-	uint8_t i=0;
-
 	// INIT
 	DDRC  &= ~(_BV(DDC0)); // set C0 to input
 	PINC |= _BV(PC0);  // enable pullup
