@@ -1,5 +1,5 @@
 
-OBJ = main.o util.o uart.o itoa.o
+OBJ = main.o util.o uart.o
 
 # Default values
 OUT           ?= image
