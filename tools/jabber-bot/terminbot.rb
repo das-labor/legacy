@@ -248,11 +248,7 @@ setup_connection()
 setup_roster()
 connect()
 setup_messagehandler()
-
-Thread.stop
-
-Thread.new {
 keepalive()
-}
+Thread.stop
 
 @client.close
