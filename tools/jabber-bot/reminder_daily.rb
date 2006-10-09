@@ -4,7 +4,7 @@ require 'xmpp4r'
 require 'xmpp4r/roster/helper/roster'
 require 'rexml/document'
 require 'date'
-
+require 'config.rb'
 
 XMLSOURCE=ARGV[0]+"/termine.xml";
 
@@ -51,12 +51,12 @@ at.sort!{ |a,b| a.date <=> b.date }
 
 
 # Mit Jabber-Server verbinden
-@client = Jabber::Client.new(Jabber::JID.new('terminbot@das-labor.org/LABOR-Reminder'))
+@client = Jabber::Client.new(Jabber::JID.new(@account))
 @client.connect
-@client.auth('foobar23')
+@client.auth(@password)
 
-@client.send(Jabber::Presence.new.set_show(:chat).set_status('reminding...'))
-#client.send(Jabber::Presence.new(:chat, 'LABOR-Termine'))
+@client.send(Jabber::Presence.new.set_show(:chat).set_status(@remstatus))
+#client.send(Jabber::Presence.new(:chat, '@remstatus'))
 
 
 # So, eigentlich macht das hier einen Roster, und acceptet alle Subscriptions
@@ -83,13 +83,13 @@ Thread.stop
 
 # Terminerinnerung für den nächsten Tag an alle User im Roster
 def reminder_tomorrow(at)
-    morgen = String.new("\nMorgen im LABOR:")
+    morgen = String.new(@introtomorrow)
     at.each { |term|
     if term.date == Date.today+1 then
         morgen << "\n#{term} \n #{term.link}\n\n";
     end
     }
-    if morgen != "Morgen im LABOR:"
+    if morgen != @introtomorrow
 		@jids.each { |jid|
 	        msg = Jabber::Message.new("#{jid}")
     	    msg.type = :chat
@@ -99,11 +99,6 @@ def reminder_tomorrow(at)
     end
 	puts(morgen)
 end
-#puts("----\n")
-#@jids.each { |jid|
-#    puts("#{jid}")
-#}
-#puts("----\n")
 
 reminder_tomorrow(at)
 

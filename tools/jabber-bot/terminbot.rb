@@ -23,43 +23,7 @@ require 'xmpp4r/roster/helper/roster'
 require 'xmpp4r/version/iq/version'
 require 'rexml/document'
 require 'date'
-
-# config options. adjust to your needs
-######################################
-
-@interval=30	#keep-alive interval
-@account = 'terminbot@das-labor.org/LABOR-Termine'	# the bots account / resource
-@password = 'foobar23'	# password (ah, no! just kidding! password must have a different meaning)
-@status = 'waiting for your requests'	# the bots status message
-
-# The answer, if there is no event today
-@notoday = "Heute ist keine Veranstaltung im LABOR. Komm' vorbei und mach etwas eigenes! Das LABOR wartet auf Dich."
-# The answer, if there is no event tomorrow
-@notomorrow = "Morgen ist keine Veranstaltung im LABOR. Komm' vorbei und mach etwas eigenes! Das LABOR wartet auf Dich."
-# The leading text for today's events
-@introtoday = "Heute im LABOR:"
-@introtomorrow = "Morgen im LABOR:"
-
-# the text a user gets on subscription
-@instructiontext = "Welcome to the event reminder service!\n
-For the bot to work properly (including being able to unsubscribe from the bot!), you have to grant your authorization.
-The bot will remind you one day, and again 4h before any event. Furthermore it knows the following commands: today, tomorrow, all"
-
-# help message
-@helpmessage = "
-Command not known!
-I know the following commands:
-all         Shows all events
-today       Shows todays events
-tomorrow    shows tomorrows events
-
-To unsubscribe from my service, just revoke my authorization or delete me from your roster."
-
-# Tim requested an annoyance feature
-@timsjid = "opti ät amessage dot de" # for the bot to work correctly, enter Tim's correct jid here
-@annoytext = "hoho!"
-
-######################################
+require 'config.rb'
 
 XMLSOURCE=ARGV[0]+"/termine.xml";
 
@@ -142,8 +106,11 @@ def listall(at)
 	return alles
 end
 
-
-#puts(listall(at))
+if @debug == 1
+	puts
+	puts("listall:")
+	puts(listall(@at))
+end
 
 def setup_connection
 	# Mit Jabber-Server verbinden
@@ -161,13 +128,18 @@ def setup_roster
 	@roster.add_subscription_request_callback { |item, presence|
 		if presence.type == :subscribe
 	    	@roster.accept_subscription(presence.from)
-			# puts("subscribed")
 			item.subscribe()
+			if @debug == 1
+				puts("Accepted subscription from jid #{presence.from}. Sent subscribe to this user.")
+			end
 			# Dem User erklären, warum er den Bot authorisieren muss und was der Bot kann
 			instruction = Jabber::Message.new(item.jid)
 			instruction.type = :chat
 			instruction.set_body(@instructiontext)
 			@client.send(instruction)
+            if @debug == 1
+                puts("Sent instruction text to user  #{presence.from}.")
+            end
 		end
 	}
 
@@ -177,6 +149,9 @@ def setup_roster
 	    if presence.type == :unsubscribed
 			# puts("unsubscribed")
 	        item.remove()
+            if @debug == 1
+                puts("Received unsubscribe request from #{presence.from}. Removed user from roster.")
+            end
 	    end
 	}
 end
@@ -195,11 +170,17 @@ def setup_messagehandler
 		answer.type = :chat
 		answer.set_body(tomorrow(@at))
 		@client.send(answer)
+        if @debug == 1
+	        puts("Sent content \'tomorrow\' to #{m.from}.")
+        end
     elsif m.body == "today" then
         answer = Jabber::Message.new(m.from)
    	    answer.type = :chat
        	answer.set_body(today(@at))
         @client.send(answer)
+        if @debug == 1
+            puts("Sent content \'today\' to #{m.from}.")
+        end
 #    elsif m.body == "next7" then
 #		answer = Jabber::Message.new(m.from)
 #        answer.type = :chat
@@ -211,6 +192,9 @@ def setup_messagehandler
             answer.type = :chat
             answer.set_body(listall(@at))
             @client.send(answer)
+		    if @debug == 1
+    	        puts("Sent content \'all\' to #{m.from}.")
+	        end
         end
 # as tim requested an annoyance feature for the bot, there it is
 	elsif m.body == "annoytim" then
@@ -222,11 +206,17 @@ def setup_messagehandler
 		annoy.set_body(@annoytext)
 		@client.send(annoy)
         @client.send(answer)
+        if @debug == 1
+            puts("User #{m.from} annoyed Tim.")
+        end
 	elsif
 		answer = Jabber::Message.new(m.from)
 		answer.type = :chat
         answer.set_body(@helpmessage)
         @client.send(answer)
+        if @debug == 1
+            puts("Sent help message to #{m.from}.")
+        end
 	end
 }
 end
@@ -236,19 +226,64 @@ end
 def keepalive
 	loop {
 		iq = Jabber::Version::IqQueryVersion.new()
-#		puts("#{iq}")
 		@client.send(iq)
-#		puts("sent")
+		if @debug == 1
+			puts("Keep-alive request sent:")
+			puts("#{iq}")
+		end
 		sleep(@interval)
 	}
 end
 
+# debug routinen (allgemein)
+if @debug == 1
+	puts("Checking variables and content functions")
+    puts("today:")
+	puts(today(@at))
+	puts("tomorrow:")
+	puts(tomorrow(@at))
+    puts("listall:")
+    puts(listall(@at))
+	puts("\n")
+	puts("notoday: " + @notoday)
+	puts("notomorrow: " +  @notomorrow)
+	puts("introtoday: " + @introtoday)
+	puts("introtomorrow: " + @introtomorrow)
+	puts("instructiontext: " + @instructiontext)
+	puts("helpmessage: " + @helpmessage)
+end
+
+
+
 # und alles ausführen (in der richtigen Reihenfolge)
+if @debug == 1
+	puts("Setting up the connection with the following parameters: ")
+	puts("account: " + @account)
+	puts("password: " + @password)
+	puts("statusmessage: " + @status)
+end
 setup_connection()
+
+if @debug == 1
+	puts("Setting up the roster...")
+end
 setup_roster()
+
+if @debug == 1
+	puts("Connecting to server...")
+end
 connect()
+
+if @debug == 1
+	puts("Setting up the message handler...")
+end
 setup_messagehandler()
+
+if @debug == 1
+	puts("Setting up keepalive with interval #{@interval}")
+end
 keepalive()
+
 Thread.stop
 
 @client.close
