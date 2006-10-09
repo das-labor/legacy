@@ -203,7 +203,7 @@ def setup_messagehandler
         answer.set_body("You just annoyed Tim")
 		annoy = Jabber::Message.new(@timsjid)
 		annoy.type = :chat
-		annoy.set_body(@annoytext)
+		annoy.set_body(@annoytext + "\n This message has been requested by #{m.from} for reasons of annoyment. Do not blame me!")
 		@client.send(annoy)
         @client.send(answer)
         if @debug == 1
