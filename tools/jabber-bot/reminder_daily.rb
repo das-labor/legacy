@@ -51,7 +51,7 @@ at.sort!{ |a,b| a.date <=> b.date }
 
 
 # Mit Jabber-Server verbinden
-@client = Jabber::Client.new(Jabber::JID.new(@account))
+@client = Jabber::Client.new(Jabber::JID.new(@remaccount))
 @client.connect
 @client.auth(@password)
 
