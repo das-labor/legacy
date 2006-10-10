@@ -34,8 +34,8 @@
 </termin>
 <termin>
   <month>10</month>
-  <text>L4 Microkernel Design</text>
-  <hour>19</hour>
+  <text>MATCH1</text>
+  <hour>04</hour>
   <day>10</day>
   <year>06</year>
   <min>30</min>
@@ -45,14 +45,36 @@
 </termin>
 <termin>
   <month>10</month>
-  <text>Bootstrap Meeting</text>
-  <hour>19</hour>
+  <text>MATCH2</text>
+  <hour>05</hour>
   <day>11</day>
   <year>06</year>
   <min>30</min>
-  <link>http://wiki.das-labor.org/wiki/index.php?title=Bootstrap_Meeting</link>
-  <wday>Mi</wday>
-  <match>* Mi 11.10.06 19:30, [[Bootstrap Meeting]]</match>
+  <link>http://wiki.das-labor.org/wiki/index.php?title=L4_Microkernel_Design</link>
+  <wday>Di</wday>
+  <match>* Di 10.10.06 19:30, [[L4 Microkernel Design]]</match>
+</termin>
+<termin>
+  <month>10</month>
+  <text>MATCH3</text>
+  <hour>04</hour>
+  <day>12</day>
+  <year>06</year>
+  <min>30</min>
+  <link>http://wiki.das-labor.org/wiki/index.php?title=L4_Microkernel_Design</link>
+  <wday>Di</wday>
+  <match>* Di 10.10.06 19:30, [[L4 Microkernel Design]]</match>
+</termin>
+<termin>
+  <month>10</month>
+  <text>MATCH4</text>
+  <hour>04</hour>
+  <day>13</day>
+  <year>06</year>
+  <min>30</min>
+  <link>http://wiki.das-labor.org/wiki/index.php?title=L4_Microkernel_Design</link>
+  <wday>Di</wday>
+  <match>* Di 10.10.06 19:30, [[L4 Microkernel Design]]</match>
 </termin>
 <termin>
   <month>10</month>
