@@ -5,7 +5,7 @@
 @remindertime = "1100" # at what time do we check if there is an event tomorrow?
 @interval=30    # keep-alive interval
 @account = 'terminbot@das-labor.org/LABOR-Termine'  # the bots account / resource
-@remaccount = 'james@das-labor.org/ReminderJames'  # the bots account / reminder reesource
+@remaccount = 'terminbot@das-labor.org/Reminder'  # the bots account / reminder reesource
 @password = 'foobar23'  # password (ah, no! just kidding! password must have a different meaning)
 @status = 'waiting for your requests'   # the bots status message
 @remstatus = 'on reminding duty'	# the bots status message when reminding
