@@ -235,6 +235,14 @@ def keepalive
 	}
 end
 
+#def reminder_daily(rtime)
+#	curtime = "#{DateTime.now.hour}#{DateTime.now.min}"
+#	if curtime == rtime
+#		# call the reminder
+#		# reconnect bot
+#	end
+#end
+
 # debug routinen (allgemein)
 if @debug == 1
 	puts("Checking variables and content functions")
@@ -256,34 +264,37 @@ end
 
 
 # und alles ausführen (in der richtigen Reihenfolge)
-if @debug == 1
-	puts("Setting up the connection with the following parameters: ")
-	puts("account: " + @account)
-	puts("password: " + @password)
-	puts("statusmessage: " + @status)
-end
-setup_connection()
+def startup
+	if @debug == 1
+		puts("Setting up the connection with the following parameters: ")
+		puts("account: " + @account)
+		puts("password: " + @password)
+		puts("statusmessage: " + @status)
+	end
+	setup_connection()
 
-if @debug == 1
-	puts("Setting up the roster...")
-end
-setup_roster()
+	if @debug == 1
+		puts("Setting up the roster...")
+	end
+	setup_roster()
+	
+	if @debug == 1
+		puts("Connecting to server...")
+	end
+	connect()
 
-if @debug == 1
-	puts("Connecting to server...")
-end
-connect()
+	if @debug == 1
+		puts("Setting up the message handler...")
+	end
+	setup_messagehandler()
 
-if @debug == 1
-	puts("Setting up the message handler...")
+	if @debug == 1
+		puts("Setting up keepalive with interval #{@interval}")
+	end
+	keepalive()
 end
-setup_messagehandler()
 
-if @debug == 1
-	puts("Setting up keepalive with interval #{@interval}")
-end
-keepalive()
-
+startup()
 Thread.stop
 
 @client.close
