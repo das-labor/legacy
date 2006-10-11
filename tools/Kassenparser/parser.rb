@@ -7,7 +7,7 @@ require 'date'
 require 'rubygems'
 require 'gruff'
 Kasse = 920
-Getreanke = 6000
+Getraenke = 6000
 Mitglied = 6001
 Miete = 6339
 Kontofuehrung = 6002
@@ -18,8 +18,9 @@ end_date = Date.new(2006,10,11);
 masterarray = Array.new
 foohash = Hash.new
 mhash = Hash.new
+ghash = Hash.new
 dataarry = Array.new
-
+miethash = Hash.new
 IO.readlines("test").each do |line|
 	# 2. Datum 8. Text 9. Konto rein 10. Konto raus 11. Betrag
 	values = line.split(/;/)
@@ -54,13 +55,38 @@ masterarray.each do |datensatz|
 			mhash.store(datensatz[0],datensatz[4])
 		end
 	end
+	if datensatz[3] == Getraenke 
+		if ghash.has_key? datensatz[0]
+			ghash[datensatz[0]] += datensatz[4] 
+		else
+			ghash.store(datensatz[0],datensatz[4])
+		end
+	end
+	if datensatz[2] == Getraenke
+		if ghash.has_key? datensatz[0]
+			ghash[datensatz[0]] -= datensatz[4] 
+		else
+			ghash.store(datensatz[0],0-datensatz[4])
+		end
+	end
+#	if datensatz[2] == Miete 
+#		if miethash.has_key? datensatz[0]
+#			miethash[datensatz[0]] += datensatz[4] 
+#		else
+#			miethash.store(datensatz[0],datensatz[4])
+#		end
+#	end
 end
-graph  = Gruff::Line.new
+graph  = Gruff::Line.new(1024)
 graph.title = "Labor Kasse #{start_date.to_s} bis #{end_date.to_s} "
-n=0;
-kassenstand = 0;
+n=0
+kassenstand = 0
 mitgliedsumme = 0
+gsumme = 0
+miete = 380 # ist fix
 marry = Array.new
+garry = Array.new
+mietarry = Array.new
 start_date.upto(end_date) do |date|
 	if date.day.to_i == 1 
 		graph.labels.store(n,date.month.to_s)
@@ -77,11 +103,25 @@ start_date.upto(end_date) do |date|
 			mitgliedsumme += tagesumsatz
 		end
 	end
+	ghash.each do |gdate,tagesumsatz|
+		if gdate == date
+			gsumme += tagesumsatz
+		end
+	end
+#	miethash.each do |umsatzdate,tagesumsatz|
+#		if umsatzdate == date
+#			miete += tagesumsatz
+#		end
+#	end
  	marry.push mitgliedsumme
 	dataarry.push kassenstand
+	garry.push gsumme
+	mietarry.push miete
 	n += 1
 end
 
-graph.data("Kassenstand",dataarry)
-graph.data("Mitglieder",marry)
+graph.data("Kasse",dataarry)
+graph.data("Beiträge\nmonatl.",marry)
+graph.data("Getränke",garry)
+graph.data("Böse\nLinie",mietarry)
 graph.write("test.png")
