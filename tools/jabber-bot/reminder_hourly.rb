@@ -83,14 +83,14 @@ Thread.stop
 
 # Terminerinnerung in einigen Stunden  an alle User im Roster
 def reminder_today(at)
-    heute = String.new(@introtomorrow)
+    heute = String.new(@introtoday)
     at.each { |term|
     if (term.date == Date.today && term.hour.to_i == DateTime.now.hour()+@remhours) then
 #		puts("day match & hour match")
 	        heute << "\n#{term} \n #{term.link}\n\n";
     end
     }
-    if heute != @introtomorrow
+    if heute != @introtoday
 		@jids.each { |jid|
 	        msg = Jabber::Message.new("#{jid}")
     	    msg.type = :chat

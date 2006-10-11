@@ -2,8 +2,8 @@
 ######################################
 
 @debug = 0		# set 1 to enable
-@remindertime = "1100" # at what time do we check if there is an event tomorrow?
-@remhours = 4 # how many hours before an event do we remind?
+@remindertime = "1100" 	# at what time do we check if there is an event tomorrow?
+@remhours = 4 	# how many hours before an event do we remind?
 @interval=30    # keep-alive interval
 @account = 'terminbot@das-labor.org/LABOR-Termine'  # the bots account / resource
 @remaccount = 'terminbot@das-labor.org/Reminder'  # the bots account / reminder reesource
