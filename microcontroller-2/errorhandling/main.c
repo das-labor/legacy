@@ -62,13 +62,11 @@ struct {
 							id3, eh3} };
 */
 
-volatile const PGM_P	 eb_3[2] PROGMEM = {id3, eh3};
-volatile const PGM_P	 eb_2[2] PROGMEM = {id2, eh2};
-volatile const PGM_P	 eb_1[2] PROGMEM = {id1, eh1};
-volatile const PGM_P	 eb_0[2] PROGMEM = {id0, eh0};
-//asm(".byte 4");
-const uint8_t errorblock[] PROGMEM = {4};
-const uint8_t dummy[] PROGMEM = {4};
+volatile const PGM_P	eb_3[2] PROGMEM = {(PGM_P)id3, (PGM_P)eh3};
+volatile const PGM_P	eb_2[2] PROGMEM = {(PGM_P)id2, (PGM_P)eh2};
+volatile const PGM_P	eb_1[2] PROGMEM = {(PGM_P)id1, (PGM_P)eh1};
+volatile const PGM_P	eb_0[2] PROGMEM = {(PGM_P)id0, (PGM_P)eh0};
+ const uint8_t errorblock[] PROGMEM = {4};
 //volatile prog_uint8_t errorblock  = 4;
 
 
@@ -89,7 +87,7 @@ int main (void){
 	error_register_handler(eh1,2,"\x42\x23");
 	uart_putstr("\r\nstill allive ;-) 3");
 	error("beep", 2, 0x42, 0x23);
-	error_register_handlerblock((&dummy) +1);
+	error_register_handlerblock(&(errorblock[0]));
 	uart_putstr("\r\nstill allive ;-) 4");
 	error("beep", 3, 0x41, 0x23, 0x11);
 	uart_putstr("\r\nstill allive ;-) 5");
