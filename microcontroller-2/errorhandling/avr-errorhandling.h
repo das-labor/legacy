@@ -40,6 +40,18 @@ typedef struct{
 	uint8_t* descriptor;
 } error_ramitem_t;
 */
+typedef PROGMEM uint8_t PROGMEM errorBlockId_t[];
+
+typedef struct{
+	prog_uint8_t* PROGMEM id;
+	errorHandler_t*  PROGMEM handler;
+} errorblockentry_t;
+
+typedef struct {
+	const uint8_t n;
+	const errorblockentry_t entry[];
+} PROGMEM errorblock_t;
+
 /********************************************************************************************************/
 void error_init(void);
 /********************************************************************************************************/

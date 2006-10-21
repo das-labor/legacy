@@ -210,7 +210,7 @@ uint8_t error_unregister_handlerblock(void* block){
 int memcmp_P(const void* s1, PGM_VOID_P s2, size_t n){ /* why the fuck isn't this implemented in avr-libc??? */
  #ifdef DEBUG
 	DEBUG_S("\r\ncomparig:\r\na: ");
-	uart_hexdump(s1, n);
+	uart_hexdump((void*)s1, n);
 	DEBUG_S("\r\nb: ");
 	{int i;
 	 PGM_VOID_P p=s2;
@@ -298,7 +298,7 @@ void* error_full (errorDataPtr_t data, error_id_t error){
    #ifdef DEBUG	
 	DEBUG_S("\r\nNO HANDLER FOUND");
    #endif
- 	{int x;for(x=1;x;++x);} /* insert some delay to avoid to fast resetting */
+ 	{uint16_t x;for(x=0x8000;x;++x);} /* insert some delay to avoid to fast resetting */
 	ERROR_PANIC_ACTION;
 	return (void*)0; /* just to satisfy the compiler */
 }
