@@ -26,9 +26,9 @@ int8_t blightstat;
 
 uint8_t scriptstat;
 
-unsigned char bla[8];
+char bla[8];
 
-Mutex rx_mutex;
+Mutex men_mutex;
 
 void make_basemenu();
 menu_item_t *make_item(void *show, void *enter, menu_t *menu, uint8_t type) ;
@@ -285,13 +285,12 @@ void switch_script() {
 		scriptstat=1;
 }
 
-void temp(void *data) {
-	menu_t *menu = data;
-	static can_message_t msg={0xa0, 0xa1, PORT_REMOTE, PORT_TEMP};
+void temp(void *data) {										// todo: start temp sending
+	//static can_message_t msg={0xa0, 0xa1, PORT_REMOTE, PORT_TEMP};
 	//msg.addr_src = 0xa0;
 	
-	msg.dlc = 1;
-	msg.data[0] = 0x90;
+	//msg.dlc = 1;
+	//msg.data[0] = 0x90;
 	while(1) {  // keyhandeling
 		AvrXDelay(&switchtimer, 550);
 		if(!(PINB & (1 << PB3))) { // ok
@@ -299,25 +298,33 @@ void temp(void *data) {
 			return;
 		}
 		dispFillRect(50, 30, 30, 8, 0);
-		can_put(&msg);
-		AvrXWaitSemaphore(&rx_mutex);
+		//can_put(&msg);
+		AvrXDelay(&switchtimer, 5); // timing testen
 		draw_Text(bla, 50, 30, 0, 1, 1);
 	}
 }
+/*
+char* canmessage(uint8_t dst_adr, uint8_t dst_port, char* msg) {  // adresse, zielport, message
+	can_message_t msg = {0xa0, 0, PORT_REMOTE, 0, 0};
+	msg.dlc = strlen(msg);
+	msg.port_dst = dst_port;
+	msg.addr_dst = dst_adr;
+	strcpy(msg.data, msg);
+	can_put(&msg);
+	AvrXDelay(&switchtimer, 5); // timing testen
+	return *bla;
+} */
+
 
 void ctrl_mood(void *data) {
-	menu_t *menu = data;
 	uint8_t i, key;
-	can_message_t msg = {0xa0, 0xa1, PORT_REMOTE, PORT_MOOD, 0};
-	//msg.addr_src = 0xa0;
-	
-	msg.dlc = 1;
+	can_message_t msg = {0xa0, 0xa1, PORT_REMOTE, PORT_MOOD, 1};
 	msg.data[0] = FKT_MOOD_GET_B;
 	can_put(&msg);
-	AvrXWaitSemaphore(&rx_mutex);
+	AvrXDelay(&switchtimer, 5);
 	uint8_t val[8];
-	strcpy(val, bla);
-	for(i=0;i<3;i++) {
+	memcpy(val, bla, 4);
+	for(i=0; i<3; i++) {
 		dispDrawRect(50, (10*i), 30, 5, 1);
 		dispFillRect(51, (10*i)+1, mc_POS_DIV(val[i], 9), 3, 1);
 	 }
@@ -347,7 +354,6 @@ void ctrl_mood(void *data) {
 			i++;
 			if(i == 3)
 				i=0;
-			AvrXDelay(&switchtimer, 500);
 			dispFillRect(45, (10*i)+1, 3, 3, 1);
 		}
 		if(key == 3) {
@@ -360,6 +366,31 @@ void ctrl_mood(void *data) {
 		
 	}
 }
+/*
+void scan() {
+	static can_message_t msg={0xa0, 0xa1, PORT_REMOTE, PORT_TEMP};
+	//msg.addr_src = 0xa0;
+	msg.addr_dst++;  //temp.addr_dst = rx_msg.addr_src
+	msg.dlc = 1;
+	msg.data[0] = 0x90;
+	can_put(&msg);
+	AvrXDelay(&switchtimer, 5);
+	uint8_t val[8];
+
+}
+*/
+/*
+scan()
+	ping?
+	antwort / timeout
+	liste
+	
+	
+
+
+*/
+
+
 /*
 setup
 scan
