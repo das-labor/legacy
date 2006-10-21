@@ -5,12 +5,12 @@
 
 void drawLine(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t color) {
 	signed int i, dx, dy, sdx, sdy, dxabs, dyabs, x, y, px, py;
-	dx = x2 - x1;      // the horizontal distance of the line
-	dy = y2 - y1;      // the vertical distance of the line 
-	dxabs = dx >= 0 ? dx: -dx; //abs
-	dyabs = dy >= 0 ? dy: -dy; //abs
-	sdx = dx >= 0 ? 1: -1;     //sgn
-	sdy = dy >= 0 ? 1: -1;     //sgn
+	dx = x2 - x1;			// the horizontal distance of the line
+	dy = y2 - y1;			// the vertical distance of the line 
+	dxabs = dx >= 0 ? dx: -dx;	//abs
+	dyabs = dy >= 0 ? dy: -dy;	//abs
+	sdx = dx >= 0 ? 1: -1;		//sgn
+	sdy = dy >= 0 ? 1: -1;		//sgn
 	x = dyabs >> 1;
 	y = dxabs >> 1;
 	px = x1;
@@ -42,7 +42,7 @@ void drawLine(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t color) {
 
 void dispDrawRect(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t color) {
 	width--; height--;
-	dispHLine(x, y, x + width, color);		// top
+	dispHLine(x, y, x + width, color);			// top
 	dispHLine(x, y+height, x + width, color);	// bottom
 	dispVLine(x, y , y + height);			// left
 	dispVLine(x+width, y, y + height);		// right

@@ -1,4 +1,4 @@
-#include <AvrXFifo.h>
+
 
 AVRX_EXTERNTASK(menu);
 
@@ -26,10 +26,8 @@ typedef struct {
 
 extern menu_t root;
 
-extern unsigned char bla[8];
-extern Mutex rx_mutex;
-#ifndef MENU
-AVRX_EXT_FIFO(rftxfifo); 
-#endif
+extern char bla[8];
+extern Mutex men_mutex;
+
 
 

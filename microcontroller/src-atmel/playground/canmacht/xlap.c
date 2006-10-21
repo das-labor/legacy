@@ -34,8 +34,11 @@ void process_mgt_msg() {
 }
 
 void process_data() {
-	AvrXSetSemaphore(&rx_mutex);
-	strcpy(bla, rx_msg.data); 
+	if(rx_msg.data[0]==0x10)
+		
+	// if temp = tempbuffer  		// ariatne
+	memcpy(bla, rx_msg.data, 8);		// +1, 8 mem
+	//AvrXSetSemaphore(&men_mutex);
 }
 
 AVRX_GCC_TASKDEF(laptask, 55, 3) {
@@ -45,12 +48,12 @@ AVRX_GCC_TASKDEF(laptask, 55, 3) {
 			if(rx_msg.port_dst == PORT_MGT) {
 				process_mgt_msg();	
 			}
-			else if(rx_msg.port_dst == PORT_REMOTE) {
+			else if(rx_msg.port_dst == PORT_REMOTE) {  // Temperaturen empfangen  -  getrennt empfangen - port?
 				process_data();
 			}
 		}
 	}
-};
+}
 
 void xlap_init() {
 	myaddr = eeprom_read_byte(0x00);
