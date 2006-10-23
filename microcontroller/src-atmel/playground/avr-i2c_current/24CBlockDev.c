@@ -34,17 +34,19 @@ void E24C_blockdev_writeBlock(blockdev_ptr_t addr, const void* block, uint16_t l
 	if (((uint32_t)length + addr & 0xffff)&0x10000){ /* if spreading over two devices */
 		uint16_t l1;
 		l1= 0x10000-((uint16_t)addr);
-		E24C_blockdev_writeBlock(getDevAddr(addr), (uint16_t)addr, block, l1);
+	//	E24C_blockdev_writeBlock(getDevAddr(addr), (uint16_t)addr, block, l1);
+		E24C_page_write(getDevAddr(addr), (uint16_t)addr, block, l1);
 		addr &= 0xffff0000;
 		addr += 0x10000;
-		E24C_blockdev_writeBlock(getDevAddr(addr), (uint16_t)addr, block+l1, length-l1);
+	//	E24C_blockdev_writeBlock(getDevAddr(addr), (uint16_t)addr, block+l1, length-l1);
+		E24C_page_write(getDevAddr(addr), (uint16_t)addr, block+l1, length-l1);
 	} else {
 		i2c_addr_t devaddr = getDevAddr(addr);
 		uint16_t l1;
 		l1 = 128-(addr%128);
 		E24C_page_write(devaddr, (uint16_t)addr, block, (length<l1)?length:l1);
 		if (length<l1){
-			return void;
+			return ;
 		} else {
 			block += l1;
 			length -= l1;

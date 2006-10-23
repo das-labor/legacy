@@ -60,7 +60,7 @@ int main (void)
     uart_putstr(HELP_STR);
     while(1){
     		switch (uart_getc()){
-    			case 't': thermo_dump(0x90); break;
+    		//	case 't': thermo_dump(0x90); break;
     			case 'a': i2c_detect(dev_table); break;
     			case 'd': eeprom_dump_page(0xA0, 0, 8*1024); break;
     			case 'c': console_dbg(); break;

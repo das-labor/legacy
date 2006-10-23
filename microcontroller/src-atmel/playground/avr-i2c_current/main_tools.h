@@ -23,10 +23,10 @@ typedef uint8_t  i2c_detect_t[32]; // 32*8==256 every bit represents one i2c add
 /****************************************************
  *  FUNCTIONS
  ****************************************************/
-void main_tools_init();
+void main_tools_init(void);
 
 /* specific menus */
-void console_dbg();
+void console_dbg(void);
 void i2c_detect(i2c_detect_t table);
 void thermo_dump(i2c_addr_t);
 

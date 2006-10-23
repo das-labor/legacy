@@ -31,7 +31,7 @@ i2c_mode_t	i2c_mode;
 /****************************************************
  *  i2c_init()
  * **************************************************/
-void			i2c_init(){
+void			i2c_init(void){
 	DDRC 	&= ~(_BV(0) | _BV(1)); // clears bit 0&1 and make them inputs
 	#ifdef I2C_EXTERNAL_PULLUP
 		PORTC 	&= ~(_BV(0) | _BV(1));
@@ -63,7 +63,7 @@ void			i2c_set_speed(uint8_t twbr, uint8_t twps){
 /****************************************************
  *  i2c_do_ack
  * **************************************************/
-void i2c_do_ack(){
+void i2c_do_ack(void){
 	DEBUG_S("do_ack\r\n");
 	i2c_ack_flag = true;
 }
@@ -72,7 +72,7 @@ void i2c_do_ack(){
 /****************************************************
  *  i2c_do_not_ack
  * **************************************************/
-void i2c_do_not_ack(){
+void i2c_do_not_ack(void){
 	DEBUG_S("do_not_ack\r\n");
 	i2c_ack_flag = false;
 }
@@ -118,7 +118,7 @@ i2c_status_t		i2c_start (i2c_addr_t addr){
 /****************************************************
  *  i2c_stop()
  * **************************************************/
-i2c_status_t 	i2c_stop(){
+i2c_status_t 	i2c_stop(void){
 	DEBUG_S("stop\r\n");
 	while (! (TWCR & _BV(TWINT)))
 		;
@@ -164,7 +164,7 @@ i2c_status_t		i2c_sendbyte(uint8_t byte){
 /****************************************************
  * i2c_readbyte
  * **************************************************/
-uint8_t			i2c_readbyte(){
+uint8_t			i2c_readbyte(void){
 	DEBUG_S("read\r\n");
 /*
  * The left debugstatement make this work!!!

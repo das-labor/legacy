@@ -1,5 +1,4 @@
 
-
 #include "config.h"
 #include "debug.h"
 #include "uart.h"
@@ -9,7 +8,10 @@
 #include <stdio.h> // itoa()
 #include "24Cxxx.h"
 #include "i2c_tools.h"
+#include "main_tools.h"
 // #include "main_db_tools.h"
+
+void uart_putbyte(uint8_t b);
 
 
 /****************************************************
@@ -21,7 +23,7 @@
 /****************************************************
  *  main_tools_init()
  * **************************************************/
-void main_tools_init(){
+void main_tools_init(void){
     i2c_init();
     E24C_init();
 }
@@ -30,7 +32,7 @@ void main_tools_init(){
 /****************************************************
  *  console_dbg()
  * **************************************************/
-void console_dbg(){
+void console_dbg(void){
 	char c;
 	uart_putstr("\r\n*** console debug ***\r\npress 'q' to leave\r\n");
 	do {
@@ -249,7 +251,7 @@ void thermo_dump(i2c_addr_t dev){
 
 
 
-*/
+//*/
 
 
 
