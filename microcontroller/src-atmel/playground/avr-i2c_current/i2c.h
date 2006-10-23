@@ -38,12 +38,12 @@ typedef enum {I2C_MT, I2C_MR, I2C_ST, I2C_SR, I2C_STOPED} i2c_mode_t;
 #endif
 #endif
 
-void			i2c_init();
+void			i2c_init(void);
 void			i2c_set_speed(uint8_t, uint8_t);
 i2c_status_t	i2c_start (i2c_addr_t);
-i2c_status_t	i2c_stop();
+i2c_status_t	i2c_stop(void);
 i2c_status_t	i2c_sendbyte(uint8_t byte);
-uint8_t			i2c_readbyte();
+uint8_t			i2c_readbyte(void);
 
 /*
  * Nice functions
@@ -52,7 +52,7 @@ i2c_status_t i2c_restart (i2c_addr_t);
 i2c_status_t i2c_start_a (i2c_addr_t devaddr);
 i2c_status_t i2c_restart_a(i2c_addr_t devaddr);
 
-void i2c_do_ack();
-void i2c_do_not_ack();
+void i2c_do_ack(void);
+void i2c_do_not_ack(void);
 
 #endif /*I2C_H_*/
