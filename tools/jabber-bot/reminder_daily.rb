@@ -86,7 +86,7 @@ def reminder_tomorrow(at)
     morgen = String.new(@introtomorrow)
     at.each { |term|
     if term.date == Date.today+1 then
-        morgen << "\n#{term} \n #{term.link}\n\n";
+        morgen << " \n#{term.day}.#{term.month}. (#{term.wday}) #{term.hour}:#{term.min} #{term.text}\n#{term.link}";
     end
     }
     if morgen != @introtomorrow

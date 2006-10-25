@@ -73,7 +73,7 @@ def tomorrow(at)
 	at.each { |term|
     if term.date == Date.today+1 then
 		morgen << @introtomorrow
-        morgen << " \n#{term}  #{term.link}";
+        morgen << " \n#{term.hour}:#{term.min} #{term.text}\n#{term.link}";
     end
     }
     if morgen == "\n"
@@ -87,7 +87,7 @@ def today(at)
     at.each { |term|
     if term.date == Date.today then
 		heute << @introtoday
-        heute << " \n#{term}  #{term.link}";
+        heute << " \n#{term.hour}:#{term.min} #{term.text}\n#{term.link}";
     end
     }
 	if heute == "\n"
@@ -100,7 +100,7 @@ def listall(at)
 	alles = String.new("\n")
 	at.each { |term|
 	if term.date > Date.today-1 then
-		alles << "#{term} \n#{term.link} \n\n"
+		alles << "#{term.day}.#{term.month}.#{term.year} (#{term.wday}) #{term.hour}:#{term.min} #{term.text}\n#{term.link} \n\n"
 	end
 	}
 	return alles

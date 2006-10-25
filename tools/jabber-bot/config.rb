@@ -35,7 +35,7 @@ tomorrow    shows tomorrows events
 To unsubscribe from my service, just revoke my authorization or delete me from your roster."
 
 # Tim requested an annoyance feature
-@timsjid = "opti ät amessage dot de" # for the bot to work correctly, enter Tim's correct jid here
+@timsjid = "optional ät jabber pünkt ccc pünkt de" # for the bot to work correctly, enter Tim's correct jid here
 @annoytext = "hoho!"
 
 ######################################
