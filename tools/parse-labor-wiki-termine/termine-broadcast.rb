@@ -48,9 +48,9 @@ htmlout = File.new( ARGV[0]+"/termine_html", "w" );
 
 at.each { |term|
   if term.date == Date.today then
-    htmlout.puts "<b><a href=\"#{term.link}\">#{term}</a></b><br/>"
+    htmlout.puts "<b><a href=\"#{term.link}\">#{term.day}.#{term.month}.#{term.year} (#{term.wday}) #{term.hour}:#{term.min} - #{term.text}</a></b><br/>"
   elsif term.date > Date.today-1 then
-    htmlout.puts "<a href=\"#{term.link}\">#{term}</a><br/>"
+    htmlout.puts "<a href=\"#{term.link}\">#{term.day}.#{term.month}.#{term.year} (#{term.wday}) #{term.hour}:#{term.min} - #{term.text}</a><br/>"
   end
 
 }
@@ -72,45 +72,10 @@ rss20out.puts "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?> \n
 
 at.each { |term|
   if term.date > Date.today-1 then
-    rss20out.puts "<item>\n<title>#{term.text}</title>\n<description>#{term}</description>\n<link>#{term.link}</link>\n</item>\n\n"
+    rss20out.puts "<item>\n<title>#{term.text}</title>\n<description>#{term.day}.#{term.month}.#{term.year} (#{term.wday}) #{term.hour}:#{term.min} - #{term.text}</description>\n<link>#{term.link}</link>\n</item>\n\n"
   end
 }
 
 rss20out.puts "</channel> \n</rss>"
 
 rss20out.close
-
-
-
-icalout = File.new( ARGV[0]+"/LABOR-Termine.ics", "w" );
-
-icalout.puts "BEGIN:VCALENDAR
-VERSION:2.0
-X-WR-CALNAME:LABOR-Termine
-PRODID:-//Apple Computer\, Inc//iCal 2.0//EN
-X-WR-RELCALID:5644223456g
-X-WR-TIMEZONE:Europe/Berlin
-CALSCALE:GREGORIAN
-METHOD:PUBLISH"
-
-at.each { |term|
-    icalout.puts "BEGIN:VEVENT
-LOCATION:Labor
-DTSTAMP:#{timestamp}Z
-UID:#{timestamp}#{term.year}#{term.month}#{term.day}@labor
-SEQUENCE:10
-URL;VALUE=URI:#{term.link}
-DTSTART;TZID=Europe/Berlin:#{term.year}#{term.month}#{term.day}T#{term.hour}#{term.min}00
-SUMMARY:#{term.text}
-DTEND;TZID=Europe/Berlin:#{term.year}#{term.month}#{term.day}T235900
-LAST-MODIFIED:#{timestamp}
-DESCRIPTION:#{term}
-END:VEVENT\n"
-
-}
-
-
-icalout.puts "END:VCALENDAR"
-
-icalout.close
-
