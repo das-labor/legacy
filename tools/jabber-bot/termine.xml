@@ -25,7 +25,7 @@
   <month>10</month>
   <text>Open Meeting</text>
   <hour>19</hour>
-  <day>07</day>
+  <day>04</day>
   <year>06</year>
   <min>30</min>
   <link>http://wiki.das-labor.org/wiki/index.php?title=Open_Meeting</link>
@@ -34,47 +34,14 @@
 </termin>
 <termin>
   <month>10</month>
-  <text>MATCH1</text>
-  <hour>04</hour>
-  <day>10</day>
-  <year>06</year>
-  <min>30</min>
-  <link>http://wiki.das-labor.org/wiki/index.php?title=L4_Microkernel_Design</link>
-  <wday>Di</wday>
-  <match>* Di 10.10.06 19:30, [[L4 Microkernel Design]]</match>
-</termin>
-<termin>
-  <month>10</month>
-  <text>MATCH2</text>
-  <hour>05</hour>
+  <text>Bootstrap Meeting</text>
+  <hour>19</hour>
   <day>11</day>
   <year>06</year>
   <min>30</min>
-  <link>http://wiki.das-labor.org/wiki/index.php?title=L4_Microkernel_Design</link>
-  <wday>Di</wday>
-  <match>* Di 10.10.06 19:30, [[L4 Microkernel Design]]</match>
-</termin>
-<termin>
-  <month>10</month>
-  <text>MATCH3</text>
-  <hour>04</hour>
-  <day>12</day>
-  <year>06</year>
-  <min>30</min>
-  <link>http://wiki.das-labor.org/wiki/index.php?title=L4_Microkernel_Design</link>
-  <wday>Di</wday>
-  <match>* Di 10.10.06 19:30, [[L4 Microkernel Design]]</match>
-</termin>
-<termin>
-  <month>10</month>
-  <text>MATCH4</text>
-  <hour>04</hour>
-  <day>13</day>
-  <year>06</year>
-  <min>30</min>
-  <link>http://wiki.das-labor.org/wiki/index.php?title=L4_Microkernel_Design</link>
-  <wday>Di</wday>
-  <match>* Di 10.10.06 19:30, [[L4 Microkernel Design]]</match>
+  <link>http://wiki.das-labor.org/wiki/index.php?title=Bootstrap_Meeting</link>
+  <wday>Mi</wday>
+  <match>* Mi 11.10.06 19:30, [[Bootstrap Meeting]]</match>
 </termin>
 <termin>
   <month>10</month>
@@ -119,6 +86,28 @@
   <link>http://wiki.das-labor.org/wiki/index.php?title=Open_Meeting</link>
   <wday>Mi</wday>
   <match>* Mi 25.10.06 19:30, [[Open Meeting]]</match>
+</termin>
+<termin>
+  <month>10</month>
+  <text>Binary Analysis Weekend</text>
+  <hour>14</hour>
+  <day>28</day>
+  <year>06</year>
+  <min>00</min>
+  <link>http://wiki.das-labor.org/wiki/index.php?title=Binary_Analysis_Weekend</link>
+  <wday>Sa</wday>
+  <match>* Sa 28.10.06 14:00, [[Binary Analysis Weekend]]</match>
+</termin>
+<termin>
+  <month>10</month>
+  <text>Binary Analysis Weekend</text>
+  <hour>12</hour>
+  <day>29</day>
+  <year>06</year>
+  <min>00</min>
+  <link>http://wiki.das-labor.org/wiki/index.php?title=Binary_Analysis_Weekend</link>
+  <wday>So</wday>
+  <match>* So 29.10.06 12:00, [[Binary Analysis Weekend]]</match>
 </termin>
 <termin>
   <month>10</month>

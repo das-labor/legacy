@@ -87,7 +87,7 @@ def reminder_today(at)
     at.each { |term|
     if (term.date == Date.today && term.hour.to_i == DateTime.now.hour()+@remhours) then
 #		puts("day match & hour match")
-	        heute << "\n#{term} \n #{term.link}\n\n";
+	        heute << " \n#{term.hour}:#{term.min} #{term.text}\n#{term.link}";
     end
     }
     if heute != @introtoday
