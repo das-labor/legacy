@@ -75,6 +75,16 @@ AnnotateOrder=1
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 
+[Document7]
+DocumentPath=cpld.Vhd
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotateSuffix=
+AnnotationIgnoreSelected=0
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+
 [ProjectVariant1]
 Description=Variant of PCB_Project1
 ParameterCount=0
@@ -443,6 +453,7 @@ L17=WNNNNNNNWNNNWWWWN
 
 [Annotate]
 SortOrder=3
+MatchParameter1=Comment
 
 [HighlightMethod]
 Zoom=1
