@@ -1,0 +1,12 @@
+
+Belegung des 9 Pol Sub-d Steckers zur verbindung der Geräte:
+
+1: GND
+2: Dim0
+3: Dim1
+4: Dim2
+5: Dim3
+6: Power on Unit0 (active low) (PB1)
+7: Power on andere Units (active high) (PB0)
+8: Dim4
+9: Dim5

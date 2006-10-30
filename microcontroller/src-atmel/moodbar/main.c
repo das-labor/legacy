@@ -12,6 +12,7 @@
 #include "xcan.h"
 #include "xlap.h"
 #include "mood.h"
+#include "pl_dim.h"
 
 //AVRX_GCC_TASK(Monitor, 20, 0);          // External Task: Debug Monitor
 
@@ -36,7 +37,9 @@ int main(void)
     //InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
 	da_init();
 	xlap_init();
-    //AvrXRunTask(TCB(Monitor));
+    
+	lampe_init();
+	//AvrXRunTask(TCB(Monitor));
 	AvrXRunTask(TCB(laptask));
 	AvrXRunTask(TCB(moodtask));
 	

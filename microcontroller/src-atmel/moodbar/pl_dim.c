@@ -22,8 +22,9 @@ typedef struct{
 
 
 pl_param_t pl[]={
-	{0xff*4, 0xe6*4, 0x40*4, 0xc0*4, 38},
+	{0xff*4, 0xe2*4, 0x40*4, 0xc0*4, 38},
 	{0xff*4, 0xf0*4, 0x50*4, 0xe0*4, 38},
+	{0xff*4, 0xf1*4, 0x48*4, 0xe0*4, 38},
 };
 
 
@@ -55,4 +56,13 @@ void lampe_dim(uint8_t lampe, int8_t d){
 void lampe_set(uint8_t lampe, uint8_t bright){
 	lampbright[lampe] = bright;
 	da_set (lampe, bright_calc (&pl[lampe], bright));
+}
+
+void lampe_init(){
+	//Anschaltsignale:
+	//Unit 0 PB1 active low
+	//andere : PB0 (active high)
+	
+	DDRB  |= 0x03;
+	PORTB |= 0x01;
 }
