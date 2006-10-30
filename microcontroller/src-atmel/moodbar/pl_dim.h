@@ -11,3 +11,5 @@ typedef struct{
 
 void lampe_set(uint8_t lampe, uint8_t bright);
 void lampe_dim(uint8_t lampe, int8_t d);
+void lampe_init();
+

@@ -29,9 +29,9 @@ unsigned int getnum(char ** str){
 }
 
 
-uint16_t brightnes[3];
+uint16_t brightnes[8];
 
-char moodstring[] = "g=255b=0g-50b+50b?255b-50g+50g?255";
+char moodstring[] = "g=255 b=0 r=0 r+8 r?255 g-8 g?0 b+8 b?255 r-8 r?0 g+8 g?255 b-8 b?0";
 
 AVRX_GCC_TASKDEF(moodtask, 100, 4)
 {
@@ -95,10 +95,10 @@ AVRX_GCC_TASKDEF(moodtask, 100, 4)
 		
 		while(wait){
 			uint8_t y;
-			for(y=0;y<2;y++){
+			for(y=0;y<8;y++){
 				uint8_t bright;
 				int16_t b;
-				b = brightnes[y] + deltas[y];
+				b = brightnes[y] + 8 * deltas[y];
 				if ( b > 0x3FFF ) b = 0x3FFF;
 				if ( b < 0 ) b = 0;
 					
@@ -110,7 +110,7 @@ AVRX_GCC_TASKDEF(moodtask, 100, 4)
 					wait=0;
 				}
 			}
-			AvrXStartTimer(&timer1, 100);       // 800 ms delay
+			AvrXStartTimer(&timer1, 100);
 			AvrXWaitTimer(&timer1);
     	}
 	}
