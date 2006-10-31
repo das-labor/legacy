@@ -165,7 +165,7 @@ def setup_messagehandler
 @client.add_message_callback { |m|
 #	puts(m.body())
 #	puts Date.today
-	if m.body == "tomorrow" then
+	if m.body =~ /.*tomorrow*/ then
 		answer = Jabber::Message.new(m.from)
 		answer.type = :chat
 		answer.set_body(tomorrow(@at))
@@ -173,7 +173,7 @@ def setup_messagehandler
         if @debug == 1
 	        puts("Sent content \'tomorrow\' to #{m.from}.")
         end
-    elsif m.body == "today" then
+    elsif m.body =~ /.*today*/ then
         answer = Jabber::Message.new(m.from)
    	    answer.type = :chat
        	answer.set_body(today(@at))
@@ -186,7 +186,7 @@ def setup_messagehandler
 #        answer.type = :chat
 #        answer.set_body(next7(@at))
 #        @client.send(answer)
-    elsif m.body == "all" then
+    elsif m.body =~ /.*all*/ then
         if(listall(@at))
             answer = Jabber::Message.new(m.from)
             answer.type = :chat
@@ -225,11 +225,11 @@ end
 # Wir brauchen etwas, das wenig, aber regelmäßig Traffic macht
 def keepalive
 	loop {
-		iq = Jabber::Version::IqQueryVersion.new()
-		@client.send(iq)
+		#iq = Jabber::Version::IqQueryVersion.new()
+		@client.send(" \t ")
 		if @debug == 1
 			puts("Keep-alive request sent:")
-			puts("#{iq}")
+			#puts("#{iq}")
 		end
 		sleep(@interval)
 	}
