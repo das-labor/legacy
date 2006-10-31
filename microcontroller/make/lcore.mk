@@ -30,8 +30,8 @@ clean:
 	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak 
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
 
-fct_table:
-	./mk_function_table.pl *.h >function_table.c
+function_table.c: $(wildcard *.h)
+	./mk_function_table.pl *.h >$@
 
 flash:
 	$(ERASECMD)
