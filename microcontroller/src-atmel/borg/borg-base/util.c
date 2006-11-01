@@ -35,7 +35,7 @@ void wait(int ms){
 #ifdef BORG_CAN
 		bcan_process_messages();
 #endif
-		if (waitForFire) {
+		if (0) {
 			//PORTJOYGND &= ~(1<<BITJOY0);
 			//PORTJOYGND &= ~(1<<BITJOY1);		
 		#ifndef RHEINFIRECONTROL	

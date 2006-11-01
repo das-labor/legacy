@@ -5,71 +5,66 @@
 
 #include "borg_hw.h"
 
-#define COLPORT1  PORTA
-#define COLDDR1   DDRA
-
-#define COLPORT2  PORTC
-#define COLDDR2   DDRC
-
-#define ROWPORT PORTD
-#define ROWDDR   DDRD
-#define PIN_RST  PD0
-#define PIN_CLK  PD1
-#define PIN_SHFT1 PD2
-#define PIN_SHFT2 PD3
-
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
+#define COLDDR DDRC
+#define COLPORT PORTC
+#define ROWPORT PORTB
+#define COLDATA PC1
+#define COLCLK PC0
+#define ROWDDR DDRB
 
-
-#define BORG_ANDRE
-
-#ifdef BORG_ANDRE
 inline void rowshow(unsigned char row, unsigned char plane){
-	COLPORT1 = 0;
-	COLPORT2 = 0;
+	static uint8_t rowmask;
+	uint8_t i;
+	uint8_t tmp;
+	ROWPORT = 0;
+	
+	switch (plane){
+                case 0:
+                        TCNT0 = 0x100-2;
+                        break;
+                case 1:
+                        TCNT0 = 0x100-8;
+                        break;
+                case 2:
+                        TCNT0 = 0x100-20;
+        }
+
+
 	
 	if (row == 0){
-		ROWPORT&= ~(1<<PIN_RST);
-		ROWPORT|= (1<<PIN_RST);
-		ROWPORT|= (1<<PIN_SHFT1);
-		ROWPORT|= (1<<PIN_CLK);
-		ROWPORT&= ~(1<<PIN_CLK);
-		ROWPORT&= ~(1<<PIN_SHFT1);
-		switch (plane){
-			case 0:
-				OCR0 = 2;
-				break;
-			case 1:
-				OCR0 = 8;
-				break;
-			case 2:
-				OCR0 = 20;
-		}
-	}else if(row == 8){
-		ROWPORT&= ~(1<<PIN_RST);
-		ROWPORT|= (1<<PIN_RST);
-		ROWPORT|= (1<<PIN_SHFT2);
-		ROWPORT|= (1<<PIN_CLK);
-		ROWPORT&= ~(1<<PIN_CLK);
-		ROWPORT&= ~(1<<PIN_SHFT2);
+		rowmask=2;
 	}else{
-		ROWPORT|= (1<<PIN_CLK);
-		ROWPORT&= ~(1<<PIN_CLK);
+		rowmask <<= 1;
 	}
+	tmp = pixmap[plane][row][1];
+	for (i = 0;i<8;i++){
+		if (tmp & 0x80){
+			COLPORT |= (1<<COLDATA);
+		}else{
+			COLPORT &= ~(1<<COLDATA);
+		}	
+		COLPORT |= (1<<COLCLK);
+	       	COLPORT &= ~(1<<COLCLK);	
+        	tmp <<= 1;
+	}
+	tmp = pixmap[plane][row][0];
+	for (i = 0;i<8;i++){
+		if (tmp & 0x80){
+			COLPORT |= (1<<COLDATA);
+		}else{
+			COLPORT &= ~(1<<COLDATA);
+		}	
+		COLPORT |= (1<<COLCLK);
+	       	COLPORT &= ~(1<<COLCLK);	
+        	tmp <<= 1;
+	}
+
 	
-	COLPORT1 = pixmap[plane][row][0];
-	COLPORT2 = pixmap[plane][row][1];
+	ROWPORT = rowmask;	
 }
-#elif BORG_LS
 
-#error jeah
-
-#endif
-
-
-
-
-SIGNAL(SIG_OUTPUT_COMPARE0)
+SIGNAL(SIG_OVERFLOW0)
 {
 	static unsigned char plane = 0;
 	static unsigned char row = 0;
@@ -95,18 +90,14 @@ void timer0_on(){
 		 1    0    1       clk/1024
 	
 */
-	TCCR0 = 0x0B;	// CTC Mode, clk/8
-	TCNT0 = 0;	// reset timer
-	OCR0  = 0x20;	// Compare with this value
-	TIMSK = 0x02;	// Compare match Interrupt on
+	TCCR0 = 0x03;	// clk/64
+	TCNT0 = 0xFF-20;// reset timer
+	TIMSK |= (1<<TOIE0);
 }
 
 void borg_hw_init(){
-	COLDDR1 = 0xFF;
-	COLDDR2 = 0xFF;
+	COLDDR |= 0x03;
 	ROWDDR = 0xFF;
-	COLPORT1 = 0;
-	COLPORT2 = 0;
 	ROWPORT = 0;
 	timer0_on();
 }
