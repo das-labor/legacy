@@ -1,1 +1,1 @@
-../borg-base/scrolltext.h
+scrolltext(unsigned char *str);
