@@ -1,1 +1,2 @@
-../borg-base/font_small6.h
+ude "font.h"
+extern font font_small6;
