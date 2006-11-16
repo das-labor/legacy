@@ -1,3 +1,18 @@
+-----------------------------------------------------------------------------
+-- Simple UART without hardware Flowcontrol und with 1 byte buffer.
+--   by Joerg Bornschein  (jb@capsec.org)
+--
+-- halfbit anf fullbit parametrize the boundrate:
+--
+--     fullbit = 50 MHz / 115000 Baud
+--     halfbit = fullbit / 2;
+--
+-- This module was NOT intensely --  but works for me
+--
+-- All files under GPLv2   
+-----------------------------------------------------------------------------
+
+
 library ieee;
 use ieee.std_logic_1164.all;
 

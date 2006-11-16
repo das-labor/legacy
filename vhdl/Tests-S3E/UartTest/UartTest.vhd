@@ -1,3 +1,8 @@
+-----------------------------------------------------------------------------
+-- Test Design for UART -- Echo Test
+--
+-- See uart.vhd for additional documentation
+-----------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.ALL;
 use ieee.numeric_std.all;
@@ -37,7 +42,6 @@ end component;
 
 
 -----------------------------------------------------------------------------
-
 signal rd        : std_logic;
 signal wr        : std_logic;
 signal rx_full   : std_logic;
@@ -83,6 +87,8 @@ uart0: uart
 		uart_txd  => uart_txd,
 		uart_rxd  => uart_rxd2 );
 		
+
+
 
 --proc: process(reset, clk) is
 --begin
@@ -139,13 +145,6 @@ begin
 		end if;
 	end if;
 end process;
-
---idata <= odata;
---
---wr_n <= '0' when rx_full='1' and tx_busy_n='1' else
---        '1';
---  
---rd_n <= wr_n;
 
 
 end rtl;
