@@ -1,0 +1,10 @@
+# ==== Clock inputs (CLK) ====
+NET "clk" LOC = "C9" | IOSTANDARD = LVCMOS33 ;
+NET "clk" PERIOD = 20ns HIGH 40%;
+
+# === Reset input ===
+NET "reset" LOC = "D18" | IOSTANDARD = LVTTL | PULLDOWN ;
+
+# ==== RS-232 Serial Ports (RS232) ====
+NET "uart_rxd"  LOC = "R7" |  IOSTANDARD = LVTTL ;
+NET "uart_txd"  LOC = "M14" | IOSTANDARD = LVTTL | DRIVE = 8 | SLEW = SLOW ;

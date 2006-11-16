@@ -1,6 +1,10 @@
 
 Various small toy designs for the Spartan3E Starter Kit.
+========================================================
 
+LEDs      Uses ordenary GNU Makefile (without ISE)
 
-All theese designes use ordenary GNU Makefiles... non GUI
+UartTest  
+	Serial communication (RS232) 8N1 115200 Baud
+
 
