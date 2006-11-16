@@ -2,7 +2,7 @@
 -- Simple UART with 1 byte buffer and without hardware flowcontrol.
 --   by Joerg Bornschein  (jb@capsec.org)
 --
--- halfbit anf fullbit parametrize the boundrate:
+-- halfbit anf fullbit parametrize the baundrate:
 --
 --     fullbit = 50 MHz / 115000 Baud
 --     halfbit = fullbit / 2;
