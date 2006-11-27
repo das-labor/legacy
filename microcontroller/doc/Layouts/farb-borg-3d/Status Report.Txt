@@ -1,0 +1,10 @@
+Output: Protel
+Type  : ProtelNetlist
+From  : Project [Free Documents]
+   Generated File[global.NET]
+
+
+Files Generated   : 1
+Documents Printed : 0
+
+Finished Output Generation At 14:27:39 On 30.09.2006
