@@ -16,12 +16,12 @@ DefaultConfiguration=
 UserID=0xFFFFFFFF
 
 [Document1]
-DocumentPath=farbBorg.SchDoc
+DocumentPath=AVR-MEM-CLPD.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=100
 AnnotateSuffix=
 AnnotationIgnoreSelected=0
-AnnotateOrder=0
+AnnotateOrder=2
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 
@@ -31,14 +31,14 @@ AnnotationEnabled=1
 AnnotateStartValue=200
 AnnotateSuffix=
 AnnotationIgnoreSelected=0
-AnnotateOrder=2
+AnnotateOrder=3
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 
 [Document3]
-DocumentPath=ShiftregisterTeil2.SchDoc
+DocumentPath=ShiftregisterTeil1.SchDoc
 AnnotationEnabled=1
-AnnotateStartValue=400
+AnnotateStartValue=300
 AnnotateSuffix=
 AnnotationIgnoreSelected=0
 AnnotateOrder=4
@@ -46,12 +46,12 @@ DoLibraryUpdate=1
 DoDatabaseUpdate=1
 
 [Document4]
-DocumentPath=ShiftregisterTeil1.SchDoc
+DocumentPath=ShiftregisterTeil2.SchDoc
 AnnotationEnabled=1
-AnnotateStartValue=300
+AnnotateStartValue=400
 AnnotateSuffix=
 AnnotationIgnoreSelected=0
-AnnotateOrder=3
+AnnotateOrder=5
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 
@@ -66,22 +66,22 @@ DoLibraryUpdate=1
 DoDatabaseUpdate=1
 
 [Document6]
-DocumentPath=AVR-MEM-CLPD.SchDoc
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotateSuffix=
-AnnotationIgnoreSelected=0
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-
-[Document7]
 DocumentPath=global.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotateSuffix=
 AnnotationIgnoreSelected=0
 AnnotateOrder=1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+
+[Document7]
+DocumentPath=Low-Side.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=500
+AnnotateSuffix=
+AnnotationIgnoreSelected=0
+AnnotateOrder=6
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 
@@ -177,12 +177,10 @@ OutputDefault2=0
 PageOptions2=Record=PageOptions|SelectedOnly=False|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-4|MediaType=1|DitherType=10|PaperKind=A4|PrintScaleMode=1
 OutputType3=Schematic Print
 OutputName3=Schematic Prints
-OutputDocumentPath3=
+OutputDocumentPath3=D:\Dokumente und Einstellungen\labor\Desktop\svn\doc\Layouts\farb-borg-3d\AVR-MEM-CLPD.SchDoc
 OutputEnabled3=1
 OutputDefault3=0
-PageOptions3=Record=PageOptions|SelectedOnly=False|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=0|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=600|MediaType=1|DitherType=0|PaperKind=A4|PrintScaleMode=1
-Configuration3_Name1=OutputConfigurationParameter1
-Configuration3_Item1=Record=SchPrintView|BooleanThing=False
+PageOptions3=Record=PageOptions|SelectedOnly=False|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=0|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-4|MediaType=1|DitherType=10|PaperKind=A4|PrintScaleMode=1
 
 [OutputGroup4]
 Name=Assembly Outputs
