@@ -1,6 +1,6 @@
-Record=SheetSymbol|SourceDocument=global.SchDoc|Designator=U_farbBorg|SchDesignator=U_farbBorg|FileName=farbBorg.SchDoc
+Record=SheetSymbol|SourceDocument=global.SchDoc|Designator=U_AVR-MEM-CLPD|SchDesignator=U_AVR-MEM-CLPD|FileName=AVR-MEM-CLPD.SchDoc
 Record=SheetSymbol|SourceDocument=global.SchDoc|Designator=U_MMC-CAN|SchDesignator=U_MMC-CAN|FileName=MMC-CAN.SchDoc
 Record=SheetSymbol|SourceDocument=global.SchDoc|Designator=U_ShiftregisterTeil1|SchDesignator=U_ShiftregisterTeil1|FileName=ShiftregisterTeil1.SchDoc
 Record=SheetSymbol|SourceDocument=global.SchDoc|Designator=U_ShiftregisterTeil2|SchDesignator=U_ShiftregisterTeil2|FileName=ShiftregisterTeil2.SchDoc
 Record=TopLevelDocument|FileName=global.SchDoc
-Record=FPGA_COMPONENT|BaseComponentDesignator=U102|DocumentName=farbBorg.SchDoc|LibraryReference=XC9536-5PC44C|SubProjectPath= |Configuration= |Description=XC9500 CPLD with 36 Macrocells, 44-Pin PLCC, Commercial Grade|SubPartUniqueId1=FIHLIEGU|SubPartDocPath1=farbBorg.SchDoc
+Record=FPGA_COMPONENT|BaseComponentDesignator=U?|DocumentName=AVR-MEM-CLPD.SchDoc|LibraryReference=XC9536-5PC44C|SubProjectPath= |Configuration= |Description=XC9500 CPLD with 36 Macrocells, 44-Pin PLCC, Commercial Grade|SubPartUniqueId1=KLITUGBU|SubPartDocPath1=AVR-MEM-CLPD.SchDoc
