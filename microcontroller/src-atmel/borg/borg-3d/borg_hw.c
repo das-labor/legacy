@@ -3,9 +3,32 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 
+#include "util.h"
+
 #include "borg_hw.h"
 
+
+#define CTRLPORT  PORTA
+#define CTRLDDR   DDRA
+
+#define DATAPORT  PORTC
+#define DATADDR   DDRC
+#define DATAPIN   PINC
+
+#define PIN_OE_DATA    	 PA0
+#define PIN_SHIFT_DATA   PA1
+#define PIN_CLEAR_DATA 	 PA2
+#define PIN_CLK_DATA 	 PA3
+#define PIN_SHIFT_PLANE  PA4
+#define PIN_CLK_PLANE    PA5
+#define PIN_CLEAR_PLANE  PA6
+
+
+//the actual Pixmap
 unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
+
+uint8_t PlanesPNP;	//decides if The Transistors for the Planes are turned one
+					// by logic high (PlanesPNP=0), or low (PlanesPNP = 1)
 
 inline void rowshow(unsigned char row, unsigned char plane) {
 	unsigned char i;	
@@ -22,12 +45,19 @@ inline void rowshow(unsigned char row, unsigned char plane) {
 			case 2:
 				OCR0 = 20;
 		}
-		CTRLPORT &= ~(1<<PIN_CLEAR_PLANE);
-		CTRLPORT |=  (1<<PIN_CLEAR_PLANE);
-		CTRLPORT |=  (1<<PIN_SHIFT_PLANE);		
-		CTRLPORT |=  (1<<PIN_CLK_PLANE);		
-		CTRLPORT &= ~(1<<PIN_CLK_PLANE);
-		CTRLPORT &= ~(1<<PIN_SHIFT_PLANE);	
+		if(PlanesPNP){
+			CTRLPORT &=  ~(1<<PIN_SHIFT_PLANE);		
+			CTRLPORT |=  (1<<PIN_CLK_PLANE);		
+			CTRLPORT &= ~(1<<PIN_CLK_PLANE);
+			CTRLPORT |=  (1<<PIN_SHIFT_PLANE);
+		}else{	
+			CTRLPORT &= ~(1<<PIN_CLEAR_PLANE);
+			CTRLPORT |=  (1<<PIN_CLEAR_PLANE);
+			CTRLPORT |=  (1<<PIN_SHIFT_PLANE);		
+			CTRLPORT |=  (1<<PIN_CLK_PLANE);		
+			CTRLPORT &= ~(1<<PIN_CLK_PLANE);
+			CTRLPORT &= ~(1<<PIN_SHIFT_PLANE);
+		}			
 	} else {
 		CTRLPORT |=  (1<<PIN_CLK_PLANE);		
 		CTRLPORT &= ~(1<<PIN_CLK_PLANE);
@@ -97,9 +127,26 @@ void timer0_off(){
 
 void borg_hw_init() {
 	CTRLPORT = (1<<PIN_OE_DATA);
-	DATAPORT = 0x00;
 	CTRLDDR = 0xFF;
+	
+	DATAPORT = 0xff;//Pullups on
+	wait(1);
+	if (DATAPIN != 0xff){
+		PlanesPNP = 1;//Pulldown on dataline means Plane control inverted
+	}
 	DATADDR = 0xFF;
+	
+	if(PlanesPNP){
+		uint8_t x;
+		CTRLPORT |=  (1<<PIN_CLEAR_PLANE);//leave reset
+		CTRLPORT |=  (1<<PIN_SHIFT_PLANE);//shift in ones
+		//set shiftreg outputs to 1 (So PNPs are off)
+		for(x=0;x<8;x++){
+			CTRLPORT |=  (1<<PIN_CLK_PLANE);		
+			CTRLPORT &= ~(1<<PIN_CLK_PLANE);
+		}
+	}
+	
 	timer0_on ();
 
 	wdt_reset();
