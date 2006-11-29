@@ -6,6 +6,8 @@ end TestBench;
 
 architecture Behavioral of TestBench is
 
+constant Tclk : time := 10ns;
+
 -----------------------------------------------------------------------------
 -- Component declaration ----------------------------------------------------
 component UartTest is
@@ -17,7 +19,7 @@ component UartTest is
 		uart_txd    : out std_logic );
 end component;
 
-constant Tclk : time := 10ns;
+-----------------------------------------------------------------------------
 
 signal clk       : std_logic;
 signal reset     : std_logic;
@@ -42,5 +44,6 @@ begin
 end process;
 
 reset <= '1', '0' after 2.5*Tclk;
+
 end Behavioral;
 
