@@ -88,7 +88,7 @@ cpu0 : leon3s                                       -- LEON3 processor
                   icen      => 0,      -- enable ICACHE
                   isets     => 1,      -- number ICACHE sets
                   isetsize  => 4,      -- ICACHE set size in kB
-                  0linesize => 4,      -- ICACHE line size
+                  ilinesize => 4,      -- ICACHE line size
                   dcen      => 0,      -- enable DCACHE 
                   dsets     => 1,      -- number ICACHE sets
                   dsetsize  => 2,      -- ICACHE set size in kB

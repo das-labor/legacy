@@ -21,7 +21,7 @@ VHDLSRC+=System.vhd TestWBLeon.vhd
 
 
 
-all: TestWBLeon
+all: grlib TestWBLeon
 
 
 #############################################################################
