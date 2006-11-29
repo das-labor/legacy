@@ -1,0 +1,5 @@
+
+  mainmenu_option next_comment
+  comment 'USB             '
+    bool 'Enable USB target controller       ' CONFIG_USBTGT
+  endmenu

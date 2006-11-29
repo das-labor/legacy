@@ -1,0 +1,20 @@
+
+#ifndef CONFIG_SRCTRL
+#define CONFIG_SRCTRL 0
+#endif
+
+#ifndef CONFIG_SRCTRL_PROMWS
+#define CONFIG_SRCTRL_PROMWS 0
+#endif
+
+#ifndef CONFIG_SRCTRL_RAMWS
+#define CONFIG_SRCTRL_RAMWS 0
+#endif
+
+#ifndef CONFIG_SRCTRL_RMW
+#define CONFIG_SRCTRL_RMW 0
+#endif
+
+#ifndef CONFIG_SRCTRL_8BIT
+#define CONFIG_SRCTRL_8BIT 0
+#endif

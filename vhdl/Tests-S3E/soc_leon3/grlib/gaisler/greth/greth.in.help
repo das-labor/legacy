@@ -1,0 +1,13 @@
+Gaisler Ethernet MAC enable
+CONFIG_GRETH_ENABLE
+  Say Y here to enable the Gaisler Research Ethernet MAC . The MAC has 
+  one AHB master interface to read and write packets to memory, and one
+  APB slave interface for accessing the control registers. 
+
+Gaisler Ethernet FIFO depth
+CONFIG_GRETH_FIFO4
+  Set the depth of the receive and transmit FIFOs in the MAC core.
+  The MAC core will perform AHB burst read/writes with half the
+  size of the FIFO depth.
+
+

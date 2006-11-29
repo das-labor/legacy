@@ -1,0 +1,61 @@
+/*OUTUT_ARCH(sparc) */
+__DYNAMIC = 0;
+
+
+/**
+ *
+
+ *  +----------------+  <- low DDR    (0x80000000)
+ *  |                |
+ *  |  UPLOAD REGION |
+ *  |                |
+ *  |                |
+ *  +----------------+  <- low RAM    (0x80000000)
+ *  |.bss            |
+ *  |      _sbss     |
+ *  |      _ebss     |
+ *  +----------------+
+ *  |   heap space   |
+ *  |                |
+ *  |   stack space  |
+ *  +----------------+  <- high DDR   (0x84000000)
+ *
+ */
+
+
+_RAM_START  = 0x80000000;
+_RAM_SIZE   = 0x04000000;
+_RAM_END    = _RAM_START  + _RAM_SIZE;
+
+
+MEMORY {
+  ram     : ORIGIN = 0x80000000, LENGTH = 0x04000000     /* 64 */
+}
+
+SECTIONS
+{
+  .text : 
+  {
+    _stext = .;
+    *(.text)
+    _etext = .;
+  } > ram
+
+  .data : 
+  {
+    _sdata = .;
+    *(.data)
+    *(.rodata)
+    *(.rodata.*)
+    _edata = .;
+  } > ram
+
+ 
+  .bss :
+  {
+    _sbss = .;
+    *(.bss)
+    _ebss = .;
+  } > ram
+}
+

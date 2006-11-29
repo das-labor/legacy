@@ -1,0 +1,5 @@
+  bool 'PCI arbiter  ' CONFIG_PCI_ARBITER
+  if [ "$CONFIG_PCI_ARBITER" = "y" ]; then
+    bool 'PCI arbiter APB interface ' CONFIG_PCI_ARBITER_APB
+  fi
+

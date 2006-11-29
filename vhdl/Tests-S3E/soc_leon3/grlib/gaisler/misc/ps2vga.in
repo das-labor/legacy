@@ -1,0 +1,3 @@
+    bool 'Enable keyboard (PS2) interface  ' CONFIG_KBD_ENABLE
+    bool 'Enable console (VGA) interface  ' CONFIG_VGA_ENABLE
+

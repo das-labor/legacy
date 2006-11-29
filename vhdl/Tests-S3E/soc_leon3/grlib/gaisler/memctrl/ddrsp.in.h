@@ -1,0 +1,29 @@
+#ifndef CONFIG_DDRSP
+#define CONFIG_DDRSP 0
+#endif
+
+#ifndef CONFIG_DDRSP_INIT
+#define CONFIG_DDRSP_INIT 0
+#endif
+
+#ifndef CONFIG_DDRSP_FREQ
+#define CONFIG_DDRSP_FREQ 100
+#endif
+
+#ifndef CONFIG_DDRSP_COL
+#define CONFIG_DDRSP_COL 9
+#endif
+
+#if defined CONFIG_DDRSP_64M
+#define CONFIG_DDRSP_SIZE 64
+#elif defined CONFIG_DDRSP_128M
+#define CONFIG_DDRSP_SIZE 128
+#elif defined CONFIG_DDRSP_256M
+#define CONFIG_DDRSP_SIZE 256
+#elif defined CONFIG_DDRSP_512M
+#define CONFIG_DDRSP_SIZE 512
+#elif defined CONFIG_DDRSP_1G
+#define CONFIG_DDRSP_SIZE 1024
+#else
+#define CONFIG_DDRSP_SIZE 256
+#endif
