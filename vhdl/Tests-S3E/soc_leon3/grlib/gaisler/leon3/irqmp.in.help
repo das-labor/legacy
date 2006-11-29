@@ -1,0 +1,8 @@
+LEON3 interrupt controller
+CONFIG_IRQ3_ENABLE
+  Say Y here to enable the LEON3 interrupt controller. This is needed
+  if you want to be able to receive interrupts. Operating systems like
+  Linux, RTEMS and eCos needs this option to be enabled. If you intend
+  to use the Bare-C run-time and not use interrupts, you could disable
+  the interrupt controller and save about 500 gates.
+

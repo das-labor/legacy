@@ -1,0 +1,75 @@
+#ifndef CONFIG_1553_RT_EN
+#define CONFIG_1553_RT_EN 0
+#endif
+
+#ifndef CONFIG_1553_BC_EN
+#define CONFIG_1553_BC_EN 0
+#endif
+
+#ifndef CONFIG_1553_RTADDR
+#define CONFIG_1553_RTADDR 1
+#endif
+
+#ifndef CONFIG_1553_RTADDRP
+#define CONFIG_1553_RTADDRP 0
+#endif
+
+#ifndef CONFIG_1553_WRTCMD
+#define CONFIG_1553_WRTCMD 1
+#endif
+
+#ifndef CONFIG_1553_WRTTSW
+#define CONFIG_1553_WRTTSW 1
+#endif
+
+#ifndef CONFIG_1553_INTENBBR
+#define CONFIG_1553_INTENBBR 0
+#endif
+
+#ifndef CONFIG_1553_BCASTEN
+#define CONFIG_1553_BCASTEN 1
+#endif
+
+#ifndef CONFIG_1553_SA30LOOP
+#define CONFIG_1553_SA30LOOP 0
+#endif
+
+#if defined CONFIG_1553_RTCLKSPD12
+#define CONFIG_1553_RTCLKSPD 0
+#elif defined CONFIG_1553_RTCLKSPD16
+#define CONFIG_1553_RTCLKSPD 1
+#elif defined CONFIG_1553_RTCLKSPD20
+#define CONFIG_1553_RTCLKSPD 2
+#elif defined CONFIG_1553_RTCLKSPD24
+#define CONFIG_1553_RTCLKSPD 3
+#else
+#define CONFIG_1553_RTCLKSPD 2
+#endif
+
+#ifndef CONFIG_1553_BRM_EN
+#define CONFIG_1553_BRM_EN 0
+#endif
+
+#ifndef CONFIG_1553_NUM
+#define CONFIG_1553_NUM 1
+#endif
+
+#if defined CONFIG_1553_BRM_BC
+#define CONFIG_1553_BRM_MS 0
+#elif defined CONFIG_1553_BRM_RT
+#define CONFIG_1553_BRM_MS 1
+#elif defined CONFIG_1553_BRM_MON
+#define CONFIG_1553_BRM_MS 2
+#elif defined CONFIG_1553_BRM_RTMON
+#define CONFIG_1553_BRM_MS 3
+#else
+#define CONFIG_1553_BRM_MS 0
+#endif
+
+#ifdef CONFIG_1553_BRM_ABSTD
+#undef CONFIG_1553_BRM_ABSTD
+#define CONFIG_1553_BRM_ABSTD 0
+#else
+#define CONFIG_1553_BRM_ABSTD 1
+#endif
+

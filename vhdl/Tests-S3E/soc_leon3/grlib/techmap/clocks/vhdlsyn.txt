@@ -1,0 +1,6 @@
+libclk.vhd
+clkgen_actel.vhd
+clkgen_altera.vhd
+clkgen_xilinx.vhd
+clkgen_rh_lib18t.vhd
+clkgen.vhd

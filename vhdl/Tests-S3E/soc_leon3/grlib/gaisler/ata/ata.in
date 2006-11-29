@@ -1,0 +1,5 @@
+    bool 'Enable ATA interface                 ' CONFIG_ATA_ENABLE
+    if [ "$CONFIG_ATA_ENABLE" = "y" ]; then
+      hex 'ATA I/O area start address (haddr[19:8]) ' CONFIG_ATAIO A00
+      int 'Interrupt number                      ' CONFIG_ATAIRQ 10
+    fi

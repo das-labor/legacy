@@ -1,0 +1,7 @@
+#devices
+ahb2hpi
+spi
+i2c
+dac
+miscellaneous
+multiio

@@ -1,0 +1,4 @@
+USB controller enable
+CONFIG_USBTGT
+  Say Y here to enable an USB target controller (Experimental!)
+

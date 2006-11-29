@@ -1,0 +1,42 @@
+mainmenu_option next_comment
+comment '1553 RT        '
+  bool 'Enable RT controller       ' CONFIG_1553_RT_EN
+  if [ "$CONFIG_1553_RT_EN" = "y" ]; then
+    int 'RT Address (0 - 31) ' CONFIG_1553_RTADDR 1
+    int 'RT Address (odd) parity bit ' CONFIG_1553_RTADDRP 0
+    choice 'Clock speed (MHz) ' \
+    "12	    CONFIG_1553_RTCLKSPD12	 \
+     16     CONFIG_1553_RTCLKSPD16	 \
+     20	    CONFIG_1553_RTCLKSPD20	 \
+     24	    CONFIG_1553_RTCLKSPD24" 20
+
+     bool 'Write command word to memory ' CONFIG_1553_WRTCMD
+     bool 'Write status word to memory ' CONFIG_1553_WRTTSW
+     bool 'Generate interrupts on bad messages ' CONFIG_1553_INTENBBR
+     bool 'Enable broadcasts ' CONFIG_1553_BCASTEN
+     bool 'Use SA 30 as loopback ' CONFIG_1553_SA30LOOP
+  fi 
+endmenu
+
+mainmenu_option next_comment
+comment '1553 BC             '  
+    bool 'Enable BC controller       ' CONFIG_1553_BC_EN
+endmenu
+
+mainmenu_option next_comment
+comment '1553 BRM             '
+    bool 'Enable BRM controller       ' CONFIG_1553_BRM_EN 
+    if [ "$CONFIG_1553_BRM_EN" = "y" ]; then  
+      int 'Number of BRM controllers (1 - 2)' CONFIG_1553_NUM 1
+      choice 'Operating mode' \
+      "BC	CONFIG_1553_BRM_BC	 \
+       RT	CONFIG_1553_BRM_RT	 \
+       MON	CONFIG_1553_BRM_MON	 \
+       RT/MON	CONFIG_1553_BRM_RTMON" BC
+
+      int 'RT Address (0 - 31) ' CONFIG_1553_RTADDR 1
+      int 'RT Address (odd) parity bit ' CONFIG_1553_RTADDRP 0
+
+      bool 'MIL-STD-1553-B support' CONFIG_1553_BRM_ABSTD 
+    fi
+ endmenu

@@ -1,0 +1,4 @@
+USB controller enable
+CONFIG_USBDCL
+  Say Y here to enable the USB DSU interface (Experimental!)
+

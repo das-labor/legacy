@@ -1,0 +1,34 @@
+[size] 1280 972
+[pos] -1 -1
+*-28,000000 11220000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+@28
+clk
+@22
+led[7:0]
+@28
+system0.wb32_cyc
+system0.wb32_stb
+system0.wb32_ack
+system0.wb32_we
+@22
+system0.wb32_adr[31:0]
+system0.wb32_sel[3:0]
+system0.wb32_dat_r[31:0]
+system0.wb32_dat_w[31:0]
+system0.leon_irqs[15:0]
+@28
+system0.uart0.wb_stb_i
+uart_tx
+system0.la0.wb_stb_i
+system0.la0.spen
+@22
+system0.la0.sp[15:0]
+system0.la0.sc[15:0]
+@28
+system0.la0.we1
+@22
+system0.la0.wdata1[31:0]
+@28
+system0.la0.sdone
+system0.wb32_ack
+system0.la0.ram_ack

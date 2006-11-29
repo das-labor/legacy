@@ -1,0 +1,3 @@
+libddr.vhd ddr_lattice.vhd ddr_xilinx.vhd ddr_gen.vhd 
+ddr_ireg.vhd ddr_oreg.vhd
+

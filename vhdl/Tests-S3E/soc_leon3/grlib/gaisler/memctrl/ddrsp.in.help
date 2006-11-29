@@ -1,0 +1,30 @@
+SDRAM controller enable
+CONFIG_DDRSP
+  Say Y here to enabled a 16-bit DDR266 SDRAM controller. 
+
+Power-on init
+CONFIG_DDRSP_INIT
+  Say Y here to enable the automatic DDR initialization sequence.
+  If disabled, the sequencemust be performed in software before
+  the DDR can be used. If unsure, say Y.
+
+Memory frequency
+CONFIG_DDRSP_FREQ
+  Enter the frequency of the DDR clock (in MHz). The value is
+  typically between 80 - 133, depending on system configuration.
+  Some template design (such as the leon3-avnet-eval-lx25)
+  calculate this value automatically and this value is not used.
+
+Column bits
+CONFIG_DDRSP_COL
+  Select the number of colomn address bits of the DDR memory.
+  Typical values are 8 - 11. Only needed when automatic DDR
+  initialisation is choosen. The column size can always be
+  programmed by software as well.
+
+Device density
+CONFIG_DDRSP_64M
+  Select the size (Mbits) of the used DDR device. Only needed
+  when automatic DDR initialisation is choosen. The device size
+  can always be programmed by software as well.
+

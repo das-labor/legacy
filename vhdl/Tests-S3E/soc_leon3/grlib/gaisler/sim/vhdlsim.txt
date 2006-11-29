@@ -1,0 +1,2 @@
+sim.vhd sram.vhd sramft.vhd
+sram16.vhd phy.vhd

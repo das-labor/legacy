@@ -1,0 +1,10 @@
+Text-mode VGA
+CONFIG_VGA_ENABLE
+  Say Y here to enable a simple text-mode VGA controller. The controller
+  generate 48x36 characters on a 640x480 pixel screen. The pixel clock
+  is 25 MHz.
+
+PS2 KBD interface
+CONFIG_KBD_ENABLE
+  Say Y here to enable a PS/2 keyboard or mouse interface.
+

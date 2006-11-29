@@ -1,0 +1,9 @@
+
+  mainmenu_option next_comment
+  comment 'PC133 SDRAM controller             '
+    bool 'Enable PC133 SDRAM controller       ' CONFIG_SDCTRL
+    if [ "$CONFIG_SDCTRL" = "y" ]; then
+      bool '64-bit SDRAM data bus' CONFIG_SDCTRL_BUS64
+      bool 'Unsynchronized sdclock' CONFIG_SDCTRL_INVCLK
+    fi
+  endmenu

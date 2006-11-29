@@ -1,0 +1,71 @@
+1553RT Enable
+CONFIG_1553_RT_EN
+  Say Y here to enable a 1553 Remote Terminal
+
+RT Address
+CONFIG_1553_RTADDR
+  Enter a remote terminal address between 0 and 31 
+  (0-30 if broadcasts enabled).
+
+RT Address parity bit
+CONFIG_1553_RTADDRP
+  Enter 0 or 1 so that the remote terminal address and 
+  this bit achieves odd parity.
+
+Command word
+CONFIG_1553_WRTCMD
+  Say Y here to make the RT write the command word to memory.
+
+Status word
+CONFIG_1553_WRTTSW
+  Say Y here to make the RT write the status word to memory.
+
+Enable irq on bad msg
+CONFIG_1553_INTENBBR
+  Say Y here to enable RT irqs on bad messages.
+
+Enable broadcasts
+CONFIG_1553_BCASTEN
+  Say Y here to enable broadcasts (address 31 may not be assigned
+  to any RT).
+
+Enable loopback
+CONFIG_1553_SA30LOOP
+  Say Y here to make RT address 30 loopback
+
+RT clock speed 
+CONFIG_1553_RTCLKSPD12
+  Choose the RT clock frequency
+
+RT clock speed 
+CONFIG_1553_RTCLKSPD16
+  Choose the RT clock frequency
+
+RT clock speed 
+CONFIG_1553_RTCLKSPD20
+  Choose the RT clock frequency
+
+RT clock speed 
+CONFIG_1553_RTCLKSPD24
+  Choose the RT clock frequency
+
+1553BC Enable
+CONFIG_1553_BC_EN
+  Say Y here to enable a 1553 Bus Controller
+
+BRM enable
+CONFIG_1553_BRM_EN
+  Say Y here to make enable on or more BRM cores
+
+Number of BRM cores
+CONFIG_1553_NUM
+  Choose number of BRM cores (1-2)
+
+Bus standard
+CONFIG_1553_BRM_ABSTD
+  Say Y here to choose MIL-STD-1553 B compliance
+
+BRM Mode
+CONFIG_1553_BRM_MS
+  Choose operating mode (BC = Bus Controller, RT = Remote terminal, 
+  MON = Bus Monitor, RT/MON = Remote terminal and bus monitor

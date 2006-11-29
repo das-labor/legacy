@@ -1,0 +1,12 @@
+
+PCI arbiter enable
+CONFIG_PCI_ARBITER
+  To enable a PCI arbiter, say Y here.
+
+PCI APB interface enable
+CONFIG_PCI_ARBITER_APB
+  Say Y here to enable the APB interface on the PCI arbiter. This makes
+  it possible to dynamically re-assign PCI master priorities. See the
+  PCI arbiter manual for details.
+
+

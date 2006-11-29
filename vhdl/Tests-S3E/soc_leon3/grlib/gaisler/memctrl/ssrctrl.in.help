@@ -1,0 +1,5 @@
+SDRAM controller enable
+CONFIG_SSCTRL
+  Say Y here to enabled a 32-bit synchronous SRAM (SSRAM) controller.
+  The controller is designed for piplined ZBT SSRAM.
+

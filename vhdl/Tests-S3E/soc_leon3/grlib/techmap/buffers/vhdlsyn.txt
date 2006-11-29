@@ -1,0 +1,3 @@
+clkbuf_xilinx.vhd
+clkbuf_actel.vhd
+techbuf.vhd
