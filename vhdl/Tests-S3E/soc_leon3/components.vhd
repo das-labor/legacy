@@ -2,8 +2,46 @@ library ieee;
 use ieee.std_logic_1164.all;
 library techmap;
 
-package spike is
+package components is
 
+-----------------------------------------------------------------------------
+-- DDR Controller (64 Bit Wishbone Slave) -----------------------------------
+component wb_ddr is
+	generic (
+		wait200us    : in    std_logic := '1' );
+	port(
+	   clk          : in    std_logic;
+		clk_2x       : in    std_logic;
+		clk_2x90     : in    std_logic;
+		reset        : in    std_logic;
+		-- DDR Connection
+		ddr_clk      : out   std_logic;
+		ddr_clk_n    : out   std_logic;
+		ddr_clk_fb   : in    std_logic;
+		ddr_dq       : inout std_logic_vector(15 downto 0);
+		ddr_dqs      : inout std_logic_vector( 1 downto 0);
+		ddr_dm       : out   std_logic_vector( 1 downto 0);
+		ddr_addr     : out   std_logic_vector(13 downto 0);
+		ddr_ba       : out   std_logic_vector( 1 downto 0);
+		ddr_cke      : out   std_logic;
+		ddr_cs_n     : out   std_logic;
+		ddr_ras_n    : out   std_logic;
+		ddr_cas_n    : out   std_logic;
+		ddr_we_n     : out   std_logic;
+		-- Whishbone Interface
+		wb_adr_i     : in    std_logic_vector(31 downto 0);
+		wb_dat_i     : in    std_logic_vector(63 downto 0);
+		wb_dat_o     : out   std_logic_vector(63 downto 0);
+		wb_sel_i     : in    std_logic_vector( 7 downto 0);
+		wb_we_i      : in    std_logic;
+		wb_stb_i     : in    std_logic;
+		wb_cyc_i     : in    std_logic;
+		wb_ack_o     : out   std_logic;
+		-- Debug & Rotary 
+		sw           : in    std_logic_vector(3 downto 0);
+		rotary       : in    std_logic_vector(2 downto 0);
+		debug        : out   std_logic_vector(7 downto 0) );
+end component wb_ddr;
 
 -----------------------------------------------------------------------------
 -- AHB2WB Bus Bridge --------------------------------------------------------

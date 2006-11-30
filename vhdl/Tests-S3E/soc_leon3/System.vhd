@@ -1,6 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use work.spike.all;
+use work.components.all;
 
 -----------------------------------------------------------------------------
 -- Spike Top System ---------------------------------------------------------
@@ -271,7 +271,7 @@ bridge: wb32_wb64
 
 -----------------------------------------------------------------------------
 -- 64 Bit DDR Controller ----------------------------------------------------
-ddr0: entity work.wb_ddr
+ddr0: wb_ddr
 	port map(
 		clk        => clk,
 		clk_2x     => clk_2x,
