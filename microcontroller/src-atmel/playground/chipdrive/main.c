@@ -8,6 +8,8 @@
 
 #include "config.h"
 
+#include "reader.h"
+
 //AVRX_GCC_TASK(Monitor, 20, 0);          // External Task: Debug Monitor
 
 
@@ -31,8 +33,8 @@ int main(void)
     //InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
 
 	//AvrXRunTask(TCB(Monitor));
-	AvrXRunTask(TCB(laptask));
-	AvrXRunTask(TCB(moodtask));
+	AvrXRunTask(TCB(reader));
+	//AvrXRunTask(TCB(moodtask));
 	
 
     /* Needed for EEPROM access in monitor */
