@@ -197,7 +197,7 @@ void i2cEeRead(u16 address, u16 len, u08 *data)
 
 
 //Probes if a device with this address acks
-u08 i2cProbe(addr){
+u08 i2cProbe(u08 addr){
 	u08 ack;
 	i2cStart();
 	ack = i2cPutbyte(addr);

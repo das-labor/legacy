@@ -26,4 +26,11 @@ rest of the contacts:
 15 - dir1    has  10k pullup
 16 - dir2    has  10k pullup
 
+the signals of the three Opto switches are marked as S in the Table.
+
+Normally the Motor is controlled by pulling dir1 or dir2 low.
+I (Tixiv) have hacked our Unit, so that the Motor controller is inhibited
+when both lines are pulled low simultaneously. That saves 15mA supply current.
+I have also changed the Suplly Voltage to the Optos from 12V to 5V, so that they
+also consume less current.
 

@@ -36,33 +36,43 @@ void chipdrive_init(){
 
 
 //wait for card to be inserted and load it
-void chipdrive_load(){
-	u08 state, oldstate = 0, c1;
-	u16 c2;	
+u08 chipdrive_load(){
+	u08 state, oldstate = 0, c;
 	//wait until a card is inserted
 	while(1){
 		state = PIN_SWITCH & ((1<<BIT_SWITCH1)|(1<<BIT_SWITCH2));
 		//switch 1 or 2 was released, so a card was drawn out
 		if(state > oldstate) oldstate = state;
 		//switch 1 or 2 was pressed, so a card was pushed in
-		if(state < oldstate) break;
-		AvrXDelay(&pollTimer, 100);
+		if((state < oldstate) || (state == 0)) break;
+		AvrXDelay(&pollTimer, 50);
 	}
+	//wait a little, so user has pushed card to first roll
+	AvrXDelay(&pollTimer, 50);
+	
 	//begin drawing in card
 	PORT_MOTOR &= ~(1<<BIT_MOTOR_IN);
 	
 	//is the second switch activated fast enough?
-	c1=0;
+	c=0;
 	while(PIN_SWITCH & (1<<BIT_SWITCH2)){
-		AvrXDelay(&pollTimer, 100);
-		if((c1++)>10) return LOAD_ERROR;
+		AvrXDelay(&pollTimer, 10);
+		if((c++)>50){
+			//stop motor
+			PORT_MOTOR |= (1<<BIT_MOTOR_IN);
+			return LOAD_ERROR;
+		}
 	}
 	
 	//is the card drawn in fast enough?
-	c2=0;
+	c=0;
 	while(PIN_SWITCH & (1<<BIT_SWITCH3)){
 		AvrXDelay(&pollTimer, 10);
-		if((c2++)>200) return LOAD_ERROR;
+		if((c++)>150){
+			//stop motor
+			PORT_MOTOR |= (1<<BIT_MOTOR_IN);
+			return LOAD_ERROR;
+		}
 	}
 	
 	//o.k. - the card is in, so we can stop the motor
@@ -77,46 +87,54 @@ void chipdrive_load(){
 	return LOAD_OK;
 }
 
-void chipdrive_eject(){
+u08 chipdrive_eject(){
+	AvrXDelay(&pollTimer, 100);
+	u08 c = 0;
 	PORT_MOTOR &= ~(1<<BIT_MOTOR_OUT);
-	while( !(PIN_SWITCH & (1<<BIT_SWITCH2)) );
+	while( !(PIN_SWITCH & (1<<BIT_SWITCH2)) ){
+		AvrXDelay(&pollTimer, 50);
+		if((c++)>40){
+			//motor off
+			PORT_MOTOR |= (1<<BIT_MOTOR_OUT);
+			return LOAD_ERROR;
+		}
+	}
+	//wait a little until the card is really out
+	AvrXDelay(&pollTimer, 50);
 	PORT_MOTOR |= (1<<BIT_MOTOR_OUT);
+	return LOAD_OK;
 }
-
-#define CHIPDRIVE_SENSE_CARD !(PIN_SWITCH & (1<<BIT_SWITCH1))
-
-int main(){
-unsigned char card=0;
-
-PORTB = 0x08;
-chipdrive_init();
-    console_init();
-
-while(1){
-if(CHIPDRIVE_SENSE_CARD){
-chipdrive_load();
-card = 1;
-}
-if( !(PINB & (1<<3)) ){
-if(card){
-card = 0;
-chipdrive_eject();
-while(CHIPDRIVE_SENSE_CARD);
-}
-}
-console();
-}
-}
-
 
 
 AVRX_GCC_TASKDEF(reader, 50, 3)
 {
+	u08 error_count = 0;
 	chipdrive_init();
+	if ( (PIN_SWITCH & (1<<BIT_SWITCH2)) == 0) {
+		//switch 2 pressed, so card is in drive
+		chipdrive_eject();
+	};
 	
 	while(1){
-				
-		
+		if (chipdrive_load() != LOAD_OK){
+			error_count ++;
+		}else{
+			// do stuff here
+			PORTB |=8;
+			while (PINB & 8);
+		}
+
+		if (chipdrive_eject() != LOAD_OK){
+			error_count++;
+			if (error_count > 2){
+				AvrXDelay(&pollTimer, 30000);
+			}
+		}else{
+			//only reset errors on correct eject, because
+			//on correct load the card could still be always
+			//jammed when ejecting.
+			error_count = 0;
+		}
 		
 	}
 }
