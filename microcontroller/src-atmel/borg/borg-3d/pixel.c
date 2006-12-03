@@ -23,17 +23,27 @@ void clear_screen(unsigned char value){
 void setpixel3d(pixel3d p, unsigned char value ){
 	unsigned char plane;
 	if (p.x < 8 && p.y < 8 && p.z < 8) { 
-		for (plane=0; plane < NUM_LEVELS; plane++) {
+#ifdef NEW_HARDWARE
+		for (plane = 0; plane < NUM_LEVELS; plane++) {
+			if (plane < value)
+				pixmap[plane][p.z][p.y] |=  shl_table[p.x];
+			else
+				pixmap[plane][p.z][p.y] &= ~shl_table[p.x];
+		}
+#else
+		for (plane = 0; plane < NUM_LEVELS; plane++) {
 			if (plane < value)
 				pixmap[plane][p.x][p.y] |=  shl_table[p.z];
 			else
 				pixmap[plane][p.x][p.y] &= ~shl_table[p.z];
 		}
+#endif // NEW_HARDWARE
 	}	
 }
 
 void shift3d(direction dir) {
      unsigned char i, j, k;
+#ifdef NEW_HARDWARE
      switch (dir) {
      case back:
           for (i = 1; i < NUM_PLANES; i ++) {
@@ -110,6 +120,85 @@ void shift3d(direction dir) {
           }
           break;
      }     
+#else
+     switch (dir) {
+     case back:
+          for (i = 1; i < NUM_PLANES; i ++) {
+              for (j = 0; j < NUM_ROWS; j++) {
+                  for (k = 0; k < NUM_LEVELS; k++) {
+                      pixmap[k][i-1][j] = pixmap[k][i][j]; 
+                  }
+              }
+          }
+          for (j = 0; j < NUM_ROWS; j++) {
+              for (k = 0; k < NUM_LEVELS; k++) {
+                  pixmap[k][NUM_PLANES-1][j] = 0; 
+              }
+          }
+          break;
+     case forward:
+          for (i = NUM_PLANES-2; i < NUM_PLANES; i--) {
+              for (j = NUM_ROWS-1; j < NUM_ROWS; j--) {
+                  for (k = 0; k < NUM_LEVELS; k++) {
+                      pixmap[k][i+1][j] = pixmap[k][i][j]; 
+                  }
+              }
+          }
+          for (j = NUM_ROWS-1; j < NUM_ROWS; j--) {
+              for (k = 0; k < NUM_LEVELS; k++) {
+                  pixmap[k][0][j] = 0;
+              }
+          }
+          break;
+     case right:
+          for (i = 0; i < NUM_PLANES; i ++) {
+              for (j = 1; j < NUM_ROWS; j++) {
+                  for (k = 0; k < NUM_LEVELS; k++) {
+                      pixmap[k][i][j-1] = pixmap[k][i][j]; 
+                  }
+              }
+          }
+          for (j = 0; j < NUM_PLANES; j++) {
+              for (k = 0; k < NUM_LEVELS; k++) {
+                  pixmap[k][j][NUM_PLANES-1] = 0; 
+              }
+          }
+          break;
+     case left:
+          for (i = NUM_PLANES-1; i < NUM_PLANES; i--) {
+              for (j = NUM_ROWS-2; j < NUM_ROWS; j--) {
+                  for (k = 0; k < NUM_LEVELS; k++) {
+                      pixmap[k][i][j+1] = pixmap[k][i][j]; 
+                  }
+              }
+          }
+          for (j = NUM_PLANES-1; j < NUM_ROWS; j--) {
+              for (k = 0; k < NUM_LEVELS; k++) {
+                  pixmap[k][j][0] = 0;
+              }
+          }
+          break;
+     case up:
+          for (i = 0; i < NUM_PLANES; i ++) {
+              for (j = 0; j < NUM_ROWS; j++) {
+                  for (k = 0; k < NUM_LEVELS; k++) {
+                      pixmap[k][i][j] = pixmap[k][i][j] << 1; 
+                  }
+              }
+          }
+          break;
+     case down:
+          for (i = 0; i < NUM_PLANES; i ++) {
+              for (j = 0; j < NUM_ROWS; j++) {
+                  for (k = 0; k < NUM_LEVELS; k++) {
+                      pixmap[k][i][j] = pixmap[k][i][j] >> 1;                   
+                  }
+              }
+          }
+          break;
+     }     
+#endif
+
 }
 
 unsigned char get_pixel3d(pixel3d p){
