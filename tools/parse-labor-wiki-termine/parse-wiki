@@ -1,27 +1,11 @@
 #!/usr/bin/env ruby
 
 
+WIKIPAGE    = "Termine"
 WIKIURL     = "http://wiki.das-labor.org/wiki/index.php?title=Spezial:Export"
-WIKIPAGE    = "Vorlage:Termine"
 WIKIPREFIX  = "http://wiki.das-labor.org/wiki/index.php?title="
 
-BLOGSERVER  = "www.das-labor.org.de"
-BLOGPATH    = "/weblog/xmlrpx.php"
-BLOGID      = "LABOR"
-BLOGUSER    = "termine"
-BLOGPASSWD  = '%%termin&&'
-
-POSTTITLE   = "SCHEDULE"
-POSTHEAD    = <<EOF
-
-Schedule
-
-EOF
-POSTLINE    = " * LALA"
-POSTTAIL    = <<EOF
-
- (k)allisti
-EOF
+XMLFILE=ARGV[0]+"/termine.xml";
 
 WIKILINES = [
 #  /\W+(?:<DATE>\d{2}.\d{2}.\d{2})\W+(?:<DAY>\w\w)\W+(?:<TEXT>.*)/,
@@ -34,7 +18,6 @@ WIKILINES = [
 require 'http-access2'
 require 'rexml/document'
 require 'htmlentities/lib/htmlentities.rb'
-require 'metaweblogapi.rb'
 require 'namedregexp.rb'
 
 class LaborTermine 
@@ -112,30 +95,17 @@ end
 lt = LaborTermine.new;
 lt.run;
 
-
-puts "<termine>"
-lt.termine.each { |termin|
-	puts "<termin>"
-	termin.each { |key,val|
-		puts "  <#{key}>#{val}</#{key}>"
-	}
-	puts "</termin>"
+File.open( XMLFILE, "w" ) { |f|
+  f.puts "<termine>"
+  lt.termine.each { |termin|
+    puts "#{termin["day"]}.#{termin["month"]}.#{termin["year"]} #{termin["hour"]}:#{termin["min"]} #{termin["text"]}"
+    f.puts "<termin>"
+      termin.each { |key,val|
+        f.puts "  <#{key}>#{val}</#{key}>"
+    	}
+    f.puts "</termin>"
+  }
+  f.puts "</termine>"
 }
-puts "</termine>"
-
-exit
-
-
-
-client = MetaWebLogAPI::Client.new(BLOGSERVER, BLOGPATH,
-    BLOGID, BLOGUSER, BLOGPASSWD)
-
-blogpost = {
-  'title' => 'New post!',
-  'description' => 'This is the body of my new post',
-  'pubDate' => Time.gm(2005,05,31,15,0,0,0) # May 31, 2005 at 3:00 PM
-}
-
-client.newPost(blogpost, true)
 
 
