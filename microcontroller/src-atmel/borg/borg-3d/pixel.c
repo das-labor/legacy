@@ -23,7 +23,7 @@ void clear_screen(unsigned char value){
 void setpixel3d(pixel3d p, unsigned char value ){
 	unsigned char plane;
 	if (p.x < 8 && p.y < 8 && p.z < 8) { 
-#ifdef NEW_HARDWARE
+#ifdef NEW_GENERATION
 		for (plane = 0; plane < NUM_LEVELS; plane++) {
 			if (plane < value)
 				pixmap[plane][p.z][p.y] |=  shl_table[p.x];
@@ -41,11 +41,14 @@ void setpixel3d(pixel3d p, unsigned char value ){
 	}	
 }
 
+/** shifts all pixel to the direction dir. The pixels, who are shiftet out
+ *  are lost. Its fast because it works directly with the image memory.
+ */
 void shift3d(direction dir) {
      unsigned char i, j, k;
-#ifdef NEW_HARDWARE
      switch (dir) {
-     case back:
+#ifdef NEW_GENERATION
+     case down:
           for (i = 1; i < NUM_PLANES; i ++) {
               for (j = 0; j < NUM_ROWS; j++) {
                   for (k = 0; k < NUM_LEVELS; k++) {
@@ -59,7 +62,7 @@ void shift3d(direction dir) {
               }
           }
           break;
-     case forward:
+     case up:
           for (i = NUM_PLANES-2; i < NUM_PLANES; i--) {
               for (j = NUM_ROWS-1; j < NUM_ROWS; j--) {
                   for (k = 0; k < NUM_LEVELS; k++) {
@@ -73,7 +76,7 @@ void shift3d(direction dir) {
               }
           }
           break;
-     case right:
+     case forward:
           for (i = 0; i < NUM_PLANES; i ++) {
               for (j = 1; j < NUM_ROWS; j++) {
                   for (k = 0; k < NUM_LEVELS; k++) {
@@ -87,7 +90,7 @@ void shift3d(direction dir) {
               }
           }
           break;
-     case left:
+     case back:
           for (i = NUM_PLANES-1; i < NUM_PLANES; i--) {
               for (j = NUM_ROWS-2; j < NUM_ROWS; j--) {
                   for (k = 0; k < NUM_LEVELS; k++) {
@@ -101,7 +104,7 @@ void shift3d(direction dir) {
               }
           }
           break;
-     case up:
+     case right:
           for (i = 0; i < NUM_PLANES; i ++) {
               for (j = 0; j < NUM_ROWS; j++) {
                   for (k = 0; k < NUM_LEVELS; k++) {
@@ -110,7 +113,7 @@ void shift3d(direction dir) {
               }
           }
           break;
-     case down:
+     case left:
           for (i = 0; i < NUM_PLANES; i ++) {
               for (j = 0; j < NUM_ROWS; j++) {
                   for (k = 0; k < NUM_LEVELS; k++) {
@@ -119,9 +122,7 @@ void shift3d(direction dir) {
               }
           }
           break;
-     }     
 #else
-     switch (dir) {
      case back:
           for (i = 1; i < NUM_PLANES; i ++) {
               for (j = 0; j < NUM_ROWS; j++) {
@@ -196,17 +197,20 @@ void shift3d(direction dir) {
               }
           }
           break;
-     }     
 #endif
-
+     }     
 }
 
-unsigned char get_pixel3d(pixel3d p){
 
+unsigned char get_pixel3d(pixel3d p) {
 	if ((p.x > (NUM_ROWS-1)) || (p.y > (NUM_ROWS-1)) || (p.z > (NUM_ROWS-1))) {
 		return 0xff;
 	} else {
+#ifdef NEW_GENERATION
+		return (pixmap[0][p.z%NUM_PLANES][p.y%PLANEBYTES] & shl_table[p.x%8]) ? 1:0;
+#else
 		return (pixmap[0][p.x%NUM_PLANES][p.y%PLANEBYTES] & shl_table[p.z%8]) ? 1:0;
+#endif
 	}
 }
 
@@ -350,45 +354,124 @@ direction turn_down(direction dir){
 	return 0;
 }
 
+/** sets a whole plane to the brightness color. 
+ *  The 64 LED of the plane, which is defined by the direction dir and the 
+ *  num.
+ *           back
+ *         -------
+ *        / up  / |             |_______________|     
+ *       -------  | right        0 1 2 3 4 5 6 7
+ * left  |front|  |             dir
+ *       |     | /
+ *       -------
+ *         down
+ */
 void set_plane(direction dir, unsigned char num, unsigned char color)
 {
 	unsigned char pindex = 0;
 	int p, y, x;
 	unsigned char v = 0xFF;
-
+	
 	switch (dir) {
-		
-		//pixmap[p][rl][byte]
 		case back:
-			pindex = NUM_PLANES-(num+1);
-			for(x=0;x<PLANEBYTES ;x++) {
-				for(p=0; p<NUM_LEVELS; p++) {
-					if ( p < color)
+			pindex = NUM_PLANES - (num+1);
+			for (x = 0; x < PLANEBYTES; x++) {
+				for (p = 0; p < NUM_LEVELS; p++) {
+#ifdef NEW_GENERATION					
+					if (p < color)
+						pixmap[p][x][pindex] = v;
+					else
+						pixmap[p][x][pindex] &= ~v;
+#else
+					if (p < color)
 						pixmap[p][pindex][x] = v;
 					else
 						pixmap[p][pindex][x] &= ~v;
+#endif
 				}
 			 }			
 			break;
 			
 		case forward:
 			 pindex = num;			 
-			 for(x=0;x<PLANEBYTES ;x++) {
-				for(p=0; p<NUM_LEVELS; p++) {
-					if ( p < color)
+			 for (x = 0; x < PLANEBYTES; x++) {
+				for (p = 0; p < NUM_LEVELS; p++) {
+#ifdef NEW_GENERATION
+					if (p < color)
+						pixmap[p][x][pindex] = v;
+					else
+						pixmap[p][x][pindex] &= ~v;
+#else
+					if (p < color)
 						pixmap[p][pindex][x] = v;
 					else
 						pixmap[p][pindex][x] &= ~v;
+#endif
+				}
+			 }
+			break;
+#ifdef NEW_GENERATION			
+			
+		case up:
+			pindex = NUM_PLANES-(num+1);
+			for (y = 0; y < NUM_PLANES; y++) {
+				for (p = 0; p < NUM_LEVELS; p++) {
+					if ( p < color)
+						pixmap[p][pindex][y] =  v;
+					else
+						pixmap[p][pindex][y] &= ~v;				
+				}
+			 }
+			break;
+			
+		case down:
+			pindex = num;
+			for (y = 0; y < NUM_PLANES; y++) {
+				for (p = 0; p < NUM_LEVELS; p++) {
+					if (p < color)
+						pixmap[p][pindex][y] = v;
+					else
+						pixmap[p][pindex][y] &= ~v;				
 				}
 			 }
 			break;
 			
 		case right:
+			v = shl_table[NUM_ROWS - (num+1)];
+			for (p = 0; p < NUM_LEVELS; p++) {
+				for (y = 0; y < NUM_PLANES; y++) {
+					for (x = 0; x < PLANEBYTES; x++) {
+						if ( p < color)
+							pixmap[p][y][x] |= v;
+						else
+							pixmap[p][y][x] &= ~v;				
+					}
+				}
+			}
+			break;
+
+		case left:
+			v = shl_table[num];
+			for (p = 0; p < NUM_LEVELS; p++) {
+				for (y = 0; y < NUM_PLANES; y++) {
+					for (x = 0; x < PLANEBYTES; x++) {
+						if (p < color)
+							pixmap[p][y][x] |= v;
+						else
+							pixmap[p][y][x] &= ~v;				
+					}
+				}
+			}
+			break;
+#else
+
+
+		case right:
 			pindex = NUM_PLANES-(num+1);
-			for(y=0;y<NUM_PLANES ;y++) {
-				for(p=0; p<NUM_LEVELS; p++) {
+			for (y = 0; y < NUM_PLANES; y++) {
+				for (p = 0; p < NUM_LEVELS; p++) {
 					if ( p < color)
-						pixmap[p][y][pindex] = v;
+						pixmap[p][y][pindex] =  v;
 					else
 						pixmap[p][y][pindex] &= ~v;				
 				}
@@ -397,9 +480,9 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			
 		case left:
 			pindex = num;
-			for(y=0;y<NUM_PLANES ;y++) {
-				for(p=0; p<NUM_LEVELS; p++) {
-					if ( p < color)
+			for (y = 0; y < NUM_PLANES; y++) {
+				for (p = 0; p < NUM_LEVELS; p++) {
+					if (p < color)
 						pixmap[p][y][pindex] = v;
 					else
 						pixmap[p][y][pindex] &= ~v;				
@@ -409,31 +492,32 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			
 		case down:
 			v = shl_table[NUM_ROWS - (num+1)];
-			for(p=0; p<NUM_LEVELS; p++) {
-					for(y=0; y<NUM_PLANES ;y++) {
-						for(x=0; x<PLANEBYTES ;x++) {
-							if ( p < color)
-								pixmap[p][y][x] |= v;
-							else
-								pixmap[p][y][x] &= ~v;				
+			for (p = 0; p < NUM_LEVELS; p++) {
+				for (y = 0; y < NUM_PLANES; y++) {
+					for (x = 0; x < PLANEBYTES; x++) {
+						if ( p < color)
+							pixmap[p][y][x] |= v;
+						else
+							pixmap[p][y][x] &= ~v;				
 					}
 				}
 			}
 			break;
-			
+
 		case up:
 			v = shl_table[num];
-			for(p=0; p<NUM_LEVELS; p++) {
-					for(y=0; y<NUM_PLANES ;y++) {
-						for(x=0; x<PLANEBYTES ;x++) {
-							if ( p < color)
-								pixmap[p][y][x] |= v;
-							else
-								pixmap[p][y][x] &= ~v;				
+			for (p = 0; p < NUM_LEVELS; p++) {
+				for (y = 0; y < NUM_PLANES; y++) {
+					for (x = 0; x < PLANEBYTES; x++) {
+						if (p < color)
+							pixmap[p][y][x] |= v;
+						else
+							pixmap[p][y][x] &= ~v;				
 					}
 				}
 			}
 			break;
+#endif
 	} //end switch(dir)
 }
 
