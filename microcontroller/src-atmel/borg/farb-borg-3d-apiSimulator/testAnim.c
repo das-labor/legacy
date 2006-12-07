@@ -15,14 +15,46 @@ void *display_loop(void * unused)  {
 
 void testAnim() {
 	unsigned char x, y, z;
-	for (z = 0; z < MAX_Z; z++) {
-		for (y = 0; y < MAX_Y; y++) {
-			for (x = 0; x < MAX_X; x++) {
-				pixmap[z][y][x][0] = x * FAKTOR;
-				pixmap[z][y][x][1] = y * FAKTOR;
-				pixmap[z][y][x][2] = z * FAKTOR;
-				myWait(10);
+	unsigned char i;
+	for (i = 0; i < 150; i++) {
+		for (z = 0; z < MAX_Z; z++) {
+			for (y = 0; y < MAX_Y; y++) {
+				for (x = 0; x < MAX_X; x++) {
+					switch (i % 6) {
+						case 0:
+							pixmap[z][y][x][0] = x * FAKTOR;
+							pixmap[z][y][x][1] = y * FAKTOR;
+							pixmap[z][y][x][2] = z * FAKTOR;
+							break;
+						case 1:
+							pixmap[z][y][x][0] = x * FAKTOR;
+							pixmap[z][y][x][1] = z * FAKTOR;
+							pixmap[z][y][x][2] = y * FAKTOR;
+							break;
+						case 2:
+							pixmap[z][y][x][0] = y * FAKTOR;
+							pixmap[z][y][x][1] = x * FAKTOR;
+							pixmap[z][y][x][2] = z * FAKTOR;
+							break;
+						case 3:
+							pixmap[z][y][x][0] = y * FAKTOR;
+							pixmap[z][y][x][1] = z * FAKTOR;
+							pixmap[z][y][x][2] = x * FAKTOR;
+							break;
+						case 4:
+							pixmap[z][y][x][0] = z * FAKTOR;
+							pixmap[z][y][x][1] = x * FAKTOR;
+							pixmap[z][y][x][2] = y * FAKTOR;
+							break;
+						case 5:
+							pixmap[z][y][x][0] = z * FAKTOR;
+							pixmap[z][y][x][1] = y * FAKTOR;
+							pixmap[z][y][x][2] = x * FAKTOR;
+							break;
+					} 
+				}
 			}
 		}
+		myWait(250);
 	}
 }

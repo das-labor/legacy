@@ -29,9 +29,15 @@ void setpixel3d(pixel3d p, unsigned char value ){
 	if (p.x < 8 && p.y < 8 && p.z < 8) { 
 		for (plane=0; plane < NUM_LEVELS; plane++) {
 			if (plane < value)
+#ifdef NEW_GENERATION
+				pixmap[plane][p.z][p.y] |=  shl_table[p.x];
+			else
+				pixmap[plane][p.z][p.y] &= ~shl_table[p.x];
+#else
 				pixmap[plane][p.x][p.y] |=  shl_table[p.z];
 			else
 				pixmap[plane][p.x][p.y] &= ~shl_table[p.z];
+#endif
 		}
 	}	
 }
@@ -42,6 +48,82 @@ void setpixel3d(pixel3d p, unsigned char value ){
 void shift3d(direction dir) {
      unsigned char i, j, k;
      switch (dir) {
+#ifdef NEW_GENERATION
+     case down:
+          for (i = 1; i < NUM_PLANES; i ++) {
+              for (j = 0; j < NUM_ROWS; j++) {
+                  for (k = 0; k < NUM_LEVELS; k++) {
+                      pixmap[k][i-1][j] = pixmap[k][i][j]; 
+                  }
+              }
+          }
+          for (j = 0; j < NUM_ROWS; j++) {
+              for (k = 0; k < NUM_LEVELS; k++) {
+                  pixmap[k][NUM_PLANES-1][j] = 0; 
+              }
+          }
+          break;
+     case up:
+          for (i = NUM_PLANES-2; i < NUM_PLANES; i--) {
+              for (j = NUM_ROWS-1; j < NUM_ROWS; j--) {
+                  for (k = 0; k < NUM_LEVELS; k++) {
+                      pixmap[k][i+1][j] = pixmap[k][i][j]; 
+                  }
+              }
+          }
+          for (j = NUM_ROWS-1; j < NUM_ROWS; j--) {
+              for (k = 0; k < NUM_LEVELS; k++) {
+                  pixmap[k][0][j] = 0;
+              }
+          }
+          break;
+     case forward:
+          for (i = 0; i < NUM_PLANES; i ++) {
+              for (j = 1; j < NUM_ROWS; j++) {
+                  for (k = 0; k < NUM_LEVELS; k++) {
+                      pixmap[k][i][j-1] = pixmap[k][i][j]; 
+                  }
+              }
+          }
+          for (j = 0; j < NUM_PLANES; j++) {
+              for (k = 0; k < NUM_LEVELS; k++) {
+                  pixmap[k][j][NUM_PLANES-1] = 0; 
+              }
+          }
+          break;
+     case back:
+          for (i = NUM_PLANES-1; i < NUM_PLANES; i--) {
+              for (j = NUM_ROWS-2; j < NUM_ROWS; j--) {
+                  for (k = 0; k < NUM_LEVELS; k++) {
+                      pixmap[k][i][j+1] = pixmap[k][i][j]; 
+                  }
+              }
+          }
+          for (j = NUM_PLANES-1; j < NUM_ROWS; j--) {
+              for (k = 0; k < NUM_LEVELS; k++) {
+                  pixmap[k][j][0] = 0;
+              }
+          }
+          break;
+     case right:
+          for (i = 0; i < NUM_PLANES; i ++) {
+              for (j = 0; j < NUM_ROWS; j++) {
+                  for (k = 0; k < NUM_LEVELS; k++) {
+                      pixmap[k][i][j] = pixmap[k][i][j] << 1; 
+                  }
+              }
+          }
+          break;
+     case left:
+          for (i = 0; i < NUM_PLANES; i ++) {
+              for (j = 0; j < NUM_ROWS; j++) {
+                  for (k = 0; k < NUM_LEVELS; k++) {
+                      pixmap[k][i][j] = pixmap[k][i][j] >> 1;                   
+                  }
+              }
+          }
+          break;
+#else
      case back:
           for (i = 1; i < NUM_PLANES; i ++) {
               for (j = 0; j < NUM_ROWS; j++) {
@@ -116,6 +198,7 @@ void shift3d(direction dir) {
               }
           }
           break;
+#endif
      }     
 }
 
@@ -126,7 +209,11 @@ unsigned char get_pixel3d(pixel3d p) {
 	if ((p.x > (NUM_ROWS-1)) || (p.y > (NUM_ROWS-1)) || (p.z > (NUM_ROWS-1))) {
 		return 0xff;
 	} else {
+#ifdef NEW_GENERATION
+		return (pixmap[0][p.z%NUM_PLANES][p.y%PLANEBYTES] & shl_table[p.x%8]) ? 1:0;
+#else
 		return (pixmap[0][p.x%NUM_PLANES][p.y%PLANEBYTES] & shl_table[p.z%8]) ? 1:0;
+#endif
 	}
 }
 
@@ -297,35 +384,104 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 	
 	switch (dir) {
 		case back:
-			pindex = NUM_PLANES-(num+1);
-			for (x=0; x<PLANEBYTES; x++) {
-				for (p=0; p<NUM_LEVELS; p++) {
+			pindex = NUM_PLANES - (num+1);
+			for (x = 0; x < PLANEBYTES; x++) {
+				for (p = 0; p < NUM_LEVELS; p++) {
+#ifdef NEW_GENERATION					
+					if (p < color)
+						pixmap[p][x][pindex] = v;
+					else
+						pixmap[p][x][pindex] &= ~v;
+#else
 					if (p < color)
 						pixmap[p][pindex][x] = v;
 					else
 						pixmap[p][pindex][x] &= ~v;
+#endif
 				}
 			 }			
 			break;
 			
 		case forward:
 			 pindex = num;			 
-			 for (x=0; x<PLANEBYTES; x++) {
-				for (p=0; p<NUM_LEVELS; p++) {
-					if ( p < color)
+			 for (x = 0; x < PLANEBYTES; x++) {
+				for (p = 0; p < NUM_LEVELS; p++) {
+#ifdef NEW_GENERATION
+					if (p < color)
+						pixmap[p][x][pindex] = v;
+					else
+						pixmap[p][x][pindex] &= ~v;
+#else
+					if (p < color)
 						pixmap[p][pindex][x] = v;
 					else
 						pixmap[p][pindex][x] &= ~v;
+#endif
+				}
+			 }
+			break;
+#ifdef NEW_GENERATION			
+			
+		case up:
+			pindex = NUM_PLANES-(num+1);
+			for (y = 0; y < NUM_PLANES; y++) {
+				for (p = 0; p < NUM_LEVELS; p++) {
+					if ( p < color)
+						pixmap[p][pindex][y] =  v;
+					else
+						pixmap[p][pindex][y] &= ~v;				
+				}
+			 }
+			break;
+			
+		case down:
+			pindex = num;
+			for (y = 0; y < NUM_PLANES; y++) {
+				for (p = 0; p < NUM_LEVELS; p++) {
+					if (p < color)
+						pixmap[p][pindex][y] = v;
+					else
+						pixmap[p][pindex][y] &= ~v;				
 				}
 			 }
 			break;
 			
 		case right:
+			v = shl_table[NUM_ROWS - (num+1)];
+			for (p = 0; p < NUM_LEVELS; p++) {
+				for (y = 0; y < NUM_PLANES; y++) {
+					for (x = 0; x < PLANEBYTES; x++) {
+						if ( p < color)
+							pixmap[p][y][x] |= v;
+						else
+							pixmap[p][y][x] &= ~v;				
+					}
+				}
+			}
+			break;
+
+		case left:
+			v = shl_table[num];
+			for (p = 0; p < NUM_LEVELS; p++) {
+				for (y = 0; y < NUM_PLANES; y++) {
+					for (x = 0; x < PLANEBYTES; x++) {
+						if (p < color)
+							pixmap[p][y][x] |= v;
+						else
+							pixmap[p][y][x] &= ~v;				
+					}
+				}
+			}
+			break;
+#else
+
+
+		case right:
 			pindex = NUM_PLANES-(num+1);
-			for (y=0; y<NUM_PLANES; y++) {
-				for (p=0; p<NUM_LEVELS; p++) {
+			for (y = 0; y < NUM_PLANES; y++) {
+				for (p = 0; p < NUM_LEVELS; p++) {
 					if ( p < color)
-						pixmap[p][y][pindex] = v;
+						pixmap[p][y][pindex] =  v;
 					else
 						pixmap[p][y][pindex] &= ~v;				
 				}
@@ -334,9 +490,9 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			
 		case left:
 			pindex = num;
-			for (y=0;y<NUM_PLANES; y++) {
-				for (p=0; p<NUM_LEVELS; p++) {
-					if ( p < color)
+			for (y = 0; y < NUM_PLANES; y++) {
+				for (p = 0; p < NUM_LEVELS; p++) {
+					if (p < color)
 						pixmap[p][y][pindex] = v;
 					else
 						pixmap[p][y][pindex] &= ~v;				
@@ -346,9 +502,9 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			
 		case down:
 			v = shl_table[NUM_ROWS - (num+1)];
-			for (p=0; p<NUM_LEVELS; p++) {
-				for (y=0; y<NUM_PLANES; y++) {
-					for(x=0; x<PLANEBYTES ;x++) {
+			for (p = 0; p < NUM_LEVELS; p++) {
+				for (y = 0; y < NUM_PLANES; y++) {
+					for (x = 0; x < PLANEBYTES; x++) {
 						if ( p < color)
 							pixmap[p][y][x] |= v;
 						else
@@ -360,10 +516,10 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 
 		case up:
 			v = shl_table[num];
-			for(p=0; p<NUM_LEVELS; p++) {
-				for (y=0; y<NUM_PLANES; y++) {
-					for (x=0; x<PLANEBYTES; x++) {
-						if ( p < color)
+			for (p = 0; p < NUM_LEVELS; p++) {
+				for (y = 0; y < NUM_PLANES; y++) {
+					for (x = 0; x < PLANEBYTES; x++) {
+						if (p < color)
 							pixmap[p][y][x] |= v;
 						else
 							pixmap[p][y][x] &= ~v;				
@@ -371,6 +527,7 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 				}
 			}
 			break;
+#endif
 	} //end switch(dir)
 }
 
@@ -482,7 +639,7 @@ unsigned char easyRandom() {
 	return (unsigned char) muh;
 }
 
-/** Draws a treedimentional line with the bressenham 3d algrorthmus form the point
+/** Draws a thredimentional line with the bressenham 3d algrorthmus form the point
   * px1, py1, xz1 to the point px2, py2, pz2 with the brightness value.
   */
 void drawLine3D(char px1, char py1, char pz1, 

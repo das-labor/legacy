@@ -7,7 +7,7 @@ void test1() {
 		for (y = 0; y < NUM_ROWS; y++) {
 			for (x = 0; x < NUM_PLANES; x++) {
 				setpixel3d((pixel3d){x,y,z}, 3);
-				wait(15);
+				wait(25);
 			}
 		}
 	}
@@ -189,7 +189,32 @@ void joystick_test() {
 	}
 }
 
+void shift_test() {
+	clear_screen(0);
+	setpixel3d((pixel3d) {4,4,4}, 3);
+	setpixel3d((pixel3d) {4,4,5}, 3);
+	setpixel3d((pixel3d) {4,5,4}, 3);
+	setpixel3d((pixel3d) {4,5,5}, 3);
+	setpixel3d((pixel3d) {5,4,4}, 3);
+	setpixel3d((pixel3d) {5,4,5}, 3);
+	setpixel3d((pixel3d) {5,5,4}, 3);
+	setpixel3d((pixel3d) {5,5,5}, 3);
+	wait(2000);
+	shift3d(up);
+	wait(2000);
+	shift3d(down);
+	wait(2000);
+	shift3d(right);
+	wait(2000);
+	shift3d(left);
+	wait(2000);
+	shift3d(forward);
+	wait(2000);
+	shift3d(back);
+}
+
 void setplane_test() {
+	clear_screen(0);
 	set_plane(up, 0, 3);
 	wait(1000);
 	set_plane(down, 0, 3);

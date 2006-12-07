@@ -25,8 +25,13 @@
  *  handeled in the simulator and the real borg.
  *  These format is needed by the real one.
  *  
- *  pixmap[<bitarray number>][<y-coordinate>][<x-coordinate>] = z_bits
+#ifdef NEW_GENERATION 
+ *  pixmap[<bitarray number>][<z-coordinate>][<y-coordinate>] = x_bits
+ *  x_bits & (1<<x-coordinate) => value of coordinate (x,y,z) 
+#else
+ *  pixmap[<bitarray number>][<x-coordinate>][<y-coordinate>] = z_bits
  *  z_bits & (1<<z-coordinate) => value of coordinate (x,y,z) 
+#endif 
  */
 extern unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
 
@@ -39,7 +44,7 @@ typedef struct {
 	unsigned char x;
 	unsigned char y;
 	unsigned char z;
-//	unsigned char dummy;  // the optimation of the avr-gcc could be better
+//	unsigned char dummy;  // the optimation of the avr-gcc could be better with it
 } pixel3d;
 
 /** see the set_plane(..) comment in the c-file. */

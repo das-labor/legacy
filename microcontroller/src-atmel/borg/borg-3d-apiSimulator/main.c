@@ -96,8 +96,13 @@ void display(void){
 				color = 0;
 				// checks what level the LED has got.
 				for (level = 0; level < NUM_LEVELS; level++) {
+#ifdef NEW_GENERATION
+					if (pixmap[level][z%NUM_PLANES][y%PLANEBYTES] 
+						& (1 << x%NUM_ROWS)) {
+#else
 					if (pixmap[level][x%NUM_PLANES][y%PLANEBYTES] 
 						& (1 << z%NUM_ROWS)) {
+#endif
 						color = level+1;		
 					}
 				}
