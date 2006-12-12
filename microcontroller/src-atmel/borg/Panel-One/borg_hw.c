@@ -21,21 +21,53 @@
  * 17-18	GND
  * 19-26	D0-D7
  *
+ * Und nochmal richtigrum:
+ * 1 		D7
+ * 2 		D6
+ * 3 		D5
+ * 4 		D4
+ * 5 		D3
+ * 6 		D2
+ * 7 		D1
+ * 8 		D0
+ * 9 		GND
+ * 10		GND
+ * 11		/EO3
+ * 12		CP4
+ * 13		/show
+ * 14		CP1
+ * 15		CP2
+ * 16		CP3
+ * 17		GND
+ * 18		GND
+ * 19		+12V
+ * 20		+12V
+ * 21		+12V
+ * 22		+12V
+ * 23		+5V
+ * 24		GND
+ * 25		GND
+ * 26		GND
+ *
+ * Es werden 4 40374 Latches benutzt. Nr. 1,2 und 4 treiben vom Datenbus
+ * in Richtung Panel, Nr. 3 treibt von den Tastenausgängen auf den Datenbus.
+ * Die EOs von 1,2 und 4 liegen fest auf GND.
+ *
  * Die LEDs sind in einer 12*16 Matrix angeordnet
  * Die Werte für die LED spalten Werden mit CP1 und CP2 in die 
  * Latches übernommen (insgesammt 16 Spalten)
- * Die Zeile wird beim löschen von /show übernommen???
+ * Die Nummer der Zeile wird beim löschen von /show übernommen.
  *
  * Die Tasten sind in einer 8*8 Matrix angeordnet.
- * Über Latch 4 werden die Zeilen gesetzt, über Latch 3 können dann die
- * Spalten gelesen werden.
+ * Über Latch 4 werden die Zeilen einzeln auf high gesetzt, über 
+ * Latch 3 können dann die Spalten gelesen werden.
  * 
  */
 
 //Datenport für das Panel
 #define COLPORT  PORTA
 #define COLDDR   DDRA
-#define COLPIN	PIND
+#define COLPIN	PINA
 
 #define CTRLPORT PORTC
 #define CTRLDDR   DDRC
@@ -51,13 +83,13 @@
 //Der Puffer, in dem das aktuelle Bild gespeichert wird
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
-uint8_t keys[8];
+volatile uint8_t keys[8];
 
 inline void busywait() {
 	unsigned char i;
-	for(i=0;i<20;i++){
-		asm volatile("nop");
-	}
+	//for(i=0;i<20;i++){
+	//	asm volatile("nop");
+	//}
 }
 
 
@@ -90,12 +122,11 @@ inline void checkkeys(uint8_t row){
 		mask = 1;
 	}else{
 		//read keyboard cols into latch
+		COLDDR = 0;
+		CTRLPORT &= ~(1<<PIN_EO3);
 		CTRLPORT |= (1<<PIN_CP3);
 		busywait();
 		CTRLPORT &= ~(1<<PIN_CP3);
-		busywait();
-		COLDDR = 0;
-		CTRLPORT &= ~(1<<PIN_EO3);
 		busywait();
 		keys[row-1] = COLPIN;
 		CTRLPORT |= (1<<PIN_EO3);
@@ -173,8 +204,8 @@ void timer0_on(){
 
 void borg_hw_init(){
 	//Pins am Zeilenport auf Ausgang
+	CTRLPORT |= (1<<PIN_EO3)|(1<<PIN_SHOW);
 	CTRLDDR  |= (1<<PIN_EO3) | (1<<PIN_CP4) | (1<<PIN_SHOW) | (1<<PIN_CP1) | (1<<PIN_CP2) | (1<<PIN_CP3);
-	CTRLPORT |= (1<<PIN_EO3);
 	
 	//Alle Spalten erstmal aus
 	//Spalten Ports auf Ausgang

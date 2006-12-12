@@ -32,6 +32,22 @@ int main (void){
 		
 		
 	unsigned char pos=0, buf[10], bright=3;
+	
+	while(1){
+		uint8_t x;
+		for(x=0;x<8;x++){
+			itoa(keys[x],buf,16);
+			uart_putstr(buf);
+			uart_putc(' ');
+		}
+		uart_putc('\r');
+	
+	
+	
+	}
+	
+	
+	
 	while(1){
 		unsigned char c=uart_getc();
 		switch (c){

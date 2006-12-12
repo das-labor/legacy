@@ -138,16 +138,15 @@ unsigned int getLen(blob_t *blob) {
 	unsigned char glyph;
 	unsigned int strLen = 0;
 	unsigned char * str = blob->str;
+	uint8_t space = blob->space * blob->font_storebytes;
 	
 	while ((glyph = *str++)) {
 		glyph -= 1;
-		strLen += PW(blob->fontIndex[glyph+1]) -
-			PW(blob->fontIndex[glyph]); 
-			strLen += blob->space*2;//BUGBUG
+		strLen += PW(blob->fontIndex[glyph+1]) - PW(blob->fontIndex[glyph]); 
+		strLen += space;
 	}      
 	return strLen/blob->font_storebytes;
 }
-
 
 
 unsigned int getnum(blob_t * blob){
