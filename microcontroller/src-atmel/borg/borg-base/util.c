@@ -56,4 +56,14 @@ void wait(int ms){
 
 }
 
+#define BIT_S(var,b) ((var&(1<<b))?1:0)
 
+unsigned char random(){
+	static uint32_t muh = 0xAAAA;
+	unsigned char x;
+	for(x=0;x<8;x++){
+	muh = (muh<<1) ^ BIT_S(muh,1) ^ BIT_S(muh,8) ^ BIT_S(muh,9) ^ BIT_S(muh,13) ^ BIT_S(muh,27) ^ BIT_S(muh,31);
+	}
+	
+	return (unsigned char) muh;
+}

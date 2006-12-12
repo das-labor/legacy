@@ -24,6 +24,13 @@ int main (void) {
 	clear_screen(0);
 
 	mode = setjmp(newmode_jmpbuf);
+	
+	
+	//test1();
+	//while(1);
+	
+	
+	
 	oldOldmode = oldMode;
 	waitForFire = 1;
 	for (;;) {
