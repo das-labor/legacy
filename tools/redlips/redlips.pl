@@ -193,8 +193,14 @@
 #
 # Todo
 # ----
+#
+# REWRITE PACKET HANDLING:
+#  1. QUEUE -> get dest ip+port
+#  2. REDIRECT to local port -> get nice tcp stream
+#  3. ...
+#  4. Profit
+#
 # better dump_ascii (indent \n, check for binary proto -> complete hexdump)
-# internal tcp proxy for seq/ack numbers
 # acronym for red
 # nfnetlink_queue (passemble instead of pinject, no dependency on rawsock)
 # object orientation (python rewrite?)
