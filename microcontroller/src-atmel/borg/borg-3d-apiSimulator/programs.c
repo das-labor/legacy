@@ -7,7 +7,7 @@
  */
 void *display_loop(void * unused) {
 	while (1) {
-	
+	    flury();
 		rotatedScaledCube();
 		growingCubeFilled();
 		planeAnimation2(80);
