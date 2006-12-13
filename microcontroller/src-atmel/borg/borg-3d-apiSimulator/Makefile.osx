@@ -6,7 +6,7 @@ LIBS =  -lpthread -framework Carbon -framework GLUT -framework OpenGL -framework
 CC = gcc
 
 OPTIMIZE = -O2 
-override CFLAGS        = -g -Wall $(OPTIMIZE) -DOSX_ 
+override CFLAGS        = -g -Wall $(OPTIMIZE) -DOSX_ -DNEW_GENERERATION 
 $(DEFS)
 override LDFLAGS       = -Wl -prebind
 

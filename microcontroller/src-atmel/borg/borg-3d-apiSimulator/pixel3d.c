@@ -474,8 +474,6 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			}
 			break;
 #else
-
-
 		case right:
 			pindex = NUM_PLANES-(num+1);
 			for (y = 0; y < NUM_PLANES; y++) {

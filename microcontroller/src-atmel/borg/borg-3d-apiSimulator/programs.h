@@ -50,6 +50,7 @@ void rotatePixmap(char animatioNo);
 void laborZylinder();
 void rotatedScaledCube(); 
 void testRotate();
+void flury();
 
 //games.c
 void pong();

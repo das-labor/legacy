@@ -328,3 +328,45 @@ void laborZylinder() {
 		shift3d(up);
 	}
 }
+
+void flury() {
+#define NUM_CIRCLE 9
+	pixel3d circlePoints[NUM_CIRCLE][8][8];
+	unsigned char  add = 0, i, j, l, firstRadius = 3, helpRadius, angle = 0, x, y, z;
+	unsigned char hangle = 0;
+	unsigned int k;
+	// init data
+	for (k = 0; k < 800; k++) {
+		if (k > 400)
+			add = k / 32;
+		helpRadius = firstRadius;
+		for (i = 0; i < NUM_CIRCLE; i++) {
+			for (j = 0; j < 8; j++) {
+				for (l = 0; l < 8; l++) {
+					hangle = (angle + helpRadius + add) & 0x3f;	
+					rotate(angle + j*6, 
+						   angle + j*5 + 5, 
+						   angle + j*4 + 9,
+					       &(pixel3d) {19 + add, 23 + add, 16 + add}, &circlePoints[i][j][l], 1, 
+						    (pixel3d) {hangle + l*8, hangle + l*8, hangle + l*8}); 
+
+					x = circlePoints[i][j][l].x/8;
+					y = circlePoints[i][j][l].y/8;
+					z = circlePoints[i][j][l].z/8;
+				
+					if (x < 8 && y < 8 && z < 8)
+						setpixel3d((pixel3d) {x, y, z}, 3);
+				}
+			}
+			helpRadius = (helpRadius*2)/3; 
+		}
+		wait(30);
+		clear_screen(0);
+		angle++;
+		firstRadius += 2;
+		if (firstRadius > 119)
+			firstRadius = 9;
+	}
+}
+
+
