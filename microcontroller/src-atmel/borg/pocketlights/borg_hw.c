@@ -79,7 +79,7 @@ inline void rowshow(unsigned char row, unsigned char plane){
 	COLPORT1 = (pixmap[plane][row][2] & 0x03 ) | (COLPORT1 & ~0x03);
 	//tmp = (pixmap[plane][row][0] <<2 )| (pixmap[plane][row][1]>>6);
 	COLPORT2 = bitrot(pixmap[plane][row][1]);
-	COLPORT3 = (pixmap[plane][row][0]);
+	COLPORT3 = bitrot(pixmap[plane][row][0]);
 }
 
 
@@ -108,6 +108,7 @@ void timer0_off(){
 
 	COLPORT1 = 0;
 	COLPORT2 = 0;
+	COLPORT3 = 0;
 	ROWPORT = 0;
 
 	TCCR0 = 0x00;

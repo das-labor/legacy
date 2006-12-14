@@ -7,7 +7,6 @@
 #include "programm.h"
 #include "borg_hw.h"
 #include "pixel.h"
-#include "borg_can.h"
 #include "joystick.h"
 
 volatile unsigned char oldMode, oldOldmode, mode;
@@ -21,11 +20,14 @@ int main (void){
 	waitForFire = 0;
 
 	sei();
+	
+	int i,j,h=3;
 
+	mode=0;
 	for(;;){
 		switch(mode++) {
 		case 1:
-		//	scrolltext(scrolltext_text);
+			scrolltext(SCROLLTEXT_DEFAULT);
 			break;
 		case 2:
 			spirale(5);
