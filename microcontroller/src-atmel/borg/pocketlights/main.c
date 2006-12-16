@@ -7,7 +7,6 @@
 #include "programm.h"
 #include "borg_hw.h"
 #include "pixel.h"
-#include "joystick.h"
 
 volatile unsigned char oldMode, oldOldmode, mode;
 
@@ -17,13 +16,8 @@ int main (void){
 	clear_screen(0);
 	borg_hw_init();
 
-	waitForFire = 0;
-
 	sei();
 	
-	int i,j,h=3;
-
-	mode=0;
 	for(;;){
 		switch(mode++) {
 		case 1:
