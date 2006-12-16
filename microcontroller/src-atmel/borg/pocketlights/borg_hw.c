@@ -10,7 +10,6 @@
 #define COLPORT1  		PORTB
 #define COLDDR1   		DDRB
 
-
 #define COLPORT2  		PORTA
 #define COLDDR2   		DDRA
 

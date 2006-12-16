@@ -7,6 +7,7 @@
 #include "programm.h"
 #include "borg_hw.h"
 #include "pixel.h"
+#include "menu.h"
 
 volatile unsigned char oldMode, oldOldmode, mode;
 
@@ -18,7 +19,12 @@ int main (void){
 
 	sei();
 	
+	mode = setjmp(newmode_jmpbuf);
+	
+	
+	oldOldmode = oldMode;
 	for(;;){
+		oldMode = mode;
 		switch(mode++) {
 		case 1:
 			scrolltext(SCROLLTEXT_DEFAULT);
@@ -61,7 +67,7 @@ int main (void){
 			off();
 			break;
 		case 43:
-		//	snakeJoystick();
+			menu();
 			mode = oldOldmode;
 		default:
 			break;
