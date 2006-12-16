@@ -4,21 +4,21 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include "borg_hw.h"
+#include "buttons.h"
 
 // 16 Spalten insgesamt direkt gesteuert, dafür 2 Ports
-#define COLPORT1  PORTB
-#define COLDDR1   DDRB
+#define COLPORT1  		PORTB
+#define COLDDR1   		DDRB
 
 
-#define COLPORT2  PORTA
-#define COLDDR2   DDRA
+#define COLPORT2  		PORTA
+#define COLDDR2   		DDRA
 
-#define COLPORT3  PORTC
-#define COLDDR3   DDRC
+#define COLPORT3  		PORTC
+#define COLDDR3   		DDRC
 
-#define ROWPORT PORTD
-#define ROWDDR   DDRD
-
+#define ROWPORT 		PORTD
+#define ROWDDR   		DDRD
 
 //Der Puffer, in dem das aktuelle Bild gespeichert wird
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
@@ -95,13 +95,17 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 	//Die aktuelle Zeile in der aktuellen Ebene ausgeben
 	rowshow(row, plane);
 	
+	//Nach gedrücktem Button für jeweilige Zeile checken
+	if(!(PINB & (1<<BUTTONPIN))){
+		button_action(row);		
+	}
+	
 	//Zeile und Ebene inkrementieren
 	if(++row == NUM_ROWS){
 		row = 0;
 		if(++plane==NUMPLANE) plane=0;
 	}
 }
-
 
 void timer0_off(){
 	cli();
@@ -148,7 +152,10 @@ void borg_hw_init(){
 	COLPORT2 = 0;
 	COLPORT3 = 0;
 	
+	// Alle Zeilen aus
 	ROWPORT = 0;
+	
+	init_buttons();
 	
 	timer0_on();
 
