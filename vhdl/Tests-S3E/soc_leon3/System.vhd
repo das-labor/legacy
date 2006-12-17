@@ -6,7 +6,7 @@ use work.components.all;
 -- Spike Top System ---------------------------------------------------------
 entity System is
 	generic (
-		uart_div     : in    integer := 286 ); -- 56700 baud 
+		uart_div     : in    integer := 286 ); -- 115200 baud 
 	port (
 		clk_in       : in    std_logic;
 		reset_in     : in    std_logic;
