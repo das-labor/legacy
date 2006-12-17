@@ -1,4 +1,3 @@
-
 #include <setjmp.h>
 #include <avr/interrupt.h>
 
@@ -19,9 +18,14 @@ int main (void){
 
 	sei();
 	
+/*	
+	test1();
+	while(1){
+		;
+	}
+*/
+	
 	mode = setjmp(newmode_jmpbuf);
-	
-	
 	oldOldmode = oldMode;
 	for(;;){
 		oldMode = mode;
@@ -69,6 +73,15 @@ int main (void){
 		case 43:
 			menu();
 			mode = oldOldmode;
+			break;
+		case 50:
+			scrolltext("</# Start pressed");
+			mode = oldOldmode;
+			break;
+		case 51:
+			scrolltext("</# Select pressed");
+			mode = oldOldmode;
+			break;
 		default:
 			break;
 		}

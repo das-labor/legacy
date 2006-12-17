@@ -1,5 +1,3 @@
-
-#include <avr/signal.h>
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <avr/wdt.h>
@@ -36,8 +34,7 @@ inline uint8_t bitrot(uint8_t b){
 //Eine Zeile anzeigen
 inline void rowshow(unsigned char row, unsigned char plane){
 	static uint8_t mask = 0x01;
-	uint8_t tmp;
-
+	
 	//Die Zustände von der vorherigen Zeile löschen
 	COLPORT1 &= ~0x03;
 	COLPORT2 = 0;
@@ -76,7 +73,6 @@ inline void rowshow(unsigned char row, unsigned char plane){
 	
 	//die Daten für die aktuelle Zeile auf die Spaltentreiber ausgeben
 	COLPORT1 = (pixmap[plane][row][2] & 0x03 ) | (COLPORT1 & ~0x03);
-	//tmp = (pixmap[plane][row][0] <<2 )| (pixmap[plane][row][1]>>6);
 	COLPORT2 = bitrot(pixmap[plane][row][1]);
 	COLPORT3 = bitrot(pixmap[plane][row][0]);
 }
@@ -95,8 +91,8 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 	rowshow(row, plane);
 	
 	//Nach gedrücktem Button für jeweilige Zeile checken
-	if(!(PINB & (1<<BUTTONPIN))){
-		button_action(row);		
+	if(PINB & (1<<BUTTONPIN)){
+		button_record(row);		
 	}
 	
 	//Zeile und Ebene inkrementieren

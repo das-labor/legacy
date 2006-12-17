@@ -7,7 +7,6 @@
 //Pixmap an, also Spaltenzahl/8 aufgerundet
 #define LINEBYTES (((NUM_COLS-1)/8)+1)
 
-
 extern unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
 void watchdog_enable();
