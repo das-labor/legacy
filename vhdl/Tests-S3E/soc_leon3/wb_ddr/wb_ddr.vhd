@@ -8,7 +8,7 @@ entity wb_ddr is
 	generic (
 		wait200us    : in    std_logic := '1' );
 	port(
-	   clk          : in    std_logic;
+	    clk          : in    std_logic;
 		clk_2x       : in    std_logic;
 		clk_2x90     : in    std_logic;
 		reset        : in    std_logic;
@@ -208,7 +208,7 @@ begin
 		else
 			-- state machine
 			case state is
-			when wait200 =>			    -- wait 200us 
+			when wait200 =>                  -- WAIT 200us 
 				ddr_cke  <= '0';
 				ddr_cs_n <= '0';
 				if (wait2count(13)='1' and wait2count(11)='1') or wait200us='0' then
