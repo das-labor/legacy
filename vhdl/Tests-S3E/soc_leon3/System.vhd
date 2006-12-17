@@ -348,15 +348,10 @@ wb32_dat_r <=  prom0_dat  when  prom0_en='1' else
 wb32_ack   <= prom0_ack  or gpio0_ack  or uart0_ack or  
               bridge_ack or timer0_ack or scope0_ack;
 
+
+
 -----------------------------------------------------------------------------
--- I/O Ports ----------------------------------------------------------------
-debug_led <= reset & clk & uart0_en & bridge_en & scope0_en & scope0_ack & wb32_stb & wb32_ack;
-
-led <=  oport(7 downto 0) when sw(3 downto 2)="00" else
-        debug_led;
-
-iport <= (others => '0');
-
+-- IRQs----- ----------------------------------------------------------------
 leon_irqs <= (
 	12     => timer0_irq0,         -- high priority
 	11     => scope0_irq,
@@ -365,9 +360,9 @@ leon_irqs <= (
 	4      => uart0_txirq,         -- low priority
 	others => '0' );
 
------------------------------------------------------------------------------
--- Debug Probes -------------------------------------------------------------
 
+-----------------------------------------------------------------------------
+-- Debug Probes for On-Chip-Scope -------------------------------------------
 probe <= (
 	0      => wb32_stb,          -- Group 1: Wishbone Bus
 	1      => wb32_ack,
@@ -386,5 +381,15 @@ probe <= (
 	11     => ddr_dbg(0),  -- need AUTO_REFRESH
 	
 	others => '0' );
+
+-----------------------------------------------------------------------------
+-- LEDs and I/O Ports -------------------------------------------------------
+debug_led <= reset & clk & uart0_en & bridge_en & scope0_en & scope0_ack & wb32_stb & wb32_ack;
+
+led <=  oport(7 downto 0) when sw(3 downto 2)="00" else
+        debug_led;
+
+iport <= (others => '0');
+
 
 end architecture;
