@@ -4,6 +4,8 @@ use IEEE.STD_LOGIC_1164.ALL;
 library UNISIM;
 use UNISIM.VComponents.all;
 
+-----------------------------------------------------------------------------
+-- Clock generator: generate 50MHz, 100MHz and 100MHz pi/2 phased clock -----
 entity ClkGen is
 	port(
 		clk_in   : in  std_logic;
@@ -14,16 +16,35 @@ entity ClkGen is
 		locked   : out std_logic );
 end ClkGen;
 
+-----------------------------------------------------------------------------
+-- Implementation -----------------------------------------------------------
 architecture Behavioral of ClkGen is
 
+--  (don't ask me why this is so freakin complicated... historical reasons..) 
+--
+--                  clk_2x_int_b (100MHz)
+--   +--------------------------------+  +----------------------------+
+--   |     +------+                   |  |   +------+                 |
+--   |  fb |      | clk_2x_int_u      |  | fb|      | clk_2xu         | clk_2xb
+--   +---->| dcm0 |--------------BUFG>+  +-->| dcm1 |-----------BUFG>-+------> [clk_2x]
+--         |      |                   |      |      |
+-- clk_in  |      | clk_1xu           |    in|      | clk_2x90u
+-- ------->|      |---------+         +----->|      |-----------BUFG>------> [clk_2x90]
+--         +------+         |                +------+
+--                          |
+--                          +-----------------------------------BUFG>-----------> [clk]
+--
+
+-----------------------------------------------------------------------------
+-- Xilinx DCM Components ----------------------------------------------------
 component DCM
--- xxxpragma translate_off
+-- xxx pragma translate_off
     generic ( 
               DLL_FREQUENCY_MODE    : string := "LOW";
               CLK_FEEDBACK          : string := "1X";				  
               DUTY_CYCLE_CORRECTION : boolean := TRUE
             );  
--- xxxpragma translate_on
+-- xxx pragma translate_on
     port ( CLKIN     : in  std_logic;
            CLKFB     : in  std_logic;
            PSINCDEC  : in  std_logic;
@@ -45,11 +66,12 @@ component DCM
           );
 end component;
 
-
 component BUFG
   port ( I : in std_logic;
          O : out std_logic);
 end component;
+-----------------------------------------------------------------------------
+
 
 signal gnd : std_logic;
 
