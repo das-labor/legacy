@@ -26,6 +26,22 @@ void writeint(uint32_t val)
 	}
 }
 
+void memtest()
+{
+	int *p;
+
+	for (p=(int *)0x80000000; p<(int *)0x8000ffff; p++) {
+		*p = (int)p;
+	}
+
+	for (p=(int *)0x80000000; p<(int *)0x8000ffff; p++) {
+		if (*p != (int)p) {
+			uart_putstr("DDR TEST FAILED\n");
+		}
+	}
+}
+
+
 int main(int argc, char **argv)
 {
 	uint8_t *p = 0xf0100010;
@@ -37,6 +53,7 @@ int main(int argc, char **argv)
 	irq_enable();
 
 	uart_putstr("\r\n** SPIKE BOOTLOADER **\n\r");
+	memtest();
 	for(;;) {
 		uint32_t start, size, checksum;
 		char c = uart_getchar();
