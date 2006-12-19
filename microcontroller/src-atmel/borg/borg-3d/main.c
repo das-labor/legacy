@@ -107,6 +107,7 @@ int main (void) {
 		case 16:
 			flury();
 			growingCubeFilled();
+			break;
 		case 20:
 			planeAnimation2(80);
 			break;
