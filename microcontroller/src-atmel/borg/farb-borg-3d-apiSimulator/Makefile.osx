@@ -1,6 +1,6 @@
 PRG = borg3dSim
 APP = $(PRG).app/Contents/MacOS/$(PRG)
-OBJ = main.o testAnim.o trackball.o util.o
+OBJ = main.o testAnim.o trackball.o util.o api.o
 
 
 OPTIMIZE = -O2
