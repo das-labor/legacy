@@ -7,8 +7,6 @@
 /** This defines how many Streams in matrix are used.
  *  FIXME: Better define directly above the animation-program. */
 
-#define STREAMER_NUM 30
-
 #define MAX_X 5
 #define MAX_Y 5
 #define MAX_Z 5

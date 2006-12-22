@@ -54,7 +54,7 @@ int WindWidth, WindHeight;
 /** 
  *
  */
-extern unsigned char pixmap[MAX_Z][MAX_Y][MAX_X][COLOR_BYTES];
+unsigned char pixmap[MAX_Z][MAX_Y][MAX_X][COLOR_BYTES];
 
 
 // rotations variables for keyboardrotation
@@ -104,11 +104,11 @@ void display(void){
 				/*printf("%f %f %f\n", pixmap[z][y][x][0]/64.0, 
 									 pixmap[z][y][x][1]/64.0, 
 									 pixmap[z][y][x][2]/64.0); */
-				glColor4f(pixmap[z][y][x][0]/64.0, 
-						  pixmap[z][y][x][1]/64.0, 
-						  pixmap[z][y][x][2]/64.0,
+				glColor4f(pixmap[z][y][x][0]/256.0, 
+						  pixmap[z][y][x][1]/256.0, 
+						  pixmap[z][y][x][2]/256.0,
 						  0.5);
-				// display the LEDs in a the original size raster
+				// display the LEDs in a the original size grid
 				// in the real one are also 4cm beetween the LEDs
 				drawLED(color, (float)x*4.0, (float)y*4.0, (float)z*4.);
 			}
