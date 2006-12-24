@@ -1,22 +1,109 @@
 #include "config.h"
 #include "util.h"
 #include "api.h"
- 
+
+color black = {0, 0, 0};
+
 unsigned char imag[MAX_Z][MAX_Y][MAX_X][COLOR_BYTES];
 
-// Die pixmap soll au§erhalb des avrs liegen 
+// Die pixmap soll au§erhalb dses avrs liegen 
 extern unsigned char pixmap[MAX_Z][MAX_Y][MAX_X][COLOR_BYTES];
 
 // a voxel is compareabel to a pixel in 2D, with the differents, that it has a volume
-void setVoxel(voxel pos, unsigned char red, unsigned char green, unsigned char blue) {
+void setVoxel(voxel pos, color c) {
 	unsigned char *im;
 	if (pos.x < MAX_X && pos.y < MAX_Y && pos.z < MAX_Z) {
-		im = (unsigned char *) imag[pos.z][pos.y][pos.x][0];
-		*im++ = red;
-		*im++ = green;
-		*im   = blue;
+		im = (unsigned char *) &imag[pos.z][pos.y][pos.x][0];
+		*im++ = c.r;
+		*im++ = c.g;
+		*im   = c.b;
 	}
 }
+
+void setSymetricVoxel(voxel pos, color c) {
+	unsigned char *im;
+	if (pos.x < (MAX_X+1)/2 && pos.y < (MAX_Y+1)/2 && pos.z < (MAX_Z+1)/2) {
+		im = (unsigned char *) &imag[pos.z+2][pos.y+2][pos.x+2][0];
+		*im++ = c.r;
+		*im++ = c.g;
+		*im   = c.b;
+		im = (unsigned char *) &imag[2-pos.z][pos.y+2][pos.x+2][0];
+		*im++ = c.r;
+		*im++ = c.g;
+		*im   = c.b;
+		im = (unsigned char *) &imag[pos.z+2][2-pos.y][pos.x+2][0];
+		*im++ = c.r;
+		*im++ = c.g;
+		*im   = c.b;
+		im = (unsigned char *) &imag[2-pos.z][2-pos.y][pos.x+2][0];
+		*im++ = c.r;
+		*im++ = c.g;
+		*im   = c.b;
+		im = (unsigned char *) &imag[pos.z+2][pos.y+2][2-pos.x][0];
+		*im++ = c.r;
+		*im++ = c.g;
+		*im   = c.b;
+		im = (unsigned char *) &imag[2-pos.z][pos.y+2][2-pos.x][0];
+		*im++ = c.r;
+		*im++ = c.g;
+		*im   = c.b;
+		im = (unsigned char *) &imag[pos.z+2][2-pos.y][2-pos.x][0];
+		*im++ = c.r;
+		*im++ = c.g;
+		*im   = c.b;
+		im = (unsigned char *) &imag[2-pos.z][2-pos.y][2-pos.x][0];
+		*im++ = c.r;
+		*im++ = c.g;
+		*im   = c.b;
+		
+	}
+}
+
+unsigned char isVoxelSet(voxel pos) {
+	// check if voxel exists
+	if (pos.x < MAX_X && pos.y < MAX_Y && pos.z < MAX_Z) {
+		if (imag[pos.z][pos.y][pos.x][R] ||
+			imag[pos.z][pos.y][pos.x][G] ||
+			imag[pos.z][pos.y][pos.x][B]) {
+			return 1; // set color != black
+		}
+		return 0;     // is black 
+	} 
+	return 2;         // is outside image
+}
+
+voxel getNextVoxel(voxel pos, direction d) {
+	switch (d) {
+		case up:	  pos.z++; break;
+		case down:	  pos.z--; break;
+		case back:	  pos.y++; break;
+		case forward: pos.y--; break;
+		case right:	  pos.x++; break;
+		case left:	  pos.x--; break;
+		default: break; 
+	}
+	return pos;
+}
+
+direction direction_r(direction dir) {
+	switch (dir) {
+		case right:
+			return back;
+		case down:
+			return left;
+		case left:
+			return up;
+		case up:
+			return forward;	
+		case back:
+			return down;
+		case forward:
+			return right;
+		default:
+			return dir;
+	}
+}
+
 
 // too big for a real avr
 void fade(unsigned char msProStep, unsigned char steps) {
@@ -29,8 +116,8 @@ void fade(unsigned char msProStep, unsigned char steps) {
 	              *im  = (unsigned char*) imag;
  	
 	for (i = 0; i < MAX_Z*MAX_Y*MAX_X*COLOR_BYTES; i++) {
-		*help = *pix++ << 8;
-		*aC++ = ((*im++ << 8) - *help++)/steps;
+		*help = *pix++ << 7;
+		*aC++ = ((*im++ << 7) - *help++)/steps;
 	}
 
  	for (s = 0; s < steps; s++) {
@@ -41,7 +128,7 @@ void fade(unsigned char msProStep, unsigned char steps) {
 
 		for (i = 0; i < MAX_Z*MAX_Y*MAX_X*COLOR_BYTES; i++) {
 			*help += *aC++;  
-			*pix++ = (*help++ + 128) >> 8;
+			*pix++ = (*help++ + 64) >> 7;
 		}
 		myWait(msProStep);
 	}
@@ -62,16 +149,16 @@ void swapAndWait(unsigned char ms) {
 	myWait(ms);
 } 
 
-void clearScreen(unsigned char red, unsigned char  green, unsigned char blue) {
+void clearScreen(color c) {
 	unsigned char *pix = (unsigned char *) pixmap, *im = (unsigned char *) imag;
 	unsigned short i;
 	for (i = 0; i < MAX_Z*MAX_Y*MAX_X; i++) {
-		*pix++ = red;
-		*im++  = red;
-		*pix++ = green;
-		*im++  = green;
-		*pix++ = blue;
-		*im++  = blue;
+		*pix++ = c.r;
+		*im++  = c.r;
+		*pix++ = c.g;
+		*im++  = c.g;
+		*pix++ = c.b;
+		*im++  = c.b;
 	}
 }
 

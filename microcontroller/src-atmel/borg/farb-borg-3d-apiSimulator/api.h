@@ -6,17 +6,31 @@ typedef struct {
 	unsigned char x, y, z;
 } voxel; 
 
+typedef struct {
+	unsigned char r, g, b;
+} color; 
+
+
 typedef enum {
+	noDirection = 0,
 	up, down, 
 	right, left,
 	forward, back
 } direction;
 
+extern color black;
+
 extern unsigned char imag[MAX_Z][MAX_Y][MAX_X][COLOR_BYTES];
 
-void clearScreen(unsigned char red, unsigned char  green, unsigned char blue);
+void clearScreen(color c);
 
-void setVoxel(voxel pos, unsigned char red, unsigned char green, unsigned char blue);
+void setVoxel(voxel pos, color c);
+void setSymetricVoxel(voxel pos, color c);
+
+unsigned char isVoxelSet(voxel pos);
+voxel getNextVoxel(voxel pos, direction d);
+
+direction direction_r(direction dir);
 
 void shift(direction dir);
 
