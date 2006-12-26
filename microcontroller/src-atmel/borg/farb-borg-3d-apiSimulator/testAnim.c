@@ -7,13 +7,17 @@ void test1();
 void testAnim();
 void fnordLicht();
 void symetricRandom();
+void symetricRoutes();	
 void movingCubes();
 void snake();
+void spirale();
 
 // Playlist
 void *display_loop(void * unused)  {
 	while (1) {
 		//test1();
+		symetricRoutes();
+		spirale(); 
 		snake(); 
 		movingCubes();
 		symetricRandom();
@@ -85,13 +89,15 @@ void testAnim() {
 		else 
 			fade(20, 40);	
 	}
+	clearImage(black);
+	fade(10, 50);
 }
 
 void fnordLicht() {
 	unsigned char *im, i, j;
 	unsigned short k;
 
-	for (j = 0; j < 5; j++) {
+	for (j = 0; j < 2; j++) {
 		for (i = 0; i < 255; i++) {
 			im = (unsigned char *) imag;
 			for (k = 0; k < MAX_Z*MAX_Y*MAX_X; k++) {
@@ -128,7 +134,7 @@ void symetricRandom() {
 	color col;
 	for (j = 0; j < 254; j++) {
 		clearScreen(black);
-		for (i = 0; i < 12; i++) {
+		for (i = 0; i < 10; i++) {
 			pos.x = easyRandom() % 3;
 			pos.y = easyRandom() % 3;
 			pos.z = easyRandom() % 3;
@@ -138,6 +144,36 @@ void symetricRandom() {
 			setSymetricVoxel(pos, col);
 		}
 		swapAndWait(20);
+	}
+	clearScreen(black);
+}
+
+
+void symetricRoutes() {
+	color curColor = {100, 100, 100};
+	voxel pos = {1, 1, 1}, help;
+	unsigned char i;
+	char addR = 3, addG = 1, addB = -2; 
+    clearScreen(black);
+	for (i = 0; i < 200; i++) {
+		do {
+			help = getNextVoxel(pos, (direction)((easyRandom()%6) + 1));
+		} while (help.x > 2 || help.y > 2 || help.z > 2);
+		pos = help;
+		setSymetricVoxel(pos, curColor);
+		swapAndWait(50);
+		if ((i & 15) == 0)
+			clearScreen(black);
+		// prevent big color jumps
+		if (curColor.r < 5 || curColor.r > 250) 
+			addR = -addR;
+		if (curColor.g < 5 || curColor.g > 250) 
+			addG = -addG;
+		if (curColor.b < 5 || curColor.b > 250) 
+			addB = -addB;
+		curColor.r += addR;
+		curColor.g += addG;
+		curColor.b += addB;
 	}
 }
 
@@ -151,6 +187,75 @@ void drawCube(voxel pos, unsigned char color) {
 	imag[pos.x][pos.y+1][pos.z+1][color]   = 255;
 	imag[pos.x+1][pos.y+1][pos.z+1][color] = 255;
 }
+ 
+/* ^
+ * | 4   6 7 0 1 2
+ * | 3   5   |>  3
+ * y 2   4   +   4
+ * | 1   3  <|   5
+ * | 0   2 1 0 7 6
+ * | 
+ * |     0 1 2 3 4
+ * +-------- x ------->
+ */
+void drawLineZAngle(unsigned char angle, unsigned char z, color value) {
+	// could be optimised in programcode
+	unsigned char x1[8] = {2, 1, 0, 0, 0, 0, 0, 1};
+	unsigned char y1[8] = {0, 0, 0, 1, 2, 3, 4, 4};
+	unsigned char x2[8] = {2, 3, 4, 4, 4, 4, 4, 3};
+	unsigned char y2[8] = {4, 4, 4, 3, 2, 1, 0, 0};
+	angle &= 0x07;
+	drawLine3D(x1[angle], y1[angle], z, x2[angle], y2[angle], z, value);	
+}
+
+
+void spirale() {
+	unsigned char z, angle, count = 0, i = 0, index, value, angleAdd;
+	signed short help; 
+	color colors[5] = {{150,   0, 250},
+					   { 50, 150, 180},
+					   { 50, 220,  80},
+					   {250, 150, 180},
+					   {  0,   0,   0}
+					  };
+	color curColor;
+	for (angleAdd = 0; angleAdd < 12; count++) {
+		// Farbwerte interpolieren
+		index = i / 16; // (12*5)/4 = 15
+		value = i % 16;
+		help  = colors[index+1].r; 
+		help -= colors[index].r;
+		help *= value;
+		help /= 16;
+		curColor.r = help + colors[index].r;
+		help  = colors[index+1].g; 
+		help -= colors[index].g;
+		help *= value;
+		help /= 16;
+		curColor.g = help + colors[index].g;
+		help  = colors[index+1].b; 
+		help -= colors[index].b;
+		help *= value;
+		help /= 16;
+		curColor.b = help + colors[index].b;
+		//printf("%d %d %d  %d %d \n", curColor.r, curColor.g, curColor.b, index, value);
+		for (angle = 0; angle < 8; angle++) {
+			for (z = 0; z < 5; z++) {
+				drawLineZAngle((angle+(angleAdd*z/4)) & 0x07, z, curColor);		
+			}
+			swapAndWait(30);
+			clearScreen(black);
+			
+			if (count > 5) { 
+				angleAdd++;
+				count = 0;
+			}
+		}
+		i++;
+	}
+}
+
+
 
 void movingCubes() {
 	// Startpoint of the cube
@@ -158,9 +263,9 @@ void movingCubes() {
 	direction way[] = {up, right, up, right, up, right, 
 					   forward, forward, forward,
 					   down, left, back, down, back, back,
-					   down, left, left, 0}; 
+					   down, left, left, up,  right, down, left, 0}; 
 	unsigned char i, j; 
-	for (j = 0; j < 10; j++) {
+	for (j = 0; j < 5; j++) {
 		i = 0;
 		while(way[i]) {
 			switch (way[i++]) {
@@ -236,6 +341,7 @@ void movingCubes() {
 	}
 }
 
+// a green Version of the Matrix of Borg 3D
 
 
 #define SNAKE_LEN 100
@@ -245,10 +351,10 @@ void snake() {
 	voxel *head = &pixels[1];
 	voxel *tail = &pixels[0];
 	voxel old_head;
-	color snakeColor = {156, 200, 73};
+	color snakeColor = {100, 50, 220};
 	voxel apples[10];
 	unsigned char apple_num = 0;
-	
+	char addR = 2, addG = -1, addB = 1;
 	pixels[0].x = 1; 
 	pixels[0].y = 1;
 	pixels[0].z = 0;
@@ -318,22 +424,34 @@ void snake() {
 		} else {
 			while (tail != head) {
 				setVoxel(*tail, black);
-				if ((++tail) > pixels+SNAKE_LEN) 
+				if ((++tail) > pixels + SNAKE_LEN) 
 					tail = pixels;
 				wait(60);
 			}
 			break;
 		}
 		for (j = 0; j < apple_num; j++) {
-			if (x % 2) {
+			if (x & 1) { // let the apples blink
 				setVoxel(apples[j], snakeColor);
 			} else {
 				setVoxel(apples[j], black);
 			}
 		}
-		snakeColor.r += 1;
-		snakeColor.g += 2;
-		snakeColor.b += 4;
+		if (snakeColor.r < 5 || snakeColor.r > 250) 
+			addR = -addR;
+		if (snakeColor.g < 5 || snakeColor.g > 250) 
+			addG = -addG;
+		if (snakeColor.b < 5 || snakeColor.b > 250) 
+			addB = -addB;
+		snakeColor.r += addR;
+		snakeColor.g += addG;
+		snakeColor.b += addB;
 		swapAndWait(60);
 	}
 }
+
+void wobbeln() {
+	
+
+}
+

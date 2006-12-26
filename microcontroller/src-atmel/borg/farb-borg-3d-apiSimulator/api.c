@@ -9,7 +9,8 @@ unsigned char imag[MAX_Z][MAX_Y][MAX_X][COLOR_BYTES];
 // Die pixmap soll au§erhalb dses avrs liegen 
 extern unsigned char pixmap[MAX_Z][MAX_Y][MAX_X][COLOR_BYTES];
 
-// a voxel is compareabel to a pixel in 2D, with the differents, that it has a volume
+// a voxel is compareabel to a pixel in 2D, with the differents, that it has 
+// a volume
 void setVoxel(voxel pos, color c) {
 	unsigned char *im;
 	if (pos.x < MAX_X && pos.y < MAX_Y && pos.z < MAX_Z) {
@@ -55,7 +56,6 @@ void setSymetricVoxel(voxel pos, color c) {
 		*im++ = c.r;
 		*im++ = c.g;
 		*im   = c.b;
-		
 	}
 }
 
@@ -162,6 +162,16 @@ void clearScreen(color c) {
 	}
 }
 
+void clearImage(color c) {
+	unsigned char *pix = (unsigned char *) pixmap, *im = (unsigned char *) imag;
+	unsigned short i;
+	for (i = 0; i < MAX_Z*MAX_Y*MAX_X; i++) {
+		*im++  = c.r;
+		*im++  = c.g;
+		*im++  = c.b;
+	}
+}
+
 #define BIT_S(var,b) ((var&(1<<b))?1:0)
 
 unsigned char easyRandom() {
@@ -186,6 +196,85 @@ void shift(direction dir) {
 
 
 }
+
+/** Draws a thredimentional line with the bressenham 3d algrorthmus form the point
+  * px1, py1, xz1 to the point px2, py2, pz2 with the brightness value.
+  */
+void drawLine3D(char px1, char py1, char pz1, 
+ 			    char px2, char py2, char pz2, color value) {
+    char i, dx, dy, dz, l, m, n, x_inc, y_inc, z_inc, err_1, err_2, dx2, dy2, dz2;
+    char curx = px1, cury = py1, curz = pz1;
+    dx = (px2 - px1);
+    dy = (py2 - py1);
+    dz = (pz2 - pz1);
+    x_inc = (dx < 0) ? -1 : 1;	// sign
+    l = dx >= 0 ? dx : -dx;    	// abs
+    y_inc = (dy < 0) ? -1 : 1;  
+    m = dy >= 0 ? dy : -dy;
+    z_inc = (dz < 0) ? -1 : 1;
+    n = dz >= 0 ? dz : -dz;
+    dx2 = l << 1;
+    dy2 = m << 1;
+    dz2 = n << 1;
+
+    if ((l >= m) && (l >= n)) {
+        err_1 = dy2 - l;
+        err_2 = dz2 - l;
+        for (i = 0; i < l; i++) {
+            setVoxel((voxel) {curx, cury, curz}, value);
+            if (err_1 > 0) {
+                cury += y_inc;
+                err_1 -= dx2;
+            }
+            if (err_2 > 0) {
+                curz += z_inc;
+                err_2 -= dx2;
+            }
+            err_1 += dy2;
+            err_2 += dz2;
+            curx += x_inc;
+        }
+    } else if ((m >= l) && (m >= n)) {
+        err_1 = dx2 - m;
+        err_2 = dz2 - m;
+        for (i = 0; i < m; i++) {
+            setVoxel((voxel) {curx, cury, curz}, value);
+            if (err_1 > 0) {
+                curx += x_inc;
+                err_1 -= dy2;
+            }
+            if (err_2 > 0) {
+                curz += z_inc;
+                err_2 -= dy2;
+            }
+            err_1 += dx2;
+            err_2 += dz2;
+            cury += y_inc;
+        }
+    } else {
+        err_1 = dy2 - n;
+        err_2 = dx2 - n;
+        for (i = 0; i < n; i++) {
+            setVoxel((voxel) {curx, cury, curz}, value);
+            if (err_1 > 0) {
+                cury += y_inc;
+                err_1 -= dz2;
+            }
+            if (err_2 > 0) {
+                curx += x_inc;
+                err_2 -= dz2;
+            }
+            err_1 += dy2;
+            err_2 += dx2;
+            curz += z_inc;
+        }
+    }
+   	setVoxel((voxel) {curx, cury, curz}, value);
+}
+
+
+
+
 
 /*
 void blurX(unsigned char filter[3]) {
