@@ -23,6 +23,7 @@ extern color black;
 extern unsigned char imag[MAX_Z][MAX_Y][MAX_X][COLOR_BYTES];
 
 void clearScreen(color c);
+void clearImage(color c);
 
 void setVoxel(voxel pos, color c);
 void setSymetricVoxel(voxel pos, color c);
@@ -38,6 +39,9 @@ void fade(unsigned char msProStep, unsigned char steps);
 void swapAndWait(unsigned char ms);
 
 unsigned char easyRandom();
+
+void drawLine3D(char px1, char py1, char pz1, 
+ 			    char px2, char py2, char pz2, color value);
 
 /* not jet implementet
 
