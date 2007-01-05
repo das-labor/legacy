@@ -5,8 +5,8 @@
 #include <avr/interrupt.h>
 
 
+
 #include "avrx.h"               // AvrX System calls/data structures
-#include "serialio.h"           // From AvrX...
 
 #include "config.h"
 
@@ -39,7 +39,7 @@ int main(void)
 
 	//AvrXRunTask(TCB(Monitor));
 	AvrXRunTask(TCB(reader));
-//	AvrXRunTask(TCB(panel));
+	AvrXRunTask(TCB(panel));
 	
     /* Needed for EEPROM access in monitor */
 	AvrXSetSemaphore(&EEPromMutex);

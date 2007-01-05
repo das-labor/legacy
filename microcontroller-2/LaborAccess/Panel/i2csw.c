@@ -29,8 +29,8 @@ void delay_2u5(){
 #define SDA_LO()      SDADDR |=  (1<<SDA)
 #define SDA_HI()      SDADDR &= ~(1<<SDA)
 
-#define SCL_LO()      SDADDR |=  (1<<SCL) 
-#define SCL_HI()      SDADDR &= ~(1<<SCL) 
+#define SCL_LO()      SCLDDR |=  (1<<SCL) 
+#define SCL_HI()      SCLDDR &= ~(1<<SCL) 
 
 
 // defines and constants
