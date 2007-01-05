@@ -1,6 +1,8 @@
 
 #include "reader.h"
+#include "i2csw.h"
 
+#include "foo.h"
 //Switch 1 goes low when a card is inserted.
 //Goes high again when the card is at the end.
 //
@@ -13,6 +15,11 @@
 #define BIT_SWITCH1 PA5
 #define BIT_SWITCH2 PA4
 #define BIT_SWITCH3 PA3
+
+#define SWITCH1 ((~PINA) & (1<<BIT_SWITCH1))
+#define SWITCH2 ((~PINA) & (1<<BIT_SWITCH2))
+#define SWITCH3 ((~PINA) & (1<<BIT_SWITCH3))
+
 
 
 #define PORT_MOTOR PORTB
@@ -27,6 +34,13 @@
 #define MOTOR_STOP() PORT_MOTOR |= (1<<BIT_MOTOR_OUT); PORT_MOTOR |= (1<<BIT_MOTOR_IN)
 #define MOTOR_OFF() PORT_MOTOR &= ~(1<<BIT_MOTOR_OUT); PORT_MOTOR &= ~(1<<BIT_MOTOR_IN)
 
+#define DDR_POWER DDRA
+#define PORT_POWER PORTA
+#define BIT_POWER 2
+
+#define POWER_ON() PORT_POWER &= ~(1<<BIT_POWER)
+#define POWER_OFF() PORT_POWER |= (1<<BIT_POWER)
+
 
 #define LOAD_OK 0
 #define LOAD_ERROR 1
@@ -38,6 +52,8 @@ TimerControlBlock   pollTimer, timeoutTimer;             // Declare the control 
 
 
 void chipdrive_init(){
+	PORT_POWER |= (1<<BIT_POWER);//power to smartcard off
+	DDR_POWER |= (1<<BIT_POWER);
 	DDR_MOTOR |= (1<<BIT_MOTOR_IN);
 	DDR_MOTOR |= (1<<BIT_MOTOR_OUT);
 	MOTOR_OFF();
@@ -64,7 +80,7 @@ u08 chipdrive_load(){
 	
 	//is the second switch activated fast enough?
 	c=0;
-	while(PIN_SWITCH & (1<<BIT_SWITCH2)){
+	while(!SWITCH2){
 		AvrXDelay(&pollTimer, 10);
 		if((c++)>50){
 			goto load_error;
@@ -73,7 +89,7 @@ u08 chipdrive_load(){
 	
 	//is the card drawn in fast enough?
 	c=0;
-	while(PIN_SWITCH & (1<<BIT_SWITCH3)){
+	while(!SWITCH3){
 		AvrXDelay(&pollTimer, 10);
 		if((c++)>150){
 			goto load_error;
@@ -84,10 +100,10 @@ u08 chipdrive_load(){
 	MOTOR_STOP();
 	
 	//switch 1 is still pressed, so the card is to long
-	if(!(PIN_SWITCH & (1<<BIT_SWITCH1))) return LOAD_LONG;
+	if(SWITCH1) return LOAD_LONG;
 	
 	//switch 2 is not pressed anymore, so the card is to short
-	if(PIN_SWITCH & (1<<BIT_SWITCH2)) return LOAD_SHORT;
+	if(!SWITCH2) return LOAD_SHORT;
 	
 	return LOAD_OK;
 
@@ -101,7 +117,23 @@ u08 chipdrive_eject(){
 	AvrXDelay(&pollTimer, 100);
 	u08 c = 0;
 	MOTOR_OUT();
-	while( !(PIN_SWITCH & (1<<BIT_SWITCH2)) ){
+	while( SWITCH2 ){
+		AvrXDelay(&pollTimer, 50);
+		if((c++)>40){
+			MOTOR_OFF();		
+			return LOAD_ERROR;
+		}
+	}
+	//just let motor roll out, so card is pushed a little further.
+	MOTOR_OFF();
+	return LOAD_OK;
+}
+
+u08 chipdrive_capture(){
+	AvrXDelay(&pollTimer, 100);
+	u08 c = 0;
+	MOTOR_IN();
+	while( SWITCH3 ){
 		AvrXDelay(&pollTimer, 50);
 		if((c++)>40){
 			MOTOR_OFF();		
@@ -123,12 +155,26 @@ AVRX_GCC_TASKDEF(reader, 50, 3)
 		chipdrive_eject();
 	};
 	
+	seg_putstr("\n");
+	hexdump((uint8_t[]){0x12,0x34,0xff,0x56},4);
+			
+	
 	while(1){
 		if (chipdrive_load() != LOAD_OK){
 			error_count ++;
 		}else{
+			uint8_t buf[5];
+			seg_putstr("\n");
+			POWER_ON();
+			AvrXDelay(&pollTimer, 10);
+			i2cEeRead(0, 5, buf);
+			POWER_OFF();
+			hexdump(buf,5);
 			// do stuff here
 			AvrXDelay(&pollTimer, 3000);
+			
+			chipdrive_capture();
+			
 		
 		}
 

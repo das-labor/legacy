@@ -18,13 +18,14 @@
 #define LOAD_ERROR 1
 
 
-
-TimerControlBlock   pollTimer, timeoutTimer;             // Declare the control blocks needed for timers
-
 #define CARDPOWER_ON() PORT_POWER &= ~(1<<BIT_POWER)
 #define CARDPOWER_OFF() PORT_POWER |= (1<<BIT_POWER)
 
 #define CARD_IS_IN ((~PIN_SWITCH) & (1<<BIT_SWITCH))
+
+
+TimerControlBlock   pollTimer, timeoutTimer;             // Declare the control blocks needed for timers
+
 
 void chipdrive_init(){
 	PORT_SWITCH |= (1<<BIT_SWITCH);
@@ -79,9 +80,9 @@ AVRX_GCC_TASKDEF(reader, 200, 3)
 			tmp = i2cEeDetect();
 			i2cEeRead(0, 6, data);
 			hd44780_clear_line(0);
-			hexdump(data, 3);
+			hexdump_d(data, 3);
 			hd44780_clear_line(1);
-			hexdump(data+3, 3);
+			hexdump_d(data+3, 3);
 			
 			AvrXDelay(&pollTimer, 100);
 			CARDPOWER_OFF();

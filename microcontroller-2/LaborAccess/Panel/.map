@@ -18,6 +18,12 @@ Archive member included because of file (symbol)
                               main.o (__do_copy_data)
 /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_clear_bss.o)
                               main.o (__do_clear_bss)
+/usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(itoa.o)
+                              foo.o (itoa)
+/usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(strrev.o)
+                              /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(itoa.o) (strrev)
+/usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_udivmodhi4.o)
+                              /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(itoa.o) (__udivmodhi4)
 
 Allocating common symbols
 Common symbol       size              file
@@ -54,6 +60,8 @@ LOAD reader.o
 LOAD borg_hw.o
 LOAD panel.o
 LOAD pixel.o
+LOAD foo.o
+LOAD 7seg.o
 LOAD ../../lib/AvrX2.6f/avrx//avrx.a
 LOAD /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a
 LOAD /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a
@@ -149,7 +157,7 @@ LOAD /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0xc0e
+.text           0x00000000      0xf0a
  *(.vectors)
  .vectors       0x00000000       0x54 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
                 0x00000000                __vectors
@@ -166,131 +174,149 @@ LOAD /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a
                 0x00000054                readerTcb
  .progmem.data  0x0000005b        0x7 panel.o
                 0x0000005b                panelTcb
-                0x00000062                . = ALIGN (0x2)
+ .progmem.data  0x00000062       0x21 7seg.o
+                0x0000006d                letters
+                0x00000062                field
+                0x00000079                numbers
+                0x00000084                . = ALIGN (0x2)
+ *fill*         0x00000083        0x1 00
  *(.init0)
  *(.init1)
  *(.init2)
- .init2         0x00000062        0xc /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+ .init2         0x00000084        0xc /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
  *(.init3)
  *(.init4)
- .init4         0x0000006e       0x16 /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_copy_data.o)
-                0x0000006e                __do_copy_data
- .init4         0x00000084       0x10 /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_clear_bss.o)
-                0x00000084                __do_clear_bss
+ .init4         0x00000090       0x16 /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_copy_data.o)
+                0x00000090                __do_copy_data
+ .init4         0x000000a6       0x10 /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_clear_bss.o)
+                0x000000a6                __do_clear_bss
  *(.init5)
  *(.init6)
  *(.init7)
  *(.init8)
  *(.init9)
- .init9         0x00000094        0x4 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+ .init9         0x000000b6        0x4 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
  *(.text)
- .text          0x00000098        0x4 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
-                0x00000098                __vector_1
-                0x00000098                __vector_12
-                0x00000098                __bad_interrupt
-                0x00000098                __vector_6
-                0x00000098                __vector_3
-                0x00000098                __vector_13
-                0x00000098                __vector_17
-                0x00000098                __vector_19
-                0x00000098                __vector_7
-                0x00000098                __vector_5
-                0x00000098                __vector_4
-                0x00000098                __vector_9
-                0x00000098                __vector_2
-                0x00000098                __vector_15
-                0x00000098                __vector_8
-                0x00000098                __vector_14
-                0x00000098                __vector_10
-                0x00000098                __vector_16
-                0x00000098                __vector_18
-                0x00000098                __vector_20
- .text          0x0000009c       0x42 main.o
-                0x0000009c                main
- .text          0x000000de      0x260 i2csw.o
-                0x000001bc                i2cInit
-                0x000000ee                i2cStart
-                0x00000116                i2cPutbyte
-                0x000002f0                i2cEeDetect
-                0x000000de                delay_5u
-                0x000002d4                i2cProbe
-                0x00000108                i2cStop
-                0x000001be                i2cEeWrite
-                0x00000172                i2cGetbyte
-                0x000000e6                delay_2u5
-                0x00000250                i2cEeRead
- .text          0x0000033e      0x142 reader.o
-                0x000003f4                chipdrive_eject
-                0x0000033e                chipdrive_init
-                0x00000348                chipdrive_load
-                0x0000043a                reader
- .text          0x00000480      0x25e borg_hw.o
-                0x0000069e                timer0_off
-                0x000006a6                timer0_on
-                0x000005c4                __vector_11
-                0x000004f6                borg_int
-                0x00000482                rowshow
-                0x00000480                busywait
-                0x000004be                checkkeys
-                0x000006b6                borg_hw_init
- .text          0x000006de       0x24 panel.o
-                0x000006de                panel
- .text          0x00000702       0xa2 pixel.o
-                0x00000702                clear_screen
-                0x0000072e                setpixel
-                0x000007a4                . = ALIGN (0x2)
+ .text          0x000000ba        0x4 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+                0x000000ba                __vector_1
+                0x000000ba                __vector_12
+                0x000000ba                __bad_interrupt
+                0x000000ba                __vector_6
+                0x000000ba                __vector_3
+                0x000000ba                __vector_13
+                0x000000ba                __vector_17
+                0x000000ba                __vector_19
+                0x000000ba                __vector_7
+                0x000000ba                __vector_5
+                0x000000ba                __vector_4
+                0x000000ba                __vector_9
+                0x000000ba                __vector_2
+                0x000000ba                __vector_15
+                0x000000ba                __vector_8
+                0x000000ba                __vector_14
+                0x000000ba                __vector_10
+                0x000000ba                __vector_16
+                0x000000ba                __vector_18
+                0x000000ba                __vector_20
+ .text          0x000000be       0x42 main.o
+                0x000000be                main
+ .text          0x00000100      0x260 i2csw.o
+                0x000001de                i2cInit
+                0x00000110                i2cStart
+                0x00000138                i2cPutbyte
+                0x00000312                i2cEeDetect
+                0x00000100                delay_5u
+                0x000002f6                i2cProbe
+                0x0000012a                i2cStop
+                0x000001e0                i2cEeWrite
+                0x00000194                i2cGetbyte
+                0x00000108                delay_2u5
+                0x00000272                i2cEeRead
+ .text          0x00000360      0x200 reader.o
+                0x0000041e                chipdrive_eject
+                0x00000360                chipdrive_init
+                0x0000036e                chipdrive_load
+                0x000004aa                reader
+                0x00000464                chipdrive_capture
+ .text          0x00000560      0x25e borg_hw.o
+                0x0000077e                timer0_off
+                0x00000786                timer0_on
+                0x000006a4                __vector_11
+                0x000005d6                borg_int
+                0x00000562                rowshow
+                0x00000560                busywait
+                0x0000059e                checkkeys
+                0x00000796                borg_hw_init
+ .text          0x000007be       0x84 panel.o
+                0x000007be                panel
+ .text          0x00000842       0xa2 pixel.o
+                0x00000842                clear_screen
+                0x0000086e                setpixel
+ .text          0x000008e4       0x78 foo.o
+                0x000008e4                hexdump
+ .text          0x0000095c       0xb2 7seg.o
+                0x0000095c                seg_putc
+                0x000009ea                seg_putstr_P
+                0x000009ce                seg_putstr
+ .text          0x00000a0e       0x4a /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(itoa.o)
+                0x00000a0e                itoa
+ .text          0x00000a58       0x20 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(strrev.o)
+                0x00000a58                strrev
+                0x00000a78                . = ALIGN (0x2)
  *(.text.*)
  .text.avrx.avrx_tasking
-                0x000007a4      0x1d4 ../../lib/AvrX2.6f/avrx//avrx.a(avrx_tasking.o)
-                0x000008c6                AvrXRunTask
-                0x00000910                AvrXResume
-                0x00000840                _Epilog
-                0x000008ca                AvrXInitTask
-                0x000007a4                IntProlog
-                0x000008ae                AvrXSetKernelStack
-                0x0000092c                _QueuePid
-                0x0000083c                Epilog
+                0x00000a78      0x1d4 ../../lib/AvrX2.6f/avrx//avrx.a(avrx_tasking.o)
+                0x00000b9a                AvrXRunTask
+                0x00000be4                AvrXResume
+                0x00000b14                _Epilog
+                0x00000b9e                AvrXInitTask
+                0x00000a78                IntProlog
+                0x00000b82                AvrXSetKernelStack
+                0x00000c00                _QueuePid
+                0x00000b10                Epilog
  .text.avrx.avrx_semaphores
-                0x00000978       0xe2 ../../lib/AvrX2.6f/avrx//avrx.a(avrx_semaphores.o)
-                0x00000978                AvrXWaitTimer
-                0x000009a6                AvrXSetObjectSemaphore
-                0x000009a6                AvrXAckMessage
-                0x00000978                AvrXWaitObjectSemaphore
-                0x0000097c                AvrXWaitSemaphore
-                0x000009c4                AvrXIntSetSemaphore
-                0x00000a34                _RemoveObjectAt
-                0x00000978                AvrXWaitMessageAck
-                0x000009c0                AvrXIntSetObjectSemaphore
-                0x00000a28                _RemoveFirstObject
-                0x00000978                AvrXWaitTask
-                0x000009fa                _AppendObject
-                0x00000a16                _RemoveObject
-                0x000009aa                AvrXSetSemaphore
+                0x00000c4c       0xe2 ../../lib/AvrX2.6f/avrx//avrx.a(avrx_semaphores.o)
+                0x00000c4c                AvrXWaitTimer
+                0x00000c7a                AvrXSetObjectSemaphore
+                0x00000c7a                AvrXAckMessage
+                0x00000c4c                AvrXWaitObjectSemaphore
+                0x00000c50                AvrXWaitSemaphore
+                0x00000c98                AvrXIntSetSemaphore
+                0x00000d08                _RemoveObjectAt
+                0x00000c4c                AvrXWaitMessageAck
+                0x00000c94                AvrXIntSetObjectSemaphore
+                0x00000cfc                _RemoveFirstObject
+                0x00000c4c                AvrXWaitTask
+                0x00000cce                _AppendObject
+                0x00000cea                _RemoveObject
+                0x00000c7e                AvrXSetSemaphore
  .text.avrx.avrx_timequeue
-                0x00000a5a       0xe4 ../../lib/AvrX2.6f/avrx//avrx.a(avrx_timequeue.o)
-                0x00000a5a                AvrXDelay
-                0x00000a5e                AvrXStartTimer
-                0x00000a66                CountNotZero
-                0x00000ab6                AvrXTimerHandler
+                0x00000d2e       0xe4 ../../lib/AvrX2.6f/avrx//avrx.a(avrx_timequeue.o)
+                0x00000d2e                AvrXDelay
+                0x00000d32                AvrXStartTimer
+                0x00000d3a                CountNotZero
+                0x00000d8a                AvrXTimerHandler
  .text.avrx.avrx_eeprom
-                0x00000b3e       0x68 ../../lib/AvrX2.6f/avrx//avrx.a(avrx_eeprom.o)
-                0x00000b3e                AvrXReadEEProm
-                0x00000b8a                AvrXWriteEEProm
-                0x00000b5c                AvrXReadEEPromWord
+                0x00000e12       0x68 ../../lib/AvrX2.6f/avrx//avrx.a(avrx_eeprom.o)
+                0x00000e12                AvrXReadEEProm
+                0x00000e5e                AvrXWriteEEProm
+                0x00000e30                AvrXReadEEPromWord
  .text.avrx.avrx_resetsemaphore
-                0x00000ba6       0x22 ../../lib/AvrX2.6f/avrx//avrx.a(avrx_resetsemaphore.o)
-                0x00000ba6                AvrXResetObjectSemaphore
-                0x00000bae                AvrXIntResetSemaphore
-                0x00000bae                AvrXResetSemaphore
-                0x00000ba6                AvrXIntResetObjectSemaphore
+                0x00000e7a       0x22 ../../lib/AvrX2.6f/avrx//avrx.a(avrx_resetsemaphore.o)
+                0x00000e7a                AvrXResetObjectSemaphore
+                0x00000e82                AvrXIntResetSemaphore
+                0x00000e82                AvrXResetSemaphore
+                0x00000e7a                AvrXIntResetObjectSemaphore
  .text.avrx.avrx_message
-                0x00000bc8       0x2e ../../lib/AvrX2.6f/avrx//avrx.a(avrx_message.o)
-                0x00000bd2                AvrXIntSendMessage
-                0x00000bda                AvrXWaitMessage
-                0x00000bc8                AvrXSendMessage
- .text.libgcc   0x00000bf6       0x18 /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_udivmodqi4.o)
-                0x00000bf6                __udivmodqi4
-                0x00000c0e                . = ALIGN (0x2)
+                0x00000e9c       0x2e ../../lib/AvrX2.6f/avrx//avrx.a(avrx_message.o)
+                0x00000ea6                AvrXIntSendMessage
+                0x00000eae                AvrXWaitMessage
+                0x00000e9c                AvrXSendMessage
+ .text.libgcc   0x00000eca       0x18 /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_udivmodqi4.o)
+                0x00000eca                __udivmodqi4
+ .text.libgcc   0x00000ee2       0x28 /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_udivmodhi4.o)
+                0x00000ee2                __udivmodhi4
+                0x00000f0a                . = ALIGN (0x2)
  *(.fini9)
  *(.fini8)
  *(.fini7)
@@ -301,67 +327,72 @@ LOAD /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a
  *(.fini2)
  *(.fini1)
  *(.fini0)
-                0x00000c0e                _etext = .
+                0x00000f0a                _etext = .
 
-.data           0x00800060        0x8 load address 0x00000c0e
+.data           0x00800060        0xe load address 0x00000f0a
                 0x00800060                PROVIDE (__data_start, .)
  *(.data)
- .data          0x00800060        0x8 pixel.o
-                0x00800060                shl_table
+ .data          0x00800060        0x2 reader.o
+ .data          0x00800062        0x2 panel.o
+ .data          0x00800064        0x8 pixel.o
+                0x00800064                shl_table
+ .data          0x0080006c        0x1 7seg.o
+                0x0080006c                fp
  *(.gnu.linkonce.d*)
-                0x00800068                . = ALIGN (0x2)
-                0x00800068                _edata = .
-                0x00800068                PROVIDE (__data_end, .)
+                0x0080006e                . = ALIGN (0x2)
+ *fill*         0x0080006d        0x1 00
+                0x0080006e                _edata = .
+                0x0080006e                PROVIDE (__data_end, .)
 
-.bss            0x00800068      0x12a
-                0x00800068                PROVIDE (__bss_start, .)
+.bss            0x0080006e      0x12c
+                0x0080006e                PROVIDE (__bss_start, .)
  *(.bss)
- .bss           0x00800068        0x3 borg_hw.o
+ .bss           0x0080006e        0x3 borg_hw.o
  *(COMMON)
- COMMON         0x0080006b       0x67 reader.o
+ COMMON         0x00800071       0x67 reader.o
                                   0x0 (size before relaxing)
-                0x0080006b                readerStk
-                0x008000c0                timeoutTimer
-                0x008000c6                pollTimer
-                0x008000cc                readerPid
- COMMON         0x008000d2       0x50 borg_hw.o
+                0x00800071                readerStk
+                0x008000c6                timeoutTimer
+                0x008000cc                pollTimer
+                0x008000d2                readerPid
+ COMMON         0x008000d8       0x50 borg_hw.o
                                   0x0 (size before relaxing)
-                0x008000d2                pixmap
-                0x0080011a                keys
- COMMON         0x00800122       0x61 panel.o
+                0x008000d8                pixmap
+                0x00800120                keys
+ COMMON         0x00800128       0x61 panel.o
                                   0x0 (size before relaxing)
-                0x00800122                panelPid
-                0x00800128                panelStk
-                0x0080017d                myTimer
- *fill*         0x00800183        0x1 00
- COMMON         0x00800184        0x7 ../../lib/AvrX2.6f/avrx//avrx.a(avrx_tasking.o)
+                0x00800128                panelPid
+                0x0080012e                panelStk
+                0x00800183                myTimer
+ *fill*         0x00800189        0x3 00
+ COMMON         0x0080018c        0x7 ../../lib/AvrX2.6f/avrx//avrx.a(avrx_tasking.o)
                                   0x0 (size before relaxing)
-                0x00800184                AvrXKernelData
- *fill*         0x0080018b        0x1 00
- COMMON         0x0080018c        0x3 ../../lib/AvrX2.6f/avrx//avrx.a(avrx_timequeue.o)
+                0x0080018c                AvrXKernelData
+ *fill*         0x00800193        0x1 00
+ COMMON         0x00800194        0x3 ../../lib/AvrX2.6f/avrx//avrx.a(avrx_timequeue.o)
                                   0x0 (size before relaxing)
-                0x0080018c                _TimerQueue
-                0x0080018e                _TimQLevel
- *fill*         0x0080018f        0x1 00
- COMMON         0x00800190        0x2 ../../lib/AvrX2.6f/avrx//avrx.a(avrx_eeprom.o)
+                0x00800194                _TimerQueue
+                0x00800196                _TimQLevel
+ *fill*         0x00800197        0x1 00
+ COMMON         0x00800198        0x2 ../../lib/AvrX2.6f/avrx//avrx.a(avrx_eeprom.o)
                                   0x0 (size before relaxing)
-                0x00800190                EEPromMutex
-                0x00800192                PROVIDE (__bss_end, .)
-                0x00000c0e                __data_load_start = LOADADDR (.data)
-                0x00000c16                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00800198                EEPromMutex
+                0x0080019a                PROVIDE (__bss_end, .)
+                0x00000f0a                __data_load_start = LOADADDR (.data)
+                0x00000f18                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00800192        0x0
-                0x00800192                PROVIDE (__noinit_start, .)
+.noinit         0x0080019a        0x0
+                0x0080019a                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x00800192                PROVIDE (__noinit_end, .)
-                0x00800192                _end = .
-                0x00800192                PROVIDE (__heap_start, .)
+                0x0080019a                PROVIDE (__noinit_end, .)
+                0x0080019a                _end = .
+                0x0080019a                PROVIDE (__heap_start, .)
 
-.eeprom         0x00810000        0x0 load address 0x00000c16
+.eeprom         0x00810000        0x0 load address 0x00000f18
  *(.eeprom*)
                 0x00810000                __eeprom_end = .
 
-.stab           0x00000000     0x1f50
+.stab           0x00000000     0x2208
  *(.stab)
  .stab          0x00000000      0x2a0 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
  .stab          0x000002a0      0xbc4 ../../lib/AvrX2.6f/avrx//avrx.a(avrx_tasking.o)
@@ -376,10 +407,14 @@ LOAD /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a
                                 0x12c (size before relaxing)
  .stab          0x00001de8      0x168 ../../lib/AvrX2.6f/avrx//avrx.a(avrx_message.o)
                                 0x174 (size before relaxing)
+ .stab          0x00001f50      0x1e0 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(itoa.o)
+                                0x1ec (size before relaxing)
+ .stab          0x00002130       0xd8 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(strrev.o)
+                                 0xe4 (size before relaxing)
 
-.stabstr        0x00000000      0x341
+.stabstr        0x00000000      0x3a7
  *(.stabstr)
- .stabstr       0x00000000      0x341 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
+ .stabstr       0x00000000      0x3a7 /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
                                   0x0 (size before relaxing)
 
 .stab.excl
@@ -518,6 +553,8 @@ __data_end                                        /usr/lib/gcc/avr/3.4.3/avr5/li
 __data_load_start                                 /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_copy_data.o)
 __data_start                                      /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_copy_data.o)
 __do_clear_bss                                    /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_clear_bss.o)
+                                                  7seg.o
+                                                  foo.o
                                                   pixel.o
                                                   panel.o
                                                   borg_hw.o
@@ -525,6 +562,8 @@ __do_clear_bss                                    /usr/lib/gcc/avr/3.4.3/avr5/li
                                                   i2csw.o
                                                   main.o
 __do_copy_data                                    /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_copy_data.o)
+                                                  7seg.o
+                                                  foo.o
                                                   pixel.o
                                                   panel.o
                                                   borg_hw.o
@@ -535,6 +574,8 @@ __heap_end                                        /usr/lib/gcc/avr/3.4.3/../../.
 __init                                            /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
 __stack                                           /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
                                                   main.o
+__udivmodhi4                                      /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_udivmodhi4.o)
+                                                  /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(itoa.o)
 __udivmodqi4                                      /usr/lib/gcc/avr/3.4.3/avr5/libgcc.a(_udivmodqi4.o)
                                                   pixel.o
 __vector_1                                        /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
@@ -565,15 +606,21 @@ borg_hw_init                                      borg_hw.o
 borg_int                                          borg_hw.o
 busywait                                          borg_hw.o
 checkkeys                                         borg_hw.o
+chipdrive_capture                                 reader.o
 chipdrive_eject                                   reader.o
 chipdrive_init                                    reader.o
 chipdrive_load                                    reader.o
 clear_screen                                      pixel.o
-                                                  panel.o
 delay_2u5                                         i2csw.o
 delay_5u                                          i2csw.o
+field                                             7seg.o
+fp                                                7seg.o
+hexdump                                           foo.o
+                                                  panel.o
+                                                  reader.o
 i2cEeDetect                                       i2csw.o
 i2cEeRead                                         i2csw.o
+                                                  reader.o
 i2cEeWrite                                        i2csw.o
 i2cGetbyte                                        i2csw.o
 i2cInit                                           i2csw.o
@@ -581,16 +628,22 @@ i2cProbe                                          i2csw.o
 i2cPutbyte                                        i2csw.o
 i2cStart                                          i2csw.o
 i2cStop                                           i2csw.o
-keys                                              borg_hw.o
+itoa                                              /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(itoa.o)
+                                                  foo.o
+keys                                              panel.o
+                                                  borg_hw.o
+letters                                           7seg.o
 main                                              main.o
                                                   /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/crtm32.o
 myTimer                                           panel.o
+numbers                                           7seg.o
 panel                                             panel.o
 panelPid                                          panel.o
 panelStk                                          panel.o
 panelTcb                                          panel.o
                                                   main.o
-pixmap                                            pixel.o
+pixmap                                            7seg.o
+                                                  pixel.o
                                                   borg_hw.o
 pollTimer                                         reader.o
 reader                                            reader.o
@@ -599,9 +652,18 @@ readerStk                                         reader.o
 readerTcb                                         reader.o
                                                   main.o
 rowshow                                           borg_hw.o
+seg_putc                                          7seg.o
+                                                  foo.o
+seg_putstr                                        7seg.o
+                                                  foo.o
+                                                  panel.o
+                                                  reader.o
+seg_putstr_P                                      7seg.o
 setpixel                                          pixel.o
                                                   panel.o
 shl_table                                         pixel.o
+strrev                                            /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(strrev.o)
+                                                  /usr/lib/gcc/avr/3.4.3/../../../../avr/lib/avr5/libc.a(itoa.o)
 timeoutTimer                                      reader.o
 timer0_off                                        borg_hw.o
 timer0_on                                         borg_hw.o
