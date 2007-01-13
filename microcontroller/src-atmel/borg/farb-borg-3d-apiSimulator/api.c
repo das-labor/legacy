@@ -2,7 +2,11 @@
 #include "util.h"
 #include "api.h"
 
-color black = {0, 0, 0};
+color black = {  0,   0,   0};
+color white = {255, 255, 255};
+color red   = {255,   0,   0};
+color green = {  0, 255,   0};
+color blue  = {  0,   0, 255};
 
 unsigned char imag[MAX_Z][MAX_Y][MAX_X][COLOR_BYTES];
 
@@ -192,9 +196,35 @@ voxel next_voxel(voxel pix, direction dir);
 */
 
 void shift(direction dir) {
-
-
-
+	unsigned char z, y, x, c, i;
+	unsigned char *im  = (unsigned char*) imag;
+	
+	switch (dir) {
+		case up:
+			for (z = 4; z < MAX_Z; z--) {
+				im = (unsigned char*) &imag[z][0][0][0];
+				for (i = 0; i < MAX_Y*MAX_X*COLOR_BYTES; i++) {
+					im[MAX_Y*MAX_X*COLOR_BYTES] = *im++; 
+				}
+			}
+			im = (unsigned char*) imag;
+			for (i = 0; i < MAX_Y*MAX_X*COLOR_BYTES; i++) {
+				*im++ = 0; 
+			}
+			break;
+		case down:
+			break;
+		case forward:
+			break;
+		case back:
+			break;
+		case right:
+			break;
+		case left:
+			break;
+		default:
+			break;
+	}
 }
 
 /** Draws a thredimentional line with the bressenham 3d algrorthmus form the point
@@ -271,9 +301,6 @@ void drawLine3D(char px1, char py1, char pz1,
     }
    	setVoxel((voxel) {curx, cury, curz}, value);
 }
-
-
-
 
 
 /*

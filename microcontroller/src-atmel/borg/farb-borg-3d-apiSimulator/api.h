@@ -1,3 +1,5 @@
+#include "config.h"
+
 #define R 0
 #define G 1
 #define B 2
@@ -18,7 +20,7 @@ typedef enum {
 	forward, back
 } direction;
 
-extern color black;
+extern color black, white, red, green, blue;
 
 extern unsigned char imag[MAX_Z][MAX_Y][MAX_X][COLOR_BYTES];
 
