@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 ##########################################################################
 ## Terminbot
 ##
@@ -15,8 +16,6 @@
 
 
 
-
-#!/usr/bin/env ruby
 
 require 'xmpp4r'
 require 'xmpp4r/roster/helper/roster'
