@@ -1,0 +1,101 @@
+#!/bin/bash
+#
+# Termin-Bot init-script
+
+#set +e   # Don't exit on error status
+
+PATH=/path/were/the/bot/lives/:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/path/were/the/bot/lives/terminbot.rb
+NAME=terminbot
+DESC="LABOR Terminbot"
+XMLDIR=`~/www.das-labor.org/` # directory with the xml file to parse
+
+start()
+{
+        # Return
+        #   0 if daemon has been started
+        #   1 if daemon was already running
+        #   2 if daemon could not be started
+        start-stop-daemon --start --quiet --pidfile /var/run/$NAME.pid --exec $DAEMON --test --background -- $XMLDIR > /dev/null || return 1
+        start-stop-daemon --start --quiet --pidfile /var/run/$NAME.pid --exec $DAEMON --background -- $XMLDIR || return 2
+}
+
+stop()
+{
+        # Return
+        #   0 if daemon has been stopped
+        #   1 if daemon was already stopped
+        #   2 if daemon could not be stopped
+        #   other if a failure occurred
+        start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile /var/run/$NAME.pid --name $NAME
+        RETVAL="$?"
+        [ "$RETVAL" = 2 ] && return 2
+        # Wait for children to finish too
+        start-stop-daemon --stop --quiet --oknodo --retry=0/30/KILL/5 --exec $DAEMON
+        [ "$?" = 2 ] && return 2
+        rm -f /var/run/$NAME.pid   # Doesn't delete its own pidfile
+        return "$RETVAL"
+}
+
+case "$1" in
+  start)
+        echo -n "Starting $DESC: $NAME"
+        start
+        case "$?" in
+                0)
+                        echo "."
+                        exit 0
+                        ;;
+                1)
+                        echo " (already running)."
+                        exit 0
+                        ;;
+                *)
+                        echo " (failed)."
+                        exit 1
+                        ;;
+        esac
+        ;;
+  stop)
+        echo -n "Stopping $DESC: $NAME"
+        stop
+        case "$?" in
+                0) echo "." ; exit 0 ;;
+                1) echo " ()." ; exit 0 ;;
+                *) echo " (failed)." ; exit 1 ;;
+        esac
+        ;;
+  restart)
+        echo -n "Restarting $DESC: $NAME"
+        stop
+        case "$?" in
+                0|1)
+                        start
+                        case "$?" in
+                                0)
+                                        echo "."
+                                        exit 0
+                                        ;;
+                                1)
+                                        echo " (failed -- old process is still running)."
+                                        exit 1
+                                        ;;
+                                *)
+                                        echo " (failed to start)."
+                                        exit 1
+                                        ;;
+                        esac
+                        ;;
+                *)
+                        echo " (failed to stop)."
+                        exit 1
+                        ;;
+        esac
+        ;;
+  *)
+        echo "Usage: /etc/init.d/$NAME {start|stop|restart}" >&2
+        exit 3
+        ;;
+esac
+
+exit 0
