@@ -81,7 +81,9 @@ def setup_messagehandler
 @client.add_message_callback { |m|
         # Set the LABOR's status on the website
         if m.body == "status=on" then
-		puts("#{m.from}")
+		if @debug == 1
+			puts("#{m.from}")
+		end
                 if m.from == @setaccount
                         if @debug == 1
                                 puts("Set status ON")
@@ -91,7 +93,9 @@ def setup_messagehandler
                 end   
 
         elsif m.body == "status=off" then
-		puts("#{m.from}")
+		if @debug == 1
+			puts("#{m.from}")
+		end
 		if m.from == @setaccount
 			if @debug == 1
 		                puts("Set status OFF")
