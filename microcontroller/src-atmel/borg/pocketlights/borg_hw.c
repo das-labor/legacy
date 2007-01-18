@@ -3,6 +3,7 @@
 #include <avr/wdt.h>
 #include "borg_hw.h"
 #include "buttons.h"
+#include "fifo.h"
 
 // 16 Spalten insgesamt direkt gesteuert, dafür 2 Ports
 #define COLPORT1  		PORTB
@@ -14,22 +15,11 @@
 #define COLPORT3  		PORTC
 #define COLDDR3   		DDRC
 
-#define ROWPORT 		PORTD
-#define ROWDDR   		DDRD
+#define ROWPORT 			PORTD
+#define ROWDDR   			DDRD
 
-//Der Puffer, in dem das aktuelle Bild gespeichert wird
+// Der Puffer, in dem das aktuelle Bild gespeichert wird
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
-
-
-inline uint8_t bitrot(uint8_t b){
-	uint8_t x, r=0;
-	for(x=0;x<8;x++){
-		r<<=1;
-		r |= b & 0x01;
-		b>>=1;
-	}
-	return r;
-}
 
 //Eine Zeile anzeigen
 inline void rowshow(unsigned char row, unsigned char plane){
@@ -73,8 +63,8 @@ inline void rowshow(unsigned char row, unsigned char plane){
 	
 	//die Daten für die aktuelle Zeile auf die Spaltentreiber ausgeben
 	COLPORT1 = (pixmap[plane][row][2] & 0x03 ) | (COLPORT1 & ~0x03);
-	COLPORT2 = bitrot(pixmap[plane][row][1]);
-	COLPORT3 = bitrot(pixmap[plane][row][0]);
+	COLPORT3 = pixmap[plane][row][0];
+	COLPORT2 = pixmap[plane][row][1];	
 }
 
 
@@ -83,22 +73,45 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 {
 	static unsigned char plane = 0;
 	static unsigned char row = 0;
+	// Zwei Statusbytes für die Button Pins. --> Vergleich; Übergang 1->0 = button_release = button gedrückt
+	static unsigned char button_pin_state = 0;
+	static unsigned char old_button_pin_state=0;
 	
 	//Watchdog zurücksetzen
 	wdt_reset();
 	
-	//Die aktuelle Zeile in der aktuellen Ebene ausgeben
+	// Die aktuelle Zeile in der aktuellen Ebene ausgeben
 	rowshow(row, plane);
 	
-	//Nach gedrücktem Button für jeweilige Zeile checken
-	if(PINB & (1<<BUTTONPIN)){
-		button_record(row);		
-	}
-	
-	//Zeile und Ebene inkrementieren
-	if(++row == NUM_ROWS){
-		row = 0;
-		if(++plane==NUMPLANE) plane=0;
+	// *** Pinstatus an aktueller Zeile von links ins Byte schieben (damit Button_status 0 an Bit 0 steht)
+	//shift byte nach rechts
+	button_pin_state>>=1;
+	//wenn signal am Buttonpin (aktuell 3), dann wird das höchste Bit auf 1 gesetzt
+	if((PINB & (1<<BUTTONPIN)))
+		button_pin_state |= 0x80;
+		
+	//Zeile und Ebene inkrementieren, Buttons abfragen
+	if(++row == NUM_ROWS){	
+		// Nach der letzten Helligkeitsstufe (plane), also nach einem kompletten Frame, Buttonpins speichern
+		if(++plane==NUMPLANE){
+			plane=0;
+		}
+		row =0;
+		
+		// registriert Button DOWN
+		if((~old_button_pin_state) & button_pin_state){
+			_inline_fifo_put(&fifo, button_pin_state);
+		}
+		
+		// registriert Button RELEASE
+/*		if(old_button_pin_state & (~button_pin_state)){
+			//_inline_fifo_put (fifo_t *f, const uint8_t data)
+		}
+*/
+		
+		// Pinstate als "alt" speichern
+		old_button_pin_state=button_pin_state;
+		button_pin_state=0;
 	}
 }
 
