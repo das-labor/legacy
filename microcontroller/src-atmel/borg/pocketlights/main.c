@@ -7,6 +7,7 @@
 #include "borg_hw.h"
 #include "pixel.h"
 #include "menu.h"
+#include "buttons.h"
 
 volatile unsigned char oldMode, oldOldmode, mode;
 
@@ -18,23 +19,18 @@ int main (void){
 
 	sei();
 	
-/*	
-	test1();
-	while(1){
-		;
-	}
-*/
-	
 	mode = setjmp(newmode_jmpbuf);
 	oldOldmode = oldMode;
 	for(;;){
 		oldMode = mode;
 		switch(mode++) {
 		case 1:
-			scrolltext(SCROLLTEXT_DEFAULT);
+			scrolltext("</#XXX");
+			//scrolltext(SCROLLTEXT_DEFAULT);
 			break;
 		case 2:
-			spirale(5);
+			testbuttons();
+			//spirale(5);
 			break;
 		case 3:
 			joern1();

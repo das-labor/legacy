@@ -15,7 +15,7 @@
 
 #define SCROLLTEXT_STRING_SIZE 128
 #define SCROLLTEXT_FONT font_arial8
-#define SCROLLTEXT_DEFAULT "</#LABOR Borg - Widerstand ist zwecklos."
+#define SCROLLTEXT_DEFAULT "</#Pocketlights project - BETA \/\/ powered by LABOR"
 #define SCROLL_X_SPEED 30
 #define SCROLL_Y_SPEED 20
 
