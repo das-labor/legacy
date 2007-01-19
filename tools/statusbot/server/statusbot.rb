@@ -23,17 +23,19 @@ require 'date'
 require 'ftools'
 require 'config.rb'
 
+@timeout=1
 
-
-## Dieser Teil ist nicht schön, tut aber folgendes:
 
 def setlabstatus(status)
 	if status == "on" then
 		File.copy(@iconon, @staticon)
+		@client.send(Jabber::Presence.new.set_show(:chat).set_status('Offen!'))
 	elsif status == "off" then
 		File.copy(@iconoff, @staticon)
+		 @client.send(Jabber::Presence.new.set_show(:xa).set_status('Geschlossen'))
 	elsif status == "none" then
 		File.copy(@iconnone, @staticon)
+		 @client.send(Jabber::Presence.new.set_show(:dnd).set_status(@status))
 	end
 end
 
@@ -89,7 +91,7 @@ def setup_messagehandler
                                 puts("Set status ON")
                         end
                         setlabstatus("on")
-			@client.send(Jabber::Presence.new.set_show(:chat).set_status('Offen!'))
+			@timeout = @statustimeout
                 end   
 
         elsif m.body == "status=off" then
@@ -101,7 +103,7 @@ def setup_messagehandler
 		                puts("Set status OFF")
         		end
 	        	setlabstatus("off")
-			@client.send(Jabber::Presence.new.set_show(:xa).set_status('Geschlossen'))
+			@timeout = @statustimeout
         	end   
 	end     
 
@@ -116,8 +118,16 @@ def keepalive
 		#iq = Jabber::Version::IqQueryVersion.new()
 		@client.send(" \t ")
 		if @debug == 1
-			puts("Keep-alive request sent:")
-			#puts("#{iq}")
+			puts("Keep-alive request sent")
+		end
+		if @timeout > 0
+			@timeout -= 1
+			if @timeout < 1 then
+				setlabstatus("none")
+				if @debug == 1
+					puts("Timeout! Setting Status: NONE")
+				end
+			end
 		end
 		sleep(@interval)
 	}
@@ -127,11 +137,6 @@ end
 
 # und alles ausführen (in der richtigen Reihenfolge)
 def startup
-	if @debug == 1
-		puts("setting status icon to statusNONE")
-	end
-	setlabstatus("none")
-
 	if @debug == 1
 		puts("Setting up the connection with the following parameters: ")
 		puts("account: " + @account)
@@ -154,6 +159,11 @@ def startup
 		puts("Setting up the message handler...")
 	end
 	setup_messagehandler()
+	
+        if @debug == 1
+                puts("setting status icon to statusNONE")
+        end
+        setlabstatus("none")
 
 	if @debug == 1
 		puts("Setting up keepalive with interval #{@interval}")
