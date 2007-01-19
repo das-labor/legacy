@@ -8,7 +8,7 @@
   <meta name="keywords" content="LABOR, e.V., Bochum, LABOR e.V., LABOR eV, LABOR, das LABOR, LABOR Bochum, Elektronik, Elektrotechnik, Basteln, Technik, Gesellschaft, das LABOR Bochum, das LABOR, Verein, wiki, IT, ITS, IT-Security, security, Projekt, projekte, termin, termine, veranstaltung, veranstaltungen, monatsprogramm, programm, programmieren, borg, 3D, Animation" />
   <meta name="description" content="LABOR e.V. Bochum. Weblog, Wiki, Termine, Projekte" />
   <link rel="stylesheet" type="text/css" href="main.css" />
-  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="shortcut icon" href="status.png" />
   <link rel="alternate" type="application/rss+xml" title="LABOR: Termine RSS 2.0" href="http://www.das-labor.org/rss20" />
 
 <style type="text/css" media="screen">
@@ -42,9 +42,23 @@ a:hover   { color: #555555; background-color: none; text-decoration: none; }
 #container {
   border: 1px dashed #000000;
   padding: 10px 25px 10px 25px;
-  min-width: 550px;
+  min-width: 755px;
   margin: 60px 90px 90px 90px;
   text-align: left;
+}
+
+#blog_labor {
+  padding-left: 50px;
+  border-style: none;
+  width: 300px;
+  text-align: left;
+  overflow: auto;
+  font-size: 11pt;
+}
+
+#alert {
+  font-size: 11pt;
+  font-weight: bold;
 }
 
 -->
@@ -65,7 +79,11 @@ a:hover   { color: #555555; background-color: none; text-decoration: none; }
 &nbsp;
 </td>
 <td align="left" width="340" valign="bottom">
-
+&nbsp; <a href="http://wiki.das-labor.org/wiki/index.php?title=Status-Bot">LABOR-Status: <img src="status.png" alt="LABOR-Status: gruen = offen, rot = geschlossen, orange = kein Status" width="30" height="30" align="middle" style="border:none" /></a>
+<br />
+<br />
+<br />
+<br />
 <ul>
 <li><a href="http://wiki.das-labor.org/wiki/index.php?title=Kontakt">Kontakt</a></li>
 <li><a href="http://wiki.das-labor.org/wiki/index.php?title=Projekte">Projekte</a></li>
@@ -75,16 +93,36 @@ a:hover   { color: #555555; background-color: none; text-decoration: none; }
 <br />
 <li><a href="http://blog.das-labor.org/">weblog</a></li>
 <li><a href="http://planet.das-labor.org/">planet</a></li>
+<li><a href="http://wiki.das-labor.org/">wiki</a></li>
 </ul>
-
 </td>
 </tr>
 </table>
 <table>
 <tr>
-<td align="left" width="100%" bgcolor="#ffffff">
-<p><b>Termine</b>&nbsp; &nbsp; &nbsp;<a href="http://www.das-labor.org/rss20"><img src="rss.png" alt="rss 2.0" width="15" height="15" style="border:none" /></a> <a href="webcal://www.das-labor.org/LABOR-Termine.ics"><img src="ical.png" alt="iCal" width="20" height="20" style="border:none" /></a> <a href="http://www.das-labor.org/download/Monatspr_small.pdf"><img src="pdf.png" alt="pdf" width="17" height="17" style="border:none" /></a></p>
-<p><?php include(termine_html); ?></p>
+<td align="left" width="340" bgcolor="#ffffff">&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td align="left" width="515" bgcolor="#ffffff">
+<b>Termine</b>&nbsp; &nbsp; &nbsp;<a href="http://www.das-labor.org/rss20"><img src="rss.png" alt="rss 2.0" width="15" height="15" style="border:none" /></a> <a href="webcal://www.das-labor.org/LABOR-Termine.ics"><img src="ical.png" alt="iCal" width="20" height="20" style="border:none" /></a> <a href="http://www.das-labor.org/download/Monatspr_small.pdf"><img src="pdf.png" alt="pdf" width="17" height="17" style="border:none" /></a>
+</td>
+<td align="center" width="165" bgcolor="#ffffff" nowrap>
+&nbsp;</td>
+</tr>
+</table>
+<table>
+<tr>
+<td align="left" width="500" bgcolor="#ffffff" nowrap>
+<?php include(termine_html); ?>
+</td>
+<td align="center" width="180" bgcolor="#ffffff" valign="bottom">
+<div id="blog_labor">
+<div id="alert">Neues vom Blog:</div>
+<a href="http://blog.das-labor.org"><?php include "http://blog.das-labor.org/weblog/?microsummary=1"; ?></a>
+<br />
+<br />
+</div>
 </td>
 </tr>
 </table>
