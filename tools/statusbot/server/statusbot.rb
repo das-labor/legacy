@@ -39,6 +39,19 @@ def setlabstatus(status)
 	end
 end
 
+def writelog(status)
+	log = File.open( "status_daily.log", "a" );
+        if status == "on" then
+		log.log.puts("1")
+        elsif status == "off" then
+		log.puts("0")
+        elsif status == "none" then
+		log.puts("-1")
+        end
+	log.close
+end
+
+
 def setup_connection
 	# Mit Jabber-Server verbinden
 	@client = Jabber::Client.new(Jabber::JID.new(@account))
@@ -92,6 +105,7 @@ def setup_messagehandler
                         end
                         setlabstatus("on")
 			@timeout = @statustimeout
+			writelog("on")
                 end   
 
         elsif m.body == "status=off" then
@@ -104,6 +118,7 @@ def setup_messagehandler
         		end
 	        	setlabstatus("off")
 			@timeout = @statustimeout
+			writelog("off")
         	end   
 	end     
 
@@ -129,6 +144,12 @@ def keepalive
 				end
 			end
 		end
+                if @timeout < 1 then
+	                writelog("none")
+        	        if @debug == 1
+                 	       puts("Timeout! Logging: NONE")
+                        end
+                end
 		sleep(@interval)
 	}
 end
