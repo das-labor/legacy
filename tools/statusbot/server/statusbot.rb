@@ -51,6 +51,13 @@ def writelog(status)
 	log.close
 end
 
+def offset()
+	if !File.exists?("status.lock") then
+        	lc = File.open( "status.lock", "w" );
+	        lc.puts(Time.now.strftime("%H"))
+	        lc.close
+	end
+end
 
 def setup_connection
 	# Mit Jabber-Server verbinden
@@ -105,6 +112,7 @@ def setup_messagehandler
                         end
                         setlabstatus("on")
 			@timeout = @statustimeout
+			offset()
 			writelog("on")
                 end   
 
@@ -118,6 +126,7 @@ def setup_messagehandler
         		end
 	        	setlabstatus("off")
 			@timeout = @statustimeout
+			offset()
 			writelog("off")
         	end   
 	end     
@@ -128,6 +137,8 @@ end
 
 # Die Verbindung bricht ständig weg.
 # Wir brauchen etwas, das wenig, aber regelmäßig Traffic macht
+# Nebenbei bauen wir einen timeout, der den status auf NONE setzt,
+# wenn er länger nichts vom client gehört hat
 def keepalive
 	loop {
 		#iq = Jabber::Version::IqQueryVersion.new()
@@ -145,6 +156,7 @@ def keepalive
 			end
 		end
                 if @timeout < 1 then
+			offset()
 	                writelog("none")
         	        if @debug == 1
                  	       puts("Timeout! Logging: NONE")
