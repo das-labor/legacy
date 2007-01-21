@@ -42,7 +42,7 @@ end
 def writelog(status)
 	log = File.open( "status_daily.log", "a" );
         if status == "on" then
-		log.log.puts("1")
+		log.puts("1")
         elsif status == "off" then
 		log.puts("0")
         elsif status == "none" then
