@@ -2,10 +2,28 @@
 require 'rubygems'
 require 'gruff'
 
-@ppath = '/home/das-labor.org/www.das-labor.org/'	# where to write the graphics (trailing slash!)
-
+@picdir = './'  # where to write to images (trailing slash!)
 std = Array.new		# status data of max. one day
 stw = Array.new		# status data of max. one week
+
+# read logging start time
+lc = File.new("status.lock" , "r");
+logstart = lc.readline
+lc.close
+#puts logstart
+ofs = logstart.to_i
+
+# calculating label offset
+h1 = ofs.modulo(24).to_s
+h3 = (ofs+3).modulo(24).to_s
+h6 = (ofs+6).modulo(24).to_s
+h9 = (ofs+9).modulo(24).to_s
+h12 = (ofs+12).modulo(24).to_s
+h15 = (ofs+15).modulo(24).to_s
+h18 = (ofs+18).modulo(24).to_s
+h21 = (ofs+21).modulo(24).to_s
+h24 = ofs.modulo(24).to_s
+
 
 # push log content into array
 sdfile = File.new( "status_daily.log", "r" );
@@ -16,12 +34,13 @@ sdfile.close
 
 # reset weekly log file if it contains more than 7 dates
 if File.exists?("status_weekly.log") then
+	swc = Array.new
 	swfcheck = File.new( "status_weekly.log", "r" );
 	swfcheck.each_line { |line|
-	        stw.push(line.to_i)
+	        swc.push(line.to_i)
 	}
 	swfcheck.close
-	if stw.length >= 7 then
+	if swc.length >= 7 then
 		File.delete("status_weekly.log")
 	end
 end
@@ -32,11 +51,16 @@ end
 # and write this value to the weekly logfile.
 
 if std.length >= 1440 then
-	File.delete("status_daily.log")
 	swfile  = File.new( "status_weekly.log", "a" );
 	# here we count 
 	sum = 0
-	std.each{ |e|
+	today = std.slice!(1,1440)
+	nd = File.new("status_daily.log", "w")
+	std.each{ |f|
+		nd.puts f
+	}
+	nd.close
+	today.each{ |e|
 		if e == 1
 			sum += e
 		end
@@ -46,14 +70,19 @@ if std.length >= 1440 then
 	puts(day)
 	swfile.puts(day)
 	swfile.close
+	swwfile = File.new( "status_weekly.log", "r" );
+	swwfile.each_line { |line|
+                stw.push(line.to_i)
+        }
+
 end
 
 # Generate a bar diagram from the daily activity data
 d = Gruff::Bar.new('400x200')
 d.title = "Today's Nerd Activity" 
 d.data("Status: 0 = closed, 1 = open, -1 = missing data", std)
-d.labels = {0 => '0h', 180 => '3h', 360 => '6h', 540 => '9h', 720 => '12h', 900 => '15h', 1080 => '18h', 1260 => '21h', 1440 => '24h' }
-d.write(@ppath+'activity_daily.png')
+d.labels = {0 => h1, 180 => h3, 360 => h6, 540 => h9, 720 => h12, 900 => h15, 1080 => h18, 1260 => h21, 1440 => h24 }
+d.write(@picdir+'activity_daily.png')
 
 # Generate a bar diagram from weekly activity data (if exists)
 if stw.length != 0 then
@@ -61,6 +90,6 @@ if stw.length != 0 then
 	w.title = "This Week's Nerd Activity"
 	w.data("Opening Hours", stw)
 	w.labels = {0 => 'Mon', 1 => 'Tue', 2 => 'Wed', 3 => 'Thu', 4 => 'Fri', 5 => 'Sat', 6 => 'Sun' }
-	w.write(@ppath+'activity_weekly.png')
+	w.write(@picdir+'activity_weekly.png')
 end
 
