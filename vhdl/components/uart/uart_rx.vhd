@@ -5,8 +5,7 @@ use ieee.std_logic_1164.all;
 -- UART Receiver ------------------------------------------------------------
 entity uart_rx is
 	generic (
-		FULLBIT  : integer := 434;
-		HALFBIT  : integer := 217 );
+		fullbit  : integer );
 	port (
 		clk      : in  std_logic;
 		reset    : in  std_logic;
@@ -22,6 +21,8 @@ end uart_rx;
 -----------------------------------------------------------------------------
 -- Implemenattion -----------------------------------------------------------
 architecture rtl of uart_rx is
+
+constant halfbit : integer := fullbit / 2; 
 
 -- Signals
 signal bitcount  : integer range 0 to 10;

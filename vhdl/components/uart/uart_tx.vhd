@@ -5,8 +5,7 @@ use ieee.std_logic_1164.all;
 -- UART Transmitter ---------------------------------------------------------
 entity uart_tx is
 	generic (
-		fullbit  : integer := 434;
-		halfbit  : integer := 217 );
+		fullbit  : integer );
 	port (
 		clk      : in  std_logic;
 		reset    : in  std_logic;
@@ -22,6 +21,8 @@ end uart_tx;
 -----------------------------------------------------------------------------
 -- Implemenattion -----------------------------------------------------------
 architecture rtl of uart_tx is
+
+constant halfbit : integer := fullbit / 2; 
 
 -- Signals
 signal bitcount  : integer range 0 to 10;
