@@ -1,8 +1,9 @@
 #!/usr/bin/ruby
 require 'rubygems'
-require 'gruff'
+#require 'gruff'
+require '/usr/lib/ruby/gems/1.8/gems/gruff-0.2.8/lib/gruff.rb'
 
-@picdir = './'  # where to write to images (trailing slash!)
+@picdir = '/home/das-labor.org/www.das-labor.org/'  # where to write to images (trailing slash!)
 std = Array.new		# status data of max. one day
 stw = Array.new		# status data of max. one week
 
@@ -24,6 +25,12 @@ h18 = (ofs+18).modulo(24).to_s
 h21 = (ofs+21).modulo(24).to_s
 h24 = ofs.modulo(24).to_s
 
+def new_offset()
+  lc = File.open( "status.lock", "w" );
+  lc.puts(Time.now.strftime("%H"))
+  lc.close
+end
+                                    
 
 # push log content into array
 sdfile = File.new( "status_daily.log", "r" );
@@ -31,7 +38,9 @@ sdfile.each_line { |line|
 	std.push(line.to_i)
 }
 sdfile.close
-
+#std.each { |ho|
+#  puts ho
+#}
 # reset weekly log file if it contains more than 7 dates
 if File.exists?("status_weekly.log") then
 	swc = Array.new
@@ -60,6 +69,7 @@ if std.length >= 1440 then
 		nd.puts f
 	}
 	nd.close
+  new_offset()
 	today.each{ |e|
 		if e == 1
 			sum += e
