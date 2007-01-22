@@ -13,7 +13,7 @@ use ieee.std_logic_1164.all;
 
 -----------------------------------------------------------------------------
 -- UART ---------------------------------------------------------------------
-entity myuart is
+entity uart is
 	generic (
 		divisor   : integer := 434 );
 	port (
@@ -32,11 +32,11 @@ entity myuart is
 		-- 
 		uart_rxd  : in  std_logic;
 		uart_txd  : out std_logic );
-end myuart;
+end uart;
 
 -----------------------------------------------------------------------------
 -- implementation -----------------------------------------------------------
-architecture rtl of myuart is
+architecture rtl of uart is
 
 -----------------------------------------------------------------------------
 -- component declarations ---------------------------------------------------
