@@ -1,5 +1,8 @@
 -----------------------------------------------------------------------------
--- Dual Port Block Ram ------------------------------------------------------
+-- Dual Port Block Ram (technology independent description)
+-- (c) 2006 Joerg Bornschein (jb@capsec.org)
+-- All files under GPLv2
+-----------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.ALL;
 use ieee.numeric_std.all;
