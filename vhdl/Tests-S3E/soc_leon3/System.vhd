@@ -3,10 +3,10 @@ use ieee.std_logic_1164.all;
 use work.components.all;
 
 -----------------------------------------------------------------------------
--- Spike Top System ---------------------------------------------------------
+-- Leon/Wishbone System -----------------------------------------------------
 entity System is
 	generic (
-		uart_div     : in    integer := 286 ); -- 115200 baud 
+		uart_div     : in    integer := 286 ); -- 56700 baud 
 	port (
 		clk_in       : in    std_logic;
 		reset_in     : in    std_logic;
