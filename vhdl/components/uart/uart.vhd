@@ -2,10 +2,9 @@
 -- Simple UART with 1 byte buffer and without hardware flowcontrol.
 --   by Joerg Bornschein  (jb@capsec.org)
 --
--- halfbit anf fullbit parametrize the baundrate:
+-- divisor parametrizes the baundrate:
 --
---     fullbit = 50 MHz / 115000 Baud
---     halfbit = fullbit / 2;
+--     divisor = 50 MHz / 115000 Baud = 434
 --
 -- All files under GPLv2   
 -----------------------------------------------------------------------------
@@ -16,8 +15,7 @@ use ieee.std_logic_1164.all;
 -- UART ---------------------------------------------------------------------
 entity myuart is
 	generic (
-		halfbit   : integer := 217;
-		fullbit   : integer := 434 );
+		divisor   : integer := 434 );
 	port (
 		clk       : in  std_logic;
 		reset     : in  std_logic;
@@ -44,8 +42,7 @@ architecture rtl of myuart is
 -- component declarations ---------------------------------------------------
 component uart_rx is
 	generic (
-		fullbit  : integer := 434;
-		halfbit  : integer := 217 );
+		fullbit  : integer );
 	port (
 		clk      : in  std_logic;
 		reset    : in  std_logic;
@@ -60,8 +57,7 @@ end component;
 
 component uart_tx is
 	generic (
-		fullbit  : integer := 434;
-		halfbit  : integer := 217 );
+		fullbit  : integer );
 	port (
 		clk      : in  std_logic;
 		reset    : in  std_logic;
@@ -132,8 +128,7 @@ end process;
 
 uart_rx0: uart_rx 
 	generic map (
-		fullbit => fullbit,
-		halfbit => halfbit )
+		fullbit => divisor )
 	port map (
 		clk     => clk,
 		reset   => reset,
@@ -147,8 +142,7 @@ uart_rx0: uart_rx
 		
 uart_tx0: uart_tx 
 	generic map (
-		fullbit => fullbit,
-		halfbit => halfbit )
+		fullbit => divisor )
 	port map (
 		clk     => clk,
 		reset   => reset,
