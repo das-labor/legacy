@@ -4,7 +4,7 @@
 --
 -- divisor parametrizes the baundrate:
 --
---     divisor = 50 MHz / 115000 Baud = 434
+--     divisor = 50 MHz / 115200 Baud = 434
 --
 -- All files under GPLv2   
 -----------------------------------------------------------------------------
