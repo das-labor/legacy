@@ -1,12 +1,17 @@
+-----------------------------------------------------------------------------
+-- On-chip logic analyzer with wishbone bus for control and data export.
+-- Waveforms are stored in local BlockRAM which size (depth) can be o
+-- configured via a generic.
+--
+-- (c) 2006 by Joerg Bornschein  (jb@capsec.org)
+-- All files under GPLv2   
+-----------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.ALL;
 use ieee.numeric_std.ALL;
 
 -----------------------------------------------------------------------------
 -- Wishbone LogicAnalyzer ---------------------------------------------------
--- Using BlockRAM -- does not infer with WB Access 
---
---
 entity wb_scope is
 	generic (
 		depth      : natural := 4096 );
