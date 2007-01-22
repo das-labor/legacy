@@ -2,9 +2,13 @@
 Various small toy designs for the Spartan3E Starter Kit.
 ========================================================
 
-LEDs      Uses ordenary GNU Makefile (without ISE)
+LEDs
+    Uses ordenary GNU Makefile (without ISE)
 
 UartTest  
-	Serial communication (RS232) 8N1 115200 Baud
+    Serial communication (RS232) 8N1 115200 Baud
 
+soc_leon3
+    Complete System-On-a-Chip with wb_leon CPU, wb_ddr memory controller
+    wb_scope on-chip logic analyzer and about 50% slices left.
 
