@@ -179,7 +179,8 @@ cmdPath0: entity work.CmdPath
 ------------------------------------------------------------------------------
 -- Main state machine --------------------------------------------------------
 stateproc: process(clk) is 
-type TState is (resetState, wait200, init1, init2, init3, init4, init5, init6, init7, init8, idle, read1, read2, write1, write2);
+type TState is (resetState, wait200, init1, init2, init3, init4, init5, init6,
+                 init7, init8, idle, read1, read2, write1, write2);
 variable state      : TState := wait200;
 variable refcount   : unsigned(8 downto 0);
 variable wait2count : unsigned(13 downto 0);
@@ -268,7 +269,7 @@ begin
 				end if;
 			when idle =>
 				ddr_cmd      <= cmd_nop;     -- NOP
-            wb_ack_o     <=  '0';
+				wb_ack_o     <=  '0';
 				if ref='1' then              -- need AUTO REFRESH
 					ddr_cmd      <= cmd_ref;  
 					ref          <= '0';
@@ -299,8 +300,8 @@ begin
 			when read2 =>
 				ddr_cmd      <= cmd_nop; -- NOP
 				if (rdone='1') then
-               wb_dat_o <= dq_rdata;
-               wb_ack_o <= '1';
+					wb_dat_o <= dq_rdata;
+					wb_ack_o <= '1';
 					state := idle;
 					waits := wRP;
 				end if;
@@ -313,7 +314,7 @@ begin
 			when write2 =>
 				ddr_cmd      <= cmd_nop; -- NOP
 				if (wdone='1') then
-               wb_ack_o <= '1';
+					wb_ack_o <= '1';
 					state := idle;
 					waits := wDAL;
 				end if;
