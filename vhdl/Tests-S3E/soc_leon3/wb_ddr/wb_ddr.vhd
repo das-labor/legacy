@@ -1,3 +1,9 @@
+-----------------------------------------------------------------------------
+-- DDR Controller with 64 Bit Wishbone interface and 16 bit DDR data width
+--   by Joerg Bornschein  (jb@capsec.org)
+--
+-- All files under GPLv2  --  please contact me if you use this component
+-----------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -82,8 +88,9 @@ signal cal_done   : std_logic;
 signal cal_ovf    : std_logic;
 signal cal_xing   : std_logic_vector(5 downto 0);
 
-signal match_led  : std_logic_vector(7 downto 0);
+signal match_led  : std_logic_vector(7 downto 0);  -- XXX debug LEDs XXX
 signal led        : std_logic_vector(7 downto 0);  -- XXX debug LEDs XXX
+--signal sw       : std_logic_vector(3 downto 0);  -- XXX debug switches XXX
 
 -- CmdPath <-> DataPath
 signal path_rtrig : std_logic;
