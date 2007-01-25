@@ -4,15 +4,13 @@ use ieee.std_logic_1164.all;
 -----------------------------------------------------------------------------
 -- UART ---------------------------------------------------------------------
 entity myuart is
-	generic (
-		halfbit   : integer := 217;
-		fullbit   : integer := 434 );
 	port (
 		clk       : in  std_logic;
 		reset     : in  std_logic;
 		--
-		txdata    : in  std_logic_vector(7 downto 0);
-		rxdata    : out std_logic_vector(7 downto 0);
+		divisor   : in  std_logic_vector(15 downto 0);
+		txdata    : in  std_logic_vector( 7 downto 0);
+		rxdata    : out std_logic_vector( 7 downto 0);
 		wr        : in  std_logic;
 		rd        : in  std_logic;
 		tx_avail  : out std_logic;
@@ -32,13 +30,11 @@ architecture rtl of myuart is
 -----------------------------------------------------------------------------
 -- component declarations ---------------------------------------------------
 component uart_rx is
-	generic (
-		fullbit  : integer := 434;
-		halfbit  : integer := 217 );
 	port (
 		clk      : in  std_logic;
 		reset    : in  std_logic;
 		--
+		divisor  : in  std_logic_vector(15 downto 0);
 		dout     : out std_logic_vector(7 downto 0);
 		avail    : out std_logic;
 		error    : out std_logic;
@@ -48,13 +44,11 @@ component uart_rx is
 end component;
 
 component uart_tx is
-	generic (
-		fullbit  : integer := 434;
-		halfbit  : integer := 217 );
 	port (
 		clk      : in  std_logic;
 		reset    : in  std_logic;
-		--
+		--  
+		divisor  : in  std_logic_vector(15 downto 0);
 		din      : in  std_logic_vector(7 downto 0);
 		wr       : in  std_logic;
 		busy     : out std_logic;
@@ -79,15 +73,16 @@ signal rxbuf_full : std_logic;
 
 begin
 
-iotxproc: process(clk, reset) is
+iotxproc: process(clk) is
 begin
+	if clk'event and clk='1' then
 	if reset='1' then
 		utx_wr     <= '0';
 		txbuf_full <= '0';
 		
 		urx_clear  <= '0';
 		rxbuf_full <= '0';
-	elsif clk'event and clk='1' then
+	else
 		-- TX Buffer Logic
 		if wr='1' then
 			txbuf      <= txdata;
@@ -115,38 +110,8 @@ begin
 			urx_clear <= '0';
 		end if;
 	end if;
+	end if;
 end process;
-
-
-
-uart_rx0: uart_rx 
-	generic map (
-		fullbit => fullbit,
-		halfbit => halfbit )
-	port map (
-		clk     => clk,
-		reset   => reset,
-		--
-		dout    => urx_dout,
-		avail   => urx_avail,
-		error   => urx_error,
-		clear   => urx_clear,
-		--
-		rxd     => uart_rxd );
-		
-uart_tx0: uart_tx 
-	generic map (
-		fullbit => fullbit,
-		halfbit => halfbit )
-	port map (
-		clk     => clk,
-		reset   => reset,
-		--
-		din     => txbuf,
-		wr      => utx_wr,
-		busy    => utx_busy,
-		--
-		txd     => uart_txd );
 
 rxdata   <= rxbuf;
 rx_avail <= rxbuf_full and not rd;
@@ -155,6 +120,33 @@ rx_error <= urx_error;
 
 tx_busy  <= utx_busy or txbuf_full or wr;
 tx_avail <= not txbuf_full;
+
+
+-- Instantiate RX and TX engine
+uart_rx0: uart_rx 
+	port map (
+		clk     => clk,
+		reset   => reset,
+		--
+		divisor => divisor,
+		dout    => urx_dout,
+		avail   => urx_avail,
+		error   => urx_error,
+		clear   => urx_clear,
+		--
+		rxd     => uart_rxd );
+		
+uart_tx0: uart_tx 
+	port map (
+		clk     => clk,
+		reset   => reset,
+		--
+		divisor => divisor,
+		din     => txbuf,
+		wr      => utx_wr,
+		busy    => utx_busy,
+		--
+		txd     => uart_txd );
 
 end rtl;
 

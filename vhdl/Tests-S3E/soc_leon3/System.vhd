@@ -5,8 +5,6 @@ use work.components.all;
 -----------------------------------------------------------------------------
 -- Leon/Wishbone System -----------------------------------------------------
 entity System is
-	generic (
-		uart_div     : in    integer := 286 ); -- 56700 baud 
 	port (
 		clk_in       : in    std_logic;
 		reset_in     : in    std_logic;
@@ -185,8 +183,6 @@ gpio0: wb_gpio
 -----------------------------------------------------------------------------
 -- UART ---------------------------------------------------------------------
 uart0: wb_uart
-	generic map (
-		uart_div    => uart_div )
 	port map (
 		clk         => clk,
 		reset       => reset,

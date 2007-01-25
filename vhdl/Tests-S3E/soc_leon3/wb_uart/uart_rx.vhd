@@ -1,17 +1,16 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 -----------------------------------------------------------------------------
 -- UART Receiver ------------------------------------------------------------
 entity uart_rx is
-	generic (
-		FULLBIT  : integer := 434;
-		HALFBIT  : integer := 217 );
 	port (
 		clk      : in  std_logic;
 		reset    : in  std_logic;
 		--
-		dout     : out std_logic_vector(7 downto 0);
+		divisor  : in  std_logic_vector(15 downto 0);
+		dout     : out std_logic_vector( 7 downto 0);
 		avail    : out std_logic;
 		error    : out std_logic;
 		clear    : in  std_logic;
@@ -25,7 +24,7 @@ architecture rtl of uart_rx is
 
 -- Signals
 signal bitcount  : integer range 0 to 10;
-signal count     : integer range 0 to FULLBIT;
+signal count     : unsigned(15 downto 0);
 signal shiftreg  : std_logic_vector(7 downto 0);
 signal rxh       : std_logic_vector(2 downto 0);
 signal rxd2      : std_logic;
@@ -34,12 +33,13 @@ begin
 
 proc: process(clk, reset) is
 begin
+	if clk'event and clk='1' then
 	if reset='1' then
+		count    <= (others => '0');
 		bitcount <= 0;
-		count    <= 0;
 		error    <= '0';
 		avail    <= '0';
-	elsif clk'event and clk='1' then
+	else
 		if clear='1' then 
 			error <= '0';
 			avail <= '0';
@@ -50,12 +50,12 @@ begin
 		else
 			if bitcount=0 then     -- wait for startbit
 				if rxd2='0' then     -- FOUND
-					count    <= HALFBIT;
+					count    <= unsigned("0" & divisor(15 downto 1) );
 					bitcount <= bitcount + 1;						
 				end if;
 			elsif bitcount=1 then  -- sample mid of startbit
 				if rxd2='0' then     -- OK
-					count    <= FULLBIT;
+					count    <= unsigned(divisor);
 					bitcount <= bitcount + 1;
 					shiftreg <= "00000000";
 				else                -- ERROR
@@ -64,21 +64,20 @@ begin
 				end if;
 			elsif bitcount=10 then -- stopbit
 --				if rxd2='1' then     -- OK
-					count    <= 0;
 					bitcount <= 0;
 					dout     <= shiftreg;
 					avail    <= '1';
 --				else                -- ERROR
---					count    <= 0;
 --					error    <= '1';
 --				end if;
 			else
 				shiftreg(6 downto 0) <= shiftreg(7 downto 1);
 				shiftreg(7) <= rxd2;
-				count    <= FULLBIT;
+				count    <= unsigned(divisor);
 				bitcount <= bitcount + 1;
 			end if;
 		end if;
+	end if;
 	end if;
 end process;
 

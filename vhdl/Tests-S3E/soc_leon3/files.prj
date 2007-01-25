@@ -187,10 +187,10 @@ vhdl work wb_bram.vhd
 vhdl work System.vhd
 vhdl work wb32_wb64/wb32_wb64.vhd
 vhdl work wb_timer/wb_timer.vhd
-vhdl work wb_uart/wb_uart.vhd
 vhdl work wb_uart/uart.vhd
 vhdl work wb_uart/uart_rx.vhd
 vhdl work wb_uart/uart_tx.vhd
+vhdl work wb_uart/wb_uart.vhd
 vhdl work wb_gpio/wb_gpio.vhd
 vhdl work wb_leon/wb_leon.vhd
 vhdl work wb_leon/ahb2wb.vhd

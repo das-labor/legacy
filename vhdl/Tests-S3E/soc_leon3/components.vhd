@@ -160,9 +160,6 @@ end component;
 -----------------------------------------------------------------------------
 -- Wishbone UART ------------------------------------------------------------
 component wb_uart is
-   generic (
-      uart_div   : in  integer := 286   -- default to 56700 baud
-   );
    port (
       clk        : in  std_logic;
       reset      : in  std_logic;

@@ -1,16 +1,21 @@
+-----------------------------------------------------------------------------
+-- Wishbone UART ------------------------------------------------------------
+--
+-- (c) 2007 Joerg Bornschein (jb@capsec.org)
+--
+-- All files under GPLv2
+-----------------------------------------------------------------------------
 library ieee;
-use ieee.std_logic_1164.ALL;
-use ieee.numeric_std.ALL;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 -----------------------------------------------------------------------------
 -- Wishbone UART ------------------------------------------------------------
 entity wb_uart is
-	generic (
-		uart_div   : in  integer := 286 );  -- default to 56700 baud
 	port (
 		clk        : in  std_logic;
 		reset      : in  std_logic;
-		-- Wishbone bus
+		-- Wishbone slave
 		wb_adr_i   : in  std_logic_vector(31 downto 0);
 		wb_dat_i   : in  std_logic_vector(31 downto 0);
 		wb_dat_o   : out std_logic_vector(31 downto 0);
@@ -21,22 +26,24 @@ entity wb_uart is
 		wb_we_i    : in  std_logic;
 		wb_rxirq_o : out std_logic;
 		wb_txirq_o : out std_logic;
-		-- I/O ports
+		-- Serial I/O ports
 		uart_rx    : in  std_logic;
 		uart_tx    : out std_logic );
 end wb_uart;
 
-
-
 -----------------------------------------------------------------------------
 -- 0x00 Status Register
--- 0x04 RX / TX Data
+-- 0x04 Divisor Register
+-- 0x08 RX / TX Data
 --
 -- Status Register:
 -- 
 --       +-------------+----------+----------+---------+---------+
 --       |  ... 0 ...  | TX_IRQEN | RX_IRQEN | TX_BUSY | RX_FULL |
 --       +-------------+----------+----------+---------+---------+
+--
+-- Divisor Register:
+--   Example: 115200 Baud with clk beeing 50MHz:   50MHz/115200 = 434
 --
 -----------------------------------------------------------------------------
 -- Implementation -----------------------------------------------------------
@@ -45,15 +52,13 @@ architecture rtl of wb_uart is
 -----------------------------------------------------------------------------
 -- Components ---------------------------------------------------------------
 component myuart is
-	generic (
-		halfbit   : integer := 217;
-		fullbit   : integer := 434 );
 	port (
 		clk       : in  std_logic;
 		reset     : in  std_logic;
 		--
-		txdata    : in  std_logic_vector(7 downto 0);
-		rxdata    : out std_logic_vector(7 downto 0);
+		divisor   : in  std_logic_vector(15 downto 0);
+		txdata    : in  std_logic_vector( 7 downto 0);
+		rxdata    : out std_logic_vector( 7 downto 0);
 		wr        : in  std_logic;
 		rd        : in  std_logic;
 		tx_avail  : out std_logic;
@@ -81,21 +86,21 @@ signal txdata     : std_logic_vector(7 downto 0);
 
 signal status_reg : std_logic_vector(31 downto 0);
 signal data_reg   : std_logic_vector(31 downto 0);
+signal div_reg    : std_logic_vector(31 downto 0);
 
 signal tx_irqen   : std_logic;
 signal rx_irqen   : std_logic;
+signal divisor    : std_logic_vector(15 downto 0);
 
 begin
 
-
-wb_rxirq_o <= rx_avail and rx_irqen;
-wb_txirq_o <= tx_avail and tx_irqen;
-
+-- Instantiate actual UART engine
 uart0: myuart
 	port map (
 		clk       => clk,
 		reset     => reset,
         -- Sync Interface
+		divisor   => divisor,
 		txdata    => txdata,
 		rxdata    => rxdata,
 		wr        => wr,
@@ -110,17 +115,20 @@ uart0: myuart
 		uart_rxd  => uart_rx );
 
 
-status_reg <= ZEROS(31 downto 2) & not tx_avail & rx_avail;
-data_reg   <= ZEROS(31 downto 8) & rxdata;
+-- Status & divisor register + Wishbine glue logic
+status_reg <= ZEROS(31 downto  2) & not tx_avail & rx_avail;
+data_reg   <= ZEROS(31 downto  8) & rxdata;
+div_reg    <= ZEROS(31 downto 16) & divisor;
 
 wb_dat_o <= status_reg when wb_stb_i='1' and wb_adr_i(3 downto 0)=x"0" else
-            data_reg   when wb_stb_i='1' and wb_adr_i(3 downto 0)=x"4" else
+            div_reg    when wb_stb_i='1' and wb_adr_i(3 downto 0)=x"4" else
+            data_reg   when wb_stb_i='1' and wb_adr_i(3 downto 0)=x"8" else
             (others => '-');
 
-rd <= '1' when wb_stb_i='1' and wb_adr_i(3 downto 0)=x"4" and wb_we_i='0' else
+rd <= '1' when wb_stb_i='1' and wb_adr_i(3 downto 0)=x"8" and wb_we_i='0' else
       '0';
 
-wr <= '1' when wb_stb_i='1' and wb_adr_i(3 downto 0)=x"4" and wb_we_i='1' else
+wr <= '1' when wb_stb_i='1' and wb_adr_i(3 downto 0)=x"8" and wb_we_i='1' else
       '0';
 
 txdata <= wb_dat_i(7 downto 0);
@@ -128,22 +136,29 @@ txdata <= wb_dat_i(7 downto 0);
 wb_ack_o <= wb_stb_i; 
 
 
+-- Handle Wishbone write request (and reset condition)
 proc: process(reset, clk) is
 begin
-	if reset='1' then
-		tx_irqen <= '0';
-		rx_irqen <= '0';
-	elsif clk'event and clk='1' then
-		-- WB write request
-		if wb_stb_i='1' and wb_we_i='1' then
-			if wb_adr_i(3 downto 0)=x"0" then
+	if clk'event and clk='1' then
+		if reset='1' then
+			tx_irqen <= '0';
+			rx_irqen <= '0';
+			divisor  <= (others => '1');
+		else 
+		if wb_stb_i='1' and wb_we_i='1' then    
+			if wb_adr_i(3 downto 0)=x"0" then     -- write to status register
 				tx_irqen <= wb_dat_i(3);
 				rx_irqen <= wb_dat_i(2);
+			elsif wb_adr_i(3 downto 0)=x"4" then  -- write to divisor register
+				divisor  <= wb_dat_i(15 downto 0);
 			end if;
+		end if;
 		end if;
 	end if;
 end process;
 
+-- Generate interrupts when enabled
+wb_rxirq_o <= rx_avail and rx_irqen;
+wb_txirq_o <= tx_avail and tx_irqen;
 
 end rtl;
-
