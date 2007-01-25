@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------
 -- On-chip logic analyzer with wishbone bus for control and data export.
--- Waveforms are stored in local BlockRAM which size (depth) can be o
+-- Waveforms are stored in local BlockRAM which size (depth) can be
 -- configured via a generic.
 --
 -- (c) 2006 by Joerg Bornschein  (jb@capsec.org)
@@ -31,8 +31,6 @@ entity wb_scope is
 		-- I/O ports
 		probe      : in  std_logic_vector(31 downto 0) );
 end wb_scope;
-
-
 
 -----------------------------------------------------------------------------
 -- 0x00000 Status Register:
@@ -120,11 +118,11 @@ ram0: bram_dp
 	port map (
 		clk    => clk,
 		reset  => reset,
-		-- Port 1  (probe & sample engine)
+		-- Port 1  (probe & sample engine (write only))
 		we1    => we1,
 		addr1  => addr1,
 		wdata1 => wdata1,
-		-- Port 2  (Wishbone Access)
+		-- Port 2  (Wishbone Access (read only))
 		oe2    => oe2,
 		addr2  => addr2,
 		rdata2 => rdata2 );
