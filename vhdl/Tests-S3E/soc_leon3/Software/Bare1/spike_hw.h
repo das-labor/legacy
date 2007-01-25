@@ -57,6 +57,7 @@ typedef struct {
 
 typedef struct {
 	volatile uint32_t ucr;      // status register
+	volatile uint32_t divisor;  // 16 bit divisor (Fclk / Baud)
 	volatile uint32_t databuf;  // 1 byte rx buffer
 } uart_t;
 

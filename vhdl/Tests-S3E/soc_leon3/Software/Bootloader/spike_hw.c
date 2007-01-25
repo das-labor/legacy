@@ -74,6 +74,9 @@ void tic_init()
  */
 void uart_init()
 {
+	// Setup Divisor register (Fclk / Baud)
+	uart0->divisor = (FCPU/115200);
+	
 	// Initialize ring buffer
 	rxhead = rxtail = rxbuf;
 

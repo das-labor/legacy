@@ -44,17 +44,15 @@ begin
 -----------------------------------------------------------------------------
 -- LEON3 System -------------------------------------------------------------
 system0: entity work.System
-	generic map (
-		uart_div    => 15 )
 	port map (
 		clk_in      => clk,
 		reset_in    => reset,
 		-- I/O Ports
-                sw          => "0000",
+		sw          => "0000",
 		rotary      => "000",
 		led         => led,
 		-- UART 
-		uart_rx     => '1',
+		uart_rx     => uart_tx,
 		uart_tx     => uart_tx,
 		-- DDR connection
 		ddr_clk    => ddr_clk,
@@ -79,6 +77,6 @@ begin
 	wait for 2*Tclk;
 end process;
 
-reset <= '1', '0' after 2.5*Tclk;
+reset <= '1', '0' after 10.5*Tclk;
 
 end architecture;
