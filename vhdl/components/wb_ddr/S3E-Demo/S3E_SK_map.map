@@ -11,7 +11,7 @@ Target Device  : xc3s500e
 Target Package : fg320
 Target Speed   : -4
 Mapper Version : spartan3e -- $Revision: 1.36 $
-Mapped Date    : Tue Jan 23 21:46:04 2007
+Mapped Date    : Thu Jan 25 15:21:56 2007
 
 Mapping design into LUTs...
 Running directed packing...
@@ -23,7 +23,7 @@ Design Summary
 
 Design Summary:
 Number of errors:      0
-Number of warnings:    4
+Number of warnings:    8
 Logic Utilization:
   Number of Slice Flip Flops:         569 out of   9,312    6%
   Number of 4 input LUTs:             462 out of   9,312    4%
@@ -35,7 +35,7 @@ Logic Distribution:
 Total Number of 4 input LUTs:            463 out of   9,312    4%
   Number used as logic:                462
   Number used as a route-thru:           1
-  Number of bonded IOBs:               59 out of     232   25%
+  Number of bonded IOBs:               63 out of     232   27%
     IOB Flip Flops:                    18
   Number of ODDR2s used:               20
     Number of DDR_ALIGNMENT = NONE     20
@@ -43,10 +43,10 @@ Total Number of 4 input LUTs:            463 out of   9,312    4%
   Number of DCMs:                      3 out of       4   75%
 
 Total equivalent gate count for design:  29,163
-Additional JTAG gate count for IOBs:  2,832
+Additional JTAG gate count for IOBs:  3,024
 Peak Memory Usage:  170 MB
-Total REAL time to MAP completion:  12 secs 
-Total CPU time to MAP completion:   8 secs 
+Total REAL time to MAP completion:  4 secs 
+Total CPU time to MAP completion:   4 secs 
 
 NOTES:
 

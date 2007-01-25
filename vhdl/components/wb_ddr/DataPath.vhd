@@ -1,9 +1,17 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+-----------------------------------------------------------------------------
+-- Wishbone DDR controller component
+-- (c) 2007 Joerg Bornschein (jb@capsec.org)
+--
+-- This file is part of wb_ddr and should not be used directly
+-----------------------------------------------------------------------------
+library ieee;
+use ieee.std_logic_1164.all;
 
-library UNISIM;
-use UNISIM.VComponents.all;
+library UNISIM;              -- only for DDR FF (XXX)
+use UNISIM.VComponents.all;  -- only for DDR FF (XXX)
 
+-----------------------------------------------------------------------------
+-- DataPath -----------------------------------------------------------------
 entity DataPath is
 	port (
 		clk_2x   : in    std_logic;
@@ -26,11 +34,14 @@ entity DataPath is
 		-- Debug 
 		led      : out   std_logic_vector( 7 downto 0);
 		sw       : in    std_logic_vector(3 downto 0) );
-
 end DataPath;
 
-architecture RTL of DataPath is
+-----------------------------------------------------------------------------
+-- Implementation -----------------------------------------------------------
+architecture rtl of DataPath is
 
+-----------------------------------------------------------------------------
+-- Component declaration ----------------------------------------------------
 component FDDRRSE
    -- synthesis translate_off
    generic (INIT : bit := '1');
@@ -195,7 +206,6 @@ begin
 	end if;
 end process;
 
-
 rdata270proc: process(reset, clk_fb270) is
 variable match : std_logic;
 begin
@@ -320,5 +330,5 @@ begin
 end process;
 
 
-end RTL;
+end rtl;
 
