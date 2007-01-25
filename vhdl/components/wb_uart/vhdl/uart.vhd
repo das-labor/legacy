@@ -1,3 +1,9 @@
+-----------------------------------------------------------------------------
+-- Wishbone UART component
+-- (c) 2007 Joerg Bornschein (jb@capsec.org)
+--
+-- This file is part of wb_uart and should not be used directly
+-----------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
 
