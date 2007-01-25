@@ -1,9 +1,8 @@
 -----------------------------------------------------------------------------
 -- Wishbone UART ------------------------------------------------------------
---
 -- (c) 2007 Joerg Bornschein (jb@capsec.org)
 --
--- All files under GPLv2
+-- All files under GPLv2 -- please contact me if you use this component
 -----------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
