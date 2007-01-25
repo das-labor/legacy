@@ -1,10 +1,18 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+-----------------------------------------------------------------------------
+-- Wishbone DDR controller component
+-- (c) 2007 Joerg Bornschein (jb@capsec.org)
+--
+-- This file is part of wb_ddr and should not be used directly
+-----------------------------------------------------------------------------
+library ieee;
+use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-library UNISIM;
-use UNISIM.VComponents.all;
+library UNISIM;              -- for Xilinx DCM and BUFG
+use UNISIM.VComponents.all;  -- for Xilinx DCM and BUFG
 
+-----------------------------------------------------------------------------
+-- DDRDCM -------------------------------------------------------------------
 entity DDRDCM is
 	port (
 		clk_fb   : in  std_logic;		
@@ -19,8 +27,12 @@ entity DDRDCM is
 		cal_ovf  : out std_logic );
 end DDRDCM;
 
-architecture RTL of DDRDCM is
+-----------------------------------------------------------------------------
+-- Implementation -----------------------------------------------------------
+architecture rtl of DDRDCM is
 
+-----------------------------------------------------------------------------
+-- Component declaration ----------------------------------------------------
 component DCM
 -- pppragma translate_off
     generic ( 
@@ -51,12 +63,13 @@ component DCM
           );
 end component;
 
-
 component BUFG
   port ( I : in std_logic;
          O : out std_logic);
 end component;
 
+-----------------------------------------------------------------------------
+-- Local signals ------------------------------------------------------------
 signal Vcc        : std_logic := '1';
 signal GND        : std_logic := '0';
 
@@ -157,5 +170,4 @@ begin
 	end if;
 end process;
 		
-end RTL;
-
+end rtl;

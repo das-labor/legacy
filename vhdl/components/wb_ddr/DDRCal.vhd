@@ -1,8 +1,15 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+-----------------------------------------------------------------------------
+-- Wishbone DDR controller component
+-- (c) 2007 Joerg Bornschein (jb@capsec.org)
+--
+-- This file is part of wb_ddr and should not be used directly
+-----------------------------------------------------------------------------
+library ieee;
+use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-
+-----------------------------------------------------------------------------
+-- DDRCal -------------------------------------------------------------------
 entity DDRCal is
 	port (
 		clk       : in  std_logic;
@@ -19,7 +26,9 @@ entity DDRCal is
 		led       : out std_logic_vector(7 downto 0) );
 end DDRCal;
 
-architecture Behavioral of DDRCal is
+-----------------------------------------------------------------------------
+-- Implementation -----------------------------------------------------------
+architecture rtl of DDRCal is
 
 signal clkxing_int : std_logic_vector(7 downto 0);
 
@@ -93,6 +102,5 @@ begin
    end if;
 end process;
 
-
-end Behavioral;
+end rtl;
 

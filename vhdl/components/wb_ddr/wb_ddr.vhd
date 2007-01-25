@@ -51,8 +51,6 @@ end wb_ddr;
 -- Implementation -----------------------------------------------------------
 architecture rtl of wb_ddr is
 
-subtype TWaits is unsigned(3 downto 0);
-
 constant CASLatency : std_logic_vector(2 downto 0) := "010";
 
 constant wRP  : unsigned(3 downto 0) := "0011";
@@ -68,6 +66,84 @@ constant cmd_write  : std_logic_vector(2 downto 0) := "100";
 constant cmd_mrs    : std_logic_vector(2 downto 0) := "000";
 constant cmd_ref    : std_logic_vector(2 downto 0) := "001";
 constant cmd_pre    : std_logic_vector(2 downto 0) := "010";
+
+-----------------------------------------------------------------------------
+-- Component declarations ---------------------------------------------------
+component CmdPath is
+	port (
+	   clk        : in  std_logic;
+		clk_2x     : in  std_logic;
+		reset      : in  std_logic;
+		-- 
+		cmd        : in  std_logic_vector(2 downto 0);
+		rdone      : out std_logic;
+		wdone      : out std_logic;
+		-- to high speed DataPath
+		path_rtrig : out std_logic;
+		path_wtrig : out std_logic;
+		-- DDR Connection
+		ddr_ras_n  : out std_logic;
+		ddr_cas_n  : out std_logic;
+		ddr_we_n   : out std_logic );
+end component CmdPath;
+
+component DataPath is
+	port (
+		clk_2x   : in    std_logic;
+		clk_2x90 : in    std_logic;
+		clk_fb90 : in    std_logic;
+		reset    : in    std_logic;
+		cal_xing : in    std_logic_vector(5 downto 0);
+		--
+		rtrig    : in    std_logic;
+		wtrig    : in    std_logic;
+		rdone    : out   std_logic;
+		wdone    : out   std_logic;
+		rdata    : out   std_logic_vector(63 downto 0);
+		wdata    : in    std_logic_vector(63 downto 0);
+		dmask    : in    std_logic_vector( 7 downto 0);
+		-- DDR Connection
+		ddr_dqs  : inout std_logic_vector( 1 downto 0);
+		ddr_dq   : inout std_logic_vector(15 downto 0);
+		ddr_dm   : out   std_logic_vector( 1 downto 0);
+		-- Debug 
+		led      : out   std_logic_vector( 7 downto 0);
+		sw       : in    std_logic_vector(3 downto 0) );
+end component DataPath;
+
+component DDRCal is
+	port (
+		clk       : in  std_logic;
+		reset     : in  std_logic;
+		-- Calibration
+		cal_xing  : out std_logic_vector(5 downto 0);
+		cal_inc   : out std_logic;
+		cal_dec   : out std_logic;
+		cal_done  : in  std_logic;
+		cal_ovf   : in  std_logic;
+		-- Status & Buttons
+		match_led : in  std_logic_vector(7 downto 0);		
+		rotary    : in  std_logic_vector(2 downto 0);
+		led       : out std_logic_vector(7 downto 0) );
+end component DDRCal;
+
+component DDRDCM is
+	port (
+		clk_fb   : in  std_logic;		
+		clk_fb90 : out std_logic;
+		-- Calibration & Control
+		reset    : in  std_logic;		
+		locked   : out std_logic;		
+		clk      : in  std_logic;
+		cal_inc  : in  std_logic;
+		cal_dec  : in  std_logic;
+		cal_done : out std_logic;
+		cal_ovf  : out std_logic );
+end component DDRDCM;
+
+-----------------------------------------------------------------------------
+-- Local signals and types --------------------------------------------------
+subtype TWaits is unsigned(3 downto 0);
 
 signal clk_fb90   : std_logic;
 signal dcm_locked : std_logic;
@@ -104,7 +180,7 @@ ddr_clk    <= not clk_2x;
 ddr_clk_n  <=     clk_2x;
 
 -- generate phase shifted clock for data sampling (reading)
-dcm0: entity work.DDRDCM
+dcm0: DDRDCM
 	port map(
 		clk_fb   => ddr_clk_fb,
 		clk_fb90 => clk_fb90,
@@ -118,7 +194,7 @@ dcm0: entity work.DDRDCM
 		cal_ovf  => cal_ovf );
 	
 -- calibrate phase shifted clock
-cal0: entity work.DDRCal
+cal0: DDRCal
 	port map(
 		reset    => reset,
 		clk      => clk,
@@ -133,9 +209,8 @@ cal0: entity work.DDRCal
 		rotary   => rotary,
 		led      => led );
 
-------------------------------------------------------------------------------
--- DQ/DQS high speed path ----------------------------------------------------
-dataPath0: entity work.DataPath
+-- DQ/DQS high speed path
+dataPath0: DataPath
 	port map (
 		clk_2x   => clk_2x,
 		clk_2x90 => clk_2x90,
@@ -159,9 +234,8 @@ dataPath0: entity work.DataPath
 		sw       => sw,
 		led      => match_led );
 		
-------------------------------------------------------------------------------
--- High speed CMD path -------------------------------------------------------
-cmdPath0: entity work.CmdPath
+-- High speed CMD path
+cmdPath0: CmdPath
 	port map(
 		clk        => clk,
 		clk_2x     => clk_2x,
