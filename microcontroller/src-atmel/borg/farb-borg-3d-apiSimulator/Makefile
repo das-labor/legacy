@@ -1,5 +1,5 @@
 PRG = borg3dSim
-OBJ = imain.o testAnim.o fileParser.o trackball.o util.o api.o 
+OBJ = main.o testAnim.o fileParser.o trackball.o util.o api.o 
 OPTIMIZE = -O2
 LIBS = -lglut -lpthread -lGL -lGLU
 CC = gcc
