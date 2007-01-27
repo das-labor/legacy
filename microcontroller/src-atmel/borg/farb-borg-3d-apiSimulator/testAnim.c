@@ -2,7 +2,7 @@
 #include "util.h"
 #include "api.h"
 #include "testAnim.h"
-#include "fileparser.h"
+#include "fileParser.h"
 
 // Playlist
 void *display_loop(void * unused)  {
