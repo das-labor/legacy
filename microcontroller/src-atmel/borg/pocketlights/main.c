@@ -8,6 +8,7 @@
 #include "pixel.h"
 #include "menu.h"
 #include "buttons.h"
+#include "blinkenlights.h"
 
 volatile unsigned char oldMode, oldOldmode, mode;
 
@@ -33,7 +34,8 @@ int main (void){
 			//spirale(5);
 			break;
 		case 3:
-			joern1();
+			test_blinkenlights();
+			//joern1();
 			break;
 		case 4:
 			snake();

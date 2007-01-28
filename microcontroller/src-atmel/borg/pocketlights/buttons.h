@@ -37,6 +37,4 @@ BUTTON_A_MASK = 0x80
 button_mask;
 
 void init_buttons();
-void button_register(unsigned char button_pin_state);
-void button_add(button_value button);
 button_value get_button();

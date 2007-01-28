@@ -76,6 +76,8 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 	// Zwei Statusbytes für die Button Pins. --> Vergleich; Übergang 1->0 = button_release = button gedrückt
 	static unsigned char button_pin_state = 0;
 	static unsigned char old_button_pin_state=0;
+	// Zähler um die Buttons zu entprellen (seltener abfragen, damit kein zweiter Press registriert wird beim loslassen)
+	static unsigned char anti_prell=0;
 	
 	//Watchdog zurücksetzen
 	wdt_reset();
@@ -83,13 +85,14 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 	// Die aktuelle Zeile in der aktuellen Ebene ausgeben
 	rowshow(row, plane);
 	
-	// *** Pinstatus an aktueller Zeile von links ins Byte schieben (damit Button_status 0 an Bit 0 steht)
-	//shift byte nach rechts
+	/*** Pinstatus an aktueller Zeile von links ins Byte schieben (damit Button_status 0 an Bit 0 steht) ***/
+	// shift byte nach rechts
 	button_pin_state>>=1;
-	//wenn signal am Buttonpin (aktuell 3), dann wird das höchste Bit auf 1 gesetzt
+	// wenn signal am Buttonpin (aktuell 3), dann wird das höchste Bit auf 1 gesetzt
 	if((PINB & (1<<BUTTONPIN)))
 		button_pin_state |= 0x80;
-		
+	/*** END ***/
+	
 	//Zeile und Ebene inkrementieren, Buttons abfragen
 	if(++row == NUM_ROWS){	
 		// Nach der letzten Helligkeitsstufe (plane), also nach einem kompletten Frame, Buttonpins speichern
@@ -98,9 +101,25 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 		}
 		row =0;
 		
-		// registriert Button DOWN
-		if((~old_button_pin_state) & button_pin_state){
-			_inline_fifo_put(&fifo, button_pin_state);
+		/**** Buttons registrieren (ins FIFO schreiben) ****/
+		// Buttons nur bei einer Plane registrieren
+		if(plane==NUMPLANE-1){
+			
+			// Antiprell Zähler hochzählen und vergleichen...
+			
+			/****** TODO: find a good value for anti_prell ******/
+			
+			if((++anti_prell%32)==0){
+			
+				// registriert Button DOWN
+				if((~old_button_pin_state) & button_pin_state){
+					_inline_fifo_put(&fifo, button_pin_state);
+				}
+				
+				// Pinstate als "alt" speichern
+				old_button_pin_state=button_pin_state;
+				button_pin_state=0;
+			}
 		}
 		
 		// registriert Button RELEASE
@@ -108,10 +127,8 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 			//_inline_fifo_put (fifo_t *f, const uint8_t data)
 		}
 */
-		
-		// Pinstate als "alt" speichern
-		old_button_pin_state=button_pin_state;
-		button_pin_state=0;
+		/**** END Buttons registrieren (ins FIFO schreiben) ****/
+
 	}
 }
 
