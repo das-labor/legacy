@@ -42,7 +42,7 @@ architecture rtl of DataPath is
 
 -----------------------------------------------------------------------------
 -- Component declaration ----------------------------------------------------
-component FDDRRSE
+component ODDR2
    -- synthesis translate_off
    generic (INIT : bit := '1');
    -- synthesis translate_on
@@ -144,7 +144,7 @@ ddr_dm  <= (others => 'Z') when tri='1' else
 -- generate dqs_out
 dqs: for i in 1 downto 0 generate
 begin
-	dqsff: FDDRRSE
+	dqsff: ODDR2
 		port map (
 			Q   => dqs_out(i),
 			C0  => clk_2x,
@@ -159,7 +159,7 @@ end generate;
 -- generate dq_out
 dq: for i in 15 downto 0 generate
 begin
-	dqff: FDDRRSE
+	dqff: ODDR2
 		port map (
 			Q   => dq_out(i),
 			C0  => clk_2x90,
@@ -174,7 +174,7 @@ end generate;
 -- generate dm_out
 dm: for i in 1 downto 0 generate
 begin
-	dqsff: FDDRRSE
+	dqsff: ODDR2
 		port map (
 			Q   => dm_out(i),
 			C0  => clk_2x,
@@ -245,7 +245,7 @@ begin
 		end if;
 		
 	
-		--DEBUG
+		-- DEBUG --------------------------------------------------
 		dq270 <= ddr_dq;
 		match := '0';
 		if sw(3)='1' and dq270="0000000000000011" then
@@ -273,6 +273,7 @@ begin
 --		if rstate(5)='1' then
 --			led(0) <= match;
 --		end if;
+		-- DEBUG --------------------------------------------------
 	end if;
 end process;
 
@@ -298,7 +299,7 @@ begin
 		end if;
 
 		
-		--DEBUG
+		-- DEBUG --------------------------------------------------
 		dq90 <= ddr_dq;
 		match := '0';
 		if sw(3)='1' and dq90="0000000000000011" then
@@ -326,6 +327,7 @@ begin
 --		if rstate(5)='1' then
 --			led(1) <= match;
 --		end if;
+		-- DEBUG --------------------------------------------------
 	end if;
 end process;
 
