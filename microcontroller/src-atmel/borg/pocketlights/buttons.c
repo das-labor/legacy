@@ -9,12 +9,6 @@
 unsigned char buffer[BUF_SIZE];
 fifo_t fifo;
  
-void button_add(button_value button){
-}
-
-void button_register(unsigned char button_pin_state){
-}
-
 button_value get_button(){
 	uint8_t temp=fifo_get_wait(&fifo);
 	
