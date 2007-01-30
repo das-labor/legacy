@@ -36,11 +36,7 @@ component wb_ddr is
 		wb_we_i      : in    std_logic;
 		wb_stb_i     : in    std_logic;
 		wb_cyc_i     : in    std_logic;
-		wb_ack_o     : out   std_logic;
-		-- Debug & Rotary 
-		sw           : in    std_logic_vector(3 downto 0);
-		rotary       : in    std_logic_vector(2 downto 0);
-		debug        : out   std_logic_vector(7 downto 0) );
+		wb_ack_o     : out   std_logic );
 end component wb_ddr;
 
 -----------------------------------------------------------------------------

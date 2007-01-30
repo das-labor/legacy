@@ -11,14 +11,14 @@
 #define SCOPE_SDONE	4
 
 typedef struct {
-	volatile uint32_t cr;		// control register
+	volatile uint32_t cr;       // control register
 	volatile uint32_t sp;       // sample pointer
-	volatile uint32_t sc;		// sample counter
-	volatile uint32_t divisor;	// sampleing divisor
-	volatile uint8_t  channel0; // 
-	volatile uint8_t  channel1;
-	volatile uint8_t  channel2;
-	volatile uint8_t  channel3;
+	volatile uint32_t sc;       // sample counter
+	volatile uint32_t divisor; 	// sampleing divisor
+	volatile uint8_t  channel0; // MUX select 
+	volatile uint8_t  channel1; // MUX select 
+	volatile uint8_t  channel2; // MUX select 
+	volatile uint8_t  channel3; // MUX select 
 } scope_t;
 
 extern scope_t *scope0;
