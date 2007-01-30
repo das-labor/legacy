@@ -8,7 +8,7 @@ entity safer_enc is
 		clk     : in  std_logic;
 		rst     : in  std_logic;
 		--
-		key     : in  std_logic_vector(31 downto 0);
+		key     : in  std_logic_vector(63 downto 0);
 		data_in : in  std_logic_vector(63 downto 0);
 		data_out: out std_logic_vector(63 downto 0)
 	);
@@ -84,7 +84,7 @@ data0 <= data3 when ctrl3=x"6" else
          data_in;
 			
 key0  <= key3  when ctrl3=x"6" else
-         (key & key) xor data_in;
+         key;
 			
 ctrl0 <= ctrl3 when ctrl3=x"6" else
          x"0";  
