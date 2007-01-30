@@ -19,7 +19,7 @@ component safer_enc is
 		clk     : in  std_logic;
 		rst     : in  std_logic;
 		--
-		key     : in  std_logic_vector(31 downto 0);
+		key     : in  std_logic_vector(63 downto 0);
 		data_in : in  std_logic_vector(63 downto 0);
 		data_out: out std_logic_vector(63 downto 0)
 	);
@@ -31,7 +31,7 @@ end component safer_enc;
 signal clk      : std_logic;
 signal rst      : std_logic;
 
-signal key      : std_logic_vector(31 downto 0);
+signal key      : std_logic_vector(63 downto 0);
 signal data_in  : std_logic_vector(63 downto 0);
 signal data_out : std_logic_vector(63 downto 0);
 
@@ -39,8 +39,8 @@ begin
 
 -----------------------------------------------------------------------------
 -- Unit Under Test ----------------------------------------------------------
-key     <= (others => '0');
-data_in <= (others => '0');
+key     <= x"0807060504030201";
+data_in <= x"0102030405060708";
 
 safer: safer_enc
 	port map (

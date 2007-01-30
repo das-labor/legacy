@@ -57,7 +57,7 @@ begin
 		input(8*i+4 downto 8*i) & input(8*i+7 downto 8*i+5);
 
 	biased(8*i+7 downto 8*i) <=
-		temp(8*i+7 downto 8*i) + bias(8*i+7 downto 8*i);
+		input(8*i+7 downto 8*i) + bias(8*i+7 downto 8*i);
 end generate;
 
 rotated <= temp;
