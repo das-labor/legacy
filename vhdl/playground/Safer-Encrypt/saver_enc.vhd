@@ -56,20 +56,20 @@ end component;
 
 -----------------------------------------------------------------------------
 -- Local signals ------------------------------------------------------------
-signal data0 : std_logic_vector(63 downto 0);
-signal data1 : std_logic_vector(63 downto 0);
-signal data2 : std_logic_vector(63 downto 0);
-signal data3 : std_logic_vector(63 downto 0);
+signal data0  : std_logic_vector(63 downto 0);
+signal data1  : std_logic_vector(63 downto 0);
+signal data2  : std_logic_vector(63 downto 0);
+signal data3  : std_logic_vector(63 downto 0);
 
-signal key0  : std_logic_vector(63 downto 0);
-signal key1  : std_logic_vector(63 downto 0);
-signal key2  : std_logic_vector(63 downto 0);
-signal key3  : std_logic_vector(63 downto 0);
+signal key0   : std_logic_vector(63 downto 0);
+signal key1   : std_logic_vector(63 downto 0);
+signal key2   : std_logic_vector(63 downto 0);
+signal key3   : std_logic_vector(63 downto 0);
 
-signal ctrl0 : std_logic_vector( 3 downto 0);
-signal ctrl1 : std_logic_vector( 3 downto 0);
-signal ctrl2 : std_logic_vector( 3 downto 0);
-signal ctrl3 : std_logic_vector( 3 downto 0);
+signal ctrl0  : std_logic_vector( 3 downto 0);
+signal ctrl1  : std_logic_vector( 3 downto 0);
+signal ctrl2  : std_logic_vector( 3 downto 0);
+signal ctrl3  : std_logic_vector( 3 downto 0);
 
 -- final step
 signal data_f : std_logic_vector(63 downto 0);
