@@ -10,7 +10,11 @@ end Testbench;
 -- Testbench implementation -------------------------------------------------
 architecture Behavioral of Testbench is
 
-component saver_enc is
+constant Tclk : time := 10ns;   -- 100 MHz
+
+
+
+component safer_enc is
 	port (
 		clk     : in  std_logic;
 		rst     : in  std_logic;
@@ -19,13 +23,11 @@ component saver_enc is
 		data_in : in  std_logic_vector(63 downto 0);
 		data_out: out std_logic_vector(63 downto 0)
 	);
-end component saver_enc;
+end component safer_enc;
 
-constant Tclk : time := 10ns;
 
 -----------------------------------------------------------------------------
 -- Local signals ------------------------------------------------------------
-
 signal clk      : std_logic;
 signal rst      : std_logic;
 
@@ -35,11 +37,12 @@ signal data_out : std_logic_vector(63 downto 0);
 
 begin
 
+-----------------------------------------------------------------------------
+-- Unit Under Test ----------------------------------------------------------
 key     <= (others => '0');
 data_in <= (others => '0');
 
-
-safer: saver_enc
+safer: safer_enc
 	port map (
 		clk      => clk,
 		rst      => rst,
@@ -47,15 +50,14 @@ safer: saver_enc
 		data_in  => data_in,
 		data_out => data_out );
 
-
 -----------------------------------------------------------------------------
 -- CLK and RST renerator ----------------------------------------------------
-rst <= '1', '0' after 3.5*Tclk;
+rst <= '1', '0' after 2.5*Tclk;
 
 clkproc: process is
 begin
-	clk <= '1', '0' after Tclk;
-	wait for 2*Tclk;
+	clk <= '1', '0' after Tclk/2;
+	wait for Tclk;
 end process;
 
 end Behavioral;

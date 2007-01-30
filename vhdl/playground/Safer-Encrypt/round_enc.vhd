@@ -115,9 +115,8 @@ begin
 
 -----------------------------------------------------------------------------
 -- Data Path ----------------------------------------------------------------
-
 step13: STEP_1_3
-	Port map ( input => data0, key => bkey0, output => data1 ); 
+	Port map ( input => data0, key => bkey0, output => data1 );
 
 sbox0: S_BOX_PERMUTATION 		Port map ( 
 		              clk   => clk,
