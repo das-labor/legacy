@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "fileparser.h"
+
 /*
  * 
  */
@@ -15,6 +17,8 @@ typedef enum {
 	CLearImage        = 'c',
 	SwapAndWait       = 'S',
 	Fade              = 'F',
+	SetVoxelsPalette  = 'V',
+	SetVoxels         = 'v',
 	NoCommand         =  0
 } command;
 
@@ -59,7 +63,7 @@ static unsigned char hex2Byte(char *twoByteString) {
 
 void playPlaylist(char *filename) {
 	FILE * apsFile;
-	char buffer[BUF_SIZE], *p;
+	char buffer[BUF_SIZE];
 	unsigned char ignoreNextLine = 0, x;
 	
 	apsFile = fopen(filename, "r");
@@ -106,6 +110,7 @@ void playAnimFile(char *filename) {
 	unsigned char inStateCnt = 0;
 	unsigned char idx, x, y, z, fadeTime;
 	color setColor;
+	voxel setVox;
 	unsigned char ignoreNextLine = 0;
 	
 	palette['R'-32] = red;
@@ -171,10 +176,12 @@ void playAnimFile(char *filename) {
 									imag[z][y][x][G] = hex2Byte(p);
 									p += 2;
 									imag[z][y][x][B] = hex2Byte(p);
-									p += 2;
+									p += 3;
 								}
+								y++;
 							} else {
 								z++;
+								y = 0;
 								if (z >= MAX_Z) {
 									inStateCnt = 0;
 								}
@@ -203,6 +210,32 @@ void playAnimFile(char *filename) {
 								inStateCnt = 0;
 							}
 							break;
+						case SetVoxelsPalette:
+							if (buffer[0] == '>') {
+								inStateCnt = 0;
+							} else {
+								setVox.x = buffer[0] - '0';
+								setVox.y = buffer[2] - '0';
+								setVox.z = buffer[4] - '0';
+								
+								setVoxel(setVox, palette[buffer[6]-32]);
+							}
+							break;
+						case SetVoxels:
+							if (buffer[0] == '>') {
+								inStateCnt = 0;
+							} else {
+								setVox.x = buffer[0] - '0';
+								setVox.y = buffer[2] - '0';
+								setVox.z = buffer[4] - '0';
+								
+								setColor.r = hex2Byte(&buffer[ 6]);
+								setColor.g = hex2Byte(&buffer[ 8]);
+								setColor.b = hex2Byte(&buffer[10]);
+								
+								setVoxel(setVox, setColor);
+							}
+							break;
 						default:
 							inStateCnt = 0;
 							break;
@@ -215,7 +248,6 @@ void playAnimFile(char *filename) {
 						ignoreNextLine = 0;
 					}
 				}
-				
 			}
 		}
 		fclose(animFile);
