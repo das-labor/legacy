@@ -1,0 +1,7 @@
+
+AVRXHOME       = ../../lib/AvrX2.6f/avrx/
+SRC            = main.c AvrXBufferedSerial.c AvrXFifo.c uart_sw.c server1.c
+MCU_TARGET     = atmega32
+DEFS           = -DF_CPU=16000000
+
+include ../../make/avrx.mk

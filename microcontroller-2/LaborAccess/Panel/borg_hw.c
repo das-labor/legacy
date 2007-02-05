@@ -1,5 +1,4 @@
 
-#include <avr/signal.h>
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <avr/wdt.h>
@@ -9,22 +8,6 @@
 #include "borg_hw.h"
 
 /* Steckerbelegung Flachbandkabel am Panel
- * (die Nummerierung ist in wirklichkeit umgekehrt)
- * 
- * 1-3		GND
- * 4		+5V für Logic
- * 5-8		+12V
- * 9-10		GND
- * 11		CP3
- * 12		CP2
- * 13		CP1
- * 14		/show
- * 15		CP4
- * 16		/EO3
- * 17-18	GND
- * 19-26	D0-D7
- *
- * Und nochmal richtigrum:
  * 1 		D7
  * 2 		D6
  * 3 		D5
@@ -84,12 +67,13 @@
 #define PIN_EO3  	PD7
 
 //Der Puffer, in dem das aktuelle Bild gespeichert wird
+//dieser hat 3 "Ebenen" für die verscheidenen Helligkeiten.
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
 volatile uint8_t keys[8];
 
 inline void busywait() {
-	unsigned char i;
+	//unsigned char i;
 	//for(i=0;i<20;i++){
 	//	asm volatile("nop");
 	//}

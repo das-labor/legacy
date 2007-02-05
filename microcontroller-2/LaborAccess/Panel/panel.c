@@ -16,7 +16,7 @@ AVRX_GCC_TASKDEF(panel, 50, 4)
 				setpixel((x^1)*16+8+y,3);
 				AvrXDelay(&myTimer, 20);
 				seg_putstr("\n");			
-				hexdump(keys+5,5);
+				//hexdump(keys,5);
 			
 			}
 		}
@@ -26,7 +26,7 @@ AVRX_GCC_TASKDEF(panel, 50, 4)
 				setpixel((x^1)*16+8+y,1);
 				AvrXDelay(&myTimer, 20);
 				seg_putstr("\n");			
-				hexdump(keys+5,5);
+				//hexdump(keys,5);
 			
 			}
 		}

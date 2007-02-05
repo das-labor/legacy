@@ -2,7 +2,8 @@
 #include "reader.h"
 #include "i2csw.h"
 
-#include "foo.h"
+#include "enum.h"
+
 //Switch 1 goes low when a card is inserted.
 //Goes high again when the card is at the end.
 //
@@ -21,10 +22,9 @@
 #define SWITCH3 ((~PINA) & (1<<BIT_SWITCH3))
 
 
-
 #define PORT_MOTOR PORTB
 #define DDR_MOTOR DDRB
-//dircetion the motor goes in, if these Pins are pulled low
+//dircetion the motor runs, if these Pins are pulled low
 #define BIT_MOTOR_IN PB0
 #define BIT_MOTOR_OUT PB1
 
@@ -34,14 +34,6 @@
 #define MOTOR_STOP() PORT_MOTOR |= (1<<BIT_MOTOR_OUT); PORT_MOTOR |= (1<<BIT_MOTOR_IN)
 #define MOTOR_OFF() PORT_MOTOR &= ~(1<<BIT_MOTOR_OUT); PORT_MOTOR &= ~(1<<BIT_MOTOR_IN)
 
-#define DDR_POWER DDRA
-#define PORT_POWER PORTA
-#define BIT_POWER 2
-
-#define POWER_ON() PORT_POWER &= ~(1<<BIT_POWER)
-#define POWER_OFF() PORT_POWER |= (1<<BIT_POWER)
-
-
 #define LOAD_OK 0
 #define LOAD_ERROR 1
 #define LOAD_LONG 2
@@ -49,6 +41,10 @@
 
 TimerControlBlock   pollTimer, timeoutTimer;             // Declare the control blocks needed for timers
 
+MessageQueue ReaderMsgOutQueue;
+MessageQueue ReaderMsgInQueue;
+
+ReaderMsg_t ReaderMsgOut;
 
 
 void chipdrive_init(){
@@ -105,6 +101,7 @@ u08 chipdrive_load(){
 	//switch 2 is not pressed anymore, so the card is to short
 	if(!SWITCH2) return LOAD_SHORT;
 	
+	AvrXDelay(&pollTimer, 100);
 	return LOAD_OK;
 
 load_error:
@@ -154,28 +151,21 @@ AVRX_GCC_TASKDEF(reader, 50, 3)
 		//switch 2 pressed, so card is in drive
 		chipdrive_eject();
 	};
-	
-	seg_putstr("\n");
-	hexdump((uint8_t[]){0x12,0x34,0xff,0x56},4);
 			
 	
 	while(1){
 		if (chipdrive_load() != LOAD_OK){
 			error_count ++;
 		}else{
-			uint8_t buf[5];
-			seg_putstr("\n");
-			POWER_ON();
-			AvrXDelay(&pollTimer, 10);
-			i2cEeRead(0, 5, buf);
-			POWER_OFF();
-			hexdump(buf,5);
-			// do stuff here
-			AvrXDelay(&pollTimer, 3000);
+			ReaderMsg_t *p;
+			AvrXSendMessage(&ReaderMsgOutQueue, (MessageControlBlock*)&ReaderMsgOut);
+            AvrXWaitMessageAck((MessageControlBlock*)&ReaderMsgOut);
 			
-			chipdrive_capture();
-			
-		
+			p = (ReaderMsg_t*)AvrXWaitMessage(&ReaderMsgInQueue);
+			if(p->state == COMMAND_CAPTURE){
+				chipdrive_capture();
+			}
+			AvrXAckMessage((MessageControlBlock*)p);
 		}
 
 		if (chipdrive_eject() != LOAD_OK){
