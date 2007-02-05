@@ -1,0 +1,3 @@
+
+#define COMMAND_CAPTURE 0x01
+#define COMMAND_EJECT 0x02

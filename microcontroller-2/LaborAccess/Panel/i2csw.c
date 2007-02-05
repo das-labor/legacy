@@ -5,19 +5,19 @@
 // This Library uses slow (100kHz) Bus timing
 
 
-void delay_5u(){
+inline void delay_5u(){
 	asm volatile(
-	"delay_5u_lp:\n\t"
+	"delay_5u_lp%=:\n\t"
 		"dec	%0	\n\t"
-		"brne	delay_5u_lp	\n\t"
+		"brne	delay_5u_lp%=\n\t"
 		::"r" ((u08)((5ul*F_CPU)/(3ul*1000000ul))) ); 
 }
 
-void delay_2u5(){
+inline void delay_2u5(){
 	asm volatile(
-	"delay_2u5_lp:\n\t"
+	"delay_2u5_lp%=:\n\t"
 		"dec	%0	\n\t"
-		"brne	delay_2u5_lp	\n\t"
+		"brne	delay_2u5_lp%=	\n\t"
 		::"r" ((u08)((2.5*F_CPU)/(3ul*1000000ul))) ); 
 }
 

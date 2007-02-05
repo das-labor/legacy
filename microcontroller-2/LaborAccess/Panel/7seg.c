@@ -1,6 +1,6 @@
 #include <avr/pgmspace.h>
 #include "pixel.h"
-
+#include "7seg.h"
 
 
 
@@ -68,14 +68,14 @@ void seg_putc(uint8_t c){
 	}
 }
 
-void seg_putstr(unsigned char* txt){
+void seg_putstr(char * txt){
 	unsigned char c;
 	while((c=*txt++)){
 		seg_putc(c);			
 	}
 }
 
-void seg_putstr_P(unsigned char* txt){
+void seg_putstr_P(char * txt){
 	unsigned char c;
 	while((c=pgm_read_byte(txt++))){
 		seg_putc(c);

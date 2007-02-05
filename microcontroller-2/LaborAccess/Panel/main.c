@@ -1,10 +1,8 @@
 
 #include <avr/io.h>
 
-#include <avrx-io.h>
-#include <avrx-signal.h>
 #include "avrx.h"               // AvrX System calls/data structures
-#include "serialio.h"           // From AvrX...
+#include "AvrXSerialIo.h"
 
 #include "config.h"
 
@@ -12,6 +10,7 @@
 
 #include "reader.h"
 #include "panel.h"
+#include "client.h"
 
 //AVRX_GCC_TASK(Monitor, 20, 0);          // External Task: Debug Monitor
 
@@ -25,11 +24,11 @@ int main(void)
     TCCR0 = TMC8_CK256;		// Set Timer0 to CPUCLK/256
     TIMSK = 1<<TOIE0;		// Enable interrupt flag
 	
-    //InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
+	InitSerial0(BAUD(4800));
 
-	//AvrXRunTask(TCB(Monitor));
 	AvrXRunTask(TCB(reader));
 	AvrXRunTask(TCB(panel));
+	AvrXRunTask(TCB(client));
 	
 	borg_hw_init();
 
