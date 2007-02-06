@@ -1,5 +1,8 @@
 
+#include <string.h>
+
 #include "channel.h"
+#include "dummy_qport.h"
 
 #define MAX_CHANNELS 1
 
@@ -14,14 +17,14 @@ typedef struct{
 
 uint8_t client_buf[20];
 
-channel_t Chanels[] ={
+channel_t Channels[] ={
 	{client_buf, sizeof(client_buf), 0, 0},
-}
+};
 
 uint8_t channel_read(uint8_t id, uint8_t * buffer, uint8_t size){
 	uint8_t chansize;
 	channel_t * chan;
-	chan = &Chanels[id];
+	chan = &Channels[id];
 	do{
 		AvrXWaitSemaphore(&chan->mutex);
 	}while(chan->size == 0);
@@ -37,6 +40,7 @@ uint8_t channel_read(uint8_t id, uint8_t * buffer, uint8_t size){
 
 uint8_t channel_write(uint8_t id, uint8_t * buffer, uint8_t size){
 	qport_write(id, buffer, size);
+	return 0;
 }
 
 

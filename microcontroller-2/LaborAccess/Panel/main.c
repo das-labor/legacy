@@ -29,6 +29,7 @@ int main(void)
 	AvrXRunTask(TCB(reader));
 	AvrXRunTask(TCB(panel));
 	AvrXRunTask(TCB(client));
+	AvrXRunTask(TCB(qport));
 	
 	borg_hw_init();
 
