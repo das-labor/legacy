@@ -24,7 +24,7 @@ void tetris_playfield_destruct(tetris_playfield_t* p_pl) {
 /* Function:           tetris_playfield_insertPiece
  * Description:        Inserts a new piece
  * Argument p_pl:      The playfield to perform action on
- * Argument p_piece:   The type of piece
+ * Argument p_piece:   The piece to be insertes
  * Return value:       0 corresponds to false, anything other to true
  */
 uint8_t tetris_playfield_insertPiece(tetris_playfield_t* p_pl, tetris_piece_t* p_piece) {
