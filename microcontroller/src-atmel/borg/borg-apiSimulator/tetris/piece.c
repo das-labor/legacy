@@ -8,14 +8,14 @@
 
 /* Function:        tetris_piece_construct
  * Description:     Constructs a piece with the given attributes
- * Argument t:      The shape the piece (see defintion of tetris_piece_type_t in piece.h)
+ * Argument s:      The shape of the piece (see defintion of tetris_piece_shape_t in piece.h)
  * Argument a:      Its angle (see defintion of tetris_piece_angel_t in piece.h)
  * Return value:    Pointer to a newly created piece
  */
-tetris_piece_t* tetris_piece_construct (enum tetris_piece_type_t t, enum tetris_piece_angle_t a) {
+tetris_piece_t* tetris_piece_construct (enum tetris_piece_shape_t s, enum tetris_piece_angle_t a) {
     tetris_piece_t* p_piece = (tetris_piece_t*) malloc (sizeof(tetris_piece_t));
     if (p_piece != NULL) {
-    	p_piece->type = t;
+    	p_piece->shape = s;
     	p_piece->angle = a;
     }
 
@@ -59,7 +59,7 @@ uint8_t tetris_piece_solidMatter(tetris_piece_t* p_pc, uint8_t x, uint8_t y) {
 
 	/* we just use the lookup table to determine the corporality of the given piece */
     uint16_t piece;
-    switch (p_pc->type) {
+    switch (p_pc->shape) {
     case TETRIS_PC_LINE:
         piece = pc_line[p_pc->angle];
         break;
