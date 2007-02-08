@@ -43,10 +43,10 @@ uint8_t tetris_playfield_insertPiece(tetris_playfield_t* p_pl, tetris_piece_t* p
 		}
 		
 		/* OK */
-		return 0;
+		return 1;
 	} else {
 		/* wrong state */
-		return 1;
+		return 0;
 	}
 }
 
