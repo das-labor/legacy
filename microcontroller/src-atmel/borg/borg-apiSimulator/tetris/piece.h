@@ -9,30 +9,41 @@
  *********/
 
 enum tetris_piece_type_t {
-	TETRIS_PT_LINE,
-	TETRIS_PT_T,
-	TETRIS_PT_SQUARE,
-	TETRIS_PT_L,
-	TETRIS_PT_LBACK,
-	TETRIS_PT_S,
-	TETRIS_PT_Z,
-	TETRIS_PT_DUMMY    /* empty piece which acts as a buffer for rotations */
+	TETRIS_PC_LINE,
+	TETRIS_PC_T,
+	TETRIS_PC_SQUARE,
+	TETRIS_PC_L,
+	TETRIS_PC_LBACK,
+	TETRIS_PC_S,
+	TETRIS_PC_Z
+};
+
+
+enum tetris_piece_angle_t {
+	TETRIS_PC_ANGLE_0,
+	TETRIS_PC_ANGLE_90,
+	TETRIS_PC_ANGLE_180,
+	TETRIS_PC_ANGLE_270
 };
 
 
 enum tetris_piece_rotation_t {
-	TETRIS_PR_CLOCKWISE,
-	TETRIS_PR_COUNTERCLOCKWISE
+	TETRIS_PC_ROT_CLOCKWISE,
+	TETRIS_PC_ROT_COUNTERCLOCKWISE
 };
 
-typedef uint8_t tetris_piece_t[4][4];
+
+typedef struct {
+	enum tetris_piece_type_t type;  // holds the bitmaps of the 4 angels of the piece
+	enum tetris_piece_angle_t angle; // specifies one of 4 angels (in steps of 90 degrees)
+} tetris_piece_t;
 
 
 /*****************************
  *  construction/destruction *
  *****************************/
 
-tetris_piece_t* tetris_piece_construct (enum tetris_piece_type_t t);
+tetris_piece_t* tetris_piece_construct (enum tetris_piece_type_t t, enum tetris_piece_angle_t a);
 void tetris_piece_destruct(tetris_piece_t* p);
 
 
@@ -52,19 +63,18 @@ uint8_t tetris_piece_solidMatter(tetris_piece_t* p_pc, uint8_t x, uint8_t y);
 
 /* Function:        tetris_piece_rotate
  * Description:     Rotates a piece
- * Argument p_src:  The piece to rotate
- * Argument p_dst:  The piece where the rotation will be stored 
+ * Argument p_pc:   The piece to rotate
  * Argument r:      Type of rotation (see tetris_piece_rotation_t above)
  * Return value:    void
  */
-void tetris_piece_rotate(tetris_piece_t* p_src, tetris_piece_t* p_dst, enum tetris_piece_rotation_t r);
+void tetris_piece_rotate(tetris_piece_t* p_pc, enum tetris_piece_rotation_t r);
 
 
 /* Function:        tetris_piece_lastSolidMatterRow
  * Description:     Determines the last row which contains solid matter (counting from 0)
  * Argument p_pc:   The piece to rotate
- * Return value:    The last row containing solid matter or -1 if no matter was found
+ * Return value:    The last row containing solid matter
  */
-int8_t tetris_piece_lastSolidMatterRow(tetris_piece_t* p_pc);
+uint8_t tetris_piece_lastSolidMatterRow(tetris_piece_t* p_pc);
 
 #endif /*TETRIS_PIECE_H_*/
