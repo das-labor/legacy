@@ -8,7 +8,7 @@
  * types *
  *********/
 
-enum tetris_piece_type_t {
+enum tetris_piece_shape_t {
 	TETRIS_PC_LINE,
 	TETRIS_PC_T,
 	TETRIS_PC_SQUARE,
@@ -34,7 +34,7 @@ enum tetris_piece_rotation_t {
 
 
 typedef struct {
-	enum tetris_piece_type_t type;  // holds the bitmaps of the 4 angels of the piece
+	enum tetris_piece_shape_t shape; // specifies the shape of the piece
 	enum tetris_piece_angle_t angle; // specifies one of 4 angels (in steps of 90 degrees)
 } tetris_piece_t;
 
@@ -45,11 +45,11 @@ typedef struct {
 
 /* Function:        tetris_piece_construct
  * Description:     Constructs a piece with the given attributes
- * Argument t:      The shape the piece (see defintion of tetris_piece_type_t above)
+ * Argument s:      The shape of the piece (see defintion of tetris_piece_shape_t above)
  * Argument a:      Its angle (see defintion of tetris_piece_angel_t above)
  * Return value:    Pointer to a newly created piece
  */
-tetris_piece_t* tetris_piece_construct (enum tetris_piece_type_t t, enum tetris_piece_angle_t a);
+tetris_piece_t* tetris_piece_construct (enum tetris_piece_shape_t s, enum tetris_piece_angle_t a);
 
 
 /* Function:        tetris_piece_destruct
