@@ -64,7 +64,7 @@ uint8_t tetris_playfield_insertPiece(tetris_playfield_t* p_pl, tetris_piece_t* p
 /* Function:           tetris_playfield_rotatePiece
  * Description:        rotates falling piece to the given direction
  * Argument p_pl:      The playfield to perform action on
- * Argument r:         The direction of the rotation (see also tetris_piece_rotation_t in piece.h)
+ * Argument r:         The direction of the rotation (see also tetris_piece_rotation_t above)
  * Return value:       0 corresponds to false, anything other to true
  */
 uint8_t tetris_playfield_rotatePiece(tetris_playfield_t* p_pl, enum tetris_piece_rotation_t r);
