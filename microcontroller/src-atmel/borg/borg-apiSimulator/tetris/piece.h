@@ -43,7 +43,20 @@ typedef struct {
  *  construction/destruction *
  *****************************/
 
+/* Function:        tetris_piece_construct
+ * Description:     Constructs a piece with the given attributes
+ * Argument t:      The shape the piece (see defintion of tetris_piece_type_t above)
+ * Argument a:      Its angle (see defintion of tetris_piece_angel_t above)
+ * Return value:    Pointer to a newly created piece
+ */
 tetris_piece_t* tetris_piece_construct (enum tetris_piece_type_t t, enum tetris_piece_angle_t a);
+
+
+/* Function:        tetris_piece_destruct
+ * Description:     Destructs a piece
+ * Argument p:      The pointer of the piece to be destructed
+ * Return value:    void
+ */
 void tetris_piece_destruct(tetris_piece_t* p);
 
 
@@ -56,7 +69,7 @@ void tetris_piece_destruct(tetris_piece_t* p);
  * Argument p_pc:   The piece to examine
  * Argument x:      The x coordinate
  * Argument y:      The y coordinate
- * Return value:    0 corresponds to no matter, everything > 0 to solid matter
+ * Return value:    0 corresponds to empty space, 1 to solid matter
  */
 uint8_t tetris_piece_solidMatter(tetris_piece_t* p_pc, uint8_t x, uint8_t y);
 
