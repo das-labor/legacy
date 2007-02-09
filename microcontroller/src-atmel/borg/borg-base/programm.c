@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "pixel.h"
 #include "util.h"
 #include "config.h"
@@ -5,6 +7,8 @@
 #ifdef AVR
 	#include <avr/io.h>
 #endif
+
+#define RANDOM8() ((uint8_t)random())
 
 void test1(){
 	unsigned char x,y;
@@ -199,9 +203,9 @@ void matrix() {
 		unsigned char nsc;
 		for(nsc=0;nsc<6;nsc++){
 			if(streamer_num<STREAMER_NUM){
-				unsigned char sy = random()%(2*NUM_ROWS);
+				unsigned char sy = RANDOM8()%(2*NUM_ROWS);
 				if (sy>NUM_ROWS-1) sy=0;
-				streamers[streamer_num] = (streamer){{random()%NUM_COLS, sy}, 0, (random()%8)+12, index++,(random()%16)+3};
+				streamers[streamer_num] = (streamer){{RANDOM8()%NUM_COLS, sy}, 0, (RANDOM8()%8)+12, index++,(RANDOM8()%16)+3};
 				streamer_num++;	
 			}
 		}
@@ -235,7 +239,7 @@ void feuer()
 
 		// update lowest line
 		for(x=0; x<NUM_COLS; x++) {
-			world[x][FEUER_Y-1] = random();
+			world[x][FEUER_Y-1] = RANDOM8();
 		};
 	
 		// copy to screen
@@ -345,3 +349,4 @@ void tetris(){
 	dropin(line);
 	dropin(left);
 }
+

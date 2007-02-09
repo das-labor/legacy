@@ -58,6 +58,7 @@ void wait(int ms){
 
 #define BIT_S(var,b) ((var&(1<<b))?1:0)
 
+/* not used in favour of stdio's random 
 unsigned char random(){
 	static uint32_t muh = 0xAAAA;
 	unsigned char x;
@@ -67,3 +68,4 @@ unsigned char random(){
 	
 	return (unsigned char) muh;
 }
+*/
