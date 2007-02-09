@@ -12,10 +12,9 @@
 
 #ifdef ERROR_HANDLING
 	#include "error-handling.h"
+	#define PERSISTENT_COUNTER_OVERFLOW		(void*)0, 2,4,1
+	#define PERSISTENT_COUNTER_WRITER_ERROR	(void*)0, 2,4,2
 #endif
-
-#define PERSISTENT_COUNTER_OVERFLOW		(void*)0, 2,4,1
-#define PERSISTENT_COUNTER_WRITER_ERROR	(void*)0, 2,4,2
 
 #define RING_SIZE 168
 
@@ -24,10 +23,29 @@ uint8_t ring_idx = 0xff;
 uint16_t  EEMEM B08_23;
 uint8_t EEMEM B0_7[RING_SIZE];
 
+#ifdef INIT_EEPROM
+void init_buffer(void){
+	uint8_t i;
+	eeprom_busy_wait();
+	eeprom_write_word(&B08_23, 0x0000);
+	for(i=0; i<RING_SIZE; ++i){
+		eeprom_busy_wait();
+		eeprom_write_byte(&(B0_7[i]), 0x00);
+	}
+}
+#endif
+
 void percnt_init(void){
 	uint8_t i;
 	uint8_t maxidx=0;
-	uint8_t t,max=0;
+	uint8_t t,max=eeprom_read_byte(&(B0_7[0]));
+	#ifdef INIT_EEPROM
+		if(t = (eeprom_read_word(&B08_23)==0xFFFF)){
+		//	for(i=0; i<RING_SIZE; ++i){
+		//	}
+			init_buffer();
+		}
+	#endif
 	for(i=0; i<RING_SIZE; ++i){ /* this might be speed up, but such optimisation could lead to timing attacks */
 		eeprom_busy_wait();
 		t=eeprom_read_byte(&(B0_7[i]));

@@ -1,3 +1,5 @@
+
+#include <stdlib.h> /* random() */
 #include "pixel.h"
 #include "util.h"
 
@@ -46,7 +48,7 @@ void spirale(unsigned int delay){
 }
 
 #define BIT_S(var,b) ((var&(1<<b))?1:0)
-
+/*
 unsigned char random(){
 	static unsigned int muh = 0xAA;
 	unsigned char x;
@@ -56,7 +58,7 @@ unsigned char random(){
 	return (unsigned char) muh;
 
 }
-
+*/
 void snake(){
 	pixel pixels[64] = {{4,6},{4,5}};
 	pixel * head = &pixels[1];
@@ -342,7 +344,7 @@ void feuer()
 
 		// update lowest line
 		for(x=0; x<8; x++) {
-			world[x][15] = random();
+			world[x][15] = 0xff & random();
 		};
 	
 		// copy to screen

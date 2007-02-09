@@ -1,6 +1,8 @@
 
 #include <setjmp.h>
 #include <avr/interrupt.h>
+#include <stdio.h>
+#include <stdlib.h> /* srandom() */
 
 #include "config.h"
 #include "scrolltext.h"
@@ -9,6 +11,7 @@
 #include "pixel.h"
 #include "borg_can.h"
 #include "joystick.h"
+#include "persistentCounter.h"
 
 volatile unsigned char oldMode, oldOldmode, mode;
 
@@ -16,6 +19,8 @@ jmp_buf newmode_jmpbuf;
 
 int main (void){
 	clear_screen(0);
+	srandom(percnt_get());
+	percnt_inc();
 	borg_hw_init();
 	bcan_init();
 	joy_init();	
@@ -29,6 +34,10 @@ int main (void){
 		switch(mode++) {
 		case 1:
 			scrolltext(scrolltext_text);
+			{ char a[14];
+				sprintf(a,"</# counter == %lu  ", percnt_get());
+				scrolltext(a);
+			}
 			break;
 		case 2:
 			spirale(5);

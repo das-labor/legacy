@@ -42,5 +42,5 @@
 #define CAN_TX_BUFFER_SIZE 2	//only used for Interrupt
 #define F_MCP F_CPU
 
-
+#define INIT_EEPROM
 
