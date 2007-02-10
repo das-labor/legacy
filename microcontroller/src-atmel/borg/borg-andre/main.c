@@ -2,7 +2,6 @@
 #include <setjmp.h>
 #include <avr/interrupt.h>
 #include <stdio.h>
-#include <stdlib.h> /* srandom() */
 
 #include "config.h"
 #include "scrolltext.h"
@@ -11,6 +10,7 @@
 #include "pixel.h"
 #include "borg_can.h"
 #include "joystick.h"
+#include "prng.h"
 #include "persistentCounter.h"
 
 volatile unsigned char oldMode, oldOldmode, mode;
