@@ -1,12 +1,11 @@
-#include <stdlib.h>
 
 #include "pixel.h"
 #include "util.h"
-
+#include "prng.h"
 #include "snake.h"
 
 
-#define RANDOM8() ((uint8_t)random())
+#define RANDOM8() (random8())
 
 void snake(){
 	pixel pixels[64];
