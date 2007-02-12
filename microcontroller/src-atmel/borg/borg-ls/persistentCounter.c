@@ -40,10 +40,9 @@ void percnt_init(void){
 	uint8_t maxidx=0;
 	uint8_t t,max=eeprom_read_byte(&(B0_7[0]));
 	#ifdef INIT_EEPROM
-		if(t = (eeprom_read_word(&B08_23)==0xFFFF)){
-		//	for(i=0; i<RING_SIZE; ++i){
-		//	}
-			init_buffer();
+		if (eeprom_read_word(&B08_23)==0xFFFF){	/* test if the 2 MSB == 0xFFFF*/
+			if (eeprom_read_word((uint16_t*)&(B0_7[0]))==0xFFFF) /* test the first to bytes of ringbuffer*/
+				init_buffer();
 		}
 	#endif
 	for(i=0; i<RING_SIZE; ++i){ /* this might be speed up, but such optimisation could lead to timing attacks */
@@ -58,9 +57,10 @@ void percnt_init(void){
 }
 
 uint32_t percnt_get(void){
+	uint32_t ret=0;
+
 	if(ring_idx==0xff)
 		percnt_init();
-	uint32_t ret=0;
 	cli();
 	eeprom_busy_wait();
 	ret=eeprom_read_word(&B08_23)<<8;
@@ -72,7 +72,6 @@ uint32_t percnt_get(void){
 
 void percnt_inc(void){
 	/* we must make this resistant agaist power off while this is running ... */
-	/* uint8_t t; */
 	uint32_t u;
 		
 	if(ring_idx==0xff)
