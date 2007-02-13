@@ -75,13 +75,8 @@ uint8_t tetris_playfield_insertPiece(tetris_playfield_t* p_pl, tetris_piece_t* p
 		p_pl->p_piece = p_piece;
 		
 		/* set start position (in the middle of the top line) */
-		p_pl->nRow = (p_pl->nWidth - 2) / 2;
-		int8_t row = tetris_piece_lastSolidMatterRow(p_piece);
-		if (row > -1) {
-			p_pl->nRow = -row;
-		} else {
-			p_pl->nRow = 0;
-		}
+		p_pl->nColumn = (p_pl->nWidth - 2) / 2;
+		p_pl->nRow = -3;
 		
 		/* OK */
 		return 1;
@@ -102,7 +97,7 @@ uint8_t tetris_playfield_insertPiece(tetris_playfield_t* p_pl, tetris_piece_t* p
  */
 uint16_t tetris_playfield_collisionDetect(tetris_playfield_t* p_pl, tetris_piece_t* p_pc, int8_t nRow, int8_t nColumn) {
 	/* only allow coordinates which are within sane ranges */
-	if ((nRow >= p_pl->nHeight) || (nColumn >= p_pl->nHeight)) {
+	if ((nRow < p_pl->nWidth) && (nColumn < p_pl->nHeight)) {
 		
 		uint16_t piece = tetris_piece_getBitfield(p_pc);
 		uint16_t nPlayfieldRow;
