@@ -6,6 +6,7 @@
 #include "config.h"
 #include "scrolltext.h"
 #include "programm.h"
+#include "matrix.h"
 #include "borg_hw.h"
 #include "pixel.h"
 #include "borg_can.h"
