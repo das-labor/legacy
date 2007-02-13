@@ -1,5 +1,5 @@
-#include <stdlib.h>
 
+#include "prng.h"
 #include "pixel.h"
 #include "util.h"
 #include "config.h"
@@ -8,7 +8,7 @@
 	#include <avr/io.h>
 #endif
 
-#define RANDOM8() ((uint8_t)random())
+#define RANDOM8() (random8())
 
 void test1(){
 	unsigned char x,y;
@@ -144,76 +144,6 @@ void fadein()
 			}
 	}
 
-}
-
-typedef struct{
-	pixel start;
-	unsigned char len;
-	unsigned char decay;
-	unsigned char index;
-	unsigned char speed;
-} streamer;
-
-void matrix() {
-	unsigned int counter = 500;//run 500 cycles
-	streamer streamers[STREAMER_NUM];
-	unsigned char matrix_bright[NUM_COLS][NUM_ROWS];
-	unsigned char x, y;
-	unsigned char index = 0;
-
-	unsigned char draw;
-
-	unsigned char streamer_num = 0;
-	while(counter--){
-		unsigned char i, j;
-		for(x=0;x<NUM_COLS;x++)
-			for(y=0;y<NUM_ROWS;y++)
-				matrix_bright[x][y]=0;
-		
-		for(i=0;i<streamer_num;i++){
-			streamer str = streamers[i];
-			
-			unsigned char bright = 255; draw = 0;
-			for(j=(str.len>>3);j!=0xFF;j--){ //Draw streamer
-				if(j+str.start.y<NUM_ROWS){
-					if(bright>>6) draw = 1;
-					if(bright > matrix_bright[str.start.x][str.start.y+j]){
-						//setpixel((pixel){str.start.x, str.start.y+j}, bright>>6);
-						matrix_bright[str.start.x][str.start.y+j] = bright;
-					}
-				}
-				bright-=((bright>>5)*str.decay);
-			}
-			str.len+=str.speed>>1;
-			streamers[i] = str;
-			if(!draw){
-				for(j=i;j<streamer_num-1;j++){
-					streamers[j] = streamers[j+1];
-				}
-				streamer_num--;
-				i--;
-			};
-						
-		}
-		
-		for(y=0;y<NUM_ROWS;y++)
-			for(x=0;x<NUM_COLS;x++)
-				setpixel((pixel){x,y}, matrix_bright[x][y]>>6);
-		
-		unsigned char nsc;
-		for(nsc=0;nsc<6;nsc++){
-			if(streamer_num<STREAMER_NUM){
-				unsigned char sy = RANDOM8()%(2*NUM_ROWS);
-				if (sy>NUM_ROWS-1) sy=0;
-				streamers[streamer_num] = (streamer){{RANDOM8()%NUM_COLS, sy}, 0, (RANDOM8()%8)+12, index++,(RANDOM8()%16)+3};
-				streamer_num++;	
-			}
-		}
-		wait(80);	
-		
-	
-	
-	}
 }
 
 #define FEUER_Y (NUM_ROWS + 3)
