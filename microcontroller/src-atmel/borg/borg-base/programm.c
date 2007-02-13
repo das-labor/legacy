@@ -280,3 +280,24 @@ void tetris(){
 	dropin(left);
 }
 
+
+/**
+ * void random_bright(void)
+ *  by Daniel Otte
+ * 
+ * 
+ */
+void random_bright(unsigned cycles){
+	uint8_t t,x,y;
+	while(cycles--){
+		for(y=0; y<NUM_ROWS; ++y)
+			for(x=0; x<NUM_COLS/4; ++x){
+				t=random8();
+				setpixel((pixel){x*4+0, y}, 0x3&(t>>0));
+				setpixel((pixel){x*4+1, y}, 0x3&(t>>2));
+				setpixel((pixel){x*4+2, y}, 0x3&(t>>4));
+				setpixel((pixel){x*4+3, y}, 0x3&(t>>6));
+			}
+		wait(200);
+	}
+}

@@ -13,3 +13,4 @@ void snake();
 void matrix();
 void fadein();
 void feuer();
+void random_bright(unsigned cycles);
