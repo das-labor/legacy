@@ -57,8 +57,11 @@ int main (void){
 			break;
 		case 7:
 			matrix();
-			mode = 1;
 			break;
+		case 8:
+			random_bright(200);
+			mode = 1;
+			break;	
 		case 31:
 			test_level1();
 			break;
