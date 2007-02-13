@@ -16,7 +16,7 @@ extern jmp_buf newmode_jmpbuf;
 
 
 char default_text[] PROGMEM = SCROLLTEXT_DEFAULT;
-char scrolltext_text[128];
+char scrolltext_text[SCROLLTEXT_STRING_SIZE];
 
 
 void bcan_init() 

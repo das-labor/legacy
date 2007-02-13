@@ -1,12 +1,7 @@
-
-#include "prng.h"
 #include "pixel.h"
 #include "util.h"
 
 #include "snake.h"
-
-
-#define RANDOM8() (random8())
 
 void snake(){
 	pixel pixels[64];
@@ -65,11 +60,11 @@ void snake(){
 			*head = next_pixel(old_head, dir);
 			setpixel(*head, 3);
 		
-			if((RANDOM8()&0xff)<80){
+			if((random()&0xff)<80){
 				unsigned char j;
 				unsigned char nextapple=0, distx, disty, shortdist=255, xy=0;
 				if(!apple_num){
-					dir = RANDOM8()%4;
+					dir = random()%4;
 				}else{
 					for(j=0;j<apple_num;j++){
 						if(head->x > apples[j].x){
@@ -96,8 +91,8 @@ void snake(){
 				}
 			}
 
-			if( (apple_num<9) && ((RANDOM8()&0xff)<10) ){
-				pixel new_apple = (pixel){RANDOM8()%NUM_COLS,RANDOM8()%NUM_ROWS};
+			if( (apple_num<9) && ((random()&0xff)<10) ){
+				pixel new_apple = (pixel){random()%NUM_COLS,random()%NUM_ROWS};
 				if(!get_pixel(new_apple)){
 					apples[apple_num++]=new_apple;
 				}
