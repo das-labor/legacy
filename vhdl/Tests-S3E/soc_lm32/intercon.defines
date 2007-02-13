@@ -1,0 +1,129 @@
+filename=intercon
+intercon=intercon
+syscon=syscon
+target=generic
+hdl=vhdl
+signal_groups=0
+tga_bits=2
+tgc_bits=3
+tgd_bits=0
+rename_tga=bte
+rename_tgc=cti
+rename_tgd=tgd
+classic=000
+endofburst=111
+dat_size=32
+adr_size=32
+mux_type=andor
+interconnect=sharedbus
+
+##################################
+# LM32 CPU
+
+master lm32i
+  type=rw
+  lock_o=1
+  tga_o=0
+  tgc_o=0
+  tgd_o=0
+  err_i=1
+  rty_i=1
+  priority=1
+end master lm32i
+
+master lm32d
+  type=rw
+  lock_o=1
+  tga_o=0
+  tgc_o=0
+  tgd_o=0
+  err_i=1
+  rty_i=1
+  priority=1
+end master lm32d
+
+###################################
+# On-Chip-RAM
+
+slave bram0
+  type=rw
+  adr_i_hi=31
+  adr_i_lo=0
+  tga_i=0
+  tgc_i=0
+  tgd_i=0
+  lock_i=0
+  err_o=0
+  rty_o=0
+  baseadr=0x00000000
+  size=0x00001000
+  baseadr1=0x00000000
+  size1=0xffffffff
+  baseadr2=0x00000000
+  size2=0xffffffff
+end slave bram
+
+###################################
+# Timer
+
+slave timer0
+  type=rw
+  adr_i_hi=31
+  adr_i_lo=0
+  tga_i=0
+  tgc_i=0
+  tgd_i=0
+  lock_i=0
+  err_o=0
+  rty_o=0
+  baseadr=0x80000000
+  size=0x00000100
+  baseadr1=0x00000000
+  size1=0xffffffff
+  baseadr2=0x00000000
+  size2=0xffffffff
+end slave timer
+
+###################################
+# Uart
+
+slave uart0
+  type=rw
+  adr_i_hi=31
+  adr_i_lo=0
+  tga_i=0
+  tgc_i=0
+  tgd_i=0
+  lock_i=0
+  err_o=0
+  rty_o=0
+  baseadr=0x80000100
+  size=0x00000100
+  baseadr1=0x00000000
+  size1=0xffffffff
+  baseadr2=0x00000000
+  size2=0xffffffff
+end slave uart
+
+###################################
+# Gpio
+
+slave gpio0
+  type=rw
+  adr_i_hi=31
+  adr_i_lo=0
+  tga_i=0
+  tgc_i=0
+  tgd_i=0
+  lock_i=0
+  err_o=0
+  rty_o=0
+  baseadr=0x80000200
+  size=0x00000100
+  baseadr1=0x00000000
+  size1=0xffffffff
+  baseadr2=0x00000000
+  size2=0xffffffff
+end slave gpio
+
+
