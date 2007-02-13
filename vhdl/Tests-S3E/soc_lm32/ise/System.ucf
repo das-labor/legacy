@@ -1,0 +1,8 @@
+# ==== Clock inputs (CLK) ====                                                                                                                   
+NET "clk" LOC = "C9" | IOSTANDARD = LVCMOS33 ;
+NET "clk" PERIOD = 20ns HIGH 50%;
+
+NET "reset" LOC = "D18" | IOSTANDARD = LVTTL | PULLDOWN ;
+
+
+
