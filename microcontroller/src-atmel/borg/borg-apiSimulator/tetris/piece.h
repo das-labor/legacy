@@ -12,10 +12,10 @@ enum tetris_piece_shape_t {
 	TETRIS_PC_LINE,
 	TETRIS_PC_T,
 	TETRIS_PC_SQUARE,
-	TETRIS_PC_L,
 	TETRIS_PC_LBACK,
-	TETRIS_PC_S,
-	TETRIS_PC_Z
+	TETRIS_PC_L,
+	TETRIS_PC_Z,
+	TETRIS_PC_S
 };
 
 
@@ -64,14 +64,12 @@ void tetris_piece_destruct(tetris_piece_t* p);
  *  piece related functions *
  ********************************/
 
-/* Function:        tetris_piece_solidMatter
- * Description:     Determines if the piece consists of solid matter at the given position 
- * Argument p_pc:   The piece to examine
- * Argument x:      The x coordinate
- * Argument y:      The y coordinate
- * Return value:    0 corresponds to empty space, 1 to solid matter
+/* Function:        tetris_piece_getBitfield
+ * Description:     Returns the bitfield representation of the piece
+ * Argument p_pc:   The piece from which the bitfield shuld be retrieved
+ * Return value:    Returns the bitfield representation of the piece
  */
-uint8_t tetris_piece_solidMatter(tetris_piece_t* p_pc, uint8_t x, uint8_t y);
+uint16_t tetris_piece_getBitfield(tetris_piece_t* p_pc);
 
 
 /* Function:        tetris_piece_rotate

@@ -37,57 +37,28 @@ void tetris_piece_destruct(tetris_piece_t* p_pc) {
  *  piece related functions *
  ********************************/
 
-/* Function:        tetris_piece_solidMatter
- * Description:     Determines if the piece consists of solid matter at the given position 
- * Argument p_pc:   The piece to examine
- * Argument x:      The x coordinate
- * Argument y:      The y coordinate
- * Return value:    0 corresponds to empty space, 1 to solid matter
+/* Function:        tetris_piece_getBitfield
+ * Description:     Returns the bitfield representation of the piece 
+ * Argument p_pc:   The piece from which the bitfield shuld be retrieved
+ * Return value:    Returns the bitfield representation of the piece
  */
-uint8_t tetris_piece_solidMatter(tetris_piece_t* p_pc, uint8_t x, uint8_t y) {
+uint16_t tetris_piece_getBitfield(tetris_piece_t* p_pc) {
 	/* lookup table:
 	 * a value in an array represents a piece in a specific angle (rotating clockwise from index 0)
 	 * a nibble at position n in such a piece corresponds to a bitmap of its row number n
 	 */
-    static uint16_t pc_line[]   = {0x2222, 0x00F0, 0x2222, 0x00F0};
-    static uint16_t pc_t[]      = {0x0262, 0x0270, 0x0230, 0x0072};
-    static uint16_t pc_square[] = {0x0066, 0x0066, 0x0066, 0x0066};
-    static uint16_t pc_l[]      = {0x0443, 0x0074, 0x0622, 0x0130};
-    static uint16_t pc_lback[]  = {0x0226, 0x0430, 0x0322, 0x0C60};
-    static uint16_t pc_s[]      = {0x0462, 0x0360, 0x0462, 0x0360};
-    static uint16_t pc_z[]      = {0x0264, 0x0C60, 0x0264, 0x0C60};
+    static uint16_t piece[][4] = {{0x2222, 0x00F0, 0x2222, 0x00F0},  /* TETRIS_PC_LINE */
+                                  {0x0262, 0x0270, 0x0230, 0x0072},  /* TETRIS_PC_T */
+                                  {0x0066, 0x0066, 0x0066, 0x0066},  /* TETRIS_PC_SQUARE */
+                                  {0x0443, 0x0074, 0x0622, 0x0130},  /* TETRIS_PC_LBACK */
+                                  {0x0226, 0x0430, 0x0322, 0x0C60},  /* TETRIS_PC_L */
+                                  {0x0462, 0x0360, 0x0462, 0x0360},  /* TETRIS_PC_Z */
+                                  {0x0264, 0x0C60, 0x0264, 0x0C60}}; /* TETRIS_PC_S */
 
-	/* we just use the lookup table to determine the corporality of the given piece */
-    uint16_t piece;
-    switch (p_pc->shape) {
-    case TETRIS_PC_LINE:
-        piece = pc_line[p_pc->angle];
-        break;
-    case TETRIS_PC_T:
-        piece = pc_t[p_pc->angle];
-        break;
-    case TETRIS_PC_SQUARE:
-        piece = pc_square[p_pc->angle];
-        break;
-    case TETRIS_PC_L:
-        piece = pc_l[p_pc->angle];
-        break;
-    case TETRIS_PC_LBACK:
-        piece = pc_lback[p_pc->angle];
-        break;
-    case TETRIS_PC_S:
-        piece = pc_s[p_pc->angle];
-        break;
-    case TETRIS_PC_Z:
-    default:
-        piece = pc_z[p_pc->angle];
-        break;
-    }
-    
     /* x and y are mapped to the corresponding bit in the piece value and
      * a "1" is returned if the bit is set, a "0" otherwise 
      */ 
-    return ((((y << 2) | x) & piece) > 0) ? 1 : 0;
+    return piece[p_pc->shape][p_pc->angle];
 }
 
 
@@ -126,16 +97,12 @@ void tetris_piece_rotate(tetris_piece_t* p_pc, enum tetris_piece_rotation_t r) {
  * Return value:    The last row containing solid matter
  */
 uint8_t tetris_piece_lastSolidMatterRow(tetris_piece_t* p_pc) {
-	int i;
-	int sum = 0;
-	
-	/* we add all values of the last row */
-	for (i = 0; i < 3; ++i) {
-		sum += tetris_piece_solidMatter(p_pc, i, 3);
+	/* either row no. 2 or no. 3 is the last one which contains matter 
+	 * so if the nibble of row 3 isn't 0, it must be the last row
+	 */	
+	if ((0x000F & tetris_piece_getBitfield(p_pc)) != 0) {
+		return 3;
+	} else {
+		return 2;
 	}
-	
-	/* the last row which contains matter must either be row no. 2 or 3 
-	 * if the crossfoot of row no. 3 is 0, it contains no matter, hence number 2 must be the last row
-	 */
-	return (sum > 0) ? 3 : 2;
 }
