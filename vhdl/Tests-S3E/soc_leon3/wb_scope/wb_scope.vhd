@@ -1,10 +1,17 @@
+-----------------------------------------------------------------------------
+-- On-chip logic analyzer with wishbone bus for control and data export.
+-- Waveforms are stored in local BlockRAM which size (depth) can be
+-- configured via a generic.
+--
+-- (c) 2006 by Joerg Bornschein  (jb@capsec.org)
+-- All files under GPLv2   
+-----------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.ALL;
 use ieee.numeric_std.ALL;
 
 -----------------------------------------------------------------------------
 -- Wishbone LogicAnalyzer ---------------------------------------------------
--- Using BlockRAM -- does not infer with WB Access 
 entity wb_scope is
 	generic (
 		depth      : natural := 4096 );
@@ -24,8 +31,6 @@ entity wb_scope is
 		-- I/O ports
 		probe      : in  std_logic_vector(31 downto 0) );
 end wb_scope;
-
-
 
 -----------------------------------------------------------------------------
 -- 0x00000 Status Register:
@@ -73,8 +78,9 @@ end component;
 
 -----------------------------------------------------------------------------
 -- Local Signals ------------------------------------------------------------
-
 constant ZEROS  : std_logic_vector(31 downto 0) := (others => '0');
+
+signal wbactive : std_logic;
 
 signal status_reg : std_logic_vector(31 downto 0);
 
@@ -83,7 +89,6 @@ signal sc      : std_logic_vector(15 downto 0); -- SampleCounter
 signal spen    : std_logic;                     -- Sample Enable
 signal irqen   : std_logic;                     -- IRQ Enable
 signal sdone   : std_logic;                     -- Sampling Done
-
 
 signal sreg    : std_logic_vector(27 downto 0); -- sample register
 signal chan    : std_logic_vector( 3 downto 0); -- actual data to be sampled
@@ -114,31 +119,33 @@ ram0: bram_dp
 	port map (
 		clk    => clk,
 		reset  => reset,
-		-- Port 1  (probe & sample engine)
+		-- Port 1  (probe & sample engine (write only))
 		we1    => we1,
 		addr1  => addr1,
 		wdata1 => wdata1,
-		-- Port 2  (Wishbone Access)
+		-- Port 2  (Wishbone Access (read only))
 		oe2    => oe2,
 		addr2  => addr2,
 		rdata2 => rdata2 );
 
+wbactive <= wb_stb_i and wb_cyc_i;
+
 addr2 <= wb_adr_i(13 downto 2);
-oe2   <= '1' when wb_stb_i='1' and wb_adr_i(19 downto 16)=x"1" else
+oe2   <= '1' when wbactive='1' and wb_adr_i(19 downto 16)=x"1" else
          '0';
 
-wb_dat_o <= status_reg               when wb_stb_i='1' and wb_adr_i(19 downto 16)=x"0" and wb_adr_i( 7 downto 0)=x"00" else
-            ZEROS(31 downto 16) & sp when wb_stb_i='1' and wb_adr_i(19 downto 16)=x"0" and wb_adr_i( 7 downto 0)=x"04" else
-            ZEROS(31 downto 16) & sc when wb_stb_i='1' and wb_adr_i(19 downto 16)=x"0" and wb_adr_i( 7 downto 0)=x"08" else
+wb_dat_o <= status_reg               when wbactive='1' and wb_adr_i(19 downto 16)=x"0" and wb_adr_i( 7 downto 0)=x"00" else
+            ZEROS(31 downto 16) & sp when wbactive='1' and wb_adr_i(19 downto 16)=x"0" and wb_adr_i( 7 downto 0)=x"04" else
+            ZEROS(31 downto 16) & sc when wbactive='1' and wb_adr_i(19 downto 16)=x"0" and wb_adr_i( 7 downto 0)=x"08" else
             ZEROS(2 downto 0)&csel3 & 
             ZEROS(2 downto 0)&csel2 & 
             ZEROS(2 downto 0)&csel1 & 
-            ZEROS(2 downto 0)&csel0  when wb_stb_i='1' and wb_adr_i(19 downto 16)=x"0" and wb_adr_i( 7 downto 0)=x"10" else
-            rdata2                   when wb_stb_i='1' and wb_adr_i(19 downto 16)=x"1" else 
+            ZEROS(2 downto 0)&csel0  when wbactive='1' and wb_adr_i(19 downto 16)=x"0" and wb_adr_i( 7 downto 0)=x"10" else
+            rdata2                   when wbactive='1' and wb_adr_i(19 downto 16)=x"1" else 
             (others => '-');
 
-wb_ack_o <= wb_stb_i and ram_ack when wb_adr_i(19 downto 16)=x"1" else
-			wb_stb_i;
+wb_ack_o <= wbactive and ram_ack when wb_adr_i(19 downto 16)=x"1" else
+			wbactive;
 			
 wb_irq_o <= sdone and irqen;
 
@@ -193,7 +200,7 @@ begin
 		end if;
 
 		-- WB register write request
-		if wb_stb_i='1' and wb_we_i='1' and wb_adr_i(19 downto 16)=x"0" then
+		if wbactive='1' and wb_we_i='1' and wb_adr_i(19 downto 16)=x"0" then
 			if wb_adr_i(7 downto 0)=x"00" then -- StatusRegister
 				spen  <= wb_dat_i(0);
 				irqen <= wb_dat_i(1);
@@ -228,7 +235,7 @@ begin
 		end if;
 
 		-- Buffer read request
-		if wb_stb_i='1' and wb_adr_i(19 downto 16)=x"1" then
+		if wbactive='1' and wb_adr_i(19 downto 16)=x"1" then
 			ram_ack <= '1' and not ram_ack;
 		else
 			ram_ack <= '0';

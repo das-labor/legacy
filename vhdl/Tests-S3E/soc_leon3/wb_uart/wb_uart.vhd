@@ -1,9 +1,8 @@
 -----------------------------------------------------------------------------
 -- Wishbone UART ------------------------------------------------------------
---
 -- (c) 2007 Joerg Bornschein (jb@capsec.org)
 --
--- All files under GPLv2
+-- All files under GPLv2 -- please contact me if you use this component
 -----------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
@@ -77,6 +76,8 @@ end component;
 
 constant ZEROS  : std_logic_vector(31 downto 0) := (others => '0');
 
+signal active     : std_logic;
+
 signal wr         : std_logic;
 signal rd         : std_logic;
 signal rx_avail   : std_logic;
@@ -120,20 +121,23 @@ status_reg <= ZEROS(31 downto  2) & not tx_avail & rx_avail;
 data_reg   <= ZEROS(31 downto  8) & rxdata;
 div_reg    <= ZEROS(31 downto 16) & divisor;
 
-wb_dat_o <= status_reg when wb_stb_i='1' and wb_adr_i(3 downto 0)=x"0" else
-            div_reg    when wb_stb_i='1' and wb_adr_i(3 downto 0)=x"4" else
-            data_reg   when wb_stb_i='1' and wb_adr_i(3 downto 0)=x"8" else
+-- Bus cycle?
+active <= wb_stb_i and wb_cyc_i;
+
+wb_dat_o <= status_reg when active='1' and wb_adr_i(3 downto 0)=x"0" else
+            div_reg    when active='1' and wb_adr_i(3 downto 0)=x"4" else
+            data_reg   when active='1' and wb_adr_i(3 downto 0)=x"8" else
             (others => '-');
 
-rd <= '1' when wb_stb_i='1' and wb_adr_i(3 downto 0)=x"8" and wb_we_i='0' else
+rd <= '1' when active='1' and wb_adr_i(3 downto 0)=x"8" and wb_we_i='0' else
       '0';
 
-wr <= '1' when wb_stb_i='1' and wb_adr_i(3 downto 0)=x"8" and wb_we_i='1' else
+wr <= '1' when active='1' and wb_adr_i(3 downto 0)=x"8" and wb_we_i='1' else
       '0';
 
 txdata <= wb_dat_i(7 downto 0);
 
-wb_ack_o <= wb_stb_i; 
+wb_ack_o <= active; 
 
 
 -- Handle Wishbone write request (and reset condition)
@@ -145,7 +149,7 @@ begin
 			rx_irqen <= '0';
 			divisor  <= (others => '1');
 		else 
-		if wb_stb_i='1' and wb_we_i='1' then    
+		if active='1' and wb_we_i='1' then    
 			if wb_adr_i(3 downto 0)=x"0" then     -- write to status register
 				tx_irqen <= wb_dat_i(3);
 				rx_irqen <= wb_dat_i(2);
