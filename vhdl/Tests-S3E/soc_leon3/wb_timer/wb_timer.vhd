@@ -40,6 +40,8 @@ end wb_timer;
 -- Implementation -----------------------------------------------------------
 architecture rtl of wb_timer is
 
+signal wbactive      : std_logic;
+
 signal counter0      : unsigned(31 downto 0);
 signal counter1      : unsigned(31 downto 0);
 
@@ -59,14 +61,16 @@ begin
 
 -----------------------------------------------------------------------------
 -- Wishbone handling --------------------------------------------------------
-wb_ack_o <= wb_stb_i;
+wbactive <= wb_stb_i and wb_cyc_i;
 
-wb_dat_o <= tcr0                        when wb_stb_i='1' and wb_adr_i(7 downto 0)=x"00" else
-            std_logic_vector(compare0)  when wb_stb_i='1' and wb_adr_i(7 downto 0)=x"04" else
-            std_logic_vector(counter0)  when wb_stb_i='1' and wb_adr_i(7 downto 0)=x"08" else
-            tcr1                        when wb_stb_i='1' and wb_adr_i(7 downto 0)=x"0C" else
-            std_logic_vector(compare1)  when wb_stb_i='1' and wb_adr_i(7 downto 0)=x"10" else
-            std_logic_vector(counter1)  when wb_stb_i='1' and wb_adr_i(7 downto 0)=x"14" else
+wb_ack_o <= wbactive;
+
+wb_dat_o <= tcr0                        when wbactive='1' and wb_adr_i(7 downto 0)=x"00" else
+            std_logic_vector(compare0)  when wbactive='1' and wb_adr_i(7 downto 0)=x"04" else
+            std_logic_vector(counter0)  when wbactive='1' and wb_adr_i(7 downto 0)=x"08" else
+            tcr1                        when wbactive='1' and wb_adr_i(7 downto 0)=x"0C" else
+            std_logic_vector(compare1)  when wbactive='1' and wb_adr_i(7 downto 0)=x"10" else
+            std_logic_vector(counter1)  when wbactive='1' and wb_adr_i(7 downto 0)=x"14" else
             (others => '-');
 
 wb_irq0_o <= trig0 and irq0en;
@@ -94,15 +98,15 @@ begin
 	elsif clk'event and clk='1' then
 
 		-- Reset trigX on TCR access --------------------------------
-		if wb_stb_i='1' and wb_adr_i(7 downto 0)=x"00" then
+		if wbactive='1' and wb_adr_i(7 downto 0)=x"00" then
 			trig0 <= '0';
 		end if;
-		if wb_stb_i='1' and wb_adr_i(7 downto 0)=x"0C" then
+		if wbactive='1' and wb_adr_i(7 downto 0)=x"0C" then
 			trig1 <= '0';
 		end if;
 
 		-- WB write register ----------------------------------------
-		if wb_stb_i='1' and wb_we_i='1' then 
+		if wbactive='1' and wb_we_i='1' then 
 
 			-- decode WB_SEL_I --
 			if wb_sel_i(3)='1' then
