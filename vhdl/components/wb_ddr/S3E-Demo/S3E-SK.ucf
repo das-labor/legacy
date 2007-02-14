@@ -1,6 +1,6 @@
 # ==== Clock inputs (CLK) ====
 NET "clk_in" LOC = "C9" | IOSTANDARD = LVCMOS33 ;
-NET "clk_in" PERIOD = 20ns HIGH 40%;
+NET "clk_in" PERIOD = 65 MHz HIGH 50%;
 
 
 # ==== Pushbuttons (BTN) ====

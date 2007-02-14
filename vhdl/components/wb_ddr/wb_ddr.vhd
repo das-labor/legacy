@@ -349,7 +349,7 @@ begin
 					ref          <= '0';
 					state := idle;
 					waits := wRFC;
-				elsif wb_stb_i='1' and wb_we_i='1' then
+				elsif wb_stb_i='1' and wb_cyc_i='1' and wb_we_i='1' then
 				   -- Start write cycle
 					ddr_addr(12 downto 0) <= wb_adr_i(23 downto 11);					
 					ddr_ba(1)    <= wb_adr_i(25);  
@@ -357,7 +357,7 @@ begin
 					ddr_cmd      <= cmd_act;  -- ACTIVE
 					state := write1;
 					waits := wRCD;
-				elsif wb_stb_i='1' and wb_we_i='0' then
+				elsif wb_stb_i='1' and wb_cyc_i='1' and wb_we_i='0' then
 				   -- Start read cycle
 					ddr_addr(12 downto 0) <= wb_adr_i(23 downto 11);					
 					ddr_ba(1)           <= wb_adr_i(25);  
