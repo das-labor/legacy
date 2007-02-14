@@ -36,6 +36,7 @@
 /* Exception handlers - Must be 32 bytes long. */
         .section    .text, "ax", @progbits        
         .global     _start  
+		.global     irq_enable, irq_disable, jump, halt
 _start:    
 _reset_handler:
 	xor r0, r0, r0
@@ -54,6 +55,7 @@ _crt0:
 	/* Setup stack and global pointer */
 	mvhi    sp, hi(_fstack)
 	ori     sp, sp, lo(_fstack)
+	addi    sp, sp, -4
 	mvhi    gp, hi(_gp)
 	ori     gp, gp, lo(_gp)
 
@@ -63,6 +65,19 @@ _crt0:
 	calli   main
 
 
+irq_enable:
+	ret
+
+	
+irq_disable:
+	ret
+
+jump:
+	bi jump
+
+
+halt:
+	bi halt
 
 	/* Save all registers onto the stack */ 
 _save_all:
