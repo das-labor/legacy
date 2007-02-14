@@ -15,7 +15,7 @@ endofburst=111
 dat_size=32
 adr_size=32
 mux_type=andor
-interconnect=sharedbus
+interconnect=crossbarswitch
 
 ##################################
 # LM32 CPU
@@ -29,6 +29,10 @@ master lm32i
   err_i=1
   rty_i=1
   priority=1
+  priority_bram0=1
+  priority_timer0=1
+  priority_uart0=1
+  priority_gpio0=1
 end master lm32i
 
 master lm32d
@@ -40,6 +44,10 @@ master lm32d
   err_i=1
   rty_i=1
   priority=1
+  priority_bram0=1
+  priority_timer0=1
+  priority_uart0=1
+  priority_gpio0=1
 end master lm32d
 
 ###################################
@@ -77,7 +85,7 @@ slave timer0
   err_o=0
   rty_o=0
   baseadr=0x80000000
-  size=0x00000100
+  size=0x00001000
   baseadr1=0x00000000
   size1=0xffffffff
   baseadr2=0x00000000
@@ -97,8 +105,8 @@ slave uart0
   lock_i=0
   err_o=0
   rty_o=0
-  baseadr=0x80000100
-  size=0x00000100
+  baseadr=0x80001000
+  size=0x00001000
   baseadr1=0x00000000
   size1=0xffffffff
   baseadr2=0x00000000
@@ -118,8 +126,8 @@ slave gpio0
   lock_i=0
   err_o=0
   rty_o=0
-  baseadr=0x80000200
-  size=0x00000100
+  baseadr=0x80002000
+  size=0x00001000
   baseadr1=0x00000000
   size1=0xffffffff
   baseadr2=0x00000000

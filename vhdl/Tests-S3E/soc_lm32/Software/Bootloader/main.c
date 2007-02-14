@@ -44,10 +44,6 @@ void memtest()
 
 int main(int argc, char **argv)
 {
-	uint8_t *p = 0xf0100010;
-
-	*p = 0x23;
-
 	// Initialize stuff
 	uart_init();
 	irq_enable();
