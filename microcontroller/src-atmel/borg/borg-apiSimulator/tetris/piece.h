@@ -8,35 +8,42 @@
  * types *
  *********/
 
-enum tetris_piece_shape_t {
-	TETRIS_PC_LINE,
-	TETRIS_PC_T,
-	TETRIS_PC_SQUARE,
-	TETRIS_PC_LBACK,
-	TETRIS_PC_L,
-	TETRIS_PC_Z,
-	TETRIS_PC_S
-};
+typedef enum tetris_piece_shape_t_
+{
+    TETRIS_PC_LINE,
+    TETRIS_PC_T,
+    TETRIS_PC_SQUARE,
+    TETRIS_PC_LBACK,
+    TETRIS_PC_L,
+    TETRIS_PC_Z,
+    TETRIS_PC_S
+}
+tetris_piece_shape_t;
 
 
-enum tetris_piece_angle_t {
-	TETRIS_PC_ANGLE_0,
-	TETRIS_PC_ANGLE_90,
-	TETRIS_PC_ANGLE_180,
-	TETRIS_PC_ANGLE_270
-};
+typedef enum tetris_piece_angle_t_
+{
+    TETRIS_PC_ANGLE_0,
+    TETRIS_PC_ANGLE_90,
+    TETRIS_PC_ANGLE_180,
+    TETRIS_PC_ANGLE_270
+}
+tetris_piece_angle_t;
 
 
-enum tetris_piece_rotation_t {
-	TETRIS_PC_ROT_CLOCKWISE,
-	TETRIS_PC_ROT_COUNTERCLOCKWISE
-};
+typedef enum tetris_piece_rotation_t_ {
+    TETRIS_PC_ROT_CLOCKWISE,
+    TETRIS_PC_ROT_COUNTERCLOCKWISE
+}
+tetris_piece_rotation_t;
 
 
-typedef struct {
-	enum tetris_piece_shape_t shape; // specifies the shape of the piece
-	enum tetris_piece_angle_t angle; // specifies one of 4 angels (in steps of 90 degrees)
-} tetris_piece_t;
+typedef struct tetris_piece_t_
+{
+    tetris_piece_shape_t shape; // specifies the shape of the piece
+    tetris_piece_angle_t angle; // specifies one of 4 angels
+}
+tetris_piece_t;
 
 
 /*****************************
@@ -44,20 +51,21 @@ typedef struct {
  *****************************/
 
 /* Function:        tetris_piece_construct
- * Description:     Constructs a piece with the given attributes
- * Argument s:      The shape of the piece (see defintion of tetris_piece_shape_t above)
- * Argument a:      Its angle (see defintion of tetris_piece_angel_t above)
- * Return value:    Pointer to a newly created piece
+ * Description:     constructs a piece with the given attributes
+ * Argument s:      shape of the piece (see tetris_piece_shape_t)
+ * Argument a:      its angle (see tetris_piece_angel_t)
+ * Return value:    pointer to a newly created piece
  */
-tetris_piece_t* tetris_piece_construct (enum tetris_piece_shape_t s, enum tetris_piece_angle_t a);
+tetris_piece_t* tetris_piece_construct(tetris_piece_shape_t s,
+                                       tetris_piece_angle_t a);
 
 
 /* Function:        tetris_piece_destruct
- * Description:     Destructs a piece
- * Argument p:      The pointer of the piece to be destructed
+ * Description:     destructs a piece
+ * Argument pPc:    pointer to the piece to be destructed
  * Return value:    void
  */
-void tetris_piece_destruct(tetris_piece_t* p);
+void tetris_piece_destruct(tetris_piece_t* pPc);
 
 
 /********************************
@@ -65,27 +73,29 @@ void tetris_piece_destruct(tetris_piece_t* p);
  ********************************/
 
 /* Function:        tetris_piece_getBitfield
- * Description:     Returns the bitfield representation of the piece
- * Argument p_pc:   The piece from which the bitfield shuld be retrieved
- * Return value:    Returns the bitfield representation of the piece
+ * Description:     returns bitfield representation of the piece 
+ * Argument pPc:    piece from which the bitfield shuld be retrieved
+ * Return value:    bitfield representation of the piece
+ *                  - nth nibble is nth row of the piece (from upper left)
+ *                  - the LSB of a nibble represents the left side of the row
  */
-uint16_t tetris_piece_getBitfield(tetris_piece_t* p_pc);
+uint16_t tetris_piece_getBitfield(tetris_piece_t* pPc);
 
 
-/* Function:        tetris_piece_rotate
- * Description:     Rotates a piece
- * Argument p_pc:   The piece to rotate
- * Argument r:      Type of rotation (see tetris_piece_rotation_t above)
- * Return value:    void
+/* Function:       tetris_piece_rotate
+ * Description:    rotates a piece
+ * Argument pPc:   piece to rotate
+ * Argument r:     type of rotation (see tetris_piece_rotation_t)
+ * Return value:   void
  */
-void tetris_piece_rotate(tetris_piece_t* p_pc, enum tetris_piece_rotation_t r);
+void tetris_piece_rotate(tetris_piece_t* pPc,
+                         tetris_piece_rotation_t r);
 
-
-/* Function:        tetris_piece_lastSolidMatterRow
- * Description:     Determines the last row which contains solid matter (counting from 0)
- * Argument p_pc:   The piece to rotate
- * Return value:    The last row containing solid matter
+/* Function:        tetris_piece_lastMatterRow
+ * Description:     determines last row of a piece which contains matter
+ * Argument pPc:    piece to rotate
+ * Return value:    no. of last row containing matter (counting from 0)
  */
-uint8_t tetris_piece_lastSolidMatterRow(tetris_piece_t* p_pc);
+uint8_t tetris_piece_lastMatterRow(tetris_piece_t* pPc);
 
 #endif /*TETRIS_PIECE_H_*/

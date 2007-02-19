@@ -9,104 +9,122 @@
 /*********
  * types *
  *********/
- 
+
 /* directions to which a piece can be moved */
-enum tetris_playfield_direction_t {
-	TETRIS_PFD_LEFT,
-	TETRIS_PFD_RIGHT,
-	TETRIS_PFD_DOWN
-};
+typedef enum tetris_playfield_direction_t_
+{
+    TETRIS_PFD_LEFT,
+    TETRIS_PFD_RIGHT
+}
+tetris_playfield_direction_t;
 
 
 /* status of the playfield */
-enum tetris_playfield_status_t {
-	TETRIS_PFS_HOVERING, /* piece is still hovering */
-	TETRIS_PFS_DOCKED,   /* piece has been docked */
-	TETRIS_PFS_GAMEOVER	 /* playfield is filled up */
-};
+typedef enum tetris_playfield_status_t_
+{
+    TETRIS_PFS_READY,    /* ready to get next piece */
+    TETRIS_PFS_HOVERING, /* piece is still hovering */
+    TETRIS_PFS_DOCKED,   /* piece has been docked */
+    TETRIS_PFS_GAMEOVER	 /* playfield is filled up */
+}
+tetris_playfield_status_t;
 
 
 /* tetris_playfield_t */
-typedef struct {
-	tetris_piece_t* p_piece;               /* currently falling piece */
-	int8_t  nColumn;                       /* horizontal postition (0 ist left) */
-	int8_t  nRow;                          /* vertical position (0 is top) */
-	uint8_t nWidth;						   /* width of playfield */
-	uint8_t nHeight;                       /* height of playfield */
-	uint8_t nFillHeight;                   /* height of the uppermost matter */
-	enum tetris_playfield_status_t status; /* status */
-	uint16_t *contents;                    /* playfield itself */
-} tetris_playfield_t;
+typedef struct tetris_playfield_t_
+{
+    tetris_piece_t* pPiece;           /* currently falling piece */
+    int8_t nColumn;                   /* horiz. piece position (0 is left) */
+    int8_t nRow;                      /* vert. piece position (0 is top) */
+    uint8_t nWidth;                   /* width of playfield */
+    uint8_t nHeight;                  /* height of playfield */
+    tetris_playfield_status_t status; /* status */
+    uint16_t *contents;               /* playfield itself */
+}
+tetris_playfield_t;
 
 
 /*****************************
  *  construction/destruction *
  *****************************/
 tetris_playfield_t* tetris_playfield_construct(uint8_t nWidth, uint8_t nHeight);
-void tetris_playfield_destruct(tetris_playfield_t* p_pl);
+void tetris_playfield_destruct(tetris_playfield_t* pPl);
 
 
 /********************************
  *  playfield related functions *
  ********************************/
 
-/* Function:           tetris_playfield_insertPiece
- * Description:        Inserts a new piece
- * Argument p_pl:      The playfield to perform action on
- * Argument p_piece:   The piece to be inserted
- * Return value:       0 corresponds to false, anything other to true
+/* Function:           tetris_playfield_reset
+ * Description:        resets playfield to begin a new game
+ * Argument pPl:       playfield to perform action on
+ * Return value:       void
  */
-uint8_t tetris_playfield_insertPiece(tetris_playfield_t* p_pl, tetris_piece_t* p_piece);
+void tetris_playfield_reset(tetris_playfield_t* pPl);
+
+
+/* Function:            tetris_playfield_insertPiece
+ * Description:         inserts a new piece
+ * Argument pPl:        playfield to perform action on
+ * Argument pPiece:     piece to be inserted
+ * Argument ppOldPiece: indirect pointer to former piece for deallocation
+ * Return value:        0 corresponds to false, anything other to true
+ */
+uint8_t tetris_playfield_insertPiece(tetris_playfield_t* pPl,
+                                     tetris_piece_t* pPiece,
+                                     tetris_piece_t** ppOldPiece);
 
 
 /* Function:           tetris_playfield_advancePiece
- * Description:        Lowers piece by one row or finally docks it
- * Argument p_pl:      The playfield to perform action on
- * Return value:       Returns a value of enum tetris_playfield_status_t (see above)
+ * Description:        lowers piece by one row or finally docks it
+ * Argument pPl:       playfield to perform action on
+ * Return value:       playfield status (see tetris_playfield_status_t)
  */
-enum tetris_playfield_status_t tetris_playfield_advancePiece(tetris_playfield_t* p_pl);
+tetris_playfield_status_t tetris_playfield_advancePiece(tetris_playfield_t* pPl);
 
 
 /* Function:           tetris_playfield_movePiece
- * Description:        Moves piece to the given direction
- * Argument p_pl:      The playfield to perform action on
- * Argument direction: Direction (see tetris_playfield_direction_t)
- * Return value:       void
+ * Description:        moves piece to the given direction
+ * Argument pPl:       playfield to perform action on
+ * Argument direction: direction (see tetris_playfield_direction_t)
+ * Return value:       1 if piece could be moved, 0 otherwise 
  */
-void tetris_playfield_movePiece(tetris_playfield_t* p_pl, enum tetris_playfield_direction_t direction);
+uint8_t tetris_playfield_movePiece(tetris_playfield_t* pPl,
+                                   tetris_playfield_direction_t direction);
 
 
-/* Function:           tetris_playfield_dropPiece
- * Description:        Drops piece immediately
- * Argument p_pl:      The playfield to perform action on
- * Return value:       Returns a value of enum tetris_playfield_status_t (see above)
+/* Function:           tetris_playfield_removeCompletedLines
+ * Description:        removes completed lines (if any) and lowers the dump
+ * Argument pPl:       playfield to perform action on
+ * Return value:       number of removed lines (0-4)
  */
-enum tetris_playfield_status_t tetris_playfield_dropPiece(tetris_playfield_t* p_pl);
+uint8_t tetris_playfield_removeCompleteLines(tetris_playfield_t* pPl);
 
 
-/* Function:           tetris_playfield_removeCompleteLines
- * Description:        Removes completed lines (if any) and lowers the dump correlatively
- * Argument p_pl:      The playfield to perform action on
- * Return value:       Returns number of removed lines (0-4)
- */
-uint8_t tetris_playfield_removeCompletedLines(tetris_playfield_t* p_pl);
-
-
-/* Function:           tetris_playfield_reset
- * Description:        Resets playfield to begin a new game;
- * Argument p_pl:      The playfield to perform action on
- * Return value:       void
- */
-void tetris_playfield_reset(tetris_playfield_t* p_pl);
-
-/* Function:           collisionDetect
- * Description:        
- * Argument p_pl:      The playfield to perform action on
- * Argument p_pc:      The piece which shoud be checked
- * Argument nRow:      The row where the piece should be moved
- * Argument nColumn:   The column where the piece should be moved
+/* Function:           collision
+ * Description:        detects if piece collides with s.th. at a given position
+ * Argument pPl:       playfield to perform action on
+ * Argument nColumn:   column where the piece should be moved
+ * Argument nRow:      row where the piece should be moved
  * Return value:       1 for collision, 0 otherwise
  */
-uint16_t tetris_playfield_collisionDetect(tetris_playfield_t* p_pl, tetris_piece_t* p_pc, int8_t nRow, int8_t nColumn);
+uint16_t tetris_playfield_collision(tetris_playfield_t* pPl,
+                                    int8_t nColumn,
+                                    int8_t nRow);
+                                    
 
+
+/* Function:            shiftDown
+ * Description:         shifts rows by a step size within a given window of rows 
+ * Argument pPl:        playfield to perform action on
+ * Argument nLowestRow: the lowest row to begin with
+ * Argument nSteps:     how many steps per shift should be done 
+ * Argument nWindow:    the window within the shifts should be performed
+ * Return value:        void
+ */
+void tetris_playfield_shiftDown(tetris_playfield_t* pPl,
+                             uint8_t nLowestRow,
+                             uint8_t nSteps,
+                             uint8_t nWindow);
+                                    
 #endif /*TETRIS_PLAYFIELD_H_*/

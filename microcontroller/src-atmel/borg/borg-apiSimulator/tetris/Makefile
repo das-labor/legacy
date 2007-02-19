@@ -1,14 +1,14 @@
 CC = gcc
 LD = ld
-OPTIMIZE = -O2
+OPTIMIZE = -O0
 override CFLAGS = -g -Wall $(OPTIMIZE)
 
-all: tetris.o
+all: tetris
 
-#tetris: tetris.o
-#	$(CC) $(CFLAGS) tetris.o -o tetris
+tetris: tetris.o
+	$(CC) $(CFLAGS) tetris.o -o tetris
 
-tetris.o: piece.o playfield.o view.o logic.o
+tetris.o: piece.o playfield.o view.o logic.o input.o
 	$(LD) -r piece.o playfield.o view.o logic.o -o tetris.o
 
 piece.o: piece.h piece.c
@@ -20,8 +20,11 @@ playfield.o: ../config.h piece.h playfield.h playfield.c
 view.o: view.h view.c
 	$(CC) $(CFLAGS) -c view.c -o view.o
 
-logic.o: logic.c logic.h piece.h playfield.h
+logic.o: logic.c logic.h piece.h playfield.h input.h
 	$(CC) $(CFLAGS) -c logic.c -o logic.o
+
+input.o: input.c input.h
+	$(CC) $(CFLAGS) -c input.c -o input.o
 
 clean:
 	rm -rf *.o tetris
