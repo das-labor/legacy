@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- IMPORTANT: This is an internal file that has been generated
+     by the Xilinx ISE software.  Any direct editing or
+     changes made to this file may result in unpredictable
+     behavior or data corruption.  It is strongly advised that
+     users do not edit the contents of this file. -->
+<messages>
+<msg type="warning" file="PhysDesignRules" num="372">Gated clock. Clock net clk32 is sourced by a combinatorial pin. This is not good design practice. Use the CE pin to control the loading of data into the flip-flop.
+</msg>
+
+<msg type="warning" file="PhysDesignRules" num="367">The signal &lt;button&lt;2&gt;_IBUF&gt; is incomplete. The signal does not drive any load pins in the design.
+</msg>
+
+<msg type="warning" file="PhysDesignRules" num="367">The signal &lt;button&lt;3&gt;_IBUF&gt; is incomplete. The signal does not drive any load pins in the design.
+</msg>
+
+<msg type="warning" file="PhysDesignRules" num="367">The signal &lt;switch&lt;3&gt;_IBUF&gt; is incomplete. The signal does not drive any load pins in the design.
+</msg>
+
+<msg type="warning" file="PhysDesignRules" num="367">The signal &lt;switch&lt;4&gt;_IBUF&gt; is incomplete. The signal does not drive any load pins in the design.
+</msg>
+
+<msg type="warning" file="PhysDesignRules" num="367">The signal &lt;switch&lt;5&gt;_IBUF&gt; is incomplete. The signal does not drive any load pins in the design.
+</msg>
+
+<msg type="warning" file="PhysDesignRules" num="367">The signal &lt;switch&lt;6&gt;_IBUF&gt; is incomplete. The signal does not drive any load pins in the design.
+</msg>
+
+<msg type="warning" file="PhysDesignRules" num="367">The signal &lt;switch&lt;7&gt;_IBUF&gt; is incomplete. The signal does not drive any load pins in the design.
+</msg>
+
+<msg type="info" file="PhysDesignRules" num="772">To achieve optimal frequency synthesis performance with the CLKFX and CLKFX180 outputs of the DCM comp clkgen/dcm0/clkgen/dcm0, consult the device Interactive Data Sheet.
+</msg>
+
+</messages>
