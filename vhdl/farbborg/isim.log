@@ -1,0 +1,57 @@
+ command line:
+   ./testbench_isim_beh.exe
+     -intstyle  ise
+     -ipchost  localhost
+     -ipcport  50996
+
+Thu Dec 21 16:43:45 2006
+
+Total Line Count = 5859
+
+ Elaboration time 0.13 sec.
+
+ Estimate current memory usage 36.3725 Meg. 
+
+ Total signals 1109
+ Total nets 9059
+ Total signal drivers 1317
+ Total blocks 38
+ Total primitive blocks 20
+ Total processes 1186
+ntrace select -o on -n /testbench/button 
+ntrace select -o on -n /testbench/switch 
+ntrace select -o on -n /testbench/led 
+ntrace select -o on -n /testbench/segments 
+ntrace select -o on -n /testbench/mux 
+ntrace select -o on -n /testbench/ram_ce_n 
+ntrace select -o on -n /testbench/ram_be_n 
+ntrace select -o on -n /testbench/ram_we_n 
+ntrace select -o on -n /testbench/ram_oe_n 
+ntrace select -o on -n /testbench/ram_addr 
+ntrace select -o on -n /testbench/ram_io 
+ntrace select -o on -n /testbench/rxd 
+ntrace select -o on -n /testbench/txd 
+ntrace select -o on -n /testbench/clk16 
+ntrace select -o on -n /testbench/clk32 
+ntrace select -o on -n /testbench/reset_n 
+ntrace select -o on -n /testbench/hex_out 
+ntrace select -o on -n /testbench/led1 
+ntrace select -o on -n /testbench/avr/clk32 
+ntrace select -o on -n /testbench/avr/sg_core_pc 
+ntrace select -o on -n /testbench/avr/sg_core_ramadr 
+ntrace select -o on -n /testbench/avr/data_adr 
+ntrace select -o on -n /testbench/avr/access_sel 
+ntrace select -o on -n /testbench/avr/sg_core_inst 
+ntrace select -o on -n /testbench/avr/sg_core_ramwe 
+ntrace select -o on -n /testbench/avr/ram_di 
+ntrace select -o on -n /testbench/avr/sg_ram_dout 
+ntrace start 
+run 1000 ns 
+Simulator is doing circuit initialization process.
+WARNING:Simulator:29 - at 0 ns: Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an
+   arithmetic operand, the result will be 'X'(es).
+Finished circuit initialization process.
+restart
+run 10000 ns 
+Simulator is doing circuit initialization process.
+Finished circuit initialization process.
