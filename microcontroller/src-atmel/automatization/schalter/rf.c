@@ -106,6 +106,8 @@ uint8_t rf_time2code(rf_code_t * code, uint8_t * time, uint8_t numbits){
 
 int8_t lampbright[4];
 
+
+
 void lampedim(uint8_t lampe, int8_t d){
 	int8_t tmp;
 	static can_message_t msg = {0, 0x35, PORT_LAMPE, PORT_LAMPE, 3};
@@ -133,7 +135,8 @@ AVRX_GCC_TASKDEF(rfrxtask, 50, 6)
 	TCCR1B = 5; // clk/1024
 	MCUCR |= (1<<ISC10); //trigger on any edge
 	
-	static can_message_t msg={0,0xff,PORT_REMOTE,PORT_REMOTE};
+	static can_message_t msg = {0,0xff,PORT_REMOTE,PORT_REMOTE};
+	static can_message_t msg_l = {0, 0x31, PORT_LAMPE, PORT_LAMPE, 3, {FKT_LAMPE_ADD}};
 	msg.addr_src = myaddr;
 	
 	uint32_t code=0, lastcode=0;
@@ -212,6 +215,18 @@ AVRX_GCC_TASKDEF(rfrxtask, 50, 6)
 				case 0x00441550: //switch e off
 				case 0x0014051d: //C 1 off
 					if(new) AvrXPutFifo(rftxfifo, 0x00140555); //Bastelecken Licht aus
+					break;
+				case 0x0015055d: //switch D 1 on
+					if(new) AvrXPutFifo(rftxfifo, 0x00140000); //Beamer an
+					break;
+				case 0x0014055d: //switch D 1 off
+					if(new) AvrXPutFifo(rftxfifo, 0x00110000); //Beamer aus
+					break;
+				case 0x0015455d: //switch D 2 on
+					if(new) AvrXPutFifo(rftxfifo, 0x00440000); //Kaffeemaschine an
+					break;
+				case 0x0014455d: //switch D 2 off
+					if(new) AvrXPutFifo(rftxfifo, 0x00410000); //Kaffeemaschine aus
 					break;
 			}
 			lastcode = code;

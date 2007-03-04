@@ -20,6 +20,7 @@ void labor_on(){
 	AvrXPutFifo(rftxfifo, 0x00111500);//Steckdose D (Bar)
 	AvrXPutFifo(rftxfifo, 0x00510500);//Steckdose A (Couch)
 	AvrXPutFifo(rftxfifo, 0x00511400);//Steckdose C (Bastelecke)
+	AvrXPutFifo(rftxfifo, 0x00040000);//Steckdose REV (Flipperecke)
 	
 	AvrXPutFifo(rftxfifo, 0x010000C0); //Fluter an
 	
@@ -27,6 +28,7 @@ void labor_on(){
 	AvrXPutFifo(rftxfifo, 0x00111500);//Steckdose D (Bar)
 	AvrXPutFifo(rftxfifo, 0x00510500);//Steckdose A (Couch)
 	AvrXPutFifo(rftxfifo, 0x00511400);//Steckdose C (Bastelecke)
+	AvrXPutFifo(rftxfifo, 0x00040000);//Steckdose REV (Flipperecke)
 	
 	AvrXPutFifo(rftxfifo, 0x010000C0); //Fluter1 an
 	
@@ -39,14 +41,17 @@ void labor_off(){
 	AvrXPutFifo(rftxfifo, 0x00541400);//Steckdose C (Bastelecke)
 	AvrXPutFifo(rftxfifo, 0x00540500);//Steckdose A (Couch)
 	AvrXPutFifo(rftxfifo, 0x00141500);//Steckdose D (Bar)
+	AvrXPutFifo(rftxfifo, 0x00010000);//Steckdose REV (Flipperecke)
 	
 	AvrXPutFifo(rftxfifo, 0x00541400);//Steckdose C (Bastelecke)
 	AvrXPutFifo(rftxfifo, 0x00540500);//Steckdose A (Couch)
 	AvrXPutFifo(rftxfifo, 0x00141500);//Steckdose D (Bar)
+	AvrXPutFifo(rftxfifo, 0x00010000);//Steckdose REV (Flipperecke)
 
 	AvrXPutFifo(rftxfifo, 0x00541400);//Steckdose C (Bastelecke)
 	AvrXPutFifo(rftxfifo, 0x00540500);//Steckdose A (Couch)
 	AvrXPutFifo(rftxfifo, 0x00141500);//Steckdose D (Bar)
+	AvrXPutFifo(rftxfifo, 0x00010000);//Steckdose REV (Flipperecke)
 }
 
 AVRX_GCC_TASKDEF(switchtask, 20, 8){
