@@ -19,6 +19,9 @@
 #define ROWPORT PORTD
 #define ROWDDR   DDRD
 
+#define ROWPORT2 PORTC
+#define ROWDDR2 DDRC
+
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
 inline void rowshow(unsigned char row, unsigned char plane){
@@ -26,7 +29,8 @@ inline void rowshow(unsigned char row, unsigned char plane){
 	uint8_t x, tmp;
 	
 	//alle Zeilentreiber aus
-	ROWPORT = 0xFF;
+	ROWPORT |= 0xF3;
+	ROWPORT2 |= 0x0C;
 	
 	for(x=0;x<10;x++){
 		asm volatile ("nop");	
@@ -41,13 +45,13 @@ inline void rowshow(unsigned char row, unsigned char plane){
 	
 	switch (plane){
 		case 0:
-			TCNT0 = 0x100-2;
+			TCNT0 = 0x100-12;
 			break;
 		case 1:
-			TCNT0 = 0x100-8;
+			TCNT0 = 0x100-20;
 			break;
 		case 2:
-			TCNT0 = 0x100-20;
+			TCNT0 = 0x100-50;
 	}
 	
 	
@@ -95,12 +99,13 @@ inline void rowshow(unsigned char row, unsigned char plane){
 		COLPORT &= ~(1<<BIT_CLK);
 	}
 	//nächste Zeile anschalten
-	ROWPORT = rowmask;
+	ROWPORT &= rowmask | 0x0C;
+	ROWPORT2 &= rowmask | 0xF3;
 }
 
 extern uint8_t schmuh;
 
-SIGNAL(SIG_OVERFLOW0)
+INTERRUPT(SIG_OVERFLOW0)
 {
 	static unsigned char plane = 0;
 	static unsigned char row = 0;
@@ -136,9 +141,13 @@ void timer0_on(){
 
 void borg_hw_init(){
 	// Alle Zeilentransistoren aus.
-	ROWPORT = 0xFF;
+	ROWPORT |= 0xF3;
 	// Port für Zeilentransistoren auf Ausgang
-	ROWDDR = 0xFF;
+	ROWDDR |= 0xF3;
+	
+	ROWPORT2 |=0x0C;
+	ROWDDR2 |=0x0C;
+
 	
 	//Signale für Schieberegister auf Ausgang
 	COLDDR |= (1<<BIT_CLK) | (1<<BIT_DAT);
