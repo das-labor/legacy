@@ -5,7 +5,7 @@
 #include "buttons.h"
 #include "fifo.h"
 
-// 16 Spalten insgesamt direkt gesteuert, dafür 2 Ports
+// 18 Spalten insgesamt direkt gesteuert, dafür 2 Ports + 2 Pins
 #define COLPORT1  		PORTB
 #define COLDDR1   		DDRB
 
@@ -15,6 +15,7 @@
 #define COLPORT3  		PORTC
 #define COLDDR3   		DDRC
 
+// 8 Zeilen über Treiber IC gesteuert, dafür ein Port
 #define ROWPORT 			PORTD
 #define ROWDDR   			DDRD
 

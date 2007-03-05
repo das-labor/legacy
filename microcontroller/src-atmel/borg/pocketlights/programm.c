@@ -383,30 +383,6 @@ void feuer()
 	}
 }
 
-void snake2()
-{
-	unsigned char exit = 0;
-	
-	cursor position;
-	position.mode=set;
-	position.pos=(pixel){0,0};
-	position.dir=left;
-	
-	setpixel((pixel){0,0},3);
-	
-	while(!exit){
-		switch(get_button()){
-			case BUTTON_UP: 		position.dir=up; 		walk(&position, 1, 0); break;
-			case BUTTON_DOWN: 	position.dir=down; 		walk(&position, 1, 0); break;
-			case BUTTON_LEFT: 	position.dir=left; 		walk(&position, 1, 0); break;
-			case BUTTON_RIGHT: 	position.dir=right; 		walk(&position, 1, 0); break;
-			case BUTTON_A: 		exit=1; break;
-			default: break;			
-		}		
-	}
-	exit=0;
-}
-
 void testbuttons(){
 	uint8_t x,y,exit=0;
 	
