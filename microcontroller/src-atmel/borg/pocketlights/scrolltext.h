@@ -1,1 +1,1 @@
-../borg-base/scrolltext.h
+link ../borg-base/scrolltext.h
