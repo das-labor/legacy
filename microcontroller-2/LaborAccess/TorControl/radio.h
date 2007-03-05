@@ -14,6 +14,6 @@ extern uint8_t radio_txcount;
 // to be called at 2500 Hz 
 void radio_tick ( void );
 
-AVRX_EXTERNTASK(laptask);
+AVRX_EXTERNTASK(sesame);
 
 #endif
