@@ -16,16 +16,15 @@
 
 AVRX_SIGINT(SIG_OVERFLOW0)
 {
-    static uint8_t tickcount = 0;
     IntProlog();                // Save interrupted context, switch stacks
     TCNT0 = TCNT0_INIT;		// Reload the timer counter
 
-    for (tickcount=0;tickcount<10;tickcount++)
-	    radio_tick();
+    radio_tick();
 
     AvrXTimerHandler();         // Process Timer queue
     Epilog();                   // Restore context of next running task
 };
+
 
 int main(void)
 {
@@ -45,6 +44,7 @@ int main(void)
     // Initialize LAP
     xlap_init();
     AvrXRunTask(TCB(laptask));
+    AvrXRunTask(TCB(sesame));
 
     /* Needed for EEPROM access in monitor */
     AvrXSetSemaphore(&EEPromMutex);
