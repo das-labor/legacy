@@ -1,4 +1,3 @@
-
 #include <avr/wdt.h>
 #include <avr/io.h>
 #include <avr/eeprom.h>
@@ -35,7 +34,6 @@ void process_mgt_msg(){
 }
 
 void process_remote_msg(){
-	
 //	AvrXPutFifo(rftxfifo, *(uint32_t*)rx_msg.data);
 }
 
