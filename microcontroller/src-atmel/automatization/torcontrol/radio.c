@@ -36,25 +36,30 @@ void radio_tick()
 
 //	IntProlog();             // Switch to kernel stack/context
 
+	if (!radio_txcount)
+		return;
+
+
 	if (bytecounter == 0)
 	{
 		if (bitmask == 0x01)
-			PORTD |= _BV(PD6);
+			PORTD |= _BV(PD0);
 
 	} else if (bytecounter < 6)
 	{
 		if (sendcode[bytecounter-1] & bitmask)
 		{
-			PORTD |= _BV(PD6);
+			PORTD |= _BV(PD0);
 		} else
 		{
-			PORTD &= ~(_BV(PD6));
+			PORTD &= ~(_BV(PD0));
 		}
 	} else
 	{
-		PORTD &= ~(_BV(PD6));
+		PORTD &= ~(_BV(PD0));
 		if (bytecounter == 10)
 		{
+			radio_txcount--;
 			bytecounter = 0;
 			bitmask = 0x80;
 		}
