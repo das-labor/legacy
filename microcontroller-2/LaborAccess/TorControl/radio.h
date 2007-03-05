@@ -9,7 +9,7 @@
 #endif
 
 // Number of outstanding Tor-Open commands
-extern uint8_t radio_txcount;
+volatile extern uint8_t radio_txcount;
 
 // to be called at 2500 Hz 
 void radio_tick ( void );
