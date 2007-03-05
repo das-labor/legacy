@@ -1,17 +1,11 @@
 #define TCNT0_INIT (0xFF-F_CPU/256/TICKRATE)
 
-#define BAUDRATE 19200L
-#define UBRR_INIT (F_CPU/(16*BAUDRATE)-1)
-
-#define TMC8_CK256 (1<<CS02)
-
 #define F_CPU 16000000L
 #define F_MCP F_CPU
 
 #define TICKRATE 2500
 
 #define MEGA8
-
 #ifdef MEGA8
 #	define SPI_PORT PORTB
 #	define SPI_PIN_SS PB2
