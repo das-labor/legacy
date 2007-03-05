@@ -42,7 +42,7 @@ FALSE	= 0
 MCU = atmega8
 
 TARGET = main
-CANADDR = 53
+CANADDR = 0x53
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex

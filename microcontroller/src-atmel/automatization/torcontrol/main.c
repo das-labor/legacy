@@ -34,6 +34,11 @@ int main(void)
 
     DDRC = 0xFF;
 	
+    // Radio initialisieren
+    radio_txcount = 0;
+    DDRD |= _BV(PD0);
+    DDRB = 0x00;
+
     //InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
     xlap_init();
     // radio_init();
