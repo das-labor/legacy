@@ -1,5 +1,7 @@
 #define TCNT0_INIT (0xFF-F_CPU/256/TICKRATE)
 
+#define TMC8_CK256 (1<<CS02)
+
 #define F_CPU 16000000L
 #define F_MCP F_CPU
 
