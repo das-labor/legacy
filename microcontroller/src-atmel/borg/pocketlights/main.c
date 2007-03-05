@@ -27,15 +27,15 @@ int main (void){
 		switch(mode++) {
 		case 1:
 			scrolltext("</#XXX");
-			//scrolltext(SCROLLTEXT_DEFAULT);
+//			scrolltext(SCROLLTEXT_DEFAULT);
 			break;
 		case 2:
 			testbuttons();
-			//spirale(5);
+//			spirale(5);
 			break;
 		case 3:
 			test_blinkenlights();
-			//joern1();
+//			joern1();
 			break;
 		case 4:
 			snake();
@@ -70,14 +70,6 @@ int main (void){
 			break;
 		case 43:
 			menu();
-			mode = oldOldmode;
-			break;
-		case 50:
-			scrolltext("</# Start pressed");
-			mode = oldOldmode;
-			break;
-		case 51:
-			scrolltext("</# Select pressed");
 			mode = oldOldmode;
 			break;
 		default:
