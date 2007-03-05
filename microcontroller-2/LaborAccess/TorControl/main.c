@@ -33,16 +33,20 @@ int main(void)
     TIMSK = 1<<TOIE0;		// Enable interrupt flag
 
     DDRC = 0xFF;
+    DDRD |= _BV(PD0);           // Control pin for rf module
+    DDRB = 0x00;                // ??
+
+    radio_txcount = 0;          // Tor-Open commands to be send
 	
-    //InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
+    // Initialize LAP
     xlap_init();
-    // radio_init();
-    //AvrXRunTask(TCB(Monitor));
     AvrXRunTask(TCB(laptask));
 
     /* Needed for EEPROM access in monitor */
     AvrXSetSemaphore(&EEPromMutex);
 	
+    //AvrXRunTask(TCB(Monitor));
+    //InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
 
     Epilog();                   // Switch from AvrX Stack to first task
     while(1);
