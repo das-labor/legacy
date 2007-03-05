@@ -16,9 +16,13 @@
 
 AVRX_SIGINT(SIG_OVERFLOW0)
 {
+    static uint8_t tickcount = 0;
     IntProlog();                // Save interrupted context, switch stacks
     TCNT0 = TCNT0_INIT;		// Reload the timer counter
-    radio_tick();
+
+    for (tickcount=0;tickcount<10;tickcount++)
+	    radio_tick();
+
     AvrXTimerHandler();         // Process Timer queue
     Epilog();                   // Restore context of next running task
 };
