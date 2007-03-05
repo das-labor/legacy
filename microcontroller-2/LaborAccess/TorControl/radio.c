@@ -7,7 +7,7 @@
 
 const uint8_t sendcode[5] = { 0x65, 0xb2, 0xcb, 0x2c, 0xb0 };
 
-uint8_t radio_txcount;
+volatile uint8_t radio_txcount = 0;
 AVRX_GCC_TASKDEF(sesame, 50, 5) /* name, stackspace, pri */
 {
 	while (1)
