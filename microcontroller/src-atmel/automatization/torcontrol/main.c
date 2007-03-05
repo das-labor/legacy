@@ -9,7 +9,7 @@
 #include "config.h"
 #include "xcan.h"
 #include "xlap.h"
-#include "rf.h"
+#include "radio.h"
 
 //AVRX_GCC_TASK(Monitor, 20, 0);          // External Task: Debug Monitor
 
@@ -18,6 +18,7 @@ AVRX_SIGINT(SIG_OVERFLOW0)
 {
     IntProlog();                // Save interrupted context, switch stacks
     TCNT0 = TCNT0_INIT;		// Reload the timer counter
+    radio_tick();
     AvrXTimerHandler();         // Process Timer queue
     Epilog();                   // Restore context of next running task
 };
@@ -35,7 +36,7 @@ int main(void)
 	
     //InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
     xlap_init();
-    radio_init();
+    // radio_init();
     //AvrXRunTask(TCB(Monitor));
     AvrXRunTask(TCB(laptask));
 

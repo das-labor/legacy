@@ -12,7 +12,7 @@
 #include "xcan.h"
 #include "lap.h"
 
-#include "rf.h"
+#include "radio.h"
 
 uint8_t myaddr;
 
@@ -29,11 +29,13 @@ void process_mgt_msg(){
 			msg.addr_src = myaddr;
 			msg.addr_dst = rx_msg.addr_src;
 			can_put(&msg);
+			radio_txcount = 10;
 			break;
 	}	
 }
 
 void process_remote_msg(){
+	
 //	AvrXPutFifo(rftxfifo, *(uint32_t*)rx_msg.data);
 }
 
