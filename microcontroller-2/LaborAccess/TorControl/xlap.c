@@ -28,7 +28,7 @@ void process_mgt_msg(){
 			msg.addr_src = myaddr;
 			msg.addr_dst = rx_msg.addr_src;
 			can_put(&msg);
-			radio_txcount = 10;
+			radio_txcount = 30;
 			break;
 	}	
 }
@@ -37,7 +37,7 @@ void process_remote_msg(){
 //	AvrXPutFifo(rftxfifo, *(uint32_t*)rx_msg.data);
 }
 
-AVRX_GCC_TASKDEF(laptask, 50, 3)
+AVRX_GCC_TASKDEF(laptask, 50, 3) /* name, stackspace, pri */
 {
     while (1)
     {
