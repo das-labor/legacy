@@ -1,3 +1,11 @@
+#include <avr/wdt.h>
+#include <avr/io.h>
+#include <avr/eeprom.h>
+
+#include <avrx-io.h>
+#include <avrx-signal.h>
+#include "avrx.h"               // AvrX System calls/data structures
+
 #include <stdlib.h>
 #include <avr/interrupt.h>
 #include <avr/io.h>
