@@ -10,7 +10,6 @@
 #endif
 
 #include "pixel.h"
-#include "util.h"
 #include "font_arial8.h"
 #include "font_small6.h"
 //#include "font-v5.h"
@@ -562,7 +561,11 @@ void scrolltext(unsigned char *str) {
 				aktblob = aktblob->next;
 			}
 			update_pixmap();
-			wait(2);	
+			// NOP schleife, um ein wait(2) zu ersetzen
+			unsigned char i;
+			for(i=0;i<50;i++){
+				asm volatile("nop");
+			}
 		};
 		startblob = setupBlob(0);
 		//showBlob(startblob);

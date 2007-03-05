@@ -96,18 +96,6 @@ void spirale(unsigned int delay){
 	}
 }
 
-#define BIT_S(var,b) ((var&(1<<b))?1:0)
-
-unsigned char random(){
-	static unsigned int muh = 0xAA;
-	unsigned char x;
-	for(x=0;x<8;x++){
-		muh = (muh<<1) ^ BIT_S(muh,1) ^ BIT_S(muh,8) ^ BIT_S(muh,9) ^ BIT_S(muh,13) ^ BIT_S(muh,15);
-	}
-	return (unsigned char) muh;
-
-}
-
 void snake(){
 	pixel pixels[64];
 	pixels[0] = (pixel){NUM_COLS/2, NUM_ROWS/2};
