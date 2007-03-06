@@ -6,9 +6,10 @@
 #include "programm.h"
 #include "borg_hw.h"
 #include "pixel.h"
-#include "menu.h"
+//#include "menu.h"
 #include "buttons.h"
 #include "blinkenlights.h"
+#include "pong.h"
 
 volatile unsigned char oldMode, oldOldmode, mode;
 
@@ -34,11 +35,12 @@ int main (void){
 //			spirale(5);
 			break;
 		case 3:
-			test_blinkenlights();
+			play_pong();
 //			joern1();
 			break;
 		case 4:
-			snake();
+			test_blinkenlights();
+//			snake();
 			break;
 		case 5:
 			schachbrett(20);
@@ -69,7 +71,7 @@ int main (void){
 			off();
 			break;
 		case 43:
-			menu();
+//			menu();
 			mode = oldOldmode;
 			break;
 		default:
