@@ -6,8 +6,6 @@
 
 	The fifo needs to be both declared and initialized.
 */
-#include <avr/io.h>
-#include <avr/interrupt.h>
 #include "avrx.h"
 #include "fifo.h"
 
