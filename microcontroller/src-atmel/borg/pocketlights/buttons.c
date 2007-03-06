@@ -10,7 +10,10 @@ unsigned char buffer[BUF_SIZE];
 fifo_t fifo;
  
 button_value get_button(){
-	uint8_t temp=fifo_get_wait(&fifo);
+	int temp=fifo_get_nowait(&fifo);
+	
+	if( temp == -1) //fifo returns with no button in it
+		return BUTTON_NONE;
 	
 	if ( temp & BUTTON_UP_MASK)
 		return BUTTON_UP;
@@ -28,7 +31,7 @@ button_value get_button(){
 		return BUTTON_A;
 	if ( temp & BUTTON_B_MASK)
 		return BUTTON_B;
-	return 99;
+	return BUTTON_NONE;
 }
 
 void init_buttons(){

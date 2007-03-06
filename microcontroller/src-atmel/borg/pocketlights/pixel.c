@@ -61,7 +61,7 @@ unsigned char get_pixel(pixel p){
 
 
 unsigned char get_next_pixel(pixel p, direction dir){
-	pixel tmp;
+	pixel tmp=(pixel){0,0};
 	switch (dir){
 		case right:
 			tmp = (pixel){p.x-1, p.y};
@@ -80,7 +80,7 @@ unsigned char get_next_pixel(pixel p, direction dir){
 }
 
 unsigned char get_next_diagonal_pixel(pixel p, Ddirection dir){
-	pixel tmp;
+	pixel tmp=(pixel){0,0};
 	switch (dir){
 		case right_up:
 			tmp = (pixel){p.x-1, p.y-1};
@@ -154,6 +154,24 @@ pixel next_pixel(pixel pix, direction dir){
 				break;
 	
 			}
+	return (pixel){0,0};
+}
+
+pixel next_diagonal_pixel(pixel p, Ddirection dir){
+	switch (dir){
+		case right_up:
+			return((pixel){p.x-1, p.y-1});
+			break;
+		case left_down:
+			return((pixel){p.x+1, p.y+1});
+			break;	
+		case right_down:
+			return((pixel){p.x-1, p.y+1});
+			break;
+		case left_up:
+			return((pixel){p.x+1, p.y-1});
+			break;
+	}
 	return (pixel){0,0};
 }
 

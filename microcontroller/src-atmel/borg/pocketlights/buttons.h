@@ -19,7 +19,8 @@ BUTTON_RIGHT = 3,
 BUTTON_SELECT = 4,
 BUTTON_START = 5, 
 BUTTON_B = 6,
-BUTTON_A = 7
+BUTTON_A = 7,
+BUTTON_NONE = 99
 }
 button_value;
 

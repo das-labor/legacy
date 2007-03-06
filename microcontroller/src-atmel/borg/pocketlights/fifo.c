@@ -21,7 +21,8 @@ uint8_t fifo_get_wait (fifo_t *f)
 
 int fifo_get_nowait (fifo_t *f)
 {
-	if (!f->count)		return -1;
+	if (!f->count)		
+		return -1;
 		
 	return (int) _inline_fifo_get (f);	
 }

@@ -32,6 +32,7 @@ unsigned char get_next_pixel(pixel p, direction dir);
 unsigned char get_next_diagonal_pixel(pixel p, Ddirection dir);
 
 pixel next_pixel(pixel pix, direction dir);
+pixel next_diagonal_pixel(pixel pix, Ddirection dir);
 
 direction direction_r(direction dir);
 Ddirection Ddirection_r(Ddirection dir);
