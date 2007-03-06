@@ -1,9 +1,8 @@
 #include <avr/wdt.h>
 #include <avr/io.h>
 #include <avr/eeprom.h>
+#include <string.h>
 
-#include <avrx-io.h>
-#include <avrx-signal.h>
 #include "avrx.h"               // AvrX System calls/data structures
 
 #include "config.h"
@@ -11,7 +10,8 @@
 #include "xcan.h"
 #include "lap.h"
 
-#include "radio.h"
+#include "fifo.h"
+#include "rf.h"
 
 uint8_t myaddr;
 
@@ -28,13 +28,18 @@ void process_mgt_msg(){
 			msg.addr_src = myaddr;
 			msg.addr_dst = rx_msg.addr_src;
 			can_put(&msg);
-			radio_txcount = 30;
 			break;
 	}	
 }
 
 void process_remote_msg(){
-//	AvrXPutFifo(rftxfifo, *(uint32_t*)rx_msg.data);
+	AvrXPutFifo(rftxfifo, *(uint32_t*)rx_msg.data);
+}
+
+void process_gate_msg(){
+	if(!memcmp(rx_msg.data, (uint8_t[]){0xde,0xad,0xbe,0xef}, 4)){
+		AvrXPutFifo(rftxfifo, 0x010050B5); //Tor auf 101101010101  B55
+	}
 }
 
 AVRX_GCC_TASKDEF(laptask, 50, 3) /* name, stackspace, pri */
@@ -47,9 +52,10 @@ AVRX_GCC_TASKDEF(laptask, 50, 3) /* name, stackspace, pri */
 				process_mgt_msg();	
 			}else if(rx_msg.port_dst == PORT_REMOTE){
 				process_remote_msg();
+			}else if(rx_msg.port_dst == PORT_GATE){
+				process_gate_msg();
 			}
 		}
-		PORTC ^= 0x01;
     }
 };
 

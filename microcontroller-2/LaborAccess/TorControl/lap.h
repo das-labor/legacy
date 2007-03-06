@@ -44,7 +44,7 @@ typedef struct{
  */
 
 typedef enum { PORT_MGT=0x30, PORT_LAMPE=0x20, PORT_SDO=0x15, PORT_SDO_DATA=0x16,
-		PORT_BORG=0x23, PORT_MOOD=0x17, PORT_REMOTE=0x21 }       	ports;
+		PORT_BORG=0x23, PORT_MOOD=0x17, PORT_REMOTE=0x21, PORT_GATE=0x22 } ports;
 
 typedef enum { FKT_MGT_PING=0x00, FKT_MGT_PONG=0x01, 
 		FKT_MGT_RESET=0x02, FKT_MGT_AWAKE=0x03 }	lap_mgt_fkts;

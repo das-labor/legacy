@@ -2,9 +2,6 @@
 #include <string.h>
 
 #include <avrx.h>
-#include <avrx-io.h>
-
-#include <avrx-signal.h>
 #include <AvrXFifo.h>
 
 #include "config.h"
