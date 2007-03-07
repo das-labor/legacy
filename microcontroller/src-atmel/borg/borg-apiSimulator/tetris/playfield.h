@@ -36,8 +36,8 @@ typedef struct tetris_playfield_t_
     tetris_piece_t* pPiece;           /* currently falling piece */
     int8_t nColumn;                   /* horiz. piece position (0 is left) */
     int8_t nRow;                      /* vert. piece position (0 is top) */
-    uint8_t nWidth;                   /* width of playfield */
-    uint8_t nHeight;                  /* height of playfield */
+    int8_t nWidth;                    /* width of playfield */
+    int8_t nHeight;                   /* height of playfield */
     tetris_playfield_status_t status; /* status */
     uint16_t *contents;               /* playfield itself */
 }
@@ -47,7 +47,7 @@ tetris_playfield_t;
 /*****************************
  *  construction/destruction *
  *****************************/
-tetris_playfield_t* tetris_playfield_construct(uint8_t nWidth, uint8_t nHeight);
+tetris_playfield_t* tetris_playfield_construct(int8_t nWidth, int8_t nHeight);
 void tetris_playfield_destruct(tetris_playfield_t* pPl);
 
 
@@ -108,23 +108,8 @@ uint8_t tetris_playfield_removeCompleteLines(tetris_playfield_t* pPl);
  * Argument nRow:      row where the piece should be moved
  * Return value:       1 for collision, 0 otherwise
  */
-uint16_t tetris_playfield_collision(tetris_playfield_t* pPl,
-                                    int8_t nColumn,
-                                    int8_t nRow);
-                                    
-
-
-/* Function:            shiftDown
- * Description:         shifts rows by a step size within a given window of rows 
- * Argument pPl:        playfield to perform action on
- * Argument nLowestRow: the lowest row to begin with
- * Argument nSteps:     how many steps per shift should be done 
- * Argument nWindow:    the window within the shifts should be performed
- * Return value:        void
- */
-void tetris_playfield_shiftDown(tetris_playfield_t* pPl,
-                             uint8_t nLowestRow,
-                             uint8_t nSteps,
-                             uint8_t nWindow);
+uint8_t tetris_playfield_collision(tetris_playfield_t* pPl,
+                                   int8_t nColumn,
+                                   int8_t nRow);
                                     
 #endif /*TETRIS_PLAYFIELD_H_*/
