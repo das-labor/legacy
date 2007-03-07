@@ -13,6 +13,8 @@ int main (int argc, char* argv[])
     tetris_piece_t* pOldPiece;
 
     int i = 0;
+    
+    /*
     while (pPl->status != TETRIS_PFS_GAMEOVER)
     {
         pPiece = tetris_piece_construct(TETRIS_PC_LINE, TETRIS_PC_ANGLE_0);
@@ -39,7 +41,21 @@ int main (int argc, char* argv[])
 
     tetris_playfield_destruct (pPl);
     tetris_piece_destruct (pPiece);
+	*/
+	
+	for (i = 0; i < 16; ++i)
+		pPl->contents[i] = i;
+	
+	for (i = 0; i < 15; i++)
+		printf("%2d, ", pPl->contents[i]);
+	printf("%2d\n", pPl->contents[15]);
+	
+	tetris_playfield_shiftDown(pPl, 13, 3, 4);
 
+	for (i = 0; i < 15; i++)
+		printf("%2d, ", pPl->contents[i]);
+	printf("%2d\n", pPl->contents[15]);
+	
     return 0;
 }
 
