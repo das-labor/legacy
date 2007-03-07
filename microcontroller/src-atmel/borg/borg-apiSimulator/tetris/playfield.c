@@ -318,42 +318,19 @@ uint8_t tetris_playfield_removeCompleteLines(tetris_playfield_t* pPl)
 		uint8_t nComplete = nLowestRow - nStopRow + 1;
 		if (nComplete > 0)
 		{
-			for (i = nStopRow; nLowestRow >= 0; --i)
+			for (i = nStopRow - 1; nLowestRow >= 0; --i)
 			{
-				pPl->contents[nLowestRow] = pPl->contents[i];
+				if (i >= 0)
+				{
+					pPl->contents[nLowestRow] = pPl->contents[i];
+				}
+				else
+				{
+					pPl->contents[nLowestRow] = 0;
+				}
 				--nLowestRow;
 			}
-			/* tetris_playfield_shiftDown(pPl, nLowestRow, nComplete,
-				nLowestRow + 1); */
 		}
 	}
 	return nRowMask;
-}
-
-
-/* Function:            shiftDown
- * Description:         shifts rows by a step size within a given window of rows 
- * Argument pPl:        playfield to perform action on
- * Argument nLowestRow: the lowest row to begin with
- * Argument nSteps:     how many steps per shift should be done 
- * Argument nWindow:    the window within the shifts should be performed
- * Return value:        void
- */
-void tetris_playfield_shiftDown(tetris_playfield_t* pPl,
-                                uint8_t nLowestRow,
-                                uint8_t nSteps,
-                                uint8_t nWindow)
-{
-	int8_t i = 0;
-	for (i = nLowestRow; i > (nLowestRow - nWindow); --i)
-	{
-		if ((i - nSteps) > (nLowestRow - nWindow))
-		{
-			pPl->contents[i] = pPl->contents[i - nSteps];
-		}
-		else
-		{
-			pPl->contents[i] = 0;
-		}
-	}
 }
