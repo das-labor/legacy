@@ -2,7 +2,7 @@
 --
 -- For defines see intercon.defines
 --
--- Generated Wed Feb 14 14:54:14 2007
+-- Generated Thu Feb 15 16:16:00 2007
 --
 -- Wishbone masters:
 --   lm32i
