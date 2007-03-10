@@ -14,7 +14,9 @@ classic=000
 endofburst=111
 dat_size=32
 adr_size=32
-mux_type=andor
+mux_type=mux
+#interconnect=sharedbus
+optimize=area
 interconnect=crossbarswitch
 
 ##################################

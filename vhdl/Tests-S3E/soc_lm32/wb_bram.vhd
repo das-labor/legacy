@@ -142,7 +142,7 @@ signal ack : std_logic;
 
 begin
 
-wb_ack_o <= wb_stb_i and ack;
+wb_ack_o <= wb_stb_i and wb_cyc_i and ack;
 
 memproc: process (clk) is
 variable a : integer;
@@ -171,7 +171,7 @@ begin
 
 
 		wb_dat_o <= mem(a);
-		ack <= '1' and not ack after 2 ns;
+		ack <= '1' and not ack;
 	else
 		ack <= '0';
 	end if;
