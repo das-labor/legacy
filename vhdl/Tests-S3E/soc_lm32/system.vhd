@@ -153,23 +153,6 @@ component wb_bram is
       wb_we_i  : in  std_logic );
 end component;
 
-component wb_timer is
-   port (
-      clk      : in  std_logic;
-      reset    : in  std_logic;
-      -- Wishbone bus
-      wb_adr_i : in  std_logic_vector(31 downto 0);
-      wb_dat_i : in  std_logic_vector(31 downto 0);
-      wb_dat_o : out std_logic_vector(31 downto 0);
-      wb_sel_i : in  std_logic_vector( 3 downto 0);
-      wb_cyc_i : in  std_logic;
-      wb_stb_i : in  std_logic;
-      wb_ack_o : out std_logic;
-      wb_we_i  : in  std_logic;
-      wb_irq0_o: out std_logic;
-      wb_irq1_o: out std_logic );
-end component wb_timer;
-
 component wb_uart is
 	port (
 		clk        : in  std_logic;
@@ -212,9 +195,6 @@ end component wb_gpio;
 -----------------------------------------------------------------------------
 -- Local Signals ------------------------------------------------------------
 -----------------------------------------------------------------------------
-
---signal clk       : std_logic;
-
 signal iport     : std_logic_vector(31 downto 0);
 signal oport     : std_logic_vector(31 downto 0);
 signal intr_n    : std_logic_vector(31 downto 0);
@@ -285,15 +265,15 @@ signal gpio0_ack_o   : std_logic;
 signal gpio0_we_i    : std_logic;
 
 
+
 -----------------------------------------------------------------------------
 -- Implementation -----------------------------------------------------------
 -----------------------------------------------------------------------------
 begin
 
--- clk <= clk_in;
--- leds <= oport(7 downto 0);
+leds <= oport(7 downto 0);
 iport(3 downto 0) <= btn;
-leds <= clk & reset & i_stb_o & i_ack_i & d_stb_o & d_ack_i & bram0_stb_i & bram0_ack_o;
+
 
 -----------------------------------------------------------------------------
 -- LM32 CPU -----------------------------------------------------------------
@@ -385,21 +365,6 @@ gpio0: wb_gpio
 			--
 			iport     => oport,
 			oport     => iport
-	);
-	
-timer0: wb_timer
-	Port map (
-			clk       => clk,
-			reset     => reset,
-			--
-			wb_adr_i  => timer0_adr_i,
-			wb_dat_o  => timer0_dat_o,
-			wb_dat_i  => timer0_dat_i,
-			wb_sel_i  => timer0_sel_i,
-			wb_stb_i  => timer0_stb_i,
-			wb_cyc_i  => timer0_cyc_i,
-			wb_ack_o  => timer0_ack_o,
-			wb_we_i   => timer0_we_i
 	);
 	
 

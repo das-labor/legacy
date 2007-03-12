@@ -1,8 +1,8 @@
 #include "spike_hw.h"
 
 timer_t *timer0 = (timer_t *)0x80000000;
-uart_t  *uart0  =  (uart_t *)0x80001000;
-gpio_t  *gpio0  =  (gpio_t *)0x80002000;
+uart_t  *uart0  =  (uart_t *)0x80000100;
+gpio_t  *gpio0  =  (gpio_t *)0x80000200;
 
 uint32_t msec = 0;
 

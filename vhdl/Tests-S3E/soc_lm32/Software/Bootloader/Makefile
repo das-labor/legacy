@@ -5,7 +5,7 @@ LM32_OBJDUMP=lm32-elf-objdump
 
 SRECTOVHDL=~/bin/srectovhdl
 
-CFLAGS=-O2 -Wall -s -fomit-frame-pointer -mbarrel-shift-enabled -mmultiply-enabled -mdivide-enabled -msign-extend-enabled
+CFLAGS=-O2 -Wall -s -fomit-frame-pointer
 LDFLAGS=-Tlinkcmd
 SEGMENTS = -j .text -j .data
 
