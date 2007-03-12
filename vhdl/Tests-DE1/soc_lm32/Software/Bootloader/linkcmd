@@ -1,0 +1,77 @@
+/*OUTUT_ARCH(sparc) */
+__DYNAMIC = 0;
+
+
+/**
+ *
+ *  +----------------+   <- low PROM  (0x00000000)
+ *  |.text           |
+ *  |      _stext    |
+ *  |      _etext    |
+ *  +----------------+
+ *  |.data           |
+ *  |      _sdata    |
+ *  |      _edata    |
+ *  +----------------+
+ *  
+
+
+ *  +----------------+  <- low DDR    (0x80000000)
+ *  |                |
+ *  |  UPLOAD REGION |
+ *  |                |
+ *  |                |
+ *  +----------------+  <- low RAM    (0x83000000)
+ *  |.bss            |
+ *  |      _sbss     |
+ *  |      _ebss     |
+ *  +----------------+
+ *  |   heap space   |
+ *  |                |
+ *  |   stack space  |
+ *  +----------------+  <- high DDR   (0x84000000)
+ *
+ */
+
+
+_PROM_START = 0x00000000;
+_PROM_SIZE  = 0x800;
+_PROM_END   = _PROM_START + _PROM_SIZE;
+
+_RAM_START  = 0x00000800;
+_RAM_SIZE   = 0x00000800;
+_RAM_END    = _RAM_START  + _RAM_SIZE;
+
+
+MEMORY {
+  prom    : ORIGIN = 0x00000000, LENGTH = 0x800          /*  2k */
+  ram     : ORIGIN = 0x00000800, LENGTH = 0x800          /*  2k */
+}
+
+SECTIONS
+{
+  .text : 
+  {
+    _stext = .;
+    *(.text)
+    _etext = .;
+  } > prom
+
+  .data : 
+  {
+    _sdata = .;
+    *(.data)
+    *(.rodata)
+    *(.rodata.*)
+    _edata = .;
+  } > prom
+
+ 
+  .bss :
+  {
+    _sbss = .;
+    *(.bss)
+    _ebss = .;
+  } > ram
+}
+
