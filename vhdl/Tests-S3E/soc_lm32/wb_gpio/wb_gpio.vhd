@@ -25,8 +25,6 @@ end wb_gpio;
 -- Implementation -----------------------------------------------------------
 architecture rtl of wb_gpio is
 
-signal wbactive  : std_logic;
-
 signal oport_reg : std_logic_vector(31 downto 0);
 signal iport_reg : std_logic_vector(31 downto 0);
 
@@ -45,10 +43,10 @@ end process;
 -----------------------------------------------------------------------------
 -- Wishbone handling --------------------------------------------------------
 
-wb_ack_o <= wb_stb_i and wb_cyc_i;
+wb_ack_o <= wb_stb_i;
 
-wb_dat_o <= iport_reg when wb_stb_i='1' and wb_cyc_i='1' and wb_adr_i(3 downto 0)=x"0" else
-            oport_reg when wb_stb_i='1' and wb_cyc_i='1' and wb_adr_i(3 downto 0)=x"4" else
+wb_dat_o <= iport_reg when wb_stb_i='1' and wb_adr_i(3 downto 0)=x"0" else
+            oport_reg when wb_stb_i='1' and wb_adr_i(3 downto 0)=x"4" else
             (others => '-');
 
 writeproc: process (reset, clk) is
@@ -57,7 +55,7 @@ begin
 	if reset='1' then 
 		oport_reg <= (others => '0');
 	elsif clk'event and clk='1' then
-		if wb_stb_i='1' and wb_cyc_i='1' and wb_we_i='1' then 
+		if wb_stb_i='1' and wb_we_i='1' then 
 
 			-- decode WB_SEL_I --
 			if wb_sel_i(3)='1' then

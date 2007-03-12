@@ -2,7 +2,7 @@
 --
 -- For defines see intercon.defines
 --
--- Generated Thu Feb 15 16:16:00 2007
+-- Generated Tue Feb 13 14:08:14 2007
 --
 -- Wishbone masters:
 --   lm32i
@@ -12,11 +12,11 @@
 --   bram0
 --     baseadr 0x00000000 - size 0x00001000
 --   timer0
---     baseadr 0x80000000 - size 0x00001000
+--     baseadr 0x80000000 - size 0x00000100
 --   uart0
---     baseadr 0x80001000 - size 0x00001000
+--     baseadr 0x80000100 - size 0x00000100
 --   gpio0
---     baseadr 0x80002000 - size 0x00001000
+--     baseadr 0x80000200 - size 0x00000100
 -----------------------------------------------------------------------------------------
 library IEEE;
 use IEEE.std_logic_1164.all;
@@ -182,40 +182,30 @@ entity intercon is
   reset : in std_logic);
 end intercon;
 architecture rtl of intercon is
-  signal lm32i_bram0_ss : std_logic; -- slave select
-  signal lm32i_bram0_bg : std_logic; -- bus grant
-  signal lm32i_timer0_ss : std_logic; -- slave select
-  signal lm32i_timer0_bg : std_logic; -- bus grant
-  signal lm32i_uart0_ss : std_logic; -- slave select
-  signal lm32i_uart0_bg : std_logic; -- bus grant
-  signal lm32i_gpio0_ss : std_logic; -- slave select
-  signal lm32i_gpio0_bg : std_logic; -- bus grant
-  signal lm32d_bram0_ss : std_logic; -- slave select
-  signal lm32d_bram0_bg : std_logic; -- bus grant
-  signal lm32d_timer0_ss : std_logic; -- slave select
-  signal lm32d_timer0_bg : std_logic; -- bus grant
-  signal lm32d_uart0_ss : std_logic; -- slave select
-  signal lm32d_uart0_bg : std_logic; -- bus grant
-  signal lm32d_gpio0_ss : std_logic; -- slave select
-  signal lm32d_gpio0_bg : std_logic; -- bus grant
+  signal lm32i_bg : std_logic; -- bus grant
+  signal lm32d_bg : std_logic; -- bus grant
+  signal bram0_ss : std_logic; -- slave select
+  signal timer0_ss : std_logic; -- slave select
+  signal uart0_ss : std_logic; -- slave select
+  signal gpio0_ss : std_logic; -- slave select
 begin  -- rtl
-arbiter_bram0 : block
-  signal lm32i_bg, lm32i_bg_1, lm32i_bg_2, lm32i_bg_q : std_logic;
-  signal lm32i_trafic_limit : std_logic;
-  signal lm32d_bg, lm32d_bg_1, lm32d_bg_2, lm32d_bg_q : std_logic;
-  signal lm32d_trafic_limit : std_logic;
-  signal ce, idle, ack : std_logic;
-begin
-ack <= bram0_ack_o;
+arbiter_sharedbus: block
+  signal lm32i_bg_1, lm32i_bg_2, lm32i_bg_q : std_logic;
+  signal lm32d_bg_1, lm32d_bg_2, lm32d_bg_q : std_logic;
+  signal lm32i_trafic_ctrl_limit : std_logic;
+  signal lm32d_trafic_ctrl_limit : std_logic;
+  signal ack, ce, idle :std_logic;
+begin -- arbiter
+ack <= bram0_ack_o or timer0_ack_o or uart0_ack_o or gpio0_ack_o;
 
 trafic_supervision_1 : entity work.trafic_supervision
 generic map(
   priority => 1,
   tot_priority => 2)
 port map(
-  bg => lm32i_bram0_bg,
+  bg => lm32i_bg,
   ce => ce,
-  trafic_limit => lm32i_trafic_limit,
+  trafic_limit => lm32i_trafic_ctrl_limit,
   clk => clk,
   reset => reset);
 
@@ -224,9 +214,9 @@ generic map(
   priority => 1,
   tot_priority => 2)
 port map(
-  bg => lm32d_bram0_bg,
+  bg => lm32d_bg,
   ce => ce,
-  trafic_limit => lm32d_trafic_limit,
+  trafic_limit => lm32d_trafic_ctrl_limit,
   clk => clk,
   reset => reset);
 
@@ -257,281 +247,74 @@ end if;
 end process;
 
 idle <= '1' when lm32i_bg_q='0' and lm32d_bg_q='0' else '0';
-lm32i_bg_1 <= '1' when idle='1' and lm32i_cyc_o='1' and lm32i_bram0_ss='1' and lm32i_trafic_limit='0' else '0';
-lm32d_bg_1 <= '1' when idle='1' and (lm32i_bg_1='0') and lm32d_cyc_o='1' and lm32d_bram0_ss='1' and lm32d_trafic_limit='0' else '0';
-lm32i_bg_2 <= '1' when idle='1' and (lm32i_bg_1='0' and lm32d_bg_1='0') and lm32i_cyc_o='1' and lm32i_bram0_ss='1' else '0';
-lm32d_bg_2 <= '1' when idle='1' and (lm32i_bg_1='0' and lm32d_bg_1='0' and lm32i_bg_2='0') and lm32d_cyc_o='1' and lm32d_bram0_ss='1' else '0';
+lm32i_bg_1 <= '1' when idle='1' and lm32i_cyc_o='1' and lm32i_trafic_ctrl_limit='0' else '0';
+lm32d_bg_1 <= '1' when idle='1' and lm32d_cyc_o='1' and lm32d_trafic_ctrl_limit='0' and (lm32i_bg_1='0') else '0';
+lm32i_bg_2 <= '1' when idle='1' and (lm32i_bg_1='0' and lm32d_bg_1='0') and lm32i_cyc_o='1' else '0';
+lm32d_bg_2 <= '1' when idle='1' and (lm32i_bg_1='0' and lm32d_bg_1='0' and lm32i_bg_2='0') and lm32d_cyc_o='1' else '0';
 lm32i_bg <= lm32i_bg_q or lm32i_bg_1 or lm32i_bg_2;
 lm32d_bg <= lm32d_bg_q or lm32d_bg_1 or lm32d_bg_2;
-ce <= (lm32i_cyc_o and lm32i_bram0_ss) or (lm32d_cyc_o and lm32d_bram0_ss) when idle='1' else '0';
-lm32i_bram0_bg <= lm32i_bg;
-lm32d_bram0_bg <= lm32d_bg;
-end block arbiter_bram0;
-arbiter_timer0 : block
-  signal lm32i_bg, lm32i_bg_1, lm32i_bg_2, lm32i_bg_q : std_logic;
-  signal lm32i_trafic_limit : std_logic;
-  signal lm32d_bg, lm32d_bg_1, lm32d_bg_2, lm32d_bg_q : std_logic;
-  signal lm32d_trafic_limit : std_logic;
-  signal ce, idle, ack : std_logic;
-begin
-ack <= timer0_ack_o;
+ce <= lm32i_cyc_o or lm32d_cyc_o when idle='1' else '0';
 
-trafic_supervision_1 : entity work.trafic_supervision
-generic map(
-  priority => 1,
-  tot_priority => 2)
-port map(
-  bg => lm32i_timer0_bg,
-  ce => ce,
-  trafic_limit => lm32i_trafic_limit,
-  clk => clk,
-  reset => reset);
+end block arbiter_sharedbus;
 
-trafic_supervision_2 : entity work.trafic_supervision
-generic map(
-  priority => 1,
-  tot_priority => 2)
-port map(
-  bg => lm32d_timer0_bg,
-  ce => ce,
-  trafic_limit => lm32d_trafic_limit,
-  clk => clk,
-  reset => reset);
-
-process(clk,reset)
-begin
-if reset='1' then
-  lm32i_bg_q <= '0';
-elsif clk'event and clk='1' then
-if lm32i_bg_q='0' then
-  lm32i_bg_q <= lm32i_bg;
-elsif ack='1' then
-  lm32i_bg_q <= '0';
-end if;
-end if;
-end process;
-
-process(clk,reset)
-begin
-if reset='1' then
-  lm32d_bg_q <= '0';
-elsif clk'event and clk='1' then
-if lm32d_bg_q='0' then
-  lm32d_bg_q <= lm32d_bg;
-elsif ack='1' then
-  lm32d_bg_q <= '0';
-end if;
-end if;
-end process;
-
-idle <= '1' when lm32i_bg_q='0' and lm32d_bg_q='0' else '0';
-lm32i_bg_1 <= '1' when idle='1' and lm32i_cyc_o='1' and lm32i_timer0_ss='1' and lm32i_trafic_limit='0' else '0';
-lm32d_bg_1 <= '1' when idle='1' and (lm32i_bg_1='0') and lm32d_cyc_o='1' and lm32d_timer0_ss='1' and lm32d_trafic_limit='0' else '0';
-lm32i_bg_2 <= '1' when idle='1' and (lm32i_bg_1='0' and lm32d_bg_1='0') and lm32i_cyc_o='1' and lm32i_timer0_ss='1' else '0';
-lm32d_bg_2 <= '1' when idle='1' and (lm32i_bg_1='0' and lm32d_bg_1='0' and lm32i_bg_2='0') and lm32d_cyc_o='1' and lm32d_timer0_ss='1' else '0';
-lm32i_bg <= lm32i_bg_q or lm32i_bg_1 or lm32i_bg_2;
-lm32d_bg <= lm32d_bg_q or lm32d_bg_1 or lm32d_bg_2;
-ce <= (lm32i_cyc_o and lm32i_timer0_ss) or (lm32d_cyc_o and lm32d_timer0_ss) when idle='1' else '0';
-lm32i_timer0_bg <= lm32i_bg;
-lm32d_timer0_bg <= lm32d_bg;
-end block arbiter_timer0;
-arbiter_uart0 : block
-  signal lm32i_bg, lm32i_bg_1, lm32i_bg_2, lm32i_bg_q : std_logic;
-  signal lm32i_trafic_limit : std_logic;
-  signal lm32d_bg, lm32d_bg_1, lm32d_bg_2, lm32d_bg_q : std_logic;
-  signal lm32d_trafic_limit : std_logic;
-  signal ce, idle, ack : std_logic;
-begin
-ack <= uart0_ack_o;
-
-trafic_supervision_1 : entity work.trafic_supervision
-generic map(
-  priority => 1,
-  tot_priority => 2)
-port map(
-  bg => lm32i_uart0_bg,
-  ce => ce,
-  trafic_limit => lm32i_trafic_limit,
-  clk => clk,
-  reset => reset);
-
-trafic_supervision_2 : entity work.trafic_supervision
-generic map(
-  priority => 1,
-  tot_priority => 2)
-port map(
-  bg => lm32d_uart0_bg,
-  ce => ce,
-  trafic_limit => lm32d_trafic_limit,
-  clk => clk,
-  reset => reset);
-
-process(clk,reset)
-begin
-if reset='1' then
-  lm32i_bg_q <= '0';
-elsif clk'event and clk='1' then
-if lm32i_bg_q='0' then
-  lm32i_bg_q <= lm32i_bg;
-elsif ack='1' then
-  lm32i_bg_q <= '0';
-end if;
-end if;
-end process;
-
-process(clk,reset)
-begin
-if reset='1' then
-  lm32d_bg_q <= '0';
-elsif clk'event and clk='1' then
-if lm32d_bg_q='0' then
-  lm32d_bg_q <= lm32d_bg;
-elsif ack='1' then
-  lm32d_bg_q <= '0';
-end if;
-end if;
-end process;
-
-idle <= '1' when lm32i_bg_q='0' and lm32d_bg_q='0' else '0';
-lm32i_bg_1 <= '1' when idle='1' and lm32i_cyc_o='1' and lm32i_uart0_ss='1' and lm32i_trafic_limit='0' else '0';
-lm32d_bg_1 <= '1' when idle='1' and (lm32i_bg_1='0') and lm32d_cyc_o='1' and lm32d_uart0_ss='1' and lm32d_trafic_limit='0' else '0';
-lm32i_bg_2 <= '1' when idle='1' and (lm32i_bg_1='0' and lm32d_bg_1='0') and lm32i_cyc_o='1' and lm32i_uart0_ss='1' else '0';
-lm32d_bg_2 <= '1' when idle='1' and (lm32i_bg_1='0' and lm32d_bg_1='0' and lm32i_bg_2='0') and lm32d_cyc_o='1' and lm32d_uart0_ss='1' else '0';
-lm32i_bg <= lm32i_bg_q or lm32i_bg_1 or lm32i_bg_2;
-lm32d_bg <= lm32d_bg_q or lm32d_bg_1 or lm32d_bg_2;
-ce <= (lm32i_cyc_o and lm32i_uart0_ss) or (lm32d_cyc_o and lm32d_uart0_ss) when idle='1' else '0';
-lm32i_uart0_bg <= lm32i_bg;
-lm32d_uart0_bg <= lm32d_bg;
-end block arbiter_uart0;
-arbiter_gpio0 : block
-  signal lm32i_bg, lm32i_bg_1, lm32i_bg_2, lm32i_bg_q : std_logic;
-  signal lm32i_trafic_limit : std_logic;
-  signal lm32d_bg, lm32d_bg_1, lm32d_bg_2, lm32d_bg_q : std_logic;
-  signal lm32d_trafic_limit : std_logic;
-  signal ce, idle, ack : std_logic;
-begin
-ack <= gpio0_ack_o;
-
-trafic_supervision_1 : entity work.trafic_supervision
-generic map(
-  priority => 1,
-  tot_priority => 2)
-port map(
-  bg => lm32i_gpio0_bg,
-  ce => ce,
-  trafic_limit => lm32i_trafic_limit,
-  clk => clk,
-  reset => reset);
-
-trafic_supervision_2 : entity work.trafic_supervision
-generic map(
-  priority => 1,
-  tot_priority => 2)
-port map(
-  bg => lm32d_gpio0_bg,
-  ce => ce,
-  trafic_limit => lm32d_trafic_limit,
-  clk => clk,
-  reset => reset);
-
-process(clk,reset)
-begin
-if reset='1' then
-  lm32i_bg_q <= '0';
-elsif clk'event and clk='1' then
-if lm32i_bg_q='0' then
-  lm32i_bg_q <= lm32i_bg;
-elsif ack='1' then
-  lm32i_bg_q <= '0';
-end if;
-end if;
-end process;
-
-process(clk,reset)
-begin
-if reset='1' then
-  lm32d_bg_q <= '0';
-elsif clk'event and clk='1' then
-if lm32d_bg_q='0' then
-  lm32d_bg_q <= lm32d_bg;
-elsif ack='1' then
-  lm32d_bg_q <= '0';
-end if;
-end if;
-end process;
-
-idle <= '1' when lm32i_bg_q='0' and lm32d_bg_q='0' else '0';
-lm32i_bg_1 <= '1' when idle='1' and lm32i_cyc_o='1' and lm32i_gpio0_ss='1' and lm32i_trafic_limit='0' else '0';
-lm32d_bg_1 <= '1' when idle='1' and (lm32i_bg_1='0') and lm32d_cyc_o='1' and lm32d_gpio0_ss='1' and lm32d_trafic_limit='0' else '0';
-lm32i_bg_2 <= '1' when idle='1' and (lm32i_bg_1='0' and lm32d_bg_1='0') and lm32i_cyc_o='1' and lm32i_gpio0_ss='1' else '0';
-lm32d_bg_2 <= '1' when idle='1' and (lm32i_bg_1='0' and lm32d_bg_1='0' and lm32i_bg_2='0') and lm32d_cyc_o='1' and lm32d_gpio0_ss='1' else '0';
-lm32i_bg <= lm32i_bg_q or lm32i_bg_1 or lm32i_bg_2;
-lm32d_bg <= lm32d_bg_q or lm32d_bg_1 or lm32d_bg_2;
-ce <= (lm32i_cyc_o and lm32i_gpio0_ss) or (lm32d_cyc_o and lm32d_gpio0_ss) when idle='1' else '0';
-lm32i_gpio0_bg <= lm32i_bg;
-lm32d_gpio0_bg <= lm32d_bg;
-end block arbiter_gpio0;
 decoder:block
+  signal adr : std_logic_vector(31 downto 0);
 begin
-lm32i_bram0_ss <= '1' when lm32i_adr_o(31 downto 12)="00000000000000000000" else 
+adr <= (lm32i_adr_o and lm32i_bg) or (lm32d_adr_o and lm32d_bg);
+bram0_ss <= '1' when adr(31 downto 12)="00000000000000000000" else
 '0';
-lm32i_timer0_ss <= '1' when lm32i_adr_o(31 downto 12)="10000000000000000000" else 
+timer0_ss <= '1' when adr(31 downto 8)="" else
 '0';
-lm32i_uart0_ss <= '1' when lm32i_adr_o(31 downto 12)="10000000000000000001" else 
+uart0_ss <= '1' when adr(31 downto 8)="" else
 '0';
-lm32i_gpio0_ss <= '1' when lm32i_adr_o(31 downto 12)="10000000000000000010" else 
+gpio0_ss <= '1' when adr(31 downto 8)="" else
 '0';
-lm32d_bram0_ss <= '1' when lm32d_adr_o(31 downto 12)="00000000000000000000" else 
-'0';
-lm32d_timer0_ss <= '1' when lm32d_adr_o(31 downto 12)="10000000000000000000" else 
-'0';
-lm32d_uart0_ss <= '1' when lm32d_adr_o(31 downto 12)="10000000000000000001" else 
-'0';
-lm32d_gpio0_ss <= '1' when lm32d_adr_o(31 downto 12)="10000000000000000010" else 
-'0';
-bram0_adr_i <= (lm32i_adr_o(31 downto 0) and lm32i_bram0_bg) or (lm32d_adr_o(31 downto 0) and lm32d_bram0_bg);
-timer0_adr_i <= (lm32i_adr_o(31 downto 0) and lm32i_timer0_bg) or (lm32d_adr_o(31 downto 0) and lm32d_timer0_bg);
-uart0_adr_i <= (lm32i_adr_o(31 downto 0) and lm32i_uart0_bg) or (lm32d_adr_o(31 downto 0) and lm32d_uart0_bg);
-gpio0_adr_i <= (lm32i_adr_o(31 downto 0) and lm32i_gpio0_bg) or (lm32d_adr_o(31 downto 0) and lm32d_gpio0_bg);
+bram0_adr_i <= adr(31 downto 0);
+timer0_adr_i <= adr(31 downto 0);
+uart0_adr_i <= adr(31 downto 0);
+gpio0_adr_i <= adr(31 downto 0);
 end block decoder;
 
--- cyc_i(s)
-bram0_cyc_i <= (lm32i_cyc_o and lm32i_bram0_bg) or (lm32d_cyc_o and lm32d_bram0_bg);
-timer0_cyc_i <= (lm32i_cyc_o and lm32i_timer0_bg) or (lm32d_cyc_o and lm32d_timer0_bg);
-uart0_cyc_i <= (lm32i_cyc_o and lm32i_uart0_bg) or (lm32d_cyc_o and lm32d_uart0_bg);
-gpio0_cyc_i <= (lm32i_cyc_o and lm32i_gpio0_bg) or (lm32d_cyc_o and lm32d_gpio0_bg);
--- stb_i(s)
-bram0_stb_i <= (lm32i_stb_o and lm32i_bram0_bg) or (lm32d_stb_o and lm32d_bram0_bg);
-timer0_stb_i <= (lm32i_stb_o and lm32i_timer0_bg) or (lm32d_stb_o and lm32d_timer0_bg);
-uart0_stb_i <= (lm32i_stb_o and lm32i_uart0_bg) or (lm32d_stb_o and lm32d_uart0_bg);
-gpio0_stb_i <= (lm32i_stb_o and lm32i_gpio0_bg) or (lm32d_stb_o and lm32d_gpio0_bg);
--- we_i(s)
-bram0_we_i <= (lm32i_we_o and lm32i_bram0_bg) or (lm32d_we_o and lm32d_bram0_bg);
-timer0_we_i <= (lm32i_we_o and lm32i_timer0_bg) or (lm32d_we_o and lm32d_timer0_bg);
-uart0_we_i <= (lm32i_we_o and lm32i_uart0_bg) or (lm32d_we_o and lm32d_uart0_bg);
-gpio0_we_i <= (lm32i_we_o and lm32i_gpio0_bg) or (lm32d_we_o and lm32d_gpio0_bg);
--- ack_i(s)
-lm32i_ack_i <= (bram0_ack_o and lm32i_bram0_bg) or (timer0_ack_o and lm32i_timer0_bg) or (uart0_ack_o and lm32i_uart0_bg) or (gpio0_ack_o and lm32i_gpio0_bg);
-lm32d_ack_i <= (bram0_ack_o and lm32d_bram0_bg) or (timer0_ack_o and lm32d_timer0_bg) or (uart0_ack_o and lm32d_uart0_bg) or (gpio0_ack_o and lm32d_gpio0_bg);
--- rty_i(s)
+mux: block
+  signal cyc, stb, we, ack : std_logic;
+  signal sel : std_logic_vector(3 downto 0);
+  signal dat_m2s, dat_s2m : std_logic_vector(31 downto 0);
+begin
+cyc <= (lm32i_cyc_o and lm32i_bg) or (lm32d_cyc_o and lm32d_bg);
+bram0_cyc_i <= bram0_ss and cyc;
+timer0_cyc_i <= timer0_ss and cyc;
+uart0_cyc_i <= uart0_ss and cyc;
+gpio0_cyc_i <= gpio0_ss and cyc;
+stb <= (lm32i_stb_o and lm32i_bg) or (lm32d_stb_o and lm32d_bg);
+bram0_stb_i <= stb;
+timer0_stb_i <= stb;
+uart0_stb_i <= stb;
+gpio0_stb_i <= stb;
+we <= (lm32i_we_o and lm32i_bg) or (lm32d_we_o and lm32d_bg);
+bram0_we_i <= we;
+timer0_we_i <= we;
+uart0_we_i <= we;
+gpio0_we_i <= we;
+ack <= bram0_ack_o or timer0_ack_o or uart0_ack_o or gpio0_ack_o;
+lm32i_ack_i <= ack and lm32i_bg;
+lm32d_ack_i <= ack and lm32d_bg;
 lm32i_rty_i <= '0';
 lm32d_rty_i <= '0';
--- err_i(s)
 lm32i_err_i <= '0';
 lm32d_err_i <= '0';
--- sel_i(s)
-bram0_sel_i <= (lm32i_sel_o and lm32i_bram0_bg) or (lm32d_sel_o and lm32d_bram0_bg);
-timer0_sel_i <= (lm32i_sel_o and lm32i_timer0_bg) or (lm32d_sel_o and lm32d_timer0_bg);
-uart0_sel_i <= (lm32i_sel_o and lm32i_uart0_bg) or (lm32d_sel_o and lm32d_uart0_bg);
-gpio0_sel_i <= (lm32i_sel_o and lm32i_gpio0_bg) or (lm32d_sel_o and lm32d_gpio0_bg);
--- slave dat_i(s)
-bram0_dat_i <= (lm32i_dat_o and lm32i_bram0_bg) or (lm32d_dat_o and lm32d_bram0_bg);
-timer0_dat_i <= (lm32i_dat_o and lm32i_timer0_bg) or (lm32d_dat_o and lm32d_timer0_bg);
-uart0_dat_i <= (lm32i_dat_o and lm32i_uart0_bg) or (lm32d_dat_o and lm32d_uart0_bg);
-gpio0_dat_i <= (lm32i_dat_o and lm32i_gpio0_bg) or (lm32d_dat_o and lm32d_gpio0_bg);
--- master dat_i(s)
-lm32i_dat_i <= (bram0_dat_o and lm32i_bram0_bg) or (timer0_dat_o and lm32i_timer0_bg) or (uart0_dat_o and lm32i_uart0_bg) or (gpio0_dat_o and lm32i_gpio0_bg);
-lm32d_dat_i <= (bram0_dat_o and lm32d_bram0_bg) or (timer0_dat_o and lm32d_timer0_bg) or (uart0_dat_o and lm32d_uart0_bg) or (gpio0_dat_o and lm32d_gpio0_bg);
--- tgc_i
--- tga_i
+sel <= (lm32i_sel_o and lm32i_bg) or (lm32d_sel_o and lm32d_bg);
+bram0_sel_i <= sel;
+timer0_sel_i <= sel;
+uart0_sel_i <= sel;
+gpio0_sel_i <= sel;
+dat_m2s <= (lm32i_dat_o and lm32i_bg) or (lm32d_dat_o and lm32d_bg);
+bram0_dat_i <= dat_m2s;
+timer0_dat_i <= dat_m2s;
+uart0_dat_i <= dat_m2s;
+gpio0_dat_i <= dat_m2s;
+dat_s2m <= (bram0_dat_o and bram0_ss) or (timer0_dat_o and timer0_ss) or (uart0_dat_o and uart0_ss) or (gpio0_dat_o and gpio0_ss);
+lm32i_dat_i <= dat_s2m;
+lm32d_dat_i <= dat_s2m;
+end block mux;
+
 end rtl;
