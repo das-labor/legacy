@@ -13,7 +13,14 @@ entity System is
 		hex3     : out std_logic_vector(6 downto 0);
 		btn      : in  std_logic_vector(3 downto 0);
 		uart_rx  : in  std_logic;
-		uart_tx  : out std_logic
+		uart_tx  : out std_logic;
+		
+		sram_oe_n : out std_logic;
+	  	sram_we_n : out std_logic;
+	  	sram_ub_n : out std_logic;
+	  	sram_lb_n : out std_logic;
+	  	sram_addr : out std_logic_vector(18 downto 0);
+	    sram_dq   : inout std_logic_vector(15 downto 0)
 	);
 end System;
 
@@ -57,6 +64,15 @@ component intercon is
   bram0_adr_i : out std_logic_vector(31 downto 0);
   bram0_cyc_i : out std_logic;
   bram0_stb_i : out std_logic;
+  -- sram0
+  sram0_dat_o : in  std_logic_vector(31 downto 0);
+  sram0_ack_o : in  std_logic;
+  sram0_dat_i : out std_logic_vector(31 downto 0);
+  sram0_we_i  : out std_logic;
+  sram0_sel_i : out std_logic_vector(3 downto 0);
+  sram0_adr_i : out std_logic_vector(31 downto 0);
+  sram0_cyc_i : out std_logic;
+  sram0_stb_i : out std_logic;
   -- timer0
   timer0_dat_o : in  std_logic_vector(31 downto 0);
   timer0_ack_o : in  std_logic;
@@ -194,6 +210,30 @@ component wb_uart is
 		uart_tx    : out std_logic );
 end component wb_uart;
 
+component wb_sram is
+	port(
+	  clk      : in  std_logic;
+      reset    : in  std_logic;
+      -- Wishbone bus
+      wb_adr_i : in  std_logic_vector(31 downto 0);
+      wb_dat_i : in  std_logic_vector(31 downto 0);
+      wb_dat_o : out std_logic_vector(31 downto 0);
+      wb_sel_i : in  std_logic_vector( 3 downto 0);
+      wb_cyc_i : in  std_logic;
+      wb_stb_i : in  std_logic;
+      wb_ack_o : out std_logic;
+      wb_we_i  : in  std_logic;
+      -- Pins für das SRAM
+	  sram_oe_n : out std_logic;
+	  sram_we_n : out std_logic;
+	  sram_ub_n : out std_logic;
+	  sram_lb_n : out std_logic;
+	  sram_addr : out std_logic_vector(18 downto 0);
+	  sram_dq   : inout std_logic_vector(15 downto 0)
+		);
+end component wb_sram;
+
+
 component wb_gpio is
    port (
       clk      : in  std_logic;
@@ -290,6 +330,16 @@ signal gpio0_stb_i   : std_logic;
 signal gpio0_ack_o   : std_logic;
 signal gpio0_we_i    : std_logic;
 
+signal sram0_adr_i   : std_logic_vector(31 downto 0);
+signal sram0_dat_o   : std_logic_vector(31 downto 0);
+signal sram0_dat_i   : std_logic_vector(31 downto 0);
+signal sram0_sel_i   : std_logic_vector( 3 downto 0);
+signal sram0_cyc_i   : std_logic;
+signal sram0_stb_i   : std_logic;
+signal sram0_ack_o   : std_logic;
+signal sram0_we_i    : std_logic;
+
+
 -------------------------------------------------------------------------
 -- Implementation -----------------------------------------------------------
 -----------------------------------------------------------------------------
@@ -352,6 +402,7 @@ bram0: wb_bram
 			wb_cyc_i  => bram0_cyc_i,
 			wb_ack_o  => bram0_ack_o,
 			wb_we_i   => bram0_we_i
+	 
 		);
 		
 uart0: wb_uart
@@ -373,6 +424,29 @@ uart0: wb_uart
 			uart_rx   => uart_rx,
 			uart_tx   => uart_tx
 	);
+
+sram0: wb_sram
+	Port map (
+			clk       => clk,
+			reset     => reset,
+			--
+			wb_adr_i  => sram0_adr_i,
+			wb_dat_o  => sram0_dat_o,
+			wb_dat_i  => sram0_dat_i,
+			wb_sel_i  => sram0_sel_i,
+			wb_stb_i  => sram0_stb_i,
+			wb_cyc_i  => sram0_cyc_i,
+			wb_ack_o  => sram0_ack_o,
+			wb_we_i   => sram0_we_i,
+			
+			sram_oe_n => sram_oe_n,
+			sram_we_n => sram_we_n,
+			sram_ub_n => sram_ub_n,
+			sram_lb_n => sram_lb_n,
+			sram_addr => sram_addr,
+			sram_dq   => sram_dq 
+			
+	);	
 	
 gpio0: wb_gpio
 	Port map (
@@ -478,6 +552,15 @@ wb0: intercon
   timer0_adr_i => timer0_adr_i,
   timer0_cyc_i => timer0_cyc_i,
   timer0_stb_i => timer0_stb_i,
+  -- sram0
+  sram0_dat_o  => sram0_dat_o, 
+  sram0_ack_o  => sram0_ack_o,  
+  sram0_dat_i  => sram0_dat_i, 
+  sram0_we_i   => sram0_we_i,  
+  sram0_sel_i  => sram0_sel_i, 
+  sram0_adr_i  => sram0_adr_i, 
+  sram0_cyc_i  => sram0_cyc_i, 
+  sram0_stb_i  => sram0_stb_i, 
   -- uart0
   uart0_dat_o => uart0_dat_o,
   uart0_ack_o => uart0_ack_o,

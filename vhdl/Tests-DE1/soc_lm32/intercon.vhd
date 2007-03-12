@@ -2,7 +2,7 @@
 --
 -- For defines see intercon.defines
 --
--- Generated Sun Mar 11 01:02:17 2007
+-- Generated Mon Mar 12 22:11:16 2007
 --
 -- Wishbone masters:
 --   lm32i
@@ -18,7 +18,7 @@
 --   gpio0
 --     baseadr 0x80002000 - size 0x00001000
 --   sram0
---     baseadr 0x00001000 - size 0x00080000
+--     baseadr 0x00080000 - size 0x00080000
 -----------------------------------------------------------------------------------------
 library IEEE;
 use IEEE.std_logic_1164.all;
@@ -497,8 +497,8 @@ ack <= sram0_ack_o;
 
 trafic_supervision_1 : entity work.trafic_supervision
 generic map(
-  priority => ,
-  tot_priority => 0)
+  priority => 1,
+  tot_priority => 2)
 port map(
   bg => lm32i_sram0_bg,
   ce => ce,
@@ -508,8 +508,8 @@ port map(
 
 trafic_supervision_2 : entity work.trafic_supervision
 generic map(
-  priority => ,
-  tot_priority => 0)
+  priority => 1,
+  tot_priority => 2)
 port map(
   bg => lm32d_sram0_bg,
   ce => ce,
@@ -564,7 +564,7 @@ lm32i_uart0_ss <= '1' when lm32i_adr_o(31 downto 12)="10000000000000000001" else
 '0';
 lm32i_gpio0_ss <= '1' when lm32i_adr_o(31 downto 12)="10000000000000000010" else 
 '0';
-lm32i_sram0_ss <= '1' when lm32i_adr_o(31 downto 19)="0000000000000" else 
+lm32i_sram0_ss <= '1' when lm32i_adr_o(31 downto 19)="0000000000001" else 
 '0';
 lm32d_bram0_ss <= '1' when lm32d_adr_o(31 downto 12)="00000000000000000000" else 
 '0';
@@ -574,7 +574,7 @@ lm32d_uart0_ss <= '1' when lm32d_adr_o(31 downto 12)="10000000000000000001" else
 '0';
 lm32d_gpio0_ss <= '1' when lm32d_adr_o(31 downto 12)="10000000000000000010" else 
 '0';
-lm32d_sram0_ss <= '1' when lm32d_adr_o(31 downto 19)="0000000000000" else 
+lm32d_sram0_ss <= '1' when lm32d_adr_o(31 downto 19)="0000000000001" else 
 '0';
 bram0_adr_i <= (lm32i_adr_o(31 downto 0) and lm32i_bram0_bg) or (lm32d_adr_o(31 downto 0) and lm32d_bram0_bg);
 timer0_adr_i <= (lm32i_adr_o(31 downto 0) and lm32i_timer0_bg) or (lm32d_adr_o(31 downto 0) and lm32d_timer0_bg);

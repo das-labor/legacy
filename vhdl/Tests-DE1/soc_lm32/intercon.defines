@@ -33,7 +33,7 @@ master lm32i
   priority_timer0=1
   priority_uart0=1
   priority_gpio0=1
-  priority_sram0=
+  priority_sram0=1
 end master lm32i
 
 master lm32d
@@ -48,7 +48,7 @@ master lm32d
   priority_timer0=1
   priority_uart0=1
   priority_gpio0=1
-  priority_sram0=
+  priority_sram0=1
 end master lm32d
 
 slave bram0
