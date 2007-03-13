@@ -10,6 +10,7 @@
 #include "buttons.h"
 #include "blinkenlights.h"
 #include "pong.h"
+#include "invaders.h"
 
 volatile unsigned char oldMode, oldOldmode, mode;
 
@@ -35,7 +36,8 @@ int main (void){
 //			spirale(5);
 			break;
 		case 3:
-			play_pong();
+			play_invaders();
+//			play_pong();
 //			joern1();
 			break;
 		case 4:

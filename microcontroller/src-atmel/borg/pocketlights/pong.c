@@ -19,7 +19,7 @@ static int game_won=0;
 void reset_ball(){
 	ball.pos = (pixel){NUM_COLS/2,NUM_ROWS/2};
 	ball.speed = 1;
-	ball.dir = random()%3;	
+	ball.dir = random()%4;	
 }
 
 void draw_paddles(){
@@ -81,7 +81,7 @@ void move_ball(){
 	if(ball.pos.y<=0){
 		switch(ball.dir){
 			case left_up: 		ball.dir=left_down; 	break;
-			case right_up: 	ball.dir=right_down;	break;
+			case right_up: 	ball.dir=right_down; break;
 			default:							break;
 		}		
 	}
@@ -90,12 +90,12 @@ void move_ball(){
 	
 	//ball direction is left, check left paddle for collision
 	if((ball.dir==left_up)||(ball.dir==left_down)){
-		if(ball.pos.x==NUM_COLS-2){
+		if(ball.pos.x==NUM_COLS-2 || ball.pos.x==NUM_COLS-1){
 			if((ball.pos.y>=paddle1_posy)&&(ball.pos.y<=(paddle1_posy+PADDLE_LENGTH))){ //paddle is placed right, ball is hit.
 				switch(ball.dir){
-					case left_up:		ball.dir=right_up;	break;
+					case left_up:		ball.dir=right_up;		break;
 					case left_down:	ball.dir=right_down;	break;
-					default:							break;
+					default:								break;
 				}
 			} else {	// Ooops. Player 1 has missed the ball....
 				draw_paddles();
@@ -116,14 +116,13 @@ void move_ball(){
 				setpixel(ball.pos,3);
 				wait(700);
 				reset_ball();
-
 			}
 		}
 	}
 	
 	//ball direction is right, check right paddle for collision
 	if((ball.dir==right_up)||(ball.dir==right_down)){
-		if(ball.pos.x==1){
+		if(ball.pos.x==1 || ball.pos.x==0){
 			if((ball.pos.y>=paddle2_posy)&&(ball.pos.y<=paddle2_posy+PADDLE_LENGTH)){ //paddle is placed right, ball is hit.
 				switch(ball.dir){
 					case right_up:		ball.dir=left_up;	break;
@@ -187,11 +186,12 @@ void play_pong(){
 	
 	while(!game_won){
 		clear_screen(0);
-		move_ball();
 		react_input();
 		draw_paddles();
+		move_ball();
 		draw_ball();
 		wait(100);
 	}	
 	scrolltext("</#Game Over...");
 }
+
