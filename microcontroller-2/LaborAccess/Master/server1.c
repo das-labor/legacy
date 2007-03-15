@@ -2,21 +2,7 @@
 #include "uart_sw.h"
 #include "avrx.h"
 
-typedef struct{
-	uint8_t type;
-	uint8_t data[10];
-}request_t;
-
-typedef struct{
-	uint16_t index;
-	uint8_t[8] key;	
-}credentials_t;
-
-typedef struct{
-	enum request_type type;
-	credentials_t credentials;
-}request_cred_t;
-
+#include "protocol.h"
 
 AVRX_GCC_TASKDEF(server1, 50, 4)
 {
@@ -35,7 +21,7 @@ AVRX_GCC_TASKDEF(server1, 50, 4)
 		}else{
 		
 			switch (req.type){
-				case REQ_OPEN:{
+				case REQ_OPEN_CRED:{
 					if ()
 					break;
 				}
