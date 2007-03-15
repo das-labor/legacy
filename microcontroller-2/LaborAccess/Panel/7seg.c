@@ -28,8 +28,22 @@ unsigned char letters[] PROGMEM = {
 	0x74,//h
 	0x30,//I
 	0x1e,//J
-	0x80,
-	0x38,//L	
+	0x80,//K - special 0
+	0x38,//L
+	0x81,//m - special 1
+	0x54,//n
+	0x5c,//o
+	0x73,//P
+	0x67,//q
+	0x50,//r
+	0x6d,//S
+	0x78,//t
+	0x1c,//u
+	0x3c,//V
+	0x82,//w - special 2
+	0x76,//X
+	0x66,//Y
+	0x5b,//Z	
 };
 
 unsigned char field[] PROGMEM ={
@@ -42,7 +56,7 @@ uint8_t fp = 10;
 
 void seg_putc(uint8_t c){
 	uint8_t dat, row;
-	if(c == '\n'){
+	if(c == '\r'){
 		uint8_t f;
 		fp = 10;
 		for(f=0;f<10;f++){
@@ -54,14 +68,12 @@ void seg_putc(uint8_t c){
 		return;		
 	}
 	if (c >= 'a'){
-		dat	= PGMB(letters[c-'a']);
+		dat = PGMB(letters[c-'a']);
 	}else{
 		dat = PGMB(numbers[c-'0']);	
 	}
 	row = PGMB(field[fp]);
-	pixmap[0][row][0] = dat;
-	pixmap[1][row][0] = dat;
-	pixmap[2][row][0] = dat;
+	pixmap[row][0] = dat;
 	fp--;
 	if(fp == 0xff){
 		fp = 10;
