@@ -40,8 +40,8 @@ applicable agreement for further details.
 	(port
 		(pt 0 64)
 		(input)
-		(text "btn[3..0]" (rect 0 0 41 12)(font "Arial" ))
-		(text "btn[3..0]" (rect 21 59 62 71)(font "Arial" ))
+		(text "btn[9..0]" (rect 0 0 41 12)(font "Arial" ))
+		(text "btn[9..0]" (rect 21 59 62 71)(font "Arial" ))
 		(line (pt 0 64)(pt 16 64)(line_width 3))
 	)
 	(port
