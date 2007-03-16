@@ -11,7 +11,7 @@ entity System is
 		hex1     : out std_logic_vector(6 downto 0);
 		hex2     : out std_logic_vector(6 downto 0);
 		hex3     : out std_logic_vector(6 downto 0);
-		btn      : in  std_logic_vector(3 downto 0);
+		btn      : in  std_logic_vector(9 downto 0);
 		uart_rx  : in  std_logic;
 		uart_tx  : out std_logic;
 		
@@ -252,12 +252,14 @@ component wb_gpio is
       oport    : out std_logic_vector(31 downto 0) );
 end component wb_gpio;
 
-component hex is
+component nibble7Seg is
    port (
-      digit    : in  std_logic_vector(3 downto 0);
+      nibble0  : in  std_logic_vector(3 downto 0);
+	  nibble1  : in  std_logic_vector(3 downto 0);
+	  sel      : in  std_logic;
 	  hex      : out std_logic_vector(6 downto 0)	
         );
-end component hex;
+end component nibble7Seg;
 -----------------------------------------------------------------------------
 -- Local Signals ------------------------------------------------------------
 -----------------------------------------------------------------------------
@@ -346,7 +348,7 @@ signal sram0_we_i    : std_logic;
 begin
 
 --leds <= oport(7 downto 0);
-iport(3 downto 0) <= btn;
+iport(3 downto 0) <= btn(3 downto 0);
 leds <= clk & reset & i_stb_o & i_ack_i & d_stb_o & d_ack_i & bram0_stb_i & bram0_ack_o;
 
 
@@ -481,26 +483,34 @@ timer0: wb_timer
 			wb_we_i   => timer0_we_i
 	);
 	
-digit0:hex
+digit0:nibble7Seg
 	Port map (
-		digit    => i_adr_o(3 downto 0),
-		hex      => hex0	 	
+		sel       => btn(9),
+		nibble0   => i_adr_o(3 downto 0),
+		nibble1   => i_adr_o(19 downto 16),
+		hex       => hex0	 	
 			 );
 
-digit1:hex
+digit1:nibble7Seg
 	Port map (
-		digit    => i_adr_o(7 downto 4),
-		hex      => hex1	 	
+		sel       => btn(9),
+		nibble0   => i_adr_o(7 downto 4),
+		nibble1   => i_adr_o(23 downto 20),
+		hex       => hex1	 	
 			 );
-digit2:hex
+digit2:nibble7Seg
 	Port map (
-		digit    => i_adr_o(11 downto 8),
-		hex      => hex2	 	
+		sel       => btn(9),
+		nibble0   => i_adr_o(11 downto 8),
+		nibble1   => i_adr_o(27 downto 24),
+		hex       => hex2	 	
 			 );
-digit3:hex
+digit3:nibble7Seg
 	Port map (
-		digit    => i_adr_o(15 downto 12),
-		hex      => hex3	 	
+		sel       => btn(9),
+		nibble0   => i_adr_o(15 downto 12),
+		nibble1   => i_adr_o(31 downto 28),
+		hex       => hex3	 	
 			 );						
 			
 

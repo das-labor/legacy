@@ -54,23 +54,6 @@ applicable agreement for further details.
 )
 (pin
 	(input)
-	(rect 232 176 400 192)
-	(text "INPUT" (rect 133 0 161 10)(font "Arial" (font_size 6)))
-	(text "SW[3..0]" (rect 5 0 48 12)(font "Arial" ))
-	(pt 168 8)
-	(drawing
-		(line (pt 92 12)(pt 117 12)(line_width 1))
-		(line (pt 92 4)(pt 117 4)(line_width 1))
-		(line (pt 121 8)(pt 168 8)(line_width 1))
-		(line (pt 92 12)(pt 92 4)(line_width 1))
-		(line (pt 117 4)(pt 121 8)(line_width 1))
-		(line (pt 117 12)(pt 121 8)(line_width 1))
-	)
-	(text "VCC" (rect 136 7 156 17)(font "Arial" (font_size 6)))
-	(annotation_block (location)(rect 144 192 200 248))
-)
-(pin
-	(input)
 	(rect 8 160 176 176)
 	(text "INPUT" (rect 133 0 161 10)(font "Arial" (font_size 6)))
 	(text "KEY[1]" (rect 5 0 40 12)(font "Arial" ))
@@ -102,6 +85,23 @@ applicable agreement for further details.
 	)
 	(text "VCC" (rect 136 7 156 17)(font "Arial" (font_size 6)))
 	(annotation_block (location)(rect -48 128 0 144))
+)
+(pin
+	(input)
+	(rect 232 176 400 192)
+	(text "INPUT" (rect 133 0 161 10)(font "Arial" (font_size 6)))
+	(text "SW[9..0]" (rect 5 0 48 12)(font "Arial" ))
+	(pt 168 8)
+	(drawing
+		(line (pt 92 12)(pt 117 12)(line_width 1))
+		(line (pt 92 4)(pt 117 4)(line_width 1))
+		(line (pt 121 8)(pt 168 8)(line_width 1))
+		(line (pt 92 12)(pt 92 4)(line_width 1))
+		(line (pt 117 4)(pt 121 8)(line_width 1))
+		(line (pt 117 12)(pt 121 8)(line_width 1))
+	)
+	(text "VCC" (rect 136 7 156 17)(font "Arial" (font_size 6)))
+	(annotation_block (location)(rect 144 192 200 248))
 )
 (pin
 	(output)
@@ -385,8 +385,8 @@ applicable agreement for further details.
 	(port
 		(pt 0 64)
 		(input)
-		(text "btn[3..0]" (rect 0 0 41 12)(font "Arial" ))
-		(text "btn[3..0]" (rect 21 59 62 71)(font "Arial" ))
+		(text "btn[9..0]" (rect 0 0 41 12)(font "Arial" ))
+		(text "btn[9..0]" (rect 21 59 62 71)(font "Arial" ))
 		(line (pt 0 64)(pt 16 64)(line_width 3))
 	)
 	(port
@@ -485,14 +485,6 @@ applicable agreement for further details.
 	)
 )
 (connector
-	(pt 400 168)
-	(pt 232 168)
-)
-(connector
-	(pt 400 152)
-	(pt 240 152)
-)
-(connector
 	(pt 240 152)
 	(pt 240 128)
 )
@@ -503,5 +495,13 @@ applicable agreement for further details.
 (connector
 	(pt 176 168)
 	(pt 184 168)
+)
+(connector
+	(pt 240 152)
+	(pt 400 152)
+)
+(connector
+	(pt 232 168)
+	(pt 400 168)
 )
 (junction (pt 176 168))
