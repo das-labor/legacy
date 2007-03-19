@@ -1,10 +1,8 @@
 #include <avr/pgmspace.h>
-#include "pixel.h"
+#include "borg_hw.h"
 #include "7seg.h"
 
-
-
-unsigned char numbers[] PROGMEM = {
+uint8_t numbers[] PROGMEM = {
 	0x3f,//0
 	0x06,//1
 	0x5B,//2
@@ -17,7 +15,7 @@ unsigned char numbers[] PROGMEM = {
 	0x6f,//9	
 };
 
-unsigned char letters[] PROGMEM = {
+uint8_t letters[] PROGMEM = {
 	0x77,//A
 	0x7c,//b
 	0x39,//C
@@ -46,7 +44,14 @@ unsigned char letters[] PROGMEM = {
 	0x5b,//Z	
 };
 
-unsigned char field[] PROGMEM ={
+uint8_t letters_special[][2] PROGMEM ={
+	{0x06,0x64},//K
+	//{0x54,0x44},//m
+	{0x33,0x27},//M
+	{0x3c,0x1e},//W
+};
+
+uint8_t field[] PROGMEM ={
 	9,4,8,3,7,2,10,6,1,5,0
 };
 
@@ -54,41 +59,56 @@ unsigned char field[] PROGMEM ={
 
 uint8_t fp = 10;
 
+static void writec(uint8_t dat){
+	uint8_t row;
+	//dont write it, if the display is full.
+	if(fp == 0xff)
+		return;
+	row = PGMB(field[fp]);
+	pixmap[row][0] = dat;
+	fp--;
+}
+
 void seg_putc(uint8_t c){
-	uint8_t dat, row;
+	uint8_t dat, row, uc;
 	if(c == '\r'){
 		uint8_t f;
 		fp = 10;
 		for(f=0;f<10;f++){
-			row = PGMB(field[fp]);
-			pixmap[0][row][0] = 0;
-			pixmap[1][row][0] = 0;
-			pixmap[2][row][0] = 0;
+			row = PGMB(field[f]);
+			pixmap[row][0] = 0;	
 		}
 		return;		
 	}
-	if (c >= 'a'){
-		dat = PGMB(letters[c-'a']);
-	}else{
+	uc = c & 0xdf;//convert potential letter to uppercase
+	if (uc >= 'A' && uc<= 'Z'){
+		dat = PGMB(letters[uc-'A']);
+	}else if(c >= '0' && c<= '9'){
 		dat = PGMB(numbers[c-'0']);	
+	}else if(c == ' '){
+		dat = 0;
+	}else{
+		return;
 	}
-	row = PGMB(field[fp]);
-	pixmap[row][0] = dat;
-	fp--;
-	if(fp == 0xff){
-		fp = 10;
+	//check for special letter
+	if(dat & 0x80){//special
+		dat &= 0x7f;
+		writec(PGMB(letters_special[dat][0]));
+		writec(PGMB(letters_special[dat][1]));
+	}else{
+		writec(dat);
 	}
 }
 
 void seg_putstr(char * txt){
-	unsigned char c;
+	uint8_t c;
 	while((c=*txt++)){
 		seg_putc(c);			
 	}
 }
 
 void seg_putstr_P(char * txt){
-	unsigned char c;
+	uint8_t c;
 	while((c=pgm_read_byte(txt++))){
 		seg_putc(c);
 	}

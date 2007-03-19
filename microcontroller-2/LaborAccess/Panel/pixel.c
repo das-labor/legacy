@@ -1,36 +1,29 @@
-#define PIXEL_C
+
 #include "pixel.h"
-
 #include "borg_hw.h"
-
 #include "config.h"
 
-unsigned char shl_table[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
+uint8_t shl_table[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
 
-void clear_screen(unsigned char value){
-	unsigned char p,*pix,v=0xff;
+void clear_screen(uint8_t value){
+	uint8_t *pix,v=0;
 	unsigned int i;
-	for(p=0;p<NUMPLANE;p++){
-		pix=&pixmap[p][0][0];
-		if(p==value)
-			v=0;
-		for(i=0;i<NUM_ROWS*LINEBYTES;i++)
-			pix[i]=v;
-	}
+	pix=&pixmap[0][0];
+	if(value) v = 0xff;
+	for(i=0;i<NUM_ROWS*LINEBYTES;i++)
+		pix[i]=v;
 }
 
-void setpixel(unsigned char x, unsigned char value ){
-	unsigned char y;
+void setpixel(uint8_t x, uint8_t value ){
+	uint8_t y;
 	y = x/NUM_COLS;
 	x %= NUM_COLS;
-	if(value>NUMPLANE)
-		value=NUMPLANE;
-	unsigned char pos = (y%NUM_ROWS)*LINEBYTES + (x/8);
-	unsigned char mask = shl_table[x%8];
-	unsigned char plane;
-	for(plane=0;plane<value;plane++)
-		pixmap[plane][0][pos]|=mask;
-	mask ^=0xff;
-	for(;plane<NUMPLANE;plane++)
-		pixmap[plane][0][pos]&=mask;
+	uint8_t pos = (y%NUM_ROWS)*LINEBYTES + (x/8);
+	uint8_t mask = shl_table[x%8];
+	if(value){
+		pixmap[0][pos]|=mask;
+	}else{
+		mask ^=0xff;
+		pixmap[0][pos]&=mask;
+	}
 }

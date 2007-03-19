@@ -5,6 +5,7 @@
 
 #include "reader.h"
 #include "i2csw.h"
+#include "7seg.h"
 
 #include "AvrXSerialIo.h"
 
@@ -31,6 +32,9 @@ void putbuf(uint8_t * b, uint8_t s){
 AVRX_GCC_TASKDEF(client, 90, 4){
 	while(1){
 		ReaderMsg_t *p;
+		request_cred_t request;
+		reply_t reply;
+		
 		p = (ReaderMsg_t*)AvrXWaitMessage(&ReaderMsgOutQueue);
 		AvrXAckMessage((MessageControlBlock*)p);
 	
@@ -41,7 +45,6 @@ AVRX_GCC_TASKDEF(client, 90, 4){
 		if(! i2cEeDetect())
 			goto error;
 		
-		request_cred_t request;
 		
 		asn1_obj_t root_obj = {4,251};
 		asn1_obj_t obj;
@@ -57,9 +60,14 @@ AVRX_GCC_TASKDEF(client, 90, 4){
 		if ( asn1_read(&obj, 0x81, (uint8_t *) &request.credentials.key, 8) != 8 )
 			goto error;
 		
-		channel_write(0, (uint8_t *)&request, sizeof(request));
+		seg_putstr("\r" "openrequest");
 		
-		//channel_read(0, 
+		channel_write(0, (uint8_t *)&request, sizeof(request));
+		channel_read(0, (uint8_t *)&reply, sizeof(reply));
+		
+		seg_putstr("\r");
+		seg_putstr(reply.nickname);
+		
 		
 		error:
 		

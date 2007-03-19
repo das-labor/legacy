@@ -4,8 +4,7 @@
 #include "avrx.h"               // AvrX System calls/data structures
 #include "AvrXSerialIo.h"
 #include "uart_sw.h"
-
-//AVRX_GCC_TASK(Monitor, 20, 0);          // External Task: Debug Monitor
+#include "dummy_qport.h"
 
 #define TICKRATE 1000
 #define TCNT0_INIT (0xFF-F_CPU/256/TICKRATE)
@@ -35,15 +34,16 @@ int main(void)
 	
     
 	AvrXRunTask(TCB(server1));
+	AvrXRunTask(TCB(qport));
 	
-	InitSerial0(BAUD(9600));
+	InitSerial0(BAUD(4800));
 	InitSerial1();
 
     /* Needed for EEPROM access in monitor */
 	AvrXSetSemaphore(&EEPromMutex);
 	
-	put_c0('h');
-	put_c1('H');
+	//put_c0('h');
+	//put_c1('H');
 	
     Epilog();                   // Switch from AvrX Stack to first task
     while(1);
