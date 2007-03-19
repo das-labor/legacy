@@ -67,12 +67,11 @@
 #define PIN_EO3  	PD7
 
 //Der Puffer, in dem das aktuelle Bild gespeichert wird
-//dieser hat 3 "Ebenen" für die verscheidenen Helligkeiten.
-unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
+uint8_t pixmap[NUM_ROWS][LINEBYTES];
 
 volatile uint8_t keys[8];
 
-inline void busywait() {
+static inline void busywait() {
 	//unsigned char i;
 	//for(i=0;i<20;i++){
 	//	asm volatile("nop");
@@ -81,17 +80,17 @@ inline void busywait() {
 
 
 //Eine Zeile anzeigen
-inline void rowshow(unsigned char row, unsigned char plane){
+static inline void rowshow(unsigned char row){
 	CTRLPORT |= (1<<PIN_SHOW);//blank
 	
-	DATAPORT  = pixmap[plane][row][0];
+	DATAPORT  = pixmap[row][0];
 	busywait();
 	CTRLPORT |=  (1<<PIN_CP1);
 	busywait();
 	CTRLPORT &= ~(1<<PIN_CP1);
 	busywait();
 
-	DATAPORT  = pixmap[plane][row][1];
+	DATAPORT  = pixmap[row][1];
 	busywait();
 	CTRLPORT |=  (1<<PIN_CP2);
 	busywait();
@@ -103,7 +102,7 @@ inline void rowshow(unsigned char row, unsigned char plane){
 	CTRLPORT &= ~(1<<PIN_SHOW);
 }
 
-inline void checkkeys(uint8_t row){
+static inline void checkkeys(uint8_t row){
 	static uint8_t mask;
 	if(row == 0){
 		mask = 1;
@@ -129,43 +128,27 @@ inline void checkkeys(uint8_t row){
 	CTRLPORT &= ~(1<<PIN_CP4);
 }
 
-//Dieser Interrupt wird je nach Ebene mit 50kHz 31,25kHz oder 12,5kHz ausgeführt
-inline void borg_int()
+static inline void borg_int()
 {
-	static unsigned char plane = 0;
 	static unsigned char row = 0;
 	
-
 	//Watchdog zurücksetzen
 	wdt_reset();
 	
 	//Die aktuelle Zeile in der aktuellen Ebene ausgeben
-	rowshow(row, plane);
+	rowshow(row);
 
-	if( (plane == 2) && (row<9) ) checkkeys(row);
+	if(row<9) checkkeys(row);
 	
 	//Zeile und Ebene inkrementieren
 	if(++row == NUM_ROWS){
 		row = 0;
-		if(++plane==NUMPLANE) plane=0;
-		switch(plane){
-			case 0: 
-					OCR0 = 5;
-					break;
-			case 1:
-					OCR0 = 12;
-					break;
-			case 2:
-					OCR0 = 20;
-					break;
-		}
 	}
 }
 
-AVRX_SIGINT(SIG_OVERFLOW0)
+AVRX_SIGINT(SIG_OUTPUT_COMPARE0)
 {
     IntProlog();                // Save interrupted context, switch stacks
-    TCNT0 = TCNT0_INIT;			// Reload the timer counter
     borg_int();
 	AvrXTimerHandler();         // Process Timer queue
     Epilog();                   // Restore context of next running task
@@ -192,10 +175,10 @@ void timer0_on(){
 		 1    0    1       clk/1024
 	
 */
-	TCCR0 = 0x0C;	// CTC Mode, clk/64
-	TCNT0 = 0;	// reset timer
-	OCR0  = 20;	// Compare with this value
-	TIMSK = 0x02;	// Compare match Interrupt on
+	TCCR0 = (1<<CS02)|(1<<WGM01);// Set Timer0 to CPUCLK/256 CTC mode
+	OCR0  = F_CPU/256/TICKRATE;	// Set Compare to tickrate
+	TIMSK |= (1<<OCIE0);	// Compare match Interrupt on
+	
 }
 
 void borg_hw_init(){
@@ -207,9 +190,10 @@ void borg_hw_init(){
 	//Spalten Ports auf Ausgang
 	DATADDR  = 0xFF;
 	DATAPORT = 0x00;
-	
-//	timer0_on();
 
+	//Timer an
+	timer0_on();
+	
 	//Watchdog Timer aktivieren
 	wdt_reset();
 	wdt_enable(0x00);	// 17ms Watchdog
