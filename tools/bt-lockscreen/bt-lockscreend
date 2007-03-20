@@ -1,8 +1,8 @@
 #!/bin/bash
-CHECKMAC='00:12:D2:05:A5:E6'
-CHECKNAME='Foobar'
-CHECKTIME=30
-LOCKCMD='gnome-screensaver-command -a'
+CHECKMAC='00:12:C3:19:F4:D0'	# MAC address of the device to check for
+CHECKNAME='foo'			# Name of the device to check for
+CHECKTIME=30			# Time in seconds to wait between checks
+LOCKCMD='gnome-screensaver-command -a'	# command we use to lock our screen
 
 # Check if a process with the name bt-lockscreend is already running - the dumb way
 if [ $(ps ax | grep bt-lockscreend | grep -v grep | wc -l) ]
