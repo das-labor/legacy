@@ -43,34 +43,34 @@ int main (int argc, char* argv[])
     tetris_piece_destruct (pPiece);
 	*/
 	
-	pPl->contents[0]  = 0x0110;
-	pPl->contents[1]  = 0x0111;
-	pPl->contents[2]  = 0x0112;
-	pPl->contents[3]  = 0x0113;
-	pPl->contents[4]  = 0x0114;
-	pPl->contents[5]  = 0x0115;
-	pPl->contents[6]  = 0x03FF;
-	pPl->contents[7]  = 0x03FF;
-	pPl->contents[8]  = 0x0116;
-	pPl->contents[9]  = 0x03FF;
-	pPl->contents[10] = 0x0117;
-	pPl->contents[11] = 0x0118;
-	pPl->contents[12] = 0x0119;
-	pPl->contents[13] = 0x011A;
-	pPl->contents[14] = 0x011B;
-	pPl->contents[15] = 0x011C;
+	pPl->dump[0]  = 0x0001;
+	pPl->dump[1]  = 0x03FF;
+	pPl->dump[2]  = 0x0002;
+	pPl->dump[3]  = 0x0003;
+	pPl->dump[4]  = 0x0004;
+	pPl->dump[5]  = 0x0005;
+	pPl->dump[6]  = 0x0006;
+	pPl->dump[7]  = 0x0007;
+	pPl->dump[8]  = 0x0008;
+	pPl->dump[9]  = 0x0009;
+	pPl->dump[10] = 0x000A;
+	pPl->dump[11] = 0x000B;
+	pPl->dump[12] = 0x000C;
+	pPl->dump[13] = 0x000D;
+	pPl->dump[14] = 0x000E;
+	pPl->dump[15] = 0x000F;
 
 
 	for (i = 0; i < 16; i++)
-		printf("%04x, ", pPl->contents[i]);
+		printf("%04x, ", pPl->dump[i]);
 	printf("\n");
 
-	pPl->nRow = 6;
+	pPl->nRow = -2;
 	pPl->status = TETRIS_PFS_DOCKED;
 	tetris_playfield_removeCompleteLines(pPl);
 
 	for (i = 0; i < 16; i++)
-		printf("%04x, ", pPl->contents[i]);
+		printf("%04x, ", pPl->dump[i]);
 
     return 0;
 }
