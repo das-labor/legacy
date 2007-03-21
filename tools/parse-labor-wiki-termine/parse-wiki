@@ -2,8 +2,8 @@
 
 
 WIKIPAGE    = "Termine"
-WIKIURL     = "http://wiki.das-labor.org/wiki/index.php?title=Spezial:Export"
-WIKIPREFIX  = "http://wiki.das-labor.org/wiki/index.php?title="
+WIKIURL     = "http://www.das-labor.org:80/wiki/Spezial:Exportieren/Termine"
+WIKIPREFIX  = "http://www.das-labor.org/wiki/"
 
 XMLFILE=ARGV[0]+"/termine.xml";
 
@@ -30,7 +30,7 @@ class LaborTermine
   def getWikiContent
     proxy = ENV['HTTP_PROXY']
     clnt  = HTTPAccess2::Client.new(proxy)
-    txt   = clnt.get(WIKIURL, { "pages" => WIKIPAGE, "action" => "submit", "curonly" => "true" }).content
+    txt   = clnt.get(WIKIURL).content
     return HTMLEntities.decode_entities(txt);
   end
 

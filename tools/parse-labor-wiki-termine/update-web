@@ -78,7 +78,7 @@ htmlout.close
 ##############################################################################
 # RSS Output #################################################################
 puts "Generating RSS 2.0..."
-rss20out = File.new( ARGV[0]+"/rss20", "w" );
+rss20out = File.new( ARGV[0]+"/termine.rss", "w" );
 rss20out.puts "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?> \n 
 <rss version=\"2.0\"> \n 
 <channel> \n 
@@ -96,7 +96,7 @@ rss20out.close
 ##############################################################################
 # ICAL Output ################################################################
 puts "Generating iCal..."
-icalout = File.new( ARGV[0]+"/LABOR-Termine.ics", "w" );
+icalout = File.new( ARGV[0]+"/termine.ics", "w" );
 icalout.puts "BEGIN:VCALENDAR
 VERSION:2.0
 X-WR-CALNAME:LABOR-Termine
