@@ -1,57 +1,57 @@
-#include <inttypes.h>
 #include <stdlib.h>
+#include <assert.h>
+#include <inttypes.h>
 #include "piece.h"
 
 /*****************************
  *  construction/destruction *
  *****************************/
 
-/* Function:        tetris_piece_construct
- * Description:     constructs a piece with the given attributes
- * Argument s:      shape of the piece (see tetris_piece_shape_t)
- * Argument a:      its angle (see tetris_piece_angel_t)
- * Return value:    pointer to a newly created piece
+/* Function:     tetris_piece_construct
+ * Description:  constructs a piece with the given attributes
+ * Argument s:   shape of the piece (see tetris_piece_shape_t)
+ * Argument a:   its angle (see tetris_piece_angel_t)
+ * Return value: pointer to a newly created piece
  */
 tetris_piece_t* tetris_piece_construct(tetris_piece_shape_t s,
                                        tetris_piece_angle_t a)
 {
-    tetris_piece_t* p_piece =
-    	(tetris_piece_t*) malloc (sizeof(tetris_piece_t));
-    	
-    if (p_piece != NULL)
-    {
-        p_piece->shape = s;
-        p_piece->angle = a;
-    }
+    tetris_piece_t* p_piece = (tetris_piece_t*) malloc (sizeof(tetris_piece_t));
+	assert(p_piece != NULL);
+
+    p_piece->shape = s;
+    p_piece->angle = a;
 
     return p_piece;
 }
 
-/* Function:        tetris_piece_destruct
- * Description:     destructs a piece
- * Argument pPc:    pointer to the piece to be destructed
- * Return value:    void
+/* Function:     tetris_piece_destruct
+ * Description:  destructs a piece
+ * Argument pPc: pointer to the piece to be destructed
+ * Return value: void
  */
 void tetris_piece_destruct(tetris_piece_t* pPc)
 {
-    if (pPc != NULL)
-        free(pPc);
+	assert(pPc != NULL);
+	free(pPc);
 }
 
 
-/********************************
+/****************************
  *  piece related functions *
- ********************************/
+ ****************************/
 
-/* Function:        tetris_piece_getBitfield
- * Description:     returns bitfield representation of the piece 
- * Argument pPc:    piece from which the bitfield shuld be retrieved
- * Return value:    bitfield representation of the piece
- *                  - nth nibble is nth row of the piece (from upper left)
- *                  - the LSB of a nibble represents the left side of the row
+/* Function:     tetris_piece_getBitfield
+ * Description:  returns bitfield representation of the piece 
+ * Argument pPc: piece from which the bitfield shuld be retrieved
+ * Return value: bitfield representation of the piece
+ *               - nth nibble is nth row of the piece (from upper left)
+ *               - the LSB of a nibble represents the left side of a row
  */
 uint16_t tetris_piece_getBitfield(tetris_piece_t* pPc)
 {
+	assert(pPc != NULL);
+	
     /* Lookup table:
      * A value in an array represents a piece in a specific angle (rotating
      * clockwise from index 0).
@@ -68,15 +68,17 @@ uint16_t tetris_piece_getBitfield(tetris_piece_t* pPc)
 }
 
 
-/* Function:       tetris_piece_rotate
- * Description:    rotates a piece
- * Argument pPc:   piece to rotate
- * Argument r:     type of rotation (see tetris_piece_rotation_t)
- * Return value:   void
+/* Function:     tetris_piece_rotate
+ * Description:  rotates a piece
+ * Argument pPc: piece to rotate
+ * Argument r:   type of rotation (see tetris_piece_rotation_t)
+ * Return value: void
  */
 void tetris_piece_rotate(tetris_piece_t* pPc,
                          tetris_piece_rotation_t r)
 {
+	assert(pPc != NULL);
+	
     /* we just rotate through the available angles in the given direction and
      * make wrap arounds where appropriate
      */
@@ -106,16 +108,17 @@ void tetris_piece_rotate(tetris_piece_t* pPc,
 }
 
 
-/* Function:        tetris_piece_lastMatterRow
- * Description:     determines last row of a piece which contains matter
- * Argument pPc:    piece to rotate
- * Return value:    no. of last row containing matter (counting from 0)
+/* Function:     tetris_piece_lastMatterRow
+ * Description:  determines last row of a piece which contains matter
+ * Argument pPc: piece to rotate
+ * Return value: no. of last row containing matter (counting from 0)
  */
 uint8_t tetris_piece_lastMatterRow(tetris_piece_t* pPc)
 {
+	assert(pPc != NULL);
+	
     /* either row no. 2 or no. 3 is the last one which contains matter
-     * so if the last nibble isn't 0, row no. 3 must be the last one
-     */
+     * so if the last nibble isn't 0, row no. 3 must be the last one */
     if ((0xF000 & tetris_piece_getBitfield(pPc)) != 0)
     {
         return 3;
