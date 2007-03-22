@@ -20,9 +20,12 @@
 #include "config.h"
 #include "pixel.h"
 #include "programm.h"
+#include "tetris/logic.h"
 #include "trackball.h"
 
 #include "scrolltext2.h"
+
+unsigned char fakeport;
 
 int WindWidth, WindHeight;
 
@@ -85,6 +88,41 @@ void keyboard(unsigned char key, int x, int y){
     		glutDestroyWindow(win);
     		exit(0); 
 			break;
+		case ' ':
+			fakeport |= 0x01;
+			break;
+		case 'a':
+			fakeport |= 0x02;
+			break;
+		case 'd':
+			fakeport |= 0x04;
+			break;
+		case 's':
+			fakeport |= 0x08;
+			break;
+		case 'w':
+			fakeport |= 0x10;
+			break;
+	}
+}
+
+void keyboardup(unsigned char key, int x, int y){
+	switch (key) {  
+		case ' ':
+			fakeport &= ~0x01;
+			break;
+		case 'a':
+			fakeport &= ~0x02;
+			break;
+		case 'd':
+			fakeport &= ~0x04;
+			break;
+		case 's':
+			fakeport &= ~0x08;
+			break;
+		case 'w':
+			fakeport &= ~0x10;
+			break;
 	}
 }
 
@@ -145,7 +183,8 @@ void timf(int value) {
 }*/
 
 void *display_loop(void * unused) {
-	while (1) {	
+	while (1) {
+		tetris();
 		schwarzesLoch();
 		breakpoint();
         scrolltext("Scrolltext3 Test.~", 0, 70);
@@ -174,6 +213,7 @@ int main(int argc, char **argv){
     glutDisplayFunc(display);
     glutIdleFunc(display);
     glutKeyboardFunc(keyboard);
+    glutKeyboardUpFunc(keyboardup);
     glutSpecialFunc(special);
     glutMouseFunc(mouse);
     glutMotionFunc(motion);
