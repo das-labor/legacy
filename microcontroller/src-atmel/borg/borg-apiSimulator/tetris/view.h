@@ -4,16 +4,17 @@
 #include <inttypes.h>
 #include "piece.h"
 #include "playfield.h"
-#include "../pixel.h"
+
+
+#define colorBorder 1
+#define colorPiece 3
+#define colorSpace 0
 
 typedef struct tetris_view_t
 {
     tetris_playfield_t* pPl; // specifies the shape of the piece
-    int nLastColumn;
-    int nLastRow;
 }
-tetris_piece_t;
-
+tetris_view_t;
 
 
 /*****************************
@@ -25,7 +26,7 @@ tetris_piece_t;
  * Argument pPl: pointer to the playfield which should be observed
  * Return value: pointer to a newly created view
  */
-tetris_piece_t* tetris_view_construct(tetris_playfield_t* pPl);
+tetris_view_t* tetris_view_construct(tetris_playfield_t* pPl);
 
 
 /* Function:       tetris_view_destruct
@@ -33,7 +34,7 @@ tetris_piece_t* tetris_view_construct(tetris_playfield_t* pPl);
  * Argument pView: pointer to the view to be destructed
  * Return value:   void
  */
- void tetris_view_destruct(tetris_piece_t* pPc);
+void tetris_view_destruct(tetris_view_t* pView);
 
 
 /***************************
@@ -42,10 +43,10 @@ tetris_piece_t* tetris_view_construct(tetris_playfield_t* pPl);
 
 /* Function:       tetris_view_updatePlayfield
  * Description:    destructs a view
- * Argument pView: pointer to the view to be destructed
+ * Argument pView: pointer to the view which should be destructed
  * Return value:   void
  */
- void tetris_view_destruct(tetris_piece_t* pPc);
+void tetris_view_updatePlayfield(tetris_view_t* pView);
 
 
 #endif /*TETRIS_VIEW_H_*/

@@ -1,13 +1,13 @@
 PRG = borgSim
-#OBJ = main.o pixel.o programm.o util.o  scrolltext3.o  trackball.o  breakpoint.o tetris/tetris.o
-OBJ = main.o pixel.o programm.o util.o  scrolltext3.o  trackball.o  breakpoint.o
+OBJ = main.o pixel.o joystick.o programm.o util.o  scrolltext3.o  trackball.o  breakpoint.o tetris/tetris.o
+#OBJ = main.o pixel.o joystick.o programm.o util.o  scrolltext3.o  trackball.o  breakpoint.o
 
-OPTIMIZE = -O2
+OPTIMIZE = -O0
 LIBS = -lglut -lpthread -lGL -lGLU
 CC = gcc
 LD = ld
 
-OPTIMIZE = -O2
+OPTIMIZE = -O0
 override CFLAGS        = -g -Wall $(OPTIMIZE)
 $(DEFS)
 override LDFLAGS       = -Wl,-Map,$(PRG).map
