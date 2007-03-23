@@ -38,7 +38,6 @@ void tetris ()
 			        pOldPiece = NULL;
 			    }
 				break;
-				tetris_playfield_advancePiece(pPl);
 				
 			case TETRIS_PFS_HOVERING:
 				cmd = tetris_input_getCommand(pIn);

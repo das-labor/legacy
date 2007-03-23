@@ -114,9 +114,25 @@ uint8_t tetris_playfield_insertPiece(tetris_playfield_t *pPl,
 
 	/* set start position (in the middle of the top line) */
 	pPl->nColumn = (pPl->nWidth - 2) / 2;
-	pPl->nRow = -tetris_piece_lastMatterRow(pPiece) - 1;
+	uint16_t nPieceMap = tetris_piece_getBitfield(pPl->pPiece);
+	pPl->nRow = 0;
+	if ((0x000F & nPieceMap) == 0)
+	{
+		--pPl->nRow;
+		if ((0x00F0 & nPieceMap) == 0)
+		{
+			--pPl->nRow;
+		}
+	}
 
-	pPl->status = TETRIS_PFS_HOVERING;
+	if (tetris_playfield_collision(pPl, pPl->nColumn, pPl->nRow) != 1)
+	{
+		pPl->status = TETRIS_PFS_HOVERING;
+	}
+	else
+	{
+		pPl->status = TETRIS_PFS_GAMEOVER;
+	}
 
 	/* OK */
 	return 1;

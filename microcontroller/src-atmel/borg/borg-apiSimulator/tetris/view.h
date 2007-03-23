@@ -66,7 +66,7 @@ void tetris_view_updatePlayfield(tetris_view_t *pView);
  * Return value: void
  */
 void tetris_view_updateNextPiece(tetris_view_t *pV,
-                                tetris_piece_t *pPc);
+                                 tetris_piece_t *pPc);
 
 
 #endif /*TETRIS_VIEW_H_*/

@@ -107,24 +107,3 @@ void tetris_piece_rotate(tetris_piece_t *pPc,
     }
 }
 
-
-/* Function:     tetris_piece_lastMatterRow
- * Description:  determines last row of a piece which contains matter
- * Argument pPc: piece to rotate
- * Return value: no. of last row containing matter (counting from 0)
- */
-uint8_t tetris_piece_lastMatterRow(tetris_piece_t *pPc)
-{
-	assert(pPc != NULL);
-	
-    /* either row no. 2 or no. 3 is the last one which contains matter
-     * so if the last nibble isn't 0, row no. 3 must be the last one */
-    if ((0xF000 & tetris_piece_getBitfield(pPc)) != 0)
-    {
-        return 3;
-    }
-    else
-    {
-        return 2;
-    }
-}
