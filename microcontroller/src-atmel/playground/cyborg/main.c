@@ -35,6 +35,8 @@ int main(void)
 	AvrXRunTask(TCB(task2));
 	
 	InitSerial0(BAUD(9600));
+	
+	adc_init();
 
     /* Needed for EEPROM access in monitor */
 	AvrXSetSemaphore(&EEPromMutex);
