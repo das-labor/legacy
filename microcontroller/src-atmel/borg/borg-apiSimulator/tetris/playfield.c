@@ -15,13 +15,13 @@
  * Argument nHeight: height of playfield (4 <= n <= 124)
  * Return value:     pointer to a newly created playfield
  */
-tetris_playfield_t* tetris_playfield_construct(int8_t nWidth,
+tetris_playfield_t *tetris_playfield_construct(int8_t nWidth,
                                                int8_t nHeight)
 {
 	assert((nWidth >= 4) && (nWidth <= 16));
 	assert((nHeight >= 4) && (nHeight <= 124));
 	
-	tetris_playfield_t* pPlayfield =
+	tetris_playfield_t *pPlayfield =
 		(tetris_playfield_t*) malloc(sizeof(tetris_playfield_t));
 		
 	if (pPlayfield != NULL)
@@ -52,7 +52,7 @@ tetris_playfield_t* tetris_playfield_construct(int8_t nWidth,
  * Argument pPl: pointer to the playfield to be destructed
  * Return value: void
  */
-void tetris_playfield_destruct(tetris_playfield_t* pPl)
+void tetris_playfield_destruct(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
 	
@@ -74,7 +74,7 @@ void tetris_playfield_destruct(tetris_playfield_t* pPl)
  * Argument pPl: playfield to perform action on
  * Return value: void
  */
-void tetris_playfield_reset(tetris_playfield_t* pPl)
+void tetris_playfield_reset(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
 
@@ -99,8 +99,8 @@ void tetris_playfield_reset(tetris_playfield_t* pPl)
  * Argument ppOldPiece: indirect pointer to former piece for deallocation
  * Return value:        0 corresponds to false, anything other to true
  */
-uint8_t tetris_playfield_insertPiece(tetris_playfield_t* pPl,
-                                     tetris_piece_t* pPiece,
+uint8_t tetris_playfield_insertPiece(tetris_playfield_t *pPl,
+                                     tetris_piece_t *pPiece,
                                      tetris_piece_t** ppOldPiece)
 {
 	assert((pPl != NULL) && (pPiece != NULL) && (ppOldPiece != NULL));
@@ -130,7 +130,7 @@ uint8_t tetris_playfield_insertPiece(tetris_playfield_t* pPl,
  * Argument nRow:    row where the piece should be moved
  * Return value:     1 for collision, 0 otherwise
  */
-uint8_t tetris_playfield_collision(tetris_playfield_t* pPl,
+uint8_t tetris_playfield_collision(tetris_playfield_t *pPl,
                                    int8_t nColumn,
                                    int8_t nRow)
 {
@@ -150,12 +150,35 @@ uint8_t tetris_playfield_collision(tetris_playfield_t* pPl,
 	 * 
 	 * NOTE: LSB represents the left most position. 
 	 */
-	uint16_t nPiece = tetris_piece_getBitfield(pPl->pPiece);
+	uint16_t nPieceMap = tetris_piece_getBitfield(pPl->pPiece);
 	uint16_t nPlayfieldPart;
-	uint16_t nPieceRow;
+	uint16_t nPieceRowMap;
 	int8_t y;
 
-	/* start at a piece row which has actually entered the playfield */
+	/* negative nRow values indicate that the piece hasn't fully entered the
+	 * playfield yet which requires special treatment if the piece overlaps
+	 * with either the left or the right border */
+	if (nRow < 0)
+	{
+		uint16_t nBorderMask = 0x0000;
+		/* piece overlaps with left border */
+		if (nColumn < 0)
+		{
+			nBorderMask = 0x1111 << (-nColumn + 1);
+		}
+		/* piece overlaps with left border */
+		else if ((nColumn + 3) >= pPl->nWidth)
+		{
+			nBorderMask = 0x8888 >> ((nColumn + 3) - pPl->nWidth);
+		}
+		/* return if piece collides with border */
+		if ((nPieceMap & nBorderMask) != 0)
+		{
+			return 1;
+		}
+	}
+
+	/* here we check the part which has already entered the playfield */
 	for (y = (nRow < 0) ? -nRow : 0; y < 4; ++y)
 	{
 		/* current piece row overlaps with lower border */
@@ -193,11 +216,11 @@ uint8_t tetris_playfield_collision(tetris_playfield_t* pPl,
 		}
 
 		/* clear all bits of the piece we are not interested in and
-		 * align the remaing row to bit no. 0 */
-		nPieceRow = (nPiece & (0x000F << (y << 2))) >> (y << 2);
+		 * align the remaing row to LSB */
+		nPieceRowMap = (nPieceMap & (0x000F << (y << 2))) >> (y << 2);
 
 		/* finally check for a collision */
-		if ((nPlayfieldPart & nPieceRow) != 0)
+		if ((nPlayfieldPart & nPieceRowMap) != 0)
 		{
 			return 1;
 		}
@@ -213,7 +236,7 @@ uint8_t tetris_playfield_collision(tetris_playfield_t* pPl,
  * Argument pPl: playfield to perform action on
  * Return value: void
  */
-void tetris_playfield_advancePiece(tetris_playfield_t* pPl)
+void tetris_playfield_advancePiece(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
 
@@ -223,8 +246,8 @@ void tetris_playfield_advancePiece(tetris_playfield_t* pPl)
 	if (tetris_playfield_collision(pPl, pPl->nColumn, pPl->nRow + 1))
 	{
 		uint16_t nPiece = tetris_piece_getBitfield(pPl->pPiece);
-		uint16_t nPieceRow;
-		int8_t y;
+		uint16_t nPieceMap;
+		int8_t i, y;
 
 		/* Is the playfield filled up? */
 		if ((pPl->nRow < 0) && (nPiece & (0x0FFF >> (3 + pPl->nRow))) != 0)
@@ -233,22 +256,29 @@ void tetris_playfield_advancePiece(tetris_playfield_t* pPl)
 		}
 		else
 		{
-			/* the expression (y + pPl->nRow) has to be a valid index for
-			 * the dump array */
-			for (y = (pPl->nRow < 0) ? -(pPl->nRow) : 0;
-				(y < 4) && ((y + pPl->nRow) <= pPl->nHeight); ++y)
+			// determine valid start point for dump index
+			int8_t nStartRow = ((pPl->nRow + 3) < pPl->nHeight) ? 
+				(pPl->nRow + 3) : pPl->nHeight - 1;
+			for (i = nStartRow; i >= pPl->nRow; --i)
 			{
-				/* clear all bits of the piece we are not interested in */
-				nPieceRow = nPiece & (0x000F << (y << 2));
+				y = i - pPl->nRow;
+				/* clear all bits of the piece we are not interested in and
+				 * align the rest to LSB */
+				nPieceMap = (nPiece & (0x000F << (y << 2))) >> (y << 2);
 				/* shift the remaining content to the current column */
-				nPieceRow <<= pPl->nColumn - (y << 2);
-				/* achor piece in playfield */
-				pPl->dump[y + pPl->nRow] |= nPieceRow;
+				if (pPl->nColumn >= 0)
+				{
+					nPieceMap <<= pPl->nColumn;
+				}
+				else
+				{
+					nPieceMap >>= -pPl->nColumn;
+				}
+				/* embed piece in playfield */
+				pPl->dump[i] |= nPieceMap;
 			}
 
 			/* the piece has finally been docked */
-			pPl->nColumn = 0;
-			pPl->nRow = 0;
 			pPl->status = TETRIS_PFS_DOCKED;
 		}
 	}
@@ -267,7 +297,7 @@ void tetris_playfield_advancePiece(tetris_playfield_t* pPl)
  * Argument direction: direction (see tetris_playfield_direction_t)
  * Return value:       1 if piece could be moved, 0 otherwise 
  */
-uint8_t tetris_playfield_movePiece(tetris_playfield_t* pPl,
+uint8_t tetris_playfield_movePiece(tetris_playfield_t *pPl,
                                    tetris_playfield_direction_t direction)
 {
 	assert(pPl != NULL);
@@ -292,7 +322,7 @@ uint8_t tetris_playfield_movePiece(tetris_playfield_t* pPl,
  * Argument r:   type of rotation (see tetris_piece_rotation_t)
  * Return value: 1 if piece could be rotated, 0 otherwise 
  */
-uint8_t tetris_playfield_rotatePiece(tetris_playfield_t* pPl,
+uint8_t tetris_playfield_rotatePiece(tetris_playfield_t *pPl,
                                      tetris_piece_rotation_t rotation)
 {
 	assert(pPl != NULL);
@@ -328,7 +358,7 @@ uint8_t tetris_playfield_rotatePiece(tetris_playfield_t* pPl,
  * Return value: first 4 bits indicate which lines haven been removed
  *               (relative to vertical piece posotion)
  */
-uint8_t tetris_playfield_removeCompleteLines(tetris_playfield_t* pPl)
+uint8_t tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
 
@@ -409,7 +439,7 @@ uint8_t tetris_playfield_removeCompleteLines(tetris_playfield_t* pPl)
  * Argument pPl: the playfield we want information from
  * Return value: width of the playfield
  */
-int8_t tetris_playfield_getWidth(tetris_playfield_t* pPl)
+int8_t tetris_playfield_getWidth(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
 	return pPl->nWidth;
@@ -421,7 +451,7 @@ int8_t tetris_playfield_getWidth(tetris_playfield_t* pPl)
  * Argument pPl: the playfield we want information from
  * Return value: height of the playfield
  */
-int8_t tetris_playfield_getHeight(tetris_playfield_t* pPl)
+int8_t tetris_playfield_getHeight(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
 	return pPl->nHeight;
@@ -432,7 +462,7 @@ int8_t tetris_playfield_getHeight(tetris_playfield_t* pPl)
  * Argument pPl: the playfield we want information from
  * Return value: pointer to the currently falling piece
  */
-tetris_piece_t* tetris_playfield_getPiece(tetris_playfield_t* pPl)
+tetris_piece_t *tetris_playfield_getPiece(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
 	return pPl->pPiece;
@@ -443,7 +473,7 @@ tetris_piece_t* tetris_playfield_getPiece(tetris_playfield_t* pPl)
  * Argument pPl: the playfield we want information from
  * Return value: column of the currently falling piece
  */
-int8_t tetris_playfield_getColumn(tetris_playfield_t* pPl)
+int8_t tetris_playfield_getColumn(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
 	return pPl->nColumn;
@@ -454,7 +484,7 @@ int8_t tetris_playfield_getColumn(tetris_playfield_t* pPl)
  * Argument pPl: the playfield we want information from
  * Return value: row of the currently falling piece
  */
-int8_t tetris_playfield_getRow(tetris_playfield_t* pPl)
+int8_t tetris_playfield_getRow(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
 	return pPl->nRow;
@@ -465,7 +495,7 @@ int8_t tetris_playfield_getRow(tetris_playfield_t* pPl)
  * Argument pPl: the playfield we want information from
  * Return value: status of the playfield (see tetris_playfield_status_t)
  */
-int8_t tetris_playfield_getStatus(tetris_playfield_t* pPl)
+int8_t tetris_playfield_getStatus(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
 	return pPl->status;
@@ -477,7 +507,7 @@ int8_t tetris_playfield_getStatus(tetris_playfield_t* pPl)
  * Argument nRow: the number of the row (0 <= nRow < height of playfield)
  * Return value:  bitmap of the requestet row (LSB is leftmost column)
  */
-uint16_t tetris_playfield_getDumpRow(tetris_playfield_t* pPl, int8_t nRow)
+uint16_t tetris_playfield_getDumpRow(tetris_playfield_t *pPl, int8_t nRow)
 {
 	assert(pPl != NULL);
 	assert((0 <= nRow) && (nRow < pPl->nHeight));

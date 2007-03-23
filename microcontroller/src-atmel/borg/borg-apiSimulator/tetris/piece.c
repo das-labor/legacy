@@ -13,10 +13,10 @@
  * Argument a:   its angle (see tetris_piece_angel_t)
  * Return value: pointer to a newly created piece
  */
-tetris_piece_t* tetris_piece_construct(tetris_piece_shape_t s,
+tetris_piece_t *tetris_piece_construct(tetris_piece_shape_t s,
                                        tetris_piece_angle_t a)
 {
-    tetris_piece_t* p_piece = (tetris_piece_t*) malloc (sizeof(tetris_piece_t));
+    tetris_piece_t *p_piece = (tetris_piece_t*) malloc (sizeof(tetris_piece_t));
 	assert(p_piece != NULL);
 
     p_piece->shape = s;
@@ -30,7 +30,7 @@ tetris_piece_t* tetris_piece_construct(tetris_piece_shape_t s,
  * Argument pPc: pointer to the piece to be destructed
  * Return value: void
  */
-void tetris_piece_destruct(tetris_piece_t* pPc)
+void tetris_piece_destruct(tetris_piece_t *pPc)
 {
 	assert(pPc != NULL);
 	free(pPc);
@@ -48,7 +48,7 @@ void tetris_piece_destruct(tetris_piece_t* pPc)
  *               - nth nibble is nth row of the piece (from upper left)
  *               - the LSB of a nibble represents the left side of a row
  */
-uint16_t tetris_piece_getBitfield(tetris_piece_t* pPc)
+uint16_t tetris_piece_getBitfield(tetris_piece_t *pPc)
 {
 	assert(pPc != NULL);
 	
@@ -58,7 +58,7 @@ uint16_t tetris_piece_getBitfield(tetris_piece_t* pPc)
      */
     static uint16_t piece[][4] = {{0x2222, 0x0F00, 0x2222, 0x0F00}, /* LINE */
                                   {0x0E40, 0x4640, 0x4E00, 0x4C40}, /* T */
-                                  {0x6600, 0x6600, 0x6600, 0x6600}, /* SQUARE */
+                                  {0x0660, 0x0660, 0x0660, 0x0660}, /* SQUARE */
                                   {0x6220, 0x1700, 0x4460, 0x0E80}, /* LBACK */
                                   {0x6440, 0x0E20, 0x44C0, 0x8E00}, /* L */
                                   {0x4620, 0x6C00, 0x4620, 0x6C00}, /* Z */
@@ -74,7 +74,7 @@ uint16_t tetris_piece_getBitfield(tetris_piece_t* pPc)
  * Argument r:   type of rotation (see tetris_piece_rotation_t)
  * Return value: void
  */
-void tetris_piece_rotate(tetris_piece_t* pPc,
+void tetris_piece_rotate(tetris_piece_t *pPc,
                          tetris_piece_rotation_t r)
 {
 	assert(pPc != NULL);
@@ -113,7 +113,7 @@ void tetris_piece_rotate(tetris_piece_t* pPc,
  * Argument pPc: piece to rotate
  * Return value: no. of last row containing matter (counting from 0)
  */
-uint8_t tetris_piece_lastMatterRow(tetris_piece_t* pPc)
+uint8_t tetris_piece_lastMatterRow(tetris_piece_t *pPc)
 {
 	assert(pPc != NULL);
 	
