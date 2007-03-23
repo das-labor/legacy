@@ -57,4 +57,13 @@ void tetris_input_destruct(tetris_input_t *pIn);
  */
 tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn);
 
+/* Function:      tetris_input_setLevel
+ * Description:   modifies time interval of input events
+ * Argument pIn:  pointer to input structure
+ * Argument nLvl: desired level (0 <= nLvl <= 9);
+ * Return value:  void
+ */
+void tetris_input_setLevel(tetris_input_t *pIn,
+                                             uint8_t nLvl);
+
 #endif /*INPUT_H_*/
