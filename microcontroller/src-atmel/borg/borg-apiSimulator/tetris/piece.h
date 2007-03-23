@@ -57,7 +57,7 @@ tetris_piece_t;
  * Argument a:   its angle (see tetris_piece_angel_t)
  * Return value: pointer to a newly created piece
  */
-tetris_piece_t* tetris_piece_construct(tetris_piece_shape_t s,
+tetris_piece_t *tetris_piece_construct(tetris_piece_shape_t s,
                                        tetris_piece_angle_t a);
 
 
@@ -66,7 +66,7 @@ tetris_piece_t* tetris_piece_construct(tetris_piece_shape_t s,
  * Argument pPc: pointer to the piece to be destructed
  * Return value: void
  */
- void tetris_piece_destruct(tetris_piece_t* pPc);
+ void tetris_piece_destruct(tetris_piece_t *pPc);
 
 
 /****************************
@@ -80,7 +80,7 @@ tetris_piece_t* tetris_piece_construct(tetris_piece_shape_t s,
  *               - nth nibble is nth row of the piece (from upper left)
  *               - the LSB of a nibble represents the left side of a row
  */
-uint16_t tetris_piece_getBitfield(tetris_piece_t* pPc);
+uint16_t tetris_piece_getBitfield(tetris_piece_t *pPc);
 
 
 /* Function:     tetris_piece_rotate
@@ -89,7 +89,7 @@ uint16_t tetris_piece_getBitfield(tetris_piece_t* pPc);
  * Argument r:   type of rotation (see tetris_piece_rotation_t)
  * Return value: void
  */
-void tetris_piece_rotate(tetris_piece_t* pPc,
+void tetris_piece_rotate(tetris_piece_t *pPc,
                          tetris_piece_rotation_t r);
 
 /* Function:     tetris_piece_lastMatterRow
@@ -97,6 +97,6 @@ void tetris_piece_rotate(tetris_piece_t* pPc,
  * Argument pPc: piece to rotate
  * Return value: no. of last row containing matter (counting from 0)
  */
-uint8_t tetris_piece_lastMatterRow(tetris_piece_t* pPc);
+uint8_t tetris_piece_lastMatterRow(tetris_piece_t *pPc);
 
 #endif /*TETRIS_PIECE_H_*/

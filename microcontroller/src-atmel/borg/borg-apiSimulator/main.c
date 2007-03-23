@@ -212,6 +212,7 @@ int main(int argc, char **argv){
     //glutReshapeFunc(reshape);
     glutDisplayFunc(display);
     glutIdleFunc(display);
+    glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF);
     glutKeyboardFunc(keyboard);
     glutKeyboardUpFunc(keyboardup);
     glutSpecialFunc(special);
