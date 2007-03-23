@@ -8,6 +8,8 @@
 
 void tetris ()
 {
+	uint8_t nLines = 0;
+	uint8_t nRowMask = 0;
 	int8_t *pnWidth = (int8_t *)malloc(sizeof(int8_t));
 	int8_t *pnHeight = (int8_t *)malloc(sizeof(int8_t));
 	tetris_view_getDimensions(pnWidth, pnHeight);
@@ -72,7 +74,13 @@ void tetris ()
 				break;
 				
 			case TETRIS_PFS_DOCKED:
-				tetris_playfield_removeCompleteLines(pPl);
+				nRowMask = tetris_playfield_removeCompleteLines(pPl);
+				nLines += tetris_logic_calculateLines(nRowMask);
+				
+				if ((nRowMask != 0) && ((nLines / 10) < 10)) 
+				{
+					tetris_input_setLevel(pIn, nLines / 10);
+				}
 				break;
     	}
     	
@@ -88,3 +96,24 @@ void tetris ()
     tetris_piece_destruct(pNextPiece);
 }
 
+/* Function:          tetris_logic_calculateLines
+ * Description:       calculates no. of lines for the given row mask
+ * Argument nRowMask: row mask from which the no. of lines will be calculated
+ * Return value:      number of lines of the row mask
+ */
+uint8_t tetris_logic_calculateLines(uint8_t nRowMask)
+{
+	uint8_t i;
+	uint8_t nMask = 0x0001;
+	uint8_t nLines = 0;
+	for (i = 0; i < 4; ++i)
+	{
+		if ((nMask & nRowMask) != 0)
+		{
+			++nLines;
+		}
+		nMask <<= 1;
+	}
+	
+	return nLines;
+}
