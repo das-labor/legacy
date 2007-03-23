@@ -12,7 +12,7 @@
 
 typedef struct tetris_view_t
 {
-    tetris_playfield_t *pPl; // specifies the shape of the piece
+    tetris_playfield_t *pPl; /* associated playfield */
 }
 tetris_view_t;
 
