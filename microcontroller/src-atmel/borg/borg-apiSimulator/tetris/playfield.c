@@ -164,9 +164,9 @@ uint8_t tetris_playfield_collision(tetris_playfield_t *pPl,
 		/* piece overlaps with left border */
 		if (nColumn < 0)
 		{
-			nBorderMask = 0x1111 << (-nColumn + 1);
+			nBorderMask = 0x1111 << (-nColumn - 1);
 		}
-		/* piece overlaps with left border */
+		/* piece overlaps with right border */
 		else if ((nColumn + 3) >= pPl->nWidth)
 		{
 			nBorderMask = 0x8888 >> ((nColumn + 3) - pPl->nWidth);
