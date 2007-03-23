@@ -92,11 +92,4 @@ uint16_t tetris_piece_getBitfield(tetris_piece_t *pPc);
 void tetris_piece_rotate(tetris_piece_t *pPc,
                          tetris_piece_rotation_t r);
 
-/* Function:     tetris_piece_lastMatterRow
- * Description:  determines last row of a piece which contains matter
- * Argument pPc: piece to rotate
- * Return value: no. of last row containing matter (counting from 0)
- */
-uint8_t tetris_piece_lastMatterRow(tetris_piece_t *pPc);
-
 #endif /*TETRIS_PIECE_H_*/

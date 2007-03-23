@@ -1,6 +1,7 @@
 #ifndef INPUT_H_
 #define INPUT_H_
 
+#define TETRIS_INPUT_REPEATCOUNT 10
 #define TETRIS_INPUT_TICKS 10
 #define TETRIS_INPUT_ITERATIONS_PER_LEVEL {100, 90, 80, 70, 60, 50, 40, 30, 20, 10}
 
@@ -20,6 +21,7 @@ typedef struct tetris_input_t
 {
 	uint8_t nLevel;
 	uint8_t nPass;
+	uint8_t nRepeatCount;
 	tetris_input_command_t lastCmd;
 }
 tetris_input_t;

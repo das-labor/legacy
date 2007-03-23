@@ -20,6 +20,7 @@ tetris_input_t *tetris_input_construct()
 	pIn->lastCmd = TETRIS_INCMD_NONE;
 	pIn->nLevel = 0;
 	pIn->nPass = 0;
+	pIn->nRepeatCount = 0;
 	
 	return pIn;
 }
@@ -61,6 +62,7 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 			if (pIn->lastCmd != TETRIS_INCMD_ROTATE_CLOCKWISE)
 			{
 				pIn->lastCmd = cmd = TETRIS_INCMD_ROTATE_CLOCKWISE;
+				pIn->nRepeatCount = 0;
 				++pIn->nPass;
 			}
 			else
@@ -70,26 +72,34 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 		}
 		else if (JOYISLEFT)
 		{
-			if (pIn->lastCmd != TETRIS_INCMD_LEFT)
+			if ((pIn->lastCmd != TETRIS_INCMD_LEFT) ||
+				((pIn->lastCmd == TETRIS_INCMD_LEFT) &&
+				(pIn->nRepeatCount >= TETRIS_INPUT_REPEATCOUNT)))
 			{
 				pIn->lastCmd = cmd = TETRIS_INCMD_LEFT;
+				pIn->nRepeatCount = 0;
 				++pIn->nPass;
 			}
 			else
 			{
 				cmd = TETRIS_INCMD_NONE;
+				++pIn->nRepeatCount;
 			}
 		}
 		else if (JOYISRIGHT)
 		{
-			if (pIn->lastCmd != TETRIS_INCMD_RIGHT)
+			if ((pIn->lastCmd != TETRIS_INCMD_RIGHT) ||
+				((pIn->lastCmd == TETRIS_INCMD_RIGHT) &&
+				(pIn->nRepeatCount >= TETRIS_INPUT_REPEATCOUNT)))
 			{
 				pIn->lastCmd = cmd = TETRIS_INCMD_RIGHT;
+				pIn->nRepeatCount = 0;
 				++pIn->nPass;
 			}
 			else
 			{
 				cmd = TETRIS_INCMD_NONE;
+				++pIn->nRepeatCount;
 			}
 		}
 		else if (JOYISUP)
@@ -97,6 +107,7 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 			if (pIn->lastCmd != TETRIS_INCMD_UP)
 			{
 				pIn->lastCmd = cmd = TETRIS_INCMD_UP;
+				pIn->nRepeatCount = 0;
 				pIn->nPass = 0;
 			}
 			else
@@ -106,19 +117,24 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 		}
 		else if (JOYISDOWN)
 		{
-			if (pIn->lastCmd != TETRIS_INCMD_DOWN)
+			if ((pIn->lastCmd != TETRIS_INCMD_DOWN) ||
+				((pIn->lastCmd == TETRIS_INCMD_DOWN) &&
+				(pIn->nRepeatCount >= TETRIS_INPUT_REPEATCOUNT)))
 			{
 				pIn->lastCmd = cmd = TETRIS_INCMD_DOWN;
+				pIn->nRepeatCount = 0;
 				pIn->nPass = 0;
 			}
 			else
 			{
 				cmd = TETRIS_INCMD_NONE;
+				++pIn->nRepeatCount;
 			}
 		}
 		else
 		{
 			pIn->lastCmd = cmd = TETRIS_INCMD_NONE;
+			pIn->nRepeatCount = 0;
 		}
 		
 		myWait(TETRIS_INPUT_TICKS);

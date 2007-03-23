@@ -20,7 +20,7 @@ tetris_view_t *tetris_view_construct(tetris_playfield_t *pPl)
 	// memory allocation
 	assert(pPl != NULL);
 	tetris_view_t *pView =
-		(tetris_view_t*) malloc(sizeof(tetris_view_t));
+		(tetris_view_t *) malloc(sizeof(tetris_view_t));
 	assert(pView != NULL);
 	pView->pPl = pPl;
 	
@@ -156,7 +156,7 @@ void tetris_view_updatePlayfield(tetris_view_t *pV)
  * Return value: void
  */
 void tetris_view_updateNextPiece(tetris_view_t *pV,
-                                  tetris_piece_t *pPc)
+                                 tetris_piece_t *pPc)
 {
 	uint8_t x;
 	uint8_t y;
