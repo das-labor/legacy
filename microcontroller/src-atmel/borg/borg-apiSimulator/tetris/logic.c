@@ -14,6 +14,7 @@ void tetris ()
 	
     tetris_playfield_t *pPl = tetris_playfield_construct(*pnWidth, *pnHeight);
     tetris_view_t *pView = tetris_view_construct(pPl);
+	tetris_input_t *pIn = tetris_input_construct();
     
     tetris_input_command_t cmd;
     tetris_piece_t *pPiece = NULL;
@@ -40,7 +41,7 @@ void tetris ()
 				tetris_playfield_advancePiece(pPl);
 				
 			case TETRIS_PFS_HOVERING:
-				cmd = tetris_input_getCommand();
+				cmd = tetris_input_getCommand(pIn);
 				switch (cmd)
 				{
 					case TETRIS_INCMD_DOWN:
@@ -81,6 +82,7 @@ void tetris ()
 
 	free(pnWidth);
 	free(pnHeight);
+	tetris_input_destruct(pIn);
     tetris_view_destruct(pView);
     tetris_playfield_destruct(pPl);
     tetris_piece_destruct(pPiece);
