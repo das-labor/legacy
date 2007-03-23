@@ -29,12 +29,12 @@ tetris_view_t *tetris_view_construct(tetris_playfield_t *pPl)
 	uint8_t x, y;
 	for (y = 0; y < 16; ++y)
 	{
-		setpixel((pixel){5, y}, TETRIS_VIEW_COLORBORDER);
-		setpixel((pixel){0, y}, TETRIS_VIEW_COLORBORDER);
+		setpixel((pixel){4, y}, TETRIS_VIEW_COLORBORDER);
+		setpixel((pixel){15, y}, TETRIS_VIEW_COLORBORDER);
 	}
 	for (y = 0; y < 5; ++y)
 	{
-		for (x = 1; x <= 4; ++x){
+		for (x = 0; x <= 3; ++x){
 			setpixel((pixel){x, y}, TETRIS_VIEW_COLORBORDER);
 			setpixel((pixel){x, y + 11}, TETRIS_VIEW_COLORBORDER);
 		}
@@ -143,7 +143,7 @@ void tetris_view_updatePlayfield(tetris_view_t *pV)
 			{
 				nColor = TETRIS_VIEW_COLORSPACE;
 			}
-			setpixel((pixel){15-x,nRow}, nColor);
+			setpixel((pixel){14-x,nRow}, nColor);
 			nElementMask <<= 1;
 		}
 	}
@@ -176,7 +176,7 @@ void tetris_view_updateNextPiece(tetris_view_t *pV,
 			{
 				nColor = TETRIS_VIEW_COLORSPACE;
 			}
-			setpixel((pixel) {4 - x, y + 6}, nColor);
+			setpixel((pixel) {3 - x, y + 6}, nColor);
 			nElementMask <<= 1;
 		}
 	} 
