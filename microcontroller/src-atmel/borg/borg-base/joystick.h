@@ -3,7 +3,7 @@
 
 #include <avr/io.h>
 
-extern unsigned char waitForFire;
+unsigned char waitForFire;
 inline void joy_init();
 
 #define BITFIRE  PD0
