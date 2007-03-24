@@ -183,6 +183,7 @@ void feuer()
 	}
 }
 
+/*
 void tetris(){
 	PORTB = 0x0f;
 	clear_screen(0);
@@ -279,7 +280,7 @@ void tetris(){
 	dropin(line);
 	dropin(left);
 }
-
+*/
 
 /**
  * void random_bright(void)
@@ -301,3 +302,4 @@ void random_bright(unsigned cycles){
 		wait(200);
 	}
 }
+*/
