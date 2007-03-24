@@ -16,7 +16,9 @@ tetris_input_t *tetris_input_construct()
 {
 	tetris_input_t *pIn = (tetris_input_t *)malloc(sizeof(tetris_input_t));
 	assert(pIn != NULL);
-	
+
+	waitForFire = 0;
+		
 	pIn->lastCmd = TETRIS_INCMD_NONE;
 	pIn->nLevel = 0;
 	pIn->nPass = 0;
@@ -33,6 +35,7 @@ tetris_input_t *tetris_input_construct()
  */
 void tetris_input_destruct(tetris_input_t *pIn)
 {
+	waitForFire = 1;
 	assert(pIn != NULL);
 	free(pIn);
 }
