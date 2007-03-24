@@ -73,7 +73,7 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 				cmd = TETRIS_INCMD_NONE;
 			}
 		}
-		else if (JOYISLEFT)
+		else if (JOYISDOWN) /* is really left */
 		{
 			if ((pIn->lastCmd != TETRIS_INCMD_LEFT) ||
 				((pIn->lastCmd == TETRIS_INCMD_LEFT) &&
@@ -89,7 +89,7 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 				++pIn->nRepeatCount;
 			}
 		}
-		else if (JOYISRIGHT)
+		else if (JOYISUP) /* is really right */
 		{
 			if ((pIn->lastCmd != TETRIS_INCMD_RIGHT) ||
 				((pIn->lastCmd == TETRIS_INCMD_RIGHT) &&
@@ -105,7 +105,7 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 				++pIn->nRepeatCount;
 			}
 		}
-		else if (JOYISUP)
+		else if (JOYISRIGHT) /* is really up */
 		{
 			if (pIn->lastCmd != TETRIS_INCMD_UP)
 			{
@@ -118,7 +118,7 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 				cmd = TETRIS_INCMD_NONE;
 			}
 		}
-		else if (JOYISDOWN)
+		else if (JOYISLEFT) /* is really down */
 		{
 			if ((pIn->lastCmd != TETRIS_INCMD_DOWN) ||
 				((pIn->lastCmd == TETRIS_INCMD_DOWN) &&
