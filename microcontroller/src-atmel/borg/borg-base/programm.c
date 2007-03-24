@@ -302,4 +302,4 @@ void random_bright(unsigned cycles){
 		wait(200);
 	}
 }
-*/
+
