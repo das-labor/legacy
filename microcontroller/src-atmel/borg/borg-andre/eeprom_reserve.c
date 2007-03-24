@@ -7,8 +7,8 @@
  */
 
 #include <avr/eeprom.h>
-#include <stdint.h>
+#include <inttypes.h>
 
-uint8_t EEMEM do_not_use;
+// uint8_t EEMEM do_not_use;
 
 

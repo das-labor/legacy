@@ -5,7 +5,7 @@
 #define TETRIS_INPUT_TICKS 10
 #define TETRIS_INPUT_ITERATIONS_PER_LEVEL {100, 90, 80, 70, 60, 50, 40, 30, 20, 10}
 
-extern unsigned waitForFire;
+extern unsigned char waitForFire;
 
 typedef enum tetris_input_command_t
 {
