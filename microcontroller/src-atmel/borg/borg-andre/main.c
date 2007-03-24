@@ -13,6 +13,7 @@
 #include "joystick.h"
 #include "prng.h"
 #include "persistentCounter.h"
+#include "tetris/logic.h"
 
 volatile unsigned char oldMode, oldOldmode, mode;
 
@@ -82,6 +83,7 @@ int main (void){
 			break;
 		case 43:
 		//	snakeJoystick();
+			tetris();
 			mode = oldOldmode;
 		default:
 			break;
