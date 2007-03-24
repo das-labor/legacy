@@ -6,7 +6,7 @@
 #include "playfield.h"
 
 
-#define TETRIS_VIEW_COLORBORDER 2
+#define TETRIS_VIEW_COLORBORDER 1
 #define TETRIS_VIEW_COLORPIECE 3
 #define TETRIS_VIEW_COLORSPACE 0
 
