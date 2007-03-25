@@ -4,7 +4,7 @@
 
 #include "AvrXFifo.h"
 
-#define BAUDRATE 38400
+#define BAUDRATE 9600
 
 #define nop() __asm volatile ("nop")
 
