@@ -9,6 +9,7 @@ uint8_t buffer[BUFFERSIZE];
 
 
 AVRX_GCC_TASKDEF(qport, 50, 1){
+	static uint8_t test;
 	uint8_t size;
 	uint8_t id;
 	while(1){
