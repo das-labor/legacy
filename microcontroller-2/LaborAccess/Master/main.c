@@ -45,6 +45,9 @@ int main(void)
 	//put_c0('h');
 	//put_c1('H');
 	
+	fdevopen(put_char1, get_char1);
+	
+	
     Epilog();                   // Switch from AvrX Stack to first task
     while(1);
 };

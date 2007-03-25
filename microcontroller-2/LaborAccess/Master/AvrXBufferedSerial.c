@@ -62,7 +62,7 @@ void InitSerial0(uint16_t ubrr)
 	UBRRH = (uint8_t)(ubrr>>8);
 	UCSRA = (BAUDX == 8)?(1<<U2X):0;
 	UCSRB = ((1<<TXEN) | (1<<RXEN) | (1<<RXCIE));
-	UCSRC = ((1<<URSEL) | (1<<UCSZ1) | (1<<UCSZ0));
+	UCSRC = ((1<<URSEL) | (1<<UCSZ1) | (1<<UCSZ0)) | (1<<USBS);
 
 // One USART, (C register not shared)
 #elif defined(__AVR_ATmega169__) | defined(__AVR_ATmega165__) | defined(__AVR_IOtn2313__)
