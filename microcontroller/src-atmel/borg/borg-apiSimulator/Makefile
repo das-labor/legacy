@@ -1,5 +1,7 @@
 PRG = borgSim
-OBJ = main.o pixel.o joystick.o programm.o util.o  scrolltext3.o  trackball.o  breakpoint.o tetris/tetris.o
+OBJ = main.o pixel.o joystick.o programm.o util.o  scrolltext3.o \
+  trackball.o breakpoint.o menu.o invaders2.o invader_draw.o \
+  invader_proc.o invader_init.o tetris/tetris.o
 #OBJ = main.o pixel.o joystick.o programm.o util.o  scrolltext3.o  trackball.o  breakpoint.o
 
 OPTIMIZE = -O0

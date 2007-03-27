@@ -1,3 +1,6 @@
+#ifndef PIXEL_H_
+#define PIXEL_H_
+
 #include "util.h"
 #include "config.h"
 
@@ -42,3 +45,5 @@ void set_cursor(cursor* cur, pixel p);
 
 //this is deprecated
 void walk(cursor* cur, unsigned char steps, unsigned int delay);
+
+#endif /* PIXEL_H */

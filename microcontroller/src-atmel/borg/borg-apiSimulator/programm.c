@@ -1,5 +1,6 @@
 #include "pixel.h"
 #include "programm.h"
+#include "joystick.h"
 
 
 void test1(){
@@ -348,8 +349,8 @@ void feuer()
 		wait(70);
 	}
 }
-/*
-void tetris(){
+
+void tetris_old(){
 	PORTB = 0x0f;
 	clear_screen(0);
 	unsigned char i;
@@ -407,7 +408,7 @@ void tetris(){
 		struct block aktuell = foobar;
 			unsigned char i;
 			unsigned char h=1;
-			unsigned char taste = PINB & 0x0F;
+			unsigned char taste = JOYISFIRE;
 			aktuell = press(aktuell,taste);
 			struct block next=aktuell;
 			for(i=0;i<4;i++){
@@ -445,4 +446,4 @@ void tetris(){
 	dropin(line);
 	dropin(left);
 }
-*/
+
