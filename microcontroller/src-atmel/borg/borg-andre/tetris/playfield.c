@@ -26,12 +26,12 @@ tetris_playfield_t *tetris_playfield_construct(int8_t nWidth,
 		
 	if (pPlayfield != NULL)
 	{
-		/* allocating mem for dump array */
+		// allocating mem for dump array
 		pPlayfield->dump = (uint16_t*) calloc(nHeight, sizeof(uint16_t));
 			
 		if (pPlayfield->dump != NULL)
 		{
-			/* setting desired attributes */
+			// setting desired attributes
 			pPlayfield->nWidth = nWidth;
 			pPlayfield->nHeight = nHeight;
 			tetris_playfield_reset(pPlayfield);
@@ -56,7 +56,7 @@ void tetris_playfield_destruct(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
 	
-	/* if memory for the dump array has been allocated, free it */
+	// if memory for the dump array has been allocated, free it
 	if (pPl->dump != NULL)
 	{
 		free(pPl->dump);
@@ -82,7 +82,7 @@ void tetris_playfield_reset(tetris_playfield_t *pPl)
 	pPl->nColumn = 0;
 	pPl->nRow = 0;
 
-	/* clear dump if it has been allocated in memory */
+	// clear dump if it has been allocated in memory
 	if (pPl->dump != NULL)
 	{
 		memset(pPl->dump, 0, pPl->nHeight);
@@ -96,46 +96,50 @@ void tetris_playfield_reset(tetris_playfield_t *pPl)
  * Description:         inserts a new piece
  * Argument pPl:        playfield to perform action on
  * Argument pPiece:     piece to be inserted
- * Argument ppOldPiece: indirect pointer to former piece for deallocation
- * Return value:        0 corresponds to false, anything other to true
+ * Argument ppOldPiece: [out] indirect pointer to former piece for deallocation
+ * Return value:        void
  */
-uint8_t tetris_playfield_insertPiece(tetris_playfield_t *pPl,
-                                     tetris_piece_t *pPiece,
-                                     tetris_piece_t** ppOldPiece)
+void tetris_playfield_insertPiece(tetris_playfield_t *pPl,
+                                  tetris_piece_t *pPiece,
+                                  tetris_piece_t** ppOldPiece)
 {
 	assert((pPl != NULL) && (pPiece != NULL) && (ppOldPiece != NULL));
 
-	/* a piece can only be inserted in state TETRIS_PFS_READY */
+	// a piece can only be inserted in state TETRIS_PFS_READY
 	assert(pPl->status == TETRIS_PFS_READY);
 
-	/* replace old piece */
+	// replace old piece
 	*ppOldPiece = pPl->pPiece;
 	pPl->pPiece = pPiece;
 
-	/* set start position (in the middle of the top line) */
+	// set horizontal start position (in the middle of the top line)
 	pPl->nColumn = (pPl->nWidth - 2) / 2;
+	
+	// set vertical start position (first piece row with matter at pos. 1)
 	uint16_t nPieceMap = tetris_piece_getBitfield(pPl->pPiece);
-	pPl->nRow = 0;
-	if ((0x000F & nPieceMap) == 0)
+	uint16_t nElementMask = 0xF000;
+	pPl->nRow = -3;
+	while ((nPieceMap & nElementMask) == 0)
 	{
-		--pPl->nRow;
-		if ((0x00F0 & nPieceMap) == 0)
-		{
-			--pPl->nRow;
-		}
+		++pPl->nRow;
+		nElementMask >>= 4;
 	}
-
-	if (tetris_playfield_collision(pPl, pPl->nColumn, pPl->nRow) != 1)
+	if (pPl->nRow < 0)
 	{
-		pPl->status = TETRIS_PFS_HOVERING;
+		++pPl->nRow;
+	}
+	
+	// did we already collide with something?
+	if (tetris_playfield_collision(pPl, pPl->nColumn, pPl->nRow) == 1)
+	{
+		// game over man, game over!!
+		pPl->status = TETRIS_PFS_GAMEOVER;
 	}
 	else
 	{
-		pPl->status = TETRIS_PFS_GAMEOVER;
+		// bring it on!
+		pPl->status = TETRIS_PFS_HOVERING;
 	}
-
-	/* OK */
-	return 1;
 }
 
 
@@ -152,97 +156,96 @@ uint8_t tetris_playfield_collision(tetris_playfield_t *pPl,
 {
 	assert(pPl != NULL);
 
-	/* only allow coordinates which are within sane ranges */
+	// only allow coordinates which are within sane ranges
 	assert((nColumn >= -4) && (nColumn < pPl->nWidth));
 	assert((nRow >= -4) && (nRow < pPl->nHeight));
 	
-	/* The rows of a piece get compared with the background one by one
-	 * until either a collision occures or all rows are compared. Both the
-	 * piece row and the part of the playfield it covers are represented in
-	 * 4 bits which were singled out from their corresponding uint16_t
-	 * values and are aligned to LSB. In case where a piece overlaps with
-	 * either the left or the right border we "enhance" the playfield part
-	 * via bit shifting and set all bits representing the border to 1.
-	 * 
-	 * NOTE: LSB represents the left most position. 
-	 */
+	// The rows of a piece get compared with the background one by one
+	// until either a collision occures or all rows are compared. Both the
+	// piece row and the part of the playfield it covers are represented in
+	// 4 bits which were singled out from their corresponding uint16_t
+	// values and are aligned to LSB. In case where a piece overlaps with
+	// either the left or the right border we "enhance" the playfield part
+	// via bit shifting and set all bits representing the border to 1.
+	// 
+	// NOTE: LSB represents the left most position. 
 	uint16_t nPieceMap = tetris_piece_getBitfield(pPl->pPiece);
 	uint16_t nPlayfieldPart;
 	uint16_t nPieceRowMap;
 	int8_t y;
 
-	/* negative nRow values indicate that the piece hasn't fully entered the
-	 * playfield yet which requires special treatment if the piece overlaps
-	 * with either the left or the right border */
+	// negative nRow values indicate that the piece hasn't fully entered the
+	// playfield yet which requires special treatment if the piece overlaps
+	// with either the left or the right border
 	if (nRow < 0)
 	{
 		uint16_t nBorderMask = 0x0000;
-		/* piece overlaps with left border */
+		// piece overlaps with left border
 		if (nColumn < 0)
 		{
 			nBorderMask = 0x1111 << (-nColumn - 1);
 		}
-		/* piece overlaps with right border */
+		// piece overlaps with right border
 		else if ((nColumn + 3) >= pPl->nWidth)
 		{
 			nBorderMask = 0x8888 >> ((nColumn + 3) - pPl->nWidth);
 		}
-		/* return if piece collides with border */
+		// return if piece collides with border
 		if ((nPieceMap & nBorderMask) != 0)
 		{
 			return 1;
 		}
 	}
 
-	/* here we check the part which has already entered the playfield */
+	// here we check the part which has already entered the playfield
 	for (y = (nRow < 0) ? -nRow : 0; y < 4; ++y)
 	{
-		/* current piece row overlaps with lower border */
+		// current piece row overlaps with lower border
 		if ((y + nRow) >= pPl->nHeight)
 		{
-			/* all 4 bits represent the lower border */
+			// all 4 bits represent the lower border
 			nPlayfieldPart = 0x000F;
 		}
-		/* piece overlaps with left border */
+		// piece overlaps with left border
 		else if (nColumn < 0)
 		{
-			/* clear all bits we are not interested in */
+			// clear all bits we are not interested in
 			nPlayfieldPart = (pPl->dump[y + nRow] & (0x000F >> -nColumn));
-			/* add zeros to the left (the bits "behind" the left border) */
+			// add zeros to the left (the bits "behind" the left border)
 			nPlayfieldPart <<= -nColumn;
-			/* set bits beyond left border to 1 */
+			// set bits beyond left border to 1
 			nPlayfieldPart |= 0x000F >> (4 + nColumn);
 		}
-		/* piece overlaps with right border */
+		// piece overlaps with right border
 		else if ((nColumn + 3) >= pPl->nWidth)
 		{
-			/* align the bits we are interested in to LSB
-			 * (thereby clearing the rest) */
+			// align the bits we are interested in to LSB
+			// (thereby clearing the rest)
 			nPlayfieldPart = pPl->dump[y + nRow] >> nColumn;
-			/* set bits beyond right border to 1 */
+			// set bits beyond right border to 1
 			nPlayfieldPart |= 0xFFF8 >> (nColumn + 3 - pPl->nWidth);
 		}
-		/* current row neither overlaps with left, right nor lower border */
+		// current row neither overlaps with left, right nor lower border
 		else
 		{
-			/* clear all bits we are not interested in and align the
-			 * remaing row to bit no. 0 */
+			// clear all bits we are not interested in and align the
+			// remaing row to LSB
 			nPlayfieldPart =
 				(pPl->dump[y + nRow] & (0x000F << nColumn)) >> nColumn;
 		}
 
-		/* clear all bits of the piece we are not interested in and
-		 * align the remaing row to LSB */
+		// clear all bits of the piece we are not interested in and
+		// align the remaing row to LSB
 		nPieceRowMap = (nPieceMap & (0x000F << (y << 2))) >> (y << 2);
 
-		/* finally check for a collision */
+		// finally check for a collision
 		if ((nPlayfieldPart & nPieceRowMap) != 0)
 		{
 			return 1;
 		}
 	}
 
-	/* if we reach here, no collision was detected */
+	// if we reach here, no collision was detected
 	return 0;
 }
 
@@ -265,7 +268,7 @@ void tetris_playfield_advancePiece(tetris_playfield_t *pPl)
 		uint16_t nPieceMap;
 		int8_t i, y;
 
-		/* Is the playfield filled up? */
+		// Is the playfield filled up?
 		if ((pPl->nRow < 0) && (nPiece & (0x0FFF >> (3 + pPl->nRow))) != 0)
 		{
 			pPl->status = TETRIS_PFS_GAMEOVER;
@@ -278,10 +281,10 @@ void tetris_playfield_advancePiece(tetris_playfield_t *pPl)
 			for (i = nStartRow; i >= pPl->nRow; --i)
 			{
 				y = i - pPl->nRow;
-				/* clear all bits of the piece we are not interested in and
-				 * align the rest to LSB */
+				// clear all bits of the piece we are not interested in and
+				// align the rest to LSB
 				nPieceMap = (nPiece & (0x000F << (y << 2))) >> (y << 2);
-				/* shift the remaining content to the current column */
+				// shift the remaining content to the current column
 				if (pPl->nColumn >= 0)
 				{
 					nPieceMap <<= pPl->nColumn;
@@ -290,18 +293,18 @@ void tetris_playfield_advancePiece(tetris_playfield_t *pPl)
 				{
 					nPieceMap >>= -pPl->nColumn;
 				}
-				/* embed piece in playfield */
+				// embed piece in playfield
 				pPl->dump[i] |= nPieceMap;
 			}
 
-			/* the piece has finally been docked */
+			// the piece has finally been docked
 			pPl->status = TETRIS_PFS_DOCKED;
 		}
 	}
 	else
 	{
-		/* since there is no collision the piece may continue its travel
-		 * to the ground... */
+		// since there is no collision the piece may continue its travel
+		// to the ground...
 		pPl->nRow++;
 	}
 }
@@ -343,15 +346,15 @@ uint8_t tetris_playfield_rotatePiece(tetris_playfield_t *pPl,
 {
 	assert(pPl != NULL);
 
-	/* a piece can only be rotation if it is still hovering */
+	// a piece can only be rotation if it is still hovering
 	assert(pPl->status == TETRIS_PFS_HOVERING);
 	
 	tetris_piece_rotate(pPl->pPiece, rotation);
 	
-	/* does the rotated piece cause a collision? */
+	// does the rotated piece cause a collision?
 	if (tetris_playfield_collision(pPl, pPl->nColumn, pPl->nRow) != 0)
 	{
-		/* in that case we revert the rotation*/
+		// in that case we revert the rotation
 		if (rotation == TETRIS_PC_ROT_CLOCKWISE)
 		{
 			tetris_piece_rotate(pPl->pPiece, TETRIS_PC_ROT_COUNTERCLOCKWISE);
@@ -378,38 +381,38 @@ uint8_t tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
 
-	/* rows can only be removed if we are in state TETRIS_PFS_DOCKED */
+	// rows can only be removed if we are in state TETRIS_PFS_DOCKED
 	assert(pPl->status == TETRIS_PFS_DOCKED);
 
-	/* bit mask of a full row */
+	// bit mask of a full row
 	uint16_t nFullRow = 0xFFFF >> (16 - pPl->nWidth);
 	
-	/* return value */
+	// return value
 	uint8_t nRowMask = 0;
 	
-	/* determine sane start and stop values for the dump' index */
+	// determine sane start and stop values for the dump' index
 	int8_t nStartRow =
 		((pPl->nRow + 3) >= pPl->nHeight) ? pPl->nHeight - 1 : pPl->nRow + 3;
 	int8_t nStopRow = (pPl->nRow < 0) ? 0 : pPl->nRow;
 		
-	/* dump index variables
-	 * for incomplete rows, both variables will be decremented
-	 * for complete rows, only i gets decremented */ 
+	// dump index variables
+	//   for incomplete rows, both variables will be decremented
+	//   for complete rows, only i gets decremented
 	int8_t nLowestRow = nStartRow;
 	int8_t i;
 	
-	/* this loop only considers rows which are affected by the piece */ 
+	// this loop only considers rows which are affected by the piece 
 	for (i = nStartRow; i >= nStopRow; --i)
 	{
-		/* is current row a full row? */
+		// is current row a full row?
 		if ((nFullRow & pPl->dump[i]) == nFullRow)
 		{
-			/* set corresponding bit for the return value */
+			// set corresponding bit for the return value
 			nRowMask |= 0x0008 >> (nStartRow - i);
 		}
 		else
 		{
-			/* if nLowestRow and i differ, the dump has to be shifted */
+			// if nLowestRow and i differ, the dump has to be shifted
 			if (i < nLowestRow)
 			{
 				pPl->dump[nLowestRow] = pPl->dump[i];
@@ -418,28 +421,28 @@ uint8_t tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl)
 		}
 	}
 	
-	/* if rows have been removed, this loop shifts the rest of the dump */
+	// if rows have been removed, this loop shifts the rest of the dump
 	uint8_t nComplete = nLowestRow - nStopRow + 1;
 	if (nComplete > 0)
 	{
 		for (i = nStopRow - 1; nLowestRow >= 0; --i)
 		{
-			/* is the row we are copying from below the upper border? */
+			// is the row we are copying from below the upper border?
 			if (i >= 0)
 			{
-				/* just copy from that row */
+				// just copy from that row
 				pPl->dump[nLowestRow] = pPl->dump[i];
 			}
 			else
 			{
-				/* rows above the upper border are always empty */
+				// rows above the upper border are always empty
 				pPl->dump[nLowestRow] = 0;
 			}
 			--nLowestRow;
 		}
 	}
 
-	/* ready to get the next piece */
+	// ready to get the next piece
 	pPl->status = TETRIS_PFS_READY;
 
 	return nRowMask;

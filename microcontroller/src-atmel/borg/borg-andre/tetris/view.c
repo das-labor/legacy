@@ -23,22 +23,9 @@ tetris_view_t *tetris_view_construct(tetris_playfield_t *pPl)
 		(tetris_view_t *) malloc(sizeof(tetris_view_t));
 	assert(pView != NULL);
 	pView->pPl = pPl;
-	
-	// drawing playfield
+
 	clear_screen(0);
-	uint8_t x, y;
-	for (y = 0; y < 16; ++y)
-	{
-		setpixel((pixel){4, y}, TETRIS_VIEW_COLORBORDER);
-		setpixel((pixel){15, y}, TETRIS_VIEW_COLORBORDER);
-	}
-	for (y = 0; y < 5; ++y)
-	{
-		for (x = 0; x <= 3; ++x){
-			setpixel((pixel){x, y}, TETRIS_VIEW_COLORBORDER);
-			setpixel((pixel){x, y + 11}, TETRIS_VIEW_COLORBORDER);
-		}
-	}
+	tetris_view_drawPlayfield(TETRIS_VIEW_COLORBORDER);
 
 	return pView;
 }
@@ -102,7 +89,7 @@ void tetris_view_updatePlayfield(tetris_view_t *pV)
 	{	
 		nRowMap = tetris_playfield_getDumpRow(pV->pPl, nRow);
 		
-		/* if a piece is hovering it needs to be drawn */
+		// if a piece is hovering it needs to be drawn
 		if ((status == TETRIS_PFS_HOVERING) || (status == TETRIS_PFS_GAMEOVER))
 		{
 			if ((nRow >= nPieceRow))
@@ -111,10 +98,10 @@ void tetris_view_updatePlayfield(tetris_view_t *pV)
 				int8_t nColumn = tetris_playfield_getColumn(pV->pPl);
 				uint16_t nPieceMap =
 					tetris_piece_getBitfield(tetris_playfield_getPiece(pV->pPl));
-				/* clear all bits of the piece we are not interested in and
-				 * align the remaing row to LSB */
+				// clear all bits of the piece we are not interested in and
+				// align the remaing row to LSB
 				nPieceMap = (nPieceMap & (0x000F << (y << 2))) >> (y << 2);
-				/* shift remaining part to current column */
+				// shift remaining part to current column
 				if (nColumn >= 0)
 				{
 					nPieceMap <<= nColumn;
@@ -123,9 +110,9 @@ void tetris_view_updatePlayfield(tetris_view_t *pV)
 				{
 					nPieceMap >>= -nColumn;
 				}
-				/* cut off unwanted stuff */
+				// cut off unwanted stuff
 				nPieceMap &= 0x03ff;
-				/* finally embed piece into the view */
+				// finally embed piece into the view
 				nRowMap |= nPieceMap;
 			}
 		}
@@ -180,4 +167,45 @@ void tetris_view_updateNextPiece(tetris_view_t *pV,
 			nElementMask <<= 1;
 		}
 	} 
+}
+
+
+/* Function:     tetris_view_updateLevel
+ * Description:  informs a view about entering a new level
+ * Argument pV:  pointer to the view which should be updated
+ * Return value: void
+ */
+void tetris_view_updateLevel(tetris_view_t *pV)
+{
+	uint8_t i;
+	for (i = 0; i < TETRIS_VIEW_BLINK_COUNT; ++i)
+	{
+		tetris_view_drawPlayfield(TETRIS_VIEW_COLORPIECE);
+		wait(TETRIS_VIEW_BLINK_DELAY);
+		tetris_view_drawPlayfield(TETRIS_VIEW_COLORBORDER);
+	}
+}
+
+
+/* Function:         tetris_view_drawPlayfield
+ * Description:      draws the playfield in the given color
+ * Argument nColor:  the color for the border
+ * Return value:     void
+ */
+void tetris_view_drawPlayfield(uint8_t nColor)
+{
+	// drawing playfield
+	uint8_t x, y;
+	for (y = 0; y < 16; ++y)
+	{
+		setpixel((pixel){4, y}, nColor);
+		setpixel((pixel){15, y}, nColor);
+	}
+	for (y = 0; y < 5; ++y)
+	{
+		for (x = 0; x <= 3; ++x){
+			setpixel((pixel){x, y}, nColor);
+			setpixel((pixel){x, y + 11}, nColor);
+		}
+	}
 }
