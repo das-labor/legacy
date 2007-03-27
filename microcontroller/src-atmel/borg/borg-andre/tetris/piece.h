@@ -13,10 +13,10 @@ typedef enum tetris_piece_shape_t
     TETRIS_PC_LINE,
     TETRIS_PC_T,
     TETRIS_PC_SQUARE,
-    TETRIS_PC_LBACK,
     TETRIS_PC_L,
-    TETRIS_PC_Z,
-    TETRIS_PC_S
+    TETRIS_PC_LBACK,
+    TETRIS_PC_S,
+    TETRIS_PC_Z
 }
 tetris_piece_shape_t;
 
