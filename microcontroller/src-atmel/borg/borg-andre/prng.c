@@ -41,7 +41,7 @@ uint8_t random8(void){
 	return (uint8_t)state;
 }
 
-void srandom(uint32_t seed){
+void srandom32(uint32_t seed){
 	if(seed)
 		state = seed;
 }

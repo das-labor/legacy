@@ -13,6 +13,6 @@
 #include <stdint.h>
 
 uint8_t random8(void);
-void srandom(uint32_t seed);
+void srandom32(uint32_t seed);
 
 #endif /* PRNG_H_*/
