@@ -1,3 +1,5 @@
+#ifndef PROGRAMM_H_
+#define PROGRAMM_H_
 
 void off();
 void spirale(unsigned int delay);
@@ -14,3 +16,5 @@ void matrix();
 void fadein();
 void feuer();
 void random_bright(unsigned cycles);
+
+#endif /* PROGRAMM_H_ */
