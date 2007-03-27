@@ -47,3 +47,4 @@ void set_cursor(cursor* cur, pixel p);
 void walk(cursor* cur, unsigned char steps, unsigned int delay);
 
 #endif /* PIXEL_H */
+

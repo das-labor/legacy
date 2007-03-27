@@ -5,3 +5,4 @@
 extern font font_arial8;
 
 #endif /* FONT_ARIAL8_H */
+
