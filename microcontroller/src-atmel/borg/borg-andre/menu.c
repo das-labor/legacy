@@ -52,17 +52,17 @@ void menu()
 			}
 			break;
 		}
-		else if (JOYISRIGHT)
+		else if (JOYISUP) // is really right
 		{
 			menu_animate(miSelection, MENU_DIRECTION_LEFT);
 			miSelection = MENU_NEXTITEM(miSelection);
 		}
-		else if (JOYISLEFT)
+		else if (JOYISDOWN) // is really left
 		{
 			menu_animate(miSelection, MENU_DIRECTION_RIGHT);
 			miSelection = MENU_PREVITEM(miSelection);
 		}
-		else if (JOYISUP)
+		else if (JOYISRIGHT) // is really up
 		{
 			break;
 		}
