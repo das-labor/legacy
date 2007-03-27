@@ -13,7 +13,7 @@
 #include "joystick.h"
 #include "prng.h"
 #include "persistentCounter.h"
-#include "tetris/logic.h"
+#include "menu.h"
 
 volatile unsigned char oldMode, oldOldmode, mode;
 
@@ -21,7 +21,7 @@ jmp_buf newmode_jmpbuf;
 
 int main (void){
 	clear_screen(0);
-	srandom(percnt_get());
+	srandom32(percnt_get());
 	percnt_inc();
 	borg_hw_init();
 	bcan_init();
@@ -83,7 +83,7 @@ int main (void){
 			break;
 		case 43:
 		//	snakeJoystick();
-			tetris();
+			menu();
 			mode = oldOldmode;
 		default:
 			break;
