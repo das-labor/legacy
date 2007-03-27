@@ -1,3 +1,6 @@
+#ifndef CONFIG_H_
+#define CONFIG_H_
+
 #define NUM_ROWS 16
 #define NUM_COLS 16
 #define NUM_PLANES 1
@@ -44,3 +47,4 @@
 
 #define INIT_EEPROM
 
+#endif /* CONFIG_H_ */
