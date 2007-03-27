@@ -1,10 +1,25 @@
 #ifndef INPUT_H_
 #define INPUT_H_
 
-#define TETRIS_INPUT_REPEATCOUNT 10
-#define TETRIS_INPUT_TICKS 10
-#define TETRIS_INPUT_ITERATIONS_PER_LEVEL {100, 90, 80, 70, 60, 50, 40, 30, 20, 10}
+/***********
+ * defines *
+ ***********/
 
+// amount of micro seconds that each loop cycle waits
+#define TETRIS_INPUT_TICKS 10
+
+// amount of loop cycles for 10 levels until a piece will be moved down
+#define TETRIS_INPUT_CYCLESPERLEVEL {100, 90, 80, 70, 60, 50, 40, 30, 20, 10}
+
+// here you can adjust the delays (in loop cycles) for key repeat
+#define TETRIS_INPUT_REPEAT_INITIALDELAY 20
+#define TETRIS_INPUT_REPEAT_DELAY 5
+
+
+/*********
+ * types *
+ *********/
+ 
 typedef enum tetris_input_command_t
 {
 	TETRIS_INCMD_NONE,
@@ -13,16 +28,22 @@ typedef enum tetris_input_command_t
 	TETRIS_INCMD_LEFT,
 	TETRIS_INCMD_RIGHT,
 	TETRIS_INCMD_DOWN,
-	TETRIS_INCMD_UP	
+	TETRIS_INCMD_DROP	
 }
 tetris_input_command_t;
 
+
 typedef struct tetris_input_t
 {
-	uint8_t nLevel;
-	uint8_t nPass;
-	uint8_t nRepeatCount;
-	tetris_input_command_t lastCmd;
+	uint8_t nLevel;                 // current level
+	
+	uint8_t nLoopCycles;            // tracks how many loop cycles have been
+	                                // done since last forced piece movement
+	                                
+	int8_t nRepeatCount;            // tracks how many loop cycles have been
+									// done since last reset of repeat counter
+									 
+	tetris_input_command_t cmdLast; // last command (important for key repeat)
 }
 tetris_input_t;
 
@@ -57,6 +78,14 @@ void tetris_input_destruct(tetris_input_t *pIn);
  */
 tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn);
 
+
+/* Function:     tetris_input_queryJoystick
+ * Description:  translates joystick movements to a tetris_input_command_t
+ * Return value: void
+ */
+tetris_input_command_t tetris_input_queryJoystick();
+
+
 /* Function:      tetris_input_setLevel
  * Description:   modifies time interval of input events
  * Argument pIn:  pointer to input structure
@@ -64,6 +93,6 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn);
  * Return value:  void
  */
 void tetris_input_setLevel(tetris_input_t *pIn,
-                                             uint8_t nLvl);
+                           uint8_t nLvl);
 
 #endif /*INPUT_H_*/

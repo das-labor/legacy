@@ -27,4 +27,4 @@ input.o: input.c input.h ../joystick.h ../util.h
 	$(CC) $(CFLAGS) -c input.c -o input.o
 
 clean:
-	rm -rf *.o tetris
+	rm -rf *.o

@@ -9,7 +9,7 @@
  * types *
  *********/
 
-/* directions to which a piece can be moved */
+// directions to which a piece can be moved */
 typedef enum tetris_playfield_direction_t
 {
     TETRIS_PFD_LEFT,
@@ -18,27 +18,27 @@ typedef enum tetris_playfield_direction_t
 tetris_playfield_direction_t;
 
 
-/* status of the playfield */
+// status of the playfield */
 typedef enum tetris_playfield_status_t
 {
-    TETRIS_PFS_READY,    /* ready to get next piece */
-    TETRIS_PFS_HOVERING, /* piece is still hovering */
-    TETRIS_PFS_DOCKED,   /* piece has been docked */
-    TETRIS_PFS_GAMEOVER	 /* playfield is filled up */
+    TETRIS_PFS_READY,    // ready to get next piece
+    TETRIS_PFS_HOVERING, // piece is still hovering
+    TETRIS_PFS_DOCKED,   // piece has been docked
+    TETRIS_PFS_GAMEOVER	 // playfield is filled up
 }
 tetris_playfield_status_t;
 
 
-/* tetris_playfield_t */
+// tetris_playfield_t
 typedef struct tetris_playfield_t
 {
-	int8_t nWidth;                    /* width of playfield */
-	int8_t nHeight;                   /* height of playfield */
-	tetris_piece_t *pPiece;           /* currently falling piece */
-	int8_t nColumn;                   /* horz. piece pos. (0 is left) */
-	int8_t nRow;                      /* vert. piece pos. (0 is top) */
-	tetris_playfield_status_t status; /* status */
-	uint16_t *dump;                   /* playfield itself */
+	int8_t nWidth;                    // width of playfield
+	int8_t nHeight;                   // height of playfield
+	tetris_piece_t *pPiece;           // currently falling piece
+	int8_t nColumn;                   // horz. piece pos. (0 is left)
+	int8_t nRow;                      // vert. piece pos. (0 is top)
+	tetris_playfield_status_t status; // status
+	uint16_t *dump;                   // playfield itself
 }
 tetris_playfield_t;
 
@@ -80,12 +80,12 @@ void tetris_playfield_reset(tetris_playfield_t *pPl);
  * Description:         inserts a new piece
  * Argument pPl:        playfield to perform action on
  * Argument pPiece:     piece to be inserted
- * Argument ppOldPiece: indirect pointer to former piece for deallocation
- * Return value:        0 corresponds to false, anything other to true
+ * Argument ppOldPiece: [out] indirect pointer to former piece for deallocation
+ * Return value:        void
  */
-uint8_t tetris_playfield_insertPiece(tetris_playfield_t *pPl,
-                                     tetris_piece_t *pPiece,
-                                     tetris_piece_t** ppOldPiece);
+void tetris_playfield_insertPiece(tetris_playfield_t *pPl,
+                                  tetris_piece_t *pPiece,
+                                  tetris_piece_t** ppOldPiece);
 
 
 /* Function:         tetris_playfield_collision

@@ -5,6 +5,8 @@
 #include "piece.h"
 #include "playfield.h"
 
+#define TETRIS_VIEW_BLINK_COUNT 2
+#define TETRIS_VIEW_BLINK_DELAY 250
 
 #define TETRIS_VIEW_COLORBORDER 1
 #define TETRIS_VIEW_COLORPIECE 3
@@ -68,5 +70,20 @@ void tetris_view_updatePlayfield(tetris_view_t *pView);
 void tetris_view_updateNextPiece(tetris_view_t *pV,
                                  tetris_piece_t *pPc);
 
+
+/* Function:     tetris_view_updateLevel
+ * Description:  informs a view about entering a new level
+ * Argument pV:  pointer to the view which should be updated
+ * Return value: void
+ */
+void tetris_view_updateLevel(tetris_view_t *pV);
+
+
+/* Function:         tetris_view_drawPlayfield
+ * Description:      draws the playfield in the given color
+ * Argument nColor:  the color for the border
+ * Return value:     void
+ */
+void tetris_view_drawPlayfield(uint8_t nColor);
 
 #endif /*TETRIS_VIEW_H_*/
