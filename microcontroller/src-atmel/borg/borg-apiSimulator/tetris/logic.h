@@ -1,6 +1,8 @@
 #ifndef TETRIS_LOGIC_H_
 #define TETRIS_LOGIC_H_
 
+#include <inttypes.h>
+
 void tetris();
 
 /* Function:          tetris_logic_calculateLines
