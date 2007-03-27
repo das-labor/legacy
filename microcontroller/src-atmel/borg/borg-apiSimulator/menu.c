@@ -186,20 +186,23 @@ void menu_setpixel(int8_t x, int8_t y, int8_t isSet)
 	
 	// mirror mirror on the wall, what's the quirkiest API of them all...
 	x = NUM_COLS - 1 - x;
+	uint8_t nMiddle = (NUM_COLS - MENU_WIDTH_ICON) / 2; 
 	
 	if (isSet != 0)
 		{
-		if ((x == 0) || (x == (NUM_COLS - 1)))
+		if ((x >= nMiddle - MENU_WIDTH_DELIMITER) &&
+			(x < (nMiddle + MENU_WIDTH_ICON + MENU_WIDTH_DELIMITER)))
 		{
-			nColor = 1;
+			nColor = 3;
 		}
-		else if ((x == 1) || (x == (NUM_COLS - 2)))
+		else if ((x == (nMiddle - MENU_WIDTH_DELIMITER - 1)) ||
+		 (x == (nMiddle + MENU_WIDTH_ICON + MENU_WIDTH_DELIMITER)))
 		{
 			nColor = 2;
 		}
 		else
 		{
-			nColor = 3;
+			nColor = 1;
 		}
 	}
 	else
