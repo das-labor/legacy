@@ -20,6 +20,7 @@
 #include "config.h"
 #include "pixel.h"
 #include "programm.h"
+#include "menu.h"
 #include "tetris/logic.h"
 #include "trackball.h"
 
@@ -184,7 +185,7 @@ void timf(int value) {
 
 void *display_loop(void * unused) {
 	while (1) {
-		tetris();
+		menu();
 		schwarzesLoch();
 		breakpoint();
         scrolltext("Scrolltext3 Test.~", 0, 70);
