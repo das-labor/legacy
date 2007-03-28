@@ -38,9 +38,8 @@ menu_direction_t;
 void menu();
 void menu_animate(menu_item_t currentItem, menu_direction_t direction);
 uint8_t menu_getIconPixel(menu_item_t item, int8_t x, int8_t y);
-menu_item_t menu_prevItem(menu_item_t item);
-menu_item_t menu_nextItem(menu_item_t item);
 void menu_setpixel(int8_t x, int8_t y, int8_t isSet);
 
 
 #endif /*MENU_H_*/
+
