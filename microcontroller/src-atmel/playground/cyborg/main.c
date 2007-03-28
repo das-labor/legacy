@@ -4,7 +4,8 @@
 #include "avrx.h"               // AvrX System calls/data structures
 #include "AvrXSerialIo.h"
 
-
+#include "adc.h"
+#include "servo.h"
 #include "task1.h"
 
 
@@ -14,7 +15,8 @@
 
 
 AVRX_SIGINT(SIG_OVERFLOW0)
-{	IntProlog();                // Save interrupted context, switch stacks
+{	
+	IntProlog();                // Save interrupted context, switch stacks
     TCNT0 = TCNT0_INIT;
     AvrXTimerHandler();         // Process Timer queue
     Epilog();                   // Restore context of next running task
@@ -37,6 +39,8 @@ int main(void)
 	InitSerial0(BAUD(9600));
 	
 	adc_init();
+
+	servo_init();
 
     /* Needed for EEPROM access in monitor */
 	AvrXSetSemaphore(&EEPromMutex);
