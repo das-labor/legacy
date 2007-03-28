@@ -17,6 +17,7 @@
 #endif
 
 #include <stdio.h>
+#include <setjmp.h>
 #include "config.h"
 #include "pixel.h"
 #include "programm.h"
@@ -24,9 +25,10 @@
 #include "tetris/logic.h"
 #include "trackball.h"
 
-#include "scrolltext2.h"
+#include "scrolltext.h"
 
 unsigned char fakeport;
+jmp_buf newmode_jmpbuf;
 
 int WindWidth, WindHeight;
 
@@ -184,11 +186,13 @@ void timf(int value) {
 }*/
 
 void *display_loop(void * unused) {
+	unsigned char mode;;;
+	mode = setjmp(newmode_jmpbuf);
 	while (1) {
-		menu();
+        scrolltext("Scrolltext3 Test.~");
+ 		menu();
 		schwarzesLoch();
 		breakpoint();
-        scrolltext("Scrolltext3 Test.~", 0, 70);
 		matrix();
 		fadein();
 		joern1();
