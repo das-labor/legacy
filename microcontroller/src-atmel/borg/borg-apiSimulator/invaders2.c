@@ -1,6 +1,6 @@
 #include "invaders2.h"
 
-//#include <stdio.h>
+#include <stdio.h>
 
 void borg_invaders() {
 	//	waitForFire = 0;	
