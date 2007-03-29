@@ -5,6 +5,7 @@
 #include <inttypes.h>
 #include "../pixel.h"
 #include "../util.h"
+#include "../scrolltext.h"
 #include "view.h"
 
 
@@ -154,6 +155,34 @@ void tetris_view_update(tetris_view_t *pV)
 		tetris_view_blinkBorders();
 		pV->nOldLevel = nLevel;
 	}
+}
+
+
+/* Function:     tetris_view_showResults
+ * Description:  shows results after game
+ * Argument pV:  pointer to the view which should show the reults
+ * Return value: void
+ */
+void tetris_view_showResults(tetris_view_t *pV)
+{
+	char pszResults[64];
+	uint32_t nScore = tetris_logic_getScore(pV->pLogic);
+	uint32_t nHighscore = tetris_logic_getHighscore(pV->pLogic);
+	uint8_t nLines = tetris_logic_getLines(pV->pLogic);
+	
+	if (nScore <= nHighscore)
+	{
+		snprintf(pszResults, 64 * sizeof(char),
+			"</#Lines %d    Your Score %d    Highscore %d",
+			nLines, nScore, nHighscore);
+	}
+	else
+	{
+		snprintf(pszResults, 64 * sizeof(char),
+			"</#Lines %d    New Highscore %d", nLines, nScore);
+	}
+	
+	scrolltext(pszResults);
 }
 
 
