@@ -13,6 +13,7 @@
 #include "view.h"
 #include "input.h"
 
+
 /****************************
  * construction/destruction *
  ****************************/
@@ -47,7 +48,7 @@ void tetris_logic_destruct(tetris_logic_t *pLogic)
  ***************************/
 
 void tetris ()
-{
+{	
 	int8_t *pnWidth = (int8_t *)malloc(sizeof(int8_t));
 	int8_t *pnHeight = (int8_t *)malloc(sizeof(int8_t));
 	tetris_view_getDimensions(pnWidth, pnHeight);
@@ -56,6 +57,9 @@ void tetris ()
     tetris_playfield_t *pPl = tetris_playfield_construct(*pnWidth, *pnHeight);
 	tetris_input_t *pIn = tetris_input_construct();
     tetris_view_t *pView = tetris_view_construct(pLogic, pPl);
+    
+	static uint32_t nHighscore = 0;
+ 	tetris_logic_setHighscore(pLogic, nHighscore);   
     
     int8_t nPieceRow;
     uint8_t nRowMask;
@@ -138,6 +142,13 @@ void tetris ()
     	
     	tetris_view_update(pView);
     }
+    
+    tetris_view_showResults(pView);
+	uint32_t nScore = tetris_logic_getScore(pView->pLogic);
+	if (nScore > nHighscore)
+	{
+		nHighscore = nScore;
+	}
 
 	free(pnWidth);
 	free(pnHeight);
@@ -209,7 +220,6 @@ void tetris_logic_removedLines(tetris_logic_t *pLogic,
 			pLogic->nScore += 1200 * (pLogic->nLevel + 1);
 			break;
 	}
-
 }
 
 
@@ -240,6 +250,19 @@ uint32_t tetris_logic_getHighscore(tetris_logic_t *pLogic)
 	assert(pLogic != NULL);
 	return pLogic->nHighscore;
 }
+
+/* Function:             tetris_logic_setHighscore
+ * Description:          set highscore
+ * Argument pLogic:      the logic object we want to modify
+ * Argmument nHighscore: highscore
+ */
+void tetris_logic_setHighscore(tetris_logic_t *pLogic,
+                               uint32_t nHighscore)
+{
+	assert(pLogic != NULL);
+	pLogic->nHighscore = nHighscore;
+}
+
 
 /* Function:        tetris_logic_getLevel
  * Description:     returns the current level

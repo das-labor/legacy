@@ -66,6 +66,14 @@ void tetris_view_getDimensions(int8_t *w,
 void tetris_view_update(tetris_view_t *pV);
 
 
+/* Function:     tetris_view_showResults
+ * Description:  shows results after game
+ * Argument pV:  pointer to the view which should show the reults
+ * Return value: void
+ */
+void tetris_view_showResults(tetris_view_t *pV);
+
+
 /* Function:      tetris_view_drawPreviewPiece
  * Description:   redraws the preview window
  * Argmument pPc: pointer to the piece for the preview window (may be NULL)

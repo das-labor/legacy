@@ -92,8 +92,16 @@ uint32_t tetris_logic_getScore(tetris_logic_t *pLogic);
  * Argument pLogic: the logic object we want information from
  * Return value:    the highscore as uint32_t
  */
-
 uint32_t tetris_logic_getHighscore(tetris_logic_t *pLogic);
+
+
+/* Function:             tetris_logic_setHighscore
+ * Description:          set highscore
+ * Argument pLogic:      the logic object we want to modify
+ * Argmument nHighscore: highscore
+ */
+void tetris_logic_setHighscore(tetris_logic_t *pLogic,
+                               uint32_t nHighscore);
 
 
 /* Function:        tetris_logic_getLevel
