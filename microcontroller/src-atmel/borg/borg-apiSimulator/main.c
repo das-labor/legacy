@@ -29,6 +29,9 @@
 
 unsigned char fakeport;
 jmp_buf newmode_jmpbuf;
+volatile unsigned char oldMode, oldOldmode, mode;
+extern unsigned char waitForFire;
+
 
 int WindWidth, WindHeight;
 
@@ -188,21 +191,54 @@ void timf(int value) {
 void *display_loop(void * unused) {
 	unsigned char mode;;;
 	mode = setjmp(newmode_jmpbuf);
-	while (1) {
-        scrolltext("Scrolltext3 Test.~");
- 		menu();
-		schwarzesLoch();
-		breakpoint();
-		matrix();
-		fadein();
-		joern1();
-		test1();
-		snake();
-		schachbrett(20);
-		spirale(20);
-		//labor_borg();
-		feuer();
+	
+	mode = setjmp(newmode_jmpbuf);
+	oldOldmode = oldMode;
+	waitForFire = 1;	
+	for(;;){
+		oldMode = mode;
+		switch(mode++) {
+		case 1:
+			breakpoint();
+			break;
+		case 2:
+			schwarzesLoch();
+			break;
+		case 3:
+			scrolltext("</#Scrolltext3 Test");
+			break;
+		case 4:
+			spirale(20);
+			break;
+		case 5:
+			joern1();
+			break;
+		case 6:
+			snake();
+			break;
+		case 7:
+			schachbrett(20);
+			break;
+		case 8:
+			feuer();
+			break;
+		case 9:
+			matrix();
+			break;
+		case 31:
+			fadein();
+			break;
+		case 32:
+			test1();
+			break;
+		case 43:
+			menu();
+			mode = oldOldmode;
+		default:
+			break;
+		}
 	}
+
 }
 
 int main(int argc, char **argv){
