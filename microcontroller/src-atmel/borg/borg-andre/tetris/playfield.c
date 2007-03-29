@@ -81,6 +81,7 @@ void tetris_playfield_reset(tetris_playfield_t *pPl)
 	pPl->pPiece = NULL;
 	pPl->nColumn = 0;
 	pPl->nRow = 0;
+	pPl->nRowMask = 0;
 
 	// clear dump if it has been allocated in memory
 	if (pPl->dump != NULL)
@@ -374,10 +375,9 @@ uint8_t tetris_playfield_rotatePiece(tetris_playfield_t *pPl,
 /* Function:     tetris_playfield_removeCompletedLines
  * Description:  removes completed lines (if any) and lowers the dump
  * Argument pPl: playfield to perform action on
- * Return value: first 4 bits indicate which lines haven been removed
- *               (relative to vertical piece posotion)
+ * Return value: void
  */
-uint8_t tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl)
+void tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
 
@@ -445,7 +445,7 @@ uint8_t tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl)
 	// ready to get the next piece
 	pPl->status = TETRIS_PFS_READY;
 
-	return nRowMask;
+	pPl->nRowMask = nRowMask;
 }
 
 
@@ -507,6 +507,19 @@ int8_t tetris_playfield_getRow(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
 	return pPl->nRow;
+}
+
+/* Function:     tetris_playfield_getRowMask
+ * Description:  returns the row mask relative to nRow 
+ * Argument pPl: the playfield we want information from
+ * Return value: the first 4 bits indicate which lines (relative to nRow)
+ *               have been removed if we are in status TETRIS_PFS_READY
+ *               LSB is the highest line
+ */
+uint8_t tetris_playfield_getRowMask(tetris_playfield_t *pPl)
+{
+	assert(pPl != NULL);
+	return pPl->nRowMask;
 }
 
 /* Function:     tetris_playfield_getStatus
