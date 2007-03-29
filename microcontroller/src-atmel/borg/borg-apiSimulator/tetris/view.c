@@ -183,6 +183,7 @@ void tetris_view_updateLevel(tetris_view_t *pV)
 		tetris_view_drawPlayfield(TETRIS_VIEW_COLORPIECE);
 		myWait(TETRIS_VIEW_BLINK_DELAY);
 		tetris_view_drawPlayfield(TETRIS_VIEW_COLORBORDER);
+		myWait(TETRIS_VIEW_BLINK_DELAY);
 	}
 }
 
