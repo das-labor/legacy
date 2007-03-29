@@ -11,9 +11,10 @@
 #define MENU_WIDTH_ICON 8
 #define MENU_HEIGHT_ICON 8
 #define MENU_WIDTH_DELIMITER 2
-
+#define MENU_POLL_INTERVAL 10
 #define MENU_WAIT_INITIAL 20
 #define MENU_WAIT_INCREMENT 0
+
 
 #define MENU_NEXTITEM(item) ((item + 1) % MENU_ITEM_MAX)
 #define MENU_PREVITEM(item) ((item + MENU_ITEM_MAX - 1) % MENU_ITEM_MAX)
