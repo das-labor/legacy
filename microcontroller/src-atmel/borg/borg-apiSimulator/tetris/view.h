@@ -2,6 +2,7 @@
 #define TETRIS_VIEW_H_
 
 #include <inttypes.h>
+#include "logic.h"
 #include "piece.h"
 #include "playfield.h"
 
@@ -14,7 +15,9 @@
 
 typedef struct tetris_view_t
 {
-    tetris_playfield_t *pPl; /* associated playfield */
+    tetris_logic_t *pLogic;  // associated logic object
+    tetris_playfield_t *pPl; // associated playfield
+    uint8_t nOldLevel;       // helper variable to recognize level changes
 }
 tetris_view_t;
 
@@ -25,10 +28,12 @@ tetris_view_t;
 
 /* Function:     tetris_view_construct
  * Description:  constructs a view for André's borg
- * Argument pPl: pointer to the playfield which should be observed
+ * Argument pPl: pointer to logic object which should be observed
+ * Argument pPl: pointer to playfield which should be observed
  * Return value: pointer to a newly created view
  */
-tetris_view_t *tetris_view_construct(tetris_playfield_t *pPl);
+tetris_view_t *tetris_view_construct(tetris_logic_t *pLogic,
+                                     tetris_playfield_t *pPl);
 
 
 /* Function:       tetris_view_destruct
@@ -53,37 +58,34 @@ void tetris_view_getDimensions(int8_t *w,
                                int8_t *h);
 
 
-/* Function:     tetris_view_updatePlayfield
- * Description:  informs a view about changes in the playfield
+/* Function:     tetris_view_update
+ * Description:  informs a view about changes in the game
  * Argument pV:  pointer to the view which should be updated
  * Return value: void
  */
-void tetris_view_updatePlayfield(tetris_view_t *pView);
+void tetris_view_update(tetris_view_t *pV);
 
 
-/* Function:     tetris_view_updateNextPiece
- * Description:  informs a view about the next piece
- * Argument pV:  pointer to the view which should be updated
- * Argument pPc: pointer to the piece which should be drawn
- * Return value: void
+/* Function:      tetris_view_drawPreviewPiece
+ * Description:   redraws the preview window
+ * Argmument pPc: pointer to the piece for the preview window (may be NULL)
+ * Return value:  void
  */
-void tetris_view_updateNextPiece(tetris_view_t *pV,
-                                 tetris_piece_t *pPc);
+void tetris_view_drawPreviewPiece(tetris_piece_t *pPc);
 
 
-/* Function:     tetris_view_updateLevel
- * Description:  informs a view about entering a new level
- * Argument pV:  pointer to the view which should be updated
- * Return value: void
- */
-void tetris_view_updateLevel(tetris_view_t *pV);
-
-
-/* Function:         tetris_view_drawPlayfield
- * Description:      draws the playfield in the given color
+/* Function:         tetris_view_drawBorders
+ * Description:      draws borders in the given color
  * Argument nColor:  the color for the border
  * Return value:     void
  */
-void tetris_view_drawPlayfield(uint8_t nColor);
+void tetris_view_drawBorders(uint8_t nColor);
+
+
+/* Function:        tetris_view_blinkBorders
+ * Description:     makes the borders blink to notify player of a level change
+ * Return value:    void
+ */
+void tetris_view_blinkBorders();
 
 #endif /*TETRIS_VIEW_H_*/
