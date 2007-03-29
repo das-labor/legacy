@@ -24,8 +24,11 @@
 #include "menu.h"
 #include "tetris/logic.h"
 #include "trackball.h"
+#include "snake.h"
 
 #include "scrolltext.h"
+
+
 
 unsigned char fakeport;
 jmp_buf newmode_jmpbuf;
