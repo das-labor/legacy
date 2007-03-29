@@ -34,7 +34,7 @@ void menu()
 		{
 			while (JOYISFIRE)
 			{
-				wait(10);
+				wait(MENU_POLL_INTERVAL);
 			}
 			switch (miSelection)
 			{
@@ -65,6 +65,10 @@ void menu()
 		else if (JOYISRIGHT) // is really up
 		{
 			break;
+		}
+		else
+		{
+			wait(MENU_POLL_INTERVAL);
 		}
 	}
 	
