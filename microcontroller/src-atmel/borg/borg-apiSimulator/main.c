@@ -191,8 +191,6 @@ void timf(int value) {
 void *display_loop(void * unused) {
 	unsigned char mode;;;
 	mode = setjmp(newmode_jmpbuf);
-	
-	mode = setjmp(newmode_jmpbuf);
 	oldOldmode = oldMode;
 	waitForFire = 1;	
 	for(;;){

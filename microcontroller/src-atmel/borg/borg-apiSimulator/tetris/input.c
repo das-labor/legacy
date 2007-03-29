@@ -189,13 +189,13 @@ tetris_input_command_t tetris_input_queryJoystick()
 /* Function:      tetris_input_setLevel
  * Description:   modifies time interval of input events
  * Argument pIn:  pointer to input structure
- * Argument nLvl: desired level (0 <= nLvl <= 9);
+ * Argument nLvl: desired level (0 <= nLvl <= TETRIS_INPUT_LEVELS - 1)
  * Return value:  void
  */
 void tetris_input_setLevel(tetris_input_t *pIn,
                            uint8_t nLvl)
 {
 	assert(pIn != NULL);
-	assert(nLvl <= 9);
+	assert(nLvl <= TETRIS_INPUT_LEVELS - 1);
 	pIn->nLevel = nLvl;
 }
