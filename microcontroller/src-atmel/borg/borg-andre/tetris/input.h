@@ -8,8 +8,12 @@
 // amount of micro seconds that each loop cycle waits
 #define TETRIS_INPUT_TICKS 10
 
+
+// number of levels
+#define TETRIS_INPUT_LEVELS 20
 // amount of loop cycles for 10 levels until a piece will be moved down
-#define TETRIS_INPUT_CYCLESPERLEVEL {100, 90, 80, 70, 60, 50, 40, 30, 20, 10}
+#define TETRIS_INPUT_CYCLESPERLEVEL {100, 90, 81, 73, 66, 59, 53, 48, 43, 39, \
+	35, 31, 28, 25, 23, 21, 19, 17, 15, 14}
 
 // here you can adjust the delays (in loop cycles) for key repeat
 #define TETRIS_INPUT_REPEAT_INITIALDELAY 20
@@ -89,7 +93,7 @@ tetris_input_command_t tetris_input_queryJoystick();
 /* Function:      tetris_input_setLevel
  * Description:   modifies time interval of input events
  * Argument pIn:  pointer to input structure
- * Argument nLvl: desired level (0 <= nLvl <= 9);
+ * Argument nLvl: desired level (0 <= nLvl <= TETRIS_INPUT_LEVELS - 1)
  * Return value:  void
  */
 void tetris_input_setLevel(tetris_input_t *pIn,

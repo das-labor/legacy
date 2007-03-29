@@ -9,7 +9,7 @@
  * types *
  *********/
 
-// directions to which a piece can be moved */
+// directions to which a piece can be moved
 typedef enum tetris_playfield_direction_t
 {
     TETRIS_PFD_LEFT,
@@ -18,7 +18,7 @@ typedef enum tetris_playfield_direction_t
 tetris_playfield_direction_t;
 
 
-// status of the playfield */
+// status of the playfield
 typedef enum tetris_playfield_status_t
 {
     TETRIS_PFS_READY,    // ready to get next piece
@@ -37,6 +37,7 @@ typedef struct tetris_playfield_t
 	tetris_piece_t *pPiece;           // currently falling piece
 	int8_t nColumn;                   // horz. piece pos. (0 is left)
 	int8_t nRow;                      // vert. piece pos. (0 is top)
+	uint8_t nRowMask;                 // removed lines relative to nRow (bitmask)
 	tetris_playfield_status_t status; // status
 	uint16_t *dump;                   // playfield itself
 }
@@ -131,10 +132,9 @@ uint8_t tetris_playfield_rotatePiece(tetris_playfield_t *pPl,
 /* Function:     tetris_playfield_removeCompletedLines
  * Description:  removes completed lines (if any) and lowers the dump
  * Argument pPl: playfield to perform action on
- * Return value: first 4 bits indicate which lines haven been removed
- *               (relative to vertical piece posotion)
+ * Return value: void
  */
-uint8_t tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl);
+void tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl);
 
 
 /*****************
@@ -179,6 +179,15 @@ int8_t tetris_playfield_getColumn(tetris_playfield_t *pPl);
  * Return value: row of the currently falling piece
  */
 int8_t tetris_playfield_getRow(tetris_playfield_t *pPl);
+
+
+/* Function:     tetris_playfield_getRowMask
+ * Description:  returns the row mask relative to nRow 
+ * Argument pPl: the playfield we want information from
+ * Return value: the first 4 bits indicate which lines (relative to nRow)
+ *               have been removed if we are in status TETRIS_PFS_READY
+ */
+uint8_t tetris_playfield_getRowMask(tetris_playfield_t *pPl);
 
 
 /* Function:     tetris_playfield_getStatus
