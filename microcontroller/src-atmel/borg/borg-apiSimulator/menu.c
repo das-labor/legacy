@@ -40,11 +40,11 @@ void menu()
 			}
 			switch (miSelection)
 			{
-				/*
-				case MENU_ITEM_SNAKE
-					snakeJoystick();
+				
+				case MENU_ITEM_SNAKE:
+					snake_game();
 					break;
-				*/
+				
 				case MENU_ITEM_SPACEINVADERS:
 					borg_invaders();
 					break;
@@ -83,7 +83,7 @@ uint8_t menu_getIconPixel(menu_item_t item, int8_t x, int8_t y)
 {
 	// MSB is leftmost pixel
 	static uint8_t nIcon[][8] =
-		{/*{0xff, 0x81, 0xbd, 0xa5, 0xa5, 0xad, 0xa1, 0xbf},*/	// Snake icon
+		{{0xff, 0x81, 0xbd, 0xa5, 0xa5, 0xad, 0xa1, 0xbf},	// Snake icon
 		 {0x66, 0x18, 0x3c, 0x5a, 0xff, 0xbd, 0xa5, 0x18},  // Invaders icon
 		 {0x0f, 0x0f, 0xc3, 0xdb, 0xdb, 0xc3, 0xf0, 0xf0}}; // Tetris icon
 

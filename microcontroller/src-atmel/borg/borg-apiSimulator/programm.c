@@ -350,6 +350,7 @@ void feuer()
 	}
 }
 
+/*
 void tetris_old(){
 	PORTB = 0x0f;
 	clear_screen(0);
@@ -445,5 +446,5 @@ void tetris_old(){
 	dropin(left);
 	dropin(line);
 	dropin(left);
-}
+} */
 

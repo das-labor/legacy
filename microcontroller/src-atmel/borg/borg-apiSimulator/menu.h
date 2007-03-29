@@ -20,7 +20,7 @@
 
 typedef enum menu_item_t
 {
-	// MENU_ITEM_SNAKE,
+	MENU_ITEM_SNAKE,
 	MENU_ITEM_SPACEINVADERS,
 	MENU_ITEM_TETRIS,
 	MENU_ITEM_MAX // fake entry to mark the end
