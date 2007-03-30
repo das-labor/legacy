@@ -4,7 +4,7 @@
  */
 
 #include <assert.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include "menu.h"
 #include "config.h"
 #include "util.h"
