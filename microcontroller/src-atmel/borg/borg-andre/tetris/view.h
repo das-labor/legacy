@@ -1,7 +1,7 @@
 #ifndef TETRIS_VIEW_H_
 #define TETRIS_VIEW_H_
 
-#include <inttypes.h>
+#include <stdint.h>
 #include "logic.h"
 #include "piece.h"
 #include "playfield.h"

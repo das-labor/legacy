@@ -1,7 +1,7 @@
 #ifndef TETRIS_PIECE_H_
 #define TETRIS_PIECE_H_
 
-#include <inttypes.h>
+#include <stdint.h>
 
 
 /*********

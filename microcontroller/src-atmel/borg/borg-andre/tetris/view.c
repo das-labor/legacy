@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include "../pixel.h"
 #include "../util.h"
 #include "../scrolltext.h"
@@ -166,8 +166,8 @@ void tetris_view_update(tetris_view_t *pV)
 void tetris_view_showResults(tetris_view_t *pV)
 {
 	char pszResults[64];
-	uint32_t nScore = tetris_logic_getScore(pV->pLogic);
-	uint32_t nHighscore = tetris_logic_getHighscore(pV->pLogic);
+	uint16_t nScore = tetris_logic_getScore(pV->pLogic);
+	uint16_t nHighscore = tetris_logic_getHighscore(pV->pLogic);
 	uint8_t nLines = tetris_logic_getLines(pV->pLogic);
 	
 	if (nScore <= nHighscore)

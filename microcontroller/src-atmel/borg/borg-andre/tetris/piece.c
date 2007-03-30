@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <assert.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include "piece.h"
 
 /*****************************

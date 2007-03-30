@@ -1,7 +1,7 @@
 #ifndef TETRIS_PLAYFIELD_H_
 #define TETRIS_PLAYFIELD_H_
 
-#include <inttypes.h>
+#include <stdint.h>
 #include "piece.h"
 
 

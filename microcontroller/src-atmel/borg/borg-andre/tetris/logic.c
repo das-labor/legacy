@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include "logic.h"
 #include "piece.h"
 #include "playfield.h"
@@ -58,7 +58,7 @@ void tetris ()
 	tetris_input_t *pIn = tetris_input_construct();
     tetris_view_t *pView = tetris_view_construct(pLogic, pPl);
     
-	static uint32_t nHighscore = 0;
+	static uint16_t nHighscore = 0;
  	tetris_logic_setHighscore(pLogic, nHighscore);   
     
     int8_t nPieceRow;
@@ -144,7 +144,7 @@ void tetris ()
     }
     
     tetris_view_showResults(pView);
-	uint32_t nScore = tetris_logic_getScore(pView->pLogic);
+	uint16_t nScore = tetris_logic_getScore(pView->pLogic);
 	if (nScore > nHighscore)
 	{
 		nHighscore = nScore;
@@ -203,21 +203,19 @@ void tetris_logic_removedLines(tetris_logic_t *pLogic,
 	pLogic->nLevel = ((pLogic->nLines / 10) < TETRIS_INPUT_LEVELS) ?
 		(pLogic->nLines / 10) : (TETRIS_INPUT_LEVELS - 1);
 
-	// points are calulated like the first Tetris version for
-	// the Nintendo Game Boy
 	switch (nLines)
 	{
 		case 1:
-			pLogic->nScore += 40 * (pLogic->nLevel + 1);
+			pLogic->nScore += 50;
 			break;
 		case 2:
-			pLogic->nScore += 100 * (pLogic->nLevel + 1);
+			pLogic->nScore += 150;
 			break;
 		case 3:
-			pLogic->nScore += 300 * (pLogic->nLevel + 1);
+			pLogic->nScore += 250;
 			break;
 		case 4:
-			pLogic->nScore += 1200 * (pLogic->nLevel + 1);
+			pLogic->nScore += 400;
 			break;
 	}
 }
@@ -230,9 +228,9 @@ void tetris_logic_removedLines(tetris_logic_t *pLogic,
 /* Function:        tetris_logic_getScore
  * Description:     returns the current score
  * Argument pLogic: the logic object we want information from
- * Return value:    the score as uint32_t
+ * Return value:    the score as uint16_t
  */
-uint32_t tetris_logic_getScore(tetris_logic_t *pLogic)
+uint16_t tetris_logic_getScore(tetris_logic_t *pLogic)
 {
 	assert(pLogic != NULL);
 	return pLogic->nScore;
@@ -242,10 +240,10 @@ uint32_t tetris_logic_getScore(tetris_logic_t *pLogic)
 /* Function:        tetris_logic_getHighscore
  * Description:     returns the current highscore
  * Argument pLogic: the logic object we want information from
- * Return value:    the highscore as uint32_t
+ * Return value:    the highscore as uint16_t
  */
 
-uint32_t tetris_logic_getHighscore(tetris_logic_t *pLogic)
+uint16_t tetris_logic_getHighscore(tetris_logic_t *pLogic)
 {
 	assert(pLogic != NULL);
 	return pLogic->nHighscore;
@@ -257,7 +255,7 @@ uint32_t tetris_logic_getHighscore(tetris_logic_t *pLogic)
  * Argmument nHighscore: highscore
  */
 void tetris_logic_setHighscore(tetris_logic_t *pLogic,
-                               uint32_t nHighscore)
+                               uint16_t nHighscore)
 {
 	assert(pLogic != NULL);
 	pLogic->nHighscore = nHighscore;
