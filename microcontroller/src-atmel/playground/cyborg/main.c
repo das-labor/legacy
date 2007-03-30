@@ -35,6 +35,7 @@ int main(void)
 	
 	AvrXRunTask(TCB(task1));
 	AvrXRunTask(TCB(task2));
+	//AvrXRunTask(TCB(rangefinder));
 	
 	InitSerial0(BAUD(9600));
 	
