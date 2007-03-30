@@ -161,7 +161,7 @@ tetris_input_command_t tetris_input_queryJoystick()
 {
 	if (JOYISFIRE)
 	{
-		return TETRIS_INCMD_ROTATE_CLOCKWISE;
+		return TETRIS_INCMD_DROP;
 	}
 	else if (JOYISLEFT)
 	{
@@ -173,7 +173,7 @@ tetris_input_command_t tetris_input_queryJoystick()
 	}
 	else if (JOYISUP)
 	{
-		return TETRIS_INCMD_DROP;
+		return TETRIS_INCMD_ROTATE_CLOCKWISE;
 	}
 	else if (JOYISDOWN)
 	{

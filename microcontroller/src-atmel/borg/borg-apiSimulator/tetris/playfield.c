@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <assert.h>
 #include <inttypes.h>
@@ -270,7 +271,7 @@ void tetris_playfield_advancePiece(tetris_playfield_t *pPl)
 		int8_t i, y;
 
 		// Is the playfield filled up?
-		if ((pPl->nRow < 0) && (nPiece & (0x0FFF >> (3 + pPl->nRow))) != 0)
+		if ((pPl->nRow < 0) && (nPiece & (0x0FFF >> ((3 + pPl->nRow) << 2))) != 0)
 		{
 			pPl->status = TETRIS_PFS_GAMEOVER;
 		}

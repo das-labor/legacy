@@ -10,10 +10,10 @@
 
 
 // number of levels
-#define TETRIS_INPUT_LEVELS 20
+#define TETRIS_INPUT_LEVELS 25
 // amount of loop cycles for 10 levels until a piece will be moved down
 #define TETRIS_INPUT_CYCLESPERLEVEL {100, 90, 81, 73, 66, 59, 53, 48, 43, 39, \
-	35, 31, 28, 25, 23, 21, 19, 17, 15, 14}
+	35, 31, 28, 25, 23, 21, 19, 17, 15, 14, 12, 11, 10, 9, 8}
 
 // here you can adjust the delays (in loop cycles) for key repeat
 #define TETRIS_INPUT_REPEAT_INITIALDELAY 20

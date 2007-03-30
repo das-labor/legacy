@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include <assert.h>
 #include "input.h"
 #include "../joystick.h"

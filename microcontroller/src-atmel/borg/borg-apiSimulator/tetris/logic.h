@@ -10,8 +10,8 @@
 
 typedef struct tetris_logic_t
 {
-	uint32_t nScore;               // score of the player
-	uint32_t nHighscore;           // highscore
+	uint16_t nScore;               // score of the player
+	uint16_t nHighscore;           // highscore
 	uint8_t nLevel;                // current level
 	uint8_t nLines;                // number of completed lines
 	tetris_piece_t *pPreviewPiece; // the piece intended to be the next one
@@ -82,17 +82,17 @@ void tetris_logic_removedLines(tetris_logic_t *pLogic,
 /* Function:        tetris_logic_getScore
  * Description:     returns the current score
  * Argument pLogic: the logic object we want information from
- * Return value:    the score as uint32_t
+ * Return value:    the score as uint16_t
  */
-uint32_t tetris_logic_getScore(tetris_logic_t *pLogic);
+uint16_t tetris_logic_getScore(tetris_logic_t *pLogic);
 
 
 /* Function:        tetris_logic_getHighscore
  * Description:     returns the current highscore
  * Argument pLogic: the logic object we want information from
- * Return value:    the highscore as uint32_t
+ * Return value:    the highscore as uint16_t
  */
-uint32_t tetris_logic_getHighscore(tetris_logic_t *pLogic);
+uint16_t tetris_logic_getHighscore(tetris_logic_t *pLogic);
 
 
 /* Function:             tetris_logic_setHighscore
@@ -101,7 +101,7 @@ uint32_t tetris_logic_getHighscore(tetris_logic_t *pLogic);
  * Argmument nHighscore: highscore
  */
 void tetris_logic_setHighscore(tetris_logic_t *pLogic,
-                               uint32_t nHighscore);
+                               uint16_t nHighscore);
 
 
 /* Function:        tetris_logic_getLevel
