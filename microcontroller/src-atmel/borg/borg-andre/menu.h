@@ -6,7 +6,7 @@
 #ifndef MENU_H_
 #define MENU_H_
 
-#include <inttypes.h>
+#include <stdint.h>
 
 #define MENU_WIDTH_ICON 8
 #define MENU_HEIGHT_ICON 8
