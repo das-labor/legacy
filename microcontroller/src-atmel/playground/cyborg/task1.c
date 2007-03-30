@@ -11,7 +11,7 @@
 TimerControlBlock my_timer1, my_timer2;
 
 
-AVRX_GCC_TASKDEF(task1, 200, 4)
+AVRX_GCC_TASKDEF(task1, 100, 4)
 {
 	
 	printf("Debug\r");
@@ -21,7 +21,7 @@ AVRX_GCC_TASKDEF(task1, 200, 4)
 		
 	while(1){
 		AvrXDelay(&my_timer1, 200);
-		PORTB ^= (1<<PB4);
+		//PORTB ^= (1<<PB4);
 	}
 }
 
@@ -37,8 +37,8 @@ AVRX_GCC_TASKDEF(task1, 200, 4)
 	int16_t pwm[2];
 
 void set_motor(){
-	#define MAX_SPEED 200
-	#define MIN_SPEED -50
+	#define MAX_SPEED 0x80
+	#define MIN_SPEED -30
 	
 	if(pwm[0] < MIN_SPEED) pwm[0] = MIN_SPEED;
 	if(pwm[0] > MAX_SPEED) pwm[0] = MAX_SPEED;	
@@ -62,76 +62,76 @@ void set_motor(){
 	}		
 }
 
+uint8_t noline = 0;
+uint8_t end = 0;
+
+
 uint8_t opto[6];
-uint8_t offset[6]={50,3,1,1,0,55};
+uint8_t offset[6]={40,20,20,20,20,60};
 
 int8_t get_linepos(){
 	uint8_t x;
-	uint8_t minpos = 0;
-	uint16_t minval = 65535;
-	
 	for(x=0;x<6;x++){
 		uint16_t tmp;
 		tmp = adc_value[x] + offset[x];
 		if(tmp > 255) tmp = 255;
 		opto[x] = tmp;
-	//	printf("%d ", tmp);
-		
-	}	
-	//printf("\r");
-		
-
-	for(x=0;x<5;x++){
-		uint16_t val;
-		val = opto[x] + opto[x+1];
-		//printf("%d ", val);
-		
-		if(val < minval){
-			minval = val;
-			minpos = x;
-		}
 	}
+	int16_t pos = 0;
+	int16_t div = 0;
+	for(x=0;x<6;x++){
+		int16_t tmp;
+		tmp = 255 - opto[x];
+		div += tmp;
+//		printf("%d ", tmp);
+		tmp = tmp * ((x*32) - 80);
+		pos += tmp;
+	}
+//	printf("\r%d %d\r", div, pos);
 	
-	//printf("\r");
-	//printf("%d\r", minpos);
-	
-	
-	uint8_t a,b;
-	a = opto[minpos];
-	b = opto[minpos+1];
-	
-	int8_t diff;
-	diff = a-b;
-	
-	diff /= 2;
-	
-	if(diff > 7) diff = 7;
-	if(diff < -8) diff = -8;
-	
-	int8_t pos;
-	pos = -32 + minpos*16 + diff;
-	return pos;
+	static int8_t lastpos;
+	if(div > 400){
+		end = 1;
+	}else{
+		end = 0;
+	}
+	if(div < 20){
+		noline = 1;
+		return lastpos;
+	}else{
+		noline = 0;
+		pos = pos/div;
+		lastpos = pos;
+		return pos;
+	}
 }
 
-#define P 256
-#define I 1
-#define D 0
 
-int16_t pid(int8_t in){
-	static int16_t integrator;
-	static int8_t old = 0;
-	int16_t prop;
-	int16_t diff;
-	int16_t out;
+void followline(){
+		int8_t pos; 
 		
-	prop = in * P;
-	integrator += in * I;
-	diff = (in - old) * D;
+		pos = get_linepos();
+		
+		if (noline){
+			PORTB |= (1<<PB4);
+		}else{
+			PORTB &= ~(1<<PB4);
+		}
+		
+		//printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\r", adc_value[0], adc_value[1], adc_value[2], adc_value[3], adc_value[4], adc_value[5], pos);
+		//printf("%d\r", pos);
+		
+		pwm[0] = 0x40 + 2*pos;
+		pwm[1] = 0x40 - 2*pos;
 	
-	out = prop + integrator + diff;
+		set_motor();
 	
-	return out;
+		AvrXDelay(&my_timer2, 2);
+
 }
+
+
+
 
 AVRX_GCC_TASKDEF(task2, 300, 5)
 {
@@ -153,21 +153,57 @@ AVRX_GCC_TASKDEF(task2, 300, 5)
 		AvrXDelay(&my_timer2, 20);
 	}
 	
-	while(1){
-		int8_t pos; int16_t out;
-		pos = get_linepos();
-		printf("%d\r", pos);
-		
-		//out = pid(pos);
-	
-		//printf("%d", out);
-		
-		pwm[0] = 0xb0 + pos*8;
-		pwm[1] = 0xb0 - pos*8;
-		
-		set_motor();
-	
-		AvrXDelay(&my_timer2, 10);
+	while(!end){
+		followline();
 	}
+	pwm[0] = -30;
+	pwm[1] = 80;
+	set_motor();
+	AvrXDelay(&my_timer2, 1000);
+	
+	do{
+		get_linepos();
+		AvrXDelay(&my_timer2, 20);
+	}while(noline);	
+	
+	while(!end){
+		followline();
+	}
+	
+	pwm[0] = 0;
+	pwm[1] = 0;
+	set_motor();
+	
+	
+	while(1);
 
+}
+
+
+TimerControlBlock range_timer;
+uint8_t range[20];
+
+AVRX_GCC_TASKDEF(rangefinder, 100, 6)
+{
+	while(1){
+		uint8_t pos;
+		for(pos=0;pos<20;pos++){
+			AvrXDelay(&range_timer, 100);
+			range[pos] = adc_value[6];
+			set_servo(60+pos*10);
+		}
+		set_servo(60);
+		printf("-----------------\r");
+		for(pos=0;pos<20;pos++){
+			//printf("%03d ",range[pos]);
+			uint8_t c;
+			for(c=0;c<range[pos];c+=2){
+				printf("#");
+			}
+			printf("\r");
+			
+		}
+		printf("------------------\r");
+		AvrXDelay(&range_timer, 200);
+	}	
 }
