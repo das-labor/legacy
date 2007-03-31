@@ -1,17 +1,16 @@
 #include <stdlib.h>
-#include <stdint.h>
+#include <inttypes.h>
 #include <assert.h>
 #include "input.h"
 #include "../joystick.h"
 #include "../util.h"
-
 
 /*****************************
  *  construction/destruction *
  *****************************/
 
 /* Function:     tetris_input_construct
- * Description:  constructs an input structure for André's borg
+ * Description:  constructs an input object for André's borg
  * Return value: pointer to a newly created input
  */
 tetris_input_t *tetris_input_construct()
@@ -30,7 +29,7 @@ tetris_input_t *tetris_input_construct()
 
 /* Function:     tetris_input_destruct
  * Description:  destructs an input structure
- * Argument pIn: pointer to the input to be destructed
+ * Argument pIn: pointer to the input object which should to be destructed
  * Return value: void
  */
 void tetris_input_destruct(tetris_input_t *pIn)
@@ -46,7 +45,7 @@ void tetris_input_destruct(tetris_input_t *pIn)
 
 /* Function:     tetris_input_getCommand
  * Description:  retrieves commands from joystick or loop interval
- * Argument pIn: pointer to input structure
+ * Argument pIn: pointer to input object
  * Return value: void
  */
 tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
@@ -67,8 +66,8 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 			case TETRIS_INCMD_LEFT:
 			case TETRIS_INCMD_RIGHT:
 			case TETRIS_INCMD_DOWN:
-				// only react if either the current command differ from the last
-				// one or enough loop cycles have been run on the same command
+				// only react if either the current command differs from the last
+				// or enough loop cycles have been run on the same command
 				// (for key repeat)
 				if ((pIn->cmdLast != cmdJoystick) || ((pIn->cmdLast == cmdJoystick)
 					&& (pIn->nRepeatCount >= TETRIS_INPUT_REPEAT_DELAY)))
@@ -115,7 +114,17 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 				if (pIn->cmdLast != cmdJoystick)
 				{
 					pIn->nRepeatCount =  -TETRIS_INPUT_REPEAT_INITIALDELAY;
-					++pIn->nLoopCycles;
+					if (cmdJoystick == TETRIS_INCMD_DROP)
+					{
+						// reset autom. falling if player has dropped the piece
+						pIn->nLoopCycles = 0;
+					}
+					else
+					{
+						// rotations must not prevent autom. falling
+						++pIn->nLoopCycles;
+					}
+
 					pIn->cmdLast = cmdReturn = cmdJoystick;
 				}
 				else
@@ -153,8 +162,27 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 }
 
 
+/* Function:      tetris_input_setLevel
+ * Description:   modifies time interval of input events
+ * Argument pIn:  pointer to input structure
+ * Argument nLvl: desired level (0 <= nLvl <= TETRIS_INPUT_LEVELS - 1)
+ * Return value:  void
+ */
+void tetris_input_setLevel(tetris_input_t *pIn,
+                           uint8_t nLvl)
+{
+	assert(pIn != NULL);
+	assert(nLvl <= TETRIS_INPUT_LEVELS - 1);
+	pIn->nLevel = nLvl;
+}
+
+
+/***************************
+ * non-interface functions *
+ ***************************/
+
 /* Function:     tetris_input_queryJoystick
- * Description:  translates joystick movements to a tetris_input_command_t
+ * Description:  translates joystick movements into tetris_input_command_t
  * Return value: void
  */
 tetris_input_command_t tetris_input_queryJoystick()
@@ -163,19 +191,19 @@ tetris_input_command_t tetris_input_queryJoystick()
 	{
 		return TETRIS_INCMD_DROP;
 	}
-	else if (JOYISDOWN) // is really left
+	else if (JOYISLEFT)
 	{
 		return TETRIS_INCMD_LEFT;
 	}
-	else if (JOYISUP) // is really right
+	else if (JOYISRIGHT)
 	{
 		return TETRIS_INCMD_RIGHT;
 	}
-	else if (JOYISRIGHT) // is really up
+	else if (JOYISUP)
 	{
 		return TETRIS_INCMD_ROTATE_CLOCKWISE;
 	}
-	else if (JOYISLEFT) // is really down
+	else if (JOYISDOWN)
 	{
 		return TETRIS_INCMD_DOWN;
 	}
@@ -183,19 +211,4 @@ tetris_input_command_t tetris_input_queryJoystick()
 	{
 		return TETRIS_INCMD_NONE;
 	}
-}
-
-
-/* Function:      tetris_input_setLevel
- * Description:   modifies time interval of input events
- * Argument pIn:  pointer to input structure
- * Argument nLvl: desired level (0 <= nLvl < TETRIS_INPUT_LEVELS);
- * Return value:  void
- */
-void tetris_input_setLevel(tetris_input_t *pIn,
-                           uint8_t nLvl)
-{
-	assert(pIn != NULL);
-	assert(nLvl < TETRIS_INPUT_LEVELS);
-	pIn->nLevel = nLvl;
 }

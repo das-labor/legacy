@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
-#include <stdint.h>
+#include <inttypes.h>
 #include "../pixel.h"
 #include "../util.h"
 #include "../scrolltext.h"

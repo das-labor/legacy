@@ -13,6 +13,7 @@
 #include "util.h"
 #include "pixel.h"
 #include "joystick.h"
+#include "snake.h"
 #include "tetris/logic.h"
 #include "invaders2.h"
 
@@ -40,11 +41,9 @@ void menu()
 			}
 			switch (miSelection)
 			{
-				
 				case MENU_ITEM_SNAKE:
 					snake_game();
 					break;
-				
 				case MENU_ITEM_SPACEINVADERS:
 					borg_invaders();
 					break;
