@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <stdint.h>
+#include <inttypes.h>
 #include "logic.h"
 #include "piece.h"
 #include "playfield.h"
@@ -19,7 +19,7 @@
  ****************************/
 
 /* Function:     tetris_logic_construct
- * Description:  constructs a logic structure
+ * Description:  constructs a logic object
  * Return value: pointer to a newly created logic object
  */
 tetris_logic_t *tetris_logic_construct()
@@ -32,7 +32,7 @@ tetris_logic_t *tetris_logic_construct()
 
 
 /* Function:     tetris_logic_destruct
- * Description:  destructs a logic structure
+ * Description:  destructs a logic object
  * Argument pIn: pointer to the logic object to be destructed
  * Return value: void
  */
@@ -54,38 +54,38 @@ void tetris ()
 	tetris_view_getDimensions(pnWidth, pnHeight);
 	
 	tetris_logic_t *pLogic = tetris_logic_construct();
-    tetris_playfield_t *pPl = tetris_playfield_construct(*pnWidth, *pnHeight);
+	tetris_playfield_t *pPl = tetris_playfield_construct(*pnWidth, *pnHeight);
 	tetris_input_t *pIn = tetris_input_construct();
-    tetris_view_t *pView = tetris_view_construct(pLogic, pPl);
-    
+	tetris_view_t *pView = tetris_view_construct(pLogic, pPl);
+	
 	static uint16_t nHighscore = 0;
- 	tetris_logic_setHighscore(pLogic, nHighscore);   
-    
-    int8_t nPieceRow;
-    uint8_t nRowMask;
-    
-    tetris_input_command_t cmd;
-    tetris_piece_t *pPiece = NULL;
-    tetris_piece_t *pOldPiece = NULL;
-    tetris_piece_t *pNextPiece = pPiece =
-    	tetris_piece_construct(rand() % 7, TETRIS_PC_ANGLE_0);
- 	tetris_logic_setPreviewPiece(pLogic, pNextPiece);
-    
-    while (tetris_playfield_getStatus(pPl) != TETRIS_PFS_GAMEOVER)
-    {
-    	switch (tetris_playfield_getStatus(pPl))
-    	{
+	tetris_logic_setHighscore(pLogic, nHighscore);   
+	
+	int8_t nPieceRow;
+	uint8_t nRowMask;
+	
+	tetris_input_command_t cmd;
+	tetris_piece_t *pPiece = NULL;
+	tetris_piece_t *pOldPiece = NULL;
+	tetris_piece_t *pNextPiece = pPiece =
+		tetris_piece_construct(rand() % 7, TETRIS_PC_ANGLE_0);
+	tetris_logic_setPreviewPiece(pLogic, pNextPiece);
+	
+	while (tetris_playfield_getStatus(pPl) != TETRIS_PFS_GAMEOVER)
+	{
+		switch (tetris_playfield_getStatus(pPl))
+		{
 			case TETRIS_PFS_READY:
 				pPiece = pNextPiece;
 				pNextPiece =
 					tetris_piece_construct(rand() % 7, TETRIS_PC_ANGLE_0);
 				tetris_logic_setPreviewPiece(pLogic, pNextPiece);
 				tetris_playfield_insertPiece(pPl, pPiece, &pOldPiece);
-			    if (pOldPiece != NULL)
-			    {
-			        tetris_piece_destruct(pOldPiece);
-			        pOldPiece = NULL;
-			    }
+				if (pOldPiece != NULL)
+				{
+					tetris_piece_destruct(pOldPiece);
+					pOldPiece = NULL;
+				}
 				break;
 				
 			case TETRIS_PFS_HOVERING:
@@ -122,7 +122,7 @@ void tetris ()
 						// if the game still runs, reward the player with extra points
 						if (tetris_playfield_getStatus(pPl) != TETRIS_PFS_GAMEOVER)
 						{
-							tetris_logic_singleDrop(pLogic, tetris_playfield_getRow(pPl) - nPieceRow);	
+							tetris_logic_completeDrop(pLogic, tetris_playfield_getRow(pPl) - nPieceRow);	
 						}
 						break;
 					case TETRIS_INCMD_NONE:
@@ -138,12 +138,12 @@ void tetris ()
 				tetris_input_setLevel(pIn, tetris_logic_getLevel(pLogic));
 
 				break;
-    	}
-    	
-    	tetris_view_update(pView);
-    }
-    
-    tetris_view_showResults(pView);
+		}
+		
+		tetris_view_update(pView);
+	}
+	
+	tetris_view_showResults(pView);
 	uint16_t nScore = tetris_logic_getScore(pView->pLogic);
 	if (nScore > nHighscore)
 	{
@@ -152,12 +152,12 @@ void tetris ()
 
 	free(pnWidth);
 	free(pnHeight);
-    tetris_view_destruct(pView);
+	tetris_view_destruct(pView);
 	tetris_input_destruct(pIn);
-    tetris_playfield_destruct(pPl);
-    tetris_logic_destruct(pLogic);
-    tetris_piece_destruct(pPiece);
-    tetris_piece_destruct(pNextPiece);
+	tetris_playfield_destruct(pPl);
+	tetris_logic_destruct(pLogic);
+	tetris_piece_destruct(pPiece);
+	tetris_piece_destruct(pNextPiece);
 }
 
 /* Function:        tetris_logic_singleDrop
@@ -293,7 +293,7 @@ uint8_t tetris_logic_getLines(tetris_logic_t *pLogic)
  * Return value:    void
  */
 void tetris_logic_setPreviewPiece(tetris_logic_t *pLogic,
-                             tetris_piece_t *pPiece)
+                                  tetris_piece_t *pPiece)
 {
 	assert(pLogic != NULL);
 	pLogic->pPreviewPiece = pPiece;
@@ -317,7 +317,7 @@ tetris_piece_t* tetris_logic_getPreviewPiece(tetris_logic_t *pLogic)
  ***************************/
 
 /* Function:          tetris_logic_calculateLines
- * Description:       calculates no. of lines for the given row mask
+ * Description:       calculates number of lines for the given row mask
  * Argument nRowMask: row mask from which the no. of lines will be calculated
  * Return value:      number of lines of the row mask
  */

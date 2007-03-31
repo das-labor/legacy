@@ -15,9 +15,9 @@
 
 typedef struct tetris_view_t
 {
-    tetris_logic_t *pLogic;  // associated logic object
-    tetris_playfield_t *pPl; // associated playfield
-    uint8_t nOldLevel;       // helper variable to recognize level changes
+	tetris_logic_t *pLogic;  // associated logic object
+	tetris_playfield_t *pPl; // associated playfield
+	uint8_t nOldLevel;       // helper variable to recognize level changes
 }
 tetris_view_t;
 

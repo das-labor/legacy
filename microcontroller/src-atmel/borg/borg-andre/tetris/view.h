@@ -1,7 +1,7 @@
 #ifndef TETRIS_VIEW_H_
 #define TETRIS_VIEW_H_
 
-#include <stdint.h>
+#include <inttypes.h>
 #include "logic.h"
 #include "piece.h"
 #include "playfield.h"
@@ -15,9 +15,9 @@
 
 typedef struct tetris_view_t
 {
-    tetris_logic_t *pLogic;  // associated logic object
-    tetris_playfield_t *pPl; // associated playfield
-    uint8_t nOldLevel;       // helper variable to recognize level changes
+	tetris_logic_t *pLogic;  // associated logic object
+	tetris_playfield_t *pPl; // associated playfield
+	uint8_t nOldLevel;       // helper variable to recognize level changes
 }
 tetris_view_t;
 

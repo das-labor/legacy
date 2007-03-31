@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <assert.h>
-#include <stdint.h>
+#include <inttypes.h>
 #include "piece.h"
 
 /*****************************
@@ -16,13 +16,13 @@
 tetris_piece_t *tetris_piece_construct(tetris_piece_shape_t s,
                                        tetris_piece_angle_t a)
 {
-    tetris_piece_t *p_piece = (tetris_piece_t*) malloc (sizeof(tetris_piece_t));
+	tetris_piece_t *p_piece = (tetris_piece_t*) malloc (sizeof(tetris_piece_t));
 	assert(p_piece != NULL);
 
-    p_piece->shape = s;
-    p_piece->angle = a;
+	p_piece->shape = s;
+	p_piece->angle = a;
 
-    return p_piece;
+	return p_piece;
 }
 
 /* Function:     tetris_piece_destruct
@@ -52,18 +52,18 @@ uint16_t tetris_piece_getBitfield(tetris_piece_t *pPc)
 {
 	assert(pPc != NULL);
 	
-    // Lookup table:
-    // A value in an array represents a piece in a specific angle (rotating
-    // clockwise from index 0).
-    static uint16_t piece[][4] = {{0x0F00, 0x2222, 0x0F00, 0x2222},  // LINE
-                                  {0x4E00, 0x4640, 0x0E40, 0x4C40},  // T
-                                  {0x0660, 0x0660, 0x0660, 0x0660},  // SQUARE
-                                  {0x2E00, 0x88C0, 0x0E80, 0xC440},  // L
-                                  {0x8E00, 0x6440, 0x0E20, 0x44C0},  // LBACK
-                                  {0x6C00, 0x4620, 0x6C00, 0x4620},  // S
-                                  {0xC600, 0x4C80, 0xC600, 0x4C80}}; // Z
+	// Lookup table:
+	// A value in an array represents a piece in a specific angle (rotating
+	// clockwise from index 0).
+	static uint16_t piece[][4] = {{0x0F00, 0x2222, 0x0F00, 0x2222},  // LINE
+	                              {0x4E00, 0x4640, 0x0E40, 0x4C40},  // T
+	                              {0x0660, 0x0660, 0x0660, 0x0660},  // SQUARE
+	                              {0x2E00, 0x88C0, 0x0E80, 0xC440},  // L
+	                              {0x8E00, 0x6440, 0x0E20, 0x44C0},  // LBACK
+	                              {0x6C00, 0x4620, 0x6C00, 0x4620},  // S
+	                              {0xC600, 0x4C80, 0xC600, 0x4C80}}; // Z
 
-    return piece[pPc->shape][pPc->angle];
+	return piece[pPc->shape][pPc->angle];
 }
 
 
@@ -78,30 +78,30 @@ void tetris_piece_rotate(tetris_piece_t *pPc,
 {
 	assert(pPc != NULL);
 	
-    // we just rotate through the available angles in the given direction and
-    // make wrap arounds where appropriate
-    switch (r)
-    {
-    case TETRIS_PC_ROT_CLOCKWISE:
-        if (pPc->angle == TETRIS_PC_ANGLE_270)
-        {
-            pPc->angle = TETRIS_PC_ANGLE_0;
-        }
-        else
-        {
-            ++pPc->angle;
-        }
-        break;
-    case TETRIS_PC_ROT_COUNTERCLOCKWISE:
-        if (pPc->angle == TETRIS_PC_ANGLE_0)
-        {
-            pPc->angle = TETRIS_PC_ANGLE_270;
-        }
-        else
-        {
-            --pPc->angle;
-        }
-        break;
-    }
+	// we just rotate through the available angles in the given direction and
+	// make wrap arounds where appropriate
+	switch (r)
+	{
+	case TETRIS_PC_ROT_CLOCKWISE:
+		if (pPc->angle == TETRIS_PC_ANGLE_270)
+		{
+			pPc->angle = TETRIS_PC_ANGLE_0;
+		}
+		else
+		{
+			++pPc->angle;
+		}
+		break;
+	case TETRIS_PC_ROT_COUNTERCLOCKWISE:
+		if (pPc->angle == TETRIS_PC_ANGLE_0)
+		{
+			pPc->angle = TETRIS_PC_ANGLE_270;
+		}
+		else
+		{
+			--pPc->angle;
+		}
+		break;
+	}
 }
 

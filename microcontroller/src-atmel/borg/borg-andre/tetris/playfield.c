@@ -1,7 +1,8 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <assert.h>
-#include <stdint.h>
+#include <inttypes.h>
 #include "playfield.h"
 #include "piece.h"
 
@@ -537,9 +538,10 @@ int8_t tetris_playfield_getStatus(tetris_playfield_t *pPl)
  * Description:   returns the given row of the dump (as bitmap)
  * Argument pPl:  the playfield we want information from
  * Argument nRow: the number of the row (0 <= nRow < height of playfield)
- * Return value:  bitmap of the requestet row (LSB is leftmost column)
+ * Return value:  bitmap of the requested row (LSB is leftmost column)
  */
-uint16_t tetris_playfield_getDumpRow(tetris_playfield_t *pPl, int8_t nRow)
+uint16_t tetris_playfield_getDumpRow(tetris_playfield_t *pPl,
+                                     int8_t nRow)
 {
 	assert(pPl != NULL);
 	assert((0 <= nRow) && (nRow < pPl->nHeight));

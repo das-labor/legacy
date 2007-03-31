@@ -1,7 +1,7 @@
 #ifndef TETRIS_LOGIC_H_
 #define TETRIS_LOGIC_H_
 
-#include <stdint.h>
+#include <inttypes.h>
 #include "piece.h"
 
 /*********
@@ -24,14 +24,14 @@ tetris_logic_t;
  ****************************/
 
 /* Function:     tetris_logic_construct
- * Description:  constructs a logic structure
+ * Description:  constructs a logic object
  * Return value: pointer to a newly created logic object
  */
 tetris_logic_t *tetris_logic_construct();
 
 
 /* Function:     tetris_logic_destruct
- * Description:  destructs a logic structure
+ * Description:  destructs a logic object
  * Argument pIn: pointer to the logic object to be destructed
  * Return value: void
  */
@@ -127,7 +127,7 @@ uint8_t tetris_logic_getLines(tetris_logic_t *pLogic);
  * Return value:    void
  */
 void tetris_logic_setPreviewPiece(tetris_logic_t *pLogic,
-                             tetris_piece_t *pPiece);
+                                  tetris_piece_t *pPiece);
 
 /* Function:        tetris_logic_getPreviewPiece
  * Description:     returns piece which was set via tetris_logic_setPreviewPiece
@@ -142,7 +142,7 @@ tetris_piece_t* tetris_logic_getPreviewPiece(tetris_logic_t *pLogic);
  ***************************/
 
 /* Function:          tetris_logic_calculateLines
- * Description:       calculates no. of lines for the given row mask
+ * Description:       calculates number of lines for the given row mask
  * Argument nRowMask: row mask from which the no. of lines will be calculated
  * Return value:      number of lines of the row mask
  */

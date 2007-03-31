@@ -12,8 +12,8 @@
 // directions to which a piece can be moved
 typedef enum tetris_playfield_direction_t
 {
-    TETRIS_PFD_LEFT,
-    TETRIS_PFD_RIGHT
+	TETRIS_PFD_LEFT,
+	TETRIS_PFD_RIGHT
 }
 tetris_playfield_direction_t;
 
@@ -21,10 +21,10 @@ tetris_playfield_direction_t;
 // status of the playfield
 typedef enum tetris_playfield_status_t
 {
-    TETRIS_PFS_READY,    // ready to get next piece
-    TETRIS_PFS_HOVERING, // piece is still hovering
-    TETRIS_PFS_DOCKED,   // piece has been docked
-    TETRIS_PFS_GAMEOVER	 // playfield is filled up
+	TETRIS_PFS_READY,    // ready to get next piece
+	TETRIS_PFS_HOVERING, // piece is still hovering
+	TETRIS_PFS_DOCKED,   // piece has been docked
+	TETRIS_PFS_GAMEOVER	 // playfield is filled up
 }
 tetris_playfield_status_t;
 
@@ -37,7 +37,7 @@ typedef struct tetris_playfield_t
 	tetris_piece_t *pPiece;           // currently falling piece
 	int8_t nColumn;                   // horz. piece pos. (0 is left)
 	int8_t nRow;                      // vert. piece pos. (0 is top)
-	uint8_t nRowMask;                 // removed lines relative to nRow (bitmask)
+	uint8_t nRowMask;                 // removed lines relative to nRow (bitmap)
 	tetris_playfield_status_t status; // status
 	uint16_t *dump;                   // playfield itself
 }
@@ -99,7 +99,7 @@ void tetris_playfield_insertPiece(tetris_playfield_t *pPl,
 uint8_t tetris_playfield_collision(tetris_playfield_t *pPl,
                                    int8_t nColumn,
                                    int8_t nRow);
-                                   
+								   
 
 /* Function:     tetris_playfield_advancePiece
  * Description:  lowers piece by one row or finally docks it
@@ -202,9 +202,10 @@ int8_t tetris_playfield_getStatus(tetris_playfield_t *pPl);
  * Description:   returns the given row of the dump (as bitmap)
  * Argument pPl:  the playfield we want information from
  * Argument nRow: the number of the row (0 <= nRow <= 124)
- * Return value:  bitmap of the requestet row (LSB is leftmost column)
+ * Return value:  bitmap of the requested row (LSB is leftmost column)
  */
-uint16_t tetris_playfield_getDumpRow(tetris_playfield_t *pPl, int8_t nRow);
+uint16_t tetris_playfield_getDumpRow(tetris_playfield_t *pPl,
+                                     int8_t nRow);
 
 
 #endif /*TETRIS_PLAYFIELD_H_*/

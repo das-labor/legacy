@@ -10,39 +10,39 @@
 
 typedef enum tetris_piece_shape_t
 {
-    TETRIS_PC_LINE,
-    TETRIS_PC_T,
-    TETRIS_PC_SQUARE,
-    TETRIS_PC_L,
-    TETRIS_PC_LBACK,
-    TETRIS_PC_S,
-    TETRIS_PC_Z
+	TETRIS_PC_LINE,
+	TETRIS_PC_T,
+	TETRIS_PC_SQUARE,
+	TETRIS_PC_L,
+	TETRIS_PC_LBACK,
+	TETRIS_PC_S,
+	TETRIS_PC_Z
 }
 tetris_piece_shape_t;
 
 
 typedef enum tetris_piece_angle_t
 {
-    TETRIS_PC_ANGLE_0,
-    TETRIS_PC_ANGLE_90,
-    TETRIS_PC_ANGLE_180,
-    TETRIS_PC_ANGLE_270
+	TETRIS_PC_ANGLE_0,
+	TETRIS_PC_ANGLE_90,
+	TETRIS_PC_ANGLE_180,
+	TETRIS_PC_ANGLE_270
 }
 tetris_piece_angle_t;
 
 
 typedef enum tetris_piece_rotation_t
 {
-    TETRIS_PC_ROT_CLOCKWISE,
-    TETRIS_PC_ROT_COUNTERCLOCKWISE
+	TETRIS_PC_ROT_CLOCKWISE,
+	TETRIS_PC_ROT_COUNTERCLOCKWISE
 }
 tetris_piece_rotation_t;
 
 
 typedef struct tetris_piece_t
 {
-    tetris_piece_shape_t shape; // specifies the shape of the piece
-    tetris_piece_angle_t angle; // specifies one of 4 angels
+	tetris_piece_shape_t shape; // specifies the shape of the piece
+	tetris_piece_angle_t angle; // specifies one of 4 angels
 }
 tetris_piece_t;
 
