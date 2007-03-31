@@ -6,8 +6,8 @@
 #define SCROLLTEXT_STRING_SIZE 128
 #define SCROLLTEXT_FONT font_arial8
 #define SCROLLTEXT_DEFAULT "</#das  LABOR  Bochum#</#www.das-labor.org#</#coded using avr-gcc"
-#define SCROLL_X_SPEED 20
-#define SCROLL_Y_SPEED 20
+#define SCROLL_X_SPEED 5
+#define SCROLL_Y_SPEED 5
 
 
 #define STREAMER_NUM 30
