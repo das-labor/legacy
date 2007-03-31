@@ -6,11 +6,11 @@ void procCannon(Cannon *cn, uPixel *shot){
   static unsigned char mv = 0;
   if( mv >= CANNON_SPEED) {
     mv = 0;
-    if(JOYISDOWN) { // is really left
+    if(JOYISLEFT) {
 			if(cn->pos != RIGHT_BORDER) {
 				cn->pos++;
 			}
-		} else if (JOYISUP) { // is really right
+		} else if (JOYISRIGHT) {
 			if(cn->pos != LEFT_BORDER) {
 				cn->pos--;
 			}				

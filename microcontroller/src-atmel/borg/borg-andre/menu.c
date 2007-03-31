@@ -39,7 +39,7 @@ void menu()
 			switch (miSelection)
 			{
 				/*
-				case MENU_ITEM_SNAKE
+				case MENU_ITEM_SNAKE:
 					snakeJoystick();
 					break;
 				*/
@@ -52,17 +52,17 @@ void menu()
 			}
 			break;
 		}
-		else if (JOYISUP) // is really right
+		else if (JOYISRIGHT)
 		{
 			menu_animate(miSelection, MENU_DIRECTION_LEFT);
 			miSelection = MENU_NEXTITEM(miSelection);
 		}
-		else if (JOYISDOWN) // is really left
+		else if (JOYISLEFT)
 		{
 			menu_animate(miSelection, MENU_DIRECTION_RIGHT);
 			miSelection = MENU_PREVITEM(miSelection);
 		}
-		else if (JOYISRIGHT) // is really up
+		else if (JOYISUP)
 		{
 			break;
 		}
@@ -77,7 +77,9 @@ void menu()
 }
 
 
-uint8_t menu_getIconPixel(menu_item_t item, int8_t x, int8_t y)
+uint8_t menu_getIconPixel(menu_item_t item,
+                          int8_t x,
+                          int8_t y)
 {
 	// MSB is leftmost pixel
 	static uint8_t nIcon[][8] =
@@ -97,7 +99,8 @@ uint8_t menu_getIconPixel(menu_item_t item, int8_t x, int8_t y)
 }
 
 
-void menu_animate(menu_item_t miInitial, menu_direction_t direction)
+void menu_animate(menu_item_t miInitial,
+                  menu_direction_t direction)
 {
 	int16_t nWait = MENU_WAIT_INITIAL;
 
@@ -181,7 +184,9 @@ void menu_animate(menu_item_t miInitial, menu_direction_t direction)
 }
 
 
-void menu_setpixel(int8_t x, int8_t y, int8_t isSet)
+void menu_setpixel(int8_t x,
+                   int8_t y,
+                   int8_t isSet)
 {
 	uint8_t nColor;
 	
