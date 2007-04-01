@@ -82,7 +82,7 @@ void tetris_piece_rotate(tetris_piece_t *pPc,
 	// make wrap arounds where appropriate
 	switch (r)
 	{
-	case TETRIS_PC_ROT_CLOCKWISE:
+	case TETRIS_PC_ROT_CW:
 		if (pPc->angle == TETRIS_PC_ANGLE_270)
 		{
 			pPc->angle = TETRIS_PC_ANGLE_0;
@@ -92,7 +92,7 @@ void tetris_piece_rotate(tetris_piece_t *pPc,
 			++pPc->angle;
 		}
 		break;
-	case TETRIS_PC_ROT_COUNTERCLOCKWISE:
+	case TETRIS_PC_ROT_CCW:
 		if (pPc->angle == TETRIS_PC_ANGLE_0)
 		{
 			pPc->angle = TETRIS_PC_ANGLE_270;

@@ -33,8 +33,8 @@ tetris_piece_angle_t;
 
 typedef enum tetris_piece_rotation_t
 {
-	TETRIS_PC_ROT_CLOCKWISE,
-	TETRIS_PC_ROT_COUNTERCLOCKWISE
+	TETRIS_PC_ROT_CW, // clockwise rotation
+	TETRIS_PC_ROT_CCW // counter clockwise rotation
 }
 tetris_piece_rotation_t;
 
