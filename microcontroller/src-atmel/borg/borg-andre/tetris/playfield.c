@@ -5,6 +5,7 @@
 #include "playfield.h"
 #include "piece.h"
 
+
 /****************************
  * construction/destruction *
  ****************************/
@@ -46,6 +47,7 @@ tetris_playfield_t *tetris_playfield_construct(int8_t nWidth,
 	}
 	return NULL;
 }
+
 
 /* Function:     tetris_playfield_destruct
  * Description:  destructs a playfield
@@ -356,13 +358,13 @@ uint8_t tetris_playfield_rotatePiece(tetris_playfield_t *pPl,
 	if (tetris_playfield_collision(pPl, pPl->nColumn, pPl->nRow) != 0)
 	{
 		// in that case we revert the rotation
-		if (rotation == TETRIS_PC_ROT_CLOCKWISE)
+		if (rotation == TETRIS_PC_ROT_CW)
 		{
-			tetris_piece_rotate(pPl->pPiece, TETRIS_PC_ROT_COUNTERCLOCKWISE);
+			tetris_piece_rotate(pPl->pPiece, TETRIS_PC_ROT_CCW);
 		}
 		else
 		{
-			tetris_piece_rotate(pPl->pPiece, TETRIS_PC_ROT_CLOCKWISE);
+			tetris_piece_rotate(pPl->pPiece, TETRIS_PC_ROT_CW);
 		}
 		
 		return 0;
@@ -476,6 +478,7 @@ int8_t tetris_playfield_getHeight(tetris_playfield_t *pPl)
 	return pPl->nHeight;
 }
 
+
 /* Function:     tetris_playfield_getPiece
  * Description:  returns the currently falling piece
  * Argument pPl: the playfield we want information from
@@ -486,6 +489,7 @@ tetris_piece_t *tetris_playfield_getPiece(tetris_playfield_t *pPl)
 	assert(pPl != NULL);
 	return pPl->pPiece;
 }
+
 
 /* Function:     tetris_playfield_getColumn
  * Description:  returns the column of the currently falling piece
@@ -498,6 +502,7 @@ int8_t tetris_playfield_getColumn(tetris_playfield_t *pPl)
 	return pPl->nColumn;
 }
 
+
 /* Function:     tetris_playfield_getRow
  * Description:  returns the row of the currently falling piece
  * Argument pPl: the playfield we want information from
@@ -508,6 +513,7 @@ int8_t tetris_playfield_getRow(tetris_playfield_t *pPl)
 	assert(pPl != NULL);
 	return pPl->nRow;
 }
+
 
 /* Function:     tetris_playfield_getRowMask
  * Description:  returns the row mask relative to nRow 
@@ -522,6 +528,7 @@ uint8_t tetris_playfield_getRowMask(tetris_playfield_t *pPl)
 	return pPl->nRowMask;
 }
 
+
 /* Function:     tetris_playfield_getStatus
  * Description:  returns the status of the playfield
  * Argument pPl: the playfield we want information from
@@ -532,6 +539,7 @@ int8_t tetris_playfield_getStatus(tetris_playfield_t *pPl)
 	assert(pPl != NULL);
 	return pPl->status;
 }
+
 
 /* Function:      tetris_playfield_getDumpRow
  * Description:   returns the given row of the dump (as bitmap)

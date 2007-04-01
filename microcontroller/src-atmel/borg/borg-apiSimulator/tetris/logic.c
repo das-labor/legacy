@@ -1,6 +1,6 @@
 /* Borgtris
  * by: Christian Kroll
- * date: Tuesday, 2007/03/27
+ * date: Sunday, 2007/04/01
  */
 
 #include <stdlib.h>
@@ -30,7 +30,6 @@ tetris_logic_t *tetris_logic_construct()
 	return pLogic;
 }
 
-
 /* Function:     tetris_logic_destruct
  * Description:  destructs a logic object
  * Argument pIn: pointer to the logic object to be destructed
@@ -47,111 +46,158 @@ void tetris_logic_destruct(tetris_logic_t *pLogic)
  * logic related functions *
  ***************************/
 
+/* Function:     tetris
+ * Description:  runs the tetris game
+ * Return value: void
+ */
 void tetris ()
 {	
-	int8_t *pnWidth = (int8_t *)malloc(sizeof(int8_t));
-	int8_t *pnHeight = (int8_t *)malloc(sizeof(int8_t));
-	tetris_view_getDimensions(pnWidth, pnHeight);
-	
+	// get view dependent dimensions of the playfield
+	int8_t nWidth;
+	int8_t nHeight;
+	tetris_view_getDimensions(&nWidth, &nHeight);
+
+	// prepare data structures that drive the game...
 	tetris_logic_t *pLogic = tetris_logic_construct();
-	tetris_playfield_t *pPl = tetris_playfield_construct(*pnWidth, *pnHeight);
+	tetris_playfield_t *pPl = tetris_playfield_construct(nWidth, nHeight);
 	tetris_input_t *pIn = tetris_input_construct();
 	tetris_view_t *pView = tetris_view_construct(pLogic, pPl);
-	
-	static uint16_t nHighscore = 0;
-	tetris_logic_setHighscore(pLogic, nHighscore);   
-	
+
+	// runtime variables
 	int8_t nPieceRow;
 	uint8_t nRowMask;
-	
-	tetris_input_command_t cmd;
+
+	// initial highscore is 0
+	static uint16_t nHighscore = 0;
+
+	// initialize current and next piece
 	tetris_piece_t *pPiece = NULL;
-	tetris_piece_t *pOldPiece = NULL;
 	tetris_piece_t *pNextPiece = pPiece =
 		tetris_piece_construct(rand() % 7, TETRIS_PC_ANGLE_0);
+
+	// the view only monitors the logic and the playfield object for the game
+	// status so we must put information like the next piece or the current
+	// highscore to a place where the view can find it 
+	tetris_logic_setHighscore(pLogic, nHighscore);   
 	tetris_logic_setPreviewPiece(pLogic, pNextPiece);
-	
+
+	// game loop, stops if the game is over
 	while (tetris_playfield_getStatus(pPl) != TETRIS_PFS_GAMEOVER)
 	{
+		// what we do depends strongly on the status of the playfield
 		switch (tetris_playfield_getStatus(pPl))
 		{
-			case TETRIS_PFS_READY:
-				pPiece = pNextPiece;
-				pNextPiece =
-					tetris_piece_construct(rand() % 7, TETRIS_PC_ANGLE_0);
-				tetris_logic_setPreviewPiece(pLogic, pNextPiece);
-				tetris_playfield_insertPiece(pPl, pPiece, &pOldPiece);
-				if (pOldPiece != NULL)
-				{
-					tetris_piece_destruct(pOldPiece);
-					pOldPiece = NULL;
-				}
-				break;
-				
-			case TETRIS_PFS_HOVERING:
-				cmd = tetris_input_getCommand(pIn);
-				switch (cmd)
-				{
-					case TETRIS_INCMD_DOWN:
-						tetris_playfield_advancePiece(pPl);
-						// if the game still runs, reward the player with extra points
-						if (tetris_playfield_getStatus(pPl) != TETRIS_PFS_GAMEOVER)
-						{
-							tetris_logic_singleDrop(pLogic, 1);
-						}
-						break;
-					case TETRIS_INCMD_LEFT:
-						tetris_playfield_movePiece(pPl, TETRIS_PFD_LEFT);
-						break;
-					case TETRIS_INCMD_RIGHT:
-						tetris_playfield_movePiece(pPl, TETRIS_PFD_RIGHT);
-						break;
-					case TETRIS_INCMD_ROTATE_CLOCKWISE:
-						tetris_playfield_rotatePiece(pPl, TETRIS_PC_ROT_CLOCKWISE);
-						break;
-					case TETRIS_INCMD_ROTATE_COUNTERCLOCKWISE:
-						tetris_playfield_rotatePiece(pPl, TETRIS_PC_ROT_COUNTERCLOCKWISE);
-						break;
-					case TETRIS_INCMD_DROP:
-						nPieceRow = tetris_playfield_getRow(pPl);
-						// emulate immediate drop
-						while (tetris_playfield_getStatus(pPl) == TETRIS_PFS_HOVERING)
-						{
-							tetris_playfield_advancePiece(pPl);
-						}
-						// if the game still runs, reward the player with extra points
-						if (tetris_playfield_getStatus(pPl) != TETRIS_PFS_GAMEOVER)
-						{
-							tetris_logic_completeDrop(pLogic, tetris_playfield_getRow(pPl) - nPieceRow);	
-						}
-						break;
-					case TETRIS_INCMD_NONE:
-						// nothing to do
-						break;
-				}
-				break;
-				
-			case TETRIS_PFS_DOCKED:
-				tetris_playfield_removeCompleteLines(pPl);
-				nRowMask = tetris_playfield_getRowMask(pPl);				
-				tetris_logic_removedLines(pLogic, nRowMask);			
-				tetris_input_setLevel(pIn, tetris_logic_getLevel(pLogic));
+		// the playfield awaits a new piece
+		case TETRIS_PFS_READY:
+			// make preview piece the current piece and create new preview piece
+			pPiece = pNextPiece;
+			pNextPiece =
+				tetris_piece_construct(rand() % 7, TETRIS_PC_ANGLE_0);
+			tetris_logic_setPreviewPiece(pLogic, pNextPiece);
 
+			// insert new piece into playfield
+			tetris_piece_t *pOldPiece;
+			tetris_playfield_insertPiece(pPl, pPiece, &pOldPiece);
+
+			// destruct old piece (if it exists) since we don't need it anymore
+			if (pOldPiece != NULL)
+			{
+				tetris_piece_destruct(pOldPiece);
+				pOldPiece = NULL;
+			}
+			break;
+
+		// a piece is hovering and can be controlled by the player
+		case TETRIS_PFS_HOVERING:
+			// what we do depends on what the input module tells us
+			switch (tetris_input_getCommand(pIn))
+			{
+			// the piece was pulled down by the almighty gravity
+			case TETRIS_INCMD_GRAVITY:
+				tetris_playfield_advancePiece(pPl);
 				break;
+
+			// the player has pulled down the piece herself/himself
+			case TETRIS_INCMD_DOWN:
+				tetris_playfield_advancePiece(pPl);
+				// if the game still runs, reward the player with extra points
+				if (tetris_playfield_getStatus(pPl) != TETRIS_PFS_GAMEOVER)
+				{
+					tetris_logic_singleDrop(pLogic, 1);
+				}
+				break;
+
+			// player shifted the piece to the left
+			case TETRIS_INCMD_LEFT:
+				tetris_playfield_movePiece(pPl, TETRIS_PFD_LEFT);
+				break;
+
+			// player shifted the piece to the right
+			case TETRIS_INCMD_RIGHT:
+				tetris_playfield_movePiece(pPl, TETRIS_PFD_RIGHT);
+				break;
+
+			// player rotated the piece clockwise
+			case TETRIS_INCMD_ROT_CW:
+				tetris_playfield_rotatePiece(pPl, TETRIS_PC_ROT_CW);
+				break;
+
+			// player rotated the piece counter clockwise
+			case TETRIS_INCMD_ROT_CCW:
+				tetris_playfield_rotatePiece(pPl, TETRIS_PC_ROT_CCW);
+				break;
+
+			// the player decided to make a immediate drop
+			case TETRIS_INCMD_DROP:
+				nPieceRow = tetris_playfield_getRow(pPl);
+				// emulate immediate drop
+				while (tetris_playfield_getStatus(pPl) == TETRIS_PFS_HOVERING)
+				{
+					tetris_playfield_advancePiece(pPl);
+				}
+				// if the game still runs, reward the player with extra points
+				if (tetris_playfield_getStatus(pPl) != TETRIS_PFS_GAMEOVER)
+				{
+					tetris_logic_completeDrop(pLogic,
+						tetris_playfield_getRow(pPl) - nPieceRow);	
+				}
+				break;
+
+			case TETRIS_INCMD_NONE:
+				// nothing to do
+				break;
+			}
+			break;
+
+		// the piece has irrevocably hit the ground
+		case TETRIS_PFS_DOCKED:
+			// remove comlpete lines (if any)
+			tetris_playfield_removeCompleteLines(pPl);
+			// retrieve number of completes lines
+			nRowMask = tetris_playfield_getRowMask(pPl);
+			// let the logic object decide how many points the player gets
+			// and if the level gets changed 				
+			tetris_logic_removedLines(pLogic, nRowMask);			
+			tetris_input_setLevel(pIn, tetris_logic_getLevel(pLogic));
+
+			break;
 		}
-		
+
+		// the view updates it state every loop cycle to make changes visible
 		tetris_view_update(pView);
 	}
-	
+
+	// game is over and we provide the player with her/his results
 	tetris_view_showResults(pView);
+
+	// update highscore if it has been beaten
 	uint16_t nScore = tetris_logic_getScore(pView->pLogic);
 	if (nScore > nHighscore)
 	{
 		nHighscore = nScore;
 	}
 
-	free(pnWidth);
-	free(pnHeight);
+	// clean up
 	tetris_view_destruct(pView);
 	tetris_input_destruct(pIn);
 	tetris_playfield_destruct(pPl);
@@ -159,6 +205,7 @@ void tetris ()
 	tetris_piece_destruct(pPiece);
 	tetris_piece_destruct(pNextPiece);
 }
+
 
 /* Function:        tetris_logic_singleDrop
  * Description:     add points which result from single step dropping
@@ -224,7 +271,7 @@ void tetris_logic_removedLines(tetris_logic_t *pLogic,
 /*****************
  * get functions *
  *****************/
- 
+
 /* Function:        tetris_logic_getScore
  * Description:     returns the current score
  * Argument pLogic: the logic object we want information from
@@ -248,6 +295,7 @@ uint16_t tetris_logic_getHighscore(tetris_logic_t *pLogic)
 	assert(pLogic != NULL);
 	return pLogic->nHighscore;
 }
+
 
 /* Function:             tetris_logic_setHighscore
  * Description:          set highscore
@@ -334,6 +382,6 @@ uint8_t tetris_logic_calculateLines(uint8_t nRowMask)
 		}
 		nMask <<= 1;
 	}
-	
+
 	return nLines;
 }

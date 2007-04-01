@@ -18,7 +18,6 @@ typedef struct tetris_logic_t
 }
 tetris_logic_t;
 
-
 /****************************
  * construction/destruction *
  ****************************/
@@ -29,7 +28,6 @@ tetris_logic_t;
  */
 tetris_logic_t *tetris_logic_construct();
 
-
 /* Function:     tetris_logic_destruct
  * Description:  destructs a logic object
  * Argument pIn: pointer to the logic object to be destructed
@@ -37,11 +35,14 @@ tetris_logic_t *tetris_logic_construct();
  */
 void tetris_logic_destruct(tetris_logic_t *pLogic);
 
-
 /***************************
  * logic related functions *
  ***************************/
- 
+
+/* Function:     tetris
+ * Description:  runs the tetris game
+ * Return value: void
+ */
 void tetris();
 
 
@@ -78,7 +79,7 @@ void tetris_logic_removedLines(tetris_logic_t *pLogic,
 /*********************
  * get/set functions *
  *********************/
- 
+
 /* Function:        tetris_logic_getScore
  * Description:     returns the current score
  * Argument pLogic: the logic object we want information from
@@ -128,6 +129,7 @@ uint8_t tetris_logic_getLines(tetris_logic_t *pLogic);
  */
 void tetris_logic_setPreviewPiece(tetris_logic_t *pLogic,
                                   tetris_piece_t *pPiece);
+
 
 /* Function:        tetris_logic_getPreviewPiece
  * Description:     returns piece which was set via tetris_logic_setPreviewPiece

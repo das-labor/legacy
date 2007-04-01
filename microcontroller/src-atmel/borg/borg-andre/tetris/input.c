@@ -5,13 +5,14 @@
 #include "../joystick.h"
 #include "../util.h"
 
+
 /*****************************
  *  construction/destruction *
  *****************************/
 
 /* Function:     tetris_input_construct
  * Description:  constructs an input object for André's borg
- * Return value: pointer to a newly created input
+ * Return value: pointer to a newly created input object
  */
 tetris_input_t *tetris_input_construct()
 {
@@ -45,8 +46,8 @@ void tetris_input_destruct(tetris_input_t *pIn)
 
 /* Function:     tetris_input_getCommand
  * Description:  retrieves commands from joystick or loop interval
- * Argument pIn: pointer to input object
- * Return value: void
+ * Argument pIn: pointer to an input object
+ * Return value: see definition of tetris_input_command_t
  */
 tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 {
@@ -63,87 +64,87 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 
 		switch (cmdJoystick)
 		{
-			case TETRIS_INCMD_LEFT:
-			case TETRIS_INCMD_RIGHT:
-			case TETRIS_INCMD_DOWN:
-				// only react if either the current command differs from the last
-				// or enough loop cycles have been run on the same command
-				// (for key repeat)
-				if ((pIn->cmdLast != cmdJoystick) || ((pIn->cmdLast == cmdJoystick)
-					&& (pIn->nRepeatCount >= TETRIS_INPUT_REPEAT_DELAY)))
-				{
-					// reset repeat counter
-					if (pIn->cmdLast != cmdJoystick)
-					{
-						// different command: we set an extra initial delay
-						pIn->nRepeatCount = -TETRIS_INPUT_REPEAT_INITIALDELAY;
-					}
-					else
-					{
-						// same command: there's no extra initial delay
-						pIn->nRepeatCount = 0;
-					}
-
-					if (cmdJoystick == TETRIS_INCMD_DOWN)
-					{
-						// suppress autom. falling if down key is pressed anyway
-						pIn->nLoopCycles = 0;
-					}
-					else
-					{
-						// right or left moves must not prevent autom. falling
-						++pIn->nLoopCycles;
-					}
-
-					// update cmdLast and return value
-					pIn->cmdLast = cmdReturn = cmdJoystick;
-				}
-				else
-				{
-					// if not enough loop cylces have been run we increment the
-					// repeat counter and ensure that we continue the loop
-					++pIn->nRepeatCount;
-					cmdReturn = TETRIS_INCMD_NONE;
-				}
-				break;
-
-			case TETRIS_INCMD_DROP:
-			case TETRIS_INCMD_ROTATE_CLOCKWISE:
-			case TETRIS_INCMD_ROTATE_COUNTERCLOCKWISE:
-				// no key repeat here
+		case TETRIS_INCMD_LEFT:
+		case TETRIS_INCMD_RIGHT:
+		case TETRIS_INCMD_DOWN:
+			// only react if either the current command differs from the last
+			// or enough loop cycles have been run on the same command
+			// (for key repeat)
+			if ((pIn->cmdLast != cmdJoystick) || ((pIn->cmdLast == cmdJoystick)
+				&& (pIn->nRepeatCount >= TETRIS_INPUT_REPEAT_DELAY)))
+			{
+				// reset repeat counter
 				if (pIn->cmdLast != cmdJoystick)
 				{
-					pIn->nRepeatCount =  -TETRIS_INPUT_REPEAT_INITIALDELAY;
-					if (cmdJoystick == TETRIS_INCMD_DROP)
-					{
-						// reset autom. falling if player has dropped the piece
-						pIn->nLoopCycles = 0;
-					}
-					else
-					{
-						// rotations must not prevent autom. falling
-						++pIn->nLoopCycles;
-					}
-
-					pIn->cmdLast = cmdReturn = cmdJoystick;
+					// different command: we set an extra initial delay
+					pIn->nRepeatCount = -TETRIS_INPUT_REPEAT_INITIALDELAY;
 				}
 				else
 				{
-					cmdReturn = TETRIS_INCMD_NONE;
+					// same command: there's no extra initial delay
+					pIn->nRepeatCount = 0;
 				}
-				break;
-				
-			case TETRIS_INCMD_NONE:
-				pIn->cmdLast = cmdReturn = TETRIS_INCMD_NONE;
+
+				if (cmdJoystick == TETRIS_INCMD_DOWN)
+				{
+					// suppress autom. falling if down key is pressed anyway
+					pIn->nLoopCycles = 0;
+				}
+				else
+				{
+					// right or left moves must not prevent autom. falling
+					++pIn->nLoopCycles;
+				}
+
+				// update cmdLast and return value
+				pIn->cmdLast = cmdReturn = cmdJoystick;
+			}
+			else
+			{
+				// if not enough loop cylces have been run we increment the
+				// repeat counter and ensure that we continue the loop
+				++pIn->nRepeatCount;
+				cmdReturn = TETRIS_INCMD_NONE;
+			}
+			break;
+
+		case TETRIS_INCMD_DROP:
+		case TETRIS_INCMD_ROT_CW:
+		case TETRIS_INCMD_ROT_CCW:
+			// no key repeat here
+			if (pIn->cmdLast != cmdJoystick)
+			{
 				pIn->nRepeatCount =  -TETRIS_INPUT_REPEAT_INITIALDELAY;
-				break;
+				if (cmdJoystick == TETRIS_INCMD_DROP)
+				{
+					// reset autom. falling if player has dropped the piece
+					pIn->nLoopCycles = 0;
+				}
+				else
+				{
+					// rotations must not prevent autom. falling
+					++pIn->nLoopCycles;
+				}
+
+				pIn->cmdLast = cmdReturn = cmdJoystick;
+			}
+			else
+			{
+				cmdReturn = TETRIS_INCMD_NONE;
+			}
+			break;
+			
+		case TETRIS_INCMD_NONE:
+			pIn->cmdLast = cmdReturn = TETRIS_INCMD_NONE;
+			pIn->nRepeatCount =  -TETRIS_INPUT_REPEAT_INITIALDELAY;
+			break;
 		}
-		
+
 		wait(TETRIS_INPUT_TICKS);
 		if (cmdReturn != TETRIS_INCMD_NONE)
 			return cmdReturn;
 	}
-	
+
 	if (pIn->nLoopCycles >= nMaxCycles)
 	{
 		pIn->nLoopCycles = 0;
@@ -158,13 +159,13 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 		}
 	}
 
-	return TETRIS_INCMD_DOWN;
+	return TETRIS_INCMD_GRAVITY;
 }
 
 
 /* Function:      tetris_input_setLevel
  * Description:   modifies time interval of input events
- * Argument pIn:  pointer to input structure
+ * Argument pIn:  pointer to an input object
  * Argument nLvl: desired level (0 <= nLvl <= TETRIS_INPUT_LEVELS - 1)
  * Return value:  void
  */
@@ -183,7 +184,7 @@ void tetris_input_setLevel(tetris_input_t *pIn,
 
 /* Function:     tetris_input_queryJoystick
  * Description:  translates joystick movements into tetris_input_command_t
- * Return value: void
+ * Return value: see definitition of tetris_input_command_t
  */
 tetris_input_command_t tetris_input_queryJoystick()
 {
@@ -201,7 +202,7 @@ tetris_input_command_t tetris_input_queryJoystick()
 	}
 	else if (JOYISUP)
 	{
-		return TETRIS_INCMD_ROTATE_CLOCKWISE;
+		return TETRIS_INCMD_ROT_CW;
 	}
 	else if (JOYISDOWN)
 	{
