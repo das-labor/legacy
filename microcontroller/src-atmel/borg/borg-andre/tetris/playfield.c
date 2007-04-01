@@ -111,6 +111,9 @@ void tetris_playfield_insertPiece(tetris_playfield_t *pPl,
 	// a piece can only be inserted in state TETRIS_PFS_READY
 	assert(pPl->status == TETRIS_PFS_READY);
 
+	// row mask is now meaningless
+	pPl->nRowMask = 0;
+	
 	// replace old piece
 	*ppOldPiece = pPl->pPiece;
 	pPl->pPiece = pPiece;

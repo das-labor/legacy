@@ -8,6 +8,12 @@
 #include "../scrolltext.h"
 #include "view.h"
 
+/* the API simulator and the real API have different named wait functions */ 
+#ifdef __AVR__
+	#define WAIT(ms) wait(ms)
+#else
+	#define WAIT(ms) myWait(ms)
+#endif
 
 /****************************
  * construction/destruction *
@@ -270,8 +276,8 @@ void tetris_view_blinkBorders()
 	for (i = 0; i < TETRIS_VIEW_BLINK_COUNT; ++i)
 	{
 		tetris_view_drawBorders(TETRIS_VIEW_COLORPIECE);
-		myWait(TETRIS_VIEW_BLINK_DELAY);
+		WAIT(TETRIS_VIEW_BLINK_DELAY);
 		tetris_view_drawBorders(TETRIS_VIEW_COLORBORDER);
-		myWait(TETRIS_VIEW_BLINK_DELAY);
+		WAIT(TETRIS_VIEW_BLINK_DELAY);
 	}
 }

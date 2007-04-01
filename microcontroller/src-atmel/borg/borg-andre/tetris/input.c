@@ -5,6 +5,12 @@
 #include "../joystick.h"
 #include "../util.h"
 
+/* the API simulator and the real API have different named wait functions */ 
+#ifdef __AVR__
+	#define WAIT(ms) wait(ms)
+#else
+	#define WAIT(ms) myWait(ms)
+#endif
 
 /*****************************
  *  construction/destruction *
@@ -140,7 +146,7 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 			break;
 		}
 
-		wait(TETRIS_INPUT_TICKS);
+		WAIT(TETRIS_INPUT_TICKS);
 		if (cmdReturn != TETRIS_INCMD_NONE)
 			return cmdReturn;
 	}

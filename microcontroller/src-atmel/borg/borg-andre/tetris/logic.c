@@ -63,9 +63,8 @@ void tetris ()
 	tetris_input_t *pIn = tetris_input_construct();
 	tetris_view_t *pView = tetris_view_construct(pLogic, pPl);
 
-	// runtime variables
+	// runtime variable
 	int8_t nPieceRow;
-	uint8_t nRowMask;
 
 	// initial highscore is 0
 	static uint16_t nHighscore = 0;
@@ -81,10 +80,10 @@ void tetris ()
 	tetris_logic_setHighscore(pLogic, nHighscore);   
 	tetris_logic_setPreviewPiece(pLogic, pNextPiece);
 
-	// game loop, stops if the game is over
+	// game loop, runs as long as the game is not over
 	while (tetris_playfield_getStatus(pPl) != TETRIS_PFS_GAMEOVER)
 	{
-		// what we do depends strongly on the status of the playfield
+		// what we do strongly depends on the status of the playfield
 		switch (tetris_playfield_getStatus(pPl))
 		{
 		// the playfield awaits a new piece
@@ -147,7 +146,7 @@ void tetris ()
 				tetris_playfield_rotatePiece(pPl, TETRIS_PC_ROT_CCW);
 				break;
 
-			// the player decided to make a immediate drop
+			// the player decided to make an immediate drop
 			case TETRIS_INCMD_DROP:
 				nPieceRow = tetris_playfield_getRow(pPl);
 				// emulate immediate drop
@@ -171,15 +170,13 @@ void tetris ()
 
 		// the piece has irrevocably hit the ground
 		case TETRIS_PFS_DOCKED:
-			// remove comlpete lines (if any)
+			// remove complete lines (if any)
 			tetris_playfield_removeCompleteLines(pPl);
-			// retrieve number of completes lines
-			nRowMask = tetris_playfield_getRowMask(pPl);
-			// let the logic object decide how many points the player gets
-			// and if the level gets changed 				
-			tetris_logic_removedLines(pLogic, nRowMask);			
-			tetris_input_setLevel(pIn, tetris_logic_getLevel(pLogic));
 
+			// let the logic object decide how many points the player gets
+			// and whether the level gets changed 				
+			tetris_logic_removedLines(pLogic, tetris_playfield_getRowMask(pPl));
+			tetris_input_setLevel(pIn, tetris_logic_getLevel(pLogic));
 			break;
 		}
 
