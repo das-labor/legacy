@@ -38,6 +38,7 @@ MachineDialog::MachineDialog(QWidget *parent, DrawArea *drawarea)
 	oktobus = new Oktobus();
 	if (oktobus->init("/dev/parport0")) {
 		//Fehler
+		printf("PARPORT FEHLER !!!\n");
 	}
 	stop();
 	

@@ -10,7 +10,7 @@ Oktobus::Oktobus(){
 }
 
 int Oktobus::init(QString pardev){
-#if HAVEPARPORT
+#if HAVE_PARPORT
 	fd = ppi_open(pardev.toAscii().data());
 	if (fd < 0)
 		return 1;
@@ -22,7 +22,7 @@ int Oktobus::init(QString pardev){
 
 uint8_t Oktobus::readInputs(){
 	uint8_t tmp;
-#if HAVEPARPORT
+#if HAVE_PARPORT
 
 	ppi_setall(fd, 15, PPICTRL);
 	tmp = ppi_getall(fd, PPISTATUS);	
@@ -56,13 +56,13 @@ void Oktobus::motorStep(uint8_t motor, bool dir){
 			break;
 		
 	}
-#if HAVEPARPORT
+#if HAVE_PARPORT
 	ppi_setmask(fd, PPIDATA, 0x03 << (2*motor), (motor_sequence[(unsigned char)stepcount[motor]%4]) << (2*motor) );
 #endif
 }
 
 void Oktobus::setOutput(uint8_t output, bool value) {
-#if HAVEPARPORT
+#if HAVE_PARPORT
 	if(value){
 		ppi_set(fd, PPIDATA, (1<<output));
 	}else{

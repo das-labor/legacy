@@ -1,4 +1,4 @@
-r#include <QPainter>
+#include <QPainter>
 #include <QStringListIterator>
 #include <QChar>
 #include <iostream>
