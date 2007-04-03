@@ -100,8 +100,7 @@ void tetris_view_update(tetris_view_t *pV)
 
 	tetris_playfield_status_t status = tetris_playfield_getStatus(pV->pPl);
 
-	int8_t nRow;
-	for (nRow = nStartRow; nRow >= 0; --nRow)
+	for (int8_t nRow = nStartRow; nRow >= 0; --nRow)
 	{	
 		nRowMap = tetris_playfield_getDumpRow(pV->pPl, nRow);
 		
@@ -134,8 +133,8 @@ void tetris_view_update(tetris_view_t *pV)
 		}
 		
 		nElementMask = 0x0001;
-		int8_t x;
-		for (x = 0; x < 10; ++x)
+
+		for (int8_t x = 0; x < 10; ++x)
 		{
 			unsigned char nColor;
 			if ((nRowMap & nElementMask) != 0)
@@ -171,20 +170,20 @@ void tetris_view_update(tetris_view_t *pV)
  */
 void tetris_view_showResults(tetris_view_t *pV)
 {
-	char pszResults[64];
+	char pszResults[48];
 	uint16_t nScore = tetris_logic_getScore(pV->pLogic);
 	uint16_t nHighscore = tetris_logic_getHighscore(pV->pLogic);
 	uint8_t nLines = tetris_logic_getLines(pV->pLogic);
 	
 	if (nScore <= nHighscore)
 	{
-		snprintf(pszResults, 64 * sizeof(char),
-			"</#Lines %u    Your Score %u    Highscore %u",
+		snprintf(pszResults, 48 * sizeof(char),
+			"</#Lines %u    Score %u    Highscore %u",
 			nLines, nScore, nHighscore);
 	}
 	else
 	{
-		snprintf(pszResults, 64 * sizeof(char),
+		snprintf(pszResults, 48 * sizeof(char),
 			"</#Lines %u    New Highscore %u", nLines, nScore);
 	}
 	
@@ -203,18 +202,15 @@ void tetris_view_showResults(tetris_view_t *pV)
  */
 void tetris_view_drawPreviewPiece(tetris_piece_t *pPc)
 {
-	uint8_t x;
-	uint8_t y;
-	
 	if (pPc != NULL)
 	{
 		uint8_t nColor;
 		uint16_t nElementMask = 0x0001;
 		uint16_t nPieceMap = tetris_piece_getBitfield(pPc);
 		
-		for (y = 0; y < 4; ++y)
+		for (uint8_t y = 0; y < 4; ++y)
 		{
-			for (x = 0; x < 4; ++x)
+			for (uint8_t x = 0; x < 4; ++x)
 			{
 				if ((nPieceMap & nElementMask) != 0)
 				{
@@ -231,9 +227,9 @@ void tetris_view_drawPreviewPiece(tetris_piece_t *pPc)
 	}
 	else
 	{
-		for (y = 0; y < 4; ++y)
+		for (uint8_t y = 0; y < 4; ++y)
 		{
-			for (x = 0; x < 4; ++x)
+			for (uint8_t x = 0; x < 4; ++x)
 			{
 				setpixel((pixel) {3 - x, y + 6}, TETRIS_VIEW_COLORSPACE);
 			}
@@ -272,8 +268,7 @@ void tetris_view_drawBorders(uint8_t nColor)
  */
 void tetris_view_blinkBorders()
 {
-	uint8_t i;
-	for (i = 0; i < TETRIS_VIEW_BLINK_COUNT; ++i)
+	for (uint8_t i = 0; i < TETRIS_VIEW_BLINK_COUNT; ++i)
 	{
 		tetris_view_drawBorders(TETRIS_VIEW_COLORPIECE);
 		WAIT(TETRIS_VIEW_BLINK_DELAY);
