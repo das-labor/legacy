@@ -1,6 +1,6 @@
 /* Borgtris
  * by: Christian Kroll
- * date: Sunday, 2007/04/03
+ * date: Tuesday, 2007/04/03
  */
 
 #include <stdlib.h>
