@@ -10,4 +10,5 @@ include ../../make/avr.mk
 
 .PHONY: tetris/tetris.o
 tetris/tetris.o:
-	$(MAKE) "MCU_CC=$(MCU_CC)" "MCU_LD=$(MCU_LD)" "LDFLAGS=$(LDFLAGS)" "CFLAGS=$(CFLAGS)" --directory=tetris
+	$(MAKE) "MCU_CC=$(MCU_CC)" "MCU_LD=$(MCU_LD)" "LDFLAGS=$(LDFLAGS)" \
+		"CFLAGS=$(CFLAGS) -DNDEBUG -pedantic -std=c99" --directory=tetris

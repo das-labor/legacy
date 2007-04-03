@@ -1,7 +1,7 @@
 CC = gcc
 LD = ld
 OPTIMIZE = -O0
-override CFLAGS = -g -Wall $(OPTIMIZE)
+override CFLAGS = -g -Wall -pedantic -std=c99 $(OPTIMIZE)
 
 all: tetris.o
 

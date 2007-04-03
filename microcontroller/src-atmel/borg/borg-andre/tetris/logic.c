@@ -1,6 +1,6 @@
 /* Borgtris
  * by: Christian Kroll
- * date: Sunday, 2007/04/01
+ * date: Sunday, 2007/04/03
  */
 
 #include <stdlib.h>
@@ -368,10 +368,9 @@ tetris_piece_t* tetris_logic_getPreviewPiece(tetris_logic_t *pLogic)
  */
 uint8_t tetris_logic_calculateLines(uint8_t nRowMask)
 {
-	uint8_t i;
 	uint8_t nMask = 0x0001;
 	uint8_t nLines = 0;
-	for (i = 0; i < 4; ++i)
+	for (uint8_t i = 0; i < 4; ++i)
 	{
 		if ((nMask & nRowMask) != 0)
 		{

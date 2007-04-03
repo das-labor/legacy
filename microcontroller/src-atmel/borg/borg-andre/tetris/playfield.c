@@ -178,7 +178,6 @@ uint8_t tetris_playfield_collision(tetris_playfield_t *pPl,
 	uint16_t nPieceMap = tetris_piece_getBitfield(pPl->pPiece);
 	uint16_t nPlayfieldPart;
 	uint16_t nPieceRowMap;
-	int8_t y;
 
 	// negative nRow values indicate that the piece hasn't fully entered the
 	// playfield yet which requires special treatment if the piece overlaps
@@ -204,7 +203,7 @@ uint8_t tetris_playfield_collision(tetris_playfield_t *pPl,
 	}
 
 	// here we check the part which has already entered the playfield
-	for (y = (nRow < 0) ? -nRow : 0; y < 4; ++y)
+	for (int8_t y = (nRow < 0) ? -nRow : 0; y < 4; ++y)
 	{
 		// current piece row overlaps with lower border
 		if ((y + nRow) >= pPl->nHeight)
@@ -271,8 +270,6 @@ void tetris_playfield_advancePiece(tetris_playfield_t *pPl)
 	if (tetris_playfield_collision(pPl, pPl->nColumn, pPl->nRow + 1))
 	{
 		uint16_t nPiece = tetris_piece_getBitfield(pPl->pPiece);
-		uint16_t nPieceMap;
-		int8_t i, y;
 
 		// Is the playfield filled up?
 		if ((pPl->nRow < 0) && (nPiece & (0x0FFF >> ((3 + pPl->nRow) << 2))) != 0)
@@ -284,12 +281,13 @@ void tetris_playfield_advancePiece(tetris_playfield_t *pPl)
 			// determine valid start point for dump index
 			int8_t nStartRow = ((pPl->nRow + 3) < pPl->nHeight) ? 
 				(pPl->nRow + 3) : pPl->nHeight - 1;
-			for (i = nStartRow; i >= pPl->nRow; --i)
+			for (int8_t i = nStartRow; i >= pPl->nRow; --i)
 			{
-				y = i - pPl->nRow;
+				int8_t y = i - pPl->nRow;
+				
 				// clear all bits of the piece we are not interested in and
 				// align the rest to LSB
-				nPieceMap = (nPiece & (0x000F << (y << 2))) >> (y << 2);
+				uint16_t nPieceMap = (nPiece & (0x000F << (y << 2))) >> (y << 2);
 				// shift the remaining content to the current column
 				if (pPl->nColumn >= 0)
 				{
@@ -404,10 +402,9 @@ void tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl)
 	//   for incomplete rows, both variables will be decremented
 	//   for complete rows, only i gets decremented
 	int8_t nLowestRow = nStartRow;
-	int8_t i;
 	
 	// this loop only considers rows which are affected by the piece 
-	for (i = nStartRow; i >= nStopRow; --i)
+	for (int8_t i = nStartRow; i >= nStopRow; --i)
 	{
 		// is current row a full row?
 		if ((nFullRow & pPl->dump[i]) == nFullRow)
@@ -430,7 +427,7 @@ void tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl)
 	uint8_t nComplete = nLowestRow - nStopRow + 1;
 	if (nComplete > 0)
 	{
-		for (i = nStopRow - 1; nLowestRow >= 0; --i)
+		for (int8_t i = nStopRow - 1; nLowestRow >= 0; --i)
 		{
 			// is the row we are copying from below the upper border?
 			if (i >= 0)
