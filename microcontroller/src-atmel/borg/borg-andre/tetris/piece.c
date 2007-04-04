@@ -1,7 +1,13 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <inttypes.h>
-#include <avr/pgmspace.h>
+
+#ifdef __AVR__
+	#include <avr/pgmspace.h>
+#else
+	#define PROGMEM
+#endif
+
 #include "piece.h"
 
 /*****************************
@@ -56,15 +62,20 @@ uint16_t tetris_piece_getBitfield(tetris_piece_t *pPc)
 	// Lookup table:
 	// A value in an array represents a piece in a specific angle (rotating
 	// clockwise from index 0).
-	const static uint16_t pc[][4] PROGMEM = {{0x0F00, 0x2222, 0x0F00, 0x2222}, // LINE
-	                                 {0x4E00, 0x4640, 0x0E40, 0x4C40}, // T
-	                                 {0x0660, 0x0660, 0x0660, 0x0660}, // SQUARE
-	                                 {0x2E00, 0x88C0, 0x0E80, 0xC440}, // L
-	                                 {0x8E00, 0x6440, 0x0E20, 0x44C0}, // LBACK
-	                                 {0x6C00, 0x4620, 0x6C00, 0x4620}, // S
-	                                 {0xC600, 0x4C80, 0xC600, 0x4C80}};// Z
+	const static uint16_t piece[][4] PROGMEM =
+		{{0x0F00, 0x2222, 0x0F00, 0x2222},  // LINE
+		 {0x4E00, 0x4640, 0x0E40, 0x4C40},  // T
+		 {0x0660, 0x0660, 0x0660, 0x0660},  // SQUARE
+		 {0x2E00, 0x88C0, 0x0E80, 0xC440},  // L
+		 {0x8E00, 0x6440, 0x0E20, 0x44C0},  // LBACK
+		 {0x6C00, 0x4620, 0x6C00, 0x4620},  // S
+		 {0xC600, 0x4C80, 0xC600, 0x4C80}}; // Z
 
-	return pgm_read_word(&pc[pPc->shape][pPc->angle]);
+	#ifdef __AVR__
+		return pgm_read_word(&piece[pPc->shape][pPc->angle]);
+	#else
+		return piece[pPc->shape][pPc->angle];
+	#endif
 }
 
 
