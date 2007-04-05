@@ -1,0 +1,17 @@
+<Combine name="LabCardCreator" fileversion="2.0">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry build="True" name="LabCardCreator" configuration="Debug" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry build="True" name="LabCardCreator" configuration="Release" />
+    </Configuration>
+  </Configurations>
+  <DeployTargets />
+  <StartMode startupentry="LabCardCreator" single="True">
+    <Execute type="None" entry="LabCardCreator" />
+  </StartMode>
+  <Entries>
+    <Entry filename="./LabCardCreator.mdp" />
+  </Entries>
+</Combine>
