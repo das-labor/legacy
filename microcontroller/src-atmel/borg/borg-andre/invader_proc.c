@@ -1,6 +1,5 @@
+#include <stdlib.h>
 #include "invaders2.h"
-
-#include "stdio.h"
 
 void procCannon(Cannon *cn, uPixel *shot){
   static unsigned char mv = 0;
@@ -44,21 +43,6 @@ unsigned char areAtBorder(Invaders *iv) {
 
 }
 
-
-#ifdef PETER
-#define BIT_S(var,b) ((var&(1<<b))?1:0)
-
-unsigned char random(){
-	static unsigned int muh = 0xAA;
-	unsigned char x;
-	for(x=0;x<8;x++){
-		muh = (muh<<1) ^ BIT_S(muh,1) ^ BIT_S(muh,8) 
-			^ BIT_S(muh,9) ^ BIT_S(muh,13) ^ BIT_S(muh,15);
-	}
-	return (unsigned char) muh;
-
-}
-#endif
 void procInvaders(Invaders *iv, uPixel st[MAX_SHOTS]){
 	static unsigned char mv = 0;
 
@@ -77,10 +61,10 @@ void procInvaders(Invaders *iv, uPixel st[MAX_SHOTS]){
 	mv++;
 
 	unsigned char i,y;
-	unsigned char spos = random()%16;
+	unsigned char spos = rand()%16;
 	if(spos >=BORG_WIDTH) return;
 	
-	unsigned char shoot = random();
+	unsigned char shoot = rand() % 256;
 	
 	if(shoot  < SHOOTING_RATE ) {
 		for(i = 0; i < MAX_SHOTS; ++i) {
@@ -218,8 +202,8 @@ invader_shots:
 }
 
 void procSpaceship(Spaceship *sc) {
-		unsigned char rnd1 = random();
-		unsigned char rnd2 = random();
+		unsigned char rnd1 = rand() % 256;
+		unsigned char rnd2 = rand() % 256;
 		
 		static unsigned char sct = 0;
 		

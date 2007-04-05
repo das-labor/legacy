@@ -122,7 +122,7 @@ void tetris_playfield_insertPiece(tetris_playfield_t *pPl,
 	pPl->nColumn = (pPl->nWidth - 2) / 2;
 	
 	// set vertical start position (first piece row with matter at pos. 1)
-	uint16_t nPieceMap = tetris_piece_getBitfield(pPl->pPiece);
+	uint16_t nPieceMap = tetris_piece_getBitmap(pPl->pPiece);
 	uint16_t nElementMask = 0xF000;
 	pPl->nRow = -3;
 	while ((nPieceMap & nElementMask) == 0)
@@ -175,7 +175,7 @@ uint8_t tetris_playfield_collision(tetris_playfield_t *pPl,
 	// via bit shifting and set all bits representing the border to 1.
 	// 
 	// NOTE: LSB represents the left most position. 
-	uint16_t nPieceMap = tetris_piece_getBitfield(pPl->pPiece);
+	uint16_t nPieceMap = tetris_piece_getBitmap(pPl->pPiece);
 	uint16_t nPlayfieldPart;
 	uint16_t nPieceRowMap;
 
@@ -269,7 +269,7 @@ void tetris_playfield_advancePiece(tetris_playfield_t *pPl)
 
 	if (tetris_playfield_collision(pPl, pPl->nColumn, pPl->nRow + 1))
 	{
-		uint16_t nPiece = tetris_piece_getBitfield(pPl->pPiece);
+		uint16_t nPiece = tetris_piece_getBitmap(pPl->pPiece);
 
 		// Is the playfield filled up?
 		if ((pPl->nRow < 0) && (nPiece & (0x0FFF >> ((3 + pPl->nRow) << 2))) != 0)

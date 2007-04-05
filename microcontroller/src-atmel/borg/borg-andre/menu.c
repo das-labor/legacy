@@ -1,46 +1,64 @@
 /* A game chooser for borgs
  * by: Christian Kroll
- * date: Tuesday, 2007/03/27
+ * date: Thursday, 2007/04/05
  */
 
+#include <stdlib.h>
 #include <assert.h>
-#include <stdint.h>
+#include <inttypes.h>
+
+// architecture dependent stuff
+#ifdef __AVR__
+	#include <avr/pgmspace.h>
+	#define WAIT(ms) wait(ms)
+#else
+	#define PROGMEM
+	#define WAIT(ms) myWait(ms)
+#endif
+
 #include "menu.h"
 #include "config.h"
 #include "util.h"
 #include "pixel.h"
 #include "joystick.h"
-// #include "snake.h"
+#include "snake.h"
 #include "tetris/logic.h"
 #include "invaders2.h"
 
 void menu()
 {
+	// don't let WAIT() query fire button to prevent endless circular jumps
 	waitForFire = 0;
+	
 	clear_screen(0);
 	
+	// wait as long the fire button is pressed to prevent unwanted selections
 	while (JOYISFIRE)
 	{
-		wait(10);
+		WAIT(MENU_POLL_INTERVAL);
 	}
 	
+	// set initial menu item
 	static menu_item_t miSelection = MENU_ITEM_TETRIS;
-	
+	// scroll in currently selected menu item
 	menu_animate(MENU_PREVITEM(miSelection), MENU_DIRECTION_LEFT);
 
 	while (1)
 	{
+		// the user has made her/his choice
 		if (JOYISFIRE)
 		{
+			// prevent unwanted selections
 			while (JOYISFIRE)
 			{
-				wait(MENU_POLL_INTERVAL);
+				WAIT(MENU_POLL_INTERVAL);
 			}
+			// call correponding function
 			switch (miSelection)
 			{
 				/*
 				case MENU_ITEM_SNAKE:
-					snakeJoystick();
+					snake();
 					break;
 				*/
 				case MENU_ITEM_SPACEINVADERS:
@@ -52,6 +70,7 @@ void menu()
 			}
 			break;
 		}
+		// change selected item and do some scrolling
 		else if (JOYISRIGHT)
 		{
 			menu_animate(miSelection, MENU_DIRECTION_LEFT);
@@ -62,13 +81,15 @@ void menu()
 			menu_animate(miSelection, MENU_DIRECTION_RIGHT);
 			miSelection = MENU_PREVITEM(miSelection);
 		}
+		// exit menu
 		else if (JOYISUP)
 		{
 			break;
 		}
+		// cpu friendly polling interval (for simulator)
 		else
 		{
-			wait(MENU_POLL_INTERVAL);
+			WAIT(MENU_POLL_INTERVAL);
 		}
 	}
 	
@@ -77,19 +98,23 @@ void menu()
 }
 
 
-uint8_t menu_getIconPixel(menu_item_t item,
-                          int8_t x,
-                          int8_t y)
+uint8_t menu_getIconPixel(menu_item_t item, int8_t x, int8_t y)
 {
 	// MSB is leftmost pixel
-	static uint8_t nIcon[][8] =
-		{/*{0xff, 0x81, 0xbd, 0xa5, 0xa5, 0xad, 0xa1, 0xbf},*/	// Snake icon
+	const static uint8_t nIcon[][8] PROGMEM =
+		{{0xff, 0x81, 0xbd, 0xa5, 0xa5, 0xad, 0xa1, 0xbf},	// Snake icon
 		 {0x66, 0x18, 0x3c, 0x5a, 0xff, 0xbd, 0xa5, 0x18},  // Invaders icon
 		 {0x0f, 0x0f, 0xc3, 0xdb, 0xdb, 0xc3, 0xf0, 0xf0}}; // Tetris icon
 
+	// is x within the icon or do we have reached the delimiter?
 	if (x < MENU_WIDTH_ICON)
 	{
+		// return pixel
+	#ifdef __AVR__
+		return (0x80 >> x) & pgm_read_word(&nIcon[item][y]);
+	#else
 		return (0x80 >> x) & nIcon[item][y];
+	#endif
 	}
 	else
 	{
@@ -99,8 +124,7 @@ uint8_t menu_getIconPixel(menu_item_t item,
 }
 
 
-void menu_animate(menu_item_t miInitial,
-                  menu_direction_t direction)
+void menu_animate(menu_item_t miInitial, menu_direction_t direction)
 {
 	int16_t nWait = MENU_WAIT_INITIAL;
 
@@ -116,6 +140,7 @@ void menu_animate(menu_item_t miInitial,
 	}
 	mi = (mi + MENU_ITEM_MAX - (nBack % MENU_ITEM_MAX)) % MENU_ITEM_MAX;
 	
+	// start and stop offsets for the scrolling icons (both are 0 for stills)
 	int8_t nStart, nStop;
 	if (direction == MENU_DIRECTION_STILL)
 	{
@@ -128,6 +153,7 @@ void menu_animate(menu_item_t miInitial,
 		nStop = MENU_WIDTH_ICON + MENU_WIDTH_DELIMITER;	
 	}
 	
+	// draw menu screen for each offset within the nStart/nStop range
 	int8_t i;
 	for (i = nStart; i <= nStop; ++i)
 	{
@@ -137,12 +163,14 @@ void menu_animate(menu_item_t miInitial,
 		else
 			nOffset = -i;
 
-		// offset if the left border cuts the left most icon
+		// offset of the left most icon if it is cut by the left border
 		int8_t nInitialSideOffset = (((MENU_WIDTH_ICON + MENU_WIDTH_DELIMITER) - 
 			(nWidthSide % (MENU_WIDTH_ICON + MENU_WIDTH_DELIMITER))) + nOffset +
 			(MENU_WIDTH_ICON + MENU_WIDTH_DELIMITER)) %
 			(MENU_WIDTH_ICON + MENU_WIDTH_DELIMITER);
 								
+		// an initial side offset of 0 means the leftmost icon was changed 
+		// if we are scrolling to the left, increment value for leftmost item 
 		if (direction == MENU_DIRECTION_LEFT)
 		{
 			if (nInitialSideOffset == 0)
@@ -151,6 +179,7 @@ void menu_animate(menu_item_t miInitial,
 			}
 		}
 		
+		// draw the icons from the leftmost position (line by line)
 		int8_t y;
 		for (y = 0; y < MENU_HEIGHT_ICON; ++y)
 		{
@@ -170,6 +199,8 @@ void menu_animate(menu_item_t miInitial,
 			}
 		}
 
+		// an initial side offset of 0 means the leftmost icon was changed 
+		// if we are scrolling to the right, decrement value for leftmost item 
 		if (direction == MENU_DIRECTION_RIGHT)
 		{
 			if (nInitialSideOffset == 0)
@@ -178,15 +209,15 @@ void menu_animate(menu_item_t miInitial,
 			}
 		}
 
-		wait(nWait);
+		// wait between the frames so that the animation can be seen
+		WAIT(nWait);
+		// animation speed can be throtteled
 		nWait += MENU_WAIT_INCREMENT;
 	}
 }
 
 
-void menu_setpixel(int8_t x,
-                   int8_t y,
-                   int8_t isSet)
+void menu_setpixel(int8_t x, int8_t y, int8_t isSet)
 {
 	uint8_t nColor;
 	

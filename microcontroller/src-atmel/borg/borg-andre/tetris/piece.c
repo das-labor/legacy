@@ -48,14 +48,14 @@ void tetris_piece_destruct(tetris_piece_t *pPc)
  *  piece related functions *
  ****************************/
 
-/* Function:     tetris_piece_getBitfield
+/* Function:     tetris_piece_getBitmap
  * Description:  returns bitfield representation of the piece 
  * Argument pPc: piece from which the bitfield shuld be retrieved
  * Return value: bitfield representation of the piece
  *               - nth nibble is nth row of the piece (from upper left)
  *               - the LSB of a nibble represents the left side of a row
  */
-uint16_t tetris_piece_getBitfield(tetris_piece_t *pPc)
+uint16_t tetris_piece_getBitmap(tetris_piece_t *pPc)
 {
 	assert(pPc != NULL);
 	

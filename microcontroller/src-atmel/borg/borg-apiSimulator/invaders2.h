@@ -35,7 +35,6 @@ typedef struct {
 	#include "scrolltext.h"
 	#include "joystick.h"
 
-	unsigned char random();
 	//typedef uPixel pixel;
 	#define uPixel pixel
 	//#define getPixel(_X, _Y) get_pixel( (pixel){_X, _Y})
