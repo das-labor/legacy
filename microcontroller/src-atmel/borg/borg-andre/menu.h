@@ -6,7 +6,7 @@
 #ifndef MENU_H_
 #define MENU_H_
 
-#include <stdint.h>
+#include <inttypes.h>
 
 #define MENU_WIDTH_ICON 8
 #define MENU_HEIGHT_ICON 8
@@ -15,13 +15,12 @@
 #define MENU_WAIT_INITIAL 40
 #define MENU_WAIT_INCREMENT 0
 
-
 #define MENU_NEXTITEM(item) ((item + 1) % MENU_ITEM_MAX)
 #define MENU_PREVITEM(item) ((item + MENU_ITEM_MAX - 1) % MENU_ITEM_MAX)
 
 typedef enum menu_item_t
 {
-	// MENU_ITEM_SNAKE,
+	/* MENU_ITEM_SNAKE, */
 	MENU_ITEM_SPACEINVADERS,
 	MENU_ITEM_TETRIS,
 	MENU_ITEM_MAX // fake entry to mark the end
@@ -37,18 +36,10 @@ typedef enum menu_direction_t
 menu_direction_t;
 
 void menu();
+void menu_animate(menu_item_t currentItem, menu_direction_t direction);
+uint8_t menu_getIconPixel(menu_item_t item, int8_t x, int8_t y);
+void menu_setpixel(int8_t x, int8_t y, int8_t isSet);
 
-void menu_animate(menu_item_t currentItem,
-                  menu_direction_t direction);
-                  
-uint8_t menu_getIconPixel(menu_item_t item,
-                          int8_t x,
-                          int8_t y);
-                          
-void menu_setpixel(int8_t x,
-                   int8_t y,
-                   int8_t isSet);
 
 #endif /*MENU_H_*/
-
 

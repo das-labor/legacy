@@ -112,7 +112,7 @@ void tetris_view_update(tetris_view_t *pV)
 				int8_t y = nRow - nPieceRow;
 				int8_t nColumn = tetris_playfield_getColumn(pV->pPl);
 				uint16_t nPieceMap =
-					tetris_piece_getBitfield(tetris_playfield_getPiece(pV->pPl));
+					tetris_piece_getBitmap(tetris_playfield_getPiece(pV->pPl));
 				// clear all bits of the piece we are not interested in and
 				// align the remaing row to LSB
 				nPieceMap = (nPieceMap & (0x000F << (y << 2))) >> (y << 2);
@@ -206,7 +206,7 @@ void tetris_view_drawPreviewPiece(tetris_piece_t *pPc)
 	{
 		uint8_t nColor;
 		uint16_t nElementMask = 0x0001;
-		uint16_t nPieceMap = tetris_piece_getBitfield(pPc);
+		uint16_t nPieceMap = tetris_piece_getBitmap(pPc);
 		
 		for (uint8_t y = 0; y < 4; ++y)
 		{
