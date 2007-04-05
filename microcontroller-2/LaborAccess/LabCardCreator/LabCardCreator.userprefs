@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<UserCombinePreferences filename="/home/joerg/src/labor-svn/microcontroller-2/LaborAccess/LabCardCreator/LabCardCreator.mds">
+  <Files />
+  <Views>
+    <ViewMemento Id="MonoDevelop.Ide.Gui.Pads.ProjectPad">
+      <TreeView>
+        <Node expanded="True">
+          <Node name="LabCardCreator" expanded="True">
+            <Node name="References" expanded="True" />
+            <Node name="Resources" expanded="True">
+              <Node name="Labor.png" expanded="False" selected="True" />
+            </Node>
+            <Node name="UserInterface" expanded="True" />
+          </Node>
+        </Node>
+      </TreeView>
+    </ViewMemento>
+    <ViewMemento Id="MonoDevelop.Ide.Gui.Pads.ClassPad">
+      <TreeView>
+        <Node expanded="True" />
+      </TreeView>
+    </ViewMemento>
+    <ViewMemento Id="MonoDevelop.NUnit.TestPad">
+      <TreeView>
+        <Node expanded="False" />
+      </TreeView>
+    </ViewMemento>
+  </Views>
+  <Properties>
+    <Properties>
+      <Property key="ActiveConfiguration" value="Debug" />
+      <Property key="ActiveWindow" value="" />
+    </Properties>
+  </Properties>
+</UserCombinePreferences>
