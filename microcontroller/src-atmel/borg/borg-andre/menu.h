@@ -1,6 +1,6 @@
 /* A game chooser for borgs
  * by: Christian Kroll
- * date: Tuesday, 2007/03/27
+ * date: Saturday, 2007/04/07
  */
 
 #ifndef MENU_H_
