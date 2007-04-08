@@ -195,7 +195,7 @@ uint8_t tetris_playfield_getRowMask(tetris_playfield_t *pPl);
  * Argument pPl: the playfield we want information from
  * Return value: status of the playfield (see tetris_playfield_status_t)
  */
-int8_t tetris_playfield_getStatus(tetris_playfield_t *pPl);
+tetris_playfield_status_t tetris_playfield_getStatus(tetris_playfield_t *pPl);
 
 
 /* Function:      tetris_playfield_getDumpRow
