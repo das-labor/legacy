@@ -91,9 +91,9 @@ extern unsigned char peter [8][11];
 
 
 #define MAX_SHOTS 		7
-#define MIN_SPEED		75
+#define MIN_SPEED		70
 #define SPEED_INC_RATE 	2
-#define SPEED_INC_VALUE 2
+#define SPEED_INC_VALUE 3
 #define MAX_LEVEL		3
 
 #define SHOOTING_RATE 	6

@@ -43,8 +43,9 @@ void initInvaders(Invaders* iv, unsigned char lv) {
 				for(x = 0; x < 8; ++x) {
 						iv->map[x][0] = 2;
 						iv->map[x][1] = 2;
-						iv->map[x][2] = 1;
+						iv->map[x][2] = 2;
 						iv->map[x][3] = 1;
+						iv->map[x][4] = 1;
 				
 				}
 
@@ -60,11 +61,11 @@ void initInvaders(Invaders* iv, unsigned char lv) {
 		case 1:
 			for(x = 0; x < 8; ++x) {
 					//for(y = 0; y < MAX_INVADER_HEIGHT; ++y) {
-					iv->map[x][0] = 2;
-					iv->map[x][1] = 2;
+					iv->map[x][0] = 3;
+					iv->map[x][1] = 3;
 					iv->map[x][2] = 2;
-					iv->map[x][3] = 1;
-					iv->map[x][3] = 1;	 
+					iv->map[x][3] = 2;
+					iv->map[x][4] = 1;	 
 					//}	
 				}
 		
