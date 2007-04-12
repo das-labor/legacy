@@ -11,6 +11,8 @@
 
 #include <stdio.h>
 
+uint8_t doorstate;
+
 AVRX_GCC_TASKDEF(server1, 200, 4)
 {
 	
@@ -18,7 +20,7 @@ AVRX_GCC_TASKDEF(server1, 200, 4)
 	
 	while(1){
 		request_t req;
-		reply_t reply;
+		reply_auth_t reply;
 		uint8_t size;
 		
 		size = channel_read(CHANNEL_SERVER1, (uint8_t *) &req, sizeof(request_t));
@@ -27,15 +29,32 @@ AVRX_GCC_TASKDEF(server1, 200, 4)
 		
 		if(req.type < 0x80){//requests below 0x80 don't need credentials
 			switch(req.type){
+				case REQUEST_GET_DOORSTATE:
+					channel_write(CHANNEL_SERVER1, (uint8_t *) &doorstate, 1);
+					break;
+				case REQUEST_LOCK_DOWNSTAIRS:
+				{
+					uint8_t result = RESULT_OK;
+					doorstate &= ~(STATE_DOOR_DOWNSTAIRS);
+					channel_write(CHANNEL_SERVER1, (uint8_t *) &result, 1);
+					break;
+				}
+				case REQUEST_UNLOCK_DOWNSTAIRS:
+				{
+					uint8_t result = RESULT_OK;
+					doorstate |= (STATE_DOOR_DOWNSTAIRS);
+					channel_write(CHANNEL_SERVER1, (uint8_t *) &result, 1);
+					break;
+				}
 				default:
 					break;
 			}
 		}else{
 		
 			switch (req.type){
-				case REQUEST_OPEN_CRED:{
+				case REQUEST_AUTH:{
 					strcpy(reply.nickname, "tixiv" );
-					channel_write(CHANNEL_SERVER1, (uint8_t *) &reply, sizeof(reply_t));
+					channel_write(CHANNEL_SERVER1, (uint8_t *) &reply, sizeof(reply_auth_t));
 					printf("reply\r");
 		
 				}
