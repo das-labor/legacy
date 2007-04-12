@@ -11,8 +11,10 @@ typedef struct{
 	uint8_t state;
 }ReaderMsg_t;
 
-extern MessageQueue ReaderMsgOutQueue;
 extern MessageQueue ReaderMsgInQueue;
+
+extern ReaderMsg_t ReaderMsgOut;
+
 
 #define DDR_POWER DDRA
 #define PORT_POWER PORTA

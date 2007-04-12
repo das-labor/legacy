@@ -1,6 +1,7 @@
 
 #include "reader.h"
 #include "i2csw.h"
+#include "client.h"
 
 #include "enum.h"
 
@@ -41,7 +42,6 @@
 
 TimerControlBlock   pollTimer, timeoutTimer;             // Declare the control blocks needed for timers
 
-MessageQueue ReaderMsgOutQueue;
 MessageQueue ReaderMsgInQueue;
 
 ReaderMsg_t ReaderMsgOut;
@@ -158,7 +158,7 @@ AVRX_GCC_TASKDEF(reader, 50, 3)
 			error_count ++;
 		}else{
 			ReaderMsg_t *p;
-			AvrXSendMessage(&ReaderMsgOutQueue, (MessageControlBlock*)&ReaderMsgOut);
+			AvrXSendMessage(&ClientQueue, (MessageControlBlock*)&ReaderMsgOut);
             AvrXWaitMessageAck((MessageControlBlock*)&ReaderMsgOut);
 			
 			p = (ReaderMsg_t*)AvrXWaitMessage(&ReaderMsgInQueue);
