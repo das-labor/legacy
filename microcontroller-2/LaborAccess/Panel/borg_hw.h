@@ -3,6 +3,7 @@
 
 #include "config.h"
 #include <stdint.h>
+#include <avrx.h>
 
 //Linebytes gibt die Zahl der Bytes pro Zeile in der
 //Pixmap an, also Spaltenzahl/8 aufgerundet
@@ -16,6 +17,11 @@ void watchdog_enable();
 void borg_hw_init();
 void timer0_off();
 
+typedef struct{
+	MessageControlBlock mcb;
+	uint8_t key;
+}KeyboardMsg_t;
 
+extern KeyboardMsg_t KeyboardMsg;
 
 #endif

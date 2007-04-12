@@ -7,6 +7,8 @@
 
 #include "borg_hw.h"
 
+#include "client.h"
+
 /* Steckerbelegung Flachbandkabel am Panel
  * 1 		D7
  * 2 		D6
@@ -71,6 +73,8 @@ uint8_t pixmap[NUM_ROWS][LINEBYTES];
 
 volatile uint8_t keys[8];
 
+KeyboardMsg_t KeyboardMsg;
+
 static inline void busywait() {
 	//unsigned char i;
 	//for(i=0;i<20;i++){
@@ -107,6 +111,8 @@ static inline void checkkeys(uint8_t row){
 	if(row == 0){
 		mask = 1;
 	}else{
+		uint8_t tmp, new, x;
+		uint8_t r = row-1;
 		//read keyboard cols into latch
 		DATADDR = 0;
 		CTRLPORT &= ~(1<<PIN_EO3);
@@ -114,7 +120,21 @@ static inline void checkkeys(uint8_t row){
 		busywait();
 		CTRLPORT &= ~(1<<PIN_CP3);
 		busywait();
-		keys[row-1] = DATAPIN;
+		tmp = DATAPIN;
+		new = tmp & ( ~keys[r]);
+		if(new){
+			for(x=0;x<8;x++){
+				if(new & 0x01){
+					if (AvrXTestMessageAck ((MessageControlBlock*)&KeyboardMsg)){
+						KeyboardMsg.key = (r<<4) | x;
+						AvrXIntSendMessage(&ClientQueue, (MessageControlBlock*)&KeyboardMsg);
+						break;
+					}
+				}
+				new >>= 1;
+			}
+		}
+		keys[r] = tmp;
 		CTRLPORT |= (1<<PIN_EO3);
 		busywait();
 		DATADDR = 0xFF;
@@ -197,4 +217,6 @@ void borg_hw_init(){
 	//Watchdog Timer aktivieren
 	wdt_reset();
 	wdt_enable(0x00);	// 17ms Watchdog
+	
+	AvrXAckMessage((MessageControlBlock*)&KeyboardMsg);
 }
