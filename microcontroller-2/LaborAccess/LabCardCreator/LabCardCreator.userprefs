@@ -1,16 +1,19 @@
 <?xml version="1.0"?>
 <UserCombinePreferences filename="/home/joerg/src/labor-svn/microcontroller-2/LaborAccess/LabCardCreator/LabCardCreator.mds">
-  <Files />
+  <Files>
+    <File filename="Welcome" />
+    <File filename="./MainWindow.cs" />
+    <File filename="./OpenCT.cs" />
+    <File filename="../../../../../../../usr/include/openct/openct.h" />
+  </Files>
   <Views>
     <ViewMemento Id="MonoDevelop.Ide.Gui.Pads.ProjectPad">
       <TreeView>
         <Node expanded="True">
           <Node name="LabCardCreator" expanded="True">
             <Node name="References" expanded="True" />
-            <Node name="Resources" expanded="True">
-              <Node name="Labor.png" expanded="False" selected="True" />
-            </Node>
-            <Node name="UserInterface" expanded="True" />
+            <Node name="Resources" expanded="True" />
+            <Node name="OpenCT.cs" expanded="False" selected="True" />
           </Node>
         </Node>
       </TreeView>
@@ -29,7 +32,7 @@
   <Properties>
     <Properties>
       <Property key="ActiveConfiguration" value="Debug" />
-      <Property key="ActiveWindow" value="" />
+      <Property key="ActiveWindow" value="/home/joerg/src/labor-svn/microcontroller-2/LaborAccess/LabCardCreator/OpenCT.cs" />
     </Properties>
   </Properties>
 </UserCombinePreferences>
