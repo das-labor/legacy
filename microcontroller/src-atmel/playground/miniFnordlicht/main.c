@@ -133,7 +133,6 @@ void fadeToColor(uint8_t *fadeColor, uint8_t steps) {
 
 void mainColors() {
     uint8_t i;
-	fadeToColor((uint8_t[]){255, 0, 0}, 128);
 	for (i = 0; i < 255; i++) {
 		color[0] = 255-i;
 		color[1] = i;

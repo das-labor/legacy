@@ -62,9 +62,7 @@ void snake_game() {
 		}
 		apple_se:
 
-
 		if (!dead) {
-
 			if (JOYISLEFT) {
 				dir = direction_r(dir);
 			} else if (JOYISRIGHT) {
@@ -87,16 +85,15 @@ void snake_game() {
 				pixel new_apple = (pixel) {random() % NUM_COLS, 
 										   random() % NUM_ROWS};
 				if (!get_pixel(new_apple)){
-					apples[apple_num++]=new_apple;
+					apples[apple_num++] = new_apple;
 				}
 			}
             // lšsche Ende
-			if (!apple_found) {
+			if (!apple_found && !dead) {
 				clearpixel(*tail);
 				if (++tail == pixels + 64) 
 					tail = pixels;
 			}
-			
 		} else {
 			while (tail != head) {
 				clearpixel(*tail);
