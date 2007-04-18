@@ -6,8 +6,7 @@ MCU_CC        ?= avr-gcc
 OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall
 DEFS          ?= -DF_CPU=16000000
-CFLAGS        += -g -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS)
-#CFLAGS        += -fnew-ra
+CFLAGS        += -MMD -g -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS)
 ASFLAGS       ?=  
 ASFLAGS       += -g $(DEFS) 
 LDFLAGS        = -Wl,-Map,$(OUT).map
@@ -88,3 +87,7 @@ esrec: $(OUT)_eeprom.srec
 %_eeprom.bin: %.elf
 	$(OBJCOPY) -j .eeprom --change-section-lma .eeprom=0 -O binary $< $@
 
+DEPS := $(wildcard *.d)
+ifneq ($(DEPS),)
+include $(DEPS)
+endif
