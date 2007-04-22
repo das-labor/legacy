@@ -1,0 +1,24 @@
+digraph uarthook{
+
+//	graph[orientation=landscape,rankdir=LR];
+	
+	InByte[shape=ellipse];
+	PushByte[shape=box, label="save byte on stack"];
+	sei[shape=box, label = "reenable interrupts"];
+	fork[shape=diamond, label="is hook already running?"];
+	CallHook[shape=box];
+	inqueu[shape=box];
+	QueuEmpty[shape=diamond, label="is queu empty?"];
+	end[shape=ellipse];
+
+	InByte -> PushByte;
+	PushByte -> sei;
+	sei -> fork;
+	fork -> CallHook[label = "no"];
+	fork -> inqueu[label = "yes"];
+	inqueu -> end;
+	CallHook -> QueuEmpty;
+	QueuEmpty -> CallHook[label = "no"];
+	QueuEmpty -> end[label = "yes"];
+}
+

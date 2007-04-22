@@ -1,0 +1,36 @@
+digraph prnr{
+     graph[orientation=landscape,rankdir=LR];
+     Input[shape=box];
+     Output[shape=box];
+     Pool[shape=record,label="<Low> Pool\n[0..255]|<High> Pool\n[256..511]"];
+     InH1[label=Hash];
+     InHMix[label=Hash];
+     InSelector[label="update\nselector"];
+     InSelectorState[shape=box,label="Low / High"];
+     OutH1[label=Hash];
+     OutH2[label=Hash];
+     OutSelector[label="update\nselector"];
+     OutSelectorState[shape=box,label="Low / High"];
+	  
+     /* the INPUT part of the PRNG */ 
+     Input -> InH1;
+     InH1 -> InHMix[headlabel ="b"];
+     Pool -> InHMix[headlabel ="a"];
+     InHMix -> InSelector;
+     InSelector -> Pool:Low[arrowhead=dot];
+     InSelector -> Pool:High[style=dotted,arrowhead=dot];
+  //   InSelector -> InSelectorState[headlabel=toogle];
+  //   InSelectorState -> InSelector;
+
+     /* the OUTPUT part of the PRNG */
+     Pool -> OutH1;
+     OutH1 -> OutSelector;
+     OutSelector -> Pool:Low[style=dotted,arrowhead=dot];
+     OutSelector -> Pool:High[arrowhead=dot];
+ //    OutSelector -> OutSelectorState[headlabel=toogle];
+ //    OutSelectorState -> OutSelector;	       
+     OutH1 -> OutH2;
+     OutH2 -> Output;
+
+}
+

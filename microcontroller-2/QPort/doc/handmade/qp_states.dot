@@ -1,0 +1,17 @@
+digraph prnr{
+     graph[orientation=landscape,rankdir=LR];
+     START;
+     unkeyed;
+     idle;
+     stream;
+     message;
+	 
+	 START -> unkeyed;
+	 unkeyed -> idle [label="keying"];
+	 idle -> stream [label="type=stream"]; 
+	 idle -> message [label="type=message"];
+	 idle -> unkeyed  [label="timeout"];
+	 stream -> idle [label="end-of-stream"];
+	 message -> idle [label="end-of-message"];
+	  
+}
