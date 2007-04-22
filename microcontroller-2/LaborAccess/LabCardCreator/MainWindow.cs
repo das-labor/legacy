@@ -49,16 +49,22 @@ public class MainWindow: Gtk.Window
 
 	protected virtual void OnWriteBtnClicked(object sender, System.EventArgs e)
 	{
-		ASN1 root = new ASN1(0x23);
-		ASN1 lid  = new ASN1(0x24); root.Add( lid );		
-		ASN1 nick = new ASN1(0x25); root.Add( nick );
-		ASN1 name = new ASN1(0x26); root.Add( name );
-		ASN1 perm = new ASN1(0x27); root.Add( perm );
+		ASN1 root  = new ASN1(0xE3);
+		ASN1 sid   = new ASN1(0xC0); root.Add( sid );	
+		ASN1 lid   = new ASN1(0xC1); root.Add( lid );	
+		ASN1 token = new ASN1(0xC2); root.Add( token );		
+		ASN1 nick  = new ASN1(0xC3); root.Add( nick );
+		ASN1 name  = new ASN1(0xC4); root.Add( name );
+		ASN1 perm  = new ASN1(0xC5); root.Add( perm );
+		
+		sid.Value   = new byte[4];
+		lid.Value   = new byte[2];
+		token.Value = new byte[8];
 		
 		nick.Value = System.Text.Encoding.ASCII.GetBytes( nickEntry.Text );
 		name.Value = System.Text.Encoding.ASCII.GetBytes( nameEntry.Text );
 		
-		root.SaveToFile( "/home/joerg/file.asn" );
+		// root.SaveToFile( "/home/gast/file.asn" );
 				
 		System.Console.WriteLine( root.ToString() );
 	}
