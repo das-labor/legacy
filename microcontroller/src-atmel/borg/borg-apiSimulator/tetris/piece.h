@@ -92,4 +92,5 @@ uint16_t tetris_piece_getBitmap(tetris_piece_t *pPc);
 void tetris_piece_rotate(tetris_piece_t *pPc,
                          tetris_piece_rotation_t r);
 
+
 #endif /*TETRIS_PIECE_H_*/

@@ -14,6 +14,32 @@
 #include "input.h"
 
 
+/***************************
+ * non-interface functions *
+ ***************************/
+
+/* Function:          tetris_logic_calculateLines
+ * Description:       calculates number of lines for the given row mask
+ * Argument nRowMask: row mask from which the no. of lines will be calculated
+ * Return value:      number of lines of the row mask
+ */
+uint8_t tetris_logic_calculateLines(uint8_t nRowMask)
+{
+	uint8_t nMask = 0x0001;
+	uint8_t nLines = 0;
+	for (uint8_t i = 0; i < 4; ++i)
+	{
+		if ((nMask & nRowMask) != 0)
+		{
+			++nLines;
+		}
+		nMask <<= 1;
+	}
+
+	return nLines;
+}
+
+
 /****************************
  * construction/destruction *
  ****************************/
@@ -354,30 +380,4 @@ tetris_piece_t* tetris_logic_getPreviewPiece(tetris_logic_t *pLogic)
 {
 	assert(pLogic != NULL);
 	return pLogic->pPreviewPiece;
-}
-
-
-/***************************
- * non-interface functions *
- ***************************/
-
-/* Function:          tetris_logic_calculateLines
- * Description:       calculates number of lines for the given row mask
- * Argument nRowMask: row mask from which the no. of lines will be calculated
- * Return value:      number of lines of the row mask
- */
-uint8_t tetris_logic_calculateLines(uint8_t nRowMask)
-{
-	uint8_t nMask = 0x0001;
-	uint8_t nLines = 0;
-	for (uint8_t i = 0; i < 4; ++i)
-	{
-		if ((nMask & nRowMask) != 0)
-		{
-			++nLines;
-		}
-		nMask <<= 1;
-	}
-
-	return nLines;
 }
