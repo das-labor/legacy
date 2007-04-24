@@ -12,6 +12,60 @@
 	#define WAIT(ms) myWait(ms)
 #endif
 
+
+/***********
+ * defines *
+ ***********/
+
+// amount of milliseconds that each loop cycle waits
+#define TETRIS_INPUT_TICKS 10
+
+// number of loop cycles for each level until a piece gets moved down
+#define TETRIS_INPUT_CYCLESPERLEVEL {100, 90, 81, 73, 66, 59, 53, 48, 43, 39, \
+	35, 31, 28, 25, 23, 21, 19, 17, 15, 14, 12, 11, 10, 9, 8}
+
+// here you can adjust the delays (in loop cycles) for key repeat
+#define TETRIS_INPUT_REPEAT_INITIALDELAY 20
+#define TETRIS_INPUT_REPEAT_DELAY 5
+
+
+/***************************
+ * non-interface functions *
+ ***************************/
+
+/* Function:     tetris_input_queryJoystick
+ * Description:  translates joystick movements into tetris_input_command_t
+ * Return value: see definitition of tetris_input_command_t
+ */
+tetris_input_command_t tetris_input_queryJoystick()
+{
+	if (JOYISFIRE)
+	{
+		return TETRIS_INCMD_DROP;
+	}
+	else if (JOYISLEFT)
+	{
+		return TETRIS_INCMD_LEFT;
+	}
+	else if (JOYISRIGHT)
+	{
+		return TETRIS_INCMD_RIGHT;
+	}
+	else if (JOYISUP)
+	{
+		return TETRIS_INCMD_ROT_CW;
+	}
+	else if (JOYISDOWN)
+	{
+		return TETRIS_INCMD_DOWN;
+	}
+	else
+	{
+		return TETRIS_INCMD_NONE;
+	}
+}
+
+
 /*****************************
  *  construction/destruction *
  *****************************/
@@ -181,41 +235,4 @@ void tetris_input_setLevel(tetris_input_t *pIn,
 	assert(pIn != NULL);
 	assert(nLvl <= TETRIS_INPUT_LEVELS - 1);
 	pIn->nLevel = nLvl;
-}
-
-
-/***************************
- * non-interface functions *
- ***************************/
-
-/* Function:     tetris_input_queryJoystick
- * Description:  translates joystick movements into tetris_input_command_t
- * Return value: see definitition of tetris_input_command_t
- */
-tetris_input_command_t tetris_input_queryJoystick()
-{
-	if (JOYISFIRE)
-	{
-		return TETRIS_INCMD_DROP;
-	}
-	else if (JOYISLEFT)
-	{
-		return TETRIS_INCMD_LEFT;
-	}
-	else if (JOYISRIGHT)
-	{
-		return TETRIS_INCMD_RIGHT;
-	}
-	else if (JOYISUP)
-	{
-		return TETRIS_INCMD_ROT_CW;
-	}
-	else if (JOYISDOWN)
-	{
-		return TETRIS_INCMD_DOWN;
-	}
-	else
-	{
-		return TETRIS_INCMD_NONE;
-	}
 }

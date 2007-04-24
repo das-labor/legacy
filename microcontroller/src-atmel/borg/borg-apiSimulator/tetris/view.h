@@ -6,12 +6,10 @@
 #include "piece.h"
 #include "playfield.h"
 
-#define TETRIS_VIEW_BLINK_COUNT 2
-#define TETRIS_VIEW_BLINK_DELAY 100
 
-#define TETRIS_VIEW_COLORBORDER 1
-#define TETRIS_VIEW_COLORPIECE 3
-#define TETRIS_VIEW_COLORSPACE 0
+/*********
+ * types *
+ *********/
 
 typedef struct tetris_view_t
 {
@@ -73,27 +71,5 @@ void tetris_view_update(tetris_view_t *pV);
  */
 void tetris_view_showResults(tetris_view_t *pV);
 
-
-/* Function:      tetris_view_drawPreviewPiece
- * Description:   redraws the preview window
- * Argmument pPc: pointer to the piece for the preview window (may be NULL)
- * Return value:  void
- */
-void tetris_view_drawPreviewPiece(tetris_piece_t *pPc);
-
-
-/* Function:         tetris_view_drawBorders
- * Description:      draws borders in the given color
- * Argument nColor:  the color for the border
- * Return value:     void
- */
-void tetris_view_drawBorders(uint8_t nColor);
-
-
-/* Function:        tetris_view_blinkBorders
- * Description:     makes the borders blink to notify player of a level change
- * Return value:    void
- */
-void tetris_view_blinkBorders();
 
 #endif /*TETRIS_VIEW_H_*/

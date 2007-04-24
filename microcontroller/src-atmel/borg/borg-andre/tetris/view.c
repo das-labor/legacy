@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <inttypes.h>
+#include "../config.h"
 #include "../pixel.h"
 #include "../util.h"
 #include "../scrolltext.h"
@@ -15,94 +16,51 @@
 	#define WAIT(ms) myWait(ms)
 #endif
 
-/****************************
- * construction/destruction *
- ****************************/
 
-/* Function:     tetris_view_construct
- * Description:  constructs a view for André's borg
- * Argument pPl: pointer to logic object which should be observed
- * Argument pPl: pointer to playfield which should be observed
- * Return value: pointer to a newly created view
- */
-tetris_view_t *tetris_view_construct(tetris_logic_t *pLogic,
-                                     tetris_playfield_t *pPl)
-{
-	// memory allocation
-	assert((pLogic != NULL) && (pPl != NULL));
-	tetris_view_t *pView =
-		(tetris_view_t *) malloc(sizeof(tetris_view_t));
-	assert(pView != NULL);
+/***********
+ * defines *
+ ***********/
 
-	// init
-	memset(pView, 0, sizeof(tetris_view_t));
-	pView->pLogic = pLogic;
-	pView->pPl = pPl;
+// how often should the borders blink (to indicate level up)
+#define TETRIS_VIEW_BLINK_COUNT 2
 
-	// drawing some first stuff
-	clear_screen(0);
-	tetris_view_drawBorders(TETRIS_VIEW_COLORBORDER);
+// amount of time (in ms) between color changes 
+#define TETRIS_VIEW_BLINK_DELAY 100
 
-	return pView;
-}
-
-
-/* Function:       tetris_view_destruct
- * Description:    destructs a view
- * Argument pView: pointer to the view which should be destructed
- * Return value:   void
- */
-void tetris_view_destruct(tetris_view_t *pView)
-{
-	assert(pView != NULL);
-	free(pView);
-}
+// colors of game elements
+#define TETRIS_VIEW_COLORBORDER 1
+#define TETRIS_VIEW_COLORPIECE 3
+#define TETRIS_VIEW_COLORSPACE 0
 
 
 /***************************
- *  view related functions *
+ * non-interface functions *
  ***************************/
 
-/* Function:     tetris_view_getDimensions
- * Description:  destructs a view
- * Argument w:   [out] pointer to an int8_t to store the playfield width
- * Argument h:   [out] pointer to an int8_t to store the playfield height
- * Return value: void
+/* Function:      tetris_view_drawDump
+ * Description:   redraws the dump and the falling piece (if necessary)
+ * Argmument pPl: pointer to the playfield which should be drawn
+ * Return value:  void
  */
-void tetris_view_getDimensions(int8_t *w,
-                               int8_t *h)
+void tetris_view_drawDump(tetris_playfield_t *pPl)
 {
-	assert((w != NULL) && (h != NULL));
-	*w = 10;
-	*h = 16;
-}
-
-
-/* Function:     tetris_view_update
- * Description:  informs a view about changes in the game
- * Argument pV:  pointer to the view which should be updated
- * Return value: void
- */
-void tetris_view_update(tetris_view_t *pV)
-{
-	assert(pV != NULL);
-
-	if (tetris_playfield_getRow(pV->pPl) <= -4)
+	assert(pPl != NULL);
+	if (tetris_playfield_getRow(pPl) <= -4)
 	{
 		return;
 	}
 
-	int8_t nPieceRow = tetris_playfield_getRow(pV->pPl);
+	int8_t nPieceRow = tetris_playfield_getRow(pPl);
 	int8_t nStartRow =
 		((nPieceRow + 3) < 16) ? (nPieceRow + 3) : 15;
 	uint16_t nRowMap;
 	uint16_t nElementMask;
 
-	tetris_playfield_status_t status = tetris_playfield_getStatus(pV->pPl);
+	tetris_playfield_status_t status = tetris_playfield_getStatus(pPl);
 
 	for (int8_t nRow = nStartRow; nRow >= 0; --nRow)
 	{	
-		nRowMap = tetris_playfield_getDumpRow(pV->pPl, nRow);
+		nRowMap = tetris_playfield_getDumpRow(pPl, nRow);
 		
 		// if a piece is hovering it needs to be drawn
 		if ((status == TETRIS_PFS_HOVERING) || (status == TETRIS_PFS_GAMEOVER))
@@ -110,9 +68,9 @@ void tetris_view_update(tetris_view_t *pV)
 			if ((nRow >= nPieceRow))
 			{
 				int8_t y = nRow - nPieceRow;
-				int8_t nColumn = tetris_playfield_getColumn(pV->pPl);
+				int8_t nColumn = tetris_playfield_getColumn(pPl);
 				uint16_t nPieceMap =
-					tetris_piece_getBitmap(tetris_playfield_getPiece(pV->pPl));
+					tetris_piece_getBitmap(tetris_playfield_getPiece(pPl));
 				// clear all bits of the piece we are not interested in and
 				// align the remaing row to LSB
 				nPieceMap = (nPieceMap & (0x000F << (y << 2))) >> (y << 2);
@@ -149,51 +107,8 @@ void tetris_view_update(tetris_view_t *pV)
 			nElementMask <<= 1;
 		}
 	}
-	
-	// draw preview piece
-	tetris_view_drawPreviewPiece(tetris_logic_getPreviewPiece(pV->pLogic));
-	
-	// visual feedback to inform about a level change
-	uint8_t nLevel = tetris_logic_getLevel(pV->pLogic);
-	if (nLevel != pV->nOldLevel)
-	{
-		tetris_view_blinkBorders();
-		pV->nOldLevel = nLevel;
-	}
 }
 
-
-/* Function:     tetris_view_showResults
- * Description:  shows results after game
- * Argument pV:  pointer to the view which should show the reults
- * Return value: void
- */
-void tetris_view_showResults(tetris_view_t *pV)
-{
-	char pszResults[48];
-	uint16_t nScore = tetris_logic_getScore(pV->pLogic);
-	uint16_t nHighscore = tetris_logic_getHighscore(pV->pLogic);
-	uint8_t nLines = tetris_logic_getLines(pV->pLogic);
-	
-	if (nScore <= nHighscore)
-	{
-		snprintf(pszResults, 48 * sizeof(char),
-			"</#Lines %u    Score %u    Highscore %u",
-			nLines, nScore, nHighscore);
-	}
-	else
-	{
-		snprintf(pszResults, 48 * sizeof(char),
-			"</#Lines %u    New Highscore %u", nLines, nScore);
-	}
-	
-	scrolltext(pszResults);
-}
-
-
-/***************************
- * non-interface functions *
- ***************************/
 
 /* Function:      tetris_view_drawPreviewPiece
  * Description:   redraws the preview window
@@ -275,4 +190,120 @@ void tetris_view_blinkBorders()
 		tetris_view_drawBorders(TETRIS_VIEW_COLORBORDER);
 		WAIT(TETRIS_VIEW_BLINK_DELAY);
 	}
+}
+
+
+/****************************
+ * construction/destruction *
+ ****************************/
+
+/* Function:     tetris_view_construct
+ * Description:  constructs a view for André's borg
+ * Argument pPl: pointer to logic object which should be observed
+ * Argument pPl: pointer to playfield which should be observed
+ * Return value: pointer to a newly created view
+ */
+tetris_view_t *tetris_view_construct(tetris_logic_t *pLogic,
+                                     tetris_playfield_t *pPl)
+{
+	// memory allocation
+	assert((pLogic != NULL) && (pPl != NULL));
+	tetris_view_t *pView =
+		(tetris_view_t *) malloc(sizeof(tetris_view_t));
+	assert(pView != NULL);
+
+	// init
+	memset(pView, 0, sizeof(tetris_view_t));
+	pView->pLogic = pLogic;
+	pView->pPl = pPl;
+
+	// drawing some first stuff
+	clear_screen(0);
+	tetris_view_drawBorders(TETRIS_VIEW_COLORBORDER);
+
+	return pView;
+}
+
+
+/* Function:       tetris_view_destruct
+ * Description:    destructs a view
+ * Argument pView: pointer to the view which should be destructed
+ * Return value:   void
+ */
+void tetris_view_destruct(tetris_view_t *pView)
+{
+	assert(pView != NULL);
+	free(pView);
+}
+
+
+/***************************
+ *  view related functions *
+ ***************************/
+
+/* Function:     tetris_view_getDimensions
+ * Description:  destructs a view
+ * Argument w:   [out] pointer to an int8_t to store the playfield width
+ * Argument h:   [out] pointer to an int8_t to store the playfield height
+ * Return value: void
+ */
+void tetris_view_getDimensions(int8_t *w,
+                               int8_t *h)
+{
+	assert((w != NULL) && (h != NULL));
+	*w = 10;
+	*h = 16;
+}
+
+
+/* Function:     tetris_view_update
+ * Description:  informs a view about changes in the game
+ * Argument pV:  pointer to the view which should be updated
+ * Return value: void
+ */
+void tetris_view_update(tetris_view_t *pV)
+{
+	assert(pV != NULL);
+	
+	// draw dump
+	tetris_view_drawDump(pV->pPl);	
+	
+	// draw preview piece
+	tetris_view_drawPreviewPiece(tetris_logic_getPreviewPiece(pV->pLogic));
+	
+	// visual feedback to inform about a level change
+	uint8_t nLevel = tetris_logic_getLevel(pV->pLogic);
+	if (nLevel != pV->nOldLevel)
+	{
+		tetris_view_blinkBorders();
+		pV->nOldLevel = nLevel;
+	}
+}
+
+
+/* Function:     tetris_view_showResults
+ * Description:  shows results after game
+ * Argument pV:  pointer to the view which should show the reults
+ * Return value: void
+ */
+void tetris_view_showResults(tetris_view_t *pV)
+{
+	char pszResults[48];
+	uint16_t nScore = tetris_logic_getScore(pV->pLogic);
+	uint16_t nHighscore = tetris_logic_getHighscore(pV->pLogic);
+	uint8_t nLines = tetris_logic_getLines(pV->pLogic);
+	
+	if (nScore <= nHighscore)
+	{
+		snprintf(pszResults, 48 * sizeof(char),
+			"</#Lines %u    Score %u    Highscore %u",
+			nLines, nScore, nHighscore);
+	}
+	else
+	{
+		snprintf(pszResults, 48 * sizeof(char),
+			"</#Lines %u    New Highscore %u", nLines, nScore);
+	}
+	
+	scrolltext(pszResults);
 }
