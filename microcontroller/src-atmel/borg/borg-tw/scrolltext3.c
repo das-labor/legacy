@@ -19,9 +19,10 @@
 #define MAX_FONTS 1
 font fonts[MAX_FONTS];
 #define MAX_SPECIALCOLORS 3
-unsigned char PROGMEM colorTable[MAX_SPECIALCOLORS*NUM_ROWS] = {1, 1, 2, 3, 3, 2, 1, 1,   
-                                                                3, 3, 2, 1, 1, 2, 3, 3,    
-                                                                3, 3, 2, 2, 3, 3, 2, 2
+unsigned char PROGMEM colorTable[MAX_SPECIALCOLORS*NUM_ROWS] = {1, 1, 2, 3, 3, 2, 1,   
+                                                                3, 3, 2, 1, 1, 2, 3,    
+                                                                3, 3, 2, 2, 3, 3, 2,
+// 8te Row aus Colortable gelöscht wegen compiler warning
 };
 
 
@@ -82,7 +83,7 @@ enum waitfor_e{
 struct blob_t_struct;
 typedef struct blob_t_struct{
 	struct blob_t_struct * next, * last;
-	char *str;
+	unsigned char *str;
 	char *commands;
 	enum waitfor_e waitfor;
 	int sizex;

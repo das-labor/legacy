@@ -3,14 +3,14 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <stdio.h>
-
 #include "config.h"
 #include "scrolltext.h"
+#include "uart.h"
 // #include "programm.h"
 // #include "matrix.h"
 #include "borg_hw.h"
 #include "pixel.h"
-#include "prng.h"
+// #include "prng.h"
 // #include "persistentCounter.h"
 
 jmp_buf newmode_jmpbuf;
@@ -22,6 +22,7 @@ int main (void){
 	// srandom(percnt_get());
 	// percnt_inc();
 	borg_hw_init();
+	uart_init();
 	sei();
 
 	mode = setjmp(newmode_jmpbuf);
