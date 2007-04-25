@@ -64,7 +64,7 @@ ISR(SIG_OVERFLOW0)
 	
 	rowshow(row, plane);
 	
-	PORTB ^= (1<<PB2);
+//	PORTB ^= (1<<PB2);   // Toggel Board Led on Interupt
 	
 	if(++row == NUM_ROWS){
 		row = 0;
@@ -99,11 +99,10 @@ void borg_hw_init(){
 	ROWPORT = 0x00;
 	ROWDDR |= 0xFE; // 0=rxd, 1-7=rows (7)
 
-	COLDDR |= (1<<PB2);
+	COLDDR |= (1<<PB2); // Set Status Led Pin Output
 
 	DDRC = 0x18;
 	
 
 	timer0_on();
 }
-

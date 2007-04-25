@@ -61,7 +61,7 @@ unsigned char get_pixel(pixel p){
 
 
 unsigned char get_next_pixel(pixel p, direction dir){
-	pixel tmp;
+	pixel tmp = {0,0}; 		//Initialisieren wegen compiler warning
 	switch (dir){
 		case right:
 			tmp = (pixel){p.x-1, p.y};
