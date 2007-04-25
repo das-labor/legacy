@@ -1,0 +1,213 @@
+HANDY ONE-LINERS FOR RUBY                             November 16, 2005
+compiled by David P Thomas <davidpthomas@gmail.com>         version 1.0
+
+Latest version of this file can be found at:
+    http://www.fepus.net/ruby1line.txt
+
+Last Updated: Wed Nov 16 08:35:02 CST 2005
+
+FILE SPACING:
+
+# double space a file
+    $ cat <file> | ruby -pe 'puts'
+# triple space a file
+    $ cat <file> | ruby -pe '2.times {puts}'
+# undo double-spacing (w/ and w/o whitespace in lines)
+    $ cat <file> | ruby -lne 'BEGIN{$/="\n\n"}; puts $_'
+    $ cat <file> | ruby -ne 'BEGIN{$/="\n\n"}; puts $_.chomp'
+    $ cat <file> | ruby -e 'puts STDIN.readlines.to_s.gsub(/\n\n/, "\n")'
+
+NUMBERING:
+
+# number each line of a file (left justified).
+    $ cat <file> | ruby -ne 'printf("%-6s%s", $., $_)'
+# number each line of a file (right justified).
+    $ cat <file> | ruby -ne 'printf("%6s%s", $., $_)'
+# number each line of a file, only print non-blank lines
+    $ cat <file> | ruby -e 'while gets; end; puts $.'
+# count lines (emulates 'wc -l')
+    $ cat <file> | ruby -ne 'END {puts $.}'
+    $ cat <file> | ruby -e 'while gets; end; puts $.'
+
+TEXT CONVERSION AND SUBSTITUTION:
+
+# convert DOS newlines (CR/LF) to Unix format (LF)
+# - strip newline regardless; re-print with unix EOL
+    $ cat <file> | ruby -ne 'BEGIN{$\="\n"}; print $_.chomp'
+
+# convert Unix newlines (LF) to DOS format (CR/LF)
+# - strip newline regardless; re-print with dos EOL
+    $ cat <file> | ruby -ne 'BEGIN{$\="\r\n"}; print $_.chomp'
+
+# delete leading whitespace (spaces/tabs/etc) from beginning of each line
+    $ cat <file> | ruby -pe 'gsub(/^\s+/, "")'
+
+# delete trailing whitespace (spaces/tabs/etc) from end of each line
+# - strip newline regardless; replace with default platform record separator
+    $ cat <file> | ruby -pe 'gsub(/\s+$/, $/)'
+
+# delete BOTH leading and trailing whitespace from each line
+    $ cat <file> | ruby -pe 'gsub(/^\s+/, "").gsub(/\s+$/, $/)'
+
+# insert 5 blank spaces at the beginning of each line (ie. page offset)
+    $ cat <file> | ruby -pe 'gsub(/%/, "   ")'
+    FAILS! $ cat <file> | ruby -pe 'gsub(/%/, 5.times{putc " "})'
+
+# align all text flush right on a 79-column width
+    $ cat <file> | ruby -ne 'printf("%79s", $_)'
+
+# center all text in middle of 79-column width
+    $ cat <file> | ruby -ne 'puts $_.chomp.center(79)'
+    $ cat <file> | ruby -lne 'puts $_.center(79)'
+
+# substitute (find and replace) "foo" with "bar" on each line
+    $ cat <file> | ruby -pe 'gsub(/foo/, "bar")'
+
+# substitute "foo" with "bar" ONLY for lines which contain "baz"
+    $ cat <file> | ruby -pe 'gsub(/foo/, "bar") if $_ =~ /baz/'
+
+# substitute "foo" with "bar" EXCEPT for lines which contain "baz"
+    $ cat <file> | ruby -pe 'gsub(/foo/, "bar") unless $_ =~ /baz/'
+
+# substitute "foo" or "bar" or "baz".... with "baq"
+    $ cat <file> | ruby -pe 'gsub(/(foo|bar|baz)/, "baq")'
+
+# reverse order of lines (emulates 'tac') IMPROVE
+    $ cat <file> | ruby -ne 'BEGIN{@arr=Array.new}; @arr.push $_; END{puts @arr.reverse}'
+
+# reverse each character on the line (emulates 'rev')
+    $ cat <file> | ruby -ne 'puts $_.chomp.reverse'
+    $ cat <file> | ruby -lne 'puts $_.reverse'
+
+# join pairs of lines side-by-side (like 'paste')
+    $ cat <file> | ruby -pe '$_ = $_.chomp + " " + gets if $. % 2'
+
+# if a line ends with a backslash, append the next line to it
+    $ cat <file> | ruby -pe 'while $_.match(/\\$/); $_ = $_.chomp.chop + gets; end'
+    $ cat <file> | ruby -e 'puts STDIN.readlines.to_s.gsub(/\\\n/, "")'
+
+# if a line begins with an equal sign, append it to the previous line (Unix)
+    $ cat <file> | ruby -e 'puts STDIN.readlines.to_s.gsub(/\n=/, "")'
+
+# add a blank line every 5 lines (after lines 5, 10, 15, etc)
+    $ cat <file> | ruby -pe 'puts if $. % 6 == 0'
+
+SELECTIVE PRINTING OF CERTAIN LINES
+
+# print first 10 lines of a file (emulate 'head')
+    $ cat <file> | ruby -pe 'exit if $. > 10'
+
+# print first line of a file (emulate 'head -1')
+    $ cat <file> | ruby -pe 'puts $_; exit'
+
+# print the last 10 lines of a file (emulate 'tail'); NOTE reads entire file!
+    $ cat <file> | ruby -e 'puts STDIN.readlines.reverse!.slice(0,10).reverse!'
+
+# print the last 2 lines of a file (emulate 'tail -2'); NOTE reads entire file!
+    $ cat <file> | ruby -e 'puts STDIN.readlines.reverse!.slice(0,2).reverse!'
+
+# print the last line of a file (emulates 'tail -1')
+    $ cat <file> | ruby -ne 'line = $_; END {puts line}'
+
+# print only lines that match a regular expression (emulates 'grep')
+    $ cat <file> | ruby -pe 'next unless $_ =~ /regexp/'
+
+# print only lines that DO NOT match a regular expression (emulates 'grep')
+    $ cat <file> | ruby -pe 'next if $_ =~ /regexp/'
+
+# print the line immediately before a regexp, but not the regex matching line
+    $ cat <file> | ruby -ne 'puts @prev if $_ =~ /regex/; @prev = $_;'
+
+# print the line immediately after a regexp, but not the regex matching line
+    $ cat <file> | ruby -ne 'puts $_ if @prev =~ /regex/; @prev = $_;'
+
+# grep for foo AND bar AND baz (in any order)
+    $ cat <file> | ruby -pe 'next unless $_ =~ /foo/ && $_ =~ /bar/ && $_ =~ /baz/'
+
+# grep for foo AND bar AND baz (in order)
+    $ cat <file> | ruby -pe 'next unless $_ =~ /foo.*bar.*baz/'
+
+# grep for foo OR bar OR baz
+    $ cat <file> | ruby -pe 'next unless $_ =~ /(foo|bar|baz)/'
+
+# print paragraph if it contains regexp; blank lines separate paragraphs
+    $ cat <file> | ruby -ne 'BEGIN{$/="\n\n"}; print $_ if $_ =~ /regexp/'
+
+# print paragraph if it contains foo AND bar AND baz (in any order); blank lines separate paragraphs
+    $ cat <file> | ruby -ne 'BEGIN{$/="\n\n"}; print $_ if $_ =~ /foo/ && $_ =~ /bar/ && $_ =~ /baz/'
+
+# print paragraph if it contains foo AND bar AND baz (in order); blank lines separate paragraphs
+    $ cat <file> | ruby -ne 'BEGIN{$/="\n\n"}; print $_ if $_ =~ /(foo.*bar.*baz)/'
+
+# print paragraph if it contains foo OR bar OR baz; blank lines separate paragraphs
+    $ cat <file> | ruby -ne 'BEGIN{$/="\n\n"}; print $_ if $_ =~ /(foo|bar|baz)/'
+
+# print only lines of 65 characters or greater
+    $ cat <file> | ruby -pe 'next unless $_.chomp.length >= 65'
+    $ cat <file> | ruby -lpe 'next unless $_.length >= 65'
+
+# print only lines of 65 characters or less
+    $ cat <file> | ruby -pe 'next unless $_.chomp.length < 65'
+    $ cat <file> | ruby -lpe 'next unless $_.length < 65'
+
+# print section of file from regex to end of file
+    $ cat <file> | ruby -pe '@found=true if $_ =~ /regex/; next unless @found'
+
+# print section of file based on line numbers (eg. lines 2-7 inclusive)
+    $ cat <file> | ruby -pe 'next unless $. >= 2 && $. <= 7'
+
+# print line number 52
+    $ cat <file> | ruby -pe 'next unless $. == 52'
+
+# print every 3rd line starting at line 4
+    $ cat <file> | ruby -pe 'next unless $. >= 4 && $. % 3 == 0'
+
+# print section of file between two regular expressions, /foo/ and /bar/
+    $ cat <file> | ruby -ne '@found=true if $_ =~ /foo/; next unless @found; puts $_; exit if $_ =~ /bar/'
+
+SELECTIVE DELETION OF CERTAIN LINES
+
+# print all of file except between two regular expressions, /foo/ and /bar/
+    $ cat <file> | ruby -ne '@found = true if $_ =~ /foo/; puts $_ unless @found; @found = false if $_ =~ /bar/'
+
+# print file and remove duplicate, consecutive lines from a file (emulates 'uniq')
+    $ cat <file> | ruby -ne 'puts $_ unless $_ == @prev; @prev = $_'
+
+# print file and remove duplicate, non-consecutive lines from a file (careful of memory!)
+    $ cat <file> | ruby -e 'puts STDIN.readlines.sort.uniq!.to_s'
+
+# print file except for first 10 lines
+    $ cat <file> | ruby -pe 'next if $. <= 10'
+
+# print file except for last line
+    $ cat <file> | ruby -e 'lines=STDIN.readlines; puts lines[0,lines.size-1]'
+
+# print file except for last 2 lines
+    $ cat <file> | ruby -e 'lines=STDIN.readlines; puts lines[0,lines.size-2]'
+
+# print file except for last 10 lines
+    $ cat <file> | ruby -e 'lines=STDIN.readlines; puts lines[0,lines.size-10]'
+
+# print file except for every 8th line
+    $ cat <file> | ruby -pe 'next if $. % 8 == 0'
+
+# print file except for blank lines
+    $ cat <file> | ruby -pe 'next if $_ =~ /^\s*$/'
+
+# delete all consecutive blank lines from a file except the first
+    $ cat <file>  | ruby -e 'BEGIN{$/=nil}; puts STDIN.readlines.to_s.gsub(/\n(\n)+/, "\n\n")'
+
+# delete all consecutive blank lines from a file except for the first 2
+    $ cat <file>  | ruby -e 'BEGIN{$/=nil}; puts STDIN.readlines.to_s.gsub(/\n(\n)+/, "\n\n")'
+
+# delete all leading blank lines at top of file
+    $ cat <file> | ruby -pe '@lineFound = true if $_ !~ /^\s*$/; next if !@lineFound'
+
+
+If you have any additional scripts to contribute or if you find errors
+in this document, please send an e-mail to the compiler.  Indicate the
+version of ruby you used, the operating system it was compiled for, and
+the nature of the problem.  Various scripts in this file were written or
+contributed by:
+
+ David P Thomas <dthomas@orbitz.com>    # author of this document

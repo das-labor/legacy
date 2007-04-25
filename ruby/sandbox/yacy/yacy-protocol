@@ -1,0 +1,179 @@
+SVN: svn://svn.berlios.de/yacy/trunk
+
+Konventionen in diesem Dokument
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- mit "~" unterstrichene Textteile sind eine Überschrift (ach was?!) für einen Absatz
+- die 'Gesendet'-Sektion enthält den (HTTP-)Teil, den der lokale Peer versendet, dementsprechend gibt die 'Emfpangen'-Sektion den vom
+  remote (YaCy-)Server gelieferten Teil an
+- GROßGESCHRIEBENE Einträge sind kein Klartext im Protokoll/Format, es sei denn, ein Backslash ist vorrangestellt, sondern enthalten
+  den Sinn der an dortiger Stelle befindlichen Daten und/oder werden in einer zu jeder Sektion gehörenden 'Legende' erklärt
+- in "Anführungszeichen" stehende Begriffe sind als Hinweis auf einen Absatz, der speziell auf diesen Teil eingeht. Dieser kann mit der
+  'Suchen'-Funktion des favorisierten Anzeigeprogramms bestimmt gefunden werden
+- '???' weist auf noch nicht Geklärtes hin, diese Teile werden bei entsprechend langen Tagen eventuell nachgereicht werden :P
+
+
+HANDSHAKE: /yacy/hello.html, /yacy/query.html
+~~~~~~~~~
+/yacy/hello.html ist das Servlet der Wahl, die dazugehörige Java-Datei enthält alles Nötige. Dennoch folgend ein kurzer Abriss.
+Ein Handshake von lokal zu remote läuft so ab, dass der eigene Peer seinen Seed an den zu pingenden Remote Peer sendet und damit
+Informationen über eine kleine (selbstdefinierbare) Anzahl an YaCy-Peers, sowie detailiertere Informationen über den gehandshaketen
+Peer erhält.
+
+Wie sämtliche Kommunikation zwischen den Peers, bzw. die Protokollebene, läuft dabei über HTTP-Requests ab.
+Der Handshake besteht nur aus einer POST-HTTP-Anfrage an den remote Peer nach folgendem Muster.
+
+Gesendet:
+POST /yacy/hello.html
+iam=PEERHASH
+seed=MYSEED
+count=COUNT
+key=KEY
+[pattern=PATTERN]
+
+Empfangen:
+version=VERSION
+uptime=UPTIME
+yourip=HOST
+yourtype={junior|senior|principal}
+mytime=TIME IN UTC
+SEEDS
+
+Legende:
+PEERHASH : 12-Zeichen eigener "Peerhash"
+MYSEED : Der eigene Seed, wie er auch im Seed-Upload File gespeichert wird, siehe de/anomic/yacy/yacySeed.java:537
+COUNT : Die Anzahl an Seeds anderer YaCy Peers, die der gehandshakete Peer zurückliefern soll
+KEY: 
+PATTERN : unused
+VERSION : YaCy Version und SVN Revision des Peers in folgendem Format: x.yyy0/zzzz, wobei 'x' für die major Version,
+          'y' für die minor Version und 'z' für die SVN Revision, auf der der Remote Peer läuft, steht
+UPTIME : ???
+HOST : entweder die IP, die der gesendete Seed enthält, wenn sie mit dem bereits gespeicherten Seed auf remote Seite
+       einstimmt, oder der statische Hostname (auch Teil des gesendeten Seeds) (siehe "StaticIP"), oder die IP, die der
+       remote HTTPd aus der Anfrage extrahiert; abgearbeitet in dieser Reihenfolge
+SEEDS : Eine CR/LF-getrennte Liste, die die geforderte Anzahl (zufällig gewählter?) Seeds von remote Peers enthält       
+
+
+Suche: /yacy/search.html
+~~~~~
+/yacy/search.html von remote Peers wird aufgerufen, wenn eine Remote Suche auf dem lokalen Peer gestartet wird, um die
+Suchergebnisse von anderen Peers abzuholen. Dabei werden nicht nur die Hashes der Suchworte übermittelt, sondern auch
+Ranking-Attribute, die maximale Suchzeit und maximal zurückzuliefernden Matches.
+Der remote Peer sucht dann in seiner Datenbank (inklusive eventuell vorhandenem RAM- und anderer Caches) passende Einträge
+heraus, rankt sie nach den übermittelten Parametern und liefert sie an den anfragenden Peer. Eine eventuell vorhandene Blue-List
+wird dabei nicht ausgewertet.
+Die Blue-List (yacy.blue im Hauptverzeichnis) ist eine Liste, die Suchworte im Plain-Text enthält, wonach der lokale Peer nicht
+suchen darf, selbst wenn eine Suche danach stattfindet. Bei remote-Suchen wird diese Datei - wie oben erwähnt - allerdings nicht
+zu Rate gezogen.
+
+DHT: /yacy/transfer.html, /yacy/transferRWI.html, /yacy/transferURL.html
+~~~
+Die DHT-Distribution ist dafür zuständig, im lokalen Index vorhandene Words an "passende" Peers zu schicken, die dann bei einer
+Suchanfrage angesprochen werden. Im Endeffekt soll DHT es verwirklichen, dass ein bestimmter Peer nur bestimmte Words vorhält,
+sodass bei einer Suchanfrage nur die Peers angesprochen werden müssen, die für den Word-'Bereich' zuständig sind.
+
+0. Zuständigkeit
+Momentan wird ein zuständiger Peer nach dem Hash des Wortes ausgewählt. Das heißt, der Wordhash sollte so gut wie möglich mit dem
+Peerhash übereinstimmen. Dabei wird die Differenz zwischen Word- und Peerhash mit dem in /de/anomic/yacy/yacyDHTAction.java:247
+dargestellten Algorithmus bestimmt. Wichtig bei der Auswahl, dass es nicht egal ist, ob der Peerhash "links" oder "rechts"
+(Der Base64-Zeichensatz wird dabei rotiert => als Kreis dargestellt) des Wordhashes ist, d.h. der Abstand negativ oder positiv
+ist: Ein Peer ist nur dann für die Ablage des Wortes X geeignet, wenn der Abstand Peerhash->Wordhash größer als 0 ist.
+Des Weiteren werden aktuell maximal 3 Peers als 'zuständig' gewählt; der Redundanzfaktor liegt bei 3. Erst wenn alle 3 Peers die
+versendeten Words erfolgreich (Bestätigung des remote Peers jeweils benötigt) verlaufen ist, so dürfen die Words (der Chunk) aus
+der lokalen DB gelöscht werden.
+Bricht der Transfer zu einem Peer ab, so wird der nächst-passende Peer (mit einer größeren DHT-Distance) gewählt, wobei neben den
+ursprünglichen drei Gewählten ('primary') 7 fallback-Peers bereitstehen.
+
+Orbiter deutete auf dem 23C3 an, dass das aktuelle DHT-Konzept geändert werden sollte, und zwar in die Richtung, dass nicht nur der
+Peerhash für die Zuständigkeit ausschlaggebend ist, sondern auch die Häufigkeit des Wortes. Demnach sollen 'demnächst' Worte, die
+auf vielen URLs vorkommen, auch an mehrere Peers verteilt werden, um die Last bei einer Suchanfrage von dem (im Idealfall) einen
+Peer, der das Wort vorhält, zu nehmen. Diese Neuerung wird aber sicherlich noch einige Monate auf sich warten lassen.
+
+1. Empfang
+2. Versand
+3. Ausnahmefälle
+
+Remote Crawls: ???, /yacy/CrawlReceipt.html
+~~~~~~~~~~~~~
+Remote Crawls sind eine Option, die beim Starten eines neuen Crawl-Auftrages angegeben werden kann; dies ist nur bei YaCy so geregelt und
+keine zwingende Vorraussetzung. Sie bieten die Möglichkeit, Crawls des maximalen Crawl-Levels an remote Peers zu verteilen, sodass diese
+die Seite dann herunterladen und indexieren. Nur Crawls des maximalen Crawl-Levels, weil damit die Last, Remote Crawls zu verteilen, beim
+Initiator des Crawls bleibt und Remote Crawls somit nicht für DoS verwendet werden können.
+Der Remote Peer, der einen Remote Crawl ausführt, sollte die URL durch den ganzen Validierungsprozess laufen lassen, der in "Crawling"
+beschrieben wird, um unnötige doppelte Indexierungen zu vermeiden. Wurde der Remote-Crawl erfolgreich durchgeführt, so muss dem Initiator
+eine Rückmeldung darüber gesendet werden werden (siehe 1.1, 2.1).
+
+1. Remote Crawls versenden
+2. Remote Crawls empfangen
+3. Remote Crawl Receipt
+4. Ausnahmefälle
+
+Blacklist Transfer: /yacy/list.html
+~~~~~~~~~~~~~~~~~~
+Blacklisteinträge aus Blacklists eines remote Peers geladen werden. Alle auf dem remote Peer als 'shared' markierte Blacklists werden bei
+einer Anfrage an den lokalen Peer übermittelt, welcher dann die eventuell doppelten Einträge aussortieren und die Option, alle neuen Einträge
+in ie lokale Blacklist einzutragen, anbieten solllte. Diese Funktion könnte beispielsweise auch für automatische Blacklist-Abgleiche mit
+vertrauenswürdigen ('befreundeten') Peers genutzt werden.
+
+1. Format
+
+Peer Messages: /yacy/message.html
+~~~~~~~~~~~~~
+Peers können Nachrichten miteinander austauschen. Diese können im "Wikicode" formatiert werden.
+
+WikiCode
+~~~~~~~~
+Elements:
+- ''text'' : <strong>text</strong>
+- '''text''' : <em>text</em>
+- '''''text''''' : <strong><em>text</em></strong>
+- ==text== : <h1>text</h1>
+- ===text=== : <h2>text</h2>
+- ====text==== : <h3>text</h3>
+- *text : <ul><li>text</li></ul>
+- #text : <ol><li>text</li></ol>
+- ;text1:text2 : <dl><dt>text1</dt><dd>text2</dd></dl>
+- <pre>text</pre> : <pre>text</pre>
+-  text : <p class="box">text</p> (Text in Kasten)
+- ;text : <p class="indended">text</p> (intended Text)
+- <code>text</code> : <code>text</code>
+
+Es wird angestrebt, den WikiCode kompatibel mit MediaWikis Code zu halten.
+
+
+Seed
+~~~~
+Der Seed eines Peers enthält alle Informationen über einen Peer, die im Netzwerk verfügbar sind.
+
+Folgende Werte sind vorhanden: /de/anomic/yacy/yacySeed.java
+- Hash => Peerhash des Peers als 12-stelliger String
+- Name => selbstgegebener Name des Peers
+- BDate => Datum/Zeit, wann der Peer das erste Mal gestartet wurde, Format: ???
+- UTC => aktuelles Datum/Uhrzeit des Peers
+- ISpeed => Indexierungsgeschwindigkeit in Pages/Min (PPM)
+- Uptime => Anzahl Minuten, die der Peer bereits läuft
+- LCount => Anzahl Links, die der Peer gespeichert hat (LURLs)
+- NCount => Anzahl Links, die der Peer 'noticed', aber nicht indexiert hat
+- ICount => Anzahl indexierter Links
+- SCount => Anzahl Seeds, die der Peer 'kennt' (gespeichert hat)
+- CCount => Anzahl Peers, die eine Verbindung zu dem Peer halten
+- Version => YaCy-Version des Peers
+- IP => IP des Peers im Format a.b.c.d (a-d: 0-255); existiert nur, wenn bereits ein "Handshake" durchgeführt wurde
+- Port => Port auf dem der Peer läuft (standardmäßig 8080)
+- PeerType => Typ des Peers (virgin/junior/senior/principal)
+- IPType => static/dynamic (je nach Häufigkeit, mit der der Peer die IP wechselt, siehe ???)
+- USpeed => von YaCy berechnete Upload-Geschwindigkeit
+- CRWCnt => Anzahl eigener "Citation Rank"s
+- CRTCnt => Anzahl anderer "Citation Rank"s
+- Flags => "Flags" des Peers
+- sI => gesendete Words
+- rI => empfangene Words
+- sU => gesendete URLs
+- sI => empfangene URLs
+
+Zusammensetzung des Seeds:
+Alle oben aufgelisteten Key/Value-Pairs werden in eine komma-separierte Liste folgenden Formats geschrieben: {KEY=VALUE,KEY=VALUE,[...]}
+Dieser String wird UTF-8 codiert, dann Base64 verschlüsselt. Es wird ihm "b|" vorangestellt und mit CR/LF wird er beendet. Das Ergebnis ist
+eine Seed-Zeile, die von anderen YaCy Peers geparst und somit der Kontakt zu diesem Peer hergestellt werden kann.
+Beispiel:
+b|e0hhc2g9ekxYRmY1bFR0ZVV2LElQVHlwZT0mZW1wdHk7LFRhZ3M9LElQPTYyLjc1LjIxNC4xMTMsUG9ydD05MDkwLFVwdGltZT0xMTY1LHJJPTE3NzQ1Mzg4NyxWZXJzaW9uPTAuNDkyMDMwNTQsUGVlclR5cGU9cHJpbmNpcGFsLFVUQz0rMDEwMCxzST04OTUwODQwNixMYXN0U2Vlbj0yMDA2MTIwODE0NTAwNCxOYW1lPWx1bGFiYWQtMSxDQ291bnQ9Mi4wLFNDb3VudD00NyxDUlRDbnQ9MCxuZXdzPSxVU3BlZWQ9MCxDUldDbnQ9MCxCRGF0ZT0yMDA1MDgwNTE5MTk0NyxyVT0yMDE1NjEwMSxMQ291bnQ9MTYwNTMzMSxJQ291bnQ9MjM5MjY5OSxzVT0yODA3MDg4MyxJU3BlZWQ9MixzZWVkVVJMPWh0dHA6Ly93d3cubHVsYWJhZC5kZS9zZWVkLnR4dCxOQ291bnQ9MCxGbGFncz1ub29vfQ
+
