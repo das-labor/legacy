@@ -1,0 +1,19 @@
+# css_graphs
+ruby script/plugin install http://topfunky.net/svn/plugins/css_graphs
+ruby script/generate css_graphs
+
+# markaby
+script/plugin install http://code.whytheluckystiff.net/svn/markaby/trunk
+# or the gem => gem install markaby
+
+# ssl requirement plugin
+script/plugin install http://dev.rubyonrails.org/svn/rails/plugins/ssl_requirement
+
+# beast, great forum. only 500 lines..
+svn co http://svn.techno-weenie.net/projects/beast/ beast-svn
+
+# file_column
+ruby script/plugin install http://opensvn.csie.org/rails_file_column/plugins/file_column/trunk vendor/plugins/file_column
+
+#
+script/plugin install https://svn.jkraemer.net/svn/projects/ferret-demo/trunk/vendor/plugins/acts_as_ferret/
