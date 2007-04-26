@@ -591,65 +591,40 @@ require 'date'; Date.parse('June 12 2005').year
 
 3.times { p 'duck'*3+"ing on Ruby's door!"}; p 'O'+'h'*4+' yeah'+'!'*4
 
-system("netstat -d -n -f inet | grep \"ESTABLISHED\" | grep \".5223\" | grep -v 127 | awk '{print $5}'")
-system("netstat -d -n -f inet")
-
+IO.popen ("which ruby") { |f| p f.gets }
+output = IO.popen("which ruby").readlines
 output = %x{which ruby}
-result = `which ruby`
+output = `which ruby`
+system("which ruby") # only true|false
 
 
 "(1,2,3,4,5)".slice(1..-2).split(',')
-
-#lines=procs.split("\n")
-#lines=lines[1..-1]
 
 logger.debug("My object is " + obj + ". Cool!") if logger.debug?
 
 fl = 79.4788888; sprintf("%.3f", fl).to_f
 (79.478888 * 1000).round.to_f / 1000
 
-# mysqldump --user=user --password=pw --opt --all-databases --quote-names > db-file.sql
-
 c = a.merge!(b) { |key, old_value, new_value| old_value + new_value }
 
-ruby -e "print \"temp on #{Time.now.strftime(\"%H:%M:%S\")}\n\";lines = IO.popen('~/utools/_env/bin/tempmonitor -a -l').readlines;print lines[0];print lines[1];y=lines[2].split(/:/);print \"Hard Disk: #{y[1]}\""
-
-FileTest.directory?("..")
-File.exists?("..")
+FileTest.directory?("folder") # true|false
+File.exists?("file_or_folder") # true|false
 
 directories, files = Dir['*'].partition{|d| File.directory? d}
 
 def a(&a);yield(a,10);end;a{|a,i|(i==1)?(print "los gehts!\n"):(print "#{i-=1}...";a.call(a,i))}
 
-system("cd ..;open agile.pdf")
-
 if s.count('.') == 1 #check if a string contains only one (not more) dot?
-
-
-# scp -r marvin@host:/home/marvin/jabberlogs ~/incoming
-
-
-f = IO.popen("which rails"); p f.readlines.to_s
-#f = IO.popen("curl -o schnappi.mp3 http://www.soulretrieval.de/trash/schnappi_fsk_18.mp3"); p f.readlines.to_s
-system('curl -O http://www.soulretrieval.de/trash/schnappi_fsk_1.mp3')
 
 ruby -e "puts 'nil brei'.unpack('x6a2X8ax2axa2X3axaX5aXa').to_s"
 
 puts "Parent is #{Process.pid}"
-IO.popen ("date") { |f| puts f.gets }
-IO.popen("-") {|f| $stderr.puts "#{Process.pid} is here, f is #{f}"}
-
-
-
 
 "I like Ruby!".split("").each{|c|print c;$>.flush;sleep(0.05)}
 
-IO.readlines("ls")
-
 ((:janfri.to_s*2).to_i(36)+'8joj609n02kw'.to_i(36)).to_s(36).tr!('x',' ').capitalize!
 
-require 'md5'
-md5 = MD5.new(fti.link).hexdigest()
+require 'md5'; MD5.new('foo').hexdigest
 
 'nil brei'.unpack('x6a2X8ax2axa2X3axaX5aXa').to_s
 
@@ -658,21 +633,10 @@ item.employee.full_name unless item.employee.nil?
 
 "aa, bb,cc,  dd".split(',').collect! { |x| x.strip }
 
-
-
-
 def local_ip 
   ifconfig = %x(which /sbin/ifconfig).strip 
   %x(ifconfig).split("lo").shift =~ /inet addr\:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s/ 
   $1 
-end
-
-
-#bash ps -er -o "user,pid,rss,%cpu,%mem,command"
-
-#Dir['*.{mp3,MP3,Mp3,mP3}'].each do |mp3| #slower..
-Dir['*.[mM][pP]3'].each do |mp3|
-  puts mp3, "\n"
 end
 
 require 'Mp3Info'
@@ -686,11 +650,5 @@ Dir['**.[mM][pP]3'].each do |mp3|
 end
 
 "#{x/3600}:#{x/60%60}:#{x%60}" # x seconds into time..
-
-request.env['REMOTE_HOST']
-request.env["HTTP_REFERER"]
-request.env['SERVER_ADDR']
-
-
 
 "thisIsCamelCase".gsub(/[A-Z]/) {|match| "_#{match.downcase}" }

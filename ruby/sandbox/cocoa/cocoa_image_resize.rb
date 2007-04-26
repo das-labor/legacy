@@ -8,11 +8,6 @@ OSX::NSApplication.sharedApplication
 class OSX::NSImage
   def writeJPEG(filename)
     bits = OSX::NSBitmapImageRep.alloc.initWithData(self.TIFFRepresentation)
-    #x = bits.bitmapData
-    #p x
-    #p x
-    #print bits
-    #p bits
     data = bits.representationUsingType_properties(OSX::NSTIFFFileType, nil)
     data.writeToFile_atomically(filename, false)
   end

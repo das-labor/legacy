@@ -11,33 +11,35 @@ end
 
 sp.close               
 
-
-int ledPin = 9;
-int analogPin = 3;
-int val = 0;
-int incomingByte = 0;
-
-void setup()
-{
-  Serial.begin(9600);
-  pinMode(ledPin, OUTPUT);
-}
-
-void loop()
-{
-  //val = analogRead(analogPin);
-  //analogWrite(ledPin, val / 4);
-  analogWrite(ledPin, 100);
-  
-  //if (Serial.available() > 0) {
-	//	incomingByte = Serial.read();
-  //              //analogWrite(ledPin, incomingByte);
-  //              if (incomingByte > 0) {
-  //                analogWrite(ledPin, incomingByte);
-  //                Serial.print(incomingByte);
-  //                incomingByte = 0;
-  //                Serial.print(incomingByte);
-  //              }
-	//}
-  
-}
+##
+##  arduino.c
+##
+#   int ledPin = 9;
+#   int analogPin = 3;
+#   int val = 0;
+#   int incomingByte = 0;
+#   
+#   void setup()
+#   {
+#     Serial.begin(9600);
+#     pinMode(ledPin, OUTPUT);
+#   }
+#   
+#   void loop()
+#   {
+#     //val = analogRead(analogPin);
+#     //analogWrite(ledPin, val / 4);
+#     analogWrite(ledPin, 100);
+#     
+#     //if (Serial.available() > 0) {
+#   	//	incomingByte = Serial.read();
+#     //              //analogWrite(ledPin, incomingByte);
+#     //              if (incomingByte > 0) {
+#     //                analogWrite(ledPin, incomingByte);
+#     //                Serial.print(incomingByte);
+#     //                incomingByte = 0;
+#     //                Serial.print(incomingByte);
+#     //              }
+#   	//}
+#     
+#   }
