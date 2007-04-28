@@ -5,11 +5,16 @@ extern jmp_buf newmode_jmpbuf;
 
 #include "config.h"
 #include "joystick.h"
-
+#include <avr/eeprom.h>
+#include "uart.h"
 
 #ifndef F_CPU
 #define F_CPU 8000000
 #endif
+
+char UartInTxt [SCROLLTEXT_STRING_SIZE];
+uint8_t string_ready_state = 0;
+
 
 void wait(int ms){
 
@@ -28,6 +33,10 @@ void wait(int ms){
 	OCR2 = (F_CPU/128000);	//1000Hz 
 	for(;ms>0;ms--){
 
+		
+		
+/*		Joystickbehandlung Alt
+
 		if (waitForFire) {
 			//PORTJOYGND &= ~(1<<BITJOY0);
 			//PORTJOYGND &= ~(1<<BITJOY1);		
@@ -42,13 +51,37 @@ void wait(int ms){
 			}
 		#endif
 		}
+*/
+		//wait for compare match flag
+		while(!(TIFR&0x80)){
 
-		while(!(TIFR&0x80));	//wait for compare match flag
+			char input_char;
+			static uint8_t Input_Char_Pointer;
+			
+			if (uart_getc_nb (& input_char)) {
+				switch (input_char) {     
+					case 'y' :   //Start of Text Code (0x02) // Break (0x00)
+						Input_Char_Pointer = 0;
+						string_ready_state = 0;
+						break;
+				
+					case 0x0D :   //Cariiage Return (CR)
+						
+						string_ready_state = 1;
+						UartInTxt[Input_Char_Pointer + 1] = 0; // Set NULL Termination
+						break;
+			
+					default :
+						UartInTxt[Input_Char_Pointer] = input_char;
+						Input_Char_Pointer++;
+						break;
+				}
+			}
+	
+		}
 		TIFR=0x80;		//reset flag
 	}
-
 }
-
 #define BIT_S(var,b) ((var&(1<<b))?1:0)
 
 /* not used in favour of stdio's random 
@@ -62,4 +95,3 @@ unsigned char random(){
 	return (unsigned char) muh;
 }
 */
-
