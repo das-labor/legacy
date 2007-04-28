@@ -2,7 +2,6 @@
 
 
 #include <avr/io.h>
-#include <avr/signal.h>
 #include <avr/interrupt.h>
 #include <stdlib.h>
 
@@ -66,7 +65,7 @@ SIGNAL(SIG_UART_RECV) {
 void uart_init() {
 	PORTD |= 0x01;				//Pullup an RXD an
 
-	UCSRB |= (1<<TXEN);			//UART TX einschalten
+//	UCSRB |= (1<<TXEN);			//UART TX einschalten
 	UCSRC |= (1<<URSEL)|(3<<UCSZ0);		//Asynchron 8N1
 
 	UCSRB |= ( 1 << RXEN );			//Uart RX einschalten

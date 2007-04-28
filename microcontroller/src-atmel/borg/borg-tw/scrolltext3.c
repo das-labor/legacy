@@ -335,15 +335,15 @@ blob_t * setupBlob(unsigned char * str){
 	blob->sizex = getLen(blob);
 	if(*blob->commands == '<'){
 		blob->posx = 0;
-		blob->posy = (NUM_ROWS-blob->sizey)/2;
+		blob->posy = ((NUM_ROWS-blob->sizey)/2)-1;//borg tw patch -1
 	}else if(*blob->commands == '>'){
 		blob->posx = NUM_COLS+blob->sizex;
-		blob->posy = (NUM_ROWS-blob->sizey)/2;
+		blob->posy = ((NUM_ROWS-blob->sizey)/2)-1;//borg tw patch -1
 	}else if(*blob->commands == 'd'){
 		blob->posy = -blob->sizey;
 		blob->posx = (NUM_COLS - 2 + blob->sizex)/2;
 	}else if(*blob->commands == 'u'){
-		blob->posy = blob->sizey;
+		blob->posy = blob->sizey-1;//borg tw patch -1
 		blob->posx = (NUM_COLS - 2 + blob->sizex)/2;
 	}
 	

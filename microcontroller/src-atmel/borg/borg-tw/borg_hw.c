@@ -100,7 +100,7 @@ void borg_hw_init(){
 	ROWDDR |= 0xFE; // 0=rxd, 1-7=rows (7)
 
 	COLDDR |= (1<<PB2); // Set Status Led Pin Output
-
+	COLPORT|= (1<<PB2); // Set Hi, Led OFF
 	DDRC = 0x18;
 	
 
