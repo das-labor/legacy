@@ -25,6 +25,20 @@
 #include "tetris/logic.h"
 #include "invaders2.h"
 
+
+// defines
+#define MENU_WIDTH_ICON 8
+#define MENU_HEIGHT_ICON 8
+#define MENU_WIDTH_DELIMITER 2
+#define MENU_POLL_INTERVAL 10
+#define MENU_TIMEOUT_ITERATIONS 2000
+#define MENU_WAIT_INITIAL 40
+#define MENU_WAIT_INCREMENT 0
+
+#define MENU_NEXTITEM(item) ((item + 1) % MENU_ITEM_MAX)
+#define MENU_PREVITEM(item) ((item + MENU_ITEM_MAX - 1) % MENU_ITEM_MAX)
+
+
 void menu()
 {
 	// don't let WAIT() query fire button to prevent endless circular jumps
@@ -42,6 +56,8 @@ void menu()
 	static menu_item_t miSelection = MENU_ITEM_TETRIS;
 	// scroll in currently selected menu item
 	menu_animate(MENU_PREVITEM(miSelection), MENU_DIRECTION_LEFT);
+	
+	uint16_t nMenuIterations = MENU_TIMEOUT_ITERATIONS;
 
 	while (1)
 	{
@@ -75,21 +91,25 @@ void menu()
 		{
 			menu_animate(miSelection, MENU_DIRECTION_LEFT);
 			miSelection = MENU_NEXTITEM(miSelection);
+			nMenuIterations = MENU_TIMEOUT_ITERATIONS;
 		}
 		else if (JOYISLEFT)
 		{
 			menu_animate(miSelection, MENU_DIRECTION_RIGHT);
 			miSelection = MENU_PREVITEM(miSelection);
+			nMenuIterations = MENU_TIMEOUT_ITERATIONS;
 		}
 		// exit menu
 		else if (JOYISUP)
 		{
 			break;
 		}
-		// cpu friendly polling interval (for simulator)
+		// return if timeout is reached
 		else
 		{
 			WAIT(MENU_POLL_INTERVAL);
+			if (--nMenuIterations == 0)
+				break;
 		}
 	}
 	
