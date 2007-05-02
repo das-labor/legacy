@@ -1,6 +1,6 @@
 /* A game chooser for borgs
  * by: Christian Kroll
- * date: Saturday, 2007/04/07
+ * date: Thursday, 2007/04/05
  */
 
 #include <stdlib.h>
@@ -31,8 +31,8 @@
 #define MENU_HEIGHT_ICON 8
 #define MENU_WIDTH_DELIMITER 2
 #define MENU_POLL_INTERVAL 10
-#define MENU_TIMEOUT_ITERATIONS 2000
-#define MENU_WAIT_INITIAL 40
+#define MENU_TIMEOUT_ITERATIONS 2000;
+#define MENU_WAIT_INITIAL 20
 #define MENU_WAIT_INCREMENT 0
 
 #define MENU_NEXTITEM(item) ((item + 1) % MENU_ITEM_MAX)
@@ -56,7 +56,7 @@ void menu()
 	static menu_item_t miSelection = MENU_ITEM_TETRIS;
 	// scroll in currently selected menu item
 	menu_animate(MENU_PREVITEM(miSelection), MENU_DIRECTION_LEFT);
-	
+
 	uint16_t nMenuIterations = MENU_TIMEOUT_ITERATIONS;
 
 	while (1)
@@ -69,14 +69,12 @@ void menu()
 			{
 				WAIT(MENU_POLL_INTERVAL);
 			}
-			// call correponding function
+			// call corresponding function
 			switch (miSelection)
 			{
-				/*
 				case MENU_ITEM_SNAKE:
-					snake();
+					snake_game();
 					break;
-				*/
 				case MENU_ITEM_SPACEINVADERS:
 					borg_invaders();
 					break;
@@ -121,8 +119,8 @@ void menu()
 uint8_t menu_getIconPixel(menu_item_t item, int8_t x, int8_t y)
 {
 	// MSB is leftmost pixel
-	const static uint8_t nIcon[][8] PROGMEM =
-		{//{0xff, 0x81, 0xbd, 0xa5, 0xa5, 0xad, 0xa1, 0xbf},  // Snake icon
+	static uint8_t nIcon[][8] PROGMEM =
+		{{0xff, 0x81, 0xbd, 0xa5, 0xa5, 0xad, 0xa1, 0xbf},	// Snake icon
 		 {0x66, 0x18, 0x3c, 0x5a, 0xff, 0xbd, 0xa5, 0x18},  // Invaders icon
 		 {0x0f, 0x0f, 0xc3, 0xdb, 0xdb, 0xc3, 0xf0, 0xf0}}; // Tetris icon
 
