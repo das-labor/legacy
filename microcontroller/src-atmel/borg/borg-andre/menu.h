@@ -1,6 +1,6 @@
 /* A game chooser for borgs
  * by: Christian Kroll
- * date: Saturday, 2007/04/07
+ * date: Tuesday, 2007/03/27
  */
 
 #ifndef MENU_H_
@@ -10,7 +10,7 @@
 
 typedef enum menu_item_t
 {
-	/* MENU_ITEM_SNAKE, */
+	MENU_ITEM_SNAKE,
 	MENU_ITEM_SPACEINVADERS,
 	MENU_ITEM_TETRIS,
 	MENU_ITEM_MAX // fake entry to mark the end
