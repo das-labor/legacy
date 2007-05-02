@@ -1,7 +1,6 @@
 #include "pixel.h"
 #include "joystick.h"
-
-#define SNAKE_JOY_SENSE  2
+#include <stdint.h>
 
 extern unsigned char random();
 
@@ -11,7 +10,8 @@ void snake_game() {
 	pixel * tail = &pixels[0];
 	pixel old_head;
 	pixel apples[10];
-	
+	uint8_t joy, joy_old, joy_cmd;
+
 	unsigned char x, y, dead = 0;
 	unsigned char apple_num = 0;
 	direction dir = up;
@@ -40,50 +40,46 @@ void snake_game() {
 		++head;
 		if (head == pixels + 64) 
 				head = pixels;
-				
-		dead_cnt = 0;
+			
+		if (joy_cmd == right) {
+				dir = direction_r(dir);
+				dir = direction_r(dir);
+				dir = direction_r(dir);
+				joy_cmd = 0xff;
+		} else if (joy_cmd == left) {
+				dir = direction_r(dir);
+				joy_cmd = 0xff;
+		} 
+			
+		// kopf einen weiter bewegen
+		*head = next_pixel(old_head, dir);
+						
 		apple_found = 0;	
 		
 		// prüfen ob man auf nen Apfel drauf ist 
 		for (j = 0; j < apple_num; j++) {
-			unsigned char i;
-			for (i = 0; i < 4; i++) {
-				if ( (next_pixel(old_head, (direction) i).x == apples[j].x) && 
-				     (next_pixel(old_head, (direction) i).y == apples[j].y) ){
-					apple_found = 1;
-					dir = (direction) i;
-					for(; j < apple_num - 1; j++) {
-						apples[j] = apples[j+1];
-					}
-					apple_num--;
-					goto apple_se;
+			if ( ( head->x == apples[j].x) && 
+			     (head->y == apples[j].y) ){
+				apple_found = 1;
+				for(; j < apple_num - 1; j++) {
+					apples[j] = apples[j+1];
 				}
+				apple_num--;
+				goto apple_se;
 			}
+		}
+		if (get_pixel(*head)) {
+			dead = 1;
 		}
 		apple_se:
 
-		if (!dead) {
-			if (JOYISLEFT) {
-				dir = direction_r(dir);
-			} else if (JOYISRIGHT) {
-				dir = direction_r(dir);
-				dir = direction_r(dir);
-				dir = direction_r(dir);
-			} 
-							
-			// kopf einen weiter bewegen
-			*head = next_pixel(old_head, dir);
-			if (get_pixel(*head)) {
-				dead = 1;
-				dead_cnt++;
-			}
-			
+		if (!dead) {	
 			setpixel(*head, 3);
 			
 			// setze neue Äpfel
 			if ( (apple_num < 9) && (random() < 10) ) {
-				pixel new_apple = (pixel) {random() % NUM_COLS, 
-										   random() % NUM_ROWS};
+				pixel new_apple = (pixel) {(random() % (NUM_COLS-2))+1, 
+										   (random() % (NUM_ROWS-2))+1};
 				if (!get_pixel(new_apple)){
 					apples[apple_num++] = new_apple;
 				}
@@ -111,7 +107,19 @@ void snake_game() {
 				clearpixel(apples[j]);
 			}
 		}
-		wait (100);
+		for(j=0;j<20;j++){
+			if(JOYISLEFT){
+				joy = left;
+			}else if(JOYISRIGHT){
+				joy = right;
+			}else{
+				joy = 0xff;
+			}
+			if(joy != joy_old){
+				joy_cmd = joy;
+			}
+			joy_old = joy;
+			wait (5);
+		}
 	}
-
 }
