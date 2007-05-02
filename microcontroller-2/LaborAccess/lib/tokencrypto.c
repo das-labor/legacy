@@ -5,7 +5,7 @@
 #include <avr/eeprom.h>
 #include "prng.h"
 #include "hmac-sha256.h"
-
+#include "tokencrypto.h"
 
 uint8_t dbkey[DBKEY_SIZE] EEMEM = {DB_KEY};
 
