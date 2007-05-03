@@ -78,12 +78,12 @@ tetris_input_t *tetris_input_construct()
 {
 	tetris_input_t *pIn = (tetris_input_t *)malloc(sizeof(tetris_input_t));
 	assert(pIn != NULL);
-	
+
 	pIn->cmdLast = TETRIS_INCMD_NONE;
 	pIn->nLevel = 0;
 	pIn->nLoopCycles = 0;
 	pIn->nRepeatCount = -TETRIS_INPUT_REPEAT_INITIALDELAY;
-	
+
 	return pIn;
 }
 
@@ -193,7 +193,7 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 				cmdReturn = TETRIS_INCMD_NONE;
 			}
 			break;
-			
+
 		case TETRIS_INCMD_NONE:
 			pIn->cmdLast = cmdReturn = TETRIS_INCMD_NONE;
 			pIn->nRepeatCount =  -TETRIS_INPUT_REPEAT_INITIALDELAY;
@@ -236,3 +236,4 @@ void tetris_input_setLevel(tetris_input_t *pIn,
 	assert(nLvl <= TETRIS_INPUT_LEVELS - 1);
 	pIn->nLevel = nLvl;
 }
+

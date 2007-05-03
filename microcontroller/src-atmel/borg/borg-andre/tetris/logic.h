@@ -140,3 +140,4 @@ tetris_piece_t* tetris_logic_getPreviewPiece(tetris_logic_t *pLogic);
 
 
 #endif /*TETRIS_LOGIC_H_*/
+
