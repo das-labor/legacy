@@ -148,7 +148,7 @@ void menu_animate(menu_item_t miInitial, menu_direction_t direction)
 
 	// space between left border and the icon in the middle
 	int8_t nWidthSide = (NUM_COLS - MENU_WIDTH_ICON) / 2;
-		
+
 	// determine the icon at the leftmost position
 	menu_item_t mi = miInitial + MENU_ITEM_MAX;
 	int8_t nBack = nWidthSide / (MENU_WIDTH_ICON + MENU_WIDTH_DELIMITER);
@@ -157,7 +157,7 @@ void menu_animate(menu_item_t miInitial, menu_direction_t direction)
 		++nBack;
 	}
 	mi = (mi + MENU_ITEM_MAX - (nBack % MENU_ITEM_MAX)) % MENU_ITEM_MAX;
-	
+
 	// start and stop offsets for the scrolling icons (both are 0 for stills)
 	int8_t nStart, nStop;
 	if (direction == MENU_DIRECTION_STILL)
@@ -170,7 +170,7 @@ void menu_animate(menu_item_t miInitial, menu_direction_t direction)
 		nStart = 1;
 		nStop = MENU_WIDTH_ICON + MENU_WIDTH_DELIMITER;	
 	}
-	
+
 	// draw menu screen for each offset within the nStart/nStop range
 	int8_t i;
 	for (i = nStart; i <= nStop; ++i)
@@ -186,7 +186,7 @@ void menu_animate(menu_item_t miInitial, menu_direction_t direction)
 			(nWidthSide % (MENU_WIDTH_ICON + MENU_WIDTH_DELIMITER))) + nOffset +
 			(MENU_WIDTH_ICON + MENU_WIDTH_DELIMITER)) %
 			(MENU_WIDTH_ICON + MENU_WIDTH_DELIMITER);
-								
+
 		// an initial side offset of 0 means the leftmost icon was changed 
 		// if we are scrolling to the left, increment value for leftmost item 
 		if (direction == MENU_DIRECTION_LEFT)
@@ -196,7 +196,7 @@ void menu_animate(menu_item_t miInitial, menu_direction_t direction)
 				mi = MENU_NEXTITEM(mi);
 			}
 		}
-		
+
 		// draw the icons from the leftmost position (line by line)
 		int8_t y;
 		for (y = 0; y < MENU_HEIGHT_ICON; ++y)
@@ -207,7 +207,7 @@ void menu_animate(menu_item_t miInitial, menu_direction_t direction)
 			for (x = 0; x < NUM_COLS; ++x)
 			{
 				int8_t nPixel = menu_getIconPixel(miCurrent, nIconOffset, y);
-				
+
 				menu_setpixel(x, ((NUM_ROWS - MENU_HEIGHT_ICON) / 2) + y, nPixel);
 				if (++nIconOffset >= (MENU_WIDTH_ICON + MENU_WIDTH_DELIMITER))
 				{
@@ -238,11 +238,11 @@ void menu_animate(menu_item_t miInitial, menu_direction_t direction)
 void menu_setpixel(int8_t x, int8_t y, int8_t isSet)
 {
 	uint8_t nColor;
-	
+
 	// mirror mirror on the wall, what's the quirkiest API of them all...
 	x = NUM_COLS - 1 - x;
 	uint8_t nMiddle = (NUM_COLS - MENU_WIDTH_ICON) / 2; 
-	
+
 	if (isSet != 0)
 		{
 		if ((x >= nMiddle - MENU_WIDTH_DELIMITER) &&
@@ -264,7 +264,7 @@ void menu_setpixel(int8_t x, int8_t y, int8_t isSet)
 	{
 		nColor = 0;
 	}
-	
+
 	setpixel((pixel) {x, y}, nColor);
 }
 
