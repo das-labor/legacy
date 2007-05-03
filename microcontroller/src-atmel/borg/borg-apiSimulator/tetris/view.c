@@ -61,7 +61,7 @@ void tetris_view_drawDump(tetris_playfield_t *pPl)
 	for (int8_t nRow = nStartRow; nRow >= 0; --nRow)
 	{	
 		nRowMap = tetris_playfield_getDumpRow(pPl, nRow);
-		
+
 		// if a piece is hovering it needs to be drawn
 		if ((status == TETRIS_PFS_HOVERING) || (status == TETRIS_PFS_GAMEOVER))
 		{
@@ -89,7 +89,7 @@ void tetris_view_drawDump(tetris_playfield_t *pPl)
 				nRowMap |= nPieceMap;
 			}
 		}
-		
+
 		nElementMask = 0x0001;
 
 		for (int8_t x = 0; x < 10; ++x)
@@ -122,7 +122,7 @@ void tetris_view_drawPreviewPiece(tetris_piece_t *pPc)
 		uint8_t nColor;
 		uint16_t nElementMask = 0x0001;
 		uint16_t nPieceMap = tetris_piece_getBitmap(pPc);
-		
+
 		for (uint8_t y = 0; y < 4; ++y)
 		{
 			for (uint8_t x = 0; x < 4; ++x)
@@ -264,13 +264,13 @@ void tetris_view_getDimensions(int8_t *w,
 void tetris_view_update(tetris_view_t *pV)
 {
 	assert(pV != NULL);
-	
+
 	// draw dump
 	tetris_view_drawDump(pV->pPl);	
-	
+
 	// draw preview piece
 	tetris_view_drawPreviewPiece(tetris_logic_getPreviewPiece(pV->pLogic));
-	
+
 	// visual feedback to inform about a level change
 	uint8_t nLevel = tetris_logic_getLevel(pV->pLogic);
 	if (nLevel != pV->nOldLevel)
@@ -292,7 +292,7 @@ void tetris_view_showResults(tetris_view_t *pV)
 	uint16_t nScore = tetris_logic_getScore(pV->pLogic);
 	uint16_t nHighscore = tetris_logic_getHighscore(pV->pLogic);
 	uint8_t nLines = tetris_logic_getLines(pV->pLogic);
-	
+
 	if (nScore <= nHighscore)
 	{
 		snprintf(pszResults, 48 * sizeof(char),
@@ -304,6 +304,7 @@ void tetris_view_showResults(tetris_view_t *pV)
 		snprintf(pszResults, 48 * sizeof(char),
 			"</#Lines %u    New Highscore %u", nLines, nScore);
 	}
-	
+
 	scrolltext(pszResults);
 }
+

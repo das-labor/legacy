@@ -21,15 +21,15 @@ tetris_playfield_t *tetris_playfield_construct(int8_t nWidth,
 {
 	assert((nWidth >= 4) && (nWidth <= 16));
 	assert((nHeight >= 4) && (nHeight <= 124));
-	
+
 	tetris_playfield_t *pPlayfield =
 		(tetris_playfield_t*) malloc(sizeof(tetris_playfield_t));
-		
+
 	if (pPlayfield != NULL)
 	{
 		// allocating mem for dump array
 		pPlayfield->dump = (uint16_t*) calloc(nHeight, sizeof(uint16_t));
-			
+
 		if (pPlayfield->dump != NULL)
 		{
 			// setting desired attributes
@@ -57,7 +57,7 @@ tetris_playfield_t *tetris_playfield_construct(int8_t nWidth,
 void tetris_playfield_destruct(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
-	
+
 	// if memory for the dump array has been allocated, free it
 	if (pPl->dump != NULL)
 	{
@@ -113,14 +113,14 @@ void tetris_playfield_insertPiece(tetris_playfield_t *pPl,
 
 	// row mask is now meaningless
 	pPl->nRowMask = 0;
-	
+
 	// replace old piece
 	*ppOldPiece = pPl->pPiece;
 	pPl->pPiece = pPiece;
 
 	// set horizontal start position (in the middle of the top line)
 	pPl->nColumn = (pPl->nWidth - 2) / 2;
-	
+
 	// set vertical start position (first piece row with matter at pos. 1)
 	uint16_t nPieceMap = tetris_piece_getBitmap(pPl->pPiece);
 	uint16_t nElementMask = 0xF000;
@@ -134,7 +134,7 @@ void tetris_playfield_insertPiece(tetris_playfield_t *pPl,
 	{
 		++pPl->nRow;
 	}
-	
+
 	// did we already collide with something?
 	if (tetris_playfield_collision(pPl, pPl->nColumn, pPl->nRow) == 1)
 	{
@@ -165,7 +165,7 @@ uint8_t tetris_playfield_collision(tetris_playfield_t *pPl,
 	// only allow coordinates which are within sane ranges
 	assert((nColumn >= -4) && (nColumn < pPl->nWidth));
 	assert((nRow >= -4) && (nRow < pPl->nHeight));
-	
+
 	// The rows of a piece get compared with the background one by one
 	// until either a collision occures or all rows are compared. Both the
 	// piece row and the part of the playfield it covers are represented in
@@ -284,7 +284,7 @@ void tetris_playfield_advancePiece(tetris_playfield_t *pPl)
 			for (int8_t i = nStartRow; i >= pPl->nRow; --i)
 			{
 				int8_t y = i - pPl->nRow;
-				
+
 				// clear all bits of the piece we are not interested in and
 				// align the rest to LSB
 				uint16_t nPieceMap = (nPiece & (0x000F << (y << 2))) >> (y << 2);
@@ -327,7 +327,7 @@ uint8_t tetris_playfield_movePiece(tetris_playfield_t *pPl,
 
 	// a piece can only be moved if it is still hovering
 	assert(pPl->status == TETRIS_PFS_HOVERING);
-	
+
 	int8_t nOffset = (direction == TETRIS_PFD_LEFT) ? -1 : 1;
 	if (tetris_playfield_collision(pPl, pPl->nColumn + nOffset, pPl->nRow) == 0)
 	{
@@ -352,9 +352,9 @@ uint8_t tetris_playfield_rotatePiece(tetris_playfield_t *pPl,
 
 	// a piece can only be rotation if it is still hovering
 	assert(pPl->status == TETRIS_PFS_HOVERING);
-	
+
 	tetris_piece_rotate(pPl->pPiece, rotation);
-	
+
 	// does the rotated piece cause a collision?
 	if (tetris_playfield_collision(pPl, pPl->nColumn, pPl->nRow) != 0)
 	{
@@ -367,7 +367,7 @@ uint8_t tetris_playfield_rotatePiece(tetris_playfield_t *pPl,
 		{
 			tetris_piece_rotate(pPl->pPiece, TETRIS_PC_ROT_CW);
 		}
-		
+
 		return 0;
 	}
 
@@ -389,20 +389,20 @@ void tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl)
 
 	// bit mask of a full row
 	uint16_t nFullRow = 0xFFFF >> (16 - pPl->nWidth);
-	
+
 	// return value
 	uint8_t nRowMask = 0;
-	
+
 	// determine sane start and stop values for the dump' index
 	int8_t nStartRow =
 		((pPl->nRow + 3) >= pPl->nHeight) ? pPl->nHeight - 1 : pPl->nRow + 3;
 	int8_t nStopRow = (pPl->nRow < 0) ? 0 : pPl->nRow;
-		
+
 	// dump index variables
 	//   for incomplete rows, both variables will be decremented
 	//   for complete rows, only i gets decremented
 	int8_t nLowestRow = nStartRow;
-	
+
 	// this loop only considers rows which are affected by the piece 
 	for (int8_t i = nStartRow; i >= nStopRow; --i)
 	{
@@ -422,7 +422,7 @@ void tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl)
 			--nLowestRow;
 		}
 	}
-	
+
 	// if rows have been removed, this loop shifts the rest of the dump
 	uint8_t nComplete = nLowestRow - nStopRow + 1;
 	if (nComplete > 0)
@@ -554,3 +554,4 @@ uint16_t tetris_playfield_getDumpRow(tetris_playfield_t *pPl,
 	assert((0 <= nRow) && (nRow < pPl->nHeight));
 	return pPl->dump[nRow];
 }
+

@@ -99,7 +99,7 @@ void tetris_playfield_insertPiece(tetris_playfield_t *pPl,
 uint8_t tetris_playfield_collision(tetris_playfield_t *pPl,
                                    int8_t nColumn,
                                    int8_t nRow);
-								   
+
 
 /* Function:     tetris_playfield_advancePiece
  * Description:  lowers piece by one row or finally docks it
@@ -209,3 +209,4 @@ uint16_t tetris_playfield_getDumpRow(tetris_playfield_t *pPl,
 
 
 #endif /*TETRIS_PLAYFIELD_H_*/
+

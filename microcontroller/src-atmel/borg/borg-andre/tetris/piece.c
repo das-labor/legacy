@@ -58,7 +58,7 @@ void tetris_piece_destruct(tetris_piece_t *pPc)
 uint16_t tetris_piece_getBitmap(tetris_piece_t *pPc)
 {
 	assert(pPc != NULL);
-	
+
 	// Lookup table:
 	// A value in an array represents a piece in a specific angle (rotating
 	// clockwise from index 0).
@@ -89,7 +89,7 @@ void tetris_piece_rotate(tetris_piece_t *pPc,
                          tetris_piece_rotation_t r)
 {
 	assert(pPc != NULL);
-	
+
 	// we just rotate through the available angles in the given direction and
 	// make wrap arounds where appropriate
 	switch (r)
