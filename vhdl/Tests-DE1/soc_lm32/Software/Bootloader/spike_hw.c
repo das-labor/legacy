@@ -1,8 +1,8 @@
 #include "spike_hw.h"
 
-timer_t *timer0 = (timer_t *)0x80000000;
-uart_t  *uart0  =  (uart_t *)0x80001000;
-gpio_t  *gpio0  =  (gpio_t *)0x80002000;
+volatile timer_t *timer0 = (volatile timer_t *) 0x80000000;
+volatile uart_t  *uart0  = (volatile uart_t *)  0x80001000;
+volatile gpio_t  *gpio0  = (volatile gpio_t *)  0x80002000;
 
 uint32_t msec = 0;
 
@@ -18,24 +18,26 @@ void irq_handler(uint32_t irl)
 	int diff;
 
 	switch (irl) {
-	case 12:                                 /* timer0.0 (system tic) */
-		tcr = timer0->tcr0;  // reset trig0
-		msec++;
+	case 0:                                              /* uart0 tx */
 		break;
-	case 10:                                              /* uart0 rx */
+	case 1:                                              /* uart0 rx */
 		diff = rxhead - rxtail;
-		if (diff < 0) diff += UART_RXBUFSIZE;
+		if (diff < 0) 
+			diff += UART_RXBUFSIZE;
 		if (diff < UART_RXBUFSIZE -1) {
 			// buffer not full
 			*rxhead = uart0->databuf;
-			if (++rxhead == (rxbuf + UART_RXBUFSIZE)) rxhead = rxbuf;
+			if (++rxhead == (rxbuf + UART_RXBUFSIZE)) 
+				rxhead = rxbuf;
 		} else {
 			uart0->databuf;   // read buffer to clear IRQ
 		}
 		break;
-	case 6:                                               /* timer0.1 */
+	case 2:                                   /* timer0.0 (system tic) */
+		tcr = timer0->tcr0;  // reset trig0
+		msec++;
 		break;
-	case 4:                                               /* uart0 tx */
+	case 3:                                               /* timer0.1 */
 		break;
 	};
 
@@ -75,7 +77,7 @@ void tic_init()
 void uart_init()
 {
 	// Setup Divisor register (Fclk / Baud)
-	uart0->divisor = (FCPU/115200);
+	uart0->divisor = 10; // (FCPU/57600);
 	
 	// Initialize ring buffer
 	rxhead = rxtail = rxbuf;
@@ -87,25 +89,25 @@ void uart_init()
 char  uart_getchar()
 {
 	char val;
-
-	while( rxhead == rxtail )
-		halt();
+	while ( rxhead == rxtail )
+		uart0->ucr = UART_RXIRQEN;
 
 	val = *rxtail;
-	if (++rxtail == (rxbuf + UART_RXBUFSIZE)) rxtail = rxbuf;
+	if (++rxtail == (rxbuf + UART_RXBUFSIZE)) 
+		rxtail = rxbuf;
 
 	return val;
 }
 
 void uart_putchar(char c)
 {
-	while ( uart0->ucr & UART_TX_BUSY ) {
-		uart0->ucr = UART_RXIRQEN | UART_TXIRQEN;
-		halt();
+	while (uart0->ucr & UART_TX_BUSY) {
+		//uart0->ucr = UART_RXIRQEN; // | UART_TXIRQEN;
+		//halt();
 	}
 	
 	uart0->databuf = c;
-	uart0->ucr = UART_RXIRQEN;
+	uart0->ucr = UART_RXIRQEN; 
 }
 
 void uart_putstr(char *str)

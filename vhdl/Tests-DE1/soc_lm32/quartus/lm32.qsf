@@ -25,10 +25,10 @@
 
 set_global_assignment -name DEVICE EP2C20F484C7
 set_global_assignment -name FAMILY "Cyclone II"
-set_global_assignment -name TOP_LEVEL_ENTITY lm32
+set_global_assignment -name TOP_LEVEL_ENTITY system
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 6.1
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "22:55:09  MARCH 06, 2007"
-set_global_assignment -name LAST_QUARTUS_VERSION 6.1
+set_global_assignment -name LAST_QUARTUS_VERSION 7.0
 set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (VHDL)"
 set_global_assignment -name EDA_INCLUDE_VHDL_CONFIGURATION_DECLARATION ON -section_id eda_simulation
 set_global_assignment -name EDA_OUTPUT_DATA_FORMAT VHDL -section_id eda_simulation
@@ -319,8 +319,16 @@ set_global_assignment -name FLOW_ENABLE_IO_ASSIGNMENT_ANALYSIS ON
 set_global_assignment -name STRATIX_CONFIGURATION_DEVICE EPCS4
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
 set_global_assignment -name RESERVE_ASDO_AFTER_CONFIGURATION "AS INPUT TRI-STATED"
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_instance_assignment -name PARTITION_HIERARCHY no_file_for_top_partition -to | -section_id Top
+set_global_assignment -name VERILOG_INPUT_VERSION VERILOG_2001
+set_global_assignment -name VERILOG_SHOW_LMF_MAPPING_MESSAGES OFF
+set_global_assignment -name OPTIMIZE_POWER_DURING_SYNTHESIS OFF
+set_global_assignment -name AUTO_RAM_TO_LCELL_CONVERSION ON
+set_global_assignment -name SIMULATION_MODE TIMING
+set_global_assignment -name GLITCH_DETECTION OFF
+set_global_assignment -name VHDL_FILE ../wb_uart/uart.vhd
+set_global_assignment -name VHDL_FILE ../wb_uart/uart_rx.vhd
+set_global_assignment -name VHDL_FILE ../wb_uart/uart_tx.vhd
+set_global_assignment -name VHDL_FILE ../wb_uart/wb_uart.vhd
 set_global_assignment -name VHDL_FILE ../wb_timer/wb_timer.vhd
 set_global_assignment -name VERILOG_FILE ../wb_lm32/lm32_interrupt.v
 set_global_assignment -name VERILOG_FILE ../wb_lm32/lm32_logic_op.v
@@ -334,10 +342,6 @@ set_global_assignment -name VERILOG_FILE ../wb_lm32/lm32_load_store_unit.v
 set_global_assignment -name VHDL_FILE ../wb_scope/bram_dp.vhd
 set_global_assignment -name VHDL_FILE ../wb_scope/mux32.vhd
 set_global_assignment -name VHDL_FILE ../wb_scope/wb_scope.vhd
-set_global_assignment -name VHDL_FILE ../wb_uart/uart.vhd
-set_global_assignment -name VHDL_FILE ../wb_uart/uart_rx.vhd
-set_global_assignment -name VHDL_FILE ../wb_uart/uart_tx.vhd
-set_global_assignment -name VHDL_FILE ../wb_uart/wb_uart.vhd
 set_global_assignment -name VHDL_FILE ../intercon.vhd
 set_global_assignment -name VHDL_FILE ../system.vhd
 set_global_assignment -name VHDL_FILE ../TestBench.vhd
@@ -346,4 +350,16 @@ set_global_assignment -name BDF_FILE lm32.bdf
 set_global_assignment -name VHDL_FILE ../hex.vhd
 set_global_assignment -name VHDL_FILE wb_sram.vhd
 set_global_assignment -name VECTOR_WAVEFORM_FILE sim_sram.vwf
-set_global_assignment -name INCREMENTAL_VECTOR_INPUT_SOURCE sim_sram.vwf
+set_global_assignment -name VHDL_FILE top.vhd
+set_global_assignment -name VECTOR_WAVEFORM_FILE uart_test.vwf
+set_global_assignment -name ZIP_VECTOR_WAVEFORM_FILE lm32.sim.cvwf
+set_global_assignment -name VECTOR_WAVEFORM_FILE lm32.sim.vwf
+set_global_assignment -name CHECK_OUTPUTS OFF
+set_global_assignment -name VECTOR_WAVEFORM_FILE lm32_uart.vwf
+set_global_assignment -name ZIP_VECTOR_WAVEFORM_FILE lm32uart.cvwf
+set_global_assignment -name ADD_DEFAULT_PINS_TO_SIMULATION_OUTPUT_WAVEFORMS OFF
+set_global_assignment -name SIMULATOR_GENERATE_POWERPLAY_VCD_FILE ON
+set_global_assignment -name SIMULATOR_POWERPLAY_VCD_FILE_OUTPUT_DESTINATION lm32.vcd
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_instance_assignment -name PARTITION_HIERARCHY no_file_for_top_partition -to | -section_id Top
+set_global_assignment -name INCREMENTAL_VECTOR_INPUT_SOURCE lm32.sim.vwf

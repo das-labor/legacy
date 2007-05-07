@@ -207,7 +207,7 @@ component wb_uart is
 		wb_txirq_o : out std_logic;
 		-- Serial I/O ports
 		uart_rx    : in  std_logic;
-		uart_tx    : out std_logic );
+		uart_tx    : out std_logic);
 end component wb_uart;
 
 component wb_sram is
@@ -312,6 +312,8 @@ signal timer0_cyc_i   : std_logic;
 signal timer0_stb_i   : std_logic;
 signal timer0_ack_o   : std_logic;
 signal timer0_we_i    : std_logic;
+signal timer0_irq0    : std_logic;
+signal timer0_irq1    : std_logic;
 
 
 signal uart0_adr_i   : std_logic_vector(31 downto 0);
@@ -322,6 +324,9 @@ signal uart0_cyc_i   : std_logic;
 signal uart0_stb_i   : std_logic;
 signal uart0_ack_o   : std_logic;
 signal uart0_we_i    : std_logic;
+signal uart0_irq_rx  : std_logic;
+signal uart0_irq_tx  : std_logic;	
+
 
 signal gpio0_adr_i   : std_logic_vector(31 downto 0);
 signal gpio0_dat_o   : std_logic_vector(31 downto 0);
@@ -349,7 +354,8 @@ begin
 
 --leds <= oport(7 downto 0);
 iport(3 downto 0) <= btn(3 downto 0);
-leds <= clk & reset & i_stb_o & i_ack_i & d_stb_o & d_ack_i & bram0_stb_i & bram0_ack_o;
+leds <= clk & reset &  uart0_stb_i & uart0_ack_o & 
+        uart0_irq_rx & uart0_irq_tx & uart0_we_i & uart0_we_i;
 
 
 -----------------------------------------------------------------------------
@@ -420,8 +426,8 @@ uart0: wb_uart
 			wb_cyc_i  => uart0_cyc_i,
 			wb_ack_o  => uart0_ack_o,
 			wb_we_i   => uart0_we_i,
-			wb_rxirq_o=> open,
-			wb_txirq_o=> open,			
+			wb_rxirq_o=> uart0_irq_rx,
+			wb_txirq_o=> uart0_irq_tx,			
 			--
 			uart_rx   => uart_rx,
 			uart_tx   => uart_tx
@@ -480,7 +486,9 @@ timer0: wb_timer
 			wb_stb_i  => timer0_stb_i,
 			wb_cyc_i  => timer0_cyc_i,
 			wb_ack_o  => timer0_ack_o,
-			wb_we_i   => timer0_we_i
+			wb_we_i   => timer0_we_i,
+			wb_irq0_o => timer0_irq0,
+			wb_irq1_o => timer0_irq1
 	);
 	
 digit0:nibble7Seg
@@ -594,6 +602,7 @@ wb0: intercon
   reset         => reset
 	);
 	
-intr_n <= (others => '1');
+intr_n <= x"0000000" & timer0_irq1 & timer0_irq0 & uart0_irq_rx & uart0_irq_tx;
+
 
 end rtl;

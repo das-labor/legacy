@@ -77,6 +77,8 @@ end component;
 constant ZEROS  : std_logic_vector(31 downto 0) := (others => '0');
 
 signal active     : std_logic;
+signal activeLast : std_logic;
+signal ack        : std_logic;
 
 signal wr         : std_logic;
 signal rd         : std_logic;
@@ -117,28 +119,26 @@ uart0: myuart
 
 
 -- Status & divisor register + Wishbine glue logic
-status_reg <= ZEROS(31 downto  2) & not tx_avail & rx_avail;
+status_reg <= ZEROS(31 downto  4) & tx_irqen & rx_irqen & not tx_avail & rx_avail;
 data_reg   <= ZEROS(31 downto  8) & rxdata;
 div_reg    <= ZEROS(31 downto 16) & divisor;
 
 -- Bus cycle?
 active <= wb_stb_i and wb_cyc_i;
 
-wb_dat_o <= status_reg when active='1' and wb_adr_i(3 downto 0)=x"0" else
-            div_reg    when active='1' and wb_adr_i(3 downto 0)=x"4" else
-            data_reg   when active='1' and wb_adr_i(3 downto 0)=x"8" else
-            (others => '-');
+wb_dat_o <= status_reg when wb_we_i='0' and (active='1' or ack='1') and wb_adr_i(3 downto 0)=x"0" else
+            div_reg    when wb_we_i='0' and (active='1' or ack='1') and wb_adr_i(3 downto 0)=x"4" else
+            data_reg   when wb_we_i='0' and (active='1' or ack='1') and wb_adr_i(3 downto 0)=x"8" else
+            (others => '0');
 
-rd <= '1' when active='1' and wb_adr_i(3 downto 0)=x"8" and wb_we_i='0' else
+rd <= '1' when (active='1' or ack='1') and wb_adr_i(3 downto 0)=x"8" and wb_we_i='0' else
       '0';
 
-wr <= '1' when active='1' and wb_adr_i(3 downto 0)=x"8" and wb_we_i='1' else
+wr <= '1' when (active='1' or ack='1') and wb_adr_i(3 downto 0)=x"8" and wb_we_i='1' else
       '0';
 
-txdata <= wb_dat_i(7 downto 0);
-
-wb_ack_o <= active; 
-
+txdata   <= wb_dat_i(7 downto 0);
+wb_ack_o <= ack;
 
 -- Handle Wishbone write request (and reset condition)
 proc: process(reset, clk) is
@@ -149,7 +149,21 @@ begin
 			rx_irqen <= '0';
 			divisor  <= (others => '1');
 		else 
-		if active='1' and wb_we_i='1' then    
+		
+		if active='1' then
+			if	activeLast='0' then
+				activeLast <= '1';
+				ack        <= '0';
+			else 
+				activeLast <= '0';
+				ack        <= '1';
+			end if;
+		else 
+			ack        <= '0';
+			activeLast <= '0';	
+		end if;
+		
+		if (active='1' or ack='1') and wb_we_i='1' then    
 			if wb_adr_i(3 downto 0)=x"0" then     -- write to status register
 				tx_irqen <= wb_dat_i(3);
 				rx_irqen <= wb_dat_i(2);

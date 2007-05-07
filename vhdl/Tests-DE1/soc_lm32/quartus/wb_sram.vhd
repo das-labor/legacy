@@ -39,11 +39,11 @@ SRAM_WE_N <= not (wb_we_i and wb_cyc_i and wb_stb_i);
 
 sram_oe_n <= not (not wb_we_i and wb_cyc_i and wb_stb_i); 
  
-sram_addr <= wb_adr_i(17 downto 0) & high_word;
+sram_addr <= wb_adr_i(19 downto 2) & high_word;
 
 sram_dq <= wb_dat_i(31 downto 16) when high_word='1' and wb_we_i='1' else
            wb_dat_i(15 downto 0)  when high_word='0' and wb_we_i='1' else 
-           (others => 'Z');
+           (others => '-');
 
 sram_ub_n <= not wb_sel_i(1) when high_word='0' else
              not wb_sel_i(3) when high_word='1';
