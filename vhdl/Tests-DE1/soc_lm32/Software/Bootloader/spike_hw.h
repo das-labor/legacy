@@ -2,11 +2,15 @@
 #define SPIKEHW_H
 
 #define PROMSTART 0x00000000
-#define RAMSTART  0x80000800
+#define RAMSTART  0x00000800
 #define RAMSIZE   (2*1024)
 #define RAMEND    (RAMSTART + RAMSIZE)
 
-#define FCPU      50000000
+#define SRAM_START 0xB0000000
+#define SRAM_SIZE  0x00080000
+
+#define FCPU         3125000
+//(50000000/16)
 /// #define FCPU      500000
 
 #define UART_RXBUFSIZE 32
@@ -24,6 +28,7 @@ typedef signed   char   int8_t;
  */
 void irq_enable();
 void irq_disable();
+void irq_mask();
 void halt();
 void jump(uint32_t addr);
 
@@ -38,7 +43,6 @@ typedef struct {
 	volatile uint32_t iport;
 	volatile uint32_t oport;
 } gpio_t;
-
 
 /***************************************************************************
  * TIMER0
@@ -75,15 +79,13 @@ typedef struct {
 /***************************************************************************
  * Spike peripheral components
  */
-extern uart_t  *uart0;
-extern timer_t *timer0;
-extern gpio_t  *gpio0;
+extern volatile uart_t  *uart0;
+extern volatile timer_t *timer0;
+extern volatile gpio_t  *gpio0;
 
 void uart_init();
 void uart_putchar(char c);
 void uart_putstr(char *str);
 char uart_getchar();
-
-
 
 #endif // SPIKEHW_H

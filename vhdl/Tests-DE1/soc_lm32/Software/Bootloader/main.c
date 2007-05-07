@@ -30,13 +30,19 @@ void memtest()
 {
 	int *p;
 
-	for (p=(int *)0x80000000; p<(int *)0x8000ffff; p++) {
+	for (p=(int *)SRAM_START; p<(int *)(SRAM_START+SRAM_SIZE-1); p++) {
 		*p = (int)p;
 	}
 
-	for (p=(int *)0x80000000; p<(int *)0x8000ffff; p++) {
+	for (p=(int *)SRAM_START; p<(int *)(SRAM_START+SRAM_SIZE-1); p++) {
 		if (*p != (int)p) {
-			uart_putstr("DDR TEST FAILED\n");
+			uart_putchar('S');
+			uart_putchar('R');
+			uart_putchar('A');
+			uart_putchar('M');
+			uart_putchar('\r');
+			uart_putchar('\n');
+				
 		}
 	}
 }
@@ -46,9 +52,17 @@ int main(int argc, char **argv)
 {
 	// Initialize stuff
 	uart_init();
+	irq_mask();
 	irq_enable();
-
-	uart_putstr("\r\n** SPIKE BOOTLOADER **\n\r");
+	
+	uart_putchar('S');
+	uart_putchar('p');
+	uart_putchar('i');
+	uart_putchar('k');
+	uart_putchar('e');
+	uart_putchar('\r');
+	uart_putchar('\n');
+	//uart_putstr("\r\n** SPIKE BOOTLOADER **\n\r");
 	memtest();
 	for(;;) {
 		uint32_t start, size, checksum;
@@ -59,13 +73,17 @@ int main(int argc, char **argv)
 		case 'r':
 			jump(0x00000000);
 		case 'u':
-			uart_putstr("u:");
+			//uart_putstr("u:");
+			uart_putchar('u');
+			uart_putchar(':');
 			/* read start */
 			start = readint();
-			writeint(start); uart_putchar(':');
+			writeint(start);
+		    uart_putchar(':');
 			/* read size */
 			size  = readint();
-			writeint(size); uart_putchar(':');
+			writeint(size); 
+			uart_putchar(':');
 
 			checksum = 0;
 			for(p=(char *)start; p<(char *)(start+size); p++) {
@@ -73,15 +91,24 @@ int main(int argc, char **argv)
 				*p = c;
 				checksum += (unsigned char)c;
 			}
-			writeint(checksum); uart_putstr(".\r\n");
+			writeint(checksum); 
+			//uart_putstr(".\r\n");
+			uart_putchar('.');
+			uart_putchar('\r');
+			uart_putchar('\n');
 			break;
 		case 'g':
-			uart_putstr("g:");
+			uart_putchar('u');
+			uart_putchar(':');
 			start = readint();
 			writeint(start); uart_putchar('.');
 			irq_disable();
 			jump(start);
-			uart_putstr("XXXX");
+			//uart_putstr("XXXX");
+			uart_putchar('X');
+			uart_putchar('X');
+			uart_putchar('X');
+			uart_putchar('X');			
 			break;
 		}
 	}

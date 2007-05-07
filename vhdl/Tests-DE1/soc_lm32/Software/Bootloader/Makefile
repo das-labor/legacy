@@ -3,13 +3,13 @@ LM32_LD=lm32-elf-ld
 LM32_OBJCOPY=lm32-elf-objcopy
 LM32_OBJDUMP=lm32-elf-objdump
 
-SRECTOVHDL=~/bin/srectovhdl
+VHDLFILE=../../wb_bram.vhd
 
-CFLAGS=-O2 -Wall -s -fomit-frame-pointer -mbarrel-shift-enabled -mmultiply-enabled -mdivide-enabled -msign-extend-enabled
+CFLAGS=-MMD -O2 -Wall -g -s -fomit-frame-pointer -mbarrel-shift-enabled   -mmultiply-enabled -mdivide-enabled -msign-extend-enabled
 LDFLAGS=-Tlinkcmd
 SEGMENTS = -j .text -j .data
 
-all: image.vhdl
+all: $(VHDLFILE) 
 
 crt0ram.o: crt0ram.S
 	$(LM32_CC) $(CFLAGS) -c crt0ram.S
@@ -24,17 +24,25 @@ image: crt0ram.o main.o spike_hw.o
 	$(LM32_LD) $(LDFLAGS) -Map image.map -N -o image crt0ram.o main.o spike_hw.o
 
 image.lst: image
-	$(LM32_OBJDUMP) --disassemble image > image.lst
+	$(LM32_OBJDUMP) -h -S $< > $@
 
 image.bin: image
 	$(LM32_OBJCOPY) $(SEGMENTS) -O srec image image.bin
 
-image.srec: image
+image.srec: image image.lst
 	$(LM32_OBJCOPY) $(SEGMENTS) -O srec image image.srec
 
-image.vhdl: image.srec
-	$(SRECTOVHDL) image.srec image.vhdl > /dev/null
+srectovhdl: srectovhdl.c
+	gcc -o srectovhdl srectovhdl.c
+
+$(VHDLFILE): image.srec srectovhdl
+	srectovhdl image.srec > $(VHDLFILE)
 
 clean:
-	rm -f image image.lst image.bin image.srec image.vhdl *.o
+	rm -f image image.lst image.bin image.srec  *.o
+
+DEPS := $(wildcard *.d)
+ifneq ($(DEPS),)
+include $(DEPS)
+endif
 
