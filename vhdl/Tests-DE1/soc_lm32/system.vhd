@@ -19,7 +19,8 @@ entity System is
 	  	sram_we_n : out std_logic;
 	  	sram_ub_n : out std_logic;
 	  	sram_lb_n : out std_logic;
-	  	sram_addr : out std_logic_vector(18 downto 0);
+	    sram_ce_n : out std_logic;
+	  	sram_addr : out std_logic_vector(17 downto 0);
 	    sram_dq   : inout std_logic_vector(15 downto 0)
 	);
 end System;
@@ -228,7 +229,8 @@ component wb_sram is
 	  sram_we_n : out std_logic;
 	  sram_ub_n : out std_logic;
 	  sram_lb_n : out std_logic;
-	  sram_addr : out std_logic_vector(18 downto 0);
+	  sram_ce_n : out std_logic;
+	  sram_addr : out std_logic_vector(17 downto 0);
 	  sram_dq   : inout std_logic_vector(15 downto 0)
 		);
 end component wb_sram;
@@ -451,9 +453,9 @@ sram0: wb_sram
 			sram_we_n => sram_we_n,
 			sram_ub_n => sram_ub_n,
 			sram_lb_n => sram_lb_n,
+			sram_ce_n => sram_ce_n,
 			sram_addr => sram_addr,
-			sram_dq   => sram_dq 
-			
+			sram_dq   => sram_dq
 	);	
 	
 gpio0: wb_gpio
