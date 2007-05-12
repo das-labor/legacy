@@ -57,7 +57,7 @@ void sleep(int msec)
 	timer0->tcr1 = TIMER_EN | TIMER_IRQEN;
 
 	do {
-		halt();
+		//halt();
 		tcr = timer0->tcr1;
 	} while ( ! (tcr & TIMER_TRIG) );
 }
@@ -76,17 +76,18 @@ void tic_init()
  */
 void uart_init()
 {
+	int test;
 	// Setup Divisor register (Fclk / Baud)
-	uart0->divisor = 10; // (FCPU/57600);
+	uart0->divisor = (FCPU/57600);
 	
 	// Initialize ring buffer
 	rxhead = rxtail = rxbuf;
 
 	// activate RX IRQ
-	uart0->ucr = UART_RXIRQEN;
+	//uart0->ucr = UART_RXIRQEN;
 }
 
-char  uart_getchar()
+char uart_getchar()
 {
 	char val;
 	while ( rxhead == rxtail )
@@ -101,7 +102,10 @@ char  uart_getchar()
 
 void uart_putchar(char c)
 {
+	//int status = ;
+	//uart0->divisor = status;
 	while (uart0->ucr & UART_TX_BUSY) {
+		//status = uart0->ucr;
 		//uart0->ucr = UART_RXIRQEN; // | UART_TXIRQEN;
 		//halt();
 	}

@@ -66,18 +66,18 @@ _crt0:
 
 
 irq_enable:
-	mvi     r0, 1
-	wcsr	IE, r0
+	mvi     r1, 1
+	wcsr	IE, r1
 	ret
 
 irq_mask:
-	mvi     r0, 0x0000000f
-	wcsr	IM, r0
+	mvi     r1, 0x0000000f
+	wcsr	IM, r1
 	ret
 	
 irq_disable:
-	mvi     r0, 0
-	wcsr	IE, r0
+	mvi     r1, 0
+	wcsr	IE, r1
 	ret
 
 jump:

@@ -9,9 +9,7 @@
 #define SRAM_START 0xB0000000
 #define SRAM_SIZE  0x00080000
 
-#define FCPU         3125000
-//(50000000/16)
-/// #define FCPU      500000
+#define FCPU         25000000
 
 #define UART_RXBUFSIZE 32
 
@@ -34,7 +32,6 @@ void jump(uint32_t addr);
 
 void sleep();
 void tic_init();
-
 
 /***************************************************************************
  * GPIO0

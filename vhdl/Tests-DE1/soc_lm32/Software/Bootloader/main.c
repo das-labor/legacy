@@ -52,8 +52,8 @@ int main(int argc, char **argv)
 {
 	// Initialize stuff
 	uart_init();
-	irq_mask();
-	irq_enable();
+	//irq_mask();
+	//irq_enable();
 	
 	uart_putchar('S');
 	uart_putchar('p');
