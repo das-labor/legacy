@@ -17,7 +17,8 @@ piece.o: piece.c piece.h
 playfield.o: playfield.c playfield.h piece.h
 	$(CC) $(CFLAGS) -c playfield.c -o playfield.o
 
-view.o: view.c view.h ../pixel.h
+view.o: view.c view.h logic.h piece.h playfield.h ../config.h ../pixel.h \
+ ../util.h ../scrolltext.h
 	$(CC) $(CFLAGS) -c view.c -o view.o
 
 logic.o: logic.c logic.h piece.h playfield.h input.h view.h
