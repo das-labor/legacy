@@ -1,14 +1,16 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include <assert.h>
-#include "input.h"
 #include "../joystick.h"
 #include "../util.h"
+#include "input.h"
 
 /* the API simulator and the real API have different named wait functions */ 
 #ifdef __AVR__
+	#include <avr/pgmspace.h>
 	#define WAIT(ms) wait(ms)
 #else
+	#define PROGMEM
 	#define WAIT(ms) myWait(ms)
 #endif
 
@@ -113,8 +115,14 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 {
 	assert (pIn != NULL);
 
-	static uint8_t nCyclesPerLevel[] = TETRIS_INPUT_CYCLESPERLEVEL;
-	uint8_t nMaxCycles = nCyclesPerLevel[pIn->nLevel];
+	const static uint8_t nCyclesPerLevel[] PROGMEM =
+		TETRIS_INPUT_CYCLESPERLEVEL;
+	#ifdef __AVR__
+		uint8_t nMaxCycles = pgm_read_word(&nCyclesPerLevel[pIn->nLevel]);
+	#else
+		uint8_t nMaxCycles = nCyclesPerLevel[pIn->nLevel];
+	#endif
+
 	tetris_input_command_t cmdJoystick = TETRIS_INCMD_NONE;
 	tetris_input_command_t cmdReturn = TETRIS_INCMD_NONE;
 
