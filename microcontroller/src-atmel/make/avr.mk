@@ -25,7 +25,7 @@ LAPFLASHCMD   ?= lapcontrol -s rl
 all: $(OUT).elf lst text eeprom
 
 clean:
-	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec
+	rm -rf $(OUT) *.o *.d *.lst *.map *.hex *.bin *.srec
 	rm -rf *.srec $(OUT).elf
 
 flash: $(OUT).hex
