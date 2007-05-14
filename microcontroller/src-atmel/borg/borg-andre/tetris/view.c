@@ -7,6 +7,9 @@
 #include "../pixel.h"
 #include "../util.h"
 #include "../scrolltext.h"
+#include "logic.h"
+#include "piece.h"
+#include "playfield.h"
 #include "view.h"
 
 /* the API simulator and the real API have different named wait functions */ 
