@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <inttypes.h>
+#include "piece.h"
 
 #ifdef __AVR__
 	#include <avr/pgmspace.h>
@@ -8,7 +9,6 @@
 	#define PROGMEM
 #endif
 
-#include "piece.h"
 
 /*****************************
  *  construction/destruction *
