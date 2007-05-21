@@ -348,9 +348,9 @@ uint8_t tetris_logic_getLevel(tetris_logic_t *pLogic)
 /* Function:        tetris_logic_getLines
  * Description:     returns the number of completed lines
  * Argument pLogic: the logic object we want information from
- * Return value:    number of completed lines as uint8_t
+ * Return value:    number of completed lines as uint16_t
  */
-uint8_t tetris_logic_getLines(tetris_logic_t *pLogic)
+uint16_t tetris_logic_getLines(tetris_logic_t *pLogic)
 {
 	assert(pLogic != NULL);
 	return pLogic->nLines;

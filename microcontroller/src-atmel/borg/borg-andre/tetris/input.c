@@ -25,8 +25,8 @@
 // number of loop cycles for each level until a piece gets moved down
 // (the last level is merely a stuffing byte because avr-gcc causes
 // trouble if you store an array with an odd number of bytes into PROGMEM)
-#define TETRIS_INPUT_CYCLESPERLEVEL {100, 90, 81, 73, 66, 59, 53, 48, 43, 39, \
-	35, 31, 28, 25, 23, 21, 19, 17, 15, 14, 12, 11, 10, 9, 8, 7}
+#define TETRIS_INPUT_CYCLESPERLEVEL {100, 87, 76, 66, 57, 50, 43, 38, 33, 29, \
+	25, 22, 19, 16, 14, 12, 11, 9, 8, 7}
 
 // here you can adjust the delays (in loop cycles) for key repeat
 #define TETRIS_INPUT_REPEAT_INITIALDELAY 20
