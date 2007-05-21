@@ -9,7 +9,7 @@
  ***********/
 
 // number of levels
-#define TETRIS_INPUT_LEVELS 25
+#define TETRIS_INPUT_LEVELS 20
 
 
 /*********

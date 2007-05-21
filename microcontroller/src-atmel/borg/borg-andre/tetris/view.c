@@ -294,7 +294,7 @@ void tetris_view_showResults(tetris_view_t *pV)
 	char pszResults[48];
 	uint16_t nScore = tetris_logic_getScore(pV->pLogic);
 	uint16_t nHighscore = tetris_logic_getHighscore(pV->pLogic);
-	uint8_t nLines = tetris_logic_getLines(pV->pLogic);
+	uint16_t nLines = tetris_logic_getLines(pV->pLogic);
 
 	if (nScore <= nHighscore)
 	{
