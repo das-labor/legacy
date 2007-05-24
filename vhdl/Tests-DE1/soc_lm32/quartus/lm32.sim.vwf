@@ -3273,6 +3273,576 @@ SIGNAL("wb_uart:uart0|rx_irqen")
 	PARENT = "";
 }
 
+SIGNAL("sram_lb_n")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = OUTPUT;
+	PARENT = "";
+}
+
+SIGNAL("sram_oe_n")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = OUTPUT;
+	PARENT = "";
+}
+
+SIGNAL("sram_ub_n")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = OUTPUT;
+	PARENT = "";
+}
+
+SIGNAL("sram_we_n")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = OUTPUT;
+	PARENT = "";
+}
+
+SIGNAL("wb_sram:sram0|active")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "";
+}
+
+SIGNAL("wb_sram:sram0|high_word")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "";
+}
+
+SIGNAL("wb_sram:sram0|sram_dq_in")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = BUS;
+	WIDTH = 16;
+	LSB_INDEX = 0;
+	DIRECTION = REGISTERED;
+	PARENT = "";
+}
+
+SIGNAL("wb_sram:sram0|sram_dq_in[15]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|sram_dq_in";
+}
+
+SIGNAL("wb_sram:sram0|sram_dq_in[14]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|sram_dq_in";
+}
+
+SIGNAL("wb_sram:sram0|sram_dq_in[13]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|sram_dq_in";
+}
+
+SIGNAL("wb_sram:sram0|sram_dq_in[12]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|sram_dq_in";
+}
+
+SIGNAL("wb_sram:sram0|sram_dq_in[11]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|sram_dq_in";
+}
+
+SIGNAL("wb_sram:sram0|sram_dq_in[10]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|sram_dq_in";
+}
+
+SIGNAL("wb_sram:sram0|sram_dq_in[9]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|sram_dq_in";
+}
+
+SIGNAL("wb_sram:sram0|sram_dq_in[8]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|sram_dq_in";
+}
+
+SIGNAL("wb_sram:sram0|sram_dq_in[7]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|sram_dq_in";
+}
+
+SIGNAL("wb_sram:sram0|sram_dq_in[6]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|sram_dq_in";
+}
+
+SIGNAL("wb_sram:sram0|sram_dq_in[5]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|sram_dq_in";
+}
+
+SIGNAL("wb_sram:sram0|sram_dq_in[4]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|sram_dq_in";
+}
+
+SIGNAL("wb_sram:sram0|sram_dq_in[3]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|sram_dq_in";
+}
+
+SIGNAL("wb_sram:sram0|sram_dq_in[2]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|sram_dq_in";
+}
+
+SIGNAL("wb_sram:sram0|sram_dq_in[1]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|sram_dq_in";
+}
+
+SIGNAL("wb_sram:sram0|sram_dq_in[0]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|sram_dq_in";
+}
+
+SIGNAL("wb_sram:sram0|wb_ack_o")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = BUS;
+	WIDTH = 32;
+	LSB_INDEX = 0;
+	DIRECTION = REGISTERED;
+	PARENT = "";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[31]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[30]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[29]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[28]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[27]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[26]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[25]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[24]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[23]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[22]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[21]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[20]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[19]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[18]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[17]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[16]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[15]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[14]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[13]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[12]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[11]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[10]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[9]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[8]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[7]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[6]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[5]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[4]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[3]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[2]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[1]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
+SIGNAL("wb_sram:sram0|wb_dat_o[0]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = REGISTERED;
+	PARENT = "wb_sram:sram0|wb_dat_o";
+}
+
 TRANSITION_LIST("clk")
 {
 	NODE
@@ -3280,9 +3850,9 @@ TRANSITION_LIST("clk")
 		REPEAT = 1;
 		NODE
 		{
-			REPEAT = 1000;
-			LEVEL 0 FOR 20.0;
-			LEVEL 1 FOR 20.0;
+			REPEAT = 4000;
+			LEVEL 0 FOR 5.0;
+			LEVEL 1 FOR 5.0;
 		}
 	}
 }
@@ -6016,6 +6586,501 @@ TRANSITION_LIST("wb_uart:uart0|wb_rxirq_o")
 }
 
 TRANSITION_LIST("wb_uart:uart0|rx_irqen")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("sram_lb_n")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("sram_oe_n")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("sram_ub_n")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("sram_we_n")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|active")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|high_word")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|sram_dq_in[15]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|sram_dq_in[14]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|sram_dq_in[13]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|sram_dq_in[12]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|sram_dq_in[11]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|sram_dq_in[10]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|sram_dq_in[9]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|sram_dq_in[8]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|sram_dq_in[7]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|sram_dq_in[6]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|sram_dq_in[5]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|sram_dq_in[4]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|sram_dq_in[3]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|sram_dq_in[2]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|sram_dq_in[1]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|sram_dq_in[0]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_ack_o")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[31]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[30]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[29]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[28]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[27]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[26]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[25]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[24]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[23]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[22]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[21]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[20]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[19]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[18]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[17]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[16]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[15]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[14]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[13]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[12]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[11]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[10]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[9]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[8]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[7]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[6]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[5]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[4]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[3]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[2]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[1]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL X FOR 40000.0;
+	}
+}
+
+TRANSITION_LIST("wb_sram:sram0|wb_dat_o[0]")
 {
 	NODE
 	{
@@ -8764,12 +9829,39 @@ DISPLAY_LINE
 
 DISPLAY_LINE
 {
-	CHANNEL = "hex0";
+	CHANNEL = "sram_oe_n";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
 	TREE_INDEX = 275;
 	TREE_LEVEL = 0;
-	CHILDREN = 276, 277, 278, 279, 280, 281, 282;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "sram_we_n";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 276;
+	TREE_LEVEL = 0;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_ack_o";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 277;
+	TREE_LEVEL = 0;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "hex0";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 278;
+	TREE_LEVEL = 0;
+	CHILDREN = 279, 280, 281, 282, 283, 284, 285;
 }
 
 DISPLAY_LINE
@@ -8777,9 +9869,9 @@ DISPLAY_LINE
 	CHANNEL = "hex0[6]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 276;
+	TREE_INDEX = 279;
 	TREE_LEVEL = 1;
-	PARENT = 275;
+	PARENT = 278;
 }
 
 DISPLAY_LINE
@@ -8787,9 +9879,9 @@ DISPLAY_LINE
 	CHANNEL = "hex0[5]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 277;
+	TREE_INDEX = 280;
 	TREE_LEVEL = 1;
-	PARENT = 275;
+	PARENT = 278;
 }
 
 DISPLAY_LINE
@@ -8797,9 +9889,9 @@ DISPLAY_LINE
 	CHANNEL = "hex0[4]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 278;
+	TREE_INDEX = 281;
 	TREE_LEVEL = 1;
-	PARENT = 275;
+	PARENT = 278;
 }
 
 DISPLAY_LINE
@@ -8807,9 +9899,9 @@ DISPLAY_LINE
 	CHANNEL = "hex0[3]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 279;
+	TREE_INDEX = 282;
 	TREE_LEVEL = 1;
-	PARENT = 275;
+	PARENT = 278;
 }
 
 DISPLAY_LINE
@@ -8817,9 +9909,9 @@ DISPLAY_LINE
 	CHANNEL = "hex0[2]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 280;
+	TREE_INDEX = 283;
 	TREE_LEVEL = 1;
-	PARENT = 275;
+	PARENT = 278;
 }
 
 DISPLAY_LINE
@@ -8827,9 +9919,9 @@ DISPLAY_LINE
 	CHANNEL = "hex0[1]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 281;
+	TREE_INDEX = 284;
 	TREE_LEVEL = 1;
-	PARENT = 275;
+	PARENT = 278;
 }
 
 DISPLAY_LINE
@@ -8837,9 +9929,9 @@ DISPLAY_LINE
 	CHANNEL = "hex0[0]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 282;
+	TREE_INDEX = 285;
 	TREE_LEVEL = 1;
-	PARENT = 275;
+	PARENT = 278;
 }
 
 DISPLAY_LINE
@@ -8847,9 +9939,9 @@ DISPLAY_LINE
 	CHANNEL = "hex1";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 283;
+	TREE_INDEX = 286;
 	TREE_LEVEL = 0;
-	CHILDREN = 284, 285, 286, 287, 288, 289, 290;
+	CHILDREN = 287, 288, 289, 290, 291, 292, 293;
 }
 
 DISPLAY_LINE
@@ -8857,9 +9949,9 @@ DISPLAY_LINE
 	CHANNEL = "hex1[6]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 284;
+	TREE_INDEX = 287;
 	TREE_LEVEL = 1;
-	PARENT = 283;
+	PARENT = 286;
 }
 
 DISPLAY_LINE
@@ -8867,9 +9959,9 @@ DISPLAY_LINE
 	CHANNEL = "hex1[5]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 285;
+	TREE_INDEX = 288;
 	TREE_LEVEL = 1;
-	PARENT = 283;
+	PARENT = 286;
 }
 
 DISPLAY_LINE
@@ -8877,9 +9969,9 @@ DISPLAY_LINE
 	CHANNEL = "hex1[4]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 286;
+	TREE_INDEX = 289;
 	TREE_LEVEL = 1;
-	PARENT = 283;
+	PARENT = 286;
 }
 
 DISPLAY_LINE
@@ -8887,9 +9979,9 @@ DISPLAY_LINE
 	CHANNEL = "hex1[3]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 287;
+	TREE_INDEX = 290;
 	TREE_LEVEL = 1;
-	PARENT = 283;
+	PARENT = 286;
 }
 
 DISPLAY_LINE
@@ -8897,9 +9989,9 @@ DISPLAY_LINE
 	CHANNEL = "hex1[2]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 288;
+	TREE_INDEX = 291;
 	TREE_LEVEL = 1;
-	PARENT = 283;
+	PARENT = 286;
 }
 
 DISPLAY_LINE
@@ -8907,9 +9999,9 @@ DISPLAY_LINE
 	CHANNEL = "hex1[1]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 289;
+	TREE_INDEX = 292;
 	TREE_LEVEL = 1;
-	PARENT = 283;
+	PARENT = 286;
 }
 
 DISPLAY_LINE
@@ -8917,9 +10009,9 @@ DISPLAY_LINE
 	CHANNEL = "hex1[0]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 290;
+	TREE_INDEX = 293;
 	TREE_LEVEL = 1;
-	PARENT = 283;
+	PARENT = 286;
 }
 
 DISPLAY_LINE
@@ -8927,9 +10019,9 @@ DISPLAY_LINE
 	CHANNEL = "hex2";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 291;
+	TREE_INDEX = 294;
 	TREE_LEVEL = 0;
-	CHILDREN = 292, 293, 294, 295, 296, 297, 298;
+	CHILDREN = 295, 296, 297, 298, 299, 300, 301;
 }
 
 DISPLAY_LINE
@@ -8937,9 +10029,9 @@ DISPLAY_LINE
 	CHANNEL = "hex2[6]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 292;
+	TREE_INDEX = 295;
 	TREE_LEVEL = 1;
-	PARENT = 291;
+	PARENT = 294;
 }
 
 DISPLAY_LINE
@@ -8947,9 +10039,9 @@ DISPLAY_LINE
 	CHANNEL = "hex2[5]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 293;
+	TREE_INDEX = 296;
 	TREE_LEVEL = 1;
-	PARENT = 291;
+	PARENT = 294;
 }
 
 DISPLAY_LINE
@@ -8957,9 +10049,9 @@ DISPLAY_LINE
 	CHANNEL = "hex2[4]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 294;
+	TREE_INDEX = 297;
 	TREE_LEVEL = 1;
-	PARENT = 291;
+	PARENT = 294;
 }
 
 DISPLAY_LINE
@@ -8967,9 +10059,9 @@ DISPLAY_LINE
 	CHANNEL = "hex2[3]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 295;
+	TREE_INDEX = 298;
 	TREE_LEVEL = 1;
-	PARENT = 291;
+	PARENT = 294;
 }
 
 DISPLAY_LINE
@@ -8977,9 +10069,9 @@ DISPLAY_LINE
 	CHANNEL = "hex2[2]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 296;
+	TREE_INDEX = 299;
 	TREE_LEVEL = 1;
-	PARENT = 291;
+	PARENT = 294;
 }
 
 DISPLAY_LINE
@@ -8987,9 +10079,9 @@ DISPLAY_LINE
 	CHANNEL = "hex2[1]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 297;
+	TREE_INDEX = 300;
 	TREE_LEVEL = 1;
-	PARENT = 291;
+	PARENT = 294;
 }
 
 DISPLAY_LINE
@@ -8997,9 +10089,9 @@ DISPLAY_LINE
 	CHANNEL = "hex2[0]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 298;
+	TREE_INDEX = 301;
 	TREE_LEVEL = 1;
-	PARENT = 291;
+	PARENT = 294;
 }
 
 DISPLAY_LINE
@@ -9007,9 +10099,9 @@ DISPLAY_LINE
 	CHANNEL = "hex3";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 299;
+	TREE_INDEX = 302;
 	TREE_LEVEL = 0;
-	CHILDREN = 300, 301, 302, 303, 304, 305, 306;
+	CHILDREN = 303, 304, 305, 306, 307, 308, 309;
 }
 
 DISPLAY_LINE
@@ -9017,9 +10109,9 @@ DISPLAY_LINE
 	CHANNEL = "hex3[6]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 300;
+	TREE_INDEX = 303;
 	TREE_LEVEL = 1;
-	PARENT = 299;
+	PARENT = 302;
 }
 
 DISPLAY_LINE
@@ -9027,9 +10119,9 @@ DISPLAY_LINE
 	CHANNEL = "hex3[5]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 301;
+	TREE_INDEX = 304;
 	TREE_LEVEL = 1;
-	PARENT = 299;
+	PARENT = 302;
 }
 
 DISPLAY_LINE
@@ -9037,9 +10129,9 @@ DISPLAY_LINE
 	CHANNEL = "hex3[4]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 302;
+	TREE_INDEX = 305;
 	TREE_LEVEL = 1;
-	PARENT = 299;
+	PARENT = 302;
 }
 
 DISPLAY_LINE
@@ -9047,9 +10139,9 @@ DISPLAY_LINE
 	CHANNEL = "hex3[3]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 303;
+	TREE_INDEX = 306;
 	TREE_LEVEL = 1;
-	PARENT = 299;
+	PARENT = 302;
 }
 
 DISPLAY_LINE
@@ -9057,9 +10149,9 @@ DISPLAY_LINE
 	CHANNEL = "hex3[2]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 304;
+	TREE_INDEX = 307;
 	TREE_LEVEL = 1;
-	PARENT = 299;
+	PARENT = 302;
 }
 
 DISPLAY_LINE
@@ -9067,9 +10159,9 @@ DISPLAY_LINE
 	CHANNEL = "hex3[1]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 305;
+	TREE_INDEX = 308;
 	TREE_LEVEL = 1;
-	PARENT = 299;
+	PARENT = 302;
 }
 
 DISPLAY_LINE
@@ -9077,41 +10169,14 @@ DISPLAY_LINE
 	CHANNEL = "hex3[0]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Hexadecimal;
-	TREE_INDEX = 306;
+	TREE_INDEX = 309;
 	TREE_LEVEL = 1;
-	PARENT = 299;
+	PARENT = 302;
 }
 
 DISPLAY_LINE
 {
 	CHANNEL = "sram_dq[0]~result";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Binary;
-	TREE_INDEX = 307;
-	TREE_LEVEL = 0;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "sram_dq[1]~result";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Binary;
-	TREE_INDEX = 308;
-	TREE_LEVEL = 0;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "sram_dq[2]~result";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Binary;
-	TREE_INDEX = 309;
-	TREE_LEVEL = 0;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "sram_dq[3]~result";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
 	TREE_INDEX = 310;
@@ -9120,7 +10185,7 @@ DISPLAY_LINE
 
 DISPLAY_LINE
 {
-	CHANNEL = "sram_dq[4]~result";
+	CHANNEL = "sram_dq[1]~result";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
 	TREE_INDEX = 311;
@@ -9129,7 +10194,7 @@ DISPLAY_LINE
 
 DISPLAY_LINE
 {
-	CHANNEL = "sram_dq[5]~result";
+	CHANNEL = "sram_dq[2]~result";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
 	TREE_INDEX = 312;
@@ -9138,7 +10203,7 @@ DISPLAY_LINE
 
 DISPLAY_LINE
 {
-	CHANNEL = "sram_dq[6]~result";
+	CHANNEL = "sram_dq[3]~result";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
 	TREE_INDEX = 313;
@@ -9147,7 +10212,7 @@ DISPLAY_LINE
 
 DISPLAY_LINE
 {
-	CHANNEL = "sram_dq[7]~result";
+	CHANNEL = "sram_dq[4]~result";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
 	TREE_INDEX = 314;
@@ -9156,7 +10221,7 @@ DISPLAY_LINE
 
 DISPLAY_LINE
 {
-	CHANNEL = "sram_dq[8]~result";
+	CHANNEL = "sram_dq[5]~result";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
 	TREE_INDEX = 315;
@@ -9165,7 +10230,7 @@ DISPLAY_LINE
 
 DISPLAY_LINE
 {
-	CHANNEL = "sram_dq[9]~result";
+	CHANNEL = "sram_dq[6]~result";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
 	TREE_INDEX = 316;
@@ -9174,7 +10239,7 @@ DISPLAY_LINE
 
 DISPLAY_LINE
 {
-	CHANNEL = "sram_dq[10]~result";
+	CHANNEL = "sram_dq[7]~result";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
 	TREE_INDEX = 317;
@@ -9183,7 +10248,7 @@ DISPLAY_LINE
 
 DISPLAY_LINE
 {
-	CHANNEL = "sram_dq[11]~result";
+	CHANNEL = "sram_dq[8]~result";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
 	TREE_INDEX = 318;
@@ -9192,7 +10257,7 @@ DISPLAY_LINE
 
 DISPLAY_LINE
 {
-	CHANNEL = "sram_dq[12]~result";
+	CHANNEL = "sram_dq[9]~result";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
 	TREE_INDEX = 319;
@@ -9201,7 +10266,7 @@ DISPLAY_LINE
 
 DISPLAY_LINE
 {
-	CHANNEL = "sram_dq[13]~result";
+	CHANNEL = "sram_dq[10]~result";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
 	TREE_INDEX = 320;
@@ -9210,7 +10275,7 @@ DISPLAY_LINE
 
 DISPLAY_LINE
 {
-	CHANNEL = "sram_dq[14]~result";
+	CHANNEL = "sram_dq[11]~result";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
 	TREE_INDEX = 321;
@@ -9219,11 +10284,574 @@ DISPLAY_LINE
 
 DISPLAY_LINE
 {
-	CHANNEL = "sram_dq[15]~result";
+	CHANNEL = "sram_dq[12]~result";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
 	TREE_INDEX = 322;
 	TREE_LEVEL = 0;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "sram_dq[13]~result";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Binary;
+	TREE_INDEX = 323;
+	TREE_LEVEL = 0;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "sram_dq[14]~result";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Binary;
+	TREE_INDEX = 324;
+	TREE_LEVEL = 0;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "sram_dq[15]~result";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Binary;
+	TREE_INDEX = 325;
+	TREE_LEVEL = 0;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "sram_lb_n";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 326;
+	TREE_LEVEL = 0;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "sram_ub_n";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 327;
+	TREE_LEVEL = 0;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|active";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 328;
+	TREE_LEVEL = 0;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|high_word";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 329;
+	TREE_LEVEL = 0;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|sram_dq_in";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 330;
+	TREE_LEVEL = 0;
+	CHILDREN = 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|sram_dq_in[15]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 331;
+	TREE_LEVEL = 1;
+	PARENT = 330;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|sram_dq_in[14]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 332;
+	TREE_LEVEL = 1;
+	PARENT = 330;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|sram_dq_in[13]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 333;
+	TREE_LEVEL = 1;
+	PARENT = 330;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|sram_dq_in[12]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 334;
+	TREE_LEVEL = 1;
+	PARENT = 330;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|sram_dq_in[11]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 335;
+	TREE_LEVEL = 1;
+	PARENT = 330;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|sram_dq_in[10]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 336;
+	TREE_LEVEL = 1;
+	PARENT = 330;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|sram_dq_in[9]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 337;
+	TREE_LEVEL = 1;
+	PARENT = 330;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|sram_dq_in[8]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 338;
+	TREE_LEVEL = 1;
+	PARENT = 330;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|sram_dq_in[7]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 339;
+	TREE_LEVEL = 1;
+	PARENT = 330;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|sram_dq_in[6]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 340;
+	TREE_LEVEL = 1;
+	PARENT = 330;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|sram_dq_in[5]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 341;
+	TREE_LEVEL = 1;
+	PARENT = 330;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|sram_dq_in[4]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 342;
+	TREE_LEVEL = 1;
+	PARENT = 330;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|sram_dq_in[3]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 343;
+	TREE_LEVEL = 1;
+	PARENT = 330;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|sram_dq_in[2]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 344;
+	TREE_LEVEL = 1;
+	PARENT = 330;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|sram_dq_in[1]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 345;
+	TREE_LEVEL = 1;
+	PARENT = 330;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|sram_dq_in[0]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 346;
+	TREE_LEVEL = 1;
+	PARENT = 330;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 347;
+	TREE_LEVEL = 0;
+	CHILDREN = 348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359, 360, 361, 362, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[31]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 348;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[30]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 349;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[29]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 350;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[28]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 351;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[27]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 352;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[26]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 353;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[25]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 354;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[24]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 355;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[23]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 356;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[22]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 357;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[21]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 358;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[20]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 359;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[19]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 360;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[18]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 361;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[17]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 362;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[16]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 363;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[15]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 364;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[14]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 365;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[13]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 366;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[12]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 367;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[11]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 368;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[10]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 369;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[9]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 370;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[8]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 371;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[7]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 372;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[6]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 373;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[5]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 374;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[4]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 375;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[3]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 376;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[2]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 377;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[1]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 378;
+	TREE_LEVEL = 1;
+	PARENT = 347;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "wb_sram:sram0|wb_dat_o[0]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 379;
+	TREE_LEVEL = 1;
+	PARENT = 347;
 }
 
 TIME_BAR

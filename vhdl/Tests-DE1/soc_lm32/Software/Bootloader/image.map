@@ -1,0 +1,106 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+prom             0x00000000         0x00000800
+ram              0x00000800         0x00000800
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+                0x00000000                __DYNAMIC = 0x0
+                0x00000000                _PROM_START = 0x0
+                0x00000800                _PROM_SIZE = 0x800
+                0x00000800                _PROM_END = (_PROM_START + _PROM_SIZE)
+                0x00000800                _RAM_START = 0x800
+                0x00000800                _RAM_SIZE = 0x800
+                0x00001000                _RAM_END = (_RAM_START + _RAM_SIZE)
+
+.text           0x00000000      0x620
+                0x00000000                _stext = .
+ *(.text)
+ .text          0x00000000       0xfc crt0ram.o
+                0x00000048                irq_enable
+                0x00000000                _start
+                0x0000006c                jump
+                0x00000054                irq_mask
+                0x00000060                irq_disable
+                0x00000070                halt
+ .text          0x000000fc      0x2d0 main.o
+                0x000000fc                readint
+                0x000001a4                memtest
+                0x00000140                writeint
+                0x0000027c                main
+ .text          0x000003cc      0x254 spike_hw.o
+                0x000005ec                uart_putstr
+                0x00000494                sleep
+                0x0000052c                uart_getchar
+                0x000004f0                uart_init
+                0x000003cc                irq_handler
+                0x000004c8                tic_init
+                0x000005c0                uart_putchar
+                0x00000620                _etext = .
+
+.data           0x00000620       0x84
+                0x00000620                _sdata = .
+ *(.data)
+ .data          0x00000620       0x14 spike_hw.o
+                0x0000062c                uart0
+                0x00000630                timer0
+                0x00000620                msec
+                0x00000628                gpio0
+                0x00000624                sram0
+ *(.rodata)
+ *(.rodata.*)
+ .rodata.str1.4
+                0x00000634       0x70 main.o
+                                 0x74 (size before relaxing)
+                0x000006a4                _edata = .
+
+.bss            0x00000800       0x28
+                0x00000800                _sbss = .
+ *(.bss)
+ .bss           0x00000800       0x28 spike_hw.o
+                0x00000828                _ebss = .
+LOAD crt0ram.o
+LOAD main.o
+LOAD spike_hw.o
+OUTPUT(image elf32-lm32)
+
+.debug_abbrev   0x00000000      0x22b
+ .debug_abbrev  0x00000000       0xf7 main.o
+ .debug_abbrev  0x000000f7      0x134 spike_hw.o
+
+.debug_info     0x00000000      0x4fc
+ .debug_info    0x00000000      0x190 main.o
+ .debug_info    0x00000190      0x36c spike_hw.o
+
+.debug_line     0x00000000      0x4ba
+ .debug_line    0x00000000      0x29e main.o
+ .debug_line    0x0000029e      0x21c spike_hw.o
+
+.debug_pubnames
+                0x00000000       0xeb
+ .debug_pubnames
+                0x00000000       0x40 main.o
+ .debug_pubnames
+                0x00000040       0xab spike_hw.o
+
+.debug_aranges  0x00000000       0x40
+ .debug_aranges
+                0x00000000       0x20 main.o
+ .debug_aranges
+                0x00000020       0x20 spike_hw.o
+
+.debug_ranges   0x00000000       0x18
+ .debug_ranges  0x00000000       0x18 main.o
+
+.debug_str      0x00000000      0x1c2
+ .debug_str     0x00000000       0xdb main.o
+                                 0xf1 (size before relaxing)
+ .debug_str     0x000000db       0xe7 spike_hw.o
+                                0x18f (size before relaxing)
+
+.comment        0x00000000       0x62
+ .comment       0x00000000       0x31 main.o
+ .comment       0x00000031       0x31 spike_hw.o

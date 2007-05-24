@@ -2,7 +2,7 @@
 --
 -- For defines see intercon.defines
 --
--- Generated Fri Mar 23 00:18:34 2007
+-- Generated Thu May 24 22:16:44 2007
 --
 -- Wishbone masters:
 --   lm32i
@@ -18,7 +18,7 @@
 --   gpio0
 --     baseadr 0x80002000 - size 0x00001000
 --   sram0
---     baseadr 0xB0000000 - size 0x00080000
+--     baseadr 0xB0000000 - size 0x00040000
 -----------------------------------------------------------------------------------------
 library IEEE;
 use IEEE.std_logic_1164.all;
@@ -182,6 +182,8 @@ entity intercon is
   -- sram0
   sram0_dat_o : in  std_logic_vector(31 downto 0);
   sram0_ack_o : in  std_logic;
+  sram0_err_o : in  std_logic;
+  sram0_rty_o : in  std_logic;
   sram0_dat_i : out std_logic_vector(31 downto 0);
   sram0_we_i  : out std_logic;
   sram0_sel_i : out std_logic_vector(3 downto 0);
@@ -564,7 +566,7 @@ lm32i_uart0_ss <= '1' when lm32i_adr_o(31 downto 12)="10000000000000000001" else
 '0';
 lm32i_gpio0_ss <= '1' when lm32i_adr_o(31 downto 12)="10000000000000000010" else 
 '0';
-lm32i_sram0_ss <= '1' when lm32i_adr_o(31 downto 19)="1011000000000" else 
+lm32i_sram0_ss <= '1' when lm32i_adr_o(31 downto 18)="10110000000000" else 
 '0';
 lm32d_bram0_ss <= '1' when lm32d_adr_o(31 downto 12)="00000000000000000000" else 
 '0';
@@ -574,7 +576,7 @@ lm32d_uart0_ss <= '1' when lm32d_adr_o(31 downto 12)="10000000000000000001" else
 '0';
 lm32d_gpio0_ss <= '1' when lm32d_adr_o(31 downto 12)="10000000000000000010" else 
 '0';
-lm32d_sram0_ss <= '1' when lm32d_adr_o(31 downto 19)="1011000000000" else 
+lm32d_sram0_ss <= '1' when lm32d_adr_o(31 downto 18)="10110000000000" else 
 '0';
 bram0_adr_i <= (lm32i_adr_o(31 downto 0) and lm32i_bram0_bg) or (lm32d_adr_o(31 downto 0) and lm32d_bram0_bg);
 timer0_adr_i <= (lm32i_adr_o(31 downto 0) and lm32i_timer0_bg) or (lm32d_adr_o(31 downto 0) and lm32d_timer0_bg);

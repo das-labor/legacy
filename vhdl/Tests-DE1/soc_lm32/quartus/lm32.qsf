@@ -25,7 +25,7 @@
 
 set_global_assignment -name DEVICE EP2C20F484C7
 set_global_assignment -name FAMILY "Cyclone II"
-set_global_assignment -name TOP_LEVEL_ENTITY wb_sram
+set_global_assignment -name TOP_LEVEL_ENTITY top
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 6.1
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "22:55:09  MARCH 06, 2007"
 set_global_assignment -name LAST_QUARTUS_VERSION 7.0
@@ -329,8 +329,13 @@ set_global_assignment -name CHECK_OUTPUTS OFF
 set_global_assignment -name ADD_DEFAULT_PINS_TO_SIMULATION_OUTPUT_WAVEFORMS OFF
 set_global_assignment -name SIMULATOR_GENERATE_POWERPLAY_VCD_FILE ON
 set_global_assignment -name SIMULATOR_POWERPLAY_VCD_FILE_OUTPUT_DESTINATION lm32.vcd
-set_global_assignment -name INCREMENTAL_VECTOR_INPUT_SOURCE sim_sram.vwf
-set_global_assignment -name VHDL_FILE wb_sram.vhd
+set_global_assignment -name INCREMENTAL_VECTOR_INPUT_SOURCE lm32.sim.vwf
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_instance_assignment -name PARTITION_HIERARCHY no_file_for_top_partition -to | -section_id Top
+set_global_assignment -name VERILOG_FILE ../wb_lm32/lm32_shifter.v
+set_global_assignment -name VERILOG_FILE ../wb_lm32/lm32_multiplier.v
+set_global_assignment -name VERILOG_FILE ../wb_sram/asram_core.v
+set_global_assignment -name VERILOG_FILE ../wb_sram/asram_top.v
 set_global_assignment -name VHDL_FILE ../wb_uart/uart.vhd
 set_global_assignment -name VHDL_FILE ../wb_uart/uart_rx.vhd
 set_global_assignment -name VHDL_FILE ../wb_uart/uart_tx.vhd
@@ -362,5 +367,3 @@ set_global_assignment -name VECTOR_WAVEFORM_FILE lm32.sim.vwf
 set_global_assignment -name VECTOR_WAVEFORM_FILE lm32_uart.vwf
 set_global_assignment -name ZIP_VECTOR_WAVEFORM_FILE lm32uart.cvwf
 set_global_assignment -name ZIP_VECTOR_WAVEFORM_FILE sram.cvwf
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_instance_assignment -name PARTITION_HIERARCHY no_file_for_top_partition -to | -section_id Top

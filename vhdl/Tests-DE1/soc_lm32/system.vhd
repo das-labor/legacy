@@ -66,20 +66,22 @@ component intercon is
   bram0_cyc_i : out std_logic;
   bram0_stb_i : out std_logic;
   -- sram0
-  sram0_dat_o : in  std_logic_vector(31 downto 0);
-  sram0_ack_o : in  std_logic;
   sram0_dat_i : out std_logic_vector(31 downto 0);
+  sram0_ack_o : in  std_logic;
+  sram0_dat_o : in  std_logic_vector(31 downto 0);
   sram0_we_i  : out std_logic;
   sram0_sel_i : out std_logic_vector(3 downto 0);
   sram0_adr_i : out std_logic_vector(31 downto 0);
   sram0_cyc_i : out std_logic;
   sram0_stb_i : out std_logic;
+  sram0_rty_o : in  std_logic;
+  sram0_err_o : in  std_logic;  
   -- timer0
   timer0_dat_o : in  std_logic_vector(31 downto 0);
   timer0_ack_o : in  std_logic;
   timer0_dat_i : out std_logic_vector(31 downto 0);
   timer0_we_i  : out std_logic;
-  timer0_sel_i : out std_logic_vector(3 downto 0);
+  timer0_sel_i : out std_logic_vector( 3 downto 0);
   timer0_adr_i : out std_logic_vector(31 downto 0);
   timer0_cyc_i : out std_logic;
   timer0_stb_i : out std_logic;
@@ -88,7 +90,7 @@ component intercon is
   uart0_ack_o : in  std_logic;
   uart0_dat_i : out std_logic_vector(31 downto 0);
   uart0_we_i  : out std_logic;
-  uart0_sel_i : out std_logic_vector(3 downto 0);
+  uart0_sel_i : out std_logic_vector( 3 downto 0);
   uart0_adr_i : out std_logic_vector(31 downto 0);
   uart0_cyc_i : out std_logic;
   uart0_stb_i : out std_logic;
@@ -97,7 +99,7 @@ component intercon is
   gpio0_ack_o : in  std_logic;
   gpio0_dat_i : out std_logic_vector(31 downto 0);
   gpio0_we_i  : out std_logic;
-  gpio0_sel_i : out std_logic_vector(3 downto 0);
+  gpio0_sel_i : out std_logic_vector( 3 downto 0);
   gpio0_adr_i : out std_logic_vector(31 downto 0);
   gpio0_cyc_i : out std_logic;
   gpio0_stb_i : out std_logic;
@@ -211,29 +213,35 @@ component wb_uart is
 		uart_tx    : out std_logic);
 end component wb_uart;
 
-component wb_sram is
+component asram_top is
 	port(
-	  clk      : in  std_logic;
-      reset    : in  std_logic;
-      -- Wishbone bus
-      wb_adr_i : in  std_logic_vector(31 downto 0);
-      wb_dat_i : in  std_logic_vector(31 downto 0);
-      wb_dat_o : out std_logic_vector(31 downto 0);
-      wb_sel_i : in  std_logic_vector( 3 downto 0);
-      wb_cyc_i : in  std_logic;
-      wb_stb_i : in  std_logic;
-      wb_ack_o : out std_logic;
-      wb_we_i  : in  std_logic;
-      -- Pins für das SRAM
-	  sram_oe_n : out std_logic;
-	  sram_we_n : out std_logic;
-	  sram_ub_n : out std_logic;
-	  sram_lb_n : out std_logic;
-	  sram_ce_n : out std_logic;
-	  sram_addr : out std_logic_vector(17 downto 0);
-	  sram_dq   : inout std_logic_vector(15 downto 0)
+        clk_i        : in  std_logic;
+        rst_i        : in  std_logic;
+                
+        ASRAM_CTI_I  : in  std_logic_vector(2 downto 0); 
+        ASRAM_BTE_I  : in  std_logic_vector(1 downto 0);
+        ASRAM_ADR_I  : in  std_logic_vector(31 downto 0);
+        ASRAM_DAT_I  : in  std_logic_vector(31 downto 0);
+        ASRAM_SEL_I  : in  std_logic_vector( 3 downto 0);
+        ASRAM_WE_I   : in  std_logic;
+        ASRAM_STB_I  : in  std_logic;
+        ASRAM_CYC_I  : in  std_logic;
+        ASRAM_LOCK_I : in  std_logic;
+        ASRAM_ACK_O  : out std_logic;
+        ASRAM_DAT_O  : out std_logic_vector(31 downto 0);
+        ASRAM_ERR_O  : out std_logic;
+        ASRAM_RTY_O  : out std_logic;
+        
+        -- SRAM side interface
+        sram_addr    : out std_logic_vector(17 downto 0);
+        sram_data_in : in  std_logic_vector(15 downto 0);
+        sram_data_out: out std_logic_vector(15 downto 0);
+        sram_csn     : out std_logic;
+        sram_wen     : out std_logic;
+        sram_oen     : out std_logic;
+        sram_be      : out std_logic_vector(1 downto 0)
 		);
-end component wb_sram;
+end component asram_top;
 
 
 component wb_gpio is
@@ -343,11 +351,19 @@ signal sram0_adr_i   : std_logic_vector(31 downto 0);
 signal sram0_dat_o   : std_logic_vector(31 downto 0);
 signal sram0_dat_i   : std_logic_vector(31 downto 0);
 signal sram0_sel_i   : std_logic_vector( 3 downto 0);
+signal sram0_cti_i   : std_logic_vector( 2 downto 0);
 signal sram0_cyc_i   : std_logic;
 signal sram0_stb_i   : std_logic;
 signal sram0_ack_o   : std_logic;
+signal sram0_rty_o   : std_logic;
+signal sram0_err_o   : std_logic;
 signal sram0_we_i    : std_logic;
+signal sram0_dq_i    : std_logic_vector(15 downto 0);
+signal sram0_dq_o    : std_logic_vector(15 downto 0);
+signal sram0_we_n    : std_logic;
 
+
+signal hex_view      : std_logic_vector(31 downto 0);
 
 -------------------------------------------------------------------------
 -- Implementation -----------------------------------------------------------
@@ -359,7 +375,11 @@ iport(3 downto 0) <= btn(3 downto 0);
 leds <= clk & reset &  uart0_stb_i & uart0_ack_o & 
         uart0_irq_rx & uart0_irq_tx & uart0_we_i & uart0_we_i;
 
+sram_dq    <= sram0_dq_o when sram0_we_n='0' else 
+	          (others => 'Z');
+sram0_dq_i <= sram_dq;
 
+sram_we_n  <= sram0_we_n;
 -----------------------------------------------------------------------------
 -- LM32 CPU -----------------------------------------------------------------
 -----------------------------------------------------------------------------
@@ -435,27 +455,34 @@ uart0: wb_uart
 			uart_tx   => uart_tx
 	);
 
-sram0: wb_sram
+sram0: asram_top
 	Port map (
-			clk       => clk,
-			reset     => reset,
-			--
-			wb_adr_i  => sram0_adr_i,
-			wb_dat_o  => sram0_dat_o,
-			wb_dat_i  => sram0_dat_i,
-			wb_sel_i  => sram0_sel_i,
-			wb_stb_i  => sram0_stb_i,
-			wb_cyc_i  => sram0_cyc_i,
-			wb_ack_o  => sram0_ack_o,
-			wb_we_i   => sram0_we_i,
-			
-			sram_oe_n => sram_oe_n,
-			sram_we_n => sram_we_n,
-			sram_ub_n => sram_ub_n,
-			sram_lb_n => sram_lb_n,
-			sram_ce_n => sram_ce_n,
-			sram_addr => sram_addr,
-			sram_dq   => sram_dq
+		clk_i        => clk,
+		rst_i        => reset,
+        
+		ASRAM_CTI_I  => (others => '0'),
+		ASRAM_BTE_I  => (others => '0'),
+		ASRAM_ADR_I  => sram0_adr_i,
+		ASRAM_DAT_I  => sram0_dat_i,
+		ASRAM_SEL_I  => sram0_sel_i,
+		ASRAM_WE_I   => sram0_we_i,
+		ASRAM_STB_I  => sram0_stb_i,
+		ASRAM_CYC_I  => sram0_cyc_i,
+		ASRAM_LOCK_I => '0',
+		ASRAM_ACK_O  => sram0_ack_o,
+		ASRAM_DAT_O  => sram0_dat_o,
+		ASRAM_ERR_O  => sram0_err_o,
+		ASRAM_RTY_O  => sram0_rty_o,
+
+		-- SRAM side 
+		sram_addr    => sram_addr,
+		sram_data_in => sram0_dq_i,
+		sram_data_out=> sram0_dq_o,
+		sram_csn     => sram_ce_n,
+		sram_wen     => sram0_we_n,
+		sram_oen     => sram_oe_n,  
+		sram_be(1)   => sram_ub_n,
+		sram_be(0)   => sram_lb_n	   
 	);	
 	
 gpio0: wb_gpio
@@ -493,33 +520,43 @@ timer0: wb_timer
 			wb_irq1_o => timer0_irq1
 	);
 	
+	
+
+hex_view <= i_adr_o when btn(8 downto 7)="00" else
+            d_adr_o when btn(8 downto 7)="01" else
+            i_dat_i when btn(8 downto 6)="100" else
+            i_dat_o when btn(8 downto 6)="101" else
+            d_dat_i when btn(8 downto 6)="110" else
+            d_dat_o;
+            
+           
 digit0:nibble7Seg
 	Port map (
 		sel       => btn(9),
-		nibble0   => i_adr_o(3 downto 0),
-		nibble1   => i_adr_o(19 downto 16),
+		nibble0   => hex_view(3 downto 0),
+		nibble1   => hex_view(19 downto 16),
 		hex       => hex0	 	
 			 );
 
 digit1:nibble7Seg
 	Port map (
 		sel       => btn(9),
-		nibble0   => i_adr_o(7 downto 4),
-		nibble1   => i_adr_o(23 downto 20),
+		nibble0   => hex_view(7 downto 4),
+		nibble1   => hex_view(23 downto 20),
 		hex       => hex1	 	
 			 );
 digit2:nibble7Seg
 	Port map (
 		sel       => btn(9),
-		nibble0   => i_adr_o(11 downto 8),
-		nibble1   => i_adr_o(27 downto 24),
+		nibble0   => hex_view(11 downto 8),
+		nibble1   => hex_view(27 downto 24),
 		hex       => hex2	 	
 			 );
 digit3:nibble7Seg
 	Port map (
 		sel       => btn(9),
-		nibble0   => i_adr_o(15 downto 12),
-		nibble1   => i_adr_o(31 downto 28),
+		nibble0   => hex_view(15 downto 12),
+		nibble1   => hex_view(31 downto 28),
 		hex       => hex3	 	
 			 );						
 			
@@ -581,6 +618,8 @@ wb0: intercon
   sram0_adr_i  => sram0_adr_i, 
   sram0_cyc_i  => sram0_cyc_i, 
   sram0_stb_i  => sram0_stb_i, 
+  sram0_rty_o  => sram0_rty_o,
+  sram0_err_o  => sram0_err_o, 
   -- uart0
   uart0_dat_o => uart0_dat_o,
   uart0_ack_o => uart0_ack_o,
