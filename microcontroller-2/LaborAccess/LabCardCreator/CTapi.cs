@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace CTapi 
 {
 
-	class CTapi 
+	public class CTapi 
 	{
 		/*********************************************************************/
 		/* actual P/Invoke for native library */
@@ -34,7 +34,7 @@ namespace CTapi
 		
 		private ushort ctn = 1; 
 		
-		CTapi(int pn)
+		public CTapi(int pn)
 		{
 			int ret;
 
@@ -71,16 +71,18 @@ namespace CTapi
 			ushort lr = 4;			
 			byte[] rsp = new byte[lr];
 			
-			ret = CT_data(ctn, ref dad, ref sad, cmd.Length, cmd, ref lr, rsp);			
+			ret = CT_data(ctn, ref dad, ref sad, (ushort)cmd.Length, cmd, ref lr, rsp);			
 		
 			if (ret == 0)
 				return true;
 			
 			System.Console.WriteLine(ret);
+			return false;
 		}
 		
 		public byte[] Read(int addr, int size)
 		{
+			return new byte[0];
 		}
 	}
 	
