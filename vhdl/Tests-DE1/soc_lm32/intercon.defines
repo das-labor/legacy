@@ -130,11 +130,11 @@ slave sram0
   tga_i=0
   tgc_i=0
   tgd_i=0
-  lock_i=0
-  err_o=0
-  rty_o=0
+  lock_i=1
+  err_o=1
+  rty_o=1
   baseadr=0xB0000000
-  size=0x00080000
+  size=0x00040000
   baseadr1=0x00000000
   size1=0xffffffff
   baseadr2=0x00000000

@@ -23,12 +23,6 @@
  * SUCH DAMAGE.
  */
 
-/* From include/sys/signal.h */  
-#define	SIGINT	2	/* interrupt */
-#define	SIGTRAP	5	/* trace trap */
-#define	SIGFPE	8	/* arithmetic exception */
-#define	SIGSEGV	11	/* segmentation violation */
-
 #define _fstack _RAM_END
 #define _gp     _RAM_START
 
@@ -39,8 +33,8 @@
 		.global     irq_enable, irq_disable, irq_mask, jump, halt
 _start:    
 _reset_handler:
-	xor r0, r0, r0
-	wcsr	IE, r0
+	xor     r0, r0, r0
+	wcsr    IE, r0
 	mvhi    r1, hi(_reset_handler)
 	ori     r1, r1, lo(_reset_handler)
 	wcsr    EBA, r1
@@ -81,8 +75,7 @@ irq_disable:
 	ret
 
 jump:
-	bi jump
-
+	b       r1 
 
 halt:
 	bi halt

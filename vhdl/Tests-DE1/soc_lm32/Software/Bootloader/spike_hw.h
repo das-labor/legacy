@@ -7,7 +7,7 @@
 #define RAMEND    (RAMSTART + RAMSIZE)
 
 #define SRAM_START 0xB0000000
-#define SRAM_SIZE  0x00080000
+#define SRAM_SIZE  0x00040000
 
 #define FCPU         25000000
 
@@ -21,9 +21,6 @@ typedef signed   int   int32_t;
 typedef unsigned char  uint8_t;
 typedef signed   char   int8_t;
 
-/***************************************************************************
- * SPARC Interrupt & PowerDown 
- */
 void irq_enable();
 void irq_disable();
 void irq_mask();
@@ -84,5 +81,10 @@ void uart_init();
 void uart_putchar(char c);
 void uart_putstr(char *str);
 char uart_getchar();
+
+extern volatile timer_t  *timer0;
+extern volatile uart_t   *uart0; 
+extern volatile gpio_t   *gpio0; 
+extern volatile uint32_t *sram0; 
 
 #endif // SPIKEHW_H

@@ -99,5 +99,3 @@ sram_dq <= (others => 'Z') when wb_we_i='0' else
            sram_dq_out;
 
 end rtl;
-
-

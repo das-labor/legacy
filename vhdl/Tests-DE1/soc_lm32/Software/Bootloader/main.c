@@ -19,50 +19,47 @@ void writeint(uint32_t val)
 	for(i=0; i<8; i++) {
 		digit = (val & 0xf0000000) >> 28;
 		if (digit < 0xA) 
-			uart_putchar( '0'+digit );
+			uart_putchar('0'+digit);
 		else
-			uart_putchar( 'A'+(digit-10) );
+			uart_putchar('A'+digit-10);
 		val <<= 4;
 	}
 }
 
 void memtest()
 {
-	int *p;
-
-	for (p=(int *)SRAM_START; p<(int *)(SRAM_START+SRAM_SIZE-1); p++) {
-		*p = (int)p;
+	volatile int *p;
+    uart_putstr("SRAM MEMTEST WRITE\n\r");
+	writeint(0x12345678);
+	for (p = sram0; p < &sram0[100]; p++) {
+		writeint((int) p);
+		uart_putstr("\n\r");
+		*p = (int) p;  
 	}
-
-	for (p=(int *)SRAM_START; p<(int *)(SRAM_START+SRAM_SIZE-1); p++) {
+	
+    uart_putstr("SRAM MEMTEST READBACH\n\r");
+	for (p = sram0; p < &sram0[100]; p++) {
 		if (*p != (int)p) {
-			uart_putchar('S');
-			uart_putchar('R');
-			uart_putchar('A');
-			uart_putchar('M');
-			uart_putchar('\r');
-			uart_putchar('\n');
-				
+			uart_putstr("SRAM MEMTEST ERROR\n\r");
 		}
 	}
 }
 
-
 int main(int argc, char **argv)
 {
+	char test;
+	
+  	sram0[100] = '5';
+	test    = sram0[100];
+ 	if (test == '5') {
+ 	  irq_mask();
+ 	}	
+	
 	// Initialize stuff
 	uart_init();
-	//irq_mask();
 	//irq_enable();
-	
-	uart_putchar('S');
-	uart_putchar('p');
-	uart_putchar('i');
-	uart_putchar('k');
-	uart_putchar('e');
-	uart_putchar('\r');
-	uart_putchar('\n');
-	//uart_putstr("\r\n** SPIKE BOOTLOADER **\n\r");
+
+	uart_putstr("\r\n** SPIKE BOOTLOADER **\n\r");
 	memtest();
 	for(;;) {
 		uint32_t start, size, checksum;
@@ -92,10 +89,7 @@ int main(int argc, char **argv)
 				checksum += (unsigned char)c;
 			}
 			writeint(checksum); 
-			//uart_putstr(".\r\n");
-			uart_putchar('.');
-			uart_putchar('\r');
-			uart_putchar('\n');
+			uart_putstr(".\r\n");
 			break;
 		case 'g':
 			uart_putchar('u');
@@ -104,11 +98,7 @@ int main(int argc, char **argv)
 			writeint(start); uart_putchar('.');
 			irq_disable();
 			jump(start);
-			//uart_putstr("XXXX");
-			uart_putchar('X');
-			uart_putchar('X');
-			uart_putchar('X');
-			uart_putchar('X');			
+			uart_putstr("XXXX");		
 			break;
 		}
 	}
