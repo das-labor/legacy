@@ -9,6 +9,10 @@
 unsigned char buf[1502];
 volatile unsigned int count;
 
+#define PORT_LA PORTC
+#define DDR_LA DDRC
+#define PIN_LA PINC
+
 void uart_init() {
 	PORTD |= 0x01;				//Pullup an RXD an
 
@@ -57,8 +61,8 @@ SIGNAL(SIG_UART_RECV) {
 
 void init(){
 	unsigned int x;
-	DDRA = 0x0;
-	PORTA = 0xFF;
+	DDR_LA = 0x0;
+	PORT_LA = 0xFF;
 	
 	for(x=0;x<1000;x++){
 		buf[x]=0;
@@ -88,16 +92,16 @@ int main(){
 	
 	init();
 	uart_init();
-	fdevopen(&uart_putc,0,0);
+	fdevopen(&uart_putc,0);
 	printf("ready.\n\r");
 	sei();
 	
-	tmp2 = PINA;
+	tmp2 = PIN_LA;
 	while(1){
 		tmp1 = tmp2;
 		*p++ = tmp1;
 		TCNT1 = 0;
-		while( tmp1 == (tmp2=PINA) );
+		while( tmp1 == (tmp2=PIN_LA) );
 		*(unsigned int *)p = TCNT1;
 		p+=2;
 		if(count++ == 500) while(1);
