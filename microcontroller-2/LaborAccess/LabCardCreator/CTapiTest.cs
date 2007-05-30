@@ -7,8 +7,15 @@ public class CtTests
 	[Test]
 	public void ResetTest()
 	{
-		// CTapi ct = new CTapi(0);
-		// ct.Reset();
-		Assert.Fail();
+		CT ct = new CT(1);
+		ct.Reset();
 	}
+	
+	[Test]
+	public void RequestICC()
+	{
+		CT ct = new CT(1);
+		ct.GetStatus();
+	}
+	
 }
