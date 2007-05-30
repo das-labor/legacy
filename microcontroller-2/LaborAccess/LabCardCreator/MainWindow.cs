@@ -24,7 +24,7 @@ public class MainWindow: Gtk.Window
 
 	protected virtual void OnQuitActivated(object sender, System.EventArgs e)
 	{
-		Application.Quit ();	
+		Application.Quit ();
 	}
 
 	protected virtual void OnConnectActivated(object sender, System.EventArgs e)
