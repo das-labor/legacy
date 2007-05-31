@@ -83,20 +83,20 @@ trackball.o: trackball.c trackball.h
 util.o: util.c joystick.h
 	$(CC) $(CFLAGS) -c -o util.o util.c
 
-input.o: tetris/input.c joystick.h util.h tetris/input.h
-	$(CC) $(CFLAGS) -c -o tetris/input.o tetris/input.c
+tetris/input.o: tetris/input.c joystick.h util.h tetris/input.h
+        $(CC) $(CFLAGS) -c -o tetris/input.o tetris/input.c
 
-logic.o: tetris/logic.c tetris/logic.h tetris/piece.h tetris/playfield.h \
-  tetris/view.h tetris/input.h
-	$(CC) $(CFLAGS) -c -o tetris/logic.o tetris/logic.c
+tetris/logic.o: tetris/logic.c tetris/logic.h tetris/piece.h \
+  tetris/playfield.h tetris/view.h tetris/input.h
+        $(CC) $(CFLAGS) -c -o tetris/logic.o tetris/logic.c
 
-piece.o: tetris/piece.c tetris/piece.h
-	$(CC) $(CFLAGS) -c -o tetris/piece.o tetris/piece.c
+tetris/piece.o: tetris/piece.c tetris/piece.h
+        $(CC) $(CFLAGS) -c -o tetris/piece.o tetris/piece.c
 
-playfield.o: tetris/playfield.c tetris/playfield.h tetris/piece.h
-	$(CC) $(CFLAGS) -c -o tetris/playfield.o tetris/playfield.c
+tetris/playfield.o: tetris/playfield.c tetris/playfield.h tetris/piece.h
+        $(CC) $(CFLAGS) -c -o tetris/playfield.o tetris/playfield.c
 
-view.o: tetris/view.c config.h pixel.h util.h scrolltext.h tetris/logic.h \
-  tetris/piece.h tetris/playfield.h tetris/view.h
-	$(CC) $(CFLAGS) -c -o tetris/view.o tetris/view.c
+tetris/view.o: tetris/view.c config.h pixel.h util.h scrolltext.h \
+  tetris/logic.h tetris/piece.h tetris/playfield.h tetris/view.h
+        $(CC) $(CFLAGS) -c -o tetris/view.o tetris/view.c
 
