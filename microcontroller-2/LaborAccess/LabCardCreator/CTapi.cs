@@ -1,11 +1,12 @@
 using System;
+using System.Threading;
 using System.Runtime.InteropServices;
 using System.Text;
 
 
 namespace CTapi 
 {
-	/*
+	/***
 	 *
 	 */
 	public class CT 
@@ -50,10 +51,19 @@ namespace CTapi
 		
 		public CT(int pn)
 		{
-			int ret;
+			int count, ret=0;
 
-			ret = CT_init(ctn, (ushort)pn);
-			
+			// Sometimes CT_init failes without reason
+			// Try it 5 times...
+			for(count=0; count<5; count++) {
+				ret = CT_init(ctn, (ushort)pn);
+
+				if (ret==0)
+					break;
+				Thread.Sleep(500);
+				Console.WriteLine( "Opening try {0} failed...", count );
+			}
+
 			if (ret != 0)
 				throw new ApplicationException( String.Format ("Could not open Card Terminal (ret={0:d})", ret) );
 		}
