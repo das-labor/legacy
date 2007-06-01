@@ -2,7 +2,6 @@
 using System;
 using System.Threading;
 using Gtk;
-using NUnit.Framework;
 using CTapi;
 
 namespace LabCardCreator
@@ -11,21 +10,19 @@ namespace LabCardCreator
 	{
 		public static void Main (string[] args)
 		{
-			Thread.Sleep(1000);		
-			CT ct = new CT(1);
-			// ct.Reset();
+			CT ct = new CT(1);		
+
 			Thread.Sleep(1000);
-			
+
 			while(true) {
 				Thread.Sleep(500);
 				
 				if (ct.GetStatus()) {
-					System.Console.WriteLine( "Karte Drinne");
+					Console.WriteLine( "Karte Drinne");
 				} else {
-					System.Console.WriteLine( "Karte Drinne");
+					Console.WriteLine( "Karte Drinne");
 				}
 			}
-		
 		
 			/*
 			Application.Init ();

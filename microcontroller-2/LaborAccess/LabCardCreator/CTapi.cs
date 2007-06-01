@@ -1,16 +1,17 @@
 using System;
 using System.Runtime.InteropServices;
-
-
+using System.Text;
 
 
 namespace CTapi 
 {
-
+	/*
+	 *
+	 */
 	public class CT 
 	{
 		/*********************************************************************/
-		/* actual P/Invoke for native library */
+		/* actual P/Invoke for native library                                */
 		const string Library = "libtowitoko.so";
 	
 		[DllImport(Library)]
@@ -26,17 +27,17 @@ namespace CTapi
 		                                     ref ushort lr, byte[] rsp);
 		                                     
 		/*********************************************************************/
-		void DumpBytes(byte[] bytes)
+		string Hexify(byte[] bytes, int lr)
 		{
-			foreach(byte i in bytes)
-			{
-				System.Console.Write( "{0:x2} ", i );				
+			StringBuilder sb = new StringBuilder(80);
+			
+			for(int i=0; i<lr; i++) {
+				sb.AppendFormat( "{0:x2} ", bytes[i] );				
 			}
-			System.Console.WriteLine("");
+			return sb.ToString();
 		}
 		
 		/*********************************************************************/
-
 		private const byte ADDR_HOST    = 0x02;
 		private const byte ADDR_REMHOST = 0x05;  
 		private const byte ADDR_CT      = 0x01;		
@@ -53,17 +54,13 @@ namespace CTapi
 
 			ret = CT_init(ctn, (ushort)pn);
 			
-			if (ret != 0) {
-				System.Console.WriteLine("CT_init: " + ret);			
-				throw new ApplicationException( "Could not open Card Terminal" );
-			}
+			if (ret != 0)
+				throw new ApplicationException( String.Format ("Could not open Card Terminal (ret={0:d})", ret) );
 		}
 		
 		~CT()
 		{
-			int ret;
-			
-			ret = CT_close(ctn);
+			CT_close(ctn);
 		}
 		
 		public void Reset()
@@ -80,7 +77,9 @@ namespace CTapi
 			if ( (ret==0) && (rsp[0]==0x90) && (rsp[1]==0x00) )
 				return;
 		
-			throw new ApplicationException( "Could not reset Card Terminal" ); 
+			throw new ApplicationException( 
+				String.Format("Could not reset Card Terminal (ret={0:d} rsp=[{1}])", ret, Hexify(rsp, lr) )
+			);
 		}
 		
 		public bool RequestICC()
@@ -94,12 +93,12 @@ namespace CTapi
 			
 			ret = CT_data(ctn, ref dad, ref sad, (ushort)cmd.Length, cmd, ref lr, rsp);			
 		
-			if (ret != 0)
-				throw new ArgumentException();
+			if (ret == 0)
+				return true;
 			
-			System.Console.Write( "RequestICC: (ret={0:d} lr={1:d}) ", ret, lr );
-			DumpBytes(rsp);
-			return true;
+			throw new ApplicationException( 
+				String.Format("Could not request ICC (ret={0:d} rsp=[{1}])", ret, Hexify(rsp, lr) )
+			);
 		}
 		
 		public bool GetStatus()
@@ -113,25 +112,22 @@ namespace CTapi
 
 			ret = CT_data(ctn, ref dad, ref sad, (ushort)cmd.Length, cmd, ref lr, rsp);
 
-
-			
 			if ( (rsp[1] != 0x90) || (rsp[2] != 0x00) ) {
-				System.Console.Write( "RequestICC: (ret={0:d} lr={1:d}) ", ret, lr );
-				DumpBytes( rsp );
-				throw new ArgumentException();
+				throw new ApplicationException( 
+					String.Format("Could not get status (ret={0:d} rsp=[{1}])", ret, Hexify(rsp, lr) )
+				);
 			}
 				
-			if (rsp[0] == 0x00)
+			if (rsp[0] == 0x00) {
 				return false;
-			else if (rsp[0] == 0x05) 
+			} else if (rsp[0] == 0x05) { 
 				return true;
-
-			System.Console.Write( "RequestICC: (ret={0:d} lr={1:d}) ", ret, lr );
-			DumpBytes( rsp );
-
-			throw new ArgumentException();			
+			} else {
+				throw new ApplicationException( 
+					String.Format("Get status return bogus stuff (ret={0:d} rsp=[{1}])", ret, Hexify(rsp, lr) )
+				);
+			};
 		}
-		
 		
 		public byte[] Read(int addr, int size)
 		{

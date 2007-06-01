@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
-  <widget class="Gtk.Window" id="MainWindow" design-size="516 287">
+  <widget class="Gtk.Window" id="MainWindow" design-size="516 292">
     <action-group name="Default">
       <action id="CardCreator">
         <property name="ShortLabel">_CardCreator</property>
@@ -54,6 +54,11 @@
         <property name="StockId">gtk-clear</property>
         <signal name="Activated" handler="OnEraseActivated" />
       </action>
+      <action id="">
+        <property name="ShortLabel">------------------</property>
+        <property name="Label">------------------</property>
+        <property name="Type">Action</property>
+      </action>
     </action-group>
     <property name="Title" translatable="yes">Labor Card Creator</property>
     <property name="Icon">resource:Labor.png</property>
@@ -76,6 +81,7 @@
                 <node type="Menuitem" action="ViewHexdump" />
                 <node type="Menuitem" action="EraseCard" />
                 <node type="Menuitem" action="Quit" />
+                <node type="Menuitem" action="" />
               </node>
               <node type="Menu" action="Help">
                 <node type="Menuitem" action="About" />
