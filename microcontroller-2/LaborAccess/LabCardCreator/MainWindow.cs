@@ -1,21 +1,47 @@
-using Mono.Security;
 using System;
+using System.Threading;
+using Mono.Security;
 using Gtk;
+using CTapi;
 
 public class MainWindow: Gtk.Window
 {
+	// GTK Widgets
 	protected Gtk.Entry nickEntry;
 	protected Gtk.Entry nameEntry;
 	protected Gtk.Entry numberEntry;
 	protected Gtk.CheckButton adminCheck;
 	protected Gtk.CheckButton door0Check;
 	protected Gtk.CheckButton door1Check;
+
+	// CardReader stuff
+	protected CT ct;
 	
+	// Constructor
 	public MainWindow (): base ("")
 	{
 		Stetic.Gui.Build (this, typeof(MainWindow));
 	}
+
+	protected bool CheckCardStatus()
+	{
+		if (ct == null)
+			return false;
 	
+		try {
+			if (ct.GetStatus()) {
+				Console.WriteLine( "Karte is drinne" );
+			} else {
+				Console.WriteLine( "Nix Karte drinne" );			
+			};
+		} catch {
+			ct = null;
+			return false;
+		}
+		
+		return true;
+	}
+
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
 	{
 		Application.Quit ();
@@ -29,6 +55,10 @@ public class MainWindow: Gtk.Window
 
 	protected virtual void OnConnectActivated(object sender, System.EventArgs e)
 	{
+		ct = new CT(1);
+		
+		GLib.Timeout.Add (500, new GLib.TimeoutHandler(CheckCardStatus));
+		Console.Error.WriteLine("Connected to Card Terminal");
 	}
 
 	protected virtual void OnDisconnectActivated(object sender, System.EventArgs e)
@@ -65,13 +95,11 @@ public class MainWindow: Gtk.Window
 		name.Value = System.Text.Encoding.ASCII.GetBytes( nameEntry.Text );
 		
 		// root.SaveToFile( "/home/gast/file.asn" );
-				
-		System.Console.WriteLine( root.ToString() );
+		// Console.WriteLine( root.ToString() );
 	}
 	
 	protected virtual void OnAboutActivated(object sender, System.EventArgs e)
 	{
 	}
 
-	
 }
