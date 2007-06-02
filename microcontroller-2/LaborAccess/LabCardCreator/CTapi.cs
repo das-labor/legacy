@@ -3,11 +3,27 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using System.Text;
 
-
 namespace CTapi 
 {
-	/***
-	 *
+	/****************************************************************************
+	 * My own Exception Class
+	 */
+	public class CTException : ApplicationException
+	{
+		public CTException(string msg)
+			: base(msg)
+		{
+		}
+		
+		public CTException(string msg, Exception inner)
+			: base(msg, inner)
+		{
+		}
+	}
+
+
+	/***************************************************************************
+	 * Interface to libtowitoko CT_api
 	 */
 	public class CT 
 	{
@@ -54,18 +70,18 @@ namespace CTapi
 			int count, ret=0;
 
 			// Sometimes CT_init failes without reason
-			// Try it 5 times...
-			for(count=0; count<5; count++) {
+			// Try it 3 times...
+			for(count=0; count<3; count++) {
 				ret = CT_init(ctn, (ushort)pn);
 
 				if (ret==0)
 					break;
 				Thread.Sleep(500);
-				Console.WriteLine( "Opening try {0} failed...", count );
+				Console.WriteLine( "Opening CardTerminal ({0} try failed)", count+1 );
 			}
 
 			if (ret != 0)
-				throw new ApplicationException( String.Format ("Could not open Card Terminal (ret={0:d})", ret) );
+				throw new CTException( String.Format ("Could not open Card Terminal (ret={0:d})", ret) );
 		}
 		
 		~CT()
@@ -87,7 +103,7 @@ namespace CTapi
 			if ( (ret==0) && (rsp[0]==0x90) && (rsp[1]==0x00) )
 				return;
 		
-			throw new ApplicationException( 
+			throw new CTException( 
 				String.Format("Could not reset Card Terminal (ret={0:d} rsp=[{1}])", ret, Hexify(rsp, lr) )
 			);
 		}
@@ -106,7 +122,7 @@ namespace CTapi
 			if (ret == 0)
 				return true;
 			
-			throw new ApplicationException( 
+			throw new CTException( 
 				String.Format("Could not request ICC (ret={0:d} rsp=[{1}])", ret, Hexify(rsp, lr) )
 			);
 		}
@@ -123,7 +139,7 @@ namespace CTapi
 			ret = CT_data(ctn, ref dad, ref sad, (ushort)cmd.Length, cmd, ref lr, rsp);
 
 			if ( (rsp[1] != 0x90) || (rsp[2] != 0x00) ) {
-				throw new ApplicationException( 
+				throw new CTException( 
 					String.Format("Could not get status (ret={0:d} rsp=[{1}])", ret, Hexify(rsp, lr) )
 				);
 			}
@@ -133,7 +149,7 @@ namespace CTapi
 			} else if (rsp[0] == 0x05) { 
 				return true;
 			} else {
-				throw new ApplicationException( 
+				throw new CTException( 
 					String.Format("Get status return bogus stuff (ret={0:d} rsp=[{1}])", ret, Hexify(rsp, lr) )
 				);
 			};

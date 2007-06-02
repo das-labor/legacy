@@ -16,30 +16,51 @@ public class MainWindow: Gtk.Window
 
 	// CardReader stuff
 	protected CT ct;
+	protected bool CardInSlot;
+	
 	
 	// Constructor
 	public MainWindow (): base ("")
 	{
 		Stetic.Gui.Build (this, typeof(MainWindow));
+		CardInSlot = false;		
+	}
+	
+	// Card Inserted // Removed
+	protected void OnCardInserted()
+	{
+		Console.WriteLine( "Card Inserted!" );
+	}
+	
+	protected void OnCardRemoved()
+	{
+		Console.WriteLine( "Card Removed!");
 	}
 
+	// Check for card insertion / removes
+	// Called every second
 	protected bool CheckCardStatus()
 	{
+		bool card;
 		if (ct == null)
-			return false;
+			return false;   // stop checking
 	
 		try {
-			if (ct.GetStatus()) {
-				Console.WriteLine( "Karte is drinne" );
-			} else {
-				Console.WriteLine( "Nix Karte drinne" );			
+			card = ct.GetStatus();
+		
+			if (card && !CardInSlot ) {
+				OnCardInserted();
+				CardInSlot = true;
+			} else if (!card && CardInSlot) {
+				OnCardRemoved();
+				CardInSlot = false;
 			};
-		} catch {
+		} catch (CTException ex) {
 			ct = null;
-			return false;
+			return false;  // stop checking
 		}
 		
-		return true;
+		return true;       // recheck in 1s
 	}
 
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
@@ -55,10 +76,15 @@ public class MainWindow: Gtk.Window
 
 	protected virtual void OnConnectActivated(object sender, System.EventArgs e)
 	{
-		ct = new CT(1);
+		try {
+			ct = new CT(1);
 		
-		GLib.Timeout.Add (500, new GLib.TimeoutHandler(CheckCardStatus));
-		Console.Error.WriteLine("Connected to Card Terminal");
+			GLib.Timeout.Add (500, new GLib.TimeoutHandler(CheckCardStatus));
+			Console.Error.WriteLine("Connected to Card Terminal");
+		} catch ( CTException ex ) {
+			Console.Error.WriteLine( ex.ToString() );
+			ct = null;
+		}
 	}
 
 	protected virtual void OnDisconnectActivated(object sender, System.EventArgs e)

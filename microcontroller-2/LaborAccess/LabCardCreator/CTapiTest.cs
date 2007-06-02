@@ -9,7 +9,6 @@ public class CtTests
 {
 	// Configure COM port
 	public const int pn = 1;
-	
 	public CT ct;
 	
 
