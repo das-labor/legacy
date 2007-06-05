@@ -1,5 +1,4 @@
 #include <avr/io.h>
-#include <avr/signal.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 

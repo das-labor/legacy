@@ -212,26 +212,28 @@ int main(){
 	static uint16_t states[8];
 	static uint16_t shift_state[8];
 
+	uint8_t x;
 
 	init_ps2();
 	sei();
 
 	//DTV reset auslösen
-	*DDR(&PORT_RESET) |= 1<<PIN_RESET;
-	uint8_t x;
+	*DDR(&PORT_RESET) |= (1<<PIN_RESET);
 	for(x=0;x<10;x++){
-		key_make(PS2_KEY_LCTRL);
+//		key_make(PS2_KEY_LCTRL);
 		wait(40);
 	}
 
 	*DDR(&PORT_RESET) &= ~(1<<PIN_RESET);
 
 	//Auf die STRG Taste hauen, bis das DTV im cevi Modus ist
-	for(x=0;x<50;x++){
+	for(x=0;x<20;x++){
 		key_make(PS2_KEY_LCTRL);
-		wait(40);
+		wait(100);
 	}
 	
+	wait(200);
+
 	key_break(PS2_KEY_LCTRL);
 
 
