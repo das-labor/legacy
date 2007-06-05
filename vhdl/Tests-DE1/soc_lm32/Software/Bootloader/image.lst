@@ -3,27 +3,27 @@ image:     file format elf32-lm32
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00000620  00000000  00000000  00000054  2**2
+  0 .text         000005e8  00000000  00000000  00000054  2**2
                   CONTENTS, ALLOC, LOAD, CODE
-  1 .data         00000084  00000620  00000620  00000674  2**2
+  1 .data         00000054  000005e8  000005e8  0000063c  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          00000028  00000800  00000800  000006f8  2**2
+  2 .bss          00000028  00000800  00000800  00000690  2**2
                   ALLOC
-  3 .debug_abbrev 0000022b  00000000  00000000  000006f8  2**0
+  3 .debug_abbrev 0000022b  00000000  00000000  00000690  2**0
                   CONTENTS, READONLY, DEBUGGING
-  4 .debug_info   000004fc  00000000  00000000  00000923  2**0
+  4 .debug_info   000004fc  00000000  00000000  000008bb  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_line   000004ba  00000000  00000000  00000e1f  2**0
+  5 .debug_line   000004a2  00000000  00000000  00000db7  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_pubnames 000000eb  00000000  00000000  000012d9  2**0
+  6 .debug_pubnames 000000eb  00000000  00000000  00001259  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_aranges 00000040  00000000  00000000  000013c4  2**0
+  7 .debug_aranges 00000040  00000000  00000000  00001344  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_ranges 00000018  00000000  00000000  00001404  2**0
+  8 .debug_ranges 00000018  00000000  00000000  00001384  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    000001c2  00000000  00000000  0000141c  2**0
+  9 .debug_str    000001c2  00000000  00000000  0000139c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .comment      00000062  00000000  00000000  000015de  2**0
+ 10 .comment      00000062  00000000  00000000  0000155e  2**0
                   CONTENTS, READONLY
 Disassembly of section .text:
 
@@ -47,7 +47,7 @@ Disassembly of section .text:
   38:	34 01 00 00 	mvi r1,0
   3c:	34 02 00 00 	mvi r2,0
   40:	34 03 00 00 	mvi r3,0
-  44:	f8 00 00 8e 	calli 27c <main>
+  44:	f8 00 00 83 	calli 250 <main>
 
 00000048 <irq_enable>:
   48:	34 01 00 01 	mvi r1,1
@@ -119,18 +119,18 @@ uint32_t readint()
 	uint32_t val;
 
 	val = (uint8_t)uart_getchar();
- 108:	f8 00 01 09 	calli 52c <uart_getchar>
+ 108:	f8 00 00 fb 	calli 4f4 <uart_getchar>
 	val <<= 8; val += (uint8_t)uart_getchar();
  10c:	3c 2b 00 08 	sli r11,r1,8
- 110:	f8 00 01 07 	calli 52c <uart_getchar>
+ 110:	f8 00 00 f9 	calli 4f4 <uart_getchar>
  114:	b5 61 58 00 	add r11,r11,r1
 	val <<= 8; val += (uint8_t)uart_getchar();
  118:	3d 6b 00 08 	sli r11,r11,8
- 11c:	f8 00 01 04 	calli 52c <uart_getchar>
+ 11c:	f8 00 00 f6 	calli 4f4 <uart_getchar>
  120:	b5 61 58 00 	add r11,r11,r1
 	val <<= 8; val += (uint8_t)uart_getchar();
  124:	3d 6b 00 08 	sli r11,r11,8
- 128:	f8 00 01 01 	calli 52c <uart_getchar>
+ 128:	f8 00 00 f3 	calli 4f4 <uart_getchar>
 
 	return val;
 }
@@ -144,170 +144,156 @@ uint32_t readint()
 
 void writeint(uint32_t val)
 {
- 140:	37 9c ff f0 	addi sp,sp,-16
- 144:	5b 8b 00 10 	sw (sp+16),r11
- 148:	5b 8c 00 0c 	sw (sp+12),r12
- 14c:	5b 8d 00 08 	sw (sp+8),r13
- 150:	5b 9d 00 04 	sw (sp+4),ra
- 154:	78 0d f0 00 	mvhi r13,0xf000
- 158:	b8 20 58 00 	mv r11,r1
- 15c:	39 ad 00 00 	ori r13,r13,0x0
- 160:	34 0c 00 07 	mvi r12,7
+ 140:	37 9c ff ec 	addi sp,sp,-20
+ 144:	5b 8b 00 14 	sw (sp+20),r11
+ 148:	5b 8c 00 10 	sw (sp+16),r12
+ 14c:	5b 8d 00 0c 	sw (sp+12),r13
+ 150:	5b 8e 00 08 	sw (sp+8),r14
+ 154:	5b 9d 00 04 	sw (sp+4),ra
+ 158:	78 0d f0 00 	mvhi r13,0xf000
+ 15c:	b8 20 58 00 	mv r11,r1
+ 160:	39 ad 00 00 	ori r13,r13,0x0
+ 164:	34 0e 00 09 	mvi r14,9
+ 168:	34 0c 00 07 	mvi r12,7
 	int i, digit;
 
 	for(i=0; i<8; i++) {
 		digit = (val & 0xf0000000) >> 28;
- 164:	a1 6d 08 00 	and r1,r11,r13
- 168:	00 23 00 1c 	srui r3,r1,28
-		if (digit < 0xA) 
- 16c:	68 62 00 09 	cmpgi r2,r3,9
-			uart_putchar( '0'+digit );
- 170:	34 61 00 30 	addi r1,r3,48
- 174:	44 40 00 02 	be r2,r0,17c <writeint+0x3c>
+ 16c:	a1 6d 08 00 	and r1,r11,r13
+ 170:	00 22 00 1c 	srui r2,r1,28
+		if (digit >= 0xA) 
+			uart_putchar('A'+digit-10);
+ 174:	34 41 00 37 	addi r1,r2,55
+ 178:	4d c2 00 0c 	bge r14,r2,1a8 <writeint+0x68>
 		else
-			uart_putchar( 'A'+(digit-10) );
- 178:	34 61 00 37 	addi r1,r3,55
+			uart_putchar('0'+digit);
 		val <<= 4;
  17c:	3d 6b 00 04 	sli r11,r11,4
- 180:	f8 00 01 10 	calli 5c0 <uart_putchar>
+ 180:	f8 00 01 02 	calli 588 <uart_putchar>
  184:	35 8c ff ff 	addi r12,r12,-1
- 188:	4d 80 ff f7 	bge r12,r0,164 <writeint+0x24>
- 18c:	2b 8b 00 10 	lw r11,(sp+16)
- 190:	2b 8c 00 0c 	lw r12,(sp+12)
- 194:	2b 8d 00 08 	lw r13,(sp+8)
- 198:	2b 9d 00 04 	lw ra,(sp+4)
- 19c:	37 9c 00 10 	addi sp,sp,16
- 1a0:	c3 a0 00 00 	ret
+ 188:	4d 80 ff f9 	bge r12,r0,16c <writeint+0x2c>
+ 18c:	2b 8b 00 14 	lw r11,(sp+20)
+ 190:	2b 8c 00 10 	lw r12,(sp+16)
+ 194:	2b 8d 00 0c 	lw r13,(sp+12)
+ 198:	2b 8e 00 08 	lw r14,(sp+8)
+ 19c:	2b 9d 00 04 	lw ra,(sp+4)
+ 1a0:	37 9c 00 14 	addi sp,sp,20
+ 1a4:	c3 a0 00 00 	ret
+ 1a8:	34 41 00 30 	addi r1,r2,48
+ 1ac:	e3 ff ff f4 	bi 17c <writeint+0x3c>
 
-000001a4 <memtest>:
+000001b0 <memtest>:
 	}
 }
 
 void memtest()
 {
- 1a4:	37 9c ff f0 	addi sp,sp,-16
- 1a8:	5b 8b 00 10 	sw (sp+16),r11
- 1ac:	5b 8c 00 0c 	sw (sp+12),r12
- 1b0:	5b 8d 00 08 	sw (sp+8),r13
- 1b4:	5b 9d 00 04 	sw (sp+4),ra
+ 1b0:	37 9c ff f0 	addi sp,sp,-16
+ 1b4:	5b 8b 00 10 	sw (sp+16),r11
+ 1b8:	5b 8c 00 0c 	sw (sp+12),r12
+ 1bc:	5b 8d 00 08 	sw (sp+8),r13
+ 1c0:	5b 9d 00 04 	sw (sp+4),ra
 	volatile int *p;
-    uart_putstr("SRAM MEMTEST WRITE\n\r");
- 1b8:	78 01 00 00 	mvhi r1,0x0
- 1bc:	38 21 06 34 	ori r1,r1,0x634
- 1c0:	f8 00 01 0b 	calli 5ec <uart_putstr>
-	writeint(0x12345678);
- 1c4:	78 01 12 34 	mvhi r1,0x1234
- 1c8:	38 21 56 78 	ori r1,r1,0x5678
- 1cc:	fb ff ff dd 	calli 140 <writeint>
-	for (p = sram0; p < &sram0[100]; p++) {
- 1d0:	78 0d 00 00 	mvhi r13,0x0
- 1d4:	b9 a0 10 00 	mv r2,r13
- 1d8:	38 42 06 24 	ori r2,r2,0x624
- 1dc:	28 4b 00 00 	lw r11,(r2+0)
- 1e0:	35 61 01 90 	addi r1,r11,400
- 1e4:	51 61 00 0d 	bgeu r11,r1,218 <memtest+0x74>
- 1e8:	b8 40 60 00 	mv r12,r2
+    //uart_putstr("SRAM MEMTEST WRITE\n\r");
+	//writeint(0x12345678);
+	for (p=(int *)SRAM_START; p<(int *)(SRAM_START+SRAM_SIZE); p++) {
+ 1c4:	78 0b b0 00 	mvhi r11,0xb000
+ 1c8:	b9 60 68 00 	mv r13,r11
+ 1cc:	78 0c b0 00 	mvhi r12,0xb000
+ 1d0:	39 6b 00 00 	ori r11,r11,0x0
+ 1d4:	39 8c 00 ff 	ori r12,r12,0xff
 		writeint((int) p);
- 1ec:	b9 60 08 00 	mv r1,r11
- 1f0:	fb ff ff d4 	calli 140 <writeint>
+ 1d8:	b9 60 08 00 	mv r1,r11
+ 1dc:	fb ff ff d9 	calli 140 <writeint>
 		uart_putstr("\n\r");
- 1f4:	78 01 00 00 	mvhi r1,0x0
- 1f8:	38 21 06 94 	ori r1,r1,0x694
- 1fc:	f8 00 00 fc 	calli 5ec <uart_putstr>
- 200:	29 81 00 00 	lw r1,(r12+0)
+ 1e0:	78 01 00 00 	mvhi r1,0x0
+ 1e4:	38 21 05 fc 	ori r1,r1,0x5fc
+ 1e8:	f8 00 00 f3 	calli 5b4 <uart_putstr>
 		*p = (int) p;  
- 204:	59 6b 00 00 	sw (r11+0),r11
- 208:	35 6b 00 04 	addi r11,r11,4
- 20c:	34 21 01 90 	addi r1,r1,400
- 210:	51 61 00 02 	bgeu r11,r1,218 <memtest+0x74>
- 214:	e3 ff ff f6 	bi 1ec <memtest+0x48>
+ 1ec:	59 6b 00 00 	sw (r11+0),r11
+ 1f0:	35 6b 00 04 	addi r11,r11,4
+ 1f4:	55 6c 00 02 	bgu r11,r12,1fc <memtest+0x4c>
+ 1f8:	e3 ff ff f8 	bi 1d8 <memtest+0x28>
 	}
 	
-    uart_putstr("SRAM MEMTEST READBACH\n\r");
- 218:	78 01 00 00 	mvhi r1,0x0
- 21c:	38 21 06 4c 	ori r1,r1,0x64c
- 220:	f8 00 00 f3 	calli 5ec <uart_putstr>
-	for (p = sram0; p < &sram0[100]; p++) {
- 224:	b9 a0 10 00 	mv r2,r13
- 228:	38 42 06 24 	ori r2,r2,0x624
- 22c:	28 4b 00 00 	lw r11,(r2+0)
- 230:	35 61 01 90 	addi r1,r11,400
- 234:	51 61 00 0c 	bgeu r11,r1,264 <memtest+0xc0>
- 238:	b8 40 60 00 	mv r12,r2
+    uart_putstr("SRAM MEMTEST READBACK\n\r");
+ 1fc:	78 01 00 00 	mvhi r1,0x0
+ 200:	38 21 06 00 	ori r1,r1,0x600
+	for (p=(int *)SRAM_START; p<(int *)(SRAM_START+SRAM_SIZE); p++) {
+ 204:	b9 a0 58 00 	mv r11,r13
+ 208:	78 0c b0 00 	mvhi r12,0xb000
+ 20c:	f8 00 00 ea 	calli 5b4 <uart_putstr>
+ 210:	39 6b 00 00 	ori r11,r11,0x0
+ 214:	39 8c 00 ff 	ori r12,r12,0xff
 		if (*p != (int)p) {
- 23c:	29 62 00 00 	lw r2,(r11+0)
+ 218:	29 62 00 00 	lw r2,(r11+0)
 			uart_putstr("SRAM MEMTEST ERROR\n\r");
- 240:	78 01 00 00 	mvhi r1,0x0
- 244:	38 21 06 64 	ori r1,r1,0x664
- 248:	44 4b 00 02 	be r2,r11,250 <memtest+0xac>
- 24c:	f8 00 00 e8 	calli 5ec <uart_putstr>
- 250:	29 81 00 00 	lw r1,(r12+0)
- 254:	35 6b 00 04 	addi r11,r11,4
- 258:	34 21 01 90 	addi r1,r1,400
- 25c:	51 61 00 02 	bgeu r11,r1,264 <memtest+0xc0>
- 260:	e3 ff ff f7 	bi 23c <memtest+0x98>
- 264:	2b 8b 00 10 	lw r11,(sp+16)
- 268:	2b 8c 00 0c 	lw r12,(sp+12)
- 26c:	2b 8d 00 08 	lw r13,(sp+8)
- 270:	2b 9d 00 04 	lw ra,(sp+4)
- 274:	37 9c 00 10 	addi sp,sp,16
- 278:	c3 a0 00 00 	ret
+ 21c:	78 01 00 00 	mvhi r1,0x0
+ 220:	38 21 06 18 	ori r1,r1,0x618
+ 224:	44 4b 00 02 	be r2,r11,22c <memtest+0x7c>
+ 228:	f8 00 00 e3 	calli 5b4 <uart_putstr>
+ 22c:	35 6b 00 04 	addi r11,r11,4
+ 230:	55 6c 00 02 	bgu r11,r12,238 <memtest+0x88>
+ 234:	e3 ff ff f9 	bi 218 <memtest+0x68>
+ 238:	2b 8b 00 10 	lw r11,(sp+16)
+ 23c:	2b 8c 00 0c 	lw r12,(sp+12)
+ 240:	2b 8d 00 08 	lw r13,(sp+8)
+ 244:	2b 9d 00 04 	lw ra,(sp+4)
+ 248:	37 9c 00 10 	addi sp,sp,16
+ 24c:	c3 a0 00 00 	ret
 
-0000027c <main>:
+00000250 <main>:
 		}
 	}
 }
 
 int main(int argc, char **argv)
 {
- 27c:	37 9c ff ec 	addi sp,sp,-20
- 280:	5b 8b 00 14 	sw (sp+20),r11
- 284:	5b 8c 00 10 	sw (sp+16),r12
- 288:	5b 8d 00 0c 	sw (sp+12),r13
- 28c:	5b 8e 00 08 	sw (sp+8),r14
- 290:	5b 9d 00 04 	sw (sp+4),ra
+ 250:	37 9c ff ec 	addi sp,sp,-20
+ 254:	5b 8b 00 14 	sw (sp+20),r11
+ 258:	5b 8c 00 10 	sw (sp+16),r12
+ 25c:	5b 8d 00 0c 	sw (sp+12),r13
+ 260:	5b 8e 00 08 	sw (sp+8),r14
+ 264:	5b 9d 00 04 	sw (sp+4),ra
 	char test;
 	
   	sram0[100] = '5';
- 294:	78 01 00 00 	mvhi r1,0x0
- 298:	38 21 06 24 	ori r1,r1,0x624
- 29c:	28 23 00 00 	lw r3,(r1+0)
- 2a0:	34 02 00 35 	mvi r2,53
- 2a4:	58 62 01 90 	sw (r3+400),r2
+ 268:	78 01 00 00 	mvhi r1,0x0
+ 26c:	38 21 05 ec 	ori r1,r1,0x5ec
+ 270:	28 23 00 00 	lw r3,(r1+0)
+ 274:	34 02 00 35 	mvi r2,53
+ 278:	58 62 01 90 	sw (r3+400),r2
 	test    = sram0[100];
- 2a8:	28 61 01 90 	lw r1,(r3+400)
- 2ac:	20 21 00 ff 	andi r1,r1,0xff
+ 27c:	28 61 01 90 	lw r1,(r3+400)
+ 280:	20 21 00 ff 	andi r1,r1,0xff
  	if (test == '5') {
- 2b0:	fc 22 08 00 	cmpne r1,r1,r2
- 2b4:	44 20 00 3e 	be r1,r0,3ac <main+0x130>
+ 284:	fc 22 08 00 	cmpne r1,r1,r2
+ 288:	44 20 00 3b 	be r1,r0,374 <main+0x124>
  	  irq_mask();
  	}	
 	
 	// Initialize stuff
 	uart_init();
- 2b8:	f8 00 00 8e 	calli 4f0 <uart_init>
+ 28c:	f8 00 00 8b 	calli 4b8 <uart_init>
 	//irq_enable();
 
-	uart_putstr("\r\n** SPIKE BOOTLOADER **\n\r");
- 2bc:	78 01 00 00 	mvhi r1,0x0
- 2c0:	38 21 06 7c 	ori r1,r1,0x67c
- 2c4:	f8 00 00 ca 	calli 5ec <uart_putstr>
+	//uart_putstr("\r\n** SPIKE BOOTLOADER **\n\r");
 	memtest();
- 2c8:	fb ff ff b7 	calli 1a4 <memtest>
+ 290:	fb ff ff c8 	calli 1b0 <memtest>
 	for(;;) {
 		uint32_t start, size, checksum;
 		char c = uart_getchar();
- 2cc:	f8 00 00 98 	calli 52c <uart_getchar>
- 2d0:	b8 20 10 00 	mv r2,r1
+ 294:	f8 00 00 98 	calli 4f4 <uart_getchar>
+ 298:	b8 20 10 00 	mv r2,r1
 		char *p;
 
 		switch (c) {
- 2d4:	64 21 00 72 	cmpei r1,r1,114
- 2d8:	5c 20 00 18 	bne r1,r0,338 <main+0xbc>
- 2dc:	68 41 00 72 	cmpgi r1,r2,114
- 2e0:	5c 20 00 30 	bne r1,r0,3a0 <main+0x124>
- 2e4:	64 41 00 67 	cmpei r1,r2,103
- 2e8:	44 20 ff f9 	be r1,r0,2cc <main+0x50>
+ 29c:	64 21 00 72 	cmpei r1,r1,114
+ 2a0:	5c 20 00 18 	bne r1,r0,300 <main+0xb0>
+ 2a4:	68 41 00 72 	cmpgi r1,r2,114
+ 2a8:	5c 20 00 30 	bne r1,r0,368 <main+0x118>
+ 2ac:	64 41 00 67 	cmpei r1,r2,103
+ 2b0:	44 20 ff f9 	be r1,r0,294 <main+0x44>
 		case 'r':
 			jump(0x00000000);
 		case 'u':
@@ -334,120 +320,120 @@ int main(int argc, char **argv)
 			break;
 		case 'g':
 			uart_putchar('u');
- 2ec:	34 01 00 75 	mvi r1,117
- 2f0:	f8 00 00 b4 	calli 5c0 <uart_putchar>
+ 2b4:	34 01 00 75 	mvi r1,117
+ 2b8:	f8 00 00 b4 	calli 588 <uart_putchar>
 			uart_putchar(':');
- 2f4:	34 01 00 3a 	mvi r1,58
- 2f8:	f8 00 00 b2 	calli 5c0 <uart_putchar>
+ 2bc:	34 01 00 3a 	mvi r1,58
+ 2c0:	f8 00 00 b2 	calli 588 <uart_putchar>
 			start = readint();
- 2fc:	fb ff ff 80 	calli fc <readint>
- 300:	b8 20 70 00 	mv r14,r1
+ 2c4:	fb ff ff 8e 	calli fc <readint>
+ 2c8:	b8 20 70 00 	mv r14,r1
 			writeint(start); uart_putchar('.');
- 304:	fb ff ff 8f 	calli 140 <writeint>
- 308:	34 01 00 2e 	mvi r1,46
- 30c:	f8 00 00 ad 	calli 5c0 <uart_putchar>
+ 2cc:	fb ff ff 9d 	calli 140 <writeint>
+ 2d0:	34 01 00 2e 	mvi r1,46
+ 2d4:	f8 00 00 ad 	calli 588 <uart_putchar>
 			irq_disable();
- 310:	fb ff ff 54 	calli 60 <irq_disable>
+ 2d8:	fb ff ff 62 	calli 60 <irq_disable>
 			jump(start);
- 314:	b9 c0 08 00 	mv r1,r14
- 318:	fb ff ff 55 	calli 6c <jump>
+ 2dc:	b9 c0 08 00 	mv r1,r14
+ 2e0:	fb ff ff 63 	calli 6c <jump>
 			uart_putstr("XXXX");		
- 31c:	78 01 00 00 	mvhi r1,0x0
- 320:	38 21 06 98 	ori r1,r1,0x698
- 324:	f8 00 00 b2 	calli 5ec <uart_putstr>
- 328:	f8 00 00 81 	calli 52c <uart_getchar>
- 32c:	b8 20 10 00 	mv r2,r1
- 330:	64 21 00 72 	cmpei r1,r1,114
- 334:	44 20 ff ea 	be r1,r0,2dc <main+0x60>
- 338:	34 01 00 00 	mvi r1,0
- 33c:	fb ff ff 4c 	calli 6c <jump>
- 340:	34 01 00 75 	mvi r1,117
- 344:	f8 00 00 9f 	calli 5c0 <uart_putchar>
- 348:	34 01 00 3a 	mvi r1,58
- 34c:	f8 00 00 9d 	calli 5c0 <uart_putchar>
- 350:	fb ff ff 6b 	calli fc <readint>
- 354:	b8 20 70 00 	mv r14,r1
- 358:	fb ff ff 7a 	calli 140 <writeint>
- 35c:	34 01 00 3a 	mvi r1,58
- 360:	f8 00 00 98 	calli 5c0 <uart_putchar>
- 364:	fb ff ff 66 	calli fc <readint>
- 368:	b8 20 58 00 	mv r11,r1
- 36c:	fb ff ff 75 	calli 140 <writeint>
- 370:	34 01 00 3a 	mvi r1,58
- 374:	b5 cb 68 00 	add r13,r14,r11
- 378:	f8 00 00 92 	calli 5c0 <uart_putchar>
- 37c:	34 0c 00 00 	mvi r12,0
- 380:	b9 c0 58 00 	mv r11,r14
- 384:	51 cd 00 0c 	bgeu r14,r13,3b4 <main+0x138>
- 388:	f8 00 00 69 	calli 52c <uart_getchar>
- 38c:	31 61 00 00 	sb (r11+0),r1
- 390:	b5 81 60 00 	add r12,r12,r1
- 394:	35 6b 00 01 	addi r11,r11,1
- 398:	51 6d 00 07 	bgeu r11,r13,3b4 <main+0x138>
- 39c:	e3 ff ff fb 	bi 388 <main+0x10c>
- 3a0:	64 41 00 75 	cmpei r1,r2,117
- 3a4:	44 20 ff ca 	be r1,r0,2cc <main+0x50>
- 3a8:	e3 ff ff e6 	bi 340 <main+0xc4>
- 3ac:	fb ff ff 2a 	calli 54 <irq_mask>
- 3b0:	e3 ff ff c2 	bi 2b8 <main+0x3c>
- 3b4:	b9 80 08 00 	mv r1,r12
- 3b8:	fb ff ff 62 	calli 140 <writeint>
- 3bc:	78 01 00 00 	mvhi r1,0x0
- 3c0:	38 21 06 a0 	ori r1,r1,0x6a0
- 3c4:	f8 00 00 8a 	calli 5ec <uart_putstr>
- 3c8:	e3 ff ff d8 	bi 328 <main+0xac>
+ 2e4:	78 01 00 00 	mvhi r1,0x0
+ 2e8:	38 21 06 30 	ori r1,r1,0x630
+ 2ec:	f8 00 00 b2 	calli 5b4 <uart_putstr>
+ 2f0:	f8 00 00 81 	calli 4f4 <uart_getchar>
+ 2f4:	b8 20 10 00 	mv r2,r1
+ 2f8:	64 21 00 72 	cmpei r1,r1,114
+ 2fc:	44 20 ff ea 	be r1,r0,2a4 <main+0x54>
+ 300:	34 01 00 00 	mvi r1,0
+ 304:	fb ff ff 5a 	calli 6c <jump>
+ 308:	34 01 00 75 	mvi r1,117
+ 30c:	f8 00 00 9f 	calli 588 <uart_putchar>
+ 310:	34 01 00 3a 	mvi r1,58
+ 314:	f8 00 00 9d 	calli 588 <uart_putchar>
+ 318:	fb ff ff 79 	calli fc <readint>
+ 31c:	b8 20 70 00 	mv r14,r1
+ 320:	fb ff ff 88 	calli 140 <writeint>
+ 324:	34 01 00 3a 	mvi r1,58
+ 328:	f8 00 00 98 	calli 588 <uart_putchar>
+ 32c:	fb ff ff 74 	calli fc <readint>
+ 330:	b8 20 58 00 	mv r11,r1
+ 334:	fb ff ff 83 	calli 140 <writeint>
+ 338:	34 01 00 3a 	mvi r1,58
+ 33c:	b5 cb 68 00 	add r13,r14,r11
+ 340:	f8 00 00 92 	calli 588 <uart_putchar>
+ 344:	34 0c 00 00 	mvi r12,0
+ 348:	b9 c0 58 00 	mv r11,r14
+ 34c:	51 cd 00 0c 	bgeu r14,r13,37c <main+0x12c>
+ 350:	f8 00 00 69 	calli 4f4 <uart_getchar>
+ 354:	31 61 00 00 	sb (r11+0),r1
+ 358:	b5 81 60 00 	add r12,r12,r1
+ 35c:	35 6b 00 01 	addi r11,r11,1
+ 360:	51 6d 00 07 	bgeu r11,r13,37c <main+0x12c>
+ 364:	e3 ff ff fb 	bi 350 <main+0x100>
+ 368:	64 41 00 75 	cmpei r1,r2,117
+ 36c:	44 20 ff ca 	be r1,r0,294 <main+0x44>
+ 370:	e3 ff ff e6 	bi 308 <main+0xb8>
+ 374:	fb ff ff 38 	calli 54 <irq_mask>
+ 378:	e3 ff ff c5 	bi 28c <main+0x3c>
+ 37c:	b9 80 08 00 	mv r1,r12
+ 380:	fb ff ff 70 	calli 140 <writeint>
+ 384:	78 01 00 00 	mvhi r1,0x0
+ 388:	38 21 06 38 	ori r1,r1,0x638
+ 38c:	f8 00 00 8a 	calli 5b4 <uart_putstr>
+ 390:	e3 ff ff d8 	bi 2f0 <main+0xa0>
 
-000003cc <irq_handler>:
+00000394 <irq_handler>:
 /***************************************************************************
  * IRQ handling
  */
 void irq_handler(uint32_t irl)
 {
- 3cc:	b8 20 10 00 	mv r2,r1
+ 394:	b8 20 10 00 	mv r2,r1
 	uint32_t tcr;
 	int diff;
 
 	switch (irl) {
- 3d0:	64 21 00 01 	cmpei r1,r1,1
- 3d4:	5c 20 00 04 	bne r1,r0,3e4 <irq_handler+0x18>
- 3d8:	64 41 00 02 	cmpei r1,r2,2
- 3dc:	5c 20 00 1b 	bne r1,r0,448 <irq_handler+0x7c>
- 3e0:	c3 a0 00 00 	ret
+ 398:	64 21 00 01 	cmpei r1,r1,1
+ 39c:	5c 20 00 04 	bne r1,r0,3ac <irq_handler+0x18>
+ 3a0:	64 41 00 02 	cmpei r1,r2,2
+ 3a4:	5c 20 00 1b 	bne r1,r0,410 <irq_handler+0x7c>
+ 3a8:	c3 a0 00 00 	ret
 	case 0:                                              /* uart0 tx */
 		break;
 	case 1:                                              /* uart0 rx */
 		diff = rxhead - rxtail;
- 3e4:	78 06 00 00 	mvhi r6,0x0
- 3e8:	38 c6 08 20 	ori r6,r6,0x820
- 3ec:	28 c1 00 00 	lw r1,(r6+0)
- 3f0:	78 02 00 00 	mvhi r2,0x0
- 3f4:	38 42 08 24 	ori r2,r2,0x824
- 3f8:	28 43 00 00 	lw r3,(r2+0)
- 3fc:	c8 23 08 00 	sub r1,r1,r3
+ 3ac:	78 06 00 00 	mvhi r6,0x0
+ 3b0:	38 c6 08 20 	ori r6,r6,0x820
+ 3b4:	28 c1 00 00 	lw r1,(r6+0)
+ 3b8:	78 02 00 00 	mvhi r2,0x0
+ 3bc:	38 42 08 24 	ori r2,r2,0x824
+ 3c0:	28 43 00 00 	lw r3,(r2+0)
+ 3c4:	c8 23 08 00 	sub r1,r1,r3
 		if (diff < 0) 
- 400:	4c 20 00 02 	bge r1,r0,408 <irq_handler+0x3c>
+ 3c8:	4c 20 00 02 	bge r1,r0,3d0 <irq_handler+0x3c>
 			diff += UART_RXBUFSIZE;
- 404:	34 21 00 20 	addi r1,r1,32
+ 3cc:	34 21 00 20 	addi r1,r1,32
 		if (diff < UART_RXBUFSIZE -1) {
- 408:	68 21 00 1e 	cmpgi r1,r1,30
- 40c:	5c 20 00 19 	bne r1,r0,470 <irq_handler+0xa4>
+ 3d0:	68 21 00 1e 	cmpgi r1,r1,30
+ 3d4:	5c 20 00 19 	bne r1,r0,438 <irq_handler+0xa4>
 			// buffer not full
 			*rxhead = uart0->databuf;
- 410:	78 01 00 00 	mvhi r1,0x0
- 414:	38 21 06 2c 	ori r1,r1,0x62c
- 418:	28 c5 00 00 	lw r5,(r6+0)
- 41c:	28 24 00 00 	lw r4,(r1+0)
+ 3d8:	78 01 00 00 	mvhi r1,0x0
+ 3dc:	38 21 05 f4 	ori r1,r1,0x5f4
+ 3e0:	28 c5 00 00 	lw r5,(r6+0)
+ 3e4:	28 24 00 00 	lw r4,(r1+0)
 			if (++rxhead == (rxbuf + UART_RXBUFSIZE)) 
- 420:	78 03 00 00 	mvhi r3,0x0
- 424:	38 63 08 20 	ori r3,r3,0x820
- 428:	28 82 00 08 	lw r2,(r4+8)
- 42c:	30 a2 00 00 	sb (r5+0),r2
- 430:	28 c1 00 00 	lw r1,(r6+0)
- 434:	34 21 00 01 	addi r1,r1,1
- 438:	58 c1 00 00 	sw (r6+0),r1
- 43c:	28 c2 00 00 	lw r2,(r6+0)
- 440:	44 43 00 11 	be r2,r3,484 <irq_handler+0xb8>
- 444:	c3 a0 00 00 	ret
+ 3e8:	78 03 00 00 	mvhi r3,0x0
+ 3ec:	38 63 08 20 	ori r3,r3,0x820
+ 3f0:	28 82 00 08 	lw r2,(r4+8)
+ 3f4:	30 a2 00 00 	sb (r5+0),r2
+ 3f8:	28 c1 00 00 	lw r1,(r6+0)
+ 3fc:	34 21 00 01 	addi r1,r1,1
+ 400:	58 c1 00 00 	sw (r6+0),r1
+ 404:	28 c2 00 00 	lw r2,(r6+0)
+ 408:	44 43 00 11 	be r2,r3,44c <irq_handler+0xb8>
+ 40c:	c3 a0 00 00 	ret
 				rxhead = rxbuf;
 		} else {
 			uart0->databuf;   // read buffer to clear IRQ
@@ -455,28 +441,28 @@ void irq_handler(uint32_t irl)
 		break;
 	case 2:                                   /* timer0.0 (system tic) */
 		tcr = timer0->tcr0;  // reset trig0
- 448:	78 01 00 00 	mvhi r1,0x0
- 44c:	38 21 06 30 	ori r1,r1,0x630
- 450:	28 23 00 00 	lw r3,(r1+0)
+ 410:	78 01 00 00 	mvhi r1,0x0
+ 414:	38 21 05 f8 	ori r1,r1,0x5f8
+ 418:	28 23 00 00 	lw r3,(r1+0)
 		msec++;
- 454:	78 02 00 00 	mvhi r2,0x0
- 458:	38 42 06 20 	ori r2,r2,0x620
- 45c:	28 41 00 00 	lw r1,(r2+0)
- 460:	28 64 00 00 	lw r4,(r3+0)
- 464:	34 21 00 01 	addi r1,r1,1
- 468:	58 41 00 00 	sw (r2+0),r1
- 46c:	c3 a0 00 00 	ret
- 470:	78 01 00 00 	mvhi r1,0x0
- 474:	38 21 06 2c 	ori r1,r1,0x62c
- 478:	28 22 00 00 	lw r2,(r1+0)
- 47c:	28 43 00 08 	lw r3,(r2+8)
- 480:	c3 a0 00 00 	ret
- 484:	78 01 00 00 	mvhi r1,0x0
- 488:	38 21 08 00 	ori r1,r1,0x800
- 48c:	58 c1 00 00 	sw (r6+0),r1
- 490:	c3 a0 00 00 	ret
+ 41c:	78 02 00 00 	mvhi r2,0x0
+ 420:	38 42 05 e8 	ori r2,r2,0x5e8
+ 424:	28 41 00 00 	lw r1,(r2+0)
+ 428:	28 64 00 00 	lw r4,(r3+0)
+ 42c:	34 21 00 01 	addi r1,r1,1
+ 430:	58 41 00 00 	sw (r2+0),r1
+ 434:	c3 a0 00 00 	ret
+ 438:	78 01 00 00 	mvhi r1,0x0
+ 43c:	38 21 05 f4 	ori r1,r1,0x5f4
+ 440:	28 22 00 00 	lw r2,(r1+0)
+ 444:	28 43 00 08 	lw r3,(r2+8)
+ 448:	c3 a0 00 00 	ret
+ 44c:	78 01 00 00 	mvhi r1,0x0
+ 450:	38 21 08 00 	ori r1,r1,0x800
+ 454:	58 c1 00 00 	sw (r6+0),r1
+ 458:	c3 a0 00 00 	ret
 
-00000494 <sleep>:
+0000045c <sleep>:
 		break;
 	case 3:                                               /* timer0.1 */
 		break;
@@ -494,48 +480,48 @@ void sleep(int msec)
 
 	// Use timer0.1
 	timer0->compare1 = (FCPU/1000)*msec;
- 494:	78 02 00 00 	mvhi r2,0x0
- 498:	38 42 06 30 	ori r2,r2,0x630
- 49c:	28 43 00 00 	lw r3,(r2+0)
- 4a0:	08 21 61 a8 	muli r1,r1,25000
+ 45c:	78 02 00 00 	mvhi r2,0x0
+ 460:	38 42 05 f8 	ori r2,r2,0x5f8
+ 464:	28 43 00 00 	lw r3,(r2+0)
+ 468:	08 21 61 a8 	muli r1,r1,25000
 	timer0->counter1 = 0;
 	timer0->tcr1 = TIMER_EN | TIMER_IRQEN;
- 4a4:	34 02 00 0a 	mvi r2,10
- 4a8:	58 61 00 10 	sw (r3+16),r1
- 4ac:	34 01 00 00 	mvi r1,0
- 4b0:	58 61 00 14 	sw (r3+20),r1
- 4b4:	58 62 00 0c 	sw (r3+12),r2
+ 46c:	34 02 00 0a 	mvi r2,10
+ 470:	58 61 00 10 	sw (r3+16),r1
+ 474:	34 01 00 00 	mvi r1,0
+ 478:	58 61 00 14 	sw (r3+20),r1
+ 47c:	58 62 00 0c 	sw (r3+12),r2
 
 	do {
 		//halt();
 		tcr = timer0->tcr1;
- 4b8:	28 61 00 0c 	lw r1,(r3+12)
+ 480:	28 61 00 0c 	lw r1,(r3+12)
 	} while ( ! (tcr & TIMER_TRIG) );
- 4bc:	20 21 00 01 	andi r1,r1,0x1
- 4c0:	44 20 ff fe 	be r1,r0,4b8 <sleep+0x24>
- 4c4:	c3 a0 00 00 	ret
+ 484:	20 21 00 01 	andi r1,r1,0x1
+ 488:	44 20 ff fe 	be r1,r0,480 <sleep+0x24>
+ 48c:	c3 a0 00 00 	ret
 
-000004c8 <tic_init>:
+00000490 <tic_init>:
 }
 
 void tic_init()
 {
 	// Setup timer0.0
 	timer0->compare0 = (FCPU/1000);
- 4c8:	78 01 00 00 	mvhi r1,0x0
- 4cc:	38 21 06 30 	ori r1,r1,0x630
- 4d0:	28 23 00 00 	lw r3,(r1+0)
- 4d4:	34 02 61 a8 	mvi r2,25000
- 4d8:	58 62 00 04 	sw (r3+4),r2
+ 490:	78 01 00 00 	mvhi r1,0x0
+ 494:	38 21 05 f8 	ori r1,r1,0x5f8
+ 498:	28 23 00 00 	lw r3,(r1+0)
+ 49c:	34 02 61 a8 	mvi r2,25000
+ 4a0:	58 62 00 04 	sw (r3+4),r2
 	timer0->counter0 = 0;
- 4dc:	34 01 00 00 	mvi r1,0
- 4e0:	58 61 00 08 	sw (r3+8),r1
+ 4a4:	34 01 00 00 	mvi r1,0
+ 4a8:	58 61 00 08 	sw (r3+8),r1
 	timer0->tcr0     = TIMER_EN | TIMER_AR | TIMER_IRQEN;
- 4e4:	34 02 00 0e 	mvi r2,14
- 4e8:	58 62 00 00 	sw (r3+0),r2
- 4ec:	c3 a0 00 00 	ret
+ 4ac:	34 02 00 0e 	mvi r2,14
+ 4b0:	58 62 00 00 	sw (r3+0),r2
+ 4b4:	c3 a0 00 00 	ret
 
-000004f0 <uart_init>:
+000004b8 <uart_init>:
 }
 
 
@@ -547,26 +533,26 @@ void uart_init()
 	int test;
 	// Setup Divisor register (Fclk / Baud)
 	uart0->divisor = (FCPU/57600);
- 4f0:	78 01 00 00 	mvhi r1,0x0
- 4f4:	38 21 06 2c 	ori r1,r1,0x62c
- 4f8:	28 24 00 00 	lw r4,(r1+0)
+ 4b8:	78 01 00 00 	mvhi r1,0x0
+ 4bc:	38 21 05 f4 	ori r1,r1,0x5f4
+ 4c0:	28 24 00 00 	lw r4,(r1+0)
 	
 	// Initialize ring buffer
 	rxhead = rxtail = rxbuf;
- 4fc:	78 03 00 00 	mvhi r3,0x0
- 500:	78 02 00 00 	mvhi r2,0x0
- 504:	34 01 01 b2 	mvi r1,434
- 508:	58 81 00 04 	sw (r4+4),r1
- 50c:	38 63 08 24 	ori r3,r3,0x824
- 510:	38 42 08 00 	ori r2,r2,0x800
- 514:	58 62 00 00 	sw (r3+0),r2
- 518:	28 64 00 00 	lw r4,(r3+0)
- 51c:	78 01 00 00 	mvhi r1,0x0
- 520:	38 21 08 20 	ori r1,r1,0x820
- 524:	58 24 00 00 	sw (r1+0),r4
- 528:	c3 a0 00 00 	ret
+ 4c4:	78 03 00 00 	mvhi r3,0x0
+ 4c8:	78 02 00 00 	mvhi r2,0x0
+ 4cc:	34 01 01 b2 	mvi r1,434
+ 4d0:	58 81 00 04 	sw (r4+4),r1
+ 4d4:	38 63 08 24 	ori r3,r3,0x824
+ 4d8:	38 42 08 00 	ori r2,r2,0x800
+ 4dc:	58 62 00 00 	sw (r3+0),r2
+ 4e0:	28 64 00 00 	lw r4,(r3+0)
+ 4e4:	78 01 00 00 	mvhi r1,0x0
+ 4e8:	38 21 08 20 	ori r1,r1,0x820
+ 4ec:	58 24 00 00 	sw (r1+0),r4
+ 4f0:	c3 a0 00 00 	ret
 
-0000052c <uart_getchar>:
+000004f4 <uart_getchar>:
 
 	// activate RX IRQ
 	//uart0->ucr = UART_RXIRQEN;
@@ -577,96 +563,96 @@ char uart_getchar()
 	char val;
 	while ( rxhead == rxtail )
 		uart0->ucr = UART_RXIRQEN;
- 52c:	78 05 00 00 	mvhi r5,0x0
- 530:	38 a5 08 20 	ori r5,r5,0x820
- 534:	28 a2 00 00 	lw r2,(r5+0)
- 538:	78 04 00 00 	mvhi r4,0x0
- 53c:	b8 80 30 00 	mv r6,r4
- 540:	38 c6 08 24 	ori r6,r6,0x824
- 544:	28 c1 00 00 	lw r1,(r6+0)
- 548:	44 41 00 0f 	be r2,r1,584 <uart_getchar+0x58>
+ 4f4:	78 05 00 00 	mvhi r5,0x0
+ 4f8:	38 a5 08 20 	ori r5,r5,0x820
+ 4fc:	28 a2 00 00 	lw r2,(r5+0)
+ 500:	78 04 00 00 	mvhi r4,0x0
+ 504:	b8 80 30 00 	mv r6,r4
+ 508:	38 c6 08 24 	ori r6,r6,0x824
+ 50c:	28 c1 00 00 	lw r1,(r6+0)
+ 510:	44 41 00 0f 	be r2,r1,54c <uart_getchar+0x58>
 
 	val = *rxtail;
- 54c:	b8 80 28 00 	mv r5,r4
- 550:	38 a5 08 24 	ori r5,r5,0x824
- 554:	28 a4 00 00 	lw r4,(r5+0)
+ 514:	b8 80 28 00 	mv r5,r4
+ 518:	38 a5 08 24 	ori r5,r5,0x824
+ 51c:	28 a4 00 00 	lw r4,(r5+0)
 	if (++rxtail == (rxbuf + UART_RXBUFSIZE)) 
- 558:	78 03 00 00 	mvhi r3,0x0
- 55c:	38 63 08 20 	ori r3,r3,0x820
- 560:	40 82 00 00 	lbu r2,(r4+0)
- 564:	28 a1 00 00 	lw r1,(r5+0)
- 568:	20 44 00 ff 	andi r4,r2,0xff
- 56c:	34 21 00 01 	addi r1,r1,1
- 570:	58 a1 00 00 	sw (r5+0),r1
- 574:	28 a2 00 00 	lw r2,(r5+0)
- 578:	44 43 00 0d 	be r2,r3,5ac <uart_getchar+0x80>
+ 520:	78 03 00 00 	mvhi r3,0x0
+ 524:	38 63 08 20 	ori r3,r3,0x820
+ 528:	40 82 00 00 	lbu r2,(r4+0)
+ 52c:	28 a1 00 00 	lw r1,(r5+0)
+ 530:	20 44 00 ff 	andi r4,r2,0xff
+ 534:	34 21 00 01 	addi r1,r1,1
+ 538:	58 a1 00 00 	sw (r5+0),r1
+ 53c:	28 a2 00 00 	lw r2,(r5+0)
+ 540:	44 43 00 0d 	be r2,r3,574 <uart_getchar+0x80>
 		rxtail = rxbuf;
 
 	return val;
 }
- 57c:	b8 80 08 00 	mv r1,r4
- 580:	c3 a0 00 00 	ret
- 584:	78 01 00 00 	mvhi r1,0x0
- 588:	38 21 06 2c 	ori r1,r1,0x62c
- 58c:	28 23 00 00 	lw r3,(r1+0)
- 590:	b8 a0 38 00 	mv r7,r5
- 594:	34 05 00 04 	mvi r5,4
- 598:	58 65 00 00 	sw (r3+0),r5
- 59c:	28 e2 00 00 	lw r2,(r7+0)
- 5a0:	28 c1 00 00 	lw r1,(r6+0)
- 5a4:	44 41 ff fd 	be r2,r1,598 <uart_getchar+0x6c>
- 5a8:	e3 ff ff e9 	bi 54c <uart_getchar+0x20>
- 5ac:	78 01 00 00 	mvhi r1,0x0
- 5b0:	38 21 08 00 	ori r1,r1,0x800
- 5b4:	58 a1 00 00 	sw (r5+0),r1
- 5b8:	b8 80 08 00 	mv r1,r4
- 5bc:	c3 a0 00 00 	ret
+ 544:	b8 80 08 00 	mv r1,r4
+ 548:	c3 a0 00 00 	ret
+ 54c:	78 01 00 00 	mvhi r1,0x0
+ 550:	38 21 05 f4 	ori r1,r1,0x5f4
+ 554:	28 23 00 00 	lw r3,(r1+0)
+ 558:	b8 a0 38 00 	mv r7,r5
+ 55c:	34 05 00 04 	mvi r5,4
+ 560:	58 65 00 00 	sw (r3+0),r5
+ 564:	28 e2 00 00 	lw r2,(r7+0)
+ 568:	28 c1 00 00 	lw r1,(r6+0)
+ 56c:	44 41 ff fd 	be r2,r1,560 <uart_getchar+0x6c>
+ 570:	e3 ff ff e9 	bi 514 <uart_getchar+0x20>
+ 574:	78 01 00 00 	mvhi r1,0x0
+ 578:	38 21 08 00 	ori r1,r1,0x800
+ 57c:	58 a1 00 00 	sw (r5+0),r1
+ 580:	b8 80 08 00 	mv r1,r4
+ 584:	c3 a0 00 00 	ret
 
-000005c0 <uart_putchar>:
+00000588 <uart_putchar>:
 
 void uart_putchar(char c)
 {
- 5c0:	78 02 00 00 	mvhi r2,0x0
- 5c4:	38 42 06 2c 	ori r2,r2,0x62c
- 5c8:	28 42 00 00 	lw r2,(r2+0)
- 5cc:	20 23 00 ff 	andi r3,r1,0xff
+ 588:	78 02 00 00 	mvhi r2,0x0
+ 58c:	38 42 05 f4 	ori r2,r2,0x5f4
+ 590:	28 42 00 00 	lw r2,(r2+0)
+ 594:	20 23 00 ff 	andi r3,r1,0xff
 	//int status = ;
 	//uart0->divisor = status;
 	while (uart0->ucr & UART_TX_BUSY) {
- 5d0:	28 41 00 00 	lw r1,(r2+0)
- 5d4:	20 21 00 02 	andi r1,r1,0x2
- 5d8:	5c 20 ff fe 	bne r1,r0,5d0 <uart_putchar+0x10>
+ 598:	28 41 00 00 	lw r1,(r2+0)
+ 59c:	20 21 00 02 	andi r1,r1,0x2
+ 5a0:	5c 20 ff fe 	bne r1,r0,598 <uart_putchar+0x10>
 		//status = uart0->ucr;
 		//uart0->ucr = UART_RXIRQEN; // | UART_TXIRQEN;
 		//halt();
 	}
 	
 	uart0->databuf = c;
- 5dc:	58 43 00 08 	sw (r2+8),r3
+ 5a4:	58 43 00 08 	sw (r2+8),r3
 	uart0->ucr = UART_RXIRQEN; 
- 5e0:	34 01 00 04 	mvi r1,4
- 5e4:	58 41 00 00 	sw (r2+0),r1
- 5e8:	c3 a0 00 00 	ret
+ 5a8:	34 01 00 04 	mvi r1,4
+ 5ac:	58 41 00 00 	sw (r2+0),r1
+ 5b0:	c3 a0 00 00 	ret
 
-000005ec <uart_putstr>:
+000005b4 <uart_putstr>:
 }
 
 void uart_putstr(char *str)
 {
- 5ec:	37 9c ff f8 	addi sp,sp,-8
- 5f0:	5b 8b 00 08 	sw (sp+8),r11
- 5f4:	5b 9d 00 04 	sw (sp+4),ra
- 5f8:	b8 20 58 00 	mv r11,r1
- 5fc:	e0 00 00 03 	bi 608 <uart_putstr+0x1c>
+ 5b4:	37 9c ff f8 	addi sp,sp,-8
+ 5b8:	5b 8b 00 08 	sw (sp+8),r11
+ 5bc:	5b 9d 00 04 	sw (sp+4),ra
+ 5c0:	b8 20 58 00 	mv r11,r1
+ 5c4:	e0 00 00 03 	bi 5d0 <uart_putstr+0x1c>
 	char *c = str;
 	while(*c) {
 		uart_putchar(*c);
- 600:	fb ff ff f0 	calli 5c0 <uart_putchar>
+ 5c8:	fb ff ff f0 	calli 588 <uart_putchar>
 		c++;
- 604:	35 6b 00 01 	addi r11,r11,1
- 608:	41 61 00 00 	lbu r1,(r11+0)
- 60c:	5c 20 ff fd 	bne r1,r0,600 <uart_putstr+0x14>
- 610:	2b 8b 00 08 	lw r11,(sp+8)
- 614:	2b 9d 00 04 	lw ra,(sp+4)
- 618:	37 9c 00 08 	addi sp,sp,8
- 61c:	c3 a0 00 00 	ret
+ 5cc:	35 6b 00 01 	addi r11,r11,1
+ 5d0:	41 61 00 00 	lbu r1,(r11+0)
+ 5d4:	5c 20 ff fd 	bne r1,r0,5c8 <uart_putstr+0x14>
+ 5d8:	2b 8b 00 08 	lw r11,(sp+8)
+ 5dc:	2b 9d 00 04 	lw ra,(sp+4)
+ 5e0:	37 9c 00 08 	addi sp,sp,8
+ 5e4:	c3 a0 00 00 	ret

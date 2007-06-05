@@ -7,7 +7,8 @@
 #define RAMEND    (RAMSTART + RAMSIZE)
 
 #define SRAM_START 0xB0000000
-#define SRAM_SIZE  0x00040000
+//#define SRAM_SIZE  0x00020000
+#define SRAM_SIZE  0x00000100
 
 #define FCPU         25000000
 

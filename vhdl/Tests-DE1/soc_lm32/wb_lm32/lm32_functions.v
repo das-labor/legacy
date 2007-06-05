@@ -17,7 +17,7 @@
 // Project          : LatticeMico32
 // File             : lm32_functions.v
 // Title            : Common functions
-// Version          : 6.0.13
+// Version          : 6.1.17
 // =============================================================================
 					  
 function integer clogb2;

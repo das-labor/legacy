@@ -18,7 +18,7 @@
 // File             : lm32_interrupt.v
 // Title            : Interrupt logic
 // Dependencies     : lm32_include.v
-// Version          : 6.0.13
+// Version          : 6.1.17
 // =============================================================================
 
 `include "lm32_include.v"
@@ -51,13 +51,7 @@ module lm32_interrupt (
     // ----- Outputs -------
     interrupt_exception,
     // To pipeline
-`ifdef ONE_BIG_CSR_MUX       
-    ie_csr_read_data,
-    im_csr_read_data,
-    ip_csr_read_data
-`else
     csr_read_data
-`endif
     );
 
 /////////////////////////////////////////////////////
@@ -99,17 +93,8 @@ input csr_write_enable;                         // CSR write enable
 output interrupt_exception;                     // Request to raide an interrupt exception
 wire   interrupt_exception;
 
-`ifdef ONE_BIG_CSR_MUX       
-output [`LM32_WORD_RNG] ie_csr_read_data;       // Data read from CSR
-wire   [`LM32_WORD_RNG] ie_csr_read_data;
-output [`LM32_WORD_RNG] im_csr_read_data;       // Data read from CSR
-wire   [`LM32_WORD_RNG] im_csr_read_data;
-output [`LM32_WORD_RNG] ip_csr_read_data;       // Data read from CSR
-wire   [`LM32_WORD_RNG] ip_csr_read_data;
-`else
 output [`LM32_WORD_RNG] csr_read_data;          // Data read from CSR
 reg    [`LM32_WORD_RNG] csr_read_data;
-`endif
 
 /////////////////////////////////////////////////////
 // Internal nets and registers 
@@ -122,7 +107,9 @@ wire [interrupts-1:0] interrupt_n_exception;
 
 reg ie;                                         // Interrupt enable
 reg eie;                                        // Exception interrupt enable
+`ifdef CFG_DEBUG_ENABLED
 reg bie;                                        // Breakpoint interrupt enable
+`endif
 reg [interrupts-1:0] ip;                        // Interrupt pending
 reg [interrupts-1:0] im;                        // Interrupt mask
 
@@ -139,11 +126,17 @@ assign interrupt_exception = (|interrupt_n_exception) & ie;
 // Determine which interrupts are currently being asserted (active-low) or are already pending
 assign asserted = ip | ~interrupt_n;
        
-`ifdef ONE_BIG_CSR_MUX       
-assign ie_csr_read_data = {{`LM32_WORD_WIDTH-3{1'b0}}, bie, eie, ie};
+assign ie_csr_read_data = {{`LM32_WORD_WIDTH-3{1'b0}}, 
+`ifdef CFG_DEBUG_ENABLED
+                           bie,
+`else
+                           1'b0,
+`endif                             
+                           eie, 
+                           ie
+                          };
 assign ip_csr_read_data = ip;
 assign im_csr_read_data = im;
-`else               
 generate
     if (interrupts > 1) 
     begin
@@ -151,7 +144,15 @@ generate
 always @(*)
 begin
     case (csr)
-    `LM32_CSR_IE:  csr_read_data = {{`LM32_WORD_WIDTH-3{1'b0}}, bie, eie, ie};
+    `LM32_CSR_IE:  csr_read_data = {{`LM32_WORD_WIDTH-3{1'b0}}, 
+`ifdef CFG_DEBUG_ENABLED
+                                    bie,
+`else
+                                    1'b0,                                     
+`endif
+                                    eie, 
+                                    ie
+                                   };
     `LM32_CSR_IP:  csr_read_data = ip;
     `LM32_CSR_IM:  csr_read_data = im;
     default:       csr_read_data = {`LM32_WORD_WIDTH{1'bx}};
@@ -164,14 +165,21 @@ end
 always @(*)
 begin
     case (csr)
-    `LM32_CSR_IE:  csr_read_data = {{`LM32_WORD_WIDTH-3{1'b0}}, bie, eie, ie};
+    `LM32_CSR_IE:  csr_read_data = {{`LM32_WORD_WIDTH-3{1'b0}}, 
+`ifdef CFG_DEBUG_ENABLED
+                                    bie, 
+`else
+                                    1'b0,                                    
+`endif
+                                    eie, 
+                                    ie
+                                   };
     `LM32_CSR_IP:  csr_read_data = ip;
     default:       csr_read_data = {`LM32_WORD_WIDTH{1'bx}};
     endcase
 end
     end
 endgenerate
-`endif
     
 /////////////////////////////////////////////////////
 // Sequential Logic
@@ -179,7 +187,7 @@ endgenerate
 
 generate
     if (interrupts > 1)
-    begin : INT_NAMED
+    begin
 // IE, IM, IP - Interrupt Enable, Interrupt Mask and Interrupt Pending CSRs
 always @(posedge clk_i `CFG_RESET_SENSITIVITY)
 begin
@@ -249,7 +257,7 @@ begin
 end
     end
 else
-    begin : XX_NAMED
+    begin
 // IE, IM, IP - Interrupt Enable, Interrupt Mask and Interrupt Pending CSRs
 always @(posedge clk_i `CFG_RESET_SENSITIVITY)
 begin

@@ -18,7 +18,7 @@
 // File             : lm32_cpu.v
 // Title            : Top-level of CPU.
 // Dependencies     : lm32_include.v
-// Version          : 6.0.13
+// Version          : 6.1.17
 // =============================================================================
 
 `include "lm32_include.v"
@@ -63,6 +63,16 @@ module lm32_cpu (
     D_ERR_I,
     D_RTY_I,
     // ----- Outputs -------
+`ifdef CFG_TRACE_ENABLED
+    trace_pc,
+    trace_pc_valid,
+    trace_exception,
+    trace_eid,
+    trace_eret,
+`ifdef CFG_DEBUG_ENABLED
+    trace_bret,
+`endif
+`endif
 `ifdef CFG_JTAG_ENABLED
     jtag_reg_d,
     jtag_reg_addr_d,
@@ -193,6 +203,23 @@ input D_RTY_I;                                  // Data Wishbone interface retry
 // Outputs
 /////////////////////////////////////////////////////
 
+`ifdef CFG_TRACE_ENABLED
+output [`LM32_PC_RNG] trace_pc;                 // PC to trace
+reg    [`LM32_PC_RNG] trace_pc;
+output trace_pc_valid;                          // Indicates that a new trace PC is valid
+reg    trace_pc_valid;
+output trace_exception;                         // Indicates an exception has occured
+reg    trace_exception;
+output [`LM32_EID_RNG] trace_eid;               // Indicates what type of exception has occured
+reg    [`LM32_EID_RNG] trace_eid;
+output trace_eret;                              // Indicates an eret instruction has been executed
+reg    trace_eret;
+`ifdef CFG_DEBUG_ENABLED
+output trace_bret;                              // Indicates a bret instruction has been executed
+reg    trace_bret;
+`endif
+`endif
+
 `ifdef CFG_JTAG_ENABLED
 output [`LM32_BYTE_RNG] jtag_reg_d;
 wire   [`LM32_BYTE_RNG] jtag_reg_d;
@@ -285,61 +312,45 @@ reg [`LM32_PC_RNG] branch_target_m;
 wire [`LM32_D_RESULT_SEL_0_RNG] d_result_sel_0_d; // Which result should be selected in D stage for operand 0
 wire [`LM32_D_RESULT_SEL_1_RNG] d_result_sel_1_d; // Which result should be selected in D stage for operand 1
 
-`ifdef STYLE_MUX_X
-wire x_result_sel_csr_d;
+wire x_result_sel_csr_d;                        // Select X stage result from CSRs
 reg x_result_sel_csr_x;
 `ifdef LM32_MC_ARITHMETIC_ENABLED
-wire x_result_sel_mc_arith_d;
+wire x_result_sel_mc_arith_d;                   // Select X stage result from multi-cycle arithmetic unit
 reg x_result_sel_mc_arith_x;
 `endif
 `ifdef LM32_NO_BARREL_SHIFT    
-wire x_result_sel_shift_d;
+wire x_result_sel_shift_d;                      // Select X stage result from shifter
 reg x_result_sel_shift_x;
 `endif
 `ifdef CFG_SIGN_EXTEND_ENABLED
-wire x_result_sel_sext_d;
+wire x_result_sel_sext_d;                       // Select X stage result from sign-extend logic
 reg x_result_sel_sext_x;
 `endif
-wire x_result_sel_logic_d;
+wire x_result_sel_logic_d;                      // Select X stage result from logic op unit
 reg x_result_sel_logic_x;
 `ifdef CFG_USER_ENABLED
-wire x_result_sel_user_d;
+wire x_result_sel_user_d;                       // Select X stage result from user-defined logic
 reg x_result_sel_user_x;
 `endif
-wire x_result_sel_add_d;
+wire x_result_sel_add_d;                        // Select X stage result from adder
 reg x_result_sel_add_x;
-`else
-wire [`LM32_X_RESULT_SEL_RNG] x_result_sel_d;   // Which result should be selected in X stage
-reg [`LM32_X_RESULT_SEL_RNG] x_result_sel_x;    
-`endif
-`ifdef STYLE_MUX_M
-wire m_result_sel_compare_d;
+wire m_result_sel_compare_d;                    // Select M stage result from comparison logic
 reg m_result_sel_compare_x;
 reg m_result_sel_compare_m;
 `ifdef CFG_PL_BARREL_SHIFT_ENABLED
-wire m_result_sel_shift_d;
+wire m_result_sel_shift_d;                      // Select M stage result from shifter
 reg m_result_sel_shift_x;
 reg m_result_sel_shift_m;
 `endif
-`else
-wire [`LM32_M_RESULT_SEL_RNG] m_result_sel_d;   // Which result should be selected in M stage
-reg [`LM32_M_RESULT_SEL_RNG] m_result_sel_x;    
-reg [`LM32_M_RESULT_SEL_RNG] m_result_sel_m;
-`endif
-`ifdef STYLE_MUX_W
-wire w_result_sel_load_d;
+wire w_result_sel_load_d;                       // Select W stage result from load/store unit
 reg w_result_sel_load_x;
 reg w_result_sel_load_m;
 reg w_result_sel_load_w;
-wire w_result_sel_mul_d;
+`ifdef CFG_PL_MULTIPLY_ENABLED
+wire w_result_sel_mul_d;                        // Select W stage result from multiplier
 reg w_result_sel_mul_x;
 reg w_result_sel_mul_m;
 reg w_result_sel_mul_w;
-`else
-wire [`LM32_W_RESULT_SEL_RNG] w_result_sel_d;   // Which result should be selected in W stage
-reg [`LM32_W_RESULT_SEL_RNG] w_result_sel_x;    
-reg [`LM32_W_RESULT_SEL_RNG] w_result_sel_m;
-reg [`LM32_W_RESULT_SEL_RNG] w_result_sel_w;
 `endif
 wire x_bypass_enable_d;                         // Whether result is bypassable in X stage
 reg x_bypass_enable_x;                          
@@ -376,10 +387,18 @@ reg scall_x;
 wire eret_d;                                    // Indicates an eret instruction
 reg eret_x;
 wire eret_q_x;
+reg eret_m;
+`ifdef CFG_TRACE_ENABLED
+reg eret_w;
+`endif
 `ifdef CFG_DEBUG_ENABLED
 wire bret_d;                                    // Indicates a bret instruction
 reg bret_x;
 wire bret_q_x;
+reg bret_m;
+`ifdef CFG_TRACE_ENABLED
+reg bret_w;
+`endif
 `endif
 wire csr_write_enable_d;                        // CSR write enable
 reg csr_write_enable_x;
@@ -498,13 +517,7 @@ wire [`LM32_WORD_RNG] mc_result_x;
 
 // From CSRs
 `ifdef CFG_INTERRUPTS_ENABLED
-`ifdef ONE_BIG_CSR_MUX       
-wire [`LM32_WORD_RNG] ie_csr_read_data_x;       // Data read from IE CSR
-wire [`LM32_WORD_RNG] im_csr_read_data_x;       // Data read from IM CSR
-wire [`LM32_WORD_RNG] ip_csr_read_data_x;       // Data read from IP CSR
-`else
 wire [`LM32_WORD_RNG] interrupt_csr_read_data_x;// Data read from interrupt CSRs
-`endif
 `endif
 wire [`LM32_WORD_RNG] cfg;                      // Configuration CSR
 `ifdef CFG_CYCLE_COUNTER_ENABLED
@@ -517,6 +530,10 @@ wire [`LM32_PC_RNG] pc_f;                       // PC of instruction in F stage
 wire [`LM32_PC_RNG] pc_d;                       // PC of instruction in D stage
 wire [`LM32_PC_RNG] pc_x;                       // PC of instruction in X stage
 wire [`LM32_PC_RNG] pc_m;                       // PC of instruction in M stage
+wire [`LM32_PC_RNG] pc_w;                       // PC of instruction in W stage
+`ifdef CFG_TRACE_ENABLED
+reg [`LM32_PC_RNG] pc_c;                        // PC of last commited instruction
+`endif
 `ifdef CFG_EBR_POSEDGE_REGISTER_FILE
 wire [`LM32_INSTRUCTION_RNG] instruction_f;     // Instruction in F stage
 `endif
@@ -593,7 +610,11 @@ reg [`LM32_PC_WIDTH+2-1:8] eba;                 // Exception Base Address (EBA) 
 `ifdef CFG_DEBUG_ENABLED
 reg [`LM32_PC_WIDTH+2-1:8] deba;                // Debug Exception Base Address (DEBA) CSR
 `endif
-reg [`LM32_EID_RNG] eid;                        // Exception ID
+reg [`LM32_EID_RNG] eid_x;                      // Exception ID in X stage
+`ifdef CFG_TRACE_ENABLED
+reg [`LM32_EID_RNG] eid_m;                      // Exception ID in M stage
+reg [`LM32_EID_RNG] eid_w;                      // Exception ID in W stage
+`endif
 
 `ifdef CFG_DEBUG_ENABLED
 `ifdef LM32_SINGLE_STEP_ENABLED
@@ -617,8 +638,10 @@ reg exception_w;
 wire exception_q_w;
 `endif
 
+`ifdef CFG_DEBUG_ENABLED
 `ifdef CFG_JTAG_ENABLED
 wire reset_exception;                           // Indicates if a reset exception has occured
+`endif
 `endif
 `ifdef CFG_INTERRUPTS_ENABLED
 wire interrupt_exception;                       // Indicates if an interrupt exception has occured
@@ -702,6 +725,7 @@ lm32_instruction_unit #(
     .pc_d                   (pc_d),
     .pc_x                   (pc_x),
     .pc_m                   (pc_m),
+    .pc_w                   (pc_w),
 `ifdef CFG_ICACHE_ENABLED
     .icache_stall_request   (icache_stall_request),
     .icache_restart_request (icache_restart_request),
@@ -740,7 +764,6 @@ lm32_decoder decoder (
     // ----- Outputs -------
     .d_result_sel_0         (d_result_sel_0_d),
     .d_result_sel_1         (d_result_sel_1_d),
-`ifdef STYLE_MUX_X    
     .x_result_sel_csr       (x_result_sel_csr_d),
 `ifdef LM32_MC_ARITHMETIC_ENABLED
     .x_result_sel_mc_arith  (x_result_sel_mc_arith_d),
@@ -756,24 +779,13 @@ lm32_decoder decoder (
     .x_result_sel_user      (x_result_sel_user_d),
 `endif
     .x_result_sel_add       (x_result_sel_add_d),
-`else
-    .x_result_sel           (x_result_sel_d),   
-`endif
-`ifdef STYLE_MUX_M    
     .m_result_sel_compare   (m_result_sel_compare_d),
 `ifdef CFG_PL_BARREL_SHIFT_ENABLED
     .m_result_sel_shift     (m_result_sel_shift_d),  
 `endif    
-`else
-    .m_result_sel           (m_result_sel_d),
-`endif    
-`ifdef STYLE_MUX_W    
     .w_result_sel_load      (w_result_sel_load_d),
 `ifdef CFG_PL_MULTIPLY_ENABLED
     .w_result_sel_mul       (w_result_sel_mul_d),
-`endif
-`else 
-    .w_result_sel           (w_result_sel_d),
 `endif
     .x_bypass_enable        (x_bypass_enable_d),
     .m_bypass_enable        (m_bypass_enable_d),
@@ -965,7 +977,7 @@ lm32_mc_arithmetic mc_arithmetic (
     );
 `endif
               
-// `ifdef CFG_INTERRUPTS_ENABLED
+`ifdef CFG_INTERRUPTS_ENABLED
 // Interrupt unit
 lm32_interrupt interrupt (
     // ----- Inputs -------
@@ -991,15 +1003,9 @@ lm32_interrupt interrupt (
     // ----- Outputs -------
     .interrupt_exception    (interrupt_exception),
     // To pipeline
-`ifdef ONE_BIG_CSR_MUX       
-    .ie_csr_read_data       (ie_csr_read_data_x),
-    .im_csr_read_data       (im_csr_read_data_x),
-    .ip_csr_read_data       (ip_csr_read_data_x)
-`else
     .csr_read_data          (interrupt_csr_read_data_x)
-`endif
     );
-//`endif
+`endif
 
 `ifdef CFG_JTAG_ENABLED
 // JTAG interface
@@ -1252,21 +1258,12 @@ end
 always @(*)
 begin
     d_result_0 = d_result_sel_0_d[0] ? {pc_f, 2'b00} : bypass_data_0; 
-`ifdef STYLE_CASE
     case (d_result_sel_1_d)
     `LM32_D_RESULT_SEL_1_ZERO:      d_result_1 = {`LM32_WORD_WIDTH{1'b0}};
     `LM32_D_RESULT_SEL_1_REG_1:     d_result_1 = bypass_data_1;
     `LM32_D_RESULT_SEL_1_IMMEDIATE: d_result_1 = immediate_d;
     default:                        d_result_1 = {`LM32_WORD_WIDTH{1'bx}};
     endcase
-`endif
-`ifdef STYLE_MUX
-    d_result_1 = d_result_sel_1_d[0] 
-                        ? bypass_data_1 
-                        : d_result_sel_1_d[1] 
-                           ? immediate_d
-                           : {`LM32_WORD_WIDTH{1'b0}};
-`endif
 end
 
 `ifdef CFG_USER_ENABLED    
@@ -1310,7 +1307,6 @@ end
 // X stage result selection
 always @(*)
 begin
-`ifdef STYLE_MUX_X
     x_result =   x_result_sel_add_x ? adder_result_x 
                : x_result_sel_csr_x ? csr_read_data_x
 `ifdef CFG_SIGN_EXTEND_ENABLED
@@ -1326,68 +1322,26 @@ begin
                : x_result_sel_mc_arith_x ? mc_result_x
 `endif
                : logic_result_x;
-`else               
-    case (x_result_sel_x) 
-    `LM32_X_RESULT_SEL_ADDER:       x_result = adder_result_x;
-    `LM32_X_RESULT_SEL_LOGIC:       x_result = logic_result_x;
-    `LM32_X_RESULT_SEL_CSR:         x_result = csr_read_data_x;
-`ifdef CFG_SIGN_EXTEND_ENABLED
-    `LM32_X_RESULT_SEL_SEXT:        x_result = sext_result_x;
-`endif
-`ifdef CFG_USER_ENABLED
-    `LM32_X_RESULT_SEL_USER:        x_result = user_result;
-`endif
-`ifdef LM32_NO_BARREL_SHIFT
-    `LM32_X_RESULT_SEL_SHIFT:       x_result = shifter_result_x;
-`endif
-`ifdef LM32_MC_ARITHMETIC_ENABLED
-    `LM32_X_RESULT_SEL_MC_ARITH:    x_result = mc_result_x;
-`endif
-    default:                        x_result = {`LM32_WORD_WIDTH{1'bx}};
-    endcase
-`endif
 end
 
 // M stage result selection
 always @(*)
 begin
-`ifdef STYLE_MUX_M
     m_result =   m_result_sel_compare_m ? {{`LM32_WORD_WIDTH-1{1'b0}}, condition_met_m}
 `ifdef CFG_PL_BARREL_SHIFT_ENABLED
                : m_result_sel_shift_m ? shifter_result_m
 `endif
                : operand_m; 
-`else
-    case (m_result_sel_m)
-    `LM32_M_RESULT_SEL_NOP:         m_result = operand_m;
-    `LM32_M_RESULT_SEL_COMPARE:     m_result = {{`LM32_WORD_WIDTH-1{1'b0}}, condition_met_m};
-`ifdef CFG_PL_BARREL_SHIFT_ENABLED
-    `LM32_M_RESULT_SEL_SHIFTER:     m_result = shifter_result_m;
-`endif
-    default:                        m_result = {`LM32_WORD_WIDTH{1'bx}};
-    endcase               
-`endif                                    
 end
 
 // W stage result selection
 always @(*)
 begin
-`ifdef STYLE_MUX_W
     w_result =    w_result_sel_load_w ? load_data_w
 `ifdef CFG_PL_MULTIPLY_ENABLED
                 : w_result_sel_mul_w ? multiplier_result_w
 `endif
                 : operand_w;
-`else
-    case (w_result_sel_w)
-    `LM32_W_RESULT_SEL_NOP:         w_result = operand_w;
-    `LM32_W_RESULT_SEL_LOAD:        w_result = load_data_w;
-`ifdef CFG_PL_MULTIPLY_ENABLED
-    `LM32_W_RESULT_SEL_MULTIPLIER:  w_result = multiplier_result_w;
-`endif
-    default:                        w_result = {`LM32_WORD_WIDTH{1'bx}};
-    endcase
-`endif
 end
 
 `ifdef CFG_FAST_UNCONDITIONAL_BRANCH    
@@ -1495,9 +1449,6 @@ assign non_debug_exception_x = (system_call_exception == `TRUE)
 assign exception_x = (debug_exception_x == `TRUE) || (non_debug_exception_x == `TRUE);
 `else
 assign exception_x =           (system_call_exception == `TRUE)
-`ifdef CFG_JTAG_ENABLED
-                            || (reset_exception == `TRUE)
-`endif                            
 `ifdef CFG_BUS_ERRORS_ENABLED
                             || (instruction_bus_error_exception == `TRUE)
                             || (data_bus_error_exception == `TRUE)
@@ -1518,34 +1469,34 @@ assign exception_x =           (system_call_exception == `TRUE)
 // Exception ID
 always @(*)
 begin
+`ifdef CFG_DEBUG_ENABLED
 `ifdef CFG_JTAG_ENABLED
     if (reset_exception == `TRUE)
-        eid = `LM32_EID_RESET;
+        eid_x = `LM32_EID_RESET;
     else
 `endif     
-`ifdef CFG_DEBUG_ENABLED
          if (breakpoint_exception == `TRUE)
-        eid = `LM32_EID_BREAKPOINT;
+        eid_x = `LM32_EID_BREAKPOINT;
     else
 `endif
 `ifdef CFG_BUS_ERRORS_ENABLED
          if (instruction_bus_error_exception == `TRUE)
-        eid = `LM32_EID_INST_BUS_ERROR;
+        eid_x = `LM32_EID_INST_BUS_ERROR;
     else
 `endif
 `ifdef CFG_DEBUG_ENABLED
          if (watchpoint_exception == `TRUE)
-        eid = `LM32_EID_WATCHPOINT;
+        eid_x = `LM32_EID_WATCHPOINT;
     else 
 `endif
 `ifdef CFG_BUS_ERRORS_ENABLED
          if (data_bus_error_exception == `TRUE)
-        eid = `LM32_EID_DATA_BUS_ERROR;
+        eid_x = `LM32_EID_DATA_BUS_ERROR;
     else
 `endif
 `ifdef CFG_MC_DIVIDE_ENABLED
          if (divide_by_zero_exception == `TRUE)
-        eid = `LM32_EID_DIVIDE_BY_ZERO;
+        eid_x = `LM32_EID_DIVIDE_BY_ZERO;
     else
 `endif
 `ifdef CFG_INTERRUPTS_ENABLED
@@ -1554,10 +1505,10 @@ begin
              && (dc_ss == `FALSE)
 `endif                            
             )
-        eid = `LM32_EID_INTERRUPT;
+        eid_x = `LM32_EID_INTERRUPT;
     else
 `endif
-        eid = `LM32_EID_SCALL;
+        eid_x = `LM32_EID_SCALL;
 end
 
 // Stall generation
@@ -1570,6 +1521,17 @@ assign stall_d =   (stall_x == `TRUE)
                 || (   (interlock == `TRUE)
                     && (kill_d == `FALSE)
                    ) 
+                || (   (eret_d == `TRUE)
+                    && (load_q_x == `TRUE)
+                   )
+`ifdef CFG_DEBUG_ENABLED
+                || (   (bret_d == `TRUE)
+                    && (load_q_x == `TRUE)
+                   )
+`endif                   
+                || (   (csr_write_enable_d == `TRUE)
+                    && (load_q_x == `TRUE)
+                   )                      
                 ;
                 
 assign stall_x =    (stall_m == `TRUE)
@@ -1744,15 +1706,9 @@ always @(*)
 begin
     case (csr_x)
 `ifdef CFG_INTERRUPTS_ENABLED
-`ifdef ONE_BIG_CSR_MUX       
-    `LM32_CSR_IE:   csr_read_data_x = ie_csr_read_data_x;  
-    `LM32_CSR_IM:   csr_read_data_x = im_csr_read_data_x;  
-    `LM32_CSR_IP:   csr_read_data_x = ip_csr_read_data_x;  
-`else
     `LM32_CSR_IE,
     `LM32_CSR_IM,
     `LM32_CSR_IP:   csr_read_data_x = interrupt_csr_read_data_x;  
-`endif
 `endif
 `ifdef CFG_CYCLE_COUNTER_ENABLED
     `LM32_CSR_CC:   csr_read_data_x = cc;
@@ -1775,7 +1731,7 @@ end
 /////////////////////////////////////////////////////
 
 // Exception Base Address (EBA) CSR
-always @(posedge clk_i or posedge rst_i)
+always @(posedge clk_i `CFG_RESET_SENSITIVITY)
 begin
     if (rst_i == `TRUE)
         eba <= eba_reset[`LM32_PC_WIDTH+2-1:8];
@@ -1792,7 +1748,7 @@ end
 
 `ifdef CFG_DEBUG_ENABLED
 // Debug Exception Base Address (DEBA) CSR
-always @(posedge clk_i or posedge rst_i)
+always @(posedge clk_i `CFG_RESET_SENSITIVITY)
 begin
     if (rst_i == `TRUE)
         deba <= deba_reset[`LM32_PC_WIDTH+2-1:8];
@@ -1936,7 +1892,6 @@ begin
         operand_1_x <= {`LM32_WORD_WIDTH{1'b0}};
         store_operand_x <= {`LM32_WORD_WIDTH{1'b0}};
         branch_target_x <= {`LM32_WORD_WIDTH{1'b0}};        
-`ifdef STYLE_MUX_X    
         x_result_sel_csr_x <= `FALSE;
 `ifdef LM32_MC_ARITHMETIC_ENABLED
         x_result_sel_mc_arith_x <= `FALSE;
@@ -1952,24 +1907,13 @@ begin
         x_result_sel_user_x <= `FALSE;
 `endif
         x_result_sel_add_x <= `FALSE;
-`else
-        x_result_sel_x <= {`LM32_X_RESULT_SEL_WIDTH{1'b0}};
-`endif
-`ifdef STYLE_MUX_M    
         m_result_sel_compare_x <= `FALSE;
 `ifdef CFG_PL_BARREL_SHIFT_ENABLED
         m_result_sel_shift_x <= `FALSE;
 `endif    
-`else
-        m_result_sel_x <= {`LM32_M_RESULT_SEL_WIDTH{1'b0}};
-`endif    
-`ifdef STYLE_MUX_W    
         w_result_sel_load_x <= `FALSE;
 `ifdef CFG_PL_MULTIPLY_ENABLED
         w_result_sel_mul_x <= `FALSE;
-`endif
-`else 
-        w_result_sel_x <= {`LM32_W_RESULT_SEL_WIDTH{1'b0}};
 `endif
         x_bypass_enable_x <= `FALSE;
         m_bypass_enable_x <= `FALSE;
@@ -2006,21 +1950,13 @@ begin
         csr_write_enable_x <= `FALSE;
         operand_m <= {`LM32_WORD_WIDTH{1'b0}};
         branch_target_m <= {`LM32_WORD_WIDTH{1'b0}};
-`ifdef STYLE_MUX_M    
         m_result_sel_compare_m <= `FALSE;
 `ifdef CFG_PL_BARREL_SHIFT_ENABLED
         m_result_sel_shift_m <= `FALSE;
 `endif    
-`else
-        m_result_sel_m <= {`LM32_M_RESULT_SEL_WIDTH{1'b0}};
-`endif    
-`ifdef STYLE_MUX_W    
         w_result_sel_load_m <= `FALSE;
 `ifdef CFG_PL_MULTIPLY_ENABLED
         w_result_sel_mul_m <= `FALSE;
-`endif
-`else 
-        w_result_sel_m <= {`LM32_W_RESULT_SEL_WIDTH{1'b0}};
 `endif
         m_bypass_enable_m <= `FALSE;
         branch_m <= `FALSE;
@@ -2041,13 +1977,9 @@ begin
         non_debug_exception_m <= `FALSE;        
 `endif
         operand_w <= {`LM32_WORD_WIDTH{1'b0}};        
-`ifdef STYLE_MUX_W    
         w_result_sel_load_w <= `FALSE;
 `ifdef CFG_PL_MULTIPLY_ENABLED
         w_result_sel_mul_w <= `FALSE;
-`endif
-`else 
-        w_result_sel_w <= {`LM32_W_RESULT_SEL_WIDTH{1'b0}};
 `endif
         write_idx_w <= {`LM32_REG_IDX_WIDTH{1'b0}};        
         write_enable_w <= `FALSE;
@@ -2071,7 +2003,6 @@ begin
             operand_1_x <= d_result_1;
             store_operand_x <= bypass_data_1;
             branch_target_x <= branch_reg_d == `TRUE ? bypass_data_0[`LM32_PC_RNG] : pc_d + branch_offset_d;            
-`ifdef STYLE_MUX_X    
             x_result_sel_csr_x <= x_result_sel_csr_d;
 `ifdef LM32_MC_ARITHMETIC_ENABLED
             x_result_sel_mc_arith_x <= x_result_sel_mc_arith_d;
@@ -2087,24 +2018,13 @@ begin
             x_result_sel_user_x <= x_result_sel_user_d;
 `endif
             x_result_sel_add_x <= x_result_sel_add_d;
-`else
-            x_result_sel_x <= x_result_sel_d;
-`endif
-`ifdef STYLE_MUX_M    
             m_result_sel_compare_x <= m_result_sel_compare_d;
 `ifdef CFG_PL_BARREL_SHIFT_ENABLED
             m_result_sel_shift_x <= m_result_sel_shift_d;
 `endif    
-`else
-            m_result_sel_x <= m_result_sel_d;
-`endif    
-`ifdef STYLE_MUX_W    
             w_result_sel_load_x <= w_result_sel_load_d;
 `ifdef CFG_PL_MULTIPLY_ENABLED
             w_result_sel_mul_x <= w_result_sel_mul_d;
-`endif
-`else 
-            w_result_sel_x <= w_result_sel_d;
 `endif
             x_bypass_enable_x <= x_bypass_enable_d;
             m_bypass_enable_x <= m_bypass_enable_d;
@@ -2145,15 +2065,10 @@ begin
         if (stall_m == `FALSE)
         begin
             operand_m <= x_result;
-`ifdef STYLE_MUX_M    
             m_result_sel_compare_m <= m_result_sel_compare_x;
 `ifdef CFG_PL_BARREL_SHIFT_ENABLED
             m_result_sel_shift_m <= m_result_sel_shift_x;
 `endif    
-`else
-            m_result_sel_m <= m_result_sel_x;
-`endif    
-`ifdef STYLE_MUX_W    
             if (exception_x == `TRUE)
             begin
                 w_result_sel_load_m <= `FALSE;
@@ -2168,9 +2083,6 @@ begin
                 w_result_sel_mul_m <= w_result_sel_mul_x;
 `endif
             end
-`else 
-            w_result_sel_m <= exception_x == `TRUE ? `LM32_W_RESULT_SEL_NOP : w_result_sel_x;
-`endif
             m_bypass_enable_m <= m_bypass_enable_x;
 `ifdef CFG_PL_BARREL_SHIFT_ENABLED
             direction_m <= direction_x;
@@ -2197,12 +2109,19 @@ begin
 `endif
             condition_met_m <= condition_met_x;
 `ifdef CFG_DEBUG_ENABLED
-            branch_target_m <= exception_x == `TRUE ? {(debug_exception_x == `TRUE) || (dc_re == `TRUE) ? deba : eba, eid, {3{1'b0}}} : branch_target_x;
+            branch_target_m <= exception_x == `TRUE ? {(debug_exception_x == `TRUE) || (dc_re == `TRUE) ? deba : eba, eid_x, {3{1'b0}}} : branch_target_x;
 `else
-            branch_target_m <= exception_x == `TRUE ? {eba, eid, {3{1'b0}}} : branch_target_x;
+            branch_target_m <= exception_x == `TRUE ? {eba, eid_x, {3{1'b0}}} : branch_target_x;
+`endif
+`ifdef CFG_TRACE_ENABLED
+            eid_m <= eid_x;
 `endif
 `ifdef CFG_DCACHE_ENABLED
             dflush_m <= dflush_x;
+`endif
+            eret_m <= eret_q_x;
+`ifdef CFG_DEBUG_ENABLED
+            bret_m <= bret_q_x; 
 `endif
             write_enable_m <= exception_x == `TRUE ? `TRUE : write_enable_x;            
 `ifdef CFG_DEBUG_ENABLED
@@ -2223,15 +2142,18 @@ begin
         // M/W stage registers
 
         operand_w <= exception_m == `TRUE ? {pc_m, 2'b00} : m_result;        
-`ifdef STYLE_MUX_W    
         w_result_sel_load_w <= w_result_sel_load_m;
 `ifdef CFG_PL_MULTIPLY_ENABLED
         w_result_sel_mul_w <= w_result_sel_mul_m;
 `endif
-`else 
-        w_result_sel_w <= w_result_sel_m;
-`endif
         write_idx_w <= write_idx_m;
+`ifdef CFG_TRACE_ENABLED
+        eid_w <= eid_m;
+        eret_w <= eret_m;
+`ifdef CFG_DEBUG_ENABLED
+        bret_w <= bret_m; 
+`endif
+`endif
         write_enable_w <= write_enable_m;
 `ifdef CFG_DEBUG_ENABLED
         debug_exception_w <= debug_exception_m;
@@ -2285,6 +2207,69 @@ begin
 end
 `endif
 
+`ifdef CFG_TRACE_ENABLED
+// PC tracing logic
+always @(posedge clk_i `CFG_RESET_SENSITIVITY)
+begin
+    if (rst_i == `TRUE)
+    begin
+        trace_pc_valid <= `FALSE;
+        trace_pc <= {`LM32_PC_WIDTH{1'b0}};
+        trace_exception <= `FALSE;
+        trace_eid <= `LM32_EID_RESET;
+        trace_eret <= `FALSE;
+`ifdef CFG_DEBUG_ENABLED
+        trace_bret <= `FALSE;
+`endif
+        pc_c <= `CFG_EBA_RESET/4;
+    end
+    else
+    begin
+        trace_pc_valid <= `FALSE;
+        
+        // Has an exception occured
+`ifdef CFG_DEBUG_ENABLED
+        if ((debug_exception_q_w == `TRUE) || (non_debug_exception_q_w == `TRUE))
+`else
+        if (exception_q_w == `TRUE)
+`endif
+        begin        
+            trace_exception <= `TRUE;
+            trace_pc_valid <= `TRUE;
+            trace_pc <= pc_w;
+            trace_eid <= eid_w;
+        end
+        else
+            trace_exception <= `FALSE;
+        
+        if ((valid_w == `TRUE) && (!kill_w))
+        begin
+            // An instruction is commiting. Determine if it is non-sequential
+            if (pc_c + 1'b1 != pc_w)
+            begin
+                // Non-sequential instruction
+                trace_pc_valid <= `TRUE;
+                trace_pc <= pc_w;
+            end
+            // Record PC so we can determine if next instruction is sequential or not
+            pc_c <= pc_w;
+            // Indicate if it was an eret/bret instruction
+            trace_eret <= eret_w;
+`ifdef CFG_DEBUG_ENABLED
+            trace_bret <= bret_w;
+`endif
+        end
+        else
+        begin
+            trace_eret <= `FALSE;
+`ifdef CFG_DEBUG_ENABLED
+            trace_bret <= `FALSE;
+`endif
+        end
+    end
+end
+`endif
+
 /////////////////////////////////////////////////////
 // Behavioural Logic
 /////////////////////////////////////////////////////
@@ -2295,25 +2280,12 @@ end
 initial
 begin
 `ifdef LM32_EBR_REGISTER_FILE
-    reg_0.ram.mem[0] = {`LM32_WORD_WIDTH{1'b0}};
-    reg_1.ram.mem[0] = {`LM32_WORD_WIDTH{1'b0}};
+    reg_0.mem[0] = {`LM32_WORD_WIDTH{1'b0}};
+    reg_1.mem[0] = {`LM32_WORD_WIDTH{1'b0}};
 `else
     registers[0] = {`LM32_WORD_WIDTH{1'b0}};
 `endif
 end
-
-// Check that pc_f is valid when used for return address
-always @(posedge clk_i)
-begin
-    if ((stall_d == `FALSE) && (valid_d == `TRUE) && (d_result_sel_0_d[0] == `LM32_D_RESULT_SEL_0_NEXT_PC))
-    begin
-        if (pc_f !== pc_d + 1)
-        begin
-            $display ("pc_f !== pc_d + 1");
-            $stop;
-        end
-    end
-end        
 
 // synthesis translate_on
         

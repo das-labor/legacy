@@ -16,9 +16,9 @@
 //                         FILE DETAILS
 // Project          : LatticeMico32
 // File             : lm32_adder.v
-// Title            : Integer adder
+// Title            : Integer adder / subtractor with comparison flag generation 
 // Dependencies     : lm32_include.v
-// Version          : 6.0.13
+// Version          : 6.1.17
 // =============================================================================
 
 `include "lm32_include.v"
@@ -43,29 +43,29 @@ module lm32_adder (
 // Inputs
 /////////////////////////////////////////////////////
 
-input adder_op_x;                                       // 0 for addition, 1 for subtraction
+input adder_op_x;                                       // Operating to perform, 0 for addition, 1 for subtraction
 input adder_op_x_n;                                     // Inverted version of adder_op_x
-input [`LM32_WORD_RNG] operand_0_x;
-input [`LM32_WORD_RNG] operand_1_x;                 
+input [`LM32_WORD_RNG] operand_0_x;                     // Operand to add, or subtract from
+input [`LM32_WORD_RNG] operand_1_x;                     // Opearnd to add, or subtract by
 
 /////////////////////////////////////////////////////
 // Outputs
 /////////////////////////////////////////////////////
 
-output [`LM32_WORD_RNG] adder_result_x;
+output [`LM32_WORD_RNG] adder_result_x;                 // Result of addition or subtraction
 wire   [`LM32_WORD_RNG] adder_result_x;
 output adder_carry_n_x;                                 // Inverted carry
 wire   adder_carry_n_x;
-output adder_overflow_x;                                // Only valid for subtractions
+output adder_overflow_x;                                // Indicates if overflow occured, only valid for subtractions
 reg    adder_overflow_x;
     
 /////////////////////////////////////////////////////
 // Internal nets and registers 
 /////////////////////////////////////////////////////
 
-wire a_sign;
-wire b_sign;
-wire result_sign;
+wire a_sign;                                            // Sign (i.e. positive or negative) of operand 0
+wire b_sign;                                            // Sign of operand 1
+wire result_sign;                                       // Sign of result
 
 /////////////////////////////////////////////////////
 // Instantiations 
@@ -86,11 +86,14 @@ lm32_addsub addsub (
 // Combinational Logic
 /////////////////////////////////////////////////////
 
-// Determine whether an overflow occured when performing a subtraction
+// Extract signs of operands and result
 
 assign a_sign = operand_0_x[`LM32_WORD_WIDTH-1];
 assign b_sign = operand_1_x[`LM32_WORD_WIDTH-1];
 assign result_sign = adder_result_x[`LM32_WORD_WIDTH-1];
+
+// Determine whether an overflow occured when performing a subtraction
+
 always @(*)
 begin    
     //  +ve - -ve = -ve -> overflow

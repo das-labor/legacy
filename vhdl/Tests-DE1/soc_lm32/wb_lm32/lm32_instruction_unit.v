@@ -18,7 +18,7 @@
 // File             : lm32_instruction_unit.v
 // Title            : Instruction unit
 // Dependencies     : lm32_include.v
-// Version          : 6.0.13
+// Version          : 6.1.17
 // =============================================================================
 
 `include "lm32_include.v"
@@ -72,6 +72,7 @@ module lm32_instruction_unit (
     pc_d,
     pc_x,
     pc_m,
+    pc_w,
 `ifdef CFG_ICACHE_ENABLED
     icache_stall_request,
     icache_restart_request,
@@ -114,9 +115,7 @@ parameter base_address = 0;                             // Base address of cacha
 parameter limit = 0;                                    // Limit (highest address) of cachable memory
 
 // For bytes_per_line == 4, we set 1 so part-select range isn't reversed, even though not really used 
-//localparam addr_offset_width = bytes_per_line == 4 ? 1 : clogb2(bytes_per_line)-1-2;
-localparam addr_offset_width = 1;
-
+localparam addr_offset_width = bytes_per_line == 4 ? 1 : clogb2(bytes_per_line)-1-2;
 localparam addr_offset_lsb = 2;
 localparam addr_offset_msb = (addr_offset_lsb+addr_offset_width-1);
 
@@ -177,6 +176,8 @@ output [`LM32_PC_RNG] pc_x;                             // X stage PC
 reg    [`LM32_PC_RNG] pc_x;
 output [`LM32_PC_RNG] pc_m;                             // M stage PC
 reg    [`LM32_PC_RNG] pc_m;
+output [`LM32_PC_RNG] pc_w;                             // W stage PC
+reg    [`LM32_PC_RNG] pc_w;
 
 `ifdef CFG_ICACHE_ENABLED
 output icache_stall_request;                            // Instruction cache stall request
@@ -215,9 +216,9 @@ reg    i_we_o;
 wire   i_we_o;
 `endif
 output [`LM32_CTYPE_RNG] i_cti_o;                       // Instruction Wishbone interface cycle type 
-wire   [`LM32_CTYPE_RNG] i_cti_o;
+reg    [`LM32_CTYPE_RNG] i_cti_o;
 output i_lock_o;                                        // Instruction Wishbone interface lock bus
-wire   i_lock_o;
+reg    i_lock_o;
 output [`LM32_BTYPE_RNG] i_bte_o;                       // Instruction Wishbone interface burst type 
 wire   [`LM32_BTYPE_RNG] i_bte_o;
 `endif
@@ -245,7 +246,6 @@ reg    [`LM32_INSTRUCTION_RNG] instruction_d;
 /////////////////////////////////////////////////////
 
 reg [`LM32_PC_RNG] pc_a;                                // A stage PC
-reg [`LM32_PC_RNG] pc_w;                                // W stage PC
 
 `ifdef LM32_CACHE_ENABLED
 reg [`LM32_PC_RNG] restart_address;                     // Address to restart from after a cache miss  
@@ -257,6 +257,8 @@ wire [`LM32_PC_RNG] icache_refill_address;              // Address that caused c
 reg icache_refill_ready;                                // Indicates when next word of refill data is ready to be written to cache
 reg [`LM32_INSTRUCTION_RNG] icache_refill_data;         // Next word of refill data, fetched from Wishbone
 wire [`LM32_INSTRUCTION_RNG] icache_data_f;             // Instruction fetched from instruction cache
+wire [`LM32_CTYPE_RNG] first_cycle_type;                // First Wishbone cycle type
+wire [`LM32_CTYPE_RNG] next_cycle_type;                 // Next Wishbone cycle type
 wire last_word;                                         // Indicates if this is the last word in the cache line
 wire [`LM32_PC_RNG] first_address;                      // First cache refill address
 `else
@@ -418,7 +420,7 @@ assign instruction_f = wb_data_f;
 `endif
 `endif
 
-// Unused Wishbone signals
+// Unused/constant Wishbone signals
 `ifdef CFG_IWB_ENABLED
 `ifdef CFG_HW_DEBUG_ENABLED
 `else
@@ -426,23 +428,35 @@ assign i_dat_o = 32'd0;
 assign i_we_o = `FALSE;
 assign i_sel_o = 4'b1111;
 `endif
-assign i_cti_o = `LM32_CTYPE_WIDTH'd0;
-assign i_lock_o = `FALSE;
-assign i_bte_o = `LM32_BTYPE_WIDTH'd0;
+assign i_bte_o = `LM32_BTYPE_LINEAR;
 `endif
 
-`ifdef CFG_ICACHE_ENABLED                
+`ifdef CFG_ICACHE_ENABLED
+// Determine parameters for next cache refill Wishbone access                
 generate
-    if (bytes_per_line > 4)
+    case (bytes_per_line)
+    4:
     begin
-assign last_word = (&i_adr_o[addr_offset_msb:addr_offset_lsb]) == 1'b1;
-assign first_address = {icache_refill_address[`LM32_PC_WIDTH+2-1:addr_offset_msb+1], {addr_offset_width{1'b0}}};
-    end
-    else
-    begin
+assign first_cycle_type = `LM32_CTYPE_END;
+assign next_cycle_type = `LM32_CTYPE_END;
 assign last_word = `TRUE;
 assign first_address = icache_refill_address;
     end
+    8:
+    begin
+assign first_cycle_type = `LM32_CTYPE_INCREMENTING;
+assign next_cycle_type = `LM32_CTYPE_END;
+assign last_word = i_adr_o[addr_offset_msb:addr_offset_lsb] == 1'b1;
+assign first_address = {icache_refill_address[`LM32_PC_WIDTH+2-1:addr_offset_msb+1], {addr_offset_width{1'b0}}};
+    end
+    16:
+    begin
+assign first_cycle_type = `LM32_CTYPE_INCREMENTING;
+assign next_cycle_type = i_adr_o[addr_offset_msb] == 1'b1 ? `LM32_CTYPE_END : `LM32_CTYPE_INCREMENTING;
+assign last_word = i_adr_o[addr_offset_msb:addr_offset_lsb] == 2'b11;
+assign first_address = {icache_refill_address[`LM32_PC_WIDTH+2-1:addr_offset_msb+1], {addr_offset_width{1'b0}}};
+    end
+    endcase
 endgenerate
 `endif
                      
@@ -541,6 +555,8 @@ begin
         i_cyc_o <= `FALSE;
         i_stb_o <= `FALSE;
         i_adr_o <= {`LM32_WORD_WIDTH{1'b0}};
+        i_cti_o <= `LM32_CTYPE_END;
+        i_lock_o <= `FALSE;
         icache_refill_data <= {`LM32_INSTRUCTION_WIDTH{1'b0}};
         icache_refill_ready <= `FALSE;
 `ifdef CFG_BUS_ERRORS_ENABLED
@@ -572,17 +588,16 @@ begin
                 else
 `endif
                 begin
-                    if (!last_word)
-                    begin
-                        // Fetch next word in cache line
-                        i_adr_o[addr_offset_msb:addr_offset_lsb] <= i_adr_o[addr_offset_msb:addr_offset_lsb] + 1'b1;
-                    end
-                    else
+                    if (last_word == `TRUE)
                     begin
                         // Cache line fill complete 
                         i_cyc_o <= `FALSE;
                         i_stb_o <= `FALSE;
+                        i_lock_o <= `FALSE;
                     end
+                    // Fetch next word in cache line
+                    i_adr_o[addr_offset_msb:addr_offset_lsb] <= i_adr_o[addr_offset_msb:addr_offset_lsb] + 1'b1;
+                    i_cti_o <= next_cycle_type;
                     // Write fetched data into instruction cache
                     icache_refill_ready <= `TRUE;
                     icache_refill_data <= i_dat_i;
@@ -607,6 +622,8 @@ begin
                 i_adr_o <= {first_address, 2'b00};
                 i_cyc_o <= `TRUE;
                 i_stb_o <= `TRUE;                
+                i_cti_o <= first_cycle_type;
+                //i_lock_o <= `TRUE;
 `ifdef CFG_BUS_ERRORS_ENABLED
                 bus_error_f <= `FALSE;
 `endif
@@ -627,6 +644,7 @@ begin
                     i_cyc_o <= `TRUE;
                     i_stb_o <= `TRUE;
                     i_we_o <= jtag_write_enable;
+                    i_cti_o <= `LM32_CTYPE_END;
                     jtag_access <= `TRUE;
                 end
             end 
@@ -652,6 +670,8 @@ begin
         i_cyc_o <= `FALSE;
         i_stb_o <= `FALSE;
         i_adr_o <= {`LM32_WORD_WIDTH{1'b0}};
+        i_cti_o <= `LM32_CTYPE_CLASSIC;
+        i_lock_o <= `FALSE;
         wb_data_f <= {`LM32_INSTRUCTION_WIDTH{1'b0}};
 `ifdef CFG_BUS_ERRORS_ENABLED
         bus_error_f <= `FALSE;

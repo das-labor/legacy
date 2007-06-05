@@ -17,8 +17,10 @@
 // Project          : LatticeMico32
 // File             : lm32_addsub.v
 // Title            : PMI adder/subtractor.
-// Version          : 6.0.13
+// Version          : 6.1.17
 // =============================================================================
+
+`include "lm32_include.v"
 
 /////////////////////////////////////////////////////
 // Module interface
@@ -57,34 +59,13 @@ wire   Cout;
 // Instantiations
 ///////////////////////////////////////////////////// 
 
-//pmi_addsub #(
-//    // ----- Parameters -------
-//    .pmi_data_width     (32),
-//    .pmi_result_width   (32),
-//    .pmi_sign           ("off"),
-//    .pmi_family         ("ECP"),
-//    .module_type        ("pmi_addsub")
-//  ) addsub (
-    // ----- Inputs -------
-//    .DataA              (DataA),
-//    .DataB              (DataB),
-//    .Cin                (Cin),
-//    .Add_Sub            (Add_Sub),
-    // ----- Outputs -------
-//    .Result             (Result),
-//    .Cout               (Cout),
-//    .Overflow           ()
-//    );
+       generate
+	     wire [32:0] tmp_addResult = DataA + DataB + Cin;
+	     wire [32:0] tmp_subResult = DataA - DataB - !Cin;   
+   
+	     assign  Result = (Add_Sub == 1) ? tmp_addResult[31:0] : tmp_subResult[31:0];
+	     assign  Cout = (Add_Sub == 1) ? tmp_addResult[32] : !tmp_subResult[32];
 
-assign Result = DataA + DataB;
-
-//my_addsub(
-//	.A	(DataA),
-//	.B	(DataB),
-//	.C_IN	(Cin),
-//	.C_OUT	(Cout),
-//	.ADD	(Add_Sub),
-//	.S	(Result)
-//	);
+       endgenerate 
 
 endmodule

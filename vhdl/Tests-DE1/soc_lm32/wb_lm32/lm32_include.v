@@ -17,7 +17,7 @@
 // Project          : LatticeMico32
 // File             : lm32_include.v
 // Title            : CPU global macros
-// Version          : 6.0.13
+// Version          : 6.1.17
 // =============================================================================
 
 `ifdef LM32_INCLUDE_V
@@ -39,6 +39,7 @@
 `define CFG_IWB_ENABLED
 `define CFG_DWB_ENABLED
 
+// Data-path width
 `define LM32_WORD_WIDTH                 32
 `define LM32_WORD_RNG                   (`LM32_WORD_WIDTH-1):0
 `define LM32_SHIFT_WIDTH                5
@@ -46,6 +47,7 @@
 `define LM32_BYTE_SELECT_WIDTH          4
 `define LM32_BYTE_SELECT_RNG            (`LM32_BYTE_SELECT_WIDTH-1):0
 
+// Register file size
 `define LM32_REGISTERS                  32
 `define LM32_REG_IDX_WIDTH              5
 `define LM32_REG_IDX_RNG                (`LM32_REG_IDX_WIDTH-1):0
@@ -121,6 +123,7 @@
 `endif
 `endif
 
+// Derive a macro that indicates whether or not the multi-cycle arithmetic unit is required
 `ifdef CFG_MC_DIVIDE_ENABLED
 `define LM32_MC_ARITHMETIC_ENABLED
 `endif
@@ -140,7 +143,7 @@
 `endif
 
 // Revision number
-`define LM32_REVISION                   6'hd
+`define LM32_REVISION                   6'h11
 
 // Logical operations - Function encoded directly in instruction
 `define LM32_LOGIC_OP_RNG               3:0
@@ -237,211 +240,10 @@
 `define LM32_D_RESULT_SEL_1_REG_1        2'b01
 `define LM32_D_RESULT_SEL_1_IMMEDIATE    2'b10
 
-`define STYLE_MUX_X
-`define STYLE_MUX_M
-`define STYLE_MUX_W
-
-`ifdef STYLE_MUX_X   
-`else 
-`define LM32_X_RESULT_SEL_WIDTH         4
-`define LM32_X_RESULT_SEL_RNG           3:0
-`define LM32_X_RESULT_SEL_ADDER         4'd0
-`define LM32_X_RESULT_SEL_LOGIC         4'd1
-`define LM32_X_RESULT_SEL_CSR           4'd2
-`define LM32_X_RESULT_SEL_SEXT          4'd3
-`define LM32_X_RESULT_SEL_USER          4'd4
-`define LM32_X_RESULT_SEL_SHIFT         4'd5
-`define LM32_X_RESULT_SEL_MULTIPLY      4'd6
-`define LM32_X_RESULT_SEL_DIVIDE        4'd7
-`define LM32_X_RESULT_SEL_MODULUS       4'd8
-`define LM32_X_RESULT_SEL_SHIFT_LEFT    4'd9
-`define LM32_X_RESULT_SEL_SHIFT_RIGHT   4'da
-`endif
-
-`ifdef CFG_MC_MULTIPLY_ENABLED
-`ifdef CFG_USER_ENABLED
-`ifdef CFG_SIGN_EXTEND_ENABLED
-`ifdef CFG_PL_BARREL_SHIFT_ENABLED
-`define LM32_X_RESULT_SEL_WIDTH         5
-`define LM32_X_RESULT_SEL_RNG           4:0
-`define LM32_X_RESULT_SEL_ADDER         5'b00001
-`define LM32_X_RESULT_SEL_LOGIC         5'b00010
-`define LM32_X_RESULT_SEL_CSR           5'b00100
-`define LM32_X_RESULT_SEL_SEXT          5'b01000
-`define LM32_X_RESULT_SEL_USER          5'b10000
-`define LM32_X_RESULT_SEL_MULTIPLY      5'b00000
-`else // CFG_PL_BARREL_SHIFT_ENABLED
-`endif // CFG_PL_BARREL_SHIFT_ENABLED
-`else // CFG_SIGN_EXTEND_ENABLED
-`ifdef CFG_PL_BARREL_SHIFT_ENABLED
-`define LM32_X_RESULT_SEL_WIDTH         4
-`define LM32_X_RESULT_SEL_RNG           3:0
-`define LM32_X_RESULT_SEL_ADDER         4'b0001
-`define LM32_X_RESULT_SEL_LOGIC         4'b0010
-`define LM32_X_RESULT_SEL_CSR           4'b0100
-`define LM32_X_RESULT_SEL_USER          4'b1000
-`define LM32_X_RESULT_SEL_MULTIPLY      4'b0000
-`else // CFG_PL_BARREL_SHIFT_ENABLED
-`define LM32_X_RESULT_SEL_WIDTH         5
-`define LM32_X_RESULT_SEL_RNG           4:0
-`define LM32_X_RESULT_SEL_ADDER         5'b00001
-`define LM32_X_RESULT_SEL_LOGIC         5'b00010
-`define LM32_X_RESULT_SEL_CSR           5'b00100
-`define LM32_X_RESULT_SEL_USER          5'b01000
-`define LM32_X_RESULT_SEL_SHIFT         5'b10000
-`define LM32_X_RESULT_SEL_MULTIPLY      5'b00000
-`endif // CFG_PL_BARREL_SHIFT_ENABLED
-`endif // CFG_SIGN_EXTEND_ENABLED
-`else // CFG_USER_ENABLED
-`ifdef CFG_SIGN_EXTEND_ENABLED
-`ifdef CFG_PL_BARREL_SHIFT_ENABLED
-`define LM32_X_RESULT_SEL_WIDTH         4
-`define LM32_X_RESULT_SEL_RNG           3:0
-`define LM32_X_RESULT_SEL_ADDER         4'b0001
-`define LM32_X_RESULT_SEL_LOGIC         4'b0010
-`define LM32_X_RESULT_SEL_CSR           4'b0100
-`define LM32_X_RESULT_SEL_SEXT          4'b1000
-`define LM32_X_RESULT_SEL_MULTIPLY      4'b0000
-`else // CFG_PL_BARREL_SHIFT_ENABLED
-`define LM32_X_RESULT_SEL_WIDTH         5
-`define LM32_X_RESULT_SEL_RNG           4:0
-`define LM32_X_RESULT_SEL_ADDER         5'b00001
-`define LM32_X_RESULT_SEL_LOGIC         5'b00010
-`define LM32_X_RESULT_SEL_CSR           5'b00100
-`define LM32_X_RESULT_SEL_SEXT          5'b01000
-`define LM32_X_RESULT_SEL_SHIFT         5'b10000
-`define LM32_X_RESULT_SEL_MULTIPLY      5'b00000
-`endif // CFG_PL_BARREL_SHIFT_ENABLED
-`else // CFG_SIGN_EXTEND_ENABLED
-`ifdef CFG_PL_BARREL_SHIFT_ENABLED
-`define LM32_X_RESULT_SEL_WIDTH         3
-`define LM32_X_RESULT_SEL_RNG           2:0
-`define LM32_X_RESULT_SEL_ADDER         3'b001
-`define LM32_X_RESULT_SEL_LOGIC         3'b010
-`define LM32_X_RESULT_SEL_CSR           3'b100
-`define LM32_X_RESULT_SEL_MULTIPLY      3'b000
-`else // CFG_PL_BARREL_SHIFT_ENABLED
-`define LM32_X_RESULT_SEL_WIDTH         4
-`define LM32_X_RESULT_SEL_RNG           3:0
-`define LM32_X_RESULT_SEL_ADDER         4'b0001
-`define LM32_X_RESULT_SEL_LOGIC         4'b0010
-`define LM32_X_RESULT_SEL_CSR           4'b0100
-`define LM32_X_RESULT_SEL_SHIFT         4'b1000
-`define LM32_X_RESULT_SEL_MULTIPLY      4'b0000
-`endif // CFG_PL_BARREL_SHIFT_ENABLED
-`endif // CFG_SIGN_EXTEND_ENABLED
-`endif // CFG_USER_ENABLED
-`else // CFG_MC_MULTIPLY_ENABLED
-`ifdef CFG_USER_ENABLED
-`ifdef CFG_SIGN_EXTEND_ENABLED
-`ifdef CFG_PL_BARREL_SHIFT_ENABLED
-`define LM32_X_RESULT_SEL_WIDTH         4
-`define LM32_X_RESULT_SEL_RNG           3:0
-`define LM32_X_RESULT_SEL_ADDER         4'b0001
-`define LM32_X_RESULT_SEL_LOGIC         4'b0010
-`define LM32_X_RESULT_SEL_CSR           4'b0100
-`define LM32_X_RESULT_SEL_SEXT          4'b1000
-`define LM32_X_RESULT_SEL_USER          4'b0000
-`else // CFG_PL_BARREL_SHIFT_ENABLED
-`define LM32_X_RESULT_SEL_WIDTH         5
-`define LM32_X_RESULT_SEL_RNG           4:0
-`define LM32_X_RESULT_SEL_ADDER         5'b00001
-`define LM32_X_RESULT_SEL_LOGIC         5'b00010
-`define LM32_X_RESULT_SEL_CSR           5'b00100
-`define LM32_X_RESULT_SEL_SEXT          5'b01000
-`define LM32_X_RESULT_SEL_USER          5'b10000
-`define LM32_X_RESULT_SEL_SHIFT         5'b00000
-`endif // CFG_PL_BARREL_SHIFT_ENABLED
-`else // CFG_SIGN_EXTEND_ENABLED
-`ifdef CFG_PL_BARREL_SHIFT_ENABLED
-`define LM32_X_RESULT_SEL_WIDTH         3
-`define LM32_X_RESULT_SEL_RNG           2:0
-`define LM32_X_RESULT_SEL_ADDER         3'b001
-`define LM32_X_RESULT_SEL_LOGIC         3'b010
-`define LM32_X_RESULT_SEL_CSR           3'b100
-`define LM32_X_RESULT_SEL_USER          3'b000
-`else // CFG_PL_BARREL_SHIFT_ENABLED
-`define LM32_X_RESULT_SEL_WIDTH         4
-`define LM32_X_RESULT_SEL_RNG           3:0
-`define LM32_X_RESULT_SEL_ADDER         4'b0001
-`define LM32_X_RESULT_SEL_LOGIC         4'b0010
-`define LM32_X_RESULT_SEL_CSR           4'b0100
-`define LM32_X_RESULT_SEL_USER          4'b1000
-`define LM32_X_RESULT_SEL_SHIFT         4'b0000
-`endif // CFG_PL_BARREL_SHIFT_ENABLED
-`endif // CFG_SIGN_EXTEND_ENABLED
-`else // CFG_USER_ENABLED
-`ifdef CFG_SIGN_EXTEND_ENABLED
-`ifdef CFG_PL_BARREL_SHIFT_ENABLED
-`define LM32_X_RESULT_SEL_WIDTH         3
-`define LM32_X_RESULT_SEL_RNG           2:0
-`define LM32_X_RESULT_SEL_ADDER         3'b001
-`define LM32_X_RESULT_SEL_LOGIC         3'b010
-`define LM32_X_RESULT_SEL_CSR           3'b100
-`define LM32_X_RESULT_SEL_SEXT          3'b000
-`else // CFG_PL_BARREL_SHIFT_ENABLED
-`define LM32_X_RESULT_SEL_WIDTH         4
-`define LM32_X_RESULT_SEL_RNG           3:0
-`define LM32_X_RESULT_SEL_ADDER         4'b0001
-`define LM32_X_RESULT_SEL_LOGIC         4'b0010
-`define LM32_X_RESULT_SEL_CSR           4'b0100
-`define LM32_X_RESULT_SEL_SEXT          4'b1000
-`define LM32_X_RESULT_SEL_SHIFT         4'b0000
-`endif // CFG_PL_BARREL_SHIFT_ENABLED
-`else // CFG_SIGN_EXTEND_ENABLED
-`ifdef CFG_PL_BARREL_SHIFT_ENABLED
-`define LM32_X_RESULT_SEL_WIDTH         2
-`define LM32_X_RESULT_SEL_RNG           1:0
-`define LM32_X_RESULT_SEL_ADDER         2'b01
-`define LM32_X_RESULT_SEL_LOGIC         2'b10
-`define LM32_X_RESULT_SEL_CSR           2'b00
-`else // CFG_PL_BARREL_SHIFT_ENABLED
-`define LM32_X_RESULT_SEL_WIDTH         3
-`define LM32_X_RESULT_SEL_RNG           2:0
-`define LM32_X_RESULT_SEL_ADDER         3'b001
-`define LM32_X_RESULT_SEL_LOGIC         3'b010
-`define LM32_X_RESULT_SEL_CSR           3'b100
-`define LM32_X_RESULT_SEL_SHIFT         3'b000
-`endif // CFG_PL_BARREL_SHIFT_ENABLED
-`endif // CFG_SIGN_EXTEND_ENABLED
-`endif // CFG_USER_ENABLED
-`endif // CFG_MC_MULTIPLY_ENABLED
-
-`ifdef STYLE_MUX_M
-`else
-`ifdef CFG_PL_BARREL_SHIFT_ENABLED
-`define LM32_M_RESULT_SEL_WIDTH         2
-`define LM32_M_RESULT_SEL_RNG           1:0
-`define LM32_M_RESULT_SEL_NOP           2'b00
-`define LM32_M_RESULT_SEL_COMPARE       2'b01
-`define LM32_M_RESULT_SEL_SHIFTER       2'b10
-`else
-`define LM32_M_RESULT_SEL_WIDTH         1
-`define LM32_M_RESULT_SEL_RNG           0:0
-`define LM32_M_RESULT_SEL_NOP           1'b0
-`define LM32_M_RESULT_SEL_COMPARE       1'b1
-`endif
-`endif
-
-`ifdef STYLE_MUX_W
-`else
-`ifdef CFG_PL_MULTIPLY_ENABLED
-`define LM32_W_RESULT_SEL_WIDTH         2
-`define LM32_W_RESULT_SEL_RNG           1:0
-`define LM32_W_RESULT_SEL_NOP           2'b00
-`define LM32_W_RESULT_SEL_LOAD          2'b01
-`define LM32_W_RESULT_SEL_MULTIPLIER    2'b10
-`else
-`define LM32_W_RESULT_SEL_WIDTH         1
-`define LM32_W_RESULT_SEL_RNG           0:0
-`define LM32_W_RESULT_SEL_NOP           1'b0
-`define LM32_W_RESULT_SEL_LOAD          1'b1
-`endif
-`endif
-
 `define LM32_USER_OPCODE_WIDTH           11
 `define LM32_USER_OPCODE_RNG             (`LM32_USER_OPCODE_WIDTH-1):0
 
+// Derive a macro to indicate if either of the caches are implemented
 `ifdef CFG_ICACHE_ENABLED
 `define LM32_CACHE_ENABLED      
 `else
@@ -483,21 +285,35 @@
 `define LM32_HWORD_1_RNG                 31:16
 
 // Use an asynchronous reset
+// To use a synchronous reset, define this macro as nothing
 `define CFG_RESET_SENSITIVITY or posedge rst_i
-// Use muxes - To be removed: MUX Seems to be smaller
-`define STYLE_MUX
-//`define STYLE_CASE
-//`define ONE_BIG_CSR_MUX
 
+// V.T. Srce
 `define SRCE
 
+// Whether to include context registers for debug exceptions
+// in addition to standard exception handling registers
 // Bizarre - Removing this increases LUT count!
 `define CFG_DEBUG_EXCEPTIONS_ENABLED
 
-// Wishbone - These should probably be moved elsewhere
-`define LM32_BTYPE_WIDTH                2
-`define LM32_BTYPE_RNG                  (`LM32_BTYPE_WIDTH-1):0
+// Wishbone defines 
+// Refer to Wishbone System-on-Chip Interconnection Architecture
+// These should probably be moved to a Wishbone common file
+
+// Wishbone cycle types
 `define LM32_CTYPE_WIDTH                3
 `define LM32_CTYPE_RNG                  (`LM32_CTYPE_WIDTH-1):0
+`define LM32_CTYPE_CLASSIC              3'b000
+`define LM32_CTYPE_CONSTANT             3'b001
+`define LM32_CTYPE_INCREMENTING         3'b010
+`define LM32_CTYPE_END                  3'b111
+
+// Wishbone burst types
+`define LM32_BTYPE_WIDTH                2
+`define LM32_BTYPE_RNG                  (`LM32_BTYPE_WIDTH-1):0
+`define LM32_BTYPE_LINEAR               2'b00
+`define LM32_BTYPE_4_BEAT               2'b01
+`define LM32_BTYPE_8_BEAT               2'b10
+`define LM32_BTYPE_16_BEAT              2'b11
 
 `endif
