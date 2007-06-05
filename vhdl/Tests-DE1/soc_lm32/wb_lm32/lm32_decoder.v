@@ -18,7 +18,7 @@
 // File             : lm32_decoder.v
 // Title            : Instruction decoder
 // Dependencies     : lm32_include.v
-// Version          : 6.0.13
+// Version          : 6.1.17
 // =============================================================================
 
 `include "lm32_include.v"
@@ -84,7 +84,6 @@ module lm32_decoder (
     // ----- Outputs -------
     d_result_sel_0,
     d_result_sel_1,        
-`ifdef STYLE_MUX_X    
     x_result_sel_csr,
 `ifdef LM32_MC_ARITHMETIC_ENABLED
     x_result_sel_mc_arith,
@@ -100,24 +99,13 @@ module lm32_decoder (
     x_result_sel_user,
 `endif
     x_result_sel_add,
-`else
-    x_result_sel,   
-`endif
-`ifdef STYLE_MUX_M    
     m_result_sel_compare,
 `ifdef CFG_PL_BARREL_SHIFT_ENABLED
     m_result_sel_shift,  
 `endif    
-`else
-    m_result_sel,
-`endif    
-`ifdef STYLE_MUX_W    
     w_result_sel_load,
 `ifdef CFG_PL_MULTIPLY_ENABLED
     w_result_sel_mul,
-`endif
-`else 
-    w_result_sel,
 `endif
     x_bypass_enable,
     m_bypass_enable,
@@ -180,7 +168,6 @@ output [`LM32_D_RESULT_SEL_0_RNG] d_result_sel_0;
 reg    [`LM32_D_RESULT_SEL_0_RNG] d_result_sel_0;
 output [`LM32_D_RESULT_SEL_1_RNG] d_result_sel_1;
 reg    [`LM32_D_RESULT_SEL_1_RNG] d_result_sel_1;
-`ifdef STYLE_MUX_X
 output x_result_sel_csr;
 reg    x_result_sel_csr;
 `ifdef LM32_MC_ARITHMETIC_ENABLED
@@ -203,31 +190,17 @@ reg    x_result_sel_user;
 `endif
 output x_result_sel_add;
 reg    x_result_sel_add;
-`else
-output [`LM32_X_RESULT_SEL_RNG] x_result_sel;
-reg    [`LM32_X_RESULT_SEL_RNG] x_result_sel;
-`endif
-`ifdef STYLE_MUX_M
 output m_result_sel_compare;
 reg    m_result_sel_compare;
 `ifdef CFG_PL_BARREL_SHIFT_ENABLED
 output m_result_sel_shift;
 reg    m_result_sel_shift;
 `endif
-`else
-output [`LM32_M_RESULT_SEL_RNG] m_result_sel;
-reg    [`LM32_M_RESULT_SEL_RNG] m_result_sel;
-`endif
-`ifdef STYLE_MUX_W
 output w_result_sel_load;
 reg    w_result_sel_load;
 `ifdef CFG_PL_MULTIPLY_ENABLED
 output w_result_sel_mul;
 reg    w_result_sel_mul;
-`endif
-`else
-output [`LM32_W_RESULT_SEL_RNG] w_result_sel;
-reg    [`LM32_W_RESULT_SEL_RNG] w_result_sel;
 `endif
 output x_bypass_enable;
 wire   x_bypass_enable;
@@ -429,35 +402,6 @@ begin
     else
         d_result_sel_1 = `LM32_D_RESULT_SEL_1_REG_1; 
     // X stage
-//`define STYLE_MUX_XX
-`ifdef STYLE_MUX_X    
-`ifdef STYLE_MUX_XX    
-    x_result_sel_csr = op_rcsr;
-`ifdef LM32_MC_ARITHMETIC_ENABLED
-    x_result_sel_mc_arith = `FALSE
-`ifdef CFG_MC_BARREL_SHIFT_ENABLED
-                            | shift_left | shift_right
-`endif
-`ifdef CFG_MC_DIVIDE_ENABLED
-                            | divide | modulus
-`endif
-`ifdef CFG_MC_MULTIPLY_ENABLED
-                            | multiply
-`endif
-                    ;
-`endif
-`ifdef LM32_NO_BARREL_SHIFT
-    x_result_sel_shift = shift;
-`endif    
-`ifdef CFG_SIGN_EXTEND_ENABLED
-    x_result_sel_sext = sext;
-`endif        
-    x_result_sel_logic = logic;
-`ifdef CFG_USER_ENABLED        
-    x_result_sel_user = op_user;
-`endif
-    x_result_sel_add = op_add | op_sub | load | store;
-`else // STYLE_MUX_XX
     x_result_sel_csr = `FALSE;
 `ifdef LM32_MC_ARITHMETIC_ENABLED
     x_result_sel_mc_arith = `FALSE;
@@ -505,69 +449,25 @@ begin
 `endif
     else 
         x_result_sel_add = `TRUE;        
-`endif // STYLE_MUX_XX   
-`else // STYLE_MUX_X
-    if (op_rcsr)
-        x_result_sel = `LM32_X_RESULT_SEL_CSR;
-`ifdef LM32_NO_BARREL_SHIFT
-    else if (shift)
-        x_result_sel_shift = `LM32_X_RESULT_SEL_SHIFT;        
-`endif
-`ifdef CFG_SIGN_EXTEND_ENABLED
-    else if (sext)
-        x_result_sel = `LM32_X_RESULT_SEL_SEXT;
-`endif        
-    else if (logic) 
-        x_result_sel = `LM32_X_RESULT_SEL_LOGIC;
-`ifdef CFG_USER_ENABLED        
-    else if (op_user)
-        x_result_sel = `LM32_X_RESULT_SEL_USER;
-`endif
-    else 
-        x_result_sel = `LM32_X_RESULT_SEL_ADDER;
-`endif // STYLE_MUX_X  
     
     // M stage
 
-`ifdef STYLE_MUX_M    
     m_result_sel_compare = cmp;
 `ifdef CFG_PL_BARREL_SHIFT_ENABLED
     m_result_sel_shift = shift;
 `endif
-`else 
-`ifdef CFG_PL_BARREL_SHIFT_ENABLED
-    if (shift)
-        m_result_sel = `LM32_M_RESULT_SEL_SHIFTER;
-    else 
-`endif    
-         if (cmp)
-        m_result_sel = `LM32_M_RESULT_SEL_COMPARE;
-    else
-        m_result_sel = `LM32_M_RESULT_SEL_NOP;
-`endif
 
     // W stage
-`ifdef STYLE_MUX_M        
     w_result_sel_load = load;
 `ifdef CFG_PL_MULTIPLY_ENABLED
     w_result_sel_mul = op_mul; 
 `endif
-`else
-    if (load)
-        w_result_sel = `LM32_W_RESULT_SEL_LOAD;
-`ifdef CFG_PL_MULTIPLY_ENABLED
-    else if (op_mul)
-        w_result_sel = `LM32_W_RESULT_SEL_MULTIPLIER;
-`endif        
-    else
-        w_result_sel = `LM32_W_RESULT_SEL_NOP;
-`endif        
 end
 
 // Set if result is valid at end of X stage
 assign x_bypass_enable =  arith 
                         | logic
-`ifdef CFG_MC_SHIFT_ENABLED
+`ifdef CFG_MC_BARREL_SHIFT_ENABLED
                         | shift_left
                         | shift_right
 `endif                        

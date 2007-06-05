@@ -16,8 +16,8 @@
 //                         FILE DETAILS
 // Project          : LatticeMico32
 // File             : lm32_ram.v
-// Title            : PMI pseudo dual port RAM.
-// Version          : 6.0.13
+// Title            : Pseudo dual-port RAM.
+// Version          : 6.1.17
 // =============================================================================
 
 `include "lm32_include.v"
@@ -71,37 +71,35 @@ output [data_width-1:0] read_data;      // Data read from specified addess
 wire   [data_width-1:0] read_data;
     
 /////////////////////////////////////////////////////
-// Instantiations
+// Internal nets and registers
 /////////////////////////////////////////////////////
 
-pmi_ram_dp #(
-    // ----- Parameters -------
-    .pmi_wr_addr_depth  (1 << address_width),
-    .pmi_wr_addr_width  (address_width),
-    .pmi_wr_data_width  (data_width),
-    .pmi_rd_addr_depth  (1 << address_width),
-    .pmi_rd_addr_width  (address_width),
-    .pmi_rd_data_width  (data_width),
-    .pmi_regmode        ("noreg"),
-    .pmi_gsr            ("enable"),
-    .pmi_resetmode      ("async"),
-    .pmi_init_file      ("none"),
-    .pmi_init_file_format("binary"),
-    .pmi_family         ("ECP"),
-    .module_type        ("pmi_ram_dp")
-  ) ram (
-    // ----- Inputs -------
-    .RdClock            (read_clk),
-    .WrClock            (write_clk),
-    .Reset              (reset),
-    .Data               (write_data),
-    .RdAddress          (read_address),
-    .WrAddress          (write_address),
-    .RdClockEn          (enable_read),
-    .WrClockEn          (enable_write),
-    .WE                 (write_enable),
-    // ----- Outputs -------
-    .Q                  (read_data)
-    );
+reg [data_width-1:0] mem[0:(1<<address_width)-1]; // The RAM
+reg [address_width-1:0] ra;             // Registered read address
+
+/////////////////////////////////////////////////////
+// Combinational Logic
+/////////////////////////////////////////////////////
+
+// Read port
+assign read_data = mem[ra]; 
+
+/////////////////////////////////////////////////////
+// Sequential Logic
+/////////////////////////////////////////////////////
+
+// Write port
+always @(posedge write_clk)
+begin
+    if ((write_enable == `TRUE) && (enable_write == `TRUE))
+        mem[write_address] <= write_data; 
+end
+
+// Register read address for use on next cycle
+always @(posedge read_clk)
+begin
+    if (enable_read)
+        ra <= read_address;
+end
 
 endmodule

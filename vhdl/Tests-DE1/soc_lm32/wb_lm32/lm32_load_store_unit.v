@@ -18,7 +18,7 @@
 // File             : lm32_load_store_unit.v
 // Title            : Load and store unit
 // Dependencies     : lm32_include.v
-// Version          : 6.0.13
+// Version          : 6.1.17
 // =============================================================================
 
 `include "lm32_include.v"
@@ -88,9 +88,7 @@ parameter base_address = 0;                             // Base address of cacha
 parameter limit = 0;                                    // Limit (highest address) of cachable memory
 
 // For bytes_per_line == 4, we set 1 so part-select range isn't reversed, even though not really used 
-//localparam addr_offset_width = bytes_per_line == 4 ? 1 : clogb2(bytes_per_line)-1-2;
-localparam addr_offset_width = 1;
-
+localparam addr_offset_width = bytes_per_line == 4 ? 1 : clogb2(bytes_per_line)-1-2;
 localparam addr_offset_lsb = 2;
 localparam addr_offset_msb = (addr_offset_lsb+addr_offset_width-1);
 
@@ -160,9 +158,9 @@ reg    d_stb_o;
 output d_we_o;                                          // Data Wishbone interface write enable
 reg    d_we_o;
 output [`LM32_CTYPE_RNG] d_cti_o;                       // Data Wishbone interface cycle type 
-wire   [`LM32_CTYPE_RNG] d_cti_o;
+reg    [`LM32_CTYPE_RNG] d_cti_o;
 output d_lock_o;                                        // Date Wishbone interface lock bus
-wire   d_lock_o;
+reg    d_lock_o;
 output [`LM32_BTYPE_RNG] d_bte_o;                       // Data Wishbone interface burst type 
 wire   [`LM32_BTYPE_RNG] d_bte_o;
 
@@ -188,6 +186,8 @@ reg dcache_select_m;
 wire [`LM32_WORD_RNG] dcache_data_m;                    // Data read from cache
 wire [`LM32_WORD_RNG] dcache_refill_address;            // Address to refill data cache from
 reg dcache_refill_ready;                                // Indicates the next word of refill data is ready
+wire [`LM32_CTYPE_RNG] first_cycle_type;                // First Wishbone cycle type
+wire [`LM32_CTYPE_RNG] next_cycle_type;                 // Next Wishbone cycle type
 wire last_word;                                         // Indicates if this is the last word in the cache line
 wire [`LM32_WORD_RNG] first_address;                    // First cache refill address
 `endif
@@ -372,24 +372,35 @@ begin
     endcase
 end
 
-// Unused Wishbone signals
-assign d_cti_o = `LM32_CTYPE_WIDTH'd0;
-assign d_lock_o = `FALSE;
-assign d_bte_o = `LM32_BTYPE_WIDTH'd0;
+// Unused/constant Wishbone signals
+assign d_bte_o = `LM32_BTYPE_LINEAR;
 
 `ifdef CFG_DCACHE_ENABLED                
 // Generate signal to indicate last word in cache line
 generate 
-        if (bytes_per_line > 4)
-        begin
-assign first_address = {dcache_refill_address[`LM32_WORD_WIDTH-1:addr_offset_msb+1], {addr_offset_width{1'b0}}, 2'b00};
-assign last_word = (&d_adr_o[addr_offset_msb:addr_offset_lsb]) == 1'b1;
-        end
-        else
-        begin
-assign first_address = {dcache_refill_address[`LM32_WORD_WIDTH-1:2], 2'b00};
+    case (bytes_per_line)
+    4:
+    begin
+assign first_cycle_type = `LM32_CTYPE_END;
+assign next_cycle_type = `LM32_CTYPE_END;
 assign last_word = `TRUE;
-        end
+assign first_address = {dcache_refill_address[`LM32_WORD_WIDTH-1:2], 2'b00};
+    end
+    8:
+    begin
+assign first_cycle_type = `LM32_CTYPE_INCREMENTING;
+assign next_cycle_type = `LM32_CTYPE_END;
+assign last_word = (&d_adr_o[addr_offset_msb:addr_offset_lsb]) == 1'b1;
+assign first_address = {dcache_refill_address[`LM32_WORD_WIDTH-1:addr_offset_msb+1], {addr_offset_width{1'b0}}, 2'b00};
+    end
+    16:
+    begin
+assign first_cycle_type = `LM32_CTYPE_INCREMENTING;
+assign next_cycle_type = d_adr_o[addr_offset_msb] == 1'b1 ? `LM32_CTYPE_END : `LM32_CTYPE_INCREMENTING;
+assign last_word = (&d_adr_o[addr_offset_msb:addr_offset_lsb]) == 1'b1;
+assign first_address = {dcache_refill_address[`LM32_WORD_WIDTH-1:addr_offset_msb+1], {addr_offset_width{1'b0}}, 2'b00};
+    end
+    endcase
 endgenerate
 `endif
 
@@ -408,6 +419,8 @@ begin
         d_adr_o <= {`LM32_WORD_WIDTH{1'b0}};
         d_sel_o <= {`LM32_BYTE_SELECT_WIDTH{`FALSE}};
         d_we_o <= `FALSE;
+        d_cti_o <= `LM32_CTYPE_END;
+        d_lock_o <= `FALSE;
         wb_data_m <= {`LM32_WORD_WIDTH{1'b0}};
         wb_load_complete <= `FALSE;
         stall_wb_load <= `FALSE;
@@ -439,8 +452,10 @@ begin
                     // Refill/access complete
                     d_cyc_o <= `FALSE;
                     d_stb_o <= `FALSE;
+                    d_lock_o <= `FALSE;
                 end
 `ifdef CFG_DCACHE_ENABLED    
+                d_cti_o <= next_cycle_type;
                 // If we are performing a refill, indicate to cache next word of data is ready            
                 dcache_refill_ready <= dcache_refilling;
 `endif
@@ -465,6 +480,8 @@ begin
                 d_sel_o <= {`LM32_WORD_WIDTH/8{`TRUE}};
                 d_stb_o <= `TRUE;                
                 d_we_o <= `FALSE;
+                d_cti_o <= first_cycle_type;
+                //d_lock_o <= `TRUE;
             end
             else 
 `endif            
@@ -482,11 +499,12 @@ begin
                 d_sel_o <= byte_enable_m;
                 d_stb_o <= `TRUE;
                 d_we_o <= `TRUE;
+                d_cti_o <= `LM32_CTYPE_END;
             end        
             else if (   (load_q_m == `TRUE) 
                      && (wb_select_m == `TRUE) 
                      && (wb_load_complete == `FALSE)
-                     /* stall_m will be TRUE, because stall_wb_load will be TRUE */
+                     // stall_m will be TRUE, because stall_wb_load will be TRUE 
                     )
             begin
                 // Read requested address
@@ -496,6 +514,7 @@ begin
                 d_sel_o <= byte_enable_m;
                 d_stb_o <= `TRUE;
                 d_we_o <= `FALSE;
+                d_cti_o <= `LM32_CTYPE_END;
             end
         end
         // Clear load/store complete flag when instruction leaves M stage
@@ -586,4 +605,3 @@ end
 // synthesis translate_on
 
 endmodule
-

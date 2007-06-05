@@ -18,7 +18,7 @@
 // File             : lm32_top.v
 // Title            : Top-level of CPU.
 // Dependencies     : lm32_include.v
-// Version          : 6.0.13
+// Version          : 6.1.17
 // =============================================================================
 
 `include "lm32_include.v"
@@ -38,6 +38,7 @@ module lm32_top (
     // From user logic
 `ifdef CFG_USER_ENABLED
     user_result,
+    user_complete,
 `endif     
 `ifdef CFG_IWB_ENABLED
     // Instruction Wishbone master
@@ -63,6 +64,7 @@ module lm32_top (
     DEBUG_STB_I,
     // ----- Outputs -------
 `ifdef CFG_USER_ENABLED    
+    user_valid,
     user_opcode,
     user_operand_0,
     user_operand_1,
@@ -109,6 +111,7 @@ input [`LM32_INTERRUPT_RNG] interrupt_n;        // Interrupt pins, active-low
 
 `ifdef CFG_USER_ENABLED
 input [`LM32_WORD_RNG] user_result;             // User-defined instruction result
+input user_complete;                            // Indicates the user-defined instruction result is valid
 `endif    
 
 `ifdef CFG_IWB_ENABLED
@@ -138,6 +141,8 @@ input DEBUG_STB_I;                              // Debug monitor Wishbone interf
 /////////////////////////////////////////////////////
 
 `ifdef CFG_USER_ENABLED
+output user_valid;                              // Indicates that user_opcode and user_operand_* are valid
+wire   user_valid;
 output [`LM32_USER_OPCODE_RNG] user_opcode;     // User-defined instruction opcode
 reg    [`LM32_USER_OPCODE_RNG] user_opcode;
 output [`LM32_WORD_RNG] user_operand_0;         // First operand for user-defined instruction
@@ -210,6 +215,23 @@ wire jtck;
 wire jrstn;
 `endif
 
+`ifdef CFG_TRACE_ENABLED
+// PC trace signals
+wire [`LM32_PC_RNG] trace_pc;                   // PC to trace (address of next non-sequential instruction)
+wire trace_pc_valid;                            // Indicates that a new trace PC is valid
+wire trace_exception;                           // Indicates an exception has occured
+wire [`LM32_EID_RNG] trace_eid;                 // Indicates what type of exception has occured
+wire trace_eret;                                // Indicates an eret instruction has been executed
+`ifdef CFG_DEBUG_ENABLED
+wire trace_bret;                                // Indicates a bret instruction has been executed
+`endif
+`endif
+
+/////////////////////////////////////////////////////
+// Functions
+/////////////////////////////////////////////////////
+
+`include "lm32_functions.v"
 /////////////////////////////////////////////////////
 // Instantiations
 ///////////////////////////////////////////////////// 
@@ -251,6 +273,16 @@ lm32_cpu cpu (
     .D_ERR_I               (D_ERR_I),
     .D_RTY_I               (D_RTY_I),
     // ----- Outputs -------
+`ifdef CFG_TRACE_ENABLED
+    .trace_pc              (trace_pc),
+    .trace_pc_valid        (trace_pc_valid),
+    .trace_exception       (trace_exception),
+    .trace_eid             (trace_eid),
+    .trace_eret            (trace_eret),
+`ifdef CFG_DEBUG_ENABLED
+    .trace_bret            (trace_bret),
+`endif
+`endif
 `ifdef CFG_JTAG_ENABLED
     .jtag_reg_d            (jtag_reg_d),
     .jtag_reg_addr_d       (jtag_reg_addr_d),
@@ -273,7 +305,7 @@ lm32_cpu cpu (
     .I_LOCK_O              (I_LOCK_O),
     .I_BTE_O               (I_BTE_O),
     `endif
-// Data Wishbone master
+    // Data Wishbone master
     .D_DAT_O               (D_DAT_O),
     .D_ADR_O               (D_ADR_O),
     .D_CYC_O               (D_CYC_O),

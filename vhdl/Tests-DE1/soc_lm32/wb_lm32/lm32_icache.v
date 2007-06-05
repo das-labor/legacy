@@ -18,7 +18,7 @@
 // File             : lm32_icache.v
 // Title            : Instruction cache
 // Dependencies     : lm32_include.v
-// Version          : 6.0.13
+// Version          : 6.1.17
 // =============================================================================
 					  
 `include "lm32_include.v"
@@ -122,7 +122,7 @@ output refill_request;                              // Request to refill a cache
 wire   refill_request;
 output [`LM32_PC_RNG] refill_address;               // Base address of cache refill
 reg    [`LM32_PC_RNG] refill_address;               
-output refilling;
+output refilling;                                   // Indicates the instruction cache is currently refilling
 reg    refilling;
 output [`LM32_INSTRUCTION_RNG] inst;                // Instruction read from cache
 wire   [`LM32_INSTRUCTION_RNG] inst;
@@ -312,6 +312,7 @@ end
     end
 endgenerate
 
+// Record whether we are refilling
 always @(posedge clk_i `CFG_RESET_SENSITIVITY)
 begin
     if (rst_i == `TRUE)

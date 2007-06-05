@@ -16,7 +16,7 @@ Linker script and memory map
                 0x00000800                _RAM_SIZE = 0x800
                 0x00001000                _RAM_END = (_RAM_START + _RAM_SIZE)
 
-.text           0x00000000      0x620
+.text           0x00000000      0x5e8
                 0x00000000                _stext = .
  *(.text)
  .text          0x00000000       0xfc crt0ram.o
@@ -26,36 +26,35 @@ Linker script and memory map
                 0x00000054                irq_mask
                 0x00000060                irq_disable
                 0x00000070                halt
- .text          0x000000fc      0x2d0 main.o
+ .text          0x000000fc      0x298 main.o
                 0x000000fc                readint
-                0x000001a4                memtest
+                0x000001b0                memtest
                 0x00000140                writeint
-                0x0000027c                main
- .text          0x000003cc      0x254 spike_hw.o
-                0x000005ec                uart_putstr
-                0x00000494                sleep
-                0x0000052c                uart_getchar
-                0x000004f0                uart_init
-                0x000003cc                irq_handler
-                0x000004c8                tic_init
-                0x000005c0                uart_putchar
-                0x00000620                _etext = .
+                0x00000250                main
+ .text          0x00000394      0x254 spike_hw.o
+                0x000005b4                uart_putstr
+                0x0000045c                sleep
+                0x000004f4                uart_getchar
+                0x000004b8                uart_init
+                0x00000394                irq_handler
+                0x00000490                tic_init
+                0x00000588                uart_putchar
+                0x000005e8                _etext = .
 
-.data           0x00000620       0x84
-                0x00000620                _sdata = .
+.data           0x000005e8       0x54
+                0x000005e8                _sdata = .
  *(.data)
- .data          0x00000620       0x14 spike_hw.o
-                0x0000062c                uart0
-                0x00000630                timer0
-                0x00000620                msec
-                0x00000628                gpio0
-                0x00000624                sram0
+ .data          0x000005e8       0x14 spike_hw.o
+                0x000005f4                uart0
+                0x000005f8                timer0
+                0x000005e8                msec
+                0x000005f0                gpio0
+                0x000005ec                sram0
  *(.rodata)
  *(.rodata.*)
  .rodata.str1.4
-                0x00000634       0x70 main.o
-                                 0x74 (size before relaxing)
-                0x000006a4                _edata = .
+                0x000005fc       0x40 main.o
+                0x0000063c                _edata = .
 
 .bss            0x00000800       0x28
                 0x00000800                _sbss = .
@@ -75,9 +74,9 @@ OUTPUT(image elf32-lm32)
  .debug_info    0x00000000      0x190 main.o
  .debug_info    0x00000190      0x36c spike_hw.o
 
-.debug_line     0x00000000      0x4ba
- .debug_line    0x00000000      0x29e main.o
- .debug_line    0x0000029e      0x21c spike_hw.o
+.debug_line     0x00000000      0x4a2
+ .debug_line    0x00000000      0x286 main.o
+ .debug_line    0x00000286      0x21c spike_hw.o
 
 .debug_pubnames
                 0x00000000       0xeb

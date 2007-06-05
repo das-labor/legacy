@@ -16,9 +16,9 @@
 //                         FILE DETAILS
 // Project          : LatticeMico32
 // File             : lm32_logic_op.v
-// Title            : Logic operations
+// Title            : Logic operations (and / or / not etc)
 // Dependencies     : lm32_include.v
-// Version          : 6.0.13
+// Version          : 6.1.17
 // =============================================================================
 
 `include "lm32_include.v"

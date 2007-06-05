@@ -18,10 +18,10 @@ void writeint(uint32_t val)
 
 	for(i=0; i<8; i++) {
 		digit = (val & 0xf0000000) >> 28;
-		if (digit < 0xA) 
-			uart_putchar('0'+digit);
-		else
+		if (digit >= 0xA) 
 			uart_putchar('A'+digit-10);
+		else
+			uart_putchar('0'+digit);
 		val <<= 4;
 	}
 }
@@ -29,16 +29,16 @@ void writeint(uint32_t val)
 void memtest()
 {
 	volatile int *p;
-    uart_putstr("SRAM MEMTEST WRITE\n\r");
-	writeint(0x12345678);
-	for (p = sram0; p < &sram0[100]; p++) {
+    //uart_putstr("SRAM MEMTEST WRITE\n\r");
+	//writeint(0x12345678);
+	for (p=(int *)SRAM_START; p<(int *)(SRAM_START+SRAM_SIZE); p++) {
 		writeint((int) p);
 		uart_putstr("\n\r");
 		*p = (int) p;  
 	}
 	
-    uart_putstr("SRAM MEMTEST READBACH\n\r");
-	for (p = sram0; p < &sram0[100]; p++) {
+    uart_putstr("SRAM MEMTEST READBACK\n\r");
+	for (p=(int *)SRAM_START; p<(int *)(SRAM_START+SRAM_SIZE); p++) {
 		if (*p != (int)p) {
 			uart_putstr("SRAM MEMTEST ERROR\n\r");
 		}
@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 	uart_init();
 	//irq_enable();
 
-	uart_putstr("\r\n** SPIKE BOOTLOADER **\n\r");
+	//uart_putstr("\r\n** SPIKE BOOTLOADER **\n\r");
 	memtest();
 	for(;;) {
 		uint32_t start, size, checksum;
