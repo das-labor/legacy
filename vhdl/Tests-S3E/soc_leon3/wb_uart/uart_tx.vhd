@@ -32,37 +32,36 @@ begin
 proc: process(clk)
 begin
 	if clk'event and clk='1' then
-		if reset='1' then
-			count    <= (others => '0');
-			bitcount <= 0;
-			busy     <= '0';
-			txd      <= '1';
+	if reset='1' then
+		count    <= (others => '0');
+		bitcount <= 0;
+		busy     <= '0';
+		txd      <= '1';
+	else
+		if count/=0 then 
+			count <= count - 1;
 		else
-			if count/=0 then 
-				count <= count - 1;
-			else
-				if bitcount=0 then
-					if wr='1' then          -- START BIT
-						shiftreg <= din;
-						busy     <= '1';
-						txd      <= '0';					
-						bitcount <= bitcount + 1;
-						count    <= unsigned(divisor);
-					else
-						busy <= '0';
-					end if;
-				elsif bitcount=9 then      -- STOP BIT
-					txd         <= '1';
-					bitcount    <= 0;
-					count       <= unsigned(divisor);
-				else                       -- DATA BIT
-					shiftreg(6 downto 0) <= shiftreg(7 downto 1);
-					txd         <= shiftreg(0);				
-					bitcount    <= bitcount + 1;				
-					count       <= unsigned(divisor);
+			if bitcount=0 then
+				busy <= '0';
+				if wr='1' then          -- START BIT
+					shiftreg <= din;
+					busy     <= '1';
+					txd      <= '0';					
+					bitcount <= bitcount + 1;
+					count    <= unsigned(divisor);
 				end if;
+			elsif bitcount=9 then      -- STOP BIT
+				txd         <= '1';
+				bitcount    <= 0;
+				count       <= unsigned(divisor);
+			else                       -- DATA BIT
+				shiftreg(6 downto 0) <= shiftreg(7 downto 1);
+				txd         <= shiftreg(0);				
+				bitcount    <= bitcount + 1;				
+				count       <= unsigned(divisor);
 			end if;
 		end if;
+	end if;
 	end if;
 end process;
 
