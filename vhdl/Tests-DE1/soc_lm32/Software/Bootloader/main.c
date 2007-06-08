@@ -30,8 +30,6 @@ void memtest()
 {
 	volatile int *p;
 	for (p=(int *)SRAM_START; p<(int *)(SRAM_START+SRAM_SIZE); p++) {
-		//writeint((int) p);
-		//uart_putstr("\n\r");
 		*p = (int) p;  
 	}
 	
@@ -41,11 +39,13 @@ void memtest()
 		}
 	}
 	uart_putstr("SRAM MEMTEST OK\n\r");
-}
+} 
+
 
 int main(int argc, char **argv)
 {
 	char test;
+	volatile int *p;
 	
 	// Initialize stuff
 	uart_init();
@@ -53,10 +53,10 @@ int main(int argc, char **argv)
 
 	uart_putstr("\r\n** SPIKE BOOTLOADER **\n\r");
 	memtest();
+	uart_putchar('r'); // Ready
 	for(;;) {
 		uint32_t start, size, checksum, help;
 		unsigned char c = uart_getchar();
-		char *p;
 
 		switch (c) {
     		case 'r':
@@ -99,8 +99,9 @@ int main(int argc, char **argv)
     			uart_putstr("XXXX");		
     			break;
     		case 'e':
-    		    while (1) {
-    		      uart_putchar(uart_getchar());
+    		    c = 0;
+    		    while (c != '\r') {
+    		      uart_putchar(c = uart_getchar());
     		    }
     		    break;
     		}

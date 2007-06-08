@@ -9,7 +9,7 @@ CFLAGS=-MMD -O2 -Wall -g -s -fomit-frame-pointer -mbarrel-shift-enabled   -mmult
 LDFLAGS=-Tlinkcmd
 SEGMENTS = -j .text -j .data
 
-all: image.bin image.lst 
+all: image.bin image.lst image.srec
 
 crt0ram.o: crt0ram.S
 	$(LM32_CC) $(CFLAGS) -c crt0ram.S
