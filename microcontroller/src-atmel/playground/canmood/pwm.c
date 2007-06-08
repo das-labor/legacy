@@ -14,6 +14,17 @@
 #include "xcan.h"
 #include "pwm.h"
 
+
+//defines for the Portpins the LEDs are connected to.
+#define PORT_LED PORTC
+#define DDR_LED DDRC
+
+//the offset is the bitnumber of the Red Channel on the Port.
+//the other color shall follow as RGB
+#define LED_OFFSET 0
+#define MASK_LEDS (0x07<<LED_OFFSET);
+
+
 /* structs */
 volatile struct global_t global = {{0, 0}};
 
@@ -104,8 +115,11 @@ inline void init_timer1(void) {
 
 
 /** init pwm */
-inline void init_pwm(void) {
+void init_pwm(void) {
 	uint8_t i;
+
+	PORT_LED &= ~MASK_LEDS;
+	DDR_LED |= MASK_LEDS;
 
 	init_timer1();
 
@@ -115,7 +129,7 @@ inline void init_pwm(void) {
 		global_pwm.channels[i].speed = 0x00200;
 		global_pwm.channels[i].flags.target_reached = 0;
 		global_pwm.channels[i].remainder = 0;
-		global_pwm.channels[i].mask = _BV(i+5);
+		global_pwm.channels[i].mask = _BV(i+LED_OFFSET);
 	}
 
 	update_pwm_timeslots();
@@ -276,7 +290,7 @@ ISR(SIG_OUTPUT_COMPARE1A) {
 	/* decide if this interrupt is the beginning of a pwm cycle */
 	if (pwm.next_bitmask == 0) {
 		/* output initial values */
-		PORTD = ~pwm.initial_bitmask;
+		PORT_LED = ~pwm.initial_bitmask;
         
 		/* if next timeslot would happen too fast or has already happened, just spinlock */
 		while (TCNT1 + 500 > pwm.slots[pwm.index].top) {
@@ -286,7 +300,7 @@ ISR(SIG_OUTPUT_COMPARE1A) {
 			}
 
 			/* output value */
-			PORTD &= ~pwm.slots[pwm.index].mask;
+			PORT_LED &= ~pwm.slots[pwm.index].mask;
 
 			/* we can safely increment index here, since we are in the first timeslot and there
 			* will always be at least one timeslot after this (middle) */
@@ -304,7 +318,7 @@ ISR(SIG_OUTPUT_COMPARE1A) {
 /** timer1 output compare b interrupt */
 ISR(SIG_OUTPUT_COMPARE1B) {
 	/* normal interrupt, output pre-calculated bitmask */
-	PORTD &= ~pwm.next_bitmask;
+	PORT_LED &= ~pwm.next_bitmask;
 
 	/* and calculate the next timeslot */
 	prepare_next_timeslot();

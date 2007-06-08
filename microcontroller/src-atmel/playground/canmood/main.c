@@ -35,14 +35,6 @@ int main(void) {
 	TCCR0 = TMC8_CK256;		// Set Timer0 to CPUCLK/256
 	TIMSK = 1<<TOIE0;		// Enable interrupt flag
 
-	DDRD |= (1 << PD7) | (1 << PD6) | (1 << PD5);
-//	DDRD = 0xff;
-	PORTD &= ~(1 << PD7) | ~(1 << PD6) | ~(1 << PD5);
-
-	DDRC |= (1 << PC4) | (1 << PC5);
-	PORTC |= (1 << PC4) | (1 << PC5);
-
-//	PORTD = 0xff;
     //InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
 
 	init_pwm();
