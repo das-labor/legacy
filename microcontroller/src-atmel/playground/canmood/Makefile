@@ -42,7 +42,7 @@ FALSE	= 0
 MCU = atmega8
 
 TARGET = canpolar
-CANADDR = 67
+CANADDR = 0x51
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
@@ -60,7 +60,7 @@ SRC = main.c xcan.c spi.c mood.c xlap.c pwm.c
 
 #ASRC = ../avrx/serialio.S
 
-GCCLIB = ../../AvrX2.6f/avrx/avrx.a
+GCCLIB = ../../lib/AvrX2.6f/avrx/avrx.a
 
 # Optimization level, can be [0, 1, 2, 3, s].
 # 0 = turn off optimization. s = optimize for size.
@@ -89,7 +89,7 @@ CSTANDARD = -std=gnu99
 CDEFS = -DF_CPU=$(CPUCLK) -DTICKRATE=$(TICKRATE) -DBAUDRATE=$(BAUDRATE)
 
 # Place -I options here
-CINCS = -I../../AvrX2.6f/avrx
+CINCS = -I../../lib/AvrX2.6f/avrx
 
 
 # Compiler flags.
