@@ -1,0 +1,553 @@
+
+image:     file format elf32-lm32
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000004dc  00000000  00000000  00000054  2**2
+                  CONTENTS, ALLOC, LOAD, CODE
+  1 .data         00000068  000004dc  000004dc  00000530  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000000  00000800  00000800  00000598  2**0
+                  ALLOC
+  3 .debug_abbrev 000001f1  00000000  00000000  00000598  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  4 .debug_info   00000470  00000000  00000000  00000789  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_line   00000428  00000000  00000000  00000bf9  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_pubnames 000000eb  00000000  00000000  00001021  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_aranges 00000040  00000000  00000000  0000110c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_str    000001b3  00000000  00000000  0000114c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .comment      00000062  00000000  00000000  000012ff  2**0
+                  CONTENTS, READONLY
+Disassembly of section .text:
+
+00000000 <_start>:
+   0:	98 00 00 00 	xor r0,r0,r0
+   4:	d0 00 00 00 	wcsr IE,r0
+   8:	78 01 00 00 	mvhi r1,0x0
+   c:	38 21 00 00 	ori r1,r1,0x0
+  10:	d0 e1 00 00 	wcsr EBA,r1
+  14:	f8 00 00 03 	calli 20 <_crt0>
+  18:	34 00 00 00 	nop
+  1c:	34 00 00 00 	nop
+
+00000020 <_crt0>:
+  20:	98 00 00 00 	xor r0,r0,r0
+  24:	78 1c 00 00 	mvhi sp,0x0
+  28:	3b 9c 10 00 	ori sp,sp,0x1000
+  2c:	37 9c ff fc 	addi sp,sp,-4
+  30:	78 1a 00 00 	mvhi gp,0x0
+  34:	3b 5a 08 00 	ori gp,gp,0x800
+  38:	34 01 00 00 	mvi r1,0
+  3c:	34 02 00 00 	mvi r2,0
+  40:	34 03 00 00 	mvi r3,0
+  44:	f8 00 00 7c 	calli 234 <main>
+
+00000048 <irq_enable>:
+  48:	34 01 00 01 	mvi r1,1
+  4c:	d0 01 00 00 	wcsr IE,r1
+  50:	c3 a0 00 00 	ret
+
+00000054 <irq_mask>:
+  54:	34 01 00 0f 	mvi r1,15
+  58:	d0 21 00 00 	wcsr IM,r1
+  5c:	c3 a0 00 00 	ret
+
+00000060 <irq_disable>:
+  60:	34 01 00 00 	mvi r1,0
+  64:	d0 01 00 00 	wcsr IE,r1
+  68:	c3 a0 00 00 	ret
+
+0000006c <jump>:
+  6c:	c0 20 00 00 	b r1
+
+00000070 <halt>:
+  70:	e0 00 00 00 	bi 70 <halt>
+
+00000074 <_save_all>:
+  74:	37 9c ff 80 	addi sp,sp,-128
+  78:	5b 81 00 04 	sw (sp+4),r1
+  7c:	5b 82 00 08 	sw (sp+8),r2
+  80:	5b 83 00 0c 	sw (sp+12),r3
+  84:	5b 84 00 10 	sw (sp+16),r4
+  88:	5b 85 00 14 	sw (sp+20),r5
+  8c:	5b 86 00 18 	sw (sp+24),r6
+  90:	5b 87 00 1c 	sw (sp+28),r7
+  94:	5b 88 00 20 	sw (sp+32),r8
+  98:	5b 89 00 24 	sw (sp+36),r9
+  9c:	5b 8a 00 28 	sw (sp+40),r10
+  a0:	5b 9e 00 78 	sw (sp+120),ea
+  a4:	5b 9f 00 7c 	sw (sp+124),ba
+  a8:	2b 81 00 80 	lw r1,(sp+128)
+  ac:	5b 81 00 74 	sw (sp+116),r1
+  b0:	bb 80 08 00 	mv r1,sp
+  b4:	34 21 00 80 	addi r1,r1,128
+  b8:	5b 81 00 70 	sw (sp+112),r1
+  bc:	c3 a0 00 00 	ret
+
+000000c0 <_restore_all_and_return>:
+  c0:	2b 81 00 04 	lw r1,(sp+4)
+  c4:	2b 82 00 08 	lw r2,(sp+8)
+  c8:	2b 83 00 0c 	lw r3,(sp+12)
+  cc:	2b 84 00 10 	lw r4,(sp+16)
+  d0:	2b 85 00 14 	lw r5,(sp+20)
+  d4:	2b 86 00 18 	lw r6,(sp+24)
+  d8:	2b 87 00 1c 	lw r7,(sp+28)
+  dc:	2b 88 00 20 	lw r8,(sp+32)
+  e0:	2b 89 00 24 	lw r9,(sp+36)
+  e4:	2b 8a 00 28 	lw r10,(sp+40)
+  e8:	2b 9d 00 74 	lw ra,(sp+116)
+  ec:	2b 9e 00 78 	lw ea,(sp+120)
+  f0:	2b 9f 00 7c 	lw ba,(sp+124)
+  f4:	2b 9c 00 70 	lw sp,(sp+112)
+  f8:	c3 c0 00 00 	eret
+
+000000fc <readint>:
+#include "spike_hw.h"
+
+uint32_t readint()
+{
+  fc:	37 9c ff f8 	addi sp,sp,-8
+ 100:	5b 8b 00 08 	sw (sp+8),r11
+ 104:	5b 9d 00 04 	sw (sp+4),ra
+	uint32_t val;
+
+	val = (uint8_t)uart_getchar();
+ 108:	f8 00 00 d2 	calli 450 <uart_getchar>
+	val <<= 8; val += (uint8_t)uart_getchar();
+ 10c:	3c 2b 00 08 	sli r11,r1,8
+ 110:	f8 00 00 d0 	calli 450 <uart_getchar>
+ 114:	b5 61 58 00 	add r11,r11,r1
+	val <<= 8; val += (uint8_t)uart_getchar();
+ 118:	3d 6b 00 08 	sli r11,r11,8
+ 11c:	f8 00 00 cd 	calli 450 <uart_getchar>
+ 120:	b5 61 58 00 	add r11,r11,r1
+	val <<= 8; val += (uint8_t)uart_getchar();
+ 124:	3d 6b 00 08 	sli r11,r11,8
+ 128:	f8 00 00 ca 	calli 450 <uart_getchar>
+
+	return val;
+}
+ 12c:	b5 61 08 00 	add r1,r11,r1
+ 130:	2b 8b 00 08 	lw r11,(sp+8)
+ 134:	2b 9d 00 04 	lw ra,(sp+4)
+ 138:	37 9c 00 08 	addi sp,sp,8
+ 13c:	c3 a0 00 00 	ret
+
+00000140 <writeint>:
+
+void writeint(uint32_t val)
+{
+ 140:	37 9c ff ec 	addi sp,sp,-20
+ 144:	5b 8b 00 14 	sw (sp+20),r11
+ 148:	5b 8c 00 10 	sw (sp+16),r12
+ 14c:	5b 8d 00 0c 	sw (sp+12),r13
+ 150:	5b 8e 00 08 	sw (sp+8),r14
+ 154:	5b 9d 00 04 	sw (sp+4),ra
+ 158:	78 0d f0 00 	mvhi r13,0xf000
+ 15c:	b8 20 58 00 	mv r11,r1
+ 160:	39 ad 00 00 	ori r13,r13,0x0
+ 164:	34 0e 00 09 	mvi r14,9
+ 168:	34 0c 00 07 	mvi r12,7
+	int i, digit;
+
+	for(i=0; i<8; i++) {
+		digit = (val & 0xf0000000) >> 28;
+ 16c:	a1 6d 08 00 	and r1,r11,r13
+ 170:	00 22 00 1c 	srui r2,r1,28
+		if (digit >= 0xA) 
+			uart_putchar('A'+digit-10);
+ 174:	34 41 00 37 	addi r1,r2,55
+ 178:	4d c2 00 0c 	bge r14,r2,1a8 <writeint+0x68>
+		else
+			uart_putchar('0'+digit);
+		val <<= 4;
+ 17c:	3d 6b 00 04 	sli r11,r11,4
+ 180:	f8 00 00 c0 	calli 480 <uart_putchar>
+ 184:	35 8c ff ff 	addi r12,r12,-1
+ 188:	4d 80 ff f9 	bge r12,r0,16c <writeint+0x2c>
+ 18c:	2b 8b 00 14 	lw r11,(sp+20)
+ 190:	2b 8c 00 10 	lw r12,(sp+16)
+ 194:	2b 8d 00 0c 	lw r13,(sp+12)
+ 198:	2b 8e 00 08 	lw r14,(sp+8)
+ 19c:	2b 9d 00 04 	lw ra,(sp+4)
+ 1a0:	37 9c 00 14 	addi sp,sp,20
+ 1a4:	c3 a0 00 00 	ret
+ 1a8:	34 41 00 30 	addi r1,r2,48
+ 1ac:	e3 ff ff f4 	bi 17c <writeint+0x3c>
+
+000001b0 <memtest>:
+	}
+}
+
+void memtest()
+{
+ 1b0:	37 9c ff f4 	addi sp,sp,-12
+ 1b4:	5b 8b 00 0c 	sw (sp+12),r11
+ 1b8:	5b 8c 00 08 	sw (sp+8),r12
+ 1bc:	5b 9d 00 04 	sw (sp+4),ra
+	volatile int *p;
+	for (p=(int *)SRAM_START; p<(int *)(SRAM_START+SRAM_SIZE); p++) {
+ 1c0:	78 0b b0 00 	mvhi r11,0xb000
+ 1c4:	b9 60 10 00 	mv r2,r11
+ 1c8:	78 01 b0 03 	mvhi r1,0xb003
+ 1cc:	39 6b 00 00 	ori r11,r11,0x0
+ 1d0:	38 21 ff ff 	ori r1,r1,0xffff
+		//writeint((int) p);
+		//uart_putstr("\n\r");
+		*p = (int) p;  
+ 1d4:	59 6b 00 00 	sw (r11+0),r11
+ 1d8:	35 6b 00 04 	addi r11,r11,4
+ 1dc:	55 61 00 02 	bgu r11,r1,1e4 <memtest+0x34>
+ 1e0:	e3 ff ff fd 	bi 1d4 <memtest+0x24>
+	}
+	
+	for (p=(int *)SRAM_START; p<(int *)(SRAM_START+SRAM_SIZE); p++) {
+ 1e4:	b8 40 58 00 	mv r11,r2
+ 1e8:	78 0c b0 03 	mvhi r12,0xb003
+ 1ec:	39 6b 00 00 	ori r11,r11,0x0
+ 1f0:	39 8c ff ff 	ori r12,r12,0xffff
+		if (*p != (int)p) {
+ 1f4:	29 62 00 00 	lw r2,(r11+0)
+			uart_putstr("SRAM MEMTEST ERROR\n\r");
+ 1f8:	78 01 00 00 	mvhi r1,0x0
+ 1fc:	38 21 04 f0 	ori r1,r1,0x4f0
+ 200:	44 4b 00 02 	be r2,r11,208 <memtest+0x58>
+ 204:	f8 00 00 a9 	calli 4a8 <uart_putstr>
+ 208:	35 6b 00 04 	addi r11,r11,4
+ 20c:	55 6c 00 02 	bgu r11,r12,214 <memtest+0x64>
+ 210:	e3 ff ff f9 	bi 1f4 <memtest+0x44>
+		}
+	}
+	uart_putstr("SRAM MEMTEST OK\n\r");
+ 214:	78 01 00 00 	mvhi r1,0x0
+ 218:	38 21 05 08 	ori r1,r1,0x508
+ 21c:	f8 00 00 a3 	calli 4a8 <uart_putstr>
+ 220:	2b 8b 00 0c 	lw r11,(sp+12)
+ 224:	2b 8c 00 08 	lw r12,(sp+8)
+ 228:	2b 9d 00 04 	lw ra,(sp+4)
+ 22c:	37 9c 00 0c 	addi sp,sp,12
+ 230:	c3 a0 00 00 	ret
+
+00000234 <main>:
+}
+
+int main(int argc, char **argv)
+{
+ 234:	37 9c ff e8 	addi sp,sp,-24
+ 238:	5b 8b 00 18 	sw (sp+24),r11
+ 23c:	5b 8c 00 14 	sw (sp+20),r12
+ 240:	5b 8d 00 10 	sw (sp+16),r13
+ 244:	5b 8e 00 0c 	sw (sp+12),r14
+ 248:	5b 8f 00 08 	sw (sp+8),r15
+ 24c:	5b 9d 00 04 	sw (sp+4),ra
+	char test;
+	
+	// Initialize stuff
+	uart_init();
+ 250:	f8 00 00 78 	calli 430 <uart_init>
+	//irq_enable();
+
+	uart_putstr("\r\n** SPIKE BOOTLOADER **\n\r");
+ 254:	78 01 00 00 	mvhi r1,0x0
+ 258:	38 21 05 1c 	ori r1,r1,0x51c
+ 25c:	f8 00 00 93 	calli 4a8 <uart_putstr>
+	memtest();
+ 260:	fb ff ff d4 	calli 1b0 <memtest>
+	for(;;) {
+		uint32_t start, size, checksum, help;
+		unsigned char c = uart_getchar();
+ 264:	f8 00 00 7b 	calli 450 <uart_getchar>
+		char *p;
+
+		switch (c) {
+ 268:	64 22 00 67 	cmpei r2,r1,103
+ 26c:	b8 20 18 00 	mv r3,r1
+ 270:	5c 40 00 34 	bne r2,r0,340 <main+0x10c>
+ 274:	68 21 00 67 	cmpgi r1,r1,103
+ 278:	5c 20 00 08 	bne r1,r0,298 <main+0x64>
+ 27c:	64 61 00 65 	cmpei r1,r3,101
+ 280:	44 20 ff f9 	be r1,r0,264 <main+0x30>
+    		case 'r':
+    			jump(0x00000000);
+    		case 'u':
+    			//uart_putstr("u:");
+    			uart_putchar('u');
+    			uart_putchar(':');
+    			/* read start */
+    			start = readint();
+    			writeint(start);
+    		    uart_putchar(':');
+    			/* read size */
+    			size  = readint();
+    			writeint(size); 
+    			uart_putchar(':');
+    
+    			checksum = 0;
+    			for (p = (int *) start; p < (int *) (start+size); p++) {
+    				help  = (c = uart_getchar()) << 24;
+    				checksum += c;
+    				help += (c = uart_getchar()) << 16;
+                    checksum += c;
+                    help += (c = uart_getchar()) << 8;
+                    checksum += c;
+                    help += (c = uart_getchar());
+    				checksum += c;
+    				*p = help;
+    			}
+    			writeint(checksum); 
+    			uart_putstr(".\r\n");
+    			break;
+    		case 'g':
+    			uart_putchar('g');
+    			uart_putchar(':');
+    			start = readint();
+    			writeint(start); uart_putchar('.');
+    			irq_disable();
+    			jump(start);
+    			uart_putstr("XXXX");		
+    			break;
+    		case 'e':
+    		    while (1) {
+    		      uart_putchar(uart_getchar());
+ 284:	f8 00 00 73 	calli 450 <uart_getchar>
+ 288:	f8 00 00 7e 	calli 480 <uart_putchar>
+ 28c:	f8 00 00 71 	calli 450 <uart_getchar>
+ 290:	f8 00 00 7c 	calli 480 <uart_putchar>
+ 294:	e3 ff ff fc 	bi 284 <main+0x50>
+ 298:	64 61 00 72 	cmpei r1,r3,114
+ 29c:	5c 20 00 38 	bne r1,r0,37c <main+0x148>
+ 2a0:	64 61 00 75 	cmpei r1,r3,117
+ 2a4:	44 20 ff f0 	be r1,r0,264 <main+0x30>
+ 2a8:	34 01 00 75 	mvi r1,117
+ 2ac:	f8 00 00 75 	calli 480 <uart_putchar>
+ 2b0:	34 01 00 3a 	mvi r1,58
+ 2b4:	f8 00 00 73 	calli 480 <uart_putchar>
+ 2b8:	fb ff ff 91 	calli fc <readint>
+ 2bc:	b8 20 60 00 	mv r12,r1
+ 2c0:	fb ff ff a0 	calli 140 <writeint>
+ 2c4:	34 01 00 3a 	mvi r1,58
+ 2c8:	f8 00 00 6e 	calli 480 <uart_putchar>
+ 2cc:	fb ff ff 8c 	calli fc <readint>
+ 2d0:	b8 20 58 00 	mv r11,r1
+ 2d4:	fb ff ff 9b 	calli 140 <writeint>
+ 2d8:	34 01 00 3a 	mvi r1,58
+ 2dc:	f8 00 00 69 	calli 480 <uart_putchar>
+ 2e0:	b5 8b 78 00 	add r15,r12,r11
+ 2e4:	34 0d 00 00 	mvi r13,0
+ 2e8:	b9 80 70 00 	mv r14,r12
+ 2ec:	51 8f 00 27 	bgeu r12,r15,388 <main+0x154>
+ 2f0:	f8 00 00 58 	calli 450 <uart_getchar>
+ 2f4:	3c 2b 00 18 	sli r11,r1,24
+ 2f8:	b5 a1 68 00 	add r13,r13,r1
+ 2fc:	f8 00 00 55 	calli 450 <uart_getchar>
+ 300:	b8 20 18 00 	mv r3,r1
+ 304:	3c 21 00 10 	sli r1,r1,16
+ 308:	b5 a3 68 00 	add r13,r13,r3
+ 30c:	b5 61 58 00 	add r11,r11,r1
+ 310:	f8 00 00 50 	calli 450 <uart_getchar>
+ 314:	b8 20 18 00 	mv r3,r1
+ 318:	3c 21 00 08 	sli r1,r1,8
+ 31c:	b5 a3 68 00 	add r13,r13,r3
+ 320:	b5 61 58 00 	add r11,r11,r1
+ 324:	f8 00 00 4b 	calli 450 <uart_getchar>
+ 328:	b5 61 58 00 	add r11,r11,r1
+ 32c:	31 cb 00 00 	sb (r14+0),r11
+ 330:	b5 a1 68 00 	add r13,r13,r1
+ 334:	35 ce 00 01 	addi r14,r14,1
+ 338:	51 cf 00 14 	bgeu r14,r15,388 <main+0x154>
+ 33c:	e3 ff ff ed 	bi 2f0 <main+0xbc>
+ 340:	f8 00 00 50 	calli 480 <uart_putchar>
+ 344:	34 01 00 3a 	mvi r1,58
+ 348:	f8 00 00 4e 	calli 480 <uart_putchar>
+ 34c:	fb ff ff 6c 	calli fc <readint>
+ 350:	b8 20 60 00 	mv r12,r1
+ 354:	fb ff ff 7b 	calli 140 <writeint>
+ 358:	34 01 00 2e 	mvi r1,46
+ 35c:	f8 00 00 49 	calli 480 <uart_putchar>
+ 360:	fb ff ff 40 	calli 60 <irq_disable>
+ 364:	b9 80 08 00 	mv r1,r12
+ 368:	fb ff ff 41 	calli 6c <jump>
+ 36c:	78 01 00 00 	mvhi r1,0x0
+ 370:	38 21 05 38 	ori r1,r1,0x538
+ 374:	f8 00 00 4d 	calli 4a8 <uart_putstr>
+ 378:	e3 ff ff bb 	bi 264 <main+0x30>
+ 37c:	34 01 00 00 	mvi r1,0
+ 380:	fb ff ff 3b 	calli 6c <jump>
+ 384:	e3 ff ff c9 	bi 2a8 <main+0x74>
+ 388:	b9 a0 08 00 	mv r1,r13
+ 38c:	fb ff ff 6d 	calli 140 <writeint>
+ 390:	78 01 00 00 	mvhi r1,0x0
+ 394:	38 21 05 40 	ori r1,r1,0x540
+ 398:	f8 00 00 44 	calli 4a8 <uart_putstr>
+ 39c:	e3 ff ff b2 	bi 264 <main+0x30>
+
+000003a0 <irq_handler>:
+		break;
+	case 1:                                              /* uart0 rx */
+		break;
+	case 2:                                   /* timer0.0 (system tic) */
+		tcr = timer0->tcr0;  // reset trig0
+ 3a0:	78 02 00 00 	mvhi r2,0x0
+		msec++;
+ 3a4:	78 04 00 00 	mvhi r4,0x0
+ 3a8:	64 21 00 02 	cmpei r1,r1,2
+ 3ac:	38 42 04 ec 	ori r2,r2,0x4ec
+ 3b0:	38 84 04 dc 	ori r4,r4,0x4dc
+ 3b4:	5c 20 00 02 	bne r1,r0,3bc <irq_handler+0x1c>
+ 3b8:	c3 a0 00 00 	ret
+ 3bc:	28 41 00 00 	lw r1,(r2+0)
+ 3c0:	28 82 00 00 	lw r2,(r4+0)
+ 3c4:	28 23 00 00 	lw r3,(r1+0)
+ 3c8:	34 42 00 01 	addi r2,r2,1
+ 3cc:	58 82 00 00 	sw (r4+0),r2
+ 3d0:	c3 a0 00 00 	ret
+
+000003d4 <sleep>:
+		break;
+	case 3:                                               /* timer0.1 */
+		break;
+	};
+
+	return;
+}
+
+/***************************************************************************
+ * General utility functions
+ */
+void sleep(int msec)
+{
+	uint32_t tcr;
+
+	// Use timer0.1
+	timer0->compare1 = (FCPU/1000)*msec;
+ 3d4:	78 02 00 00 	mvhi r2,0x0
+ 3d8:	38 42 04 ec 	ori r2,r2,0x4ec
+ 3dc:	28 43 00 00 	lw r3,(r2+0)
+ 3e0:	08 21 61 a8 	muli r1,r1,25000
+	timer0->counter1 = 0;
+	timer0->tcr1 = TIMER_EN | TIMER_IRQEN;
+ 3e4:	34 02 00 0a 	mvi r2,10
+ 3e8:	58 61 00 10 	sw (r3+16),r1
+ 3ec:	34 01 00 00 	mvi r1,0
+ 3f0:	58 61 00 14 	sw (r3+20),r1
+ 3f4:	58 62 00 0c 	sw (r3+12),r2
+
+	do {
+		//halt();
+		tcr = timer0->tcr1;
+ 3f8:	28 61 00 0c 	lw r1,(r3+12)
+	} while ( ! (tcr & TIMER_TRIG) );
+ 3fc:	20 21 00 01 	andi r1,r1,0x1
+ 400:	44 20 ff fe 	be r1,r0,3f8 <sleep+0x24>
+ 404:	c3 a0 00 00 	ret
+
+00000408 <tic_init>:
+}
+
+void tic_init()
+{
+	// Setup timer0.0
+	timer0->compare0 = (FCPU/1000);
+ 408:	78 01 00 00 	mvhi r1,0x0
+ 40c:	38 21 04 ec 	ori r1,r1,0x4ec
+ 410:	28 23 00 00 	lw r3,(r1+0)
+ 414:	34 02 61 a8 	mvi r2,25000
+ 418:	58 62 00 04 	sw (r3+4),r2
+	timer0->counter0 = 0;
+ 41c:	34 01 00 00 	mvi r1,0
+ 420:	58 61 00 08 	sw (r3+8),r1
+	timer0->tcr0     = TIMER_EN | TIMER_AR | TIMER_IRQEN;
+ 424:	34 02 00 0e 	mvi r2,14
+ 428:	58 62 00 00 	sw (r3+0),r2
+ 42c:	c3 a0 00 00 	ret
+
+00000430 <uart_init>:
+}
+
+/***************************************************************************
+ * UART Functions
+ */
+void uart_init()
+{
+	// Setup Divisor register (Fclk / Baud)
+	uart0->divisor = (FCPU/57600);
+ 430:	78 01 00 00 	mvhi r1,0x0
+ 434:	38 21 04 e8 	ori r1,r1,0x4e8
+ 438:	28 23 00 00 	lw r3,(r1+0)
+ 43c:	34 02 01 b2 	mvi r2,434
+ 440:	58 62 00 04 	sw (r3+4),r2
+	
+	uart0->ucr     = 0;
+ 444:	34 01 00 00 	mvi r1,0
+ 448:	58 61 00 00 	sw (r3+0),r1
+ 44c:	c3 a0 00 00 	ret
+
+00000450 <uart_getchar>:
+}
+
+char uart_getchar()
+{   
+ 450:	78 03 00 00 	mvhi r3,0x0
+    while (!(uart0->ucr & UART_RX_FULL)) {
+ 454:	b8 60 10 00 	mv r2,r3
+ 458:	38 42 04 e8 	ori r2,r2,0x4e8
+ 45c:	28 42 00 00 	lw r2,(r2+0)
+ 460:	28 41 00 00 	lw r1,(r2+0)
+ 464:	20 21 00 01 	andi r1,r1,0x1
+ 468:	44 20 ff fb 	be r1,r0,454 <uart_getchar+0x4>
+    }
+    uart0->ucr = 0;
+ 46c:	34 01 00 00 	mvi r1,0
+ 470:	58 41 00 00 	sw (r2+0),r1
+	return uart0->databuf;
+ 474:	28 41 00 08 	lw r1,(r2+8)
+}
+ 478:	20 21 00 ff 	andi r1,r1,0xff
+ 47c:	c3 a0 00 00 	ret
+
+00000480 <uart_putchar>:
+
+void uart_putchar(char c)
+{
+ 480:	78 02 00 00 	mvhi r2,0x0
+ 484:	38 42 04 e8 	ori r2,r2,0x4e8
+ 488:	28 42 00 00 	lw r2,(r2+0)
+ 48c:	20 23 00 ff 	andi r3,r1,0xff
+	while (uart0->ucr & UART_TX_BUSY) {
+ 490:	28 41 00 00 	lw r1,(r2+0)
+ 494:	20 21 00 02 	andi r1,r1,0x2
+ 498:	5c 20 ff fe 	bne r1,r0,490 <uart_putchar+0x10>
+	}
+	uart0->databuf = c;
+ 49c:	58 43 00 08 	sw (r2+8),r3
+	uart0->ucr = 0;
+ 4a0:	58 41 00 00 	sw (r2+0),r1
+ 4a4:	c3 a0 00 00 	ret
+
+000004a8 <uart_putstr>:
+}
+
+void uart_putstr(char *str)
+{
+ 4a8:	37 9c ff f8 	addi sp,sp,-8
+ 4ac:	5b 8b 00 08 	sw (sp+8),r11
+ 4b0:	5b 9d 00 04 	sw (sp+4),ra
+ 4b4:	b8 20 58 00 	mv r11,r1
+ 4b8:	e0 00 00 03 	bi 4c4 <uart_putstr+0x1c>
+	char *c = str;
+	while(*c) {
+		uart_putchar(*c);
+ 4bc:	fb ff ff f1 	calli 480 <uart_putchar>
+		c++;
+ 4c0:	35 6b 00 01 	addi r11,r11,1
+ 4c4:	41 61 00 00 	lbu r1,(r11+0)
+ 4c8:	5c 20 ff fd 	bne r1,r0,4bc <uart_putstr+0x14>
+ 4cc:	2b 8b 00 08 	lw r11,(sp+8)
+ 4d0:	2b 9d 00 04 	lw ra,(sp+4)
+ 4d4:	37 9c 00 08 	addi sp,sp,8
+ 4d8:	c3 a0 00 00 	ret
