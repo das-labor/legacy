@@ -63,7 +63,7 @@ int main(int argc, char **argv)
 		// Upload single block
 		fseek( infile, blockstart, SEEK_SET );
 		fputc( 'u', tty );
-		writeint( tty, 0x80000000 + blockstart);
+		writeint( tty, 0xb0000000 + blockstart);
 		writeint( tty, BLOCKSIZE );
 		checksum = 0;
 		for( i=0; i<BLOCKSIZE; i++ ) {
@@ -86,8 +86,7 @@ int main(int argc, char **argv)
 	}
 
 	fputc( 'g', tty );
-	writeint( tty, 0x80000000 );
+	writeint( tty, 0xb0000000 );
 
 	return 0;
 }
-

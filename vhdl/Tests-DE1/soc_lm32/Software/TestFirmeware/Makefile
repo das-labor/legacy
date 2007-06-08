@@ -9,7 +9,7 @@ CFLAGS=-MMD -O2 -Wall -g -s -fomit-frame-pointer -mbarrel-shift-enabled   -mmult
 LDFLAGS=-Tlinkcmd
 SEGMENTS = -j .text -j .data
 
-all: $(VHDLFILE) 
+all: image.bin image.lst 
 
 crt0ram.o: crt0ram.S
 	$(LM32_CC) $(CFLAGS) -c crt0ram.S
@@ -27,16 +27,10 @@ image.lst: image
 	$(LM32_OBJDUMP) -h -S $< > $@
 
 image.bin: image
-	$(LM32_OBJCOPY) $(SEGMENTS) -O srec image image.bin
+	$(LM32_OBJCOPY) $(SEGMENTS) -O binary image image.bin
 
 image.srec: image image.lst
 	$(LM32_OBJCOPY) $(SEGMENTS) -O srec image image.srec
-
-srectovhdl: srectovhdl.c
-	gcc -o srectovhdl srectovhdl.c
-
-$(VHDLFILE): image.srec srectovhdl
-	srectovhdl image.srec > $(VHDLFILE)
 
 clean:
 	rm -f srectovhdl image image.lst image.bin image.srec image.map  *.o *.d
