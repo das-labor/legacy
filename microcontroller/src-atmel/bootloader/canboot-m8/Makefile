@@ -15,7 +15,7 @@ PROGDATA_START = 0x1FCE
 FLASHCMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --upload if=$(PRG).hex
 FLASHCMD_EEPR  = uisp -dprog=bsd --segment=eeprom --upload if=$(PRG)_eeprom.hex
 ERASECMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --erase
-FUSECMD        = uisp -dprog=bsd --wr_fuse_h=0xc2
+FUSECMD        = uisp -dprog=bsd --wr_fuse_h=0xc2 && uisp -dprog=bsd --wr_fuse_l=0x9f  
 
 DEFS           = -DF_CPU=16000000
 LIBS           =
