@@ -2,7 +2,6 @@
 #include "prng.h"
 #include "pixel.h"
 #include "util.h"
-#include "config.h"
 
 #ifdef AVR
 	#include <avr/io.h>
