@@ -1,7 +1,7 @@
 
 #ifndef __C64__
 #include <avr/io.h>
-#include <avr/signal.h>
+#include <avr/interrupt.h>
 #define asm asm volatile
 #endif
 
