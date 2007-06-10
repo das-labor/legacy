@@ -1,8 +1,6 @@
 #ifndef SPI_H
 #define SPI_H
 
-#include "config.h"
-
 /**
  * this enables the use of Hardware SPI on ATMEGA 
  *

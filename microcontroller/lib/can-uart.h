@@ -7,7 +7,6 @@
  * 
  */
 
-#include "config.h"
 #include "can.h"
 #include "can-encap.h"
 

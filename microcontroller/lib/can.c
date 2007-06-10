@@ -5,8 +5,6 @@
 #define asm asm volatile
 #endif
 
-
-#include "config.h"
 #include "can.h"
 #include "spi.h"
 

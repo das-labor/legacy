@@ -1,8 +1,6 @@
 #ifndef CAN_H
 #define CAN_H
 
-#include "config.h"
-
 /*****************************************************************************
  * Simple CAN Library
  *
@@ -11,8 +9,6 @@
  * #define CAN_RX_BUFFER_SIZE 2	//only used for Interrupt
  * #define CAN_TX_BUFFER_SIZE 2	//only used for Interrupt
  */
-
-#include "config.h"
 
 /*****************************************************************************
  * Types
