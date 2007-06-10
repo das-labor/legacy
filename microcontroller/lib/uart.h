@@ -14,8 +14,6 @@
  *
  */
 
-#include "config.h"
-
 #include <inttypes.h>
 #include <avr/pgmspace.h>
 

@@ -1,7 +1,6 @@
 #include <avr/io.h>
 
 #include "util.h"
-#include "config.h"
 #ifdef UTIL_TIMER_HW
 
 void wait(int ms){
