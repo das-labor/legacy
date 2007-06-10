@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
-#include "config.h"
 #include "scrolltext.h"
 #ifdef AVR
 #   include "borg_hw.h"

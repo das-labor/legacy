@@ -9,7 +9,6 @@
 #include "prng.h"
 #include "pixel.h"
 #include "util.h"
-#include "config.h"
 
 
 typedef struct{
