@@ -2,7 +2,6 @@
 
 
 #include <avr/io.h>
-#include <avr/signal.h>
 #include <avr/interrupt.h>
 #include <stdlib.h>
 
@@ -125,7 +124,8 @@ void uart_putstr_P(PGM_P str) {
 
 void uart_hexdump(char *buf, int len)
 {
-	unsigned char x=0, sbuf[3];
+	unsigned char x=0;
+	char sbuf[3];
 
 	while(len--){
 		itoa(*buf++, sbuf, 16);
