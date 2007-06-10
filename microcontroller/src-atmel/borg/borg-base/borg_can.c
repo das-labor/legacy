@@ -1,7 +1,6 @@
 #include "can.h"
 #include "lap.h"
 #include "borg_hw.h"
-#include "config.h"
 #include "borg_can.h"
 #include "spi.h"
 

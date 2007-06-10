@@ -2,10 +2,7 @@
 #include <setjmp.h>
 extern jmp_buf newmode_jmpbuf;
 
-
-#include "config.h"
 #include "joystick.h"
-
 
 #ifdef BORG_CAN
 #  include "borg_can.h"
