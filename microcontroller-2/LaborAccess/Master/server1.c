@@ -15,12 +15,11 @@ uint8_t doorstate;
 
 AVRX_GCC_TASKDEF(server1, 200, 4)
 {
-	
+	uint8_t auth_mode = 0;
 	printf("Debug\r");
 	
 	while(1){
 		request_t req;
-		reply_auth_t reply;
 		uint8_t size;
 		
 		size = channel_read(CHANNEL_SERVER1, (uint8_t *) &req, sizeof(request_t));
@@ -53,7 +52,21 @@ AVRX_GCC_TASKDEF(server1, 200, 4)
 		
 			switch (req.type){
 				case REQUEST_AUTH:{
-					strcpy(reply.nickname, "tixiv" );
+					reply_auth_t reply;
+					request_cred_t * req_cred = (request_cred_t*) &req;
+					
+					if(database_check(req_cred->card_id, req_cred->token) == 0){
+						reply.result = RESULT_OK;
+						database_get_nickname(reply.nickname);
+						generate_token(reply.token);
+						
+						
+					}else{
+						reply.result = RESULT_DENIED;	
+					}
+					
+					reply.privileges = 0;
+					
 					channel_write(CHANNEL_SERVER1, (uint8_t *) &reply, sizeof(reply_auth_t));
 					printf("reply\r");
 		
@@ -70,4 +83,3 @@ AVRX_GCC_TASKDEF(server1, 200, 4)
 		
 	}
 }
-

@@ -148,6 +148,11 @@ static inline void checkkeys(uint8_t row){
 	CTRLPORT &= ~(1<<PIN_CP4);
 }
 
+uint8_t key_is_pressed(uint8_t key){
+	if(key[(key>>4)] & (1<<(key & 0x07))) return 1;
+	return 0;
+}
+
 static inline void borg_int()
 {
 	static unsigned char row = 0;

@@ -89,6 +89,8 @@ void get_doorstate(){
 	}
 }
 
+//send a request, that consists of only a type,
+//and receive the result, that is also only one byte.
 uint8_t simple_request(uint8_t type){
 	request_t req;
 	uint8_t result;
@@ -108,13 +110,67 @@ uint8_t card_read_credentials(request_cred_t * request){
 	if (asn1_get(&obj, &root_obj, 0x69))
 		return 1;
 			
-	if ( asn1_read(&obj, 0x80, (uint8_t *) &request->credentials.index, 2) != 2)
+	if ( asn1_read(&obj, 0x80, (uint8_t *) &request->card_id, 2) != 2)
 		return 1;
 			
-	if ( asn1_read(&obj, 0x81, (uint8_t *) &request->credentials.key, 8) != 8 )
+	if ( asn1_read(&obj, 0x81, request->token, 8) != 8 )
 		return 1;
 
 	return 0;		
+}
+
+uint8_t card_write_token(uint8_t[8] token){
+	if(! i2cEeDetect())
+		return 1;
+	
+	asn1_obj_t root_obj = {4,251};
+	asn1_obj_t obj;
+		
+	if (asn1_get(&obj, &root_obj, 0x69))
+		return 1;
+					
+	if ( asn1_write(&obj, 0x81, token, 8) != 8 )
+		return 1;
+
+	return 0;		
+}
+
+typedef struct{
+	char name[12];
+	uint8_t key;
+	uint8_t (*handler)(void);
+}menu_entry_t;
+
+menu_entry_t menu[] PROGMEM = {
+	{"newcard", KEY_NEW_CARD, handle_new_card},
+	{"id  deact", handle_deactivate_id},
+	{"id  react", handle_reactivate_id},
+	{"db  dump", handle_dump_db},
+}
+
+//blocks waiting for a key
+uint8_t get_key(){
+	uint8_t key;	
+	MessageControlBlock *p;		
+	while(1){
+		p = AvrXWaitMessage(&ClientQueue);
+		if(p == (MessageControlBlock*)&KeyboardMsg){
+			key = KeyboardMsg.key;
+			AvrXAckMessage(p);
+			return key;
+		}
+	}				
+}
+
+uint8_t admin_menu(){
+	uint8_t x;
+	uint8_t menu_pos = 0xff;
+	uint8_t key;
+	seg_putstr_P(PSTR("\r" "    admin"));
+	key = get_key();
+	for(x=0;x<)
+	
+	
 }
 
 void handle_card_inserted(){
@@ -148,14 +204,37 @@ void handle_card_inserted(){
 			goto error;
 		}
 		
-//		if(key_pressed(KEY_ADMIN)){
-//			handle_admin(request);
-//		}
-		
-//		seg_putstr_P(PSTR("\r" "openrequest"));
-		
-		seg_putstr("\r    ");
+		seg_putstr_P(PSTR("\r" "helo"));
 		seg_putstr(reply.nickname);
+		
+		AvrXDelay(&client_timer, 1000);
+					
+		if(key_is_pressed(KEY_ADMIN)){
+			if(reply.privileges & PRIVILEG_ADMIN){
+				admin_menu();
+			else{
+				errorstring = PSTR("\r" "no  admin");
+				goto error;
+			}
+		}else{
+			if(doorstate & STATE_DOOR_DOWNSTAIRS){
+				//door is open, so we request locking it
+				if(simple_request(REQUEST_LOCK_UPSTAIRS) == RESULT_OK){
+					seg_putstr_P(PSTR("\r" "doorlocking"));
+				}else{
+					errorstring = PSTR("\r" "cantlock");
+					goto error;
+				}
+			}else{
+				//door is locked, so we request opening it
+				if(simple_request(REQUEST_UNLOCK_UPSTAIRS) == RESULT_OK){
+					seg_putstr_P(PSTR("\r" "dooropening"));
+				}else{
+					errorstring = PSTR("\r" "cantopen");
+					goto error;
+				}
+			}
+		}
 		
 		goto end;
 		
