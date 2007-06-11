@@ -1,6 +1,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef DEBUG
+#include <stdio.h>
+#endif
+
 #include "can.h"
 #include "can-uart.h"
 #include "can-encap.h"
@@ -66,6 +70,9 @@ rs232can_msg * canu_get_nb(){
 	char c;
 	
 	while (uart_getc_nb(&c)) {
+		#ifdef DEBUG
+		printf("canu_get_nb received: %02x\n", c);
+		#endif
 		switch (canu_rcvstate) {
 		case STATE_START:
 			if (c) {
