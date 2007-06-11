@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "config.h"
+
 #include "can.h"
 #include "can-encap.h"
 #include "cann.h"
