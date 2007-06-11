@@ -18,10 +18,29 @@ AVRX_GCC_TASKDEF(mood, 20, 4) {
 		for (i=0; i<3; i++) {
 			global_pwm.channels[i].speed = 0x00100;
 		}
-		for (i = 0; i < 3; i++) {
-			global_pwm.channels[i].target_brightness = 0;
-			AvrXDelay(&switchtimer2, 12000);
-			global_pwm.channels[i].target_brightness = 255;
-		}
+		global_pwm.channels[0].target_brightness = 255;
+		global_pwm.channels[1].target_brightness = 0;
+		global_pwm.channels[2].target_brightness = 0;
+		AvrXDelay(&switchtimer2, 10000);
+		global_pwm.channels[0].target_brightness = 255;
+		global_pwm.channels[1].target_brightness = 255;
+		global_pwm.channels[2].target_brightness = 0;
+		AvrXDelay(&switchtimer2, 10000);
+		global_pwm.channels[0].target_brightness = 0;
+		global_pwm.channels[1].target_brightness = 255;
+		global_pwm.channels[2].target_brightness = 0;
+		AvrXDelay(&switchtimer2, 10000);
+		global_pwm.channels[0].target_brightness = 0;
+		global_pwm.channels[1].target_brightness = 255;
+		global_pwm.channels[2].target_brightness = 255;
+		AvrXDelay(&switchtimer2, 10000);
+		global_pwm.channels[0].target_brightness = 0;
+		global_pwm.channels[1].target_brightness = 0;
+		global_pwm.channels[2].target_brightness = 255;
+		AvrXDelay(&switchtimer2, 10000);
+		global_pwm.channels[0].target_brightness = 255;
+		global_pwm.channels[1].target_brightness = 0;
+		global_pwm.channels[2].target_brightness = 255;
+		AvrXDelay(&switchtimer2, 10000);
 	}
 }
