@@ -47,8 +47,8 @@ void uart_init(char *sport) {
 	// set serial options
 	tcgetattr(uart_fd, &options);
 
-	cfsetispeed(&options, B115200);
-	cfsetospeed(&options, B115200);
+	cfsetispeed(&options, UART_BAUD_RATE);
+	cfsetospeed(&options, UART_BAUD_RATE);
 
 	options.c_cflag &= ~(PARENB | CSTOPB | CSIZE | CRTSCTS);
 	options.c_cflag |= (CS8 | CLOCAL | CREAD);
