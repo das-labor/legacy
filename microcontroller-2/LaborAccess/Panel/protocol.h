@@ -23,10 +23,17 @@
 
 
 
+//values for the result var in replys
 #define RESULT_OK 0
 #define RESULT_DENIED 1
 
-#define STATE_DOOR_DOWNSTAIRS 0x01
+//flags in privileges
+#define PRIVILEG_ADMIN 0x01
+
+
+//a set bit means the door is open/unlocked
+#define STATE_DOOR_UPSTAIRS   0x01
+#define STATE_DOOR_DOWNSTAIRS 0x02
 
 
 typedef struct{
@@ -35,18 +42,15 @@ typedef struct{
 }request_t;
 
 typedef struct{
-	uint16_t index;
-	uint8_t key[8];	
-}credentials_t;
-
-typedef struct{
 	uint8_t type;
-	credentials_t credentials;
+	uint16_t card_id;
+	uint8_t token[8];
 }request_cred_t;
 
 typedef struct{
 	uint8_t result;
-	credentials_t credentials;
+	uint8_t privileges;
+	uint8_t token[8];
 	char nickname[NICKNAME_MAX_LEN+1];
 }reply_auth_t;
 
