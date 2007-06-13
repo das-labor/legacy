@@ -10,7 +10,7 @@ inline void delay_5u(){
 	"delay_5u_lp%=:\n\t"
 		"dec	%0	\n\t"
 		"brne	delay_5u_lp%=\n\t"
-		::"r" ((u08)((5ul*F_CPU)/(3ul*1000000ul))) ); 
+		::"r" ((uint8_t)((5ul*F_CPU)/(3ul*1000000ul))) ); 
 }
 
 inline void delay_2u5(){
@@ -18,7 +18,7 @@ inline void delay_2u5(){
 	"delay_2u5_lp%=:\n\t"
 		"dec	%0	\n\t"
 		"brne	delay_2u5_lp%=	\n\t"
-		::"r" ((u08)((2.5*F_CPU)/(3ul*1000000ul))) ); 
+		::"r" ((uint8_t)((2.5*F_CPU)/(3ul*1000000ul))) ); 
 }
 
 
@@ -56,9 +56,9 @@ void i2cStop(){
 	SDA_HI();
 }
 
-u08 i2cPutbyte(u08 b)
+uint8_t i2cPutbyte(uint8_t b)
 {
-	u08 i, ack;
+	uint8_t i, ack;
 	
 	for (i=0;i<8;i++){
 		QDEL();
@@ -91,9 +91,9 @@ u08 i2cPutbyte(u08 b)
 }
 
 
-u08 i2cGetbyte(u08 ack)
+uint8_t i2cGetbyte(uint8_t ack)
 {
-	u08 i, b = 0;
+	uint8_t i, b = 0;
     
 	QDEL();
 	SDA_HI();
@@ -128,24 +128,29 @@ void i2cInit(void)
 }
 
 //write to i2c eeprom in multibyte write mode
-s08 i2cEeWrite(u16 address, u16 len, u08 *data)
+int8_t i2cEeWrite(uint8_t *address, uint8_t *data, uint16_t len)
 {
-	u08 ack;
-	union{u08 b[2]; u16 w;} addr;
-	addr.w = address;
+	uint8_t ack;
+	union{uint8_t b[2]; uint16_t w;} addr;
+	addr.w = (uint16_t)address;
 	
 	while(len){
 		i2cStart();
 		//set start address
+#ifdef EEPROM_2_ADDR_BYTES
+		if (! i2cPutbyte(EEPROM_ADDRESS)) goto error;
+		if (! i2cPutbyte(addr.b[1])) goto error;
+		if (! i2cPutbyte(addr.b[0])) goto error;
+#else
 		if (! i2cPutbyte(EEPROM_ADDRESS|(addr.b[1]<<1))) goto error;
 		if (! i2cPutbyte(addr.b[0])) goto error;
-
+#endif
 		do{
 			len--;
 			if(! i2cPutbyte(*data++) ) goto error;
 			addr.w++;
 		//keep writing until a 4 byte boundary in eeprom is reached
-		}while(len && (addr.b[0] % 4));
+		}while(len && (addr.b[0] % EEPROM_SECTOR_SIZE));
 	
 		//initiate and wait for internal write cycle
 		do{
@@ -166,22 +171,34 @@ error:
 }
 
 //read bytes from eeprom to buffer
-void i2cEeRead(u16 address, u16 len, u08 *data)
+void i2cEeRead(uint8_t *data, uint8_t *address, uint16_t len)
 {
-	u08 ack;
-	union{u08 b[2]; u16 w;} addr;
-	addr.w = address;
+	uint8_t ack;
+	union{uint8_t b[2]; uint16_t w;} addr;
+	addr.w = (uint16_t)address;
 	
 	while(len){
 		i2cStart();
+		
+#ifdef EEPROM_2_ADDR_BYTES
+		//setup address
+		i2cPutbyte(EEPROM_ADDRESS);
+		i2cPutbyte(addr.b[1]);
+		i2cPutbyte(addr.b[0]);
+		//do a repeated start condition
+		i2cStart();
+	
+		i2cPutbyte(EEPROM_ADDRESS | READ );
+#else
 		//setup address
 		i2cPutbyte(EEPROM_ADDRESS | (addr.b[1]<<1) );
 		i2cPutbyte(addr.b[0]);
-	
+
 		//do a repeated start condition
 		i2cStart();
 	
 		i2cPutbyte(EEPROM_ADDRESS | READ | (addr.b[1]<<1) );
+#endif
 
 		do{
 			//keep on going until all bytes are sent, or the end of a field is reached
@@ -195,10 +212,10 @@ void i2cEeRead(u16 address, u16 len, u08 *data)
 	}
 }
 
-
+#ifdef EE_DETECT
 //Probes if a device with this address acks
-u08 i2cProbe(u08 addr){
-	u08 ack;
+uint8_t i2cProbe(uint8_t addr){
+	uint8_t ack;
 	i2cStart();
 	ack = i2cPutbyte(addr);
 	i2cStop();
@@ -208,8 +225,8 @@ u08 i2cProbe(u08 addr){
 //detect if there is a valid i2c eeprom card inserted
 //returns card size in sectors of 256 bytes
 //a return value of zero means no valid card
-u08 i2cEeDetect(){
-	u08 retval;
+uint8_t i2cEeDetect(){
+	uint8_t retval;
 	HDEL();
 	if( !(SDAPIN & (1<<SDA)) ){
 		//SDA is low, so this can't be an i2c card
@@ -235,3 +252,4 @@ u08 i2cEeDetect(){
 	//seems to be a valid card, so we return the size
 	return retval;
 }
+#endif

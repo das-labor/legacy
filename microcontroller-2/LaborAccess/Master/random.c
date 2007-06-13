@@ -1,6 +1,6 @@
 
 #include <avr/io.h>
-
+#include "random.h"
 
 uint8_t get_random_byte(){
 	uint8_t x, v;

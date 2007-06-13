@@ -8,6 +8,7 @@
 #include "protocol.h"
 #include "channels.h"
 #include "channel.h"
+#include "random.h"
 
 #include <stdio.h>
 
@@ -57,10 +58,9 @@ AVRX_GCC_TASKDEF(server1, 200, 4)
 					
 					if(database_check(req_cred->card_id, req_cred->token) == 0){
 						reply.result = RESULT_OK;
-						database_get_nickname(reply.nickname);
+						database_get_nickname(req_cred->card_id, reply.nickname);
 						generate_token(reply.token);
-						
-						
+						database_store_token(req_cred->card_id, reply.token);
 					}else{
 						reply.result = RESULT_DENIED;	
 					}

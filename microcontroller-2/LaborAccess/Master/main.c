@@ -5,6 +5,7 @@
 #include "AvrXSerialIo.h"
 #include "uart_sw.h"
 #include "dummy_qport.h"
+#include "i2csw.h"
 
 #define TICKRATE 1000
 #define TCNT0_INIT (0xFF-F_CPU/256/TICKRATE)
@@ -47,7 +48,8 @@ int main(void)
 	
 	fdevopen(put_char1, get_char1);
 	
-	
-    Epilog();                   // Switch from AvrX Stack to first task
-    while(1);
+	i2cInit();
+
+	Epilog();                   // Switch from AvrX Stack to first task
+	while(1);
 };
