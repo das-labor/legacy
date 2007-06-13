@@ -15,11 +15,25 @@
 #include "rfm12_config.h"
 #include "rfm12.h"
 
+void rfm_init_ddr ( void )
+{
+	// outputs
+	RFM_DDR_SPICLK |= RFM_PIN_SPICLK;
+	RFM_DDR_SPITX |= RFM_PIN_SPITX;
+	RFM_DDR_CS |= RFM_PIN_CS;
+
+	// inputs
+	RFM_DDR_NIRQ &= ~(RFM_PIN_NIRQ);
+	RFM_DDR_SPIRX &= ~(RFM_PIN_SPIRX);
+
+	RFM_PORT_CS &= ~(RFM_PIN_CS);
+}
+
 void rfm_spi_waitcycle ( void )
 {
 	uint8_t i;
 	for (i=0;i<RFM_SPI_WAITCYCLES;i++)
-		asm volatile "nop";
+		asm volatile ("nop");
 }
 
 inline void rfm_spi_setrx ( void )
@@ -63,7 +77,7 @@ uint16_t rfm_spi_send ( uint16_t in_bytes )
 		}
 
 		RFM_SPICLK_ON();
-		rfm_spi_waitcycles();
+		rfm_spi_waitcycle();
 
 		if (RFM_PORT_SPIRX & RFM_PIN_SPIRX)
 			dout |= 0x0001;
@@ -71,7 +85,7 @@ uint16_t rfm_spi_send ( uint16_t in_bytes )
 		dout <<= 1;
 		mask <<= 1;
 		RFM_SPICLK_OFF();
-		rfm_spi_waitcycles();
+		rfm_spi_waitcycle();
 	}
 	return dout;
 }
@@ -141,7 +155,7 @@ void rfm_tx ( uint8_t in_byte )
 inline void rfm_tx_wait ( uint8_t in_byte )
 {
 	while ( RFM_PORT_NIRQ & RFM_PIN_NIRQ )
-		asm volatile "nop";
+		asm volatile ("nop");
 	
 	rfm_tx ( in_byte );
 }
@@ -172,7 +186,7 @@ void rfm_init_rx ( void )
 uint8_t rfm_rx_wait ( void )
 {
 	while ( RFM_PORT_NIRQ & RFM_PIN_NIRQ )
-		asm volatile "nop";
+		asm volatile ("nop");
 	
 	rfm_spi_send ( 0x0000 );
 	rfm_spi_send ( 0xB000 );
