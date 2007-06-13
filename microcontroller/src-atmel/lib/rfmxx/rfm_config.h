@@ -21,17 +21,17 @@
 
 /* chip select */
 #define RFM_PORT_CS PORTD
-#define RFM_PIN_CS  _BV(PD0)
+#define RFM_PIN_CS  _BV(PD2)
 #define RFM_DDR_CS  DDRD
 
 /* serial data out (trans -> mcu) */
 #define RFM_DDR_SDO  DDRD
-#define RFM_PIN_SDO  _BV(PD1)
+#define RFM_PIN_SDO  _BV(PD0)
 #define RFM_PORT_SDO PORTD
 
 /* serial data in (mcu -> trans) */
 #define RFM_DDR_SDI  DDRD
-#define RFM_PIN_SDI  _BV(PD2)
+#define RFM_PIN_SDI  _BV(PD4)
 #define RFM_PORT_SDI PORTD
 
 /* serial clock in (mcu -> trans) */
@@ -39,10 +39,13 @@
 #define RFM_PIN_CKI  _BV(PD3)
 #define RFM_PORT_CKI PORTD
 
-/* serial clock out (trans -> mcu) */
-#define RFM_DDR_CKO  DDRD
-#define RFM_PIN_CKO  _BV(PD4)
-#define RFM_PORT_CKO PORTD
+/* nIRQ */
+#define RFM_DDR_NIRQ  DDRD
+#define RFM_PIN_NIRQ  _BV(PD1)
+#define RFM_PORT_NIRQ PORTD
+
+// nirq = 1
+
 
 
 /* ===== END OF CONFIGURATION ======
