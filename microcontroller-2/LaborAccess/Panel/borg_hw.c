@@ -149,7 +149,7 @@ static inline void checkkeys(uint8_t row){
 }
 
 uint8_t key_is_pressed(uint8_t key){
-	if(key[(key>>4)] & (1<<(key & 0x07))) return 1;
+	if(keys[(key>>4)] & (1<<(key & 0x07))) return 1;
 	return 0;
 }
 

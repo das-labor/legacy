@@ -30,7 +30,6 @@ extern KeyboardMsg_t KeyboardMsg;
 #define KEY_RECORD 0x03
 #define KEY_GREEN 0x02
 #define KEY_TAPE2 0x01
-#define KEY_TAPE 0x00
 #define KEY_4TIMES 0x14
 #define KEY_REPEAT 0x13
 #define KEY_REWIND 0x12
@@ -46,6 +45,16 @@ extern KeyboardMsg_t KeyboardMsg;
 #define KEY_FLAG 0x62
 #define KEY_TAPE 0x61
 #define KEY_HORN 0x60
+#define KEY_0 0x50
+#define KEY_1 0x31
+#define KEY_2 0x32
+#define KEY_3 0x33
+#define KEY_4 0x34
+#define KEY_5 0x40
+#define KEY_6 0x41
+#define KEY_7 0x42
+#define KEY_8 0x43
+#define KEY_9 0x44
 
 
 #endif
