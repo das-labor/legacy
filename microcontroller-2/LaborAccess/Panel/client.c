@@ -50,8 +50,6 @@
 
 #include "protocol.h"
 
-
-#define KEY_DEACTIVATE 0x11
 #define KEY_NEW_CARD   KEY_1
 #define KEY_DEACTIVATE KEY_2
 #define KEY_REACTIVATE KEY_3
