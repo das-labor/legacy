@@ -50,6 +50,10 @@
 
 #include "protocol.h"
 
+#include "util.h"
+
+#define KEY_ADMIN KEY_PLAY
+
 #define KEY_NEW_CARD   KEY_1
 #define KEY_DEACTIVATE KEY_2
 #define KEY_REACTIVATE KEY_3
@@ -127,7 +131,7 @@ uint8_t card_read_credentials(request_cred_t * request){
 	return 0;		
 }
 
-uint8_t card_write_token(uint8_t[8] token){
+uint8_t card_write_token(uint8_t * token){
 	if(! i2cEeDetect())
 		return 1;
 	
@@ -165,17 +169,12 @@ typedef struct{
 	uint8_t (*handler)(void);
 }menu_entry_t;
 
-char newcard_str[] PROGMEM = "newcard";
-char id_deact_str[] PROGMEM = "id  deact";
-char id_react_str[] PROGMEM = "id  react";
-char db_dump_str[] PROGMEM = "db  dump";
-
 menu_entry_t menu[] PROGMEM = {
-	{newcard_str, KEY_NEW_CARD, handle_new_card},
-	{id_deact_str, KEY_DEACTIVATE, handle_deactivate_id},
-	{id_react_str, KEY_REACTIVATE, handle_reactivate_id},
-	{db_dump_str, KEY_DUMP_DB, handle_dump_db},
-}
+	{"newcard", KEY_NEW_CARD, handle_new_card},
+	{"id  deact", KEY_DEACTIVATE, handle_deactivate_id},
+	{"id  react", KEY_REACTIVATE, handle_reactivate_id},
+	{"db  dump", KEY_DUMP_DB, handle_dump_db},
+};
 
 //blocks waiting for a key
 uint8_t get_key(){
@@ -194,22 +193,23 @@ uint8_t get_key(){
 uint8_t admin_menu(){
 	uint8_t x;
 	uint8_t key;
-	uint8_t (*handler)(void);
+	uint8_t (*handler)(void) = 0;
 	
 	seg_putstr_P(PSTR("\r" "    admin"));
 	while(1){
 		key = get_key();
 		for(x=0; x < (sizeof(menu)/sizeof(menu_entry_t)); x++ ){
 			if(key == menu[x].key){
-				seg_putstr_P (PW(menu[x].name);
-				handler = PW(menu[x].handler);
+				seg_putstr_P (menu[x].name);
+				handler = (uint8_t(*)(void))PW(menu[x].handler);
 				break;
 			}
 		}
 		if(key == KEY_S){
-			handler();	
+			if(handler)
+				handler();	
 		}
-		if(key = KEY_R){
+		if(key == KEY_R){
 			break;	
 		}
 	}
@@ -263,7 +263,7 @@ void handle_card_inserted(){
 		if(key_is_pressed(KEY_ADMIN)){
 			if(reply.flags & FLAG_ADMIN){
 				admin_menu();
-			else{
+			}else{
 				errorstring = PSTR("\r" "no  admin");
 				goto error;
 			}
