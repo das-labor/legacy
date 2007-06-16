@@ -1,4 +1,4 @@
 
-OBJ            = rfm12.o example.o
+OBJ            = rf12.o uart.o main.o
 
-include ../../make/avr.mk
+include ../../../../make/avr.mk
