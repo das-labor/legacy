@@ -23,7 +23,7 @@
 //values for the result var in replys
 #define RESULT_OK 0
 #define RESULT_DENIED 1
-#define RESULT_DEACTIVATED
+#define RESULT_DEACTIVATED 2
 
 //flags
 #define FLAG_ADMIN 0x01
