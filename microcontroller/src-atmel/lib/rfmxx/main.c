@@ -40,10 +40,10 @@ int main(void)
 
 	for (;;)
 	{
-		if (!(PINB & _BV(PB0)))
+	//	if (!(PINB & _BV(PB0)))
 		{
 			send(tx);
-			_delay_ms(50);
+			_delay_ms(100);
 		}
 
 		if (k<7)
@@ -62,7 +62,6 @@ int main(void)
 void receive(void)
 {
 	uint16_t moo = 0x00;
-	PORTC = rf12_rxdata(); return;
 	moo = rf12_rxdata_nb();
 	if (moo > 0xff)
 		PORTC = (moo & 0x00ff);
