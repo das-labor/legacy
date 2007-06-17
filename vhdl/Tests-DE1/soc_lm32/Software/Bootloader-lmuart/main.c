@@ -1,20 +1,22 @@
 #include "spike_hw.h"
 
-uint32_t readint()
-{
-	uint32_t val;
-
-	val = (uint8_t)uart_getchar();
-	val <<= 8; val += (uint8_t)uart_getchar();
-	val <<= 8; val += (uint8_t)uart_getchar();
-	val <<= 8; val += (uint8_t)uart_getchar();
-
-	return val;
+uint32_t readint() {
+	uint32_t val = 0, i;
+    uint8_t c;
+    for (i = 0; i < 8; i++) {
+        val <<= 4;
+        c = uart_getchar();
+        if (c <= '9')
+    	   val |= (c - '0') & 0xf;
+        else
+    	   val |= (c - 'A' + 0xa) & 0xf;    
+    }
+    return val;
 }
 
 void writeint(uint32_t val)
 {
-	int i, digit;
+	uint32_t i, digit;
 
 	for(i=0; i<8; i++) {
 		digit = (val & 0xf0000000) >> 28;
@@ -30,8 +32,6 @@ void memtest()
 {
 	volatile int *p;
 	for (p=(int *)SRAM_START; p<(int *)(SRAM_START+SRAM_SIZE); p++) {
-		//writeint((int) p);
-		//uart_putstr("\n\r");
 		*p = (int) p;  
 	}
 	
@@ -45,8 +45,7 @@ void memtest()
 
 int main(int argc, char **argv)
 {
-	char test;
-	
+	volatile int *p;
 	// Initialize stuff
 	uart_init();
 	//irq_enable();
@@ -55,49 +54,43 @@ int main(int argc, char **argv)
 	memtest();
 	for(;;) {
 		uint32_t start, size, checksum, help;
-		unsigned char c = uart_getchar();
-		char *p;
+		uart_putchar('>');
+		uint8_t c = uart_getchar();
 
 		switch (c) {
-    		case 'r':
+    		case 'r':  // reset
     			jump(0x00000000);
-    		case 'u':
-    			//uart_putstr("u:");
-    			uart_putchar('u');
-    			uart_putchar(':');
-    			/* read start */
+    		case 'u':  // Upload programm
+      			/* read start */
     			start = readint();
-    			writeint(start);
-    		    uart_putchar(':');
     			/* read size */
     			size  = readint();
-    			writeint(size); 
-    			uart_putchar(':');
-    
     			checksum = 0;
     			for (p = (int *) start; p < (int *) (start+size); p++) {
-    				help  = (c = uart_getchar()) << 24;
-    				checksum += c;
-    				help += (c = uart_getchar()) << 16;
-                    checksum += c;
-                    help += (c = uart_getchar()) << 8;
-                    checksum += c;
-                    help += (c = uart_getchar());
-    				checksum += c;
-    				*p = help;
+    				*p = readint();
+    				checksum += *p;
     			}
     			writeint(checksum); 
     			uart_putstr(".\r\n");
     			break;
-    		case 'g':
-    			uart_putchar('g');
-    			uart_putchar(':');
+    		case 'g': // GO
     			start = readint();
-    			writeint(start); uart_putchar('.');
-    			irq_disable();
     			jump(start);
     			uart_putstr("XXXX");		
     			break;
+    		case 'v': // view memory 
+    		  start = readint();
+    		  size  = readint();
+    		  help = 0;
+    		  for (p = (int *) start; p < (int *) (size); p++) {
+    				if (!(help++ & 4)) {
+    				    uart_putstr("\r\n");
+    				    writeint(p);
+    				}
+    				uart_putchar();    
+    				writeint(*p);
+    		  }
+    		  break;
     		case 'e':
     		    while (1) {
     		      uart_putchar(uart_getchar());
@@ -106,4 +99,3 @@ int main(int argc, char **argv)
     		}
 	}
 }
-

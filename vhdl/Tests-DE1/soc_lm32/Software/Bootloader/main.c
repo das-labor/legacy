@@ -1,27 +1,33 @@
 #include "spike_hw.h"
 
-uint32_t readint()
-{
-	uint32_t val;
-
-	val = (uint8_t)uart_getchar();
-	val <<= 8; val += (uint8_t)uart_getchar();
-	val <<= 8; val += (uint8_t)uart_getchar();
-	val <<= 8; val += (uint8_t)uart_getchar();
-
-	return val;
+uint32_t readint(uint8_t nibbles, uint8_t* checksum) {
+	uint32_t val = 0, i;
+    uint8_t c;
+    for (i = 0; i < nibbles; i++) {
+        val <<= 4;
+        c = uart_getchar();
+        if (c <= '9')
+    	   val |= (c - '0') & 0xf;
+        else
+    	   val |= (c - 'A' + 0xa) & 0xf; 
+    	if (i & 1)
+    	   *checksum += val;      
+    }
+    return val;
 }
 
-void writeint(uint32_t val)
+void writeint(uint8_t nibbles, uint32_t val)
 {
-	int i, digit;
+	uint32_t i, digit;
 
-	for(i=0; i<8; i++) {
-		digit = (val & 0xf0000000) >> 28;
-		if (digit >= 0xA) 
-			uart_putchar('A'+digit-10);
-		else
-			uart_putchar('0'+digit);
+	for (i=0; i<8; i++) {
+	    if (i >= 8-nibbles) {
+    		digit = (val & 0xf0000000) >> 28;
+    		if (digit >= 0xA) 
+      			uart_putchar('A'+digit-10);
+      		else
+    			uart_putchar('0'+digit);
+	    }
 		val <<= 4;
 	}
 }
@@ -37,74 +43,74 @@ void memtest()
 		if (*p != (int)p) {
 			uart_putstr("SRAM MEMTEST ERROR\n\r");
 		}
+		*p = 0;
 	}
 	uart_putstr("SRAM MEMTEST OK\n\r");
-} 
-
+}
 
 int main(int argc, char **argv)
 {
-	char test;
-	volatile int *p;
-	
+	volatile int8_t  *p;
+	volatile int32_t *p32;
+	uint8_t checksum;
 	// Initialize stuff
 	uart_init();
 	//irq_enable();
 
 	uart_putstr("\r\n** SPIKE BOOTLOADER **\n\r");
 	memtest();
-	uart_putchar('r'); // Ready
 	for(;;) {
 		uint32_t start, size, checksum, help;
-		unsigned char c = uart_getchar();
+		uart_putchar('>');
+		uint8_t c = uart_getchar();
 
 		switch (c) {
-    		case 'r':
+    		case 'r': // reset
     			jump(0x00000000);
-    		case 'u':
-    			//uart_putstr("u:");
-    			uart_putchar('u');
-    			uart_putchar(':');
-    			/* read start */
-    			start = readint();
-    			writeint(start);
-    		    uart_putchar(':');
-    			/* read size */
-    			size  = readint();
-    			writeint(size); 
-    			uart_putchar(':');
-    
-    			checksum = 0;
-    			for (p = (int *) start; p < (int *) (start+size); p++) {
-    				help  = (c = uart_getchar()) << 24;
-    				checksum += c;
-    				help += (c = uart_getchar()) << 16;
-                    checksum += c;
-                    help += (c = uart_getchar()) << 8;
-                    checksum += c;
-                    help += (c = uart_getchar());
-    				checksum += c;
-    				*p = help;
+    			break;
+    		case 'u': // Upload programm
+      			checksum = 0;
+      			/* read size */
+    			size  = readint(2, (uint8_t *) &checksum);
+    			size -= 5;
+      			/* read start */
+    			start = readint(8, (uint8_t *) &checksum);
+    			for (p = (int8_t *) start; p < (int8_t *) (start+size); p++) {
+    				*p = readint(2, (uint8_t *) &checksum);
     			}
-    			writeint(checksum); 
-    			uart_putstr(".\r\n");
+    			writeint(2, ~checksum);
     			break;
-    		case 'g':
-    			uart_putchar('g');
-    			uart_putchar(':');
-    			start = readint();
-    			writeint(start); uart_putchar('.');
-    			irq_disable();
+    		case 'g': // go
+    			start = readint(8, (uint8_t *) &checksum);
     			jump(start);
-    			uart_putstr("XXXX");		
-    			break;
-    		case 'e':
-    		    c = 0;
-    		    while (c != '\r') {
-    		      uart_putchar(c = uart_getchar());
+    			uart_putstr("XX");		
+    			break;   
+    		case 'v': // view memory 
+    		  start = readint(8, (uint8_t *) &checksum);
+    		  size  = readint(8, (uint8_t *) &checksum);
+    	      help = 0;
+    		  for (p32 = (int32_t *) start; p32 < (int32_t *) (size); p32++) {
+    				if (!(help++ & 3)) {
+    				    uart_putstr("\r\n[");
+    				    writeint(8, (uint32_t) p32);
+    				    uart_putchar(']');    
+    				}
+    				uart_putchar(' ');    
+    				writeint(8, *p32);
+    		  }
+    		  break;
+    		case 'e': // echo test
+    		    while (1) {
+    		      uart_putchar(uart_getchar());
+    		    }
+    		    break;
+    		case 'E':
+    		    checksum = 0;
+    		    while (1) {
+    		          readint(8, (uint8_t *) &checksum);
+    		          writeint(2, checksum); 
     		    }
     		    break;
     		}
 	}
 }
-

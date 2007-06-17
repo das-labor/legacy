@@ -68,7 +68,7 @@ void uart_init()
 
 
 	// Setup Divisor register (Fclk / Baud)
-	uart0->div = (FCPU/(57600*16));
+	//uart0->div = (FCPU/(57600*16));
 }
 
 char uart_getchar()
@@ -82,7 +82,7 @@ void uart_putchar(char c)
 {
 	while (! (uart0->lsr & UART_THRE)) {
 	}
-	uart0->rxrx = c;
+	uart0->rxtx = c;
 }
 
 void uart_putstr(char *str)

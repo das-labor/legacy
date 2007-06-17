@@ -16,7 +16,7 @@ Linker script and memory map
                 0x00000800                _RAM_SIZE = 0x800
                 0x00001000                _RAM_END = (_RAM_START + _RAM_SIZE)
 
-.text           0x00000000      0x4dc
+.text           0x00000000      0x4fc
                 0x00000000                _stext = .
  *(.text)
  .text          0x00000000       0xfc crt0ram.o
@@ -26,35 +26,37 @@ Linker script and memory map
                 0x00000054                irq_mask
                 0x00000060                irq_disable
                 0x00000070                halt
- .text          0x000000fc      0x2a4 main.o
-                0x000000fc                readint
-                0x000001b0                memtest
-                0x00000140                writeint
-                0x00000234                main
- .text          0x000003a0      0x13c spike_hw.o
-                0x000004a8                uart_putstr
-                0x000003d4                sleep
-                0x00000450                uart_getchar
-                0x00000430                uart_init
-                0x000003a0                irq_handler
-                0x00000408                tic_init
-                0x00000480                uart_putchar
-                0x000004dc                _etext = .
+ .text          0x000000fc      0x2cc main.o
+                0x0000012c                readint
+                0x000001e0                memtest
+                0x00000170                writeint
+                0x00000264                main
+                0x000000fc                getHex
+ .text          0x000003c8      0x134 spike_hw.o
+                0x000004c8                uart_putstr
+                0x000003fc                sleep
+                0x0000047c                uart_getchar
+                0x00000458                uart_init
+                0x000003c8                irq_handler
+                0x00000430                tic_init
+                0x000004a4                uart_putchar
+                0x000004fc                _etext = .
 
-.data           0x000004dc       0x68
-                0x000004dc                _sdata = .
+.data           0x000004fc       0xb0
+                0x000004fc                _sdata = .
  *(.data)
- .data          0x000004dc       0x14 spike_hw.o
-                0x000004e8                uart0
-                0x000004ec                timer0
-                0x000004dc                msec
-                0x000004e4                gpio0
-                0x000004e0                sram0
+ .data          0x000004fc       0x14 spike_hw.o
+                0x00000508                uart0
+                0x0000050c                timer0
+                0x000004fc                msec
+                0x00000504                gpio0
+                0x00000500                sram0
  *(.rodata)
+ .rodata        0x00000510       0x48 main.o
  *(.rodata.*)
  .rodata.str1.4
-                0x000004f0       0x54 main.o
-                0x00000544                _edata = .
+                0x00000558       0x54 main.o
+                0x000005ac                _edata = .
 
 .bss            0x00000800        0x0
                 0x00000800                _sbss = .
@@ -69,20 +71,20 @@ OUTPUT(image elf32-lm32)
  .debug_abbrev  0x00000000       0xf5 main.o
  .debug_abbrev  0x000000f5       0xfc spike_hw.o
 
-.debug_info     0x00000000      0x470
- .debug_info    0x00000000      0x187 main.o
- .debug_info    0x00000187      0x2e9 spike_hw.o
+.debug_info     0x00000000      0x4fe
+ .debug_info    0x00000000      0x1b6 main.o
+ .debug_info    0x000001b6      0x348 spike_hw.o
 
-.debug_line     0x00000000      0x428
- .debug_line    0x00000000      0x28c main.o
- .debug_line    0x0000028c      0x19c spike_hw.o
+.debug_line     0x00000000      0x430
+ .debug_line    0x00000000      0x29c main.o
+ .debug_line    0x0000029c      0x194 spike_hw.o
 
 .debug_pubnames
-                0x00000000       0xeb
+                0x00000000       0xf6
  .debug_pubnames
-                0x00000000       0x40 main.o
+                0x00000000       0x4b main.o
  .debug_pubnames
-                0x00000040       0xab spike_hw.o
+                0x0000004b       0xab spike_hw.o
 
 .debug_aranges  0x00000000       0x40
  .debug_aranges
@@ -90,11 +92,11 @@ OUTPUT(image elf32-lm32)
  .debug_aranges
                 0x00000020       0x20 spike_hw.o
 
-.debug_str      0x00000000      0x1b3
- .debug_str     0x00000000       0xda main.o
-                                 0xf0 (size before relaxing)
- .debug_str     0x000000da       0xd9 spike_hw.o
-                                0x176 (size before relaxing)
+.debug_str      0x00000000      0x1be
+ .debug_str     0x00000000       0xf0 main.o
+                                0x101 (size before relaxing)
+ .debug_str     0x000000f0       0xce spike_hw.o
+                                0x172 (size before relaxing)
 
 .comment        0x00000000       0x62
  .comment       0x00000000       0x31 main.o

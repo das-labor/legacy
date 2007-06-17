@@ -20,7 +20,7 @@ main.o: main.c
 spike_hw.o: spike_hw.c
 	$(LM32_CC) $(CFLAGS) -c spike_hw.c
 
-image: crt0ram.o main.o spike_hw.o
+image: crt0ram.o main.o spike_hw.o linkcmd Makefile
 	$(LM32_LD) $(LDFLAGS) -Map image.map -N -o image crt0ram.o main.o spike_hw.o
 
 image.lst: image

@@ -60,16 +60,25 @@ typedef struct {
 /***************************************************************************
  * UART0
  */
-#define UART_RX_FULL 1
-#define UART_TX_BUSY 2
-#define UART_RXIRQEN 4
-#define UART_TXIRQEN 8
+#define UART_DR   0x01                    // Data Ready
+#define UART_OE   0x02                    // Overrun Error
+#define UART_PE   0x04                    // Parity Error
+#define UART_FE   0x08                    // Parity Error
+#define UART_BI   0x10                    // Break Interrupt
+#define UART_THRE 0x20                    // Transmit Holf Reg Empty
+#define UART_TEMT 0x40                    // Transmit 
 
 typedef struct {
-	volatile uint32_t ucr;      // status register
-	volatile uint32_t divisor;  // 16 bit divisor (Fclk / Baud)
-	volatile uint32_t databuf;  // 1 byte rx buffer
+   volatile uint32_t rxtx;
+   volatile uint32_t ier;
+   volatile uint32_t iir;
+   volatile uint32_t lcr;
+   volatile uint32_t mcr;
+   volatile uint32_t lsr;
+   volatile uint32_t msr;
+   volatile uint32_t div;
 } uart_t;
+
 
 /***************************************************************************
  * Spike peripheral components
