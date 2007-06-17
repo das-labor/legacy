@@ -30,7 +30,8 @@
 /* Exception handlers - Must be 32 bytes long. */
         .section    .text, "ax", @progbits        
         .global     _start  
-		.global     irq_enable, irq_disable, irq_mask, jump, halt
+		.global     irq_enable, irq_disable, irq_mask, jump, halt, getra, getsp
+		.global     getr0
 _start:    
 _reset_handler:
 	xor     r0, r0, r0
@@ -76,6 +77,18 @@ irq_disable:
 
 jump:
 	b       r1 
+
+getsp:
+    mv      r1, sp
+    ret
+    
+getra:
+    mv      r1, ra
+    ret    
+
+getr0:
+    mv      r1, r0
+    ret
 
 halt:
 	bi halt

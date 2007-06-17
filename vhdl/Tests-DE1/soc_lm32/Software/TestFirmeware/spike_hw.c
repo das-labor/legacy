@@ -3,7 +3,6 @@
 volatile timer_t  *timer0 = (volatile timer_t *)  0x80000000;
 volatile uart_t   *uart0  = (volatile uart_t *)   0x80001000;
 volatile gpio_t   *gpio0  = (volatile gpio_t *)   0x80002000;
-volatile uint32_t *sram0  = (volatile uint32_t *) 0xB0000000;
 
 uint32_t msec = 0;
 
@@ -62,22 +61,27 @@ void tic_init()
  */
 void uart_init()
 {
+	uart0->ier = 0x00;  // Interrupt Enable Register
+	uart0->lcr = 0x03;  // Line Control Register:    8N1
+	uart0->mcr = 0x00;  // Modem Control Register
+
+
 	// Setup Divisor register (Fclk / Baud)
-	uart0->divisor = (FCPU/57600);
+	//uart0->div = (FCPU/(57600*16));
 }
 
 char uart_getchar()
 {   
-    while (!(uart0->ucr & UART_RX_FULL)) {
-    }
-	return uart0->databuf;
+	while (! (uart0->lsr & UART_DR)) {
+	}
+	return uart0->rxtx;
 }
 
 void uart_putchar(char c)
 {
-	while (uart0->ucr & UART_TX_BUSY) {
+	while (! (uart0->lsr & UART_THRE)) {
 	}
-	uart0->databuf = c;
+	uart0->rxtx = c;
 }
 
 void uart_putstr(char *str)
