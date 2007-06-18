@@ -1,6 +1,7 @@
 #define RF_PORT	PORTD
 #define RF_DDR	DDRD
 #define RF_PIN	PIND
+#define F_CPU 16000000L
 
 #define SDI		7
 #define SCK		6

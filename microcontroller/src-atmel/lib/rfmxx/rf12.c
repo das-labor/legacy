@@ -5,7 +5,6 @@
 #include "config.h"
 #include "uart.h"
 
-#define F_CPU 16000000UL
 #include <util/delay.h>
 
 
@@ -39,7 +38,7 @@ void rf12_init(void)
 	RF_PORT=(1<<CS);
 
 	RFM_DDR_NIRQ &= ~(RFM_PIN_NIRQ);
-	RFM_PORT_NIRQ |= RFM_PIN_NIRQ;
+//	RFM_PORT_NIRQ |= RFM_PIN_NIRQ;
 
 	for (i=0; i<10; i++)
 		_delay_ms(10);			// wait until POR done
@@ -85,6 +84,16 @@ void rf12_ready(void)
 {	cbi(RF_PORT, CS);
 	while (!(RF_PIN&(1<<SDO))); // wait until FIFO ready
 }
+/* @brief nop around for at max ARG cycles. returns 1 on success
+ */
+uint8_t rf12_ready_wait(uint16_t in_cycles)
+{
+	uint16_t passedcycles = 0;
+	cbi(RF_PORT, CS);
+	while (!(RF_PIN&(1<<SDO)) && passedcycles < in_cycles) passedcycles++;
+	if (passedcycles == in_cycles) return 0x00;
+	return 0x01;
+}
 
 void rf12_txdata(uint8_t data, unsigned char number)
 {	unsigned char i;
@@ -119,29 +128,32 @@ uint8_t rf12_rxdata()
 	rf12_trans(0xCA83);			// enable FIFO
 	rf12_ready();
 	i = (rf12_trans(0xB000)); 
-	printf("%c", i);
+#ifdef RFM_DEBUG
+	printf("RFM12\treceived char: '%c'\r\n", i);
+#endif
 	rf12_trans(0x8208);			// RX off
 	return i;
 }
 
 /* @note return values > 0xff == data received
  */
-uint16_t rf12_rxdata_nb()
+
+uint16_t rf12_rxdata_nb(uint16_t in_waitcycles)
 {
 	uint8_t i;
-	cbi(RF_PORT, CS);
-	for (i=0;i<0xff && (RF_PIN&(1<<SDO));i++) asm volatile ("nop");
-	if (i == 0xff)
-	{
-		return 0x0000;
-		sbi(RF_PORT, CS);
-	}
 	rf12_trans(0x82C8);			// RX on
 	rf12_trans(0xCA81);			// set FIFO mode
 	rf12_trans(0xCA83);			// enable FIFO
-	rf12_ready();
+	if (!rf12_ready_wait(in_waitcycles))
+	{
+		rf12_trans(0x8208);			// RX off
+		return 0x0000;
+	}
+
 	i = (rf12_trans(0xB000)); 
-	rf12_trans(0x8208);
-	printf("%c", i);
-	return (0xff00 & (i & 0x00ff));
+#ifdef RFM_DEBUG
+	printf("RFM12\treceived char: '%c'\r\n", i);
+#endif
+	rf12_trans(0x8208);			// RX off
+	return (0xff00 | i);
 }
