@@ -25,7 +25,7 @@
 #define REQUEST_DELETE_ADMIN 0xa0
 
 //requests that need permissions from 2 admins:
-#defone REQUEST_MAKE_ADMIN 0xb0
+#define REQUEST_MAKE_ADMIN 0xb0
 
 
 
@@ -57,7 +57,7 @@ typedef struct{
 }request_auth_t; //type + 10 bytes
 
 //flags in permissions
-#define PERM_ADMIN 0x01;
+#define PERM_ADMIN 0x01
 #define PERM_DOOR_DOWNSTAIRS 0x02
 #define PERM_DOOR_UPSTAIRS 0x04
 

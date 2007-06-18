@@ -34,6 +34,7 @@ uint8_t database_check(uint16_t id, uint8_t * token){
 	
 	if((state != DB_STATE_VALID) && (state != DB_STATE_DEACTIVATED)){
 		return RESULT_DENIED;
+	}
 		
 	i2cEeRead(tmpbuf, db[id].token, 8);
 	if( memcmp(tmpbuf, token, 8) != 0)
@@ -84,8 +85,8 @@ uint16_t database_new_entry(uint8_t permissions, char * nickname, char * realnam
 		permissions &= ~PERM_ADMIN;
 		i2cEeWrite(&db[id].permissions, &permissions, 1);
 		
-		i2cEeWrite(db[id].nickname, nickname, 8);
-		i2cEeWrite(db[id].realname, realname, 32);
+		i2cEeWrite((uint8_t *)db[id].nickname, (uint8_t *)nickname, 8);
+		i2cEeWrite((uint8_t *)db[id].realname, (uint8_t *)realname, 32);
 				
 		return id;
 	}

@@ -112,7 +112,7 @@ uint8_t simple_request(uint8_t type){
 	return result;
 }
 
-uint8_t card_read_credentials(request_cred_t * request){
+uint8_t card_read_credentials(request_auth_t * request){
 	if(! i2cEeDetect())
 		return 1;
 	
@@ -216,7 +216,7 @@ uint8_t admin_menu(){
 }
 
 void handle_card_inserted(){
-		request_cred_t request;
+		request_auth_t request;
 		reply_auth_t reply;
 		char * errorstring;
 
@@ -261,7 +261,7 @@ void handle_card_inserted(){
 		AvrXDelay(&client_timer, 1000);
 					
 		if(key_is_pressed(KEY_ADMIN)){
-			if(reply.flags & FLAG_ADMIN){
+			if(reply.permissions & PERM_ADMIN){
 				admin_menu();
 			}else{
 				errorstring = PSTR("\r" "no  admin");

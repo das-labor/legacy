@@ -53,7 +53,7 @@ AVRX_GCC_TASKDEF(server1, 200, 4)
 			}
 			case REQUEST_AUTH:{
 				reply_auth_t reply;
-				request_cred_t * req_cred = (request_cred_t*) &req;
+				request_auth_t * req_cred = (request_auth_t*) &req;
 				uint8_t result;
 				uint16_t id = req_cred->card_id;
 				
@@ -93,7 +93,7 @@ AVRX_GCC_TASKDEF(server1, 200, 4)
 				break;
 			}	
 			case REQUEST_RESET:
-				admin_num = 0
+				admin_num = 0;
 				session_perm = 0;
 				send_simple_reply(RESULT_OK);
 				break;
