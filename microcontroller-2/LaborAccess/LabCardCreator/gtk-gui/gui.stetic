@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
-  <widget class="Gtk.Window" id="MainWindow" design-size="516 304">
+  <widget class="Gtk.Window" id="LabCardCreator.MainWindow" design-size="516 270">
     <action-group name="Default">
       <action id="CardCreator">
         <property name="ShortLabel">_CardCreator</property>
@@ -35,6 +35,7 @@
       </action>
       <action id="DisconnectCardTerminal">
         <property name="ShortLabel">Disconnect Card Terminal</property>
+        <property name="Sensitive">False</property>
         <property name="Label">Disconnect Card Terminal</property>
         <property name="Type">Action</property>
         <property name="StockId">gtk-disconnect</property>
@@ -132,6 +133,7 @@
                     <property name="CanFocus">True</property>
                     <property name="Events">0</property>
                     <property name="MemberName">door0Check</property>
+                    <property name="Sensitive">False</property>
                   </widget>
                   <packing>
                     <property name="Position">1</property>
@@ -147,6 +149,7 @@
                     <property name="CanFocus">True</property>
                     <property name="Events">0</property>
                     <property name="MemberName">door1Check</property>
+                    <property name="Sensitive">False</property>
                   </widget>
                   <packing>
                     <property name="Position">2</property>
@@ -267,6 +270,7 @@
                 <property name="CanFocus">True</property>
                 <property name="Events">0</property>
                 <property name="MemberName">nickEntry</property>
+                <property name="Sensitive">False</property>
               </widget>
               <packing>
                 <property name="LeftAttach">1</property>
@@ -288,6 +292,7 @@
                 <property name="CanFocus">True</property>
                 <property name="Events">0</property>
                 <property name="MemberName">nameEntry</property>
+                <property name="Sensitive">False</property>
               </widget>
               <packing>
                 <property name="BottomAttach">2</property>
@@ -341,7 +346,7 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Statusbar" id="statusbar1">
+          <widget class="Gtk.Statusbar" id="Statusbar">
             <property name="HasResizeGrip">False</property>
             <property name="Events">0</property>
             <property name="MemberName" />
@@ -390,7 +395,7 @@
                     <property name="Events">0</property>
                     <property name="MemberName" />
                     <child>
-                      <widget class="Gtk.Button" id="writeBtn">
+                      <widget class="Gtk.Button" id="writeButton">
                         <property name="Type">TextAndIcon</property>
                         <property name="Icon">stock:stock_creditcard Menu</property>
                         <property name="Label">_Write to card</property>
@@ -399,6 +404,7 @@
                         <property name="CanFocus">True</property>
                         <property name="Events">0</property>
                         <property name="MemberName" />
+                        <property name="Sensitive">False</property>
                         <property name="HasDefault">True</property>
                         <property name="CanDefault">True</property>
                         <signal name="Clicked" handler="OnWriteBtnClicked" />
@@ -425,6 +431,157 @@
             <property name="PackType">End</property>
             <property name="Position">3</property>
             <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="Gtk.Dialog" id="LabCardCreator.EraseDialog" design-size="458 161">
+    <property name="Title" translatable="yes">Erase card...</property>
+    <property name="Buttons">2</property>
+    <property name="HelpButton">False</property>
+    <property name="WindowPosition">CenterOnParent</property>
+    <property name="HasSeparator">False</property>
+    <property name="Events">ButtonPressMask</property>
+    <property name="MemberName" />
+    <property name="HasDefault">True</property>
+    <property name="CanDefault">True</property>
+    <child internal-child="VBox">
+      <widget class="Gtk.VBox" id="dialog_VBox">
+        <property name="BorderWidth">2</property>
+        <property name="Events">ButtonPressMask</property>
+        <property name="MemberName" />
+        <child>
+          <widget class="Gtk.VBox" id="vbox1">
+            <property name="Events">0</property>
+            <property name="MemberName" />
+            <child>
+              <widget class="Gtk.HBox" id="hbox1">
+                <property name="Events">0</property>
+                <property name="MemberName" />
+                <child>
+                  <widget class="Gtk.Image" id="image3">
+                    <property name="Pixbuf">stock:gtk-dialog-warning Dialog</property>
+                    <property name="Events">0</property>
+                    <property name="MemberName" />
+                    <property name="WidthRequest">70</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">False</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Label" id="MsgLabel">
+                    <property name="LabelProp" translatable="yes" context="yes" comments="">|&lt;b&gt;Delete card content and format as Labor Card?&lt;/b&gt;</property>
+                    <property name="UseMarkup">True</property>
+                    <property name="Justify">Center</property>
+                    <property name="Events">0</property>
+                    <property name="MemberName" />
+                  </widget>
+                  <packing>
+                    <property name="Position">1</property>
+                    <property name="AutoSize">False</property>
+                    <property name="Padding">10</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">False</property>
+                <property name="Expand">False</property>
+                <property name="Padding">10</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Expander" id="ContentExpander">
+                <property name="CanFocus">True</property>
+                <property name="Tooltip" translatable="yes" context="yes" comments="">|Show hexdump of card content</property>
+                <property name="Events">0</property>
+                <property name="MemberName">ContentExpander</property>
+                <signal name="Activated" handler="OnExpander" />
+                <child>
+                  <widget class="Gtk.TextView" id="ContentView">
+                    <property name="Text" />
+                    <property name="CursorVisible">False</property>
+                    <property name="Editable">False</property>
+                    <property name="AcceptsTab">False</property>
+                    <property name="CanFocus">True</property>
+                    <property name="Events">0</property>
+                    <property name="MemberName" />
+                  </widget>
+                </child>
+                <child>
+                  <widget class="Gtk.Label" id="GtkLabel">
+                    <property name="LabelProp" translatable="yes" comments="">Show detailed card content</property>
+                    <property name="UseUnderline">True</property>
+                    <property name="Events">0</property>
+                    <property name="MemberName" />
+                  </widget>
+                  <packing>
+                    <property name="type">label_item</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">True</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+    <child internal-child="ActionArea">
+      <widget class="Gtk.HButtonBox" id="LabCardCreator.EraseDialog_ActionArea">
+        <property name="Size">2</property>
+        <property name="LayoutStyle">End</property>
+        <property name="Spacing">6</property>
+        <property name="BorderWidth">5</property>
+        <property name="Events">ButtonPressMask</property>
+        <property name="MemberName" />
+        <child>
+          <widget class="Gtk.Button" id="CancelButton">
+            <property name="UseStock">True</property>
+            <property name="Type">StockItem</property>
+            <property name="StockId">gtk-cancel</property>
+            <property name="IsDialogButton">True</property>
+            <property name="ResponseId">-2</property>
+            <property name="CanFocus">True</property>
+            <property name="Events">0</property>
+            <property name="MemberName">CancelButton</property>
+            <property name="HasDefault">True</property>
+            <property name="CanDefault">True</property>
+            <property name="label">gtk-cancel</property>
+          </widget>
+          <packing>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Button" id="DeleteButton">
+            <property name="UseStock">True</property>
+            <property name="Type">StockItem</property>
+            <property name="StockId">gtk-delete</property>
+            <property name="IsDialogButton">True</property>
+            <property name="ResponseId">-3</property>
+            <property name="CanFocus">True</property>
+            <property name="Events">0</property>
+            <property name="MemberName">DeleteButton</property>
+            <property name="CanDefault">True</property>
+            <property name="label">gtk-delete</property>
+          </widget>
+          <packing>
+            <property name="Position">1</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
