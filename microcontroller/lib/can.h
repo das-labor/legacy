@@ -1,5 +1,6 @@
 #ifndef CAN_H
 #define CAN_H
+#include <inttypes.h>
 
 /*****************************************************************************
  * Simple CAN Library
@@ -16,7 +17,7 @@
 
 typedef unsigned char can_addr;
 typedef unsigned char can_port;
-typedef uint16_t can_channel_t;
+typedef unsigned char can_channel_t;
 
 typedef struct
 {
