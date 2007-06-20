@@ -1,10 +1,10 @@
 #include "spike_hw.h"
 
-void writeint(uint32_t val)
+inline void writeint(uint32_t val)
 {
 	uint32_t i, digit;
 
-	for(i=0; i<8; i++) {
+	for (i=0; i<8; i++) {
 		digit = (val & 0xf0000000) >> 28;
 		if (digit >= 0xA) 
 			uart_putchar('A'+digit-10);
@@ -24,27 +24,47 @@ void test() {
     uart_putchar('a');
 } 
 
+char glob[] = "Dies ist ein globaler String ";
+
 void main()
 {
-	// Initialize stuff
+    char test[] = "Dies ist ein lokaler String ";
+    char *str = test;
+    
+    test[0] = 'd';
+    glob[0] = 'd';
+    
+ 	// Initialize stuff
 	uart_init();
 	
-	writeint(getsp());
-	uart_putchar(' ');
-	writeint(getra());
-	uart_putchar(' ');
-	writeint(getr0());
+	for (;*str; str++) {
+	   uart_putchar(*str);
+	}
 	
+	str = glob;
+	for (;*str; str++) {
+	   uart_putchar(*str);
+	}
+	//uart_putstr(test);
+	
+	writeint(get_cfg());
+	uart_putchar(' ');
+
+	writeint(*((uint32_t *) get_sp()+1));
+	uart_putchar(' ');
+	//writeint(getra());
+		
+    uart_putchar(' ');
+
 	//irq_enable();
-	test();
-
-	writeint(getsp());
+	//test();
+    //setra(0xB0000000);
+	//writeint(getra());
+	
 	uart_putchar(' ');
-	writeint(getra());
-	uart_putchar(' ');
-	writeint(getr0());
+	//writeint(getra());
 
-	uart_putstr("Hello World\r\n");
+	uart_putstr("\r\nHello World !!! \r\n");
 	while (1) { // echo test
 	   uart_putchar(uart_getchar());
 	}

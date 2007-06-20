@@ -81,7 +81,7 @@
 //`timescale 1ns/10ps
 module uart_core
       #(parameter CLK_IN_MHZ = 25,
-        parameter BAUD_RATE  = 115200,
+        parameter BAUD_RATE  = 57600,
         parameter ADDRWIDTH = 5,
         parameter DATAWIDTH = 8
        )

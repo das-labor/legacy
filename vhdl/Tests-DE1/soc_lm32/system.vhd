@@ -193,25 +193,25 @@ component wb_timer is
       wb_irq1_o: out std_logic );
 end component wb_timer;
 
-component wb_uart is
+component uart_core is
 	port (
 		clk        : in  std_logic;
 		reset      : in  std_logic;
 		-- Wishbone slave
-		wb_adr_i   : in  std_logic_vector(31 downto 0);
-		wb_dat_i   : in  std_logic_vector(31 downto 0);
-		wb_dat_o   : out std_logic_vector(31 downto 0);
-		wb_sel_i   : in  std_logic_vector( 3 downto 0);
-		wb_cyc_i   : in  std_logic;
-		wb_stb_i   : in  std_logic;
-		wb_ack_o   : out std_logic;
-		wb_we_i    : in  std_logic;
-		wb_rxirq_o : out std_logic;
-		wb_txirq_o : out std_logic;
-		-- Serial I/O ports
-		uart_rx    : in  std_logic;
-		uart_tx    : out std_logic);
-end component wb_uart;
+		UART_ADR_I : in  std_logic_vector(31 downto 0);
+		UART_DAT_I : in  std_logic_vector(31 downto 0);
+		UART_DAT_O : out std_logic_vector(31 downto 0);
+		UART_SEL_I : in  std_logic_vector( 3 downto 0);
+		UART_STB_I : in  std_logic;
+		UART_CYC_I : in  std_logic;
+		UART_ACK_O : out std_logic;
+		UART_WE_I  : in  std_logic;
+		INTR	   : out std_logic;
+		TXRDY_N    : out std_logic;
+		
+		SIN        : in  std_logic;
+		SOUT       : out std_logic);
+end component uart_core;
 
 component asram_top is
 	port(
@@ -435,24 +435,24 @@ bram0: wb_bram
 	 
 		);
 		
-uart0: wb_uart
+uart0: uart_core
 	Port map (
 			clk       => clk,
 			reset     => reset,
 			--
-			wb_adr_i  => uart0_adr_i,
-			wb_dat_o  => uart0_dat_o,
-			wb_dat_i  => uart0_dat_i,
-			wb_sel_i  => uart0_sel_i,
-			wb_stb_i  => uart0_stb_i,
-			wb_cyc_i  => uart0_cyc_i,
-			wb_ack_o  => uart0_ack_o,
-			wb_we_i   => uart0_we_i,
-			wb_rxirq_o=> uart0_irq_rx,
-			wb_txirq_o=> uart0_irq_tx,			
+			UART_ADR_I => uart0_adr_i,
+			UART_DAT_I => uart0_dat_i,
+			UART_DAT_O => uart0_dat_o,
+			UART_SEL_I => uart0_sel_i,
+			UART_STB_I => uart0_stb_i,
+			UART_CYC_I => uart0_cyc_i,
+			UART_ACK_O => uart0_ack_o,
+			UART_WE_I  => uart0_we_i,
+			INTR	   => uart0_irq_rx,
+			TXRDY_N    => uart0_irq_tx,			
 			--
-			uart_rx   => uart_rx,
-			uart_tx   => uart_tx
+			SIN        => uart_rx,
+			SOUT       => uart_tx
 	);
 
 sram0: asram_top

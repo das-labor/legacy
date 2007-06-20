@@ -16,19 +16,17 @@ uploadFile = File.open(ARGV[1], "r")
 puts "File loaded." if uploadFile
 puts upFileSize
 begin
-    sramSize = 0x00040000
     waitTime = 5    
     
-    puts "Spike Uploade Tool"
+    puts "Spike Upload Tool"
     ch = 0;
     # warte auf Eingabe
+    sp.putc 'r'
     begin
         putc  (ch = sp.getc)
     end while ch != 62
         
     puts "Spike bootloader found"
-    
-    STDIN.getc
     error = 0
     puts "tansmitting"
     uploadFile.each_line do |line|
@@ -42,9 +40,9 @@ begin
                     putc '.'
                     sp.putc b
                 end   
-                c1   = sp.getc
-                c2   = sp.getc  
-                c    = sprintf("%c%c", c1, c2)
+                c1 = sp.getc
+                c2 = sp.getc  
+                c  = sprintf("%c%c", c1, c2)
                 if error > 3
                     puts "checksum error"
                     break
@@ -60,74 +58,25 @@ begin
         end
     end	
     		
-=begin	
-	sp.printf("uB0000000")
-	#tty.puts "(B0000000)"
-	wait(waitTime)
-	sp.printf("%08X", upFileSize)
-	#tty.printf("(%08X)", upFileSize)
-	wait(waitTime)
-	i = 0
-	uploadFile.each_byte do |b|
-		checksum += b
-		sp.printf("%02X", b)
-		#tty.printf("(%02X)", b)
-		wait(waitTime/4)
-		i += 1
-	end
-=end
-    	
-    STDIN.getc
-        	
     sp.printf("vB0000000");
     wait(waitTime)
-    sp.printf("B0000400")
+    sp.printf("B0000500")
     wait(waitTime)
     begin
         putc (ch = sp.getc)
     end while ch != 62    #tty.puts "Checksum"
-    STDIN.getc
+    #STDIN.getc
     
-    #tty.puts((checksum & 0xff).to_s)
     wait(waitTime)
     puts "Run"
     sp.printf("gB0000000")
     puts "Complete"
-   begin
+    begin
         putc (ch = sp.getc)
     end while ch != 62   
-    
-=begin
-tty.getc
-sp.printf("uB0000000")
-tty.puts "(B0000000)"
-wait(waitTime)
-sp.printf("%08X", sramSize)
-tty.printf("(%08X)", sramSize)
-wait(waitTime)
-sramSize.times do
-    sp.printf("00")
-    wait(waitTime/4) 
-end
-=end
-	
-=begin
-open("/dev/tty", "r+") { |tty|
-    tty.sync = true
-    Thread.new {
-    while true do
-        tty.printf("%c", sp.getc)
-    end
-    }
-    while (l = tty.gets) do
-    sp.write(l.sub("\n", "\r"))
-    end
-}
-=end
-
+   
 ensure 
     uploadFile.close unless uploadFile.nil?
     sp.close unless sp.nil?
-     
-    puts "Serialport closed"
+    puts "\n\rSerialport closed"
 end

@@ -30,8 +30,8 @@
 /* Exception handlers - Must be 32 bytes long. */
         .section    .text, "ax", @progbits        
         .global     _start  
-		.global     irq_enable, irq_disable, irq_mask, jump, halt, getra, getsp
-		.global     getr0
+		.global     irq_enable, irq_disable, irq_mask, jump, halt
+		.global     get_sp, get_r0, get_gp, get_cfg, get_cycles
 _start:    
 _reset_handler:
 	xor     r0, r0, r0
@@ -51,9 +51,10 @@ _crt0:
 	mvhi    sp, hi(_fstack)
 	ori     sp, sp, lo(_fstack)
 	addi    sp, sp, -4
+	mv      fp, sp
 	mvhi    gp, hi(_gp)
 	ori     gp, gp, lo(_gp)
-
+	
 	mvi     r1, 0
 	mvi     r2, 0
 	mvi     r3, 0
@@ -66,7 +67,6 @@ irq_enable:
 	ret
 
 irq_mask:
-	mvi     r1, 0x0000000f
 	wcsr	IM, r1
 	ret
 	
@@ -78,18 +78,26 @@ irq_disable:
 jump:
 	b       r1 
 
-getsp:
+get_sp:
     mv      r1, sp
     ret
-    
-getra:
-    mv      r1, ra
-    ret    
 
-getr0:
+get_gp:
+    mv      r1, gp
+    ret       
+
+get_r0:
     mv      r1, r0
     ret
 
+get_cfg:
+    rcsr    r1, CFG
+    ret
+    
+get_cycles:
+    rcsr    r1, CFG
+    ret
+   
 halt:
 	bi halt
 

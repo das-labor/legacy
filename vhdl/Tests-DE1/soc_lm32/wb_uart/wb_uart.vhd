@@ -163,7 +163,7 @@ begin
 			activeLast <= '0';	
 		end if;
 		
-		if (active='1' or ack='1') and wb_we_i='1' then    
+		if active='1' and wb_we_i='1' then    
 			if wb_adr_i(3 downto 0)=x"0" then     -- write to status register
 				tx_irqen <= wb_dat_i(3);
 				rx_irqen <= wb_dat_i(2);
