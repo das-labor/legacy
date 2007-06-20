@@ -11,14 +11,18 @@ typedef signed   int   int32_t;
 typedef unsigned char  uint8_t;
 typedef signed   char   int8_t;
 
-void irq_enable();
-void irq_disable();
-void irq_mask();
-void halt();
-void jump(uint32_t addr);
-uint32_t getra();
-uint32_t getr0();
-uint32_t getsp();
+// Assembler-Helper-Functions
+extern void irq_enable();
+extern void irq_disable();
+extern void irq_mask();
+extern void halt();
+extern void jump(uint32_t addr);
+extern uint32_t get_r0();
+extern uint32_t get_sp();
+extern uint32_t get_gp();
+extern uint32_t get_cfg();
+extern uint32_t get_cycles();
+
 
 void sleep();
 void tic_init();

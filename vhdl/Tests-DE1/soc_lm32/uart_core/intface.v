@@ -280,8 +280,8 @@
 `define INTFACE_FILE
 
 
-module intface #(parameter CLK_IN_MHZ = 16,
-                 parameter BAUD_RATE = 115200,
+module intface #(parameter CLK_IN_MHZ = 25,
+                 parameter BAUD_RATE = 57600,
                  parameter ADDRWIDTH = 5,
                  parameter DATAWIDTH = 8) 
        (
