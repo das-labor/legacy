@@ -54,8 +54,13 @@ can_message * can_buffer_get()
 	return (can_message*)malloc(sizeof(can_message));
 }
 
+can_message_raw * can_buffer_get_raw()
+{
+	return (can_message_raw*)malloc(sizeof(can_message_raw));
+}
+
 //transmit a can message
-void can_transmit(can_message *cmsg)
+void can_transmit_raw (can_message_raw *cmsg)
 {
 	rs232can_msg rmsg;
 
@@ -69,35 +74,36 @@ void can_transmit(can_message *cmsg)
 	free(cmsg);
 }
 
+void can_transmit(can_message *cmsg)
+{
+	can_message_raw *newmsg;
+
+	newmsg = malloc(sizeof(can_message_raw));
+
+	newmsg->id = ((cmsg->port_src & 0x3f) << 23) | ((cmsg->port_dst & 0x30) << 17) |
+		((cmsg->port_dst & 0x0f) << 16) | (cmsg->addr_src << 8) | (cmsg->addr_dst);
+	newmsg->dlc = cmsg->dlc;
+	memcpy(newmsg->data, cmsg->data, 8);
+
+	can_transmit_raw (newmsg);
+
+	free(cmsg);
+}
+
 /****************************************************************************
  * reciving
  */
 
 // XXX must free messages
 	
-//returns next can message, or 0 if no Message was received.
-can_message * can_get_nb(){
-	rs232can_msg *rmsg;
-	can_message  *cmsg;
-
-	if (conn)
-		rmsg = cann_get_nb(conn);
-	else
-		rmsg = canu_get_nb();
-
-	if (!rmsg) return 0;
-
-	cmsg = can_buffer_get();
-	rs232can_rs2can(cmsg, rmsg);
-
-	return cmsg;
-
-}
-
 //returns next can message
-can_message * can_get(){
+can_message * can_get_nb ()
+{
 	rs232can_msg *rmsg;
-	can_message  *cmsg;
+	can_message_raw  *cmsg;
+	can_message *retmsg;
+
+	retmsg = malloc(sizeof(can_message));
 
 	if (conn)
 		rmsg = cann_get(conn);
@@ -106,11 +112,45 @@ can_message * can_get(){
 
 	if (!rmsg) return 0;
 
-	cmsg = can_buffer_get();
+
+	cmsg = can_buffer_get_raw();
+	rs232can_rs2can(cmsg, rmsg);
+
+	retmsg->addr_src = (uint8_t) (cmsg->id >> 8);
+	retmsg->addr_dst = (uint8_t) (cmsg->id);
+	retmsg->port_src = (uint8_t) ((cmsg->id >> 23) & 0x3f);
+	retmsg->port_dst = (uint8_t) (((cmsg->id >> 16) & 0x0f) | ((cmsg->id >> 17) & 0x30));
+	retmsg->dlc = cmsg->dlc;
+	memcpy(retmsg->data, cmsg->data, 8);
+
+
+	free (cmsg);
+	return retmsg;
+}
+can_message *can_get ()
+{
+	return can_get_nb();
+}
+
+//returns next can message, or 0 if no Message was received.
+can_message_raw * can_get_raw_nb(){
+	rs232can_msg *rmsg;
+	can_message_raw  *cmsg;
+
+	if (conn)
+		rmsg = cann_get_nb(conn);
+	else
+		rmsg = canu_get_nb();
+
+	if (!rmsg) return 0;
+
+	cmsg = can_buffer_get_raw();
 	rs232can_rs2can(cmsg, rmsg);
 
 	return cmsg;
+
 }
+
 
 void can_free(can_message *msg){
 	free(msg);
