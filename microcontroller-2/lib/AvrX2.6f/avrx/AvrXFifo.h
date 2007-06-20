@@ -1,6 +1,7 @@
 #ifndef _AvrXFifo_h_
 #define _AvrXFifo_h_
 #include "avrx.h"
+#include "stdint.h"
 /*
     Buffered BYTE oriented FIFO
 
