@@ -24,7 +24,7 @@ typedef struct {
 
 
 //void rs232can_setmode(can_mode_t mode);
-void rs232can_rs2can(can_message *cmsg, rs232can_msg *rmsg);
-void rs232can_can2rs(rs232can_msg *rmsg, can_message *cmsg);
+void rs232can_rs2can(can_message_raw *cmsg, rs232can_msg *rmsg);
+void rs232can_can2rs(rs232can_msg *rmsg, can_message_raw *cmsg);
 
 #endif
