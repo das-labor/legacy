@@ -6,6 +6,7 @@
 #include "uart_sw.h"
 #include "dummy_qport.h"
 #include "i2csw.h"
+#include "xlap.h"
 
 #define TICKRATE 1000
 #define TCNT0_INIT (0xFF-F_CPU/256/TICKRATE)
@@ -36,6 +37,8 @@ int main(void)
     
 	AvrXRunTask(TCB(server1));
 	AvrXRunTask(TCB(qport));
+	AvrXRunTask(TCB(laptask));
+	
 	
 	InitSerial0(BAUD(4800));
 	InitSerial1();
