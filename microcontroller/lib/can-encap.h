@@ -7,6 +7,8 @@
  * Use with UART, TCP/IP or alike.
  */
 
+#define CAN_RAW
+
 #include "can.h"
 
 #define RS232CAN_MAXLENGTH 20

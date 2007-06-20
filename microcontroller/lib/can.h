@@ -1,6 +1,5 @@
 #ifndef CAN_H
 #define CAN_H
-#include <inttypes.h>
 
 /*****************************************************************************
  * Simple CAN Library
@@ -14,6 +13,8 @@
 /*****************************************************************************
  * Types
  */
+ 
+ #include <stdint.h>
 
 typedef unsigned char can_addr;
 typedef unsigned char can_port;
@@ -55,6 +56,7 @@ void can_setfilter();
 void can_setmode(can_mode_t);
 void can_setled(unsigned char led, unsigned char state);
 
+
 /*****************************************************************************
  * Sending
  */
@@ -78,6 +80,29 @@ can_message *can_get_nb();
   void can_free(can_message * msg);
 #endif
 
+
+/*****************************************************************************
+ * Sending
+ */
+
+can_message_raw * can_buffer_get_raw();
+void can_transmit_raw( can_message_raw *msg );
+
+
+/*****************************************************************************
+ * Receiving
+ */
+
+can_message_raw *can_get_raw();
+can_message_raw *can_get_raw_nb();
+
+// this is only needed for Interrupt driven Version
+#ifndef CAN_INTERRUPT
+// #  define can_free(m)
+  void can_free_raw(can_message_raw * msg);
+#else
+  void can_free_raw(can_message_raw * msg);
+#endif
 
 
 #endif

@@ -159,10 +159,10 @@ void message_load(can_message_x * msg){
 	spi_data(WRITE);
 	spi_data(TXB0SIDH);
 
-	spi_data((uint8_t)((uint32_t)msg->id>>21));
-	spi_data( ((uint8_t)((uint32_t)msg->id>>13) & 0xE0) | (1<<EXIDE) | ((uint8_t)((uint32_t)msg->id>>16)&0x03) );
-	spi_data((uint8_t)(msg->id>>8));
-	spi_data((uint8_t)(msg->id));
+	spi_data((uint8_t)((uint32_t)msg->msg.id>>21));
+	spi_data( ((uint8_t)((uint32_t)msg->msg.id>>13) & 0xE0) | (1<<EXIDE) | ((uint8_t)((uint32_t)msg->msg.id>>16)&0x03) );
+	spi_data((uint8_t)(msg->msg.id>>8));
+	spi_data((uint8_t)(msg->msg.id));
 	
 	spi_data(msg->msg.dlc);
 	for(x=0;x<msg->msg.dlc;x++){
@@ -188,7 +188,7 @@ void message_fetch(can_message_x * msg){
 	tmp2 = spi_data(0);
 	tmp3 = spi_data(0);
 	
-	msg->id = ((uint32_t)tmp1<<21) | ((uint32_t)((uint8_t)tmp2&0xE0)<<13) 
+	msg->msg.id = ((uint32_t)tmp1<<21) | ((uint32_t)((uint8_t)tmp2&0xE0)<<13) 
 			| ((uint32_t)((uint8_t)tmp2&0x03)<<16) | (tmp3<<8) | spi_data(0);
 	
 	msg->msg.dlc = spi_data(0) & 0x0F;	
@@ -403,7 +403,7 @@ void can_init(){
 
 #ifdef CAN_INTERRUPT
 //returns next can message in buffer, or 0 Pointer if buffer is empty
-can_message * can_get_nb(){
+can_message_raw * can_get_raw_nb(){
 	can_message_x *p;
 	if(RX_HEAD == RX_TAIL){
 		return 0;
@@ -414,7 +414,7 @@ can_message * can_get_nb(){
 	}
 }
 
-can_message * can_get(){
+can_message_raw * can_get_raw(){
 	can_message_x *p;
 
 	while(RX_HEAD == RX_TAIL) { };
@@ -427,14 +427,14 @@ can_message * can_get(){
 
 
 //marks a receive buffer as unused again so it can be overwritten in Interrupt
-void can_free(can_message * msg){
+void can_free_raw(can_message_raw * msg){
 	can_message_x * msg_x = (can_message_x *) msg;
 	msg_x->flags = 0;
 }
 
 
 //returns pointer to the next can TX buffer
-can_message * can_buffer_get(){
+can_message_raw * can_buffer_get_raw(){
 	can_message_x *p;
 	p = &TX_BUFFER[TX_HEAD];
 	while (p->flags&0x01); //wait until buffer is free
@@ -444,7 +444,7 @@ can_message * can_buffer_get(){
 
 
 //start transmitting can messages, and mark message msg as transmittable
-void can_transmit(can_message* msg2){
+void can_transmit_raw(can_message_raw* msg2){
 	can_message_x* msg=(can_message_x*) msg2;
 	if(msg){
 		msg->flags |= 0x01;
@@ -463,7 +463,7 @@ void can_transmit(can_message* msg2){
 
 can_message_x RX_MESSAGE, TX_MESSAGE;
 
-can_message * can_get_nb(){
+can_message_raw * can_get_raw_nb(){
 	//check the pin, that the MCP's Interrup output connects to
 	if(SPI_REG_PIN_MCP_INT & (1<<SPI_PIN_MCP_INT)){
 		return 0;
@@ -474,7 +474,7 @@ can_message * can_get_nb(){
 	}
 }
 
-can_message * can_get(){
+can_message_raw * can_get_raw(){
 	//wait while the MCP doesn't generate an RX Interrupt
 	while(SPI_REG_PIN_MCP_INT & (1<<SPI_PIN_MCP_INT)) { };
 	
@@ -483,15 +483,15 @@ can_message * can_get(){
 }
 
 	//only for compatibility with Interrupt driven Version
-can_message * can_buffer_get(){
+can_message_raw * can_buffer_get_raw(){
 	return &(TX_MESSAGE.msg);
 }
 
-void can_transmit(can_message * msg){
+void can_transmit_raw(can_message * msg){
 	message_load((can_message_x*)msg);
 }
 
-void can_free(can_message * msg){
+void can_free_raw(can_message_raw * msg){
 }
 
 #endif
