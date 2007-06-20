@@ -3,7 +3,6 @@
 #include <avr/interrupt.h>
 #include <stdlib.h>
 
-
 #include "config.h"
 #include "util.h"
 #include "spi.h"
@@ -17,7 +16,7 @@
 void process_rs232_msg( rs232can_msg *msg )
 {
 	can_mode_t  can_mode;
-	can_message *cmsg;
+	can_message_raw *cmsg;
 
 	switch(msg->cmd) {
 		case RS232CAN_SETFILTER:
@@ -27,14 +26,14 @@ void process_rs232_msg( rs232can_msg *msg )
 			can_setmode(can_mode);
 			break;
 		case RS232CAN_PKT:
-			cmsg = can_buffer_get();
+			cmsg = can_buffer_get_raw();
 			rs232can_rs2can(cmsg, msg);
-			can_transmit(cmsg);
+			can_transmit_raw(cmsg);
 			break;
 	}
 }
 
-void process_can_msg(can_message *msg){
+void process_can_msg(can_message_raw *msg){
 	rs232can_msg rmsg;
 
 	rs232can_can2rs(&rmsg, msg);
@@ -127,7 +126,7 @@ int main(){
 		
 	while(1) {
 		rs232can_msg *rmsg;
-		can_message  *cmsg;
+		can_message_raw  *cmsg;
 
 
 		rmsg = canu_get_nb();
@@ -137,10 +136,10 @@ int main(){
 			process_rs232_msg(rmsg);
 		}
 		
-		cmsg = can_get_nb();
+		cmsg = can_get_raw_nb();
 		if (cmsg){
 			process_can_msg(cmsg);
-			can_free(cmsg);
+			can_free_raw(cmsg);
 		}
 
 		if (can_error) {
