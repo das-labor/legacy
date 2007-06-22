@@ -151,7 +151,29 @@ can_message_raw * can_get_raw_nb(){
 
 }
 
+can_message_raw* can_v2_to_raw (can_message_v2 *in_message)
+{
+	can_message_raw *retmsg;
 
+	retmsg = malloc(sizeof(can_message_raw));
+	retmsg->id = 0x0000;
+	retmsg->id |= (((uint32_t) in_message->channel) << 20);
+	retmsg->id |= (((uint32_t) in_message->subchannel) << 18);
+	retmsg->id |= (((uint16_t) in_message->addr_src) << 8);
+	retmsg->id |= in_message->addr_dst;
+	retmsg->dlc = in_message->dlc;
+	memcpy(retmsg->data, in_message->data, 8);
+
+	return retmsg;
+}
+
+can_transmit_v2 (can_message_v2 *in_msg)
+{
+	can_message_raw *txmsg;
+
+	txmsg = can_v2_to_raw (in_msg);
+	can_transmit_raw (txmsg);
+}
 void can_free(can_message *msg){
 	free(msg);
 }

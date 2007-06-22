@@ -16,6 +16,7 @@
 #include "cmds-borg.h"
 #include "cmds-mood.h"
 #include "cmds-flash.h"
+#include "cansole.h"
 
 // Atmel ; LAP includes
 // #include "config.h"
@@ -46,6 +47,7 @@ cmd_t cmds[] = {
   { &cmd_lamp,  "lamp", "lamp <addr> <lamp> <value>" ,"set lamp on device to value"},
   { &cmd_borg,  "borg", "borg ..." ,"control bord device"},
   { &cmd_mood,  "mood", "mood ..." ,"control mood device"},
+  { &cmd_cansole, "cansole", "cansole <addr> <chan> <subchannel>", "connect to cansole at given address, channel and subchannel" },
 //  { &ftk_lampe, "lampe", "lampe ...",  "Control lampe-device" }
   { NULL, NULL, NULL, NULL }
 };
