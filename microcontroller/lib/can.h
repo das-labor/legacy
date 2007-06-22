@@ -18,7 +18,8 @@
 
 typedef unsigned char can_addr;
 typedef unsigned char can_port;
-typedef unsigned char can_channel_t;
+typedef uint16_t can_channel_t;
+typedef uint8_t can_subchannel_t;
 
 typedef struct
 {
@@ -35,6 +36,17 @@ typedef struct{
 	unsigned char dlc;
 	unsigned char data[8];
 }can_message;
+
+typedef struct
+{
+	can_channel_t    channel;
+	can_subchannel_t subchannel;
+	can_addr         addr_src;
+	can_addr         addr_dst;
+	uint8_t          dlc;
+	uint8_t          data[8];
+} can_message_v2;
+
 
 typedef enum { normal, mode_sleep, loopback, listenonly, config } can_mode_t ;
 
