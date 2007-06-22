@@ -36,8 +36,13 @@ cmd_cansole (int argc, char* argv[])
 
 	mytty = fopen ("/dev/tty", "rw");
 	fcntl(0, F_SETFL, O_NONBLOCK);
-	tmpmsg = malloc(sizeof(can_message_raw));
 	txmsg = malloc(sizeof(can_message_v2));
+
+	txmsg->channel = (uint8_t) atoi(argv[2]);
+	txmsg->subchannel = (uint8_t) atoi(argv[3]);
+	txmsg->addr_src = 0x00;
+	txmsg->addr_dst = (uint8_t) atoi (argv[1]);
+	txmsg->dlc = 1;
 
 	set_keypress();
 	printf("\n(echo test)\n");
@@ -49,12 +54,9 @@ cmd_cansole (int argc, char* argv[])
 		if (tmpchar != 0xff)
 		{
 			printf("got char: %x\n", tmpchar);
-
-			txmsg->channel = (uint8_t) atoi(argv[1]);
-			txmsg->subchannel = (uint8_t) atoi(argv[2]);
-			txmsg->addr_src = 0x00;
-			txmsg->addr_dst = (uint8_t) atoi (argv[0]);
-			can_transmit_raw (tmpmsg);
+			txmsg->data[0] = tmpchar;
+						
+			can_transmit_v2 (txmsg);
 		}
 
 		usleep (100);
