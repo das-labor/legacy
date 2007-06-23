@@ -9,12 +9,12 @@
 #include "can.h"
 #include "../../../../microcontroller-2/cansole/client/termio.h"
 
-FILE *mytty;
+int mytty;
 
 void cansole_exit (int in_signal)
 {
         printf ("\nCansole closing...\n");
-        fclose (mytty);
+        close (mytty);
 	reset_keypress ();
         exit (in_signal);
 }
@@ -23,23 +23,23 @@ cmd_cansole (int argc, char* argv[])
 {
 	uint8_t tmpchar = 0x00;
 	can_message_raw *tmpmsg;
-	can_message_v2 *txmsg;
+	can_message_v2 *txmsg, *rxmsg;
 	
-	if (argc != 4)
+	if (argc != 3)
 	{
-		printf("ERROR: cmd_console needs 3 arguments, got %i.\n", argc-1);
+		printf("ERROR: cmd_console needs 2 arguments, got %i.\n", argc-1);
 		exit (-1);
 	}
 
 	signal (SIGINT, cansole_exit);
 	signal (SIGKILL, cansole_exit);
 
-	mytty = fopen ("/dev/tty", "rw");
-	fcntl(0, F_SETFL, O_NONBLOCK);
+	mytty = open ("/dev/tty", O_NONBLOCK | O_RDWR );
+	
 	txmsg = malloc(sizeof(can_message_v2));
 
 	txmsg->channel = (uint8_t) atoi(argv[2]);
-	txmsg->subchannel = (uint8_t) atoi(argv[3]);
+	txmsg->subchannel = 1;
 	txmsg->addr_src = 0x00;
 	txmsg->addr_dst = (uint8_t) atoi (argv[1]);
 	txmsg->dlc = 1;
@@ -47,18 +47,29 @@ cmd_cansole (int argc, char* argv[])
 	set_keypress();
 	printf("\n(echo test)\n");
 
-	while (0x17)
+	while (23)
 	{
-		tmpchar = getc(mytty);
-		printf("got char: %x\n", tmpchar);
-		if (tmpchar != 0xff)
+		ssize_t s;
+		
+		s = read(mytty, &tmpchar, 1);
+		if (s == 1)
 		{
-			printf("got char: %x\n", tmpchar);
+			//printf("got char: %x\n", tmpchar);
 			txmsg->data[0] = tmpchar;
-						
 			can_transmit_v2 (txmsg);
 		}
+		
+		rxmsg = can_get_v2_nb();
+		if(rxmsg){
+			if( (rxmsg->addr_src == txmsg->addr_dst) && (rxmsg->addr_dst == txmsg->addr_src) &&
+			  (rxmsg->channel == txmsg->channel) && (rxmsg->subchannel == 1 ) ){
+				write(mytty, rxmsg->data, rxmsg->dlc);
+			}
+		}
+		
 
-		usleep (100);
+		
+		
+		usleep (1000);
 	}
 }

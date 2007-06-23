@@ -7,5 +7,5 @@
 #include "can.h"
 #include "../../../../microcontroller-2/cansole/client/termio.h"
 
-cmd_cansole (int argc, char* argv[]);
+void cmd_cansole (int argc, char* argv[]);
 void cansole_exit (int in_signal);
