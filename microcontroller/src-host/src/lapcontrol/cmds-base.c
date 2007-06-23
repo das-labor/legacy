@@ -89,22 +89,44 @@ extern unsigned int debug_level;
 
 void cmd_dump(int argc, char *argv[]) 
 {
-	can_message *msg;
+	
+	if(argc){
+		can_message_v2 *msg;
 
-	while(1) {
-		msg = can_get();
-		
-		if (msg) {
-			time_t muh = time(0);
-			struct tm *tme = localtime(&muh);
-			printf( "%02d:%02d.%02d:  %02x:%02x -> %02x:%02x    ",
-				tme->tm_hour, tme->tm_min, tme->tm_sec,
-				msg->addr_src, msg->port_src,
-				msg->addr_dst, msg->port_dst );
-			hexdump(msg->data, msg->dlc);
-			printf("\n");
+		while(1) {
+			msg = can_get_v2_nb();
 			
-			can_free(msg);
+			if (msg) {
+				time_t muh = time(0);
+				struct tm *tme = localtime(&muh);
+				printf( "%02d:%02d.%02d:  %03x,%x:  %02x -> %02x    ",
+					tme->tm_hour, tme->tm_min, tme->tm_sec,
+					msg->channel, msg->subchannel,
+					msg->addr_src, msg->addr_dst );
+				hexdump(msg->data, msg->dlc);
+				printf("\n");
+				
+				can_free_v2(msg);
+			}
+		}
+	}else{
+		can_message *msg;
+
+		while(1) {
+			msg = can_get();
+			
+			if (msg) {
+				time_t muh = time(0);
+				struct tm *tme = localtime(&muh);
+				printf( "%02d:%02d.%02d:  %02x:%02x -> %02x:%02x    ",
+					tme->tm_hour, tme->tm_min, tme->tm_sec,
+					msg->addr_src, msg->port_src,
+					msg->addr_dst, msg->port_dst );
+				hexdump(msg->data, msg->dlc);
+				printf("\n");
+				
+				can_free(msg);
+			}
 		}
 	}
 };

@@ -127,6 +127,7 @@ can_message * can_get_nb ()
 	free (cmsg);
 	return retmsg;
 }
+
 can_message *can_get ()
 {
 	return can_get_nb();
@@ -154,12 +155,12 @@ can_message_raw * can_get_raw_nb(){
 can_message_raw* can_v2_to_raw (can_message_v2 *in_message)
 {
 	can_message_raw *retmsg;
-
 	retmsg = malloc(sizeof(can_message_raw));
 	retmsg->id = 0x0000;
-	retmsg->id |= (((uint32_t) in_message->channel) << 20);
-	retmsg->id |= (((uint32_t) in_message->subchannel) << 18);
-	retmsg->id |= (((uint16_t) in_message->addr_src) << 8);
+	
+	retmsg->id |= ((uint32_t) in_message->channel << 20);
+	retmsg->id |= ((uint32_t)in_message->subchannel << 18);
+	retmsg->id |= ((uint16_t) in_message->addr_src << 8);
 	retmsg->id |= in_message->addr_dst;
 	retmsg->dlc = in_message->dlc;
 	memcpy(retmsg->data, in_message->data, 8);
@@ -167,15 +168,52 @@ can_message_raw* can_v2_to_raw (can_message_v2 *in_message)
 	return retmsg;
 }
 
-can_transmit_v2 (can_message_v2 *in_msg)
+void can_transmit_v2 (can_message_v2 *in_msg)
 {
 	can_message_raw *txmsg;
 
 	txmsg = can_v2_to_raw (in_msg);
 	can_transmit_raw (txmsg);
 }
+
+
+can_message_v2 * can_get_v2_nb ()
+{
+	rs232can_msg *rmsg;
+	can_message_raw  *cmsg;
+	can_message_v2 *retmsg;
+
+	retmsg = malloc(sizeof(can_message_v2));
+
+	if (conn)
+		rmsg = cann_get_nb(conn);
+	else
+		rmsg = canu_get_nb();
+
+	if (!rmsg) return 0;
+
+
+	cmsg = can_buffer_get_raw();
+	rs232can_rs2can(cmsg, rmsg);
+
+	retmsg->addr_src = (uint8_t)  (cmsg->id >> 8);
+	retmsg->addr_dst = (uint8_t)  (cmsg->id);
+	retmsg->channel = (uint16_t)  ((cmsg->id >> 20) & 0x1ff);
+	retmsg->subchannel = (uint8_t)((cmsg->id >> 18 ) & 0x03);
+	retmsg->dlc = cmsg->dlc;
+	memcpy(retmsg->data, cmsg->data, 8);
+
+
+	free (cmsg);
+	return retmsg;
+}
+
+
+
 void can_free(can_message *msg){
 	free(msg);
 }
 
-
+void can_free_v2(can_message_v2 *msg){
+	free(msg);
+}
