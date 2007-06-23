@@ -23,20 +23,6 @@ typedef enum{
 	vd, c, uc, i, ui, str, ptr
 }argument_type;
 
-#ifdef CONSOLE_C
-const static char str__void[] PROGMEM = "void";
-const static char str__char[] PROGMEM = "char";
-const static char str__uchar[] PROGMEM = "uchar";
-const static char str__int[] PROGMEM = "int";
-const static char str__uint[] PROGMEM = "uint";
-const static char str__string[] PROGMEM = "string";
-const static char str__pointer[] PROGMEM = "pointer";
-
-const char * argument_type_names[] PROGMEM ={
-str__void, str__char, str__uchar, str__int, str__uint, str__string, str__pointer
-};
-#endif
-
 
 typedef struct{
 	argument_type type;
@@ -51,6 +37,7 @@ typedef struct{
 }c_function;
 #define C_FKT_P c_function * PROGMEM
 
+AVRX_EXTERNTASK(console_task);
 
 
 void console();

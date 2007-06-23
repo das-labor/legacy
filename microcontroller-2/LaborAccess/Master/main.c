@@ -1,4 +1,5 @@
 
+#include <stdio.h>
 #include <avr/io.h>
 
 #include "avrx.h"               // AvrX System calls/data structures
@@ -7,6 +8,7 @@
 #include "dummy_qport.h"
 #include "i2csw.h"
 #include "xlap.h"
+#include "console.h"
 
 #define TICKRATE 1000
 #define TCNT0_INIT (0xFF-F_CPU/256/TICKRATE)
@@ -38,6 +40,7 @@ int main(void)
 	AvrXRunTask(TCB(server1));
 	AvrXRunTask(TCB(qport));
 	AvrXRunTask(TCB(laptask));
+	AvrXRunTask(TCB(console_task));
 	
 	
 	InitSerial0(BAUD(4800));
@@ -49,7 +52,7 @@ int main(void)
 	//put_c0('h');
 	//put_c1('H');
 	
-	fdevopen(put_char1, get_char1);
+	fdevopen(stream_putc,0);
 	
 	i2cInit();
 
