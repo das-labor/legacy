@@ -117,4 +117,23 @@ can_message_raw *can_get_raw_nb();
 #endif
 
 
+
+
+/*****************************************************************************
+ * Sending
+ */
+
+void can_transmit_v2( can_message_v2 *msg );
+
+
+/*****************************************************************************
+ * Receiving
+ */
+
+can_message_v2 *can_get_v2_nb();
+
+void can_free_v2(can_message_v2 *msg);
+
+
+
 #endif
