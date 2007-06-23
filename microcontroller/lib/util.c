@@ -28,7 +28,7 @@ void wait(int ms){
 	for(;ms>0;ms--){
  		unsigned int i;
 
-		for(i=65535; i>0; i--) {
+		for(i=3000; i>0; i--) {
 			asm volatile("nop");
 		}
 	}
