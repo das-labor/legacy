@@ -3,6 +3,7 @@
 
 #include <avrx.h>
 #include <avr/interrupt.h>
+#include <AvrXFifo.h>
 
 #include "xcan.h"
 #include "../spi/spi.h"

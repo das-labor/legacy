@@ -20,17 +20,40 @@
 #define CONSOLE_C
 #include "console.h"
 #include "xlap.h"
+#include "util.h"
 
 extern const command_table main_table PROGMEM;
 
+const static char str__void[] PROGMEM = "void";
+const static char str__char[] PROGMEM = "char";
+const static char str__uchar[] PROGMEM = "uchar";
+const static char str__int[] PROGMEM = "int";
+const static char str__uint[] PROGMEM = "uint";
+const static char str__string[] PROGMEM = "string";
+const static char str__pointer[] PROGMEM = "pointer";
 
-void stdout_putc(uint8_t c){
+const char * argument_type_names[] PROGMEM ={
+str__void, str__char, str__uchar, str__int, str__uint, str__string, str__pointer
+};
+
+void stdout_putc(char c){
 	stream_putc(c);
 }
 
-void stdout_putstr_P(char * str){
-	
+void stdout_putstr_P(const char * str){
+	char c;
+	while((c = PB(*str++))){
+		stdout_putc(c);
+	}
 }
+
+void stdout_putstr(const char * str){
+	char c;
+	while((c = *str++)){
+		stdout_putc(c);
+	}
+}
+
 
 char getc_tr(){
 	char tmp;
@@ -118,7 +141,7 @@ unsigned char begin_cmp_P(char * s1, PGM_P s2){
 }
 
 //returns 0 on multiple or no results, 1 on one result
-unsigned char command_table_search(CMD_T_P tbl, unsigned char * string, unsigned char ** bufend){
+unsigned char command_table_search(CMD_T_P tbl, char * string, char ** bufend){
 	unsigned char x, found = 0;
 	unsigned char tbl_size = pgm_read_byte(&tbl->size);
 	PGM_P found_s = 0;
@@ -162,10 +185,11 @@ unsigned char command_table_search(CMD_T_P tbl, unsigned char * string, unsigned
 }
 
 
-unsigned char split(unsigned char * string, unsigned char splitchar, unsigned char * substrings[]){
+unsigned char split(char * string, char splitchar, char * substrings[]){
 	
-	unsigned char tmp, num=0;
-	unsigned char * str_start = string;
+	char tmp;
+	unsigned char num=0;
+	char * str_start = string;
 	do{
 		tmp = *string;
 		if ((tmp == splitchar) || (tmp == 0)){
@@ -186,9 +210,9 @@ enum resolve_result{r_incomplete, r_table, r_function};
 
 //searches command tree for an object fitting the "path" typed in
 //returns target and rest
-enum resolve_result resolve_command(unsigned char * cmd, unsigned char ** rest, void ** target){
-	unsigned char * args[MAX_ARGS];
-	unsigned char split_buffer[BUFFER_SIZE];
+enum resolve_result resolve_command(char * cmd, char ** rest, void ** target){
+	char * args[MAX_ARGS];
+	char split_buffer[BUFFER_SIZE];
 	strcpy(split_buffer, cmd);
 	unsigned char argnum = split(split_buffer, ' ', args);
 	const command_table * PROGMEM my_table = &main_table;
@@ -226,9 +250,11 @@ enum resolve_result resolve_command(unsigned char * cmd, unsigned char ** rest, 
 	return r_table;
 }
 
-void function_do_call(int * registers, void(*call)() ){
+
+static void function_do_call(int * registers, void(*call)() ){
 asm volatile(
 	"	push	r28\n"
+	"	push	r29\n"
 	
 	"	push	r26\n"
 	"	push	r27\n"
@@ -252,18 +278,18 @@ asm volatile(
 	"	cpi	r28, 26\n"
 	"	brlo	lp2\n"
 	
+	"	pop	r29\n"
 	"	pop	r28\n"
 	:
 	:"z" (call), "x" (registers)
-	:"r29", "r25", "r24", "r23", "r22", "r21", "r20", "r19", "r18", "r17", "r15", "r14", "r13", "r12", "r10", "r9", "r8", "r7"
+	:"r25", "r24", "r23", "r22", "r21", "r20", "r19", "r18", "r17", "r15", "r14", "r13", "r12", "r10", "r9", "r8", "r7"
 	);
 }
 
 
-
 void function_call(C_FKT_P target, char * argstring){
-	unsigned char strbuffer[BUFFER_SIZE];
-	unsigned char * args[MAX_ARGS];
+	char strbuffer[BUFFER_SIZE];
+	char * args[MAX_ARGS];
 	unsigned char arg_num;
 	
 	char buf_tmp[10];
@@ -348,8 +374,8 @@ void function_call(C_FKT_P target, char * argstring){
 }
 
 
-static unsigned char history_buf[HISTORY_SIZE];
-static unsigned char * history_pos = history_buf;
+static char history_buf[HISTORY_SIZE];
+static char * history_pos = history_buf;
 
 void history_init(){
 	unsigned char x;
@@ -358,7 +384,7 @@ void history_init(){
 	}
 }
 
-void history_save(unsigned char * string){
+void history_save(char * string){
 	unsigned char tmp;
 	do{
 		*history_pos++ = tmp = *string++;
@@ -366,8 +392,8 @@ void history_save(unsigned char * string){
 	}while(tmp);
 }
 
-void history_load(unsigned char * buffer, unsigned char ** bufend, unsigned char num){
-	unsigned char * pos = history_pos;
+void history_load(char * buffer, char ** bufend, unsigned char num){
+	char * pos = history_pos;
 	unsigned char tmp;
 	unsigned char x;
 	for(x=0;x<num+1;x++){
@@ -385,12 +411,14 @@ void history_load(unsigned char * buffer, unsigned char ** bufend, unsigned char
 }
 
 
-void console(){
-	static unsigned char buffer[BUFFER_SIZE];
-	static unsigned char * buf_pos = buffer;
+AVRX_GCC_TASKDEF(console_task, 100, 5){
+	static char buffer[BUFFER_SIZE];
+	static char * buf_pos = buffer;
 	static unsigned char history_num;
 	unsigned char tmp;
-	unsigned char * rest; void * target;
+	char * rest; void * target;
+	
+	history_init();
 	
 	while(1){
 		tmp = getc_tr();
@@ -420,7 +448,7 @@ void console(){
 				case r_incomplete:
 					if((command_table_search((CMD_T_P)target, rest, &buf_pos))){
 						*buf_pos++ = ' ';
-						uart_putc (' ');
+						stdout_putc (' ');
 					}else{
 						stdout_putstr_P(PSTR(PROMPT));
 						stdout_putstr(buffer);
@@ -457,10 +485,4 @@ void console(){
 			stdout_putc (tmp);
 		}
 	}		
-}
-
-void console_init(){
-	history_init();
-	uart_init();
-
 }
