@@ -90,7 +90,7 @@ extern unsigned int debug_level;
 void cmd_dump(int argc, char *argv[]) 
 {
 	
-	if(argc){
+	if(argc>1){
 		can_message_v2 *msg;
 
 		while(1) {
@@ -108,6 +108,7 @@ void cmd_dump(int argc, char *argv[])
 				
 				can_free_v2(msg);
 			}
+			usleep(100);
 		}
 	}else{
 		can_message *msg;

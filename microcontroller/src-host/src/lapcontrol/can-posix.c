@@ -103,8 +103,6 @@ can_message * can_get_nb ()
 	can_message_raw  *cmsg;
 	can_message *retmsg;
 
-	retmsg = malloc(sizeof(can_message));
-
 	if (conn)
 		rmsg = cann_get(conn);
 	else
@@ -112,6 +110,7 @@ can_message * can_get_nb ()
 
 	if (!rmsg) return 0;
 
+	retmsg = malloc(sizeof(can_message));
 
 	cmsg = can_buffer_get_raw();
 	rs232can_rs2can(cmsg, rmsg);
@@ -183,8 +182,6 @@ can_message_v2 * can_get_v2_nb ()
 	can_message_raw  *cmsg;
 	can_message_v2 *retmsg;
 
-	retmsg = malloc(sizeof(can_message_v2));
-
 	if (conn)
 		rmsg = cann_get_nb(conn);
 	else
@@ -192,7 +189,8 @@ can_message_v2 * can_get_v2_nb ()
 
 	if (!rmsg) return 0;
 
-
+	retmsg = malloc(sizeof(can_message_v2));
+	
 	cmsg = can_buffer_get_raw();
 	rs232can_rs2can(cmsg, rmsg);
 
@@ -202,7 +200,6 @@ can_message_v2 * can_get_v2_nb ()
 	retmsg->subchannel = (uint8_t)((cmsg->id >> 18 ) & 0x03);
 	retmsg->dlc = cmsg->dlc;
 	memcpy(retmsg->data, cmsg->data, 8);
-
 
 	free (cmsg);
 	return retmsg;
