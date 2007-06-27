@@ -57,8 +57,14 @@ int main (void){
 			break;
 		case 8:
 			random_bright(200);
+			break;
+		case 9:
+			if ((random8() % 6) == (random8() % 6))
+			{
+				scrolltext("</#All Your Base Are Belong To Us!!");
+			}
 			mode = 1;
-			break;	
+			break;
 		case 31:
 			test_level1();
 			break;
