@@ -3,6 +3,7 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <stdio.h>
+#include <stdlibh.h>
 
 #include "config.h"
 #include "scrolltext.h"
@@ -31,10 +32,10 @@ int main (void){
 	for(;;){
 		switch(mode++) {
 		case 1:
-			scrolltext(scrolltext_text);
-			{   char a[34]; 
-				sprintf_P(a,PSTR("</# counter == %lu "), percnt_get());
-				scrolltext(a);
+			scrolltext((unsigned char*)scrolltext_text);
+			{   char a[40]; 
+				sprintf_P(a,PSTR("</# counter == %lu    (%s - %s)"), percnt_get(), __DATE__, __TIME__);
+				scrolltext((unsigned char*)a);
 			}
 			break;
 		case 2:
@@ -61,7 +62,7 @@ int main (void){
 		case 9:
 			if ((random8() % 6) == (random8() % 6))
 			{
-				scrolltext("</#All Your Base Are Belong To Us!!");
+				scrolltext((unsigned char*)"</#All Your Base Are Belong To Us!!");
 			}
 			mode = 1;
 			break;
