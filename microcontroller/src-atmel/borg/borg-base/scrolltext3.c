@@ -136,7 +136,7 @@ void showBlob(blob_t * blob){
 unsigned int getLen(blob_t *blob) {
 	unsigned char glyph;
 	unsigned int strLen = 0;
-	unsigned char * str = blob->str;
+	unsigned char * str = (unsigned char*)blob->str;
 	uint8_t space = blob->space * blob->font_storebytes;
 	
 	while ((glyph = *str++)) {
@@ -291,18 +291,18 @@ blob_t * setupBlob(unsigned char * str){
 	blob_t *blob = malloc(sizeof (blob_t));
 	
 	if(!chop_cnt){
-		blob->commands = strtok_r (str, delim, &last);
+		blob->commands = strtok_r ((char*)str, delim, &last);
 		if( blob->commands == 0) goto fail;
 		
 		if((tmp = getnum(blob)) != 0xFFFF){
 			chop_cnt = tmp;
-			lastcommands = blob->commands;
+			lastcommands = (unsigned char*)blob->commands;
 		}
 	}
 	
 	if(chop_cnt){
 		chop_cnt--;
-		blob->commands = lastcommands;
+		blob->commands = (char*)lastcommands;
 	}
 	
 	blob->str = strtok_r (0, delim, &last);
@@ -313,7 +313,7 @@ blob_t * setupBlob(unsigned char * str){
 	blob->fontData = fonts[0].fontData;
 	blob->font_storebytes = fonts[0].storebytes;
 	
-	unsigned char tmp1, *strg = blob->str;
+	unsigned char tmp1, *strg = (unsigned char*)blob->str;
 	unsigned char glyph_beg = fonts[0].glyph_beg;
 	unsigned char glyph_end = fonts[0].glyph_end;
 

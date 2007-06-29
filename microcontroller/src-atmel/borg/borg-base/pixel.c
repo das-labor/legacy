@@ -74,6 +74,9 @@ unsigned char get_next_pixel(pixel p, direction dir){
 		case up:
 			tmp = (pixel){p.x, p.y-1};
 			break;
+		default:
+			tmp = p;
+			break;
 	}
 	return get_pixel(tmp);
 }
