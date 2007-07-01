@@ -109,34 +109,41 @@ void message_fetch(){
 
 
 // *********************** Interrupt handler  **********************************
-AVRX_SIGINT(SIG_INTERRUPT0)
+AVRX_SIGINT(CAN_INTERRUPT_VECTOR)
 {
 	IntProlog();             // Switch to kernel stack/context
-	GICR &= ~(1<<INT0);
+//	CAN_INTERRUPT_DISABLE();
 	EndCritical();
-	unsigned char status = mcp_status();
 
-	if ( status & 0x01 ) {	// Message in RX0
-		mcp_bitmod(CANINTE, (1<<RX0IE), 0x00); //disable interrupt
-		AvrXIntSetSemaphore(&rx_mutex);
-	} else if ( status & 0x08 ) {	// TX0 empty
-		if (tx_fifo.in == tx_fifo.out)	// tx_fifo is Empty
-		{
-			mcp_bitmod(CANINTE, (1<<TX0IE), 0x00); //disable interrupt
+	while((CAN_INTERRUPT_PIN & (1<<CAN_INTERRUPT_BIT)) == 0){
+		unsigned char status = mcp_status();
+		
+		if ( status & 0x01 ) {	// Message in RX0
+			
+			mcp_bitmod(CANINTE, (1<<RX0IE), 0x00); //disable interrupt
+			AvrXIntSetSemaphore(&rx_mutex);
 		}
-		else
-		{
-			//Pull can message from fifo and transmit it
-			message_load (&tx_fifo.buf[tx_fifo.out]);
-			uint8_t t = tx_fifo.out+1;
-			if (t >= tx_fifo.size)
-				t = 0;
-			tx_fifo.out = t;
-			mcp_bitmod(CANINTF, (1<<TX0IF), 0x00); //clear interrupt condition
-			AvrXIntSetSemaphore(&tx_mutex); //Signal were ready for new messages
+		
+		if ( status & 0x08 ) {	// TX0 empty			
+			if (tx_fifo.out == tx_fifo.in)	// tx_fifo is Empty
+			{
+				mcp_bitmod(CANINTE, (1<<TX0IE), 0x00); //disable interrupt
+			}
+			else
+			{
+			
+				//Pull can message from fifo and transmit it
+				message_load (&tx_fifo.buf[tx_fifo.out]);
+				uint8_t t = tx_fifo.out+1;
+				if (t >= tx_fifo.size)
+					t = 0;
+				tx_fifo.out = t;
+				mcp_bitmod(CANINTF, (1<<TX0IF), 0x00); //clear interrupt condition
+				AvrXIntSetSemaphore(&tx_mutex); //Signal were ready for new messages
+			}
 		}
 	}
-	GICR |= (1<<INT0);
+//	CAN_INTERRUPT_ENABLE();
 	Epilog();                // Return to tasks
 }
 
@@ -244,16 +251,7 @@ void can_init(){
 	can_setfilter();
 	can_setmode(normal);
 
-#ifdef CLASSIC_ATMEL
-	//this turns on INT0 on the Atmel
-	MCUCR |=  (1<<ISC01);
-	GIMSK |= (1<<INT0);
-#else
-	//this turns on INT0 on the Atmega
-	//MCUCR |=  (1<<ISC01);
-	GICR |= (1<<INT0);
-#endif
-
+	CAN_INTERRUPT_ENABLE();
 }
 
 void can_get(){
@@ -270,9 +268,8 @@ uint16_t can_put(can_message_t * msg){
 		return FIFO_ERR;
 	memcpy (&tx_fifo.buf[tx_fifo.in], msg, sizeof(can_message_t));
 	tx_fifo.in = t;
-	//AvrXSetSemaphore(&p->Producer);
-	GICR &= ~(1<<INT0);
+	CAN_INTERRUPT_DISABLE();
 	mcp_bitmod(CANINTE, (1<<TX0IE), 0xff); //enable interrupt
-	GICR |= (1<<INT0);
+	CAN_INTERRUPT_ENABLE();
 	return FIFO_OK;
 }

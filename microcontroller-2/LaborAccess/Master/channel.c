@@ -12,9 +12,9 @@ uint8_t channel_read(uint8_t id, uint8_t * buffer, uint8_t size){
 	channel_t * chan;
 	chan = &Channels[id];
 	do{
-		printf("wait\r");
+//		printf("wait\r");
 		AvrXWaitSemaphore(&chan->mutex);
-		printf("got\r");
+//		printf("got\r");
 	}while(chan->size == 0);
 	
 	chansize = chan->size;
