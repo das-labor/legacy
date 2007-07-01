@@ -38,10 +38,10 @@ cmd_cansole (int argc, char* argv[])
 	
 	txmsg = malloc(sizeof(can_message_v2));
 
-	txmsg->channel = (uint8_t) atoi(argv[2]);
+	txmsg->channel = (uint8_t) strtol(argv[2],0,0);
 	txmsg->subchannel = 1;
 	txmsg->addr_src = 0x00;
-	txmsg->addr_dst = (uint8_t) atoi (argv[1]);
+	txmsg->addr_dst = (uint8_t) strtol (argv[1],0,0);
 	txmsg->dlc = 1;
 
 	set_keypress();
@@ -61,7 +61,7 @@ cmd_cansole (int argc, char* argv[])
 		
 		rxmsg = can_get_v2_nb();
 		if(rxmsg){
-			if( (rxmsg->addr_src == txmsg->addr_dst) && (rxmsg->addr_dst == txmsg->addr_src) &&
+			if( (rxmsg->addr_src == txmsg->addr_dst) &&
 			  (rxmsg->channel == txmsg->channel) && (rxmsg->subchannel == 1 ) ){
 				write(mytty, rxmsg->data, rxmsg->dlc);
 			}
