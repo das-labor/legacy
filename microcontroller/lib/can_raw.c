@@ -189,7 +189,7 @@ void message_fetch(can_message_x * msg){
 	tmp3 = spi_data(0);
 	
 	msg->msg.id = ((uint32_t)tmp1<<21) | ((uint32_t)((uint8_t)tmp2&0xE0)<<13) 
-			| ((uint32_t)((uint8_t)tmp2&0x03)<<16) | (tmp3<<8) | spi_data(0);
+			| ((uint32_t)((uint8_t)tmp2&0x03)<<16) | ((uint16_t)tmp3<<8) | spi_data(0);
 	
 	msg->msg.dlc = spi_data(0) & 0x0F;	
 	for(x=0;x<msg->msg.dlc;x++){
