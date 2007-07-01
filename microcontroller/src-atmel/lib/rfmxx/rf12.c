@@ -1,12 +1,9 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "global.h"
-#include "rf12.h"
-#include "config.h"
-#include "uart.h"
-
 #include <util/delay.h>
 
+#include "rf12.h"
+#include "config.h"
 
 unsigned short rf12_trans(unsigned short wert)
 {	unsigned short werti=0;
@@ -37,7 +34,7 @@ void rf12_init(void)
 	RF_DDR=(1<<SDI)|(1<<SCK)|(1<<CS);
 	RF_PORT=(1<<CS);
 
-	RFM_DDR_NIRQ &= ~(RFM_PIN_NIRQ);
+//	RFM_DDR_NIRQ &= ~(RFM_PIN_NIRQ);
 //	RFM_PORT_NIRQ |= RFM_PIN_NIRQ;
 
 	for (i=0; i<10; i++)
@@ -95,8 +92,78 @@ uint8_t rf12_ready_wait(uint16_t in_cycles)
 	return 0x01;
 }
 
-void rf12_txdata(uint8_t data, unsigned char number)
-{	unsigned char i;
+
+unsigned int crcUpdate(unsigned int crc, unsigned char serialData)
+{
+        unsigned int tmp;
+        unsigned char j;
+
+	tmp = serialData << 8;
+        for (j=0; j<8; j++)
+	{
+                if((crc^tmp) & 0x8000)
+			crc = (crc<<1) ^ 0x1021;
+                else
+			crc = crc << 1;
+                tmp = tmp << 1;
+        }
+	return crc;
+}
+
+void rf12_txarray (unsigned char *data, unsigned char number)
+{	
+	unsigned char i;
+	unsigned int crc;
+	rf12_trans(0x8238);			// TX on
+
+	rf12_ready();
+	rf12_trans(0xB8AA);
+	rf12_ready();
+	rf12_trans(0xB8AA);
+	rf12_ready();
+	rf12_trans(0xB8AA);
+	rf12_ready();
+	rf12_trans(0xB8AA);
+	rf12_ready();
+	rf12_trans(0xB82D);
+	rf12_ready();
+	rf12_trans(0xB8D4);
+	rf12_ready();
+	rf12_trans(0xB800 | number);
+
+	PORTC ^= (_BV(PC1));
+	crc = crcUpdate(0, number);
+	for (i=0; i<number; i++)
+	{	
+		rf12_ready();
+		rf12_trans(0xB800 | data[i]);
+		crc = crcUpdate(crc, data[i]);
+		printf(".");
+	}
+//	rf12_ready();
+//	rf12_trans(0xB800 | (crc & 0x00FF));
+	printf("sending crc: %4x\r\n", crc);
+//	rf12_ready();
+//	rf12_trans(0xB800 | (crc >> 8));
+	rf12_ready();
+	rf12_trans(0xB800 | '\r');
+	rf12_ready();
+	rf12_trans(0xB800 | '\n');
+	rf12_ready();
+	rf12_trans(0xB8AA);
+	rf12_ready();
+	rf12_trans(0xB8AA);
+	rf12_ready();
+
+	rf12_trans(0x8208);			// TX off
+}
+
+
+void rf12_txdata(uint8_t data)
+{	
+	unsigned char i;
+	uint8_t crc = 0;
+
 	rf12_trans(0x8238);			// TX on
 	rf12_ready();
 	rf12_trans(0xB8AA);
@@ -109,12 +176,31 @@ void rf12_txdata(uint8_t data, unsigned char number)
 	rf12_ready();
 	rf12_trans(0xB8D4);
 	
+	crc = crcUpdate (0, 8);
+	rf12_ready();
+	rf12_trans(0xB808);
+	rf12_ready();
+	rf12_trans(0xB800|(data));
+	crc = crcUpdate (0, data);
+	PORTC ^= (_BV(PC0));
+//	rf12_ready();
+//	rf12_trans(0xB800|(data));
+	for (i=0;i<7;i++)
+	{
+		rf12_ready();
+		rf12_trans(0xB800|('a' + i));
+		crc = crcUpdate (0, ('a' + i));
+	}
+	rf12_trans(0xB800 | (crc & 0x00FF));
+	rf12_ready();
+	rf12_trans(0xB800 | (crc >> 8));
+	printf("\r\ncrc: %4x\r\n", crc);
+	/*
 	rf12_ready();
 	rf12_trans(0xB800|(data));
 	rf12_ready();
 	rf12_trans(0xB800|(data));
-	rf12_ready();
-	rf12_trans(0xB800|(data));
+	*/
 	
 	rf12_ready();
 	rf12_trans(0x8208);			// TX off
@@ -135,6 +221,38 @@ uint8_t rf12_rxdata()
 	return i;
 }
 
+unsigned char rf12_rxarray(unsigned char *data)
+{	
+	unsigned char i, number;
+	unsigned int crc, crc_chk;
+	rf12_trans(0x82C8);			// RX on
+	rf12_trans(0xCA81);			// set FIFO mode
+	rf12_trans(0xCA83);			// enable FIFO
+	
+	rf12_ready();
+	number = rf12_trans(0xB000) & 0x00FF;
+	crc_chk = crcUpdate(0, number);
+
+	for (i=0; i<number; i++)
+	{
+		rf12_ready();
+		data[i] = (unsigned char) (rf12_trans(0xB000) & 0x00FF);
+		crc_chk = crcUpdate(crc_chk, data[i]);
+	}
+
+	rf12_ready();
+	crc = rf12_trans(0xB000) & 0x00FF;
+	rf12_ready();
+	crc |=  rf12_trans(0xB000) << 8;
+
+	rf12_trans(0x8208);			// RX off
+
+	if (crc != crc_chk)
+		number = 0;
+
+	return number;
+}
+
 /* @note return values > 0xff == data received
  */
 
@@ -146,7 +264,7 @@ uint16_t rf12_rxdata_nb(uint16_t in_waitcycles)
 	rf12_trans(0xCA83);			// enable FIFO
 	if (!rf12_ready_wait(in_waitcycles))
 	{
-		rf12_trans(0x8208);			// RX off
+//		rf12_trans(0x8208);			// RX off
 		return 0x0000;
 	}
 
