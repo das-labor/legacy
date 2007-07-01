@@ -8,4 +8,3 @@ Host-PC based software to control a LTC1290 based ADC
 * powered via serial port
 * communication via DTR/RTS and CTR
 
-testing
