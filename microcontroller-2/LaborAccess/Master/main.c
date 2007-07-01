@@ -37,8 +37,8 @@ int main(void)
     TIMSK = 1<<TOIE0;		// Enable interrupt flag
 	
     
-	AvrXRunTask(TCB(server1));
-	AvrXRunTask(TCB(qport));
+	//AvrXRunTask(TCB(server1));
+	//AvrXRunTask(TCB(qport));
 	AvrXRunTask(TCB(laptask));
 	AvrXRunTask(TCB(console_task));
 	
@@ -46,6 +46,8 @@ int main(void)
 	InitSerial0(BAUD(4800));
 	InitSerial1();
 
+	xlap_init();
+	
     /* Needed for EEPROM access in monitor */
 	AvrXSetSemaphore(&EEPromMutex);
 	
@@ -53,6 +55,7 @@ int main(void)
 	//put_c1('H');
 	
 	fdevopen(stream_putc,0);
+	//fdevopen(put_c1,0);
 	
 	i2cInit();
 

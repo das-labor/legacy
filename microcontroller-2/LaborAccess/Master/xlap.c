@@ -42,15 +42,14 @@ void process_stream_msg(){
 
 void xlap_init(){
 	myaddr = eeprom_read_byte(0x00);
+	AVRX_INIT_FIFO(stream_fifo);
 	can_init();
 }
 
 #define CHANNEL_STREAM 0x17
 
-AVRX_GCC_TASKDEF(laptask, 50, 3)
+AVRX_GCC_TASKDEF(laptask, 200, 3)
 {
-	xlap_init();	
-    AVRX_INIT_FIFO(stream_fifo);
 	while (1)
     {
 		can_get();			//get next canmessage in rx_msg

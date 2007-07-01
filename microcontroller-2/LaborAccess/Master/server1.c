@@ -25,7 +25,7 @@ AVRX_GCC_TASKDEF(server1, 200, 4)
 {
 	uint8_t admin_num = 0;
 	uint8_t session_perm = 0;
-	printf("Debug\r");
+//	printf("Debug\r");
 	
 	while(1){
 		request_t req;

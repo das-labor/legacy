@@ -10,7 +10,7 @@
 //number of args resolve functioytes each.n can seperate. 2 bytes each.
 #define MAX_ARGS 10
 
-#define PROMPT "\n\r>"
+#define PROMPT "\n>"
 
 
 #include <string.h>
@@ -21,6 +21,8 @@
 #include "console.h"
 #include "xlap.h"
 #include "util.h"
+
+static char newline_str_P[] PROGMEM = "\n";
 
 extern const command_table main_table PROGMEM;
 
@@ -81,7 +83,7 @@ void command_table_print(CMD_T_P tbl){
 	unsigned char x;
 	unsigned char tbl_size = pgm_read_byte(&tbl->size);
 	for(x=0;x<tbl_size;x++){
-		stdout_putstr_P(PSTR("\r\n"));
+		stdout_putstr_P(newline_str_P);
 		stdout_putstr_P((PGM_P) pgm_read_word(&((CMD_P)pgm_read_word(&tbl->commands[x]))->name ));
 	}
 }
@@ -90,7 +92,7 @@ void function_info_print(C_FKT_P func){
 	unsigned char arg_num = pgm_read_byte(&func->arg_num);
 	unsigned char x;
 	PGM_P tmp;
-	stdout_putstr_P(PSTR("\r\n"));
+	stdout_putstr_P(newline_str_P);
 	stdout_putstr_P((PGM_P) pgm_read_word ( &argument_type_names[pgm_read_byte(&func->ret_type.type)] ));
 	stdout_putc(' ');
 	if((tmp = (PGM_P) pgm_read_word(&func->ret_type.name )) != 0){
@@ -167,7 +169,7 @@ unsigned char command_table_search(CMD_T_P tbl, char * string, char ** bufend){
 		for(x=0;x<tbl_size;x++){
 			PGM_P command_name = (PGM_P) pgm_read_word(&((CMD_P)pgm_read_word(&tbl->commands[x]))->name);
 			if( begin_cmp_P (string, command_name)){
-				stdout_putstr_P(PSTR("\r\n"));
+				stdout_putstr_P(newline_str_P);
 				stdout_putstr_P((PGM_P) pgm_read_word(&((CMD_P)pgm_read_word(&tbl->commands[x]))->name ));
 				if(!ref_str){
 					ref_str = command_name;
@@ -422,13 +424,13 @@ AVRX_GCC_TASKDEF(console_task, 100, 5){
 	
 	while(1){
 		tmp = getc_tr();
-		if(tmp == '\r'){
+		if(tmp == '\n'){
 			history_num = 0;
 			if(buf_pos != buffer){
 				*buf_pos = 0;	//terminate line
 				history_save (buffer);
 				buf_pos = buffer;   //reset pointer
-				stdout_putstr_P(PSTR("\r\n"));
+				stdout_putstr_P(newline_str_P);
 				switch(resolve_command(buffer, &rest, &target)){
 					case r_incomplete:
 						stdout_putstr_P(PSTR("Error: No such command"));
