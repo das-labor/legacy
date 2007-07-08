@@ -49,7 +49,7 @@ void wait(int ms){
 /******************************************************************************/
 
 lop_ctx_t lop0={
-	idle, idle, 0, 0, NULL, 0, 
+	idle, idle, idle, 0, 0, NULL, 0, 
 	NULL, NULL, NULL, NULL, NULL};
 
 /******************************************************************************/
@@ -95,7 +95,7 @@ void sendport(uint8_t b){
 	uint8_t * msg=NULL;
 	uint16_t length;
 	do{
-		length = rand() & 0x02FF;
+		length = 3; //rand() & 0x02FF;
 	}while(!(msg=(uint8_t*)malloc(length)));
 	memset(msg, b, length);
 	lop_sendmessage(&lop0, length, msg);
@@ -121,22 +121,37 @@ int main(){
 	lop0.on_streamstart = lop0_streamstart;
 	lop0.on_msgrx = lop0_messagerx;
 	lop_sendreset(&lop0);
-//	streamstart(&lop0);
-	uint8_t x=1;
+//	lop_streamstart(&lop0);
+	uint8_t pb,x=1,y=1;
 	while(1){
-		if((PINB & 0x03) != 0x03){
-			if(PINB & 0x01){
+		if(((pb=PINB & 0x0f)) != 0x0f){
+			pb = (~pb & 0x0f);
+		
+			if(pb & 1){
 				x >>= 1;
 				if(!x) 
 					x = 0x80;
-			} else {
+				sendport(x);
+				PORTC=x;
+			}
+			
+			if(pb & 2) {
 				x <<= 1;
 				if(!x) 
 					x = 0x01;
+				sendport(x);
+				PORTC=x;
 			}
-			//sendstream(&lop0, x);
-			sendport(x);
-			PORTC=x;
+			if(pb & 4){
+				lop_sendstream(&lop0, y);
+				PORTC=y;
+				++y;
+			}
+			if(pb & 8){
+				lop_sendreset(&lop0);
+				lop_streamstart(&lop0);
+			}
+			
 			wait(500);
 		}
 	}
