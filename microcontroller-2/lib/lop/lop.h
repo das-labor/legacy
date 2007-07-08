@@ -13,7 +13,7 @@
 typedef enum {idle,message,stream} lopstates_t;
 
 typedef struct lop_ctx {
-	lopstates_t rxstate, txstate;
+	lopstates_t rxstate, txstate, msgretstate;
 	uint32_t msgidx;
 	uint16_t msglength;
 	uint8_t* msgbuffer;

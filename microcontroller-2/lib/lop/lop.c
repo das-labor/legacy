@@ -12,8 +12,6 @@
 #include <stdint.h>
 #include "lop.h"
 
-#include "uart.h"
-
 #define LOP_ESC_CODE		0x23
 #define LOP_RESET_CODE		0x42
 #define LOP_XON_CODE		0x11
@@ -30,6 +28,32 @@
 
 static void lop_process_l1(lop_ctx_t* ctx, uint8_t b);
 static void lop_process_l2(lop_ctx_t* ctx, uint8_t b);
+
+/******************************************************************************/
+
+static
+void lop_error(uint8_t b){
+	switch(b){
+		case 1: /* message in message */
+			break;
+		case 2: /* stream start while not idle */
+			break;
+		case 3: /* stream start while not stream */
+			break;
+		case 4: /* invalid esc-sequence */
+			break;
+		case 5: /* message to large */
+			break;			
+		case 6: /* invalid recive state */
+			break;
+		case 7: /* stream send while not stream */
+			break;
+		default:
+			break;
+	}
+	for(;;)
+		;
+}
 
 /******************************************************************************/
 
@@ -70,9 +94,11 @@ void lop_process_l1(lop_ctx_t* ctx, uint8_t b){
 		}
 		switch(b){
 			case LOP_TYPE_MSG:
-				if(!ctx->rxstate==idle){
+				if(ctx->rxstate==message){
 					/* invalid transition error */
+					lop_error(1);
 				}
+				ctx->msgretstate = ctx->rxstate;
 				ctx->rxstate=message;
 				if(ctx->msgbuffer){
 					free(ctx->msgbuffer);
@@ -84,6 +110,7 @@ void lop_process_l1(lop_ctx_t* ctx, uint8_t b){
 			case LOP_TYPE_STREAM_START:
 				if(!ctx->rxstate==idle){
 					/* invalid transition error */
+					lop_error(2);
 				}
 				ctx->rxstate=stream;
 				if(ctx->on_streamstart)
@@ -92,6 +119,7 @@ void lop_process_l1(lop_ctx_t* ctx, uint8_t b){
 			case LOP_TYPE_STREAM_STOP:
 				if(!ctx->rxstate==stream){
 					/* invalid transition error */
+					lop_error(3);
 				}
 				ctx->rxstate=idle;
 				if(ctx->on_streamstop)
@@ -99,6 +127,7 @@ void lop_process_l1(lop_ctx_t* ctx, uint8_t b){
 				break;
 			default:
 				/* invalid escape-sequence */
+				lop_error(4);
 				break;
 		}
 	}
@@ -124,6 +153,7 @@ void lop_process_l2(lop_ctx_t* ctx, uint8_t b){
 					ctx->msglength += b;
 					if(!(ctx->msgbuffer=malloc(ctx->msglength))){
 						/* message to large error */
+						lop_error(5);
 					}
 					break;
 				default:
@@ -135,11 +165,13 @@ void lop_process_l2(lop_ctx_t* ctx, uint8_t b){
 					ctx->on_msgrx(ctx->msglength, ctx->msgbuffer);
 				free(ctx->msgbuffer);
 				ctx->msgbuffer = NULL;
+				ctx->rxstate = ctx->msgretstate;
 			}
 			ctx->msgidx++;
 			break;
 		default:
 			/* invalid recive, should never happen */
+			lop_error(6);
 			break;
 	}
 }
@@ -178,9 +210,10 @@ void lop_sendbyte(lop_ctx_t * ctx,uint8_t b){
 /******************************************************************************/
 
 void lop_sendmessage(lop_ctx_t * ctx,uint16_t length, uint8_t * msg){
+	lopstates_t tmpstate;
 	if(!ctx->sendrawbyte)
 		return;
-	while(ctx->txstate!=idle)
+	while((tmpstate=ctx->txstate)==message)
 		;
 	ctx->txstate=message;
 	ctx->sendrawbyte(LOP_ESC_CODE);
@@ -189,7 +222,7 @@ void lop_sendmessage(lop_ctx_t * ctx,uint16_t length, uint8_t * msg){
 	lop_sendbyte(ctx, length&0x00FF);
 	while(length--)
 		lop_sendbyte(ctx, *msg++);
-	ctx->txstate=idle;
+	ctx->txstate=tmpstate;
 }
 
 /******************************************************************************/
@@ -222,7 +255,8 @@ void lop_sendstream(lop_ctx_t * ctx, uint8_t b){
 	if(!(ctx->sendrawbyte))
 		return;
 	if(ctx->txstate!=stream){
-		/* invalid send error */	
+		/* invalid send error */
+		lop_error(7);	
 		return;
 	}
 	lop_sendbyte(ctx, b);
