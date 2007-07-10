@@ -1,11 +1,34 @@
 /**
- * 
- * 
- * 
- * 
+ * \file	main-lop-avr-test.c
+ * \author	Daniel Otte
+ * \date	2007-07-10
+ * \par license
+ *  GPL
+ * \brief demonstration of lop usage
  * 
  * 
  */
+
+/* 
+ * This demo uses lop two transfer lifgthpatterns between two laborboards via
+ * a serial connection.
+ * Two types of communication are used:
+ *  -Messages 
+ *  -Stream
+ * 1) Messages have a random length and all bytes have the same value, which is
+ *    to be displayed.
+ *    +-+-+-+-+-     -+-+-+
+ *    |b|b|b|b|b ... b|b|b|
+ *    +-+-+-+-+-     -+-+-+
+ * 2) via stream frames are transfered. Theses frames are eight bytes long and
+ *    start with the byte wich is to be displayed, the other bytes have random
+ *    values.
+ * 	  +-+-+-+-+-+-+-+-+
+ *    |b|r|r|r|r|r|r|r|
+ *    +-+-+-+-+-+-+-+-+
+ */  
+ 
+ 
  
 #include <stdint.h>
 #include <avr/io.h> 
@@ -16,41 +39,29 @@
 
 #include "lop.h"
 
-#ifdef DISPLAY
-	#include "hd44780.h"
-	#define display_init hd44780_init
-	#define display_print hd44780_print
-	#define display_print_P hd44780_print_P
-	#define display_putc  hd44780_data
-	#define display_set_cursor hd44780_set_cursor
-	#define display_clear_line hd44780_clear_line
-	#define display_command hd44780_command
-#else
-	#define display_init() 
-	#define display_print(s) 
-	#define display_print_P(s) 
-	#define display_putc(s)  
-	#define display_set_cursor(a,b)
-	#define display_clear_line(s) 
-	#define display_command(s) 
-#endif
+/******************************************************************************/
+/* GLOBAL VARIABLES                                                           */
+/******************************************************************************/
 
+uint8_t onsync=0;
+
+lop_ctx_t lop0={
+	idle, idle, idle, 0, 0, NULL, 0, 
+	NULL, NULL, NULL, NULL};
+
+
+/******************************************************************************/
+/* FUNCTIONS                                                                  */
 /******************************************************************************/
 
 void wait(int ms){
 	TCCR2 = 0x0C;				/* CTC Mode, clk/64 */
 	OCR2 = 125;					/* 1000Hz */
 	for(;ms>0;ms--){
-		while(!(TIFR&0x80));	/* wait for compare matzch flag */
+		while(!(TIFR&0x80));	/* wait for compare match flag */
 		TIFR=0x80;				/* reset flag */
 	}
 }
-
-/******************************************************************************/
-
-lop_ctx_t lop0={
-	idle, idle, idle, 0, 0, NULL, 0, 
-	NULL, NULL, NULL, NULL, NULL};
 
 /******************************************************************************/
 
@@ -60,13 +71,26 @@ void lop0_sendrawbyte(uint8_t b){
 
 /******************************************************************************/
 
-void lop0_streamrx(uint8_t b){
-	PORTC = b;
+void onuartrx(uint8_t b){
+	lop_recieve_byte(&lop0,b);
 }
 
 /******************************************************************************/
 
-void lop0_streamstart(){	
+void lop0_streamrx(uint8_t b){
+	static uint8_t i=0;
+	if(onsync){
+		if(i==0)
+			PORTC = b;
+		i++;
+		i %= 8;
+	}
+}
+
+/******************************************************************************/
+
+void lop0_streamsync(){	
+	onsync=1;
 }
 
 /******************************************************************************/
@@ -85,17 +109,11 @@ void lop0_messagerx(uint16_t length, uint8_t * msg){
 
 /******************************************************************************/
 
-void onuartrx(uint8_t b){
-	lop_recieve_byte(&lop0,b);
-}
-
-/******************************************************************************/
-
-void sendport(uint8_t b){
+void sendportmsg(uint8_t b){
 	uint8_t * msg=NULL;
 	uint16_t length;
 	do{
-		length = 3; //rand() & 0x02FF;
+		length = rand() & 0x02FF;
 	}while(!(msg=(uint8_t*)malloc(length)));
 	memset(msg, b, length);
 	lop_sendmessage(&lop0, length, msg);
@@ -111,17 +129,14 @@ int main(){
 	PORTB = 0XFF;
 	
 	uart_init();
-	display_init();
-	display_clear_line(1);
-	display_clear_line(0);
 	
 	uart_hook = onuartrx;
 	lop0.on_streamrx = lop0_streamrx;
 	lop0.sendrawbyte = lop0_sendrawbyte;
-	lop0.on_streamstart = lop0_streamstart;
+	lop0.on_streamsync = lop0_streamsync;
 	lop0.on_msgrx = lop0_messagerx;
+	
 	lop_sendreset(&lop0);
-//	lop_streamstart(&lop0);
 	uint8_t pb,x=1,y=1;
 	while(1){
 		if(((pb=PINB & 0x0f)) != 0x0f){
@@ -131,7 +146,7 @@ int main(){
 				x >>= 1;
 				if(!x) 
 					x = 0x80;
-				sendport(x);
+				sendportmsg(x);
 				PORTC=x;
 			}
 			
@@ -139,17 +154,22 @@ int main(){
 				x <<= 1;
 				if(!x) 
 					x = 0x01;
-				sendport(x);
+				sendportmsg(x);
 				PORTC=x;
 			}
 			if(pb & 4){
+				uint8_t i;
+				lop_streamsync(&lop0);
 				lop_sendstream(&lop0, y);
+				for(i=0; i<7; ++i){
+					lop_sendstream(&lop0, rand()&0xff);
+				}
 				PORTC=y;
 				++y;
 			}
 			if(pb & 8){
 				lop_sendreset(&lop0);
-				lop_streamstart(&lop0);
+				y=0;
 			}
 			
 			wait(500);
