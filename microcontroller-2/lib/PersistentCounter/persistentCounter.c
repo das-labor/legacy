@@ -12,8 +12,6 @@
 
 #ifdef ERROR_HANDLING
 	#include "error-handling.h"
-	#define PERSISTENT_COUNTER_OVERFLOW		(void*)0, 2,4,1
-	#define PERSISTENT_COUNTER_WRITER_ERROR	(void*)0, 2,4,2
 #endif
 
 #define RING_SIZE 168
@@ -58,26 +56,30 @@ void percnt_init(void){
 
 uint32_t percnt_get(void){
 	uint32_t ret=0;
-
+	uint8_t tmps;
+	
 	if(ring_idx==0xff)
 		percnt_init();
+	tmps = SREG;
 	cli();
 	eeprom_busy_wait();
 	ret=eeprom_read_word(&B08_23)<<8;
 	eeprom_busy_wait();
 	ret |= eeprom_read_byte(&(B0_7[ring_idx]));
-	sei();
+	SREG |= tmps&0x80; /* reeanble interrupts if they were turned on */
 	return ret;
 }
 
 void percnt_inc(void){
 	/* we must make this resistant agaist power off while this is running ... */
 	uint32_t u;
+	uint8_t tmps;
 		
 	if(ring_idx==0xff)
 		percnt_init();
 
 	u = percnt_get();
+	tmps = SREG;
 	cli();
 	/* it's important to write msb first! */
 	if((u&0x000000ff) == 0xff){
@@ -106,6 +108,6 @@ void percnt_inc(void){
 	#endif 
 	}
 	
-	sei();
+	SREG |= tmps&0x80; /* reeanble interrupts if they were turned on */
 }
 
