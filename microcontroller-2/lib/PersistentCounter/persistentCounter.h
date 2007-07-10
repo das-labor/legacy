@@ -10,6 +10,13 @@
 #define PERSISTENTCOUNTER_H_
 
 
+#ifdef ERROR_HANDLING
+	#include "error-handling.h"
+	#define PERSISTENT_COUNTER_OVERFLOW		(void*)0, 2,4,1
+	#define PERSISTENT_COUNTER_WRITER_ERROR	(void*)0, 2,4,2
+#endif
+
+
 #include <stdint.h>
 
 #define PERSISTENT_COUNTER_BITS 24
