@@ -23,9 +23,11 @@
 #define LOP_XOFF_ESC		0x04
 
 #define LOP_TYPE_MSG			0x14
+#define LOP_TYPE_STREAMSYNC		0x15
+/*
 #define LOP_TYPE_STREAM_START	0x15
 #define LOP_TYPE_STREAM_STOP	0x16
-
+*/
 static void lop_process_l1(lop_ctx_t* ctx, uint8_t b);
 static void lop_process_l2(lop_ctx_t* ctx, uint8_t b);
 
@@ -107,23 +109,13 @@ void lop_process_l1(lop_ctx_t* ctx, uint8_t b){
 				ctx->msgidx = 0;
 				ctx->msglength = 0;
 				break;
-			case LOP_TYPE_STREAM_START:
-				if(!ctx->rxstate==idle){
+			case LOP_TYPE_STREAMSYNC:
+				if(ctx->rxstate==message){
 					/* invalid transition error */
 					lop_error(2);
 				}
-				ctx->rxstate=stream;
-				if(ctx->on_streamstart)
-					ctx->on_streamstart();
-				break;
-			case LOP_TYPE_STREAM_STOP:
-				if(!ctx->rxstate==stream){
-					/* invalid transition error */
-					lop_error(3);
-				}
-				ctx->rxstate=idle;
-				if(ctx->on_streamstop)
-					ctx->on_streamstop();
+				if(ctx->on_streamsync)
+					ctx->on_streamsync();
 				break;
 			default:
 				/* invalid escape-sequence */
@@ -137,12 +129,10 @@ void lop_process_l1(lop_ctx_t* ctx, uint8_t b){
 static
 void lop_process_l2(lop_ctx_t* ctx, uint8_t b){
 	switch(ctx->rxstate){
-		case stream:
+		case idle:
+			/* stream data */
 			if(ctx->on_streamrx)
 				ctx->on_streamrx(b);
-			break;
-		case idle:
-			/* drop, may happen on asynchonous access */
 			break;
 		case message:
 			switch(ctx->msgidx){
@@ -210,10 +200,9 @@ void lop_sendbyte(lop_ctx_t * ctx,uint8_t b){
 /******************************************************************************/
 
 void lop_sendmessage(lop_ctx_t * ctx,uint16_t length, uint8_t * msg){
-	lopstates_t tmpstate;
 	if(!ctx->sendrawbyte)
 		return;
-	while((tmpstate=ctx->txstate)==message)
+	while(ctx->txstate==message)
 		;
 	ctx->txstate=message;
 	ctx->sendrawbyte(LOP_ESC_CODE);
@@ -222,11 +211,23 @@ void lop_sendmessage(lop_ctx_t * ctx,uint16_t length, uint8_t * msg){
 	lop_sendbyte(ctx, length&0x00FF);
 	while(length--)
 		lop_sendbyte(ctx, *msg++);
-	ctx->txstate=tmpstate;
+	ctx->txstate=idle;
 }
 
 /******************************************************************************/
 
+void lop_streamsync(lop_ctx_t * ctx){
+	if(!ctx->sendrawbyte)
+		return;
+	while(ctx->txstate==message)
+		;
+	ctx->txstate=idle;
+	ctx->sendrawbyte(LOP_ESC_CODE);
+	ctx->sendrawbyte(LOP_TYPE_STREAMSYNC);
+}
+
+/******************************************************************************/
+/*
 void lop_streamstart(lop_ctx_t * ctx){
 	if(!ctx->sendrawbyte)
 		return;
@@ -236,9 +237,9 @@ void lop_streamstart(lop_ctx_t * ctx){
 	ctx->sendrawbyte(LOP_ESC_CODE);
 	ctx->sendrawbyte(LOP_TYPE_STREAM_START);
 }
-
+*/
 /******************************************************************************/
-
+/*
 void lop_streamstop(lop_ctx_t * ctx){
 	if(!ctx->sendrawbyte)
 		return;
@@ -248,13 +249,13 @@ void lop_streamstop(lop_ctx_t * ctx){
 	ctx->sendrawbyte(LOP_TYPE_STREAM_STOP);
 	ctx->txstate=idle;
 }
-
+*/
 /******************************************************************************/
 
 void lop_sendstream(lop_ctx_t * ctx, uint8_t b){
 	if(!(ctx->sendrawbyte))
 		return;
-	if(ctx->txstate!=stream){
+	if(ctx->txstate!=idle){
 		/* invalid send error */
 		lop_error(7);	
 		return;
