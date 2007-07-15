@@ -23,7 +23,8 @@ FLASHCMD      = uisp -dprog=bsd --erase --upload if=$(OUT).hex
 
 #############################################################################
 # Rules
-all: $(OUT).elf lst text eeprom
+all: $(OUT).elf lst text 
+program: all
 
 clean:
 	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec
