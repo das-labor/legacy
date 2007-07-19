@@ -251,19 +251,23 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 			break;
 		}
 
-		// chatter protection
-		if (pIn->nIgnoreCmdCounter[cmdJoystick] == 0)
+		switch (cmdJoystick)
 		{
-			switch (cmdJoystick)
+		// suppress automatic falling if the player has dropped a piece
+		case TETRIS_INCMD_DOWN:
+		case TETRIS_INCMD_DROP:
+			// chatter protection
+			if (pIn->nIgnoreCmdCounter[cmdJoystick] == 0)
 			{
-			// suppress automatic falling if the player has dropped a piece
-			case TETRIS_INCMD_DOWN:
-			case TETRIS_INCMD_DROP:
 				pIn->nLoopCycles = 0;
-			// ensure automatic falling otherwise
-			default:
+			}
+			else
+			{
 				++pIn->nLoopCycles;
 			}
+		// ensure automatic falling otherwise
+		default:
+			++pIn->nLoopCycles;
 		}
 		
 		// decrease all ignore counters
