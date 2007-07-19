@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include <inttypes.h>
 #include <assert.h>
 #include "../joystick.h"
@@ -37,36 +38,78 @@
  * non-interface functions *
  ***************************/
 
+/* Function:     tetris_input_chatterProtect;
+ * Description:  sets initial ignore counter for a given command if it is != 0
+ * Argument pIn: pointer to an input object
+ * Argument cmd: the command which should be checked
+ * Return value: void
+ */
+void tetris_input_chatterProtect (tetris_input_t *pIn,
+                                  tetris_input_command_t cmd)
+{
+	assert(cmd < TETRIS_INCMD_NONE);
+	
+	// Here you can define the amount of loop cycles a command is ignored after
+	// it has been issued.
+	// NOTE: Hasn't been tested well for commands with key repeat, yet!
+	const static uint8_t nInitialIgnoreValue[TETRIS_INCMD_NONE] PROGMEM =
+	{
+		0, // TETRIS_INCMD_ROT_CW
+		0, // TETRIS_INCMD_ROT_CCW
+		0, // TETRIS_INCMD_LEFT (key repeat)
+		0, // TETRIS_INCMD_RIGHT (key repeat)
+		0, // TETRIS_INCMD_DOWN (key repeat)
+		6, // TETRIS_INCMD_DROP
+		0, // TETRIS_INCMD_GRAVITY
+		0  // TETRIS_INCMD_IGNORE (don't use it!)
+	};
+
+	if (pIn->nIgnoreCmdCounter[cmd] == 0)
+	{
+		#ifdef __AVR__
+			pIn->nIgnoreCmdCounter[cmd] = pgm_read_word(&nInitialIgnoreValue[cmd]);
+		#else
+			pIn->nIgnoreCmdCounter[cmd] = nInitialIgnoreValue[cmd];
+		#endif
+	}
+}
+
+
 /* Function:     tetris_input_queryJoystick
  * Description:  translates joystick movements into tetris_input_command_t
+ * Argument pIn: pointer to an input object
  * Return value: see definitition of tetris_input_command_t
  */
 tetris_input_command_t tetris_input_queryJoystick()
 {
+	tetris_input_command_t cmdReturn;
+	
 	if (JOYISFIRE)
 	{
-		return TETRIS_INCMD_DROP;
+		cmdReturn = TETRIS_INCMD_DROP;
 	}
 	else if (JOYISLEFT)
 	{
-		return TETRIS_INCMD_LEFT;
+		cmdReturn = TETRIS_INCMD_LEFT;
 	}
 	else if (JOYISRIGHT)
 	{
-		return TETRIS_INCMD_RIGHT;
+		cmdReturn = TETRIS_INCMD_RIGHT;
 	}
 	else if (JOYISUP)
 	{
-		return TETRIS_INCMD_ROT_CW;
+		cmdReturn = TETRIS_INCMD_ROT_CW;
 	}
 	else if (JOYISDOWN)
 	{
-		return TETRIS_INCMD_DOWN;
+		cmdReturn = TETRIS_INCMD_DOWN;
 	}
 	else
 	{
-		return TETRIS_INCMD_NONE;
+		cmdReturn = TETRIS_INCMD_NONE;
 	}
+	
+	return cmdReturn;
 }
 
 
@@ -87,6 +130,7 @@ tetris_input_t *tetris_input_construct()
 	pIn->nLevel = 0;
 	pIn->nLoopCycles = 0;
 	pIn->nRepeatCount = -TETRIS_INPUT_REPEAT_INITIALDELAY;
+	memset(pIn->nIgnoreCmdCounter, 0, TETRIS_INCMD_NONE);
 
 	return pIn;
 }
@@ -117,6 +161,9 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 {
 	assert (pIn != NULL);
 
+	// nMaxCycles is the amount of loop cycles until a gravity command is
+	// issued. Its value depends on the current level. The amount of cycles
+	// for each level is defined in the ARRAY TETRIS_INPUT_CYCLESPERLEVEL.
 	const static uint8_t nCyclesPerLevel[] PROGMEM =
 		TETRIS_INPUT_CYCLESPERLEVEL;
 	#ifdef __AVR__
@@ -128,7 +175,7 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 	tetris_input_command_t cmdJoystick = TETRIS_INCMD_NONE;
 	tetris_input_command_t cmdReturn = TETRIS_INCMD_NONE;
 
-	for (; pIn->nLoopCycles < nMaxCycles; ++pIn->nLoopCycles)
+	for (; pIn->nLoopCycles < nMaxCycles;)
 	{
 		cmdJoystick = tetris_input_queryJoystick();
 
@@ -137,11 +184,13 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 		case TETRIS_INCMD_LEFT:
 		case TETRIS_INCMD_RIGHT:
 		case TETRIS_INCMD_DOWN:
-			// only react if either the current command differs from the last
+			// only react if the ignore value for the given command is 0
+			// and if either the current command differs from the last
 			// or enough loop cycles have been run on the same command
 			// (for key repeat)
-			if ((pIn->cmdLast != cmdJoystick) || ((pIn->cmdLast == cmdJoystick)
+			if (((pIn->cmdLast != cmdJoystick) || ((pIn->cmdLast == cmdJoystick)
 				&& (pIn->nRepeatCount >= TETRIS_INPUT_REPEAT_DELAY)))
+				&& (pIn->nIgnoreCmdCounter[cmdJoystick] == 0))
 			{
 				// reset repeat counter
 				if (pIn->cmdLast != cmdJoystick)
@@ -155,24 +204,14 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 					pIn->nRepeatCount = 0;
 				}
 
-				if (cmdJoystick == TETRIS_INCMD_DOWN)
-				{
-					// suppress autom. falling if down key is pressed anyway
-					pIn->nLoopCycles = 0;
-				}
-				else
-				{
-					// right or left moves must not prevent autom. falling
-					++pIn->nLoopCycles;
-				}
-
 				// update cmdLast and return value
 				pIn->cmdLast = cmdReturn = cmdJoystick;
 			}
 			else
 			{
-				// if not enough loop cylces have been run we increment the
-				// repeat counter and ensure that we continue the loop
+				// if not enough loop cycles have been run or the ignore value
+				// is not 0, we increment the repeat counter and ensure that
+				// we continue the loop and keep the key repeat functioning
 				++pIn->nRepeatCount;
 				cmdReturn = TETRIS_INCMD_NONE;
 			}
@@ -182,7 +221,8 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 		case TETRIS_INCMD_ROT_CW:
 		case TETRIS_INCMD_ROT_CCW:
 			// no key repeat here
-			if (pIn->cmdLast != cmdJoystick)
+			if ((pIn->cmdLast != cmdJoystick)
+				&& (pIn->nIgnoreCmdCounter[cmdJoystick] == 0))
 			{
 				pIn->nRepeatCount =  -TETRIS_INPUT_REPEAT_INITIALDELAY;
 				if (cmdJoystick == TETRIS_INCMD_DROP)
@@ -190,29 +230,56 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
 					// reset autom. falling if player has dropped the piece
 					pIn->nLoopCycles = 0;
 				}
-				else
-				{
-					// rotations must not prevent autom. falling
-					++pIn->nLoopCycles;
-				}
 
 				pIn->cmdLast = cmdReturn = cmdJoystick;
 			}
 			else
 			{
+				// if we reach here the command is somehow ignored
 				cmdReturn = TETRIS_INCMD_NONE;
 			}
 			break;
 
 		case TETRIS_INCMD_NONE:
+			// chatter protection
+			if (pIn->cmdLast != TETRIS_INCMD_NONE)
+			{
+				tetris_input_chatterProtect(pIn, pIn->cmdLast);
+			}
 			pIn->cmdLast = cmdReturn = TETRIS_INCMD_NONE;
 			pIn->nRepeatCount =  -TETRIS_INPUT_REPEAT_INITIALDELAY;
 			break;
 		}
 
+		// chatter protection
+		if (pIn->nIgnoreCmdCounter[cmdJoystick] == 0)
+		{
+			switch (cmdJoystick)
+			{
+			// suppress automatic falling if the player has dropped a piece
+			case TETRIS_INCMD_DOWN:
+			case TETRIS_INCMD_DROP:
+				pIn->nLoopCycles = 0;
+			// ensure automatic falling otherwise
+			default:
+				++pIn->nLoopCycles;
+			}
+		}
+		
+		// decrease all ignore counters
+		for (int ignoreIndex = 0; ignoreIndex < TETRIS_INCMD_NONE; ++ignoreIndex)
+		{
+			if (pIn->nIgnoreCmdCounter[ignoreIndex]!= 0)
+			{
+				--pIn->nIgnoreCmdCounter[ignoreIndex];
+			}
+		}
+
 		WAIT(TETRIS_INPUT_TICKS);
 		if (cmdReturn != TETRIS_INCMD_NONE)
+		{
 			return cmdReturn;
+		}
 	}
 
 	if (pIn->nLoopCycles >= nMaxCycles)
