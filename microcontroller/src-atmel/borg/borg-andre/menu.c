@@ -32,6 +32,7 @@
 #define MENU_WIDTH_DELIMITER 2
 #define MENU_POLL_INTERVAL 10
 #define MENU_TIMEOUT_ITERATIONS 2000
+#define MENU_WAIT_CHATTER 60
 #define MENU_WAIT_INITIAL 40
 #define MENU_WAIT_INCREMENT 0
 
@@ -69,6 +70,9 @@ void menu()
 			{
 				WAIT(MENU_POLL_INTERVAL);
 			}
+			// work against the chatter effects of dump joysticks
+			WAIT(MENU_WAIT_CHATTER);
+			
 			// call corresponding function
 			switch (miSelection)
 			{
