@@ -58,8 +58,7 @@ borg_invaders ()
 
       //Spaceship 
       sc.lives = 1;
-      sc.pos = 255;
-
+      sc.pos = 250;
 
       //Cannon
       cn.pos = 7;
@@ -80,7 +79,6 @@ borg_invaders ()
 
 	  draw (&iv, &sc, &pl, &cn, guards, st, &shot);
 
-
 	  ivStatus = getStatus (&iv);
 
 	  if (ivStatus == 2)	//LOST  
@@ -95,8 +93,6 @@ borg_invaders ()
 	      unsigned int bonus =
 		POINTS_FOR_LEVEL * (level + 1) * (12 - iv.pos.y);
 	      pl.points += bonus;
-	      //printf("cleared l: %d , y: %d bonus: %d \n", 
-	      //              level, iv.pos.y, bonus);
 	      if (level == MAX_LEVEL - 1)
 		{
 		  level = 0;
@@ -122,9 +118,9 @@ borg_invaders ()
 
   clearScreen ();
   //wait(5000);
-  char text[64];
+ /* unsigned*/ char text[64];
   snprintf (text, 64, "</#points: %u", pl.points);
-  scrolltext (text);
+  scrolltext ((unsigned char*) text);
   //printf("scores: %d\n", pl.points);
 
 
