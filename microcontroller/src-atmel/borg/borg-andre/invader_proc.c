@@ -148,10 +148,10 @@ procShots (Invaders * iv,
 
       for (i = 0; i < MAX_SHOTS; ++i)
 	{
-	  if ( /*st[i].x < BORG_WIDTH && */ st[i].y < BORG_HEIGHT)
-	    {
+	  //if ( /*st[i].x < BORG_WIDTH && */ st[i].y < BORG_HEIGHT)
+	  //  {
 	      st[i].y++;
-	    }
+	  //  }
 	}
     }
 
