@@ -64,14 +64,13 @@ initInvaders (Invaders * iv, unsigned char lv)
 	{
 	  iv->map[x][0] = 2;
 	  iv->map[x][1] = 2;
-	  iv->map[x][2] = 2;
+	  iv->map[x][2] = 1;
 	  iv->map[x][3] = 1;
-	  iv->map[x][4] = 1;
 	}
 
       iv->pos.x = 4;
       iv->pos.y = SPACESHIP_LINE + 1;
-      iv->speed = MIN_SPEED - 1;
+      iv->speed = MIN_SPEED-1;
       iv->direction = 1;
       break;
 
@@ -80,9 +79,9 @@ initInvaders (Invaders * iv, unsigned char lv)
 	{
 	  //for(y = 0; y < MAX_INVADER_HEIGHT; ++y) {
 	  iv->map[x][0] = 3;
-	  iv->map[x][1] = 3;
+	  iv->map[x][1] = 2;
 	  iv->map[x][2] = 2;
-	  iv->map[x][3] = 2;
+	  iv->map[x][3] = 1;
 	  //  iv->map[x][4] = 1;
 	  //}     
 	}
@@ -94,7 +93,7 @@ initInvaders (Invaders * iv, unsigned char lv)
       iv->direction = 1;
       break;
 
-    case 2:
+    case 3:
       for (x = 0; x < 11; ++x)
 	{
 	  for (y = 0; y < 8; ++y)
@@ -109,25 +108,25 @@ initInvaders (Invaders * iv, unsigned char lv)
       iv->pos.x = 3;
       iv->pos.y = SPACESHIP_LINE + 1;
 
-      iv->speed = MIN_SPEED - 4;
+      iv->speed = MIN_SPEED - 3;
       iv->direction = 1;
 
       break;
       
 
-    case 3:
+    case 2:
       for (x = 0; x < 11; ++x)
 	{
 	  for (y = 0; y < 8; ++y)
 	    {
-		  iv->map[x][y] = hans[x][y];
+		  iv->map[x][y] = hans[y][x];
 	    }
 	}
 
       iv->pos.x = 3;
       iv->pos.y = SPACESHIP_LINE + 1;
 
-      iv->speed = MIN_SPEED - 1;
+      iv->speed = MIN_SPEED - 2;
       iv->direction = 1;
 
       break;
