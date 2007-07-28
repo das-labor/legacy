@@ -29,7 +29,7 @@ AVRX_SIGINT(SIG_OUTPUT_COMPARE2){
 void servo_init(){
 	DDR_SERVO |= (1<<BIT_SERVO);
 
-	pulselength = 125;
+	pulselength = 110;
 
 	TCCR2 = (1<<WGM21) | TCCR2_CLK1024;
 	OCR2 = 255;
