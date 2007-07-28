@@ -8,6 +8,9 @@
 
 #include "adc.h"
 
+
+//#define RANGE
+
 TimerControlBlock my_timer1, my_timer2;
 
 
@@ -38,7 +41,7 @@ AVRX_GCC_TASKDEF(task1, 100, 4)
 
 void set_motor(){
 	#define MAX_SPEED 0x80
-	#define MIN_SPEED -30
+	#define MIN_SPEED -0x60
 	
 	if(pwm[0] < MIN_SPEED) pwm[0] = MIN_SPEED;
 	if(pwm[0] > MAX_SPEED) pwm[0] = MAX_SPEED;	
@@ -90,7 +93,7 @@ int8_t get_linepos(){
 //	printf("\r%d %d\r", div, pos);
 	
 	static int8_t lastpos;
-	if(div > 400){
+	if(div > 750){
 		end = 1;
 	}else{
 		end = 0;
@@ -107,29 +110,87 @@ int8_t get_linepos(){
 }
 
 
+#ifdef RANGE
+uint8_t tas;
+
+void turn_and_search(){
+	tas = 1;
+	pwm[0] = 0x60;
+	pwm[1] = -0x60;
+	set_motor();
+	AvrXDelay(&my_timer2, 200);
+	pwm[0] = 0x20;
+	pwm[1] = 0x70;
+	set_motor();
+	
+	do{
+		get_linepos();
+		AvrXDelay(&my_timer2, 20);
+	}while(noline);	
+	
+	pwm[0] = -0x60;
+	pwm[1] = 0x60;
+	set_motor();
+	AvrXDelay(&my_timer2, 100);
+	tas = 0;
+	get_linepos();
+}
+
+#endif
+
 void followline(){
+		
+		
+		
+		static uint8_t oldpos[16];
+		static uint8_t oldpos_cnt;
+		int8_t delta;
+		int16_t reg;
+		
 		int8_t pos; 
-		
+
+		//read line sensor		
 		pos = get_linepos();
+
+		//calculate delta-value
+		oldpos[oldpos_cnt] = pos;
+		delta = pos - oldpos[(oldpos_cnt+15)%16];
+		oldpos_cnt = (oldpos_cnt + 1)%16;
+
+		//printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\r", adc_value[0], adc_value[1], adc_value[2], adc_value[3], adc_value[4], adc_value[5], pos);
+		//printf("%d\r", pos);
 		
+		reg = 3*pos + 55*delta;
+		
+		pwm[0] = 0x65 + reg;
+		pwm[1] = 0x65 - reg;
+	
+		set_motor();
+	
 		if (noline){
 			PORTB |= (1<<PB4);
 		}else{
 			PORTB &= ~(1<<PB4);
 		}
-		
-		//printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\r", adc_value[0], adc_value[1], adc_value[2], adc_value[3], adc_value[4], adc_value[5], pos);
-		//printf("%d\r", pos);
-		
-		pwm[0] = 0x40 + 2*pos;
-		pwm[1] = 0x40 - 2*pos;
-	
-		set_motor();
-	
-		AvrXDelay(&my_timer2, 2);
+
+#ifdef RANGE		
+		static uint8_t rc;
+			
+		if(!tas){
+			if(adc_value[6] > 32){
+				rc++;
+				if(rc == 5){
+					rc = 0;
+					turn_and_search();
+				}
+			}else{
+				rc = 0;
+			}
+		}
+#endif
+		AvrXDelay(&my_timer2, 4);
 
 }
-
 
 
 
@@ -156,24 +217,31 @@ AVRX_GCC_TASKDEF(task2, 300, 5)
 	while(!end){
 		followline();
 	}
-	pwm[0] = -30;
+
+/*
+	pwm[0] = -80;
 	pwm[1] = 80;
 	set_motor();
-	AvrXDelay(&my_timer2, 1000);
+	AvrXDelay(&my_timer2, 500);
 	
 	do{
 		get_linepos();
 		AvrXDelay(&my_timer2, 20);
 	}while(noline);	
 	
-	while(!end){
+	uint16_t y;
+	
+	for(y=0; y<500; y++){
 		followline();
 	}
 	
+	while(!end){
+		followline();
+	}
+*/	
 	pwm[0] = 0;
 	pwm[1] = 0;
 	set_motor();
-	
 	
 	while(1);
 
