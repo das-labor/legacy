@@ -20,7 +20,7 @@
 	};
 	
 	uint8_t parity_even_bit(uint8_t p){
-		return nibble_parity_table[p>>4]^nibble_parity_table[4&0xf];
+		return nibble_parity_table[p>>4]^nibble_parity_table[p&0xf];
 	}
 #endif
 
