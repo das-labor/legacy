@@ -1,9 +1,8 @@
-AVRX_EXTERNTASK(pwmtask);
 
 #define _TIMSK_TIMER1 TIMSK
 
 
-#define PWM_CHANNELS 3
+#define PWM_CHANNELS 8
 
 /* macros for extracting low and high byte */
 #define LOW(x) (uint8_t)(0x00ff & (x))
@@ -69,15 +68,16 @@ struct channel_t
 
 }; /*}}}*/
 
-struct global_pwm_t {
-    /* current channel records */
-    struct channel_t channels[3];
-};
 
-extern volatile struct global_pwm_t global_pwm;
+
+extern uint8_t bright[3][PWM_CHANNELS];
+
+
+
 
 /* prototypes */
 void init_timer1(void);
 void init_pwm(void);
-void update_pwm_timeslots(void);
-void update_brightness(void);
+
+
+void update_timeslots();

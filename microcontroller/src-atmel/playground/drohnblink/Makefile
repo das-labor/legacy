@@ -1,12 +1,12 @@
 PRG            = drohnblink
-OBJ            = main.o
+OBJ            = main.o pwm.o
 MCU_TARGET     = atmega8
 OPTIMIZE       = -Os
 
 FLASHCMD       = uisp -dprog=bsd --upload if=$(PRG).hex
 ERASECMD       = uisp -dprog=bsd --erase
 
-DEFS           = -DF_CPU=10111000
+DEFS           = -DF_CPU=8000000
 LIBS           =
 
 # You should not have to change anything below here.
