@@ -1,12 +1,15 @@
 PRG            = drohnblink
-OBJ            = main.o pwm.o
+OBJ            = main.o pwm.o uart.o
 MCU_TARGET     = atmega8
 OPTIMIZE       = -Os
 
 FLASHCMD       = uisp -dprog=bsd --upload if=$(PRG).hex
 ERASECMD       = uisp -dprog=bsd --erase
+LAUNCH_BOOTLOADER = foodloader-0.21/launcher/launch-bootloader
 
-DEFS           = -DF_CPU=8000000
+SERIAL = /dev/ttyS0
+
+DEFS           = -DF_CPU=16000000
 LIBS           =
 
 # You should not have to change anything below here.
@@ -34,6 +37,11 @@ flash:
 	$(ERASECMD)
 	sleep 1
 	$(FLASHCMD)
+
+sflash: $(PRG).hex
+	$(LAUNCH_BOOTLOADER) $(SERIAL) 115200
+	avrdude -p m8 -b 115200 -u -c avr109 -P $(SERIAL) -U f:w:$(PRG).hex -F
+
 
 lst:  $(PRG).lst
 

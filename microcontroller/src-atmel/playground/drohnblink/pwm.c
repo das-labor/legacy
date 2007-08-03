@@ -11,8 +11,11 @@
 
 
 //defines for the Portpins the LEDs are connected to.
-#define PORT_LED PORTD
-#define DDR_LED DDRD
+#define PORT_LED0 PORTD
+#define DDR_LED0 DDRD
+
+#define PORT_LED1 PORTB
+#define DDR_LED1 DDRB
 
 #define PORT_RGB PORTC
 #define DDR_RGB DDRC
@@ -29,22 +32,21 @@ volatile struct global_t global = {{0, 0}};
 /* encapsulates all pwm data including timeslot and output mask array */
 typedef struct{
 	struct {
-		uint8_t mask;
+		uint16_t mask;
 		uint16_t top;
 	} slots[PWM_MAX_TIMESLOTS];
 
 	uint8_t index;  /* current timeslot index in the 'slots' array */
-//	uint8_t count;  /* number of entries in slots */
-	uint8_t next_bitmask; /* next output bitmask, or signal for start or middle of pwm cycle */
-//	uint8_t initial_bitmask; /* output mask set at beginning */
+	uint16_t next_bitmask; /* next output bitmask, or signal for start or middle of pwm cycle */
 }timeslots_t;
 
 static inline void prepare_next_timeslot(void);
 
 /* GLOBAL VARIABLES */
 
-static const uint8_t masks[] = {
-	0xfe, 0xfd, 0xfb, 0xf7, 0xef, 0xdf, 0xbf, 0x7f
+//PD2, PD3, PD4, PD5, PD6, PD7, PB0, PB5, PB4, PB3, PB2, PB1
+static const uint16_t masks[] = {
+	0xfffb, 0xfff7, 0xffef, 0xffdf, 0xffbf, 0xff7f, 0xfeff, 0xdfff, 0xefff, 0xf7ff, 0xfbff, 0xfdff
 };
 
 static const uint8_t masks_rgb[] = {
@@ -107,8 +109,11 @@ inline void init_timer1(void) {
 
 /** init pwm */
 void init_pwm(void) {
-	PORT_LED = 0;
-	DDR_LED = 0xff;
+	PORT_LED0 = 0;
+	DDR_LED0 = 0xfc;
+	
+	PORT_LED1 = 0;
+	DDR_LED1 = 0x3f;
 	
 	DDR_RGB |= 0x38;
 
@@ -119,9 +124,9 @@ void init_pwm(void) {
 
 /** update pwm timeslot table */
 void calculate_timeslots(timeslots_t * ts, uint8_t bright[]) {
-	uint8_t sorted[PWM_CHANNELS] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	uint8_t sorted[PWM_CHANNELS] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
 	uint8_t i, j;
-	uint8_t mask = 0xff;
+	uint16_t mask = 0x3ffc;
 	uint8_t last_brightness = 0;
 
 	/* sort channels according to the current brightness */
@@ -139,6 +144,9 @@ void calculate_timeslots(timeslots_t * ts, uint8_t bright[]) {
 
 	/* timeslot index */
 	j = 0;
+
+	//store as initial bitmask
+	ts->next_bitmask = mask;
 	
 	/* calculate timeslots and masks */
 	for (i=0; i < PWM_CHANNELS; i++) {
@@ -171,7 +179,6 @@ void calculate_timeslots(timeslots_t * ts, uint8_t bright[]) {
 
 	/* reset pwm structure */
 	ts->index = 0;
-//	ts->count = j;
 	
 	//insert dummy slot at end - its top is never reached, so the other interrupt
 	//is executed instead.
@@ -230,14 +237,16 @@ ISR(SIG_OUTPUT_COMPARE1A) {
 	// spin until it is time for the next cycle
 	while(TCNT1 < 25840);
 	//switch to next color
-	PORT_LED = 0;
+	PORT_LED0 = 0;
+	PORT_LED1 = 0;
 	PORT_RGB = rgb_mask;
 	for(x=0;x<10;x++)
 		asm volatile("nop");
 	//reset timer
 	TCNT1 = 0;
 	/* output initial values */
-	PORT_LED = pwm.next_bitmask;
+	PORT_LED0 = LOW(pwm.next_bitmask);
+	PORT_LED1 = HIGH(pwm.next_bitmask);
 	
 	/* if next timeslot would happen too fast or has already happened, just spinlock */
 	while (TCNT1 + 500 > pwm.slots[pwm.index].top) {
@@ -245,8 +254,9 @@ ISR(SIG_OUTPUT_COMPARE1A) {
 		while (pwm.slots[pwm.index].top > TCNT1);
 
 		/* output value */
-		PORT_LED = pwm.slots[pwm.index].mask;
-
+		PORT_LED0 = LOW(pwm.slots[pwm.index].mask);
+		PORT_LED1 = HIGH(pwm.slots[pwm.index].mask);
+		
 		/* we can safely increment index here, since we are in the first timeslot and there
 		* will always be at least one (dummy) timeslot after this */
 		pwm.index++;
@@ -262,8 +272,9 @@ ISR(SIG_OUTPUT_COMPARE1A) {
 /** timer1 output compare b interrupt */
 ISR(SIG_OUTPUT_COMPARE1B) {
 	/* normal interrupt, output pre-calculated bitmask */
-	PORT_LED = pwm.next_bitmask;
-
+	PORT_LED0 = LOW(pwm.next_bitmask);
+	PORT_LED1 = HIGH(pwm.next_bitmask);
+	
 	/* and calculate the next timeslot */
 	prepare_next_timeslot();
 }

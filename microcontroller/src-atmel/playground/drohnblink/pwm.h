@@ -2,7 +2,7 @@
 #define _TIMSK_TIMER1 TIMSK
 
 
-#define PWM_CHANNELS 8
+#define PWM_CHANNELS 12
 
 /* macros for extracting low and high byte */
 #define LOW(x) (uint8_t)(0x00ff & (x))
