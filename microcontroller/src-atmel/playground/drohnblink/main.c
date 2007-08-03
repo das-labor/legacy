@@ -1,8 +1,10 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/eeprom.h>
 
 #include "pwm.h"
+#include "uart.h"
 
 void mydelay(){
 	uint8_t x;
@@ -12,22 +14,66 @@ void mydelay(){
 }
 
 
+#define NUM_CHANNELS 12
 
 int main(){
+	uint8_t c, x, y, addr_offset;
 	
-	bright[0][0] = 1;
-	bright[0][1] = 16;
-	bright[1][2] = 16;
+	//addr_offset = eeprom_read_byte(1);
+	addr_offset = 0;
 	
-	update_timeslots();
+	uart_init();
 	
 	init_pwm();
 	sei();
+		
+	while(1){
+		//wait for sync
+		while(1){
+			c = uart_getc();
+			if(c == 0x55)
+				break;
+		}
 	
+	sync:
+		
+		
+		for(x=0; x<addr_offset; x++){
+			c = uart_getc();
+			if(c == 0x55) goto sync;
+		}
+		
+		for(x=0; x<NUM_CHANNELS; x++){
+			for(y=0;y<3;y++){		
+				c = uart_getc();
+				if(c == 0x55) goto sync;
+				bright[y][x] = c;
+			}
+		}
+		
+		for(x=0;x<40;x++){
+			uart_putc(((uint8_t *)bright)[x]);	
+		}
+		
+		
+		update_timeslots();
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 	uint8_t x=0, y=0, up=1;
 	while (1) {
-		/* at the beginning of each pwm cycle, call the fading engine and
-		* execute all script threads */
 		if (global.flags.new_cycle) {
 			global.flags.new_cycle = 0;
 		
@@ -49,11 +95,15 @@ int main(){
 			bright[1][4] = x;
 			bright[2][4] = 63-x;
 	
+			bright[0][5] = x;
+			bright[1][5] = 63-x;
+			bright[2][6] = x;
+			bright[0][6] = 63-x;
+			bright[1][7] = x;
+			bright[2][7] = 63-x;
+	
 				update_timeslots();
 
 		}
 	}
-
-
-
-}
+	*/
