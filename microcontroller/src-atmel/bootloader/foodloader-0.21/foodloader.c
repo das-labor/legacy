@@ -92,8 +92,8 @@ static inline uint8_t wait_for_char(void)
 /*{{{*/ {
     uint8_t i;
 
-    for(i = 0; i < 5; i++) {
-        _delay_loop_2(65535);
+    for(i = 0; i < 10; i++) {
+        _delay_loop_2(50000);
 
         if(_UCSRA_UART0 & _BV(_RXC_UART0)) {
             if(_UDR_UART0 == BOOTLOADER_ENTRY_CHAR) {
@@ -126,12 +126,14 @@ static inline void init_uart(void)
 static noinline void start_application(void)
 /* {{{ */ {
 
+#   	ifdef BOOTLOADER_JUMPER
         /* reset input pin */
         BOOTLOADER_PORT &= BOOTLOADER_MASK;
+#   	endif
 
         /* move interrupt vectors to application section and jump to main program */
-        _IVREG = _BV(IVCE);
-        _IVREG = 0;
+//        _IVREG = _BV(IVCE);
+//        _IVREG = 0;
         jump_to_application();
 
 } /* }}} */
@@ -142,10 +144,11 @@ int main(void)
 #   ifdef HONOR_WATCHDOG_RESET
     /* if this reset was caused by the watchdog timer, just start the
      * application, else disable the watchdog */
-    if (MCUSR & _BV(WDRF))
+    if (MCUSR & _BV(WDRF)){
         jump_to_application();
-    else
-        wdt_disable();
+    }else{
+	    wdt_disable();
+	}
 #   endif
 
 
@@ -161,14 +164,15 @@ int main(void)
         uart_putc('b');
 #   endif
 
+#   ifdef BOOTLOADER_JUMPER
     /* configure pin as input and enable pullup */
     BOOTLOADER_DDR &= ~BOOTLOADER_MASK;
     BOOTLOADER_PORT |= BOOTLOADER_MASK;
+#   endif
 
     /* bootloader activation methods */
-    if (
+    if (!(
 #   ifdef BOOTLOADER_JUMPER
-	I don't want this, so throw error please!!
             /* 1) activation via jumper */
             ((BOOTLOADER_PIN & BOOTLOADER_MASK) == 0) ||
 #   endif
@@ -176,11 +180,8 @@ int main(void)
             /* 2) or activation via char */
             wait_for_char() ||
 #   endif
-            0) {
-
-        goto start_bootloader;
-
-    } else {
+            0)) {
+				
 #       if SEND_BOOT_MESSAGE
         uart_putc('a');
 #       endif
@@ -188,9 +189,9 @@ int main(void)
         start_application();
     }
 
-
-start_bootloader:
-
+	
+//start_bootloader:
+	
 #   if SEND_BOOT_MESSAGE
     uart_putc('p');
 #   endif
