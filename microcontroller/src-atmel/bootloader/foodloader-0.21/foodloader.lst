@@ -1,0 +1,1493 @@
+   1               		.file	"foodloader.c"
+   2               		.arch atmega8
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  12               		.text
+  13               	.Ltext0:
+  91               	uart_putc:
+  92               		.stabd	46,0,0
+   1:foodloader.c  **** /* vim:fdm=marker ts=4 et ai
+   2:foodloader.c  ****  * {{{
+   3:foodloader.c  ****  *
+   4:foodloader.c  ****  * (c) by Alexander Neumann <alexander@bumpern.de>
+   5:foodloader.c  ****  *     Lars Noschinski <lars@public.noschinski.de>
+   6:foodloader.c  ****  *
+   7:foodloader.c  ****  *     Idea and implementation for char startup mode by
+   8:foodloader.c  ****  *     Scott Torborg - storborg@mit.edu - August 2006
+   9:foodloader.c  ****  *
+  10:foodloader.c  ****  * This program is free software; you can redistribute it and/or modify
+  11:foodloader.c  ****  * it under the terms of the GNU General Public License version 2 as
+  12:foodloader.c  ****  * published by the Free Software Foundation.
+  13:foodloader.c  ****  *
+  14:foodloader.c  ****  * This program is distributed in the hope that it will be useful,
+  15:foodloader.c  ****  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  16:foodloader.c  ****  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  17:foodloader.c  ****  * GNU General Public License for more details.
+  18:foodloader.c  ****  *
+  19:foodloader.c  ****  * You should have received a copy of the GNU General Public License
+  20:foodloader.c  ****  * along with this program; if not, write to the Free Software
+  21:foodloader.c  ****  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+  22:foodloader.c  ****  *
+  23:foodloader.c  ****  * For more information on the GPL, please go to:
+  24:foodloader.c  ****  * http://www.gnu.org/copyleft/gpl.html
+  25:foodloader.c  ****  }}} */
+  26:foodloader.c  **** 
+  27:foodloader.c  **** #include <avr/io.h>
+  28:foodloader.c  **** #include <avr/boot.h>
+  29:foodloader.c  **** #include <avr/interrupt.h>
+  30:foodloader.c  **** #include <avr/eeprom.h>
+  31:foodloader.c  **** #include <avr/pgmspace.h>
+  32:foodloader.c  **** #include <util/delay.h>
+  33:foodloader.c  **** #include "config.h"
+  34:foodloader.c  **** #include "uart.h"
+  35:foodloader.c  **** 
+  36:foodloader.c  **** #ifdef HONOR_WATCHDOG_RESET
+  37:foodloader.c  **** #   include <avr/wdt.h>
+  38:foodloader.c  **** #endif
+  39:foodloader.c  **** 
+  40:foodloader.c  **** uint16_t flash_address;             /* start flash (byte address, converted) write at this address 
+  41:foodloader.c  **** uint16_t eeprom_address;            /* start eerprom (byte address) write at this address */
+  42:foodloader.c  **** 
+  43:foodloader.c  **** 
+  44:foodloader.c  **** /* prototypes */
+  45:foodloader.c  **** void (*jump_to_application)(void) = (void *)0x0000;
+  46:foodloader.c  **** 
+  47:foodloader.c  **** /* defines */
+  48:foodloader.c  **** #define HIGH(x) ( (uint8_t) (x >> 8) )
+  49:foodloader.c  **** #define LOW(x)  ( (uint8_t) x )
+  50:foodloader.c  **** 
+  51:foodloader.c  **** #define noinline __attribute__((noinline))
+  52:foodloader.c  **** 
+  53:foodloader.c  **** 
+  54:foodloader.c  **** /** output one character */
+  55:foodloader.c  **** static noinline void uart_putc(uint8_t data)
+  56:foodloader.c  **** /*{{{*/ {
+  94               	.LM0:
+  95               	/* prologue: frame size=0 */
+  96               	/* prologue end (size=0) */
+  97               	.L3:
+  57:foodloader.c  **** 
+  58:foodloader.c  ****     /* loop until data has been transmitted */
+  59:foodloader.c  ****     while (!(_UCSRA_UART0 & _BV(_UDRE_UART0)));
+  99               	.LM1:
+ 100 0000 5D9B      		sbis 43-0x20,5
+ 101 0002 FECF      		rjmp .L3
+  60:foodloader.c  **** 
+  61:foodloader.c  ****     /* put data in buffer */
+  62:foodloader.c  ****     _UDR_UART0 = data;
+ 103               	.LM2:
+ 104 0004 8CB9      		out 44-0x20,r24
+ 105               	/* epilogue: frame size=0 */
+ 106 0006 0895      		ret
+ 107               	/* epilogue end (size=1) */
+ 108               	/* function uart_putc size 4 (3) */
+ 110               	.Lscope0:
+ 112               		.stabd	78,0,0
+ 115               	uart_getc:
+ 116               		.stabd	46,0,0
+  63:foodloader.c  **** 
+  64:foodloader.c  **** } /* }}} */
+  65:foodloader.c  **** 
+  66:foodloader.c  **** /** output a string */
+  67:foodloader.c  **** static inline void uart_puts(uint8_t buffer[])
+  68:foodloader.c  **** /*{{{*/ {
+  69:foodloader.c  **** 
+  70:foodloader.c  ****     /* send everything until end of string */
+  71:foodloader.c  ****     while (*buffer != 0) {
+  72:foodloader.c  ****         uart_putc(*buffer);
+  73:foodloader.c  ****         buffer++;
+  74:foodloader.c  ****     }
+  75:foodloader.c  **** 
+  76:foodloader.c  **** } /* }}} */
+  77:foodloader.c  **** 
+  78:foodloader.c  **** /** block until one character has been read */
+  79:foodloader.c  **** static noinline uint8_t uart_getc(void)
+  80:foodloader.c  **** /*{{{*/ {
+ 118               	.LM3:
+ 119               	/* prologue: frame size=0 */
+ 120               	/* prologue end (size=0) */
+ 121               	.L10:
+  81:foodloader.c  **** 
+  82:foodloader.c  ****     /* wait if a byte has been received */
+  83:foodloader.c  ****     while (!(_UCSRA_UART0 & _BV(_RXC_UART0)));
+ 123               	.LM4:
+ 124 0008 5F9B      		sbis 43-0x20,7
+ 125 000a FECF      		rjmp .L10
+  84:foodloader.c  **** 
+  85:foodloader.c  ****     /* return received byte */
+  86:foodloader.c  ****     return _UDR_UART0;
+ 127               	.LM5:
+ 128 000c 8CB1      		in r24,44-0x20
+  87:foodloader.c  **** 
+  88:foodloader.c  **** } /* }}} */
+ 130               	.LM6:
+ 131 000e 9927      		clr r25
+ 132               	/* epilogue: frame size=0 */
+ 133 0010 0895      		ret
+ 134               	/* epilogue end (size=1) */
+ 135               	/* function uart_getc size 5 (4) */
+ 137               	.Lscope1:
+ 139               		.stabd	78,0,0
+ 142               	start_application:
+ 143               		.stabd	46,0,0
+  89:foodloader.c  **** 
+  90:foodloader.c  **** /* loop a few times, and see if the character is received */
+  91:foodloader.c  **** static inline uint8_t wait_for_char(void)
+  92:foodloader.c  **** /*{{{*/ {
+  93:foodloader.c  ****     uint8_t i;
+  94:foodloader.c  **** 
+  95:foodloader.c  ****     for(i = 0; i < 5; i++) {
+  96:foodloader.c  ****         _delay_loop_2(65535);
+  97:foodloader.c  **** 
+  98:foodloader.c  ****         if(_UCSRA_UART0 & _BV(_RXC_UART0)) {
+  99:foodloader.c  ****             if(_UDR_UART0 == BOOTLOADER_ENTRY_CHAR) {
+ 100:foodloader.c  ****                     return 1;
+ 101:foodloader.c  ****             }
+ 102:foodloader.c  ****         }
+ 103:foodloader.c  ****     }
+ 104:foodloader.c  **** 
+ 105:foodloader.c  ****     /* never received the character */
+ 106:foodloader.c  ****     return 0;
+ 107:foodloader.c  **** } /* }}} */
+ 108:foodloader.c  **** 
+ 109:foodloader.c  **** /** init the hardware uart */
+ 110:foodloader.c  **** static inline void init_uart(void)
+ 111:foodloader.c  **** /*{{{*/ {
+ 112:foodloader.c  **** 
+ 113:foodloader.c  ****     /* set baud rate */
+ 114:foodloader.c  ****     _UBRRH_UART0 = (uint8_t)(UART_UBRR >> 8);  /* high byte */
+ 115:foodloader.c  ****     _UBRRL_UART0 = (uint8_t)UART_UBRR;         /* low byte */
+ 116:foodloader.c  **** 
+ 117:foodloader.c  ****     /* set mode */
+ 118:foodloader.c  ****     _UCSRC_UART0 = UART_UCSRC;
+ 119:foodloader.c  **** 
+ 120:foodloader.c  ****     /* enable transmitter, receiver */
+ 121:foodloader.c  ****     _UCSRB_UART0 = _BV(_TXEN_UART0) | _BV(_RXEN_UART0);
+ 122:foodloader.c  **** 
+ 123:foodloader.c  **** } /* }}} */
+ 124:foodloader.c  **** 
+ 125:foodloader.c  **** /** move interrupt vectors to application section and jump to main program */
+ 126:foodloader.c  **** static noinline void start_application(void)
+ 127:foodloader.c  **** /* {{{ */ {
+ 145               	.LM7:
+ 146               	/* prologue: frame size=0 */
+ 147               	/* prologue end (size=0) */
+ 128:foodloader.c  **** 
+ 129:foodloader.c  ****         /* reset input pin */
+ 130:foodloader.c  ****         BOOTLOADER_PORT &= BOOTLOADER_MASK;
+ 149               	.LM8:
+ 150 0012 85B3      		in r24,53-0x20
+ 151 0014 8170      		andi r24,lo8(1)
+ 152 0016 85BB      		out 53-0x20,r24
+ 131:foodloader.c  **** 
+ 132:foodloader.c  ****         /* move interrupt vectors to application section and jump to main program */
+ 133:foodloader.c  ****         _IVREG = _BV(IVCE);
+ 154               	.LM9:
+ 155 0018 81E0      		ldi r24,lo8(1)
+ 156 001a 8BBF      		out 91-0x20,r24
+ 134:foodloader.c  ****         _IVREG = 0;
+ 158               	.LM10:
+ 159 001c 1BBE      		out 91-0x20,__zero_reg__
+ 135:foodloader.c  ****         jump_to_application();
+ 161               	.LM11:
+ 162 001e E091 0000 		lds r30,jump_to_application
+ 163 0022 F091 0000 		lds r31,(jump_to_application)+1
+ 164 0026 0995      		icall
+ 165               	/* epilogue: frame size=0 */
+ 166 0028 0895      		ret
+ 167               	/* epilogue end (size=1) */
+ 168               	/* function start_application size 12 (11) */
+ 170               	.Lscope2:
+ 172               		.stabd	78,0,0
+ 173               		.data
+ 174               	.LC0:
+ 175 0000 4644 4C20 		.string	"FDL v"
+ 175      7600 
+ 176               		.text
+ 178               	.global	main
+ 180               	main:
+ 181               		.stabd	46,0,0
+ 136:foodloader.c  **** 
+ 137:foodloader.c  **** } /* }}} */
+ 138:foodloader.c  **** 
+ 139:foodloader.c  **** int main(void)
+ 140:foodloader.c  **** /* {{{ */ {
+ 183               	.LM12:
+ 184               	/* prologue: frame size=0 */
+ 185 002a C0E0      		ldi r28,lo8(__stack - 0)
+ 186 002c D0E0      		ldi r29,hi8(__stack - 0)
+ 187 002e DEBF      		out __SP_H__,r29
+ 188 0030 CDBF      		out __SP_L__,r28
+ 189               	/* prologue end (size=4) */
+ 141:foodloader.c  **** 
+ 142:foodloader.c  **** #   ifdef HONOR_WATCHDOG_RESET
+ 143:foodloader.c  ****     /* if this reset was caused by the watchdog timer, just start the
+ 144:foodloader.c  ****      * application, else disable the watchdog */
+ 145:foodloader.c  ****     if (MCUSR & _BV(WDRF))
+ 191               	.LM13:
+ 192 0032 04B6      		in __tmp_reg__,84-0x20
+ 193 0034 03FE      		sbrs __tmp_reg__,3
+ 194 0036 06C0      		rjmp .L18
+ 146:foodloader.c  ****         jump_to_application();
+ 196               	.LM14:
+ 197 0038 E091 0000 		lds r30,jump_to_application
+ 198 003c F091 0000 		lds r31,(jump_to_application)+1
+ 199 0040 0995      		icall
+ 200 0042 06C0      		rjmp .L20
+ 201               	.L18:
+ 147:foodloader.c  ****     else
+ 148:foodloader.c  ****         wdt_disable();
+ 203               	.LM15:
+ 204 0044 88E1      		ldi r24,lo8(24)
+ 205               	/* #APP */
+ 206 0046 0FB6      		in __tmp_reg__, __SREG__
+ 207 0048 F894      		cli
+ 208 004a 81BD      		out 33, r24
+ 209 004c 11BC      		out 33, __zero_reg__
+ 210 004e 0FBE      		out __SREG__,__tmp_reg__
+ 211               		
+ 212               	/* #NOAPP */
+ 213               	.L20:
+ 214               	.LBB24:
+ 215               	.LBB25:
+ 217               	.LM16:
+ 218 0050 10BC      		out 64-0x20,__zero_reg__
+ 220               	.LM17:
+ 221 0052 88E0      		ldi r24,lo8(8)
+ 222 0054 89B9      		out 41-0x20,r24
+ 224               	.LM18:
+ 225 0056 86E8      		ldi r24,lo8(-122)
+ 226 0058 80BD      		out 64-0x20,r24
+ 228               	.LM19:
+ 229 005a 88E1      		ldi r24,lo8(24)
+ 230 005c 8AB9      		out 42-0x20,r24
+ 231               	.LBE25:
+ 232               	.LBE24:
+ 149:foodloader.c  **** #   endif
+ 150:foodloader.c  **** 
+ 151:foodloader.c  **** 
+ 152:foodloader.c  ****     uint8_t memory_type;
+ 153:foodloader.c  **** 
+ 154:foodloader.c  ****     /* BUF_T is defined in config.h, according the pagesize */
+ 155:foodloader.c  ****     BUF_T buffer_size;
+ 156:foodloader.c  **** 
+ 157:foodloader.c  ****     init_uart();
+ 158:foodloader.c  **** 
+ 159:foodloader.c  ****     /* send boot message */
+ 160:foodloader.c  **** #   if SEND_BOOT_MESSAGE
+ 161:foodloader.c  ****         uart_putc('b');
+ 234               	.LM20:
+ 235 005e 82E6      		ldi r24,lo8(98)
+ 236 0060 CFDF      		rcall uart_putc
+ 162:foodloader.c  **** #   endif
+ 163:foodloader.c  **** 
+ 164:foodloader.c  ****     /* configure pin as input and enable pullup */
+ 165:foodloader.c  ****     BOOTLOADER_DDR &= ~BOOTLOADER_MASK;
+ 238               	.LM21:
+ 239 0062 A098      		cbi 52-0x20,0
+ 166:foodloader.c  ****     BOOTLOADER_PORT |= BOOTLOADER_MASK;
+ 241               	.LM22:
+ 242 0064 A89A      		sbi 53-0x20,0
+ 243 0066 20E0      		ldi r18,lo8(0)
+ 244 0068 EFEF      		ldi r30,lo8(-1)
+ 245 006a FFEF      		ldi r31,hi8(-1)
+ 246               	.L21:
+ 247               	.LBB26:
+ 248               	.LBB27:
+ 249               	.LBB28:
+ 250               	.LBB29:
+ 252               	.Ltext1:
+   1:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** /* Copyright (c) 2002, Marek Michalkiewicz
+   2:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****    Copyright (c) 2004,2005 Joerg Wunsch
+   3:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****    All rights reserved.
+   4:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+   5:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****    Redistribution and use in source and binary forms, with or without
+   6:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****    modification, are permitted provided that the following conditions are met:
+   7:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+   8:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****    * Redistributions of source code must retain the above copyright
+   9:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****      notice, this list of conditions and the following disclaimer.
+  10:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+  11:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****    * Redistributions in binary form must reproduce the above copyright
+  12:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****      notice, this list of conditions and the following disclaimer in
+  13:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****      the documentation and/or other materials provided with the
+  14:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****      distribution.
+  15:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+  16:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****    * Neither the name of the copyright holders nor the names of
+  17:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****      contributors may be used to endorse or promote products derived
+  18:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****      from this software without specific prior written permission.
+  19:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+  20:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  21:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  22:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  23:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  24:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  25:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  26:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  27:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  28:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  29:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  30:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  31:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+  32:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** /* $Id: delay.h,v 1.1.2.1 2005/12/12 23:19:49 joerg_wunsch Exp $ */
+  33:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+  34:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** #ifndef _UTIL_DELAY_H_
+  35:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** #define _UTIL_DELAY_H_ 1
+  36:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+  37:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** #include <inttypes.h>
+  38:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+  39:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** /** \defgroup util_delay <util/delay.h>: Busy-wait delay loops
+  40:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     \code
+  41:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     #define F_CPU 1000000UL  // 1 MHz
+  42:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     //#define F_CPU 14.7456E6
+  43:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     #include <util/delay.h>
+  44:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     \endcode
+  45:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+  46:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     \note As an alternative method, it is possible to pass the
+  47:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     F_CPU macro down to the compiler from the Makefile.
+  48:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     Obviously, in that case, no \c \#define statement should be
+  49:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     used.
+  50:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+  51:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     The functions in this header file implement simple delay loops
+  52:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     that perform a busy-waiting.  They are typically used to
+  53:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     facilitate short delays in the program execution.  They are
+  54:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     implemented as count-down loops with a well-known CPU cycle
+  55:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     count per loop iteration.  As such, no other processing can
+  56:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     occur simultaneously.  It should be kept in mind that the
+  57:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     functions described here do not disable interrupts.
+  58:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+  59:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     In general, for long delays, the use of hardware timers is
+  60:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     much preferrable, as they free the CPU, and allow for
+  61:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     concurrent processing of other events while the timer is
+  62:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     running.  However, in particular for very short delays, the
+  63:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     overhead of setting up a hardware timer is too much compared
+  64:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     to the overall delay time.
+  65:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+  66:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     Two inline functions are provided for the actual delay algorithms.
+  67:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+  68:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     Two wrapper functions allow the specification of microsecond, and
+  69:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     millisecond delays directly, using the application-supplied macro
+  70:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     F_CPU as the CPU clock frequency (in Hertz).  These functions
+  71:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     operate on double typed arguments, however when optimization is
+  72:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     turned on, the entire floating-point calculation will be done at
+  73:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     compile-time.
+  74:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+  75:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     \note When using _delay_us() and _delay_ms(), the expressions
+  76:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     passed as arguments to these functions shall be compile-time
+  77:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     constants, otherwise the floating-point calculations to setup the
+  78:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     loops will be done at run-time, thereby drastically increasing
+  79:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     both the resulting code size, as well as the time required to
+  80:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     setup the loops.
+  81:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** */
+  82:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+  83:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** #if !defined(__DOXYGEN__)
+  84:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** static inline void _delay_loop_1(uint8_t __count) __attribute__((always_inline));
+  85:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** static inline void _delay_loop_2(uint16_t __count) __attribute__((always_inline));
+  86:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** static inline void _delay_us(double __us) __attribute__((always_inline));
+  87:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** static inline void _delay_ms(double __ms) __attribute__((always_inline));
+  88:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** #endif
+  89:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+  90:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** /** \ingroup util_delay
+  91:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+  92:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     Delay loop using an 8-bit counter \c __count, so up to 256
+  93:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     iterations are possible.  (The value 256 would have to be passed
+  94:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     as 0.)  The loop executes three CPU cycles per iteration, not
+  95:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     including the overhead the compiler needs to setup the counter
+  96:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     register.
+  97:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+  98:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     Thus, at a CPU speed of 1 MHz, delays of up to 768 microseconds
+  99:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     can be achieved.
+ 100:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** */
+ 101:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** void
+ 102:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** _delay_loop_1(uint8_t __count)
+ 103:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** {
+ 104:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 	__asm__ volatile (
+ 105:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 		"1: dec %0" "\n\t"
+ 106:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 		"brne 1b"
+ 107:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 		: "=r" (__count)
+ 108:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 		: "0" (__count)
+ 109:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 	);
+ 110:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** }
+ 111:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+ 112:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** /** \ingroup util_delay
+ 113:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+ 114:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     Delay loop using a 16-bit counter \c __count, so up to 65536
+ 115:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     iterations are possible.  (The value 65536 would have to be
+ 116:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     passed as 0.)  The loop executes four CPU cycles per iteration,
+ 117:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     not including the overhead the compiler requires to setup the
+ 118:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     counter register pair.
+ 119:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 
+ 120:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     Thus, at a CPU speed of 1 MHz, delays of up to about 262.1
+ 121:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****     milliseconds can be achieved.
+ 122:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h ****  */
+ 123:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** void
+ 124:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** _delay_loop_2(uint16_t __count)
+ 125:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** {
+ 126:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/util/delay.h **** 	__asm__ volatile (
+ 254               	.LM23:
+ 255 006c CF01      		movw r24,r30
+ 256               	/* #APP */
+ 257 006e 0197      		1: sbiw r24,1
+ 258 0070 F1F7      		brne 1b
+ 259               	/* #NOAPP */
+ 260               	.LBE29:
+ 261               	.LBE28:
+ 263               	.Ltext2:
+ 265               	.LM24:
+ 266 0072 5F9B      		sbis 43-0x20,7
+ 267 0074 03C0      		rjmp .L22
+ 269               	.LM25:
+ 270 0076 8CB1      		in r24,44-0x20
+ 271 0078 8037      		cpi r24,lo8(112)
+ 272 007a 29F0      		breq .L24
+ 273               	.L22:
+ 275               	.LM26:
+ 276 007c 2F5F      		subi r18,lo8(-(1))
+ 277 007e 2530      		cpi r18,lo8(5)
+ 278 0080 09F4      		brne .+2
+ 279 0082 38C1      		rjmp .L96
+ 280 0084 F3CF      		rjmp .L21
+ 281               	.L24:
+ 282               	.LBE27:
+ 283               	.LBE26:
+ 167:foodloader.c  **** 
+ 168:foodloader.c  ****     /* bootloader activation methods */
+ 169:foodloader.c  ****     if (
+ 170:foodloader.c  **** #   ifdef BOOTLOADER_JUMPER
+ 171:foodloader.c  **** 	I don't want this, so throw error please!!
+ 172:foodloader.c  ****             /* 1) activation via jumper */
+ 173:foodloader.c  ****             ((BOOTLOADER_PIN & BOOTLOADER_MASK) == 0) ||
+ 174:foodloader.c  **** #   endif
+ 175:foodloader.c  **** #   ifdef BOOTLOADER_CHAR
+ 176:foodloader.c  ****             /* 2) or activation via char */
+ 177:foodloader.c  ****             wait_for_char() ||
+ 178:foodloader.c  **** #   endif
+ 179:foodloader.c  ****             0) {
+ 180:foodloader.c  **** 
+ 181:foodloader.c  ****         goto start_bootloader;
+ 182:foodloader.c  **** 
+ 183:foodloader.c  ****     } else {
+ 184:foodloader.c  **** #       if SEND_BOOT_MESSAGE
+ 185:foodloader.c  ****         uart_putc('a');
+ 186:foodloader.c  **** #       endif
+ 187:foodloader.c  **** 
+ 188:foodloader.c  ****         start_application();
+ 189:foodloader.c  ****     }
+ 190:foodloader.c  **** 
+ 191:foodloader.c  **** 
+ 192:foodloader.c  **** start_bootloader:
+ 193:foodloader.c  **** 
+ 194:foodloader.c  **** #   if SEND_BOOT_MESSAGE
+ 195:foodloader.c  ****     uart_putc('p');
+ 285               	.LM27:
+ 286 0086 80E7      		ldi r24,lo8(112)
+ 287               	.L107:
+ 288 0088 BBDF      		rcall uart_putc
+ 289               	.L108:
+ 290               	.LBB30:
+ 196:foodloader.c  **** #   endif
+ 197:foodloader.c  **** 
+ 198:foodloader.c  ****     /* main loop */
+ 199:foodloader.c  ****     while (1)
+ 200:foodloader.c  ****     {
+ 201:foodloader.c  ****         uint8_t command;
+ 202:foodloader.c  **** 
+ 203:foodloader.c  ****         /* block until a command has been received */
+ 204:foodloader.c  ****         command = uart_getc();
+ 292               	.LM28:
+ 293 008a BEDF      		rcall uart_getc
+ 205:foodloader.c  **** 
+ 206:foodloader.c  ****         switch (command)
+ 295               	.LM29:
+ 296 008c 8635      		cpi r24,lo8(86)
+ 297 008e 09F4      		brne .+2
+ 298 0090 7CC0      		rjmp .L33
+ 299 0092 8735      		cpi r24,lo8(87)
+ 300 0094 C8F4      		brsh .L42
+ 301 0096 8C34      		cpi r24,lo8(76)
+ 302 0098 09F4      		brne .+2
+ 303 009a EEC0      		rjmp .L106
+ 304 009c 8D34      		cpi r24,lo8(77)
+ 305 009e 50F4      		brsh .L43
+ 306 00a0 8234      		cpi r24,lo8(66)
+ 307 00a2 09F4      		brne .+2
+ 308 00a4 80C0      		rjmp .L29
+ 309 00a6 8534      		cpi r24,lo8(69)
+ 310 00a8 09F4      		brne .+2
+ 311 00aa E6C0      		rjmp .L106
+ 312 00ac 8134      		cpi r24,lo8(65)
+ 313 00ae 09F0      		breq .+2
+ 314 00b0 1FC1      		rjmp .L27
+ 315 00b2 28C0      		rjmp .L28
+ 316               	.L43:
+ 317 00b4 8335      		cpi r24,lo8(83)
+ 318 00b6 09F4      		brne .+2
+ 319 00b8 60C0      		rjmp .L31
+ 320 00ba 8435      		cpi r24,lo8(84)
+ 321 00bc 09F4      		brne .+2
+ 322 00be 51C0      		rjmp .L32
+ 323 00c0 8035      		cpi r24,lo8(80)
+ 324 00c2 09F0      		breq .+2
+ 325 00c4 15C1      		rjmp .L27
+ 326 00c6 D8C0      		rjmp .L106
+ 327               	.L42:
+ 328 00c8 8536      		cpi r24,lo8(101)
+ 329 00ca 81F1      		breq .L37
+ 330 00cc 8636      		cpi r24,lo8(102)
+ 331 00ce 48F4      		brsh .L44
+ 332 00d0 8136      		cpi r24,lo8(97)
+ 333 00d2 B1F0      		breq .L35
+ 334 00d4 8236      		cpi r24,lo8(98)
+ 335 00d6 09F4      		brne .+2
+ 336 00d8 60C0      		rjmp .L36
+ 337 00da 8835      		cpi r24,lo8(88)
+ 338 00dc 09F0      		breq .+2
+ 339 00de 08C1      		rjmp .L27
+ 340 00e0 5AC0      		rjmp .L34
+ 341               	.L44:
+ 342 00e2 8037      		cpi r24,lo8(112)
+ 343 00e4 09F4      		brne .+2
+ 344 00e6 55C0      		rjmp .L39
+ 345 00e8 8137      		cpi r24,lo8(113)
+ 346 00ea 20F4      		brsh .L45
+ 347 00ec 8736      		cpi r24,lo8(103)
+ 348 00ee 09F0      		breq .+2
+ 349 00f0 FFC0      		rjmp .L27
+ 350 00f2 C4C0      		rjmp .L38
+ 351               	.L45:
+ 352 00f4 8337      		cpi r24,lo8(115)
+ 353 00f6 B9F1      		breq .L40
+ 354 00f8 8437      		cpi r24,lo8(116)
+ 355 00fa 09F0      		breq .+2
+ 356 00fc F9C0      		rjmp .L27
+ 357 00fe 39C0      		rjmp .L41
+ 358               	.L35:
+ 207:foodloader.c  ****         {
+ 208:foodloader.c  ****             case 'P':   /* enter programming mode, respond with CR */
+ 209:foodloader.c  ****             case 'L':   /* leave programming mode, respond with CR */
+ 210:foodloader.c  **** #if EXIT_BOOTLOADER == 0
+ 211:foodloader.c  ****             case 'E':   /* exit bootloader, ignored */
+ 212:foodloader.c  **** #endif
+ 213:foodloader.c  ****                         uart_putc('\r');
+ 214:foodloader.c  ****                         break;
+ 215:foodloader.c  **** 
+ 216:foodloader.c  ****             case 'a':   /* report if we support address autoincrementing: yes, of course */
+ 217:foodloader.c  ****                         uart_putc('Y');
+ 360               	.LM30:
+ 361 0100 89E5      		ldi r24,lo8(89)
+ 362 0102 C2CF      		rjmp .L107
+ 363               	.L28:
+ 218:foodloader.c  ****                         break;
+ 219:foodloader.c  **** 
+ 220:foodloader.c  ****             case 'A':   /* set write address start (in words), read high and low byte and respond w
+ 221:foodloader.c  ****                         /* {{{ */
+ 222:foodloader.c  **** 
+ 223:foodloader.c  ****                         /* eeprom address is a byte address */
+ 224:foodloader.c  ****                         eeprom_address = (uart_getc() << 8) | uart_getc();
+ 365               	.LM31:
+ 366 0104 81DF      		rcall uart_getc
+ 367 0106 082F      		mov r16,r24
+ 368 0108 7FDF      		rcall uart_getc
+ 369 010a 1127      		clr r17
+ 370 010c 102F      		mov r17,r16
+ 371 010e 0027      		clr r16
+ 372 0110 9927      		clr r25
+ 373 0112 082B      		or r16,r24
+ 374 0114 192B      		or r17,r25
+ 375 0116 1093 0000 		sts (eeprom_address)+1,r17
+ 376 011a 0093 0000 		sts eeprom_address,r16
+ 225:foodloader.c  **** 
+ 226:foodloader.c  ****                         /* flash address is a byte address too, but we get a
+ 227:foodloader.c  ****                          * word address so convert it */
+ 228:foodloader.c  ****                         flash_address = eeprom_address << 1;
+ 378               	.LM32:
+ 379 011e 000F      		lsl r16
+ 380 0120 111F      		rol r17
+ 381 0122 1093 0000 		sts (flash_address)+1,r17
+ 382 0126 0093 0000 		sts flash_address,r16
+ 383 012a A6C0      		rjmp .L106
+ 384               	.L37:
+ 229:foodloader.c  **** 
+ 230:foodloader.c  ****                         /* acknowledge */
+ 231:foodloader.c  ****                         uart_putc('\r');
+ 232:foodloader.c  ****                         break;
+ 233:foodloader.c  **** 
+ 234:foodloader.c  ****                         /* }}} */
+ 235:foodloader.c  **** 
+ 236:foodloader.c  ****             case 'e':   /* do a chip-erase, respond with CR afterwards */
+ 237:foodloader.c  ****                         /* {{{ */
+ 238:foodloader.c  **** 
+ 239:foodloader.c  ****                         /* iterate over all pages in flash, and try to erase every single
+ 240:foodloader.c  ****                          * one of them (the bootloader section should be protected by lock-bits (!)
+ 241:foodloader.c  **** 
+ 242:foodloader.c  ****                         for (flash_address = 0; flash_address < BOOT_SECTION_START; flash_address +
+ 386               	.LM33:
+ 387 012c 1092 0000 		sts (flash_address)+1,__zero_reg__
+ 388 0130 1092 0000 		sts flash_address,__zero_reg__
+ 389 0134 80E0      		ldi r24,lo8(0)
+ 390 0136 90E0      		ldi r25,hi8(0)
+ 391 0138 23E0      		ldi r18,lo8(3)
+ 392               	.L109:
+ 243:foodloader.c  ****                             boot_page_erase_safe(flash_address);
+ 394               	.LM34:
+ 395 013a 07B6      		in __tmp_reg__,87-0x20
+ 396 013c 00FC      		sbrc __tmp_reg__,0
+ 397 013e FDCF      		rjmp .L109
+ 398               	.L89:
+ 399 0140 E199      		sbic 60-0x20,1
+ 400 0142 FECF      		rjmp .L89
+ 401               	/* #APP */
+ 402 0144 FC01      		movw r30, r24
+ 403 0146 2093 5700 		sts 87, r18
+ 404 014a E895      		spm
+ 405               		
+ 407               	.LM35:
+ 408               	/* #NOAPP */
+ 409 014c 805C      		subi r24,lo8(-(64))
+ 410 014e 9F4F      		sbci r25,hi8(-(64))
+ 411 0150 3CE1      		ldi r19,hi8(7168)
+ 412 0152 8030      		cpi r24,lo8(7168)
+ 413 0154 9307      		cpc r25,r19
+ 414 0156 88F3      		brlo .L109
+ 415 0158 9093 0000 		sts (flash_address)+1,r25
+ 416 015c 8093 0000 		sts flash_address,r24
+ 417 0160 8BC0      		rjmp .L106
+ 418               	.L32:
+ 244:foodloader.c  ****                         }
+ 245:foodloader.c  **** 
+ 246:foodloader.c  ****                         uart_putc('\r');
+ 247:foodloader.c  ****                         break;
+ 248:foodloader.c  **** 
+ 249:foodloader.c  ****                         /* }}} */
+ 250:foodloader.c  **** 
+ 251:foodloader.c  ****             case 'T':   /* select device type: received device type and respond with CR */
+ 252:foodloader.c  ****                         /* ignore this command, only the device this bootloader
+ 253:foodloader.c  ****                          * is installed on can be programmed :) */
+ 254:foodloader.c  **** 
+ 255:foodloader.c  ****                         /* discard byte and acknowledge */
+ 256:foodloader.c  ****                         uart_getc();
+ 420               	.LM36:
+ 421 0162 52DF      		rcall uart_getc
+ 422 0164 89C0      		rjmp .L106
+ 423               	.L40:
+ 257:foodloader.c  ****                         uart_putc('\r');
+ 258:foodloader.c  ****                         break;
+ 259:foodloader.c  **** 
+ 260:foodloader.c  ****             case 's':   /* read signature bytes: respond with the three signature bytes for this MC
+ 261:foodloader.c  ****                         uart_putc(_SIG_BYTE_3);
+ 425               	.LM37:
+ 426 0166 87E0      		ldi r24,lo8(7)
+ 427 0168 4BDF      		rcall uart_putc
+ 262:foodloader.c  ****                         uart_putc(_SIG_BYTE_2);
+ 429               	.LM38:
+ 430 016a 83E9      		ldi r24,lo8(-109)
+ 431 016c 49DF      		rcall uart_putc
+ 263:foodloader.c  ****                         uart_putc(_SIG_BYTE_1);
+ 433               	.LM39:
+ 434 016e 8EE1      		ldi r24,lo8(30)
+ 435 0170 8BCF      		rjmp .L107
+ 436               	.L41:
+ 264:foodloader.c  ****                         break;
+ 265:foodloader.c  **** 
+ 266:foodloader.c  ****             case 't':   /* return supported device codes (only one in this case), and terminate wit
+ 267:foodloader.c  ****                         uart_putc(_AVR910_DEVCODE);
+ 438               	.LM40:
+ 439 0172 86E7      		ldi r24,lo8(118)
+ 440 0174 45DF      		rcall uart_putc
+ 268:foodloader.c  ****                         uart_putc(0);
+ 442               	.LM41:
+ 443 0176 80E0      		ldi r24,lo8(0)
+ 444 0178 87CF      		rjmp .L107
+ 445               	.L31:
+ 269:foodloader.c  ****                         break;
+ 270:foodloader.c  **** 
+ 271:foodloader.c  ****             case 'S':   /* give software identifier, send exactly 7 chars */
+ 272:foodloader.c  ****                         uart_puts((uint8_t *)"FDL v");
+ 447               	.LM42:
+ 448 017a C0E0      		ldi r28,lo8(.LC0)
+ 449 017c D0E0      		ldi r29,hi8(.LC0)
+ 450 017e 02C0      		rjmp .L50
+ 451               	.L51:
+ 452               	.LBB31:
+ 453               	.LBB32:
+ 455               	.LM43:
+ 456 0180 3FDF      		rcall uart_putc
+ 458               	.LM44:
+ 459 0182 2196      		adiw r28,1
+ 460               	.L50:
+ 462               	.LM45:
+ 463 0184 8881      		ld r24,Y
+ 464 0186 8823      		tst r24
+ 465 0188 D9F7      		brne .L51
+ 466               	.L33:
+ 467               	.LBE32:
+ 468               	.LBE31:
+ 273:foodloader.c  **** 
+ 274:foodloader.c  ****             case 'V':   /* return software version (2 byte) */
+ 275:foodloader.c  ****                         uart_putc(VERSION_BYTE_1);
+ 470               	.LM46:
+ 471 018a 80E3      		ldi r24,lo8(48)
+ 472 018c 39DF      		rcall uart_putc
+ 276:foodloader.c  ****                         uart_putc(VERSION_BYTE_2);
+ 474               	.LM47:
+ 475 018e 82E3      		ldi r24,lo8(50)
+ 476 0190 7BCF      		rjmp .L107
+ 477               	.L39:
+ 277:foodloader.c  ****                         break;
+ 278:foodloader.c  **** 
+ 279:foodloader.c  ****             case 'p':   /* send programmer type, in this case 'S' for serial */
+ 280:foodloader.c  ****                         uart_putc('S');
+ 479               	.LM48:
+ 480 0192 83E5      		ldi r24,lo8(83)
+ 481 0194 79CF      		rjmp .L107
+ 482               	.L34:
+ 281:foodloader.c  ****                         break;
+ 282:foodloader.c  **** 
+ 283:foodloader.c  **** #if EXIT_BOOTLOADER == 1
+ 284:foodloader.c  ****             case 'E':   /* exit bootloader */
+ 285:foodloader.c  **** #endif
+ 286:foodloader.c  ****             case 'X':   /* start application */
+ 287:foodloader.c  **** 
+ 288:foodloader.c  ****                         start_application();
+ 484               	.LM49:
+ 485 0196 3DDF      		rcall start_application
+ 486 0198 6FC0      		rjmp .L106
+ 487               	.L36:
+ 289:foodloader.c  ****                         uart_putc('\r');
+ 290:foodloader.c  **** 
+ 291:foodloader.c  ****                         break;
+ 292:foodloader.c  **** 
+ 293:foodloader.c  ****             case 'b':   /* check block support: return yes and 2 bytes block size we support */
+ 294:foodloader.c  ****                         uart_putc('Y');
+ 489               	.LM50:
+ 490 019a 89E5      		ldi r24,lo8(89)
+ 491 019c 31DF      		rcall uart_putc
+ 295:foodloader.c  ****                         uart_putc(HIGH(BLOCKSIZE));
+ 493               	.LM51:
+ 494 019e 80E0      		ldi r24,lo8(0)
+ 495 01a0 2FDF      		rcall uart_putc
+ 296:foodloader.c  ****                         uart_putc(LOW(BLOCKSIZE));
+ 497               	.LM52:
+ 498 01a2 80E4      		ldi r24,lo8(64)
+ 499 01a4 71CF      		rjmp .L107
+ 500               	.L29:
+ 297:foodloader.c  ****                         break;
+ 298:foodloader.c  **** 
+ 299:foodloader.c  ****             case 'B':   /* start block flash or eeprom load (fill mcu internal page buffer) */
+ 300:foodloader.c  ****                         /* {{{ */
+ 301:foodloader.c  **** 
+ 302:foodloader.c  ****                         /* first, read buffer size (in bytes) */
+ 303:foodloader.c  ****                         buffer_size = (uart_getc() << 8) | uart_getc();
+ 502               	.LM53:
+ 503 01a6 30DF      		rcall uart_getc
+ 504 01a8 2FDF      		rcall uart_getc
+ 505 01aa D82E      		mov r13,r24
+ 304:foodloader.c  **** 
+ 305:foodloader.c  ****                         /* check if our buffer can hold all this data */
+ 306:foodloader.c  ****                         if (buffer_size > BLOCKSIZE) {
+ 507               	.LM54:
+ 508 01ac 80E4      		ldi r24,lo8(64)
+ 509 01ae 8D15      		cp r24,r13
+ 510 01b0 08F4      		brsh .+2
+ 511 01b2 9EC0      		rjmp .L27
+ 307:foodloader.c  ****                             uart_putc('?');
+ 308:foodloader.c  ****                             break;
+ 309:foodloader.c  ****                         }
+ 310:foodloader.c  **** 
+ 311:foodloader.c  ****                         /* then, read flash ('F') or eeprom ('E') memory type */
+ 312:foodloader.c  ****                         memory_type = uart_getc();
+ 513               	.LM55:
+ 514 01b4 29DF      		rcall uart_getc
+ 313:foodloader.c  **** 
+ 314:foodloader.c  ****                         /* memory type is flash */
+ 315:foodloader.c  ****                         if (memory_type == 'F')
+ 516               	.LM56:
+ 517 01b6 8634      		cpi r24,lo8(70)
+ 518 01b8 09F0      		breq .+2
+ 519 01ba 46C0      		rjmp .L54
+ 520               	.LBB33:
+ 316:foodloader.c  ****                         /* {{{ */ {
+ 317:foodloader.c  **** 
+ 318:foodloader.c  ****                             BUF_T i;
+ 319:foodloader.c  ****                             uint16_t temp_word_buffer;
+ 320:foodloader.c  **** 
+ 321:foodloader.c  ****                             if (flash_address > BOOT_SECTION_START) {
+ 522               	.LM57:
+ 523 01bc 8091 0000 		lds r24,flash_address
+ 524 01c0 9091 0000 		lds r25,(flash_address)+1
+ 525 01c4 8150      		subi r24,lo8(7169)
+ 526 01c6 9C41      		sbci r25,hi8(7169)
+ 527 01c8 10F0      		brlo .L56
+ 322:foodloader.c  ****                                 uart_putc(0);
+ 529               	.LM58:
+ 530 01ca 80E0      		ldi r24,lo8(0)
+ 531 01cc 19DF      		rcall uart_putc
+ 532               	.L56:
+ 323:foodloader.c  ****                             }
+ 324:foodloader.c  **** 
+ 325:foodloader.c  ****                             uint16_t temp_address = flash_address;
+ 534               	.LM59:
+ 535 01ce C091 0000 		lds r28,flash_address
+ 536 01d2 D091 0000 		lds r29,(flash_address)+1
+ 537               	.L58:
+ 326:foodloader.c  ****                             boot_spm_busy_wait();
+ 539               	.LM60:
+ 540 01d6 07B6      		in __tmp_reg__,87-0x20
+ 541 01d8 00FC      		sbrc __tmp_reg__,0
+ 542 01da FDCF      		rjmp .L58
+ 543 01dc EE24      		clr r14
+ 544 01de FF24      		clr r15
+ 545 01e0 11C0      		rjmp .L60
+ 546               	.L61:
+ 327:foodloader.c  **** 
+ 328:foodloader.c  ****                             /* read data, wordwise, low byte first */
+ 329:foodloader.c  ****                             for (i = 0; i < buffer_size/2; i++) {
+ 330:foodloader.c  **** 
+ 331:foodloader.c  ****                                 /* get data word */
+ 332:foodloader.c  ****                                 temp_word_buffer = uart_getc() | (uart_getc() << 8);
+ 548               	.LM61:
+ 549 01e2 12DF      		rcall uart_getc
+ 550 01e4 082F      		mov r16,r24
+ 551 01e6 10DF      		rcall uart_getc
+ 333:foodloader.c  **** 
+ 334:foodloader.c  ****                                 /* write data to temporary buffer */
+ 335:foodloader.c  ****                                 boot_page_fill(temp_address, temp_word_buffer);
+ 553               	.LM62:
+ 554 01e8 21E0      		ldi r18,lo8(1)
+ 555 01ea 1127      		clr r17
+ 556 01ec 9927      		clr r25
+ 557 01ee 982F      		mov r25,r24
+ 558 01f0 8827      		clr r24
+ 559 01f2 082B      		or r16,r24
+ 560 01f4 192B      		or r17,r25
+ 561               	/* #APP */
+ 562 01f6 0801      		movw  r0, r16
+ 563 01f8 FE01      		movw r30, r28
+ 564 01fa 2093 5700 		sts 87, r18
+ 565 01fe E895      		spm
+ 566 0200 1124      		clr  r1
+ 567               		
+ 336:foodloader.c  **** 
+ 337:foodloader.c  ****                                 /* increment by two, since temp_address is a byte
+ 338:foodloader.c  ****                                  * address, but we are writing words! */
+ 339:foodloader.c  ****                                 temp_address += 2;
+ 569               	.LM63:
+ 570               	/* #NOAPP */
+ 571 0202 2296      		adiw r28,2
+ 572               	.L60:
+ 573 0204 9E2D      		mov r25,r14
+ 574 0206 0894      		sec
+ 575 0208 E11C      		adc r14,__zero_reg__
+ 576 020a F11C      		adc r15,__zero_reg__
+ 578               	.LM64:
+ 579 020c 8D2D      		mov r24,r13
+ 580 020e 8695      		lsr r24
+ 581 0210 9817      		cp r25,r24
+ 582 0212 38F3      		brlo .L61
+ 583               	.L87:
+ 340:foodloader.c  ****                             }
+ 341:foodloader.c  **** 
+ 342:foodloader.c  ****                             /* after filling the temp buffer, write the page and wait till we're do
+ 343:foodloader.c  ****                             boot_page_write_safe(flash_address);
+ 585               	.LM65:
+ 586 0214 07B6      		in __tmp_reg__,87-0x20
+ 587 0216 00FC      		sbrc __tmp_reg__,0
+ 588 0218 FDCF      		rjmp .L87
+ 589               	.L88:
+ 590 021a E199      		sbic 60-0x20,1
+ 591 021c FECF      		rjmp .L88
+ 592 021e 25E0      		ldi r18,lo8(5)
+ 593 0220 8091 0000 		lds r24,flash_address
+ 594 0224 9091 0000 		lds r25,(flash_address)+1
+ 595               	/* #APP */
+ 596 0228 FC01      		movw r30, r24
+ 597 022a 2093 5700 		sts 87, r18
+ 598 022e E895      		spm
+ 599               		
+ 600               	/* #NOAPP */
+ 601               	.L65:
+ 344:foodloader.c  ****                             boot_spm_busy_wait();
+ 603               	.LM66:
+ 604 0230 07B6      		in __tmp_reg__,87-0x20
+ 605 0232 00FC      		sbrc __tmp_reg__,0
+ 606 0234 FDCF      		rjmp .L65
+ 345:foodloader.c  **** 
+ 346:foodloader.c  ****                             /* re-enable application flash section, so we can read it again */
+ 347:foodloader.c  ****                             boot_rww_enable();
+ 608               	.LM67:
+ 609 0236 81E1      		ldi r24,lo8(17)
+ 610               	/* #APP */
+ 611 0238 8093 5700 		sts 87, r24
+ 612 023c E895      		spm
+ 613               		
+ 348:foodloader.c  **** 
+ 349:foodloader.c  ****                             /* store next page's address, since we do auto-address-incrementing */
+ 350:foodloader.c  ****                             flash_address = temp_address;
+ 615               	.LM68:
+ 616               	/* #NOAPP */
+ 617 023e D093 0000 		sts (flash_address)+1,r29
+ 618 0242 C093 0000 		sts flash_address,r28
+ 619 0246 18C0      		rjmp .L106
+ 620               	.L54:
+ 621               	.LBE33:
+ 351:foodloader.c  **** 
+ 352:foodloader.c  ****                             uart_putc('\r');
+ 353:foodloader.c  **** 
+ 354:foodloader.c  ****                         } /* }}} */
+ 355:foodloader.c  ****                         else if (memory_type == 'E')
+ 623               	.LM69:
+ 624 0248 8534      		cpi r24,lo8(69)
+ 625 024a 09F0      		breq .+2
+ 626 024c 51C0      		rjmp .L27
+ 627 024e 00E0      		ldi r16,lo8(0)
+ 628 0250 11C0      		rjmp .L69
+ 629               	.L70:
+ 630               	.LBB34:
+ 356:foodloader.c  ****                         /* {{{ */ {
+ 357:foodloader.c  **** 
+ 358:foodloader.c  ****                             //uart_putc('E');
+ 359:foodloader.c  ****                             uint8_t temp_data;
+ 360:foodloader.c  ****                             BUF_T i;
+ 361:foodloader.c  **** 
+ 362:foodloader.c  ****                             for (i = 0; i < buffer_size; i++) {
+ 363:foodloader.c  ****                                 temp_data = uart_getc();
+ 632               	.LM70:
+ 633 0252 DADE      		rcall uart_getc
+ 364:foodloader.c  ****                                 eeprom_write_byte( (uint8_t *)eeprom_address, temp_data);
+ 635               	.LM71:
+ 636 0254 A091 0000 		lds r26,eeprom_address
+ 637 0258 B091 0000 		lds r27,(eeprom_address)+1
+ 638               	.LBB35:
+ 639               	.LBB36:
+ 641               	.Ltext3:
+   1:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** /* Copyright (c) 2002, 2003, 2004 Marek Michalkiewicz
+   2:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****    Copyright (c) 2005, 2006 Bjoern Haase
+   3:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****    All rights reserved.
+   4:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+   5:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****    Redistribution and use in source and binary forms, with or without
+   6:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****    modification, are permitted provided that the following conditions are met:
+   7:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+   8:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****    * Redistributions of source code must retain the above copyright
+   9:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      notice, this list of conditions and the following disclaimer.
+  10:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+  11:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****    * Redistributions in binary form must reproduce the above copyright
+  12:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      notice, this list of conditions and the following disclaimer in
+  13:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      the documentation and/or other materials provided with the
+  14:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      distribution.
+  15:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+  16:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****    * Neither the name of the copyright holders nor the names of
+  17:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      contributors may be used to endorse or promote products derived
+  18:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      from this software without specific prior written permission.
+  19:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+  20:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  21:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  22:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  23:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  24:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  25:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  26:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  27:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  28:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  29:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  30:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  31:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+  32:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** /* $Id: eeprom.h,v 1.17.2.1 2006/02/26 21:51:04 aesok Exp $ */
+  33:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+  34:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** /*
+  35:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****    eeprom.h
+  36:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+  37:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****    Contributors:
+  38:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      Created by Marek Michalkiewicz <marekm@linux.org.pl>
+  39:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      eeprom_write_word and eeprom_write_block added by Artur Lipowski 
+  40:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      <LAL@pro.onet.pl>
+  41:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      Complete rewrite using the original interface by Bjoern Haase 
+  42:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      <bjoern.haase@de.bosch.com>. 
+  43:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****  */
+  44:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+  45:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #ifndef _EEPROM_H_
+  46:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #define _EEPROM_H_ 1
+  47:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+  48:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #define __need_size_t
+  49:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #include <stddef.h>
+  50:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #include <inttypes.h>
+  51:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+  52:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+  53:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #ifdef __AVR_MEGA__
+  54:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #define XCALL "call"
+  55:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #else
+  56:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #define XCALL "rcall"
+  57:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #endif
+  58:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+  59:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #include <avr/io.h>
+  60:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #ifndef __EEPROM_REG_LOCATIONS__
+  61:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** /** \def __EEPROM_REG_LOCATIONS__
+  62:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     \ingroup avr_eeprom
+  63:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      In order to be able to work without a requiring a multilib 
+  64:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      approach for dealing with controllers having the EEPROM registers
+  65:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      at different positions in memory space, the eeprom functions evaluate
+  66:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      __EEPROM_REG_LOCATIONS__: It is assumed to be defined by
+  67:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      the device io header and contains 6 uppercase hex digits encoding the 
+  68:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      addresses of EECR,EEDR and EEAR. 
+  69:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      First two letters:  EECR address.
+  70:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      Second two letters: EEDR address.
+  71:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      Last two letters:   EEAR address.
+  72:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      The default 1C1D1E corresponds to the
+  73:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      register location that is valid for most controllers. The value
+  74:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      of this define symbol is used for appending it to the base name of the
+  75:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      assembler functions.  */
+  76:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #define __EEPROM_REG_LOCATIONS__ 1C1D1E
+  77:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #endif
+  78:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #define _STR2(EXP) _STR1(EXP)
+  79:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #define _STR1(EXP) #EXP
+  80:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #define _REG_LOCATION_SUFFIX _STR2(__EEPROM_REG_LOCATIONS__)
+  81:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+  82:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #ifndef CR_TAB
+  83:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #define CR_TAB "\n\t"
+  84:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #endif
+  85:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+  86:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+  87:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** /** \defgroup avr_eeprom <avr/eeprom.h>: EEPROM handling
+  88:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     \code #include <avr/eeprom.h> \endcode
+  89:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+  90:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     This header file declares the interface to some simple library
+  91:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     routines suitable for handling the data EEPROM contained in the
+  92:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     AVR microcontrollers.  The implementation uses a simple polled
+  93:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     mode interface.  Applications that require interrupt-controlled
+  94:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     EEPROM access to ensure that no time will be wasted in spinloops
+  95:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     will have to deploy their own implementation.
+  96:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+  97:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     \note All of the read/write functions first make sure the EEPROM
+  98:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      is ready to be accessed.  Since this may cause long delays if a
+  99:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      write operation is still pending, time-critical applications
+ 100:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      should first poll the EEPROM e. g. using eeprom_is_ready() before
+ 101:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      attempting any actual I/O.
+ 102:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 103:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     \note This header file declares inline functions that call the
+ 104:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      assembler subroutines directly. This prevents that the compiler
+ 105:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      generates push/pops for the call-clobbered registers. This way
+ 106:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      also a specific calling convention could be used for the eeprom
+ 107:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      routines e.g. by passing values in __tmp_reg__, eeprom addresses in
+ 108:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      X and memory addresses in Z registers. Method is optimized for code 
+ 109:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      size.
+ 110:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 111:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     \note Presently supported are two locations of the EEPROM register
+ 112:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      set: 0x1F,0x20,0x21 and 0x1C,0x1D,0x1E 
+ 113:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      (see ::__EEPROM_REG_LOCATIONS__).
+ 114:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 115:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     \note As these functions modify IO registers, they are known to be
+ 116:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      non-reentrant.  If any of these functions are used from both,
+ 117:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      standard and interrupt context, the applications must ensure
+ 118:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      proper protection (e.g. by disabling interrupts before accessing
+ 119:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      them).
+ 120:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 121:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** */
+ 122:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 123:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 124:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** /* forward declarations of the inline functions so that doxygen does
+ 125:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****    not get confused by the attribute expression.  */
+ 126:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 127:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** static inline uint8_t __attribute__ ((always_inline))
+ 128:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** eeprom_read_byte (const uint8_t *addr);
+ 129:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 130:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** static inline uint16_t __attribute__ ((always_inline)) 
+ 131:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** eeprom_read_word (const uint16_t *addr);
+ 132:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 133:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** static inline void __attribute__ ((always_inline))
+ 134:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** eeprom_read_block (void *pointer_ram,
+ 135:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****                    const void *pointer_eeprom,
+ 136:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****                    size_t size);
+ 137:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 138:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** static inline void __attribute__ ((always_inline))
+ 139:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** eeprom_write_byte (uint8_t *addr,uint8_t value);
+ 140:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 141:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** static inline void __attribute__ ((always_inline))
+ 142:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** eeprom_write_word (uint16_t *addr,uint16_t value);
+ 143:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 144:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** static inline void __attribute__ ((always_inline))
+ 145:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** eeprom_write_block (const void *pointer_ram,
+ 146:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****                     void *pointer_eeprom,
+ 147:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****                     size_t size);
+ 148:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 149:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** /** \name avr-libc declarations */
+ 150:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 151:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** /*@{*/
+ 152:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 153:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** /** \def EEMEM
+ 154:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     \ingroup avr_eeprom
+ 155:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     Attribute expression causing a variable to be allocated within the .eeprom
+ 156:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****      section.  */
+ 157:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #define EEMEM __attribute__((section(".eeprom")))
+ 158:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 159:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** /** \def eeprom_is_ready
+ 160:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     \ingroup avr_eeprom
+ 161:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     \returns 1 if EEPROM is ready for a new read/write operation, 0 if not. */
+ 162:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 163:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #if defined(__DOXYGEN__)
+ 164:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** # define eeprom_is_ready()
+ 165:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #elif defined(EEWE)
+ 166:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** # define eeprom_is_ready() bit_is_clear(EECR, EEWE)
+ 167:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #elif defined(EEPE)
+ 168:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** # define eeprom_is_ready() bit_is_clear(EECR, EEPE)
+ 169:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #elif defined(DEECR) && defined(EEL)
+ 170:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** # define eeprom_is_ready() bit_is_clear(DEECR, EEL)
+ 171:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #else
+ 172:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** # error "No write enable bit known for this device's EEPROM."
+ 173:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #endif
+ 174:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 175:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** /** \def eeprom_busy_wait
+ 176:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     \ingroup avr_eeprom
+ 177:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 178:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     Loops until the eeprom is no longer busy.
+ 179:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 180:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     \returns Nothing. */
+ 181:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 182:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** #define eeprom_busy_wait() do {} while (!eeprom_is_ready())
+ 183:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 184:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 185:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** /** \ingroup avr_eeprom
+ 186:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     Read one byte from EEPROM address \c addr. */
+ 187:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 188:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** uint8_t 
+ 189:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** eeprom_read_byte (const uint8_t *addr) 
+ 190:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** {
+ 191:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   uint8_t result;
+ 192:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   asm volatile
+ 193:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****       ( XCALL " __eeprom_read_byte_" _REG_LOCATION_SUFFIX CR_TAB
+ 194:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****         "mov %1,__tmp_reg__"
+ 195:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****        : "+x" (addr),
+ 196:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****          "=r" (result)
+ 197:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****        : );
+ 198:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   return result;
+ 199:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** }
+ 200:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 201:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** /** \ingroup avr_eeprom
+ 202:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     Read one 16-bit word (little endian) from EEPROM address \c addr. */
+ 203:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** uint16_t
+ 204:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** eeprom_read_word (const uint16_t *addr)
+ 205:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** {
+ 206:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   uint16_t result;
+ 207:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 208:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   asm ( 
+ 209:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****         XCALL " __eeprom_read_word_" _REG_LOCATION_SUFFIX CR_TAB
+ 210:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****        : "+x" (addr),
+ 211:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****          "=z" (result)
+ 212:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****        : );
+ 213:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   return result;
+ 214:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** }
+ 215:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 216:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** /** \ingroup avr_eeprom
+ 217:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     Read a block of \c n bytes from EEPROM address \c pointer_eeprom to
+ 218:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     \c pointer_ram.  For constant n <= 256 bytes a library function is used.
+ 219:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     For block sizes unknown at compile time or block sizes > 256 an inline
+ 220:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     loop is expanded. */
+ 221:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 222:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** void 
+ 223:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** eeprom_read_block (void *pointer_ram,
+ 224:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****                    const void *pointer_eeprom,
+ 225:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****                    size_t n)
+ 226:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** {
+ 227:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   if (!__builtin_constant_p (n)
+ 228:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****       || n > 256)
+ 229:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     {
+ 230:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****       /* make sure size is a 16 bit variable.  */
+ 231:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****       uint16_t size = n; 
+ 232:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 233:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****       asm volatile ( 
+ 234:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****             ".%=_start:" CR_TAB
+ 235:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****             "sbiw %2,1" CR_TAB
+ 236:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****             "brlt .%=_finished" CR_TAB
+ 237:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****              XCALL " __eeprom_read_byte_" _REG_LOCATION_SUFFIX CR_TAB
+ 238:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****             "st z+,__tmp_reg__" CR_TAB
+ 239:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****             "rjmp .%=_start" CR_TAB
+ 240:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****             ".%=_finished:" 
+ 241:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****           : "=x" (pointer_eeprom),
+ 242:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****             "=z" (pointer_ram),
+ 243:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****             "+w" (size)
+ 244:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****            : "x" (pointer_eeprom), 
+ 245:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****              "z" (pointer_ram)
+ 246:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****            : "memory");
+ 247:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     }
+ 248:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   else
+ 249:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     {
+ 250:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****       if (n != 0)
+ 251:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****         {
+ 252:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****           if (n == 256)
+ 253:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****             {
+ 254:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****               asm volatile (
+ 255:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****                   XCALL " __eeprom_read_block_" _REG_LOCATION_SUFFIX 
+ 256:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****                 : "+x" (pointer_eeprom),
+ 257:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****                   "=z" (pointer_ram)
+ 258:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****                 : "z"  (pointer_ram)
+ 259:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****                 : "memory");
+ 260:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****             }
+ 261:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****           else
+ 262:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****             {
+ 263:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****               /* Needed in order to truncate to 8 bit.  */
+ 264:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****               uint8_t len;
+ 265:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****               len = (uint8_t) n; 
+ 266:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 267:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****               asm volatile (
+ 268:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****                   "mov __zero_reg__,%2"      CR_TAB
+ 269:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****                    XCALL " __eeprom_read_block_" _REG_LOCATION_SUFFIX 
+ 270:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****                 : "+x" (pointer_eeprom),
+ 271:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****                   "=z" (pointer_ram)
+ 272:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****                 : "r"  (len),
+ 273:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****                   "z"  (pointer_ram)
+ 274:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****                 : "memory");
+ 275:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****             }
+ 276:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****         }
+ 277:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     }
+ 278:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** }
+ 279:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 280:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** /** \ingroup avr_eeprom
+ 281:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****     Write a byte \c value to EEPROM address \c addr. */
+ 282:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** 
+ 283:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** void 
+ 284:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** eeprom_write_byte (uint8_t *addr,uint8_t value)
+ 285:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h **** {
+ 286:/usr/lib/gcc/avr/4.1.0/../../../../avr/include/avr/eeprom.h ****   asm volatile (
+ 643               	.LM72:
+ 644               	/* #APP */
+ 645 025c 082E      		mov __tmp_reg__,r24
+ 646 025e 00D0      		rcall __eeprom_write_byte_1C1D1E
+ 647               	/* #NOAPP */
+ 648               	.LBE36:
+ 649               	.LBE35:
+ 651               	.Ltext4:
+ 365:foodloader.c  **** 
+ 366:foodloader.c  ****                                 eeprom_address++;
+ 653               	.LM73:
+ 654 0260 8091 0000 		lds r24,eeprom_address
+ 655 0264 9091 0000 		lds r25,(eeprom_address)+1
+ 656 0268 0196      		adiw r24,1
+ 657 026a 9093 0000 		sts (eeprom_address)+1,r25
+ 658 026e 8093 0000 		sts eeprom_address,r24
+ 660               	.LM74:
+ 661 0272 0F5F      		subi r16,lo8(-(1))
+ 662               	.L69:
+ 663 0274 0D15      		cp r16,r13
+ 664 0276 69F7      		brne .L70
+ 665               	.L106:
+ 367:foodloader.c  ****                             }
+ 368:foodloader.c  **** 
+ 369:foodloader.c  ****                             uart_putc('\r');
+ 667               	.LM75:
+ 668 0278 8DE0      		ldi r24,lo8(13)
+ 669 027a 06CF      		rjmp .L107
+ 670               	.L38:
+ 671               	.LBE34:
+ 370:foodloader.c  **** 
+ 371:foodloader.c  ****                         } /* }}} */
+ 372:foodloader.c  ****                         else {
+ 373:foodloader.c  ****                             uart_putc('?');
+ 374:foodloader.c  ****                         }
+ 375:foodloader.c  **** 
+ 376:foodloader.c  ****                         break;
+ 377:foodloader.c  **** 
+ 378:foodloader.c  ****                         /* }}} */
+ 379:foodloader.c  **** 
+ 380:foodloader.c  ****             case 'g':   /* start block flash or eeprom read */
+ 381:foodloader.c  ****                         /* {{{ */
+ 382:foodloader.c  **** 
+ 383:foodloader.c  ****                         /* first, read byte counter */
+ 384:foodloader.c  ****                         buffer_size = (uart_getc() << 8) | uart_getc();
+ 673               	.LM76:
+ 674 027c C5DE      		rcall uart_getc
+ 675 027e C4DE      		rcall uart_getc
+ 676 0280 E82E      		mov r14,r24
+ 385:foodloader.c  **** 
+ 386:foodloader.c  ****                         /* then, read memory type */
+ 387:foodloader.c  ****                         memory_type = uart_getc();
+ 678               	.LM77:
+ 679 0282 C2DE      		rcall uart_getc
+ 388:foodloader.c  **** 
+ 389:foodloader.c  ****                         /* memory type is flash */
+ 390:foodloader.c  ****                         if (memory_type == 'F')
+ 681               	.LM78:
+ 682 0284 8634      		cpi r24,lo8(70)
+ 683 0286 E1F4      		brne .L72
+ 684 0288 FF24      		clr r15
+ 685 028a 17C0      		rjmp .L74
+ 686               	.L75:
+ 687               	.LBB37:
+ 688               	.LBB38:
+ 689               	.LBB39:
+ 391:foodloader.c  ****                         /* {{{ */ {
+ 392:foodloader.c  **** 
+ 393:foodloader.c  ****                             /* read buffer_size words */
+ 394:foodloader.c  ****                             for (BUF_T i = 0; i < buffer_size; i += 2) {
+ 395:foodloader.c  ****                                 uint16_t temp_word_buffer;
+ 396:foodloader.c  **** 
+ 397:foodloader.c  ****                                 /* read word */
+ 398:foodloader.c  ****                                 temp_word_buffer = pgm_read_word(flash_address);
+ 691               	.LM79:
+ 692 028c E091 0000 		lds r30,flash_address
+ 693 0290 F091 0000 		lds r31,(flash_address)+1
+ 694               	/* #APP */
+ 695 0294 0591      		lpm r16, Z+
+ 696 0296 1491      		lpm r17, Z
+ 697               		
+ 698               	/* #NOAPP */
+ 699               	.LBE39:
+ 399:foodloader.c  **** 
+ 400:foodloader.c  ****                                 /* send data */
+ 401:foodloader.c  ****                                 uart_putc(LOW(temp_word_buffer));
+ 701               	.LM80:
+ 702 0298 802F      		mov r24,r16
+ 703 029a B2DE      		rcall uart_putc
+ 402:foodloader.c  ****                                 uart_putc(HIGH(temp_word_buffer));
+ 705               	.LM81:
+ 706 029c 012F      		mov r16,r17
+ 707 029e 1127      		clr r17
+ 708 02a0 802F      		mov r24,r16
+ 709 02a2 AEDE      		rcall uart_putc
+ 403:foodloader.c  **** 
+ 404:foodloader.c  ****                                 /* increment address by 2, since it's a byte address */
+ 405:foodloader.c  ****                                 flash_address += 2;
+ 711               	.LM82:
+ 712 02a4 8091 0000 		lds r24,flash_address
+ 713 02a8 9091 0000 		lds r25,(flash_address)+1
+ 714 02ac 0296      		adiw r24,2
+ 715 02ae 9093 0000 		sts (flash_address)+1,r25
+ 716 02b2 8093 0000 		sts flash_address,r24
+ 717               	.LBE38:
+ 719               	.LM83:
+ 720 02b6 32E0      		ldi r19,lo8(2)
+ 721 02b8 F30E      		add r15,r19
+ 722               	.L74:
+ 723 02ba FE14      		cp r15,r14
+ 724 02bc 38F3      		brlo .L75
+ 725 02be E5CE      		rjmp .L108
+ 726               	.L72:
+ 727               	.LBE37:
+ 406:foodloader.c  ****                             }
+ 407:foodloader.c  **** 
+ 408:foodloader.c  ****                         } /* }}} */
+ 409:foodloader.c  ****                         /* if memory type is eeprom */
+ 410:foodloader.c  ****                         else if (memory_type == 'E')
+ 729               	.LM84:
+ 730 02c0 8534      		cpi r24,lo8(69)
+ 731 02c2 B1F4      		brne .L27
+ 732 02c4 00E0      		ldi r16,lo8(0)
+ 733 02c6 11C0      		rjmp .L78
+ 734               	.L79:
+ 735 02c8 A091 0000 		lds r26,eeprom_address
+ 736 02cc B091 0000 		lds r27,(eeprom_address)+1
+ 737               	.LBB40:
+ 738               	.LBB41:
+ 739               	.LBB42:
+ 740               	.LBB43:
+ 742               	.Ltext5:
+ 744               	.LM85:
+ 745               	/* #APP */
+ 746 02d0 00D0      		rcall __eeprom_read_byte_1C1D1E
+ 747 02d2 802D      		mov r24,__tmp_reg__
+ 748               	/* #NOAPP */
+ 749               	.LBE43:
+ 750               	.LBE42:
+ 752               	.Ltext6:
+ 411:foodloader.c  ****                         /* {{{ */ {
+ 412:foodloader.c  **** 
+ 413:foodloader.c  ****                             for (uint8_t i = 0; i < buffer_size; i += 1) {
+ 414:foodloader.c  ****                                 uint8_t temp_buffer;
+ 415:foodloader.c  **** 
+ 416:foodloader.c  ****                                 /* read and send byte */
+ 417:foodloader.c  ****                                 temp_buffer = eeprom_read_byte((uint8_t *)eeprom_address);
+ 418:foodloader.c  ****                                 uart_putc(temp_buffer);
+ 754               	.LM86:
+ 755 02d4 95DE      		rcall uart_putc
+ 419:foodloader.c  **** 
+ 420:foodloader.c  ****                                 eeprom_address++;
+ 757               	.LM87:
+ 758 02d6 8091 0000 		lds r24,eeprom_address
+ 759 02da 9091 0000 		lds r25,(eeprom_address)+1
+ 760 02de 0196      		adiw r24,1
+ 761 02e0 9093 0000 		sts (eeprom_address)+1,r25
+ 762 02e4 8093 0000 		sts eeprom_address,r24
+ 763               	.LBE41:
+ 765               	.LM88:
+ 766 02e8 0F5F      		subi r16,lo8(-(1))
+ 767               	.L78:
+ 768 02ea 0E15      		cp r16,r14
+ 769 02ec 69F7      		brne .L79
+ 770 02ee CDCE      		rjmp .L108
+ 771               	.L27:
+ 772               	.LBE40:
+ 421:foodloader.c  ****                             }
+ 422:foodloader.c  ****                         } /* }}} */
+ 423:foodloader.c  ****                         else {
+ 424:foodloader.c  ****                             uart_putc('?');
+ 425:foodloader.c  ****                         }
+ 426:foodloader.c  **** 
+ 427:foodloader.c  ****                         break;
+ 428:foodloader.c  **** 
+ 429:foodloader.c  ****                         /* }}} */
+ 430:foodloader.c  **** 
+ 431:foodloader.c  ****             /* NOT IMPLEMENTED: */
+ 432:foodloader.c  ****             /* {{{ */
+ 433:foodloader.c  ****             /* 'c': write program memory, low byte -- NOT IMPLEMENTED */
+ 434:foodloader.c  ****             /* 'C': write program memory, high byte -- NOT IMPLEMENTED */
+ 435:foodloader.c  ****             /* 'm': issue page write -- NOT IMPLEMENTED */
+ 436:foodloader.c  ****             /* 'r': read lock bits -- NOT IMPLEMENTED */
+ 437:foodloader.c  ****             /* 'R': read program memory -- NOT IMPLEMENTED */
+ 438:foodloader.c  ****             /* 'd': read data (== eeprom) memory -- NOT IMPLEMENT */
+ 439:foodloader.c  ****             /* 'D': write data (== eeprom) memory -- NOT IMPLEMENTED */
+ 440:foodloader.c  ****             /* 'l': write lock bits -- NOT IMPLEMENTED */
+ 441:foodloader.c  ****             /* 'F': read fuse bits -- NOT IMPLEMENTED */
+ 442:foodloader.c  ****             /* 'N': read high fuse bits -- NOT IMPLEMENTED */
+ 443:foodloader.c  ****             /* 'Q': read extended fuse bits -- NOT IMPLEMENTED */ /* }}} */
+ 444:foodloader.c  **** 
+ 445:foodloader.c  ****             default:    /* default: respond with '?' */
+ 446:foodloader.c  ****                         uart_putc('?');
+ 774               	.LM89:
+ 775 02f0 8FE3      		ldi r24,lo8(63)
+ 776 02f2 CACE      		rjmp .L107
+ 777               	.L96:
+ 778               	.LBE30:
+ 780               	.LM90:
+ 781 02f4 81E6      		ldi r24,lo8(97)
+ 782 02f6 84DE      		rcall uart_putc
+ 784               	.LM91:
+ 785 02f8 8CDE      		rcall start_application
+ 786 02fa C5CE      		rjmp .L24
+ 787               	/* epilogue: frame size=0 */
+ 788               	/* epilogue: noreturn */
+ 789               	/* epilogue end (size=0) */
+ 790               	/* function main size 396 (392) */
+ 834               	.Lscope3:
+ 836               		.stabd	78,0,0
+ 837               	.global	jump_to_application
+ 838               	.global	jump_to_application
+ 839               		.section .bss
+ 842               	jump_to_application:
+ 843 0000 0000      		.skip 2,0
+ 844               		.comm flash_address,2,1
+ 845               		.comm eeprom_address,2,1
+ 849               		.text
+ 851               	.Letext0:
+ 852               	/* File "foodloader.c": code  417 = 0x01a1 ( 410), prologues   4, epilogues   3 */
+DEFINED SYMBOLS
+                            *ABS*:00000000 foodloader.c
+     /tmp/ccb1RTSd.s:3      *ABS*:0000003f __SREG__
+     /tmp/ccb1RTSd.s:4      *ABS*:0000003e __SP_H__
+     /tmp/ccb1RTSd.s:5      *ABS*:0000003d __SP_L__
+     /tmp/ccb1RTSd.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccb1RTSd.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccb1RTSd.s:91     .text:00000000 uart_putc
+     /tmp/ccb1RTSd.s:115    .text:00000008 uart_getc
+     /tmp/ccb1RTSd.s:142    .text:00000012 start_application
+     /tmp/ccb1RTSd.s:842    .bss:00000000 jump_to_application
+     /tmp/ccb1RTSd.s:180    .text:0000002a main
+                            *COM*:00000002 eeprom_address
+                            *COM*:00000002 flash_address
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+__stack
+__eeprom_write_byte_1C1D1E
+__eeprom_read_byte_1C1D1E
