@@ -31,6 +31,8 @@ else ifeq ($(MCU),atmega32)
 	AVRDUDE_MCU=m32
 else ifeq ($(MCU),atmega644)
 	AVRDUDE_MCU=m644
+else ifeq ($(MCU),atmega162)
+	AVRDUDE_MCU=m162
 endif
 
 AVRDUDE_FLAGS += -p $(AVRDUDE_MCU) -b $(AVRDUDE_BAUDRATE)
@@ -105,5 +107,3 @@ program-serial-eeprom-%: %.eep.hex
 
 %-size: %.hex
 	$(SIZE) $<
-
-

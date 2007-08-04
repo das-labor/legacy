@@ -24,7 +24,7 @@
 #include "../config.h"
 
 /* loop delay time in microseconds */
-#define DELAY_TIME 200
+#define DELAY_TIME 10000
 
 int
 main(int argc, char* argv[])
@@ -109,10 +109,6 @@ main(int argc, char* argv[])
 
         w[0] = BOOTLOADER_ENTRY_CHAR;
 
-        /* set timeout for checking readability of serial device */
-        tv.tv_sec = 0;
-        tv.tv_usec = DELAY_TIME;
-
         printf("Sending bootloader entry command (%c).\n", BOOTLOADER_ENTRY_CHAR);
         printf("You may now plug in the target device.\n");
 
@@ -130,6 +126,10 @@ main(int argc, char* argv[])
              * be observed */
             FD_SET(fd, &fds);
 
+	        /* set timeout for checking readability of serial device */
+			tv.tv_sec = 0;
+			tv.tv_usec = DELAY_TIME;
+			
             /* check to see if there is data to be read */
             rc = select(fd+1, &fds, NULL, NULL, &tv);
             if(rc < 0) {

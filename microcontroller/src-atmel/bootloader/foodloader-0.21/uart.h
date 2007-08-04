@@ -32,6 +32,13 @@
 #define UART_UCSRC (_BV(URSEL) | _BV(UCSZ0) | _BV(UCSZ1))
 
 /* }}} */
+#elif defined(__AVR_ATmega162__)
+/* {{{ */
+/* in atmega162, we need a special switching bit
+ * for addressing UCSRC */
+#define UART_UCSRC (_BV(_URSEL_UART0) | _BV(_UCSZ0_UART0) | _BV(_UCSZ1_UART0))
+
+/* }}} */
 #elif defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega644__)
 /* {{{ */
 /* in atmega88, this isn't needed any more */
@@ -52,6 +59,8 @@
 #elif (F_CPU == 8000000)
 #define UART_UBRR 25 /* 8mhz, 19200 */
 /* #define UART_UBRR 3 */ /* 8mhz, 115200 */
+#elif (F_CPU == 11059200)
+#define UART_UBRR 5 /* 11,0592mhz, 115200 */
 #else
 #error this cpu frequency is not supported by uart.h yet!
 #error (see datasheet for UBRR value at 115200 baud)

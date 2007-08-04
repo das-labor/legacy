@@ -23,6 +23,9 @@ ifeq ($(MCU),atmega8)
 	# atmega8 with 512 words bootloader:
 	# bootloader section starts at 0xe00 (word-address) == 0x1c00 (byte-address)
 	BOOT_SECTION_START = 0x1c00
+	#Fuses for Xtal/16MHz, bootloader at 0x1c00
+	HFUSE = 0xc2
+	LFUSE = 0xef
 else ifeq ($(MCU),atmega88)
 	# atmega88 with 1024 words bootloader:
 	# bootloader section starts at 0xc00 (word-address) == 0x1800 (byte-address)
@@ -55,6 +58,17 @@ else ifeq ($(MCU),atmega644)
 	# atmega644 with 512 words bootloader:
 	# bootloader section starts at 0x7e00 (word-address) == 0xfc00 (byte-address)
 	#BOOT_SECTION_START = 0xfc00
+else ifeq ($(MCU),atmega162)
+	# atmega162 with 1024 words bootloader:
+	# bootloader section starts at 0x1c00 (word-address) == 0x3800 (byte-address)
+	#BOOT_SECTION_START = 0x3800
+	#
+	# atmega168 with 512 words bootloader:
+	# bootloader section starts at 0x1e00 (word-address) == 0x3c00 (byte-address)
+	BOOT_SECTION_START = 0x3c00
+	#Fuses for Xtal/16MHz, bootloader at 0x3c00
+	HFUSE = 0xd2
+	LFUSE = 0xef
 endif
 
 LDFLAGS += -Wl,--section-start=.text=$(BOOT_SECTION_START)
@@ -108,8 +122,8 @@ lock:
 	$(AVRDUDE) $(AVRDUDE_FLAGS) -c $(ISP_PROG) -P $(ISP_DEV) -U lock:w:0x2f:m
 	
 fuse:
-	$(AVRDUDE) $(AVRDUDE_FLAGS) -c $(ISP_PROG) -P $(ISP_DEV) -U hfuse:w:0xc2:m
-	$(AVRDUDE) $(AVRDUDE_FLAGS) -c $(ISP_PROG) -P $(ISP_DEV) -U lfuse:w:0xef:m
+	$(AVRDUDE) $(AVRDUDE_FLAGS) -c $(ISP_PROG) -P $(ISP_DEV) -U hfuse:w:$(HFUSE):m
+	$(AVRDUDE) $(AVRDUDE_FLAGS) -c $(ISP_PROG) -P $(ISP_DEV) -U lfuse:w:$(LFUSE):m
 
 launcher:
 	$(MAKE) -C launcher
