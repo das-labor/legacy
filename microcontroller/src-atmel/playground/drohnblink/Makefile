@@ -7,7 +7,9 @@ FLASHCMD       = uisp -dprog=bsd --upload if=$(PRG).hex
 ERASECMD       = uisp -dprog=bsd --erase
 LAUNCH_BOOTLOADER = foodloader-0.21/launcher/launch-bootloader
 
-SERIAL = /dev/ttyS0
+#SERIAL = /dev/ttyS0
+SERIAL = /dev/ttyUSB0
+
 
 DEFS           = -DF_CPU=16000000
 LIBS           =
@@ -42,6 +44,9 @@ sflash: $(PRG).hex
 	$(LAUNCH_BOOTLOADER) $(SERIAL) 115200
 	avrdude -p m8 -b 115200 -u -c avr109 -P $(SERIAL) -U f:w:$(PRG).hex -F
 
+sflasht:
+	$(LAUNCH_BOOTLOADER) $(SERIAL) 115200
+	avrdude -p m8 -b 115200 -u -c avr109 -P $(SERIAL) -t
 
 lst:  $(PRG).lst
 
