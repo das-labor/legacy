@@ -19,8 +19,8 @@ void mydelay(){
 int main(){
 	uint8_t c, x, y, addr_offset;
 	
-	//addr_offset = eeprom_read_byte(1);
-	addr_offset = 0;
+	addr_offset = eeprom_read_byte((uint8_t *)1);
+	//addr_offset = 0;
 	
 	uart_init();
 	
@@ -50,12 +50,7 @@ int main(){
 				bright[y][x] = c;
 			}
 		}
-		
-		for(x=0;x<40;x++){
-			uart_putc(((uint8_t *)bright)[x]);	
-		}
-		
-		
+				
 		update_timeslots();
 	}
 }

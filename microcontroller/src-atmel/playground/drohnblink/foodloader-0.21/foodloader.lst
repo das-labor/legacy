@@ -1472,16 +1472,16 @@
  852               	/* File "foodloader.c": code  417 = 0x01a1 ( 410), prologues   4, epilogues   3 */
 DEFINED SYMBOLS
                             *ABS*:00000000 foodloader.c
-     /tmp/ccb1RTSd.s:3      *ABS*:0000003f __SREG__
-     /tmp/ccb1RTSd.s:4      *ABS*:0000003e __SP_H__
-     /tmp/ccb1RTSd.s:5      *ABS*:0000003d __SP_L__
-     /tmp/ccb1RTSd.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccb1RTSd.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccb1RTSd.s:91     .text:00000000 uart_putc
-     /tmp/ccb1RTSd.s:115    .text:00000008 uart_getc
-     /tmp/ccb1RTSd.s:142    .text:00000012 start_application
-     /tmp/ccb1RTSd.s:842    .bss:00000000 jump_to_application
-     /tmp/ccb1RTSd.s:180    .text:0000002a main
+     /tmp/ccf5B0IB.s:3      *ABS*:0000003f __SREG__
+     /tmp/ccf5B0IB.s:4      *ABS*:0000003e __SP_H__
+     /tmp/ccf5B0IB.s:5      *ABS*:0000003d __SP_L__
+     /tmp/ccf5B0IB.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccf5B0IB.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccf5B0IB.s:91     .text:00000000 uart_putc
+     /tmp/ccf5B0IB.s:115    .text:00000008 uart_getc
+     /tmp/ccf5B0IB.s:142    .text:00000012 start_application
+     /tmp/ccf5B0IB.s:842    .bss:00000000 jump_to_application
+     /tmp/ccf5B0IB.s:180    .text:0000002a main
                             *COM*:00000002 eeprom_address
                             *COM*:00000002 flash_address
 

@@ -1,8 +1,8 @@
 
-foodloader:     Dateiformat elf32-avr
+foodloader:     file format elf32-avr
 
-Sektionen:
-Idx Name          Größe     VMA       LMA       Datei-Off Ausr.
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
   0 .text         00000380  00001c00  00001c00  00000094  2**0
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
   1 .data         00000006  00800060  00001f80  00000414  2**0
@@ -15,9 +15,9 @@ Idx Name          Größe     VMA       LMA       Datei-Off Ausr.
                   CONTENTS
   5 .stab         00000fa8  00000000  00000000  0000041c  2**2
                   CONTENTS, READONLY, DEBUGGING
-  6 .stabstr      00000b3e  00000000  00000000  000013c4  2**0
+  6 .stabstr      00000b69  00000000  00000000  000013c4  2**0
                   CONTENTS, READONLY, DEBUGGING
-Disassemblierung der Sektion .text:
+Disassembly of section .text:
 
 00001c00 <__vectors>:
     1c00:	12 c0       	rjmp	.+36     	; 0x1c26 <__ctors_end>
