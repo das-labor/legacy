@@ -1,13 +1,17 @@
+`define LATTICE_FAMILY "EC"
+`define LATTICE_FAMILY_EC
 `ifndef SYSTEM_CONF
 `define SYSTEM_CONF
 
-`timescale 1ns / 100 ps
+//`timescale 1ns / 100 ps
 
 `define CFG_DEBUG_ENABLED
 `define CFG_EBA_RESET 32'h0
 `define CFG_DEBA_RESET 32'h0
+
 `define MULT_ENABLE
 `define CFG_PL_MULTIPLY_ENABLED
+
 `define SHIFT_ENABLE
 `define CFG_PL_BARREL_SHIFT_ENABLED
 `define CFG_MC_DIVIDE_ENABLED
@@ -15,5 +19,6 @@
 //`define CFG_ROM_DEBUG_ENABLED
 `define CFG_BREAKPOINTS 32'h1
 `define CFG_WATCHPOINTS 32'h1
+`define INCLUDE_LM32
 
 `endif // SYSTEM_CONF

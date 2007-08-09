@@ -9,32 +9,30 @@ uint32_t msec = 0;
 /***************************************************************************
  * IRQ handling
  */
-void irq_handler(uint32_t irl)
-{
+void irq_handler(uint32_t irl) {
 	uint32_t tcr;
 	int diff;
-
+/*
 	switch (irl) {
-	case 0:                                              /* uart0 tx */
+	case 0:      // uart0 tx 
 		break;
-	case 1:                                              /* uart0 rx */
+	case 1:      // uart0 rx
 		break;
-	case 2:                                   /* timer0.0 (system tic) */
-		tcr = timer0->tcr0;  // reset trig0
+	case 2:      // timer0.0 (system tic) 
+		tcr = timer0->tcr0;   // reset trig0 
 		msec++;
 		break;
-	case 3:                                               /* timer0.1 */
+	case 3:      // timer0.1 
 		break;
 	};
-
+ */
 	return;
 }
 
 /***************************************************************************
  * General utility functions
- */
-void sleep(int msec)
-{
+ *
+void sleep(int msec) {
 	uint32_t tcr;
 
 	// Use timer0.1
@@ -48,48 +46,42 @@ void sleep(int msec)
 	} while ( ! (tcr & TIMER_TRIG) );
 }
 
-void tic_init()
-{
+void tic_init() {
 	// Setup timer0.0
 	timer0->compare0 = (FCPU/1000);
 	timer0->counter0 = 0;
 	timer0->tcr0     = TIMER_EN | TIMER_AR | TIMER_IRQEN;
-}
+} */
 
 /***************************************************************************
  * UART Functions
  */
-void uart_init()
-{
+void uart_init() {
 	uart0->ier = 0x00;  // Interrupt Enable Register
 	uart0->lcr = 0x03;  // Line Control Register:    8N1
 	uart0->mcr = 0x00;  // Modem Control Register
-
-
+	
 	// Setup Divisor register (Fclk / Baud)
-	//uart0->div = (FCPU/(57600*16));
+	// uart0->div = (FCPU/(57600*16));
 }
 
-char uart_getchar()
-{   
-	while (! (uart0->lsr & UART_DR)) {
+char uart_getchar() {
+   	while (! (uart0->lsr & UART_DR)) {
 	}
 	return uart0->rxtx;
 }
 
-void uart_putchar(char c)
-{
+void uart_putchar(char c) {
 	while (! (uart0->lsr & UART_THRE)) {
 	}
 	uart0->rxtx = c;
 }
 
-void uart_putstr(char *str)
-{
+void uart_putstr(char *str) {
 	char *c = str;
-	while(*c) {
+	
+	while (*c) {
 		uart_putchar(*c);
 		c++;
 	}
 }
-

@@ -31,7 +31,7 @@
         .section    .text, "ax", @progbits        
         .global     _start  
 		.global     irq_enable, irq_disable, irq_mask, jump, halt
-		.global     get_sp, get_r0, get_gp, get_cfg, get_cycles
+		.global     get_sp, get_r0, get_gp, get_cfg, get_cycles, test_sp
 _start:    
 _reset_handler:
 	xor     r0, r0, r0
@@ -48,13 +48,12 @@ _crt0:
 	xor     r0, r0, r0
 
 	/* Setup stack and global pointer */
+	/*
 	mvhi    sp, hi(_fstack)
-	ori     sp, sp, lo(_fstack)
-	addi    sp, sp, -4
-	mv      fp, sp
+	ori     sp, sp, lo(_fstack) 
+    mv      fp, sp
 	mvhi    gp, hi(_gp)
-	ori     gp, gp, lo(_gp)
-	
+	ori     gp, gp, lo(_gp)*/	
 	mvi     r1, 0
 	mvi     r2, 0
 	mvi     r3, 0
@@ -77,6 +76,7 @@ irq_disable:
 
 jump:
 	b       r1 
+	
 
 get_sp:
     mv      r1, sp
@@ -85,6 +85,16 @@ get_sp:
 get_gp:
     mv      r1, gp
     ret       
+
+test_sp:
+    sb     (r1+0), r2
+         
+    /*sw      (sp+4), r1
+    mv      r1, r0
+    lw      r1, (sp+0)
+    addi    sp, sp, -1*/
+    ret
+    
 
 get_r0:
     mv      r1, r0

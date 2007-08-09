@@ -339,7 +339,7 @@ int main(int argc, char **argv)
     			start = readint(8, (uint8_t *) &checksum);
     			jump(start);
     			uart_putstr("XX");		
-    			break;
+    			break;   
     		case 'v': // view memory 
     		  start = readint(8, (uint8_t *) &checksum);
     		  size  = readint(8, (uint8_t *) &checksum);
