@@ -21,7 +21,27 @@ entity System is
 	  	sram_lb_n : out std_logic;
 	    sram_ce_n : out std_logic;
 	  	sram_addr : out std_logic_vector(17 downto 0);
-	    sram_dq   : inout std_logic_vector(15 downto 0)
+	    sram_dq   : inout std_logic_vector(15 downto 0);
+	
+		-- farbborg interface
+      	clk_pwm    : in  std_logic;
+      
+	    -- Latch shift-register
+	  	lsr_clr    : out std_logic;  
+      	lsr_d      : out std_logic;
+      	lsr_c      : out std_logic;
+      
+	  	latch_data : out std_logic_vector(7 downto 0);
+	 
+	  	-- Plane shift-register	
+	  	psr_c      : out std_logic;
+	  	psr_d      : out std_logic;
+	 
+	  	-- May be debug stuff
+	  	col_enable : out std_logic;
+	  	plane_out  : out std_logic_vector(4 downto 0)
+
+	
 	);
 end System;
 
@@ -264,6 +284,7 @@ end component wb_gpio;
 
 component nibble7Seg is
    port (
+
       nibble0  : in  std_logic_vector(3 downto 0);
 	  nibble1  : in  std_logic_vector(3 downto 0);
 	  sel      : in  std_logic;

@@ -69,6 +69,24 @@ slave bram0
   size2=0xffffffff
 end slave bram0
 
+slave farbborg0
+  type=w
+  adr_i_hi=31
+  adr_i_lo=0
+  tga_i=0
+  tgc_i=0
+  tgd_i=0
+  lock_i=0
+  err_o=0
+  rty_o=0
+  baseadr=0x80010000
+  size=0x00010000
+  baseadr1=0x00000000
+  size1=0xffffffff
+  baseadr2=0x00000000
+  size2=0xffffffff
+end slave farbborg0
+
 slave timer0
   type=rw
   adr_i_hi=31

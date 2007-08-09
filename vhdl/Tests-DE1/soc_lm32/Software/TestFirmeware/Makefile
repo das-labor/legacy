@@ -5,7 +5,7 @@ LM32_OBJDUMP=lm32-elf-objdump
 
 VHDLFILE=../../wb_bram.vhd
 
-CFLAGS=-MMD -O2 -Wall -g -s -fomit-frame-pointer -mbarrel-shift-enabled   -mmultiply-enabled -mdivide-enabled -msign-extend-enabled
+CFLAGS=-MMD -O1 -Wall -g -s -fomit-frame-pointer -mbarrel-shift-enabled -mmultiply-enabled -mdivide-enabled -msign-extend-enabled
 LDFLAGS=-Tlinkcmd
 SEGMENTS = -j .text -j .data
 

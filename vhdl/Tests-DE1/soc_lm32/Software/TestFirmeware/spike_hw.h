@@ -22,7 +22,7 @@ extern uint32_t get_sp();
 extern uint32_t get_gp();
 extern uint32_t get_cfg();
 extern uint32_t get_cycles();
-
+extern uint32_t test_sp(uint8_t* adr, uint32_t value);
 
 void sleep();
 void tic_init();

@@ -4,26 +4,26 @@ $0 = __FILE__
 require "serialport.so"
 
 def wait (msec)
-    t = Time.now
+    t = Time.now    
     while (Time.now - t)*1000 < msec do
     end    
 end
 
-sp = SerialPort.new(ARGV[0], 57600, 8, 2, SerialPort::NONE)
+sp = SerialPort.new(ARGV[0], 57600, 8, 1, SerialPort::NONE)
 checksum = 0
 upFileSize =  File.size(ARGV[1])
 uploadFile = File.open(ARGV[1], "r")
 puts "File loaded." if uploadFile
 puts upFileSize
 begin
-    waitTime = 5    
+    waitTime = 4    
     
     puts "Spike Upload Tool"
     ch = 0;
     # warte auf Eingabe
     sp.putc 'r'
     begin
-        putc  (ch = sp.getc)
+        putc(ch = sp.getc)
     end while ch != 62
         
     puts "Spike bootloader found"
@@ -51,7 +51,7 @@ begin
             end while c.hex != line[-4..-3].hex
             wait(waitTime)
             begin
-                putc (ch = sp.getc)
+                putc(ch = sp.getc)
             end while ch != 62
             puts " "
             error = 0
@@ -60,10 +60,10 @@ begin
     		
     sp.printf("vB0000000");
     wait(waitTime)
-    sp.printf("B0000500")
+    sp.printf("B0000700")
     wait(waitTime)
     begin
-        putc (ch = sp.getc)
+        putc(ch = sp.getc)
     end while ch != 62    #tty.puts "Checksum"
     #STDIN.getc
     
@@ -72,7 +72,7 @@ begin
     sp.printf("gB0000000")
     puts "Complete"
     begin
-        putc (ch = sp.getc)
+        putc(ch = sp.getc)
     end while ch != 62   
    
 ensure 
