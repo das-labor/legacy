@@ -30,6 +30,7 @@ master lm32i
   err_i=1
   rty_i=1
   priority_bram0=1
+  priority_farborg0=1
   priority_timer0=1
   priority_uart0=1
   priority_gpio0=1
@@ -45,6 +46,7 @@ master lm32d
   err_i=1
   rty_i=1
   priority_bram0=1
+  priority_farborg0=1 
   priority_timer0=1
   priority_uart0=1
   priority_gpio0=1
@@ -70,7 +72,7 @@ slave bram0
 end slave bram0
 
 slave farbborg0
-  type=w
+  type=rw
   adr_i_hi=31
   adr_i_lo=0
   tga_i=0
