@@ -1,8 +1,9 @@
 /**
- * 
- * 
- * 
- * 
+ * \file qport.c
+ * \author Daniel Otte
+ * \date 2007-08-10
+ * \par license 
+ *  GPL
  * 
  */
 
@@ -16,10 +17,6 @@
 #include "hmac-sha256.h"
 #include "sha256.h"
 #include "xtea.h"
-
-#include <avr/io.h>
-
-#include "uart.h"
 
 /******************************************************************************/
 
@@ -159,7 +156,6 @@ void qport_setupstream(qport_ctx_t * ctx, uint8_t rxtx, uint8_t * a, uint8_t * b
 /******************************************************************************/
 
 void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
-	PORTC = 0x02;
 	if(ctx->keyingdata && (ctx->keyingdata->id == kp->id)){
 		/* we recived a response to our kp */
 		qport_setupstream(ctx, TX, ctx->keyingdata->seed_a, kp->seed_a);
