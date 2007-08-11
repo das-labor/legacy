@@ -40,9 +40,7 @@ entity System is
 	  	-- May be debug stuff
 	  	col_enable : out std_logic;
 	  	plane_out  : out std_logic_vector(4 downto 0)
-
-	
-	);
+     		);
 end System;
 
 architecture rtl of System is
@@ -123,6 +121,16 @@ component intercon is
   gpio0_adr_i : out std_logic_vector(31 downto 0);
   gpio0_cyc_i : out std_logic;
   gpio0_stb_i : out std_logic;
+  -- farbborg0
+  farbborg0_adr_i   : out std_logic_vector(31 downto 0); 
+  farbborg0_dat_o   : in  std_logic_vector(31 downto 0);
+  farbborg0_dat_i   : out std_logic_vector(31 downto 0);
+  farbborg0_sel_i   : out std_logic_vector( 3 downto 0);
+  farbborg0_cyc_i   : out std_logic;
+  farbborg0_stb_i   : out std_logic;
+  farbborg0_ack_o   : in  std_logic;
+  farbborg0_we_i    : out std_logic;	
+
   -- clock and reset
   clk   : in std_logic;
   reset : in std_logic);
@@ -263,7 +271,6 @@ component asram_top is
 		);
 end component asram_top;
 
-
 component wb_gpio is
    port (
       clk      : in  std_logic;
@@ -281,6 +288,43 @@ component wb_gpio is
       iport    : in  std_logic_vector(31 downto 0);
       oport    : out std_logic_vector(31 downto 0) );
 end component wb_gpio;
+
+component wb_farbborg is
+   port (
+      clk        : in  std_logic;
+      reset      : in  std_logic;
+     
+      -- Wishbone bus
+      wb_adr_i   : in  std_logic_vector(12 downto 0);
+      wb_dat_i   : in  std_logic_vector( 7 downto 0);
+      wb_dat_o   : out std_logic_vector( 7 downto 0);
+      wb_sel_i   : in  std_logic_vector( 3 downto 0);
+      wb_cyc_i   : in  std_logic;
+      wb_stb_i   : in  std_logic;
+      wb_ack_o   : out std_logic;
+      wb_we_i    : in  std_logic;
+      
+      -- farbborg interface
+      clk_pwm    : in  std_logic;
+      
+      -- Latch shift-register
+	  lsr_clr    : out std_logic;  
+      lsr_d      : out std_logic;
+      lsr_c      : out std_logic;
+      
+      latch_data : out std_logic_vector(7 downto 0);
+	 
+	  -- Plane shift-register	
+      psr_c      : out std_logic;
+	  psr_d      : out std_logic;
+		 
+	  col_enable : out std_logic;
+	
+	  -- May be debug stuff
+	  plane_out  : out std_logic_vector(4 downto 0)
+       );
+end component;
+
 
 component nibble7Seg is
    port (
@@ -346,7 +390,6 @@ signal timer0_we_i    : std_logic;
 signal timer0_irq0    : std_logic;
 signal timer0_irq1    : std_logic;
 
-
 signal uart0_adr_i   : std_logic_vector(31 downto 0);
 signal uart0_dat_o   : std_logic_vector(31 downto 0);
 signal uart0_dat_i   : std_logic_vector(31 downto 0);
@@ -358,7 +401,6 @@ signal uart0_we_i    : std_logic;
 signal uart0_irq_rx  : std_logic;
 signal uart0_irq_tx  : std_logic;	
 
-
 signal gpio0_adr_i   : std_logic_vector(31 downto 0);
 signal gpio0_dat_o   : std_logic_vector(31 downto 0);
 signal gpio0_dat_i   : std_logic_vector(31 downto 0);
@@ -367,6 +409,15 @@ signal gpio0_cyc_i   : std_logic;
 signal gpio0_stb_i   : std_logic;
 signal gpio0_ack_o   : std_logic;
 signal gpio0_we_i    : std_logic;
+
+signal farbborg0_adr_i   : std_logic_vector(31 downto 0);
+signal farbborg0_dat_o   : std_logic_vector(31 downto 0);
+signal farbborg0_dat_i   : std_logic_vector(31 downto 0);
+signal farbborg0_sel_i   : std_logic_vector( 3 downto 0);
+signal farbborg0_cyc_i   : std_logic;
+signal farbborg0_stb_i   : std_logic;
+signal farbborg0_ack_o   : std_logic;
+signal farbborg0_we_i    : std_logic;
 
 signal sram0_adr_i   : std_logic_vector(31 downto 0);
 signal sram0_dat_o   : std_logic_vector(31 downto 0);
@@ -382,7 +433,6 @@ signal sram0_we_i    : std_logic;
 signal sram0_dq_i    : std_logic_vector(15 downto 0);
 signal sram0_dq_o    : std_logic_vector(15 downto 0);
 signal sram0_we_n    : std_logic;
-
 
 signal hex_view      : std_logic_vector(31 downto 0);
 
@@ -523,6 +573,36 @@ gpio0: wb_gpio
 			iport     => oport,
 			oport     => iport
 	);
+
+farbborg0 : wb_farbborg 
+   port map (
+      clk        	=> clk,
+      reset         => reset,
+     
+      wb_adr_i      => farbborg0_adr_i(12 downto 0), 
+      wb_dat_i      => farbborg0_dat_o( 7 downto 0), 
+      wb_dat_o      => farbborg0_dat_i( 7 downto 0), 
+      wb_sel_i      => farbborg0_sel_i, 
+      wb_cyc_i      => farbborg0_cyc_i, 
+      wb_stb_i      => farbborg0_stb_i, 
+      wb_ack_o      => farbborg0_ack_o, 
+      wb_we_i       => farbborg0_we_i,  
+      
+      clk_pwm       => clk_pwm,
+      
+	  lsr_clr       => lsr_clr,
+      lsr_d         => lsr_d,
+      lsr_c         => lsr_c,
+         
+      latch_data    => latch_data,
+
+      psr_c         => psr_c,
+	  psr_d         => psr_d,
+		 
+	  col_enable    => col_enable,
+	
+	  plane_out     => plane_out
+       );
 	
 timer0: wb_timer
 	Port map (
@@ -541,8 +621,6 @@ timer0: wb_timer
 			wb_irq1_o => timer0_irq1
 	);
 	
-	
-
 hex_view <= i_adr_o when btn(8 downto 7)="00" else
             d_adr_o when btn(8 downto 7)="01" else
             i_dat_i when btn(8 downto 6)="100" else
@@ -581,8 +659,6 @@ digit3:nibble7Seg
 		hex       => hex3	 	
 			 );						
 			
-
-
 -----------------------------------------------------------------------------
 -- Wishbone Interconnection -------------------------------------------------
 -----------------------------------------------------------------------------
@@ -659,12 +735,20 @@ wb0: intercon
   gpio0_adr_i => gpio0_adr_i,
   gpio0_cyc_i => gpio0_cyc_i,
   gpio0_stb_i => gpio0_stb_i,
+  -- farbborg0
+  farbborg0_adr_i => farbborg0_adr_i,     
+  farbborg0_dat_o => farbborg0_dat_o, 
+  farbborg0_dat_i => farbborg0_dat_i, 
+  farbborg0_sel_i => farbborg0_sel_i, 
+  farbborg0_cyc_i => farbborg0_cyc_i, 
+  farbborg0_stb_i => farbborg0_stb_i, 
+  farbborg0_ack_o => farbborg0_ack_o, 
+  farbborg0_we_i  => farbborg0_we_i,  
   -- clock and reset
   clk           => clk,
   reset         => reset
 	);
 	
 intr_n <= x"0000000" & timer0_irq1 & timer0_irq0 & uart0_irq_rx & uart0_irq_tx;
-
 
 end rtl;

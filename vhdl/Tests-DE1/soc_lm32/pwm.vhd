@@ -22,12 +22,13 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
+-- Xilinx includes
 --Library UNISIM;
 --use UNISIM.vcomponents.all;
 
+-- Altera inlcudes
 library altera_mf;
 use altera_mf.all;
-
 
 ---- Uncomment the following library declaration if instantiating
 ---- any Xilinx primitives in this code.
@@ -35,29 +36,26 @@ use altera_mf.all;
 --use UNISIM.VComponents.all;
 
 entity pwm is
-    Port ( reset : in  STD_LOGIC;
-           cp2 : in  STD_LOGIC;
-			  addr : in std_logic_vector(10 downto 0);
-			  din : in std_logic_vector(7 downto 0);
-			  we : in std_logic;
-           clk : in  STD_LOGIC;
-           lsr_clr : out  STD_LOGIC;
-           lsr_d : out  STD_LOGIC;
-           lsr_c : out  STD_LOGIC;
-           latch_data : out  STD_LOGIC_VECTOR (7 downto 0);
-			  psr_c : out std_logic;
-				psr_d : out std_logic;
-				col_enable : out std_logic
-	
-			  
+    Port ( reset	  : in  std_logic;
+           cp2 		  : in  std_logic;
+		   addr		  : in  std_logic_vector(10 downto 0);
+		   din		  : in  std_logic_vector(7 downto 0);
+		   we		  : in  std_logic;
+           clk		  : in  std_logic;
+           lsr_clr	  : out std_logic;
+           lsr_d	  : out std_logic;
+           lsr_c	  : out std_logic;
+           latch_data : out std_logic_vector(7 downto 0);
+		   psr_c 	  : out std_logic;
+		   psr_d	  : out std_logic;
+		   col_enable : out std_logic		  
 			  );
 end pwm;
 
 architecture Behavioral of pwm is
 
-constant USE_XILINX : boolean := false;
-constant USE_ALTERA : boolean := true;
-
+--constant USE_XILINX : boolean := false;
+--constant USE_ALTERA : boolean := true;
 
 --this holds the brightnesses for the LEDs
 --type RAM128Type is array(127 downto 0) of std_logic_vector(63 downto 0);
@@ -90,8 +88,6 @@ signal addr_br : std_logic_vector(10 downto 0);
 signal we_br1 : std_logic;
 signal we_br2 : std_logic;
 
-
-
 signal lsr_clk_en : std_logic;
 
 signal trigger : std_logic;
@@ -102,8 +98,6 @@ signal line : std_logic_vector(63 downto 0);
 
 signal pwm_enable : std_logic;
 
-
-
 COMPONENT altsyncram
 	GENERIC (
 		address_reg_b				: STRING;
@@ -111,7 +105,6 @@ COMPONENT altsyncram
 		clock_enable_input_b		: STRING;
 		clock_enable_output_a		: STRING;
 		clock_enable_output_b		: STRING;
-		indata_reg_b		 		: STRING;
 		init_file					: STRING;
 		init_file_layout			: STRING;
 		intended_device_family		: STRING;
@@ -119,32 +112,24 @@ COMPONENT altsyncram
 		numwords_a					: NATURAL;
 		numwords_b					: NATURAL;
 		operation_mode				: STRING;
-		outdata_aclr_a				: STRING;
 		outdata_aclr_b				: STRING;
-		outdata_reg_a				: STRING;
 		outdata_reg_b				: STRING;
 		power_up_uninitialized		: STRING;
-		ram_block_type				: STRING;
 		read_during_write_mode_mixed_ports	: STRING;
 		widthad_a					: NATURAL;
 		widthad_b					: NATURAL;
 		width_a						: NATURAL;
 		width_b						: NATURAL;
-		width_byteena_a				: NATURAL;
-		width_byteena_b				: NATURAL;
-		wrcontrol_wraddress_reg_b	: STRING
+		width_byteena_a				: NATURAL
 	);
 	PORT (
 			wren_a					: IN  STD_LOGIC ;
 			clock0					: IN  STD_LOGIC ;
-			wren_b					: IN  STD_LOGIC ;
 			clock1					: IN  STD_LOGIC ;
 			address_a				: IN  STD_LOGIC_VECTOR ((widthad_a - 1) DOWNTO 0);
 			address_b				: IN  STD_LOGIC_VECTOR ((widthad_b - 1) DOWNTO 0);
-			q_a						: OUT STD_LOGIC_VECTOR ((width_a - 1) DOWNTO 0);
 			q_b						: OUT STD_LOGIC_VECTOR ((width_b - 1) DOWNTO 0);
-			data_a					: IN  STD_LOGIC_VECTOR ((width_a - 1)  DOWNTO 0);
-			data_b					: IN  STD_LOGIC_VECTOR ((width_b - 1)  DOWNTO 0)
+			data_a					: IN  STD_LOGIC_VECTOR ((width_a - 1)  DOWNTO 0)
 	);
 	END COMPONENT;
 
@@ -236,7 +221,6 @@ begin
 			end if;
 			
 			--line <= RAMFile(CONV_INTEGER(address));
-			
 			
 			for i in 7 downto 0 loop
 				if pwmcount >= line( (i+1)*8-1 downto 8*i) then
@@ -387,7 +371,7 @@ begin
 
 -----------------------------------------------------------------------------
 -- Altrera ------------------------------------------------------------------
-altera: if USE_ALTERA generate
+--altera: if USE_ALTERA generate
 
 	timeTable : altsyncram
 	GENERIC MAP (
@@ -396,39 +380,30 @@ altera: if USE_ALTERA generate
 		clock_enable_input_b => "BYPASS",
 		clock_enable_output_a => "BYPASS",
 		clock_enable_output_b => "BYPASS",
-		indata_reg_b => "CLOCK1",
 		init_file => "time_data.hex",
 		init_file_layout => "PORT_B",
 		intended_device_family => "Cyclone II",
 		lpm_type => "altsyncram",
 		numwords_a => 2048,
 		numwords_b => 1024,
-		operation_mode => "BIDIR_DUAL_PORT",
-		outdata_aclr_a => "NONE",
+		operation_mode => "DUAL_PORT",
 		outdata_aclr_b => "NONE",
-		outdata_reg_a => "CLOCK0",
 		outdata_reg_b => "CLOCK1",
 		power_up_uninitialized => "FALSE",
-		ram_block_type => "M4K",
 		read_during_write_mode_mixed_ports => "DONT_CARE",
 		widthad_a => 11,
 		widthad_b => 10,
 		width_a => 8,
 		width_b => 16,
-		width_byteena_a => 1,
-		width_byteena_b => 1,
-		wrcontrol_wraddress_reg_b => "CLOCK1"
+		width_byteena_a => 1
 	)
 	PORT MAP (
 		wren_a => we_br3,
 		clock0 => cp2,
-		wren_b => '0',
 		clock1 => clk,
 		address_a => br3_adr,
 		address_b => br3_adrb,
 		data_a => din,
-		data_b => (others => '0'),
-		--q_a => sub_wire0,
 		q_b => pwmdata
 	);
 
@@ -439,39 +414,30 @@ altera: if USE_ALTERA generate
 		clock_enable_input_b => "BYPASS",
 		clock_enable_output_a => "BYPASS",
 		clock_enable_output_b => "BYPASS",
-		indata_reg_b => "CLOCK1",
 		init_file => "image_data1.hex",
 		init_file_layout => "PORT_B",
 		intended_device_family => "Cyclone II",
 		lpm_type => "altsyncram",
 		numwords_a => 2048,
 		numwords_b => 512,
-		operation_mode => "BIDIR_DUAL_PORT",
-		outdata_aclr_a => "NONE",
+		operation_mode => "DUAL_PORT",
 		outdata_aclr_b => "NONE",
-		outdata_reg_a => "CLOCK0",
 		outdata_reg_b => "CLOCK1",
 		power_up_uninitialized => "FALSE",
-		ram_block_type => "M4K",
 		read_during_write_mode_mixed_ports => "DONT_CARE",
 		widthad_a => 11,
 		widthad_b => 9,
 		width_a => 8,
 		width_b => 32,
-		width_byteena_a => 1,
-		width_byteena_b => 1,
-		wrcontrol_wraddress_reg_b => "CLOCK1"
+		width_byteena_a => 1
 	)
 	PORT MAP (
 		wren_a => we_br3,
 		clock0 => cp2,
-		wren_b => '0',
 		clock1 => clk,
 		address_a => br3_adr,
 		address_b => address,
 		data_a => din,
-		data_b => (others => '0'),
-		--q_a => sub_wire0,
 		q_b => line(31 downto 0)
 	);
 	
@@ -482,43 +448,34 @@ altera: if USE_ALTERA generate
 		clock_enable_input_b => "BYPASS",
 		clock_enable_output_a => "BYPASS",
 		clock_enable_output_b => "BYPASS",
-		indata_reg_b => "CLOCK1",
 		init_file => "image_data2.hex",
 		init_file_layout => "PORT_B",
 		intended_device_family => "Cyclone II",
 		lpm_type => "altsyncram",
 		numwords_a => 2048,
 		numwords_b => 512,
-		operation_mode => "BIDIR_DUAL_PORT",
-		outdata_aclr_a => "NONE",
+		operation_mode => "DUAL_PORT",
 		outdata_aclr_b => "NONE",
-		outdata_reg_a => "CLOCK0",
 		outdata_reg_b => "CLOCK1",
 		power_up_uninitialized => "FALSE",
-		ram_block_type => "M4K",
 		read_during_write_mode_mixed_ports => "DONT_CARE",
 		widthad_a => 11,
 		widthad_b => 9,
 		width_a => 8,
 		width_b => 32,
-		width_byteena_a => 1,
-		width_byteena_b => 1,
-		wrcontrol_wraddress_reg_b => "CLOCK1"
+		width_byteena_a => 1
 	)
 	PORT MAP (
 		wren_a => we_br1,
 		clock0 => cp2,
-		wren_b => '0',
 		clock1 => clk,
 		address_a => br3_adr,
 		address_b => address,
 		data_a => din,
-		data_b => (others => '0'),
-		--q_a => sub_wire0,
 		q_b => line(63 downto 32)
 	);
 
-end generate;	
+--end generate;	
 
 end Behavioral;
 

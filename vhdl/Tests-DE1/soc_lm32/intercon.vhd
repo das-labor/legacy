@@ -2,7 +2,7 @@
 --
 -- For defines see intercon.defines
 --
--- Generated Wed Jul 25 20:27:04 2007
+-- Generated Sat Aug 11 17:59:13 2007
 --
 -- Wishbone masters:
 --   lm32i
@@ -310,8 +310,8 @@ ack <= farbborg0_ack_o;
 
 trafic_supervision_1 : entity work.trafic_supervision
 generic map(
-  priority => 0,
-  tot_priority => 0)
+  priority => 1,
+  tot_priority => 1)
 port map(
   bg => lm32i_farbborg0_bg,
   ce => ce,
@@ -321,8 +321,8 @@ port map(
 
 trafic_supervision_2 : entity work.trafic_supervision
 generic map(
-  priority => 0,
-  tot_priority => 0)
+  priority => 1,
+  tot_priority => 1)
 port map(
   bg => lm32d_farbborg0_bg,
   ce => ce,
