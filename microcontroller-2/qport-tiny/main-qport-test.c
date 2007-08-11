@@ -19,25 +19,6 @@
 #include "lop.h"
 #include "prng.h"
 
-#ifdef DISPLAY
-	#include "hd44780.h"
-	#define display_init hd44780_init
-	#define display_print hd44780_print
-	#define display_print_P hd44780_print_P
-	#define display_putc  hd44780_data
-	#define display_set_cursor hd44780_set_cursor
-	#define display_clear_line hd44780_clear_line
-	#define display_command hd44780_command
-#else
-	#define display_init() 
-	#define display_print(s) 
-	#define display_print_P(s) 
-	#define display_putc(s)  
-	#define display_set_cursor(a,b)
-	#define display_clear_line(s) 
-	#define display_command(s) 
-#endif
-
 /******************************************************************************/
 
 /* keys from /dev/random */
@@ -152,9 +133,16 @@ int main(){
 	
 	uart_init();
 	prng_init();
-	display_init();
-	display_clear_line(1);
-	display_clear_line(0);
+	
+	/* flash LEDs two times */
+	PORTC = 0xFF;
+	wait(200);
+	PORTC = 0x00;
+	wait(400);
+	PORTC = 0xFF;
+	wait(200);
+	PORTC = 0x00;
+	
 	
 	uart_hook = onuartrx;
 	lop0.on_streamrx = lop0_streamrx;
