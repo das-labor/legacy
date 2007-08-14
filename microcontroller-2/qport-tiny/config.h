@@ -18,17 +18,15 @@
 #define UART_XON_XOFF_THRESHOLD_2 (UART_RXBUFSIZE - 12)
 
 #undef UART_LEDS
-/*
-#define UART_HWFLOWCONTROL
-#define UART_RTS_PORT PORTA
-#define UART_RTS_DDR DDRA
-#define UART_CTS_PIN PINA
-#define UART_CTS_DDR DDRA
-#define UART_RTS_BIT 0
-#define UART_CTS_BIT 1
-*/
 
 #define HMAC_SHORTONLY
+#define QPTINY_AUTOKEYING
+
+
+#define DISPLAY_TIMEOUT 1000
+
+
+
 
 #endif
 

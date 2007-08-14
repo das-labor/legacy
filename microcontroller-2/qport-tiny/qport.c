@@ -11,12 +11,20 @@
 #include <stdlib.h> 
 #include <string.h>
 #include <avr/eeprom.h> 
+#include "config.h"
 #include "qport.h"
 #include "lop.h"
 #include "prng.h"
 #include "hmac-sha256.h"
 #include "sha256.h"
 #include "xtea.h"
+
+
+// #define LED_DEBUG
+
+#ifdef LED_DEBUG
+ #include <avr/io.h>
+#endif
 
 /******************************************************************************/
 
@@ -78,6 +86,16 @@ void qport_sendbyte(qport_ctx_t * ctx, uint8_t b){
 
 void qport_streamsend(qport_ctx_t * ctx, uint8_t p){
 	uint8_t i;
+	if(ctx->keystate==unkeyed){
+	 #ifdef QPTINY_AUTOKEYING
+		qport_rekey(ctx);	
+		while(ctx->keystate==unkeyed)
+			;
+	 #else
+	  	return;
+	 #endif
+	
+	}
 	for(i=0; i<QPORT_STREAMAUTH; ++i){
 		qport_sendbyte(ctx, stream_enc(ctx,p));				
 	}
@@ -87,12 +105,19 @@ void qport_streamsend(qport_ctx_t * ctx, uint8_t p){
 
 void qport_recieve_byte(qport_ctx_t * ctx, uint8_t b){
 	b = stream_dec(ctx, b);
+	if(ctx->keystate == unkeyed){
+		#ifdef LED_DEBUG
+		PORTC |= 0x40;
+		#endif
+		return;
+	}
 	if(ctx->streamrx_index==0){
 		ctx->streamrx_value = b;
 	} else {
 		if(ctx->streamrx_value != b){
 			/* evil error, maybe someone changed some packets */
 			/* we should do a resync */
+			PORTC |= 0x80;
 			return;
 		}
 	}
@@ -156,36 +181,56 @@ void qport_setupstream(qport_ctx_t * ctx, uint8_t rxtx, uint8_t * a, uint8_t * b
 /******************************************************************************/
 
 void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
+	#ifdef LED_DEBUG
+	PORTC |= 0x08;
+	#endif
 	if(ctx->keyingdata && (ctx->keyingdata->id == kp->id)){
 		/* we recived a response to our kp */
+		#ifdef LED_DEBUG
+		PORTC ^= 0x04;
+		#endif
 		qport_setupstream(ctx, TX, ctx->keyingdata->seed_a, kp->seed_a);
 		qport_setupstream(ctx, RX, ctx->keyingdata->seed_b, kp->seed_b);
 		free(ctx->keyingdata);
 		ctx->keyingdata = 0;
+		ctx->keystate = keyed;
 	} else {
+		if((!ctx->keyingdata)||(ctx->keyingdata && (ctx->keyingdata->id > kp->id))){ /* lower ID wins */
 		/* we should respond to the incomming packet */
-		qport_keypacket_t kpresponse;
-		genkeypacket(&kpresponse);
-		kpresponse.id = kp->id;
-		lop_sendmessage(ctx->lop, sizeof(qport_keypacket_t), (uint8_t*)&kpresponse);
-		qport_setupstream(ctx,TX, kp->seed_a, kpresponse.seed_a);
-		qport_setupstream(ctx,RX, kp->seed_b, kpresponse.seed_b);
-		{
-			uint8_t help[16];
-			/* swap rx and tx keys */
-			memcpy(help, ctx->streamkey_rxa, 16);
-			memcpy(ctx->streamkey_rxa, ctx->streamkey_txa, 16);
-			memcpy(ctx->streamkey_txa, help, 16);
-			memcpy(help, ctx->streamkey_rxb, 16);
-			memcpy(ctx->streamkey_rxb, ctx->streamkey_txb, 16);
-			memcpy(ctx->streamkey_txb, help, 16);
-			/* swap rx and tx states */
-			memcpy(help, ctx->streamstate_rxa, 8);
-			memcpy(ctx->streamstate_rxa, ctx->streamstate_txa, 8);
-			memcpy(ctx->streamstate_txa, help, 8);
-			memcpy(help, ctx->streamstate_rxb, 8);
-			memcpy(ctx->streamstate_rxb, ctx->streamstate_txb, 8);
-			memcpy(ctx->streamstate_txb, help, 8);
+			#ifdef LED_DEBUG
+			PORTC ^= 2;
+			#endif
+			qport_keypacket_t kpresponse;
+			genkeypacket(&kpresponse);
+			kpresponse.id = kp->id;
+			lop_sendmessage(ctx->lop, sizeof(qport_keypacket_t), (uint8_t*)&kpresponse);
+			qport_setupstream(ctx,TX, kp->seed_a, kpresponse.seed_a);
+			qport_setupstream(ctx,RX, kp->seed_b, kpresponse.seed_b);
+			{
+				uint8_t help[16];
+				/* swap rx and tx keys */
+				memcpy(help, ctx->streamkey_rxa, 16);
+				memcpy(ctx->streamkey_rxa, ctx->streamkey_txa, 16);
+				memcpy(ctx->streamkey_txa, help, 16);
+				memcpy(help, ctx->streamkey_rxb, 16);
+				memcpy(ctx->streamkey_rxb, ctx->streamkey_txb, 16);
+				memcpy(ctx->streamkey_txb, help, 16);
+				/* swap rx and tx states */
+				memcpy(help, ctx->streamstate_rxa, 8);
+				memcpy(ctx->streamstate_rxa, ctx->streamstate_txa, 8);
+				memcpy(ctx->streamstate_txa, help, 8);
+				memcpy(help, ctx->streamstate_rxb, 8);
+				memcpy(ctx->streamstate_rxb, ctx->streamstate_txb, 8);
+				memcpy(ctx->streamstate_txb, help, 8);
+			}
+			ctx->keystate = keyed;
+		}
+		if(ctx->keyingdata){
+			#ifdef LED_DEBUG
+			PORTC ^= 1;
+			#endif
+			free(ctx->keyingdata);
+			ctx->keyingdata = 0;
 		}
 	}
 }

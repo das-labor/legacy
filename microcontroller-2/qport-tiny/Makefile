@@ -1,6 +1,6 @@
 PRG            = qport-test
 OBJ            = main-qport-test.o lop.o  uart.o qport.o sha256-asm.o \
-				 xtea-asm.o prng.o hmac-sha256.o
+		  hd44780.o xtea-asm.o prng.o hmac-sha256.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os -mno-tablejump
 
