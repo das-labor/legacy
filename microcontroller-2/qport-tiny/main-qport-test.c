@@ -19,6 +19,8 @@
 #include "lop.h"
 #include "prng.h"
 
+#include "hd44780.h"
+
 /******************************************************************************/
 
 /* keys from /dev/random */
@@ -51,11 +53,13 @@ uint8_t getbadrandom(void){
 
 void prng_init(void){
 	/* here we should add some entropy to the prng */
-	uint16_t i;
-	uint8_t b;
-	for(i=0; i<768; ++i){
-		b = getbadrandom();
-		addEntropy(8,&b);
+	uint8_t i,j;
+	uint8_t b[64];
+	for(i=0; i<32; ++i){
+		for(j=0; j<64; ++j){
+			b[j] = getbadrandom();
+		}
+		addEntropy(64*8,&b);
 	}
 }
 
@@ -93,47 +97,50 @@ lop_ctx_t lop0={
 qport_ctx_t qp0;
 
 /******************************************************************************/
-
 void lop0_sendrawbyte(uint8_t b){
 	uart_putc((char)b);
 }
-
 /******************************************************************************/
-
 void lop0_streamrx(uint8_t b){
 	qport_recieve_byte(&qp0, b);
 }
-
 /******************************************************************************/
-
 void lop0_msgrx(uint16_t len, uint8_t * msg){
 	qport_incomming_msg(&qp0, len, msg);
 }
-
 /******************************************************************************/
-
 void onuartrx(uint8_t b){
 	lop_recieve_byte(&lop0,b);
 }
-
 /******************************************************************************/
-
 void qp0_streamrx(uint8_t b){
 	PORTC = b;
 }
-
 /******************************************************************************/
 
 int main(){
 	uint8_t pb, x=0;
+	uint8_t display=0;
 	DDRC = 0xFF;
 	PORTC = 0x00;
 	DDRB = 0x00;
 	PORTB = 0XFF;
 	
+	DDRA = 0x00;
+	PORTA = 0x00;
+	ADMUX = 0x40;  /* Vref=Avcc, ADC0 */
+	ADCSRA = 0x83; /* turn ADC on, prescaler=8 */
+	
 	uart_init();
 	prng_init();
 	
+	display=!hd44780_init();
+	if(display){
+		hd44780_clear_line(0);
+		hd44780_clear_line(1);
+		hd44780_set_cursor(0,0);
+		hd44780_print("Hello World!");
+	}
 	/* flash LEDs two times */
 	PORTC = 0xFF;
 	wait(200);
@@ -144,12 +151,11 @@ int main(){
 	PORTC = 0x00;
 	
 	
-	uart_hook = onuartrx;
 	lop0.on_streamrx = lop0_streamrx;
 	lop0.sendrawbyte = lop0_sendrawbyte;
 	lop0.on_msgrx = lop0_msgrx;
-	lop_sendreset(&lop0);
-
+	
+	qp0.keystate = unkeyed;
 	qp0.master_enc_key_rxa = qp0_key_rxa;
 	qp0.master_enc_key_rxb = qp0_key_rxb;
 	qp0.master_enc_key_txa = qp0_key_txa;
@@ -157,10 +163,14 @@ int main(){
 	qp0.master_mac_key = qp0_key_hmac;
 	qp0.on_byterx = qp0_streamrx;
 	qp0.lop = &lop0;
-	qp0.keystate = unkeyed;
 	qp0.keyingdata = 0;
 	
-	qport_rekey(&qp0);
+	lop_sendreset(&lop0);
+	uart_hook = onuartrx;
+	
+//	wait(getRandomByte());
+	if(qp0.keystate == unkeyed)
+		qport_rekey(&qp0);
 			
 	while(1){
 		if(((pb=PINB & 0x0f)) != 0x0f){
@@ -169,10 +179,15 @@ int main(){
 				qport_rekey(&qp0);
 			}
 			if(pb & 2) {
-				uart_hexdump(qp0.streamkey_rxa, 16); uart_putstr("\r\n");
-				uart_hexdump(qp0.streamkey_rxb, 16); uart_putstr("\r\n");
-				uart_hexdump(qp0.streamkey_txa, 16); uart_putstr("\r\n");
-				uart_hexdump(qp0.streamkey_txb, 16); uart_putstr("\r\n");
+				uart_putstr("\r\n krxa: "); uart_hexdump(qp0.streamkey_rxa, 16);
+				uart_putstr("\r\n krxb: "); uart_hexdump(qp0.streamkey_rxb, 16);
+				uart_putstr("\r\n ktxa: "); uart_hexdump(qp0.streamkey_txa, 16);
+				uart_putstr("\r\n ktxb: "); uart_hexdump(qp0.streamkey_txb, 16);
+				
+				uart_putstr("\r\n srxa: "); uart_hexdump(qp0.streamstate_rxa, 8);
+				uart_putstr("\r\n srxb: "); uart_hexdump(qp0.streamstate_rxb, 8);
+				uart_putstr("\r\n stxa: "); uart_hexdump(qp0.streamstate_txa, 8);
+				uart_putstr("\r\n stxb: "); uart_hexdump(qp0.streamstate_txb, 8);
 			}
 			if(pb & 4){
 				x+=1;

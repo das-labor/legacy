@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="15cm" height="13cm" viewBox="-2 3 15 13">
+  <ellipse style="fill: #ffffff" cx="5.97086" cy="7.98543" rx="1.97086" ry="0.985428"/>
+  <ellipse style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" cx="5.97086" cy="7.98543" rx="1.97086" ry="0.985428"/>
+  <text style="fill: #000000; text-anchor:middle; font-size: 0.8; font-family: sans; font-style: normal; font-weight: normal" x="5.97086" y="8.13543">XTEA</text>
+  <rect style="fill: #ffffff" x="4" y="4" width="4" height="1.9"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="4" y="4" width="4" height="1.9"/>
+  <text style="fill: #000000; text-anchor:middle; font-size: 0.8; font-family: sans; font-style: normal; font-weight: normal" x="6" y="5.1">State</text>
+  <rect style="fill: #ffffff" x="4" y="10" width="4" height="1.9"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="4" y="10" width="4" height="1.9"/>
+  <text style="fill: #000000; text-anchor:middle; font-size: 0.8; font-family: sans; font-style: normal; font-weight: normal" x="6" y="11.1">Output</text>
+  <ellipse style="fill: #ffffff" cx="6" cy="15" rx="1" ry="1"/>
+  <ellipse style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" cx="6" cy="15" rx="1" ry="1"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x1="6" y1="14" x2="6" y2="16"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x1="5" y1="15" x2="7" y2="15"/>
+  <rect style="fill: #ffffff" x="-1" y="14" width="3.8" height="1.9"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="-1" y="14" width="3.8" height="1.9"/>
+  <text style="fill: #000000; text-anchor:middle; font-size: 0.8; font-family: sans; font-style: normal; font-weight: normal" x="0.9" y="15.1">Plaintext</text>
+  <rect style="fill: #ffffff" x="9" y="14" width="4.3" height="1.9"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="9" y="14" width="4.3" height="1.9"/>
+  <text style="fill: #000000; text-anchor:middle; font-size: 0.8; font-family: sans; font-style: normal; font-weight: normal" x="11.15" y="15.1">Ciphertext</text>
+  <line style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x1="2.8" y1="14.95" x2="4.77645" y2="14.9949"/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="4.38267,15.236 4.88823,14.9975 4.39403,14.7362 "/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x1="7" y1="15" x2="8.77646" y2="14.9556"/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="8.39464,15.2152 8.88823,14.9528 8.38214,14.7154 "/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x1="6" y1="11.9" x2="6" y2="13.7764"/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="5.75,13.3882 6,13.8882 6.25,13.3882 "/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x1="6" y1="5.9" x2="5.97678" y2="6.77647"/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="5.73715,6.38179 5.97382,6.88824 6.23697,6.39503 "/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x1="5.97086" y1="8.97086" x2="5.99367" y2="9.77648"/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="5.73278,9.39552 5.99684,9.88824 6.23258,9.38137 "/>
+  <rect style="fill: #ffffff" x="0" y="7" width="2" height="1.9"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x="0" y="7" width="2" height="1.9"/>
+  <text style="fill: #000000; text-anchor:middle; font-size: 0.8; font-family: sans; font-style: normal; font-weight: normal" x="1" y="8.1">k</text>
+  <line style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" x1="2" y1="7.95" x2="3.77643" y2="7.98147"/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="3.38386,8.22455 3.88821,7.98345 3.39272,7.72463 "/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" d="M 11.15,14 A 14.0531,14.0531 0 0 0 7.27938,6.10729"/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000" points="7.73237,6.20171 7.20124,6.02735 7.38043,6.55687 "/>
+</svg>

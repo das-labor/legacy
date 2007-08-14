@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="15cm"
+   height="13cm"
+   viewBox="-2 3 15 13"
+   id="svg2514"
+   sodipodi:version="0.32"
+   inkscape:version="0.45.1"
+   sodipodi:docname="xtea_ofb.svg"
+   sodipodi:docbase="/home/bg/workspace/qport-tiny/doc"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <metadata
+     id="metadata2591">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs2589" />
+  <sodipodi:namedview
+     inkscape:window-height="480"
+     inkscape:window-width="640"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     guidetolerance="10.0"
+     gridtolerance="10.0"
+     objecttolerance="10.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
+  <ellipse
+     style="fill: #ffffff"
+     cx="5.97086"
+     cy="7.98543"
+     rx="1.97086"
+     ry="0.985428"
+     id="ellipse2516"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <ellipse
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     cx="5.97086"
+     cy="7.98543"
+     rx="1.97086"
+     ry="0.985428"
+     id="ellipse2518"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <text
+     style="fill: #000000; text-anchor:middle; font-size: 0.8; font-family: sans; font-style: normal; font-weight: normal"
+     x="5.97086"
+     y="8.13543"
+     id="text2520"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300">XTEA</text>
+  <rect
+     style="fill: #ffffff"
+     x="4"
+     y="4"
+     width="4"
+     height="1.9"
+     id="rect2522"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <rect
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x="4"
+     y="4"
+     width="4"
+     height="1.9"
+     id="rect2524"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <text
+     style="fill: #000000; text-anchor:middle; font-size: 0.8; font-family: sans; font-style: normal; font-weight: normal"
+     x="6"
+     y="5.1"
+     id="text2526"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300">State</text>
+  <rect
+     style="fill: #ffffff"
+     x="4"
+     y="10"
+     width="4"
+     height="1.9"
+     id="rect2528"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <rect
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x="4"
+     y="10"
+     width="4"
+     height="1.9"
+     id="rect2530"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <text
+     style="fill: #000000; text-anchor:middle; font-size: 0.8; font-family: sans; font-style: normal; font-weight: normal"
+     x="6"
+     y="11.1"
+     id="text2532"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300">Output</text>
+  <rect
+     style="fill: #ffffff"
+     x="11"
+     y="7"
+     width="2"
+     height="1.9"
+     id="rect2534"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <rect
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x="11"
+     y="7"
+     width="2"
+     height="1.9"
+     id="rect2536"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <text
+     style="fill: #000000; text-anchor:middle; font-size: 0.8; font-family: sans; font-style: normal; font-weight: normal"
+     x="12"
+     y="8.1"
+     id="text2538"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300">k</text>
+  <ellipse
+     style="fill: #ffffff"
+     cx="6"
+     cy="15"
+     rx="1"
+     ry="1"
+     id="ellipse2540"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <ellipse
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     cx="6"
+     cy="15"
+     rx="1"
+     ry="1"
+     id="ellipse2542"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <line
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x1="6"
+     y1="14"
+     x2="6"
+     y2="16"
+     id="line2544"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <line
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x1="5"
+     y1="15"
+     x2="7"
+     y2="15"
+     id="line2546"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <rect
+     style="fill: #ffffff"
+     x="-1"
+     y="14"
+     width="3.8"
+     height="1.9"
+     id="rect2548"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <rect
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x="-1"
+     y="14"
+     width="3.8"
+     height="1.9"
+     id="rect2550"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <text
+     style="fill: #000000; text-anchor:middle; font-size: 0.8; font-family: sans; font-style: normal; font-weight: normal"
+     x="0.9"
+     y="15.1"
+     id="text2552"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300">Plaintext</text>
+  <rect
+     style="fill: #ffffff"
+     x="9"
+     y="14"
+     width="4.3"
+     height="1.9"
+     id="rect2554"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <rect
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x="9"
+     y="14"
+     width="4.3"
+     height="1.9"
+     id="rect2556"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <text
+     style="fill: #000000; text-anchor:middle; font-size: 0.8; font-family: sans; font-style: normal; font-weight: normal"
+     x="11.15"
+     y="15.1"
+     id="text2558"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300">Ciphertext</text>
+  <line
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x1="2.8"
+     y1="14.95"
+     x2="4.77645"
+     y2="14.9949"
+     id="line2560"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <polyline
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     points="4.38267,15.236 4.88823,14.9975 4.39403,14.7362 "
+     id="polyline2562"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <line
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x1="7"
+     y1="15"
+     x2="8.77646"
+     y2="14.9556"
+     id="line2564"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <polyline
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     points="8.39464,15.2152 8.88823,14.9528 8.38214,14.7154 "
+     id="polyline2566"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <line
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x1="6"
+     y1="11.9"
+     x2="6"
+     y2="13.7764"
+     id="line2568"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <polyline
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     points="5.75,13.3882 6,13.8882 6.25,13.3882 "
+     id="polyline2570"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <line
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x1="11"
+     y1="7.95"
+     x2="8.1653"
+     y2="7.98284"
+     id="line2572"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <polyline
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     points="8.55058,7.72836 8.05351,7.98413 8.55637,8.22833 "
+     id="polyline2574"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <line
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x1="6"
+     y1="5.9"
+     x2="5.97678"
+     y2="6.77647"
+     id="line2576"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <polyline
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     points="5.73715,6.38179 5.97382,6.88824 6.23697,6.39503 "
+     id="polyline2578"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <line
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x1="5.97086"
+     y1="8.97086"
+     x2="5.99367"
+     y2="9.77648"
+     id="line2580"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <polyline
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     points="5.73278,9.39552 5.99684,9.88824 6.23258,9.38137 "
+     id="polyline2582"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <polyline
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     points="6,12.95 3,12.95 3,4.95 3.77639,4.95 "
+     id="polyline2584"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+  <polyline
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     points="3.3882,5.2 3.8882,4.95 3.3882,4.7 "
+     id="polyline2586"
+     inkscape:export-filename="/home/bg/workspace/qport-tiny/doc/xtea_ofb.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
+</svg>
