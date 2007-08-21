@@ -20,7 +20,7 @@
 #include "xtea.h"
 
 
-// #define LED_DEBUG
+#define LED_DEBUG
 
 #ifdef LED_DEBUG
  #include <avr/io.h>
@@ -117,7 +117,11 @@ void qport_recieve_byte(qport_ctx_t * ctx, uint8_t b){
 		if(ctx->streamrx_value != b){
 			/* evil error, maybe someone changed some packets */
 			/* we should do a resync */
+			ctx->keystate = unkeyed;
+			ctx->streamrx_index = 0;
+		    #ifdef LED_DEBUG
 			PORTC |= 0x80;
+			#endif
 			return;
 		}
 	}
@@ -195,7 +199,7 @@ void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
 		ctx->keyingdata = 0;
 		ctx->keystate = keyed;
 	} else {
-		if((!ctx->keyingdata)||(ctx->keyingdata && (ctx->keyingdata->id > kp->id))){ /* lower ID wins */
+		if((!ctx->keyingdata)||(ctx->keyingdata && ((ctx->keyingdata->id) > (kp->id)))){ /* lower ID wins */
 		/* we should respond to the incomming packet */
 			#ifdef LED_DEBUG
 			PORTC ^= 2;
