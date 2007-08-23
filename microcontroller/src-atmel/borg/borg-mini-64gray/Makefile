@@ -1,5 +1,5 @@
 
-OBJ            = borg_hw2.o main.o util.o borg_hw2_asm.o
+OBJ            = borg_hw2.o main.o util.o borg_hw2_asm.o prng.o
 # util.o pixel.o programm.o snake.o 
 
 MCU_TARGET    = atmega8
