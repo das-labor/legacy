@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+
+# exifdate2jpegname reads the creation date in the EXIF date a digital camera writes on taking an image
+# and renames the image accordingly (datestring_renamed_oringalimagename.jpg)
+# It expects a directory as parameter and does the renaming for all JPEG files contained
+
+require 'rubygems'
+require 'exifr'
+#require 'ftools'
+
+if !(ARGV[0]) then
+	puts "Extracts the creation time from the JPEG file's EXIF tag and names the file accordingly to datestring_rename_orignalfilename "
+	puts "Usage: exifdate2jpegname <directory> "
+	exit
+end
+
+Dir.chdir(ARGV[0])
+images = Dir["*.{jpg,JPG,jpeg,JPEG}"]
+
+images.each {|img|
+
+if EXIFR::JPEG.new(img).exif? then
+#	puts EXIFR::JPEG.new(img).date_time
+	img_name =  File.basename(img)
+	if !(img_name =~ /.*._renamed.*./) then
+		img_date = EXIFR::JPEG.new(img).date_time
+		i_d = img_date.to_s
+		d = i_d.split	 		# split date from EXIF
+		hms = d[3].split(":")	# split time to h m s
+		time = Time.local(d[5], d[1], d[2], hms[0], hms[1], hms[2]) 	# define time
+		datestring = time.strftime("%Y-%m-%d_%H-%M-%S")		# create datestring as year-month-day_hour-minute-second
+		newname = datestring			# starting to concat the new filename, beginning with datestring
+		newname << "_renamed_"			# then comes the "has been renamed"-indicator
+		newname << img_name.downcase	# then the original filename
+		puts newname
+		File.rename(img, newname)
+	elsif
+		print(img, " has already been renamed\n")
+	end
+elsif
+	print("no EXIF data in ", img,"\n")
+end
+}
