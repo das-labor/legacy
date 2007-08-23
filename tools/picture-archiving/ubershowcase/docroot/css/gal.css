@@ -45,9 +45,9 @@ a:hover   { color: #bbb; text-decoration: none; }
     border-left: 1px solid #959596;
     border-right: 1px solid #959596;
     padding: 10px 25px 10px 25px;
-    min-width: 800px;
+    min-width: 930px;
     min-height: 400px;
-    margin: 60px 90px 90px 90px;
+    margin: 60px 10px 60px 10px;
     text-align: left;
 }
 
