@@ -28,12 +28,12 @@ require 'rubygems'
 require 'exifr'
 require 'builder'
 
-@GTITLE = "photographic collection"
-TWIDTH = 150
-THEIGHT = 100
-@ROOTDIR = "/data/projects/picture-archiving/rgallery/docroot/"
-@CACHEDIR = "cache/"
-DFILE = "_info.txt"
+@GTITLE = "Ubershowcase - lets rock!"               # your gallery's title. edit.
+TWIDTH = 150                                        # thumbnail width. this is a good choice
+THEIGHT = 100                                       # thumbnail height. this is a good choice
+@ROOTDIR = "/path/to/your/ubershowcase/directory/"  # the full path to your ubershowcase directory. edit!
+@CACHEDIR = "cache/"                                # where your thumbnails reside
+DFILE = "_info.txt"                                 # name of the additional info file
 
 @galleries = Array.new
 @forced = false

@@ -1,0 +1,37 @@
+UBERSHOWCASE
+
+ABOUT:
+Ubershowcase is a web gallery creator written in ruby using rMagick, exifr and builder.
+It is a simple "drag the stuff in a folder, I'll take care of the rest"-solution.
+For the front-end the Thickbox framework is used.
+
+FEATURES:
+
+- 	Creates thumbnails (size of choice)
+- 	Client-side resizing of big images according to the users screen size 
+	(never touches the original! usable to browse your photo archive without having to 
+	worry about your precious originals)
+-	Reads and displays EXIF data in a convenient way
+-	Static web pages. It's hard to exploit xhtml and css, right?
+	Low load on server, as there is no need for re-rendering of pages and images on every view
+-	Thickbox as shiny AJAX klickbunt front-end. 
+
+
+USAGE:
+1.	Copy the ubershowcase folder to a location accessible by your webserver
+2.	Edit some settings in the ubershowcase script
+	@ROOTDIR = "/path/to/your/ubershowcase/directory/"
+	@GTITLE = "Ubershowcase - lets rock!"
+	DFILE = "_info.txt" (optional, see below)
+	there is more your can change, but change at least the path!
+3.	Each of your galleries should be a folder containing images
+	Place them in /path/to/your/ubershowcase/directory/galleries/
+4.	You can add some information to your image sets by placing file called _info.txt
+	in your galleries-folder and in each of its subfolders. You may use (x)html in these files.
+	The filename is specified via the constant DFILE (see above). You may change it, if you like
+	The content of _info.txt in your galleries folder show on your ubershowcase frontend.
+5.	Make sure all libraries are there. You need:
+	- RMagick (check if your Linux distribution comes with a pre-compiled version, else compile it yourself)
+	- exifr (via ruby gems)
+	- builder (via ruby gems)
+6.	Run the ubershowcase script.
