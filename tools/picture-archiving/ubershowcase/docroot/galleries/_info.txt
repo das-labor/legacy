@@ -1,0 +1,3 @@
+<h3>Wayne! ... this is some random info, picked just for you.</h3><br />
+<p>Add some description for your galleries here</p>
+

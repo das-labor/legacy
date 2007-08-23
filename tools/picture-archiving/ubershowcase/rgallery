@@ -1,0 +1,371 @@
+#!/usr/bin/env ruby
+
+# MIT LICENSE
+# 
+# Copyright (c) 2007 Tilman Frosch (frosch.org.uk)
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+
+require 'RMagick'
+require 'rubygems'
+require 'exifr'
+require 'builder'
+
+@GTITLE = "photographic collection"
+TWIDTH = 150
+THEIGHT = 100
+@ROOTDIR = "/data/projects/picture-archiving/rgallery/docroot/"
+@CACHEDIR = "cache/"
+DFILE = "_info.txt"
+
+@galleries = Array.new
+@forced = false
+if ARGV[0] == "-force"
+	@forced = true
+end
+
+def get_description(sdir)
+	c = ""
+    df = "#{@ROOTDIR}galleries/#{sdir}/#{DFILE}"
+	dm = "#{@ROOTDIR}galleries/#{DFILE}"
+#	puts df
+#	puts dm
+    if File.exist?(df)
+        f = File.new(df)
+        f.readlines.each{|l| c << l }
+        f.close
+	elsif sdir == "nav"
+		if File.exist?(dm)
+			f = File.new(dm)
+    	    f.readlines.each{|l| c << l }
+	        f.close
+		end
+    else
+        c = ""
+    end
+	return c
+end
+
+def mkthumb(f,outfile)		# creates thumbnail. expects /path/to/source/image/file and /path/to/output/file
+	timg = Magick::Image.read(f).first
+	timg.thumbnail!(TWIDTH,THEIGHT)
+	timg.write(outfile)
+end
+
+def get_exif(eimg)			# reads exif data from image file. expects /path/to/image/file. returns hash containing exif_fields
+	i = EXIFR::JPEG.new(eimg)	
+	if i.exif? then
+		exif_fields = {
+			'Date'     =>  i.date_time,
+			'Camera'    =>  i.model,
+			'Exposure'  =>  i.exposure_time.to_s,
+			'Aperture' =>  i.f_number.to_f
+		}
+	else
+		exif_fields = ""
+	end
+	return exif_fields
+end
+
+def to_thumbnail(my_img, my_sdir)	# does checks and creates dirs before calling mkthumb
+	cd = "#{@ROOTDIR}#{@CACHEDIR}"
+#	print "thumbnail1: cachedir: #{cd}\n"
+	if !FileTest.directory?(cd)		# is there a cache dir? else create one
+		Dir.mkdir(cd)
+	end
+	od = "#{@ROOTDIR}#{@CACHEDIR}#{my_sdir}/"
+#	print "thumbnail2: outdir: #{od}\n"
+	if !FileTest.directory?(od)		# is there a subdir in cachedir corresponding to sub-gallery we are working on?
+        Dir.mkdir(od)
+    end
+	of = "#{@ROOTDIR}#{@CACHEDIR}#{my_sdir}/#{my_img}"
+#	print "thumbnail3: outfile: #{of}\n"
+	
+	f = "#{@ROOTDIR}galleries/#{my_sdir}/#{my_img}"
+#	print "#{f} changed?\n"
+	if changed(f)
+		mkthumb(my_img,of)
+	end
+end
+
+
+def process_images(sdir)	# calls thumbnailer and embed_picture to place the thumb in the html gallery page (for every picture in dir)
+	images = Dir["*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF,tiff,tif,TIF,TIFF}"]
+	images.sort!
+	images.each{|img|
+		#print "pre to_thumbnail img = #{img}, rd = #{rd}, subdir = #{sdir}\n\n"
+		to_thumbnail(img, sdir)
+		embed_picture(img, sdir)
+	}
+end
+
+def embed_picture(x_img, x_sdir)		# creates the xhtml around the thumbnail
+	path_img_thumb = "#{@CACHEDIR}#{x_sdir}/#{x_img}"
+	path_img_big = "galleries/#{x_sdir}/#{x_img}"
+	@x.div('class'=>'picture') {
+		exif_data = get_exif(x_img)
+#		@x.h3(x_img)			# uncomment to show image name above thumbnail
+		if exif_data != ""
+			descr = "Date: #{exif_data.fetch("Date")}, Exposure: #{exif_data.fetch("Exposure")}, f: #{exif_data.fetch("Aperture")}, Camera: #{exif_data.fetch("Camera")}"
+		else
+			descr = ""
+		end
+		@x.a('href'=> path_img_big, 'class' => 'thickbox', 'rel' => x_sdir, 'title' => descr) {
+			@x.img('src'=> path_img_thumb)
+		}
+		@x.dl {
+#			@x.dt('')
+			exif_data.each{|title, field|
+				if title == "Date"
+					@x.dt(title)
+					ds = field.strftime("%d.%m.%Y %H:%M:%S")
+					@x.dd(ds)
+				elsif
+					@x.dt(title)
+					@x.dd(field)
+				end
+			}
+		}
+	}	
+end
+
+def build_xhtml(sdir)
+	outfile = "#{sdir}.html"
+	@galleries << outfile
+	puts "Creating file #{outfile} ..."
+	name = sdir.sub(/_/, ' ')
+	dtext = get_description(sdir)
+	@xhtml = ''
+	@x = Builder::XmlMarkup.new(:target=>@xhtml, :indent=>1)
+	@x.instruct!
+	@x.declare! :DOCTYPE, :html, :PUBLIC, "-//W3C//DTD XHTML 1.0 Strict//EN", "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
+	@x.html( "xmlns" => "http://www.w3.org/1999/xhtml" ) {
+	@x.head { 
+    @x.title "#{@GTITLE}: #{name}"
+	@x.link("rel" => "stylesheet", "href" => "css/gal.css", "type" => "text/css", "media" => "screen")
+	@x.script( "type" => "text/javascript", "src" => "js/jquery.js")
+	@x.script( "type" => "text/javascript", "src" => "js/thickbox.js")
+	}
+	@x.body {
+		@x.h1("#{@GTITLE}: #{name}")
+		 @x.div("id" => "container"){
+			@x.div('id'=>'gallery') {
+				@x.div("class" => "description"){ @x << "#{dtext}" }
+				@x.br
+				process_images(sdir)	
+			}
+		}
+	}
+}
+    File.open(File.join(@ROOTDIR, outfile), 'w+') do |file|
+        file.puts @xhtml
+    end
+end
+
+def walk_dirs()
+#	puts @ROOTDIR
+	rd = "#{@ROOTDIR}galleries/"
+#	print "main1: rootdir: #{rd}\n\n"
+	Dir.chdir(rd)
+	dcontent = Dir["*"]
+	dcontent.each {|sdir|
+		if FileTest.directory?(sdir) then
+#			print "main2: subdir: #{sdir}\n\n"
+			Dir.chdir(sdir)
+			build_xhtml(sdir)
+#			print "main3: rootdir: #{rd}\n\n"
+			Dir.chdir(rd)
+		end
+	}
+
+end
+
+def build_nav()
+	dtext = get_description("nav")
+#	puts dtext
+	nav_xhtml = ''
+	x = Builder::XmlMarkup.new(:target=>nav_xhtml, :indent=>1)
+	x.instruct!
+	x.declare! :DOCTYPE, :html, :PUBLIC, "-//W3C//DTD XHTML 1.0 Strict//EN", "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
+	x.html( "xmlns" => "http://www.w3.org/1999/xhtml" ) {
+	x.head { 
+    x.title @GTITLE
+	x.link("rel" => "stylesheet", "href" => "css/nav.css", "type" => "text/css")
+	}
+	x.body {
+    x.h1("#{@GTITLE}")
+	x.div("id" => "container"){
+		x.div('id'=>'glist') {
+			x.h3('galleries')
+			x.ul{
+				@galleries.each{|gal|
+					n = gal.sub(/.html/, '')
+					name = n.sub(/_/, ' ')
+					x.li{
+					x.a('href' => gal){
+						x.text! name
+					}
+					}
+				}
+			}
+		}
+		x.div("id" => "description"){ x << "#{dtext}" }
+	}
+	}
+}
+	puts "Creating index.html ..."
+    File.open(File.join(@ROOTDIR, 'index.html'), 'w+') do |file|
+        file.puts nav_xhtml
+    end
+	
+	@galleries.each{|g|
+		add_nav(g)
+	}
+end
+
+def add_nav(file)		# adds navigation to galleries
+	c = ""
+	nav_xhtml = ""
+	x = Builder::XmlMarkup.new(:target=>nav_xhtml, :indent=>1)
+	fl = "#{@ROOTDIR}#{file}"
+
+	f = File.new(fl)
+	f.readlines.each{|l| c << l }
+	f.close
+	x.div('id'=>'glist') {
+		x.a('href' => "index.html"){ x.h3('galleries') }
+		x.ul{
+			@galleries.each{|gal|
+				n = gal.sub(/.html/, '')
+				name = n.sub(/_/, ' ')
+				x.li{
+					x.a('href' => gal){
+						x.text! name
+					}
+				}
+			}
+		}
+	}
+
+	navbar = "<div id=\"container\">\n   #{nav_xhtml}\n"
+	c.sub!(/<div id=\"container\">/, navbar)
+    File.open(File.join(@ROOTDIR, file), 'w+') do |file|
+        file.puts c
+    end	
+end
+
+def changed(file)	# has a file changed? compare mtime to timestamp
+    mt = File.mtime(file).strftime("%Y%m%d%H%M%S").to_i
+#	puts ts
+	if mt > @ts
+		modified = true
+	elsif @forced
+		modified = true
+	else
+		modified = false
+	end
+	
+	return modified
+end
+
+def set_ts									# set timestamp, write it to file 
+	tsfile = "#{@ROOTDIR}timestamp.txt"		# used for checking if files have changed
+	ts = Time.now.strftime("%Y%m%d%H%M%S")	# since the last run of the script
+	f = File.new(tsfile,  "w+")
+	f.print ts
+	f.close
+end
+
+def get_ts									# read timestap from file, 
+	tsfile = "#{@ROOTDIR}timestamp.txt"		# write to @ts
+	if File.exist?(tsfile)
+		f = File.new(tsfile)
+		@ts = f.readlines[0].to_i
+		f.close
+	else
+		@ts = 0
+	end
+end
+
+def clean_cache		# clean orphan thumbnails in cache
+	print "Cleaning orphan thumbnails in cache ...\n\n"
+	cachedir = "#{@ROOTDIR}#{@CACHEDIR}"
+	galdir = "#{@ROOTDIR}galleries/"
+
+	Dir.chdir(cachedir)		# go to cache directory
+	cached = Dir["*"]		# push list subdirs to Array
+#	print "cachedir: #{cachedir}\n"
+#	print "galdir: #{galdir}\n"
+#	print "gals: #{gals}"
+#	print "in cache: #{cached}\n"
+#	print "to del: #{to_del}\n"
+	if !cached.empty? then	# if there are subdirs chdir to them one per loop
+		Dir.chdir(cachedir)
+		cached.each{|d|
+			cdir = "#{cachedir}#{d}/"	# the next subdir we'll look at
+#			puts cdir
+			odir = "#{galdir}#{d}/"
+#			puts odir
+			if FileTest.exists?(odir)	# is there a corresponding gallery?
+				Dir.chdir(odir)
+				ofiles = Dir["*"]		# if true, push its content (thumb images) to ofiles Array
+			else
+				ofiles = []				# if not, create empty Array
+			end
+			Dir.chdir(cdir)				# switch to subdir
+			cfiles = Dir["*"]			# push contents to cfiles array
+			dfiles = cfiles - ofiles	# dfiles: files to delete. diff between cfiles and ofiles
+			if !dfiles.empty? then
+				dfiles.each{|f|
+					print "deleting #{f}\n"
+					File.delete(f)
+				}
+			end
+			cf = Dir["*"]
+			Dir.chdir(cachedir)
+			if cf.empty?				# do we still need this subdir?
+				print "Removing empty thumbnail directory #{cdir}\n"
+				Dir.delete(cdir)
+			end
+		}
+	end
+end
+
+def clean_html				# remove all html-files (gallery pages and index.html)
+    Dir.chdir(@ROOTDIR)		# execute before creating new ones to make sure everything is brand new and shiny
+    hfiles = Dir["*.html"]
+    hfiles.each{|f|
+        File.delete(f)
+    }
+end
+
+def main()
+	get_ts()
+	clean_cache()
+	clean_html()
+	print "\nCreating galleries and thumbnails...\n\n"
+	walk_dirs()
+	build_nav()
+	set_ts()
+	print "\n\nFinished! \n\n"
+end
+
+main()
+
