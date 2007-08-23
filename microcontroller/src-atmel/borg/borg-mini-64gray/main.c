@@ -1,6 +1,7 @@
 
 #include <setjmp.h>
 #include <avr/interrupt.h>
+#include <string.h>
 //#include <avr/signal.h>
 
 #include <avr/pgmspace.h>
@@ -9,6 +10,7 @@
 //#include "programm.h"
 #include "borg_hw2.h"
 #include "util.h"
+#include "prng.h"
 
 
 #ifdef AVR
@@ -42,6 +44,11 @@
 
 volatile uint16_t gval[2];
 uint16_t gzero[2];
+
+union {
+	unsigned int world[NUM_COLS][FEUER_Y];   // double buffer
+	uint16_t bobscreen[10][8];
+} GG;
 
 
 void g_init(){
@@ -103,14 +110,54 @@ void draw_level(uint8_t num){
 	draw_hline(3,8,5);
 }
 
+
+
+void feuer()
+{
+	unsigned char y, x;
+	unsigned int  t;
+//	unsigned int world[NUM_COLS][FEUER_Y];   // double buffer
+	
+
+	for(t=0; t<800; t++) {
+		// diffuse
+		for(y=1; y<FEUER_Y; y++) {
+			for(x=1; x<NUM_COLS-1; x++) {
+				GG.world[x][y-1] = (FEUER_N*GG.world[x-1][y] + FEUER_S*GG.world[x][y] + FEUER_N*GG.world[x+1][y]) / (FEUER_DIV*(FEUER_Y-y));
+			};
+
+			GG.world[0][y-1] = (FEUER_N*GG.world[NUM_COLS-1][y] + FEUER_S*GG.world[0][y] + FEUER_N*GG.world[1][y]) / (FEUER_DIV*(FEUER_Y-y));
+			GG.world[NUM_COLS-1][y-1] = (FEUER_N*GG.world[0][y] + FEUER_S*GG.world[NUM_COLS-1][y] + FEUER_N*GG.world[NUM_COLS-2][y]) / (FEUER_DIV*(FEUER_Y-y));
+		};
+
+		// update lowest line
+		for(x=0; x<NUM_COLS; x++) {
+			GG.world[x][FEUER_Y-1] =  random8() & 0x7f;
+		};
+		GG.world[NUM_COLS-1][FEUER_Y-1] = 0;
+		GG.world[0][FEUER_Y-1] = 0;
+	//	world[NUM_COLS/2][FEUER_Y-1] = random8() | 32;
+	//	world[NUM_COLS/2-1][FEUER_Y-1] = random8() | 32;
+	
+		// copy to screen
+		for(y=0; y<NUM_ROWS; y++) {
+			for(x=0; x<NUM_COLS; x++) {
+				setpixel( (pixel){x,y}, (GG.world[x][y] >> 2) );
+			}		
+		};
+
+		wait(FEUER_DELAY);
+	}
+}
+
 int main (void){
 	unsigned char mode = 1;
 
 	int8_t gd[2];
 	int16_t speed0 = 0, speed1=0, gmedx = 0, gmedy = 0;
 	int16_t pos0 = 0, pos1 = 0, posi0, posi1;
-	
-	uint16_t bobscreen[10][8];
+	unsigned char y, x;
+	unsigned int  t;
 	
 	DDRB = 0x03;
 	PORTB = 0x01;
@@ -140,6 +187,7 @@ int main (void){
 			pixmap[iy][ix] = 0; //bb++ % 64;
 		}
 	}
+	memset(GG.bobscreen, sizeof(GG.bobscreen),0);
 //	pixmap[0][0] = 1;
 //	while(1);
 	
@@ -150,7 +198,8 @@ int main (void){
 #define BOWL 2048
 	uint8_t b = 0;
 
-
+  //  while(1) feuer();
+    
 	while(1){
 		pixel mypix, oldpix;
 		
@@ -217,7 +266,7 @@ int main (void){
 		if((mypix.x != oldpix.x) || (mypix.y != oldpix.y) ){
 			setpixel(oldpix,b);
 		    b = get_pixel(mypix);
-			setpixel(mypix, 31);
+			setpixel(mypix, 64);
 			
 		//	if(get_pixel(mypix)){
 		//		setpixel(mypix,3);
@@ -232,15 +281,46 @@ int main (void){
 		oldpix = mypix;
 	*/
 		
+		// diffuse
+		for(y=1; y<FEUER_Y; y++) {
+			for(x=1; x<NUM_COLS-1; x++) {
+				GG.world[x][y-1] = (FEUER_N*GG.world[x-1][y] + FEUER_S*GG.world[x][y] + FEUER_N*GG.world[x+1][y]) / (FEUER_DIV*(FEUER_Y-y)); // (FEUER_DIV*(FEUER_Y-y))
+			};
+
+			GG.world[0][y-1] = (FEUER_N*GG.world[NUM_COLS-1][y] + FEUER_S*GG.world[0][y] + FEUER_N*GG.world[1][y]) / (FEUER_DIV*(FEUER_Y-y));
+			GG.world[NUM_COLS-1][y-1] = (FEUER_N*GG.world[0][y] + FEUER_S*GG.world[NUM_COLS-1][y] + FEUER_N*GG.world[NUM_COLS-2][y]) / (FEUER_DIV*(FEUER_Y-y));
+		};
+
+		// update lowest line
+		for(x=0; x<NUM_COLS; x++) {
+			GG.world[x][FEUER_Y-1] =  0; //random8() & 0x7f;
+		};
+		GG.world[NUM_COLS-1][FEUER_Y-1] = 0;
+		GG.world[0][FEUER_Y-1] = 0;
+	//	world[NUM_COLS/2][FEUER_Y-1] = random8() | 32;
+	//	world[NUM_COLS/2-1][FEUER_Y-1] = random8() | 32;
+	
+		GG.world[posi0][posi1] =  random8() & 0x7f;
+	
+		// copy to screen
+		for(y=0; y<NUM_ROWS; y++) {
+			for(x=0; x<NUM_COLS; x++) {
+				setpixel( (pixel){x,y}, (GG.world[x][y] >> 2) );
+			}		
+		};
+
+		wait(FEUER_DELAY);		
+		
+		/*
 		// BOBSCREEN
 		#define bobfact	16
-		if(bobscreen[mypix.x][mypix.y] < (63*bobfact)) bobscreen[mypix.x][mypix.y] += bobfact * 8;
+		if(GG.bobscreen[mypix.x][mypix.y] < (63*bobfact)) GG.bobscreen[mypix.x][mypix.y] += bobfact * 8;
 		for(ix = 0;ix < 10; ix++) {
 			for(iy = 0;iy < 8; iy++) {
-				setpix(ix,iy,bobscreen[ix][iy] / (bobfact));
-				if(bobscreen[ix][iy]>=1) bobscreen[ix][iy]-=1;
+				setpix(ix,iy,GG.bobscreen[ix][iy] / (bobfact));
+				if(GG.bobscreen[ix][iy]>=1) GG.bobscreen[ix][iy]-=1;
 			}
-		}
+		}*/
 		
 		wait(1);
 	}
