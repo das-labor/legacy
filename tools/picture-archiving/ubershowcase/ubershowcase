@@ -100,18 +100,22 @@ def to_thumbnail(my_img, my_sdir)	# does checks and creates dirs before calling 
 	
 	f = "#{@ROOTDIR}galleries/#{my_sdir}/#{my_img}"
 #	print "#{f} changed?\n"
-	if changed(f)
+#	if changed(f)
 		mkthumb(my_img,of)
-	end
+#	end
 end
 
 
 def process_images(sdir)	# calls thumbnailer and embed_picture to place the thumb in the html gallery page (for every picture in dir)
+	d = "#{@ROOTDIR}galleries/#{sdir}"
+	ch = changed(d)
 	images = Dir["*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF,tiff,tif,TIF,TIFF}"]
 	images.sort!
 	images.each{|img|
 		#print "pre to_thumbnail img = #{img}, rd = #{rd}, subdir = #{sdir}\n\n"
-		to_thumbnail(img, sdir)
+		if ch
+			to_thumbnail(img, sdir)
+		end
 		embed_picture(img, sdir)
 	}
 end
@@ -169,7 +173,7 @@ def build_xhtml(sdir)
 			@x.div('id'=>'gallery') {
 				@x.div("class" => "description"){ @x << "#{dtext}" }
 				@x.br
-				process_images(sdir)	
+				process_images(sdir)
 			}
 		}
 	}
