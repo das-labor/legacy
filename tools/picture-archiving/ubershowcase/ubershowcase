@@ -99,10 +99,7 @@ def to_thumbnail(my_img, my_sdir)	# does checks and creates dirs before calling 
 #	print "thumbnail3: outfile: #{of}\n"
 	
 	f = "#{@ROOTDIR}galleries/#{my_sdir}/#{my_img}"
-#	print "#{f} changed?\n"
-#	if changed(f)
-		mkthumb(my_img,of)
-#	end
+	mkthumb(my_img,of)
 end
 
 
@@ -135,7 +132,6 @@ def embed_picture(x_img, x_sdir)		# creates the xhtml around the thumbnail
 			@x.img('src'=> path_img_thumb)
 		}
 		@x.dl {
-#			@x.dt('')
 			exif_data.each{|title, field|
 				if title == "Date"
 					@x.dt(title)
@@ -152,8 +148,8 @@ end
 
 def build_xhtml(sdir)
 	outfile = "#{sdir}.html"
-	@galleries << outfile
-	puts "Creating file #{outfile} ..."
+	@galleries << outfile				# push the name of every xhtml page we build to @galleries
+	puts "Creating file #{outfile} ..."	# later we use @galleries to build the navigation
 	name = sdir.sub(/_/, ' ')
 	dtext = get_description(sdir)
 	@xhtml = ''
@@ -183,29 +179,25 @@ def build_xhtml(sdir)
     end
 end
 
-def walk_dirs()
-#	puts @ROOTDIR
+def walk_dirs()								# walk through the subdirs of the galleries dir
 	rd = "#{@ROOTDIR}galleries/"
-#	print "main1: rootdir: #{rd}\n\n"
 	Dir.chdir(rd)
 	dcontent = Dir["*"]
 	dcontent.each {|sdir|
-		if FileTest.directory?(sdir) then
-#			print "main2: subdir: #{sdir}\n\n"
+		if FileTest.directory?(sdir) then	# if File in gal dir is subdir chdir to it 
 			Dir.chdir(sdir)
-			build_xhtml(sdir)
-#			print "main3: rootdir: #{rd}\n\n"
+			build_xhtml(sdir)				# and build gallery page
 			Dir.chdir(rd)
 		end
 	}
 
 end
 
-def build_nav()
-	dtext = get_description("nav")
+def build_nav()							# Builds main navigation
+	dtext = get_description("nav")		# get the description text from DFILE in galleries/
 #	puts dtext
-	nav_xhtml = ''
-	x = Builder::XmlMarkup.new(:target=>nav_xhtml, :indent=>1)
+	nav_xhtml = ''						
+	x = Builder::XmlMarkup.new(:target=>nav_xhtml, :indent=>1)	# use the Builder lib to create a xhtml file
 	x.instruct!
 	x.declare! :DOCTYPE, :html, :PUBLIC, "-//W3C//DTD XHTML 1.0 Strict//EN", "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
 	x.html( "xmlns" => "http://www.w3.org/1999/xhtml" ) {
@@ -219,7 +211,7 @@ def build_nav()
 		x.div('id'=>'glist') {
 			x.h3('galleries')
 			x.ul{
-				@galleries.each{|gal|
+				@galleries.each{|gal|		# for the origin @galleries look at build_xhtml
 					n = gal.sub(/.html/, '')
 					name = n.sub(/_/, ' ')
 					x.li{
@@ -239,8 +231,8 @@ def build_nav()
         file.puts nav_xhtml
     end
 	
-	@galleries.each{|g|
-		add_nav(g)
+	@galleries.each{|g|		# insert the navigation bar in every (sub-)gallery we have created
+		add_nav(g)			# (see below)
 	}
 end
 
@@ -253,12 +245,12 @@ def add_nav(file)		# adds navigation to galleries
 	f = File.new(fl)
 	f.readlines.each{|l| c << l }
 	f.close
-	x.div('id'=>'glist') {
-		x.a('href' => "index.html"){ x.h3('galleries') }
+	x.div('id'=>'glist') {					# we create a partial xhtml page
+		x.a('href' => "index.html"){ x.h3('galleries') }	
 		x.ul{
-			@galleries.each{|gal|
-				n = gal.sub(/.html/, '')
-				name = n.sub(/_/, ' ')
+			@galleries.each{|gal|			# for add a link to the yet-to-be nav bar for 
+				n = gal.sub(/.html/, '')	# every subgallery we created (for the name:
+				name = n.sub(/_/, ' ')		# strip file extension, replace underscores with spaces)
 				x.li{
 					x.a('href' => gal){
 						x.text! name
@@ -268,9 +260,9 @@ def add_nav(file)		# adds navigation to galleries
 		}
 	}
 
-	navbar = "<div id=\"container\">\n   #{nav_xhtml}\n"
-	c.sub!(/<div id=\"container\">/, navbar)
-    File.open(File.join(@ROOTDIR, file), 'w+') do |file|
+	navbar = "<div id=\"container\">\n   #{nav_xhtml}\n"	# this is our navbar appended to the tag where we want to insert it
+	c.sub!(/<div id=\"container\">/, navbar)				# replace the tag with the string above
+    File.open(File.join(@ROOTDIR, file), 'w+') do |file|	# write changes to file
         file.puts c
     end	
 end
@@ -315,18 +307,11 @@ def clean_cache		# clean orphan thumbnails in cache
 
 	Dir.chdir(cachedir)		# go to cache directory
 	cached = Dir["*"]		# push list subdirs to Array
-#	print "cachedir: #{cachedir}\n"
-#	print "galdir: #{galdir}\n"
-#	print "gals: #{gals}"
-#	print "in cache: #{cached}\n"
-#	print "to del: #{to_del}\n"
 	if !cached.empty? then	# if there are subdirs chdir to them one per loop
 		Dir.chdir(cachedir)
 		cached.each{|d|
 			cdir = "#{cachedir}#{d}/"	# the next subdir we'll look at
-#			puts cdir
 			odir = "#{galdir}#{d}/"
-#			puts odir
 			if FileTest.exists?(odir)	# is there a corresponding gallery?
 				Dir.chdir(odir)
 				ofiles = Dir["*"]		# if true, push its content (thumb images) to ofiles Array
