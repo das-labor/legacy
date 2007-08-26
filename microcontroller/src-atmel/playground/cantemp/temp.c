@@ -26,7 +26,7 @@ TimerControlBlock switchtimer3;
 								// 
 
 
-AVRX_GCC_TASKDEF(temp, 20, 4) {
+AVRX_GCC_TASKDEF(temp, 40, 3) {
 	uint8_t sensors = eeprom_read_byte(0x01);
 	uint8_t sensor[sensors], hbyte, lbyte;
   	char buffer[sensors][2];
@@ -51,7 +51,7 @@ AVRX_GCC_TASKDEF(temp, 20, 4) {
 					lbyte = i2c_readNak();		// msb byte2 test for .5 degree
 					i2c_stop();
 				}
-				if(buffer[j][0] == hbyte && buffer[j][1] == lbyte) {
+				if(buffer[j][0] != hbyte && buffer[j][1] != lbyte) {
 					temp.data[0] = sensor[j];
 					temp.data[1] = buffer[j][0] = hbyte;
 					temp.data[2] = buffer[j][1] = lbyte;
