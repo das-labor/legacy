@@ -69,9 +69,9 @@ ISR(SIG_UART_DATA) {
 
 ISR(SIG_UART_RECV) {
 	int diff; 
-	volatile char c;
+	char c;
 #ifdef UART_HOOK	
-	static uint8_t hook_running=0;
+	static volatile uint8_t hook_running=0;
 #endif
 #ifdef UART_LEDS
 	PORTC ^= 0x02;
