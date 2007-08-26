@@ -10,7 +10,7 @@
  */
 
 /* 
- * This demo uses lop two transfer lifgthpatterns between two laborboards via
+ * This demo uses lop to transfer lightpatterns between two laborboards via
  * a serial connection.
  * Two types of communication are used:
  *  -Messages 
@@ -20,7 +20,7 @@
  *    +-+-+-+-+-     -+-+-+
  *    |b|b|b|b|b ... b|b|b|
  *    +-+-+-+-+-     -+-+-+
- * 2) via stream frames are transfered. Theses frames are eight bytes long and
+ * 2) Via stream frames are transfered. Theses frames are eight bytes long and
  *    start with the byte wich is to be displayed, the other bytes have random
  *    values.
  * 	  +-+-+-+-+-+-+-+-+
@@ -71,7 +71,10 @@ void lop0_sendrawbyte(uint8_t b){
 
 /******************************************************************************/
 
+// this handler is called from the uart_hook, i.e. when the Uart receives
+// a new byte.
 void onuartrx(uint8_t b){
+	//let lop handle the received byte.
 	lop_recieve_byte(&lop0,b);
 }
 
@@ -130,7 +133,11 @@ int main(){
 	
 	uart_init();
 	
+	//set the handler for the bytes received by uart
+	//this function is then called by uart.c
 	uart_hook = onuartrx;
+	
+	//set handlers for the outputs from lop
 	lop0.on_streamrx = lop0_streamrx;
 	lop0.sendrawbyte = lop0_sendrawbyte;
 	lop0.on_streamsync = lop0_streamsync;
@@ -178,6 +185,3 @@ int main(){
 
 	return 0;
 }
-
-
-
