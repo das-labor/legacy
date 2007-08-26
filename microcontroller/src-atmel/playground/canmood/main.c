@@ -11,10 +11,6 @@
 #include "xlap.h"
 #include "mood.h"
 #include "pwm.h"
-#ifdef I2C
-#include "i2cmaster.h"
-#include "temp.h"
-#endif
 
 //AVRX_GCC_TASK(Monitor, 20, 0);          // External Task: Debug Monitor
 
@@ -38,18 +34,13 @@ int main(void) {
     //InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
 
 	init_pwm();
-#ifdef I2C
-	i2c_init();
-#endif
 	xlap_init();
 	
     //AvrXRunTask(TCB(Monitor));
 	AvrXRunTask(TCB(laptask));
 	AvrXRunTask(TCB(mood));
 	AvrXRunTask(TCB(pwmtask));
-#ifdef I2C
-	AvrXRunTask(TCB(temp));
-#endif
+
     /* Needed for EEPROM access in monitor */
 	AvrXSetSemaphore(&EEPromMutex);
 

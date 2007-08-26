@@ -14,14 +14,12 @@
 #include "pwm.h"
 #include "string.h"
 #include "mood.h"
-#include "temp.h"
 
 uint8_t myaddr;
 
-
 void process_mgt_msg() {
 	static can_message_t msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
-	switch(rx_msg.data[0]) {
+	switch (rx_msg.data[0]) {
 		case FKT_MGT_RESET:
 			wdt_enable(0);
 			while(1);
@@ -33,12 +31,12 @@ void process_mgt_msg() {
 		case FKT_MGT_DESC:
 			msg.addr_src = myaddr;
 			msg.addr_dst = rx_msg.addr_src;
-			msg.dlc = 2;
+			msg.dlc = 1;
 			msg.data[0] = PORT_MOOD;
-#ifdef I2C
-			msg.data[1] = PORT_TEMP;
-#endif
 			can_put(&msg);
+			break;
+		case FKT_WR_ADDR:
+			eeprom_write_byte(0, rx_msg.data[1]);
 			break;
 	}	
 }
@@ -67,9 +65,9 @@ void process_mood_msg() {
 void process_prog_msg() {
 	uint8_t i;
 	mprog = rx_msg.data[0];
-	if(!mprog) {
+	if (!mprog) {
 		AvrXSuspend(PID(mood));
-		for (i=0; i<3; i++) {
+		for (i = 0; i < 3; i++) {
 			global_pwm.channels[i].speed = 0x00200;
 			global_pwm.channels[i].target_brightness = 0;
 		}
@@ -80,23 +78,20 @@ void process_prog_msg() {
 }
 
 AVRX_GCC_TASKDEF(laptask, 55, 3) {
-    while (1) {
+	while (1) {
 		can_get();			//get next canmessage in rx_msg
-		if(rx_msg.addr_dst == myaddr) {
-			if(rx_msg.port_dst == PORT_MGT) {
+		if (rx_msg.addr_dst == myaddr) {
+			if (rx_msg.port_dst == PORT_MGT) {
 				process_mgt_msg();	
 			}
-			else if(rx_msg.port_dst == PORT_MOOD) {
+			else if (rx_msg.port_dst == PORT_MOOD) {
 				process_mood_msg();
 			}
-			else if(rx_msg.port_dst == 0x06) {
+			else if (rx_msg.port_dst == 0x06) {
 				process_prog_msg();
 			}
-			/*else if (rx_msg.port_dst == PORT_TEMP) {
-				tempact = 60;		//starte tempcasting
-			}*/
 		}
-    }
+	}
 };
 
 void xlap_init() {

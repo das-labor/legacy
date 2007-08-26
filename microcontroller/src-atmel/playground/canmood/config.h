@@ -32,6 +32,3 @@
 //Number of Messages in Can TX Buffer
 #define TX_SIZE 10
 
-//#define STATIC_SCRIPTS 
-
-//#define I2C
