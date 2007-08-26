@@ -48,7 +48,6 @@ CANADDR = 0x51
 FORMAT = ihex
 
 SRC = main.c xcan.c spi.c mood.c xlap.c pwm.c 
-#twimaster.c temp.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
