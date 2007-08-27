@@ -17,16 +17,14 @@
 #define mc_POS_DIV(a, b)  ( (a)/(b) +  ( ( (a) % (b) >= (b)/2 ) ? 1 : 0 ) )
 
 struct {
-	int8_t x;
-	int8_t y;
-	} pos;		// doto: position handeling
+	uint8_t x;
+	uint8_t y;
+	} pos;		// todo: position handeling
 
 extern menu_t root;
 int8_t blightstat;
 
 uint8_t scriptstat;
-
-char bla[8];
 
 Mutex men_mutex;
 
@@ -148,18 +146,18 @@ void menu_handler(void *data) {
 
 	//dispFillRect(0, 0, 40, 11*menu->size, 0);
 
-	for(i = 0; i < menu->size; i++) {
+	for (i = 0; i < menu->size; i++) {
 		menu->items[i]->show(menu->items[i]->data, (sel==i));
 		pos.y += 11;
 		if(i >= 6)
 			break;
 	}
-	while(1) {  // keyhandeling
+	while (1) {  // keyhandeling
 		key = getKey(550);
 		// enter
 		if(key == 2) {
 			if(!(menu->items[sel]->type & 0x01))
-				dispFillRect(0, 0, 40, 11*menu->size+1, 0);
+				dispFillRect(0, 0, 40, 11 * menu->size + 1, 0);
 			//pos.x += 20;
 			menu->items[sel]->enter(menu->items[sel]->data); // enter
 			goto DRAW_MEN;
@@ -169,13 +167,13 @@ void menu_handler(void *data) {
 		if(key == 3) {
 			//pos.x -= 20;
 			if(menu->name != "/") { // nicht aus Hauptmenu springen
-				dispFillRect(0, 0, 40, 11*menu->size+1, 0);
+				dispFillRect(0, 0, 40, 11 * menu->size + 1, 0);
 				return;
 			}
 		}
 	//	up down
-		if(key < 2) {
-			pos.y = sel*11;
+		if (key < 2) {
+			pos.y = sel * 11;
 			menu->items[sel]->show(menu->items[sel]->data, 0);
 			if(key == 1)
 				sel++;
@@ -194,8 +192,8 @@ void menu_handler(void *data) {
 void show_menu(void *data, uint8_t selected) {
 	menu_t *menu = data;
 	dispDrawRect(pos.x, pos.y, 40, 12, 1);
-	dispFillRect(pos.x+1, pos.y+1, 38, 10, selected);
-	draw_Text(menu->name, pos.x+2, pos.y+2, 0, 1, !selected);
+	dispFillRect(pos.x + 1, pos.y + 1, 38, 10, selected);
+	draw_Text(menu->name, pos.x + 2, pos.y + 2, 0, 1, !selected);
 }
 /*
 void show_text(void *data, uint8_t selected) {
@@ -214,8 +212,8 @@ void menu_add_item(menu_t *menu, menu_item_t *entry, uint8_t pos) {
 	//pos > size? pos=size
 	menu->size += 1;
 	menu->items = realloc(menu->items, (menu->size) * sizeof(menu_item_t*));
-	for(i = menu->size-1; i > pos; i--) {
-		menu->items[i] = menu->items[i-1];
+	for (i = menu->size - 1; i > pos; i--) {
+		menu->items[i] = menu->items[i - 1];
 	}
 	menu->items[pos] = entry;
 	// elemente von hinten nach hinten aufrücken bis pos
@@ -226,7 +224,7 @@ void menu_add_item(menu_t *menu, menu_item_t *entry, uint8_t pos) {
 menu_t *make_menu(char *name) { // name
 	menu_t *newmenu = malloc(sizeof(menu_t)) ;
 
-	newmenu->name = malloc(strlen(name)+1);
+	newmenu->name = malloc(strlen(name) + 1);
 	strcpy(newmenu->name, name);
 	newmenu->items = 0;
 	newmenu->size = 0;
@@ -249,7 +247,7 @@ menu_item_t *make_item(void *show, void *enter, menu_t *menu, uint8_t type) {
 void switch_blight(void *data, uint8_t selected) {
 	uint8_t key;
 	dispDrawRect(50, 15, 32, 5, 1);
-	dispFillRect(51, 16, blightstat*3, 3, 1);
+	dispFillRect(51, 16, blightstat * 3, 3, 1);
 	while(1) {  // keyhandeling
 		key = getKey(550);
 		if(key == 3) {
@@ -258,7 +256,7 @@ void switch_blight(void *data, uint8_t selected) {
 		}
 	//	up down
 		if(key < 2) {
-			dispFillRect(51, 16, blightstat*3, 3, 0);
+			dispFillRect(51, 16, blightstat * 3, 3, 0);
 			if(key == 1)
 				blightstat--;
 			if(key == 0)
@@ -267,8 +265,8 @@ void switch_blight(void *data, uint8_t selected) {
 				blightstat = 0;
 			if(blightstat < 0)
 				blightstat = 10;
-			dispFillRect(51, 16, blightstat*3, 3, 1);
-			OCR2 = blightstat*15;
+			dispFillRect(51, 16, blightstat * 3, 3, 1);
+			OCR2 = blightstat * 15;
 		}
 	}
 }
@@ -279,10 +277,11 @@ void switch_script() {
 	msg.dlc = 1;
 	msg.data[0] = scriptstat;
 	can_put(&msg);
-	if(scriptstat)
-		scriptstat=0;
-	else
-		scriptstat=1;
+	if (scriptstat) {
+		scriptstat = 0;
+	} else {
+		scriptstat = 1;
+	}
 }
 
 void temp(void *data) {										// todo: start temp sending
@@ -291,7 +290,7 @@ void temp(void *data) {										// todo: start temp sending
 	
 	//msg.dlc = 1;
 	//msg.data[0] = 0x90;
-	while(1) {  // keyhandeling
+	while (1) {  // keyhandeling
 		AvrXDelay(&switchtimer, 550);
 		if(!(PINB & (1 << PB3))) { // ok
 			dispFillRect(50, 30, 30, 8, 0);
@@ -324,46 +323,45 @@ void ctrl_mood(void *data) {
 	AvrXDelay(&switchtimer, 5);
 	uint8_t val[8];
 	memcpy(val, bla, 4);
-	for(i=0; i<3; i++) {
-		dispDrawRect(50, (10*i), 30, 5, 1);
-		dispFillRect(51, (10*i)+1, mc_POS_DIV(val[i], 9), 3, 1);
-	 }
+	for (i = 0; i < 3; i++) {
+		dispDrawRect(50, (10 * i), 30, 5, 1);
+		dispFillRect(51, (10 * i) + 1, mc_POS_DIV(val[i], 9), 3, 1);
+	}
 	
 	
 	msg.dlc = 3;
 	msg.data[0] = FKT_MOOD_SET_B;
-	i=0;
+	i = 0;
 	dispFillRect(45, 1, 3, 3, 1);
 	AvrXDelay(&switchtimer, 500);
-	while(1) {  // keyhandeling
+	while (1) {  // keyhandeling
 		key = getKey(60);
 		if(key < 2) {
-			dispFillRect(51, (10*i)+1, mc_POS_DIV(val[i], 9), 3, 0);
+			dispFillRect(51, (10 * i) + 1, mc_POS_DIV(val[i], 9), 3, 0);
 			if(key == 1 && val[i] != 0)
 				val[i]--;
 			if(key == 0 && val[i] != 255)
 				val[i]++;
-			dispFillRect(51, (10*i)+1, mc_POS_DIV(val[i], 9), 3, 1);
+			dispFillRect(51, (10 * i) + 1, mc_POS_DIV(val[i], 9), 3, 1);
 			msg.data[1] = i;
 			msg.data[2] = val[i];
 			can_put(&msg);
 		}
-		if(key == 2) {
+		if (key == 2) {
 			AvrXDelay(&switchtimer, 500);
-			dispFillRect(45, (10*i)+1, 3, 3, 0);
+			dispFillRect(45, (10 * i) + 1, 3, 3, 0);
 			i++;
 			if(i == 3)
-				i=0;
-			dispFillRect(45, (10*i)+1, 3, 3, 1);
+				i = 0;
+			dispFillRect(45, (10 * i) + 1, 3, 3, 1);
 		}
-		if(key == 3) {
-			dispFillRect(45, (10*i)+1, 3, 3, 0);
-			for(i=0;i<3;i++) {
-				dispFillRect(50, 10*i, 30, 5, 0);
+		if (key == 3) {
+			dispFillRect(45, (10 * i) + 1, 3, 3, 0);
+			for (i = 0; i < 3; i++) {
+				dispFillRect(50, 10 * i, 30, 5, 0);
 	 		}
 			return;
 		}
-		
 	}
 }
 /*

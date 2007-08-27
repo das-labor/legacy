@@ -34,10 +34,31 @@ void process_mgt_msg() {
 }
 
 void process_data() {
-	if(rx_msg.data[0]==0x10)
+	if(rx_msg.data[0] == 0x10)
 		
-	// if temp = tempbuffer  		// ariatne
-	memcpy(bla, rx_msg.data, 8);		// +1, 8 mem
+	// if temp = tempbuffer  		// ariatne 
+typedef struct {
+		uint8_t typ;
+		uint8_t *wert;
+		uint_t *next;
+	} sensor_t;
+	
+	sensor sensor_t = 0;
+
+	addsensor( wert, typ) {
+		sensor_t nextsensor = sensor;
+		sensor_t newsensor;
+		if (sensor != 0) {
+			while (nextsensor != 0)
+				nextsensor = sensor.next;
+		{
+		newsensor.typ = ;
+		newsensor.wert = ;
+		newsensor.next = 0;
+		sensor->next = newsensor;
+	}
+	
+	
 	//AvrXSetSemaphore(&men_mutex);
 }
 
@@ -46,7 +67,7 @@ AVRX_GCC_TASKDEF(laptask, 55, 3) {
 		can_get();			//get next canmessage in rx_msg
 		if(rx_msg.addr_dst == myaddr) {
 			if(rx_msg.port_dst == PORT_MGT) {
-				process_mgt_msg();	
+				process_mgt_msg();
 			}
 			else if(rx_msg.port_dst == PORT_REMOTE) {  // Temperaturen empfangen  -  getrennt empfangen - port?
 				process_data();
