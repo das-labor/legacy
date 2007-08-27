@@ -20,7 +20,6 @@ typedef struct {
 
 typedef struct {
 	char *name;
-	
 	uint8_t adr;
 } mood_ctrl_t;
 
