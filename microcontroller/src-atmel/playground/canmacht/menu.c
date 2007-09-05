@@ -292,7 +292,7 @@ void temp(void *data) {										// todo: start temp sending
 	//msg.data[0] = 0x90;
 	while (1) {  // keyhandeling
 		AvrXDelay(&switchtimer, 550);
-		if(!(PINB & (1 << PB3))) { // ok
+		if (!(PINB & (1 << PB3))) { // ok
 			dispFillRect(50, 30, 30, 8, 0);
 			return;
 		}
