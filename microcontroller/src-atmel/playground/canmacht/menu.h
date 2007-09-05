@@ -25,7 +25,6 @@ typedef struct {
 
 extern menu_t root;
 
-extern char bla[8];
 extern Mutex men_mutex;
 
 

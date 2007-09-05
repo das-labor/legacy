@@ -11,12 +11,12 @@
 #include "spi.h"
 #include "xcan.h"
 #include "lap.h"
+#include "xlap.h"
 #include "string.h"
 #include "menu.h"
 #include "stdlib.h"
 
 uint8_t myaddr;
-
 
 void process_mgt_msg() {
 	static can_message_t msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
@@ -34,35 +34,24 @@ void process_mgt_msg() {
 }
 
 void process_data() {
-	if(rx_msg.data[0] == 0x10)
-		
-	// if temp = tempbuffer  		// ariatne 
-typedef struct {
-		uint8_t typ;
-		uint8_t *wert;
-		uint_t *next;
-	} sensor_t;
-	
-	sensor sensor_t = 0;
-
-	addsensor( wert, typ) {
-		sensor_t nextsensor = sensor;
-		sensor_t newsensor;
-		if (sensor != 0) {
-			while (nextsensor != 0)
-				nextsensor = sensor.next;
-		{
-		newsensor.typ = ;
-		newsensor.wert = ;
-		newsensor.next = 0;
-		sensor->next = newsensor;
+	sensor_t nextsensor = sensor;
+	uint8_t wert[] = {rx_msg.data[1], rx_msg.data[2]};
+	if (nextsensor != 0) {
+		while (nextsensor != 0)
+			if (nextsensor.typ != rx_msg.data[0]) {
+				nextsensor.wert = wert;
+			}
+			nextsensor = sensor.next;
 	}
-	
-	
-	//AvrXSetSemaphore(&men_mutex);
+	sensor_t newsensor;
+	newsensor.typ = rx_msg.data[0];
+	newsensor.wert = wert;
+	newsensor.next = 0;
+	nextsensor.next = newsensor;
 }
 
 AVRX_GCC_TASKDEF(laptask, 55, 3) {
+	sensor = 0;
 	while (1) {
 		can_get();			//get next canmessage in rx_msg
 		if(rx_msg.addr_dst == myaddr) {
