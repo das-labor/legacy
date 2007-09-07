@@ -34,24 +34,25 @@ void process_mgt_msg() {
 }
 
 void process_data() {
-	sensor_t nextsensor = sensor;
+	sensor_t *nextsensor = sensor;
 	uint8_t wert[] = {rx_msg.data[1], rx_msg.data[2]};
-	if (nextsensor != 0) {
-		while (nextsensor != 0)
-			if (nextsensor.typ != rx_msg.data[0]) {
-				nextsensor.wert = wert;
+	if (nextsensor != NULL) {
+		while (nextsensor != NULL) {
+			if (nextsensor->typ != rx_msg.data[0]) {
+				nextsensor->wert = wert;
 			}
-			nextsensor = sensor.next;
+			nextsensor = nextsensor->next;
+		}
 	}
-	sensor_t newsensor;
-	newsensor.typ = rx_msg.data[0];
-	newsensor.wert = wert;
-	newsensor.next = 0;
-	nextsensor.next = newsensor;
+	sensor_t *newsensor;
+	newsensor->typ = rx_msg.data[0];
+	newsensor->wert = wert;
+	newsensor->next = NULL;
+	nextsensor->next = newsensor;
 }
 
 AVRX_GCC_TASKDEF(laptask, 55, 3) {
-	sensor = 0;
+	sensor = NULL;
 	while (1) {
 		can_get();			//get next canmessage in rx_msg
 		if(rx_msg.addr_dst == myaddr) {
