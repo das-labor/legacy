@@ -290,7 +290,7 @@ void temp(void *data) {										// todo: start temp sending
 	
 	//msg.dlc = 1;
 	//msg.data[0] = 0x90;
-	while (1) {  // keyhandeling
+/*	while (1) {  // keyhandeling
 		AvrXDelay(&switchtimer, 550);
 		if (!(PINB & (1 << PB3))) { // ok
 			dispFillRect(50, 30, 30, 8, 0);
@@ -300,7 +300,7 @@ void temp(void *data) {										// todo: start temp sending
 		//can_put(&msg);
 		AvrXDelay(&switchtimer, 5); // timing testen
 		draw_Text(bla, 50, 30, 0, 1, 1);
-	}
+	}*/
 }
 /*
 char* canmessage(uint8_t dst_adr, uint8_t dst_port, char* msg) {  // adresse, zielport, message
@@ -316,7 +316,7 @@ char* canmessage(uint8_t dst_adr, uint8_t dst_port, char* msg) {  // adresse, zi
 
 
 void ctrl_mood(void *data) {
-	uint8_t i, key;
+/*	uint8_t i, key;
 	can_message_t msg = {0xa0, 0xa1, PORT_REMOTE, PORT_MOOD, 1};
 	msg.data[0] = FKT_MOOD_GET_B;
 	can_put(&msg);
@@ -362,7 +362,7 @@ void ctrl_mood(void *data) {
 	 		}
 			return;
 		}
-	}
+	}*/
 }
 /*
 void scan() {
