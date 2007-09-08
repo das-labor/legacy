@@ -135,8 +135,10 @@ def embed_picture(x_img, x_sdir)		# creates the xhtml around the thumbnail
 			exif_data.each{|title, field|
 				if title == "Date"
 					@x.dt(title)
-					ds = field.strftime("%d.%m.%Y %H:%M:%S")
-					@x.dd(ds)
+					if !(field = "0000:00:00 00:00:00")
+						ds = field.strftime("%d.%m.%Y %H:%M:%S")
+						@x.dd(ds)
+					end
 				elsif
 					@x.dt(title)
 					@x.dd(field)
