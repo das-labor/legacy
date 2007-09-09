@@ -37,11 +37,6 @@ int main()
 	//power up receive circuit (and stay in rx mode)
 	rfm12_data(RFM12_CMD_PWRMGT | RFM12_PWRMGT_ER);
 	
-	//disable sync byte recognition (clears fifo)
-//	rfm12_data(CLEAR_FIFO);
-	
-	//enable sync byte recognition (here we go!)
-//	rfm12_data(ACCEPT_DATA);
 	
 	while(1)
 	{
