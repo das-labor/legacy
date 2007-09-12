@@ -1,8 +1,9 @@
 /**
  * labor octet protocol
- * 
- * 
- * 
+ * \file lop.c
+ * \author Daniel Otte
+ * \par License
+ *  GPLv3
  * 
  * 
  */
@@ -227,30 +228,6 @@ void lop_streamsync(lop_ctx_t * ctx){
 }
 
 /******************************************************************************/
-/*
-void lop_streamstart(lop_ctx_t * ctx){
-	if(!ctx->sendrawbyte)
-		return;
-	while(ctx->txstate!=idle)
-		;
-	ctx->txstate=stream;
-	ctx->sendrawbyte(LOP_ESC_CODE);
-	ctx->sendrawbyte(LOP_TYPE_STREAM_START);
-}
-*/
-/******************************************************************************/
-/*
-void lop_streamstop(lop_ctx_t * ctx){
-	if(!ctx->sendrawbyte)
-		return;
-	if(ctx->txstate!=stream)
-		return;
-	ctx->sendrawbyte(LOP_ESC_CODE);
-	ctx->sendrawbyte(LOP_TYPE_STREAM_STOP);
-	ctx->txstate=idle;
-}
-*/
-/******************************************************************************/
 
 void lop_sendstream(lop_ctx_t * ctx, uint8_t b){
 	if(!(ctx->sendrawbyte))
@@ -264,6 +241,7 @@ void lop_sendstream(lop_ctx_t * ctx, uint8_t b){
 }
 
 /******************************************************************************/
+
 void lop_sendreset(lop_ctx_t * ctx){
 	if(ctx->sendrawbyte)
 		ctx->sendrawbyte(LOP_RESET_CODE);
