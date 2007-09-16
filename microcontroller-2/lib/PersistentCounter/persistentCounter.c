@@ -2,7 +2,8 @@
  * \file	persistentCounter.c
  * \author	Daniel Otte 
  * \brief	a persistent 24-bit counter in EEPROM for ATmega µC
- * 
+ * \par license
+ *  GPLv3
  */
 
 #include <stdint.h>
