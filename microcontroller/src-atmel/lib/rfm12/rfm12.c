@@ -1,5 +1,9 @@
 //author peter+hansi
 
+//TODO:
+// + decide on interface functions for buffer access
+// + fine tune error handling (fiforeset) and other common stuff in int handler with jumps
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <string.h>
@@ -77,6 +81,9 @@ volatile rf_tx_buffer_t rf_tx_buffer;
 
 //buffer and status for the message to be received
 volatile rf_rx_buffer_t rf_rx_buffer;
+
+//double buffers for incoming data
+volatile rf_buffer_t rf_buffers[2];
 
 //mode we are in - rx or tx
 #define MODE_RX 0
@@ -202,26 +209,29 @@ ISR(INT0_vect){
 				rfm12_data_inline(RFM12_CMD_FIFORESET>>8, CLEAR_FIFO_INLINE);
 				rfm12_data_inline(RFM12_CMD_FIFORESET>>8, ACCEPT_DATA_INLINE);
 			}
-		}else{
-				//debug
-				//uart_putc('R');
-				//uart_putc(rfm12_read_fifo_inline());
-			
-				//check if we're receiving a new transmission or the next byte of a active transmission
+		}
+		//RX MODE
+		else
+		{	
 				//FIXME: this could cause problems, b/c we could be ignoring a transmission if the buffer is in STATUS_COMPLETE
 				//FIXME: this in turn could lead to a false sync byte recognition in the middle of a transfer
 				//FIXME: we should silently clock in the transmission without writing it to the buffer OR apply double buffering
-				if(rf_rx_buffer.status == STATUS_FREE)
+			
+				//FIXME-2: DOUBLE BUFFERING IMPLEMENTED - anyway, if we MUST ignore a transmission, we should silently clock it in.
+				//FIXME-2: read above for the reasoning
+			
+				//check if we're receiving a new transmission or the next byte of a active transmission
+				if(rf_rx_buffer.rf_buffer_in->status == STATUS_FREE)
 				{
 					rf_rx_buffer.bytecount = 1;
-					rf_rx_buffer.status = STATUS_OCCUPIED;
+					rf_rx_buffer.rf_buffer_in->status = STATUS_OCCUPIED;
 					
 					//receive the first byte, which indicates the transmission length
-					rf_rx_buffer.len = rfm12_read_fifo_inline();
-					rf_rx_buffer.num_bytes = rf_rx_buffer.len + 3;
+					rf_rx_buffer.rf_buffer_in->len = rfm12_read_fifo_inline();
+					rf_rx_buffer.num_bytes = rf_rx_buffer.rf_buffer_in->len + 3;
 				}
 				//transfer is active, continue receipt
-				else if(rf_rx_buffer.status == STATUS_OCCUPIED)
+				else if(rf_rx_buffer.rf_buffer_in->status == STATUS_OCCUPIED)
 				{
 					//check if transmission is complete
 					if(rf_rx_buffer.bytecount < rf_rx_buffer.num_bytes)
@@ -229,14 +239,14 @@ ISR(INT0_vect){
 						//put next byte into buffer, if there is enough space
 						if(rf_rx_buffer.bytecount < (RFM12_RX_BUFFER_SIZE + 3))
 						{
-							*((uint8_t *)&rf_rx_buffer.len + rf_rx_buffer.bytecount) = rfm12_read_fifo_inline();
+							*((uint8_t *)&rf_rx_buffer.rf_buffer_in->len + rf_rx_buffer.bytecount) = rfm12_read_fifo_inline();
 						}
 						
 						//check crc
-						if((rf_rx_buffer.bytecount == 2) && (rf_rx_buffer.checksum != (rf_rx_buffer.len ^ rf_rx_buffer.type ^ 0xff)))
+						if((rf_rx_buffer.bytecount == 2) && (rf_rx_buffer.rf_buffer_in->checksum != (rf_rx_buffer.rf_buffer_in->len ^ rf_rx_buffer.rf_buffer_in->type ^ 0xff)))
 						{
 							//invalid crc, reset transmission
-							rf_rx_buffer.status = STATUS_FREE;
+							rf_rx_buffer.rf_buffer_in->status = STATUS_FREE;
 						
 							//reset fifo
 							rfm12_data_inline(RFM12_CMD_FIFORESET>>8, CLEAR_FIFO_INLINE);
@@ -249,8 +259,21 @@ ISR(INT0_vect){
 					//transmission is complete, reset fifo
 					else
 					{
+						rf_buffer_t * tmpBuf = rf_rx_buffer.rf_buffer_out;
+						
 						//indicate that the buffer is complete now
-						rf_rx_buffer.status = STATUS_COMPLETE;
+						rf_rx_buffer.rf_buffer_in->status = STATUS_COMPLETE;
+						
+						//flip buffers
+						//hint: if the in buffer has not been cleared by the application, we shouldn't switch it
+						//(otherwise we could destroy buffer readouts)
+						//hint2: if the out buffer is currently occupied and the in buffer is full,
+						//then a subsequent call to rfm12_rx_clear() flips the buffers
+						if(tmpBuf->status == STATUS_FREE)
+						{
+							rf_rx_buffer.rf_buffer_out = rf_rx_buffer.rf_buffer_in;
+							rf_rx_buffer.rf_buffer_in = tmpBuf;
+						}
 												
 						//reset fifo
 						rfm12_data_inline(RFM12_CMD_FIFORESET>>8, CLEAR_FIFO_INLINE);
@@ -261,6 +284,7 @@ ISR(INT0_vect){
 				else
 				{
 					//DEBUG CODE - FIXME
+					//we're just resetting the device, instead of silently clocking in data
 					rfm12_data_inline(RFM12_CMD_FIFORESET>>8, CLEAR_FIFO_INLINE);
 					rfm12_data_inline(RFM12_CMD_FIFORESET>>8, ACCEPT_DATA_INLINE);
 				}
@@ -283,8 +307,13 @@ void rfm12_init(){
 	DDR_SS |= (1<<BIT_SS);
 	SS_RELEASE();
 	
+	//init tx sync byte pattern
 	rf_tx_buffer.sync[0] = SYNC_MSB;
 	rf_tx_buffer.sync[1] = SYNC_LSB;
+	
+	//init buffer pointers
+	rf_rx_buffer.rf_buffer_in = &rf_buffers[0];
+	rf_rx_buffer.rf_buffer_out = &rf_buffers[1];
 	
 	//disable all power
 	//this was no good idea, because when one writes the PWRMGT register
@@ -341,7 +370,7 @@ void rfm12_init(){
 void rfm12_tx(uint8_t type, uint8_t length, uint8_t *data)
 {
 	//exit if a transfer is active
-	if((rf_tx_buffer.status != STATUS_FREE) || (rf_rx_buffer.status != STATUS_FREE))
+	if((rf_tx_buffer.status != STATUS_FREE) || (rf_rx_buffer.rf_buffer_in->status != STATUS_FREE))
 		return;
 	
 	//calculate number of bytes to be sent by ISR

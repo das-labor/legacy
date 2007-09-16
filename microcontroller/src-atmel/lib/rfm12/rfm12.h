@@ -1,4 +1,5 @@
 //rfm12 public header file
+//author peter+hansi
 
 //function protoypes
 void rfm12_init();
@@ -7,10 +8,7 @@ void rfm12_tx(uint8_t tape, uint8_t length, uint8_t *data);
 uint16_t rfm12_read(uint16_t d);
 
 static inline uint8_t rfm12_tx_status();
-
-static inline uint8_t *rfm12_rx_buffer();
 static inline void rfm12_rx_clear();
-
 
 //size of transmit buffer
 #define RFM12_TX_BUFFER_SIZE 30
@@ -27,7 +25,7 @@ static inline void rfm12_rx_clear();
 
 
 /* Private structs needed for inline functions */
-
+/* DO NOT MODIFY ANY SOURCE BELOW HERE ;-) */
 
 
 typedef struct{
@@ -45,7 +43,7 @@ typedef struct{
 
 
 //for storing the received bytes.
-typedef_struct{
+typedef struct{
 	uint8_t status; 		//is the buffer ready or occupied?
 	uint8_t len;			//length byte - number of bytes in buffer
 	uint8_t type;			//type field for airlab
@@ -65,6 +63,9 @@ typedef struct{
 	
 }rf_rx_buffer_t;
 
+//this prototype needs to be declared after the struct declaration...
+static inline rf_buffer_t * rfm12_rx_buffer();
+
 
 extern volatile rf_buffer_t rf_buffers[2];
 
@@ -75,20 +76,34 @@ extern volatile rf_tx_buffer_t rf_tx_buffer;
 extern volatile rf_rx_buffer_t rf_rx_buffer;
 
 //inline function to return the rx buffer status byte
+//this function works on the output buffer
 static inline uint8_t rfm12_rx_status()
 {
-	return rf_rx_buffer.status;
+	return rf_rx_buffer.rf_buffer_out->status;
 }
 
 //inline function to retrieve current rf_buffer struct pointer
-static inline uint8_t *rfm12_rx_buffer()
+//this function works on the output buffer
+static inline rf_buffer_t * rfm12_rx_buffer()
 {
 	return rf_rx_buffer.rf_buffer_out;
 }
 
 //inline function to clear buffer complete/occupied status
+//this function works on the output buffer
 static inline void rfm12_rx_clear()
 {
+	//note: no buffer flipping here if the interrupt is receiving data
+	//BUT... if the in buffer is already complete, then we need to flip the buffers
+	//otherwise the interrupt does the job
+	
 	rf_rx_buffer.rf_buffer_out->status = STATUS_FREE;
-	rf_rx_buffer.rf_buffer_out =
+	
+	//flip buffers if necessary
+	if(rf_rx_buffer.rf_buffer_in->status == STATUS_COMPLETE)
+	{
+		rf_buffer_t * tmpBuf = rf_rx_buffer.rf_buffer_in;
+		rf_rx_buffer.rf_buffer_in = rf_rx_buffer.rf_buffer_out;
+		rf_rx_buffer.rf_buffer_out = tmpBuf;
+	}
 }
