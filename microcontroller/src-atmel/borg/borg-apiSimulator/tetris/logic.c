@@ -1,18 +1,32 @@
 /* Borgtris
  * by: Christian Kroll
- * date: Tuesday, 2007/05/13
+ * date: Tuesday, 2007/09/16
  */
 
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <inttypes.h>
+
+#ifdef __AVR__
+	#include <avr/eeprom.h>
+	#include <avr/interrupt.h>
+#endif
+
 #include "logic.h"
 #include "piece.h"
 #include "playfield.h"
 #include "view.h"
 #include "input.h"
 
+
+#ifdef EEMEM
+	/***********************
+	 * Highscore in EEPROM *
+	 ***********************/
+
+	uint16_t tetris_logic_nHighscore EEMEM;
+#endif
 
 /***************************
  * non-interface functions *
@@ -39,6 +53,26 @@ uint8_t tetris_logic_calculateLines(uint8_t nRowMask)
 	return nLines;
 }
 
+uint16_t tetris_logic_retrieveHighscore(void)
+{
+#ifdef EEMEM
+	uint16_t nHighscore = 0;
+	nHighscore = eeprom_read_word(&tetris_logic_nHighscore);
+	return nHighscore;
+#else
+	return 0;
+#endif
+}
+
+void tetris_logic_saveHighscore(uint16_t nHighscore)
+{
+#ifdef EEMEM
+	if (nHighscore > tetris_logic_retrieveHighscore())
+	{
+		eeprom_write_word(&tetris_logic_nHighscore, nHighscore);
+	}
+#endif
+}
 
 /****************************
  * construction/destruction *
@@ -92,8 +126,12 @@ void tetris ()
 	// runtime variable
 	int8_t nPieceRow;
 
-	// initial highscore is 0
+	// retrieve highscore
 	static uint16_t nHighscore = 0;
+	if (nHighscore == 0)
+	{
+		nHighscore = tetris_logic_retrieveHighscore();
+	}
 
 	// initialize current and next piece
 	tetris_piece_t *pPiece = NULL;
@@ -218,6 +256,7 @@ void tetris ()
 	if (nScore > nHighscore)
 	{
 		nHighscore = nScore;
+		tetris_logic_saveHighscore(nHighscore);
 	}
 
 	// clean up
