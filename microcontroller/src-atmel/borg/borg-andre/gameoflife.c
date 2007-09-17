@@ -18,14 +18,14 @@
 #define YSIZE NUM_ROWS
 
 //#define GLIDER_TEST
-#define BITSTUFFED
+//#define BITSTUFFED
 
 #ifndef GOL_DELAY
- #define GOL_DELAY 200 /* milliseconds */
+ #define GOL_DELAY 0 /* milliseconds */
 #endif
 
 #ifndef GOL_CYCLES
- #define GOL_CYCLES (2*60/5) /* two minutes of fun */
+ #define GOL_CYCLES (2*60*3)
 #endif
 
 /******************************************************************************/

@@ -7,6 +7,7 @@
 #include "scrolltext.h"
 #include "programm.h"
 #include "matrix.h"
+#include "gameoflife.h"
 #include "borg_hw.h"
 #include "pixel.h"
 #include "borg_can.h"
@@ -61,8 +62,11 @@ int main (void){
 			break;
 		case 8:
 			random_bright(200);
+			break;
+		case 9:	
+			gameoflife();
 			mode = 1;
-			break;	
+			break;
 		case 31:
 			test_level1();
 			break;
