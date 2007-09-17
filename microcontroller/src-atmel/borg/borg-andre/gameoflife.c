@@ -8,20 +8,46 @@
 
 #include <stdint.h>
 #include <util/delay.h>
+#include <avr/sfr_defs.h> /* for debugging */
 #include "config.h"
 #include "prng.h"
 #include "pixel.h"
+#include "util.h"
 
 /******************************************************************************/ 
+
+#define DEBUG
  
 #define XSIZE NUM_COLS
 #define YSIZE NUM_ROWS
 
+/* 
+ *  last line is for debug information
+ */
+#ifdef DEBUG 
+ #undef YSIZE
+ #define YSIZE (NUM_ROWS-1)
+ #define DEBUG_ROW (NUM_ROWS-1)
+ #define DEBUG_BIT(pos, val) \
+  setpixel((pixel){(pos)%XSIZE,DEBUG_ROW+(pos)/XSIZE},(val)?3:0)
+ #define DEBUG_BYTE(s,v) \
+  DEBUG_BIT((s)*8+0, (v)&(1<<0)); \
+  DEBUG_BIT((s)*8+1, (v)&(1<<1)); \
+  DEBUG_BIT((s)*8+2, (v)&(1<<2)); \
+  DEBUG_BIT((s)*8+3, (v)&(1<<3)); \
+  DEBUG_BIT((s)*8+4, (v)&(1<<4)); \
+  DEBUG_BIT((s)*8+5, (v)&(1<<5)); \
+  DEBUG_BIT((s)*8+6, (v)&(1<<6)); \
+  DEBUG_BIT((s)*8+7, (v)&(1<<7))   
+#else
+ #define DEBUG_BIT(s,v)
+ #define DEBUG_BYTE(s,v)
+#endif
 //#define GLIDER_TEST
 //#define BITSTUFFED
 
 #ifndef GOL_DELAY
- #define GOL_DELAY 0 /* milliseconds */
+ #define GOL_DELAY 1 /* milliseconds */
 #endif
 
 #ifndef GOL_CYCLES
@@ -142,6 +168,8 @@ void pfcopy(field_t dest, field_t src){
 }
 
 int gameoflife(){
+	DEBUG_BYTE(0,0); // set debug bytes to zero
+	DEBUG_BYTE(1,0);
 	field_t pf1={{0}},pf2={{0}};
 	int x,y;
 	uint16_t cycle;
@@ -171,7 +199,9 @@ int gameoflife(){
 #endif	
 	printpf(pf1);
 	for(cycle=1; cycle<GOL_CYCLES; ++cycle){
-		_delay_ms(GOL_DELAY);
+		DEBUG_BYTE(0,(uint8_t)cycle&0xff);
+		DEBUG_BYTE(1, 0);
+		wait(GOL_DELAY);
 		pfcopy(pf2,pf1);
 		nextiteration(pf1,pf2);
 		printpf(pf1);
