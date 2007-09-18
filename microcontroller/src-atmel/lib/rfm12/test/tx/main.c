@@ -6,10 +6,9 @@
 #include "uart.h"
 
 uint8_t txTestData[] = {0,1,2,3,5,7,9,201};
-rf_buffer_t * rxBuf;
 
 int main()
-{	
+{
 	DDRC = 0xff;
 	
 	uart_init();
@@ -32,23 +31,20 @@ int main()
 		{
 			if(rfm12_rx_status() == 2)
 			{
-				//get buffer
-				rxBuf = rfm12_rx_buffer();
-				
 				//send protocol type
 				uart_putc('P');
-				uart_putc(rxBuf->type);
+				uart_putc(rfm12_rx_type());
 				
 				//send buffer len
 				uart_putc('L');
-				uart_putc(rxBuf->len);
+				uart_putc(rfm12_rx_len());
 				
 				//indicate start of buffer
 				uart_putc('R');
 				
-				for(x = 0; x < rxBuf->len; x++)
+				for(x = 0; x < rfm12_rx_len(); x++)
 				{
-					uart_putc(rxBuf->buffer[x]);
+					uart_putc(rfm12_rx_buffer()[x]);
 				}
 				
 				//clear buffer
