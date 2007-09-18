@@ -1,5 +1,4 @@
 //rfm12 public header file
-//author peter+hansi
 
 //function protoypes
 void rfm12_init();
@@ -8,7 +7,10 @@ void rfm12_tx(uint8_t tape, uint8_t length, uint8_t *data);
 uint16_t rfm12_read(uint16_t d);
 
 static inline uint8_t rfm12_tx_status();
+
+static inline uint8_t *rfm12_rx_buffer();
 static inline void rfm12_rx_clear();
+
 
 //size of transmit buffer
 #define RFM12_TX_BUFFER_SIZE 30
@@ -18,15 +20,18 @@ static inline void rfm12_rx_clear();
 //(double_buffering)
 #define RFM12_RX_BUFFER_SIZE 30
 
+//states for the rx and tx buffers
 #define STATUS_FREE 0
 #define STATUS_OCCUPIED 1
 #define STATUS_COMPLETE 2
 
+//states for the rx state machine
+#define STATUS_IDLE      0
+#define STATUS_RECEIVING 1
+#define STATUS_IGNORING  2
 
 
 /* Private structs needed for inline functions */
-/* DO NOT MODIFY ANY SOURCE BELOW HERE ;-) */
-
 
 typedef struct{
 	uint8_t status; 		//is the buffer free or occupied?
@@ -44,7 +49,7 @@ typedef struct{
 
 //for storing the received bytes.
 typedef struct{
-	uint8_t status; 		//is the buffer ready or occupied?
+	uint8_t status; 		//is the buffer free or is there complete data in it?
 	uint8_t len;			//length byte - number of bytes in buffer
 	uint8_t type;			//type field for airlab
 	uint8_t checksum;		//rx checksum
@@ -53,21 +58,22 @@ typedef struct{
 
 
 typedef struct{
+	uint8_t status;			//are we idle, receiving or ignoring?
 	uint8_t num_bytes;		//number of bytes to be received
 	uint8_t bytecount;		//received bytes counter
 	
+	//Buffers for storing incoming transmissions
+	rf_buffer_t rf_buffers[2];
+	
 	//points to the rf_buffer in rf_buffers that will be filled next
 	rf_buffer_t * rf_buffer_in;
-	//points to the rf_buffer in rf_buffers that will be read next
-	rf_buffer_t * rf_buffer_out;
+	uint8_t buffer_in_num;
 	
+	//points to the rf_buffer in rf_buffers that will be retruned for reading next
+	rf_buffer_t * rf_buffer_out;
+	uint8_t buffer_out_num;
 }rf_rx_buffer_t;
 
-//this prototype needs to be declared after the struct declaration...
-static inline rf_buffer_t * rfm12_rx_buffer();
-
-
-extern volatile rf_buffer_t rf_buffers[2];
 
 //Buffer and status for the message to be transmitted
 extern volatile rf_tx_buffer_t rf_tx_buffer;
@@ -75,35 +81,41 @@ extern volatile rf_tx_buffer_t rf_tx_buffer;
 //buffer and status for the message to be received
 extern volatile rf_rx_buffer_t rf_rx_buffer;
 
+
 //inline function to return the rx buffer status byte
-//this function works on the output buffer
+//(returns STATUS_FREE or STATUS_COMPLETE)
 static inline uint8_t rfm12_rx_status()
 {
 	return rf_rx_buffer.rf_buffer_out->status;
 }
 
-//inline function to retrieve current rf_buffer struct pointer
-//this function works on the output buffer
-static inline rf_buffer_t * rfm12_rx_buffer()
+static inline uint8_t rfm12_rx_len()
 {
-	return rf_rx_buffer.rf_buffer_out;
+	return rf_rx_buffer.rf_buffer_out->len;
 }
 
+static inline uint8_t rfm12_rx_type()
+{
+	return rf_rx_buffer.rf_buffer_out->type;
+}
+
+
+
+//inline function to retrieve current rf buffer
+static inline uint8_t *rfm12_rx_buffer()
+{
+	return rf_rx_buffer.rf_buffer_out->buffer;
+}
+
+
+
 //inline function to clear buffer complete/occupied status
-//this function works on the output buffer
 static inline void rfm12_rx_clear()
 {
-	//note: no buffer flipping here if the interrupt is receiving data
-	//BUT... if the in buffer is already complete, then we need to flip the buffers
-	//otherwise the interrupt does the job
-	
+	//mark the current buffer as empty
 	rf_rx_buffer.rf_buffer_out->status = STATUS_FREE;
 	
-	//flip buffers if necessary
-	if(rf_rx_buffer.rf_buffer_in->status == STATUS_COMPLETE)
-	{
-		rf_buffer_t * tmpBuf = rf_rx_buffer.rf_buffer_in;
-		rf_rx_buffer.rf_buffer_in = rf_rx_buffer.rf_buffer_out;
-		rf_rx_buffer.rf_buffer_out = tmpBuf;
-	}
+	//switch to the other buffer
+	rf_rx_buffer.buffer_out_num = (rf_rx_buffer.buffer_out_num + 1 ) % 2 ;
+	rf_rx_buffer.rf_buffer_out = &rf_rx_buffer.rf_buffers[rf_rx_buffer.buffer_out_num];
 }
