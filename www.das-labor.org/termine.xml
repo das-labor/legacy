@@ -1,0 +1,123 @@
+<termine>
+<termin>
+  <month>10</month>
+  <text> Bochumer GNU/Linux User Group</text>
+  <hour>19</hour>
+  <day>02</day>
+  <year>06</year>
+  <min>00</min>
+  <link>http://www.bglug.de/</link>
+  <wday>Mo</wday>
+  <match>* Mo 02.10.06 19:00, [http://www.bglug.de/ Bochumer GNU/Linux User Group]</match>
+</termin>
+<termin>
+  <month>10</month>
+  <text> CCC-RP :: Treffen</text>
+  <hour>19</hour>
+  <day>03</day>
+  <year>06</year>
+  <min>00</min>
+  <link>http://www.chaos-west.de/wiki/index.php?title=ChaosInBochum</link>
+  <wday>Di</wday>
+  <match>* Di 03.10.06 19:00, [http://www.chaos-west.de/wiki/index.php?title=ChaosInBochum CCC-RP :: Treffen]</match>
+</termin>
+<termin>
+  <month>10</month>
+  <text>Open Meeting</text>
+  <hour>19</hour>
+  <day>04</day>
+  <year>06</year>
+  <min>30</min>
+  <link>http://wiki.das-labor.org/wiki/index.php?title=Open_Meeting</link>
+  <wday>Mi</wday>
+  <match>* Mi 04.10.06 19:30, [[Open Meeting]]</match>
+</termin>
+<termin>
+  <month>10</month>
+  <text>L4 Microkernel Design</text>
+  <hour>19</hour>
+  <day>10</day>
+  <year>06</year>
+  <min>30</min>
+  <link>http://wiki.das-labor.org/wiki/index.php?title=L4_Microkernel_Design</link>
+  <wday>Di</wday>
+  <match>* Di 10.10.06 19:30, [[L4 Microkernel Design]]</match>
+</termin>
+<termin>
+  <month>10</month>
+  <text>Bootstrap Meeting</text>
+  <hour>19</hour>
+  <day>11</day>
+  <year>06</year>
+  <min>30</min>
+  <link>http://wiki.das-labor.org/wiki/index.php?title=Bootstrap_Meeting</link>
+  <wday>Mi</wday>
+  <match>* Mi 11.10.06 19:30, [[Bootstrap Meeting]]</match>
+</termin>
+<termin>
+  <month>10</month>
+  <text> Bochumer GNU/Linux User Group</text>
+  <hour>19</hour>
+  <day>16</day>
+  <year>06</year>
+  <min>00</min>
+  <link>http://www.bglug.de/</link>
+  <wday>Mo</wday>
+  <match>* Mo 16.10.06 19:00, [http://www.bglug.de/ Bochumer GNU/Linux User Group]</match>
+</termin>
+<termin>
+  <month>10</month>
+  <text>Open Meeting</text>
+  <hour>19</hour>
+  <day>18</day>
+  <year>06</year>
+  <min>30</min>
+  <link>http://wiki.das-labor.org/wiki/index.php?title=Open_Meeting</link>
+  <wday>Mi</wday>
+  <match>* Mi 18.10.06 19:30, [[Open Meeting]]</match>
+</termin>
+<termin>
+  <month>10</month>
+  <text>C.I.P.H.E.R.-Review </text>
+  <hour>19</hour>
+  <day>24</day>
+  <year>06</year>
+  <min>30</min>
+  <link>http://wiki.das-labor.org/wiki/index.php?title=C.I.P.H.E.R.-Review</link>
+  <wday>Di</wday>
+  <match>* Di 24.10.06 19:30, [[C.I.P.H.E.R.-Review]] </match>
+</termin>
+<termin>
+  <month>10</month>
+  <text>Open Meeting</text>
+  <hour>19</hour>
+  <day>25</day>
+  <year>06</year>
+  <min>30</min>
+  <link>http://wiki.das-labor.org/wiki/index.php?title=Open_Meeting</link>
+  <wday>Mi</wday>
+  <match>* Mi 25.10.06 19:30, [[Open Meeting]]</match>
+</termin>
+<termin>
+  <month>10</month>
+  <text> Bochumer GNU/Linux User Group</text>
+  <hour>19</hour>
+  <day>30</day>
+  <year>06</year>
+  <min>00</min>
+  <link>http://www.bglug.de/</link>
+  <wday>Mo</wday>
+  <match>* Mo 30.10.06 19:00, [http://www.bglug.de/ Bochumer GNU/Linux User Group]</match>
+</termin>
+<termin>
+  <month>10</month>
+  <text>Spass mit Web 2.0</text>
+  <hour>19</hour>
+  <day>31</day>
+  <year>06</year>
+  <min>30</min>
+  <link>http://wiki.das-labor.org/wiki/index.php?title=Spass_mit_Web_2.0</link>
+  <wday>Di</wday>
+  <match>* Di 31.10.06 19:30, [[Spass mit Web 2.0]]</match>
+</termin>
+</termine>
