@@ -41,9 +41,23 @@ a:hover   { color: #555555; background-color: none; text-decoration: none; }
   font-size: 11pt;
 }
 
+#video {
+  padding-bottom: 20px;
+  padding-left: 10px;
+  border-bottom: 1px solid #000;
+  text-align: left;
+  overflow: auto;
+}
+
 #alert {
   font-size: 12pt;
   font-weight: bold;
+}
+
+#subtitle {
+  border-style: none;
+  text-align: left;
+  font-size: 8pt;
 }
 
 #footer {
