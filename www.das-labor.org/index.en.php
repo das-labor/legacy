@@ -38,10 +38,10 @@
 <br />
 <ul>
 <li><a href="http://www.das-labor.org/wiki/Contact">contact</a></li>
-<li><a href="http://www.das-labor.org/wiki/Projekte">projects</a></li>
+<li><a href="http://www.das-labor.org/wiki/Projects">projects</a></li>
 <li><a href="http://www.das-labor.org/wiki/Directions">directions</a></li>
 <li><a href="http://www.das-labor.org/about.html">about us</a></li>
-<li><a href="impressum.html">impressum</a></li>
+<li><a href="impressum.en.html">impressum</a></li>
 <br />
 <li><a href="http://www.das-labor.org/blog/">weblog</a></li>
 <li><a href="http://planet.das-labor.org/">planet</a></li>
