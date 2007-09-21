@@ -40,7 +40,7 @@
 <li><a href="http://www.das-labor.org/wiki/Contact">contact</a></li>
 <li><a href="http://www.das-labor.org/wiki/Projekte">projects</a></li>
 <li><a href="http://www.das-labor.org/wiki/Directions">directions</a></li>
-<li><a href="http://www.das-labor.org/wiki/%C3%9Cber_das_Labor/en">about us</a></li>
+<li><a href="http://www.das-labor.org/about.html">about us</a></li>
 <li><a href="impressum.html">impressum</a></li>
 <br />
 <li><a href="http://www.das-labor.org/blog/">weblog</a></li>

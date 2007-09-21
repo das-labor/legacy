@@ -50,7 +50,7 @@ if ( $_GET['m'] != 1 ){ // if manual flag set, do not check for language!
 <li><a href="http://www.das-labor.org/wiki/Kontakt">Kontakt</a></li>
 <li><a href="http://www.das-labor.org/wiki/Projekte">Projekte</a></li>
 <li><a href="http://www.das-labor.org/wiki/Wegbeschreibung">Wegbeschreibung</a></li>
-<li><a href="http://www.das-labor.org/wiki/%C3%9Cber">&Uuml;ber uns</a> (<em><a href="files/LABOR-Flyer.pdf">pdf</a></em>) (<em><a href="files/LABOR-Flyer.png">png</a></em>)</li>
+<li><a href="http://www.das-labor.org/ueber.html">&Uuml;ber uns</a> (<em><a href="files/LABOR-Flyer.pdf">pdf</a></em>) (<em><a href="files/LABOR-Flyer.png">png</a></em>)</li>
 <li><a href="impressum.html">Impressum</a></li>
 <br />
 <li><a href="http://www.das-labor.org/blog/">weblog</a></li>
