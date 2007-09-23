@@ -43,8 +43,11 @@
  #define DEBUG_BIT(s,v)
  #define DEBUG_BYTE(s,v)
 #endif
+
 //#define GLIDER_TEST
-//#define BITSTUFFED
+
+#define BITSTUFFED
+#define LOOP_DETECT_BUFFER_SIZE 8
 
 #ifndef GOL_DELAY
  #define GOL_DELAY 1 /* milliseconds */
@@ -54,6 +57,7 @@
  #define GOL_CYCLES (2*60*3)
 #endif
 
+/******************************************************************************/
 /******************************************************************************/
 
 typedef enum{dead=0, alive=1} cell_t;
@@ -65,9 +69,13 @@ typedef enum{dead=0, alive=1} cell_t;
 
 typedef cell_t field_t[FIELD_XSIZE][FIELD_YSIZE];
 
+/******************************************************************************/
+
 void setcell(field_t  pf, int x, int y, cell_t value){
 	pf[(x+FIELD_XSIZE)%FIELD_XSIZE][(y+FIELD_YSIZE)%FIELD_YSIZE] = value;
 }
+
+/******************************************************************************/
 
 cell_t getcell(field_t pf, int x, int y){
 	return pf[(x+FIELD_XSIZE)%FIELD_XSIZE][(y+FIELD_YSIZE)%FIELD_YSIZE];
@@ -80,6 +88,7 @@ cell_t getcell(field_t pf, int x, int y){
 
 typedef uint8_t field_t[FIELD_XSIZE][FIELD_YSIZE];
 
+/******************************************************************************/
 
 void setcell(field_t pf, int x, int y, cell_t value){
 	uint8_t t;
@@ -95,6 +104,8 @@ void setcell(field_t pf, int x, int y, cell_t value){
 	pf[x/8][y] = t;
 }
 
+/******************************************************************************/
+
 cell_t getcell(field_t pf, int x, int y){
 	x = (x+XSIZE) % XSIZE;
 	y = (y+YSIZE) % YSIZE; 
@@ -103,7 +114,7 @@ cell_t getcell(field_t pf, int x, int y){
 }
 #endif
 
-
+/******************************************************************************/
 
 uint8_t countsurroundingalive(field_t pf, int x, int y){
 	uint8_t ret=0;
@@ -119,6 +130,8 @@ uint8_t countsurroundingalive(field_t pf, int x, int y){
 	ret += (getcell(pf, x+1, y+1)==alive)?1:0;
 	return ret;
 }
+
+/******************************************************************************/
 
 void nextiteration(field_t dest, field_t src){
 	int x,y;
@@ -148,6 +161,7 @@ void nextiteration(field_t dest, field_t src){
 	}
 } 
 
+/******************************************************************************/
 
 void printpf(field_t pf){
 	int x,y;
@@ -158,6 +172,8 @@ void printpf(field_t pf){
 	}
 }
 
+/******************************************************************************/
+
 void pfcopy(field_t dest, field_t src){
 	int x,y;	
 	for(y=0; y<YSIZE; ++y){
@@ -167,13 +183,45 @@ void pfcopy(field_t dest, field_t src){
 	}
 }
 
+/******************************************************************************/
+
+uint8_t pfcmp(field_t dest, field_t src){
+	int x,y;	
+	for(y=0; y<YSIZE; ++y){
+		for(x=0; x<XSIZE; ++x){
+			if (getcell(src,x,y) != getcell(dest,x,y))
+				return 1;
+		}
+	}
+	return 0;
+}
+
+
+/******************************************************************************/
+
+void insertglider(field_t pf){
+	/*
+	 *  #
+	 *   #
+	 * ###
+	 */
+		                      setcell(pf, 1, 0, alive);
+	                                                    setcell(pf, 2, 1, alive);
+	setcell(pf, 0, 2, alive); setcell(pf, 1, 2, alive); setcell(pf, 2, 2, alive);
+}
+
+/******************************************************************************/
+
 int gameoflife(){
 	DEBUG_BYTE(0,0); // set debug bytes to zero
 	DEBUG_BYTE(1,0);
-	field_t pf1={{0}},pf2={{0}};
+	field_t pf1,pf2;
+	field_t ldbuf[LOOP_DETECT_BUFFER_SIZE]={{{0}}}; // loop detect buffer
+	uint8_t ldbuf_idx=0;
 	int x,y;
 	uint16_t cycle;
 	
+start:	
 	/* initalise the field with random */
 	for(y=0;y<YSIZE;++y){
 		for(x=0;x<XSIZE; ++x){
@@ -187,24 +235,30 @@ int gameoflife(){
 			setcell(pf1,x,y,dead);
 		}
 	}
-	/*
-	 *  #
-	 *   #
-	 * ###
-	 */
-		setcell(pf1, 1, 0, alive);
-			setcell(pf1, 2, 1, alive);
-	setcell(pf1, 0, 2, alive); setcell(pf1, 1, 2, alive);setcell(pf1, 2, 2, alive);
-	 
+	insertglider(pf1);	 
 #endif	
+	
+	/* the main part */
 	printpf(pf1);
 	for(cycle=1; cycle<GOL_CYCLES; ++cycle){
 		DEBUG_BYTE(0,(uint8_t)cycle&0xff);
-		DEBUG_BYTE(1, 0);
+		DEBUG_BYTE(1, SREG);
 		wait(GOL_DELAY);
 		pfcopy(pf2,pf1);
 		nextiteration(pf1,pf2);
 		printpf(pf1);
+	/* loop detection */
+		if(!pfcmp(pf1, pf2))
+			goto start;
+	/* */
+		uint8_t i;
+		for(i=0; i<LOOP_DETECT_BUFFER_SIZE; ++i){
+			if(!pfcmp(pf1, ldbuf[i]))
+				goto start;
+		}
+		pfcopy(ldbuf[ldbuf_idx], pf1);
+		ldbuf_idx = (ldbuf_idx+1)%LOOP_DETECT_BUFFER_SIZE;
+		
 	}
 	
 	return 0;
