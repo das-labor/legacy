@@ -17,16 +17,14 @@ void cmd_musicd(int argc, char **argv)
 	while (msg = (can_message*) can_get())
 	{
 		// incoming message from switch
-		if (msg->addr_src == 0x01)
+		if (msg->addr_src == 0x01 && msg->port_src == 0x21
+				&& msg->addr_dst == 0xff && msg->port_dst == 0x21)
 		{
-			if (msg->data[0] == 'm')
+			if (msg->data[0] == 0x50 && msg->data[1] == 0x45 &&
+					msg->data[2] == 0x51 && msg->data[3] == 0x00)
 			{
-				switch (msg->data[1])
-				{
-					case '0x00':
 						system ("mpc next");
-					break;
-				}
+						printf("foo!!\n");
 			}
 		}
 	}
