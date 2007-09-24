@@ -21,17 +21,14 @@
  ***********/
 
 // amount of milliseconds that each loop cycle waits
-#define TETRIS_INPUT_TICKS 10
+#define TETRIS_INPUT_TICKS 5
 
-// number of loop cycles for each level until a piece gets moved down
-// (the last level is merely a stuffing byte because avr-gcc causes
-// trouble if you store an array with an odd number of bytes into PROGMEM)
-#define TETRIS_INPUT_CYCLESPERLEVEL {100, 87, 76, 66, 57, 50, 43, 38, 33, 29, \
-	25, 22, 19, 16, 14, 12, 11, 9, 8, 7}
+// minimum of cycles in gliding mode
+#define TETRIS_INPUT_GLIDE_CYCLES 60
 
 // here you can adjust the delays (in loop cycles) for key repeat
-#define TETRIS_INPUT_REPEAT_INITIALDELAY 20
-#define TETRIS_INPUT_REPEAT_DELAY 5
+#define TETRIS_INPUT_REPEAT_INITIALDELAY 40
+#define TETRIS_INPUT_REPEAT_DELAY 10
 
 
 /***************************
@@ -130,7 +127,8 @@ tetris_input_t *tetris_input_construct()
 	assert(pIn != NULL);
 
 	pIn->cmdLast = TETRIS_INCMD_NONE;
-	pIn->nLevel = 0;
+	pIn->nLevel = 0xFF;
+	tetris_input_setLevel(pIn, 0);
 	pIn->nLoopCycles = 0;
 	pIn->nRepeatCount = -TETRIS_INPUT_REPEAT_INITIALDELAY;
 	memset(pIn->nIgnoreCmdCounter, 0, TETRIS_INCMD_NONE);
@@ -155,29 +153,40 @@ void tetris_input_destruct(tetris_input_t *pIn)
  * input related functions *
  ***************************/
 
-/* Function:     tetris_input_getCommand
- * Description:  retrieves commands from joystick or loop interval
- * Argument pIn: pointer to an input object
- * Return value: see definition of tetris_input_command_t
+/* Function:          tetris_input_getCommand
+ * Description:       retrieves commands from joystick or loop interval
+ * Argument pIn:      pointer to an input object
+ * Argument nGliding: 1 for extended gravity time interval, 0 otherwise
+ * Return value:      see definition of tetris_input_command_t
  */
-tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn)
+tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
+                                               uint8_t nGliding)
 {
 	assert (pIn != NULL);
-
-	// nMaxCycles is the amount of loop cycles until a gravity command is
-	// issued. Its value depends on the current level. The amount of cycles
-	// for each level is defined in the ARRAY TETRIS_INPUT_CYCLESPERLEVEL.
-	const static uint8_t nCyclesPerLevel[] PROGMEM =
-		TETRIS_INPUT_CYCLESPERLEVEL;
-	#ifdef __AVR__
-		uint8_t nMaxCycles = pgm_read_word(&nCyclesPerLevel[pIn->nLevel]);
-	#else
-		uint8_t nMaxCycles = nCyclesPerLevel[pIn->nLevel];
-	#endif
 
 	tetris_input_command_t cmdJoystick = TETRIS_INCMD_NONE;
 	tetris_input_command_t cmdReturn = TETRIS_INCMD_NONE;
 
+	uint8_t nMaxCycles;
+	
+	// if the piece is gliding we grant the player a reasonable amount of time
+	// to make the game more controllable at high falling speeds
+	if (nGliding != 0)
+	{
+		if (pIn->nMaxCycles < TETRIS_INPUT_GLIDE_CYCLES)
+		{
+			nMaxCycles = TETRIS_INPUT_GLIDE_CYCLES;
+		}
+		else
+		{
+			nMaxCycles = pIn->nMaxCycles;
+		}
+	}
+	else
+	{
+		nMaxCycles = pIn->nMaxCycles;
+	}
+	
 	while (pIn->nLoopCycles < nMaxCycles)
 	{
 		cmdJoystick = tetris_input_queryJoystick();
@@ -310,6 +319,10 @@ void tetris_input_setLevel(tetris_input_t *pIn,
 {
 	assert(pIn != NULL);
 	assert(nLvl <= TETRIS_INPUT_LEVELS - 1);
-	pIn->nLevel = nLvl;
+	if (pIn->nLevel != nLvl)
+	{
+		pIn->nLevel = nLvl;
+		pIn->nMaxCycles = 400 / (nLvl + 2);
+	}
 }
 

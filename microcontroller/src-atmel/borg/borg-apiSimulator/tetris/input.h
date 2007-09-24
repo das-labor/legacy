@@ -34,15 +34,19 @@ tetris_input_command_t;
 
 typedef struct tetris_input_t
 {
-	// current level (determines falling speed)
+	// Current level (determines falling speed).
 	uint8_t nLevel;
 
+	// Amount of loop cycles between forced piece movements. This value gets
+	// set via the tetris_input_setLevel() function.
+	uint8_t nMaxCycles;
+	
 	// This counter tracks how many loop cycles have been done since the last
 	// forced piece movement. It gets reset if it either reaches a well
 	// defined value (causing a gravity command to be issued) or the player has
 	// moved down the piece herself/himself.
 	uint8_t nLoopCycles;
-	
+
 	// Amount of loop cycles in which the same command has been issued
 	// consecutively. It gets reset if either the current command differs from
 	// the last one or a well-defined value has been reached (thereby
@@ -87,12 +91,14 @@ void tetris_input_destruct(tetris_input_t *pIn);
  * input related functions *
  ***************************/
 
-/* Function:     tetris_input_getCommand
- * Description:  retrieves commands from joystick or loop interval
- * Argument pIn: pointer to an input object
- * Return value: see definition of tetris_input_command_t
+/* Function:          tetris_input_getCommand
+ * Description:       retrieves commands from joystick or loop interval
+ * Argument pIn:      pointer to an input object
+ * Argument nGliding: 1 for extended gravity time interval, 0 otherwise
+ * Return value:      see definition of tetris_input_command_t
  */
-tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn);
+tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
+                                               uint8_t nGliding);
 
 
 /* Function:      tetris_input_setLevel

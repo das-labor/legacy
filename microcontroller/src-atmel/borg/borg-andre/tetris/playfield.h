@@ -23,6 +23,7 @@ typedef enum tetris_playfield_status_t
 {
 	TETRIS_PFS_READY,    // ready to get next piece
 	TETRIS_PFS_HOVERING, // piece is still hovering
+	TETRIS_PFS_GLIDING,  // piece is gliding on the dump
 	TETRIS_PFS_DOCKED,   // piece has been docked
 	TETRIS_PFS_GAMEOVER	 // playfield is filled up
 }

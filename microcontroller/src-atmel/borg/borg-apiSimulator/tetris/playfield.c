@@ -6,6 +6,30 @@
 #include "piece.h"
 
 
+/***************************
+ * non-interface functions *
+ ***************************/
+
+/* Function:         tetris_playfield_hoverStatus;
+ * Description:      determines if piece is either hovering or gliding
+ * Argument pPl:     playfield perform action on
+ * Return value:     TETRIS_PFS_HOVERING or TETRIS_PFS_GLIDING
+ */
+tetris_playfield_status_t tetris_playfield_hoverStatus(tetris_playfield_t* pPl)
+{
+	// if the piece touches the dump we ensure that the status is "gliding"
+	if (tetris_playfield_collision(pPl, pPl->nColumn, pPl->nRow + 1))
+	{
+		return TETRIS_PFS_GLIDING;
+	}
+	// otherwise the status must be "hovering"
+	else
+	{
+		return TETRIS_PFS_HOVERING;
+	}
+}
+
+
 /****************************
  * construction/destruction *
  ****************************/
@@ -144,7 +168,7 @@ void tetris_playfield_insertPiece(tetris_playfield_t *pPl,
 	else
 	{
 		// bring it on!
-		pPl->status = TETRIS_PFS_HOVERING;
+		pPl->status = tetris_playfield_hoverStatus(pPl);
 	}
 }
 
@@ -264,8 +288,9 @@ void tetris_playfield_advancePiece(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
 
-	// a piece can only be lowered if it is hovering
-	assert (pPl->status == TETRIS_PFS_HOVERING);
+	// a piece can only be lowered if it is hovering or gliding
+	assert ((pPl->status == TETRIS_PFS_HOVERING) ||
+		(pPl->status == TETRIS_PFS_GLIDING));
 
 	if (tetris_playfield_collision(pPl, pPl->nColumn, pPl->nRow + 1))
 	{
@@ -310,6 +335,9 @@ void tetris_playfield_advancePiece(tetris_playfield_t *pPl)
 		// since there is no collision the piece may continue its travel
 		// to the ground...
 		pPl->nRow++;
+		
+		// are we gliding?
+		pPl->status = tetris_playfield_hoverStatus(pPl);
 	}
 }
 
@@ -325,13 +353,17 @@ uint8_t tetris_playfield_movePiece(tetris_playfield_t *pPl,
 {
 	assert(pPl != NULL);
 
-	// a piece can only be moved if it is still hovering
-	assert(pPl->status == TETRIS_PFS_HOVERING);
+	// a piece can only be moved if it is still hovering or gliding
+	assert((pPl->status == TETRIS_PFS_HOVERING) ||
+		(pPl->status == TETRIS_PFS_GLIDING));
 
 	int8_t nOffset = (direction == TETRIS_PFD_LEFT) ? -1 : 1;
 	if (tetris_playfield_collision(pPl, pPl->nColumn + nOffset, pPl->nRow) == 0)
 	{
 		pPl->nColumn += nOffset;
+
+		// are we gliding?
+		pPl->status = tetris_playfield_hoverStatus(pPl);
 		return 1;
 	}
 
@@ -350,8 +382,9 @@ uint8_t tetris_playfield_rotatePiece(tetris_playfield_t *pPl,
 {
 	assert(pPl != NULL);
 
-	// a piece can only be rotation if it is still hovering
-	assert(pPl->status == TETRIS_PFS_HOVERING);
+	// a piece can only be rotation if it is still hovering or gliding
+	assert((pPl->status == TETRIS_PFS_HOVERING) ||
+			(pPl->status == TETRIS_PFS_GLIDING));
 
 	tetris_piece_rotate(pPl->pPiece, rotation);
 
@@ -370,6 +403,9 @@ uint8_t tetris_playfield_rotatePiece(tetris_playfield_t *pPl,
 
 		return 0;
 	}
+
+	// are we gliding?
+	pPl->status = tetris_playfield_hoverStatus(pPl);
 
 	return 1;
 }
