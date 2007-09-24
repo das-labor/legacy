@@ -12,6 +12,7 @@
 void cmd_musicd(int argc, char **argv)
 {
 	int target_addr;
+	uint32_t tmp;
 	can_message *msg;
 
 	while (msg = (can_message*) can_get())
@@ -20,11 +21,31 @@ void cmd_musicd(int argc, char **argv)
 		if (msg->addr_src == 0x01 && msg->port_src == 0x21
 				&& msg->addr_dst == 0xff && msg->port_dst == 0x21)
 		{
-			if (msg->data[0] == 0x50 && msg->data[1] == 0x45 &&
-					msg->data[2] == 0x51 && msg->data[3] == 0x00)
+			tmp = ((uint32_t) msg->data[0] << 24) |
+				((uint32_t) msg->data[1] << 16) |
+				((uint32_t) msg->data[2] << 8) |
+				((uint32_t) msg->data[3]);
+
+			switch (tmp)
 			{
-						system ("mpc next");
-						printf("foo!!\n");
+				case 0x50455400:
+						system ("mpc next > /dev/null");
+						printf("next\n");
+						usleep(500);
+				break;
+				case 0x50455100:
+						system ("mpc last > /dev/null");
+						printf("last\n");
+						usleep(500); //filter duplicates
+				break;
+				case 0x50515100:
+						system ("mpc volume -2 > /dev/null");
+						printf("vol--\n");
+				break;
+				case 0x50515400:
+						system ("mpc volume +2 > /dev/null");
+						printf("vol++\n");
+				break;
 			}
 		}
 	}
