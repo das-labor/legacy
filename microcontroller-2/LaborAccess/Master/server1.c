@@ -30,6 +30,7 @@ AVRX_GCC_TASKDEF(server1, 200, 4)
 	while(1){
 		request_t req;
 		uint8_t size;
+		doorstate |= STATE_DOOR_UPSTAIRS;
 		
 		size = channel_read(CHANNEL_SERVER1, (uint8_t *) &req, sizeof(request_t));
 		

@@ -9,6 +9,7 @@
 #include "i2csw.h"
 #include "xlap.h"
 #include "console.h"
+#include "door.h"
 
 #define TICKRATE 1000
 #define TCNT0_INIT (0xFF-F_CPU/256/TICKRATE)
@@ -37,10 +38,11 @@ int main(void)
     TIMSK = 1<<TOIE0;		// Enable interrupt flag
 	
     
-	//AvrXRunTask(TCB(server1));
-	//AvrXRunTask(TCB(qport));
+	AvrXRunTask(TCB(server1));
+	AvrXRunTask(TCB(qport));
 	AvrXRunTask(TCB(laptask));
-	AvrXRunTask(TCB(console_task));
+	AvrXRunTask(TCB(door));
+//	AvrXRunTask(TCB(console_task));
 	
 	
 	InitSerial0(BAUD(4800));
