@@ -1,0 +1,7 @@
+TODO LIST
+
+  door.c:
+  - Add message queues so other routines can send messages (and open the door!)
+  - Eventually display errors on panel
+
+  
