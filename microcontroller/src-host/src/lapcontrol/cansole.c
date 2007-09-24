@@ -54,7 +54,7 @@ cmd_cansole (int argc, char* argv[])
 		s = read(mytty, &tmpchar, 1);
 		if (s == 1)
 		{
-			//printf("got char: %x\n", tmpchar);
+			printf("got char: %x\n", tmpchar);
 			txmsg->data[0] = tmpchar;
 			can_transmit_v2 (txmsg);
 		}
