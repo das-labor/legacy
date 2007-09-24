@@ -116,6 +116,9 @@ void tetris ()
 	int8_t nWidth;
 	int8_t nHeight;
 	tetris_view_getDimensions(&nWidth, &nHeight);
+	
+	// holds the current user command which should be processed
+	tetris_input_command_t inCmd;
 
 	// prepare data structures that drive the game...
 	tetris_logic_t *pLogic = tetris_logic_construct();
@@ -172,8 +175,20 @@ void tetris ()
 
 		// a piece is hovering and can be controlled by the player
 		case TETRIS_PFS_HOVERING:
+		case TETRIS_PFS_GLIDING:
+			// if the piece is gliding the input module has to grant us
+			// a minimum amount of time to move it
+			if (tetris_playfield_getStatus(pPl) == TETRIS_PFS_GLIDING)
+			{
+				inCmd = tetris_input_getCommand(pIn, 1);
+			}
+			else
+			{
+				inCmd = tetris_input_getCommand(pIn, 0);
+			}
+
 			// what we do depends on what the input module tells us
-			switch (tetris_input_getCommand(pIn))
+			switch (inCmd)
 			{
 			// the piece was pulled down by the almighty gravity
 			case TETRIS_INCMD_GRAVITY:
@@ -214,7 +229,8 @@ void tetris ()
 			case TETRIS_INCMD_DROP:
 				nPieceRow = tetris_playfield_getRow(pPl);
 				// emulate immediate drop
-				while (tetris_playfield_getStatus(pPl) == TETRIS_PFS_HOVERING)
+				while((tetris_playfield_getStatus(pPl) == TETRIS_PFS_GLIDING) ||
+					(tetris_playfield_getStatus(pPl) == TETRIS_PFS_HOVERING))
 				{
 					tetris_playfield_advancePiece(pPl);
 				}

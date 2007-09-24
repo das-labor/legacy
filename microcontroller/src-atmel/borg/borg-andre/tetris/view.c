@@ -65,8 +65,9 @@ void tetris_view_drawDump(tetris_playfield_t *pPl)
 	{	
 		nRowMap = tetris_playfield_getDumpRow(pPl, nRow);
 
-		// if a piece is hovering it needs to be drawn
-		if ((status == TETRIS_PFS_HOVERING) || (status == TETRIS_PFS_GAMEOVER))
+		// if a piece is hovering or gliding it needs to be drawn
+		if ((status == TETRIS_PFS_HOVERING) || (status == TETRIS_PFS_GLIDING) || 
+			(status == TETRIS_PFS_GAMEOVER))
 		{
 			if ((nRow >= nPieceRow))
 			{
