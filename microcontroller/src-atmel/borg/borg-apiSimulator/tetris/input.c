@@ -24,7 +24,7 @@
 #define TETRIS_INPUT_TICKS 5
 
 // minimum of cycles in gliding mode
-#define TETRIS_INPUT_GLIDE_CYCLES 60
+#define TETRIS_INPUT_GLIDE_CYCLES 75
 
 // here you can adjust the delays (in loop cycles) for key repeat
 #define TETRIS_INPUT_REPEAT_INITIALDELAY 40
