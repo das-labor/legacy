@@ -15,6 +15,7 @@
 #include "cmds-test.h"
 #include "cmds-borg.h"
 #include "cmds-mood.h"
+#include "cmds-musicd.h"
 #include "cmds-flash.h"
 #include "cansole.h"
 
@@ -48,6 +49,7 @@ cmd_t cmds[] = {
   { &cmd_borg,  "borg", "borg ..." ,"control bord device"},
   { &cmd_mood,  "mood", "mood ..." ,"control mood device"},
   { &cmd_cansole, "cansole", "cansole <addr> <chan> <subchannel>", "connect to cansole at given address, channel and subchannel" },
+  { &cmd_musicd, "musicd", "musicd", "starts a music control daemon in foreground" },
 //  { &ftk_lampe, "lampe", "lampe ...",  "Control lampe-device" }
   { NULL, NULL, NULL, NULL }
 };
