@@ -3,7 +3,6 @@
 #include <time.h>
 #include <errno.h>
 #include <string.h>
-#include <math.h>
 
 #include <can.h>
 #include <lap.h>
