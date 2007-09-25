@@ -46,6 +46,17 @@ void cmd_musicd(int argc, char **argv)
 						system ("mpc volume +2 > /dev/null");
 						printf("vol++\n");
 				break;
+				case 0x50554400:
+				case 0x50554100:
+						system ("mpc clear > /dev/null");
+						system ("mpc add http://bombastix.soundbomb.net:8000/nectarine.ogg > /dev/null");
+						system ("mpc play");
+				break;
+				case 0x50545400:
+						system ("mpc pause > /dev/null");
+						system ("espeak -a 1000 \"nakka nakka nakka\"");
+						system ("mpc play > /dev/null");
+				break;
 			}
 		}
 	}
