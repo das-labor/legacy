@@ -48,14 +48,14 @@ void tetris_input_chatterProtect (tetris_input_t *pIn,
 	// its button has been released
 	const static uint8_t nInitialIgnoreValue[TETRIS_INCMD_NONE] PROGMEM =
 	{
-		0, // TETRIS_INCMD_ROT_CW
-		0, // TETRIS_INCMD_ROT_CCW
-		0, // TETRIS_INCMD_LEFT (key repeat)
-		0, // TETRIS_INCMD_RIGHT (key repeat)
-		0, // TETRIS_INCMD_DOWN (key repeat)
-		6, // TETRIS_INCMD_DROP
-		0, // TETRIS_INCMD_GRAVITY (irrelevant)
-		0  // TETRIS_INCMD_IGNORE (irrelevant as well)
+		0,  // TETRIS_INCMD_ROT_CW
+		0,  // TETRIS_INCMD_ROT_CCW
+		0,  // TETRIS_INCMD_LEFT (key repeat)
+		0,  // TETRIS_INCMD_RIGHT (key repeat)
+		0,  // TETRIS_INCMD_DOWN (key repeat)
+		24, // TETRIS_INCMD_DROP
+		0,  // TETRIS_INCMD_GRAVITY (irrelevant)
+		0   // TETRIS_INCMD_IGNORE (irrelevant as well)
 	};
 
 	// TETRIS_INCMD_NONE is irrelevant
