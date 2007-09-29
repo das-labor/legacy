@@ -241,7 +241,7 @@ start:
 	/* the main part */
 	printpf(pf1);
 	for(cycle=1; cycle<GOL_CYCLES; ++cycle){
-		DEBUG_BYTE(0,(uint8_t)cycle&0xff);
+		DEBUG_BYTE(0,(uint8_t)(GOL_CYCLES-cycle)&0xff);
 		DEBUG_BYTE(1, SREG);
 		wait(GOL_DELAY);
 		pfcopy(pf2,pf1);
