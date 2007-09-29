@@ -248,13 +248,17 @@ start:
 		nextiteration(pf1,pf2);
 		printpf(pf1);
 	/* loop detection */
-		if(!pfcmp(pf1, pf2))
-			goto start;
+		if(!pfcmp(pf1, pf2)){
+			insertglider(pf1);
+			cycle=1;
+		}
 	/* */
 		uint8_t i;
 		for(i=0; i<LOOP_DETECT_BUFFER_SIZE; ++i){
-			if(!pfcmp(pf1, ldbuf[i]))
-				goto start;
+			if(!pfcmp(pf1, ldbuf[i])){
+				insertglider(pf1);
+				cycle=1;
+			}
 		}
 		pfcopy(ldbuf[ldbuf_idx], pf1);
 		ldbuf_idx = (ldbuf_idx+1)%LOOP_DETECT_BUFFER_SIZE;
