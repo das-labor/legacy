@@ -25,7 +25,7 @@ AVRX_GCC_TASKDEF(server1, 200, 4)
 {
 	uint8_t admin_num = 0;
 	uint8_t session_perm = 0;
-//	printf("Debug\r");
+	printf("Debug\n");
 	
 	while(1){
 		request_t req;
@@ -90,7 +90,7 @@ AVRX_GCC_TASKDEF(server1, 200, 4)
 				
 				//return the reply to the client.
 				channel_write(CHANNEL_SERVER1, (uint8_t *) &reply, sizeof(reply_auth_t));
-				printf("reply\r");
+				printf("reply\n");
 				break;
 			}	
 			case REQUEST_RESET:

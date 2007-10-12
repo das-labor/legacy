@@ -9,7 +9,7 @@
 #define SPI_HARDWARE
 
 
-#define TX_SIZE 10
+#define TX_SIZE 3
 #define F_MCP F_CPU
 
 #define CAN_INTERRUPT_VECTOR SIG_INTERRUPT2

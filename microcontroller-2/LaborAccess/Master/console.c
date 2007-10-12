@@ -64,6 +64,7 @@ char getc_tr(){
 	if(tmp != 0x1b){
 		return tmp;
 	}
+	stream_getc();
 	tmp = stream_getc();
 	switch ( tmp ){
 	case ('A'):
@@ -413,7 +414,7 @@ void history_load(char * buffer, char ** bufend, unsigned char num){
 }
 
 
-AVRX_GCC_TASKDEF(console_task, 100, 5){
+AVRX_GCC_TASKDEF(console_task, 200, 5){
 	static char buffer[BUFFER_SIZE];
 	static char * buf_pos = buffer;
 	static unsigned char history_num;
