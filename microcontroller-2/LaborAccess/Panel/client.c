@@ -112,6 +112,8 @@ uint8_t simple_request(uint8_t type){
 	return result;
 }
 
+static TimerControlBlock timer;
+
 uint8_t card_read_credentials(request_auth_t * request){
 	if(! i2cEeDetect())
 		return 1;
@@ -335,8 +337,5 @@ AVRX_GCC_TASKDEF(client, 150, 4){
 				}
 			}			
 		}
-		
-		
-	}
-			
+	}			
 }

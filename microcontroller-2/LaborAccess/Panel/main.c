@@ -11,7 +11,7 @@
 #include "reader.h"
 #include "panel.h"
 #include "client.h"
-#include "dummy_qport.h"
+#include "lop_binding.h"
 
 int main(void)
 {
@@ -24,7 +24,7 @@ int main(void)
 	AvrXRunTask(TCB(reader));
 	//AvrXRunTask(TCB(panel));
 	AvrXRunTask(TCB(client));
-	AvrXRunTask(TCB(qport));
+	AvrXRunTask(TCB(loptask));
 	
 	//init Panel Ports and Timer
 	borg_hw_init();

@@ -2,7 +2,7 @@
 #include <string.h>
 
 #include "channel.h"
-#include "dummy_qport.h"
+#include "lop_binding.h"
 #include "channels.h"
 
 
@@ -25,7 +25,7 @@ uint8_t channel_read(uint8_t id, uint8_t * buffer, uint8_t size){
 }
 
 uint8_t channel_write(uint8_t id, uint8_t * buffer, uint8_t size){
-	qport_write(id, buffer, size);
+	lop_write(id, buffer, size);
 	return 0;
 }
 
