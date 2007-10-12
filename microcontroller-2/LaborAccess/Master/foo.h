@@ -1,2 +1,2 @@
 
-void printhallo(void);
+void printhallo();
