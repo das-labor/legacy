@@ -1,2 +1,4 @@
 
 void printhallo();
+
+void
