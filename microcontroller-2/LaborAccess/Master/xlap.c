@@ -50,7 +50,7 @@ void xlap_init(){
 
 AVRX_GCC_TASKDEF(laptask, 200, 3)
 {
-	printf("Langer String Test und so\n");
+	//printf("Langer String Test und so\n");
 	while (1)
     {
 		can_get();			//get next canmessage in rx_msg

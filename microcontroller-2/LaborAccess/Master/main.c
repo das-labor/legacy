@@ -5,7 +5,7 @@
 #include "avrx.h"               // AvrX System calls/data structures
 #include "AvrXSerialIo.h"
 #include "uart_sw.h"
-#include "dummy_qport.h"
+#include "lop_binding.h"
 #include "i2csw.h"
 #include "xlap.h"
 #include "console.h"
@@ -39,7 +39,7 @@ int main(void)
 	
     
 	AvrXRunTask(TCB(server1));
-	AvrXRunTask(TCB(qport));
+	AvrXRunTask(TCB(loptask));
 	AvrXRunTask(TCB(laptask));
 	AvrXRunTask(TCB(console_task));
 	AvrXRunTask(TCB(MotorCtrl));
