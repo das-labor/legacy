@@ -121,6 +121,7 @@ u08 chipdrive_eject(){
 			return LOAD_ERROR;
 		}
 	}
+	AvrXDelay(&pollTimer, 50);
 	//just let motor roll out, so card is pushed a little further.
 	MOTOR_OFF();
 	return LOAD_OK;
