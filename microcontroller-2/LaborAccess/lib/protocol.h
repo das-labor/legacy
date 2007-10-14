@@ -1,7 +1,11 @@
 
 #include <inttypes.h>
 
+//how many chars can a nickname have?
 #define NICKNAME_MAX_LEN 7
+
+//how many bytes does a token have?
+#define TOKEN_SIZE 32
 
 
 //Requests that don't need permissions
@@ -47,14 +51,14 @@
 //It must have atleast the maximum Size used for any request.
 typedef struct{
 	uint8_t type;
-	uint8_t data[41];
+	uint8_t data[65];
 }request_t;
 
 typedef struct{
 	uint8_t type;
 	uint16_t card_id;
-	uint8_t token[8];
-}request_auth_t; //type + 10 bytes
+	uint8_t token[TOKEN_SIZE];
+}request_auth_t; //type + 34 bytes
 
 //flags in permissions
 #define PERM_ADMIN 0x01
@@ -65,7 +69,7 @@ typedef struct{
 typedef struct{
 	uint8_t result;
 	uint8_t permissions;
-	uint8_t token[8];
+	uint8_t token[TOKEN_SIZE];
 	char nickname[NICKNAME_MAX_LEN+1];
 }reply_auth_t;
 
@@ -78,19 +82,19 @@ typedef struct{
 	uint8_t permissions;
 	char nickname[NICKNAME_MAX_LEN+1];
 	char realname[32];
-}request_new_card_t; //type + 41 bytes
+}request_new_card_t; //type + 65 bytes
 
 typedef struct{
 	uint8_t result;
 	uint16_t id;
-	uint8_t token[8];
+	uint8_t token[TOKEN_SIZE];
 }reply_new_card_t;
 
 typedef request_auth_t request_make_admin_t;
 
 typedef struct{
 	uint8_t result;
-	uint8_t token[8];
+	uint8_t token[TOKEN_SIZE];
 }reply_make_admin_t;
 
 typedef struct{

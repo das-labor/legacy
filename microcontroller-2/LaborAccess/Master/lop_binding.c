@@ -20,7 +20,7 @@ lop_ctx_t lop0={
 	NULL, NULL, NULL, NULL};
 
 
-#define BUFFERSIZE 50
+#define BUFFERSIZE 100
 uint8_t buffer[BUFFERSIZE];
 
 	
@@ -61,7 +61,7 @@ AVRX_GCC_TASKDEF(loptask, 200, 1){
 	while(1){
 		c = get_char0();
 		lop_recieve_byte(&lop0,c);
-		//printf("r: %c", c);
+		printf("%x\n", c);
 	}
 }
 

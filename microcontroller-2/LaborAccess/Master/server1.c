@@ -21,7 +21,7 @@ void send_simple_reply(uint8_t result){
 }
 
 
-AVRX_GCC_TASKDEF(server1, 200, 4)
+AVRX_GCC_TASKDEF(server1, 400, 4)
 {
 	uint8_t admin_num = 0;
 	uint8_t session_perm = 0;
@@ -35,6 +35,8 @@ AVRX_GCC_TASKDEF(server1, 200, 4)
 		size = channel_read(CHANNEL_SERVER1, (uint8_t *) &req, sizeof(request_t));
 		
 		if(size==0) goto handle_error;
+		
+		//printf("req: %x\n",req.type);
 		
 		switch(req.type){
 			case REQUEST_GET_DOORSTATE:
@@ -53,10 +55,13 @@ AVRX_GCC_TASKDEF(server1, 200, 4)
 				break;
 			}
 			case REQUEST_AUTH:{
+				printf("auth\n");
 				reply_auth_t reply;
 				request_auth_t * req_cred = (request_auth_t*) &req;
 				uint8_t result;
 				uint16_t id = req_cred->card_id;
+				
+				printf("id: %x\n", id);
 				
 				reply.permissions = 0;
 				

@@ -61,9 +61,16 @@
 
 
 
-
 #define KEY_DOOR_DOWNSTAIRS 0x62
 #define LED_FLAG 0xa8
+
+
+
+//asn1 identifiers
+#define ASN1_LAB_ACCESS_OBJECT 0x69
+#define ASN1_ID 0x80
+#define ASN1_TOKEN 0x81
+
 
 
 ReaderMsg_t msg;
@@ -78,7 +85,6 @@ void putbuf(uint8_t * b, uint8_t s){
 }
 */
 
-//uint8_t muh[]={0xde,0xad,0xbe,0xef, 0x69, 0x0e ,0x80, 0x02, 0x01, 0x00, 0x81, 0x08, 0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88};
 
 
 MessageQueue ClientQueue;
@@ -114,6 +120,9 @@ uint8_t simple_request(uint8_t type){
 
 static TimerControlBlock timer;
 
+
+
+// read id and token from a card to request object
 uint8_t card_read_credentials(request_auth_t * request){
 	if(! i2cEeDetect())
 		return 1;
@@ -121,18 +130,19 @@ uint8_t card_read_credentials(request_auth_t * request){
 	asn1_obj_t root_obj = {4,251};
 	asn1_obj_t obj;
 		
-	if (asn1_get(&obj, &root_obj, 0x69))
+	if (asn1_get(&obj, &root_obj, ASN1_LAB_ACCESS_OBJECT))
 		return 1;
 			
-	if ( asn1_read(&obj, 0x80, (uint8_t *) &request->card_id, 2) != 2)
+	if ( asn1_read(&obj, ASN1_ID, (uint8_t *) &request->card_id, 2) != 2)
 		return 1;
 			
-	if ( asn1_read(&obj, 0x81, request->token, 8) != 8 )
+	if ( asn1_read(&obj, ASN1_TOKEN, request->token, TOKEN_SIZE) != TOKEN_SIZE )
 		return 1;
 
 	return 0;		
 }
 
+// write a new token to a card
 uint8_t card_write_token(uint8_t * token){
 	if(! i2cEeDetect())
 		return 1;
@@ -140,10 +150,10 @@ uint8_t card_write_token(uint8_t * token){
 	asn1_obj_t root_obj = {4,251};
 	asn1_obj_t obj;
 		
-	if (asn1_get(&obj, &root_obj, 0x69))
+	if (asn1_get(&obj, &root_obj, ASN1_LAB_ACCESS_OBJECT))
 		return 1;
 					
-	if ( asn1_write(&obj, 0x81, token, 8) != 8 )
+	if ( asn1_write(&obj, ASN1_TOKEN, token, TOKEN_SIZE) != TOKEN_SIZE )
 		return 1;
 
 	return 0;		
@@ -217,6 +227,9 @@ uint8_t admin_menu(){
 	}
 }
 
+//uint8_t muh[]={0xde,0xad,0xbe,0xef, 0x69, 0x26 ,0x80, 0x02, 0x01, 0x00, 0x81, 0x20, 0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88,0x10,0x20,0x30,0x40,0x50,0x60,0x70,0x80,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88};
+
+
 void handle_card_inserted(){
 		request_auth_t request;
 		reply_auth_t reply;
@@ -240,7 +253,7 @@ void handle_card_inserted(){
 		
 		request.type = REQUEST_AUTH;
 		
-		channel_write(0, (uint8_t *)&request, sizeof(request));
+		channel_write(0, (uint8_t *)&request, 20);//sizeof(request));
 		channel_read(0, (uint8_t *)&reply, sizeof(reply));
 		
 		if(reply.result == RESULT_DEACTIVATED){
@@ -314,7 +327,7 @@ void segputhex(uint8_t c){
 }
 
 
-AVRX_GCC_TASKDEF(client, 150, 4){
+AVRX_GCC_TASKDEF(client, 400, 4){
 	while(1){
 		MessageControlBlock *p;
 		
