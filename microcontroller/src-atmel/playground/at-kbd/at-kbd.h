@@ -6,7 +6,7 @@
 #include "config.h"
 
 #ifndef F_CPU
- #define F_CPU 16000000UL // 1 MHz  
+ #define F_CPU 16000000UL // 16 MHz  
 #endif
  #include <avr/delay.h>
 

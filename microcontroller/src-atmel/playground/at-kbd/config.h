@@ -10,10 +10,7 @@
 #define UART_RXBUFSIZE 16
 #define UART_TXBUFSIZE 16
 #define UART_LINE_BUFFER_SIZE 40
-#define UART_LEDS 1
-
-
-//c at-kbd.[ch] defines
+#undef UART_LEDS
 
 #define KBD_DATA_DDR		DDRA
 #define KBD_DATA_OUT_PORT	PORTA
