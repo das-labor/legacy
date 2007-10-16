@@ -14,7 +14,7 @@
 #include "debug.h"
 #include <inttypes.h>
 #include <avr/io.h>
-#include <avr/signal.h>
+#include <avr/interrupt.h>
 
 
 #define 	cli()   __asm__ __volatile__ ("cli" ::)
@@ -54,14 +54,14 @@ void kbd_init(){
 
 */
 
-INTERRUPT(SIG_INTERRUPT2){
+ISR(INT2_vect){
 	static byte c=0; //c counter
 	static byte t=0, paraty=0;	//c temporary var. //paraty
 	
 	byte b=KBD_DATA_IN;
 	
 	++c;
-	
+	sei();
 	switch (c) {
 		case 1:		//c start bit, start condition if data line low
 			paraty = 0;

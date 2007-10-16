@@ -3,7 +3,7 @@
 #include "config.h"
 
 #include <avr/io.h>
-#include <avr/signal.h>
+//#include <avr/signal.h>
 #include <avr/interrupt.h>
 #include <stdlib.h>
 
@@ -19,6 +19,25 @@
 #endif
 
 
+#ifdef ATMEGA644
+#define UCSRB UCSR0B
+#define UCSRC UCSR0C
+#define UDR UDR0
+#define UBRRH UBRR0H
+#define UBRRL UBRR0L
+#define URSEL UMSEL00
+//#define SIG_UART_DATA SIG_UART0_DATA
+#define SIG_UART_DATA USART0_TX_vect
+//#define SIG_UART_RECV SIG_UART0_RECV
+#define SIG_UART_RECV USART0_RX_vect
+#define UDRIE UDRIE0
+#define TXEN TXEN0
+#define UMSEL UMSEL0
+#define RXEN RXEN0
+#define RXCIE RXCIE0
+#define UCSZ0 UCSZ00
+#endif
+
 #define UART_BAUD_CALC(UART_BAUD_RATE,F_OSC) ((F_CPU)/((UART_BAUD_RATE)*16L)-1)
 
 
@@ -29,7 +48,7 @@ volatile static char *volatile rxhead, *volatile rxtail;
 volatile static char *volatile txhead, *volatile txtail;
 
 
-SIGNAL(SIG_UART_DATA) {
+ISR(SIG_UART_DATA) {
 #ifdef UART_LEDS	
 	PORTC ^= 0x01;
 #endif
@@ -42,7 +61,7 @@ SIGNAL(SIG_UART_DATA) {
 	}
 }
 
-SIGNAL(SIG_UART_RECV) {
+ISR(SIG_UART_RECV) {
 	int diff; 
 
 #ifdef UART_LEDS
@@ -126,17 +145,13 @@ void uart_putstr_P(PGM_P str) {
 
 void uart_hexdump(char *buf, int len)
 {
-	unsigned char x=0, sbuf[3];
-
+	unsigned char table[]={'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
+	
 	while(len--){
-		itoa(*buf++, sbuf, 16);
-		if (sbuf[1] == 0) uart_putc(' ');
-		uart_putstr(sbuf);
+		uart_putc(table[((*buf)>>4)&0xf]);
+		uart_putc(table[(*buf)&0xf]);
 		uart_putc(' ');
-		if(++x == 16) {
-			uart_putstr_P(PSTR("\r\n"));
-			x = 0;
-		}
+		++buf;
 	}
 }
 
