@@ -10,7 +10,7 @@
 #define ATMEGA644
 
 //c uart.[ch] defines
-#define UART_INTERRUPT 1
+//#define UART_INTERRUPT 1
 #define UART_BAUD_RATE 38400
 #define UART_RXBUFSIZE 16
 #define UART_TXBUFSIZE 16

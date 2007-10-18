@@ -150,13 +150,22 @@ void console_getnick(void * data){
  *  console_verifyuser()
  ****************************************************/
 void console_verifyuser(void){
-	char * nick;
 	authblock_t ab;
+	authcredvalid_state_t t;
 	
-	console_getnick(&nick);
-	new_account(&ab, nick);
-	free(nick);
-	
+	console_getauthblock(&ab);
+	t= check_authblock(&ab);
+	if(t==invalid_cred){
+		uart_putstr_P(PSTR("\r\n invalid authblock"));
+		return;
+	}
+	if(t==valid_admin){
+		uart_putstr_P(PSTR("\r\n valid admin authblock"));
+	} else {
+		uart_putstr_P(PSTR("\r\n valid user authblock"));
+	}
+	uart_putstr_P(PSTR("\r\n your new authblock"));
+	console_dumpauthblock(&ab);
 }
 
 /****************************************************

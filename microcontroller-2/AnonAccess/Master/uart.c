@@ -26,9 +26,7 @@
 #define UBRRH UBRR0H
 #define UBRRL UBRR0L
 #define URSEL UMSEL00
-//#define SIG_UART_DATA SIG_UART0_DATA
 #define SIG_UART_DATA USART0_TX_vect
-//#define SIG_UART_RECV SIG_UART0_RECV
 #define SIG_UART_RECV USART0_RX_vect
 #define UDRIE UDRIE0
 #define TXEN TXEN0
@@ -36,6 +34,9 @@
 #define RXEN RXEN0
 #define RXCIE RXCIE0
 #define UCSZ0 UCSZ00
+#define UCSRA UCSR0A
+#define UDRE UDRE0
+#define RXC RXC0
 #endif
 
 #define UART_BAUD_CALC(UART_BAUD_RATE,F_OSC) ((F_CPU)/((UART_BAUD_RATE)*16L)-1)
@@ -87,8 +88,11 @@ void uart_init() {
 	PORTD |= 0x01;				//Pullup an RXD an
 
 	UCSRB |= (1<<TXEN);			//UART TX einschalten
+#ifdef ATMEGA644
+	UCSRC = (3<<UCSZ0);		//Asynchron 8N1
+#else	
 	UCSRC |= (1<<URSEL)|(3<<UCSZ0);		//Asynchron 8N1
-
+#endif
 	UCSRB |= ( 1 << RXEN );			//Uart RX einschalten
 
 	UBRRH=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU)>>8);

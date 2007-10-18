@@ -36,7 +36,7 @@ void memxor(uint8_t * dest, uint8_t * src, uint8_t length){
 #define HALFSIZE (BLOCKSIZE/2)
 
 #define L ((uint8_t*)block+ 0)
-#define R ((uint8_t*)block+16)
+#define R ((uint8_t*)block+HALFSIZEB)
 void shabea256(void * block, void * key, uint16_t keysize, uint8_t enc, uint8_t rounds){
 	int8_t r;		/**/
 	uint8_t *tb;	/**/
@@ -51,27 +51,22 @@ void shabea256(void * block, void * key, uint16_t keysize, uint8_t enc, uint8_t 
 	}
 	memcpy(tb+HALFSIZEB+2, key, kbs); /* copy key to temporary block */
 	tb[HALFSIZEB+0] = 0;	/* set round counter high value to zero */
-	
+
 	for(;r!=(enc?(rounds):-1);enc?r++:r--){ /* enc: 0..(rounds-1) ; !enc: (rounds-1)..0 */
-	
-	uart_putstr_P(PSTR("x"));
 		memcpy(tb, R, HALFSIZEB); /* copy right half into tb */
 		tb[HALFSIZEB+1] = r;
 		sha256(&hash, tb, HALFSIZE+16+keysize);
 		if(!(r==(enc?(rounds-1):0))){	
 			/* swap */
-			memxor(hash, L, HALFSIZE);
-			memcpy(L, R, HALFSIZE);
-			memcpy(R, hash, HALFSIZE);
+			memxor(hash, L, HALFSIZEB);
+			memcpy(L, R, HALFSIZEB);
+			memcpy(R, hash, HALFSIZEB);
 		} else {
 			/* no swap */
 			memxor(L, hash, HALFSIZE);	
 		}
 	}
-	uart_putstr_P(PSTR("q"));
 	free(tb);
-	uart_putstr_P(PSTR("z"));
-
 }
 
 
