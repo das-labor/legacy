@@ -181,27 +181,22 @@ void new_account(authblock_t * ab, char* nickname){
 		}
 	}
 	/* generate new ticket */
-	DS("a");
 	fillBlockRandom(ab->ticket, 32);
 	/* store new ticket */
-	DS("b");
 	load_ticketkey(key);
 	hmac_sha256(hmac, key, 256, ab->ticket, 32*8);
 	delete_key(key, 32);
 	ticketdb_newuser(&hmac, &(ab->uid), ab->uid);
 	ticketdb_setUserFlags(ab->uid, &flags);
 	/* make new RID & Co */
-	DS("c");
 	load_nickkey(key);
 	hmac_sha256(ab->rid, key, 256, nickname, 8*strlen(nickname));
 	delete_key(key, 32);
 	fillBlockRandom(ab->rkey, 32);
-	DS("c1");
 	shabea256(ab->rid, ab->rkey, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
-	DS("c2");
 	_delay_ms(100);
 	load_ridkey(key);
-	shabea256(ab->rid, key, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
+//	shabea256(ab->rid, key, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
 	delete_key(key,32);
 	/* fix hmac */
 	DS("d");
