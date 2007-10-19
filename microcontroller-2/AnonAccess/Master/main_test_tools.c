@@ -22,6 +22,7 @@
 #include "types.h"
 #include "keys.h"
 #include "reqvalidator.h"
+#include "shabea.h"
 
 /*
 #include "mcp9800.h"
@@ -50,6 +51,11 @@ uint8_t getbadrandom(void){
 
 void prng_init(void){
 	/* here we should add some entropy to the prng */
+	DDRA = 0x00;
+	PORTA = 0x00;
+	ADMUX = 0x40;  /* Vref=Avcc, ADC0 */
+	ADCSRA = 0x83; /* turn ADC on, prescaler=8 */
+	
 	uint8_t i,j;
 	uint8_t b[64];
 	for(i=0; i<32; ++i){
@@ -65,6 +71,7 @@ void prng_init(void){
 void main_tools_init(){
     i2c_init();
     E24C_init();
+    
     prng_init();
     ticketdb_init();
 }
@@ -136,6 +143,24 @@ void asciihex2values(uint8_t* dest, char * src, int n){
 	}
 }
 
+void test_shabea256(void){
+	uint8_t b[32];
+	uint8_t key[32];
+	
+	fillBlockRandom(key, 32);
+	fillBlockRandom(b, 32);
+	uart_putstr_P(PSTR("\r\n key:   ")); uart_hexdump(key, 32);
+	uart_putstr_P(PSTR("\r\n plain: ")); uart_hexdump(b, 32);
+	
+	shabea256(b, key, 256, 1, 16);
+	uart_putstr_P(PSTR("\r\n crypt: ")); uart_hexdump(b, 32);
+	
+	shabea256(b, key, 256, 0, 16);
+	uart_putstr_P(PSTR("\r\n plain: ")); uart_hexdump(b, 32);
+	
+	shabea256(b, key, 256, 1, 16);
+	uart_putstr_P(PSTR("\r\n crypt: ")); uart_hexdump(b, 32);
+}
 
 void console_getnick(void * data){
 	char rcvbuffer[31];
@@ -199,27 +224,27 @@ void console_adduser_db(void){
 void console_getauthblock(authblock_t *ab){
 	char rcvbuffer[150];
 
-	uart_putstr_P(PSTR("\r\n uid :"));
+	uart_putstr_P(PSTR("\r\n uid:    "));
 	console_getnstr(6, rcvbuffer);
 	asciihex2values((uint8_t*)&(ab->uid),rcvbuffer, 4);
 //	uart_putstr(" {"); uart_hexdump((char*)&(ab->uid),2);uart_putstr("}");
 
-	uart_putstr_P(PSTR("\r\n ticket :"));
+	uart_putstr_P(PSTR("\r\n ticket: "));
 	console_getnstr(110, rcvbuffer);
 	asciihex2values( ab->ticket,rcvbuffer, 64);
 //	uart_putstr("\r\n {"); uart_hexdump((char*)(ab->ticket),32);uart_putstr("}");
 
-	uart_putstr_P(PSTR("\r\n rkey :"));
+	uart_putstr_P(PSTR("\r\n rkey:   "));
 	console_getnstr(110, rcvbuffer);
 	asciihex2values( ab->rkey,rcvbuffer, 64);
 //	uart_putstr("\r\n {"); uart_hexdump((char*)(ab->rkey),32);uart_putstr("}");
 
-	uart_putstr_P(PSTR("\r\n rid :"));
+	uart_putstr_P(PSTR("\r\n rid:    "));
 	console_getnstr(110, rcvbuffer);
 	asciihex2values( ab->rid,rcvbuffer, 64);
 //	uart_putstr("\r\n {"); uart_hexdump((char*)(ab->rid),32);uart_putstr("}");
 
-	uart_putstr_P(PSTR("\r\n hmac :"));
+	uart_putstr_P(PSTR("\r\n hmac:   "));
 	console_getnstr(110, rcvbuffer);
 	asciihex2values( ab->hmac,rcvbuffer, 64);
 //	uart_putstr("\r\n {"); uart_hexdump((char*)(ab->hmac),32);uart_putstr("}");
@@ -449,48 +474,6 @@ void eeprom_set_page(i2c_addr_t dev, uint16_t start, uint16_t length){
     }
 }
 
-
-
-
-/****************************************************
- *  thermo_dump()
- * **************************************************/
-/*
-void thermo_dump(i2c_addr_t dev){
-	char c, tempstr[20];
-	mcp9800_temp_t temp, temp_old;
-	uart_putstr("\r\n*** Thermo dump ***\n\r");
-	uart_putstr("Config-Reg: 0x");
-	uart_putbyte(i2c_get_8bit_reg(dev,conf_reg));
-	uart_putstr("\r\n");
-	uart_putstr("Stetting 12-bit resolution.\r\n");
-	mcp9800_set_resolution(dev,mcp9800_12bit);
-	while (!uart_getc_nb(&c)){	
-		temp_old = mcp9800_get_temp(dev);
-		uart_putstr("temperature: 0x");
-		uart_putbyte(HIGH(temp));
-		uart_putstr(".0x");
-		uart_putbyte(LOW(temp));
-		uart_putstr(" (");
-		uart_putstr(itoa((int)HIGH(temp),tempstr, 10));
-		uart_putstr(".");
-		if (LOW(temp)<100)
-			uart_putc('0');
-		if (LOW(temp)<10)
-			uart_putc('0');
-		uart_putstr(utoa((int)LOW(temp),tempstr, 10));
-		uart_putstr(")");
-		do{
-			temp = mcp9800_get_temp(dev);
-		}while(temp==temp_old);
-		//uart_putstr(TERM_LN_ERASE"\r");
-		uart_putc('\r');
-	}
-	
-	uart_putstr("\r\n");
-}
-*/
-
 /******************************************************************************/
 void getnames(void ** data){
 	*data = malloc(2*sizeof(void*));
@@ -510,7 +493,43 @@ void getuid(void ** data){
 	asciihex2values((uint8_t*)(*data), str, 4);
 }
 
-void console_toggleadmin(){
+
+void console_setadmin(){
+	userflags_t sf,cf;
+	char * nick;
+	uint8_t key[32];
+	uint8_t hmac[32];
+	
+	sf.admin = sf.exist = sf.locked = sf.notify_lostadmin = sf.reserved = 0;
+	cf.admin = cf.exist = cf.locked = cf.notify_lostadmin = cf.reserved = 0;
+	sf.admin = 1;
+	console_getnick(&nick);
+	modify_account(nick, sf, cf);
+	free(nick);
+	
+	uart_putstr_P(PSTR("\r\n now admin flag is set"));
+}
+
+void console_clearadmin(){
+	userflags_t sf,cf;
+	char * nick;
+	uint8_t key[32];
+	uint8_t hmac[32];
+	
+	sf.admin = sf.exist = sf.locked = sf.notify_lostadmin = sf.reserved = 0;
+	cf.admin = cf.exist = cf.locked = cf.notify_lostadmin = cf.reserved = 0;
+	cf.admin = 1;
+	console_getnick(&nick);
+	load_nickkey(key);
+	hmac_sha256(hmac, key, 256, nick, strlen(nick));
+	delete_key(key, 32);
+	free(nick);
+	flmdb_makeentry(hmac, sf, cf);
+	
+	uart_putstr_P(PSTR("\r\n now admin flag is cleared"));
+}
+
+void console_toggleadmin_uid(){
 	uid_t *uid;
 	userflags_t flags;
 	
@@ -553,9 +572,9 @@ void console_lasim(void){
 	if(valid_authreq(action,n,authblocks)){
 		/* give new credetials!!! */
 		uart_putstr_P(PSTR("\r\n data = "));
-		uart_hexdump((char*)&data, 2);
+		uart_hexdump(&data, 2);
 		uart_putstr_P(PSTR("\r\n data[0] = "));
-		uart_hexdump((char*)(((uint8_t*)data)[0]), 2);
+		uart_hexdump((((uint8_t*)data)[0]), 2);
 		perform_action(action, data);
 	}else{
 		uart_putstr_P(PSTR("\r\n*** verification failed ***"));

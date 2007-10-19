@@ -48,6 +48,7 @@ void eeprom_set_byte(i2c_addr_t dev, uint16_t start, uint16_t length);
 void eeprom_set_page(i2c_addr_t dev, uint16_t start, uint16_t length);
 */
 
+void test_shabea256(void);
 uint8_t getbadrandom(void);
 void prng_init(void);
 void main_tools_init();
