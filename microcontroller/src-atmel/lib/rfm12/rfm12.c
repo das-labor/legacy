@@ -316,7 +316,7 @@ void rfm12_tick(){
 	
 	
 	
-	//check if see a carrier
+	//check if we see a carrier
 	if(status & RFM12_STATUS_RSSI){
 		//yes: reset free counter
 		channel_free_count = 200;
@@ -329,6 +329,7 @@ void rfm12_tick(){
 
 			//do we have something to transmit?
 			if(rf_tx_buffer.status == STATUS_OCCUPIED)
+			{
 				//yes: start transmitting
 				
 				//disable the interrupt (as we're working directly with the transceiver now)
@@ -350,7 +351,8 @@ void rfm12_tick(){
 				//(hint: TX starts now)
 				rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);
 			
-				RFM12_INT_ON();				
+				RFM12_INT_ON();
+			}
 		}
 	}
 }
