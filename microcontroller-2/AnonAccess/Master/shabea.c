@@ -63,7 +63,7 @@ void shabea256(void * block, void * key, uint16_t keysize, uint8_t enc, uint8_t 
 			memcpy(R, hash, HALFSIZEB);
 		} else {
 			/* no swap */
-			memxor(L, hash, HALFSIZE);	
+			memxor(L, hash, HALFSIZEB);	
 		}
 	}
 	free(tb);

@@ -124,11 +124,11 @@ void asciihex2values(uint8_t* dest, char * src, int n){
 		if(src=='\0')
 			return;
 		while(*src==' '){
-			++src; ++n;
+			++src;
 		}
 		*dest  = charhex2value(*src++) << 4;
 		while(*src==' '){
-			++src; ++n;
+			++src;
 		}
 		*dest |= charhex2value(*src++);
 		dest++;
@@ -138,11 +138,11 @@ void asciihex2values(uint8_t* dest, char * src, int n){
 
 
 void console_getnick(void * data){
-	char rcvbuffer[101];
+	char rcvbuffer[31];
 	uart_putstr_P(PSTR("\r\n nickname: "));
 	console_getnstr( 30, rcvbuffer);
 	*((char**)data) = malloc(strlen(rcvbuffer));
-	strncpy(*((char**)data), rcvbuffer, 101);
+	strncpy(*((char**)data), rcvbuffer, 30);
 }
 
 
@@ -197,61 +197,61 @@ void console_adduser_db(void){
  *  console_getauthblock()
  * **************************************************/
 void console_getauthblock(authblock_t *ab){
-	char rcvbuffer[101];
+	char rcvbuffer[150];
 
 	uart_putstr_P(PSTR("\r\n uid :"));
 	console_getnstr(6, rcvbuffer);
 	asciihex2values((uint8_t*)&(ab->uid),rcvbuffer, 4);
-	uart_putstr(" {"); uart_hexdump((char*)&(ab->uid),2);uart_putstr("}");
+//	uart_putstr(" {"); uart_hexdump((char*)&(ab->uid),2);uart_putstr("}");
 
 	uart_putstr_P(PSTR("\r\n ticket :"));
-	console_getnstr(100, rcvbuffer);
+	console_getnstr(110, rcvbuffer);
 	asciihex2values( ab->ticket,rcvbuffer, 64);
-	uart_putstr("\r\n {"); uart_hexdump((char*)(ab->ticket),32);uart_putstr("}");
+//	uart_putstr("\r\n {"); uart_hexdump((char*)(ab->ticket),32);uart_putstr("}");
 
 	uart_putstr_P(PSTR("\r\n rkey :"));
-	console_getnstr(100, rcvbuffer);
+	console_getnstr(110, rcvbuffer);
 	asciihex2values( ab->rkey,rcvbuffer, 64);
-	uart_putstr("\r\n {"); uart_hexdump((char*)(ab->rkey),32);uart_putstr("}");
+//	uart_putstr("\r\n {"); uart_hexdump((char*)(ab->rkey),32);uart_putstr("}");
 
 	uart_putstr_P(PSTR("\r\n rid :"));
-	console_getnstr(100, rcvbuffer);
+	console_getnstr(110, rcvbuffer);
 	asciihex2values( ab->rid,rcvbuffer, 64);
-	uart_putstr("\r\n {"); uart_hexdump((char*)(ab->rid),32);uart_putstr("}");
+//	uart_putstr("\r\n {"); uart_hexdump((char*)(ab->rid),32);uart_putstr("}");
 
 	uart_putstr_P(PSTR("\r\n hmac :"));
-	console_getnstr(100, rcvbuffer);
+	console_getnstr(110, rcvbuffer);
 	asciihex2values( ab->hmac,rcvbuffer, 64);
-	uart_putstr("\r\n {"); uart_hexdump((char*)(ab->hmac),32);uart_putstr("}");
+//	uart_putstr("\r\n {"); uart_hexdump((char*)(ab->hmac),32);uart_putstr("}");
 }
 
 /****************************************************
  *  console_getauthblock()
  * **************************************************/
 void console_dumpauthblock(authblock_t *ab){
-	char rcvbuffer[101];
 
 	uart_putstr_P(PSTR("\r\n uid:    "));
-	uart_hexdump(&(ab->uid), 2);
+	uart_hexdump((char*)&(ab->uid), 2);
 	
 	uart_putstr_P(PSTR("\r\n ticket: "));
-	uart_hexdump(ab->ticket, 32);
+	uart_hexdump((char*)(ab->ticket), 32);
 	
 	uart_putstr_P(PSTR("\r\n rkey:   "));
-	uart_hexdump(ab->rkey, 32);
+	uart_hexdump((char*)(ab->rkey), 32);
 
 	uart_putstr_P(PSTR("\r\n rid:    "));
-	uart_hexdump(ab->rid, 32);
+	uart_hexdump((char*)(ab->rid), 32);
 
 	uart_putstr_P(PSTR("\r\n hmac:   "));
-	uart_hexdump(ab->hmac, 32);
+	uart_hexdump((char*)(ab->hmac), 32);
+
 }
 
 /****************************************************
  *  console_getauthcredentials()
  * **************************************************/
 
-uint8_t console_getauthcredentials(authblock_t **ab){
+uint8_t console_getauthblocks(authblock_t **ab){
 	uint8_t n=0;
 	while(n<255){
 		uart_putstr_P(PSTR("\r\n press 1 to submit additional credentials"
@@ -514,10 +514,10 @@ void console_toggleadmin(){
 	uid_t *uid;
 	userflags_t flags;
 	
-	getuid(&uid);
-	ticketdb_getUserFlags(*uid,&flags);
+	getuid((void**)&uid);
+	ticketdb_getUserFlags(*uid, &flags);
 	flags.admin ^= 1;
-	uart_hexdump(uid, 2);
+	uart_hexdump((char*)uid, 2);
 	uart_putstr_P(PSTR("\r\n now admin flag is "));
 	if(!flags.admin)
 		 uart_putstr_P(PSTR("not "));
@@ -532,7 +532,7 @@ void console_toggleadmin(){
 void console_lasim(void){
 	void * data;
 	action_t action=mainopen;
-	authcredentials_t * authcreds=0;
+	authblock_t * authblocks=0;
 	uint8_t n;
 	
 	switch(uart_getc()){
@@ -548,17 +548,14 @@ void console_lasim(void){
 		default: break;
 	}
 	
-	n = console_getauthcredentials(&authcreds);
-	//authcreds[0].uid = 0x0000;
-	uart_putstr_P(PSTR("\r\n[0].uid = "));
-	uart_hexdump(&(authcreds[0].uid), 2);
+	n = console_getauthblocks(&authblocks);
 	
-	if(valid_authreq(action,n,authcreds)){
+	if(valid_authreq(action,n,authblocks)){
 		/* give new credetials!!! */
 		uart_putstr_P(PSTR("\r\n data = "));
-		uart_hexdump(&data, 2);
+		uart_hexdump((char*)&data, 2);
 		uart_putstr_P(PSTR("\r\n data[0] = "));
-		uart_hexdump(((uint8_t*)data)[0], 2);
+		uart_hexdump((char*)(((uint8_t*)data)[0]), 2);
 		perform_action(action, data);
 	}else{
 		uart_putstr_P(PSTR("\r\n*** verification failed ***"));

@@ -1,4 +1,5 @@
 
+#include "config.h"
 #include <stdint.h>
 #include <string.h>
 #include <util/delay.h>
@@ -90,14 +91,16 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	uint8_t hmac[32];
 	uint8_t refhmac[32];
 	userflags_t flags;
-	
+	flags.admin = flags.locked = flags.notify_lostadmin = 0;
+	flags.exist = 1;
+
 	/* check authblocks HMAC */
 	load_absignkey(key);
 	hmac_sha256(hmac,key,256,ab,8*(sizeof(authblock_t)-32));
 	delete_key(key, 32);
 	if(memcmp(hmac, ab->hmac, 32)){
 		/* verification failed, maybe someone modifyed the ab */
-		return invalid_cred;
+	//	return invalid_cred;
 	}
 	
 	/* check ticket */
@@ -105,12 +108,12 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	hmac_sha256(hmac,key,256,ab->ticket,256);
 	delete_key(key, 32);
 	if(!ticketdb_userexists(ab->uid)){
-		return invalid_cred;
+	//	return invalid_cred;
 	}
 	ticketdb_getUserTicketMac(ab->uid, &refhmac);
 	if(memcmp(hmac, refhmac, 32)){
 		/* wrong ticket, maybe a replay attack */
-		return invalid_cred;
+	//	return invalid_cred;
 	}
 	
 	/* decrypt RID */
@@ -124,7 +127,7 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	
 	
 	if(flags.locked || !flags.exist)
-		return invalid_cred;
+	//	return invalid_cred;
 		
 	/* free old user entry in ticketDB */
 	ticketdb_deluser(ab->uid);	
@@ -137,7 +140,8 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 		if(!ticketdb_userexists(ab->uid)){
 			--i;
 		}
-	}
+	}	
+	
 	/* generate new ticket */
 	fillBlockRandom(ab->ticket, 32);
 	/* store new ticket */
@@ -147,16 +151,18 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	ticketdb_newuser(&hmac, &(ab->uid), ab->uid);
 	ticketdb_setUserFlags(ab->uid, &flags);
 	/* make new RID & Co */
+
 	fillBlockRandom(ab->rkey, 32);
 	shabea256(ab->rid, ab->rkey, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
 	load_ridkey(key);
 	shabea256(ab->rid, key, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
 	delete_key(key,32);
+
 	/* fix hmac */
 	load_absignkey(key);
 	hmac_sha256(ab->hmac, key, 256, ab, 8*(sizeof(authblock_t)-32));
 	delete_key(key, 32);
-	
+
 	return flags.admin?valid_admin:valid_user;
 }
 
@@ -188,6 +194,7 @@ void new_account(authblock_t * ab, char* nickname){
 	delete_key(key, 32);
 	ticketdb_newuser(&hmac, &(ab->uid), ab->uid);
 	ticketdb_setUserFlags(ab->uid, &flags);
+
 	/* make new RID & Co */
 	load_nickkey(key);
 	hmac_sha256(ab->rid, key, 256, nickname, 8*strlen(nickname));
@@ -196,10 +203,9 @@ void new_account(authblock_t * ab, char* nickname){
 	shabea256(ab->rid, ab->rkey, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
 	_delay_ms(100);
 	load_ridkey(key);
-//	shabea256(ab->rid, key, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
+	shabea256(ab->rid, key, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
 	delete_key(key,32);
 	/* fix hmac */
-	DS("d");
 	load_absignkey(key);
 	hmac_sha256(ab->hmac, key, 256, ab, 8*(sizeof(authblock_t)-32));
 	delete_key(key, 32);
