@@ -39,8 +39,11 @@
 	"f - to test blockDev driver\r\n"\
 	"z - to set all bytes to 0xff in blockDev\r\n"\
 	"c - to learn about your terminal\r\n"\
+	"s - to test shabea implementation\r\n"  \
 	"i - to init the database\r\n" \
 	"n - to add a user to datatabase (hard)\r\n" \
+	"m - to set admin flag\r\n" \
+	"j - to clear admin flag\r\n" \
 	"+ - to add a user\r\n" \
 	"# - to do action\r\n" \
 	"b - to enter LA-Sim mode" \
@@ -71,10 +74,13 @@ int main (void)
     			case 'z': E24C_blockdev_setBlock(0,0x00, 1024); break;
     			// {int i; for (i=0; i<1024; ++i){ E24C_blockdev_writeByte(i, 0xFF);}}; break;
     			case 'c': console_dbg(); break;
+    			case 's': test_shabea256(); break;
     			case 'f': ticketdb_format(TICKETDB_SIZE);/* break;*/
     			case 'i': ticketdb_init();dump_dbstats(); break;
     			case 'n': console_adduser_db(); break;
-    			case 'm': console_toggleadmin(); break;
+    			case 'm': console_setadmin(); break;
+    			case 'j': console_clearadmin(); break;
+    			
     			case '+': console_adduser(); break;
     			case '#': console_verifyuser(); break;
     			case 'b': console_lasim(); break;

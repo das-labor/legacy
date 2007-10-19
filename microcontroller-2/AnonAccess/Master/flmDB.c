@@ -16,6 +16,7 @@
 #include "flmDB.h"
 #include "24CBlockDev.h"
 #include "ticketDB.h"
+#include "uart.h"
 
 #define FLMDB_MAXID (FLMDB_SIZE/sizeof(flmdb_entry_t)-1)
 
@@ -39,9 +40,10 @@ void flmdb_setentry(flmdb_entry_t * entry, entryid_t id){
 void flmdb_process(uint8_t * searchmac, userid_t uid, userflags_t * flags){
 	entryid_t i;
 	flmdb_entry_t entry;
-	
 	for(i=0; i<= FLMDB_MAXID; ++i){
 		flmdb_loadentry(&entry, i);
+		
+		uart_putc('.');
 		if(entry.active && !memcmp(entry.hnick, searchmac, 32)){
 			ticketdb_getUserFlags(uid, flags);
 			/* apply flag modifiers */

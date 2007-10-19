@@ -2,6 +2,7 @@
 
 #include "config.h"
 
+#include <stdint.h>
 #include <avr/io.h>
 //#include <avr/signal.h>
 #include <avr/interrupt.h>
@@ -147,13 +148,13 @@ void uart_putstr_P(PGM_P str) {
 	}
 }
 
-void uart_hexdump(char *buf, int len)
+void uart_hexdump(void *buf, int len)
 {
 	unsigned char table[]={'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
 	
 	while(len--){
-		uart_putc(table[((*buf)>>4)&0xf]);
-		uart_putc(table[(*buf)&0xf]);
+		uart_putc(table[((*(uint8_t*)buf)>>4)&0xf]);
+		uart_putc(table[(*(uint8_t*)buf)&0xf]);
 		uart_putc(' ');
 		++buf;
 	}

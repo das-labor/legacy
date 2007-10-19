@@ -100,7 +100,7 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	delete_key(key, 32);
 	if(memcmp(hmac, ab->hmac, 32)){
 		/* verification failed, maybe someone modifyed the ab */
-	//	return invalid_cred;
+		return invalid_cred;
 	}
 	
 	/* check ticket */
@@ -108,12 +108,12 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	hmac_sha256(hmac,key,256,ab->ticket,256);
 	delete_key(key, 32);
 	if(!ticketdb_userexists(ab->uid)){
-	//	return invalid_cred;
+		return invalid_cred;
 	}
 	ticketdb_getUserTicketMac(ab->uid, &refhmac);
 	if(memcmp(hmac, refhmac, 32)){
 		/* wrong ticket, maybe a replay attack */
-	//	return invalid_cred;
+		return invalid_cred;
 	}
 	
 	/* decrypt RID */
@@ -124,10 +124,9 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	
 	/* search in flag-modify-DB & apply flag modifications */
 	flmdb_process(ab->rid, ab->uid, &flags);
-	
-	
+		
 	if(flags.locked || !flags.exist)
-	//	return invalid_cred;
+		return invalid_cred;
 		
 	/* free old user entry in ticketDB */
 	ticketdb_deluser(ab->uid);	
@@ -151,7 +150,6 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	ticketdb_newuser(&hmac, &(ab->uid), ab->uid);
 	ticketdb_setUserFlags(ab->uid, &flags);
 	/* make new RID & Co */
-
 	fillBlockRandom(ab->rkey, 32);
 	shabea256(ab->rid, ab->rkey, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
 	load_ridkey(key);
@@ -198,10 +196,10 @@ void new_account(authblock_t * ab, char* nickname){
 	/* make new RID & Co */
 	load_nickkey(key);
 	hmac_sha256(ab->rid, key, 256, nickname, 8*strlen(nickname));
+	uart_putstr_P(PSTR("\r\n create hnick: ")); uart_hexdump(ab->rid, 32);
 	delete_key(key, 32);
 	fillBlockRandom(ab->rkey, 32);
 	shabea256(ab->rid, ab->rkey, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
-	_delay_ms(100);
 	load_ridkey(key);
 	shabea256(ab->rid, key, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
 	delete_key(key,32);
@@ -218,6 +216,7 @@ void modify_account(char * nickname, userflags_t setflags, userflags_t clearflag
 	
 	load_nickkey(key);
 	hmac_sha256(hmac, key, 256, nickname, 8*strlen(nickname));
+	uart_putstr_P(PSTR("\r\n modify hnick: ")); uart_hexdump(hmac, 32);
 	delete_key(key, 32);
 	flmdb_makeentry(hmac, setflags, clearflags);
 }
