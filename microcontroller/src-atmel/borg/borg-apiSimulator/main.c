@@ -1,14 +1,16 @@
-#ifdef OSX_
-#  include <GLUT/glut.h>
-#else
-#  include <GL/glut.h>  
-#endif
+
 
 #ifdef _WIN32
+#  include <GL/glut.h>
 #  include <windows.h>
 #  include <process.h>
 #  define pthread_t int
 #else
+#  ifdef OSX_
+#    include <GLUT/glut.h>
+#  else
+#    include <GL/glut.h>
+#  endif
 #  include <pthread.h>   // for threads in linux
 #  include <stdlib.h>
 #  include <sys/time.h>
@@ -67,16 +69,16 @@ void display(void){
 	glRotatef(view_rotz, 0.0, 0.0, 1.0);
 	glTranslatef(-NUM_COLS*2, 0., -NUM_ROWS*2.);
   	for (x = 0; x < 1; x++) {
-		for (y = 0; y < NUM_COLS; y++) { 
+		for (y = 0; y < NUM_COLS; y++) {
 			for (z = 0; z < NUM_ROWS; z++) {
 				color = 0;
 				for (level = 0; level < NUMPLANE; level++) {
 					if (pixmap[level][z%NUM_ROWS][y/8] & (1 << y % 8)) {
-						color = level+1;		
+						color = level+1;
 					}
 				}
-				drawLED(color, (float)y*4.0, 
-				               (float)x*4.0, 
+				drawLED(color, (float)y*4.0,
+				               (float)x*4.0,
 							   (float)(NUM_ROWS-1-z)*4.0);
 			}
 		}
@@ -92,10 +94,10 @@ void display(void){
 }
 
 void keyboard(unsigned char key, int x, int y){
-	switch (key) {  
+	switch (key) {
 		case 'q': printf("Quit\n");
     		glutDestroyWindow(win);
-    		exit(0); 
+    		exit(0);
 			break;
 		case ' ':
 			fakeport |= 0x01;
@@ -116,7 +118,7 @@ void keyboard(unsigned char key, int x, int y){
 }
 
 void keyboardup(unsigned char key, int x, int y){
-	switch (key) {  
+	switch (key) {
 		case ' ':
 			fakeport &= ~0x01;
 			break;
@@ -147,17 +149,17 @@ void motion(int x, int y)
 
 void reshape(int width, int height)
 {
-  
+
   tbReshape(width, height);
 
   glViewport(0, 0, width, height);
-  
+
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(60.0, (float)WindWidth/(float)WindWidth, 5., 1000.);
   gluLookAt(NUM_ROWS*2., NUM_ROWS*2.+50., NUM_COLS*2.,
             NUM_ROWS*2., NUM_ROWS*2., NUM_COLS*2.,
-            0.0, 0.0, 1.0); 
+            0.0, 0.0, 1.0);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
@@ -195,7 +197,7 @@ void *display_loop(void * unused) {
 	unsigned char mode;;;
 	mode = setjmp(newmode_jmpbuf);
 	oldOldmode = oldMode;
-	waitForFire = 1;	
+	waitForFire = 1;
 	for(;;){
 		oldMode = mode;
 		switch(mode++) {
@@ -244,12 +246,12 @@ void *display_loop(void * unused) {
 
 int main(int argc, char **argv){
     WindHeight = 700;
-    WindWidth = 700;         
+    WindWidth = 700;
     glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
     glutInitWindowSize(WindHeight, WindWidth);
     win = glutCreateWindow("16x16 Borg Simulator");
-    
+
     // callback
     //glutReshapeFunc(reshape);
     glutDisplayFunc(display);
@@ -260,39 +262,39 @@ int main(int argc, char **argv){
     glutSpecialFunc(special);
     glutMouseFunc(mouse);
     glutMotionFunc(motion);
-    
+
     // clearcolor & main loop
     glClearColor(0,0,0,1.0);
     gluPerspective(60.0, (float)WindWidth/(float)WindWidth, 5., 1000.);
     gluLookAt(NUM_COLS*2., NUM_COLS*2.+50., NUM_ROWS*2.,
               NUM_COLS*2., NUM_COLS*2., NUM_ROWS*2.,
-            0.0, 0.0, 1.0); 
+            0.0, 0.0, 1.0);
 
-	// init Call List for LED	
+	// init Call List for LED
 	quad = gluNewQuadric();
 	glNewList(0, GL_COMPILE);
 		glColor4f(0.8, 0.0, 0.0, 1.);
-		gluSphere(quad, 1.0, 12, 12);		
+		gluSphere(quad, 1.0, 12, 12);
 	glEndList();
 	glNewList(1, GL_COMPILE);
 		glColor4f(0.5, 0.0, 0.0, 1.);
-		gluSphere(quad, 1.4, 12, 12);	
+		gluSphere(quad, 1.4, 12, 12);
     glEndList();
 	glNewList(2, GL_COMPILE);
 		glColor4f(0.7, 0.0, 0.0, 1.);
-		gluSphere(quad, 1.55, 12, 12);	
+		gluSphere(quad, 1.55, 12, 12);
     glEndList();
 	glNewList(3, GL_COMPILE);
 		glColor4f(1.00, 0.0, 0.0, 1.);
 	    gluSphere(quad, 1.7, 12, 12);
     glEndList();
-	
+
    tbInit(GLUT_LEFT_BUTTON);
    tbAnimate(GL_FALSE);
-	
-	// start display_loop thread 
+
+	// start display_loop thread
 #ifdef _WIN32
-    _beginthread((void (*)(void*))display_loop, 0, NULL);   
+    _beginthread((void (*)(void*))display_loop, 0, NULL);
 #else
     pthread_create(&simthread, NULL, display_loop, NULL);
 #endif

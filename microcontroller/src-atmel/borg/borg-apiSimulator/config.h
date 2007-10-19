@@ -9,7 +9,6 @@
 #define SCROLL_X_SPEED 5
 #define SCROLL_Y_SPEED 5
 
-
 #define STREAMER_NUM 30
 #define LINEBYTES (((NUM_COLS-1)/8)+1)
 
