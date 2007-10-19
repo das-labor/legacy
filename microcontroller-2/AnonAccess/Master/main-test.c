@@ -43,11 +43,7 @@
 	"n - to add a user to datatabase (hard)\r\n" \
 	"+ - to add a user\r\n" \
 	"# - to do action\r\n" \
-	"1 - to perform a blockset test\r\n" \
-	"2 - to perform a blockset test\r\n" \
-	"3 - to perform a blockset test\r\n" \
-	"4 - to perform a blockset test\r\n" \
-	"5 - to perform a blockset test\r\n" \
+	"b - to enter LA-Sim mode" \
 	"\r\n"
 
 
@@ -72,7 +68,7 @@ int main (void)
     			case 'a': i2c_detect(dev_table); break;
     			case 'd': eeprom_dump_page(0xA0, 0, 512); break;
     			case 'l': eeprom_dump_page(0xA0, 0,2048); break;
-    			case 'z': E24C_blockdev_setBlock(0,0xFF, 1024); break;
+    			case 'z': E24C_blockdev_setBlock(0,0x00, 1024); break;
     			// {int i; for (i=0; i<1024; ++i){ E24C_blockdev_writeByte(i, 0xFF);}}; break;
     			case 'c': console_dbg(); break;
     			case 'f': ticketdb_format(TICKETDB_SIZE);/* break;*/

@@ -21,11 +21,11 @@ void main_close(void){
 
 void dump_authblock(authblock_t * ab){
 	uart_putstr_P(PSTR("\r\n +++ authblock +++"));
-	uart_putstr_P(PSTR("\r\n   UID:    ")); uart_hexdump(&(ab->uid),  2);
-	uart_putstr_P(PSTR("\r\n   RID:    ")); uart_hexdump(&(ab->rid), 32);
-	uart_putstr_P(PSTR("\r\n   RKey:   ")); uart_hexdump(&(ab->rkey), 32);
-	uart_putstr_P(PSTR("\r\n   Ticket: ")); uart_hexdump(&(ab->ticket), 32);
-	uart_putstr_P(PSTR("\r\n   HMAC:   ")); uart_hexdump(&(ab->hmac), 32);
+	uart_putstr_P(PSTR("\r\n   UID:    ")); uart_hexdump((char*)&(ab->uid),  2);
+	uart_putstr_P(PSTR("\r\n   RID:    ")); uart_hexdump((char*)&(ab->rid), 32);
+	uart_putstr_P(PSTR("\r\n   RKey:   ")); uart_hexdump((char*)&(ab->rkey), 32);
+	uart_putstr_P(PSTR("\r\n   Ticket: ")); uart_hexdump((char*)&(ab->ticket), 32);
+	uart_putstr_P(PSTR("\r\n   HMAC:   ")); uart_hexdump((char*)&(ab->hmac), 32);
 }
 
 void add_user(char * nickname){
