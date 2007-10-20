@@ -26,7 +26,6 @@ int8_t blightstat;
 
 uint8_t scriptstat;
 
-Mutex men_mutex;
 
 void make_basemenu();
 menu_item_t *make_item(void *show, void *enter, menu_t *menu, uint8_t type) ;
@@ -120,18 +119,18 @@ void make_basemenu() {
 
 uint8_t getKey(uint16_t delay) {  // keyport in header
 	AvrXDelay(&switchtimer, delay);
-	while(1) {
+	while (1) {
 		
-		if(!(PINB & (1 << PB0))) { // up
+		if (!(PINB & (1 << PB0))) { // up
 			return 0;
 		}
-		if(!(PINB & (1 << PB1))) { // down
+		if (!(PINB & (1 << PB1))) { // down
 			return 1;
 		}
-		if(!(PINB & (1 << PB2))) { // ok
+		if (!(PINB & (1 << PB2))) { // ok
 			return 2;
 		}
-		if(!(PINB & (1 << PB3))) { // back
+		if (!(PINB & (1 << PB3))) { // back
 			return 3;
 		}
 	}
@@ -149,14 +148,14 @@ void menu_handler(void *data) {
 	for (i = 0; i < menu->size; i++) {
 		menu->items[i]->show(menu->items[i]->data, (sel==i));
 		pos.y += 11;
-		if(i >= 6)
+		if (i >= 6)
 			break;
 	}
 	while (1) {  // keyhandeling
 		key = getKey(550);
 		// enter
-		if(key == 2) {
-			if(!(menu->items[sel]->type & 0x01))
+		if (key == 2) {
+			if (!(menu->items[sel]->type & 0x01))
 				dispFillRect(0, 0, 40, 11 * menu->size + 1, 0);
 			//pos.x += 20;
 			menu->items[sel]->enter(menu->items[sel]->data); // enter
@@ -164,9 +163,9 @@ void menu_handler(void *data) {
 		}
 
 	// zurück
-		if(key == 3) {
+		if (key == 3) {
 			//pos.x -= 20;
-			if(menu->name != "/") { // nicht aus Hauptmenu springen
+			if (menu->name != "/") { // nicht aus Hauptmenu springen
 				dispFillRect(0, 0, 40, 11 * menu->size + 1, 0);
 				return;
 			}
@@ -175,15 +174,15 @@ void menu_handler(void *data) {
 		if (key < 2) {
 			pos.y = sel * 11;
 			menu->items[sel]->show(menu->items[sel]->data, 0);
-			if(key == 1)
+			if (key == 1)
 				sel++;
-			if(key == 0)
+			if (key == 0)
 				sel--;
-			if(sel == menu->size)
+			if (sel == menu->size)
 				sel = 0;
-			if(sel < 0)
+			if (sel < 0)
 				sel = menu->size - 1;
-			pos.y = sel*11;
+			pos.y = sel * 11;
 			menu->items[sel]->show(menu->items[sel]->data, 1);
 		}
 	}
@@ -204,7 +203,7 @@ void show_text(void *data, uint8_t selected) {
 void show_mood(void *data, uint8_t selected) {
 	menu_t *menu = data;
 	dispDrawRect(50, pos.y, 65, 9, 1);
-	dispFillRect(pos.x+1, pos.y+1, 39, 8, selected);
+	dispFillRect(pos.x + 1, pos.y + 1, 39, 8, selected);
 }
 */
 void menu_add_item(menu_t *menu, menu_item_t *entry, uint8_t pos) {
@@ -248,22 +247,22 @@ void switch_blight(void *data, uint8_t selected) {
 	uint8_t key;
 	dispDrawRect(50, 15, 32, 5, 1);
 	dispFillRect(51, 16, blightstat * 3, 3, 1);
-	while(1) {  // keyhandeling
+	while (1) {  // keyhandeling
 		key = getKey(550);
-		if(key == 3) {
+		if (key == 3) {
 			dispFillRect(50, 15, 32, 5, 0);
 			return;
 		}
 	//	up down
-		if(key < 2) {
+		if (key < 2) {
 			dispFillRect(51, 16, blightstat * 3, 3, 0);
-			if(key == 1)
+			if (key == 1)
 				blightstat--;
-			if(key == 0)
+			if (key == 0)
 				blightstat++;
-			if(blightstat == 11)
+			if (blightstat == 11)
 				blightstat = 0;
-			if(blightstat < 0)
+			if (blightstat < 0)
 				blightstat = 10;
 			dispFillRect(51, 16, blightstat * 3, 3, 1);
 			OCR2 = blightstat * 15;
@@ -285,12 +284,12 @@ void switch_script() {
 }
 
 void temp(void *data) {										// todo: start temp sending
-	//static can_message_t msg={0xa0, 0xa1, PORT_REMOTE, PORT_TEMP};
+	//static can_message_t msg = {0xa0, 0xa1, PORT_REMOTE, PORT_TEMP};
 	//msg.addr_src = 0xa0;
 	
 	//msg.dlc = 1;
 	//msg.data[0] = 0x90;
-/*	while (1) {  // keyhandeling
+	while (1) {  // keyhandeling
 		AvrXDelay(&switchtimer, 550);
 		if (!(PINB & (1 << PB3))) { // ok
 			dispFillRect(50, 30, 30, 8, 0);
@@ -299,8 +298,8 @@ void temp(void *data) {										// todo: start temp sending
 		dispFillRect(50, 30, 30, 8, 0);
 		//can_put(&msg);
 		AvrXDelay(&switchtimer, 5); // timing testen
-		draw_Text(bla, 50, 30, 0, 1, 1);
-	}*/
+		//draw_Text(bla, 50, 30, 0, 1, 1);
+	}
 }
 /*
 char* canmessage(uint8_t dst_adr, uint8_t dst_port, char* msg) {  // adresse, zielport, message
@@ -336,7 +335,7 @@ void ctrl_mood(void *data) {
 	AvrXDelay(&switchtimer, 500);
 	while (1) {  // keyhandeling
 		key = getKey(60);
-		if(key < 2) {
+		if (key < 2) {
 			dispFillRect(51, (10 * i) + 1, mc_POS_DIV(val[i], 9), 3, 0);
 			if(key == 1 && val[i] != 0)
 				val[i]--;
@@ -366,7 +365,7 @@ void ctrl_mood(void *data) {
 }
 /*
 void scan() {
-	static can_message_t msg={0xa0, 0xa1, PORT_REMOTE, PORT_TEMP};
+	static can_message_t msg = {0xa0, 0xa1, PORT_REMOTE, PORT_TEMP};
 	//msg.addr_src = 0xa0;
 	msg.addr_dst++;  //temp.addr_dst = rx_msg.addr_src
 	msg.dlc = 1;
@@ -400,12 +399,12 @@ scan
 // adds an entry to a menu structure at pos
 
 
-void menu_remove_entry(menu **menu_pt, uint16_t pos){
+void menu_remove_entry(menu **menu_pt, uint16_t pos) {
 	uint16_t x;
-	for(x=pos; x < (*menu_pt)->entry_num-1; x++){
-		(*menu_pt)->entries[x] = (*menu_pt)->entries[x+1];
+	for (x = pos; x < (*menu_pt)->entry_num-1; x++) {
+		(*menu_pt)->entries[x] = (*menu_pt)->entries[x + 1];
 	}
 	(*menu_pt)->entry_num--;	                                
-	(*menu_pt) = realloc((*menu_pt), 4+((*menu_pt)->entry_num)*sizeof(menu_entry) );
+	(*menu_pt) = realloc((*menu_pt), 4 + ((*menu_pt)->entry_num) * sizeof(menu_entry));
 }
 */

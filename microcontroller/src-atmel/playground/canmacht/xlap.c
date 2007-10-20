@@ -17,10 +17,11 @@
 #include "stdlib.h"
 
 uint8_t myaddr;
+sensor_t sensor;
 
 void process_mgt_msg() {
 	static can_message_t msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
-	switch(rx_msg.data[0]) {
+	switch (rx_msg.data[0]) {
 		case FKT_MGT_RESET:
 			TCCR2 = 0;
 			wdt_enable(0);
@@ -53,7 +54,7 @@ void process_data(sensor_t *sensor) {
 }
 
 AVRX_GCC_TASKDEF(laptask, 55, 3) {
-	sensor_t *sensor = NULL;
+	//sensor = 0;
 	while (1) {
 		can_get();			//get next canmessage in rx_msg
 		if(rx_msg.addr_dst == myaddr) {
@@ -61,7 +62,7 @@ AVRX_GCC_TASKDEF(laptask, 55, 3) {
 				process_mgt_msg();
 			}
 			else if(rx_msg.port_dst == PORT_REMOTE) {  // Temperaturen empfangen
-				process_data(sensor);
+				process_data(&sensor);
 			}
 		}
 	}

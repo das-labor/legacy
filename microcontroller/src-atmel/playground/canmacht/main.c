@@ -9,7 +9,7 @@
 #include "config.h"
 #include "xcan.h"
 #include "xlap.h"
-//#include "keys.h"
+#include "stuff.h"
 #include "menu.h"
 #include "grafiklcd.h"
 
@@ -17,10 +17,10 @@
 
 
 AVRX_SIGINT(SIG_OVERFLOW0) {
-	IntProlog();                // Save interrupted context, switch stacks
-	TCNT0 = TCNT0_INIT;			// Reload the timer counter
-	AvrXTimerHandler();         // Process Timer queue
-	Epilog();                   // Restore context of next running task
+	IntProlog();			// Save interrupted context, switch stacks
+	TCNT0 = TCNT0_INIT;		// Reload the timer counter
+	AvrXTimerHandler();		// Process Timer queue
+	Epilog();			// Restore context of next running task
 }
 
 int main(void) {
@@ -31,14 +31,14 @@ int main(void) {
 	TIMSK = 1<<TOIE0;		// Enable interrupt flag
 
 
-	PORTB = 0x0f; // Tastenport
-	DDRB  = 0x00;
+	PORTB = 0x0f; // Tastenpin pullups
+	DDRB  = 0x00; // 
 	//InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
 	xlap_init();
 	dispInit(); // Display initialisierung
 
 	AvrXRunTask(TCB(laptask));
-	//AvrXRunTask(TCB(keys));
+	AvrXRunTask(TCB(stuff));
 	AvrXRunTask(TCB(menu));
 
 	/* Needed for EEPROM access in monitor */

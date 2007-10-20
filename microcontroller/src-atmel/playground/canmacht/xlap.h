@@ -14,4 +14,4 @@ struct sensor_struct {
 };
 
 typedef struct sensor_struct sensor_t;
-
+extern sensor_t sensor;
