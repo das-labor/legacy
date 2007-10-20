@@ -14,7 +14,8 @@
 #include "prng.h"
 #include "fairrnd.h"
 #include "uart.h"
-
+#include "rtc.h"
+#include "main_test_tools.h"
 
 #define DS(a) uart_putstr_P(PSTR(a))
 /**
@@ -70,6 +71,17 @@ bool valid_authreq(action_t action, uint8_t n, authblock_t * authblock){
 	uart_putstr_P(PSTR("\r\n admins: "));
 	uart_hexdump((char*)&admins,1);
 	
+	for(i=0;i<n;++i){
+		t =  check_authblock(&(authblock[i]));
+		users  += (t==valid_user || t==valid_admin)?1:0;
+		admins += (t==valid_admin)?1:0;
+	}
+	
+	/* give new authblocks */
+	for(i=0;i<n;++i){
+		console_dumpauthblock(&(authblock[i]));
+	}
+	
 	if((requirement_table[action].users_req  <= users)
 	 &&(requirement_table[action].admins_req <= admins)){
 		return true;
@@ -107,6 +119,7 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	load_ticketkey(key);
 	hmac_sha256(hmac,key,256,ab->ticket,256);
 	delete_key(key, 32);
+	
 	if(!ticketdb_userexists(ab->uid)){
 		return invalid_cred;
 	}
@@ -141,8 +154,31 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 		}
 	}	
 	
+	/* check timestamp */
+	load_timestampkey(key);
+	shabea256(ab->ticket, key,256, 0, 16);
+	delete_key(key, 32);
+	{
+		timestamp_t t;
+		memcpy(&t, ab->ticket+32-sizeof(timestamp_t), sizeof(timestamp_t)); 
+		if(t+TICKET_TIMEOUT < gettimestamp()){
+			/* setlock bit instead of directly returning invalid_cred 
+			 * for making it possible to use the unlock_feature */
+			 flags.locked = 1;
+			 ticketdb_setUserFlags(ab->uid, &flags);
+		}
+	}
+	
 	/* generate new ticket */
-	fillBlockRandom(ab->ticket, 32);
+	fillBlockRandom(ab->ticket, 32-sizeof(timestamp_t));
+	{
+		timestamp_t t;
+		t = gettimestamp();
+		memcpy(ab->ticket+32-sizeof(timestamp_t), &t, sizeof(timestamp_t));
+	}
+	load_timestampkey(key);
+	shabea256(ab->ticket, key, 256, 1, 16);
+	delete_key(key, 32);
 	/* store new ticket */
 	load_ticketkey(key);
 	hmac_sha256(hmac, key, 256, ab->ticket, 32*8);
@@ -161,6 +197,9 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	hmac_sha256(ab->hmac, key, 256, ab, 8*(sizeof(authblock_t)-32));
 	delete_key(key, 32);
 
+	if(flags.locked==1){ // this happens when user got timeout
+		return invalid_cred;
+	}
 	return flags.admin?valid_admin:valid_user;
 }
 
@@ -185,7 +224,15 @@ void new_account(authblock_t * ab, char* nickname){
 		}
 	}
 	/* generate new ticket */
-	fillBlockRandom(ab->ticket, 32);
+	fillBlockRandom(ab->ticket, 32-sizeof(timestamp_t));
+	{
+		timestamp_t t;
+		t = gettimestamp();
+		memcpy(ab->ticket+32-sizeof(timestamp_t), &t, sizeof(timestamp_t));
+	}
+	load_timestampkey(key);
+	shabea256(ab->ticket, key, 256, 1, 16);
+	delete_key(key, 32);
 	/* store new ticket */
 	load_ticketkey(key);
 	hmac_sha256(hmac, key, 256, ab->ticket, 32*8);
@@ -196,7 +243,6 @@ void new_account(authblock_t * ab, char* nickname){
 	/* make new RID & Co */
 	load_nickkey(key);
 	hmac_sha256(ab->rid, key, 256, nickname, 8*strlen(nickname));
-	uart_putstr_P(PSTR("\r\n create hnick: ")); uart_hexdump(ab->rid, 32);
 	delete_key(key, 32);
 	fillBlockRandom(ab->rkey, 32);
 	shabea256(ab->rid, ab->rkey, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
@@ -216,7 +262,6 @@ void modify_account(char * nickname, userflags_t setflags, userflags_t clearflag
 	
 	load_nickkey(key);
 	hmac_sha256(hmac, key, 256, nickname, 8*strlen(nickname));
-	uart_putstr_P(PSTR("\r\n modify hnick: ")); uart_hexdump(hmac, 32);
 	delete_key(key, 32);
 	flmdb_makeentry(hmac, setflags, clearflags);
 }
