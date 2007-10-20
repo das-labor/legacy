@@ -5,7 +5,7 @@
 
 #ifndef __BOOL__
 #ifndef BOOL
-	typedef enum{false=0, true=1} bool;
+typedef enum{false=0, true=1} bool;
 	#define BOOL
 	#define __BOOL__
 #endif
@@ -46,7 +46,8 @@ typedef struct userflags_st{
 	unsigned admin:1;				/* this user is admin */
 	unsigned locked:1;				/* this account is locked */
 	unsigned notify_lostadmin:1;	/* this user must be notifyed about lost admin privileges */
-	unsigned reserved:4;
+	unsigned anonymous:1;			/* this user is anonymous */
+	unsigned reserved:3;
 } userflags_t;
 
 typedef enum{

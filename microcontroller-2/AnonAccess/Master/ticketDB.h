@@ -29,14 +29,13 @@ typedef struct stats_st{
 
 typedef struct userentry_st{
 	uint8_t     flags;
-	uint8_t	    reserved[7];
+	uint8_t	    nickname[7];
 	ticketmac_t ticketmac;
-} userentry_t; /* total size is 80 bytes */
+} userentry_t; /* total size is 40 bytes */
 
 #define DB_FLAGS_OFFSET      0
-#define DB_NICKNAME_OFFSET   8
-#define DB_REALNAME_OFFSET  16
-#define DB_TICKETMAC_OFFSET 48
+#define DB_NICKNAME_OFFSET   1
+#define DB_TICKETMAC_OFFSET  8
 
 typedef struct dbheader_st{
 	uint8_t id[10]; 
@@ -62,6 +61,8 @@ uint8_t	ticketdb_getUserTicketMac(userid_t id, ticketmac_t*);
 uint8_t	ticketdb_getUserFlags(userid_t id, userflags_t*);
 uint8_t	ticketdb_setUserTicketMac(userid_t id, ticketmac_t*);
 uint8_t	ticketdb_setUserFlags(userid_t id, userflags_t*);
+uint8_t	ticketdb_getUserNickname(userid_t id, char* dest);
+uint8_t	ticketdb_setUserNickname(userid_t id, char* dest);
 
 unsigned ticketdb_getstatMaxUsers(void);
 unsigned ticketdb_getstatUsers(void);
