@@ -1,0 +1,24 @@
+EAGLE Version 4.16 Copyright (c) 1988-2005 CadSoft
+
+Electrical Rule Check für /home/dr4go/eagle/moodlight/controll/controll.sch am 22.09.2006 18:53:54 
+
+WARNUNG: Seite 1/1: SUPPLY-Pin VCC überschrieben mit +5V
+FEHLER: Seite 1/1: Nicht angeschlossener INPUT-Pin: U1 TX0RTS
+FEHLER: Seite 1/1: Nicht angeschlossener INPUT-Pin: U1 TX1RTS
+FEHLER: Seite 1/1: Nicht angeschlossener INPUT-Pin: U1 TX2RTS
+FEHLER: Seite 1/1: Nicht angeschlossener INPUT-Pin: U1 RESET
+WARNUNG: Seite 1/1: POWER-Pin U1P VSS verbunden mit GND
+WARNUNG: Seite 1/1: POWER-Pin U1P VDD verbunden mit +5V
+FEHLER: OUTPUT- und SUPPLY-Pins gemeinsam an Netz +5V
+WARNUNG: Keine Pins an Netz N$5
+WARNUNG: Seite 1/1: Netze GND und N$5 zu nahe an (0 3.5)
+WARNUNG: Seite 1/1: Netze N$34 und +5V zu nahe an (3.1 -0.1)
+WARNUNG: Seite 1/1: Netze N$5 und GND zu nahe an (0 3.5)
+WARNUNG: Seite 1/1, Netz N$5: Wire überlappt Pin an Position (-0.05 3.5)
+WARNUNG: Seite 1/1, Netz N$34: Wire überlappt Pin an Position (3.1 -0.1)
+WARNUNG: Seite 1/1, Netz N$38: Wire überlappt Pin an Position (3.1 -0.2)
+
+Board und Schaltplan sind konsistent
+
+    5 Fehler
+   10 Warnungen
