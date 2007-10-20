@@ -102,6 +102,26 @@ uint8_t ticketdb_setUserTicketMac(userid_t id, ticketmac_t* src){
 }
 
 /******************************************************************************/
+/* dest must have place for at least 8 characters
+ */
+uint8_t ticketdb_getUserNickname(userid_t id, char* dest){
+	if (id>=dbstats.max_users)
+		return DB_ERROR_NOSUCHUSER;;
+	E24C_blockdev_readBlock(dbheadersize + id*sizeof(userentry_t)
+	                        +DB_NICKNAME_OFFSET, dest, 7);
+	dest[7] = '\0';
+	return DB_ERROR_OK;
+}
+/******************************************************************************/
+
+uint8_t ticketdb_setUserNickname(userid_t id, char* dest){
+	if (id>=dbstats.max_users)
+		return DB_ERROR_NOSUCHUSER;;
+	E24C_blockdev_writeBlock(dbheadersize + id*sizeof(userentry_t)
+	                        +DB_NICKNAME_OFFSET, dest, 7);
+	return DB_ERROR_OK;
+}
+/******************************************************************************/
 
 uint8_t ticketdb_setUserFlags(userid_t id, userflags_t* src){
 	userflags_t oflags;
