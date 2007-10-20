@@ -74,5 +74,8 @@ void getnames(void ** data);
 void getuid(void ** data);
 void console_toggleadmin();
 void console_lasim(void);
+void console_setadmin();
+void console_clearadmin();
+
 
 #endif /*MAIN_TOOLS_H_*/
