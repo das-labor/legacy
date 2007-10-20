@@ -39,7 +39,7 @@ typedef uint8_t token_t[32];
 typedef struct{
 	uint8_t users_req;
 	uint8_t admins_req;
- } action_requirements_t;
+} action_requirements_t;
 
 typedef struct userflags_st{
 	unsigned exist:1;				/* this user exists */

@@ -497,8 +497,6 @@ void getuid(void ** data){
 void console_setadmin(){
 	userflags_t sf,cf;
 	char * nick;
-	uint8_t key[32];
-	uint8_t hmac[32];
 	
 	sf.admin = sf.exist = sf.locked = sf.notify_lostadmin = sf.reserved = 0;
 	cf.admin = cf.exist = cf.locked = cf.notify_lostadmin = cf.reserved = 0;
@@ -533,7 +531,7 @@ void console_toggleadmin_uid(){
 	uid_t *uid;
 	userflags_t flags;
 	
-	getuid((void**)&uid);
+	getuid((void**)&uid); /* this makes ugly warning, maybe we should change s.th. here */
 	ticketdb_getUserFlags(*uid, &flags);
 	flags.admin ^= 1;
 	uart_hexdump((char*)uid, 2);
@@ -570,11 +568,11 @@ void console_lasim(void){
 	n = console_getauthblocks(&authblocks);
 	
 	if(valid_authreq(action,n,authblocks)){
-		/* give new credetials!!! */
-		uart_putstr_P(PSTR("\r\n data = "));
-		uart_hexdump(&data, 2);
-		uart_putstr_P(PSTR("\r\n data[0] = "));
-		uart_hexdump((((uint8_t*)data)[0]), 2);
+		/* give new authblocks */
+		uint8_t i;
+		for(i=0;i<n;++i){
+			console_dumpauthblock(&(authblocks[i]));
+		}
 		perform_action(action, data);
 	}else{
 		uart_putstr_P(PSTR("\r\n*** verification failed ***"));

@@ -77,11 +77,6 @@ bool valid_authreq(action_t action, uint8_t n, authblock_t * authblock){
 		admins += (t==valid_admin)?1:0;
 	}
 	
-	/* give new authblocks */
-	for(i=0;i<n;++i){
-		console_dumpauthblock(&(authblock[i]));
-	}
-	
 	if((requirement_table[action].users_req  <= users)
 	 &&(requirement_table[action].admins_req <= admins)){
 		return true;
@@ -161,7 +156,7 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	{
 		timestamp_t t;
 		memcpy(&t, ab->ticket+32-sizeof(timestamp_t), sizeof(timestamp_t)); 
-		if(t+TICKET_TIMEOUT < gettimestamp()){
+		if(flags.anonymous && (t+TICKET_TIMEOUT < gettimestamp())){
 			/* setlock bit instead of directly returning invalid_cred 
 			 * for making it possible to use the unlock_feature */
 			 flags.locked = 1;
