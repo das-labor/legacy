@@ -5,7 +5,9 @@
 
 #ifndef __BOOL__
 #ifndef BOOL
-typedef enum{false=0, true=1} bool;
+	typedef enum{false=0, true=1} bool;
+	#define BOOL
+	#define __BOOL__
 #endif
 #endif
 

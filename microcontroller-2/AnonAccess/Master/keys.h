@@ -9,5 +9,6 @@ void load_ticketkey(uint8_t * dest);
 void load_absignkey(uint8_t * dest);
 void load_ridkey(uint8_t * dest);
 void load_nickkey(uint8_t * dest);
+void load_timestampkey(uint8_t * dest);
 
 #endif /*KEYS_H_*/

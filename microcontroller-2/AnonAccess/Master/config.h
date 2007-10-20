@@ -30,6 +30,7 @@
 #define FLMDB_OFFSET TICKETDB_SIZE
 #define FLMDB_SIZE 256
 
+#define TICKET_TIMEOUT (1000LL*60*60*24*30*3) /* timeout value in ms */ /* 90 days */
 
 #endif
 

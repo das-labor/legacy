@@ -43,7 +43,6 @@ void flmdb_process(uint8_t * searchmac, userid_t uid, userflags_t * flags){
 	for(i=0; i<= FLMDB_MAXID; ++i){
 		flmdb_loadentry(&entry, i);
 		
-		uart_putc('.');
 		if(entry.active && !memcmp(entry.hnick, searchmac, 32)){
 			ticketdb_getUserFlags(uid, flags);
 			/* apply flag modifiers */
