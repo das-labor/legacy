@@ -23,6 +23,7 @@
 #include "keys.h"
 #include "reqvalidator.h"
 #include "shabea.h"
+#include "rtc.h"
 
 /*
 #include "mcp9800.h"
@@ -69,9 +70,10 @@ void prng_init(void){
 /******************************************************************************/
  
 void main_tools_init(){
+//	sei();
     i2c_init();
     E24C_init();
-    
+    rtc_init();
     prng_init();
     ticketdb_init();
 }
@@ -93,6 +95,18 @@ void dump_dbstats(void){
 	i = ticketdb_getstatLockedAdmins();
 	uart_putstr_P(PSTR("Lockes Admins:")); uart_putbyte(i>>8); uart_putbyte(i&0xff); uart_putstr_P(PSTR("\r\n"));
 }
+
+/****************************************************
+ *  console_dumptimestamp()
+ * **************************************************/
+
+void console_dumptimestamp(void){
+	timestamp_t t;
+	t = gettimestamp();
+	uart_putstr_P(PSTR("\r\n timestamp (hex): "));
+	uart_hexdump(&t, sizeof(timestamp_t));
+}
+
 
 /****************************************************
  *  console_getnstr()
