@@ -9,8 +9,10 @@
 #include "config.h"
 #include "xcan.h"
 #include "xlap.h"
-#include "mood.h"
 #include "pwm.h"
+#include "static_scripts.h"
+//#include "mood.h"
+#include "testscript.h"
 
 //AVRX_GCC_TASK(Monitor, 20, 0);          // External Task: Debug Monitor
 
@@ -21,7 +23,7 @@ AVRX_SIGINT(SIG_OVERFLOW0)
     TCNT0 = TCNT0_INIT;			// Reload the timer counter
     AvrXTimerHandler();         // Process Timer queue
     Epilog();                   // Restore context of next running task
-};
+}
 
 int main(void) {
 	AvrXSetKernelStack(0);
@@ -35,15 +37,18 @@ int main(void) {
 
 	init_pwm();
 	xlap_init();
-	
+	init_script_threads();
+	script_threads[0].handler.execute = &memory_handler_flash;
+	script_threads[0].handler.position = (uint16_t) &colorchange_red;
+	script_threads[0].flags.disabled = 0;
     //AvrXRunTask(TCB(Monitor));
 	AvrXRunTask(TCB(laptask));
-	AvrXRunTask(TCB(mood));
 	AvrXRunTask(TCB(pwmtask));
+	//AvrXRunTask(TCB(mood));
 
     /* Needed for EEPROM access in monitor */
 	AvrXSetSemaphore(&EEPromMutex);
 
 	Epilog();                   // Switch from AvrX Stack to first task
 	while(1);
-};
+}

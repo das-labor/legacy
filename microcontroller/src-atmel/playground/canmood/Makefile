@@ -41,13 +41,13 @@ FALSE	= 0
 
 MCU = atmega8
 
-TARGET = canpolar
-CANADDR = 0x51
+TARGET = canmood
+CANADDR = 0x00
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
 
-SRC = main.c xcan.c spi.c mood.c xlap.c pwm.c 
+SRC = main.c xcan.c spi.c xlap.c pwm.c static_scripts.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
@@ -104,6 +104,7 @@ CFLAGS += -O$(OPT)
 #CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 #CFLAGS += -funsigned-bitfields -fpack-struct -fshort-enums -fnew-ra
 CFLAGS += -funsigned-bitfields -fpack-struct -fshort-enums
+#CFLAGS += -pedantic
 CFLAGS += -Wall
 CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
@@ -171,12 +172,12 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 # Type: avrdude -c ?
 # to get a full listing.
 #
-AVRDUDE_PROGRAMMER = stk500
+AVRDUDE_PROGRAMMER = avrasp
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
 #AVRDUDE_PORT = com4    # programmer connected to serial device
 #AVRDUDE_BAUD = 38400
-AVRDUDE_PORT = com1    # programmer connected to serial device
+AVRDUDE_PORT = ttyusb0    # programmer connected to serial device
 AVRDUDE_BAUD = 115200
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
@@ -410,7 +411,7 @@ clean_list :
 	$(REMOVE) $(TARGET).eep
 	$(REMOVE) $(TARGET).obj
 	$(REMOVE) $(TARGET).cof
-#	$(REMOVE) $(TARGET).elf
+	$(REMOVE) $(TARGET).elf
 	$(REMOVE) $(TARGET).map
 	$(REMOVE) $(TARGET).a90
 	$(REMOVE) $(TARGET).sym

@@ -24,11 +24,20 @@
  * For more information on the GPL, please go to:
  * http://www.gnu.org/copyleft/gpl.html
  }}} */
+#ifndef PWM_H
+#define PWM_H
+#include <avr/io.h>
+#include "avrx.h"
+#include <avrx-io.h>
 
 AVRX_EXTERNTASK(pwmtask);
 
 #define _TIMSK_TIMER1 TIMSK
 
+/* color <-> channel assignment */
+#define CHANNEL_RED     0
+#define CHANNEL_GREEN   1
+#define CHANNEL_BLUE    2
 
 #define PWM_CHANNELS 3
 
@@ -108,3 +117,4 @@ void init_timer1(void);
 void init_pwm(void);
 void update_pwm_timeslots(void);
 void update_brightness(void);
+#endif

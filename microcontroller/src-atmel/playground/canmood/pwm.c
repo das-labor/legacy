@@ -38,7 +38,7 @@
 #include "config.h"
 #include "xcan.h"
 #include "pwm.h"
-
+#include "static_scripts.h"
 
 //defines for the Portpins the LEDs are connected to.
 #define PORT_LED PORTC
@@ -362,6 +362,7 @@ AVRX_GCC_TASKDEF(pwmtask, 100, 5) {
 		if (global.flags.new_cycle) {
 			global.flags.new_cycle = 0;
 			update_brightness();
+			execute_script_threads();
 			continue;
 		}
 	}
