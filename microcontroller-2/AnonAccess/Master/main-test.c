@@ -40,6 +40,7 @@
 	"z - to set all bytes to 0xff in blockDev\r\n"\
 	"c - to learn about your terminal\r\n"\
 	"s - to test shabea implementation\r\n"  \
+	"t - to get a timestamp\r\n" \
 	"i - to init the database\r\n" \
 	"n - to add a user to datatabase (hard)\r\n" \
 	"m - to set admin flag\r\n" \
@@ -75,6 +76,7 @@ int main (void)
     			// {int i; for (i=0; i<1024; ++i){ E24C_blockdev_writeByte(i, 0xFF);}}; break;
     			case 'c': console_dbg(); break;
     			case 's': test_shabea256(); break;
+    			case 't': console_dumptimestamp(); break;
     			case 'f': ticketdb_format(TICKETDB_SIZE);/* break;*/
     			case 'i': ticketdb_init();dump_dbstats(); break;
     			case 'n': console_adduser_db(); break;
