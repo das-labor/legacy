@@ -9,38 +9,8 @@
 #include "xlap.h"
 #include "pwm.h"
 
-TimerControlBlock switchtimer2;
-uint8_t mprog = 1;
+#include "testscript.h"
 
 AVRX_GCC_TASKDEF(mood, 20, 4) {
-	uint8_t i;
-	while(1) {
-		for (i=0; i<3; i++) {
-			global_pwm.channels[i].speed = 0x00100;
-		}
-		global_pwm.channels[0].target_brightness = 255;
-		global_pwm.channels[1].target_brightness = 0;
-		global_pwm.channels[2].target_brightness = 0;
-		AvrXDelay(&switchtimer2, 10000);
-		global_pwm.channels[0].target_brightness = 255;
-		global_pwm.channels[1].target_brightness = 255;
-		global_pwm.channels[2].target_brightness = 0;
-		AvrXDelay(&switchtimer2, 10000);
-		global_pwm.channels[0].target_brightness = 0;
-		global_pwm.channels[1].target_brightness = 255;
-		global_pwm.channels[2].target_brightness = 0;
-		AvrXDelay(&switchtimer2, 10000);
-		global_pwm.channels[0].target_brightness = 0;
-		global_pwm.channels[1].target_brightness = 255;
-		global_pwm.channels[2].target_brightness = 255;
-		AvrXDelay(&switchtimer2, 10000);
-		global_pwm.channels[0].target_brightness = 0;
-		global_pwm.channels[1].target_brightness = 0;
-		global_pwm.channels[2].target_brightness = 255;
-		AvrXDelay(&switchtimer2, 10000);
-		global_pwm.channels[0].target_brightness = 255;
-		global_pwm.channels[1].target_brightness = 0;
-		global_pwm.channels[2].target_brightness = 255;
-		AvrXDelay(&switchtimer2, 10000);
-	}
+
 }

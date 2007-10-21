@@ -13,7 +13,6 @@
 #include "lap.h"
 #include "pwm.h"
 #include "string.h"
-#include "mood.h"
 
 uint8_t myaddr;
 
@@ -62,21 +61,6 @@ void process_mood_msg() {
 	}
 }
 
-void process_prog_msg() {
-	uint8_t i;
-	mprog = rx_msg.data[0];
-	if (!mprog) {
-		AvrXSuspend(PID(mood));
-		for (i = 0; i < 3; i++) {
-			global_pwm.channels[i].speed = 0x00200;
-			global_pwm.channels[i].target_brightness = 0;
-		}
-	}
-	else {
-		AvrXResume(PID(mood));
-	}
-}
-
 AVRX_GCC_TASKDEF(laptask, 55, 3) {
 	while (1) {
 		can_get();			//get next canmessage in rx_msg
@@ -87,12 +71,9 @@ AVRX_GCC_TASKDEF(laptask, 55, 3) {
 			else if (rx_msg.port_dst == PORT_MOOD) {
 				process_mood_msg();
 			}
-			else if (rx_msg.port_dst == 0x06) {
-				process_prog_msg();
-			}
 		}
 	}
-};
+}
 
 void xlap_init() {
 	myaddr = eeprom_read_byte(0x00);
