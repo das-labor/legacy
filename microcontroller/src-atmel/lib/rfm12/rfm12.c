@@ -82,6 +82,9 @@ volatile rf_rx_buffer_t rf_rx_buffer;
 #define MODE_TX 1
 uint8_t rfm12_mode;
 
+/* @description Actual sending function to send raw data to the Module
+ * @note do NOT call this function directly, unless you know what you're doing.
+ */
 
 void rfm12_data(uint16_t d){
 	SS_ASSERT();
@@ -113,7 +116,9 @@ uint16_t rfm12_read(uint16_t d)
 }
 
 
-//reads the upper 8 bits of the status register (the interrupt flags)
+/* @description reads the upper 8 bits of the status
+ * register (the interrupt flags)
+ */
 static inline uint8_t rfm12_read_int_flags_inline(){
 	SS_ASSERT();
 	SPDR = 0;
@@ -153,7 +158,9 @@ static inline uint8_t rfm12_read_fifo_inline(){
 /*
 	interrupt handler for interrupts from rfm12
 	
-	The receiver will generate an interrupt request (IT) for the microcontroller - by pulling the nIRQ pin low - on the following events:
+	The receiver will generate an interrupt request (IT) for the
+	microcontroller - by pulling the nIRQ pin low - on the following events:
+
 	• The TX register is ready to receive the next byte (RGIT)
 	• The FIFO has received the preprogrammed amount of bits (FFIT)
 	• Power-on reset (POR) *

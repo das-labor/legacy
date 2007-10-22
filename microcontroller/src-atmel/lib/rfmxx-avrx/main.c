@@ -1,16 +1,26 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
-#include <avr/eeprom.h>
+//#include <avr/eeprom.h>
 #include <stdlib.h>
 #include "rf12.h"     
 #include "config.h"
 #include "uart.h"
 
+#include "avrx.h"
 #include <util/delay.h>
 
 void send(uint8_t i);
-void receive(void);
+TimerControlBlock mytimer;
+TimerControlBlock mytimer2;
+
+AVRX_SIGINT(SIG_OVERFLOW0)
+{
+    IntProlog();                // Save interrupted context, switch stacks
+    TCNT0 = TCNT0_INIT;
+    AvrXTimerHandler();         // Process Timer queue
+    Epilog();                   // Restore context of next running task
+}
 
 
 void dump_registers (void)
@@ -35,6 +45,59 @@ void dump_registers (void)
 	rxbuf = rf12_trans(0x0000 | i);
 	printf("%i = %x\t", i, rxbuf);
 	printf("\r\n");
+	AvrXDelay(&mytimer2, 50);
+}
+
+AVRX_EXTERNTASK(rxtask);
+AVRX_EXTERNTASK(txtask);
+
+AVRX_GCC_TASKDEF (txtask, 100, 4)
+{
+	char txbuf[32] = "hallo, nakkatest.", inputchar;
+
+	while (10)
+	{
+		if (uart_getc_nb(&inputchar))
+                {
+                        switch (inputchar)
+                        {
+                                case 's':
+//                                      rxbuf = rf12_trans(0x0000);
+//                                      printf("status register: %4x\r\n", rxbuf);
+                                        dump_registers();
+                                break;
+                                case 't':
+                                        uart_putc(inputchar);
+					rf12_txdata(txbuf, strlen(txbuf));
+                                break;
+                        }
+                }
+		AvrXDelay (&mytimer2, 100);
+	}
+}
+AVRX_GCC_TASKDEF (rxtask, 100, 4)
+{
+	uint8_t moo = 0, i;
+	char tmp[16];
+	
+	rf12_init();
+	rf12_setfreq(RF12FREQ(434.0));	// Sende/Empfangsfrequenz auf 433,92MHz einstellen
+	rf12_setbandwidth(4, 1, 4);	// 200kHz Bandbreite, -6dB Verstärkung, DRSSI threshold: -79dBm 
+	rf12_setbaud(19200);		// 19200 baud
+	rf12_setpower(0, 6);		// 1mW Ausgangangsleistung, 120kHz Frequenzshift
+
+
+	while (92)
+	{
+		moo = rf12_rxarray (&tmp, 10);
+		if (moo > 0)
+		{
+			for (i=0;i<moo;i++)
+				printf("%c", tmp[i]);
+			moo = 0;
+		}
+		AvrXDelay (&mytimer, 1);
+	}
 }
 
 int main(void)
@@ -43,6 +106,16 @@ int main(void)
 	uint16_t rxbuf = 0x0000;
 	char inputchar;
 
+	AvrXSetKernelStack(0);
+
+	MCUCR = 1<<SE;                   // Enable "sleep" mode (low power when idle)
+	TCNT0 = TCNT0_INIT;              // Load overflow counter of timer0
+	TCCR0 = TMC8_CK256; // Set Timer0 to CPUCLK/256
+	TIMSK = 1<<TOIE0;                // Enable interrupt flag
+
+
+
+	AvrXSetSemaphore(&EEPromMutex);
 	inputchar = malloc(sizeof(char));
 
 	DDRC = 0xff;
@@ -52,64 +125,26 @@ int main(void)
 
 	uart_init();
 	fdevopen(uart_putc, 0);
+	uart_putstr("\r\n");
 	uart_putstr("Hallo\r\n");
+//	_delay_ms(19);
 
-	rf12_init();					// ein paar Register setzen (z.B. CLK auf 10MHz)
-	rf12_setfreq(RF12FREQ(434.0));	// Sende/Empfangsfrequenz auf 433,92MHz einstellen
-	rf12_setbandwidth(4, 1, 4);	// 200kHz Bandbreite, -6dB Verstärkung, DRSSI threshold: -79dBm 
-	rf12_setbaud(19200);			// 19200 baud
-	rf12_setpower(0, 6);			// 1mW Ausgangangsleistung, 120kHz Frequenzshift
 	PORTC = 0xff;
+
+	AvrXRunTask(TCB(rxtask));
+	AvrXRunTask(TCB(txtask));
+	Epilog();
 
 	for (;;)
 	{
-		//receive();
-		if (uart_getc_nb(&inputchar))
-		{
-			switch (inputchar)
-			{
-				case 's':
-//					rxbuf = rf12_trans(0x0000);
-//					printf("status register: %4x\r\n", rxbuf);
-					dump_registers();
-				break;
-				case 't':
-					uart_putc(inputchar);
-					send(inputchar);
-				break;
-				case 'r':
-					printf("receive()\r\n");
-				break;
-			}
-		}
-					receive();
-//		rxbuf = rf12_trans(0xCA83);
-	
-	}
-}
-
-void receive(void)
-{
-	uint16_t moo = 0x00;
-	char tmp[16];
-//	moo = rf12_rxdata();
-	moo = rf12_rxdata_nb(0x4000);
-//	rf12_rxarray(&tmp);
-	if (moo > 0xff)
-	{
-		printf ("char: %2x\r\n", (moo & 0x00ff));
-//		printf ("array: %s\r\n", tmp);
-//		printf("status register: %x\r\n", rf12_trans(0x0000));
-//		PORTC = (uint8_t) (moo & 0x00ff);
 	}
 }
 
 void send(uint8_t i)
 {
-	char test[] = "hallo nakkatest\r\n";
+	uint8_t test[8] = { 'n', 'a', 'k', 'k', 'a', '\r', '\n' };
 //	PORTC = i;
 //	rf12_txdata(i,1);
-	rf12_txarray(test, strlen(test));
-	rf12_txdata (i);
+//	rf12_txdata (i);
 }
 
