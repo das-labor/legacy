@@ -1,7 +1,7 @@
 PRG	    = anonaccess-test
 OBJ	    = main-test.o main_test_tools.o uart.o debug.o 24CBlockDev.o 24Cxxx.o \
   i2c.o i2c_tools.o prng.o sha256-asm.o hmac-sha256.o reqvalidator.o \
-  action.o keys.o shabea.o ticketDB.o flmDB.o fairrnd.o rtc.o
+  action.o keys.o shabea.o ticketDB.o flmDB.o fairrnd.o rtc.o encE24C.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os -mno-tablejump
 DEBUG	   = -gstabs
@@ -15,7 +15,7 @@ CC	     = avr-gcc
 # Override is only needed by avr-lib build system.
 
 override LDFLAGS       = -Wl,-Map,$(PRG).map
-override CFLAGS        = -g -pedantic -std=gnu99 -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -morder1
+override CFLAGS        = -g -pedantic -std=gnu99 -Wall -Wstrict-prototypes $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -morder1
 # -fnew-ra
 override LDFLAGS       = -Wl,-Map,$(PRG).map
 override ASFLAGS	   = -mmcu=$(MCU_TARGET)
@@ -25,7 +25,8 @@ OBJDUMP	= avr-objdump
 
 
 ERASECMD       = 
-FLASHCMD       = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB0 -c avr911 -U flash:w:$(PRG).hex  -U eeprom:w:$(PRG)_eeprom.hex
+#FLASHCMD       = avrdude -p $(MCU_TARGET) -c usbasp -U flash:w:$(PRG).hex  -U eeprom:w:$(PRG)_eeprom.hex
+FLASHCMD       = avrdude -p $(MCU_TARGET)  -P /dev/ttyUSB0 -c avr911 -U flash:w:$(PRG).hex  -U eeprom:w:$(PRG)_eeprom.hex
 EEPROM_FLASHCMD = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB0 -c avr911 -U eeprom:w:$(PRG)_eeprom.hex
 
 
