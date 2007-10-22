@@ -4,34 +4,34 @@
 
 #include "rf12.h"
 #include "config.h"
+#include "uart.h"
 
 #ifdef RF_USE_AVRX
-	#include <avrx.h>
-	#include <avrx-io.h>
-	#include <avrx-signal.h>
+	#include "avrx.h"
 #endif
 
+TimerControlBlock rftimer;
 uint16_t rf12_trans (uint16_t wert)
 {
 	unsigned short werti=0;
 	unsigned char i;
 
-	cbi(RF_PORT, CS);
+	rf_cbi(RF_PORT, CS);
 	for (i=0; i<16; i++)
 	{
 		if (wert&32768)
-			sbi(RF_PORT, SDI);
+			rf_sbi(RF_PORT, SDI);
 		else
-			cbi(RF_PORT, SDI);
+			rf_cbi(RF_PORT, SDI);
 		werti<<=1;
 		if (RF_PIN&(1<<SDO))
 			werti|=1;
-		sbi(RF_PORT, SCK);
+		rf_sbi(RF_PORT, SCK);
 		wert<<=1;
 		_delay_us(0.3);
-		cbi(RF_PORT, SCK);
+		rf_cbi(RF_PORT, SCK);
 	}
-	sbi(RF_PORT, CS);
+	rf_sbi(RF_PORT, CS);
 	return werti;
 }
 
@@ -41,11 +41,13 @@ void rf12_init (void)
 	RF_DDR=(1<<SDI)|(1<<SCK)|(1<<CS);
 	RF_PORT=(1<<CS);
 	
+	printf("INIT  %i\r\n", __LINE__);
 	#ifdef RF_USE_AVRX
 		AvrXDelay (&rftimer, 100);
 	#else
 		_delay_ms(100);
 	#endif
+	printf("INIT  %i\r\n", __LINE__);
 
 	rf12_trans(0xC0E0);			// AVR CLK: 10MHz
 	rf12_trans(0x80D7);			// Enable FIFO
@@ -88,7 +90,13 @@ void rf12_setpower(unsigned char power, unsigned char mod)
  */
 void rf12_ready(void)
 {
+	uint8_t i;
 	cbi(RF_PORT, CS);
+	cbi(RF_PORT, SDI);
+
+	for (i=0;i<32;i++)
+		asm volatile ("nop");
+
 	while (!(RF_PIN&(1<<SDO)))
 	{
 		#ifdef RF_USE_AVRX
@@ -105,7 +113,7 @@ void rf12_ready(void)
 uint8_t rf12_ready_timeout (uint8_t in_waitms)
 {
 	uint8_t i = 0;
-	cbi(RF_PORT, CS);
+	rf_cbi(RF_PORT, CS);
 	while (!(RF_PIN&(1<<SDO)) && i < in_waitms)
 	{
 		#ifdef RF_USE_AVRX
@@ -119,9 +127,9 @@ uint8_t rf12_ready_timeout (uint8_t in_waitms)
 	return 0;
 }
 
-void rf12_txdata(uint8_t data)
+void rf12_txdata(uint8_t *data, uint8_t in_num)
 {	
-	unsigned char i;
+	uint8_t i;
 
 	rf12_trans(0x8238);			// TX on
 	rf12_ready();
@@ -136,7 +144,11 @@ void rf12_txdata(uint8_t data)
 	rf12_trans(0xB8D4);
 	
 	rf12_ready();
-	rf12_trans(0xB800|(data));
+	for (i=0;i<in_num;i++)
+	{
+		rf12_trans(0xB800| *(data + i) );
+	}
+	rf12_trans(0xB8AA);
 	PORTC ^= (_BV(PC0));
 	
 	rf12_ready();
@@ -150,7 +162,6 @@ uint8_t rf12_rxbyte()
 	rf12_trans(0xCA81);			// set FIFO mode
 	rf12_trans(0xCA83);			// enable FIFO
 	rf12_ready();
-	rf12_trans(0x0000);
 	i = (rf12_trans(0xB000)); 
 	rf12_trans(0x8208);			// RX off
 	return i;
@@ -170,9 +181,9 @@ uint8_t rf12_rxarray ( uint8_t *target, uint8_t maxlen )
 	for (i=0;i<maxlen && timeoutcount == 0;i++)
 	{
 		timeoutcount = rf12_ready_timeout (RF_RXTIMEOUT);
-		rf12_trans(0x0000);
-		timeoutcount = rf12_ready_timeout (RF_RXTIMEOUT);
-		*(target + i) = (uint8_t) ((rf12_trans(0xB000)) & 0x00ff);
+		if (!timeoutcount)
+		printf("received: %2x \r\n", ((rf12_trans(0xB000)) & 0x00ff));
+//		*(target + i) = (uint8_t) ((rf12_trans(0xB000)) & 0x00ff);
 	}
 
 	rf12_trans(0x8208);			// RX off
