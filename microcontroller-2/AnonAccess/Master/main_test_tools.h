@@ -52,7 +52,7 @@ void console_dumptimestamp(void);
 void test_shabea256(void);
 uint8_t getbadrandom(void);
 void prng_init(void);
-void main_tools_init();
+void main_tools_init(void);
 void dump_dbstats(void);
 void console_getnstr(uint16_t n, char* dest);
 uint8_t charhex2value(char c);
@@ -64,19 +64,20 @@ void console_adduser_db(void);
 void console_getauthblock(authblock_t *ab);
 void console_dumpauthblock(authblock_t *ab);
 uint8_t console_getauthcredentials(authblock_t **ab);
-void console_dbg();
+void console_dbg(void);
 void uart_putbyte(uint8_t b);
 void i2c_detect(i2c_detect_t table);
 void eeprom_dump_byte(i2c_addr_t dev, uint16_t start, uint16_t length);
 void eeprom_dump_page(i2c_addr_t dev, uint16_t start, uint16_t length);
 void eeprom_set_byte(i2c_addr_t dev, uint16_t start, uint16_t length);
 void eeprom_set_page(i2c_addr_t dev, uint16_t start, uint16_t length);
+void crypto_eeprom_dump(uint32_t start, uint16_t length);
 void getnames(void ** data);
 void getuid(void ** data);
-void console_toggleadmin();
+void console_toggleadmin(void);
 void console_lasim(void);
-void console_setadmin();
-void console_clearadmin();
+void console_setadmin(void);
+void console_clearadmin(void);
 
 
 #endif /*MAIN_TOOLS_H_*/

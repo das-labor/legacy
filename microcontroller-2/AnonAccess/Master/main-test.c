@@ -18,6 +18,8 @@
 #include "ticketDB.h"
 #include "flmDB.h"
 #include "prng.h"
+#include "encE24C.h"
+#include "keys.h"
 #include "main_test_tools.h"
 
 
@@ -64,6 +66,11 @@ int main (void)
     /*******************/
     i2c_set_speed(I2C_SPEED_100);
 	/******************/
+	uint8_t essiv_key[32];
+	uint8_t crypt_key[32];
+
+	load_eeprom_essiv_key(essiv_key);
+	load_eeprom_crypt_key(crypt_key);
 
     uart_putstr_P(PSTR(HELP_STR));
     while(1){
@@ -72,6 +79,7 @@ int main (void)
     			case 'a': i2c_detect(dev_table); break;
     			case 'd': eeprom_dump_page(0xA0, 0, 512); break;
     			case 'l': eeprom_dump_page(0xA0, 0,2048); break;
+    			case 'r': crypto_eeprom_dump(0, 512); break;
     			case 'z': E24C_blockdev_setBlock(0,0x00, 1024); break;
     			// {int i; for (i=0; i<1024; ++i){ E24C_blockdev_writeByte(i, 0xFF);}}; break;
     			case 'c': console_dbg(); break;
@@ -93,6 +101,42 @@ int main (void)
     			case '4': E24C_blockdev_setBlock(14,'4',114); break;
     			case '5': E24C_blockdev_setBlock(0,'#',128LL*1024); break;
     		*/	
+    			case '1': crypto_set_block(0, 0, 2342, essiv_key, crypt_key); break; 
+    			case '2': crypto_set_block(0, 0, 100, essiv_key, crypt_key); break; 
+    			case '3': { uint8_t nb[128];
+    						memset(nb, 0, 128); 
+    						encrypt_E24Cblock(nb, 0, essiv_key, crypt_key);} break;
+    			case '4': { uint8_t nb[128];
+    						uint8_t db[128];
+    						memset(nb, 0, 128); 
+    						decrypt_E24Cblock(db, 0, essiv_key, crypt_key);
+    						uart_hexdump(db, 128);
+    						if(memcmp(db, nb, 128)){
+    							uart_putstr_P(PSTR("\r\ndecrypt failed"));
+    						}else{
+    							uart_putstr_P(PSTR("\r\ndecrypt successfull"));
+    						}
+    					} break;
+    			case '5': { uint8_t nb[128];
+    						uint8_t db[128];
+    						memset(nb, 0, 128); 
+    						crypto_read_block(db, 0, 128, essiv_key, crypt_key);
+    						uart_hexdump(db, 128);
+    						if(memcmp(db, nb, 128)){
+    							uart_putstr_P(PSTR("\r\ndecrypt failed"));
+    						}else{
+    							uart_putstr_P(PSTR("\r\ndecrypt successfull"));
+    						}
+    					} break;					 
+    			
+    			case '6': { uint8_t nb[128];
+    						uint8_t i;
+    						for(i=0; i<128; ++i){
+    							nb[i]=i;
+    						} 
+    						encrypt_E24Cblock(nb, 0, essiv_key, crypt_key);
+    					} break;
+    					
     			default: uart_putstr_P(PSTR(HELP_STR)); break;
     		}	
     		uart_putstr_P(PSTR("\r\ndone\r\n"));

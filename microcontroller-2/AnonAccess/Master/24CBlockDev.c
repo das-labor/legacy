@@ -1,7 +1,7 @@
 /*
  * Author:	Daniel Otte
  * Date:		06.06.2006
- * License:	GPL
+ * License:	GPLv3
  * 
  **/
 

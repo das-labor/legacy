@@ -24,6 +24,7 @@
 #include "reqvalidator.h"
 #include "shabea.h"
 #include "rtc.h"
+#include "encE24C.h"
 
 /*
 #include "mcp9800.h"
@@ -450,6 +451,56 @@ void eeprom_dump_page(i2c_addr_t dev, uint16_t start, uint16_t length){
 
 
 /****************************************************
+ *  crypto_eeprom_dump()
+ * **************************************************/
+void crypto_eeprom_dump(uint32_t start, uint16_t length){
+	uint16_t i=0;
+	uint8_t buffer[ROW_SIZE];
+    uint8_t j=0;
+    uint8_t crypt_key[32], essiv_key[32];
+    
+    load_eeprom_crypt_key(crypt_key);
+    load_eeprom_essiv_key(essiv_key);
+	uart_putstr_P(PSTR("EEPROM-Dump (Crypto-Mode):\r\n")); 
+	for (i=start; i<(start+length-ROW_SIZE); i+=ROW_SIZE){
+		crypto_read_block(buffer, i, ROW_SIZE, essiv_key, crypt_key);
+		uart_putstr("0x");
+		uart_putbyte(HIGH(i));
+		uart_putbyte(LOW(i));
+		uart_putstr(":");
+		for (j=0; j<ROW_SIZE; ++j){
+			uart_putc(' ');
+			uart_putbyte(buffer[j]);
+		}
+		uart_putc('\t');
+		for (j=0; j<ROW_SIZE; ++j){
+			uart_putc((buffer[j]<32)?'.':buffer[j]);
+		}
+        uart_putstr_P(PSTR("\r\n"));  
+	}
+	crypto_read_block(buffer, i, (start+length-i),essiv_key, crypt_key);
+	uart_putstr_P(PSTR("0x"));
+	uart_putbyte(HIGH(i));
+	uart_putbyte(LOW(i));
+	uart_putc(':');
+	for (j=0; j<ROW_SIZE; ++j){
+		uart_putc(' ');
+		if (j<(start+length-i)){
+			uart_putbyte(buffer[j]);
+		} else {
+			uart_putc(' ');
+			uart_putc(' ');
+		} 
+	}
+	uart_putc('\t');
+	for (j=0; j<start+length-i; ++j){
+		uart_putc((buffer[j]<32)?'.':buffer[j]);
+	}
+    uart_putstr_P(PSTR("\r\n"));  
+	
+}
+
+/****************************************************
  *  eeprom_set_byte()
  * **************************************************/
 void eeprom_set_byte(i2c_addr_t dev, uint16_t start, uint16_t length){
@@ -488,6 +539,8 @@ void eeprom_set_page(i2c_addr_t dev, uint16_t start, uint16_t length){
     }
 }
 
+
+
 /******************************************************************************/
 void getnames(void ** data){
 	*data = malloc(2*sizeof(void*));
@@ -508,7 +561,7 @@ void getuid(void ** data){
 }
 
 
-void console_setadmin(){
+void console_setadmin(void){
 	userflags_t sf,cf;
 	char * nick;
 	
@@ -522,7 +575,7 @@ void console_setadmin(){
 	uart_putstr_P(PSTR("\r\n now admin flag is set"));
 }
 
-void console_clearadmin(){
+void console_clearadmin(void){
 	userflags_t sf,cf;
 	char * nick;
 	uint8_t key[32];
@@ -539,22 +592,6 @@ void console_clearadmin(){
 	flmdb_makeentry(hmac, sf, cf);
 	
 	uart_putstr_P(PSTR("\r\n now admin flag is cleared"));
-}
-
-void console_toggleadmin_uid(){
-	uid_t *uid;
-	userflags_t flags;
-	
-	getuid((void**)&uid); /* this makes ugly warning, maybe we should change s.th. here */
-	ticketdb_getUserFlags(*uid, &flags);
-	flags.admin ^= 1;
-	uart_hexdump((char*)uid, 2);
-	uart_putstr_P(PSTR("\r\n now admin flag is "));
-	if(!flags.admin)
-		 uart_putstr_P(PSTR("not "));
-	uart_putstr_P(PSTR("set"));
-	ticketdb_setUserFlags(*uid, &flags);
-	free(uid);
 }
 
 /****************************************************
