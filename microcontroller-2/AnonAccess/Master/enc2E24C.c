@@ -116,8 +116,8 @@ void crypto_set_block(uint8_t value, blockdev_ptr_t addr, uint16_t length,
 	encrypt_E24Cblock(page, addr&~(BLOCKSIZE-1), crypt_key);
 	length -= rl;
 	addr += BLOCKSIZE; /* now addr addressesn blocks */
-	memset(page, value, BLOCKSIZE);
-	while(length>=BLOCKSIZE){
+	while(length>BLOCKSIZE){
+		memset(page, value, BLOCKSIZE);
 		encrypt_E24Cblock(page, addr, crypt_key);
 		addr += BLOCKSIZE;
 		rl = (length>BLOCKSIZE)?BLOCKSIZE:length;
@@ -145,7 +145,7 @@ void crypto_write_block(void *dest, blockdev_ptr_t addr, uint16_t length,
 	length -= rl;
 	dest = (uint8_t*)dest +rl;
 	addr += BLOCKSIZE; /* now addr addressesn blocks */
-	while(length>=BLOCKSIZE){
+	while(length>BLOCKSIZE){
 		memcpy(page, dest, BLOCKSIZE);
 		dest = (uint8_t*)dest+BLOCKSIZE;
 		encrypt_E24Cblock(page, addr, crypt_key);
