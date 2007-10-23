@@ -58,7 +58,6 @@ void memxor(void * dest, void * src, uint8_t length);
 void encrypt_E24Cblock(void *dest, blockaddr_t blockaddr, uint8_t * essiv_key, uint8_t * crypt_key){
 	uint8_t essiv[32];
 	uint8_t i;
-	uart_putc('.');
 	hmac_sha256(essiv, essiv_key, ESSIVKEY_SIZE, &blockaddr, 8*sizeof(blockaddr_t));
 	memxor(dest, essiv, 32);
 	memset(essiv, 0, 32); /* kill essiv for security */
@@ -76,12 +75,6 @@ void encrypt_E24Cblock(void *dest, blockaddr_t blockaddr, uint8_t * essiv_key, u
 void decrypt_E24Cblock(void *dest, blockaddr_t blockaddr, uint8_t * essiv_key, uint8_t * crypt_key){
 	uint8_t essiv[32];
 	uint8_t i;
-/*
-	uart_putstr_P(PSTR("\r\ndec_block: dest="));
-		uart_hexdump(&dest, 2);
-		uart_putstr_P(PSTR(" blockaddr="));
-		uart_hexdump(&blockaddr, 2);
-*/		
 	E24C_block_read(getDevAddr(blockaddr * BLOCKSIZE), (blockaddr*BLOCKSIZE)&0xFFFF, (uint8_t*)dest, BLOCKSIZE);	
 	dest = (uint8_t*)dest + BLOCKSIZE;
 	for(i=0; i<BLOCKSIZE/32-1; ++i){
@@ -107,26 +100,12 @@ void crypto_read_block(void * dest, blockdev_ptr_t addr, uint16_t length,
 	if(rl>length){
 		rl=length;
 	}
-/*	uart_putstr_P(PSTR("\r\n DEBUG addr="));
-	uart_hexdump(&addr, 4);
-	uart_putstr_P(PSTR("\r\n DEBUG rl="));
-	uart_hexdump(&rl, 1);
-	uart_putstr_P(PSTR("\r\n DEBUG page:\r\n"));
-		uart_hexdump(page +  0, 16); uart_putstr_P(PSTR("\r\n"));
-		uart_hexdump(page + 16, 16); uart_putstr_P(PSTR("\r\n"));
-		uart_hexdump(page + 32, 16); uart_putstr_P(PSTR("\r\n"));
-		uart_hexdump(page + 48, 16); uart_putstr_P(PSTR("\r\n"));
-		uart_hexdump(page + 64, 16); uart_putstr_P(PSTR("\r\n"));
-		uart_hexdump(page + 80, 16); uart_putstr_P(PSTR("\r\n"));
-		uart_hexdump(page + 96, 16); uart_putstr_P(PSTR("\r\n"));
-		uart_hexdump(page +112, 16); uart_putstr_P(PSTR("\r\n"));
-*/
+
 	memcpy(dest, page+(addr&(BLOCKSIZE-1)), rl);
 	dest = (uint8_t*)dest + rl;
 	length -= rl;
 	addr = addr/BLOCKSIZE +1; /* now addr addresses blocks */
 	while(length){
-//		uart_putc('x');
 		decrypt_E24Cblock(page, addr++, essiv_key, crypt_key);
 		rl = (length>128)?128:length;
 		memcpy(dest, page, rl);
@@ -150,8 +129,8 @@ void crypto_set_block(uint8_t value, blockdev_ptr_t addr, uint16_t length,
 	encrypt_E24Cblock(page, addr/BLOCKSIZE, essiv_key, crypt_key);
 	length -= rl;
 	addr = addr/BLOCKSIZE +1; /* now addr addressesn blocks */
-	memset(page, value, BLOCKSIZE);
 	while(length>=BLOCKSIZE){
+		memset(page, value, BLOCKSIZE);
 		encrypt_E24Cblock(page, addr++, essiv_key, crypt_key);
 		rl = (length>128)?128:length;
 		length -= rl;
