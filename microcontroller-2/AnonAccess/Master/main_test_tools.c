@@ -24,7 +24,7 @@
 #include "reqvalidator.h"
 #include "shabea.h"
 #include "rtc.h"
-#include "encE24C.h"
+#include "enc2E24C.h"
 
 /*
 #include "mcp9800.h"
@@ -457,13 +457,12 @@ void crypto_eeprom_dump(uint32_t start, uint16_t length){
 	uint16_t i=0;
 	uint8_t buffer[ROW_SIZE];
     uint8_t j=0;
-    uint8_t crypt_key[32], essiv_key[32];
+    uint8_t crypt_key[32];
     
     load_eeprom_crypt_key(crypt_key);
-    load_eeprom_essiv_key(essiv_key);
-	uart_putstr_P(PSTR("EEPROM-Dump (Crypto-Mode):\r\n")); 
+    uart_putstr_P(PSTR("EEPROM-Dump (Crypto-Mode):\r\n")); 
 	for (i=start; i<(start+length-ROW_SIZE); i+=ROW_SIZE){
-		crypto_read_block(buffer, i, ROW_SIZE, essiv_key, crypt_key);
+		crypto_read_block(buffer, i, ROW_SIZE, crypt_key);
 		uart_putstr("0x");
 		uart_putbyte(HIGH(i));
 		uart_putbyte(LOW(i));
@@ -478,7 +477,7 @@ void crypto_eeprom_dump(uint32_t start, uint16_t length){
 		}
         uart_putstr_P(PSTR("\r\n"));  
 	}
-	crypto_read_block(buffer, i, (start+length-i),essiv_key, crypt_key);
+	crypto_read_block(buffer, i, (start+length-i), crypt_key);
 	uart_putstr_P(PSTR("0x"));
 	uart_putbyte(HIGH(i));
 	uart_putbyte(LOW(i));
