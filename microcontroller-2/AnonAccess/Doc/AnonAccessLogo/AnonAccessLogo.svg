@@ -14,8 +14,8 @@
    sodipodi:version="0.32"
    inkscape:version="0.45.1"
    version="1.0"
-   sodipodi:docbase="/home/anzgar"
-   sodipodi:docname="AnonAccessLogo1.svg"
+   sodipodi:docbase="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo"
+   sodipodi:docname="AnonAccessLogo.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="/home/anzgar/AnonAccessLogobeta4.png"
    inkscape:export-xdpi="90"
@@ -29,16 +29,16 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.8948649"
      inkscape:cx="200.17635"
-     inkscape:cy="109.95385"
+     inkscape:cy="95.60855"
      inkscape:document-units="px"
      inkscape:current-layer="layer9"
      showgrid="true"
      width="1052.3622px"
      height="744.09448px"
-     inkscape:window-width="1280"
-     inkscape:window-height="725"
+     inkscape:window-width="1022"
+     inkscape:window-height="580"
      inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:window-y="0"
      showguides="true"
      inkscape:guide-bbox="true" />
   <defs
@@ -74,13 +74,14 @@
     <rect
        style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:8;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
        id="rect9236"
-       width="295.66144"
-       height="183.33858"
-       x="4"
-       y="556.75592"
+       width="296.18918"
+       height="183.86633"
+       x="3.4722579"
+       y="556.22815"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"
-       inkscape:export-filename="/home/anzgar/AnonAccessLogo.png" />
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/AnonAccessLogo.png"
+       ry="24.276138" />
   </g>
   <g
      inkscape:groupmode="layer"
