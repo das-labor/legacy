@@ -20,12 +20,12 @@
 #                                                                                     #
 # Needed libraries:                                                                   #
 # - from ruby standard lib:                                                           #
-# 	- optparse                                                                        #
-# 	- ftools                                                                          #
+#   - optparse                                                                        #
+#   - ftools                                                                          #
 # - REXML                                                                             #
 # - gems:                                                                             #
-# 	- simplehttp                                                                      #
-# 	                                                                                  #
+#   - simplehttp                                                                      #
+#                                                                                     #
 # #####################################################################################
 
 ## CONFIG: edit the following 3 setting according to your needs
