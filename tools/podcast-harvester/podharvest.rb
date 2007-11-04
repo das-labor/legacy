@@ -168,6 +168,9 @@ def parse_args()		# shiny new command line switches parser
 		opts.on("-r", "--refresh",	"Refresh all podcasts, you subscribed to, independent of existing files") do |s|
 			@options[:refresh] = 1
 		end
+		opts.on("-k", "--keep",	"Do not delete outdated podcasts or any other file in your podcast directory") do |s|
+			@options[:keep] = 1
+		end
 		opts.on("-h", "--help", "This help" ) do
 		    puts opts
 		    exit
@@ -188,7 +191,12 @@ def main
 #			puts file_url
 			get_latest_file(file_url)
 		}
+	end
+
+	if !(@options[:keep]==1)
 		delete_old()
+	else
+		printf "\n\nClean-Up disabled, keeping even all the outdated podcasts.\n"
 	end
 
 	if @options[:sync]==1 then
