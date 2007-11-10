@@ -64,11 +64,12 @@ void draw_level(uint8_t num){
 }
     int8_t pathleft[8];
     int8_t pathright[8];
+    int8_t crash;
     
 void do_path(int16_t pos0, int16_t pos1) {
     static int16_t scount=0, toncount=0;
     static int8_t posl=3, posr=5;
-    int i;
+    int i,j;
     
     i = ((pos1+4*1024)/256);
     if(i<0) i=0;
@@ -98,7 +99,7 @@ void do_path(int16_t pos0, int16_t pos1) {
         }
         
         // draw next line
-        if(rand()>0x2000) {
+        if(rand()>0x6000) {
             if(rand()>0x3fff) {
                 posl++;
                 if(posl>9) posl=9;
@@ -108,7 +109,7 @@ void do_path(int16_t pos0, int16_t pos1) {
             }
         }
         
-        if(rand()>0x2000) {
+        if(rand()>0x6000) {
             if(rand()>0x3fff) {
                 posr++;
                 if(posr>9) posr=9;
@@ -141,8 +142,24 @@ void do_path(int16_t pos0, int16_t pos1) {
         
         // draw field
         for(i=0;i<8;i++) {
-            setpix(pathleft[i],i,1);
-            setpix(pathright[i],i,1);
+            for(j=0;j<=9;j++) setpix(j,i,0); 
+            if(crash) {
+                for(j=0;j<=pathleft[i];j++) {
+                    setpix(j,i,2);
+                }    
+                for(j=pathright[i];j<=9;j++) {
+                    setpix(j,i,2);
+                }    
+            } else {
+                for(j=0;j<=pathleft[i];j++) {
+                    setpix(j,i,1);
+                }    
+                for(j=pathright[i];j<=9;j++) {
+                    setpix(j,i,1);
+                }            
+            }
+            
+            
         }
         
         
@@ -154,7 +171,7 @@ int main (void){
 
 	int8_t gd[2];
 	int16_t speed0 = 0, speed1=0;
-	int16_t pos0 = 0, pos1 = 0, posi0, posi1;
+	int16_t pos0 = 0, pos1 = 0, posi0, posi1, posrl;
     int8_t i;
     
     DDRB |= (1<<1) | (2<<1);
@@ -163,6 +180,7 @@ int main (void){
 	
 	clear_screen(0);
 	borg_hw_init();
+    wait(100);
 	g_init();
 	sei();	
 	
@@ -228,24 +246,38 @@ int main (void){
 		
 	//	pos0 = 0; pos1 = 0;
         
-		posi0 = pos0/1024; posi1 = pos1/1024;
-		posi0 += 5; posi1 += 4;
+		posi0 = pos0/1024; 
+        posi1 = pos1/1024;
+        
+        if(pos0/1024 >=5 ) {
+        //    if((pos0/1024) > 6) posi0++;
+        } else {
+        //    if((pos0/1024) < 3) posi0--;
+        }
+        
+		posi0 += 5; 
+        posi1 += 4;
 		
 		if(posi0 < 0) posi0 = 0; if(posi0 > 9) posi0 = 9;
 		if(posi1 < 0) posi1 = 0; if(posi1 > 7) posi1 = 7;	
         
-        posi1=1;
-		mypix = (pixel){posi0, posi1};
-        
         // crash?
         if(((posi0)==(int16_t)pathleft[1]) || ((posi0)==(int16_t)pathright[1])) {
             // beep
-            for(i=0;i<10;i++) {
-                PORTB ^= (1<<1) | (1<<2);
-                wait(1);
-            }
-            
+        //    for(i=0;i<10;i++) {
+        //        PORTB ^= (1<<1) | (1<<2);
+        //        wait(1);
+        //    }
+            if((posi0)==(int16_t)pathleft[1]) posi0++;
+            if((posi0)==(int16_t)pathright[1]) posi0--;
+            crash = 1;
+        } else {
+            crash = 0;
         }
+        
+        posi1=1;
+		mypix = (pixel){posi0, posi1};
+        
 		
 	//	if((mypix.x != oldpix.x) || (mypix.y != oldpix.y) ){
 			setpixel(oldpix,0);
