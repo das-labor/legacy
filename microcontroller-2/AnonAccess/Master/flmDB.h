@@ -24,5 +24,5 @@ void flmdb_loadentry(flmdb_entry_t * entry, entryid_t id);
 void flmdb_setentry(flmdb_entry_t * entry, entryid_t id);
 void flmdb_process(uint8_t * searchmac, userid_t uid, userflags_t * flags);
 void flmdb_makeentry(uint8_t * mac, userflags_t setflags, userflags_t clearflags);
-
+void flmdb_format(void);
 #endif /*FLMDB_H_*/

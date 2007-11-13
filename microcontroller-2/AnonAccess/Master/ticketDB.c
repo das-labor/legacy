@@ -6,13 +6,24 @@
 #include "config.h"
 #include "debug.h"
 
-
+#define TICKETDB_OFFSET 0
 
 #define MAJ_VERSION	0
 #define MIN_VERSION 1
 
 #define DB_IDSTRING {'A', 'n', 'o', 'n', 'A', 'c','c', 'e', 's', 's' }
 
+/*
+#define READ_BLOCK(a, d, s)  E24C_blockdev_readBlock((a),(d),(s))
+#define WRITE_BLOCK(a, d, s) E24C_blockdev_writeBlock((a),(d),(s))
+#define SET_BLOCK(a,v,s)     E24C_blockdev_setBlock((a),(v),(s))
+*/
+#include "keys.h"
+#include "enc2E24C.h"
+
+#define READ_BLOCK(a, d, s)  crypto_read_block((d),(a),(s), eeprom_key)
+#define WRITE_BLOCK(a, d, s) crypto_write_block((d),(a),(s), eeprom_key)
+#define SET_BLOCK(a,v,s)     crypto_set_block((v),(a),(s), eeprom_key)
 
 /******************************************************************************/
 uint16_t dbheadersize;
@@ -20,7 +31,7 @@ stats_t  dbstats;
 /******************************************************************************/
 
 void ticketdb_syncstats(void){
-	E24C_blockdev_writeBlock(DBSTAT_OFFSET ,&dbstats,sizeof(dbstats));
+	WRITE_BLOCK(TICKETDB_OFFSET + DBSTAT_OFFSET ,&dbstats,sizeof(dbstats));
 }
 
 /******************************************************************************/
@@ -75,7 +86,7 @@ bool ticketdb_userexists(userid_t id){
 uint8_t ticketdb_getUserTicketMac(userid_t id, ticketmac_t* dest){
 	if (id>=dbstats.max_users)
 		return DB_ERROR_NOSUCHUSER;;
-	E24C_blockdev_readBlock(dbheadersize + id*sizeof(userentry_t)
+	READ_BLOCK(TICKETDB_OFFSET + dbheadersize + id*sizeof(userentry_t)
 	                        +DB_TICKETMAC_OFFSET, dest, 32);
 	return DB_ERROR_OK;
 }
@@ -85,9 +96,14 @@ uint8_t ticketdb_getUserTicketMac(userid_t id, ticketmac_t* dest){
 uint8_t ticketdb_getUserFlags(userid_t id, userflags_t* dest){
 	if (id>=dbstats.max_users)
 		return DB_ERROR_NOSUCHUSER;
-	*((uint8_t*)dest) = E24C_blockdev_readByte(dbheadersize
-	                                           +id*sizeof(userentry_t)
-	                                           +DB_FLAGS_OFFSET);
+	uint32_t addr	= TICKETDB_OFFSET + dbheadersize +id*sizeof(userentry_t)
+	           +DB_FLAGS_OFFSET;
+	           
+	READ_BLOCK(addr, dest, 1);
+	uart_putstr_P(PSTR("\r\nread userflags: "));
+	uart_hexdump(&addr, 4);
+	uart_putstr_P(PSTR(" @ "));
+	uart_hexdump(dest, 1);
 	return DB_ERROR_OK;
 }
 
@@ -96,7 +112,7 @@ uint8_t ticketdb_getUserFlags(userid_t id, userflags_t* dest){
 uint8_t ticketdb_setUserTicketMac(userid_t id, ticketmac_t* src){
 	if (id>=dbstats.max_users)
 		return DB_ERROR_NOSUCHUSER;
-	E24C_blockdev_writeBlock(dbheadersize + id*sizeof(userentry_t)
+	WRITE_BLOCK(TICKETDB_OFFSET + dbheadersize + id*sizeof(userentry_t)
 	                         +DB_TICKETMAC_OFFSET, src, 32);
 	return DB_ERROR_OK;
 }
@@ -107,7 +123,7 @@ uint8_t ticketdb_setUserTicketMac(userid_t id, ticketmac_t* src){
 uint8_t ticketdb_getUserNickname(userid_t id, char* dest){
 	if (id>=dbstats.max_users)
 		return DB_ERROR_NOSUCHUSER;;
-	E24C_blockdev_readBlock(dbheadersize + id*sizeof(userentry_t)
+	READ_BLOCK(TICKETDB_OFFSET + dbheadersize + id*sizeof(userentry_t)
 	                        +DB_NICKNAME_OFFSET, dest, 7);
 	dest[7] = '\0';
 	return DB_ERROR_OK;
@@ -117,7 +133,7 @@ uint8_t ticketdb_getUserNickname(userid_t id, char* dest){
 uint8_t ticketdb_setUserNickname(userid_t id, char* dest){
 	if (id>=dbstats.max_users)
 		return DB_ERROR_NOSUCHUSER;;
-	E24C_blockdev_writeBlock(dbheadersize + id*sizeof(userentry_t)
+	WRITE_BLOCK(TICKETDB_OFFSET + dbheadersize + id*sizeof(userentry_t)
 	                        +DB_NICKNAME_OFFSET, dest, 7);
 	return DB_ERROR_OK;
 }
@@ -135,9 +151,10 @@ uint8_t ticketdb_setUserFlags(userid_t id, userflags_t* src){
 	dbstats.locked_admins += (src->exist & src->admin & src->locked)
 						 - (oflags.exist & oflags.admin & oflags.locked);
 	ticketdb_syncstats();
-	E24C_blockdev_writeByte(dbheadersize + id*sizeof(userentry_t)
-	                        +DB_FLAGS_OFFSET, *((uint8_t*)src));
-	
+	WRITE_BLOCK(TICKETDB_OFFSET + dbheadersize + id*sizeof(userentry_t)
+	                        +DB_FLAGS_OFFSET, src, 1);
+	uart_putstr_P(PSTR("\r\nwrite flags: "));
+	uart_hexdump(src, 1);
 	return DB_ERROR_OK;
 }
 
@@ -174,7 +191,7 @@ uint16_t ticketdb_getstatLockedAdmins(void){
 /******************************************************************************/
 
 void ticketdb_format(dbsize_t size){
-	E24C_blockdev_setBlock(0,0,size); /* set all bytes to zeo */
+	SET_BLOCK(TICKETDB_OFFSET,0,size); /* set all bytes to zeo */
 	
 	dbheader_t header={DB_IDSTRING, MAJ_VERSION, MIN_VERSION, sizeof(dbheader_t),
 						{(size - sizeof(dbheader_t))/sizeof(userentry_t), /* max users */
@@ -182,7 +199,7 @@ void ticketdb_format(dbsize_t size){
 						  0,  /* admins */
 						  0,  /* locked users */
 						  0}};/* locked addmins */ 
-	E24C_blockdev_writeBlock(0,&header, sizeof(dbheader_t));
+	WRITE_BLOCK(TICKETDB_OFFSET,&header, sizeof(dbheader_t));
 }
 
 /******************************************************************************/
@@ -190,7 +207,7 @@ void ticketdb_format(dbsize_t size){
 uint8_t ticketdb_init(void){ /* initDB */
 	dbheader_t header;
 	uint8_t ret=0;
-	E24C_blockdev_readBlock(0,&header,sizeof(dbheader_t));
+	READ_BLOCK(TICKETDB_OFFSET,&header,sizeof(dbheader_t));
 	/* check if this is a valid header */
 	if (!(   header.id[0] == 'A' 
 	      && header.id[1] == 'n' 

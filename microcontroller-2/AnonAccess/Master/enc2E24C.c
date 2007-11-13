@@ -56,7 +56,7 @@ void memxor(void * dest, void * src, uint8_t length);
 void encrypt_E24Cblock(void *dest, blockdev_ptr_t addr, uint8_t * crypt_key){
 	uint8_t key[CRYPTKEY_SIZE/8+sizeof(blockdev_ptr_t)];
 	
-	addr &= ~(BLOCKSIZE-1);
+	addr &= ~(BLOCKSIZE-1); /* set addr to the blocks base address*/
 	memcpy(key, crypt_key, CRYPTKEY_SIZE/8);
 	memcpy(key + CRYPTKEY_SIZE/8, &addr, sizeof(blockdev_ptr_t));
 	shabea256(dest, key, CRYPTKEY_SIZE+8*sizeof(blockdev_ptr_t), 1, 16);
@@ -107,25 +107,33 @@ void crypto_set_block(uint8_t value, blockdev_ptr_t addr, uint16_t length,
 	uint8_t page[BLOCKSIZE];
 	uint8_t rl;
 	
-	decrypt_E24Cblock(page, addr&~(BLOCKSIZE-1), crypt_key);
+	decrypt_E24Cblock(page, addr&(~(BLOCKSIZE-1)), crypt_key);
 	rl = BLOCKSIZE - (addr&(BLOCKSIZE-1));/* space left to blockend */
+//	if(rl>length){
+//		rl=length;
+//	}
+	memset(page+BLOCKSIZE-rl, value, (rl<length)?rl:length);
+	encrypt_E24Cblock(page, addr&(~(BLOCKSIZE-1)), crypt_key);
+	uart_putc('~');
 	if(rl>length){
 		rl=length;
 	}
-	memset(page+BLOCKSIZE-rl, value, rl);
-	encrypt_E24Cblock(page, addr&~(BLOCKSIZE-1), crypt_key);
 	length -= rl;
 	addr += BLOCKSIZE; /* now addr addressesn blocks */
-	while(length>BLOCKSIZE){
+	while(length>=BLOCKSIZE){
+		uart_putc('+');
 		memset(page, value, BLOCKSIZE);
 		encrypt_E24Cblock(page, addr, crypt_key);
 		addr += BLOCKSIZE;
-		rl = (length>BLOCKSIZE)?BLOCKSIZE:length;
-		length -= rl;
+	//	rl = (length>BLOCKSIZE)?BLOCKSIZE:length;
+		length -= BLOCKSIZE;
 	}
-	decrypt_E24Cblock(page, addr, crypt_key);
-	memset(page, value, rl);
-	encrypt_E24Cblock(page, addr, crypt_key);
+	if(length){
+		uart_putc('*');
+		decrypt_E24Cblock(page, addr, crypt_key);
+		memset(page, value, length);
+		encrypt_E24Cblock(page, addr, crypt_key);
+	}
 }
 
 
@@ -137,24 +145,26 @@ void crypto_write_block(void *dest, blockdev_ptr_t addr, uint16_t length,
 	
 	decrypt_E24Cblock(page, addr&~(BLOCKSIZE-1), crypt_key);
 	rl = BLOCKSIZE - (addr&(BLOCKSIZE-1));/* space left to blockend */
+	memcpy(page+BLOCKSIZE-rl, dest, (rl>length)?length:rl);
+	encrypt_E24Cblock(page, addr&~(BLOCKSIZE-1), crypt_key);
 	if(rl>length){
 		rl=length;
 	}
-	memcpy(page+BLOCKSIZE-rl, dest, rl);
-	encrypt_E24Cblock(page, addr&~(BLOCKSIZE-1), crypt_key);
 	length -= rl;
 	dest = (uint8_t*)dest +rl;
 	addr += BLOCKSIZE; /* now addr addressesn blocks */
-	while(length>BLOCKSIZE){
+	while(length>=BLOCKSIZE){
 		memcpy(page, dest, BLOCKSIZE);
 		dest = (uint8_t*)dest+BLOCKSIZE;
 		encrypt_E24Cblock(page, addr, crypt_key);
 		addr += BLOCKSIZE;
-		rl = (length>BLOCKSIZE)?BLOCKSIZE:length;
-		length -= rl;
+	//	rl = (length>BLOCKSIZE)?BLOCKSIZE:length;
+		length -= BLOCKSIZE;
 	}
-	decrypt_E24Cblock(page, addr, crypt_key);
-	memcpy(page, dest, rl);
-	encrypt_E24Cblock(page, addr, crypt_key);
+	if(length){
+		decrypt_E24Cblock(page, addr, crypt_key);
+		memcpy(page, dest, length);
+		encrypt_E24Cblock(page, addr, crypt_key);
+	}
 }
 

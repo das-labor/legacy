@@ -107,6 +107,7 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	delete_key(key, 32);
 	if(memcmp(hmac, ab->hmac, 32)){
 		/* verification failed, maybe someone modifyed the ab */
+		uart_putstr_P(PSTR("\r\nHMAC failed"));
 		return invalid_cred;
 	}
 	
@@ -116,11 +117,13 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	delete_key(key, 32);
 	
 	if(!ticketdb_userexists(ab->uid)){
+		uart_putstr_P(PSTR("\r\nUser does not exist"));
 		return invalid_cred;
 	}
 	ticketdb_getUserTicketMac(ab->uid, &refhmac);
 	if(memcmp(hmac, refhmac, 32)){
 		/* wrong ticket, maybe a replay attack */
+		uart_putstr_P(PSTR("\r\nTicket does not match"));
 		return invalid_cred;
 	}
 	
@@ -133,8 +136,10 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	/* search in flag-modify-DB & apply flag modifications */
 	flmdb_process(ab->rid, ab->uid, &flags);
 		
-	if(flags.locked || !flags.exist)
+	if(flags.locked || !flags.exist){
+		uart_putstr_P(PSTR("\r\nUser locked"));
 		return invalid_cred;
+	}	
 		
 	/* free old user entry in ticketDB */
 	ticketdb_deluser(ab->uid);	
@@ -193,6 +198,7 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	delete_key(key, 32);
 
 	if(flags.locked==1){ // this happens when user got timeout
+		uart_putstr_P(PSTR("\r\nTimeout"));
 		return invalid_cred;
 	}
 	return flags.admin?valid_admin:valid_user;
