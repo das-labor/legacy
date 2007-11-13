@@ -66,9 +66,8 @@ int main (void)
     /*******************/
     i2c_set_speed(I2C_SPEED_100);
 	/******************/
-	uint8_t crypt_key[32];
 
-	load_eeprom_crypt_key(crypt_key);
+	load_eeprom_crypt_key(eeprom_key);
 
     uart_putstr_P(PSTR(HELP_STR));
     while(1){
@@ -83,7 +82,7 @@ int main (void)
     			case 'c': console_dbg(); break;
     			case 's': test_shabea256(); break;
     			case 't': console_dumptimestamp(); break;
-    			case 'f': ticketdb_format(TICKETDB_SIZE);/* break;*/
+    			case 'f': ticketdb_format(TICKETDB_SIZE); flmdb_format();/* break;*/
     			case 'i': ticketdb_init();dump_dbstats(); break;
     			case 'n': console_adduser_db(); break;
     			case 'm': console_setadmin(); break;
@@ -99,15 +98,16 @@ int main (void)
     			case '4': E24C_blockdev_setBlock(14,'4',114); break;
     			case '5': E24C_blockdev_setBlock(0,'#',128LL*1024); break;
     		*/	
-    			case '1': crypto_set_block(0, 0, 2342, crypt_key); break; 
-    			case '2': crypto_set_block(0, 0, 100, crypt_key); break; 
+    			case 'y': {userflags_t c; ticketdb_getUserFlags(0, &c);} break;
+    			case '1': crypto_set_block(0, 0, 2342, eeprom_key); break; 
+    			case '2': crypto_set_block(0, 0, 100, eeprom_key); break; 
     			case '3': { uint8_t nb[128];
     						memset(nb, 0, 128); 
-    						encrypt_E24Cblock(nb, 0, crypt_key);} break;
+    						encrypt_E24Cblock(nb, 0, eeprom_key);} break;
     			case '4': { uint8_t nb[128];
     						uint8_t db[128];
     						memset(nb, 0, 128); 
-    						decrypt_E24Cblock(db, 0, crypt_key);
+    						decrypt_E24Cblock(db, 0, eeprom_key);
     						uart_hexdump(db, 128);
     						if(memcmp(db, nb, 128)){
     							uart_putstr_P(PSTR("\r\ndecrypt failed"));
@@ -118,7 +118,7 @@ int main (void)
     			case '5': { uint8_t nb[128];
     						uint8_t db[128];
     						memset(nb, 0, 128); 
-    						crypto_read_block(db, 0, 128, crypt_key);
+    						crypto_read_block(db, 0, 128, eeprom_key);
     						uart_hexdump(db, 128);
     						if(memcmp(db, nb, 128)){
     							uart_putstr_P(PSTR("\r\ndecrypt failed"));
@@ -132,7 +132,19 @@ int main (void)
     						for(i=0; i<128; ++i){
     							nb[i]=i;
     						} 
-    						crypto_write_block(nb, 0, 128, crypt_key);
+    						crypto_write_block(nb, 0, 128, eeprom_key);
+    					} break;
+    			case '7': { uint8_t i;
+    						for(i=0; i<120; ++i){
+    							crypto_write_block(&i, i, 1, eeprom_key);
+    						} 
+    						
+    					} break;
+    			case '8': { uint8_t i=120;
+    					//	for(i=0; i<120; ++i){
+    							crypto_set_block(i, i, 1, eeprom_key);
+    					//	} 
+    						
     					} break;
     					
     			default: uart_putstr_P(PSTR(HELP_STR)); break;

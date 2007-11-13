@@ -11,6 +11,7 @@ void load_ridkey(uint8_t * dest);
 void load_nickkey(uint8_t * dest);
 void load_timestampkey(uint8_t * dest);
 void load_eeprom_crypt_key(uint8_t * dest);
-void load_eeprom_essiv_key(uint8_t * dest);
+
+extern uint8_t eeprom_key[32];
 
 #endif /*KEYS_H_*/

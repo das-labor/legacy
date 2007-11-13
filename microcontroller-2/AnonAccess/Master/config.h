@@ -7,8 +7,8 @@
 #define DEBUG uart
 
 //#define ATMEGA128
-//#define ATMEGA644
-#define ATMEGA32
+#define ATMEGA644
+//#define ATMEGA32
 
 //c uart.[ch] defines
 //#define UART_INTERRUPT 1

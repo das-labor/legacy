@@ -19,12 +19,22 @@
 #include "uart.h"
 
 #define FLMDB_MAXID (FLMDB_SIZE/sizeof(flmdb_entry_t)-1)
+/*
+#define READ_BLOCK(a, d, s)  E24C_blockdev_readBlock((a),(d),(s))
+#define WRITE_BLOCK(a, d, s) E24C_blockdev_writeBlock((a),(d),(s))
+#define SET_BLOCK(a,v,s)     E24C_blockdev_setBlock((a),(v),(s))
+*/
+#include "keys.h"
+#include "enc2E24C.h"
 
+#define READ_BLOCK(a, d, s)  crypto_read_block((d),(a),(s), eeprom_key)
+#define WRITE_BLOCK(a, d, s) crypto_write_block((d),(a),(s), eeprom_key)
+#define SET_BLOCK(a,v,s)     crypto_set_block((v),(a),(s), eeprom_key)
 
 void flmdb_loadentry(flmdb_entry_t * entry, entryid_t id){
 	if(id>FLMDB_MAXID)
 		return;
-	E24C_blockdev_readBlock(FLMDB_OFFSET + id*sizeof(flmdb_entry_t),
+	READ_BLOCK(FLMDB_OFFSET + id*sizeof(flmdb_entry_t),
 	                        entry, sizeof(flmdb_entry_t));
 	return;
 }
@@ -32,7 +42,7 @@ void flmdb_loadentry(flmdb_entry_t * entry, entryid_t id){
 void flmdb_setentry(flmdb_entry_t * entry, entryid_t id){
 	if(id>FLMDB_MAXID)
 		return;
-	E24C_blockdev_writeBlock(FLMDB_OFFSET + id*sizeof(flmdb_entry_t), 
+	WRITE_BLOCK(FLMDB_OFFSET + id*sizeof(flmdb_entry_t), 
 	                         entry, sizeof(flmdb_entry_t));
 	return;
 }
@@ -77,7 +87,7 @@ void flmdb_makeentry(uint8_t * mac, userflags_t setflags, userflags_t clearflags
 	entry.clearflags = clearflags;
 	
 	for(i=0; i<=FLMDB_MAXID; ++i){
-		t = E24C_blockdev_readByte(FLMDB_OFFSET + i*sizeof(flmdb_entry_t) + FLMDB_ACTIVE_OFFSET);
+		READ_BLOCK(FLMDB_OFFSET + i*sizeof(flmdb_entry_t) + FLMDB_ACTIVE_OFFSET, &t, 1);
 		if(!t){
 			flmdb_setentry(&entry, i);
 			return;
@@ -85,6 +95,8 @@ void flmdb_makeentry(uint8_t * mac, userflags_t setflags, userflags_t clearflags
 	}
 }
 
-
+void flmdb_format(void){
+	SET_BLOCK(FLMDB_OFFSET, 0, FLMDB_SIZE);
+}
 
 

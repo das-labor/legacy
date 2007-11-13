@@ -36,8 +36,11 @@ void rtc_init(void){
 timestamp_t gettimestamp(void){
 	return milliseconds;
 }
-    
+#ifdef ATMEGA644
+ISR(TIMER0_COMPA_vect){
+#else
 ISR(TIMER0_COMP_vect){
+#endif
 	++milliseconds;
 	if(milliseconds%(1000LL*60LL*60LL)==0){ /* every hour */
 		 uint64_t t;
