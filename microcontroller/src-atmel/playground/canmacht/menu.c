@@ -40,52 +40,7 @@ void show_mood(void *data, uint8_t selected);
 void switch_script();
 void temp(void *data);
 void ctrl_mood(void *data);
-/*
-menu_item_t mi_i0 = {&show_menu, &menu_handler, &root}; // nur zum testen
-menu_item_t *bla[] = {&mi_i0};				// "
 
-//menu_item_t *its_blight[] = {&};
-menu_t mblight = {"blight", 1, 0};//its_blight};
-menu_item_t iblight = {&show_menu, &switch_blight, &mblight};
-
-menu_t mscan = {"scan", 1, bla};
-menu_item_t iscan = {&show_menu, &menu_handler, &mscan};
-
-menu_item_t *its_setup[] = {&iblight, &iscan};
-menu_t msetup = {"setup", 2, its_setup};
-menu_item_t isetup = {&show_menu, &menu_handler, &msetup};
-
-//menu_item_t *its_all[] = {&iadr};
-menu_t mtempadr = {"alle", 1, bla};
-menu_item_t itempadr = {&show_menu, &menu_handler, &mtempadr};
-
-menu_item_t *its_tempadr[] = {&itempadr};
-menu_t mtemp = {"temp", 1, its_tempadr};
-menu_item_t itemp = {&show_menu, &menu_handler, &mtemp};
-
-menu_item_t *its_info[] = {&itemp};
-menu_t minfo = {"wissen", 1, its_info};
-menu_item_t iinfo = {&show_menu, &menu_handler, &minfo};
-
-menu_t mdimm = {"dimm", 1, bla};
-menu_item_t idimm = {&show_mood, &menu_handler, &mdimm};
-
-menu_item_t *its_alle[] = {&idimm};
-menu_t mmoodadr = {"alle", 1, its_alle};
-menu_item_t imoodadr = {&show_menu, &menu_handler, &mmoodadr};
-
-menu_item_t *its_moodadr[] = {&imoodadr};
-menu_t mmood = {"mood", 1, its_moodadr};
-menu_item_t imood = {&show_menu, &menu_handler, &mmood};
-
-menu_item_t *its_ctrl[] = {&imood};
-menu_t mctrl = {"macht", 1, its_ctrl};
-menu_item_t ictrl = {&show_menu, &menu_handler, &mctrl};
-
-menu_item_t *items_root[] = {&ictrl, &iinfo, &isetup};
-//menu_t root = {"/", 3, items_root};
-
-*/
 
 
 menu_t root = {"/", 0, 0};
@@ -152,7 +107,7 @@ void menu_handler(void *data) {
 			break;
 	}
 	while (1) {  // keyhandeling
-		key = getKey(550);
+		key = getKey(500);
 		// enter
 		if (key == 2) {
 			if (!(menu->items[sel]->type & 0x01))
@@ -289,7 +244,7 @@ void temp(void *data) {										// todo: start temp sending
 	
 	//msg.dlc = 1;
 	//msg.data[0] = 0x90;
-	while (1) {  // keyhandeling
+	/*while (1) {  // keyhandeling
 		AvrXDelay(&switchtimer, 550);
 		if (!(PINB & (1 << PB3))) { // ok
 			dispFillRect(50, 30, 30, 8, 0);
@@ -299,7 +254,7 @@ void temp(void *data) {										// todo: start temp sending
 		//can_put(&msg);
 		AvrXDelay(&switchtimer, 5); // timing testen
 		//draw_Text(bla, 50, 30, 0, 1, 1);
-	}
+	}*/
 }
 /*
 char* canmessage(uint8_t dst_adr, uint8_t dst_port, char* msg) {  // adresse, zielport, message
