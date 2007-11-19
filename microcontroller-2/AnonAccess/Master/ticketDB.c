@@ -6,7 +6,6 @@
 #include "config.h"
 #include "debug.h"
 
-#define TICKETDB_OFFSET 0
 
 #define MAJ_VERSION	0
 #define MIN_VERSION 1
@@ -44,8 +43,8 @@ uint8_t	ticketdb_newuser(ticketmac_t* mac, userid_t* id, uint16_t initid){
 	
 	/* find new location */
 	initid %= dbstats.max_users;
-	while(ticketdb_userexists(initid))
-		initid = (initid+1)% dbstats.max_users;
+//	while(ticketdb_userexists(initid))
+//		initid = (initid+1)% dbstats.max_users;
 	*id=initid;
 	
 	ticketdb_setUserTicketMac(*id, mac);
@@ -75,6 +74,7 @@ bool ticketdb_userexists(userid_t id){
 	userflags_t flags;
 	if (id>=dbstats.max_users)
 		return false;
+return false;
 	ticketdb_getUserFlags(id,&flags);
 //	uart_putstr("\r\n <"); uart_hexdump(&flags, 1); uart_putstr(">");
 	return flags.exist;	
@@ -100,10 +100,6 @@ uint8_t ticketdb_getUserFlags(userid_t id, userflags_t* dest){
 	           +DB_FLAGS_OFFSET;
 	           
 	READ_BLOCK(addr, dest, 1);
-	uart_putstr_P(PSTR("\r\nread userflags: "));
-	uart_hexdump(&addr, 4);
-	uart_putstr_P(PSTR(" @ "));
-	uart_hexdump(dest, 1);
 	return DB_ERROR_OK;
 }
 
@@ -153,8 +149,6 @@ uint8_t ticketdb_setUserFlags(userid_t id, userflags_t* src){
 	ticketdb_syncstats();
 	WRITE_BLOCK(TICKETDB_OFFSET + dbheadersize + id*sizeof(userentry_t)
 	                        +DB_FLAGS_OFFSET, src, 1);
-	uart_putstr_P(PSTR("\r\nwrite flags: "));
-	uart_hexdump(src, 1);
 	return DB_ERROR_OK;
 }
 

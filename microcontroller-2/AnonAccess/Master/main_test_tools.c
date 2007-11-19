@@ -178,7 +178,7 @@ void test_shabea256(void){
 }
 
 void console_getnick(void * data){
-	char rcvbuffer[31];
+	char rcvbuffer[31]={0};
 	uart_putstr_P(PSTR("\r\n nickname: "));
 	console_getnstr( 30, rcvbuffer);
 	*((char**)data) = malloc(strlen(rcvbuffer));
@@ -406,16 +406,20 @@ void eeprom_dump_byte(i2c_addr_t dev, uint16_t start, uint16_t length){
 /****************************************************
  *  eeprom_dump_page()
  * **************************************************/
-void eeprom_dump_page(i2c_addr_t dev, uint16_t start, uint16_t length){
-	uint16_t i=0;
+void eeprom_dump_page(i2c_addr_t dev, uint32_t start, uint16_t length){
+	uint32_t i=0;
 	uint8_t buffer[ROW_SIZE];
     uint8_t j=0;
 	uart_putstr_P(PSTR("EEPROM-Dump (Page-Mode):\r\n")); 
 	for (i=start; i<(start+length-ROW_SIZE); i+=ROW_SIZE){
 		E24C_block_read(dev, i, buffer, ROW_SIZE);
 		uart_putstr("0x");
-		uart_putbyte(HIGH(i));
-		uart_putbyte(LOW(i));
+	//	uart_putbyte(HIGH(i));
+	//	uart_putbyte(LOW(i));
+		uart_putbyte((i>>24)&0xff);
+		uart_putbyte((i>>16)&0xff);
+		uart_putbyte((i>> 8)&0xff);
+		uart_putbyte((i>> 0)&0xff);
 		uart_putstr(":");
 		for (j=0; j<ROW_SIZE; ++j){
 			uart_putc(' ');
@@ -429,8 +433,12 @@ void eeprom_dump_page(i2c_addr_t dev, uint16_t start, uint16_t length){
 	}
 	E24C_block_read(dev, i, buffer, (start+length-i));
 	uart_putstr_P(PSTR("0x"));
-	uart_putbyte(HIGH(i));
-	uart_putbyte(LOW(i));
+//	uart_putbyte(HIGH(i));
+//	uart_putbyte(LOW(i));
+	uart_putbyte((i>>24)&0xff);
+	uart_putbyte((i>>16)&0xff);
+	uart_putbyte((i>> 8)&0xff);
+	uart_putbyte((i>> 0)&0xff);
 	uart_putc(':');
 	for (j=0; j<ROW_SIZE; ++j){
 		uart_putc(' ');
@@ -454,7 +462,7 @@ void eeprom_dump_page(i2c_addr_t dev, uint16_t start, uint16_t length){
  *  crypto_eeprom_dump()
  * **************************************************/
 void crypto_eeprom_dump(uint32_t start, uint16_t length){
-	uint16_t i=0;
+	uint32_t i=0;
 	uint8_t buffer[ROW_SIZE];
     uint8_t j=0;
     uint8_t crypt_key[32];
@@ -464,8 +472,12 @@ void crypto_eeprom_dump(uint32_t start, uint16_t length){
 	for (i=start; i<(start+length-ROW_SIZE); i+=ROW_SIZE){
 		crypto_read_block(buffer, i, ROW_SIZE, crypt_key);
 		uart_putstr("0x");
-		uart_putbyte(HIGH(i));
-		uart_putbyte(LOW(i));
+//		uart_putbyte(HIGH(i));
+//		uart_putbyte(LOW(i));
+		uart_putbyte((i>>24)&0xff);
+		uart_putbyte((i>>16)&0xff);
+		uart_putbyte((i>> 8)&0xff);
+		uart_putbyte((i>> 0)&0xff);
 		uart_putstr(":");
 		for (j=0; j<ROW_SIZE; ++j){
 			uart_putc(' ');
@@ -479,8 +491,12 @@ void crypto_eeprom_dump(uint32_t start, uint16_t length){
 	}
 	crypto_read_block(buffer, i, (start+length-i), crypt_key);
 	uart_putstr_P(PSTR("0x"));
-	uart_putbyte(HIGH(i));
-	uart_putbyte(LOW(i));
+//	uart_putbyte(HIGH(i));
+//	uart_putbyte(LOW(i));
+	uart_putbyte((i>>24)&0xff);
+	uart_putbyte((i>>16)&0xff);
+	uart_putbyte((i>> 8)&0xff);
+	uart_putbyte((i>> 0)&0xff);
 	uart_putc(':');
 	for (j=0; j<ROW_SIZE; ++j){
 		uart_putc(' ');
@@ -588,7 +604,7 @@ void console_clearadmin(void){
 	hmac_sha256(hmac, key, 256, nick, strlen(nick));
 	delete_key(key, 32);
 	free(nick);
-	flmdb_makeentry(hmac, sf, cf);
+	flmdb_makeentry(hmac, sf, cf, 0);
 	
 	uart_putstr_P(PSTR("\r\n now admin flag is cleared"));
 }

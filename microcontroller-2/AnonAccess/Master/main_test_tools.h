@@ -68,7 +68,7 @@ void console_dbg(void);
 void uart_putbyte(uint8_t b);
 void i2c_detect(i2c_detect_t table);
 void eeprom_dump_byte(i2c_addr_t dev, uint16_t start, uint16_t length);
-void eeprom_dump_page(i2c_addr_t dev, uint16_t start, uint16_t length);
+void eeprom_dump_page(i2c_addr_t dev, uint32_t start, uint16_t length);
 void eeprom_set_byte(i2c_addr_t dev, uint16_t start, uint16_t length);
 void eeprom_set_page(i2c_addr_t dev, uint16_t start, uint16_t length);
 void crypto_eeprom_dump(uint32_t start, uint16_t length);

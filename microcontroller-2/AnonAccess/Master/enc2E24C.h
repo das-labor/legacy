@@ -34,7 +34,7 @@ void decrypt_E24Cblock(void *dest, blockdev_ptr_t addr, uint8_t * crypt_key);
 
 void crypto_read_block(void * dest, blockdev_ptr_t addr, uint16_t length, 
                        void * crypt_key);
-void crypto_set_block(uint8_t value, blockdev_ptr_t addr, uint16_t length, 
+void crypto_set_block(uint8_t value, blockdev_ptr_t addr, uint32_t length, 
                       void * crypt_key);
 void crypto_write_block(void *dest, blockdev_ptr_t addr, uint16_t length, 
                         void * crypt_key);

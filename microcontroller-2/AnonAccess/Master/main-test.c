@@ -77,8 +77,10 @@ int main (void)
     			case 'd': eeprom_dump_page(0xA0, 0, 512); break;
     			case 'l': eeprom_dump_page(0xA0, 0,2048); break;
     			case 'r': crypto_eeprom_dump(0, 512); break;
+    			case 'R': crypto_eeprom_dump(0, 4096); break;
     			case 'z': E24C_blockdev_setBlock(0,0x00, 1024); break;
     			// {int i; for (i=0; i<1024; ++i){ E24C_blockdev_writeByte(i, 0xFF);}}; break;
+    			case 'F': crypto_eeprom_dump(FLMDB_OFFSET, 4096); break;
     			case 'c': console_dbg(); break;
     			case 's': test_shabea256(); break;
     			case 't': console_dumptimestamp(); break;
@@ -98,7 +100,6 @@ int main (void)
     			case '4': E24C_blockdev_setBlock(14,'4',114); break;
     			case '5': E24C_blockdev_setBlock(0,'#',128LL*1024); break;
     		*/	
-    			case 'y': {userflags_t c; ticketdb_getUserFlags(0, &c);} break;
     			case '1': crypto_set_block(0, 0, 2342, eeprom_key); break; 
     			case '2': crypto_set_block(0, 0, 100, eeprom_key); break; 
     			case '3': { uint8_t nb[128];
