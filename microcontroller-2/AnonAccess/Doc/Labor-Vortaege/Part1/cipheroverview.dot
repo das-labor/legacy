@@ -1,0 +1,13 @@
+digraph G {
+	crypt_algos [label="cryptographic algorithms"]
+	crypt_algos -> ciphers
+	crypt_algos -> hashes
+	crypt_algos -> MACs
+	crypt_algos -> PRNGs
+	ciphers -> symmetric
+	ciphers -> asymetric
+	symmetric -> "block ciphers"
+	symmetric -> "stream ciphers"
+	
+	
+}
