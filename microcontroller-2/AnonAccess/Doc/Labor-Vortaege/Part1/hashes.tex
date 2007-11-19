@@ -46,7 +46,37 @@
 \frametitle{Wie?}
 	Signieren mit gemeinsamen Schl"ussel
 	\par
-	\center{\large{\texttt{hash ( key | nachricht )}}}
+	\begin{center}\large{\texttt{hash ( key | nachricht )}}\end{center}
+	\vspace{5mm}
+	Speichern von Passw"ortern
+	\par
+	\begin{center}\large{\texttt{hash ( seed | passwort )}}\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Angriffe}
+	\begin{itemize}
+		\item Rainbow Tables (f"ur Passw"orter)
+		\item Probieren (z.B. A..z, 0..9)
+		\item Reduktion des Problems/Algorithmus
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Gegenma"snahmen (1)}
+	\large{Immer Salz verwenden!}
+\end{frame}
+
+\begin{frame}
+\frametitle{Gegenma"snahmen (2)}
+	Kaskadieren von Hashfunktionen:
+	\par
+	\begin{center}\large{\texttt{$hash_1 (msg) \oplus hash_2(msg)$}}\end{center}
+	\vspace{5mm}
+	\par
+	...aber bitte \large{NICHT} so:
+	\par
+	\begin{center}\large{\texttt{$hash_1 (hash_2(msg))$}}\end{center}
 \end{frame}
 
 \end{document}
