@@ -144,15 +144,19 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	/* free old user entry in ticketDB */
 	ticketdb_deluser(ab->uid);	
 	/* generate new uid */
+	uint8_t t=0;
 	uint16_t i;
-	i = fairrnd(ticketdb_getstatMaxUsers()-ticketdb_getstatUsers());	
-	ab->uid = -1;
-	while(i){
-		ab->uid++;
-		if(!ticketdb_userexists(ab->uid)){
-			--i;
-		}
-	}	
+	do{
+		i = fairrnd(ticketdb_getstatMaxUsers()-1);
+		++t;
+	} while (ticketdb_userexists(i) && (t<5));
+	if(t==5){
+		do{
+			i = (i+1)%ticketdb_getstatMaxUsers();
+		}while(ticketdb_userexists(i));
+	}
+	ab->uid = i;
+	
 	
 	/* check timestamp */
 	load_timestampkey(key);
@@ -215,15 +219,30 @@ void new_account(authblock_t * ab, char* nickname){
 	flags.notify_lostadmin = 0;
 	flags.reserved = 0;
 	/* generate new uid */
-	uint16_t i;
-	i = fairrnd(ticketdb_getstatMaxUsers()-ticketdb_getstatUsers());	
-	ab->uid = -1;
-	while(i){
-		ab->uid++;
-		if(!ticketdb_userexists(ab->uid)){
-			--i;
-		}
+	uint8_t t=0;
+	uint16_t i=0;
+	uart_putstr_P(PSTR("\r\n !nick: "));
+	uart_hexdump(nickname, 32);
+	do{
+		i = fairrnd(ticketdb_getstatMaxUsers()-1);
+		//i=2; //fillBlockRandom(&i, 2);
+		//i %= 100;//
+		//i %= ticketdb_getstatMaxUsers();
+		++t;
+		uart_putstr_P(PSTR("\r\n &nick: "));
+		uart_hexdump(nickname, 32);
+	} while (ticketdb_userexists(i) && (t<5));
+	uart_putstr_P(PSTR("\r\n %nick: "));
+	uart_hexdump(nickname, 32);
+	if(t==5){
+		do{
+			i = (i+1)%ticketdb_getstatMaxUsers();
+		}while(ticketdb_userexists(i));
 	}
+	ab->uid = i;
+	
+	uart_putstr_P(PSTR("\r\n \"nick: "));
+	uart_hexdump(nickname, 32);
 	/* generate new ticket */
 	fillBlockRandom(ab->ticket, 32-sizeof(timestamp_t));
 	{
@@ -234,17 +253,29 @@ void new_account(authblock_t * ab, char* nickname){
 	load_timestampkey(key);
 	shabea256(ab->ticket, key, 256, 1, 16);
 	delete_key(key, 32);
+	
+	uart_putstr_P(PSTR("\r\n $nick: "));
+	uart_hexdump(nickname, 32);
 	/* store new ticket */
 	load_ticketkey(key);
 	hmac_sha256(hmac, key, 256, ab->ticket, 32*8);
 	delete_key(key, 32);
+	uart_putstr_P(PSTR("\r\n &nick: "));
+	uart_hexdump(nickname, 32);
 	ticketdb_newuser(&hmac, &(ab->uid), ab->uid);
+	
+	uart_putstr_P(PSTR("\r\n /nick: "));
+	uart_hexdump(nickname, 32);
 	ticketdb_setUserFlags(ab->uid, &flags);
 
 	/* make new RID & Co */
 	load_nickkey(key);
 	hmac_sha256(ab->rid, key, 256, nickname, 8*strlen(nickname));
-	delete_key(key, 32);
+	delete_key(key, 32);	
+	uart_putstr_P(PSTR("\r\n  nick: "));
+	uart_hexdump(nickname, 32);
+	uart_putstr_P(PSTR("\r\n hnick: "));
+	uart_hexdump(ab->rid, 32);
 	fillBlockRandom(ab->rkey, 32);
 	shabea256(ab->rid, ab->rkey, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
 	load_ridkey(key);
@@ -264,7 +295,11 @@ void modify_account(char * nickname, userflags_t setflags, userflags_t clearflag
 	load_nickkey(key);
 	hmac_sha256(hmac, key, 256, nickname, 8*strlen(nickname));
 	delete_key(key, 32);
-	flmdb_makeentry(hmac, setflags, clearflags);
+	uart_putstr_P(PSTR("\r\n  nick: "));
+	uart_hexdump(nickname, 32);
+	uart_putstr_P(PSTR("\r\n hnick: "));
+	uart_hexdump(hmac, 32);
+	flmdb_makeentry(hmac, setflags, clearflags, 0);
 }
 
 
