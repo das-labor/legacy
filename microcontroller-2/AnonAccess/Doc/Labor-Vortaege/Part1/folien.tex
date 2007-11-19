@@ -1,0 +1,122 @@
+\documentclass{beamer}
+\colorlet{structure}{green!50!black}
+
+\mode<article> % only for the article version
+{
+  \usepackage{fullpage}
+  \usepackage{hyperref}
+}
+\mode<presentation>
+{
+	\setbeamertemplate{background canvas}[vertical shading][bottom=red!10,top=blue!10]
+%	\useinnertheme[shadow=true]{rounded}
+%	\useoutertheme{shadow}
+%	\usecolortheme{whale}
+	\setbeamerfont{block title}{size={}}
+  \usefonttheme[onlysmall]{structurebold}
+}
+
+\setbeamersize{mini frame size=5cm}
+
+\usepackage[english]{varioref}
+
+\usetheme{Hannover}
+\usecolortheme{dove}
+%\setbeamercolor{math text}{fg=green!50!black}
+%\setbeamercolor{normal text in math text}{parent=math text}
+
+%\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usepackage{amsmath,amssymb}
+%\usepackage[latin1]{inputenc}
+\usepackage[utf8]{inputenc}
+\usepackage{colortbl}
+\usepackage[english,german,ngerman]{babel}
+% Line spacing
+\usepackage{setspace}
+\usepackage{listings}
+%\usepackage{lmodern}
+%\usepackage[T1]{fontenc}
+\usepackage{times}
+\setbeamercovered{dynamic}
+
+%
+% The following defintions are peculiar to this particular
+% presetation. They have nothing to do with the beamer class
+%
+
+\newcommand{\Lang}[1]{\operatorname{\text{\textsc{#1}}}}
+
+\newcommand{\Class}[1]{\operatorname{\mathchoice
+  {\text{\normalfont\small #1}}
+  {\text{\normalfont\small #1}}
+  {\text{\normalfont#1}}
+  {\text{\normalfont#1}}}}
+
+\newcommand{\DOF}{\Class{DOF}}
+\newcommand{\NOF}{\Class{NOF}}
+\newcommand{\DOFpoly}{\Class{DOF}_{\operatorname{poly}}}
+\newcommand{\NOFpoly}{\Class{NOF}_{\operatorname{poly}}}
+
+\newcommand{\Nat}{\mathbb{N}}
+\newcommand{\Set}[1]{\{#1\}}
+
+\newenvironment{ccodelisting}
+{\begin{list}{}{\setlength{\leftmargin}{1em}}\item\scriptsize\bfseries}
+{\end{list}}
+
+
+%
+% The following info should normally be given in you main file:
+%
+%\subject{cryptographic primitives}
+%\lstset{
+%	language=ADA,
+%        basicstyle=\ttfamily,
+%        keywordstyle=\color{Red},
+%        commentstyle=\color{Blue},
+%        stringstyle=\color{Green},
+%        showstringspaces=false,
+%        emph={bool,int,unsigned,char,true,false,void}, %emphstyle=\color{CornflowerBlue},
+%        emph={[2]IFF\_TUN}, emphstyle={[2]\color{red}}
+%}
+
+\author{S\"oren Heisrath \and Daniel Otte}
+\title{Cryptographic basics}
+\institute{das Labor}
+
+\date[November 2007]{xx.xx.2k+7}
+
+\begin{document}
+
+%-------------------------------------------------------------------------------
+
+\frame{\titlepage}
+
+\section<presentation>*{}
+
+\begin{frame}
+  \frametitle{}
+  \tableofcontents[part=1,pausesection,hideallsubsections]
+\end{frame}
+
+%\AtBeginSubsection[]
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Overview}
+    \tableofcontents[currentsection]
+    %\tableofcontents[current,currentsubsection]
+  \end{frame}
+}
+
+\part<presentation>{Intro}
+\input{overview.tex}
+\input{blockciphers.tex}
+\input{streamciphers.tex}
+\input{hashes.tex}
+\input{macs.tex}
+\input{prngs.tex}
+% ----
+
+\end{document}
+
