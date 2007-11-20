@@ -23,7 +23,29 @@
 \end{frame}
 
 \begin{frame}
-	\frametitle{example of usage}
+\frametitle{what for?}
+	\begin{columns}
+	\column{6cm}
+		\begin{itemize}
+			\item One-way property
+			\item usefull for large messages
+		\end{itemize}
+	\column{6cm}
+		\begin{center}
+			\includegraphics[width=4cm,height=6cm]{oneway}
+		\end{center}
+	\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{example of usage (1)}
+	secure storage of passwords
+	\par
+	\begin{center}$hash( seed \parallel passwort )$\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{example of usage (2)}
 	Alice and Bob want to make a decission, where there normaly would flip a coin for.
 	But they can not meet and have only a halfduplex communication channel (ex. a telephoneline).
 	\begin{enumerate}
@@ -35,57 +57,24 @@
 	\end{enumerate}	
 \end{frame}
 
-%\begin{frame}
-%\frametitle{Warum?}
-%	\begin{columns}
-%	\column{6cm}
-%		\begin{itemize}
-%			\item One-way Eigenschaft
-%			\item Sinnvoll f"ur gro"se Nachrichten
-%		\end{itemize}
-%	\column{6cm}
-%		\begin{center}
-%			\includegraphics[width=4cm,height=6cm]{oneway}
-%		\end{center}
-%	\end{columns}
-%\end{frame}
-
-
 \begin{frame}
-\frametitle{Wie?}
-	Signieren mit gemeinsamen Schl"ussel
-	\par
-	\begin{center}\large{\texttt{hash ( key | nachricht )}}\end{center}
-	\vspace{5mm}
-	Speichern von Passw"ortern
-	\par
-	\begin{center}\large{\texttt{hash ( seed | passwort )}}\end{center}
-\end{frame}
-
-\begin{frame}
-\frametitle{Angriffe}
+\frametitle{Attacs}
 	\begin{itemize}
-		\item Rainbow Tables (f"ur Passw"orter)
-		\item Probieren (z.B. A..z, 0..9)
-		\item Reduktion des Problems/Algorithmus
+		\item Rainbow tables (time/memory tradeoff)
+		\item brute-force (z.B. A..z, 0..9)
+		\item analytical attacs
 	\end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Gegenma"snahmen (1)}
-	\large{Immer Salz verwenden!}
+\frametitle{counter measurements (1)}
+	\large{always use salts!}
 \end{frame}
 
 \begin{frame}
-\frametitle{Gegenma"snahmen (2)}
-	Kaskadieren von Hashfunktionen:
+\frametitle{countermesaurements (2)}
+	concatenation of different hash functions:
 	\par
-	\begin{center}\large{\texttt{$hash_1 (msg) \oplus hash_2(msg)$}}\end{center}
-	\vspace{5mm}
-	\par
-	...aber bitte \large{NICHT} so:
-	\par
-	\begin{center}\large{\texttt{$hash_1 (hash_2(msg))$}}\end{center}
+	\begin{center}$hash_1 (msg) \parallel hash_2(msg)$\end{center}
 \end{frame}
 
-\end{document}
