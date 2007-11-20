@@ -4,16 +4,16 @@
 	%\frametitle{Was sie tun}
 	\frametitle{what they do}
 	%Eigenschaften
-	Propertys:
+	Properties:
 	\begin{columns}
 	\column{6cm}
 		\begin{itemize}
 		%	\item Surjektiv \begin{small}(Eindeutige Abbildung)\end{small}
 		%	\item Kollisionsfrei
 		%	\item Lawineneffekt
-			\item surjective \begin{small}(unambiguous projection)\end{small}
+			\item surjective \begin{small}(unidirectional projection)\end{small}
 			\item collision free
-			\item good averlancheffect
+			\item good averlanche-effect
 		\end{itemize}
 	\column{6cm}
 		\begin{center}
@@ -28,7 +28,7 @@
 	\column{6cm}
 		\begin{itemize}
 			\item One-way property
-			\item usefull for large messages
+			\item useful for large messages
 		\end{itemize}
 	\column{6cm}
 		\begin{center}
@@ -46,12 +46,12 @@
 
 \begin{frame}
 	\frametitle{example of usage (2)}
-	Alice and Bob want to make a decission, where there normaly would flip a coin for.
+	Alice and Bob want to make a decision, where there normaly would flip a coin for.
 	But they can not meet and have only a halfduplex communication channel (ex. a telephoneline).
 	\begin{enumerate}
 		\item Alice generates a random bitstring $m$ of sufficient length (ex. 512 bit) and keeps it secret
 		\item Alice sends Bob the hash value $h(m)$ of $m$
-		\item Bob ''guesse'' the value of the least significant (or other well defined) bit and sends his guess to Alice
+		\item Bob ''guesses'' the value of the least significant (or other well defined) bit and sends his guess to Alice
 		\item Alice now sends $m$ to Bob
 		\item Bob validates that the recieved hash matches the hash of the recieved bitstring $m$
 	\end{enumerate}	
@@ -61,20 +61,48 @@
 \frametitle{Attacs}
 	\begin{itemize}
 		\item Rainbow tables (time/memory tradeoff)
-		\item brute-force (z.B. A..z, 0..9)
+		\item brute-force (e.g. A..z, 0..9)
 		\item analytical attacs
 	\end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{counter measurements (1)}
-	\large{always use salts!}
+\frametitle{countermeasures (1)}
+	\large{always use salt!}
 \end{frame}
 
 \begin{frame}
-\frametitle{countermesaurements (2)}
+\frametitle{countermesaures (2)}
 	concatenation of different hash functions:
 	\par
 	\begin{center}$hash_1 (msg) \parallel hash_2(msg)$\end{center}
 \end{frame}
+
+%-----
+
+\begin{frame}
+\frametitle{Merkle-Damgård construction}
+	very common construction for hash functions.
+	examples:
+	\begin{itemize}
+		\item MD4
+		\item MD5 (RFC 1321)
+		\item SHA-0 (FIPS PUB 180-0) 
+		\item SHA-1 (FIPS PUB 180-1) 
+		\item SHA-2 (includes SHA-224, SHA-256, SHA-384, SHA-512) (FIPS PUB 180-2)
+		\item RIPEMD-160
+	\end{itemize}
+	\begin{center}\includegraphics[scale=0.35]{Merkle-Damgard_hash_big}\end{center}
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
 
