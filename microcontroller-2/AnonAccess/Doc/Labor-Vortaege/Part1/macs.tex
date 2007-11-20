@@ -1,0 +1,23 @@
+\section{MACs}
+
+\begin{frame}
+	\frametitle{WTF?}
+	MAC - Massage Authentification Code\\
+	Kind of ''symmetric'' signature of a message.
+	
+	\begin{center}$MAC_k(msg)$\end{center}
+	
+	Propertys:
+	\begin{itemize}
+		\item output being of constant length
+		\item collision free
+		\item resistant to choosen-plaintext-attack
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{HMAC}
+	Defined in \textbf{RFC 2104}
+	
+	$HMAC_k(msg) = hash((k \oplus opad) \parallel hash((k \oplus ipad)\parallel msg) )$
+\end{frame}
