@@ -49,11 +49,11 @@
 	Alice and Bob want to make a decision, where there normaly would flip a coin for.
 	But they can not meet and have only a halfduplex communication channel (ex. a telephoneline).
 	\begin{enumerate}
-		\item Alice generates a random bitstring $m$ of sufficient length (ex. 512 bit) and keeps it secret
-		\item Alice sends Bob the hash value $h(m)$ of $m$
-		\item Bob ''guesses'' the value of the least significant (or other well defined) bit and sends his guess to Alice
-		\item Alice now sends $m$ to Bob
-		\item Bob validates that the recieved hash matches the hash of the recieved bitstring $m$
+		\item<2-> Alice generates a random bitstring $m$ of sufficient length (ex. 512 bit) and keeps it secret
+		\item<3-> Alice sends Bob the hash value $h(m)$ of $m$
+		\item<4-> Bob ''guesses'' the value of the least significant (or other well defined) bit and sends his guess to Alice
+		\item<5-> Alice now sends $m$ to Bob
+		\item<6-> Bob validates that the recieved hash matches the hash of the recieved bitstring $m$
 	\end{enumerate}	
 \end{frame}
 
@@ -68,7 +68,11 @@
 
 \begin{frame}
 \frametitle{countermeasures (1)}
-	\large{always use salt!}
+	\begin{center}
+		\large{always use salt!}
+		\par
+		\includegraphics[width=1cm,height=2cm]{salt}
+	\end{center}
 \end{frame}
 
 \begin{frame}
@@ -93,6 +97,22 @@
 		\item RIPEMD-160
 	\end{itemize}
 	\begin{center}\includegraphics[scale=0.35]{Merkle-Damgard_hash_big}\end{center}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{example: SHA-1}
+	\begin{itemize}
+	\item Blocksize: 512 bit
+	\item maximum message length: $2^64-1 bit$
+	\end{itemize}
+	$f_t(x,y,z) = \left\{ 
+	\begin{array}{r@{\quad:\quad}l}
+	 -1 & t<0 \\
+	  0 & t=0 \\
+	  1 & t>0
+	\end{array}
+	\right. \]$
 \end{frame}
 
 
