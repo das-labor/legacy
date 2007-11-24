@@ -19,15 +19,15 @@ AVRX_GCC_TASKDEF(stuff, 100, 4) {
 	sensor_t *aktSensor;
 	uint8_t i;
 	while(1) {
-		aktSensor = &sensor;
+		aktSensor = sensor;
 		i = 0;
 		AvrXDelay(&switchtimer, 1000);
 
-		while (aktSensor->next != NULL) {
+		while (aktSensor != NULL) {
 			dispFillRect(80, 30 + 9 * i, 30, 8, 0);
 			itoa(aktSensor->typ, bla, 10);
 			strcat(bla, " ");
-			itoa(aktSensor->wert[0], bla2, 10);
+			itoa(aktSensor->wert, bla2, 10);
 			strcat(bla, bla2);
 			draw_Text(bla, 80, 30 + 9 * i, 0, 1, 1);
 			aktSensor = aktSensor->next;
