@@ -17,7 +17,7 @@
 #include "stdlib.h"
 
 uint8_t myaddr;
-sensor_t sensor = {0, NULL, NULL};
+sensor_t *sensor;
 //#################
 TimerControlBlock switchtimer2;
 //#################
@@ -37,27 +37,32 @@ void process_mgt_msg() {
 }
 
 void process_data() {
-	sensor_t *nextsensor = &sensor;
-	uint8_t *wert = malloc(sizeof(uint8_t[2]));
-	wert[0] = rx_msg.data[1];
-	wert[1] = rx_msg.data[2];
+	sensor_t *nextsensor = sensor;
+	sensor_t *lastsensor = sensor;
 
 	can_setled(0, 1);
 	AvrXDelay(&switchtimer2, 100);
 	can_setled(0, 0);
 
-	while (nextsensor->next != NULL) {
+	while (nextsensor != NULL) {
 		if (nextsensor->typ == rx_msg.data[0]) {
-			nextsensor->wert = wert;
+			nextsensor->wert = rx_msg.data[1]; //			nextsensor->wert = *((uint16_t*)&rx_msg.data[1]);
 			return;
 		}
+		lastsensor = nextsensor;
 		nextsensor = nextsensor->next;
 	}
+
 	sensor_t *newsensor = malloc(sizeof(sensor_t));
 	newsensor->typ = rx_msg.data[0];
-	newsensor->wert = wert;
+	newsensor->wert = rx_msg.data[1];
 	newsensor->next = NULL;
-	nextsensor->next = newsensor;
+	if (sensor == NULL) {
+		sensor = newsensor;
+	}
+	else {
+		lastsensor->next = newsensor;
+	}
 }
 
 AVRX_GCC_TASKDEF(laptask, 55, 3) {
