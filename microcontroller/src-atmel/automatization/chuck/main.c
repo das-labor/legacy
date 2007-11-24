@@ -10,6 +10,7 @@
 #include "xcan.h"
 #include "xlap.h"
 #include "pump.h"
+#include "feuchte.h"
 
 //AVRX_GCC_TASK(Monitor, 20, 0);          // External Task: Debug Monitor
 
@@ -33,12 +34,11 @@ int main(void)
 	TCCR0 = TMC8_CK256;		// Set Timer0 to CPUCLK/256
 	TIMSK = 1<<TOIE0;		// Enable interrupt flag
 
-	DDRC = 0xFF;
-
 	xlap_init();
 	can_setled(0, 1);
 	AvrXRunTask(TCB(laptask));
-	AvrXRunTask(TCB(pumptask));
+	AvrXRunTask(TCB(feuchtetask));
+	//AvrXRunTask(TCB(pumptask));
 
 	/* Needed for EEPROM access in monitor */
 	AvrXSetSemaphore(&EEPromMutex);
