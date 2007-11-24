@@ -40,11 +40,12 @@ void process_mgt_msg()
 
 void process_gate_msg()
 {
+	PUMP_DDR |= PUMP_PIN;
 //	AvrXPutFifo(pumpstat, STAT_PUMP_ENABLE);
 	PUMP_PORT ^= (PUMP_PIN);
 }
 
-AVRX_GCC_TASKDEF(laptask, 50, 3) /* name, stackspace, pri */
+AVRX_GCC_TASKDEF(laptask, 100, 3) /* name, stackspace, pri */
 {
     while (1)
     {

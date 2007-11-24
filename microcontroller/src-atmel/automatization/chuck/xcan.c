@@ -2,6 +2,9 @@
 #include <string.h>
 
 #include <avrx.h>
+#include <avrx-io.h>
+
+#include <avrx-signal.h>
 #include <AvrXFifo.h>
 
 #include "config.h"
@@ -199,8 +202,11 @@ AVRX_SIGINT(SIG_INTERRUPT0)
 	IntProlog();             // Switch to kernel stack/context
 	GICR &= ~(1<<INT0);
 	EndCritical();
-	unsigned char status = mcp_status();
 
+	cli();
+	
+	unsigned char status = mcp_status();
+	
 	if ( status & 0x01 ) {	// Message in RX0
 		mcp_bitmod(CANINTE, (1<<RX0IE), 0x00); //disable interrupt
 		AvrXIntSetSemaphore(&rx_mutex);
@@ -222,7 +228,8 @@ AVRX_SIGINT(SIG_INTERRUPT0)
 		}
 	}
 	GICR |= (1<<INT0);
-	Epilog();                // Return to tasks
+	
+	Epilog();                // Return to tasks	
 }
 
 void mcp_reset(){
@@ -309,6 +316,10 @@ void can_init(){
 #	error Can Baudrate is only defined for F_MCP 8, 16 and 20 MHz
 #	endif
 
+	//SJW=1, BLTMODE=1, SAM=1, PHSEG1=6, PHSEG2=5, PRSEG=1
+	//CNF1 = SJW1-0:BRP5-0
+	//CNF2 = BLTMODE:SAM:PHSEG12-PHSEG10:PRSEG2-PRSEG0
+	//CNF3 = SOF:WAKFIL:X:X:X:PHSEG22-PHSEG20
 	mcp_write( CNF1, 0x40 | CNF1_T );
 	mcp_write( CNF2, 0xf1 );
 	mcp_write( CNF3, 0x05 );
