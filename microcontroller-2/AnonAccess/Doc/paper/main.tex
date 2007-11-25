@@ -1,0 +1,34 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{ucs}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{eurosym}
+\usepackage[english]{varioref}
+\usepackage{setspace}
+\usepackage{listings}
+\usepackage[
+    pdftex,
+    a4paper,
+    bookmarks,
+    bookmarksopen=true,
+    pdfauthor={Daniel Otte},
+    pdftitle={AnonAccess},
+    colorlinks,
+    linkcolor=blue,
+    urlcolor=blue,
+    bookmarksnumbered=true,hyperindex=true]{hyperref}
+%% for producing ps use dvips for pdfs use pdftex
+%\usepackage[dvips]{graphicx} 
+\usepackage[pdftex]{graphicx}
+
+\author{Daniel Otte}
+\title{AnonAccess}
+\begin{document}
+\maketitle
+\section{Conventions}
+\input{components.tex}
+\input{idealrun.tex}
+
+\end{document}
