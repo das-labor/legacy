@@ -11,6 +11,7 @@
 
 TimerControlBlock timer;
 
+uint8_t feuchte;
 
 AVRX_GCC_TASKDEF(feuchtetask, 100, 8)
 {
@@ -22,7 +23,6 @@ AVRX_GCC_TASKDEF(feuchtetask, 100, 8)
 	
 	while(1){
 		uint16_t s;
-		uint8_t r;
 		
 		PORTC |= (1<<PC5);
 		AvrXDelay(&timer, 5);
@@ -31,9 +31,9 @@ AVRX_GCC_TASKDEF(feuchtetask, 100, 8)
 		AvrXDelay(&timer, 5);
 		PORTC &= ~(1<<PC5);
 
-		r = ADCH;
+		feuchte = ADCH;
 		
-		msg.data[0] = r;
+		msg.data[0] = feuchte;
 		
 		can_put(&msg);
 		

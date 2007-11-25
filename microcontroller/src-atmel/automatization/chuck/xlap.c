@@ -13,6 +13,7 @@
 #include "fifo.h"
 #include "rf.h"
 #include "pump.h"
+#include "feuchte.h"
 
 uint8_t myaddr;
 
@@ -40,9 +41,18 @@ void process_mgt_msg()
 
 void process_gate_msg()
 {
+	static uint8_t pump_state;
+	
 	PUMP_DDR |= PUMP_PIN;
-//	AvrXPutFifo(pumpstat, STAT_PUMP_ENABLE);
-	PUMP_PORT ^= (PUMP_PIN);
+	pump_state ^= 1;
+	
+	if(pump_state){
+		if(feuchte > 0x09){ //don't drown poor chuck
+			PUMP_PORT |= (PUMP_PIN);
+		}
+	}else{
+		PUMP_PORT &= ~(PUMP_PIN);
+	}
 }
 
 AVRX_GCC_TASKDEF(laptask, 100, 3) /* name, stackspace, pri */
