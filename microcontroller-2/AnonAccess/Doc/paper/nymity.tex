@@ -1,0 +1,20 @@
+\section{being known by name or shared pseudonym}
+AnonAccess allows three kinds of being known:
+\begin{itemize}
+\item being known by name
+\item being known by pseudonym
+\item being known by a shared pseudonym
+\end{itemize}
+
+\subsection{being known by name}
+If the user selects to be known by name the nickname is stored in the \textit{TicketDB} in a way that is available in plaintext to the \textit{Master-Unit}. It can be searched for and it can be read by an administrator. This allows immidiate manipulation of the users flags.
+
+\subsection{being known by pseudonym}
+In every mode the user enters his/her nickname at card creation time at the \textit{Terminal-Unit} and the \textit{Master-Unit} generates a HMAC (with a special key, the \textit{nickkey}) from this nickname. This HMAC is refferd to as \textit{user pseudony} in this document. It is not possible for neither possible for the \textit{Master-Unit} nor the \textit{Terminal-Unit} to compute the users nickname from this pseudonym. The \textit{user pseudonym} is not stored in the \textit{Master-Unit} neither in the \textit{Terminal-Unit}, it is stored only in double encrypted form in the \textit{AuthBlock} on the users card.
+
+This pseudonym is used to apply modifications to a given account. A modification is done by adding an entry to the \textit{FLMDB}. As this requires the \textit{user pseudonym} the nickname of the associated user must be known. Also the modifications can only be applied when the user processes the user authentification process.
+
+\subsection{sharing a pseudonym}
+It is also possible to have multiple users having the same \textit{user pseudonym}. Therefore they simply have to enter the same nickname. It is recommended to use the name of colors for such groups.
+
+To apply modifications to an account in such a group, the modification has to be applyed to all members of the group. An exception is the case where the card related to this account is available. In this case the \textit{UID} from the card can be used to modify the flags in the \textit{TicketDB} directly.

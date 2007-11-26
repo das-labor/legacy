@@ -21,19 +21,17 @@
     bookmarksnumbered=true,hyperindex=true]{hyperref}
 %% for producing ps use dvips for pdfs use pdftex
 %\usepackage[dvips]{graphicx} 
-\usepackage[pdftex]{graphicx}
+\usepackage[pdftex,final]{graphicx}
 \usepackage{picins}
 \usepackage{picinpar}
 \usepackage{algorithmic}
 \usepackage{algorithm}
 
-\author{Daniel Otte}
-\title{AnonAccess}
-
+\author{Daniel Otte\\daniel.otte@ruhr-uni-bochum.de}
+\title{\huge{AnonAccess} \\ \normalsize{das Labor \\ \url{http://www.das-labor.org}}}
 \begin{document} 
-\maketitle
 
-\begin{figure}
+\begin{figure}[t]
  \begin{minipage}[b]{.3\linewidth}
  \includegraphics[scale=0.1]{Labor} 
  \end{minipage}
@@ -43,6 +41,9 @@
  \end{minipage}
 \end{figure}
 
+\maketitle
+
+
 \begin{abstract}
 This paper gives an overview of the AnonAccess-system, which tries to provide access to users which may be known by name, pseudonym or a shared pseudonym, to a given functionality (ex. open a door). The shared pseudonym access feature is tried to be extended and implemented in such a way that it can be claimed to ben anonymous.
 \end{abstract}
@@ -50,6 +51,7 @@ This paper gives an overview of the AnonAccess-system, which tries to provide ac
 \input{notations.tex}
 \input{cryptoprimitives.tex}
 \input{components.tex}
+\input{nymity.tex}
 \input{idealrun.tex}
 
 \begin{appendix}
@@ -57,7 +59,10 @@ This paper gives an overview of the AnonAccess-system, which tries to provide ac
 \input{appendix_shabea.tex}
 \end{appendix}
  
+\newpage
+
 \begin{thebibliography}{999}
+ \bibitem{IEC60027-2}When is a kilobyte a kibibyte? And an MB an MiB?\url{http://www.iec.ch/zone/si/si_bytes.htm}
  \bibitem{FIPS180-2}FIPS 180-2: Secure Hash Standard (SHS) \url{http://csrc.nist.gov/publications/fips/fips180-2/fips180-2withchangenotice.pdf}
  
  \bibitem{RFC2104}RFC 2104: HMAC: Keyed-Hashing for Message Authentication

@@ -23,12 +23,15 @@ HMAC        & 32 bytes & $HMAC_{AuthBlockKey}(UID \parallel ticket \parallel r_{
 %-----
 
 \subsection{realtimeclock (RTC)}
-The realtimeclock is implemented in software by using one of the microcontrollers timers. A timerinterrupt function increments a 64bit value every millisecond (this counter will wrap arround in about 584.542.046 years, which should be quite enough for us). Additionaly the counters value is periodically\footnote{the value is backed up every $3FFFFF_{(16)}$ milliseconds wich is about every 1.165 hours} written to the microcontrollers eeprom and read back after reset. On reset we also add the value $3FFFFF_{(16)}$ to the counter to avoid having more then one time the same timestamp.
+The realtimeclock is implemented in software by using one of the microcontrollers timers. A timer interrupt function increments a 64bit value every millisecond (this counter will wrap arround in about 584.542.046 years, which should be quite enough for us). Additionaly the counters value is periodically\footnote{the value is backed up every $3FFFFF_{(16)}$ milliseconds wich is about every 1.165 hours} written to the microcontrollers EEPROM and read back after reset. On reset we also add the value $3FFFFF_{(16)}$ to the counter to avoid having more then one time the same timestamp.
+
+The backup storage is implemented in a ringbuffer structure with an additional index byte. 
+The index byte indicates which cell of the ringbuffer is to use. After writing a value to a cell it is read back and checked. If the check fails the index byte is incremented by one and the next cell is used. The EEPROM is specified to be written 100,000 times so one cell may work for 116,508.4 hours which is about 13.29 years. So with a ringbuffer of 20 cells we should be able to operate for about 265.82 years which should be sufficient for most applications (if not the ringbuffer could be easily made even larger).
 
 %-----
 
 \subsection{microcontroller}
-We use for both units microcontrollers from the ATmega family from Atmel\cite{Atmel}. They are relative cheap and support protection of the internal memories (flash and eeprom) from being read by their lock-bit feature. There is also a toolchain including GCCs\cite{GCC} C-compiler and a libc implementation\cite{AVR-Libc} available fot this 8 bit microcontrollers which eases the writing of the software.
+We use for both units microcontrollers from the ATmega family from Atmel\cite{Atmel}. They are relative cheap and support protection of the internal memories (flash and eeprom) from being read by their lock-bit feature. There is also a toolchain including GCCs\cite{GCC} C-compiler and a libc implementation\cite{AVR-Libc} available for this 8 bit microcontrollers which eases the writing of the software.
 
 The \textit{Master-Unit} uses a ATmega644\cite{ATmega644} in DIL-Package with 64KiB of program flash, 4KiB of internal SRAM and 2KiB of internal EEPROM (100,000 rewrite cycles guranteed).
 
@@ -38,7 +41,7 @@ The \textit{Terminal-Unit} uses a ATmega32\cite{ATmega32} in DIL-Package with 32
 %-----
 
 \subsection{random number generator (RNG)}
-\begin{window}[0,r, \includegraphics[scale=0.5]{RNG}, {schematic of the hardware random generator}]
+\begin{window}[0,r, \includegraphics[scale=0.05]{hwrnd_schem}, {schematic of the hardware random generator}]
 This curcit utilises the randomnes of the breakthrough voltage of the diode of a transistor to generate random voltages in the range from 0 to 5 volts. While this is quite random it does not need to be cryptographicaly secure because the RNGs output is used only as input for the cryptograpicaly secure PRNG. \\
 \end{window}
 \vspace{1cm}
@@ -90,7 +93,7 @@ locked\_users   & 2 bytes & number of locked users \\
 locked\_admins & 2 bytes & number of locked admins \\ \hline
 \end{tabular} 
 
-The following space of the ticketDB is filled with userentrys which have the following structure:\\
+The following space of the TicketDB is filled with userentrys which have the following structure:\\
 \begin{tabular}{|l|c|l|} \hline
 name & size & description \\ \hline 
 flags         & 1 byte    & the flags associated with the user \\
