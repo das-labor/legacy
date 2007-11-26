@@ -1,0 +1,651 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.45.1"
+   sodipodi:docbase="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo"
+   sodipodi:docname="PRNG.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.75"
+     inkscape:cx="423.90638"
+     inkscape:cy="920.75998"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:window-width="1022"
+     inkscape:window-height="580"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     gridtolerance="50"
+     inkscape:grid-bbox="false" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="opacity:1;fill:#000000;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect2160"
+       width="360"
+       height="98.571426"
+       x="160"
+       y="93.790756"
+       ry="24.276138"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <text
+       xml:space="preserve"
+       style="font-size:56px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       x="171.42856"
+       y="159.50504"
+       id="text3134"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100"><tspan
+         sodipodi:role="line"
+         id="tspan3136"
+         x="171.42856"
+         y="159.50504">randompool</tspan></text>
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:6,2;stroke-dashoffset:0"
+       d="M 341,92.362183 C 341,192.36218 340,191.36218 340,191.36218"
+       id="path3146"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       sodipodi:type="arc"
+       style="opacity:1;fill:#000000;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4117"
+       sodipodi:cx="81"
+       sodipodi:cy="154.36218"
+       sodipodi:rx="30"
+       sodipodi:ry="30"
+       d="M 111 154.36218 A 30 30 0 1 1  51,154.36218 A 30 30 0 1 1  111 154.36218 z"
+       transform="translate(-82.414214,129)"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <rect
+       style="opacity:1;fill:#000000;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect6057"
+       width="144"
+       height="50"
+       x="161"
+       y="261.36218"
+       ry="24.276138"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="177"
+       y="297.36218"
+       id="text7997"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100"><tspan
+         sodipodi:role="line"
+         id="tspan7999"
+         x="177"
+         y="297.36218">offset</tspan></text>
+    <path
+       sodipodi:type="arc"
+       style="opacity:1;fill:#000000;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:2.89655168;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path9955"
+       sodipodi:cx="440"
+       sodipodi:cy="272.36218"
+       sodipodi:rx="20"
+       sodipodi:ry="20"
+       d="M 460 272.36218 A 20 20 0 1 1  420,272.36218 A 20 20 0 1 1  460 272.36218 z"
+       transform="matrix(0.6904762,0,0,0.6904762,-98.80953,28.302579)"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 191.19047,216.36218 L 218.80951,216.36218"
+       id="path9957"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 204.99999,202.55266 L 204.99999,230.1717"
+       id="path9959"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       sodipodi:type="arc"
+       style="opacity:1;fill:#000000;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:2.89655168;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path9961"
+       sodipodi:cx="440"
+       sodipodi:cy="272.36218"
+       sodipodi:rx="20"
+       sodipodi:ry="20"
+       d="M 460 272.36218 A 20 20 0 1 1  420,272.36218 A 20 20 0 1 1  460 272.36218 z"
+       transform="matrix(0.6904762,0,0,0.6904762,10.190474,28.302579)"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 300.19047,216.36218 L 327.80951,216.36218"
+       id="path9963"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 313.99999,202.55266 L 313.99999,230.1717"
+       id="path9965"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       sodipodi:type="arc"
+       style="opacity:1;fill:#000000;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:2.89655168;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path9967"
+       sodipodi:cx="440"
+       sodipodi:cy="272.36218"
+       sodipodi:rx="20"
+       sodipodi:ry="20"
+       d="M 460 272.36218 A 20 20 0 1 1  420,272.36218 A 20 20 0 1 1  460 272.36218 z"
+       transform="matrix(0.6904762,0,0,0.6904762,171.19047,29.302579)"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 461.19047,217.36218 L 488.80951,217.36218"
+       id="path9969"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 474.99999,203.55266 L 474.99999,231.1717"
+       id="path9971"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       sodipodi:type="arc"
+       style="opacity:1;fill:#000000;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:2.89655168;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path9973"
+       sodipodi:cx="440"
+       sodipodi:cy="272.36218"
+       sodipodi:rx="20"
+       sodipodi:ry="20"
+       d="M 460 272.36218 A 20 20 0 1 1  420,272.36218 A 20 20 0 1 1  460 272.36218 z"
+       transform="matrix(0.6904762,0,0,0.6904762,61.19047,28.302579)"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 351.19047,216.36218 L 378.80951,216.36218"
+       id="path9975"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 364.99999,202.55266 L 364.99999,230.1717"
+       id="path9977"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <rect
+       style="opacity:1;fill:#000000;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect9979"
+       width="144"
+       height="50"
+       x="375"
+       y="263.36218"
+       ry="24.276138"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       x="391"
+       y="299.36218"
+       id="text9981"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100"><tspan
+         sodipodi:role="line"
+         id="tspan9983"
+         x="391"
+         y="299.36218">offset</tspan></text>
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 222.6,260.36218 L 210.92381,231.17171"
+       id="path11929"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect6057"
+       inkscape:connection-end="#path9955"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 282.02857,260.36218 L 350.19047,224.21572"
+       id="path11931"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect6057"
+       inkscape:connection-end="#path9973"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 398.97222,262.36218 L 328.5,224.21181"
+       id="path11933"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect9979"
+       inkscape:connection-end="#path9961"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 457.25352,262.36218 L 469.28169,231.86218"
+       id="path11935"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect9979"
+       inkscape:connection-end="#path9967"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <text
+       xml:space="preserve"
+       style="font-size:48px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="-19.414213"
+       y="300.36218"
+       id="text11937"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100"><tspan
+         sodipodi:role="line"
+         id="tspan11939"
+         x="-19.414213"
+         y="300.36218">H</tspan></text>
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 160,93.362183 L 160,62.362183 L 520,62.362183 L 520,92.362183"
+       id="path11941"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <rect
+       style="opacity:1;fill:#000000;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect11943"
+       width="272"
+       height="98"
+       x="-140"
+       y="93.362183"
+       ry="24.276138"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <rect
+       style="opacity:1;fill:#000000;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect11945"
+       width="199"
+       height="79"
+       x="-79"
+       y="-75.637817"
+       ry="24.276138"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <text
+       xml:space="preserve"
+       style="font-size:56px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       x="-56"
+       y="-18.286255"
+       id="text11947"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100"><tspan
+         sodipodi:role="line"
+         id="tspan11949"
+         x="-56"
+         y="-18.286255">Input</tspan></text>
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M -60,92.362183 L -60,192.36218"
+       id="path11969"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M -140,192.36218 L -140,212.36218 L 130,212.36218 L 130,192.36218"
+       id="path11971"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M -0.81365739,252.36218 L 0,210.36218"
+       id="path11973"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#path4117"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 29.585786,283.75892 L 160,285.42794"
+       id="path11975"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#path4117"
+       inkscape:connection-end="#rect6057"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 20.344828,4.3621826 L 20,94.362183"
+       id="path13915"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect11945"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M -100,92.362183 L -100,32.362183 L 250,32.362183 L 250,62.362183"
+       id="path13917"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       sodipodi:type="arc"
+       style="opacity:1;fill:#000000;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path13919"
+       sodipodi:cx="81"
+       sodipodi:cy="154.36218"
+       sodipodi:rx="30"
+       sodipodi:ry="30"
+       d="M 111 154.36218 A 30 30 0 1 1  51,154.36218 A 30 30 0 1 1  111 154.36218 z"
+       transform="translate(521,-11)"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <text
+       xml:space="preserve"
+       style="font-size:48px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       x="584"
+       y="160.36218"
+       id="text13921"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100"><tspan
+         sodipodi:role="line"
+         id="tspan13923"
+         x="584"
+         y="160.36218">H</tspan></text>
+    <path
+       sodipodi:type="arc"
+       style="opacity:1;fill:#000000;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path13925"
+       sodipodi:cx="81"
+       sodipodi:cy="154.36218"
+       sodipodi:rx="30"
+       sodipodi:ry="30"
+       d="M 111 154.36218 A 30 30 0 1 1  51,154.36218 A 30 30 0 1 1  111 154.36218 z"
+       transform="translate(789,-12)"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <text
+       xml:space="preserve"
+       style="font-size:48px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       x="852"
+       y="159.36218"
+       id="text13927"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100"><tspan
+         sodipodi:role="line"
+         id="tspan13929"
+         x="852"
+         y="159.36218">H</tspan></text>
+    <path
+       sodipodi:type="arc"
+       style="opacity:1;fill:#000000;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:1.59218582;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path13931"
+       sodipodi:cx="81"
+       sodipodi:cy="154.36218"
+       sodipodi:rx="30"
+       sodipodi:ry="30"
+       d="M 111 154.36218 A 30 30 0 1 1  51,154.36218 A 30 30 0 1 1  111 154.36218 z"
+       transform="matrix(1.5914622,0,0,0.9914622,603.09156,-10.682083)"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <text
+       xml:space="preserve"
+       style="font-size:48px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       x="692"
+       y="156.36218"
+       id="text13933"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100"><tspan
+         sodipodi:role="line"
+         id="tspan13935"
+         x="692"
+         y="156.36218">+1</tspan></text>
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 440,62.362183 L 440,32.362183 L 600,32.362183 L 599,112.36218"
+       id="path13937"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 633,143.12372 L 682.66467,142.74169"
+       id="path13939"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#path13919"
+       inkscape:connection-end="#path13931"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 781.33533,142.36218 L 839,142.36218"
+       id="path13941"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#path13931"
+       inkscape:connection-end="#path13925"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <rect
+       style="opacity:1;fill:#000000;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect13943"
+       width="199"
+       height="79"
+       x="771.5"
+       y="232.86218"
+       ry="24.276138"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <text
+       xml:space="preserve"
+       style="font-size:56px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       x="772.36523"
+       y="290.71375"
+       id="text13945"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100"><tspan
+         sodipodi:role="line"
+         id="tspan13947"
+         x="772.36523"
+         y="290.71375">Output</tspan></text>
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 870.23846,173.36218 L 870.68846,231.86218"
+       id="path13949"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#path13925"
+       inkscape:connection-end="#rect13943"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M -120,72.362183 L -100,92.362183 L -80,72.362183"
+       id="path15889"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 0,72.362183 L 20,92.362183 L 40,72.362183"
+       id="path15891"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M -20,232.36218 L 0,252.36218 L 20,232.36218"
+       id="path15893"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 580,92.362183 L 600,112.36218 L 620,92.362183"
+       id="path15895"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 660,122.36218 L 680,142.36218 L 660,162.36218"
+       id="path15897"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 820,122.36218 L 840,142.36218 L 820,162.36218"
+       id="path15899"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 890,212.36218 L 870,232.36218 L 850,212.36218"
+       id="path15901"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 205,202.36218 L 205,192.36218"
+       id="path15905"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 315,202.36218 L 315,192.36218"
+       id="path15907"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 365,202.36218 L 365,192.36218"
+       id="path15909"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 475,202.36218 L 475,192.36218"
+       id="path15911"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 140,262.36218 L 160,286.36218 L 140.66667,305.69552"
+       id="path16882"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 190,202.36218 L 204.66667,192.36218 L 220.66667,202.36218"
+       id="path16884"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 300,201.69552 L 315.33333,191.69552 L 330,201.69552"
+       id="path16886"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 350,202.36218 L 365.33333,192.36218 L 380,203.02885"
+       id="path16888"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 460,203.02885 L 474.66667,193.02885 L 490.66667,202.36218"
+       id="path16890"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+  </g>
+</svg>

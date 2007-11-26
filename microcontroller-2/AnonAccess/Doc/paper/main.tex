@@ -22,13 +22,37 @@
 %% for producing ps use dvips for pdfs use pdftex
 %\usepackage[dvips]{graphicx} 
 \usepackage[pdftex]{graphicx}
+\usepackage{picins}
+\usepackage{picinpar}
 
 \author{Daniel Otte}
 \title{AnonAccess}
-\begin{document}
+
+\begin{document} 
 \maketitle
-\section{Conventions}
+
+\begin{figure}
+ \begin{minipage}[b]{.3\linewidth}
+ \includegraphics[scale=0.1]{Labor} 
+ \end{minipage}
+ \hspace{0.5\linewidth}
+ \begin{minipage}[b]{.3\linewidth}
+ \includegraphics[scale=0.7]{AnonAccessLogo} 
+ \end{minipage}
+\end{figure}
+
+\begin{abstract}
+This paper gives an overview of the AnonAccess-system, which tries to provide access to users which may be known by name, pseudonym or a shared pseudonym, to a given functionality (ex. open a door). The shared pseudonym access feature is tried to be extended and implemented in such a way that it can be claimed to ben anonymous.
+\end{abstract}
+
+\input{notations.tex}
 \input{components.tex}
 \input{idealrun.tex}
 
+\begin{appendix}
+\input{appendix_prng.tex}
+
+\section{the Shabea-Cipher}
+Shabea is a SHA-256 based Feistel-Cipher
+\end{appendix}
 \end{document}
