@@ -1,0 +1,32 @@
+\section{the Shabea-Cipher}
+Shabea (SHA based encryption algorithm) is a SHA-256 based Feistel-Cipher, it was designed to securely encryt data where a SHA-256 implementation is available. It was important to have a small (in program space and memory requirement) when a SHA-256 implementation is availabel.
+
+\begin{algorithm}
+\caption{Encryption with Shabea}
+\label{algShabeaEnc}
+\begin{algorithmic}
+\REQUIRE $INPUT = L_0 \parallel R_0$ where $L_0$ and $R_0$ are both 16 bytes large
+\REQUIRE $4\leq rounds\leq 255$
+\REQUIRE $key$ wich the length (in bits) is $keylength$ of any size
+\FOR{$i=0$ to $rounds$}
+\STATE $L_{i+1} \leftarrow R_i$
+\STATE $R_{i+1} \leftarrow L_i \oplus H(key \parallel 0 \parallel i \parallel R_i)$
+\ENDFOR
+\STATE $OUTPUT = L_{i+1} \parallel R_{i+1}$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Decryption with Shabea}
+\label{algShabeaDec}
+\begin{algorithmic}
+\REQUIRE $INPUT = L_{rounds} \parallel R_{rounds}$ where $L_{rounds}$ and $R_{rounds}$ are both 16 bytes large
+\REQUIRE $4\leq rounds\leq 255$
+\REQUIRE $key$ wich the length (in bits) is $keylength$ of any size
+\FOR{$i=rounds+1$ downto $1$}
+\STATE $R_{i-1} \leftarrow L_i$
+\STATE $L_{i-1} \leftarrow R_i \oplus H(key \parallel 0 \parallel i \parallel L_i)$
+\ENDFOR
+\STATE $OUTPUT = L_0 \parallel R_0$
+\end{algorithmic}
+\end{algorithm}
