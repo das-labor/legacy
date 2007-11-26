@@ -24,6 +24,8 @@
 \usepackage[pdftex]{graphicx}
 \usepackage{picins}
 \usepackage{picinpar}
+\usepackage{algorithmic}
+\usepackage{algorithm}
 
 \author{Daniel Otte}
 \title{AnonAccess}
@@ -46,13 +48,35 @@ This paper gives an overview of the AnonAccess-system, which tries to provide ac
 \end{abstract}
 
 \input{notations.tex}
+\input{cryptoprimitives.tex}
 \input{components.tex}
 \input{idealrun.tex}
 
 \begin{appendix}
 \input{appendix_prng.tex}
-
-\section{the Shabea-Cipher}
-Shabea is a SHA-256 based Feistel-Cipher
+\input{appendix_shabea.tex}
 \end{appendix}
+ 
+\begin{thebibliography}{999}
+ \bibitem{FIPS180-2}FIPS 180-2: Secure Hash Standard (SHS) \url{http://csrc.nist.gov/publications/fips/fips180-2/fips180-2withchangenotice.pdf}
+ 
+ \bibitem{RFC2104}RFC 2104: HMAC: Keyed-Hashing for Message Authentication
+
+ \bibitem{ISO7816-1}ISO/IEC 7816-1:1998 Identification cards -- Integrated circuit(s) cards with contacts -- Part 1: Physical characteristics
+
+ \bibitem{ISO7816-2}ISO/IEC 7816-2:1999 Identification cards -- Integrated circuit cards -- Part 2: Cards with contacts -- Dimensions and location of the contacts
+
+ \bibitem{ASN.1BER}ITU-T Rec. X.690: Information technology ? Abstract Syntax Notation One (ASN.1): Specification of basic notation \url{http://www.itu.int/ITU-T/studygroups/com17/languages/X.680-0207.pdf}
+
+ \bibitem{Atmel}The Atmel Cooperation webpresence \url{http://www.atmel.com}  
+
+ \bibitem{ATmega644}ATmega644 Preliminary (revision M, updated 08/07) \url{http://www.atmel.com/dyn/resources/prod_documents/doc2593.pdf}
+
+ \bibitem{ATmega32}ATmega32(L) (revision K, updated 08/07)\url{http://www.atmel.com/dyn/resources/prod_documents/doc2503.pdf}
+
+ \bibitem{GCC}GCC, the GNU Compiler Collection \url{http://gcc.gnu.org}
+ 
+ \bibitem{AVR-Libc}AVR Libc Home Page \url{http://www.nongnu.org/avr-libc/}
+\end{thebibliography}
+
 \end{document}

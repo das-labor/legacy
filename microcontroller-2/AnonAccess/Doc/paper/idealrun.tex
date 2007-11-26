@@ -10,10 +10,10 @@
  \item master-unit searches in \textit{FLMDB} for entrys matching users pseudonym; for every matching entry it does:
   \begin{enumerate}
   \item modify users flags as indicated by the \textit{setflags} and \textit{clearflags} fields
-  \item delet the entry if the \textit{permanent}-flag is not set
+  \item delete the entry if the \textit{permanent}-flag is not set
   \end{enumerate}
- \item master-unit delets \textit{ticketDB}-entry
- \item master-unit generates a new \textit{UID} wich points to an entry in \textit{ticketDB}
+ \item master-unit deletes \textit{ticketDB}-entry
+ \item master-unit generates a new \textit{UID} which points to an entry in \textit{ticketDB}
  \item master-unit generates a new \textit{ticket} with a new \textit{timestamp}
  \item master-unit writes new \textit{ticket} at \textit{UID} in \textit{ticketDB}
  \item master-unit generates new \textit{$r_{key}$}
