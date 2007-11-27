@@ -9,15 +9,20 @@
 	
 	Propertys:
 	\begin{itemize}
-		\item output being of constant length
+		\item output of constant length
 		\item collision free
-		\item resistant to choosen-plaintext-attack
+		\item resistant to chosen-plaintext-attack
 	\end{itemize}
 \end{frame}
 
 \begin{frame}
 	\frametitle{HMAC}
 	Defined in \textbf{RFC 2104}
-	
+	\par
 	$HMAC_k(msg) = hash((k \oplus opad) \parallel hash((k \oplus ipad)\parallel msg) )$
+\end{frame}
+
+\begin{frame}
+	\frametitle{What for?}
+	Authentication of messages.
 \end{frame}
