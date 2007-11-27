@@ -3,8 +3,37 @@
 
 \section{stream ciphers}
 \begin{frame}
-\frametitle{basic modes of operation}
-	\begin{center}
-	%	\includegraphics[width=4.5cm,height=3.5cm]{menuconfig.ps}
-	\end{center}
+\frametitle{Properties}
+	\begin{itemize}
+		\item<2-> Encryption ''on-stream'' - i.e. not divided into blocks
+		\item<3-> Some may be used as PRNG
+		\item<4-> Some require loss-free connections
+	\end{itemize}
 \end{frame}
+\begin{frame}
+\frametitle{basic modes of operation}
+	\begin{itemize}
+		\item<2-> Asynchronous
+		\item<3-> Synchronous
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Asynchronous mode}
+	\begin{itemize}
+		\item<2-> Cipher- and/or Plaintext re-used in feedback function
+		\item<3-> May be used on lossy connections
+		\item<4-> Self-synchronizing
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Synchronous mode}
+	\begin{itemize}
+		\item<2-> No feedback function
+		\item<3-> ''Entropy'' data generated idependant from plain- \& ciphertext
+		\item<4-> Implies \& requires loss-free connection
+	\end{itemize}
+\end{frame}
+
