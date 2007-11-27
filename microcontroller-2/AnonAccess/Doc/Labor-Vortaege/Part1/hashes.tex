@@ -104,15 +104,19 @@
 \frametitle{example: SHA-1}
 	\begin{itemize}
 	\item Blocksize: 512 bit
-	\item maximum message length: $2^64-1 bit$
+	\item maximum message length: $2^{64}-1 bit$
 	\end{itemize}
-	$f_t(x,y,z) = \left\{ 
+	
+	$
+	f_t(x,y,z) = 	\left\{ 
 	\begin{array}{r@{\quad:\quad}l}
-	 -1 & t<0 \\
-	  0 & t=0 \\
-	  1 & t>0
+	 Ch(x,y,z) = (x \wedge y) \oplus (\neg x \wedge z) &  0\le t\le 19 \\
+	 Parity(x,y,z) = x \oplus y \oplus z               & 20\le t\le 39 \\
+	 Maj(x,y,z) = (x \wedge y) \oplus (x \wedge z) \oplus (y \wedge z)  & 40\le t\le 59 \\
+	 Parity(x,y,z) = x \oplus y \oplus z               & 60\le t\le 79
 	\end{array}
-	\right. \]$
+	\right.
+	$
 \end{frame}
 
 
