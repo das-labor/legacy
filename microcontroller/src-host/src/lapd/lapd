@@ -47,21 +47,41 @@ class Can_packet
 end
 
 
-sock = TCPSocket.new('rl', '2342')
-
-
-server_threads = []
-
-session = TCPServer.new( , 2343 )
-
-while 1
-	server_threads << Thread.new(session.accept){
-
-
-	}
+class LapServer
+	attr_reader :alive
+	def initialize(sock)
+		@alive = 1
+		@sock = sock
+		Thread.new{
+			while 1
+				line = sock.gets
+				if line == nil then break end
+				print line	
+			end
+			@alive = 0
+		}
+	end
 end
 
 
+servers = []
+
+server_thread = Thread.new{
+	session = TCPServer.new( '' , 2343 )
+	while 1
+		servers << LapServer.new(session.accept)
+	end
+}
+
+
+while 1
+	p servers
+	sleep 1
+end
+
+server_thread.join
+
+#sock = TCPSocket.new('rl', '2342')
 can = Can_packet.new()
 can.read_from_socket(sock)
 
