@@ -1,0 +1,70 @@
+#!/usr/bin/ruby
+
+require 'socket'
+
+class Can_packet
+	attr_reader :src_addr
+	attr_reader :dest_addr
+	attr_reader :src_port
+	attr_reader :dest_port
+
+	attr_reader :id
+	attr_reader :data
+
+	def initialize
+		@src_addr = 0
+		@dest_addr = 0
+		@src_port = 0
+		@dest_port = 0
+
+		@id = 0x1fffffff
+		@data = Array.new
+		@dlc = 0
+	end
+
+	def id_to_lap
+		@src_addr = (@id>>8) & 0xff
+		@dest_addr = @id & 0xff
+		@src_port = (@id>>23) & 0x3f
+		@dest_port = ((@id>>17) & 0x30) | ((@id>>16) & 0x0f)
+	end
+
+	def read_from_socket(s)
+		c = s.getc
+		
+		bytes = Array.new
+		(c+1).times do
+			bytes << s.getc
+		end
+
+		if bytes[0] == 0x11 then
+			@id = bytes[1] | (bytes[2] << 8) | (bytes[3] << 16) | (bytes[4] << 24)
+			@dlc = bytes[5]
+			@data = bytes[6..(5+@dlc)]
+			self.id_to_lap()
+		end
+	end
+end
+
+
+sock = TCPSocket.new('rl', '2342')
+
+
+server_threads = []
+
+session = TCPServer.new( , 2343 )
+
+while 1
+	server_threads << Thread.new(session.accept){
+
+
+	}
+end
+
+
+can = Can_packet.new()
+can.read_from_socket(sock)
+
+
+p can
+
