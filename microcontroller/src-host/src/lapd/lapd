@@ -47,36 +47,52 @@ class Can_packet
 end
 
 
+class LapDevice
+	attr_reader :type
+	attr_reader :name
+	def initialize(type, name)
+		@type = type
+		@name = name
+	end
+end
+
+class LampDevice << LapDevice
+	def initialize(type, name)
+	end
+end
+
+$servers = []
+
 class LapServer
-	attr_reader :alive
 	def initialize(sock)
-		@alive = 1
 		@sock = sock
 		Thread.new{
 			while 1
 				line = sock.gets
-				if line == nil then break end
-				print line	
+				args = /^(\w+)\s+(\w+)\s+(\w+)\s+(\w+)/.match(line)
+				if args == nil then break end
+				
+				
 			end
-			@alive = 0
+			sock.close
+			$servers.delete(self)
 		}
 	end
 end
 
 
-servers = []
 
 server_thread = Thread.new{
 	session = TCPServer.new( '' , 2343 )
 	while 1
-		servers << LapServer.new(session.accept)
+		$servers << LapServer.new(session.accept)
 	end
 }
 
 
 while 1
-	p servers
-	sleep 1
+	p $servers
+	sleep 100000
 end
 
 server_thread.join
