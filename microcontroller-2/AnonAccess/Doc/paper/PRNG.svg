@@ -13,7 +13,7 @@
    id="svg2"
    sodipodi:version="0.32"
    inkscape:version="0.45.1"
-   sodipodi:docbase="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo"
+   sodipodi:docbase="/home/bg/workspace/AnonAccess/Doc"
    sodipodi:docname="PRNG.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <defs
@@ -36,7 +36,9 @@
      inkscape:window-x="0"
      inkscape:window-y="0"
      gridtolerance="50"
-     inkscape:grid-bbox="false" />
+     inkscape:grid-bbox="false"
+     showborder="false"
+     inkscape:showpageshadow="false" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -644,6 +646,20 @@
        style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
        d="M 460,203.02885 L 474.66667,193.02885 L 490.66667,202.36218"
        id="path16890"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 541.11032,269.7082 L 521.11032,289.7082 L 541.11032,309.7082"
+       id="path2237"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 600,174.69552 C 599.66667,290.69552 599.66667,290.69552 599.66667,290.69552 L 521,289.69552"
+       id="path2239"
        inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/PRNG.png"
        inkscape:export-xdpi="100"
        inkscape:export-ydpi="100" />

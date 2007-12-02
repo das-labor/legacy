@@ -7,7 +7,7 @@
  \item master-unit loads \textit{userflags} from \textit{ticketDB}
  \item master-unit decrypts \textit{ticket} and checks \textit{timestamp} to be in range
  \item master-unit decrypts \textit{$r_{ID}$} ($dec_{pseudokey}(dec_{r_{key}}(r_{ID}))$) to get users pseudonym
- \item master-unit searches in \textit{FLMDB} for entrys matching users pseudonym; for every matching entry it does:
+ \item master-unit searches in \textit{FLMDB} for entries matching users pseudonym; for every matching entry it does:
   \begin{enumerate}
   \item modify users flags as indicated by the \textit{setflags} and \textit{clearflags} fields
   \item delete the entry if the \textit{permanent}-flag is not set

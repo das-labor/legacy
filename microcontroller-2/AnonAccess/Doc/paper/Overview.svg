@@ -8,14 +8,15 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="210mm"
-   height="297mm"
+   width="2959.448"
+   height="1481.9076"
    id="svg2"
    sodipodi:version="0.32"
    inkscape:version="0.45.1"
-   sodipodi:docbase="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo"
+   sodipodi:docbase="/home/bg/workspace/AnonAccess/Doc/paper"
    sodipodi:docname="Overview.svg"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   version="1.0">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -26,20 +27,20 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.24748737"
-     inkscape:cx="-16.676609"
-     inkscape:cy="1038.182"
+     inkscape:cx="-984.301"
+     inkscape:cy="734.3478"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
-     showborder="false"
-     inkscape:showpageshadow="false"
+     showborder="true"
+     inkscape:showpageshadow="true"
      inkscape:grid-points="true"
      gridtolerance="10000"
      guidetolerance="10000"
      inkscape:window-width="1022"
      inkscape:window-height="580"
      inkscape:window-x="0"
-     inkscape:window-y="0" />
+     inkscape:window-y="-6" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -54,7 +55,8 @@
   <g
      inkscape:label="Ebene 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(1439.5872,548.63782)">
     <rect
        style="opacity:1;fill:#000000;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect2168"
@@ -101,7 +103,7 @@
        inkscape:export-ydpi="100" />
     <text
        xml:space="preserve"
-       style="font-size:64px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:64px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="432"
        y="261.01843"
        id="text2176"
@@ -114,7 +116,7 @@
          y="261.01843">AVR</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:56px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:56px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="758"
        y="294.36218"
        id="text2182"
@@ -175,7 +177,7 @@
          y="813.1864">FLMDB</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:56px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:56px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="571.13672"
        y="713.92468"
        id="text3170"
@@ -199,7 +201,7 @@
        inkscape:export-ydpi="100" />
     <text
        xml:space="preserve"
-       style="font-size:56px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:56px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="620"
        y="272.36218"
        id="text3176"
@@ -223,7 +225,7 @@
        inkscape:export-ydpi="100" />
     <text
        xml:space="preserve"
-       style="font-size:32px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:32px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="786.85938"
        y="360.70593"
        id="text3182"
@@ -247,7 +249,7 @@
        inkscape:export-ydpi="100" />
     <text
        xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="803.90625"
        y="466.52234"
        id="text3188"
@@ -271,7 +273,7 @@
        inkscape:export-ydpi="100" />
     <text
        xml:space="preserve"
-       style="font-size:72px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:72px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="199.24922"
        y="733.11371"
        id="text3194"
@@ -319,7 +321,7 @@
        inkscape:export-ydpi="100" />
     <text
        xml:space="preserve"
-       style="font-size:72px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:72px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="1159"
        y="812.36218"
        id="text3206"
@@ -332,7 +334,7 @@
          y="812.36218">Accu</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:72px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:72px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="1159"
        y="415.21933"
        id="text3210"
@@ -348,7 +350,7 @@
          y="505.21933"
          id="tspan3214">supply</tspan></text>
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 1298.6431,651.36218 L 1298.4159,574.36218"
        id="path3216"
        inkscape:connector-type="polyline"
@@ -358,7 +360,7 @@
        inkscape:export-xdpi="100"
        inkscape:export-ydpi="100" />
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 1117,416.58255 L 1041,409.53695"
        id="path3218"
        inkscape:connector-type="polyline"
@@ -402,7 +404,7 @@
        inkscape:export-ydpi="100" />
     <text
        xml:space="preserve"
-       style="font-size:48px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:48px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="294.28571"
        y="392.36218"
        id="text3226"
@@ -415,7 +417,7 @@
          y="392.36218">QPort</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:48px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:48px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="300"
        y="515.21936"
        id="text3230"
@@ -428,7 +430,7 @@
          y="515.21936">PRNG</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:48px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:48px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="540"
        y="509.50504"
        id="text3234"
@@ -440,7 +442,7 @@
          x="540"
          y="509.50504">Crypto</tspan></text>
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 306.92698,652.36218 L 361.27504,533.36218"
        id="path3238"
        inkscape:connector-type="polyline"
@@ -450,7 +452,7 @@
        inkscape:export-xdpi="100"
        inkscape:export-ydpi="100" />
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 687.82012,652.36218 L 637.37891,533.36218"
        id="path3240"
        inkscape:connector-type="polyline"
@@ -472,7 +474,7 @@
        inkscape:export-ydpi="100" />
     <text
        xml:space="preserve"
-       style="font-size:64px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:64px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="147.76843"
        y="-93.3125"
        id="text3250"
@@ -508,7 +510,7 @@
        inkscape:export-ydpi="100" />
     <text
        xml:space="preserve"
-       style="font-size:64px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:64px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="347.76843"
        y="626.6875"
        id="text3258"
@@ -534,7 +536,7 @@
        inkscape:export-ydpi="100" />
     <text
        xml:space="preserve"
-       style="font-size:64px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:64px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="-1183.5938"
        y="357.98718"
        id="text3264"
@@ -576,21 +578,21 @@
        y="-307.63782"
        ry="0" />
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M -1338.5265,-399.01129 L -1338.5265,-339.01129"
        id="path3276"
        inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/Overview.png"
        inkscape:export-xdpi="100"
        inkscape:export-ydpi="100" />
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M -1378.5265,-379.01129 L -1298.5265,-379.01129"
        id="path3278"
        inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/Overview.png"
        inkscape:export-xdpi="100"
        inkscape:export-ydpi="100" />
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M -1378.5265,-359.01129 L -1298.5265,-359.01129"
        id="path3280"
        inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/Overview.png"
@@ -598,7 +600,7 @@
        inkscape:export-ydpi="100" />
     <text
        xml:space="preserve"
-       style="font-size:72px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:72px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="-1251.08"
        y="-332.37695"
        id="text3282"
@@ -677,7 +679,7 @@
        inkscape:export-ydpi="100" />
     <text
        xml:space="preserve"
-       style="font-size:48px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:48px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="-1017.8796"
        y="-46.03286"
        id="text3306"
@@ -689,42 +691,42 @@
          x="-1017.8796"
          y="-46.03286">Display_</tspan></text>
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M -820.05477,-367.61131 L -500.5267,-367.61131"
        id="path3310"
        inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/Overview.png"
        inkscape:export-xdpi="100"
        inkscape:export-ydpi="100" />
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M -820.05588,-287.61131 L -500.02651,-287.61131"
        id="path3312"
        inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/Overview.png"
        inkscape:export-xdpi="100"
        inkscape:export-ydpi="100" />
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M -820.05657,-447.61131 L -500.49645,-447.61131"
        id="path3314"
        inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/Overview.png"
        inkscape:export-xdpi="100"
        inkscape:export-ydpi="100" />
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M -660.02651,-527.61131 L -660.02651,-207.61131"
        id="path3316"
        inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/Overview.png"
        inkscape:export-xdpi="100"
        inkscape:export-ydpi="100" />
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M -580.02651,-527.61131 L -580.02651,-207.61131"
        id="path3318"
        inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/Overview.png"
        inkscape:export-xdpi="100"
        inkscape:export-ydpi="100" />
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M -740.02651,-207.61131 L -740.02651,-527.61131"
        id="path3320"
        inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/Overview.png"
@@ -771,7 +773,7 @@
          y="208.33875">Terminal-Unit</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:64px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:64px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="-1292.9952"
        y="890.73779"
        id="text4305"
@@ -784,7 +786,7 @@
          y="890.73779">Power</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:64px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:64px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="-957.62463"
        y="894.77838"
        id="text4309"
@@ -797,7 +799,7 @@
          y="894.77838">RNG</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:64px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;stroke-miterlimit:4;stroke-dasharray:none"
+       style="font-size:64px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="-949.5434"
        y="721.03217"
        id="text4313"
