@@ -24,11 +24,12 @@ HMAC        & 32 bytes & $HMAC_{absign\_key}(UID \parallel ticket \parallel r_{k
 %-----
 
 \subsection{Terminal-Unit}
-
+The \textit{Terminal-Unit} handels userinputs, displays information and reads and writes the user's card.
+It is equipted with keypad, display, cardreader and a hardware random number generator. It is powered by the \textit{Master-Unit} and should therefore not be reseted even in the case of power failure.
 %-----
 
 \subsection{Master-Unit}
-
+The \textit{Master-Unit} keeps the databases, does the authentication and executes the managed the secured action (ex. opens a door).
 %-----
 
 \subsection{Power supply}
@@ -41,6 +42,7 @@ The real time clock is implemented in software by using one of the microcontroll
 The backup storage is implemented in a ring buffer structure with an additional index byte. 
 The index byte indicates which cell of the ring buffer is to be used. After writing a value to a cell it is read back and checked. If the check fails the index byte is incremented by one and the next cell is used. The EEPROM is specified to be written 100,000 times so one cell may work for 116,508.4 hours which is about 13.29 years. So with a ring buffer of 20 cells, we should be able to operate for about 265.82 years which should be sufficient for most applications (if not the ring buffer could be easily made even larger).
 
+It should be known that the timer value does not necessarily correspond to a linear continous timeline or human time, although the time is monotonic increasing. % extend me
 %-----
 
 \subsection{Microcontroller}
@@ -53,7 +55,7 @@ The \textit{Terminal-Unit} uses an ATmega32\cite{ATmega32} in DIL-Package with 3
 %-----
 
 \subsection{Random number generator (RNG)}
-\begin{window}[0,r, \includegraphics[scale=0.05]{hwrnd_schem}, {schematic of the hardware random generator}]
+\begin{window}[0,r, \includegraphics[scale=0.7]{hwrnd_schem}, {schematic of the hardware random generator}]
 This circuit utilises the randomness of the transistor diode's breakthrough voltage to generate random voltages in the range from 0 to 5 volts. While this is quite random it does not need to be cryptographically secure, because the RNGs output is used only as input for the cryptographically secure PRNG. \\
 \end{window}
 \vspace{1cm}
@@ -73,7 +75,7 @@ The PRNG is periodically filled with entropy from the hardware RNG using the Add
 %-----
 
 \subsection{Secure serial port (QPort-tiny)}
-
+QPort-tiny\cite{QPort-tiny} is a software stack which offers a secure communication channel over an insecure serial line. It therefore uses a preshared secret key to agree on a set of secret symmetric keys which are used for encryption. HMAC-SHA256 is used for session key generation and XTEA\cite{XTEA} is used in OFB and CFB mode for encryption. 
 %-----
 
 \subsection{External serial EEPROM}
@@ -86,7 +88,7 @@ All contents of the EEPROM are encrypted (except the keymigration-area). Shabea-
 \subsection{Ticket-Database (TicketDB)}
 This database is used to store a HMAC of the user's ticket, her/his permissions, and some statistics about the whole system.
 The first element in the database is the header followed by the entries for the users.\\
-\begin{tabular}{|l|c|l|}\hline 
+\begin{tabular}{|l|c|p{8cm}|}\hline 
 name & size & description \\ \hline
 ID & 10 bytes & set to the ASCII string ''AnonAccess'' \\
 majversion & 1 byte & major version; set to 1 \\
@@ -129,11 +131,11 @@ reserved          & 3 bit & reserved, should be set to 0\\ \hline
 
 \subsection{FlagModifying-Database (FLMDB)}
 The flag-modifying-Database keeps entries which specify how a given user account should be modified. \\
-\begin{tabular}{|l|c|l|} \hline
+\begin{tabular}{|l|c|p{8cm}|} \hline
 name & size & description \\ \hline 
 active     & 1 byte    & set to 1 if this entry is active; set to 0 otherwise \\
 permanent  & 1 byte & set to 1 if this entry should not be removed if applied; set to 0 otherwise \\
-last       & 1 bytes & if set to 1 this is the last account to check; set to 0 otherwise \\ 
+last       & 1 bytes & if set to 1 this is the last entry to check; set to 0 otherwise \\ 
 setflags   & 1 byte & specifies which bits have to be set in the userflags\\
 clearflags & 1 byte & specifies which bits have to be cleared in the userflags\\
 reserved   & 3 byte & reserved; set to 0\\
