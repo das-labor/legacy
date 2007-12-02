@@ -3,6 +3,7 @@
 \includegraphics[scale=0.17]{Overview} 
 \caption{system overview}
 \end{figure}
+The AnonAccess system is divided in \textit{Terminal-Unit} and \textit{Master-Unit} also there is a chipcard for each user which stores user's authentification data.
 
 %-----
 
@@ -19,6 +20,14 @@ $r_{key}$ & 32 bytes & random key for $r_{ID}$ decryption \\
 $r_{ID}$   & 32 bytes & encrypted user pseudonym \\
 HMAC        & 32 bytes & $HMAC_{absign\_key}(UID \parallel ticket \parallel r_{key} \parallel r_{ID})$\\ \hline
 \end{tabular} 
+
+%-----
+
+\subsection{Terminal-Unit}
+
+%-----
+
+\subsection{Master-Unit}
 
 %-----
 
