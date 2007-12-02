@@ -8,13 +8,13 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="1052.3622"
-   height="744.09448"
+   width="304.18918"
+   height="191.86633"
    id="svg2"
    sodipodi:version="0.32"
    inkscape:version="0.45.1"
    version="1.0"
-   sodipodi:docbase="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo"
+   sodipodi:docbase="/home/bg/workspace/AnonAccess/Doc/paper"
    sodipodi:docname="AnonAccessLogo.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="/home/anzgar/AnonAccessLogobeta4.png"
@@ -29,7 +29,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.8948649"
      inkscape:cx="141.39148"
-     inkscape:cy="99.756448"
+     inkscape:cy="90.292384"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -70,7 +70,8 @@
      inkscape:groupmode="layer"
      id="layer9"
      inkscape:label="Chip achtung skalliert!!! nur grupiert verschieben!!!!"
-     style="display:inline">
+     style="display:inline"
+     transform="translate(0.5277421,-552.22815)">
     <rect
        style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:8;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
        id="rect9236"
@@ -87,7 +88,8 @@
      inkscape:groupmode="layer"
      id="layer1"
      inkscape:label="foo"
-     style="display:inline">
+     style="display:inline"
+     transform="translate(0.5277421,-552.22815)">
     <g
        id="g4276"
        transform="matrix(1.8861118,0,0,1.8861118,-264.13259,-395.22092)"

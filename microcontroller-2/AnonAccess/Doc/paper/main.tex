@@ -15,9 +15,9 @@
     bookmarksopen=true,
     pdfauthor={Daniel Otte},
     pdftitle={AnonAccess},
-    colorlinks,
-    linkcolor=blue,
-    urlcolor=blue,
+  %  colorlinks,
+  %  linkcolor=blue,
+  %  urlcolor=blue,
     bookmarksnumbered=true,hyperindex=true]{hyperref}
 %% for producing ps use dvips for pdfs use pdftex
 %\usepackage[dvips]{graphicx} 
@@ -28,12 +28,15 @@
 \usepackage{algorithm}
 
 \author{Daniel Otte\\daniel.otte@ruhr-uni-bochum.de}
-\title{\huge{AnonAccess} \\ \normalsize{das Labor \\ \url{http://www.das-labor.org}}}
+\title{\Huge{\textsf{AnonAccess}} \\ \normalsize{das Labor \\ \url{http://www.das-labor.org}}}
+
+%-----
+
 \begin{document} 
 
 \begin{figure}[t]
  \begin{minipage}[b]{.3\linewidth}
- \includegraphics[scale=0.1]{Labor} 
+ \includegraphics[scale=0.15]{Labor} 
  \end{minipage}
  \hspace{0.5\linewidth}
  \begin{minipage}[b]{.3\linewidth}
@@ -43,16 +46,17 @@
 
 \maketitle
 
-
 \begin{abstract}
-This paper gives an overview of the AnonAccess-system, which tries to provide access to users which may be known by name, pseudonym or a shared pseudonym, to a given functionality (ex. open a door). The shared pseudonym access feature is tried to be extended and implemented in such a way that it can be claimed to ben anonymous.
+This paper gives an overview of the AnonAccess-system, which tries to provide access to users which may be known by name, pseudonym or a shared pseudonym, to a given functionality (ex. open a door). The shared pseudonym access feature is tried to be extended and implemented in such a way that it can be claimed to be anonymous.
 \end{abstract}
 
 \input{notations.tex}
 \input{cryptoprimitives.tex}
 \input{components.tex}
 \input{nymity.tex}
+\input{usage.tex}
 \input{idealrun.tex}
+\input{trusted.tex}
 
 \begin{appendix}
 \input{appendix_prng.tex}
@@ -62,8 +66,8 @@ This paper gives an overview of the AnonAccess-system, which tries to provide ac
 \newpage
 
 \begin{thebibliography}{999}
- \bibitem{IEC60027-2}When is a kilobyte a kibibyte? And an MB an MiB?\url{http://www.iec.ch/zone/si/si_bytes.htm}
- \bibitem{FIPS180-2}FIPS 180-2: Secure Hash Standard (SHS) \url{http://csrc.nist.gov/publications/fips/fips180-2/fips180-2withchangenotice.pdf}
+ \bibitem{IEC60027-2}When is a kilobyte a kibibyte? And an MB an MiB? (\url{http://www.iec.ch/zone/si/si_bytes.htm})
+ \bibitem{FIPS180-2}FIPS 180-2: Secure Hash Standard (SHS) (\url{http://csrc.nist.gov/publications/fips/fips180-2/fips180-2withchangenotice.pdf})
  
  \bibitem{RFC2104}RFC 2104: HMAC: Keyed-Hashing for Message Authentication
 
@@ -71,17 +75,17 @@ This paper gives an overview of the AnonAccess-system, which tries to provide ac
 
  \bibitem{ISO7816-2}ISO/IEC 7816-2:1999 Identification cards -- Integrated circuit cards -- Part 2: Cards with contacts -- Dimensions and location of the contacts
 
- \bibitem{ASN.1BER}ITU-T Rec. X.690: Information technology ? Abstract Syntax Notation One (ASN.1): Specification of basic notation \url{http://www.itu.int/ITU-T/studygroups/com17/languages/X.680-0207.pdf}
+ \bibitem{ASN.1BER}ITU-T Rec. X.690: Information technology ? Abstract Syntax Notation One (ASN.1): Specification of basic notation (\url{http://www.itu.int/ITU-T/studygroups/com17/languages/X.680-0207.pdf})
 
- \bibitem{Atmel}The Atmel Cooperation webpresence \url{http://www.atmel.com}  
+ \bibitem{Atmel}The Atmel Cooperation web presence (\url{http://www.atmel.com})  
 
- \bibitem{ATmega644}ATmega644 Preliminary (revision M, updated 08/07) \url{http://www.atmel.com/dyn/resources/prod_documents/doc2593.pdf}
+ \bibitem{ATmega644}ATmega644 Preliminary (revision M, updated 08/07)  (\url{http://www.atmel.com/dyn/resources/prod_documents/doc2593.pdf})
 
- \bibitem{ATmega32}ATmega32(L) (revision K, updated 08/07)\url{http://www.atmel.com/dyn/resources/prod_documents/doc2503.pdf}
+ \bibitem{ATmega32}ATmega32(L) (revision K, updated 08/07)  (\url{http://www.atmel.com/dyn/resources/prod_documents/doc2503.pdf})
 
- \bibitem{GCC}GCC, the GNU Compiler Collection \url{http://gcc.gnu.org}
+ \bibitem{GCC}GCC, the GNU Compiler Collection (\url{http://gcc.gnu.org})
  
- \bibitem{AVR-Libc}AVR Libc Home Page \url{http://www.nongnu.org/avr-libc/}
+ \bibitem{AVR-Libc}AVR Libc Home Page (\url{http://www.nongnu.org/avr-libc/})
 \end{thebibliography}
 
 \end{document}
