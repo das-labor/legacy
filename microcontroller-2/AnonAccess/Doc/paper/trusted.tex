@@ -1,10 +1,21 @@
 \section{Attacks and trusted components}
-This section trys to give an overview of the trustlevel of components and so an overview of the trustlevel of a given implementation of AnonAccess.
+This section tries to give an overview of the trust level of components and thereby an overview of the trust level of a complete implementation of AnonAccess.
 
 \subsection{Security goals}
 \begin{itemize}
- \item access should only granted to users who have a valid card which inforation and related information in the database state that access should be granted to this user.
- \item no valuable information should be retriveable from the cards contents
- \item no valuable information should be retrievable to an unautherised user from the AnonAccess system
- \item no 
+ \item access should only be granted to users who have a valid card whichs information and related information in the database state, that access should be granted to this user.
+ \item no valuable information should be retrievable from the card's contents
+ \item no valuable information should be retrievable by an unauthorised user from the AnonAccess system
+ \item no information about the presence of a user who is not known by nickname should be available, even to an user with admin privileges
 \end{itemize}
+
+\subsection{Trusted components}
+We consider a component to be a trusted component if the compromisation of this component leads to compromisation of at least one of the former declared security goals.
+
+\subsubsection{Terminal-Unit}
+The \textit{Terminal-Unit} is considered trusted, especially the connection between the microcontroller and the card must be protected.
+
+\subsubsection{Master-Unit}
+The \textit{Master-Unit} is considered trusted, especially the serial bus between the microcontroller and the external serial EEPROM must be protected. Although the external EEPROM's content is encrypted, an attacker might gather usefull information from the addresses which are accessed.
+
+ 

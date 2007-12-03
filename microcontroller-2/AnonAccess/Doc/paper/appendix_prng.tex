@@ -1,7 +1,7 @@
 \section{The PRNG}
 The PRNG utilises SHA-256 as hash function.
 The entropy pool is 64 bytes (512 bits) large, which is the block size of SHA-256.
-We specify to algorithms which implement the functionality of the PRNG, one to add entropy to the entropy pool and one to get a block (32 bytes) of random data.
+We specify two algorithms which implement the functionality of the PRNG, one to add entropy to the entropy pool and one to get a block (32 bytes) of random data.
 \begin{algorithm}
 \caption{Add some data to the entropy pool}
 \label{algAddEntropy}
@@ -16,7 +16,7 @@ We specify to algorithms which implement the functionality of the PRNG, one to a
 \end{algorithm}
 
 \begin{algorithm}
-\caption{Get a block of random from the entropy pool}
+\caption{Get a block of random data from the entropy pool}
 \label{algGetRandom}
 \begin{algorithmic}
 \REQUIRE $pool = pool_0 \parallel pool_1$ where $pool_0$ and $pool_1$ are both 32 bytes large
