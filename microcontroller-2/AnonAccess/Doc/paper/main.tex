@@ -21,11 +21,14 @@
     bookmarksnumbered=true,hyperindex=true]{hyperref}
 %% for producing ps use dvips for pdfs use pdftex
 %\usepackage[dvips]{graphicx} 
-\usepackage[pdftex,final]{graphicx}
+\usepackage[pdftex,draft]{graphicx}
 \usepackage{picins}
 \usepackage{picinpar}
 \usepackage{algorithmic}
 \usepackage{algorithm}
+\usepackage{geometry}
+
+\geometry{left=2cm,right=2cm,top=2cm,bottom=2cm,pdftex}
 
 \author{Daniel Otte\\daniel.otte@ruhr-uni-bochum.de \and Sören Heisrath\\sh@3dots.de }
 \title{\Huge{\textsf{AnonAccess}} \\ \normalsize{das Labor \\ \url{http://www.das-labor.org}}}
@@ -86,7 +89,7 @@ This paper gives an overview of the AnonAccess-system, which tries to provide ac
 
  \bibitem{microchip}The Microchip Cooperation web presence (\url{http://www.microchip.com})
 
- \bibitem{QPort-tiny}QPort-tiny specification, not written yet.
+ \bibitem{QPort-tiny}QPort-tiny specification, Daniel Otte (\url{http://nerilex.3dots.de/qport-tiny.pdf}).
 
  \bibitem{XTEA}Tea extensions, Roger M. Needham and David J. Wheeler, (Notes October 1996, Revised March 1997,      Corrected October 1997) (\url{http://www.cix.co.uk/~klockstone/xtea.pdf})
 
