@@ -1,23 +1,23 @@
-\section{ideal run}
+\section{Ideal run}
  \begin{enumerate}
- \item User inserts card in terminal-unit
- \item terminal unit reads \textit{AuthBlock} from card and transmits it in \textit{addAuth}-Packet to master-unit
- \item master-unit checks \textit{UID} to be in range
- \item master-unit checks \textit{ticket} against the HMAC in \textit{ticketDB} at \textit{UID}
- \item master-unit loads \textit{userflags} from \textit{ticketDB}
- \item master-unit decrypts \textit{ticket} and checks \textit{timestamp} to be in range
- \item master-unit decrypts \textit{$r_{ID}$} ($dec_{pseudokey}(dec_{r_{key}}(r_{ID}))$) to get users pseudonym
- \item master-unit searches in \textit{FLMDB} for entries matching users pseudonym; for every matching entry it does:
+ \item User inserts card in \textit{Terminal-Unit}
+ \item \textit{Terminal-Unit} reads \textit{AuthBlock} from card and transmits it in \textit{addAuth}-Packet to \textit{\textit{Master-Unit}}
+ \item \textit{Master-Unit} checks \textit{UID} to be in range
+ \item \textit{Master-Unit} checks \textit{ticket} against the HMAC in \textit{TicketDB} at \textit{UID}
+ \item \textit{Master-Unit} loads \textit{userflags} from \textit{TicketDB}
+ \item \textit{Master-Unit} decrypts \textit{ticket} and checks \textit{timestamp} to be in range
+ \item \textit{Master-Unit} decrypts \textit{$r_{ID}$} ($dec_{pseudokey}(dec_{r_{key}}(r_{ID}))$) to get users pseudonym
+ \item \textit{Master-Unit} searches in \textit{FLMDB} for entries matching users pseudonym; for every matching entry it does:
   \begin{enumerate}
   \item modify users flags as indicated by the \textit{setflags} and \textit{clearflags} fields
   \item delete the entry if the \textit{permanent}-flag is not set
   \end{enumerate}
- \item master-unit deletes \textit{ticketDB}-entry
- \item master-unit generates a new \textit{UID} which points to an entry in \textit{ticketDB}
- \item master-unit generates a new \textit{ticket} with a new \textit{timestamp}
- \item master-unit writes new \textit{ticket} at \textit{UID} in \textit{ticketDB}
- \item master-unit generates new \textit{$r_{key}$}
- \item master-unit generates new \textit{$r_{ID}$}$=enc_{pseudokey}(enc_{r_{key}}(users pseudonym))$ 
- \item master-unit transmits new \textit{AuthBlock} in \textit{addAuthAck}-Packet to terminal-unit
- \item terminal-unit writes new \textit{AuthBlock} onto card
+ \item \textit{Master-Unit} deletes \textit{TicketDB}-entry
+ \item \textit{Master-Unit} generates a new \textit{UID} which points to an entry in \textit{TicketDB}
+ \item \textit{Master-Unit} generates a new \textit{ticket} with a new \textit{timestamp}
+ \item \textit{Master-Unit} writes new \textit{ticket} at \textit{UID} in \textit{TicketDB}
+ \item \textit{Master-Unit} generates new \textit{$r_{key}$}
+ \item \textit{Master-Unit} generates new \textit{$r_{ID}$}$=enc_{rid\_key}(enc_{r_{key}}(users pseudonym))$ 
+ \item \textit{Master-Unit} transmits new \textit{AuthBlock} in \textit{addAuthAck}-Packet to \textit{Terminal-Unit}
+ \item \textit{Terminal-Unit} writes new \textit{AuthBlock} onto card
  \end{enumerate}

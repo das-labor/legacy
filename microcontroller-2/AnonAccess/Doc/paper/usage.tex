@@ -1,10 +1,54 @@
 \section{Usage}
-This section describes the AnonAccess system from the user point of view.
-
-%-----
-
-\subsection{Admin status}
+This section describes the AnonAccess system from the user's point of view.
 
 %-----
 
 \subsection{Actions and commands}
+\subsubsection{mainopen}
+Execute a special action (ex. open a door).
+
+\subsubsection{mainclose} 
+Execute a special action (ex. closing/locking a door).
+
+\subsubsection{adduser}
+Add a user to the system. A user nickname must be specified. A user is added by generating a new valid \textit{AuthBlock} which is written to an empty card, and by writing corresponding information to the \textit{TicketDB}.
+ 
+\subsubsection{remuser}
+Remove a user from the system. A user nickname must be specified. If the nickname is stored in the \textit{TicketDB} the entry in the \textit{TicketDB} is immediately deleted which includes setting the \textit{exists}-flag to 0. If the nickname is not stored in \textit{TicketDB} a new entry in \textit{FLMDB} is generated which leads to removal of the account when a \textit{AuthBlock} is processed whichs \textit{user pseudonym} matches the generated \textit{user pseudonym}. 
+
+\subsubsection{lockuser}
+Same as removing a user but instead of deleting the entry only the lock bit is set, which will cause the system to not accept the card as valid user card.
+
+\subsubsection{unlockuser}
+Same as removing a user, but instead of deleting the entry, an eventually set lock bit will be cleared.
+
+\subsubsection{addadmin}
+Same as removing a user, but instead of deleting the entry, the admin bit will be set, granting admin privileges to the user.
+
+\subsubsection{remadmin}
+Same as removing a user, but instead of deleting the entry, an eventually set admin bit will be cleared, so the user will not have admin privileges any more.
+
+\subsubsection{keymigrate}
+Initiate a key-migration, which will write the internal secret keys to the external serial EEPROM. This might not be implemented for security reasons.
+
+%-----
+
+\subsection{Privileges}
+The system differentiates between "normal" (non-admin) users and admin users. To execute a given task in a session, special authorisation requirements must be met. These requirements are given as the number of users and admins which have to participate in the session. It might be decided to restrict admin privileges to users which are known by nickname. The given example of minimum permission levels assumes that admin privileges are restricted to users that are known by nickname.
+\begin{table}
+\caption{example for minimum permission levels for different tasks}
+\begin{tabular}{|l|l|} \hline
+    action     & requirements \\ \hline
+	mainopen   & 1 user   \\
+	mainclose  & 1 user   \\
+	adduser    & 1 admin  \\
+	remuser    & 1 admin  \\
+	lockuser   & 1 admin  \\
+	unlockuser & 1 admin  \\
+	addadmin   & 2 admins  \\
+	remadmin   & 2 admins  \\
+	keymigrate & 3 admins  \\
+    \hline
+\end{tabular}
+\end{table}
+%-----
