@@ -47,7 +47,7 @@ CANADDR = 1
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
 
-SRC = main.c xcan.c spi.c rf.c fifo.c xlap.c switch.c
+SRC = main.c xcan.c spi.c rf.c fifo.c xlap.c switch.c lamp_and_switch.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
@@ -410,13 +410,13 @@ clean_list :
 	$(REMOVE) $(TARGET).eep
 	$(REMOVE) $(TARGET).obj
 	$(REMOVE) $(TARGET).cof
-#	$(REMOVE) $(TARGET).elf
+	$(REMOVE) $(TARGET).elf
 	$(REMOVE) $(TARGET).map
 	$(REMOVE) $(TARGET).a90
 	$(REMOVE) $(TARGET).sym
 	$(REMOVE) $(TARGET).lnk
 	$(REMOVE) $(TARGET).lss
-#	$(REMOVE) $(OBJ)
+	$(REMOVE) $(OBJ)
 	$(REMOVE) *.o *.lst *.map *.lss *.sym *.cof *.eep
 	$(REMOVE) $(LST)
 	$(REMOVE) $(SRC:.c=.s)

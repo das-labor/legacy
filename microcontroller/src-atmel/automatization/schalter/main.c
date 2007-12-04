@@ -11,8 +11,23 @@
 #include "xlap.h"
 #include "rf.h"
 #include "switch.h"
+#include "lamp_and_switch.h"
 
 //AVRX_GCC_TASK(Monitor, 20, 0);          // External Task: Debug Monitor
+
+
+
+void my_init (void) __attribute__ ((naked)) \
+    __attribute__ ((section (".init2")));
+
+void
+my_init (void)
+{
+	uint8_t *x;
+	for(x=0x60;x<0x460;x++)
+		*x = 0x55;
+}
+
 
 
 AVRX_SIGINT(SIG_OVERFLOW0)
@@ -37,11 +52,14 @@ int main(void)
     //InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
 	xlap_init();
 	rf_init();
+	lamp_and_switch_init();
     //AvrXRunTask(TCB(Monitor));
 	AvrXRunTask(TCB(laptask));
 	AvrXRunTask(TCB(rfrxtask));
 	AvrXRunTask(TCB(rftxtask));
 	AvrXRunTask(TCB(switchtask));
+	AvrXRunTask(TCB(lapd_task));
+	
 
     /* Needed for EEPROM access in monitor */
 	AvrXSetSemaphore(&EEPromMutex);
