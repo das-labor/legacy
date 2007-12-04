@@ -2,14 +2,17 @@
 
 require 'socket'
 
-class Can_packet
+
+$cand_socket = TCPSocket.new('rl', '2342')
+
+class CanPacket
 	attr_reader :src_addr
 	attr_reader :dest_addr
 	attr_reader :src_port
 	attr_reader :dest_port
 
 	attr_reader :id
-	attr_reader :data
+	attr_accessor :data
 
 	def initialize
 		@src_addr = 0
@@ -29,6 +32,10 @@ class Can_packet
 		@dest_port = ((@id>>17) & 0x30) | ((@id>>16) & 0x0f)
 	end
 
+	def lap_to_id
+		@id = (@src_addr<<8) | @dest_addr | (@src_port<<23) | ((@dest_port&0x30)<<17) | ((@dest_port&0x0f)<<16)
+	end
+
 	def read_from_socket(s)
 		c = s.getc
 		
@@ -44,34 +51,131 @@ class Can_packet
 			self.id_to_lap()
 		end
 	end
-end
 
+	def transmit
+		s = $cand_socket
+		@dlc = @data.size
+		s.putc(@dlc+5)
+		s.putc(0x11)
+		s.putc(@id&0xff)
+		s.putc((@id>>8)&0xff)
+		s.putc((@id>>16)&0xff)
+		s.putc((@id>>24)&0xff)
+		s.putc(@dlc)
+		@dlc.times do |i|
+			s.putc(@data[i])
+		end
+	end
+
+	def set_lap(src_addr, src_port, dest_addr, dest_port)
+		@src_addr = src_addr
+		@dest_addr = dest_addr
+		@src_port = src_port
+		@dest_port = dest_port
+		self.lap_to_id
+	end
+end
 
 class LapDevice
 	attr_reader :type
 	attr_reader :name
-	def initialize(type, name)
-		@type = type
+	def initialize(name)
 		@name = name
+	end
+	def ==(n)
+		n == @name
+	end
+
+end
+
+class SwitchDevice < LapDevice
+	#format for args is name, lap_addr, num
+	def initialize(str)
+		name, args =  str.split(' ', 2)
+		lap_addr, num = args.split(',')
+		@lap_addr = lap_addr.to_i
+		@num = num.to_i
+
+		super(name)
+		@state = 0
+	end
+	def set(arg)
+		print "set\n"
+		p arg
+		newstate = arg.to_i
+		p newstate
+		if (newstate == 0) || (newstate == 1) then
+
+			if @state != newstate then
+				@state = newstate
+				can = CanPacket.new()
+				can.set_lap(0, 0x18, @lap_addr, 0x18)
+				can.data = [1, @num, @state]
+				can.transmit()
+			end
+		end
+	end
+	def toggle
+		set(1-@state)
+	end
+	def get
+		"info " + @name + " " + @state
+	end
+	def request(sock, command, argstr)
+		print"request\n"
+		if argstr then
+			args = argstr.split()
+		end
+		p command
+		p args
+		sock.puts case command
+			when "set" 		then set(args[0])
+			when "toggle"	then toggle
+			when "get"		then get
+			else			"error - no such comman\r\n"
+		end
 	end
 end
 
-class LampDevice << LapDevice
-	def initialize(type, name)
+$devices = []
+
+def read_devices(filename)
+	file = File.new(filename, "r")
+	file.each_line do |line|
+		line.chomp!
+		arr = line.split(' ', 2)
+		if arr.size < 2 then break end
+		$devices << case arr[0]
+			when "Switch" then SwitchDevice.new(arr[1])
+			else nil
+		end
 	end
 end
 
 $servers = []
 
 class LapServer
+	def command_get(args)
+
+	end
+
 	def initialize(sock)
 		@sock = sock
 		Thread.new{
 			while 1
 				line = sock.gets
-				args = /^(\w+)\s+(\w+)\s+(\w+)\s+(\w+)/.match(line)
-				if args == nil then break end
-				
+				if line == nil then break end
+				puts line
+				line.chomp!
+				args = line.split(' ',3);
+				i = $devices.index(args[1])
+				p args
+				p i
+				if i then
+					$devices.at(i).request(sock, args[0], args[2])
+				else
+					sock.puts("no such device\r\n")
+				end
 				
 			end
 			sock.close
@@ -81,7 +185,6 @@ class LapServer
 end
 
 
-
 server_thread = Thread.new{
 	session = TCPServer.new( '' , 2343 )
 	while 1
@@ -89,18 +192,15 @@ server_thread = Thread.new{
 	end
 }
 
+read_devices("devices.lst");
 
-while 1
-	p $servers
-	sleep 100000
+$devices.each do |d|
+	p d
 end
 
+
+
+
+
 server_thread.join
-
-#sock = TCPSocket.new('rl', '2342')
-can = Can_packet.new()
-can.read_from_socket(sock)
-
-
-p can
 
