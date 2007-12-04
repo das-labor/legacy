@@ -10,6 +10,9 @@
 #include "xcan.h"
 #include "xlap.h"
 
+#include "lamp_and_switch.h"
+#include "progmem.h"
+
 #define RF_C
 #include "rf.h"
 
@@ -21,9 +24,11 @@
 #define TX_OFF() PORT_RF_TX &= ~(1<<BIT_RF_TX)
 
 
+#define RFRXBUF_SIZE 55
+
 typedef struct{
 	uint8_t p;
-	uint8_t buf[100];
+	uint8_t buf[RFRXBUF_SIZE];
 }rfrxbuf_t;
 
 uint8_t receiving;
@@ -45,7 +50,7 @@ AVRX_SIGINT(SIG_INTERRUPT1)
 		TCNT1 = 0;
 		
 		t = rfrxbuf.p +1;
-		if(t >= 100)
+		if(t >= RFRXBUF_SIZE)
 			t = 0;
 		rfrxbuf.p = t;
 	}else{
@@ -104,30 +109,44 @@ uint8_t rf_time2code(rf_code_t * code, uint8_t * time, uint8_t numbits){
 	return 0;
 }
 
-int8_t lampbright[4];
 
+typedef struct{
+	uint32_t code;
+	void(*handler)(uint16_t param);
+	uint16_t param;
+}code_action_t;
 
+code_action_t code_actions[] PROGMEM={
+	{0x0015050d /*A 1 on*/,			rc_switch_set, (SWITCH_ON  | LAMP_COUCHFLUTER) },
+	{0x00510550 /*switch a on*/,	rc_switch_set, (SWITCH_ON  | LAMP_COUCHFLUTER) },
+	{0x0014050d /*A 1 off*/,		rc_switch_set, (SWITCH_OFF | LAMP_COUCHFLUTER) },
+	{0x00540550 /*switch a off*/,	rc_switch_set, (SWITCH_OFF | LAMP_COUCHFLUTER) },
 
-void lampedim(uint8_t lampe, int8_t d){
-	int8_t tmp;
-	static can_message_t msg = {0, 0x35, PORT_LAMPE, PORT_LAMPE, 3};
-	tmp = lampbright[lampe] -d;
-	if(tmp>0x40) tmp = 0x40;
-	if(tmp<0) tmp = 0;
-	lampbright[lampe] = tmp;
+	{0x0015450d /*A 2 on*/,			rc_switch_set, (SWITCH_ON  | LAMP_HINTENFLUTER) },
+	{0x00511150 /*switch b on*/,	rc_switch_set, (SWITCH_ON  | LAMP_HINTENFLUTER) },
+	{0x0014450d /*A 2 off*/,		rc_switch_set, (SWITCH_OFF | LAMP_HINTENFLUTER) },
+	{0x00541150 /*switch b off*/,	rc_switch_set, (SWITCH_OFF | LAMP_HINTENFLUTER) },
+
+	{0x0015054d /*B 1 on*/,			all_lampedim,  ((2<<8)|0x00 ) },
+	{0x00511450 /*switch c on*/,	all_lampedim,  ((2<<8)|0x00 ) },
+	{0x0014054d /*B 1 off*/,		all_lampedim,  ((-2<<8)|0x00 ) },
+	{0x00541450 /*switch c off*/,	all_lampedim,  ((-2<<8)|0x00 ) },
+
+	{0x0015454d /*B 2 on*/,			rc_switch_set, (SWITCH_ON  | LAMP_MOODBAR ) },
+	{0x00111550 /*switch d on*/,	rc_switch_set, (SWITCH_ON  | LAMP_MOODBAR ) },
+	{0x0014454d /*B 2 off*/,		rc_switch_set, (SWITCH_OFF | LAMP_MOODBAR ) },
+	{0x00141550 /*switch d off*/,	rc_switch_set, (SWITCH_OFF | LAMP_MOODBAR ) },
+
+	{0x00411550 /*switch e on*/,	rc_switch_set, (SWITCH_ON  | LAMP_BASTELECKE ) },
+	{0x0015051d /*C 1 on*/,			rc_switch_set, (SWITCH_ON  | LAMP_BASTELECKE ) },
+	{0x00441550 /*switch e off*/,	rc_switch_set, (SWITCH_OFF | LAMP_BASTELECKE ) },
+	{0x0014051d /*C 1 off*/,		rc_switch_set, (SWITCH_OFF | LAMP_BASTELECKE ) },
 	
-	msg.addr_src = myaddr;
-	msg.data[0] = 0;
-	msg.data[1] = lampe;
-	msg.data[2] = tmp;
-	can_put(&msg);
-}
+};
 
 
 
-
-
-AVRX_GCC_TASKDEF(rfrxtask, 50, 6)
+AVRX_GCC_TASKDEF(rfrxtask, 50, 6)//was stack 100, but 50 should be enough
 {
 	OCR1A = 120;
 	OCR1B = 2000;
@@ -135,18 +154,17 @@ AVRX_GCC_TASKDEF(rfrxtask, 50, 6)
 	TCCR1B = 5; // clk/1024
 	MCUCR |= (1<<ISC10); //trigger on any edge
 	
-	static can_message_t msg = {0,0xff,PORT_REMOTE,PORT_REMOTE};
-	static can_message_t msg_l = {0, 0x31, PORT_LAMPE, PORT_LAMPE, 3, {FKT_LAMPE_ADD}};
+	static can_message_t msg = {0, 0xff, PORT_REMOTE, PORT_REMOTE, 4};
 	msg.addr_src = myaddr;
-	
-	uint32_t code=0, lastcode=0;
+ 
+	uint32_t code=0;
 	uint8_t gotcode;
 	
     while (1)
     {
 		receiving = 0;
-		uint8_t x, new;
-		for(x=0;x<100;x++)
+		uint8_t x;
+		for(x=0;x<RFRXBUF_SIZE;x++)
 			rfrxbuf.buf[x]=0;
 		GICR |= (1<<INT1);
 		AvrXWaitSemaphore(&rfin_mutex);
@@ -163,75 +181,26 @@ AVRX_GCC_TASKDEF(rfrxtask, 50, 6)
 		}
 		
 		if(gotcode){
+			static can_message_t msg = {0,0xff,PORT_REMOTE,PORT_REMOTE};
 			msg.dlc = 4;
 			memcpy(msg.data, &code, 4);
 			can_put(&msg);
-			
-			if(code==lastcode) new=0; else new=1;
-			
-			switch (code){
-				case 0x0015050d: //A 1 on
-				case 0x00510550: //switch a on
-					if(new) AvrXPutFifo(rftxfifo, 0x010000C0); //Fluter an
-					break;
-				case 0x0014050d: //A 1 off
-				case 0x00540550: //switch a off
-					if(new) AvrXPutFifo(rftxfifo, 0x01000040); //Fluter aus
-					break;
-				case 0x0015450d: //A 2 on
-				case 0x00511150: //switch b on
-					if(new) AvrXPutFifo(rftxfifo, 0x00154515); //Türfluter an
-					break;
-				case 0x0014450d: //A 2 off
-				case 0x00541150: //switch b off
-					if(new) AvrXPutFifo(rftxfifo, 0x00144515); //Türfluter aus
-					break;
-				case 0x0015054d: //B 1 on
-				case 0x00511450: //switch c on
-					lampedim(0,2);
-					lampedim(1,2);
-					lampedim(2,2);
-					lampedim(3,2);
-					break;
-				case 0x0014054d: //B 1 off
-				case 0x00541450: //switch c off
-					lampedim(0,-2);
-					lampedim(1,-2);
-					lampedim(2,-2);
-					lampedim(3,-2);
-					break;
-				case 0x0015454d: //B 2 on
-				case 0x00111550: //switch d on
-					if(new) AvrXPutFifo(rftxfifo, 0x00150515); //Theke an
-					break;
-				case 0x0014454d: //B 2 off
-				case 0x00141550: //switch d off
-					if(new) AvrXPutFifo(rftxfifo, 0x00140515); //Theke aus
-					break;
-				case 0x00411550: //switch e on
-				case 0x0015051d: //C 1 on
-					if(new) AvrXPutFifo(rftxfifo, 0x00150555); //Bastelecken Licht an
-					break;
-				case 0x00441550: //switch e off
-				case 0x0014051d: //C 1 off
-					if(new) AvrXPutFifo(rftxfifo, 0x00140555); //Bastelecken Licht aus
-					break;
-				case 0x0015055d: //switch D 1 on
-					if(new) AvrXPutFifo(rftxfifo, 0x00140000); //Beamer an
-					break;
-				case 0x0014055d: //switch D 1 off
-					if(new) AvrXPutFifo(rftxfifo, 0x00110000); //Beamer aus
-					break;
-				case 0x0015455d: //switch D 2 on
-					if(new) AvrXPutFifo(rftxfifo, 0x00440000); //Kaffeemaschine an
-					break;
-				case 0x0014455d: //switch D 2 off
-					if(new) AvrXPutFifo(rftxfifo, 0x00410000); //Kaffeemaschine aus
-					break;
+	
+			uint8_t x;
+			for(x=0; x<(sizeof(code_actions)/sizeof(code_action_t)); x++){
+				if(code == PD(code_actions[x].code) ){
+					void(*fp)(uint16_t) = (void*) PW(code_actions[x].handler);
+					fp(PW(code_actions[x].param));
+				}
 			}
-			lastcode = code;
 		}
-		/*
+	}
+}
+
+
+
+/*
+ *
 		if (rfrxbuf.p >24){
 			msg.dlc = 8;
 			memcpy(msg.data, rfrxbuf.buf, 8);
@@ -253,9 +222,43 @@ AVRX_GCC_TASKDEF(rfrxtask, 50, 6)
 			msg.dlc = 0;
 			can_put(&msg);
 		}
-		*/
-    }
-}
+	
+    
+		if(gotcode){
+			msg.dlc = 4;
+			memcpy(msg.data, &code, 4);
+			can_put(&msg);
+			
+			if(code==lastcode) new=0; else new=1;
+			
+			switch (code){
+				case 0x0015050d: //A 1 on
+				case 0x00510550: //switch a on
+					if(new) AvrXPutFifo(rftxfifo, 0x010000C0); //Fluter an
+					break;
+				case 0x0014050d: //A 1 off
+				case 0x00540550: //switch a off
+					if(new) AvrXPutFifo(rftxfifo, 0x01000040); //Fluter aus
+					break;
+			case 0x0015055d: //switch D 1 on
+					if(new) AvrXPutFifo(rftxfifo, 0x00140000); //Beamer an
+					break;
+				case 0x0014055d: //switch D 1 off
+					if(new) AvrXPutFifo(rftxfifo, 0x00110000); //Beamer aus
+					break;
+				case 0x0015455d: //switch D 2 on
+					if(new) AvrXPutFifo(rftxfifo, 0x00440000); //Kaffeemaschine an
+					break;
+				case 0x0014455d: //switch D 2 off
+					if(new) AvrXPutFifo(rftxfifo, 0x00410000); //Kaffeemaschine aus
+					break;
+			}
+			lastcode = code;
+		}
+	
+
+
+*/
 
 
 TimerControlBlock timer;
@@ -322,7 +325,7 @@ void code_tx(rf_code_t code){
 	}
 }
 
-AVRX_GCC_TASKDEF(rftxtask, 100, 2){
+AVRX_GCC_TASKDEF(rftxtask, 70, 2){//stack was 100 bytes, but 70 should be enough
 	while(1){
 		uint32_t code;
 		uint8_t x, tmp;
