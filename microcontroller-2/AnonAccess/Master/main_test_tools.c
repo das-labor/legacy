@@ -181,7 +181,7 @@ void console_getnick(void * data){
 	char rcvbuffer[31]={0};
 	uart_putstr_P(PSTR("\r\n nickname: "));
 	console_getnstr( 30, rcvbuffer);
-	*((char**)data) = malloc(strlen(rcvbuffer));
+	*((char**)data) = malloc(strlen(rcvbuffer)+1);
 	strncpy(*((char**)data), rcvbuffer, 30);
 }
 

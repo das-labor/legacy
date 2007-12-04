@@ -208,10 +208,18 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	return flags.admin?valid_admin:valid_user;
 }
 
+#define STACK_TEST 1024
+
 void new_account(authblock_t * ab, char* nickname){
 	userflags_t flags;
 	uint8_t key[32];
 	uint8_t hmac[32];
+	volatile uint8_t stacktest[STACK_TEST];
+	int ixx;
+	
+	for(ixx=0;ixx<STACK_TEST;++ixx)
+		stacktest[ixx]=0xFF;
+	
 	/* set initial userflags */
 	flags.admin = 0;
 	flags.exist = 1;
@@ -221,19 +229,10 @@ void new_account(authblock_t * ab, char* nickname){
 	/* generate new uid */
 	uint8_t t=0;
 	uint16_t i=0;
-	uart_putstr_P(PSTR("\r\n !nick: "));
-	uart_hexdump(nickname, 32);
 	do{
 		i = fairrnd(ticketdb_getstatMaxUsers()-1);
-		//i=2; //fillBlockRandom(&i, 2);
-		//i %= 100;//
-		//i %= ticketdb_getstatMaxUsers();
 		++t;
-		uart_putstr_P(PSTR("\r\n &nick: "));
-		uart_hexdump(nickname, 32);
 	} while (ticketdb_userexists(i) && (t<5));
-	uart_putstr_P(PSTR("\r\n %nick: "));
-	uart_hexdump(nickname, 32);
 	if(t==5){
 		do{
 			i = (i+1)%ticketdb_getstatMaxUsers();
@@ -241,8 +240,6 @@ void new_account(authblock_t * ab, char* nickname){
 	}
 	ab->uid = i;
 	
-	uart_putstr_P(PSTR("\r\n \"nick: "));
-	uart_hexdump(nickname, 32);
 	/* generate new ticket */
 	fillBlockRandom(ab->ticket, 32-sizeof(timestamp_t));
 	{
@@ -254,18 +251,12 @@ void new_account(authblock_t * ab, char* nickname){
 	shabea256(ab->ticket, key, 256, 1, 16);
 	delete_key(key, 32);
 	
-	uart_putstr_P(PSTR("\r\n $nick: "));
-	uart_hexdump(nickname, 32);
 	/* store new ticket */
 	load_ticketkey(key);
 	hmac_sha256(hmac, key, 256, ab->ticket, 32*8);
 	delete_key(key, 32);
-	uart_putstr_P(PSTR("\r\n &nick: "));
-	uart_hexdump(nickname, 32);
 	ticketdb_newuser(&hmac, &(ab->uid), ab->uid);
 	
-	uart_putstr_P(PSTR("\r\n /nick: "));
-	uart_hexdump(nickname, 32);
 	ticketdb_setUserFlags(ab->uid, &flags);
 
 	/* make new RID & Co */
@@ -285,6 +276,11 @@ void new_account(authblock_t * ab, char* nickname){
 	load_absignkey(key);
 	hmac_sha256(ab->hmac, key, 256, ab, 8*(sizeof(authblock_t)-32));
 	delete_key(key, 32);
+	
+	for(ixx=0;ixx<STACK_TEST;++ixx)
+		if (stacktest[ixx]!=0xFF) break;
+	uart_putstr(ixx==STACK_TEST?"\r\nstack ok":"\r\nstack broken");
+		
 	return;
 }
 

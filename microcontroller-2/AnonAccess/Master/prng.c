@@ -107,7 +107,7 @@ void getRandomBlock(uint32_t *b){
 	sha256_init(&s);
 	sha256_lastBlock(&s, rndCore, 512); /* remeber the byte order! */
 	uint8_t i;
-	for (i=0; i<8; ++i){
+	for (i=0; i<16; ++i){
 		rndCore[i+offset] ^= s.h[i];
 	}
 	offset ^= 8; /* hehe */
