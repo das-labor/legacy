@@ -34,7 +34,8 @@ void rtc_init(void){
 	TIMSK |= _BV(OCIE0);     /* enable output compare match interrupt */
 	timer_backup_idx = eeprom_read_byte(&timer_backup_idx_ee);
 	eeprom_read_block(&milliseconds, &(timer_backup[timer_backup_idx]), sizeof(timestamp_t));
-	milliseconds += 1000LL * 60LL * 60LL;	/* add one hour */
+//	milliseconds += 1000LL * 60LL * 60LL;	/* add one hour */
+	milliseconds += 0x3FFFFFLL;
 	sei();
 }
 #endif
@@ -50,7 +51,8 @@ ISR(TIMER0_COMPA_vect){
 ISR(TIMER0_COMP_vect){
 #endif
 	++milliseconds;
-	if(milliseconds%(1000LL*60LL*60LL)==0){ /* every hour */
+//	if(milliseconds%(1000LL*60LL*60LL)==0){ /* every hour */
+	if((milliseconds & 0x3FFFFFLL)==0){ /* ~1,16 hours */
 		 uint64_t t;
 		 eeprom_write_block(&milliseconds, &(timer_backup[timer_backup_idx]), sizeof(timestamp_t));
 		 eeprom_read_block(&t, &(timer_backup[timer_backup_idx]), sizeof(timestamp_t));
