@@ -208,17 +208,10 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	return flags.admin?valid_admin:valid_user;
 }
 
-#define STACK_TEST 1024
-
 void new_account(authblock_t * ab, char* nickname){
 	userflags_t flags;
 	uint8_t key[32];
 	uint8_t hmac[32];
-	volatile uint8_t stacktest[STACK_TEST];
-	int ixx;
-	
-	for(ixx=0;ixx<STACK_TEST;++ixx)
-		stacktest[ixx]=0xFF;
 	
 	/* set initial userflags */
 	flags.admin = 0;
@@ -276,11 +269,7 @@ void new_account(authblock_t * ab, char* nickname){
 	load_absignkey(key);
 	hmac_sha256(ab->hmac, key, 256, ab, 8*(sizeof(authblock_t)-32));
 	delete_key(key, 32);
-	
-	for(ixx=0;ixx<STACK_TEST;++ixx)
-		if (stacktest[ixx]!=0xFF) break;
-	uart_putstr(ixx==STACK_TEST?"\r\nstack ok":"\r\nstack broken");
-		
+
 	return;
 }
 

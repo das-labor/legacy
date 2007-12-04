@@ -16,7 +16,7 @@
 #define READ_BLOCK(a, d, s)  E24C_blockdev_readBlock((a),(d),(s))
 #define WRITE_BLOCK(a, d, s) E24C_blockdev_writeBlock((a),(d),(s))
 #define SET_BLOCK(a,v,s)     E24C_blockdev_setBlock((a),(v),(s))
-/ */
+*/
 #include "keys.h"
 #include "enc2E24C.h"
 
@@ -74,11 +74,8 @@ bool ticketdb_userexists(userid_t id){
 	userflags_t flags;
 	if (id>=dbstats.max_users)
 		return false;
-//return false;
 	ticketdb_getUserFlags(id,&flags);
-//	uart_putstr("\r\n <"); uart_hexdump(&flags, 1); uart_putstr(">");
 	return flags.exist;	
-//	return (!(E24C_blockdev_readByte(dbheadersize + id*sizeof(userentry_t)) & 0x01));
 }
 
 /******************************************************************************/
