@@ -1,4 +1,22 @@
-//author peter+hansi
+/**** RFM 12 library for Atmel AVR Microcontrollers *******
+ * 
+ * PulseAudio is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation; either version 2 of the License,
+ * or (at your option) any later version.
+ *
+ * PulseAudio is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PulseAudio; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ * USA.
+ *
+ * @author Peter Fuhrmann, Hansi (insert realname here), Soeren Heisrath
+ */
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -86,7 +104,8 @@ uint8_t rfm12_mode;
  * @note do NOT call this function directly, unless you know what you're doing.
  */
 
-void rfm12_data(uint16_t d){
+void rfm12_data(uint16_t d)
+{
 	SS_ASSERT();
 
 	SPDR = d>>8;
@@ -119,7 +138,8 @@ uint16_t rfm12_read(uint16_t d)
 /* @description reads the upper 8 bits of the status
  * register (the interrupt flags)
  */
-static inline uint8_t rfm12_read_int_flags_inline(){
+static inline uint8_t rfm12_read_int_flags_inline()
+{
 	SS_ASSERT();
 	SPDR = 0;
 	while(!(SPSR & (1<<SPIF)));
@@ -127,8 +147,10 @@ static inline uint8_t rfm12_read_int_flags_inline(){
 	return SPDR;
 }
 
-//inline version of rfm12_data for use in interrupt
-static inline void rfm12_data_inline(uint8_t cmd, uint8_t d){
+/* @description inline version of rfm12_data for use in interrupt
+ */
+static inline void rfm12_data_inline(uint8_t cmd, uint8_t d)
+{
 	SS_ASSERT();
 
 	SPDR = cmd;
@@ -140,8 +162,10 @@ static inline void rfm12_data_inline(uint8_t cmd, uint8_t d){
 	SS_RELEASE();
 }
 
-//inline function for reading the fifo
-static inline uint8_t rfm12_read_fifo_inline(){
+/* @description inline function for reading the fifo
+ */
+static inline uint8_t rfm12_read_fifo_inline()
+{
 	SS_ASSERT();
 
 	SPDR = (RFM12_CMD_READ >> 8);
@@ -161,38 +185,43 @@ static inline uint8_t rfm12_read_fifo_inline(){
 	The receiver will generate an interrupt request (IT) for the
 	microcontroller - by pulling the nIRQ pin low - on the following events:
 
-	• The TX register is ready to receive the next byte (RGIT)
-	• The FIFO has received the preprogrammed amount of bits (FFIT)
-	• Power-on reset (POR) *
-	• FIFO overflow (FFOV) / TX register underrun (RGUR) *
-	• Wake-up timer timeout (WKUP) *
-	• Negative pulse on the interrupt input pin nINT (EXT) *
-	• Supply voltage below the preprogrammed value is detected (LBD) *
+	* The TX register is ready to receive the next byte (RGIT)
+	* The FIFO has received the preprogrammed amount of bits (FFIT)
+	* Power-on reset (POR) *
+	* FIFO overflow (FFOV) / TX register underrun (RGUR) *
+	* Wake-up timer timeout (WKUP) *
+	* Negative pulse on the interrupt input pin nINT (EXT) *
+	* Supply voltage below the preprogrammed value is detected (LBD) *
 	*these shouldn't occur - we'll just ignore them. These flags are cleared
 	 by reading status.
 */
-ISR(INT0_vect){
+ISR(RFM12_INT_VECT)
+{
 	uint8_t status;
 	
 	//first we read the first byte of the status register
 	//to get the interrupt flags
 	status = rfm12_read_int_flags_inline();
-	
-	//DEBUG////////
-	//uart_putc('S');
-	//uart_putc(status);
-	///////////////	
-	
+
+#if RFM12_UART_DEBUG
+	uart_putc('S');
+	uart_putc(status);
+#endif
+
 	//check if the fifo interrupt occurred
-	if(status & (RFM12_STATUS_FFIT>>8)){
-		if(rfm12_mode == MODE_TX){
+	if(status & (RFM12_STATUS_FFIT>>8))
+	{
+		if(rfm12_mode == MODE_TX)
+		{
 			//the fifo interrupt occurred, and we are in TX mode,
 			//so the fifo wants the next byte to TX.
 			
-			if(rf_tx_buffer.bytecount < rf_tx_buffer.num_bytes){
+			if(rf_tx_buffer.bytecount < rf_tx_buffer.num_bytes)
+			{
 				//load the next byte from our buffer struct.
 				rfm12_data_inline( (RFM12_CMD_TX>>8), rf_tx_buffer.sync[rf_tx_buffer.bytecount++]);
-			}else{
+			} else
+			{
 				//o.k. - so we are finished transmitting the bytes
 				
 				//flag the buffer as free again
@@ -209,17 +238,27 @@ ISR(INT0_vect){
 				rfm12_data_inline(RFM12_CMD_FIFORESET>>8, CLEAR_FIFO_INLINE);
 				rfm12_data_inline(RFM12_CMD_FIFORESET>>8, ACCEPT_DATA_INLINE);
 			}
-		}else{
+		} else
+		{
 			static uint8_t checksum;
 
-			//debug
-			//uart_putc('R');
-			//uart_putc(rfm12_read_fifo_inline());
+#if RFM12_UART_DEBUG
+			uart_putc('R');
+			uart_putc(rfm12_read_fifo_inline());
+#endif
 		
-			//check if we're receiving a new transmission or the next byte of a active transmission
-			//FIXME: this could cause problems, b/c we could be ignoring a transmission if the buffer is in STATUS_COMPLETE
-			//FIXME: this in turn could lead to a false sync byte recognition in the middle of a transfer
-			//FIXME: we should silently clock in the transmission without writing it to the buffer OR apply double buffering
+			/* check if we're receiving a new transmission or the next byte of
+			 * an active transmission
+			 *
+			 * FIXME: this could cause problems, b/c we could be ignoring a
+			 * transmission if the buffer is in STATUS_COMPLETE
+			 *
+			 * FIXME: this in turn could lead to a false sync byte recognition
+			 * in the middle of a transfer
+			 * 
+			 * FIXME: we should silently clock in the transmission without
+			 * writing it to the buffer OR apply double buffering
+			 */
 			if(rf_rx_buffer.status == STATUS_IDLE)
 			{
 				rf_rx_buffer.bytecount = 1;
@@ -290,7 +329,8 @@ ISR(INT0_vect){
 					rfm12_data_inline(RFM12_CMD_FIFORESET>>8, CLEAR_FIFO_INLINE);
 					rfm12_data_inline(RFM12_CMD_FIFORESET>>8, ACCEPT_DATA_INLINE);
 				}
-			}else if(rf_rx_buffer.status == STATUS_IGNORING){
+			} else if (rf_rx_buffer.status == STATUS_IGNORING)
+			{
 				//FIXME: we don't check the checksum if we ignore a package.
 				//that could mean that we ignore a wrong number of bytes, but it shouldn't
 				//hurt in practice
@@ -300,7 +340,8 @@ ISR(INT0_vect){
 				{
 					//remove byte from fifo so interrupt condition is cleared.
 					rfm12_read_fifo_inline();
-				}else{
+				}else
+				{
 					//indicate that the receiver is idle again
 					rf_rx_buffer.status = STATUS_IDLE;
 					//reset fifo
@@ -316,7 +357,8 @@ ISR(INT0_vect){
 
 
 
-void rfm12_tick(){
+void rfm12_tick()
+{
 	uint16_t status;
 	static uint8_t channel_free_count;
 	status = rfm12_read(RFM12_CMD_STATUS);
@@ -367,14 +409,17 @@ void rfm12_tick(){
 
 
 
-//ask the rfm12 to transmit a packet when possible (carrier sense)
-//the data should be written to the tx buffer first after asking if
-//it is empty.
-void rfm12_start_tx(uint8_t type, uint8_t length)
+/* @description ask the rfm12 to transmit a packet when possible (carrier sense)
+ * the data should be written to the tx buffer first after asking if
+ * it is empty.
+ *
+ * @return see rfm12.h for possible return values.
+ */
+uint8_t rfm12_start_tx(uint8_t type, uint8_t length)
 {
 	//exit if the buffer isn't free
 	if((rf_tx_buffer.status != STATUS_FREE) || (rf_rx_buffer.status != STATUS_FREE))
-		return;
+		return RFM12_TX_OCCUPIED;
 	
 	//calculate number of bytes to be sent by ISR
 	//2 sync bytes + len byte + type byte + checksum + message length + 1 dummy byte
@@ -389,18 +434,42 @@ void rfm12_start_tx(uint8_t type, uint8_t length)
 	rf_tx_buffer.bytecount = 0;
 	
 	//schedule packet for transmission
-	rf_tx_buffer.status = STATUS_OCCUPIED;	
+	rf_tx_buffer.status = STATUS_OCCUPIED;
+
+	return RFM12_TX_ENQUEUED;
+}
+
+/* @description send data out
+ * @return see rfm12.h for possible return values.
+ */
+uint8_t rfm12_tx ( uint8_t in_len, uint8_t in_type, uint8_t *in_data )
+{
+	uint8_t returnstatus
+	if (in_len > RFM12_TX_BUFFER_SIZE) return RFM12_TX_OVERFLOW;
+
+	memcpy ( rf_tx_buffer.buffer, in_data, in_len );
+	switch (returnstatus = rfm12_start_tx (in_type, in_len) )
+	{
+		case RFM12_TX_ENQUEUED:
+			return RFM12_TX_SUCCESS;
+		break;
+		default:
+			return returnstatus;
+		break;
+	}
 }
 
 
-void spi_init(){
+void spi_init()
+{
 	DDR_SPI |= (1<<BIT_MOSI) | (1<<BIT_SCK);
 	SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);//SPI Master, clk/16
 }
 
 
 
-void rfm12_init(){
+void rfm12_init()
+{
 	spi_init();
 	DDR_SS |= (1<<BIT_SS);
 	SS_RELEASE();
