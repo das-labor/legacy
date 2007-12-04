@@ -3,7 +3,7 @@
 //function protoypes
 void rfm12_init();
 void rfm12_data(uint16_t d);
-void rfm12_tx(uint8_t tape, uint8_t length, uint8_t *data);
+uint8_t rfm12_tx ( uint8_t in_len, uint8_t in_type, uint8_t *in_data );
 uint16_t rfm12_read(uint16_t d);
 
 static inline uint8_t rfm12_tx_status();
@@ -29,6 +29,21 @@ static inline void rfm12_rx_clear();
 #define STATUS_IDLE      0
 #define STATUS_RECEIVING 1
 #define STATUS_IGNORING  2
+
+// interrupt vector for rfm12 module
+#define RFM12_INT_VECT (INT0_vect)
+
+#define RFM12_UART_DEBUG 1
+
+// possible return values for rfm12_tx() and
+// rfm12_start_tx()
+#define RFM12_TX_SUCCESS 0x00
+
+#define RFM12_TX_OVERFLOW 0x01
+#define RFM12_TX_ERROR 0x02
+#define RFM12_TX_OCCUPIED 0x03
+
+#define RFM12_TX_ENQUEUED 0x80
 
 
 /* Private structs needed for inline functions */
