@@ -34,7 +34,7 @@
  * and probably only useful for cases where you have multiple
  * entities/functions sending out data via the rfm12 module.
  */
-#define RFM12_ENABLEERRORHANDLING 1
+#define RFM12_ENABLETXERRORHANDLING 1
 
 /**** TX BUFFER SIZE
  */
