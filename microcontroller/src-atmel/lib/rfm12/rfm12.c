@@ -408,7 +408,7 @@ void rfm12_tick()
 
 
 
-
+#if rfm12_ENABLETXERRORHANDLING
 /* @description ask the rfm12 to transmit a packet when possible (carrier sense)
  * the data should be written to the tx buffer first after asking if
  * it is empty.
@@ -458,7 +458,48 @@ uint8_t rfm12_tx ( uint8_t in_len, uint8_t in_type, uint8_t *in_data )
 		break;
 	}
 }
+#else
+/* @description ask the rfm12 to transmit a packet when possible (carrier sense)
+ * the data should be written to the tx buffer first after asking if
+ * it is empty.
+ *
+ * @return see rfm12.h for possible return values.
+ */
+void rfm12_start_tx(uint8_t type, uint8_t length)
+{
+	//exit if the buffer isn't free
+	if((rf_tx_buffer.status != STATUS_FREE) || (rf_rx_buffer.status != STATUS_FREE))
+		return RFM12_TX_OCCUPIED;
+	
+	//calculate number of bytes to be sent by ISR
+	//2 sync bytes + len byte + type byte + checksum + message length + 1 dummy byte
+	rf_tx_buffer.num_bytes = length + 6;
+	
+	//write airlab header to buffer
+	rf_tx_buffer.len = length;
+	rf_tx_buffer.type = type;
+	rf_tx_buffer.checksum = length ^ type ^ 0xff;
+	
+	//reset counter
+	rf_tx_buffer.bytecount = 0;
+	
+	//schedule packet for transmission
+	rf_tx_buffer.status = STATUS_OCCUPIED;
 
+	return RFM12_TX_ENQUEUED;
+}
+
+/* @description send data out
+ * @return see rfm12.h for possible return values.
+ */
+void rfm12_tx ( uint8_t in_len, uint8_t in_type, uint8_t *in_data )
+{
+	if (in_len > RFM12_TX_BUFFER_SIZE) return;
+
+	memcpy ( rf_tx_buffer.buffer, in_data, in_len );
+	rfm12_start_tx (in_type, in_len);
+}
+#endif
 
 void spi_init()
 {

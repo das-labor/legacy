@@ -1,24 +1,68 @@
-//rfm12 public header file
+/**** RFM 12 library for Atmel AVR Microcontrollers *******
+ * 
+ * PulseAudio is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation; either version 2 of the License,
+ * or (at your option) any later version.
+ *
+ * PulseAudio is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PulseAudio; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ * USA.
+ *
+ * @author Peter Fuhrmann, Hansi (insert realname here), Soeren Heisrath
+ */
 
-//function protoypes
-void rfm12_init();
-void rfm12_data(uint16_t d);
-uint8_t rfm12_tx ( uint8_t in_len, uint8_t in_type, uint8_t *in_data );
-uint16_t rfm12_read(uint16_t d);
-
-static inline uint8_t rfm12_tx_status();
-
-static inline uint8_t *rfm12_rx_buffer();
-static inline void rfm12_rx_clear();
+/******************************************************
+ *                                                    *
+ *           C O N F I G U R A T I O N                *
+ *                                                    *
+ ******************************************************/
 
 
-//size of transmit buffer
+/**** TX ERROR HANDLING
+ * en- or disable error handling for sending data
+ * 0 = disable, >=1 enable
+ *
+ * this option enables return states for rfm12_tx() and it
+ * adds slightly more overhead. This option is only recommended
+ * and probably only useful for cases where you have multiple
+ * entities/functions sending out data via the rfm12 module.
+ */
+#define RFM12_ENABLEERRORHANDLING 1
+
+/**** TX BUFFER SIZE
+ */
 #define RFM12_TX_BUFFER_SIZE 30
 
-//rx buffer size
-//there are going to be 2 Buffers of this size
-//(double_buffering)
+/**** RX BUFFER SIZE
+ * there are going to be 2 Buffers of this size
+ * (double_buffering)
+ */
 #define RFM12_RX_BUFFER_SIZE 30
+
+/**** UART DEBUGGING
+ * en- or disable debugging via uart.
+ */
+#define RFM12_UART_DEBUG 1
+
+/**** INTERRUPT VECTOR
+ * set the name for the interrupt vector here
+ */
+#define RFM12_INT_VECT (INT0_vect)
+
+/******************************************************
+ *                                                    *
+ *     E N D   O F   C O N F I G U R A T I O N        *
+ *                                                    *
+ *      ( thou shalt not change lines below )         *
+ *                                                    *
+ ******************************************************/
 
 //states for the rx and tx buffers
 #define STATUS_FREE 0
@@ -30,11 +74,6 @@ static inline void rfm12_rx_clear();
 #define STATUS_RECEIVING 1
 #define STATUS_IGNORING  2
 
-// interrupt vector for rfm12 module
-#define RFM12_INT_VECT (INT0_vect)
-
-#define RFM12_UART_DEBUG 1
-
 // possible return values for rfm12_tx() and
 // rfm12_start_tx()
 #define RFM12_TX_SUCCESS 0x00
@@ -45,6 +84,28 @@ static inline void rfm12_rx_clear();
 
 #define RFM12_TX_ENQUEUED 0x80
 
+
+
+
+//function protoypes
+void rfm12_init();
+void rfm12_data(uint16_t d);
+
+
+
+#if RFM12_ENABLETXERRORHANDLING
+uint8_t rfm12_tx ( uint8_t in_len, uint8_t in_type, uint8_t *in_data );
+uint8_t rfm12_start_tx(uint8_t type, uint8_t length);
+#else
+void rfm12_start_tx(uint8_t type, uint8_t length);
+#endif
+
+uint16_t rfm12_read(uint16_t d);
+
+static inline uint8_t rfm12_tx_status();
+
+static inline uint8_t *rfm12_rx_buffer();
+static inline void rfm12_rx_clear();
 
 /* Private structs needed for inline functions */
 
