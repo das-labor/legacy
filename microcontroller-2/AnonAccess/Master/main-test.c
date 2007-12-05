@@ -48,6 +48,7 @@
 	"n - to add a user to datatabase (hard)\r\n" \
 	"m - to set admin flag\r\n" \
 	"j - to clear admin flag\r\n" \
+	"k - to initiate keymigration\r\n" \
 	"+ - to add a user\r\n" \
 	"# - to do action\r\n" \
 	"b - to enter LA-Sim mode" \
@@ -92,6 +93,8 @@ int main (void)
     			case 'n': console_adduser_db(); break;
     			case 'm': console_setadmin(); break;
     			case 'j': console_clearadmin(); break;
+    			
+    			case 'k': do_keymigrate(); break;
     			
     			case '+': console_adduser(); break;
     			case '#': console_verifyuser(); break;
