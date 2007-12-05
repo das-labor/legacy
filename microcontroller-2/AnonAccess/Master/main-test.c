@@ -21,6 +21,7 @@
 #include "enc2E24C.h"
 #include "keys.h"
 #include "main_test_tools.h"
+#include "hwrnd.h"
 
 
 /****************************************************
@@ -71,7 +72,9 @@ int main (void)
 
     uart_putstr_P(PSTR(HELP_STR));
     while(1){
-    		switch (uart_getc()){
+    	uint8_t tc=uart_getc();
+    	busy |=1;
+    		switch (tc){
     //			case 't': thermo_dump(0x90); break;
     			case 'a': i2c_detect(dev_table); break;
     			case 'd': eeprom_dump_page(0xA0, 0, 512); break;
@@ -150,6 +153,7 @@ int main (void)
     					
     			default: uart_putstr_P(PSTR(HELP_STR)); break;
     		}	
+    		busy&= ~1;
     		uart_putstr_P(PSTR("\r\ndone\r\n"));
     }
 
