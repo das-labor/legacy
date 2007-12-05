@@ -408,7 +408,7 @@ void rfm12_tick()
 
 
 
-#if rfm12_ENABLETXERRORHANDLING
+#if RFM12_ENABLETXERRORHANDLING
 /* @description ask the rfm12 to transmit a packet when possible (carrier sense)
  * the data should be written to the tx buffer first after asking if
  * it is empty.
