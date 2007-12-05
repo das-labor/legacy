@@ -1,7 +1,7 @@
 PRG	    = anonaccess-test
 OBJ	    = main-test.o main_test_tools.o uart.o debug.o 24CBlockDev.o 24Cxxx.o \
   i2c.o i2c_tools.o prng.o sha256-asm.o hmac-sha256.o reqvalidator.o \
-  action.o keys.o shabea.o ticketDB.o flmDB.o fairrnd.o rtc.o enc2E24C.o
+  action.o keys.o shabea.o ticketDB.o flmDB.o fairrnd.o rtc.o enc2E24C.o hwrnd.o
 MCU_TARGET     = atmega644
 OPTIMIZE       = -Os -mno-tablejump
 DEBUG	   = -gstabs

@@ -25,6 +25,7 @@
 #include "shabea.h"
 #include "rtc.h"
 #include "enc2E24C.h"
+#include "hwrnd.h"
 
 /*
 #include "mcp9800.h"
@@ -39,34 +40,6 @@
  *  main_tools_init()
  * **************************************************/
  
-
-/******************************************************************************/
-
-uint8_t getbadrandom(void){
-	ADCSRA |= 0x40 | 0x80; /* start conversion */
-	while(ADCSRA & 0x40)   /* wait for conversation to complete */
-		;
-	return (uint8_t)ADC;
-}
-
-/******************************************************************************/
-
-void prng_init(void){
-	/* here we should add some entropy to the prng */
-	DDRA = 0x00;
-	PORTA = 0x00;
-	ADMUX = 0x40;  /* Vref=Avcc, ADC0 */
-	ADCSRA = 0x83; /* turn ADC on, prescaler=8 */
-	
-	uint8_t i,j;
-	uint8_t b[64];
-	for(i=0; i<32; ++i){
-		for(j=0; j<64; ++j){
-			b[j] = getbadrandom();
-		}
-		addEntropy(64*8,&b);
-	}
-}
 
 /******************************************************************************/
  
