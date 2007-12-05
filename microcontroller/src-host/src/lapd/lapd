@@ -1,80 +1,7 @@
 #!/usr/bin/ruby
 
 require 'socket'
-
-
-$cand_socket = TCPSocket.new('rl', '2342')
-
-class CanPacket
-	attr_reader :src_addr
-	attr_reader :dest_addr
-	attr_reader :src_port
-	attr_reader :dest_port
-
-	attr_reader :id
-	attr_accessor :data
-
-	def initialize
-		@src_addr = 0
-		@dest_addr = 0
-		@src_port = 0
-		@dest_port = 0
-
-		@id = 0x1fffffff
-		@data = Array.new
-		@dlc = 0
-	end
-
-	def id_to_lap
-		@src_addr = (@id>>8) & 0xff
-		@dest_addr = @id & 0xff
-		@src_port = (@id>>23) & 0x3f
-		@dest_port = ((@id>>17) & 0x30) | ((@id>>16) & 0x0f)
-	end
-
-	def lap_to_id
-		@id = (@src_addr<<8) | @dest_addr | (@src_port<<23) | ((@dest_port&0x30)<<17) | ((@dest_port&0x0f)<<16)
-	end
-
-	def read_from_socket(s)
-		c = s.getc
-		
-		bytes = Array.new
-		(c+1).times do
-			bytes << s.getc
-		end
-
-		if bytes[0] == 0x11 then
-			@id = bytes[1] | (bytes[2] << 8) | (bytes[3] << 16) | (bytes[4] << 24)
-			@dlc = bytes[5]
-			@data = bytes[6..(5+@dlc)]
-			self.id_to_lap()
-		end
-	end
-
-	def transmit
-		s = $cand_socket
-		@dlc = @data.size
-		s.putc(@dlc+5)
-		s.putc(0x11)
-		s.putc(@id&0xff)
-		s.putc((@id>>8)&0xff)
-		s.putc((@id>>16)&0xff)
-		s.putc((@id>>24)&0xff)
-		s.putc(@dlc)
-		@dlc.times do |i|
-			s.putc(@data[i])
-		end
-	end
-
-	def set_lap(src_addr, src_port, dest_addr, dest_port)
-		@src_addr = src_addr
-		@dest_addr = dest_addr
-		@src_port = src_port
-		@dest_port = dest_port
-		self.lap_to_id
-	end
-end
+require 'CanPacket'
 
 class LapDevice
 	attr_reader :type
@@ -89,8 +16,11 @@ class LapDevice
 end
 
 class SwitchDevice < LapDevice
+	attr_reader :lap_addr
+	attr_reader :num
 	#format for args is name, lap_addr, num
 	def initialize(str)
+		@watching_servers = []
 		name, args =  str.split(' ', 2)
 		lap_addr, num = args.split(',')
 		@lap_addr = lap_addr.to_i
@@ -100,18 +30,17 @@ class SwitchDevice < LapDevice
 		@state = 0
 	end
 	def set(arg)
-		print "set\n"
-		p arg
 		newstate = arg.to_i
-		p newstate
 		if (newstate == 0) || (newstate == 1) then
-
 			if @state != newstate then
-				@state = newstate
 				can = CanPacket.new()
 				can.set_lap(0, 0x18, @lap_addr, 0x18)
-				can.data = [1, @num, @state]
+				can.data = [1, @num, newstate]
 				can.transmit()
+				state_changed(newstate)
+				"o.k.\r\n"
+			else
+				"state not changed\r\n"
 			end
 		end
 	end
@@ -119,7 +48,7 @@ class SwitchDevice < LapDevice
 		set(1-@state)
 	end
 	def get
-		"info " + @name + " " + @state
+		"info " + @name + " " + @state.to_s
 	end
 	def request(sock, command, argstr)
 		print"request\n"
@@ -133,6 +62,21 @@ class SwitchDevice < LapDevice
 			when "toggle"	then toggle
 			when "get"		then get
 			else			"error - no such comman\r\n"
+		end
+	end
+	def watch(server, args)
+		@watching_servers << server
+	end
+	def state_changed(newstate)
+		if @state != newstate then
+			@state = newstate
+			@watching_servers.each do |serv|
+				if serv.alive then
+					serv.message(get)
+				else
+					@watching_servers.delete(serv)
+				end
+			end
 		end
 	end
 end
@@ -155,35 +99,45 @@ end
 $servers = []
 
 class LapServer
-	def command_get(args)
-
-	end
-
+	attr_accessor :sock
+	attr_reader   :alive
 	def initialize(sock)
 		@sock = sock
+		@alive = true
 		Thread.new{
 			while 1
 				line = sock.gets
 				if line == nil then break end
 				puts line
 				line.chomp!
-				args = line.split(' ',3);
-				i = $devices.index(args[1])
-				p args
-				p i
+				command, name, args = line.split(' ',3);
+		
+				
+				i = $devices.index(name)
 				if i then
-					$devices.at(i).request(sock, args[0], args[2])
+					if command == "watch" then
+						$devices.at(i).watch(self, args)
+						$devices.at(i).request(sock, "get", args)
+					else
+						$devices.at(i).request(sock, command, args)
+					end
 				else
 					sock.puts("no such device\r\n")
 				end
 				
 			end
+			@alive = false
 			sock.close
 			$servers.delete(self)
 		}
 	end
+	def message (str)
+		sock.puts(str)
+	end
 end
 
+
+read_devices("devices.lst");
 
 server_thread = Thread.new{
 	session = TCPServer.new( '' , 2343 )
@@ -192,15 +146,35 @@ server_thread = Thread.new{
 	end
 }
 
-read_devices("devices.lst");
 
 $devices.each do |d|
 	p d
 end
 
+$cand_socket = TCPSocket.new('rl', 2342)
 
 
+Thread.new do
+	while 1
+		can = CanPacket.new
+		can.read_from_socket
+		
+		if (can.dest_port == 0x18) && (can.data[0] == 0) then
+			$devices.each do |device|
+				if (device.lap_addr == can.src_addr) && (device.num == can.data[1]) then
+					device.state_changed(can.data[2])
+				end
+			end
+		end
+	end
+end
 
+$devices.each do |device|
+	can = CanPacket.new()
+	can.set_lap(0, 0x18, device.lap_addr, 0x18)
+	can.data = [2, device.num]
+	can.transmit()
+end
 
 server_thread.join
 
