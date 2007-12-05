@@ -1,5 +1,6 @@
 
 #include "keys.h"
+#include "24Cxxx.h"
 #include <avr/eeprom.h>
 #include <string.h>
 
@@ -67,3 +68,35 @@ void load_timestampkey(uint8_t * dest){
 void load_eeprom_crypt_key(uint8_t * dest){
 	eeprom_read_block(dest, eeprom_crypt_key, 32);
 }
+
+void do_keymigrate(void){
+	uint8_t buffer[32];
+	uint16_t addr=0;
+	
+	load_ticketkey(buffer);
+	E24C_page_write(0xA0, addr,buffer,32);
+	addr += 32;
+	
+	load_absignkey(buffer);
+	E24C_page_write(0xA0, addr,buffer,32);
+	addr += 32;
+	
+	load_ridkey(buffer);
+	E24C_page_write(0xA0, addr,buffer,32);
+	addr += 32;
+	
+	load_nickkey(buffer);
+	E24C_page_write(0xA0, addr,buffer,32);
+	addr += 32;
+	
+	load_timestampkey(buffer);
+	E24C_page_write(0xA0, addr,buffer,32);
+	addr += 32;
+	
+	load_eeprom_crypt_key(buffer);
+	E24C_page_write(0xA0, addr,buffer,32);
+	addr += 32;
+	
+}
+
+

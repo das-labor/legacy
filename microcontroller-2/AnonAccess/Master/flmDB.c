@@ -51,15 +51,15 @@ void flmdb_setentry(flmdb_entry_t * entry, entryid_t id){
 void flmdb_process(uint8_t * searchmac, userid_t uid, userflags_t * flags){
 	entryid_t i;
 	flmdb_entry_t entry;
-	
+/*	
 	uart_putstr_P(PSTR("\r\n searchmac: "));
 	uart_hexdump(searchmac, 32);
-	
+*/	
 	for(i=0; i<= FLMDB_MAXID; ++i){
 		flmdb_loadentry(&entry, i);
-		uart_putc('~');
+//		uart_putc('~');
 		if(entry.active && !memcmp(&(entry.hnick), searchmac, 32)){
-			uart_putc('-');
+//			uart_putc('-');
 			ticketdb_getUserFlags(uid, flags);
 			/* apply flag modifiers */
 			flags->admin |= entry.setflags.admin;
@@ -110,7 +110,7 @@ void flmdb_makeentry(uint8_t * mac, userflags_t setflags, userflags_t clearflags
 			if(t.active){
 				if(i==FLMDB_MAXID){
 					// ERROR!!!
-					uart_putstr_P(PSTR("\r\n ERROR: FLMDB full!!!"));
+//					uart_putstr_P(PSTR("\r\n ERROR: FLMDB full!!!"));
 					return;
 				}
 				t.last=0;

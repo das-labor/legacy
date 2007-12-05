@@ -10,6 +10,9 @@
 #include <avr/eeprom.h>
 #include "keys.h"
 
+#define DS(a)   uart_putstr_P(PSTR(a))
+#define DD(a,b) uart_hexdump((a),(b))
+
 /******************************************************************************/
 void main_open(void){
 	uart_putstr("\r\n door opening");
@@ -20,12 +23,12 @@ void main_close(void){
 }
 
 void dump_authblock(authblock_t * ab){
-	uart_putstr_P(PSTR("\r\n +++ authblock +++"));
-	uart_putstr_P(PSTR("\r\n   UID:    ")); uart_hexdump((char*)&(ab->uid),  2);
-	uart_putstr_P(PSTR("\r\n   RID:    ")); uart_hexdump((char*)&(ab->rid), 32);
-	uart_putstr_P(PSTR("\r\n   RKey:   ")); uart_hexdump((char*)&(ab->rkey), 32);
-	uart_putstr_P(PSTR("\r\n   Ticket: ")); uart_hexdump((char*)&(ab->ticket), 32);
-	uart_putstr_P(PSTR("\r\n   HMAC:   ")); uart_hexdump((char*)&(ab->hmac), 32);
+	DS("\r\n +++ authblock +++"));
+	DS("\r\n   UID:    "); DS((char*)&(ab->uid),  2);
+	DS("\r\n   RID:    "); DS((char*)&(ab->rid), 32);
+	DS("\r\n   RKey:   "); DS((char*)&(ab->rkey), 32);
+	DS("\r\n   Ticket: "); DS((char*)&(ab->ticket), 32);
+	DS("\r\n   HMAC:   "); DS((char*)&(ab->hmac), 32);
 }
 
 void add_user(char * nickname){
@@ -81,7 +84,8 @@ void rem_admin(char * nickname){
 
 void keymigration(void){
 	/* keymigration */
-	uart_putstr("\r\n keymigration ...");
+	DS("\r\n keymigration ...");
+	do_keymigrate();
 }
 
 /******************************************************************************/

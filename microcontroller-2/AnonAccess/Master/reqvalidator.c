@@ -18,6 +18,7 @@
 #include "main_test_tools.h"
 
 #define DS(a) uart_putstr_P(PSTR(a))
+#define DD(a,b) uart_hexdump((a),(b))
 /**
  * 
  *  Operation 	 Beschreibung                	 Requirements
@@ -55,7 +56,7 @@ bool valid_authreq(action_t action, uint8_t n, authblock_t * authblock){
 		uint8_t j;
 		for(j=0; j<i; ++j){
 			if(authblock[i].uid == authblock[j].uid){
-				uart_putstr_P(PSTR(" double authcreds!"));
+				DS(" double authcreds!");
 				return false;
 			}
 		}
@@ -66,10 +67,10 @@ bool valid_authreq(action_t action, uint8_t n, authblock_t * authblock){
 		users  += (t==valid_user || t==valid_admin)?1:0;
 		admins += (t==valid_admin)?1:0;
 	}
-	uart_putstr_P(PSTR("\r\n users: "));
-	uart_hexdump((char*)&users,1);
-	uart_putstr_P(PSTR("\r\n admins: "));
-	uart_hexdump((char*)&admins,1);
+	DS("\r\n users: ");
+	DD((char*)&users,1);
+	DS("\r\n admins: ");
+	DD((char*)&admins,1);
 	
 	for(i=0;i<n;++i){
 		t =  check_authblock(&(authblock[i]));
@@ -107,7 +108,7 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	delete_key(key, 32);
 	if(memcmp(hmac, ab->hmac, 32)){
 		/* verification failed, maybe someone modifyed the ab */
-		uart_putstr_P(PSTR("\r\nHMAC failed"));
+		DS("\r\nHMAC failed");
 		return invalid_cred;
 	}
 	
@@ -117,13 +118,13 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	delete_key(key, 32);
 	
 	if(!ticketdb_userexists(ab->uid)){
-		uart_putstr_P(PSTR("\r\nUser does not exist"));
+		DS("\r\nUser does not exist");
 		return invalid_cred;
 	}
 	ticketdb_getUserTicketMac(ab->uid, &refhmac);
 	if(memcmp(hmac, refhmac, 32)){
 		/* wrong ticket, maybe a replay attack */
-		uart_putstr_P(PSTR("\r\nTicket does not match"));
+		DS("\r\nTicket does not match");
 		return invalid_cred;
 	}
 	
@@ -137,7 +138,7 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	flmdb_process(ab->rid, ab->uid, &flags);
 		
 	if(flags.locked || !flags.exist){
-		uart_putstr_P(PSTR("\r\nUser locked"));
+		DS("\r\nUser locked");
 		return invalid_cred;
 	}	
 		
@@ -202,7 +203,7 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	delete_key(key, 32);
 
 	if(flags.locked==1){ // this happens when user got timeout
-		uart_putstr_P(PSTR("\r\nTimeout"));
+		DS("\r\nTimeout");
 		return invalid_cred;
 	}
 	return flags.admin?valid_admin:valid_user;
@@ -256,10 +257,8 @@ void new_account(authblock_t * ab, char* nickname){
 	load_nickkey(key);
 	hmac_sha256(ab->rid, key, 256, nickname, 8*strlen(nickname));
 	delete_key(key, 32);	
-	uart_putstr_P(PSTR("\r\n  nick: "));
-	uart_hexdump(nickname, 32);
-	uart_putstr_P(PSTR("\r\n hnick: "));
-	uart_hexdump(ab->rid, 32);
+	DS("\r\n hnick: ");
+	DD(ab->rid, 32);
 	fillBlockRandom(ab->rkey, 32);
 	shabea256(ab->rid, ab->rkey, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
 	load_ridkey(key);
@@ -280,10 +279,8 @@ void modify_account(char * nickname, userflags_t setflags, userflags_t clearflag
 	load_nickkey(key);
 	hmac_sha256(hmac, key, 256, nickname, 8*strlen(nickname));
 	delete_key(key, 32);
-	uart_putstr_P(PSTR("\r\n  nick: "));
-	uart_hexdump(nickname, 32);
-	uart_putstr_P(PSTR("\r\n hnick: "));
-	uart_hexdump(hmac, 32);
+	DS("\r\n hnick: ");
+	DD(hmac, 32);
 	flmdb_makeentry(hmac, setflags, clearflags, 0);
 }
 
