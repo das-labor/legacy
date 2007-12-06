@@ -27,7 +27,7 @@
 #define UBRRH UBRR0H
 #define UBRRL UBRR0L
 #define URSEL UMSEL00
-#define SIG_UART_DATA USART0_TX_vect
+#define SIG_UART_DATA USART0_UDRE_vect
 #define SIG_UART_RECV USART0_RX_vect
 #define UDRIE UDRIE0
 #define TXEN TXEN0
@@ -86,18 +86,19 @@ ISR(SIG_UART_RECV) {
 
 
 void uart_init() {
-	PORTD |= 0x01;				//Pullup an RXD an
-
+//	PORTD |= 0x01;				//Pullup an RXD an
+	
 	UCSRB |= (1<<TXEN);			//UART TX einschalten
 #ifdef ATMEGA644
-	UCSRC = (3<<UCSZ0);		//Asynchron 8N1
+	UCSRA = 0;
+	UCSRC = (3<<UCSZ0);		    //Asynchron 8N1
 #else	
 	UCSRC |= (1<<URSEL)|(3<<UCSZ0);		//Asynchron 8N1
 #endif
 	UCSRB |= ( 1 << RXEN );			//Uart RX einschalten
 
-	UBRRH=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU)>>8);
-	UBRRL=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU));
+	UBRRH= 0;//(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU)>>8);
+	UBRRL=25;//(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU));
 
 #ifdef UART_INTERRUPT
 	// init buffers
@@ -105,7 +106,10 @@ void uart_init() {
 	txhead = txtail = txbuf;
 
 	// activate rx IRQ
-	UCSRB |= (1 << RXCIE);
+	UCSRB |= _BV(RXCIE0);
+	#ifdef ATMEGA644
+	UCSRB |= _BV(UDRIE0);
+	#endif
 #endif // UART_INTERRUPT
 }
 
