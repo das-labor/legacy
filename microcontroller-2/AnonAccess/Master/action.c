@@ -23,12 +23,12 @@ void main_close(void){
 }
 
 void dump_authblock(authblock_t * ab){
-	DS("\r\n +++ authblock +++"));
-	DS("\r\n   UID:    "); DS((char*)&(ab->uid),  2);
-	DS("\r\n   RID:    "); DS((char*)&(ab->rid), 32);
-	DS("\r\n   RKey:   "); DS((char*)&(ab->rkey), 32);
-	DS("\r\n   Ticket: "); DS((char*)&(ab->ticket), 32);
-	DS("\r\n   HMAC:   "); DS((char*)&(ab->hmac), 32);
+	DS("\r\n +++ authblock +++");
+	DS("\r\n   UID:    "); DD((char*)&(ab->uid),  2);
+	DS("\r\n   RID:    "); DD((char*)&(ab->rid), 32);
+	DS("\r\n   RKey:   "); DD((char*)&(ab->rkey), 32);
+	DS("\r\n   Ticket: "); DD((char*)&(ab->ticket), 32);
+	DS("\r\n   HMAC:   "); DD((char*)&(ab->hmac), 32);
 }
 
 void add_user(char * nickname){
