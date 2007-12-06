@@ -12,7 +12,9 @@ class LapDevice
 	def ==(n)
 		n == @name
 	end
-
+	def to_s
+		@name + " " + self.class.to_s + "\r\n"
+	end
 end
 
 class SwitchDevice < LapDevice
@@ -50,18 +52,15 @@ class SwitchDevice < LapDevice
 	def get
 		"info " + @name + " " + @state.to_s
 	end
-	def request(sock, command, argstr)
-		print"request\n"
+	def request(server, command, argstr)
 		if argstr then
 			args = argstr.split()
 		end
-		p command
-		p args
-		sock.puts case command
+		server.message case command
 			when "set" 		then set(args[0])
 			when "toggle"	then toggle
 			when "get"		then get
-			else			"error - no such comman\r\n"
+			else			"error - no such command\r\n"
 		end
 	end
 	def watch(server, args)
@@ -79,6 +78,9 @@ class SwitchDevice < LapDevice
 			end
 		end
 	end
+	def to_s
+		super.chomp + " " + @lap_addr.to_s + "," + @num.to_s + " state=" + @state.to_s + "\r\n"
+	end 
 end
 
 $devices = []
@@ -104,6 +106,7 @@ class LapServer
 	def initialize(sock)
 		@sock = sock
 		@alive = true
+		@messages = []
 		Thread.new{
 			while 1
 				line = sock.gets
@@ -112,30 +115,51 @@ class LapServer
 				line.chomp!
 				command, name, args = line.split(' ',3);
 		
-				
-				i = $devices.index(name)
-				if i then
-					if command == "watch" then
-						$devices.at(i).watch(self, args)
-						$devices.at(i).request(sock, "get", args)
-					else
-						$devices.at(i).request(sock, command, args)
-					end
+				if command == "show" then
+					show(name, args)
 				else
-					sock.puts("no such device\r\n")
+					i = $devices.index(name)
+					if i then
+						if command == "watch" then
+							$devices.at(i).watch(self, args)
+							$devices.at(i).request(self, "get", args)
+						else 
+							$devices.at(i).request(self, command, args)
+						end
+					else
+						sock.puts("no such device\r\n")
+					end
 				end
-				
 			end
 			@alive = false
 			sock.close
 			$servers.delete(self)
+			@message_thread.kill
+		}
+		@message_thread = Thread.new{
+			while 1 do
+				msg = @messages.shift 
+				if msg then
+					sock.puts(msg)
+				else
+					Thread.stop
+				end
+			end
 		}
 	end
-	def message (str)
-		sock.puts(str)
+	def show(name, argstr)
+		 message case name
+			when "devices" then $devices.to_s
+			when "threads" then Thread.list.to_s
+		end
+	end
+	def message(str)
+		@messages << str
+		@message_thread.run
 	end
 end
 
+Thread.abort_on_exception = true
 
 read_devices("devices.lst");
 
