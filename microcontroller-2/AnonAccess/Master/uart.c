@@ -86,7 +86,7 @@ ISR(SIG_UART_RECV) {
 
 
 void uart_init() {
-//	PORTD |= 0x01;				//Pullup an RXD an
+	PORTD |= 0x01;				//Pullup an RXD an
 	
 	UCSRB |= (1<<TXEN);			//UART TX einschalten
 #ifdef ATMEGA644
@@ -97,8 +97,8 @@ void uart_init() {
 #endif
 	UCSRB |= ( 1 << RXEN );			//Uart RX einschalten
 
-	UBRRH= 0;//(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU)>>8);
-	UBRRL=25;//(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU));
+	UBRRH=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU)>>8);
+	UBRRL=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU));
 
 #ifdef UART_INTERRUPT
 	// init buffers
