@@ -19,19 +19,27 @@
 #include <inttypes.h>
 #include <avr/pgmspace.h>
 
+
+#ifdef UART_HOOK	
+	 extern void (*uart_hook) (uint8_t);	/* this is a pointer to a function ;-) */
+#endif
+
+
 void uart_init(void);
 
 void uart_putc(char c);
 void uart_putstr(char * str);
 void uart_putstr_P(PGM_P str);
-void uart_hexdump(void *buf, int len);
+void uart_hexdump(void* buf, int len);
 
 char uart_getc(void);
-char uart_getc_nb(char *c);		// returns 1 on success
+char uart_getc_nb(char *c);		/* returns 1 on success */
 
-//get one Cariage return terminated line
-//echo charakters back on Uart
-//returns buffer with zero terminated line on success, 0 pointer otherwise
+ /*
+   get one Cariage return terminated line
+   echo charakters back on Uart
+   returns buffer with zero terminated line on success, 0 pointer otherwise
+ */
 char * uart_getline_nb(void);
 
 #endif

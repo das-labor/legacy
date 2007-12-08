@@ -38,17 +38,108 @@
 #include "enc2E24C.h"
 #include "hwrnd.h"
 #include "lop.h"
+#include "lop_debug.h"
+#include "debug_tools.h"
+
+/******************************************************************************/
+/******************************************************************************/
+
+#define HELP_STR "\r\n ==AnonAccess== " \
+				 "\r\n  (debug console)" \
+				 "\r\n h: print this help" \
+				 "\r\n t: print timestamp" \
+				 "\r\n s: print session info" \
+				 "\r\n k: initiate keymigration" \
+				 "\r\n f: format databases" \
+				 "\r\n i: initialise databases" \
+				 "\r\n"
+
+/******************************************************************************/
+/******************************************************************************/
 
 uint8_t setupdone_flag EEMEM = 0;
+
+struct {
+	uint8_t users;
+	uint8_t admins;
+} session;
+
+lop_ctx_t lop0={
+	idle, idle, idle, 0, 0, NULL, 0, 
+	NULL, NULL, NULL, NULL};
+	
+/******************************************************************************/
+/******************************************************************************/
+
+void lop0_sendrawbyte(uint8_t b){
+	uart_putc(b);
+}
+
+/******************************************************************************/
+
+// this handler is called from the uart_hook, i.e. when the Uart receives
+// a new byte.
+void onuartrx(uint8_t b){
+	//let lop handle the received byte.
+	lop_recieve_byte(&lop0,b);
+}
+
+/******************************************************************************/
 
 bool setup_done(void){
 	return eeprom_read_byte(&setupdone_flag);
 }
 
+/******************************************************************************/
+
 void setup_system(void){
 }
 
-void init(void){
+/******************************************************************************/
+
+void streamrx(uint8_t b){
+	switch (b){
+		case 'h': lop_dbg_str_P(&lop0, PSTR(HELP_STR)); 
+			break;
+		case 't': lop_dbg_str_P(&lop0, PSTR("\r\ntimestamp: "));
+			timestamp_t timestamp;
+			timestamp = gettimestamp();
+			lop_dbg_hexdump(&lop0, &timestamp, sizeof(timestamp_t)); 
+			break;
+		case 's': lop_dbg_str_P(&lop0, PSTR("\r\nsession info:"));
+			lop_dbg_str_P(&lop0, PSTR("\r\n\tusers: "));
+			lop_dbg_hexdump(&lop0, &session.users, 1);
+			lop_dbg_str_P(&lop0, PSTR("\r\n\tadmins: "));
+			lop_dbg_hexdump(&lop0, &session.admins, 1);
+			break;
+		case 'k': do_keymigrate(); 
+			break;
+    	case 'f': ticketdb_format(TICKETDB_SIZE); 
+    		flmdb_format();/* break;*/
+    	case 'i': ticketdb_init();
+    		dump_dbstats();
+    		break;
+    		
+		default: lop_dbg_str_P(&lop0, PSTR("\r\n unknown command "));
+				 lop_sendstream(&lop0, b);
+				 break;
+	}
+	lop_dbg_str_P(&lop0, PSTR("\r\n done\r\n"));
+}
+
+/******************************************************************************/
+
+void messagerx(uint16_t len, uint8_t * msg){
+}
+
+/******************************************************************************/
+
+void init_system(void){
+	uart_init();
+	lop0.sendrawbyte = lop0_sendrawbyte;
+	lop0.on_streamrx = streamrx;
+	lop0.on_msgrx = messagerx;
+	uart_hook = onuartrx;
     i2c_init();
     E24C_init();
     rtc_init();
@@ -56,7 +147,9 @@ void init(void){
     ticketdb_init();
 }
 
-int main(){
+/******************************************************************************/
+
+int main(void){
 	init_system();
 	
 	if (!setup_done()){
@@ -64,15 +157,10 @@ int main(){
 	}
 	
 	while (1){
-		action = getActionReq();
-		if (validAction(action)){
-			giveNewTokens();
-			doAction(action);
-		} else {
-			doNotActio(action);
-		}
+		;
 	}
 	return 0;
 }
 
+/******************************************************************************/
 
