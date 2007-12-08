@@ -15,11 +15,11 @@
 
 /******************************************************************************/
 void main_open(void){
-	uart_putstr("\r\n door opening");
+	DS("\r\n door opening");
 }
 
 void main_close(void){
-	uart_putstr("\r\n door closeing");
+	DS("\r\n door closeing");
 }
 
 void dump_authblock(authblock_t * ab){
