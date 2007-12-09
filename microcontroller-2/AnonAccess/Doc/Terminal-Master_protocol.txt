@@ -1,0 +1,69 @@
+
+ +------+-----+-------+---- ... -----+
+ | dest | src | msgid | ... data ... |
+ +------+-----+-------+---- ... -----+
+
+-----------------------------------------
+
+ dest/src:
+  0 - Master
+  1 - Terminal
+ 
+-----------------------------------------
+
+ msgid:
+  0 - session initialisation/reset
+  1 - add AuthBlock to session
+  2 - AuthBlock reply
+  3 - AuthBlock error
+  4 - Action
+  5 - Action reply
+  6 - print string
+
+-----------------------------------------
+
+ data:
+  msgid==0: no data (0 byte)
+  msgid==1: AuthBlock (130 byte)
+  msgid==2: AuthBlock (130 byte)
+  msgid==3: error code (1 byte)
+   0 - no error code (does not mean no error, means master unit won't tell)
+   1 - HMAC in authblock is not ok
+   2 - ticket expired
+   3 - ticket not valid
+   4 - user locked
+  msgid==4: action specification (1 byte) followed by data  
+   0x00 - main open    <none>
+   0x01 - main close   <none>
+   0x10 - add user     <nickname> <anon/nonanon>
+   0x11 - rem user     <nickname>
+   0x12 - lock user    <nickname>
+   0x13 - unlock user  <nickname>
+   0x14 - add admin    <nickname>
+   0x15 - rem admin    <nickname>
+   0x16 - keymigration <none>
+  msgid==5: action code (1 byte) followed by data
+   0x00 - main open    <done/notdone>
+   0x01 - main close   <done/notdone>
+   0x10 - add user     <done/notdone>
+   0x11 - rem user     <done/notdone>
+   0x12 - lock user    <done/notdone>
+   0x13 - unlock user  <done/notdone>
+   0x14 - add admin    <done/notdone>
+   0x15 - rem admin    <done/notdone>
+   0x16 - keymigration <done/notdone>
+   
+====================================================================
+
+<none> : 0 byte
+<done/notdone> : 1 byte
+ 0x01 - done
+ 0x00 - not done
+<nickname>:
+ length - 1 byte
+ string - "length" bytes
+<anon/nonanon>
+ 0x01 - anon
+ 0x00 - not anon 
+
+
