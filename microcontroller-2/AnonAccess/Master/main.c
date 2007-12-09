@@ -73,7 +73,7 @@
 #define ANON    1
 #define NOTANON 0
 
-
+#define SESSION_MAX_PARTICIPANTS 5
 #define SESSION_MAX_DURATION (5LL * 60LL * 1000LL) /* 5 minutes */
 
 /******************************************************************************/
@@ -103,6 +103,7 @@ struct {
 	uint8_t users;
 	uint8_t admins;
 	timestamp_t timestamp;
+	uid_t participants[SESSION_MAX_PARTICIPANTS];
 } session;
 
 lop_ctx_t lop0={
@@ -144,9 +145,13 @@ void setup_system(void){
 /******************************************************************************/
 
 void session_reset(void){
+	uint8_t i;
 	session.users = 0;
 	session.admins = 0;
 	session.timestamp = 0;
+	for(i=0; i<SESSION_MAX_PARTICIPANTS; ++i){
+		session.participants[i] = NO_USER;
+	}
 }
 
 /******************************************************************************/
@@ -195,7 +200,7 @@ void streamrx(uint8_t b){
 /******************************************************************************/
 
 void messagerx(uint16_t len, uint8_t * msg){
-	if(session.users == 255 || session.admins==255){
+	if(session.users > SESSION_MAX_PARTICIPANTS || session.admins > SESSION_MAX_PARTICIPANTS){
 		/* someone seems to be pretty fast wiht card changing, but we won't allow this */
 		session_reset();
 		masterstate = mainidle;
@@ -259,6 +264,20 @@ void messagerx(uint16_t len, uint8_t * msg){
 			masterstate = mainidle;
 			busy &= ~1;
 			/* session expired - DROP */
+		}
+		/* check if user allready participates */
+		uint8_t i;
+		for(i=0; i<session.users; ++i){
+			if(((authblock_t*)&(msg[3]))->uid == session.participants[i]){
+				/* user already participates */
+				uint8_t reply[] = {
+					TERMINALUNIT_ID,
+					MASTERUNIT_ID,
+					MSGID_AB_ERROR, /* AuthBlock error reply */
+					AB_ERROR_WONTTELL }; /* won't tell */
+				lop_sendmessage(&lop0, 4, reply);
+				return;
+			}
 		}
 		switch(check_authblock((authblock_t*)&(msg[3]))){
 			case invalid_cred:
@@ -355,9 +374,8 @@ void messagerx(uint16_t len, uint8_t * msg){
 /******************************************************************************/
 
 void init_system(void){
-	session.users = 0;
-	session.admins = 0;
-	session.timestamp = 0;
+	session_reset();
+	masterstate = idle;
 	uart_init();
 	lop0.sendrawbyte = lop0_sendrawbyte;
 	lop0.on_streamrx = streamrx;
