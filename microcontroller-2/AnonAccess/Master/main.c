@@ -49,6 +49,10 @@
 				 "\r\n h: print this help" \
 				 "\r\n t: print timestamp" \
 				 "\r\n s: print session info" \
+				 "\r\n r: read serial eeprom in crypto mode (1KiB)" \
+				 "\r\n R: read serial eeprom in crypto mode (8KiB)" \
+				 "\r\n d: read serial eeprom in plain mode (1KiB)" \
+				 "\r\n D: read serial eeprom in plain mode (8KiB)" \
 				 "\r\n k: initiate keymigration" \
 				 "\r\n f: format databases" \
 				 "\r\n i: initialise databases" \
@@ -98,13 +102,22 @@ void setup_system(void){
 /******************************************************************************/
 
 void streamrx(uint8_t b){
+	i2c_detect_t dev_table;
+	
 	switch (b){
 		case 'h': lop_dbg_str_P(&lop0, PSTR(HELP_STR)); 
 			break;
-		case 't': lop_dbg_str_P(&lop0, PSTR("\r\ntimestamp: "));
-			timestamp_t timestamp;
-			timestamp = gettimestamp();
-			lop_dbg_hexdump(&lop0, &timestamp, sizeof(timestamp_t)); 
+		case 'h': i2c_detect(dev_table);
+			break;
+		case 't': console_dumptimestamp(); 
+			break;
+		case 'r': crypto_eeprom_dump(0, 1024);
+			break;
+		case 'R': crypto_eeprom_dump(0, 8*1024);
+			break;
+		case 'd': eeprom_dump_page(0xA0, 0, 1024);
+			break;
+		case 'D': eeprom_dump_page(0xA0, 0, 8*1024);
 			break;
 		case 's': lop_dbg_str_P(&lop0, PSTR("\r\nsession info:"));
 			lop_dbg_str_P(&lop0, PSTR("\r\n\tusers: "));
@@ -141,6 +154,7 @@ void init_system(void){
 	lop0.on_msgrx = messagerx;
 	uart_hook = onuartrx;
     i2c_init();
+    load_eeprom_crypt_key(eeprom_key);
     E24C_init();
     rtc_init();
     prng_init();
