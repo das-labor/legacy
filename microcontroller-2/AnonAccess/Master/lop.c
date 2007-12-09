@@ -13,8 +13,8 @@
 #include <stdint.h>
 #include "lop.h"
 
-#define LOP_ESC_CODE		0x23
-#define LOP_RESET_CODE		0x42
+#define LOP_ESC_CODE		0x05
+#define LOP_RESET_CODE		0x06
 #define LOP_XON_CODE		0x11
 #define LOP_XOFF_CODE		0x13
 
