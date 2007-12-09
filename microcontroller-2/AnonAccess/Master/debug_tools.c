@@ -337,29 +337,6 @@ void i2c_detect(i2c_detect_t table){
 	i2c_stop();
 }
 
-
-/****************************************************
- *  eeprom_dump_byte()
- * **************************************************/
-void eeprom_dump_byte(i2c_addr_t dev, uint16_t start, uint16_t length){
-	uint16_t i=0;
-    uint8_t j=0;
-    DS("EEPROM-Dump (Byte-Mode):\r\n");
-    for (i=start; i<(start+length); i+=ROW_SIZE){
-	    DS("0x");
-	    DB(HIGH(i));
-	    DB(LOW(i));
-	    DS(":");
-	    for (j=0; j<ROW_SIZE; ++j){
-	   // fix this
-	    		DC(' ');
-			DB(E24C_byte_read(dev, i+j));
-	    }
-        DS("\r\n");  
-    } 
-}
-
-
 /****************************************************
  *  eeprom_dump_page()
  * **************************************************/

@@ -57,11 +57,6 @@ typedef enum{
 } authcredvalid_state_t; /* authentification credentials valid status */
 
 typedef struct{
-	uid_t	uid;
-	token_t	token;	
-} authcredentials_t;
-
-typedef struct{
 	uid_t    uid;
 	ticket_t ticket;
 	uint8_t  rkey[32];
