@@ -26,6 +26,7 @@ typedef enum{
 
 
 typedef uint16_t userid_t;
+#define NO_USER 0xFFFF
 typedef uint32_t dbsize_t;
 typedef uint8_t  ticketmac_t[32];
 
