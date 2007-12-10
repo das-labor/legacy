@@ -92,6 +92,8 @@
 				 "\r\n k: initiate keymigration" \
 				 "\r\n f: format databases" \
 				 "\r\n i: initialise databases" \
+				 "\r\n o: execute main_open()" \
+				 "\r\n c: execute main_close()" \
 				 "\r\n"
 
 /******************************************************************************/
@@ -188,6 +190,10 @@ void streamrx(uint8_t b){
     		flmdb_format();/* break;*/
     	case 'i': ticketdb_init();
     		dump_dbstats();
+    		break;
+    	case 'o': main_open();
+    		break;
+    	case 'c': main_close();
     		break;
     		
 		default: lop_dbg_str_P(&lop0, PSTR("\r\n unknown command "));
@@ -297,6 +303,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 				msg[0] = TERMINALUNIT_ID;
 				msg[1] = MASTERUNIT_ID;
 				msg[2] = MSGID_AB_REPLY; /* AuthBlock reply */
+				
 				lop_sendmessage(&lop0, 133, msg);
 				return; break;
 			default:
@@ -374,6 +381,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 /******************************************************************************/
 
 void init_system(void){
+	door_init();
 	session_reset();
 	masterstate = idle;
 	uart_init();

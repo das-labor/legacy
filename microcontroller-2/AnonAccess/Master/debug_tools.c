@@ -192,7 +192,7 @@ void console_adduser(void){
 	authblock_t ab;
 	DS("\r\n new user");
 	console_getnick(&nick);
-	new_account(&ab, nick);
+	new_account(&ab, nick, true);
 	free(nick);
 	console_dumpauthblock(&ab);
 }
