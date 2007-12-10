@@ -300,6 +300,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 				session.admins += 1;
 			case valid_user:
 				session.users += 1;
+			case invalidtimeout_cred:  /* on timeout user gets new AB but no user increment is done */	
 				msg[0] = TERMINALUNIT_ID;
 				msg[1] = MASTERUNIT_ID;
 				msg[2] = MSGID_AB_REPLY; /* AuthBlock reply */
@@ -326,7 +327,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 			TERMINALUNIT_ID,
 			MASTERUNIT_ID,
 			MSGID_ACTION_REPLY,  /* action reply */
-			msg[3],
+			msg[3],   /* reply to what requested */
 			NOTDONE}; /* default to "not done" */
 		if(masterstate!=insession){
 			/* session must be initialised before - DROP */
@@ -364,7 +365,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 				lop_sendmessage(&lop0, 5, reply);
 				return;
 			}
-			if(len!=4+msg[4]+(msg[3]==ACTION_ADDUSER)?1:0){
+			if(len!=5+msg[4]+(msg[3]==ACTION_ADDUSER)?1:0){
 				/* length is wrong - DROP */
 				session_reset();
 				masterstate = mainidle;
@@ -374,9 +375,58 @@ void messagerx(uint16_t len, uint8_t * msg){
 			}
 		}
 		/* length checked, now we may try to do something */
-		
-	}
-}
+		action_t action;
+		action = (msg[3]&0xf)?msg[3]-0x10+2:msg[3]; /* transform ACTION_* in action_t */
+		if(!check_permissions(session.users, session.admins, action)){
+			/* not sufficient permissions */
+			session_reset();
+			masterstate = mainidle;
+			busy &= ~1;
+			lop_sendmessage(&lop0, 5, reply);
+			return;
+		}else{
+			/* length ok, permissions ok, now do the real stuff */
+			/* first the parameter free ones */
+			if(action==mainopen || action==mainclose || action==keymigrate){
+				switch (action){
+					case mainopen:   main_open(); break;
+					case mainclose:  main_close(); break;
+					case keymigrate: keymigration(); break;
+					default: /* ERROR */ break;
+				}
+				reply[4]=DONE;
+				lop_sendmessage(&lop0, 5, reply);
+			} else {
+				char name[msg[4]+1];
+				strncpy(name,(char*)&(msg[5]), msg[4]);
+				name[msg[4]] = '\0';
+				switch (action){
+					case remuser:    rem_user(name); break;
+					case lockuser:   lock_user(name); break;
+					case unlockuser: unlock_user(name); break;
+					case addadmin:   add_admin(name); break;
+					case remadmin:   rem_admin(name); break;
+					default: /* ERROR */ break;
+				}
+				if(action==adduser){
+					uint8_t addreply[5+130]={
+						TERMINALUNIT_ID,
+						MASTERUNIT_ID,
+						MSGID_ACTION_REPLY,
+						ACTION_ADDUSER,
+						DONE, 0};
+					
+					add_user(name, msg[len-1]?true:false, (authblock_t*)&(addreply[5])); 
+					lop_sendmessage(&lop0, 5+130, reply);
+				}else{
+					reply[4]=DONE;
+					lop_sendmessage(&lop0, 5, reply);
+				}
+			}
+			return;
+		}/* if(!check_permissions) ... else ... */
+	} /* if(msg[2] == MSGID_ACTION) */
+} /* void messagerx */
 
 /******************************************************************************/
 

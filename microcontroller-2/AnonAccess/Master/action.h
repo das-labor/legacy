@@ -3,13 +3,13 @@
 
 #include "types.h"
 
-void perform_action(action_t action, void * data);
+//void perform_action(action_t action, void * data);
 
 void door_init(void);
 void main_open(void);
 void main_close(void);
 void dump_authblock(authblock_t * ab);
-void add_user(char * nickname, uint8_t anon);
+void add_user(char * nickname, uint8_t anon, authblock_t *dest);
 void rem_user(char * nickname);
 void lock_user(char * nickname);
 void unlock_user(char * nickname);
