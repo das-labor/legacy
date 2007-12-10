@@ -209,16 +209,18 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	return flags.admin?valid_admin:valid_user;
 }
 
-void new_account(authblock_t * ab, char* nickname){
+void new_account(authblock_t * ab, char* nickname, uint8_t anon){
 	userflags_t flags;
 	uint8_t key[32];
 	uint8_t hmac[32];
 	
+	anon = anon?1:0;
 	/* set initial userflags */
 	flags.admin = 0;
 	flags.exist = 1;
 	flags.locked = 0;
 	flags.notify_lostadmin = 0;
+	flags.anonymous = anon;
 	flags.reserved = 0;
 	/* generate new uid */
 	uint8_t t=0;
@@ -250,7 +252,9 @@ void new_account(authblock_t * ab, char* nickname){
 	hmac_sha256(hmac, key, 256, ab->ticket, 32*8);
 	delete_key(key, 32);
 	ticketdb_newuser(&hmac, &(ab->uid), ab->uid);
-	
+	if(!anon){
+		ticketdb_addname(ab->uid, nickname);
+	}
 	ticketdb_setUserFlags(ab->uid, &flags);
 
 	/* make new RID & Co */

@@ -9,17 +9,27 @@
 #include "reqvalidator.h"
 #include <avr/eeprom.h>
 #include "keys.h"
+#include <avr/io.h>
 
 #define DS(a)   uart_putstr_P(PSTR(a))
 #define DD(a,b) uart_hexdump((a),(b))
 
 /******************************************************************************/
+void door_init(void){
+	DDRA = 0xD0;
+	PORTA = 0xD0;
+}
+
 void main_open(void){
+	PORTA &= ~0x60;
+	PORTA |=  0x80;
 	DS("\r\n door opening");
 }
 
 void main_close(void){
-	DS("\r\n door closeing");
+	PORTA &= ~0x80;
+	PORTA |=  0x60;
+	DS("\r\n door closing");
 }
 
 void dump_authblock(authblock_t * ab){
@@ -31,9 +41,9 @@ void dump_authblock(authblock_t * ab){
 	DS("\r\n   HMAC:   "); DD((char*)&(ab->hmac), 32);
 }
 
-void add_user(char * nickname){
+void add_user(char * nickname, uint8_t anon){
 	authblock_t ab;
-	new_account(&ab, nickname);
+	new_account(&ab, nickname, anon);
 	dump_authblock(&ab);
 }
 
@@ -108,7 +118,7 @@ void perform_action(action_t action, void * data){
 	switch (action){
 		case mainopen:   main_open(); break;
 		case mainclose:  main_close(); break;
-		case adduser:    add_user((char*)data); break;
+		case adduser:    add_user((char*)data, true); break;
 		case remuser:    rem_user((char*)data); break;
 		case lockuser:   lock_user((char*)data); break;
 		case unlockuser: unlock_user((char*)data); break;

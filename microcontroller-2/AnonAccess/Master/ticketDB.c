@@ -53,6 +53,7 @@ uint8_t	ticketdb_newuser(ticketmac_t* mac, userid_t* id, uint16_t initid){
 	flags.exist=true;
 	flags.locked=false;
 	flags.notify_lostadmin=false;
+	flags.anonymous=true;
 	ticketdb_setUserFlags(*id,&flags);
 	return DB_ERROR_OK;
 }
@@ -115,7 +116,7 @@ uint8_t ticketdb_setUserTicketMac(userid_t id, ticketmac_t* src){
  */
 uint8_t ticketdb_getUserNickname(userid_t id, char* dest){
 	if (id>=dbstats.max_users)
-		return DB_ERROR_NOSUCHUSER;;
+		return DB_ERROR_NOSUCHUSER;
 	READ_BLOCK(TICKETDB_OFFSET + dbheadersize + id*sizeof(userentry_t)
 	                        +DB_NICKNAME_OFFSET, dest, 7);
 	dest[7] = '\0';
@@ -125,11 +126,27 @@ uint8_t ticketdb_getUserNickname(userid_t id, char* dest){
 
 uint8_t ticketdb_setUserNickname(userid_t id, char* dest){
 	if (id>=dbstats.max_users)
-		return DB_ERROR_NOSUCHUSER;;
+		return DB_ERROR_NOSUCHUSER;
 	WRITE_BLOCK(TICKETDB_OFFSET + dbheadersize + id*sizeof(userentry_t)
 	                        +DB_NICKNAME_OFFSET, dest, 7);
 	return DB_ERROR_OK;
 }
+/******************************************************************************/
+
+uint8_t ticketdb_addname(userid_t id, char * name){
+	char s_name[7] = {0,0,0,0,0,0,0};
+	userflags_t uf;
+	if (id>=dbstats.max_users)
+		return DB_ERROR_NOSUCHUSER;
+	strncpy(s_name, name, 7);
+	ticketdb_setUserNickname(id, s_name);
+	ticketdb_getUserFlags(id, &uf);
+	uf.anonymous=false;
+	ticketdb_setUserFlags(id, &uf);
+	
+	return DB_ERROR_OK;
+}
+
 /******************************************************************************/
 
 uint8_t ticketdb_setUserFlags(userid_t id, userflags_t* src){

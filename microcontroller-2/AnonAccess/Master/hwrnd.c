@@ -20,11 +20,11 @@ uint8_t getbadrandom(void){
 
 void prng_init(void){
 	/* here we should add some entropy to the prng */
-	DDRA = 0x00;
-	PORTA = 0x00;
+	DDRA &= ~0x01;
+	PORTA &= ~0x01;
 	ADMUX = 0x40;  /* Vref=Avcc, ADC0 */
 	ADCSRA = 0x83; /* turn ADC on, prescaler=8 */
-	DIDR0 = 0x80;  /* turn off digital input for AD0 */
+	DIDR0 =  0x3F;  /* turn off digital input for AD0 */
 	
 	uint8_t i,j;
 	uint8_t b[64];
