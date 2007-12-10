@@ -30,14 +30,7 @@
  * KeyMigration Keys aus dem Gerät extrahieren 	3*<valid admin card + pin> 
  */
 
-/*******************************************************************************
- * 
- * 
- * 
- * 
- * 
- */
-bool valid_authreq(action_t action, uint8_t n, authblock_t * authblock){
+bool check_permissions(uint8_t users, uint8_t admins, action_t action){
 	action_requirements_t requirement_table[]=
 	{ {1, 0},   // mainopen
 	  {1, 0},   // mainclose
@@ -48,45 +41,9 @@ bool valid_authreq(action_t action, uint8_t n, authblock_t * authblock){
 	  {0, 2},   // addadmin
 	  {0, 2},   // remadmin
 	  {0, 3} }; // keymigration
-	uint8_t users=0, admins=0;  
-	uint8_t i;
-	authcredvalid_state_t t;
-	
-	for(i=1; i<n; ++i){ /* check for multiple authcreds */
-		uint8_t j;
-		for(j=0; j<i; ++j){
-			if(authblock[i].uid == authblock[j].uid){
-				DS(" double authcreds!");
-				return false;
-			}
-		}
-	}
-	
-	for(i=0;i<n;++i){
-		t =  check_authblock(&(authblock[i]));
-		users  += (t==valid_user || t==valid_admin)?1:0;
-		admins += (t==valid_admin)?1:0;
-	}
-	DS("\r\n users: ");
-	DD((char*)&users,1);
-	DS("\r\n admins: ");
-	DD((char*)&admins,1);
-	
-	for(i=0;i<n;++i){
-		t =  check_authblock(&(authblock[i]));
-		users  += (t==valid_user || t==valid_admin)?1:0;
-		admins += (t==valid_admin)?1:0;
-	}
-	
-	if((requirement_table[action].users_req  <= users)
-	 &&(requirement_table[action].admins_req <= admins)){
-		return true;
-	}
-	
-	return false;
+	return (requirement_table[action].users_req<=users 
+	     && requirement_table[action].admins_req<=admins);
 }
-
-
 /*******************************************************************************
  * 
  * 
@@ -204,7 +161,7 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 
 	if(flags.locked==1){ // this happens when user got timeout
 		DS("\r\nTimeout");
-		return invalid_cred;
+		return invalidtimeout_cred;
 	}
 	return flags.admin?valid_admin:valid_user;
 }

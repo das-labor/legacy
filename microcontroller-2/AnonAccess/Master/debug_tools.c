@@ -534,44 +534,6 @@ void console_clearadmin(void){
 	DS("\r\n now admin flag is cleared");
 }
 
-/****************************************************
- *  console_lasim()
- * **************************************************/
-void console_lasim(void){
-	void * data;
-	action_t action=mainopen;
-	authblock_t * authblocks=0;
-	uint8_t n;
-	
-	switch(uart_getc()){
-		case '1': action = mainopen;   break;
-		case '2': action = mainclose;  break;
-		case '3': action = adduser;    console_getnick(&data); break;
-		case '4': action = remuser;    console_getnick(&data); break;
-		case '5': action = lockuser;   console_getnick(&data); break;
-		case '6': action = unlockuser; console_getnick(&data); break;
-		case '7': action = addadmin;   console_getnick(&data); break;
-		case '8': action = remadmin;   console_getnick(&data); break;
-		case '9': action = keymigrate; break;		
-		default: break;
-	}
-	
-	n = console_getauthblocks(&authblocks);
-	
-	if(valid_authreq(action,n,authblocks)){
-		/* give new authblocks */
-		uint8_t i;
-		for(i=0;i<n;++i){
-			console_dumpauthblock(&(authblocks[i]));
-		}
-		perform_action(action, data);
-	}else{
-		DS("\r\n*** verification failed ***");
-	}
-	free(data);
-	
-}
-
 
 
 

@@ -41,10 +41,9 @@ void dump_authblock(authblock_t * ab){
 	DS("\r\n   HMAC:   "); DD((char*)&(ab->hmac), 32);
 }
 
-void add_user(char * nickname, uint8_t anon){
-	authblock_t ab;
-	new_account(&ab, nickname, anon);
-	dump_authblock(&ab);
+void add_user(char * nickname, uint8_t anon, authblock_t *dest){
+	new_account(dest, nickname, anon);
+//	dump_authblock(&ab);
 }
 
 void rem_user(char * nickname){
@@ -113,7 +112,7 @@ typedef enum{
 } action_t;
 
 */
-
+/*
 void perform_action(action_t action, void * data){
 	switch (action){
 		case mainopen:   main_open(); break;
@@ -125,11 +124,11 @@ void perform_action(action_t action, void * data){
 		case addadmin:   add_admin((char*)data); break;
 		case remadmin:   rem_admin((char*)data); break;
 		case keymigrate: keymigration(); break;
-		default: /* ERROR */ break;
+		default: / * ERROR * / break;
 	}
 }
 
-
+*/
 
 
 

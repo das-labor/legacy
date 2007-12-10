@@ -54,7 +54,8 @@ typedef struct userflags_st{
 typedef enum{
 	invalid_cred = 0,
 	valid_user   = 1,
-	valid_admin  = 3
+	valid_admin  = 3,
+	invalidtimeout_cred = 0x10
 } authcredvalid_state_t; /* authentification credentials valid status */
 
 typedef struct{
