@@ -47,8 +47,15 @@ void uart_init(char *sport) {
 	// set serial options
 	tcgetattr(uart_fd, &options);
 
+	/*
 	cfsetispeed(&options, UART_BAUD_RATE);
 	cfsetospeed(&options, UART_BAUD_RATE);
+	*
+	* Replaced the above with the following in the hope that it fixes the init
+	* bug.
+	*/
+
+	cfsetspeed(&options, UART_BAUD_RATE);
 
 	options.c_cflag &= ~(PARENB | CSTOPB | CSIZE | CRTSCTS);
 	options.c_cflag |= (CS8 | CLOCAL | CREAD);
