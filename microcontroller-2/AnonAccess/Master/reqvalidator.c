@@ -177,7 +177,7 @@ void new_account(authblock_t * ab, char* nickname, uint8_t anon){
 	flags.exist = 1;
 	flags.locked = 0;
 	flags.notify_lostadmin = 0;
-	flags.anonymous = anon;
+	flags.anonymous = anon?true:false;
 	flags.reserved = 0;
 	/* generate new uid */
 	uint8_t t=0;

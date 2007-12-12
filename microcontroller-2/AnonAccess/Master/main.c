@@ -9,9 +9,6 @@
  */
 
 
-
-
-
 #include "config.h"
 #include "debug.h"
 #include "uart.h"
@@ -51,6 +48,8 @@
 #define MSGID_ACTION        4
 #define MSGID_ACTION_REPLY  5
 #define MSGID_PRINT         6
+
+#define MSGID_ADD_BOOTSTRAP 7
 
 #define AB_ERROR_WONTTELL   0
 #define AB_ERROR_HMAC       1
@@ -100,6 +99,7 @@
 /******************************************************************************/
 
 uint8_t setupdone_flag EEMEM = 0;
+uint8_t bootstrap_accounts EEMEM = BOOTSTRAP_ACCOUNTS;
 
 struct {
 	uint8_t users;
@@ -230,7 +230,8 @@ void messagerx(uint16_t len, uint8_t * msg){
 	}
 	if((  msg[2] != MSGID_SESSION_INIT) 
 	  && (msg[2] != MSGID_ADD_AB) 
-	  && (msg[2] != MSGID_ACTION)){
+	  && (msg[2] != MSGID_ACTION)
+	  && (msg[2] != MSGID_ADD_BOOTSTRAP)){
 		session_reset();
 		masterstate = mainidle;
 		busy &= ~1;
@@ -249,6 +250,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 		session.timestamp = gettimestamp();
 		busy |= 1;
 		masterstate = insession;
+		return;
 	}
 	if(msg[2] == MSGID_ADD_AB){ /* add AuthBlock */
 		if(len!=3+130){
@@ -417,7 +419,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 						DONE, 0};
 					
 					add_user(name, msg[len-1]?true:false, (authblock_t*)&(addreply[5])); 
-					lop_sendmessage(&lop0, 5+130, reply);
+					lop_sendmessage(&lop0, 5+130, addreply);
 				}else{
 					reply[4]=DONE;
 					lop_sendmessage(&lop0, 5, reply);
@@ -426,6 +428,57 @@ void messagerx(uint16_t len, uint8_t * msg){
 			return;
 		}/* if(!check_permissions) ... else ... */
 	} /* if(msg[2] == MSGID_ACTION) */
+	if(msg[2] == MSGID_ADD_BOOTSTRAP){
+		uint8_t t; /* for bootstrap_accounts */
+		/* check form and length */
+		if(len<=5){
+			/* message much to short! no length or/and no anon field or null string*/
+			session_reset();
+			masterstate = mainidle;
+			busy &= ~1;
+			return;
+		}
+		if(len!=5+msg[3]){
+			/* message has incorrect length */
+			session_reset();
+			masterstate = mainidle;
+			busy &= ~1;
+			return;
+		}
+		if(masterstate != insession){
+			session_reset();
+			masterstate = mainidle;
+			busy &= ~1;
+			return;
+		}
+		if(NO_ANON_ADMINS && (msg[len-1]?1:0)){
+			session_reset();
+			masterstate = mainidle;
+			busy &= ~1;
+			return;
+		}
+		if((t=eeprom_read_byte(&bootstrap_accounts))!=0){
+			/* yeah, let's bootstrap the system */
+			eeprom_write_byte(&bootstrap_accounts, t-1);
+			char name[msg[3]+1];
+			strncpy(name,(char*)&(msg[4]), msg[3]);
+			name[msg[3]] = '\0';
+			uint8_t addreply[5+130]={
+						TERMINALUNIT_ID,
+						MASTERUNIT_ID,
+						MSGID_ACTION_REPLY,
+						ACTION_ADDUSER,
+						DONE, 0};
+			add_user(name, msg[len-1]?true:false, (authblock_t*)&(addreply[5])); 
+			lop_sendmessage(&lop0, 5+130, addreply);
+		} else {
+			/* won't give a bootstrap account */
+			session_reset();
+			masterstate = mainidle;
+			busy &= ~1;
+			return;
+		}
+	}
 } /* void messagerx */
 
 /******************************************************************************/

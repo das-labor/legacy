@@ -12,6 +12,8 @@
 
 typedef enum {idle,message} lopstates_t;
 
+#define LOP_MAX_MSG_LENGTH 270
+
 typedef struct lop_ctx {
 	lopstates_t rxstate, txstate, msgretstate;
 	uint32_t msgidx;

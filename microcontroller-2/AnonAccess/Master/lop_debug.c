@@ -11,7 +11,7 @@
 #include "lop_debug.h"
 
 void lop_dbg_str(lop_ctx_t * ctx,char * str){
-	while(str){
+	while(*str){
 		lop_sendstream(ctx, *str++);
 	}
 }

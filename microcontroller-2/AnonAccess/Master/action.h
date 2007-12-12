@@ -3,8 +3,6 @@
 
 #include "types.h"
 
-//void perform_action(action_t action, void * data);
-
 void door_init(void);
 void main_open(void);
 void main_close(void);
