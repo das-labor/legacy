@@ -19,7 +19,7 @@
   4 - Action
   5 - Action reply
   6 - print string
-
+  7 - get bootstrap account
 -----------------------------------------
 
  data:
@@ -45,13 +45,18 @@
   msgid==5: action code (1 byte) followed by data
    0x00 - main open    <done/notdone>
    0x01 - main close   <done/notdone>
-   0x10 - add user     <done/notdone>
+   0x10 - add user     <done/notdone> <AuthBlock>
    0x11 - rem user     <done/notdone>
    0x12 - lock user    <done/notdone>
    0x13 - unlock user  <done/notdone>
    0x14 - add admin    <done/notdone>
    0x15 - rem admin    <done/notdone>
    0x16 - keymigration <done/notdone>
+  msgid=6: print string
+   <string>
+  msgid=7: get bootstrap account (add bootstrap admin)
+   <nickname><anon/nonanon>
+   
    
 ====================================================================
 
@@ -65,5 +70,7 @@
 <anon/nonanon>
  0x01 - anon
  0x00 - not anon 
-
+<string>:
+ length - 1 byte
+ string - "length" bytes
 
