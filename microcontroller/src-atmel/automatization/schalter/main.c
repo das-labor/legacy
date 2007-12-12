@@ -23,11 +23,10 @@ void my_init (void) __attribute__ ((naked)) \
 void
 my_init (void)
 {
-	uint8_t *x;
+	uint16_t x;
 	for(x=0x60;x<0x460;x++)
-		*x = 0x55;
+		*(uint8_t*)x = 0x55;
 }
-
 
 
 AVRX_SIGINT(SIG_OVERFLOW0)
