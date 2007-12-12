@@ -27,7 +27,7 @@ uint16_t dump_addr = 0x60;
 
 void memdump(){
 	msg.dlc = 8;
-	memcpy(msg.data, dump_addr, 8);
+	memcpy(msg.data,(void*) dump_addr, 8);
 	can_put(&msg);
 	dump_addr+=8;
 }

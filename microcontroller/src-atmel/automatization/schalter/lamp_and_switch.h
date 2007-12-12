@@ -1,7 +1,8 @@
 #define SWITCH_ON  0x0100
 #define SWITCH_OFF 0x0000
 
-void rc_switch_set(uint16_t param);
+void rc_switch_set_p(uint16_t param);
+void rc_switch_set(uint8_t num, uint8_t state);
 
 void lampedim(uint16_t param);
 void all_lampedim(uint16_t param);

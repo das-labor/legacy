@@ -47,14 +47,15 @@ void all_lampedim(uint16_t param){
 uint8_t rc_switch_states[10];
 
 
-void send_info(uint8_t num){
+static void send_info(uint8_t num){
+	msg_onoff_info.addr_src = myaddr;
 	msg_onoff_info.data[1] = num;
 	msg_onoff_info.data[2] = rc_switch_states[num];
 	can_put(&msg_onoff_info);
 }
 
 
-void set(uint8_t num, uint8_t state){
+void rc_switch_set(uint8_t num, uint8_t state){
 	if(rc_switch_states[num] != state){
 		rc_switch_states[num] = state;
 		AvrXPutFifo(rftxfifo, PD(rc_switch_codes[num][state]));
@@ -63,18 +64,15 @@ void set(uint8_t num, uint8_t state){
 }
 
 
-void rc_switch_set(uint16_t param){
+void rc_switch_set_p(uint16_t param){
 	uint8_t num = param & 0xff;
 	uint8_t state = 0;
-	
-	msg_onoff_info.addr_src = myaddr;
 	
 	if(param & SWITCH_ON)
 		state = 1;
 	
-	set(num, state);
+	rc_switch_set(num, state);
 }
-
 
 
 AVRX_GCC_TASKDEF(lapd_task, 70, 7){
@@ -83,7 +81,7 @@ AVRX_GCC_TASKDEF(lapd_task, 70, 7){
 		*(uint32_t*) d = AvrXWaitPullFifo(lapd_fifo);
 		switch(d[0]){	
 			case FKT_ONOFF_SET:
-				set(d[1], d[2]);
+				rc_switch_set(d[1], d[2]);
 				break;
 			case FKT_ONOFF_GET:
 				send_info(d[1]);

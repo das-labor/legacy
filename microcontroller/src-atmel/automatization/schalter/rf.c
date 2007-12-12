@@ -117,30 +117,30 @@ typedef struct{
 }code_action_t;
 
 code_action_t code_actions[] PROGMEM={
-	{0x0015050d /*A 1 on*/,			rc_switch_set, (SWITCH_ON  | LAMP_COUCHFLUTER) },
-	{0x00510550 /*switch a on*/,	rc_switch_set, (SWITCH_ON  | LAMP_COUCHFLUTER) },
-	{0x0014050d /*A 1 off*/,		rc_switch_set, (SWITCH_OFF | LAMP_COUCHFLUTER) },
-	{0x00540550 /*switch a off*/,	rc_switch_set, (SWITCH_OFF | LAMP_COUCHFLUTER) },
+	{0x0015050d /*A 1 on*/,			rc_switch_set_p, (SWITCH_ON  | LAMP_COUCHFLUTER) },
+	{0x00510550 /*switch a on*/,	rc_switch_set_p, (SWITCH_ON  | LAMP_COUCHFLUTER) },
+	{0x0014050d /*A 1 off*/,		rc_switch_set_p, (SWITCH_OFF | LAMP_COUCHFLUTER) },
+	{0x00540550 /*switch a off*/,	rc_switch_set_p, (SWITCH_OFF | LAMP_COUCHFLUTER) },
 
-	{0x0015450d /*A 2 on*/,			rc_switch_set, (SWITCH_ON  | LAMP_HINTENFLUTER) },
-	{0x00511150 /*switch b on*/,	rc_switch_set, (SWITCH_ON  | LAMP_HINTENFLUTER) },
-	{0x0014450d /*A 2 off*/,		rc_switch_set, (SWITCH_OFF | LAMP_HINTENFLUTER) },
-	{0x00541150 /*switch b off*/,	rc_switch_set, (SWITCH_OFF | LAMP_HINTENFLUTER) },
+	{0x0015450d /*A 2 on*/,			rc_switch_set_p, (SWITCH_ON  | LAMP_HINTENFLUTER) },
+	{0x00511150 /*switch b on*/,	rc_switch_set_p, (SWITCH_ON  | LAMP_HINTENFLUTER) },
+	{0x0014450d /*A 2 off*/,		rc_switch_set_p, (SWITCH_OFF | LAMP_HINTENFLUTER) },
+	{0x00541150 /*switch b off*/,	rc_switch_set_p, (SWITCH_OFF | LAMP_HINTENFLUTER) },
 
 	{0x0015054d /*B 1 on*/,			all_lampedim,  ((2<<8)|0x00 ) },
 	{0x00511450 /*switch c on*/,	all_lampedim,  ((2<<8)|0x00 ) },
 	{0x0014054d /*B 1 off*/,		all_lampedim,  ((-2<<8)|0x00 ) },
 	{0x00541450 /*switch c off*/,	all_lampedim,  ((-2<<8)|0x00 ) },
 
-	{0x0015454d /*B 2 on*/,			rc_switch_set, (SWITCH_ON  | LAMP_MOODBAR ) },
-	{0x00111550 /*switch d on*/,	rc_switch_set, (SWITCH_ON  | LAMP_MOODBAR ) },
-	{0x0014454d /*B 2 off*/,		rc_switch_set, (SWITCH_OFF | LAMP_MOODBAR ) },
-	{0x00141550 /*switch d off*/,	rc_switch_set, (SWITCH_OFF | LAMP_MOODBAR ) },
+	{0x0015454d /*B 2 on*/,			rc_switch_set_p, (SWITCH_ON  | LAMP_MOODBAR ) },
+	{0x00111550 /*switch d on*/,	rc_switch_set_p, (SWITCH_ON  | LAMP_MOODBAR ) },
+	{0x0014454d /*B 2 off*/,		rc_switch_set_p, (SWITCH_OFF | LAMP_MOODBAR ) },
+	{0x00141550 /*switch d off*/,	rc_switch_set_p, (SWITCH_OFF | LAMP_MOODBAR ) },
 
-	{0x00411550 /*switch e on*/,	rc_switch_set, (SWITCH_ON  | LAMP_BASTELECKE ) },
-	{0x0015051d /*C 1 on*/,			rc_switch_set, (SWITCH_ON  | LAMP_BASTELECKE ) },
-	{0x00441550 /*switch e off*/,	rc_switch_set, (SWITCH_OFF | LAMP_BASTELECKE ) },
-	{0x0014051d /*C 1 off*/,		rc_switch_set, (SWITCH_OFF | LAMP_BASTELECKE ) },
+	{0x00411550 /*switch e on*/,	rc_switch_set_p, (SWITCH_ON  | LAMP_BASTELECKE ) },
+	{0x0015051d /*C 1 on*/,			rc_switch_set_p, (SWITCH_ON  | LAMP_BASTELECKE ) },
+	{0x00441550 /*switch e off*/,	rc_switch_set_p, (SWITCH_OFF | LAMP_BASTELECKE ) },
+	{0x0014051d /*C 1 off*/,		rc_switch_set_p, (SWITCH_OFF | LAMP_BASTELECKE ) },
 	
 };
 
