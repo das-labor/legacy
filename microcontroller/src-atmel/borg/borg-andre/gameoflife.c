@@ -16,7 +16,7 @@
 
 /******************************************************************************/ 
 
-#define DEBUG
+#undef DEBUG
  
 #define XSIZE NUM_COLS
 #define YSIZE NUM_ROWS
@@ -184,7 +184,7 @@ void pfcopy(field_t dest, field_t src){
 }
 
 /******************************************************************************/
-
+#ifndef BITSTUFFED
 uint8_t pfcmp(field_t dest, field_t src){
 	int x,y;	
 	for(y=0; y<YSIZE; ++y){
@@ -196,7 +196,45 @@ uint8_t pfcmp(field_t dest, field_t src){
 	return 0;
 }
 
+/******************************************************************************/
 
+uint8 pfempty(field_t src){	int x,y;	
+	for(y=0; y<YSIZE; ++y){
+		for(x=0; x<XSIZE; ++x){
+			if (getcell(src,x,y)==alive)
+				return 0;
+		}
+	}
+	return 1;
+}
+
+#else
+
+uint8_t pfcmp(field_t dest, field_t src){
+	int x,y;
+	for(y=0; y<FIELD_YSIZE; ++y){
+		for(x=0; x<FIELD_XSIZE; ++x){
+			if (src[x][y] != dest[x][y])
+				return 1;
+		}
+	}
+	return 0;
+}
+
+/******************************************************************************/
+
+uint8_t pfempty(field_t src){	
+	int x,y;	
+	for(y=0; y<FIELD_YSIZE; ++y){
+		for(x=0; x<FIELD_XSIZE; ++x){
+			if (src[x][y]!=0)
+				return 0;
+		}
+	}
+	return 1;
+}
+
+#endif
 /******************************************************************************/
 
 void insertglider(field_t pf){
@@ -251,6 +289,10 @@ start:
 		if(!pfcmp(pf1, pf2)){
 			insertglider(pf1);
 			cycle=1;
+		}
+		if(pfempty(pf1)){
+			/* kill game */
+			return 0;
 		}
 	/* */
 		uint8_t i;
