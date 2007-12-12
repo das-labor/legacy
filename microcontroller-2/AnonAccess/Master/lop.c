@@ -142,6 +142,9 @@ void lop_process_l2(lop_ctx_t* ctx, uint8_t b){
 					break;
 				case 1:
 					ctx->msglength += b;
+					if(ctx->msglength > LOP_MAX_MSG_LENGTH){
+						lop_error(5);
+					}
 					if(!(ctx->msgbuffer=malloc(ctx->msglength))){
 						/* message to large error */
 						lop_error(5);

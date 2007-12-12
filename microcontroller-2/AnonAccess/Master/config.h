@@ -23,8 +23,11 @@
 #undef UART_LEDS
 
 // i2c defines
-
 #define I2C_EXTERNAL_PULLUP
+
+#define BOOTSTRAP_ACCOUNTS 3 /* accounts given "for free" */
+#define NO_ANON_ADMINS 1
+
 
 #define HMAC_SHORTONLY
 
