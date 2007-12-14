@@ -17,6 +17,13 @@ void lamp_and_switch_init();
 #define POWER_COUCH 5
 #define POWER_BAR 6
 #define POWER_FLIPPER 7
+#define LAMP_LEUCHTSTOFF1 20
+#define LAMP_LEUCHTSTOFF2 21
+
+
+
+extern uint8_t relais[2];
+
 
 #ifdef LAMP_AND_SWITCH_C
 

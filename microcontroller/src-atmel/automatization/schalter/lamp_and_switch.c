@@ -44,22 +44,32 @@ void all_lampedim(uint16_t param){
 	}
 }
 
-uint8_t rc_switch_states[10];
+uint8_t switch_states[30];
 
 
-static void send_info(uint8_t num){
+static void switch_send_info(uint8_t num){
 	msg_onoff_info.addr_src = myaddr;
 	msg_onoff_info.data[1] = num;
-	msg_onoff_info.data[2] = rc_switch_states[num];
+	msg_onoff_info.data[2] = switch_states[num];
 	can_put(&msg_onoff_info);
 }
 
 
+uint8_t relais[2];
+
+void set_relais(uint8_t num, uint8_t state){
+	relais[num] = state;
+}
+
 void rc_switch_set(uint8_t num, uint8_t state){
-	if(rc_switch_states[num] != state){
-		rc_switch_states[num] = state;
-		AvrXPutFifo(rftxfifo, PD(rc_switch_codes[num][state]));
-		send_info(num);
+	if(switch_states[num] != state){
+		switch_states[num] = state;
+		if(num < 20){	//rc switch
+			AvrXPutFifo(rftxfifo, PD(rc_switch_codes[num][state]));
+		}else{			//relais
+			set_relais(num-20,state);
+		}
+		switch_send_info(num);
 	}
 }
 
@@ -84,7 +94,7 @@ AVRX_GCC_TASKDEF(lapd_task, 70, 7){
 				rc_switch_set(d[1], d[2]);
 				break;
 			case FKT_ONOFF_GET:
-				send_info(d[1]);
+				switch_send_info(d[1]);
 				break;
 		}
 		
