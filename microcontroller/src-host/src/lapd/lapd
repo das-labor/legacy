@@ -107,55 +107,76 @@ class LapServer
 		@sock = sock
 		@alive = true
 		@messages = []
-		Thread.new{
-			while 1
-				line = sock.gets
-				if line == nil then break end
-				puts line
-				line.chomp!
-				command, name, args = line.split(' ',3);
-		
-				if command == "show" then
-					show(name, args)
-				else
-					i = $devices.index(name)
-					if i then
-						if command == "watch" then
-							$devices.at(i).watch(self, args)
-							$devices.at(i).request(self, "get", args)
-						else 
-							$devices.at(i).request(self, command, args)
-						end
+		begin
+			@message_thread = Thread.new{
+				while 1 do
+					msg = @messages.shift 
+					if msg then
+						sock.puts(msg)
 					else
-						sock.puts("no such device\r\n")
+						Thread.stop
 					end
 				end
-			end
-			@alive = false
-			sock.close
-			$servers.delete(self)
-			@message_thread.kill
-		}
-		@message_thread = Thread.new{
-			while 1 do
-				msg = @messages.shift 
-				if msg then
-					sock.puts(msg)
-				else
-					Thread.stop
+			}
+			@server_thread = Thread.new{
+				begin
+					while 1
+						line = sock.gets
+						if line == nil then break end
+						puts line
+						line.chomp!
+						command, name, args = line.split(' ',3);
+			
+						if command == "show" then
+							show(name, args)
+						elsif command == "exit" then
+							sock.puts("bye!\r\n")
+							break
+						else
+							i = $devices.index(name)
+								if i then
+								if command == "watch" then
+									$devices.at(i).watch(self, args)
+									$devices.at(i).request(self, "get", args)
+								else 
+									$devices.at(i).request(self, command, args)
+								end
+								else
+							sock.puts("no such device\r\n")
+							end
+						end
+					end
+					self.destruct
+				rescue Errno::ECONNRESET
+					print "Errno:ECONRESET rescued\r\n"
+					self.destruct
 				end
-			end
-		}
+			}
+		end
+	end
+	def destruct
+		@alive = false
+		$servers.delete(self)
+		@sock.close
+		@message_thread.kill
 	end
 	def show(name, argstr)
 		 message case name
 			when "devices" then $devices.to_s
+			when "servers" then $servers.to_s
 			when "threads" then Thread.list.to_s
 		end
 	end
 	def message(str)
 		@messages << str
 		@message_thread.run
+	end
+	def to_s
+		@sock.peeraddr[2] + ":" + @sock.peeraddr[1].to_s + "\r\n" +\
+		"alive: " + @alive.to_s + "\r\n" +\
+		"server_thread:  " + @server_thread.to_s + "\r\n" +\
+		"message_thread: " + @message_thread.to_s + "\r\n" +\
+		"messages: " + @messages.to_s + "\r\n\r\n"
 	end
 end
 
