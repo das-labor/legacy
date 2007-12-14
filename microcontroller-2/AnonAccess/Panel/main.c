@@ -99,6 +99,10 @@ int main(void){
 
 	//Initialisierung
 	lcd_init();
+	
+	lcd_gotopos (1,1);
+	lcd_writetext ("booting ...");
+	
 	keypad_init();	
 	uart_init();
 	spi_init();
@@ -126,14 +130,18 @@ int main(void){
 	lop0.on_msgrx = lop0_messagerx;
 	uart_hook = onuartrx;
 	
-	//Prog
-	lcd_gotopos (1,1);
-	lcd_writetext ("Panel Test");
-
 	//Interupts global aktivieren
 	sei();
 	
 	lop_dbg_str(&lop0,"\r\nMAIN\r\n");
+	
+	timestamp_t t;
+	lop_dbg_str(&lop0,".");
+	t = gettimestamp();
+	while(1000>(gettimestamp()-t))
+		;
+	lop_dbg_str(&lop0,".");
+		
 	
 	
 	while(1){

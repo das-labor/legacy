@@ -62,24 +62,8 @@ char waitforanykey(void){
 	while(read_keypad()==key)
 		;
 	_delay_ms(1);
-		lop_dbg_str(&lop0, "\r\n key==");
-		lop_dbg_hexdump(&lop0,&key,1);
 	return key;
 }
-
-/*
- 0: ' '0
- 1: ' '1
- 2: ABC2
- 3: DEF3
- 4: GHI4
- 5: JKL5
- 6: MNO6
- 7: PQRS7
- 8: TUV8
- 9: WXYZ9
-
-*/
 
 void readnhex(uint8_t line, uint8_t x, uint8_t n,char * str){
 	uint8_t idx=0;
@@ -119,9 +103,29 @@ void readnhex(uint8_t line, uint8_t x, uint8_t n,char * str){
 	}
 }
 
+timestamp_t abstimedifference(timestamp_t t1, timestamp_t t2){
+	if(t1<t2){
+		return t2-t1;
+	} else {
+		return t1-t2;
+	}
+}
 
+/*
+ 0: ' '0
+ 1: ' '1
+ 2: ABC2
+ 3: DEF3
+ 4: GHI4
+ 5: JKL5
+ 6: MNO6
+ 7: PQRS7
+ 8: TUV8
+ 9: WXYZ9
 
-#define CHAR_SWITCH_DELAY 100 /* 1 sec */
+*/
+
+#define CHAR_SWITCH_DELAY 1000 /* 1 sec */
 
 uint8_t readnstr(uint8_t line, uint8_t x, uint8_t n,char * str){
 	timestamp_t time[2]={0,0};
@@ -141,52 +145,52 @@ uint8_t readnstr(uint8_t line, uint8_t x, uint8_t n,char * str){
 		{5,'W','X','Y','Z','9'} };
 	lcd_gotopos(line, x);
 	
-	while(i+1<n){
-	top:	
-		lcd_gotopos(line, x+i);
-		varidx ^= 1;
-		c[varidx] = waitforanykey();
-		time[varidx] = gettimestamp();
-		if(time[varidx^1]==0){
-			time[varidx^1]=time[varidx];
-			c[varidx^1]=c[varidx];
-		}
-		switch(c[varidx]){
-			case 'A':
-			case 'B':
-			case 'D':
-			case 'F':
-				goto top;
-			case 'E':
-				goto terminate;
-			case 'C':
-				if(i){
-					lcd_writechar(' ');
-					str[i]='\0';
-					--i;
-				}
-			default:
-				break;
-		}
-		if((CHAR_SWITCH_DELAY <= ((time[varidx]>time[varidx^1])?time[varidx]-time[varidx^1]:time[varidx^1]-time[varidx]))
-		   ||(c[varidx]!=c[varidx^1])){
-	       	
-			/* long delay, next char */
-			++i;
-			idx=0;
-			if(i+1==n)
-				goto terminate;
-			goto top;
-		} else {
-			/* short delay, modify char */
-			idx = (idx+1)%ctab[(uint8_t)c[varidx]][0];
-		}
-		lop_dbg_str(&lop0, "\r\nX");
-		str[i]=ctab[(c[varidx])-'0'][(idx+1)];
-	//	str[i]='A';
-		lcd_writechar(str[i]);
+	if(n==0)
+		return 0;
+	if(n==1){
+		str[0]='\0';
+		return 0;
 	}
-terminate:	
+	
+	do{
+		c[0]=waitforanykey();
+		time[0]=gettimestamp();
+	}while((('0'>c[0]) || ('9'<c[0])) && (c[0]!='E'));
+	if(c[0]=='E')
+		goto terminate;
+	lcd_gotopos(line, x+i);
+	str[i]=ctab[c[0]-'0'][idx+1];
+	lcd_writechar(str[i]);
+
+ nextscan:	
+	varidx ^= 1;	
+	do{
+		c[varidx]=waitforanykey();
+		time[varidx]=gettimestamp();
+	}while((('0'>c[varidx]) || ('9'<c[varidx])) && (c[varidx]!='E'));
+	if(c[1]=='E')
+		goto terminate;
+	if((c[0]==c[1]) && (abstimedifference(time[0],time[1])<=CHAR_SWITCH_DELAY)){
+		/* char modification */
+		idx = (idx+1)%ctab[c[0]-'0'][0];
+		lcd_gotopos(line, x+i);
+		str[i]=ctab[c[0]-'0'][idx+1];
+		lcd_writechar(str[i]);
+		goto nextscan;
+	} else {
+		/* next char */
+		++i;
+		if(i+1>=n)
+			goto finalise;
+		idx=0;
+		lcd_gotopos(line, x+i);
+		str[i]=ctab[c[varidx]-'0'][idx+1];
+		lcd_writechar(str[i]);
+		goto nextscan;
+	}
+  terminate:
+  	++i;
+  finalise:	
 	str[i]='\0';
 	return i;
 }
@@ -197,7 +201,7 @@ void demo_getname(void){
 	lcd_gotopos(2,1);
 	lcd_writetext("name:");
 	readnstr(3,1,10,name);
-	lcd_gotopos(3,1);
+	lcd_gotopos(4,1);
 	lcd_writetext(name);
 	waitforkey('E');
 }
