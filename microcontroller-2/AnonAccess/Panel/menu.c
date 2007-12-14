@@ -167,9 +167,20 @@ uint8_t readnstr(uint8_t line, uint8_t x, uint8_t n,char * str){
 	do{
 		c[varidx]=waitforanykey();
 		time[varidx]=gettimestamp();
-	}while((('0'>c[varidx]) || ('9'<c[varidx])) && (c[varidx]!='E'));
-	if(c[1]=='E')
+	}while((('0'>c[varidx]) || ('9'<c[varidx])) && (c[varidx]!='E') &&(c[varidx]!='C'));
+	if(c[varidx]=='E')
 		goto terminate;
+	if(c[varidx]=='C'){
+		/* correct the last value */
+		if(i>0){
+			idx = 0;
+			lcd_gotopos(line, x+i);
+			str[i]='\0';
+			lcd_writechar(' ');
+			--i;
+		}
+		goto nextscan;
+	}
 	if((c[0]==c[1]) && (abstimedifference(time[0],time[1])<=CHAR_SWITCH_DELAY)){
 		/* char modification */
 		idx = (idx+1)%ctab[c[0]-'0'][0];
