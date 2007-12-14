@@ -8,6 +8,5 @@ digraph G {
 	ciphers -> asymetric
 	symmetric -> "block ciphers"
 	symmetric -> "stream ciphers"
-	
-	
 }
+
