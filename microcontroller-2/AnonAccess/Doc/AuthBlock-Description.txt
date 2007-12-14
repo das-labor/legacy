@@ -1,0 +1,28 @@
+
+The PIN-feature is not implemented right now, so the current implentation is 
+based on 32 byte smaller AuthBlock.
+
+AuthBlock structure:
+ +------------------+
+ |   UID   ( 2byte) |
+ +------------------+
+ | Ticket (32 byte) |
+ +------------------+
+ | RKEY   (32 byte) |
+ +------------------+
+ | RID    (32 byte) |
+ +------------------+
+ | PINMAC (32 byte) |
+ +------------------+
+ | HMAC   (32 byte) |
+ +------------------+
+
+description of elements:
+ UID: User ID, used as index in the TicketDB
+ Ticket: random locking ticket, which is created by concatining 24 random bytes
+  with an 8 byte timestamp and encrypting this.
+ RKEY: random key, used for encrytion of user pseudonym
+ RID: encrypted user pseudonym; RID=enc_ridkey(enc_RKEY(user pseudonym))
+ PINMAC: used to verify the PIN
+ HMAC: HMAC over the above elements to verify that they were not modifyed 
+ 
