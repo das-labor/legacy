@@ -45,6 +45,16 @@ void lcd_writetext (char *text){
   }
 }
 
+void lcd_hexdump(void* data, uint8_t length){
+	char tab[16]={'0','1','2','3','4','5','6','7','9','8','A','B','C','D','E','F'};
+	while(length){
+		lcd_writechar(tab[(*((uint8_t*)data))>>4]);
+		lcd_writechar(tab[(*((uint8_t*)data))&0x0F]);
+		data = (uint8_t*)data +1;
+		length--;
+	}
+}
+
 // Zeilenwechsel
 
 void lcd_gotoline (uint8_t zeile){
