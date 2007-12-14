@@ -3,25 +3,218 @@
 #include "uart.h"
 #include "menu.h"
 #include "keypad.h"
+#include "rtc.h"
+#include "prng.h"
+#include "lop.h"
+#include "lop_debug.h"
 #include <stdint.h>
-#include <avr/delay.h>
+#include <util/delay.h>
+
+extern lop_ctx_t lop0;
+
+/******************************************************************************/
 
 typedef struct{
 	char *name;
-	enum {submenu, execute} options;
-	void (*fkt)(void*, ...);
+	enum {none, submenu, execute, back} options;
+	void (*fkt)(void);
 }menu_t;
+
+/******************************************************************************/
+
+void menuexec(uint8_t n, menu_t* menu);
+void open_door(void);
+void lock_door(void);
+void admin_menu(void);
+void stat_menu(void);
+void bootstrap_menu(void);
+void debug_menu(void);
+
+void print_timestamp(void);
+void print_random(void);
+
+/******************************************************************************/
 
 char* status_string = "";
 
-void open_door(void* data){}
-void lock_door(void* data){}
-void admin_menu(void* data){}
-void stat_menu(void* data){}
-void bootstrap_menu(void* data){}
-void debug_menu(void* data){}
 
-menu_t main_menu[6] = {
+void print_status(void){
+	lcd_cls();
+	lcd_gotopos(1,1);
+	lcd_writetext("=AnonAccess=");
+	lcd_writetext(status_string);
+}
+
+void waitforkey(char key){
+	while(read_keypad()!=key)
+		;
+	_delay_ms(1);
+	while(read_keypad()==key)
+		;
+	_delay_ms(1);
+}
+
+char waitforanykey(void){
+	char key;
+	while((key=read_keypad())==' ')
+		;
+	_delay_ms(1);
+	while(read_keypad()==key)
+		;
+	_delay_ms(1);
+		lop_dbg_str(&lop0, "\r\n key==");
+		lop_dbg_hexdump(&lop0,&key,1);
+	return key;
+}
+
+/*
+ 0: ' '0
+ 1: ' '1
+ 2: ABC2
+ 3: DEF3
+ 4: GHI4
+ 5: JKL5
+ 6: MNO6
+ 7: PQRS7
+ 8: TUV8
+ 9: WXYZ9
+
+*/
+
+void readnhex(uint8_t line, uint8_t x, uint8_t n,char * str){
+	uint8_t idx=0;
+	char c;
+	
+	while(idx<n){
+		c=waitforanykey();
+		lcd_gotopos(line,x+2*idx);
+		lcd_writechar(c);
+		if(c>='0' && c<='9'){
+			c=c-'0';
+		} else {
+			if(c>='A' && c<='F'){
+				c=c-'A'+10;
+			} else {
+			/* this should not happen */
+			 c=0;
+			}
+		}
+		str[idx]=(str[idx] & 0x0F) | (c<<4);
+		
+		c=waitforanykey();
+		lcd_gotopos(line,x+2*idx+1);
+		lcd_writechar(c);
+		if(c>='0' && c<='9'){
+			c=c-'0';
+		} else {
+			if(c>='A' && c<='F'){
+				c=c-'A'+10;
+			} else {
+			/* this should not happen */
+			 c=0;
+			}
+		}
+		str[idx]=(str[idx] & 0xF0) | (c);
+		++idx;
+	}
+}
+
+
+
+#define CHAR_SWITCH_DELAY 100 /* 1 sec */
+
+uint8_t readnstr(uint8_t line, uint8_t x, uint8_t n,char * str){
+	timestamp_t time[2]={0,0};
+	uint8_t i=0;
+	uint8_t idx=0,varidx=0;
+	char c[2];
+	char ctab[10][6]= {
+		{2,' ','0'},
+		{2,' ','1'},
+		{4,'A','B','C','2'},
+		{4,'D','E','F','3'},
+		{4,'G','H','I','4'},
+		{4,'J','K','L','5'},
+		{4,'M','N','O','6'},
+		{5,'P','Q','R','S','7'},
+		{4,'T','U','V','8'},
+		{5,'W','X','Y','Z','9'} };
+	lcd_gotopos(line, x);
+	
+	while(i+1<n){
+	top:	
+		lcd_gotopos(line, x+i);
+		varidx ^= 1;
+		c[varidx] = waitforanykey();
+		time[varidx] = gettimestamp();
+		if(time[varidx^1]==0){
+			time[varidx^1]=time[varidx];
+			c[varidx^1]=c[varidx];
+		}
+		switch(c[varidx]){
+			case 'A':
+			case 'B':
+			case 'D':
+			case 'F':
+				goto top;
+			case 'E':
+				goto terminate;
+			case 'C':
+				if(i){
+					lcd_writechar(' ');
+					str[i]='\0';
+					--i;
+				}
+			default:
+				break;
+		}
+		if((CHAR_SWITCH_DELAY <= ((time[varidx]>time[varidx^1])?time[varidx]-time[varidx^1]:time[varidx^1]-time[varidx]))
+		   ||(c[varidx]!=c[varidx^1])){
+	       	
+			/* long delay, next char */
+			++i;
+			idx=0;
+			if(i+1==n)
+				goto terminate;
+			goto top;
+		} else {
+			/* short delay, modify char */
+			idx = (idx+1)%ctab[(uint8_t)c[varidx]][0];
+		}
+		lop_dbg_str(&lop0, "\r\nX");
+		str[i]=ctab[(c[varidx])-'0'][(idx+1)];
+	//	str[i]='A';
+		lcd_writechar(str[i]);
+	}
+terminate:	
+	str[i]='\0';
+	return i;
+}
+
+void demo_getname(void){
+	char name[11];
+	print_status();
+	lcd_gotopos(2,1);
+	lcd_writetext("name:");
+	readnstr(3,1,10,name);
+	lcd_gotopos(3,1);
+	lcd_writetext(name);
+	waitforkey('E');
+}
+
+void demo_hex(void){
+	char name[10];
+	print_status();
+	lcd_gotopos(2,1);
+	lcd_writetext("hex:");
+	readnhex(3,1,10,name);
+	lcd_gotopos(4,1);
+	lcd_hexdump(name, 10);
+	waitforkey('E');
+}
+
+
+menu_t main_menu_mt[6] = {
 	{"open door",execute, open_door},
 	{"lock door",execute, lock_door},
 	{"admin menu",submenu, admin_menu},
@@ -30,80 +223,46 @@ menu_t main_menu[6] = {
 	{"debug menu",submenu, debug_menu}
 };
 
-
-
-/*
-untermenu allgemein[] ={
-	{"test", cmdtest},
-	{"muh", cmdtest}
+menu_t debug_menu_mt[5] = {
+	{"main menu", back, NULL},
+	{"timestamp", execute, print_timestamp},
+	{"random (30)", execute, print_random},
+	{"get name", execute, demo_getname},
+	{"get hex string", execute, demo_hex}
 };
 
-untermenu uadmin[] ={
-	{"add user", cmdtest},
-	{"rem user", cmdtest},
-	{"lock user", cmdtest},
-	{"unlock user", cmdtest},
-};
+void open_door(void){}
+void lock_door(void){}
+void admin_menu(void){}
+void stat_menu(void){}
+void bootstrap_menu(void){}
 
-untermenu cardopt[] ={
-	{"react card", cmdtest},
-	{"del card", cmdtest}
-};
-
-untermenu adminmenu[] ={
-	{"add admin", cmdtest},
-	{"rem admin", cmdtest}
-};
-
-menu haupt[] ={
-	{"Allgemein", NULL, &(allgemein[0])},
-	{"User Admin", NULL, &(uadmin[0])},
-	{"Karten Optionen", NULL, &(cardopt[0])},
-	{"Admin Menu", NULL, &(adminmenu[0])}
-};
-*/
-
-void menu_handler(char akey){
-
-	
-	
-	switch (akey)
-	{	
-		case 0x41: 
-		{						//A - next
-			
-			break;
-		}
-		case 0x42:
-		{						//B - back
-		
-			break;
-		}
-		case 0x43:
-		{						//C - Cancel
-		
-			break;
-		}
-		case 0x45:
-		{						//E - Enter
-				
-			break;
-		}
-		case 0x46:
-		{						//F - Menu Entry
-	
-			break;
-		}
-	}
-	
-	//Debug
-//	lcd_gotopos(3,5);
-//	lcd_writetext("Hello World!\x7E\x7F ");
-	
+void debug_menu(void){
+	menuexec(5, debug_menu_mt);
 }
 
-void menueakt(int a){
+void print_timestamp(void){
+	timestamp_t t;
+	t = gettimestamp();
+	print_status();
+	lcd_gotopos(2,1);
+	lcd_hexdump(&t,8);
+	waitforkey('E');
 }
+
+void print_random(void){
+	uint8_t block[30];
+	fillBlockRandom(block, 30);
+	print_status();
+	lcd_gotopos(2,1);
+	lcd_hexdump(&block,10);
+	lcd_gotopos(3,1);
+	lcd_hexdump(&block+10,10);
+	lcd_gotopos(4,1);
+	lcd_hexdump(&block+20,10);
+	waitforkey('E');
+}
+
 
 #define R_ARROW 0x7E
 #define L_ARROW 0x7F
@@ -113,14 +272,24 @@ void menuexec(uint8_t n, menu_t* menu){
   	;
 	uint8_t i,idx=0,selpos=2;
   redraw:
-	lcd_cls();
-	lcd_gotopos(1,1);
-	lcd_writetext("=AnonAccess=");
-	lcd_writetext(status_string);
+  	print_status();
 	
 	for(i=0; i<((n<3)?n:3); ++i){
 		lcd_gotopos(i+2,2);
 		lcd_writetext(menu[(idx+i)%n].name);
+		lcd_gotopos(i+2,20);
+		switch(menu[(idx+i)%n].options){
+			case submenu: lcd_writechar(R_ARROW);
+				break;
+			case execute: lcd_writechar('*');
+				break;
+			case back: lcd_writechar(L_ARROW);
+				break;
+			case none: 
+			default:
+				break;
+				
+		}
 	}
 	lcd_gotopos(selpos,1);
 	lcd_writechar(R_ARROW);
@@ -156,6 +325,11 @@ void menuexec(uint8_t n, menu_t* menu){
 			while(read_keypad()=='E')
 				;
 			_delay_ms(1);
+			if(menu[(idx+selpos-2)%n].fkt!=NULL){
+				menu[(idx+selpos-2)%n].fkt();
+			}else{
+				return;
+			}
 			goto reset;
 			break;
 		default: goto rescan; 
@@ -164,7 +338,7 @@ void menuexec(uint8_t n, menu_t* menu){
 }
 
 void master_menu(void){
-	menuexec(6, main_menu);
+	menuexec(6, main_menu_mt);
 }
 
 

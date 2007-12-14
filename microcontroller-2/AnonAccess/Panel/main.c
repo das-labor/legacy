@@ -13,9 +13,6 @@
 #include "rtc.h"
 #include <stdint.h>
 //Variablen und Konstanten
-char akey = ' ';
-
-int c = 0;
 uint8_t ROW_SIZE=0;
 
 
