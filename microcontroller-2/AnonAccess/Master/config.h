@@ -22,12 +22,22 @@
 #define UART_XON_XOFF_THRESHOLD_2 (UART_RXBUFSIZE - 12)
 #undef UART_LEDS
 
-// i2c defines
+/* i2c defines */
 #define I2C_EXTERNAL_PULLUP
 
 #define BOOTSTRAP_ACCOUNTS 3 /* accounts given "for free" */
 #define NO_ANON_ADMINS 1
 
+#define EEPROM_SEC_INIT_RWS 2 /*129*/
+
+/* tamperdetection defines */
+#define TAMPER_DETECTION
+#define TAMPER_SECT 1
+#define TAMPER_PORT PORTB
+#define TAMPER_DDR DDRB
+#define TAMPER_PIN 2
+#define TAMPER_PCMSK PCMSK1
+#define TAMPER_PCINT PCINT1_vect
 
 #define HMAC_SHORTONLY
 

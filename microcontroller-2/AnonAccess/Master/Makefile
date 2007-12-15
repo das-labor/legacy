@@ -1,8 +1,8 @@
 PRG	    = anonaccess-test
-OBJ	    = main.o debug_tools.o uart.o debug.o 24CBlockDev.o 24Cxxx.o \
+OBJ	    = keys.o main.o debug_tools.o uart.o debug.o 24CBlockDev.o 24Cxxx.o \
   i2c.o i2c_tools.o prng.o sha256-asm.o hmac-sha256.o reqvalidator.o \
-  action.o keys.o shabea.o ticketDB.o flmDB.o fairrnd.o rtc.o enc2E24C.o hwrnd.o \
-  lop.o lop_debug.o reset_counter.o base64_enc.o
+  action.o shabea.o ticketDB.o flmDB.o fairrnd.o rtc.o enc2E24C.o hwrnd.o \
+  lop.o lop_debug.o reset_counter.o base64_enc.o selfdestruct.o
 MCU_TARGET     = atmega644
 OPTIMIZE       = -Os -mno-tablejump
 DEBUG	   = -gstabs
@@ -29,6 +29,7 @@ ERASECMD       =
 #FLASHCMD       = avrdude -p $(MCU_TARGET) -c usbasp -U flash:w:$(PRG).hex  -U eeprom:w:$(PRG)_eeprom.hex
 FLASHCMD       = avrdude -p $(MCU_TARGET)  -P /dev/ttyUSB0 -c avr911 -U flash:w:$(PRG).hex  -U eeprom:w:$(PRG)_eeprom.hex
 EEPROM_FLASHCMD = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB0 -c avr911 -U eeprom:w:$(PRG)_eeprom.hex
+LOCK_CMD = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB0 -c avr911 -U lock:w:0xfc:m
 
 
 all: $(PRG).elf lst text eeprom
@@ -52,6 +53,9 @@ flash:
 eeflash:
 	$(EEPROM_FLASHCMD)
 
+lock:
+	$(LOCK_CMD)
+	
 %.lst: %.elf
 	$(OBJDUMP) -h -S $< > $@
 
