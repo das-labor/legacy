@@ -286,7 +286,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 		return;
 	}
 	if(msg[2] == MSGID_ADD_AB){ /* add AuthBlock */
-		if(len!=3+130){
+		if(len!=3+sizeof(authblock_t)){
 			session_reset();
 			masterstate = mainidle;
 			busy &= ~1;
@@ -340,7 +340,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 				msg[1] = MASTERUNIT_ID;
 				msg[2] = MSGID_AB_REPLY; /* AuthBlock reply */
 				
-				lop_sendmessage(&lop0, 133, msg);
+				lop_sendmessage(&lop0, 3+sizeof(authblock_t), msg);
 				return; break;
 			default:
 				/* GNAHHH, this should NEVER happen */
@@ -444,7 +444,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 					default: /* ERROR */ break;
 				}
 				if(action==adduser){
-					uint8_t addreply[5+130]={
+					uint8_t addreply[5+sizeof(authblock_t)]={
 						TERMINALUNIT_ID,
 						MASTERUNIT_ID,
 						MSGID_ACTION_REPLY,
@@ -452,7 +452,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 						DONE, 0};
 					
 					add_user(name, msg[len-1]?true:false, (authblock_t*)&(addreply[5])); 
-					lop_sendmessage(&lop0, 5+130, addreply);
+					lop_sendmessage(&lop0, 5+sizeof(authblock_t), addreply);
 				}else{
 					reply[4]=DONE;
 					lop_sendmessage(&lop0, 5, reply);
@@ -496,7 +496,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 			char name[msg[3]+1];
 			strncpy(name,(char*)&(msg[4]), msg[3]);
 			name[msg[3]] = '\0';
-			uint8_t addreply[5+130]={
+			uint8_t addreply[5+sizeof(authblock_t)]={
 						TERMINALUNIT_ID,
 						MASTERUNIT_ID,
 						MSGID_ACTION_REPLY,
@@ -508,7 +508,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 			ticketdb_getUserFlags(((authblock_t*)&(addreply[5]))->uid ,&uf);
 			uf.admin = true;
 			ticketdb_getUserFlags(((authblock_t*)&(addreply[5]))->uid ,&uf);
-			lop_sendmessage(&lop0, 5+130, addreply);
+			lop_sendmessage(&lop0, 5+sizeof(authblock_t), addreply);
 		} else {
 			/* won't give a bootstrap account */
 			session_reset();

@@ -51,6 +51,54 @@ bool check_permissions(uint8_t users, uint8_t admins, action_t action){
  * 
  * 
  */
+
+bool check_pin(authblock_t * ab, char* pin){
+	if(!ticketdb_userexists(ab->uid))
+		return false;
+	uint16_t l=strlen(pin);	
+	uint8_t refhmac[32],key[32];
+	uint8_t msg[32+l];
+	
+	ticketdb_getUserPinMacSeed(ab->uid, msg); /* load seed in the first 32 byte */
+	memcpy(msg+32, pin, l); /* load pin */
+	load_pinmac_key(key);
+	hmac_sha256(refhmac,key,256,msg,8*(32+l));
+	delete_key(key, 32);
+	 /* now we have the reference hmac */
+	memcpy(msg, ab->pinhmac, 32);
+	load_pinenc_key(key);
+	shabea256(msg, key, 256, 0, 16);
+	delete_key(key, 32);
+	shabea256(msg, ab->rkey, 256, 0, 16);
+	
+	if(memcmp(refhmac, msg, 32)){
+		return false;
+	} else {
+		return true;
+	}
+} 
+ 
+void update_pin(authblock_t * ab, char* pin){
+	if(!ticketdb_userexists(ab->uid))
+		return;
+	uint16_t l=strlen(pin);	
+	uint8_t refhmac[32],key[32];
+	uint8_t msg[32+l];
+	
+	fillBlockRandom(msg,32);
+	ticketdb_setUserPinMacSeed(ab->uid, msg); /* load seed in the first 32 byte */
+	memcpy(msg+32, pin, l); /* load pin */
+	load_pinmac_key(key);
+	hmac_sha256(refhmac,key,256,msg,8*(32+l));
+	delete_key(key, 32);
+		/* now we have to encrypt the hmac */
+	shabea256(refhmac, ab->rkey, 256, 1, 16);
+	load_pinenc_key(key);
+	shabea256(refhmac, key, 256, 1, 16);
+	delete_key(key, 32);
+	memcpy(ab->pinhmac, refhmac, 32);
+} 
+ 
 authcredvalid_state_t check_authblock(authblock_t * ab){
 	uint8_t key[32];
 	uint8_t hmac[32];
