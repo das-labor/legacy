@@ -1,3 +1,16 @@
+/**
+ * 
+ * Author: Martin Hermsen & Daniel Otte
+ * License: GPLv3
+ * 
+ * 
+ */
+
+#include "config.h"
+#include <stdint.h>
+#include <avr/io.h>
+#include <avr/pgmspace.h>
+#include <util/delay.h>
 #include "lcd_tools.h"
 
 // Enable-Leitung toggeln
@@ -39,9 +52,16 @@ void lcd_writechar (char zeichen){
 }
 
 // gibt eine Zeichenkette auf dem LCD aus
-void lcd_writetext (char *text){
+void lcd_writestr (char *text){
   while (*text!='\0') {
     lcd_writechar(*text++);
+  }
+}
+
+void lcd_writestr_P(PGM_P str){
+	char c;
+  while ((c=pgm_read_byte(str++))) {
+    lcd_writechar(c);
   }
 }
 

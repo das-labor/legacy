@@ -1,12 +1,14 @@
 #include "config.h"
 
 #include <stdint.h>
+#include <avr/pgmspace.h>
 
 void lcd_flash_e (void);
 void lcd_write (uint8_t, uint8_t);
 void lcd_cls (void);
 void lcd_writechar (char);
-void lcd_writetext (char *);
+void lcd_writestr (char *);
+void lcd_writestr_P(PGM_P str);
 void lcd_gotoline (uint8_t);
 void lcd_gotopos (uint8_t y, uint8_t x);
 void lcd_writezahl (int32_t, uint8_t, uint8_t);

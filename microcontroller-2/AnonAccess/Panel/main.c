@@ -1,3 +1,11 @@
+/**
+ * AnonAccess-Terminal
+ * Author: Martin Hermsen & Daniel Otte
+ * License: GPLv3
+ * 
+ * 
+ */ 
+
 #include "config.h"
 #include "lcd_tools.h"
 #include "keypad.h"
@@ -11,6 +19,7 @@
 #include "hwrnd.h"
 #include "lop_debug.h"
 #include "rtc.h"
+#include "base64_enc.h"
 #include <stdint.h>
 //Variablen und Konstanten
 uint8_t ROW_SIZE=0;
@@ -101,7 +110,7 @@ int main(void){
 	lcd_init();
 	
 	lcd_gotopos (1,1);
-	lcd_writetext ("booting ...");
+	lcd_writestr ("booting ...");
 	
 	keypad_init();	
 	uart_init();
@@ -115,14 +124,6 @@ int main(void){
 	//Set I2C SPEED 
 	i2c_set_speed(I2C_SPEED_FASTEST);
 	
-	//Timer 2 initialisieren
-	TCCR2 = 0x0D;
-	TCNT2 = 0;
-	OCR2  = 0xF0;
-
-	// Timer 2 Interrupt
-	//TIMSK= _BV(OCIE2);
-	
 	//set handlers for the outputs from lop
 	lop0.on_streamrx = lop0_streamrx;
 	lop0.sendrawbyte = lop0_sendrawbyte;
@@ -133,14 +134,7 @@ int main(void){
 	//Interupts global aktivieren
 	sei();
 	
-	lop_dbg_str(&lop0,"\r\nMAIN\r\n");
-	
-	timestamp_t t;
-	lop_dbg_str(&lop0,".");
-	t = gettimestamp();
-	while(1000>(gettimestamp()-t))
-		;
-	lop_dbg_str(&lop0,".");
+	lop_dbg_str_P(&lop0,PSTR("\r\nMAIN\r\n"));
 		
 	
 	
@@ -150,17 +144,4 @@ int main(void){
 	
 	return 0;
 } 
-
-/*
-// Interupt fuer Timer 2 (abfragen des Keypads und Menuhandler)
-ISR(TIMER2_COMP_vect)
-{
-	akey = read_keypad();
-	
-	// Debug
-	lcd_gotopos (4,19);
-	lcd_writechar (akey);
-
-}
-*/
 
