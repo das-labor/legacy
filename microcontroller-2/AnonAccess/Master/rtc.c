@@ -24,7 +24,7 @@ void rtc_init(void){
 	TIMSK0 |= _BV(OCIE0A);     /* enable output compare match interrupt */
 	timer_backup_idx = eeprom_read_byte(&timer_backup_idx_ee);
 	eeprom_read_block(&milliseconds, &(timer_backup[timer_backup_idx]), sizeof(timestamp_t));
-	milliseconds += 1000LL * 60LL * 60LL;	/* add one hour */
+	milliseconds += 0x3FFFFFLL;
 	sei();
 }
 #else

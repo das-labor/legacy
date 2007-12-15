@@ -32,11 +32,17 @@
 #include "reqvalidator.h"
 #include "shabea.h"
 #include "rtc.h"
+#include "reset_counter.h"
 #include "enc2E24C.h"
 #include "hwrnd.h"
 #include "lop.h"
 #include "lop_debug.h"
 #include "debug_tools.h"
+
+
+#define DS(a)   uart_putstr_P(PSTR(a))
+#define DD(a,b) uart_hexdump((a),(b))
+
 
 #define MASTERUNIT_ID 0
 #define TERMINALUNIT_ID 1
@@ -83,6 +89,7 @@
 				 "\r\n h: print this help" \
 				 "\r\n a: autodetect I2C-Devices" \
 				 "\r\n t: print timestamp" \
+				 "\r\n T: print number of resets done" \
 				 "\r\n s: print session info" \
 				 "\r\n r: read serial eeprom in crypto mode (1KiB)" \
 				 "\r\n R: read serial eeprom in crypto mode (8KiB)" \
@@ -141,7 +148,20 @@ bool setup_done(void){
 
 /******************************************************************************/
 
+#define EEPROM_SEC_INIT_RWS 129
+
 void setup_system(void){
+	uint8_t a,b;
+	uint8_t buffer[32];
+	/* eeprom keyspace is 7*32 byte */
+	for(a=0; a<EEPROM_SEC_INIT_RWS; ++a){
+		for(b=0; b<7; ++b){
+			getRandomBlock((uint32_t*)buffer);
+			eeprom_write_block(buffer, (void*)(b*32), 32);
+		}
+	}
+	eeprom_write_byte(&setupdone_flag, 1);
+	DS("\r\nSETUP DONE\r\n");
 }
 
 /******************************************************************************/
@@ -167,6 +187,8 @@ void streamrx(uint8_t b){
 		case 'a': i2c_detect(dev_table);
 			break;
 		case 't': console_dumptimestamp(); 
+			break;
+		case 'T': console_dumpresets(); 
 			break;
 		case 'r': crypto_eeprom_dump(0, 1024);
 			break;
@@ -470,6 +492,11 @@ void messagerx(uint16_t len, uint8_t * msg){
 						ACTION_ADDUSER,
 						DONE, 0};
 			add_user(name, msg[len-1]?true:false, (authblock_t*)&(addreply[5])); 
+			/* make user admin */
+			userflags_t uf;
+			ticketdb_getUserFlags(((authblock_t*)&(addreply[5]))->uid ,&uf);
+			uf.admin = true;
+			ticketdb_getUserFlags(((authblock_t*)&(addreply[5]))->uid ,&uf);
 			lop_sendmessage(&lop0, 5+130, addreply);
 		} else {
 			/* won't give a bootstrap account */
@@ -496,6 +523,7 @@ void init_system(void){
     load_eeprom_crypt_key(eeprom_key);
     E24C_init();
     rtc_init();
+    resetcnt_inc();
     prng_init();
     ticketdb_init();
 }
@@ -507,6 +535,9 @@ int main(void){
 	
 	if (!setup_done()){
 		setup_system();
+	} else {
+		DS("\r\nOPERATION CONTINUED\r\n");
+	
 	}
 	
 	while (1){

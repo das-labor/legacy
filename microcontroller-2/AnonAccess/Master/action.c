@@ -97,40 +97,13 @@ void keymigration(void){
 	do_keymigrate();
 }
 
-/******************************************************************************/
-/*
-typedef enum{
-	mainopen   = 0, 
-	mainclose, 
-	adduser, 
-	remuser,
-	lockuser,
-	unlockuser,
-	addadmin,
-	remadmin,
-	keymigrate
-} action_t;
-
-*/
-/*
-void perform_action(action_t action, void * data){
-	switch (action){
-		case mainopen:   main_open(); break;
-		case mainclose:  main_close(); break;
-		case adduser:    add_user((char*)data, true); break;
-		case remuser:    rem_user((char*)data); break;
-		case lockuser:   lock_user((char*)data); break;
-		case unlockuser: unlock_user((char*)data); break;
-		case addadmin:   add_admin((char*)data); break;
-		case remadmin:   rem_admin((char*)data); break;
-		case keymigrate: keymigration(); break;
-		default: / * ERROR * / break;
-	}
+void rem_keymigration(void){
+	DS("\r\n rem migration keys ...");
 }
 
-*/
+void self_destruct(void){
+	DS("\r\n self destruction ...");
+}
 
-
-
-
+/******************************************************************************/
 
