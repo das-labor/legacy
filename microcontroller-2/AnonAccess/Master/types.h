@@ -63,6 +63,7 @@ typedef struct{
 	ticket_t ticket;
 	uint8_t  rkey[32];
 	uint8_t  rid[32];
+	uint8_t  pinhmac[32];
 	uint8_t  hmac[32];
 } authblock_t;
 

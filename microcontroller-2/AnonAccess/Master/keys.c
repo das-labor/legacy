@@ -1,6 +1,7 @@
 
 #include "keys.h"
 #include "24Cxxx.h"
+#include "hmac-sha256.h"
 #include <avr/eeprom.h>
 #include <string.h>
 
@@ -42,6 +43,11 @@ uint8_t pinmac_key[32] EEMEM   = {0xdc, 0x40, 0xc8, 0x3c, 0x84, 0x11, 0x8a, 0xec
                                 0x68, 0x3e, 0xc3, 0xb2, 0x20, 0xc6, 0xa7, 0x7e,
                                 0x13, 0x54, 0x88, 0x77, 0x02, 0x9b, 0xb9, 0x8a}; 
  
+uint8_t pinenc_key[32] EEMEM   = {0xfc, 0x40, 0xc8, 0x3c, 0x84, 0x11, 0x8a, 0xec,
+                                0x66, 0x66, 0x5d, 0x9f, 0x3b, 0x79, 0x55, 0x63,
+                                0x68, 0x3e, 0xc3, 0xb2, 0x20, 0xc6, 0xa7, 0x7e,
+                                0x13, 0x54, 0x88, 0x77, 0x02, 0x9b, 0xb9, 0x8a}; 
+  
 uint8_t eeprom_crypt_key[32] EEMEM   = {0xec, 0x40, 0xc8, 0x3c, 0x84, 0x11, 0x8a, 0xec,
                                 0x66, 0x66, 0x5d, 0x9f, 0x3b, 0x79, 0x55, 0x63,
                                 0x68, 0x3e, 0xc3, 0xb2, 0x20, 0xc6, 0xa7, 0x7e,
@@ -50,33 +56,55 @@ uint8_t eeprom_crypt_key[32] EEMEM   = {0xec, 0x40, 0xc8, 0x3c, 0x84, 0x11, 0x8a
 uint8_t eeprom_key[32]; 
  
  
-void delete_key(uint8_t * key, uint16_t length){
+void delete_key(void* key, uint16_t length){
+	memset(key, 0x00, length);
+	memset(key, 0xFF, length);
+	memset(key, 0xAA, length);
+	memset(key, 0x55, length);
+	memset(key, 0xFF, length);
 	memset(key, 0x00, length);
 	memset(key, 0xFF, length);
 } 
-                                
-void load_ticketkey(uint8_t * dest){
-	eeprom_read_block(dest, ticket_key, 32);
+                   
+void load_key(void* dest, void* key){
+	uint8_t a[32],b[32];
+	eeprom_read_block(a, key, 32);
+	eeprom_read_block(b, master_key, 32);
+	hmac_sha256(dest,b,256,a,256);
+	delete_key(a,32);
+	delete_key(b,32);
+}                                
+
+void load_ticketkey(void* dest){
+	load_key(dest, ticket_key);
 } 
 
-void load_absignkey(uint8_t * dest){
-	eeprom_read_block(dest, absign_key, 32);
+void load_absignkey(void* dest){
+	load_key(dest, absign_key);
 }
 
-void load_ridkey(uint8_t * dest){
-	eeprom_read_block(dest, rid_key, 32);
+void load_ridkey(void* dest){
+	load_key(dest, rid_key);
 }
 
-void load_nickkey(uint8_t * dest){
-	eeprom_read_block(dest, nick_key, 32);
+void load_nickkey(void* dest){
+	load_key(dest, nick_key);
 }
 
-void load_timestampkey(uint8_t * dest){
-	eeprom_read_block(dest, timestamp_key, 32);
+void load_timestampkey(void* dest){
+	load_key(dest, timestamp_key);
 }
 
-void load_eeprom_crypt_key(uint8_t * dest){
-	eeprom_read_block(dest, eeprom_crypt_key, 32);
+void load_pinmac_key(void* dest){
+	load_key(dest, pinmac_key);
+}
+
+void load_pinenc_key(void* dest){
+	load_key(dest, pinenc_key);
+}
+
+void load_eeprom_crypt_key(void* dest){
+	load_key(dest, eeprom_crypt_key);
 }
 
 void do_keymigrate(void){
