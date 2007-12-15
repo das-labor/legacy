@@ -1,7 +1,7 @@
 PRG	    = panel
 OBJ	    = main.o interface.o lcd_tools.o keypad.o spi.o menu.o uart.o  24Cxxx.o \
   i2c.o i2c_tools.o prng.o sha256-asm.o hmac-sha256.o rtc.o hwrnd.o base64_enc.o \
-  lop.o lop_debug.o
+  reset_counter.o lop.o lop_debug.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os -mno-tablejump
 DEBUG	   = -gstabs

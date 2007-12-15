@@ -20,6 +20,7 @@
 #include "lop_debug.h"
 #include "rtc.h"
 #include "base64_enc.h"
+#include "reset_counter.h"
 #include <stdint.h>
 //Variablen und Konstanten
 uint8_t ROW_SIZE=0;
@@ -112,6 +113,7 @@ int main(void){
 	lcd_gotopos (1,1);
 	lcd_writestr ("booting ...");
 	
+	resetcnt_inc();
 	keypad_init();	
 	uart_init();
 	spi_init();

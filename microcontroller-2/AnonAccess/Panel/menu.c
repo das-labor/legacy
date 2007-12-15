@@ -9,6 +9,7 @@
 #include "lop_debug.h"
 #include "interface.h"
 #include "base64_enc.h"
+#include "reset_counter.h"
 #include <stdint.h>
 #include <util/delay.h>
 
@@ -33,6 +34,7 @@ void stat_menu(void);
 void bootstrap_menu(void);
 void debug_menu(void);
 
+void print_resets(void);
 void print_timestamp(void);
 void print_timestamp_live(void);
 void print_timestamp_base64(void);
@@ -82,16 +84,18 @@ menu_t main_menu_mt[6] = {
 
 
 const char main_menu_PS[]      PROGMEM = "main menu";
+const char reset_PS[]          PROGMEM = "print resets";
 const char timestamp_PS[]      PROGMEM = "timestamp";
 const char timestamp_live_PS[]      PROGMEM = "timestamp (live)";
-const char timestamp_base64_PS[]      PROGMEM = "timestamp (B64)";
-const char timestamp_base64_live_PS[]      PROGMEM = "timestamp (live,B64)";
+const char timestamp_base64_PS[]    PROGMEM = "timestamp (B64)";
+const char timestamp_base64_live_PS[]      PROGMEM = "timestamp (l,B64)";
 const char random_PS[]         PROGMEM = "random (30)";
 const char get_name_PS[]       PROGMEM = "get name";
 const char get_hex_string_PS[] PROGMEM = "get hex string";
 
-menu_t debug_menu_mt[8] = {
+menu_t debug_menu_mt[9] = {
 	{main_menu_PS, back, NULL},
+	{reset_PS, execute, print_resets},
 	{timestamp_PS, execute, print_timestamp},
 	{timestamp_live_PS, execute, print_timestamp_live},
 	{timestamp_base64_PS, execute, print_timestamp_base64},
@@ -107,8 +111,17 @@ void admin_menu(void){}
 void stat_menu(void){}
 void bootstrap_menu(void){}
 
+void print_resets(void){
+	uint64_t t;
+	t = resetcnt_read();
+	print_status();
+	lcd_gotopos(2,1);
+	lcd_hexdump(&t,8);
+	waitforkey('E');
+}
+
 void debug_menu(void){
-	menuexec(8, debug_menu_mt);
+	menuexec(9, debug_menu_mt);
 }
 
 void print_timestamp(void){

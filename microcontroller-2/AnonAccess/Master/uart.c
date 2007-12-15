@@ -161,7 +161,7 @@ void uart_init() {
 	txhead = txtail = txbuf;
 
 	// activate rx IRQ
-	UCSRB |= _BV(RXCIE0);
+	UCSRB |= _BV(RXCIE);
 	#ifdef ATMEGA644
 	UCSRB |= _BV(UDRIE0);
 	#endif

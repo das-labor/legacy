@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include "24Cxxx.h"
 #include "i2c_tools.h"
-#include "main_test_tools.h"
+#include "debug_tools.h"
 #include "ticketDB.h"
 #include "flmDB.h"
 #include "prng.h"
@@ -25,6 +25,7 @@
 #include "reqvalidator.h"
 #include "shabea.h"
 #include "rtc.h"
+#include "reset_counter.h"
 #include "enc2E24C.h"
 #include "hwrnd.h"
 #include "lop.h"
@@ -84,6 +85,16 @@ void console_dumptimestamp(void){
 	DD(&t, sizeof(timestamp_t));
 }
 
+/****************************************************
+ *  console_dumpresets()
+ * **************************************************/
+
+void console_dumpresets(void){
+	uint64_t t;
+	t = resetcnt_read();
+	DS("\r\n resets (hex): ");
+	DD(&t, sizeof(timestamp_t));
+}
 
 /****************************************************
  *  console_getnstr()
