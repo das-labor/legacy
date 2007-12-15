@@ -1,9 +1,15 @@
 
+#include <avr/eeprom.h>
 #include <avr/interrupt.h>
 #include "prng.h"
 #include "rtc.h"
+#include "lop.h"
+#include "lop_debug.h"
+#include "selfdestruct.h"
 
 #include "uart.h"
+
+extern lop_ctx_t lop0;
 
 volatile uint8_t busy=0;
 
@@ -23,7 +29,7 @@ void prng_init(void){
 	DDRA &= ~0x01;
 	PORTA &= ~0x01;
 	ADMUX = 0x40;  /* Vref=Avcc, ADC0 */
-	ADCSRA = 0x83; /* turn ADC on, prescaler=8 */
+	ADCSRA = _BV(ADEN) | _BV(ADSC) | 3; /* turn ADC on, prescaler=8 */
 	DIDR0 =  0x3F;  /* turn off digital input for AD0 */
 	
 	uint8_t i,j;
@@ -43,14 +49,39 @@ void prng_init(void){
 ISR(ADC_vect)
 {
 	static uint8_t buffer[72];
-	static uint8_t idx=0;	
+	static uint8_t idx=0;
+
+	if(tamperdetect==1){
+		/* make faster prescale=2 */
+		ADCSRA=_BV(ADEN) | _BV(ADSC) | _BV(ADATE) | _BV(ADIE) | 0;
+		tamperdetect=3;
+		busy=0x0F;
+	}	
+	if(tamperdetect&0x02){
+		static uint8_t main_cycle=0;
+		static uint16_t tamper_idx=0;
+		uint8_t tmp;
+		tmp = ADC;
+		eeprom_write_byte((void*)tamper_idx,tmp);
+		++main_cycle;
+		++tamper_idx;
+		if(main_cycle<100){
+			tamper_idx = tamper_idx & 31; 
+		} else {
+			tamper_idx = tamper_idx & 255;
+		}
+		if(main_cycle==0){
+			tamperdetect=5;
+			lop_dbg_str_P(&lop0,PSTR("\r\n overwrite finished"));
+		}
+		/* todo: kill SRAM */
+	}
+
 	if (!busy){
 		busy |=2;
 		buffer[idx++] = (uint8_t)ADC;
 		if(idx==64){
-			*((uint64_t*)(buffer+72-8)) = gettimestamp();		
-		//	uart_putstr("\r\nadc ");
-		//	uart_hexdump(buffer, 10);
+			*((uint64_t*)(buffer+72-8)) = gettimestamp();		;
 			idx=0;
 			addEntropy(72*8,(void*)buffer);
 		}

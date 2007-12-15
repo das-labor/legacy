@@ -38,9 +38,11 @@
 #include "lop.h"
 #include "lop_debug.h"
 #include "debug_tools.h"
+#include "selfdestruct.h"
 
 
 #define DS(a)   uart_putstr_P(PSTR(a))
+#define DC(a)	uart_putc(a)
 #define DD(a,b) uart_hexdump((a),(b))
 
 
@@ -148,18 +150,27 @@ bool setup_done(void){
 
 /******************************************************************************/
 
-#define EEPROM_SEC_INIT_RWS 129
-
 void setup_system(void){
 	uint8_t a,b;
 	uint8_t buffer[32];
-	/* eeprom keyspace is 7*32 byte */
+	/* eeprom keyspace is 8*32 byte */
+	DS("\r\nstarting SETUP");
+	DS("\r\ngenerating keys:\r\n");
 	for(a=0; a<EEPROM_SEC_INIT_RWS; ++a){
-		for(b=0; b<7; ++b){
+		for(b=0; b<8; ++b){
 			getRandomBlock((uint32_t*)buffer);
 			eeprom_write_block(buffer, (void*)(b*32), 32);
 		}
+		if((a&(31))==0){
+			DS("\r\n");
+		}
+		DC('.');
 	}
+	load_eeprom_crypt_key(eeprom_key);
+	DS("\r\ninitialising Ticket-DB: ...");
+	ticketdb_format(TICKETDB_SIZE);
+	DS("\r\ninitialising FLM-DB: ...");
+	flmdb_format();
 	eeprom_write_byte(&setupdone_flag, 1);
 	DS("\r\nSETUP DONE\r\n");
 }
@@ -520,25 +531,26 @@ void init_system(void){
 	lop0.on_msgrx = messagerx;
 	uart_hook = onuartrx;
     i2c_init();
-    load_eeprom_crypt_key(eeprom_key);
     E24C_init();
     rtc_init();
     resetcnt_inc();
     prng_init();
-    ticketdb_init();
+	#ifdef TAMPER_DETECTION
+	tamperdetect_init();
+	#endif
 }
 
 /******************************************************************************/
 
 int main(void){
-	init_system();
-	
+	init_system();	
 	if (!setup_done()){
 		setup_system();
 	} else {
 		DS("\r\nOPERATION CONTINUED\r\n");
-	
 	}
+    load_eeprom_crypt_key(eeprom_key);
+	ticketdb_init();
 	
 	while (1){
 		;
