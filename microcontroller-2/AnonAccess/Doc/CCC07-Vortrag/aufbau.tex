@@ -1,45 +1,31 @@
 \section{Aufbau}
 \begin{frame}
-\frametitle{}
+\frametitle{Grundaufbau}
+	\begin{center}
+		\includegraphics[width=210px]{grundaufbau}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Master Unit}
 	\begin{itemize}
-		\item<2-> Wartbarkeit
-		\item<3-> Kryptografische Sicherheit
-		\item<4-> Physikalische Sicherheit
-		\item<5-> Kleines \& Energieeffizientes System
-		\item<6-> Anonymit"at
+		\item<2-> Speicherung der Datenbank
+		\item<3-> Authentifizierung der Nutzer
+		\item<4-> L"oschung der Schl"ussel \& Datenbank bei physikalischen Angriffen
+		\item<5-> USV
 	\end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Wartbarkeit}
+\frametitle{Panel}
 	\begin{itemize}
-		\item<2-> Hinzuf"ugen von Nutzern
-		\item<3-> L"oschen von Nutzern
-		\item<4-> Privilegien verwalten
+		\item<2-> Weitergabe der Kartendaten
+		\item<3-> Ein- und Ausgabe \small{(Master Unit <-> Mensch)}
+		\item<4-> L"oschung des Schl"ussels bei physikalischen Angriffen
 	\end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Kryptografische Sicherheit}
-	\begin{itemize}
-		\item<2-> Sicherung des Kanals
-		\item<3-> Sichere Speicherung der Datenbank
-		\item<4-> Kryptografisch sicherer Zufallsgenerator
-	\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Physikalische Sicherheit}
-	\begin{itemize}
-		\item<2-> Sicherung gegen "offnen des Geh"auses
-		\item<3-> Sichere L"oschung der Daten
-	\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Hardwareanforderungen}
-	\begin{itemize}
-		\item<2-> Microcontroller Plattform
-		\item<3-> USV Sicherung f"ur mehrere Tage
-	\end{itemize}
+\frametitle{Kanal}
+	Galvanische Trennung zwischen Master Unit und Panel
 \end{frame}
