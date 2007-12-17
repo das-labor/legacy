@@ -10,10 +10,14 @@
 #include "interface.h"
 #include "base64_enc.h"
 #include "reset_counter.h"
+#include "types.h"
+#include "comm.h"
 #include <stdint.h>
 #include <util/delay.h>
 
 extern lop_ctx_t lop0;
+
+authblock_t ab;
 
 /******************************************************************************/
 
@@ -39,7 +43,7 @@ void print_timestamp(void);
 void print_timestamp_live(void);
 void print_timestamp_base64(void);
 void print_timestamp_base64_live(void);
-
+void run_serial_test(void);
 void print_random(void);
 
 /******************************************************************************/
@@ -67,6 +71,140 @@ void demo_hex(void){
 	waitforkey('E');
 }
 
+#include "uart.h"
+
+#define TIMEOUT_VAL 1000
+
+#define DBG(a) lcd_gotopos(1,15); lcd_writechar(a)
+
+void run_serial_test(void){
+	char tmp,tmp2;
+	timestamp_t tsend;
+	uint64_t ok=0,failed=0,lost=0;
+	void (*backup)(uint8_t);
+	
+	backup = uart_hook;
+	uart_hook=NULL;
+	print_status();
+	
+	while(read_keypad()!='C'){
+		tmp=getRandomByte();
+		_delay_ms(100);
+		DBG('1');
+		uart_putc(tmp);
+		DBG('2');
+		tsend = gettimestamp();
+		DBG('3');
+		while((!uart_getc_nb(&tmp2)) && ((gettimestamp()-tsend)<TIMEOUT_VAL)){
+			DBG('4');
+		}
+		if(gettimestamp()-tsend<TIMEOUT_VAL){
+			if(tmp==tmp2){
+				ok++;
+			} else {
+				failed++;
+			}
+		} else {
+			lost++;
+		}
+		DBG('5');
+		lcd_gotopos(2,2);
+		lcd_hexdump(&ok, 8);
+		lcd_gotopos(3,2);
+		lcd_hexdump(&failed, 8);
+		lcd_gotopos(4,2);
+		lcd_hexdump(&lost, 8);
+	}
+	waitforkey('E');
+	uart_hook = backup;
+}
+
+
+void req_authblock(void){
+	char name[12];
+	print_status();
+	init_session();
+	lcd_gotopos(2,1);
+	lcd_writestr_P(PSTR("name:"));
+	readnstr(3,1,10,name);
+	req_bootab(name, 0);
+	status_string[4]='~';
+}
+
+
+void view_authblock(void){
+	char str[45];
+	
+	print_status();
+	lcd_gotopos(2,1);
+	lcd_writestr_P(PSTR("uid: "));
+	lcd_hexdump(&(ab.uid), 2);
+	waitforkey('E');
+	
+	print_status();
+	lcd_gotopos(2,1);
+	lcd_writestr_P(PSTR("ticket: "));
+	base64enc(str, ab.ticket, 32);
+	lcd_gotopos(2,16);
+	lcd_writestrn(&(str[0]),4);
+	lcd_gotopos(3,1);
+	lcd_writestrn(&(str[4]),20);
+	lcd_gotopos(4,1);
+	lcd_writestrn(&(str[24]),20);
+	waitforkey('E');
+	
+	print_status();
+	lcd_gotopos(2,1);
+	lcd_writestr_P(PSTR("rkey: "));
+	base64enc(str, ab.rkey, 32);
+	lcd_gotopos(2,16);
+	lcd_writestrn(&(str[0]),4);
+	lcd_gotopos(3,1);
+	lcd_writestrn(&(str[4]),20);
+	lcd_gotopos(4,1);
+	lcd_writestrn(&(str[24]),20);
+	waitforkey('E');
+	
+	print_status();
+	lcd_gotopos(2,1);
+	lcd_writestr_P(PSTR("rid: "));
+	base64enc(str, ab.rid, 32);
+	lcd_gotopos(2,16);
+	lcd_writestrn(&(str[0]),4);
+	lcd_gotopos(3,1);
+	lcd_writestrn(&(str[4]),20);
+	lcd_gotopos(4,1);
+	lcd_writestrn(&(str[24]),20);
+	waitforkey('E');
+	
+	print_status();
+	lcd_gotopos(2,1);
+	lcd_writestr_P(PSTR("pinhmac: "));
+	base64enc(str, ab.pinhmac, 32);
+	lcd_gotopos(2,16);
+	lcd_writestrn(&(str[0]),4);
+	lcd_gotopos(3,1);
+	lcd_writestrn(&(str[4]),20);
+	lcd_gotopos(4,1);
+	lcd_writestrn(&(str[24]),20);
+	waitforkey('E');
+	
+	print_status();
+	lcd_gotopos(2,1);
+	lcd_writestr_P(PSTR("HMAC: "));
+	base64enc(str, ab.hmac, 32);
+	lcd_gotopos(2,16);
+	lcd_writestrn(&(str[0]),4);
+	lcd_gotopos(3,1);
+	lcd_writestrn(&(str[4]),20);
+	lcd_gotopos(4,1);
+	lcd_writestrn(&(str[24]),20);
+	waitforkey('E');
+}
+
+/******************************************************************************/
+/******************************************************************************/
+
 const char open_door_PS[]      PROGMEM = "open door";
 const char lock_door_PS[]      PROGMEM = "lock door";
 const char admin_menu_PS[]     PROGMEM = "admin menu";
@@ -82,8 +220,10 @@ menu_t main_menu_mt[6] = {
 	{debug_menu_PS,submenu, debug_menu}
 };
 
+/******************************************************************************/
 
 const char main_menu_PS[]      PROGMEM = "main menu";
+const char serial_test_PS[]    PROGMEM = "test serial loop";
 const char reset_PS[]          PROGMEM = "print resets";
 const char timestamp_PS[]      PROGMEM = "timestamp";
 const char timestamp_live_PS[]      PROGMEM = "timestamp (live)";
@@ -93,8 +233,9 @@ const char random_PS[]         PROGMEM = "random (30)";
 const char get_name_PS[]       PROGMEM = "get name";
 const char get_hex_string_PS[] PROGMEM = "get hex string";
 
-menu_t debug_menu_mt[9] = {
+menu_t debug_menu_mt[10] = {
 	{main_menu_PS, back, NULL},
+	{serial_test_PS, execute, run_serial_test},
 	{reset_PS, execute, print_resets},
 	{timestamp_PS, execute, print_timestamp},
 	{timestamp_live_PS, execute, print_timestamp_live},
@@ -105,11 +246,34 @@ menu_t debug_menu_mt[9] = {
 	{get_hex_string_PS, execute, demo_hex}
 };
 
-void open_door(void){}
-void lock_door(void){}
+/******************************************************************************/
+
+const char req_AB_PS[]    PROGMEM = "request AB";
+const char view_AB_PS[]   PROGMEM = "view AB";
+
+menu_t bootstrap_menu_mt[3] = {
+	{main_menu_PS, back, NULL},
+	{req_AB_PS, execute, req_authblock},
+	{view_AB_PS, execute, view_authblock}
+};
+
+/******************************************************************************/
+/******************************************************************************/
+
+void open_door(void){
+	init_session();
+	submit_ab(&ab);
+	send_mainopen();
+}
+
+void lock_door(void){
+	init_session();
+	submit_ab(&ab);
+	send_mainclose();
+}
+
 void admin_menu(void){}
 void stat_menu(void){}
-void bootstrap_menu(void){}
 
 void print_resets(void){
 	uint64_t t;
@@ -120,8 +284,16 @@ void print_resets(void){
 	waitforkey('E');
 }
 
+void bootstrap_menu(void){
+	menuexec(3, bootstrap_menu_mt);
+}
+
 void debug_menu(void){
-	menuexec(9, debug_menu_mt);
+	menuexec(10, debug_menu_mt);
+}
+
+void master_menu(void){
+	menuexec(6, main_menu_mt);
 }
 
 void print_timestamp(void){
@@ -262,9 +434,6 @@ void menuexec(uint8_t n, menu_t* menu){
 	}
 }
 
-void master_menu(void){
-	menuexec(6, main_menu_mt);
-}
 
 
 

@@ -126,6 +126,7 @@ ISR(SIG_UART_RECV) {
 	} else {
 						//reads the buffer to clear the interrupt condition
 	}
+#ifdef UART_XON_XOFF	
 	if((diff > UART_XON_XOFF_THRESHOLD_1) && (rxon==go)){
 		rxon=nogo;
 		uart_insertc(XOFF);
@@ -134,7 +135,7 @@ ISR(SIG_UART_RECV) {
 		rxon=go;
 		uart_insertc(XON);
 	}
-
+#endif
 }
 
 #endif // UART_INTERRUPT

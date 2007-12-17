@@ -24,8 +24,8 @@
 
  data:
   msgid==0: no data (0 byte)
-  msgid==1: AuthBlock (130 byte)
-  msgid==2: AuthBlock (130 byte)
+  msgid==1: AuthBlock (162 byte)
+  msgid==2: AuthBlock (162 byte)
   msgid==3: error code (1 byte)
    0 - no error code (does not mean no error, means master unit won't tell)
    1 - HMAC in authblock is not ok

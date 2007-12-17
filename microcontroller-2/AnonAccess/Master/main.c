@@ -39,12 +39,17 @@
 #include "lop_debug.h"
 #include "debug_tools.h"
 #include "selfdestruct.h"
+#include "i2c_printer.h"
 
-
+/*
 #define DS(a)   uart_putstr_P(PSTR(a))
 #define DC(a)	uart_putc(a)
 #define DD(a,b) uart_hexdump((a),(b))
+*/
 
+#define DS(a) {uart_putstr_P(PSTR(a)); printer_str_P(PSTR(a));} 
+#define DC(a) {uart_putc(a); printer_char(a);} 
+#define DD(a,b) {uart_hexdump((a),(b)); printer_hexdump((a),(b));} 
 
 #define MASTERUNIT_ID 0
 #define TERMINALUNIT_ID 1
@@ -157,7 +162,7 @@ void setup_system(void){
 	DS("\r\nstarting SETUP");
 	DS("\r\ngenerating keys:\r\n");
 	for(a=0; a<EEPROM_SEC_INIT_RWS; ++a){
-		for(b=0; b<8; ++b){
+		for(b=0; b<KEY_NUM; ++b){
 			getRandomBlock((uint32_t*)buffer);
 			eeprom_write_block(buffer, (void*)(b*32), 32);
 		}
@@ -239,6 +244,9 @@ void streamrx(uint8_t b){
 /******************************************************************************/
 
 void messagerx(uint16_t len, uint8_t * msg){
+	lop_dbg_str_P(&lop0, PSTR("\r\nmessage rx:"));
+	lop_dbg_hexdump(&lop0, msg, len);
+	
 	if(session.users > SESSION_MAX_PARTICIPANTS || session.admins > SESSION_MAX_PARTICIPANTS){
 		/* someone seems to be pretty fast wiht card changing, but we won't allow this */
 		session_reset();
@@ -351,7 +359,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 		} /* switch(check_authblock(&(msg[3]))) */
 	} /* if add AuthBlock */
 	if(msg[2] == MSGID_ACTION){ /* let's do some action */
-		if(len<=4){
+		if(len<4){
 			/* message too short */
 			session_reset();
 			masterstate = mainidle;
@@ -411,7 +419,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 		}
 		/* length checked, now we may try to do something */
 		action_t action;
-		action = (msg[3]&0xf)?msg[3]-0x10+2:msg[3]; /* transform ACTION_* in action_t */
+		action = (msg[3]&0xf)?(msg[3]-0x10+2):msg[3]; /* transform ACTION_* in action_t */
 		if(!check_permissions(session.users, session.admins, action)){
 			/* not sufficient permissions */
 			session_reset();
@@ -464,6 +472,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 	if(msg[2] == MSGID_ADD_BOOTSTRAP){
 		uint8_t t; /* for bootstrap_accounts */
 		/* check form and length */
+		lop_dbg_str_P(&lop0,PSTR("brap"));
 		if(len<=5){
 			/* message much to short! no length or/and no anon field or null string*/
 			session_reset();
@@ -479,12 +488,14 @@ void messagerx(uint16_t len, uint8_t * msg){
 			return;
 		}
 		if(masterstate != insession){
+			lop_dbg_str_P(&lop0,PSTR("brapQ"));
 			session_reset();
 			masterstate = mainidle;
 			busy &= ~1;
 			return;
 		}
-		if(NO_ANON_ADMINS && (msg[len-1]?1:0)){
+		if(NO_ANON_ADMINS && ((msg[len-1])?1:0)){
+			lop_dbg_str_P(&lop0,PSTR("brapP"));
 			session_reset();
 			masterstate = mainidle;
 			busy &= ~1;
@@ -492,6 +503,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 		}
 		if((t=eeprom_read_byte(&bootstrap_accounts))!=0){
 			/* yeah, let's bootstrap the system */
+			lop_dbg_str_P(&lop0,PSTR("brapX"));
 			eeprom_write_byte(&bootstrap_accounts, t-1);
 			char name[msg[3]+1];
 			strncpy(name,(char*)&(msg[4]), msg[3]);
@@ -532,8 +544,9 @@ void init_system(void){
 	uart_hook = onuartrx;
     i2c_init();
     E24C_init();
-    rtc_init();
+	rtc_init();
     resetcnt_inc();
+    printer_init();
     prng_init();
 	#ifdef TAMPER_DETECTION
 	tamperdetect_init();
@@ -552,9 +565,10 @@ int main(void){
     load_eeprom_crypt_key(eeprom_key);
 	ticketdb_init();
 	
-	while (1){
-		;
+	while(1){
+		_delay_ms(50);
 	}
+	
 	return 0;
 }
 

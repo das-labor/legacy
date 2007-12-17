@@ -16,9 +16,20 @@
 #include "uart.h"
 #include "rtc.h"
 #include "main_test_tools.h"
-
+#include "i2c_printer.h"
+/*
 #define DS(a) uart_putstr_P(PSTR(a))
 #define DD(a,b) uart_hexdump((a),(b))
+
+#define DS(a) {uart_putstr_P(PSTR(a)); printer_str_P(PSTR(a));} 
+#define DC(a) {uart_putc(a); printer_char(a);} 
+#define DD(a,b) {uart_hexdump((a),(b)); printer_hexdump((a),(b));} 
+*/
+#define DS(a) printer_str_P(PSTR(a))
+#define DC(a) printer_char(a)
+#define DD(a,b) printer_hexdump((a),(b)) 
+
+
 /**
  * 
  *  Operation 	 Beschreibung                	 Requirements
@@ -266,8 +277,8 @@ void new_account(authblock_t * ab, char* nickname, uint8_t anon){
 	load_nickkey(key);
 	hmac_sha256(ab->rid, key, 256, nickname, 8*strlen(nickname));
 	delete_key(key, 32);	
-	DS("\r\n hnick: ");
-	DD(ab->rid, 32);
+//	DS("\r\n hnick: ");
+//	DD(ab->rid, 32);
 	fillBlockRandom(ab->rkey, 32);
 	shabea256(ab->rid, ab->rkey, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
 	load_ridkey(key);
@@ -288,8 +299,8 @@ void modify_account(char * nickname, userflags_t setflags, userflags_t clearflag
 	load_nickkey(key);
 	hmac_sha256(hmac, key, 256, nickname, 8*strlen(nickname));
 	delete_key(key, 32);
-	DS("\r\n hnick: ");
-	DD(hmac, 32);
+//	DS("\r\n hnick: ");
+//	DD(hmac, 32);
 	flmdb_makeentry(hmac, setflags, clearflags, 0);
 }
 

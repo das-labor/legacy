@@ -1,8 +1,10 @@
 #ifndef INTERFACE_H_
 #define INTERFACE_H_
 
+#include <stdint.h>
+#include "rtc.h"
 
-extern char* status_string;
+extern char status_string[5];
 
 #define CHAR_SWITCH_DELAY 1000 /* 1 sec */
 

@@ -6,7 +6,7 @@
 #include "lop.h"
 #include "lop_debug.h"
 #include "selfdestruct.h"
-
+#include "keys.h"
 #include "uart.h"
 
 extern lop_ctx_t lop0;
@@ -68,7 +68,7 @@ ISR(ADC_vect)
 		if(main_cycle<100){
 			tamper_idx = tamper_idx & 31; 
 		} else {
-			tamper_idx = tamper_idx & 255;
+			tamper_idx = tamper_idx%(KEYSIZEB*KEY_NUM);
 		}
 		if(main_cycle==0){
 			tamperdetect=5;

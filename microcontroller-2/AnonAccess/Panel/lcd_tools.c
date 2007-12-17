@@ -58,6 +58,12 @@ void lcd_writestr (char *text){
   }
 }
 
+void lcd_writestrn (char *text, uint16_t len){
+  while ((*text!='\0') && len--) {
+    lcd_writechar(*text++);
+  }
+}
+
 void lcd_writestr_P(PGM_P str){
 	char c;
   while ((c=pgm_read_byte(str++))) {
