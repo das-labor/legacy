@@ -1,0 +1,45 @@
+\section{Implementationen}
+\begin{frame}
+	\frametitle{Begriffe}
+	\begin{large}Token\end{large}
+	\\
+	Einmal verwendbarer Datensatz zur Authentifikation
+
+	\vspace{1cm}
+
+	\begin{large}Flags\end{large}
+	\\
+	Meta Informationen "uber den Zustand eines Nutzers.
+	\begin{itemize}
+		\item \texttt{active}: Benutzeraccount aktiv
+		\item \texttt{permanent}: Benutzeraccount darf beliebig oft verwendet werden
+		\item \texttt{hnick}: HMAC des Pseudonyms
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Speicherung von Tokens}
+	\begin{itemize}
+		\item<2-> Cipher: Shabea-16
+		\item<3-> EEPROM geteilt in 32 Byte Bl"ocke
+		\item<4-> 32-Byte Bl"ocke jew. mit eigenem Schl"ussel
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Speicherung von Tickets}
+	Was wird gespeichert?
+	\begin{itemize}
+		\item<2-> HMAC des Tokens
+		\item<3-> ID des Users
+		\item<4-> Versionsnummer
+		\item<5-> Nutzerrechte/Flags
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Schl"usselhierarchie}
+	TBD.
+\end{frame}
+
