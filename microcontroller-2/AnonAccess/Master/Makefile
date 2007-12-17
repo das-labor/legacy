@@ -2,7 +2,7 @@ PRG	    = anonaccess-test
 OBJ	    = keys.o main.o debug_tools.o uart.o debug.o 24CBlockDev.o 24Cxxx.o \
   i2c.o i2c_tools.o prng.o sha256-asm.o hmac-sha256.o reqvalidator.o \
   action.o shabea.o ticketDB.o flmDB.o fairrnd.o rtc.o enc2E24C.o hwrnd.o \
-  lop.o lop_debug.o reset_counter.o base64_enc.o selfdestruct.o
+  lop.o lop_debug.o reset_counter.o base64_enc.o selfdestruct.o i2c_printer.o
 MCU_TARGET     = atmega644
 OPTIMIZE       = -Os -mno-tablejump
 DEBUG	   = -gstabs

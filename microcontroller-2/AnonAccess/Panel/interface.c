@@ -11,7 +11,7 @@
 #include <util/delay.h>
 #include "interface.h"
 
-char* status_string = "";
+char status_string[5] = "    ";
 
 
 void print_status(void){

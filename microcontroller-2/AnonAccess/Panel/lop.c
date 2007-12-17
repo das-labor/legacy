@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "lop.h"
+#include "interface.h"
+#include "lcd_tools.h"
 
 #define LOP_ESC_CODE		0x05
 #define LOP_RESET_CODE		0x06
@@ -138,9 +140,13 @@ void lop_process_l2(lop_ctx_t* ctx, uint8_t b){
 		case message:
 			switch(ctx->msgidx){
 				case 0:
+					lcd_gotopos(1,20);
+					lcd_writechar('a');
 					ctx->msglength = (uint16_t)b<<8;
 					break;
 				case 1:
+					lcd_gotopos(1,20);
+					lcd_writechar('b');
 					ctx->msglength += b;
 					if(!(ctx->msgbuffer=malloc(ctx->msglength))){
 						/* message to large error */
@@ -148,10 +154,14 @@ void lop_process_l2(lop_ctx_t* ctx, uint8_t b){
 					}
 					break;
 				default:
+					lcd_gotopos(1,20);
+					lcd_writechar('d');
 					ctx->msgbuffer[ctx->msgidx-2] = b;
 					break;
 			}
 			if(ctx->msgidx==(uint32_t)ctx->msglength+1){ /* end of message */
+				lcd_gotopos(1,20);
+				lcd_writechar('e');
 				if(ctx->on_msgrx)
 					ctx->on_msgrx(ctx->msglength, ctx->msgbuffer);
 				free(ctx->msgbuffer);
