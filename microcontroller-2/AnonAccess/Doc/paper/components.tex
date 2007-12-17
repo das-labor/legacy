@@ -1,16 +1,20 @@
+% TODO
+%
+% neccessarily < check
+
 \section{Components}
 % \begin{figure}
 % \includegraphics[scale=0.17]{Overview} 
 % \caption{system overview}
 % \end{figure}
-The AnonAccess system is divided in \textit{Terminal-Unit} and \textit{Master-Unit}, additionaly there is a chip-card for each user, which stores the user's authentication data.
+The AnonAccess system is divided into \textit{Terminal-Unit} and \textit{Master-Unit}, additionaly there is a chip-card for each user, which stores the user's authentication data.
 
 %-----
 
 \subsection{Chip-Card}
-We use simple memory cards with $I^2C$-Bus\cite{I2C} and form factor ID-1 as specified in \cite{ISO7816-1}\cite{ISO7816-2}. They are quite cheap (less then 1\euro{} per card) and not secure. Their contents might easily be read or modified, so everyone can read and check what we write on his/her card.
+We simply use memory cards with $I^2C$-Bus\cite{I2C} and form factor ID-1 as specified in \cite{ISO7816-1}\cite{ISO7816-2}. They are quite cheap (less than 1\euro{} per card) and not secure. Their contents may easily be read or modified, so everyone can read and check what we write on his/her card.
 
-The card contains a so called \textit{AuthBlock} embedded in an ASN.1-BER\cite{ASN.1BER} octal-string object.
+The card contains a so-called \textit{AuthBlock} embedded in an ASN.1-BER\cite{ASN.1BER} octal-string object.
 The \textit{AuthBlock} has the following structure:\\
 %\begin{table}
 \begin{tabular}{|l|c|l|} \hline
@@ -25,7 +29,7 @@ HMAC       & 32 bytes & $HMAC_{absign\_key}(UID \parallel ticket \parallel r_{ke
 %-----
 
 \subsection{Terminal-Unit}
-The \textit{Terminal-Unit} handles user inputs, displays information and reads and writes the user's card.
+The \textit{Terminal-Unit} handles user inputs, displays information, reads and writes the user's card.
 It is equipped with keypad, display, card reader and a hardware random number generator. It'power is supplied by the \textit{Master-Unit} and it should therefore not be reset even in the case of power failure.
 %-----
 
@@ -34,20 +38,20 @@ The \textit{Master-Unit} keeps the databases, does the authentication and execut
 %-----
 
 \subsection{Power supply}
-The power supply is designed to power the \textit{Terminal-Unit} and the \textit{Master-Unit}. It uses an accumulator to work as uninterruptible power supply, so that about 60 hours of operation without external power supply should be possible. Therefore under normal circumstances a reset due to a power failure should not happen.
+The power supply is designed to power the \textit{Terminal-Unit} and the \textit{Master-Unit}. It uses an accumulator to work as uninterruptible power supply, so that about 60 hours of operation without external power supply should be possible. Therefore, under normal circumstances, a reset due to a power failure should not happen.
 %-----
 
 \subsection{Real time clock (RTC)}
 The real time clock is implemented in software by using one of the microcontroller's timers. A timer interrupt function increments a 64bit value each millisecond (this counter will wrap around in about 584.542.046 years, which should be quite enough for us). Additionally the counter's value is periodically\footnote{the value is backed up every $3FFFFF_{(16)}$ milliseconds which is about every 1.165 hours} written to the microcontroller's EEPROM and read back after reset. On reset we also add the value $3FFFFF_{(16)}$ to the counter to avoid having the same timestamp for more than one time.
 
 The backup storage is implemented in a ring buffer structure with an additional index byte. 
-The index byte indicates which cell of the ring buffer is to be used. After writing a value to a cell it is read back and checked. If the check fails the index byte is incremented by one and the next cell is used. The EEPROM is specified to be written 100,000 times so one cell may work for 116,508.4 hours which is about 13.29 years. So with a ring buffer of 20 cells, we should be able to operate for about 265.82 years which should be sufficient for most applications (if not the ring buffer could be easily made even larger).
+The index byte indicates which cell of the ring buffer is to be used. After writing a value to a cell it is read back and checked. If the check fails the index byte is incremented by one and the next cell is used. The EEPROM is specified to be written 100,000 times so one cell may work for 116,508.4 hours which is about 13.29 years. So with a ring buffer of 20 cells, we should be able to operate for about 265.82 years which should be sufficient for most applications (if not the ring buffer could easily be extended).
 
-It should be known that the timer value does not necessarily correspond to a linear continuous time line or human time, although the time is monotonic increasing. % extend me
+It should be known that the timer value does not neccessarily correspond to a linear continious time line or human time, although the time is monotonic increasing. % extend me
 %-----
 
 \subsection{Microcontroller}
-We use microcontrollers from the ATmega family from Atmel\cite{Atmel}for both units. They are relatively cheap and support protection of the internal memories (flash and EEPROM) from being read through their lock-bit feature. There also is a toolchain including GCCs\cite{GCC} C-compiler and a libc implementation\cite{AVR-Libc} available for these 8 bit microcontrollers which eases the writing of the software.
+We use microcontrollers of Atmel's\cite{Atmel} ATmega family for both units. They are relatively cheap and support protection of the internal memory (flash and EEPROM) from being read through their lock-bit feature. There also is a toolchain including GCCs\cite{GCC} C-compiler and a libc implementation\cite{AVR-Libc} available for these 8 bit microcontrollers which eases the writing of the software.
 
 The \textit{Master-Unit} uses an ATmega644\cite{ATmega644} in DIL-Package with 64KiB of program flash, 4KiB of internal SRAM and 2KiB of internal EEPROM (100,000 rewrite cycles guaranteed).
 
@@ -80,9 +84,9 @@ QPort-tiny\cite{QPort-tiny} is a software stack which offers a secure communicat
 %-----
 
 \subsection{External serial EEPROM}
-The external serial EEPROM is used to keep the ticket databases and the flag-modify database, and can be used for key-storage in the migration process. We use standard $I^2C$\cite{I2C} EEPROMs with 512KiBit or 1MiBit (24xx512\cite{24xx512} or 24xx1025\cite{24xx1025}) from Microchip\cite{microchip}. It is possible to extend the storage capabilities by using multiple EEPROMs. That makes it possible to have up to 4MiBit or 512KiBytes of storage space which normally allows more than 10,000 users.
+The external serial EEPROM is used to keep the ticket databases and the flag-modify database, and can be used for key-storage in the migration process. We use standard $I^2C$\cite{I2C} EEPROMs with 512KiBit or 1MiBit (24xx512\cite{24xx512} or 24xx1025\cite{24xx1025}) from Microchip\cite{microchip}. It is possible to extend the storage capabilities by using multiple EEPROMs. That makes it possible to have up to 4MiBit or 512KiBytes of storage space, which allows more than 10,000 users.
 
-All contents of the EEPROM are encrypted (except the keymigration-area). Shabea-16 is used to encrypt the content. We therefore divide the EEPROM space into 32 byte blocks which are encrypted separately. Every block is encrypted with an individual key which is the result of concatenation of the ''main-key''(\textit{eepromcrypt\_key}) and the block address. So we are protected from most attacks against mass storage encryption (ex. watermarking).
+All contents of the EEPROM are encrypted (except the keymigration-area). Shabea-16 is used to encrypt the content. We therefore divide the EEPROM space into 32 byte blocks which are encrypted separately. Every block is encrypted with an individual key, which is the result of concatenation of the ''main-key''(\textit{eepromcrypt\_key}) and the block address. So we are protected from most attacks against mass storage encryption (ex. watermarking).
 
 %-----
 
@@ -91,7 +95,7 @@ This database is used to store a HMAC of the user's ticket, her/his permissions,
 The first element in the database is the header followed by the entries for the users.\\
 Header structure:\\
 %\begin{table}
-\begin{tabular}{|l|c|p{8cm}|}\hline 
+\begin{tabular}{|l|c|p{3.8cm}|}\hline 
 name & size & description \\ \hline
 ID & 10 bytes & set to the ASCII string ''AnonAccess'' \\
 majversion & 1 byte & major version; set to 1 \\
@@ -104,7 +108,7 @@ reserved & 8 bytes & reserved field for future extensions and for alignment; set
 
 The statistics field has the following structure:\\
 %\begin{table}
-\begin{tabular}{|l|c|l|} \hline
+\begin{tabular}{|l|c|p{3.8cm}|l|} \hline
 name & size & description \\ \hline 
 max\_users     & 2 bytes & maximum number of users \\
 users          & 2 bytes & actually active user \\
@@ -116,7 +120,7 @@ locked\_admins & 2 bytes & number of locked admins \\ \hline
 
 The following space of the \textit{TicketDB} is filled with user entries which have the following structure:\\
 %\begin{table}
-\begin{tabular}{|l|c|l|} \hline
+\begin{tabular}{|l|c|p{3.8cm}|l|} \hline
 name & size & description \\ \hline 
 flags      &  1 byte  & the flags associated with the user \\
 nickname   &  7 bytes & the nickname if the user decided to be known by name \\
@@ -126,7 +130,7 @@ ticketmac  & 32 bytes & HMAC from users ticket \\ \hline
 
 Where the flag field has the following structure: \\
 %\begin{table}
-\begin{tabular}{|l|c|l|} \hline
+\begin{tabular}{|l|c|p{3.8cm}|l|} \hline
 name & size & description \\ \hline 
 exists            & 1 bit    &  indicates if this entry is used (1: in use; 0: free)\\
 admin             & 1 bit & set if user has admin privileges, cleared otherwise \\
@@ -141,7 +145,7 @@ reserved          & 3 bit & reserved, should be set to 0\\ \hline
 \subsection{FlagModifying-Database (FLMDB)}
 The flag-modifying-Database keeps entries which specify how a given user account should be modified. \\
 %\begin{table}
-\begin{tabular}{|l|c|p{8cm}|} \hline
+\begin{tabular}{|l|c|p{3.8cm}|} \hline
 name & size & description \\ \hline 
 active     & 1 byte    & set to 1 if this entry is active; set to 0 otherwise \\
 permanent  & 1 byte & set to 1 if this entry should not be removed if applied; set to 0 otherwise \\
@@ -159,7 +163,7 @@ hnick      & 32 bytes & HMAC of the \textit{user pseudonym}\\
 \subsection{Key-Database (Key-DB)}
 This database stores all the cryptographic keys used in the system.\\
 %\begin{table}
-\begin{tabular}{|l|c|p{8cm}|} \hline
+\begin{tabular}{|l|c|p{3.8cm}|} \hline
 name & size & description \\ \hline 
 ticket\_key            & 256 bit & used to generate the HMAC from the ticket which is stored in \textit{TicketDB} \\
 absign\_key      & 256 bit & used to generate the HMAC in the \textit{AuthBlock} \\
