@@ -1,13 +1,12 @@
-\section{Implementationen}
-\begin{frame}
-	\frametitle{Begriffe}
-	\begin{large}Token\end{large}
-	\\
-	Einmal verwendbarer Datensatz zur Authentifikation
+%
+% diesen frame evtl spaeter erst einblenden?
+%
 
+\begin{frame}
+	\frametitle{Flags}
 	\vspace{1cm}
 
-	\begin{large}Flags\end{large}
+	\textbf{Flags}
 	\\
 	Meta Informationen "uber den Zustand eines Nutzers.
 	\begin{itemize}
@@ -17,15 +16,43 @@
 	\end{itemize}
 \end{frame}
 
+\section{M"ogliche (alternative) Implementationen}
 \begin{frame}
-	\frametitle{Speicherung von Tokens}
+	\frametitle{Variante 1}
+	\textbf{''}Speicherung von von \textbf{Einmal-Tokens}\\
+	in einer Datenbank.\textbf{''}
+
+	\vspace{1cm}\par
+
+	\textbf{Nachteile:}
 	\begin{itemize}
-		\item<2-> Cipher: Shabea-16
-		\item<3-> EEPROM geteilt in 32 Byte Bl"ocke
-		\item<4-> 32-Byte Bl"ocke jew. mit eigenem Schl"ussel
+		\item<2-> Suchen in Datenbank aufwendig
+		\item<3-> Nicht wartbar ohne eindeutige Nutzer/ID Zuordnung
+		\item<4-> \texttt{=>} nicht anonym
 	\end{itemize}
 \end{frame}
 
+\begin{frame}
+	\frametitle{Variante 2}
+	Speicherung von von \textbf{Einmal-Tokens + ID}\\
+	in einer Datenbank.
+
+	\vspace{1cm}
+
+	\textbf{Nachteil:}
+	\par Nicht anonym
+\end{frame}
+
+\begin{frame}
+	\frametitle {Was ist auf der Karte?}
+	
+	ASN-1 Struktur mit folgenden Daten:
+	\begin{itemize}
+		\item<2-> UID (Index in der Ticket Datenbank)
+		\item<3-> Verschl"usselterer Timestamp
+		\item<4-> Schl"ussel 
+	\end{itemize}
+\end{frame}
 
 \begin{frame}
 	\frametitle{Speicherung von Tickets}
