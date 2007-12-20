@@ -1,47 +1,38 @@
 \section{AnonAccess Konzept}
 
 \begin{frame}
-	\frametitle{Physikalische Sicherheit}
-	Zum Schutz vor Auslesen der Datenbank \& geheimen Schl"ussel.
+	\frametitle {Neue Problemstellungen}
+	Das Problem der Wartbarkeit
 	\begin{itemize}
-		\item<2-> Sicherung gegen "offnen des Geh"auses
-		\item<3-> Sichere L"oschung der Daten
-	\end{itemize}
-\end{frame}
-
-%
-% diesen frame (flags) evtl spaeter erst einblenden?
-%
-
-\begin{frame}
-	\frametitle{Flags}
-	\vspace{1cm}
-
-	\textbf{Flags}
-	\\
-	Meta Informationen "uber den Zustand eines Nutzers.
-	\begin{itemize}
-		\item \texttt{active}: Benutzeraccount aktiv
-		\item \texttt{permanent}: Benutzeraccount darf beliebig oft verwendet werden
-		\item \texttt{hnick}: HMAC des Pseudonyms
-	\end{itemize}
-\end{frame}
-\begin{frame}
-	\frametitle{Daten sicher Speichern}
-	Man nehme:
-	\begin{itemize}
-		\item<2-> Eine symmetrische Blockcipher
-		\item<3-> Eine Hand voll Hashfunktionen
-		\item<4-> Einen kryptografisch Sicheren Zufallsgenerator
+		\item<2-> Nutzer müssen adressierbar sein.
+		\item<3-> Lösungsidee: Nutzer müssen nicht die ganze Zeit adressierbar sein.
 	\end{itemize}
 \end{frame}
 
 \begin{frame}
-	\frametitle{Daten auf der Karte}
-	Auf jeder Karte befinden sich folgende\\
-	Daten verpackt in einer ASN-1 Struktur:
+	\frametitle {Lösung}
+	Änderungen an einem Benutzerkonto werden erst dann angewendet wenn sich der Benutzer anmeldet.
+	Die Adressierung findet über einen sogenannten Nickname statt.\\
+	Dieser Nickname wird jedoch nirgwendwo im Klartext gespeichert.\\
+	Auf der Karte wird ein verschlüsselter Fingerprint des Nicknames gespeichert.\\
+\end{frame}
+
+\begin{frame}
+	\frametitle {Lösung}
+	Sollen die Eigenschaften eines Kontos modifiziert werden,\\
+	dann wird ein Eintrag in der Flag-Modify-Database erstellt.
 	\begin{itemize}
-		\item<2-> FIX
-		\item<3-> ME
+	\item<2-> Fingerprint des Nicknames
+	\item<3-> Änderungsanweisungen
 	\end{itemize}
 \end{frame}
+
+\begin{frame}
+	\frametitle {Lösung}
+	Nun wird der Ablauf der Authentifizierung erweitert um:
+	\begin{itemize}
+	\item<2-> Entschlüsseln des Nickname Fingerprints
+	\item<3-> Suche in der Datenbank nach Änderungen für dieses Konto
+	\end{itemize}
+\end{frame}
+
