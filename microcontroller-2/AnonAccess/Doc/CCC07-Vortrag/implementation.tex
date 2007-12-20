@@ -19,54 +19,66 @@
 \section{M"ogliche (alternative) Implementationen}
 \begin{frame}
 	\frametitle{Variante 1}
-	\textbf{''}Speicherung von von \textbf{Einmal-Tokens}\\
-	in einer Datenbank.\textbf{''}
+	\textbf{''}Speicherung von Einmal-Tokens zusammen\\
+	mit ID oder Nickname in einer\\
+	Datenbank \& auf der Karte\textbf{''}
 
 	\vspace{1cm}\par
 
-	\textbf{Nachteile:}
+	\textbf<2->{Nachteil:}
 	\begin{itemize}
-		\item<2-> Suchen in Datenbank aufwendig
-		\item<3-> Nicht wartbar ohne eindeutige Nutzer/ID Zuordnung
-		\item<4-> \texttt{=>} nicht anonym
+		\item<2-> Pseudonyme sind nicht ganz so anonym
 	\end{itemize}
 \end{frame}
 
 \begin{frame}
 	\frametitle{Variante 2}
-	Speicherung von von \textbf{Einmal-Tokens + ID}\\
-	in einer Datenbank.
+	\textbf{''}Generieren von neuen IDs\\
+	und Tokens bei jedem login\textbf{''}
 
 	\vspace{1cm}
 
-	\textbf{Nachteil:}
-	\par Nicht anonym
-\end{frame}
-
-\begin{frame}
-	\frametitle {Was ist auf der Karte?}
-	
-	ASN-1 Struktur mit folgenden Daten:
+	\textbf<2->{Nachteil:}
 	\begin{itemize}
-		\item<2-> UID (Index in der Ticket Datenbank)
-		\item<3-> Verschl"usselterer Timestamp
-		\item<4-> Schl"ussel 
+		\item<2-> Nicht wartbar
 	\end{itemize}
 \end{frame}
 
 \begin{frame}
-	\frametitle{Speicherung von Tickets}
-	Was wird gespeichert?
+	\frametitle {Folgerung}
 	\begin{itemize}
-		\item<2-> HMAC des Tokens
-		\item<3-> ID des Users
-		\item<4-> Versionsnummer
-		\item<5-> Nutzerrechte/Flags
+		\item<2-> Speicherung von lesbaren Informationen auf der
+		Karte ist eine schlechte Idee.
+		\item<3-> Die Nutzerdatenbank sollte gesch"utzt werden.
 	\end{itemize}
 \end{frame}
 
 \begin{frame}
-	\frametitle{Schl"usselhierarchie}
-	TBD.
+	\frametitle{Das Problem der Wartbarkeit}
+	Zwei Alternativen:
+	\begin{enumerate}
+		\item<2-> Nutzer Pseudonyme
+		\item<3-> Timeouts
+	\end{enumerate}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Daten sicher Speichern}
+	Man nehme:
+	\begin{itemize}
+		\item<2-> Eine symmetrische Blockcipher
+		\item<3-> Eine Hand voll Hashfunktionen
+		\item<4-> Einen kryptografisch Sicheren Zufallsgenerator
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Daten auf der Karte}
+	Auf jeder Karte befinden sich folgende\\
+	Daten verpackt in einer ASN-1 Struktur:
+	\begin{itemize}
+		\item<2-> FIX
+		\item<3-> ME
+	\end{itemize}
 \end{frame}
 
