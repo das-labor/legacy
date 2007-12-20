@@ -1,0 +1,47 @@
+\section{AnonAccess Konzept}
+
+\begin{frame}
+	\frametitle{Physikalische Sicherheit}
+	Zum Schutz vor Auslesen der Datenbank \& geheimen Schl"ussel.
+	\begin{itemize}
+		\item<2-> Sicherung gegen "offnen des Geh"auses
+		\item<3-> Sichere L"oschung der Daten
+	\end{itemize}
+\end{frame}
+
+%
+% diesen frame (flags) evtl spaeter erst einblenden?
+%
+
+\begin{frame}
+	\frametitle{Flags}
+	\vspace{1cm}
+
+	\textbf{Flags}
+	\\
+	Meta Informationen "uber den Zustand eines Nutzers.
+	\begin{itemize}
+		\item \texttt{active}: Benutzeraccount aktiv
+		\item \texttt{permanent}: Benutzeraccount darf beliebig oft verwendet werden
+		\item \texttt{hnick}: HMAC des Pseudonyms
+	\end{itemize}
+\end{frame}
+\begin{frame}
+	\frametitle{Daten sicher Speichern}
+	Man nehme:
+	\begin{itemize}
+		\item<2-> Eine symmetrische Blockcipher
+		\item<3-> Eine Hand voll Hashfunktionen
+		\item<4-> Einen kryptografisch Sicheren Zufallsgenerator
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Daten auf der Karte}
+	Auf jeder Karte befinden sich folgende\\
+	Daten verpackt in einer ASN-1 Struktur:
+	\begin{itemize}
+		\item<2-> FIX
+		\item<3-> ME
+	\end{itemize}
+\end{frame}
