@@ -1,10 +1,9 @@
 /**
- * 
- * 
- * 
- * 
- * 
- * 
+ * \file main-qport-test.c
+ * \author Daniel Otte
+ * \date 2007-08-22
+ * \par license
+ *  GPLv3
  */
  
 #include <stdint.h>
@@ -38,13 +37,33 @@ uint8_t qp0_key_hmac[32] EEMEM = {0x8c, 0x40, 0xc8, 0x3c, 0x84, 0x11, 0x8a, 0xec
                                   0x68, 0x3e, 0xc3, 0xb2, 0x20, 0xc6, 0xa7, 0x7e,
                                   0x13, 0x54, 0x88, 0x77, 0x02, 0x9b, 0xb9, 0x8a};
 
+
+uint8_t display=0;  /* if we have display or don't  */
+
+/******************************************************************************/
 /*
-uint8_t qp0_key_rxa[16] EEMEM = {0};
-uint8_t qp0_key_rxb[16] EEMEM = {0};
-uint8_t qp0_key_txa[16] EEMEM = {0};
-uint8_t qp0_key_txb[16] EEMEM = {0};
-uint8_t qp0_key_hmac[32] EEMEM = {0};
-*/
+ * typedef struct lop_ctx {
+	lopstates_t rxstate, txstate, msgretstate;
+	uint32_t msgidx;
+	uint16_t msglength;
+	uint8_t* msgbuffer;
+	uint8_t escaped;
+	void (*sendrawbyte)(uint8_t);           // pointer to the writing function
+	void (*on_msgrx)(uint16_t, uint8_t*);   // function called on message recieve
+	void (*on_streamrx)(uint8_t);           // function called on recieve of a stream byte
+	void (*on_streamsync)(void);            // function called on recieve of streamsync
+} lop_ctx_t;
+*/ 
+lop_ctx_t lop0={
+	idle, idle, idle,
+	0, 0, NULL, 0, 
+	NULL, NULL, NULL, NULL};
+qport_ctx_t qp0;
+
+lop_ctx_t lop1={
+	idle, idle, idle,
+	0, 0, NULL, 0, 
+	NULL, NULL, NULL, NULL};
 
 /******************************************************************************/
 
@@ -81,25 +100,9 @@ void wait(int ms){
 }
 
 /******************************************************************************/
-/*
- * typedef struct lop_ctx {
-	lopstates_t rxstate, txstate, msgretstate;
-	uint32_t msgidx;
-	uint16_t msglength;
-	uint8_t* msgbuffer;
-	uint8_t escaped;
-	void (*sendrawbyte)(uint8_t);           // pointer to the writing function
-	void (*on_msgrx)(uint16_t, uint8_t*);   // function called on message recieve
-	void (*on_streamrx)(uint8_t);           // function called on recieve of a stream byte
-	void (*on_streamsync)(void);            // function called on recieve of streamsync
-} lop_ctx_t;
-*/ 
-lop_ctx_t lop0={
-	idle, idle, idle,
-	0, 0, NULL, 0, 
-	NULL, NULL, NULL, NULL};
-qport_ctx_t qp0;
-
+void onuartrx(uint8_t b){
+	lop_recieve_byte(&lop0,b);
+}
 /******************************************************************************/
 void lop0_sendrawbyte(uint8_t b){
 	uart_putc((char)b);
@@ -113,18 +116,31 @@ void lop0_msgrx(uint16_t len, uint8_t * msg){
 	qport_incomming_msg(&qp0, len, msg);
 }
 /******************************************************************************/
-void onuartrx(uint8_t b){
-	lop_recieve_byte(&lop0,b);
+void qp0_streamrx(uint8_t b){
+//	PORTC = b;
+	lop_recieve_byte(&lop1, b);
 }
 /******************************************************************************/
-void qp0_streamrx(uint8_t b){
+void lop1_sendrawbyte(uint8_t b){
+	qport_streamsend(&qp0, b);
+}
+/******************************************************************************/
+void lop1_streamrx(uint8_t b){
 	PORTC = b;
 }
 /******************************************************************************/
+void lop1_msgrx(uint16_t len, uint8_t * msg){
+	if(display){
+		msg[len-1] = '\0';
+		hd44780_clear_line(0);
+		hd44780_print((char*)msg);
+	}
+}
+/******************************************************************************/
+
 
 int main(){
 	uint8_t pb, x=0;
-	uint8_t display=0;
 	DDRC = 0xFF;
 	PORTC = 0x00;
 	DDRB = 0x00;
@@ -171,10 +187,15 @@ int main(){
 	qp0.lop = &lop0;
 	qp0.keyingdata = 0;
 	
+	lop1.on_streamrx = lop1_streamrx;
+	lop1.sendrawbyte = lop1_sendrawbyte;
+	lop1.on_msgrx = lop1_msgrx;
+	
 	lop_sendreset(&lop0);
 	uart_hook = onuartrx;
 	
 //	wait(getRandomByte()*16);
+	wait(500);
 	if(qp0.keystate == unkeyed)
 		qport_rekey(&qp0);
 			
@@ -186,6 +207,7 @@ int main(){
 				qport_rekey(&qp0);	
 			}
 			if(pb & 2){
+				/*
 				uart_putstr("\r\n krxa: "); uart_hexdump(qp0.streamkey_rxa, 16);
 				uart_putstr("\r\n krxb: "); uart_hexdump(qp0.streamkey_rxb, 16);
 				uart_putstr("\r\n ktxa: "); uart_hexdump(qp0.streamkey_txa, 16);
@@ -195,16 +217,25 @@ int main(){
 				uart_putstr("\r\n srxb: "); uart_hexdump(qp0.streamstate_rxb, 8);
 				uart_putstr("\r\n stxa: "); uart_hexdump(qp0.streamstate_txa, 8);
 				uart_putstr("\r\n stxb: "); uart_hexdump(qp0.streamstate_txb, 8);
+				*/
+				static uint16_t counter=0;
+				char ts[30];
+				sprintf(ts,"counter = %u", counter);
+				counter++;
+				lop_sendmessage(&lop1,strlen(ts)+1,ts);
+				
 			}
 			if(pb & 4){
 				PORTC ^= 0x20;
 				x+=1;
-				qport_streamsend(&qp0, x);
+			//	qport_streamsend(&qp0, x);
+				lop_sendstream(&lop1, x);
 			}
 			if(pb & 8){
 				PORTC ^= 0x20;
 				x-=1;
-				qport_streamsend(&qp0, x);
+			//	qport_streamsend(&qp0, x);
+				lop_sendstream(&lop1, x);
 			}
 			wait(500);
 		}
