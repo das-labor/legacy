@@ -1,4 +1,4 @@
-\documentclass{beamer}
+\documentclass[draft]{beamer}
 \colorlet{structure}{green!50!black}
 
 \mode<article> % only for the article version
@@ -19,6 +19,7 @@
 \setbeamersize{mini frame size=5cm}
 
 \usepackage[english]{varioref}
+%\usepackage[pdflatex,draft]{graphicx}
 
 \usetheme{Hannover}
 \usecolortheme{dove}
@@ -37,6 +38,7 @@
 %\usepackage{lmodern}
 %\usepackage[T1]{fontenc}
 \usepackage{times}
+\usepackage{eurosym}
 \setbeamercovered{dynamic}
 
 %
@@ -65,25 +67,18 @@
 {\end{list}}
 
 
-%
-% The following info should normally be given in you main file:
-%
-%\subject{cryptographic primitives}
-%\lstset{
-%	language=ADA,
-%        basicstyle=\ttfamily,
-%        keywordstyle=\color{Red},
-%        commentstyle=\color{Blue},
-%        stringstyle=\color{Green},
-%        showstringspaces=false,
-%        emph={bool,int,unsigned,char,true,false,void}, %emphstyle=\color{CornflowerBlue},
-%        emph={[2]IFF\_TUN}, emphstyle={[2]\color{red}}
-%}
-
 \author{S\"oren Heisrath \and Daniel Otte}
 \title{AnonAccess}
-\institute{\includegraphics[scale=0.25]{laborlogo.png}}
-\date[21. Dezember 2007]{21.12.2007}
+\institute{ %\includegraphics[scale=0.1]{Labor.pdf}}
+ \begin{minipage}[b]{.3\linewidth}
+ \includegraphics[scale=0.1]{Labor}
+ \end{minipage}
+ \hspace{0.3\linewidth}
+ \begin{minipage}[b]{.3\linewidth}
+ \includegraphics[scale=0.4]{AnonAccessLogo}
+ \end{minipage}
+}
+\date{20. Dezember 2007}
 
 \begin{document}
 
@@ -98,19 +93,11 @@
   \tableofcontents[part=1,pausesection,hideallsubsections]
 \end{frame}
 
-%\AtBeginSubsection[]
-%\AtBeginSection[]
-%{
-%  \begin{frame}<beamer>
-%    \frametitle{"Ubersicht}
-%    \tableofcontents[currentsection]
-%    %\tableofcontents[current,currentsubsection]
-%  \end{frame}
-%}
 
 \part<presentation>{Intro}
-\input{anforderungen.tex}
-\input{aufbau.tex}
+\input{anforderungen.tex} %done
+\input{begriffe.tex}      %done
+\input{aufbau.tex}        %done
 \input{alternativen.tex}
 \input{konzept.tex}
 \input{implementation.tex}

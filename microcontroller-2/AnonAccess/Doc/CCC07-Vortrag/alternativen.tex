@@ -1,28 +1,52 @@
-\section{M"ogliche (alternative) Implementationen}
+\section{Mögliche (alternative) Implementationen}
 \begin{frame}
 	\frametitle{Variante 1}
-	\textbf{''}Speicherung von Einmal-Tokens zusammen\\
-	mit ID oder Nickname in einer\\
-	Datenbank \& auf der Karte\textbf{''}
+	Daten auf der Karte:
+	\begin{itemize}
+		\item<2-> User ID
+		\item<3-> Ticket
+	\end{itemize}
+	Daten im System für jeden Nutzer:
+	\begin{itemize}
+		\item<4-> Ticket (oder Fingerprint des Tickets)
+		\item<5-> Berechtigungen (sog. Flags)
+	\end{itemize}
+\end{frame}
 
-	\vspace{1cm}\par
+\begin{frame}
+	\frametitle{Variante 1 - Anwendung}
+	Normale Authentifizierung:
+	\begin{enumerate}
+	\item<2-> Auslesen der User ID und des Tickets von der Karte
+	\item<3-> Auslesen der des Tickets aus der Nutzerdatenbank
+	\item<4-> Überprüfen des Tickets
+	\item<5-> Generieren eines neuen Tickets
+	\item<6-> Schreiben des neuen Tickets auf die Karte
+	\end{enumerate}
+\end{frame}
 
+\begin{frame}
+	\frametitle{Variante 1 - Nachteile}
 	\textbf<2->{Nachteil:}
 	\begin{itemize}
-		\item<2-> Pseudonyme sind nicht ganz so anonym
+		\item<2-> Zugriff ist nur Pseudonym
+		\item<3-> Pseudonym ist relativ schwer zu merken
 	\end{itemize}
 \end{frame}
 
 \begin{frame}
 	\frametitle{Variante 2}
-	\textbf{''}Generieren von neuen IDs\\
-	und Tokens bei jedem login\textbf{''}
+	Wie Variante 1, mit folgender Änderungen:
+	\begin{itemize}
+		\item<2-> Es wird zusätzlich zu dem Ticket auch eine neue User ID generiert.
+	\end{itemize}
+\end{frame}
 
-	\vspace{1cm}
-
+\begin{frame}
+	\frametitle{Variante 2 - Nachteil}
 	\textbf<2->{Nachteil:}
 	\begin{itemize}
-		\item<2-> Nicht wartbar
+		\item<2-> Nicht wartbar, da Nutzer nicht mehr ''adressierbar'' sind.
 	\end{itemize}
 \end{frame}
 
