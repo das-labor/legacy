@@ -3,7 +3,7 @@
  * \author Daniel Otte
  * \date 2007-08-10
  * \par license 
- *  GPL
+ *  GPLv3
  * 
  */
 
@@ -28,12 +28,18 @@
 
 /******************************************************************************/
 
-#ifndef QPORT_STREAMAUTH
- #define QPORT_STREAMAUTH 5
+#ifndef QPTINY_STREAMAUTH
+ #define QPTINY_STREAMAUTH 5
 #endif
 
 /******************************************************************************/
-
+/**
+ * \brief encrypt a byte with xtea in cipher feedback mode
+ * \param[in]     p      plaintext byte
+ * \param[in]     key    encryption key
+ * \param[in,out] state  state of the cfb mode
+ * \return ciphertext byte
+ */
 uint8_t xtea_cfb_enc(uint8_t p, uint8_t * key, uint8_t * state){
 	uint8_t cb[XTEA_BLOCKSIZEB];
 	xtea_enc((uint32_t*)cb,(uint32_t*)state,(uint32_t*)key);
@@ -43,7 +49,13 @@ uint8_t xtea_cfb_enc(uint8_t p, uint8_t * key, uint8_t * state){
 }
 
 /******************************************************************************/
-
+/**
+ * \brief decrypt a byte with xtea in cipher feedback mode
+ * \param[in]     c      ciphertext byte
+ * \param[in]     key    decryption key
+ * \param[in,out] state  state of the cfb mode
+ * \return plaintext byte
+ */
 uint8_t xtea_cfb_dec(uint8_t c, uint8_t * key, uint8_t * state){
 	uint8_t cb[XTEA_BLOCKSIZEB];
 	xtea_enc((uint32_t*)cb,(uint32_t*)state,(uint32_t*)key);
@@ -52,7 +64,13 @@ uint8_t xtea_cfb_dec(uint8_t c, uint8_t * key, uint8_t * state){
 	return c ^ cb[0];
 }
 /******************************************************************************/
-
+/**
+ * \brief decrypt/encrypt a byte with xtea in output feedback mode
+ * \param[in]     c      ciphertext/plaintext byte
+ * \param[in]     key    decryption/encryption key
+ * \param[in,out] state  state of the cfb mode
+ * \return plaintext/ciphertext byte
+ */
 uint8_t xtea_ofb(uint8_t p, uint8_t * key, uint8_t * state){
 	uint8_t cb[XTEA_BLOCKSIZEB];
 	xtea_enc((uint32_t*)cb,(uint32_t*)state,(uint32_t*)key);
@@ -61,6 +79,12 @@ uint8_t xtea_ofb(uint8_t p, uint8_t * key, uint8_t * state){
 	return p ^ cb[0];
 }
 /******************************************************************************/
+/**
+ * \brief encrypt a single byte for stream transmission 
+ * \param[in,out] ctx    qport context for keys, state & co.
+ * \param[in]     b      plaintext byte
+ * \return plaintext/ciphertext byte
+ */
 static
 uint8_t stream_enc(qport_ctx_t * ctx, uint8_t b){
 	b = xtea_cfb_enc(b,ctx->streamkey_txa, ctx->streamstate_txa);
@@ -69,6 +93,12 @@ uint8_t stream_enc(qport_ctx_t * ctx, uint8_t b){
 }
 
 /******************************************************************************/
+/**
+ * \brief decrypt a single byte for stream transmission 
+ * \param[in,out] ctx    qport context for keys, state & co.
+ * \param[in]     b      ciphertext byte
+ * \return plaintext/ciphertext byte
+ */
 static
 uint8_t stream_dec(qport_ctx_t * ctx, uint8_t b){
 	b = xtea_ofb(b,ctx->streamkey_rxb, ctx->streamstate_rxb);
@@ -96,15 +126,21 @@ void qport_streamsend(qport_ctx_t * ctx, uint8_t p){
 	 #endif
 	
 	}
-	for(i=0; i<QPORT_STREAMAUTH; ++i){
+	for(i=0; i<QPTINY_STREAMAUTH; ++i){
+	#ifndef QPTINY_CRYPTO_OFF	
 		qport_sendbyte(ctx, stream_enc(ctx,p));				
+	#else
+		qport_sendbyte(ctx, p);				
+	#endif
 	}
 }
 
 /******************************************************************************/
 
 void qport_recieve_byte(qport_ctx_t * ctx, uint8_t b){
+	#ifndef QPTINY_CRYPTO_OFF
 	b = stream_dec(ctx, b);
+	#endif
 	if(ctx->keystate == unkeyed){
 		#ifdef LED_DEBUG
 		PORTC |= 0x40;
@@ -126,7 +162,7 @@ void qport_recieve_byte(qport_ctx_t * ctx, uint8_t b){
 		}
 	}
 	ctx->streamrx_index++;
-	if(ctx->streamrx_index==QPORT_STREAMAUTH){
+	if(ctx->streamrx_index==QPTINY_STREAMAUTH){
 		if(ctx->on_byterx)
 			ctx->on_byterx(b);
 		ctx->streamrx_index=0;
@@ -186,12 +222,14 @@ void qport_setupstream(qport_ctx_t * ctx, uint8_t rxtx, uint8_t * a, uint8_t * b
 
 void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
 	#ifdef LED_DEBUG
-	PORTC |= 0x08;
+	PORTC ^= 0x08;
 	#endif
+	while(ctx->keystate==makingkey){
+	}
 	if(ctx->keyingdata && (ctx->keyingdata->id == kp->id)){
 		/* we recived a response to our kp */
 		#ifdef LED_DEBUG
-		PORTC ^= 0x04;
+		PORTC |= 0x04;
 		#endif
 		qport_setupstream(ctx, TX, ctx->keyingdata->seed_a, kp->seed_a);
 		qport_setupstream(ctx, RX, ctx->keyingdata->seed_b, kp->seed_b);
@@ -242,9 +280,11 @@ void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
 /******************************************************************************/
 
 void qport_rekey(qport_ctx_t * ctx){
+	ctx->keystate = makingkey;
 	ctx->keyingdata = malloc(sizeof(qport_keypacket_t));
 	genkeypacket(ctx->keyingdata);
 	lop_sendmessage(ctx->lop, sizeof(qport_keypacket_t), (uint8_t*)(ctx->keyingdata));
+	ctx->keystate = unkeyed;
 }
 
 /******************************************************************************/
