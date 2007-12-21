@@ -11,6 +11,8 @@ void test1();
 void test_level1();
 void test_level2();
 void test_level3();
+void test_levels();
+void test_palette();
 void snake();
 void matrix();
 void fadein();
