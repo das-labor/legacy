@@ -29,18 +29,18 @@
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
 
-//Eine Zeile anzeigen
-inline void rowshow(unsigned char row, unsigned char plane){
+//zur nächsten Zeile weiterschalten
+inline void nextrow(row){
 	//Die Zustände von der vorherigen Zeile löschen
 	COLPORT1 = 0;
 	COLPORT2 = 0;
 	
 	//kurze Warteschleife, damit die Treiber auch wirklich ausschalten
+	
 	unsigned char i;
-	for(i=0;i<20;i++){
+	for(i=0;i<10;i++){
 		asm volatile("nop");
 	}
-	
 	
 	if (row == 0){
 		//Zeile 0: Das erste Schieberegister initialisieren
@@ -51,26 +51,32 @@ inline void rowshow(unsigned char row, unsigned char plane){
 		ROWPORT&= ~(1<<PIN_CLK);
 		ROWPORT&= ~(1<<PIN_SHFT1);
 		
-		//Je nachdem, welche der Ebenen wir Zeichnen, die Zeile verschieden lange Anzeigen
-		switch (plane){
-			case 0:
-				OCR0 = 5;
-				break;
-			case 1:
-				OCR0 = 8;
-				break;
-			case 2:
-				OCR0 = 20;
-		}
 	}else{
 		//In jeder anderen Zeile einfach nur einen weiter schieben
 		ROWPORT|= (1<<PIN_CLK);
 		ROWPORT&= ~(1<<PIN_CLK);
 	}
 	
-	//ncoh eine Warteschleife, damit die Zeilentreiber bereit sind
+	//noch eine Warteschleife, damit die Zeilentreiber bereit sind
 	for(i=0;i<20;i++){
 		asm volatile("nop");
+	}
+}
+
+
+
+//Eine Zeile anzeigen
+inline void rowshow(unsigned char row, unsigned char plane){
+	//Je nachdem, welche der Ebenen wir Zeichnen, die Zeile verschieden lange Anzeigen
+	switch (plane){
+		case 0:
+			OCR0 = 3;
+			break;
+		case 1:
+			OCR0 = 4;
+			break;
+		case 2:
+			OCR0 = 22;
 	}
 	
 	uint8_t tmp;
@@ -94,8 +100,6 @@ inline void rowshow(unsigned char row, unsigned char plane){
 	#else
 	COLPORT2 = tmp;
 	#endif	
-	
-	
 }
 
 
@@ -108,14 +112,17 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 	//Watchdog zurücksetzen
 	wdt_reset();
 	
+	//Zeile und Ebene inkrementieren
+	if(++plane==NUMPLANE){
+		plane=0;
+		if(++row == NUM_ROWS){
+			row = 0;
+		}
+		nextrow(row);
+	}
+	
 	//Die aktuelle Zeile in der aktuellen Ebene ausgeben
 	rowshow(row, plane);
-	
-	//Zeile und Ebene inkrementieren
-	if(++row == NUM_ROWS){
-		row = 0;
-		if(++plane==NUMPLANE) plane=0;
-	}
 }
 
 
@@ -143,7 +150,7 @@ void timer0_on(){
 		 1    0    1       clk/1024
 	
 */
-	TCCR0 = 0x0B;	// CTC Mode, clk/64
+	TCCR0 = 0x0C;	// CTC Mode, clk/64
 	TCNT0 = 0;	// reset timer
 	OCR0  = 20;	// Compare with this value
 	TIMSK = 0x02;	// Compare match Interrupt on

@@ -18,7 +18,7 @@
 
 #define SCROLLTEXT_STRING_SIZE 128
 #define SCROLLTEXT_FONT font_arial8
-#define SCROLLTEXT_DEFAULT "</#das  LABOR  Bochum#</#www.das-labor.org#</#coded using avr-gcc"
+#define SCROLLTEXT_DEFAULT "</#www.das-labor.org#</#Neuer borg-16 Bausatz"
 #define SCROLL_X_SPEED 20
 #define SCROLL_Y_SPEED 20
 
