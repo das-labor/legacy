@@ -20,6 +20,7 @@ int main (void){
 
 	mode = setjmp(newmode_jmpbuf);
 
+	
 	for(;;){
 		switch(mode++) {
 		case 0:

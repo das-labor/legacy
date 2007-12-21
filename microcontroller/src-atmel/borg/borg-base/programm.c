@@ -52,7 +52,29 @@ void test_level3(){
 	for(;;) wait(100);
 }
 
+void test_levels(){
+	unsigned char x,y,b;
+	for(b=1;b<4;b++){
+		for (y=0;y<NUM_ROWS;y++){
+			for (x=0;x<NUM_COLS;x++){
+				setpixel((pixel){x,y}, b);
+				wait(5);
+			}
+		}
+	}
+}
 
+void test_palette(){
+	unsigned char x,y,b;
+	for (y=0;y<NUM_ROWS;y++){
+		b=y%4;
+		for (x=0;x<NUM_COLS;x++){
+			setpixel((pixel){x,y}, b);
+			wait(1);
+		}
+	}
+	for(;;) wait(100);
+}
 
 void off()
 {
