@@ -16,6 +16,8 @@
 #include "persistentCounter.h"
 #include "menu.h"
 
+//#define TESTMODE
+
 volatile unsigned char oldMode, oldOldmode, mode;
 
 jmp_buf newmode_jmpbuf;
@@ -28,9 +30,13 @@ int main (void){
 	bcan_init();
 	joy_init();	
 	sei();
-
+	
+#ifdef TESTMODE
+	test_levels();
+	test_palette();
+#endif
+	
 	mode = setjmp(newmode_jmpbuf);
-	//mode = 33;
 	oldOldmode = oldMode;
 	waitForFire = 1;	
 	for(;;){

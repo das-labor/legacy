@@ -6,11 +6,11 @@
 unsigned char waitForFire;
 inline void joy_init();
 
-#define BITFIRE  PD0
-#define BITRIGHT PB0
-#define BITLEFT  PB1
-#define BITDOWN  PB2
-#define BITUP    PB3
+#define BITFIRE  PD3
+#define BITRIGHT PB3
+#define BITLEFT  PB2
+#define BITDOWN  PB1
+#define BITUP    PB0
 
 #define JOYISFIRE  (!(PIND & (1<<BITFIRE)))
 #define JOYISLEFT  (!(PINB & (1<<BITLEFT)))
