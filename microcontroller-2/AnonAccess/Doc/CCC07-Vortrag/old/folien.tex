@@ -8,22 +8,21 @@
 }
 \mode<presentation>
 {
-%	\setbeamertemplate{background canvas}[vertical shading][bottom=red!10,top=blue!10]
+	\setbeamertemplate{background canvas}[vertical shading][bottom=red!10,top=blue!10]
 %	\useinnertheme[shadow=true]{rounded}
 %	\useoutertheme{shadow}
 %	\usecolortheme{whale}
-	\usetheme{Berkeley}
 	\setbeamerfont{block title}{size={}}
-%	\setbeamercovered{transparent}
-%    \usefonttheme[onlysmall]{structurebold}
+  \usefonttheme[onlysmall]{structurebold}
 }
 
 \setbeamersize{mini frame size=5cm}
 
 \usepackage[english]{varioref}
+%\usepackage[pdflatex,draft]{graphicx}
 
-%\usetheme{Hannover}
-%\usecolortheme{dove}
+\usetheme{Hannover}
+\usecolortheme{dove}
 %\setbeamercolor{math text}{fg=green!50!black}
 %\setbeamercolor{normal text in math text}{parent=math text}
 
@@ -40,15 +39,35 @@
 %\usepackage[T1]{fontenc}
 \usepackage{times}
 \usepackage{eurosym}
-%\setbeamercovered{dynamic}
+\setbeamercovered{dynamic}
 
+%
+% The following defintions are peculiar to this particular
+% presetation. They have nothing to do with the beamer class
+%
+
+\newcommand{\Lang}[1]{\operatorname{\text{\textsc{#1}}}}
+
+\newcommand{\Class}[1]{\operatorname{\mathchoice
+  {\text{\normalfont\small #1}}
+  {\text{\normalfont\small #1}}
+  {\text{\normalfont#1}}
+  {\text{\normalfont#1}}}}
+
+\newcommand{\DOF}{\Class{DOF}}
+\newcommand{\NOF}{\Class{NOF}}
+\newcommand{\DOFpoly}{\Class{DOF}_{\operatorname{poly}}}
+\newcommand{\NOFpoly}{\Class{NOF}_{\operatorname{poly}}}
+
+\newcommand{\Nat}{\mathbb{N}}
+\newcommand{\Set}[1]{\{#1\}}
 
 \newenvironment{ccodelisting}
 {\begin{list}{}{\setlength{\leftmargin}{1em}}\item\scriptsize\bfseries}
 {\end{list}}
 
 
-\author{Sören Heisrath \and Daniel Otte}
+\author{S\"oren Heisrath \and Daniel Otte}
 \title{AnonAccess}
 \institute{ %\includegraphics[scale=0.1]{Labor.pdf}}
  \begin{minipage}[b]{.3\linewidth}
@@ -59,7 +78,7 @@
  \includegraphics[scale=0.4]{AnonAccessLogo}
  \end{minipage}
 }
-\date{27. Dezember 2007}
+\date{20. Dezember 2007}
 
 \begin{document}
 
@@ -76,33 +95,13 @@
 
 
 \part<presentation>{Intro}
-%\input{anforderungen.tex} %done
-%\input{begriffe.tex}      %done
-%\input{aufbau.tex}        %done
-%\input{alternativen.tex}  %done
-%\input{konzept.tex}
+\input{anforderungen.tex} %done
+\input{begriffe.tex}      %done
+\input{aufbau.tex}        %done
+\input{alternativen.tex}  %done
+\input{konzept.tex}
 %\input{implementation.tex}
 % ----
-
-\input{keyproblem.tex}
-\input{requirements.tex}
-\input{ansatz1.tex}
-\input{probleme1.tex}
-\input{ansatz2.tex}
-\input{probleme2.tex}
-\input{ansatz3.tex}
-\input{eigenschaften.tex}
-\input{3stufen.tex}
-
-\section{EOP}
-\begin{frame}
-	\frametitle{EOP}
-	\begin{Huge}
-	End\\
-	Of\\
-	Presentation\\
-	\end{Huge}
-\end{frame}
 
 \end{document}
 
