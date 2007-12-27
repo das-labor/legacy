@@ -242,6 +242,16 @@
          sodipodi:role="line"
          id="tspan2276"
          x="202.28572"
-         y="277.36218">Ticket</tspan></text>
+         y="277.36218">UID, Ticket</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="331.42856"
+       y="284.50504"
+       id="text2345"><tspan
+         sodipodi:role="line"
+         x="331.42856"
+         y="284.50504"
+         id="tspan2349" /></text>
   </g>
 </svg>
