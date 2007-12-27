@@ -9,27 +9,6 @@
 	\includegraphics[scale=0.75]{ansatz3.pdf}
 \end{frame}
 
-%----------------------------------------------------------
-
-\begin{frame}
-	\frametitle{AuthBlock Struktur}
-%typedef struct{
-%	uid_t    uid;
-%	ticket_t ticket;
-%	uint8_t  rkey[32];
-%	uint8_t  rid[32];
-%	uint8_t  pinhmac[32];
-%	uint8_t  hmac[32];
-%} authblock_t;
-\begin{tabular}{|c|c|}
-\hline UID & User ID; Index in die Ticket-DB \\ 
-\hline Ticket   & $enc_{TicketKey}(24 Byte Zufall \parallel 8 Byte Zeitstempel)$ \\ 
-\hline rkey     & 32 Byte zufälliger Schlüssel \\ 
-\hline rid      & $enc_{ridKey}(enc_{rkey}(Pseudonym))$ \\ 
-\hline HMAC     & HMAC über die vorrangegangenen Daten \\ 
-\hline 
-\end{tabular} 
-\end{frame}
 
 %----------------------------------------------------------
 
