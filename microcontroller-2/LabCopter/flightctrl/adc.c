@@ -6,6 +6,19 @@ Hansi
 */
 
 #include "adc.h"
+#include "globals.h"
+
+/**********
+	ADC CHANNEL ASSIGNMENTS
+CH0: Gier
+CH1: Roll
+CH2: Nick
+CH4: Battery
+CH3: Air Pressure
+CH5: ACC_Z
+CH6: ACC_Y
+CH7: ACC_X
+**********/
 
 //ADC Interrupt Handler
 //Saves all current sensor values to corresponding globals
@@ -13,93 +26,73 @@ SIGNAL(SIG_ADC)
 {
 	//statekeeping vars
     static uint8_t kanal, state;
-	static unsigned int gier1, roll1, nick1;
 	
 	channel = 0;
 	state = 0;
 
     switch(state++)
     {
+		//Gier Measurement
         case 0:
-            gier1 = ADC;
-            kanal = 1;
-            ZaehlMessungen++;
+            CurrentGier = ADC;
+		
+			//switch to channel 1 (ROLL)
+            channel++;
             break;
+		
+		//Roll Measurement
         case 1:
-            roll1 = ADC;
-            kanal = 2;
+            CurrentRoll = ADC;
+		
+			//switch to channel 2 (NICK)
+            channel++;
             break;
+		
+		//Nick Measurement
         case 2:
-            nick1 = ADC;
+            CurrentNick = ADC;
+		
+			//switch to channel 4 (Battery)
             kanal = 4;
             break;
+		
+		//Battery Measurement
         case 3:
-            UBat = (3 * UBat + ADC / 3) / 4;//(UBat + ((ADC * 39) / 256) + 19)  / 2;
-            kanal = 6;
+            //UBat = (3 * UBat + ADC / 3) / 4;//(UBat + ((ADC * 39) / 256) + 19)  / 2;
+		
+			//switch to channel 5 (ACC_Z)
+           	channel++;
             break;
+		
+		//ACC_Z Measurement
         case 4:
-            Aktuell_ay = NeutralAccY - ADC;
-            AdWertAccRoll = Aktuell_ay;
-            kanal = 7;
+            CurrentACC_Z = ADC;
+		
+			//switch to channel 6 (ACC_Y)
+            channel++;
             break;
+		
+		//ACC_Y Measurement
         case 5:
+            CurrentACC_Y = ADC;
+		
+			//switch to channel 7 (ACC_X)
+            channel++;
+            break;
+		
+		//ACC_X Measurement
+        case 6:
             Aktuell_ax = ADC - NeutralAccX;
             AdWertAccNick =  Aktuell_ax;
-                    kanal = 0;
-            break;
-        case 6:
-            if(PlatinenVersion == 10)  AdWertGier = (ADC + gier1) / 2;
-                        else                                       AdWertGier = ADC + gier1;
-            kanal = 1;
-            break;
-        case 7:
-            if(PlatinenVersion == 10)  AdWertRoll = (ADC + roll1) / 2;
-                        else                                       AdWertRoll = ADC + roll1;
-            kanal = 2;
-            break;
-        case 8:
-            if(PlatinenVersion == 10)  AdWertNick = (ADC + nick1) / 2;
-                        else                                       AdWertNick = ADC + nick1;
-//AdWertNick = 0;
-//AdWertNick += Poti2;            
-            kanal = 5;
-            break;
-       case 9:
-            AdWertAccHoch =  (signed int) ADC - NeutralAccZ;
-            AdWertAccHoch += abs(Aktuell_ay) / 4 + abs(Aktuell_ax) / 4;
-            if(AdWertAccHoch > 1) 
-             {
-              if(NeutralAccZ < 800) NeutralAccZ+= 0.02; 
-             }  
-             else if(AdWertAccHoch < -1)
-             {
-              if(NeutralAccZ > 600) NeutralAccZ-= 0.02;
-             } 
-            messanzahl_AccHoch = 1;
-            Aktuell_az = ADC;
-            Mess_Integral_Hoch += AdWertAccHoch;      // Integrieren
-            Mess_Integral_Hoch -= Mess_Integral_Hoch / 1024; // d�mfen
-                kanal = 3;
-            break;
-        case 10:
-            tmpLuftdruck += ADC;
-            if(++messanzahl_Druck >= 5) 
-                {
-                MessLuftdruck = ADC;
-                messanzahl_Druck = 0;
-                                HoeheD = (int)(StartLuftdruck - tmpLuftdruck - HoehenWert);  // D-Anteil = neuerWert - AlterWert
-                Luftdruck = (tmpLuftdruck + 3 * Luftdruck) / 4;
-                HoehenWert = StartLuftdruck - Luftdruck;
-                tmpLuftdruck = 0;
-                } 
-            kanal = 0;
-            state = 0;
-            break;
+
+			//be aware of the missing break
+			//at the end of the state machine (turn off)
+            //break;
 			
 		//turn off int
         default:
 			INT_ADC_OFF;
-            kanal = 0;
+            channel = 0;
             state = 0;
             break;
     }
