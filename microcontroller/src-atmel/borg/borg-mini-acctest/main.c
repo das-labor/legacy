@@ -30,8 +30,10 @@ uint16_t gZero[2];
 //the zero-g offset period
 uint16_t gZeroPrd;
 
-#define ACC_START GICR |= (1<<INT1)
-
+//reset measurement ready flag, reset int flag, enable int
+#define	ACC_START gStatus &= ~1; \
+GIFR |= (1<<INT1); \
+GICR |= (1<<INT1)
 
 void g_init(){
 	//GICR |= (1<<INT0) | (1<<INT1);
@@ -57,7 +59,7 @@ ISR(SIG_INTERRUPT1){
 	//int now turns itself off at the end
 	
 	//PWM pin goes high
-	if(!(PIND & (1<<PD3)))
+	if((PIND & (1<<PD3)))
 	{
 		//save start position
 		startx = TCNT1;
@@ -78,6 +80,7 @@ ISR(SIG_INTERRUPT1){
 		GICR &= ~(1<<INT1);
 		//turn on the other int
 		GICR |= (1<<INT0);
+		GIFR |= (1<<INT0);
 	}
 }
 
@@ -99,7 +102,7 @@ ISR(SIG_INTERRUPT0){
 	//int is now executed on demand only
 	
 	//PWM pin goes high
-	if(!(PIND & (1<<PD2)))
+	if((PIND & (1<<PD2)))
 	{
 		//save start position
 		starty = TCNT1;
@@ -148,8 +151,6 @@ void g_Calibrate()
 	gZeroAvg[1] = 0;
 	gZeroPrdAvg = 0;
 	
-	//reset measurement ready flag
-	gStatus &= ~1;
 	//fire the int up
 	ACC_START;
 	
@@ -163,13 +164,15 @@ void g_Calibrate()
 		//make a period
 		g_calcPeriod();
 		
+		//sum up
 		gZeroAvg[0] += gValue[0];
 		gZeroAvg[1] += gValue[1];
 		gZeroPrdAvg += gPeriod;
-
-		//reset measurement ready flag
-		gStatus &= ~1;
-		//fire the int u
+		
+		//wait a bit
+		//wait(10);
+		
+		//fire the int up
 		ACC_START;
 	}
 	
@@ -187,6 +190,10 @@ int main (void){
 	
 	//current zero offset calibration value
 	uint16_t gCurZero[2];
+	
+	//avg test
+	int16_t gRing[32][2];
+	uint8_t ringIndex = 0;
 	
 	//point positions for drawing
 	pixel myPix, oldPix;
@@ -212,34 +219,59 @@ int main (void){
 	//calibrate zero offset values
 	g_Calibrate();
 	
-	//calculate current zero offset - once for now
-	//fixme - this has to be re-calculated every once a while
-	//but we would need a very precise period for that
-	//formula is (gZero * PRECISE_ACTUAL_PERIOD) / calibrated period
-	gCurZero[0] = (gZero[0] / gZeroPrd);
-	gCurZero[1] = (gZero[1] / gZeroPrd);
-    
+	//setup ringbuffer
+	gCurrent[0] = ((int32_t)(gZero[0]) * 255) / gZeroPrd;
+	gCurrent[1] = ((int32_t)(gZero[1]) * 255) / gZeroPrd;
+	for(i = 0; i < 32; i++)
+	{
+		gRing[i][0] = gCurrent[0];
+		gRing[i][1] = gCurrent[1];
+	}
+
 	//loop to death
 	while(1)
-	{	
-		//reset measurement flag to start a new cycle
-		gStatus &= ~1;
+	{
 		//fire the int up
 		ACC_START;
 
 		//wait for period end
 		while(!(gStatus & 1));
 		
-		//calculate period
-		//g_calcPeriod();
+		//calculate period (will be stored in gPeriod)
+		g_calcPeriod();
+		
+		//calculate current zero offset
+		//this has to be re-calculated every once a while
+		//to account for period temperature drift over time
+		//formula is (gZero * PRECISE_ACTUAL_PERIOD) / calibrated period
+		gCurZero[0] = (int32_t)((int32_t)gZero[0] * gPeriod) / gZeroPrd;
+		gCurZero[1] = (int32_t)((int32_t)gZero[1] * gPeriod) / gZeroPrd;
 		
 		//store current g value
-		//note: this is a duty cycle in percent
-		gCurrent[0] = ((int32_t)((int32_t)gValue[0] - gCurZero[0]) * 100) / gPeriod;
+		//note: this is a duty cycle in 0-255 (8bit-resolution)
+		gCurrent[0] = (((int32_t)gValue[0] - gCurZero[0]) * 255) / gPeriod;
 		
 		//store current g value
-		//note: this is a duty cycle in percent
-		gCurrent[1] = ((int32_t)((int32_t)gValue[1] - gCurZero[1]) * 100) / gPeriod;
+		//note: this is a duty cycle in 0-255 (8bit-resolution)
+		gCurrent[1] = (((int32_t)gValue[1] - gCurZero[1]) * 255) / gPeriod;
+		
+		
+		//store values to ringbuffer
+		gRing[ringIndex][0] = gCurrent[0];
+		gRing[ringIndex][1] = gCurrent[1];
+		ringIndex++;
+		ringIndex %= 32;
+		
+		//average
+		gCurrent[0] = 0;
+		gCurrent[1] = 0;
+		for(i = 0; i < 32; i++)
+		{
+			gCurrent[0] += gRing[i][0]; 
+			gCurrent[1] += gRing[i][1];
+		}
+		gCurrent[0] /= 32;
+		gCurrent[1] /= -32; //reverse axis
 		
 		//store old pixel position
 		oldPix.x = myPix.x;
@@ -248,13 +280,14 @@ int main (void){
 		//calculate new pixel position
 		//this borg has 10X and 8Y
 		//the acc sensor has an average of 12,5%dty per g
+		//as we use 8bit resolution for the current dutycycle it is 12,5%*255 for 1g
 		//1g should represent 90degree tilt in the given axis
 		//we want the pixel to indicate the absolute tilt
-		//this results in -12,5 = 0 x or y and +12,5 = max x or y
+		//this results in -(12,5/100)*255 = 0 x or y and +(12,5/100)*255 = max x or y
 		
-		//the formula scales up the 12,5 by factor 8 and rescales the result to fit the display
-		myPix.x = 5 - ((int32_t)gCurrent[0] * 8 /*scale*/ * 5 /*half x*/) / (12.5 * 8 /*scale*/);
-		myPix.y = 4 - ((int32_t)gCurrent[1] * 8 /*scale*/ * 4 /*half y*/) / (12.5 * 8 /*scale*/);
+		//the formula rescales the current gValues to fit the display
+		myPix.x = 5 - (((int32_t)gCurrent[0] * 5 /*half x*/) / 32);
+		myPix.y = 4 - (((int32_t)gCurrent[1] * 4 /*half y*/) / 32);
 
 		//set pixels
 		setpixel(oldPix,0);
