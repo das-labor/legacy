@@ -22,4 +22,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor Boston, MA 02110-1301,  USA
  */
  
-  volatile int  CurrentNick, CurrentRoll, CurrentGier;
+volatile int  CurrentNick, CurrentRoll, CurrentGier;
+volatile int  CurrentACC_X, CurrentACC_Y, CurrentACC_Z;
+volatile int  CurrentUBat;

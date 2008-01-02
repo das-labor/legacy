@@ -52,8 +52,14 @@ Flight Control
 // +  POSSIBILITY OF SUCH DAMAGE. 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+//for memcpy
+#include <string.h>
+
+#include "main.h"
+#include "_Settings.h"
 #include "fc.h"
 #include "eeprom.c"
+#include "timer0.h"
 
 unsigned char h,m,s;
 volatile unsigned int I2CTimeout = 100;
