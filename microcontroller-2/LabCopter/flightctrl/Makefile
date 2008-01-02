@@ -1,5 +1,5 @@
 
-OBJ = main.o uart.o
+OBJ = main.o uart.o adc.o globals.o init.o
 
 MCU_TARGET = atmega644
 
