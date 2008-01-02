@@ -1,5 +1,5 @@
 
-OBJ = main.o uart.o adc.o globals.o init.o
+OBJ = main.o uart.o adc.o globals.o init.o fc.o eeprom.o rc.o timer0.o twimaster.o
 
 MCU_TARGET = atmega644
 
