@@ -5,15 +5,21 @@ V0.1
 Hansi
 */
 
+#include "adc.h"
+
 //ADC Interrupt Handler
 //Saves all current sensor values to corresponding globals
 SIGNAL(SIG_ADC)
 {
-    static unsigned char kanal=0,state = 0;
-    static unsigned int gier1, roll1, nick1;
-    ANALOG_OFF;
+	//statekeeping vars
+    static uint8_t kanal, state;
+	static unsigned int gier1, roll1, nick1;
+	
+	channel = 0;
+	state = 0;
+
     switch(state++)
-        {
+    {
         case 0:
             gier1 = ADC;
             kanal = 1;
@@ -89,11 +95,15 @@ SIGNAL(SIG_ADC)
             kanal = 0;
             state = 0;
             break;
-        default: 
+			
+		//turn off int
+        default:
+			INT_ADC_OFF;
             kanal = 0;
             state = 0;
             break;
-        } 
-    ADMUX = kanal;
-    if(state != 0) ANALOG_ON;
+    }
+	
+	//switch to next channel
+    ADMUX = channel;
 }
