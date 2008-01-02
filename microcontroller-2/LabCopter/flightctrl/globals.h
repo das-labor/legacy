@@ -25,3 +25,4 @@
 //these vars store the current ADC measurement values to used by the main program
 extern volatile int  CurrentNick, CurrentRoll, CurrentGier;
 extern volatile int  CurrentACC_X, CurrentACC_Y, CurrentACC_Z;
+extern volatile int  CurrentUBat;

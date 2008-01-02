@@ -27,6 +27,8 @@
 #include "twimaster.h"
 #include "timer0.h"
 
+extern void DefaultKonstanten3(void);
+
 unsigned char EEPromArray[E2END+1] EEMEM;
 unsigned char PlatinenVersion = 10;
 
@@ -99,6 +101,7 @@ void blob_init(void)
 //blobby main func
 int blob_main (void)
 {
+	unsigned int timer = 1000;
 	unsigned char i;
 	
 	sei();
@@ -180,7 +183,7 @@ int blob_main (void)
 //PORTD &= ~0x08;
             SendMotorData();
             ROT_OFF;
-            if(PcZugriff) PcZugriff--; 
+            /*if(PcZugriff) PcZugriff--; 
              else 
               {
                DubWiseKeys[0] = 0; 
@@ -188,7 +191,7 @@ int blob_main (void)
                ExternStickNick = 0;
                ExternStickRoll = 0;
                ExternStickGier = 0;
-              }
+              }*/
             if(SenderOkay)  SenderOkay--;
             if(!I2CTimeout)
                 {
@@ -206,15 +209,15 @@ int blob_main (void)
                  ROT_OFF; 
                 }
             }
-            if(SIO_DEBUG)
+            /*if(SIO_DEBUG)
               {
                DatenUebertragung();
                BearbeiteRxDaten();
               }
-              else BearbeiteRxDaten();
+              else BearbeiteRxDaten();*/
          if(CheckDelay(timer))
             { 
-            if(UBat < EE_Parameter.UnterspannungsWarnung)
+            if(CurrentUBat < EE_Parameter.UnterspannungsWarnung)
                 {     
                   if(BeepMuster == 0xffff) 
                    { 
@@ -233,7 +236,7 @@ int blob_main (void)
 int main()
 {
 	//old init
-	blob_init()
+	blob_init();
 		
 	/*** INITIALIZATION ***/
 	//move reworked init funcs here; leave rest in blob_init
