@@ -5,6 +5,7 @@ V0.1
 Hansi
 */
 
+#include <avr/interrupt.h>
 #include "adc.h"
 #include "globals.h"
 
@@ -25,7 +26,7 @@ CH7: ACC_X
 SIGNAL(SIG_ADC)
 {
 	//statekeeping vars
-    static uint8_t kanal, state;
+    static uint8_t channel, state;
 	
 	channel = 0;
 	state = 0;
@@ -53,7 +54,7 @@ SIGNAL(SIG_ADC)
             CurrentNick = ADC;
 		
 			//switch to channel 4 (Battery)
-            kanal = 4;
+            channel = 4;
             break;
 		
 		//Battery Measurement
@@ -82,8 +83,7 @@ SIGNAL(SIG_ADC)
 		
 		//ACC_X Measurement
         case 6:
-            Aktuell_ax = ADC - NeutralAccX;
-            AdWertAccNick =  Aktuell_ax;
+            CurrentACC_X = ADC;
 
 			//be aware of the missing break
 			//at the end of the state machine (turn off)
