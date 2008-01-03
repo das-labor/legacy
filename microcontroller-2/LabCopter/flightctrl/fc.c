@@ -60,6 +60,10 @@ Flight Control
 #include "fc.h"
 #include "eeprom.c"
 #include "timer0.h"
+#include <avr/eeprom.h>
+#include "globals.h"
+#include "twimaster.h"
+#include "adc.h"
 
 unsigned char h,m,s;
 volatile unsigned int I2CTimeout = 100;
@@ -152,10 +156,11 @@ void SetNeutral(void)
     CalibrierMittelwert();	
     Delay_ms_Mess(100);
 	CalibrierMittelwert();
+	/* keine hoehenregelung
     if((EE_Parameter.GlobalConfig & CFG_HOEHENREGELUNG))  // Höhenregelung aktiviert?
      {    
       if((MessLuftdruck > 950) || (MessLuftdruck < 750)) SucheLuftruckOffset();
-     }
+     }*/
 
      AdNeutralNick= AdWertNick;	
 	 AdNeutralRoll= AdWertRoll;	
@@ -183,7 +188,9 @@ void SetNeutral(void)
     MesswertNick = 0;
     MesswertRoll = 0;
     MesswertGier = 0;
+	/* keine hoehenregelung
     StartLuftdruck = Luftdruck;
+	*/
     HoeheD = 0;
     Mess_Integral_Hoch = 0;
     KompassStartwert = KompassValue;
@@ -283,7 +290,7 @@ void Mittelwert(void)
 			 }
 //++++++++++++++++++++++++++++++++++++++++++++++++
 // ADC einschalten
-    ANALOG_ON;	
+    INT_ADC_ON;	
 //++++++++++++++++++++++++++++++++++++++++++++++++
 
     Integral_Gier  = Mess_Integral_Gier;
@@ -315,7 +322,7 @@ void CalibrierMittelwert(void)
 //############################################################################
 { 		  
     // ADC auschalten, damit die Werte sich nicht während der Berechnung ändern
-	ANALOG_OFF;
+	INT_ADC_OFF;
 	MesswertNick = AdWertNick;
 	MesswertRoll = AdWertRoll;
 	MesswertGier = AdWertGier;
@@ -323,7 +330,7 @@ void CalibrierMittelwert(void)
 	Mittelwert_AccRoll = ACC_AMPLIFY * (long)AdWertAccRoll;
 	Mittelwert_AccHoch = (long)AdWertAccHoch;
    // ADC einschalten
-    ANALOG_ON;	
+    INT_ADC_ON;	
     if(Poti1 < PPM_in[EE_Parameter.Kanalbelegung[K_POTI1]] + 110) Poti1++; else if(Poti1 > PPM_in[EE_Parameter.Kanalbelegung[K_POTI1]] + 110 && Poti1) Poti1--;
     if(Poti2 < PPM_in[EE_Parameter.Kanalbelegung[K_POTI2]] + 110) Poti2++; else if(Poti2 > PPM_in[EE_Parameter.Kanalbelegung[K_POTI2]] + 110 && Poti2) Poti2--;
     if(Poti3 < PPM_in[EE_Parameter.Kanalbelegung[K_POTI3]] + 110) Poti3++; else if(Poti3 > PPM_in[EE_Parameter.Kanalbelegung[K_POTI3]] + 110 && Poti3) Poti3--;
@@ -503,10 +510,14 @@ void MotorRegler(void)
                          if(PPM_in[EE_Parameter.Kanalbelegung[K_ROLL]] <-70 && PPM_in[EE_Parameter.Kanalbelegung[K_NICK]] < 70) setting = 5;
                          eeprom_write_byte(&EEPromArray[EEPROM_ADR_ACTIVE_SET], setting);  // aktiven Datensatz merken
                         }
+							
+						/* keine hoehenregelung
                         if((EE_Parameter.GlobalConfig & CFG_HOEHENREGELUNG))  // Höhenregelung aktiviert?
                           {
                              if((MessLuftdruck > 950) || (MessLuftdruck < 750)) SucheLuftruckOffset();
                           }   
+							*/
+							
 	                    ReadParameterSet(GetActiveParamSetNumber(), (unsigned char *) &EE_Parameter.Kanalbelegung[0], STRUCT_PARAM_LAENGE);
                         SetNeutral();
                         Piep(GetActiveParamSetNumber());
@@ -950,7 +961,7 @@ DebugOut.Analog[24] = 10*(AdNeutralRoll - StartNeutralRoll);
     DebugOut.Analog[5] = HoehenWert;
     DebugOut.Analog[6] =(Mess_Integral_Hoch / 512);
     DebugOut.Analog[8] = KompassValue;
-    DebugOut.Analog[9] = UBat;
+    DebugOut.Analog[9] = CurrentUBat;
     DebugOut.Analog[10] = SenderOkay;
     DebugOut.Analog[16] = Mittelwert_AccHoch;
 
