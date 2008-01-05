@@ -62,15 +62,36 @@ void set_relais(uint8_t num, uint8_t state){
 }
 
 void rc_switch_set(uint8_t num, uint8_t state){
+	if(num >= sizeof(switch_states))
+		return;
+	
 	if(switch_states[num] != state){
 		switch_states[num] = state;
 		if(num < 20){	//rc switch
-			AvrXPutFifo(rftxfifo, PD(rc_switch_codes[num][state]));
+			if(num < (sizeof(rc_switch_codes)/8)){
+				AvrXPutFifo(rftxfifo, PD(rc_switch_codes[num][state]));
+			}else{
+				return;
+			}
 		}else{			//relais
-			set_relais(num-20,state);
+			if(num<(NUM_RELAIS+20)){
+				set_relais(num-20,state);
+			}else{
+				return;
+			}
 		}
 		switch_send_info(num);
 	}
+}
+
+static can_message_t msg_switch_set = {0, 0x00, PORT_LAPD, PORT_LAPD, 3, {FKT_ONOFF_SET, 0, 0}};
+
+void can_switch_set(uint8_t device, uint8_t num, uint8_t state){
+	msg_switch_set.addr_src = myaddr;
+	msg_switch_set.addr_dst = device;
+	msg_switch_set.data[1] = num;
+	msg_switch_set.data[2] = state;
+	can_put(&msg_switch_set);
 }
 
 

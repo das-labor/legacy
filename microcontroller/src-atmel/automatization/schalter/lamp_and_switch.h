@@ -4,6 +4,8 @@
 void rc_switch_set_p(uint16_t param);
 void rc_switch_set(uint8_t num, uint8_t state);
 
+void can_switch_set(uint8_t device, uint8_t num, uint8_t state);
+
 void lampedim(uint16_t param);
 void all_lampedim(uint16_t param);
 
@@ -13,14 +15,21 @@ void lamp_and_switch_init();
 #define LAMP_HINTENFLUTER 1
 #define LAMP_MOODBAR 2
 #define LAMP_BASTELECKE 3
-#define POWER_BASTELECKE 4
+//#define POWER_BASTELECKE 4
 #define POWER_COUCH 5
 #define POWER_BAR 6
 #define POWER_FLIPPER 7
 #define LAMP_LEUCHTSTOFF1 20
 #define LAMP_LEUCHTSTOFF2 21
 
+//not connected to this device
+//connected via can to device 0x53
 
+#define POWER_BASTELECKE 21
+#define LAMP_LEUCHTSTOFF3 20
+
+
+#define NUM_RELAIS 2
 
 extern uint8_t relais[2];
 

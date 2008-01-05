@@ -19,7 +19,7 @@ TimerControlBlock switchtimer;
 void labor_on(){
 	rc_switch_set(POWER_BAR, 1);
 	rc_switch_set(POWER_COUCH, 1);
-	rc_switch_set(POWER_BASTELECKE, 1);
+	can_switch_set(0x53, POWER_BASTELECKE, 1);
 	rc_switch_set(POWER_FLIPPER, 1);
 
 	rc_switch_set(LAMP_COUCHFLUTER, 1);
@@ -27,12 +27,19 @@ void labor_on(){
 
 void labor_off(){
 	
-	rc_switch_set(POWER_BASTELECKE, 0);
+	can_switch_set(0x53, POWER_BASTELECKE, 0);
 	rc_switch_set(POWER_COUCH, 0);
 	rc_switch_set(POWER_BAR, 0);
 	rc_switch_set(POWER_FLIPPER, 0);
+	
+	rc_switch_set(LAMP_LEUCHTSTOFF1, 0);
+	rc_switch_set(LAMP_LEUCHTSTOFF2, 0);
+	can_switch_set(0x53, LAMP_LEUCHTSTOFF3, 0);
 
 	rc_switch_set(LAMP_COUCHFLUTER, 0);
+	rc_switch_set(LAMP_HINTENFLUTER, 0);
+	rc_switch_set(LAMP_MOODBAR, 0);
+	rc_switch_set(LAMP_BASTELECKE, 0);
 }
 
 #define DDR_RELAIS DDRC
