@@ -18,8 +18,8 @@
 
 //An diesem Port sind die Zeilentreiber angeschlossen.
 //Ein Eins-Pegel schaltet den jeweiligen Transistor an.
-#define ROWPORT PORTD
-#define ROWDDR DDRD
+#define COLPORT PORTD
+#define COLDDR DDRD
 
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
@@ -27,7 +27,7 @@ inline void rowshow(unsigned char row, unsigned char plane){
 	uint8_t x, tmp;
 	
 	//alle Spaltentreiber aus
-	ROWPORT &= ~0x7F;
+	COLPORT &= ~0x7F;
 	
 	if (row == 0){
 		//turn on first row
@@ -54,7 +54,7 @@ inline void rowshow(unsigned char row, unsigned char plane){
 	
 	tmp = pixmap[plane][row][0];
 	
-	ROWPORT |= tmp & 0x7F;
+	COLPORT |= tmp & 0x7F;
 }
 
 extern uint8_t schmuh;
@@ -96,9 +96,9 @@ void timer0_on(){
 
 void borg_hw_init(){
 	// Alle Spaltentransistoren aus.
-	ROWPORT |= 0x00;
+	COLPORT |= 0x00;
 	// Port für Zeilentransistoren auf Ausgang
-	ROWDDR |= 0xFF;
+	COLDDR |= 0xFF;
 	
 	
 	//Signale für Schieberegister auf Ausgang
