@@ -29,7 +29,7 @@ void hmac_sha256_init(hmac_sha256_ctx_t *s, void* key, uint16_t kl){
 	if (kl > SHA256_BLOCK_BITS){
 		sha256((void*)buffer, key, kl);
 	} else {
-		memcpy(buffer, key, kl/8 + (kl & 0x7)?1:0);
+		memcpy(buffer, key, (kl+7)/8);
 	}
 	
 	for (i=0; i<SHA256_BLOCK_BITS/8; ++i){
@@ -51,7 +51,7 @@ void hmac_sha256_final(hmac_sha256_ctx_t *s, void* key, uint16_t kl){
 	if (kl > SHA256_BLOCK_BITS){
 		sha256((void*)buffer, key, kl);
 	} else {
-		memcpy(buffer, key, kl/8 + (kl & 0x7)?1:0);
+		memcpy(buffer, key, (kl+7)/8);
 	}
 	
 	for (i=0; i<SHA256_BLOCK_BITS/8; ++i){
@@ -90,7 +90,7 @@ void hmac_sha256(void* dest, void* key, uint16_t kl, void* msg, uint64_t ml){ /*
 	if (kl > SHA256_BLOCK_BITS){
 		sha256((void*)buffer, key, kl);
 	} else {
-		memcpy(buffer, key, kl/8 + (kl & 0x7)?1:0);
+		memcpy(buffer, key, (kl+7)/8);
 	}
 	
 	for (i=0; i<SHA256_BLOCK_BITS/8; ++i){

@@ -11,26 +11,11 @@
  
 #include <stdlib.h>
 #include <stdint.h>
+#include "config.h"
 #include "lop.h"
 #include "interface.h"
 #include "lcd_tools.h"
 
-#define LOP_ESC_CODE		0x05
-#define LOP_RESET_CODE		0x06
-#define LOP_XON_CODE		0x11
-#define LOP_XOFF_CODE		0x13
-
-#define LOP_RESET_ESC		0x01
-#define LOP_ESC_ESC			0x02
-#define LOP_XON_ESC			0x03
-#define LOP_XOFF_ESC		0x04
-
-#define LOP_TYPE_MSG			0x14
-#define LOP_TYPE_STREAMSYNC		0x15
-/*
-#define LOP_TYPE_STREAM_START	0x15
-#define LOP_TYPE_STREAM_STOP	0x16
-*/
 static void lop_process_l1(lop_ctx_t* ctx, uint8_t b);
 static void lop_process_l2(lop_ctx_t* ctx, uint8_t b);
 
@@ -92,7 +77,7 @@ void lop_process_l1(lop_ctx_t* ctx, uint8_t b){
 		return;
 	} else {
 		ctx->escaped = 0;
-		if(b<=0x04 && b!=0){ /* escaped data byte */
+		if((b<=0x04) && (b!=0)){ /* escaped data byte */
 			uint8_t t[4]={LOP_RESET_CODE, LOP_ESC_CODE, LOP_XON_CODE, LOP_XOFF_CODE};
 			lop_process_l2(ctx, t[b-1]);
 			return;
@@ -145,16 +130,20 @@ void lop_process_l2(lop_ctx_t* ctx, uint8_t b){
 					ctx->msglength = (uint16_t)b<<8;
 					break;
 				case 1:
-					lcd_gotopos(1,20);
+					lcd_gotopos(1,20-4);
+					lcd_hexdump(&(((uint16_t*)&(ctx->msglength))[0]), 2);
 					lcd_writechar('b');
 					ctx->msglength += b;
 					if(!(ctx->msgbuffer=malloc(ctx->msglength))){
+						lcd_gotopos(1,20);
+						lcd_writechar('X');
 						/* message to large error */
 						lop_error(5);
 					}
 					break;
 				default:
-					lcd_gotopos(1,20);
+					lcd_gotopos(1,20-2);
+					lcd_hexdump(&(((uint8_t*)&(ctx->msgidx))[0]), 1);
 					lcd_writechar('d');
 					ctx->msgbuffer[ctx->msgidx-2] = b;
 					break;

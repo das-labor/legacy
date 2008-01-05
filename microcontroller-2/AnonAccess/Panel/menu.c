@@ -12,6 +12,7 @@
 #include "reset_counter.h"
 #include "types.h"
 #include "comm.h"
+#include "24C04.h"
 #include <stdint.h>
 #include <util/delay.h>
 
@@ -45,6 +46,8 @@ void print_timestamp_base64(void);
 void print_timestamp_base64_live(void);
 void run_serial_test(void);
 void print_random(void);
+void dump_card(void);
+void write_card(void);
 
 /******************************************************************************/
 
@@ -76,7 +79,7 @@ void demo_hex(void){
 #define TIMEOUT_VAL 1000
 
 #define DBG(a) lcd_gotopos(1,15); lcd_writechar(a)
-
+/*
 void run_serial_test(void){
 	char tmp,tmp2;
 	timestamp_t tsend;
@@ -88,15 +91,17 @@ void run_serial_test(void){
 	print_status();
 	
 	while(read_keypad()!='C'){
-		tmp=getRandomByte();
-		_delay_ms(100);
-		DBG('1');
+#ifdef UART_XON_XOFF
+		do{
+			tmp=getRandomByte();
+		}while(tmp==0x11 || tmp==0x13);
+#else
+		tmp=getRandomByte();	
+#endif		
+		
 		uart_putc(tmp);
-		DBG('2');
 		tsend = gettimestamp();
-		DBG('3');
 		while((!uart_getc_nb(&tmp2)) && ((gettimestamp()-tsend)<TIMEOUT_VAL)){
-			DBG('4');
 		}
 		if(gettimestamp()-tsend<TIMEOUT_VAL){
 			if(tmp==tmp2){
@@ -107,7 +112,6 @@ void run_serial_test(void){
 		} else {
 			lost++;
 		}
-		DBG('5');
 		lcd_gotopos(2,2);
 		lcd_hexdump(&ok, 8);
 		lcd_gotopos(3,2);
@@ -118,6 +122,61 @@ void run_serial_test(void){
 	waitforkey('E');
 	uart_hook = backup;
 }
+*/
+
+#define BUFFERSIZE 100
+
+void run_serial_test(void){
+	char tmp,tmp2, bufferout[BUFFERSIZE], bufferin[BUFFERSIZE];
+	timestamp_t tsend;
+	uint8_t idxin,idxout;
+	uint64_t ok=0,failed=0,lost=0;
+	void (*backup)(uint8_t);
+	
+	backup = uart_hook;
+	uart_hook=NULL;
+	print_status();
+	
+	while(read_keypad()!='C'){
+#ifdef UART_XON_XOFF
+		for(idxout=0; idxout<BUFFERSIZE; ++idxout){
+			do{
+				tmp=getRandomByte();
+			}while(tmp==0x11 || tmp==0x13);
+			bufferout[idxout]=tmp;
+		}
+#else
+		fillBlockRandom(bufferout, BUFFERSIZE);
+#endif			
+		/* blast it out */
+		for(idxout=0; idxout<BUFFERSIZE; ++idxout){
+			uart_putc(bufferout[idxout]);
+		}
+		tsend = gettimestamp();
+		idxin=0;
+		while((idxin<BUFFERSIZE) && (!uart_getc_nb(&tmp2)) && ((gettimestamp()-tsend)<TIMEOUT_VAL)){
+			bufferin[idxin++]=tmp2;
+		}
+		if(gettimestamp()-tsend<TIMEOUT_VAL){
+			if(!memcmp(bufferin, bufferout, BUFFERSIZE)){
+				ok++;
+			} else {
+				failed++;
+			}
+		} else {
+			lost++;
+		}
+		lcd_gotopos(2,2);
+		lcd_hexdump(&ok, 8);
+		lcd_gotopos(3,2);
+		lcd_hexdump(&failed, 8);
+		lcd_gotopos(4,2);
+		lcd_hexdump(&lost, 8);
+	}
+	waitforkey('E');
+	uart_hook = backup;
+}
+
 
 
 void req_authblock(void){
@@ -232,8 +291,10 @@ const char timestamp_base64_live_PS[]      PROGMEM = "timestamp (l,B64)";
 const char random_PS[]         PROGMEM = "random (30)";
 const char get_name_PS[]       PROGMEM = "get name";
 const char get_hex_string_PS[] PROGMEM = "get hex string";
+const char dump_card_PS[] PROGMEM = "dump ICC";
+const char write_card_PS[] PROGMEM = "AB -> ICC";
 
-menu_t debug_menu_mt[10] = {
+menu_t debug_menu_mt[12] = {
 	{main_menu_PS, back, NULL},
 	{serial_test_PS, execute, run_serial_test},
 	{reset_PS, execute, print_resets},
@@ -243,7 +304,9 @@ menu_t debug_menu_mt[10] = {
 	{timestamp_base64_live_PS, execute, print_timestamp_base64_live},
 	{random_PS, execute, print_random},
 	{get_name_PS, execute, demo_getname},
-	{get_hex_string_PS, execute, demo_hex}
+	{get_hex_string_PS, execute, demo_hex},
+	{dump_card_PS, execute, dump_card},
+	{write_card_PS, execute, write_card}
 };
 
 /******************************************************************************/
@@ -289,7 +352,7 @@ void bootstrap_menu(void){
 }
 
 void debug_menu(void){
-	menuexec(10, debug_menu_mt);
+	menuexec(12, debug_menu_mt);
 }
 
 void master_menu(void){
@@ -358,6 +421,41 @@ void print_random(void){
 	lcd_gotopos(4,1);
 	lcd_hexdump(&block+20,10);
 	waitforkey('E');
+}
+
+void replace_unprinable(char * str, uint16_t len){
+	while(len--){
+		if((*str>='A' && *str<='Z') || 
+		   (*str>='a' && *str<='z') ||
+		   (*str>='0' && *str<='9') ||
+		   (*str==' ')){
+		   	;
+		}else{
+			*str='.';
+		}
+		str++;
+	}
+}
+
+void dump_card(void){
+	uint8_t buffer[17];
+	uint16_t i;
+//	E24C04_block_read(0xA0, 0, buffer, 16);
+//	uart_putstr("Hallo");
+	buffer[16]='\0';
+	lop_dbg_str_P(&lop0, PSTR("\r\nICC dump:\r\n"));
+	for(i=0; i<256; i+=16){
+		E24C04_block_read(0xA0, i, buffer, 16);
+		lop_dbg_hexdump(&lop0, buffer, 16);
+		lop_dbg_str_P(&lop0, PSTR("   "));
+		replace_unprinable((char*)buffer, 16);
+		lop_dbg_str(&lop0, (char*)buffer);
+		lop_dbg_str_P(&lop0, PSTR("\r\n"));
+	}
+}
+
+void write_card(void){
+	writeABtoCard(&ab);
 }
 
 

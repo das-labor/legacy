@@ -24,9 +24,8 @@
 #include <stdint.h>
 #include "comm.h"
 #include "interface.h"
-
-uint8_t ROW_SIZE=0;
-
+#include "24C04.h"
+#include "cardio.h"
 
 lop_ctx_t lop0={
 	idle, idle, idle, 0, 0, NULL, 0, 
@@ -57,10 +56,14 @@ void lop0_messagerx(uint16_t length, uint8_t * msg){
 		/* DROP */
 		return;
 	}
-	if(msg[0]!=TERMINALUNIT_ID || msg[1]!=MASTERUNIT_ID){
+	status_string[1]='q';
+
+	if((msg[0]!=TERMINALUNIT_ID) || (msg[1]!=MASTERUNIT_ID)){
+		status_string[1]='w';
 		/* DROP */
 		return;
 	}
+	status_string[1]='Q';
 	if(msg[2]==MSGID_ACTION_REPLY){
 		if(length<4)
 			return;
@@ -75,6 +78,7 @@ void lop0_messagerx(uint16_t length, uint8_t * msg){
 					return;
 				}
 				memcpy(&ab, &(msg[5]), sizeof(authblock_t));
+				writeABtoCard(&ab);
 				status_string[2]='X';
 				return;
 			}
@@ -82,76 +86,42 @@ void lop0_messagerx(uint16_t length, uint8_t * msg){
 			
 		}
 	}
-	
-	
+	if(msg[2]==MSGID_AB_REPLY){
+		if(length!=3+sizeof(authblock_t)){
+			return;
+		}
+		memcpy(&ab, &(msg[3]), sizeof(authblock_t));
+		writeABtoCard(&ab);
+		status_string[3]='X';	
+		return;
+	}
 }
 
 void lop0_streamrx(uint8_t b){
 	
 }
 
-/****************************************************
- *  eeprom_dump_page()
- * **************************************************/
-void eeprom_dump_page(i2c_addr_t dev, uint16_t start, uint16_t length){
-	uint16_t i=0;
-	uint8_t buffer[ROW_SIZE];
-    uint8_t j=0;
-	uart_putstr("EEPROM-Dump (Page-Mode):\r\n"); 
-	for (i=start; i<(start+length-ROW_SIZE); i+=ROW_SIZE){
-		E24C_block_read(dev, i, buffer, ROW_SIZE);
-//		uart_putstr("0x");
-//		uart_putbyte(HIGH(i));
-//		uart_putbyte(LOW(i));
-//		uart_putstr(":");
-		for (j=0; j<ROW_SIZE; ++j){
-//			uart_putc(' ');
-//			uart_putbyte(buffer[j]);
-		}
-//		uart_putc('\t');
-		for (j=0; j<ROW_SIZE; ++j){
-//			uart_putc((buffer[j]<32)?'.':buffer[j]);
-		}
-//		uart_putstr("\r\n");
-	}
-	E24C_block_read(dev, i, buffer, (start+length-i));
-//	uart_putstr("0x");
-//	uart_putbyte(HIGH(i));
-//	uart_putbyte(LOW(i));
-//	uart_putstr(":");
-	for (j=0; j<ROW_SIZE; ++j){
-//		uart_putc(' ');
-		if (j<(start+length-i)){
-//			uart_putbyte(buffer[j]);
-		} else {
-			uart_putc(' ');
-			uart_putc(' ');
-		} 
-	}
-//	uart_putc('\t');
-	for (j=0; j<start+length-i; ++j){
-//		uart_putc((buffer[j]<32)?'.':buffer[j]);
-	}
-//	uart_putstr("\r\n");
-	
-}
 
 int main(void){
 
 	//Initialisierung
 	lcd_init();
 	
-	lcd_gotopos (1,1);
-	lcd_writestr ("booting ...");
+	lcd_gotopos(1,1);
+	lcd_writestr("booting ...");
 	
 	resetcnt_inc();
 	keypad_init();	
 	uart_init();
+	uart_putc(XON);
 	spi_init();
 	i2c_init();
-    E24C_init();
+	E24C04_init();
+  //  E24C_init();
  	rtc_init();
  	prng_init();
+ 	DDRC = 0xF0;
+ //	PORTC|= 0xF0;
  
 	//Set I2C SPEED 
 	i2c_set_speed(I2C_SPEED_FASTEST);
@@ -162,7 +132,7 @@ int main(void){
 	lop0.on_streamsync = lop0_streamsync;
 	lop0.on_msgrx = lop0_messagerx;
 	uart_hook = onuartrx;
-	
+	lop_recieve_byte(&lop0, LOP_RESET_CODE);
 	//Interupts global aktivieren
 	sei();
 	
