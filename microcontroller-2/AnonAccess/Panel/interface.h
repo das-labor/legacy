@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "rtc.h"
 
-extern char status_string[5];
+extern char status_string[6];
 
 #define CHAR_SWITCH_DELAY 1000 /* 1 sec */
 

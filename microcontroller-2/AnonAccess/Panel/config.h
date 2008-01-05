@@ -1,6 +1,12 @@
 //Art des Atmels und dessen Takt
 #define F_CPU 16000000ul
 
+
+//#define ATMEGA128
+#define ATMEGA644
+//#define ATMEGA32
+
+
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
@@ -26,16 +32,15 @@
 #define UART_HOOK
 #define UART_INTERRUPT 1
 #define UART_BAUD_RATE 1200
-#define UART_RXBUFSIZE 16
-#define UART_TXBUFSIZE 16
-#define UART_LINE_BUFFER_SIZE 400
+#define UART_RXBUFSIZE 32
+#define UART_TXBUFSIZE 32
+#define UART_LINE_BUFFER_SIZE 40
 
 #define UART_XON_XOFF
-#define UART_XON_XOFF_THRESHOLD_1 (UART_RXBUFSIZE - 4)
-#define UART_XON_XOFF_THRESHOLD_2 (UART_RXBUFSIZE - 12)
+#define UART_XON_XOFF_THRESHOLD_1 (UART_RXBUFSIZE - 24)
+#define UART_XON_XOFF_THRESHOLD_2 (UART_RXBUFSIZE - 30)
 
 #undef UART_LEDS
-
 
 #define HWRND_PIN 7 /* ADC7 */
 

@@ -20,6 +20,13 @@
 #include <avr/pgmspace.h>
 
 
+#ifdef UART_XON_XOFF
+	#define DC1 0x11
+	#define DC3 0x13
+	#define XON  DC1
+	#define XOFF DC3
+#endif
+
 #ifdef UART_HOOK	
 	 extern void (*uart_hook) (uint8_t);	/* this is a pointer to a function ;-) */
 #endif
