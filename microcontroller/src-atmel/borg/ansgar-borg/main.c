@@ -217,14 +217,14 @@ int main (void){
 
 	while(1)
 	{
-		/*spirale(75);
+		spirale(75);
 		joern1();
 		schachbrett(5);
 		test_level1();
 		test_level2();
 		test_level3();
 		matrix();
-		fadein();*/
+		fadein();
 		feuer();
 		
 		i++; i %= 8;
