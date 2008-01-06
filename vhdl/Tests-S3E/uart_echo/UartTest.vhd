@@ -20,7 +20,7 @@ architecture rtl of UartTest is
 
 -----------------------------------------------------------------------------
 -- Component declaration ----------------------------------------------------
-component uart is
+component myuart is
 	generic (
 		halfbit   : integer := 217;
 		fullbit   : integer := 434 );
@@ -68,7 +68,7 @@ begin
 end process;
 
 
-uart0: uart
+uart0: myuart
 	generic map (
 		fullbit   => 434,
 		halfbit   => 170 )

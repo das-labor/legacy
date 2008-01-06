@@ -77,3 +77,4 @@ clean: SynClean
 
 realclean: clean
 	rm -Rf ghdlwork/*
+
