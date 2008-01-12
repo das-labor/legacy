@@ -67,6 +67,16 @@ int main (void){
 			gameoflife();
 			mode = 1;
 			break;
+			
+		//do nothing - used for blinkenmovie/picture display
+		case 10:
+			while(1)
+			{
+				//process borg stuff
+				wait(10);	
+			}
+			break;
+			
 		case 31:
 			test_level1();
 			break;
