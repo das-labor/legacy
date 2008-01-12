@@ -2,6 +2,7 @@
 #include "lap.h"
 #include "borg_can.h"
 #include "spi.h"
+#include "blinken.h"
 
 #include <avr/pgmspace.h>
 #include <setjmp.h>
@@ -85,6 +86,33 @@ void process_borg_msg(pdo_message *msg)
 		}
 		scrolltext_text[i+j] = 0;
 
+		break;
+		
+	//========== blinkenstuff
+		
+	//clear the blinkenbackbuffer to color
+	case FKT_BLINK_CLEARBUF:
+			blink_clearbuf(msg->data[0]);
+		break;
+		
+	//set auto position increment flag
+	case FKT_BLINK_SETAUTOPOS:
+			blink_setautopos(msg->data[0]);
+		break;
+	
+	//set the current blinkenbuffer offset position
+	case FKT_BLINK_SETPOS:
+			blink_setpos(msg->data[0]);
+		break;
+		
+	//puts the current blinkenbuffer to the frontbuffer
+	case FKT_BLINK_SHOW:
+			blink_show();
+		break;
+	
+	//puts data into the blinkenbuffer
+	case FKT_BLINK_DATA:
+			blink_data(msg->data, msg->dlc - 1);
 		break;
 	}
 }
