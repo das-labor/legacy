@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg18992"
+   sodipodi:version="0.32"
+   inkscape:version="0.45.1"
+   sodipodi:docbase="/home/tixiv"
+   sodipodi:docname="LED_anlöt.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs18994">
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lend"
+       style="overflow:visible;">
+      <path
+         id="path17803"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none;"
+         transform="scale(0.8) rotate(180) translate(12.5,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Mend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Mend"
+       style="overflow:visible;">
+      <path
+         id="path17809"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none;"
+         transform="scale(0.4) rotate(180) translate(10,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="350"
+     inkscape:cy="520"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1" />
+  <metadata
+     id="metadata18997">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Hintergrund">
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:4.61600018;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect28808"
+       width="250.51784"
+       height="280.23648"
+       x="235.36554"
+       y="83.625893"
+       inkscape:export-filename="/home/tixiv/LED_anlöt.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+  </g>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:#ff0000"
+       d="M 304.97618,120.41585 C 283.99437,120.41585 266.92292,138.18014 266.10118,160.3846 L 266.00743,160.3846 L 266.00743,162.0721 L 266.00743,226.54085 L 260.00743,226.54085 C 258.2088,226.54085 256.75743,227.83276 256.75743,229.4471 L 256.75743,231.1346 C 256.75743,232.74887 258.2088,234.04085 260.00743,234.04085 L 344.10118,234.04085 L 344.10118,226.54085 L 343.94493,226.54085 L 343.94493,162.0721 L 343.94493,160.3846 L 343.85118,160.3846 C 343.0289,138.18064 325.95764,120.41578 304.97618,120.41585 z "
+       id="path2476"
+       inkscape:export-filename="/home/tixiv/LED_anlöt.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#0080ff;stroke-width:5.10997725;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 286.47981,233.96812 C 286.47981,233.96812 286.47981,228.62738 286.47981,250.76373 C 286.47981,284.81961 252.73953,254.16931 252.73953,280.56263 C 252.73953,296.73918 252.73953,325.68668 252.73953,325.68668"
+       id="path13896"
+       sodipodi:nodetypes="cssc"
+       inkscape:export-filename="/home/tixiv/LED_anlöt.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:#ff0000;fill-rule:evenodd;stroke:#00ff00;stroke-width:5.48099995;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 247.14286,81.978934 L 247.14286,524.53114"
+       id="path19006" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#0000ff;stroke-width:4.616;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 231.02204,401.69727 L 503.62082,83.027078"
+       id="path20954" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#0080ff;stroke-width:4.69999981;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 317.84445 234.31779 L 317.84445 314.49904 "
+       id="path14867"
+       inkscape:export-filename="/home/tixiv/LED_anlöt.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       sodipodi:type="arc"
+       style="opacity:1;fill:#00ffff;fill-opacity:1;stroke:none;stroke-width:4.61600018;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path22896"
+       sodipodi:cx="250.35715"
+       sodipodi:cy="310.75504"
+       sodipodi:rx="7.5"
+       sodipodi:ry="13.392858"
+       d="M 257.85715 310.75504 A 7.5 13.392858 0 1 1  242.85715,310.75504 A 7.5 13.392858 0 1 1  257.85715 310.75504 z"
+       transform="translate(-0.3571429,-2.8571429)"
+       inkscape:export-filename="/home/tixiv/LED_anlöt.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       sodipodi:type="arc"
+       style="opacity:1;fill:#00ffff;fill-opacity:1;stroke:none;stroke-width:4.61600018;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path23867"
+       sodipodi:cx="316.25"
+       sodipodi:cy="301.82648"
+       sodipodi:rx="5.5357141"
+       sodipodi:ry="6.9642859"
+       d="M 321.78571 301.82648 A 5.5357141 6.9642859 0 1 1  310.71429,301.82648 A 5.5357141 6.9642859 0 1 1  321.78571 301.82648 z"
+       inkscape:export-filename="/home/tixiv/LED_anlöt.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       xml:space="preserve"
+       style="font-size:20.50232315px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="275.15384"
+       y="104.92237"
+       id="text23878"
+       inkscape:export-filename="/home/tixiv/LED_anlöt.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan23880"
+         x="275.15384"
+         y="104.92237">Säule</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:20.35383034px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="358.82297"
+       y="105.49484"
+       id="text23882"
+       inkscape:export-filename="/home/tixiv/LED_anlöt.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan23884"
+         x="358.82297"
+         y="105.49484">Ebene</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:22.95157814px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="327.85376"
+       y="352.44714"
+       id="text23886"
+       inkscape:export-filename="/home/tixiv/LED_anlöt.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan23888"
+         x="327.85376"
+         y="352.44714">Löten</tspan></text>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Mend)"
+       d="M 326.42857,344.50504 C 322.14286,344.1479 290,337.36218 276.78571,328.79075 C 263.57143,320.21932 262.14286,318.43361 262.14286,318.43361"
+       id="path23890"
+       inkscape:export-filename="/home/tixiv/LED_anlöt.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Mend)"
+       d="M 325.35715,336.6479 C 325.93081,336.6479 320.96824,337.36218 317.14285,331.64789 C 312.20782,324.27603 312.5,318.79075 312.5,318.79075"
+       id="path23892"
+       sodipodi:nodetypes="csc"
+       inkscape:export-filename="/home/tixiv/LED_anlöt.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Mend)"
+       d="M 426.42857,100.21932 C 426.42857,100.21932 438.21429,98.790753 446.42857,103.79075 C 454.64286,108.79075 463.57143,114.86218 463.57143,114.86218"
+       id="path25836"
+       inkscape:export-filename="/home/tixiv/LED_anlöt.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Mend)"
+       d="M 272.5,98.43361 L 254.64286,104.1479"
+       id="path27776"
+       inkscape:export-filename="/home/tixiv/LED_anlöt.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+  </g>
+</svg>
