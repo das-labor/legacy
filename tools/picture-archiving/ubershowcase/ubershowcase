@@ -218,13 +218,14 @@ def build_nav()							# Builds main navigation
 		x.div('id'=>'glist') {
 			x.h3('galleries')
 			x.ul{
+				@galleries.sort!
 				@galleries.each{|gal|		# for the origin @galleries look at build_xhtml
 					n = gal.sub(/.html/, '')
 					name = n.sub(/_/, ' ')
 					x.li{
-					x.a('href' => gal){
-						x.text! name
-					}
+						x.a('href' => gal){
+							x.text! name
+						}
 					}
 				}
 			}
