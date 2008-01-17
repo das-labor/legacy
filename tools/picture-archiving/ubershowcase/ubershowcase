@@ -70,15 +70,20 @@ def mkthumb(f,outfile)		# creates thumbnail. expects /path/to/source/image/file 
 end
 
 def get_exif(eimg)			# reads exif data from image file. expects /path/to/image/file. returns hash containing exif_fields
-	i = EXIFR::JPEG.new(eimg)	
-	if i.exif? then
-		exif_fields = {
-			'Date'     =>  i.date_time,
-			'Camera'    =>  i.model,
-			'Exposure'  =>  i.exposure_time.to_s,
-			'Aperture' =>  i.f_number.to_f
-		}
-	else
+	begin
+		i = EXIFR::JPEG.new(eimg)	
+		if i.exif? then
+			exif_fields = {
+				'Date'     =>  i.date_time,
+				'Camera'    =>  i.model,
+				'Exposure'  =>  i.exposure_time.to_s,
+				'Aperture' =>  i.f_number.to_f
+			}
+		else
+			exif_fields = ""
+		end
+	rescue
+		puts "Error while reading EXIF data"
 		exif_fields = ""
 	end
 	return exif_fields
