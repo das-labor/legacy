@@ -167,8 +167,10 @@ def build_xhtml(sdir)
 	@x.head { 
     @x.title "#{@GTITLE}: #{name}"
 	@x.link("rel" => "stylesheet", "href" => "css/gal.css", "type" => "text/css", "media" => "screen")
-	@x.script( "type" => "text/javascript", "src" => "js/jquery.js")
-	@x.script( "type" => "text/javascript", "src" => "js/thickbox.js")
+#	@x.script( "type" => "text/javascript", "src" => "js/jquery.js")
+#	@x.script( "type" => "text/javascript", "src" => "js/thickbox.js")
+	@x << '<script type="text/javascript" src="js/jquery.js"></script>'
+	@x << '<script type="text/javascript" src="js/thickbox.js"></script>'
 	}
 	@x.body {
 		@x.h1("#{@GTITLE}: #{name}")
