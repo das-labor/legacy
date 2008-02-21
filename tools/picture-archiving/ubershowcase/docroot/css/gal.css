@@ -83,7 +83,7 @@ dd { padding-right: 15px; text-align: right; }
 	width: 155px;
 	background-color: #222222;
     font-size: 7pt;
-    text-align: left;
+    text-align: center;
 }
 .description{
     font-size: 10pt;
@@ -92,6 +92,7 @@ dd { padding-right: 15px; text-align: right; }
 	margin-top: 5px;
 	margin-left: 10px;
 	padding-top: 10px;
+	text-align: left;
 }
 
 

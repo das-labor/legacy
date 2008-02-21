@@ -28,6 +28,7 @@ require 'rubygems'
 require 'exifr'
 require 'builder'
 
+# ----- Set these values
 @GTITLE = "Ubershowcase - lets rock!"               # your gallery's title. edit.
 TWIDTH = 150                                        # thumbnail width. this is a good choice
 THEIGHT = 100                                       # thumbnail height. this is a good choice
@@ -35,11 +36,15 @@ THEIGHT = 100                                       # thumbnail height. this is 
 @CACHEDIR = "cache/"                                # where your thumbnails reside
 DFILE = "_info.txt"                                 # name of the additional info file
 
+# ----- Leave everything below here
+
+
 @galleries = Array.new
 @forced = false
 if ARGV[0] == "-force"
 	@forced = true
 end
+TGEOM = "#{TWIDTH}x#{THEIGHT}"
 
 def get_description(sdir)							# fetch the description file from the given subdir 
 	c = ""											# read its content in to an array
@@ -63,13 +68,20 @@ def get_description(sdir)							# fetch the description file from the given subd
 	return c
 end
 
-def mkthumb(f,outfile)		# creates thumbnail. expects /path/to/source/image/file and /path/to/output/file
+# creates thumbnail. expects /path/to/source/image/file and /path/to/output/file
+# (Thanks to Jonathan Wilkins for the improvement)
+def mkthumb(f,outfile)
 	timg = Magick::Image.read(f).first
-	timg.thumbnail!(TWIDTH,THEIGHT)
+	#puts "#{f} is #{timg.columns.to_i} x #{timg.rows.to_i}"
+	timg.change_geometry!(TGEOM) { |cols, rows, img|
+		timg.resize!(cols, rows)
+	}
 	timg.write(outfile)
 end
 
-def get_exif(eimg)			# reads exif data from image file. expects /path/to/image/file. returns hash containing exif_fields
+# reads exif data from image file. expects /path/to/image/file
+# returns hash containing exif_fields
+def get_exif(eimg)
 	begin
 		i = EXIFR::JPEG.new(eimg)	
 		if i.exif? then
@@ -277,6 +289,7 @@ def add_nav(file)		# adds navigation to galleries
     end	
 end
 
+# has a file changed? compare mtime to timestamp
 def changed(file)	# has a file changed? compare mtime to timestamp
     mt = File.mtime(file).strftime("%Y%m%d%H%M%S").to_i
 #	puts ts
