@@ -11,13 +11,15 @@
 
 TimerControlBlock timer;
 
-uint8_t feuchte;
+uint8_t feuchte = 100;
 
 AVRX_GCC_TASKDEF(feuchtetask, 100, 8)
 {
+	uint16_t tmp;
 	DDRC |= (1<<PC5);
-	ADMUX = (1<<REFS0) | (1<<ADLAR) | 4;//AVCC ref, left adjust result, channel 4
-		
+	//ADMUX = (1<<REFS0) | (1<<ADLAR) | 4;//AVCC ref, left adjust result, channel 4
+	ADMUX = (1<<REFS0) | 4;//AVCC ref, left adjust result, channel 4
+			
 	static can_message_t msg = {0, 0xff, PORT_CHUCK, PORT_CHUCK, 1};
 	msg.addr_src = myaddr;
 	
@@ -31,7 +33,13 @@ AVRX_GCC_TASKDEF(feuchtetask, 100, 8)
 		AvrXDelay(&timer, 5);
 		PORTC &= ~(1<<PC5);
 
-		feuchte = ADCH;
+		tmp = ADC;
+		
+		if(tmp < 100){
+			feuchte = 100-tmp;
+		}else{
+			feuchte = 0;
+		}
 		
 		msg.data[0] = feuchte;
 		
