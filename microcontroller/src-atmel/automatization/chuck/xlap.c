@@ -47,7 +47,7 @@ void process_gate_msg()
 	pump_state ^= 1;
 	
 	if(pump_state){
-		if(feuchte > 0x09){ //don't drown poor chuck
+		if(feuchte < 50){ //don't drown poor chuck
 			PUMP_PORT |= (PUMP_PIN);
 		}
 	}else{
