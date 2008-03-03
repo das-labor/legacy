@@ -22,10 +22,13 @@
 #define S_DATA_L() DDR_PS2 |=  (1<<PIN_DATA)
 #define S_DATA_H() DDR_PS2 &=  ~(1<<PIN_DATA)
 
+#define TX_BUFFER_SIZE 20
 #define BUFFER_SIZE 20
 
-unsigned char TX_BUFFER[BUFFER_SIZE];
-unsigned char * volatile TX_HEAD=TX_BUFFER, * volatile TX_TAIL=TX_BUFFER;
+
+uint8_t tx_buffer[TX_BUFFER_SIZE];
+volatile uint8_t tx_buffer_size;//counts how many bytes are in buffer
+volatile uint8_t tx_buffer_p;//position in buffer for reading next byte from
 
 unsigned char RX_BUFFER[BUFFER_SIZE];
 unsigned char * volatile RX_HEAD=RX_BUFFER, * volatile RX_TAIL=RX_BUFFER;
@@ -38,41 +41,46 @@ unsigned char STATE, BF_COUNT;
 unsigned char NEW_DATA=0, DATAR;
 
 
+static inline uint8_t tx_buffer_get(){
+	uint8_t b = tx_buffer[tx_buffer_p];
+	tx_buffer_p++;
+	if(tx_buffer_p == TX_BUFFER_SIZE);
+		tx_buffer_p = 0;
+	tx_buffer_size--;
+	return b;
+}
+
+
 SIGNAL(SIG_OVERFLOW0){
-	static unsigned char count=0, datas, datar, parity, tx_bytenum = 0, tx_bytecnt = 0;
+	static unsigned char count, datas, tx_data[3], datar, parity, tx_bytenum, tx_bytecnt;
 	TCNT0 = 256-(F_CPU/(24000l*8));
 	switch (STATE){
 		case 0:
-			//PORTC &= 0xEF;
 			if(CLK_L){
 				BF_COUNT = 2;
 			}else if(DATA_L){
+				//data low means PC wants to transmit
 				count = 0;
 				STATE = 20;
 				datar = 0;
 			}else if(BF_COUNT){
 				BF_COUNT--;
-			}else if(TX_TAIL != TX_HEAD){
-				BF_COUNT = 2;
-				STATE = 1;
-				switch(tx_bytecnt){
-					case 0:
-						tx_bytenum = *TX_TAIL;
-						if(++TX_TAIL == TX_BUFFER + BUFFER_SIZE) TX_TAIL = TX_BUFFER;
-						tx_bytecnt = 1;
-					case 1:
-						datas = *TX_TAIL;
-						break;
-					case 2:
-						if(TX_TAIL+1 == TX_BUFFER + BUFFER_SIZE){
-							datas = *TX_BUFFER;
-						}else{
-							datas = *(TX_TAIL +1);
-						
-						}
-					break;
+			}else{
+				if( (tx_bytenum == 0) && tx_buffer_size ){
+					//load new code from buffer, if there is one, and we haven't got one yet
+					tx_bytenum = tx_buffer_get(); //first byte in buffer is length of scancode
+					uint8_t x;
+					for(x=0;x<tx_bytenum;x++){
+						tx_data[x] = tx_buffer_get();
+					}
+					tx_bytecnt = 0;
 				}
-				S_DATA_L();
+				if(tx_bytenum){
+					datas = tx_data[tx_bytecnt];
+					S_DATA_L();
+					BF_COUNT = 2;
+					STATE = 1;
+				}
 			}
 			break;
 		case 1:
@@ -89,9 +97,9 @@ SIGNAL(SIG_OVERFLOW0){
 			if(count<16){
 				switch(count%2){
 					case 0:
-						if(CLK_L){
-							STATE = 0;
-							tx_bytecnt = 1;
+						if(CLK_L){ //is PC claiming the Bus back?
+							STATE = 0; //yes: go back to start
+							tx_bytecnt = 0; //and begin retransmitting the code from first byte
 							S_DATA_H();
 						}else{
 							if(datas & 0x01){
@@ -101,9 +109,9 @@ SIGNAL(SIG_OVERFLOW0){
 							}else{
 								S_DATA_L();
 							}
+							datas>>=1;
 							S_CLK_L();
 						}
-						datas>>=1;
 						break;
 					case 1:
 						S_CLK_H();
@@ -111,11 +119,11 @@ SIGNAL(SIG_OVERFLOW0){
 				}
 				count++;
 			}else{
-				if(CLK_L){
+				if(CLK_L){ //is PC claiming the Bus back?
 					STATE = 0;
-					tx_bytecnt = 1;
+					tx_bytecnt = 0;
 					S_DATA_H();
-				}else{ 
+				}else{ //transmit parity bit
 					if(parity){
 						S_DATA_H();
 					}else{
@@ -131,9 +139,9 @@ SIGNAL(SIG_OVERFLOW0){
 			STATE = 5;
 			break;
 		case 5:
-			if(CLK_L){
+			if(CLK_L){//is PC claiming Bus back or parity failure?
 				STATE = 0;
-				tx_bytecnt = 1;
+				tx_bytecnt = 0;
 				S_DATA_H();
 			}else{
 				S_DATA_H();
@@ -142,25 +150,19 @@ SIGNAL(SIG_OVERFLOW0){
 			}
 			break;
 		case 6:
+			//done transmitting this byte.
 			S_CLK_H();
 			STATE = 0;
-			switch(tx_bytecnt){
-				case 1:
-					if(tx_bytenum == 2){
-						tx_bytecnt = 2;
-					}else{
-						if(++TX_TAIL == TX_BUFFER + BUFFER_SIZE) TX_TAIL = TX_BUFFER;
-						tx_bytecnt = 0;
-					}
-					break;
-				case 2:
-					if(++TX_TAIL == TX_BUFFER + BUFFER_SIZE) TX_TAIL = TX_BUFFER;
-					if(++TX_TAIL == TX_BUFFER + BUFFER_SIZE) TX_TAIL = TX_BUFFER;
-					tx_bytecnt = 0;
+			tx_bytecnt++;
+			if(tx_bytecnt == tx_bytenum){ //last byte?
+				tx_bytenum = 0;//yes: reset bytenum
 			}
 			break;
+
+		//beginning of receive Statemachine
 		case 20:
 			if(count < 16){
+				//clock in data
 				switch(count%2){
 					case 0:
 						S_CLK_L();
@@ -174,7 +176,6 @@ SIGNAL(SIG_OVERFLOW0){
 				count++;
 			}else{
 				S_CLK_L();
-				count = 0;
 				STATE = 21;
 			}
 			break;
@@ -205,26 +206,26 @@ SIGNAL(SIG_OVERFLOW0){
 	}
 }
 
-//internal function for storing 1 byte in queue
-inline void ps2_buffer(unsigned char byte){
-	int tmp;
-	tmp = (unsigned int)TX_HEAD - (unsigned int)TX_TAIL;
-	if(tmp <0) tmp += BUFFER_SIZE;
-	
-	if(tmp < BUFFER_SIZE-1){
-		*TX_HEAD = byte; 
-	}
-	if(++TX_HEAD == TX_BUFFER + BUFFER_SIZE) TX_HEAD = TX_BUFFER;
+//internal function for storing 1 byte in tx_buffer
+//doesn't check for overflows
+static  void tx_buffer_put(uint8_t byte){
+	uint8_t p;
+	p = tx_buffer_p + tx_buffer_size;
+	if(p > TX_BUFFER_SIZE)
+		p -= TX_BUFFER_SIZE;
+	tx_buffer[p] = byte;
 }
 
-//user function, put 1 or 2 byte scancode in buffer  - 3 byte scancodes not supported
-void ps2_put(unsigned char size, unsigned char byte1, unsigned char byte2){
+//user function, put scancode in buffer
+void ps2_put(uint8_t size, uint8_t * data ){
+	if(size + tx_buffer_size > TX_BUFFER_SIZE)
+		return;
 	cli();
-	ps2_buffer(size);
-	ps2_buffer(byte1);
-	if(size == 2){
-		ps2_buffer(byte2);
-	}
+	tx_buffer_put(size);
+	uint8_t x;
+	for(x=0;x<size;x++){
+		tx_buffer_put(data[x]);
+	}	
 	sei();
 }
 
@@ -248,29 +249,45 @@ void key_press(ps2_key key){
 */
 
 void key_make(uint16_t data){
-	if(data & 0x100) ps2_put(1,0xe0,0);
-	ps2_put(1, (uint8_t)data, 0);
+	if(tx_buffer_size + 2 > TX_BUFFER_SIZE)
+		return;
+	cli();
+	if(data & 0x100){ //extended scancode?
+		tx_buffer_put(2);//size
+		tx_buffer_put(0xe0);
+	}else{
+		tx_buffer_put(1);//size
+	}
+	tx_buffer_put((uint8_t)data);
+	sei();
 }
+
 
 void key_break(uint16_t data){
-	if(data & 0x100) ps2_put(1,0xe0,0);
-	ps2_put(2, 0xf0, (uint8_t)data);
+	if(tx_buffer_size + 2 > TX_BUFFER_SIZE)
+		return;
+	cli();
+	if(data & 0x100){ //extended scancode?
+		tx_buffer_put(3);//size
+		tx_buffer_put(0xe0);
+	}else{
+		tx_buffer_put(2);//size
+	}
+	tx_buffer_put(0xf0);
+	tx_buffer_put((uint8_t)data);
+	sei();
 }
-
 
 //blocking versions
 void key_make_b(uint16_t data){
-	ps2_put(1, (uint8_t)data, 0);
-
-	while(TX_TAIL != TX_HEAD);
+	key_make(data);
+	while(tx_buffer_size);
 }
 
 void key_break_b(uint16_t data){
-	ps2_put(2, 0xf0, (uint8_t)data);
-	while(TX_TAIL != TX_HEAD);
+	key_break(data);
+	while(tx_buffer_size);
 }
-
-
 
 void init_ps2(){
 	PORT_PS2 &= ~(1<<PIN_CLK | 1<<PIN_DATA);
@@ -279,6 +296,5 @@ void init_ps2(){
 	TCCR0 = 0x02; //Timer 0 to ck/8
 	TIMSK |= 1<<TOIE0;
 
-	ps2_put(1, 0xaa, 0);
-
 }
+

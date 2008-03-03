@@ -44,28 +44,28 @@
 
 
 #define KEY_1P_START	PS2_KEY_1
-#define KEY_1P_UP		PS2_KEY_W
-#define KEY_1P_DOWN		PS2_KEY_S
-#define KEY_1P_LEFT		PS2_KEY_A
-#define KEY_1P_RIGHT	PS2_KEY_D
-#define KEY_1P_B1		PS2_KEY_Y
-#define KEY_1P_B2		PS2_KEY_X
-#define KEY_1P_B3		PS2_KEY_C
+#define KEY_1P_UP		PS2_KEY_CRSR_UP
+#define KEY_1P_DOWN		PS2_KEY_CRSR_DOWN
+#define KEY_1P_LEFT		PS2_KEY_CRSR_LEFT
+#define KEY_1P_RIGHT	PS2_KEY_CRSR_RIGHT
+#define KEY_1P_B1		PS2_KEY_ECTRL
+#define KEY_1P_B2		PS2_KEY_V
+#define KEY_1P_B3		PS2_KEY_B
 #define KEY_2P_START	PS2_KEY_2
-#define KEY_2P_UP		PS2_KEY_T
-#define KEY_2P_DOWN		PS2_KEY_G
-#define KEY_2P_LEFT		PS2_KEY_F
-#define KEY_2P_RIGHT	PS2_KEY_H
-#define KEY_2P_B1		PS2_KEY_V
-#define KEY_2P_B2		PS2_KEY_B
-#define KEY_2P_B3		PS2_KEY_N
+#define KEY_2P_UP		PS2_KEY_W
+#define KEY_2P_DOWN		PS2_KEY_S
+#define KEY_2P_LEFT		PS2_KEY_A
+#define KEY_2P_RIGHT	PS2_KEY_D
+#define KEY_2P_B1		PS2_KEY_Y
+#define KEY_2P_B2		PS2_KEY_X
+#define KEY_2P_B3		PS2_KEY_C
 
 
 typedef struct{
 	volatile uint8_t *port;
 	uint8_t mask;
 	uint8_t state;
-	uint8_t key;
+	uint16_t key;
 }keymap_t;
 
 keymap_t keymappings[] = {
@@ -107,7 +107,7 @@ int main(){
 	volatile unsigned int delay;
 	for(delay=0;delay<1000;delay++);
 	
-	ps2_put(1, 0xaa, 0);
+	ps2_put(1, (uint8_t[]) {0xaa} );
 	
 	
 	
@@ -116,7 +116,7 @@ int main(){
 		
 		unsigned char data;
 		if(ps2_get_nb(&data)){
-			ps2_put(1, 0xfa, 0);
+			ps2_put(1, (uint8_t[]) {0xfa} );
 			//char buf[10];
 			//itoa(data, buf, 16);
 			//uart_putstr(buf);
