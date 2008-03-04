@@ -87,7 +87,9 @@ void process_borg_msg(pdo_message *msg)
 		scrolltext_text[i+j] = 0;
 
 		break;
-		
+
+#ifdef Hansi_hat_gelernt_Werte_vorher_zu_definieren
+
 	//========== blinkenstuff
 		
 	//clear the blinkenbackbuffer to color
@@ -114,6 +116,7 @@ void process_borg_msg(pdo_message *msg)
 	case FKT_BLINK_DATA:
 			blink_data(msg->data, msg->dlc - 1);
 		break;
+#endif
 	}
 }
 
