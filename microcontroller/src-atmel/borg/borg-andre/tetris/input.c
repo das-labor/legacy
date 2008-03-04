@@ -30,6 +30,15 @@
 #define TETRIS_INPUT_REPEAT_INITIALDELAY 40
 #define TETRIS_INPUT_REPEAT_DELAY 10
 
+// Here you can define the amount of loop cycles a command is ignored after
+// its button has been released
+#define TETRIS_CHATTER_TICKS_ROT_CW  50
+#define TETRIS_CHATTER_TICKS_ROT_CCW 50
+#define TETRIS_CHATTER_TICKS_LEFT     0
+#define TETRIS_CHATTER_TICKS_RIGHT    0
+#define TETRIS_CHATTER_TICKS_DOWN     0
+#define TETRIS_CHATTER_TICKS_DROP    50
+
 
 /***************************
  * non-interface functions *
@@ -44,16 +53,14 @@
 void tetris_input_chatterProtect (tetris_input_t *pIn,
                                   tetris_input_command_t cmd)
 {
-	// Here you can define the amount of loop cycles a command is ignored after
-	// its button has been released
 	const static uint8_t nInitialIgnoreValue[TETRIS_INCMD_NONE] PROGMEM =
 	{
-		0,  // TETRIS_INCMD_ROT_CW
-		0,  // TETRIS_INCMD_ROT_CCW
-		0,  // TETRIS_INCMD_LEFT (key repeat)
-		0,  // TETRIS_INCMD_RIGHT (key repeat)
-		0,  // TETRIS_INCMD_DOWN (key repeat)
-		24, // TETRIS_INCMD_DROP
+		TETRIS_CHATTER_TICKS_ROT_CW,
+		TETRIS_CHATTER_TICKS_ROT_CCW,
+		TETRIS_CHATTER_TICKS_LEFT,
+		TETRIS_CHATTER_TICKS_RIGHT,
+		TETRIS_CHATTER_TICKS_DOWN,
+		TETRIS_CHATTER_TICKS_DROP,
 		0,  // TETRIS_INCMD_GRAVITY (irrelevant)
 		0   // TETRIS_INCMD_IGNORE (irrelevant as well)
 	};
