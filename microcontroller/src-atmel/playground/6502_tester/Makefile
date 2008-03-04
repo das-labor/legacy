@@ -1,6 +1,6 @@
 
 DEFS = -DF_CPU=16000000l
-OBJ = main.c util.c uart.c
+OBJ = main.o util.o uart.o bus_access.o bus_access_helper.S
 
 
 # Default values
@@ -21,7 +21,7 @@ LAPFLASHCMD   ?= lapcontrol -s rl
 
 #############################################################################
 # Rules
-all: $(OUT).elf lst text eeprom
+all: $(OUT).elf lst text
 
 clean:
 	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec
@@ -63,6 +63,10 @@ srec: $(OUT).srec
 
 %.bin: %.elf
 	$(OBJCOPY) -j .text -j .data -O binary $< $@
+	
+%.o: %.S
+	avr-gcc -c $(CFLAGS) -o $@ $< 
+
 
 # Rules for building the .eeprom rom images
 
