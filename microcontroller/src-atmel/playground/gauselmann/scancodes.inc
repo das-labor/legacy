@@ -10,7 +10,7 @@
 #define PS2_KEY_F4            0x0c
 #define PS2_KEY_TAB           0x0d
 #define PS2_KEY_BACKQUOTE     0x0e
-#define PS2_KEY_ALT           0x11
+#define PS2_KEY_LALT          0x11
 #define PS2_KEY_LSHIFT        0x12
 #define PS2_KEY_LCTRL         0x14
 #define PS2_KEY_Q             0x15
@@ -87,6 +87,7 @@
 
 
 // extended keys
+#define PS2_KEY_RALT          0x111
 #define PS2_KEY_ECTRL         0x112
 #define PS2_KEY_RCTRL         0x114
 #define PS2_KEY_END           0x169
