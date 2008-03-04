@@ -48,9 +48,9 @@
 #define KEY_1P_DOWN		PS2_KEY_CRSR_DOWN
 #define KEY_1P_LEFT		PS2_KEY_CRSR_LEFT
 #define KEY_1P_RIGHT	PS2_KEY_CRSR_RIGHT
-#define KEY_1P_B1		PS2_KEY_ECTRL
-#define KEY_1P_B2		PS2_KEY_V
-#define KEY_1P_B3		PS2_KEY_B
+#define KEY_1P_B1		PS2_KEY_LCTRL
+#define KEY_1P_B2		PS2_KEY_LALT
+#define KEY_1P_B3		PS2_KEY_ENTER
 #define KEY_2P_START	PS2_KEY_2
 #define KEY_2P_UP		PS2_KEY_W
 #define KEY_2P_DOWN		PS2_KEY_S
@@ -89,6 +89,8 @@ keymap_t keymappings[] = {
 
 
 int main(){
+	
+	UCSRB = 0;
 	
 	//pullups on
 	PORTB = 0xfe;

@@ -44,7 +44,7 @@ unsigned char NEW_DATA=0, DATAR;
 static inline uint8_t tx_buffer_get(){
 	uint8_t b = tx_buffer[tx_buffer_p];
 	tx_buffer_p++;
-	if(tx_buffer_p == TX_BUFFER_SIZE);
+	if(tx_buffer_p == TX_BUFFER_SIZE)
 		tx_buffer_p = 0;
 	tx_buffer_size--;
 	return b;
@@ -70,7 +70,7 @@ SIGNAL(SIG_OVERFLOW0){
 					//load new code from buffer, if there is one, and we haven't got one yet
 					tx_bytenum = tx_buffer_get(); //first byte in buffer is length of scancode
 					uint8_t x;
-					for(x=0;x<tx_bytenum;x++){
+					for(x=0; x<tx_bytenum; x++){
 						tx_data[x] = tx_buffer_get();
 					}
 					tx_bytecnt = 0;
@@ -208,12 +208,13 @@ SIGNAL(SIG_OVERFLOW0){
 
 //internal function for storing 1 byte in tx_buffer
 //doesn't check for overflows
-static  void tx_buffer_put(uint8_t byte){
+static void tx_buffer_put(uint8_t byte){
 	uint8_t p;
 	p = tx_buffer_p + tx_buffer_size;
-	if(p > TX_BUFFER_SIZE)
+	if(p >= TX_BUFFER_SIZE)
 		p -= TX_BUFFER_SIZE;
 	tx_buffer[p] = byte;
+	tx_buffer_size++;
 }
 
 //user function, put scancode in buffer
@@ -295,6 +296,8 @@ void init_ps2(){
 
 	TCCR0 = 0x02; //Timer 0 to ck/8
 	TIMSK |= 1<<TOIE0;
+	
+	//key_make(0xaa);
 
 }
 
