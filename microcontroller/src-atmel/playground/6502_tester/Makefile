@@ -19,6 +19,13 @@ OBJDUMP       ?= avr-objdump
 FLASHCMD      ?= avrdude -c bsd -p m16 -U flash:w:$(OUT).hex
 LAPFLASHCMD   ?= lapcontrol -s rl
 
+
+LAUNCH_BOOTLOADER = launch-bootloader
+SERIAL = /dev/ttyUSB0
+BAUDRATE = 115200
+
+
+
 #############################################################################
 # Rules
 all: $(OUT).elf lst text
@@ -33,6 +40,14 @@ flash: $(OUT).hex
 
 canflash: $(OUT).hex
 	$(LAPFLASHCMD) flash $(CANADDR) $(OUT).hex
+
+
+sflash: $(OUT).hex
+	$(LAUNCH_BOOTLOADER) $(SERIAL) $(BAUDRATE)
+	avrdude -p m16 -b $(BAUDRATE) -u -c avr109 -P $(SERIAL) -U f:w:$(OUT).hex -F
+	echo X > $(SERIAL)
+
+
 
 #############################################################################
 # Building Rules 
