@@ -1,6 +1,6 @@
 
 DEFS = -DF_CPU=8000000l
-OBJ = main.c ps2.c util.c
+OBJ = main.c ps2.c uart.c
 
 
 # Default values
