@@ -116,7 +116,7 @@ void tetris ()
 	int8_t nWidth;
 	int8_t nHeight;
 	tetris_view_getDimensions(&nWidth, &nHeight);
-	
+
 	// holds the current user command which should be processed
 	tetris_input_command_t inCmd;
 
@@ -180,11 +180,11 @@ void tetris ()
 			// a minimum amount of time to move it
 			if (tetris_playfield_getStatus(pPl) == TETRIS_PFS_GLIDING)
 			{
-				inCmd = tetris_input_getCommand(pIn, 1);
+				inCmd = tetris_input_getCommand(pIn, TETRIS_INPACE_GLIDING);
 			}
 			else
 			{
-				inCmd = tetris_input_getCommand(pIn, 0);
+				inCmd = tetris_input_getCommand(pIn, TETRIS_INPACE_HOVERING);
 			}
 
 			// what we do depends on what the input module tells us
