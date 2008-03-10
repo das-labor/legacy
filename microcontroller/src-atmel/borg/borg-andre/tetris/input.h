@@ -25,11 +25,21 @@ typedef enum tetris_input_command_t
 	TETRIS_INCMD_DOWN,    // lower piece by one row
 	TETRIS_INCMD_DROP,    // move piece to the ground immediately  
 	TETRIS_INCMD_GRAVITY, // piece gets pulled by gravity
-	TETRIS_INCMD_IGNORE,  // padding byte, because avr-gcc can't handle uneven
-	                      // array sizes in PROGMEM
+	TETRIS_INCMD_PAD,     /* padding byte because avr-gcc can't handle uneven
+	                         array sizes in PROGMEM */
 	TETRIS_INCMD_NONE     // idle (must alway be the last one)
 }
 tetris_input_command_t;
+
+
+typedef enum tetris_input_pace_t
+{
+	TETRIS_INPACE_HOVERING, // normal falling pace
+	TETRIS_INPACE_GLIDING   /* guarantees a minimum docking time to avoid that
+	                           pieces are docked immediately if they hit something
+	                           in higher levels */
+}
+tetris_input_pace_t;
 
 
 typedef struct tetris_input_t
@@ -40,7 +50,7 @@ typedef struct tetris_input_t
 	// Amount of loop cycles between forced piece movements. This value gets
 	// set via the tetris_input_setLevel() function.
 	uint8_t nMaxCycles;
-	
+
 	// This counter tracks how many loop cycles have been done since the last
 	// forced piece movement. It gets reset if it either reaches a well
 	// defined value (causing a gravity command to be issued) or the player has
@@ -53,17 +63,17 @@ typedef struct tetris_input_t
 	// regulating the pace of the key repeat as commands are only processed
 	// if that value is reached).
 	int8_t nRepeatCount;
-	
+
 	// last command (important for key repeat)
 	tetris_input_command_t cmdLast;
-	
+
 	// Every command has its own counter. A command is ignored as long as its
-	// counter is unequal to 0. A counter gets set to a command specific
-	// value (or 0) if its corresponding command was issued directly before the
-	// player has released the button. All counters get decremented every loop
-	// cycle until they are zero. This is used to work against the chattering
-	// of some joysticks. Look at the function tetris_input_chatterCheck() in
-	// input.c for the default initial values of these counters.
+	// counter is unequal to 0. A counter gets set to a specific value (or 0)
+	// if the button of the corresponding command has been released by the
+	// player. All counters get decremented by one every loop cycle until they
+	// are zero. This is used to work against joystick chatter. Look at the
+	// TETRIS_INPUT_CHATTER_TICKS_... constants in input.c for the initial
+	// values of these counters.
 	uint8_t nIgnoreCmdCounter[TETRIS_INCMD_NONE];
 }
 tetris_input_t;
@@ -91,14 +101,14 @@ void tetris_input_destruct(tetris_input_t *pIn);
  * input related functions *
  ***************************/
 
-/* Function:          tetris_input_getCommand
- * Description:       retrieves commands from joystick or loop interval
- * Argument pIn:      pointer to an input object
- * Argument nGliding: 1 for extended gravity time interval, 0 otherwise
- * Return value:      see definition of tetris_input_command_t
+/* Function:       retris_input_getCommand
+ * Description:    retrieves commands from joystick or loop interval
+ * Argument pIn:   pointer to an input object
+ * Argument nPace: falling pace (see definition of tetris_input_pace_t)
+ * Return value:   see definition of tetris_input_command_t
  */
 tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
-                                               uint8_t nGliding);
+                                               tetris_input_pace_t nPace);
 
 
 /* Function:      tetris_input_setLevel
@@ -112,4 +122,3 @@ void tetris_input_setLevel(tetris_input_t *pIn,
 
 
 #endif /*INPUT_H_*/
-

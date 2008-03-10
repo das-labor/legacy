@@ -335,7 +335,7 @@ void tetris_playfield_advancePiece(tetris_playfield_t *pPl)
 		// since there is no collision the piece may continue its travel
 		// to the ground...
 		pPl->nRow++;
-		
+
 		// are we gliding?
 		pPl->status = tetris_playfield_hoverStatus(pPl);
 	}
