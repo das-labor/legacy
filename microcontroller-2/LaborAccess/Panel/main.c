@@ -11,7 +11,7 @@
 #include "reader.h"
 #include "panel.h"
 #include "client.h"
-#include "lop_binding.h"
+#include "dummy_qport.h"
 
 int main(void)
 {
@@ -24,10 +24,11 @@ int main(void)
 	AvrXRunTask(TCB(reader));
 	//AvrXRunTask(TCB(panel));
 	AvrXRunTask(TCB(client));
-	AvrXRunTask(TCB(loptask));
+	AvrXRunTask(TCB(qport));
 	
 	//init Panel Ports and Timer
 	borg_hw_init();
+	client_init();
 
     /* Needed for EEPROM access in monitor */
 	AvrXSetSemaphore(&EEPromMutex);

@@ -121,7 +121,6 @@ u08 chipdrive_eject(){
 			return LOAD_ERROR;
 		}
 	}
-	AvrXDelay(&pollTimer, 50);
 	//just let motor roll out, so card is pushed a little further.
 	MOTOR_OFF();
 	return LOAD_OK;
@@ -160,13 +159,11 @@ AVRX_GCC_TASKDEF(reader, 50, 3)
 		}else{
 			ReaderMsg_t *p;
 			AvrXSendMessage(&ClientQueue, (MessageControlBlock*)&ReaderMsgOut);
-            AvrXWaitMessageAck((MessageControlBlock*)&ReaderMsgOut);
 			
 			p = (ReaderMsg_t*)AvrXWaitMessage(&ReaderMsgInQueue);
 			if(p->state == COMMAND_CAPTURE){
 				chipdrive_capture();
 			}
-			AvrXAckMessage((MessageControlBlock*)p);
 		}
 
 		if (chipdrive_eject() != LOAD_OK){
