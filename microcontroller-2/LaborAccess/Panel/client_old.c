@@ -52,16 +52,9 @@
 
 #include "util.h"
 
-#define KEY_ADMIN KEY_PLAY
-
-#define KEY_NEW_CARD   KEY_1
-#define KEY_DEACTIVATE KEY_2
-#define KEY_REACTIVATE KEY_3
-#define KEY_DUMP_DB KEY_9
 
 
 #define KEY_DOOR_DOWNSTAIRS 0x62
-#define LED_FLAG 0xa8
 
 
 ReaderMsg_t msg;

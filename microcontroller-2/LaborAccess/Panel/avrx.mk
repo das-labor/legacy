@@ -10,7 +10,6 @@ WARNINGS      ?= -Wall
 #DEFS          ?= -DF_CPU=16000000
 CSTANDARD     ?= -std=gnu99
 CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) $(CSTANDARD)
-#CFLAGS        += -fnew-ra
 LDFLAGS        = -Wl,-Map,$(OUT).map
 CANADDR       ?= XXX
 
@@ -26,7 +25,7 @@ LIBS          += $(AVRXHOME)/avrx.a
 CFLAGS        += -I$(AVRXHOME)
 #CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 #CFLAGS += -funsigned-bitfields -fpack-struct -fshort-enums -fnew-ra
-CFLAGS        += -funsigned-bitfields -fpack-struct -fshort-enums
+CFLAGS        += -funsigned-bitfields -fpack-struct -fshort-enums -fgnu89-inline
 CFLAGS        += -Wa,-adhlns=$(<:.c=.lst)
 
 

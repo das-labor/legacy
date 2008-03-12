@@ -1,5 +1,12 @@
+#ifndef TYPES_H
+#define TYPES_H
 
-typedef uint8_t uint8;
-typedef uint16_t uint16;
-typedef int8_t int8;
-typedef int16_t int16;
+// datatype definitions
+typedef unsigned char  u08;
+typedef   signed char  s08;
+typedef unsigned short u16;
+typedef   signed short s16;
+typedef unsigned long  u32;
+typedef   signed long  s32;
+
+#endif

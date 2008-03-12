@@ -2,7 +2,7 @@
 #include <avr/io.h>
 #include "avrx.h"               // AvrX System calls/data structures
 
-#include "types.h"
+#include "myint.h"
 
 #include "config.h"
 
@@ -14,6 +14,10 @@ typedef struct{
 extern MessageQueue ReaderMsgInQueue;
 
 extern ReaderMsg_t ReaderMsgOut;
+
+
+#define COMMAND_CAPTURE 0x01
+#define COMMAND_EJECT 0x02
 
 
 #define DDR_POWER DDRA

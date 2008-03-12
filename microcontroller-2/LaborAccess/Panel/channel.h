@@ -3,6 +3,11 @@
 #include <inttypes.h>
 
 
+/********* main interface *************/
+
+void  channel_init();
+AVRX_EXTERNTASK(channel);
+
 /***** Interface with using task *****/
 
 //read from channel, size actually read is returned.
@@ -11,8 +16,7 @@ uint8_t channel_write(uint8_t num, uint8_t * buffer, uint8_t size);
 
 
 /****** Interface with receiving task *****/
-void packet_received(uint8_t id, uint8_t * data, uint16_t size);
-
+void packet_received(uint8_t id, uint8_t * data, uint8_t size);
 
 
 /****** Internal Structures ***************/

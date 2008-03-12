@@ -1,7 +1,7 @@
 #ifndef I2CSW_H
 #define I2CSW_H
 
-#include "types.h"
+#include "myint.h"
 
 // include project-dependent settings
 #include "i2cswconf.h"
