@@ -2,44 +2,84 @@
 #include <string.h>
 
 #include "channel.h"
-#include "dummy_qport.h"
-#include "channels.h"
+#include "AvrXSerialIo.h"
+#include "myint.h"
+
+
+/****** Main Buffer **************/
+#define BUFFERSIZE 42
+
+u08 buffer[BUFFERSIZE];
 
 
 /****** Actual Channels **********/
-uint8_t client_buf[20];
+uint8_t client_buf[42];
 
 channel_t Channels[NUM_CHANNELS] ={
-	{client_buf, sizeof(client_buf), {0, SEM_DONE}, 0},
+	{client_buf, sizeof(client_buf), 0, {0, SEM_DONE}, 0},
 };
 
 
+/*********** Global Varaibles ****************/
 
+//This mutex interlocks the channels against each other, so their packets won't get
+//intermixed.
+Mutex ChannelInterlock;
+
+
+void  channel_init(){
+	AvrXSetSemaphore(&ChannelInterlock);
+}
+
+void send_reset(){
+	put_char0(0x23);
+}
+
+void send_char(u08 c){
+	switch(c){
+		case 0x23:
+		case 0x42:
+			put_char0(0x42);
+			put_char0(c ^ 0x55);
+			break;
+		default:
+			put_char0(c);
+	}
+}
+
+
+uint8_t channel_write(uint8_t id, uint8_t * buffer, uint8_t size){
+	//request the Comport
+	AvrXWaitSemaphore(&ChannelInterlock);
+	
+	send_reset();
+	
+	send_char(size);
+	send_char(id);
+	while(size--)
+		send_char(*buffer++);
+
+	//free the Comport
+	AvrXSetSemaphore(&ChannelInterlock);
+	return 0;
+}
 
 //read from channel, size actually read is returned.
 //acks the message after copying the data, marking the buffer as empty again.
-uint8_t channel_read(uint8_t id, uint8_t * buffer, uint8_t size){
+uint8_t channel_read(uint8_t id, uint8_t * buffer, uint8_t max_size){
 	uint8_t chansize;
 	channel_t * chan;
 	chan = &Channels[id];
-	do{
-		AvrXWaitSemaphore(&chan->mutex);
-	}while(chan->size == 0);
 	
 	chansize = chan->size;
-	if(chansize <= size){
+	if(chansize <= max_size){
 		memcpy(buffer, chan->buffer, chansize);
-		chan->size = 0;
+		AvrXAckMessage(&chan->mcb);
 		return chansize;
 	}
+	AvrXAckMessage(&chan->mcb);
 	return 0;
 }
-
-uint8_t channel_write(uint8_t id, uint8_t * buffer, uint8_t size){
-	qport_write(id, buffer, size);
-	return 0;
-}
-
 
 
 void packet_received(uint8_t id, uint8_t * data, uint8_t size){
@@ -55,3 +95,50 @@ void packet_received(uint8_t id, uint8_t * data, uint8_t size){
 		}
 	}
 }
+
+//decode escape codes. returns original chars or 0xffff if reset occurred.
+u16 receive_char(){
+	u08 c;
+	c = get_char0();
+	switch(c){
+		case 0x23:
+			return 0xffff;
+			break;
+		case 0x42:
+			c = 0x55 ^ get_char0();
+			break;
+		default:
+			break;
+	}
+	return c;
+}
+
+AVRX_GCC_TASKDEF(channel, 50, 1){
+	u16 r;
+	u08 size;
+	u08 id;
+	u08 x;
+	while(1){
+start:
+		if((r = get_char0()) > 0xff) goto start;
+		size = r;
+		
+		if(size>0){
+			if((r = get_char0()) > 0xff) goto start;
+			id = r;
+			if(size<=BUFFERSIZE){
+				uint8_t x;
+				for(x=0;x<size;x++){
+					if((r = get_char0()) > 0xff) goto start;
+					buffer[x] = r;
+				}
+				packet_received(id, buffer, size);
+			}else{
+				for(x=0; x<size; x++){
+					if((r = get_char0()) > 0xff) goto start;
+				}
+			}
+		}
+	}
+}
+
