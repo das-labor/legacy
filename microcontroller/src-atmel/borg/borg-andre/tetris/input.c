@@ -32,12 +32,12 @@
 
 // Here you can adjust the amount of loop cycles a command is ignored after
 // its button has been released (to reduce joystick chatter)
-#define TETRIS_INPUT_CHATTER_TICKS_ROT_CW  50
-#define TETRIS_INPUT_CHATTER_TICKS_ROT_CCW 50
+#define TETRIS_INPUT_CHATTER_TICKS_ROT_CW  12
+#define TETRIS_INPUT_CHATTER_TICKS_ROT_CCW 12
 #define TETRIS_INPUT_CHATTER_TICKS_LEFT     0
 #define TETRIS_INPUT_CHATTER_TICKS_RIGHT    0
 #define TETRIS_INPUT_CHATTER_TICKS_DOWN     0
-#define TETRIS_INPUT_CHATTER_TICKS_DROP    50
+#define TETRIS_INPUT_CHATTER_TICKS_DROP    24
 
 
 /***************************
@@ -199,7 +199,8 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 		cmdJoystick = tetris_input_queryJoystick();
 
 		// only obey current command if it is not considered as chattering
-		if (pIn->nIgnoreCmdCounter[cmdJoystick] == 0)
+		if (((cmdJoystick < TETRIS_INCMD_NONE) ?
+			pIn->nIgnoreCmdCounter[cmdJoystick] : 0) == 0)
 		{
 			switch (cmdJoystick)
 			{
