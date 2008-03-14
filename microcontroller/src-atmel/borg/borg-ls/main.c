@@ -3,7 +3,7 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <stdio.h>
-#include <stdlibh.h>
+#include <stdlib.h>
 
 #include "config.h"
 #include "scrolltext.h"
@@ -26,6 +26,7 @@ int main (void){
 	borg_hw_init();
 	bcan_init();	
 	sei();
+	timer_init();
 
 	mode = setjmp(newmode_jmpbuf);
 	
@@ -33,10 +34,6 @@ int main (void){
 		switch(mode++) {
 		case 1:
 			scrolltext((unsigned char*)scrolltext_text);
-			{   char a[40]; 
-				sprintf_P(a,PSTR("</# counter == %lu    (%s - %s)"), percnt_get(), __DATE__, __TIME__);
-				scrolltext((unsigned char*)a);
-			}
 			break;
 		case 2:
 			spirale(5);
@@ -58,12 +55,6 @@ int main (void){
 			break;
 		case 8:
 			random_bright(200);
-			break;
-		case 9:
-			if ((random8() % 6) == (random8() % 6))
-			{
-				scrolltext((unsigned char*)"</#All Your Base Are Belong To Us!!");
-			}
 			mode = 1;
 			break;
 		case 31:
