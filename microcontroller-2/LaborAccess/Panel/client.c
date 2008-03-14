@@ -143,6 +143,8 @@ u08 card_read_credentials(request_auth_t * request){
 	return 0;		
 }
 
+uint8_t muh[]={0xde,0xad,0xbe,0xef, 0x69, 0x0e ,0x80, 0x02, 0x01, 0x00, 0x81, 0x08, 0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88};
+
 
 void handle_card_inserted(){
 		request_auth_t request;
@@ -156,7 +158,7 @@ void handle_card_inserted(){
 	
 		CARD_POWER_ON();
 
-		//i2cEeWrite(0,sizeof(muh), muh);
+		i2cEeWrite(0,sizeof(muh), muh);
 		
 		seg_putstr_P(PSTR("\r" "cardcheck"));
 		

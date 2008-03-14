@@ -100,6 +100,7 @@ void packet_received(uint8_t id, uint8_t * data, uint8_t size){
 u16 receive_char(){
 	u08 c;
 	c = get_char0();
+	
 	switch(c){
 		case 0x23:
 			return 0xffff;
@@ -120,22 +121,22 @@ AVRX_GCC_TASKDEF(channel, 50, 1){
 	u08 x;
 	while(1){
 start:
-		if((r = get_char0()) > 0xff) goto start;
+		if((r = receive_char()) > 0xff) goto start;
 		size = r;
 		
 		if(size>0){
-			if((r = get_char0()) > 0xff) goto start;
+			if((r = receive_char()) > 0xff) goto start;
 			id = r;
 			if(size<=BUFFERSIZE){
 				uint8_t x;
 				for(x=0;x<size;x++){
-					if((r = get_char0()) > 0xff) goto start;
+					if((r = receive_char()) > 0xff) goto start;
 					buffer[x] = r;
 				}
 				packet_received(id, buffer, size);
 			}else{
 				for(x=0; x<size; x++){
-					if((r = get_char0()) > 0xff) goto start;
+					if((r = receive_char()) > 0xff) goto start;
 				}
 			}
 		}
