@@ -36,13 +36,13 @@ int main(void) {
     //InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
 
 	init_pwm();
-	xlap_init();
+	//xlap_init();
 	init_script_threads();
 	script_threads[0].handler.execute = &memory_handler_flash;
 	script_threads[0].handler.position = (uint16_t) &colorchange_red;
 	script_threads[0].flags.disabled = 0;
     //AvrXRunTask(TCB(Monitor));
-	AvrXRunTask(TCB(laptask));
+	//AvrXRunTask(TCB(laptask));
 	AvrXRunTask(TCB(pwmtask));
 	//AvrXRunTask(TCB(mood));
 
