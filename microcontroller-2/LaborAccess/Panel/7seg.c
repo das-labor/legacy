@@ -74,7 +74,7 @@ void seg_putc(uint8_t c){
 	if(c == '\r'){
 		uint8_t f;
 		fp = 10;
-		for(f=0;f<10;f++){
+		for(f=0;f<=10;f++){
 			row = PGMB(field[f]);
 			pixmap[row][0] = 0;	
 		}
