@@ -1,11 +1,11 @@
 /*  	Space INVADERS V0.2 
-*		
-*		by: Fabian Bremerich
-*		Thanx to: Peter F. 
-*
-*		date: Mi, 08.03.2006 
-*
-*/
+ *		
+ *		by: Fabian Bremerich
+ *		Thanx to: Peter F. 
+ *
+ *		date: Mi, 08.03.2006 
+ *
+ */
 
 #ifndef INVADERS2_H
 #define INVADERS2_H
@@ -19,17 +19,15 @@
 
 typedef struct
 {
-  signed char x;
-  signed char y;
+	signed char x;
+	signed char y;
 } sPixel;
 
 typedef struct
 {
-  unsigned char x;
-  unsigned char y;
+	unsigned char x;
+	unsigned char y;
 } uPixel;
-
-
 
 //for compatibility to pisel.h api!
 #ifdef USE_ORIGINAL_PIXEL_API
@@ -37,20 +35,19 @@ typedef struct
 #include "scrolltext.h"
 #include "joystick.h"
 
-	//typedef uPixel pixel;
+//typedef uPixel pixel;
 #define uPixel pixel
-	//#define getPixel(_X, _Y) get_pixel( (pixel){_X, _Y})
+//#define getPixel(_X, _Y) get_pixel( (pixel){_X, _Y})
 #define clearScreen() 	clear_screen(0)
-	//#define 
+//#define 
 
-	//#ifdef SIMULATOR
+//#ifdef SIMULATOR
 #define setPixel(_X, _Y, _V) setpixel( (pixel){_X, _Y}, _V)
-	//#else //if defined (AVR)
-		//#define setPixel(_X, _Y, _V) reverseSetPixel( (pixel){_X, _Y}, _V)
-	//#endif
+//#else //if defined (AVR)
+//#define setPixel(_X, _Y, _V) reverseSetPixel( (pixel){_X, _Y}, _V)
+//#endif
 
 #endif
-
 
 /****************************************************************/
 /*                   GLOBALE VAR                                */
@@ -86,12 +83,10 @@ extern unsigned char hans[8][11];
 #define MAX_INVADER_WIDTH	12
 #define MAX_INVADER_LIVES	3
 
-
 #define POINTS_FOR_HIT 			5
 #define POINTS_FOR_KILL 		25
 #define POINTS_FOR_SPACESHIP 	75
 #define POINTS_FOR_LEVEL		100
-
 
 #define MAX_SHOTS 	7
 #define MIN_SPEED   	70
@@ -110,31 +105,28 @@ extern unsigned char hans[8][11];
 //#define WAIT_MS               20
 
 
-
 typedef struct
 {
-  unsigned char map[MAX_INVADER_WIDTH][MAX_INVADER_HEIGHT];
-  sPixel pos;
+	unsigned char map[MAX_INVADER_WIDTH][MAX_INVADER_HEIGHT];
+	sPixel pos;
 
-  unsigned char speed;
-  unsigned char speedinc;
-  signed char direction;
-  unsigned char isEdged;
+	unsigned char speed;
+	unsigned char speedinc;
+	signed char direction;
+	unsigned char isEdged;
 } Invaders;
 
 typedef struct
 {
-  unsigned char pos;
-  unsigned char lives;
+	unsigned char pos;
+	unsigned char lives;
 } Spaceship;
-
 
 typedef struct
 {
-  unsigned char pos;
-  unsigned char ready;
+	unsigned char pos;
+	unsigned char ready;
 } Cannon;
-
 
 //typedef struct {
 //      unsigned char guards[numGards];
@@ -142,65 +134,49 @@ typedef struct
 
 typedef struct
 {
-  signed char lives;
-  unsigned int points;
+	signed char lives;
+	unsigned int points;
 } Player;
 
 /****************************************************************/
 /*                          FUNCTIONS                           */
 /****************************************************************/
 
-void borg_invaders ();
+void borg_invaders();
 /*----------------------main_level_funcs-------------------------*/
 
-void procSpaceship (Spaceship * sp);
-void procCannon (Cannon * cn, uPixel * shot);
+void procSpaceship(Spaceship * sp);
+void procCannon(Cannon * cn, uPixel * shot);
 
-void procInvaders (Invaders * iv, uPixel st[MAX_SHOTS]);
-void procShots (Invaders * iv,
-		Player * pl,
-		Cannon * cn,
-		Spaceship * sc,
-		unsigned char guards[BORG_WIDTH],
-		uPixel st[MAX_SHOTS], 
-		uPixel * shot);
+void procInvaders(Invaders * iv, uPixel st[MAX_SHOTS]);
+void procShots(Invaders * iv, Player * pl, Cannon * cn, Spaceship * sc,
+		unsigned char guards[BORG_WIDTH], uPixel st[MAX_SHOTS], uPixel * shot);
 
-unsigned char getStatus (Invaders * iv);
+unsigned char getStatus(Invaders * iv);
 
 /*----------------------Initialization---------------------------*/
-void initGuards (unsigned char guards[BORG_WIDTH]);
-void initInvaders (Invaders * iv, unsigned char lv);
+void initGuards(unsigned char guards[BORG_WIDTH]);
+void initInvaders(Invaders * iv, unsigned char lv);
 //void initSpaceship(Spaceship* sc);
 //void initPlayer(Player* pl);
 
 /*----------------------getter/setter----------------------------*/
 
-unsigned char getInvaderPixel (Invaders * iv, 
-			       unsigned char x,
-			       unsigned char y);
+unsigned char getInvaderPixel(Invaders * iv, unsigned char x, unsigned char y);
 
-void setInvaderPixel (Invaders * iv, 
-		      unsigned char x, 
-		      unsigned char y,
-		      unsigned char val);
+void setInvaderPixel(Invaders * iv, unsigned char x, unsigned char y,
+		unsigned char val);
 
-unsigned char getGuardPixel (unsigned char guards[BORG_WIDTH],
-			     unsigned char x, 
-			     unsigned char y);
+unsigned char getGuardPixel(unsigned char guards[BORG_WIDTH], unsigned char x,
+		unsigned char y);
 
-void setGuardPixel (unsigned char guards[BORG_WIDTH],
-		    unsigned char x, 
-		    unsigned char y, 
-		    unsigned char val);
-
+void setGuardPixel(unsigned char guards[BORG_WIDTH], unsigned char x,
+		unsigned char y, unsigned char val);
 
 /*----------------------drawing Method---------------------------*/
 
-void draw (Invaders * iv,
-	   Spaceship * sc,
-	   Player * pl,
-	   Cannon * cn,
-	   unsigned char guards[BORG_WIDTH],
-	   uPixel ishots[MAX_SHOTS], uPixel * shot);
+void draw(Invaders * iv, Spaceship * sc, Player * pl, Cannon * cn,
+		unsigned char guards[BORG_WIDTH], uPixel ishots[MAX_SHOTS],
+		uPixel * shot);
 
 #endif
