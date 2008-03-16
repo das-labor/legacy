@@ -109,7 +109,6 @@ void eject_card(){
 	if (card_inside){
 		//eject the card
 		ReaderMsg_t msg = {{0,0}, COMMAND_EJECT};
-		CARD_POWER_OFF();
 		AvrXSendMessage(&ReaderMsgInQueue, (MessageControlBlock*)&msg);
 		//and remember it is out
 		card_inside = 0;
@@ -137,14 +136,19 @@ void com_write(void * data, u08 size){
 
 //send a request, that consists of only a type,
 //and receive the result, that is also only one byte.
-u08 simple_request(u08 type){
+u16 simple_request(u08 type){
 	u08 result;
 	com_write(&type, 1);
 	if( 1 == com_read(&result, 1) ){
 		return result;
 	}else{
-		return 0;
+		return 0xffff;
 	}
+}
+
+static void send_reset(){
+	u08 type = REQUEST_RESET;
+	com_write(&type, 1);
 }
 
 
@@ -160,6 +164,37 @@ void get_doorstate(){
 	}
 }
 
+
+//read the Laboranten-data from the card to the request object
+u08 card_read_data(request_new_card_t * request){
+	if(! i2cEeDetect())
+		//no i2c card
+		return 1;
+	
+	//the root object starts at address 4 and is 251 bytes large.
+	asn1_obj_t root_obj = {4,251};
+	asn1_obj_t obj;
+	
+	//get a reference to the Laboranten Data object in obj.
+	if (asn1_get(&obj, &root_obj, 0x69))
+		//no such object
+		return 1;
+	
+	//read nickname
+	if ( asn1_read(&obj, 0x82, (u08 *) &request->nickname, NICKNAME_MAX_LEN+1 ) != (NICKNAME_MAX_LEN+1) )
+		//no such object
+		return 1;
+
+#ifdef USE_REALNAME
+	//and realname
+	if ( asn1_read(&obj, 0x83, (u08 *) &request->realname, 32 ) != 32)
+		//no such object
+		return 1;
+#endif
+	
+	//succeeded
+	return 0;		
+}
 
 //read the data from the card to the request object
 u08 card_read_credentials(request_auth_t * request){
@@ -190,6 +225,29 @@ u08 card_read_credentials(request_auth_t * request){
 	return 0;		
 }
 
+u08 card_write_token_and_id(u08 * token, u16 id){
+	//the root object starts at address 4 and is 251 bytes large.
+	asn1_obj_t root_obj = {4,251};
+	asn1_obj_t obj;
+	
+	//get a reference to the Lab Acces Data object in obj.
+	if (asn1_get(&obj, &root_obj, 0x69))
+		//no such object
+		return 1;
+	
+	if ( asn1_write(&obj, 0x81, token, 8) != 8 )
+		//write failed
+		return 1;
+
+	if ( asn1_write(&obj, 0x80, (u08*)&id, 2) != 2 )
+		//write failed
+		return 1;
+	
+	//succeeded
+	return 0;		
+}
+
+
 u08 card_write_token(u08 * token){
 	//the root object starts at address 4 and is 251 bytes large.
 	asn1_obj_t root_obj = {4,251};
@@ -209,10 +267,16 @@ u08 card_write_token(u08 * token){
 }
 
 
-reply_auth_t auth_reply;
+static reply_auth_t auth_reply;
 
-u08 check_card(){
+//read credentials from card and check them with masterunit. reads reply to the global
+//variable auth_reply. If the card checks out o.k., the new token from the master is written
+//to the card.
+//the mode selects wether some messages are surpressed. This is because we check a new
+//card first with this function, so an old card isn't accicdently overwritten.
+u08 check_card(u08 mode){
 	char * errorstring;
+	u08 errorcode;
 	request_auth_t request;
 	
 	CARD_POWER_ON();
@@ -228,6 +292,7 @@ u08 check_card(){
 	if( card_read_credentials(&request) ){
 		//card doesn't contain right asn1 objects -> bad card
 		errorstring = PSTR("\r" "bad card");
+		errorcode = 1;
 		goto error;
 	}
 	
@@ -237,30 +302,101 @@ u08 check_card(){
 	com_write(&request, sizeof(request));
 	if( sizeof(auth_reply) != com_read(&auth_reply, sizeof(auth_reply)) ){
 		errorstring = PSTR("\r" "com error");
+		errorcode = 2;
 		goto error;		
 	}
 	
 	if(	(auth_reply.result == RESULT_DEACTIVATED) || (auth_reply.result == RESULT_OK) ){
 		if ( card_write_token(auth_reply.token) ){
 			errorstring = PSTR("\r" "bad write");
+			errorcode = 3;
 			goto error;
 		}
 	}
+	
+	CARD_POWER_OFF();
 
 	if(auth_reply.result == RESULT_DEACTIVATED){
-		seg_putstr_P(PSTR("\r" "deactivated"));
-		AvrXDelay(&client_timer, 2000);
-		seg_putstr_P(PSTR("\r" "by  "));
-		seg_putstr(auth_reply.nickname);
-		AvrXDelay(&client_timer, 2000);
+		errorcode = 4;
+		if(mode == 0){
+			seg_putstr_P(PSTR("\r" "deactivated"));
+			AvrXDelay(&client_timer, 2000);
+			seg_putstr_P(PSTR("\r" "by  "));
+			seg_putstr(auth_reply.nickname);
+			AvrXDelay(&client_timer, 2000);
+		}
 		goto end;
 	}
 	
 	if (auth_reply.result != RESULT_OK){
-		errorstring = PSTR("\r" "bad key");
+		errorcode = 5;
+		if(mode == 0){
+			errorstring = PSTR("\r" "bad key");
+			goto error;
+		}else{
+			goto end;
+		}
+	}
+	
+	if(mode == 0){
+		seg_putstr_P(PSTR("\r" "helo"));
+		seg_putstr(auth_reply.nickname);
+	
+		AvrXDelay(&client_timer, 1800);
+	}
+
+	return 0;
+
+error:
+	seg_putstr_P(errorstring);
+	AvrXDelay(&client_timer, 1800);
+end:
+	CARD_POWER_OFF();
+	return errorcode;
+}
+
+
+u08 activate_card(){
+	char * errorstring;
+	u08 errorcode;
+	request_new_card_t request;
+	
+	CARD_POWER_ON();
+
+	seg_putstr_P(PSTR("\r" "activating"));
+	
+	AvrXDelay(&client_timer, 1000);
+	
+	//first we build a new_card request with the data on the card
+	request.type = REQUEST_NEW_CARD;
+	if( card_read_data(&request) ){
+		//card doesn't contain right asn1 objects -> bad card
+		errorstring = PSTR("\r" "bad card");
+		errorcode = 1;
+		goto error;
+	}
+		
+	com_write(&request, sizeof(request));
+	if( sizeof(auth_reply) != com_read(&auth_reply, sizeof(auth_reply)) ){
+		errorstring = PSTR("\r" "com error");
+		errorcode = 2;
+		goto error;		
+	}
+		
+	if (auth_reply.result != RESULT_OK){
+		errorcode = 5;
+		errorstring = PSTR("\r" "act error");
 		goto error;
 	}
 	
+	if ( card_write_token_and_id(auth_reply.token, auth_reply.id) ){
+		errorstring = PSTR("\r" "bad write");
+		errorcode = 3;
+		goto error;
+	}
+
+	CARD_POWER_OFF();
+
 	seg_putstr_P(PSTR("\r" "helo"));
 	seg_putstr(auth_reply.nickname);
 	
@@ -269,26 +405,72 @@ u08 check_card(){
 	return 0;
 
 error:
+	CARD_POWER_OFF();
 	seg_putstr_P(errorstring);
-	AvrXDelay(&client_timer, 1000);
-end:	
-	return 1;
+	AvrXDelay(&client_timer, 1800);
+	return errorcode;
 }
 
 
+//return codes for menu function handlers:
+//0:	Go back to Admin menu
+//1:	Exit completeley
+//2:	Display "escaped" and exit completeley
+
+//activate a new card
 uint8_t handle_new_card(){
+	u08 tmp;
+	//ask for more credentials
 	seg_putstr_P(PSTR("\r" "need2admin"));
 	
 	//eject the card
 	eject_card();
 	
 	if( wait_for_card() ){
-		return 1;	
+		//key was pressed instead of card inserted -> escape
+		return 2;
 	}
-
-	check_card();
 	
-	return 0;
+	if( check_card(0) ){
+		//no valid card -> error
+		return 1;
+	}
+	
+	if( ! (auth_reply.permissions & PERM_ADMIN) ){
+		seg_putstr_P(PSTR("\r" "no  admin"));
+		AvrXDelay(&client_timer, 1800);
+		return 1;
+	}
+	
+	//o.k. - now we should have the authorisation to activate a new card
+lb_activate_begin:	
+	seg_putstr_P(PSTR("\r" "needn card"));
+	
+	//eject the card
+	eject_card();
+	
+	if( wait_for_card() ){
+		//key was pressed instead of card inserted -> escape
+		return 2;
+	}
+	
+	tmp = check_card(1);
+	if( (tmp == 0) || (tmp == 4) ){
+		//valid card was inserted by mistake
+		seg_putstr_P(PSTR("\r" "not new"));
+		AvrXDelay(&client_timer, 1800);
+		goto lb_activate_begin;
+	}
+	
+	//we want to get the result "bad key"
+	if(tmp != 5){
+		//error
+		return 1;
+	}
+	
+	activate_card();
+	
+	return 1;
 }
 
 uint8_t handle_deactivate_id(){
@@ -356,22 +538,42 @@ u08 admin_menu(){
 //uint8_t muh[]={0xde,0xad,0xbe,0xef, 0x69, 0x0e ,0x80, 0x02, 0x01, 0x00, 0x81, 0x08, 0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88};
 
 
+u08 foobuf[40];
+
 void handle_card_inserted(){
 		
 		char * errorstring;
 	
-		if( RESULT_OK != simple_request(REQUEST_RESET)){
+		u08 foobar;
+	
+		if( RESULT_OK != ( foobar = simple_request(REQUEST_RESET)) ){
+			if(foobar == 1){
+				//Hackhack: write to card
+				
+				com_read(foobuf, 40);
+				CARD_POWER_ON();
+				i2cEeWrite(4,40,foobuf);
+				CARD_POWER_OFF();
+			}else if(foobar == 2){
+				//read from card
+				CARD_POWER_ON();
+				i2cEeRead(4,40,foobuf);
+				CARD_POWER_OFF();
+				com_write(foobuf, 40);
+			}
 			errorstring = PSTR("\r" "com error" );
 			goto error;
 		}
 	
-		if( check_card() ){
+		//get_doorstate();
+	
+		if( check_card(0) ){
 			goto end;
 		}
 		
 		if(key_is_pressed(KEY_ADMIN)){
 			if(auth_reply.permissions & PERM_ADMIN){
-				if( 1 == admin_menu() ){
+				if( 2 == admin_menu() ){
 					errorstring = PSTR("\r" "    escaped");
 					goto error;				
 				}
@@ -408,6 +610,10 @@ void handle_card_inserted(){
 		
 		end:
 
+		send_reset();
+		
+		//get_doorstate();
+	
 		eject_card();
 		
 		AvrXDelay(&client_timer, 3000);
