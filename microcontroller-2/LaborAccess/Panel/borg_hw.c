@@ -68,9 +68,12 @@
 #define PIN_CP3  	PD6
 #define PIN_EO3  	PD7
 
+#define DEBOUNCE_CYCLE_NUM 10
+
 //Der Puffer, in dem das aktuelle Bild gespeichert wird
 uint8_t pixmap[NUM_ROWS][LINEBYTES];
 
+//bitmask of pressed keys
 volatile uint8_t keys[8];
 
 KeyboardMsg_t KeyboardMsg;
@@ -108,6 +111,8 @@ static inline void rowshow(unsigned char row){
 
 static inline void checkkeys(uint8_t row){
 	static uint8_t mask;
+	static uint8_t new_keys[8];
+	static uint8_t debounce_count[8];
 	if(row == 0){
 		mask = 1;
 	}else{
@@ -120,21 +125,45 @@ static inline void checkkeys(uint8_t row){
 		busywait();
 		CTRLPORT &= ~(1<<PIN_CP3);
 		busywait();
+		//read bitmask of pressed keys in this row
 		tmp = DATAPIN;
-		new = tmp & ( ~keys[r]);
-		if(new){
-			for(x=0;x<8;x++){
-				if(new & 0x01){
-					if (AvrXTestMessageAck ((MessageControlBlock*)&KeyboardMsg)){
-						KeyboardMsg.key = (r<<4) | x;
-						AvrXIntSendMessage(&ClientQueue, (MessageControlBlock*)&KeyboardMsg);
-						break;
+		
+		//debounce keys
+		if(tmp == keys[r]){
+			//values are equal, so also set new_keys to that value
+			new_keys[r] = tmp;
+		}else{
+			//key is new
+			if(tmp != new_keys[r]){
+				//and we don't know that value yet
+				new_keys[r] = tmp;//remeber new value
+				debounce_count[r] = DEBOUNCE_CYCLE_NUM;//and reset counter
+			}else{
+				//key is new, and we know it
+				if(debounce_count[r] != 0){
+					//wait some more until we accept new value
+					debounce_count[r]--;
+				}else{
+					//new value established
+					new = tmp & ( ~keys[r]);
+					keys[r] = tmp;
+					
+					if(new){
+						for(x=0;x<8;x++){
+							if(new & 0x01){
+								if (AvrXTestMessageAck ((MessageControlBlock*)&KeyboardMsg)){
+									KeyboardMsg.key = (r<<4) | x;
+									AvrXIntSendMessage(&ClientQueue, (MessageControlBlock*)&KeyboardMsg);
+									break;
+								}
+							}
+							new >>= 1;
+						}
 					}
 				}
-				new >>= 1;
 			}
 		}
-		keys[r] = tmp;
+
 		CTRLPORT |= (1<<PIN_EO3);
 		busywait();
 		DATADDR = 0xFF;
