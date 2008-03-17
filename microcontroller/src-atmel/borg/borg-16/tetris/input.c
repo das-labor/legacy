@@ -302,15 +302,6 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 	// since we have left the loop we reset the cycle counter
 	pIn->nLoopCycles = 0;
 
-	// in higher levels the key repeat may actually be slower than the
-	// falling speed, so if we reach here before we have run enough loop
-	// cycles for down key repeat, we reset the repeat counter to ensure
-	// smooth falling movements
-	if (pIn->cmdLast == TETRIS_INCMD_DOWN)
-	{
-		pIn->nRepeatCount = -TETRIS_INPUT_REPEAT_INITIALDELAY;
-	}
-
 	return TETRIS_INCMD_GRAVITY;
 }
 
@@ -326,6 +317,7 @@ void tetris_input_setLevel(tetris_input_t *pIn,
 {
 	assert(pIn != NULL);
 	assert(nLvl <= TETRIS_INPUT_LEVELS - 1);
+	nLvl = 10;
 	if (pIn->nLevel != nLvl)
 	{
 		pIn->nLevel = nLvl;
