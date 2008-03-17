@@ -40,6 +40,7 @@ extern KeyboardMsg_t KeyboardMsg;
 #define KEY_WAVESWITCH 0x22
 #define KEY_0TO12 0x20
 #define KEY_WAVE 0x54
+#define KEY_D 0x30
 #define KEY_S 0x52
 #define KEY_R 0x51
 #define KEY_FLAG 0x62
