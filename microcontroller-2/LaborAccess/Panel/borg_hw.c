@@ -68,7 +68,7 @@
 #define PIN_CP3  	PD6
 #define PIN_EO3  	PD7
 
-#define DEBOUNCE_CYCLE_NUM 10
+#define DEBOUNCE_CYCLE_NUM 3
 
 //Der Puffer, in dem das aktuelle Bild gespeichert wird
 uint8_t pixmap[NUM_ROWS][LINEBYTES];
@@ -79,10 +79,10 @@ volatile uint8_t keys[8];
 KeyboardMsg_t KeyboardMsg;
 
 static inline void busywait() {
-	//unsigned char i;
-	//for(i=0;i<20;i++){
-	//	asm volatile("nop");
-	//}
+	unsigned char i;
+	for(i=0;i<20;i++){
+		asm volatile("nop");
+	}
 }
 
 
@@ -127,6 +127,8 @@ static inline void checkkeys(uint8_t row){
 		busywait();
 		//read bitmask of pressed keys in this row
 		tmp = DATAPIN;
+		CTRLPORT |= (1<<PIN_EO3);
+
 		
 		//debounce keys
 		if(tmp == keys[r]){
@@ -164,8 +166,7 @@ static inline void checkkeys(uint8_t row){
 			}
 		}
 
-		CTRLPORT |= (1<<PIN_EO3);
-		busywait();
+		//busywait();
 		DATADDR = 0xFF;
 	}
 	

@@ -15,8 +15,14 @@ AVRX_GCC_TASKDEF(panel, 50, 4)
 			for(y=0;y<8;y++){
 				setpixel((x^1)*16+8+y,3);
 				AvrXDelay(&myTimer, 40);
-				seg_putstr("\r    tixiv");			
-				//hexdump(keys,5);
+				//seg_putstr("\r    tixiv");			
+				seg_putc('\r');
+				seg_puthex(keys[0]);
+				seg_puthex(keys[1]);
+				seg_puthex(keys[2]);
+				seg_puthex(keys[3]);
+				seg_puthex(keys[4]);
+				
 			
 			}
 		}
@@ -25,8 +31,13 @@ AVRX_GCC_TASKDEF(panel, 50, 4)
 			for(y=0;y<8;y++){
 				setpixel((x^1)*16+8+y,0);
 				AvrXDelay(&myTimer, 40);
-				seg_putstr("\rlmnopqr");			
-				//hexdump(keys,5);
+				//seg_putstr("\rlmnopqr");			
+				seg_putc('\r');
+				seg_puthex(keys[0]);
+				seg_puthex(keys[1]);
+				seg_puthex(keys[2]);
+				seg_puthex(keys[3]);
+				seg_puthex(keys[4]);
 			
 			}
 		}

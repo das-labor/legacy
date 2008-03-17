@@ -80,6 +80,10 @@ void seg_putc(uint8_t c){
 		}
 		return;		
 	}
+	if(c == '\n'){
+		fp = 10;
+		return;
+	}
 	uc = c & 0xdf;//convert potential letter to uppercase
 	if (uc >= 'A' && uc<= 'Z'){
 		dat = PGMB(letters[uc-'A']);
@@ -113,3 +117,12 @@ void seg_putstr_P(char * txt){
 		seg_putc(c);
 	}
 }
+
+void seg_puthex(uint8_t c){
+	char buf[3];
+	itoa(c, buf, 16);
+	if(buf[1] == 0)
+		seg_putc('0');
+	seg_putstr(buf);
+}
+

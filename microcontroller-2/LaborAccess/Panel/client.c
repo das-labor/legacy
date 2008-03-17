@@ -1,5 +1,40 @@
 
+/*
+	This is the Client, that sends the requests to the Labor Access Master.
+	Some of the requests need credentials in Form of card id and key, and some don't.
+	
+	Requests that don't need credentials:
+		-Unlock downstairs door (when upstairs is unlocked)
+		-Lock downstairs door (when upstairs is unlocked)
+		
+	Requests that need credentials:
+		-Unlock upstairs door
+		-Lock upstairs door
+		
+	Requests that need credentials from an admin:
+		-Activate new card
+		-Deactivate card by number
+		-Reactivate card by number
+		-Show data by number
+		-Dump database to CAN
+	
+	Requests that need credentials from 2 admins:
+		-Set admin flag for card
+		-Delete database entry
+		
+	
+	When a card is inserted, the Panel assumes a door open or lock request, depending on the
+	state the door is in at that time.
+	When one holds the tape-button while inserting a card, the admin mode is entered. One
+	can now do the admin tasks.
+
+*/
+
+
+
 #include <avr/pgmspace.h>
+#include <string.h>
+#include <stdlib.h>
 #include "client.h"
 
 #include "borg_hw.h"
@@ -471,6 +506,73 @@ lb_activate_begin:
 	activate_card();
 	
 	return 1;
+}
+
+void print_num(u16 num){
+	char buf[5];
+	u08 x, l;
+	if(num>9999){
+		seg_putstr_P(PSTR("\n" "E   "));
+		return;
+	}
+	seg_putc('\n');
+	itoa(num, buf, 10);
+	l = strlen(buf);
+	for(x=0; x<(4-l); x++){
+		seg_putc(' ');
+	}
+	seg_putstr(buf);
+}
+
+/*
+#define KEY_0 0x50
+#define KEY_1 0x31
+#define KEY_2 0x32
+#define KEY_3 0x33
+#define KEY_4 0x34
+#define KEY_5 0x40
+#define KEY_6 0x41
+#define KEY_7 0x42
+#define KEY_8 0x43
+#define KEY_9 0x44
+*/
+
+
+u08 key_to_digit(u08 key){
+	if(key == 0x50)
+		return 0;
+	if((key > 0x30) && (key < 0x35))
+		return key - 0x30;
+	if((key >= 0x40) && (key < 0x45))
+		return key - 0x40 + 5;
+	return 0xff;
+}
+
+//lets user enter a 4 digit decimal number on the keypad.
+//the number is printed right aligned on the left display during entry.
+//the D key can delete digits, and the R key escapes, returning 0xffff.
+u16 numeric_input(){
+	u16 key;
+	u16 num = 0;
+	u08 digit;
+	while(1){
+		key = get_key();
+		if(key == KEY_S){
+			return num;
+		}else if(key == KEY_D){
+			num /= 10;
+			print_num(num);
+		}else if(key == KEY_R){
+			return 0xffff;
+		}else{
+			digit = key_to_digit(key);
+			if( (digit != 0xff) && (num < 1000) ){
+				num *= 10;
+				num += digit;
+				print_num(num);
+			}
+		}
+	}
 }
 
 uint8_t handle_deactivate_id(){
