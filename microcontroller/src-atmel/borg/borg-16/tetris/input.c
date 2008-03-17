@@ -317,7 +317,6 @@ void tetris_input_setLevel(tetris_input_t *pIn,
 {
 	assert(pIn != NULL);
 	assert(nLvl <= TETRIS_INPUT_LEVELS - 1);
-	nLvl = 10;
 	if (pIn->nLevel != nLvl)
 	{
 		pIn->nLevel = nLvl;
