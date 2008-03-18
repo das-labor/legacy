@@ -524,19 +524,6 @@ void print_num(u16 num){
 	seg_putstr(buf);
 }
 
-/*
-#define KEY_0 0x50
-#define KEY_1 0x31
-#define KEY_2 0x32
-#define KEY_3 0x33
-#define KEY_4 0x34
-#define KEY_5 0x40
-#define KEY_6 0x41
-#define KEY_7 0x42
-#define KEY_8 0x43
-#define KEY_9 0x44
-*/
-
 
 u08 key_to_digit(u08 key){
 	if(key == 0x50)
@@ -551,12 +538,17 @@ u08 key_to_digit(u08 key){
 //lets user enter a 4 digit decimal number on the keypad.
 //the number is printed right aligned on the left display during entry.
 //the D key can delete digits, and the R key escapes, returning 0xffff.
-u16 numeric_input(){
+u16 numeric_input(u16 first_key){
 	u16 key;
 	u16 num = 0;
 	u08 digit;
 	while(1){
-		key = get_key();
+		if(first_key){
+			key = first_key;
+			first_key = 0;
+		}else{
+			key = get_key();
+		}
 		if(key == KEY_S){
 			return num;
 		}else if(key == KEY_D){
@@ -583,7 +575,22 @@ uint8_t handle_reactivate_id(){
 	return 0;
 }
 
+u16 get_and_show_laboranten_data(id){
+	
+}
+
 uint8_t handle_dump_db(){
+	u16 id = 1;
+	while(1){
+		u16 key;
+		get_and_show_laboranten_data(id);
+		key = get_key();
+		
+	
+	
+	
+	}
+	
 	return 0;
 }
 
@@ -635,9 +642,6 @@ u08 admin_menu(){
 		}
 	}
 }
-
-
-//uint8_t muh[]={0xde,0xad,0xbe,0xef, 0x69, 0x0e ,0x80, 0x02, 0x01, 0x00, 0x81, 0x08, 0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88};
 
 
 u08 foobuf[40];
