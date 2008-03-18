@@ -128,7 +128,7 @@ void i2cInit(void)
 }
 
 //write to i2c eeprom in multibyte write mode
-int8_t i2cEeWrite(uint8_t *address, uint8_t *data, uint16_t len)
+int8_t i2cEeWrite( uint16_t address, uint8_t *data, uint16_t len )
 {
 	uint8_t ack;
 	union{uint8_t b[2]; uint16_t w;} addr;
@@ -171,7 +171,7 @@ error:
 }
 
 //read bytes from eeprom to buffer
-void i2cEeRead(uint8_t *data, uint8_t *address, uint16_t len)
+void i2cEeRead(uint8_t *data, uint16_t address, uint16_t len)
 {
 	uint8_t ack;
 	union{uint8_t b[2]; uint16_t w;} addr;
