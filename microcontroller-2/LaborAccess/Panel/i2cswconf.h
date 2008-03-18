@@ -12,3 +12,7 @@
 
 //i2c address of eeprom
 #define EEPROM_ADDRESS 0xa0
+
+#define EEPROM_SECTOR_SIZE 8
+
+#define EE_DETECT

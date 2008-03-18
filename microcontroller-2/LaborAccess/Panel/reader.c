@@ -3,8 +3,6 @@
 #include "i2csw.h"
 #include "client.h"
 
-#include "enum.h"
-
 //Switch 1 goes low when a card is inserted.
 //Goes high again when the card is at the end.
 //

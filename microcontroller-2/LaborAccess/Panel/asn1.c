@@ -2,8 +2,8 @@
 #include "asn1.h"
 
 #include "i2csw.h"
-#define storage_read(address,len,data) i2cEeRead(address,len,data);
-#define storage_write(address,len,data) i2cEeWrite(address,len,data);
+#define storage_read(address,len,data) i2cEeRead(data,address,len);
+#define storage_write(address,len,data) i2cEeWrite(address,data,len);
 
 
 //get offset and size of an object inside of a constructed object.
