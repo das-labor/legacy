@@ -575,7 +575,7 @@ uint8_t handle_reactivate_id(){
 	return 0;
 }
 
-u16 get_and_show_laboranten_data(id){
+u16 get_and_show_laboranten_data(u16 id){
 	
 }
 
@@ -658,12 +658,12 @@ void handle_card_inserted(){
 				
 				com_read(foobuf, 40);
 				CARD_POWER_ON();
-				i2cEeWrite(4,40,foobuf);
+				i2cEeWrite(4,foobuf,40);
 				CARD_POWER_OFF();
 			}else if(foobar == 2){
 				//read from card
 				CARD_POWER_ON();
-				i2cEeRead(4,40,foobuf);
+				i2cEeRead(foobuf,4,40);
 				CARD_POWER_OFF();
 				com_write(foobuf, 40);
 			}
