@@ -5,11 +5,11 @@
 #define NICKNAME_MAX_LEN 7
 
 //how many bytes does a token have?
-#define TOKEN_SIZE 32
+#define TOKEN_SIZE 8
 
 
 //Requests that don't need permissions
-#define REQUEST_RESET 0x01
+#define REQUEST_RESET 0xff
 #define REQUEST_GET_DOORSTATE 0x20
 
 #define REQUEST_UNLOCK_DOWNSTAIRS 0x40
@@ -34,13 +34,14 @@
 
 
 //values for the result var in replys
-#define RESULT_OK 0
-#define RESULT_DENIED 1
-#define RESULT_DEACTIVATED 2
+#define RESULT_OK 				0x00
+#define RESULT_DENIED 			0x01
+#define RESULT_DEACTIVATED 		0x02
+#define RESULT_RESET 			0xff
 
 //flags
-#define FLAG_ADMIN 0x01
-#define FLAG_DEACTIVATED 0x02
+#define FLAG_ADMIN 				0x01
+#define FLAG_DEACTIVATED 		0x02
 
 
 //a set bit means the door is open/unlocked
@@ -49,16 +50,18 @@
 
 //this is the general structure for a request.
 //It must have atleast the maximum Size used for any request.
+/*
 typedef struct{
 	uint8_t type;
-	uint8_t data[65];
+	uint8_t data[42];
 }request_t;
+*/
 
 typedef struct{
 	uint8_t type;
 	uint16_t card_id;
 	uint8_t token[TOKEN_SIZE];
-}request_auth_t; //type + 34 bytes
+}request_auth_t; //type + 10 bytes
 
 //flags in permissions
 #define PERM_ADMIN 0x01
@@ -69,11 +72,10 @@ typedef struct{
 typedef struct{
 	uint8_t result;
 	uint8_t permissions;
+	uint16_t id;
 	uint8_t token[TOKEN_SIZE];
 	char nickname[NICKNAME_MAX_LEN+1];
 }reply_auth_t;
-
-
 
 typedef struct{
 	uint8_t type;
@@ -81,23 +83,23 @@ typedef struct{
 	//not abput the admin permissions.
 	uint8_t permissions;
 	char nickname[NICKNAME_MAX_LEN+1];
+#ifdef USE_REALNAME
 	char realname[32];
-}request_new_card_t; //type + 65 bytes
+#endif
+}request_new_card_t; //type + 1 + 8 + 32 = type+41 bytes
 
 typedef struct{
-	uint8_t result;
-	uint16_t id;
-	uint8_t token[TOKEN_SIZE];
-}reply_new_card_t;
-
-typedef request_auth_t request_make_admin_t;
+	u08 type;
+	u16 id;
+}request_laboranten_info_t;
 
 typedef struct{
-	uint8_t result;
-	uint8_t token[TOKEN_SIZE];
-}reply_make_admin_t;
-
-typedef struct{
-	uint8_t type;
-	uint16_t id;
-}request_delete_admin_t;
+	u08 result;
+	uint8_t permissions;
+	u16 last_id;
+	uint16_t next_id;
+	char nickname[NICKNAME_MAX_LEN+1];
+#ifdef USE_REALNAME
+	char realname[32];
+#endif
+}reply_laboranten_info_t;
