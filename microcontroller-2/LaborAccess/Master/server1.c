@@ -2,12 +2,12 @@
 #include <string.h>
 #include <avrx.h>
 
-
+#include "myint.h"
 #include "uart_sw.h"
 
 #include "protocol.h"
-#include "channels.h"
 #include "channel.h"
+#include "channels.h"
 #include "random.h"
 #include "database.h"
 
@@ -21,7 +21,7 @@ void send_simple_reply(uint8_t result){
 }
 
 
-AVRX_GCC_TASKDEF(server1, 400, 4)
+AVRX_GCC_TASKDEF(server1, 300, 4)
 {
 	uint8_t admin_num = 0;
 	uint8_t session_perm = 0;
@@ -119,6 +119,7 @@ AVRX_GCC_TASKDEF(server1, 400, 4)
 					send_simple_reply(RESULT_DENIED);
 				}	
 				break;
+/*
 			case REQUEST_NEW_CARD:
 				if(session_perm & PERM_ADMIN){
 					uint16_t id;
@@ -138,6 +139,8 @@ AVRX_GCC_TASKDEF(server1, 400, 4)
 					send_simple_reply(RESULT_DENIED);
 				}
 				break;
+*/
+/*
 			case REQUEST_MAKE_ADMIN:
 				if(admin_num >= 2){
 					reply_make_admin_t reply;
@@ -171,6 +174,7 @@ AVRX_GCC_TASKDEF(server1, 400, 4)
 					send_simple_reply(RESULT_DENIED);
 				}
 				break;
+*/
 			case REQUEST_DELETE_ADMIN:
 				if(session_perm & PERM_ADMIN){
 					

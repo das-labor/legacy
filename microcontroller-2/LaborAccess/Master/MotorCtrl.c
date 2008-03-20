@@ -3,7 +3,6 @@
 #include "avrx.h"               // AvrX System calls/data structures
 
 #include "server1.h"
-#include "protocol.h"
 
 #include "MotorCtrl.h"
 
