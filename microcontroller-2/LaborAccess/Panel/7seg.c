@@ -1,4 +1,5 @@
 #include <avr/pgmspace.h>
+#include <stdlib.h>
 #include "borg_hw.h"
 #include "7seg.h"
 
