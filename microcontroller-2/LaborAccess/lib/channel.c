@@ -1,24 +1,13 @@
 
 #include <string.h>
 
-#include "channel.h"
 #include "AvrXSerialIo.h"
 #include "myint.h"
 
 
 /****** Main Buffer **************/
-#define BUFFERSIZE 42
 
 u08 buffer[BUFFERSIZE];
-
-
-/****** Actual Channels **********/
-uint8_t client_buf[42];
-
-channel_t Channels[NUM_CHANNELS] ={
-	{client_buf, sizeof(client_buf), 0, {0, SEM_DONE}, 0},
-};
-
 
 /*********** Global Varaibles ****************/
 

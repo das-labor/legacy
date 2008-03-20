@@ -48,14 +48,14 @@
 #define STATE_DOOR_UPSTAIRS   0x01
 #define STATE_DOOR_DOWNSTAIRS 0x02
 
-//this is the general structure for a request.
+//this is the general structure for a request. The server uses it 
 //It must have atleast the maximum Size used for any request.
-/*
+
 typedef struct{
 	uint8_t type;
 	uint8_t data[42];
 }request_t;
-*/
+
 
 typedef struct{
 	uint8_t type;
