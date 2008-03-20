@@ -5,10 +5,8 @@
 #include "avrx.h"               // AvrX System calls/data structures
 #include "AvrXSerialIo.h"
 #include "uart_sw.h"
-#include "lop_binding.h"
 #include "i2csw.h"
 #include "xlap.h"
-#include "console.h"
 #include "MotorCtrl.h"
 
 #define TICKRATE 1000
@@ -39,15 +37,14 @@ int main(void)
 	
     
 	AvrXRunTask(TCB(server1));
-	AvrXRunTask(TCB(loptask));
-	AvrXRunTask(TCB(laptask));
-	AvrXRunTask(TCB(console_task));
+//	AvrXRunTask(TCB(loptask));
+//	AvrXRunTask(TCB(laptask));
 	AvrXRunTask(TCB(MotorCtrl));
 	
 	InitSerial0(BAUD(4800));
 	InitSerial1();
 
-	xlap_init();
+//	xlap_init();
 	
     /* Needed for EEPROM access in monitor */
 	AvrXSetSemaphore(&EEPromMutex);
@@ -55,7 +52,7 @@ int main(void)
 	//put_c0('h');
 	//put_c1('H');
 	
-	fdevopen(stream_putc,0);
+	//fdevopen(stream_putc,0);
 	//fdevopen(put_c1,0);
 	
 	i2cInit();
