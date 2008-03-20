@@ -42,6 +42,7 @@
 #include "7seg.h"
 
 #include "channel.h"
+#include "channels.h"
 
 #include "reader.h"
 #include "i2csw.h"
