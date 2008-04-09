@@ -39,14 +39,14 @@
 #define UART_UCSRC (_BV(_URSEL_UART0) | _BV(_UCSZ0_UART0) | _BV(_UCSZ1_UART0))
 
 /* }}} */
-#elif defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega644__)
+#elif defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega644__) || defined(__AVR_ATmega128__)
 /* {{{ */
 /* in atmega88, this isn't needed any more */
 #define UART_UCSRC (_BV(_UCSZ0_UART0) | _BV(_UCSZ1_UART0))
 
 /* }}} */
 #else
-#error this cpu isn't supported by uart.h yet!
+#error this cpu isnt supported by uart.h yet!
 #endif
 
 /* define UBRR value (see datasheet */
