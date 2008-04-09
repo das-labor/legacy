@@ -37,7 +37,11 @@
 #   include <avr/wdt.h>
 #endif
 
-uint16_t flash_address;             /* start flash (byte address, converted) write at this address */
+#if defined(__AVR_ATmega128__)
+    uint32_t flash_address;             /* start flash (byte address, converted) write at this address */
+#else
+    uint16_t flash_address;             /* start flash (byte address, converted) write at this address */
+#endif
 uint16_t eeprom_address;            /* start eerprom (byte address) write at this address */
 
 
@@ -226,7 +230,8 @@ int main(void)
 
                         /* flash address is a byte address too, but we get a
                          * word address so convert it */
-                        flash_address = eeprom_address << 1;
+                        flash_address = eeprom_address;
+                        flash_address <<= 1;
 
                         /* acknowledge */
                         uart_putc('\r');

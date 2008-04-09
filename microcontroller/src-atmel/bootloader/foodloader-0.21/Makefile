@@ -69,6 +69,17 @@ else ifeq ($(MCU),atmega162)
 	#Fuses for Xtal/16MHz, bootloader at 0x3c00
 	HFUSE = 0xd2
 	LFUSE = 0xef
+else ifeq ($(MCU),atmega128)
+	# atmega128 with 1024 words bootloader:
+	# bootloader section starts at 0xfc00 (word-address) == 0x1f800 (byte-address)
+	BOOT_SECTION_START = 0x1f800
+	#
+	# atmega168 with 512 words bootloader:
+	# bootloader section starts at 0xfe00 (word-address) == 0x1fC00 (byte-address)
+	#BOOT_SECTION_START = 0x1fc00
+	#Fuses for Xtal/16MHz, bootloader at 0x1f800
+	HFUSE = 0xc4
+	LFUSE = 0xef
 endif
 
 LDFLAGS += -Wl,--section-start=.text=$(BOOT_SECTION_START)

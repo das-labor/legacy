@@ -33,6 +33,8 @@ else ifeq ($(MCU),atmega644)
 	AVRDUDE_MCU=m644
 else ifeq ($(MCU),atmega162)
 	AVRDUDE_MCU=m162
+else ifeq ($(MCU),atmega128)
+	AVRDUDE_MCU=m128
 endif
 
 AVRDUDE_FLAGS += -p $(AVRDUDE_MCU) -b $(AVRDUDE_BAUDRATE)
