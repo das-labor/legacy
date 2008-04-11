@@ -38,10 +38,15 @@
 #endif
 
 #if defined(__AVR_ATmega128__)
+    #define FLASH_G_64K
+#endif
+
+#if defined(FLASH_G_64K)
     uint32_t flash_address;             /* start flash (byte address, converted) write at this address */
 #else
     uint16_t flash_address;             /* start flash (byte address, converted) write at this address */
 #endif
+
 uint16_t eeprom_address;            /* start eerprom (byte address) write at this address */
 
 
@@ -328,7 +333,12 @@ int main(void)
                                 uart_putc(0);
                             }
 
+							#ifdef FLASH_G_64K
+                            uint32_t temp_address = flash_address;
+                            #else
                             uint16_t temp_address = flash_address;
+                            #endif
+							
                             boot_spm_busy_wait();
 
                             /* read data, wordwise, low byte first */
@@ -401,8 +411,12 @@ int main(void)
                                 uint16_t temp_word_buffer;
 
                                 /* read word */
+								#ifdef FLASH_G_64K
+								temp_word_buffer = pgm_read_word_far(flash_address);
+								#else
                                 temp_word_buffer = pgm_read_word(flash_address);
-
+								#endif
+								
                                 /* send data */
                                 uart_putc(LOW(temp_word_buffer));
                                 uart_putc(HIGH(temp_word_buffer));
