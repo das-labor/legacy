@@ -14,7 +14,7 @@ typedef struct{
 
 /******************************************************************************/
 
-typedef struct __packed__{
+typedef struct {
 	uint8_t marker;
 //	uint8_t marker2;
 	uint64_t id;
@@ -42,7 +42,7 @@ typedef struct qport_ctx{
 	uint8_t streamrx_index;
 	uint8_t streamrx_value;
 	void (*on_byterx)(uint8_t);
-	volatile enum {unkeyed, keyed, makingkey} keystate;
+	volatile enum {unkeyed, keyed, makeingkey} keystate;
 	qport_keypacket_t * keyingdata;
 } qport_ctx_t;
 
