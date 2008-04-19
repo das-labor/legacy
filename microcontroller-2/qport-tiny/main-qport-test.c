@@ -131,8 +131,12 @@ void lop1_sendrawbyte(uint8_t b){
 }
 /******************************************************************************/
 void lop1_streamrx(uint8_t b){
+#ifdef LED_DEBUG
 	PORTC &= 0xF0;
 	PORTC |= b&0x0F;
+#else
+	PORTC = b;
+#endif
 }
 /******************************************************************************/
 void lop1_msgrx(uint16_t len, uint8_t * msg){
@@ -241,7 +245,7 @@ int main(){
 			//	qport_streamsend(&qp0, x);
 				lop_sendstream(&lop1, x);
 			}
-			wait(500);
+			wait(50);
 		}
 	}
 

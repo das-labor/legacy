@@ -23,7 +23,7 @@
 #define HMAC_SHORTONLY
 #define QPTINY_AUTOKEYING
 //#define QPTINY_CRYPTO_OFF
-#define LED_DEBUG
+//#define LED_DEBUG
 
 #define DISPLAY_TIMEOUT 1000
 
