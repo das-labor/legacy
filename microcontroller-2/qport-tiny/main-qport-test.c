@@ -13,10 +13,11 @@
 
 #include <stdlib.h> /* random(), malloc(), free() */
 #include <string.h> /* memset */
+#include <stdio.h>
 #include "uart.h"
 #include "qport.h"
 #include "lop.h"
-#include "prng.h"
+#include "entropium.h"
 
 #include "hd44780.h"
 
@@ -80,23 +81,27 @@ void prng_init(void){
 	/* here we should add some entropy to the prng */
 	uint8_t i,j;
 	uint8_t b[64];
-	for(i=0; i<32; ++i){
+	for(i=0; i<48; ++i){
 		for(j=0; j<64; ++j){
 			b[j] = getbadrandom();
 		}
-		addEntropy(64*8,&b);
+		entropium_addEntropy(64*8,&b);
 	}
 }
 
 /******************************************************************************/
 
 void wait(int ms){
+	while(ms--)	
+		_delay_ms(1);
+#if 0
 	TCCR2 = 0x0C;				/* CTC Mode, clk/64 */
 	OCR2 = 125;					/* 1000Hz */
 	for(;ms>0;ms--){
 		while(!(TIFR&0x80));	/* wait for compare matzch flag */
 		TIFR=0x80;				/* reset flag */
 	}
+#endif	
 }
 
 /******************************************************************************/
@@ -126,7 +131,8 @@ void lop1_sendrawbyte(uint8_t b){
 }
 /******************************************************************************/
 void lop1_streamrx(uint8_t b){
-	PORTC = b;
+	PORTC &= 0xF0;
+	PORTC |= b&0x0F;
 }
 /******************************************************************************/
 void lop1_msgrx(uint16_t len, uint8_t * msg){
@@ -194,16 +200,14 @@ int main(){
 	lop_sendreset(&lop0);
 	uart_hook = onuartrx;
 	
-//	wait(getRandomByte()*16);
 	wait(500);
 	if(qp0.keystate == unkeyed)
 		qport_rekey(&qp0);
-			
 	while(1){
 		if(((pb=PINB & 0x0f)) != 0x0f){
 			pb = (~pb & 0x0f);
 			if(pb & 1){
-				PORTC ^= 0x20;
+			//	PORTC ^= 0x20;
 				qport_rekey(&qp0);	
 			}
 			if(pb & 2){
@@ -222,17 +226,17 @@ int main(){
 				char ts[30];
 				sprintf(ts,"counter = %u", counter);
 				counter++;
-				lop_sendmessage(&lop1,strlen(ts)+1,ts);
+				lop_sendmessage(&lop1,strlen(ts)+1,(uint8_t*)ts);
 				
 			}
 			if(pb & 4){
-				PORTC ^= 0x20;
+			//	PORTC ^= 0x20;
 				x+=1;
 			//	qport_streamsend(&qp0, x);
 				lop_sendstream(&lop1, x);
 			}
 			if(pb & 8){
-				PORTC ^= 0x20;
+			//	PORTC ^= 0x20;
 				x-=1;
 			//	qport_streamsend(&qp0, x);
 				lop_sendstream(&lop1, x);

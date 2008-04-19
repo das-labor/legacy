@@ -17,13 +17,26 @@
 #define URSEL UMSEL
 #endif
 
-
-#ifdef UART_XON_XOFF
-	#define DC1 0x11
-	#define DC3 0x13
-	#define XON  DC1
-	#define XOFF DC3
+#ifdef ATMEGA644
+#define UCSRB UCSR0B
+#define UCSRC UCSR0C
+#define UDR UDR0
+#define UBRRH UBRR0H
+#define UBRRL UBRR0L
+#define URSEL UMSEL00
+#define USART_UDRE_vect USART0_UDRE_vect
+#define USART_RXC_vect USART0_RX_vect
+#define UDRIE UDRIE0
+#define TXEN TXEN0
+#define UMSEL UMSEL0
+#define RXEN RXEN0
+#define RXCIE RXCIE0
+#define UCSZ0 UCSZ00
+#define UCSRA UCSR0A
+#define UDRE UDRE0
+#define RXC RXC0
 #endif
+
 
 #ifdef UART_XON_XOFF
  #ifdef UART_INTERRUPT
@@ -51,7 +64,7 @@ volatile static char *volatile txhead, *volatile txtail;
 	 void (*uart_hook) (uint8_t) = (void*)0;	/* this is a pointer to a function ;-) */
 #endif
 
-ISR(SIG_UART_DATA) {
+ISR(USART_UDRE_vect) {
 #ifdef UART_LEDS	
 	PORTC ^= 0x01;
 #endif
@@ -60,14 +73,15 @@ ISR(SIG_UART_DATA) {
 		UCSRB &= ~(1 << UDRIE);		/* disable data register empty IRQ */
 	} else {
 		#ifdef UART_XON_XOFF
-			while(txon==nogo);
+			while(txon==nogo)
+				;
 		#endif
 		UDR = *txtail;			/* schreibt das Zeichen x auf die Schnittstelle */
 		if (++txtail == (txbuf + UART_TXBUFSIZE)) txtail = txbuf;
 	}
 }
 
-ISR(SIG_UART_RECV) {
+ISR(USART_RXC_vect) {
 	int diff; 
 	char c;
 #ifdef UART_HOOK	
@@ -78,12 +92,18 @@ ISR(SIG_UART_RECV) {
 #endif
 	c=UDR;
 	#ifdef UART_XON_XOFF
-	 if (c==XON)  txon=go;
-	 if (c==XOFF) txon=nogo;
+	 if (c==XON){
+		  txon=go;
+		  return;
+	 }
+	 if (c==XOFF){
+		 txon=nogo;
+		 return;
+	 }
 	#endif
 	/* buffer full? */
 	diff = rxhead - rxtail;
-	if ( diff < 0 ) diff += UART_RXBUFSIZE; /* diff is the amount of bytes in buffer */
+	if (diff < 0) diff += UART_RXBUFSIZE; /* diff is the amount of bytes in buffer */
 	if (diff < UART_RXBUFSIZE -1) {
 		// buffer NOT full
 #ifdef UART_HOOK
@@ -97,15 +117,19 @@ ISR(SIG_UART_RECV) {
 			hook_running = 0;
 		} else {
 			*rxhead = c;
-			if (++rxhead == (rxbuf + UART_RXBUFSIZE)) rxhead = rxbuf;
+			++rxhead;
+			if (rxhead == (rxbuf + UART_RXBUFSIZE)) rxhead = rxbuf;
 		}
 #else	
 		*rxhead = c;
-		if (++rxhead == (rxbuf + UART_RXBUFSIZE)) rxhead = rxbuf;
+		++rxhead;
+		if (rxhead == (rxbuf + UART_RXBUFSIZE))
+			rxhead = rxbuf;
 #endif
 	} else {
 						//reads the buffer to clear the interrupt condition
 	}
+#ifdef UART_XON_XOFF	
 	if((diff > UART_XON_XOFF_THRESHOLD_1) && (rxon==go)){
 		rxon=nogo;
 		uart_insertc(XOFF);
@@ -114,18 +138,23 @@ ISR(SIG_UART_RECV) {
 		rxon=go;
 		uart_insertc(XON);
 	}
-
+#endif
 }
 
 #endif // UART_INTERRUPT
 
 
-void uart_init(void) {
+void uart_init() {
 	PORTD |= 0x01;				//Pullup an RXD an
-
+	
 	UCSRB |= (1<<TXEN);			//UART TX einschalten
+#ifdef ATMEGA644
+	UCSRA = 0;
+	UCSRC = (3<<UCSZ0);		    //Asynchron 8N1
+#else	
+    UCSRA = 0;
 	UCSRC |= (1<<URSEL)|(3<<UCSZ0);		//Asynchron 8N1
-
+#endif
 	UCSRB |= ( 1 << RXEN );			//Uart RX einschalten
 
 	UBRRH=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU)>>8);
@@ -137,7 +166,11 @@ void uart_init(void) {
 	txhead = txtail = txbuf;
 
 	// activate rx IRQ
-	UCSRB |= (1 << RXCIE);
+	UCSRB |= _BV(RXCIE) | _BV(UDRIE);
+	sei();
+//	#ifdef ATMEGA644
+//	UCSRB |= _BV(UDRIE);
+//	#endif
 #endif // UART_INTERRUPT
 }
 
@@ -180,7 +213,7 @@ void uart_putc(char c) {
 	while (!(UCSRA & (1<<UDRE))) /* warten bis Senden moeglich */
 		; 
 	#ifdef UART_XON_XOFF
-	while (txon==nogo) 			/* warte bis XON empfangen */
+	while (txon==nogo) 			 /* warte bis XON empfangen */
 		;
 	#endif
 	UDR = c;                  /* schreibt das Zeichen x auf die Schnittstelle */
@@ -204,8 +237,8 @@ void uart_putstr_P(PGM_P str) {
 
 void uart_hexdump(void* buf, int len)
 {
-	unsigned char table[]={'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
-	
+	unsigned char table[]={'0','1','2','3','4','5','6','7',
+		                   '8','9','a','b','c','d','e','f'};
 	while(len--){
 		uart_putc(table[((*((char*)buf))>>4)&0xf]);
 		uart_putc(table[(*((char*)buf))&0xf]);
@@ -220,10 +253,13 @@ char uart_getc(void)
 {
 	char val;
 
-	while(rxhead==rxtail) ;
+	while(rxhead==rxtail)
+		;
 
 	val = *rxtail;
- 	if (++rxtail == (rxbuf + UART_RXBUFSIZE)) rxtail = rxbuf;
+ 	++rxtail;
+ 	if (rxtail == (rxbuf + UART_RXBUFSIZE))
+ 		rxtail = rxbuf;
 
 	return val;
 }
@@ -231,7 +267,8 @@ char uart_getc(void)
 char uart_getc(void)
 {
 	char t;
-	while (!(UCSRA & (1<<RXC)));	// warten bis Zeichen verfuegbar
+	while (!(UCSRA & (1<<RXC)))
+		;	// warten bis Zeichen verfuegbar
 	t=UDR;
 	#ifdef UART_XON_XOFF
 	if (t==XON)  txon=go;

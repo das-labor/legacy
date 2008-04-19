@@ -10,17 +10,16 @@
 #include <stdint.h>
 #include <stdlib.h> 
 #include <string.h>
-#include <avr/eeprom.h> 
+#include <avr/eeprom.h>
+#include <avr/interrupt.h>
 #include "config.h"
 #include "qport.h"
 #include "lop.h"
-#include "prng.h"
+#include "entropium.h"
 #include "hmac-sha256.h"
 #include "sha256.h"
 #include "xtea.h"
 
-
-#define LED_DEBUG
 
 #ifdef LED_DEBUG
  #include <avr/io.h>
@@ -143,7 +142,7 @@ void qport_recieve_byte(qport_ctx_t * ctx, uint8_t b){
 	#endif
 	if(ctx->keystate == unkeyed){
 		#ifdef LED_DEBUG
-		PORTC |= 0x40;
+	//	PORTC |= 0x40;
 		#endif
 		return;
 	}
@@ -175,7 +174,7 @@ void qport_recieve_byte(qport_ctx_t * ctx, uint8_t b){
 #define MARKER_KP         0x01
 static
 void genkeypacket(qport_keypacket_t * kp){
-	fillBlockRandom(kp, sizeof(qport_keypacket_t));
+	entropium_fillBlockRandom(kp, sizeof(qport_keypacket_t));
 	kp->marker = MARKER_KP;
 }
 
@@ -222,14 +221,18 @@ void qport_setupstream(qport_ctx_t * ctx, uint8_t rxtx, uint8_t * a, uint8_t * b
 
 void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
 	#ifdef LED_DEBUG
-	PORTC ^= 0x08;
+	PORTC ^= 0x10;
 	#endif
-	while(ctx->keystate==makingkey){
+	while(ctx->keystate==makeingkey){
+		#ifdef LED_DEBUG
+		PORTC ^= 0x80;
+		#endif
+		return;		
 	}
 	if(ctx->keyingdata && (ctx->keyingdata->id == kp->id)){
 		/* we recived a response to our kp */
 		#ifdef LED_DEBUG
-		PORTC |= 0x04;
+		PORTC |= 0x40;
 		#endif
 		qport_setupstream(ctx, TX, ctx->keyingdata->seed_a, kp->seed_a);
 		qport_setupstream(ctx, RX, ctx->keyingdata->seed_b, kp->seed_b);
@@ -240,8 +243,12 @@ void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
 		if((!ctx->keyingdata)||(ctx->keyingdata && ((ctx->keyingdata->id) > (kp->id)))){ /* lower ID wins */
 		/* we should respond to the incomming packet */
 			#ifdef LED_DEBUG
-			PORTC ^= 2;
+			PORTC ^= 0x20;
 			#endif
+			if (ctx->keyingdata){
+				free(ctx->keyingdata);
+				ctx->keyingdata = 0;
+			}
 			qport_keypacket_t kpresponse;
 			genkeypacket(&kpresponse);
 			kpresponse.id = kp->id;
@@ -266,13 +273,8 @@ void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
 				memcpy(ctx->streamstate_txb, help, 8);
 			}
 			ctx->keystate = keyed;
-		}
-		if(ctx->keyingdata){
-			#ifdef LED_DEBUG
-			PORTC ^= 1;
-			#endif
-			free(ctx->keyingdata);
-			ctx->keyingdata = 0;
+		}else{
+			/* the other party should respond to our packet and we might simply their */		
 		}
 	}
 }
@@ -280,11 +282,23 @@ void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
 /******************************************************************************/
 
 void qport_rekey(qport_ctx_t * ctx){
-	ctx->keystate = makingkey;
-	ctx->keyingdata = malloc(sizeof(qport_keypacket_t));
-	genkeypacket(ctx->keyingdata);
-	lop_sendmessage(ctx->lop, sizeof(qport_keypacket_t), (uint8_t*)(ctx->keyingdata));
-	ctx->keystate = unkeyed;
+	qport_keypacket_t* temp;
+	
+	temp = malloc(sizeof(qport_keypacket_t));
+	genkeypacket(temp);
+	
+	if(ctx->keystate == unkeyed){
+		ctx->keystate = makeingkey;
+		cli();
+		if(ctx->keyingdata)
+			free(ctx->keyingdata);
+		ctx->keyingdata = temp;
+		lop_sendmessage(ctx->lop, sizeof(qport_keypacket_t), (uint8_t*)(ctx->keyingdata));
+		ctx->keystate = unkeyed;
+		sei();
+	}else{
+		free(temp);
+	}
 }
 
 /******************************************************************************/

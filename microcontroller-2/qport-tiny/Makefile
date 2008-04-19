@@ -1,7 +1,9 @@
+include gmsl
+
 PRG            = qport-test
 OBJ            = main-qport-test.o lop.o  uart.o qport.o sha256-asm.o \
-		  hd44780.o xtea-asm.o prng.o hmac-sha256.o
-MCU_TARGET     = atmega32
+		  hd44780.o xtea-asm.o hmac-sha256.o entropium.o
+MCU_TARGET     = atmega644
 OPTIMIZE       = -Os -mno-tablejump
 
 FLASHCMD       = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB0 -c avr911 -U flash:w:$(PRG).hex  -U eeprom:w:$(PRG)_eeprom.hex
@@ -13,7 +15,7 @@ EEPROM_FLASHCMD = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB0 -c avr911 -U eeprom:w
 
 RANDOM_64      = `hexdump -n 64  -e '15/4  " 0x%08x," " 0x%08x" "\n"' /dev/urandom`
 
-DEFS           = -DF_CPU=16000000 -DRANDOM_SEED="$(RANDOM_64)"
+DEFS           = -DF_CPU=16000000 -D$(call uc, $(MCU_TARGET)) -DRANDOM_SEED="$(RANDOM_64)"
 #"`hexdump -n 64  -e '15/4  " 0x%08x," " 0x%08x" "\n"' /dev/urandom`"
 
 LIBS           =
@@ -46,7 +48,7 @@ clean:
 	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak 
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
 
-flash:
+flash: $(PRG).hex
 	$(ERASECMD)
 	$(FLASHCMD)
 
