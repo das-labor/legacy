@@ -91,14 +91,11 @@
 void rfm12_init();
 void rfm12_data(uint16_t d);
 
+void rfm12_tick();
 
-
-#if RFM12_ENABLETXERRORHANDLING
-uint8_t rfm12_tx ( uint8_t in_len, uint8_t in_type, uint8_t *in_data );
 uint8_t rfm12_start_tx(uint8_t type, uint8_t length);
-#else
-void rfm12_start_tx(uint8_t type, uint8_t length);
-#endif
+
+uint8_t rfm12_tx(uint8_t len, uint8_t type, uint8_t *data);
 
 uint16_t rfm12_read(uint16_t d);
 
@@ -106,6 +103,7 @@ static inline uint8_t rfm12_tx_status();
 
 static inline uint8_t *rfm12_rx_buffer();
 static inline void rfm12_rx_clear();
+
 
 /* Private structs needed for inline functions */
 
