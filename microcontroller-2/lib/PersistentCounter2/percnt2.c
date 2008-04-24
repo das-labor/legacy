@@ -25,6 +25,8 @@
  #define PERCNT_CS 4 /* counter size (max 4)*/
 #endif
 
+#define PERCNT_RESETONERROR
+
 #ifndef PERCNT_POLICY_INC
  #ifndef PERCNT_POLICY_STAY
  #define PERCNT_POLICY_INC
@@ -59,10 +61,12 @@ void percnt_reset(uint8_t counter){
 	for(i=0; i<PERCNT_BPC; ++i){
 		eeprom_write_byte(&(percnt_count[counter][counterA][i]), 0);
 	}
-	for(i=0; i<PERCNT_BPC; ++i){
+	eeprom_write_byte(&(percnt_count[counter][counterB][0]), 1);
+	for(i=1; i<PERCNT_BPC; ++i){
 		eeprom_write_byte(&(percnt_count[counter][counterB][i]), 0);
 	}
-	for(i=0; i<PERCNT_BPC; ++i){
+	eeprom_write_byte(&(percnt_count[counter][counterC][0]), 2);
+	for(i=1; i<PERCNT_BPC; ++i){
 		eeprom_write_byte(&(percnt_count[counter][counterC][i]), 0);
 	}
 	for(i=0; i<PERCNT_MBS; ++i){
@@ -74,6 +78,7 @@ void percnt_reset(uint8_t counter){
 	for(i=0; i<PERCNT_MBS; ++i){
 		eeprom_write_byte(&(percnt_mb[counter][counterC][i]), 0);
 	}
+	percnt_active[counter]=counterC;
 }
 
 static
@@ -146,6 +151,7 @@ uint32_t percnt_readcntx(uint8_t counter, percnt_active_t subc){
 		while(((maskb[j/8])>>(j%8))&1)
 			++j;
 		((uint8_t*)&ret)[i]=eeprom_read_byte(&(percnt_count[counter][subc][j]));
+		++j;
 	}
 	return ret;
 }
@@ -153,7 +159,7 @@ uint32_t percnt_readcntx(uint8_t counter, percnt_active_t subc){
 /******************************************************************************/
 
 uint32_t percnt_get(uint8_t counter){
-	return percnt_readcntx(counter, percnt_active[counter]);
+	return percnt_readcntx(counter, percnt_active[counter])-2;
 }
 
 /******************************************************************************/
@@ -164,7 +170,7 @@ uint8_t percnt_inc(uint8_t counter){
 	percnt_active[counter] += 1;
 	if (percnt_active[counter] == 3)
 		percnt_active[counter] = 0;
-	return percnt_writecntx(t+1, counter, percnt_active[counter]);
+	return percnt_writecntx(t+3, counter, percnt_active[counter]);
 }
 
 /******************************************************************************/
@@ -229,6 +235,11 @@ uint8_t percnt_init(uint8_t counter){
 		} else {
 			/* something realy strange happened */
 			/* might we have to initialise or so, but we must make sure that no one evil drives us here */
+			#ifdef PERCNT_RESETONERROR
+			percnt_reset(counter);
+			return 0;
+			#endif
+			
 			return 23;
 		}
 	}
