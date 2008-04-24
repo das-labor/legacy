@@ -1,17 +1,17 @@
 /**** RFM 12 library for Atmel AVR Microcontrollers *******
  * 
- * PulseAudio is free software; you can redistribute it and/or modify
+ * This software is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation; either version 2 of the License,
  * or (at your option) any later version.
  *
- * PulseAudio is distributed in the hope that it will be useful, but
+ * This software is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with PulseAudio; if not, write to the Free Software
+ * along with this software; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
  *
@@ -25,6 +25,9 @@
 #include "rfm12_hw.h"
 #include "rfm12.h"
 
+#if RFM12_UART_DEBUG
+	#include "test/uart.h"
+#endif
 
 /*
 	Set User Parameters here
@@ -203,18 +206,22 @@ ISR(RFM12_INT_VECT)
 	//to get the interrupt flags
 	status = rfm12_read_int_flags_inline();
 
-#if RFM12_UART_DEBUG
-	uart_putc('S');
-	uart_putc(status);
-#endif
 
 	//check if the fifo interrupt occurred
 	if(status & (RFM12_STATUS_FFIT>>8))
 	{
-		if(rfm12_mode == MODE_TX)
+
+#if RFM12_UART_DEBUG
+			uart_putc('F');
+#endif
+		if (rfm12_mode == MODE_TX)
 		{
 			//the fifo interrupt occurred, and we are in TX mode,
 			//so the fifo wants the next byte to TX.
+
+#if RFM12_UART_DEBUG
+			uart_putc('T');
+#endif
 			
 			if(rf_tx_buffer.bytecount < rf_tx_buffer.num_bytes)
 			{
@@ -361,8 +368,29 @@ void rfm12_tick()
 {
 	uint16_t status;
 	static uint8_t channel_free_count;
+
+#if RFM12_UART_DEBUG
+	static uint8_t oldmode;
+	if (oldmode != rfm12_mode)
+	{
+		uart_putstr ("mode change: ");
+		switch (rfm12_mode)
+		{
+			case MODE_RX:
+				uart_putc ('r');
+			break;
+			case MODE_TX:
+				uart_putc ('t');
+			break;
+			default:
+				uart_putc ('?');
+		}
+		oldmode = rfm12_mode;
+	}
+#endif
+
+
 	status = rfm12_read(RFM12_CMD_STATUS);
-	
 	
 	
 	//check if we see a carrier
@@ -444,7 +472,7 @@ uint8_t rfm12_start_tx(uint8_t type, uint8_t length)
  */
 uint8_t rfm12_tx ( uint8_t in_len, uint8_t in_type, uint8_t *in_data )
 {
-	uint8_t returnstatus
+	uint8_t returnstatus;
 	if (in_len > RFM12_TX_BUFFER_SIZE) return RFM12_TX_OVERFLOW;
 
 	memcpy ( rf_tx_buffer.buffer, in_data, in_len );
@@ -494,10 +522,18 @@ void rfm12_start_tx(uint8_t type, uint8_t length)
  */
 void rfm12_tx ( uint8_t in_len, uint8_t in_type, uint8_t *in_data )
 {
+	#if RFM12_UART_DEBUG
+		uart_putstr ("sending: ");
+		uart_putstr (in_data);
+		uart_putstr ("\r\n");
+	#endif
 	if (in_len > RFM12_TX_BUFFER_SIZE) return;
+	uart_putc('a');
 
 	memcpy ( rf_tx_buffer.buffer, in_data, in_len );
+	uart_putc('c');
 	rfm12_start_tx (in_type, in_len);
+	uart_putc('l');
 }
 #endif
 
@@ -571,3 +607,5 @@ void rfm12_init()
 	//activate the interrupt
 	RFM12_INT_ON();
 }
+
+
