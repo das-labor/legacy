@@ -1,6 +1,8 @@
-PRG            = percnt-test
-OBJ            = main.o persistentCounter.o uart.o 
-MCU_TARGET     = atmega32
+include gmsl
+
+PRG            = percnt2-test
+OBJ            = main.o percnt2.o uart.o 
+MCU_TARGET     = atmega644
 OPTIMIZE       = -Os -mno-tablejump
 
 FLASHCMD       = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB0 -c avr911 -U flash:w:$(PRG).hex  -U eeprom:w:$(PRG)_eeprom.hex
@@ -10,7 +12,7 @@ EEPROM_FLASHCMD = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB0 -c avr911 -U eeprom:w
 
 #uisp -dprog=bsd -dlpt=/dev/parport1 --erase
 
-DEFS           = -DF_CPU=16000000
+DEFS           = -DF_CPU=16000000 -D$(call uc,$(MCU_TARGET))
 
 LIBS           =
 
