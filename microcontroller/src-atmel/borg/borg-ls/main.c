@@ -13,16 +13,17 @@
 #include "pixel.h"
 #include "borg_can.h"
 #include "prng.h"
-#include "persistentCounter.h"
+#include "percnt2.h"
 
 jmp_buf newmode_jmpbuf;
 
 int main (void){
 	unsigned char mode;
 
+	percnt_init(0);
 	clear_screen(0);
-	srandom(percnt_get());
-	percnt_inc();
+	srandom(percnt_get(0));
+	percnt_inc(0);
 	borg_hw_init();
 	bcan_init();	
 	sei();
@@ -34,6 +35,10 @@ int main (void){
 		switch(mode++) {
 		case 1:
 			scrolltext((unsigned char*)scrolltext_text);
+			{   char a[40];  
+				sprintf_P(a,PSTR("</# counter == %lu "), percnt_get(0)); 
+				scrolltext((unsigned char*)a); 
+			} 
 			break;
 		case 2:
 			spirale(5);
