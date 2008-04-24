@@ -10,13 +10,11 @@
 int main ( void )
 {
 	uint8_t *bufcontents;
-	uint8_t tmp;
 	uint8_t i;
 
-	uint16_t txbuf = 0x00;
 	uint16_t ticker = 0;
 
-	const char *tv = "testvektor\r\n";
+	uint8_t *tv = (uint8_t*)  "testvektor\r\n";
 	
 	/* Laborboard setup */
 	DDRC = 0xFF;
@@ -56,13 +54,9 @@ int main ( void )
 			// can be reused for the next data.
 			rfm12_rx_clear();
 
-			tmp >>= 1;
-			if (!tmp) tmp = 0x80;
 		}
 
 
-//		rfm12_tx (1, 0, tmp);
-		
 		if (!(PINB & (_BV(PB0))) && (ticker % 3000 == 0))
 		{
 			uart_putc ('#');
