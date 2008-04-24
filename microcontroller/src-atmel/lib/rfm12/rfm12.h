@@ -25,17 +25,6 @@
  ******************************************************/
 
 
-/**** TX ERROR HANDLING
- * en- or disable error handling for sending data
- * 0 = disable, >=1 enable
- *
- * this option enables return states for rfm12_tx() and it
- * adds slightly more overhead. This option is only recommended
- * and probably only useful for cases where you have multiple
- * entities/functions sending out data via the rfm12 module.
- */
-#define RFM12_ENABLETXERRORHANDLING 0
-
 /**** TX BUFFER SIZE
  */
 #define RFM12_TX_BUFFER_SIZE 30
