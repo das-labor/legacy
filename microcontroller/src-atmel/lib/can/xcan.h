@@ -4,7 +4,7 @@
 #include "config.h"
 
 /*****************************************************************************
- * Simple CAN Library
+ * Simple CAN Library for use with avrx
  *
  */
 

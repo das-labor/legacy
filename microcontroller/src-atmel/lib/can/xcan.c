@@ -312,6 +312,10 @@ void can_init(){
 #	error Can Baudrate is only defined for F_MCP 8, 16 and 20 MHz
 #	endif
 
+	//SJW=1, BLTMODE=1, SAM=1, PHSEG1=6, PHSEG2=5, PRSEG=1
+	//CNF1 = SJW1-0:BRP5-0
+	//CNF2 = BLTMODE:SAM:PHSEG12-PHSEG10:PRSEG2-PRSEG0
+	//CNF3 = SOF:WAKFIL:X:X:X:PHSEG22-PHSEG20
 	mcp_write( CNF1, 0x40 | CNF1_T );
 	mcp_write( CNF2, 0xf1 );
 	mcp_write( CNF3, 0x05 );
