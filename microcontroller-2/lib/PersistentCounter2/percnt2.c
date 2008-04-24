@@ -7,6 +7,7 @@
  */
  
 
+#include <stdlib.h> /* labs() */
 #include <stdint.h>
 #include <avr/eeprom.h>
 
@@ -22,6 +23,19 @@
 
 #ifndef PERCNT_CS
  #define PERCNT_CS 4 /* counter size (max 4)*/
+#endif
+
+#ifndef PERCNT_POLICY_INC
+ #ifndef PERCNT_POLICY_STAY
+ #define PERCNT_POLICY_INC
+// #error You have to specify a counter policy either PERCNT_POLICY_STAY or PERCNT_POLICY_INC
+ #endif
+#endif
+
+#ifdef PERCNT_POLICY_INC
+ #ifdef PERCNT_POLICY_STAY
+ #error You have to specify a counter policy either PERCNT_POLICY_STAY or PERCNT_POLICY_INC (not both)
+ #endif
 #endif
 
 uint8_t percnt_count[PERCNT_NO][3][PERCNT_BPC] EEMEM;
@@ -153,8 +167,74 @@ uint8_t percnt_inc(uint8_t counter){
 	return percnt_writecntx(t+1, counter, percnt_active[counter]);
 }
 
+/******************************************************************************/
 
-
+uint8_t percnt_init(uint8_t counter){
+	uint32_t a,b,c;
+	uint32_t dab, dac, dbc;
+	a = percnt_readcntx(counter, counterA);
+	b = percnt_readcntx(counter, counterB);
+	c = percnt_readcntx(counter, counterC);
+	dab = labs(a-b);
+	dac = labs(a-c);
+	dbc = labs(b-c);
+	if(dab==1 && dac==1 && dbc==1){
+		/* this should be the regular case */
+		if(a>b && a>c)
+			percnt_active[counter]=counterA;
+		if(b>a && b>c)
+			percnt_active[counter]=counterB;
+		if(c>a && c>b)
+			percnt_active[counter]=counterC;
+		return 0;
+	} else {
+		/* here it gets intresting */
+		if(dab==1 || dac==1 || dbc==1){
+			/* we might got interrupted while incrementing */
+			/* action depends on policy either finish the increment or not */
+			#ifdef PERCNT_POLICY_STAY
+			if(dab==1){
+				percnt_active[counter]=(a<b)?counterB:counterA;
+				c = (a<b)?(a-1):(b-1);
+				return percnt_writecntx(c, counter, counterC);
+			}
+			if(dac==1){
+				percnt_active[counter]=(a<c)?counterC:counterA;
+				b = (a<c)?(a-1):(c-1);
+				return percnt_writecntx(b, counter, counterB);
+			}
+			if(dbc==1){
+				percnt_active[counter]=(b<c)?counterC:counterB;
+				a = (b<c)?(b-1):(c-1);
+				return percnt_writecntx(a, counter, counterA);
+			}
+			#endif
+			#ifdef PERCNT_POLICY_INC
+			if(dab==1){
+				percnt_active[counter]=counterC;
+				c = (a<b)?(a-1):(b-1);
+				return percnt_writecntx(c+1, counter, counterC);
+			}
+			if(dac==1){
+				percnt_active[counter]=counterB;
+				b = (a<c)?(a-1):(c-1);
+				return percnt_writecntx(b+1, counter, counterB);
+			}
+			if(dbc==1){
+				percnt_active[counter]=counterA;
+				a = (b<c)?(b-1):(c-1);
+				return percnt_writecntx(a+1, counter, counterA);
+			}
+			#endif
+		} else {
+			/* something realy strange happened */
+			/* might we have to initialise or so, but we must make sure that no one evil drives us here */
+			return 23;
+		}
+	}
+	/* we won't get here, but to keep the compile quiet: */
+	return 42;
+}
 
 
 
