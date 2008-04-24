@@ -33,6 +33,28 @@
 	Set User Parameters here
 */
 
+/*
+	Connect the RFM12 to the AVR as follows:
+
+	RFM12			|	AVR
+	----------------+------------
+	SDO				|	MISO
+	nIRQ			|	INT0
+	FSK/DATA/nFFS	|	VCC
+	DCLK/CFIL/FFIT	|	-
+	CLK				|	-
+	nRES			|	-
+	GND				|	GND
+	ANT				|	-
+	VDD				|	VCC
+	GND				|	GND
+	nINT/VDI		|	-
+	SDI				|	MOSI
+	SCK				|	SCK
+	nSEL			|	Slave select pin defined below
+*/
+
+
 //Pin that slave select is connected to
 #define DDR_SS DDRB
 #define PORT_SS PORTB
