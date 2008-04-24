@@ -14,7 +14,7 @@ int main ( void )
 
 	uint16_t ticker = 0;
 
-	uint8_t *tv = (uint8_t*)  "testvektor\r\n";
+	uint8_t tv[] = "testvektor\r\n";
 	
 	/* Laborboard setup */
 	DDRC = 0xFF;
