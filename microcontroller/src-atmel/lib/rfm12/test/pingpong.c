@@ -20,10 +20,19 @@ int main ( void )
 	DDRC = 0xFF;
 	PORTC = 0xAA;
 
-	rfm12_init();
 	uart_init();
+
+	uart_putc('a');
+
+	rfm12_init();
 	
+	uart_putc('b');
+
 	sei();
+	
+	uart_putc('c');
+
+	//while(1);
 	
 	PORTB |= 0x0f;
 

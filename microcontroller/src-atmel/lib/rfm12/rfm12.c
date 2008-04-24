@@ -67,7 +67,7 @@
 #define BIT_MOSI 5
 #define BIT_MISO 6
 #define BIT_SCK  7
-
+#define BIT_SPI_SS 4
 
 //frequency to use
 #define FREQ 433000000UL
@@ -233,7 +233,7 @@ ISR(RFM12_INT_VECT)
 	if(status & (RFM12_STATUS_FFIT>>8))
 	{
 
-#if RFM12_UART_DEBUG
+#if RFM12_UART_DEBUG >= 2
 			uart_putc('F');
 #endif
 		if (rfm12_mode == MODE_TX)
@@ -241,7 +241,7 @@ ISR(RFM12_INT_VECT)
 			//the fifo interrupt occurred, and we are in TX mode,
 			//so the fifo wants the next byte to TX.
 
-#if RFM12_UART_DEBUG
+#if RFM12_UART_DEBUG >= 2
 			uart_putc('T');
 #endif
 			
@@ -271,7 +271,7 @@ ISR(RFM12_INT_VECT)
 		{
 			static uint8_t checksum;
 
-#if RFM12_UART_DEBUG
+#if RFM12_UART_DEBUG >= 2
 			uart_putc('R');
 			uart_putc(rfm12_read_fifo_inline());
 #endif
@@ -393,10 +393,11 @@ void rfm12_tick()
 
 #if RFM12_UART_DEBUG
 	static uint8_t oldmode;
-	if (oldmode != rfm12_mode)
+	uint8_t mode = rfm12_mode;
+	if (oldmode != mode)
 	{
 		uart_putstr ("mode change: ");
-		switch (rfm12_mode)
+		switch (mode)
 		{
 			case MODE_RX:
 				uart_putc ('r');
@@ -407,13 +408,20 @@ void rfm12_tick()
 			default:
 				uart_putc ('?');
 		}
-		oldmode = rfm12_mode;
+		oldmode = mode;
 	}
 #endif
 
+	//don't disturb RFM12 if transmitting
+	if(rfm12_mode == MODE_TX)
+		return;
 
+	//disable the interrupt (as we're working directly with the transceiver now)
+	RFM12_INT_OFF();
+				
 	status = rfm12_read(RFM12_CMD_STATUS);
 	
+	RFM12_INT_ON();
 	
 	//check if we see a carrier
 	if(status & RFM12_STATUS_RSSI){
@@ -467,7 +475,7 @@ void rfm12_tick()
 uint8_t rfm12_start_tx(uint8_t type, uint8_t length)
 {
 	//exit if the buffer isn't free
-	if((rf_tx_buffer.status != STATUS_FREE) || (rf_rx_buffer.status != STATUS_FREE))
+	if(rf_tx_buffer.status != STATUS_FREE)
 		return RFM12_TX_OCCUPIED;
 	
 	//calculate number of bytes to be sent by ISR
@@ -501,7 +509,7 @@ uint8_t rfm12_tx ( uint8_t len, uint8_t type, uint8_t *data )
 	if (len > RFM12_TX_BUFFER_SIZE) return;
 
 	//exit if the buffer isn't free
-	if((rf_tx_buffer.status != STATUS_FREE) || (rf_rx_buffer.status != STATUS_FREE))
+	if(rf_tx_buffer.status != STATUS_FREE)
 		return RFM12_TX_OCCUPIED;
 	
 	memcpy ( rf_tx_buffer.buffer, data, len );
@@ -510,7 +518,7 @@ uint8_t rfm12_tx ( uint8_t len, uint8_t type, uint8_t *data )
 
 void spi_init()
 {
-	DDR_SPI |= (1<<BIT_MOSI) | (1<<BIT_SCK);
+	DDR_SPI |= (1<<BIT_MOSI) | (1<<BIT_SCK) | (1<<BIT_SPI_SS);
 	SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);//SPI Master, clk/16
 }
 
@@ -518,9 +526,10 @@ void spi_init()
 
 void rfm12_init()
 {
-	spi_init();
 	DDR_SS |= (1<<BIT_SS);
 	SS_RELEASE();
+	
+	spi_init();
 	
 	rf_tx_buffer.sync[0] = SYNC_MSB;
 	rf_tx_buffer.sync[1] = SYNC_LSB;
