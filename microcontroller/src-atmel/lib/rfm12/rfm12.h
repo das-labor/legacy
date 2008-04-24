@@ -99,7 +99,7 @@ uint8_t rfm12_tx(uint8_t len, uint8_t type, uint8_t *data);
 
 uint16_t rfm12_read(uint16_t d);
 
-static inline uint8_t rfm12_tx_status();
+//static inline uint8_t rfm12_tx_status();
 
 static inline uint8_t *rfm12_rx_buffer();
 static inline void rfm12_rx_clear();
