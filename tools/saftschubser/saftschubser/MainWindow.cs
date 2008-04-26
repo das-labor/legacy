@@ -11,7 +11,7 @@ namespace saftschubser
 
 public partial class MainWindow: Gtk.Window
 {	
-	Gtk.Widget mainScreen; 
+	Gtk.Widget kaufenScreen; 
 			
 	public MainWindow (): base (Gtk.WindowType.Toplevel)
 	{
@@ -23,12 +23,11 @@ public partial class MainWindow: Gtk.Window
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
 	{
 		Application.Quit ();
-		a.RetVal = true;k.
+		a.RetVal = true;
 	}
 
 	protected virtual void kaufenClicked (object sender, System.EventArgs e)
 	{
-		vbox1.Remove
 		vbox1.Add( new Kauf());
 		vbox1.ShowAll();
 	}
