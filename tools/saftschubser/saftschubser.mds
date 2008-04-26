@@ -1,0 +1,16 @@
+<Combine name="saftschubser" fileversion="2.0">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry build="True" name="saftschubser" configuration="Debug" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry build="True" name="saftschubser" configuration="Release" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="saftschubser" single="True">
+    <Execute type="None" entry="saftschubser" />
+  </StartMode>
+  <Entries>
+    <Entry filename="saftschubser/saftschubser.mdp" />
+  </Entries>
+</Combine>
