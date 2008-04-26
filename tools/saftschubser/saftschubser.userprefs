@@ -1,17 +1,15 @@
-﻿<UserCombinePreferences version="1.0" filename="/home/mati/saftschubser/saftschubser.mds">
+﻿<UserCombinePreferences version="1.0" filename="/home/ex/svn/labor/saftschubser/saftschubser.mds">
   <Files>
     <File name="Welcome" />
     <File name="saftschubser/Main.cs" line="1" column="1" />
-    <File name="saftschubser/MainWindow.cs" line="25" column="36" />
+    <File name="saftschubser/MainWindow.cs" line="14" column="19" />
     <File name="saftschubser/Kauf.cs" line="1" column="1" />
   </Files>
   <Views>
     <ViewMemento id="ProjectPad">
       <Node expanded="True">
         <Node name="saftschubser" expanded="True">
-          <Node name="References" expanded="True" />
-          <Node name="UserInterface" expanded="True" />
-          <Node name="MainWindow.cs" selected="True" />
+          <Node name="Kauf.cs" selected="True" />
         </Node>
       </Node>
     </ViewMemento>
@@ -23,7 +21,7 @@
     </ViewMemento>
   </Views>
   <Properties>
-    <Property key="ActiveWindow" value="/home/mati/saftschubser/saftschubser/MainWindow.cs" />
+    <Property key="ActiveWindow" value="/home/ex/svn/labor/saftschubser/saftschubser/Kauf.cs" />
     <Property key="ActiveConfiguration" value="Debug" />
   </Properties>
 </UserCombinePreferences>

@@ -58,7 +58,6 @@ namespace saftschubser {
             // Container child hbox1.Gtk.Box+BoxChild
             this.button1 = new Gtk.Button();
             this.button1.CanFocus = true;
-            this.button1.Name = "button1";
             this.button1.UseUnderline = true;
             // Container child button1.Gtk.Container+ContainerChild
             Gtk.Alignment w2 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
