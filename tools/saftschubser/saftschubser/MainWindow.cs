@@ -28,8 +28,11 @@ public partial class MainWindow: Gtk.Window
 
 	protected virtual void kaufenClicked (object sender, System.EventArgs e)
 	{
-		vbox1.Add( new Kauf());
+		//vbox1.Add( new Kauf());
+		vbox1.Remove(kaufenScreen);
+		vbox1.Add( kaufenScreen);
 		vbox1.ShowAll();
+			
 	}
 }
 	
