@@ -1,0 +1,6 @@
+<objects>
+  <object type="saftschubser.Kauf" palette-category="saftschubser" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+</objects>
