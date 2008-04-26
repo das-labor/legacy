@@ -17,7 +17,7 @@ namespace saftschubser {
         
         private Gtk.HBox hbox3;
         
-        private Gtk.VBox vbox2;
+        private Gtk.Table table1;
         
         private Gtk.Button button6;
         
@@ -42,53 +42,128 @@ namespace saftschubser {
             this.hbox3 = new Gtk.HBox();
             this.hbox3.Name = "hbox3";
             this.hbox3.Spacing = 6;
+            this.hbox3.BorderWidth = ((uint)(6));
             // Container child hbox3.Gtk.Box+BoxChild
-            this.vbox2 = new Gtk.VBox();
-            this.vbox2.Name = "vbox2";
-            this.vbox2.Spacing = 6;
-            // Container child vbox2.Gtk.Box+BoxChild
+            this.table1 = new Gtk.Table(((uint)(2)), ((uint)(2)), false);
+            this.table1.Name = "table1";
+            this.table1.RowSpacing = ((uint)(6));
+            this.table1.ColumnSpacing = ((uint)(6));
+            // Container child table1.Gtk.Table+TableChild
             this.button6 = new Gtk.Button();
             this.button6.CanFocus = true;
             this.button6.Name = "button6";
             this.button6.UseUnderline = true;
-            this.button6.Label = Mono.Unix.Catalog.GetString("button6");
-            this.vbox2.Add(this.button6);
-            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox2[this.button6]));
-            w1.Position = 0;
-            // Container child vbox2.Gtk.Box+BoxChild
+            // Container child button6.Gtk.Container+ContainerChild
+            Gtk.Alignment w1 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            Gtk.HBox w2 = new Gtk.HBox();
+            w2.Spacing = 2;
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Image w3 = new Gtk.Image();
+            w3.Pixbuf = new Gdk.Pixbuf(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "./mate.png"));
+            w2.Add(w3);
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Label w5 = new Gtk.Label();
+            w5.LabelProp = Mono.Unix.Catalog.GetString("Mate");
+            w5.UseUnderline = true;
+            w2.Add(w5);
+            w1.Add(w2);
+            this.button6.Add(w1);
+            this.table1.Add(this.button6);
+            Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.table1[this.button6]));
+            w9.XOptions = ((Gtk.AttachOptions)(4));
+            w9.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table1.Gtk.Table+TableChild
             this.button7 = new Gtk.Button();
             this.button7.CanFocus = true;
             this.button7.Name = "button7";
             this.button7.UseUnderline = true;
-            this.button7.Label = Mono.Unix.Catalog.GetString("button7");
-            this.vbox2.Add(this.button7);
-            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox2[this.button7]));
-            w2.Position = 1;
-            // Container child vbox2.Gtk.Box+BoxChild
+            // Container child button7.Gtk.Container+ContainerChild
+            Gtk.Alignment w10 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            Gtk.HBox w11 = new Gtk.HBox();
+            w11.Spacing = 2;
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Image w12 = new Gtk.Image();
+            w12.Pixbuf = new Gdk.Pixbuf(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "./kola.png"));
+            w11.Add(w12);
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Label w14 = new Gtk.Label();
+            w14.LabelProp = Mono.Unix.Catalog.GetString("Kola");
+            w14.UseUnderline = true;
+            w11.Add(w14);
+            w10.Add(w11);
+            this.button7.Add(w10);
+            this.table1.Add(this.button7);
+            Gtk.Table.TableChild w18 = ((Gtk.Table.TableChild)(this.table1[this.button7]));
+            w18.TopAttach = ((uint)(1));
+            w18.BottomAttach = ((uint)(2));
+            w18.XOptions = ((Gtk.AttachOptions)(4));
+            w18.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table1.Gtk.Table+TableChild
             this.button8 = new Gtk.Button();
             this.button8.CanFocus = true;
             this.button8.Name = "button8";
             this.button8.UseUnderline = true;
-            this.button8.Label = Mono.Unix.Catalog.GetString("button8");
-            this.vbox2.Add(this.button8);
-            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox2[this.button8]));
-            w3.Position = 2;
-            // Container child vbox2.Gtk.Box+BoxChild
+            // Container child button8.Gtk.Container+ContainerChild
+            Gtk.Alignment w19 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            Gtk.HBox w20 = new Gtk.HBox();
+            w20.Spacing = 2;
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Image w21 = new Gtk.Image();
+            w21.Pixbuf = new Gdk.Pixbuf(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "./brause.png"));
+            w20.Add(w21);
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Label w23 = new Gtk.Label();
+            w23.LabelProp = Mono.Unix.Catalog.GetString("Brause");
+            w23.UseUnderline = true;
+            w20.Add(w23);
+            w19.Add(w20);
+            this.button8.Add(w19);
+            this.table1.Add(this.button8);
+            Gtk.Table.TableChild w27 = ((Gtk.Table.TableChild)(this.table1[this.button8]));
+            w27.LeftAttach = ((uint)(1));
+            w27.RightAttach = ((uint)(2));
+            w27.XOptions = ((Gtk.AttachOptions)(4));
+            w27.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table1.Gtk.Table+TableChild
             this.button9 = new Gtk.Button();
             this.button9.CanFocus = true;
             this.button9.Name = "button9";
             this.button9.UseUnderline = true;
-            this.button9.Label = Mono.Unix.Catalog.GetString("button9");
-            this.vbox2.Add(this.button9);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox2[this.button9]));
-            w4.Position = 3;
-            this.hbox3.Add(this.vbox2);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox3[this.vbox2]));
-            w5.Position = 1;
-            w5.Fill = false;
+            // Container child button9.Gtk.Container+ContainerChild
+            Gtk.Alignment w28 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            Gtk.HBox w29 = new Gtk.HBox();
+            w29.Spacing = 2;
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Image w30 = new Gtk.Image();
+            w30.Pixbuf = new Gdk.Pixbuf(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "./brause2.png"));
+            w29.Add(w30);
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Label w32 = new Gtk.Label();
+            w32.LabelProp = Mono.Unix.Catalog.GetString("Brause");
+            w32.UseUnderline = true;
+            w29.Add(w32);
+            w28.Add(w29);
+            this.button9.Add(w28);
+            this.table1.Add(this.button9);
+            Gtk.Table.TableChild w36 = ((Gtk.Table.TableChild)(this.table1[this.button9]));
+            w36.TopAttach = ((uint)(1));
+            w36.BottomAttach = ((uint)(2));
+            w36.LeftAttach = ((uint)(1));
+            w36.RightAttach = ((uint)(2));
+            w36.XOptions = ((Gtk.AttachOptions)(4));
+            w36.YOptions = ((Gtk.AttachOptions)(4));
+            this.hbox3.Add(this.table1);
+            Gtk.Box.BoxChild w37 = ((Gtk.Box.BoxChild)(this.hbox3[this.table1]));
+            w37.Position = 1;
+            w37.Expand = false;
+            w37.Fill = false;
             this.vbox3.Add(this.hbox3);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox3[this.hbox3]));
-            w6.Position = 0;
+            Gtk.Box.BoxChild w38 = ((Gtk.Box.BoxChild)(this.vbox3[this.hbox3]));
+            w38.Position = 0;
             // Container child vbox3.Gtk.Box+BoxChild
             this.button10 = new Gtk.Button();
             this.button10.CanFocus = true;
@@ -96,26 +171,26 @@ namespace saftschubser {
             this.button10.UseUnderline = true;
             this.button10.BorderWidth = ((uint)(18));
             // Container child button10.Gtk.Container+ContainerChild
-            Gtk.Alignment w7 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            Gtk.Alignment w39 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
-            Gtk.HBox w8 = new Gtk.HBox();
-            w8.Spacing = 2;
+            Gtk.HBox w40 = new Gtk.HBox();
+            w40.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Image w9 = new Gtk.Image();
-            w9.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-ok", Gtk.IconSize.Menu, 16);
-            w8.Add(w9);
+            Gtk.Image w41 = new Gtk.Image();
+            w41.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-ok", Gtk.IconSize.Menu, 16);
+            w40.Add(w41);
             // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Label w11 = new Gtk.Label();
-            w11.LabelProp = Mono.Unix.Catalog.GetString("Bestätigen");
-            w11.UseUnderline = true;
-            w8.Add(w11);
-            w7.Add(w8);
-            this.button10.Add(w7);
+            Gtk.Label w43 = new Gtk.Label();
+            w43.LabelProp = Mono.Unix.Catalog.GetString("Bestätigen");
+            w43.UseUnderline = true;
+            w40.Add(w43);
+            w39.Add(w40);
+            this.button10.Add(w39);
             this.vbox3.Add(this.button10);
-            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox3[this.button10]));
-            w15.Position = 1;
-            w15.Expand = false;
-            w15.Fill = false;
+            Gtk.Box.BoxChild w47 = ((Gtk.Box.BoxChild)(this.vbox3[this.button10]));
+            w47.Position = 1;
+            w47.Expand = false;
+            w47.Fill = false;
             this.Add(this.vbox3);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
