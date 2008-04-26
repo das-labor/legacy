@@ -8,8 +8,6 @@ using System;
 
 namespace saftschubser
 {
-	
-	
 	public partial class Kauf : Gtk.Bin
 	{
 		
