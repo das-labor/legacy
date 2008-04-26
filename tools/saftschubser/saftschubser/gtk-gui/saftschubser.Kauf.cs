@@ -44,7 +44,7 @@ namespace saftschubser {
             this.hbox3.Spacing = 6;
             this.hbox3.BorderWidth = ((uint)(6));
             // Container child hbox3.Gtk.Box+BoxChild
-            this.table1 = new Gtk.Table(((uint)(2)), ((uint)(2)), false);
+            this.table1 = new Gtk.Table(((uint)(2)), ((uint)(2)), true);
             this.table1.Name = "table1";
             this.table1.RowSpacing = ((uint)(6));
             this.table1.ColumnSpacing = ((uint)(6));
@@ -60,7 +60,7 @@ namespace saftschubser {
             w2.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w3 = new Gtk.Image();
-            w3.Pixbuf = new Gdk.Pixbuf(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "./mate.png"));
+            w3.Pixbuf = Gdk.Pixbuf.LoadFromResource("mate.png");
             w2.Add(w3);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w5 = new Gtk.Label();
@@ -85,7 +85,7 @@ namespace saftschubser {
             w11.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w12 = new Gtk.Image();
-            w12.Pixbuf = new Gdk.Pixbuf(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "./kola.png"));
+            w12.Pixbuf = Gdk.Pixbuf.LoadFromResource("kola.png");
             w11.Add(w12);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w14 = new Gtk.Label();
@@ -159,8 +159,6 @@ namespace saftschubser {
             this.hbox3.Add(this.table1);
             Gtk.Box.BoxChild w37 = ((Gtk.Box.BoxChild)(this.hbox3[this.table1]));
             w37.Position = 1;
-            w37.Expand = false;
-            w37.Fill = false;
             this.vbox3.Add(this.hbox3);
             Gtk.Box.BoxChild w38 = ((Gtk.Box.BoxChild)(this.vbox3[this.hbox3]));
             w38.Position = 0;

@@ -155,6 +155,7 @@
                 <property name="MemberName" />
                 <property name="NRows">2</property>
                 <property name="NColumns">2</property>
+                <property name="Homogeneous">True</property>
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">6</property>
                 <child>
@@ -162,7 +163,7 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="Type">TextAndIcon</property>
-                    <property name="Icon">file:./mate.png</property>
+                    <property name="Icon">resource:mate.png</property>
                     <property name="Label" translatable="yes">Mate</property>
                     <property name="UseUnderline">True</property>
                   </widget>
@@ -183,7 +184,7 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="Type">TextAndIcon</property>
-                    <property name="Icon">file:./kola.png</property>
+                    <property name="Icon">resource:kola.png</property>
                     <property name="Label" translatable="yes">Kola</property>
                     <property name="UseUnderline">True</property>
                   </widget>
@@ -252,9 +253,7 @@
               </widget>
               <packing>
                 <property name="Position">1</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
+                <property name="AutoSize">False</property>
               </packing>
             </child>
           </widget>
