@@ -12,6 +12,8 @@
 #include "dbz_strings.h"
 #include "lcd_tools.h"
 #include "keypad.h"
+#include "hexdigit_tab.h"
+#include "ui_primitives.h"
 
 #define MAX(a,b) (((a)>(b))?(a):(b))
 #define MIN(a,b) (((a)<(b))?(a):(b))
@@ -447,27 +449,19 @@ void draw_frame(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, char 
 	for(i=0; i<width; ++i)
 		lcd_writechar(framechar);
 	/* bottom line */	
-	lcd_gotopos(posy+height,posx);
+	lcd_gotopos(posy+height-1,posx);
 	for(i=0; i<width; ++i)
 		lcd_writechar(framechar);
 	/* now the sides */	
 	for(i=posy+1; i<posy+height; ++i){
 		lcd_gotopos(i, posx);
 		lcd_writechar(framechar);
-		lcd_gotopos(i, posx+width);
+		lcd_gotopos(i, posx+width-1);
 		lcd_writechar(framechar);
 	}
 }
 
 /******************************************************************************/
-
-
-typedef struct{
-	PGM_P name;                                   /* 2 byte */
-	enum {none, submenu, execute, back, terminator} options;  /* 1 byte*/
-	void (*fkt)(void);                            /* 2 byte */
-} menu_t;
-
 
 void menuexec(menu_t* menu){
 	uint8_t n=0;
@@ -485,6 +479,7 @@ void menuexec(menu_t* menu){
 		lcd_writestr_P(menu[(idx+i)%n].name);
 		lcd_gotopos(i+2,20);
 		switch(menu[(idx+i)%n].options){
+			case autosubmenu:
 			case submenu: lcd_writechar(LCD_RARROW);
 				break;
 			case execute: lcd_writechar('*');
@@ -504,7 +499,7 @@ void menuexec(menu_t* menu){
 	switch (waitforkeypress()){
 		case UP_KEY: 
 			if(selpos==2){
-				idx = (n+idx-1)%n;
+				idx = (idx-1+n)%n;
 			} else {
 				selpos--;
 			}
@@ -512,7 +507,7 @@ void menuexec(menu_t* menu){
 			break;		
 		case DOWN_KEY:
 			if(selpos==4){
-				idx = (n+idx+1)%n;
+				idx = (idx+1+n)%n;
 			} else {
 				selpos++;
 			}
@@ -520,10 +515,14 @@ void menuexec(menu_t* menu){
 			break;		
 		case ENTER_KEY:	
 		case SELECT_KEY:
-			if(menu[(idx+selpos-2)%n].fkt!=NULL){
-				menu[(idx+selpos-2)%n].fkt();
-			}else{
-				return;
+			if(menu[(idx+selpos-2)%n].options==autosubmenu){
+				menuexec((menu_t*)menu[(idx+selpos-2)%n].x.submenu);
+			} else {
+				if(menu[(idx+selpos-2)%n].x.fkt!=NULL){
+					(menu[(idx+selpos-2)%n].x.fkt)();
+				}else{
+					return;
+				}
 			}
 			goto reset;
 			break;
@@ -532,8 +531,59 @@ void menuexec(menu_t* menu){
 	}
 }
 
+/******************************************************************************/
 
+void genaddr(uint16_t value, char* str, uint8_t len){
+	str+=len-1;
+	while(len--){
+		*str--= pgm_read_byte(hexdigit_tab_P+(value&0x0F));
+		value >>=4;
+	}
+}
 
+void data2hex(const void* buffer, char* dest, uint8_t length){
+	while(length--){
+		*dest++ = pgm_read_byte(hexdigit_tab_P+((*(uint8_t*)buffer)>>4));
+		*dest++ = pgm_read_byte(hexdigit_tab_P+((*(uint8_t*)buffer)&0xf));
+		buffer = (uint8_t*)buffer + 1;
+	}
+}
 
-
+void ui_hexdump(const void* data, uint16_t length){
+	int16_t offset=0;
+	uint8_t addr_len=4;
+	uint8_t bytesperline=0;
+	uint8_t i;
+	char c;
+	while((length&(0xF<<(addr_len*4-4)))==0)
+		--addr_len;
+	char addrstr[addr_len];
+	bytesperline=(LCD_WIDTH-addr_len-1)/2;
+	char bytesbuffer[bytesperline*2];
+	for(;;){
+		for(i=0; i<3; ++i){
+			if(offset+i*bytesperline>length)
+				break;
+			lcd_gotopos(2+i,1);
+			genaddr(offset+i*bytesperline, addrstr, addr_len);
+			lcd_writestrn(addrstr, addr_len);
+			lcd_writechar(':');
+			data2hex(((uint8_t*)data)+offset+i*bytesperline,bytesbuffer,
+				MIN(bytesperline,length-offset-i*bytesperline));
+			lcd_writestrn(bytesbuffer, 2*MIN(bytesperline,(length-offset-i*bytesperline)));	
+		}
+		c=waitforkeypress();
+		if(c==UP_KEY){
+			if(offset)
+				offset-=bytesperline;
+		}
+		if(c==DOWN_KEY){
+			if(offset<((signed)length)-3*(signed)bytesperline)
+				offset+=bytesperline;
+		}
+		if(c==ENTER_KEY){
+			return;
+		}
+	}
+}
 
