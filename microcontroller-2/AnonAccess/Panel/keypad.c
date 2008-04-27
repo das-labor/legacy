@@ -13,7 +13,6 @@ char keypad_tab [] PROGMEM = {
 
 
 char read_keypad(void){
-	uint8_t zeichen = 0x10;
 	uint8_t i, j;
 	uint8_t rowx[4], collx[4];
 
@@ -43,7 +42,6 @@ char read_keypad(void){
 }
 
 void keypad_init(void){
-
 	PORT_COLLS |= (1 << COLL1) | (1 << COLL2) | (1 << COLL3) | (1 << COLL4);
-
 }
+

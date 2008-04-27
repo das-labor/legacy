@@ -117,9 +117,9 @@ int main(void){
 		_delay_ms(10);
 	}
 	lcd_cls();
-	radioselect("anon\0not anon\0");
-	radioselect("bla\0blub\0foo\0bar\0foobar\0");
-	
+//	radioselect("anon\0not anon\0");
+	radioselect_P(PSTR("bla\0blub\0foo\0bar\0foobar\0"));
+	checkselect_P(PSTR("A\0B\0C\0D\0E\0F\0G\0H\0"),(uint8_t*)"\0");
 	
 	
 	resetcnt_inc();
