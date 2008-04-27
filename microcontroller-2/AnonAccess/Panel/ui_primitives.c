@@ -9,6 +9,7 @@
 #include <string.h> /* memset() */
 #include <avr/pgmspace.h>
 #include <util/delay.h>
+#include "dbz_strings.h"
 #include "lcd_tools.h"
 #include "keypad.h"
 
@@ -124,17 +125,48 @@ uint8_t vcgrom[][8] PROGMEM = {
     0x15,  /* # # # */
     0x11,  /* #   # */
     0x0E   /*  ###  */
+}, { /* radio selected */
+    0x00,  /*       */
+    0x00,  /*       */
+    0x0E,  /*  ###  */
+    0x11,  /* #   # */
+    0x15,  /* # # # */
+    0x11,  /* #   # */
+    0x0E,  /*  ###  */ 
+    0x00   /*       */
+}, { /* check selected */
+    0x00,  /*       */
+    0x1F,  /* ##### */
+    0x11,  /* #   # */
+    0x1B,  /* ## ## */
+    0x15,  /* # # # */
+    0x1B,  /* ## ## */
+    0x1F,  /* ##### */
+    0x00,  /*       */
 }};
+
+#define LCD_LABORLOGO     0
+#define LCD_RADIOSELECT   5
+#define LCD_CHECKSELECT   6
+#define LCD_RADIONOSELECT 'o'
+#define LCD_CHECKNOSELECT 0xDB
+
+#define LCD_FULLCHAR  255
+#define LCD_EMPTYCHAR  ' '
+#define LCD_RARROW 0x7E
+#define LCD_LARROW 0x7F
+
+#define NO_KEY     ' '
+#define ENTER_KEY  'F'
+#define SELECT_KEY 'E'
+#define UP_KEY     '0'
+#define DOWN_KEY   'C'
 
 void ui_primitives_init(void){
 	uint8_t vram[8];
-	uint8_t i;
 	
 	lcd_setcgaddr(0);
-	for(i=0; i<8; ++i){
-		vram[i]=pgm_read_byte(&(vcgrom[11][i]));
-	}
-	lcd_loadfont(vram);
+	lcd_loadfont_P(vcgrom[11]);
 	memset(vram, 0x10, 8);
 	lcd_loadfont(vram);
 	memset(vram, 0x18, 8);
@@ -143,20 +175,13 @@ void ui_primitives_init(void){
 	lcd_loadfont(vram);
 	memset(vram, 0x1E, 8);
 	lcd_loadfont(vram);
+	lcd_loadfont_P(vcgrom[12]);
+	lcd_loadfont_P(vcgrom[13]);
 	lcd_setddaddr(0);
 }
 
-#define LCD_FULLCHAR  255
-#define LCD_EMPTYCHAR  ' '
-#define LCD_RARROW 0x7E
-#define LCD_LARROW 0x7F
 
-
-#define ENTER_KEY  'F'
-#define SELECT_KEY 'E'
-#define UP_KEY     '0'
-#define DOWN_KEY   'C'
-
+/******************************************************************************/
 
 
 void print_progressbar(double percent, uint8_t xpos, uint8_t ypos, uint8_t width){
@@ -190,40 +215,8 @@ void print_progressbar(double percent, uint8_t xpos, uint8_t ypos, uint8_t width
 
 /******************************************************************************/
 
-static
-uint8_t dbz_strcount(char* str){
-	uint8_t ret=1;
-	if(*str=='\0')
-			return 0;
-	for(;;){
-		while(*str++)
-			;
-		if(*str=='\0')
-			return ret;
-		++ret;
-	}	
-}
-
-/******************************************************************************/
-
-static
-void dbz_splitup(char* dbzstr, char** strings){
-	if(*dbzstr=='\0')
-		return;
-	*strings++ = dbzstr;
-	for(;;){	
-		while(*dbzstr++)
-			;
-		if(*dbzstr=='\0')
-			return;
-		*strings++ = dbzstr;
-	}
-}
-
-/******************************************************************************/
-
 uint8_t radioselect(char* opts){
-	uint8_t i,index=0, arrowpos=0;
+	uint8_t i,j,index=0, arrowpos=0;
 	uint8_t select=0;
 	uint8_t optcount=dbz_strcount(opts);
 	char c=' ';
@@ -235,15 +228,15 @@ uint8_t radioselect(char* opts){
 		for(i=0; i<((3<optcount)?3:optcount); ++i){
 			lcd_gotopos(2+i, 1);
 			lcd_writechar((i==arrowpos)?LCD_RARROW:' ');
-			lcd_writestr_P(PSTR("( )                "));
-			if((i+index)%optcount==select){
-				lcd_gotopos(2+i, 3);
-				lcd_writechar('x');
+			lcd_writechar(((i+index)%optcount==select)?LCD_RADIOSELECT:LCD_RADIONOSELECT);
+			j=LCD_WIDTH-2;
+			while(--j){
+				lcd_writechar(' ');
 			}
-			lcd_gotopos(2+i, 6);
-			lcd_writestrn(optp[(i+index)%optcount],LCD_WIDTH-6);
+			lcd_gotopos(2+i, 4);
+			lcd_writestrn(optp[(i+index)%optcount],LCD_WIDTH-4);
 		}
-		while((c=read_keypad())==' ')
+		while((c=read_keypad())==NO_KEY)
 			;
 		_delay_ms(10);
 		while(c==read_keypad())
@@ -275,3 +268,177 @@ uint8_t radioselect(char* opts){
 	}
 }
 
+/******************************************************************************/
+
+uint8_t radioselect_P(PGM_P opts){
+	uint8_t i,j,index=0, arrowpos=0;
+	uint8_t select=0;
+	uint8_t optcount=dbz_strcount_P(opts);
+	char c=' ';
+	PGM_P optp[optcount];
+	if(optcount==0)
+		return 0;
+	dbz_splitup_P(opts, optp);
+	for(;;){
+		for(i=0; i<((3<optcount)?3:optcount); ++i){
+			lcd_gotopos(2+i, 1);
+			lcd_writechar((i==arrowpos)?LCD_RARROW:' ');
+			lcd_writechar(((i+index)%optcount==select)?LCD_RADIOSELECT:LCD_RADIONOSELECT);
+			j=LCD_WIDTH-2;
+			while(--j){
+				lcd_writechar(' ');
+			}
+			lcd_gotopos(2+i, 4);
+			lcd_writestrn_P(optp[(i+index)%optcount],LCD_WIDTH-4);
+		}
+		while((c=read_keypad())==NO_KEY)
+			;
+		_delay_ms(10);
+		while(c==read_keypad())
+			;
+		_delay_ms(10);
+		if(c==ENTER_KEY)
+			return select;
+		if(c==UP_KEY){
+			if(arrowpos==0){
+				if(index!=0){
+					--index;
+				}
+			} else {
+				--arrowpos;
+			}
+		}
+		if(c==DOWN_KEY){
+			if(arrowpos==MIN(2, optcount-1)){
+				if(index<optcount-3){
+					++index;
+				}
+			} else {
+				++arrowpos;
+			}
+		}
+		if(c==SELECT_KEY){
+			select=index+arrowpos;
+		}			
+	}
+}
+
+/******************************************************************************/
+static
+uint8_t getbit(const uint8_t* buffer, uint8_t pos){
+	return (buffer[pos/8])&(1<<(pos%8));
+}
+
+static
+void togglebit(uint8_t* buffer, uint8_t pos){
+	buffer[pos/8] ^= 1<<(pos%8);
+}
+/******************************************************************************/
+
+void checkselect(char* opts, uint8_t* config){
+	uint8_t i,j,index=0, arrowpos=0;
+	uint8_t optcount=dbz_strcount(opts);
+	char c=' ';
+	char* optp[optcount];
+	if(optcount==0)
+		return;
+	dbz_splitup(opts, optp);
+	for(;;){
+		for(i=0; i<((3<optcount)?3:optcount); ++i){
+			lcd_gotopos(2+i, 1);
+			lcd_writechar((i==arrowpos)?LCD_RARROW:' ');
+			lcd_writechar(getbit(config, (i+index)%optcount)?LCD_CHECKSELECT:LCD_CHECKNOSELECT);
+			j=LCD_WIDTH-2;
+			while(--j){
+				lcd_writechar(' ');
+			}
+			lcd_gotopos(2+i, 4);
+			lcd_writestrn(optp[(i+index)%optcount],LCD_WIDTH-4);
+		}
+		while((c=read_keypad())==NO_KEY)
+			;
+		_delay_ms(10);
+		while(c==read_keypad())
+			;
+		_delay_ms(10);
+		if(c==ENTER_KEY)
+			return;
+		if(c==UP_KEY){
+			if(arrowpos==0){
+				if(index!=0){
+					--index;
+				}
+			} else {
+				--arrowpos;
+			}
+		}
+		if(c==DOWN_KEY){
+			if(arrowpos==MIN(2, optcount-1)){
+					++index;
+				if(index<optcount-3){
+				}
+			} else {
+				++arrowpos;
+			}
+		}
+		if(c==SELECT_KEY){
+			togglebit(config, index+arrowpos);
+		}			
+	}
+}
+
+/******************************************************************************/
+
+void checkselect_P(PGM_P opts, uint8_t* config){
+	uint8_t i,j,index=0, arrowpos=0;
+	uint8_t optcount=dbz_strcount_P(opts);
+	char c;
+	PGM_P optp[optcount];
+	if(optcount==0)
+		return;
+	dbz_splitup_P(opts, optp);
+	for(;;){
+		for(i=0; i<((3<optcount)?3:optcount); ++i){
+			lcd_gotopos(2+i, 1);
+			lcd_writechar((i==arrowpos)?LCD_RARROW:' ');
+			lcd_writechar(getbit(config, (i+index)%optcount)?LCD_CHECKSELECT:LCD_CHECKNOSELECT);
+			j=LCD_WIDTH-2;
+			while(--j){
+				lcd_writechar(' ');
+			}
+			lcd_gotopos(2+i, 4);
+			lcd_writestrn_P(optp[(i+index)%optcount],LCD_WIDTH-4);
+		}
+		while((c=read_keypad())==NO_KEY)
+			;
+		_delay_ms(10);
+		while(c==read_keypad())
+			;
+		_delay_ms(10);
+		if(c==ENTER_KEY)
+			return;
+		if(c==UP_KEY){
+			if(arrowpos==0){
+				if(index!=0){
+					--index;
+				}
+			} else {
+				--arrowpos;
+			}
+		}
+		if(c==DOWN_KEY){
+			if(arrowpos==MIN(2, optcount-1)){
+				if(index<optcount-3){
+					++index;
+				}
+			} else {
+				++arrowpos;
+			}
+		}
+		if(c==SELECT_KEY){
+			togglebit(config, index+arrowpos);
+		}			
+	}
+}
+
+/******************************************************************************/

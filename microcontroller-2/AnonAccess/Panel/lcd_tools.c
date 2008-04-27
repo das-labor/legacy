@@ -57,6 +57,13 @@ void lcd_loadfont(const void* font){
 	}
 }
 
+void lcd_loadfont_P(PGM_VOID_P font){
+	uint8_t i;
+	for(i=0; i<8; ++i){
+		lcd_write(pgm_read_byte(((PGM_P)font)+i),1);
+	}
+}
+
 // clear display
 void lcd_cls (void){
 	lcd_write(0x02,0);   				// 0000 0010 => del Display
@@ -80,6 +87,13 @@ void lcd_writestr (const char *text){
 void lcd_writestrn (const char *text, uint16_t len){
   while ((*text!='\0') && len--) {
     lcd_writechar(*text++);
+  }
+}
+
+void lcd_writestrn_P(PGM_P text, uint16_t len){
+  char c;
+  while ((c=pgm_read_byte(text++)) && len--) {
+    lcd_writechar(c);
   }
 }
 
