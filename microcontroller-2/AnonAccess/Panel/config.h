@@ -1,9 +1,9 @@
 //Art des Atmels und dessen Takt
 #define F_CPU 16000000ul
 
-
+/* set by Makefile */
 //#define ATMEGA128
-#define ATMEGA644
+//#define ATMEGA644
 //#define ATMEGA32
 
 
@@ -31,7 +31,7 @@
 //c uart.[ch] defines
 #define UART_HOOK
 #define UART_INTERRUPT 1
-#define UART_BAUD_RATE 1200
+#define UART_BAUD_RATE 9600
 #define UART_RXBUFSIZE 32
 #define UART_TXBUFSIZE 32
 #define UART_LINE_BUFFER_SIZE 40
@@ -70,3 +70,15 @@
 //Festlegen der Port Nummern für das LCD
 #define ENABLE_LCD 5
 #define RS_LCD 4
+
+#define LCD_WIDTH 20
+#define LCD_HEIGHT 4
+
+//config for persistentCounter 2
+#define PERCNT_BPC 50
+#define PERCNT_POLICY_INC
+#define PERCNT_RESETONERROR
+
+
+
+
