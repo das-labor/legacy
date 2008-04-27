@@ -3,4 +3,20 @@
     <itemgroups />
     <signals />
   </object>
+  <object type="saftschubser.BestandScreen" palette-category="saftschubser" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="saftschubser.KasseScreen" palette-category="saftschubser" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="saftschubser.LabCtrlScreen" palette-category="saftschubser" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="saftschubser.AdminScreen" palette-category="saftschubser" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
 </objects>

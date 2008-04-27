@@ -112,7 +112,7 @@ namespace saftschubser {
             w20.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w21 = new Gtk.Image();
-            w21.Pixbuf = new Gdk.Pixbuf(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "./brause.png"));
+            w21.Pixbuf = Gdk.Pixbuf.LoadFromResource("brause.png");
             w20.Add(w21);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w23 = new Gtk.Label();
@@ -139,7 +139,7 @@ namespace saftschubser {
             w29.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w30 = new Gtk.Image();
-            w30.Pixbuf = new Gdk.Pixbuf(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "./brause2.png"));
+            w30.Pixbuf = Gdk.Pixbuf.LoadFromResource("brause2.png");
             w29.Add(w30);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w32 = new Gtk.Label();
@@ -175,7 +175,7 @@ namespace saftschubser {
             w40.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w41 = new Gtk.Image();
-            w41.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-ok", Gtk.IconSize.Menu, 16);
+            w41.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-ok", Gtk.IconSize.Button, 20);
             w40.Add(w41);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w43 = new Gtk.Label();

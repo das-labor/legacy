@@ -9,7 +9,7 @@
   </import>
   <widget class="Gtk.Window" id="saftschubser.MainWindow" design-size="715 542">
     <property name="MemberName" />
-    <property name="Title" translatable="yes">MainWindow</property>
+    <property name="Title" translatable="yes">Labor Saftschubser</property>
     <property name="WindowPosition">CenterOnParent</property>
     <signal name="DeleteEvent" handler="OnDeleteEvent" />
     <child>
@@ -35,79 +35,78 @@
             <property name="Spacing">6</property>
             <property name="BorderWidth">9</property>
             <child>
-              <widget class="Gtk.Button" id="button1">
+              <widget class="Gtk.ToggleButton" id="kaufenBtn">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Type">TextAndIcon</property>
-                <property name="Icon">stock:stock_home Menu</property>
+                <property name="Icon">stock:gtk-home Button</property>
                 <property name="Label" translatable="yes">Kaufen</property>
                 <property name="UseUnderline">True</property>
-                <signal name="Clicked" handler="kaufenClicked" />
+                <signal name="Clicked" handler="OnModeBtnClicked" />
               </widget>
               <packing>
                 <property name="Position">0</property>
                 <property name="AutoSize">False</property>
-                <property name="Expand">False</property>
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Button" id="button2">
+              <widget class="Gtk.ToggleButton" id="kasseBtn">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Type">TextAndIcon</property>
-                <property name="Icon">stock:stock_book_green Menu</property>
+                <property name="Icon">stock:stock_book_green Button</property>
                 <property name="Label" translatable="yes">Kasse</property>
                 <property name="UseUnderline">True</property>
+                <signal name="Clicked" handler="OnModeBtnClicked" />
               </widget>
               <packing>
                 <property name="Position">1</property>
                 <property name="AutoSize">False</property>
-                <property name="Expand">False</property>
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Button" id="button3">
+              <widget class="Gtk.ToggleButton" id="bestandBtn">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Type">TextAndIcon</property>
-                <property name="Icon">stock:stock_data-sources-new Menu</property>
+                <property name="Icon">stock:stock_data-sources-new Button</property>
                 <property name="Label" translatable="yes">Bestand</property>
                 <property name="UseUnderline">True</property>
+                <signal name="Clicked" handler="OnModeBtnClicked" />
               </widget>
               <packing>
                 <property name="Position">2</property>
                 <property name="AutoSize">False</property>
-                <property name="Expand">False</property>
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Button" id="button4">
+              <widget class="Gtk.ToggleButton" id="labCtrlBtn">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Type">TextAndIcon</property>
-                <property name="Icon">stock:stock_contrast Menu</property>
-                <property name="Label" translatable="yes">LabControl</property>
+                <property name="Icon">stock:stock_contrast Button</property>
+                <property name="Label" translatable="yes">LabCtrl</property>
                 <property name="UseUnderline">True</property>
+                <signal name="Clicked" handler="OnModeBtnClicked" />
               </widget>
               <packing>
                 <property name="Position">3</property>
                 <property name="AutoSize">False</property>
-                <property name="Expand">False</property>
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Button" id="button5">
+              <widget class="Gtk.ToggleButton" id="adminBtn">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Type">TextAndIcon</property>
-                <property name="Icon">stock:gtk-dialog-authentication Menu</property>
+                <property name="Icon">stock:gtk-dialog-authentication Button</property>
                 <property name="Label" translatable="yes">Admin</property>
                 <property name="UseUnderline">True</property>
+                <signal name="Clicked" handler="OnModeBtnClicked" />
               </widget>
               <packing>
                 <property name="Position">4</property>
                 <property name="AutoSize">False</property>
-                <property name="Expand">False</property>
               </packing>
             </child>
           </widget>
@@ -207,7 +206,7 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="Type">TextAndIcon</property>
-                    <property name="Icon">file:./brause.png</property>
+                    <property name="Icon">resource:brause.png</property>
                     <property name="Label">Brause</property>
                     <property name="UseUnderline">True</property>
                   </widget>
@@ -230,7 +229,7 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="Type">TextAndIcon</property>
-                    <property name="Icon">file:./brause2.png</property>
+                    <property name="Icon">resource:brause2.png</property>
                     <property name="Label" translatable="yes">Brause</property>
                     <property name="UseUnderline">True</property>
                   </widget>
@@ -267,7 +266,7 @@
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Type">TextAndIcon</property>
-            <property name="Icon">stock:gtk-ok Menu</property>
+            <property name="Icon">stock:gtk-ok Button</property>
             <property name="Label" translatable="yes">Bestätigen</property>
             <property name="UseUnderline">True</property>
             <property name="BorderWidth">18</property>
@@ -279,6 +278,69 @@
             <property name="Fill">False</property>
           </packing>
         </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="Gtk.Bin" id="saftschubser.BestandScreen" design-size="300 300">
+    <property name="MemberName" />
+    <child>
+      <widget class="Gtk.Calendar" id="calendar1">
+        <property name="MemberName" />
+        <property name="CanFocus">True</property>
+        <property name="DisplayOptions">ShowHeading, ShowDayNames</property>
+      </widget>
+    </child>
+  </widget>
+  <widget class="Gtk.Bin" id="saftschubser.KasseScreen" design-size="300 300">
+    <property name="MemberName" />
+    <child>
+      <widget class="Gtk.Label" id="label1">
+        <property name="MemberName" />
+        <property name="LabelProp" translatable="yes">Kasse</property>
+      </widget>
+    </child>
+  </widget>
+  <widget class="Gtk.Bin" id="saftschubser.LabCtrlScreen" design-size="300 300">
+    <property name="MemberName" />
+    <child>
+      <widget class="Gtk.VBox" id="vbox1">
+        <property name="MemberName" />
+        <property name="Spacing">6</property>
+        <child>
+          <widget class="Gtk.Image" id="image273">
+            <property name="MemberName" />
+            <property name="Pixbuf">resource:LaborLogo.png</property>
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Label" id="label3">
+            <property name="MemberName" />
+            <property name="LabelProp" translatable="yes">&lt;b&gt;Labor Control Panel&lt;/b&gt;
+
+Ist noch nicht fertig...
+
+</property>
+            <property name="UseMarkup">True</property>
+            <property name="Justify">Center</property>
+          </widget>
+          <packing>
+            <property name="Position">1</property>
+            <property name="AutoSize">False</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="Gtk.Bin" id="saftschubser.AdminScreen" design-size="300 300">
+    <property name="MemberName" />
+    <child>
+      <widget class="Gtk.Label" id="label4">
+        <property name="MemberName" />
+        <property name="LabelProp" translatable="yes">Admin Screen</property>
       </widget>
     </child>
   </widget>

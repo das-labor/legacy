@@ -10,7 +10,6 @@ namespace saftschubser
 {
 	public partial class Kauf : Gtk.Bin
 	{
-		
 		public Kauf()
 		{
 			this.Build();

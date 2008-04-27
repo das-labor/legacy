@@ -1,27 +1,36 @@
-﻿<UserCombinePreferences version="1.0" filename="/home/ex/svn/labor/saftschubser/saftschubser.mds">
+﻿<UserCombinePreferences version="1.0" filename="/home/joerg/src/labor-svn/tools/saftschubser/saftschubser.mds">
   <Files>
     <File name="Welcome" />
-    <File name="saftschubser/Main.cs" line="1" column="1" />
-    <File name="saftschubser/MainWindow.cs" line="14" column="19" />
+    <File name="schubserdb/SaftSchubserDb.cs" line="79" column="1" />
+    <File name="schubser-admin/Main.cs" line="27" column="2" />
+    <File name="schubser-admin/MainWindow.cs" line="9" column="1" />
+    <File name="saftschubser/MainWindow.cs" line="79" column="45" />
     <File name="saftschubser/Kauf.cs" line="1" column="1" />
   </Files>
   <Views>
     <ViewMemento id="ProjectPad">
       <Node expanded="True">
-        <Node name="saftschubser" expanded="True">
-          <Node name="Kauf.cs" selected="True" />
+        <Node name="saftschubser" expanded="True" selected="True">
+          <Node name="UserInterface" expanded="True" />
         </Node>
+        <Node name="schubser-admin" expanded="True" />
+        <Node name="schubserdb" expanded="True" />
       </Node>
     </ViewMemento>
     <ViewMemento id="ClassPad">
-      <Node expanded="True" />
+      <Node expanded="True">
+        <Node name="saftschubser" expanded="True" selected="True">
+          <Node name="saftschubser" expanded="True" />
+        </Node>
+        <Node name="schubser-admin" expanded="True" />
+      </Node>
     </ViewMemento>
     <ViewMemento id="MonoDevelop.NUnit.TestPad">
       <Node />
     </ViewMemento>
   </Views>
   <Properties>
-    <Property key="ActiveWindow" value="/home/ex/svn/labor/saftschubser/saftschubser/Kauf.cs" />
+    <Property key="ActiveWindow" value="/home/joerg/src/labor-svn/tools/saftschubser/saftschubser/Kauf.cs" />
     <Property key="ActiveConfiguration" value="Debug" />
   </Properties>
 </UserCombinePreferences>

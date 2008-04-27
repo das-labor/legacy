@@ -19,15 +19,15 @@ namespace saftschubser {
         
         private Gtk.HBox hbox1;
         
-        private Gtk.Button button1;
+        private Gtk.ToggleButton kaufenBtn;
         
-        private Gtk.Button button2;
+        private Gtk.ToggleButton kasseBtn;
         
-        private Gtk.Button button3;
+        private Gtk.ToggleButton bestandBtn;
         
-        private Gtk.Button button4;
+        private Gtk.ToggleButton labCtrlBtn;
         
-        private Gtk.Button button5;
+        private Gtk.ToggleButton adminBtn;
         
         private Gtk.Label headingLabel;
         
@@ -35,7 +35,7 @@ namespace saftschubser {
             Stetic.Gui.Initialize(this);
             // Widget saftschubser.MainWindow
             this.Name = "saftschubser.MainWindow";
-            this.Title = Mono.Unix.Catalog.GetString("MainWindow");
+            this.Title = Mono.Unix.Catalog.GetString("Labor Saftschubser");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             // Container child saftschubser.MainWindow.Gtk.Container+ContainerChild
             this.vbox1 = new Gtk.VBox();
@@ -56,18 +56,18 @@ namespace saftschubser {
             this.hbox1.Spacing = 6;
             this.hbox1.BorderWidth = ((uint)(9));
             // Container child hbox1.Gtk.Box+BoxChild
-            this.button1 = new Gtk.Button();
-            this.button1.CanFocus = true;
-            this.button1.Name = "button1";
-            this.button1.UseUnderline = true;
-            // Container child button1.Gtk.Container+ContainerChild
+            this.kaufenBtn = new Gtk.ToggleButton();
+            this.kaufenBtn.CanFocus = true;
+            this.kaufenBtn.Name = "kaufenBtn";
+            this.kaufenBtn.UseUnderline = true;
+            // Container child kaufenBtn.Gtk.Container+ContainerChild
             Gtk.Alignment w2 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w3 = new Gtk.HBox();
             w3.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w4 = new Gtk.Image();
-            w4.Pixbuf = Stetic.IconLoader.LoadIcon(this, "stock_home", Gtk.IconSize.Menu, 16);
+            w4.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-home", Gtk.IconSize.Button, 20);
             w3.Add(w4);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w6 = new Gtk.Label();
@@ -75,24 +75,23 @@ namespace saftschubser {
             w6.UseUnderline = true;
             w3.Add(w6);
             w2.Add(w3);
-            this.button1.Add(w2);
-            this.hbox1.Add(this.button1);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox1[this.button1]));
+            this.kaufenBtn.Add(w2);
+            this.hbox1.Add(this.kaufenBtn);
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox1[this.kaufenBtn]));
             w10.Position = 0;
-            w10.Expand = false;
             // Container child hbox1.Gtk.Box+BoxChild
-            this.button2 = new Gtk.Button();
-            this.button2.CanFocus = true;
-            this.button2.Name = "button2";
-            this.button2.UseUnderline = true;
-            // Container child button2.Gtk.Container+ContainerChild
+            this.kasseBtn = new Gtk.ToggleButton();
+            this.kasseBtn.CanFocus = true;
+            this.kasseBtn.Name = "kasseBtn";
+            this.kasseBtn.UseUnderline = true;
+            // Container child kasseBtn.Gtk.Container+ContainerChild
             Gtk.Alignment w11 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w12 = new Gtk.HBox();
             w12.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w13 = new Gtk.Image();
-            w13.Pixbuf = Stetic.IconLoader.LoadIcon(this, "stock_book_green", Gtk.IconSize.Menu, 16);
+            w13.Pixbuf = Stetic.IconLoader.LoadIcon(this, "stock_book_green", Gtk.IconSize.Button, 20);
             w12.Add(w13);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w15 = new Gtk.Label();
@@ -100,24 +99,23 @@ namespace saftschubser {
             w15.UseUnderline = true;
             w12.Add(w15);
             w11.Add(w12);
-            this.button2.Add(w11);
-            this.hbox1.Add(this.button2);
-            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.hbox1[this.button2]));
+            this.kasseBtn.Add(w11);
+            this.hbox1.Add(this.kasseBtn);
+            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.hbox1[this.kasseBtn]));
             w19.Position = 1;
-            w19.Expand = false;
             // Container child hbox1.Gtk.Box+BoxChild
-            this.button3 = new Gtk.Button();
-            this.button3.CanFocus = true;
-            this.button3.Name = "button3";
-            this.button3.UseUnderline = true;
-            // Container child button3.Gtk.Container+ContainerChild
+            this.bestandBtn = new Gtk.ToggleButton();
+            this.bestandBtn.CanFocus = true;
+            this.bestandBtn.Name = "bestandBtn";
+            this.bestandBtn.UseUnderline = true;
+            // Container child bestandBtn.Gtk.Container+ContainerChild
             Gtk.Alignment w20 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w21 = new Gtk.HBox();
             w21.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w22 = new Gtk.Image();
-            w22.Pixbuf = Stetic.IconLoader.LoadIcon(this, "stock_data-sources-new", Gtk.IconSize.Menu, 16);
+            w22.Pixbuf = Stetic.IconLoader.LoadIcon(this, "stock_data-sources-new", Gtk.IconSize.Button, 20);
             w21.Add(w22);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w24 = new Gtk.Label();
@@ -125,49 +123,47 @@ namespace saftschubser {
             w24.UseUnderline = true;
             w21.Add(w24);
             w20.Add(w21);
-            this.button3.Add(w20);
-            this.hbox1.Add(this.button3);
-            Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.hbox1[this.button3]));
+            this.bestandBtn.Add(w20);
+            this.hbox1.Add(this.bestandBtn);
+            Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.hbox1[this.bestandBtn]));
             w28.Position = 2;
-            w28.Expand = false;
             // Container child hbox1.Gtk.Box+BoxChild
-            this.button4 = new Gtk.Button();
-            this.button4.CanFocus = true;
-            this.button4.Name = "button4";
-            this.button4.UseUnderline = true;
-            // Container child button4.Gtk.Container+ContainerChild
+            this.labCtrlBtn = new Gtk.ToggleButton();
+            this.labCtrlBtn.CanFocus = true;
+            this.labCtrlBtn.Name = "labCtrlBtn";
+            this.labCtrlBtn.UseUnderline = true;
+            // Container child labCtrlBtn.Gtk.Container+ContainerChild
             Gtk.Alignment w29 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w30 = new Gtk.HBox();
             w30.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w31 = new Gtk.Image();
-            w31.Pixbuf = Stetic.IconLoader.LoadIcon(this, "stock_contrast", Gtk.IconSize.Menu, 16);
+            w31.Pixbuf = Stetic.IconLoader.LoadIcon(this, "stock_contrast", Gtk.IconSize.Button, 20);
             w30.Add(w31);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w33 = new Gtk.Label();
-            w33.LabelProp = Mono.Unix.Catalog.GetString("LabControl");
+            w33.LabelProp = Mono.Unix.Catalog.GetString("LabCtrl");
             w33.UseUnderline = true;
             w30.Add(w33);
             w29.Add(w30);
-            this.button4.Add(w29);
-            this.hbox1.Add(this.button4);
-            Gtk.Box.BoxChild w37 = ((Gtk.Box.BoxChild)(this.hbox1[this.button4]));
+            this.labCtrlBtn.Add(w29);
+            this.hbox1.Add(this.labCtrlBtn);
+            Gtk.Box.BoxChild w37 = ((Gtk.Box.BoxChild)(this.hbox1[this.labCtrlBtn]));
             w37.Position = 3;
-            w37.Expand = false;
             // Container child hbox1.Gtk.Box+BoxChild
-            this.button5 = new Gtk.Button();
-            this.button5.CanFocus = true;
-            this.button5.Name = "button5";
-            this.button5.UseUnderline = true;
-            // Container child button5.Gtk.Container+ContainerChild
+            this.adminBtn = new Gtk.ToggleButton();
+            this.adminBtn.CanFocus = true;
+            this.adminBtn.Name = "adminBtn";
+            this.adminBtn.UseUnderline = true;
+            // Container child adminBtn.Gtk.Container+ContainerChild
             Gtk.Alignment w38 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w39 = new Gtk.HBox();
             w39.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w40 = new Gtk.Image();
-            w40.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-dialog-authentication", Gtk.IconSize.Menu, 16);
+            w40.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-dialog-authentication", Gtk.IconSize.Button, 20);
             w39.Add(w40);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w42 = new Gtk.Label();
@@ -175,11 +171,10 @@ namespace saftschubser {
             w42.UseUnderline = true;
             w39.Add(w42);
             w38.Add(w39);
-            this.button5.Add(w38);
-            this.hbox1.Add(this.button5);
-            Gtk.Box.BoxChild w46 = ((Gtk.Box.BoxChild)(this.hbox1[this.button5]));
+            this.adminBtn.Add(w38);
+            this.hbox1.Add(this.adminBtn);
+            Gtk.Box.BoxChild w46 = ((Gtk.Box.BoxChild)(this.hbox1[this.adminBtn]));
             w46.Position = 4;
-            w46.Expand = false;
             this.vbox1.Add(this.hbox1);
             Gtk.Box.BoxChild w47 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox1]));
             w47.Position = 1;
@@ -202,7 +197,11 @@ namespace saftschubser {
             this.DefaultHeight = 542;
             this.Show();
             this.DeleteEvent += new Gtk.DeleteEventHandler(this.OnDeleteEvent);
-            this.button1.Clicked += new System.EventHandler(this.kaufenClicked);
+            this.kaufenBtn.Clicked += new System.EventHandler(this.OnModeBtnClicked);
+            this.kasseBtn.Clicked += new System.EventHandler(this.OnModeBtnClicked);
+            this.bestandBtn.Clicked += new System.EventHandler(this.OnModeBtnClicked);
+            this.labCtrlBtn.Clicked += new System.EventHandler(this.OnModeBtnClicked);
+            this.adminBtn.Clicked += new System.EventHandler(this.OnModeBtnClicked);
         }
     }
 }
