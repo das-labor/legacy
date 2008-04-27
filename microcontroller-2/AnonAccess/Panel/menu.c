@@ -3,6 +3,7 @@
 #include "uart.h"
 #include "menu.h"
 #include "keypad.h"
+#include "ui_primitives.h"
 #include "rtc.h"
 #include "prng.h"
 #include "lop.h"
@@ -23,16 +24,6 @@ authblock_t ab;
 
 /******************************************************************************/
 
-typedef struct{
-	PGM_P name;                                   /* 2 byte */
-	enum {none, submenu, execute, back} options;  /* 1 byte*/
-	void (*fkt)(void);                            /* 2 byte */
-} menu_t;
-
-
-/******************************************************************************/
-
-void menuexec(uint8_t n, menu_t* menu);
 void open_door(void);
 void lock_door(void);
 void admin_menu(void);
@@ -273,13 +264,14 @@ const char admin_menu_PS[]     PROGMEM = "admin menu";
 const char statistic_menu_PS[] PROGMEM = "statistic menu";
 const char bootstrap_menu_PS[] PROGMEM = "bootstrap menu";
 const char debug_menu_PS[]     PROGMEM = "debug menu";
-menu_t main_menu_mt[6] = {
+menu_t main_menu_mt[] = {
 	{open_door_PS,execute, open_door},
 	{lock_door_PS,execute, lock_door},
 	{admin_menu_PS,submenu, admin_menu},
 	{statistic_menu_PS,submenu, stat_menu},
 	{bootstrap_menu_PS,submenu, bootstrap_menu},
-	{debug_menu_PS,submenu, debug_menu}
+	{debug_menu_PS,submenu, debug_menu},
+	{NULL, terminator, NULL}
 };
 
 /******************************************************************************/
@@ -298,7 +290,7 @@ const char dump_card_PS[] PROGMEM = "dump ICC";
 const char write_card_PS[] PROGMEM = "AB -> ICC";
 const char display_analysis_PS[] PROGMEM = "display analysis";
 
-menu_t debug_menu_mt[13] = {
+menu_t debug_menu_mt[] = {
 	{main_menu_PS, back, NULL},
 	{serial_test_PS, execute, run_serial_test},
 	{reset_PS, execute, print_resets},
@@ -311,7 +303,8 @@ menu_t debug_menu_mt[13] = {
 	{get_hex_string_PS, execute, demo_hex},
 	{dump_card_PS, execute, dump_card},
 	{write_card_PS, execute, write_card},
-	{display_analysis_PS, execute, display_analysis}
+	{display_analysis_PS, execute, display_analysis},
+	{NULL, terminator, NULL}
 };
 
 /******************************************************************************/
@@ -319,10 +312,11 @@ menu_t debug_menu_mt[13] = {
 const char req_AB_PS[]    PROGMEM = "request AB";
 const char view_AB_PS[]   PROGMEM = "view AB";
 
-menu_t bootstrap_menu_mt[3] = {
+menu_t bootstrap_menu_mt[] = {
 	{main_menu_PS, back, NULL},
 	{req_AB_PS, execute, req_authblock},
-	{view_AB_PS, execute, view_authblock}
+	{view_AB_PS, execute, view_authblock},
+	{NULL, terminator, NULL}
 };
 
 /******************************************************************************/
@@ -353,15 +347,15 @@ void print_resets(void){
 }
 
 void bootstrap_menu(void){
-	menuexec(3, bootstrap_menu_mt);
+	menuexec(bootstrap_menu_mt);
 }
 
 void debug_menu(void){
-	menuexec(13, debug_menu_mt);
+	menuexec(debug_menu_mt);
 }
 
 void master_menu(void){
-	menuexec(6, main_menu_mt);
+	menuexec(main_menu_mt);
 }
 
 void print_timestamp(void){
@@ -474,7 +468,7 @@ void display_analysis(void){
 	while((c=read_keypad())!='C'){
 		switch (c){
 			case '0': if(offset>0) --offset; break;
-			case '3': if(offset<255-LCD_WIDTH) ++offset; break;
+			case '3': if(offset<256-LCD_WIDTH) ++offset; break;
 			default: break;
 		}
 		if(c!=' '){
@@ -486,79 +480,6 @@ void display_analysis(void){
 			}
 			_delay_ms(3);
 		}
-	}
-}
-
-#define R_ARROW 0x7E
-#define L_ARROW 0x7F
-
-void menuexec(uint8_t n, menu_t* menu){
-  reset:
-  	;
-	uint8_t i,idx=0,selpos=2;
-  redraw:
-  	print_status();
-	
-	for(i=0; i<((n<3)?n:3); ++i){
-		lcd_gotopos(i+2,2);
-		lcd_writestr_P(menu[(idx+i)%n].name);
-		lcd_gotopos(i+2,20);
-		switch(menu[(idx+i)%n].options){
-			case submenu: lcd_writechar(R_ARROW);
-				break;
-			case execute: lcd_writechar('*');
-				break;
-			case back: lcd_writechar(L_ARROW);
-				break;
-			case none: 
-			default:
-				break;
-				
-		}
-	}
-	lcd_gotopos(selpos,1);
-	lcd_writechar(R_ARROW);
-		
-  rescan:	
-	switch (read_keypad()){
-		case '0': 
-			if(selpos==2){
-				idx = (n+idx-1)%n;
-			} else {
-				selpos--;
-			}
-			_delay_ms(1);
-			while(read_keypad()=='0')
-				;
-			_delay_ms(1);
-			goto redraw;
-			break;		
-		case 'C':
-			if(selpos==4){
-				idx = (n+idx+1)%n;
-			} else {
-				selpos++;
-			}
-			_delay_ms(1);
-			while(read_keypad()=='C')
-				;
-			_delay_ms(1);
-			goto redraw;
-			break;		
-		case 'E':
-			_delay_ms(1);
-			while(read_keypad()=='E')
-				;
-			_delay_ms(1);
-			if(menu[(idx+selpos-2)%n].fkt!=NULL){
-				menu[(idx+selpos-2)%n].fkt();
-			}else{
-				return;
-			}
-			goto reset;
-			break;
-		default: goto rescan; 
-			break;
 	}
 }
 

@@ -8,6 +8,13 @@ extern char status_string[6];
 
 #define CHAR_SWITCH_DELAY 1000 /* 1 sec */
 
+typedef struct{
+	PGM_P name;                                   /* 2 byte */
+	enum {none, submenu, execute, back, terminator} options;  /* 1 byte*/
+	void (*fkt)(void);                            /* 2 byte */
+} menu_t;
+
+void menuexec(menu_t* menu);
 void print_status(void);
 void waitforkey(char key);
 char waitforanykey(void);

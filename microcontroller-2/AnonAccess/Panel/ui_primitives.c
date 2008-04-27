@@ -16,6 +16,8 @@
 #define MAX(a,b) (((a)>(b))?(a):(b))
 #define MIN(a,b) (((a)<(b))?(a):(b))
 
+#define DEBOUNCE_DELAY _delay_ms(10)
+
 uint8_t vcgrom[][8] PROGMEM = {
 {	 /* 0 */
 	0x0E,  /*  ###  */
@@ -162,6 +164,21 @@ uint8_t vcgrom[][8] PROGMEM = {
 #define UP_KEY     '0'
 #define DOWN_KEY   'C'
 
+/******************************************************************************/
+
+char waitforkeypress(void){
+	uint8_t k;
+	while((k=read_keypad())==NO_KEY)
+		;
+	DEBOUNCE_DELAY;
+	while(k==read_keypad())
+		;
+	DEBOUNCE_DELAY;
+	return k;
+} 
+
+/******************************************************************************/
+
 void ui_primitives_init(void){
 	uint8_t vram[8];
 	
@@ -219,7 +236,7 @@ uint8_t radioselect(char* opts){
 	uint8_t i,j,index=0, arrowpos=0;
 	uint8_t select=0;
 	uint8_t optcount=dbz_strcount(opts);
-	char c=' ';
+	char c;
 	char* optp[optcount];
 	if(optcount==0)
 		return 0;
@@ -236,12 +253,7 @@ uint8_t radioselect(char* opts){
 			lcd_gotopos(2+i, 4);
 			lcd_writestrn(optp[(i+index)%optcount],LCD_WIDTH-4);
 		}
-		while((c=read_keypad())==NO_KEY)
-			;
-		_delay_ms(10);
-		while(c==read_keypad())
-			;
-		_delay_ms(10);
+		c=waitforkeypress();
 		if(c==ENTER_KEY)
 			return select;
 		if(c==UP_KEY){
@@ -274,7 +286,7 @@ uint8_t radioselect_P(PGM_P opts){
 	uint8_t i,j,index=0, arrowpos=0;
 	uint8_t select=0;
 	uint8_t optcount=dbz_strcount_P(opts);
-	char c=' ';
+	char c;
 	PGM_P optp[optcount];
 	if(optcount==0)
 		return 0;
@@ -291,12 +303,7 @@ uint8_t radioselect_P(PGM_P opts){
 			lcd_gotopos(2+i, 4);
 			lcd_writestrn_P(optp[(i+index)%optcount],LCD_WIDTH-4);
 		}
-		while((c=read_keypad())==NO_KEY)
-			;
-		_delay_ms(10);
-		while(c==read_keypad())
-			;
-		_delay_ms(10);
+		c = waitforkeypress();
 		if(c==ENTER_KEY)
 			return select;
 		if(c==UP_KEY){
@@ -355,12 +362,7 @@ void checkselect(char* opts, uint8_t* config){
 			lcd_gotopos(2+i, 4);
 			lcd_writestrn(optp[(i+index)%optcount],LCD_WIDTH-4);
 		}
-		while((c=read_keypad())==NO_KEY)
-			;
-		_delay_ms(10);
-		while(c==read_keypad())
-			;
-		_delay_ms(10);
+		c = waitforkeypress();
 		if(c==ENTER_KEY)
 			return;
 		if(c==UP_KEY){
@@ -409,12 +411,7 @@ void checkselect_P(PGM_P opts, uint8_t* config){
 			lcd_gotopos(2+i, 4);
 			lcd_writestrn_P(optp[(i+index)%optcount],LCD_WIDTH-4);
 		}
-		while((c=read_keypad())==NO_KEY)
-			;
-		_delay_ms(10);
-		while(c==read_keypad())
-			;
-		_delay_ms(10);
+		c = waitforkeypress();
 		if(c==ENTER_KEY)
 			return;
 		if(c==UP_KEY){
@@ -442,3 +439,101 @@ void checkselect_P(PGM_P opts, uint8_t* config){
 }
 
 /******************************************************************************/
+
+void draw_frame(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, char framechar){
+	uint8_t i;
+	/* top line */
+	lcd_gotopos(posy,posx);
+	for(i=0; i<width; ++i)
+		lcd_writechar(framechar);
+	/* bottom line */	
+	lcd_gotopos(posy+height,posx);
+	for(i=0; i<width; ++i)
+		lcd_writechar(framechar);
+	/* now the sides */	
+	for(i=posy+1; i<posy+height; ++i){
+		lcd_gotopos(i, posx);
+		lcd_writechar(framechar);
+		lcd_gotopos(i, posx+width);
+		lcd_writechar(framechar);
+	}
+}
+
+/******************************************************************************/
+
+
+typedef struct{
+	PGM_P name;                                   /* 2 byte */
+	enum {none, submenu, execute, back, terminator} options;  /* 1 byte*/
+	void (*fkt)(void);                            /* 2 byte */
+} menu_t;
+
+
+void menuexec(menu_t* menu){
+	uint8_t n=0;
+	while(menu[n].options!=terminator)
+		++n;
+  reset:
+  	;
+	uint8_t i,idx=0,selpos=2;
+  redraw:
+  	lcd_cls();
+  //	print_status();
+	
+	for(i=0; i<((n<3)?n:3); ++i){
+		lcd_gotopos(i+2,2);
+		lcd_writestr_P(menu[(idx+i)%n].name);
+		lcd_gotopos(i+2,20);
+		switch(menu[(idx+i)%n].options){
+			case submenu: lcd_writechar(LCD_RARROW);
+				break;
+			case execute: lcd_writechar('*');
+				break;
+			case back: lcd_writechar(LCD_LARROW);
+				break;
+			case none: 
+			default:
+				break;
+				
+		}
+	}
+	lcd_gotopos(selpos,1);
+	lcd_writechar(LCD_RARROW);
+		
+  rescan:	
+	switch (waitforkeypress()){
+		case UP_KEY: 
+			if(selpos==2){
+				idx = (n+idx-1)%n;
+			} else {
+				selpos--;
+			}
+			goto redraw;
+			break;		
+		case DOWN_KEY:
+			if(selpos==4){
+				idx = (n+idx+1)%n;
+			} else {
+				selpos++;
+			}
+			goto redraw;
+			break;		
+		case ENTER_KEY:	
+		case SELECT_KEY:
+			if(menu[(idx+selpos-2)%n].fkt!=NULL){
+				menu[(idx+selpos-2)%n].fkt();
+			}else{
+				return;
+			}
+			goto reset;
+			break;
+		default: goto rescan; 
+			break;
+	}
+}
+
+
+
+
+
+
