@@ -109,18 +109,19 @@ int main(void){
 	lcd_init();
 	keypad_init();	
 	ui_primitives_init();
-	lcd_gotopos(1,1);
+	draw_frame(1,1,LCD_WIDTH,LCD_HEIGHT,'*');
+	lcd_gotopos(2,3);
 	lcd_writestr("booting ...");
 	uint8_t i;
 	for(i=0; i<255; ++i){
-		print_progressbar(i/255.0, 1, 3, 20);
+		print_progressbar(i/255.0, 2, 3, LCD_WIDTH-2);
 		_delay_ms(10);
 	}
 	lcd_cls();
 //	radioselect("anon\0not anon\0");
-	radioselect_P(PSTR("bla\0blub\0foo\0bar\0foobar\0"));
-	checkselect_P(PSTR("A\0B\0C\0D\0E\0F\0G\0H\0"),(uint8_t*)"\0");
-	
+//	radioselect_P(PSTR("bla\0blub\0foo\0bar\0foobar\0"));
+//	checkselect_P(PSTR("A\0B\0C\0D\0E\0F\0G\0H\0"),(uint8_t*)"\0");
+	ui_hexdump("bla", 57);
 	
 	resetcnt_inc();
 	uart_init();

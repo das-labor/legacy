@@ -258,22 +258,6 @@ void view_authblock(void){
 /******************************************************************************/
 /******************************************************************************/
 
-const char open_door_PS[]      PROGMEM = "open door";
-const char lock_door_PS[]      PROGMEM = "lock door";
-const char admin_menu_PS[]     PROGMEM = "admin menu";
-const char statistic_menu_PS[] PROGMEM = "statistic menu";
-const char bootstrap_menu_PS[] PROGMEM = "bootstrap menu";
-const char debug_menu_PS[]     PROGMEM = "debug menu";
-menu_t main_menu_mt[] = {
-	{open_door_PS,execute, open_door},
-	{lock_door_PS,execute, lock_door},
-	{admin_menu_PS,submenu, admin_menu},
-	{statistic_menu_PS,submenu, stat_menu},
-	{bootstrap_menu_PS,submenu, bootstrap_menu},
-	{debug_menu_PS,submenu, debug_menu},
-	{NULL, terminator, NULL}
-};
-
 /******************************************************************************/
 
 const char main_menu_PS[]      PROGMEM = "main menu";
@@ -291,20 +275,20 @@ const char write_card_PS[] PROGMEM = "AB -> ICC";
 const char display_analysis_PS[] PROGMEM = "display analysis";
 
 menu_t debug_menu_mt[] = {
-	{main_menu_PS, back, NULL},
-	{serial_test_PS, execute, run_serial_test},
-	{reset_PS, execute, print_resets},
-	{timestamp_PS, execute, print_timestamp},
-	{timestamp_live_PS, execute, print_timestamp_live},
-	{timestamp_base64_PS, execute, print_timestamp_base64},
-	{timestamp_base64_live_PS, execute, print_timestamp_base64_live},
-	{random_PS, execute, print_random},
-	{get_name_PS, execute, demo_getname},
-	{get_hex_string_PS, execute, demo_hex},
-	{dump_card_PS, execute, dump_card},
-	{write_card_PS, execute, write_card},
-	{display_analysis_PS, execute, display_analysis},
-	{NULL, terminator, NULL}
+	{main_menu_PS, back, {NULL}},
+	{serial_test_PS, execute, {run_serial_test}},
+	{reset_PS, execute, {print_resets}},
+	{timestamp_PS, execute, {print_timestamp}},
+	{timestamp_live_PS, execute, {print_timestamp_live}},
+	{timestamp_base64_PS, execute, {print_timestamp_base64}},
+	{timestamp_base64_live_PS, execute, {print_timestamp_base64_live}},
+	{random_PS, execute, {print_random}},
+	{get_name_PS, execute, {demo_getname}},
+	{get_hex_string_PS, execute, {demo_hex}},
+	{dump_card_PS, execute, {dump_card}},
+	{write_card_PS, execute, {write_card}},
+	{display_analysis_PS, execute, {display_analysis}},
+	{NULL, terminator, {NULL}}
 };
 
 /******************************************************************************/
@@ -313,10 +297,26 @@ const char req_AB_PS[]    PROGMEM = "request AB";
 const char view_AB_PS[]   PROGMEM = "view AB";
 
 menu_t bootstrap_menu_mt[] = {
-	{main_menu_PS, back, NULL},
-	{req_AB_PS, execute, req_authblock},
-	{view_AB_PS, execute, view_authblock},
-	{NULL, terminator, NULL}
+	{main_menu_PS, back, {NULL}},
+	{req_AB_PS, execute, {req_authblock}},
+	{view_AB_PS, execute, {view_authblock}},
+	{NULL, terminator, {NULL}}
+};
+
+const char open_door_PS[]      PROGMEM = "open door";
+const char lock_door_PS[]      PROGMEM = "lock door";
+const char admin_menu_PS[]     PROGMEM = "admin menu";
+const char statistic_menu_PS[] PROGMEM = "statistic menu";
+const char bootstrap_menu_PS[] PROGMEM = "bootstrap menu";
+const char debug_menu_PS[]     PROGMEM = "debug menu";
+menu_t main_menu_mt[] = {
+	{open_door_PS,execute, {open_door}},
+	{lock_door_PS,execute, {lock_door}},
+	{admin_menu_PS,submenu, {admin_menu}},
+	{statistic_menu_PS,submenu, {stat_menu}},
+	{bootstrap_menu_PS,autosubmenu, {bootstrap_menu_mt}},
+	{debug_menu_PS,autosubmenu, {debug_menu_mt}},
+	{NULL, terminator, {NULL}}
 };
 
 /******************************************************************************/
