@@ -26,7 +26,7 @@ void lcd_write(uint8_t data, uint8_t rs){
 	uint8_t dataBits = 0;
   
 	if(rs){   					// write data (RS=1, RW=0) 
-		dataBits=0x10;				// RS liegt an Pin 4 = B 0001 0000 = H 10
+		dataBits=0x10;			// RS liegt an Pin 4 = B 0001 0000 = H 10
 	}else{     					// write instruction (RS=0, RW=0) 
 		dataBits=0; 			
 	}
@@ -38,7 +38,26 @@ void lcd_write(uint8_t data, uint8_t rs){
 	_delay_us (1);
 }
 
-// del display
+void lcd_setcgaddr(uint8_t addr){
+	addr &= 0x3F;
+	addr |= 0x40;
+	lcd_write(addr, 0);
+}
+
+void lcd_setddaddr(uint8_t addr){
+	addr &= 0x7F;
+	addr |= 0x80;
+	lcd_write(addr, 0);
+}
+
+void lcd_loadfont(const void* font){
+	uint8_t i;
+	for(i=0; i<8; ++i){
+		lcd_write(((uint8_t*)font)[i],1);
+	}
+}
+
+// clear display
 void lcd_cls (void){
 	lcd_write(0x02,0);   				// 0000 0010 => del Display
 	_delay_ms(2);					// wait a moment
@@ -47,18 +66,18 @@ void lcd_cls (void){
 }
 
 // char output
-void lcd_writechar (char zeichen){
-  lcd_write (zeichen, 1);   
+void lcd_writechar (char c){
+  lcd_write (c, 1);   
 }
 
 // string output
-void lcd_writestr (char *text){
+void lcd_writestr (const char *text){
   while (*text!='\0') {
     lcd_writechar(*text++);
   }
 }
 
-void lcd_writestrn (char *text, uint16_t len){
+void lcd_writestrn (const char *text, uint16_t len){
   while ((*text!='\0') && len--) {
     lcd_writechar(*text++);
   }
@@ -71,7 +90,7 @@ void lcd_writestr_P(PGM_P str){
   }
 }
 
-void lcd_hexdump(void* data, uint8_t length){
+void lcd_hexdump(const void* data, uint8_t length){
 	char tab[16]={'0','1','2','3','4','5','6','7','9','8','A','B','C','D','E','F'};
 	while(length){
 		lcd_writechar(tab[(*((uint8_t*)data))>>4]);
@@ -81,21 +100,30 @@ void lcd_hexdump(void* data, uint8_t length){
 	}
 }
 
+uint8_t lcd_line_lut[] PROGMEM = {0x80, 0x80, 0xC0, 0x80+20, 0xC0+20};	
 
 // goto pos
-void lcd_gotoline (uint8_t zeile){
+void lcd_gotoline (uint8_t line){
+/*
   if (zeile == 1) lcd_write(0x80,0);   			// B 1000 0000 => DD-RAM Adress Set 1. Zeile/1.Spalte 
   if (zeile == 2) lcd_write(0xC0,0);   			// B 1100 0000 => DD-RAM Adress Set 2. Zeile/1.Spalte (B x100 0000 = H 40)
   if (zeile == 3) lcd_write(0x80+20,0);   		// B 1110 0000 => DD-RAM Adress Set 3. Zeile/1.Spalte (B x100 0000 = H 40)
   if (zeile == 4) lcd_write(0xC0+20,0);   		// B 1111 0000 => DD-RAM Adress Set 4. Zeile/1.Spalte (B x100 0000 = H 40)
+*/
+	if(line<=4)
+		lcd_write(pgm_read_byte(lcd_line_lut+line),0);
 }
 
 // courser positioning
-void lcd_gotopos (uint8_t zeile, uint8_t spalte){
+void lcd_gotopos (uint8_t line, uint8_t col){
+/*	
   if (zeile == 1) lcd_write(0x80+spalte-1,0);   	// DD-RAM Adress 1. Zeile + Spalte
   if (zeile == 2) lcd_write(0xC0+spalte-1,0);   	// DD-RAM Adress 2. Zeile + Spalte 
   if (zeile == 3) lcd_write(0x80+20+spalte-1,0);	// DD-RAM Adress 3. Zeile + Spalte
   if (zeile == 4) lcd_write(0xC0+20+spalte-1,0);	// DD-RAM Adress 4. Zeile + Spalte
+*/
+	if(line<=4)
+		lcd_write(pgm_read_byte(lcd_line_lut+line)+col-1,0);
 }
 
 // Display initialisieren. Einmal als erstes aufrufen

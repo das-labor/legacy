@@ -26,6 +26,7 @@
 #include "interface.h"
 #include "24C04.h"
 #include "cardio.h"
+#include "ui_primitives.h"
 
 lop_ctx_t lop0={
 	idle, idle, idle, 0, 0, NULL, 0, 
@@ -106,12 +107,22 @@ int main(void){
 
 	//Initialisierung
 	lcd_init();
-	
+	keypad_init();	
+	ui_primitives_init();
 	lcd_gotopos(1,1);
 	lcd_writestr("booting ...");
+	uint8_t i;
+	for(i=0; i<255; ++i){
+		print_progressbar(i/255.0, 1, 3, 20);
+		_delay_ms(10);
+	}
+	lcd_cls();
+	radioselect("anon\0not anon\0");
+	radioselect("bla\0blub\0foo\0bar\0foobar\0");
+	
+	
 	
 	resetcnt_inc();
-	keypad_init();	
 	uart_init();
 	uart_putc(XON);
 	spi_init();

@@ -1,6 +1,11 @@
-#include "config.h"
+#ifndef KEYPAD_H_
+#define KEYPAD_H_
 
-#define delay(us)  _delay_ms (us/1000)		// wartet µs
+#include "config.h"
 
 char read_keypad(void); 
 void keypad_init(void);
+
+
+#endif
+

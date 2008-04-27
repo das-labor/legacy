@@ -13,6 +13,7 @@
 #include "types.h"
 #include "comm.h"
 #include "24C04.h"
+#include "cardio.h"
 #include <stdint.h>
 #include <util/delay.h>
 
@@ -48,6 +49,8 @@ void run_serial_test(void);
 void print_random(void);
 void dump_card(void);
 void write_card(void);
+void display_analysis(void);
+
 
 /******************************************************************************/
 
@@ -293,8 +296,9 @@ const char get_name_PS[]       PROGMEM = "get name";
 const char get_hex_string_PS[] PROGMEM = "get hex string";
 const char dump_card_PS[] PROGMEM = "dump ICC";
 const char write_card_PS[] PROGMEM = "AB -> ICC";
+const char display_analysis_PS[] PROGMEM = "display analysis";
 
-menu_t debug_menu_mt[12] = {
+menu_t debug_menu_mt[13] = {
 	{main_menu_PS, back, NULL},
 	{serial_test_PS, execute, run_serial_test},
 	{reset_PS, execute, print_resets},
@@ -306,7 +310,8 @@ menu_t debug_menu_mt[12] = {
 	{get_name_PS, execute, demo_getname},
 	{get_hex_string_PS, execute, demo_hex},
 	{dump_card_PS, execute, dump_card},
-	{write_card_PS, execute, write_card}
+	{write_card_PS, execute, write_card},
+	{display_analysis_PS, execute, display_analysis}
 };
 
 /******************************************************************************/
@@ -352,7 +357,7 @@ void bootstrap_menu(void){
 }
 
 void debug_menu(void){
-	menuexec(12, debug_menu_mt);
+	menuexec(13, debug_menu_mt);
 }
 
 void master_menu(void){
@@ -441,9 +446,9 @@ void dump_card(void){
 	uint8_t buffer[17];
 	uint16_t i;
 //	E24C04_block_read(0xA0, 0, buffer, 16);
-//	uart_putstr("Hallo");
 	buffer[16]='\0';
 	lop_dbg_str_P(&lop0, PSTR("\r\nICC dump:\r\n"));
+	E24C04_init();
 	for(i=0; i<256; i+=16){
 		E24C04_block_read(0xA0, i, buffer, 16);
 		lop_dbg_hexdump(&lop0, buffer, 16);
@@ -458,6 +463,31 @@ void write_card(void){
 	writeABtoCard(&ab);
 }
 
+void display_analysis(void){
+	uint16_t offset=0,i;
+	char c;
+	lcd_cls();
+	lcd_gotopos(1,1);
+	lcd_writestr_P(PSTR("-=display analysis=-"));
+	lcd_gotopos(2,2);
+	lcd_writestr_P(PSTR("position:"));
+	while((c=read_keypad())!='C'){
+		switch (c){
+			case '0': if(offset>0) --offset; break;
+			case '3': if(offset<255-LCD_WIDTH) ++offset; break;
+			default: break;
+		}
+		if(c!=' '){
+			lcd_gotopos(3,4);
+			lcd_hexdump(&offset, 1);
+			lcd_gotopos(4,1);
+			for(i=offset; i<offset+LCD_WIDTH; ++i){
+				lcd_writechar((char)i);
+			}
+			_delay_ms(3);
+		}
+	}
+}
 
 #define R_ARROW 0x7E
 #define L_ARROW 0x7F

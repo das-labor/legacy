@@ -20,10 +20,11 @@
 
 void cardio_init(void){
 	DDRC &= ~(_BV(7));
+	PORTC |= _BV(7); /* enable pullup resistor */
 }
 
 bool cardinserated(void){
-	return (PINC&_BV(7))?true:false;
+	return (PINC&_BV(7))?false:true;
 } 
 
 bool readABfromCard(authblock_t * ab){

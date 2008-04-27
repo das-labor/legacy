@@ -1,11 +1,13 @@
+include gmsl
+
 PRG	    = panel
 OBJ	    = keys.o main.o interface.o lcd_tools.o keypad.o spi.o menu.o 24Cxxx.o \
   i2c.o i2c_tools.o prng.o sha256-asm.o hmac-sha256.o rtc.o hwrnd.o base64_enc.o \
-  reset_counter.o lop.o lop_debug.o comm.o 24C04.o cardio.o uart.o
+  reset_counter.o lop.o lop_debug.o comm.o 24C04.o cardio.o uart.o ui_primitives.o
 MCU_TARGET     = atmega644
 OPTIMIZE       = -Os -mno-tablejump
 DEBUG	   = -gstabs
-DEFS	   =
+DEFS	   = -D$(call uc,$(MCU_TARGET))
 LIBS	   =
 
 # You should not have to change anything below here.
@@ -41,7 +43,7 @@ clean:
 
 lst:  $(PRG).lst
 
-flash:
+flash: $(PRG).hex $(PRG)_eeprom.hex
 	$(ERASECMD)
 	$(FLASHCMD)
 

@@ -1,9 +1,18 @@
 #include "config.h"
 #include "lcd_tools.h"
+#include "keypad.h"
+
+#include <avr/pgmspace.h>
+
+char keypad_tab [] PROGMEM = { 
+							   '0', '1', '2', '3',
+	                           '4', '5', '6', '7',
+	                           '8', '9', 'A', 'B',
+	                           'C', 'D', 'E', 'F'
+	                           } ;
+
 
 char read_keypad(void){
-
-	//Variablen
 	uint8_t zeichen = 0x10;
 	uint8_t i, j;
 	uint8_t rowx[4], collx[4];
@@ -19,20 +28,18 @@ char read_keypad(void){
 	collx[3] = COLL4;
 
 	//Zeilen und Spalten abfragen
-	for (i=0;i <= 3;i++){
+	for (i=0; i<4; i++){
 		DDR_ROWS |= (1 << rowx[i]);
-		for(j=0;j<=3;j++){
+		for(j=0; j<4; j++){
 			if ((PIN_COLLS & (1 << collx[j])) == 0){
-				zeichen = j + (i * 4);
+				DDR_ROWS &= ~(1 << rowx[i]);
+				return pgm_read_byte(keypad_tab+j+(i*4));
 			}
 		}
 		DDR_ROWS &= ~(1 << rowx[i]);
 	}
 	
-	zeichen=(zeichen>0xF)?0x10:zeichen;
-	char tab[]="0123456789ABCDEF ";
-
-	return tab[zeichen];
+	return ' ';
 }
 
 void keypad_init(void){
