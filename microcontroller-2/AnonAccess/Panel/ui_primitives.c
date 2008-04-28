@@ -550,16 +550,18 @@ void data2hex(const void* buffer, char* dest, uint8_t length){
 }
 
 void ui_hexdump(const void* data, uint16_t length){
-	int16_t offset=0;
+	uint16_t offset=0;
 	uint8_t addr_len=4;
 	uint8_t bytesperline=0;
-	uint8_t i;
+	uint8_t i,j;
 	char c;
 	while((length&(0xF<<(addr_len*4-4)))==0)
 		--addr_len;
 	char addrstr[addr_len];
+	
 	bytesperline=(LCD_WIDTH-addr_len-1)/2;
 	char bytesbuffer[bytesperline*2];
+	
 	for(;;){
 		for(i=0; i<3; ++i){
 			if(offset+i*bytesperline>length)
@@ -568,9 +570,18 @@ void ui_hexdump(const void* data, uint16_t length){
 			genaddr(offset+i*bytesperline, addrstr, addr_len);
 			lcd_writestrn(addrstr, addr_len);
 			lcd_writechar(':');
-			data2hex(((uint8_t*)data)+offset+i*bytesperline,bytesbuffer,
-				MIN(bytesperline,length-offset-i*bytesperline));
-			lcd_writestrn(bytesbuffer, 2*MIN(bytesperline,(length-offset-i*bytesperline)));	
+			if((j=length-offset-i*bytesperline)>=bytesperline){
+				/* regular case */
+				data2hex(((uint8_t*)data)+offset+i*bytesperline,bytesbuffer, bytesperline);
+				lcd_writestrn(bytesbuffer, 2*bytesperline);	
+			} else {
+				/* only a few bytes are to print (j) */
+				data2hex(((uint8_t*)data)+offset+i*bytesperline,bytesbuffer, j);
+				lcd_writestrn(bytesbuffer, 2*j);
+				j=LCD_WIDTH-addr_len-1-2*j;
+				while(j--)
+					lcd_writechar(' ');
+			}
 		}
 		c=waitforkeypress();
 		if(c==UP_KEY){
@@ -586,4 +597,6 @@ void ui_hexdump(const void* data, uint16_t length){
 		}
 	}
 }
+
+
 
