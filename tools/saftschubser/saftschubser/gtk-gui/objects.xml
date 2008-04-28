@@ -39,4 +39,8 @@
       </itemgroup>
     </signals>
   </object>
+  <object type="saftschubser.BestellWidget" palette-category="saftschubser" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
 </objects>

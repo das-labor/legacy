@@ -14,8 +14,8 @@ namespace saftschubser
 			set {
 				_a = value;
 				
-				nameLabel.Markup    = string.Format( "<span size=\"xx-large\"><b>{0}</b></span>", _a.Name );
-				preisLabel.Markup   = string.Format( "<span size=\"xx-large\"><b>{0:c}</b></span>", _a.Preis );
+				nameLabel.Markup    = string.Format( "<span size=\"x-large\"><b>{0}</b></span>", _a.Name );
+				preisLabel.Markup   = string.Format( "<span size=\"x-large\"><b>{0:c}</b></span>", _a.Preis );
 				commentLabel.Markup = string.Format( "<span size=\"smaller\">Bestand: {0}</span>", _a.Bestand );
 			}
 		}

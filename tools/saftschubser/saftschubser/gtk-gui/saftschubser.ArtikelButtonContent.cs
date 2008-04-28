@@ -85,7 +85,7 @@ namespace saftschubser {
             this.commentLabel.Ypad = 2;
             this.commentLabel.Xalign = 0F;
             this.commentLabel.Yalign = 0F;
-            this.commentLabel.LabelProp = Mono.Unix.Catalog.GetString("label2");
+            this.commentLabel.LabelProp = "";
             this.vbox1.Add(this.commentLabel);
             Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox1[this.commentLabel]));
             w5.Position = 1;
