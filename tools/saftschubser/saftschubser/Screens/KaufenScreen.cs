@@ -14,17 +14,16 @@ namespace saftschubser
 		{
 			this.Build();
 			
-			artikelChooser.ArtikelChoosen += new ArtikelChoosenHandler( OnArtikelChoosen );
-			
-//			foreach(Artikel a in list) {
-//				Console.WriteLine( a );
-//			}
+			hpaned1.Position = 600;
 		}
 		
 		public void OnArtikelChoosen(object sender, Artikel a)
 		{
-			Console.WriteLine( a.ToString() );
+			bestellWidget.AddArtikel(a);
+			// Console.WriteLine( a.ToString() );
 		}
+		
+		
 		
 	}
 }
