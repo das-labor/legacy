@@ -21,14 +21,14 @@ namespace SchubserAdmin {
 		
 		protected virtual void CardAdd (object sender, System.EventArgs e)
 		{
-			Person np = SaftDb.NewPerson();
-			
-			np.Name     = "Kassenwart";
-			np.Guthaben = 23.42m;
-			
-			ShowPerson(np);
+			//Person np = SaftDb.NewPerson();
+			//
+			//np.Name     = "Kassenwart";
+			//np.Guthaben = 23.42m;
+			//
+			//ShowPerson(np);
 		}
-		
+		/*
 		void ShowPerson(Person p)
 		{
 			cardIdEntry.Text       = p.Id.ToString();
@@ -38,6 +38,7 @@ namespace SchubserAdmin {
 			cardCreditEntry.Text   = p.Guthaben.ToString();
 			cardTreuhandEntry.Text = p.Treuhaendisch.ToString();
 		}
+		*/
 		
 	}
 	

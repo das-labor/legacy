@@ -3,27 +3,6 @@ using Db4objects.Db4o;
 
 namespace SaftSchubserDb
 {
-	public class SaftDb {
-		public static IObjectContainer _db;
-
-		static IObjectContainer Db {
-			get { 
-				// if (_db == null) nu;
-				return _db;
-			}
-		}
-		
-		/*public static Person FindPerson(int id)
-		{
-		}*/
-		
-		public static Person NewPerson()
-		{
-			return new Person(0);
-		}
-	}
-	
-	
 	
 	/// <summary>
 	/// Representiert eine Person mit einer Karte
