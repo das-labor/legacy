@@ -40,7 +40,6 @@ namespace saftschubser {
             // Container child saftschubser.MainWindow.Gtk.Container+ContainerChild
             this.vbox1 = new Gtk.VBox();
             this.vbox1.Name = "vbox1";
-            this.vbox1.Spacing = 6;
             // Container child vbox1.Gtk.Box+BoxChild
             this.hbuttonbox1 = new Gtk.HButtonBox();
             this.hbuttonbox1.Name = "hbuttonbox1";
@@ -60,6 +59,7 @@ namespace saftschubser {
             this.kaufenBtn.CanFocus = true;
             this.kaufenBtn.Name = "kaufenBtn";
             this.kaufenBtn.UseUnderline = true;
+            this.kaufenBtn.Active = true;
             // Container child kaufenBtn.Gtk.Container+ContainerChild
             Gtk.Alignment w2 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
@@ -183,12 +183,15 @@ namespace saftschubser {
             // Container child vbox1.Gtk.Box+BoxChild
             this.headingLabel = new Gtk.Label();
             this.headingLabel.Name = "headingLabel";
-            this.headingLabel.LabelProp = Mono.Unix.Catalog.GetString("label1");
+            this.headingLabel.Xpad = 10;
+            this.headingLabel.Xalign = 1F;
+            this.headingLabel.LabelProp = Mono.Unix.Catalog.GetString("<b>Benutzer</b>");
+            this.headingLabel.UseMarkup = true;
+            this.headingLabel.SingleLineMode = true;
             this.vbox1.Add(this.headingLabel);
             Gtk.Box.BoxChild w48 = ((Gtk.Box.BoxChild)(this.vbox1[this.headingLabel]));
             w48.Position = 2;
             w48.Expand = false;
-            w48.Fill = false;
             this.Add(this.vbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
@@ -202,6 +205,7 @@ namespace saftschubser {
             this.bestandBtn.Clicked += new System.EventHandler(this.OnModeBtnClicked);
             this.labCtrlBtn.Clicked += new System.EventHandler(this.OnModeBtnClicked);
             this.adminBtn.Clicked += new System.EventHandler(this.OnModeBtnClicked);
+            this.adminBtn.Clicked += new System.EventHandler(this.OnCardInserted);
         }
     }
 }

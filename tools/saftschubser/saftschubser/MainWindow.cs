@@ -28,7 +28,7 @@ namespace saftschubser
 			ignoreModeSwitchEvents = false;
 
 			// alle möglichen Screens erzeugen und einhängen
-			kaufenScreen  = new Kauf();
+			kaufenScreen  = new KaufenScreen();
 			kasseScreen   = new KasseScreen();
 			bestandScreen = new BestandScreen();
 			labCtrlScreen = new LabCtrlScreen();
@@ -42,7 +42,7 @@ namespace saftschubser
 			
 			// Darstellung aktualisieren
 			UpdateScreen();
-			//Fullscreen();
+			Fullscreen();
 		}
 		
 		protected void OnDeleteEvent (object sender, DeleteEventArgs a)
@@ -72,6 +72,10 @@ namespace saftschubser
 			labCtrlScreen.Visible = (curMode == ScreenMode.LabCtrl);
 			adminScreen.Visible   = (curMode == ScreenMode.Admin);
 			
+			// headingLabel
+			headingLabel.Markup  = "[ <b>Anonymous</b> // Bar Kasse ]";
+			headingLabel.Justify = Justification.Left;
+			
 			// vbox1.ShowAll();
 			
 			ignoreModeSwitchEvents = false;
@@ -95,6 +99,11 @@ namespace saftschubser
 				System.Console.WriteLine( "Unknown OnModeBtnClicked sender!" );
 			
 			UpdateScreen();
+		}
+
+		protected virtual void OnCardInserted (object sender, System.EventArgs e)
+		{
+			//curUser = new Person();
 		}
 			
 			
