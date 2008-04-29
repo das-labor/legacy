@@ -149,23 +149,6 @@ uint8_t vcgrom[][8] PROGMEM = {
     0x00,  /*       */
 }};
 
-#define LCD_LABORLOGO     0
-#define LCD_RADIOSELECT   5
-#define LCD_CHECKSELECT   6
-#define LCD_RADIONOSELECT 'o'
-#define LCD_CHECKNOSELECT 0xDB
-
-#define LCD_FULLCHAR  255
-#define LCD_EMPTYCHAR  ' '
-#define LCD_RARROW 0x7E
-#define LCD_LARROW 0x7F
-
-#define NO_KEY     ' '
-#define ENTER_KEY  'F'
-#define SELECT_KEY 'E'
-#define UP_KEY     '0'
-#define DOWN_KEY   'C'
-
 /******************************************************************************/
 
 char waitforkeypress(void){
@@ -184,18 +167,18 @@ char waitforkeypress(void){
 void ui_primitives_init(void){
 	uint8_t vram[8];
 	
-	lcd_setcgaddr(0);
-	lcd_loadfont_P(vcgrom[11]);
-	memset(vram, 0x10, 8);
+	lcd_setcgaddr(8);
+	memset(vram, 0x10, 8); /* load |    */
 	lcd_loadfont(vram);
-	memset(vram, 0x18, 8);
+	memset(vram, 0x18, 8); /* load ||   */
 	lcd_loadfont(vram);
-	memset(vram, 0x1C, 8);
+	memset(vram, 0x1C, 8); /* load |||  */
 	lcd_loadfont(vram);
-	memset(vram, 0x1E, 8);
+	memset(vram, 0x1E, 8); /* load |||| */
 	lcd_loadfont(vram);
-	lcd_loadfont_P(vcgrom[12]);
-	lcd_loadfont_P(vcgrom[13]);
+	lcd_loadfont_P(vcgrom[12]); /* load radioselect */
+	lcd_loadfont_P(vcgrom[13]); /* load checkselect */
+	lcd_loadfont_P(vcgrom[11]); /* load labor logo*/
 	lcd_setddaddr(0);
 }
 
@@ -592,11 +575,84 @@ void ui_hexdump(const void* data, uint16_t length){
 			if(offset<((signed)length)-3*(signed)bytesperline)
 				offset+=bytesperline;
 		}
-		if(c==ENTER_KEY){
+		if(c==ENTER_KEY || c==SELECT_KEY){
 			return;
 		}
 	}
 }
 
+/******************************************************************************/
+void lcd_writelinen(const char* text, uint16_t length){
+	while(*text && *text!='\n' && length--)
+		lcd_writechar(*text++);
+}
 
+uint16_t count_lcdstrings(char* text, uint8_t width){
+	uint16_t ret=1;
+	uint8_t t=0;
+	if(!*text)
+		return 0;
+	while(*text){
+		if(*text=='\n' || t==width){
+			t=0;
+			++ret;
+		}else{
+			++t;
+		}
+		++text;
+	}
+	return ret;
+}
+
+void split_lcdstrings(char* text, char** list, uint8_t width){
+	uint8_t t=0;
+	*list = text;
+	while(*text){
+		if(*text=='\n' || t==width){
+			t=0;
+			++list;
+			*list=text+1;
+		}else{
+			++t;
+		}
+		++text;
+	}
+}
+
+void ui_textwindow(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, char* text){
+	uint16_t strn;
+	uint16_t offset=0;
+	uint8_t i,j;
+	char c;
+	
+	if(height==0 || width==0)
+		return;
+	strn=count_lcdstrings(text, width-1);
+	if(strn==0)
+		return;
+	char* l[strn];
+	split_lcdstrings(text, l, width-1);
+	
+	for(;;){
+		for(i=0; i<height; ++i){
+			lcd_gotopos(posy+i,posx); 	
+			for(j=0; j<width; ++j)
+				lcd_writechar(' ');
+			lcd_gotopos(posy+i,posx);
+			lcd_writelinen(l[offset+i],width);	
+		}
+		c = waitforkeypress();
+		if(c==ENTER_KEY || c==SELECT_KEY){
+			return;
+		}
+		if(c==UP_KEY){
+			if(offset)
+				--offset;
+		}
+		if(c==DOWN_KEY){
+			if((signed)offset<(signed)strn-height)
+				++offset;
+		}
+	}
+}
 
