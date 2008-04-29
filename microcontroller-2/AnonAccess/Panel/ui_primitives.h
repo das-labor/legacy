@@ -38,6 +38,7 @@ typedef struct menu_st{
 #define SELECT_KEY 'E'
 #define UP_KEY     '0'
 #define DOWN_KEY   'C'
+#define CORRECT_KEY 'C'
 
 
 void ui_primitives_init(void);
@@ -52,6 +53,10 @@ void ui_hexdump(const void* data, uint16_t length);
 void ui_hexdump_P(PGM_VOID_P data, uint16_t length);
 void ui_textwindow(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, char* text);
 void ui_textwindow_P(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, PGM_P text);
+
+char waitforkeypress(void);
+uint8_t read_decimaln(uint8_t xpos, uint8_t ypos, char* str, uint8_t n);
+uint8_t read_hexn(uint8_t xpos, uint8_t ypos, char* str, uint8_t n);
 
 
 #endif /*UI_PRIMITIVES_H_*/

@@ -39,6 +39,14 @@ void lcd_write(uint8_t data, uint8_t rs){
 	_delay_us (1);
 }
 
+void lcd_control(uint8_t display, uint8_t cursor, uint8_t blink){
+	uint8_t i;
+	i = display<<2 | cursor<<1 | blink;
+	i &= 0x07;
+	i |= 0x08;
+	lcd_write(i,0);
+}
+
 void lcd_setcgaddr(uint8_t addr){
 	addr &= 0x3F;
 	addr |= 0x40;

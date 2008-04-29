@@ -65,6 +65,13 @@ ISR(TIMER0_COMP_vect){
 }
 
 
+timestamp_t abstimedifference(timestamp_t t1, timestamp_t t2){
+	if(t1<t2){
+		return t2-t1;
+	} else {
+		return t1-t2;
+	}
+}
 
 
 
