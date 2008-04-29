@@ -1,18 +1,12 @@
-// BestandScreen.cs created with MonoDevelop
-// User: joerg at 13:22 27.04.2008
-//
-// To change standard headers go to Edit->Preferences->Coding->Standard Headers
-//
-
 using System;
+using System.Collections.Generic;
+using Gtk;
+using SaftSchubserDb;
 
-namespace saftschubser
+namespace SchubserPos
 {
-	
-	
 	public partial class BestandScreen : Gtk.Bin
 	{
-		
 		public BestandScreen()
 		{
 			this.Build();

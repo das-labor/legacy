@@ -6,10 +6,8 @@
 
 using System;
 
-namespace saftschubser
+namespace SchubserPos
 {
-	
-	
 	public partial class AdminScreen : Gtk.Bin
 	{
 		

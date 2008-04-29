@@ -6,7 +6,7 @@
 
 using System;
 
-namespace saftschubser
+namespace SchubserPos
 {
 	public partial class Kauf : Gtk.Bin
 	{

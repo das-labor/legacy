@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-
 using Gtk;
-
 using SaftSchubserDb;
 
-namespace saftschubser
+namespace SchubserPos
 {
 	public delegate void ArtikelChoosenHandler(object sender, Artikel a);  
 	

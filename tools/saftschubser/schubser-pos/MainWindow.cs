@@ -1,7 +1,7 @@
 using System;
 using Gtk;
 
-namespace saftschubser
+namespace SchubserPos
 {
 
 	public partial class MainWindow: Gtk.Window

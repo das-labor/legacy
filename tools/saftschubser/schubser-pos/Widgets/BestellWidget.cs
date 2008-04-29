@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-
+using Gtk;
 using SaftSchubserDb;
 
-using Gtk;
-
-namespace saftschubser
+namespace SchubserPos
 {
 	public partial class BestellWidget : Gtk.Bin
 	{
