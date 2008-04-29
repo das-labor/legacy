@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
+using Gtk;
 using SaftSchubserDb;
 
-namespace saftschubser
+namespace SchubserPos
 {
 	public partial class ArtikelButtonContent : Gtk.Bin
 	{

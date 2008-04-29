@@ -1,33 +1,29 @@
 <objects>
-  <object type="saftschubser.Kauf" allow-children="false" base-type="Gtk.Bin" palette-category="schubser-pos">
+  <object type="SchubserPos.BestandScreen" allow-children="false" base-type="Gtk.Bin" palette-category="SchubserPos">
     <itemgroups />
     <signals />
   </object>
-  <object type="saftschubser.BestandScreen" allow-children="false" base-type="Gtk.Bin" palette-category="schubser-pos">
+  <object type="SchubserPos.KaufenScreen" allow-children="false" base-type="Gtk.Bin" palette-category="SchubserPos">
     <itemgroups />
     <signals />
   </object>
-  <object type="saftschubser.KasseScreen" allow-children="false" base-type="Gtk.Bin" palette-category="schubser-pos">
+  <object type="SchubserPos.LabCtrlScreen" allow-children="false" base-type="Gtk.Bin" palette-category="SchubserPos">
     <itemgroups />
     <signals />
   </object>
-  <object type="saftschubser.LabCtrlScreen" allow-children="false" base-type="Gtk.Bin" palette-category="schubser-pos">
+  <object type="SchubserPos.ArtikelButtonContent" allow-children="false" base-type="Gtk.Bin" palette-category="SchubserPos">
     <itemgroups />
     <signals />
   </object>
-  <object type="saftschubser.AdminScreen" allow-children="false" base-type="Gtk.Bin" palette-category="schubser-pos">
+  <object type="SchubserPos.KasseScreen" allow-children="false" base-type="Gtk.Bin" palette-category="SchubserPos">
     <itemgroups />
     <signals />
   </object>
-  <object type="saftschubser.KaufenScreen" allow-children="false" base-type="Gtk.Bin" palette-category="schubser-pos">
+  <object type="SchubserPos.MainWindow" allow-children="false" base-type="Gtk.Window" palette-category="SchubserPos">
     <itemgroups />
     <signals />
   </object>
-  <object type="saftschubser.ArtikelButtonContent" allow-children="false" base-type="Gtk.Bin" palette-category="schubser-pos">
-    <itemgroups />
-    <signals />
-  </object>
-  <object type="saftschubser.ArtikelChooser" allow-children="false" base-type="Gtk.Bin" palette-category="schubser-pos">
+  <object type="SchubserPos.ArtikelChooser" allow-children="false" base-type="Gtk.Bin" palette-category="SchubserPos">
     <itemgroups>
       <itemgroup label="ArtikelChooser Properties">
         <property name="Offset" />
@@ -39,7 +35,11 @@
       </itemgroup>
     </signals>
   </object>
-  <object type="saftschubser.BestellWidget" allow-children="false" base-type="Gtk.Bin" palette-category="schubser-pos">
+  <object type="SchubserPos.BestellWidget" allow-children="false" base-type="Gtk.Bin" palette-category="SchubserPos">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="SchubserPos.AdminScreen" allow-children="false" base-type="Gtk.Bin" palette-category="SchubserPos">
     <itemgroups />
     <signals />
   </object>

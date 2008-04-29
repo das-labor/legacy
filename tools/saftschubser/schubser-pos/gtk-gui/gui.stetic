@@ -5,9 +5,9 @@
     <target-gtk-version>2.12.0</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../bin/Debug/saftschubser.exe" internal="true" />
+    <widget-library name="../bin/Debug/schubser-pos.exe" internal="true" />
   </import>
-  <widget class="Gtk.Window" id="saftschubser.MainWindow" design-size="715 542">
+  <widget class="Gtk.Window" id="SchubserPos.MainWindow" design-size="715 542">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Labor Saftschubser</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -140,163 +140,16 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="saftschubser.Kauf" design-size="495 599">
+  <widget class="Gtk.Bin" id="SchubserPos.BestandScreen" design-size="300 300">
     <property name="MemberName" />
     <child>
-      <widget class="Gtk.VBox" id="vbox3">
+      <widget class="Gtk.Label" id="label1">
         <property name="MemberName" />
-        <property name="Spacing">6</property>
-        <child>
-          <widget class="Gtk.HBox" id="hbox3">
-            <property name="MemberName" />
-            <property name="Spacing">6</property>
-            <property name="BorderWidth">6</property>
-            <child>
-              <placeholder />
-            </child>
-            <child>
-              <widget class="Gtk.Table" id="table1">
-                <property name="MemberName" />
-                <property name="NRows">2</property>
-                <property name="NColumns">2</property>
-                <property name="Homogeneous">True</property>
-                <property name="RowSpacing">6</property>
-                <property name="ColumnSpacing">6</property>
-                <child>
-                  <widget class="Gtk.Button" id="button6">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Type">TextAndIcon</property>
-                    <property name="Icon">resource:mate.png</property>
-                    <property name="Label" translatable="yes">Mate</property>
-                    <property name="UseUnderline">True</property>
-                  </widget>
-                  <packing>
-                    <property name="AutoSize">True</property>
-                    <property name="XOptions">Fill</property>
-                    <property name="YOptions">Fill</property>
-                    <property name="XExpand">False</property>
-                    <property name="XFill">True</property>
-                    <property name="XShrink">False</property>
-                    <property name="YExpand">False</property>
-                    <property name="YFill">True</property>
-                    <property name="YShrink">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.Button" id="button7">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Type">TextAndIcon</property>
-                    <property name="Icon">resource:kola.png</property>
-                    <property name="Label" translatable="yes">Kola</property>
-                    <property name="UseUnderline">True</property>
-                  </widget>
-                  <packing>
-                    <property name="TopAttach">1</property>
-                    <property name="BottomAttach">2</property>
-                    <property name="AutoSize">True</property>
-                    <property name="XOptions">Fill</property>
-                    <property name="YOptions">Fill</property>
-                    <property name="XExpand">False</property>
-                    <property name="XFill">True</property>
-                    <property name="XShrink">False</property>
-                    <property name="YExpand">False</property>
-                    <property name="YFill">True</property>
-                    <property name="YShrink">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.Button" id="button8">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Type">TextAndIcon</property>
-                    <property name="Icon">resource:brause.png</property>
-                    <property name="Label">Brause</property>
-                    <property name="UseUnderline">True</property>
-                  </widget>
-                  <packing>
-                    <property name="LeftAttach">1</property>
-                    <property name="RightAttach">2</property>
-                    <property name="AutoSize">True</property>
-                    <property name="XOptions">Fill</property>
-                    <property name="YOptions">Fill</property>
-                    <property name="XExpand">False</property>
-                    <property name="XFill">True</property>
-                    <property name="XShrink">False</property>
-                    <property name="YExpand">False</property>
-                    <property name="YFill">True</property>
-                    <property name="YShrink">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.Button" id="button9">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Type">TextAndIcon</property>
-                    <property name="Icon">resource:brause2.png</property>
-                    <property name="Label" translatable="yes">Brause</property>
-                    <property name="UseUnderline">True</property>
-                  </widget>
-                  <packing>
-                    <property name="TopAttach">1</property>
-                    <property name="BottomAttach">2</property>
-                    <property name="LeftAttach">1</property>
-                    <property name="RightAttach">2</property>
-                    <property name="AutoSize">True</property>
-                    <property name="XOptions">Fill</property>
-                    <property name="YOptions">Fill</property>
-                    <property name="XExpand">False</property>
-                    <property name="XFill">True</property>
-                    <property name="XShrink">False</property>
-                    <property name="YExpand">False</property>
-                    <property name="YFill">True</property>
-                    <property name="YShrink">False</property>
-                  </packing>
-                </child>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">False</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Button" id="button10">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Type">TextAndIcon</property>
-            <property name="Icon">stock:gtk-ok Button</property>
-            <property name="Label" translatable="yes">Bestätigen</property>
-            <property name="UseUnderline">True</property>
-            <property name="BorderWidth">18</property>
-          </widget>
-          <packing>
-            <property name="Position">1</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
+        <property name="LabelProp" translatable="yes">Bestand edieren und Fehler melden..</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="saftschubser.BestandScreen" design-size="300 300">
-    <property name="MemberName" />
-    <child>
-      <widget class="Gtk.Calendar" id="calendar1">
-        <property name="MemberName" />
-        <property name="CanFocus">True</property>
-        <property name="DisplayOptions">ShowHeading, ShowDayNames</property>
-      </widget>
-    </child>
-  </widget>
-  <widget class="Gtk.Bin" id="saftschubser.KasseScreen" design-size="300 300">
+  <widget class="Gtk.Bin" id="SchubserPos.KasseScreen" design-size="300 300">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.Label" id="label1">
@@ -305,7 +158,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="saftschubser.LabCtrlScreen" design-size="300 300">
+  <widget class="Gtk.Bin" id="SchubserPos.LabCtrlScreen" design-size="300 300">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox1">
@@ -340,7 +193,7 @@ Ist noch nicht fertig...
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="saftschubser.AdminScreen" design-size="300 300">
+  <widget class="Gtk.Bin" id="SchubserPos.AdminScreen" design-size="300 300">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.Label" id="label4">
@@ -349,7 +202,7 @@ Ist noch nicht fertig...
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="saftschubser.KaufenScreen" design-size="661 520">
+  <widget class="Gtk.Bin" id="SchubserPos.KaufenScreen" design-size="661 520">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.HPaned" id="hpaned1">
@@ -357,7 +210,7 @@ Ist noch nicht fertig...
         <property name="CanFocus">True</property>
         <property name="Position">262</property>
         <child>
-          <widget class="saftschubser.ArtikelChooser" id="artikelChooser">
+          <widget class="SchubserPos.ArtikelChooser" id="artikelChooser">
             <property name="MemberName" />
             <property name="Events">ButtonPressMask</property>
             <property name="Offset">0</property>
@@ -368,7 +221,7 @@ Ist noch nicht fertig...
           </packing>
         </child>
         <child>
-          <widget class="saftschubser.BestellWidget" id="bestellWidget">
+          <widget class="SchubserPos.BestellWidget" id="bestellWidget">
             <property name="MemberName" />
             <property name="Events">ButtonPressMask</property>
           </widget>
@@ -376,7 +229,7 @@ Ist noch nicht fertig...
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="saftschubser.ArtikelButtonContent" design-size="232 89">
+  <widget class="Gtk.Bin" id="SchubserPos.ArtikelButtonContent" design-size="232 89">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.HBox" id="hbox1">
@@ -459,7 +312,7 @@ Ist noch nicht fertig...
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="saftschubser.ArtikelChooser" design-size="327 356">
+  <widget class="Gtk.Bin" id="SchubserPos.ArtikelChooser" design-size="327 356">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox2">
@@ -547,7 +400,7 @@ Ist noch nicht fertig...
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="saftschubser.BestellWidget" design-size="518 300">
+  <widget class="Gtk.Bin" id="SchubserPos.BestellWidget" design-size="518 300">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.Frame" id="frame1">

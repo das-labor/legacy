@@ -3,7 +3,7 @@ using Gtk;
 
 using SaftSchubserDb;
 
-namespace saftschubser
+namespace SchubserPos
 {
 	class MainClass
 	{
