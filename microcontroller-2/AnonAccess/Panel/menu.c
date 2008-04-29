@@ -262,6 +262,28 @@ void read_flash(void){
 	ui_hexdump_P(0,1024);
 }
 
+void read_decimal(void){
+	char str[9];
+	lcd_cls();
+	lcd_gotopos(1,1);
+	lcd_writestr_P(PSTR("Enter number:"));
+	read_decimaln(1,2,str,8);
+	lcd_gotopos(3,1);
+	lcd_writestr(str);
+	waitforkeypress();
+}
+
+void read_hex(void){
+	char str[9];
+	lcd_cls();
+	lcd_gotopos(1,1);
+	lcd_writestr_P(PSTR("Enter hexnumber:"));
+	read_hexn(1,2,str,8);
+	lcd_gotopos(3,1);
+	lcd_writestr(str);
+	waitforkeypress();
+}
+
 /******************************************************************************/
 
 const char main_menu_PS[]      PROGMEM = "main menu";
@@ -278,10 +300,15 @@ const char dump_card_PS[] PROGMEM = "dump ICC";
 const char write_card_PS[] PROGMEM = "AB -> ICC";
 const char display_analysis_PS[] PROGMEM = "display analysis";
 const char read_flash_PS[] PROGMEM = "read flash";
+const char enter_dec_PS[] PROGMEM = "enter decimal";
+const char enter_hex_PS[] PROGMEM = "enter hexadecimal";
+
 
 menu_t debug_menu_mt[] = {
 	{main_menu_PS, back, (superp)NULL},
 	{read_flash_PS, execute, (superp)read_flash},
+	{enter_dec_PS, execute, (superp)read_decimal},
+	{enter_hex_PS, execute, (superp)read_hex},
 	{serial_test_PS, execute, (superp)run_serial_test},
 	{reset_PS, execute, (superp)print_resets},
 	{timestamp_PS, execute, (superp)print_timestamp},

@@ -16,5 +16,6 @@ typedef uint64_t timestamp_t;
 
 void rtc_init(void);
 timestamp_t gettimestamp(void);
+timestamp_t abstimedifference(timestamp_t t1, timestamp_t t2);
 
 #endif /*RTC_H_*/

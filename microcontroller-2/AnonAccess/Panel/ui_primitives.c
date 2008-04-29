@@ -14,143 +14,15 @@
 #include "keypad.h"
 #include "hexdigit_tab.h"
 #include "ui_primitives.h"
-
-#define MAX(a,b) (((a)>(b))?(a):(b))
-#define MIN(a,b) (((a)<(b))?(a):(b))
+#include "extrachars.h"
+#include "interface.h"
+#include "rtc.h"
 
 #define DEBOUNCE_DELAY _delay_ms(10)
 
-uint8_t vcgrom[][8] PROGMEM = {
-{	 /* 0 */
-	0x0E,  /*  ###  */
-    0x11,  /* #   # */
-    0x13,  /* #  ## */
-    0x15,  /* # # # */
-    0x19,  /* ##  # */
-    0x11,  /* #   # */
-    0x0E,  /*  ###  */
-    0x00   /*       */
-}, { /* 1 */
-	0x04,  /*   #   */
-    0x0C,  /*  ##   */
-    0x04,  /*   #   */
-    0x04,  /*   #   */
-    0x04,  /*   #   */
-    0x04,  /*   #   */
-    0x0E,  /*  ###  */
-    0x00   /*       */	
-}, { /* 2 */
-	0x0E,  /*  ###  */
-    0x11,  /* #   # */
-    0x01,  /*     # */
-    0x02,  /*    #  */
-    0x04,  /*   #   */
-    0x08,  /*  #    */
-    0x1F,  /* ##### */
-    0x00   /*       */	
-}, { /* 3 */
-	0x1F,  /* ##### */
-    0x02,  /*    #  */
-    0x04,  /*   #   */
-    0x02,  /*    #  */
-    0x01,  /*     # */
-    0x11,  /* #   # */
-    0x0E,  /*  ###  */
-    0x00   /*       */	
-}, { /* 4 */
-	0x02,  /*    #  */
-    0x06,  /*   ##  */
-    0x0A,  /*  # #  */
-    0x12,  /* #  #  */
-    0x1F,  /* ##### */
-    0x02,  /*    #  */
-    0x02,  /*    #  */
-    0x00   /*       */	
-}, { /* 5 */
-	0x1F,  /* ##### */
-    0x10,  /* #     */
-    0x1E,  /* ####  */
-    0x01,  /*     # */
-    0x01,  /*     # */
-    0x11,  /* #   # */
-    0x0E,  /*  ###  */
-    0x00   /*       */	
-}, { /* 6 */
-	0x06,  /*   ##  */
-    0x08,  /*  #    */
-    0x10,  /* #     */
-    0x1E,  /* ####  */
-    0x11,  /* #   # */
-    0x11,  /* #   # */
-    0x0E,  /*  ###  */
-    0x00   /*       */	
-}, { /* 7 */
-	0x1F,  /* ##### */
-    0x11,  /* #   # */
-    0x01,  /*     # */
-    0x02,  /*    #  */
-    0x04,  /*   #   */
-    0x04,  /*   #   */
-    0x04,  /*   #   */
-    0x00   /*       */	
-}, { /* 8 */
-	0x0E,  /*  ###  */
-    0x11,  /* #   # */
-    0x11,  /* #   # */
-	0x0E,  /*  ###  */
-    0x11,  /* #   # */
-    0x11,  /* #   # */
-	0x0E,  /*  ###  */
-    0x00   /*       */	
-}, { /* 9 */
-	0x0E,  /*  ###  */
-    0x11,  /* #   # */
-    0x11,  /* #   # */
-	0x0E,  /*  #### */
-    0x11,  /*     # */
-    0x11,  /*    #  */
-	0x0E,  /*  ##   */
-    0x00   /*       */	
-}, { /* % */
-	0x18,  /* ##    */
-    0x19,  /* ##  # */
-    0x02,  /*    #  */
-	0x04,  /*   #   */
-    0x08,  /*  #    */
-    0x13,  /* #  ## */
-	0x03,  /*    ## */
-    0x00   /*       */	
-}, { /* labor logo :-) */
-	0x0E,  /*  ###  */
-    0x11,  /* #   # */
-    0x15,  /* # # # */
-    0x11,  /* #   # */
-    0x15,  /* # # # */
-    0x15,  /* # # # */
-    0x11,  /* #   # */
-    0x0E   /*  ###  */
-}, { /* radio selected */
-    0x00,  /*       */
-    0x00,  /*       */
-    0x0E,  /*  ###  */
-    0x11,  /* #   # */
-    0x15,  /* # # # */
-    0x11,  /* #   # */
-    0x0E,  /*  ###  */ 
-    0x00   /*       */
-}, { /* check selected */
-    0x00,  /*       */
-    0x1F,  /* ##### */
-    0x11,  /* #   # */
-    0x1B,  /* ## ## */
-    0x15,  /* # # # */
-    0x1B,  /* ## ## */
-    0x1F,  /* ##### */
-    0x00,  /*       */
-}};
-
-/******************************************************************************/
-
+#define MAX(a,b) (((a)>(b))?(a):(b))
+#define MIN(a,b) (((a)<(b))?(a):(b))
+	
 char waitforkeypress(void){
 	uint8_t k;
 	while((k=read_keypad())==NO_KEY)
@@ -159,6 +31,22 @@ char waitforkeypress(void){
 	while(k==read_keypad())
 		;
 	DEBOUNCE_DELAY;
+	return k;
+} 
+
+
+char waitforkeypresstimed(timestamp_t* tdiff){
+	uint8_t k;
+	timestamp_t a,b;
+	while((k=read_keypad())==NO_KEY)
+		;
+	a = gettimestamp();	
+	DEBOUNCE_DELAY;
+	while(k==read_keypad())
+		;
+	b = gettimestamp();	
+	DEBOUNCE_DELAY;
+	*tdiff = b-a;
 	return k;
 } 
 
@@ -182,9 +70,7 @@ void ui_primitives_init(void){
 	lcd_setddaddr(0);
 }
 
-
 /******************************************************************************/
-
 
 void print_progressbar(double percent, uint8_t xpos, uint8_t ypos, uint8_t width){
 	uint8_t full, part, i;
@@ -293,56 +179,6 @@ uint8_t radioselect_P(PGM_P opts){
 }
 
 /******************************************************************************/
-/*
-uint8_t radioselect_P(PGM_P opts){
-	uint8_t i,j,index=0, arrowpos=0;
-	uint8_t select=0;
-	uint8_t optcount=dbz_strcount_P(opts);
-	char c;
-	PGM_P optp[optcount];
-	if(optcount==0)
-		return 0;
-	dbz_splitup_P(opts, optp);
-	for(;;){
-		for(i=0; i<((3<optcount)?3:optcount); ++i){
-			lcd_gotopos(2+i, 1);
-			lcd_writechar((i==arrowpos)?LCD_RARROW:' ');
-			lcd_writechar(((i+index)%optcount==select)?LCD_RADIOSELECT:LCD_RADIONOSELECT);
-			j=LCD_WIDTH-2;
-			while(--j){
-				lcd_writechar(' ');
-			}
-			lcd_gotopos(2+i, 4);
-			lcd_writestrn_P(optp[(i+index)%optcount],LCD_WIDTH-4);
-		}
-		c = waitforkeypress();
-		if(c==ENTER_KEY)
-			return select;
-		if(c==UP_KEY){
-			if(arrowpos==0){
-				if(index!=0){
-					--index;
-				}
-			} else {
-				--arrowpos;
-			}
-		}
-		if(c==DOWN_KEY){
-			if(arrowpos==MIN(2, optcount-1)){
-				if(index<optcount-3){
-					++index;
-				}
-			} else {
-				++arrowpos;
-			}
-		}
-		if(c==SELECT_KEY){
-			select=index+arrowpos;
-		}			
-	}
-}
-*/
-/******************************************************************************/
 /******************************************************************************/
 
 static
@@ -433,56 +269,6 @@ void checkselect_P(PGM_P opts, uint8_t* config){
 	checkselect_core(opts, config, 1);
 }
 
-/******************************************************************************/
-/******************************************************************************/
-/*
-void checkselect_P(PGM_P opts, uint8_t* config){
-	uint8_t i,j,index=0, arrowpos=0;
-	uint8_t optcount=dbz_strcount_P(opts);
-	char c;
-	PGM_P optp[optcount];
-	if(optcount==0)
-		return;
-	dbz_splitup_P(opts, optp);
-	for(;;){
-		for(i=0; i<((3<optcount)?3:optcount); ++i){
-			lcd_gotopos(2+i, 1);
-			lcd_writechar((i==arrowpos)?LCD_RARROW:' ');
-			lcd_writechar(getbit(config, (i+index)%optcount)?LCD_CHECKSELECT:LCD_CHECKNOSELECT);
-			j=LCD_WIDTH-2;
-			while(--j){
-				lcd_writechar(' ');
-			}
-			lcd_gotopos(2+i, 4);
-			lcd_writestrn_P(optp[(i+index)%optcount],LCD_WIDTH-4);
-		}
-		c = waitforkeypress();
-		if(c==ENTER_KEY)
-			return;
-		if(c==UP_KEY){
-			if(arrowpos==0){
-				if(index!=0){
-					--index;
-				}
-			} else {
-				--arrowpos;
-			}
-		}
-		if(c==DOWN_KEY){
-			if(arrowpos==MIN(2, optcount-1)){
-				if(index<optcount-3){
-					++index;
-				}
-			} else {
-				++arrowpos;
-			}
-		}
-		if(c==SELECT_KEY){
-			togglebit(config, index+arrowpos);
-		}			
-	}
-}
-*/
 /******************************************************************************/
 /******************************************************************************/
 
@@ -840,3 +626,241 @@ void ui_textwindow_P(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, 
 
 /******************************************************************************/
 /******************************************************************************/
+
+uint8_t read_decimaln(uint8_t xpos, uint8_t ypos, char* str, uint8_t n){
+	uint8_t idx=0;
+	char c;
+	LCD_CURSOR_ON;
+	for(;;){
+		lcd_gotopos(ypos,xpos+idx);
+		lcd_writechar(' ');
+		lcd_gotopos(ypos,xpos+idx);
+		c=waitforkeypress();
+		if(c>='0' && c<='9' && idx<n){
+			lcd_writechar(c);
+			str[idx]=c;
+			++idx;
+		}else{
+			if(c==ENTER_KEY || c==SELECT_KEY){
+				break;
+			}
+			if(c==CORRECT_KEY){
+				if(idx)
+					--idx;
+			}
+		}
+	}
+	str[idx]='\0';
+	LCD_CURSOR_OFF;
+	return idx;
+}
+
+/******************************************************************************/
+
+uint8_t read_pinn(uint8_t xpos, uint8_t ypos, char disp,char* str, uint8_t n){
+	uint8_t idx=0;
+	char c;
+	if(disp!=0)
+		LCD_CURSOR_ON;
+	for(;;){
+		lcd_gotopos(ypos,xpos+idx);
+		lcd_writechar(' ');
+		lcd_gotopos(ypos,xpos+idx);
+		c=waitforkeypress();
+		if(c>='0' && c<='9' && idx<n){
+			lcd_writechar(disp);
+			str[idx]=c;
+			++idx;
+		}else{
+			if(c==ENTER_KEY || c==SELECT_KEY){
+				break;
+			}
+			if(c==CORRECT_KEY){
+				if(idx)
+					--idx;
+			}
+		}
+	}
+	str[idx]='\0';
+	LCD_CURSOR_OFF;
+	return idx;
+}
+
+/******************************************************************************/
+#define KEYPAD_SPECIALDELAY 1500 /* milliseconds */
+
+uint8_t read_hexn(uint8_t xpos, uint8_t ypos, char* str, uint8_t n){
+	uint8_t idx=0;
+	char c;
+	timestamp_t td;
+	LCD_CURSOR_ON;
+	for(;;){
+		lcd_gotopos(ypos,xpos+idx);
+		lcd_writechar(' ');
+		lcd_gotopos(ypos,xpos+idx);
+		c=waitforkeypresstimed(&td);
+		if(((c>='0'&&c<='9')|| (c>='A'&&c<='F'&&td<KEYPAD_SPECIALDELAY)) && idx<n){
+			lcd_writechar(c);
+			str[idx]=c;
+			++idx;
+		}else{
+			if((c==ENTER_KEY || c==SELECT_KEY)&& td>=KEYPAD_SPECIALDELAY){
+				break;
+			}
+			if(c==CORRECT_KEY && td>=KEYPAD_SPECIALDELAY){
+				if(idx)
+					--idx;
+			}
+		}
+	}
+	str[idx]='\0';
+	LCD_CURSOR_OFF;
+	return idx;	
+}
+
+/******************************************************************************/
+
+void readnhex(uint8_t line, uint8_t x, uint8_t n, char * str){
+	uint8_t idx=0;
+	char c;
+	
+	lcd_control(1,1,0);
+	while(idx<n){
+		c=waitforanykey();
+		lcd_gotopos(line,x+2*idx);
+		lcd_writechar(c);
+		if(c>='0' && c<='9'){
+			c=c-'0';
+		} else {
+			if(c>='A' && c<='F'){
+				c=c-'A'+10;
+			} else {
+			/* this should not happen */
+			 c=0;
+			}
+		}
+		str[idx]=(str[idx] & 0x0F) | (c<<4);
+		
+		c=waitforanykey();
+		lcd_gotopos(line,x+2*idx+1);
+		lcd_writechar(c);
+		if(c>='0' && c<='9'){
+			c=c-'0';
+		} else {
+			if(c>='A' && c<='F'){
+				c=c-'A'+10;
+			} else {
+			/* this should not happen */
+			 c=0;
+			}
+		}
+		str[idx]=(str[idx] & 0xF0) | (c);
+		++idx;
+	}
+	
+	lcd_control(1,0,0);
+}
+
+/******************************************************************************/
+
+/*
+ 0: ' '0
+ 1: ' '1
+ 2: ABC2
+ 3: DEF3
+ 4: GHI4
+ 5: JKL5
+ 6: MNO6
+ 7: PQRS7
+ 8: TUV8
+ 9: WXYZ9
+
+*/
+
+#define CHAR_SWITCH_DELAY 1000 /* 1 sec */
+
+uint8_t readnstr(uint8_t line, uint8_t x, uint8_t n,char * str){
+	timestamp_t time[2]={0,0};
+	uint8_t i=0;
+	uint8_t idx=0,varidx=0;
+	char c[2];
+	char ctab[][6]= {
+		{5,'.',',',';',':','0'},
+		{5,' ','-','_','+','1'},
+		{4,'A','B','C','2'},
+		{4,'D','E','F','3'},
+		{4,'G','H','I','4'},
+		{4,'J','K','L','5'},
+		{4,'M','N','O','6'},
+		{5,'P','Q','R','S','7'},
+		{4,'T','U','V','8'},
+		{5,'W','X','Y','Z','9'},  /* 9 */
+		{5,'!','"','$','@','%'},  /* A */
+		{5,'&','/','(',')','='},  /* B */
+		{5,'\\','|','~','[',']'}  /* D */ 
+		};
+	lcd_control(1,1,0);
+	lcd_gotopos(line, x);
+	
+	if(n==0)
+		return 0;
+	if(n==1){
+		str[0]='\0';
+		return 0;
+	}
+	
+	do{
+		c[0]=waitforanykey();
+		time[0]=gettimestamp();
+	}while((('0'>c[0]) || ('9'<c[0])) && (c[0]!='E'));
+	if(c[0]=='E')
+		goto terminate;
+	lcd_gotopos(line, x+i);
+	str[i]=ctab[c[0]-'0'][idx+1];
+	lcd_writechar(str[i]);
+
+ nextscan:	
+	varidx ^= 1;	
+	do{
+		c[varidx]=waitforanykey();
+		time[varidx]=gettimestamp();
+	}while((('0'>c[varidx]) || ('9'<c[varidx])) && (c[varidx]!='E') &&(c[varidx]!='C'));
+	if(c[varidx]=='E')
+		goto terminate;
+	if(c[varidx]=='C'){
+		/* correct the last value */
+		if(i>0){
+			idx = 0;
+			lcd_gotopos(line, x+i);
+			str[i]='\0';
+			lcd_writechar(' ');
+			--i;
+		}
+		goto nextscan;
+	}
+	if((c[0]==c[1]) && (abstimedifference(time[0],time[1])<=CHAR_SWITCH_DELAY)){
+		/* char modification */
+		idx = (idx+1)%ctab[c[0]-'0'][0];
+		lcd_gotopos(line, x+i);
+		str[i]=ctab[c[0]-'0'][idx+1];
+		lcd_writechar(str[i]);
+		goto nextscan;
+	} else {
+		/* next char */
+		++i;
+		if(i+1>=n)
+			goto finalise;
+		idx=0;
+		lcd_gotopos(line, x+i);
+		str[i]=ctab[c[varidx]-'0'][idx+1];
+		lcd_writechar(str[i]);
+		goto nextscan;
+	}
+  terminate:
+  	++i;
+  finalise:	
+	str[i]='\0';
+	lcd_control(1,0,0);
+	return i;
+}
+
