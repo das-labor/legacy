@@ -4,25 +4,25 @@
       <CustomCommands>
         <Command type="Custom" />
       </CustomCommands>
-      <Entry build="True" name="saftschubser" configuration="Debug" />
-      <Entry build="True" name="schubserdb" configuration="Debug" />
+      <Entry build="True" name="schubser-pos" configuration="Debug" />
+      <Entry build="True" name="schubser-db" configuration="Debug" />
       <Entry build="True" name="schubser-admin" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry build="True" name="saftschubser" configuration="Release" />
-      <Entry build="True" name="schubserdb" configuration="Release" />
+      <Entry build="True" name="schubser-pos" configuration="Release" />
+      <Entry build="True" name="schubser-db" configuration="Release" />
       <Entry build="True" name="schubser-admin" configuration="Release" />
     </Configuration>
   </Configurations>
-  <StartMode startupentry="saftschubser" single="False">
-    <Execute type="Execute" entry="saftschubser" />
+  <StartMode startupentry="schubser-pos" single="False">
+    <Execute type="Execute" entry="schubser-pos" />
     <Execute type="None" entry="schubserdb" />
     <Execute type="Execute" entry="schubser-admin" />
   </StartMode>
   <MonoDevelop.ChangeLogAddIn.ChangeLogInfo policy="OneChangeLogInProjectRootDirectory" />
   <Entries>
     <Entry filename="saftschubser/saftschubser.mdp" />
-    <Entry filename="schubserdb/schubserdb.mdp" />
+    <Entry filename="schubser-db/schubser-db.mdp" />
     <Entry filename="schubser-admin/schubser-admin.mdp" />
   </Entries>
 </Combine>
