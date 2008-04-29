@@ -1,10 +1,7 @@
-// Main.cs created with MonoDevelop
-// User: mati at 00:52 26.04.2008
-//
-// To change standard headers go to Edit->Preferences->Coding->Standard Headers
-//
 using System;
 using Gtk;
+
+using SaftSchubserDb;
 
 namespace saftschubser
 {
