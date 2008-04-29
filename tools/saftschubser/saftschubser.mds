@@ -21,7 +21,7 @@
   </StartMode>
   <MonoDevelop.ChangeLogAddIn.ChangeLogInfo policy="OneChangeLogInProjectRootDirectory" />
   <Entries>
-    <Entry filename="saftschubser/saftschubser.mdp" />
+    <Entry filename="schubser-pos/schubser-pos.mdp" />
     <Entry filename="schubser-db/schubser-db.mdp" />
     <Entry filename="schubser-admin/schubser-admin.mdp" />
   </Entries>
