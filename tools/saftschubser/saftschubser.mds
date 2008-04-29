@@ -7,22 +7,26 @@
       <Entry build="True" name="SchubserPos" configuration="Debug" />
       <Entry build="True" name="SchubserDb" configuration="Debug" />
       <Entry build="True" name="SchubserAdmin" configuration="Debug" />
+      <Entry build="True" name="Packages" configuration="" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="SchubserPos" configuration="Release" />
       <Entry build="True" name="SchubserDb" configuration="Release" />
       <Entry build="True" name="SchubserAdmin" configuration="Release" />
+      <Entry build="True" name="Packages" configuration="" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="SchubserPos" single="True">
     <Execute type="None" entry="SchubserPos" />
     <Execute type="None" entry="SchubserDb" />
     <Execute type="None" entry="SchubserAdmin" />
+    <Execute type="None" entry="Packages" />
   </StartMode>
-  <MonoDevelop.ChangeLogAddIn.ChangeLogInfo policy="OneChangeLogInProjectRootDirectory" />
+  <MonoDevelop.ChangeLogAddIn.ChangeLogInfo policy="UpdateNearestChangeLog" />
   <Entries>
     <Entry filename="schubser-pos/schubser-pos.mdp" />
     <Entry filename="schubser-db/schubser-db.mdp" />
     <Entry filename="schubser-admin/schubser-admin.mdp" />
+    <Entry filename="Packages.mdse" />
   </Entries>
 </Combine>
