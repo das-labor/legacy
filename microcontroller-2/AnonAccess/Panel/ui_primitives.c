@@ -620,9 +620,9 @@ void ui_hexdump_core(const void* data, uint16_t length, uint8_t flash){
 	void (*d2h)(const void*, char*, uint8_t);
 	
 	if(flash){
-		d2h = (void (*)(const void*, char*, uint8_t))data2hex;
-	} else {
 		d2h = (void (*)(const void*, char*, uint8_t))data2hex_P;
+	} else {
+		d2h = (void (*)(const void*, char*, uint8_t))data2hex;
 	}
 	
 	while((length&(0xF<<(addr_len*4-4)))==0)
