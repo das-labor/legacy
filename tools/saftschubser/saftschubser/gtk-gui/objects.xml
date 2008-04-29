@@ -1,33 +1,33 @@
 <objects>
-  <object type="saftschubser.Kauf" palette-category="saftschubser" allow-children="false" base-type="Gtk.Bin">
+  <object type="saftschubser.Kauf" allow-children="false" base-type="Gtk.Bin" palette-category="schubser-pos">
     <itemgroups />
     <signals />
   </object>
-  <object type="saftschubser.BestandScreen" palette-category="saftschubser" allow-children="false" base-type="Gtk.Bin">
+  <object type="saftschubser.BestandScreen" allow-children="false" base-type="Gtk.Bin" palette-category="schubser-pos">
     <itemgroups />
     <signals />
   </object>
-  <object type="saftschubser.KasseScreen" palette-category="saftschubser" allow-children="false" base-type="Gtk.Bin">
+  <object type="saftschubser.KasseScreen" allow-children="false" base-type="Gtk.Bin" palette-category="schubser-pos">
     <itemgroups />
     <signals />
   </object>
-  <object type="saftschubser.LabCtrlScreen" palette-category="saftschubser" allow-children="false" base-type="Gtk.Bin">
+  <object type="saftschubser.LabCtrlScreen" allow-children="false" base-type="Gtk.Bin" palette-category="schubser-pos">
     <itemgroups />
     <signals />
   </object>
-  <object type="saftschubser.AdminScreen" palette-category="saftschubser" allow-children="false" base-type="Gtk.Bin">
+  <object type="saftschubser.AdminScreen" allow-children="false" base-type="Gtk.Bin" palette-category="schubser-pos">
     <itemgroups />
     <signals />
   </object>
-  <object type="saftschubser.KaufenScreen" palette-category="saftschubser" allow-children="false" base-type="Gtk.Bin">
+  <object type="saftschubser.KaufenScreen" allow-children="false" base-type="Gtk.Bin" palette-category="schubser-pos">
     <itemgroups />
     <signals />
   </object>
-  <object type="saftschubser.ArtikelButtonContent" palette-category="saftschubser" allow-children="false" base-type="Gtk.Bin">
+  <object type="saftschubser.ArtikelButtonContent" allow-children="false" base-type="Gtk.Bin" palette-category="schubser-pos">
     <itemgroups />
     <signals />
   </object>
-  <object type="saftschubser.ArtikelChooser" palette-category="saftschubser" allow-children="false" base-type="Gtk.Bin">
+  <object type="saftschubser.ArtikelChooser" allow-children="false" base-type="Gtk.Bin" palette-category="schubser-pos">
     <itemgroups>
       <itemgroup label="ArtikelChooser Properties">
         <property name="Offset" />
@@ -39,7 +39,7 @@
       </itemgroup>
     </signals>
   </object>
-  <object type="saftschubser.BestellWidget" palette-category="saftschubser" allow-children="false" base-type="Gtk.Bin">
+  <object type="saftschubser.BestellWidget" allow-children="false" base-type="Gtk.Bin" palette-category="schubser-pos">
     <itemgroups />
     <signals />
   </object>

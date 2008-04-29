@@ -30,7 +30,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="Db4objects.Db4o, Version=6.0.1.0, Culture=neutral, PublicKeyToken=6199cd4f203aa8eb" />
-    <ProjectReference type="Project" localcopy="True" refto="schubserdb" />
+    <ProjectReference type="Project" localcopy="True" refto="schubser-db" />
   </References>
   <GtkDesignInfo gtkVersion="2.12.0" />
 </Project>

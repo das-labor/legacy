@@ -10,7 +10,6 @@ namespace SchubserAdmin {
 		public MainWindow (): base (Gtk.WindowType.Toplevel)
 		{
 			Build ();
-			
 		}
 		
 		protected void OnDeleteEvent (object sender, DeleteEventArgs a)

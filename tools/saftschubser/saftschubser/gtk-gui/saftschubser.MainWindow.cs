@@ -86,14 +86,14 @@ namespace saftschubser {
             this.kasseBtn.UseUnderline = true;
             // Container child kasseBtn.Gtk.Container+ContainerChild
             Gtk.Alignment w11 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            // Container child GtkAlignment1.Gtk.Container+ContainerChild
             Gtk.HBox w12 = new Gtk.HBox();
             w12.Spacing = 2;
-            // Container child GtkHBox.Gtk.Container+ContainerChild
+            // Container child GtkHBox1.Gtk.Container+ContainerChild
             Gtk.Image w13 = new Gtk.Image();
             w13.Pixbuf = Stetic.IconLoader.LoadIcon(this, "stock_book_green", Gtk.IconSize.Button, 20);
             w12.Add(w13);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
+            // Container child GtkHBox1.Gtk.Container+ContainerChild
             Gtk.Label w15 = new Gtk.Label();
             w15.LabelProp = Mono.Unix.Catalog.GetString("Kasse");
             w15.UseUnderline = true;
@@ -110,14 +110,14 @@ namespace saftschubser {
             this.bestandBtn.UseUnderline = true;
             // Container child bestandBtn.Gtk.Container+ContainerChild
             Gtk.Alignment w20 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            // Container child GtkAlignment2.Gtk.Container+ContainerChild
             Gtk.HBox w21 = new Gtk.HBox();
             w21.Spacing = 2;
-            // Container child GtkHBox.Gtk.Container+ContainerChild
+            // Container child GtkHBox2.Gtk.Container+ContainerChild
             Gtk.Image w22 = new Gtk.Image();
             w22.Pixbuf = Stetic.IconLoader.LoadIcon(this, "stock_data-sources-new", Gtk.IconSize.Button, 20);
             w21.Add(w22);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
+            // Container child GtkHBox2.Gtk.Container+ContainerChild
             Gtk.Label w24 = new Gtk.Label();
             w24.LabelProp = Mono.Unix.Catalog.GetString("Bestand");
             w24.UseUnderline = true;
@@ -134,14 +134,14 @@ namespace saftschubser {
             this.labCtrlBtn.UseUnderline = true;
             // Container child labCtrlBtn.Gtk.Container+ContainerChild
             Gtk.Alignment w29 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            // Container child GtkAlignment3.Gtk.Container+ContainerChild
             Gtk.HBox w30 = new Gtk.HBox();
             w30.Spacing = 2;
-            // Container child GtkHBox.Gtk.Container+ContainerChild
+            // Container child GtkHBox3.Gtk.Container+ContainerChild
             Gtk.Image w31 = new Gtk.Image();
             w31.Pixbuf = Stetic.IconLoader.LoadIcon(this, "stock_contrast", Gtk.IconSize.Button, 20);
             w30.Add(w31);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
+            // Container child GtkHBox3.Gtk.Container+ContainerChild
             Gtk.Label w33 = new Gtk.Label();
             w33.LabelProp = Mono.Unix.Catalog.GetString("LabCtrl");
             w33.UseUnderline = true;
@@ -158,14 +158,14 @@ namespace saftschubser {
             this.adminBtn.UseUnderline = true;
             // Container child adminBtn.Gtk.Container+ContainerChild
             Gtk.Alignment w38 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            // Container child GtkAlignment4.Gtk.Container+ContainerChild
             Gtk.HBox w39 = new Gtk.HBox();
             w39.Spacing = 2;
-            // Container child GtkHBox.Gtk.Container+ContainerChild
+            // Container child GtkHBox4.Gtk.Container+ContainerChild
             Gtk.Image w40 = new Gtk.Image();
             w40.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-dialog-authentication", Gtk.IconSize.Button, 20);
             w39.Add(w40);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
+            // Container child GtkHBox4.Gtk.Container+ContainerChild
             Gtk.Label w42 = new Gtk.Label();
             w42.LabelProp = Mono.Unix.Catalog.GetString("Admin");
             w42.UseUnderline = true;
