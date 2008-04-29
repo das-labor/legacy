@@ -217,15 +217,30 @@ void print_progressbar(double percent, uint8_t xpos, uint8_t ypos, uint8_t width
 
 /******************************************************************************/
 
-uint8_t radioselect(char* opts){
+uint8_t radioselect_core(const char* opts, uint8_t flash){
 	uint8_t i,j,index=0, arrowpos=0;
 	uint8_t select=0;
-	uint8_t optcount=dbz_strcount(opts);
+	
+	uint8_t (*count)(const void*);
+	void    (*split)(const void*, void**);
+	void    (*write)(const void*, uint16_t);
+	
+	if(flash){
+		count = (uint8_t (*)(const void*))dbz_strcount_P;
+		split = (void    (*)(const void*, void**))dbz_splitup_P;
+		write = (void    (*)(const void*, uint16_t))lcd_writestrn_P;
+	} else {
+		count = (uint8_t (*)(const void*))dbz_strcount;
+		split = (void    (*)(const void*, void**))dbz_splitup;
+		write = (void    (*)(const void*, uint16_t))lcd_writestrn;
+	}
+	
+	uint8_t optcount=count(opts);
 	char c;
-	char* optp[optcount];
+	void* optp[optcount];
 	if(optcount==0)
 		return 0;
-	dbz_splitup(opts, optp);
+	split(opts, optp);
 	for(;;){
 		for(i=0; i<((3<optcount)?3:optcount); ++i){
 			lcd_gotopos(2+i, 1);
@@ -236,7 +251,7 @@ uint8_t radioselect(char* opts){
 				lcd_writechar(' ');
 			}
 			lcd_gotopos(2+i, 4);
-			lcd_writestrn(optp[(i+index)%optcount],LCD_WIDTH-4);
+			write(optp[(i+index)%optcount],LCD_WIDTH-4);
 		}
 		c=waitforkeypress();
 		if(c==ENTER_KEY)
@@ -267,6 +282,18 @@ uint8_t radioselect(char* opts){
 
 /******************************************************************************/
 
+uint8_t radioselect(const char* opts){
+	return radioselect_core(opts, 0);
+}
+
+/******************************************************************************/
+
+uint8_t radioselect_P(PGM_P opts){
+	return radioselect_core(opts, 1);
+}
+
+/******************************************************************************/
+/*
 uint8_t radioselect_P(PGM_P opts){
 	uint8_t i,j,index=0, arrowpos=0;
 	uint8_t select=0;
@@ -314,27 +341,47 @@ uint8_t radioselect_P(PGM_P opts){
 		}			
 	}
 }
-
+*/
 /******************************************************************************/
+/******************************************************************************/
+
 static
 uint8_t getbit(const uint8_t* buffer, uint8_t pos){
 	return (buffer[pos/8])&(1<<(pos%8));
 }
 
+/******************************************************************************/
+
 static
 void togglebit(uint8_t* buffer, uint8_t pos){
 	buffer[pos/8] ^= 1<<(pos%8);
 }
+
 /******************************************************************************/
 
-void checkselect(char* opts, uint8_t* config){
+void checkselect_core(const char* opts, uint8_t* config, uint8_t flash){
 	uint8_t i,j,index=0, arrowpos=0;
-	uint8_t optcount=dbz_strcount(opts);
+	
+	uint8_t (*count)(const void*);
+	void    (*split)(const void*, void**);
+	void    (*write)(const void*, uint16_t);
+	
+	if(flash){
+		count = (uint8_t (*)(const void*))dbz_strcount_P;
+		split = (void    (*)(const void*, void**))dbz_splitup_P;
+		write = (void    (*)(const void*, uint16_t))lcd_writestrn_P;
+	} else {
+		count = (uint8_t (*)(const void*))dbz_strcount;
+		split = (void    (*)(const void*, void**))dbz_splitup;
+		write = (void    (*)(const void*, uint16_t))lcd_writestrn;
+	}
+	
+	uint8_t optcount=count(opts);
 	char c=' ';
-	char* optp[optcount];
+	void* optp[optcount];
 	if(optcount==0)
 		return;
-	dbz_splitup(opts, optp);
+	split(opts, optp);
 	for(;;){
 		for(i=0; i<((3<optcount)?3:optcount); ++i){
 			lcd_gotopos(2+i, 1);
@@ -345,7 +392,7 @@ void checkselect(char* opts, uint8_t* config){
 				lcd_writechar(' ');
 			}
 			lcd_gotopos(2+i, 4);
-			lcd_writestrn(optp[(i+index)%optcount],LCD_WIDTH-4);
+			write(optp[(i+index)%optcount],LCD_WIDTH-4);
 		}
 		c = waitforkeypress();
 		if(c==ENTER_KEY)
@@ -376,6 +423,19 @@ void checkselect(char* opts, uint8_t* config){
 
 /******************************************************************************/
 
+void checkselect(const char* opts, uint8_t* config){
+	checkselect_core(opts, config, 0);
+}
+
+/******************************************************************************/
+
+void checkselect_P(PGM_P opts, uint8_t* config){
+	checkselect_core(opts, config, 1);
+}
+
+/******************************************************************************/
+/******************************************************************************/
+/*
 void checkselect_P(PGM_P opts, uint8_t* config){
 	uint8_t i,j,index=0, arrowpos=0;
 	uint8_t optcount=dbz_strcount_P(opts);
@@ -422,7 +482,8 @@ void checkselect_P(PGM_P opts, uint8_t* config){
 		}			
 	}
 }
-
+*/
+/******************************************************************************/
 /******************************************************************************/
 
 void draw_frame(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, char framechar){
@@ -444,6 +505,7 @@ void draw_frame(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, char 
 	}
 }
 
+/******************************************************************************/
 /******************************************************************************/
 
 void menuexec(menu_t* menu){
@@ -499,10 +561,10 @@ void menuexec(menu_t* menu){
 		case ENTER_KEY:	
 		case SELECT_KEY:
 			if(menu[(idx+selpos-2)%n].options==autosubmenu){
-				menuexec((menu_t*)menu[(idx+selpos-2)%n].x.submenu);
+				menuexec((menu_t*)menu[(idx+selpos-2)%n].x);
 			} else {
-				if(menu[(idx+selpos-2)%n].x.fkt!=NULL){
-					(menu[(idx+selpos-2)%n].x.fkt)();
+				if(menu[(idx+selpos-2)%n].x!=0){
+					((void(*)(void))(menu[(idx+selpos-2)%n].x))();
 				}else{
 					return;
 				}
@@ -515,6 +577,7 @@ void menuexec(menu_t* menu){
 }
 
 /******************************************************************************/
+/******************************************************************************/
 
 void genaddr(uint16_t value, char* str, uint8_t len){
 	str+=len-1;
@@ -524,6 +587,8 @@ void genaddr(uint16_t value, char* str, uint8_t len){
 	}
 }
 
+/******************************************************************************/
+
 void data2hex(const void* buffer, char* dest, uint8_t length){
 	while(length--){
 		*dest++ = pgm_read_byte(hexdigit_tab_P+((*(uint8_t*)buffer)>>4));
@@ -532,12 +597,34 @@ void data2hex(const void* buffer, char* dest, uint8_t length){
 	}
 }
 
-void ui_hexdump(const void* data, uint16_t length){
+/******************************************************************************/
+
+void data2hex_P(PGM_VOID_P buffer, char* dest, uint8_t length){
+	uint8_t t;
+	while(length--){
+		t=pgm_read_byte(buffer);
+		*dest++ = pgm_read_byte(hexdigit_tab_P+(t>>4));
+		*dest++ = pgm_read_byte(hexdigit_tab_P+(t&0xf));
+		buffer = (uint8_t*)buffer + 1;
+	}
+}
+
+/******************************************************************************/
+
+void ui_hexdump_core(const void* data, uint16_t length, uint8_t flash){
 	uint16_t offset=0;
 	uint8_t addr_len=4;
 	uint8_t bytesperline=0;
 	uint8_t i,j;
 	char c;
+	void (*d2h)(const void*, char*, uint8_t);
+	
+	if(flash){
+		d2h = (void (*)(const void*, char*, uint8_t))data2hex;
+	} else {
+		d2h = (void (*)(const void*, char*, uint8_t))data2hex_P;
+	}
+	
 	while((length&(0xF<<(addr_len*4-4)))==0)
 		--addr_len;
 	char addrstr[addr_len];
@@ -553,13 +640,14 @@ void ui_hexdump(const void* data, uint16_t length){
 			genaddr(offset+i*bytesperline, addrstr, addr_len);
 			lcd_writestrn(addrstr, addr_len);
 			lcd_writechar(':');
-			if((j=length-offset-i*bytesperline)>=bytesperline){
+			if(length-offset-i*bytesperline>=bytesperline){
 				/* regular case */
-				data2hex(((uint8_t*)data)+offset+i*bytesperline,bytesbuffer, bytesperline);
+				d2h(((uint8_t*)data)+offset+i*bytesperline,bytesbuffer, bytesperline);
 				lcd_writestrn(bytesbuffer, 2*bytesperline);	
 			} else {
-				/* only a few bytes are to print (j) */
-				data2hex(((uint8_t*)data)+offset+i*bytesperline,bytesbuffer, j);
+				/* only a few bytes are to print */
+				j=length-offset-i*bytesperline;
+				d2h(((uint8_t*)data)+offset+i*bytesperline,bytesbuffer, j);
 				lcd_writestrn(bytesbuffer, 2*j);
 				j=LCD_WIDTH-addr_len-1-2*j;
 				while(j--)
@@ -580,14 +668,61 @@ void ui_hexdump(const void* data, uint16_t length){
 		}
 	}
 }
+/******************************************************************************/
+
+void ui_hexdump(const void* data, uint16_t length){
+	ui_hexdump_core(data, length, 0);
+}
 
 /******************************************************************************/
+
+void ui_hexdump_P(PGM_VOID_P data, uint16_t length){
+	ui_hexdump_core(data, length, 1);
+}
+
+/******************************************************************************/
+/******************************************************************************/
+
 void lcd_writelinen(const char* text, uint16_t length){
 	while(*text && *text!='\n' && length--)
 		lcd_writechar(*text++);
 }
 
-uint16_t count_lcdstrings(char* text, uint8_t width){
+/******************************************************************************/
+
+void lcd_writelinen_P(PGM_P text, uint16_t length){
+	char c;
+	
+	c=pgm_read_byte(text);
+	while(c && c!='\n' && length--){
+		lcd_writechar(c);
+		c=pgm_read_byte(++text);
+	}
+}
+
+/******************************************************************************/
+
+uint16_t count_lcdstrings_P(PGM_P text, uint8_t width){
+	uint16_t ret=1;
+	uint8_t t=0;
+	char c;
+	c=pgm_read_byte(text);
+	if(!c)
+		return 0;
+	while(c){
+		if(c=='\n' || t==width){
+			t=0;
+			++ret;
+		}else{
+			++t;
+		}
+		c=pgm_read_byte(++text);
+	}
+	return ret;
+}
+/******************************************************************************/
+
+uint16_t count_lcdstrings(const char* text, uint8_t width){
 	uint16_t ret=1;
 	uint8_t t=0;
 	if(!*text)
@@ -604,14 +739,35 @@ uint16_t count_lcdstrings(char* text, uint8_t width){
 	return ret;
 }
 
-void split_lcdstrings(char* text, char** list, uint8_t width){
+/******************************************************************************/
+
+void split_lcdstrings_P(PGM_P text, PGM_P* list, uint8_t width){
 	uint8_t t=0;
+	char c;
 	*list = text;
+	c=pgm_read_byte(text);
+	while(c){
+		if(c=='\n' || t==width){
+			t=0;
+			++list;
+			*list=text+1;
+		}else{
+			++t;
+		}
+		c=pgm_read_byte(++text);
+	}
+}
+
+/******************************************************************************/
+
+void split_lcdstrings(const char* text, char** list, uint8_t width){
+	uint8_t t=0;
+	*list = (void*)((uint16_t)text); /* with this little trick the compiler can be keept quite about the const stuff */
 	while(*text){
 		if(*text=='\n' || t==width){
 			t=0;
 			++list;
-			*list=text+1;
+			*list=(char*)((uint16_t)text)+1;
 		}else{
 			++t;
 		}
@@ -619,19 +775,34 @@ void split_lcdstrings(char* text, char** list, uint8_t width){
 	}
 }
 
-void ui_textwindow(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, char* text){
+/******************************************************************************/
+
+void ui_textwindow_core(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, const void* text, uint8_t flash){
 	uint16_t strn;
 	uint16_t offset=0;
 	uint8_t i,j;
 	char c;
+	uint16_t (*count)(const void*, uint8_t);
+	void (*split)(const void*, void**, uint8_t);
+	void (*writeln)(const void*, uint16_t);
+	
+	if(flash){
+		count = (uint16_t (*)(const void*, uint8_t))    count_lcdstrings_P;
+		split = (void (*)(const void*, void**, uint8_t))split_lcdstrings_P;
+		writeln = (void (*)(const void*, uint16_t))     lcd_writelinen_P;
+	}else{
+		count = (uint16_t (*)(const void*, uint8_t))    count_lcdstrings;
+		split = (void (*)(const void*, void**, uint8_t))split_lcdstrings;
+		writeln = (void (*)(const void*, uint16_t))     lcd_writelinen;
+	}
 	
 	if(height==0 || width==0)
 		return;
-	strn=count_lcdstrings(text, width-1);
+	strn=count(text, width-1);
 	if(strn==0)
 		return;
-	char* l[strn];
-	split_lcdstrings(text, l, width-1);
+	void* l[strn];
+	split(text, l, width-1);
 	
 	for(;;){
 		for(i=0; i<height; ++i){
@@ -639,7 +810,7 @@ void ui_textwindow(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, ch
 			for(j=0; j<width; ++j)
 				lcd_writechar(' ');
 			lcd_gotopos(posy+i,posx);
-			lcd_writelinen(l[offset+i],width);	
+			writeln(l[offset+i],width);	
 		}
 		c = waitforkeypress();
 		if(c==ENTER_KEY || c==SELECT_KEY){
@@ -655,4 +826,17 @@ void ui_textwindow(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, ch
 		}
 	}
 }
+/******************************************************************************/
 
+void ui_textwindow(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, char* text){
+	ui_textwindow_core(posx,posy,width,height, text, 0);
+}
+
+/******************************************************************************/
+
+void ui_textwindow_P(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, PGM_P text){
+	ui_textwindow_core(posx,posy,width, height, text, 1);
+}
+
+/******************************************************************************/
+/******************************************************************************/

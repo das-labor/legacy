@@ -102,7 +102,11 @@ void lop0_streamrx(uint8_t b){
 	
 }
 
-char* gpl_text=
+
+
+int main(void){
+
+PGM_P gpl_text= PSTR(
     "Copyright (C) 2008 \007 Daniel Otte\n"
     "\n"
     "This program is free software: you can redistribute it and/or modify\n"
@@ -116,15 +120,13 @@ char* gpl_text=
     "GNU General Public License for more details.\n"
     "\n"
     "You should have received a copy of the GNU General Public License\n"
-    "along with this program.  If not, see <http://www.gnu.org/licenses/>.";
-
-
-int main(void){
-
+    "along with this program.  If not, see <http://www.gnu.org/licenses/>.");
+    
 	//Initialisierung
 	lcd_init();
 	keypad_init();	
 	ui_primitives_init();
+	lcd_cls();
 	draw_frame(1,1,LCD_WIDTH,LCD_HEIGHT,'*');
 	lcd_gotopos(2,3);
 	lcd_writestr("booting ...");
@@ -133,12 +135,12 @@ int main(void){
 //		print_progressbar(i/255.0, 2, 3, LCD_WIDTH-2);
 //		_delay_ms(10);
 	}
-	lcd_cls();
+//	lcd_cls();
 //	radioselect("anon\0not anon\0");
 //	radioselect_P(PSTR("bla\0blub\0foo\0bar\0foobar\0"));
 //	checkselect_P(PSTR("A\0B\0C\0D\0E\0F\0G\0H\0"),(uint8_t*)"\0");
 //	ui_hexdump("bla", 57);
-	ui_textwindow(1,1,LCD_WIDTH,LCD_HEIGHT, gpl_text);
+	ui_textwindow_P(1,1,LCD_WIDTH,LCD_HEIGHT, gpl_text);
 	resetcnt_inc();
 	uart_init();
 	uart_putc(XON);
