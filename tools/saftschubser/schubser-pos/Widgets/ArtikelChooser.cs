@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Gtk;
-using SaftSchubserDb;
+using SchubserDb;
 
 namespace SchubserPos
 {

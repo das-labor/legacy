@@ -1,7 +1,7 @@
 using System;
 using Gtk;
 
-using SaftSchubserDb;
+using SchubserDb;
 
 namespace SchubserPos
 {

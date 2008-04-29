@@ -4,7 +4,7 @@ using Gtk;
 using Db4objects.Db4o;
 using Db4objects.Db4o.Query;
 
-using SaftSchubserDb;
+using SchubserDb;
 
 namespace SchubserAdmin {
 	

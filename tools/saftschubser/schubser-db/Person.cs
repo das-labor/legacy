@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using Db4objects.Db4o;
 
-namespace SaftSchubserDb
+namespace SchubserDb
 {
 	/// <summary>
 	/// Representiert eine Person mit einer Karte
