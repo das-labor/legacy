@@ -52,6 +52,13 @@ namespace SaftSchubserDb
 		
 		public static void Commit()
 		{
+			//flush Db
+			Artikel proto = new Artikel();
+			IObjectSet res = Db.Get(proto);
+			foreach (Artikel a in res) {
+				Db.Delete(a);
+			}
+			
 			foreach ( KeyValuePair<Artikel,bool> pair in DirtyList ) 
 			{
 				Db.Set( pair.Key );
