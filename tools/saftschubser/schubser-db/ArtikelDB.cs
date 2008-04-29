@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Db4objects.Db4o;
 using Db4objects.Db4o.Query;
 
-namespace SaftSchubserDb
+namespace SchubserDb
 {
 	public static class ArtikelDB
 	{

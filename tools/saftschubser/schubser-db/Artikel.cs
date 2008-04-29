@@ -1,6 +1,6 @@
 using System;
 
-namespace SaftSchubserDb
+namespace SchubserDb
 {
 	public class Artikel
 	{

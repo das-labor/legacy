@@ -1,7 +1,7 @@
 using System;
 using Db4objects.Db4o;
 
-namespace SaftSchubserDb
+namespace SchubserDb
 {
 }
 	

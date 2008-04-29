@@ -22,6 +22,8 @@
     <File name="Tests/ArtikelTest.cs" subtype="Code" buildaction="Compile" />
     <File name="Person.cs" subtype="Code" buildaction="Compile" />
     <File name="PersonDB.cs" subtype="Code" buildaction="Compile" />
+    <File name="Audit.cs" subtype="Code" buildaction="Compile" />
+    <File name="AuditItem.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

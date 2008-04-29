@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 using System.Collections.Generic;
 
-namespace SaftSchubserDb
+namespace SchubserDb
 {
 	[TestFixture()]
 	public class ArtikelTest
