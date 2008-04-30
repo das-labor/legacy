@@ -2,5 +2,6 @@
 #define KEYPAD_CHARSET_H_
 
 extern const char alphanum_cs[];
+extern const char alphanumext_cs[];
 
 #endif /*KEYPAD_CHARSET_H_*/

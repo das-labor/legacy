@@ -15,7 +15,6 @@
 #include "hexdigit_tab.h"
 #include "ui_primitives.h"
 #include "extrachars.h"
-#include "interface.h"
 #include "rtc.h"
 
 #define DEBOUNCE_DELAY _delay_ms(10)
@@ -25,7 +24,7 @@
 
 /******************************************************************************/	
 	
-char waitforkeypress(void){
+char ui_waitforkeypress(void){
 	uint8_t k;
 	while((k=read_keypad())==NO_KEY)
 		;
@@ -38,7 +37,7 @@ char waitforkeypress(void){
 
 /******************************************************************************/
 
-char waitforkeypresstimed(timestamp_t* tdiff){
+char ui_waitforkeypresstimed(timestamp_t* tdiff){
 	uint8_t k;
 	timestamp_t a,b;
 	while((k=read_keypad())==NO_KEY)
@@ -55,8 +54,8 @@ char waitforkeypresstimed(timestamp_t* tdiff){
 
 /******************************************************************************/
 
-void waitforkey(char key){
-	while(key!=waitforkeypress())
+void ui_waitforkey(char key){
+	while(key!=ui_waitforkeypress())
 		;
 }
 
@@ -83,7 +82,7 @@ void ui_primitives_init(void){
 
 /******************************************************************************/
 
-void print_progressbar(double percent, uint8_t xpos, uint8_t ypos, uint8_t width){
+void ui_progressbar(double percent, uint8_t xpos, uint8_t ypos, uint8_t width){
 	uint8_t full, part, i;
 	char str[3];
 	if(percent>1) 
@@ -114,7 +113,7 @@ void print_progressbar(double percent, uint8_t xpos, uint8_t ypos, uint8_t width
 
 /******************************************************************************/
 
-uint8_t radioselect_core(const char* opts, uint8_t flash){
+uint8_t ui_radioselect_core(const char* opts, uint8_t flash){
 	uint8_t i,j,index=0, arrowpos=0;
 	uint8_t select=0;
 	
@@ -150,7 +149,7 @@ uint8_t radioselect_core(const char* opts, uint8_t flash){
 			lcd_gotopos(2+i, 4);
 			write(optp[(i+index)%optcount],LCD_WIDTH-4);
 		}
-		c=waitforkeypress();
+		c=ui_waitforkeypress();
 		if(c==ENTER_KEY)
 			return select;
 		if(c==UP_KEY){
@@ -179,14 +178,14 @@ uint8_t radioselect_core(const char* opts, uint8_t flash){
 
 /******************************************************************************/
 
-uint8_t radioselect(const char* opts){
-	return radioselect_core(opts, 0);
+uint8_t ui_radioselect(const char* opts){
+	return ui_radioselect_core(opts, 0);
 }
 
 /******************************************************************************/
 
-uint8_t radioselect_P(PGM_P opts){
-	return radioselect_core(opts, 1);
+uint8_t ui_radioselect_P(PGM_P opts){
+	return ui_radioselect_core(opts, 1);
 }
 
 /******************************************************************************/
@@ -206,7 +205,7 @@ void togglebit(uint8_t* buffer, uint8_t pos){
 
 /******************************************************************************/
 
-void checkselect_core(const char* opts, uint8_t* config, uint8_t flash){
+void ui_checkselect_core(const char* opts, uint8_t* config, uint8_t flash){
 	uint8_t i,j,index=0, arrowpos=0;
 	
 	uint8_t (*count)(const void*);
@@ -241,7 +240,7 @@ void checkselect_core(const char* opts, uint8_t* config, uint8_t flash){
 			lcd_gotopos(2+i, 4);
 			write(optp[(i+index)%optcount],LCD_WIDTH-4);
 		}
-		c = waitforkeypress();
+		c = ui_waitforkeypress();
 		if(c==ENTER_KEY)
 			return;
 		if(c==UP_KEY){
@@ -270,20 +269,20 @@ void checkselect_core(const char* opts, uint8_t* config, uint8_t flash){
 
 /******************************************************************************/
 
-void checkselect(const char* opts, uint8_t* config){
-	checkselect_core(opts, config, 0);
+void ui_checkselect(const char* opts, uint8_t* config){
+	ui_checkselect_core(opts, config, 0);
 }
 
 /******************************************************************************/
 
-void checkselect_P(PGM_P opts, uint8_t* config){
-	checkselect_core(opts, config, 1);
+void ui_checkselect_P(PGM_P opts, uint8_t* config){
+	ui_checkselect_core(opts, config, 1);
 }
 
 /******************************************************************************/
 /******************************************************************************/
 
-void draw_frame(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, char framechar){
+void ui_drawframe(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, char framechar){
 	uint8_t i;
 	/* top line */
 	lcd_gotopos(posy,posx);
@@ -305,7 +304,7 @@ void draw_frame(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, char 
 /******************************************************************************/
 /******************************************************************************/
 
-void menuexec(menu_t* menu){
+void ui_menuexec(menu_t* menu){
 	uint8_t n=0;
 	while(menu[n].options!=terminator)
 		++n;
@@ -314,7 +313,7 @@ void menuexec(menu_t* menu){
 	uint8_t i,idx=0,selpos=2;
   redraw:
   //	lcd_cls();
-  	print_status();
+  	ui_printstatusline();
 	
 	for(i=0; i<((n<3)?n:3); ++i){
 		lcd_gotopos(i+2,2);
@@ -338,7 +337,7 @@ void menuexec(menu_t* menu){
 	lcd_writechar(LCD_RARROW);
 		
   rescan:	
-	switch (waitforkeypress()){
+	switch (ui_waitforkeypress()){
 		case UP_KEY: 
 			if(selpos==2){
 				idx = (idx-1+n)%n;
@@ -358,7 +357,7 @@ void menuexec(menu_t* menu){
 		case ENTER_KEY:	
 		case SELECT_KEY:
 			if(menu[(idx+selpos-2)%n].options==autosubmenu){
-				menuexec((menu_t*)menu[(idx+selpos-2)%n].x);
+				ui_menuexec((menu_t*)menu[(idx+selpos-2)%n].x);
 			} else {
 				if(menu[(idx+selpos-2)%n].x!=0){
 					((void(*)(void))(menu[(idx+selpos-2)%n].x))();
@@ -375,7 +374,7 @@ void menuexec(menu_t* menu){
 
 /******************************************************************************/
 /******************************************************************************/
-
+static
 void genaddr(uint16_t value, char* str, uint8_t len){
 	str+=len-1;
 	while(len--){
@@ -385,7 +384,7 @@ void genaddr(uint16_t value, char* str, uint8_t len){
 }
 
 /******************************************************************************/
-
+static
 void data2hex(const void* buffer, char* dest, uint8_t length){
 	while(length--){
 		*dest++ = pgm_read_byte(hexdigit_tab_P+((*(uint8_t*)buffer)>>4));
@@ -395,7 +394,7 @@ void data2hex(const void* buffer, char* dest, uint8_t length){
 }
 
 /******************************************************************************/
-
+static
 void data2hex_P(PGM_VOID_P buffer, char* dest, uint8_t length){
 	uint8_t t;
 	while(length--){
@@ -451,7 +450,7 @@ void ui_hexdump_core(const void* data, uint16_t length, uint8_t flash){
 					lcd_writechar(' ');
 			}
 		}
-		c=waitforkeypress();
+		c=ui_waitforkeypress();
 		if(c==UP_KEY){
 			if(offset)
 				offset-=bytesperline;
@@ -498,7 +497,7 @@ void lcd_writelinen_P(PGM_P text, uint16_t length){
 }
 
 /******************************************************************************/
-
+static
 uint16_t count_lcdstrings_P(PGM_P text, uint8_t width){
 	uint16_t ret=1;
 	uint8_t t=0;
@@ -518,7 +517,7 @@ uint16_t count_lcdstrings_P(PGM_P text, uint8_t width){
 	return ret;
 }
 /******************************************************************************/
-
+static
 uint16_t count_lcdstrings(const char* text, uint8_t width){
 	uint16_t ret=1;
 	uint8_t t=0;
@@ -537,7 +536,7 @@ uint16_t count_lcdstrings(const char* text, uint8_t width){
 }
 
 /******************************************************************************/
-
+static
 void split_lcdstrings_P(PGM_P text, PGM_P* list, uint8_t width){
 	uint8_t t=0;
 	char c;
@@ -556,7 +555,7 @@ void split_lcdstrings_P(PGM_P text, PGM_P* list, uint8_t width){
 }
 
 /******************************************************************************/
-
+static
 void split_lcdstrings(const char* text, char** list, uint8_t width){
 	uint8_t t=0;
 	*list = (void*)((uint16_t)text); /* with this little trick the compiler can be keept quite about the const stuff */
@@ -609,7 +608,7 @@ void ui_textwindow_core(uint8_t posx, uint8_t posy, uint8_t width, uint8_t heigh
 			lcd_gotopos(posy+i,posx);
 			writeln(l[offset+i],width);	
 		}
-		c = waitforkeypress();
+		c = ui_waitforkeypress();
 		if(c==ENTER_KEY || c==SELECT_KEY){
 			return;
 		}
@@ -646,7 +645,7 @@ uint8_t read_decimaln(uint8_t xpos, uint8_t ypos, char* str, uint8_t n){
 		lcd_gotopos(ypos,xpos+idx);
 		lcd_writechar(' ');
 		lcd_gotopos(ypos,xpos+idx);
-		c=waitforkeypress();
+		c=ui_waitforkeypress();
 		if(c>='0' && c<='9' && idx<n){
 			lcd_writechar(c);
 			str[idx]=c;
@@ -677,7 +676,7 @@ uint8_t read_pinn(uint8_t xpos, uint8_t ypos, char disp,char* str, uint8_t n){
 		lcd_gotopos(ypos,xpos+idx);
 		lcd_writechar(' ');
 		lcd_gotopos(ypos,xpos+idx);
-		c=waitforkeypress();
+		c=ui_waitforkeypress();
 		if(c>='0' && c<='9' && idx<n){
 			lcd_writechar(disp);
 			str[idx]=c;
@@ -709,7 +708,7 @@ uint8_t read_hexn(uint8_t xpos, uint8_t ypos, char* str, uint8_t n){
 		lcd_gotopos(ypos,xpos+idx);
 		lcd_writechar(' ');
 		lcd_gotopos(ypos,xpos+idx);
-		c=waitforkeypresstimed(&td);
+		c=ui_waitforkeypresstimed(&td);
 		if(((c>='0'&&c<='9')|| (c>='A'&&c<='F'&&td<KEYPAD_SPECIALDELAY)) && idx<n){
 			lcd_writechar(c);
 			str[idx]=c;
@@ -783,7 +782,7 @@ uint8_t read_strn(uint8_t xpos, uint8_t ypos, PGM_P charset, char * str, uint8_t
 		lcd_gotopos(ypos, xpos+idx);
 		lcd_writechar(' ');
 		lcd_gotopos(ypos, xpos+idx);
-		c[toggle]=waitforkeypress();
+		c[toggle]=ui_waitforkeypress();
 		time[toggle]=gettimestamp();
 		if((c[0]==c[1]) && 
 		   (tabidx<charsetn) && 
@@ -839,4 +838,11 @@ uint8_t read_strn(uint8_t xpos, uint8_t ypos, PGM_P charset, char * str, uint8_t
 
 /******************************************************************************/
 
+char ui_statusstring[6] = "     ";
 
+void ui_printstatusline(void){
+	lcd_cls();
+	lcd_gotopos(1,1);
+	lcd_writestr("=AnonAccess=");
+	lcd_writestr(ui_statusstring);
+}

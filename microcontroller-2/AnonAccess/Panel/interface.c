@@ -11,13 +11,4 @@
 #include <util/delay.h>
 #include "interface.h"
 
-char status_string[6] = "     ";
-
-
-void print_status(void){
-	lcd_cls();
-	lcd_gotopos(1,1);
-	lcd_writestr("=AnonAccess=");
-	lcd_writestr(status_string);
-}
 

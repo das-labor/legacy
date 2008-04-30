@@ -8,7 +8,6 @@
 #include "prng.h"
 #include "lop.h"
 #include "lop_debug.h"
-#include "interface.h"
 #include "base64_enc.h"
 #include "reset_counter.h"
 #include "types.h"
@@ -49,13 +48,13 @@ void display_analysis(void);
 
 void demo_getname(void){
 	char name[11];
-	print_status();
+	ui_printstatusline();
 	lcd_gotopos(2,1);
 	lcd_writestr_P(PSTR("name:"));
 	read_strn(1, 3, alphanum_cs, name, 10);
 	lcd_gotopos(4,1);
 	lcd_writestr(name);
-	waitforkey('E');
+	ui_waitforkey('E');
 }
 
 #include "uart.h"
@@ -119,7 +118,7 @@ void run_serial_test(void){
 	
 	backup = uart_hook;
 	uart_hook=NULL;
-	print_status();
+	ui_printstatusline();
 	
 	while(read_keypad()!='C'){
 #ifdef UART_XON_XOFF
@@ -157,7 +156,7 @@ void run_serial_test(void){
 		lcd_gotopos(4,2);
 		lcd_hexdump(&lost, 8);
 	}
-	waitforkey('E');
+	ui_waitforkey('E');
 	uart_hook = backup;
 }
 
@@ -165,26 +164,26 @@ void run_serial_test(void){
 
 void req_authblock(void){
 	char name[12];
-	print_status();
+	ui_printstatusline();
 	init_session();
 	lcd_gotopos(2,1);
 	lcd_writestr_P(PSTR("name:"));
 	read_strn(1,3,alphanum_cs, name,10);
 	req_bootab(name, 0);
-	status_string[4]='~';
+	ui_statusstring[4]='~';
 }
 
 
 void view_authblock(void){
 	char str[45];
 	
-	print_status();
+	ui_printstatusline();
 	lcd_gotopos(2,1);
 	lcd_writestr_P(PSTR("uid: "));
 	lcd_hexdump(&(ab.uid), 2);
-	waitforkey('E');
+	ui_waitforkey('E');
 	
-	print_status();
+	ui_printstatusline();
 	lcd_gotopos(2,1);
 	lcd_writestr_P(PSTR("ticket: "));
 	base64enc(str, ab.ticket, 32);
@@ -194,9 +193,9 @@ void view_authblock(void){
 	lcd_writestrn(&(str[4]),20);
 	lcd_gotopos(4,1);
 	lcd_writestrn(&(str[24]),20);
-	waitforkey('E');
+	ui_waitforkey('E');
 	
-	print_status();
+	ui_printstatusline();
 	lcd_gotopos(2,1);
 	lcd_writestr_P(PSTR("rkey: "));
 	base64enc(str, ab.rkey, 32);
@@ -206,9 +205,9 @@ void view_authblock(void){
 	lcd_writestrn(&(str[4]),20);
 	lcd_gotopos(4,1);
 	lcd_writestrn(&(str[24]),20);
-	waitforkey('E');
+	ui_waitforkey('E');
 	
-	print_status();
+	ui_printstatusline();
 	lcd_gotopos(2,1);
 	lcd_writestr_P(PSTR("rid: "));
 	base64enc(str, ab.rid, 32);
@@ -218,9 +217,9 @@ void view_authblock(void){
 	lcd_writestrn(&(str[4]),20);
 	lcd_gotopos(4,1);
 	lcd_writestrn(&(str[24]),20);
-	waitforkey('E');
+	ui_waitforkey('E');
 	
-	print_status();
+	ui_printstatusline();
 	lcd_gotopos(2,1);
 	lcd_writestr_P(PSTR("pinhmac: "));
 	base64enc(str, ab.pinhmac, 32);
@@ -230,9 +229,9 @@ void view_authblock(void){
 	lcd_writestrn(&(str[4]),20);
 	lcd_gotopos(4,1);
 	lcd_writestrn(&(str[24]),20);
-	waitforkey('E');
+	ui_waitforkey('E');
 	
-	print_status();
+	ui_printstatusline();
 	lcd_gotopos(2,1);
 	lcd_writestr_P(PSTR("HMAC: "));
 	base64enc(str, ab.hmac, 32);
@@ -242,7 +241,7 @@ void view_authblock(void){
 	lcd_writestrn(&(str[4]),20);
 	lcd_gotopos(4,1);
 	lcd_writestrn(&(str[24]),20);
-	waitforkey('E');
+	ui_waitforkey('E');
 }
 
 /******************************************************************************/
@@ -260,7 +259,7 @@ void read_decimal(void){
 	read_decimaln(1,2,str,8);
 	lcd_gotopos(3,1);
 	lcd_writestr(str);
-	waitforkeypress();
+	ui_waitforkeypress();
 }
 
 void read_hex(void){
@@ -271,7 +270,7 @@ void read_hex(void){
 	read_hexn(1,2,str,8);
 	lcd_gotopos(3,1);
 	lcd_writestr(str);
-	waitforkeypress();
+	ui_waitforkeypress();
 }
 
 /******************************************************************************/
@@ -362,10 +361,10 @@ void stat_menu(void){}
 void print_resets(void){
 	uint64_t t;
 	t = resetcnt_read();
-	print_status();
+	ui_printstatusline();
 	lcd_gotopos(2,1);
 	lcd_hexdump(&t,8);
-	waitforkey('E');
+	ui_waitforkey('E');
 }
 /*
 void bootstrap_menu(void){
@@ -378,21 +377,21 @@ void debug_menu(void){
 }
 */
 void master_menu(void){
-	menuexec(main_menu_mt);
+	ui_menuexec(main_menu_mt);
 }
 
 void print_timestamp(void){
 	timestamp_t t;
 	t = gettimestamp();
-	print_status();
+	ui_printstatusline();
 	lcd_gotopos(2,1);
 	lcd_hexdump(&t,8);
-	waitforkey('E');
+	ui_waitforkey('E');
 }
 
 void print_timestamp_live(void){
 	timestamp_t t;
-	print_status();	
+	ui_printstatusline();	
 	while(read_keypad()!='E'){
 		t = gettimestamp();
 		lcd_gotopos(2,1);
@@ -409,16 +408,16 @@ void print_timestamp_base64(void){
 	
 	t = gettimestamp();
 	base64enc(str,&t,sizeof(timestamp_t));
-	print_status();
+	ui_printstatusline();
 	lcd_gotopos(2,1);
 	lcd_writestr(str);
-	waitforkey('E');
+	ui_waitforkey('E');
 }
 
 void print_timestamp_base64_live(void){
 	timestamp_t t;
 	char str[(sizeof(timestamp_t)+2)/3*4+1]; /* should make 13 */
-	print_status();	
+	ui_printstatusline();	
 	while(read_keypad()!='E'){
 		t = gettimestamp();
 		base64enc(str,&t,sizeof(timestamp_t));
@@ -435,14 +434,14 @@ void print_timestamp_base64_live(void){
 void print_random(void){
 	uint8_t block[30];
 	fillBlockRandom(block, 30);
-	print_status();
+	ui_printstatusline();
 	lcd_gotopos(2,1);
 	lcd_hexdump(&block,10);
 	lcd_gotopos(3,1);
 	lcd_hexdump(&block+10,10);
 	lcd_gotopos(4,1);
 	lcd_hexdump(&block+20,10);
-	waitforkey('E');
+	ui_waitforkey('E');
 }
 
 void replace_unprinable(char * str, uint16_t len){
