@@ -15,6 +15,7 @@
 #include "comm.h"
 #include "24C04.h"
 #include "cardio.h"
+#include "keypad_charset.h"
 #include <stdint.h>
 #include <util/delay.h>
 
@@ -51,20 +52,9 @@ void demo_getname(void){
 	print_status();
 	lcd_gotopos(2,1);
 	lcd_writestr_P(PSTR("name:"));
-	readnstr(3,1,10,name);
+	read_strn(1, 3, alphanum_cs, name, 10);
 	lcd_gotopos(4,1);
 	lcd_writestr(name);
-	waitforkey('E');
-}
-
-void demo_hex(void){
-	char name[10];
-	print_status();
-	lcd_gotopos(2,1);
-	lcd_writestr_P(PSTR("hex:"));
-	readnhex(3,1,10,name);
-	lcd_gotopos(4,1);
-	lcd_hexdump(name, 10);
 	waitforkey('E');
 }
 
@@ -179,7 +169,7 @@ void req_authblock(void){
 	init_session();
 	lcd_gotopos(2,1);
 	lcd_writestr_P(PSTR("name:"));
-	readnstr(3,1,10,name);
+	read_strn(1,3,alphanum_cs, name,10);
 	req_bootab(name, 0);
 	status_string[4]='~';
 }
@@ -317,7 +307,6 @@ menu_t debug_menu_mt[] = {
 	{timestamp_base64_live_PS, execute, (superp)print_timestamp_base64_live},
 	{random_PS, execute, (superp)print_random},
 	{get_name_PS, execute, (superp)demo_getname},
-	{get_hex_string_PS, execute, (superp)demo_hex},
 	{dump_card_PS, execute, (superp)dump_card},
 	{write_card_PS, execute, (superp)write_card},
 	{display_analysis_PS, execute, (superp)display_analysis},

@@ -21,22 +21,3 @@ void print_status(void){
 	lcd_writestr(status_string);
 }
 
-void waitforkey(char key){
-	while(read_keypad()!=key)
-		;
-	_delay_ms(1);
-	while(read_keypad()==key)
-		;
-	_delay_ms(1);
-}
-
-char waitforanykey(void){
-	char key;
-	while((key=read_keypad())==' ')
-		;
-	_delay_ms(1);
-	while(read_keypad()==key)
-		;
-	_delay_ms(1);
-	return key;
-}
