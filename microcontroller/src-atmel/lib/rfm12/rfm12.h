@@ -43,7 +43,8 @@
 /**** INTERRUPT VECTOR
  * set the name for the interrupt vector here
  */
-#define RFM12_INT_VECT (INT0_vect)
+#define RFM12_INT_VECT (INT2_vect)
+#define RFM12_INT_BIT (INT2)
 
 /******************************************************
  *                                                    *

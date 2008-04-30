@@ -22,15 +22,10 @@ int main ( void )
 
 	uart_init();
 
-	uart_putc('a');
 
 	rfm12_init();
 	
-	uart_putc('b');
-
 	sei();
-	
-	uart_putc('c');
 
 	//while(1);
 	
