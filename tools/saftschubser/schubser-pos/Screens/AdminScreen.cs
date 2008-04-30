@@ -1,6 +1,6 @@
 using System;
 
-namespace SchubserPos
+namespace Jeton
 {
 	public partial class AdminScreen : Gtk.Bin
 	{

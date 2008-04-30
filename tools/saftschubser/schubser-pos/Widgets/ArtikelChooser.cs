@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Gtk;
-using SchubserDb;
+using JetonDb;
 
-namespace SchubserPos
+namespace Jeton
 {
 	public delegate void ArtikelChoosenHandler(object sender, Artikel a);  
 	
@@ -26,8 +26,11 @@ namespace SchubserPos
 		public ArtikelChooser()
 		{
 			this.Build();
-
-			_artikel = ArtikelDB.VisibleArtikel();
+			
+			
+			JetonCtrl.CreateArtikel();
+			_artikel = JetonDb.JetonCtrl.GetVisibleArtikel();
+			
 			Update();
 		}
 

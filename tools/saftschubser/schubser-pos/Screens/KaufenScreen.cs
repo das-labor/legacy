@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Gtk;
-using SchubserDb;
+using JetonDb;
 
-namespace SchubserPos
+namespace Jeton
 {
 	public partial class KaufenScreen : Gtk.Bin
 	{

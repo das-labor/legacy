@@ -1,7 +1,7 @@
 using System;
 using Gtk;
 
-namespace SchubserPos
+namespace Jeton
 {
 
 	public partial class MainWindow: Gtk.Window
@@ -16,6 +16,17 @@ namespace SchubserPos
 		Gtk.Widget bestandScreen;
 		Gtk.Widget labCtrlScreen;
 		Gtk.Widget adminScreen;
+		Gtk.Widget specialScreen;
+
+		public Widget SpecialScreen {
+			get {
+				return specialScreen;
+			}
+			set {
+				specialScreen = value;
+			}
+		}
+
 		
 		ScreenMode curMode;
 		bool       ignoreModeSwitchEvents;
@@ -29,6 +40,8 @@ namespace SchubserPos
 
 			// alle möglichen Screens erzeugen und einhängen
 			kaufenScreen  = new KaufenScreen();
+
+			
 			kasseScreen   = new KasseScreen();
 			bestandScreen = new BestandScreen();
 			labCtrlScreen = new LabCtrlScreen();

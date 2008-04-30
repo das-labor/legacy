@@ -3,7 +3,7 @@ using Gtk;
 
 using SchubserDb;
 
-namespace SchubserPos
+namespace Jeton
 {
 	class MainClass
 	{

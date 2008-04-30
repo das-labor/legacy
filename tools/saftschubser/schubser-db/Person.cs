@@ -3,21 +3,21 @@ using System.Collections.Generic;
 
 using Db4objects.Db4o;
 
-namespace SchubserDb
+namespace JetonDb
 {
 	/// <summary>
-	/// Representiert eine Person mit einer Karte
+	///  Representiert eine Person mit einer Karte
 	/// </summary>
 	public class Person
 	{
 		// static Members
-		public static int NextId = 0;
+		//public static int NextId = 0;
 			
 		// Members
 		string   _name;
 		int      _id;
-		decimal  _guthaben;
-		decimal  _treuhaendisch;
+		decimal  _deposit;
+		decimal  _escrow;
 		
 		/// <value>
 		/// 
@@ -31,27 +31,21 @@ namespace SchubserDb
 			get { return _id; }
 		}
 		
-		public decimal Guthaben {
-			get { return _guthaben; }
-			set { _guthaben = value; }
+		public decimal Deposit {
+			          get { return _deposit; }
+			protected set { _deposit = value; }
 		}
 		
-		public decimal Treuhaendisch {
-			get { return _treuhaendisch; }
-			set { _treuhaendisch = value; }
+		public decimal Escrow {
+			          get { return _escrow; }
+			protected set { _escrow = value; }
 		}
-		
-		/// <summary>
-		/// 
-		/// </summary>
-		public Person(int id)
+
+		public Person()
 		{
-			_id = id;
-		}
-		
-		public Person(string name)
-		{
-			_name = name;
+			Deposit = 0.0m;
+			Escrow  = 0.0m;
+			Name    = "New Person";
 		}
 	}
 }
