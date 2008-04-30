@@ -36,29 +36,29 @@
 /*
 	Connect the RFM12 to the AVR as follows:
 
-	RFM12			|	AVR
+	RFM12           | AVR
 	----------------+------------
-	SDO				|	MISO
-	nIRQ			|	INT0
-	FSK/DATA/nFFS	|	VCC
-	DCLK/CFIL/FFIT	|	-
-	CLK				|	-
-	nRES			|	-
-	GND				|	GND
-	ANT				|	-
-	VDD				|	VCC
-	GND				|	GND
-	nINT/VDI		|	-
-	SDI				|	MOSI
-	SCK				|	SCK
-	nSEL			|	Slave select pin defined below
+	SDO             | MISO
+	nIRQ            | INT0
+	FSK/DATA/nFFS   | VCC
+	DCLK/CFIL/FFIT  |  -
+	CLK             |  -
+	nRES            |  -
+	GND             | GND
+	ANT             |  -
+	VDD             | VCC
+	GND             | GND
+	nINT/VDI        | -
+	SDI             | MOSI
+	SCK             | SCK
+	nSEL            | Slave select pin defined below
 */
 
 
 //Pin that slave select is connected to
-#define DDR_SS DDRB
-#define PORT_SS PORTB
-#define BIT_SS 4
+#define DDR_SS DDRC
+#define PORT_SS PORTC
+#define BIT_SS 5
 
 //SPI port
 #define DDR_SPI DDRB
@@ -99,8 +99,8 @@
 #define SS_ASSERT() PORT_SS &= ~(1<<BIT_SS)
 #define SS_RELEASE() PORT_SS |= (1<<BIT_SS)
 
-#define RFM12_INT_ON() GICR |= (1<<INT0)
-#define RFM12_INT_OFF() GICR &= ~(1<<INT0)
+#define RFM12_INT_ON() GICR |= (1<<RFM12_INT_BIT)
+#define RFM12_INT_OFF() GICR &= ~(1<<RFM12_INT_BIT)
 
 
 //default fiforeset is as follows:
