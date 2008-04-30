@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Gtk;
 using SchubserDb;
 
-namespace SchubserPos
+namespace Jeton
 {
 	public partial class BestandScreen : Gtk.Bin
 	{

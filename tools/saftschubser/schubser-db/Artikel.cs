@@ -1,6 +1,6 @@
 using System;
 
-namespace SchubserDb
+namespace JetonDb
 {
 	public class Artikel
 	{
@@ -17,7 +17,7 @@ namespace SchubserDb
 			}
 			set {
 				_name = value;
-				ArtikelDB.Dirty(this);
+				// ArtikelDB.Dirty(this);
 			}
 		}
 
@@ -27,7 +27,7 @@ namespace SchubserDb
 			}
 			set {
 				_preis = value;
-				ArtikelDB.Dirty(this);				
+				// ArtikelDB.Dirty(this);				
 			}
 		}
 
@@ -37,7 +37,7 @@ namespace SchubserDb
 			}
 			set {
 				_bestand = value;
-				ArtikelDB.Dirty(this);				
+				// ArtikelDB.Dirty(this);				
 			}
 		}
 
@@ -47,13 +47,13 @@ namespace SchubserDb
 			}
 			set {
 				_proKasten = value;
-				ArtikelDB.Dirty(this);				
+				// ArtikelDB.Dirty(this);				
 			}
 		}
 		
 		public override string ToString()
 		{
-			return string.Format( "Artikel: ({0}, Preis: {1:c}, Bestand: {2}, ProKasten: {3}",
+			return string.Format( "Item: ({0}, Price: {1:c}, InStock: {2}, PerPackage: {3}",
 			                      Name, Preis, Bestand, ProKasten );
 		}
 		

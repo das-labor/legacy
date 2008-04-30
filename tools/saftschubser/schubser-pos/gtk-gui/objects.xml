@@ -1,29 +1,29 @@
 <objects>
-  <object type="SchubserPos.BestandScreen" allow-children="false" base-type="Gtk.Bin" palette-category="SchubserPos">
+  <object type="SchubserPos.KaufenScreen" allow-children="false" base-type="Gtk.Bin" palette-category="Jeton">
     <itemgroups />
     <signals />
   </object>
-  <object type="SchubserPos.KaufenScreen" allow-children="false" base-type="Gtk.Bin" palette-category="SchubserPos">
+  <object type="SchubserPos.LabCtrlScreen" allow-children="false" base-type="Gtk.Bin" palette-category="Jeton">
     <itemgroups />
     <signals />
   </object>
-  <object type="SchubserPos.LabCtrlScreen" allow-children="false" base-type="Gtk.Bin" palette-category="SchubserPos">
+  <object type="SchubserPos.ArtikelButtonContent" allow-children="false" base-type="Gtk.Bin" palette-category="Jeton">
     <itemgroups />
     <signals />
   </object>
-  <object type="SchubserPos.ArtikelButtonContent" allow-children="false" base-type="Gtk.Bin" palette-category="SchubserPos">
+  <object type="SchubserPos.KasseScreen" allow-children="false" base-type="Gtk.Bin" palette-category="Jeton">
     <itemgroups />
     <signals />
   </object>
-  <object type="SchubserPos.KasseScreen" allow-children="false" base-type="Gtk.Bin" palette-category="SchubserPos">
+  <object type="SchubserPos.MainWindow" allow-children="false" base-type="Gtk.Window" palette-category="Jeton">
     <itemgroups />
     <signals />
   </object>
-  <object type="SchubserPos.MainWindow" allow-children="false" base-type="Gtk.Window" palette-category="SchubserPos">
+  <object type="SchubserPos.ModalScreen" allow-children="false" base-type="Gtk.Bin" palette-category="Jeton" internal="true">
     <itemgroups />
     <signals />
   </object>
-  <object type="SchubserPos.ArtikelChooser" allow-children="false" base-type="Gtk.Bin" palette-category="SchubserPos">
+  <object type="Jeton.ArtikelChooser" palette-category="Jeton" allow-children="false" base-type="Gtk.Bin">
     <itemgroups>
       <itemgroup label="ArtikelChooser Properties">
         <property name="Offset" />
@@ -35,11 +35,15 @@
       </itemgroup>
     </signals>
   </object>
-  <object type="SchubserPos.BestellWidget" allow-children="false" base-type="Gtk.Bin" palette-category="SchubserPos">
+  <object type="Jeton.BestellWidget" palette-category="Jeton" allow-children="false" base-type="Gtk.Bin">
     <itemgroups />
     <signals />
   </object>
-  <object type="SchubserPos.AdminScreen" allow-children="false" base-type="Gtk.Bin" palette-category="SchubserPos">
+  <object type="Jeton.AdminScreen" palette-category="Jeton" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="Jeton.BestandScreen" palette-category="Jeton" allow-children="false" base-type="Gtk.Bin">
     <itemgroups />
     <signals />
   </object>

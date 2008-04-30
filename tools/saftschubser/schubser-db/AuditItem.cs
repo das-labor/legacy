@@ -1,10 +1,9 @@
 using System;
 
-namespace SchubserDb
+namespace JetonDb
 {
 	public class AuditItem
 	{
-		
 		public AuditItem()
 		{
 		}
