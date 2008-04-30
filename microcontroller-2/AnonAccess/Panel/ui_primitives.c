@@ -22,6 +22,8 @@
 
 #define MAX(a,b) (((a)>(b))?(a):(b))
 #define MIN(a,b) (((a)<(b))?(a):(b))
+
+/******************************************************************************/	
 	
 char waitforkeypress(void){
 	uint8_t k;
@@ -34,6 +36,7 @@ char waitforkeypress(void){
 	return k;
 } 
 
+/******************************************************************************/
 
 char waitforkeypresstimed(timestamp_t* tdiff){
 	uint8_t k;
@@ -50,6 +53,14 @@ char waitforkeypresstimed(timestamp_t* tdiff){
 	return k;
 } 
 
+/******************************************************************************/
+
+void waitforkey(char key){
+	while(key!=waitforkeypress())
+		;
+}
+
+/******************************************************************************/
 /******************************************************************************/
 
 void ui_primitives_init(void){
@@ -302,8 +313,8 @@ void menuexec(menu_t* menu){
   	;
 	uint8_t i,idx=0,selpos=2;
   redraw:
-  	lcd_cls();
-  //	print_status();
+  //	lcd_cls();
+  	print_status();
 	
 	for(i=0; i<((n<3)?n:3); ++i){
 		lcd_gotopos(i+2,2);
@@ -720,49 +731,6 @@ uint8_t read_hexn(uint8_t xpos, uint8_t ypos, char* str, uint8_t n){
 
 /******************************************************************************/
 
-void readnhex(uint8_t line, uint8_t x, uint8_t n, char * str){
-	uint8_t idx=0;
-	char c;
-	
-	lcd_control(1,1,0);
-	while(idx<n){
-		c=waitforanykey();
-		lcd_gotopos(line,x+2*idx);
-		lcd_writechar(c);
-		if(c>='0' && c<='9'){
-			c=c-'0';
-		} else {
-			if(c>='A' && c<='F'){
-				c=c-'A'+10;
-			} else {
-			/* this should not happen */
-			 c=0;
-			}
-		}
-		str[idx]=(str[idx] & 0x0F) | (c<<4);
-		
-		c=waitforanykey();
-		lcd_gotopos(line,x+2*idx+1);
-		lcd_writechar(c);
-		if(c>='0' && c<='9'){
-			c=c-'0';
-		} else {
-			if(c>='A' && c<='F'){
-				c=c-'A'+10;
-			} else {
-			/* this should not happen */
-			 c=0;
-			}
-		}
-		str[idx]=(str[idx] & 0xF0) | (c);
-		++idx;
-	}
-	
-	lcd_control(1,0,0);
-}
-
-/******************************************************************************/
-
 /*
  0: ' '0
  1: ' '1
@@ -779,28 +747,27 @@ void readnhex(uint8_t line, uint8_t x, uint8_t n, char * str){
 
 #define CHAR_SWITCH_DELAY 1000 /* 1 sec */
 
-uint8_t readnstr(uint8_t line, uint8_t x, uint8_t n,char * str){
+/******************************************************************************/
+
+uint8_t read_strn(uint8_t xpos, uint8_t ypos, PGM_P charset, char * str, uint8_t n){
 	timestamp_t time[2]={0,0};
-	uint8_t i=0;
 	uint8_t idx=0,varidx=0;
-	char c[2];
-	char ctab[][6]= {
-		{5,'.',',',';',':','0'},
-		{5,' ','-','_','+','1'},
-		{4,'A','B','C','2'},
-		{4,'D','E','F','3'},
-		{4,'G','H','I','4'},
-		{4,'J','K','L','5'},
-		{4,'M','N','O','6'},
-		{5,'P','Q','R','S','7'},
-		{4,'T','U','V','8'},
-		{5,'W','X','Y','Z','9'},  /* 9 */
-		{5,'!','"','$','@','%'},  /* A */
-		{5,'&','/','(',')','='},  /* B */
-		{5,'\\','|','~','[',']'}  /* D */ 
-		};
-	lcd_control(1,1,0);
-	lcd_gotopos(line, x);
+	char c[2]={0,0};
+	uint8_t toggle=0;
+	uint8_t charsetn;
+	uint8_t tabidx=100;
+
+	charsetn=dbz_strcount_P(charset);
+	PGM_P ctab[charsetn];
+	dbz_splitup_P(charset, ctab);
+	
+	lcd_gotopos(1,1);
+	lcd_hexdump(&charsetn, 1);
+	c[0]=pgm_read_byte(charset);
+	lcd_hexdump(c, 1);
+	c[0]=pgm_read_byte(ctab[0]);
+	lcd_hexdump(c, 1);
+	
 	
 	if(n==0)
 		return 0;
@@ -809,58 +776,67 @@ uint8_t readnstr(uint8_t line, uint8_t x, uint8_t n,char * str){
 		return 0;
 	}
 	
-	do{
-		c[0]=waitforanykey();
-		time[0]=gettimestamp();
-	}while((('0'>c[0]) || ('9'<c[0])) && (c[0]!='E'));
-	if(c[0]=='E')
-		goto terminate;
-	lcd_gotopos(line, x+i);
-	str[i]=ctab[c[0]-'0'][idx+1];
-	lcd_writechar(str[i]);
-
- nextscan:	
-	varidx ^= 1;	
-	do{
-		c[varidx]=waitforanykey();
-		time[varidx]=gettimestamp();
-	}while((('0'>c[varidx]) || ('9'<c[varidx])) && (c[varidx]!='E') &&(c[varidx]!='C'));
-	if(c[varidx]=='E')
-		goto terminate;
-	if(c[varidx]=='C'){
-		/* correct the last value */
-		if(i>0){
-			idx = 0;
-			lcd_gotopos(line, x+i);
-			str[i]='\0';
-			lcd_writechar(' ');
-			--i;
+	LCD_CURSOR_ON;
+	for(;;){
+	go_on:
+		toggle ^= 1;
+		lcd_gotopos(ypos, xpos+idx);
+		lcd_writechar(' ');
+		lcd_gotopos(ypos, xpos+idx);
+		c[toggle]=waitforkeypress();
+		time[toggle]=gettimestamp();
+		if((c[0]==c[1]) && 
+		   (tabidx<charsetn) && 
+		   (abstimedifference(time[0],time[1])<=CHAR_SWITCH_DELAY)){
+			/* we should just modify the char */
+			char x;
+			varidx += 1;
+			varidx %= strlen_P(ctab[tabidx]);
+			x = pgm_read_byte((ctab[tabidx])+varidx);
+			lcd_gotopos(ypos, xpos+idx-1);
+			lcd_writechar(x);
+			str[idx-1]=x;
+		}else{
+			if(c[toggle]==ENTER_KEY || c[toggle]==SELECT_KEY){
+				/* terminate */
+				str[idx]='\0';
+				LCD_CURSOR_OFF;
+				return idx;
+			}
+			if(c[toggle]==CORRECT_KEY){
+				tabidx=100;
+				if(idx)
+					--idx;
+			}else{
+				/* "normal" keypress */
+				tabidx=100;
+				/* 1) translate key code in table index */
+				if('0'<=c[toggle] && '9'>=c[toggle])
+					tabidx = c[toggle] -'0';
+				if(c[toggle]=='A')
+					tabidx = 10;
+				if(c[toggle]=='B')
+					tabidx = 11;
+				if(c[toggle]=='D')
+					tabidx = 12;
+				/* 2) check if we have an entry for that */
+				if(tabidx>=charsetn)
+					goto go_on;
+				if(pgm_read_byte(ctab[tabidx])==1)
+					goto go_on;
+				if(idx==n)
+					goto go_on;
+				/* 3) set the value and display it */
+				str[idx]=pgm_read_byte(ctab[tabidx]);
+				lcd_writechar(str[idx]);
+				idx++;
+				varidx=0;		
+			}
 		}
-		goto nextscan;
 	}
-	if((c[0]==c[1]) && (abstimedifference(time[0],time[1])<=CHAR_SWITCH_DELAY)){
-		/* char modification */
-		idx = (idx+1)%ctab[c[0]-'0'][0];
-		lcd_gotopos(line, x+i);
-		str[i]=ctab[c[0]-'0'][idx+1];
-		lcd_writechar(str[i]);
-		goto nextscan;
-	} else {
-		/* next char */
-		++i;
-		if(i+1>=n)
-			goto finalise;
-		idx=0;
-		lcd_gotopos(line, x+i);
-		str[i]=ctab[c[varidx]-'0'][idx+1];
-		lcd_writechar(str[i]);
-		goto nextscan;
-	}
-  terminate:
-  	++i;
-  finalise:	
-	str[i]='\0';
-	lcd_control(1,0,0);
-	return i;
+	
 }
+
+/******************************************************************************/
+
 

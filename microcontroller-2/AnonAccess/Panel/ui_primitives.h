@@ -1,6 +1,10 @@
 #ifndef UI_PRIMITIVES_H_
 #define UI_PRIMITIVES_H_
 
+#include <stdint.h>
+#include <avr/pgmspace.h>
+#include "rtc.h"
+
 /* we use a integer instead of void* 'cause the compiler keepr rumoring about 
  * data_ptr <-> func_ptr conversation 
  */
@@ -55,8 +59,12 @@ void ui_textwindow(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, ch
 void ui_textwindow_P(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, PGM_P text);
 
 char waitforkeypress(void);
+char waitforkeypresstimed(timestamp_t* tdiff);
+void waitforkey(char key);
+
 uint8_t read_decimaln(uint8_t xpos, uint8_t ypos, char* str, uint8_t n);
 uint8_t read_hexn(uint8_t xpos, uint8_t ypos, char* str, uint8_t n);
+uint8_t read_strn(uint8_t xpos, uint8_t ypos, PGM_P charset,char * str, uint8_t n);
 
 
 #endif /*UI_PRIMITIVES_H_*/
