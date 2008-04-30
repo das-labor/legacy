@@ -1,7 +1,7 @@
 using System;
 using Gtk;
 
-using SchubserDb;
+using JetonDb;
 
 namespace Jeton
 {

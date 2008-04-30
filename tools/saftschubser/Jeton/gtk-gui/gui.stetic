@@ -5,9 +5,9 @@
     <target-gtk-version>2.12.0</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../bin/Debug/schubser-pos.exe" internal="true" />
+    <widget-library name="../bin/Debug/jeton.exe" internal="true" />
   </import>
-  <widget class="Gtk.Window" id="SchubserPos.MainWindow" design-size="715 542">
+  <widget class="Gtk.Window" id="Jeton.MainWindow" design-size="715 542">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Labor Saftschubser</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -149,7 +149,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="SchubserPos.KasseScreen" design-size="460 416">
+  <widget class="Gtk.Bin" id="Jeton.KasseScreen" design-size="460 416">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox1">
@@ -273,7 +273,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="SchubserPos.LabCtrlScreen" design-size="300 300">
+  <widget class="Gtk.Bin" id="Jeton.LabCtrlScreen" design-size="300 300">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox1">
@@ -317,7 +317,7 @@ Ist noch nicht fertig...
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="SchubserPos.KaufenScreen" design-size="661 520">
+  <widget class="Gtk.Bin" id="Jeton.KaufenScreen" design-size="661 520">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.HPaned" id="hpaned1">
@@ -325,7 +325,7 @@ Ist noch nicht fertig...
         <property name="CanFocus">True</property>
         <property name="Position">262</property>
         <child>
-          <widget class="SchubserPos.ArtikelChooser" id="artikelChooser">
+          <widget class="Jeton.ArtikelChooser" id="artikelChooser">
             <property name="MemberName" />
             <property name="Events">ButtonPressMask</property>
             <property name="Offset">0</property>
@@ -336,7 +336,7 @@ Ist noch nicht fertig...
           </packing>
         </child>
         <child>
-          <widget class="SchubserPos.BestellWidget" id="bestellWidget">
+          <widget class="Jeton.BestellWidget" id="bestellWidget">
             <property name="MemberName" />
             <property name="Events">ButtonPressMask</property>
           </widget>
@@ -344,7 +344,7 @@ Ist noch nicht fertig...
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="SchubserPos.ArtikelButtonContent" design-size="232 89">
+  <widget class="Gtk.Bin" id="Jeton.ArtikelButtonContent" design-size="232 89">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.HBox" id="hbox1">
@@ -643,7 +643,7 @@ Ist noch nicht fertig...
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="SchubserPos.ModalScreen" design-size="300 300">
+  <widget class="Gtk.Bin" id="Jeton.ModalScreen" design-size="300 300">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <child>
