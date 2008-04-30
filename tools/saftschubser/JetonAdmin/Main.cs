@@ -6,7 +6,7 @@ using Db4objects.Db4o.Query;
 
 using JetonDb;
 
-namespace SchubserAdmin {
+namespace JetonAdmin {
 	
 	class MainClass
 	{

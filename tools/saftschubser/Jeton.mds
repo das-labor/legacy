@@ -26,7 +26,7 @@
   <Entries>
     <Entry filename="Jeton/Jeton.mdp" />
     <Entry filename="JetonDb/JetonDb.mdp" />
-    <Entry filename="JetonAdmin/JetinAdmin.mdp" />
+    <Entry filename="JetonAdmin/JetonAdmin.mdp" />
     <Entry filename="Packages.mdse" />
   </Entries>
 </Combine>
