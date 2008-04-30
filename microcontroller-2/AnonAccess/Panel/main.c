@@ -23,7 +23,6 @@
 #include "reset_counter.h"
 #include <stdint.h>
 #include "comm.h"
-#include "interface.h"
 #include "24C04.h"
 #include "cardio.h"
 #include "ui_primitives.h"
@@ -38,7 +37,7 @@ lop_ctx_t lop0={
 // a new byte.
 void onuartrx(uint8_t b){
 	//let lop handle the received byte.
-	status_string[0]='a'+(1+(status_string[0]-'a'))%26;
+	ui_statusstring[0]='a'+(1+(ui_statusstring[0]-'a'))%26;
 	lop_recieve_byte(&lop0,b);
 }
 
@@ -52,38 +51,38 @@ void lop0_sendrawbyte(uint8_t b){
 }
 
 void lop0_messagerx(uint16_t length, uint8_t * msg){
-	status_string[1]='o';
+	ui_statusstring[1]='o';
 	if(length<3){
 		/* DROP */
 		return;
 	}
-	status_string[1]='q';
+	ui_statusstring[1]='q';
 
 	if((msg[0]!=TERMINALUNIT_ID) || (msg[1]!=MASTERUNIT_ID)){
-		status_string[1]='w';
+		ui_statusstring[1]='w';
 		/* DROP */
 		return;
 	}
-	status_string[1]='Q';
+	ui_statusstring[1]='Q';
 	if(msg[2]==MSGID_ACTION_REPLY){
 		if(length<4)
 			return;
-		status_string[1]='O';	
+		ui_statusstring[1]='O';	
 		if(msg[3]==ACTION_ADDUSER){
 			if(length<5)
 				return;
-			status_string[1]='p';	
+			ui_statusstring[1]='p';	
 			if(msg[4]==DONE){
 				if(length!=5+sizeof(authblock_t)){
-					status_string[1]='v';	
+					ui_statusstring[1]='v';	
 					return;
 				}
 				memcpy(&ab, &(msg[5]), sizeof(authblock_t));
 				writeABtoCard(&ab);
-				status_string[2]='X';
+				ui_statusstring[2]='X';
 				return;
 			}
-			status_string[1]='V';	
+			ui_statusstring[1]='V';	
 			
 		}
 	}
@@ -93,7 +92,7 @@ void lop0_messagerx(uint16_t length, uint8_t * msg){
 		}
 		memcpy(&ab, &(msg[3]), sizeof(authblock_t));
 		writeABtoCard(&ab);
-		status_string[3]='X';	
+		ui_statusstring[3]='X';	
 		return;
 	}
 }
@@ -127,7 +126,7 @@ PGM_P gpl_text= PSTR(
 	keypad_init();	
 	ui_primitives_init();
 	lcd_cls();
-	draw_frame(1,1,LCD_WIDTH,LCD_HEIGHT,'*');
+	ui_drawframe(1,1,LCD_WIDTH,LCD_HEIGHT,'*');
 	lcd_gotopos(2,3);
 	lcd_writestr("booting ...");
 	uint8_t i;
@@ -168,7 +167,7 @@ PGM_P gpl_text= PSTR(
 	
 //	lop_dbg_str_P(&lop0,PSTR("\r\nMAIN\r\n"));
 		
-	status_string[0]='a';
+	ui_statusstring[0]='a';
 	
 	while(1){
 		master_menu();

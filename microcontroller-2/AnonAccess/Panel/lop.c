@@ -13,7 +13,6 @@
 #include <stdint.h>
 #include "config.h"
 #include "lop.h"
-#include "interface.h"
 #include "lcd_tools.h"
 
 static void lop_process_l1(lop_ctx_t* ctx, uint8_t b);

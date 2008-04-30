@@ -44,27 +44,29 @@ typedef struct menu_st{
 #define DOWN_KEY   'C'
 #define CORRECT_KEY 'C'
 
+extern char ui_statusstring[6];
 
-void ui_primitives_init(void);
-void print_progressbar(double percent, uint8_t xpos, uint8_t ypos, uint8_t width);
-uint8_t radioselect(const char* opts);
-uint8_t radioselect_P(PGM_P opts);
-void checkselect(const char* opts, uint8_t* config);
-void checkselect_P(PGM_P opts, uint8_t* config);
-void menuexec(menu_t* menu);
-void draw_frame(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, char framechar);
-void ui_hexdump(const void* data, uint16_t length);
-void ui_hexdump_P(PGM_VOID_P data, uint16_t length);
-void ui_textwindow(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, char* text);
-void ui_textwindow_P(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, PGM_P text);
+void    ui_primitives_init(void);
+void    ui_progressbar(double percent, uint8_t xpos, uint8_t ypos, uint8_t width);
+uint8_t ui_radioselect(const char* opts);
+uint8_t ui_radioselect_P(PGM_P opts);
+void    ui_checkselect(const char* opts, uint8_t* config);
+void    ui_checkselect_P(PGM_P opts, uint8_t* config);
+void    ui_menuexec(menu_t* menu);
+void    ui_drawframe(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, char framechar);
+void    ui_hexdump(const void* data, uint16_t length);
+void    ui_hexdump_P(PGM_VOID_P data, uint16_t length);
+void    ui_textwindow(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, char* text);
+void    ui_textwindow_P(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, PGM_P text);
 
-char waitforkeypress(void);
-char waitforkeypresstimed(timestamp_t* tdiff);
-void waitforkey(char key);
+char    ui_waitforkeypress(void);
+char    ui_waitforkeypresstimed(timestamp_t* tdiff);
+void    ui_waitforkey(char key);
 
 uint8_t read_decimaln(uint8_t xpos, uint8_t ypos, char* str, uint8_t n);
 uint8_t read_hexn(uint8_t xpos, uint8_t ypos, char* str, uint8_t n);
 uint8_t read_strn(uint8_t xpos, uint8_t ypos, PGM_P charset,char * str, uint8_t n);
 
+void ui_printstatusline(void);
 
 #endif /*UI_PRIMITIVES_H_*/
