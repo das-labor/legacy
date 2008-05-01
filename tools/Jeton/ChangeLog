@@ -1,5 +1,10 @@
 2008-05-01  Jörg Bornschein <joerg@das-labor.org> 
 
+	* JetonDb/JetonCtrl.cs: Sanitize DbPath handling
+	* JetonDb/Tests/JetonDbTest.cs: Better UnitTests
+
+2008-05-01  Jörg Bornschein <joerg@das-labor.org> 
+
 	
 
 2008-04-29  Jörg Bornschein <joerg@das-labor.org> 

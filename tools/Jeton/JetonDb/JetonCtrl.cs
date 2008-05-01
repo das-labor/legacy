@@ -7,12 +7,25 @@ using Db4objects.Db4o.Query;
 
 namespace JetonDb
 {
+	/// <summary>
+	/// This class encapsulates most operatione (transactions) on the actual 
+	/// database. In terms of MVC, this is ths Controller.
+	/// </summary>
 	public class JetonCtrl
 	{
-		protected static string _dbPath;
 
+
+		/// <value>
+		/// 
+		/// </value>
 		public static string DbPath {
 			get {
+				if (_db != null) {
+					_db.Rollback();
+					_db.Close();
+					_db = null;
+				}
+				
 				if (_dbPath == null)
 					_dbPath = System.Environment.GetEnvironmentVariable("JETON_DB");
 				
@@ -27,12 +40,11 @@ namespace JetonDb
 				_dbPath = value;
 			}
 		}
+		private static string _dbPath;		
 		
-		
-		
-		
-		protected static IObjectContainer _db;
-		
+		/// <value>
+		///  Actual connection to the Db4O Database Backend 
+		/// </value>
 		public static IObjectContainer Db {
 			get {
 				if (_db == null) {
@@ -45,7 +57,8 @@ namespace JetonDb
 				_db = value;
 			}
 		}
-
+		private static IObjectContainer _db;
+		
 		
 		///////////////////////////////////////////////////////////
 		
@@ -104,6 +117,5 @@ namespace JetonDb
 		public static void RelieveEscrow(Person p, decimal val)
 		{
 		}
-
 	}
 }
