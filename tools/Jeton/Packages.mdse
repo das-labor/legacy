@@ -1,0 +1,22 @@
+<CombineEntry name="Packages" fileversion="2.0" ctype="PackagingProject">
+  <Packages>
+    <Package name="Linux Binaries">
+      <Builder rootEntry="Jeton.mds" targetFile="jeton.tar.gz" platform="Linux" ctype="BinariesZipPackageBuilder">
+        <ChildEntries>
+          <Entry>Jeton/Jeton.mdp</Entry>
+          <Entry>JetonDb/JetonDb.mdp</Entry>
+          <Entry>JetonAdmin/JetonAdmin.mdp</Entry>
+        </ChildEntries>
+      </Builder>
+    </Package>
+    <Package name="Tarball">
+      <Builder rootEntry="Jeton.mds" TargetDirectory="/home/joerg/src/labor-svn/tools/Jeton" DefaultConfiguration="Release" ctype="TarballDeployTarget">
+        <ChildEntries>
+          <Entry>JetonDb/JetonDb.mdp</Entry>
+          <Entry>JetonAdmin/JetonAdmin.mdp</Entry>
+          <Entry>Jeton/Jeton.mdp</Entry>
+        </ChildEntries>
+      </Builder>
+    </Package>
+  </Packages>
+</CombineEntry>

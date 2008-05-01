@@ -1,0 +1,19 @@
+2008-05-01  Jörg Bornschein <joerg@das-labor.org> 
+
+	
+
+2008-04-29  Jörg Bornschein <joerg@das-labor.org> 
+
+	
+
+2008-04-29   <> 
+
+	* schubser-db/schubser-db.mdp, saftschubser.mds: Minor cleanup
+
+2008-04-29  Joerg Bornschein <joerg@das-labor.org> 
+
+	* ArtikelTest.cs, Tests/ArtikelTest.cs: Move unit tests into seperate
+	  directory
+	* PersonDB.cs, Person.cs: Initial structure for Person database
+	* SaftSchubserDb.cs: Minor cleanup
+
