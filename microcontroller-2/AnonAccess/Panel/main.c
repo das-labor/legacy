@@ -26,6 +26,7 @@
 #include "24C04.h"
 #include "cardio.h"
 #include "ui_primitives.h"
+#include "logs.h"
 
 lop_ctx_t lop0={
 	idle, idle, idle, 0, 0, NULL, 0, 
@@ -101,93 +102,74 @@ void lop0_streamrx(uint8_t b){
 	
 }
 
-
-
 int main(void){
-	ui_loglist_t log;
-	ui_loginit(&log,12);
 	
-PGM_P gpl_text= PSTR(
-    "Copyright (C) 2008 \007 Daniel Otte\n"
-    "\n"
-    "This program is free software: you can redistribute it and/or modify\n"
-    "it under the terms of the GNU General Public License as published by\n"
-    "the Free Software Foundation, either version 3 of the License, or\n"
-    "(at your option) any later version.\n"
-    "\n"
-    "This program is distributed in the hope that it will be useful,\n"
-    "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-    "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-    "GNU General Public License for more details.\n"
-    "\n"
-    "You should have received a copy of the GNU General Public License\n"
-    "along with this program.  If not, see <http://www.gnu.org/licenses/>.");
-    
 	//Initialisierung
-	 ui_logappend(&log, PSTR("lcd init"), flash_st, processing_st);
-	lcd_init();
-	 ui_logchangelaststate(&log, success_st);
-	 //---
-	 ui_logappend(&log, PSTR("keypad init"), flash_st, processing_st);
-	keypad_init();	
-	 ui_logchangelaststate(&log, success_st);
-	//---
-	 ui_logappend(&log, PSTR("user interface init"), flash_st, processing_st);
-	ui_primitives_init();
-	 ui_logchangelaststate(&log, success_st);
-	//---
-	lcd_cls();
-	 ui_logappend(&log, PSTR("bla"), flash_st, informative_st);
-	 ui_logappend(&log, PSTR("blub"), flash_st, informative_st);
-	 ui_logappend(&log, PSTR("foo"), flash_st, informative_st);
-	 ui_logappend(&log, PSTR("bar"), flash_st, informative_st);
-	 ui_logappend(&log, PSTR("foobar"), flash_st, informative_st);
+	init_logs();
 	
-	ui_logprint(1,1,LCD_WIDTH,LCD_HEIGHT, &log);
-	ui_waitforkey('E');
-	ui_logreader(1,1,LCD_WIDTH, LCD_HEIGHT, &log);
+	BOOTLOG_APPEND_P("LCD init");
+	lcd_init();
+	BOOTLOG_APPEND_OK;
+	 //---
+	BOOTLOG_APPEND_P("Keypad init");
+	keypad_init();	
+	BOOTLOG_APPEND_OK;
+	 //---
+	BOOTLOG_APPEND_P("UI init");
+	ui_primitives_init();
+	BOOTLOG_APPEND_OK;
+	//---
 	ui_drawframe(1,1,LCD_WIDTH,LCD_HEIGHT,'*');
 	lcd_gotopos(2,3);
 	lcd_writestr("booting ...");
-	uint8_t i;
-	for(i=0; i<255; ++i){
-//		print_progressbar(i/255.0, 2, 3, LCD_WIDTH-2);
-//		_delay_ms(10);
-	}
-//	lcd_cls();
-//	radioselect("anon\0not anon\0");
-//	radioselect_P(PSTR("bla\0blub\0foo\0bar\0foobar\0"));
-//	checkselect_P(PSTR("A\0B\0C\0D\0E\0F\0G\0H\0"),(uint8_t*)"\0");
-//	ui_hexdump("bla", 57);
-	ui_textwindow_P(1,1,LCD_WIDTH,LCD_HEIGHT, gpl_text);
+	
+	BOOTLOG_APPEND_P("Reset counter++");
 	resetcnt_inc();
+	BOOTLOG_APPEND_OK;
+	
+	BOOTLOG_APPEND_P("UART init");
 	uart_init();
 	uart_putc(XON);
+	BOOTLOG_APPEND_OK;
+	
+	BOOTLOG_APPEND_P("SPI init");
 	spi_init();
+	BOOTLOG_APPEND_OK;
+	
+	BOOTLOG_APPEND_P("RTC init");
+	rtc_init();
+ 	BOOTLOG_APPEND_OK;
+	
+ 	BOOTLOG_APPEND_P("PRNG init");
+	prng_init();
+ 	BOOTLOG_APPEND_OK;
+	
+	BOOTLOG_APPEND_P("I2C init");
 	i2c_init();
-	E24C04_init();
-  //  E24C_init();
- 	rtc_init();
- 	prng_init();
- 	DDRC = 0xF0;
+	i2c_set_speed(I2C_SPEED_FASTEST);
+	DDRC = 0xF0;	
+	BOOTLOG_APPEND_OK;
+	
  //	PORTC|= 0xF0;
  
 	//Set I2C SPEED 
-	i2c_set_speed(I2C_SPEED_FASTEST);
 	
 	//set handlers for the outputs from lop
+	BOOTLOG_APPEND_P("LOP init");
 	lop0.on_streamrx = lop0_streamrx;
 	lop0.sendrawbyte = lop0_sendrawbyte;
 	lop0.on_streamsync = lop0_streamsync;
 	lop0.on_msgrx = lop0_messagerx;
 	uart_hook = onuartrx;
 	lop_recieve_byte(&lop0, LOP_RESET_CODE);
+	BOOTLOG_APPEND_OK;
 	//Interupts global aktivieren
 	sei();
 	
 //	lop_dbg_str_P(&lop0,PSTR("\r\nMAIN\r\n"));
 		
-	ui_statusstring[0]='a';
+//	ui_logreader(1,1,LCD_WIDTH,LCD_HEIGHT, &log);
+//	ui_textwindow_P(1,1,LCD_WIDTH,LCD_HEIGHT, gpl_text);
 	
 	while(1){
 		master_menu();

@@ -86,6 +86,9 @@ uint8_t read_strn(uint8_t xpos, uint8_t ypos, PGM_P charset,char * str, uint8_t 
 
 void    ui_printstatusline(void);
 
+void lcd_writeB64(void* data, uint16_t length);
+void lcd_writelinen(const char* text, uint16_t length);
+void lcd_writelinen_P(PGM_P text, uint16_t length);
 
 void    ui_loginit(ui_loglist_t* log, uint8_t size);
 void    ui_logrm(ui_loglist_t* log);
