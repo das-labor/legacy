@@ -4,11 +4,12 @@ PRG	    = panel
 OBJ	    = keys.o main.o lcd_tools.o keypad.o spi.o menu.o 24Cxxx.o \
   i2c.o i2c_tools.o prng.o sha256-asm.o hmac-sha256.o rtc.o hwrnd.o base64_enc.o \
   reset_counter.o lop.o lop_debug.o comm.o 24C04.o cardio.o uart.o ui_primitives.o \
-  dbz_strings.o hexdigit_tab.o extrachars.o keypad_charset.o ui_tests.o
+  dbz_strings.o hexdigit_tab.o extrachars.o keypad_charset.o ui_tests.o logs.o
 MCU_TARGET     = atmega644
+FLASH_SIZE     = 65536L
 OPTIMIZE       = -Os -mno-tablejump
 DEBUG	   = -gstabs
-DEFS	   = -D$(call uc,$(MCU_TARGET))
+DEFS	   = -D$(call uc,$(MCU_TARGET)) -DFLASH_SIZE=$(FLASH_SIZE)
 LIBS	   =
 
 # You should not have to change anything below here.
@@ -18,7 +19,7 @@ CC	     = avr-gcc
 # Override is only needed by avr-lib build system.
 
 override LDFLAGS       = -Wl,-Map,$(PRG).map
-override CFLAGS        = -g -pedantic -std=gnu99 -Wall -Wstrict-prototypes $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -morder1
+override CFLAGS        = -MMD -g -pedantic -std=gnu99 -Wall -Wstrict-prototypes $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -morder1
 # -fnew-ra
 override LDFLAGS       = -Wl,-Map,$(PRG).map
 override ASFLAGS	   = -mmcu=$(MCU_TARGET)
@@ -108,3 +109,9 @@ pdf: $(PRG).pdf
 
 %.png: %.fig
 	$(FIG2DEV) -L png $< $@
+
+DEPS := $(wildcard *.d)
+ifneq ($(DEPS),)
+include $(DEPS)
+endif
+

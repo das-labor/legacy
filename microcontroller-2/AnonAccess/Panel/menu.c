@@ -16,6 +16,7 @@
 #include "cardio.h"
 #include "keypad_charset.h"
 #include "ui_tests.h"
+#include "logs.h"
 #include <stdint.h>
 #include <util/delay.h>
 
@@ -237,6 +238,12 @@ void view_authblock(void){
 /******************************************************************************/
 /******************************************************************************/
 
+void read_logs(void){
+	ui_loglist_t* tab[]={&bootlog, &syslog, &seclog};
+	ui_logreader(1,1,LCD_WIDTH,LCD_HEIGHT, 
+	    tab[ui_radioselect_P(1,2,LCD_WIDTH, 3, PSTR("bootlog\0syslog\0seclog\0"))]);
+}
+
 /******************************************************************************/
 
 const char main_menu_PS[]      PROGMEM = "main menu";
@@ -247,21 +254,18 @@ const char timestamp_live_PS[]      PROGMEM = "timestamp (live)";
 const char timestamp_base64_PS[]    PROGMEM = "timestamp (B64)";
 const char timestamp_base64_live_PS[]      PROGMEM = "timestamp (l,B64)";
 const char random_PS[]         PROGMEM = "random (30)";
-const char get_name_PS[]       PROGMEM = "get name";
-const char get_hex_string_PS[] PROGMEM = "get hex string";
 const char dump_card_PS[] PROGMEM = "dump ICC";
 const char write_card_PS[] PROGMEM = "AB -> ICC";
-const char display_analysis_PS[] PROGMEM = "display analysis";
 const char read_flash_PS[] PROGMEM = "read flash";
-const char enter_dec_PS[] PROGMEM = "enter decimal";
-const char enter_hex_PS[] PROGMEM = "enter hexadecimal";
+const char read_logs_PS[] PROGMEM = "read logs";
+const char ui_tests_PS[] PROGMEM = "UI tests";
 
 
 menu_t debug_menu_mt[] = {
 	{main_menu_PS, back, (superp)NULL},
+	{read_logs_PS, execute, (superp)read_logs},
 	{read_flash_PS, execute, (superp)read_flash},
-	{enter_dec_PS, execute, (superp)read_decimal},
-	{enter_hex_PS, execute, (superp)read_hex},
+	{ui_tests_PS, autosubmenu, (superp)ui_test_menu_mt},
 	{serial_test_PS, execute, (superp)run_serial_test},
 	{reset_PS, execute, (superp)print_resets},
 	{timestamp_PS, execute, (superp)print_timestamp},
@@ -269,10 +273,8 @@ menu_t debug_menu_mt[] = {
 	{timestamp_base64_PS, execute, (superp)print_timestamp_base64},
 	{timestamp_base64_live_PS, execute, (superp)print_timestamp_base64_live},
 	{random_PS, execute, (superp)print_random},
-	{get_name_PS, execute, (superp)demo_getname},
 	{dump_card_PS, execute, (superp)dump_card},
 	{write_card_PS, execute, (superp)write_card},
-	{display_analysis_PS, execute, (superp)display_analysis},
 	{NULL, terminator, (superp)NULL}
 };
 
@@ -330,16 +332,7 @@ void print_resets(void){
 	lcd_hexdump(&t,8);
 	ui_waitforkey('E');
 }
-/*
-void bootstrap_menu(void){
-	menuexec(bootstrap_menu_mt);
-}
-*/
-/*
-void debug_menu(void){
-	menuexec(debug_menu_mt);
-}
-*/
+
 void master_menu(void){
 	ui_menuexec(main_menu_mt);
 }
@@ -363,36 +356,31 @@ void print_timestamp_live(void){
 	}
 	while(read_keypad()=='E')
 		;
-	_delay_ms(1);
+	_delay_ms(10);
 }
 
 void print_timestamp_base64(void){
 	timestamp_t t;
-	char str[(sizeof(timestamp_t)+2)/3*4+1]; /* should make 13 */
 	
 	t = gettimestamp();
-	base64enc(str,&t,sizeof(timestamp_t));
 	ui_printstatusline();
 	lcd_gotopos(2,1);
-	lcd_writestr(str);
+	lcd_writeB64(&t, 8);
 	ui_waitforkey('E');
 }
 
 void print_timestamp_base64_live(void){
 	timestamp_t t;
-	char str[(sizeof(timestamp_t)+2)/3*4+1]; /* should make 13 */
 	ui_printstatusline();	
 	while(read_keypad()!='E'){
 		t = gettimestamp();
-		base64enc(str,&t,sizeof(timestamp_t));
-//		str[((sizeof(timestamp_t)*8)+5)/6] = '\0';
-
 		lcd_gotopos(2,1);
-		lcd_writestr(str);
+		lcd_writeB64(&t, 8);
 	}
 	while(read_keypad()=='E')
 		;
-	_delay_ms(1);
+	_delay_ms(10);
+	
 }
 
 void print_random(void){
