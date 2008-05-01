@@ -104,7 +104,9 @@ void lop0_streamrx(uint8_t b){
 
 
 int main(void){
-
+	ui_loglist_t log;
+	ui_loginit(&log,12);
+	
 PGM_P gpl_text= PSTR(
     "Copyright (C) 2008 \007 Daniel Otte\n"
     "\n"
@@ -122,10 +124,28 @@ PGM_P gpl_text= PSTR(
     "along with this program.  If not, see <http://www.gnu.org/licenses/>.");
     
 	//Initialisierung
+	 ui_logappend(&log, PSTR("lcd init"), flash_st, processing_st);
 	lcd_init();
+	 ui_logchangelaststate(&log, success_st);
+	 //---
+	 ui_logappend(&log, PSTR("keypad init"), flash_st, processing_st);
 	keypad_init();	
+	 ui_logchangelaststate(&log, success_st);
+	//---
+	 ui_logappend(&log, PSTR("user interface init"), flash_st, processing_st);
 	ui_primitives_init();
+	 ui_logchangelaststate(&log, success_st);
+	//---
 	lcd_cls();
+	 ui_logappend(&log, PSTR("bla"), flash_st, informative_st);
+	 ui_logappend(&log, PSTR("blub"), flash_st, informative_st);
+	 ui_logappend(&log, PSTR("foo"), flash_st, informative_st);
+	 ui_logappend(&log, PSTR("bar"), flash_st, informative_st);
+	 ui_logappend(&log, PSTR("foobar"), flash_st, informative_st);
+	
+	ui_logprint(1,1,LCD_WIDTH,LCD_HEIGHT, &log);
+	ui_waitforkey('E');
+	ui_logreader(1,1,LCD_WIDTH, LCD_HEIGHT, &log);
 	ui_drawframe(1,1,LCD_WIDTH,LCD_HEIGHT,'*');
 	lcd_gotopos(2,3);
 	lcd_writestr("booting ...");

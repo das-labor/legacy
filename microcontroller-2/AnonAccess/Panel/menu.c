@@ -15,6 +15,7 @@
 #include "24C04.h"
 #include "cardio.h"
 #include "keypad_charset.h"
+#include "ui_tests.h"
 #include <stdint.h>
 #include <util/delay.h>
 
@@ -45,17 +46,6 @@ void display_analysis(void);
 
 /******************************************************************************/
 
-
-void demo_getname(void){
-	char name[11];
-	ui_printstatusline();
-	lcd_gotopos(2,1);
-	lcd_writestr_P(PSTR("name:"));
-	read_strn(1, 3, alphanum_cs, name, 10);
-	lcd_gotopos(4,1);
-	lcd_writestr(name);
-	ui_waitforkey('E');
-}
 
 #include "uart.h"
 
@@ -246,32 +236,6 @@ void view_authblock(void){
 
 /******************************************************************************/
 /******************************************************************************/
-
-void read_flash(void){
-	ui_hexdump_P(0,1024);
-}
-
-void read_decimal(void){
-	char str[9];
-	lcd_cls();
-	lcd_gotopos(1,1);
-	lcd_writestr_P(PSTR("Enter number:"));
-	read_decimaln(1,2,str,8);
-	lcd_gotopos(3,1);
-	lcd_writestr(str);
-	ui_waitforkeypress();
-}
-
-void read_hex(void){
-	char str[9];
-	lcd_cls();
-	lcd_gotopos(1,1);
-	lcd_writestr_P(PSTR("Enter hexnumber:"));
-	read_hexn(1,2,str,8);
-	lcd_gotopos(3,1);
-	lcd_writestr(str);
-	ui_waitforkeypress();
-}
 
 /******************************************************************************/
 
@@ -478,34 +442,6 @@ void dump_card(void){
 void write_card(void){
 	writeABtoCard(&ab);
 }
-
-void display_analysis(void){
-	uint16_t offset=0,i;
-	char c;
-	lcd_cls();
-	lcd_gotopos(1,1);
-	lcd_writestr_P(PSTR("-=display analysis=-"));
-	lcd_gotopos(2,2);
-	lcd_writestr_P(PSTR("position:"));
-	while((c=read_keypad())!='C'){
-		switch (c){
-			case '0': if(offset>0) --offset; break;
-			case '3': if(offset<256-LCD_WIDTH) ++offset; break;
-			default: break;
-		}
-		if(c!=' '){
-			lcd_gotopos(3,4);
-			lcd_hexdump(&offset, 1);
-			lcd_gotopos(4,1);
-			for(i=offset; i<offset+LCD_WIDTH; ++i){
-				lcd_writechar((char)i);
-			}
-			_delay_ms(3);
-		}
-	}
-}
-
-
 
 
 

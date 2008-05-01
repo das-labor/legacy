@@ -19,7 +19,7 @@ const char alphanum_cs[] PROGMEM =
 
 const char alphanumext_cs[] PROGMEM = 
 	"0 +-*/=\0"
-	"1\\?!\"|<>\0"
+	"1\\?!\"|\0"
 	"ABCabc2\0"
 	"DEFdef3\0"
 	"GHIghi4\0"
@@ -28,7 +28,7 @@ const char alphanumext_cs[] PROGMEM =
 	"PQRSpqrs7\0"
 	"TUVtuv8\0"
 	"XYZxyz9\0"
-	"(){}[]\0" /* A */
+	"(){}[]<>\0" /* A */
 	".:;,\0";  /* B */
 
 
