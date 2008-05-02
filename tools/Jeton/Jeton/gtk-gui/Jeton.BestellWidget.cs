@@ -47,7 +47,6 @@ namespace Jeton {
             // Container child eventBox.Gtk.Container+ContainerChild
             this.GtkAlignment2 = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.GtkAlignment2.Name = "GtkAlignment2";
-            this.GtkAlignment2.LeftPadding = ((uint)(12));
             this.GtkAlignment2.RightPadding = ((uint)(12));
             this.GtkAlignment2.BottomPadding = ((uint)(12));
             // Container child GtkAlignment2.Gtk.Container+ContainerChild
