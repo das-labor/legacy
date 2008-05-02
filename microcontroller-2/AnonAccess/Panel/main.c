@@ -65,6 +65,12 @@ void lop0_messagerx(uint16_t length, uint8_t * msg){
 		return;
 	}
 	ui_statusstring[1]='Q';
+	if(msg_wait){	/* there is a blocking reques for a message */
+		msg_data=malloc(length);
+		memcpy(msg_data, msg, length);
+		msg_wait=0;
+		return;
+	}
 	if(msg[2]==MSGID_ACTION_REPLY){
 		if(length<4)
 			return;
@@ -79,7 +85,7 @@ void lop0_messagerx(uint16_t length, uint8_t * msg){
 					return;
 				}
 				memcpy(&ab, &(msg[5]), sizeof(authblock_t));
-				writeABtoCard(&ab);
+				card_writeAB(&ab);
 				ui_statusstring[2]='X';
 				return;
 			}
@@ -92,7 +98,7 @@ void lop0_messagerx(uint16_t length, uint8_t * msg){
 			return;
 		}
 		memcpy(&ab, &(msg[3]), sizeof(authblock_t));
-		writeABtoCard(&ab);
+		card_writeAB(&ab);
 		ui_statusstring[3]='X';	
 		return;
 	}
@@ -172,7 +178,7 @@ int main(void){
 //	ui_textwindow_P(1,1,LCD_WIDTH,LCD_HEIGHT, gpl_text);
 	
 	while(1){
-		master_menu();
+		ui_menuexec(main_menu_mt);
 	}
 	
 	return 0;

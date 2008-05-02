@@ -2,6 +2,7 @@
 #include "lcd_tools.h"
 #include "uart.h"
 #include "menu.h"
+#include "sha256.h"
 #include "keypad.h"
 #include "ui_primitives.h"
 #include "rtc.h"
@@ -26,29 +27,19 @@ authblock_t ab;
 
 /******************************************************************************/
 
-void open_door(void);
-void lock_door(void);
-void admin_menu(void);
-void stat_menu(void);
-void bootstrap_menu(void);
-void debug_menu(void);
-
-void print_resets(void);
-void print_timestamp(void);
-void print_timestamp_live(void);
-void print_timestamp_base64(void);
-void print_timestamp_base64_live(void);
-void run_serial_test(void);
-void print_random(void);
-void dump_card(void);
-void write_card(void);
-void display_analysis(void);
-
-
 /******************************************************************************/
 
 
 #include "uart.h"
+
+#ifndef MIN
+ #define MIN(a,b) (((a)<(b))?(a):(b))
+#endif
+
+#ifndef MAX
+ #define MAX(a,b) (((a)>(b))?(a):(b))
+#endif
+
 
 #define TIMEOUT_VAL 1000
 
@@ -151,16 +142,70 @@ void run_serial_test(void){
 	uart_hook = backup;
 }
 
+void error_display(PGM_P str){
+	lcd_cls();
+	ui_drawframe(1,1,LCD_WIDTH, LCD_HEIGHT, '#');
+	lcd_gotopos(2,3);
+	lcd_writestr_P(str);
+	ui_waitforkey('F');
+	return;
+}
 
+#define PIN_MAX_LEN  16
+#define NAME_MAX_LEN 12
+
+void getandsubmitpin(void){
+	char pin_str[PIN_MAX_LEN+1];	
+	uint8_t l;
+	
+	lcd_cls();
+	ui_drawframe(1,1,LCD_WIDTH, LCD_HEIGHT, '*');
+	lcd_gotopos(2,3);
+	lcd_writestr_P(PSTR("please enter PIN:"));
+	lcd_gotopos(2,3);
+	l=read_pinn(3,3, '*', pin_str, PIN_MAX_LEN);
+	submit_pin(pin_str, l);
+}
 
 void req_authblock(void){
-	char name[12];
+	char name[NAME_MAX_LEN+1];
+	char pin[PIN_MAX_LEN+1];
+	char pincheck[PIN_MAX_LEN+1];
+	uint8_t pl, plc;
+	uint8_t anon;
+	uint8_t pinflags=0;
+	
 	ui_printstatusline();
 	init_session();
 	lcd_gotopos(2,1);
 	lcd_writestr_P(PSTR("name:"));
-	read_strn(1,3,alphanum_cs, name,10);
-	req_bootab(name, 0);
+	read_strn(1,3,alphanum_cs, name,NAME_MAX_LEN);
+	do{
+		lcd_cls();
+		ui_drawframe(1,1,LCD_WIDTH, LCD_HEIGHT, '*');
+		lcd_gotopos(2,3);
+		lcd_writestr_P(PSTR("please enter PIN:"));
+		lcd_gotopos(2,3);
+		pl=read_pinn(3,3, '*', pin, PIN_MAX_LEN);
+		/***/
+		lcd_cls();
+		ui_drawframe(1,1,LCD_WIDTH, LCD_HEIGHT, '*');
+		lcd_gotopos(2,3);
+		lcd_writestr_P(PSTR("please confirm PIN:"));
+		lcd_gotopos(2,3);
+		plc=read_pinn(3,3, '*', pincheck, PIN_MAX_LEN);
+	}while(pl!=plc || !memcmp(pin, pincheck, MIN(pl, plc)));
+	
+	lcd_cls();
+	anon=1^ui_radioselect_P(2,2,LCD_WIDTH-1,2,PSTR("anon\0not anon\0"));
+	
+	lcd_cls();
+	lcd_gotopos(1,1);
+	lcd_writestr_P(PSTR("select pinr requirement:"));
+	ui_checkselect_P(2,2,LCD_WIDTH-1, LCD_HEIGHT-1, 
+		PSTR("admin tasks\0normal tasks\0"),&pinflags);
+	
+	req_bootab(name, pin, pl, anon, pinflags);
 	ui_statusstring[4]='~';
 }
 
@@ -245,77 +290,87 @@ void read_logs(void){
 }
 
 /******************************************************************************/
-
-const char main_menu_PS[]      PROGMEM = "main menu";
-const char serial_test_PS[]    PROGMEM = "test serial loop";
-const char reset_PS[]          PROGMEM = "print resets";
-const char timestamp_PS[]      PROGMEM = "timestamp";
-const char timestamp_live_PS[]      PROGMEM = "timestamp (live)";
-const char timestamp_base64_PS[]    PROGMEM = "timestamp (B64)";
-const char timestamp_base64_live_PS[]      PROGMEM = "timestamp (l,B64)";
-const char random_PS[]         PROGMEM = "random (30)";
-const char dump_card_PS[] PROGMEM = "dump ICC";
-const char write_card_PS[] PROGMEM = "AB -> ICC";
-const char read_flash_PS[] PROGMEM = "read flash";
-const char read_logs_PS[] PROGMEM = "read logs";
-const char ui_tests_PS[] PROGMEM = "UI tests";
-
-
-menu_t debug_menu_mt[] = {
-	{main_menu_PS, back, (superp)NULL},
-	{read_logs_PS, execute, (superp)read_logs},
-	{read_flash_PS, execute, (superp)read_flash},
-	{ui_tests_PS, autosubmenu, (superp)ui_test_menu_mt},
-	{serial_test_PS, execute, (superp)run_serial_test},
-	{reset_PS, execute, (superp)print_resets},
-	{timestamp_PS, execute, (superp)print_timestamp},
-	{timestamp_live_PS, execute, (superp)print_timestamp_live},
-	{timestamp_base64_PS, execute, (superp)print_timestamp_base64},
-	{timestamp_base64_live_PS, execute, (superp)print_timestamp_base64_live},
-	{random_PS, execute, (superp)print_random},
-	{dump_card_PS, execute, (superp)dump_card},
-	{write_card_PS, execute, (superp)write_card},
-	{NULL, terminator, (superp)NULL}
-};
-
-/******************************************************************************/
-
-const char req_AB_PS[]    PROGMEM = "request AB";
-const char view_AB_PS[]   PROGMEM = "view AB";
-
-menu_t bootstrap_menu_mt[] = {
-	{main_menu_PS, back, (superp)NULL},
-	{req_AB_PS, execute, (superp)req_authblock},
-	{view_AB_PS, execute, (superp)view_authblock},
-	{NULL, terminator, (superp)NULL}
-};
-
-const char open_door_PS[]      PROGMEM = "open door";
-const char lock_door_PS[]      PROGMEM = "lock door";
-const char admin_menu_PS[]     PROGMEM = "admin menu";
-const char statistic_menu_PS[] PROGMEM = "statistic menu";
-const char bootstrap_menu_PS[] PROGMEM = "bootstrap menu";
-const char debug_menu_PS[]     PROGMEM = "debug menu";
-menu_t main_menu_mt[] = {
-	{open_door_PS,execute, (superp)open_door},
-	{lock_door_PS,execute, (superp)lock_door},
-	{admin_menu_PS,submenu, (superp)admin_menu},
-	{statistic_menu_PS,submenu, (superp)stat_menu},
-	{bootstrap_menu_PS,autosubmenu, (superp)bootstrap_menu_mt},
-	{debug_menu_PS,autosubmenu, (superp)debug_menu_mt},
-	{NULL, terminator, (superp)NULL}
-};
-
 /******************************************************************************/
 /******************************************************************************/
 
 void open_door(void){
+	if(!card_inserated()){
+		lcd_cls();
+		ui_drawframe(1,1,LCD_WIDTH, LCD_HEIGHT, '*');
+		lcd_gotopos(2,2);
+		lcd_writestr_P(PSTR("please insert card"));
+		while(!card_inserated())
+			;
+	}
+	if(card_readAB(&ab)==false){
+		error_display(PSTR("card read error!"));
+		return;
+	}
 	init_session();
 	submit_ab(&ab);
+	if(waitformessage(1000)){
+		error_display(PSTR("communication timeout!"));
+		return;
+	}
+	if(getmsgid(msg_data)==MSGID_AB_PINREQ){
+		freemsg();
+		getandsubmitpin();
+		if(waitformessage(1000)){
+			error_display(PSTR("communication timeout!"));
+			return;
+		}
+	}
+	if(getmsgid(msg_data)==MSGID_AB_ERROR){
+		freemsg();
+		error_display(PSTR("AB ERROR!"));
+		return;
+	}
+	if((getmsgid(msg_data)!=MSGID_AB_REPLY) || (msg_length!=3+sizeof(authblock_t))){
+		freemsg();
+		error_display(PSTR("AB strange ERROR!"));
+		return;
+	}
+	card_writeAB((authblock_t*)((uint8_t*)msg_data+3));
+	freemsg();
 	send_mainopen();
+	if(waitformessage(1000)){
+		error_display(PSTR("communication timeout!"));
+		return;
+	}
+	if(getmsgid(msg_data)==MSGID_ACTION_REPLY && 
+	   msg_length==6 && ((uint8_t*)msg_data)[4]==ACTION_MAINOPEN){
+		lcd_cls();
+		lcd_gotopos(2,2);
+		lcd_writestr_P(PSTR("door "));
+		if(((uint8_t*)msg_data)[5]==NOTDONE)
+			lcd_writestr_P(PSTR("NOT "));
+		lcd_writestr_P(PSTR("opening!"));
+		uint16_t i=3000;
+		while(i--)
+			_delay_ms(1);
+		freemsg();
+		return;
+	}
+	freemsg();
 }
 
 void lock_door(void){
+	if(!card_inserated()){
+		lcd_cls();
+		ui_drawframe(1,1,LCD_WIDTH, LCD_HEIGHT, '*');
+		lcd_gotopos(2,2);
+		lcd_writestr_P(PSTR("please insert card"));
+		while(!card_inserated())
+			;
+	}
+	if(card_readAB(&ab)==false){
+		lcd_cls();
+		ui_drawframe(1,1,LCD_WIDTH, LCD_HEIGHT, '#');
+		lcd_gotopos(2,3);
+		lcd_writestr_P(PSTR("card read error!"));
+		ui_waitforkey('F');
+		return;
+	}
 	init_session();
 	submit_ab(&ab);
 	send_mainclose();
@@ -331,10 +386,6 @@ void print_resets(void){
 	lcd_gotopos(2,1);
 	lcd_hexdump(&t,8);
 	ui_waitforkey('E');
-}
-
-void master_menu(void){
-	ui_menuexec(main_menu_mt);
 }
 
 void print_timestamp(void){
@@ -428,10 +479,72 @@ void dump_card(void){
 }
 
 void write_card(void){
-	writeABtoCard(&ab);
+	card_writeAB(&ab);
 }
 
+/******************************************************************************/
+/* MENUS                                                                      */
+/******************************************************************************/
 
 
+const char main_menu_PS[]      PROGMEM = "main menu";
+const char serial_test_PS[]    PROGMEM = "test serial loop";
+const char reset_PS[]          PROGMEM = "print resets";
+const char timestamp_PS[]      PROGMEM = "timestamp";
+const char timestamp_live_PS[]      PROGMEM = "timestamp (live)";
+const char timestamp_base64_PS[]    PROGMEM = "timestamp (B64)";
+const char timestamp_base64_live_PS[]      PROGMEM = "timestamp (l,B64)";
+const char random_PS[]         PROGMEM = "random (30)";
+const char dump_card_PS[] PROGMEM = "dump ICC";
+const char write_card_PS[] PROGMEM = "AB -> ICC";
+const char read_flash_PS[] PROGMEM = "read flash";
+const char read_logs_PS[] PROGMEM = "read logs";
+const char ui_tests_PS[] PROGMEM = "UI tests";
+
+
+menu_t debug_menu_mt[] = {
+	{main_menu_PS, back, (superp)NULL},
+	{read_logs_PS, execute, (superp)read_logs},
+	{read_flash_PS, execute, (superp)read_flash},
+	{ui_tests_PS, autosubmenu, (superp)ui_test_menu_mt},
+	{serial_test_PS, execute, (superp)run_serial_test},
+	{reset_PS, execute, (superp)print_resets},
+	{timestamp_PS, execute, (superp)print_timestamp},
+	{timestamp_live_PS, execute, (superp)print_timestamp_live},
+	{timestamp_base64_PS, execute, (superp)print_timestamp_base64},
+	{timestamp_base64_live_PS, execute, (superp)print_timestamp_base64_live},
+	{random_PS, execute, (superp)print_random},
+	{dump_card_PS, execute, (superp)dump_card},
+	{write_card_PS, execute, (superp)write_card},
+	{NULL, terminator, (superp)NULL}
+};
+
+/******************************************************************************/
+
+const char req_AB_PS[]    PROGMEM = "request AB";
+const char view_AB_PS[]   PROGMEM = "view AB";
+
+menu_t bootstrap_menu_mt[] = {
+	{main_menu_PS, back, (superp)NULL},
+	{req_AB_PS, execute, (superp)req_authblock},
+	{view_AB_PS, execute, (superp)view_authblock},
+	{NULL, terminator, (superp)NULL}
+};
+
+const char open_door_PS[]      PROGMEM = "open door";
+const char lock_door_PS[]      PROGMEM = "lock door";
+const char admin_menu_PS[]     PROGMEM = "admin menu";
+const char statistic_menu_PS[] PROGMEM = "statistic menu";
+const char bootstrap_menu_PS[] PROGMEM = "bootstrap menu";
+const char debug_menu_PS[]     PROGMEM = "debug menu";
+menu_t main_menu_mt[] = {
+	{open_door_PS,execute, (superp)open_door},
+	{lock_door_PS,execute, (superp)lock_door},
+	{admin_menu_PS,submenu, (superp)admin_menu},
+	{statistic_menu_PS,submenu, (superp)stat_menu},
+	{bootstrap_menu_PS,autosubmenu, (superp)bootstrap_menu_mt},
+	{debug_menu_PS,autosubmenu, (superp)debug_menu_mt},
+	{NULL, terminator, (superp)NULL}
+};
 
 

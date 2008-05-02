@@ -10,9 +10,16 @@
 #include <avr/eeprom.h>
 #include "keys.h"
 #include <avr/io.h>
+#include "i2c_printer.h"
 
+/*
 #define DS(a)   uart_putstr_P(PSTR(a))
 #define DD(a,b) uart_hexdump((a),(b))
+*/
+#define DS(a) {uart_putstr_P(PSTR(a)); printer_str_P(PSTR(a));} 
+#define DC(a) {uart_putc(a); printer_char(a);} 
+#define DD(a,b) {uart_hexdump((a),(b)); printer_hexdump((a),(b));} 
+
 
 /******************************************************************************/
 void door_init(void){

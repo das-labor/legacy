@@ -13,22 +13,6 @@
 #include <stdint.h>
 #include "lop.h"
 
-#define LOP_ESC_CODE		0x05
-#define LOP_RESET_CODE		0x06
-#define LOP_XON_CODE		0x11
-#define LOP_XOFF_CODE		0x13
-
-#define LOP_RESET_ESC		0x01
-#define LOP_ESC_ESC			0x02
-#define LOP_XON_ESC			0x03
-#define LOP_XOFF_ESC		0x04
-
-#define LOP_TYPE_MSG			0x14
-#define LOP_TYPE_STREAMSYNC		0x15
-/*
-#define LOP_TYPE_STREAM_START	0x15
-#define LOP_TYPE_STREAM_STOP	0x16
-*/
 static void lop_process_l1(lop_ctx_t* ctx, uint8_t b);
 static void lop_process_l2(lop_ctx_t* ctx, uint8_t b);
 
@@ -142,9 +126,6 @@ void lop_process_l2(lop_ctx_t* ctx, uint8_t b){
 					break;
 				case 1:
 					ctx->msglength += b;
-			/*		if(ctx->msglength > LOP_MAX_MSG_LENGTH){
-						lop_error(5);
-					} */
 					if(!(ctx->msgbuffer=malloc(ctx->msglength))){
 						/* message to large error */
 						lop_error(5);
@@ -249,4 +230,3 @@ void lop_sendreset(lop_ctx_t * ctx){
 	if(ctx->sendrawbyte)
 		ctx->sendrawbyte(LOP_RESET_CODE);
 }
-

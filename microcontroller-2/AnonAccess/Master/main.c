@@ -40,6 +40,7 @@
 #include "debug_tools.h"
 #include "selfdestruct.h"
 #include "i2c_printer.h"
+#include "iDP3540.h"
 
 /*
 #define DS(a)   uart_putstr_P(PSTR(a))
@@ -107,6 +108,7 @@
 				 "\r\n i: initialise databases" \
 				 "\r\n o: execute main_open()" \
 				 "\r\n c: execute main_close()" \
+				 "\r\n u: cut paper" \
 				 "\r\n"
 
 /******************************************************************************/
@@ -160,7 +162,7 @@ void setup_system(void){
 	uint8_t buffer[32];
 	/* eeprom keyspace is 8*32 byte */
 	DS("\r\nstarting SETUP");
-	DS("\r\ngenerating keys:\r\n");
+	DS("\r\ngenerating keys:");
 	for(a=0; a<EEPROM_SEC_INIT_RWS; ++a){
 		for(b=0; b<KEY_NUM; ++b){
 			getRandomBlock((uint32_t*)buffer);
@@ -195,6 +197,8 @@ void session_reset(void){
 /******************************************************************************/
 
 void streamrx(uint8_t b){
+	return;
+/*	
 	i2c_detect_t dev_table;
 	
 	switch (b){
@@ -225,7 +229,7 @@ void streamrx(uint8_t b){
 		case 'k': do_keymigrate(); 
 			break;
     	case 'f': ticketdb_format(TICKETDB_SIZE); 
-    		flmdb_format();/* break;*/
+    		flmdb_format();/ * break;* /
     	case 'i': ticketdb_init();
     		dump_dbstats();
     		break;
@@ -233,20 +237,97 @@ void streamrx(uint8_t b){
     		break;
     	case 'c': main_close();
     		break;
-    		
+    	case 'u': cutpaper();
+    		break;
+
 		default: lop_dbg_str_P(&lop0, PSTR("\r\n unknown command "));
 				 lop_sendstream(&lop0, b);
 				 break;
 	}
 	lop_dbg_str_P(&lop0, PSTR("\r\n done\r\n"));
+	*/
+}
+
+/******************************************************************************/
+
+bool msg_check(uint16_t len, uint8_t * msg){
+	if(len<3){
+		session_reset();
+		masterstate = mainidle;
+		busy &= ~1;
+		/* message to short - DROP */
+		return 0;
+	}
+	if(msg[0] != MASTERUNIT_ID){
+		/* packet not for me - DROP */
+		return 0;
+	}
+	if(msg[1] != TERMINALUNIT_ID){
+		/* packet not from terminal - DROP */
+		return 0;
+	}
+	if(msg[2]>7) /* no valid MSGID */
+		return 0;
+	/* check packages length */
+	switch(msg[2]){
+		case MSGID_SESSION_INIT:
+			return len==3;
+		case MSGID_ADD_AB:
+			return len==3+sizeof(authblock_t);
+		case MSGID_ADD_BOOTSTRAP:
+			if(len<3+2)
+				return 0;
+			if(len!=4+msg[3]+1)
+				return 0;
+			return 1;	
+		case MSGID_ACTION:
+			if(len<4)
+				return 0;
+			break;
+		/* the following packets should not be recieved by the maser */
+		case MSGID_AB_REPLY:
+		case MSGID_AB_ERROR:
+		case MSGID_ACTION_REPLY:
+		case MSGID_PRINT:
+		default:
+			return 0;	
+	}
+	/* now only the action stuff is left */
+	switch(msg[3]){
+		case ACTION_MAINOPEN:
+		case ACTION_MAINCLOSE:
+		case ACTION_KEYMIGRATION:
+			return len==4;
+		case ACTION_ADDUSER:
+			if(len<6)
+				return 0;
+			return len==5+msg[4]+1;
+		case ACTION_REMUSER:
+		case ACTION_LOCKUSER:
+		case ACTION_UNLOCKUSER:
+		case ACTION_ADDADMIN:
+		case ACTION_REMADMIN:
+			if(len<6)
+				return 0;
+			if(msg[4]){
+				/* nickname option choosen */
+				return len==5+msg[4];
+			} else {
+				/* uid option choosen */
+				return len==7;
+			}
+		default:
+			return 0;
+	}
 }
 
 /******************************************************************************/
 
 void messagerx(uint16_t len, uint8_t * msg){
+/*	
 	lop_dbg_str_P(&lop0, PSTR("\r\nmessage rx:"));
 	lop_dbg_hexdump(&lop0, msg, len);
-	
+*/	
 	if(session.users > SESSION_MAX_PARTICIPANTS || session.admins > SESSION_MAX_PARTICIPANTS){
 		/* someone seems to be pretty fast wiht card changing, but we won't allow this */
 		session_reset();
@@ -254,66 +335,40 @@ void messagerx(uint16_t len, uint8_t * msg){
 		busy &= ~1;
 	}
 	
-	if(len<3){
-		session_reset();
-		masterstate = mainidle;
-		busy &= ~1;
-		/* message to short - DROP */
-		return;
-	}
-	if(msg[0] != MASTERUNIT_ID){
-		/* packet not for me - DROP */
-		return;
-	}
-	if(msg[1] != TERMINALUNIT_ID){
-		/* packet not from terminal - DROP */
-		return;
-	}
-	if((  msg[2] != MSGID_SESSION_INIT) 
-	  && (msg[2] != MSGID_ADD_AB) 
-	  && (msg[2] != MSGID_ACTION)
-	  && (msg[2] != MSGID_ADD_BOOTSTRAP)){
+	
+	if(!msg_check(len, msg)){
 		session_reset();
 		masterstate = mainidle;
 		busy &= ~1;
 		/* unknown message type - DROP */
+		DS("\r\nERROR:  MESSAGE DROPED\r\n\r\n\r\n\r\n\r\n")
 		return;
 	}
+	
 	if(msg[2] == MSGID_SESSION_INIT){ /* reset/initiate session*/
-		if(len!=3){
-			session_reset();
-			masterstate = mainidle;
-			busy &= ~1;
-			/* too long packet - DROP */
-			return;
-		}
 		session_reset();
 		session.timestamp = gettimestamp();
 		busy |= 1;
 		masterstate = insession;
 		return;
 	}
+	
+	if(masterstate != insession){
+		session_reset();
+		masterstate = mainidle;
+		busy &= ~1;
+		/* not "in session" - DROP */
+		return;
+	}
+
+	if(session.timestamp + SESSION_MAX_DURATION < gettimestamp()){
+		session_reset();
+		masterstate = mainidle;
+		busy &= ~1;
+		/* session expired - DROP */
+	}
+	
 	if(msg[2] == MSGID_ADD_AB){ /* add AuthBlock */
-		if(len!=3+sizeof(authblock_t)){
-			session_reset();
-			masterstate = mainidle;
-			busy &= ~1;
-			/* packet length does not match - DROP */
-			return;
-		}
-		if(masterstate != insession){
-			session_reset();
-			masterstate = mainidle;
-			busy &= ~1;
-			/* not "in session" - DROP */
-			return;
-		}
-		if(session.timestamp + SESSION_MAX_DURATION < gettimestamp()){
-			session_reset();
-			masterstate = mainidle;
-			busy &= ~1;
-			/* session expired - DROP */
-		}
 		/* check if user allready participates */
 		uint8_t i;
 		for(i=0; i<session.users; ++i){
@@ -359,67 +414,17 @@ void messagerx(uint16_t len, uint8_t * msg){
 		} /* switch(check_authblock(&(msg[3]))) */
 	} /* if add AuthBlock */
 	if(msg[2] == MSGID_ACTION){ /* let's do some action */
-		if(len<4){
-			/* message too short */
-			session_reset();
-			masterstate = mainidle;
-			busy &= ~1;
-			return;
-		}
+		
 		uint8_t reply[]= {
 			TERMINALUNIT_ID,
 			MASTERUNIT_ID,
 			MSGID_ACTION_REPLY,  /* action reply */
 			msg[3],   /* reply to what requested */
 			NOTDONE}; /* default to "not done" */
-		if(masterstate!=insession){
-			/* session must be initialised before - DROP */
-			lop_sendmessage(&lop0, 5, reply);
-			return;
-		}
-		if(session.timestamp + SESSION_MAX_DURATION < gettimestamp()){
-			/* session expired */
-			session_reset();
-			masterstate = mainidle;
-			busy &= ~1;
-			lop_sendmessage(&lop0, 5, reply);
-			return;
-		}
-		/* now check the length */
-		 /* length of actions without parameter */
-		if((msg[3]==ACTION_MAINOPEN || msg[3]==ACTION_MAINCLOSE || msg[3]==ACTION_KEYMIGRATION)
-		  && len!=4){
-		  	/* wrong length */
-			session_reset();
-			masterstate = mainidle;
-			busy &= ~1;
-			lop_sendmessage(&lop0, 5, reply);
-			return;
-		}
-		 /* length of packets with "nickname" parameter */
-		if(msg[3]==ACTION_REMUSER || msg[3]==ACTION_LOCKUSER || 
-		   msg[3]==ACTION_UNLOCKUSER || msg[3]==ACTION_ADDADMIN || 
-		   msg[3]==ACTION_REMADMIN || msg[3]==ACTION_ADDUSER){
-			if(len<5){
-				/* not even a length byte is given zzz - DROP */
-				session_reset();
-				masterstate = mainidle;
-				busy &= ~1;
-				lop_sendmessage(&lop0, 5, reply);
-				return;
-			}
-			if(len!=5+msg[4]+(msg[3]==ACTION_ADDUSER)?1:0){
-				/* length is wrong - DROP */
-				session_reset();
-				masterstate = mainidle;
-				busy &= ~1;
-				lop_sendmessage(&lop0, 5, reply);
-				return;
-			}
-		}
+		
 		/* length checked, now we may try to do something */
 		action_t action;
-		action = (msg[3]&0xf)?(msg[3]-0x10+2):msg[3]; /* transform ACTION_* in action_t */
+		action = (msg[3]&0xf0)?(msg[3]-0x10+2):msg[3]; /* transform ACTION_* in action_t */
 		if(!check_permissions(session.users, session.admins, action)){
 			/* not sufficient permissions */
 			session_reset();
@@ -469,33 +474,11 @@ void messagerx(uint16_t len, uint8_t * msg){
 			return;
 		}/* if(!check_permissions) ... else ... */
 	} /* if(msg[2] == MSGID_ACTION) */
+	
 	if(msg[2] == MSGID_ADD_BOOTSTRAP){
 		uint8_t t; /* for bootstrap_accounts */
 		/* check form and length */
-		lop_dbg_str_P(&lop0,PSTR("brap"));
-		if(len<=5){
-			/* message much to short! no length or/and no anon field or null string*/
-			session_reset();
-			masterstate = mainidle;
-			busy &= ~1;
-			return;
-		}
-		if(len!=5+msg[3]){
-			/* message has incorrect length */
-			session_reset();
-			masterstate = mainidle;
-			busy &= ~1;
-			return;
-		}
-		if(masterstate != insession){
-			lop_dbg_str_P(&lop0,PSTR("brapQ"));
-			session_reset();
-			masterstate = mainidle;
-			busy &= ~1;
-			return;
-		}
 		if(NO_ANON_ADMINS && ((msg[len-1])?1:0)){
-			lop_dbg_str_P(&lop0,PSTR("brapP"));
 			session_reset();
 			masterstate = mainidle;
 			busy &= ~1;
@@ -503,7 +486,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 		}
 		if((t=eeprom_read_byte(&bootstrap_accounts))!=0){
 			/* yeah, let's bootstrap the system */
-			lop_dbg_str_P(&lop0,PSTR("brapX"));
+	//		lop_dbg_str_P(&lop0,PSTR("brapX"));
 			eeprom_write_byte(&bootstrap_accounts, t-1);
 			char name[msg[3]+1];
 			strncpy(name,(char*)&(msg[4]), msg[3]);
@@ -538,10 +521,17 @@ void init_system(void){
 	session_reset();
 	masterstate = idle;
 	uart_init();
+	uart_putstr_P(PSTR("\r\nuart works (a)\r\n"));
+//	while(1);
 	lop0.sendrawbyte = lop0_sendrawbyte;
 	lop0.on_streamrx = streamrx;
 	lop0.on_msgrx = messagerx;
 	uart_hook = onuartrx;
+	lop_recieve_byte(&lop0, LOP_RESET_CODE);
+	uart_putc(XON);
+	uart_putstr_P(PSTR("\r\nuart works\r\n"));
+	
+//	while(1);
     i2c_init();
     E24C_init();
 	rtc_init();
@@ -565,6 +555,14 @@ int main(void){
     load_eeprom_crypt_key(eeprom_key);
 	ticketdb_init();
 	
+	setred();
+	DS("time: ");
+	{
+		timestamp_t t;
+		t=gettimestamp();
+		DD(&t, sizeof(timestamp_t));
+		DS("\r\n\n\n\n");
+	}
 	while(1){
 		_delay_ms(50);
 	}

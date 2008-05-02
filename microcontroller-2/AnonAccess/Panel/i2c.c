@@ -73,7 +73,7 @@ void i2c_do_not_ack(void){
 /****************************************************
  * i2c_start()
  * **************************************************/
-i2c_status_t		i2c_start (i2c_addr_t addr){
+i2c_status_t i2c_start (i2c_addr_t addr){
 	
  	SHOW_STATUS("start-0");
 	if ( (i2c_mode != I2C_STOPPED)){
