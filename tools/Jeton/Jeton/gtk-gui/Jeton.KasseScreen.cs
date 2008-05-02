@@ -68,7 +68,7 @@ namespace Jeton {
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
             this.label1.Xalign = 1F;
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("<span size=\"xx-large\"><b>Kassenstand:</b></span>");
+            this.label1.LabelProp = Mono.Unix.Catalog.GetString("<span size=\"xx-large\"><b>Soll-Kassenstand:</b></span>");
             this.label1.UseMarkup = true;
             this.hbox1.Add(this.label1);
             Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.hbox1[this.label1]));
@@ -81,11 +81,15 @@ namespace Jeton {
             this.hbox1.Add(this.standLabel);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox1[this.standLabel]));
             w2.Position = 1;
+            w2.Expand = false;
+            w2.Fill = false;
+            w2.Padding = ((uint)(50));
             this.vbox2.Add(this.hbox1);
             Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
             w3.Position = 0;
             w3.Expand = false;
             w3.Fill = false;
+            w3.Padding = ((uint)(20));
             // Container child vbox2.Gtk.Box+BoxChild
             this.hbox2 = new Gtk.HBox();
             this.hbox2.Name = "hbox2";

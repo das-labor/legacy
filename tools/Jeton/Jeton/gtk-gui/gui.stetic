@@ -149,7 +149,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="Jeton.KasseScreen" design-size="460 416">
+  <widget class="Gtk.Bin" id="Jeton.KasseScreen" design-size="599 416">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox1">
@@ -181,7 +181,7 @@
                               <widget class="Gtk.Label" id="label1">
                                 <property name="MemberName" />
                                 <property name="Xalign">1</property>
-                                <property name="LabelProp" translatable="yes">&lt;span size="xx-large"&gt;&lt;b&gt;Kassenstand:&lt;/b&gt;&lt;/span&gt;</property>
+                                <property name="LabelProp" translatable="yes">&lt;span size="xx-large"&gt;&lt;b&gt;Soll-Kassenstand:&lt;/b&gt;&lt;/span&gt;</property>
                                 <property name="UseMarkup">True</property>
                               </widget>
                               <packing>
@@ -198,6 +198,9 @@
                               <packing>
                                 <property name="Position">1</property>
                                 <property name="AutoSize">False</property>
+                                <property name="Expand">False</property>
+                                <property name="Fill">False</property>
+                                <property name="Padding">50</property>
                               </packing>
                             </child>
                           </widget>
@@ -206,6 +209,7 @@
                             <property name="AutoSize">True</property>
                             <property name="Expand">False</property>
                             <property name="Fill">False</property>
+                            <property name="Padding">20</property>
                           </packing>
                         </child>
                         <child>

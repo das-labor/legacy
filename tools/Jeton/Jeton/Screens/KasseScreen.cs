@@ -2,8 +2,6 @@ using System;
 
 namespace Jeton
 {
-	
-	
 	public partial class KasseScreen : Gtk.Bin
 	{
 		
