@@ -1,0 +1,6 @@
+"\n"
+"const mlop_hwaddr_t hwaddr = {"
+	15/1  " 0x%02x," " 0x%02x" "\n"
+"};"
+"\n\n"
+
