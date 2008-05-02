@@ -15,6 +15,8 @@
   0 - session initialisation/reset
   1 - add AuthBlock to session
   2 - AuthBlock reply
+*  8 - AuthBlock PIN request
+*  9 - AuthBlock PIN reply
   3 - AuthBlock error
   4 - Action
   5 - Action reply
@@ -36,11 +38,11 @@
    0x00 - main open    <none>
    0x01 - main close   <none>
    0x10 - add user     <nickname> <anon/nonanon>
-   0x11 - rem user     <nickname>
-   0x12 - lock user    <nickname>
-   0x13 - unlock user  <nickname>
-   0x14 - add admin    <nickname>
-   0x15 - rem admin    <nickname>
+   0x11 - rem user     <uid>
+   0x12 - lock user    <uid>
+   0x13 - unlock user  <uid>
+   0x14 - add admin    <uid>
+   0x15 - rem admin    <uid>
    0x16 - keymigration <none>
   msgid==5: action code (1 byte) followed by data
    0x00 - main open    <done/notdone>
@@ -55,7 +57,7 @@
   msgid=6: print string
    <string>
   msgid=7: get bootstrap account (add bootstrap admin)
-   <nickname><anon/nonanon>
+*   <nickname><pinhash><anon/nonanon><pinflags>
    
    
 ====================================================================
@@ -64,6 +66,9 @@
 <done/notdone> : 1 byte
  0x01 - done
  0x00 - not done
+<uid>:
+ length - 1 byte
+ useridentifier - nickname with specifyed length or 2 byte user identification number (length=0) 
 <nickname>:
  length - 1 byte
  string - "length" bytes

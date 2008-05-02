@@ -23,19 +23,20 @@ void cardio_init(void){
 	PORTC |= _BV(7); /* enable pullup resistor */
 }
 
-bool cardinserated(void){
+bool card_inserated(void){
 	return (PINC&_BV(7))?false:true;
 } 
 
-bool readABfromCard(authblock_t * ab){
-	if(!cardinserated()){
+bool card_readAB(authblock_t * ab){
+	if(!card_inserated()){
 		return false;
 	}
+	E24C04_init();
 	uint8_t buffer[1+2+sizeof(authblock_t)+32];
 	E24C04_block_read(0xA0, 0, buffer, 1+2+sizeof(authblock_t)+32);
 	if(buffer[0]!=ASN1_TAG)
 		return false;
-	if(buffer[1]!=0x81)
+	if(buffer[1]!=0x81)	/* 127<length<256 ==> 1000.0001 */
 		return false;
 	if(buffer[2]!=ASN1_LENGTH)
 		return false;
@@ -54,10 +55,11 @@ bool readABfromCard(authblock_t * ab){
 }
 
 
-bool writeABtoCard(authblock_t * ab){
-	if(cardinserated()==false){
+bool card_writeAB(authblock_t * ab){
+	if(card_inserated()==false){
 		return false;
 	}
+	E24C04_init();
 	uint8_t buffer[1+2+sizeof(authblock_t)+32];
 	buffer[0] = ASN1_TAG;
 	buffer[1] = 0x81;

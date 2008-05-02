@@ -59,7 +59,10 @@
        sodipodi:rx="12.59534"
        sodipodi:ry="4.4194174"
        d="M 190.30011 112.73652 A 12.59534 4.4194174 0 1 1  165.10943,112.73652 A 12.59534 4.4194174 0 1 1  190.30011 112.73652 z"
-       transform="matrix(1.3874568,0,0,1.157761,102.65045,53.67263)" />
+       transform="matrix(1.3874568,0,0,1.157761,102.65045,53.67263)"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <rect
        style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.92060256;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
        id="rect9236"
@@ -69,12 +72,15 @@
        y="147.36136"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"
-       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/AnonAccessLogo/AnonAccessLogo.png"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
        ry="5.8281012" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.45055103;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:4.35165283, 1.45055094;stroke-dashoffset:14.50550943;stroke-opacity:1;display:inline"
        d="M 279.87027,108.38537 L 279.87027,304.91042 L 279.87027,304.91042"
-       id="path2179" />
+       id="path2179"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <rect
        style="fill:#1e1e1e;fill-opacity:1;stroke:#000000;stroke-width:0.75856698;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:10;stroke-opacity:1;display:inline"
        id="rect4125"
@@ -82,7 +88,10 @@
        height="41.914001"
        x="331.47821"
        y="142.08794"
-       ry="0.072463147" />
+       ry="0.072463147"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        sodipodi:type="arc"
        style="fill:#1e1e1e;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:10;stroke-opacity:1;display:inline"
@@ -92,7 +101,10 @@
        sodipodi:rx="12.099798"
        sodipodi:ry="5.1616864"
        d="M 189.30654 57.6572 A 12.099798 5.1616864 0 1 1  165.10694,57.6572 A 12.099798 5.1616864 0 1 1  189.30654 57.6572 z"
-       transform="matrix(1.4519087,0,0,0.8314254,91.928093,94.431329)" />
+       transform="matrix(1.4519087,0,0,0.8314254,91.928093,94.431329)"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        sodipodi:type="arc"
        style="fill:#000000;fill-opacity:1;stroke:#191919;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:10;stroke-opacity:1;display:inline"
@@ -102,29 +114,47 @@
        sodipodi:rx="12.099798"
        sodipodi:ry="5.1616864"
        d="M 189.30654 57.6572 A 12.099798 5.1616864 0 1 1  165.10694,57.6572 A 12.099798 5.1616864 0 1 1  189.30654 57.6572 z"
-       transform="matrix(1.4519087,0,0,0.8314254,91.928093,117.09091)" />
+       transform="matrix(1.4519087,0,0,0.8314254,91.928093,117.09091)"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.29748249px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline"
        d="M 331.52376,223.53694 C 340.28456,205.25967 372.24848,237.98664 387.55452,223.53694 L 387.55452,223.53694"
        id="path2177"
-       sodipodi:nodetypes="ccc" />
+       sodipodi:nodetypes="ccc"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.29657042px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline"
        d="M 331.5233,266.70037 C 345.2577,250.98326 377.77159,281.21993 387.59459,266.70037"
        id="path2180"
-       sodipodi:nodetypes="cc" />
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.05240035px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline"
        d="M 331.40122,223.06605 L 331.40122,266.70874"
-       id="path2182" />
+       id="path2182"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.05240035px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline"
        d="M 387.33786,223.56156 L 387.33786,266.70874"
-       id="path2184" />
+       id="path2184"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.08383095px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline"
        d="M 170.89559,212.90409 C 301.75951,212.90409 301.75951,212.90409 301.75951,212.90409 L 301.75951,245.2192 L 323.57017,245.2192"
-       id="path7035" />
+       id="path7035"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <rect
        style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.62933022;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
        id="rect11176"
@@ -132,7 +162,7 @@
        height="4.8694677"
        x="91.350082"
        y="165.41754"
-       inkscape:export-filename="/home/anzgar/path8144.png"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <rect
@@ -142,7 +172,7 @@
        height="1.5827465"
        x="94.052399"
        y="166.92316"
-       inkscape:export-filename="/home/anzgar/path8144.png"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <path
@@ -150,7 +180,7 @@
        d="M 91.316817,166.90387 C 92.343807,166.89163 94.370287,166.93084 94.778577,166.87315 C 95.381427,166.78794 94.012247,165.43584 94.040767,165.41669"
        id="path12183"
        sodipodi:nodetypes="csc"
-       inkscape:export-filename="/home/anzgar/path8144.png"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <path
@@ -158,7 +188,7 @@
        d="M 98.730547,166.90038 C 98.058617,166.90103 95.912797,166.89424 95.855767,166.8884 C 94.334777,166.73276 95.714187,165.65335 95.730307,165.63516"
        id="path12194"
        sodipodi:nodetypes="csc"
-       inkscape:export-filename="/home/anzgar/path8144.png"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <path
@@ -166,7 +196,7 @@
        id="path12210"
        d="M 91.316817,166.90387 C 92.343807,166.89163 94.370287,166.93084 94.778577,166.87315 C 95.381427,166.78794 94.012247,165.43584 94.040767,165.41669"
        style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.62933022;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
-       inkscape:export-filename="/home/anzgar/path8144.png"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <path
@@ -174,7 +204,7 @@
        d="M 91.316817,166.90387 C 92.343807,166.89163 94.370287,166.93084 94.778577,166.87315 C 95.381427,166.78794 94.012247,165.43584 94.040767,165.41669"
        id="path12220"
        sodipodi:nodetypes="csc"
-       inkscape:export-filename="/home/anzgar/path8144.png"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <path
@@ -182,7 +212,7 @@
        d="M 91.328917,168.50458 C 92.352997,168.51926 94.373827,168.47232 94.780967,168.54137 C 95.382117,168.64335 94.016787,170.26165 94.045217,170.28455"
        id="path12217"
        sodipodi:nodetypes="csc"
-       inkscape:export-filename="/home/anzgar/path8144.png"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <path
@@ -190,7 +220,7 @@
        d="M 98.764237,168.54728 C 97.735677,168.56194 95.706097,168.51499 95.297207,168.58404 C 94.693417,168.686 96.064687,170.30418 96.036137,170.32708"
        id="path12223"
        sodipodi:nodetypes="csc"
-       inkscape:export-filename="/home/anzgar/path8144.png"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <text
@@ -198,7 +228,10 @@
        style="font-size:36px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="94.285156"
        y="226.13812"
-       id="text2293"><tspan
+       id="text2293"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
          id="tspan2295"
          x="94.285156"
@@ -210,17 +243,26 @@
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.24422514;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.24422514, 1.24422514;stroke-dashoffset:0;stroke-opacity:1"
        d="M 387.11945,237.36218 L 331.60409,237.36218"
-       id="path2299" />
+       id="path2299"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.24422514;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.24422514, 1.24422514;stroke-dashoffset:0;stroke-opacity:1"
        d="M 387.1015,251.45915 L 331.58614,251.45915"
-       id="path3272" />
+       id="path3272"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="332.09952"
        y="248.34695"
-       id="text3274"><tspan
+       id="text3274"
+       inkscape:export-filename="/home/bg/workspace/AnonAccess/Doc/CCC07-Vortrag/ansatz1.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
          id="tspan3276"
          x="332.09952"

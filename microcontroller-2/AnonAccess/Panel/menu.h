@@ -1,9 +1,8 @@
 #include "config.h"
 #include "types.h"
 
+#include "ui_primitives.h"
+
 extern authblock_t ab;
-
-void menu_handler(char);
-
-void master_menu(void);
+extern menu_t main_menu_mt[];
 void cmdtest(void* data);

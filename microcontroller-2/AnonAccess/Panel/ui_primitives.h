@@ -81,6 +81,7 @@ char    ui_waitforkeypresstimed(timestamp_t* tdiff);
 void    ui_waitforkey(char key);
 
 uint8_t read_decimaln(uint8_t xpos, uint8_t ypos, char* str, uint8_t n);
+uint8_t read_pinn(uint8_t xpos, uint8_t ypos, char disp,char* str, uint8_t n);
 uint8_t read_hexn(uint8_t xpos, uint8_t ypos, char* str, uint8_t n);
 uint8_t read_strn(uint8_t xpos, uint8_t ypos, PGM_P charset,char * str, uint8_t n);
 
