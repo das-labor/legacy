@@ -1,0 +1,48 @@
+
+[executer]
+RunInTerminal=true
+
+[Project State]
+clean before build=false
+
+[filelist]
+0=/home/duncan/avr_projects/usb-servo/common/usbservo.h
+1=/home/duncan/avr_projects/usb-servo/firmware/usbdrv/oddebug.c
+2=/home/duncan/avr_projects/usb-servo/firmware/usbdrv/oddebug.h
+3=/home/duncan/avr_projects/usb-servo/firmware/AVRlib/timer.h
+4=/home/duncan/avr_projects/usb-servo/firmware/AVRlib/timer.c
+5=/home/duncan/avr_projects/usb-servo/firmware/AVRlib/servoconf.h
+6=/home/duncan/avr_projects/usb-servo/firmware/AVRlib/servo.h
+7=/home/duncan/avr_projects/usb-servo/firmware/AVRlib/servo.c
+
+[filenumbers]
+0=1
+1=17
+2=14
+3=1
+4=1
+5=77
+6=1
+7=170
+
+[filemarkers]
+0=
+1=
+2=
+3=
+4=
+5=
+6=
+7=
+
+[File View]
+filter.file.unmatch=*.so *.o *.a *.la
+filter.file.ignore.hidden=0
+filter.dir.ignore.hidden=0
+
+[Project Tree]
+0=0
+
+[File Tree]
+0=0
+1=0:1
