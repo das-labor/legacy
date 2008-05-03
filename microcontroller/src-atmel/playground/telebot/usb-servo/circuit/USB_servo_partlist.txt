@@ -1,0 +1,34 @@
+Partlist
+
+Exported from USB_servo.sch at  2/08/2007 22:18:49 
+
+EAGLE Version 4.16r2 Copyright (c) 1988-2006 CadSoft
+
+Part     Value          Device         Package  Library         Sheet
+
+C1       22p            C2,5-3         C2.5-3   capacitor-wima  1
+C2       22p            C2,5-3         C2.5-3   capacitor-wima  1
+C3       680u           CPOL-EUE5-10.5 E5-10,5  rcl             1
+C4       100n           C2,5-3         C2.5-3   capacitor-wima  1
+C5       330u           CPOL-EUE5-10.5 E5-10,5  rcl             1
+D1       1N5908         1N5908         C4111-15 diode           1
+IC1      MEGA8-P        MEGA8-P        DIL28-3  atmel           1
+IC2      LM2596S50      LM2596S        TO263-5  linear          1
+L2       33uH           MS85           MS85     inductor-neosid 1
+LED1                    LED5MM         LED5MM   led             1
+LED2                    LED5MM         LED5MM   led             1
+Q1       12Mhz          CRYSTALHC49U-V HC49U-V  crystal         1
+R1       68             R-US_0309/12   0309/12  rcl             1
+R2       68             R-US_0309/12   0309/12  rcl             1
+R3       4k7            R-US_0309/12   0309/12  rcl             1
+R4       2k2            R-US_0309/12   0309/12  rcl             1
+R5       100k           R-US_0309/12   0309/12  rcl             1
+SERVO0                  MA03-1         MA03-1   con-lstb        1
+SERVO1                  MA03-1         MA03-1   con-lstb        1
+SERVO2                  MA03-1         MA03-1   con-lstb        1
+SERVO3                  MA03-1         MA03-1   con-lstb        1
+SERVO4                  MA03-1         MA03-1   con-lstb        1
+SERVO5                  MA03-1         MA03-1   con-lstb        1
+SV1                     MA05-1         MA05-1   con-lstb        1
+SV2                     MA08-1         MA08-1   con-lstb        1
+X1                      PN61729        PN61729  con-berg        1
