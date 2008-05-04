@@ -277,7 +277,7 @@ bool msg_check(uint16_t len, uint8_t * msg){
 		case MSGID_ADD_BOOTSTRAP:
 			if(len<3+2)
 				return 0;
-			if(len!=4+msg[3]+1)
+			if(len!=4+msg[3]+sizeof(sha256_hash_t)+1+1)
 				return 0;
 			return 1;	
 		case MSGID_ACTION:
@@ -378,7 +378,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 					TERMINALUNIT_ID,
 					MASTERUNIT_ID,
 					MSGID_AB_ERROR, /* AuthBlock error reply */
-					AB_ERROR_WONTTELL }; /* won't tell */
+				1};//	AB_ERROR_WONTTELL }; /* won't tell */
 				lop_sendmessage(&lop0, 4, reply);
 				return;
 			}
@@ -390,7 +390,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 						TERMINALUNIT_ID,
 						MASTERUNIT_ID,
 						MSGID_AB_ERROR, /* AuthBlock error reply */
-						AB_ERROR_WONTTELL }; /* won't tell */
+					2};//	AB_ERROR_WONTTELL }; /* won't tell */
 					lop_sendmessage(&lop0, 4, reply);	
 				}
 				return;	break;
@@ -463,8 +463,8 @@ void messagerx(uint16_t len, uint8_t * msg){
 						MSGID_ACTION_REPLY,
 						ACTION_ADDUSER,
 						DONE, 0};
-					
-					add_user(name, msg[len-1]?true:false, (authblock_t*)&(addreply[5])); 
+					add_user(name, msg+len-sizeof(sha256_hash_t), msg[len-2], msg[len-1], (authblock_t*)&(addreply[5]));
+//					add_user(name, msg[len-1]?true:false, (authblock_t*)&(addreply[5])); 
 					lop_sendmessage(&lop0, 5+sizeof(authblock_t), addreply);
 				}else{
 					reply[4]=DONE;
@@ -478,7 +478,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 	if(msg[2] == MSGID_ADD_BOOTSTRAP){
 		uint8_t t; /* for bootstrap_accounts */
 		/* check form and length */
-		if(NO_ANON_ADMINS && ((msg[len-1])?1:0)){
+		if(NO_ANON_ADMINS && ((msg[len-2])?1:0)){
 			session_reset();
 			masterstate = mainidle;
 			busy &= ~1;
@@ -497,12 +497,12 @@ void messagerx(uint16_t len, uint8_t * msg){
 						MSGID_ACTION_REPLY,
 						ACTION_ADDUSER,
 						DONE, 0};
-			add_user(name, msg[len-1]?true:false, (authblock_t*)&(addreply[5])); 
+			add_user(name, msg+len-2-sizeof(sha256_hash_t), msg[len-2]?true:false, msg[len-1], (authblock_t*)&(addreply[5])); 
 			/* make user admin */
 			userflags_t uf;
 			ticketdb_getUserFlags(((authblock_t*)&(addreply[5]))->uid ,&uf);
 			uf.admin = true;
-			ticketdb_getUserFlags(((authblock_t*)&(addreply[5]))->uid ,&uf);
+			ticketdb_setUserFlags(((authblock_t*)&(addreply[5]))->uid ,&uf);
 			lop_sendmessage(&lop0, 5+sizeof(authblock_t), addreply);
 		} else {
 			/* won't give a bootstrap account */
@@ -536,11 +536,15 @@ void init_system(void){
     E24C_init();
 	rtc_init();
     resetcnt_inc();
+	uart_putstr_P(PSTR("\r\nprinter init ... "));
     printer_init();
+	uart_putstr_P(PSTR(" finished\r\n"));
     prng_init();
 	#ifdef TAMPER_DETECTION
 	tamperdetect_init();
 	#endif
+	DS("-_-_-_-");
+	uart_putstr_P(PSTR("\r\ninit finished\r\n"));
 }
 
 /******************************************************************************/

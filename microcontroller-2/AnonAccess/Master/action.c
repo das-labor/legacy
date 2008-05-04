@@ -4,6 +4,7 @@
 #include "flmDB.h"
 #include "action.h"
 #include "uart.h"
+#include "sha256.h"
 #include "hmac-sha256.h"
 #include "types.h"
 #include "reqvalidator.h"
@@ -48,8 +49,8 @@ void dump_authblock(authblock_t * ab){
 	DS("\r\n   HMAC:   "); DD((char*)&(ab->hmac), 32);
 }
 
-void add_user(char * nickname, uint8_t anon, authblock_t *dest){
-	new_account(dest, nickname, anon);
+void add_user(char * nickname, sha256_hash_t pinhash,uint8_t anon, uint8_t pinflags, authblock_t *dest){
+	new_account(dest, nickname, pinhash, anon, pinflags);
 //	dump_authblock(&ab);
 }
 

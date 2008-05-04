@@ -136,6 +136,7 @@ void lop_process_l2(lop_ctx_t* ctx, uint8_t b){
 					if(!(ctx->msgbuffer=malloc(ctx->msglength))){
 						lcd_gotopos(1,20);
 						lcd_writechar('X');
+						
 						/* message to large error */
 						lop_error(5);
 					}
@@ -152,7 +153,8 @@ void lop_process_l2(lop_ctx_t* ctx, uint8_t b){
 				lcd_writechar('e');
 				if(ctx->on_msgrx)
 					ctx->on_msgrx(ctx->msglength, ctx->msgbuffer);
-				free(ctx->msgbuffer);
+				if(ctx->msgbuffer)
+					free(ctx->msgbuffer);
 				ctx->msgbuffer = NULL;
 				ctx->rxstate = ctx->msgretstate;
 			}

@@ -143,9 +143,9 @@ void run_serial_test(void){
 }
 
 void error_display(PGM_P str){
-	lcd_cls();
-	ui_drawframe(1,1,LCD_WIDTH, LCD_HEIGHT, '#');
-	lcd_gotopos(2,3);
+//	lcd_cls();
+	ui_drawframe(1,2,LCD_WIDTH, LCD_HEIGHT-1, '#');
+	lcd_gotopos(3,3);
 	lcd_writestr_P(str);
 	ui_waitforkey('F');
 	return;
@@ -168,45 +168,94 @@ void getandsubmitpin(void){
 }
 
 void req_authblock(void){
-	char name[NAME_MAX_LEN+1];
-	char pin[PIN_MAX_LEN+1];
-	char pincheck[PIN_MAX_LEN+1];
+//	char name[NAME_MAX_LEN+2];
+//	char pin[PIN_MAX_LEN+2];
+//	char pincheck[PIN_MAX_LEN+2];
+	char* str_name;
+	char* str_pina;
+	char* str_pinb;
 	uint8_t pl, plc;
 	uint8_t anon;
 	uint8_t pinflags=0;
+	
+	str_name=malloc(NAME_MAX_LEN);
+	str_pina=malloc(PIN_MAX_LEN);
+	str_pinb=malloc(PIN_MAX_LEN);
 	
 	ui_printstatusline();
 	init_session();
 	lcd_gotopos(2,1);
 	lcd_writestr_P(PSTR("name:"));
-	read_strn(1,3,alphanum_cs, name,NAME_MAX_LEN);
+	read_strn(1,3,alphanum_cs, str_name,NAME_MAX_LEN);
 	do{
 		lcd_cls();
 		ui_drawframe(1,1,LCD_WIDTH, LCD_HEIGHT, '*');
-		lcd_gotopos(2,3);
+		lcd_gotopos(2,2);
 		lcd_writestr_P(PSTR("please enter PIN:"));
 		lcd_gotopos(2,3);
-		pl=read_pinn(3,3, '*', pin, PIN_MAX_LEN);
+		pl=read_pinn(3,3, '*', str_pina, PIN_MAX_LEN);
 		/***/
 		lcd_cls();
 		ui_drawframe(1,1,LCD_WIDTH, LCD_HEIGHT, '*');
-		lcd_gotopos(2,3);
+		lcd_gotopos(2,2);
 		lcd_writestr_P(PSTR("please confirm PIN:"));
 		lcd_gotopos(2,3);
-		plc=read_pinn(3,3, '*', pincheck, PIN_MAX_LEN);
-	}while(pl!=plc || !memcmp(pin, pincheck, MIN(pl, plc)));
-	
+		plc=read_pinn(3,3, '*', str_pinb, PIN_MAX_LEN);
+	}while((pl!=plc) || (memcmp(str_pina, str_pinb, MIN(pl, plc))!=0));
+	free(str_pinb);
 	lcd_cls();
 	anon=1^ui_radioselect_P(2,2,LCD_WIDTH-1,2,PSTR("anon\0not anon\0"));
 	
 	lcd_cls();
 	lcd_gotopos(1,1);
-	lcd_writestr_P(PSTR("select pinr requirement:"));
+	lcd_writestr_P(PSTR("select pin requirement:"));
 	ui_checkselect_P(2,2,LCD_WIDTH-1, LCD_HEIGHT-1, 
 		PSTR("admin tasks\0normal tasks\0"),&pinflags);
-	
-	req_bootab(name, pin, pl, anon, pinflags);
-	ui_statusstring[4]='~';
+	lcd_gotopos(1,1);
+	lcd_writestr_P(PSTR("waiting for response"));
+	ui_statusstring[4]='~';	
+	uint8_t et;
+	req_bootab(str_name, str_pina, pl, anon, pinflags);
+	if((et=waitformessage(5000))){
+		if(et==2){
+			error_display(PSTR("malloc failed!"));
+			return;
+		}
+		if(et==1){
+			error_display(PSTR("timeout!   "));
+			return;
+		}
+		error_display(PSTR(" X ERROR! "));
+		return;
+	}
+	free(str_name);
+	free(str_pina);
+	if( (msg_length!=5+sizeof(authblock_t))    ||
+		(getmsgid(msg_data)!=MSGID_ACTION_REPLY)||
+		(((uint8_t*)msg_data)[3]!= ACTION_ADDUSER ) ||
+		(((uint8_t*)msg_data)[4]!= DONE ) ) { 
+		lcd_cls();
+		lcd_gotopos(1,1);
+		lcd_writestr_P(PSTR("rx wrong packet:"));
+		//error_display(PSTR("rx wrong packet!"));
+		//ui_hexdump(1,2,LCD_WIDTH,LCD_HEIGHT-1, msg_data, msg_length);
+		lcd_gotopos(2,1);
+		lcd_hexdump(&msg_data, 2);
+		lcd_gotopos(3,1);
+		lcd_hexdump(&msg_length, 2);
+		ui_waitforkey('F');
+		lcd_gotopos(1,1);
+		lcd_writestr_P(PSTR("-_-_-_-"));
+		freemsg();
+		return;
+	}
+	card_writeAB((authblock_t*)((uint8_t*)msg_data+5));
+	lcd_cls();
+	lcd_gotopos(1,1);
+	lcd_writestr_P(PSTR("new AB:"));
+	ui_hexdump(1,2,LCD_WIDTH,LCD_HEIGHT-1, msg_data, msg_length);
+	freemsg();
+	return;
 }
 
 
@@ -462,6 +511,7 @@ void replace_unprinable(char * str, uint16_t len){
 }
 
 void dump_card(void){
+/*	
 	uint8_t buffer[17];
 	uint16_t i;
 //	E24C04_block_read(0xA0, 0, buffer, 16);
@@ -475,6 +525,37 @@ void dump_card(void){
 		replace_unprinable((char*)buffer, 16);
 		lop_dbg_str(&lop0, (char*)buffer);
 		lop_dbg_str_P(&lop0, PSTR("\r\n"));
+	}
+*/
+	uint8_t buffer[256];
+	E24C04_init();
+	E24C04_block_read(0xA0, 0, buffer, 256);
+	ui_hexdump(1, 1, LCD_WIDTH, LCD_HEIGHT, buffer, 256);
+}
+
+void erase_card(void){
+	uint16_t i;
+	lcd_cls();
+	ui_drawframe(1,1,LCD_WIDTH,LCD_HEIGHT,'*');
+	lcd_gotopos(2,2);
+	lcd_writestr_P(PSTR("erasing ..."));
+	E24C04_init();
+	for(i=0; i<256; ++i){
+		E24C04_byte_write(0xA0, i, 0xFF);
+		ui_progressbar(i/255.0, 2,3,LCD_WIDTH-2);
+	}
+}
+
+void randomize_card(void){
+	uint16_t i;
+	lcd_cls();
+	ui_drawframe(1,1,LCD_WIDTH,LCD_HEIGHT,'*');
+	lcd_gotopos(2,2);
+	lcd_writestr_P(PSTR("randomizing ..."));
+	E24C04_init();
+	for(i=0; i<256; ++i){
+		E24C04_byte_write(0xA0, i, getRandomByte());
+		ui_progressbar(i/255.0, 2,3,LCD_WIDTH-2);
 	}
 }
 
@@ -500,9 +581,11 @@ const char write_card_PS[] PROGMEM = "AB -> ICC";
 const char read_flash_PS[] PROGMEM = "read flash";
 const char read_logs_PS[] PROGMEM = "read logs";
 const char ui_tests_PS[] PROGMEM = "UI tests";
+const char erase_card_PS[] PROGMEM = "erase ICC";
+const char randomize_card_PS[] PROGMEM = "randomize ICC";
 
 
-menu_t debug_menu_mt[] = {
+menu_t debug_menu_mt[] PROGMEM = {
 	{main_menu_PS, back, (superp)NULL},
 	{read_logs_PS, execute, (superp)read_logs},
 	{read_flash_PS, execute, (superp)read_flash},
@@ -514,6 +597,8 @@ menu_t debug_menu_mt[] = {
 	{timestamp_base64_PS, execute, (superp)print_timestamp_base64},
 	{timestamp_base64_live_PS, execute, (superp)print_timestamp_base64_live},
 	{random_PS, execute, (superp)print_random},
+	{erase_card_PS, execute, (superp)erase_card},
+	{randomize_card_PS, execute, (superp)randomize_card},
 	{dump_card_PS, execute, (superp)dump_card},
 	{write_card_PS, execute, (superp)write_card},
 	{NULL, terminator, (superp)NULL}
@@ -524,7 +609,7 @@ menu_t debug_menu_mt[] = {
 const char req_AB_PS[]    PROGMEM = "request AB";
 const char view_AB_PS[]   PROGMEM = "view AB";
 
-menu_t bootstrap_menu_mt[] = {
+menu_t bootstrap_menu_mt[] PROGMEM = {
 	{main_menu_PS, back, (superp)NULL},
 	{req_AB_PS, execute, (superp)req_authblock},
 	{view_AB_PS, execute, (superp)view_authblock},
@@ -537,7 +622,7 @@ const char admin_menu_PS[]     PROGMEM = "admin menu";
 const char statistic_menu_PS[] PROGMEM = "statistic menu";
 const char bootstrap_menu_PS[] PROGMEM = "bootstrap menu";
 const char debug_menu_PS[]     PROGMEM = "debug menu";
-menu_t main_menu_mt[] = {
+menu_t main_menu_mt[] PROGMEM = {
 	{open_door_PS,execute, (superp)open_door},
 	{lock_door_PS,execute, (superp)lock_door},
 	{admin_menu_PS,submenu, (superp)admin_menu},

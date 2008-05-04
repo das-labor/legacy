@@ -39,9 +39,9 @@
 #define ANON    1
 #define NOTANON 0
 
-extern uint8_t msg_wait;
-extern uint16_t msg_length;
-extern void* msg_data;
+extern volatile uint8_t msg_wait;
+extern volatile uint16_t msg_length;
+extern volatile void* msg_data;
 
 void init_session(void);
 void submit_ab(authblock_t * ab);

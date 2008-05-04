@@ -7,15 +7,15 @@
 extern ui_loglist_t bootlog, syslog, seclog;
 
 #ifndef BOOTLOG_SIZE
- #define BOOTLOG_SIZE 16
+ #define BOOTLOG_SIZE 6
 #endif 
 
 #ifndef SYSLOG_SIZE
- #define SYSLOG_SIZE 16
+ #define SYSLOG_SIZE 6
 #endif
 
 #ifndef SECLOG_SIZE
- #define SECLOG_SIZE 16
+ #define SECLOG_SIZE 6
 #endif
 
 #define BOOTLOG_APPEND_P(s)    ui_logappend(&bootlog, PSTR(s), flash_st, processing_st);

@@ -13,7 +13,7 @@
 //c uart.[ch] defines
 #define UART_HOOK
 #define UART_INTERRUPT 1
-#define UART_BAUD_RATE 9600
+#define UART_BAUD_RATE 1200
 #define UART_RXBUFSIZE 32
 #define UART_TXBUFSIZE 32
 #define UART_LINE_BUFFER_SIZE 40
@@ -25,7 +25,7 @@
 #undef UART_LEDS
 
 /* i2c defines */
-#define I2C_EXTERNAL_PULLUP
+//#define I2C_EXTERNAL_PULLUP
 
 #define BOOTSTRAP_ACCOUNTS 200 /* accounts given "for free" */
 #define NO_ANON_ADMINS 1

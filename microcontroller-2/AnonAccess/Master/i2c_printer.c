@@ -72,7 +72,8 @@ void printer_reset(void){
 }
 
 void printer_init(void){
-	
+	if(!printer_available)
+		return;
 	i2c_set_8bit_reg(ADDR, IODIRA_B0, 0x00); /* set port a as output */
 	i2c_set_8bit_reg(ADDR, IODIRB_B0, 0xBE); /* set port a as output */
 	i2c_set_8bit_reg(ADDR, IOCON_B0, 0x20); /* set port a as output */

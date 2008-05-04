@@ -17,10 +17,12 @@
 #include "sha256.h"
 #include "comm.h"
 
+#include "lcd_tools.h"
+
 extern lop_ctx_t lop0;
-uint8_t msg_wait;
-uint16_t msg_length;
-void* msg_data;
+volatile uint8_t msg_wait;
+volatile uint16_t msg_length;
+volatile void* msg_data;
 
 
 void init_session(void){
@@ -81,7 +83,7 @@ void req_bootab(char* name, char* pin, uint16_t pinlen_B, uint8_t anon, uint8_t 
 	if(len>=256){
 		len=255;
 	}
-	uint8_t msg[3+1+len+1]; /*={
+	uint8_t msg[3+1+len+sizeof(sha256_hash_t)+1+1]; /*={
 		MASTERUNIT_ID,
 		TERMINALUNIT_ID,
 		MSGID_ADD_BOOTSTRAP,
@@ -92,20 +94,29 @@ void req_bootab(char* name, char* pin, uint16_t pinlen_B, uint8_t anon, uint8_t 
 	msg[2]=MSGID_ADD_BOOTSTRAP;
 	msg[3]=(uint8_t)len;
 	memcpy(&(msg[4]), name, len);
-	msg[3+1+len]=anon?1:0;
-	lop_sendmessage(&lop0, 4+1+len, msg);
+	sha256((sha256_hash_t*)&(msg[3+1+len]),pin, pinlen_B*8);
+	msg[3+1+len+sizeof(sha256_hash_t)]=anon?1:0;
+	msg[3+1+len+sizeof(sha256_hash_t)+1]=pinflags&3;
+	lop_sendmessage(&lop0, sizeof(msg), msg);
 }
 
 uint8_t waitformessage(uint16_t timeout){
 	msg_wait=1;
-	while(msg_wait && timeout--)
+	while(msg_wait && timeout){
+		--timeout;
 		_delay_ms(1);
+	}
 	msg_wait=0;	
-	return !timeout;
+	if(timeout==0)
+		return 1;	
+	if(msg_data==0)
+		return 2;
+	return 0;
 }
 
 void freemsg(void){
-	free(msg_data);
+	if(msg_data)
+		free(msg_data);
 	msg_length=0;
 }
 
