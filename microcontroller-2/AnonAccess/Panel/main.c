@@ -66,8 +66,10 @@ void lop0_messagerx(uint16_t length, uint8_t * msg){
 	}
 	ui_statusstring[1]='Q';
 	if(msg_wait){	/* there is a blocking reques for a message */
-		msg_data=malloc(length);
-		memcpy(msg_data, msg, length);
+		if((msg_data=lop0.msgbuffer)){
+			lop0.msgbuffer=NULL;
+			msg_length=length;
+		}
 		msg_wait=0;
 		return;
 	}

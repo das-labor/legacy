@@ -200,10 +200,12 @@ void console_verifyuser(void){
  * **************************************************/
 void console_adduser(void){
 	char * nick;
+	sha256_hash_t pinhash;
 	authblock_t ab;
+	memset(&pinhash, 0, sizeof(sha256_hash_t));
 	DS("\r\n new user");
 	console_getnick(&nick);
-	new_account(&ab, nick, true);
+	new_account(&ab, nick, pinhash, 0,0);
 	free(nick);
 	console_dumpauthblock(&ab);
 }

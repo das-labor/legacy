@@ -17,18 +17,18 @@
 #include "rtc.h"
 #include "main_test_tools.h"
 #include "i2c_printer.h"
-/*
+
 #define DS(a) uart_putstr_P(PSTR(a))
 #define DD(a,b) uart_hexdump((a),(b))
 
 #define DS(a) {uart_putstr_P(PSTR(a)); printer_str_P(PSTR(a));} 
 #define DC(a) {uart_putc(a); printer_char(a);} 
 #define DD(a,b) {uart_hexdump((a),(b)); printer_hexdump((a),(b));} 
-*/
+/*
 #define DS(a) printer_str_P(PSTR(a))
 #define DC(a) printer_char(a)
 #define DD(a,b) printer_hexdump((a),(b)) 
-
+*/
 
 /**
  * 
@@ -134,7 +134,12 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	delete_key(key, 32);
 	
 	if(!ticketdb_userexists(ab->uid)){
-		DS("\r\nUser does not exist");
+		DS("\r\nUser does not exist: ");
+		DD(&(ab->uid), 2);
+		DS(" max: ");
+		uint16_t j;
+		j = ticketdb_getstatMaxUsers();
+		DD(&j, 2);
 		return invalid_cred;
 	}
 	ticketdb_getUserTicketMac(ab->uid, &refhmac);
@@ -225,7 +230,7 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	return flags.admin?valid_admin:valid_user;
 }
 
-void new_account(authblock_t * ab, char* nickname, uint8_t anon){
+void new_account(authblock_t * ab, char* nickname, sha256_hash_t pinhash,uint8_t anon, uint8_t pinflags){
 	userflags_t flags;
 	uint8_t key[32];
 	uint8_t hmac[32];
@@ -237,6 +242,8 @@ void new_account(authblock_t * ab, char* nickname, uint8_t anon){
 	flags.locked = 0;
 	flags.notify_lostadmin = 0;
 	flags.anonymous = anon?true:false;
+	flags.force_admin_pin = (pinflags&1)?true:false;
+	flags.force_normal_pin = (pinflags&2)?true:false;
 	flags.reserved = 0;
 	/* generate new uid */
 	uint8_t t=0;
@@ -260,7 +267,7 @@ void new_account(authblock_t * ab, char* nickname, uint8_t anon){
 		memcpy(ab->ticket+32-sizeof(timestamp_t), &t, sizeof(timestamp_t));
 	}
 	load_timestampkey(key);
-	shabea256(ab->ticket, key, 256, 1, 16);
+	shabea256(ab->ticket, key, 256, 1, 16); /* encrypt ticket */
 	delete_key(key, 32);
 	
 	/* store new ticket */
@@ -271,7 +278,7 @@ void new_account(authblock_t * ab, char* nickname, uint8_t anon){
 	if(!anon){
 		ticketdb_addname(ab->uid, nickname);
 	}
-	ticketdb_setUserFlags(ab->uid, &flags);
+//	ticketdb_setUserFlags(ab->uid, &flags);
 
 	/* make new RID & Co */
 	load_nickkey(key);
@@ -280,14 +287,23 @@ void new_account(authblock_t * ab, char* nickname, uint8_t anon){
 //	DS("\r\n hnick: ");
 //	DD(ab->rid, 32);
 	fillBlockRandom(ab->rkey, 32);
-	shabea256(ab->rid, ab->rkey, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
+	shabea256(ab->rid, ab->rkey, 256, 1, 16); /* shabea256 with 16 rounds in encrypt mode */
 	load_ridkey(key);
-	shabea256(ab->rid, key, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
+	shabea256(ab->rid, key, 256, 1, 16); /* shabea256 with 16 rounds in encrypt mode */
 	delete_key(key,32);
+	
+	/* process pinhash */
+//	memcpy(ab->pinhmac, pinhash, sizeof(sha256_hash_t));
+//	shabea256(ab->rid, ab->rkey, 256, 1, 16); /* shabea256 with 16 rounds in encrypt mode */
+//	load_pinmac_key(key);
+//	hmac_sha256(ab->pinhmac, key, 256, ab->pinhmac, sizeof(sha256_hash_t)*8); 
+//	delete_key(key,32);
+	
 	/* fix hmac */
 	load_absignkey(key);
 	hmac_sha256(ab->hmac, key, 256, ab, 8*(sizeof(authblock_t)-32));
 	delete_key(key, 32);
+	
 
 	return;
 }

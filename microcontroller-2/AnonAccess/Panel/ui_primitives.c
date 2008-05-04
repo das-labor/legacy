@@ -313,7 +313,7 @@ void ui_drawframe(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, cha
 
 void ui_menuexec(menu_t* menu){
 	uint8_t n=0;
-	while(menu[n].options!=terminator)
+	while(pgm_read_byte(&(menu[n].options))!=terminator)
 		++n;
   reset:
   	;
@@ -324,9 +324,9 @@ void ui_menuexec(menu_t* menu){
 	
 	for(i=0; i<((n<3)?n:3); ++i){
 		lcd_gotopos(i+2,2);
-		lcd_writestr_P(menu[(idx+i)%n].name);
+		lcd_writestr_P((PGM_P)(pgm_read_word(&(menu[(idx+i)%n].name))));
 		lcd_gotopos(i+2,20);
-		switch(menu[(idx+i)%n].options){
+		switch(pgm_read_byte(&(menu[(idx+i)%n].options))){
 			case autosubmenu:
 			case submenu: lcd_writechar(LCD_RARROW);
 				break;
@@ -363,11 +363,11 @@ void ui_menuexec(menu_t* menu){
 			break;		
 		case ENTER_KEY:	
 		case SELECT_KEY:
-			if(menu[(idx+selpos-2)%n].options==autosubmenu){
-				ui_menuexec((menu_t*)menu[(idx+selpos-2)%n].x);
+			if(pgm_read_byte(&(menu[(idx+selpos-2)%n].options))==autosubmenu){
+				ui_menuexec((menu_t*)pgm_read_word(&(menu[(idx+selpos-2)%n].x)));
 			} else {
-				if(menu[(idx+selpos-2)%n].x!=0){
-					((void(*)(void))(menu[(idx+selpos-2)%n].x))();
+				if(pgm_read_word(&(menu[(idx+selpos-2)%n].x))!=0){
+					((void(*)(void))(pgm_read_word(&(menu[(idx+selpos-2)%n].x))))();
 				}else{
 					return;
 				}
@@ -777,14 +777,6 @@ uint8_t read_strn(uint8_t xpos, uint8_t ypos, PGM_P charset, char * str, uint8_t
 	charsetn=dbz_strcount_P(charset);
 	PGM_P ctab[charsetn];
 	dbz_splitup_P(charset, ctab);
-	
-	lcd_gotopos(1,1);
-	lcd_hexdump(&charsetn, 1);
-	c[0]=pgm_read_byte(charset);
-	lcd_hexdump(c, 1);
-	c[0]=pgm_read_byte(ctab[0]);
-	lcd_hexdump(c, 1);
-	
 	
 	if(n==0)
 		return 0;

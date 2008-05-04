@@ -48,7 +48,9 @@ typedef struct userflags_st{
 	unsigned locked:1;				/* this account is locked */
 	unsigned notify_lostadmin:1;	/* this user must be notifyed about lost admin privileges */
 	unsigned anonymous:1;			/* this user is anonymous */
-	unsigned reserved:3;
+	unsigned force_admin_pin:1;
+	unsigned force_normal_pin:1;
+	unsigned reserved:1;
 } userflags_t;
 
 typedef enum{
