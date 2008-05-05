@@ -48,6 +48,7 @@ void base64enc(char* dest, void* src, uint16_t length){
 	/* now we do the rest */
 	switch(length%3){
 		case 0: 
+			break;
 		case 1:
 			a[0]=(((uint8_t*)src)[i*3+0])>>2;
 			a[1]=((((uint8_t*)src)[i*3+0])<<4)&0x3F;

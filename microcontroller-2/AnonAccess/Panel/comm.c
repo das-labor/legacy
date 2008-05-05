@@ -24,6 +24,7 @@ volatile uint8_t msg_wait;
 volatile uint16_t msg_length;
 volatile void* msg_data;
 
+const char str_class_char_P[] PROGMEM = {'#','i','w','E','X'};
 
 void init_session(void){
 	uint8_t msg[3]={
@@ -120,6 +121,6 @@ void freemsg(void){
 	msg_length=0;
 }
 
-uint8_t getmsgid(void* msg){
+uint8_t getmsgid(const void* msg){
 	return ((uint8_t*)msg)[2];
 }
