@@ -38,7 +38,7 @@ void prng_init(void){
 		}
 		addEntropy(64*8,&b);
 	}
-	ADCSRA = _BV(ADEN) | _BV(ADSC) | _BV(ADATE) | _BV(ADIE) | 7; /* turn ADC on, start ADC, enable interrupt prescaler=128 */
+//	ADCSRA = _BV(ADEN) | _BV(ADSC) | _BV(ADATE) | _BV(ADIE) | 7; /* turn ADC on, start ADC, enable interrupt prescaler=128 */
 #ifdef ATMEGA644	
 	ADCSRB = 0; /* freerunning mode*/
 #endif

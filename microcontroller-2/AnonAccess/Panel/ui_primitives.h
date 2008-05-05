@@ -90,6 +90,7 @@ void    ui_printstatusline(void);
 void lcd_writeB64(void* data, uint16_t length);
 void lcd_writelinen(const char* text, uint16_t length);
 void lcd_writelinen_P(PGM_P text, uint16_t length);
+void lcd_writeB64long(uint8_t xpos, uint8_t ypos, uint8_t width, void* data, uint16_t length);
 
 void    ui_loginit(ui_loglist_t* log, uint8_t size);
 void    ui_logrm(ui_loglist_t* log);
@@ -100,4 +101,8 @@ ui_loglist_entry_t* ui_logget(ui_loglist_t* log, uint8_t index);
 uint8_t ui_logactcount(ui_loglist_t* log);
 void    ui_logprint(uint8_t xpos, uint8_t ypos, uint8_t width, uint8_t height, ui_loglist_t* log);
 void ui_logreader(uint8_t xpos, uint8_t ypos, uint8_t width, uint8_t height, ui_loglist_t* log);
+
+
+int8_t ui_keyortimeout(uint16_t timeout);
+
 #endif /*UI_PRIMITIVES_H_*/

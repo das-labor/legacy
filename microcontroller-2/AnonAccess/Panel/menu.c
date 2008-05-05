@@ -260,72 +260,51 @@ void req_authblock(void){
 
 
 void view_authblock(void){
-	char str[45];
+	authblock_t a;
 	
-	ui_printstatusline();
+	if(card_readAB(&a)==false){
+		lcd_cls();
+		ui_drawframe(1,1,LCD_WIDTH,LCD_HEIGHT,'#');
+		lcd_gotopos(2,3);
+		lcd_writestr_P(PSTR("could not find"));
+		lcd_gotopos(3,3);
+		lcd_writestr_P(PSTR("authblock"));
+		ui_waitforkey('E');
+	}
+	lcd_cls();
 	lcd_gotopos(2,1);
 	lcd_writestr_P(PSTR("uid: "));
-	lcd_hexdump(&(ab.uid), 2);
+	lcd_hexdump(&(a.uid), 2);
 	ui_waitforkey('E');
 	
-	ui_printstatusline();
-	lcd_gotopos(2,1);
+	lcd_cls();
+	lcd_gotopos(1,1);
 	lcd_writestr_P(PSTR("ticket: "));
-	base64enc(str, ab.ticket, 32);
-	lcd_gotopos(2,16);
-	lcd_writestrn(&(str[0]),4);
-	lcd_gotopos(3,1);
-	lcd_writestrn(&(str[4]),20);
-	lcd_gotopos(4,1);
-	lcd_writestrn(&(str[24]),20);
+	lcd_writeB64long(1,2,LCD_WIDTH, a.ticket, 32);
 	ui_waitforkey('E');
 	
-	ui_printstatusline();
-	lcd_gotopos(2,1);
+	lcd_cls();
+	lcd_gotopos(1,1);
 	lcd_writestr_P(PSTR("rkey: "));
-	base64enc(str, ab.rkey, 32);
-	lcd_gotopos(2,16);
-	lcd_writestrn(&(str[0]),4);
-	lcd_gotopos(3,1);
-	lcd_writestrn(&(str[4]),20);
-	lcd_gotopos(4,1);
-	lcd_writestrn(&(str[24]),20);
+	lcd_writeB64long(1,2,LCD_WIDTH, a.rkey, 32);
 	ui_waitforkey('E');
 	
-	ui_printstatusline();
-	lcd_gotopos(2,1);
+	lcd_cls();
+	lcd_gotopos(1,1);
 	lcd_writestr_P(PSTR("rid: "));
-	base64enc(str, ab.rid, 32);
-	lcd_gotopos(2,16);
-	lcd_writestrn(&(str[0]),4);
-	lcd_gotopos(3,1);
-	lcd_writestrn(&(str[4]),20);
-	lcd_gotopos(4,1);
-	lcd_writestrn(&(str[24]),20);
+	lcd_writeB64long(1,2,LCD_WIDTH, a.rid, 32);
 	ui_waitforkey('E');
 	
-	ui_printstatusline();
-	lcd_gotopos(2,1);
+	lcd_cls();
+	lcd_gotopos(1,1);
 	lcd_writestr_P(PSTR("pinhmac: "));
-	base64enc(str, ab.pinhmac, 32);
-	lcd_gotopos(2,16);
-	lcd_writestrn(&(str[0]),4);
-	lcd_gotopos(3,1);
-	lcd_writestrn(&(str[4]),20);
-	lcd_gotopos(4,1);
-	lcd_writestrn(&(str[24]),20);
+	lcd_writeB64long(1, 2, LCD_WIDTH, a.pinhmac, 32);
 	ui_waitforkey('E');
 	
-	ui_printstatusline();
-	lcd_gotopos(2,1);
+	lcd_cls();
+	lcd_gotopos(1,1);
 	lcd_writestr_P(PSTR("HMAC: "));
-	base64enc(str, ab.hmac, 32);
-	lcd_gotopos(2,16);
-	lcd_writestrn(&(str[0]),4);
-	lcd_gotopos(3,1);
-	lcd_writestrn(&(str[4]),20);
-	lcd_gotopos(4,1);
-	lcd_writestrn(&(str[24]),20);
+	lcd_writeB64long(1,2,LCD_WIDTH, a.hmac, 32);
 	ui_waitforkey('E');
 }
 
@@ -333,9 +312,9 @@ void view_authblock(void){
 /******************************************************************************/
 
 void read_logs(void){
-	ui_loglist_t* tab[]={&bootlog, &syslog, &seclog};
+	ui_loglist_t* tab[]={&bootlog, &syslog, &seclog, &masterlog};
 	ui_logreader(1,1,LCD_WIDTH,LCD_HEIGHT, 
-	    tab[ui_radioselect_P(1,2,LCD_WIDTH, 3, PSTR("bootlog\0syslog\0seclog\0"))]);
+	    tab[ui_radioselect_P(1,2,LCD_WIDTH, 3, PSTR("bootlog\0syslog\0seclog\0masterlog\0"))]);
 }
 
 /******************************************************************************/
@@ -358,14 +337,14 @@ void open_door(void){
 	init_session();
 	submit_ab(&ab);
 	if(waitformessage(1000)){
-		error_display(PSTR("communication timeout!"));
+		error_display(PSTR("(361) com. timeout!"));
 		return;
 	}
 	if(getmsgid(msg_data)==MSGID_AB_PINREQ){
 		freemsg();
 		getandsubmitpin();
 		if(waitformessage(1000)){
-			error_display(PSTR("communication timeout!"));
+			error_display(PSTR("(368) com. timeout!"));
 			return;
 		}
 	}
@@ -383,20 +362,19 @@ void open_door(void){
 	freemsg();
 	send_mainopen();
 	if(waitformessage(1000)){
-		error_display(PSTR("communication timeout!"));
+		error_display(PSTR("(386) com. timeout!"));
 		return;
 	}
 	if(getmsgid(msg_data)==MSGID_ACTION_REPLY && 
-	   msg_length==6 && ((uint8_t*)msg_data)[4]==ACTION_MAINOPEN){
+	   msg_length==5 && ((uint8_t*)msg_data)[3]==ACTION_MAINOPEN){
+		lcd_gotopos(1,2); lcd_writechar('Z');
 		lcd_cls();
 		lcd_gotopos(2,2);
 		lcd_writestr_P(PSTR("door "));
-		if(((uint8_t*)msg_data)[5]==NOTDONE)
+		if(((uint8_t*)msg_data)[4]==NOTDONE)
 			lcd_writestr_P(PSTR("NOT "));
 		lcd_writestr_P(PSTR("opening!"));
-		uint16_t i=3000;
-		while(i--)
-			_delay_ms(1);
+		ui_keyortimeout(3000);
 		freemsg();
 		return;
 	}

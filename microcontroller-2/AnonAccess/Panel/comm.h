@@ -34,6 +34,16 @@
 #define ACTION_REMADMIN    0x15
 #define ACTION_KEYMIGRATION 0x016
 
+#define STR_CLASS_NO    0x00
+#define STR_CLASS_INFO  0x01
+#define STR_CLASS_WARN  0x02
+#define STR_CLASS_ERROR 0x03
+#define STR_CLASS_SEC   0x04
+#define STR_CLASS_MAX   0x04
+
+extern const char str_class_char_P[]; // PROGMEM = {'#','i','w','E','X'};
+
+
 #define DONE    1
 #define NOTDONE 0
 #define ANON    1
@@ -52,6 +62,6 @@ void req_bootab(char* name, char* pin, uint16_t pinlen_B, uint8_t anon, uint8_t 
 
 void freemsg(void);
 uint8_t waitformessage(uint16_t timeout);
-uint8_t getmsgid(void* msg);
+uint8_t getmsgid(const void* msg);
 
 #endif /*COMM_H_*/

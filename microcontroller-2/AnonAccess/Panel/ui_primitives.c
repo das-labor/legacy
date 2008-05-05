@@ -17,6 +17,7 @@
 #include "extrachars.h"
 #include "rtc.h"
 #include "base64_enc.h"
+#include <ctype.h>
 
 #define DEBOUNCE_DELAY _delay_ms(10)
 
@@ -490,7 +491,7 @@ void ui_hexdump_P(uint8_t xpos, uint8_t ypos, uint8_t width, uint8_t height,
 /******************************************************************************/
 
 void lcd_writelinen(const char* text, uint16_t length){
-	while(*text && *text!='\n' && length--)
+	while(*text && *text!='\n' && *text!='\r' && length--)
 		lcd_writechar(*text++);
 }
 
@@ -508,10 +509,31 @@ void lcd_writelinen_P(PGM_P text, uint16_t length){
 /******************************************************************************/
 
 void lcd_writeB64(void* data, uint16_t length){
-	char str[1+(length*3+3)/4]; /* length/3*4*/
+	char str[1+(length*4+3)/3]; /* length/3*4 */
 	
 	base64enc(str, data, length);
 	lcd_writestr(str);
+}
+
+/******************************************************************************/
+
+void lcd_writeB64long(uint8_t xpos, uint8_t ypos, uint8_t width, void* data, uint16_t length){
+	uint8_t bytesperline;
+	bytesperline = (width/4)*3;
+	for(; length>=bytesperline; length-=bytesperline){
+		lcd_gotopos(ypos++, xpos);
+		lcd_writeB64((uint8_t*)data, bytesperline);
+		data = (uint8_t*)data + bytesperline;
+		if(ypos>LCD_HEIGHT)
+			return;
+	}
+	if(length){
+		if(ypos>LCD_HEIGHT)
+			return;
+		lcd_gotopos(ypos, xpos);
+		lcd_writeB64((uint8_t*)data, length);
+		
+	}
 }
 
 /******************************************************************************/
@@ -904,15 +926,25 @@ void ui_logfree(ui_loglist_t* log){
 
 /******************************************************************************/
 
+uint16_t stringprintlen(char* str){
+	uint16_t i=0;
+	while(isprint(str[i]))
+		++i;
+	return i;
+}
+
+/******************************************************************************/
+
 uint8_t ui_logappend(ui_loglist_t* log, void* str, storage_type_t st, state_t state){
 	if(log->entrys[log->idx].storage_type!=none_st){
 		ui_logrm(log);
 	}
 	if(st==copy_st){
-		uint16_t len=strlen(str);
-		if(!(log->entrys[log->idx].str=malloc(len)))
+		uint16_t len=stringprintlen((char*)str);
+		if(!(log->entrys[log->idx].str=malloc(len+1)))
 			return 1;
 		memcpy(log->entrys[log->idx].str, str, len);
+		((char*)(log->entrys[log->idx].str))[len]='\0';
 	}else{
 		log->entrys[log->idx].str = str;
 	}
@@ -1029,7 +1061,20 @@ void ui_logreader(uint8_t xpos, uint8_t ypos, uint8_t width, uint8_t height,
 }	
 /******************************************************************************/
 
-
+int8_t ui_keyortimeout(uint16_t timeout){
+	char key;
+	while(timeout--){
+		if((key=read_keypad())!=NO_KEY){
+			DEBOUNCE_DELAY;
+			while(read_keypad()==key)
+				;
+			DEBOUNCE_DELAY;
+			return key;
+		}
+		_delay_ms(1);
+	}
+	return -1;
+}
 
 
 

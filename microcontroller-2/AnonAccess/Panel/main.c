@@ -27,6 +27,12 @@
 #include "cardio.h"
 #include "ui_primitives.h"
 #include "logs.h"
+#include <ctype.h>
+#include <string.h>
+
+#define MAX(a,b) (((a)>(b))?(a):(b))
+#define MIN(a,b) (((a)<(b))?(a):(b))
+
 
 lop_ctx_t lop0={
 	idle, idle, idle, 0, 0, NULL, 0, 
@@ -40,6 +46,17 @@ void onuartrx(uint8_t b){
 	//let lop handle the received byte.
 	ui_statusstring[0]='a'+(1+(ui_statusstring[0]-'a'))%26;
 	lop_recieve_byte(&lop0,b);
+}
+
+
+/******************************************************************************/
+
+uint16_t purify_str(char* str){
+	uint16_t i=0,len=strlen(str);
+	while(i<len && (!isprint(str[i]) || isspace(str[i])) )
+		++i;
+	memmove(str, str+i, len-i);
+	return len-i;
 }
 
 /******************************************************************************/
@@ -71,6 +88,22 @@ void lop0_messagerx(uint16_t length, uint8_t * msg){
 			msg_length=length;
 		}
 		msg_wait=0;
+		return;
+	}
+	if(msg[2]==MSGID_PRINT){
+		if(msg[3]>STR_CLASS_MAX) 
+			return; /* string class out of range */
+//		if(length!=msg[4]+5);
+//			return; /* incorrect length */
+		lcd_cls();
+		ui_drawframe(1,1,LCD_WIDTH, LCD_HEIGHT,pgm_read_byte(str_class_char_P+msg[3]));
+		lcd_gotopos(2,2);
+//		lcd_hexdump(msg+2,7);
+//		lcd_gotopos(3,2);
+		uint16_t strlen;
+		strlen=purify_str((char*)msg+5);
+		lcd_writelinen((char*)msg+5, MIN(strlen, LCD_WIDTH-2));
+		ui_logappend(&masterlog, msg+5, copy_st, informative_st);
 		return;
 	}
 	if(msg[2]==MSGID_ACTION_REPLY){
@@ -141,11 +174,11 @@ int main(void){
 	BOOTLOG_APPEND_OK;
 	
 	BOOTLOG_APPEND_P("SPI init");
-	spi_init();
+	//spi_init();
 	BOOTLOG_APPEND_OK;
 	
 	BOOTLOG_APPEND_P("RTC init");
-	rtc_init();
+	//rtc_init();
  	BOOTLOG_APPEND_OK;
 	
  	BOOTLOG_APPEND_P("PRNG init");

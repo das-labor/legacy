@@ -4,18 +4,23 @@
 #include "ui_primitives.h"
 #include "config.h"
 
-extern ui_loglist_t bootlog, syslog, seclog;
+extern ui_loglist_t bootlog, syslog, seclog, masterlog;
 
 #ifndef BOOTLOG_SIZE
- #define BOOTLOG_SIZE 6
+ #define BOOTLOG_SIZE 16
 #endif 
 
 #ifndef SYSLOG_SIZE
- #define SYSLOG_SIZE 6
+ #define SYSLOG_SIZE 16
 #endif
 
 #ifndef SECLOG_SIZE
- #define SECLOG_SIZE 6
+ #define SECLOG_SIZE 16
+#endif
+
+
+#ifndef MASTERLOG_SIZE
+ #define MASTERLOG_SIZE 16
 #endif
 
 #define BOOTLOG_APPEND_P(s)    ui_logappend(&bootlog, PSTR(s), flash_st, processing_st);

@@ -102,7 +102,7 @@ const char test_readhex_PS[] PROGMEM =  "read hexadecimal";
 const char test_readstr_PS[] PROGMEM =  "read string";
 const char test_display_PS[] PROGMEM =  "displayanalysis";
 
-menu_t ui_test_menu_mt[]={
+menu_t ui_test_menu_mt[] PROGMEM ={
 	{debug_menux_PS, back, (superp)NULL},	
 	{test_hexview_PS, execute, (superp)read_flash},
 	{test_textview_PS, execute, (superp)read_gpl},

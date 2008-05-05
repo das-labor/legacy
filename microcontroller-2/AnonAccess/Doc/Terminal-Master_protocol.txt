@@ -55,7 +55,7 @@
    0x15 - rem admin    <done/notdone>
    0x16 - keymigration <done/notdone>
   msgid=6: print string
-   <string>
+*  <classification><string>
   msgid=7: get bootstrap account (add bootstrap admin)
 *   <nickname><pinhash><anon/nonanon><pinflags>
    
@@ -78,4 +78,9 @@
 <string>:
  length - 1 byte
  string - "length" bytes
-
+*<classification>
+ 0x00 - no classification
+ 0x01 - informative
+ 0x02 - warning
+ 0x03 - error
+ 0x04 - security

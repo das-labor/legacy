@@ -48,7 +48,13 @@
 #define DD(a,b) uart_hexdump((a),(b))
 */
 
+/*
 #define DS(a) {uart_putstr_P(PSTR(a)); printer_str_P(PSTR(a));} 
+#define DC(a) {uart_putc(a); printer_char(a);} 
+#define DD(a,b) {uart_hexdump((a),(b)); printer_hexdump((a),(b));} 
+*/
+
+#define DS(a) {uart_putstr_P(PSTR(a)); terminal_print_P(&lop0, STR_CLASS_INFO, PSTR(a));} 
 #define DC(a) {uart_putc(a); printer_char(a);} 
 #define DD(a,b) {uart_hexdump((a),(b)); printer_hexdump((a),(b));} 
 
@@ -80,6 +86,15 @@
 #define ACTION_ADDADMIN    0x14
 #define ACTION_REMADMIN    0x15
 #define ACTION_KEYMIGRATION 0x016
+
+
+#define STR_CLASS_NO    0x00
+#define STR_CLASS_INFO  0x01
+#define STR_CLASS_WARN  0x02
+#define STR_CLASS_ERROR 0x03
+#define STR_CLASS_SEC   0x04
+#define STR_CLASS_MAX   0x04
+
 
 #define DONE    1
 #define NOTDONE 0
@@ -536,15 +551,15 @@ void init_system(void){
     E24C_init();
 	rtc_init();
     resetcnt_inc();
-	uart_putstr_P(PSTR("\r\nprinter init ... "));
+	DS("\r\nprinter init ... ");
     printer_init();
-	uart_putstr_P(PSTR(" finished\r\n"));
+	DS(" finished\r\n");
     prng_init();
 	#ifdef TAMPER_DETECTION
 	tamperdetect_init();
 	#endif
 	DS("-_-_-_-");
-	uart_putstr_P(PSTR("\r\ninit finished\r\n"));
+	DS("\r\ninit finished\r\n");
 }
 
 /******************************************************************************/
