@@ -137,17 +137,15 @@ void lop1_messagerx(uint16_t length, uint8_t * msg){
 	if(msg[2]==MSGID_PRINT){
 		if(msg[3]>STR_CLASS_MAX) 
 			return; /* string class out of range */
-		if(length!=msg[4]+5);
+		if(length!=5+msg[4])
 			return; /* incorrect length */
 		lcd_cls();
 		ui_drawframe(1,1,LCD_WIDTH, LCD_HEIGHT,pgm_read_byte(str_class_char_P+msg[3]));
 		lcd_gotopos(2,2);
-//		lcd_hexdump(msg+2,7);
-//		lcd_gotopos(3,2);
 		uint16_t strlen;
 		strlen=purify_str((char*)msg+5);
 		lcd_writelinen((char*)msg+5, MIN(strlen, LCD_WIDTH-2));
-		ui_logappend(&masterlog, msg+5, copy_st, informative_st);
+		ui_logappend(&masterlog, msg+5, copy_st, msg[3]);
 		return;
 	}
 	if(msg[2]==MSGID_ACTION_REPLY){
