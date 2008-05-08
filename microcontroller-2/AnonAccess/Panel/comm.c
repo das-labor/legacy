@@ -19,7 +19,7 @@
 
 #include "lcd_tools.h"
 
-extern lop_ctx_t lop0;
+extern lop_ctx_t lop1;
 volatile uint8_t msg_wait;
 volatile uint16_t msg_length;
 volatile void* msg_data;
@@ -32,7 +32,7 @@ void init_session(void){
 		TERMINALUNIT_ID,
 		MSGID_SESSION_INIT
 	};
-	lop_sendmessage(&lop0, 3, msg);
+	lop_sendmessage(&lop1, 3, msg);
 } 
  
 void submit_ab(authblock_t * ab){
@@ -43,7 +43,7 @@ void submit_ab(authblock_t * ab){
 		0
 	};
 	memcpy(&(msg[3]), ab, sizeof(authblock_t));
-	lop_sendmessage(&lop0, 3+sizeof(authblock_t), msg);
+	lop_sendmessage(&lop1, 3+sizeof(authblock_t), msg);
 }
 
 void submit_pin(char* pin, uint16_t length_B){
@@ -54,7 +54,7 @@ void submit_pin(char* pin, uint16_t length_B){
 		0
 	};
 	sha256((sha256_hash_t*)((uint8_t*)msg+3), pin, length_B*8);
-	lop_sendmessage(&lop0, 3+32, msg);
+	lop_sendmessage(&lop1, 3+32, msg);
 }
 
 
@@ -65,7 +65,7 @@ void send_mainopen(void){
 		MSGID_ACTION,
 		ACTION_MAINOPEN
 	};
-	lop_sendmessage(&lop0, 4, msg);
+	lop_sendmessage(&lop1, 4, msg);
 }
 
 void send_mainclose(void){
@@ -75,7 +75,7 @@ void send_mainclose(void){
 		MSGID_ACTION,
 		ACTION_MAINCLOSE
 	};
-	lop_sendmessage(&lop0, 4, msg);
+	lop_sendmessage(&lop1, 4, msg);
 } 
 
 void req_bootab(char* name, char* pin, uint16_t pinlen_B, uint8_t anon, uint8_t pinflags){
@@ -98,7 +98,7 @@ void req_bootab(char* name, char* pin, uint16_t pinlen_B, uint8_t anon, uint8_t 
 	sha256((sha256_hash_t*)&(msg[3+1+len]),pin, pinlen_B*8);
 	msg[3+1+len+sizeof(sha256_hash_t)]=anon?1:0;
 	msg[3+1+len+sizeof(sha256_hash_t)+1]=pinflags&3;
-	lop_sendmessage(&lop0, sizeof(msg), msg);
+	lop_sendmessage(&lop1, sizeof(msg), msg);
 }
 
 uint8_t waitformessage(uint16_t timeout){

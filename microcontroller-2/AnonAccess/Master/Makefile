@@ -2,10 +2,10 @@ include gmsl
 
 PRG	    = anonaccess-test
 OBJ	    = keys.o main.o debug_tools.o uart.o debug.o 24CBlockDev.o 24Cxxx.o \
-  i2c.o i2c_tools.o prng.o sha256-asm.o hmac-sha256.o reqvalidator.o \
+  i2c.o i2c_tools.o sha256-asm.o hmac-sha256.o reqvalidator.o \
   action.o shabea.o ticketDB.o flmDB.o fairrnd.o rtc.o enc2E24C.o hwrnd.o \
   lop.o lop_debug.o reset_counter.o base64_enc.o selfdestruct.o i2c_printer.o \
-  iDP3540.o
+  iDP3540.o qport.o xtea-asm.o entropium.o
 MCU_TARGET     = atmega644
 OPTIMIZE       = -Os -mno-tablejump
 DEBUG	   = -gstabs
@@ -19,7 +19,7 @@ CC	     = avr-gcc
 # Override is only needed by avr-lib build system.
 
 override LDFLAGS       = -Wl,-Map,$(PRG).map
-override CFLAGS        = -g -pedantic -std=gnu99 -Wall -Wstrict-prototypes $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -morder1
+override CFLAGS        = -MMD -g -pedantic -std=gnu99 -Wall -Wstrict-prototypes $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -morder1
 # -fnew-ra
 override LDFLAGS       = -Wl,-Map,$(PRG).map
 override ASFLAGS	   = -mmcu=$(MCU_TARGET)
@@ -116,3 +116,10 @@ pdf: $(PRG).pdf
 
 %.png: %.fig
 	$(FIG2DEV) -L png $< $@
+
+DEPS := $(wildcard *.d)
+ifneq ($(DEPS),)
+include $(DEPS)
+endif
+
+

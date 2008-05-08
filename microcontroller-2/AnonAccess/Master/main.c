@@ -23,7 +23,7 @@
 #include "i2c_tools.h"
 #include "ticketDB.h"
 #include "flmDB.h"
-#include "prng.h"
+#include "entropium.h"
 #include "hmac-sha256.h"
 #include "sha256.h"
 #include "action.h"
@@ -37,6 +37,7 @@
 #include "hwrnd.h"
 #include "lop.h"
 #include "lop_debug.h"
+#include "qport.h"
 #include "debug_tools.h"
 #include "selfdestruct.h"
 #include "i2c_printer.h"
@@ -54,9 +55,17 @@
 #define DD(a,b) {uart_hexdump((a),(b)); printer_hexdump((a),(b));} 
 */
 
+/*
 #define DS(a) {uart_putstr_P(PSTR(a)); terminal_print_P(&lop0, STR_CLASS_INFO, PSTR(a));} 
 #define DC(a) {uart_putc(a); printer_char(a);} 
 #define DD(a,b) {uart_hexdump((a),(b)); printer_hexdump((a),(b));} 
+*/
+
+//#define DS(a) {terminal_print_P(&lop1, STR_CLASS_INFO, PSTR(a));} 
+#define DS(a) {;} 
+#define DC(a) {;} 
+#define DD(a,b) {;} 
+
 
 #define MASTERUNIT_ID 0
 #define TERMINALUNIT_ID 1
@@ -139,7 +148,28 @@ struct {
 	uid_t participants[SESSION_MAX_PARTICIPANTS];
 } session;
 
+/* keys from /dev/random */
+uint8_t qp0_key_rxa[16] EEMEM = {0x3c, 0x71, 0x68, 0xa9, 0x6b, 0xf1, 0x63, 0xac,
+                                 0xc4, 0x7f, 0x61, 0x00, 0xcb, 0x96, 0x3d, 0x74};
+uint8_t qp0_key_rxb[16] EEMEM = {0xd4, 0x82, 0x18, 0x04, 0xd2, 0x29, 0xe2, 0x7e,
+                                 0x7b, 0x41, 0x2a, 0x2e, 0x30, 0xc6, 0x5c, 0xbd};
+uint8_t qp0_key_txa[16] EEMEM = {0x15, 0x36, 0xb4, 0x47, 0x62, 0xc2, 0xc8, 0x35,
+                                 0x78, 0xb5, 0x4c, 0xa3, 0xcb, 0x10, 0x8b, 0x34};
+uint8_t qp0_key_txb[16] EEMEM = {0xec, 0x78, 0x0c, 0xf0, 0x44, 0xf9, 0x6f, 0x4a,
+                                 0xd5, 0xf6, 0x3a, 0x87, 0xde, 0x3d, 0x8f, 0x18};
+
+uint8_t qp0_key_hmac[32] EEMEM = {0x8c, 0x40, 0xc8, 0x3c, 0x84, 0x11, 0x8a, 0xec,
+                                  0x66, 0x66, 0x5d, 0x9f, 0x3b, 0x79, 0x55, 0x63,
+                                  0x68, 0x3e, 0xc3, 0xb2, 0x20, 0xc6, 0xa7, 0x7e,
+                                  0x13, 0x54, 0x88, 0x77, 0x02, 0x9b, 0xb9, 0x8a};
+
 lop_ctx_t lop0={
+	idle, idle, idle, 0, 0, NULL, 0, 
+	NULL, NULL, NULL, NULL};
+
+qport_ctx_t qp0;
+
+lop_ctx_t lop1={
 	idle, idle, idle, 0, 0, NULL, 0, 
 	NULL, NULL, NULL, NULL};
 	
@@ -151,17 +181,49 @@ enum{
 /******************************************************************************/
 /******************************************************************************/
 
-void lop0_sendrawbyte(uint8_t b){
-	uart_putc(b);
-}
+void streamrx(uint8_t b);
+void messagerx(uint16_t length, uint8_t* msg);
 
-/******************************************************************************/
 
 // this handler is called from the uart_hook, i.e. when the Uart receives
 // a new byte.
 void onuartrx(uint8_t b){
-	//let lop handle the received byte.
 	lop_recieve_byte(&lop0,b);
+}
+
+void lop0_sendrawbyte(uint8_t b){
+	uart_putc((char)b);
+}
+
+void lop0_streamrx(uint8_t b){
+	qport_recieve_byte(&qp0, b);
+}
+
+void lop0_streamsync(void){	
+}
+
+void lop0_messagerx(uint16_t length, uint8_t * msg){
+	qport_incomming_msg(&qp0, length, msg);
+}
+
+/******************************************************************************/
+
+void qp0_streamrx(uint8_t b){
+	lop_recieve_byte(&lop1, b);
+}
+
+/******************************************************************************/
+
+void lop1_sendrawbyte(uint8_t b){
+	qport_streamsend(&qp0, b);
+}
+
+void lop1_streamrx(uint8_t b){
+	streamrx(b);
+}
+
+void lop1_messagerx(uint16_t length, uint8_t* msg){
+	messagerx(length, msg);
 }
 
 /******************************************************************************/
@@ -180,7 +242,7 @@ void setup_system(void){
 	DS("\r\ngenerating keys:");
 	for(a=0; a<EEPROM_SEC_INIT_RWS; ++a){
 		for(b=0; b<KEY_NUM; ++b){
-			getRandomBlock((uint32_t*)buffer);
+			entropium_getRandomBlock((uint32_t*)buffer);
 			eeprom_write_block(buffer, (void*)(b*32), 32);
 		}
 		if((a&(31))==0){
@@ -394,7 +456,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 					MASTERUNIT_ID,
 					MSGID_AB_ERROR, /* AuthBlock error reply */
 				1};//	AB_ERROR_WONTTELL }; /* won't tell */
-				lop_sendmessage(&lop0, 4, reply);
+				lop_sendmessage(&lop1, 4, reply);
 				return;
 			}
 		}
@@ -406,7 +468,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 						MASTERUNIT_ID,
 						MSGID_AB_ERROR, /* AuthBlock error reply */
 					2};//	AB_ERROR_WONTTELL }; /* won't tell */
-					lop_sendmessage(&lop0, 4, reply);	
+					lop_sendmessage(&lop1, 4, reply);	
 				}
 				return;	break;
 			case valid_admin:
@@ -418,7 +480,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 				msg[1] = MASTERUNIT_ID;
 				msg[2] = MSGID_AB_REPLY; /* AuthBlock reply */
 				
-				lop_sendmessage(&lop0, 3+sizeof(authblock_t), msg);
+				lop_sendmessage(&lop1, 3+sizeof(authblock_t), msg);
 				return; break;
 			default:
 				/* GNAHHH, this should NEVER happen */
@@ -445,7 +507,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 			session_reset();
 			masterstate = mainidle;
 			busy &= ~1;
-			lop_sendmessage(&lop0, 5, reply);
+			lop_sendmessage(&lop1, 5, reply);
 			return;
 		}else{
 			/* length ok, permissions ok, now do the real stuff */
@@ -458,7 +520,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 					default: /* ERROR */ break;
 				}
 				reply[4]=DONE;
-				lop_sendmessage(&lop0, 5, reply);
+				lop_sendmessage(&lop1, 5, reply);
 			} else {
 				char name[msg[4]+1];
 				strncpy(name,(char*)&(msg[5]), msg[4]);
@@ -480,10 +542,10 @@ void messagerx(uint16_t len, uint8_t * msg){
 						DONE, 0};
 					add_user(name, msg+len-sizeof(sha256_hash_t), msg[len-2], msg[len-1], (authblock_t*)&(addreply[5]));
 //					add_user(name, msg[len-1]?true:false, (authblock_t*)&(addreply[5])); 
-					lop_sendmessage(&lop0, 5+sizeof(authblock_t), addreply);
+					lop_sendmessage(&lop1, 5+sizeof(authblock_t), addreply);
 				}else{
 					reply[4]=DONE;
-					lop_sendmessage(&lop0, 5, reply);
+					lop_sendmessage(&lop1, 5, reply);
 				}
 			}
 			return;
@@ -518,7 +580,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 			ticketdb_getUserFlags(((authblock_t*)&(addreply[5]))->uid ,&uf);
 			uf.admin = true;
 			ticketdb_setUserFlags(((authblock_t*)&(addreply[5]))->uid ,&uf);
-			lop_sendmessage(&lop0, 5+sizeof(authblock_t), addreply);
+			lop_sendmessage(&lop1, 5+sizeof(authblock_t), addreply);
 		} else {
 			/* won't give a bootstrap account */
 			session_reset();
@@ -536,22 +598,49 @@ void init_system(void){
 	session_reset();
 	masterstate = idle;
 	uart_init();
-	uart_putstr_P(PSTR("\r\nuart works (a)\r\n"));
+//	uart_putstr_P(PSTR("\r\nuart works (a)\r\n"));
 //	while(1);
+
+	lop0.msgbuffer = NULL;
+	lop0.msgidx = 0;
+	lop0.on_streamrx = lop0_streamrx;
+	lop0.sendrawbyte = lop0_sendrawbyte;
+	lop0.on_msgrx = lop0_messagerx;
+	
+	qp0.keystate = unkeyed;
+	qp0.master_enc_key_rxa = qp0_key_rxa;
+	qp0.master_enc_key_rxb = qp0_key_rxb;
+	qp0.master_enc_key_txa = qp0_key_txa;
+	qp0.master_enc_key_txb = qp0_key_txb;
+	qp0.master_mac_key = qp0_key_hmac;
+	qp0.on_byterx = qp0_streamrx;
+	qp0.lop = &lop0;
+	qp0.keyingdata = 0;
+
+	lop1.on_streamrx = lop1_streamrx;
+	lop1.sendrawbyte = lop1_sendrawbyte;
+	lop1.on_msgrx =    lop1_messagerx;
+	lop_sendreset(&lop0);
+	uart_hook = onuartrx;
+/*
 	lop0.sendrawbyte = lop0_sendrawbyte;
 	lop0.on_streamrx = streamrx;
 	lop0.on_msgrx = messagerx;
 	uart_hook = onuartrx;
 	lop_recieve_byte(&lop0, LOP_RESET_CODE);
+*/	
 	uart_putc(XON);
-	uart_putstr_P(PSTR("\r\nuart works\r\n"));
+//	uart_putstr_P(PSTR("\r\nuart works\r\n"));
 	
+	if(qp0.keystate == unkeyed)
+		qport_rekey(&qp0);
 //	while(1);
     i2c_init();
     E24C_init();
 	rtc_init();
     resetcnt_inc();
 	DS("\r\nprinter init ... ");
+	DS("\r\n2nd msg ");
     printer_init();
 	DS(" finished\r\n");
     prng_init();

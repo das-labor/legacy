@@ -26,7 +26,7 @@
 		uart_init();
 		initialised=1;
 	}	
-	uart_putc(c);
+//	uart_putc(c);
  }
  
  void debug_str(char* s){

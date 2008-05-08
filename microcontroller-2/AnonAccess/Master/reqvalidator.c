@@ -11,24 +11,29 @@
 #include "shabea.h"
 #include "keys.h"
 #include "types.h"
-#include "prng.h"
+#include "entropium.h"
 #include "fairrnd.h"
 #include "uart.h"
 #include "rtc.h"
 #include "main_test_tools.h"
 #include "i2c_printer.h"
-
+/*
 #define DS(a) uart_putstr_P(PSTR(a))
 #define DD(a,b) uart_hexdump((a),(b))
-
+*/
+/*
 #define DS(a) {uart_putstr_P(PSTR(a)); printer_str_P(PSTR(a));} 
 #define DC(a) {uart_putc(a); printer_char(a);} 
 #define DD(a,b) {uart_hexdump((a),(b)); printer_hexdump((a),(b));} 
+*/
 /*
 #define DS(a) printer_str_P(PSTR(a))
 #define DC(a) printer_char(a)
 #define DD(a,b) printer_hexdump((a),(b)) 
 */
+#define DS(a)   {;} 
+#define DC(a)   {;} 
+#define DD(a,b) {;} 
 
 /**
  * 
@@ -96,7 +101,7 @@ void update_pin(authblock_t * ab, char* pin){
 	uint8_t refhmac[32],key[32];
 	uint8_t msg[32+l];
 	
-	fillBlockRandom(msg,32);
+	entropium_fillBlockRandom(msg,32);
 	ticketdb_setUserPinMacSeed(ab->uid, msg); /* load seed in the first 32 byte */
 	memcpy(msg+32, pin, l); /* load pin */
 	load_pinmac_key(key);
@@ -196,7 +201,7 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	}
 	
 	/* generate new ticket */
-	fillBlockRandom(ab->ticket, 32-sizeof(timestamp_t));
+	entropium_fillBlockRandom(ab->ticket, 32-sizeof(timestamp_t));
 	{
 		timestamp_t t;
 		t = gettimestamp();
@@ -212,7 +217,7 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	ticketdb_newuser(&hmac, &(ab->uid), ab->uid);
 	ticketdb_setUserFlags(ab->uid, &flags);
 	/* make new RID & Co */
-	fillBlockRandom(ab->rkey, 32);
+	entropium_fillBlockRandom(ab->rkey, 32);
 	shabea256(ab->rid, ab->rkey, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
 	load_ridkey(key);
 	shabea256(ab->rid, key, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
@@ -260,7 +265,7 @@ void new_account(authblock_t * ab, char* nickname, sha256_hash_t pinhash,uint8_t
 	ab->uid = i;
 	
 	/* generate new ticket */
-	fillBlockRandom(ab->ticket, 32-sizeof(timestamp_t));
+	entropium_fillBlockRandom(ab->ticket, 32-sizeof(timestamp_t));
 	{
 		timestamp_t t;
 		t = gettimestamp();
@@ -286,7 +291,7 @@ void new_account(authblock_t * ab, char* nickname, sha256_hash_t pinhash,uint8_t
 	delete_key(key, 32);	
 //	DS("\r\n hnick: ");
 //	DD(ab->rid, 32);
-	fillBlockRandom(ab->rkey, 32);
+	entropium_fillBlockRandom(ab->rkey, 32);
 	shabea256(ab->rid, ab->rkey, 256, 1, 16); /* shabea256 with 16 rounds in encrypt mode */
 	load_ridkey(key);
 	shabea256(ab->rid, key, 256, 1, 16); /* shabea256 with 16 rounds in encrypt mode */

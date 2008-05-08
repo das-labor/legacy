@@ -29,17 +29,17 @@ void tamperdetect_init(void){
 
 ISR(TAMPER_PCINT){
 	if(!tamperdetect){
-		lop_dbg_str_P(&lop0, PSTR("\r\nTAMPER-DETECT!!!"));
+//		lop_dbg_str_P(&lop0, PSTR("\r\nTAMPER-DETECT!!!"));
 		tamperdetect=1;
-		lop_dbg_str_P(&lop0, PSTR("\r\nTAMPER (1)"));
+//		lop_dbg_str_P(&lop0, PSTR("\r\nTAMPER (1)"));
 		while(tamperdetect==1)
 			;	/* wait until the ADC_INT starts working */
-		lop_dbg_str_P(&lop0, PSTR("\r\nTAMPER (2)"));
+//		lop_dbg_str_P(&lop0, PSTR("\r\nTAMPER (2)"));
 		while(tamperdetect&2)
 			;	/* wait until the ADC_INT starts working */
 		/* overwrite SRAM */	
 		/* overwrite external EEPROM */	
-		lop_dbg_str_P(&lop0, PSTR("\r\nTAMPER-DETEC finished"));
+//		lop_dbg_str_P(&lop0, PSTR("\r\nTAMPER-DETEC finished"));
 	}
 }
 
