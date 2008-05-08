@@ -15,7 +15,7 @@
 #include "main_test_tools.h"
 #include "ticketDB.h"
 #include "flmDB.h"
-#include "prng.h"
+#include "entropium.h"
 #include "hmac-sha256.h"
 #include "sha256.h"
 #include "action.h"
@@ -135,8 +135,8 @@ void test_shabea256(void){
 	uint8_t b[32];
 	uint8_t key[32];
 	
-	fillBlockRandom(key, 32);
-	fillBlockRandom(b, 32);
+	entropium_fillBlockRandom(key, 32);
+	entropium_fillBlockRandom(b, 32);
 	uart_putstr_P(PSTR("\r\n key:   ")); uart_hexdump(key, 32);
 	uart_putstr_P(PSTR("\r\n plain: ")); uart_hexdump(b, 32);
 	

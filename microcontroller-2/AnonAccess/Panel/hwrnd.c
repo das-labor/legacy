@@ -2,7 +2,7 @@
 #include <avr/interrupt.h>
 
 #include "config.h"
-#include "prng.h"
+#include "entropium.h"
 #include "rtc.h"
 
 #include "uart.h"
@@ -36,7 +36,7 @@ void prng_init(void){
 		for(j=0; j<64; ++j){
 			b[j] = getbadrandom();
 		}
-		addEntropy(64*8,&b);
+		entropium_addEntropy(64*8,&b);
 	}
 //	ADCSRA = _BV(ADEN) | _BV(ADSC) | _BV(ADATE) | _BV(ADIE) | 7; /* turn ADC on, start ADC, enable interrupt prescaler=128 */
 #ifdef ATMEGA644	
@@ -58,7 +58,7 @@ ISR(ADC_vect)
 		//	uart_putstr("\r\nadc ");
 		//	uart_hexdump(buffer, 10);
 			idx=0;
-			addEntropy(72*8,(void*)buffer);
+			entropium_addEntropy(72*8,(void*)buffer);
 		}
 		busy &= ~2;
 	}

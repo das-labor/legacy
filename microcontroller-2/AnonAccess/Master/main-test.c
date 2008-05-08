@@ -17,7 +17,7 @@
 #include "24CBlockDev.h"
 #include "ticketDB.h"
 #include "flmDB.h"
-#include "prng.h"
+#include "entropium.h"
 #include "enc2E24C.h"
 #include "keys.h"
 #include "main_test_tools.h"

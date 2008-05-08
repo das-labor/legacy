@@ -6,7 +6,7 @@
 #include "keypad.h"
 #include "ui_primitives.h"
 #include "rtc.h"
-#include "prng.h"
+#include "entropium.h"
 #include "lop.h"
 #include "lop_debug.h"
 #include "base64_enc.h"
@@ -21,14 +21,15 @@
 #include <stdint.h>
 #include <util/delay.h>
 
-extern lop_ctx_t lop0;
+extern lop_ctx_t lop1;
 
 authblock_t ab;
 
 /******************************************************************************/
 
 /******************************************************************************/
-
+#define TIMEOUT_DELAY 15000
+#define DISPLAY_TIME  3000
 
 #include "uart.h"
 
@@ -44,50 +45,6 @@ authblock_t ab;
 #define TIMEOUT_VAL 1000
 
 #define DBG(a) lcd_gotopos(1,15); lcd_writechar(a)
-/*
-void run_serial_test(void){
-	char tmp,tmp2;
-	timestamp_t tsend;
-	uint64_t ok=0,failed=0,lost=0;
-	void (*backup)(uint8_t);
-	
-	backup = uart_hook;
-	uart_hook=NULL;
-	print_status();
-	
-	while(read_keypad()!='C'){
-#ifdef UART_XON_XOFF
-		do{
-			tmp=getRandomByte();
-		}while(tmp==0x11 || tmp==0x13);
-#else
-		tmp=getRandomByte();	
-#endif		
-		
-		uart_putc(tmp);
-		tsend = gettimestamp();
-		while((!uart_getc_nb(&tmp2)) && ((gettimestamp()-tsend)<TIMEOUT_VAL)){
-		}
-		if(gettimestamp()-tsend<TIMEOUT_VAL){
-			if(tmp==tmp2){
-				ok++;
-			} else {
-				failed++;
-			}
-		} else {
-			lost++;
-		}
-		lcd_gotopos(2,2);
-		lcd_hexdump(&ok, 8);
-		lcd_gotopos(3,2);
-		lcd_hexdump(&failed, 8);
-		lcd_gotopos(4,2);
-		lcd_hexdump(&lost, 8);
-	}
-	waitforkey('E');
-	uart_hook = backup;
-}
-*/
 
 #define BUFFERSIZE 100
 
@@ -106,12 +63,12 @@ void run_serial_test(void){
 #ifdef UART_XON_XOFF
 		for(idxout=0; idxout<BUFFERSIZE; ++idxout){
 			do{
-				tmp=getRandomByte();
+				tmp=entropium_getRandomByte();
 			}while(tmp==0x11 || tmp==0x13);
 			bufferout[idxout]=tmp;
 		}
 #else
-		fillBlockRandom(bufferout, BUFFERSIZE);
+		entropium_fillBlockRandom(bufferout, BUFFERSIZE);
 #endif			
 		/* blast it out */
 		for(idxout=0; idxout<BUFFERSIZE; ++idxout){
@@ -216,7 +173,7 @@ void req_authblock(void){
 	ui_statusstring[4]='~';	
 	uint8_t et;
 	req_bootab(str_name, str_pina, pl, anon, pinflags);
-	if((et=waitformessage(5000))){
+	if((et=waitformessage(TIMEOUT_DELAY))){
 		if(et==2){
 			error_display(PSTR("malloc failed!"));
 			return;
@@ -336,14 +293,14 @@ void open_door(void){
 	}
 	init_session();
 	submit_ab(&ab);
-	if(waitformessage(1000)){
+	if(waitformessage(TIMEOUT_DELAY)){
 		error_display(PSTR("(361) com. timeout!"));
 		return;
 	}
 	if(getmsgid(msg_data)==MSGID_AB_PINREQ){
 		freemsg();
 		getandsubmitpin();
-		if(waitformessage(1000)){
+		if(waitformessage(TIMEOUT_DELAY)){
 			error_display(PSTR("(368) com. timeout!"));
 			return;
 		}
@@ -358,10 +315,14 @@ void open_door(void){
 		error_display(PSTR("AB strange ERROR!"));
 		return;
 	}
-	card_writeAB((authblock_t*)((uint8_t*)msg_data+3));
+	if(card_writeAB((authblock_t*)((uint8_t*)msg_data+3))==false){
+		freemsg();
+		error_display(PSTR("card write ERROR!"));
+		return;
+	}
 	freemsg();
 	send_mainopen();
-	if(waitformessage(1000)){
+	if(waitformessage(TIMEOUT_DELAY)){
 		error_display(PSTR("(386) com. timeout!"));
 		return;
 	}
@@ -374,7 +335,7 @@ void open_door(void){
 		if(((uint8_t*)msg_data)[4]==NOTDONE)
 			lcd_writestr_P(PSTR("NOT "));
 		lcd_writestr_P(PSTR("opening!"));
-		ui_keyortimeout(3000);
+		ui_keyortimeout(DISPLAY_TIME);
 		freemsg();
 		return;
 	}
@@ -400,7 +361,53 @@ void lock_door(void){
 	}
 	init_session();
 	submit_ab(&ab);
+	if(waitformessage(TIMEOUT_DELAY)){
+		error_display(PSTR("(361) com. timeout!"));
+		return;
+	}
+	if(getmsgid(msg_data)==MSGID_AB_PINREQ){
+		freemsg();
+		getandsubmitpin();
+		if(waitformessage(TIMEOUT_DELAY)){
+			error_display(PSTR("(368) com. timeout!"));
+			return;
+		}
+	}
+	if(getmsgid(msg_data)==MSGID_AB_ERROR){
+		freemsg();
+		error_display(PSTR("AB ERROR!"));
+		return;
+	}
+	if((getmsgid(msg_data)!=MSGID_AB_REPLY) || (msg_length!=3+sizeof(authblock_t))){
+		freemsg();
+		error_display(PSTR("AB strange ERROR!"));
+		return;
+	}
+	if(card_writeAB((authblock_t*)((uint8_t*)msg_data+3))==false){
+		freemsg();
+		error_display(PSTR("card write ERROR!"));
+		return;
+	}
+	freemsg();
 	send_mainclose();
+	if(waitformessage(TIMEOUT_DELAY)){
+		error_display(PSTR("(386) com. timeout!"));
+		return;
+	}
+	if(getmsgid(msg_data)==MSGID_ACTION_REPLY && 
+	   msg_length==5 && ((uint8_t*)msg_data)[3]==ACTION_MAINCLOSE){
+		lcd_gotopos(1,2); lcd_writechar('Z');
+		lcd_cls();
+		lcd_gotopos(2,2);
+		lcd_writestr_P(PSTR("door "));
+		if(((uint8_t*)msg_data)[4]==NOTDONE)
+			lcd_writestr_P(PSTR("NOT "));
+		lcd_writestr_P(PSTR("closing!"));
+		ui_keyortimeout(DISPLAY_TIME);
+		freemsg();
+		return;
+	}
+	freemsg();
 }
 
 void admin_menu(void){}
@@ -463,7 +470,7 @@ void print_timestamp_base64_live(void){
 
 void print_random(void){
 	uint8_t block[30];
-	fillBlockRandom(block, 30);
+	entropium_fillBlockRandom(block, 30);
 	ui_printstatusline();
 	lcd_gotopos(2,1);
 	lcd_hexdump(&block,10);
@@ -494,15 +501,15 @@ void dump_card(void){
 	uint16_t i;
 //	E24C04_block_read(0xA0, 0, buffer, 16);
 	buffer[16]='\0';
-	lop_dbg_str_P(&lop0, PSTR("\r\nICC dump:\r\n"));
+	lop_dbg_str_P(&lop1, PSTR("\r\nICC dump:\r\n"));
 	E24C04_init();
 	for(i=0; i<256; i+=16){
 		E24C04_block_read(0xA0, i, buffer, 16);
-		lop_dbg_hexdump(&lop0, buffer, 16);
-		lop_dbg_str_P(&lop0, PSTR("   "));
+		lop_dbg_hexdump(&lop1, buffer, 16);
+		lop_dbg_str_P(&lop1, PSTR("   "));
 		replace_unprinable((char*)buffer, 16);
-		lop_dbg_str(&lop0, (char*)buffer);
-		lop_dbg_str_P(&lop0, PSTR("\r\n"));
+		lop_dbg_str(&lop1, (char*)buffer);
+		lop_dbg_str_P(&lop1, PSTR("\r\n"));
 	}
 */
 	uint8_t buffer[256];
@@ -532,7 +539,7 @@ void randomize_card(void){
 	lcd_writestr_P(PSTR("randomizing ..."));
 	E24C04_init();
 	for(i=0; i<256; ++i){
-		E24C04_byte_write(0xA0, i, getRandomByte());
+		E24C04_byte_write(0xA0, i, entropium_getRandomByte());
 		ui_progressbar(i/255.0, 2,3,LCD_WIDTH-2);
 	}
 }

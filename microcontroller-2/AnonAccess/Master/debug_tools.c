@@ -16,7 +16,7 @@
 #include "debug_tools.h"
 #include "ticketDB.h"
 #include "flmDB.h"
-#include "prng.h"
+#include "entropium.h"
 #include "hmac-sha256.h"
 #include "sha256.h"
 #include "action.h"
@@ -32,11 +32,18 @@
 #include "lop_debug.h"
 
 extern lop_ctx_t lop0;
-
+/*
 #define DS(a)   lop_dbg_str_P(&lop0, PSTR(a))
 #define DD(a,b) lop_dbg_hexdump(&lop0, (a),(b))
 #define DC(a)   lop_sendstream(&lop0, a)
 #define DB(a)   dbg_putbyte(a)
+*/
+
+#define DS(a)   
+#define DD(a,b) 
+#define DC(a)   
+#define DB(a)   
+
 /*
 #include "mcp9800.h"
 */
@@ -149,8 +156,8 @@ void test_shabea256(void){
 	uint8_t b[32];
 	uint8_t key[32];
 	
-	fillBlockRandom(key, 32);
-	fillBlockRandom(b, 32);
+	entropium_fillBlockRandom(key, 32);
+	entropium_fillBlockRandom(b, 32);
 	DS("\r\n key:   "); DD(key, 32);
 	DS("\r\n plain: "); DD(b, 32);
 	

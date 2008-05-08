@@ -1,7 +1,7 @@
 
 #include <avr/eeprom.h>
 #include <avr/interrupt.h>
-#include "prng.h"
+#include "entropium.h"
 #include "rtc.h"
 #include "lop.h"
 #include "lop_debug.h"
@@ -38,7 +38,7 @@ void prng_init(void){
 		for(j=0; j<64; ++j){
 			b[j] = getbadrandom();
 		}
-		addEntropy(64*8,&b);
+		entropium_addEntropy(64*8,&b);
 	}
 //	ADCSRA = _BV(ADEN) | _BV(ADSC) | _BV(ADATE) | _BV(ADIE) | 7; /* turn ADC on, start ADC, enable interrupt prescaler=128 */
 //	ADCSRB = 0; /* freerunning mode*/
@@ -72,7 +72,7 @@ ISR(ADC_vect)
 		}
 		if(main_cycle==0){
 			tamperdetect=5;
-			lop_dbg_str_P(&lop0,PSTR("\r\n overwrite finished"));
+//			lop_dbg_str_P(&lop0,PSTR("\r\n overwrite finished"));
 		}
 		/* todo: kill SRAM */
 	}
@@ -83,7 +83,7 @@ ISR(ADC_vect)
 		if(idx==64){
 			*((uint64_t*)(buffer+72-8)) = gettimestamp();		;
 			idx=0;
-			addEntropy(72*8,(void*)buffer);
+			entropium_addEntropy(72*8,(void*)buffer);
 		}
 		busy &= ~2;
 	}

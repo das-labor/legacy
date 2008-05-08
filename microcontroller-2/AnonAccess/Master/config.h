@@ -13,7 +13,7 @@
 //c uart.[ch] defines
 #define UART_HOOK
 #define UART_INTERRUPT 1
-#define UART_BAUD_RATE 9600
+#define UART_BAUD_RATE 1200
 #define UART_RXBUFSIZE 32
 #define UART_TXBUFSIZE 32
 #define UART_LINE_BUFFER_SIZE 40
@@ -58,6 +58,7 @@
 
 #define PRINTER_ADDR 0x00
 
+#define QPTINY_AUTOKEYING
 
 #endif
 
