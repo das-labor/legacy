@@ -61,8 +61,8 @@
 #define DD(a,b) {uart_hexdump((a),(b)); printer_hexdump((a),(b));} 
 */
 
-//#define DS(a) {terminal_print_P(&lop1, STR_CLASS_INFO, PSTR(a));} 
-#define DS(a) {;} 
+#define DS(a) {terminal_print_P(&lop1, STR_CLASS_INFO, PSTR(a));} 
+//#define DS(a) {;} 
 #define DC(a) {;} 
 #define DD(a,b) {;} 
 
@@ -669,7 +669,7 @@ int main(void){
 		timestamp_t t;
 		t=gettimestamp();
 		DD(&t, sizeof(timestamp_t));
-		DS("\r\n\n\n\n");
+	//	DS("\r\n\n\n\n");
 	}
 	while(1){
 		_delay_ms(50);

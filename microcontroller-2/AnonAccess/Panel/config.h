@@ -1,3 +1,6 @@
+#ifndef CONFIG_H_
+#define CONFIG_H_
+
 //Art des Atmels und dessen Takt
 #define F_CPU 16000000ul
 
@@ -81,5 +84,9 @@
 
 
 #define QPTINY_AUTOKEYING
+//#define QPTINY_CRYPTO_OFF
+//#define QPTINY_STREAMAUTH 1
+
+#endif
 
 

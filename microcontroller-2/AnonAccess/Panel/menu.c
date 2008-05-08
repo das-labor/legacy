@@ -101,8 +101,12 @@ void run_serial_test(void){
 
 void error_display(PGM_P str){
 //	lcd_cls();
+	uint8_t i;
 	ui_drawframe(1,2,LCD_WIDTH, LCD_HEIGHT-1, '#');
-	lcd_gotopos(3,3);
+	lcd_gotopos(3,2);
+	for(i=0; i<LCD_WIDTH-2; ++i)
+		lcd_writechar(' ');
+	lcd_gotopos(3,3);	
 	lcd_writestr_P(str);
 	ui_waitforkey('F');
 	return;

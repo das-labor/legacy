@@ -1,5 +1,6 @@
-#ifndef __CONFIG_H__
-#define __CONFIG_H__
+#ifndef CONFIG_H__
+#define CONFIG_H__
+
 #include <avr/io.h>
 
 #define F_CPU 16000000         // Oszillator-Frequenz in Hz
@@ -59,6 +60,8 @@
 #define PRINTER_ADDR 0x00
 
 #define QPTINY_AUTOKEYING
+//#define QPTINY_CRYPTO_OFF
+//#define QPTINY_STREAMAUTH 1
 
 #endif
 

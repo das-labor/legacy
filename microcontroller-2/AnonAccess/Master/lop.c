@@ -74,7 +74,7 @@ void lop_process_l1(lop_ctx_t* ctx, uint8_t b){
 		return;
 	} else {
 		ctx->escaped = 0;
-		if(b<=0x04 && b!=0){ /* escaped data byte */
+		if((b<=0x04) && (b!=0)){ /* escaped data byte */
 			uint8_t t[4]={LOP_RESET_CODE, LOP_ESC_CODE, LOP_XON_CODE, LOP_XOFF_CODE};
 			lop_process_l2(ctx, t[b-1]);
 			return;
