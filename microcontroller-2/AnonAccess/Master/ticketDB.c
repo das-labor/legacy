@@ -103,7 +103,7 @@ uint8_t ticketdb_getUserFlags(userid_t id, userflags_t* dest){
 
 /******************************************************************************/
 
-uint8_t ticketdb_setUserPinMacSeed(userid_t id, void* src){
+uint8_t ticketdb_setUserPinMac(userid_t id, void* src){
 	if (id>=dbstats.max_users)
 		return DB_ERROR_NOSUCHUSER;
 	WRITE_BLOCK(TICKETDB_OFFSET + dbheadersize + id*sizeof(userentry_t)
@@ -113,7 +113,7 @@ uint8_t ticketdb_setUserPinMacSeed(userid_t id, void* src){
 
 /******************************************************************************/
 
-uint8_t ticketdb_getUserPinMacSeed(userid_t id, void* dest){
+uint8_t ticketdb_getUserPinMac(userid_t id, void* dest){
 	if (id>=dbstats.max_users)
 		return DB_ERROR_NOSUCHUSER;
 	READ_BLOCK(TICKETDB_OFFSET + dbheadersize + id*sizeof(userentry_t)

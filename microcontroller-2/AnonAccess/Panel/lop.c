@@ -48,9 +48,17 @@ void lop_error(uint8_t b){
 
 void lop_reset(lop_ctx_t* ctx){
 	ctx->rxstate = idle;
+	ctx->txstate = idle;
+	ctx->escaped = 0;
+	ctx->msgretstate = idle;
+	ctx->msgidx = 0;
+	ctx->msglength = 0;
 	if(ctx->msgbuffer){
 		free(ctx->msgbuffer);
 		ctx->msgbuffer = NULL;
+	}
+	if(ctx->on_reset){
+		ctx->on_reset;
 	}
 }
 
@@ -169,12 +177,13 @@ void lop_process_l2(lop_ctx_t* ctx, uint8_t b){
 
 /******************************************************************************/
 static
-void lop_sendbyte(lop_ctx_t * ctx,uint8_t b){
+void lop_sendbyte(lop_ctx_t* ctx, uint8_t b){
 		
 	if(!(ctx->sendrawbyte)){
 		return;
 	}
-	
+//	lcd_gotopos(1,3);
+//	lcd_writechar('a');
 	switch(b){
 		case LOP_ESC_CODE:
 			ctx->sendrawbyte(LOP_ESC_CODE);
@@ -196,22 +205,36 @@ void lop_sendbyte(lop_ctx_t * ctx,uint8_t b){
 			ctx->sendrawbyte(b);
 			break;
 	}
+//	lcd_gotopos(1,3);
+//	lcd_writechar('x');
 }
 
 /******************************************************************************/
 
 void lop_sendmessage(lop_ctx_t * ctx,uint16_t length, uint8_t * msg){
+	lcd_gotopos(1,2);
+	lcd_writechar('a');
 	if(!ctx->sendrawbyte)
 		return;
+	lcd_gotopos(1,2);
+	lcd_writechar('b');
 	while(ctx->txstate==message)
 		;
+	lcd_gotopos(1,2);
+	lcd_writechar('c');
 	ctx->txstate=message;
 	ctx->sendrawbyte(LOP_ESC_CODE);
 	ctx->sendrawbyte(LOP_TYPE_MSG);
+	lcd_gotopos(1,2);
+	lcd_writechar('d');
 	lop_sendbyte(ctx, length>>8);
 	lop_sendbyte(ctx, length&0x00FF);
+	lcd_gotopos(1,2);
+	lcd_writechar('e');
 	while(length--)
 		lop_sendbyte(ctx, *msg++);
+	lcd_gotopos(1,2);
+	lcd_writechar('f');
 	ctx->txstate=idle;
 }
 

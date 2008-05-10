@@ -599,7 +599,7 @@ void init_system(void){
 	masterstate = idle;
 	uart_init();
 //	uart_putstr_P(PSTR("\r\nuart works (a)\r\n"));
-//	while(1);
+
 
 	lop0.msgbuffer = NULL;
 	lop0.msgidx = 0;

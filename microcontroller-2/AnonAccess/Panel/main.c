@@ -93,8 +93,16 @@ void lop0_streamrx(uint8_t b){
 void lop0_streamsync(void){	
 }
 
+void lop0_reset(void){	
+	uart_init();
+}
+
 void lop0_messagerx(uint16_t length, uint8_t * msg){
+	lcd_gotopos(1,1);
+	lcd_writechar('Q');
 	qport_incomming_msg(&qp0, length, msg);
+	lcd_gotopos(1,1);
+	lcd_writechar('W');
 }
 
 /******************************************************************************/
@@ -210,7 +218,6 @@ int main(void){
 	
 	BOOTLOG_APPEND_P("UART init");
 	uart_init();
-	uart_putc(XON);
 	BOOTLOG_APPEND_OK;
 	
 	BOOTLOG_APPEND_P("LOP0 init");
@@ -219,6 +226,7 @@ int main(void){
 	lop0.on_streamrx = lop0_streamrx;
 	lop0.sendrawbyte = lop0_sendrawbyte;
 	lop0.on_msgrx = lop0_messagerx;
+	lop0.on_reset = lop0_reset;
 	BOOTLOG_APPEND_OK;
 	
 	BOOTLOG_APPEND_P("QPORT init");
@@ -237,8 +245,9 @@ int main(void){
 	lop1.on_streamrx = lop1_streamrx;
 	lop1.sendrawbyte = lop1_sendrawbyte;
 	lop1.on_msgrx = lop1_messagerx;
-	lop_sendreset(&lop0);
 	uart_hook = onuartrx;
+	lop_sendreset(&lop0);
+	uart_putc(XON);
 	
 	
 	if(qp0.keystate == unkeyed)
