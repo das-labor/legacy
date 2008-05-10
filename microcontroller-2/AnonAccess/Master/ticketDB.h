@@ -65,8 +65,8 @@ uint8_t	ticketdb_setUserTicketMac(userid_t id, ticketmac_t*);
 uint8_t	ticketdb_setUserFlags(userid_t id, userflags_t*);
 uint8_t	ticketdb_getUserNickname(userid_t id, char* dest);
 uint8_t	ticketdb_setUserNickname(userid_t id, char* dest);
-uint8_t ticketdb_setUserPinMacSeed(userid_t id, void* src);
-uint8_t ticketdb_getUserPinMacSeed(userid_t id, void* dest);
+uint8_t ticketdb_setUserPinMac(userid_t id, void* src);
+uint8_t ticketdb_getUserPinMac(userid_t id, void* dest);
 uint8_t ticketdb_addname(userid_t id, char* name);
 
 unsigned ticketdb_getstatMaxUsers(void);

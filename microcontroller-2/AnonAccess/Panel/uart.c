@@ -7,7 +7,6 @@
 #include <stdlib.h>
 
 #include "uart.h"
-#include "hexdigit_tab.h"
 
 #ifdef ATMEGA128
 #define UCSRB UCSR0B
@@ -51,8 +50,8 @@
 
 #ifdef UART_XON_XOFF
 	typedef enum{go=1,nogo=0} gonogo;
-	static gonogo txon=go;
-	static gonogo rxon=go;
+	static volatile gonogo txon=go;
+	static volatile gonogo rxon=go;
 #endif
 
 #ifdef UART_INTERRUPT
@@ -74,8 +73,14 @@ ISR(USART_UDRE_vect) {
 		UCSRB &= ~(1 << UDRIE);		/* disable data register empty IRQ */
 	} else {
 		#ifdef UART_XON_XOFF
-			while(txon==nogo)
-				;
+			if(txon==nogo){
+				UCSRB &= ~(1 << UDRIE);		/* disable data register empty IRQ */
+				sei();
+				while(txon==nogo)
+					;
+				cli();
+				UCSRB |= (1 << UDRIE);		/* enable data register empty IRQ */
+			}
 		#endif
 		UDR = *txtail;			/* schreibt das Zeichen x auf die Schnittstelle */
 		if (++txtail == (txbuf + UART_TXBUFSIZE)) txtail = txbuf;
@@ -165,9 +170,9 @@ void uart_init() {
 	// init buffers
 	rxhead = rxtail = rxbuf;
 	txhead = txtail = txbuf;
-
+	
 	// activate rx IRQ
-	UCSRB |= _BV(RXCIE) | _BV(UDRIE);
+	UCSRB |= _BV(RXCIE); // | _BV(UDRIE);
 	sei();
 //	#ifdef ATMEGA644
 //	UCSRB |= _BV(UDRIE);
@@ -179,14 +184,17 @@ void uart_init() {
 #ifdef UART_XON_XOFF
 
 void uart_insertc(char c){
-	volatile int diff;
-	do {
+	volatile int16_t diff;
+	sei(); /* just to avoid deadlocks */
+	do{
 		diff = txhead - txtail;
-		if ( diff < 0 ) diff += UART_TXBUFSIZE;
-	} while ( diff >= UART_TXBUFSIZE -1 );
+		if ( diff < 0 ) 
+			diff += UART_TXBUFSIZE;
+	}while ( diff >= UART_TXBUFSIZE -1 );
 
 	cli();
- 	if (--txtail == (txbuf-1)) txtail += UART_TXBUFSIZE;
+ 	if (--txtail == (txbuf-1)) 
+ 		txtail += UART_TXBUFSIZE;
 	*txtail = c;
 	
 	UCSRB |= (1 << UDRIE);		/* enable data register empty IRQ */
@@ -238,9 +246,11 @@ void uart_putstr_P(PGM_P str) {
 
 void uart_hexdump(void* buf, int len)
 {
+	unsigned char table[]={'0','1','2','3','4','5','6','7',
+		                   '8','9','a','b','c','d','e','f'};
 	while(len--){
-		uart_putc(pgm_read_byte(hexdigit_tab_P+((*(uint8_t*)buf)>>4)));
-		uart_putc(pgm_read_byte(hexdigit_tab_P+((*(uint8_t*)buf)&0xf)));
+		uart_putc(table[((*((char*)buf))>>4)&0xf]);
+		uart_putc(table[(*((char*)buf))&0xf]);
 		uart_putc(' ');
 		buf=(uint8_t*)buf+1;
 	}

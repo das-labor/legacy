@@ -68,24 +68,26 @@ bool check_permissions(uint8_t users, uint8_t admins, action_t action){
  * 
  */
 
-bool check_pin(authblock_t * ab, char* pin){
+bool check_pin(authblock_t * ab, sha256_hash_t pinhash){
 	if(!ticketdb_userexists(ab->uid))
-		return false;
-	uint16_t l=strlen(pin);	
+		return false;	
 	uint8_t refhmac[32],key[32];
-	uint8_t msg[32+l];
+	uint8_t msg[32];
 	
-	ticketdb_getUserPinMacSeed(ab->uid, msg); /* load seed in the first 32 byte */
-	memcpy(msg+32, pin, l); /* load pin */
+	/* load data from DB */
+	ticketdb_getUserPinMac(ab->uid, msg); /* load seed in the first 32 byte */
+	load_ticketkeydiv2(msg);
+	hmac_sha256(key, msg, 256, ab->ticket, 256);
+	delete_key(msg, 32);
+	memcpy(msg, pinhash, 32);
+	shabea256(msg, key, 256, 0, 16); /* shabea in decrypt mode */
+	delete_key(key, 32);
+
+	/* calculate reference MAC */
 	load_pinmac_key(key);
-	hmac_sha256(refhmac,key,256,msg,8*(32+l));
+	hmac_sha256(refhmac,key,256,pinhash,256);
 	delete_key(key, 32);
 	 /* now we have the reference hmac */
-	memcpy(msg, ab->pinhmac, 32);
-	load_pinenc_key(key);
-	shabea256(msg, key, 256, 0, 16);
-	delete_key(key, 32);
-	shabea256(msg, ab->rkey, 256, 0, 16);
 	
 	if(memcmp(refhmac, msg, 32)){
 		return false;
@@ -94,7 +96,7 @@ bool check_pin(authblock_t * ab, char* pin){
 	}
 } 
  
-void update_pin(authblock_t * ab, char* pin){
+void update_pin(authblock_t * ab, char* pin){//sha256_hash_t pinhash){
 	if(!ticketdb_userexists(ab->uid))
 		return;
 	uint16_t l=strlen(pin);	
@@ -102,7 +104,7 @@ void update_pin(authblock_t * ab, char* pin){
 	uint8_t msg[32+l];
 	
 	entropium_fillBlockRandom(msg,32);
-	ticketdb_setUserPinMacSeed(ab->uid, msg); /* load seed in the first 32 byte */
+	ticketdb_setUserPinMac(ab->uid, msg); /* load seed in the first 32 byte */
 	memcpy(msg+32, pin, l); /* load pin */
 	load_pinmac_key(key);
 	hmac_sha256(refhmac,key,256,msg,8*(32+l));
@@ -116,8 +118,8 @@ void update_pin(authblock_t * ab, char* pin){
 } 
  
 authcredvalid_state_t check_authblock(authblock_t * ab){
-	uint8_t key[32];
-	uint8_t hmac[32];
+	uint8_t key[32], key2[32];
+	uint8_t hmac[32], pinhmac[32];
 	uint8_t refhmac[32];
 	userflags_t flags;
 	flags.admin = flags.locked = flags.notify_lostadmin = 0;
@@ -158,7 +160,15 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	load_ridkey(key);
 	shabea256(ab->rid, key, 256, 0, 16); /* shabea256 with 16 rounds in decrypt mode */
 	delete_key(key,32);
-	shabea256(ab->rid, ab->rkey, 256, 0, 16); /* shabea256 with 16 rounds in decrypt mode */
+	shabea256(ab->rid, ab->ticket, 256, 0, 16); /* shabea256 with 16 rounds in decrypt mode */
+	
+	/* decrypt PINMAC */
+	load_ticketkeydiv2(key2);
+	hmac_sha256(key, key2, 256, ab->ticket, 256);
+	delete_key(key2, 32);
+	ticketdb_getUserPinMac(ab->uid,pinhmac);
+	shabea256(pinhmac, key, 256, 0, 16); /* shabea256 with 16 rounds in decrypt mode */
+	delete_key(key,32);
 	
 	/* search in flag-modify-DB & apply flag modifications */
 	flmdb_process(ab->rid, ab->uid, &flags);
@@ -217,11 +227,25 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	ticketdb_newuser(&hmac, &(ab->uid), ab->uid);
 	ticketdb_setUserFlags(ab->uid, &flags);
 	/* make new RID & Co */
-	entropium_fillBlockRandom(ab->rkey, 32);
-	shabea256(ab->rid, ab->rkey, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
+//	entropium_fillBlockRandom(ab->rkey, 32);
+	memset(ab->rkey, 0, 32);
+	/* make new RID & Co */
+	load_ticketkeydiv1(key2);
+	hmac_sha256(key, key2, 256, ab->ticket, 256);
+	delete_key(key2,32);
+	shabea256(ab->rid, key, 256, 1, 16); /* shabea256 with 16 rounds in encrypt mode */
+	delete_key(key, 32);
 	load_ridkey(key);
-	shabea256(ab->rid, key, 256, 1, 16); /* shabea256 with 16 rounds in decrypt mode */
+	shabea256(ab->rid, key, 256, 1, 16); /* shabea256 with 16 rounds in encrypt mode */
 	delete_key(key,32);
+	/* encrypt PINMAC */
+	load_ticketkeydiv1(key2);
+	hmac_sha256(key, key2, 256, ab->ticket, 256);
+	delete_key(key2,32);
+	shabea256(pinhmac, key, 256, 1, 16); /* shabea256 with 16 rounds in encrypt mode */
+	delete_key(key, 32);
+	ticketdb_setUserPinMac(ab->uid, pinhmac);
+
 
 	/* fix hmac */
 	load_absignkey(key);
@@ -237,7 +261,7 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 
 void new_account(authblock_t * ab, char* nickname, sha256_hash_t pinhash,uint8_t anon, uint8_t pinflags){
 	userflags_t flags;
-	uint8_t key[32];
+	uint8_t key[32], key2[32];
 	uint8_t hmac[32];
 	
 	anon = anon?1:0;
@@ -291,25 +315,31 @@ void new_account(authblock_t * ab, char* nickname, sha256_hash_t pinhash,uint8_t
 	delete_key(key, 32);	
 //	DS("\r\n hnick: ");
 //	DD(ab->rid, 32);
-	entropium_fillBlockRandom(ab->rkey, 32);
-	shabea256(ab->rid, ab->rkey, 256, 1, 16); /* shabea256 with 16 rounds in encrypt mode */
+//	entropium_fillBlockRandom(ab->rkey, 32);
+	memset(ab->rkey, 0, 32);
+	load_ticketkeydiv1(key);
+	hmac_sha256(key2, key, 256, ab->ticket, 256);
+	delete_key(key, 32);
+	shabea256(ab->rid, key2, 256, 1, 16); /* shabea256 with 16 rounds in encrypt mode */
+	delete_key(key2, 32);
 	load_ridkey(key);
 	shabea256(ab->rid, key, 256, 1, 16); /* shabea256 with 16 rounds in encrypt mode */
 	delete_key(key,32);
 	
 	/* process pinhash */
-//	memcpy(ab->pinhmac, pinhash, sizeof(sha256_hash_t));
-//	shabea256(ab->rid, ab->rkey, 256, 1, 16); /* shabea256 with 16 rounds in encrypt mode */
-//	load_pinmac_key(key);
-//	hmac_sha256(ab->pinhmac, key, 256, ab->pinhmac, sizeof(sha256_hash_t)*8); 
-//	delete_key(key,32);
+	memset(ab->pinhmac, 0, 32);
+	load_ticketkeydiv2(key);
+	hmac_sha256(key2, key, 256, ab->ticket, 256);
+	delete_key(key, 32);
+	memcpy(hmac, pinhash, 32);
+	shabea256(hmac, key2, 256, 1, 16); /* shabea256 with 16 rounds in encrypt mode */
+	ticketdb_setUserPinMac(ab->uid, hmac);
 	
 	/* fix hmac */
 	load_absignkey(key);
 	hmac_sha256(ab->hmac, key, 256, ab, 8*(sizeof(authblock_t)-32));
 	delete_key(key, 32);
 	
-
 	return;
 }
 

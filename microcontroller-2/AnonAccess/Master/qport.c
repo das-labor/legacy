@@ -20,7 +20,6 @@
 #include "sha256.h"
 #include "xtea.h"
 
-
 #ifdef LED_DEBUG
  #include <avr/io.h>
 #endif
@@ -239,6 +238,7 @@ void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
 		free(ctx->keyingdata);
 		ctx->keyingdata = 0;
 		ctx->keystate = keyed;
+		return;
 	} else {
 		if((!ctx->keyingdata)||(ctx->keyingdata && ((ctx->keyingdata->id) > (kp->id)))){ /* lower ID wins */
 		/* we should respond to the incomming packet */

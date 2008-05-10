@@ -49,7 +49,7 @@ clean:
 
 lst:  $(PRG).lst
 
-flash:
+flash: $(PRG).hex $(PRG)_eeprom.hex
 	$(ERASECMD)
 	$(FLASHCMD)
 

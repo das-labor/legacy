@@ -10,6 +10,8 @@
 
 void delete_key(void* key, uint16_t length);
 void load_ticketkey(void* dest);
+void load_ticketkeydiv1(void* dest);
+void load_ticketkeydiv2(void* dest);
 void load_absignkey(void* dest);
 void load_ridkey(void* dest);
 void load_nickkey(void* dest);

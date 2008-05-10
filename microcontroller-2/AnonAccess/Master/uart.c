@@ -50,8 +50,8 @@
 
 #ifdef UART_XON_XOFF
 	typedef enum{go=1,nogo=0} gonogo;
-	static gonogo txon=go;
-	static gonogo rxon=go;
+	static volatile gonogo txon=go;
+	static volatile gonogo rxon=go;
 #endif
 
 #ifdef UART_INTERRUPT
@@ -73,8 +73,14 @@ ISR(USART_UDRE_vect) {
 		UCSRB &= ~(1 << UDRIE);		/* disable data register empty IRQ */
 	} else {
 		#ifdef UART_XON_XOFF
-			while(txon==nogo)
-				;
+			if(txon==nogo){
+				UCSRB &= ~(1 << UDRIE);		/* disable data register empty IRQ */
+				sei();
+				while(txon==nogo)
+					;
+				cli();
+				UCSRB |= (1 << UDRIE);		/* enable data register empty IRQ */
+			}
 		#endif
 		UDR = *txtail;			/* schreibt das Zeichen x auf die Schnittstelle */
 		if (++txtail == (txbuf + UART_TXBUFSIZE)) txtail = txbuf;
@@ -164,9 +170,9 @@ void uart_init() {
 	// init buffers
 	rxhead = rxtail = rxbuf;
 	txhead = txtail = txbuf;
-
+	
 	// activate rx IRQ
-	UCSRB |= _BV(RXCIE) | _BV(UDRIE);
+	UCSRB |= _BV(RXCIE); // | _BV(UDRIE);
 	sei();
 //	#ifdef ATMEGA644
 //	UCSRB |= _BV(UDRIE);
