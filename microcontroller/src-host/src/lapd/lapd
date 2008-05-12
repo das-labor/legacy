@@ -153,7 +153,7 @@ end
 $devices = []
 
 def read_devices(filename)
-	file = File.new(filename, "a")
+	file = File.new(filename, "r")
 	file.each_line do |line|
 		line.chomp!
 		arr = line.split(' ', 2)
@@ -281,7 +281,7 @@ opts = OptionParser.new do |o|
 
 	o.on( "-l", "--logfile FILENAME",
 			"Path to logfile (default: STDOUT)" ) do |logfile|
-		$LogHandle = File.new( logfile, "w+" )
+		$LogHandle = File.new( logfile, "a" )
 	end
 
 	o.on( "-p", "--port PORT", Integer, 
