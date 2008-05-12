@@ -1,5 +1,7 @@
 #!/usr/bin/ruby
 
+require 'optparse'
+require 'date'
 require 'socket'
 require 'CanPacket'
 
@@ -145,6 +147,9 @@ end
 
 
 
+
+
+
 $devices = []
 
 def read_devices(filename)
@@ -244,44 +249,122 @@ class LapServer
 	end
 end
 
-Thread.abort_on_exception = true
+##############################################################################
+# Utility Functions
 
-read_devices("devices.lst");
-
-server_thread = Thread.new{
-	session = TCPServer.new( '' , 2343 )
-	while 1
-		$servers << LapServer.new(session.accept)
+def debug(level, msg)
+	if $VerboseLevel >= level then
+		$LogHandle.puts "#{Time.now.strftime( "%Y-%m-%d %H-%M-%S" )} - #{msg}"
+		$LogHandle.flush
 	end
-}
-
-
-$devices.each do |d|
-	p d
 end
 
-$cand_socket = TCPSocket.new('rl', 2342)
+def error(msg)
+	debug(0, msg )
+end
+
+##############################################################################
+# Main
+
+$Port         = 2343
+$LogHandle    = STDERR
+$VerboseLevel = 3
+
+opts = OptionParser.new do |o|
+	o.banner = "lapd -- Labor Control Daemon"
+	o.separator ""
+
+	o.on( "-v", "--verbose LEVEL", Integer,
+			"Set verbosity to LEVEL (default: #{$VerboseLevel})" ) do |level|
+		$VerboseLevel = level
+	end
+
+	o.on( "-l", "--logfile FILENAME",
+			"Path to logfile (default: STDOUT)" ) do |logfile|
+		$LogHandle = File.new( logfile, "w+" )
+	end
+
+	o.on( "-p", "--port PORT", Integer, 
+			"TCP/IP Port to listen on (default: #{$Port})" ) do |port|
+		$Port = port
+	end
+
+	o.on( "-h", "--help",
+			"Display help message" ) do 
+		puts
+		puts opts
+		puts
+		exit 0
+	end
+end
+
+begin
+	opts.parse!( ARGV )
+rescue => e
+	STDERR.puts 
+	STDERR.puts "Fatal error: #{e}"
+	STDERR.puts 
+	STDERR.puts opts
+	exit 1
+end
 
 
-Thread.new do
-	while 1
-		can = CanPacket.new
-		can.read_from_socket
+Thread.abort_on_exception = true
+
+begin
+	debug 5, "Reading devices.lst..."
+	read_devices("devices.lst")
+
+	$devices.each do |d|
+		debug 7, d
+	end
+rescue => e 
+	error "Error reading devices.lst: #{e}"
+	exit 2
+end
+
+server_thread = Thread.new do 
+	begin
+		debug 5, "Accepting connections on port #{$Port}..."
+
+		socket = TCPServer.new( '' , $Port )
+		while true do
+			$servers << LapServer.new(socket.accept)
+		end
+	rescue => e
+		error "Error in server_thread: #{e}"
+		exit 2
+	end
+end
 		
-		if (can.dest_port == 0x18) && (can.data[0] == 0) then
-			$devices.each do |device|
-				if (device.lap_addr == can.src_addr) && (device.num == can.data[1]) then
-					device.state_changed(can.data[2])
+$cand_socket = TCPSocket.new('rl', 2342)
+cand_thread = Thread.new do
+	begin
+		debug 5, "Connecting to cand..."
+
+		while true do
+			can = CanPacket.new
+			can.read_from_socket
+			debug 7, "Recieved CanPacket"
+			
+			if (can.dest_port == 0x18) && (can.data[0] == 0) then
+				$devices.each do |device|
+					if (device.lap_addr == can.src_addr) && (device.num == can.data[1]) then
+						device.state_changed(can.data[2])
+					end
+				end
+			end
+			if (can.dest_port == 0x26) then
+				$devices.each do |device|
+					if (device.lap_addr == can.src_addr) then
+						device.humidity_changed(can.data[0])
+					end
 				end
 			end
 		end
-		if (can.dest_port == 0x26) then
-			$devices.each do |device|
-				if (device.lap_addr == can.src_addr) then
-					device.humidity_changed(can.data[0])
-				end
-			end
-		end
+	rescue => e
+		error "Error in cand_thread: #{e}"
+		exit 2
 	end
 end
 
