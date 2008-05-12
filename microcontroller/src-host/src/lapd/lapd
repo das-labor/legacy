@@ -9,6 +9,8 @@ class LapDevice
 	def initialize(name)
 		@name = name
 	end
+	def request_state()
+	end
 	def ==(n)
 		n == @name
 	end
@@ -30,6 +32,12 @@ class SwitchDevice < LapDevice
 
 		super(name)
 		@state = 0
+	end
+	def request_state()
+		can = CanPacket.new()
+		can.set_lap(0, 0x18, self.lap_addr, 0x18)
+		can.data = [2, self.num]
+		can.transmit()
 	end
 	def set(arg)
 		newstate = arg.to_i
@@ -83,6 +91,60 @@ class SwitchDevice < LapDevice
 	end 
 end
 
+
+class PlantDevice < LapDevice
+	attr_reader :lap_addr
+	#format for args is name lap_addr
+	def initialize(str)
+		@watching_servers = []
+		name, args =  str.split(' ', 2)
+		@lap_addr = args.to_i
+
+		super(name)
+		@humidity = 0
+	end
+#	def set(arg)
+#		newstate = arg.to_i
+#		if (newstate == 0) || (newstate == 1) then
+#			if @state != newstate then
+#				can = CanPacket.new()
+#				can.set_lap(0, 0x18, @lap_addr, 0x18)
+#				can.data = [1, @num, newstate]
+#				can.transmit()
+#				state_changed(newstate)
+#				"o.k.\r\n"
+#			else
+#				"state not changed\r\n"
+#			end
+#		end
+#	end
+	def get_humidity
+		@name + " humidity " + @humidity.to_s
+	end
+	def get
+		get_humidity()
+	end
+	def request(server, command, argstr)
+		if argstr then
+			args = argstr.split()
+		end
+		server.message case command
+#			when "set" 		then set(args[0])
+			when "get"		then get
+			else			"error - no such command\r\n"
+		end
+	end
+	def humidity_changed(newhumidity)
+		@humidity = newhumidity		
+	end
+	def to_s
+		super.chomp + " " + @lap_addr.to_s + "," + @num.to_s + " humidity=" + @humidity.to_s + "\r\n"
+	end 
+end
+
+
+
+
 $devices = []
 
 def read_devices(filename)
@@ -93,6 +155,8 @@ def read_devices(filename)
 		if arr.size < 2 then break end
 		$devices << case arr[0]
 			when "Switch" then SwitchDevice.new(arr[1])
+			when "Plant"  then PlantDevice.new(arr[1])
+
 			else nil
 		end
 	end
@@ -211,14 +275,18 @@ Thread.new do
 				end
 			end
 		end
+		if (can.dest_port == 0x26) then
+			$devices.each do |device|
+				if (device.lap_addr == can.src_addr) then
+					device.humidity_changed(can.data[0])
+				end
+			end
+		end
 	end
 end
 
 $devices.each do |device|
-	can = CanPacket.new()
-	can.set_lap(0, 0x18, device.lap_addr, 0x18)
-	can.data = [2, device.num]
-	can.transmit()
+	device.request_state()
 end
 
 server_thread.join
