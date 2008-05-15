@@ -11,6 +11,8 @@
 #define PERCNT_INITERROR 23
 #define PERCNT_STRANGEERROR 42
 
+uint8_t percnt_getactivesubcounter(uint8_t counter);
+
 void percnt_reset(uint8_t counter);
 uint32_t percnt_get(uint8_t counter);
 uint8_t percnt_inc(uint8_t counter);

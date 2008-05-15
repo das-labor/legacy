@@ -2,9 +2,9 @@
 #include <setjmp.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
+#include <avr/eeprom.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "config.h"
 #include "scrolltext.h"
 #include "programm.h"
@@ -19,7 +19,6 @@ jmp_buf newmode_jmpbuf;
 
 int main (void){
 	unsigned char mode;
-
 	percnt_init(0);
 	clear_screen(0);
 	srandom(percnt_get(0));
