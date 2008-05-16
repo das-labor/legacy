@@ -259,7 +259,7 @@ int gameoflife(){
 	int x,y;
 	uint16_t cycle;
 	
-start:	
+//start:	
 	/* initalise the field with random */
 	for(y=0;y<YSIZE;++y){
 		for(x=0;x<XSIZE; ++x){

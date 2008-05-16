@@ -44,7 +44,7 @@ int main (void){
 		switch(mode++) {
 		case 1:
 			scrolltext(scrolltext_text);
-			{ unsigned char a[14];
+			{ char a[14];
 				sprintf(a,"</# counter == %lu  ", percnt_get());
 				scrolltext(a);
 			}
