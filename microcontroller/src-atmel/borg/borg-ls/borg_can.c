@@ -11,6 +11,7 @@
 #include <string.h>
 
 #include "config.h"
+#include "borg_hw.h"
 
 can_addr myaddr;
 extern jmp_buf newmode_jmpbuf;
