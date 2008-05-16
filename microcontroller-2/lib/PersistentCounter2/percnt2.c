@@ -170,7 +170,7 @@ uint8_t percnt_inc(uint8_t counter){
 	percnt_active[counter] += 1;
 	if (percnt_active[counter] == 3)
 		percnt_active[counter] = 0;
-	return percnt_writecntx(t+3, counter, percnt_active[counter]);
+	return percnt_writecntx(t+1+2, counter, percnt_active[counter]); /* rember, _get substracts two */
 }
 
 /******************************************************************************/
@@ -184,64 +184,66 @@ uint8_t percnt_init(uint8_t counter){
 	dab = labs(a-b);
 	dac = labs(a-c);
 	dbc = labs(b-c);
-	if(dab==1 && dac==1 && dbc==1){
-		/* this should be the regular case */
-		if(a>b && a>c)
-			percnt_active[counter]=counterA;
-		if(b>a && b>c)
-			percnt_active[counter]=counterB;
-		if(c>a && c>b)
-			percnt_active[counter]=counterC;
+	if(dab==1 && dbc==1 && dac==2){
+		percnt_active[counter]=counterC;
 		return 0;
-	} else {
-		/* here it gets intresting */
-		if(dab==1 || dac==1 || dbc==1){
-			/* we might got interrupted while incrementing */
-			/* action depends on policy either finish the increment or not */
-			#ifdef PERCNT_POLICY_STAY
-			if(dab==1){
-				percnt_active[counter]=(a<b)?counterB:counterA;
-				c = (a<b)?(a-1):(b-1);
-				return percnt_writecntx(c, counter, counterC);
-			}
-			if(dac==1){
-				percnt_active[counter]=(a<c)?counterC:counterA;
-				b = (a<c)?(a-1):(c-1);
-				return percnt_writecntx(b, counter, counterB);
-			}
-			if(dbc==1){
-				percnt_active[counter]=(b<c)?counterC:counterB;
-				a = (b<c)?(b-1):(c-1);
-				return percnt_writecntx(a, counter, counterA);
-			}
-			#endif
-			#ifdef PERCNT_POLICY_INC
-			if(dab==1){
-				percnt_active[counter]=counterC;
-				c = (a<b)?(a-1):(b-1);
-				return percnt_writecntx(c+1, counter, counterC);
-			}
-			if(dac==1){
-				percnt_active[counter]=counterB;
-				b = (a<c)?(a-1):(c-1);
-				return percnt_writecntx(b+1, counter, counterB);
-			}
-			if(dbc==1){
-				percnt_active[counter]=counterA;
-				a = (b<c)?(b-1):(c-1);
-				return percnt_writecntx(a+1, counter, counterA);
-			}
-			#endif
-		} else {
-			/* something realy strange happened */
-			/* might we have to initialise or so, but we must make sure that no one evil drives us here */
-			#ifdef PERCNT_RESETONERROR
-			percnt_reset(counter);
-			return 0;
-			#endif
-			
-			return 23;
+	}
+	if(dab==1 && dbc==2 && dac==1){
+		percnt_active[counter]=counterB;	
+		return 0;
+	}
+	if(dab==2 && dbc==1 && dac==1){
+		percnt_active[counter]=counterA;
+		return 0;
+	}
+	
+	/* here it gets intresting */
+	if(dab==1 || dac==1 || dbc==1){
+		/* we might got interrupted while incrementing */
+		/* action depends on policy either finish the increment or not */
+		#ifdef PERCNT_POLICY_STAY
+		if(dab==1){
+			percnt_active[counter]=(a<b)?counterB:counterA;
+			c = (a<b)?(a-1):(b-1);
+			return percnt_writecntx(c, counter, counterC);
 		}
+		if(dac==1){
+			percnt_active[counter]=(a<c)?counterC:counterA;
+			b = (a<c)?(a-1):(c-1);
+			return percnt_writecntx(b, counter, counterB);
+		}
+		if(dbc==1){
+			percnt_active[counter]=(b<c)?counterC:counterB;
+			a = (b<c)?(b-1):(c-1);
+			return percnt_writecntx(a, counter, counterA);
+		}
+		#endif
+		#ifdef PERCNT_POLICY_INC
+		if(dab==1){
+			percnt_active[counter]=counterC;
+			c = (a<b)?(a-1):(b-1);
+			return percnt_writecntx(c+1, counter, counterC);
+		}
+		if(dac==1){
+			percnt_active[counter]=counterB;
+			b = (a<c)?(a-1):(c-1);
+			return percnt_writecntx(b+1, counter, counterB);
+		}
+		if(dbc==1){
+			percnt_active[counter]=counterA;
+			a = (b<c)?(b-1):(c-1);
+			return percnt_writecntx(a+1, counter, counterA);
+		}
+		#endif
+	} else {
+		/* something realy strange happened */
+		/* might we have to initialise or so, but we must make sure that no one evil drives us here */
+		#ifdef PERCNT_RESETONERROR
+		percnt_reset(counter);
+		return 0;
+		#endif
+		
+		return 23;
 	}
 	/* we won't get here, but to keep the compile quiet: */
 	return 42;
