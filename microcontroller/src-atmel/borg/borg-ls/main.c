@@ -34,10 +34,10 @@ int main (void){
 	for(;;){
 		switch(mode++) {
 		case 1:
-			scrolltext((unsigned char*)scrolltext_text);
+			scrolltext(scrolltext_text);
 			{   char a[40];  
 				sprintf_P(a,PSTR("</# counter == %lu "), percnt_get(0)); 
-				scrolltext((unsigned char*)a); 
+				scrolltext(a);
 			} 
 			break;
 		case 2:
