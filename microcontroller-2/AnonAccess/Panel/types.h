@@ -58,12 +58,21 @@ typedef enum{
 	invalidtimeout_cred = 0x10
 } authcredvalid_state_t; /* authentification credentials valid status */
 
+/*
 typedef struct{
 	uid_t    uid;
 	ticket_t ticket;
 	uint8_t  rkey[32];
 	uint8_t  rid[32];
 	uint8_t  pinhmac[32];
+	uint8_t  hmac[32];
+} authblock_t;
+*/
+
+typedef struct{
+	uid_t    uid;
+	ticket_t ticket;
+	uint8_t  rid[32];
 	uint8_t  hmac[32];
 } authblock_t;
 

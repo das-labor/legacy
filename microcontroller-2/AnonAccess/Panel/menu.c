@@ -246,20 +246,8 @@ void view_authblock(void){
 	
 	lcd_cls();
 	lcd_gotopos(1,1);
-	lcd_writestr_P(PSTR("rkey: "));
-	lcd_writeB64long(1,2,LCD_WIDTH, a.rkey, 32);
-	ui_waitforkey('E');
-	
-	lcd_cls();
-	lcd_gotopos(1,1);
 	lcd_writestr_P(PSTR("rid: "));
 	lcd_writeB64long(1,2,LCD_WIDTH, a.rid, 32);
-	ui_waitforkey('E');
-	
-	lcd_cls();
-	lcd_gotopos(1,1);
-	lcd_writestr_P(PSTR("pinhmac: "));
-	lcd_writeB64long(1, 2, LCD_WIDTH, a.pinhmac, 32);
 	ui_waitforkey('E');
 	
 	lcd_cls();

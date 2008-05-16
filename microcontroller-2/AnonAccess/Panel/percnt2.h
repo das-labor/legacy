@@ -2,6 +2,8 @@
 #define PERCNT2_H_
 
 #include <stdint.h>
+#include "config.h"
+
 
 #define PERCNT_OK 0
 #define PERCNT_ERROR 1
