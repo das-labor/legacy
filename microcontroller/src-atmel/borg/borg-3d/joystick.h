@@ -2,7 +2,7 @@
 #define JOYSTICK_H
 
 extern unsigned char waitForFire;
-inline void joy_init();
+void joy_init();
 
 #define PORTJOYGND PORTB
 #define DDRJOYGND DDRB
@@ -28,3 +28,4 @@ inline void joy_init();
 #define JOYISFIRE (!(PINJOYDIRS & (1<<BITFIRE)))
 
 #endif // JOYSTICK_H
+
