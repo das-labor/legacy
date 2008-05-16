@@ -83,6 +83,8 @@ void menu()
 			case MENU_ITEM_TETRIS:
 				tetris();
 				break;
+			default:
+				break;
 			}
 			break;
 		}

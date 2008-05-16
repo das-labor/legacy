@@ -15,6 +15,7 @@
 #include "prng.h"
 #include "persistentCounter.h"
 #include "menu.h"
+#include "util.h"
 
 volatile unsigned char oldMode, oldOldmode, mode;
 
@@ -37,7 +38,7 @@ int main (void){
 		switch(mode++) {
 		case 1:
 			scrolltext(scrolltext_text);
-			{ unsigned char a[14];
+			{ char a[14];
 				sprintf(a,"</# counter == %lu  ", percnt_get());
 				scrolltext(a);
 			}
