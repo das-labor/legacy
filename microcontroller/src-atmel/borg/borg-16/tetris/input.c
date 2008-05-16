@@ -263,6 +263,8 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 				pIn->cmdLast = cmdReturn = TETRIS_INCMD_NONE;
 				pIn->nRepeatCount = -TETRIS_INPUT_REPEAT_INITIALDELAY;
 				break;
+			default:
+				break;
 			}
 		}
 		// current command is considered as chattering
