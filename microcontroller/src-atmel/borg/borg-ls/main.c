@@ -14,6 +14,7 @@
 #include "borg_can.h"
 #include "prng.h"
 #include "percnt2.h"
+#include "util.h"
 
 jmp_buf newmode_jmpbuf;
 
