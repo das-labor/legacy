@@ -6,6 +6,31 @@
 #include "config.h"
 
 
+/* Coordinate System of Borg:
+ *
+ *           back
+ *         -------          X  ^
+ *        / up  / |          /
+ *      0-------  | right   -----> 
+ * left  |front|  |         |    Y
+ *       |     | /          |Z
+ *       -------            v
+ *         down
+ *
+ * In the following description, the normal vector of the planes is used to
+ * describe their orientation.
+ * 
+ * On the old hardware, the electrical planes are in X direction, each
+ * latch controls a plane in Y direction, and each Latch bit controls a 
+ * Z-plane. The pixmap is used as pixmap[level][x][y] = z-bits.
+ *
+ * On the NEW_GENERATION, the electrical planes are in Z direction, each
+ * latch controls a plane in Y direction, and each Latch bit controls a
+ * X-Plane. The pixmap is used as pixmap[level][z][y] = x-bits.
+ *
+ */
+
+
 unsigned char shl_table[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
 
 void clear_screen(unsigned char value){
@@ -373,47 +398,33 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 	unsigned char v = 0xFF;
 	
 	switch (dir) {
-		case back:
-			pindex = NUM_PLANES - (num+1);
+#ifdef NEW_GENERATION			
+		case left:
+			pindex = num;
 			for (x = 0; x < PLANEBYTES; x++) {
 				for (p = 0; p < NUM_LEVELS; p++) {
-#ifdef NEW_GENERATION					
 					if (p < color)
 						pixmap[p][x][pindex] = v;
 					else
 						pixmap[p][x][pindex] &= ~v;
-#else
-					if (p < color)
-						pixmap[p][pindex][x] = v;
-					else
-						pixmap[p][pindex][x] &= ~v;
-#endif
 				}
 			 }			
 			break;
-			
-		case forward:
-			 pindex = num;			 
-			 for (x = 0; x < PLANEBYTES; x++) {
+	
+		case right:
+			pindex = NUM_PLANES - (num+1);
+			for (x = 0; x < PLANEBYTES; x++) {
 				for (p = 0; p < NUM_LEVELS; p++) {
-#ifdef NEW_GENERATION
 					if (p < color)
 						pixmap[p][x][pindex] = v;
 					else
 						pixmap[p][x][pindex] &= ~v;
-#else
-					if (p < color)
-						pixmap[p][pindex][x] = v;
-					else
-						pixmap[p][pindex][x] &= ~v;
-#endif
 				}
-			 }
+			 }			
 			break;
-#ifdef NEW_GENERATION			
-			
+
 		case up:
-			pindex = NUM_PLANES-(num+1);
+			pindex = num;
 			for (y = 0; y < NUM_PLANES; y++) {
 				for (p = 0; p < NUM_LEVELS; p++) {
 					if ( p < color)
@@ -425,7 +436,7 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			break;
 			
 		case down:
-			pindex = num;
+			pindex = NUM_PLANES-(num+1);
 			for (y = 0; y < NUM_PLANES; y++) {
 				for (p = 0; p < NUM_LEVELS; p++) {
 					if (p < color)
@@ -436,7 +447,8 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			 }
 			break;
 			
-		case right:
+		case back:
+			//this seems to be back
 			v = shl_table[NUM_ROWS - (num+1)];
 			for (p = 0; p < NUM_LEVELS; p++) {
 				for (y = 0; y < NUM_PLANES; y++) {
@@ -450,7 +462,8 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			}
 			break;
 
-		case left:
+		case forward:
+			//this seems to be front
 			v = shl_table[num];
 			for (p = 0; p < NUM_LEVELS; p++) {
 				for (y = 0; y < NUM_PLANES; y++) {
@@ -464,7 +477,29 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			}
 			break;
 #else
-
+		case back:
+			pindex = NUM_PLANES - (num+1);
+			for (x = 0; x < PLANEBYTES; x++) {
+				for (p = 0; p < NUM_LEVELS; p++) {
+					if (p < color)
+						pixmap[p][pindex][x] = v;
+					else
+						pixmap[p][pindex][x] &= ~v;
+				}
+			 }			
+			break;
+			
+		case forward:
+			 pindex = num;			 
+			 for (x = 0; x < PLANEBYTES; x++) {
+				for (p = 0; p < NUM_LEVELS; p++) {
+					if (p < color)
+						pixmap[p][pindex][x] = v;
+					else
+						pixmap[p][pindex][x] &= ~v;
+				}
+			 }
+			break;
 
 		case right:
 			pindex = NUM_PLANES-(num+1);

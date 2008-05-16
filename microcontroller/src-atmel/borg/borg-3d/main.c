@@ -15,6 +15,7 @@ jmp_buf newmode_jmpbuf;
 
 volatile unsigned char oldMode, oldOldmode, mode;
 
+
 int main (void) {
 	borg_hw_init();
 	uart_init();
@@ -24,13 +25,7 @@ int main (void) {
 	clear_screen(0);
 
 	mode = setjmp(newmode_jmpbuf);
-	
-	
-	//test1();
-	//while(1);
-	
-	
-	
+
 	oldOldmode = oldMode;
 	waitForFire = 1;
 	for (;;) {
@@ -133,3 +128,4 @@ int main (void) {
 		}
 	}
 }
+
