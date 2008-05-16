@@ -277,11 +277,11 @@ unsigned char blobNextCommand(blob_t * blob){
 }
 
 
-blob_t * setupBlob(unsigned char * str){
+blob_t * setupBlob(char * str){
 	/*char * strtok_r ( char * string, const char * delim, char ** last)*/ 
 	static unsigned char chop_cnt;
 	static char *last; static char delim[] = "#";
-	static unsigned char *lastcommands;
+	static char *lastcommands;
 	unsigned int tmp;
 	
 	if(str){
@@ -291,18 +291,18 @@ blob_t * setupBlob(unsigned char * str){
 	blob_t *blob = malloc(sizeof (blob_t));
 	
 	if(!chop_cnt){
-		blob->commands = strtok_r ((char*)str, delim, &last);
+		blob->commands = strtok_r (str, delim, &last);
 		if( blob->commands == 0) goto fail;
 		
 		if((tmp = getnum(blob)) != 0xFFFF){
 			chop_cnt = tmp;
-			lastcommands = (unsigned char*)blob->commands;
+			lastcommands = blob->commands;
 		}
 	}
 	
 	if(chop_cnt){
 		chop_cnt--;
-		blob->commands = (char*)lastcommands;
+		blob->commands = lastcommands;
 	}
 	
 	blob->str = strtok_r (0, delim, &last);
@@ -486,9 +486,9 @@ void drawBlob(blob_t *blob) {
 
 extern jmp_buf newmode_jmpbuf;
 
-void scrolltext(unsigned char *str) {
+void scrolltext(char *str) {
 	jmp_buf tmp_jmpbuf;
-	unsigned char tmp_str[SCROLLTEXT_STRING_SIZE];
+	char tmp_str[SCROLLTEXT_STRING_SIZE];
 	int ljmp_retval;
 	
 	fonts[0] = SCROLLTEXT_FONT;
