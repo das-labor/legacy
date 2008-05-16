@@ -1,11 +1,34 @@
 #define PIXEL_C
 
-#include <avr/pgmspace.h>
-
 #include "pixel.h"
 #include "borg_hw.h"
 #include "util.h"
 #include "config.h"
+
+
+/* Coordinate System of Borg:
+ *
+ *           back
+ *         -------          X  ^
+ *        / up  / |          /
+ *      0-------  | right   -----> 
+ * left  |front|  |         |    Y
+ *       |     | /          |Z
+ *       -------            v
+ *         down
+ *
+ * In the following description, the normal vector of the planes is used to
+ * describe their orientation.
+ * 
+ * On the old hardware, the electrical planes are in X direction, each
+ * latch controls a plane in Y direction, and each Latch bit controls a 
+ * Z-plane. The pixmap is used as pixmap[level][x][y] = z-bits.
+ *
+ * On the NEW_GENERATION, the electrical planes are in Z direction, each
+ * latch controls a plane in Y direction, and each Latch bit controls a
+ * X-Plane. The pixmap is used as pixmap[level][z][y] = x-bits.
+ *
+ */
 
 
 unsigned char shl_table[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
@@ -106,7 +129,7 @@ void shift3d(direction dir) {
               }
           }
           break;
-     case left:
+     case right:
           for (i = 0; i < NUM_PLANES; i ++) {
               for (j = 0; j < NUM_ROWS; j++) {
                   for (k = 0; k < NUM_LEVELS; k++) {
@@ -115,7 +138,7 @@ void shift3d(direction dir) {
               }
           }
           break;
-     case right:
+     case left:
           for (i = 0; i < NUM_PLANES; i ++) {
               for (j = 0; j < NUM_ROWS; j++) {
                   for (k = 0; k < NUM_LEVELS; k++) {
@@ -376,6 +399,18 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 	
 	switch (dir) {
 #ifdef NEW_GENERATION			
+		case left:
+			pindex = num;
+			for (x = 0; x < PLANEBYTES; x++) {
+				for (p = 0; p < NUM_LEVELS; p++) {
+					if (p < color)
+						pixmap[p][x][pindex] = v;
+					else
+						pixmap[p][x][pindex] &= ~v;
+				}
+			 }			
+			break;
+	
 		case right:
 			pindex = NUM_PLANES - (num+1);
 			for (x = 0; x < PLANEBYTES; x++) {
@@ -387,21 +422,9 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 				}
 			 }			
 			break;
-			
-		case left:
-			 pindex = num;			 
-			 for (x = 0; x < PLANEBYTES; x++) {
-				for (p = 0; p < NUM_LEVELS; p++) {
-					if (p < color)
-						pixmap[p][x][pindex] = v;
-					else
-						pixmap[p][x][pindex] &= ~v;
-				}
-			 }
-			break;
-			
+
 		case up:
-			pindex = NUM_PLANES-(num+1);
+			pindex = num;
 			for (y = 0; y < NUM_PLANES; y++) {
 				for (p = 0; p < NUM_LEVELS; p++) {
 					if ( p < color)
@@ -413,7 +436,7 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			break;
 			
 		case down:
-			pindex = num;
+			pindex = NUM_PLANES-(num+1);
 			for (y = 0; y < NUM_PLANES; y++) {
 				for (p = 0; p < NUM_LEVELS; p++) {
 					if (p < color)
@@ -425,6 +448,7 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			break;
 			
 		case back:
+			//this seems to be back
 			v = shl_table[NUM_ROWS - (num+1)];
 			for (p = 0; p < NUM_LEVELS; p++) {
 				for (y = 0; y < NUM_PLANES; y++) {
@@ -439,6 +463,7 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			break;
 
 		case forward:
+			//this seems to be front
 			v = shl_table[num];
 			for (p = 0; p < NUM_LEVELS; p++) {
 				for (y = 0; y < NUM_PLANES; y++) {
@@ -451,8 +476,7 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 				}
 			}
 			break;
-#else//not new generation
-
+#else
 		case back:
 			pindex = NUM_PLANES - (num+1);
 			for (x = 0; x < PLANEBYTES; x++) {
@@ -476,7 +500,7 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 				}
 			 }
 			break;
-			
+
 		case right:
 			pindex = NUM_PLANES-(num+1);
 			for (y = 0; y < NUM_PLANES; y++) {
@@ -533,20 +557,18 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 }
 
 // 16 = sin(90°) = 1
-char sinTab[] PROGMEM = {0, 6, 12, 19, 24, 30, 36, 41, 45, 49, 53, 56, 59, 61, 63, 64, 64};
+char sinTab[] = {0, 6, 12, 19, 24, 30, 36, 41, 45, 49, 53, 56, 59, 61, 63, 64, 64};
 		 
-#define PB(w) pgm_read_byte(&(w))
-
 char Sin(unsigned char a) {
 	a %= 64;
 	if (a < 17) {
-		return  PB(sinTab[a]);
+		return  sinTab[a];
 	} else if (a < 33) {
-		return  PB(sinTab[32-a]);
+		return  sinTab[32-a];
 	} else if (a < 49) {
-		return - PB (sinTab[a-32]);
+		return -sinTab[a-32];
 	} else {
-		return - PB (sinTab[64-a]);
+		return -sinTab[64-a];
 	}
 }	
 

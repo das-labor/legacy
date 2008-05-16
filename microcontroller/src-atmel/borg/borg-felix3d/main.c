@@ -38,7 +38,7 @@ int main (void) {
       		growingCubeFilled();
 			break;
 		case 2:
-			scrolltext(scrolltext_text);
+			scrolltext("Hello Borg");
         	growingCubeFilled();
 	        break;
 		case 3:

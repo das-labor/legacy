@@ -434,7 +434,7 @@ void drawBlob(blob_t *blob) {
 	
 	if(!blob->visible) return;
 	
-	unsigned char * str = blob->str;
+	unsigned char * str = (unsigned char*)blob->str;
 	posx = blob->posx;
 	posy = blob->posy;
 	toy = posy + blob->sizey;
