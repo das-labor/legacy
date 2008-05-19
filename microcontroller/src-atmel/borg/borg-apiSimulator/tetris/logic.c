@@ -242,8 +242,7 @@ void tetris ()
 				}
 				break;
 
-			case TETRIS_INCMD_NONE:
-				// nothing to do
+			default:
 				break;
 			}
 			break;
@@ -257,6 +256,8 @@ void tetris ()
 			// and whether the level gets changed 				
 			tetris_logic_removedLines(pLogic, tetris_playfield_getRowMask(pPl));
 			tetris_input_setLevel(pIn, tetris_logic_getLevel(pLogic));
+			break;
+		default:
 			break;
 		}
 
