@@ -242,9 +242,6 @@ void tetris ()
 				}
 				break;
 
-			case TETRIS_INCMD_NONE:
-				// nothing to do
-				break;
 			default:
 				break;
 			}
