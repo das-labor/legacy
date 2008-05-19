@@ -10,7 +10,7 @@
 #define UART_RXBUFSIZE 50
 #define UART_TXBUFSIZE 50
 #undef  UART_LEDS
-
+#define UART_2_STOPBITS
 
 // spi.[ch] defines
 #define SPI_HARDWARE
