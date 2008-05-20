@@ -242,6 +242,7 @@ void tetris ()
 				}
 				break;
 
+			// avoid compiler warnings
 			default:
 				break;
 			}
@@ -257,6 +258,8 @@ void tetris ()
 			tetris_logic_removedLines(pLogic, tetris_playfield_getRowMask(pPl));
 			tetris_input_setLevel(pIn, tetris_logic_getLevel(pLogic));
 			break;
+
+		// avoid compiler warnings
 		default:
 			break;
 		}
