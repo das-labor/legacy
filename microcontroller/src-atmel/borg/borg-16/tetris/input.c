@@ -178,16 +178,10 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 
 	// if the piece is gliding we grant the player a reasonable amount of time
 	// to make the game more controllable at high falling speeds
-	if (nPace == TETRIS_INPACE_GLIDING)
+	if ((nPace == TETRIS_INPACE_GLIDING) &&
+			(pIn->nMaxCycles < TETRIS_INPUT_GLIDE_CYCLES))
 	{
-		if (pIn->nMaxCycles < TETRIS_INPUT_GLIDE_CYCLES)
-		{
-			nMaxCycles = TETRIS_INPUT_GLIDE_CYCLES;
-		}
-		else
-		{
-			nMaxCycles = pIn->nMaxCycles;
-		}
+		nMaxCycles = TETRIS_INPUT_GLIDE_CYCLES;
 	}
 	else
 	{
@@ -263,6 +257,7 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 				pIn->cmdLast = cmdReturn = TETRIS_INCMD_NONE;
 				pIn->nRepeatCount = -TETRIS_INPUT_REPEAT_INITIALDELAY;
 				break;
+
 			default:
 				break;
 			}
