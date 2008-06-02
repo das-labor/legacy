@@ -1,3 +1,5 @@
+#include <avr/io.h>
+
 #define MDIR_OPEN  0x01
 #define MDIR_CLOSE 0x00
 
@@ -7,24 +9,24 @@
  **/
 
 #define MOTOR_MASK 0x3C
-#define MOTOR_PORT PORTC
-#define MOTOR_DDR DDRC
+#define MOTOR_PORT (PORTC)
+#define MOTOR_DDR (DDRC)
 
 /* Amount of steps & rounds to execute. The motor is considered
  * blocked when the amount of steps executed exceeds MCTL_NUMSTEPS.
  */
-#define MCTL_NUMSTEPS 800
+#define MCTL_NUMSTEPS 1200
 #define MCTL_ROUNDS 3
 
 /* Amount of steps to ignore changes in sensor brightness before a
  * change in brightness is counted as a new round.
  */
-#define MCTL_ROUNDTRIGGERLEVEL 100
+#define MCTL_ROUNDTRIGGERLEVEL 500
 
 /* Set of commands to give to motorctl()
  */
 
-#define MCTL_GET_STATE  0x00
+#define MCTL_GET_STATE  0x06
 #define MCTL_OPEN_DOOR  0x01
 #define MCTL_CLOSE_DOOR 0x02
 #define MCTL_CALIBRATE  0x03
@@ -50,6 +52,6 @@ inline void mctl_step (uint8_t in_direction);
 
 /* @description Send a "command" to the motor
  */
-extern inline void mctl_ctl ( uint8_t in_action );
-
-extern void mctl_tick ( void )
+extern uint8_t mctl_ctl ( uint8_t in_action );
+extern void mctl_tick ( void );
+extern void mctl_init ( void );
