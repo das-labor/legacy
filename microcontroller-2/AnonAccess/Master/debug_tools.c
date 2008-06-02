@@ -243,10 +243,6 @@ void console_getauthblock(authblock_t *ab){
 	console_getnstr(110, rcvbuffer);
 	asciihex2values( ab->ticket,rcvbuffer, 64);
 
-	DS("\r\n rkey:   ");
-	console_getnstr(110, rcvbuffer);
-	asciihex2values( ab->rkey,rcvbuffer, 64);
-
 	DS("\r\n rid:    ");
 	console_getnstr(110, rcvbuffer);
 	asciihex2values( ab->rid,rcvbuffer, 64);
