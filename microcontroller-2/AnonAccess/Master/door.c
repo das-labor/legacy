@@ -1,10 +1,19 @@
+#include <stdint.h>
+#include <avr/io.h>
+#include "door.h"
 
 #define NUMSTEPS 4
 
 inline void mctl_step (uint8_t in_direction)
 {
-	static uint8_t currentstep;
+	static uint8_t currentstep = 0;
+#if 1
 	const uint8_t motorsteps[NUMSTEPS] = { 0x24, 0x30, 0x18, 0x0C };
+#else
+	const uint8_t motorsteps[NUMSTEPS] = { 0x20, 0x10, 0x08, 0x04 };
+#endif
+//	const uint8_t motorsteps[NUMSTEPS] = { 0x14, 0x28, 0x30, 0x0C };
+//	const uint8_t motorsteps[NUMSTEPS] = { 0x30, 0x18, 0x18, 0x0C };
 	
 	if (in_direction == MDIR_OPEN)
 		currentstep = (currentstep == (NUMSTEPS-1)) ? 0 : currentstep+1;
@@ -15,21 +24,26 @@ inline void mctl_step (uint8_t in_direction)
 	MOTOR_PORT |= motorsteps[currentstep];
 }
 
-inline void mctl_init ( void )
+extern void mctl_init ( void )
 {
 	MOTOR_DDR |= MOTOR_MASK;
 	MOTOR_PORT &= ~(MOTOR_MASK);
+	MOTOR_PORT |= 0x03;
 
 	ADMUX = 0xc1;
 	ADCSRA = (1<<ADEN) | 7; // activate adc.
+	
+#define BIT_LED PA7	
+	PORTA |= (1<<BIT_LED);
+	DDRA |= (1<<BIT_LED);
 }
 
-extern inline uint8_t mctl_ctl ( uint8_t in_action )
+extern uint8_t mctl_ctl ( uint8_t in_action )
 {
 	static uint8_t currentstate = MCTL_STATE_UNKNOWN;
 
 	/* disallow changes to the state if there's a pending operation */
-	if (currentstate & MCTL_STATE_BUSY && in_action != MCTL_STATE_BLOCKED)
+	if (in_action & MCTL_STATE_BUSY)
 		return currentstate;
 
 	switch (in_action)
@@ -40,6 +54,11 @@ extern inline uint8_t mctl_ctl ( uint8_t in_action )
 		
 		case MCTL_CLOSE_DOOR:
 			currentstate = MCTL_STATE_CLOSING;
+		break;
+		case MCTL_GET_STATE:
+			return currentstate;
+		default:
+			currentstate = in_action;
 		break;
 	}
 	
@@ -52,12 +71,7 @@ extern void mctl_tick ( void )
 	static uint8_t roundnum = 0;
 	uint8_t i;
 	uint16_t adcval;
-	static uint8_t adcstate = 0;
-#if MCTL_NUMSTEPS > 0xff
 	static uint16_t numsteps = 0;
-#else
-	static uint8_t numsteps = 0;
-#endif
 
 	/* reset counters upon state change */
 	if (mystate != mctl_ctl (MCTL_GET_STATE))
@@ -66,17 +80,17 @@ extern void mctl_tick ( void )
 		roundnum = 0;
 		mystate = mctl_ctl (MCTL_GET_STATE);
 	}
+	
+	if (mystate & MCTL_STATE_BUSY) numsteps++;
 
 	switch (mystate)
 	{
 		case MCTL_STATE_OPENING:
-			mctl_step (MCTL_OPEN_DOOR);
-			numsteps++;
+			mctl_step (MDIR_OPEN);
 		break;
 		case MCTL_STATE_CLOSING:
-		case MCTL_STATE_CALIBRATE:  /* calibration == closing... for now */
-			mctl_step (MCTL_CLOSE_DOOR);
-			numsteps++;
+		case MCTL_STATE_CALIBRATING:  /* calibration == closing... for now */
+			mctl_step (MDIR_CLOSE);
 		break;
 	}
 	
@@ -89,15 +103,14 @@ extern void mctl_tick ( void )
 		adcval = ADC;
 	};
 
-	if (adcstate == 0) /* virgin state value */
-	{
-		adcstate = (adcval > MCTL_ADC_TRESHOLD) ? 2 : 1;
-	} else if ((adcval > MCTL_ADC_TRESHOLD && adcstate == 1)   /* rising edge */
-		|| (adcval < MCTL_ADC_TRESHOLD && adcstate == 2))  /* falling edge */
+	if (adcval > MCTL_ADC_TRESHOLD && numsteps > MCTL_ROUNDTRIGGERLEVEL)
 	{
 		roundnum++;
 		numsteps = 0;
 	}
+
+	if (roundnum == MCTL_ROUNDS)
+		mctl_ctl (MCTL_STATE_IDLE);
 
 	if (numsteps > MCTL_NUMSTEPS) /* treshold hit! set error condition */
 	{
