@@ -11,6 +11,7 @@
 #include <avr/eeprom.h>
 #include "keys.h"
 #include <avr/io.h>
+#include <string.h>
 #include "i2c_printer.h"
 
 /*
@@ -55,54 +56,65 @@ void dump_authblock(authblock_t * ab){
 	DS("\r\n   HMAC:   "); DD((char*)&(ab->hmac), 32);
 }
 
+void modify_account_id(uint8_t* id, userflags_t set, userflags_t clear){
+	if(*id){
+		char name[*id+1];
+		memcpy(name, id+1, *id);
+		name[*id] = '\0';
+		modify_account(name, set, clear);
+	} else {
+		modify_account_byuid(*((uid_t*)(id+1)), set, clear);
+	}
+}
+
 void add_user(char * nickname, sha256_hash_t pinhash,uint8_t anon, uint8_t pinflags, authblock_t *dest){
 	new_account(dest, nickname, pinhash, anon, pinflags);
 //	dump_authblock(&ab);
 }
 
-void rem_user(char * nickname){
+void rem_user(uint8_t* id){
 	userflags_t set, clear;
 	
 	set.admin = set.exist = set.locked = set.notify_lostadmin = 0;
 	clear.admin = clear.exist = clear.locked = clear.notify_lostadmin = 0;
 	clear.exist = 1;
-	modify_account(nickname, set, clear);
+	modify_account_id(id, set, clear);
 }
 
-void lock_user(char * nickname){
+void lock_user(uint8_t* id){
 	userflags_t set, clear;
 	
 	set.admin = set.exist = set.locked = set.notify_lostadmin = 0;
 	clear.admin = clear.exist = clear.locked = clear.notify_lostadmin = 0;
 	set.locked = 1;
-	modify_account(nickname, set, clear);
+	modify_account_id(id, set, clear);
 }
 
-void unlock_user(char * nickname){
+void unlock_user(uint8_t* id){
 	userflags_t set, clear;
 	
 	set.admin = set.exist = set.locked = set.notify_lostadmin = 0;
 	clear.admin = clear.exist = clear.locked = clear.notify_lostadmin = 0;
 	clear.locked = 1;
-	modify_account(nickname, set, clear);
+	modify_account_id(id, set, clear);
 }
 
-void add_admin(char * nickname){
+void add_admin(uint8_t* id){
 	userflags_t set, clear;
 	
 	set.admin = set.exist = set.locked = set.notify_lostadmin = 0;
 	clear.admin = clear.exist = clear.locked = clear.notify_lostadmin = 0;
 	set.admin = 1;
-	modify_account(nickname, set, clear);
+	modify_account_id(id, set, clear);
 }
 
-void rem_admin(char * nickname){
+void rem_admin(uint8_t* id){
 	userflags_t set, clear;
 	
 	set.admin = set.exist = set.locked = set.notify_lostadmin = 0;
 	clear.admin = clear.exist = clear.locked = clear.notify_lostadmin = 0;
 	clear.admin = 1;
-	modify_account(nickname, set, clear);
+	modify_account_id(id, set, clear);
 }
 
 void keymigration(void){

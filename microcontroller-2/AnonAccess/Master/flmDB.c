@@ -66,10 +66,14 @@ void flmdb_process(uint8_t * searchmac, userid_t uid, userflags_t * flags){
 			flags->exist |= entry.setflags.exist;
 			flags->locked|= entry.setflags.locked;
 			flags->notify_lostadmin |= entry.setflags.notify_lostadmin;
+			flags->force_admin_pin  |= entry.setflags.force_admin_pin;
+			flags->force_normal_pin |= entry.setflags.force_normal_pin;
 			flags->admin &= ~entry.clearflags.admin;
 			flags->exist &= ~entry.clearflags.exist;
 			flags->locked&= ~entry.clearflags.locked;
 			flags->notify_lostadmin &= ~entry.clearflags.notify_lostadmin;
+			flags->force_admin_pin  &= ~entry.clearflags.force_admin_pin;
+			flags->force_normal_pin &= ~entry.clearflags.force_normal_pin;
 			flags->reserved = 0;
 			
 			/* sync with db */

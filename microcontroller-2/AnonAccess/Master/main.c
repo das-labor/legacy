@@ -523,6 +523,7 @@ void messagerx_old(uint16_t len, uint8_t * msg){
 				reply[4]=DONE;
 				lop_sendmessage(&lop1, 5, reply);
 			} else {
+			/*	
 				char name[msg[4]+1];
 				strncpy(name,(char*)&(msg[5]), msg[4]);
 				name[msg[4]] = '\0';
@@ -532,7 +533,7 @@ void messagerx_old(uint16_t len, uint8_t * msg){
 					case unlockuser: unlock_user(name); break;
 					case addadmin:   add_admin(name); break;
 					case remadmin:   rem_admin(name); break;
-					default: /* ERROR */ break;
+					default: / * ERROR * / break;
 				}
 				if(action==adduser){
 					uint8_t addreply[5+sizeof(authblock_t)]={
@@ -548,6 +549,7 @@ void messagerx_old(uint16_t len, uint8_t * msg){
 					reply[4]=DONE;
 					lop_sendmessage(&lop1, 5, reply);
 				}
+			*/	
 			}
 			return;
 		}/* if(!check_permissions) ... else ... */

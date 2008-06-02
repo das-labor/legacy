@@ -60,6 +60,10 @@ bool check_permissions(uint8_t users, uint8_t admins, action_t action){
 	return (requirement_table[action].users_req<=users 
 	     && requirement_table[action].admins_req<=admins);
 }
+
+bool final_action(action_t action){
+	return true;
+}
 /*******************************************************************************
  * 
  * 
@@ -387,3 +391,24 @@ void modify_account(char * nickname, userflags_t setflags, userflags_t clearflag
 }
 
 
+void modify_account_byuid(uid_t uid, userflags_t setflags, userflags_t clearflags){
+	userflags_t flags;
+	
+	ticketdb_getUserFlags(uid, &flags);
+/*	flags |= setflags;
+	flags &= ~clearflags; */
+	flags.admin |= setflags.admin;
+	flags.exist |= setflags.exist;
+	flags.locked|= setflags.locked;
+	flags.notify_lostadmin |= setflags.notify_lostadmin;
+	flags.force_admin_pin  |= setflags.force_admin_pin;
+	flags.force_normal_pin |= setflags.force_normal_pin;
+	flags.admin &= ~clearflags.admin;
+	flags.exist &= ~clearflags.exist;
+	flags.locked&= ~clearflags.locked;
+	flags.notify_lostadmin &= ~clearflags.notify_lostadmin;
+	flags.force_admin_pin  &= ~clearflags.force_admin_pin;
+	flags.force_normal_pin &= ~clearflags.force_normal_pin;
+	flags.reserved = 0;
+	ticketdb_setUserFlags(uid, &flags);	
+}
