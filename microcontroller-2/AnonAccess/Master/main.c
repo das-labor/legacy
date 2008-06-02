@@ -42,6 +42,7 @@
 #include "selfdestruct.h"
 #include "i2c_printer.h"
 #include "iDP3540.h"
+#include "comm.h"
 
 /*
 #define DS(a)   uart_putstr_P(PSTR(a))
@@ -182,7 +183,7 @@ enum{
 /******************************************************************************/
 
 void streamrx(uint8_t b);
-void messagerx(uint16_t length, uint8_t* msg);
+void messagerx_old(uint16_t length, uint8_t* msg);
 
 
 // this handler is called from the uart_hook, i.e. when the Uart receives
@@ -261,7 +262,7 @@ void setup_system(void){
 
 /******************************************************************************/
 
-void session_reset(void){
+void session_reset_old(void){
 	uint8_t i;
 	session.users = 0;
 	session.admins = 0;
@@ -329,7 +330,7 @@ void streamrx(uint8_t b){
 
 bool msg_check(uint16_t len, uint8_t * msg){
 	if(len<3){
-		session_reset();
+		session_reset_old();
 		masterstate = mainidle;
 		busy &= ~1;
 		/* message to short - DROP */
@@ -400,21 +401,21 @@ bool msg_check(uint16_t len, uint8_t * msg){
 
 /******************************************************************************/
 
-void messagerx(uint16_t len, uint8_t * msg){
+void messagerx_old(uint16_t len, uint8_t * msg){
 /*	
 	lop_dbg_str_P(&lop0, PSTR("\r\nmessage rx:"));
 	lop_dbg_hexdump(&lop0, msg, len);
 */	
 	if(session.users > SESSION_MAX_PARTICIPANTS || session.admins > SESSION_MAX_PARTICIPANTS){
 		/* someone seems to be pretty fast wiht card changing, but we won't allow this */
-		session_reset();
+		session_reset_old();
 		masterstate = mainidle;
 		busy &= ~1;
 	}
 	
 	
 	if(!msg_check(len, msg)){
-		session_reset();
+		session_reset_old();
 		masterstate = mainidle;
 		busy &= ~1;
 		/* unknown message type - DROP */
@@ -423,7 +424,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 	}
 	
 	if(msg[2] == MSGID_SESSION_INIT){ /* reset/initiate session*/
-		session_reset();
+		session_reset_old();
 		session.timestamp = gettimestamp();
 		busy |= 1;
 		masterstate = insession;
@@ -431,7 +432,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 	}
 	
 	if(masterstate != insession){
-		session_reset();
+		session_reset_old();
 		masterstate = mainidle;
 		busy &= ~1;
 		/* not "in session" - DROP */
@@ -439,7 +440,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 	}
 
 	if(session.timestamp + SESSION_MAX_DURATION < gettimestamp()){
-		session_reset();
+		session_reset_old();
 		masterstate = mainidle;
 		busy &= ~1;
 		/* session expired - DROP */
@@ -484,7 +485,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 				return; break;
 			default:
 				/* GNAHHH, this should NEVER happen */
-				session_reset();
+				session_reset_old();
 				masterstate = mainidle;
 				busy &= ~1;
 				return; break;
@@ -504,7 +505,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 		action = (msg[3]&0xf0)?(msg[3]-0x10+2):msg[3]; /* transform ACTION_* in action_t */
 		if(!check_permissions(session.users, session.admins, action)){
 			/* not sufficient permissions */
-			session_reset();
+			session_reset_old();
 			masterstate = mainidle;
 			busy &= ~1;
 			lop_sendmessage(&lop1, 5, reply);
@@ -556,7 +557,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 		uint8_t t; /* for bootstrap_accounts */
 		/* check form and length */
 		if(NO_ANON_ADMINS && ((msg[len-2])?1:0)){
-			session_reset();
+			session_reset_old();
 			masterstate = mainidle;
 			busy &= ~1;
 			return;
@@ -583,7 +584,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 			lop_sendmessage(&lop1, 5+sizeof(authblock_t), addreply);
 		} else {
 			/* won't give a bootstrap account */
-			session_reset();
+			session_reset_old();
 			masterstate = mainidle;
 			busy &= ~1;
 			return;
@@ -595,7 +596,7 @@ void messagerx(uint16_t len, uint8_t * msg){
 
 void init_system(void){
 	door_init();
-	session_reset();
+	session_reset_old();
 	masterstate = idle;
 	uart_init();
 //	uart_putstr_P(PSTR("\r\nuart works (a)\r\n"));

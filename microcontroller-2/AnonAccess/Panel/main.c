@@ -134,7 +134,7 @@ void lop1_messagerx(uint16_t length, uint8_t * msg){
 		return;
 	}
 	ui_statusstring[1]='Q';
-	if(msg_wait){	/* there is a blocking reques for a message */
+	if(msg_wait){	/* there is a blocking request for a message */
 		if((msg_data=lop1.msgbuffer)){
 			lop1.msgbuffer=NULL;
 			msg_length=length;

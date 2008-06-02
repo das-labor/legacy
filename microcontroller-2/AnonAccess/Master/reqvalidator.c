@@ -96,25 +96,25 @@ bool check_pin(authblock_t * ab, sha256_hash_t pinhash){
 	}
 } 
  
-void update_pin(authblock_t * ab, char* pin){//sha256_hash_t pinhash){
+void change_pin(authblock_t * ab, sha256_hash_t pinhash){
 	if(!ticketdb_userexists(ab->uid))
 		return;
-	uint16_t l=strlen(pin);	
-	uint8_t refhmac[32],key[32];
-	uint8_t msg[32+l];
-	
-	entropium_fillBlockRandom(msg,32);
-	ticketdb_setUserPinMac(ab->uid, msg); /* load seed in the first 32 byte */
-	memcpy(msg+32, pin, l); /* load pin */
+	uint8_t hmac[32], key[32], key2[32];
+
+	/* generate hmac */
 	load_pinmac_key(key);
-	hmac_sha256(refhmac,key,256,msg,8*(32+l));
+	hmac_sha256(hmac, key, 256, pinhash, 256);
 	delete_key(key, 32);
-		/* now we have to encrypt the hmac */
-	shabea256(refhmac, ab->rkey, 256, 1, 16);
-	load_pinenc_key(key);
-	shabea256(refhmac, key, 256, 1, 16);
-	delete_key(key, 32);
-	memcpy(ab->pinhmac, refhmac, 32);
+
+	/* encrypt hmac */
+	load_ticketkeydiv2(key2);
+	hmac_sha256(key, key2, 256, ab->ticket, 256);
+	delete_key(key2, 32);
+	shabea256(hmac, key, 256, 1, 16);
+	delete_key(key, 32);	
+
+	/* store PINMAC */
+	ticketdb_setUserPinMac(ab->uid, hmac);	
 } 
  
 authcredvalid_state_t check_authblock(authblock_t * ab){
@@ -228,7 +228,7 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	ticketdb_setUserFlags(ab->uid, &flags);
 	/* make new RID & Co */
 //	entropium_fillBlockRandom(ab->rkey, 32);
-	memset(ab->rkey, 0, 32);
+//	memset(ab->rkey, 0, 32);
 	/* make new RID & Co */
 	load_ticketkeydiv1(key2);
 	hmac_sha256(key, key2, 256, ab->ticket, 256);
@@ -258,6 +258,37 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	}
 	return flags.admin?valid_admin:valid_user;
 }
+
+uint8_t pin_required(uid_t uid, uint8_t admin){
+	userflags_t flags;
+	ticketdb_getUserFlags(uid, &flags);
+	if(admin){
+		if(flags.force_admin_pin)
+			return 1;
+		#ifdef AAP_ANON_ADMIN_REQ_PIN
+		if(flags.anonymous)
+			return 1;
+		#endif
+		#ifdef AAP_ADMIN_REQ_PIN
+			return 1;
+		#else
+			return 0;
+		#endif
+	} else {
+		if(flags.force_normal_pin)
+			return 1;
+		#ifdef AAP_ANON_USER_REQ_PIN
+		if(flags.anonymous)
+			return 1;
+		#endif
+		#ifdef AAP_USER_REQ_PIN
+			return 1;
+		#else
+			return 0;
+		#endif	
+	}
+}
+
 
 void new_account(authblock_t * ab, char* nickname, sha256_hash_t pinhash,uint8_t anon, uint8_t pinflags){
 	userflags_t flags;
@@ -316,7 +347,7 @@ void new_account(authblock_t * ab, char* nickname, sha256_hash_t pinhash,uint8_t
 //	DS("\r\n hnick: ");
 //	DD(ab->rid, 32);
 //	entropium_fillBlockRandom(ab->rkey, 32);
-	memset(ab->rkey, 0, 32);
+//	memset(ab->rkey, 0, 32);
 	load_ticketkeydiv1(key);
 	hmac_sha256(key2, key, 256, ab->ticket, 256);
 	delete_key(key, 32);
@@ -327,7 +358,7 @@ void new_account(authblock_t * ab, char* nickname, sha256_hash_t pinhash,uint8_t
 	delete_key(key,32);
 	
 	/* process pinhash */
-	memset(ab->pinhmac, 0, 32);
+//	memset(ab->pinhmac, 0, 32);
 	load_ticketkeydiv2(key);
 	hmac_sha256(key2, key, 256, ab->ticket, 256);
 	delete_key(key, 32);
