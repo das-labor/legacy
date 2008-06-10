@@ -95,10 +95,6 @@ tetris_input_command_t tetris_input_queryJoystick()
 	{
 		cmdReturn = TETRIS_INCMD_DROP;
 	}
-	else if (JOYISUP)
-	{
-		cmdReturn = TETRIS_INCMD_ROT_CW;
-	}
 	else if (JOYISLEFT)
 	{
 		cmdReturn = TETRIS_INCMD_LEFT;
@@ -110,6 +106,10 @@ tetris_input_command_t tetris_input_queryJoystick()
 	else if (JOYISDOWN)
 	{
 		cmdReturn = TETRIS_INCMD_DOWN;
+	}
+	else if (JOYISUP)
+	{
+		cmdReturn = TETRIS_INCMD_ROT_CW;
 	}
 	else
 	{
