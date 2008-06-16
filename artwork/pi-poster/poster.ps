@@ -20,6 +20,7 @@
 %    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+/paper_autosize true def
 /pi_stroke true def
 
 /inch {	72 mul } def
@@ -34,8 +35,16 @@
 } def
 
 /papersize [
-	0 DIN_A 
-        round exch round exch % dirty hack, might work 
+	paper_autosize
+	{
+		currentpagedevice
+		/PageSize get
+		aload pop
+	}
+	{
+		0 DIN_A 
+       		round exch round exch % dirty hack, might work
+	} ifelse
 ] cvx def
 
 /pi_size papersize pop 1.25 mul def 
