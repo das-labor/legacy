@@ -47,6 +47,7 @@ namespace Jeton {
             // Container child eventBox.Gtk.Container+ContainerChild
             this.GtkAlignment2 = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.GtkAlignment2.Name = "GtkAlignment2";
+            this.GtkAlignment2.LeftPadding = ((uint)(12));
             this.GtkAlignment2.RightPadding = ((uint)(12));
             this.GtkAlignment2.BottomPadding = ((uint)(12));
             // Container child GtkAlignment2.Gtk.Container+ContainerChild
@@ -71,31 +72,59 @@ namespace Jeton {
             this.cancelBtn.HeightRequest = 50;
             this.cancelBtn.CanFocus = true;
             this.cancelBtn.Name = "cancelBtn";
-            this.cancelBtn.UseStock = true;
             this.cancelBtn.UseUnderline = true;
-            this.cancelBtn.Label = "gtk-cancel";
+            // Container child cancelBtn.Gtk.Container+ContainerChild
+            Gtk.Alignment w2 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            Gtk.HBox w3 = new Gtk.HBox();
+            w3.Spacing = 2;
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Image w4 = new Gtk.Image();
+            w4.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-delete", Gtk.IconSize.Button, 20);
+            w3.Add(w4);
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Label w6 = new Gtk.Label();
+            w6.LabelProp = Mono.Unix.Catalog.GetString("Alle _entfernen");
+            w6.UseUnderline = true;
+            w3.Add(w6);
+            w2.Add(w3);
+            this.cancelBtn.Add(w2);
             this.hbuttonbox2.Add(this.cancelBtn);
-            Gtk.ButtonBox.ButtonBoxChild w2 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2[this.cancelBtn]));
-            w2.Expand = false;
-            w2.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w10 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2[this.cancelBtn]));
+            w10.Expand = false;
+            w10.Fill = false;
             // Container child hbuttonbox2.Gtk.ButtonBox+ButtonBoxChild
             this.applyBtn = new Gtk.Button();
             this.applyBtn.WidthRequest = 150;
             this.applyBtn.CanFocus = true;
             this.applyBtn.Name = "applyBtn";
-            this.applyBtn.UseStock = true;
             this.applyBtn.UseUnderline = true;
-            this.applyBtn.Label = "gtk-apply";
+            // Container child applyBtn.Gtk.Container+ContainerChild
+            Gtk.Alignment w11 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            Gtk.HBox w12 = new Gtk.HBox();
+            w12.Spacing = 2;
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Image w13 = new Gtk.Image();
+            w13.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-apply", Gtk.IconSize.Button, 20);
+            w12.Add(w13);
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Label w15 = new Gtk.Label();
+            w15.LabelProp = Mono.Unix.Catalog.GetString("_Kaufen");
+            w15.UseUnderline = true;
+            w12.Add(w15);
+            w11.Add(w12);
+            this.applyBtn.Add(w11);
             this.hbuttonbox2.Add(this.applyBtn);
-            Gtk.ButtonBox.ButtonBoxChild w3 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2[this.applyBtn]));
-            w3.Position = 1;
-            w3.Expand = false;
-            w3.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w19 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2[this.applyBtn]));
+            w19.Position = 1;
+            w19.Expand = false;
+            w19.Fill = false;
             this.vbox3.Add(this.hbuttonbox2);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox3[this.hbuttonbox2]));
-            w4.Position = 1;
-            w4.Expand = false;
-            w4.Fill = false;
+            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.vbox3[this.hbuttonbox2]));
+            w20.Position = 1;
+            w20.Expand = false;
+            w20.Fill = false;
             this.GtkAlignment2.Add(this.vbox3);
             this.eventBox.Add(this.GtkAlignment2);
             this.frame1.Add(this.eventBox);

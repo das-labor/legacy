@@ -591,11 +591,11 @@ Ist noch nicht fertig...
                             <property name="WidthRequest">150</property>
                             <property name="HeightRequest">50</property>
                             <property name="CanFocus">True</property>
-                            <property name="UseStock">True</property>
-                            <property name="Type">StockItem</property>
-                            <property name="StockId">gtk-cancel</property>
+                            <property name="Type">TextAndIcon</property>
+                            <property name="Icon">stock:gtk-delete Button</property>
+                            <property name="Label" translatable="yes">Alle _entfernen</property>
+                            <property name="UseUnderline">True</property>
                             <signal name="Clicked" handler="OnCancelClicked" />
-                            <property name="label">gtk-cancel</property>
                           </widget>
                           <packing>
                             <property name="Expand">False</property>
@@ -607,11 +607,11 @@ Ist noch nicht fertig...
                             <property name="MemberName" />
                             <property name="WidthRequest">150</property>
                             <property name="CanFocus">True</property>
-                            <property name="UseStock">True</property>
-                            <property name="Type">StockItem</property>
-                            <property name="StockId">gtk-apply</property>
+                            <property name="Type">TextAndIcon</property>
+                            <property name="Icon">stock:gtk-apply Button</property>
+                            <property name="Label" translatable="yes">_Kaufen</property>
+                            <property name="UseUnderline">True</property>
                             <signal name="Clicked" handler="OnApplyClicked" />
-                            <property name="label">gtk-apply</property>
                           </widget>
                           <packing>
                             <property name="Position">1</property>
