@@ -1,5 +1,9 @@
 2008-06-23  Jörg Bornschein <joerg@das-labor.org> 
 
+	
+
+2008-06-23  Jörg Bornschein <joerg@das-labor.org> 
+
 	* Jeton/gtk-gui/Jeton.BestellWidget.cs, Jeton/gtk-gui/gui.stetic: Minor
 	  cossmetic changes (button icons)
 
