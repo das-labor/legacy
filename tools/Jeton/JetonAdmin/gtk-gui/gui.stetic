@@ -4,7 +4,10 @@
     <images-root-path>..</images-root-path>
     <target-gtk-version>2.12.0</target-gtk-version>
   </configuration>
-  <widget class="Gtk.Window" id="JetonAdmin.MainWindow" design-size="566 587">
+  <import>
+    <widget-library name="../bin/Debug/JetonAdmin.exe" internal="true" />
+  </import>
+  <widget class="Gtk.Window" id="JetonAdmin.MainWindow" design-size="619 587">
     <action-group name="Default">
       <action id="DateiAction">
         <property name="Type">Action</property>
@@ -31,7 +34,8 @@
       </action>
     </action-group>
     <property name="MemberName" />
-    <property name="Title" translatable="yes">MainWindow</property>
+    <property name="Title" translatable="yes">Jeton Admin</property>
+    <property name="Icon">stock:stock_unknown Menu</property>
     <property name="WindowPosition">CenterOnParent</property>
     <signal name="DeleteEvent" handler="OnDeleteEvent" />
     <child>
@@ -64,472 +68,10 @@
             <property name="CurrentPage">0</property>
             <property name="EnablePopup">True</property>
             <child>
-              <widget class="Gtk.HPaned" id="hpaned1">
+              <widget class="JetonAdmin.CardScreen" id="cardscreen1">
                 <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="Position">221</property>
-                <child>
-                  <widget class="Gtk.VBox" id="vbox2">
-                    <property name="MemberName" />
-                    <property name="Spacing">6</property>
-                    <child>
-                      <widget class="Gtk.Label" id="label2">
-                        <property name="MemberName" />
-                        <property name="LabelProp" translatable="yes">Ausgegebene Karten:</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">0</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
-                        <property name="MemberName" />
-                        <property name="ShadowType">In</property>
-                        <child>
-                          <widget class="Gtk.NodeView" id="nodeview2">
-                            <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="ShowScrollbars">True</property>
-                            <property name="HeadersClickable">True</property>
-                          </widget>
-                        </child>
-                      </widget>
-                      <packing>
-                        <property name="Position">1</property>
-                        <property name="AutoSize">True</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.HButtonBox" id="hbuttonbox1">
-                        <property name="MemberName" />
-                        <property name="Homogeneous">True</property>
-                        <property name="Size">2</property>
-                        <child>
-                          <widget class="Gtk.Button" id="button1">
-                            <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="UseStock">True</property>
-                            <property name="Type">StockItem</property>
-                            <property name="StockId">gtk-add</property>
-                            <signal name="Clicked" handler="CardAdd" />
-                            <property name="label">gtk-add</property>
-                          </widget>
-                          <packing>
-                            <property name="Expand">False</property>
-                            <property name="Fill">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.Button" id="button2">
-                            <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="UseStock">True</property>
-                            <property name="Type">StockItem</property>
-                            <property name="StockId">gtk-remove</property>
-                            <property name="label">gtk-remove</property>
-                          </widget>
-                          <packing>
-                            <property name="Position">1</property>
-                            <property name="Expand">False</property>
-                            <property name="Fill">False</property>
-                          </packing>
-                        </child>
-                      </widget>
-                      <packing>
-                        <property name="Position">2</property>
-                        <property name="AutoSize">False</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                        <property name="Padding">5</property>
-                      </packing>
-                    </child>
-                  </widget>
-                  <packing>
-                    <property name="Resize">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.VBox" id="vbox6">
-                    <property name="MemberName" />
-                    <property name="Spacing">6</property>
-                    <child>
-                      <widget class="Gtk.Label" id="label12">
-                        <property name="MemberName" />
-                        <property name="LabelProp" translatable="yes">Details zur gewählten Karte:</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">0</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.Table" id="table1">
-                        <property name="MemberName" />
-                        <property name="NRows">6</property>
-                        <property name="NColumns">2</property>
-                        <property name="RowSpacing">6</property>
-                        <property name="ColumnSpacing">6</property>
-                        <property name="BorderWidth">9</property>
-                        <child>
-                          <widget class="Gtk.Entry" id="cardCreditEntry">
-                            <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="IsEditable">True</property>
-                            <property name="InvisibleChar">●</property>
-                          </widget>
-                          <packing>
-                            <property name="TopAttach">3</property>
-                            <property name="BottomAttach">4</property>
-                            <property name="LeftAttach">1</property>
-                            <property name="RightAttach">2</property>
-                            <property name="AutoSize">True</property>
-                            <property name="XOptions">Fill</property>
-                            <property name="YOptions">Fill</property>
-                            <property name="XExpand">False</property>
-                            <property name="XFill">True</property>
-                            <property name="XShrink">False</property>
-                            <property name="YExpand">False</property>
-                            <property name="YFill">True</property>
-                            <property name="YShrink">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.Entry" id="cardIdEntry">
-                            <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="IsEditable">False</property>
-                            <property name="InvisibleChar">●</property>
-                          </widget>
-                          <packing>
-                            <property name="LeftAttach">1</property>
-                            <property name="RightAttach">2</property>
-                            <property name="AutoSize">True</property>
-                            <property name="XOptions">Fill</property>
-                            <property name="YOptions">Fill</property>
-                            <property name="XExpand">False</property>
-                            <property name="XFill">True</property>
-                            <property name="XShrink">False</property>
-                            <property name="YExpand">False</property>
-                            <property name="YFill">True</property>
-                            <property name="YShrink">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.Entry" id="cardNameEntry">
-                            <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="IsEditable">True</property>
-                            <property name="InvisibleChar">●</property>
-                          </widget>
-                          <packing>
-                            <property name="TopAttach">1</property>
-                            <property name="BottomAttach">2</property>
-                            <property name="LeftAttach">1</property>
-                            <property name="RightAttach">2</property>
-                            <property name="AutoSize">True</property>
-                            <property name="XOptions">Fill</property>
-                            <property name="YOptions">Fill</property>
-                            <property name="XExpand">False</property>
-                            <property name="XFill">True</property>
-                            <property name="XShrink">False</property>
-                            <property name="YExpand">False</property>
-                            <property name="YFill">True</property>
-                            <property name="YShrink">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.Entry" id="cardTreuhandEntry">
-                            <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="IsEditable">True</property>
-                            <property name="InvisibleChar">●</property>
-                          </widget>
-                          <packing>
-                            <property name="TopAttach">4</property>
-                            <property name="BottomAttach">5</property>
-                            <property name="LeftAttach">1</property>
-                            <property name="RightAttach">2</property>
-                            <property name="AutoSize">True</property>
-                            <property name="XOptions">Fill</property>
-                            <property name="YOptions">Fill</property>
-                            <property name="XExpand">False</property>
-                            <property name="XFill">True</property>
-                            <property name="XShrink">False</property>
-                            <property name="YExpand">False</property>
-                            <property name="YFill">True</property>
-                            <property name="YShrink">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow1">
-                            <property name="MemberName" />
-                            <property name="ShadowType">In</property>
-                            <child>
-                              <widget class="Gtk.NodeView" id="nodeview3">
-                                <property name="MemberName" />
-                                <property name="CanFocus">True</property>
-                                <property name="ShowScrollbars">True</property>
-                                <property name="HeadersClickable">True</property>
-                              </widget>
-                            </child>
-                          </widget>
-                          <packing>
-                            <property name="TopAttach">5</property>
-                            <property name="BottomAttach">6</property>
-                            <property name="LeftAttach">1</property>
-                            <property name="RightAttach">2</property>
-                            <property name="AutoSize">False</property>
-                            <property name="XExpand">True</property>
-                            <property name="XFill">True</property>
-                            <property name="XShrink">False</property>
-                            <property name="YExpand">True</property>
-                            <property name="YFill">True</property>
-                            <property name="YShrink">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.Label" id="label10">
-                            <property name="MemberName" />
-                            <property name="LabelProp" translatable="yes">Treuhand-Konto:</property>
-                          </widget>
-                          <packing>
-                            <property name="TopAttach">4</property>
-                            <property name="BottomAttach">5</property>
-                            <property name="AutoSize">True</property>
-                            <property name="XOptions">Fill</property>
-                            <property name="YOptions">Fill</property>
-                            <property name="XExpand">False</property>
-                            <property name="XFill">True</property>
-                            <property name="XShrink">False</property>
-                            <property name="YExpand">False</property>
-                            <property name="YFill">True</property>
-                            <property name="YShrink">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.Label" id="label11">
-                            <property name="MemberName" />
-                            <property name="LabelProp" translatable="yes">Transaktionen:</property>
-                          </widget>
-                          <packing>
-                            <property name="TopAttach">5</property>
-                            <property name="BottomAttach">6</property>
-                            <property name="AutoSize">True</property>
-                            <property name="XOptions">Fill</property>
-                            <property name="YOptions">Fill</property>
-                            <property name="XExpand">False</property>
-                            <property name="XFill">True</property>
-                            <property name="XShrink">False</property>
-                            <property name="YExpand">False</property>
-                            <property name="YFill">True</property>
-                            <property name="YShrink">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.Label" id="label3">
-                            <property name="MemberName" />
-                            <property name="LabelProp" translatable="yes">Karten ID:</property>
-                          </widget>
-                          <packing>
-                            <property name="AutoSize">True</property>
-                            <property name="XOptions">Fill</property>
-                            <property name="YOptions">Fill</property>
-                            <property name="XExpand">False</property>
-                            <property name="XFill">True</property>
-                            <property name="XShrink">False</property>
-                            <property name="YExpand">False</property>
-                            <property name="YFill">True</property>
-                            <property name="YShrink">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.Label" id="label4">
-                            <property name="MemberName" />
-                            <property name="LabelProp" translatable="yes">Screen Name:</property>
-                          </widget>
-                          <packing>
-                            <property name="TopAttach">1</property>
-                            <property name="BottomAttach">2</property>
-                            <property name="AutoSize">True</property>
-                            <property name="XOptions">Fill</property>
-                            <property name="YOptions">Fill</property>
-                            <property name="XExpand">False</property>
-                            <property name="XFill">True</property>
-                            <property name="XShrink">False</property>
-                            <property name="YExpand">False</property>
-                            <property name="YFill">True</property>
-                            <property name="YShrink">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.Label" id="label6">
-                            <property name="MemberName" />
-                            <property name="LabelProp" translatable="yes">Rollen:</property>
-                          </widget>
-                          <packing>
-                            <property name="TopAttach">2</property>
-                            <property name="BottomAttach">3</property>
-                            <property name="AutoSize">False</property>
-                            <property name="XOptions">Fill</property>
-                            <property name="YOptions">Fill</property>
-                            <property name="XExpand">False</property>
-                            <property name="XFill">True</property>
-                            <property name="XShrink">False</property>
-                            <property name="YExpand">False</property>
-                            <property name="YFill">True</property>
-                            <property name="YShrink">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.Label" id="label9">
-                            <property name="MemberName" />
-                            <property name="LabelProp" translatable="yes">Guthaben:</property>
-                          </widget>
-                          <packing>
-                            <property name="TopAttach">3</property>
-                            <property name="BottomAttach">4</property>
-                            <property name="AutoSize">True</property>
-                            <property name="XOptions">Fill</property>
-                            <property name="YOptions">Fill</property>
-                            <property name="XExpand">False</property>
-                            <property name="XFill">True</property>
-                            <property name="XShrink">False</property>
-                            <property name="YExpand">False</property>
-                            <property name="YFill">True</property>
-                            <property name="YShrink">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.VBox" id="vbox3">
-                            <property name="MemberName" />
-                            <property name="Spacing">6</property>
-                            <child>
-                              <widget class="Gtk.CheckButton" id="cardRoleLaborant">
-                                <property name="MemberName" />
-                                <property name="CanFocus">True</property>
-                                <property name="Label" translatable="yes">Laborant</property>
-                                <property name="DrawIndicator">True</property>
-                                <property name="HasLabel">True</property>
-                                <property name="UseUnderline">True</property>
-                              </widget>
-                              <packing>
-                                <property name="Position">0</property>
-                                <property name="AutoSize">True</property>
-                                <property name="Expand">False</property>
-                                <property name="Fill">False</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="Gtk.CheckButton" id="cardRoleDoor">
-                                <property name="MemberName" />
-                                <property name="CanFocus">True</property>
-                                <property name="Label" translatable="yes">Türöffner</property>
-                                <property name="DrawIndicator">True</property>
-                                <property name="HasLabel">True</property>
-                                <property name="UseUnderline">True</property>
-                              </widget>
-                              <packing>
-                                <property name="Position">1</property>
-                                <property name="AutoSize">True</property>
-                                <property name="Expand">False</property>
-                                <property name="Fill">False</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="Gtk.CheckButton" id="cardRoleCreator">
-                                <property name="MemberName" />
-                                <property name="CanFocus">True</property>
-                                <property name="Label" translatable="yes">(Karten-) Erzeuger</property>
-                                <property name="DrawIndicator">True</property>
-                                <property name="HasLabel">True</property>
-                                <property name="UseUnderline">True</property>
-                              </widget>
-                              <packing>
-                                <property name="Position">2</property>
-                                <property name="AutoSize">True</property>
-                                <property name="Expand">False</property>
-                                <property name="Fill">False</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="Gtk.CheckButton" id="cardRoleGod">
-                                <property name="MemberName" />
-                                <property name="CanFocus">True</property>
-                                <property name="Label" translatable="yes">Gott</property>
-                                <property name="DrawIndicator">True</property>
-                                <property name="HasLabel">True</property>
-                                <property name="UseUnderline">True</property>
-                              </widget>
-                              <packing>
-                                <property name="PackType">End</property>
-                                <property name="Position">3</property>
-                                <property name="AutoSize">True</property>
-                                <property name="Expand">False</property>
-                                <property name="Fill">False</property>
-                              </packing>
-                            </child>
-                          </widget>
-                          <packing>
-                            <property name="TopAttach">2</property>
-                            <property name="BottomAttach">3</property>
-                            <property name="LeftAttach">1</property>
-                            <property name="RightAttach">2</property>
-                            <property name="AutoSize">True</property>
-                            <property name="XOptions">Fill</property>
-                            <property name="YOptions">Fill</property>
-                            <property name="XExpand">False</property>
-                            <property name="XFill">True</property>
-                            <property name="XShrink">False</property>
-                            <property name="YExpand">False</property>
-                            <property name="YFill">True</property>
-                            <property name="YShrink">False</property>
-                          </packing>
-                        </child>
-                      </widget>
-                      <packing>
-                        <property name="Position">1</property>
-                        <property name="AutoSize">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.HButtonBox" id="hbuttonbox2">
-                        <property name="MemberName" />
-                        <property name="BorderWidth">6</property>
-                        <property name="Size">1</property>
-                        <child>
-                          <widget class="Gtk.Button" id="cardSaveBtn">
-                            <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="UseStock">True</property>
-                            <property name="Type">StockItem</property>
-                            <property name="StockId">gtk-save</property>
-                            <property name="label">gtk-save</property>
-                          </widget>
-                          <packing>
-                            <property name="Expand">False</property>
-                            <property name="Fill">False</property>
-                          </packing>
-                        </child>
-                      </widget>
-                      <packing>
-                        <property name="Position">2</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                  </widget>
-                </child>
+                <property name="Events">ButtonPressMask</property>
               </widget>
-              <packing>
-                <property name="TabFill">False</property>
-                <property name="MenuLabel" translatable="yes" />
-              </packing>
             </child>
             <child>
               <widget class="Gtk.Label" id="label1">
@@ -587,6 +129,507 @@
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="Gtk.Bin" id="JetonAdmin.CardScreen" design-size="672 499">
+    <property name="MemberName" />
+    <child>
+      <widget class="Gtk.HPaned" id="hpaned1">
+        <property name="MemberName" />
+        <property name="CanFocus">True</property>
+        <property name="Position">221</property>
+        <child>
+          <widget class="Gtk.VBox" id="vbox2">
+            <property name="MemberName" />
+            <property name="Spacing">6</property>
+            <child>
+              <widget class="Gtk.Label" id="label2">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">Ausgegebene Karten:</property>
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
+                <property name="MemberName" />
+                <property name="ShadowType">In</property>
+                <child>
+                  <widget class="Gtk.NodeView" id="cardListView">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="ShowScrollbars">True</property>
+                    <property name="HeadersClickable">True</property>
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.HButtonBox" id="hbuttonbox1">
+                <property name="MemberName" />
+                <property name="Homogeneous">True</property>
+                <property name="Size">2</property>
+                <child>
+                  <widget class="Gtk.Button" id="button1">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="UseStock">True</property>
+                    <property name="Type">StockItem</property>
+                    <property name="StockId">gtk-add</property>
+                    <signal name="Clicked" handler="OnCardAdd" />
+                    <property name="label">gtk-add</property>
+                  </widget>
+                  <packing>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Button" id="cardDeleteBtn">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="UseStock">True</property>
+                    <property name="Type">StockItem</property>
+                    <property name="StockId">gtk-remove</property>
+                    <signal name="Clicked" handler="OnCardDelete" />
+                    <property name="label">gtk-remove</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">1</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">2</property>
+                <property name="AutoSize">False</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+                <property name="Padding">5</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="Resize">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.VBox" id="vbox6">
+            <property name="MemberName" />
+            <property name="Spacing">6</property>
+            <child>
+              <widget class="Gtk.Label" id="label12">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">Details zur gewählten Karte:</property>
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Table" id="table1">
+                <property name="MemberName" />
+                <property name="NRows">6</property>
+                <property name="NColumns">2</property>
+                <property name="RowSpacing">6</property>
+                <property name="ColumnSpacing">6</property>
+                <property name="BorderWidth">9</property>
+                <child>
+                  <widget class="Gtk.Entry" id="cardCreditEntry">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="IsEditable">True</property>
+                    <property name="InvisibleChar">●</property>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">3</property>
+                    <property name="BottomAttach">4</property>
+                    <property name="LeftAttach">1</property>
+                    <property name="RightAttach">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Entry" id="cardEscrowEntry">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="IsEditable">True</property>
+                    <property name="InvisibleChar">●</property>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">4</property>
+                    <property name="BottomAttach">5</property>
+                    <property name="LeftAttach">1</property>
+                    <property name="RightAttach">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Entry" id="cardIdEntry">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="IsEditable">False</property>
+                    <property name="InvisibleChar">●</property>
+                  </widget>
+                  <packing>
+                    <property name="LeftAttach">1</property>
+                    <property name="RightAttach">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Entry" id="cardNameEntry">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="IsEditable">True</property>
+                    <property name="InvisibleChar">●</property>
+                    <signal name="Changed" handler="OnNameEntryChanged" />
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">1</property>
+                    <property name="BottomAttach">2</property>
+                    <property name="LeftAttach">1</property>
+                    <property name="RightAttach">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow1">
+                    <property name="MemberName" />
+                    <property name="ShadowType">In</property>
+                    <child>
+                      <widget class="Gtk.NodeView" id="nodeview3">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="ShowScrollbars">True</property>
+                        <property name="HeadersClickable">True</property>
+                      </widget>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">5</property>
+                    <property name="BottomAttach">6</property>
+                    <property name="LeftAttach">1</property>
+                    <property name="RightAttach">2</property>
+                    <property name="AutoSize">False</property>
+                    <property name="XExpand">True</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">True</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Label" id="label10">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes">Treuhand-Konto:</property>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">4</property>
+                    <property name="BottomAttach">5</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Label" id="label11">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes">Transaktionen:</property>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">5</property>
+                    <property name="BottomAttach">6</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Label" id="label3">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes">Karten ID:</property>
+                  </widget>
+                  <packing>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Label" id="label4">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes">Screen Name:</property>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">1</property>
+                    <property name="BottomAttach">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Label" id="label6">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes">Rollen:</property>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">2</property>
+                    <property name="BottomAttach">3</property>
+                    <property name="AutoSize">False</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Label" id="label9">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes">Guthaben:</property>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">3</property>
+                    <property name="BottomAttach">4</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.VBox" id="vbox3">
+                    <property name="MemberName" />
+                    <property name="Spacing">6</property>
+                    <child>
+                      <widget class="Gtk.CheckButton" id="cardRoleLaborant">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Label" translatable="yes">Laborant</property>
+                        <property name="DrawIndicator">True</property>
+                        <property name="HasLabel">True</property>
+                        <property name="UseUnderline">True</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">0</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.CheckButton" id="cardRoleDoor">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Label" translatable="yes">Türöffner</property>
+                        <property name="DrawIndicator">True</property>
+                        <property name="HasLabel">True</property>
+                        <property name="UseUnderline">True</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">1</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.CheckButton" id="cardRoleEscrow">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Label" translatable="yes">Treuhänder</property>
+                        <property name="DrawIndicator">True</property>
+                        <property name="HasLabel">True</property>
+                        <property name="UseUnderline">True</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">2</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.CheckButton" id="cardRoleCreator">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Label" translatable="yes">(Karten-) Erzeuger</property>
+                        <property name="DrawIndicator">True</property>
+                        <property name="HasLabel">True</property>
+                        <property name="UseUnderline">True</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">3</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.CheckButton" id="cardRoleGod">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Label" translatable="yes">Gott</property>
+                        <property name="DrawIndicator">True</property>
+                        <property name="HasLabel">True</property>
+                        <property name="UseUnderline">True</property>
+                      </widget>
+                      <packing>
+                        <property name="PackType">End</property>
+                        <property name="Position">4</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">2</property>
+                    <property name="BottomAttach">3</property>
+                    <property name="LeftAttach">1</property>
+                    <property name="RightAttach">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.HButtonBox" id="hbuttonbox2">
+                <property name="MemberName" />
+                <property name="BorderWidth">6</property>
+                <property name="Size">2</property>
+                <child>
+                  <widget class="Gtk.Button" id="cardWriteBtn">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="Type">TextAndIcon</property>
+                    <property name="Icon">stock:stock_data-save Button</property>
+                    <property name="Label" translatable="yes">Auf die Karte speichern</property>
+                    <property name="UseUnderline">True</property>
+                  </widget>
+                  <packing>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Button" id="cardSaveBtn">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="UseStock">True</property>
+                    <property name="Type">StockItem</property>
+                    <property name="StockId">gtk-save</property>
+                    <signal name="Clicked" handler="OnSaveClicked" />
+                    <property name="label">gtk-save</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">1</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">2</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+          </widget>
         </child>
       </widget>
     </child>

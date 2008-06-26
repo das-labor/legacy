@@ -1,9 +1,10 @@
 using System;
 using Gtk;
+using CTapi;
+using JetonDb;
 
 namespace Jeton
 {
-
 	public partial class MainWindow: Gtk.Window
 	{	
 		enum ScreenMode {
@@ -26,7 +27,6 @@ namespace Jeton
 				specialScreen = value;
 			}
 		}
-
 		
 		ScreenMode curMode;
 		bool       ignoreModeSwitchEvents;
@@ -40,8 +40,6 @@ namespace Jeton
 
 			// alle möglichen Screens erzeugen und einhängen
 			kaufenScreen  = new KaufenScreen();
-
-			
 			kasseScreen   = new KasseScreen();
 			bestandScreen = new BestandScreen();
 			labCtrlScreen = new LabCtrlScreen();
@@ -56,9 +54,33 @@ namespace Jeton
 			// Darstellung aktualisieren
 			UpdateScreen();
 			Fullscreen();
+			
+			// Open CardTerminal
+			ActiveUser au = ActiveUser.Instance;
+			au.OpenCT(1);
+			au.ActiveUserChanged   += new ActiveUserChangedHandler( OnActiveUserChanged );
+			au.CardTerminalProblem += new CardTerminalProblemHandler( OnCardTerminalProblem );
 		}
 		
-		protected void OnDeleteEvent (object sender, DeleteEventArgs a)
+		private void OnActiveUserChanged()
+		{
+			System.Console.WriteLine( "New ActiveUser" );
+			
+			/*
+			 Person p = JetonCtrl.CreatePerson();
+			p.Name = "Admin";
+			
+			ActiveUser au = ActiveUser.Instance;
+			 au.CreateCard( p );
+			 */
+		}
+		
+		private void OnCardTerminalProblem()
+		{
+			System.Console.WriteLine( "!! CardTerminal Problem !!" );
+		}
+		
+		private void OnDeleteEvent (object sender, DeleteEventArgs a)
 		{
 			Application.Quit ();
 			a.RetVal = true;
@@ -90,7 +112,6 @@ namespace Jeton
 			headingLabel.Justify = Justification.Left;
 			
 			// vbox1.ShowAll();
-			
 			ignoreModeSwitchEvents = false;
 		}
 
@@ -114,12 +135,7 @@ namespace Jeton
 			UpdateScreen();
 		}
 
-		protected virtual void OnCardInserted (object sender, System.EventArgs e)
-		{
-			//curUser = new Person();
-		}
-			
-			
+		
 	}
 }
 	

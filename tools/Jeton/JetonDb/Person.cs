@@ -14,8 +14,8 @@ namespace JetonDb
 		//public static int NextId = 0;
 			
 		// Members
+		UInt16   _id;		
 		string   _name;
-		int      _id;
 		decimal  _deposit;
 		decimal  _escrow;
 		
@@ -33,19 +33,12 @@ namespace JetonDb
 		
 		public decimal Deposit {
 			          get { return _deposit; }
-			protected set { _deposit = value; }
+			          set { _deposit = value; }
 		}
 		
 		public decimal Escrow {
 			          get { return _escrow; }
-			protected set { _escrow = value; }
-		}
-
-		public Person()
-		{
-			Deposit = 0.0m;
-			Escrow  = 0.0m;
-			Name    = "New Person";
+			          set { _escrow = value; }
 		}
 	}
 }
