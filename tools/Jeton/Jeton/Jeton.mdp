@@ -4,13 +4,13 @@
       <Output directory="bin/Debug" assembly="jeton" />
       <Build debugmode="True" target="Exe" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
-      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" definesymbols="DEBUG" generatexmldocumentation="False" win32Icon="." ctype="CSharpCompilerParameters" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" definesymbols="DEBUG" generatexmldocumentation="False" win32Icon="." langversion="ISO_2" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Release" assembly="jeton" />
       <Build debugmode="False" target="Exe" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
-      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" win32Icon="." ctype="CSharpCompilerParameters" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" win32Icon="." langversion="ISO_2" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
   <Contents>
@@ -44,6 +44,7 @@
     <File name="gtk-gui/Jeton.KaufenScreen.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/Jeton.ArtikelButtonContent.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/Jeton.ModalScreen.cs" subtype="Code" buildaction="Compile" />
+    <File name="ActiveUser.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -54,6 +55,8 @@
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Project" localcopy="True" refto="JetonDb" />
+    <ProjectReference type="Project" localcopy="True" refto="CTapi" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Security, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
   <Deployment.LinuxDeployData scriptName="jeton" />
   <GtkDesignInfo isWidgetLibrary="True" gtkVersion="2.12.0">
@@ -75,11 +78,11 @@
       <Widget>Jeton.ArtikelButtonContent</Widget>
       <Widget>Jeton.KasseScreen</Widget>
       <Widget>Jeton.MainWindow</Widget>
-      <Widget>Jeton.ModalScreen</Widget>
       <Widget>Jeton.ArtikelChooser</Widget>
       <Widget>Jeton.BestellWidget</Widget>
       <Widget>Jeton.AdminScreen</Widget>
       <Widget>Jeton.BestandScreen</Widget>
+      <Widget>Jeton.ModalScreen</Widget>
     </ExportedWidgets>
   </GtkDesignInfo>
 </Project>

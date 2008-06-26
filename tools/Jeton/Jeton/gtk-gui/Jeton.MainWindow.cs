@@ -205,7 +205,6 @@ namespace Jeton {
             this.bestandBtn.Clicked += new System.EventHandler(this.OnModeBtnClicked);
             this.labCtrlBtn.Clicked += new System.EventHandler(this.OnModeBtnClicked);
             this.adminBtn.Clicked += new System.EventHandler(this.OnModeBtnClicked);
-            this.adminBtn.Clicked += new System.EventHandler(this.OnCardInserted);
         }
     }
 }

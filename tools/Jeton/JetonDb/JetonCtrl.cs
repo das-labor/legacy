@@ -8,16 +8,11 @@ using Db4objects.Db4o.Query;
 namespace JetonDb
 {
 	/// <summary>
-	/// This class encapsulates most operatione (transactions) on the actual 
-	/// database. In terms of MVC, this is ths Controller.
+	///  This class encapsulates most operatins (transactions) on the actual 
+	///  database. In terms of MVC, this is ths Controller.
 	/// </summary>
 	public class JetonCtrl
 	{
-
-
-		/// <value>
-		/// 
-		/// </value>
 		public static string DbPath {
 			get {
 				if (_db != null) {
@@ -59,20 +54,26 @@ namespace JetonDb
 		}
 		private static IObjectContainer _db;
 		
-		
-		///////////////////////////////////////////////////////////
-		
+		/// <summary>
+		/// 
+		/// </summary>
 		public static Artikel CreateArtikel()
 		{
 			return new Artikel();
 		}
 		
+		/// <summary>
+		///   
+		/// </summary>
 		public static void SaveArtikel(Artikel i)
 		{
 			Db.Set(i);
 			Db.Commit();
 		}
 		
+		/// <summary>
+		///  Search and return all Artikel 
+		/// </summary>
 		public static List<Artikel> GetArtikel()
 		{
 			List<Artikel> list = new List<Artikel>();
@@ -85,23 +86,49 @@ namespace JetonDb
 			
 			return list;
 		}
-		
+
+		/// <summary>
+		///  
+		/// </summary>
 		public static List<Artikel> GetVisibleArtikel()
 		{
 			return GetArtikel();
 		}
+
 		
-		///////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////		
 		
+		/// <summary>
+		///  
+		/// </summary>
 		public static Person CreatePerson()
 		{
 			return new Person();
 		}
 		
+		/// <summary>
+		///  
+		/// </summary>
 		public static void SavePerson(Person p)
 		{
 			Db.Set(p);
 			Db.Commit();
+		}
+		
+		/// <summary>
+		///  Search and return all Artikel 
+		/// </summary>
+		public static List<Person> GetAllPersons()
+		{
+			List<Person> list = new List<Person>();
+			Person proto = new Person();
+			
+			IObjectSet res = Db.Get(proto);
+			foreach (Person a in res) {
+				list.Add( a );
+			}
+			
+			return list;
 		}
 		
 		///////////////////////////////////////////////////////////		
@@ -117,5 +144,7 @@ namespace JetonDb
 		public static void RelieveEscrow(Person p, decimal val)
 		{
 		}
+		
+
 	}
 }

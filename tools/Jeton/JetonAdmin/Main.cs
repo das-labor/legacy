@@ -13,7 +13,7 @@ namespace JetonAdmin {
 		public static void Main (string[] args)
 		{
 			// Open Database
-
+			/*
 			Artikel mate = JetonCtrl.CreateArtikel();
 			mate.Name      = "Mate";
 			mate.Bestand   = 13;
@@ -40,6 +40,7 @@ namespace JetonAdmin {
 			schoka.Preis     = 1.00m;
 			schoka.ProKasten = 12;
 			JetonCtrl.SaveArtikel(schoka);
+*/
 
 			
 			// IObjectContainer db = Db4oFactory.OpenFile("/tmp/schubser.db");

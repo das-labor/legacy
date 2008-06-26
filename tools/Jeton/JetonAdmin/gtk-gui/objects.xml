@@ -1,0 +1,6 @@
+<objects>
+  <object type="JetonAdmin.CardScreen" palette-category="JetonAdmin" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+</objects>

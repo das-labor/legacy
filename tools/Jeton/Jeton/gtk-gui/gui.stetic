@@ -103,7 +103,6 @@
                 <property name="Label" translatable="yes">Admin</property>
                 <property name="UseUnderline">True</property>
                 <signal name="Clicked" handler="OnModeBtnClicked" />
-                <signal name="Clicked" handler="OnCardInserted" />
               </widget>
               <packing>
                 <property name="Position">4</property>
