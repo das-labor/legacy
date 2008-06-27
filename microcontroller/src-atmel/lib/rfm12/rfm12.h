@@ -20,35 +20,7 @@
 
 /******************************************************
  *                                                    *
- *           C O N F I G U R A T I O N                *
- *                                                    *
- ******************************************************/
-
-
-/**** TX BUFFER SIZE
- */
-#define RFM12_TX_BUFFER_SIZE 30
-
-/**** RX BUFFER SIZE
- * there are going to be 2 Buffers of this size
- * (double_buffering)
- */
-#define RFM12_RX_BUFFER_SIZE 30
-
-/**** UART DEBUGGING
- * en- or disable debugging via uart.
- */
-#define RFM12_UART_DEBUG 1
-
-/**** INTERRUPT VECTOR
- * set the name for the interrupt vector here
- */
-#define RFM12_INT_VECT (INT2_vect)
-#define RFM12_INT_BIT (INT2)
-
-/******************************************************
- *                                                    *
- *     E N D   O F   C O N F I G U R A T I O N        *
+ *    NO  C O N F I G U R A T I O N  IN THIS FILE     *
  *                                                    *
  *      ( thou shalt not change lines below )         *
  *                                                    *

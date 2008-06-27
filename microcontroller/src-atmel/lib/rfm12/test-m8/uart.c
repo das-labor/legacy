@@ -8,7 +8,7 @@
 #include "uart.h"
 
 #define UART_BAUD_RATE 19200
-#define UART_INTERRUPT
+//#define UART_INTERRUPT
 #define UART_RXBUFSIZE 50
 #define UART_TXBUFSIZE 50
 

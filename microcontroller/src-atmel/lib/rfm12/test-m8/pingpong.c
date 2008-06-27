@@ -2,7 +2,6 @@
 #include <avr/interrupt.h>
 #include <string.h>
 
-// #include "../rfm12_hw.h"
 #include "rfm12.h"
 #include "uart.h"
 
@@ -16,21 +15,11 @@ int main ( void )
 
 	uint8_t tv[] = "testvektor\r\n";
 	
-	/* Laborboard setup */
-	DDRC = 0xFF;
-	PORTC = 0xAA;
-
 	uart_init();
-
 
 	rfm12_init();
 	
 	sei();
-
-	//while(1);
-	
-	PORTB |= 0x0f;
-
 
 	uart_putstr ("\r\n");
 	uart_putstr ("Hello\r\n");
@@ -51,7 +40,6 @@ int main ( void )
 			for (i=0;i<rfm12_rx_len();i++)
 			{
 				uart_putc ( bufcontents[i] );
-				PORTC =  bufcontents[i];
 			}
 			
 			// tell the implementation that the buffer
@@ -61,11 +49,11 @@ int main ( void )
 		}
 
 
-		if (!(PINB & (_BV(PB0))) && (ticker % 3000 == 0))
-		{
-			uart_putc ('#');
-			rfm12_tx (sizeof(tv), 0, tv);
-		}
+//		if (!(PINB & (_BV(PB0))) && (ticker % 3000 == 0))
+//		{
+//			uart_putc ('#');
+//			rfm12_tx (sizeof(tv), 0, tv);
+//		}
 
 		rfm12_tick();
 	}

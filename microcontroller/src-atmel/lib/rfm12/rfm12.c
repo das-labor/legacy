@@ -15,7 +15,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
  *
- * @author Peter Fuhrmann, Hans-Gert Dahme, Soeren Heisrath
+ * @author Peter Fuhrmann, Hans-Gert Dahmen, Soeren Heisrath
  */
 
 #include <avr/io.h>
@@ -28,56 +28,6 @@
 #if RFM12_UART_DEBUG
 	#include "test/uart.h"
 #endif
-
-/*
-	Set User Parameters here
-*/
-
-/*
-	Connect the RFM12 to the AVR as follows:
-
-	RFM12           | AVR
-	----------------+------------
-	SDO             | MISO
-	nIRQ            | INT0
-	FSK/DATA/nFFS   | VCC
-	DCLK/CFIL/FFIT  |  -
-	CLK             |  -
-	nRES            |  -
-	GND             | GND
-	ANT             |  -
-	VDD             | VCC
-	GND             | GND
-	nINT/VDI        | -
-	SDI             | MOSI
-	SCK             | SCK
-	nSEL            | Slave select pin defined below
-*/
-
-
-//Pin that slave select is connected to
-#define DDR_SS DDRC
-#define PORT_SS PORTC
-#define BIT_SS 5
-
-//SPI port
-#define DDR_SPI DDRB
-#define PORT_SPI PORTB
-#define PIN_SPI PINB
-#define BIT_MOSI 5
-#define BIT_MISO 6
-#define BIT_SCK  7
-#define BIT_SPI_SS 4
-
-//frequency to use
-#define FREQ 433000000UL
-
-//use this for datarates >= 2700 Baud
-#define DATARATE_VALUE RFM12_DATARATE_CALC_HIGH(9600.0)
-
-//use this for 340 Baud < datarate < 2700 Baud
-//#define DATARATE_VALUE RFM12_DATARATE_CALC_LOW(1200.0)
-
 
 
 //default value for powermanagement register
@@ -506,14 +456,14 @@ uint8_t rfm12_tx ( uint8_t len, uint8_t type, uint8_t *data )
 		uart_putstr (data);
 		uart_putstr ("\r\n");
 	#endif
-	if (len > RFM12_TX_BUFFER_SIZE) return;
+	if (len > RFM12_TX_BUFFER_SIZE) return RFM12_TX_ERROR;
 
 	//exit if the buffer isn't free
 	if(rf_tx_buffer.status != STATUS_FREE)
 		return RFM12_TX_OCCUPIED;
 	
 	memcpy ( rf_tx_buffer.buffer, data, len );
-	rfm12_start_tx (type, len);
+	return rfm12_start_tx (type, len);
 }
 
 void spi_init()

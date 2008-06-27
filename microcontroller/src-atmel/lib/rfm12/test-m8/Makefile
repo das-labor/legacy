@@ -1,6 +1,6 @@
-PRG            = rfm12_rx_test
-OBJ            = main.o uart.o ../../rfm12.o
-MCU_TARGET     = atmega32
+PRG            = pingpong
+OBJ            = pingpong.o uart.o rfm12.o
+MCU_TARGET     = atmega8
 OPTIMIZE       = -Os
 
 FLASHCMD       = uisp -dprog=bsd --upload if=$(PRG).hex
