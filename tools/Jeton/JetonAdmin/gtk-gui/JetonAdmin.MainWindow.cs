@@ -27,7 +27,7 @@ namespace JetonAdmin {
         
         private Gtk.Notebook notebook1;
         
-        private JetonAdmin.CardScreen cardscreen1;
+        private JetonAdmin.UserScreen userscreen1;
         
         private Gtk.Label label1;
         
@@ -77,18 +77,18 @@ namespace JetonAdmin {
             this.notebook1 = new Gtk.Notebook();
             this.notebook1.CanFocus = true;
             this.notebook1.Name = "notebook1";
-            this.notebook1.CurrentPage = 0;
+            this.notebook1.CurrentPage = 1;
             this.notebook1.EnablePopup = true;
             // Container child notebook1.Gtk.Notebook+NotebookChild
-            this.cardscreen1 = new JetonAdmin.CardScreen();
-            this.cardscreen1.Events = ((Gdk.EventMask)(256));
-            this.cardscreen1.Name = "cardscreen1";
-            this.notebook1.Add(this.cardscreen1);
+            this.userscreen1 = new JetonAdmin.UserScreen();
+            this.userscreen1.Events = ((Gdk.EventMask)(256));
+            this.userscreen1.Name = "userscreen1";
+            this.notebook1.Add(this.userscreen1);
             // Notebook tab
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("Karten");
-            this.notebook1.SetTabLabel(this.cardscreen1, this.label1);
+            this.label1.LabelProp = Mono.Unix.Catalog.GetString("Benutzer");
+            this.notebook1.SetTabLabel(this.userscreen1, this.label1);
             this.label1.ShowAll();
             // Notebook tab
             Gtk.Label w5 = new Gtk.Label();
@@ -96,7 +96,7 @@ namespace JetonAdmin {
             this.notebook1.Add(w5);
             this.label5 = new Gtk.Label();
             this.label5.Name = "label5";
-            this.label5.LabelProp = Mono.Unix.Catalog.GetString("Bestand");
+            this.label5.LabelProp = Mono.Unix.Catalog.GetString("Artikel Bestand");
             this.notebook1.SetTabLabel(w5, this.label5);
             this.label5.ShowAll();
             // Notebook tab

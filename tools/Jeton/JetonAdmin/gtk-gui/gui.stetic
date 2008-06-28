@@ -65,10 +65,10 @@
           <widget class="Gtk.Notebook" id="notebook1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="CurrentPage">0</property>
+            <property name="CurrentPage">1</property>
             <property name="EnablePopup">True</property>
             <child>
-              <widget class="JetonAdmin.CardScreen" id="cardscreen1">
+              <widget class="JetonAdmin.UserScreen" id="userscreen1">
                 <property name="MemberName" />
                 <property name="Events">ButtonPressMask</property>
               </widget>
@@ -76,7 +76,7 @@
             <child>
               <widget class="Gtk.Label" id="label1">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">Karten</property>
+                <property name="LabelProp" translatable="yes">Benutzer</property>
               </widget>
               <packing>
                 <property name="type">tab</property>
@@ -88,7 +88,7 @@
             <child>
               <widget class="Gtk.Label" id="label5">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">Bestand</property>
+                <property name="LabelProp" translatable="yes">Artikel Bestand</property>
               </widget>
               <packing>
                 <property name="type">tab</property>
@@ -133,7 +133,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="JetonAdmin.CardScreen" design-size="672 499">
+  <widget class="Gtk.Bin" id="JetonAdmin.UserScreen" design-size="672 499">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.HPaned" id="hpaned1">
@@ -147,7 +147,8 @@
             <child>
               <widget class="Gtk.Label" id="label2">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">Ausgegebene Karten:</property>
+                <property name="Xalign">0</property>
+                <property name="LabelProp" translatable="yes">Benutzer:</property>
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -254,6 +255,7 @@
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
                     <property name="InvisibleChar">●</property>
+                    <signal name="Changed" handler="OnChanged" />
                   </widget>
                   <packing>
                     <property name="TopAttach">3</property>
@@ -277,6 +279,7 @@
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
                     <property name="InvisibleChar">●</property>
+                    <signal name="Changed" handler="OnChanged" />
                   </widget>
                   <packing>
                     <property name="TopAttach">4</property>
@@ -321,7 +324,7 @@
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
                     <property name="InvisibleChar">●</property>
-                    <signal name="Changed" handler="OnNameEntryChanged" />
+                    <signal name="Changed" handler="OnChanged" />
                   </widget>
                   <packing>
                     <property name="TopAttach">1</property>
@@ -590,14 +593,77 @@
               <widget class="Gtk.HButtonBox" id="hbuttonbox2">
                 <property name="MemberName" />
                 <property name="BorderWidth">6</property>
+                <property name="Size">0</property>
+              </widget>
+              <packing>
+                <property name="Position">2</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.HButtonBox" id="hbuttonbox3">
+                <property name="MemberName" />
+                <property name="Size">0</property>
+              </widget>
+              <packing>
+                <property name="Position">3</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.HButtonBox" id="hbuttonbox4">
+                <property name="MemberName" />
+                <property name="Size">0</property>
+              </widget>
+              <packing>
+                <property name="Position">4</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.HButtonBox" id="hbuttonbox5">
+                <property name="MemberName" />
+                <property name="Size">0</property>
+              </widget>
+              <packing>
+                <property name="Position">5</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.HButtonBox" id="hbuttonbox6">
+                <property name="MemberName" />
+                <property name="Size">0</property>
+              </widget>
+              <packing>
+                <property name="Position">6</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.HButtonBox" id="hbuttonbox7">
+                <property name="MemberName" />
+                <property name="Spacing">20</property>
+                <property name="BorderWidth">10</property>
                 <property name="Size">2</property>
+                <property name="LayoutStyle">Start</property>
                 <child>
-                  <widget class="Gtk.Button" id="cardWriteBtn">
+                  <widget class="Gtk.Button" id="button66">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="Type">TextAndIcon</property>
-                    <property name="Icon">stock:stock_data-save Button</property>
-                    <property name="Label" translatable="yes">Auf die Karte speichern</property>
+                    <property name="Icon">stock:gtk-save Menu</property>
+                    <property name="Label" translatable="yes">Auf Karte Speichern</property>
                     <property name="UseUnderline">True</property>
                   </widget>
                   <packing>
@@ -606,14 +672,14 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Button" id="cardSaveBtn">
+                  <widget class="Gtk.Button" id="undoBtn">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="UseStock">True</property>
                     <property name="Type">StockItem</property>
-                    <property name="StockId">gtk-save</property>
-                    <signal name="Clicked" handler="OnSaveClicked" />
-                    <property name="label">gtk-save</property>
+                    <property name="StockId">gtk-undo</property>
+                    <signal name="Clicked" handler="OnUndoClicked" />
+                    <property name="label">gtk-undo</property>
                   </widget>
                   <packing>
                     <property name="Position">1</property>
@@ -623,7 +689,19 @@
                 </child>
               </widget>
               <packing>
-                <property name="Position">2</property>
+                <property name="Position">7</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.HButtonBox" id="hbuttonbox8">
+                <property name="MemberName" />
+                <property name="Size">0</property>
+              </widget>
+              <packing>
+                <property name="Position">8</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
