@@ -11,7 +11,7 @@
 namespace JetonAdmin {
     
     
-    public partial class CardScreen {
+    public partial class UserScreen {
         
         private Gtk.HPaned hpaned1;
         
@@ -73,16 +73,28 @@ namespace JetonAdmin {
         
         private Gtk.HButtonBox hbuttonbox2;
         
-        private Gtk.Button cardWriteBtn;
+        private Gtk.HButtonBox hbuttonbox3;
         
-        private Gtk.Button cardSaveBtn;
+        private Gtk.HButtonBox hbuttonbox4;
+        
+        private Gtk.HButtonBox hbuttonbox5;
+        
+        private Gtk.HButtonBox hbuttonbox6;
+        
+        private Gtk.HButtonBox hbuttonbox7;
+        
+        private Gtk.Button button66;
+        
+        private Gtk.Button undoBtn;
+        
+        private Gtk.HButtonBox hbuttonbox8;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
-            // Widget JetonAdmin.CardScreen
+            // Widget JetonAdmin.UserScreen
             Stetic.BinContainer.Attach(this);
-            this.Name = "JetonAdmin.CardScreen";
-            // Container child JetonAdmin.CardScreen.Gtk.Container+ContainerChild
+            this.Name = "JetonAdmin.UserScreen";
+            // Container child JetonAdmin.UserScreen.Gtk.Container+ContainerChild
             this.hpaned1 = new Gtk.HPaned();
             this.hpaned1.CanFocus = true;
             this.hpaned1.Name = "hpaned1";
@@ -94,7 +106,8 @@ namespace JetonAdmin {
             // Container child vbox2.Gtk.Box+BoxChild
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
-            this.label2.LabelProp = Mono.Unix.Catalog.GetString("Ausgegebene Karten:");
+            this.label2.Xalign = 0F;
+            this.label2.LabelProp = Mono.Unix.Catalog.GetString("Benutzer:");
             this.vbox2.Add(this.label2);
             Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox2[this.label2]));
             w1.Position = 0;
@@ -376,48 +389,99 @@ namespace JetonAdmin {
             this.hbuttonbox2 = new Gtk.HButtonBox();
             this.hbuttonbox2.Name = "hbuttonbox2";
             this.hbuttonbox2.BorderWidth = ((uint)(6));
-            // Container child hbuttonbox2.Gtk.ButtonBox+ButtonBoxChild
-            this.cardWriteBtn = new Gtk.Button();
-            this.cardWriteBtn.CanFocus = true;
-            this.cardWriteBtn.Name = "cardWriteBtn";
-            this.cardWriteBtn.UseUnderline = true;
-            // Container child cardWriteBtn.Gtk.Container+ContainerChild
-            Gtk.Alignment w28 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment.Gtk.Container+ContainerChild
-            Gtk.HBox w29 = new Gtk.HBox();
-            w29.Spacing = 2;
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Image w30 = new Gtk.Image();
-            w30.Pixbuf = Stetic.IconLoader.LoadIcon(this, "stock_data-save", Gtk.IconSize.Button, 20);
-            w29.Add(w30);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Label w32 = new Gtk.Label();
-            w32.LabelProp = Mono.Unix.Catalog.GetString("Auf die Karte speichern");
-            w32.UseUnderline = true;
-            w29.Add(w32);
-            w28.Add(w29);
-            this.cardWriteBtn.Add(w28);
-            this.hbuttonbox2.Add(this.cardWriteBtn);
-            Gtk.ButtonBox.ButtonBoxChild w36 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2[this.cardWriteBtn]));
-            w36.Expand = false;
-            w36.Fill = false;
-            // Container child hbuttonbox2.Gtk.ButtonBox+ButtonBoxChild
-            this.cardSaveBtn = new Gtk.Button();
-            this.cardSaveBtn.CanFocus = true;
-            this.cardSaveBtn.Name = "cardSaveBtn";
-            this.cardSaveBtn.UseStock = true;
-            this.cardSaveBtn.UseUnderline = true;
-            this.cardSaveBtn.Label = "gtk-save";
-            this.hbuttonbox2.Add(this.cardSaveBtn);
-            Gtk.ButtonBox.ButtonBoxChild w37 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2[this.cardSaveBtn]));
-            w37.Position = 1;
-            w37.Expand = false;
-            w37.Fill = false;
             this.vbox6.Add(this.hbuttonbox2);
-            Gtk.Box.BoxChild w38 = ((Gtk.Box.BoxChild)(this.vbox6[this.hbuttonbox2]));
-            w38.Position = 2;
-            w38.Expand = false;
-            w38.Fill = false;
+            Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.vbox6[this.hbuttonbox2]));
+            w28.Position = 2;
+            w28.Expand = false;
+            w28.Fill = false;
+            // Container child vbox6.Gtk.Box+BoxChild
+            this.hbuttonbox3 = new Gtk.HButtonBox();
+            this.hbuttonbox3.Name = "hbuttonbox3";
+            this.vbox6.Add(this.hbuttonbox3);
+            Gtk.Box.BoxChild w29 = ((Gtk.Box.BoxChild)(this.vbox6[this.hbuttonbox3]));
+            w29.Position = 3;
+            w29.Expand = false;
+            w29.Fill = false;
+            // Container child vbox6.Gtk.Box+BoxChild
+            this.hbuttonbox4 = new Gtk.HButtonBox();
+            this.hbuttonbox4.Name = "hbuttonbox4";
+            this.vbox6.Add(this.hbuttonbox4);
+            Gtk.Box.BoxChild w30 = ((Gtk.Box.BoxChild)(this.vbox6[this.hbuttonbox4]));
+            w30.Position = 4;
+            w30.Expand = false;
+            w30.Fill = false;
+            // Container child vbox6.Gtk.Box+BoxChild
+            this.hbuttonbox5 = new Gtk.HButtonBox();
+            this.hbuttonbox5.Name = "hbuttonbox5";
+            this.vbox6.Add(this.hbuttonbox5);
+            Gtk.Box.BoxChild w31 = ((Gtk.Box.BoxChild)(this.vbox6[this.hbuttonbox5]));
+            w31.Position = 5;
+            w31.Expand = false;
+            w31.Fill = false;
+            // Container child vbox6.Gtk.Box+BoxChild
+            this.hbuttonbox6 = new Gtk.HButtonBox();
+            this.hbuttonbox6.Name = "hbuttonbox6";
+            this.vbox6.Add(this.hbuttonbox6);
+            Gtk.Box.BoxChild w32 = ((Gtk.Box.BoxChild)(this.vbox6[this.hbuttonbox6]));
+            w32.Position = 6;
+            w32.Expand = false;
+            w32.Fill = false;
+            // Container child vbox6.Gtk.Box+BoxChild
+            this.hbuttonbox7 = new Gtk.HButtonBox();
+            this.hbuttonbox7.Name = "hbuttonbox7";
+            this.hbuttonbox7.Spacing = 20;
+            this.hbuttonbox7.BorderWidth = ((uint)(10));
+            this.hbuttonbox7.LayoutStyle = ((Gtk.ButtonBoxStyle)(3));
+            // Container child hbuttonbox7.Gtk.ButtonBox+ButtonBoxChild
+            this.button66 = new Gtk.Button();
+            this.button66.CanFocus = true;
+            this.button66.Name = "button66";
+            this.button66.UseUnderline = true;
+            // Container child button66.Gtk.Container+ContainerChild
+            Gtk.Alignment w33 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            // Container child GtkAlignment2.Gtk.Container+ContainerChild
+            Gtk.HBox w34 = new Gtk.HBox();
+            w34.Spacing = 2;
+            // Container child GtkHBox2.Gtk.Container+ContainerChild
+            Gtk.Image w35 = new Gtk.Image();
+            w35.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-save", Gtk.IconSize.Menu, 16);
+            w34.Add(w35);
+            // Container child GtkHBox2.Gtk.Container+ContainerChild
+            Gtk.Label w37 = new Gtk.Label();
+            w37.LabelProp = Mono.Unix.Catalog.GetString("Auf Karte Speichern");
+            w37.UseUnderline = true;
+            w34.Add(w37);
+            w33.Add(w34);
+            this.button66.Add(w33);
+            this.hbuttonbox7.Add(this.button66);
+            Gtk.ButtonBox.ButtonBoxChild w41 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox7[this.button66]));
+            w41.Expand = false;
+            w41.Fill = false;
+            // Container child hbuttonbox7.Gtk.ButtonBox+ButtonBoxChild
+            this.undoBtn = new Gtk.Button();
+            this.undoBtn.CanFocus = true;
+            this.undoBtn.Name = "undoBtn";
+            this.undoBtn.UseStock = true;
+            this.undoBtn.UseUnderline = true;
+            this.undoBtn.Label = "gtk-undo";
+            this.hbuttonbox7.Add(this.undoBtn);
+            Gtk.ButtonBox.ButtonBoxChild w42 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox7[this.undoBtn]));
+            w42.Position = 1;
+            w42.Expand = false;
+            w42.Fill = false;
+            this.vbox6.Add(this.hbuttonbox7);
+            Gtk.Box.BoxChild w43 = ((Gtk.Box.BoxChild)(this.vbox6[this.hbuttonbox7]));
+            w43.Position = 7;
+            w43.Expand = false;
+            w43.Fill = false;
+            // Container child vbox6.Gtk.Box+BoxChild
+            this.hbuttonbox8 = new Gtk.HButtonBox();
+            this.hbuttonbox8.Name = "hbuttonbox8";
+            this.vbox6.Add(this.hbuttonbox8);
+            Gtk.Box.BoxChild w44 = ((Gtk.Box.BoxChild)(this.vbox6[this.hbuttonbox8]));
+            w44.Position = 8;
+            w44.Expand = false;
+            w44.Fill = false;
             this.hpaned1.Add(this.vbox6);
             this.Add(this.hpaned1);
             if ((this.Child != null)) {
@@ -426,8 +490,10 @@ namespace JetonAdmin {
             this.Show();
             this.button1.Clicked += new System.EventHandler(this.OnCardAdd);
             this.cardDeleteBtn.Clicked += new System.EventHandler(this.OnCardDelete);
-            this.cardNameEntry.Changed += new System.EventHandler(this.OnNameEntryChanged);
-            this.cardSaveBtn.Clicked += new System.EventHandler(this.OnSaveClicked);
+            this.cardNameEntry.Changed += new System.EventHandler(this.OnChanged);
+            this.cardEscrowEntry.Changed += new System.EventHandler(this.OnChanged);
+            this.cardCreditEntry.Changed += new System.EventHandler(this.OnChanged);
+            this.undoBtn.Clicked += new System.EventHandler(this.OnUndoClicked);
         }
     }
 }
