@@ -38,7 +38,7 @@ unsigned char timer1_corrcet = 0;
 unsigned short timer1_max;
 
 unsigned char taste1_ent, taste2_ent, taste1_sf, taste2_sf; // ff flase
-#define TIME_DEBOUNCE   8    // 80 ms
+#define TIME_DEBOUNCE   3    // 80 ms
 #define TIME_NOTE     150
 #define TIME_OCTAVE    70
 
@@ -269,6 +269,7 @@ typedef enum {
 
 typedef enum {
 	MR_BASS,
+	MR_BASS_DSHARP,
 	MR_GUITAR,
 	MR_CUSTOM
 } menu_root_t;
@@ -318,8 +319,13 @@ void showCurrentNote() {
 
 // 0 markiert das ende
 unsigned char midi_notes_bass[] = {
-	26, 28, 33, 38, 43, 0
+	23, 26, 28, 33, 38, 43, 0
 };
+
+unsigned char midi_notes_bass_dsharp[] = {
+	22, 27, 32, 37, 42, 0
+};
+
 
 unsigned char midi_notes_guitar[] = {
 	38, 40, 45, 50, 55, 59, 64, 0
@@ -347,16 +353,23 @@ void stateMachineMenu() {
 					setDisplay(TONE_B);
 					note_ptr = midi_notes_bass;
 					if (taste1_sf)
-						menu_root = MR_GUITAR;
+						menu_root = MR_BASS_DSHARP;
 					break;
 					
+				case MR_BASS_DSHARP: // Bass D-Sharp
+					setDisplay(TONE_D_SHARP);
+					note_ptr = midi_notes_bass_dsharp;
+					if (taste1_sf)
+						menu_root = MR_GUITAR;
+					break;
+										
 				case MR_GUITAR: // Guitar
 					setDisplay(TONE_G);
 					note_ptr = midi_notes_guitar;
 					if (taste1_sf)
 						menu_root = MR_CUSTOM;
 					break;
-					
+				
 				case MR_CUSTOM: // Custom
 					setDisplay(TONE_C);
 					note_ptr = midi_notes_custom;
