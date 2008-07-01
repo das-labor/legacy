@@ -31,6 +31,7 @@ int main (int argc, char *argv[])
 
 	uint8_t buffer[2][64];
 	uint16_t buflen[2] = { 0, 0 };
+	uint_fast32_t packetcounter = 0;
 
 	const unsigned char rawVid[2] =
 	{
@@ -78,11 +79,12 @@ int main (int argc, char *argv[])
 				5000);
 		if (tmp > 0)
 		{
+			packetcounter++;
 			buflen[BUF_IN] = tmp;
-			printf ("%03i bytes received --------\r\n", tmp);
+			printf ("%03i bytes received, packet #%010u --------\r\n", tmp, packetcounter);
 			for (i=0;i<tmp;i++)
 			{
-				printf("%0X ", buffer[BUF_IN][i]);
+				printf("%02X ", buffer[BUF_IN][i]);
 				if (i % 20 == 0) printf("\r\n");
 			}
 			printf("\r\n");
@@ -90,18 +92,6 @@ int main (int argc, char *argv[])
 		{
 			fprintf (stderr, "USB error: %s\r\n", usb_strerror());
 			return __LINE__ * -1;
-		}
-
-		tmp = usb_interrupt_read (udhandle, 0, buffer[BUF_IN], sizeof (buffer[BUF_IN]), 5000);
-		if (tmp > 0)
-		{
-			printf("int!\r\n");
-			for (i=0;i<tmp;i++)
-			{
-				printf("%0X ", buffer[BUF_IN][i]);
-				if (i % 20 == 0) printf("\r\n");
-			}
-			printf("\r\n");
 		}
 	}
 }
