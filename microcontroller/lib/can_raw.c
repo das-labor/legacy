@@ -133,6 +133,10 @@ unsigned char mcp_rx_status(){
 }
 */
 
+#ifdef CAN_HANDLEERROR
+  unsigned char can_error;
+#endif
+
 unsigned char mcp_status(){
 	unsigned char d;
 	spi_set_ss();
@@ -199,6 +203,8 @@ void message_fetch(can_message_x * msg){
 	
 	mcp_bitmod(CANINTF, (1<<RX0IF), 0x00);
 }
+
+
 #ifdef CAN_INTERRUPT
 
 static can_message_x RX_BUFFER[CAN_RX_BUFFER_SIZE], TX_BUFFER[CAN_TX_BUFFER_SIZE];
@@ -242,7 +248,7 @@ SIGNAL(SIG_INTERRUPT0) {
 	}
 }
 
-#endif
+#endif // CAN_INTERRUPT
 
 
 void mcp_reset(){
@@ -382,13 +388,18 @@ void can_init(){
 	// this only configures the INT Output of the mcp2515, not the int on the Atmel
 	mcp_write( CANINTE, (1<<RX0IE) | (1<<TX0IE) );
 	
-	
+
+
+	AVR_CAN_INT_ON();
+
+
 #ifdef __C64__
 	#error not implemented yet
 #elif ATMEGA
 	//this turns on INT0 on the Atmega	
 	GICR |= (1<<INT0);
 #else
+	#warning This is for oldschool Atmel (like AT90S2313) - you probably don't want this
 	//this turns on INT0 on the Atmel
 	MCUCR |=  (1<<ISC01);
 	GIMSK |= (1<<INT0);
