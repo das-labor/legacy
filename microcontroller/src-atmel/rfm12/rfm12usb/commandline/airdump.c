@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <usb.h>
@@ -51,6 +52,7 @@ int main (int argc, char *argv[])
 
 	signal (SIGKILL, sig_cleanup);
 	signal (SIGINT, sig_cleanup);
+	signal (SIGHUP, sig_cleanup);
 
 	usb_init();
 	
@@ -67,6 +69,9 @@ int main (int argc, char *argv[])
 
 	while (42)
 	{
+		usleep (1000);
+		memset (buffer[BUF_IN], 0x00, sizeof(buffer[BUF_IN]));
+		buffer[BUF_IN][0] = 1;
 		tmp = usb_control_msg (udhandle,
 				USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
 				CUSTOM_RQ_GET_DATA, 0, 0, buffer[BUF_IN], sizeof (buffer[BUF_IN]),
@@ -84,6 +89,19 @@ int main (int argc, char *argv[])
 		} else if (tmp < 0)
 		{
 			fprintf (stderr, "USB error: %s\r\n", usb_strerror());
+			return __LINE__ * -1;
+		}
+
+		tmp = usb_interrupt_read (udhandle, 0, buffer[BUF_IN], sizeof (buffer[BUF_IN]), 5000);
+		if (tmp > 0)
+		{
+			printf("int!\r\n");
+			for (i=0;i<tmp;i++)
+			{
+				printf("%0X ", buffer[BUF_IN][i]);
+				if (i % 20 == 0) printf("\r\n");
+			}
+			printf("\r\n");
 		}
 	}
 }

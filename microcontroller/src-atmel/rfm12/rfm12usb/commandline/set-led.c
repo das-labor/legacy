@@ -27,6 +27,10 @@ respectively.
 #include "../firmware/requests.h"	/* custom request numbers */
 #include "../firmware/usbconfig.h"	/* device's VID/PID and names */
 
+#define CUSTOM_RQ_GET_STATUS CUSTOM_RQ_GET_DATA
+#define CUSTOM_RQ_SET_STATUS CUSTOM_RQ_PUT_DATA
+
+
 static void
 usage (char *name)
 {
