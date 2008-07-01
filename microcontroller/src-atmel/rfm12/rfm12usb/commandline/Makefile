@@ -6,6 +6,7 @@
 # Copyright: (c) 2008 by OBJECTIVE DEVELOPMENT Software GmbH
 # License: GNU GPL v2 (see License.txt) or proprietary (CommercialLicense.txt)
 # This Revision: $Id: Makefile 605 2008-05-13 15:53:12Z cs $
+# :
 
 
 # Concigure the following definitions according to your system.
