@@ -55,7 +55,7 @@ typedef enum { normal, mode_sleep, loopback, listenonly, config } can_mode_t ;
  * Global variables
  */
 #ifdef CAN_HANDLEERROR
-  unsigned char can_error;
+  extern unsigned char can_error;
 #endif
 
 
