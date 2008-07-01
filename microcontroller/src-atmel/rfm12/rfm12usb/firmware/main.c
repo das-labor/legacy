@@ -38,35 +38,65 @@ different port or bit, change the macros below:
 /* ----------------------------- USB interface ----------------------------- */
 /* ------------------------------------------------------------------------- */
 
-uint8_t buflen;
-uint8_t buffer[20];
+typedef struct{
+	uint8_t type;
+	uint8_t len;
+	uint8_t data[30];
+}airlab_message_t;
+
+typedef struct{
+	airlab_message_t messages[8];
+	uint8_t in;
+	uint8_t out;
+}airlab_fifo_t;
+
+
+airlab_message_t * fifo_get(airlab_fifo_t * f){
+	if(f->out == f->in) return 0;
+	airlab_message_t * p;
+	p = &f->messages[f->out];
+	f->out = (f->out+1) % 8;
+	return p;
+}
+
+airlab_message_t * fifo_put(airlab_fifo_t * f){
+	if(f->out - f->in == 2) return 0;
+	airlab_message_t * p;
+	p = &f->messages[f->in];
+	f->in = (f->in+1) % 8;
+	return p;
+}
+
+
+airlab_fifo_t rx_fifo;
+
+
 
 usbMsgLen_t usbFunctionSetup(uchar data[8])
 {
-usbRequest_t    *rq = (void *)data;
-static uchar    dataBuffer[4];  /* buffer must stay valid when usbFunctionSetup returns */
-
-    if(rq->bRequest == CUSTOM_RQ_ECHO){ /* echo -- used for reliability tests */
-        dataBuffer[0] = rq->wValue.bytes[0];
-        dataBuffer[1] = rq->wValue.bytes[1];
-        dataBuffer[2] = rq->wIndex.bytes[0];
-        dataBuffer[3] = rq->wIndex.bytes[1];
-        usbMsgPtr = dataBuffer;         /* tell the driver which data to return */
-        return 4;
-    }else if(rq->bRequest == CUSTOM_RQ_SET_STATUS){
+	usbRequest_t *rq = (void *)data;
+    if(rq->bRequest == CUSTOM_RQ_PUT_DATA){
         if(rq->wValue.bytes[0] & 1){    /* set LED */
             LED_PORT_OUTPUT |= _BV(LED_BIT);
         }else{                          /* clear LED */
             LED_PORT_OUTPUT &= ~_BV(LED_BIT);
         }
-    }else if(rq->bRequest == CUSTOM_RQ_GET_STATUS){
-        usbMsgPtr = buffer;         /* tell the driver which data to return */
-        return buflen;                       /* tell the driver to send n bytes */
+    }else if(rq->bRequest == CUSTOM_RQ_GET_DATA){
+        airlab_message_t * m;
+		m = fifo_get(&rx_fifo);
+		if(m){
+			usbMsgPtr = (void*) m;  /* tell the driver which data to return */
+        	return m->len + 2; /* tell the driver to send n bytes */
+		}else{
+			return 0;
+		}
     }
     return 0;   /* default for not implemented requests: return no data back to host */
 }
 
 /* ------------------------------------------------------------------------- */
+
+
 
 int main(void)
 {
@@ -94,12 +124,18 @@ uchar   i;
 		rfm12_tick();
 		
 		if (rfm12_rx_status() == STATUS_COMPLETE){
-			uint8_t * bufcontents;
-			bufcontents = rfm12_rx_buffer();
+			airlab_message_t * m;
+			uint8_t buflen;
 
-			buflen = rfm12_rx_len();
-			if (buflen>20) buflen = 20;
-			memcpy (buffer, bufcontents, buflen);
+			m = fifo_put(&rx_fifo);
+			if(m){
+				buflen = rfm12_rx_len();
+				if(buflen > 30) buflen = 30;
+				
+				memcpy(m->data, rfm12_rx_buffer(), buflen);
+				m->len = buflen;
+				m->type = rfm12_rx_type();
+			}
 			
 			rfm12_rx_clear();
 			usbSetInterrupt(0, 0);  /* NULL message on interrupt socket */
