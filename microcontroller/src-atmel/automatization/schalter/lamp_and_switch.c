@@ -44,7 +44,7 @@ void all_lampedim(uint16_t param){
 	}
 }
 
-uint8_t switch_states[30];
+uint8_t switch_states[32];
 
 
 static void switch_send_info(uint8_t num){

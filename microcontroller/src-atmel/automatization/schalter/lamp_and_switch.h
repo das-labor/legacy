@@ -36,7 +36,7 @@ extern uint8_t relais[2];
 
 #ifdef LAMP_AND_SWITCH_C
 
-uint32_t rc_switch_codes[10][2] PROGMEM={
+uint32_t rc_switch_codes[12][2] PROGMEM={
 	{ 0x01000040 /*Fluter aus*/,				0x010000C0 /*Fluter an*/			},
 	{ 0x00144515 /*Hinten Fluter aus*/,			0x00154515 /*Hinten Fluter an*/		},
 	{ 0x00140515 /*Theke aus*/,					0x00150515 /*Theke an*/				},
@@ -45,7 +45,8 @@ uint32_t rc_switch_codes[10][2] PROGMEM={
 	{ 0x00540500 /*Steckdose A (Couch)*/,		0x00510500	},
 	{ 0x00141500 /*Steckdose D (Bar)*/,			0x00111500	},
 	{ 0x00010000 /*Steckdose REV(Flipperecke)*/,0x00040000	},
-
+	{ 0x00511101, 0x00541101 }, /* reaktorraum B an/aus */
+	{ 0x00511401, 0x00541401 }  /* reaktorraum C an/aus */
 };
 #else
 AVRX_EXT_FIFO(lapd_fifo);
