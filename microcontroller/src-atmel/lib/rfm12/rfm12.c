@@ -172,11 +172,29 @@ static inline uint8_t rfm12_read_fifo_inline()
 */
 
 
-INTERRUPT(RFM12_INT_VECT){
-	
-	RFM12_INT_OFF();
-	sei();
-	
+
+ISR(RFM12_INT_VECT, ISR_NOBLOCK){
+/*
+	asm volatile(
+		"push r24\n\t"
+		"in r24, 0x3b\n\t"
+		"andi r24, 0x7f\n\t"
+		"out 0x3b, r24\n\t"		
+	);
+*/
+//	RFM12_INT_OFF();
+//	sei();
+//	asm volatile("rcall rfm12_isr");
+//	RFM12_INT_ON();
+/*
+	asm volatile(
+		"in r24, 0x3b\n\t"
+		"ori r24, 0x80\n\t"
+		"out 0x3b, r24\n\t"		
+		"pop r24\n\t"
+	);
+*/
+
 	uint8_t status;
 
 	//first we read the first byte of the status register
@@ -334,7 +352,6 @@ INTERRUPT(RFM12_INT_VECT){
 				}
 			}
 		}
-		
 	}
 }
 
@@ -539,6 +556,9 @@ void rfm12_init()
 	rfm12_data(CLEAR_FIFO);
 	rfm12_data(ACCEPT_DATA);
 
+	//setup interrupt for falling edge trigger
+	RFM12_INT_SETUP();
+	
 	//activate the interrupt
 	RFM12_INT_ON();
 }
