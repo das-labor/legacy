@@ -63,7 +63,9 @@ int main ( void )
 
 		if (!(PINB & (_BV(PB0))) && (ticker % 3000 == 0))
 		{
+			static uint8_t count;
 			uart_putc ('#');
+			tv[sizeof(tv)-1] = count++;
 			rfm12_tx (sizeof(tv), 0, tv);
 		}
 
