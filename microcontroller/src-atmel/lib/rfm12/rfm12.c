@@ -65,10 +65,10 @@
 
 
 //Buffer and status for the message to be transmitted
-volatile rf_tx_buffer_t rf_tx_buffer;
+rf_tx_buffer_t rf_tx_buffer;
 
 //buffer and status for the message to be received
-volatile rf_rx_buffer_t rf_rx_buffer;
+rf_rx_buffer_t rf_rx_buffer;
 
 //mode we are in - rx or tx
 #define MODE_RX 0
@@ -170,10 +170,15 @@ static inline uint8_t rfm12_read_fifo_inline()
 	*these shouldn't occur - we'll just ignore them. These flags are cleared
 	 by reading status.
 */
-ISR(RFM12_INT_VECT)
-{
-	uint8_t status;
+
+
+INTERRUPT(RFM12_INT_VECT){
 	
+	RFM12_INT_OFF();
+	sei();
+	
+	uint8_t status;
+
 	//first we read the first byte of the status register
 	//to get the interrupt flags
 	status = rfm12_read_int_flags_inline();
@@ -302,8 +307,8 @@ ISR(RFM12_INT_VECT)
 					num = rf_rx_buffer.buffer_in_num;
 					num = (num+1) % 2;
 					rf_rx_buffer.buffer_in_num = num;
+
 					rf_rx_buffer.rf_buffer_in = &rf_rx_buffer.rf_buffers[num];
-					
 					//reset fifo
 					rfm12_data_inline(RFM12_CMD_FIFORESET>>8, CLEAR_FIFO_INLINE);
 					rfm12_data_inline(RFM12_CMD_FIFORESET>>8, ACCEPT_DATA_INLINE);
@@ -453,7 +458,7 @@ uint8_t rfm12_tx ( uint8_t len, uint8_t type, uint8_t *data )
 {
 	#if RFM12_UART_DEBUG
 		uart_putstr ("sending: ");
-		uart_putstr (data);
+		uart_putstr ((char*)data);
 		uart_putstr ("\r\n");
 	#endif
 	if (len > RFM12_TX_BUFFER_SIZE) return RFM12_TX_ERROR;

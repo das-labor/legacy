@@ -59,8 +59,6 @@ uint8_t rfm12_start_tx(uint8_t type, uint8_t length);
 
 uint8_t rfm12_tx(uint8_t len, uint8_t type, uint8_t *data);
 
-uint16_t rfm12_read(uint16_t d);
-
 //static inline uint8_t rfm12_tx_status();
 
 static inline uint8_t *rfm12_rx_buffer();
@@ -70,7 +68,7 @@ static inline void rfm12_rx_clear();
 /* Private structs needed for inline functions */
 
 typedef struct{
-	uint8_t status; 		//is the buffer free or occupied?
+	volatile uint8_t status;//is the buffer free or occupied?
 	uint8_t num_bytes; 		//number of bytes to transmit (size in buffer)
 	uint8_t bytecount;   //counter for the byte we are transmitting at the moment
 	
@@ -85,7 +83,7 @@ typedef struct{
 
 //for storing the received bytes.
 typedef struct{
-	uint8_t status; 		//is the buffer free or is there complete data in it?
+	volatile uint8_t status;//is the buffer free or is there complete data in it?
 	uint8_t len;			//length byte - number of bytes in buffer
 	uint8_t type;			//type field for airlab
 	uint8_t checksum;		//rx checksum
@@ -94,7 +92,7 @@ typedef struct{
 
 
 typedef struct{
-	uint8_t status;			//are we idle, receiving or ignoring?
+	volatile uint8_t status;//are we idle, receiving or ignoring?
 	uint8_t num_bytes;		//number of bytes to be received
 	uint8_t bytecount;		//received bytes counter
 	
@@ -112,10 +110,10 @@ typedef struct{
 
 
 //Buffer and status for the message to be transmitted
-extern volatile rf_tx_buffer_t rf_tx_buffer;
+extern rf_tx_buffer_t rf_tx_buffer;
 
 //buffer and status for the message to be received
-extern volatile rf_rx_buffer_t rf_rx_buffer;
+extern rf_rx_buffer_t rf_rx_buffer;
 
 
 //inline function to return the rx buffer status byte
@@ -140,7 +138,7 @@ static inline uint8_t rfm12_rx_type()
 //inline function to retrieve current rf buffer
 static inline uint8_t *rfm12_rx_buffer()
 {
-	return rf_rx_buffer.rf_buffer_out->buffer;
+	return (uint8_t*) rf_rx_buffer.rf_buffer_out->buffer;
 }
 
 
