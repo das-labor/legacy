@@ -90,7 +90,9 @@
 /**** INTERRUPT VECTOR
  * set the name for the interrupt vector here
  */
-#define RFM12_INT_VECT (INT0_vect)
-#define RFM12_INT_BIT (INT0)
+#define RFM12_INT_VECT (INT1_vect)
+#define RFM12_INT_BIT (INT1)
 
+//setup Interrupt for falling egde trigger
+#define RFM12_INT_SETUP() (MCUCR |= (1<<ISC11))
 
