@@ -256,6 +256,7 @@ void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
 			qport_setupstream(ctx,TX, kp->seed_a, kpresponse.seed_a);
 			qport_setupstream(ctx,RX, kp->seed_b, kpresponse.seed_b);
 			{
+			#ifdef QPORT_NOOPTIMISE
 				uint8_t help[16];
 				/* swap rx and tx keys */
 				memcpy(help, ctx->streamkey_rxa, 16);
@@ -271,6 +272,12 @@ void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
 				memcpy(help, ctx->streamstate_rxb, 8);
 				memcpy(ctx->streamstate_rxb, ctx->streamstate_txb, 8);
 				memcpy(ctx->streamstate_txb, help, 8);
+			#else
+				memxor(ctx->streamkey_txa, ctx->streamkey_rxa, 48);
+				memxor(ctx->streamkey_rxa, ctx->streamkey_txa, 48);
+				memxor(ctx->streamkey_txa, ctx->streamkey_rxa, 48);
+			#endif
+			
 			}
 			ctx->keystate = keyed;
 		}else{
