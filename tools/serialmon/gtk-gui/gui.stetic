@@ -1283,15 +1283,14 @@ Space</property>
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Image" id="image4">
+              <widget class="Gtk.Image" id="image8">
                 <property name="MemberName" />
-                <property name="Pixbuf">file:./logo_small.png</property>
+                <property name="Pixbuf">resource:logo_small.png</property>
               </widget>
               <packing>
                 <property name="Position">1</property>
-                <property name="AutoSize">True</property>
+                <property name="AutoSize">False</property>
                 <property name="Expand">False</property>
-                <property name="Fill">False</property>
               </packing>
             </child>
           </widget>
@@ -1999,9 +1998,9 @@ Public License instead of this License.  But first, please read
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Image" id="image3">
+          <widget class="Gtk.Image" id="image7">
             <property name="MemberName" />
-            <property name="Pixbuf">file:./Labor.png</property>
+            <property name="Pixbuf">resource:Labor.png</property>
           </widget>
           <packing>
             <property name="Position">2</property>
