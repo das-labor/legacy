@@ -1,4 +1,5 @@
 #include "LibUsbWrapper.h"
+#include "UsbDevice.h"
 
 bool UsbDevice::connect()
 {
@@ -30,18 +31,18 @@ bool UsbDevice::disconnect()
 
 bool UsbDevice::isConnected()
 {
-	(handle)?true:false;
+	return (handle?true:false);
 }
 
 
-int UsbDevice::reqeuestRead(int requesttype, int request, int value, int index, char *bytes, int size, int timeout)
+int UsbDevice::reqeuestRead(int request, int value, int index, char *bytes, int size, int timeout)
 {
 	return usb_control_msg(handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
-		requesttype, value, index, bytes, size, timeout);
+		request, value, index, bytes, size, timeout);
 }
 
 
-int UsbDevice::requestWrite(int requesttype, int request, int value, int index, char *bytes, int size, int timeout)
+int UsbDevice::requestWrite(int request, int value, int index, char *bytes, int size, int timeout)
 {
 	//not implemented yet
 	return -1;
@@ -63,14 +64,14 @@ UsbDevice::UsbDevice(int vid, int pid)
 	handle = NULL;
 	device = NULL;
 
-	LibUsbWrapper::Instance().findBusses();
-    LibUsbWrapper::Instance().findDevices();
+	LibUsbWrapper::Instance().FindBusses();
+    LibUsbWrapper::Instance().FindDevices();
 
-    for(bus = LibUsbWrapper::Instance().getBusses(); bus; bus = bus->next)
+    for(bus = LibUsbWrapper::Instance().GetBusses(); bus; bus = bus->next)
 	{
         for(dev = bus->devices; dev; dev = dev->next)
 		{
-            if((vendorID == 0 || dev->descriptor.idVendor == vendorID) && (productID == 0 || dev->descriptor.idProduct == productID))
+            if((vid == 0 || dev->descriptor.idVendor == vid) && (pid == 0 || dev->descriptor.idProduct == pid))
 			{
 				//save device
 				device = dev;

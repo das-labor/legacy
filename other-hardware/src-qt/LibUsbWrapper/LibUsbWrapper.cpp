@@ -9,15 +9,15 @@ LibUsbWrapper::~LibUsbWrapper()
 {
 }
 
-LibUsbWrapper::FindBusses()
+void LibUsbWrapper::FindBusses()
 {
 	//ensure lib is loaded
 	Instance();
 
 	usb_find_busses();
 }
-    
-LibUsbWrapper::FindDevices()
+
+void LibUsbWrapper::FindDevices()
 {
 	//ensure lib is loaded
 	Instance();
