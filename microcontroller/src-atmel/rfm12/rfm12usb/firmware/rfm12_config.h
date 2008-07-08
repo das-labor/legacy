@@ -92,7 +92,8 @@
  */
 #define RFM12_INT_VECT (INT1_vect)
 #define RFM12_INT_BIT (INT1)
-
+//interrupt mask register
+#define RFM12_INT_MSK (GICR)
 //setup Interrupt for falling egde trigger
 #define RFM12_INT_SETUP() (MCUCR |= (1<<ISC11))
 

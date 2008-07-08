@@ -18,7 +18,8 @@ different port or bit, change the macros below:
 */
 #define LED_PORT_DDR        DDRD
 #define LED_PORT_OUTPUT     PORTD
-#define LED_BIT             6
+#define LED_BIT_RED         6
+#define LED_BIT_GREEN		7
 
 #include <avr/io.h>
 #include <avr/wdt.h>
@@ -77,14 +78,16 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 	usbRequest_t *rq = (void *)data;
     if(rq->bRequest == CUSTOM_RQ_PUT_DATA){
         if(rq->wValue.bytes[0] & 1){    /* set LED */
-            LED_PORT_OUTPUT |= _BV(LED_BIT);
+            LED_PORT_OUTPUT |= _BV(LED_BIT_RED);
         }else{                          /* clear LED */
-            LED_PORT_OUTPUT &= ~_BV(LED_BIT);
+            LED_PORT_OUTPUT &= ~_BV(LED_BIT_RED);
         }
     }else if(rq->bRequest == CUSTOM_RQ_GET_DATA){
-        airlab_message_t * m;
+        //LED_PORT_OUTPUT ^= _BV(LED_BIT);
+		airlab_message_t * m;
 		m = fifo_get(&rx_fifo);
 		if(m){
+			LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
 			usbMsgPtr = (void*) m;  /* tell the driver which data to return */
         	return m->len + 2; /* tell the driver to send n bytes */
 		}else{
@@ -116,7 +119,7 @@ uchar   i;
 		_delay_ms(1);
 	}
 	usbDeviceConnect();
-    LED_PORT_DDR |= _BV(LED_BIT);   /* make the LED bit an output */
+    LED_PORT_DDR |= _BV(LED_BIT_RED) | _BV(LED_BIT_GREEN);   /* make the LED bit an output */
     sei();
 
 	for(;;){                /* main event loop */
@@ -127,8 +130,11 @@ uchar   i;
 			airlab_message_t * m;
 			uint8_t buflen;
 
+        	LED_PORT_OUTPUT ^= _BV(LED_BIT_GREEN);
+			
 			m = fifo_put(&rx_fifo);
 			if(m){
+				
 				buflen = rfm12_rx_len();
 				if(buflen > 30) buflen = 30;
 				
