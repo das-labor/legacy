@@ -49,8 +49,8 @@
 #define SS_ASSERT() PORT_SS &= ~(1<<BIT_SS)
 #define SS_RELEASE() PORT_SS |= (1<<BIT_SS)
 
-#define RFM12_INT_ON() GICR |= (1<<RFM12_INT_BIT)
-#define RFM12_INT_OFF() GICR &= ~(1<<RFM12_INT_BIT)
+#define RFM12_INT_ON() RFM12_INT_MSK |= (1<<RFM12_INT_BIT)
+#define RFM12_INT_OFF() RFM12_INT_MSK &= ~(1<<RFM12_INT_BIT)
 
 
 //default fiforeset is as follows:
@@ -174,27 +174,7 @@ static inline uint8_t rfm12_read_fifo_inline()
 
 
 ISR(RFM12_INT_VECT, ISR_NOBLOCK){
-/*
-	asm volatile(
-		"push r24\n\t"
-		"in r24, 0x3b\n\t"
-		"andi r24, 0x7f\n\t"
-		"out 0x3b, r24\n\t"		
-	);
-*/
-//	RFM12_INT_OFF();
-//	sei();
-//	asm volatile("rcall rfm12_isr");
-//	RFM12_INT_ON();
-/*
-	asm volatile(
-		"in r24, 0x3b\n\t"
-		"ori r24, 0x80\n\t"
-		"out 0x3b, r24\n\t"		
-		"pop r24\n\t"
-	);
-*/
-
+	RFM12_INT_OFF();
 	uint8_t status;
 
 	//first we read the first byte of the status register
@@ -353,6 +333,8 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK){
 			}
 		}
 	}
+
+	RFM12_INT_ON();
 }
 
 
