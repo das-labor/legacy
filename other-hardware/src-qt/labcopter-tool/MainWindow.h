@@ -1,6 +1,6 @@
 
 #include "ui_MainWindow.h"
-#include <QGraphicsScene>
+#include "UsbEventDevice.h"
 
 class MainWindow : public QMainWindow{
 public:
@@ -8,5 +8,7 @@ public:
 
 private:
 	Ui::MainWindow ui;
-	QGraphicsScene * scene;
+	OsziWidget * oszi;
+	UsbEventDevice * usbDevice;
+	
 };

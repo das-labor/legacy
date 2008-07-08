@@ -1,6 +1,6 @@
 #include "UsbEventDevice.h"
 
-UsbEventDevice::UsbEventDevice(int vid, int pid) : UsbDevice(int vid, int pid)
+UsbEventDevice::UsbEventDevice(int vid, int pid) : UsbDevice(vid, pid)
 {
 	running = false;
 }
@@ -8,10 +8,10 @@ UsbEventDevice::UsbEventDevice(int vid, int pid) : UsbDevice(int vid, int pid)
 
 UsbEventDevice::~UsbEventDevice()
 {
-	if(!this.finished())
+	if(!this->isFinished())
 	{
 		stopEventThread();
-		while(!this.finished());
+		while(!this->isFinished());
 	}
 }
 
@@ -23,7 +23,7 @@ void UsbEventDevice::startEventThread(int endPoint, unsigned int bufSize, unsign
 	_bufSize = bufSize;
 	_readTimeout = readTimeout;
 
-	this.start();
+	this->start();
 }
 
 
@@ -35,22 +35,24 @@ void UsbEventDevice::stopEventThread()
 
 void UsbEventDevice::run()
 {
-	EventThread(_endPoint, _bufSize, _readTimeout);
+	eventThread(_endPoint, _bufSize, _readTimeout);
 }
 
 
-void UsbEventDevice::EventThread(int endPoint, unsigned int bufSize, unsigned int eventTimeout)
+void UsbEventDevice::eventThread(int endPoint, unsigned int bufSize, unsigned int eventTimeout)
 {
-	QByteArray ba(bufSize);
+	QByteArray ba;
+	ba.resize(bufSize);
 	int recSize;
 
 	while(running)
 	{
-		recSize = fetchInterrupt(0, ba.constData(), bufSize, 0);
-
+		recSize = fetchInterrupt(endPoint, ba.data(), (int)bufSize, (int)eventTimeout);
+		
 		if(recSize > 0)
 		{
-			emit interruptReceived(new QByteArray(ba.constData(), recSize));
+			QByteArray &bab = *new QByteArray(ba.data(), recSize);
+			emit interruptReceived(bab);
 		}
 	}
 

@@ -1,8 +1,15 @@
+
 #include <QObject>
+#include <QThread>
+#include <QByteArray>
+
 #include "UsbDevice.h"
 
-class UsbEventDevice : public QThread, UsbDevice
+
+class UsbEventDevice : public QThread, public UsbDevice 
 {
+	Q_OBJECT;
+	
 public:
 	UsbEventDevice(int vid, int pid);
 	~UsbEventDevice();
@@ -11,15 +18,15 @@ public:
 	void stopEventThread();
 
 	//not necessary
-	//bool reqeuestRead(int requesttype, int request, int value, int index, QByteArray bytes, int size, int timeout);
-	//bool reqeuestWrite(int requesttype, int request, int value, int index, QByteArray bytes, int size, int timeout);
+	//bool reqeuestRead(int request, int value, int index, QByteArray bytes, int size, int timeout);
+	//bool reqeuestWrite(int request, int value, int index, QByteArray bytes, int size, int timeout);
 
-public signals:
+signals:
 	void interruptReceived(QByteArray &bytes);
 	void connectChanged(bool state);
 
 private:
-	void eventThread();
+	void eventThread(int endPoint, unsigned int bufSize, unsigned int eventTimeout);
 	virtual void run();
 
 	bool running;
