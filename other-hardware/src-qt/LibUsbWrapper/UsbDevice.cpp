@@ -1,7 +1,7 @@
 #include "LibUsbWrapper.h"
 #include "UsbDevice.h"
 
-bool UsbDevice::connect()
+bool UsbDevice::usbConnect()
 {
 	if(device)
 	{
@@ -12,7 +12,7 @@ bool UsbDevice::connect()
 }
 
 
-bool UsbDevice::disconnect()
+bool UsbDevice::usbDisconnect()
 {
 	int tmp;
 
@@ -90,5 +90,5 @@ UsbDevice::UsbDevice(int vid, int pid)
 
 UsbDevice::~UsbDevice()
 {
-	disconnect();
+	usbDisconnect();
 }
