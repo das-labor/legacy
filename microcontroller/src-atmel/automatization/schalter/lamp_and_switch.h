@@ -45,8 +45,8 @@ uint32_t rc_switch_codes[12][2] PROGMEM={
 	{ 0x00540500 /*Steckdose A (Couch)*/,		0x00510500	},
 	{ 0x00141500 /*Steckdose D (Bar)*/,			0x00111500	},
 	{ 0x00010000 /*Steckdose REV(Flipperecke)*/,0x00040000	},
-	{ 0x00511101, 0x00541101 }, /* reaktorraum B an/aus */
-	{ 0x00511401, 0x00541401 }  /* reaktorraum C an/aus */
+	{ 0x00541101, 0x00511101 }, /* reaktorraum B an/aus */
+	{ 0x00541401, 0x00511401 }  /* reaktorraum C an/aus */
 };
 #else
 AVRX_EXT_FIFO(lapd_fifo);
