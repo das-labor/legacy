@@ -1,4 +1,5 @@
-#include "LibUsbWrapper.h"
+
+#include <usb.h>
 
 class UsbDevice
 {
@@ -6,8 +7,8 @@ public:
 	UsbDevice(int vid, int pid);
 	~UsbDevice();
 
-	bool connect();
-	bool disconnect();
+	bool usbConnect();
+	bool usbDisconnect();
 	bool isConnected();
 
 	int reqeuestRead(int request, int value, int index, char *bytes, int size, int timeout);
