@@ -1,25 +1,18 @@
 
 #include "MainWindow.h"
 
-#include <QGraphicsRectItem>
-#include <QGraphicsTextItem>
 
 MainWindow::MainWindow(){
+	char buf[255];
 	ui.setupUi(this);
 
-	scene = new QGraphicsScene;
+	//oszi = new OsziWidget(*ui.graphicsView);	
 	
-	ui.graphicsView->setScene(scene);
+	usbDevice = new UsbEventDevice(0x16c0, 0x05dc);
+	usbDevice->usbConnect();
 	
-	//QGraphicsRectItem *r = new QGraphicsRectItem(10, 10, 30, 40);
-	//r->setFlag(QGraphicsItem::ItemIsSelectable);
-	//scene->addItem(r);
-	
-	
-	QGraphicsTextItem *t = scene->addText("Hello, world!");
-	t->setFlag(QGraphicsItem::ItemIsSelectable);
-	
-	
-	
+	usbDevice->reqeuestRead(1, 0, 0, buf, sizeof(buf), 4000);
 
+	qDebug(buf);
+	
 }

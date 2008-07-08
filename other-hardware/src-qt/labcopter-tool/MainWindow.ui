@@ -13,13 +13,13 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget" >
-   <widget class="QGraphicsView" name="graphicsView" >
+   <widget class="OsziWidget" native="1" name="widget" >
     <property name="geometry" >
      <rect>
-      <x>23</x>
-      <y>214</y>
-      <width>761</width>
-      <height>331</height>
+      <x>20</x>
+      <y>140</y>
+      <width>751</width>
+      <height>401</height>
      </rect>
     </property>
    </widget>
@@ -42,6 +42,14 @@
   </widget>
   <widget class="QStatusBar" name="statusbar" />
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>OsziWidget</class>
+   <extends>QWidget</extends>
+   <header>OsziWidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
