@@ -7,8 +7,8 @@
 
 int main (void)
 {
-	uint16_t ticker;
-	uint8_t tv[] = "testvektor\r\n";
+	uint32_t ticker = 1;
+	uint8_t alivesign[] = "sixvolts alive\r\n";
 	uint8_t *buf, rxlen;
 
 	motor_init();
@@ -21,8 +21,11 @@ int main (void)
 
 	while (42)
 	{
-		if (!ticker)
-			rfm12_tx (sizeof(tv), 0, tv);
+		if (ticker > 0xAffff)
+		{
+			rfm12_tx (sizeof(alivesign), 0, alivesign);
+			ticker = 0;
+		}
 
 		
 		if (rfm12_rx_status() == STATUS_COMPLETE)
@@ -62,9 +65,11 @@ int main (void)
 					rfm12_tx (1, 0, buf);
 				break;
 			}
+			ticker = 0;
+		} else
+		{
+			ticker++;
 		}
-
-		ticker++;
 		rfm12_tick();
 	}
 }
