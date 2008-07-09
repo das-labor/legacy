@@ -26,6 +26,9 @@
  *                                                    *
  ******************************************************/
 
+#include "rfm12_config.h"
+
+#ifndef RFM12_H
 //states for the rx and tx buffers
 #define STATUS_FREE 0
 #define STATUS_OCCUPIED 1
@@ -153,3 +156,6 @@ static inline void rfm12_rx_clear()
 	rf_rx_buffer.buffer_out_num = (rf_rx_buffer.buffer_out_num + 1 ) % 2 ;
 	rf_rx_buffer.rf_buffer_out = &rf_rx_buffer.rf_buffers[rf_rx_buffer.buffer_out_num];
 }
+
+#define RFM12_H
+#endif

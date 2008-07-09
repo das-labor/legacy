@@ -32,6 +32,7 @@ different port or bit, change the macros below:
 #include "usbdrv.h"
 #include "oddebug.h"        /* This is also an example for using debug macros */
 #include "requests.h"       /* The custom request numbers we use */
+#include "../common/console.h"
 
 #include "rfm12.h"
 
@@ -39,62 +40,50 @@ different port or bit, change the macros below:
 /* ----------------------------- USB interface ----------------------------- */
 /* ------------------------------------------------------------------------- */
 
-typedef struct{
-	uint8_t type;
-	uint8_t len;
-	uint8_t data[30];
-}airlab_message_t;
-
-typedef struct{
-	airlab_message_t messages[8];
-	uint8_t in;
-	uint8_t out;
-}airlab_fifo_t;
-
-
-airlab_message_t * fifo_get(airlab_fifo_t * f){
-	if(f->out == f->in) return 0;
-	airlab_message_t * p;
-	p = &f->messages[f->out];
-	f->out = (f->out+1) % 8;
-	return p;
-}
-
-airlab_message_t * fifo_put(airlab_fifo_t * f){
-	if(f->out - f->in == 2) return 0;
-	airlab_message_t * p;
-	p = &f->messages[f->in];
-	f->in = (f->in+1) % 8;
-	return p;
-}
-
-
-airlab_fifo_t rx_fifo;
-
-
+uint8_t usbtxlen = 0;
+uint8_t txbuf[32];
 
 usbMsgLen_t usbFunctionSetup(uchar data[8])
 {
 	usbRequest_t *rq = (void *)data;
-    if(rq->bRequest == CUSTOM_RQ_PUT_DATA){
-        if(rq->wValue.bytes[0] & 1){    /* set LED */
-            LED_PORT_OUTPUT |= _BV(LED_BIT_RED);
-        }else{                          /* clear LED */
-            LED_PORT_OUTPUT &= ~_BV(LED_BIT_RED);
-        }
-    }else if(rq->bRequest == CUSTOM_RQ_GET_DATA){
-        //LED_PORT_OUTPUT ^= _BV(LED_BIT);
-		airlab_message_t * m;
-		m = fifo_get(&rx_fifo);
-		if(m){
+
+	if (rq->bRequest == CUSTOM_RQ_PUT_DATA)
+	{
+		switch (rq->wValue.bytes[0])
+		{
+			case USB_SENDCHAR: /* send a single character */
+				txbuf[0] = rq->wIndex.bytes[0];
+				rfm12_tx (1, 0, &txbuf);
+				//rfm12_tx (sizeof(foobar), 0, &foobar);
+				LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
+			break;
+		}
+		
+		#if 0
+		if (rq->wValue.bytes[0] & 1)
+		{
+			LED_PORT_OUTPUT |= _BV(LED_BIT_RED);
+		} else
+		{                          /* clear LED */
+			LED_PORT_OUTPUT &= ~_BV(LED_BIT_RED);
+		}
+		#endif
+	} else if (rq->bRequest == CUSTOM_RQ_GET_DATA)
+	{
+		//LED_PORT_OUTPUT ^= _BV(LED_BIT);
+		if (usbtxlen)
+		{
+			uint8_t tmp;
+			tmp = usbtxlen;
 			LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
-			usbMsgPtr = (void*) m;  /* tell the driver which data to return */
-        	return m->len + 2; /* tell the driver to send n bytes */
-		}else{
+			usbtxlen = 0;
+			return tmp; /* tell the driver to send n bytes */
+		} else
+		{
 			return 0;
 		}
-    }
-    return 0;   /* default for not implemented requests: return no data back to host */
+	}
+	return 0;   /* default for not implemented requests: return no data back to host */
 }
 
 /* ------------------------------------------------------------------------- */
@@ -103,46 +92,53 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 
 int main(void)
 {
-uchar   i;
+	uchar   i;
 
-    /* RESET status: all port bits are inputs without pull-up.
-     * That's the way we need D+ and D-. Therefore we don't need any
-     * additional hardware initialization.
-     */
+	/* RESET status: all port bits are inputs without pull-up.
+	* That's the way we need D+ and D-. Therefore we don't need any
+	* additional hardware initialization.
+	*/
 	rfm12_init();
     
 	usbInit();
-    usbDeviceDisconnect();  /* enforce re-enumeration, do this while interrupts are disabled! */
+	usbDeviceDisconnect();  /* enforce re-enumeration, do this while interrupts are disabled! */
  	i = 0;
-	while(--i){             /* fake USB disconnect for > 250 ms */
+	while(--i)
+	{             /* fake USB disconnect for > 250 ms */
 		wdt_reset();
 		_delay_ms(1);
 	}
 	usbDeviceConnect();
-    LED_PORT_DDR |= _BV(LED_BIT_RED) | _BV(LED_BIT_GREEN);   /* make the LED bit an output */
-    sei();
+	LED_PORT_DDR |= _BV(LED_BIT_RED) | _BV(LED_BIT_GREEN);   /* make the LED bit an output */
+	sei();
 
-	for(;;){                /* main event loop */
-        usbPoll();
+	while (42)
+	{
 		rfm12_tick();
+		usbPoll();
 		
-		if (rfm12_rx_status() == STATUS_COMPLETE){
-			airlab_message_t * m;
+		if (rfm12_rx_status() == STATUS_COMPLETE)
+		{
 			uint8_t buflen;
 
-        	LED_PORT_OUTPUT ^= _BV(LED_BIT_GREEN);
+			LED_PORT_OUTPUT ^= _BV(LED_BIT_GREEN);
 			
+			buflen = rfm12_rx_len();
+			usbMsgPtr = (void *) rfm12_rx_buffer();
+			usbtxlen = buflen;
+			/*
 			m = fifo_put(&rx_fifo);
-			if(m){
+			if(m)
+			{
 				
 				buflen = rfm12_rx_len();
-				if(buflen > 30) buflen = 30;
+				if (buflen > 30) buflen = 30;
 				
 				memcpy(m->data, rfm12_rx_buffer(), buflen);
 				m->len = buflen;
 				m->type = rfm12_rx_type();
 			}
-			
+			*/
 			rfm12_rx_clear();
 			usbSetInterrupt(0, 0);  /* NULL message on interrupt socket */
 		}
