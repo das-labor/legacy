@@ -44,7 +44,9 @@
 	SCK             | SCK
 	nSEL            | Slave select pin defined below
 */
+#ifndef RFM12_CONFIG_H
 
+#include <avr/io.h>
 
 //Pin that the RFM12's slave select is connected to
 #define DDR_SS DDRB
@@ -97,3 +99,5 @@
 //setup Interrupt for falling egde trigger
 #define RFM12_INT_SETUP() (MCUCR |= (1<<ISC11))
 
+#define RFM12_CONFIG_H
+#endif
