@@ -29,7 +29,7 @@ namespace serialmon {
         
         private Gtk.Frame frame4;
         
-        private Gtk.Alignment GtkAlignment6;
+        private Gtk.Alignment GtkAlignment7;
         
         private Gtk.Table table4;
         
@@ -49,7 +49,7 @@ namespace serialmon {
         
         private Gtk.Frame frame5;
         
-        private Gtk.Alignment GtkAlignment7;
+        private Gtk.Alignment GtkAlignment8;
         
         private Gtk.VBox vbox5;
         
@@ -65,9 +65,9 @@ namespace serialmon {
         
         private Gtk.SpinButton addrwidth_spin;
         
-        private Gtk.Label GtkLabel11;
+        private Gtk.Label GtkLabel12;
         
-        private Gtk.Label GtkLabel9;
+        private Gtk.Label GtkLabel14;
         
         private Gtk.Frame frame1;
         
@@ -191,6 +191,7 @@ namespace serialmon {
             this.label11.LabelProp = Mono.Unix.Catalog.GetString("font");
             this.table3.Add(this.label11);
             Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.table3[this.label11]));
+            w2.XPadding = ((uint)(6));
             w2.XOptions = ((Gtk.AttachOptions)(4));
             w2.YOptions = ((Gtk.AttachOptions)(4));
             this.vbox4.Add(this.table3);
@@ -204,10 +205,10 @@ namespace serialmon {
             this.frame4.ShadowType = ((Gtk.ShadowType)(1));
             this.frame4.BorderWidth = ((uint)(3));
             // Container child frame4.Gtk.Container+ContainerChild
-            this.GtkAlignment6 = new Gtk.Alignment(0F, 0F, 1F, 1F);
-            this.GtkAlignment6.Name = "GtkAlignment6";
-            this.GtkAlignment6.LeftPadding = ((uint)(12));
-            // Container child GtkAlignment6.Gtk.Container+ContainerChild
+            this.GtkAlignment7 = new Gtk.Alignment(0F, 0F, 1F, 1F);
+            this.GtkAlignment7.Name = "GtkAlignment7";
+            this.GtkAlignment7.LeftPadding = ((uint)(12));
+            // Container child GtkAlignment7.Gtk.Container+ContainerChild
             this.table4 = new Gtk.Table(((uint)(2)), ((uint)(3)), false);
             this.table4.Name = "table4";
             this.table4.RowSpacing = ((uint)(6));
@@ -216,6 +217,7 @@ namespace serialmon {
             this.colauto_rb = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("automatic"));
             this.colauto_rb.CanFocus = true;
             this.colauto_rb.Name = "colauto_rb";
+            this.colauto_rb.Active = true;
             this.colauto_rb.DrawIndicator = true;
             this.colauto_rb.UseUnderline = true;
             this.colauto_rb.Group = new GLib.SList(System.IntPtr.Zero);
@@ -286,8 +288,8 @@ namespace serialmon {
             w9.RightAttach = ((uint)(2));
             w9.XOptions = ((Gtk.AttachOptions)(4));
             w9.YOptions = ((Gtk.AttachOptions)(4));
-            this.GtkAlignment6.Add(this.table4);
-            this.frame4.Add(this.GtkAlignment6);
+            this.GtkAlignment7.Add(this.table4);
+            this.frame4.Add(this.GtkAlignment7);
             this.GtkLabel8 = new Gtk.Label();
             this.GtkLabel8.Name = "GtkLabel8";
             this.GtkLabel8.LabelProp = Mono.Unix.Catalog.GetString("<b>column size</b>");
@@ -309,10 +311,10 @@ namespace serialmon {
             this.frame5.ShadowType = ((Gtk.ShadowType)(1));
             this.frame5.BorderWidth = ((uint)(3));
             // Container child frame5.Gtk.Container+ContainerChild
-            this.GtkAlignment7 = new Gtk.Alignment(0F, 0F, 1F, 1F);
-            this.GtkAlignment7.Name = "GtkAlignment7";
-            this.GtkAlignment7.LeftPadding = ((uint)(12));
-            // Container child GtkAlignment7.Gtk.Container+ContainerChild
+            this.GtkAlignment8 = new Gtk.Alignment(0F, 0F, 1F, 1F);
+            this.GtkAlignment8.Name = "GtkAlignment8";
+            this.GtkAlignment8.LeftPadding = ((uint)(12));
+            // Container child GtkAlignment8.Gtk.Container+ContainerChild
             this.vbox5 = new Gtk.VBox();
             this.vbox5.Name = "vbox5";
             this.vbox5.Spacing = 6;
@@ -320,6 +322,7 @@ namespace serialmon {
             this.addrbasehex_rb = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("hexadecimal"));
             this.addrbasehex_rb.CanFocus = true;
             this.addrbasehex_rb.Name = "addrbasehex_rb";
+            this.addrbasehex_rb.Active = true;
             this.addrbasehex_rb.DrawIndicator = true;
             this.addrbasehex_rb.UseUnderline = true;
             this.addrbasehex_rb.Group = new GLib.SList(System.IntPtr.Zero);
@@ -384,24 +387,24 @@ namespace serialmon {
             w19.Position = 3;
             w19.Expand = false;
             w19.Fill = false;
-            this.GtkAlignment7.Add(this.vbox5);
-            this.frame5.Add(this.GtkAlignment7);
-            this.GtkLabel11 = new Gtk.Label();
-            this.GtkLabel11.Name = "GtkLabel11";
-            this.GtkLabel11.LabelProp = Mono.Unix.Catalog.GetString("<b>address</b>");
-            this.GtkLabel11.UseMarkup = true;
-            this.frame5.LabelWidget = this.GtkLabel11;
+            this.GtkAlignment8.Add(this.vbox5);
+            this.frame5.Add(this.GtkAlignment8);
+            this.GtkLabel12 = new Gtk.Label();
+            this.GtkLabel12.Name = "GtkLabel12";
+            this.GtkLabel12.LabelProp = Mono.Unix.Catalog.GetString("<b>address</b>");
+            this.GtkLabel12.UseMarkup = true;
+            this.frame5.LabelWidget = this.GtkLabel12;
             this.hbox4.Add(this.frame5);
             Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.hbox4[this.frame5]));
             w22.Position = 1;
             w22.Expand = false;
             w22.Fill = false;
             this.frame3.Add(this.hbox4);
-            this.GtkLabel9 = new Gtk.Label();
-            this.GtkLabel9.Name = "GtkLabel9";
-            this.GtkLabel9.LabelProp = Mono.Unix.Catalog.GetString("<b>general settings</b>");
-            this.GtkLabel9.UseMarkup = true;
-            this.frame3.LabelWidget = this.GtkLabel9;
+            this.GtkLabel14 = new Gtk.Label();
+            this.GtkLabel14.Name = "GtkLabel14";
+            this.GtkLabel14.LabelProp = Mono.Unix.Catalog.GetString("<b>general settings</b>");
+            this.GtkLabel14.UseMarkup = true;
+            this.frame3.LabelWidget = this.GtkLabel14;
             this.vbox1.Add(this.frame3);
             Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.vbox1[this.frame3]));
             w24.Position = 0;
@@ -806,14 +809,14 @@ namespace serialmon {
             this.ok_button.UseUnderline = true;
             // Container child ok_button.Gtk.Container+ContainerChild
             Gtk.Alignment w59 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment8.Gtk.Container+ContainerChild
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w60 = new Gtk.HBox();
             w60.Spacing = 2;
-            // Container child GtkHBox11.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w61 = new Gtk.Image();
             w61.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-apply", Gtk.IconSize.Menu, 16);
             w60.Add(w61);
-            // Container child GtkHBox11.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w63 = new Gtk.Label();
             w63.LabelProp = Mono.Unix.Catalog.GetString("OK");
             w63.UseUnderline = true;
@@ -822,7 +825,7 @@ namespace serialmon {
             this.ok_button.Add(w59);
             this.hbox3.Add(this.ok_button);
             Gtk.Box.BoxChild w67 = ((Gtk.Box.BoxChild)(this.hbox3[this.ok_button]));
-            w67.Position = 2;
+            w67.Position = 1;
             w67.Expand = false;
             w67.Fill = false;
             this.vbox1.Add(this.hbox3);
@@ -834,8 +837,8 @@ namespace serialmon {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 400;
-            this.DefaultHeight = 518;
+            this.DefaultWidth = 520;
+            this.DefaultHeight = 550;
             this.Show();
             this.DestroyEvent += new Gtk.DestroyEventHandler(this.OnDestroyEvent);
             this.DeleteEvent += new Gtk.DeleteEventHandler(this.OnDeleteEvent);

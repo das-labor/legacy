@@ -13,23 +13,39 @@ namespace serialmon {
     
     public partial class about {
         
+        private Gtk.VBox vbox1;
+        
         private Gtk.Notebook notebook1;
         
-        private Gtk.VBox vbox1;
+        private Gtk.VBox vbox2;
         
         private Gtk.Label label4;
         
-        private Gtk.Image image4;
+        private Gtk.Image image8;
         
         private Gtk.Label label1;
+        
+        private Gtk.Alignment alignment1;
         
         private Gtk.ScrolledWindow GtkScrolledWindow;
         
         private Gtk.TextView textview1;
         
-        private Gtk.Image image3;
+        private Gtk.Label label2;
+        
+        private Gtk.Alignment alignment2;
+        
+        private Gtk.VBox vbox3;
+        
+        private Gtk.Label label5;
+        
+        private Gtk.Image image7;
         
         private Gtk.Label label3;
+        
+        private Gtk.HBox hbox1;
+        
+        private Gtk.Button button1;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
@@ -38,41 +54,47 @@ namespace serialmon {
             this.Title = Mono.Unix.Catalog.GetString("about");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             // Container child serialmon.about.Gtk.Container+ContainerChild
-            this.notebook1 = new Gtk.Notebook();
-            this.notebook1.CanFocus = true;
-            this.notebook1.Name = "notebook1";
-            this.notebook1.CurrentPage = 0;
-            // Container child notebook1.Gtk.Notebook+NotebookChild
             this.vbox1 = new Gtk.VBox();
             this.vbox1.Name = "vbox1";
             this.vbox1.Spacing = 6;
             // Container child vbox1.Gtk.Box+BoxChild
+            this.notebook1 = new Gtk.Notebook();
+            this.notebook1.CanFocus = true;
+            this.notebook1.Name = "notebook1";
+            this.notebook1.CurrentPage = 2;
+            // Container child notebook1.Gtk.Notebook+NotebookChild
+            this.vbox2 = new Gtk.VBox();
+            this.vbox2.Name = "vbox2";
+            this.vbox2.Spacing = 6;
+            // Container child vbox2.Gtk.Box+BoxChild
             this.label4 = new Gtk.Label();
             this.label4.Name = "label4";
             this.label4.LabelProp = Mono.Unix.Catalog.GetString("serialmon (v0.001): \n      a mono program by <b>Daniel Otte</b> (daniel.otte@rub.de) [GPLv3 or later]");
             this.label4.UseMarkup = true;
-            this.vbox1.Add(this.label4);
-            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox1[this.label4]));
+            this.vbox2.Add(this.label4);
+            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox2[this.label4]));
             w1.Position = 0;
             w1.Expand = false;
             w1.Fill = false;
-            // Container child vbox1.Gtk.Box+BoxChild
-            this.image4 = new Gtk.Image();
-            this.image4.Name = "image4";
-            this.image4.Pixbuf = new Gdk.Pixbuf(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "./logo_small.png"));
-            this.vbox1.Add(this.image4);
-            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox1[this.image4]));
+            // Container child vbox2.Gtk.Box+BoxChild
+            this.image8 = new Gtk.Image();
+            this.image8.Name = "image8";
+            this.image8.Pixbuf = Gdk.Pixbuf.LoadFromResource("logo_small.png");
+            this.vbox2.Add(this.image8);
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox2[this.image8]));
             w2.Position = 1;
             w2.Expand = false;
-            w2.Fill = false;
-            this.notebook1.Add(this.vbox1);
+            this.notebook1.Add(this.vbox2);
             // Notebook tab
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
             this.label1.LabelProp = Mono.Unix.Catalog.GetString(":about");
-            this.notebook1.SetTabLabel(this.vbox1, this.label1);
+            this.notebook1.SetTabLabel(this.vbox2, this.label1);
             this.label1.ShowAll();
             // Container child notebook1.Gtk.Notebook+NotebookChild
+            this.alignment1 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
+            this.alignment1.Name = "alignment1";
+            // Container child alignment1.Gtk.Container+ContainerChild
             this.GtkScrolledWindow = new Gtk.ScrolledWindow();
             this.GtkScrolledWindow.Name = "GtkScrolledWindow";
             this.GtkScrolledWindow.ShadowType = ((Gtk.ShadowType)(1));
@@ -84,30 +106,98 @@ namespace serialmon {
             this.textview1.Editable = false;
             this.textview1.WrapMode = ((Gtk.WrapMode)(2));
             this.GtkScrolledWindow.Add(this.textview1);
-            this.notebook1.Add(this.GtkScrolledWindow);
-            Gtk.Notebook.NotebookChild w5 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.GtkScrolledWindow]));
-            w5.Position = 1;
+            this.alignment1.Add(this.GtkScrolledWindow);
+            this.notebook1.Add(this.alignment1);
+            Gtk.Notebook.NotebookChild w6 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.alignment1]));
+            w6.Position = 1;
+            // Notebook tab
+            this.label2 = new Gtk.Label();
+            this.label2.Name = "label2";
+            this.label2.LabelProp = Mono.Unix.Catalog.GetString(":License");
+            this.notebook1.SetTabLabel(this.alignment1, this.label2);
+            this.label2.ShowAll();
             // Container child notebook1.Gtk.Notebook+NotebookChild
-            this.image3 = new Gtk.Image();
-            this.image3.Name = "image3";
-            this.image3.Pixbuf = new Gdk.Pixbuf(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "./Labor.png"));
-            this.notebook1.Add(this.image3);
-            Gtk.Notebook.NotebookChild w6 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.image3]));
-            w6.Position = 2;
-            w6.TabFill = false;
+            this.alignment2 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
+            this.alignment2.Name = "alignment2";
+            // Container child alignment2.Gtk.Container+ContainerChild
+            this.vbox3 = new Gtk.VBox();
+            this.vbox3.Name = "vbox3";
+            this.vbox3.Spacing = 6;
+            // Container child vbox3.Gtk.Box+BoxChild
+            this.label5 = new Gtk.Label();
+            this.label5.Name = "label5";
+            this.label5.LabelProp = Mono.Unix.Catalog.GetString("This program is a project by <b>Das Labor</b>\n  visit us at http://www.das-labor.org");
+            this.label5.UseMarkup = true;
+            this.vbox3.Add(this.label5);
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox3[this.label5]));
+            w7.Position = 0;
+            w7.Expand = false;
+            w7.Fill = false;
+            // Container child vbox3.Gtk.Box+BoxChild
+            this.image7 = new Gtk.Image();
+            this.image7.Name = "image7";
+            this.image7.Pixbuf = Gdk.Pixbuf.LoadFromResource("Labor.png");
+            this.vbox3.Add(this.image7);
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox3[this.image7]));
+            w8.Position = 1;
+            w8.Expand = false;
+            w8.Fill = false;
+            this.alignment2.Add(this.vbox3);
+            this.notebook1.Add(this.alignment2);
+            Gtk.Notebook.NotebookChild w10 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.alignment2]));
+            w10.Position = 2;
             // Notebook tab
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
-            this.label3.LabelProp = Mono.Unix.Catalog.GetString("about:das labor");
-            this.notebook1.SetTabLabel(this.image3, this.label3);
+            this.label3.LabelProp = Mono.Unix.Catalog.GetString(":Labor");
+            this.notebook1.SetTabLabel(this.alignment2, this.label3);
             this.label3.ShowAll();
-            this.Add(this.notebook1);
+            this.vbox1.Add(this.notebook1);
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox1[this.notebook1]));
+            w11.Position = 0;
+            // Container child vbox1.Gtk.Box+BoxChild
+            this.hbox1 = new Gtk.HBox();
+            this.hbox1.Name = "hbox1";
+            this.hbox1.Spacing = 6;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.button1 = new Gtk.Button();
+            this.button1.CanFocus = true;
+            this.button1.Name = "button1";
+            this.button1.UseUnderline = true;
+            // Container child button1.Gtk.Container+ContainerChild
+            Gtk.Alignment w12 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            Gtk.HBox w13 = new Gtk.HBox();
+            w13.Spacing = 2;
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Image w14 = new Gtk.Image();
+            w14.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-cancel", Gtk.IconSize.Menu, 16);
+            w13.Add(w14);
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Label w16 = new Gtk.Label();
+            w16.LabelProp = Mono.Unix.Catalog.GetString("close");
+            w16.UseUnderline = true;
+            w13.Add(w16);
+            w12.Add(w13);
+            this.button1.Add(w12);
+            this.hbox1.Add(this.button1);
+            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.hbox1[this.button1]));
+            w20.Position = 2;
+            w20.Expand = false;
+            w20.Fill = false;
+            this.vbox1.Add(this.hbox1);
+            Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox1]));
+            w21.Position = 1;
+            w21.Expand = false;
+            w21.Fill = false;
+            this.Add(this.vbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 483;
+            this.DefaultWidth = 485;
             this.DefaultHeight = 506;
             this.Show();
+            this.button1.Released += new System.EventHandler(this.OnButton1Released);
         }
     }
 }

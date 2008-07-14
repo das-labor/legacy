@@ -30,5 +30,10 @@ namespace serialmon
         {
             this.Build();
         }
+
+        protected virtual void OnButton1Released (object sender, System.EventArgs e)
+        {
+            this.Destroy();
+        }
     }
 }
