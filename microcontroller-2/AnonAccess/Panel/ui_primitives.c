@@ -66,7 +66,7 @@ void ui_waitforkey(char key){
 
 void ui_primitives_init(void){
 	uint8_t vram[8];
-	
+//	#if 0
 	lcd_setcgaddr(8);
 	memset(vram, 0x10, 8); /* load |    */
 	lcd_loadfont(vram);
@@ -80,6 +80,7 @@ void ui_primitives_init(void){
 	lcd_loadfont_P(vcgrom[13]); /* load checkselect */
 	lcd_loadfont_P(vcgrom[11]); /* load labor logo*/
 	lcd_setddaddr(0);
+//	#endif
 }
 
 /******************************************************************************/

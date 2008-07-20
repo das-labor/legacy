@@ -22,8 +22,8 @@ uint8_t getbadrandom(void){
 
 void prng_init(void){
 	/* here we should add some entropy to the prng */
-	DDRA &= ~_BV(HWRND_PIN);
-	PORTA &= ~_BV(HWRND_PIN);
+//	DDRA &= ~_BV(HWRND_PIN);
+//	PORTA &= ~_BV(HWRND_PIN);
 	ADMUX = 0x40 | HWRND_PIN;  /* Vref=Avcc, ADC0 */
 	ADCSRA = 0x83; /* turn ADC on, prescaler=8 */
 #ifdef ATMEGA644

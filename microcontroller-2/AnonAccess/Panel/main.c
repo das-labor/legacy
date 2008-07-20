@@ -264,7 +264,7 @@ int main(void){
  	BOOTLOG_APPEND_OK;
 	
  	BOOTLOG_APPEND_P("PRNG init");
-	prng_init();
+	//prng_init();
  	BOOTLOG_APPEND_OK;
 	
 	BOOTLOG_APPEND_P("I2C init");

@@ -66,15 +66,21 @@
 
 //Festlegen der PORTS für das LCD
 #define PORT_LCD PORTA
-#define DDR_LCD DDA
+#define DDR_LCD  DDA
 #define DDRC_LCD DDRA
-#define PIN_LCD PINA
+#define PIN_LCD  PINA
 
 //Festlegen der Port Nummern für das LCD
+/* for the small LCD
 #define ENABLE_LCD 5
-#define RS_LCD 4
+#define RS_LCD     4
+*/
+#define LCD_RS      7
+#define LCD_RW      6
+#define LCD_ENABLE1 5
+#define LCD_ENABLE2 4
 
-#define LCD_WIDTH 20
+#define LCD_WIDTH 27
 #define LCD_HEIGHT 4
 
 //config for persistentCounter 2
@@ -84,8 +90,8 @@
 
 
 #define QPTINY_AUTOKEYING
-//#define QPTINY_CRYPTO_OFF
-//#define QPTINY_STREAMAUTH 1
+#define QPTINY_CRYPTO_OFF
+#define QPTINY_STREAMAUTH 1
 
 #endif
 

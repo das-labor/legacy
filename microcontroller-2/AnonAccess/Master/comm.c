@@ -336,11 +336,15 @@ void messagerx(uint16_t length, void* msg){
 	prevalid_func_pt prevalid_func;
 	command_func = (command_func_pt)(pgm_read_word(&(msg_command_table[((uint8_t*)msg)[2]])));
 	prevalid_func = (prevalid_func_pt)(pgm_read_word(&(msg_prevalid_table[((uint8_t*)msg)[2]])));
-	if(!command_func)
+	if(!command_func){
+		send_str(TERMINALUNIT_ID, "function not defined", STR_CLASS_ERROR);
 		return; /* DROP */
+	}
 	if(prevalid_func){
-		if(prevalid_func(length, msg)!=0)
+		if(prevalid_func(length, msg)!=0){
+			send_str(TERMINALUNIT_ID, "prevalidate failed", STR_CLASS_ERROR);
 			return; /* DROP */
+		}
 	}
 	command_func(length, msg, &master_state);
 }
@@ -370,14 +374,23 @@ void freemsg(void){
 #endif
 
 void send_str(uint8_t terminal_id, char* str, uint8_t str_class){
-	uint16_t slen = strlen(str);
+	uint16_t slen; 
+	if(str_class&0x10){
+		slen = strlen_P(str);
+	} else {
+	 	slen = strlen(str);
+	}
 	slen = MAX(slen,255);
 	uint8_t msg[3+1+1+slen];
 	msg[0] = terminal_id;
 	msg[1] = MASTERUNIT_ID;
 	msg[3] = MSGID_PRINT;
-	msg[4] = (str_class>STR_CLASS_MAX)?STR_CLASS_NO:str_class;
-	memcpy(msg+5, str, slen);
+	msg[4] = ((str_class&0x0F)>STR_CLASS_MAX)?STR_CLASS_NO&0x0F:str_class;
+	if(str_class&0x10){
+		memcpy_P(msg+5, str, slen);
+	} else {
+		memcpy(msg+5, str, slen);
+	}
 	lop_sendmessage(&lop1, sizeof(msg), msg);
 }
 
