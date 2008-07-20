@@ -1,7 +1,7 @@
 include gmsl
 
 PRG	    = panel
-OBJ	    = keys.o main.o lcd_tools.o keypad.o spi.o menu.o 24Cxxx.o \
+OBJ	    = keys.o main.o lcd_tools2.o keypad.o spi.o menu.o 24Cxxx.o \
   i2c.o i2c_tools.o sha256-asm.o hmac-sha256.o rtc.o hwrnd.o base64_enc.o \
   reset_counter.o lop.o lop_debug.o comm.o 24C04.o cardio.o uart.o ui_primitives.o \
   dbz_strings.o hexdigit_tab.o extrachars.o keypad_charset.o ui_tests.o logs.o \
@@ -112,6 +112,12 @@ pdf: $(PRG).pdf
 	$(FIG2DEV) -L png $< $@
 
 DEPS := $(wildcard *.d)
+ifneq ($(DEPS),)
+include $(DEPS)
+endif
+
+DEP_DIR=
+
 ifneq ($(DEPS),)
 include $(DEPS)
 endif

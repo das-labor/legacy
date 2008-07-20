@@ -60,8 +60,8 @@
 #define PRINTER_ADDR 0x00
 
 #define QPTINY_AUTOKEYING
-//#define QPTINY_CRYPTO_OFF
-//#define QPTINY_STREAMAUTH 1
+#define QPTINY_CRYPTO_OFF
+#define QPTINY_STREAMAUTH 1
 
 #endif
 

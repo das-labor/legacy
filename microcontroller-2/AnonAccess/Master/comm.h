@@ -52,6 +52,13 @@
 #define STR_CLASS_ERROR 0x03
 #define STR_CLASS_SEC   0x04
 #define STR_CLASS_MAX   0x04
+/* the following are the same as above but define that the string is stored in PROGMEM */
+#define STR_CLASS_NO_P    0x10
+#define STR_CLASS_INFO_P  0x11
+#define STR_CLASS_WARN_P  0x12
+#define STR_CLASS_ERROR_P 0x13
+#define STR_CLASS_SEC_P   0x14
+#define STR_CLASS_MAX_P   0x14
 
 #define DONE    1
 #define NOTDONE 0

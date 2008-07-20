@@ -191,8 +191,8 @@ void req_authblock(void){
 	}
 	free(str_name);
 	free(str_pina);
-	if( (msg_length!=5+sizeof(authblock_t))    ||
-		(getmsgid(msg_data)!=MSGID_ACTION_REPLY)||
+	if( (msg_length!=5+sizeof(authblock_t))         ||
+		(getmsgid(msg_data)!=MSGID_ACTION_REPLY)    ||
 		(((uint8_t*)msg_data)[3]!= ACTION_ADDUSER ) ||
 		(((uint8_t*)msg_data)[4]!= DONE ) ) { 
 		lcd_cls();
@@ -201,9 +201,14 @@ void req_authblock(void){
 		//error_display(PSTR("rx wrong packet!"));
 		//ui_hexdump(1,2,LCD_WIDTH,LCD_HEIGHT-1, msg_data, msg_length);
 		lcd_gotopos(2,1);
-		lcd_hexdump(&msg_data, 2);
+		lcd_hexdump(&msg_data, MIN(LCD_WIDTH, msg_length)/2);
 		lcd_gotopos(3,1);
 		lcd_hexdump(&msg_length, 2);
+		uint8_t tmp_msgid = getmsgid(msg_data);
+		lcd_gotopos(4,1);
+		lcd_writestr_P(PSTR("msg_id="));
+		lcd_hexdump(&tmp_msgid, 1);
+		
 		ui_waitforkey('F');
 		lcd_gotopos(1,1);
 		lcd_writestr_P(PSTR("-_-_-_-"));
