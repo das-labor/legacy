@@ -180,7 +180,9 @@ int main(){
 	wait(200);
 	PORTC = 0x00;
 	
-	
+	lop_init(&lop0);
+	lop_init(&lop1);
+
 	lop0.msgbuffer = NULL;
 	lop0.msgidx = 0;
 	lop0.on_streamrx = lop0_streamrx;

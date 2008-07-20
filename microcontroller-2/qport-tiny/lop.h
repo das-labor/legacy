@@ -12,6 +12,15 @@
 
 typedef enum {idle,message} lopstates_t;
 
+/** 
+ * \typedef 
+ */
+
+/**
+ * \struct lop_ctx
+ * 
+ * 
+ */
 typedef struct lop_ctx {
 	lopstates_t rxstate, txstate, msgretstate;
 	uint32_t msgidx;
@@ -22,9 +31,11 @@ typedef struct lop_ctx {
 	void (*on_msgrx)(uint16_t, uint8_t*);   /* function called on message recieve */
 	void (*on_streamrx)(uint8_t);           /* function called on recieve of a stream byte*/
 	void (*on_streamsync)(void);            /* function called on recieve of streamsync */
+	void (*on_reset)(void);            /* function called on recieve of streamsync */
 } lop_ctx_t;
 
 /******************************************************************************/
+void lop_init(lop_ctx_t* ctx);
 void lop_reset(lop_ctx_t* ctx);
 void lop_sendreset(lop_ctx_t * ctx);
 /******************************************************************************/
