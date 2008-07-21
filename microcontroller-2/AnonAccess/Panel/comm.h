@@ -32,22 +32,24 @@
 #define ACTION_UNLOCKUSER  0x13
 #define ACTION_ADDADMIN    0x14
 #define ACTION_REMADMIN    0x15
-#define ACTION_KEYMIGRATION 0x016
+#define ACTION_KEYMIGRATION 0x16
 
 #define STR_CLASS_NO    0x00
 #define STR_CLASS_INFO  0x01
 #define STR_CLASS_WARN  0x02
 #define STR_CLASS_ERROR 0x03
 #define STR_CLASS_SEC   0x04
-#define STR_CLASS_MAX   0x04
+#define STR_CLASS_DBG   0x04
+#define STR_CLASS_MAX   0x05
 /* the following are the same as above but define that the string is stored in PROGMEM */
 #define STR_CLASS_NO_P    0x10
 #define STR_CLASS_INFO_P  0x11
 #define STR_CLASS_WARN_P  0x12
 #define STR_CLASS_ERROR_P 0x13
 #define STR_CLASS_SEC_P   0x14
-#define STR_CLASS_MAX_P   0x14
-extern const char str_class_char_P[]; // PROGMEM = {'#','i','w','E','X'};
+#define STR_CLASS_DBG_P   0x15
+#define STR_CLASS_MAX_P   0x15
+extern const char str_class_char_P[]; // PROGMEM = {'#','i','w','E','X','d'};
 
 
 #define DONE    1

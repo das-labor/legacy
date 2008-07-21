@@ -15,6 +15,7 @@
 #include "hmac-sha256.h"
 #include "debug.h"
 #include "uart.h"
+#include "memxor.h"
 
 #define BLOCKSIZE 128
 #define CRYPTKEY_SIZE 256
@@ -39,19 +40,10 @@ i2c_addr_t getDevAddr(blockdev_ptr_t baddr){
 	return devaddr;
 }
 
-/* already included in shabea.c */
-void memxor(void * dest, void * src, uint8_t length){
-	while(length--){
-		*((uint8_t*)dest) ^= *((uint8_t*)src);
-		dest = (uint8_t*)dest +1;
-		src  = (uint8_t*)src +1;
-	}
-}
 
 #else
 
 i2c_addr_t getDevAddr(blockdev_ptr_t baddr);
-void memxor(void * dest, void * src, uint8_t length);
 
 #endif
 

@@ -52,7 +52,6 @@ uint8_t xtea_cfb_dec(uint8_t c, uint8_t * key, uint8_t * state);
 uint8_t xtea_ofb(uint8_t p, uint8_t * key, uint8_t * state);
 void qport_streamsend(qport_ctx_t * ctx, uint8_t p);
 void qport_recieve_byte(qport_ctx_t * ctx, uint8_t b);
-void memxor(void * dest, const void * src, uint16_t n);
 void qport_setupstream(qport_ctx_t * ctx, uint8_t rxtx, uint8_t * a, uint8_t * b);
 void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp);
 void qport_rekey(qport_ctx_t * ctx);

@@ -19,7 +19,7 @@
 #include "hmac-sha256.h"
 #include "sha256.h"
 #include "xtea.h"
-
+#include "memxor.h"
 
 #ifdef LED_DEBUG
  #include <avr/io.h>
@@ -176,14 +176,6 @@ static
 void genkeypacket(qport_keypacket_t * kp){
 	entropium_fillBlockRandom(kp, sizeof(qport_keypacket_t));
 	kp->marker = MARKER_KP;
-}
-
-/******************************************************************************/
-
-void memxor(void * dest, const void * src, uint16_t n){
-	while(n--){
-		((uint8_t*)dest)[n] ^= ((uint8_t*)src)[n];
-	}
 }
 
 /******************************************************************************/

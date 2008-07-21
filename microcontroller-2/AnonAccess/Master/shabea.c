@@ -1,8 +1,26 @@
+/* shabea.c */
+/*
+    This file is part of the Crypto-avr-lib/microcrypt-lib.
+    Copyright (C) 2008  Daniel Otte (daniel.otte@rub.de)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 /**
  * \file	shabea.c
  * \author	Daniel Otte 
  * \date	2007-06-07
- * \brief	SHABEA - a SHA Based Encrytion Algorithm implementation
+ * \brief	SHABEA - a SHA Based Encryption Algorithm implementation
  * \par License	
  * GPL
  * 
@@ -17,15 +35,8 @@
 #include "config.h"
 #include "uart.h"
 #include "debug.h"
-/*
- * 
- */
-static
-void memxor(uint8_t * dest, uint8_t * src, uint8_t length){
-	while(length--){
-		*dest++ ^= *src++;
-	}
-} 
+#include "memxor.h"
+
 
 /*
  * SHABEA256-n
@@ -37,27 +48,22 @@ void memxor(uint8_t * dest, uint8_t * src, uint8_t length){
 #define HALFSIZE (BLOCKSIZE/2)
 
 #define L ((uint8_t*)block+ 0)
-#define R ((uint8_t*)block+HALFSIZEB)
-void shabea256(void * block, void * key, uint16_t keysize, uint8_t enc, uint8_t rounds){
+#define R ((uint8_t*)block+16)
+void shabea256(void * block, void * key, uint16_t keysize_b, uint8_t enc, uint8_t rounds){
 	int8_t r;		/**/
+	uint8_t tb[HALFSIZEB+2+(keysize_b+7)/8];	/**/
 	uint16_t kbs;	/* bytes used for the key / temporary block */
 	sha256_hash_t hash;
 	
 	r = (enc?0:(rounds-1));
-	kbs = keysize/8 + ((keysize&7)?1:0);
-	uint8_t  tb[HALFSIZEB+2+kbs];	/**/
-
-//	tb = malloc(HALFSIZEB+2+kbs);
-//	if(!tb){
-//		uart_putstr_P(PSTR(" \r\n PENG"));
-//	}
+	kbs = (keysize_b+7)/8;
 	memcpy(tb+HALFSIZEB+2, key, kbs); /* copy key to temporary block */
 	tb[HALFSIZEB+0] = 0;	/* set round counter high value to zero */
-
+	
 	for(;r!=(enc?(rounds):-1);enc?r++:r--){ /* enc: 0..(rounds-1) ; !enc: (rounds-1)..0 */
 		memcpy(tb, R, HALFSIZEB); /* copy right half into tb */
 		tb[HALFSIZEB+1] = r;
-		sha256(&hash, tb, HALFSIZE+16+keysize);
+		sha256(&hash, tb, HALFSIZE+16+keysize_b);
 		if(!(r==(enc?(rounds-1):0))){	
 			/* swap */
 			memxor(hash, L, HALFSIZEB);
@@ -68,7 +74,6 @@ void shabea256(void * block, void * key, uint16_t keysize, uint8_t enc, uint8_t 
 			memxor(L, hash, HALFSIZEB);	
 		}
 	}
-//	free(tb);
 }
 
 
