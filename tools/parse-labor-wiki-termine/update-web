@@ -17,7 +17,7 @@ class Termin
     @year  = xml.elements["year"].text.to_i;
     @text  = xml.elements["text"].text;
     @link  = xml.elements["link"].text;
-    @hour  = xml.elements["hour"].text;
+    @hour  = xml.elements["hour"].text.to_i;
     @min   = xml.elements["min"].text;
     
     @year += 2000 if @year < 2000;
@@ -97,17 +97,38 @@ rss20out.close
 # ICAL Output ################################################################
 puts "Generating iCal..."
 icalout = File.new( ARGV[0]+"/termine.ics", "w" );
-icalout.puts "BEGIN:VCALENDAR
+icalout.puts <<ENDL
+BEGIN:VCALENDAR
 VERSION:2.0
 X-WR-CALNAME:LABOR-Termine
-PRODID:-//Apple Computer\, Inc//iCal 2.0//EN
+PRODID:http://www.das-labor.org/
 X-WR-RELCALID:5644223456g
 X-WR-TIMEZONE:Europe/Berlin
 CALSCALE:GREGORIAN
-METHOD:PUBLISH"
+METHOD:PUBLISH
+BEGIN:VTIMEZONE
+TZID:Europe/Berlin
+X-LIC-LOCATION:Europe/Berlin
+BEGIN:STANDARD
+TZNAME:CET
+DTSTART:19701026T020000
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-2SU;BYMONTH=10
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+END:STANDARD
+BEGIN:DAYLIGHT
+TZNAME:CEST
+DTSTART:19700330T030000
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=3
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+END:DAYLIGHT
+END:VTIMEZONE
+ENDL
 
 termine.each { |term|
-    icalout.puts "BEGIN:VEVENT
+    icalout.puts <<ENDL
+BEGIN:VEVENT
 LOCATION:Labor
 DTSTAMP:#{timestamp}Z
 UID:#{term.year}#{term.month}#{term.day}#{term.hour}#{term.min}@labor
@@ -119,6 +140,7 @@ DTEND;TZID=Europe/Berlin:#{term.year}#{term.month}#{term.day}T235900
 LAST-MODIFIED:#{timestamp}
 DESCRIPTION:#{term}
 END:VEVENT\n"
+ENDL
 
 }
 icalout.puts "END:VCALENDAR"

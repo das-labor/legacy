@@ -55,8 +55,15 @@ class LaborTermine
   	m.each { |a|
 		aterm[a[0].downcase] = a[1];
 	}
-	lr = /\[\[\s*(.*?)\s*\]\]/;
-	if lr.match( aterm["text"] ) then 
+	# lr = /\[\[\s*(.*?)\s*\]\]/; if lr.match( aterm["text"] ) then 
+	if  /\[\[\s*(.+?)\s*\|\s*(.+?)\]\]/.match( aterm["text"] ) then
+		wikipage=$1;
+    aterm["text"] = $2;
+		wikipage.gsub!( " ", "_" );
+		aterm["link"] = WIKIPREFIX+wikipage;
+		aterm["text"].sub!("[[", "");
+		aterm["text"].sub!("]]", "");
+	elsif  /\[\[\s*(.*?)\s*\]\]/.match( aterm["text"] ) then
 		wikipage=$1;
 		wikipage.gsub!( " ", "_" );
 		aterm["link"] = WIKIPREFIX+wikipage;
