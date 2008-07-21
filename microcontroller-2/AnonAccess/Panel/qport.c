@@ -20,7 +20,6 @@
 #include "sha256.h"
 #include "xtea.h"
 
-#include "lcd_tools.h"
 
 #ifdef LED_DEBUG
  #include <avr/io.h>
@@ -221,8 +220,6 @@ void qport_setupstream(qport_ctx_t * ctx, uint8_t rxtx, uint8_t * a, uint8_t * b
 /******************************************************************************/
 
 void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
-	lcd_gotopos(1,1);
-	lcd_writechar('L');
 	#ifdef LED_DEBUG
 	PORTC ^= 0x10;
 	#endif
@@ -237,24 +234,14 @@ void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
 		#ifdef LED_DEBUG
 		PORTC |= 0x40;
 		#endif
-		lcd_gotopos(1,1);
-		lcd_writechar('E');
 		qport_setupstream(ctx, TX, ctx->keyingdata->seed_a, kp->seed_a);
 		qport_setupstream(ctx, RX, ctx->keyingdata->seed_b, kp->seed_b);
-		lcd_gotopos(1,1);
-		lcd_writechar('R');
 		free(ctx->keyingdata);
 		ctx->keyingdata = 0;
 		ctx->keystate = keyed;
-		lcd_gotopos(1,1);
-		lcd_writechar('T');
-		return;
 	} else {
 		if((!ctx->keyingdata)||(ctx->keyingdata && ((ctx->keyingdata->id) > (kp->id)))){ /* lower ID wins */
 		/* we should respond to the incomming packet */
-			lcd_gotopos(1,1);
-			lcd_writechar('S');
-			ctx->keystate=unkeyed;
 			#ifdef LED_DEBUG
 			PORTC ^= 0x20;
 			#endif
@@ -262,24 +249,14 @@ void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
 				free(ctx->keyingdata);
 				ctx->keyingdata = 0;
 			}
-			lcd_gotopos(1,1);
-			lcd_writechar('D');
 			qport_keypacket_t kpresponse;
 			genkeypacket(&kpresponse);
-			lcd_gotopos(1,1);
-			lcd_writechar('H');
 			kpresponse.id = kp->id;
-			ctx->lop->txstate=idle;
-			lcd_gotopos(1,1);
-			lcd_writechar('X');
 			lop_sendmessage(ctx->lop, sizeof(qport_keypacket_t), (uint8_t*)&kpresponse);
-			lcd_gotopos(1,1);
-			lcd_writechar('F');
 			qport_setupstream(ctx,TX, kp->seed_a, kpresponse.seed_a);
 			qport_setupstream(ctx,RX, kp->seed_b, kpresponse.seed_b);
 			{
-				lcd_gotopos(1,1);
-				lcd_writechar('G');
+			#ifdef QPORT_NOOPTIMISE
 				uint8_t help[16];
 				/* swap rx and tx keys */
 				memcpy(help, ctx->streamkey_rxa, 16);
@@ -295,11 +272,15 @@ void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
 				memcpy(help, ctx->streamstate_rxb, 8);
 				memcpy(ctx->streamstate_rxb, ctx->streamstate_txb, 8);
 				memcpy(ctx->streamstate_txb, help, 8);
+			#else
+				memxor(ctx->streamkey_txa, ctx->streamkey_rxa, 48);
+				memxor(ctx->streamkey_rxa, ctx->streamkey_txa, 48);
+				memxor(ctx->streamkey_txa, ctx->streamkey_rxa, 48);
+			#endif
+			
 			}
 			ctx->keystate = keyed;
 		}else{
-			lcd_gotopos(1,1);
-			lcd_writechar('M');
 			/* the other party should respond to our packet and we might simply their */		
 		}
 	}

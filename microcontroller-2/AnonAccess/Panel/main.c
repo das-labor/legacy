@@ -134,14 +134,7 @@ void lop1_messagerx(uint16_t length, uint8_t * msg){
 		return;
 	}
 	ui_statusstring[1]='Q';
-	if(msg_wait){	/* there is a blocking request for a message */
-		if((msg_data=lop1.msgbuffer)){
-			lop1.msgbuffer=NULL;
-			msg_length=length;
-		}
-		msg_wait=0;
-		return;
-	}
+	
 	if(msg[2]==MSGID_PRINT){
 		if(msg[3]>STR_CLASS_MAX) 
 			return; /* string class out of range */
@@ -156,6 +149,16 @@ void lop1_messagerx(uint16_t length, uint8_t * msg){
 		ui_logappend(&masterlog, msg+5, copy_st, msg[3]);
 		return;
 	}
+	/* there is a blocking request for a message */
+	if(msg_wait){	
+		if((msg_data=lop1.msgbuffer)){
+			lop1.msgbuffer=NULL;
+			msg_length=length;
+		}
+		msg_wait=0;
+		return;
+	}
+	
 	if(msg[2]==MSGID_ACTION_REPLY){
 		if(length<4)
 			return;
@@ -221,6 +224,9 @@ int main(void){
 	BOOTLOG_APPEND_OK;
 	
 	BOOTLOG_APPEND_P("LOP0 init");
+	lop_init(&lop0);
+	lop_init(&lop1);
+	
 	lop0.msgbuffer = NULL;
 	lop0.msgidx = 0;
 	lop0.on_streamrx = lop0_streamrx;
