@@ -10,7 +10,7 @@ INCLUDEPATH += . ../LibUsbWrapper/
 LIBS += -lusb
 
 # Input
-HEADERS += MainWindow.h OsziWidget.h UsbEventDevice.h ../LibUsbWrapper/LibUsbWrapper.h ../LibUsbWrapper/UsbDevice.h
+HEADERS += MainWindow.h OsziWidget.h Graph.h UsbEventDevice.h ../LibUsbWrapper/LibUsbWrapper.h ../LibUsbWrapper/UsbDevice.h
 FORMS += MainWindow.ui OsziWidget.ui
-SOURCES += main.cpp MainWindow.cpp OsziWidget.cpp UsbEventDevice.cpp ../LibUsbWrapper/LibUsbWrapper.cpp ../LibUsbWrapper/UsbDevice.cpp
+SOURCES += main.cpp MainWindow.cpp OsziWidget.cpp Graph.cpp UsbEventDevice.cpp ../LibUsbWrapper/LibUsbWrapper.cpp ../LibUsbWrapper/UsbDevice.cpp
 
