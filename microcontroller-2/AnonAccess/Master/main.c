@@ -67,7 +67,7 @@
 #define DC(a) {;} 
 #define DD(a,b) {;} 
 
-
+/*
 #define MASTERUNIT_ID 0
 #define TERMINALUNIT_ID 1
 
@@ -105,11 +105,11 @@
 #define STR_CLASS_SEC   0x04
 #define STR_CLASS_MAX   0x04
 
-
 #define DONE    1
 #define NOTDONE 0
 #define ANON    1
 #define NOTANON 0
+*/
 
 #define SESSION_MAX_PARTICIPANTS 5
 #define SESSION_MAX_DURATION (5LL * 60LL * 1000LL) /* 5 minutes */

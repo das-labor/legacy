@@ -24,7 +24,7 @@ volatile uint8_t msg_wait;
 volatile uint16_t msg_length;
 volatile void* msg_data;
 
-const char str_class_char_P[] PROGMEM = {'#','i','w','E','X'};
+const char str_class_char_P[] PROGMEM = {'#','i','w','E','X', 'd'};
 
 void init_session(void){
 	uint8_t msg[3]={

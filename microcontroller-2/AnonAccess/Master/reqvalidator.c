@@ -35,6 +35,8 @@
 #define DC(a)   {;} 
 #define DD(a,b) {;} 
 
+#include "comm.h" /* only for debugging purpose */
+
 /**
  * 
  *  Operation 	 Beschreibung                	 Requirements
@@ -312,15 +314,21 @@ void new_account(authblock_t * ab, char* nickname, sha256_hash_t pinhash,uint8_t
 	/* generate new uid */
 	uint8_t t=0;
 	uint16_t i=0;
+	send_str(TERMINALUNIT_ID, PSTR("(1/n)"), STR_CLASS_DBG_P);
 	do{
 		i = fairrnd(ticketdb_getstatMaxUsers()-1);
 		++t;
+		send_str(TERMINALUNIT_ID, PSTR("(1.1/n)"), STR_CLASS_DBG_P);
 	} while (ticketdb_userexists(i) && (t<5));
+	send_str(TERMINALUNIT_ID, PSTR("(2/n)"), STR_CLASS_DBG_P);
 	if(t==5){
 		do{
 			i = (i+1)%ticketdb_getstatMaxUsers();
+			send_str(TERMINALUNIT_ID, PSTR("(2.1/n)"), STR_CLASS_DBG_P);
 		}while(ticketdb_userexists(i));
 	}
+	
+	send_str(TERMINALUNIT_ID, PSTR("(3/n)"), STR_CLASS_DBG_P);
 	ab->uid = i;
 	
 	/* generate new ticket */
@@ -330,18 +338,31 @@ void new_account(authblock_t * ab, char* nickname, sha256_hash_t pinhash,uint8_t
 		t = gettimestamp();
 		memcpy(ab->ticket+32-sizeof(timestamp_t), &t, sizeof(timestamp_t));
 	}
-	load_timestampkey(key);
-	shabea256(ab->ticket, key, 256, 1, 16); /* encrypt ticket */
-	delete_key(key, 32);
 	
+	send_str(TERMINALUNIT_ID, PSTR("(4/n)"), STR_CLASS_DBG_P);
+	load_timestampkey(key);
+	send_str(TERMINALUNIT_ID, PSTR("(4.0/n)"), STR_CLASS_DBG_P);
+	shabea256(ab->ticket, key, 256, 1, 16); /* encrypt ticket */
+	send_str(TERMINALUNIT_ID, PSTR("(4.0.1/n)"), STR_CLASS_DBG_P);
+	delete_key(key, 32);
+	send_str(TERMINALUNIT_ID, PSTR("(4.1/n)"), STR_CLASS_DBG_P);
+	uint16_t tmp_i;
+	for(tmp_i=0; tmp_i<3000; ++tmp_i){
+		_delay_ms(1);
+	}
 	/* store new ticket */
 	load_ticketkey(key);
 	hmac_sha256(hmac, key, 256, ab->ticket, 32*8);
 	delete_key(key, 32);
+	send_str(TERMINALUNIT_ID, PSTR("(4.2/n)"), STR_CLASS_DBG_P);
+	
 	ticketdb_newuser(&hmac, &(ab->uid), ab->uid);
+	send_str(TERMINALUNIT_ID, PSTR("(4.3/n)"), STR_CLASS_DBG_P);
 	if(!anon){
 		ticketdb_addname(ab->uid, nickname);
 	}
+	
+	send_str(TERMINALUNIT_ID, PSTR("(5/n)"), STR_CLASS_DBG_P);
 //	ticketdb_setUserFlags(ab->uid, &flags);
 
 	/* make new RID & Co */
@@ -352,6 +373,8 @@ void new_account(authblock_t * ab, char* nickname, sha256_hash_t pinhash,uint8_t
 //	DD(ab->rid, 32);
 //	entropium_fillBlockRandom(ab->rkey, 32);
 //	memset(ab->rkey, 0, 32);
+
+	send_str(TERMINALUNIT_ID, PSTR("(6/n)"), STR_CLASS_DBG_P);
 	load_ticketkeydiv1(key);
 	hmac_sha256(key2, key, 256, ab->ticket, 256);
 	delete_key(key, 32);
@@ -361,6 +384,7 @@ void new_account(authblock_t * ab, char* nickname, sha256_hash_t pinhash,uint8_t
 	shabea256(ab->rid, key, 256, 1, 16); /* shabea256 with 16 rounds in encrypt mode */
 	delete_key(key,32);
 	
+	send_str(TERMINALUNIT_ID, PSTR("(7/n)"), STR_CLASS_DBG_P);
 	/* process pinhash */
 //	memset(ab->pinhmac, 0, 32);
 	load_ticketkeydiv2(key);
@@ -370,6 +394,7 @@ void new_account(authblock_t * ab, char* nickname, sha256_hash_t pinhash,uint8_t
 	shabea256(hmac, key2, 256, 1, 16); /* shabea256 with 16 rounds in encrypt mode */
 	ticketdb_setUserPinMac(ab->uid, hmac);
 	
+	send_str(TERMINALUNIT_ID, PSTR("(8/n)"), STR_CLASS_DBG_P);
 	/* fix hmac */
 	load_absignkey(key);
 	hmac_sha256(ab->hmac, key, 256, ab, 8*(sizeof(authblock_t)-32));

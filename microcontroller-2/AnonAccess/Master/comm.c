@@ -281,15 +281,18 @@ uint8_t session_getbootstrap(uint16_t length, uint8_t* msg){
 	nick = malloc(nick_len+1);
 	memcpy(nick, msg+4, nick_len);
 	nick[nick_len]=0;
-	send_str(TERMINALUNIT_ID, "started", STR_CLASS_INFO);
-	new_account(&reply+5, nick, msg+3+nick_len,msg[3+nick_len+32], msg[3+nick_len+32+1]);
+	send_str(TERMINALUNIT_ID, PSTR("started"), STR_CLASS_INFO_P);
+	new_account((authblock_t*)(reply+5), nick, msg+3+nick_len,msg[3+nick_len+32], msg[3+nick_len+32+1]);
+	send_str(TERMINALUNIT_ID, PSTR("done (1/n)"), STR_CLASS_INFO_P);
 	reply[0] = TERMINALUNIT_ID;
 	reply[1] = MASTERUNIT_ID;
 	reply[2] = MSGID_ACTION_REPLY;
 	reply[3] = ACTION_ADDUSER;
 	reply[4] = DONE;
-	
+	send_str(TERMINALUNIT_ID, PSTR("done (2/n)"), STR_CLASS_INFO_P);
 	lop_sendmessage(&lop1, 5+sizeof(authblock_t), reply);
+	send_str(TERMINALUNIT_ID, PSTR("done (n/n)"), STR_CLASS_INFO_P);
+	return 0;
 }
 
 uint8_t session_getbootstrap_validate(uint16_t length, uint8_t* msg){
@@ -380,12 +383,12 @@ void messagerx(uint16_t length, void* msg){
 	command_func = (command_func_pt)(pgm_read_word(&(msg_command_table[((uint8_t*)msg)[2]])));
 	prevalid_func = (prevalid_func_pt)(pgm_read_word(&(msg_prevalid_table[((uint8_t*)msg)[2]])));
 	if(!command_func){
-		send_str(TERMINALUNIT_ID, "function not defined", STR_CLASS_ERROR);
+		send_str(TERMINALUNIT_ID, PSTR("function not defined"), STR_CLASS_ERROR_P);
 		return; /* DROP */
 	}
 	if(prevalid_func){
 		if(prevalid_func(length, msg)!=0){
-			send_str(TERMINALUNIT_ID, "prevalidate failed", STR_CLASS_ERROR);
+			send_str(TERMINALUNIT_ID, PSTR("prevalidate failed"), STR_CLASS_ERROR_P);
 			return; /* DROP */
 		}
 	}
