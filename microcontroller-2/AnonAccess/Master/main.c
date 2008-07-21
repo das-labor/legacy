@@ -602,7 +602,8 @@ void init_system(void){
 	masterstate = idle;
 	uart_init();
 //	uart_putstr_P(PSTR("\r\nuart works (a)\r\n"));
-
+	lop_init(&lop0);
+	lop_init(&lop1);
 
 	lop0.msgbuffer = NULL;
 	lop0.msgidx = 0;

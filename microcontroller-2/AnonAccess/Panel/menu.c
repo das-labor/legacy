@@ -142,6 +142,15 @@ void req_authblock(void){
 	str_name=malloc(NAME_MAX_LEN);
 	str_pina=malloc(PIN_MAX_LEN);
 	str_pinb=malloc(PIN_MAX_LEN);
+	if(str_name==NULL || str_pina==NULL || str_pinb==NULL){
+		lcd_gotopos(2,1);
+		lcd_writestr_P(PSTR("ERROR: malloc(menu.c:147)"));
+		uint16_t i;
+		for(i=0; i<10000; ++i){
+			_delay_ms(1);
+		}
+		return;
+	}
 	
 	ui_printstatusline();
 	init_session();
@@ -173,7 +182,7 @@ void req_authblock(void){
 	ui_checkselect_P(2,2,LCD_WIDTH-1, LCD_HEIGHT-1, 
 		PSTR("admin tasks\0normal tasks\0"),&pinflags);
 	lcd_gotopos(1,1);
-	lcd_writestr_P(PSTR("waiting for response"));
+	lcd_writestr_P(PSTR("waiting for response   "));
 	ui_statusstring[4]='~';	
 	uint8_t et;
 	req_bootab(str_name, str_pina, pl, anon, pinflags);
@@ -201,7 +210,7 @@ void req_authblock(void){
 		//error_display(PSTR("rx wrong packet!"));
 		//ui_hexdump(1,2,LCD_WIDTH,LCD_HEIGHT-1, msg_data, msg_length);
 		lcd_gotopos(2,1);
-		lcd_hexdump(&msg_data, MIN(LCD_WIDTH, msg_length)/2);
+		lcd_hexdump(msg_data, MIN(LCD_WIDTH/2, msg_length));
 		lcd_gotopos(3,1);
 		lcd_hexdump(&msg_length, 2);
 		uint8_t tmp_msgid = getmsgid(msg_data);

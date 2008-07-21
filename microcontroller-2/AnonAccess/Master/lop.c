@@ -13,6 +13,22 @@
 #include <stdint.h>
 #include "lop.h"
 
+#define LOP_ESC_CODE		0x23
+#define LOP_RESET_CODE		0x42
+#define LOP_XON_CODE		0x11
+#define LOP_XOFF_CODE		0x13
+
+#define LOP_RESET_ESC		0x01
+#define LOP_ESC_ESC			0x02
+#define LOP_XON_ESC			0x03
+#define LOP_XOFF_ESC		0x04
+
+#define LOP_TYPE_MSG			0x14
+#define LOP_TYPE_STREAMSYNC		0x15
+/*
+#define LOP_TYPE_STREAM_START	0x15
+#define LOP_TYPE_STREAM_STOP	0x16
+*/
 static void lop_process_l1(lop_ctx_t* ctx, uint8_t b);
 static void lop_process_l2(lop_ctx_t* ctx, uint8_t b);
 
@@ -41,6 +57,20 @@ void lop_error(uint8_t b){
 	for(;;)
 		;
 }
+/******************************************************************************/
+
+void lop_init(lop_ctx_t* ctx){
+	ctx->rxstate = idle;
+	ctx->msgretstate = idle;
+	ctx->txstate = idle;
+	ctx->on_msgrx = NULL;
+	ctx->on_reset = NULL;
+	ctx->on_streamrx = NULL;
+	ctx->on_streamsync = NULL;
+	ctx->msgbuffer = NULL;
+	ctx->sendrawbyte = NULL;
+	ctx->escaped = 0;
+}
 
 /******************************************************************************/
 
@@ -49,6 +79,9 @@ void lop_reset(lop_ctx_t* ctx){
 	if(ctx->msgbuffer){
 		free(ctx->msgbuffer);
 		ctx->msgbuffer = NULL;
+	}
+	if(ctx->on_reset){
+		ctx->on_reset();
 	}
 }
 
@@ -74,7 +107,7 @@ void lop_process_l1(lop_ctx_t* ctx, uint8_t b){
 		return;
 	} else {
 		ctx->escaped = 0;
-		if((b<=0x04) && (b!=0)){ /* escaped data byte */
+		if(b<=0x04 && b!=0){ /* escaped data byte */
 			uint8_t t[4]={LOP_RESET_CODE, LOP_ESC_CODE, LOP_XON_CODE, LOP_XOFF_CODE};
 			lop_process_l2(ctx, t[b-1]);
 			return;
@@ -230,3 +263,4 @@ void lop_sendreset(lop_ctx_t * ctx){
 	if(ctx->sendrawbyte)
 		ctx->sendrawbyte(LOP_RESET_CODE);
 }
+

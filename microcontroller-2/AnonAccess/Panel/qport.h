@@ -16,6 +16,7 @@ typedef struct{
 
 typedef struct {
 	uint8_t marker;
+//	uint8_t marker2;
 	uint64_t id;
 	uint8_t seed_a[32];
 	uint8_t seed_b[32];
@@ -31,10 +32,10 @@ typedef struct qport_ctx{
 	uint8_t	*master_mac_key;
 	uint8_t streamkey_txa[16];
 	uint8_t streamkey_txb[16];
-	uint8_t streamkey_rxa[16];
-	uint8_t streamkey_rxb[16];
 	uint8_t streamstate_txa[8];
 	uint8_t streamstate_txb[8];
+	uint8_t streamkey_rxa[16];
+	uint8_t streamkey_rxb[16];
 	uint8_t streamstate_rxa[8];
 	uint8_t streamstate_rxb[8];
 	lop_ctx_t * lop;

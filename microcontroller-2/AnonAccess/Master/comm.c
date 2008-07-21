@@ -27,6 +27,13 @@
 #define SESSION_MAX_IDLE (10LL * 60LL * 1000LL)     /* 10 minutes */
 #define SESSION_MAX_DURATION (45LL * 60LL * 1000LL) /* 45 minutes */
 
+#ifndef MAX
+ #define MAX(a,b) (((a)>(b))?(a):(b))
+#endif
+
+#ifndef MIN
+ #define MIN(a,b) (((a)<(b))?(a):(b))
+#endif
 
 extern lop_ctx_t lop1;
 volatile uint8_t msg_wait;
@@ -266,6 +273,25 @@ uint8_t session_action_validate(uint16_t length, uint8_t* msg){
 	return 1;	
 }
 
+uint8_t session_getbootstrap(uint16_t length, uint8_t* msg){
+	uint8_t reply[5+sizeof(authblock_t)];
+	char* nick;
+	uint8_t nick_len;
+	nick_len=msg[3];
+	nick = malloc(nick_len+1);
+	memcpy(nick, msg+4, nick_len);
+	nick[nick_len]=0;
+	send_str(TERMINALUNIT_ID, "started", STR_CLASS_INFO);
+	new_account(&reply+5, nick, msg+3+nick_len,msg[3+nick_len+32], msg[3+nick_len+32+1]);
+	reply[0] = TERMINALUNIT_ID;
+	reply[1] = MASTERUNIT_ID;
+	reply[2] = MSGID_ACTION_REPLY;
+	reply[3] = ACTION_ADDUSER;
+	reply[4] = DONE;
+	
+	lop_sendmessage(&lop1, 5+sizeof(authblock_t), reply);
+}
+
 uint8_t session_getbootstrap_validate(uint16_t length, uint8_t* msg){
 	if(length<6)
 		return 1;
@@ -288,16 +314,33 @@ uint8_t session_getbootstrap_validate(uint16_t length, uint8_t* msg){
 	
 typedef uint8_t(*prevalid_func_pt)(uint16_t length, uint8_t *msg);
 typedef uint8_t(*command_func_pt)(uint16_t length, uint8_t *msg, master_state_t* mstate);
-
+/*
+  0 - session initialisation/reset
+  1 - add AuthBlock to session
+  2 - AuthBlock reply
+  3 - AuthBlock error
+  4 - Action
+  5 - Action reply
+  6 - print string
+  7 - get bootstrap account
+*  8 - AuthBlock PIN request
+*  9 - AuthBlock PIN reply
+*/
 command_func_pt msg_command_table[MSGID_CNT] PROGMEM = {
 	session_reset,
 	session_addAB,
-	NULL
+	NULL,
+	NULL,
+	session_action,
+	NULL,
+	NULL,
+	session_getbootstrap,
 };
 
 prevalid_func_pt msg_prevalid_table[MSGID_CNT] PROGMEM = {
 	session_reset_validate,
 	session_addAB_validate,
+	NULL,
 	NULL,
 	session_action_validate,
 	NULL,
@@ -369,10 +412,6 @@ void freemsg(void){
 	msg_length=0;
 }
 
-#ifndef MAX
- #define MAX(a,b) (((a)>(b))?(a):(b))
-#endif
-
 void send_str(uint8_t terminal_id, char* str, uint8_t str_class){
 	uint16_t slen; 
 	if(str_class&0x10){
@@ -380,12 +419,13 @@ void send_str(uint8_t terminal_id, char* str, uint8_t str_class){
 	} else {
 	 	slen = strlen(str);
 	}
-	slen = MAX(slen,255);
+	slen = MIN(slen,255);
 	uint8_t msg[3+1+1+slen];
 	msg[0] = terminal_id;
 	msg[1] = MASTERUNIT_ID;
-	msg[3] = MSGID_PRINT;
-	msg[4] = ((str_class&0x0F)>STR_CLASS_MAX)?STR_CLASS_NO&0x0F:str_class;
+	msg[2] = MSGID_PRINT;
+	msg[3] = (((str_class&0x0F)>STR_CLASS_MAX)?STR_CLASS_NO:str_class)&0x0F;
+	msg[4] = slen;
 	if(str_class&0x10){
 		memcpy_P(msg+5, str, slen);
 	} else {
