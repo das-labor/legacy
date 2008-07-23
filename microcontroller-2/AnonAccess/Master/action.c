@@ -14,6 +14,8 @@
 #include <string.h>
 #include "i2c_printer.h"
 
+
+#include "comm.h"
 /*
 #define DS(a)   uart_putstr_P(PSTR(a))
 #define DD(a,b) uart_hexdump((a),(b))
@@ -24,7 +26,8 @@
 #define DD(a,b) {uart_hexdump((a),(b)); printer_hexdump((a),(b));} 
 */
 
-#define DS(a) {;} 
+//#define DS(a) {;} 
+#define DS(a) send_str(TERMINALUNIT_ID, PSTR(a), STR_CLASS_DBG_P)
 #define DC(a) {;} 
 #define DD(a,b) {;} 
 
@@ -38,13 +41,13 @@ void door_init(void){
 void main_open(void){
 	PORTA &= ~0x60;
 	PORTA |=  0x80;
-	DS("\r\n door opening");
+	DS("\r\n>> door opening <<");
 }
 
 void main_close(void){
 	PORTA &= ~0x80;
 	PORTA |=  0x60;
-	DS("\r\n door closing");
+	DS("\r\n>> door closing <<");
 }
 
 void dump_authblock(authblock_t * ab){

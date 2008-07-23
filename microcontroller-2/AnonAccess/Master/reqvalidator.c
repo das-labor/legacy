@@ -31,9 +31,10 @@
 #define DC(a) printer_char(a)
 #define DD(a,b) printer_hexdump((a),(b)) 
 */
-#define DS(a)   {;} 
+//#define DS(a)   {;} 
 #define DC(a)   {;} 
 #define DD(a,b) {;} 
+#define DS(a) send_str(TERMINALUNIT_ID, PSTR(a), STR_CLASS_DBG_P)
 
 #include "comm.h" /* only for debugging purpose */
 
@@ -262,7 +263,7 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 		DS("\r\nTimeout");
 		return invalidtimeout_cred;
 	}
-	return flags.admin?valid_admin:valid_user;
+	return flags.admin?valid_admin:(flags.notify_lostadmin?valid_user_lostadm:valid_user);
 }
 
 uint8_t pin_required(uid_t uid, uint8_t admin){
@@ -310,7 +311,7 @@ void new_account(authblock_t * ab, char* nickname, sha256_hash_t pinhash,uint8_t
 	flags.anonymous = anon?true:false;
 	flags.force_admin_pin = (pinflags&1)?true:false;
 	flags.force_normal_pin = (pinflags&2)?true:false;
-	flags.reserved = 0;
+	flags.lock_nick = 0;
 	/* generate new uid */
 	uint8_t t=0;
 	uint16_t i=0;
@@ -346,10 +347,6 @@ void new_account(authblock_t * ab, char* nickname, sha256_hash_t pinhash,uint8_t
 	send_str(TERMINALUNIT_ID, PSTR("(4.0.1/n)"), STR_CLASS_DBG_P);
 	delete_key(key, 32);
 	send_str(TERMINALUNIT_ID, PSTR("(4.1/n)"), STR_CLASS_DBG_P);
-	uint16_t tmp_i;
-	for(tmp_i=0; tmp_i<3000; ++tmp_i){
-		_delay_ms(1);
-	}
 	/* store new ticket */
 	load_ticketkey(key);
 	hmac_sha256(hmac, key, 256, ab->ticket, 32*8);
@@ -422,18 +419,19 @@ void modify_account_byuid(uid_t uid, userflags_t setflags, userflags_t clearflag
 	ticketdb_getUserFlags(uid, &flags);
 /*	flags |= setflags;
 	flags &= ~clearflags; */
-	flags.admin |= setflags.admin;
-	flags.exist |= setflags.exist;
-	flags.locked|= setflags.locked;
+	flags.admin            |= setflags.admin;
+	flags.exist            |= setflags.exist;
+	flags.locked           |= setflags.locked;
 	flags.notify_lostadmin |= setflags.notify_lostadmin;
 	flags.force_admin_pin  |= setflags.force_admin_pin;
 	flags.force_normal_pin |= setflags.force_normal_pin;
-	flags.admin &= ~clearflags.admin;
-	flags.exist &= ~clearflags.exist;
-	flags.locked&= ~clearflags.locked;
+	flags.lock_nick        |= setflags.lock_nick;
+	flags.admin            &= ~clearflags.admin;
+	flags.exist            &= ~clearflags.exist;
+	flags.locked           &= ~clearflags.locked;
 	flags.notify_lostadmin &= ~clearflags.notify_lostadmin;
 	flags.force_admin_pin  &= ~clearflags.force_admin_pin;
 	flags.force_normal_pin &= ~clearflags.force_normal_pin;
-	flags.reserved = 0;
+	flags.lock_nick        &= ~clearflags.lock_nick;
 	ticketdb_setUserFlags(uid, &flags);	
 }

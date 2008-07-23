@@ -58,23 +58,24 @@ void flmdb_process(uint8_t * searchmac, userid_t uid, userflags_t * flags){
 	for(i=0; i<= FLMDB_MAXID; ++i){
 		flmdb_loadentry(&entry, i);
 //		uart_putc('~');
-		if(entry.active && !memcmp(&(entry.hnick), searchmac, 32)){
+		if(entry.active && !memcmp(&(entry.hnick), searchmac, sizeof(hnick_t))){
 //			uart_putc('-');
 			ticketdb_getUserFlags(uid, flags);
 			/* apply flag modifiers */
-			flags->admin |= entry.setflags.admin;
-			flags->exist |= entry.setflags.exist;
-			flags->locked|= entry.setflags.locked;
+			flags->admin            |= entry.setflags.admin;
+			flags->exist            |= entry.setflags.exist;
+			flags->locked           |= entry.setflags.locked;
 			flags->notify_lostadmin |= entry.setflags.notify_lostadmin;
 			flags->force_admin_pin  |= entry.setflags.force_admin_pin;
 			flags->force_normal_pin |= entry.setflags.force_normal_pin;
-			flags->admin &= ~entry.clearflags.admin;
-			flags->exist &= ~entry.clearflags.exist;
-			flags->locked&= ~entry.clearflags.locked;
+			flags->lock_nick        |= entry.setflags.lock_nick;
+			flags->admin            &= ~entry.clearflags.admin;
+			flags->exist            &= ~entry.clearflags.exist;
+			flags->locked           &= ~entry.clearflags.locked;
 			flags->notify_lostadmin &= ~entry.clearflags.notify_lostadmin;
 			flags->force_admin_pin  &= ~entry.clearflags.force_admin_pin;
 			flags->force_normal_pin &= ~entry.clearflags.force_normal_pin;
-			flags->reserved = 0;
+			flags->lock_nick        &= ~entry.clearflags.lock_nick;
 			
 			/* sync with db */
 			ticketdb_setUserFlags(uid, flags);
@@ -98,7 +99,7 @@ void flmdb_makeentry(uint8_t * mac, userflags_t setflags, userflags_t clearflags
 	flmdb_entry_t entry;
 	flmdb_entry_t t;
 	
-	memcpy(entry.hnick, mac, 32);
+	memcpy(entry.hnick, mac, sizeof(hnick_t));
 	entry.active = 1;
 	entry.last=0;
 	entry.permanent = permanent?1:0;

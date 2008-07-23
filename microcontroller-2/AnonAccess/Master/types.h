@@ -48,15 +48,16 @@ typedef struct userflags_st{
 	unsigned locked:1;				/* this account is locked */
 	unsigned notify_lostadmin:1;	/* this user must be notifyed about lost admin privileges */
 	unsigned anonymous:1;			/* this user is anonymous */
-	unsigned force_admin_pin:1;
-	unsigned force_normal_pin:1;
-	unsigned reserved:1;
+	unsigned force_admin_pin:1;     /* this user is allways asked for pin */
+	unsigned force_normal_pin:1;    /* this user is asked for pin when logging in as admin */
+	unsigned lock_nick:1;           /* the corresponding nick is locked */
 } userflags_t;
 
 typedef enum{
 	invalid_cred = 0,
 	valid_user   = 1,
 	valid_admin  = 3,
+	valid_user_lostadm  = 5,
 	invalidtimeout_cred = 0x10
 } authcredvalid_state_t; /* authentification credentials valid status */
 /*
