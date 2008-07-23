@@ -1,3 +1,25 @@
+/* menu.c */
+/*
+ *   This file is part of AnonAccess, an access system which can be used
+ *    to open door or doing other things with an anonymity featured
+ *    account managment.
+ *   Copyright (C) 2006, 2007, 2008  Daniel Otte (daniel.otte@rub.de)
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 #include "config.h"
 #include "lcd_tools.h"
 #include "uart.h"
@@ -306,37 +328,37 @@ uint8_t login_with_card(uint8_t admin){
 	}
 	if(card_readAB(&ab)==false){
 		error_display(PSTR("card read error!"));
-		return;
+		return 0;
 	}
 	submit_ab(&ab, admin);
 	if(waitformessage(TIMEOUT_DELAY)){
 		error_display(PSTR("(312) com. timeout!"));
-		return;
+		return 0;
 	}
 	if(getmsgid(msg_data)==MSGID_AB_PINREQ){
 		freemsg();
 		getandsubmitpin();
 		if(waitformessage(TIMEOUT_DELAY)){
 			error_display(PSTR("(320) com. timeout!"));
-			return;
+			return 0;
 		}
 	}
 	if(getmsgid(msg_data)==MSGID_AB_ERROR){
 		freemsg();
 		errorn_display(PSTR("AB ERROR!"), ((uint8_t*)msg_data)[3]);
-		return;
+		return 0;
 	}
 	if((getmsgid(msg_data)!=MSGID_AB_REPLY) || (msg_length!=3+sizeof(authblock_t)+1)){
 		freemsg();
 		error_display(PSTR("AB strange ERROR!"));
-		return;
+		return 0;
 	}
 		if(card_writeAB((authblock_t*)((uint8_t*)msg_data+3))==false){
 		freemsg();
 		error_display(PSTR("card write ERROR!"));
-		return;
+		return 0;
 	}
-	if(msg[3+sizeof(authblock_t)]!=0){
+	if(((uint8_t*)msg_data)[3+sizeof(authblock_t)]!=0){
 		lcd_cls();
 		ui_drawframe(1,1,LCD_WIDTH, LCD_HEIGHT, '!');
 		ui_textwindow_P(2,2,LCD_WIDTH-2, LCD_HEIGHT, 
@@ -345,7 +367,7 @@ uint8_t login_with_card(uint8_t admin){
 	}
 	freemsg();
 	error_display(PSTR("AB fine!"));	
-	
+	return 1;
 }
 
 /******************************************************************************/
@@ -354,7 +376,8 @@ uint8_t login_with_card(uint8_t admin){
 
 void open_door(void){
 	init_session();
-	login_with_card(0);
+	if(login_with_card(0)==0)
+		return;
 	send_mainopen();
 	if(waitformessage(TIMEOUT_DELAY)){
 		error_display(PSTR("(386) com. timeout!"));
@@ -535,10 +558,6 @@ void randomize_card(void){
 	}
 }
 
-void write_card(void){
-	card_writeAB(&ab);
-}
-
 void system_stats(void){
 	;
 }
@@ -561,7 +580,6 @@ const char timestamp_base64_PS[]    PROGMEM = "timestamp (B64)";
 const char timestamp_base64_live_PS[]      PROGMEM = "timestamp (l,B64)";
 const char random_PS[]         PROGMEM = "random (30)";
 const char dump_card_PS[] PROGMEM = "dump ICC";
-const char write_card_PS[] PROGMEM = "AB -> ICC";
 const char read_flash_PS[] PROGMEM = "read flash";
 const char read_logs_PS[] PROGMEM = "read logs";
 const char ui_tests_PS[] PROGMEM = "UI tests";
@@ -584,7 +602,6 @@ menu_t debug_menu_mt[] PROGMEM = {
 	{erase_card_PS, execute, (superp)erase_card},
 	{randomize_card_PS, execute, (superp)randomize_card},
 	{dump_card_PS, execute, (superp)dump_card},
-	{write_card_PS, execute, (superp)write_card},
 	{NULL, terminator, (superp)NULL}
 };
 

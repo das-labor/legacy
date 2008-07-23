@@ -1,3 +1,25 @@
+/* main.c */
+/*
+ *   This file is part of AnonAccess, an access system which can be used
+ *    to open door or doing other things with an anonymity featured
+ *    account managment.
+ *   Copyright (C) 2006, 2007, 2008  Daniel Otte (daniel.otte@rub.de)
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 /**
  * AnonAccess-Terminal
  * Author: Martin Hermsen & Daniel Otte
@@ -175,8 +197,7 @@ void lop1_messagerx(uint16_t length, uint8_t * msg){
 					ui_statusstring[1]='v';	
 					return;
 				}
-				memcpy(&ab, &(msg[5]), sizeof(authblock_t));
-				card_writeAB(&ab);
+				card_writeAB((authblock_t*)&(msg[5]));
 				ui_statusstring[2]='X';
 				return;
 			}
@@ -188,8 +209,7 @@ void lop1_messagerx(uint16_t length, uint8_t * msg){
 		if(length!=3+sizeof(authblock_t)){
 			return;
 		}
-		memcpy(&ab, &(msg[3]), sizeof(authblock_t));
-		card_writeAB(&ab);
+		card_writeAB((authblock_t*)&(msg[3]));
 		ui_statusstring[3]='X';	
 		return;
 	}
