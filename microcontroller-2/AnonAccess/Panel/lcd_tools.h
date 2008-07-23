@@ -24,13 +24,17 @@ void lcd_gotopos (uint8_t y, uint8_t x);
 //void lcd_set4bit (void);
 void lcd_port_ini (void);
 void lcd_init (void);
-void lcd_hexdump(const void* data, uint8_t length);
+void lcd_hexdump(const volatile void* data, uint8_t length);
 
 
-#define LCD_CURSOR_ON   lcd_control(1,1,0)
-#define LCD_CURSOR_OFF  lcd_control(1,0,0)
-#define LCD_DISPLAY_ON  lcd_control(1,0,0)
-#define LCD_DISPLAY_OFF lcd_control(0,0,0)
+void lcd_cursor(uint8_t blink, uint8_t cursor);
+void lcd_display_onoff(uint8_t onoff);
+	
+
+#define LCD_CURSOR_ON   lcd_cursor(0,1)
+#define LCD_CURSOR_OFF  lcd_cursor(0,0)
+#define LCD_DISPLAY_ON  lcd_display_onoff(1)
+#define LCD_DISPLAY_OFF lcd_display_onoff(0)
 
 
 #endif /* LCD_TOOLS_H_ */

@@ -36,10 +36,13 @@
 
 /******************************************************************************/
 
-uint16_t purify_str(char* str){
-	uint16_t i=0,len=strlen(str);
+uint16_t purify_strn(char* str, uint8_t len){
+	uint16_t i=0;
 	while(i<len && (!isprint(str[i]) || isspace(str[i])) )
 		++i;
+	if(i==0){
+		return len;
+	}
 	memmove(str, str+i, len-i);
 	return len-i;
 }
@@ -144,7 +147,7 @@ void lop1_messagerx(uint16_t length, uint8_t * msg){
 		ui_drawframe(1,1,LCD_WIDTH, LCD_HEIGHT,pgm_read_byte(str_class_char_P+msg[3]));
 		lcd_gotopos(2,2);
 		uint16_t strlen;
-		strlen=purify_str((char*)msg+5);
+		strlen=purify_strn((char*)msg+5,msg[4]);
 		lcd_writelinen((char*)msg+5, MIN(strlen, LCD_WIDTH-2));
 		ui_logappend(&masterlog, msg+5, copy_st, msg[3]);
 		return;
@@ -278,6 +281,10 @@ int main(void){
 	i2c_set_speed(I2C_SPEED_FASTEST);
 	DDRC = 0xF0;	
 	BOOTLOG_APPEND_OK;
+	
+	BOOTLOG_APPEND_P("CARDIO init");
+	cardio_init();
+ 	BOOTLOG_APPEND_OK;
 	
  //	PORTC|= 0xF0;
  

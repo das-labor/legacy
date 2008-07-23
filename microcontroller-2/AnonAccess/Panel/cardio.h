@@ -1,7 +1,7 @@
 #ifndef CARDIO_H_
 #define CARDIO_H_
 
-
+void cardio_init(void);
 bool card_inserated(void);
 bool card_erase(void);
 bool card_format(void);

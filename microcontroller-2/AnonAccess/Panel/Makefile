@@ -5,13 +5,16 @@ OBJ	    = keys.o main.o lcd_tools2.o keypad.o spi.o menu.o 24Cxxx.o \
   i2c.o i2c_tools.o sha256-asm.o hmac-sha256.o rtc.o hwrnd.o base64_enc.o \
   reset_counter.o lop.o lop_debug.o comm.o 24C04.o cardio.o uart.o ui_primitives.o \
   dbz_strings.o hexdigit_tab.o extrachars.o keypad_charset.o ui_tests.o logs.o \
-  qport.o xtea-asm.o entropium.o
+  qport.o xtea-asm.o entropium.o factorizefun.o
 MCU_TARGET     = atmega644
 FLASH_SIZE     = 65536L
 OPTIMIZE       = -Os -mno-tablejump
 DEBUG	   = -gstabs
 DEFS	   = -D$(call uc,$(MCU_TARGET)) -DFLASH_SIZE=$(FLASH_SIZE)
-LIBS	   =
+LIBS	   =  
+DEP_DIR    = .deps/
+
+
 
 # You should not have to change anything below here.
 
@@ -19,11 +22,10 @@ CC	     = avr-gcc
 
 # Override is only needed by avr-lib build system.
 
-override LDFLAGS       = -Wl,-Map,$(PRG).map
-override CFLAGS        = -MMD -g -pedantic -std=gnu99 -Wall -Wstrict-prototypes $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -morder1
+override LDFLAGS       = -Wl,-Map,$(PRG).map -mmcu=$(MCU_TARGET) -morder1 -Wall
+override CFLAGS        = -MMD -MF$(DEP_DIR)$(patsubst %.c,%.d,$<) -g -pedantic -std=gnu99 -Wall -Wstrict-prototypes $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -morder1
 # -fnew-ra
-override LDFLAGS       = -Wl,-Map,$(PRG).map
-override ASFLAGS	   = -mmcu=$(MCU_TARGET)
+override ASFLAGS       = -mmcu=$(MCU_TARGET)
 
 OBJCOPY	= avr-objcopy
 OBJDUMP	= avr-objdump
@@ -38,11 +40,15 @@ EEPROM_FLASHCMD = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB0 -c avr911 -U eeprom:w
 all: $(PRG).elf lst text eeprom
 
 $(PRG).elf: $(OBJ)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 clean:
 	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak 
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
+
+depclean: clean
+	rm -rf $(DEP_DIR)*.d
+
 
 lst:  $(PRG).lst
 
@@ -52,6 +58,14 @@ flash: $(PRG).hex $(PRG)_eeprom.hex
 
 eeflash:
 	$(EEPROM_FLASHCMD)
+
+%.o: %.c
+	@echo [gcc] $@
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+%.o: %.S
+	@echo [gas] $@
+	@$(CC) $(ASFLAGS) -c -o $@ $<
 
 %.lst: %.elf
 	$(OBJDUMP) -h -S $< > $@
@@ -111,13 +125,7 @@ pdf: $(PRG).pdf
 %.png: %.fig
 	$(FIG2DEV) -L png $< $@
 
-DEPS := $(wildcard *.d)
-ifneq ($(DEPS),)
-include $(DEPS)
-endif
-
-DEP_DIR=
-
+DEPS := $(wildcard $(DEP_DIR)*.d)
 ifneq ($(DEPS),)
 include $(DEPS)
 endif

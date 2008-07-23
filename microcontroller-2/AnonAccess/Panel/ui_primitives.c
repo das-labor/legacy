@@ -37,6 +37,21 @@ char ui_waitforkeypress(void){
 	return k;
 } 
 
+/******************************************************************************/	
+	
+char ui_waitforkeypresswhile(void(*fpt)(void*), void* param){
+	uint8_t k;
+	if(fpt==NULL){
+		return ui_waitforkeypress();
+	}
+	while((k=read_keypad())==NO_KEY)
+		fpt(param);
+	DEBOUNCE_DELAY;
+	while(k==read_keypad())
+		fpt(param);
+	DEBOUNCE_DELAY;
+	return k;
+} 
 /******************************************************************************/
 
 char ui_waitforkeypresstimed(timestamp_t* tdiff){
@@ -327,7 +342,7 @@ void ui_menuexec(menu_t* menu){
 	for(i=0; i<((n<3)?n:3); ++i){
 		lcd_gotopos(i+2,2);
 		lcd_writestr_P((PGM_P)(pgm_read_word(&(menu[(idx+i)%n].name))));
-		lcd_gotopos(i+2,20);
+		lcd_gotopos(i+2,LCD_WIDTH);
 		switch(pgm_read_byte(&(menu[(idx+i)%n].options))){
 			case autosubmenu:
 			case submenu: lcd_writechar(LCD_RARROW);
@@ -383,7 +398,7 @@ void ui_menuexec(menu_t* menu){
 
 /******************************************************************************/
 /******************************************************************************/
-static
+/* write the number with MSB first */
 void genaddr(uint16_t value, char* str, uint8_t len){
 	str+=len-1;
 	while(len--){
@@ -393,7 +408,7 @@ void genaddr(uint16_t value, char* str, uint8_t len){
 }
 
 /******************************************************************************/
-static
+
 void data2hex(const void* buffer, char* dest, uint8_t length){
 	while(length--){
 		*dest++ = pgm_read_byte(hexdigit_tab_P+((*(uint8_t*)buffer)>>4));
@@ -403,7 +418,7 @@ void data2hex(const void* buffer, char* dest, uint8_t length){
 }
 
 /******************************************************************************/
-static
+
 void data2hex_P(PGM_VOID_P buffer, char* dest, uint8_t length){
 	uint8_t t;
 	while(length--){
@@ -417,7 +432,7 @@ void data2hex_P(PGM_VOID_P buffer, char* dest, uint8_t length){
 /******************************************************************************/
 
 void ui_hexdump_core(uint8_t xpos, uint8_t ypos, uint8_t width, uint8_t height,
-                     const void* data, uint16_t length, uint8_t flash){
+                     const volatile void* data, uint16_t length, uint8_t flash){
 	uint16_t offset=0;
 	uint8_t addr_len=4;
 	uint8_t bytesperline=0;
@@ -477,7 +492,7 @@ void ui_hexdump_core(uint8_t xpos, uint8_t ypos, uint8_t width, uint8_t height,
 /******************************************************************************/
 
 void ui_hexdump(uint8_t xpos, uint8_t ypos, uint8_t width, uint8_t height,
-                const void* data, uint16_t length){
+                const volatile void* data, uint16_t length){
 	ui_hexdump_core(xpos, ypos, width, height, data, length, 0);
 }
 
@@ -789,7 +804,8 @@ uint8_t read_hexn(uint8_t xpos, uint8_t ypos, char* str, uint8_t n){
 
 /******************************************************************************/
 
-uint8_t read_strn(uint8_t xpos, uint8_t ypos, PGM_P charset, char * str, uint8_t n){
+uint8_t read_strnwhile(uint8_t xpos, uint8_t ypos, PGM_P charset, 
+                       char * str, uint8_t n, void(*fpt)(void*), void* param){
 	timestamp_t time[2]={0,0};
 	uint8_t idx=0,varidx=0;
 	char c[2]={0,0};
@@ -815,7 +831,7 @@ uint8_t read_strn(uint8_t xpos, uint8_t ypos, PGM_P charset, char * str, uint8_t
 		lcd_gotopos(ypos, xpos+idx);
 		lcd_writechar(' ');
 		lcd_gotopos(ypos, xpos+idx);
-		c[toggle]=ui_waitforkeypress();
+		c[toggle]=ui_waitforkeypresswhile(fpt, param);
 		time[toggle]=gettimestamp();
 		if((c[0]==c[1]) && 
 		   (tabidx<charsetn) && 
@@ -867,6 +883,11 @@ uint8_t read_strn(uint8_t xpos, uint8_t ypos, PGM_P charset, char * str, uint8_t
 		}
 	}
 	
+}
+/******************************************************************************/
+
+uint8_t read_strn(uint8_t xpos, uint8_t ypos, PGM_P charset, char * str, uint8_t n){
+	return read_strnwhile(xpos, ypos, charset, str, n, NULL, NULL);
 }
 
 /******************************************************************************/
