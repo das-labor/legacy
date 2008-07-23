@@ -5,12 +5,14 @@ OBJ	    = keys.o main.o debug_tools.o uart.o debug.o 24CBlockDev.o 24Cxxx.o \
   i2c.o i2c_tools.o comm.o sha256-asm.o hmac-sha256.o reqvalidator.o \
   action.o shabea.o ticketDB.o flmDB.o fairrnd.o rtc.o enc2E24C.o hwrnd.o \
   lop.o lop_debug.o reset_counter.o base64_enc.o selfdestruct.o i2c_printer.o \
-  iDP3540.o qport.o xtea-asm.o entropium.o memxor.o
+  iDP3540.o qport.o xtea-asm.o entropium.o memxor.o system_stats.o
+  
 MCU_TARGET     = atmega644
 OPTIMIZE       = -Os -mno-tablejump
 DEBUG	   = -gstabs
 DEFS	   = -D$(call uc,$(MCU_TARGET))
 LIBS	   =
+DEP_DIR    = .deps/
 
 # You should not have to change anything below here.
 
@@ -19,9 +21,9 @@ CC	     = avr-gcc
 # Override is only needed by avr-lib build system.
 
 override LDFLAGS       = -Wl,-Map,$(PRG).map
-override CFLAGS        = -MMD -g -pedantic -std=gnu99 -Wall -Wstrict-prototypes $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -morder1
+override CFLAGS        = -MMD -MF$(DEP_DIR)$(patsubst %.c,%.d,$<) -g -pedantic -std=gnu99 -Wall -Wstrict-prototypes $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -morder1
 # -fnew-ra
-override LDFLAGS       = -Wl,-Map,$(PRG).map
+override LDFLAGS       = -Wl,-Map,$(PRG).map -mmcu=$(MCU_TARGET) -morder1 -Wall
 override ASFLAGS	   = -mmcu=$(MCU_TARGET)
 
 OBJCOPY	= avr-objcopy
@@ -38,14 +40,22 @@ LOCK_CMD = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB0 -c avr911 -U lock:w:0xfc:m
 all: $(PRG).elf lst text eeprom
 
 $(PRG).elf: $(OBJ)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-host-test:
-	gcc -o sha256_host -g -D__LITTLE_ENDIAN__ -DHOST_TEST main.c sha256.c
+%.o: %.c
+	@echo [gcc] $@
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+%.o: %.S
+	@echo [gas] $@
+	@$(CC) $(ASFLAGS) -c -o $@ $<
 
 clean:
 	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak 
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
+
+depclean: clean
+	rm -rf $(DEP_DIR)*.d
 
 lst:  $(PRG).lst
 
@@ -117,7 +127,7 @@ pdf: $(PRG).pdf
 %.png: %.fig
 	$(FIG2DEV) -L png $< $@
 
-DEPS := $(wildcard *.d)
+DEPS := $(wildcard $(DEP_DIR)*.d)
 ifneq ($(DEPS),)
 include $(DEPS)
 endif

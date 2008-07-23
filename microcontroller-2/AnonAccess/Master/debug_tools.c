@@ -57,8 +57,10 @@ extern lop_ctx_t lop0;
  *  uart_putbyte()
  * **************************************************/
 void dbg_putbyte(uint8_t b){
+	#if DC
 	char table[]={'0','1','2','3','4','5','6','7',
 				  '8','9','A','B','C','D','E','F'};
+	#endif
 	DC(table[b>>4]);
 	DC(table[b&0xF]);
 }
@@ -522,8 +524,10 @@ void console_setadmin(void){
 	userflags_t sf,cf;
 	char * nick;
 	
-	sf.admin = sf.exist = sf.locked = sf.notify_lostadmin = sf.reserved = 0;
-	cf.admin = cf.exist = cf.locked = cf.notify_lostadmin = cf.reserved = 0;
+	sf.admin = sf.exist = sf.locked = sf.notify_lostadmin = sf.anonymous = 
+	           sf.force_admin_pin = sf.force_normal_pin = sf.lock_nick = 0;
+	cf.admin = cf.exist = cf.locked = cf.notify_lostadmin = cf.anonymous = 
+	           cf.force_admin_pin = cf.force_normal_pin = cf.lock_nick = 0;
 	sf.admin = 1;
 	console_getnick(&nick);
 	modify_account(nick, sf, cf);
@@ -537,8 +541,10 @@ void console_clearadmin(void){
 	uint8_t key[32];
 	uint8_t hmac[32];
 	
-	sf.admin = sf.exist = sf.locked = sf.notify_lostadmin = sf.reserved = 0;
-	cf.admin = cf.exist = cf.locked = cf.notify_lostadmin = cf.reserved = 0;
+	sf.admin = sf.exist = sf.locked = sf.notify_lostadmin = sf.anonymous = 
+	           sf.force_admin_pin = sf.force_normal_pin = sf.lock_nick = 0;
+	cf.admin = cf.exist = cf.locked = cf.notify_lostadmin = cf.anonymous = 
+	           cf.force_admin_pin = cf.force_normal_pin = cf.lock_nick = 0;
 	cf.admin = 1;
 	console_getnick(&nick);
 	load_nickkey(key);

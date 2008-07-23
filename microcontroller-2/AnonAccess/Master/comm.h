@@ -12,13 +12,13 @@
 #define MSGID_SESSION_INIT  0
 #define MSGID_ADD_AB        1
 #define MSGID_AB_REPLY      2
-#define MSGID_AB_PINREQ     8
-#define MSGID_AB_PINREPLY   9
 #define MSGID_AB_ERROR      3
 #define MSGID_ACTION        4
 #define MSGID_ACTION_REPLY  5
 #define MSGID_PRINT         6
 #define MSGID_ADD_BOOTSTRAP 7
+#define MSGID_AB_PINREQ     8
+#define MSGID_AB_PINREPLY   9
 
 #define MSGID_MAX  9
 #define MSGID_CNT (MSGID_MAX+1)
@@ -32,6 +32,7 @@
 #define AB_ERROR_TOO_MANY_PARTICIPANTS  6
 #define AB_ERROR_TIMEOUT    7
 #define AB_ERROR_AUTHBLOCK  8
+#define AB_ERROR_AUTHBLOCK_TIMEOUT 11
 #define AB_ERROR_PINTIMEOUT 9
 #define AB_ERROR_PIN       10
 

@@ -27,6 +27,9 @@
 #define SESSION_MAX_IDLE (10LL * 60LL * 1000LL)     /* 10 minutes */
 #define SESSION_MAX_DURATION (45LL * 60LL * 1000LL) /* 45 minutes */
 
+#define DS(a) (send_str(TERMINALUNIT_ID, PSTR(a), STR_CLASS_DBG_P))	
+
+
 #ifndef MAX
  #define MAX(a,b) (((a)>(b))?(a):(b))
 #endif
@@ -78,7 +81,7 @@ void session_error_reply(uint8_t msg_id, uint8_t reason, master_state_t* mstate)
 	msg[0] = mstate->terminal;
 	msg[1] = MASTERUNIT_ID;
 	msg[2] = msg_id;
-	msg[4] = reason;
+	msg[3] = reason;
 	lop_sendmessage(&lop1, 4, msg);
 }
 
@@ -86,93 +89,126 @@ uint8_t session_addAB(uint16_t length, uint8_t* msg, master_state_t* mstate){
 	authblock_t* ab;
 	uint8_t req_admin=0;
 	uint8_t i;
-	
+
+	DS("add AB");	
 	ab=(authblock_t*)(msg+3);
-	if(length==3+sizeof(authblock_t)+1)
+//	if(length==3+sizeof(authblock_t)+1)
 		req_admin=(msg[length-1])?1:0;
 	if(!mstate->in_session)
 		return 1; /* DROP */
+	DS("(1/n)");	
+
 	if(gettimestamp()-mstate->starttime > SESSION_MAX_DURATION){
 		session_error_reply(MSGID_AB_ERROR, AB_ERROR_TIMEOUT, mstate);
 		mstate->in_session = 0;
 		return 4;
 	}
+	DS("(2/n)");	
+
 	if(gettimestamp()-mstate->lasttime > SESSION_MAX_IDLE){
 		session_error_reply(MSGID_AB_ERROR, AB_ERROR_TIMEOUT, mstate);
 		mstate->in_session = 0;
 		return 5;
 	}	
+	DS("(3/n)");	
 	mstate->lasttime=gettimestamp();
 	if(mstate->users==SESSION_MAX_PARTICIPANTS){
 		session_error_reply(MSGID_AB_ERROR, AB_ERROR_TOO_MANY_PARTICIPANTS, mstate);
 		return 2;
 	}
+	DS("(4/n)");	
+	
 	/* check if user is already participating */
-	for(i=0; i<mstate->users; ++i){
+	for(i=0; i<(mstate->users); ++i){
 		if(mstate->participants[i] == ab->uid){
 			session_error_reply(MSGID_AB_ERROR, AB_ERROR_ALLREADY_PARTICIPATING, mstate);
 			return 3;
 		}
 	}
+	uint16_t tmp_i;
+	DS("(5/n)");	
+	for(tmp_i=0; tmp_i<3000; ++tmp_i){
+		_delay_ms(1);
+	}
 	authcredvalid_state_t avst;
-	switch(avst=check_authblock(ab)){
+	avst = check_authblock(ab);
+	DS("(5.1/n)");	
+	switch(avst){
 		case invalidtimeout_cred:
+			DS("(5.2/n)");	
+			session_error_reply(MSGID_AB_ERROR, AB_ERROR_AUTHBLOCK_TIMEOUT, mstate);
+			return 6;
 		case invalid_cred:
+			DS("(5.2/n)");	
 			session_error_reply(MSGID_AB_ERROR, AB_ERROR_AUTHBLOCK, mstate);
 			return 5;
 		default:
 			break;
 	}
+	DS("(6/n)");		
 	/* send back new AB */
 	msg[0] = mstate->terminal;
 	msg[1] = MASTERUNIT_ID;
 	msg[2] = MSGID_AB_REPLY;
-	lop_sendmessage(&lop1, 3+sizeof(authblock_t), msg);
+	msg[3+sizeof(authblock_t)] = (avst==valid_user_lostadm)?1:0; 
+	lop_sendmessage(&lop1, 3+sizeof(authblock_t)+1, msg);
+	DS("(7/n)");	
 	if(pin_required(ab->uid, req_admin)){
 		msg[2] = MSGID_AB_PINREQ;
 		lop_sendmessage(&lop1, 3, msg);
+		DS("(7.1/n)");	
 		if(waitformessage(10L*60L*1000L)){ /* 10 minute to enter the pin */
 			/* pin not given, timeout occured */
 			session_error_reply(MSGID_AB_ERROR, AB_ERROR_PINTIMEOUT, mstate);
 			return 6;
 		}
+		DS("(7.2/n)");	
 		if(msg_length!=3+sizeof(sha256_hash_t)){
 			session_error_reply(MSGID_AB_ERROR, AB_ERROR_WONTTELL, mstate);
 			freemsg();
 			return 7;
 		}
+		DS("(7.3/n)");	
 		if(((uint8_t*)msg_data)[2]!=MSGID_AB_PINREPLY){
 			session_error_reply(MSGID_AB_ERROR, AB_ERROR_WONTTELL, mstate);
 			freemsg();
 			return 8;
 		}
+		DS("(7.4/n)");	
 		mstate->lasttime=gettimestamp();
 		if(!check_pin(ab, (uint8_t*)msg_data+3)){
 			session_error_reply(MSGID_AB_ERROR, AB_ERROR_PIN, mstate);
 			freemsg();
 			return 9;
 		}
+		DS("(7.5/n)");	
 		freemsg();	
 	}
-	/* may implement "admin lost notification" here */
+	DS("(8/n)");	
 	mstate->participants[mstate->users++]=ab->uid;
 	if(req_admin && (avst==valid_admin)){
+		DS("(8.1/n)");	
 		mstate->admins++;
 		mstate->admin_status[(mstate->users-1)/8] |= 1<<((mstate->users-1)%8);
 	}
+	DS("(9/n)");	
+	
 	return 0;
 }
 
 uint8_t session_addAB_validate(uint16_t length, uint8_t* msg){
-	/* if no <admin/user> flag is given, maybe removed later */
-	if(length==3+sizeof(authblock_t))
-		return 0;
+	DS("AB preval");
 	if(length==3+sizeof(authblock_t)+1)
 		return 0;
 	return 1;	
 }
 
 uint8_t session_action(uint16_t length, uint8_t* msg, master_state_t* mstate){
+	uint8_t reply[5];
+	reply[0] = msg[1];
+	reply[1] = MASTERUNIT_ID;
+	reply[2] = MSGID_ACTION_REPLY;
+	reply[3] = msg[3];
 	if(!mstate->in_session)
 		return 1;
 	if((gettimestamp() > mstate->starttime + SESSION_MAX_DURATION) ||
@@ -185,10 +221,10 @@ uint8_t session_action(uint16_t length, uint8_t* msg, master_state_t* mstate){
 	if(final_action(action)){
 		mstate->in_session = 0;
 	}
-	msg[2]=MSGID_ACTION_REPLY;
+//	msg[2]=MSGID_ACTION_REPLY;
 	if(check_permissions(mstate->users, mstate->admins, action)==false){
-		msg[4]=NOTDONE;
-		lop_sendmessage(&lop1, 5, msg);
+		reply[4]=NOTDONE;
+		lop_sendmessage(&lop1, 5, reply);
 	}
 	/* now we can perform the action */
 	if(action!=adduser){
@@ -204,12 +240,12 @@ uint8_t session_action(uint16_t length, uint8_t* msg, master_state_t* mstate){
 			default: /* ERROR */ break;
 		}
 		msg[4]=DONE;
-		lop_sendmessage(&lop1, 5, msg);
+		lop_sendmessage(&lop1, 5, reply);
 		return 0;
 	} else {
 		char name[msg[4]+1]; 
 		uint8_t addreply[5+sizeof(authblock_t)]={
-			mstate->terminal,
+			msg[1],
 			MASTERUNIT_ID,
 			MSGID_ACTION_REPLY,
 			ACTION_ADDUSER,
@@ -224,6 +260,11 @@ uint8_t session_action(uint16_t length, uint8_t* msg, master_state_t* mstate){
 }
 
 uint8_t session_action_validate(uint16_t length, uint8_t* msg){
+	DS("action preval");
+	uint16_t tmp_i;
+	for(tmp_i=0; tmp_i<3000; ++tmp_i){
+		_delay_ms(1);
+	}
 	/* if no <admin/user> flag is given, maybe removed later */
 	if(length<4)
 		return 1;
@@ -268,12 +309,13 @@ uint8_t session_action_validate(uint16_t length, uint8_t* msg){
 		if(msg[length-1] > 3)
 			return 12;
 			
+		DS("ok");	
 		return 0;
 	}
 	return 1;	
 }
 
-uint8_t session_getbootstrap(uint16_t length, uint8_t* msg){
+uint8_t session_getbootstrap(uint16_t length, uint8_t* msg, master_state_t* mstate){
 	uint8_t reply[5+sizeof(authblock_t)];
 	char* nick;
 	uint8_t nick_len;
@@ -292,6 +334,7 @@ uint8_t session_getbootstrap(uint16_t length, uint8_t* msg){
 	send_str(TERMINALUNIT_ID, PSTR("done (2/n)"), STR_CLASS_INFO_P);
 	lop_sendmessage(&lop1, 5+sizeof(authblock_t), reply);
 	send_str(TERMINALUNIT_ID, PSTR("done (n/n)"), STR_CLASS_INFO_P);
+	session_reset(0,NULL,mstate);
 	return 0;
 }
 
@@ -338,6 +381,8 @@ command_func_pt msg_command_table[MSGID_CNT] PROGMEM = {
 	NULL,
 	NULL,
 	session_getbootstrap,
+	NULL,
+	NULL
 };
 
 prevalid_func_pt msg_prevalid_table[MSGID_CNT] PROGMEM = {
