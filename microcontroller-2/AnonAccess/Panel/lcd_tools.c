@@ -38,6 +38,21 @@ void lcd_write(uint8_t data, uint8_t rs){
 	lcd_flash_e ();
 	_delay_us (1);
 }
+void lcd_cursor(uint8_t blink, uint8_cursor){
+	uint8_t i;
+	i = 1<<2 | cursor<<1 | blink;
+	i &= 0x07;
+	i |= 0x08;
+	lcd_write(i,0);
+}
+
+void lcd_display_onoff(uint8_t onoff){
+	uint8_t i;
+	i = onoff?_BV(2):0;
+	i &= 0x07;
+	i |= 0x08;
+	lcd_write(i,0);
+}
 
 void lcd_control(uint8_t display, uint8_t cursor, uint8_t blink){
 	uint8_t i;

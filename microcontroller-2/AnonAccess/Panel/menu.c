@@ -18,12 +18,11 @@
 #include "keypad_charset.h"
 #include "ui_tests.h"
 #include "logs.h"
+#include "factorizefun.h"
 #include <stdint.h>
 #include <util/delay.h>
 
 extern lop_ctx_t lop1;
-
-authblock_t ab;
 
 /******************************************************************************/
 
@@ -112,6 +111,21 @@ void error_display(PGM_P str){
 	return;
 }
 
+void errorn_display(PGM_P str, uint8_t n){
+//	lcd_cls();
+	uint8_t i;
+	ui_drawframe(1,2,LCD_WIDTH, LCD_HEIGHT-1, '#');
+	lcd_gotopos(3,2);
+	for(i=0; i<LCD_WIDTH-2; ++i)
+		lcd_writechar(' ');
+	lcd_gotopos(3,3);	
+	lcd_writestr_P(str);
+	lcd_gotopos(3,LCD_WIDTH-3);
+	lcd_hexdump(&n, 1);
+	ui_waitforkey('F');
+	return;
+}
+
 #define PIN_MAX_LEN  16
 #define NAME_MAX_LEN 12
 
@@ -129,9 +143,6 @@ void getandsubmitpin(void){
 }
 
 void req_authblock(void){
-//	char name[NAME_MAX_LEN+2];
-//	char pin[PIN_MAX_LEN+2];
-//	char pincheck[PIN_MAX_LEN+2];
 	char* str_name;
 	char* str_pina;
 	char* str_pinb;
@@ -282,9 +293,9 @@ void read_logs(void){
 
 /******************************************************************************/
 /******************************************************************************/
-/******************************************************************************/
-
-void open_door(void){
+uint8_t login_with_card(uint8_t admin){
+	authblock_t ab;
+	
 	if(!card_inserated()){
 		lcd_cls();
 		ui_drawframe(1,1,LCD_WIDTH, LCD_HEIGHT, '*');
@@ -297,36 +308,53 @@ void open_door(void){
 		error_display(PSTR("card read error!"));
 		return;
 	}
-	init_session();
-	submit_ab(&ab);
+	submit_ab(&ab, admin);
 	if(waitformessage(TIMEOUT_DELAY)){
-		error_display(PSTR("(361) com. timeout!"));
+		error_display(PSTR("(312) com. timeout!"));
 		return;
 	}
 	if(getmsgid(msg_data)==MSGID_AB_PINREQ){
 		freemsg();
 		getandsubmitpin();
 		if(waitformessage(TIMEOUT_DELAY)){
-			error_display(PSTR("(368) com. timeout!"));
+			error_display(PSTR("(320) com. timeout!"));
 			return;
 		}
 	}
 	if(getmsgid(msg_data)==MSGID_AB_ERROR){
 		freemsg();
-		error_display(PSTR("AB ERROR!"));
+		errorn_display(PSTR("AB ERROR!"), ((uint8_t*)msg_data)[3]);
 		return;
 	}
-	if((getmsgid(msg_data)!=MSGID_AB_REPLY) || (msg_length!=3+sizeof(authblock_t))){
+	if((getmsgid(msg_data)!=MSGID_AB_REPLY) || (msg_length!=3+sizeof(authblock_t)+1)){
 		freemsg();
 		error_display(PSTR("AB strange ERROR!"));
 		return;
 	}
-	if(card_writeAB((authblock_t*)((uint8_t*)msg_data+3))==false){
+		if(card_writeAB((authblock_t*)((uint8_t*)msg_data+3))==false){
 		freemsg();
 		error_display(PSTR("card write ERROR!"));
 		return;
 	}
+	if(msg[3+sizeof(authblock_t)]!=0){
+		lcd_cls();
+		ui_drawframe(1,1,LCD_WIDTH, LCD_HEIGHT, '!');
+		ui_textwindow_P(2,2,LCD_WIDTH-2, LCD_HEIGHT, 
+		                PSTR("You lost your ADMIN privileges\n"
+		                     " hit [F] to continue."));
+	}
 	freemsg();
+	error_display(PSTR("AB fine!"));	
+	
+}
+
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+
+void open_door(void){
+	init_session();
+	login_with_card(0);
 	send_mainopen();
 	if(waitformessage(TIMEOUT_DELAY)){
 		error_display(PSTR("(386) com. timeout!"));
@@ -349,52 +377,9 @@ void open_door(void){
 }
 
 void lock_door(void){
-	if(!card_inserated()){
-		lcd_cls();
-		ui_drawframe(1,1,LCD_WIDTH, LCD_HEIGHT, '*');
-		lcd_gotopos(2,2);
-		lcd_writestr_P(PSTR("please insert card"));
-		while(!card_inserated())
-			;
-	}
-	if(card_readAB(&ab)==false){
-		lcd_cls();
-		ui_drawframe(1,1,LCD_WIDTH, LCD_HEIGHT, '#');
-		lcd_gotopos(2,3);
-		lcd_writestr_P(PSTR("card read error!"));
-		ui_waitforkey('F');
-		return;
-	}
+	
 	init_session();
-	submit_ab(&ab);
-	if(waitformessage(TIMEOUT_DELAY)){
-		error_display(PSTR("(361) com. timeout!"));
-		return;
-	}
-	if(getmsgid(msg_data)==MSGID_AB_PINREQ){
-		freemsg();
-		getandsubmitpin();
-		if(waitformessage(TIMEOUT_DELAY)){
-			error_display(PSTR("(368) com. timeout!"));
-			return;
-		}
-	}
-	if(getmsgid(msg_data)==MSGID_AB_ERROR){
-		freemsg();
-		error_display(PSTR("AB ERROR!"));
-		return;
-	}
-	if((getmsgid(msg_data)!=MSGID_AB_REPLY) || (msg_length!=3+sizeof(authblock_t))){
-		freemsg();
-		error_display(PSTR("AB strange ERROR!"));
-		return;
-	}
-	if(card_writeAB((authblock_t*)((uint8_t*)msg_data+3))==false){
-		freemsg();
-		error_display(PSTR("card write ERROR!"));
-		return;
-	}
-	freemsg();
+	login_with_card(0);
 	send_mainclose();
 	if(waitformessage(TIMEOUT_DELAY)){
 		error_display(PSTR("(386) com. timeout!"));
@@ -554,6 +539,14 @@ void write_card(void){
 	card_writeAB(&ab);
 }
 
+void system_stats(void){
+	;
+}
+
+void panel_stats(void){
+	;
+}
+
 /******************************************************************************/
 /* MENUS                                                                      */
 /******************************************************************************/
@@ -607,6 +600,41 @@ menu_t bootstrap_menu_mt[] PROGMEM = {
 	{NULL, terminator, (superp)NULL}
 };
 
+
+const char system_stats_PS[]    PROGMEM = "system stats";
+const char panel_stats_PS[]   PROGMEM = "pane stats";
+
+menu_t stat_menu_mt[] PROGMEM = {
+	{main_menu_PS, back, (superp)NULL},
+	{system_stats_PS, execute, (superp)system_stats},
+	{panel_stats_PS,  execute, (superp)panel_stats},
+	{NULL, terminator, (superp)NULL}
+};
+
+#ifdef GAMES
+
+const char play_PS[]      PROGMEM = "Play";
+const char highscore_PS[] PROGMEM = "Highscore";
+const char games_menu_PS[]      PROGMEM = "games menu";
+
+
+menu_t factorize_menu_mt[] PROGMEM = {
+	{games_menu_PS, back, (superp)NULL},
+	{play_PS, execute, (superp)factorize_play},
+	{highscore_PS, execute, (superp)factorize_showhighscore},
+	{NULL, terminator, (superp)NULL}
+};
+
+const char factorize_PS[]    PROGMEM = "factorize";
+
+menu_t games_menu_mt[] PROGMEM = {
+	{main_menu_PS, back, (superp)NULL},
+	{factorize_PS, autosubmenu, (superp)factorize_menu_mt},
+	{NULL, terminator, (superp)NULL}
+};
+
+#endif
+
 const char open_door_PS[]      PROGMEM = "open door";
 const char lock_door_PS[]      PROGMEM = "lock door";
 const char admin_menu_PS[]     PROGMEM = "admin menu";
@@ -617,9 +645,12 @@ menu_t main_menu_mt[] PROGMEM = {
 	{open_door_PS,execute, (superp)open_door},
 	{lock_door_PS,execute, (superp)lock_door},
 	{admin_menu_PS,submenu, (superp)admin_menu},
-	{statistic_menu_PS,submenu, (superp)stat_menu},
+	{statistic_menu_PS,autosubmenu, (superp)stat_menu_mt},
 	{bootstrap_menu_PS,autosubmenu, (superp)bootstrap_menu_mt},
 	{debug_menu_PS,autosubmenu, (superp)debug_menu_mt},
+#ifdef GAMES
+	{games_menu_PS,autosubmenu, (superp)games_menu_mt},
+#endif
 	{NULL, terminator, (superp)NULL}
 };
 

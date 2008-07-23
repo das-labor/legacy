@@ -71,12 +71,13 @@ void    ui_checkselect(  uint8_t xpos, uint8_t ypos, uint8_t width, uint8_t heig
 void    ui_checkselect_P(uint8_t xpos, uint8_t ypos, uint8_t width, uint8_t height, PGM_P opts, uint8_t* config);
 void    ui_menuexec(menu_t* menu);
 void    ui_drawframe(   uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, char framechar);
-void    ui_hexdump(     uint8_t xpos, uint8_t ypos, uint8_t width, uint8_t height, const void* data, uint16_t length);
+void    ui_hexdump(     uint8_t xpos, uint8_t ypos, uint8_t width, uint8_t height, const volatile void* data, uint16_t length);
 void    ui_hexdump_P(   uint8_t xpos, uint8_t ypos, uint8_t width, uint8_t height, PGM_VOID_P data, uint16_t length);
 void    ui_textwindow(  uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, char* text);
 void    ui_textwindow_P(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, PGM_P text);
 
 char    ui_waitforkeypress(void);
+char    ui_waitforkeypresswhile(void(*fpt)(void*), void* param);
 char    ui_waitforkeypresstimed(timestamp_t* tdiff);
 void    ui_waitforkey(char key);
 
@@ -84,6 +85,12 @@ uint8_t read_decimaln(uint8_t xpos, uint8_t ypos, char* str, uint8_t n);
 uint8_t read_pinn(uint8_t xpos, uint8_t ypos, char disp,char* str, uint8_t n);
 uint8_t read_hexn(uint8_t xpos, uint8_t ypos, char* str, uint8_t n);
 uint8_t read_strn(uint8_t xpos, uint8_t ypos, PGM_P charset,char * str, uint8_t n);
+uint8_t read_strnwhile(uint8_t xpos, uint8_t ypos, PGM_P charset, 
+                       char * str, uint8_t n, void(*fpt)(void*), void* param);
+
+void genaddr(uint16_t value, char* str, uint8_t len);
+void data2hex(const void* buffer, char* dest, uint8_t length);
+void data2hex_P(PGM_VOID_P buffer, char* dest, uint8_t length);
 
 void    ui_printstatusline(void);
 

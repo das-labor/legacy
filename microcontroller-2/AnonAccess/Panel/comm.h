@@ -70,6 +70,6 @@ void req_bootab(char* name, char* pin, uint16_t pinlen_B, uint8_t anon, uint8_t 
 
 void freemsg(void);
 uint8_t waitformessage(uint16_t timeout);
-uint8_t getmsgid(const void* msg);
+uint8_t getmsgid(volatile const void* msg);
 
 #endif /*COMM_H_*/

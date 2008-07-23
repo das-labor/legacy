@@ -35,14 +35,15 @@ void init_session(void){
 	lop_sendmessage(&lop1, 3, msg);
 } 
  
-void submit_ab(authblock_t * ab){
-	uint8_t msg[3+sizeof(authblock_t)]={
+void submit_ab(authblock_t * ab, uint8_t admin){
+	uint8_t msg[3+sizeof(authblock_t)+1]={
 		MASTERUNIT_ID,
 		TERMINALUNIT_ID,
 		MSGID_ADD_AB,
 		0
 	};
 	memcpy(&(msg[3]), ab, sizeof(authblock_t));
+	msg[3+sizeof(authblock_t)]=admin?1:0;
 	lop_sendmessage(&lop1, 3+sizeof(authblock_t), msg);
 }
 
@@ -121,6 +122,6 @@ void freemsg(void){
 	msg_length=0;
 }
 
-uint8_t getmsgid(const void* msg){
+uint8_t getmsgid(const volatile void* msg){
 	return ((uint8_t*)msg)[2];
 }
