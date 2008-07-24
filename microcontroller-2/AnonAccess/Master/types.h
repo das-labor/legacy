@@ -43,7 +43,13 @@ typedef enum{
 	unlockuser,
 	addadmin,
 	remadmin,
-	keymigrate
+	keymigrate,
+	locknick,
+	opennick,
+	getinfo,
+	search,
+	searchcont,
+	getstats
 } action_t;
 
 

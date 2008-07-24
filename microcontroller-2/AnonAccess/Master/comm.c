@@ -40,8 +40,11 @@
 #include "types.h"
 #include "sha256.h"
 #include "rtc.h"
+#include "ticketDB.h"
+#include "flmDB.h"
 #include "reqvalidator.h"
 #include "action.h"
+#include "system_stats.h"
 #include "comm.h"
 
 
@@ -226,11 +229,6 @@ uint8_t session_addAB_validate(uint16_t length, uint8_t* msg){
 }
 
 uint8_t session_action(uint16_t length, uint8_t* msg, master_state_t* mstate){
-	uint8_t reply[5];
-	reply[0] = msg[1];
-	reply[1] = MASTERUNIT_ID;
-	reply[2] = MSGID_ACTION_REPLY;
-	reply[3] = msg[3];
 	if(!mstate->in_session)
 		return 1;
 	if((gettimestamp() > mstate->starttime + SESSION_MAX_DURATION) ||
@@ -245,38 +243,81 @@ uint8_t session_action(uint16_t length, uint8_t* msg, master_state_t* mstate){
 	}
 //	msg[2]=MSGID_ACTION_REPLY;
 	if(check_permissions(mstate->users, mstate->admins, action)==false){
-		reply[4]=NOTDONE;
-		lop_sendmessage(&lop1, 5, reply);
+		lop_sendmessage(&lop1, 5, (uint8_t[5])
+		                {msg[1], MASTERUNIT_ID, MSGID_ACTION_REPLY, msg[3], NOTDONE});
 	}
 	/* now we can perform the action */
-	if(action!=adduser){
+	if(action!=adduser && action<getinfo){
+		uint8_t reply[5];
+		uint8_t n=0;
+		reply[0] = msg[1];
+		reply[1] = MASTERUNIT_ID;
+		reply[2] = MSGID_ACTION_REPLY;
+		reply[3] = msg[3];
+	
 		switch (action){
-			case mainopen:   main_open(); break;
-			case mainclose:  main_close(); break;
-			case keymigrate: keymigration(); break;
-			case remuser:    rem_user(msg+4); break;
-			case lockuser:   lock_user(msg+4); break;
-			case unlockuser: unlock_user(msg+4); break;
-			case addadmin:   add_admin(msg+4); break;
-			case remadmin:   rem_admin(msg+4); break;
+			case mainopen:   n=main_open(); break;
+			case mainclose:  n=main_close(); break;
+			case keymigrate: n=keymigration(); break;
+			case remuser:    n=rem_user(msg+4); break;
+			case lockuser:   n=lock_user(msg+4); break;
+			case unlockuser: n=unlock_user(msg+4); break;
+			case addadmin:   n=add_admin(msg+4); break;
+			case remadmin:   n=rem_admin(msg+4); break;
+			case locknick:   n=lock_nick(msg+4); break;
+			case opennick:   n=open_nick(msg+4); break;
+			
 			default: /* ERROR */ break;
 		}
-		msg[4]=DONE;
+		msg[4]=(n==0)?DONE:NOTDONE;
 		lop_sendmessage(&lop1, 5, reply);
 		return 0;
 	} else {
-		char name[msg[4]+1]; 
-		uint8_t addreply[5+sizeof(authblock_t)]={
-			msg[1],
-			MASTERUNIT_ID,
-			MSGID_ACTION_REPLY,
-			ACTION_ADDUSER,
-			DONE, 0};
-		memcpy(name, msg+5, msg[4]);
-		name[msg[4]] = '\0';
-		add_user(name, msg+4+msg[4]+1, msg[length-2], msg[length-1], (authblock_t*)&(addreply[5]));
-		lop_sendmessage(&lop1, 5+sizeof(authblock_t), addreply);
-		return 0;
+		if(action==adduser){
+			char name[msg[4]+1]; 
+			uint8_t addreply[5+sizeof(authblock_t)]={
+				msg[1],
+				MASTERUNIT_ID,
+				MSGID_ACTION_REPLY,
+				ACTION_ADDUSER,
+				DONE, 0};
+			memcpy(name, msg+5, msg[4]);
+			name[msg[4]] = '\0';
+			add_user(name, msg+4+msg[4]+1, msg[length-2], msg[length-1], (authblock_t*)&(addreply[5]));
+			lop_sendmessage(&lop1, 5+sizeof(authblock_t), addreply);
+			return 0;
+		}
+		if(action==getinfo){
+			/* currently not implemented */
+			lop_sendmessage(&lop1, 5, (uint8_t[5])
+		           {msg[1], MASTERUNIT_ID, MSGID_ACTION_REPLY, msg[3], NOTDONE});
+			return 0;
+		}
+		if(action==search || action==searchcont){
+			/* currently not implemented */
+			lop_sendmessage(&lop1, 5, (uint8_t[5])
+		           {msg[1], MASTERUNIT_ID, MSGID_ACTION_REPLY, msg[3], NOTDONE});
+			return 0;
+		}
+		if(action==getstats){
+			uint8_t reply[5+54];
+			reply[0]=msg[1];
+			reply[1]=MASTERUNIT_ID;
+			reply[2]=MSGID_ACTION_REPLY;
+			reply[3]=ACTION_GETSTATS;
+			reply[4]=DONE;
+			*((uint16_t*)(reply+ 5))=ticketdb_getstatMaxUsers();
+			*((uint16_t*)(reply+ 7))=ticketdb_getstatUsers();
+			*((uint16_t*)(reply+ 9))=ticketdb_getstatAdmins();
+			*((uint16_t*)(reply+11))=ticketdb_getstatLockedUsers();
+			*((uint16_t*)(reply+12))=ticketdb_getstatLockedAdmins();
+			*((uint16_t*)(reply+13))=0;
+			*((uint16_t*)(reply+15))=FLMDB_SIZE/sizeof(flmdb_entry_t);
+			*((uint64_t*)(reply+17))=gettimestamp();
+			system_hash(reply+19);
+			lop_sendmessage(&lop1, 54, reply);
+			return 0;
+		}
 	}
 	return 3;
 }
@@ -290,51 +331,67 @@ uint8_t session_action_validate(uint16_t length, uint8_t* msg){
 	/* if no <admin/user> flag is given, maybe removed later */
 	if(length<4)
 		return 1;
-	if(msg[3] == ACTION_MAINOPEN || 
-	   msg[3] == ACTION_MAINCLOSE || 
+	if(msg[3] == ACTION_MAINOPEN   || 
+	   msg[3] == ACTION_MAINCLOSE  || 
+	   msg[3] == ACTION_GETSTATS   || 
+	   msg[3] == ACTION_SEARCHCONT || 
 	   msg[3] == ACTION_KEYMIGRATION){
 		return (length==4)?0:2;
 	}
-	if(msg[3] < 0x10 || msg[3] > 0x16)
+	if(msg[3] < ACTION_MIN_N || msg[3] > ACTION_MAX_N)
 		return 3;
-	/* actions taking only uid as parameter */
-	if(msg[3] >= 0x11 && msg[3] <= 0x15){
-		if(length<6)
-			return 4;
-		if(msg[4] == 0){
-			return (length==7)?0:5;
-		} else {
-			if(5+msg[4]!=length)
-				return 6;
-			uint8_t i;
-			for(i=0; i<msg[4]; ++i){
-				if(msg[5+i]=='\0')
-					return 7;
+	uint8_t i;
+	switch(msg[3]){
+		/* actions taking only uid (num or nickname) as parameter */
+		case ACTION_REMUSER:
+		case ACTION_LOCKUSER:
+		case ACTION_UNLOCKUSER:
+		case ACTION_ADDADMIN:
+		case ACTION_REMADMIN:
+		case ACTION_GETINFO:
+			if(length<6)
+				return 4;
+		/* check if nick is given correctly */		
+		case ACTION_LOCKNICK:
+		case ACTION_OPENNICK:
+			if(length==5+msg[4]){
+				for(i=0; i<msg[4]; ++i){
+					if(msg[5+i]=='\0')
+						return 5;
+				}
+				return 0;
+			}
+			return 6;
+		case ACTION_ADDUSER:
+				if(length<7)
+					return 8;
+				if(5+msg[4]+sizeof(sha256_hash_t)+1+1!=length)
+					return 9;
+				for(i=0; i<msg[4]; ++i){
+					if(msg[5+i]=='\0')
+					return 10;
+				}
+				/* check anon/nonanon */
+				if(msg[length-2] > 1)
+					return 11;
+				/* check pinflags */
+				if(msg[length-1] > 3)
+					return 12;
+				return 0;
+		 case ACTION_SEARCH:
+		 	if(length<8)
+		 		return 13;
+		 	if(msg[4]==0 || msg[5]>1)
+		 		return 14;
+		 	if(length!=6+msg[6]);
+		 	for(i=0; i<msg[6]; ++i){
+				if(msg[7+i]=='\0')
+				return 15;
 			}
 			return 0;
-		}		
-	}
-	if(msg[3]==ACTION_ADDUSER){
-		if(length<7)
-			return 8;
-		if(5+msg[4]+sizeof(sha256_hash_t)+1+1!=length)
-			return 9;
-		uint8_t i;
-		for(i=0; i<msg[4]; ++i){
-			if(msg[5+i]=='\0')
-			return 10;
-		}
-		/* check anon/nonanon */
-		if(msg[length-2] > 1)
-			return 11;
-		/* check pinflags */
-		if(msg[length-1] > 3)
-			return 12;
-			
-		DS("ok");	
-		return 0;
-	}
-	return 1;	
+		default:
+			return 16;
+	}	
 }
 
 uint8_t session_getbootstrap(uint16_t length, uint8_t* msg, master_state_t* mstate){

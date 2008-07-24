@@ -241,7 +241,12 @@ void lcd_cursor(uint8_t blink, uint8_t cursor){
 	i = 1<<2 | cursor<<1 | blink;
 	i &= 0x07;
 	i |= 0x08;
-	lcd_write(i,0,(lcd_ptr>=2*LCD_WIDTH)?1:0);
+	if(cursor || blink){
+		lcd_write(i,0,(lcd_ptr>=2*LCD_WIDTH)?1:0);
+	} else {
+		lcd_write(i,0,0);
+		lcd_write(i,0,1);
+	}
 }
 
 void lcd_display_onoff(uint8_t onoff){

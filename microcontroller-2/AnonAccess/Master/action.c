@@ -60,16 +60,18 @@ void door_init(void){
 	PORTA = 0xD0;
 }
 
-void main_open(void){
+uint8_t main_open(void){
 	PORTA &= ~0x60;
 	PORTA |=  0x80;
 	DS("\r\n>> door opening <<");
+	return 0;
 }
 
-void main_close(void){
+uint8_t main_close(void){
 	PORTA &= ~0x80;
 	PORTA |=  0x60;
 	DS("\r\n>> door closing <<");
+	return 0;
 }
 
 void dump_authblock(authblock_t * ab){
@@ -97,59 +99,100 @@ void add_user(char * nickname, sha256_hash_t pinhash,uint8_t anon, uint8_t pinfl
 //	dump_authblock(&ab);
 }
 
-void rem_user(uint8_t* id){
+uint8_t rem_user(uint8_t* id){
 	userflags_t set, clear;
 	
 	set.admin = set.exist = set.locked = set.notify_lostadmin = 0;
 	clear.admin = clear.exist = clear.locked = clear.notify_lostadmin = 0;
 	clear.exist = 1;
 	modify_account_id(id, set, clear);
+	return 0;
 }
 
-void lock_user(uint8_t* id){
+uint8_t lock_user(uint8_t* id){
 	userflags_t set, clear;
 	
 	set.admin = set.exist = set.locked = set.notify_lostadmin = 0;
 	clear.admin = clear.exist = clear.locked = clear.notify_lostadmin = 0;
 	set.locked = 1;
 	modify_account_id(id, set, clear);
+	return 0;
 }
 
-void unlock_user(uint8_t* id){
+uint8_t unlock_user(uint8_t* id){
 	userflags_t set, clear;
 	
 	set.admin = set.exist = set.locked = set.notify_lostadmin = 0;
 	clear.admin = clear.exist = clear.locked = clear.notify_lostadmin = 0;
 	clear.locked = 1;
 	modify_account_id(id, set, clear);
+	return 0;
 }
 
-void add_admin(uint8_t* id){
+uint8_t add_admin(uint8_t* id){
 	userflags_t set, clear;
 	
 	set.admin = set.exist = set.locked = set.notify_lostadmin = 0;
 	clear.admin = clear.exist = clear.locked = clear.notify_lostadmin = 0;
 	set.admin = 1;
 	modify_account_id(id, set, clear);
+	return 0;
 }
 
-void rem_admin(uint8_t* id){
+uint8_t rem_admin(uint8_t* id){
 	userflags_t set, clear;
 	
 	set.admin = set.exist = set.locked = set.notify_lostadmin = 0;
 	clear.admin = clear.exist = clear.locked = clear.notify_lostadmin = 0;
 	clear.admin = 1;
 	modify_account_id(id, set, clear);
+	return 0;
 }
 
-void keymigration(void){
+uint8_t keymigration(void){
 	/* keymigration */
 	DS("\r\n keymigration ...");
 	do_keymigrate();
+	return 0;
 }
 
-void rem_keymigration(void){
+uint8_t rem_keymigration(void){
 	DS("\r\n rem migration keys ...");
+	return 0;
+}
+
+uint8_t lock_nick(uint8_t *nick){
+	uint8_t key[32];
+	sha256_hash_t mac;
+	userflags_t f,ff;
+	
+	load_ridkey(key);
+	hmac_sha256(mac, key, 256, nick+1, (*nick)*256);
+	delete_key(key, 32);
+	f.admin = f.anonymous = f.exist = f.force_admin_pin = f.force_normal_pin =
+	          f.locked = f.notify_lostadmin = 0;
+	f.lock_nick = 1;
+	ff = f;
+	ff.lock_nick = 0;
+	flmdb_makeentry(mac,f,ff,1);
+	return 0;
+}
+
+uint8_t open_nick(uint8_t *nick){
+	uint8_t key[32];
+	sha256_hash_t mac;
+	userflags_t f,ff;
+	
+	load_ridkey(key);
+	hmac_sha256(mac, key, 256, nick+1, (*nick)*256);
+	delete_key(key, 32);
+	f.admin = f.anonymous = f.exist = f.force_admin_pin = f.force_normal_pin =
+	          f.locked = f.notify_lostadmin = 0;
+	f.lock_nick = 1;
+	ff = f;
+	ff.lock_nick = 0;
+	flmdb_makeentry(mac,ff,f,1);
+	return 0;
 }
 
 void self_destruct(void){

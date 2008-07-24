@@ -26,8 +26,8 @@
 
  data:
   msgid==0: no data (0 byte)
-  msgid==1: AuthBlock (162 byte) [<admin/user>] (default to user)
-  msgid==2: AuthBlock (162 byte)
+  msgid==1: AuthBlock (162 byte) [<admin/user>]
+  msgid==2: AuthBlock (162 byte) <notify/nontify>
   msgid==3: error code (1 byte)
    0 - no error code (does not mean no error, means master unit won't tell)
    1 - HMAC in authblock is not ok
@@ -44,6 +44,12 @@
    0x14 - add admin    <uid>
    0x15 - rem admin    <uid>
    0x16 - keymigration <none>
+*  0x17 - lock nick    <nickname>
+*  0x18 - open nick    <nickname>
+*  0x19 - get info     <uid>
+*  0x1A - search nick  <maxnicksize> <casesensitive> <pattern>
+*  0x1B - continue search
+*  0x1C - get stats
   msgid==5: action code (1 byte) followed by data
    0x00 - main open    <done/notdone>
    0x01 - main close   <done/notdone>
@@ -54,10 +60,16 @@
    0x14 - add admin    <done/notdone>
    0x15 - rem admin    <done/notdone>
    0x16 - keymigration <done/notdone>
+*  0x17 - lock nick    <done/notdone>
+*  0x18 - open nick    <done/notdone>
+*  0x19 - get info     <done/notdone> <info>
+*  0x1A - search nick  <done/notdone> <nicklist>
+*  0x1B - continue search <done/notdone> <nicklist>
+*  0x1C - get stats    <done/notdone> <stats>
   msgid=6: print string
-*  <classification><string>
+  <classification><string>
   msgid=7: get bootstrap account (add bootstrap admin)
-*   <nickname><pinhash><anon/nonanon><pinflags>
+   <nickname><pinhash><anon/nonanon><pinflags>
    
    
 ====================================================================
@@ -81,15 +93,41 @@
 <string>:
  length - 1 byte
  string - "length" bytes
-*<classification>
+<notify/nontify>
+ 0x00   - no notifcation
+ 0x01   - notify about lost admin privileges
+<classification>
  0x00 - no classification
  0x01 - informative
  0x02 - warning
  0x03 - error
  0x04 - security
-*<pinflags>
+ 0x05 - debug
+<pinflags>
  0x00 - no pin enforcement
  0x01 - require pin for admin privileges
  0x10 - require pin for user privileges
  0x11 - require pin for everything
- 
+<casesesitive>
+ 0x00 - not case sensitive
+ 0x01 - case sensitive
+<pattern> (same as string)
+ length - 1 byte
+ string - "length" bytes (*: wildcard for any string; ?: wildcard for one charachter)
+<nicklist>
+ {<nicklistentry>} 0x00
+<nicklistentry>
+ <unid> <string:nickname> 0x00
+<unid> 
+ user numeric identifier, 2 bytes
+<maxnicksize>
+ 1 byte - maximum space available for nickname strings incl. terminating 0 byte
+<stats>
+ max_users        - 2 byte unsigned integer
+ users            - 2 byte unsigned integer
+ admins           - 2 byte unsigned integer
+ locked_users     - 2 byte unsigned integer
+ locked_admins    - 2 byte unsigned integer
+ flmdb_entrys     - 2 byte unsigned integer
+ flmdb_max_entrys - 2 byte unsigned integer
+	
