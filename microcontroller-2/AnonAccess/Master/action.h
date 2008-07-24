@@ -28,18 +28,20 @@
 #include "sha256.h"
 
 void door_init(void);
-void main_open(void);
-void main_close(void);
+uint8_t main_open(void);
+uint8_t main_close(void);
 void dump_authblock(authblock_t * ab);
 
 void add_user(char * nickname, sha256_hash_t pinhash,uint8_t anon, uint8_t pinflags, authblock_t *dest);
-void rem_user(uint8_t* id);
-void lock_user(uint8_t* id);
-void unlock_user(uint8_t* id);
-void add_admin(uint8_t* id);
-void rem_admin(uint8_t* id);
-void keymigration(void);
-void rem_keymigration(void);
+uint8_t rem_user(uint8_t* id);
+uint8_t lock_user(uint8_t* id);
+uint8_t unlock_user(uint8_t* id);
+uint8_t add_admin(uint8_t* id);
+uint8_t rem_admin(uint8_t* id);
+uint8_t keymigration(void);
+uint8_t rem_keymigration(void);
+uint8_t lock_nick(uint8_t *nick);
+uint8_t open_nick(uint8_t *nick);
 void self_destruct(void);
 
 #endif /*ACTION_H_*/

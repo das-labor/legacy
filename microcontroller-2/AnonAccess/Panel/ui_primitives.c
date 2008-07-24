@@ -349,6 +349,7 @@ void ui_drawframe(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, cha
 
 /******************************************************************************/
 /******************************************************************************/
+#define UI_MENU_EXEC_DELAY 1000
 
 void ui_menuexec(menu_t* menu){
 	uint8_t n=0;
@@ -406,6 +407,17 @@ void ui_menuexec(menu_t* menu){
 				ui_menuexec((menu_t*)pgm_read_word(&(menu[(idx+selpos-2)%n].x)));
 			} else {
 				if(pgm_read_word(&(menu[(idx+selpos-2)%n].x))!=0){
+				   #ifdef UI_MENU_EXEC_DELAY
+				    lcd_cls();
+				    lcd_gotopos(2,2);
+				    lcd_writechar(LCD_RARROW);
+				    lcd_writestr_P((PGM_P)pgm_read_word(&(menu[(idx+selpos-2)%n].name)));
+				    lcd_writechar(LCD_LARROW);
+				    uint16_t tmp_i;
+				    for(tmp_i=0; tmp_i<UI_MENU_EXEC_DELAY; ++tmp_i){
+				    	_delay_ms(1);
+				    }
+				   #endif	
 					((void(*)(void))(pgm_read_word(&(menu[(idx+selpos-2)%n].x))))();
 				}else{
 					return;
@@ -718,6 +730,7 @@ void ui_textwindow_P(uint8_t posx, uint8_t posy, uint8_t width, uint8_t height, 
 uint8_t read_decimaln(uint8_t xpos, uint8_t ypos, char* str, uint8_t n){
 	uint8_t idx=0;
 	char c;
+	lcd_gotopos(ypos,xpos+idx);
 	LCD_CURSOR_ON;
 	for(;;){
 		lcd_gotopos(ypos,xpos+idx);
@@ -748,6 +761,7 @@ uint8_t read_decimaln(uint8_t xpos, uint8_t ypos, char* str, uint8_t n){
 uint8_t read_pinn(uint8_t xpos, uint8_t ypos, char disp,char* str, uint8_t n){
 	uint8_t idx=0;
 	char c;
+	lcd_gotopos(ypos,xpos+idx);
 	if(disp!=0)
 		LCD_CURSOR_ON;
 	for(;;){
@@ -845,7 +859,7 @@ uint8_t read_strnwhile(uint8_t xpos, uint8_t ypos, PGM_P charset,
 		str[0]='\0';
 		return 0;
 	}
-	
+	lcd_gotopos(ypos, xpos+idx);
 	LCD_CURSOR_ON;
 	for(;;){
 	go_on:

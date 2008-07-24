@@ -38,7 +38,7 @@
 #include "types.h"
 #include "sha256.h"
 #include "comm.h"
-
+#include "system_stats.h"
 #include "lcd_tools.h"
 
 extern lop_ctx_t lop1;
@@ -66,7 +66,7 @@ void submit_ab(authblock_t * ab, uint8_t admin){
 	};
 	memcpy(&(msg[3]), ab, sizeof(authblock_t));
 	msg[3+sizeof(authblock_t)]=admin?1:0;
-	lop_sendmessage(&lop1, 3+sizeof(authblock_t), msg);
+	lop_sendmessage(&lop1, 3+sizeof(authblock_t)+1, msg);
 }
 
 void submit_pin(char* pin, uint16_t length_B){
@@ -140,7 +140,7 @@ uint8_t waitformessage(uint16_t timeout){
 
 void freemsg(void){
 	if(msg_data)
-		free(msg_data);
+		free((void*)msg_data);
 	msg_length=0;
 }
 

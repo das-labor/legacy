@@ -326,10 +326,14 @@ uint8_t login_with_card(uint8_t admin){
 		while(!card_inserated())
 			;
 	}
+	lcd_cls();
+	lcd_writestr_P(PSTR("reading card ..."));
 	if(card_readAB(&ab)==false){
 		error_display(PSTR("card read error!"));
 		return 0;
 	}
+	lcd_cls();
+	lcd_writestr_P(PSTR("card read, data submit ..."));
 	submit_ab(&ab, admin);
 	if(waitformessage(TIMEOUT_DELAY)){
 		error_display(PSTR("(312) com. timeout!"));

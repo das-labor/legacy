@@ -79,9 +79,16 @@ bool check_permissions(uint8_t users, uint8_t admins, action_t action){
 	  {0, 2},   // remuser
 	  {0, 1},   // lockuser
 	  {0, 1},   // unlockuser
-	  {0, 2},   // addadmin
-	  {0, 2},   // remadmin
-	  {0, 3} }; // keymigration
+	  {0, 3},   // addadmin
+	  {0, 3},   // remadmin
+	  {0, 3},   // keymigration
+	  {0, 1},   // lock nick
+	  {0, 1},   // open nick
+	  {0, 1},   // get info
+	  {0, 1},   // search
+	  {0, 1},   // search continue
+	  {1, 0}    // get statistics
+	        }; 
 	return (requirement_table[action].users_req<=users 
 	     && requirement_table[action].admins_req<=admins);
 }
