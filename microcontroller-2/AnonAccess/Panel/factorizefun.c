@@ -265,12 +265,13 @@ void factorize_showhighscore(void){
 	uint8_t i,j;
 	uint16_t k;
 	uint64_t t;
-	if(!(text=malloc((LCD_WIDTH+1)*(HIGHSCORES_N+1)+1))){
+	if(!(text=malloc((LCD_WIDTH+1)*(HIGHSCORES_N+1)+2))){
 		return;
 	}
 	/* print highscore in textbuffer */
 	memset(text, ' ', (LCD_WIDTH+1)*(HIGHSCORES_N+1));
-	text[(LCD_WIDTH+1)*(HIGHSCORES_N+1)] = '\0';
+	text[(LCD_WIDTH+1)*(HIGHSCORES_N+1)] = 
+	  text[(LCD_WIDTH+1)*(HIGHSCORES_N+1)+1] = '\0';
 	memcpy_P(text+2,PSTR("factorize HIGHSCORE"), 19);
 	for(i=1; i<=HIGHSCORES_N; ++i){
 		eeprom_read_block(text+LCD_WIDTH*i, highscore_table[i-1].name, 8);

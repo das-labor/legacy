@@ -289,7 +289,7 @@ int main(void){
 	BOOTLOG_APPEND_OK;
 	
 	BOOTLOG_APPEND_P("RTC init");
-	//rtc_init();
+	rtc_init();
  	BOOTLOG_APPEND_OK;
 	
  	BOOTLOG_APPEND_P("PRNG init");

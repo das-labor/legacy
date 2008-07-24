@@ -101,6 +101,27 @@ void send_mainclose(void){
 	lop_sendmessage(&lop1, 4, msg);
 } 
 
+void send_getstat(void){
+	uint8_t msg[4]={
+		MASTERUNIT_ID,
+		TERMINALUNIT_ID,
+		MSGID_ACTION,
+		ACTION_GETSTATS
+	};
+	lop_sendmessage(&lop1, 4, msg);
+}
+
+
+void send_getinfo(void){
+	uint8_t msg[4]={
+		MASTERUNIT_ID,
+		TERMINALUNIT_ID,
+		MSGID_ACTION,
+		ACTION_GETSTATS
+	};
+	lop_sendmessage(&lop1, 4, msg);
+}
+
 void req_bootab(char* name, char* pin, uint16_t pinlen_B, uint8_t anon, uint8_t pinflags){
 	uint16_t len;
 	len = strlen(name);
