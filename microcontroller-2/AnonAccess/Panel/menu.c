@@ -52,6 +52,13 @@ extern lop_ctx_t lop1;
 #define TIMEOUT_DELAY 15000
 #define DISPLAY_TIME  3000
 
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+#define AT __FILE__ ":" TOSTRING(__LINE__)
+
+#define ERR_TIMEOUT_STR(a) "(" a ") com. timeout!"
+#define ERR_MALLOC_STR(a)  "(" a ") malloc failed!" 
+
 #include "uart.h"
 
 #ifndef MIN
@@ -177,7 +184,7 @@ void req_authblock(void){
 	str_pinb=malloc(PIN_MAX_LEN);
 	if(str_name==NULL || str_pina==NULL || str_pinb==NULL){
 		lcd_gotopos(2,1);
-		lcd_writestr_P(PSTR("ERROR: malloc(menu.c:147)"));
+		lcd_writestr_P(PSTR(ERR_MALLOC_STR(AT)));
 		uint16_t i;
 		for(i=0; i<10000; ++i){
 			_delay_ms(1);
@@ -221,11 +228,11 @@ void req_authblock(void){
 	req_bootab(str_name, str_pina, pl, anon, pinflags);
 	if((et=waitformessage(TIMEOUT_DELAY))){
 		if(et==2){
-			error_display(PSTR("malloc failed!"));
+			error_display(PSTR(ERR_MALLOC_STR(AT)));
 			return;
 		}
 		if(et==1){
-			error_display(PSTR("timeout!   "));
+			error_display(PSTR(ERR_TIMEOUT_STR(AT)));
 			return;
 		}
 		error_display(PSTR(" X ERROR! "));
@@ -336,14 +343,14 @@ uint8_t login_with_card(uint8_t admin){
 	lcd_writestr_P(PSTR("card read, data submit ..."));
 	submit_ab(&ab, admin);
 	if(waitformessage(TIMEOUT_DELAY)){
-		error_display(PSTR("(312) com. timeout!"));
+		error_display(PSTR(ERR_TIMEOUT_STR(AT)));
 		return 0;
 	}
 	if(getmsgid(msg_data)==MSGID_AB_PINREQ){
 		freemsg();
 		getandsubmitpin();
 		if(waitformessage(TIMEOUT_DELAY)){
-			error_display(PSTR("(320) com. timeout!"));
+			error_display(PSTR(ERR_TIMEOUT_STR(AT)));
 			return 0;
 		}
 	}
@@ -384,7 +391,7 @@ void open_door(void){
 		return;
 	send_mainopen();
 	if(waitformessage(TIMEOUT_DELAY)){
-		error_display(PSTR("(386) com. timeout!"));
+		error_display(PSTR(ERR_TIMEOUT_STR(AT)));
 		return;
 	}
 	if(getmsgid(msg_data)==MSGID_ACTION_REPLY && 
@@ -409,7 +416,7 @@ void lock_door(void){
 	login_with_card(0);
 	send_mainclose();
 	if(waitformessage(TIMEOUT_DELAY)){
-		error_display(PSTR("(386) com. timeout!"));
+		error_display(PSTR(ERR_TIMEOUT_STR(AT)));
 		return;
 	}
 	if(getmsgid(msg_data)==MSGID_ACTION_REPLY && 
@@ -563,7 +570,46 @@ void randomize_card(void){
 }
 
 void system_stats(void){
-	;
+	if(login_with_card(0)==0)
+		return;
+	send_getstat();
+	if(waitformessage(TIMEOUT_DELAY)){
+		error_display(PSTR(ERR_TIMEOUT_STR(AT)));
+		return;
+	}
+	if(getmsgid(msg_data)==MSGID_ACTION_REPLY && 
+	   msg_length==5+54 && ((uint8_t*)msg_data)[3]==ACTION_GETSTATS){
+		char* text;
+		text=malloc(LCD_WIDTH*11+2);
+		if(!text){
+			error_display(ERR_MALLOC_STR(AT));
+			return;
+		}
+		memset(text, ' ', LCD_WIDTH*11);
+		text[LCD_WIDTH*11]=text[LCD_WIDTH*11+1]='\0';
+		memcpy_P(text+0*LCD_WIDTH, PSTR("max users"), 9);
+		utoa(*((uint16_t*)msg_data+5), text+15+0*LCD_WIDTH, 10);
+		memcpy_P(text+1*LCD_WIDTH, PSTR("users"), 5);
+		utoa(*((uint16_t*)msg_data+7), text+15+1*LCD_WIDTH, 10);
+		memcpy_P(text+2*LCD_WIDTH, PSTR("admins"), 6);
+		utoa(*((uint16_t*)msg_data+9), text+15+2*LCD_WIDTH, 10);
+		memcpy_P(text+3*LCD_WIDTH, PSTR("locked users"), 12);
+		utoa(*((uint16_t*)msg_data+11), text+15+3*LCD_WIDTH, 10);
+		memcpy_P(text+4*LCD_WIDTH, PSTR("locked admins"), 13);
+		utoa(*((uint16_t*)msg_data+13), text+15+4*LCD_WIDTH, 10);
+		memcpy_P(text+5*LCD_WIDTH, PSTR("flmDB entrys"), 12);
+		utoa(*((uint16_t*)msg_data+15), text+15+5*LCD_WIDTH, 10);
+		memcpy_P(text+6*LCD_WIDTH, PSTR("flmDB max"),  9);
+		utoa(*((uint16_t*)msg_data+17), text+15+6*LCD_WIDTH, 10);
+		
+		
+		lcd_cls();
+		ui_textwindow(1,1,LCD_WIDTH,LCD_HEIGHT, text);
+		free(text);
+		return;
+	}
+	freemsg();
+	
 }
 
 void panel_stats(void){

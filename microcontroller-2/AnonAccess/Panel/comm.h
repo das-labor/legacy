@@ -46,15 +46,23 @@
 #define AB_ERROR_TICKET     3
 #define AB_ERROR_LOCKED     4
 
-#define ACTION_MAINOPEN    0x00
-#define ACTION_MAINCLOSE   0x01
-#define ACTION_ADDUSER     0x10
-#define ACTION_REMUSER     0x11
-#define ACTION_LOCKUSER    0x12
-#define ACTION_UNLOCKUSER  0x13
-#define ACTION_ADDADMIN    0x14
-#define ACTION_REMADMIN    0x15
+#define ACTION_MAINOPEN     0x00
+#define ACTION_MAINCLOSE    0x01
+#define ACTION_ADDUSER      0x10
+#define ACTION_REMUSER      0x11
+#define ACTION_LOCKUSER     0x12
+#define ACTION_UNLOCKUSER   0x13
+#define ACTION_ADDADMIN     0x14
+#define ACTION_REMADMIN     0x15
 #define ACTION_KEYMIGRATION 0x16
+#define ACTION_LOCKNICK     0x17
+#define ACTION_OPENNICK     0x18
+#define ACTION_GETINFO      0x19
+#define ACTION_SEARCH       0x1A
+#define ACTION_SEARCHCONT   0x1B
+#define ACTION_GETSTATS     0x1C
+#define ACTION_MIN_N        0x10
+#define ACTION_MAX_N        0x1C
 
 #define STR_CLASS_NO    0x00
 #define STR_CLASS_INFO  0x01
@@ -88,6 +96,8 @@ void submit_ab(authblock_t * ab, uint8_t admin);
 void submit_pin(char* pin, uint16_t length_B);
 void send_mainopen(void);
 void send_mainclose(void);
+void send_getstat(void);
+void send_getinfo(void);
 void req_bootab(char* name, char* pin, uint16_t pinlen_B, uint8_t anon, uint8_t pinflags);
 
 void freemsg(void);
