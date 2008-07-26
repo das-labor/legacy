@@ -1,0 +1,24 @@
+<Combine name="sermon2" fileversion="2.0">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry build="True" name="sermon2" configuration="Debug" />
+      <Entry build="True" name="Packages" configuration="" />
+      <Entry build="True" name="sermon2Translation" configuration="" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry build="True" name="sermon2" configuration="Release" />
+      <Entry build="True" name="Packages" configuration="" />
+      <Entry build="True" name="sermon2Translation" configuration="" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="sermon2" single="True">
+    <Execute type="None" entry="sermon2" />
+    <Execute type="None" entry="Packages" />
+    <Execute type="None" entry="sermon2Translation" />
+  </StartMode>
+  <Entries>
+    <Entry filename="sermon2/sermon2.mdp" />
+    <Entry filename="Packages.mdse" />
+    <Entry filename="sermon2Translation/sermon2Translation.mdse" />
+  </Entries>
+</Combine>

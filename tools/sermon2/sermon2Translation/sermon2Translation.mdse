@@ -1,0 +1,6 @@
+<CombineEntry name="sermon2Translation" fileversion="2.0" outputType="RelativeToOutput" ctype="TranslationProject">
+  <translations>
+    <Translation isoCode="en" />
+    <Translation isoCode="de" />
+  </translations>
+</CombineEntry>
