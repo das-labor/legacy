@@ -439,14 +439,14 @@ namespace JetonAdmin {
             this.button66.UseUnderline = true;
             // Container child button66.Gtk.Container+ContainerChild
             Gtk.Alignment w33 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment2.Gtk.Container+ContainerChild
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w34 = new Gtk.HBox();
             w34.Spacing = 2;
-            // Container child GtkHBox2.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w35 = new Gtk.Image();
             w35.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-save", Gtk.IconSize.Menu, 16);
             w34.Add(w35);
-            // Container child GtkHBox2.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w37 = new Gtk.Label();
             w37.LabelProp = Mono.Unix.Catalog.GetString("Auf Karte Speichern");
             w37.UseUnderline = true;

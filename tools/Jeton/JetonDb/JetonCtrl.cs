@@ -132,7 +132,6 @@ namespace JetonDb
 		}
 		
 		///////////////////////////////////////////////////////////		
-
 		public static void BuyItems(Person p, List<Artikel> list)
 		{
 		}
