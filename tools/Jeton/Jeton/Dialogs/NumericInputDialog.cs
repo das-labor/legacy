@@ -15,11 +15,13 @@ namespace Jeton
 	{
 		public decimal val = 0;
 		public bool currencyMode = true;
+		public decimal maxval = 999.99m;
 		
-		public NumericInputDialog()
+		public NumericInputDialog(string info)
 		{
 			this.Build();
 			
+			infoLabel.Markup = info;
 			Button btn;
 			uint row, col;
 			
@@ -52,19 +54,35 @@ namespace Jeton
 		}
 
 		void Update(){
-			valueLabel.Markup = "<span size=\"xx-large\"><b>" + string.Format("{0:c}", val) + "</b></span>";
-		}
-		
+			if(currencyMode){
+				valueLabel.Markup = "<span size=\"xx-large\"><b>" + string.Format("{0:c}", val) + "</b></span>";
+			}else{
+				valueLabel.Markup = "<span size=\"xx-large\"><b>" + string.Format("{0:d}", (int)val) + "</b></span>";
+			}
+		}		
 		void OnNumberClicked(object sender, EventArgs a){
+			decimal newval = val;
 			Button btn = sender as Button;
-			//Console.WriteLine(btn.Name);
-			val *= 10;
-			val += decimal.Parse (btn.Name) /100;
+			if(currencyMode){
+				//Console.WriteLine(btn.Name);
+				newval *= 10;
+				newval += decimal.Parse (btn.Name) /100;
+			}else{
+				newval *= 10;
+				newval += decimal.Parse (btn.Name);
+			}
+			if(newval <= maxval)
+				val = newval;
+			
 			Update();
 		}
 		
 		void OnBackspaceClicked(object sender, EventArgs a){
-			val = ((decimal)(int)(val*10))/100 ;
+			if(currencyMode){
+				val = ((decimal)(int)(val*10))/100 ;
+			}else{
+				val = (int)val/10;
+			}
 			Update();
 		}
 	
