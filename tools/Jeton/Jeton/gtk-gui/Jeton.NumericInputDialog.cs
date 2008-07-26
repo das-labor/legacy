@@ -13,6 +13,14 @@ namespace Jeton {
     
     public partial class NumericInputDialog {
         
+        private Gtk.VBox vbox2;
+        
+        private Gtk.Label infoLabel;
+        
+        private Gtk.Label valueLabel;
+        
+        private Gtk.Table ButtonTable;
+        
         private Gtk.Button button354;
         
         private Gtk.Button button353;
@@ -29,12 +37,47 @@ namespace Jeton {
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
             w1.BorderWidth = ((uint)(2));
+            // Container child dialog1_VBox.Gtk.Box+BoxChild
+            this.vbox2 = new Gtk.VBox();
+            this.vbox2.Name = "vbox2";
+            this.vbox2.Spacing = 6;
+            // Container child vbox2.Gtk.Box+BoxChild
+            this.infoLabel = new Gtk.Label();
+            this.infoLabel.Name = "infoLabel";
+            this.infoLabel.LabelProp = Mono.Unix.Catalog.GetString("Zahleneingabe");
+            this.infoLabel.UseMarkup = true;
+            this.vbox2.Add(this.infoLabel);
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox2[this.infoLabel]));
+            w2.Position = 0;
+            w2.Expand = false;
+            w2.Fill = false;
+            // Container child vbox2.Gtk.Box+BoxChild
+            this.valueLabel = new Gtk.Label();
+            this.valueLabel.Name = "valueLabel";
+            this.valueLabel.LabelProp = "";
+            this.valueLabel.UseMarkup = true;
+            this.vbox2.Add(this.valueLabel);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox2[this.valueLabel]));
+            w3.Position = 1;
+            w3.Expand = false;
+            w3.Fill = false;
+            // Container child vbox2.Gtk.Box+BoxChild
+            this.ButtonTable = new Gtk.Table(((uint)(4)), ((uint)(3)), true);
+            this.ButtonTable.Name = "ButtonTable";
+            this.ButtonTable.RowSpacing = ((uint)(6));
+            this.ButtonTable.ColumnSpacing = ((uint)(6));
+            this.vbox2.Add(this.ButtonTable);
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox2[this.ButtonTable]));
+            w4.Position = 2;
+            w1.Add(this.vbox2);
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(w1[this.vbox2]));
+            w5.Position = 0;
             // Internal child Jeton.NumericInputDialog.ActionArea
-            Gtk.HButtonBox w2 = this.ActionArea;
-            w2.Name = "dialog1_ActionArea";
-            w2.Spacing = 6;
-            w2.BorderWidth = ((uint)(5));
-            w2.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w6 = this.ActionArea;
+            w6.Name = "dialog1_ActionArea";
+            w6.Spacing = 6;
+            w6.BorderWidth = ((uint)(5));
+            w6.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.button354 = new Gtk.Button();
             this.button354.CanFocus = true;
@@ -43,9 +86,9 @@ namespace Jeton {
             this.button354.UseUnderline = true;
             this.button354.Label = "gtk-cancel";
             this.AddActionWidget(this.button354, -6);
-            Gtk.ButtonBox.ButtonBoxChild w3 = ((Gtk.ButtonBox.ButtonBoxChild)(w2[this.button354]));
-            w3.Expand = false;
-            w3.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w7 = ((Gtk.ButtonBox.ButtonBoxChild)(w6[this.button354]));
+            w7.Expand = false;
+            w7.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.button353 = new Gtk.Button();
             this.button353.WidthRequest = 100;
@@ -56,9 +99,9 @@ namespace Jeton {
             this.button353.UseUnderline = true;
             this.button353.Label = "gtk-ok";
             this.AddActionWidget(this.button353, -5);
-            Gtk.ButtonBox.ButtonBoxChild w4 = ((Gtk.ButtonBox.ButtonBoxChild)(w2[this.button353]));
-            w4.Position = 1;
-            w4.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w8 = ((Gtk.ButtonBox.ButtonBoxChild)(w6[this.button353]));
+            w8.Position = 1;
+            w8.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
