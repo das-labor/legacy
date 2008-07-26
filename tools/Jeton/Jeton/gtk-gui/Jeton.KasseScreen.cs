@@ -148,6 +148,7 @@ namespace Jeton {
                 this.Child.ShowAll();
             }
             this.Show();
+            this.errorBtn.Clicked += new System.EventHandler(this.OnFehlbetragClicked);
         }
     }
 }
