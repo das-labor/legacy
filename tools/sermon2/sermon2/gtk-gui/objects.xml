@@ -1,0 +1,19 @@
+<objects>
+  <object type="sermon2.hexview" palette-category="sermon2" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups>
+      <itemgroup label="hexview Properties">
+        <property name="MainFont" />
+        <property name="YAdj" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
+  <object type="sermon2.TaggerConf" palette-category="sermon2" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="sermon2.TaggerDataConf" palette-category="sermon2" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+</objects>
