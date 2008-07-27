@@ -61,15 +61,15 @@ namespace JetonAdmin {
         
         private Gtk.VBox vbox3;
         
-        private Gtk.CheckButton cardRoleLaborant;
+        private Gtk.CheckButton cardPermLaborant;
         
         private Gtk.CheckButton cardRoleDoor;
         
-        private Gtk.CheckButton cardRoleEscrow;
+        private Gtk.CheckButton cardPermEscrow;
         
-        private Gtk.CheckButton cardRoleCreator;
+        private Gtk.CheckButton cardPermCreator;
         
-        private Gtk.CheckButton cardRoleGod;
+        private Gtk.CheckButton cardPermGod;
         
         private Gtk.HButtonBox hbuttonbox2;
         
@@ -83,9 +83,11 @@ namespace JetonAdmin {
         
         private Gtk.HButtonBox hbuttonbox7;
         
-        private Gtk.Button button66;
+        private Gtk.Button writeToCardBtn;
         
         private Gtk.Button undoBtn;
+        
+        private Gtk.Button saveBtn;
         
         private Gtk.HButtonBox hbuttonbox8;
         
@@ -314,19 +316,20 @@ namespace JetonAdmin {
             this.vbox3.Name = "vbox3";
             this.vbox3.Spacing = 6;
             // Container child vbox3.Gtk.Box+BoxChild
-            this.cardRoleLaborant = new Gtk.CheckButton();
-            this.cardRoleLaborant.CanFocus = true;
-            this.cardRoleLaborant.Name = "cardRoleLaborant";
-            this.cardRoleLaborant.Label = Mono.Unix.Catalog.GetString("Laborant");
-            this.cardRoleLaborant.DrawIndicator = true;
-            this.cardRoleLaborant.UseUnderline = true;
-            this.vbox3.Add(this.cardRoleLaborant);
-            Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.vbox3[this.cardRoleLaborant]));
+            this.cardPermLaborant = new Gtk.CheckButton();
+            this.cardPermLaborant.CanFocus = true;
+            this.cardPermLaborant.Name = "cardPermLaborant";
+            this.cardPermLaborant.Label = Mono.Unix.Catalog.GetString("Laborant");
+            this.cardPermLaborant.DrawIndicator = true;
+            this.cardPermLaborant.UseUnderline = true;
+            this.vbox3.Add(this.cardPermLaborant);
+            Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.vbox3[this.cardPermLaborant]));
             w21.Position = 0;
             w21.Expand = false;
             w21.Fill = false;
             // Container child vbox3.Gtk.Box+BoxChild
             this.cardRoleDoor = new Gtk.CheckButton();
+            this.cardRoleDoor.Sensitive = false;
             this.cardRoleDoor.CanFocus = true;
             this.cardRoleDoor.Name = "cardRoleDoor";
             this.cardRoleDoor.Label = Mono.Unix.Catalog.GetString("Türöffner");
@@ -338,38 +341,39 @@ namespace JetonAdmin {
             w22.Expand = false;
             w22.Fill = false;
             // Container child vbox3.Gtk.Box+BoxChild
-            this.cardRoleEscrow = new Gtk.CheckButton();
-            this.cardRoleEscrow.CanFocus = true;
-            this.cardRoleEscrow.Name = "cardRoleEscrow";
-            this.cardRoleEscrow.Label = Mono.Unix.Catalog.GetString("Treuhänder");
-            this.cardRoleEscrow.DrawIndicator = true;
-            this.cardRoleEscrow.UseUnderline = true;
-            this.vbox3.Add(this.cardRoleEscrow);
-            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.vbox3[this.cardRoleEscrow]));
+            this.cardPermEscrow = new Gtk.CheckButton();
+            this.cardPermEscrow.CanFocus = true;
+            this.cardPermEscrow.Name = "cardPermEscrow";
+            this.cardPermEscrow.Label = Mono.Unix.Catalog.GetString("Treuhänder");
+            this.cardPermEscrow.DrawIndicator = true;
+            this.cardPermEscrow.UseUnderline = true;
+            this.vbox3.Add(this.cardPermEscrow);
+            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.vbox3[this.cardPermEscrow]));
             w23.Position = 2;
             w23.Expand = false;
             w23.Fill = false;
             // Container child vbox3.Gtk.Box+BoxChild
-            this.cardRoleCreator = new Gtk.CheckButton();
-            this.cardRoleCreator.CanFocus = true;
-            this.cardRoleCreator.Name = "cardRoleCreator";
-            this.cardRoleCreator.Label = Mono.Unix.Catalog.GetString("(Karten-) Erzeuger");
-            this.cardRoleCreator.DrawIndicator = true;
-            this.cardRoleCreator.UseUnderline = true;
-            this.vbox3.Add(this.cardRoleCreator);
-            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.vbox3[this.cardRoleCreator]));
+            this.cardPermCreator = new Gtk.CheckButton();
+            this.cardPermCreator.CanFocus = true;
+            this.cardPermCreator.Name = "cardPermCreator";
+            this.cardPermCreator.Label = Mono.Unix.Catalog.GetString("(Karten-) Erzeuger");
+            this.cardPermCreator.DrawIndicator = true;
+            this.cardPermCreator.UseUnderline = true;
+            this.vbox3.Add(this.cardPermCreator);
+            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.vbox3[this.cardPermCreator]));
             w24.Position = 3;
             w24.Expand = false;
             w24.Fill = false;
             // Container child vbox3.Gtk.Box+BoxChild
-            this.cardRoleGod = new Gtk.CheckButton();
-            this.cardRoleGod.CanFocus = true;
-            this.cardRoleGod.Name = "cardRoleGod";
-            this.cardRoleGod.Label = Mono.Unix.Catalog.GetString("Gott");
-            this.cardRoleGod.DrawIndicator = true;
-            this.cardRoleGod.UseUnderline = true;
-            this.vbox3.Add(this.cardRoleGod);
-            Gtk.Box.BoxChild w25 = ((Gtk.Box.BoxChild)(this.vbox3[this.cardRoleGod]));
+            this.cardPermGod = new Gtk.CheckButton();
+            this.cardPermGod.CanFocus = true;
+            this.cardPermGod.Name = "cardPermGod";
+            this.cardPermGod.Label = Mono.Unix.Catalog.GetString("Gott");
+            this.cardPermGod.Active = true;
+            this.cardPermGod.DrawIndicator = true;
+            this.cardPermGod.UseUnderline = true;
+            this.vbox3.Add(this.cardPermGod);
+            Gtk.Box.BoxChild w25 = ((Gtk.Box.BoxChild)(this.vbox3[this.cardPermGod]));
             w25.PackType = ((Gtk.PackType)(1));
             w25.Position = 4;
             w25.Expand = false;
@@ -431,13 +435,13 @@ namespace JetonAdmin {
             this.hbuttonbox7.Name = "hbuttonbox7";
             this.hbuttonbox7.Spacing = 20;
             this.hbuttonbox7.BorderWidth = ((uint)(10));
-            this.hbuttonbox7.LayoutStyle = ((Gtk.ButtonBoxStyle)(3));
+            this.hbuttonbox7.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child hbuttonbox7.Gtk.ButtonBox+ButtonBoxChild
-            this.button66 = new Gtk.Button();
-            this.button66.CanFocus = true;
-            this.button66.Name = "button66";
-            this.button66.UseUnderline = true;
-            // Container child button66.Gtk.Container+ContainerChild
+            this.writeToCardBtn = new Gtk.Button();
+            this.writeToCardBtn.CanFocus = true;
+            this.writeToCardBtn.Name = "writeToCardBtn";
+            this.writeToCardBtn.UseUnderline = true;
+            // Container child writeToCardBtn.Gtk.Container+ContainerChild
             Gtk.Alignment w33 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w34 = new Gtk.HBox();
@@ -448,13 +452,13 @@ namespace JetonAdmin {
             w34.Add(w35);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w37 = new Gtk.Label();
-            w37.LabelProp = Mono.Unix.Catalog.GetString("Auf Karte Speichern");
+            w37.LabelProp = Mono.Unix.Catalog.GetString("Auf Karte schreiben");
             w37.UseUnderline = true;
             w34.Add(w37);
             w33.Add(w34);
-            this.button66.Add(w33);
-            this.hbuttonbox7.Add(this.button66);
-            Gtk.ButtonBox.ButtonBoxChild w41 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox7[this.button66]));
+            this.writeToCardBtn.Add(w33);
+            this.hbuttonbox7.Add(this.writeToCardBtn);
+            Gtk.ButtonBox.ButtonBoxChild w41 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox7[this.writeToCardBtn]));
             w41.Expand = false;
             w41.Fill = false;
             // Container child hbuttonbox7.Gtk.ButtonBox+ButtonBoxChild
@@ -469,19 +473,31 @@ namespace JetonAdmin {
             w42.Position = 1;
             w42.Expand = false;
             w42.Fill = false;
-            this.vbox6.Add(this.hbuttonbox7);
-            Gtk.Box.BoxChild w43 = ((Gtk.Box.BoxChild)(this.vbox6[this.hbuttonbox7]));
-            w43.Position = 7;
+            // Container child hbuttonbox7.Gtk.ButtonBox+ButtonBoxChild
+            this.saveBtn = new Gtk.Button();
+            this.saveBtn.CanFocus = true;
+            this.saveBtn.Name = "saveBtn";
+            this.saveBtn.UseStock = true;
+            this.saveBtn.UseUnderline = true;
+            this.saveBtn.Label = "gtk-save";
+            this.hbuttonbox7.Add(this.saveBtn);
+            Gtk.ButtonBox.ButtonBoxChild w43 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox7[this.saveBtn]));
+            w43.Position = 2;
             w43.Expand = false;
             w43.Fill = false;
+            this.vbox6.Add(this.hbuttonbox7);
+            Gtk.Box.BoxChild w44 = ((Gtk.Box.BoxChild)(this.vbox6[this.hbuttonbox7]));
+            w44.Position = 7;
+            w44.Expand = false;
+            w44.Fill = false;
             // Container child vbox6.Gtk.Box+BoxChild
             this.hbuttonbox8 = new Gtk.HButtonBox();
             this.hbuttonbox8.Name = "hbuttonbox8";
             this.vbox6.Add(this.hbuttonbox8);
-            Gtk.Box.BoxChild w44 = ((Gtk.Box.BoxChild)(this.vbox6[this.hbuttonbox8]));
-            w44.Position = 8;
-            w44.Expand = false;
-            w44.Fill = false;
+            Gtk.Box.BoxChild w45 = ((Gtk.Box.BoxChild)(this.vbox6[this.hbuttonbox8]));
+            w45.Position = 8;
+            w45.Expand = false;
+            w45.Fill = false;
             this.hpaned1.Add(this.vbox6);
             this.Add(this.hpaned1);
             if ((this.Child != null)) {
@@ -490,10 +506,16 @@ namespace JetonAdmin {
             this.Show();
             this.button1.Clicked += new System.EventHandler(this.OnCardAdd);
             this.cardDeleteBtn.Clicked += new System.EventHandler(this.OnCardDelete);
+            this.cardPermLaborant.Clicked += new System.EventHandler(this.OnRoleBtnClicked);
+            this.cardRoleDoor.Clicked += new System.EventHandler(this.OnRoleBtnClicked);
+            this.cardPermEscrow.Clicked += new System.EventHandler(this.OnRoleBtnClicked);
+            this.cardPermCreator.Clicked += new System.EventHandler(this.OnRoleBtnClicked);
+            this.cardPermGod.Clicked += new System.EventHandler(this.OnRoleBtnClicked);
             this.cardNameEntry.Changed += new System.EventHandler(this.OnChanged);
             this.cardEscrowEntry.Changed += new System.EventHandler(this.OnChanged);
             this.cardCreditEntry.Changed += new System.EventHandler(this.OnChanged);
             this.undoBtn.Clicked += new System.EventHandler(this.OnUndoClicked);
+            this.saveBtn.Clicked += new System.EventHandler(this.OnSaveClicked);
         }
     }
 }

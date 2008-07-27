@@ -11,19 +11,11 @@ namespace JetonDb
 		/// <summary>
 		/// Choose temporary file for unit test database operations 
 		/// </summary>
-		[SetUp]	public void SetUp()
+		public void NewDb()
 		{
 			// Choose a temporary Database
 			string path = Path.GetTempFileName();
-			JetonCtrl.DbPath = path;
-		}
-		
-		/// <summary>
-		/// Delete temporary database
-		/// </summary>
-		[TearDown] public void TearDown()
-		{
-			File.Delete( JetonCtrl.DbPath );
+			JetonCtrl.Open( path );
 		}
 		
 		/// <summary>
@@ -31,6 +23,8 @@ namespace JetonDb
 		/// </summary>
 		[Test] public void CreateAndSavePersons()
 		{
+			NewDb();
+			
 			Person p1 = JetonCtrl.CreatePerson();
 			p1.Name = "User 1";
 			JetonCtrl.SavePerson(p1);
@@ -38,13 +32,59 @@ namespace JetonDb
 			Person p2 = JetonCtrl.CreatePerson();
 			p2.Name = "User 2";
 			JetonCtrl.SavePerson(p2);
+			
+			List<Person> list = JetonCtrl.GetAllPersons();
+			Assert.AreEqual( list.Count, 2 );
+			foreach( Person p in list ) {
+				Console.WriteLine( p ); 
+			}
 		}
+		
+		[Test] public void TestPersonPermissions()
+		{
+			NewDb();
+			
+			// create & save person
+			Person p1 = JetonCtrl.CreatePerson();
+			p1.Name = "Admin";
+			p1.Permissions.Add( Perm.Laborant );
+			Console.WriteLine( "permisstions: {0:x}", p1.Permissions.data );			
+			p1.Permissions.Add( Perm.Treuhaender );			
+			p1.Permissions.Add( Perm.God );
+			Console.WriteLine( p1.Permissions.ToString() );
+			
+			// Check Permissions
+			Assert.IsTrue(  p1.Permissions.Contains( Perm.Laborant ) );
+			Assert.IsTrue(  p1.Permissions.Contains( Perm.Treuhaender ) );
+			Assert.IsTrue(  p1.Permissions.Contains( Perm.God ) );
+			Assert.IsFalse( p1.Permissions.Contains( Perm.CardCreator ) );
+			Assert.IsFalse( p1.Permissions.Contains( Perm.Satan ) );			
 
+			
+			JetonCtrl.SavePerson( p1 );
+			
+			// and load again
+			List<Person> list = JetonCtrl.GetAllPersons();
+			Assert.AreEqual( list.Count, 1 );
+
+			Person p2 = list[0];
+			Assert.AreEqual( p2.Name, "Admin" );
+			Assert.IsTrue(  p2.Permissions.Contains( Perm.Laborant ) );
+			Assert.IsTrue(  p2.Permissions.Contains( Perm.Treuhaender ) );
+			Assert.IsTrue(  p2.Permissions.Contains( Perm.God ) );
+			Assert.IsFalse( p2.Permissions.Contains( Perm.CardCreator ) );
+			Assert.IsFalse( p2.Permissions.Contains( Perm.Satan ) );			
+			Console.WriteLine( p2.Permissions );
+		}
+		
+		
 		/// <summary>
 		/// 
 		/// </summary>
 		[Test] public void CreateAndSaveArtikel()
 		{
+			NewDb();
+			
 			Artikel mate = JetonCtrl.CreateArtikel();
 			mate.Name       =  "Mate";
 			mate.Bestand    = 0;
@@ -61,11 +101,20 @@ namespace JetonDb
 			
 			// There should be two articles
 			List<Artikel> aList = JetonCtrl.GetArtikel();
-			Assert.AreEqual( aList.Count, 2 );
+			Assert.AreEqual( 2, aList.Count );
 			
 			// There should be two articles
 			List<Artikel> vaList = JetonCtrl.GetArtikel();
-			Assert.AreEqual( vaList.Count, 2 );
+			Assert.AreEqual( 2, vaList.Count );
+		}
+		
+		[Test] public void PermsTest()
+		{
+			Perms p = new Perms();
+			
+			p.Add( Perm.CardCreator );
+			Console.WriteLine( p.data );
+			
 		}
 		
 	}

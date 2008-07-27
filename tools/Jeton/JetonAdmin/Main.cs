@@ -12,6 +12,8 @@ namespace JetonAdmin {
 	{
 		public static void Main (string[] args)
 		{
+			JetonCtrl.Open();
+			
 			// Open Database
 			/*
 			Artikel mate = JetonCtrl.CreateArtikel();
@@ -42,16 +44,12 @@ namespace JetonAdmin {
 			JetonCtrl.SaveArtikel(schoka);
 */
 
-			
-			// IObjectContainer db = Db4oFactory.OpenFile("/tmp/schubser.db");
-			// db.Close();
-			
 			Application.Init ();
 			MainWindow win = new MainWindow ();
 			win.Show ();
 			Application.Run ();
 			
-			
+			JetonCtrl.Close();
 		}
 	}
 }
