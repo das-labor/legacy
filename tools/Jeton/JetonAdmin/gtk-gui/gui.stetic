@@ -133,7 +133,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="JetonAdmin.UserScreen" design-size="672 499">
+  <widget class="Gtk.Bin" id="JetonAdmin.UserScreen" design-size="710 499">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.HPaned" id="hpaned1">
@@ -486,13 +486,14 @@
                     <property name="MemberName" />
                     <property name="Spacing">6</property>
                     <child>
-                      <widget class="Gtk.CheckButton" id="cardRoleLaborant">
+                      <widget class="Gtk.CheckButton" id="cardPermLaborant">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Label" translatable="yes">Laborant</property>
                         <property name="DrawIndicator">True</property>
                         <property name="HasLabel">True</property>
                         <property name="UseUnderline">True</property>
+                        <signal name="Clicked" handler="OnRoleBtnClicked" />
                       </widget>
                       <packing>
                         <property name="Position">0</property>
@@ -504,11 +505,13 @@
                     <child>
                       <widget class="Gtk.CheckButton" id="cardRoleDoor">
                         <property name="MemberName" />
+                        <property name="Sensitive">False</property>
                         <property name="CanFocus">True</property>
                         <property name="Label" translatable="yes">Türöffner</property>
                         <property name="DrawIndicator">True</property>
                         <property name="HasLabel">True</property>
                         <property name="UseUnderline">True</property>
+                        <signal name="Clicked" handler="OnRoleBtnClicked" />
                       </widget>
                       <packing>
                         <property name="Position">1</property>
@@ -518,13 +521,14 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.CheckButton" id="cardRoleEscrow">
+                      <widget class="Gtk.CheckButton" id="cardPermEscrow">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Label" translatable="yes">Treuhänder</property>
                         <property name="DrawIndicator">True</property>
                         <property name="HasLabel">True</property>
                         <property name="UseUnderline">True</property>
+                        <signal name="Clicked" handler="OnRoleBtnClicked" />
                       </widget>
                       <packing>
                         <property name="Position">2</property>
@@ -534,13 +538,14 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.CheckButton" id="cardRoleCreator">
+                      <widget class="Gtk.CheckButton" id="cardPermCreator">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Label" translatable="yes">(Karten-) Erzeuger</property>
                         <property name="DrawIndicator">True</property>
                         <property name="HasLabel">True</property>
                         <property name="UseUnderline">True</property>
+                        <signal name="Clicked" handler="OnRoleBtnClicked" />
                       </widget>
                       <packing>
                         <property name="Position">3</property>
@@ -550,13 +555,15 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.CheckButton" id="cardRoleGod">
+                      <widget class="Gtk.CheckButton" id="cardPermGod">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Label" translatable="yes">Gott</property>
+                        <property name="Active">True</property>
                         <property name="DrawIndicator">True</property>
                         <property name="HasLabel">True</property>
                         <property name="UseUnderline">True</property>
+                        <signal name="Clicked" handler="OnRoleBtnClicked" />
                       </widget>
                       <packing>
                         <property name="PackType">End</property>
@@ -655,15 +662,15 @@
                 <property name="MemberName" />
                 <property name="Spacing">20</property>
                 <property name="BorderWidth">10</property>
-                <property name="Size">2</property>
-                <property name="LayoutStyle">Start</property>
+                <property name="Size">3</property>
+                <property name="LayoutStyle">End</property>
                 <child>
-                  <widget class="Gtk.Button" id="button66">
+                  <widget class="Gtk.Button" id="writeToCardBtn">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="Type">TextAndIcon</property>
                     <property name="Icon">stock:gtk-save Menu</property>
-                    <property name="Label" translatable="yes">Auf Karte Speichern</property>
+                    <property name="Label" translatable="yes">Auf Karte schreiben</property>
                     <property name="UseUnderline">True</property>
                   </widget>
                   <packing>
@@ -683,6 +690,22 @@
                   </widget>
                   <packing>
                     <property name="Position">1</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Button" id="saveBtn">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="UseStock">True</property>
+                    <property name="Type">StockItem</property>
+                    <property name="StockId">gtk-save</property>
+                    <signal name="Clicked" handler="OnSaveClicked" />
+                    <property name="label">gtk-save</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">2</property>
                     <property name="Expand">False</property>
                     <property name="Fill">False</property>
                   </packing>

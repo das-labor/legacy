@@ -18,7 +18,7 @@
       <Entry build="True" name="CTapi" configuration="Release" />
     </Configuration>
   </Configurations>
-  <StartMode startupentry="Jeton" single="True">
+  <StartMode startupentry="JetonAdmin" single="True">
     <Execute type="None" entry="SchubserPos" />
     <Execute type="None" entry="JetonDb" />
     <Execute type="None" entry="JetonAdmin" />

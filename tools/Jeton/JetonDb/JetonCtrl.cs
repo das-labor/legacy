@@ -13,29 +13,44 @@ namespace JetonDb
 	/// </summary>
 	public class JetonCtrl
 	{
-		public static string DbPath {
-			get {
-				if (_db != null) {
-					_db.Rollback();
-					_db.Close();
-					_db = null;
-				}
-				
-				if (_dbPath == null)
-					_dbPath = System.Environment.GetEnvironmentVariable("JETON_DB");
-				
-				if (_dbPath == null)
-					_dbPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-					_dbPath = Path.Combine( System.Environment.GetFolderPath( System.Environment.SpecialFolder.Personal ),
-						                       ".jeton.db" );
-				
-				return _dbPath;
+		/// <summary>
+		///  Open default database: JETON_DB path or "~/.jeton.db" 
+		/// </summary>
+		public static bool Open()
+		{
+			string path; 
+			
+			path = System.Environment.GetEnvironmentVariable("JETON_DB");
+			
+			if (path == null) {
+				path = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+				path = Path.Combine( System.Environment.GetFolderPath( System.Environment.SpecialFolder.Personal ),
+				                    ".jeton.db" );
 			}
-			set {
-				_dbPath = value;
-			}
+			
+			return Open(path);
 		}
-		private static string _dbPath;		
+		
+		public static bool Open(string path)
+		{
+			// Close Database if already open
+			Close();
+			
+			_db = Db4oFactory.OpenFile(path);
+			
+			return true;
+		}
+		
+		public static void Close()
+		{
+			// Close Database if already open
+			if (_db != null) {
+				_db.Rollback();
+				_db.Close();
+				_db = null;
+			};
+		}
+		
 		
 		/// <value>
 		///  Actual connection to the Db4O Database Backend 
@@ -43,17 +58,13 @@ namespace JetonDb
 		public static IObjectContainer Db {
 			get {
 				if (_db == null) {
-					_db = Db4oFactory.OpenFile(DbPath);
 				}				
 				
 				return _db;
 			}
-			set {
-				_db = value;
-			}
 		}
 		private static IObjectContainer _db;
-		
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -112,6 +123,7 @@ namespace JetonDb
 		public static void SavePerson(Person p)
 		{
 			Db.Set(p);
+			Db.Set(p.Permissions);
 			Db.Commit();
 		}
 		

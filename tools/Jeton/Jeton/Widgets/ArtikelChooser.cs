@@ -45,8 +45,6 @@ namespace Jeton
 					Button b = CreateArtikelButton(x,y);
 					b.Clicked += new System.EventHandler( OnBtnClicked );
 					btnTable.Attach( b, x, x+1, y, y+1 );
-					
-					
 				}
 			}
 			btnTable.ShowAll();

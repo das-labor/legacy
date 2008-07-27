@@ -9,6 +9,7 @@ namespace JetonAdmin
 	{
 		ListStore cardList;
 		Person    currentPerson;
+		bool      changed;
 		
 		public UserScreen()
 		{
@@ -27,7 +28,6 @@ namespace JetonAdmin
 		void UpdateCardList()
 		{
 			foreach( Person p in JetonCtrl.GetAllPersons()) {
-				Console.WriteLine( "Adding {0}", p.Name );
 				cardList.AppendValues( p, p.Name );
 			}
 		}
@@ -49,40 +49,63 @@ namespace JetonAdmin
 		
 		void OnSelectionChanged(object o, EventArgs args)
 		{
+			// First chef if we need to save currentPerson?
+			if (changed) 
+				System.Console.WriteLine( "Need too save!" );
+			
+			// Load choosen Persion and display 
 			TreeIter iter;
 			
 			if (cardListView.Selection.GetSelected(out iter)) {
 				currentPerson = cardList.GetValue (iter, 0) as Person;
+				writeToCardBtn.Sensitive = true;
+				Db2Gui();
 			} else {
 				currentPerson = null;
+				writeToCardBtn.Sensitive = false;
 			}
-			Db2Gui();
-        }
+		}
 		
 		void OnChanged (object sender, System.EventArgs e)
 		{
 			// Update CardListView
-			/*
 			TreeIter iter;
 			
 			if (cardListView.Selection.GetSelected(out iter)) {
 				cardList.SetValue(iter, 1, cardNameEntry.Text); 
 			}
-			*/
 
-			undoBtn.Sensitive = true;			
+			changed           = true;
+			undoBtn.Sensitive = true;
+			saveBtn.Sensitive = true;
 		}
+	
+		protected virtual void OnRoleBtnClicked (object sender, System.EventArgs e)
+		{
+			changed           = true;
+			undoBtn.Sensitive = true;
+			saveBtn.Sensitive = true;
+		}
+
 
 		void Gui2Db()
 		{
-			Console.WriteLine( "Db2Gui" );
+			if (currentPerson == null)
+				return;
 			
 			currentPerson.Name    = cardNameEntry.Text;
 			currentPerson.Deposit = decimal.Parse( cardCreditEntry.Text );
 			currentPerson.Escrow  = decimal.Parse( cardEscrowEntry.Text );
 			
+			currentPerson.Permissions.Set( Perm.Laborant, cardPermLaborant.Active ); 
+			currentPerson.Permissions.Set( Perm.Treuhaender, cardPermEscrow.Active );
+			currentPerson.Permissions.Set( Perm.CardCreator, cardPermCreator.Active );			
+			currentPerson.Permissions.Set( Perm.God, cardPermGod.Active ); 
+			
 			JetonCtrl.SavePerson( currentPerson );
+			changed           = false;
 			undoBtn.Sensitive = false;
+			saveBtn.Sensitive = false;
 		}
 		
 		void Db2Gui()
@@ -98,18 +121,39 @@ namespace JetonAdmin
 				cardCreditEntry.Sensitive = true;
 				cardEscrowEntry.Sensitive = true;
 				
-				cardIdEntry.Text     = currentPerson.Id.ToString();
-				cardNameEntry.Text   = currentPerson.Name;
-				cardCreditEntry.Text = currentPerson.Deposit.ToString();
-				cardEscrowEntry.Text = currentPerson.Escrow.ToString();
+				cardIdEntry.Text        = currentPerson.Id.ToString();
+				cardNameEntry.Text      = currentPerson.Name;
+				cardCreditEntry.Text    = currentPerson.Deposit.ToString();
+				cardEscrowEntry.Text    = currentPerson.Escrow.ToString();
+
+				cardPermLaborant.Active = currentPerson.Permissions.Contains( Perm.Laborant );
+				cardPermEscrow.Active   = currentPerson.Permissions.Contains( Perm.Treuhaender );
+				cardPermCreator.Active  = currentPerson.Permissions.Contains( Perm.CardCreator );
+				cardPermGod.Active      = currentPerson.Permissions.Contains( Perm.God );				
+			
 			}
-			undoBtn.Sensitive = false;			
+			
+			changed = false;
+			undoBtn.Sensitive = false;
+			saveBtn.Sensitive = false;
 		}
+		
 
 		void OnUndoClicked (object sender, System.EventArgs e)
 		{
 			Db2Gui();
 		}
 
+		protected virtual void OnSaveClicked (object sender, System.EventArgs e)
+		{
+			Gui2Db();
+		}
+
+		protected virtual void OnSaveToCardClicked(object sender, System.EventArgs e)
+		{
+			// ToDo 
+		}
+
+		
 	}
 }
