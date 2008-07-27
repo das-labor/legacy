@@ -13,6 +13,10 @@ namespace sermon2 {
     
     public partial class MainWindow {
         
+        private Gtk.Action HelpAction;
+        
+        private Gtk.Action AboutAction;
+        
         private Gtk.VBox vbox2;
         
         private Gtk.MenuBar menubar1;
@@ -44,6 +48,12 @@ namespace sermon2 {
             // Widget sermon2.MainWindow
             Gtk.UIManager w1 = new Gtk.UIManager();
             Gtk.ActionGroup w2 = new Gtk.ActionGroup("Default");
+            this.HelpAction = new Gtk.Action("HelpAction", Mono.Unix.Catalog.GetString("Help"), null, null);
+            this.HelpAction.ShortLabel = Mono.Unix.Catalog.GetString("Help");
+            w2.Add(this.HelpAction, null);
+            this.AboutAction = new Gtk.Action("AboutAction", Mono.Unix.Catalog.GetString("About"), null, "gtk-about");
+            this.AboutAction.ShortLabel = Mono.Unix.Catalog.GetString("About");
+            w2.Add(this.AboutAction, null);
             w1.InsertActionGroup(w2, 0);
             this.AddAccelGroup(w1.AccelGroup);
             this.Name = "sermon2.MainWindow";
@@ -55,7 +65,7 @@ namespace sermon2 {
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
             // Container child vbox2.Gtk.Box+BoxChild
-            w1.AddUiFromString("<ui><menubar name='menubar1'/></ui>");
+            w1.AddUiFromString("<ui><menubar name='menubar1'><menu action='HelpAction'><menuitem action='AboutAction'/></menu></menubar></ui>");
             this.menubar1 = ((Gtk.MenuBar)(w1.GetWidget("/menubar1")));
             this.menubar1.Name = "menubar1";
             this.vbox2.Add(this.menubar1);
@@ -191,6 +201,7 @@ namespace sermon2 {
             this.DefaultHeight = 300;
             this.Show();
             this.DeleteEvent += new Gtk.DeleteEventHandler(this.OnDeleteEvent);
+            this.AboutAction.Activated += new System.EventHandler(this.OnAboutActionActivated);
             this.NewObjButton.Released += new System.EventHandler(this.OnNewObjButtonReleased);
             this.button1.Released += new System.EventHandler(this.OnButton1Released);
             this.button24.Released += new System.EventHandler(this.OnButton24Released);

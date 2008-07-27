@@ -169,18 +169,17 @@ namespace sermon2 {
             w16.YOptions = ((Gtk.AttachOptions)(4));
             this.GtkAlignment.Add(this.table1);
             this.frame1.Add(this.GtkAlignment);
-            this.GtkLabel3 = new Gtk.Label();
-            this.GtkLabel3.Name = "GtkLabel3";
-            this.GtkLabel3.LabelProp = Mono.Unix.Catalog.GetString("<b>frame1</b>");
-            this.GtkLabel3.UseMarkup = true;
-            this.frame1.LabelWidget = this.GtkLabel3;
+            this.frameLabel = new Gtk.Label();
+            this.frameLabel.Name = "frameLabel";
+            this.frameLabel.LabelProp = Mono.Unix.Catalog.GetString("<b>data tagger</b>");
+            this.frameLabel.UseMarkup = true;
+            this.frame1.LabelWidget = this.frameLabel;
             this.Add(this.frame1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
             this.Show();
             this.remButton.Released += new System.EventHandler(this.OnRemButtonReleased);
-            this.foregroundCheckButton.Pressed += new System.EventHandler(this.OnForegroundCheckButtonPressed);
             this.foregroundCheckButton.Released += new System.EventHandler(this.OnForegroundCheckButtonReleased);
             this.backgroundCheckButton.Released += new System.EventHandler(this.OnBackgroundCheckButtonReleased);
         }

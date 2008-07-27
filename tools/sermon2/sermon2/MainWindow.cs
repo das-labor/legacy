@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+//using Application;
 using Gtk;
 
 namespace sermon2
@@ -37,7 +38,7 @@ public partial class MainWindow: Gtk.Window
     
     protected void OnDeleteEvent (object sender, DeleteEventArgs a)
     {
-        Application.Quit ();
+        Gtk.Application.Quit();  
         a.RetVal = true;
     }
 
@@ -83,6 +84,12 @@ public partial class MainWindow: Gtk.Window
     protected virtual void OnButton24Released (object sender, System.EventArgs e)
     {
         
+    }
+
+    protected virtual void OnAboutActionActivated (object sender, System.EventArgs e)
+    {
+        AboutDialog abd;
+        abd = new AboutDialog();
     }
 }
 
