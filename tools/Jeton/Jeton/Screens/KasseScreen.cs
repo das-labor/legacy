@@ -15,9 +15,18 @@ namespace Jeton
 
 		protected virtual void OnFehlbetragClicked (object sender, System.EventArgs e)
 		{
-			Dialog win = new NumericInputDialog();
-			win.ShowAll();
-			win.Run();
+			TextualInputDialog win = new TextualInputDialog ("Bitte Nickname eingeben!");
+			
+			win.ShowAll ();
+			win.Run();			
+			
+			
+//			NumericInputDialog win = new NumericInputDialog("Wieviel Geld befindet sich in der Kasse ?");
+	//		win.currencyMode = true;
+	//		win.ShowAll();
+	//		win.Run();
+			
+			
 			win.Destroy();
 		}
 	}
