@@ -29,6 +29,8 @@ namespace sermon2 {
         
         private Gtk.Label dataBitsLabel;
         
+        private Gtk.CheckButton hwFlowControlCheckButton;
+        
         private Gtk.ComboBox parityComboBox;
         
         private Gtk.Label parityLabel;
@@ -41,13 +43,7 @@ namespace sermon2 {
         
         private Gtk.Label stopBitsLabel;
         
-        private Gtk.HBox hbox1;
-        
         private Gtk.CheckButton xonxoffCheckButton;
-        
-        private Gtk.CheckButton hwFlowControlCheckButton;
-        
-        private Gtk.Button deleteButton;
         
         private Gtk.Label nameLabel;
         
@@ -78,37 +74,8 @@ namespace sermon2 {
             this.table1.ColumnSpacing = ((uint)(6));
             // Container child table1.Gtk.Table+TableChild
             this.baudRateComboBox = Gtk.ComboBox.NewText();
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("50"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("75"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("110"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("134"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("150"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("200"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("300"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("600"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("1200"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("1800"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("2400"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("4800"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("9600"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("19200"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("38400"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("57600"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("115200"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("230400"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("460800"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("500000"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("576000"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("921600"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("1000000"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("1152000"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("1500000"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("2000000"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("2500000"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("3000000"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("3500000"));
-            this.baudRateComboBox.AppendText(Mono.Unix.Catalog.GetString("4000000"));
             this.baudRateComboBox.Name = "baudRateComboBox";
+            this.baudRateComboBox.Active = 0;
             this.table1.Add(this.baudRateComboBox);
             Gtk.Table.TableChild w1 = ((Gtk.Table.TableChild)(this.table1[this.baudRateComboBox]));
             w1.LeftAttach = ((uint)(3));
@@ -151,6 +118,21 @@ namespace sermon2 {
             w4.XOptions = ((Gtk.AttachOptions)(4));
             w4.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
+            this.hwFlowControlCheckButton = new Gtk.CheckButton();
+            this.hwFlowControlCheckButton.CanFocus = true;
+            this.hwFlowControlCheckButton.Name = "hwFlowControlCheckButton";
+            this.hwFlowControlCheckButton.Label = Mono.Unix.Catalog.GetString("HW flow control");
+            this.hwFlowControlCheckButton.DrawIndicator = true;
+            this.hwFlowControlCheckButton.UseUnderline = true;
+            this.table1.Add(this.hwFlowControlCheckButton);
+            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table1[this.hwFlowControlCheckButton]));
+            w5.TopAttach = ((uint)(2));
+            w5.BottomAttach = ((uint)(3));
+            w5.LeftAttach = ((uint)(3));
+            w5.RightAttach = ((uint)(4));
+            w5.XOptions = ((Gtk.AttachOptions)(4));
+            w5.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table1.Gtk.Table+TableChild
             this.parityComboBox = Gtk.ComboBox.NewText();
             this.parityComboBox.AppendText(Mono.Unix.Catalog.GetString("even"));
             this.parityComboBox.AppendText(Mono.Unix.Catalog.GetString("mark"));
@@ -159,42 +141,42 @@ namespace sermon2 {
             this.parityComboBox.AppendText(Mono.Unix.Catalog.GetString("space"));
             this.parityComboBox.Name = "parityComboBox";
             this.table1.Add(this.parityComboBox);
-            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table1[this.parityComboBox]));
-            w5.TopAttach = ((uint)(1));
-            w5.BottomAttach = ((uint)(2));
-            w5.LeftAttach = ((uint)(3));
-            w5.RightAttach = ((uint)(4));
-            w5.XOptions = ((Gtk.AttachOptions)(4));
-            w5.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table1[this.parityComboBox]));
+            w6.TopAttach = ((uint)(1));
+            w6.BottomAttach = ((uint)(2));
+            w6.LeftAttach = ((uint)(3));
+            w6.RightAttach = ((uint)(4));
+            w6.XOptions = ((Gtk.AttachOptions)(4));
+            w6.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.parityLabel = new Gtk.Label();
             this.parityLabel.Name = "parityLabel";
             this.parityLabel.LabelProp = Mono.Unix.Catalog.GetString("parity");
             this.table1.Add(this.parityLabel);
-            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table1[this.parityLabel]));
-            w6.TopAttach = ((uint)(1));
-            w6.BottomAttach = ((uint)(2));
-            w6.LeftAttach = ((uint)(2));
-            w6.RightAttach = ((uint)(3));
-            w6.XOptions = ((Gtk.AttachOptions)(4));
-            w6.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table1[this.parityLabel]));
+            w7.TopAttach = ((uint)(1));
+            w7.BottomAttach = ((uint)(2));
+            w7.LeftAttach = ((uint)(2));
+            w7.RightAttach = ((uint)(3));
+            w7.XOptions = ((Gtk.AttachOptions)(4));
+            w7.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.portNameComboBoxEntry = Gtk.ComboBoxEntry.NewText();
             this.portNameComboBoxEntry.Name = "portNameComboBoxEntry";
             this.table1.Add(this.portNameComboBoxEntry);
-            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table1[this.portNameComboBoxEntry]));
-            w7.LeftAttach = ((uint)(1));
-            w7.RightAttach = ((uint)(2));
-            w7.XOptions = ((Gtk.AttachOptions)(4));
-            w7.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table1[this.portNameComboBoxEntry]));
+            w8.LeftAttach = ((uint)(1));
+            w8.RightAttach = ((uint)(2));
+            w8.XOptions = ((Gtk.AttachOptions)(4));
+            w8.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.portNameLabel = new Gtk.Label();
             this.portNameLabel.Name = "portNameLabel";
             this.portNameLabel.LabelProp = Mono.Unix.Catalog.GetString("port name");
             this.table1.Add(this.portNameLabel);
-            Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table1[this.portNameLabel]));
-            w8.XOptions = ((Gtk.AttachOptions)(4));
-            w8.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.table1[this.portNameLabel]));
+            w9.XOptions = ((Gtk.AttachOptions)(4));
+            w9.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.stopBitsComboBox = Gtk.ComboBox.NewText();
             this.stopBitsComboBox.AppendText(Mono.Unix.Catalog.GetString("0"));
@@ -203,84 +185,43 @@ namespace sermon2 {
             this.stopBitsComboBox.AppendText(Mono.Unix.Catalog.GetString("2"));
             this.stopBitsComboBox.Name = "stopBitsComboBox";
             this.table1.Add(this.stopBitsComboBox);
-            Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.table1[this.stopBitsComboBox]));
-            w9.TopAttach = ((uint)(2));
-            w9.BottomAttach = ((uint)(3));
-            w9.LeftAttach = ((uint)(1));
-            w9.RightAttach = ((uint)(2));
-            w9.XOptions = ((Gtk.AttachOptions)(4));
-            w9.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w10 = ((Gtk.Table.TableChild)(this.table1[this.stopBitsComboBox]));
+            w10.TopAttach = ((uint)(2));
+            w10.BottomAttach = ((uint)(3));
+            w10.LeftAttach = ((uint)(1));
+            w10.RightAttach = ((uint)(2));
+            w10.XOptions = ((Gtk.AttachOptions)(4));
+            w10.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.stopBitsLabel = new Gtk.Label();
             this.stopBitsLabel.Name = "stopBitsLabel";
             this.stopBitsLabel.LabelProp = Mono.Unix.Catalog.GetString("stop bits");
             this.table1.Add(this.stopBitsLabel);
-            Gtk.Table.TableChild w10 = ((Gtk.Table.TableChild)(this.table1[this.stopBitsLabel]));
-            w10.TopAttach = ((uint)(2));
-            w10.BottomAttach = ((uint)(3));
-            w10.XOptions = ((Gtk.AttachOptions)(4));
-            w10.YOptions = ((Gtk.AttachOptions)(4));
-            this.vbox1.Add(this.table1);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox1[this.table1]));
-            w11.Position = 0;
-            w11.Expand = false;
-            w11.Fill = false;
-            // Container child vbox1.Gtk.Box+BoxChild
-            this.hbox1 = new Gtk.HBox();
-            this.hbox1.Name = "hbox1";
-            this.hbox1.Spacing = 6;
-            // Container child hbox1.Gtk.Box+BoxChild
+            Gtk.Table.TableChild w11 = ((Gtk.Table.TableChild)(this.table1[this.stopBitsLabel]));
+            w11.TopAttach = ((uint)(2));
+            w11.BottomAttach = ((uint)(3));
+            w11.XOptions = ((Gtk.AttachOptions)(4));
+            w11.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table1.Gtk.Table+TableChild
             this.xonxoffCheckButton = new Gtk.CheckButton();
             this.xonxoffCheckButton.CanFocus = true;
             this.xonxoffCheckButton.Name = "xonxoffCheckButton";
             this.xonxoffCheckButton.Label = Mono.Unix.Catalog.GetString("Xon/Xoff filter");
             this.xonxoffCheckButton.DrawIndicator = true;
             this.xonxoffCheckButton.UseUnderline = true;
-            this.hbox1.Add(this.xonxoffCheckButton);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.hbox1[this.xonxoffCheckButton]));
-            w12.Position = 0;
-            // Container child hbox1.Gtk.Box+BoxChild
-            this.hwFlowControlCheckButton = new Gtk.CheckButton();
-            this.hwFlowControlCheckButton.CanFocus = true;
-            this.hwFlowControlCheckButton.Name = "hwFlowControlCheckButton";
-            this.hwFlowControlCheckButton.Label = Mono.Unix.Catalog.GetString("HW flow control");
-            this.hwFlowControlCheckButton.DrawIndicator = true;
-            this.hwFlowControlCheckButton.UseUnderline = true;
-            this.hbox1.Add(this.hwFlowControlCheckButton);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.hbox1[this.hwFlowControlCheckButton]));
-            w13.Position = 1;
-            // Container child hbox1.Gtk.Box+BoxChild
-            this.deleteButton = new Gtk.Button();
-            this.deleteButton.CanFocus = true;
-            this.deleteButton.Name = "deleteButton";
-            this.deleteButton.UseUnderline = true;
-            // Container child deleteButton.Gtk.Container+ContainerChild
-            Gtk.Alignment w14 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment.Gtk.Container+ContainerChild
-            Gtk.HBox w15 = new Gtk.HBox();
-            w15.Spacing = 2;
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Image w16 = new Gtk.Image();
-            w16.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-delete", Gtk.IconSize.Menu, 16);
-            w15.Add(w16);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Label w18 = new Gtk.Label();
-            w18.LabelProp = Mono.Unix.Catalog.GetString("remove");
-            w18.UseUnderline = true;
-            w15.Add(w18);
-            w14.Add(w15);
-            this.deleteButton.Add(w14);
-            this.hbox1.Add(this.deleteButton);
-            Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.hbox1[this.deleteButton]));
-            w22.Position = 2;
-            w22.Expand = false;
-            w22.Fill = false;
-            w22.Padding = ((uint)(13));
-            this.vbox1.Add(this.hbox1);
-            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox1]));
-            w23.Position = 1;
-            w23.Expand = false;
-            w23.Fill = false;
+            this.table1.Add(this.xonxoffCheckButton);
+            Gtk.Table.TableChild w12 = ((Gtk.Table.TableChild)(this.table1[this.xonxoffCheckButton]));
+            w12.TopAttach = ((uint)(2));
+            w12.BottomAttach = ((uint)(3));
+            w12.LeftAttach = ((uint)(2));
+            w12.RightAttach = ((uint)(3));
+            w12.XOptions = ((Gtk.AttachOptions)(4));
+            w12.YOptions = ((Gtk.AttachOptions)(4));
+            this.vbox1.Add(this.table1);
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox1[this.table1]));
+            w13.Position = 0;
+            w13.Expand = false;
+            w13.Fill = false;
             this.GtkAlignment.Add(this.vbox1);
             this.frame1.Add(this.GtkAlignment);
             this.nameLabel = new Gtk.Label();
@@ -293,7 +234,13 @@ namespace sermon2 {
                 this.Child.ShowAll();
             }
             this.Show();
-            this.deleteButton.Released += new System.EventHandler(this.OnDeleteButtonReleased);
+            this.xonxoffCheckButton.Released += new System.EventHandler(this.OnXonxoffCheckButtonReleased);
+            this.stopBitsComboBox.Changed += new System.EventHandler(this.OnStopBitsComboBoxChanged);
+            this.portNameComboBoxEntry.Changed += new System.EventHandler(this.OnPortNameComboBoxEntryChanged);
+            this.parityComboBox.Changed += new System.EventHandler(this.OnParityComboBoxChanged);
+            this.hwFlowControlCheckButton.Released += new System.EventHandler(this.OnHwFlowControlCheckButtonReleased);
+            this.dataBitsComboBox.Changed += new System.EventHandler(this.OnDataBitsComboBoxChanged);
+            this.baudRateComboBox.Changed += new System.EventHandler(this.OnBaudRateComboBoxChanged);
         }
     }
 }

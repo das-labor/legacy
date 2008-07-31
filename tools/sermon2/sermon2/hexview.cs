@@ -229,5 +229,10 @@ namespace sermon2
             
         }
         
+        public void RegisterTag(TextTag tag, object sender){
+            hexTV.Buffer.TagTable.Add(tag);
+            asciiTV.Buffer.TagTable.Add(tag);
+        }
+        
     }
 }
