@@ -16,4 +16,10 @@
     <itemgroups />
     <signals />
   </object>
+  <object type="sermon2.ObjectCommonEdit" palette-category="sermon2" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups>
+    </itemgroups>
+    <signals>
+    </signals>
+  </object>
 </objects>

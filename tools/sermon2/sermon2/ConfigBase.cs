@@ -21,16 +21,21 @@ using Gtk;
 using Gdk;
 using GConf;
 
-namespace Application
+namespace sermon2
 {
+    
     
     public class ConfigBase
     {
-        private String keyBase;
-        private String keyName;
-        private String keyFullName;
-        private String keyFullName_;
+        public const string AppBase="/apps/sermon2";
+     
+        private string keyBase;
+        private string keyName;
+        private string keyFullName;
+        private string keyFullName_;
         private GConf.Client client;
+        public  string name;
+        public  string id;
         public ConfigBase(String baseName, String Name)
         {
             client = new GConf.Client();
@@ -38,116 +43,134 @@ namespace Application
             keyName = Name.TrimEnd('/').TrimStart('/');
             keyFullName = keyBase + "/" +keyName;
             keyFullName_ = keyFullName+"/";
+            string[] sa;
+            try{
+                sa=(string[])client.Get(AppBase+"/objects");
+            }catch{
+                sa = new string[0];
+                client.Set(AppBase+"/objects", sa);
+            }
+            
+            if(Array.FindIndex(sa, Name.Equals) == -1){
+                Array.Resize(ref sa, sa.Length+1);
+                sa[sa.Length-1] = Name;
+                client.Set(AppBase+"/objects", sa);
+            }
             client.AddNotify(keyFullName, 
                    new NotifyEventHandler(OnGConf_Changed));
         }
         
-        public void write(String name, String val){
+        
+        public ConfigBase(String Name) : this(AppBase, Name)
+        {
+        }
+        
+        public void writeconfig(String name, String val){
             client.Set(keyFullName_+name, val);
         }
         
-        public String read(String name, String def){
+        public String readconfig(String name, String def){
             String s;
             try{
                 s = (String)client.Get(keyFullName_+name);
             }catch{
-                write(name, def);
+                writeconfig(name, def);
                 s = def;
             }
             return s;
         }
  
-        public void write(String name, String[] val){
+        public void writeconfig(String name, String[] val){
             client.Set(keyFullName_+name, val);
         }
         
-        public String[] read(String name, String[] def){
+        public String[] readconfig(String name, String[] def){
             String[] s;
             try{
                 s = (String[])client.Get(keyFullName_+name);
             }catch{
-                write(name, def);
+                writeconfig(name, def);
                 s = def;
             }
             return s;
         }
         
-        public void write(String name, bool val){
+        public void writeconfig(String name, bool val){
             client.Set(keyFullName_+name, val);
         }
 
-        public bool read(String name, bool def){
+        public bool readconfig(String name, bool def){
             bool s;
             try{
                 s = (bool)client.Get(keyFullName_+name);
             }catch{
-                write(name, def);
+                writeconfig(name, def);
                 s = def;
             }
             return s;
         }
         
-        public void write(String name, bool[] val){
+        public void writeconfig(String name, bool[] val){
             client.Set(keyFullName_+name, val);
         }
 
-        public bool[] read(String name, bool[] def){
+        public bool[] readconfig(String name, bool[] def){
             bool[] s;
             try{
                 s = (bool[])client.Get(keyFullName_+name);
             }catch{
-                write(name, def);
+                writeconfig(name, def);
                 s = def;
             }
             return s;
         }
         
-        public void write(String name, int val){
+        public void writeconfig(String name, int val){
             client.Set(keyFullName_+name, val);
         }
 
-        public int read(String name, int def){
+        public int readconfig(String name, int def){
             int s;
             try{
                 s = (int)client.Get(keyFullName_+name);
             }catch{
-                write(name, def);
+                writeconfig(name, def);
                 s = def;
             }
             return s;
         }
         
-        public void write(String name, int[] val){
+        public void writeconfig(String name, int[] val){
             client.Set(keyFullName_+name, val);
         }
 
-        public int[] read(String name, int[] def){
+        public int[] readconfig(String name, int[] def){
             int[] s;
             try{
                 s = (int[])client.Get(keyFullName_+name);
             }catch{
-                write(name, def);
+                writeconfig(name, def);
                 s = def;
             }
             return s;
         }
         
-        public void write(String name, Color val){
+        public void writeconfig(String name, Color val){
             int[] ca=new int[3];
             ca[0] = (int)val.Red;
             ca[1] = (int)val.Green;
             ca[2] = (int)val.Red;
-            write(name, ca);
+            writeconfig(name, ca);
         }
         
-        public Color read(String name, Color def){
+        public Color readconfig(String name, Color def){
             Color c;
             c = new Color();
             int[] ca=new int[3];
             ca[0] = (int)def.Red;
             ca[1] = (int)def.Green;
             ca[2] = (int)def.Red;
-            ca = read(name, ca);
+            ca = readconfig(name, ca);
             try{
                 c.Red   = (ushort)ca[0];
                 c.Green = (ushort)ca[1];
@@ -156,10 +179,31 @@ namespace Application
                 ca[0] = (int)def.Red;
                 ca[1] = (int)def.Green;
                 ca[2] = (int)def.Red;
-                write(name, ca);
+                writeconfig(name, ca);
                 c = def;                    
             }
             return c;
+        }
+        
+        public void writeconfig(String name, uint val){
+            client.Set(keyFullName_+name, (int)val);
+        }
+
+        public uint readconfig(String name, uint def){
+            uint s;
+            try{
+                s = (uint)client.Get(keyFullName_+name);
+            }catch{
+                writeconfig(name, def);
+                s = def;
+            }
+            return s;
+        }
+        
+        virtual public void SaveConfig(){
+        }
+        
+        virtual public void LoadConfig(){
         }
         
         virtual public void OnGConf_Changed(object sender, NotifyEventArgs args){

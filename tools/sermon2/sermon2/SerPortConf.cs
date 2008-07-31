@@ -21,37 +21,121 @@ using System;
 
 namespace sermon2
 {
-    
-    
+ 
     public partial class SerPortConf : Gtk.Bin
     {
+        static uint[] baudTable = new uint[]{
+                50,    75,   110,   134,   150,
+               200,   300,   600,  1200,  1800,
+              2400,  4800,  9600, 19200, 38400,
+             57600, 115200, 230400  };
+        static string[] portNameTable = new string[0];
         
-        public SerPortConf()
+        private SerPortConfig config;
+        public SerPortConf(SerPortConfig config)
         {
+            int i;
             this.Build();
-            
-            foreach(String s in System.IO.Ports.SerialPort.GetPortNames()){
-                portNameComboBoxEntry.AppendText(s);
+            this.config = config;
+            for(i=0; i<baudTable.Length; ++i){
+                baudRateComboBox.AppendText(baudTable[i].ToString());
             }
-            baudRateComboBox.Active = 12; /* 9600 baud */
-            dataBitsComboBox.Active = 3;  /* 8 bits */
-            parityComboBox.Active = (int)System.IO.Ports.Parity.None;
-            stopBitsComboBox.Active = (int)System.IO.Ports.StopBits.One;
+            for(i=0; i<portNameTable.Length; ++i){
+                portNameComboBoxEntry.AppendText(portNameTable[i]);
+            }
+            foreach(String s in System.IO.Ports.SerialPort.GetPortNames()){
+                i = Array.FindIndex(portNameTable, s.Equals);
+                if(i==-1){
+                    Array.Resize(ref portNameTable, portNameTable.Length+1);
+                    portNameTable[portNameTable.Length-1] = s;
+                    portNameComboBoxEntry.AppendText(s);
+                }
+            }
+            config.LoadConfig();
+            SetGuiFromConfig();
+            config.dataChanged += gconf_changed;
         }
         
-        public SerPortConf(string name) : this()
-        {
-            nameLabel.Markup = "<b>" + name + "</b>";
+        public void gconf_changed(object sender){
+            SetGuiFromConfig();
         }
         
-        public SerPortConf(uint i) : this()
-        {
-            nameLabel.Markup = "<b>port " + i.ToString() + "</b>";
+        public void SetGuiFromConfig(){
+            nameLabel.Markup = "<b>" 
+                               + config.id 
+                               + " / " 
+                               + config.name 
+                               + "</b>";            
+            int i;
+            
+            i = Array.FindIndex(portNameTable, config.portName.Equals);
+            if(i!=-1){
+                portNameComboBoxEntry.Active = i;
+            } else {
+                Array.Resize(ref portNameTable, portNameTable.Length+1);
+                portNameTable[portNameTable.Length-1] = config.portName;
+                portNameComboBoxEntry.AppendText(config.portName);
+                portNameComboBoxEntry.Active = portNameTable.Length-1;
+            }
+            int baudidx=0;
+            while((baudTable[baudidx]!=config.baudRate) 
+                  && (baudidx<baudTable.Length)){
+                  baudidx++;
+            }
+            if(baudidx==baudTable.Length){
+                /* we simply add this new baudrate */
+                Array.Resize(ref baudTable, baudTable.Length+1);
+                baudTable[baudidx]=config.baudRate;
+                baudRateComboBox.AppendText(baudTable[baudidx].ToString());
+            }
+            baudRateComboBox.Active = baudidx;
+            dataBitsComboBox.Active = (int)config.dataBits - 5;  
+            parityComboBox.Active = (int)config.parity;
+            stopBitsComboBox.Active = (int)config.stopBits;
+            xonxoffCheckButton.Active = config.xonxoffFilter;
+            hwFlowControlCheckButton.Active = config.hwFlowControl;
         }
 
-        protected virtual void OnDeleteButtonReleased (object sender, System.EventArgs e)
+        protected virtual void OnPortNameComboBoxEntryChanged (object sender, System.EventArgs e)
         {
-            ((Gtk.Container)(this.Parent)).Remove(this);
+            config.portName = portNameComboBoxEntry.ActiveText;
+            config.OnGUI_Changed();
+        }
+
+        protected virtual void OnDataBitsComboBoxChanged (object sender, System.EventArgs e)
+        {
+            config.dataBits = (uint)(dataBitsComboBox.Active+5);
+            config.OnGUI_Changed();
+        }
+
+        protected virtual void OnStopBitsComboBoxChanged (object sender, System.EventArgs e)
+        {
+            config.stopBits = (System.IO.Ports.StopBits)stopBitsComboBox.Active;
+            config.OnGUI_Changed();
+        }
+
+        protected virtual void OnBaudRateComboBoxChanged (object sender, System.EventArgs e)
+        {
+            config.baudRate = uint.Parse(baudRateComboBox.ActiveText);
+            config.OnGUI_Changed();
+        }
+
+        protected virtual void OnParityComboBoxChanged (object sender, System.EventArgs e)
+        {
+            config.parity = (System.IO.Ports.Parity)parityComboBox.Active;
+            config.OnGUI_Changed();
+        }
+
+        protected virtual void OnXonxoffCheckButtonReleased (object sender, System.EventArgs e)
+        {
+            config.xonxoffFilter = xonxoffCheckButton.Active;
+            config.OnGUI_Changed();
+        }
+
+        protected virtual void OnHwFlowControlCheckButtonReleased (object sender, System.EventArgs e)
+        {
+            config.hwFlowControl = hwFlowControlCheckButton.Active;
+            config.OnGUI_Changed();
         }
     }
 }

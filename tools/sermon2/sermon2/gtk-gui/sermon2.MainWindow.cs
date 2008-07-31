@@ -23,17 +23,27 @@ namespace sermon2 {
         
         private Gtk.Notebook notebook1;
         
+        private Gtk.HBox hbox2;
+        
+        private Gtk.HPaned hpaned3;
+        
+        private Gtk.ScrolledWindow GtkScrolledWindow;
+        
+        private Gtk.TreeView configTreeView;
+        
+        private Gtk.VBox vbox3;
+        
         private Gtk.ScrolledWindow scrolledwindow1;
         
-        private Gtk.VBox vbox1;
+        private sermon2.ObjectCommonEdit objectcommonedit1;
         
-        private Gtk.HBox hbox2;
+        private Gtk.HBox hbox3;
         
         private Gtk.ComboBox objectAddComboBox;
         
         private Gtk.Button NewObjButton;
         
-        private Gtk.Label label1;
+        private Gtk.Label label4;
         
         private Gtk.HBox hbox1;
         
@@ -79,22 +89,57 @@ namespace sermon2 {
             this.notebook1.Name = "notebook1";
             this.notebook1.CurrentPage = 0;
             // Container child notebook1.Gtk.Notebook+NotebookChild
-            this.scrolledwindow1 = new Gtk.ScrolledWindow();
-            this.scrolledwindow1.CanFocus = true;
-            this.scrolledwindow1.Name = "scrolledwindow1";
-            this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
-            // Container child scrolledwindow1.Gtk.Container+ContainerChild
-            Gtk.Viewport w4 = new Gtk.Viewport();
-            w4.ShadowType = ((Gtk.ShadowType)(0));
-            // Container child GtkViewport.Gtk.Container+ContainerChild
-            this.vbox1 = new Gtk.VBox();
-            this.vbox1.Name = "vbox1";
-            this.vbox1.Spacing = 6;
-            // Container child vbox1.Gtk.Box+BoxChild
             this.hbox2 = new Gtk.HBox();
             this.hbox2.Name = "hbox2";
             this.hbox2.Spacing = 6;
             // Container child hbox2.Gtk.Box+BoxChild
+            this.hpaned3 = new Gtk.HPaned();
+            this.hpaned3.CanFocus = true;
+            this.hpaned3.Name = "hpaned3";
+            this.hpaned3.Position = 76;
+            // Container child hpaned3.Gtk.Paned+PanedChild
+            this.GtkScrolledWindow = new Gtk.ScrolledWindow();
+            this.GtkScrolledWindow.Name = "GtkScrolledWindow";
+            this.GtkScrolledWindow.ShadowType = ((Gtk.ShadowType)(1));
+            // Container child GtkScrolledWindow.Gtk.Container+ContainerChild
+            this.configTreeView = new Gtk.TreeView();
+            this.configTreeView.CanFocus = true;
+            this.configTreeView.Name = "configTreeView";
+            this.configTreeView.HeadersClickable = true;
+            this.GtkScrolledWindow.Add(this.configTreeView);
+            this.hpaned3.Add(this.GtkScrolledWindow);
+            Gtk.Paned.PanedChild w5 = ((Gtk.Paned.PanedChild)(this.hpaned3[this.GtkScrolledWindow]));
+            w5.Resize = false;
+            // Container child hpaned3.Gtk.Paned+PanedChild
+            this.vbox3 = new Gtk.VBox();
+            this.vbox3.Name = "vbox3";
+            this.vbox3.Spacing = 6;
+            // Container child vbox3.Gtk.Box+BoxChild
+            this.scrolledwindow1 = new Gtk.ScrolledWindow();
+            this.scrolledwindow1.CanFocus = true;
+            this.scrolledwindow1.Name = "scrolledwindow1";
+            this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
+            this.scrolledwindow1.BorderWidth = ((uint)(2));
+            this.vbox3.Add(this.scrolledwindow1);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox3[this.scrolledwindow1]));
+            w6.Position = 0;
+            // Container child vbox3.Gtk.Box+BoxChild
+            this.objectcommonedit1 = new sermon2.ObjectCommonEdit();
+            this.objectcommonedit1.WidthRequest = 0;
+            this.objectcommonedit1.HeightRequest = 0;
+            this.objectcommonedit1.Sensitive = false;
+            this.objectcommonedit1.Events = ((Gdk.EventMask)(256));
+            this.objectcommonedit1.Name = "objectcommonedit1";
+            this.vbox3.Add(this.objectcommonedit1);
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox3[this.objectcommonedit1]));
+            w7.Position = 1;
+            w7.Expand = false;
+            w7.Fill = false;
+            // Container child vbox3.Gtk.Box+BoxChild
+            this.hbox3 = new Gtk.HBox();
+            this.hbox3.Name = "hbox3";
+            this.hbox3.Spacing = 6;
+            // Container child hbox3.Gtk.Box+BoxChild
             this.objectAddComboBox = Gtk.ComboBox.NewText();
             this.objectAddComboBox.AppendText(Mono.Unix.Catalog.GetString("serial port"));
             this.objectAddComboBox.AppendText(Mono.Unix.Catalog.GetString("tagger"));
@@ -104,55 +149,56 @@ namespace sermon2 {
             this.objectAddComboBox.AppendText(Mono.Unix.Catalog.GetString("lopview"));
             this.objectAddComboBox.Name = "objectAddComboBox";
             this.objectAddComboBox.Active = 0;
-            this.hbox2.Add(this.objectAddComboBox);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox2[this.objectAddComboBox]));
-            w5.Position = 0;
-            w5.Expand = false;
-            w5.Fill = false;
-            // Container child hbox2.Gtk.Box+BoxChild
+            this.hbox3.Add(this.objectAddComboBox);
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox3[this.objectAddComboBox]));
+            w8.Position = 0;
+            w8.Expand = false;
+            w8.Fill = false;
+            // Container child hbox3.Gtk.Box+BoxChild
             this.NewObjButton = new Gtk.Button();
             this.NewObjButton.CanFocus = true;
             this.NewObjButton.Name = "NewObjButton";
             this.NewObjButton.UseUnderline = true;
             // Container child NewObjButton.Gtk.Container+ContainerChild
-            Gtk.Alignment w6 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            Gtk.Alignment w9 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
-            Gtk.HBox w7 = new Gtk.HBox();
-            w7.Spacing = 2;
+            Gtk.HBox w10 = new Gtk.HBox();
+            w10.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Image w8 = new Gtk.Image();
-            w8.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-add", Gtk.IconSize.Menu, 16);
-            w7.Add(w8);
+            Gtk.Image w11 = new Gtk.Image();
+            w11.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-add", Gtk.IconSize.Menu, 16);
+            w10.Add(w11);
             // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Label w10 = new Gtk.Label();
-            w10.LabelProp = Mono.Unix.Catalog.GetString("new object");
-            w10.UseUnderline = true;
-            w7.Add(w10);
-            w6.Add(w7);
-            this.NewObjButton.Add(w6);
-            this.hbox2.Add(this.NewObjButton);
-            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.hbox2[this.NewObjButton]));
-            w14.Position = 1;
-            w14.Expand = false;
-            w14.Fill = false;
-            this.vbox1.Add(this.hbox2);
-            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox2]));
-            w15.PackType = ((Gtk.PackType)(1));
-            w15.Position = 2;
-            w15.Expand = false;
-            w15.Fill = false;
-            w4.Add(this.vbox1);
-            this.scrolledwindow1.Add(w4);
-            this.notebook1.Add(this.scrolledwindow1);
+            Gtk.Label w13 = new Gtk.Label();
+            w13.LabelProp = Mono.Unix.Catalog.GetString("new object");
+            w13.UseUnderline = true;
+            w10.Add(w13);
+            w9.Add(w10);
+            this.NewObjButton.Add(w9);
+            this.hbox3.Add(this.NewObjButton);
+            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.hbox3[this.NewObjButton]));
+            w17.Position = 1;
+            w17.Expand = false;
+            w17.Fill = false;
+            this.vbox3.Add(this.hbox3);
+            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.vbox3[this.hbox3]));
+            w18.Position = 2;
+            w18.Expand = false;
+            w18.Fill = false;
+            this.hpaned3.Add(this.vbox3);
+            this.hbox2.Add(this.hpaned3);
+            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.hbox2[this.hpaned3]));
+            w20.Position = 0;
+            this.notebook1.Add(this.hbox2);
             // Notebook tab
-            this.label1 = new Gtk.Label();
-            this.label1.Name = "label1";
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("objects");
-            this.notebook1.SetTabLabel(this.scrolledwindow1, this.label1);
-            this.label1.ShowAll();
+            this.label4 = new Gtk.Label();
+            this.label4.Name = "label4";
+            this.label4.LabelProp = Mono.Unix.Catalog.GetString("objects");
+            this.notebook1.SetTabLabel(this.hbox2, this.label4);
+            this.label4.ShowAll();
             this.vbox2.Add(this.notebook1);
-            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.vbox2[this.notebook1]));
-            w19.Position = 1;
+            Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.vbox2[this.notebook1]));
+            w22.Position = 1;
             // Container child vbox2.Gtk.Box+BoxChild
             this.hbox1 = new Gtk.HBox();
             this.hbox1.Name = "hbox1";
@@ -164,10 +210,10 @@ namespace sermon2 {
             this.button1.UseUnderline = true;
             this.button1.Label = Mono.Unix.Catalog.GetString("button1");
             this.hbox1.Add(this.button1);
-            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.hbox1[this.button1]));
-            w20.Position = 0;
-            w20.Expand = false;
-            w20.Fill = false;
+            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.hbox1[this.button1]));
+            w23.Position = 0;
+            w23.Expand = false;
+            w23.Fill = false;
             // Container child hbox1.Gtk.Box+BoxChild
             this.button24 = new Gtk.Button();
             this.button24.CanFocus = true;
@@ -175,33 +221,35 @@ namespace sermon2 {
             this.button24.UseUnderline = true;
             this.button24.Label = Mono.Unix.Catalog.GetString("button24");
             this.hbox1.Add(this.button24);
-            Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.hbox1[this.button24]));
-            w21.Position = 1;
-            w21.Expand = false;
-            w21.Fill = false;
+            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.hbox1[this.button24]));
+            w24.Position = 1;
+            w24.Expand = false;
+            w24.Fill = false;
             this.vbox2.Add(this.hbox1);
-            Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
-            w22.Position = 2;
-            w22.Expand = false;
-            w22.Fill = false;
+            Gtk.Box.BoxChild w25 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+            w25.Position = 2;
+            w25.Expand = false;
+            w25.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.statusbar2 = new Gtk.Statusbar();
             this.statusbar2.Name = "statusbar2";
             this.statusbar2.Spacing = 6;
             this.vbox2.Add(this.statusbar2);
-            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.vbox2[this.statusbar2]));
-            w23.Position = 3;
-            w23.Expand = false;
-            w23.Fill = false;
+            Gtk.Box.BoxChild w26 = ((Gtk.Box.BoxChild)(this.vbox2[this.statusbar2]));
+            w26.Position = 3;
+            w26.Expand = false;
+            w26.Fill = false;
             this.Add(this.vbox2);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 400;
             this.DefaultHeight = 300;
+            this.objectcommonedit1.Hide();
             this.Show();
             this.DeleteEvent += new Gtk.DeleteEventHandler(this.OnDeleteEvent);
             this.AboutAction.Activated += new System.EventHandler(this.OnAboutActionActivated);
+            this.configTreeView.RowActivated += new Gtk.RowActivatedHandler(this.OnConfigTreeViewRowActivated);
             this.NewObjButton.Released += new System.EventHandler(this.OnNewObjButtonReleased);
             this.button1.Released += new System.EventHandler(this.OnButton1Released);
             this.button24.Released += new System.EventHandler(this.OnButton24Released);
