@@ -23,9 +23,10 @@ using GConf;
 
 namespace sermon2
 {
+    public delegate void dataChanged_t(object changer, object changed);
+   
     
-    
-    public class ConfigBase
+    abstract public class ConfigBase
     {
         public const string AppBase="/apps/sermon2";
      
@@ -36,6 +37,7 @@ namespace sermon2
         private GConf.Client client;
         public  string name;
         public  string id;
+        public event dataChanged_t dataChanged;
         public ConfigBase(String baseName, String Name)
         {
             client = new GConf.Client();
@@ -57,9 +59,15 @@ namespace sermon2
                 client.Set(AppBase+"/objects", sa);
             }
             client.AddNotify(keyFullName, 
-                   new NotifyEventHandler(OnGConf_Changed));
+                 new NotifyEventHandler(OnGConf_Changed));
+           // client.AddNotify(keyFullName, 
+           //      new NotifyEventHandler(beep));
+            System.Console.WriteLine("Listening on "+keyFullName);
         }
         
+        public void beep(object sender, NotifyEventArgs args){
+            System.Console.WriteLine("beep");
+        }
         
         public ConfigBase(String Name) : this(AppBase, Name)
         {
@@ -200,16 +208,17 @@ namespace sermon2
             return s;
         }
         
-        virtual public void SaveConfig(){
-        }
+        abstract public void SaveConfig();
         
-        virtual public void LoadConfig(){
-        }
+        abstract public void LoadConfig();
         
-        virtual public void OnGConf_Changed(object sender, NotifyEventArgs args){
-        }
+        abstract public void OnGConf_Changed(object sender, NotifyEventArgs args);
         
-        virtual public void OnGUI_Changed(object sender,  NotifyEventArgs args){
+        abstract public void OnGUI_Changed(object sender,  NotifyEventArgs args);
+        
+        public void OnDataChanged(object changer, object changed){
+            if(dataChanged!= null)
+                dataChanged(changer, changed);
         }
     }
 }

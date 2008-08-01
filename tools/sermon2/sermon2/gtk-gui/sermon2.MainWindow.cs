@@ -33,9 +33,9 @@ namespace sermon2 {
         
         private Gtk.VBox vbox3;
         
-        private Gtk.ScrolledWindow scrolledwindow1;
+        private Gtk.ScrolledWindow scrolledwindow2;
         
-        private sermon2.ObjectCommonEdit objectcommonedit1;
+        private Gtk.ScrolledWindow commonConfScrolledWindow;
         
         private Gtk.HBox hbox3;
         
@@ -115,26 +115,23 @@ namespace sermon2 {
             this.vbox3.Name = "vbox3";
             this.vbox3.Spacing = 6;
             // Container child vbox3.Gtk.Box+BoxChild
-            this.scrolledwindow1 = new Gtk.ScrolledWindow();
-            this.scrolledwindow1.CanFocus = true;
-            this.scrolledwindow1.Name = "scrolledwindow1";
-            this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
-            this.scrolledwindow1.BorderWidth = ((uint)(2));
-            this.vbox3.Add(this.scrolledwindow1);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox3[this.scrolledwindow1]));
+            this.scrolledwindow2 = new Gtk.ScrolledWindow();
+            this.scrolledwindow2.CanFocus = true;
+            this.scrolledwindow2.Name = "scrolledwindow2";
+            this.scrolledwindow2.ShadowType = ((Gtk.ShadowType)(1));
+            this.scrolledwindow2.BorderWidth = ((uint)(2));
+            this.vbox3.Add(this.scrolledwindow2);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox3[this.scrolledwindow2]));
             w6.Position = 0;
             // Container child vbox3.Gtk.Box+BoxChild
-            this.objectcommonedit1 = new sermon2.ObjectCommonEdit();
-            this.objectcommonedit1.WidthRequest = 0;
-            this.objectcommonedit1.HeightRequest = 0;
-            this.objectcommonedit1.Sensitive = false;
-            this.objectcommonedit1.Events = ((Gdk.EventMask)(256));
-            this.objectcommonedit1.Name = "objectcommonedit1";
-            this.vbox3.Add(this.objectcommonedit1);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox3[this.objectcommonedit1]));
+            this.commonConfScrolledWindow = new Gtk.ScrolledWindow();
+            this.commonConfScrolledWindow.CanFocus = true;
+            this.commonConfScrolledWindow.Name = "commonConfScrolledWindow";
+            this.commonConfScrolledWindow.ShadowType = ((Gtk.ShadowType)(1));
+            this.commonConfScrolledWindow.BorderWidth = ((uint)(3));
+            this.vbox3.Add(this.commonConfScrolledWindow);
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox3[this.commonConfScrolledWindow]));
             w7.Position = 1;
-            w7.Expand = false;
-            w7.Fill = false;
             // Container child vbox3.Gtk.Box+BoxChild
             this.hbox3 = new Gtk.HBox();
             this.hbox3.Name = "hbox3";
@@ -244,8 +241,7 @@ namespace sermon2 {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 400;
-            this.DefaultHeight = 300;
-            this.objectcommonedit1.Hide();
+            this.DefaultHeight = 392;
             this.Show();
             this.DeleteEvent += new Gtk.DeleteEventHandler(this.OnDeleteEvent);
             this.AboutAction.Activated += new System.EventHandler(this.OnAboutActionActivated);

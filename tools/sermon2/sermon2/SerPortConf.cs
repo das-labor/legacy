@@ -54,9 +54,11 @@ namespace sermon2
             config.LoadConfig();
             SetGuiFromConfig();
             config.dataChanged += gconf_changed;
+            System.Console.WriteLine("xwidth = " + baudRateComboBox.Allocation.X);
         }
         
-        public void gconf_changed(object sender){
+        public void gconf_changed(object changer, object changed){
+            config.LoadConfig();
             SetGuiFromConfig();
         }
         
@@ -99,43 +101,43 @@ namespace sermon2
         protected virtual void OnPortNameComboBoxEntryChanged (object sender, System.EventArgs e)
         {
             config.portName = portNameComboBoxEntry.ActiveText;
-            config.OnGUI_Changed();
+            config.OnGUI_Changed(this);
         }
 
         protected virtual void OnDataBitsComboBoxChanged (object sender, System.EventArgs e)
         {
             config.dataBits = (uint)(dataBitsComboBox.Active+5);
-            config.OnGUI_Changed();
+            config.OnGUI_Changed(this);
         }
 
         protected virtual void OnStopBitsComboBoxChanged (object sender, System.EventArgs e)
         {
             config.stopBits = (System.IO.Ports.StopBits)stopBitsComboBox.Active;
-            config.OnGUI_Changed();
+            config.OnGUI_Changed(this);
         }
 
         protected virtual void OnBaudRateComboBoxChanged (object sender, System.EventArgs e)
         {
             config.baudRate = uint.Parse(baudRateComboBox.ActiveText);
-            config.OnGUI_Changed();
+            config.OnGUI_Changed(this);
         }
 
         protected virtual void OnParityComboBoxChanged (object sender, System.EventArgs e)
         {
             config.parity = (System.IO.Ports.Parity)parityComboBox.Active;
-            config.OnGUI_Changed();
+            config.OnGUI_Changed(this);
         }
 
         protected virtual void OnXonxoffCheckButtonReleased (object sender, System.EventArgs e)
         {
             config.xonxoffFilter = xonxoffCheckButton.Active;
-            config.OnGUI_Changed();
+            config.OnGUI_Changed(this);
         }
 
         protected virtual void OnHwFlowControlCheckButtonReleased (object sender, System.EventArgs e)
         {
             config.hwFlowControl = hwFlowControlCheckButton.Active;
-            config.OnGUI_Changed();
+            config.OnGUI_Changed(this);
         }
     }
 }

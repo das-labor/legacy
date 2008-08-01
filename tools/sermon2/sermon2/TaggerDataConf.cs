@@ -24,38 +24,45 @@ namespace sermon2
     
     public partial class TaggerDataConf : Gtk.Bin
     {
-        
-        public TaggerDataConf()
-        {
+        public byte val;
+        public TaggerConfig config;
+        public TaggerDataConf(byte val, TaggerConfig config){
             this.Build();
+            this.val = val;
+            this.config = config;
             foregroundColorButton.Sensitive = foregroundCheckButton.Active;
             backgroundColorButton.Sensitive = backgroundCheckButton.Active;
             backgroundColorButton.Color = new Gdk.Color(0xff, 0xff, 0xff);
         }
         
-        public TaggerDataConf(String s) : this()
-        {
-            frameLabel.Markup = "<b>" + s + "</b>";
+        public void SetGuiFromConfig(){
+            dataLabel.Markup = "data <b>0x"+string.Format("{0:X2}", val)+"</b>";
+            foregroundCheckButton.Active = config.dataTags[val].ForegroundSet;
+            backgroundCheckButton.Active = config.dataTags[val].BackgroundSet;    
+            foregroundColorButton.Color  = config.dataTags[val].ForegroundGdk;    
+            backgroundColorButton.Color  = config.dataTags[val].BackgroundGdk;
         }
         
-        public TaggerDataConf(uint i) : this()
-        {
-            frameLabel.Markup = "<b> data tagger " + i.ToString() + "</b>";
+        protected virtual void OnForegroundCheckButtonReleased (object sender, System.EventArgs e){
+            foregroundColorButton.Sensitive    = foregroundCheckButton.Active;
+            config.dataTags[val].ForegroundSet = foregroundCheckButton.Active;
         }
 
-        protected virtual void OnForegroundCheckButtonReleased (object sender, System.EventArgs e)
-        {
-           foregroundColorButton.Sensitive = foregroundCheckButton.Active;
+        protected virtual void OnBackgroundCheckButtonReleased (object sender, System.EventArgs e){
+            backgroundColorButton.Sensitive    = backgroundCheckButton.Active;
+            config.dataTags[val].BackgroundSet = backgroundCheckButton.Active;
         }
 
-        protected virtual void OnBackgroundCheckButtonReleased (object sender, System.EventArgs e)
-        {
-            backgroundColorButton.Sensitive = backgroundCheckButton.Active;
-        }
-
-        protected virtual void OnRemButtonReleased (object sender, System.EventArgs e)
-        {
+        protected virtual void OnRemButtonReleased (object sender, System.EventArgs e){
             ((Gtk.Container)(this.Parent)).Remove(this);
+        }
+
+        protected virtual void OnForegroundColorButtonColorSet (object sender, System.EventArgs e){
+            config.dataTags[val].ForegroundGdk = foregroundColorButton.Color;
+        }
+
+        protected virtual void OnBackgroundColorButtonColorSet (object sender, System.EventArgs e){
+            config.dataTags[val].ForegroundGdk = foregroundColorButton.Color;
         }
     }
 }

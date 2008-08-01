@@ -17,6 +17,7 @@
 //
 
 using System;
+using GConf;
 using Gtk;
 
 namespace sermon2
@@ -25,15 +26,19 @@ namespace sermon2
     
     public class TaggerConfig : ConfigBase
     {
-        private bool dataTag;
-        private TextTag defTag;
-        private TextTag[] dataTags;
+        public bool dataTag;
+        public TextTag defTag;
+        public TextTag[] dataTags;
         
         public TaggerConfig(string id):base(id){
             this.id = id;
+            defTag = new TextTag(id+"-def_tag");
+            dataTags = new TextTag[256];
+            LoadConfig();
         }
         
-        public void SaveConfig(){
+        override public void SaveConfig(){
+            writeconfig("name", name);
             writeconfig("tagdata", dataTag);
             writeconfig("foreground_set", defTag.ForegroundSet);
             writeconfig("foreground", defTag.ForegroundGdk);
@@ -50,7 +55,9 @@ namespace sermon2
             
         }
         
-        public void LoadConfig(){
+        override public void LoadConfig(){
+            name    = readconfig("name", "default_tagger_name");
+            System.Console.WriteLine("read tagger name: "+name);
             dataTag = readconfig("tagdata", false);
             defTag.ForegroundSet = readconfig("foreground_set", true);
             defTag.ForegroundGdk = readconfig("foreground", new Gdk.Color(0xff, 0x00, 0x00));
@@ -71,5 +78,32 @@ namespace sermon2
               }
             }
         }     
+        
+        public void OnGUI_Changed(object changer){
+            SaveConfig();
+            OnDataChanged(changer, this);                
+            
+        }
+        
+        public void OnGConf_Changed(object changer){
+            LoadConfig();
+            System.Console.WriteLine("OnGConf_Changed");
+            OnDataChanged(changer, this);             
+            
+        }
+        
+        
+        override public void OnGConf_Changed(object sender, NotifyEventArgs args){
+            LoadConfig();
+            System.Console.WriteLine("OnGConf_Changed");
+            OnDataChanged(sender, this);
+        }
+        
+        override public void OnGUI_Changed(object sender,  NotifyEventArgs args){
+            SaveConfig();
+            OnDataChanged(sender, this);                
+        }
+        
+        
     }
 }

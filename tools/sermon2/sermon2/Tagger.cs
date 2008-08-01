@@ -28,59 +28,28 @@ namespace sermon2
     
     public class Tagger
     {
-        private String name;
-        private bool dataTag;
-        private TextTag defTag;
-        private TextTag[] dataTags;
         public TaggerConfig config;
-        public tagedbyterx_t tagedbyterx;
-        public tagregister_t tagregister;
-        public Tagger(String name)
-        {
-            this.name = name;
-            dataTags = new TextTag[256];
-            dataTag = false;
-            
+        public event tagedbyterx_t tagedbyterx;
+        public event tagregister_t tagregister;
+        
+        public Tagger(string id){
+            config = new TaggerConfig(id);   
         }
         
-        public TextTag DefTag{
-            get{
-                return defTag;
-            }
-            set{
-                defTag = value;
-                tagregister(defTag, this);
-            }
+        public Tagger(string id, string name):this(id){
+            config.name = name;
+            config.SaveConfig();
         }
-        
-        public bool DataTag{
-            get{
-                return dataTag;
-            }
-            set{
-                dataTag = value;
-            }
-        }
-        
-        public String Name{
-            get{
-                return this.name;
-            }
-        }
-        public void SetDataTag(byte data, TextTag tag){
-            dataTags[data] = tag;
-            tagregister(tag, this);
-        }
-        
+                
         public void OnDataRX(byte data, object sender){
             TextTag[] tags;
-            if(dataTag && dataTags[data] != null){
+            if(config.dataTag && config.dataTags[data] != null){
                 tags= new TextTag[2];
-                tags[0] = defTag;
-                tags[1] = dataTags[data];
+                tags[0] = config.defTag;
+                tags[1] = config.dataTags[data];
             } else {
                 tags= new TextTag[1];
-                tags[0] = defTag;
+                tags[0] = config.defTag;
             }
             tagedbyterx(data, tags, this);
         }

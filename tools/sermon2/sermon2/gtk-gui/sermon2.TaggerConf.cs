@@ -25,13 +25,11 @@ namespace sermon2 {
         
         private Gtk.CheckButton backgroundCheckButton;
         
-        private Gtk.CheckButton dataCheckButton;
-        
         private Gtk.ColorButton foregroundCButton;
         
         private Gtk.CheckButton foregroundCheckButton;
         
-        private Gtk.Button removeButton;
+        private Gtk.CheckButton dataCheckButton;
         
         private Gtk.Frame frame2;
         
@@ -39,13 +37,21 @@ namespace sermon2 {
         
         private Gtk.VBox vbox1;
         
+        private Gtk.VBox vbox2;
+        
         private Gtk.HBox hbox2;
+        
+        private Gtk.HBox hbox1;
+        
+        private Gtk.Label valueLabel;
+        
+        private Gtk.SpinButton valueSpinButton;
         
         private Gtk.Button addTaggerDataConfbutton;
         
         private Gtk.Label GtkLabel5;
         
-        private Gtk.Label frameLabel;
+        private Gtk.Label nameLabel;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
@@ -65,7 +71,7 @@ namespace sermon2 {
             this.vbox3.Name = "vbox3";
             this.vbox3.Spacing = 6;
             // Container child vbox3.Gtk.Box+BoxChild
-            this.table1 = new Gtk.Table(((uint)(3)), ((uint)(2)), false);
+            this.table1 = new Gtk.Table(((uint)(2)), ((uint)(2)), false);
             this.table1.Name = "table1";
             this.table1.RowSpacing = ((uint)(6));
             this.table1.ColumnSpacing = ((uint)(6));
@@ -96,29 +102,16 @@ namespace sermon2 {
             w2.XOptions = ((Gtk.AttachOptions)(4));
             w2.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
-            this.dataCheckButton = new Gtk.CheckButton();
-            this.dataCheckButton.CanFocus = true;
-            this.dataCheckButton.Name = "dataCheckButton";
-            this.dataCheckButton.Label = Mono.Unix.Catalog.GetString("data dependant");
-            this.dataCheckButton.DrawIndicator = true;
-            this.dataCheckButton.UseUnderline = true;
-            this.table1.Add(this.dataCheckButton);
-            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.table1[this.dataCheckButton]));
-            w3.TopAttach = ((uint)(2));
-            w3.BottomAttach = ((uint)(3));
-            w3.XOptions = ((Gtk.AttachOptions)(4));
-            w3.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child table1.Gtk.Table+TableChild
             this.foregroundCButton = new Gtk.ColorButton();
             this.foregroundCButton.CanFocus = true;
             this.foregroundCButton.Events = ((Gdk.EventMask)(784));
             this.foregroundCButton.Name = "foregroundCButton";
             this.table1.Add(this.foregroundCButton);
-            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table1[this.foregroundCButton]));
-            w4.LeftAttach = ((uint)(1));
-            w4.RightAttach = ((uint)(2));
-            w4.XOptions = ((Gtk.AttachOptions)(0));
-            w4.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.table1[this.foregroundCButton]));
+            w3.LeftAttach = ((uint)(1));
+            w3.RightAttach = ((uint)(2));
+            w3.XOptions = ((Gtk.AttachOptions)(0));
+            w3.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.foregroundCheckButton = new Gtk.CheckButton();
             this.foregroundCheckButton.CanFocus = true;
@@ -127,48 +120,31 @@ namespace sermon2 {
             this.foregroundCheckButton.DrawIndicator = true;
             this.foregroundCheckButton.UseUnderline = true;
             this.table1.Add(this.foregroundCheckButton);
-            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table1[this.foregroundCheckButton]));
-            w5.XOptions = ((Gtk.AttachOptions)(4));
-            w5.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child table1.Gtk.Table+TableChild
-            this.removeButton = new Gtk.Button();
-            this.removeButton.CanFocus = true;
-            this.removeButton.Name = "removeButton";
-            this.removeButton.UseUnderline = true;
-            // Container child removeButton.Gtk.Container+ContainerChild
-            Gtk.Alignment w6 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment.Gtk.Container+ContainerChild
-            Gtk.HBox w7 = new Gtk.HBox();
-            w7.Spacing = 2;
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Image w8 = new Gtk.Image();
-            w8.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-delete", Gtk.IconSize.Menu, 16);
-            w7.Add(w8);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Label w10 = new Gtk.Label();
-            w10.LabelProp = Mono.Unix.Catalog.GetString("remove");
-            w10.UseUnderline = true;
-            w7.Add(w10);
-            w6.Add(w7);
-            this.removeButton.Add(w6);
-            this.table1.Add(this.removeButton);
-            Gtk.Table.TableChild w14 = ((Gtk.Table.TableChild)(this.table1[this.removeButton]));
-            w14.TopAttach = ((uint)(2));
-            w14.BottomAttach = ((uint)(3));
-            w14.LeftAttach = ((uint)(1));
-            w14.RightAttach = ((uint)(2));
-            w14.XOptions = ((Gtk.AttachOptions)(0));
-            w14.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table1[this.foregroundCheckButton]));
+            w4.XOptions = ((Gtk.AttachOptions)(4));
+            w4.YOptions = ((Gtk.AttachOptions)(4));
             this.vbox3.Add(this.table1);
-            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox3[this.table1]));
-            w15.Position = 0;
-            w15.Expand = false;
-            w15.Fill = false;
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox3[this.table1]));
+            w5.Position = 0;
+            w5.Expand = false;
+            w5.Fill = false;
+            // Container child vbox3.Gtk.Box+BoxChild
+            this.dataCheckButton = new Gtk.CheckButton();
+            this.dataCheckButton.CanFocus = true;
+            this.dataCheckButton.Name = "dataCheckButton";
+            this.dataCheckButton.Label = Mono.Unix.Catalog.GetString("data dependant");
+            this.dataCheckButton.DrawIndicator = true;
+            this.dataCheckButton.UseUnderline = true;
+            this.vbox3.Add(this.dataCheckButton);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox3[this.dataCheckButton]));
+            w6.Position = 1;
+            w6.Expand = false;
+            w6.Fill = false;
             // Container child vbox3.Gtk.Box+BoxChild
             this.frame2 = new Gtk.Frame();
             this.frame2.Name = "frame2";
             this.frame2.ShadowType = ((Gtk.ShadowType)(1));
-            this.frame2.BorderWidth = ((uint)(6));
+            this.frame2.BorderWidth = ((uint)(9));
             // Container child frame2.Gtk.Container+ContainerChild
             this.GtkAlignment5 = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.GtkAlignment5.Name = "GtkAlignment5";
@@ -178,41 +154,82 @@ namespace sermon2 {
             this.vbox1.Name = "vbox1";
             this.vbox1.Spacing = 6;
             // Container child vbox1.Gtk.Box+BoxChild
+            this.vbox2 = new Gtk.VBox();
+            this.vbox2.Name = "vbox2";
+            this.vbox2.Spacing = 6;
+            this.vbox2.BorderWidth = ((uint)(3));
+            this.vbox1.Add(this.vbox2);
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox1[this.vbox2]));
+            w7.Position = 0;
+            // Container child vbox1.Gtk.Box+BoxChild
             this.hbox2 = new Gtk.HBox();
             this.hbox2.Name = "hbox2";
             this.hbox2.Spacing = 6;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.hbox1 = new Gtk.HBox();
+            this.hbox1.Name = "hbox1";
+            this.hbox1.Spacing = 6;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.valueLabel = new Gtk.Label();
+            this.valueLabel.Name = "valueLabel";
+            this.valueLabel.LabelProp = Mono.Unix.Catalog.GetString("value");
+            this.hbox1.Add(this.valueLabel);
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox1[this.valueLabel]));
+            w8.Position = 0;
+            w8.Expand = false;
+            w8.Fill = false;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.valueSpinButton = new Gtk.SpinButton(-1, 255, 1);
+            this.valueSpinButton.CanFocus = true;
+            this.valueSpinButton.Name = "valueSpinButton";
+            this.valueSpinButton.Adjustment.PageIncrement = 10;
+            this.valueSpinButton.ClimbRate = 1;
+            this.valueSpinButton.Numeric = true;
+            this.valueSpinButton.Value = -1;
+            this.valueSpinButton.Wrap = true;
+            this.hbox1.Add(this.valueSpinButton);
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox1[this.valueSpinButton]));
+            w9.Position = 1;
+            w9.Expand = false;
+            w9.Fill = false;
+            this.hbox2.Add(this.hbox1);
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox2[this.hbox1]));
+            w10.Position = 0;
+            w10.Expand = false;
+            w10.Fill = false;
             // Container child hbox2.Gtk.Box+BoxChild
             this.addTaggerDataConfbutton = new Gtk.Button();
             this.addTaggerDataConfbutton.CanFocus = true;
             this.addTaggerDataConfbutton.Name = "addTaggerDataConfbutton";
             this.addTaggerDataConfbutton.UseUnderline = true;
+            this.addTaggerDataConfbutton.BorderWidth = ((uint)(3));
             // Container child addTaggerDataConfbutton.Gtk.Container+ContainerChild
-            Gtk.Alignment w16 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            Gtk.Alignment w11 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
-            Gtk.HBox w17 = new Gtk.HBox();
-            w17.Spacing = 2;
+            Gtk.HBox w12 = new Gtk.HBox();
+            w12.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Image w18 = new Gtk.Image();
-            w18.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-add", Gtk.IconSize.Menu, 16);
-            w17.Add(w18);
+            Gtk.Image w13 = new Gtk.Image();
+            w13.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-add", Gtk.IconSize.Menu, 16);
+            w12.Add(w13);
             // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Label w20 = new Gtk.Label();
-            w20.LabelProp = Mono.Unix.Catalog.GetString("button1");
-            w20.UseUnderline = true;
-            w17.Add(w20);
-            w16.Add(w17);
-            this.addTaggerDataConfbutton.Add(w16);
+            Gtk.Label w15 = new Gtk.Label();
+            w15.LabelProp = Mono.Unix.Catalog.GetString("button1");
+            w15.UseUnderline = true;
+            w12.Add(w15);
+            w11.Add(w12);
+            this.addTaggerDataConfbutton.Add(w11);
             this.hbox2.Add(this.addTaggerDataConfbutton);
-            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.hbox2[this.addTaggerDataConfbutton]));
-            w24.Position = 0;
-            w24.Expand = false;
-            w24.Fill = false;
+            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.hbox2[this.addTaggerDataConfbutton]));
+            w19.Position = 1;
+            w19.Expand = false;
+            w19.Fill = false;
             this.vbox1.Add(this.hbox2);
-            Gtk.Box.BoxChild w25 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox2]));
-            w25.PackType = ((Gtk.PackType)(1));
-            w25.Position = 1;
-            w25.Expand = false;
-            w25.Fill = false;
+            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.vbox1[this.hbox2]));
+            w20.PackType = ((Gtk.PackType)(1));
+            w20.Position = 1;
+            w20.Expand = false;
+            w20.Fill = false;
             this.GtkAlignment5.Add(this.vbox1);
             this.frame2.Add(this.GtkAlignment5);
             this.GtkLabel5 = new Gtk.Label();
@@ -221,24 +238,25 @@ namespace sermon2 {
             this.GtkLabel5.UseMarkup = true;
             this.frame2.LabelWidget = this.GtkLabel5;
             this.vbox3.Add(this.frame2);
-            Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.vbox3[this.frame2]));
-            w28.Position = 1;
+            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.vbox3[this.frame2]));
+            w23.Position = 2;
             this.GtkAlignment.Add(this.vbox3);
             this.frame1.Add(this.GtkAlignment);
-            this.frameLabel = new Gtk.Label();
-            this.frameLabel.Name = "frameLabel";
-            this.frameLabel.LabelProp = Mono.Unix.Catalog.GetString("<b>frame1</b>");
-            this.frameLabel.UseMarkup = true;
-            this.frame1.LabelWidget = this.frameLabel;
+            this.nameLabel = new Gtk.Label();
+            this.nameLabel.Name = "nameLabel";
+            this.nameLabel.LabelProp = Mono.Unix.Catalog.GetString("<b>frame1</b>");
+            this.nameLabel.UseMarkup = true;
+            this.frame1.LabelWidget = this.nameLabel;
             this.Add(this.frame1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
             this.Show();
-            this.removeButton.Released += new System.EventHandler(this.OnRemoveButtonReleased);
             this.foregroundCheckButton.Released += new System.EventHandler(this.OnForegroundCheckButtonReleased);
-            this.dataCheckButton.Released += new System.EventHandler(this.OnDataCheckButtonReleased);
+            this.foregroundCButton.ColorSet += new System.EventHandler(this.OnForegroundCButtonColorSet);
             this.backgroundCheckButton.Released += new System.EventHandler(this.OnBackgroundCheckButtonReleased);
+            this.backgroundCButton.ColorSet += new System.EventHandler(this.OnBackgroundCButtonColorSet);
+            this.dataCheckButton.Released += new System.EventHandler(this.OnDataCheckButtonReleased);
             this.addTaggerDataConfbutton.Released += new System.EventHandler(this.OnAddTaggerDataConfbuttonReleased);
         }
     }
