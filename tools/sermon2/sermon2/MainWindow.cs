@@ -38,11 +38,12 @@ public partial class MainWindow: Gtk.Window
     private TreeStore    configTreeStore;
     private TreeViewColumn configTreeColumn;
     private TreeIter[]   treeIters;
-    private string[]     objNames={"serial port", "tagger", "LOP", "streamview", "LOPview"}; 
+    private string[]     objNames={"serial port", "tagger", "LOP", "QPort", "streamview", "LOPview"}; 
     public MainWindow (): base (Gtk.WindowType.Toplevel)
     {
         Build ();
-        ports  =  new SerPort[0];
+        ports   = new SerPort[0];
+        taggers = new Tagger[0];
         prng = new Random();
         configTreeStore = new TreeStore(typeof(string));
         configTreeView.Model = configTreeStore;
@@ -51,7 +52,6 @@ public partial class MainWindow: Gtk.Window
         treeIters = new TreeIter[objNames.Length];
         gcclient = new GConf.Client();
         for(int i=0; i<objNames.Length; ++i){
-            
             treeIters[i] = configTreeStore.AppendValues(objNames[i]);
         }
         try{
@@ -62,6 +62,12 @@ public partial class MainWindow: Gtk.Window
                 if(s.StartsWith("serialport-")){
                     try{
                         AddSerialPort(s, false);
+                    }catch{
+                    }
+                }
+                if(s.StartsWith("tagger-")){
+                    try{
+                        AddTagger(s, false);
                     }catch{
                     }
                 }
@@ -82,7 +88,7 @@ public partial class MainWindow: Gtk.Window
     {
         sermon2.streamview sv;
         sv = new sermon2.streamview();
-        
+        sv.ShowAll();
     }
     
     public void AddSerialPort(string id, bool newname){
@@ -95,22 +101,34 @@ public partial class MainWindow: Gtk.Window
         }
         configTreeStore.AppendValues(treeIters[0], 
                ports[ports.Length-1].config.name);
+        ports[ports.Length-1].config.dataChanged += SerialPortObjectDataChanged;
     }
 
+    public void AddTagger(string id, bool newname){
+        Array.Resize(ref taggers, taggers.Length +1);
+        taggers[taggers.Length-1] = new Tagger(id);
+        if(newname){
+            taggers[taggers.Length-1].config.name = "tagger "
+                          + (taggers.Length-1).ToString();
+           taggers[taggers.Length-1].config.SaveConfig();
+        }
+        configTreeStore.AppendValues(treeIters[1], 
+               taggers[taggers.Length-1].config.name);
+        taggers[taggers.Length-1].config.dataChanged += TaggerObjectDataChanged;
+    }
     protected virtual void OnNewObjButtonReleased (object sender, System.EventArgs e)
     {
-        if(scrolledwindow1.Child!=null)
-                    scrolledwindow1.Remove(scrolledwindow1.Child);
+        if(scrolledwindow2.Child!=null)
+                    scrolledwindow2.Remove(scrolledwindow2.Child);
         switch(objectAddComboBox.Active){
             case 0: /* serial port config */
                 AddSerialPort("serialport-"+prng.Next().ToString(), true);
                 break;
             case 1: /* tagger config */    
-                scrolledwindow1.Add(tgconf);
-                configTreeStore.AppendValues(treeIters[objectAddComboBox.Active], "tagger 0");
+                AddTagger("tagger-"+prng.Next().ToString(), true);
                 break;
             case 2: /* lop config */    
-                scrolledwindow1.Add(lopconf);
+                scrolledwindow2.Add(lopconf);
                 configTreeStore.AppendValues(treeIters[objectAddComboBox.Active], "lop 0");
                 break;
                 
@@ -135,6 +153,7 @@ public partial class MainWindow: Gtk.Window
         o = client.Get("/apps");
         System.Console.WriteLine("o has type: {0}", o.GetType());
         return;
+     /*   
         SerPort p1,p2;
         Tagger  t1,t2;
         TextTag tag1, tag2;
@@ -155,25 +174,58 @@ public partial class MainWindow: Gtk.Window
         p1.byterx_event += (streambyterx_t)(t1.OnDataRX);
         p2.byterx_event += (streambyterx_t)(t2.OnDataRX);
         t1.tagedbyterx += sv.OnDataReciveTagged;
+    */
+    }
+
+    public void SerialPortObjectDataChanged(object changer, object changed){
+        int i;
+        for(i=0; ((ConfigBase)changed).id!=ports[i].config.id && i<ports.Length; ++i)
+            ;
+        if(i==ports.Length)
+            return;
+        TreeIter iter;
+        iter = new TreeIter();
+        System.Console.WriteLine("tree-update [serport] "+ System.DateTimeOffset.Now.ToString());
+        configTreeStore.GetIter(out iter, new TreePath(new int[]{0, i}));
+        configTreeStore.SetValue(iter, 0, ports[i].config.name);
+    }
+
+    public void TaggerObjectDataChanged(object changer, object changed){
+        int i;
+        for(i=0; ((ConfigBase)changed).id!=taggers[i].config.id && i<taggers.Length; ++i)
+            ;
+        if(i==taggers.Length)
+            return;
+        TreeIter iter;
+        iter = new TreeIter();
+        System.Console.WriteLine("tree-update [tagger] "+ System.DateTimeOffset.Now.ToString());
+        configTreeStore.GetIter(out iter, new TreePath(new int[]{1, i}));
+        configTreeStore.SetValue(iter, 0, taggers[i].config.name);
     }
 
     protected virtual void OnAboutActionActivated (object sender, System.EventArgs e){
         AboutDialog abd;
         abd = new AboutDialog();
+        abd.ShowAll();
     }
 
     protected virtual void OnConfigTreeViewRowActivated (object o, Gtk.RowActivatedArgs args){
-         System.Console.WriteLine(args.Path.ToString());
-         foreach (int i in args.Path.Indices){
-            System.Console.Write("-> " + i.ToString());
-         }
-         if(scrolledwindow1.Child!=null)
-            scrolledwindow1.Remove(scrolledwindow1.Child);
-         System.Console.Write("\n");
+        
+         if(scrolledwindow2.Child!=null)
+            scrolledwindow2.Remove(scrolledwindow2.Child);
+         if(commonConfScrolledWindow.Child!=null)
+            commonConfScrolledWindow.Remove(commonConfScrolledWindow.Child);
          if(args.Path.Indices.Length==2 && args.Path.Indices[0]==0){
-            scrolledwindow1.Add(spconf= new SerPortConf(
+            scrolledwindow2.Add(spconf= new SerPortConf(
                     ports[args.Path.Indices[1]].config));
-                     
+            commonConfScrolledWindow.Add(new ObjectCommonEdit( 
+                    ports[args.Path.Indices[1]].config));
+         }
+         if(args.Path.Indices.Length==2 && args.Path.Indices[0]==1){
+            scrolledwindow2.Add(tgconf= new TaggerConf(
+                    taggers[args.Path.Indices[1]].config));
+            commonConfScrolledWindow.Add(new ObjectCommonEdit( 
+                    taggers[args.Path.Indices[1]].config));
          }
     }
     

@@ -21,13 +21,13 @@ namespace sermon2 {
         
         private Gtk.Table table1;
         
-        private Gtk.Entry entry1;
+        private Gtk.Label idLabel;
         
         private Gtk.Label label1;
         
         private Gtk.Label label2;
         
-        private Gtk.Label label3;
+        private Gtk.Entry nameEntry;
         
         private Gtk.Button button19;
         
@@ -40,6 +40,7 @@ namespace sermon2 {
             this.Name = "sermon2.ObjectCommonEdit";
             // Container child sermon2.ObjectCommonEdit.Gtk.Container+ContainerChild
             this.frame1 = new Gtk.Frame();
+            this.frame1.HeightRequest = 140;
             this.frame1.Name = "frame1";
             this.frame1.ShadowType = ((Gtk.ShadowType)(1));
             this.frame1.BorderWidth = ((uint)(3));
@@ -57,14 +58,11 @@ namespace sermon2 {
             this.table1.RowSpacing = ((uint)(6));
             this.table1.ColumnSpacing = ((uint)(6));
             // Container child table1.Gtk.Table+TableChild
-            this.entry1 = new Gtk.Entry();
-            this.entry1.CanFocus = true;
-            this.entry1.Name = "entry1";
-            this.entry1.IsEditable = true;
-            this.table1.Add(this.entry1);
-            Gtk.Table.TableChild w1 = ((Gtk.Table.TableChild)(this.table1[this.entry1]));
-            w1.TopAttach = ((uint)(1));
-            w1.BottomAttach = ((uint)(2));
+            this.idLabel = new Gtk.Label();
+            this.idLabel.Name = "idLabel";
+            this.idLabel.LabelProp = Mono.Unix.Catalog.GetString("$ID$");
+            this.table1.Add(this.idLabel);
+            Gtk.Table.TableChild w1 = ((Gtk.Table.TableChild)(this.table1[this.idLabel]));
             w1.LeftAttach = ((uint)(1));
             w1.RightAttach = ((uint)(2));
             w1.XOptions = ((Gtk.AttachOptions)(4));
@@ -88,11 +86,14 @@ namespace sermon2 {
             w3.XOptions = ((Gtk.AttachOptions)(4));
             w3.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
-            this.label3 = new Gtk.Label();
-            this.label3.Name = "label3";
-            this.label3.LabelProp = Mono.Unix.Catalog.GetString("$ID$");
-            this.table1.Add(this.label3);
-            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table1[this.label3]));
+            this.nameEntry = new Gtk.Entry();
+            this.nameEntry.CanFocus = true;
+            this.nameEntry.Name = "nameEntry";
+            this.nameEntry.IsEditable = true;
+            this.table1.Add(this.nameEntry);
+            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table1[this.nameEntry]));
+            w4.TopAttach = ((uint)(1));
+            w4.BottomAttach = ((uint)(2));
             w4.LeftAttach = ((uint)(1));
             w4.RightAttach = ((uint)(2));
             w4.XOptions = ((Gtk.AttachOptions)(4));
@@ -141,6 +142,7 @@ namespace sermon2 {
                 this.Child.ShowAll();
             }
             this.Show();
+            this.nameEntry.Changed += new System.EventHandler(this.OnNameEntryChanged);
         }
     }
 }

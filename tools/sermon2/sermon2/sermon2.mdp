@@ -56,6 +56,8 @@
     <File name="gtk-gui/sermon2.ObjectCommonEdit.cs" subtype="Code" buildaction="Compile" />
     <File name="SerPortConfig.cs" subtype="Code" buildaction="Compile" />
     <File name="TaggerConfig.cs" subtype="Code" buildaction="Compile" />
+    <File name="SubD9.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="stamp.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />

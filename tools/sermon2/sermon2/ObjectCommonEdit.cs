@@ -24,10 +24,31 @@ namespace sermon2
     
     public partial class ObjectCommonEdit : Gtk.Bin
     {
-        
-        public ObjectCommonEdit()
+        private ConfigBase config;
+        public ObjectCommonEdit(ConfigBase config)
         {
             this.Build();
+            this.config = config;
+            SetGuiFromConfig();
         }
+        
+        public void SetGuiFromConfig(){
+            idLabel.Text = config.id;
+            nameEntry.Text = config.name;
+            config.dataChanged += SetGuiFromConfig;
+        }
+        
+        public void SetGuiFromConfig(object changer, object changed){
+            if(changer != this)
+               SetGuiFromConfig();
+        }
+
+        protected virtual void OnNameEntryChanged (object sender, System.EventArgs e)
+        {
+            config.name = nameEntry.Text;
+            config.SaveConfig();
+            config.OnGUI_Changed(this, null);
+        }
+
     }
 }

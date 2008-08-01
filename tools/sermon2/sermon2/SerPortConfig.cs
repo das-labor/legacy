@@ -17,11 +17,11 @@
 //
 
 using System;
+using GConf;
 using System.IO.Ports;
 namespace sermon2
 {
-    public delegate void dataChanged_t(object sender);
-    
+     
     public class SerPortConfig : ConfigBase
     {
         public string portName;
@@ -31,14 +31,14 @@ namespace sermon2
         public StopBits stopBits;
         public bool hwFlowControl;
         public bool xonxoffFilter;
-        public event dataChanged_t dataChanged;
+        
         public SerPortConfig(string id): base(id)
         {
             this.id = id;
             LoadConfig();
         }
         
-        public void SaveConfig(){
+        override public void SaveConfig(){
             writeconfig("name", name);
             writeconfig("portname", portName);
             writeconfig("baudrate", baudRate);
@@ -49,7 +49,7 @@ namespace sermon2
             writeconfig("hwflowcontrol", hwFlowControl);
         }
         
-        public void LoadConfig(){
+        override public void LoadConfig(){
             name     = readconfig("name", "default_port_name");
             portName = readconfig("portname", "/dev/ttyS0");
             baudRate = readconfig("baudrate", (uint)9600);
@@ -60,20 +60,25 @@ namespace sermon2
             hwFlowControl = readconfig("hwflowcontrol", false);
         }
         
-        public void OnGUI_Changed(){
+        public void OnGUI_Changed(object changer){
             SaveConfig();
-            if(dataChanged!=null){
-                System.Console.WriteLine("data changed 1");
-                dataChanged(this);                
-            }
+            OnDataChanged(changer, this);                
         }
         
-        public void OnGConf_Changed(){
-            LoadConfig();
-            if(dataChanged!=null){
-                System.Console.WriteLine("data changed 2");
-                dataChanged(this);                
-            }
+        public void OnGConf_Changed(object changer){
+            System.Console.WriteLine("OnGConf_Changed " + System.DateTimeOffset.Now.ToString());
+            OnDataChanged(changer, this);             
+       }
+        
+        
+        override public void OnGConf_Changed(object sender, NotifyEventArgs args){
+            System.Console.WriteLine("OnGConf_Changed " + System.DateTimeOffset.Now.ToString());
+            OnDataChanged(this, this);             
+        }
+        
+        override public void OnGUI_Changed(object sender,  NotifyEventArgs args){
+            SaveConfig();
+            OnDataChanged(sender, this);                
         }
         
     }
