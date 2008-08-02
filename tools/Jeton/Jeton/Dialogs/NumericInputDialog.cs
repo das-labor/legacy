@@ -33,8 +33,8 @@ namespace Jeton
 				}
 				
 				btn = new Button(i.ToString());
-				btn.SetUsize(80, 80);
-
+				btn.SetSizeRequest(80, 80);
+				
 				btn.Name = i.ToString();
 				btn.Clicked += new EventHandler(OnNumberClicked);
 				
@@ -44,7 +44,7 @@ namespace Jeton
 
 			row=3; col=2;
 			btn = new Button("gtk-go-back");
-			btn.SetUsize(80, 80);			
+			btn.SetSizeRequest(80, 80);			
 			btn.Clicked += new EventHandler(OnBackspaceClicked);
 			ButtonTable.Attach(btn, col, col+1, row, row+1);
 
