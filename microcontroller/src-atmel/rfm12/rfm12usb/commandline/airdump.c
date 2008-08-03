@@ -20,8 +20,14 @@ void sig_cleanup(int in_signum);
 
 void sig_cleanup (int in_signum)
 {
+#ifndef WIN32
 	printf("DOES NOT COMPUTE! (Signal %i)\r\n", in_signum);
+#endif
 	if (udhandle != NULL) usb_close ( udhandle );
+#ifdef WIN32
+	system("pause");
+	exit (1);
+#endif
 }
 
 int main (int argc, char *argv[])
@@ -61,9 +67,11 @@ int main (int argc, char *argv[])
 #endif
 	
 	/* signals */
+#ifndef WIN32	
 	signal (SIGKILL, sig_cleanup);
 	signal (SIGINT, sig_cleanup);
 	signal (SIGHUP, sig_cleanup);
+#endif	
 
 	usb_init();
 	
@@ -123,7 +131,7 @@ int main (int argc, char *argv[])
 
 	while (42)
 	{
-		usleep (1000);
+		sleep(1000);
 		memset (buffer[BUF_IN], 0x00, sizeof(buffer[BUF_IN]));
 		buffer[BUF_IN][0] = 1;
 		tmp = usb_control_msg (udhandle,
