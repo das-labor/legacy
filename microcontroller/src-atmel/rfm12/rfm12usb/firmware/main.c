@@ -90,19 +90,16 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 
 /* ------------------------------------------------------------------------- */
 
-
-
-int main(void)
+void init()
 {
-	uchar   i;
+	uchar i;
 
 	/* RESET status: all port bits are inputs without pull-up.
 	* That's the way we need D+ and D-. Therefore we don't need any
 	* additional hardware initialization.
 	*/
-	rfm12_init();
-
 	usbInit();
+
 	usbDeviceDisconnect();  /* enforce re-enumeration, do this while interrupts are disabled! */
  	i = 0;
 	while(--i)
@@ -111,8 +108,23 @@ int main(void)
 		_delay_ms(1);
 	}
 	usbDeviceConnect();
+
+	//init rfm12
+	rfm12_init();
+}
+
+
+int main(void)
+{
+	init();
+
 	LED_PORT_DDR |= _BV(LED_BIT_RED) | _BV(LED_BIT_GREEN);   /* make the LED bit an output */
+
+	//enable ints
 	sei();
+
+	//power led on
+	LED_PORT_OUTPUT |= _BV(LED_BIT_RED);
 
 	while (42)
 	{
