@@ -32,7 +32,7 @@ different port or bit, change the macros below:
 #include "usbdrv.h"
 #include "oddebug.h"        /* This is also an example for using debug macros */
 #include "requests.h"       /* The custom request numbers we use */
-#include "../common/console.h"
+//#include "../common/console.h"
 
 #include "rfm12.h"
 
@@ -43,6 +43,7 @@ different port or bit, change the macros below:
 uint8_t usbtxlen = 0;
 uint8_t txbuf[32];
 
+
 usbMsgLen_t usbFunctionSetup(uchar data[8])
 {
 	usbRequest_t *rq = (void *)data;
@@ -51,14 +52,14 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 	{
 		switch (rq->wValue.bytes[0])
 		{
-			case USB_SENDCHAR: /* send a single character */
+			default://case USB_SENDCHAR: /* send a single character */
 				txbuf[0] = rq->wIndex.bytes[0];
 				rfm12_tx (1, 0, &txbuf);
 				//rfm12_tx (sizeof(foobar), 0, &foobar);
 				LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
 			break;
 		}
-		
+
 		#if 0
 		if (rq->wValue.bytes[0] & 1)
 		{
@@ -86,6 +87,7 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 	return 0;   /* default for not implemented requests: return no data back to host */
 }
 
+
 /* ------------------------------------------------------------------------- */
 
 
@@ -99,7 +101,7 @@ int main(void)
 	* additional hardware initialization.
 	*/
 	rfm12_init();
-    
+
 	usbInit();
 	usbDeviceDisconnect();  /* enforce re-enumeration, do this while interrupts are disabled! */
  	i = 0;
@@ -116,13 +118,13 @@ int main(void)
 	{
 		rfm12_tick();
 		usbPoll();
-		
+
 		if (rfm12_rx_status() == STATUS_COMPLETE)
 		{
 			uint8_t buflen;
 
 			LED_PORT_OUTPUT ^= _BV(LED_BIT_GREEN);
-			
+
 			buflen = rfm12_rx_len();
 			usbMsgPtr = (void *) rfm12_rx_buffer();
 			usbtxlen = buflen;
@@ -130,10 +132,10 @@ int main(void)
 			m = fifo_put(&rx_fifo);
 			if(m)
 			{
-				
+
 				buflen = rfm12_rx_len();
 				if (buflen > 30) buflen = 30;
-				
+
 				memcpy(m->data, rfm12_rx_buffer(), buflen);
 				m->len = buflen;
 				m->type = rfm12_rx_type();
@@ -158,12 +160,12 @@ void foo(){
 
 			//bufcontents = rfm12_rx_buffer();
 
-			// dump buffer contents to uart			
+			// dump buffer contents to uart
 			//for (i=0;i<rfm12_rx_len();i++)
 			{
 				//uart_putc ( bufcontents[i] );
 			}
-			
+
 			// tell the implementation that the buffer
 			// can be reused for the next data.
 			rfm12_rx_clear();
