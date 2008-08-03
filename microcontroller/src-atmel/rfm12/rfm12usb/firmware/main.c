@@ -111,14 +111,15 @@ void init()
 
 	//init rfm12
 	rfm12_init();
+
+	LED_PORT_DDR |= _BV(LED_BIT_RED) | _BV(LED_BIT_GREEN);   /* make the LED bit an output */
 }
 
 
 int main(void)
 {
+	//main initialization
 	init();
-
-	LED_PORT_DDR |= _BV(LED_BIT_RED) | _BV(LED_BIT_GREEN);   /* make the LED bit an output */
 
 	//enable ints
 	sei();
