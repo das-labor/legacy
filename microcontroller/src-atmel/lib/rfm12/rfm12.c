@@ -1,5 +1,5 @@
 /**** RFM 12 library for Atmel AVR Microcontrollers *******
- * 
+ *
  * This software is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
  * by the Free Software Foundation; either version 2 of the License,
@@ -88,7 +88,7 @@ void rfm12_data(uint16_t d)
 
 	SPDR = d & 0xff;
 	while(!(SPSR & (1<<SPIF)));
-	
+
 	SS_RELEASE();
 }
 
@@ -97,14 +97,14 @@ uint16_t rfm12_read(uint16_t d)
 {
 	uint16_t retval;
 	SS_ASSERT();
-	
+
 	SPDR = d>>8;
 	while(!(SPSR & (1<<SPIF)));
 	retval = SPDR<<8;
 	SPDR = d & 0xff;
 	while(!(SPSR & (1<<SPIF)));
 	retval |= SPDR;
-	
+
 	SS_RELEASE();
 	return retval;
 }
@@ -133,7 +133,7 @@ static inline void rfm12_data_inline(uint8_t cmd, uint8_t d)
 
 	SPDR = d;
 	while(!(SPSR & (1<<SPIF)));
-	
+
 	SS_RELEASE();
 }
 
@@ -148,7 +148,7 @@ static inline uint8_t rfm12_read_fifo_inline()
 
 	SPDR = 0;
 	while(!(SPSR & (1<<SPIF)));
-	
+
 	SS_RELEASE();
 	return SPDR;
 }
@@ -156,7 +156,7 @@ static inline uint8_t rfm12_read_fifo_inline()
 
 /*
 	interrupt handler for interrupts from rfm12
-	
+
 	The receiver will generate an interrupt request (IT) for the
 	microcontroller - by pulling the nIRQ pin low - on the following events:
 
@@ -197,7 +197,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK){
 #if RFM12_UART_DEBUG >= 2
 			uart_putc('T');
 #endif
-			
+
 			if(rf_tx_buffer.bytecount < rf_tx_buffer.num_bytes)
 			{
 				//load the next byte from our buffer struct.
@@ -205,17 +205,17 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK){
 			} else
 			{
 				//o.k. - so we are finished transmitting the bytes
-				
+
 				//flag the buffer as free again
 				rf_tx_buffer.status = STATUS_FREE;
-				
+
 				//we are now in rx mode again
 				rfm12_mode = MODE_RX;
-				
+
 				//turn off the transmitter
 				//and enable receiver
 				rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ER);
-				
+
 				//init receiver fifo
 				rfm12_data_inline(RFM12_CMD_FIFORESET>>8, CLEAR_FIFO_INLINE);
 				rfm12_data_inline(RFM12_CMD_FIFORESET>>8, ACCEPT_DATA_INLINE);
@@ -228,7 +228,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK){
 			uart_putc('R');
 			uart_putc(rfm12_read_fifo_inline());
 #endif
-		
+
 			/* check if we're receiving a new transmission or the next byte of
 			 * an active transmission
 			 *
@@ -237,7 +237,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK){
 			 *
 			 * FIXME: this in turn could lead to a false sync byte recognition
 			 * in the middle of a transfer
-			 * 
+			 *
 			 * FIXME: we should silently clock in the transmission without
 			 * writing it to the buffer OR apply double buffering
 			 */
@@ -248,17 +248,17 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK){
 				//read first byte, which is the length byte
 				checksum = rfm12_read_fifo_inline();
 				rf_rx_buffer.num_bytes = checksum + 3;
-				
+
 				if(rf_rx_buffer.rf_buffer_in->status == STATUS_FREE){
 					//the current receive buffer is empty, so we start receiving
 					rf_rx_buffer.status = STATUS_RECEIVING;
-				
+
 					rf_rx_buffer.rf_buffer_in->len = checksum;//hackhack: checksum holds length
 				}else{
 					//the buffer is full, so we ignore this transmission.
 					rf_rx_buffer.status = STATUS_IGNORING;
 				}
-				
+
 			}
 			//transfer is active, continue receipt
 			else if(rf_rx_buffer.status == STATUS_RECEIVING)
@@ -268,21 +268,21 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK){
 				{
 					uint8_t data;
 					data = rfm12_read_fifo_inline();
-					checksum ^= data;	
-					
+					checksum ^= data;
+
 					//put next byte into buffer, if there is enough space
 					if(rf_rx_buffer.bytecount < (RFM12_RX_BUFFER_SIZE + 3))
 					{
 						//hackhack: begin writing to struct at offsetof len
 						(& rf_rx_buffer.rf_buffer_in->len)[rf_rx_buffer.bytecount] = data;
 					}
-					
+
 					//check crc
 					if((rf_rx_buffer.bytecount == 2) && (checksum != 0xff) )
 					{
 						//invalid crc, reset transmission
 						rf_rx_buffer.status = STATUS_IDLE;
-					
+
 						//reset fifo
 						rfm12_data_inline(RFM12_CMD_FIFORESET>>8, CLEAR_FIFO_INLINE);
 						rfm12_data_inline(RFM12_CMD_FIFORESET>>8, ACCEPT_DATA_INLINE);
@@ -297,16 +297,16 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK){
 					uint8_t num;
 					//indicate that the receiver is idle again
 					rf_rx_buffer.status = STATUS_IDLE;
-					
+
 					//indicate that the Buffer is ready to be used
 					rf_rx_buffer.rf_buffer_in->status = STATUS_COMPLETE;
-					
+
 					//switch to other buffer
 					num = rf_rx_buffer.buffer_in_num;
 					num = (num+1) % 2;
 					rf_rx_buffer.buffer_in_num = num;
-
 					rf_rx_buffer.rf_buffer_in = &rf_rx_buffer.rf_buffers[num];
+
 					//reset fifo
 					rfm12_data_inline(RFM12_CMD_FIFORESET>>8, CLEAR_FIFO_INLINE);
 					rfm12_data_inline(RFM12_CMD_FIFORESET>>8, ACCEPT_DATA_INLINE);
@@ -316,7 +316,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK){
 				//FIXME: we don't check the checksum if we ignore a package.
 				//that could mean that we ignore a wrong number of bytes, but it shouldn't
 				//hurt in practice
-				
+
 				//check if transmission is complete
 				if(rf_rx_buffer.bytecount < rf_rx_buffer.num_bytes)
 				{
@@ -328,7 +328,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK){
 					rf_rx_buffer.status = STATUS_IDLE;
 					//reset fifo
 					rfm12_data_inline(RFM12_CMD_FIFORESET>>8, CLEAR_FIFO_INLINE);
-					rfm12_data_inline(RFM12_CMD_FIFORESET>>8, ACCEPT_DATA_INLINE);	
+					rfm12_data_inline(RFM12_CMD_FIFORESET>>8, ACCEPT_DATA_INLINE);
 				}
 			}
 		}
@@ -372,11 +372,11 @@ void rfm12_tick()
 
 	//disable the interrupt (as we're working directly with the transceiver now)
 	RFM12_INT_OFF();
-				
+
 	status = rfm12_read(RFM12_CMD_STATUS);
-	
+
 	RFM12_INT_ON();
-	
+
 	//check if we see a carrier
 	if(status & RFM12_STATUS_RSSI){
 		//yes: reset free counter
@@ -392,26 +392,26 @@ void rfm12_tick()
 			if(rf_tx_buffer.status == STATUS_OCCUPIED)
 			{
 				//yes: start transmitting
-				
+
 				//disable the interrupt (as we're working directly with the transceiver now)
 				RFM12_INT_OFF();
-				
+
 				//disable receiver - is this needed?
 				rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
-			
+
 				//set mode for interrupt handler
 				rfm12_mode = MODE_TX;
-				
+
 				//fill 2byte 0xAA preamble into data register
 				//this is explicitly done, just to be sure
 				//(hint: the tx FIFO [if el is enabled] is two staged, so we can safely write 2 bytes before starting)
 				rfm12_data(RFM12_CMD_TX | PREAMBLE);
 				rfm12_data(RFM12_CMD_TX | PREAMBLE);
-				
+
 				//set ET in power register to enable transmission
 				//(hint: TX starts now)
 				rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);
-			
+
 				RFM12_INT_ON();
 			}
 		}
@@ -431,19 +431,19 @@ uint8_t rfm12_start_tx(uint8_t type, uint8_t length)
 	//exit if the buffer isn't free
 	if(rf_tx_buffer.status != STATUS_FREE)
 		return RFM12_TX_OCCUPIED;
-	
+
 	//calculate number of bytes to be sent by ISR
 	//2 sync bytes + len byte + type byte + checksum + message length + 1 dummy byte
 	rf_tx_buffer.num_bytes = length + 6;
-	
+
 	//write airlab header to buffer
 	rf_tx_buffer.len = length;
 	rf_tx_buffer.type = type;
 	rf_tx_buffer.checksum = length ^ type ^ 0xff;
-	
+
 	//reset counter
 	rf_tx_buffer.bytecount = 0;
-	
+
 	//schedule packet for transmission
 	rf_tx_buffer.status = STATUS_OCCUPIED;
 
@@ -465,7 +465,7 @@ uint8_t rfm12_tx ( uint8_t len, uint8_t type, uint8_t *data )
 	//exit if the buffer isn't free
 	if(rf_tx_buffer.status != STATUS_FREE)
 		return RFM12_TX_OCCUPIED;
-	
+
 	memcpy ( rf_tx_buffer.buffer, data, len );
 	return rfm12_start_tx (type, len);
 }
@@ -482,15 +482,15 @@ void rfm12_init()
 {
 	DDR_SS |= (1<<BIT_SS);
 	SS_RELEASE();
-	
+
 	spi_init();
-	
+
 	rf_tx_buffer.sync[0] = SYNC_MSB;
 	rf_tx_buffer.sync[1] = SYNC_LSB;
-	
+
 	rf_rx_buffer.rf_buffer_out = &rf_rx_buffer.rf_buffers[0];
 	rf_rx_buffer.rf_buffer_in  = &rf_rx_buffer.rf_buffers[0];
-	
+
 	//disable all power
 	//this was no good idea, because when one writes the PWRMGT register
 	//two times in a short time, the second write seems to be delayed.
@@ -499,11 +499,11 @@ void rfm12_init()
 
 	//enable internal data register and fifo
 	rfm12_data(RFM12_CMD_CFG | RFM12_CFG_EL | RFM12_CFG_EF | RFM12_BAND_433 | RFM12_XTAL_12PF);
-	
+
 	//automatic clock lock control(AL), digital Filter(!S), Data quality
 	//detector value 3
 	rfm12_data(RFM12_CMD_DATAFILTER | RFM12_DATAFILTER_AL | 3);
-	
+
 	//2 Byte Sync Pattern, Start fifo fill when sychron pattern received,
 	//disable sensitive reset, Fifo filled interrupt at 8 bits
 	rfm12_data(RFM12_CMD_FIFORESET | RFM12_FIFORESET_DR | (8<<4));
@@ -511,7 +511,7 @@ void rfm12_init()
 	//set AFC to automatic, (+4 or -3)*2.5kHz Limit, fine mode, active and enabled
 	rfm12_data(RFM12_CMD_AFC | RFM12_AFC_AUTO_KEEP | RFM12_AFC_LIMIT_4
 				| RFM12_AFC_FI | RFM12_AFC_OE | RFM12_AFC_EN);
-	
+
 	//set frequency
 	rfm12_data(RFM12_CMD_FREQUENCY | RFM12_FREQUENCY_CALC_433(FREQ) );
 
@@ -520,27 +520,27 @@ void rfm12_init()
 
 	//set rx parameters: int-in/vdi-out pin is vdi-out,
 	//Bandwith, LNA, RSSI
-	rfm12_data(RFM12_CMD_RXCTRL | RFM12_RXCTRL_P16_VDI 
-			| RFM12_RXCTRL_VDI_FAST | RFM12_RXCTRL_BW_400 | RFM12_RXCTRL_LNA_6 
+	rfm12_data(RFM12_CMD_RXCTRL | RFM12_RXCTRL_P16_VDI
+			| RFM12_RXCTRL_VDI_FAST | RFM12_RXCTRL_BW_400 | RFM12_RXCTRL_LNA_6
 			| RFM12_RXCTRL_RSSI_79 );
-	
+
 	//set TX Power to -0dB, frequency shift = +-125kHz
 	rfm12_data(RFM12_CMD_TXCONF | RFM12_TXCONF_POWER_0 | RFM12_TXCONF_FS_CALC(125000) );
-	
+
 
 	//enable receiver
 	//rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);
 
 	//enable receiver
 	rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ER);
-	
+
 	//init receiver fifo, we now begin receiving.
 	rfm12_data(CLEAR_FIFO);
 	rfm12_data(ACCEPT_DATA);
 
 	//setup interrupt for falling edge trigger
 	RFM12_INT_SETUP();
-	
+
 	//activate the interrupt
 	RFM12_INT_ON();
 }
