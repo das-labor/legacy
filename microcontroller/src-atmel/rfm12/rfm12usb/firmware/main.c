@@ -21,6 +21,9 @@ different port or bit, change the macros below:
 #define LED_BIT_RED         6
 #define LED_BIT_GREEN		7
 
+//the time after which the red led is turned off
+#define LED_OFFTIME_RED		0x0003FFFF
+
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <avr/interrupt.h>  /* for sei() */
@@ -118,6 +121,8 @@ void init()
 
 int main(void)
 {
+	uint32_t led_cnt_red;	//count led turnon time
+
 	//main initialization
 	init();
 
@@ -126,6 +131,9 @@ int main(void)
 
 	//power led on
 	LED_PORT_OUTPUT |= _BV(LED_BIT_GREEN);
+
+	//reset led on count
+	led_cnt_red = 0;
 
 	while (42)
 	{
@@ -160,6 +168,16 @@ int main(void)
 
 			rfm12_rx_clear();
 			usbSetInterrupt(0, 0);  /* NULL message on interrupt socket */
+		}
+
+		//if the red led is on for some time
+		if((LED_PORT_OUTPUT & _BV(LED_BIT_RED)) && (led_cnt_red++ >= LED_OFFTIME_RED))
+		{
+			//turn it off
+			LED_PORT_OUTPUT &= ~_BV(LED_BIT_RED);
+
+			//reset counter
+			led_cnt_red = 0;
 		}
     }
 
