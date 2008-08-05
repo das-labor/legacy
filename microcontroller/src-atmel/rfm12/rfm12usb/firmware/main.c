@@ -125,22 +125,25 @@ int main(void)
 	sei();
 
 	//power led on
-	LED_PORT_OUTPUT |= _BV(LED_BIT_RED);
+	LED_PORT_OUTPUT |= _BV(LED_BIT_GREEN);
 
 	while (42)
 	{
 		rfm12_tick();
 		usbPoll();
 
+		//if rx buffer is full
 		if (rfm12_rx_status() == STATUS_COMPLETE)
 		{
 			uint8_t buflen;
 
-			LED_PORT_OUTPUT ^= _BV(LED_BIT_GREEN);
+			//toggle receive led
+			LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
 
 			buflen = rfm12_rx_len();
 			usbMsgPtr = (void *) rfm12_rx_buffer();
 			usbtxlen = buflen;
+
 			/*
 			m = fifo_put(&rx_fifo);
 			if(m)
@@ -154,11 +157,12 @@ int main(void)
 				m->type = rfm12_rx_type();
 			}
 			*/
+
 			rfm12_rx_clear();
 			usbSetInterrupt(0, 0);  /* NULL message on interrupt socket */
 		}
-
     }
+
     return 0;
 }
 
