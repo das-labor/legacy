@@ -14,6 +14,10 @@
 #define BUF_IN 0
 #define BUF_OUT 1
 
+#ifdef WIN32
+#define	usleep(x) sleep(x)
+#endif
+
 usb_dev_handle *udhandle = NULL;
 
 void sig_cleanup(int in_signum);
@@ -131,7 +135,8 @@ int main (int argc, char *argv[])
 
 	while (42)
 	{
-		sleep(1000);
+		usleep(50);
+
 		memset (buffer[BUF_IN], 0x00, sizeof(buffer[BUF_IN]));
 		buffer[BUF_IN][0] = 1;
 		tmp = usb_control_msg (udhandle,
