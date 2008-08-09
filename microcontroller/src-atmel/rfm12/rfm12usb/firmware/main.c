@@ -113,7 +113,7 @@ uchar usbFunctionWrite(uchar *data, uchar len)
 {
     uchar i;
 
-    LED_PORT_OUTPUT &= ~_BV(LED_BIT_GREEN);
+    LED_PORT_OUTPUT ^= _BV(LED_BIT_GREEN);
 
     // if this is the last incomplete chunk
     if(len > usbrxlen)
