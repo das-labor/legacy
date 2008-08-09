@@ -39,11 +39,15 @@ different port or bit, change the macros below:
 
 #include "rfm12.h"
 
+#define USB_SENDCHAR 0x23
+#define USB_TXPACKET 0x42
+
 /* ------------------------------------------------------------------------- */
 /* ----------------------------- USB interface ----------------------------- */
 /* ------------------------------------------------------------------------- */
 
 uint8_t usbtxlen = 0;
+uint8_t usbrxlen = 0, usbrxcnt = 0;
 uint8_t txbuf[32];
 
 
@@ -55,12 +59,28 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 	{
 		switch (rq->wValue.bytes[0])
 		{
-			default://case USB_SENDCHAR: /* send a single character */
+			case USB_SENDCHAR: /* send a single character */
 				txbuf[0] = rq->wIndex.bytes[0];
-				rfm12_tx (1, 0, &txbuf);
+				rfm12_tx (1, 0, txbuf);
 				//rfm12_tx (sizeof(foobar), 0, &foobar);
 				LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
 			break;
+
+			case USB_TXPACKET:
+				// initialize position index
+				usbrxcnt = 0;
+
+				// store the amount of data to be received
+				usbrxlen = rq->wLength.bytes[0];
+
+				// limit to buffer size
+				if(usbrxlen > sizeof(txbuf))
+					usbrxlen = sizeof(txbuf);
+
+
+				LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
+			// tell driver to use usbFunctionWrite()
+			return USB_NO_MSG;
 		}
 
 		#if 0
@@ -74,7 +94,6 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 		#endif
 	} else if (rq->bRequest == CUSTOM_RQ_GET_DATA)
 	{
-		//LED_PORT_OUTPUT ^= _BV(LED_BIT);
 		if (usbtxlen)
 		{
 			uint8_t tmp;
@@ -89,6 +108,41 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 	}
 	return 0;   /* default for not implemented requests: return no data back to host */
 }
+
+uchar usbFunctionWrite(uchar *data, uchar len)
+{
+    uchar i;
+
+    LED_PORT_OUTPUT &= ~_BV(LED_BIT_GREEN);
+
+    // if this is the last incomplete chunk
+    if(len > usbrxlen)
+    {
+		// limit to the amount we can store
+        len = usbrxlen;
+	}
+
+	//copy data
+	usbrxlen -= len;
+    for(i = 0; i < len; i++)
+    {
+        txbuf[usbrxcnt++] = data[i];
+	}
+
+    if(usbrxlen == 0)
+    {
+		// tx packet
+		rfm12_tx (txbuf[0], txbuf[1], &txbuf[2]);
+
+		// return 1 if we have all data
+		return 1;
+	}
+	else
+	{
+    	return 0;
+	}
+}
+
 
 
 /* ------------------------------------------------------------------------- */
@@ -167,7 +221,8 @@ int main(void)
 			*/
 
 			rfm12_rx_clear();
-			usbSetInterrupt(0, 0);  /* NULL message on interrupt socket */
+
+			//usbSetInterrupt(0, 0);  /* NULL message on interrupt socket */
 		}
 
 		//if the red led is on for some time
