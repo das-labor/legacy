@@ -36,105 +36,167 @@ different port or bit, change the macros below:
 #include "oddebug.h"        /* This is also an example for using debug macros */
 #include "requests.h"       /* The custom request numbers we use */
 //#include "../common/console.h"
-
 #include "rfm12.h"
+#include "rfmusb.h"
 
+//FIXME: rework packet transmission system (full packet, short/fast (1byte packet))
+//FIXME: move these defines to common header, which yet has to be commited by soeren
 #define USB_SENDCHAR 0x23
 #define USB_TXPACKET 0x42
+
+
+////////
+// global variables
+////////
+
+//notify buffer
+rfmusb_notifyPacket rfmusb_notifyBuf;
+
+//buffer for transmitting usb data to the host
+uint8_t rfmusb_usbTxLen = 0;
+uint8_t rfmusb_usbTxBuf[RFMUSB_USBTXBUFFER_SIZE];
+
+//buffer for receiving usb data from the host
+uint8_t rfmusb_usbRxLen = 0, rfmusb_usbRxCnt = 0;
+uint8_t rfmusb_usbRxBuf[RFMUSB_USBRXBUFFER_SIZE];
+
 
 /* ------------------------------------------------------------------------- */
 /* ----------------------------- USB interface ----------------------------- */
 /* ------------------------------------------------------------------------- */
 
-uint8_t usbtxlen = 0;
-uint8_t usbrxlen = 0, usbrxcnt = 0;
-uint8_t txbuf[32];
-
-
 usbMsgLen_t usbFunctionSetup(uchar data[8])
 {
 	usbRequest_t *rq = (void *)data;
 
-	if (rq->bRequest == CUSTOM_RQ_PUT_DATA)
+	//switch through requests
+	//don't expect the cases to break, they may also return
+	switch(rq->bRequest)
 	{
-		switch (rq->wValue.bytes[0])
-		{
-			case USB_SENDCHAR: /* send a single character */
-				txbuf[0] = rq->wIndex.bytes[0];
-				rfm12_tx (1, 0, txbuf);
-				//rfm12_tx (sizeof(foobar), 0, &foobar);
+		//host wants to write packets to the rfm12
+		case RFMUSB_RQ_RFM12_PUT:
+			switch (rq->wValue.bytes[0])
+			{
+				//send a single character
+				//FIXME: please cleanup define name and location
+				case USB_SENDCHAR:
+					//copy data
+					rfmusb_usbRxBuf[0] = rq->wIndex.bytes[0];
+
+					//send
+					rfm12_tx (1, 0, rfmusb_usbRxBuf);
+
+					//toggle led
+					LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
+
+					//use default return value
+					break;
+
+				//transfer a raw rfm12 packet
+				case USB_TXPACKET:
+					// initialize position index
+					rfmusb_usbRxCnt = 0;
+
+					// store the amount of data to be received
+					rfmusb_usbRxLen = rq->wLength.bytes[0];
+
+					// limit to buffer size
+					if(rfmusb_usbRxLen > RFMUSB_USBRXBUFFER_SIZE)
+						rfmusb_usbRxLen = RFMUSB_USBRXBUFFER_SIZE;
+
+					//toggle status led
+					LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
+
+					// tell driver to use usbFunctionWrite()
+					return USB_NO_MSG;
+
+				//use default return value
+				default:
+					break;
+			}
+
+		//host wants to read rfm12 packet data
+		case RFMUSB_RQ_RFM12_GET:
+			//if there is data to transmit
+			if(rfmusb_usbTxLen)
+			{
+				uint8_t tmp;
+
+				//set usb message pointer
+				usbMsgPtr = (uchar *)rfmusb_usbTxBuf;
+
+				//free buffer
+				tmp = rfmusb_usbTxLen;
+				rfmusb_usbTxLen = 0;
+
+				//switch led
 				LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
+
+				//tell the driver to send n bytes
+				return tmp;
+			}
+			else
+			{
+				//use default return value
+				break;
+			}
+
+		//host polls for notifications
+		case RFMUSB_RQ_GETNOTIFICATION:
+			//if there is any
+			if(rfmusb_notifyBuf.len)
+			{
+				uint8_t tmp;
+
+				//set usb message pointer
+				usbMsgPtr = (uchar *)&rfmusb_notifyBuf;
+
+				//free buffer
+				tmp = rfmusb_notifyBuf.len;
+				rfmusb_notifyBuf.len = 0;
+
+				//tell driver to send n bytes
+				return tmp;
+			}
+
+		//use default return value
+		default:
 			break;
-
-			case USB_TXPACKET:
-				// initialize position index
-				usbrxcnt = 0;
-
-				// store the amount of data to be received
-				usbrxlen = rq->wLength.bytes[0];
-
-				// limit to buffer size
-				if(usbrxlen > sizeof(txbuf))
-					usbrxlen = sizeof(txbuf);
-
-
-				LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
-			// tell driver to use usbFunctionWrite()
-			return USB_NO_MSG;
-		}
-
-		#if 0
-		if (rq->wValue.bytes[0] & 1)
-		{
-			LED_PORT_OUTPUT |= _BV(LED_BIT_RED);
-		} else
-		{                          /* clear LED */
-			LED_PORT_OUTPUT &= ~_BV(LED_BIT_RED);
-		}
-		#endif
-	} else if (rq->bRequest == CUSTOM_RQ_GET_DATA)
-	{
-		if (usbtxlen)
-		{
-			uint8_t tmp;
-			tmp = usbtxlen;
-			LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
-			usbtxlen = 0;
-			return tmp; /* tell the driver to send n bytes */
-		} else
-		{
-			return 0;
-		}
 	}
+
 	return 0;   /* default for not implemented requests: return no data back to host */
 }
 
+
+//receive raw packet data from the host
+//FIXME: to allow different modes, one should check the current mode and call appropriate subfunctions
 uchar usbFunctionWrite(uchar *data, uchar len)
 {
     uchar i;
 
     LED_PORT_OUTPUT ^= _BV(LED_BIT_GREEN);
 
-    // if this is the last incomplete chunk
-    if(len > usbrxlen)
+    //if this is the last incomplete chunk
+    if(len > rfmusb_usbRxLen)
     {
-		// limit to the amount we can store
-        len = usbrxlen;
+		//limit to the amount we can store
+        len = rfmusb_usbRxLen;
 	}
 
 	//copy data
-	usbrxlen -= len;
+	rfmusb_usbRxLen -= len;
     for(i = 0; i < len; i++)
     {
-        txbuf[usbrxcnt++] = data[i];
+        rfmusb_usbRxBuf[rfmusb_usbRxCnt++] = data[i];
 	}
 
-    if(usbrxlen == 0)
+    if(rfmusb_usbRxLen == 0)
     {
-		// tx packet
-		rfm12_tx (txbuf[0], txbuf[1], &txbuf[2]);
+		//tx packet
+		//FIXME: test if the transmit buffer is free and issue tx rate limit notification to host if not
+		rfm12_tx(rfmusb_usbRxBuf[0], rfmusb_usbRxBuf[1], &rfmusb_usbRxBuf[2]);
 
-		// return 1 if we have all data
+		//return 1 if we have all data
 		return 1;
 	}
 	else
@@ -146,6 +208,61 @@ uchar usbFunctionWrite(uchar *data, uchar len)
 
 
 /* ------------------------------------------------------------------------- */
+
+
+//send a notification to the host
+uint8_t usbrfm_notifyHost(uint8_t notifyType, uchar *data, uint8_t len)
+{
+	//validate range
+	if((len > RFMUSB_NOTIFYBUFFER_SIZE) || (len == 0))
+	{
+		return USBRFM_ERR_RANGE;
+	}
+
+	//only send if the buffer is free and if we have data
+	if(rfmusb_notifyBuf.len == 0)
+	{
+		memcpy(rfmusb_notifyBuf.data, data, len);
+		rfmusb_notifyBuf.len = len + RFMUSB_NOTIFYBUFFER_OVERHEAD;
+	}
+	else
+	{
+		return USBRFM_ERR_OCCUPIED;
+	}
+
+	return USBRFM_ERR_OK;
+}
+
+
+//send a raw rfm12 packet to the host
+uint8_t usbrfm_usbTxRfmBuf(uint8_t packetType, uchar *data, uint8_t len)
+{
+	//validate range
+	if((len > RFM12_RX_BUFFER_SIZE) || (len == 0))
+	{
+		return USBRFM_ERR_RANGE;
+	}
+
+	//only send if the buffer is free and if we have data
+	if(rfmusb_usbTxLen == 0)
+	{
+		memcpy(&rfmusb_usbTxBuf[2], data, len);
+		rfmusb_usbTxBuf[0] = len;
+		rfmusb_usbTxBuf[1] = packetType;
+		rfmusb_usbTxLen = len + RFMUSB_NOTIFYBUFFER_OVERHEAD;
+	}
+	else
+	{
+		return USBRFM_ERR_OCCUPIED;
+	}
+
+	return USBRFM_ERR_OK;
+}
+
+
+
+/* ------------------------------------------------------------------------- */
+
 
 void init()
 {
@@ -197,32 +314,15 @@ int main(void)
 		//if rx buffer is full
 		if (rfm12_rx_status() == STATUS_COMPLETE)
 		{
-			uint8_t buflen;
-
 			//toggle receive led
 			LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
 
-			buflen = rfm12_rx_len();
-			usbMsgPtr = (void *) rfm12_rx_buffer();
-			usbtxlen = buflen;
+			//copy packet into usb transmit buffer
+			//TODO: check return value and issue rx traffic limit exeeded notification if the buffer is full
+			usbrfm_usbTxRfmBuf(rfm12_rx_type(), (uint8_t *) rfm12_rx_buffer(), rfm12_rx_len());
 
-			/*
-			m = fifo_put(&rx_fifo);
-			if(m)
-			{
-
-				buflen = rfm12_rx_len();
-				if (buflen > 30) buflen = 30;
-
-				memcpy(m->data, rfm12_rx_buffer(), buflen);
-				m->len = buflen;
-				m->type = rfm12_rx_type();
-			}
-			*/
-
+			//clear rfm12 buffer
 			rfm12_rx_clear();
-
-			//usbSetInterrupt(0, 0);  /* NULL message on interrupt socket */
 		}
 
 		//if the red led is on for some time
