@@ -216,7 +216,6 @@ void tetris_view_blinkLines(tetris_playfield_t *pPl)
 	// don't try to draw below the border
 	int8_t nDeepestRowOffset = ((nRow + 3) < tetris_playfield_getHeight(pPl) ?
 			3 : tetris_playfield_getHeight(pPl) - (nRow + 1));
-	printf("%d, %d, %d\n", nRow, nDeepestRowOffset, tetris_playfield_getHeight(pPl) - (nRow + 1));
 	
 	// this loop controls how often the lines should blink
 	for (uint8_t i = 0; i < TETRIS_VIEW_LINE_BLINK_COUNT; ++i)
