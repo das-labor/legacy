@@ -426,7 +426,8 @@ void tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl)
 	// bit mask of a full row
 	uint16_t nFullRow = 0xFFFF >> (16 - pPl->nWidth);
 
-	// return value
+	// bit mask (only 4 bits) that tells us if the n-th row after the
+	// current nRow is complete (n-th bit set to 1, LSB represents nRow itself)
 	uint8_t nRowMask = 0;
 
 	// determine sane start and stop values for the dump' index
@@ -445,8 +446,9 @@ void tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl)
 		// is current row a full row?
 		if ((nFullRow & pPl->dump[i]) == nFullRow)
 		{
-			// set corresponding bit for the return value
-			nRowMask |= 0x0008 >> (nStartRow - i);
+			// set corresponding bit for the row mask
+			// nRowMask |= 0x08 >> (nStartRow - i);
+			nRowMask |= 0x01 <<  (i - pPl->nRow);
 		}
 		else
 		{
