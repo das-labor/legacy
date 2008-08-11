@@ -24,16 +24,21 @@
  * defines *
  ***********/
 
-// how often should the borders blink (to indicate level up)
-#define TETRIS_VIEW_BLINK_COUNT 2
+// how often should the border blink (to indicate level up)
+#define TETRIS_VIEW_BORDER_BLINK_COUNT 2
+// amount of time (in ms) between border color changes 
+#define TETRIS_VIEW_BORDER_BLINK_DELAY 100
 
-// amount of time (in ms) between color changes 
-#define TETRIS_VIEW_BLINK_DELAY 100
+// how often should the lines blink when they get removed
+#define TETRIS_VIEW_LINE_BLINK_COUNT 3
+// amount of time (in ms) between line color changes 
+#define TETRIS_VIEW_LINE_BLINK_DELAY 10
 
 // colors of game elements
+#define TETRIS_VIEW_COLORSPACE  0
 #define TETRIS_VIEW_COLORBORDER 1
-#define TETRIS_VIEW_COLORPIECE 3
-#define TETRIS_VIEW_COLORSPACE 0
+#define TETRIS_VIEW_COLORFADE   2
+#define TETRIS_VIEW_COLORPIECE  3
 
 
 /***************************
@@ -182,17 +187,63 @@ void tetris_view_drawBorders(uint8_t nColor)
 
 
 /* Function:     tetris_view_blinkBorders
- * Description:  makes the borders blink to notify player of a level change
+ * Description:  lets the borders blink to notify player of a level change
  * Return value: void
  */
 void tetris_view_blinkBorders()
 {
-	for (uint8_t i = 0; i < TETRIS_VIEW_BLINK_COUNT; ++i)
+	for (uint8_t i = 0; i < TETRIS_VIEW_BORDER_BLINK_COUNT; ++i)
 	{
 		tetris_view_drawBorders(TETRIS_VIEW_COLORPIECE);
-		WAIT(TETRIS_VIEW_BLINK_DELAY);
+		WAIT(TETRIS_VIEW_BORDER_BLINK_DELAY);
 		tetris_view_drawBorders(TETRIS_VIEW_COLORBORDER);
-		WAIT(TETRIS_VIEW_BLINK_DELAY);
+		WAIT(TETRIS_VIEW_BORDER_BLINK_DELAY);
+	}
+}
+
+
+/* Function:      tetris_view_blinkLines
+ * Description:   lets complete lines blink to emphasize their removal
+ * Argmument pPl: pointer to the playfield whose complete lines should blink
+ * Return value:  void
+ */
+void tetris_view_blinkLines(tetris_playfield_t *pPl)
+{
+	// reduce necessity of pointer arithmetic
+	int8_t nRow = tetris_playfield_getRow(pPl);
+	uint8_t nRowMask = tetris_playfield_getRowMask(pPl);
+	
+	// don't try to draw below the border
+	int8_t nDeepestRowOffset = ((nRow + 3) < tetris_playfield_getHeight(pPl) ?
+			3 : tetris_playfield_getHeight(pPl) - (nRow + 1));
+	printf("%d, %d, %d\n", nRow, nDeepestRowOffset, tetris_playfield_getHeight(pPl) - (nRow + 1));
+	
+	// this loop controls how often the lines should blink
+	for (uint8_t i = 0; i < TETRIS_VIEW_LINE_BLINK_COUNT; ++i)
+	{
+		// this loop determines the color of the line to be drawn 
+		for (uint8_t nColIdx = 0; nColIdx < 2; ++nColIdx)
+		{
+			// iterate through the possibly complete lines 
+			for (uint8_t j = 0; j <= nDeepestRowOffset; ++j)
+			{
+				// is current line a complete line?
+				if ((nRowMask & (0x01 << j)) != 0)
+				{
+					// draw line in current color
+					uint8_t y = nRow + j;
+					for (uint8_t x = 0; x < 10; ++x)
+					{
+
+						uint8_t nColor = (nColIdx == 0 ? TETRIS_VIEW_COLORFADE
+								: TETRIS_VIEW_COLORPIECE); 
+						setpixel((pixel){14 - x, y}, nColor);
+					}
+				}
+			}
+			// wait a few ms to make the blink effect visible
+			WAIT(TETRIS_VIEW_BORDER_BLINK_DELAY);
+		}
 	}
 }
 
@@ -269,11 +320,17 @@ void tetris_view_update(tetris_view_t *pV)
 {
 	assert(pV != NULL);
 
-	// draw dump
-	tetris_view_drawDump(pV->pPl);	
+	// let complete lines blink (if there are any)
+	if (tetris_playfield_getRowMask(pV->pPl) != 0)
+	{
+		tetris_view_blinkLines(pV->pPl);
+	}
 
 	// draw preview piece
 	tetris_view_drawPreviewPiece(tetris_logic_getPreviewPiece(pV->pLogic));
+
+	// draw dump
+	tetris_view_drawDump(pV->pPl);	
 
 	// visual feedback to inform about a level change
 	uint8_t nLevel = tetris_logic_getLevel(pV->pLogic);
