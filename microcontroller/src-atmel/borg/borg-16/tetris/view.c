@@ -32,7 +32,7 @@
 // how often should the lines blink when they get removed
 #define TETRIS_VIEW_LINE_BLINK_COUNT 3
 // amount of time (in ms) between line color changes 
-#define TETRIS_VIEW_LINE_BLINK_DELAY 10
+#define TETRIS_VIEW_LINE_BLINK_DELAY 75
 
 // colors of game elements
 #define TETRIS_VIEW_COLORSPACE  0
@@ -242,7 +242,7 @@ void tetris_view_blinkLines(tetris_playfield_t *pPl)
 				}
 			}
 			// wait a few ms to make the blink effect visible
-			WAIT(TETRIS_VIEW_BORDER_BLINK_DELAY);
+			WAIT(TETRIS_VIEW_LINE_BLINK_DELAY);
 		}
 	}
 }
