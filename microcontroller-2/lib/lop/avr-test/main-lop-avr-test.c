@@ -65,7 +65,7 @@ void wait(int ms){
 
 /******************************************************************************/
 
-void lop0_sendrawbyte(uint8_t b){
+void lop0_sendrawbyte(uint8_t b, void* ctx){
 	uart_putc((char)b);
 }
 
@@ -80,7 +80,7 @@ void onuartrx(uint8_t b){
 
 /******************************************************************************/
 
-void lop0_streamrx(uint8_t b){
+void lop0_streamrx(uint8_t b, void* ctx){
 	static uint8_t i=0;
 	if(onsync){
 		if(i==0)
@@ -92,13 +92,13 @@ void lop0_streamrx(uint8_t b){
 
 /******************************************************************************/
 
-void lop0_streamsync(){	
+void lop0_streamsync(void* ctx){	
 	onsync=1;
 }
 
 /******************************************************************************/
 
-void lop0_messagerx(uint16_t length, uint8_t * msg){
+void lop0_messagerx(uint16_t length, uint8_t * msg, void* ctx){
 	uint8_t b;
 	if(!length)
 		return;
@@ -138,6 +138,7 @@ int main(){
 	uart_hook = onuartrx;
 	
 	//set handlers for the outputs from lop
+	lop_init(&lop0);
 	lop0.on_streamrx = lop0_streamrx;
 	lop0.sendrawbyte = lop0_sendrawbyte;
 	lop0.on_streamsync = lop0_streamsync;

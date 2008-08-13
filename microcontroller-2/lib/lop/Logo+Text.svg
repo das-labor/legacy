@@ -2,7 +2,7 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
@@ -12,10 +12,13 @@
    height="297mm"
    id="svg2"
    sodipodi:version="0.32"
-   inkscape:version="0.45.1"
+   inkscape:version="0.46"
    sodipodi:docbase="/home/bg/workspace/lop"
    sodipodi:docname="Logo+Text.svg"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-filename="/home/bg/workspace/lop/Logo+Text.png"
+   inkscape:export-xdpi="300"
+   inkscape:export-ydpi="300">
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -23,7 +26,7 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
+     inkscape:zoom="0.98994949"
      inkscape:cx="240.09828"
      inkscape:cy="979.79512"
      inkscape:document-units="px"
@@ -37,12 +40,37 @@
      guidetolerance="50"
      inkscape:object-paths="true"
      inkscape:window-width="1022"
-     inkscape:window-height="581"
+     inkscape:window-height="575"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:grid-bbox="false" />
+     inkscape:grid-bbox="false">
+    <inkscape:grid
+       type="xygrid"
+       id="grid4184" />
+  </sodipodi:namedview>
   <defs
-     id="defs4" />
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow1Mend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Mend"
+       style="overflow:visible;">
+      <path
+         id="path3418"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none;"
+         transform="scale(0.4) rotate(180) translate(10,0)" />
+    </marker>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective2634" />
+  </defs>
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -689,44 +717,16 @@
        inkscape:export-xdpi="300"
        inkscape:export-ydpi="300" />
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:5.07127237px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 129.5724,59.862809 C 152.89445,59.862809 176.21652,59.862809 199.53859,59.862809 C 222.86064,59.862809 246.18269,59.862809 269.50476,59.862809 C 272.83647,59.862809 276.16823,59.862809 279.49995,59.862809"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:4.92513943px;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow1Mend);stroke-opacity:1"
+       d="M 129.49933,59.862809 C 151.31704,59.862809 173.13476,59.862809 194.95248,59.862809 C 216.77018,59.862809 238.58788,59.862809 260.4056,59.862809 C 263.5224,59.862809 266.63925,59.862809 269.75607,59.862809"
        id="path4260"
        inkscape:export-filename="/home/bg/workspace/lop/Logo+Text.png"
        inkscape:export-xdpi="300"
        inkscape:export-ydpi="300" />
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2.34520721px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 270.63688,69.725293 C 274.17241,66.189763 277.70795,62.654223 281.24348,59.118693"
-       id="path4436"
-       inkscape:export-filename="/home/bg/workspace/lop/Logo+Text.png"
-       inkscape:export-xdpi="300"
-       inkscape:export-ydpi="300" />
-    <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2.34520721px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 270.17036,49.6754 C 273.70589,53.21093 277.24143,56.74647 280.77696,60.282"
-       id="path4444"
-       inkscape:export-filename="/home/bg/workspace/lop/Logo+Text.png"
-       inkscape:export-xdpi="300"
-       inkscape:export-ydpi="300" />
-    <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:5.07127237px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 279.70992,90.029425 C 256.38787,90.029425 233.0658,90.029425 209.74373,90.029425 C 186.42168,90.029425 163.09963,90.029425 139.77756,90.029425 C 136.44585,90.029425 133.11409,90.029425 129.78237,90.029425"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:5.01484203;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow1Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 279.738,90.029425 C 257.96764,90.029425 236.19725,90.029425 214.42687,90.029425 C 192.6565,90.029425 170.88614,90.029425 149.11574,90.029425 C 146.00571,90.029425 142.89561,90.029425 139.78555,90.029425"
        id="path4458"
-       inkscape:export-filename="/home/bg/workspace/lop/Logo+Text.png"
-       inkscape:export-xdpi="300"
-       inkscape:export-ydpi="300" />
-    <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2.34520721px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 138.64544,80.166937 C 135.10991,83.702467 131.57437,87.238011 128.03884,90.773541"
-       id="path4460"
-       inkscape:export-filename="/home/bg/workspace/lop/Logo+Text.png"
-       inkscape:export-xdpi="300"
-       inkscape:export-ydpi="300" />
-    <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2.34520721px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 139.11196,100.21683 C 135.57643,96.681304 132.04089,93.145764 128.50536,89.610234"
-       id="path4462"
        inkscape:export-filename="/home/bg/workspace/lop/Logo+Text.png"
        inkscape:export-xdpi="300"
        inkscape:export-ydpi="300" />
