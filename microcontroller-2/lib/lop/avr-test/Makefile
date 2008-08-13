@@ -23,17 +23,19 @@ CC             = avr-gcc
 
 
 
-override CFLAGS        = -g -pedantic -std=c99 -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -morder1
+override CFLAGS        = -g -pedantic -std=c99 -I.. -L.. -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -morder1
 # -fnew-ra
-override LDFLAGS       = -Wl,-Map,$(PRG).map
+override LDFLAGS       =  -I.. -L.. -Wl,-Map,$(PRG).map
 override ASFLAGS	   = -mmcu=$(MCU_TARGET)
-
 
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
 
 all: $(PRG).elf lst text eeprom
 
+
+lop.o: ../lop.c ../lop.h
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(PRG).elf: $(OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)

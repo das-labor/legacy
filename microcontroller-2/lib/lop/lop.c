@@ -57,6 +57,20 @@ void lop_error(uint8_t b){
 	for(;;)
 		;
 }
+/******************************************************************************/
+
+void lop_init(lop_ctx_t* ctx){
+	ctx->rxstate = idle;
+	ctx->msgretstate = idle;
+	ctx->txstate = idle;
+	ctx->on_msgrx = NULL;
+	ctx->on_reset = NULL;
+	ctx->on_streamrx = NULL;
+	ctx->on_streamsync = NULL;
+	ctx->msgbuffer = NULL;
+	ctx->sendrawbyte = NULL;
+	ctx->escaped = 0;
+}
 
 /******************************************************************************/
 
@@ -65,6 +79,9 @@ void lop_reset(lop_ctx_t* ctx){
 	if(ctx->msgbuffer){
 		free(ctx->msgbuffer);
 		ctx->msgbuffer = NULL;
+	}
+	if(ctx->on_reset){
+		ctx->on_reset(ctx);
 	}
 }
 
@@ -116,7 +133,7 @@ void lop_process_l1(lop_ctx_t* ctx, uint8_t b){
 					lop_error(2);
 				}
 				if(ctx->on_streamsync)
-					ctx->on_streamsync();
+					ctx->on_streamsync(ctx);
 				break;
 			default:
 				/* invalid escape-sequence */
@@ -133,7 +150,7 @@ void lop_process_l2(lop_ctx_t* ctx, uint8_t b){
 		case idle:
 			/* stream data */
 			if(ctx->on_streamrx)
-				ctx->on_streamrx(b);
+				ctx->on_streamrx(b, ctx);
 			break;
 		case message:
 			switch(ctx->msgidx){
@@ -153,7 +170,7 @@ void lop_process_l2(lop_ctx_t* ctx, uint8_t b){
 			}
 			if(ctx->msgidx==(uint32_t)ctx->msglength+1){ /* end of message */
 				if(ctx->on_msgrx)
-					ctx->on_msgrx(ctx->msglength, ctx->msgbuffer);
+					ctx->on_msgrx(ctx->msglength, ctx->msgbuffer, ctx);
 				free(ctx->msgbuffer);
 				ctx->msgbuffer = NULL;
 				ctx->rxstate = ctx->msgretstate;
@@ -177,23 +194,23 @@ void lop_sendbyte(lop_ctx_t * ctx,uint8_t b){
 	
 	switch(b){
 		case LOP_ESC_CODE:
-			ctx->sendrawbyte(LOP_ESC_CODE);
-			ctx->sendrawbyte(LOP_ESC_ESC);
+			ctx->sendrawbyte(LOP_ESC_CODE, ctx);
+			ctx->sendrawbyte(LOP_ESC_ESC, ctx);
 			break;
 		case LOP_RESET_CODE:
-			ctx->sendrawbyte(LOP_ESC_CODE);
-			ctx->sendrawbyte(LOP_RESET_ESC);
+			ctx->sendrawbyte(LOP_ESC_CODE, ctx);
+			ctx->sendrawbyte(LOP_RESET_ESC, ctx);
 			break;
 		case LOP_XON_CODE:
-			ctx->sendrawbyte(LOP_ESC_CODE);
-			ctx->sendrawbyte(LOP_XON_ESC);
+			ctx->sendrawbyte(LOP_ESC_CODE, ctx);
+			ctx->sendrawbyte(LOP_XON_ESC, ctx);
 			break;
 		case LOP_XOFF_CODE:
-			ctx->sendrawbyte(LOP_ESC_CODE);
-			ctx->sendrawbyte(LOP_XOFF_ESC);
+			ctx->sendrawbyte(LOP_ESC_CODE, ctx);
+			ctx->sendrawbyte(LOP_XOFF_ESC, ctx);
 			break;
 		default:
-			ctx->sendrawbyte(b);
+			ctx->sendrawbyte(b, ctx);
 			break;
 	}
 }
@@ -206,8 +223,8 @@ void lop_sendmessage(lop_ctx_t * ctx,uint16_t length, uint8_t * msg){
 	while(ctx->txstate==message)
 		;
 	ctx->txstate=message;
-	ctx->sendrawbyte(LOP_ESC_CODE);
-	ctx->sendrawbyte(LOP_TYPE_MSG);
+	ctx->sendrawbyte(LOP_ESC_CODE, ctx);
+	ctx->sendrawbyte(LOP_TYPE_MSG, ctx);
 	lop_sendbyte(ctx, length>>8);
 	lop_sendbyte(ctx, length&0x00FF);
 	while(length--)
@@ -223,8 +240,8 @@ void lop_streamsync(lop_ctx_t * ctx){
 	while(ctx->txstate==message)
 		;
 	ctx->txstate=idle;
-	ctx->sendrawbyte(LOP_ESC_CODE);
-	ctx->sendrawbyte(LOP_TYPE_STREAMSYNC);
+	ctx->sendrawbyte(LOP_ESC_CODE, ctx);
+	ctx->sendrawbyte(LOP_TYPE_STREAMSYNC, ctx);
 }
 
 /******************************************************************************/
@@ -244,6 +261,6 @@ void lop_sendstream(lop_ctx_t * ctx, uint8_t b){
 
 void lop_sendreset(lop_ctx_t * ctx){
 	if(ctx->sendrawbyte)
-		ctx->sendrawbyte(LOP_RESET_CODE);
+		ctx->sendrawbyte(LOP_RESET_CODE, ctx);
 }
 
