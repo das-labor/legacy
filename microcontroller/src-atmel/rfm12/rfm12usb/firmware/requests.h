@@ -16,7 +16,7 @@
 #ifndef __REQUESTS_H_INCLUDED__
 #define __REQUESTS_H_INCLUDED__
 
-#define CUSTOM_RQ_ECHO          0
+#define RFMUSB_RQ_ECHO          0x00
 /* Request that the device sends back wValue and wIndex. This is used with
  * random data to test the reliability of the communication.
  */
