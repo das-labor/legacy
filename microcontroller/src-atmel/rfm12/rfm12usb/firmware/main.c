@@ -34,8 +34,7 @@ different port or bit, change the macros below:
 
 #include "usbdrv.h"
 #include "oddebug.h"        /* This is also an example for using debug macros */
-#include "requests.h"       /* The custom request numbers we use */
-//#include "../common/console.h"
+#include "../common/requests.h"       /* The custom request numbers we use */
 #include "rfm12.h"
 #include "rfmusb.h"
 
