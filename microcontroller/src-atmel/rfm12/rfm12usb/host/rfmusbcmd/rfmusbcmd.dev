@@ -57,4 +57,13 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
+[Unit2]
+FileName=..\example\opendevice.c
+CompileCpp=0
+Folder=rfmusbcmd
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
 
