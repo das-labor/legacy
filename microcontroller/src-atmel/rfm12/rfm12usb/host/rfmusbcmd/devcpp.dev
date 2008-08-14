@@ -1,6 +1,6 @@
 [Project]
-FileName=devcpp.dev
-Name=rfm12usb cmdline
+FileName=rfmusbcmd.dev
+Name=rfmusbcmd
 UnitCount=2
 Type=1
 Ver=1
@@ -18,7 +18,7 @@ Icon=
 ExeOutput=
 ObjectOutput=
 OverrideOutput=1
-OverrideOutputName=rfm12dump.exe
+OverrideOutputName=rfmusbcmd.exe
 HostApplication=
 Folders=
 CommandLine=
@@ -48,22 +48,13 @@ ProductVersion=
 AutoIncBuildNr=0
 
 [Unit1]
-FileName=airdump.c
+FileName=rfmusbcmd.c
 CompileCpp=0
-Folder=rfm12usb cmdline
+Folder=rfmusbcmd
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit2]
-FileName=opendevice.c
-CompileCpp=0
-Folder=rfm12usb cmdline
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
 
