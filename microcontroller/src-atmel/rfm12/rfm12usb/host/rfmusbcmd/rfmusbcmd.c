@@ -6,10 +6,10 @@
 #include <unistd.h>
 #include <signal.h>
 
-#include "opendevice.h"
+#include "../example/opendevice.h"
 
 #include "../firmware/usbconfig.h"
-#include "../firmware/requests.h"
+#include "../common/requests.h"
 
 #define BUF_IN 0
 #define BUF_OUT 1
