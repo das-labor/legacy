@@ -44,8 +44,8 @@ int UsbDevice::reqeuestRead(int request, int value, int index, char *bytes, int 
 
 int UsbDevice::requestWrite(int request, int value, int index, char *bytes, int size, int timeout)
 {
-	//not implemented yet
-	return -1;
+	return usb_control_msg(handle, USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
+        request, value, index, bytes, size, timeout);
 }
 
 
