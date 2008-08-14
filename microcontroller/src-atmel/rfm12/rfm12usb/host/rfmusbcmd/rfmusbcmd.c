@@ -6,42 +6,210 @@
 #include <unistd.h>
 #include <signal.h>
 
+//for simple usbOpenDevice
 #include "../example/opendevice.h"
 
-#include "../firmware/usbconfig.h"
-#include "../common/requests.h"
-
-#define BUF_IN 0
-#define BUF_OUT 1
+//common includes
+#include "../../common/usb_id.h"
+#include "../../common/requests.h"
 
 #ifdef WIN32
 #define	usleep(x) sleep(x)
 #endif
 
+#define USB_TXPACKET 0x42
+#define RFM12_MAX_PACKET_LENGTH 30
+#define RADIO_TXBUFFER_HEADER_LEN 2
+#define DEFAULT_USB_TIMEOUT 1000
+
+//tx and rx raw packet buffer struct
+typedef struct{
+	unsigned char len;			                       //length byte - number of bytes in buffer
+	unsigned char type;			                       //type field for airlab
+	unsigned char buffer[RFM12_MAX_PACKET_LENGTH];     //generic buffer
+} radio_packetbuffer;
+
+
+//globals
 usb_dev_handle *udhandle = NULL;
+radio_packetbuffer packetBuffer;                                
 
+//forward declarations
 void sig_cleanup(int in_signum);
+int radio_rx_dump(void);
+int radio_rx(void);
+int radio_tx(unsigned char len, unsigned char type, unsigned char *data);
+void UI_main_menu(void);
+void UI_menu_show(void);
+void UI_send_raw(void);
 
-void sig_cleanup (int in_signum)
+
+//dump packets
+int radio_rx_dump(void)
 {
-#ifndef WIN32
-	printf("DOES NOT COMPUTE! (Signal %i)\r\n", in_signum);
-#endif
-	if (udhandle != NULL) usb_close ( udhandle );
-#ifdef WIN32
-	system("pause");
-	exit (1);
-#endif
+    uint_fast16_t i;
+	uint_fast32_t packetCnt = 0, packetLen;     
+	
+    do
+	{
+        //rate limit (don't be faster than 10us for a 16MHz device
+        usleep(10);  
+        
+        //clear buffer
+        memset (&packetBuffer, 0x00, sizeof(packetBuffer));
+        
+        //request raw packet
+        packetLen = usb_control_msg (udhandle,
+        		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
+        		RFMUSB_RQ_RFM12_GET, 0, 0, (char *)&packetBuffer, sizeof(packetBuffer),
+        		DEFAULT_USB_TIMEOUT);
+
+        //if something has been received        		
+        if (packetLen > 0)
+        {
+            //increment packet counter
+        	packetCnt++;
+        	
+        	//dump packet
+        	printf ("--RX--  len: %02i, type: %02x, num: #%010u  --RX--\r\n", packetBuffer.len, packetBuffer.type, packetCnt);
+        	for (i = 0; i < packetLen; i++)
+        	{
+        		printf("%c", packetBuffer.buffer[i]);
+        	}
+        	printf("\r\n");
+        }
+        else if (packetLen < 0)
+        {
+        	fprintf (stderr, "USB error: %s\r\n", usb_strerror());
+        	return __LINE__ * -1;
+        }
+    }
+    //FIXME: implement nicer way to quit the packetdump than ctrl+c
+    while(42);
 }
 
-int main (int argc, char *argv[])
-{
-	uint_fast16_t i;
-	int vid, pid, tmp;
 
-	uint8_t buffer[2][64];
-	uint16_t buflen[2] = { 0, 0 };
-	uint_fast32_t packetcounter = 0;
+//receive a packet into the standard packet buffer
+int radio_rx(void)
+{
+    //clear buffer
+    memset (&packetBuffer, 0x00, sizeof(packetBuffer));
+    
+    //request raw packet and return length
+    return usb_control_msg (udhandle,
+            USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
+            RFMUSB_RQ_RFM12_GET, 0, 0, (char *)&packetBuffer, sizeof(packetBuffer),
+            DEFAULT_USB_TIMEOUT);        		
+}
+
+
+//transmit a packet
+int radio_tx(unsigned char len, unsigned char type, unsigned char *data)
+{
+    radio_packetbuffer buf;
+    int packetLen;
+
+    //trim packet length
+    packetLen = RADIO_TXBUFFER_HEADER_LEN + ((len > RFM12_MAX_PACKET_LENGTH)?RFM12_MAX_PACKET_LENGTH:len);
+
+    //setup buffer
+    buf.len = len;
+    buf.type = type;
+
+    //copy data
+    memcpy(buf.buffer, data, len);
+
+    //request to send packet and return result
+    return usb_control_msg (udhandle,
+        USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
+        RFMUSB_RQ_RFM12_PUT, USB_TXPACKET, 0, (char *)&buf, packetLen,
+        DEFAULT_USB_TIMEOUT);
+}
+
+
+//ask the user for the packet to transmit
+void UI_send_raw()
+{
+    unsigned char length, type, buf[RFM12_MAX_PACKET_LENGTH];
+    int i, tmp;
+
+    printf("Packet length? ");
+    scanf("%u", &tmp);
+    fflush(stdin);
+    length = tmp & 0xff;
+
+    printf("Packet type? ");
+    scanf("%u", &tmp);
+    fflush(stdin);
+    type =  tmp & 0xff;
+
+    if(length > RFM12_MAX_PACKET_LENGTH)
+    {
+        length = RFM12_MAX_PACKET_LENGTH;
+    }
+
+    for(i = 0; i < length; i++)
+    {
+        printf("byte: ");
+        scanf("%hd", &tmp);
+        fflush(stdin);
+        buf[i] =  tmp & 0xff;
+    }
+
+    //directly tx packet
+    radio_tx(length, type, buf);
+}
+
+
+//show the menu
+void UI_menu_show(void)
+{
+     printf("Menu:\n");
+     printf("1\tairdump\n");
+     printf("2\tsend raw packet\n");
+     printf("0\texit\n");
+     printf("\n> ");
+}
+
+
+void UI_main_menu(void)
+{
+    int choice, run;
+    
+    run = 23 + 42 + 31337;
+    while(run)
+	{
+        UI_menu_show();
+                
+        scanf("%i", &choice);
+        fflush(stdin);
+        
+        switch(choice)
+        {
+            case 0:
+                run = 0;
+                break;
+                
+            case 1:
+                radio_rx_dump();
+                break;
+                
+            case 2:
+                UI_send_raw();
+                break;
+                
+            default:
+                break;
+        }
+    }
+    
+    printf("Exiting.\n");
+}
+
+
+int main(int argc, char *argv[])
+{	
+	int vid, pid;
 
 	const unsigned char rawVid[2] =
 	{
@@ -56,19 +224,10 @@ int main (int argc, char *argv[])
 	{ 
 		USB_CFG_VENDOR_NAME, 0
 	},
-		product[] =
-		{
-			USB_CFG_DEVICE_NAME, 0
-		};
-#if 0	
-	/* socket handling stuff */
-	int sockfd, new_fd;		// listen on sock_fd, new connection on new_fd
-	struct sockaddr_in my_addr;	// my address information
-	struct sockaddr_in their_addr;	// connector's address information
-	socklen_t sin_size;
-	struct sigaction sa;
-	int yes = 1;
-#endif
+	product[] =
+	{
+		USB_CFG_DEVICE_NAME, 0
+	};
 	
 	/* signals */
 #ifndef WIN32	
@@ -83,6 +242,7 @@ int main (int argc, char *argv[])
 	vid = rawVid[1] * 256 + rawVid[0];
 	pid = rawPid[1] * 256 + rawPid[0];
 
+    //try to open the device
 	if (usbOpenDevice (&udhandle, vid, vendor, pid, product, NULL, NULL, NULL) != 0)
 	{
 		printf ("Can't find USB Device w/ uid %04X, pid %04X\r\n", vid, pid);
@@ -90,74 +250,19 @@ int main (int argc, char *argv[])
 		return __LINE__ * -1;
 	}
 
-#if 0
-	/* networking setup */
-	if ((sockfd = socket (AF_INET, SOCK_STREAM, 0)) == -1)
-	{
-		perror ("socket");
-		exit (1);
-	}
+    //kick in main menu loop
+    UI_main_menu();
+}
 
-	if (setsockopt (sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof (int)) == -1)
-	{
-		perror ("setsockopt");
-		exit (1);
-	}
 
-	my_addr.sin_family = AF_INET;		// host byte order
-	my_addr.sin_port = htons (MYPORT);	// short, network byte order
-	my_addr.sin_addr.s_addr = INADDR_ANY;	// automatically fill with my IP
-	memset (my_addr.sin_zero, '\0', sizeof my_addr.sin_zero);
-
-	if (bind (sockfd, (struct sockaddr *) &my_addr, sizeof my_addr) == -1)
-	{
-		perror ("bind");
-		exit (1);
-	}
-
-	if (listen (sockfd, BACKLOG) == -1)
-	{
-		perror ("listen");
-		exit (1);
-	}
-
-	sa.sa_handler = sigchld_handler;	// reap all dead processes
-	sigemptyset (&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
-
-	if (sigaction (SIGCHLD, &sa, NULL) == -1)
-	{
-		perror ("sigaction");
-		exit (1);
-	}
+void sig_cleanup (int in_signum)
+{
+#ifndef WIN32
+	printf("DOES NOT COMPUTE! (Signal %i)\r\n", in_signum);
 #endif
-
-
-	while (42)
-	{
-		usleep(50);
-
-		memset (buffer[BUF_IN], 0x00, sizeof(buffer[BUF_IN]));
-		buffer[BUF_IN][0] = 1;
-		tmp = usb_control_msg (udhandle,
-				USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
-				CUSTOM_RQ_GET_DATA, 0, 0, buffer[BUF_IN], sizeof (buffer[BUF_IN]),
-				5000);
-		if (tmp > 0)
-		{
-			packetcounter++;
-			buflen[BUF_IN] = tmp;
-			printf ("%03i bytes received, packet #%010u --------\r\n", tmp, packetcounter);
-			for (i=0;i<tmp;i++)
-			{
-				printf("%c", buffer[BUF_IN][i]);
-//				if (i % 20 == 0) printf("\r\n");
-			}
-			printf("\r\n");
-		} else if (tmp < 0)
-		{
-			fprintf (stderr, "USB error: %s\r\n", usb_strerror());
-			return __LINE__ * -1;
-		}
-	}
+	if (udhandle != NULL) usb_close ( udhandle );
+#ifdef WIN32
+	system("pause");
+	exit (1);
+#endif
 }
