@@ -32,11 +32,11 @@
 
 // Here you can adjust the amount of loop cycles a command is ignored after
 // its button has been released (to reduce joystick chatter)
-#define TETRIS_INPUT_CHATTER_TICKS_ROT_CW  12
-#define TETRIS_INPUT_CHATTER_TICKS_ROT_CCW 12
-#define TETRIS_INPUT_CHATTER_TICKS_LEFT     0
-#define TETRIS_INPUT_CHATTER_TICKS_RIGHT    0
-#define TETRIS_INPUT_CHATTER_TICKS_DOWN     0
+#define TETRIS_INPUT_CHATTER_TICKS_ROT_CW  24
+#define TETRIS_INPUT_CHATTER_TICKS_ROT_CCW 24
+#define TETRIS_INPUT_CHATTER_TICKS_LEFT    12
+#define TETRIS_INPUT_CHATTER_TICKS_RIGHT   12
+#define TETRIS_INPUT_CHATTER_TICKS_DOWN    12
 #define TETRIS_INPUT_CHATTER_TICKS_DROP    24
 
 
