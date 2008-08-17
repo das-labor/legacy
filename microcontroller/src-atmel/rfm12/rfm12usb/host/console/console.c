@@ -10,13 +10,13 @@
 #include <unistd.h>
 
 #include "termio.h"
-#include "../common/console.h"
-#include "../common/configvars.h"
+#include "../../common/console.h"
+#include "../../common/configvars.h"
 #include "dump.h"
-#include "opendevice.h"
+#include "../common/opendevice.h"
 
-#include "../firmware/usbconfig.h"
-#include "../firmware/requests.h"
+#include "../../firmware/usbconfig.h"
+#include "../../firmware/requests.h"
 
 usb_dev_handle *udhandle = NULL;
 int mytty;
