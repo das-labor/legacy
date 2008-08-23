@@ -32,7 +32,7 @@ typedef struct{
 
 //globals
 usb_dev_handle *udhandle = NULL;
-radio_packetbuffer packetBuffer;                                
+radio_packetbuffer packetBuffer;
 
 //forward declarations
 void sig_cleanup(int in_signum);
@@ -48,31 +48,31 @@ void UI_send_raw(void);
 int radio_rx_dump(void)
 {
     uint_fast16_t i;
-	uint_fast32_t packetCnt = 0, packetLen;     
-	
+	uint_fast32_t packetCnt = 0, packetLen;
+
     do
 	{
         //rate limit (don't be faster than 10us for a 16MHz device
-        usleep(10);  
-        
+        usleep(10);
+
         //clear buffer
         memset (&packetBuffer, 0x00, sizeof(packetBuffer));
-        
+
         //request raw packet
         packetLen = usb_control_msg (udhandle,
         		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
         		RFMUSB_RQ_RFM12_GET, 0, 0, (char *)&packetBuffer, sizeof(packetBuffer),
         		DEFAULT_USB_TIMEOUT);
 
-        //if something has been received        		
+        //if something has been received
         if (packetLen > 0)
         {
             //increment packet counter
         	packetCnt++;
-        	
+
         	//dump packet
         	printf ("--RX--  len: %02i, type: %02x, num: #%010u  --RX--\r\n", packetBuffer.len, packetBuffer.type, packetCnt);
-        	for (i = 0; i < packetLen; i++)
+        	for (i = 0;(i < packetLen) && (i < RFM12_MAX_PACKET_LENGTH); i++)
         	{
         		printf("%c", packetBuffer.buffer[i]);
         	}
@@ -94,12 +94,12 @@ int radio_rx(void)
 {
     //clear buffer
     memset (&packetBuffer, 0x00, sizeof(packetBuffer));
-    
+
     //request raw packet and return length
     return usb_control_msg (udhandle,
             USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
             RFMUSB_RQ_RFM12_GET, 0, 0, (char *)&packetBuffer, sizeof(packetBuffer),
-            DEFAULT_USB_TIMEOUT);        		
+            DEFAULT_USB_TIMEOUT);
 }
 
 
@@ -175,40 +175,40 @@ void UI_menu_show(void)
 void UI_main_menu(void)
 {
     int choice, run;
-    
+
     run = 23 + 42 + 31337;
     while(run)
 	{
         UI_menu_show();
-                
+
         scanf("%i", &choice);
         fflush(stdin);
-        
+
         switch(choice)
         {
             case 0:
                 run = 0;
                 break;
-                
+
             case 1:
                 radio_rx_dump();
                 break;
-                
+
             case 2:
                 UI_send_raw();
                 break;
-                
+
             default:
                 break;
         }
     }
-    
+
     printf("Exiting.\n");
 }
 
 
 int main(int argc, char *argv[])
-{	
+{
 	int vid, pid;
 
 	const unsigned char rawVid[2] =
@@ -221,23 +221,23 @@ int main(int argc, char *argv[])
 	};
 
 	char vendor[] =
-	{ 
+	{
 		USB_CFG_VENDOR_NAME, 0
 	},
 	product[] =
 	{
 		USB_CFG_DEVICE_NAME, 0
 	};
-	
+
 	/* signals */
-#ifndef WIN32	
+#ifndef WIN32
 	signal (SIGKILL, sig_cleanup);
 	signal (SIGINT, sig_cleanup);
 	signal (SIGHUP, sig_cleanup);
-#endif	
+#endif
 
 	usb_init();
-	
+
 	/* usb setup */
 	vid = rawVid[1] * 256 + rawVid[0];
 	pid = rawPid[1] * 256 + rawPid[0];
