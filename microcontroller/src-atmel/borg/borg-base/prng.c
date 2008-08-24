@@ -1,48 +1,49 @@
 /**
  * \author	Daniel Otte
- * \date	2007-02-10
- * \par \License GPL
- * \brief unsecure low weigth pseudo random number generator
- * \description implementation of a simple LFSR
+ * \date	2008-08-24
+ * \license GPLv3 or later
+ * \brief   random number generator based on noekeon running in CFB-mode
  * 
  */
 
+#include "noekeon.h"
+#include "memxor.h"
 #include <stdint.h>
+#include <string.h>
 
-#ifdef AVR
-	#include <util/parity.h>
-#else
-	uint8_t nibble_parity_table[]={
-		0,1,1,0,	/* 0,1,2,3 */
-		1,0,0,1,	/* 4,5,6,7 */
-		1,0,0,1,	/* 8,9,A,B */
-		0,1,1,0 	/* C,D,E,F */
-	};
-	
-	uint8_t parity_even_bit(uint8_t p){
-		return nibble_parity_table[p>>4]^nibble_parity_table[p&0xf];
-	}
-#endif
+uint8_t random_state[16];
+uint8_t random_key[16];
 
-/* CRC32 polynom x32 + x26 + x23 + x22 + x16 + x12 + x11 + x10 + x8 + x7 + x5 + x4 + x2 + x + 1 */
-/* 1000.100_1100.0001_0001.1101_1011.0111 */
-//#define POLYNOM 0x/* we use the CRC32 polynom in hope it is irreducible */
-#define POLYNOM 0x80802301	/* 1000.000_1000.0000_0010.0011_0000.0001 */
-uint32_t state = 0x0BADC0DE;
 
 uint8_t random8(void){
-	uint8_t i,t[4];
-	for(i=0;i<8;++i){
-		*((uint32_t*)t)=state&POLYNOM;
-		state = state<<1 | (parity_even_bit(t[0]) ^ parity_even_bit(t[1]) ^ 
-							parity_even_bit(t[2]) ^ parity_even_bit(t[3]));
-	}
+	static uint8_t sr[16];
+	static uint8_t i=0;	
 	
-	return (uint8_t)state;
+	if(i==0){
+		noekeon_enc(random_state, random_key);
+		memcpy(sr, random_state, 16);
+		i=15;
+		return sr[15];
+	}
+	--i;
+	return sr[i];
+}
+
+void random_block(void* dest){
+	noekeon_enc(random_state, random_key);
+	memcpy(dest, random_state, 16);
 }
 
 void srandom32(uint32_t seed){
-	if(seed)
-		state = seed;
+	memcpy(random_key, &seed, 4);
 }
+
+void random_seed(const void* buffer){
+	memcpy(random_key, buffer, 16);
+}
+
+void random_add(const void* buffer){
+	memxor(random_key, buffer, 16);
+}
+
 

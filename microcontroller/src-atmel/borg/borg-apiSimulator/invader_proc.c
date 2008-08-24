@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "prng.h"
 #include "invaders2.h"
 
 void procCannon(Cannon * cn, uPixel * shot)
@@ -78,11 +79,11 @@ void procInvaders(Invaders * iv, uPixel st[MAX_SHOTS])
 	mv++;
 
 	unsigned char i, y;
-	unsigned char spos = rand() % 16;
+	unsigned char spos = random8() % 16;
 	if (spos >= BORG_WIDTH)
 		return;
 
-	unsigned char shoot = rand() % 256;
+	unsigned char shoot = random8();
 
 	if (shoot < SHOOTING_RATE)
 	{
@@ -238,8 +239,8 @@ void procShots(Invaders * iv, Player * pl, Cannon * cn, Spaceship * sc,
 
 void procSpaceship(Spaceship * sc)
 {
-	unsigned char rnd1 = rand() % 256;
-	unsigned char rnd2 = rand() % 256;
+	unsigned char rnd1 = random8();
+	unsigned char rnd2 = random8();
 
 	static unsigned char sct = 0;
 

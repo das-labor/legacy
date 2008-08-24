@@ -11,7 +11,8 @@ override LDFLAGS       = -Wl,-Map,$(PRG).map
 OBJ = breakpoint.o font_arial8.o font_small6.o font_uni53.o invader_draw.o \
   invader_init.o invader_proc.o invaders2.o joystick.o main.o menu.o pixel.o \
   programm.o scrolltext3.o snake.o trackball.o util.o tetris/input.o \
-  tetris/logic.o tetris/piece.o tetris/playfield.o tetris/view.o
+  tetris/logic.o tetris/piece.o tetris/playfield.o tetris/view.o prng.o \
+  memxor_c.o noekeon.o
 
 all: $(PRG)
 
@@ -78,6 +79,15 @@ trackball.o: trackball.c trackball.h
 
 util.o: util.c joystick.h
 	$(CC) $(CFLAGS) -c -o util.o util.c
+
+noekeon.o: noekeon.c noekeon.h memxor.h
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+memxor_c.o: memxor_c.c memxor.h
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+prng.o: prng.c prng.h noekeon.h memxor.h
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 tetris/input.o: tetris/input.c joystick.h util.h tetris/input.h
 	$(CC) $(CFLAGS) -c -o tetris/input.o tetris/input.c

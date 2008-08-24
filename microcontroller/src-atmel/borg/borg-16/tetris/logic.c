@@ -18,6 +18,7 @@
 #include "playfield.h"
 #include "view.h"
 #include "input.h"
+#include "../prng.h"
 
 
 #ifdef EEMEM
@@ -139,7 +140,7 @@ void tetris ()
 	// initialize current and next piece
 	tetris_piece_t *pPiece = NULL;
 	tetris_piece_t *pNextPiece = pPiece =
-		tetris_piece_construct(rand() % 7, TETRIS_PC_ANGLE_0);
+		tetris_piece_construct(random8() % 7, TETRIS_PC_ANGLE_0);
 
 	// the view only monitors the logic and the playfield object for the game
 	// status so we must put information like the next piece or the current
@@ -158,7 +159,7 @@ void tetris ()
 			// make preview piece the current piece and create new preview piece
 			pPiece = pNextPiece;
 			pNextPiece =
-				tetris_piece_construct(rand() % 7, TETRIS_PC_ANGLE_0);
+				tetris_piece_construct(random8() % 7, TETRIS_PC_ANGLE_0);
 			tetris_logic_setPreviewPiece(pLogic, pNextPiece);
 
 			// insert new piece into playfield

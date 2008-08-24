@@ -1,9 +1,8 @@
 /**
  * \author	Daniel Otte
- * \date	2007-02-10
- * \par \License GPL
- * \brief unsecure low weigth pseudo random number generator
- * \description implementation of a simple LFSR
+ * \date	2008-08-24
+ * \license GPLv3 or later
+ * \brief   random number generator based on noekeon running in CFB-mode
  * 
  */
 
@@ -13,6 +12,11 @@
 #include <stdint.h>
 
 uint8_t random8(void);
+void random_block(void* dest);
 void srandom32(uint32_t seed);
+void random_seed(const void* buffer);
+void random_add(const void* buffer);
 
 #endif /* PRNG_H_*/
+
+
