@@ -47,21 +47,23 @@
 
 
 //Pin that the RFM12's slave select is connected to
-#define DDR_SS DDRB
-#define PORT_SS PORTB
-#define BIT_SS 0
+#define DDR_SS DDRD
+#define PORT_SS PORTD
+#define BIT_SS PD4
 
 //SPI port
 #define DDR_SPI DDRB
 #define PORT_SPI PORTB
 #define PIN_SPI PINB
-#define BIT_MOSI 3
-#define BIT_MISO 4
-#define BIT_SCK  5
-#define BIT_SPI_SS 2
+#define BIT_MOSI 5
+#define BIT_MISO 6
+#define BIT_SCK  7
+#define BIT_SPI_SS 5
 //this is the hardware SS pin of the AVR - it 
 //needs to be set to output for the spi-interface to work 
 //correctly, independently of the CS pin used for the RFM12
+
+#define SPI_SOFTWARE
 
 //frequency to use
 #define FREQ 433000000UL
@@ -74,18 +76,18 @@
 
 /**** TX BUFFER SIZE
  */
-#define RFM12_TX_BUFFER_SIZE 30
+#define RFM12_TX_BUFFER_SIZE 10
 
 /**** RX BUFFER SIZE
  * there are going to be 2 Buffers of this size
  * (double_buffering)
  */
-#define RFM12_RX_BUFFER_SIZE 30
+#define RFM12_RX_BUFFER_SIZE 10
 
 /**** UART DEBUGGING
  * en- or disable debugging via uart.
  */
-#define RFM12_UART_DEBUG 1
+#define RFM12_UART_DEBUG 0
 
 /**** INTERRUPT VECTOR
  * set the name for the interrupt vector here
@@ -93,7 +95,11 @@
 #define RFM12_INT_VECT (INT0_vect)
 #define RFM12_INT_BIT (INT0)
 //the Interrupt mask register
-#define RFM12_INT_MSK GICR
+#define RFM12_INT_MSK GIMSK
 //setup the interrupt to trigger on negative edge
 #define RFM12_INT_SETUP()   MCUCR |= (1<<ISC01)
+
+
+#define PWRMGT_DEFAULT 0 //don't disable mcu clock
+
 

@@ -1,5 +1,5 @@
 PRG            = main
-OBJ            = main.o uart.o rfm12.o
+OBJ            = main.o rfm12.o
 MCU_TARGET     = at90s2313
 OPTIMIZE       = -Os
 
