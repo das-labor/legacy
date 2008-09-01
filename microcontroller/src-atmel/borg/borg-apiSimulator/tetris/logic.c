@@ -112,7 +112,7 @@ void tetris_logic_destruct(tetris_logic_t *pLogic)
  * Return value: void
  */
 void tetris ()
-{	
+{
 	// get view dependent dimensions of the playfield
 	int8_t nWidth;
 	int8_t nHeight;
@@ -144,9 +144,12 @@ void tetris ()
 
 	// the view only monitors the logic and the playfield object for the game
 	// status so we must put information like the next piece or the current
-	// highscore to a place where the view can find it 
-	tetris_logic_setHighscore(pLogic, nHighscore);   
+	// highscore to a place where the view can find it
+	tetris_logic_setHighscore(pLogic, nHighscore);
 	tetris_logic_setPreviewPiece(pLogic, pNextPiece);
+
+	// pace flag
+	tetris_input_pace_t inPace;
 
 	// game loop, runs as long as the game is not over
 	while (tetris_playfield_getStatus(pPl) != TETRIS_PFS_GAMEOVER)
@@ -181,16 +184,28 @@ void tetris ()
 			// a minimum amount of time to move it
 			if (tetris_playfield_getStatus(pPl) == TETRIS_PFS_GLIDING)
 			{
-				inCmd = tetris_input_getCommand(pIn, TETRIS_INPACE_GLIDING);
+				inPace = TETRIS_INPACE_GLIDING;
 			}
 			else
 			{
-				inCmd = tetris_input_getCommand(pIn, TETRIS_INPACE_HOVERING);
+				inPace = TETRIS_INPACE_HOVERING;
+			}
+
+			// ensure correct view mode if the game isn't paused
+			if ((inCmd = tetris_input_getCommand(pIn, inPace))
+					!= TETRIS_INCMD_PAUSE)
+			{
+				tetris_view_setViewMode(pView, TETRIS_VIMO_RUNNING);
 			}
 
 			// what we do depends on what the input module tells us
 			switch (inCmd)
 			{
+			// game paused?
+			case TETRIS_INCMD_PAUSE:
+				tetris_view_setViewMode(pView, TETRIS_VIMO_PAUSED);
+				break;
+
 			// the piece was pulled down by the almighty gravity
 			case TETRIS_INCMD_GRAVITY:
 				tetris_playfield_advancePiece(pPl);
@@ -239,7 +254,7 @@ void tetris ()
 				if (tetris_playfield_getStatus(pPl) != TETRIS_PFS_GAMEOVER)
 				{
 					tetris_logic_completeDrop(pLogic,
-						tetris_playfield_getRow(pPl) - nPieceRow);	
+						tetris_playfield_getRow(pPl) - nPieceRow);
 				}
 				break;
 
@@ -255,7 +270,7 @@ void tetris ()
 			tetris_playfield_removeCompleteLines(pPl);
 
 			// let the logic object decide how many points the player gets
-			// and whether the level gets changed 				
+			// and whether the level gets changed
 			tetris_logic_removedLines(pLogic, tetris_playfield_getRowMask(pPl));
 			tetris_input_setLevel(pIn, tetris_logic_getLevel(pLogic));
 			break;
