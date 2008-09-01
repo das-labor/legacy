@@ -3,9 +3,9 @@
 void test1() {
 	unsigned char x, y, z;
 	clear_screen(0);
-	for (z = 0; z < NUM_COLS; z++) {	
-		for (y = 0; y < NUM_ROWS; y++) {
-			for (x = 0; x < NUM_PLANES; x++) {
+	for (z = 0; z < LEN_Z; z++) {	
+		for (y = 0; y < LEN_Y; y++) {
+			for (x = 0; x < LEN_X; x++) {
 				setpixel3d((pixel3d){x,y,z}, 3);
 				wait(25);
 			}
@@ -15,54 +15,54 @@ void test1() {
 
 void test2() {
 	unsigned char i, j, k;
-	for (i = 0; i < 8; i++) {
-		for (j = 0; j < 8; j++) {
-			for (k = 0; k < 8; k++) {
+	for (i = 0; i < LEN_Z; i++) {
+		for (j = 0; j < LEN_Y; j++) {
+			for (k = 0; k < LEN_X; k++) {
 				setpixel3d((pixel3d){i,j,k}, 3);
 			}
 		}
 		wait(40);
-		for (j = 0; j < 8; j++) {
-			for (k = 0; k < 8; k++) {
+		for (j = 0; j < LEN_Y; j++) {
+			for (k = 0; k < LEN_X; k++) {
 				setpixel3d((pixel3d){i,j,k}, 0);
 			}
 		}
 	}
-	for (i = 0; i < 8; i++) {
-		for (j = 0; j < 8; j++) {
-			for (k = 0; k < 8; k++) {
+	for (i = 0; i < LEN_Z; i++) {
+		for (j = 0; j < LEN_Y; j++) {
+			for (k = 0; k < LEN_X; k++) {
 				setpixel3d((pixel3d){j,k,i}, 3);
 			}
 		}
 		wait(40);
-		for (j = 0; j < 8; j++) {
-			for (k = 0; k < 8; k++) {
+		for (j = 0; j < LEN_Y; j++) {
+			for (k = 0; k < LEN_X; k++) {
 				setpixel3d((pixel3d){j,k,i}, 0);
 			}
 		}
 	}
-	for (i = 0; i < 8; i++) {
-		for (j = 0; j < 8; j++) {
-			for (k = 0; k < 8; k++) {//sets blah
+	for (i = 0; i < LEN_Z; i++) {
+		for (j = 0; j < LEN_Y; j++) {
+			for (k = 0; k < LEN_X; k++) {//sets blah
 				setpixel3d((pixel3d){k,i,j}, 3);
 			}
 		}
 		wait(50);
-		for (j = 0; j < 8; j++) {
-			for (k = 0; k < 8; k++) {
+		for (j = 0; j < LEN_Y; j++) {
+			for (k = 0; k < LEN_X; k++) {
 				setpixel3d((pixel3d){k,i,j}, 0);
 			}
 		}
 	}
-	for (i = 7; i < 8; i--) {
-		for (j = 0; j < 8; j++) {
-			for (k = 0; k < 8; k++) {
+	for (i = LEN_X-1; i < LEN_X; i--) {
+		for (j = 0; j < LEN_Y; j++) {
+			for (k = 0; k < LEN_Z; k++) {
 				setpixel3d((pixel3d){k,j,i}, 3);
 			}
 		}
 		wait(40);
-		for (j = 0; j < 8; j++) {
-			for (k = 0; k < 8; k++) {
+		for (j = 0; j < LEN_Y; j++) {
+			for (k = 0; k < LEN_Z; k++) {
 				setpixel3d((pixel3d){k,j,i}, 0);
 			}
 		}
@@ -72,72 +72,72 @@ void test2() {
 
 void test3() {
 	unsigned char i, j, k;
-	for (i = 0; i < 8; i++) {
-		for (j = 0; j < 8; j++) {
-			for (k = 0; k < 8; k++) {
+	for (i = 0; i < LEN_X; i++) {
+		for (j = 0; j < LEN_Y; j++) {
+			for (k = 0; k < LEN_Z; k++) {
 				setpixel3d((pixel3d){i,j,k}, 3);
 			}
 		}
 		wait(40);
 	}
-	for (i = 0; i < 8; i++) {
-		for (j = 0; j < 8; j++) {
-			for (k = 0; k < 8; k++) {
+	for (i = 0; i < LEN_X; i++) {
+		for (j = 0; j < LEN_Y; j++) {
+			for (k = 0; k < LEN_Z; k++) {
 				setpixel3d((pixel3d){i,j,k}, 0);
 			}
 		}
 		wait(40);
 	}
-	for (i = 0; i < 8; i++) {
-		for (j = 0; j < 8; j++) {
-			for (k = 0; k < 8; k++) {
+	for (i = 0; i < LEN_Z; i++) {
+		for (j = 0; j < LEN_X; j++) {
+			for (k = 0; k < LEN_Y; k++) {
 				setpixel3d((pixel3d){j,k,i}, 3);
 			}
 		}
 		wait(40);
 	}
-	for (i = 0; i < 8; i++) {
-		for (j = 0; j < 8; j++) {
-			for (k = 0; k < 8; k++) {
+	for (i = 0; i < LEN_Z; i++) {
+		for (j = 0; j < LEN_Y; j++) {
+			for (k = 0; k < LEN_X; k++) {
 				setpixel3d((pixel3d){j,k,i}, 0);
 			}
 		}
 		wait(40);
 	}
-	for (i = 0; i < 8; i++) {
-		for (j = 0; j < 8; j++) {
-			for (k = 0; k < 8; k++) {
+	for (i = 0; i < LEN_Y; i++) {
+		for (j = 0; j < LEN_Z; j++) {
+			for (k = 0; k < LEN_X; k++) {
 				setpixel3d((pixel3d){k,i,j}, 3);
 			}
 		}
 		wait(50);
 	}
-	for (i = 0; i < 8; i++) {
-		for (j = 0; j < 8; j++) {
-			for (k = 0; k < 8; k++) {
+	for (i = 0; i < LEN_Y; i++) {
+		for (j = 0; j < LEN_Z; j++) {
+			for (k = 0; k < LEN_X; k++) {
 				setpixel3d((pixel3d){k,i,j}, 0);
 			}
 		}
 		wait(50);
 	}
-	for (i = 7; i < 8; i--) {
-		for (j = 0; j < 8; j++) {
-			for (k = 0; k < 8; k++) {
+	for (i = LEN_Z - 1; i < LEN_Z; i--) {
+		for (j = 0; j < LEN_Y; j++) {
+			for (k = 0; k < LEN_X; k++) {
 				setpixel3d((pixel3d){k,j,i}, 3);
 			}
 		}
 		wait(40);
 	}
-	for (i = 7; i < 8; i--) {
-		for (j = 0; j < 8; j++) {
-			for (k = 0; k < 8; k++) {
+	for (i = LEN_Z-1; i < LEN_Z; i--) {
+		for (j = 0; j < LEN_Y; j++) {
+			for (k = 0; k < LEN_X; k++) {
 				setpixel3d((pixel3d){k,j,i}, 0);
 			}
 		}
 		wait(40);
 	}
 }
-
+/*
 void joystick_test() {
 	clear_screen(0);
 	setpixel3d((pixel3d) {5,5,5}, 3);
@@ -188,7 +188,7 @@ void joystick_test() {
 			setpixel3d((pixel3d){1,1,1}, 0);
 	}
 }
-
+*/
 void shift_test() {
 	clear_screen(0);
 	setpixel3d((pixel3d) {4,4,4}, 3);
@@ -228,3 +228,4 @@ void setplane_test() {
 	set_plane(left, 0, 3);
 	wait(1000);
 }
+

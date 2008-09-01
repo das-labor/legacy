@@ -1,21 +1,24 @@
 /** This is the api of the borg-3d.
- *  The same api is used by the Simulator and the real one. 
+ *  The same api is used by the Simulator and the real one. LEN_X
  */
-#include "pixel3d.h"
+#include "api.h"
 
 /** faster shifting (eat this, Fefe!)
  */
-unsigned char shl_table[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
+unsigned short shl_table[] = {0x0001,0x0002,0x0004,0x0008,0x0010,0x0020,0x0040,0x0080,
+							  0x0100,0x0200,0x0400,0x0800,0x1000,0x2000,0x4000,0x8000};
 
 /** sets the brightness value to alle pixels. Its fast because its works directly on 
  *  the image memory.
  */
 void clear_screen(unsigned char value){
-	unsigned char p, x, y, v=0xFF;
-	for(p=0; p<NUM_LEVELS; p++) {
-		if(p == value) v=0;
-		for(y=0; y<NUM_PLANES; y++){
-			for(x=0; x<PLANEBYTES; x++){
+	unsigned char p, x, y;
+	unsigned short v = 0xFFFF;
+	for(p = 0; p < NUM_LEVELS; p++) {
+		if (p == value) 
+			v=0;
+		for (y = 0; y < LEN_Z; y++){
+			for (x = 0; x < LEN_Y; x++){
 				pixmap[p][y][x] = v;
 			}
 		}
@@ -26,18 +29,12 @@ void clear_screen(unsigned char value){
  */
 void setpixel3d(pixel3d p, unsigned char value ){
 	unsigned char plane;
-	if (p.x < 8 && p.y < 8 && p.z < 8) { 
+	if (p.x < LEN_X && p.y < LEN_Y && p.z < LEN_Z) { 
 		for (plane=0; plane < NUM_LEVELS; plane++) {
 			if (plane < value)
-#ifdef NEW_GENERATION
 				pixmap[plane][p.z][p.y] |=  shl_table[p.x];
 			else
 				pixmap[plane][p.z][p.y] &= ~shl_table[p.x];
-#else
-				pixmap[plane][p.x][p.y] |=  shl_table[p.z];
-			else
-				pixmap[plane][p.x][p.y] &= ~shl_table[p.z];
-#endif
 		}
 	}	
 }
@@ -48,157 +45,85 @@ void setpixel3d(pixel3d p, unsigned char value ){
 void shift3d(direction dir) {
      unsigned char i, j, k;
      switch (dir) {
-#ifdef NEW_GENERATION
      case down:
-          for (i = 1; i < NUM_PLANES; i ++) {
-              for (j = 0; j < NUM_ROWS; j++) {
+          for (i = 1; i < LEN_Z; i ++) {
+              for (j = 0; j < LEN_Y; j++) {
                   for (k = 0; k < NUM_LEVELS; k++) {
                       pixmap[k][i-1][j] = pixmap[k][i][j]; 
                   }
               }
           }
-          for (j = 0; j < NUM_ROWS; j++) {
+          for (j = 0; j < LEN_Y; j++) {
               for (k = 0; k < NUM_LEVELS; k++) {
-                  pixmap[k][NUM_PLANES-1][j] = 0; 
+                  pixmap[k][LEN_Z-1][j] = 0; 
               }
           }
           break;
+		  
      case up:
-          for (i = NUM_PLANES-2; i < NUM_PLANES; i--) {
-              for (j = NUM_ROWS-1; j < NUM_ROWS; j--) {
+          for (i = LEN_Z-2; i < LEN_Z; i--) {
+              for (j = LEN_Y-1; j < LEN_Y; j--) {
                   for (k = 0; k < NUM_LEVELS; k++) {
                       pixmap[k][i+1][j] = pixmap[k][i][j]; 
                   }
               }
           }
-          for (j = NUM_ROWS-1; j < NUM_ROWS; j--) {
+          for (j = LEN_Y-1; j < LEN_Y; j--) {
               for (k = 0; k < NUM_LEVELS; k++) {
                   pixmap[k][0][j] = 0;
               }
           }
           break;
+		  
      case forward:
-          for (i = 0; i < NUM_PLANES; i ++) {
-              for (j = 1; j < NUM_ROWS; j++) {
+          for (i = 0; i < LEN_Z; i ++) {
+              for (j = 1; j < LEN_Y; j++) {
                   for (k = 0; k < NUM_LEVELS; k++) {
                       pixmap[k][i][j-1] = pixmap[k][i][j]; 
                   }
               }
           }
-          for (j = 0; j < NUM_PLANES; j++) {
+          for (j = 0; j < LEN_Z; j++) {
               for (k = 0; k < NUM_LEVELS; k++) {
-                  pixmap[k][j][NUM_PLANES-1] = 0; 
+                  pixmap[k][j][LEN_Z-1] = 0; 
               }
           }
           break;
+		  
      case back:
-          for (i = NUM_PLANES-1; i < NUM_PLANES; i--) {
-              for (j = NUM_ROWS-2; j < NUM_ROWS; j--) {
+          for (i = LEN_Z-1; i < LEN_Z; i--) {
+              for (j = LEN_Y-2; j < LEN_Y; j--) {
                   for (k = 0; k < NUM_LEVELS; k++) {
                       pixmap[k][i][j+1] = pixmap[k][i][j]; 
                   }
               }
           }
-          for (j = NUM_PLANES-1; j < NUM_ROWS; j--) {
+          for (j = LEN_Z-1; j < LEN_Y; j--) {
               for (k = 0; k < NUM_LEVELS; k++) {
                   pixmap[k][j][0] = 0;
               }
           }
           break;
+		  
      case right:
-          for (i = 0; i < NUM_PLANES; i ++) {
-              for (j = 0; j < NUM_ROWS; j++) {
+          for (i = 0; i < LEN_Z; i ++) {
+              for (j = 0; j < LEN_Y; j++) {
                   for (k = 0; k < NUM_LEVELS; k++) {
                       pixmap[k][i][j] = pixmap[k][i][j] << 1; 
                   }
               }
           }
           break;
+		  
      case left:
-          for (i = 0; i < NUM_PLANES; i ++) {
-              for (j = 0; j < NUM_ROWS; j++) {
+          for (i = 0; i < LEN_Z; i ++) {
+              for (j = 0; j < LEN_Y; j++) {
                   for (k = 0; k < NUM_LEVELS; k++) {
                       pixmap[k][i][j] = pixmap[k][i][j] >> 1;                   
                   }
               }
           }
           break;
-#else
-     case back:
-          for (i = 1; i < NUM_PLANES; i ++) {
-              for (j = 0; j < NUM_ROWS; j++) {
-                  for (k = 0; k < NUM_LEVELS; k++) {
-                      pixmap[k][i-1][j] = pixmap[k][i][j]; 
-                  }
-              }
-          }
-          for (j = 0; j < NUM_ROWS; j++) {
-              for (k = 0; k < NUM_LEVELS; k++) {
-                  pixmap[k][NUM_PLANES-1][j] = 0; 
-              }
-          }
-          break;
-     case forward:
-          for (i = NUM_PLANES-2; i < NUM_PLANES; i--) {
-              for (j = NUM_ROWS-1; j < NUM_ROWS; j--) {
-                  for (k = 0; k < NUM_LEVELS; k++) {
-                      pixmap[k][i+1][j] = pixmap[k][i][j]; 
-                  }
-              }
-          }
-          for (j = NUM_ROWS-1; j < NUM_ROWS; j--) {
-              for (k = 0; k < NUM_LEVELS; k++) {
-                  pixmap[k][0][j] = 0;
-              }
-          }
-          break;
-     case right:
-          for (i = 0; i < NUM_PLANES; i ++) {
-              for (j = 1; j < NUM_ROWS; j++) {
-                  for (k = 0; k < NUM_LEVELS; k++) {
-                      pixmap[k][i][j-1] = pixmap[k][i][j]; 
-                  }
-              }
-          }
-          for (j = 0; j < NUM_PLANES; j++) {
-              for (k = 0; k < NUM_LEVELS; k++) {
-                  pixmap[k][j][NUM_PLANES-1] = 0; 
-              }
-          }
-          break;
-     case left:
-          for (i = NUM_PLANES-1; i < NUM_PLANES; i--) {
-              for (j = NUM_ROWS-2; j < NUM_ROWS; j--) {
-                  for (k = 0; k < NUM_LEVELS; k++) {
-                      pixmap[k][i][j+1] = pixmap[k][i][j]; 
-                  }
-              }
-          }
-          for (j = NUM_PLANES-1; j < NUM_ROWS; j--) {
-              for (k = 0; k < NUM_LEVELS; k++) {
-                  pixmap[k][j][0] = 0;
-              }
-          }
-          break;
-     case up:
-          for (i = 0; i < NUM_PLANES; i ++) {
-              for (j = 0; j < NUM_ROWS; j++) {
-                  for (k = 0; k < NUM_LEVELS; k++) {
-                      pixmap[k][i][j] = pixmap[k][i][j] << 1; 
-                  }
-              }
-          }
-          break;
-     case down:
-          for (i = 0; i < NUM_PLANES; i ++) {
-              for (j = 0; j < NUM_ROWS; j++) {
-                  for (k = 0; k < NUM_LEVELS; k++) {
-                      pixmap[k][i][j] = pixmap[k][i][j] >> 1;                   
-                  }
-              }
-          }
-          break;
-#endif
      }     
 }
 
@@ -206,14 +131,10 @@ void shift3d(direction dir) {
  *  FIXME: Does it really make sense to return 0xff in this case.
  */
 unsigned char get_pixel3d(pixel3d p) {
-	if ((p.x > (NUM_ROWS-1)) || (p.y > (NUM_ROWS-1)) || (p.z > (NUM_ROWS-1))) {
+	if ((p.x > (LEN_X-1)) || (p.y > (LEN_Y-1)) || (p.z > (LEN_Z-1))) {
 		return 0xff;
 	} else {
-#ifdef NEW_GENERATION
-		return (pixmap[0][p.z%NUM_PLANES][p.y%PLANEBYTES] & shl_table[p.x%8]) ? 1:0;
-#else
-		return (pixmap[0][p.x%NUM_PLANES][p.y%PLANEBYTES] & shl_table[p.z%8]) ? 1:0;
-#endif
+		return (pixmap[0][p.z][p.y] & shl_table[p.x]) ? 1:0;
 	}
 }
 
@@ -380,51 +301,36 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 {
 	unsigned char pindex = 0;
 	int p, y, x;
-	unsigned char v = 0xFF;
+	unsigned short v = 0xFFFF;
 	
 	switch (dir) {
 		case back:
-			pindex = NUM_PLANES - (num+1);
-			for (x = 0; x < PLANEBYTES; x++) {
+			pindex = LEN_Z - (num+1);
+			for (x = 0; x < LEN_Y; x++) {
 				for (p = 0; p < NUM_LEVELS; p++) {
-#ifdef NEW_GENERATION					
 					if (p < color)
 						pixmap[p][x][pindex] = v;
 					else
 						pixmap[p][x][pindex] &= ~v;
-#else
-					if (p < color)
-						pixmap[p][pindex][x] = v;
-					else
-						pixmap[p][pindex][x] &= ~v;
-#endif
 				}
 			 }			
 			break;
 			
 		case forward:
 			 pindex = num;			 
-			 for (x = 0; x < PLANEBYTES; x++) {
+			 for (x = 0; x < LEN_Y; x++) {
 				for (p = 0; p < NUM_LEVELS; p++) {
-#ifdef NEW_GENERATION
 					if (p < color)
 						pixmap[p][x][pindex] = v;
 					else
 						pixmap[p][x][pindex] &= ~v;
-#else
-					if (p < color)
-						pixmap[p][pindex][x] = v;
-					else
-						pixmap[p][pindex][x] &= ~v;
-#endif
 				}
 			 }
 			break;
-#ifdef NEW_GENERATION			
 			
 		case up:
-			pindex = NUM_PLANES-(num+1);
-			for (y = 0; y < NUM_PLANES; y++) {
+			pindex = LEN_Z-(num+1);
+			for (y = 0; y < LEN_Z; y++) {
 				for (p = 0; p < NUM_LEVELS; p++) {
 					if ( p < color)
 						pixmap[p][pindex][y] =  v;
@@ -436,7 +342,7 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			
 		case down:
 			pindex = num;
-			for (y = 0; y < NUM_PLANES; y++) {
+			for (y = 0; y < LEN_Z; y++) {
 				for (p = 0; p < NUM_LEVELS; p++) {
 					if (p < color)
 						pixmap[p][pindex][y] = v;
@@ -447,10 +353,10 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 			break;
 			
 		case right:
-			v = shl_table[NUM_ROWS - (num+1)];
+			v = shl_table[LEN_Y - (num+1)];
 			for (p = 0; p < NUM_LEVELS; p++) {
-				for (y = 0; y < NUM_PLANES; y++) {
-					for (x = 0; x < PLANEBYTES; x++) {
+				for (y = 0; y < LEN_Z; y++) {
+					for (x = 0; x < LEN_Y; x++) {
 						if ( p < color)
 							pixmap[p][y][x] |= v;
 						else
@@ -463,8 +369,8 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 		case left:
 			v = shl_table[num];
 			for (p = 0; p < NUM_LEVELS; p++) {
-				for (y = 0; y < NUM_PLANES; y++) {
-					for (x = 0; x < PLANEBYTES; x++) {
+				for (y = 0; y < LEN_Z; y++) {
+					for (x = 0; x < LEN_Y; x++) {
 						if (p < color)
 							pixmap[p][y][x] |= v;
 						else
@@ -473,59 +379,6 @@ void set_plane(direction dir, unsigned char num, unsigned char color)
 				}
 			}
 			break;
-#else
-		case right:
-			pindex = NUM_PLANES-(num+1);
-			for (y = 0; y < NUM_PLANES; y++) {
-				for (p = 0; p < NUM_LEVELS; p++) {
-					if ( p < color)
-						pixmap[p][y][pindex] =  v;
-					else
-						pixmap[p][y][pindex] &= ~v;				
-				}
-			 }
-			break;
-			
-		case left:
-			pindex = num;
-			for (y = 0; y < NUM_PLANES; y++) {
-				for (p = 0; p < NUM_LEVELS; p++) {
-					if (p < color)
-						pixmap[p][y][pindex] = v;
-					else
-						pixmap[p][y][pindex] &= ~v;				
-				}
-			 }
-			break;
-			
-		case down:
-			v = shl_table[NUM_ROWS - (num+1)];
-			for (p = 0; p < NUM_LEVELS; p++) {
-				for (y = 0; y < NUM_PLANES; y++) {
-					for (x = 0; x < PLANEBYTES; x++) {
-						if ( p < color)
-							pixmap[p][y][x] |= v;
-						else
-							pixmap[p][y][x] &= ~v;				
-					}
-				}
-			}
-			break;
-
-		case up:
-			v = shl_table[num];
-			for (p = 0; p < NUM_LEVELS; p++) {
-				for (y = 0; y < NUM_PLANES; y++) {
-					for (x = 0; x < PLANEBYTES; x++) {
-						if (p < color)
-							pixmap[p][y][x] |= v;
-						else
-							pixmap[p][y][x] &= ~v;				
-					}
-				}
-			}
-			break;
-#endif
 	} //end switch(dir)
 }
 

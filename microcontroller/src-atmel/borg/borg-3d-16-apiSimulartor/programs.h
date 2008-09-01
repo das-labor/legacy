@@ -14,11 +14,11 @@
 #  include "config.h"
 #  include "borg_hw.h"
 #  include "uart.h"
-#  include "pixel.h"
+#  include "api.h"
 #  include "scrolltext.h"
 #  include <avr/io.h>
 #else
-#  include "pixel3d.h"
+#  include "api.h"
 #  include "scrolltext2.h"
 #endif
 

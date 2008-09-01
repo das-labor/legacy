@@ -1,5 +1,5 @@
-#ifndef PIXEL3D_H
-#define PIXEL3D_H
+#ifndef API_H
+#define API_H
 
 #include <stdio.h>
 #include "util.h"
@@ -33,10 +33,10 @@
  *  z_bits & (1<<z-coordinate) => value of coordinate (x,y,z) 
 #endif 
  */
-extern unsigned char pixmap[NUM_LEVELS][NUM_PLANES][PLANEBYTES];
+extern unsigned short pixmap[NUM_LEVELS][LEN_Z][LEN_Y];
 
 #ifndef PIXEL_C
-extern unsigned char shl_table[];
+extern unsigned short shl_table[];
 #endif
 
 /** stores a three-dimentional pixel */
@@ -82,4 +82,4 @@ void rotate(char a, char b, char c, pixel3d* points,
 void drawLine3D(char px1, char py1, char pz1, 
  			    char px2, char py2, char pz2, unsigned char value);
 
-#endif // PIXEL3D_H
+#endif // API_H

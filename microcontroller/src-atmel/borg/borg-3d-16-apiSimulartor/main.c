@@ -38,7 +38,7 @@
 #  include <unistd.h>
 #endif
 
-#include "pixel3d.h"
+#include "api.h"
 #include "programs.h"
 #include "trackball.h"
 
@@ -221,33 +221,33 @@ int main(int argc, char **argv) {
     // clearcolor & main loop
     glClearColor(0.1,0.1,0.1,0.1);
     gluPerspective(60.0, (float)WindHeight/(float)WindWidth, 5., 1000.);
-    gluLookAt(NUM_PLANES*2., NUM_ROWS*2.+50., NUM_COLS*2.,
-              NUM_PLANES*2., NUM_ROWS*2., NUM_COLS*2.,
+    gluLookAt(LEN_Z*2., LEN_Y*2.+100., LEN_X*2.,
+              LEN_Z*2., LEN_Y*2., LEN_X*2.,
               0.0, 0.0, 1.0); 
 
 	// init Call List for LED. The List number is
 	// the brightnessnumber of the LED	
 	quad = gluNewQuadric();
 	glNewList(0, GL_COMPILE);
-		glColor4f(0.30, 0., 0., 1.);
+		glColor4f(0.30, 0.30, 0.30 , 1.);
 	  	gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
 		glTranslatef(0., 0., 1.);
 		gluSphere(quad, 0.25, 8, 8);		
 	glEndList();
 	glNewList(1, GL_COMPILE);
-		glColor4f(0.45, 0., 0., 1.);
+		glColor4f(0.45, 0.45, 0.45, 1.);
 		gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
 		glTranslatef(0., 0., 1.);
 		gluSphere(quad, 0.25, 8, 8);
 	glEndList();
 	glNewList(2, GL_COMPILE);
-		glColor4f(0.70, 0., 0., 1.);
+		glColor4f(0.70, 0.7, 0.7, 1.);
 		gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
 		glTranslatef(0., 0., 1.);
 		gluSphere(quad, 0.25, 8, 8);
 	glEndList();
 	glNewList(3, GL_COMPILE);
-		glColor4f(1.00, 0., 0., 1.);
+		glColor4f(1.00, 1.0, 1.0, 1.);
 		gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
 		glTranslatef(0., 0., 1.);
 		gluSphere(quad, 0.25, 8, 8	);
