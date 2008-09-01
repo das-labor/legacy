@@ -12,7 +12,7 @@
 #include "playfield.h"
 #include "view.h"
 
-/* the API simulator and the real API have different named wait functions */ 
+/* the API simulator and the real API have different named wait functions */
 #ifdef __AVR__
 	#define WAIT(ms) wait(ms)
 #else
@@ -26,12 +26,12 @@
 
 // how often should the border blink (to indicate level up)
 #define TETRIS_VIEW_BORDER_BLINK_COUNT 2
-// amount of time (in ms) between border color changes 
+// amount of time (in ms) between border color changes
 #define TETRIS_VIEW_BORDER_BLINK_DELAY 100
 
 // how often should the lines blink when they get removed
 #define TETRIS_VIEW_LINE_BLINK_COUNT 3
-// amount of time (in ms) between line color changes 
+// amount of time (in ms) between line color changes
 #define TETRIS_VIEW_LINE_BLINK_DELAY 75
 
 // colors of game elements
@@ -45,43 +45,70 @@
  * non-interface functions *
  ***************************/
 
-/* Function:      tetris_view_drawDump
- * Description:   redraws the dump and the falling piece (if necessary)
- * Argmument pPl: pointer to the playfield which should be drawn
+/* Function:      tetris_view_getPieceColor
+ * Description:   helper function to dim the piece color if game is paused
+ * Argument pV:   pointer to the view whose pause status is of interest
  * Return value:  void
  */
-void tetris_view_drawDump(tetris_playfield_t *pPl)
+uint8_t tetris_view_getPieceColor (tetris_view_t *pV)
 {
-	assert(pPl != NULL);
-	if (tetris_playfield_getRow(pPl) <= -4)
+	if (pV->modeCurrent == TETRIS_VIMO_RUNNING)
+	{
+		return TETRIS_VIEW_COLORPIECE;
+	}
+	else
+	{
+		return TETRIS_VIEW_COLORBORDER;
+	}
+}
+
+
+/* Function:      tetris_view_drawDump
+ * Description:   redraws the dump and the falling piece (if necessary)
+ * Argument pV:   pointer to the view on which the dump should be drawn
+ * Return value:  void
+ */
+void tetris_view_drawDump(tetris_view_t *pV)
+{
+	assert(pV->pPl != NULL);
+	if (tetris_playfield_getRow(pV->pPl) <= -4)
 	{
 		return;
 	}
 
-	int8_t nPieceRow = tetris_playfield_getRow(pPl);
-	int8_t nStartRow =
-		((nPieceRow + 3) < 16) ? (nPieceRow + 3) : 15;
+	int8_t nPieceRow = tetris_playfield_getRow(pV->pPl);
+
+	// only redraw dump completely if the view mode has been changed
+	int8_t nStartRow;
+	if (pV->modeCurrent == pV->modeOld)
+	{
+		nStartRow = ((nPieceRow + 3) < 16) ? (nPieceRow + 3) : 15;
+	}
+	else
+	{
+		nStartRow = 15;
+	}
+
 	uint16_t nRowMap;
 	uint16_t nElementMask;
 
-	tetris_playfield_status_t status = tetris_playfield_getStatus(pPl);
-
+	tetris_playfield_status_t status = tetris_playfield_getStatus(pV->pPl);
 	for (int8_t nRow = nStartRow; nRow >= 0; --nRow)
-	{	
-		nRowMap = tetris_playfield_getDumpRow(pPl, nRow);
+	{
+		nRowMap = tetris_playfield_getDumpRow(pV->pPl, nRow);
 
 		// if a piece is hovering or gliding it needs to be drawn
-		if ((status == TETRIS_PFS_HOVERING) || (status == TETRIS_PFS_GLIDING) || 
+		if ((status == TETRIS_PFS_HOVERING) || (status == TETRIS_PFS_GLIDING) ||
 			(status == TETRIS_PFS_GAMEOVER))
 		{
-			if ((nRow >= nPieceRow))
+			if ((nRow >= nPieceRow) && (nRow <= nPieceRow + 3))
 			{
 				int8_t y = nRow - nPieceRow;
-				int8_t nColumn = tetris_playfield_getColumn(pPl);
+				int8_t nColumn = tetris_playfield_getColumn(pV->pPl);
 				uint16_t nPieceMap =
-					tetris_piece_getBitmap(tetris_playfield_getPiece(pPl));
+					tetris_piece_getBitmap(tetris_playfield_getPiece(pV->pPl));
 				// clear all bits of the piece we are not interested in and
-				// align the remaing row to LSB
+				// align the remaining row to LSB
 				nPieceMap = (nPieceMap & (0x000F << (y << 2))) >> (y << 2);
 				// shift remaining part to current column
 				if (nColumn >= 0)
@@ -106,7 +133,7 @@ void tetris_view_drawDump(tetris_playfield_t *pPl)
 			unsigned char nColor;
 			if ((nRowMap & nElementMask) != 0)
 			{
-				nColor = TETRIS_VIEW_COLORPIECE;
+				nColor = tetris_view_getPieceColor(pV);
 			}
 			else
 			{
@@ -121,16 +148,25 @@ void tetris_view_drawDump(tetris_playfield_t *pPl)
 
 /* Function:      tetris_view_drawPreviewPiece
  * Description:   redraws the preview window
+ * Argument pV:   pointer to the view on which the piece should be drawn
  * Argmument pPc: pointer to the piece for the preview window (may be NULL)
  * Return value:  void
  */
-void tetris_view_drawPreviewPiece(tetris_piece_t *pPc)
+void tetris_view_drawPreviewPiece(tetris_view_t *pV, tetris_piece_t *pPc)
 {
 	if (pPc != NULL)
 	{
 		uint8_t nColor;
 		uint16_t nElementMask = 0x0001;
-		uint16_t nPieceMap = tetris_piece_getBitmap(pPc);
+		uint16_t nPieceMap;
+		if (pV->modeCurrent == TETRIS_VIMO_RUNNING)
+		{
+			nPieceMap = tetris_piece_getBitmap(pPc);
+		}
+		else
+		{
+			nPieceMap = 0x26a6;
+		}
 
 		for (uint8_t y = 0; y < 4; ++y)
 		{
@@ -212,18 +248,18 @@ void tetris_view_blinkLines(tetris_playfield_t *pPl)
 	// reduce necessity of pointer arithmetic
 	int8_t nRow = tetris_playfield_getRow(pPl);
 	uint8_t nRowMask = tetris_playfield_getRowMask(pPl);
-	
+
 	// don't try to draw below the border
 	int8_t nDeepestRowOffset = ((nRow + 3) < tetris_playfield_getHeight(pPl) ?
 			3 : tetris_playfield_getHeight(pPl) - (nRow + 1));
-	
+
 	// this loop controls how often the lines should blink
 	for (uint8_t i = 0; i < TETRIS_VIEW_LINE_BLINK_COUNT; ++i)
 	{
-		// this loop determines the color of the line to be drawn 
+		// this loop determines the color of the line to be drawn
 		for (uint8_t nColIdx = 0; nColIdx < 2; ++nColIdx)
 		{
-			// iterate through the possibly complete lines 
+			// iterate through the possibly complete lines
 			for (uint8_t j = 0; j <= nDeepestRowOffset; ++j)
 			{
 				// is current line a complete line?
@@ -235,7 +271,7 @@ void tetris_view_blinkLines(tetris_playfield_t *pPl)
 					{
 
 						uint8_t nColor = (nColIdx == 0 ? TETRIS_VIEW_COLORFADE
-								: TETRIS_VIEW_COLORPIECE); 
+								: TETRIS_VIEW_COLORPIECE);
 						setpixel((pixel){14 - x, y}, nColor);
 					}
 				}
@@ -270,6 +306,8 @@ tetris_view_t *tetris_view_construct(tetris_logic_t *pLogic,
 	memset(pView, 0, sizeof(tetris_view_t));
 	pView->pLogic = pLogic;
 	pView->pPl = pPl;
+	pView->modeCurrent = TETRIS_VIMO_RUNNING;
+	pView->modeOld = TETRIS_VIMO_RUNNING;
 
 	// drawing some first stuff
 	clear_screen(0);
@@ -310,6 +348,19 @@ void tetris_view_getDimensions(int8_t *w,
 }
 
 
+/* Function:     tetris_view_setViewMode
+ * Description:  sets the view mode (pause or running)
+ * Argument pV:  pointer to the view whose mode should be set
+ * Argument vm:  see definition of tetris_view_mode_t
+ * Return value: void
+ */
+void tetris_view_setViewMode(tetris_view_t *pV, tetris_view_mode_t vm)
+{
+	pV->modeOld = pV->modeCurrent;
+	pV->modeCurrent = vm;
+}
+
+
 /* Function:     tetris_view_update
  * Description:  informs a view about changes in the game
  * Argument pV:  pointer to the view which should be updated
@@ -326,10 +377,10 @@ void tetris_view_update(tetris_view_t *pV)
 	}
 
 	// draw preview piece
-	tetris_view_drawPreviewPiece(tetris_logic_getPreviewPiece(pV->pLogic));
+	tetris_view_drawPreviewPiece(pV, tetris_logic_getPreviewPiece(pV->pLogic));
 
 	// draw dump
-	tetris_view_drawDump(pV->pPl);	
+	tetris_view_drawDump(pV);
 
 	// visual feedback to inform about a level change
 	uint8_t nLevel = tetris_logic_getLevel(pV->pLogic);

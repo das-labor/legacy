@@ -23,10 +23,9 @@ typedef enum tetris_input_command_t
 	TETRIS_INCMD_LEFT,    // move piece left
 	TETRIS_INCMD_RIGHT,   // move piece right
 	TETRIS_INCMD_DOWN,    // lower piece by one row
-	TETRIS_INCMD_DROP,    // move piece to the ground immediately  
+	TETRIS_INCMD_DROP,    // move piece to the ground immediately
 	TETRIS_INCMD_GRAVITY, // piece gets pulled by gravity
-	TETRIS_INCMD_PAD,     /* padding byte because avr-gcc can't handle uneven
-	                         array sizes in PROGMEM */
+	TETRIS_INCMD_PAUSE,   // pause the game
 	TETRIS_INCMD_NONE     // idle (must alway be the last one)
 }
 tetris_input_command_t;
@@ -44,15 +43,15 @@ tetris_input_pace_t;
 
 typedef struct tetris_input_t
 {
-	// Current level (determines falling speed).
+	// current level (determines falling speed)
 	uint8_t nLevel;
 
 	// Amount of loop cycles between forced piece movements. This value gets
 	// set via the tetris_input_setLevel() function.
 	uint8_t nMaxCycles;
 
-	// This counter tracks how many loop cycles have been done since the last
-	// forced piece movement. It gets reset if it either reaches a well
+	// This counter keeps track of the loop cycles whoch have been done since
+	// the last forced piece movement. It gets reset if it either reaches a well
 	// defined value (causing a gravity command to be issued) or the player has
 	// moved down the piece herself/himself.
 	uint8_t nLoopCycles;

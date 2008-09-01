@@ -11,11 +11,21 @@
  * types *
  *********/
 
+// presentation modes
+typedef enum tetris_view_mode_t
+{
+	TETRIS_VIMO_PAUSED,
+	TETRIS_VIMO_RUNNING
+}
+tetris_view_mode_t;
+
 typedef struct tetris_view_t
 {
-	tetris_logic_t *pLogic;  // associated logic object
-	tetris_playfield_t *pPl; // associated playfield
-	uint8_t nOldLevel;       // helper variable to recognize level changes
+	tetris_logic_t *pLogic;         // associated logic object
+	tetris_playfield_t *pPl;        // associated playfield
+	tetris_view_mode_t modeCurrent; // current presentation mode
+	tetris_view_mode_t modeOld;     // old presentation mode
+	uint8_t nOldLevel;              // helper variable to recognize level changes
 }
 tetris_view_t;
 
@@ -54,6 +64,15 @@ void tetris_view_destruct(tetris_view_t *pView);
  */
 void tetris_view_getDimensions(int8_t *w,
                                int8_t *h);
+
+
+/* Function:     tetris_view_setViewMode
+ * Description:  sets the view mode (pause or running)
+ * Argument pV:  pointer to the view whose mode should be set
+ * Argument vm:  see definition of tetris_view_mode_t
+ * Return value: void
+ */
+void tetris_view_setViewMode(tetris_view_t *pV, tetris_view_mode_t vm);
 
 
 /* Function:     tetris_view_update
