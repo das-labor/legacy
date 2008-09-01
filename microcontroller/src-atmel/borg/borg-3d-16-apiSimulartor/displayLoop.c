@@ -7,7 +7,13 @@
  */
 void *display_loop(void * unused) {
 	while (1) {
-	    flury();
+	    setplane_test();
+		shift_test();
+		test3();
+		test2();
+		test2();	
+		
+    /*  flury();
 		rotatedScaledCube();
 		growingCubeFilled();
 		planeAnimation2(80);
@@ -42,5 +48,7 @@ void *display_loop(void * unused) {
 		test2();
 		snake3d();
 		feuer();
+*/
 	}
 }
+
