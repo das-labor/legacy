@@ -26,9 +26,6 @@
  *                                                    *
  ******************************************************/
 
-#include "rfm12_config.h"
-
-#ifndef RFM12_H
 //states for the rx and tx buffers
 #define STATUS_FREE 0
 #define STATUS_OCCUPIED 1
@@ -119,6 +116,11 @@ extern rf_tx_buffer_t rf_tx_buffer;
 extern rf_rx_buffer_t rf_rx_buffer;
 
 
+void rfm12_set_wakeup_timer(uint16_t val);
+void rfm12_powerDown();
+uint8_t rfm12_lowPowerTx( uint8_t len, uint8_t type, uint8_t *data );
+
+
 //inline function to return the rx buffer status byte
 //(returns STATUS_FREE or STATUS_COMPLETE)
 static inline uint8_t rfm12_rx_status()
@@ -157,5 +159,19 @@ static inline void rfm12_rx_clear()
 	rf_rx_buffer.rf_buffer_out = &rf_rx_buffer.rf_buffers[rf_rx_buffer.buffer_out_num];
 }
 
-#define RFM12_H
+#ifdef RFM12_RECEIVE_CW
+#define RFRXBUF_SIZE 55
+#define STATE_EMPTY 0
+#define STATE_RECEIVING 1
+#define STATE_FULL 2
+
+typedef struct{
+volatile	uint8_t p;
+volatile	uint8_t state;
+	uint8_t buf[RFRXBUF_SIZE];
+}rfrxbuf_t;
+
+
+extern rfrxbuf_t cw_rxbuf;
 #endif
+
