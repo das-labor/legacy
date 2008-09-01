@@ -99,7 +99,9 @@
 //setup the interrupt to trigger on negative edge
 #define RFM12_INT_SETUP()   MCUCR |= (1<<ISC01)
 
+#define RFM12_USE_WAKEUP_TIMER
 
-#define PWRMGT_DEFAULT 0 //don't disable mcu clock
+#define PWRMGT_DEFAULT (RFM12_PWRMGT_EW | RFM12_PWRMGT_DC)
 
+#define RFM12_TRANSMIT_ONLY
 
