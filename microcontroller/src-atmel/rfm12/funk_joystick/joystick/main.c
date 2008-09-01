@@ -1,6 +1,8 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <util/delay.h>
 #include <string.h>
+#include <avr/sleep.h>
 
 #include "rfm12.h"
 #include "uart.h"
@@ -9,41 +11,40 @@
 int main ( void )
 {
 	uint8_t *bufp;
-	uint8_t i;
-
-	uint16_t ticker = 0;
-
+	
 	PORTB = 0x1f; //Pullups on
 	PORTD = 0x60;
-		
-//	uart_init();
+	
+	ACSR |= (1<<ACD);//disable analog comparator to save power
+
+	DDRD |= 0x01;    //rfm reset
+	_delay_ms(10);
+	_delay_ms(10);
+	DDRD &= ~0x01;
+	
+	DDRD |= (1<<PD4);
+	PORTD |= (1<<PD4);
+	
+	uint16_t x=200;
+	
+	while(x--)
+		_delay_ms(1);
 
 	rfm12_init();
+	rfm12_set_wakeup_timer(10);
 	
 	sei();
-
-//	uart_putstr ("Hello\r\n");
 
 	uint8_t joy = 0;
 	uint8_t joy_old = 0;
 	
 	while (42)
 	{
-		ticker++;
-//		if (ticker == 0) uart_putstr ("\r\n.");
-
 		if (rfm12_rx_status() == STATUS_COMPLETE)
 		{
 
-//			uart_putstr ("new packet:\r\n");
-
 			bufp = rfm12_rx_buffer();
 
-			// dump buffer contents to uart			
-			for (i=0;i<rfm12_rx_len();i++)
-			{
-//				uart_putc ( bufcontents[i] );
-			}
 			
 			// tell the implementation that the buffer
 			// can be reused for the next data.
@@ -72,5 +73,10 @@ int main ( void )
 		}
 
 		rfm12_tick();
+	#define __BV _BV
+//		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+		sleep_mode();
+
+
 	}
 }

@@ -3,15 +3,14 @@ OBJ            = main.o rfm12.o
 MCU_TARGET     = at90s2313
 OPTIMIZE       = -Os
 
-FLASHCMD       = uisp -dprog=bsd --upload if=$(PRG).hex
-ERASECMD       = uisp -dprog=bsd --erase
+FLASHCMD       = uisp -dprog=bsd --erase --upload if=$(PRG).hex
 LAUNCH_BOOTLOADER = foodloader-0.21/launcher/launch-bootloader
 
 #SERIAL = /dev/ttyS0
 SERIAL = /dev/ttyUSB0
 
 
-DEFS           = -DF_CPU=1000000
+DEFS           = -DF_CPU=3680000
 LIBS           =
 
 # You should not have to change anything below here.
@@ -36,8 +35,6 @@ clean:
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
 
 flash:
-	$(ERASECMD)
-	sleep 1
 	$(FLASHCMD)
 
 sflash: $(PRG).hex
