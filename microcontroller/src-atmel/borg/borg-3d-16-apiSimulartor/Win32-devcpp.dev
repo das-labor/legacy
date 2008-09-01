@@ -40,7 +40,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit2]
-FileName=pixel3d.c
+FileName=api.c
 CompileCpp=0
 Folder=Projekt1
 Compile=1
@@ -50,7 +50,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit3]
-FileName=pixel3d.h
+FileName=api.h
 CompileCpp=0
 Folder=Projekt1
 Compile=0
