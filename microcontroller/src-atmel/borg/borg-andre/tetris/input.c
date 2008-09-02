@@ -27,6 +27,10 @@
 // pressed, since it is difficult to release all buttons simultanously
 #define TETRIS_INPUT_PAUSE_TICKS 100
 
+// amount of allowed loop cycles while in pause mode so that the game
+// automatically continues after a minute
+#define TETRIS_INPUT_PAUSE_CYCLES 12000
+
 // minimum of cycles in gliding mode
 #define TETRIS_INPUT_GLIDE_CYCLES 75
 
@@ -147,6 +151,7 @@ tetris_input_t *tetris_input_construct()
 	tetris_input_setLevel(pIn, 0);
 	pIn->nLoopCycles = 0;
 	pIn->nRepeatCount = -TETRIS_INPUT_REPEAT_INITIALDELAY;
+	pIn->nPauseCount = 0;
 	memset(pIn->nIgnoreCmdCounter, 0, TETRIS_INCMD_NONE);
 
 	return pIn;
@@ -259,6 +264,7 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 
 			case TETRIS_INCMD_PAUSE:
 				pIn->cmdLast = cmdReturn = cmdJoystick;
+				pIn->nPauseCount = 0;
 				break;
 
 			case TETRIS_INCMD_NONE:
@@ -268,15 +274,19 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 					tetris_input_chatterProtect(pIn, pIn->cmdLast);
 				}
 
-				// if the game is paused we return TETRIS_INCMD_PAUSE as long as no
-				// other button has been pressed
+				// if the game is paused we ensure that TETRIS_INCMD_PAUSE is
+				// considered as the last command so that the loop cycle counter
+				// does not get incremented
 				if (pIn->cmdLast != TETRIS_INCMD_PAUSE)
 				{
 					pIn->cmdLast = cmdReturn = TETRIS_INCMD_NONE;
 				}
 				else
 				{
-					pIn->cmdLast = cmdReturn = TETRIS_INCMD_PAUSE;
+					pIn->cmdLast = TETRIS_INCMD_PAUSE;
+					// force continuation of the game after several pause cycles
+					if (++pIn->nPauseCount > TETRIS_INPUT_PAUSE_CYCLES)
+						pIn->cmdLast = TETRIS_INCMD_NONE;
 				}
 
 				pIn->nRepeatCount = -TETRIS_INPUT_REPEAT_INITIALDELAY;
@@ -307,8 +317,10 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 		{
 			pIn->nLoopCycles = 0;
 		}
-		// otherwise ensure automatic falling (if game is running)
-		else if (cmdReturn != TETRIS_INCMD_PAUSE)
+		// otherwise ensure automatic falling (unless game is running)
+		else if ((cmdReturn != TETRIS_INCMD_PAUSE) &&
+				!((cmdReturn == TETRIS_INCMD_NONE) &&
+						(pIn->cmdLast == TETRIS_INCMD_PAUSE)))
 		{
 			++pIn->nLoopCycles;
 		}

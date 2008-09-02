@@ -50,10 +50,10 @@ typedef struct tetris_input_t
 	// set via the tetris_input_setLevel() function.
 	uint8_t nMaxCycles;
 
-	// This counter keeps track of the loop cycles whoch have been done since
-	// the last forced piece movement. It gets reset if it either reaches a well
-	// defined value (causing a gravity command to be issued) or the player has
-	// moved down the piece herself/himself.
+	// This counter keeps track of the number of loop cycles whoch have been
+	// done since the last forced piece movement. It gets reset if it either
+	// reaches a well defined value (causing a gravity command to be issued)
+	// or the player has moved down the piece herself/himself.
 	uint8_t nLoopCycles;
 
 	// Amount of loop cycles in which the same command has been issued
@@ -62,6 +62,12 @@ typedef struct tetris_input_t
 	// regulating the pace of the key repeat as commands are only processed
 	// if that value is reached).
 	int8_t nRepeatCount;
+
+	// Keeps track of the number loop cycles which have been run while in
+	// pause mode. As soon as a well defined value is reached, the game
+	// continues (in case someone paused the game and forgot to resume it).
+	uint16_t nPauseCount;
+
 
 	// last command (important for key repeat)
 	tetris_input_command_t cmdLast;
