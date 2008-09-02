@@ -29,7 +29,7 @@
 
 // amount of allowed loop cycles while in pause mode so that the game
 // automatically continues after a minute
-#define TETRIS_INPUT_PAUSE_CYCLES 1200
+#define TETRIS_INPUT_PAUSE_CYCLES 12000
 
 // minimum of cycles in gliding mode
 #define TETRIS_INPUT_GLIDE_CYCLES 75
