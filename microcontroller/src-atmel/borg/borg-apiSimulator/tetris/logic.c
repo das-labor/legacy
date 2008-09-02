@@ -203,6 +203,7 @@ void tetris ()
 			{
 			// game paused?
 			case TETRIS_INCMD_PAUSE:
+				// tell the view it should display the pause screen
 				tetris_view_setViewMode(pView, TETRIS_VIMO_PAUSED);
 				break;
 
