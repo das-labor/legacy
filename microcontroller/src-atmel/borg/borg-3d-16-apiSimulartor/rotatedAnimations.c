@@ -1,5 +1,5 @@
 #include "programs.h"
-
+/*
 #define NPOINTS 8
 #define NLINES 12
 void rotatedScaledCube() {
@@ -112,13 +112,13 @@ void testRotate() {
 	for (a = 0; a < 196; a++) {
 		rotate(a/4, a/2, a, org, rot, NPOINTS, (pixel3d) {0x48, 0x48, 0x48});
 		for (i = 0; i < NPOINTS; i++) {
-			/*
-			hx = rot[i].x % 16;
-			hy = rot[i].y % 16;
-			hz = rot[i].z % 16;
-			hx = hx > 4 ? 5 - hx: hx;
-			hx += hy > 4 ? 5 - hy: hy;
-			hx += hz > 4 ? 5 - hz: hz; */
+			
+			//hx = rot[i].x % 16;
+			//hy = rot[i].y % 16;
+			//hz = rot[i].z % 16;
+			//hx = hx > 4 ? 5 - hx: hx;
+			//hx += hy > 4 ? 5 - hy: hy;
+			//hx += hz > 4 ? 5 - hz: hz;
 			setpixel3d((pixel3d) {(rot[i].x+8)/16, (rot[i].y+8)/16, (rot[i].z+8)/16}, 3);
 		}
 		wait(20);
@@ -126,23 +126,24 @@ void testRotate() {
 	}	
 	
 }
+*/
 
 
 void drawLineZAngle(unsigned char angle, unsigned char z, unsigned char value) {
 	// could be optimised in programcode
-	unsigned char x1[14] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
-	unsigned char y1[14] = {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7};
-	unsigned char x2[14] = {7, 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1};
-	unsigned char y2[14] = {7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0};
+	unsigned char x1[30] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14};
+	unsigned char y1[30] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15};
+	unsigned char x2[30] = {15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,14,13,12,11,10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+	unsigned char y2[30] = {15,14,13,12,11,10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	drawLine3D(x1[angle], y1[angle], z, x2[angle], y2[angle], z, value);	
 }
 
 void spirale() {
 	unsigned char z, angle, count = 0, angleAdd;
 	for (angleAdd = 0; angleAdd < 12; count++) {
-		for (angle = 0; angle < 14; angle++) {
-			for (z = 0; z < 8; z++) {
-				drawLineZAngle((angle+(angleAdd*z/4))%14, z, 3);		
+		for (angle = 0; angle < 30; angle++) {
+			for (z = 0; z < LEN_Z; z++) {
+				drawLineZAngle((angle+(angleAdd*z/4))%30, z, 3);		
 			}
 			wait(30);
 			clear_screen(0);
@@ -155,6 +156,7 @@ void spirale() {
 	}
 }
 
+/*
 void flury() {
 #define NUM_CIRCLE 3
 	pixel3d circlePoints[NUM_CIRCLE][4][4];
@@ -311,3 +313,4 @@ void laborZylinder() {
 		shift3d(up);
 	}
 }
+*/

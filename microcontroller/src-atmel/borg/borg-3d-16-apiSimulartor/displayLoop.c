@@ -7,7 +7,19 @@
  */
 void *display_loop(void * unused) {
 	while (1) {
-	    setplane_test();
+		matrix();
+	    snake3d();
+		feuer();
+		spirale();
+		growingCubeFilled();
+		growingCubeFilled();
+		growingCubeFilled();
+		coolAnim();
+		movingArrows();
+		planeAnimation2(30);
+		joern1();
+		
+		setplane_test();
 		shift_test();
 		test3();
 		test2();

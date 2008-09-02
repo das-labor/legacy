@@ -1,5 +1,7 @@
 #include "programs.h"
 
+#define STREAMER_NUM 30
+
 typedef struct {
 	pixel3d start;
 	unsigned char len;
@@ -19,8 +21,8 @@ void matrix() {
 	
 	while (counter--) {
 		unsigned char i, j;
-		for (x = 0; x < (NUM_ROWS * NUM_PLANES); x++)
-			for (y = 0; y < (NUM_COLS); y++)
+		for (x = 0; x < (LEN_Y * LEN_X); x++)
+			for (y = 0; y < (LEN_Y); y++)
 				matrix_bright[x][y] = 0;
 		
 		for (i = 0; i < streamer_num; i++) {
@@ -48,19 +50,19 @@ void matrix() {
 			}			
 		}
 		
-		for (y = 0; y < NUM_COLS; y++)
-			for (x = 0; x < (NUM_ROWS*NUM_PLANES); x++)
-				setpixel3d((pixel3d){x % NUM_ROWS, x / NUM_PLANES, NUM_COLS-y-1}, 
+		for (y = 0; y < LEN_Y; y++)
+			for (x = 0; x < (LEN_Y*LEN_Z); x++)
+				setpixel3d((pixel3d){x % LEN_X, x / LEN_Z, LEN_X-y-1}, 
 				                     matrix_bright[x][y] >> 6);
 		
 		unsigned char nsc;
 		for (nsc = 0; nsc < 6; nsc++) {
 			if (streamer_num < STREAMER_NUM){
-				unsigned char sy = easyRandom() % (2*NUM_COLS);
+				unsigned char sy = easyRandom() % (2*LEN_X);
 				if (sy > NUM_COLS-1) 
 					sy=0;
 				streamers[streamer_num] = 
-				 			  (streamer){{easyRandom()%(NUM_ROWS*NUM_PLANES), sy}, 
+				 			  (streamer){{easyRandom()%(LEN_Y*LEN_Z), sy}, 
 				                         0, (easyRandom()%8)+12, index++,
 										 (easyRandom()%16)+3
 										};
@@ -81,24 +83,24 @@ void feuer()
 {
 	unsigned char z, y, x;
 	unsigned int  t;
-	unsigned char world[NUM_COLS][NUM_ROWS][FEUER_Y];   // double buffer
+	unsigned char world[LEN_Z][LEN_Y][FEUER_Y];   // double buffer
 
 	for(t=0; t<800; t++) {
 		// update lowest line
-		for(x=0; x<NUM_COLS; x++) {
-            for(y=0; y<NUM_ROWS; y++) {
+		for(x=0; x<LEN_X; x++) {
+            for(y=0; y<LEN_Y; y++) {
                 world[x][y][FEUER_Y-1] = easyRandom();
             }
 		}
 
 		// diffuse
 		for(z=1; z<FEUER_Y; z++) {
-			for(x=0; x<NUM_COLS; x++) {
-                for (y=0; y<NUM_ROWS; y++) {
-					world[x][y][z-1] = (FEUER_N*world[(x-1)%NUM_COLS][y][z] + 
-					                    FEUER_N*world[(x+1)%NUM_COLS][y][z] +
-						                FEUER_N*world[x][(y-1)%NUM_ROWS][z] + 
-					                    FEUER_N*world[x][(y+1)%NUM_ROWS][z] +
+			for(x=0; x<LEN_X; x++) {
+                for (y=0; y<LEN_Y; y++) {
+					world[x][y][z-1] = (FEUER_N*world[(x-1)%LEN_Y][y][z] + 
+					                    FEUER_N*world[(x+1)%LEN_X][y][z] +
+						                FEUER_N*world[x][(y-1)%LEN_Y][z] + 
+					                    FEUER_N*world[x][(y+1)%LEN_Y][z] +
 						                FEUER_S*world[x][y][z]) 
 										/ FEUER_DIV;
                 }
@@ -106,9 +108,9 @@ void feuer()
 		}
 
 		// copy to screen
-		for(z=0; z<NUM_ROWS; z++) {
-			for(x=0; x<NUM_COLS; x++) {
-                for(y=0; y<NUM_ROWS; y++) {
+		for(z=0; z<LEN_Z; z++) {
+			for(x=0; x<LEN_X; x++) {
+                for(y=0; y<LEN_Y; y++) {
 					setpixel3d((pixel3d){x,y,7-z}, world[x][y][z] >> 5 );
                 }
 			}
