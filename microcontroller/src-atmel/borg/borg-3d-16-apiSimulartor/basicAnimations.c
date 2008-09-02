@@ -2,8 +2,8 @@
 
 void growingCubeFilled() {
 	unsigned char x, y, z;
-	unsigned char min = 3, max = 4;
-	while (min < NUM_PLANES && max < NUM_PLANES) {
+	unsigned char min = 7, max = 8;
+	while (min < LEN_Z && max < LEN_Z) {
 		for (x = min; x <= max; x++) {
 			for (y = min; y <= max; y++) {
 				for (z = min; z <= max; z++) {
@@ -16,8 +16,8 @@ void growingCubeFilled() {
 		max++;
 	}
 	min = 0;
-	max = 7;
-	while (min < 5 && max > 3) {
+	max = 15;
+	while (min < 9 && max > 6) {
 		for (x = min; x <= max; x++) {
 			for (y = min; y <= max; y++) {
 				for (z = min; z <= max; z++) {
@@ -36,10 +36,10 @@ void growingCubeFilled() {
 void coolAnim() {
 	unsigned char x, y, z;
 	unsigned char min = 3, max = 4;
-	while (min < NUM_PLANES && max < NUM_PLANES) {
-		for (x = 0; x <= 8; x++) {
-			for (y = 0; y <= 8; y++) {
-				for (z = 0; z <= 8; z++) {
+	while (min < LEN_Z && max < LEN_Z) {
+		for (x = 0; x <= LEN_X; x++) {
+			for (y = 0; y <= LEN_Y; y++) {
+				for (z = 0; z <= LEN_Z; z++) {
 					if (x == min || x == max || y == min || y == max || z == min || z == max)
 						setpixel3d((pixel3d){x,y,z}, 3);
 					else 
@@ -54,9 +54,9 @@ void coolAnim() {
 	min = 0;
 	max = 7;
 	while (min < 5 && max > 3) {
-		for (x = 0; x <= 8; x++) {
-			for (y = 0; y <= 8; y++) {
-				for (z = 0; z <= 8; z++) {
+		for (x = 0; x <= LEN_X; x++) {
+			for (y = 0; y <= LEN_Y; y++) {
+				for (z = 0; z <= LEN_Z; z++) {
 					if (x == min || x == max || y == min || y == max || z == min || z == max)
 						setpixel3d((pixel3d){x,y,z}, 3);
 					else 
@@ -77,13 +77,13 @@ void movingArrows() {
      unsigned char i, j, cnt;
      for (cnt = 0; cnt < 100; cnt++) {
          shift3d(up);
-         for (i = 0; i < NUM_ROWS; i++) {
-             for (j = 0; j < NUM_COLS; j++) {
+         for (i = 0; i < LEN_Y; i++) {
+             for (j = 0; j < LEN_X; j++) {
                  setpixel3d((pixel3d) {i, j, 0}, 
-				 	(j == cnt%4 && i >= cnt%4 && i < 7 - cnt%4) ||
-				 	(j == 7 - cnt%4 && i >= cnt%4 && i < 7 - cnt%4) ||
-				 	(i == cnt%4 && j >= cnt%4 && j < 7 - cnt%4) ||
-				 	(i == 7 - cnt%4 && j >= cnt%4 && j < 7 - cnt%4)
+				 	(j == cnt%8 && i >= cnt%8 && i < LEN_Z - 1 - cnt%8) ||
+				 	(j == LEN_Z - 1 - cnt%8 && i >= cnt%8 && i < LEN_Z - 1 - cnt%8) ||
+				 	(i == cnt%8 && j >= cnt%8 && j < LEN_Z - 1 - cnt%8) ||
+				 	(i == LEN_Z - 1 - cnt%8 && j >= cnt%8 && j < LEN_Z - 1 - cnt%8)
 				 	? cnt%3+1:0);
              }
          }
@@ -94,7 +94,7 @@ void movingArrows() {
 
 
 
-#define BWIDTH 8
+#define BWIDTH LEN_Z
 void fadedPlaneScan(direction dir, unsigned char i)
 {
 		if (i < BWIDTH) set_plane(dir, i, 3);
@@ -123,8 +123,9 @@ void planeAnimation2(unsigned char ms)
 	}
 }
 
+/*
 void waves() {
-	signed char data[8][8];
+	signed char data[16][16];
 	unsigned char i, j, k;
 	for (i = 0; i < 254; i++) {
 		for (j = 0; j < 8; j++) {
@@ -145,17 +146,17 @@ void waves() {
 		clear_screen(0);
 	}
 }
+*/
 
-
-void joern1(){
+void joern1() {
 unsigned char i, j, x;
-	unsigned char rolr=1 , rol, rol2;
+	unsigned short rolr=0x0101 , rol, rol2;
 	clear_screen(0);
 	for (i = 0; i< 150;i++){
 		rol2 = rolr;
-		for (j = 0; j < NUM_PLANES; j++) {
+		for (j = 0; j < LEN_Z; j++) {
 			rol = rol2;
-            for (x=0; x < PLANEBYTES; x++) { 
+            for (x=0; x < LEN_X; x++) { 
 				pixmap[2][j][x] = rol;
 			    if((rol<<=1)==0) rol = 1;
             }
@@ -202,6 +203,7 @@ void serialStream() {
 #	endif
 }
 
+/*
 void gameOfLife(unsigned char anim, unsigned int delay) {
 	unsigned char gen, erg, seven = 1, maxGen = 0;
 	signed char x, y, z, neighC, r1 = 3, r2 = 4, r3 = 3, r4 = 2;
@@ -282,3 +284,4 @@ void gameOfLife(unsigned char anim, unsigned int delay) {
 		//printf("============ Gerneration %d \n", gen);
 	}			
 }
+*/
