@@ -263,8 +263,22 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 				break;
 
 			case TETRIS_INCMD_PAUSE:
-				pIn->cmdLast = cmdReturn = cmdJoystick;
-				pIn->nPauseCount = 0;
+				// Only issue the pause command if the input isn't considered as
+				// joystick chatter (we have to check this separately here
+				// because TETRIS_INCMD_PAUSE is a combination of the buttons
+				// for TETRIS_INCMD_ROT_CW and TETRIS_INCMD_DOWN).
+				if ((pIn->nIgnoreCmdCounter[TETRIS_INCMD_ROT_CW] +
+						pIn->nIgnoreCmdCounter[TETRIS_INCMD_DOWN]) == 0)
+				{
+					tetris_input_chatterProtect(pIn, TETRIS_INCMD_ROT_CW);
+					tetris_input_chatterProtect(pIn, TETRIS_INCMD_DOWN);
+					pIn->cmdLast = cmdReturn = cmdJoystick;
+					pIn->nPauseCount = 0;
+				}
+				else
+				{
+					pIn->cmdLast = TETRIS_INCMD_NONE;
+				}
 				break;
 
 			case TETRIS_INCMD_NONE:
