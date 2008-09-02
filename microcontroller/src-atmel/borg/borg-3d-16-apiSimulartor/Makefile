@@ -1,5 +1,5 @@
 PRG = borg3dSim
-OBJ = main.o trackball.o api.o util.o displayLoop.o testPrograms.o   
+OBJ = main.o trackball.o api.o util.o displayLoop.o testPrograms.o basicAnimations.o rotatedAnimations.o  randomAnimations.o
 #
 #OBJ = main.o api.o rotatedAnimations.o randomAnmations.o testPrograms.o joystick.o basicAnimations.o programs.o util.o trackball.o scrolltext2.o
 OPTIMIZE = -O2
