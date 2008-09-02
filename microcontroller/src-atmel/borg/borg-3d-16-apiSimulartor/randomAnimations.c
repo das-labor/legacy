@@ -13,8 +13,8 @@ typedef struct {
 void matrix() {
 	unsigned int counter = 500; 				//run 500 cycles
 	streamer streamers[STREAMER_NUM];
-	unsigned char matrix_bright[NUM_PLANES*NUM_ROWS][NUM_COLS];
-	unsigned char x, y;
+	unsigned char matrix_bright[LEN_Z*LEN_Y][LEN_X];
+	unsigned int x, y;
 	unsigned char index = 0;
 	unsigned char draw;
 	unsigned char streamer_num = 0;
@@ -30,7 +30,7 @@ void matrix() {
 			
 			unsigned char bright = 255; draw = 0;
 			for(j = (str.len >> 3); j != 0xFF; j--) { //Draw streamer
-				if (j+str.start.y < (NUM_COLS)){
+				if (j+str.start.y < (LEN_X)){
 					if (bright >> 6) 
 						draw = 1;
 					if (bright > matrix_bright[str.start.x][str.start.y+j]) {
@@ -59,7 +59,7 @@ void matrix() {
 		for (nsc = 0; nsc < 6; nsc++) {
 			if (streamer_num < STREAMER_NUM){
 				unsigned char sy = easyRandom() % (2*LEN_X);
-				if (sy > NUM_COLS-1) 
+				if (sy > LEN_X-1) 
 					sy=0;
 				streamers[streamer_num] = 
 				 			  (streamer){{easyRandom()%(LEN_Y*LEN_Z), sy}, 
@@ -74,10 +74,10 @@ void matrix() {
 } 
 
 
-#define FEUER_Y (NUM_ROWS + 3)
-#define FEUER_S 26
+#define FEUER_Y (LEN_Y + 3)
+#define FEUER_S 24
 #define FEUER_N 3
-#define FEUER_DIV 44;
+#define FEUER_DIV 39;
 
 void feuer()
 {
@@ -111,7 +111,7 @@ void feuer()
 		for(z=0; z<LEN_Z; z++) {
 			for(x=0; x<LEN_X; x++) {
                 for(y=0; y<LEN_Y; y++) {
-					setpixel3d((pixel3d){x,y,7-z}, world[x][y][z] >> 5 );
+					setpixel3d((pixel3d){x,y,15-z}, world[x][y][z] >> 5 );
                 }
 			}
 		}
@@ -184,9 +184,9 @@ void snake3d(){
 				dir = (direction) (easyRandom() % 6);
 			}
 			if((apple_num<10) && (easyRandom()<10)) {
-				pixel3d new_apple = (pixel3d){easyRandom()%NUM_PLANES,
-					                          easyRandom()%NUM_ROWS,
-					                          easyRandom()%NUM_COLS};
+				pixel3d new_apple = (pixel3d){easyRandom()%LEN_Z,
+					                          easyRandom()%LEN_Y,
+					                          easyRandom()%LEN_X};
 				if (!get_pixel3d(new_apple)){
 					apples[apple_num++] = new_apple;
 				}
