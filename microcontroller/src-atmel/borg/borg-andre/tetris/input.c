@@ -29,7 +29,7 @@
 
 // amount of allowed loop cycles while in pause mode so that the game
 // automatically continues after a minute
-#define TETRIS_INPUT_PAUSE_CYCLES 12000
+#define TETRIS_INPUT_PAUSE_CYCLES 1200
 
 // minimum of cycles in gliding mode
 #define TETRIS_INPUT_GLIDE_CYCLES 75
@@ -274,18 +274,17 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 					tetris_input_chatterProtect(pIn, pIn->cmdLast);
 				}
 
-				// if the game is paused we ensure that TETRIS_INCMD_PAUSE is
-				// considered as the last command so that the loop cycle counter
-				// does not get incremented
-				if (pIn->cmdLast != TETRIS_INCMD_PAUSE)
+				cmdReturn = TETRIS_INCMD_NONE;
+
+				// If the game is paused (last command was TETRIS_INCMD_PAUSE)
+				// we ensure that the variable which holds that last command
+				// isn't touched. It is used as a flag so that the loop cycle
+				// counter doesn't get incremented.
+				// We count the number of pause cycles, though. If enough pause
+				// cycles have been run, we enforce the continuation of the game.
+				if ((pIn->cmdLast != TETRIS_INCMD_PAUSE) ||
+					(++pIn->nPauseCount > TETRIS_INPUT_PAUSE_CYCLES))
 				{
-					pIn->cmdLast = cmdReturn = TETRIS_INCMD_NONE;
-				}
-				else
-				{
-					pIn->cmdLast = TETRIS_INCMD_PAUSE;
-					// force continuation of the game after several pause cycles
-					if (++pIn->nPauseCount > TETRIS_INPUT_PAUSE_CYCLES)
 						pIn->cmdLast = TETRIS_INCMD_NONE;
 				}
 
