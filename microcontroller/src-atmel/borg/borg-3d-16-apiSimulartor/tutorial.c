@@ -21,7 +21,7 @@
 #  include "scrolltext.h"
 #  include <avr/io.h>
 #else
-#  include "pixel3d.h"
+#  include "api.h"
 #  include "scrolltext2.h"
 #endif
 

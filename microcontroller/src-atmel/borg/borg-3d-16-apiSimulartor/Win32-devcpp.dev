@@ -1,7 +1,7 @@
 [Project]
 FileName=Win32-devcpp.dev
 Name=borg-3d-apiSimulator
-UnitCount=19
+UnitCount=15
 Type=0
 Ver=1
 ObjFiles=
@@ -12,8 +12,8 @@ ResourceIncludes=
 MakeIncludes=
 Compiler=-D_WIN32_@@_
 CppCompiler=
-Linker=-lglut32 -lglu32 -lopengl32 -lwinmm -lgdi32_@@_
-IsCpp=1
+Linker=-lglut32 -lglu32 -lopengl32 -lwinmm -lgdi32 _@@_
+IsCpp=0
 Icon=
 ExeOutput=
 ObjectOutput=
@@ -128,26 +128,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit9]
-FileName=scrolltext2.c
-CompileCpp=0
-Folder=borg-3d-apiSimulator
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit10]
-FileName=scrolltext2.h
-CompileCpp=0
-Folder=borg-3d-apiSimulator
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit11]
 FileName=basicAnimations.c
 CompileCpp=0
 Folder=borg-3d-apiSimulator
@@ -157,17 +137,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit12]
-FileName=programs.c
-CompileCpp=0
-Folder=borg-3d-apiSimulator
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit13]
+[Unit10]
 FileName=programs.h
 CompileCpp=0
 Folder=borg-3d-apiSimulator
@@ -177,17 +147,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit14]
-FileName=randomAnmations.c
-CompileCpp=0
-Folder=borg-3d-apiSimulator
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit15]
+[Unit11]
 FileName=rotatedAnimations.c
 CompileCpp=0
 Folder=borg-3d-apiSimulator
@@ -197,7 +157,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit16]
+[Unit12]
 FileName=testPrograms.c
 CompileCpp=0
 Folder=borg-3d-apiSimulator
@@ -207,7 +167,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit17]
+[Unit13]
 FileName=tutorial.c
 CompileCpp=0
 Folder=borg-3d-apiSimulator
@@ -217,8 +177,8 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit18]
-FileName=joystick.c
+[Unit15]
+FileName=randomAnimations.c
 CompileCpp=0
 Folder=borg-3d-apiSimulator
 Compile=1
@@ -233,6 +193,16 @@ CompileCpp=0
 Folder=borg-3d-apiSimulator
 Compile=0
 Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit14]
+FileName=displayLoop.c
+CompileCpp=0
+Folder=borg-3d-apiSimulator
+Compile=1
+Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=

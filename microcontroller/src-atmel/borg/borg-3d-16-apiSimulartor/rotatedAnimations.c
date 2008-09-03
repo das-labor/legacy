@@ -1,5 +1,5 @@
 #include "programs.h"
-/*
+
 #define NPOINTS 8
 #define NLINES 12
 void rotatedScaledCube() {
@@ -31,7 +31,7 @@ void rotatedScaledCube() {
 	unsigned char i;								
 											
 	for (a = 0; a < 1500; a++) {
-		scale(a/35+40, a/35+40, a/35+40, org, sca, NPOINTS, (pixel3d) {0x30, 0x30, 0x30});
+		scale(a/35+60, a/35+60, a/35+60, org, sca, NPOINTS, (pixel3d) {0x30, 0x30, 0x30});
 		rotate(a/3, a/5 , a/4, sca, rot, NPOINTS, (pixel3d) {0x38, 0x38, 0x38});
 		
 		for (i = 0; i < NLINES*2; i += 2) {
@@ -45,6 +45,7 @@ void rotatedScaledCube() {
 	}	
 }
 
+/*
 #undef NPOINTS
 #define NPOINTS 32
 void testRotate() {
