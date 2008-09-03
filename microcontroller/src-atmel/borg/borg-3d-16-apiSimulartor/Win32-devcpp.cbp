@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="borg-3d-apiSimulator" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="default">
+				<Option output="borg-3d-apiSimulator" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-D_WIN32" />
+		</Compiler>
+		<Linker>
+			<Add library="glut32" />
+			<Add library="glu32" />
+			<Add library="opengl32" />
+			<Add library="winmm" />
+			<Add library="gdi32" />
+		</Linker>
+		<Unit filename="api.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="api.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="basicAnimations.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="config.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="displayLoop.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="programs.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="randomAnimations.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="rotatedAnimations.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="testPrograms.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="trackball.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="trackball.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tutorial.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="util.h">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
