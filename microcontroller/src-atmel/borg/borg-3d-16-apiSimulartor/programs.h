@@ -38,6 +38,7 @@ void test2();
 void test3();
 void joystick_test();
 void setplane_test();
+void shift_test();
 
 //randomAnimations.c
 void snake3d();

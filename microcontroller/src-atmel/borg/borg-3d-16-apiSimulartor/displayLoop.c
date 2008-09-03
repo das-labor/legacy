@@ -7,6 +7,7 @@
  */
 void *display_loop(void * unused) {
 	while (1) {
+		rotatedScaledCube();  
 		feuer();
 		matrix();
 	    snake3d();
