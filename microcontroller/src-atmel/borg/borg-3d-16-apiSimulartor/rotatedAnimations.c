@@ -31,8 +31,8 @@ void rotatedScaledCube() {
 	unsigned char i;								
 											
 	for (a = 0; a < 1500; a++) {
-		scale(a/35+60, a/35+60, a/35+60, org, sca, NPOINTS, (pixel3d) {0x30, 0x30, 0x30});
-		rotate(a/3, a/5 , a/4, sca, rot, NPOINTS, (pixel3d) {0x38, 0x38, 0x38});
+		scale(a/35+60, a/35+60, a/35+60, org, sca, NPOINTS, (pixel3d) {0x60, 0x60, 0x60});
+		rotate(a/3, a/5 , a/4, sca, rot, NPOINTS, (pixel3d) {0x58, 0x58, 0x58});
 		
 		for (i = 0; i < NLINES*2; i += 2) {
 			h1 = rot[drawlist[i]];
