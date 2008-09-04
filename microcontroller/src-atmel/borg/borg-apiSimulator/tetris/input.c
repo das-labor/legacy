@@ -6,13 +6,17 @@
 #include "../util.h"
 #include "input.h"
 
-/* the API simulator and the real API have different named wait functions */
+/* - the API simulator and the real API have different named wait functions
+ * - the macro PM helps in reading values from PROGMEM on the AVR arch
+ */
 #ifdef __AVR__
 	#include <avr/pgmspace.h>
 	#define WAIT(ms) wait(ms)
+	#define PM(value) pgm_read_word(&value)
 #else
 	#define PROGMEM
 	#define WAIT(ms) myWait(ms)
+	#define PM(value) (value)
 #endif
 
 
@@ -24,7 +28,7 @@
 #define TETRIS_INPUT_TICKS 5
 
 // amount of milliseconds the input is ignored after the pause combo has been
-// pressed, since it is difficult to release all buttons simultanously
+// pressed, since it is difficult to release all buttons simultaneously
 #define TETRIS_INPUT_PAUSE_TICKS 100
 
 // amount of allowed loop cycles while in pause mode so that the game
@@ -61,6 +65,11 @@
 void tetris_input_chatterProtect (tetris_input_t *pIn,
                                   tetris_input_command_t cmd)
 {
+	// never exceed the index
+	assert(cmd < TETRIS_INCMD_NONE);
+
+	// amount of loop cycles a command is ignored after its button has been
+	// released (every command has its own counter)
 	const static uint8_t nInitialIgnoreValue[TETRIS_INCMD_NONE] PROGMEM =
 	{
 		TETRIS_INPUT_CHATTER_TICKS_ROT_CW,
@@ -70,22 +79,40 @@ void tetris_input_chatterProtect (tetris_input_t *pIn,
 		TETRIS_INPUT_CHATTER_TICKS_DOWN,
 		TETRIS_INPUT_CHATTER_TICKS_DROP,
 		0, // TETRIS_INCMD_GRAVITY (irrelevant because it doesn't have a button)
-		0  // TETRIS_INCMD_PAD (irrelevant as well)
+		0  // TETRIS_INCMD_PAUSE (is a combination of ROT_CW and DOWN)
 	};
 
-	// TETRIS_INCMD_NONE is irrelevant
-	if (cmd != TETRIS_INCMD_NONE)
+	// setting ignore counter according to the predefined array
+	if (pIn->nIgnoreCmdCounter[cmd] == 0)
 	{
-		// setting value according to predefined array
-		if (pIn->nIgnoreCmdCounter[cmd] == 0)
+		// if the command isn't TETRIS_INCMD_PAUSE, setting the ignore counter
+		// is straight forward
+		if (cmd != TETRIS_INCMD_PAUSE)
 		{
-		#ifdef __AVR__
-			pIn->nIgnoreCmdCounter[cmd] =
-				pgm_read_word(&nInitialIgnoreValue[cmd]);
-		#else
-			pIn->nIgnoreCmdCounter[cmd] = nInitialIgnoreValue[cmd];
-		#endif
+			pIn->nIgnoreCmdCounter[cmd] = PM(nInitialIgnoreValue[cmd]);
 		}
+		// TETRIS_INCMD_PAUSE is issued via a combination of the buttons for
+		// TETRIS_INCMD_ROT_CW and TETRIS_INCMD_DOWN, so we must set their
+		// ignore counters
+		else
+		{
+			pIn->nIgnoreCmdCounter[TETRIS_INCMD_ROT_CW] =
+				PM(nInitialIgnoreValue[TETRIS_INCMD_ROT_CW]);
+			pIn->nIgnoreCmdCounter[TETRIS_INCMD_DOWN] =
+				PM(nInitialIgnoreValue[TETRIS_INCMD_DOWN]);
+		}
+	}
+
+	// The ignore counter of TETRIS_INCMD_PAUSE is either set to the counter
+	// value of TETRIS_INCMD_ROT_CW or TETRIS_INCMD_DOWN (whichever is higher).
+	if ((cmd == TETRIS_INCMD_ROT_CW) || (cmd == TETRIS_INCMD_DOWN))
+	{
+		// helper variables (which the compiler hopefully optimizes away)
+		uint8_t nRotCw = pIn->nIgnoreCmdCounter[TETRIS_INCMD_ROT_CW];
+		uint8_t nDown = pIn->nIgnoreCmdCounter[TETRIS_INCMD_DOWN];
+
+		pIn->nIgnoreCmdCounter[TETRIS_INCMD_PAUSE] =
+				(nRotCw > nDown ? nRotCw : nDown);
 	}
 }
 
@@ -93,7 +120,7 @@ void tetris_input_chatterProtect (tetris_input_t *pIn,
 /* Function:     tetris_input_queryJoystick
  * Description:  translates joystick movements into tetris_input_command_t
  * Argument pIn: pointer to an input object
- * Return value: see definitition of tetris_input_command_t
+ * Return value: see definition of tetris_input_command_t
  */
 tetris_input_command_t tetris_input_queryJoystick()
 {
@@ -185,13 +212,17 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 {
 	assert (pIn != NULL);
 
+	// holds the translated command value of the joystick
 	tetris_input_command_t cmdJoystick = TETRIS_INCMD_NONE;
+
+	// this variable both serves as the return value and as a flag for not
+	// leaving the function as long as its value is TETRIS_INCMD_NONE
 	tetris_input_command_t cmdReturn = TETRIS_INCMD_NONE;
 
 	uint8_t nMaxCycles;
 
 	// if the piece is gliding we grant the player a reasonable amount of time
-	// to make the game more controllable at high falling speeds
+	// to make the game more controllable at higher falling speeds
 	if ((nPace == TETRIS_INPACE_GLIDING) &&
 			(pIn->nMaxCycles < TETRIS_INPUT_GLIDE_CYCLES))
 	{
@@ -257,27 +288,23 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 				}
 				else
 				{
-					// if we reach here the command is somehow ignored
+					// if we reach here the command is ignored
 					cmdReturn = TETRIS_INCMD_NONE;
 				}
 				break;
 
 			case TETRIS_INCMD_PAUSE:
-				// Only issue the pause command if the input isn't considered as
-				// joystick chatter (we have to check this separately here
-				// because TETRIS_INCMD_PAUSE is a combination of the buttons
-				// for TETRIS_INCMD_ROT_CW and TETRIS_INCMD_DOWN).
-				if ((pIn->nIgnoreCmdCounter[TETRIS_INCMD_ROT_CW] +
-						pIn->nIgnoreCmdCounter[TETRIS_INCMD_DOWN]) == 0)
+				// if this is an initial pause command, make sure that the logic
+				// module is informed about it
+				if (pIn->cmdLast != TETRIS_INCMD_PAUSE)
 				{
-					tetris_input_chatterProtect(pIn, TETRIS_INCMD_ROT_CW);
-					tetris_input_chatterProtect(pIn, TETRIS_INCMD_DOWN);
 					pIn->cmdLast = cmdReturn = cmdJoystick;
 					pIn->nPauseCount = 0;
 				}
+				// consecutive pause commands should not cause the loop to leave
 				else
 				{
-					pIn->cmdLast = TETRIS_INCMD_NONE;
+					cmdReturn = TETRIS_INCMD_NONE;
 				}
 				break;
 
@@ -288,11 +315,9 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 					tetris_input_chatterProtect(pIn, pIn->cmdLast);
 				}
 
-				cmdReturn = TETRIS_INCMD_NONE;
-
 				// If the game is paused (last command was TETRIS_INCMD_PAUSE)
 				// we ensure that the variable which holds that last command
-				// isn't touched. It is used as a flag so that the loop cycle
+				// isn't touched. We use this as a flag so that the loop cycle
 				// counter doesn't get incremented.
 				// We count the number of pause cycles, though. If enough pause
 				// cycles have been run, we enforce the continuation of the game.
@@ -302,7 +327,11 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 						pIn->cmdLast = TETRIS_INCMD_NONE;
 				}
 
+				// reset repeat counter
 				pIn->nRepeatCount = -TETRIS_INPUT_REPEAT_INITIALDELAY;
+
+				// using cmdReturn as a flag for not leaving the loop
+				cmdReturn = TETRIS_INCMD_NONE;
 				break;
 
 			default:
@@ -330,7 +359,7 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 		{
 			pIn->nLoopCycles = 0;
 		}
-		// otherwise ensure automatic falling (unless game is running)
+		// otherwise ensure automatic falling (unless the game is running)
 		else if ((cmdReturn != TETRIS_INCMD_PAUSE) &&
 				!((cmdReturn == TETRIS_INCMD_NONE) &&
 						(pIn->cmdLast == TETRIS_INCMD_PAUSE)))
