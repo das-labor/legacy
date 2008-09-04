@@ -289,7 +289,7 @@ void tetris ()
 	tetris_view_showResults(pView);
 
 	// update highscore if it has been beaten
-	uint16_t nScore = tetris_logic_getScore(pView->pLogic);
+	uint16_t nScore = tetris_logic_getScore(pLogic);
 	if (nScore > nHighscore)
 	{
 		nHighscore = nScore;
