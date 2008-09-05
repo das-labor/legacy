@@ -97,9 +97,9 @@ void tetris_input_chatterProtect (tetris_input_t *pIn,
 		else
 		{
 			pIn->nIgnoreCmdCounter[TETRIS_INCMD_ROT_CW] =
-				PM(nInitialIgnoreValue[TETRIS_INCMD_ROT_CW]);
+				TETRIS_INPUT_CHATTER_TICKS_ROT_CW;
 			pIn->nIgnoreCmdCounter[TETRIS_INCMD_DOWN] =
-				PM(nInitialIgnoreValue[TETRIS_INCMD_DOWN]);
+				TETRIS_INPUT_CHATTER_TICKS_DOWN;
 		}
 	}
 
