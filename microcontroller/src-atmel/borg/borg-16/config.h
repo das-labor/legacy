@@ -47,4 +47,15 @@
 
 #define INIT_EEPROM
 
+//#define UART_BAUD_RATE 115200L
+
+#define REVERSED_HARDWARE
+//#define INVERSE_ROWS
+
+//#define INTERLACED_ROWS
+//#define INTERLACED_COLS
+
+
+
+
 #endif /* CONFIG_H_ */
