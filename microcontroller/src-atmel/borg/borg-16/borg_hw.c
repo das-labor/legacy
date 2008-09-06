@@ -23,8 +23,6 @@
 #define PIN_SHFT1 PD7
 
 
-#define REVERSED_HARDWARE
-
 //Der Puffer, in dem das aktuelle Bild gespeichert wird
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
@@ -44,13 +42,20 @@ inline void nextrow(row){
 	
 	if (row == 0){
 		//Zeile 0: Das erste Schieberegister initialisieren
+#ifndef INVERSE_ROWS
 		ROWPORT&= ~(1<<PIN_RST);
 		ROWPORT|= (1<<PIN_RST);
 		ROWPORT|= (1<<PIN_SHFT1);
 		ROWPORT|= (1<<PIN_CLK);
 		ROWPORT&= ~(1<<PIN_CLK);
 		ROWPORT&= ~(1<<PIN_SHFT1);
-		
+#else
+		ROWPORT&= ~(1<<PIN_SHFT1);
+		ROWPORT|= (1<<PIN_CLK);
+		ROWPORT&= ~(1<<PIN_CLK);
+		ROWPORT|= (1<<PIN_SHFT1);
+
+#endif
 	}else{
 		//In jeder anderen Zeile einfach nur einen weiter schieben
 		ROWPORT|= (1<<PIN_CLK);
@@ -79,27 +84,41 @@ inline void rowshow(unsigned char row, unsigned char plane){
 			OCR0 = 22;
 	}
 	
-	uint8_t tmp;
+	uint8_t tmp, tmp1;
 	//die Daten für die aktuelle Zeile auf die Spaltentreiber ausgeben
-	tmp = pixmap[plane][row][0];
-	#ifdef REVERSED_HARDWARE
+	
+#ifndef INTERLACED_ROWS
+	tmp  = pixmap[plane][row][0];
+	tmp1 = pixmap[plane][row][1];
+#else
+	row = (row>>1) + ((row & 0x01)?8:0 );
+	tmp  = pixmap[plane][row][0];
+	tmp1 = pixmap[plane][row][1];
+#endif
+#ifdef REVERSED_HARDWARE
 	tmp = (tmp >> 4) | (tmp << 4);
 	tmp = ((tmp & 0xcc) >> 2) | ((tmp & 0x33)<< 2); //0xcc = 11001100, 0x33 = 00110011
 	tmp = ((tmp & 0xaa) >> 1) | ((tmp & 0x55)<< 1); //0xaa = 10101010, 0x55 = 1010101
 	COLPORT2 = tmp;
-	#else
-	COLPORT1 = tmp;
-	#endif	
-	
-	tmp = pixmap[plane][row][1];
-	#ifdef REVERSED_HARDWARE
+	tmp = tmp1;
 	tmp = (tmp >> 4) | (tmp << 4);
 	tmp = ((tmp & 0xcc) >> 2) | ((tmp & 0x33) << 2); //0xcc = 11001100, 0x33 = 00110011
 	tmp = ((tmp & 0xaa) >> 1) | ((tmp & 0x55) << 1); //0xaa = 10101010, 0x55 = 1010101
 	COLPORT1 = tmp;
-	#else
-	COLPORT2 = tmp;
-	#endif	
+#else
+#ifdef INTERLACED_COLS
+	static uint8_t interlace_table[16] = {
+		0x00, 0x01, 0x04, 0x05, 0x10, 0x11, 0x14, 0x15, 0x40, 0x41, 0x44, 0x45, 0x50, 0x51, 0x54, 0x55
+	};
+	COLPORT1 = interlace_table[tmp&0x0f]  | (interlace_table[tmp1&0x0f]<<1);
+	tmp>>=4; tmp1>>=4;
+	COLPORT2 = interlace_table[tmp]  | (interlace_table[tmp1]<<1);
+#else
+	COLPORT1 = tmp;
+	COLPORT2 = tmp1;
+#endif
+#endif	
+	
 }
 
 

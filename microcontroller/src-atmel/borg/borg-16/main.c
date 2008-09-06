@@ -15,6 +15,7 @@
 #include "prng.h"
 #include "persistentCounter.h"
 #include "menu.h"
+#include "mcuf.h"
 
 //#define TESTMODE
 
@@ -29,8 +30,11 @@ int main (void){
 	borg_hw_init();
 	bcan_init();
 	joy_init();	
+	uart_init();
 	sei();
-	
+
+//	mcuf_serial_mode();
+
 #ifdef TESTMODE
 	test_levels();
 	test_palette();
@@ -38,7 +42,7 @@ int main (void){
 	
 	mode = setjmp(newmode_jmpbuf);
 	oldOldmode = oldMode;
-	waitForFire = 1;	
+	waitForFire = 1;
 	for(;;){
 		oldMode = mode;
 		switch(mode++) {
@@ -88,6 +92,7 @@ int main (void){
 			break;
 		case 35:
 			test1();
+			while(1);
 			break;
 		case 0xFF:
 			off();
