@@ -45,6 +45,7 @@
 #include "reqvalidator.h"
 #include "action.h"
 #include "system_stats.h"
+#include "hexdigit_tab.h"
 #include "comm.h"
 
 
@@ -150,23 +151,21 @@ uint8_t session_addAB(uint16_t length, uint8_t* msg, master_state_t* mstate){
 			return 3;
 		}
 	}
-	uint16_t tmp_i;
 	DS("(5/n)");	
-	for(tmp_i=0; tmp_i<3000; ++tmp_i){
-		_delay_ms(1);
-	}
 	authcredvalid_state_t avst;
 	avst = check_authblock(ab);
-	DS("(5.1/n)");	
+	//DS("(5.1/n)");	
 	switch(avst){
 		case invalidtimeout_cred:
 			DS("(5.2/n)");	
 			session_error_reply(MSGID_AB_ERROR, AB_ERROR_AUTHBLOCK_TIMEOUT, mstate);
-			return 6;
+			return 11;
 		case invalid_cred:
+			_delay_ms(5000);
 			DS("(5.2/n)");	
+			_delay_ms(5000);
 			session_error_reply(MSGID_AB_ERROR, AB_ERROR_AUTHBLOCK, mstate);
-			return 5;
+			return 12;
 		default:
 			break;
 	}
@@ -243,6 +242,7 @@ uint8_t session_action(uint16_t length, uint8_t* msg, master_state_t* mstate){
 	}
 //	msg[2]=MSGID_ACTION_REPLY;
 	if(check_permissions(mstate->users, mstate->admins, action)==false){
+		DS("permission chek failed");
 		lop_sendmessage(&lop1, 5, (uint8_t[5])
 		                {msg[1], MASTERUNIT_ID, MSGID_ACTION_REPLY, msg[3], NOTDONE});
 	}
@@ -300,6 +300,7 @@ uint8_t session_action(uint16_t length, uint8_t* msg, master_state_t* mstate){
 			return 0;
 		}
 		if(action==getstats){
+			DS("gen statistics");
 			uint8_t reply[5+54];
 			reply[0]=msg[1];
 			reply[1]=MASTERUNIT_ID;
@@ -315,7 +316,8 @@ uint8_t session_action(uint16_t length, uint8_t* msg, master_state_t* mstate){
 			*((uint16_t*)(reply+15))=FLMDB_SIZE/sizeof(flmdb_entry_t);
 			*((uint64_t*)(reply+17))=gettimestamp();
 			system_hash(reply+19);
-			lop_sendmessage(&lop1, 54, reply);
+			DS("sending statistics");
+			lop_sendmessage(&lop1, 5+54, reply);
 			return 0;
 		}
 	}
@@ -324,10 +326,6 @@ uint8_t session_action(uint16_t length, uint8_t* msg, master_state_t* mstate){
 
 uint8_t session_action_validate(uint16_t length, uint8_t* msg){
 	DS("action preval");
-	uint16_t tmp_i;
-	for(tmp_i=0; tmp_i<3000; ++tmp_i){
-		_delay_ms(1);
-	}
 	/* if no <admin/user> flag is given, maybe removed later */
 	if(length<4)
 		return 1;
@@ -502,6 +500,7 @@ void messagerx(uint16_t length, void* msg){
 	}
 	if(((uint8_t*)msg)[2] > MSGID_MAX)
 		return; /* DROP */
+	send_str(TERMINALUNIT_ID, PSTR("handling request"), STR_CLASS_INFO_P);
 	command_func_pt  command_func;
 	prevalid_func_pt prevalid_func;
 	command_func = (command_func_pt)(pgm_read_word(&(msg_command_table[((uint8_t*)msg)[2]])));
@@ -516,7 +515,16 @@ void messagerx(uint16_t length, void* msg){
 			return; /* DROP */
 		}
 	}
-	command_func(length, msg, &master_state);
+	uint8_t x;
+	if((x=command_func(length, msg, &master_state))!=0){
+		_delay_ms(5000);
+		volatile char errstr[] = "command failed (XX-XX)";
+		errstr[16] = pgm_read_byte(hexdigit_tab_P+((((uint8_t*)msg)[2])>>4));
+		errstr[17] = pgm_read_byte(hexdigit_tab_P+((((uint8_t*)msg)[2])&0xf));
+		errstr[19] = pgm_read_byte(hexdigit_tab_P+(x>>4));
+		errstr[20] = pgm_read_byte(hexdigit_tab_P+(x&0xf));
+		send_str(TERMINALUNIT_ID, (char*)errstr, STR_CLASS_ERROR);	
+	}
 }
 
 uint8_t waitformessage(uint32_t timeout){

@@ -655,7 +655,9 @@ void init_system(void){
 	uart_hook = onuartrx;
 	lop_recieve_byte(&lop0, LOP_RESET_CODE);
 */	
+#ifdef UART_XON_XOFF
 	uart_putc(XON);
+#endif
 //	uart_putstr_P(PSTR("\r\nuart works\r\n"));
 	
 	if(qp0.keystate == unkeyed)

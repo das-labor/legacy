@@ -40,8 +40,29 @@
 #include "debug.h"
 #include "uart.h"
 
-#define BLOCKSIZE 32
-#define CRYPTKEY_SIZE 256
+
+#define EEPROM_ENC_NOEKEON
+
+#ifdef EEPROM_ENC_SHABEA
+ #ifdef EEPROM_ENC_NOEKEON
+ #error "Either EEPROM_ENC_SHABEA or EEPROM_ENC_NOEKEON must be defined"
+ #endif
+#else
+ #ifndef EEPROM_ENC_NOEKEON
+ #error "Either EEPROM_ENC_SHABEA or EEPROM_ENC_NOEKEON must be defined"
+ #endif
+#endif
+
+#ifdef EEPROM_ENC_SHABEA
+ #define ENC24C_BLOCKSIZE 32
+ #define CRYPTKEY_SIZE 256
+#endif
+
+#ifdef EEPROM_ENC_NOEKEON
+ #define ENC24C_BLOCKSIZE 16
+ #define CRYPTKEY_SIZE 256
+#endif
+
 
 
 #ifndef _24CBLOCKDEV_H_
@@ -51,8 +72,8 @@
 typedef uint16_t blockaddr_t;
  
 
-void encrypt_E24Cblock(void *dest, blockdev_ptr_t addr, uint8_t * crypt_key);
-void decrypt_E24Cblock(void *dest, blockdev_ptr_t addr, uint8_t * crypt_key);
+void encrypt_E24Cblock(void *dest, blockdev_ptr_t addr, const uint8_t * crypt_key);
+void decrypt_E24Cblock(void *dest, blockdev_ptr_t addr, const uint8_t * crypt_key);
 
 void crypto_read_block(void * dest, blockdev_ptr_t addr, uint16_t length, 
                        void * crypt_key);

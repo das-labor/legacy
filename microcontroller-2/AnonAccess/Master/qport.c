@@ -24,8 +24,7 @@
  * \file qport.c
  * \author Daniel Otte
  * \date 2007-08-10
- * \par license 
- *  GPLv3
+ * \license GPLv3 or later
  * 
  */
 
@@ -140,6 +139,7 @@ void qport_streamsend(qport_ctx_t * ctx, uint8_t p){
 	if(ctx->keystate==unkeyed){
 	 #ifdef QPTINY_AUTOKEYING
 		qport_rekey(ctx);	
+		sei();
 		while(ctx->keystate==unkeyed)
 			;
 	 #else
@@ -248,19 +248,21 @@ void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
 		#ifdef LED_DEBUG
 		PORTC |= 0x40;
 		#endif
-		qport_setupstream(ctx, TX, ctx->keyingdata->seed_a, kp->seed_a);
-		qport_setupstream(ctx, RX, ctx->keyingdata->seed_b, kp->seed_b);
-		free(ctx->keyingdata);
+		qport_setupstream(ctx, TX, (uint8_t*)(ctx->keyingdata->seed_a), kp->seed_a);
+		qport_setupstream(ctx, RX, (uint8_t*)(ctx->keyingdata->seed_b), kp->seed_b);
+		free((void*)ctx->keyingdata);
 		ctx->keyingdata = 0;
 		ctx->keystate = keyed;
+		return;
 	} else {
-		if((!ctx->keyingdata)||(ctx->keyingdata && ((ctx->keyingdata->id) > (kp->id)))){ /* lower ID wins */
+		if((!ctx->keyingdata) ||
+		   (ctx->keyingdata && ((ctx->keyingdata->id) > (kp->id)))){ /* lower ID wins */
 		/* we should respond to the incomming packet */
 			#ifdef LED_DEBUG
 			PORTC ^= 0x20;
 			#endif
 			if (ctx->keyingdata){
-				free(ctx->keyingdata);
+				free((void*)ctx->keyingdata);
 				ctx->keyingdata = 0;
 			}
 			qport_keypacket_t kpresponse;
@@ -294,8 +296,9 @@ void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
 			
 			}
 			ctx->keystate = keyed;
+			return;
 		}else{
-			/* the other party should respond to our packet and we might simply their */		
+			/* the other party should respond to our packet */		
 		}
 	}
 }
@@ -308,17 +311,18 @@ void qport_rekey(qport_ctx_t * ctx){
 	temp = malloc(sizeof(qport_keypacket_t));
 	genkeypacket(temp);
 	
-	if(ctx->keystate == unkeyed){
+//	if(ctx->keystate == unkeyed)
+	{
 		ctx->keystate = makeingkey;
-		cli();
+	//	cli();
 		if(ctx->keyingdata)
-			free(ctx->keyingdata);
+			free((void*)ctx->keyingdata);
 		ctx->keyingdata = temp;
 		lop_sendmessage(ctx->lop, sizeof(qport_keypacket_t), (uint8_t*)(ctx->keyingdata));
 		ctx->keystate = unkeyed;
-		sei();
-	}else{
-		free(temp);
+	//	sei();
+//	}else{
+//		free(temp);
 	}
 }
 

@@ -171,15 +171,23 @@ static
 uint8_t check_polynom(uint32_t challange, char* polynom){
 	uint8_t i,j,base_cnt;
 	base_cnt=polynom_formcheck(polynom);
-	if(base_cnt==INVALID)
+	if(base_cnt==INVALID){
+		lcd_cls();
+		lcd_gotopos(2,2);
+		lcd_writestr_P(PSTR("formcheck failed"));
+		ui_waitforkey('F');
 		return INVALID;
-	
+	}
 	uint16_t bases[base_cnt];
 	uint8_t exponents[base_cnt];
 	polynom_splitup(bases, exponents, polynom);
 	/* chek if bases are prime */
 	for(i=0; i<base_cnt; ++i){
 		if(is16bitprime(bases[i])==0){
+			lcd_cls();
+			lcd_gotopos(2,2);
+			lcd_writestr_P(PSTR("bases not prime"));
+			ui_waitforkey('F');
 			return INVALID;
 		}
 	}
@@ -191,8 +199,13 @@ uint8_t check_polynom(uint32_t challange, char* polynom){
 		}
 		a*=b;
 	}
-	if(a==challange)
+	if(a==challange){
 		return VALID;
+	}
+	lcd_cls();
+	lcd_gotopos(2,2);
+	lcd_writestr_P(PSTR("polynom has wrong value"));
+	ui_waitforkey('F');	
 	return INVALID;
 }
 
@@ -223,11 +236,13 @@ uint64_t play_factorize_level(uint8_t level, uint64_t points){
 	lcd_gotopos(2,1);
 	lcd_writestr_P(PSTR("checking ..."));	
 	n=check_polynom(challange, str);
-	if(n==INVALID)
+	if(n==INVALID){
 		return 0;
+	}
 	t2 -= t1;
 	uint64_t res;
 	res=(challange*1000*level)/t2;
+	res += 100;
 	return res;
 }
 
@@ -282,7 +297,9 @@ void factorize_showhighscore(void){
 			text[k++] = pgm_read_byte(hexdigit_tab_P+(t&0x0f));
 			t>>=4;
 		}
+		text[LCD_WIDTH*i] = '\n';
 	}
+	text[LCD_WIDTH*i] = '\n';
 	ui_textwindow(1,1,LCD_WIDTH,LCD_HEIGHT, text);
 	free(text);
 }

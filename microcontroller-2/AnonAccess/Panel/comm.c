@@ -48,13 +48,18 @@ volatile void* msg_data;
 
 const char str_class_char_P[] PROGMEM = {'#','i','w','E','X', 'd'};
 
-void init_session(void){
+void session_init(void){
+	//lop_reset(&lop1);
 	uint8_t msg[3]={
 		MASTERUNIT_ID,
 		TERMINALUNIT_ID,
 		MSGID_SESSION_INIT
 	};
+	lcd_gotopos(1,1);
+	lcd_writechar('x');
 	lop_sendmessage(&lop1, 3, msg);
+	lcd_gotopos(1,1);
+	lcd_writechar('y');
 } 
  
 void submit_ab(authblock_t * ab, uint8_t admin){

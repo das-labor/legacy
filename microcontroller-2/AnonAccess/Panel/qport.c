@@ -24,8 +24,7 @@
  * \file qport.c
  * \author Daniel Otte
  * \date 2007-08-10
- * \par license 
- *  GPLv3
+ * \license GPLv3 or later
  * 
  */
 
@@ -46,6 +45,8 @@
 #ifdef LED_DEBUG
  #include <avr/io.h>
 #endif
+
+#include "lcd_tools.h"
 
 /******************************************************************************/
 
@@ -139,9 +140,21 @@ void qport_streamsend(qport_ctx_t * ctx, uint8_t p){
 	uint8_t i;
 	if(ctx->keystate==unkeyed){
 	 #ifdef QPTINY_AUTOKEYING
-		qport_rekey(ctx);	
-		while(ctx->keystate==unkeyed)
-			;
+		lcd_gotopos(1,4);
+		lcd_writechar('a');
+		qport_rekey(ctx);
+		uint8_t j=0;	
+		while(ctx->keystate==unkeyed){
+			sei();
+			if(j==26)
+				j=0;
+			lcd_gotopos(1,7);
+			lcd_writechar('a'+j);
+			++j;
+		}
+		lcd_gotopos(1,4);
+		lcd_writechar('z');
+		
 	 #else
 	  	return;
 	 #endif
@@ -149,7 +162,11 @@ void qport_streamsend(qport_ctx_t * ctx, uint8_t p){
 	}
 	for(i=0; i<QPTINY_STREAMAUTH; ++i){
 	#ifndef QPTINY_CRYPTO_OFF	
-		qport_sendbyte(ctx, stream_enc(ctx,p));				
+		lcd_gotopos(1,3);
+		lcd_writechar('a'+2*i);
+		qport_sendbyte(ctx, stream_enc(ctx,p));
+		lcd_gotopos(1,3);
+		lcd_writechar('a'+2*i+1);				
 	#else
 		qport_sendbyte(ctx, p);				
 	#endif
@@ -249,6 +266,8 @@ void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
 		#ifdef LED_DEBUG
 		PORTC ^= 0x80;
 		#endif
+		lcd_gotopos(1,6);
+		lcd_writechar('!');
 		return;		
 	}
 	if(ctx->keyingdata && (ctx->keyingdata->id == kp->id)){
@@ -262,7 +281,8 @@ void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
 		ctx->keyingdata = 0;
 		ctx->keystate = keyed;
 	} else {
-		if((!ctx->keyingdata)||(ctx->keyingdata && ((ctx->keyingdata->id) > (kp->id)))){ /* lower ID wins */
+		if((!ctx->keyingdata)  ||
+		   (ctx->keyingdata  && ((ctx->keyingdata->id) > (kp->id)))){ /* lower ID wins */
 		/* we should respond to the incomming packet */
 			#ifdef LED_DEBUG
 			PORTC ^= 0x20;
@@ -303,7 +323,9 @@ void qport_onkp(qport_ctx_t * ctx, qport_keypacket_t *kp){
 			}
 			ctx->keystate = keyed;
 		}else{
-			/* the other party should respond to our packet and we might simply their */		
+			/* the other party should respond to our packet and we might simply wait */		
+			lcd_gotopos(1,5);
+			lcd_writechar('!');
 		}
 	}
 }
@@ -316,17 +338,18 @@ void qport_rekey(qport_ctx_t * ctx){
 	temp = malloc(sizeof(qport_keypacket_t));
 	genkeypacket(temp);
 	
-	if(ctx->keystate == unkeyed){
+//	if(ctx->keystate == unkeyed)
+	{
 		ctx->keystate = makeingkey;
-		cli();
+//		cli();
 		if(ctx->keyingdata)
 			free(ctx->keyingdata);
 		ctx->keyingdata = temp;
 		lop_sendmessage(ctx->lop, sizeof(qport_keypacket_t), (uint8_t*)(ctx->keyingdata));
 		ctx->keystate = unkeyed;
-		sei();
-	}else{
-		free(temp);
+//		sei();
+//	}else{
+//		free(temp);
 	}
 }
 
