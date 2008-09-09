@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "lop.h"
+#include "lcd_tools.h" 
 
 #define LOP_ESC_CODE		0x23
 #define LOP_RESET_CODE		0x42
@@ -242,24 +243,36 @@ void lop_sendbyte(lop_ctx_t * ctx,uint8_t b){
 void lop_sendmessage(lop_ctx_t * ctx,uint16_t length, uint8_t * msg){
 	if(!ctx->sendrawbyte)
 		return;
+	lcd_gotopos(1,2);
+	lcd_writechar('a');	
 	while(ctx->txstate==message)
 		;
+	lcd_gotopos(1,2);
+	lcd_writechar('b');
 	ctx->txstate=message;
+	lcd_gotopos(1,2);
+	lcd_writechar('c');
 	ctx->sendrawbyte(LOP_ESC_CODE);
+	lcd_gotopos(1,2);
+	lcd_writechar('d');
 	ctx->sendrawbyte(LOP_TYPE_MSG);
+	lcd_gotopos(1,2);
+	lcd_writechar('e');
 	lop_sendbyte(ctx, length>>8);
 	lop_sendbyte(ctx, length&0x00FF);
 	while(length--)
 		lop_sendbyte(ctx, *msg++);
 	ctx->txstate=idle;
+	lcd_gotopos(1,2);
+	lcd_writechar('z');
 }
 
 /******************************************************************************/
 
 void lop_streamsync(lop_ctx_t * ctx){
 	if(!ctx->sendrawbyte)
-		return;
 	while(ctx->txstate==message)
+		return;
 		;
 	ctx->txstate=idle;
 	ctx->sendrawbyte(LOP_ESC_CODE);

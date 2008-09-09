@@ -44,7 +44,7 @@ typedef enum {idle,message} lopstates_t;
  * 
  */
 typedef struct lop_ctx {
-	lopstates_t rxstate, txstate, msgretstate;
+	volatile lopstates_t rxstate, txstate, msgretstate;
 	uint32_t msgidx;
 	uint16_t msglength;
 	uint8_t* msgbuffer;

@@ -35,7 +35,7 @@
 
 uint8_t dbz_strcount(const char* str){
 	uint8_t ret=1;
-	if(*str=='\0')
+	if(*str=='\0' && *(str+1)=='\0')
 			return 0;
 	for(;;){
 		while(*str++)

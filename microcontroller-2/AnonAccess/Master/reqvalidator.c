@@ -37,6 +37,7 @@
 #include "fairrnd.h"
 #include "uart.h"
 #include "rtc.h"
+#include "hexdigit_tab.h"
 #include "main_test_tools.h"
 #include "i2c_printer.h"
 /*
@@ -57,6 +58,7 @@
 #define DC(a)   {;} 
 #define DD(a,b) {;} 
 #define DS(a) send_str(TERMINALUNIT_ID, PSTR(a), STR_CLASS_DBG_P)
+#define DSs(a) send_str(TERMINALUNIT_ID, a, STR_CLASS_DBG)
 
 #include "comm.h" /* only for debugging purpose */
 
@@ -177,12 +179,28 @@ authcredvalid_state_t check_authblock(authblock_t * ab){
 	delete_key(key, 32);
 	
 	if(!ticketdb_userexists(ab->uid)){
+	/*	
 		DS("\r\nUser does not exist: ");
 		DD(&(ab->uid), 2);
-		DS(" max: ");
+	//	DS(" max: ");
+	*/
 		uint16_t j;
+		uint8_t f;
 		j = ticketdb_getstatMaxUsers();
-		DD(&j, 2);
+		ticketdb_getUserFlags(ab->uid, (userflags_t*)&f);
+	//	DD(&j, 2);
+		char errstr[] = "User XXXX ZZ (YYYY) !exist ";
+		errstr[5] = pgm_read_byte(hexdigit_tab_P + (((ab->uid)>>12)&0xF));
+		errstr[6] = pgm_read_byte(hexdigit_tab_P + (((ab->uid)>> 8)&0xF));
+		errstr[7] = pgm_read_byte(hexdigit_tab_P + (((ab->uid)>> 4)&0xF));
+		errstr[8] = pgm_read_byte(hexdigit_tab_P + (((ab->uid)>> 0)&0xF));
+		errstr[10] = pgm_read_byte(hexdigit_tab_P + ((f>> 4)&0xF));
+		errstr[11] = pgm_read_byte(hexdigit_tab_P + ((f>> 0)&0xF));		
+		errstr[11+3] = pgm_read_byte(hexdigit_tab_P + ((j>>12)&0xF));
+		errstr[12+3] = pgm_read_byte(hexdigit_tab_P + ((j>> 8)&0xF));
+		errstr[13+3] = pgm_read_byte(hexdigit_tab_P + ((j>> 4)&0xF));
+		errstr[14+3] = pgm_read_byte(hexdigit_tab_P + ((j>> 0)&0xF));
+		DSs(errstr);
 		return invalid_cred;
 	}
 	ticketdb_getUserTicketMac(ab->uid, &refhmac);

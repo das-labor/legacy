@@ -188,6 +188,11 @@ void uart_init() {
 	UBRRH=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU)>>8);
 	UBRRL=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU));
 
+#ifdef UART_XON_XOFF
+	txon=go;
+	rxon=go;
+#endif
+
 #ifdef UART_INTERRUPT
 	// init buffers
 	rxhead = rxtail = rxbuf;
@@ -206,14 +211,17 @@ void uart_init() {
 #ifdef UART_XON_XOFF
 
 void uart_insertc(char c){
-	volatile int diff;
-	do {
+	volatile int16_t diff;
+	sei(); /* just to avoid deadlocks */
+	do{
 		diff = txhead - txtail;
-		if ( diff < 0 ) diff += UART_TXBUFSIZE;
-	} while ( diff >= UART_TXBUFSIZE -1 );
+		if ( diff < 0 ) 
+			diff += UART_TXBUFSIZE;
+	}while ( diff >= UART_TXBUFSIZE -1 );
 
 	cli();
- 	if (--txtail == (txbuf-1)) txtail += UART_TXBUFSIZE;
+ 	if (--txtail == (txbuf-1)) 
+ 		txtail += UART_TXBUFSIZE;
 	*txtail = c;
 	
 	UCSRB |= (1 << UDRIE);		/* enable data register empty IRQ */

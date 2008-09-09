@@ -22,7 +22,7 @@
 
 /**
  * AnonAccess-Terminal
- * Author: Martin Hermsen & Daniel Otte
+ * Author: Daniel Otte
  * License: GPLv3
  * 
  * 
@@ -222,8 +222,15 @@ int main(void){
 	//Initialisierung
 	init_logs();
 	
+	BOOTLOG_APPEND_P("PRNG init");
+	//prng_init();
+ 	BOOTLOG_APPEND_OK;
+	
 	BOOTLOG_APPEND_P("LCD init");
 	lcd_init();
+	ui_drawframe(1,1,LCD_WIDTH,LCD_HEIGHT,'*');
+	lcd_gotopos(2,3);
+	lcd_writestr("prebooting ...");
 	BOOTLOG_APPEND_OK;
 	 //---
 	BOOTLOG_APPEND_P("Keypad init");
@@ -233,10 +240,7 @@ int main(void){
 	BOOTLOG_APPEND_P("UI init");
 	ui_primitives_init();
 	BOOTLOG_APPEND_OK;
-	//---
-	ui_drawframe(1,1,LCD_WIDTH,LCD_HEIGHT,'*');
-	lcd_gotopos(2,3);
-	lcd_writestr("booting ...");
+	 //---
 	
 	BOOTLOG_APPEND_P("Reset counter++");
 	resetcnt_inc();
@@ -268,6 +272,7 @@ int main(void){
 	qp0.on_byterx = qp0_streamrx;
 	qp0.lop = &lop0;
 	qp0.keyingdata = 0;
+	qport_rekey(&qp0);
 	BOOTLOG_APPEND_OK;
 	
 	BOOTLOG_APPEND_P("LOP1 init");
@@ -276,8 +281,9 @@ int main(void){
 	lop1.on_msgrx = lop1_messagerx;
 	uart_hook = onuartrx;
 	lop_sendreset(&lop0);
+#ifdef UART_XON_XOFF	
 	uart_putc(XON);
-	
+#endif	
 	
 	if(qp0.keystate == unkeyed)
 		qport_rekey(&qp0);
@@ -290,10 +296,6 @@ int main(void){
 	
 	BOOTLOG_APPEND_P("RTC init");
 	rtc_init();
- 	BOOTLOG_APPEND_OK;
-	
- 	BOOTLOG_APPEND_P("PRNG init");
-	//prng_init();
  	BOOTLOG_APPEND_OK;
 	
 	BOOTLOG_APPEND_P("I2C init");

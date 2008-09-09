@@ -23,19 +23,53 @@
 #ifndef DBZ_STRINGS_H_
 #define DBZ_STRINGS_H_
 
-/*
- * author: Daniel Otte
- * email:  daniel.otte@rub.de
- * license: GPLv3
+/** \file dbz_strings.h
+ * \author  Daniel Otte
+ * \email   daniel.otte@rub.de
+ * \license GPLv3 or later
+ * \brief functions for handling of double-zero-terminated strings
  * 
  */
 
 #include <stdint.h>
 #include <avr/pgmspace.h>
 
+/** \fn uint8_t dbz_strcount(const char* str)
+ * \brief count stings in dbz-terminated string
+ * 
+ * Count the single zero terminated string in a 
+ * double terminated string
+ * \param str pointer to the double-zero-terminated string
+ */
 uint8_t dbz_strcount(const char* str);
+
+/** \fn void dbz_splitup(char* dbzstr, char** strings)
+ * \brief split up a dbz-terminated string
+ * 
+ * Fills an array with pointers to the single terminated string
+ * in a double-zero-terminated string
+ * \param dbzstr pointer to the double-zero-terminated string
+ * \param strings pointer to the array of strings (char pointers)
+ */
 void dbz_splitup(char* dbzstr, char** strings);
+
+/** \fn uint8_t dbz_strcount_P(PGM_P str)
+ * \brief count stings in dbz-terminated string in flash
+ * 
+ * Count the single zero terminated string in a 
+ * double terminated string which is placed in flash (progmem)
+ * \param str pointer to the double-zero-terminated string in flash
+ */
 uint8_t dbz_strcount_P(PGM_P str);
+
+/** \fn void dbz_splitup_P(PGM_P dbzstr, PGM_P* strings)
+ * \brief split up a dbz-terminated string in flash
+ * 
+ * Fills an array with pointers (PGM_P) to the single terminated string
+ * in a double-zero-terminated string which is placed in flash
+ * \param dbzstr  pointer to the double-zero-terminated string in flash
+ * \param strings pointer to the array of strings (PGM_P)
+ */
 void dbz_splitup_P(PGM_P dbzstr, PGM_P* strings);
 
 #endif /*DBZ_STRINGS_H_*/

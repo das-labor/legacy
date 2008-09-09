@@ -188,6 +188,11 @@ void uart_init() {
 	UBRRH=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU)>>8);
 	UBRRL=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU));
 
+#ifdef UART_XON_XOFF
+	txon=go;
+	rxon=go;
+#endif
+
 #ifdef UART_INTERRUPT
 	// init buffers
 	rxhead = rxtail = rxbuf;

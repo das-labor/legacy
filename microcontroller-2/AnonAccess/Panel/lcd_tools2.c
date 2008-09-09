@@ -52,6 +52,8 @@
 
 #define asm __asm__
 
+#define NOPNOP asm volatile ("nop\n\tnop\n\t"::)
+
 #ifndef DISPLAY_TIMEOUT
  #define DISPLAY_TIMEOUT 0xffff
 #endif
@@ -129,7 +131,7 @@ uint8_t hd44780_send(uint8_t data, uint8_t addr){
 
 	do{
 		DISP_PORT_C |= xpin;
-		asm volatile ("nop\n\tnop\n\t"::);
+		NOPNOP;
 #ifdef IF4BIT		
 		busy = (DISP_PIN & 0x08);
 		DISP_PORT_C &= ~xpin;
@@ -184,12 +186,12 @@ uint8_t hd44780_read(uint8_t addr){
 	DISP_PORT_C |= _BV(PIN_RW);
 	
 	DISP_PORT_C |= xpin;
-	asm volatile ("nop\n\tnop\n\t"::);
+	NOPNOP;
 	address = DISP_PIN & 0x07; //dont read busy flag
 	DISP_PORT_C &= ~xpin;
 	address <<= 4;
 	DISP_PORT_C |= xpin;
-	asm volatile ("nop\n\tnop\n\t"::);
+	NOPNOP;
 	address |= DISP_PIN & 0x0F;
 	DISP_PORT_C &= ~xpin;
 
@@ -203,7 +205,7 @@ uint8_t hd44780_read(uint8_t addr){
 	DISP_PORT_C |= _BV(PIN_RW);
 	
 	DISP_PORT_C |= 1<<PIN_E1;
-	asm volatile ("nop\n\tnop\n\t"::);
+	NOPNOP;
 	address = DISP_PIN & 0x7F; //dont read busy flag
 	DISP_PORT_C &= ~xpin;
 	

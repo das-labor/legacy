@@ -67,7 +67,7 @@ uint8_t	ticketdb_newuser(ticketmac_t* mac, userid_t* id, uint16_t initid){
 	initid %= dbstats.max_users;
 //	while(ticketdb_userexists(initid))
 //		initid = (initid+1)% dbstats.max_users;
-	*id=initid;
+//	*id=initid;
 	
 	ticketdb_setUserTicketMac(*id, mac);
 	
@@ -76,6 +76,9 @@ uint8_t	ticketdb_newuser(ticketmac_t* mac, userid_t* id, uint16_t initid){
 	flags.locked=false;
 	flags.notify_lostadmin=false;
 	flags.anonymous=true;
+	flags.force_admin_pin = false;
+	flags.force_normal_pin = false;
+	flags.lock_nick = false;
 	ticketdb_setUserFlags(*id,&flags);
 	return DB_ERROR_OK;
 }

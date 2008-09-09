@@ -193,7 +193,7 @@ void req_authblock(void){
 	}
 	
 	ui_printstatusline();
-	init_session();
+	session_init();
 	lcd_gotopos(2,1);
 	lcd_writestr_P(PSTR("name:"));
 	read_strn(1,3,alphanum_cs, str_name,NAME_MAX_LEN);
@@ -324,9 +324,9 @@ void read_logs(void){
 /******************************************************************************/
 uint8_t login_with_card(uint8_t admin){
 	authblock_t ab;
+	lcd_cls();
 	
 	if(!card_inserated()){
-		lcd_cls();
 		ui_drawframe(1,1,LCD_WIDTH, LCD_HEIGHT, '*');
 		lcd_gotopos(2,2);
 		lcd_writestr_P(PSTR("please insert card"));
@@ -342,10 +342,14 @@ uint8_t login_with_card(uint8_t admin){
 	lcd_cls();
 	lcd_writestr_P(PSTR("card read, data submit ..."));
 	submit_ab(&ab, admin);
+	lcd_gotopos(1,2);
+	lcd_writechar('D');
 	if(waitformessage(TIMEOUT_DELAY)){
 		error_display(PSTR(ERR_TIMEOUT_STR(AT)));
 		return 0;
 	}
+	lcd_gotopos(1,2);
+	lcd_writechar('E');
 	if(getmsgid(msg_data)==MSGID_AB_PINREQ){
 		freemsg();
 		getandsubmitpin();
@@ -378,6 +382,7 @@ uint8_t login_with_card(uint8_t admin){
 	}
 	freemsg();
 	error_display(PSTR("AB fine!"));	
+	lcd_cls();
 	return 1;
 }
 
@@ -386,7 +391,7 @@ uint8_t login_with_card(uint8_t admin){
 /******************************************************************************/
 
 void open_door(void){
-	init_session();
+	session_init();
 	if(login_with_card(0)==0)
 		return;
 	send_mainopen();
@@ -412,7 +417,7 @@ void open_door(void){
 
 void lock_door(void){
 	
-	init_session();
+	session_init();
 	login_with_card(0);
 	send_mainclose();
 	if(waitformessage(TIMEOUT_DELAY)){
@@ -570,21 +575,34 @@ void randomize_card(void){
 }
 
 void system_stats(void){
+	lcd_cls();
+	lcd_gotopos(2,2);
+	lcd_writestr_P(PSTR("statistics @ " AT));	
+	session_init();
 	if(login_with_card(0)==0)
 		return;
+	lcd_cls();
+	lcd_gotopos(2,2);
+	lcd_writestr_P(PSTR("sending stat req."));	
 	send_getstat();
-	if(waitformessage(TIMEOUT_DELAY)){
+	lcd_cls();
+	lcd_gotopos(2,2);
+	lcd_writestr_P(PSTR("stat req. submitted"));
+	if(waitformessage(TIMEOUT_DELAY*2)){
 		error_display(PSTR(ERR_TIMEOUT_STR(AT)));
 		return;
 	}
-	if(getmsgid(msg_data)==MSGID_ACTION_REPLY && 
-	   msg_length==5+54 && ((uint8_t*)msg_data)[3]==ACTION_GETSTATS){
+	if((getmsgid(msg_data)==MSGID_ACTION_REPLY)   && 
+	   (msg_length==5+54)                         && 
+	   (((uint8_t*)msg_data)[3]==ACTION_GETSTATS) &&
+	   (((uint8_t*)msg_data)[4]==DONE)){
 		char* text;
 		text=malloc(LCD_WIDTH*11+2);
 		if(!text){
-			error_display(ERR_MALLOC_STR(AT));
+			error_display(PSTR(ERR_MALLOC_STR(AT)));
 			return;
 		}
+		error_display(PSTR("ok @ " AT));
 		memset(text, ' ', LCD_WIDTH*11);
 		text[LCD_WIDTH*11]=text[LCD_WIDTH*11+1]='\0';
 		memcpy_P(text+0*LCD_WIDTH, PSTR("max users"), 9);
@@ -607,6 +625,8 @@ void system_stats(void){
 		ui_textwindow(1,1,LCD_WIDTH,LCD_HEIGHT, text);
 		free(text);
 		return;
+	}else{
+		error_display(PSTR("worng answer"));
 	}
 	freemsg();
 	
@@ -621,20 +641,20 @@ void panel_stats(void){
 /******************************************************************************/
 
 
-const char main_menu_PS[]      PROGMEM = "main menu";
-const char serial_test_PS[]    PROGMEM = "test serial loop";
-const char reset_PS[]          PROGMEM = "print resets";
-const char timestamp_PS[]      PROGMEM = "timestamp";
-const char timestamp_live_PS[]      PROGMEM = "timestamp (live)";
-const char timestamp_base64_PS[]    PROGMEM = "timestamp (B64)";
-const char timestamp_base64_live_PS[]      PROGMEM = "timestamp (l,B64)";
-const char random_PS[]         PROGMEM = "random (30)";
-const char dump_card_PS[] PROGMEM = "dump ICC";
-const char read_flash_PS[] PROGMEM = "read flash";
-const char read_logs_PS[] PROGMEM = "read logs";
-const char ui_tests_PS[] PROGMEM = "UI tests";
-const char erase_card_PS[] PROGMEM = "erase ICC";
-const char randomize_card_PS[] PROGMEM = "randomize ICC";
+const char main_menu_PS[]             PROGMEM = "main menu";
+const char serial_test_PS[]           PROGMEM = "test serial loop";
+const char reset_PS[]                 PROGMEM = "print resets";
+const char timestamp_PS[]             PROGMEM = "timestamp";
+const char timestamp_live_PS[]        PROGMEM = "timestamp (live)";
+const char timestamp_base64_PS[]      PROGMEM = "timestamp (B64)";
+const char timestamp_base64_live_PS[] PROGMEM = "timestamp (l,B64)";
+const char random_PS[]                PROGMEM = "random (30)";
+const char dump_card_PS[]             PROGMEM = "dump ICC";
+const char read_flash_PS[]            PROGMEM = "read flash";
+const char read_logs_PS[]             PROGMEM = "read logs";
+const char ui_tests_PS[]              PROGMEM = "UI tests";
+const char erase_card_PS[]            PROGMEM = "erase ICC";
+const char randomize_card_PS[]        PROGMEM = "randomize ICC";
 
 
 menu_t debug_menu_mt[] PROGMEM = {
@@ -668,8 +688,8 @@ menu_t bootstrap_menu_mt[] PROGMEM = {
 };
 
 
-const char system_stats_PS[]    PROGMEM = "system stats";
-const char panel_stats_PS[]   PROGMEM = "pane stats";
+const char system_stats_PS[]  PROGMEM = "system stats";
+const char panel_stats_PS[]   PROGMEM = "panel stats";
 
 menu_t stat_menu_mt[] PROGMEM = {
 	{main_menu_PS, back, (superp)NULL},
@@ -680,9 +700,9 @@ menu_t stat_menu_mt[] PROGMEM = {
 
 #ifdef GAMES
 
-const char play_PS[]      PROGMEM = "Play";
-const char highscore_PS[] PROGMEM = "Highscore";
-const char games_menu_PS[]      PROGMEM = "games menu";
+const char play_PS[]       PROGMEM = "Play";
+const char highscore_PS[]  PROGMEM = "Highscore";
+const char games_menu_PS[] PROGMEM = "games menu";
 
 
 menu_t factorize_menu_mt[] PROGMEM = {
