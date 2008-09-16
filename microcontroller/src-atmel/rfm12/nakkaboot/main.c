@@ -2,9 +2,14 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 
-/* the position in the eeprom where the device's network address is stored at */
-#define NL_ADDRESSPOS 0
-#define NL_ADDRESSSIZE 2
+#ifndef MAX
+	#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#endif
+
+/* simple for-loop to "wrap" around an error-prone section */
+#define NL_ERRORWRAP for (i=0;i < NL_MAXFAILS || NL_MAXFAILS == 0;i++)
+
+void (*app_ptr)(void) = (void *)0x0000;
 
 void boot_program_page (uint32_t page, uint8_t *buf)
 {
@@ -42,9 +47,195 @@ void boot_program_page (uint32_t page, uint8_t *buf)
 	// Re-enable interrupts (if they were ever enabled).
 
 	SREG = sreg;
+	sei();
+}
+
+uint8_t nl_match_packet (uint8_t *in_packet, uint8_t *in_address, uint8_t *in_mask)
+{
+	uint8_t k = 0;
+
+	for (;k<NL_ADDRESSSIZE;k++)
+		if ((*(in_packet + k) & in_mask[k]) != (in_mask[k] & in_address[k])) k = 0xff;
+	
+	return (k == 0xff) ? 0 : 1;
 }
 
 int main (void)
 {
+	uint16_t i;
+	uint8_t k, mystate = 0x00;
+	uint8_t *rxbuf;
+	uint8_t txpacket[MAX((NL_ADDRESSSIZE + 4), sizeof(nl_config)];
+	uint8_t myaddress[NL_ADDRESSSIZE], tmp[NL_ADDRESSSIZE], msk[NL_ADDRESSSIZE];
+	uint8_t mypage[SPM_PAGESIZE];
+	nl_config myconfig;
+
+	/* read address */
+	for (i=0;i<NL_ADDRESSSIZE;i++)
+	{
+		myaddress[i] = eeprom_read_byte (NL_ADDRESSPOS + i);
+		txpacket[i] = myaddress[i];
+		msk[i] = (NL_ADDRESSMASK >> (8*i));
+	}
+	
+	txpacket[NL_ADDRESSSIZE] = NLPROTO_WAIT;
+
+
 	rfm12_init();
+	sei();
+
+	/*
+	 * BOOT WAIT SEQUENCE
+	 *
+	 */
+	for (i=0;i<NL_BOOTDELAY * 10;i++)
+	{
+		if (rfm12_rx_status() == STATUS_COMPLETE)
+		{
+			rxbuf = rfm12_rx_buffer();
+			
+			/* check if packet is for us */
+			if (rfm12_rx_type() == NL_PKTTYPE
+					&& nl_match_packet (rxbuf, &myaddress, &msk))
+			{
+				/* response from master - exit the loop */
+				if (rxbuf[NL_ADDRESSSIZE] == NLPROTO_MASTER_EHLO)
+				{
+					rfm12_rx_clear();
+					break;
+				}
+			}
+			rfm12_rx_clear(); /* free the packet buffer for the next one */
+		}
+
+		txpacket[NL_ADDRESSSIZE + 2] = (i >> 8);
+		txpacket[NL_ADDRESSSIZE + 3] = (i & 0xff);
+		
+		rfm12_tick();
+
+		/* ask if somebody is out there... */
+		rfm12_tx (sizeof(txpacket), NL_PACKETTYPE, txpacket);
+		
+		/* give the host time to respond */
+		delay_ms(10);
+	}
+	
+	/* no response - jump into application */
+	if (++i >= NL_BOOTDELAY)
+	{
+		cli();
+		app_ptr();
+	}
+	/*
+	 * CONFIGURATION HANDSHAKE
+	 *
+	 */
+	txpacket[NL_ADDRESSSIZE] = NLPROTO_SLAVE_CONFIG;
+	myconfig.pagesize = SPM_PAGESIZE;
+	myconfig.rxbufsize = RFM12_RX_BUFFER_SIZE;
+	myconfig.version = NL_VERSION;
+	memcpy (txpacket + NL_ADDRESSSIZE + 1, myconfig, sizeof(myconfig));
+
+	NL_ERRORWRAP
+	{
+		/* (re)transmit our configuration if master hasn't responded yet. */
+		if (i & 0x10 && mystate == 0)
+			rfm12_tx (sizeof(txpacket), NL_PACKETTYPE, txpacket);
+		
+		if (rfm12_rx_status() == STATUS_COMPLETE)
+		{
+			rxbuf = rfm12_rx_buffer();
+
+			if (rfm12_rx_type() == NL_PKTTYPE
+					&& nl_match_packet (rxbuf, &myaddress, &msk))
+			{
+				i=0; /* somebody cares about us. reset error counter */
+				switch (rxbuf[NL_ADDRESSSIZE])
+				{
+					/* master is ready to flash */
+					case NLPROTO_PAGE_FILL:
+					{
+						nl_flashcmd mycmd;
+
+						mystate = (mystate == 0) ? 1 : mystate;
+
+						k = NL_ADDRESSSIZE + 1;
+						memcpy (mycmd, rxbuf + k, sizeof(nl_flashcmd));
+						
+						/* check boundaries */
+						if (mycmd.addr_start + (mycmd.addr_end - mycmd.addr_start) > SPM_PAGESIZE)
+						{
+							rfm12_rx_clear();
+
+							for (k = 0;k<NL_ADDRESSSIZE;k++)
+								txpacket[k] = myaddress[k];
+
+							txpacket[k++] = NLPROTO_ERROR;
+							txpacket[k++] = (uint8_t) ((__LINE__ >> 8));
+							txpacket[k++] = (uint8_t) (__LINE__);
+							rfm12_tx (k, NL_PACKETTYPE, txpacket);
+							break;
+						}
+						memcpy (mypage[addr_start], rxbuf, addr_end - addr_start);
+						rfm12_rx_clear();
+						break; /* TODO: return checksum to master */	
+					}
+
+					/* commit page write */
+					case NLPROTO_PAGE_COMMIT:
+					{
+						uint32_t pagenum = 0;
+						
+						k = NL_ADDRESSSIZE + 1;
+
+						pagenum = (uint32_t) (rxbuf[k++] << 24);
+						pagenum += (uint32_t) (rxbuf[k++] << 16);
+						pagenum += (uint32_t) (rxbuf[k++] << 8);
+						pagenum += (uint32_t) (rxbuf[k++]);
+						rfm12_rx_clear();
+
+						boot_program_page (pagenum, mypage);
+						break;
+					}
+					
+					/* jump into application */
+					case NLPROTO_BOOT:
+					{
+						rfm12_rx_clear();
+
+						#if (NL_VERBOSITY >= 1)
+						k = 0;
+
+						for (k = 0;k<NL_ADDRESSSIZE;k++)
+							txpacket[k] = myaddress[k];
+						txpacket[k++] = NLPROTO_BOOT;
+
+						rfm12_tx (k, NL_PACKETTYPE, txpacket);
+						rfm12_tick();
+						delay_ms(100);
+						#endif
+
+						cli();
+						app_ptr();
+					}
+					break;
+
+					/* default case: return error */
+					default:
+					{
+						rfm12_rx_clear();
+
+						for (k = 0;k<NL_ADDRESSSIZE;k++)
+							txpacket[k] = myaddress[k];
+						
+						txpacket[k++] = NLPROTO_ERROR;
+						txpacket[k++] = (uint8_t) ((__LINE__ >> 8));
+						txpacket[k++] = (uint8_t) (__LINE__);
+						rfm12_tx (k, NL_PACKETTYPE, txpacket);
+						break;
+					}
+				}
+			}
+		}
+	}
 }
