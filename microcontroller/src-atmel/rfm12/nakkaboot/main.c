@@ -1,6 +1,12 @@
 #include <inttypes.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
+#include <stdint.h>
+
+#include "rfm12_config.h"
+#include "rfm12.h"
+#include "nl_config.j"
+#include "nl_protocol.h"
 
 #ifndef MAX
 	#define MAX(a, b) (((a) > (b)) ? (a) : (b))
@@ -16,15 +22,13 @@ void boot_program_page (uint32_t page, uint8_t *buf)
 	uint16_t i;
 	uint8_t sreg;
 
-	// Disable interrupts.
-
 	sreg = SREG;
 	cli();
 
 	eeprom_busy_wait ();
 
 	boot_page_erase (page);
-	boot_spm_busy_wait ();      // Wait until the memory is erased.
+	boot_spm_busy_wait ();      /* Wait until the memory is erased. */
 
 	for (i=0; i<SPM_PAGESIZE; i+=2)
 	{
@@ -65,7 +69,7 @@ int main (void)
 	uint16_t i;
 	uint8_t k, mystate = 0x00;
 	uint8_t *rxbuf;
-	uint8_t txpacket[MAX((NL_ADDRESSSIZE + 4), sizeof(nl_config)];
+	uint8_t txpacket[MAX((NL_ADDRESSSIZE + 4), sizeof(nl_config))];
 	uint8_t myaddress[NL_ADDRESSSIZE], tmp[NL_ADDRESSSIZE], msk[NL_ADDRESSSIZE];
 	uint8_t mypage[SPM_PAGESIZE];
 	nl_config myconfig;
@@ -108,6 +112,7 @@ int main (void)
 			rfm12_rx_clear(); /* free the packet buffer for the next one */
 		}
 
+		/* add current counter value to request */
 		txpacket[NL_ADDRESSSIZE + 2] = (i >> 8);
 		txpacket[NL_ADDRESSSIZE + 3] = (i & 0xff);
 		
@@ -130,17 +135,21 @@ int main (void)
 	 * CONFIGURATION HANDSHAKE
 	 *
 	 */
-	txpacket[NL_ADDRESSSIZE] = NLPROTO_SLAVE_CONFIG;
+	k = NL_ADDRESSSIZE;
+
+	txpacket[k++] = NLPROTO_SLAVE_CONFIG;
 	myconfig.pagesize = SPM_PAGESIZE;
 	myconfig.rxbufsize = RFM12_RX_BUFFER_SIZE;
 	myconfig.version = NL_VERSION;
-	memcpy (txpacket + NL_ADDRESSSIZE + 1, myconfig, sizeof(myconfig));
+	memcpy (txpacket + k, myconfig, sizeof(myconfig));
 
 	NL_ERRORWRAP
 	{
 		/* (re)transmit our configuration if master hasn't responded yet. */
 		if (i & 0x10 && mystate == 0)
 			rfm12_tx (sizeof(txpacket), NL_PACKETTYPE, txpacket);
+
+		rfm12_tx();
 		
 		if (rfm12_rx_status() == STATUS_COMPLETE)
 		{
@@ -166,9 +175,6 @@ int main (void)
 						if (mycmd.addr_start + (mycmd.addr_end - mycmd.addr_start) > SPM_PAGESIZE)
 						{
 							rfm12_rx_clear();
-
-							for (k = 0;k<NL_ADDRESSSIZE;k++)
-								txpacket[k] = myaddress[k];
 
 							txpacket[k++] = NLPROTO_ERROR;
 							txpacket[k++] = (uint8_t) ((__LINE__ >> 8));
@@ -204,10 +210,8 @@ int main (void)
 						rfm12_rx_clear();
 
 						#if (NL_VERBOSITY >= 1)
-						k = 0;
+						k = NL_ADDRESSSIZE;
 
-						for (k = 0;k<NL_ADDRESSSIZE;k++)
-							txpacket[k] = myaddress[k];
 						txpacket[k++] = NLPROTO_BOOT;
 
 						rfm12_tx (k, NL_PACKETTYPE, txpacket);

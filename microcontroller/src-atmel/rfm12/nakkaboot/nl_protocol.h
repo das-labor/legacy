@@ -1,3 +1,11 @@
+#include <stdlib.h>
+#include <stdint.h>
+
+#include "rfm12_config.h"
+#include "nl_config.h"
+
+#ifndef NL_PROTOCOL_H
+
 /* defines for the nakkaloader protocol
  **/
 
@@ -37,3 +45,5 @@ typedef struct
 
 /* nakkaloader version */
 #define NL_VERSION 0x00
+
+#endif
