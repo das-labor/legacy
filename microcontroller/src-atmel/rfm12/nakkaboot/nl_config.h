@@ -1,3 +1,5 @@
+#ifndef NL_CONFIG_H
+
 /* define how many deciseconds (0.1s) to wait for a response
  * from the programming device before booting the application
  * code.
@@ -29,3 +31,5 @@
 
 /* set verbosity for bootloader - higher value will likely increase the size */
 #define NL_VERBOSITY 1
+
+#endif
