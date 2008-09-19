@@ -29,7 +29,7 @@
  * the application is started.
  *
  * */
-#define NL_MAXFAILS 8192
+#define NL_MAXFAILS 0xfffff
 
 /* set verbosity for bootloader (0 to 2)
  *
@@ -42,6 +42,6 @@
  * 2 - Send additional debug information
  *
  * */
-#define NL_VERBOSITY 0
+#define NL_VERBOSITY 2
 
 #endif

@@ -93,7 +93,7 @@ void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 void nl_boot_app ( void )
 {
 	#if (NL_VERBOSITY >= 1)
-	nl_tx_packet (NLPROTO_BOOT, 0, mypage);
+	nl_tx_packet (NLPROTO_BOOT, 2, myaddress);
 	rfm12_tick();
 	#endif
 	
@@ -103,12 +103,13 @@ void nl_boot_app ( void )
 
 int main (void)
 {
-	uint16_t i;
+	uint32_t i;
 	uint8_t k, mystate = 0x00;
 	uint8_t *rxbuf;
 	uint8_t mypage[SPM_PAGESIZE];
 	nl_config myconfig;
 	nl_flashcmd mycmd;
+
 	
 	/* fill config variables */
 	myconfig.pagesize = SPM_PAGESIZE;
@@ -128,8 +129,10 @@ int main (void)
 	for (i=0;i < NL_MAXFAILS || NL_MAXFAILS == 0;i++)
 	{
 		/* (re)transmit our configuration if master hasn't responded yet. */
-		if (i & 0x000F && mystate == 0)
+		if ((i & 0x7fff) == 0 && mystate == 0)
+		{
 			nl_tx_packet (NLPROTO_SLAVE_CONFIG, sizeof(myconfig), (uint8_t *) &myconfig);
+		}
 
 		rfm12_tick();
 		
@@ -160,9 +163,6 @@ int main (void)
 			/* master is ready to flash */
 			case NLPROTO_PAGE_FILL:
 			{
-
-				mystate = (mystate == 0) ? 1 : mystate;
-
 				k = NL_ADDRESSSIZE + 1;
 				memcpy (&mycmd, rxbuf + k, sizeof(nl_flashcmd));
 				
@@ -229,7 +229,7 @@ int main (void)
 
 				nl_tx_packet (NLPROTO_ERROR, 2, mypage);
 				#elif NL_VERBOSITY > 0
-				nl_tx_packet (NLPROTO_ERROR, 0, (uint8_t *) 0x0000);
+				nl_tx_packet (NLPROTO_ERROR, 0, mypage);
 				#endif
 			}
 			break;
