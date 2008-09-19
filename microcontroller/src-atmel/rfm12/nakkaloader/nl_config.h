@@ -30,6 +30,6 @@
 #define NL_MAXFAILS 4096
 
 /* set verbosity for bootloader - higher value will likely increase the size */
-#define NL_VERBOSITY 1
+#define NL_VERBOSITY 0
 
 #endif

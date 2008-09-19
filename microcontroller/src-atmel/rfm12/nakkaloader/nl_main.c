@@ -8,7 +8,7 @@
 #include <string.h>
 
 #include "rfm12_config.h"
-#include "../../lib/rfm12/rfm12.h"
+#include "rfm12.h"
 #include "nl_config.h"
 #include "nl_protocol.h"
 
@@ -17,7 +17,7 @@
 #endif
 
 /* simple for-loop to "wrap" around an error-prone section */
-#define NL_ERRORWRAP for (i=0;i < NL_MAXFAILS || NL_MAXFAILS == 0;i++)
+// #define NL_ERRORWRAP for (i=0;i < NL_MAXFAILS || NL_MAXFAILS == 0;i++)
 
 void (*app_ptr)(void) = (void *)0x0000;
 
@@ -82,13 +82,12 @@ int main (void)
 	/* read address */
 	for (i=NL_ADDRESSPOS;i<NL_ADDRESSPOS + NL_ADDRESSSIZE;i++)
 	{
-		myaddress[i] = eeprom_read_byte (i);
+		myaddress[i] = eeprom_read_byte ((uint8_t *) i);
 		txpacket[i] = myaddress[i];
 		msk[i] = (NL_ADDRESSMASK >> (8*i));
 	}
 	
 	txpacket[NL_ADDRESSSIZE] = NLPROTO_WAIT;
-
 
 	rfm12_init();
 	sei();
@@ -99,24 +98,6 @@ int main (void)
 	 */
 	for (i=0;i<NL_BOOTDELAY * 10;i++)
 	{
-		if (rfm12_rx_status() == STATUS_COMPLETE)
-		{
-			rxbuf = rfm12_rx_buffer();
-			
-			/* check if packet is for us */
-			if (rfm12_rx_type() == NL_PACKETTYPE
-					&& nl_match_packet (rxbuf, (uint8_t *) &myaddress, (uint8_t *) &msk))
-			{
-				/* response from master - exit the loop */
-				if (rxbuf[NL_ADDRESSSIZE] == NLPROTO_MASTER_EHLO)
-				{
-					rfm12_rx_clear();
-					break;
-				}
-			}
-			rfm12_rx_clear(); /* free the packet buffer for the next one */
-		}
-
 		/* add current counter value to request */
 		txpacket[NL_ADDRESSSIZE + 2] = (i >> 8);
 		txpacket[NL_ADDRESSSIZE + 3] = (i & 0xff);
@@ -128,6 +109,24 @@ int main (void)
 		
 		/* give the host time to respond */
 		_delay_ms(10);
+
+		if (rfm12_rx_status() != STATUS_COMPLETE)
+			continue;
+
+		rxbuf = rfm12_rx_buffer();
+		
+		/* check if packet is for us */
+		if (rfm12_rx_type() == NL_PACKETTYPE
+				&& nl_match_packet (rxbuf, (uint8_t *) &myaddress, (uint8_t *) &msk))
+		{
+			/* response from master - exit the loop */
+			if (rxbuf[NL_ADDRESSSIZE] == NLPROTO_MASTER_EHLO)
+			{
+				rfm12_rx_clear();
+				break;
+			}
+		}
+		rfm12_rx_clear(); /* free the packet buffer for the next one */
 	}
 	
 	/* no response - jump into application */
@@ -162,10 +161,11 @@ int main (void)
 		rxbuf = rfm12_rx_buffer();
 
 		if (rfm12_rx_type() != NL_PACKETTYPE
-				|| !nl_match_packet (rxbuf, (uint8_t *) &myaddress, (uint8_t *) &msk))
+			|| !nl_match_packet (rxbuf, (uint8_t *) &myaddress, (uint8_t *) &msk))
 			continue;
 			
 		i=0; /* somebody cares about us. reset error counter */
+
 		switch (rxbuf[NL_ADDRESSSIZE])
 		{
 			/* master is ready to flash */
@@ -193,6 +193,7 @@ int main (void)
 				rfm12_rx_clear();
 				break; /* TODO: return checksum to master */	
 			}
+			break;
 
 			/* commit page write */
 			case NLPROTO_PAGE_COMMIT:
@@ -210,6 +211,7 @@ int main (void)
 				boot_program_page (pagenum, mypage);
 				break;
 			}
+			break;
 			
 			/* jump into application */
 			case NLPROTO_BOOT:
@@ -243,8 +245,9 @@ int main (void)
 				txpacket[k++] = (uint8_t) ((__LINE__ >> 8));
 				txpacket[k++] = (uint8_t) (__LINE__);
 				rfm12_tx (k, NL_PACKETTYPE, txpacket);
-				break;
 			}
+			break;
 		}
 	}
+	return 0;
 }
