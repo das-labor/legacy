@@ -4,7 +4,6 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <stdint.h>
-#include <util/delay.h>
 #include <string.h>
 
 #include "rfm12_config.h"
@@ -58,14 +57,42 @@ void boot_program_page (uint32_t page, uint8_t *buf)
 	sei();
 }
 
-uint8_t nl_match_packet (uint8_t *in_packet, uint8_t *in_address, uint8_t *in_mask)
+uint8_t nl_match_packet (uint8_t *in_packet, uint8_t *in_address)
 {
-	uint8_t k = 0;
+	#if NL_ADDRESSSIZE == 1
+	if ((*(in_packet + 1) & NL_ADDRESSMASK) != (*in_address & NL_ADDRESSMASK))
+		return 0;
+	#elif NL_ADDRESSSIZE == 2
+	if (*((uint16_t *) (in_packet + 1)) & (NL_ADDRESSMASK) != 
+		*((uint16_t *) in_address) & (NL_ADDRESSMASK))
+			return 0;
+	#endif
+	return 1;
+}
 
-	for (;k<NL_ADDRESSSIZE;k++)
-		if ((*(in_packet + k) & in_mask[k]) != (in_mask[k] & in_address[k])) k = 0xff;
+void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
+{
+	static uint8_t txpacket[MAX((NL_ADDRESSSIZE + 4), sizeof(nl_config))];
+	uint8_t i = 0;
+
+	if (in_type == NLPROTO_SETADDR)
+	{
+		txpacket[1] = *(in_payload);
+
+		#if NL_ADDRESSSIZE == 2
+		txpacket[2] = *(in_payload + 1);
+		#endif
+	}
+
+	txpacket[0] = in_type;
+
+	if (in_len)
+	{
+		for (;i<in_len;i++)
+			txpacket[i + 1 + NL_ADDRESSSIZE] = *(in_payload + i);
+	}
 	
-	return (k == 0xff) ? 0 : 1;
+	rfm12_tx (i + NL_ADDRESSSIZE + 1, NL_PACKETTYPE, txpacket);
 }
 
 int main (void)
@@ -73,85 +100,36 @@ int main (void)
 	uint16_t i;
 	uint8_t k, mystate = 0x00;
 	uint8_t *rxbuf;
-	uint8_t txpacket[MAX((NL_ADDRESSSIZE + 4), sizeof(nl_config))];
 	uint8_t myaddress[NL_ADDRESSSIZE], msk[NL_ADDRESSSIZE];
 	uint8_t mypage[SPM_PAGESIZE];
 	nl_config myconfig;
 	nl_flashcmd mycmd;
+	
+	/* fill config variables */
+	myconfig.pagesize = SPM_PAGESIZE;
+	myconfig.rxbufsize = RFM12_RX_BUFFER_SIZE;
+	myconfig.version = NL_VERSION;
+
 
 	/* read address */
-	for (i=NL_ADDRESSPOS;i<NL_ADDRESSPOS + NL_ADDRESSSIZE;i++)
+	for (i=0;i<NL_ADDRESSSIZE;i++)
 	{
-		myaddress[i] = eeprom_read_byte ((uint8_t *) i);
-		txpacket[i] = myaddress[i];
+		/* abuse mypage array */
+		myaddress[i] = eeprom_read_byte ((uint8_t *) i + NL_ADDRESSPOS);
 		msk[i] = (NL_ADDRESSMASK >> (8*i));
 	}
-	
-	txpacket[NL_ADDRESSSIZE] = NLPROTO_WAIT;
+
+	/* set address */
+	nl_tx_packet (NLPROTO_SETADDR, NL_ADDRESSSIZE, myaddress);
 
 	rfm12_init();
 	sei();
 
-	/*
-	 * BOOT WAIT SEQUENCE
-	 *
-	 */
-	for (i=0;i<NL_BOOTDELAY * 10;i++)
-	{
-		/* add current counter value to request */
-		txpacket[NL_ADDRESSSIZE + 2] = (i >> 8);
-		txpacket[NL_ADDRESSSIZE + 3] = (i & 0xff);
-		
-		rfm12_tick();
-
-		/* ask if somebody is out there... */
-		rfm12_tx (sizeof(txpacket), NL_PACKETTYPE, txpacket);
-		
-		/* give the host time to respond */
-		_delay_ms(10);
-
-		if (rfm12_rx_status() != STATUS_COMPLETE)
-			continue;
-
-		rxbuf = rfm12_rx_buffer();
-		
-		/* check if packet is for us */
-		if (rfm12_rx_type() == NL_PACKETTYPE
-				&& nl_match_packet (rxbuf, (uint8_t *) &myaddress, (uint8_t *) &msk))
-		{
-			/* response from master - exit the loop */
-			if (rxbuf[NL_ADDRESSSIZE] == NLPROTO_MASTER_EHLO)
-			{
-				rfm12_rx_clear();
-				break;
-			}
-		}
-		rfm12_rx_clear(); /* free the packet buffer for the next one */
-	}
-	
-	/* no response - jump into application */
-	if (++i >= NL_BOOTDELAY)
-	{
-		cli();
-		app_ptr();
-	}
-	/*
-	 * CONFIGURATION HANDSHAKE
-	 *
-	 */
-	k = NL_ADDRESSSIZE;
-
-	txpacket[k++] = NLPROTO_SLAVE_CONFIG;
-	myconfig.pagesize = SPM_PAGESIZE;
-	myconfig.rxbufsize = RFM12_RX_BUFFER_SIZE;
-	myconfig.version = NL_VERSION;
-	memcpy (txpacket + k, &myconfig, sizeof(myconfig));
-
 	for (i=0;i < NL_MAXFAILS || NL_MAXFAILS == 0;i++)
 	{
 		/* (re)transmit our configuration if master hasn't responded yet. */
-		if (i & 0x10 && mystate == 0)
-			rfm12_tx (sizeof(txpacket), NL_PACKETTYPE, txpacket);
+		if (i & 0x000F && mystate == 0)
+			nl_tx_packet (NLPROTO_SLAVE_CONFIG, sizeof(myconfig), (uint8_t *) &myconfig);
 
 		rfm12_tick();
 		
@@ -161,13 +139,24 @@ int main (void)
 		rxbuf = rfm12_rx_buffer();
 
 		if (rfm12_rx_type() != NL_PACKETTYPE
-			|| !nl_match_packet (rxbuf, (uint8_t *) &myaddress, (uint8_t *) &msk))
+			|| !nl_match_packet (rxbuf, (uint8_t *) &myaddress))
+		{
+			rfm12_rx_clear();
 			continue;
+		}
 			
 		i=0; /* somebody cares about us. reset error counter */
 
 		switch (rxbuf[NL_ADDRESSSIZE])
 		{
+			/* they're out there... */
+			case NLPROTO_MASTER_EHLO:
+			{
+				rfm12_rx_clear();
+				mystate = 1;
+			}
+			break;
+
 			/* master is ready to flash */
 			case NLPROTO_PAGE_FILL:
 			{
@@ -182,14 +171,20 @@ int main (void)
 				{
 					rfm12_rx_clear();
 
-					txpacket[k++] = NLPROTO_ERROR;
-					txpacket[k++] = (uint8_t) ((__LINE__ >> 8));
-					txpacket[k++] = (uint8_t) (__LINE__);
-					rfm12_tx (k, NL_PACKETTYPE, txpacket);
+					#if NL_VERBOSITY > 0
+					mypage[0] = (uint8_t) ((__LINE__ >> 8));
+					mypage[1] = (uint8_t) (__LINE__);
+
+					nl_tx_packet (NLPROTO_ERROR, 2, mypage);
+					#else
+					nl_tx_packet (NLPROTO_ERROR, 0, mypage);
+					#endif
 					break;
 				}
+
 				memcpy (&mypage + mycmd.addr_start, rxbuf,
 					mycmd.addr_end - mycmd.addr_start);
+
 				rfm12_rx_clear();
 				break; /* TODO: return checksum to master */	
 			}
@@ -200,13 +195,14 @@ int main (void)
 			{
 				uint32_t pagenum = 0;
 				
+				rfm12_rx_clear();
+				
 				k = NL_ADDRESSSIZE + 1;
 
 				pagenum = (uint32_t) rxbuf[k++] << 24;
 				pagenum += (uint32_t) rxbuf[k++] << 16;
 				pagenum += (uint32_t) rxbuf[k++] << 8;
 				pagenum += (uint32_t) (rxbuf[k++]);
-				rfm12_rx_clear();
 
 				boot_program_page (pagenum, mypage);
 				break;
@@ -219,13 +215,8 @@ int main (void)
 				rfm12_rx_clear();
 
 				#if (NL_VERBOSITY >= 1)
-				k = NL_ADDRESSSIZE;
-
-				txpacket[k++] = NLPROTO_BOOT;
-
-				rfm12_tx (k, NL_PACKETTYPE, txpacket);
+				nl_tx_packet (NLPROTO_BOOT, 0, mypage);
 				rfm12_tick();
-				_delay_ms(100);
 				#endif
 
 				cli();
@@ -238,16 +229,21 @@ int main (void)
 			{
 				rfm12_rx_clear();
 
-				for (k = 0;k<NL_ADDRESSSIZE;k++)
-					txpacket[k] = myaddress[k];
-				
-				txpacket[k++] = NLPROTO_ERROR;
-				txpacket[k++] = (uint8_t) ((__LINE__ >> 8));
-				txpacket[k++] = (uint8_t) (__LINE__);
-				rfm12_tx (k, NL_PACKETTYPE, txpacket);
+				#if NL_VERBOSITY > 0
+				mypage[0] = (uint8_t) ((__LINE__ >> 8));
+				mypage[1] = (uint8_t) (__LINE__);
+
+				nl_tx_packet (NLPROTO_ERROR, 2, mypage);
+				#else
+				nl_tx_packet (NLPROTO_ERROR, 0, (uint8_t *) 0x0000);
+				#endif
 			}
 			break;
 		}
 	}
+
+	cli();
+	app_ptr();
+	
 	return 0;
 }

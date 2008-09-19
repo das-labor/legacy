@@ -9,7 +9,6 @@
 /* defines for the nakkaloader protocol
  **/
 
-#define NLPROTO_WAIT          0x00   /* slave waiting for master to respond */
 #define NLPROTO_EEPROM_READ   0x01   /* read an eeprom page from device */
 #define NLPROTO_ERROR         0x02
 #define NLPROTO_PAGE_CHKSUM   0x03   /* checksum command */
@@ -22,6 +21,8 @@
 #define NLPROTO_PAGE_FILL     0x11
 #define NLPROTO_PAGE_COMMIT   0x12   /* checksum correct, go on and flash */
 #define NLPROTO_BOOT          0x13   /* boot the application */
+
+#define NLPROTO_SETADDR       0xff
 
 typedef struct
 {
