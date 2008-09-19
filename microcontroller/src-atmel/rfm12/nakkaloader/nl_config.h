@@ -12,7 +12,7 @@
 /* the position in the eeprom where the device's network address is stored at */
 #define NL_ADDRESSPOS 0
 
-/* define how many bytes to use for the address field. this will also add approx. 100 bytes
+/* define how many bytes to use for the address field. this will also add approx. 50 bytes
  * to the binary (!)
  **/
 #define NL_ADDRESSSIZE 1
@@ -31,9 +31,16 @@
  * */
 #define NL_MAXFAILS 8192
 
-/* set verbosity for bootloader (1 or 0)
+/* set verbosity for bootloader (0 to 2)
  *
- * setting this to 1 will add a few bytes to the binary
+ * setting this to values greater than 0 will add a few bytes to the binary.
+ *
+ * Verbosity Levels:
+ *
+ * 0 - STFU-Level - don't even complain on errors.
+ * 1 - Complain on errors
+ * 2 - Send additional debug information
+ *
  * */
 #define NL_VERBOSITY 0
 

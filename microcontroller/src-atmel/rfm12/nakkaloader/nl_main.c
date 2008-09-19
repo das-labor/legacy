@@ -11,14 +11,11 @@
 #include "nl_config.h"
 #include "nl_protocol.h"
 
-#ifndef MAX
-	#define MAX(a, b) (((a) > (b)) ? (a) : (b))
-#endif
-
 /* simple for-loop to "wrap" around an error-prone section */
 // #define NL_ERRORWRAP for (i=0;i < NL_MAXFAILS || NL_MAXFAILS == 0;i++)
 
 void (*app_ptr)(void) = (void *)0x0000;
+uint8_t myaddress[NL_ADDRESSSIZE];
 
 void boot_program_page (uint32_t page, uint8_t *buf)
 {
@@ -57,14 +54,14 @@ void boot_program_page (uint32_t page, uint8_t *buf)
 	sei();
 }
 
-uint8_t nl_match_packet (uint8_t *in_packet, uint8_t *in_address)
+uint8_t nl_match_packet (uint8_t *in_packet)
 {
 	#if NL_ADDRESSSIZE == 1
-	if ((*(in_packet + 1) & NL_ADDRESSMASK) != (*in_address & NL_ADDRESSMASK))
+	if ((*(in_packet + 1) & NL_ADDRESSMASK) != (myaddress[0] & NL_ADDRESSMASK))
 		return 0;
 	#elif NL_ADDRESSSIZE == 2
 	if (*((uint16_t *) (in_packet + 1)) & (NL_ADDRESSMASK) != 
-		*((uint16_t *) in_address) & (NL_ADDRESSMASK))
+		(*((uint16_t *) &myaddress) & (NL_ADDRESSMASK)))
 			return 0;
 	#endif
 	return 1;
@@ -72,27 +69,36 @@ uint8_t nl_match_packet (uint8_t *in_packet, uint8_t *in_address)
 
 void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 {
-	static uint8_t txpacket[MAX((NL_ADDRESSSIZE + 4), sizeof(nl_config))];
-	uint8_t i = 0;
+	uint8_t txpacket[NL_ADDRESSSIZE + 1 + sizeof(nl_config)];
+	uint8_t i = NL_ADDRESSSIZE + 1, k = 0;
 
-	if (in_type == NLPROTO_SETADDR)
-	{
-		txpacket[1] = *(in_payload);
+	txpacket[1] = myaddress[0];
 
-		#if NL_ADDRESSSIZE == 2
-		txpacket[2] = *(in_payload + 1);
-		#endif
-	}
+	#if NL_ADDRESSSIZE == 2
+	txpacket[2] = myaddress[1];
+	#endif
 
 	txpacket[0] = in_type;
 
 	if (in_len)
 	{
-		for (;i<in_len;i++)
-			txpacket[i + 1 + NL_ADDRESSSIZE] = *(in_payload + i);
+		for (;k<in_len;k++)
+			txpacket[i] = *(in_payload + k);
+		i++;
 	}
 	
 	rfm12_tx (i + NL_ADDRESSSIZE + 1, NL_PACKETTYPE, txpacket);
+}
+
+void nl_boot_app ( void )
+{
+	#if (NL_VERBOSITY >= 1)
+	nl_tx_packet (NLPROTO_BOOT, 0, mypage);
+	rfm12_tick();
+	#endif
+	
+	cli();
+	app_ptr();
 }
 
 int main (void)
@@ -100,7 +106,6 @@ int main (void)
 	uint16_t i;
 	uint8_t k, mystate = 0x00;
 	uint8_t *rxbuf;
-	uint8_t myaddress[NL_ADDRESSSIZE], msk[NL_ADDRESSSIZE];
 	uint8_t mypage[SPM_PAGESIZE];
 	nl_config myconfig;
 	nl_flashcmd mycmd;
@@ -114,13 +119,8 @@ int main (void)
 	/* read address */
 	for (i=0;i<NL_ADDRESSSIZE;i++)
 	{
-		/* abuse mypage array */
 		myaddress[i] = eeprom_read_byte ((uint8_t *) i + NL_ADDRESSPOS);
-		msk[i] = (NL_ADDRESSMASK >> (8*i));
 	}
-
-	/* set address */
-	nl_tx_packet (NLPROTO_SETADDR, NL_ADDRESSSIZE, myaddress);
 
 	rfm12_init();
 	sei();
@@ -139,7 +139,7 @@ int main (void)
 		rxbuf = rfm12_rx_buffer();
 
 		if (rfm12_rx_type() != NL_PACKETTYPE
-			|| !nl_match_packet (rxbuf, (uint8_t *) &myaddress))
+			|| !nl_match_packet (rxbuf))
 		{
 			rfm12_rx_clear();
 			continue;
@@ -171,12 +171,12 @@ int main (void)
 				{
 					rfm12_rx_clear();
 
-					#if NL_VERBOSITY > 0
+					#if NL_VERBOSITY > 1
 					mypage[0] = (uint8_t) ((__LINE__ >> 8));
 					mypage[1] = (uint8_t) (__LINE__);
 
 					nl_tx_packet (NLPROTO_ERROR, 2, mypage);
-					#else
+					#elif NL_VERBOSITY > 0
 					nl_tx_packet (NLPROTO_ERROR, 0, mypage);
 					#endif
 					break;
@@ -214,13 +214,7 @@ int main (void)
 			{
 				rfm12_rx_clear();
 
-				#if (NL_VERBOSITY >= 1)
-				nl_tx_packet (NLPROTO_BOOT, 0, mypage);
-				rfm12_tick();
-				#endif
-
-				cli();
-				app_ptr();
+				nl_boot_app();
 			}
 			break;
 
@@ -229,12 +223,12 @@ int main (void)
 			{
 				rfm12_rx_clear();
 
-				#if NL_VERBOSITY > 0
+				#if NL_VERBOSITY > 1
 				mypage[0] = (uint8_t) ((__LINE__ >> 8));
 				mypage[1] = (uint8_t) (__LINE__);
 
 				nl_tx_packet (NLPROTO_ERROR, 2, mypage);
-				#else
+				#elif NL_VERBOSITY > 0
 				nl_tx_packet (NLPROTO_ERROR, 0, (uint8_t *) 0x0000);
 				#endif
 			}
@@ -242,8 +236,5 @@ int main (void)
 		}
 	}
 
-	cli();
-	app_ptr();
-	
-	return 0;
+	nl_boot_app();	
 }
