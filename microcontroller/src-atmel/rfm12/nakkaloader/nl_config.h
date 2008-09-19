@@ -1,11 +1,5 @@
 #ifndef NL_CONFIG_H
 
-/* define how many deciseconds (0.1s) to wait for a response
- * from the programming device before booting the application
- * code.
- */
-#define NL_BOOTDELAY 20
-
 /* Maximum size of packets transmitted and received by this
  * bootloader.
  */
@@ -17,7 +11,11 @@
 
 /* the position in the eeprom where the device's network address is stored at */
 #define NL_ADDRESSPOS 0
-#define NL_ADDRESSSIZE 2
+
+/* define how many bytes to use for the address field. this will also add approx. 100 bytes
+ * to the binary (!)
+ **/
+#define NL_ADDRESSSIZE 1
 
 /* address bitmask */
 #define NL_ADDRESSMASK 0xFFFF
@@ -26,10 +24,17 @@
  *
  * This value may also be set to 0, meaning the bootloader should hang forever
  * in a certain state in case of an error. (!)
+ *
+ * Note that this value also represents the bootdelay. Once the counter reaches its top,
+ * the application is started.
+ *
  * */
-#define NL_MAXFAILS 4096
+#define NL_MAXFAILS 8192
 
-/* set verbosity for bootloader - higher value will likely increase the size */
+/* set verbosity for bootloader (1 or 0)
+ *
+ * setting this to 1 will add a few bytes to the binary
+ * */
 #define NL_VERBOSITY 0
 
 #endif
