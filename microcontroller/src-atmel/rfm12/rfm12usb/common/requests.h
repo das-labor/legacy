@@ -29,6 +29,7 @@
 
 //poll for notifications
 #define RFMUSB_RQ_GETNOTIFICATION	0x03
+#define USB_TXPACKET 0x42
 
 
 #endif /* __REQUESTS_H_INCLUDED__ */
