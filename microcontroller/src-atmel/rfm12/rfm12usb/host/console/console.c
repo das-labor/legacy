@@ -12,6 +12,7 @@
 #include "termio.h"
 #include "../../common/console.h"
 #include "../../common/configvars.h"
+#include "../../common/requests.h"
 #include "dump.h"
 #include "../common/opendevice.h"
 
@@ -172,7 +173,7 @@ int main (int argc, char* argv[])
 	{
 		tmp = usb_control_msg (udhandle,
 				USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
-				CUSTOM_RQ_GET_DATA, 0, 0, buf, sizeof (buf),
+				RFMUSB_RQ_RFM12_GET, 0, 0, buf, sizeof (buf),
 				5000);
 
 		if (tmp > 0) /* data received from usb bus */
@@ -199,7 +200,7 @@ int main (int argc, char* argv[])
 
 			tmp = usb_control_msg (udhandle,
 					USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
-					CUSTOM_RQ_PUT_DATA, 0, tmpchar, buf, 2,
+					RFMUSB_RQ_RFM12_PUT, USB_TXPACKET, 0, buf, 2,
 					5000);
 		}
 		termflush (mytty);
