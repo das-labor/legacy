@@ -93,7 +93,7 @@ void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 void nl_boot_app ( void )
 {
 	#if (NL_VERBOSITY >= 1)
-	nl_tx_packet (NLPROTO_BOOT, 2, myaddress);
+	nl_tx_packet (NLPROTO_BOOT, NL_ADDRESSSIZE, myaddress);
 	rfm12_tick();
 	#endif
 	
@@ -229,7 +229,7 @@ int main (void)
 
 				nl_tx_packet (NLPROTO_ERROR, 2, mypage);
 				#elif NL_VERBOSITY > 0
-				nl_tx_packet (NLPROTO_ERROR, 0, mypage);
+				nl_tx_packet (NLPROTO_ERROR, NL_ADDRESSSIZE, myaddress);
 				#endif
 			}
 			break;
