@@ -11,7 +11,7 @@ DEVICE  = atmega8
 F_CPU   = 16000000	# in Hz
 FUSE_L  = 0x9f
 FUSE_H  = 0xc9
-AVRDUDE = avrdude -c bsd -p $(DEVICE) # edit this line for your programmer
+AVRDUDE = avrdude -c usbasp -p $(DEVICE) # edit this line for your programmer
 
 CFLAGS  = -Iusbdrv -I. -DDEBUG_LEVEL=0
 OBJECTS = usbdrv/usbdrv.o usbdrv/usbdrvasm.o usbdrv/oddebug.o main.o rfm12.o

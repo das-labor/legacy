@@ -1,21 +1,17 @@
-/* Name: main.c
- * Project: custom-class, a basic USB example
- * Author: Christian Starkjohann
- * Creation Date: 2008-04-09
- * Tabsize: 4
- * Copyright: (c) 2008 by OBJECTIVE DEVELOPMENT Software GmbH
- * License: GNU GPL v2 (see License.txt) or proprietary (CommercialLicense.txt)
- * This Revision: $Id: main.c 602 2008-05-13 15:15:13Z cs $
+/* This is the firmware for the RFMUSB device.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 as published
+ * by the Free Software Foundation.
+ *
+ * Copyright (c) Soeren Heisrath <forename@surname.org>
+ *
+ * Parts of this code were extracted from the example project
+ * developed by Christian Starkjohann under the copyright (c) 2008 by
+ * OBJECTIVE DEVELOPMENT Software GmbH.
  */
 
-/*
-This example should run on most AVRs with only little changes. No special
-hardware resources except INT0 are used. You may have to change usbconfig.h for
-different I/O pins for USB. Please note that USB D+ must be the INT0 pin, or
-at least be connected to INT0 as well.
-We assume that an LED is connected to port B bit 0. If you connect it to a
-different port or bit, change the macros below:
-*/
+
 #define LED_PORT_DDR        DDRD
 #define LED_PORT_OUTPUT     PORTD
 #define LED_BIT_RED         6
