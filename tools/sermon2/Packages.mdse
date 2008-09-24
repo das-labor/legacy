@@ -1,7 +1,7 @@
 <CombineEntry name="Packages" fileversion="2.0" ctype="PackagingProject">
   <Packages>
     <Package name="MonoDevelop Project Model Sources">
-      <Builder rootEntry="sermon2.mds" targetFile="sermon2-mds.tar.gz" format="MonoDevelop.Projects.MonoDevelopFileFormat" ctype="SourcesZipPackageBuilder">
+      <Builder rootEntry="sermon2.mds" targetFile="sermon2-mds.tar.bz2" format="MonoDevelop.Projects.MonoDevelopFileFormat" ctype="SourcesZipPackageBuilder">
         <ChildEntries>
           <Entry>sermon2/sermon2.mdp</Entry>
         </ChildEntries>

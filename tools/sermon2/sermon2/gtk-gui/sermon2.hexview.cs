@@ -13,6 +13,8 @@ namespace sermon2 {
     
     public partial class hexview {
         
+        private Gtk.Alignment alignment5;
+        
         private Gtk.HBox hbox1;
         
         private Gtk.Table table1;
@@ -32,6 +34,13 @@ namespace sermon2 {
             this.WidthRequest = 440;
             this.Name = "sermon2.hexview";
             // Container child sermon2.hexview.Gtk.Container+ContainerChild
+            this.alignment5 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
+            this.alignment5.Name = "alignment5";
+            this.alignment5.LeftPadding = ((uint)(5));
+            this.alignment5.TopPadding = ((uint)(5));
+            this.alignment5.RightPadding = ((uint)(5));
+            this.alignment5.BottomPadding = ((uint)(5));
+            // Container child alignment5.Gtk.Container+ContainerChild
             this.hbox1 = new Gtk.HBox();
             this.hbox1.WidthRequest = 300;
             this.hbox1.Name = "hbox1";
@@ -86,7 +95,8 @@ namespace sermon2 {
             w5.Position = 1;
             w5.Expand = false;
             w5.Fill = false;
-            this.Add(this.hbox1);
+            this.alignment5.Add(this.hbox1);
+            this.Add(this.alignment5);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }

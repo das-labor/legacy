@@ -118,8 +118,9 @@ public partial class MainWindow: Gtk.Window
     }
     protected virtual void OnNewObjButtonReleased (object sender, System.EventArgs e)
     {
-        if(scrolledwindow2.Child!=null)
-                    scrolledwindow2.Remove(scrolledwindow2.Child);
+        if(vbox5.Children!=null){
+            Array.ForEach(vbox5.Children, vbox5.Remove);
+        }
         switch(objectAddComboBox.Active){
             case 0: /* serial port config */
                 AddSerialPort("serialport-"+prng.Next().ToString(), true);
@@ -128,7 +129,7 @@ public partial class MainWindow: Gtk.Window
                 AddTagger("tagger-"+prng.Next().ToString(), true);
                 break;
             case 2: /* lop config */    
-                scrolledwindow2.Add(lopconf);
+                vbox5.Add(lopconf);
                 configTreeStore.AppendValues(treeIters[objectAddComboBox.Active], "lop 0");
                 break;
                 
@@ -147,17 +148,22 @@ public partial class MainWindow: Gtk.Window
 
     protected virtual void OnButton24Released (object sender, System.EventArgs e)
     {
+        /*
         GConf.Client client = new Client();
         System.Object o;
         o = new System.Object();
-        o = client.Get("/apps");
+         client.Set("/apps/sermon2/serialport-1051236133", null);
+         
         System.Console.WriteLine("o has type: {0}", o.GetType());
         return;
-     /*   
+     */   
         SerPort p1,p2;
         Tagger  t1,t2;
         TextTag tag1, tag2;
         streamview sv;
+        sv = new streamview();
+        sv.ShowAll();
+        /*
         p1 = new SerPort("p1");
         p2 = new SerPort("p2");
         tag1 = new TextTag("tag1");
@@ -169,8 +175,8 @@ public partial class MainWindow: Gtk.Window
         t1.tagregister += sv.RegisterTag;
         t2 = new Tagger("tagger 2");
         t2.tagregister += sv.RegisterTag;
-        t1.DefTag = tag1;
-        t2.DefTag = tag2;
+        t1.config.defTag = tag1;
+        t2.config.defTag = tag2;
         p1.byterx_event += (streambyterx_t)(t1.OnDataRX);
         p2.byterx_event += (streambyterx_t)(t2.OnDataRX);
         t1.tagedbyterx += sv.OnDataReciveTagged;
@@ -210,23 +216,49 @@ public partial class MainWindow: Gtk.Window
     }
 
     protected virtual void OnConfigTreeViewRowActivated (object o, Gtk.RowActivatedArgs args){
+    }
+
+    protected virtual void OnConfigTreeViewSelectCursorRow (object o, Gtk.SelectCursorRowArgs args)
+    {
+        System.Console.WriteLine("OnConfigTreeViewSelectCursorRow");
+     //   OnConfigTreeViewRowActivated(o, args);
+    }
+
+    protected virtual void OnConfigTreeViewToggleCursorRow (object o, Gtk.ToggleCursorRowArgs args)
+    {
+        System.Console.WriteLine("OnConfigTreeViewToggleCursorRow");
+ 
+    }
+
+    protected virtual void OnConfigTreeViewCursorChanged (object sender, System.EventArgs e)
+    {
+         Gtk.TreePath path;
+         Gtk.TreeViewColumn column;
         
-         if(scrolledwindow2.Child!=null)
-            scrolledwindow2.Remove(scrolledwindow2.Child);
-         if(commonConfScrolledWindow.Child!=null)
-            commonConfScrolledWindow.Remove(commonConfScrolledWindow.Child);
-         if(args.Path.Indices.Length==2 && args.Path.Indices[0]==0){
-            scrolledwindow2.Add(spconf= new SerPortConf(
-                    ports[args.Path.Indices[1]].config));
-            commonConfScrolledWindow.Add(new ObjectCommonEdit( 
-                    ports[args.Path.Indices[1]].config));
+         configTreeView.GetCursor(out path, out column);
+         
+         if(path==null)
+            return;
+        
+         if(vbox5.Children!=null){
+            Array.ForEach(vbox5.Children, vbox5.Remove);
          }
-         if(args.Path.Indices.Length==2 && args.Path.Indices[0]==1){
-            scrolledwindow2.Add(tgconf= new TaggerConf(
-                    taggers[args.Path.Indices[1]].config));
-            commonConfScrolledWindow.Add(new ObjectCommonEdit( 
-                    taggers[args.Path.Indices[1]].config));
+         if(vbox6.Children!=null){
+            Array.ForEach(vbox6.Children, vbox6.Remove);
          }
+         if(path.Indices.Length==2 && path.Indices[0]==0){
+            vbox5.Add(spconf= new SerPortConf(
+                    ports[path.Indices[1]].config));
+            vbox6.Add(new ObjectCommonEdit( 
+                    ports[path.Indices[1]].config));
+         }
+         if(path.Indices.Length==2 && path.Indices[0]==1){
+            vbox5.Add(tgconf= new TaggerConf(
+                    taggers[path.Indices[1]].config));
+            vbox6.Add(new ObjectCommonEdit( 
+                    taggers[path.Indices[1]].config));
+         }
+       System.Console.WriteLine("OnConfigTreeViewCursorChanged"); 
     }
     
     

@@ -38,7 +38,7 @@ namespace sermon2
             LoadConfig();
         }
         
-        override public void SaveConfig(){
+        override public void SaveConfig_core(){
             writeconfig("name", name);
             writeconfig("portname", portName);
             writeconfig("baudrate", baudRate);
@@ -66,12 +66,16 @@ namespace sermon2
         }
         
         public void OnGConf_Changed(object changer){
+            if(noGconfLoad)
+                return;
             System.Console.WriteLine("OnGConf_Changed " + System.DateTimeOffset.Now.ToString());
             OnDataChanged(changer, this);             
-       }
+        }
         
         
         override public void OnGConf_Changed(object sender, NotifyEventArgs args){
+            if(noGconfLoad)
+                return;
             System.Console.WriteLine("OnGConf_Changed " + System.DateTimeOffset.Now.ToString());
             OnDataChanged(this, this);             
         }

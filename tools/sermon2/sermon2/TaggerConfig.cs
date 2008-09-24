@@ -37,7 +37,7 @@ namespace sermon2
             LoadConfig();
         }
         
-        override public void SaveConfig(){
+        override public void SaveConfig_core(){
             writeconfig("name", name);
             writeconfig("tagdata", dataTag);
             writeconfig("foreground_set", defTag.ForegroundSet);
@@ -86,6 +86,8 @@ namespace sermon2
         }
         
         public void OnGConf_Changed(object changer){
+            if(noGconfLoad)
+                return;
             LoadConfig();
             System.Console.WriteLine("OnGConf_Changed");
             OnDataChanged(changer, this);             
@@ -94,6 +96,8 @@ namespace sermon2
         
         
         override public void OnGConf_Changed(object sender, NotifyEventArgs args){
+            if(noGconfLoad)
+                return;
             LoadConfig();
             System.Console.WriteLine("OnGConf_Changed");
             OnDataChanged(sender, this);
