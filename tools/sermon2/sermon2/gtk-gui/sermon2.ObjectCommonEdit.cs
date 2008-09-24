@@ -37,10 +37,10 @@ namespace sermon2 {
             Stetic.Gui.Initialize(this);
             // Widget sermon2.ObjectCommonEdit
             Stetic.BinContainer.Attach(this);
+            this.HeightRequest = 100;
             this.Name = "sermon2.ObjectCommonEdit";
             // Container child sermon2.ObjectCommonEdit.Gtk.Container+ContainerChild
             this.frame1 = new Gtk.Frame();
-            this.frame1.HeightRequest = 140;
             this.frame1.Name = "frame1";
             this.frame1.ShadowType = ((Gtk.ShadowType)(1));
             this.frame1.BorderWidth = ((uint)(3));
@@ -105,6 +105,7 @@ namespace sermon2 {
             w5.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.button19 = new Gtk.Button();
+            this.button19.WidthRequest = 20;
             this.button19.CanFocus = true;
             this.button19.Name = "button19";
             this.button19.UseUnderline = true;
@@ -130,6 +131,7 @@ namespace sermon2 {
             w14.Position = 1;
             w14.Expand = false;
             w14.Fill = false;
+            w14.Padding = ((uint)(3));
             this.GtkAlignment.Add(this.vbox2);
             this.frame1.Add(this.GtkAlignment);
             this.GtkLabel1 = new Gtk.Label();

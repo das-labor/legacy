@@ -27,9 +27,7 @@ namespace sermon2 {
         
         private Gtk.Frame frame1;
         
-        private Gtk.Alignment GtkAlignment;
-        
-        private Gtk.ScrolledWindow GtkScrolledWindow1;
+        private Gtk.Alignment alignment4;
         
         private sermon2.hexview hexview1;
         
@@ -78,51 +76,39 @@ namespace sermon2 {
             this.frame1.Name = "frame1";
             this.frame1.ShadowType = ((Gtk.ShadowType)(1));
             // Container child frame1.Gtk.Container+ContainerChild
-            this.GtkAlignment = new Gtk.Alignment(0F, 0F, 1F, 1F);
-            this.GtkAlignment.Name = "GtkAlignment";
-            this.GtkAlignment.LeftPadding = ((uint)(12));
-            // Container child GtkAlignment.Gtk.Container+ContainerChild
-            this.GtkScrolledWindow1 = new Gtk.ScrolledWindow();
-            this.GtkScrolledWindow1.Name = "GtkScrolledWindow1";
-            this.GtkScrolledWindow1.VscrollbarPolicy = ((Gtk.PolicyType)(2));
-            this.GtkScrolledWindow1.HscrollbarPolicy = ((Gtk.PolicyType)(2));
-            this.GtkScrolledWindow1.ShadowType = ((Gtk.ShadowType)(1));
-            // Container child GtkScrolledWindow1.Gtk.Container+ContainerChild
-            Gtk.Viewport w4 = new Gtk.Viewport();
-            w4.ShadowType = ((Gtk.ShadowType)(0));
-            // Container child GtkViewport1.Gtk.Container+ContainerChild
+            this.alignment4 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
+            this.alignment4.Name = "alignment4";
+            // Container child alignment4.Gtk.Container+ContainerChild
             this.hexview1 = new sermon2.hexview();
-            this.hexview1.WidthRequest = 330;
-            this.hexview1.HeightRequest = 400;
+            this.hexview1.WidthRequest = 440;
+            this.hexview1.HeightRequest = 186;
             this.hexview1.Events = ((Gdk.EventMask)(256));
-            this.hexview1.ExtensionEvents = ((Gdk.ExtensionMode)(1));
             this.hexview1.Name = "hexview1";
-            w4.Add(this.hexview1);
-            this.GtkScrolledWindow1.Add(w4);
-            this.GtkAlignment.Add(this.GtkScrolledWindow1);
-            this.frame1.Add(this.GtkAlignment);
+            this.alignment4.Add(this.hexview1);
+            this.frame1.Add(this.alignment4);
             this.GtkLabel3 = new Gtk.Label();
             this.GtkLabel3.Name = "GtkLabel3";
             this.GtkLabel3.LabelProp = Mono.Unix.Catalog.GetString("<b>stream</b>");
             this.GtkLabel3.UseMarkup = true;
             this.frame1.LabelWidget = this.GtkLabel3;
             this.vbox1.Add(this.frame1);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox1[this.frame1]));
-            w9.Position = 1;
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox1[this.frame1]));
+            w6.Position = 1;
             // Container child vbox1.Gtk.Box+BoxChild
             this.statusbar1 = new Gtk.Statusbar();
             this.statusbar1.Name = "statusbar1";
             this.statusbar1.Spacing = 6;
             this.vbox1.Add(this.statusbar1);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox1[this.statusbar1]));
-            w10.Position = 2;
-            w10.Expand = false;
-            w10.Fill = false;
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox1[this.statusbar1]));
+            w7.PackType = ((Gtk.PackType)(1));
+            w7.Position = 2;
+            w7.Expand = false;
+            w7.Fill = false;
             this.Add(this.vbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 400;
+            this.DefaultWidth = 450;
             this.DefaultHeight = 452;
             this.Show();
             this.ClearAction.Activated += new System.EventHandler(this.OnClearActionActivated);

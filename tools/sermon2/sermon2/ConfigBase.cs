@@ -35,11 +35,13 @@ namespace sermon2
         private string keyFullName;
         private string keyFullName_;
         private GConf.Client client;
+        public bool noGconfLoad;
         public  string name;
         public  string id;
         public event dataChanged_t dataChanged;
         public ConfigBase(String baseName, String Name)
         {
+            noGconfLoad=false;
             client = new GConf.Client();
             keyBase = baseName.TrimEnd('/');
             keyName = Name.TrimEnd('/').TrimStart('/');
@@ -208,7 +210,12 @@ namespace sermon2
             return s;
         }
         
-        abstract public void SaveConfig();
+        public void SaveConfig(){
+            noGconfLoad = true;
+            SaveConfig_core();
+            noGconfLoad = false;
+        }
+        abstract public void SaveConfig_core();
         
         abstract public void LoadConfig();
         
@@ -217,8 +224,10 @@ namespace sermon2
         abstract public void OnGUI_Changed(object sender,  NotifyEventArgs args);
         
         public void OnDataChanged(object changer, object changed){
-            if(dataChanged!= null)
+            if(dataChanged!= null){
+                System.Console.WriteLine("dataChanged ({0})", this.name.ToString());
                 dataChanged(changer, changed);
+            }
         }
     }
 }

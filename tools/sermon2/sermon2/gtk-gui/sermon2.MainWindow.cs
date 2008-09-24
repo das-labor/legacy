@@ -25,6 +25,8 @@ namespace sermon2 {
         
         private Gtk.HBox hbox2;
         
+        private Gtk.HPaned hpaned1;
+        
         private Gtk.HPaned hpaned3;
         
         private Gtk.ScrolledWindow GtkScrolledWindow;
@@ -33,15 +35,27 @@ namespace sermon2 {
         
         private Gtk.VBox vbox3;
         
-        private Gtk.ScrolledWindow scrolledwindow2;
-        
         private Gtk.ScrolledWindow commonConfScrolledWindow;
+        
+        private Gtk.VBox vbox4;
+        
+        private Gtk.Alignment alignment1;
+        
+        private Gtk.VBox vbox5;
+        
+        private Gtk.Alignment alignment2;
+        
+        private Gtk.VBox vbox6;
         
         private Gtk.HBox hbox3;
         
         private Gtk.ComboBox objectAddComboBox;
         
         private Gtk.Button NewObjButton;
+        
+        private Gtk.ScrolledWindow GtkScrolledWindow1;
+        
+        private Gtk.TreeView treeview1;
         
         private Gtk.Label label4;
         
@@ -93,6 +107,11 @@ namespace sermon2 {
             this.hbox2.Name = "hbox2";
             this.hbox2.Spacing = 6;
             // Container child hbox2.Gtk.Box+BoxChild
+            this.hpaned1 = new Gtk.HPaned();
+            this.hpaned1.CanFocus = true;
+            this.hpaned1.Name = "hpaned1";
+            this.hpaned1.Position = 260;
+            // Container child hpaned1.Gtk.Paned+PanedChild
             this.hpaned3 = new Gtk.HPaned();
             this.hpaned3.CanFocus = true;
             this.hpaned3.Name = "hpaned3";
@@ -115,23 +134,45 @@ namespace sermon2 {
             this.vbox3.Name = "vbox3";
             this.vbox3.Spacing = 6;
             // Container child vbox3.Gtk.Box+BoxChild
-            this.scrolledwindow2 = new Gtk.ScrolledWindow();
-            this.scrolledwindow2.CanFocus = true;
-            this.scrolledwindow2.Name = "scrolledwindow2";
-            this.scrolledwindow2.ShadowType = ((Gtk.ShadowType)(1));
-            this.scrolledwindow2.BorderWidth = ((uint)(2));
-            this.vbox3.Add(this.scrolledwindow2);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox3[this.scrolledwindow2]));
-            w6.Position = 0;
-            // Container child vbox3.Gtk.Box+BoxChild
             this.commonConfScrolledWindow = new Gtk.ScrolledWindow();
             this.commonConfScrolledWindow.CanFocus = true;
             this.commonConfScrolledWindow.Name = "commonConfScrolledWindow";
             this.commonConfScrolledWindow.ShadowType = ((Gtk.ShadowType)(1));
             this.commonConfScrolledWindow.BorderWidth = ((uint)(3));
+            // Container child commonConfScrolledWindow.Gtk.Container+ContainerChild
+            Gtk.Viewport w6 = new Gtk.Viewport();
+            w6.ShadowType = ((Gtk.ShadowType)(0));
+            // Container child GtkViewport.Gtk.Container+ContainerChild
+            this.vbox4 = new Gtk.VBox();
+            this.vbox4.Name = "vbox4";
+            this.vbox4.Spacing = 6;
+            // Container child vbox4.Gtk.Box+BoxChild
+            this.alignment1 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
+            this.alignment1.Name = "alignment1";
+            // Container child alignment1.Gtk.Container+ContainerChild
+            this.vbox5 = new Gtk.VBox();
+            this.vbox5.Name = "vbox5";
+            this.vbox5.Spacing = 6;
+            this.alignment1.Add(this.vbox5);
+            this.vbox4.Add(this.alignment1);
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox4[this.alignment1]));
+            w8.Position = 0;
+            // Container child vbox4.Gtk.Box+BoxChild
+            this.alignment2 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
+            this.alignment2.Name = "alignment2";
+            // Container child alignment2.Gtk.Container+ContainerChild
+            this.vbox6 = new Gtk.VBox();
+            this.vbox6.Name = "vbox6";
+            this.vbox6.Spacing = 6;
+            this.alignment2.Add(this.vbox6);
+            this.vbox4.Add(this.alignment2);
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox4[this.alignment2]));
+            w10.Position = 1;
+            w6.Add(this.vbox4);
+            this.commonConfScrolledWindow.Add(w6);
             this.vbox3.Add(this.commonConfScrolledWindow);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox3[this.commonConfScrolledWindow]));
-            w7.Position = 1;
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox3[this.commonConfScrolledWindow]));
+            w13.Position = 0;
             // Container child vbox3.Gtk.Box+BoxChild
             this.hbox3 = new Gtk.HBox();
             this.hbox3.Name = "hbox3";
@@ -147,45 +188,59 @@ namespace sermon2 {
             this.objectAddComboBox.Name = "objectAddComboBox";
             this.objectAddComboBox.Active = 0;
             this.hbox3.Add(this.objectAddComboBox);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox3[this.objectAddComboBox]));
-            w8.Position = 0;
-            w8.Expand = false;
-            w8.Fill = false;
+            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.hbox3[this.objectAddComboBox]));
+            w14.Position = 0;
+            w14.Expand = false;
+            w14.Fill = false;
             // Container child hbox3.Gtk.Box+BoxChild
             this.NewObjButton = new Gtk.Button();
             this.NewObjButton.CanFocus = true;
             this.NewObjButton.Name = "NewObjButton";
             this.NewObjButton.UseUnderline = true;
             // Container child NewObjButton.Gtk.Container+ContainerChild
-            Gtk.Alignment w9 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            Gtk.Alignment w15 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
-            Gtk.HBox w10 = new Gtk.HBox();
-            w10.Spacing = 2;
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Image w11 = new Gtk.Image();
-            w11.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-add", Gtk.IconSize.Menu, 16);
-            w10.Add(w11);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Label w13 = new Gtk.Label();
-            w13.LabelProp = Mono.Unix.Catalog.GetString("new object");
-            w13.UseUnderline = true;
-            w10.Add(w13);
-            w9.Add(w10);
-            this.NewObjButton.Add(w9);
+            Gtk.HBox w16 = new Gtk.HBox();
+            w16.Spacing = 2;
+            // Container child GtkHBox1.Gtk.Container+ContainerChild
+            Gtk.Image w17 = new Gtk.Image();
+            w17.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-add", Gtk.IconSize.Menu, 16);
+            w16.Add(w17);
+            // Container child GtkHBox1.Gtk.Container+ContainerChild
+            Gtk.Label w19 = new Gtk.Label();
+            w19.LabelProp = Mono.Unix.Catalog.GetString("new object");
+            w19.UseUnderline = true;
+            w16.Add(w19);
+            w15.Add(w16);
+            this.NewObjButton.Add(w15);
             this.hbox3.Add(this.NewObjButton);
-            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.hbox3[this.NewObjButton]));
-            w17.Position = 1;
-            w17.Expand = false;
-            w17.Fill = false;
+            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.hbox3[this.NewObjButton]));
+            w23.Position = 1;
+            w23.Expand = false;
+            w23.Fill = false;
             this.vbox3.Add(this.hbox3);
-            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.vbox3[this.hbox3]));
-            w18.Position = 2;
-            w18.Expand = false;
-            w18.Fill = false;
+            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.vbox3[this.hbox3]));
+            w24.Position = 1;
+            w24.Expand = false;
+            w24.Fill = false;
             this.hpaned3.Add(this.vbox3);
-            this.hbox2.Add(this.hpaned3);
-            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.hbox2[this.hpaned3]));
-            w20.Position = 0;
+            this.hpaned1.Add(this.hpaned3);
+            Gtk.Paned.PanedChild w26 = ((Gtk.Paned.PanedChild)(this.hpaned1[this.hpaned3]));
+            w26.Resize = false;
+            // Container child hpaned1.Gtk.Paned+PanedChild
+            this.GtkScrolledWindow1 = new Gtk.ScrolledWindow();
+            this.GtkScrolledWindow1.Name = "GtkScrolledWindow1";
+            this.GtkScrolledWindow1.ShadowType = ((Gtk.ShadowType)(1));
+            // Container child GtkScrolledWindow1.Gtk.Container+ContainerChild
+            this.treeview1 = new Gtk.TreeView();
+            this.treeview1.CanFocus = true;
+            this.treeview1.Name = "treeview1";
+            this.treeview1.HeadersClickable = true;
+            this.GtkScrolledWindow1.Add(this.treeview1);
+            this.hpaned1.Add(this.GtkScrolledWindow1);
+            this.hbox2.Add(this.hpaned1);
+            Gtk.Box.BoxChild w29 = ((Gtk.Box.BoxChild)(this.hbox2[this.hpaned1]));
+            w29.Position = 0;
             this.notebook1.Add(this.hbox2);
             // Notebook tab
             this.label4 = new Gtk.Label();
@@ -194,8 +249,8 @@ namespace sermon2 {
             this.notebook1.SetTabLabel(this.hbox2, this.label4);
             this.label4.ShowAll();
             this.vbox2.Add(this.notebook1);
-            Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.vbox2[this.notebook1]));
-            w22.Position = 1;
+            Gtk.Box.BoxChild w31 = ((Gtk.Box.BoxChild)(this.vbox2[this.notebook1]));
+            w31.Position = 1;
             // Container child vbox2.Gtk.Box+BoxChild
             this.hbox1 = new Gtk.HBox();
             this.hbox1.Name = "hbox1";
@@ -207,10 +262,10 @@ namespace sermon2 {
             this.button1.UseUnderline = true;
             this.button1.Label = Mono.Unix.Catalog.GetString("button1");
             this.hbox1.Add(this.button1);
-            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.hbox1[this.button1]));
-            w23.Position = 0;
-            w23.Expand = false;
-            w23.Fill = false;
+            Gtk.Box.BoxChild w32 = ((Gtk.Box.BoxChild)(this.hbox1[this.button1]));
+            w32.Position = 0;
+            w32.Expand = false;
+            w32.Fill = false;
             // Container child hbox1.Gtk.Box+BoxChild
             this.button24 = new Gtk.Button();
             this.button24.CanFocus = true;
@@ -218,24 +273,24 @@ namespace sermon2 {
             this.button24.UseUnderline = true;
             this.button24.Label = Mono.Unix.Catalog.GetString("button24");
             this.hbox1.Add(this.button24);
-            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.hbox1[this.button24]));
-            w24.Position = 1;
-            w24.Expand = false;
-            w24.Fill = false;
+            Gtk.Box.BoxChild w33 = ((Gtk.Box.BoxChild)(this.hbox1[this.button24]));
+            w33.Position = 1;
+            w33.Expand = false;
+            w33.Fill = false;
             this.vbox2.Add(this.hbox1);
-            Gtk.Box.BoxChild w25 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
-            w25.Position = 2;
-            w25.Expand = false;
-            w25.Fill = false;
+            Gtk.Box.BoxChild w34 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+            w34.Position = 2;
+            w34.Expand = false;
+            w34.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.statusbar2 = new Gtk.Statusbar();
             this.statusbar2.Name = "statusbar2";
             this.statusbar2.Spacing = 6;
             this.vbox2.Add(this.statusbar2);
-            Gtk.Box.BoxChild w26 = ((Gtk.Box.BoxChild)(this.vbox2[this.statusbar2]));
-            w26.Position = 3;
-            w26.Expand = false;
-            w26.Fill = false;
+            Gtk.Box.BoxChild w35 = ((Gtk.Box.BoxChild)(this.vbox2[this.statusbar2]));
+            w35.Position = 3;
+            w35.Expand = false;
+            w35.Fill = false;
             this.Add(this.vbox2);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
@@ -246,6 +301,10 @@ namespace sermon2 {
             this.DeleteEvent += new Gtk.DeleteEventHandler(this.OnDeleteEvent);
             this.AboutAction.Activated += new System.EventHandler(this.OnAboutActionActivated);
             this.configTreeView.RowActivated += new Gtk.RowActivatedHandler(this.OnConfigTreeViewRowActivated);
+            this.configTreeView.SelectCursorRow += new Gtk.SelectCursorRowHandler(this.OnConfigTreeViewSelectCursorRow);
+            this.configTreeView.SelectCursorRow += new Gtk.SelectCursorRowHandler(this.OnConfigTreeViewSelectCursorRow);
+            this.configTreeView.ToggleCursorRow += new Gtk.ToggleCursorRowHandler(this.OnConfigTreeViewToggleCursorRow);
+            this.configTreeView.CursorChanged += new System.EventHandler(this.OnConfigTreeViewCursorChanged);
             this.NewObjButton.Released += new System.EventHandler(this.OnNewObjButtonReleased);
             this.button1.Released += new System.EventHandler(this.OnButton1Released);
             this.button24.Released += new System.EventHandler(this.OnButton24Released);
