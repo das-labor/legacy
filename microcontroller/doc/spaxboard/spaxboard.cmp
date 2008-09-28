@@ -1,0 +1,94 @@
+Cmp-Mod V01 Created by Cvpcb (2007-11-29-a) date = 27/9/2008-15:02:54
+
+BeginCmp
+TimeStamp = 48DD423F;
+Reference = C1;
+ValeurCmp = 100n;
+IdModule  = SM1206;
+EndCmp
+
+BeginCmp
+TimeStamp = 48DE23C8;
+Reference = C2;
+ValeurCmp = CP;
+IdModule  = SM1206;
+EndCmp
+
+BeginCmp
+TimeStamp = 48DD4245;
+Reference = C3;
+ValeurCmp = 100n;
+IdModule  = SM1206;
+EndCmp
+
+BeginCmp
+TimeStamp = 48DD4372;
+Reference = C4;
+ValeurCmp = 100n;
+IdModule  = SM1206;
+EndCmp
+
+BeginCmp
+TimeStamp = 48DD4103;
+Reference = IC1;
+ValeurCmp = 78L05;
+IdModule  = SO8E;
+EndCmp
+
+BeginCmp
+TimeStamp = 48DD3F89;
+Reference = IC2;
+ValeurCmp = ATMEGA8;
+IdModule  = TQFP32;
+EndCmp
+
+BeginCmp
+TimeStamp = 48DD5F3A;
+Reference = IC3;
+ValeurCmp = RFM12;
+IdModule  = RFM12;
+EndCmp
+
+BeginCmp
+TimeStamp = 48DE3585;
+Reference = K1;
+ValeurCmp = CONN_3;
+IdModule  = PIN_ARRAY_3X1;
+EndCmp
+
+BeginCmp
+TimeStamp = 48DD65FB;
+Reference = P1;
+ValeurCmp = PWR_IN;
+IdModule  = PIN_ARRAY_2X1;
+EndCmp
+
+BeginCmp
+TimeStamp = 48DE2459;
+Reference = P2;
+ValeurCmp = CONN_10;
+IdModule  = PIN_ARRAY_5x2;
+EndCmp
+
+BeginCmp
+TimeStamp = 48DE3EBC;
+Reference = P4;
+ValeurCmp = PROG;
+IdModule  = PIN_ARRAY_5x1;
+EndCmp
+
+BeginCmp
+TimeStamp = 48DE414A;
+Reference = P5;
+ValeurCmp = CONN_8;
+IdModule  = pin_array_4x2;
+EndCmp
+
+BeginCmp
+TimeStamp = 48DE24F1;
+Reference = X1;
+ValeurCmp = 16_MHz;
+IdModule  = XLR3MC;
+EndCmp
+
+EndListe
