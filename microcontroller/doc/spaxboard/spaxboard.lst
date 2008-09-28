@@ -1,0 +1,35 @@
+EESchema (2007-11-29-a)  >> Creation date: 27/9/2008-15:06:43
+
+#Cmp ( order = Reference )
+| C1         100n        
+| C2         CP          
+| C3         100n        
+| C4         100n        
+| IC1        78L05       
+| IC2        ATMEGA8     
+| IC3        RFM12       
+| K1         CONN_3      
+| P1         PWR IN      
+| P2         CONN_10     
+| P4         PROG        
+| P5         CONN_8      
+| X1         16 MHz      
+#End Cmp
+
+#Cmp ( order = Value )
+| 100n         C1        
+| 100n         C3        
+| 100n         C4        
+| 16 MHz       X1        
+| 78L05        IC1       
+| ATMEGA8      IC2       
+| CONN_10      P2        
+| CONN_3       K1        
+| CONN_8       P5        
+| CP           C2        
+| PROG         P4        
+| PWR IN       P1        
+| RFM12        IC3       
+#End Cmp
+
+#End List
