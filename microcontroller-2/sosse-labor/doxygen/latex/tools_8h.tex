@@ -1,0 +1,99 @@
+\subsection{tools.h File Reference}
+\label{tools_8h}\index{tools.h@{tools.h}}
+Tool declarations. 
+
+{\tt \#include $<$config.h$>$}\par
+{\tt \#include $<$types.h$>$}\par
+\subsubsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \bf{swap\_\-us}(us)~(((us\&0x00FF)$<$$<$8)$|$((us\&0x\-FF00)$>$$>$8))
+\begin{CompactList}\small\item\em Byte swap single short. \item\end{CompactList}\item 
+\#define \bf{swap\_\-ul}(ul)~(((ul\&0x000000FF)$<$$<$24)$|$((ul\&0x0000FF00)$<$$<$8)$|$((ul\&0x00FF0000)$>$$>$8)$|$((ul\&0x\-FF000000)$>$$>$24))
+\begin{CompactList}\small\item\em Byte swap single long. \item\end{CompactList}\item 
+\#define \bf{hton\_\-us}(us)
+\item 
+\#define \bf{hton\_\-ul}(ul)
+\item 
+\#define \bf{min}(a, b)~((a)$<$(b)?(a):(b))
+\item 
+\#define \bf{max}(a, b)~((a)$>$(b)?(a):(b))
+\end{CompactItemize}
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+void \bf{hton\_\-us} (\bf{iu16} $\ast$us, \bf{iu8} num)
+\begin{CompactList}\small\item\em Byte swap multiple shorts. \item\end{CompactList}\item 
+void \bf{hton\_\-ul} (\bf{iu32} $\ast$ul, \bf{iu8} num)
+\begin{CompactList}\small\item\em Byte swap multiple longs. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+Tool declarations. 
+
+\begin{Desc}
+\item[Id]\doxyref{tools.h}{p.}{tools_8h},v 1.11 2002/12/22 15:42:56 m Exp \end{Desc}
+
+
+\subsubsection{Define Documentation}
+\index{tools.h@{tools.h}!hton_ul@{hton\_\-ul}}
+\index{hton_ul@{hton\_\-ul}!tools.h@{tools.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define hton\_\-ul(ul)}\hfill\label{tools_8h_b1151e3852ea534254b55edcc7c2492a}
+
+
+\index{tools.h@{tools.h}!hton_us@{hton\_\-us}}
+\index{hton_us@{hton\_\-us}!tools.h@{tools.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define hton\_\-us(us)}\hfill\label{tools_8h_3ac6738fd6414caf56af16d5aa3cc27e}
+
+
+\index{tools.h@{tools.h}!max@{max}}
+\index{max@{max}!tools.h@{tools.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define max(a, b)~((a)$>$(b)?(a):(b))}\hfill\label{tools_8h_ffe776513b24d84b39af8ab0930fef7f}
+
+
+Return maximum value \index{tools.h@{tools.h}!min@{min}}
+\index{min@{min}!tools.h@{tools.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define min(a, b)~((a)$<$(b)?(a):(b))}\hfill\label{tools_8h_c6afabdc09a49a433ee19d8a9486056d}
+
+
+Return minimum value \index{tools.h@{tools.h}!swap_ul@{swap\_\-ul}}
+\index{swap_ul@{swap\_\-ul}!tools.h@{tools.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define swap\_\-ul(ul)~(((ul\&0x000000FF)$<$$<$24)$|$((ul\&0x0000FF00)$<$$<$8)$|$((ul\&0x00FF0000)$>$$>$8)$|$((ul\&0x\-FF000000)$>$$>$24))}\hfill\label{tools_8h_7d4ae55324da2e40ff7ddd19799c09f6}
+
+
+Byte swap single long. 
+
+\index{tools.h@{tools.h}!swap_us@{swap\_\-us}}
+\index{swap_us@{swap\_\-us}!tools.h@{tools.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define swap\_\-us(us)~(((us\&0x00FF)$<$$<$8)$|$((us\&0x\-FF00)$>$$>$8))}\hfill\label{tools_8h_0e93a14e5e2e0f46131a360584d4a835}
+
+
+Byte swap single short. 
+
+
+
+\subsubsection{Function Documentation}
+\index{tools.h@{tools.h}!hton_ul@{hton\_\-ul}}
+\index{hton_ul@{hton\_\-ul}!tools.h@{tools.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void hton\_\-ul (\bf{iu32} $\ast$ {\em ul}, \bf{iu8} {\em num})}\hfill\label{tools_8h_b737d39a74d409dfdc617f659b30d115}
+
+
+Byte swap multiple longs. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ul}]Pointer to an array of longs. \item[{\em num}]Number of longs to process. \end{description}
+\end{Desc}
+\index{tools.h@{tools.h}!hton_us@{hton\_\-us}}
+\index{hton_us@{hton\_\-us}!tools.h@{tools.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void hton\_\-us (\bf{iu16} $\ast$ {\em us}, \bf{iu8} {\em num})}\hfill\label{tools_8h_1a709f10a7e0ccbbae163a7144629806}
+
+
+Byte swap multiple shorts. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em us}]Pointer to an array of shorts. \item[{\em num}]Number of shorts to process. \end{description}
+\end{Desc}

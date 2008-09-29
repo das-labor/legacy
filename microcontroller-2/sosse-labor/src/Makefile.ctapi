@@ -1,0 +1,51 @@
+CC=gcc
+AS=as
+OBJCOPY=objcopy
+
+CFLAGS=-Wall -I. -O6 -g -fpic -DCTAPI
+
+SRC=\
+	auth.c \
+	ctapi.c \
+	hal-emu.c \
+	commands.c \
+	sw.c \
+	fs.c \
+	fstream.c \
+	log.c \
+	main.c \
+	newdes-sk.c \
+	skipjack.c \
+	t0.c \
+	tea.c \
+	tools.c \
+	transaction.c
+
+OBJ=\
+	auth.o \
+	ctapi.o \
+	hal-emu.o \
+	commands.o \
+	sw.o \
+	fs.o \
+	fstream.o \
+	log.o \
+	main.o \
+	newdes-sk.o \
+	skipjack.o \
+	t0.o \
+	tea.o \
+	tools.o \
+	transaction.o
+
+all: ctapi
+
+ctapi: $(OBJ)
+	ld -g -x --shared -o libctapi.so $(OBJ)
+
+clean: clean-ctapi
+	rm -rf core
+
+clean-ctapi:
+	rm -rf $(OBJ) libctapi.so
+

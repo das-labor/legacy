@@ -1,0 +1,133 @@
+\subsection{log.h File Reference}
+\label{log_8h}\index{log.h@{log.h}}
+Logging declarations. 
+
+{\tt \#include $<$types.h$>$}\par
+\subsubsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \bf{LOG\_\-START}~0x1800
+\item 
+\#define \bf{LOG\_\-TAG\_\-JOKER}~0x\-FE
+\item 
+\#define \bf{LOG\_\-TAG\_\-EEWRITE\_\-DST}~0x01
+\item 
+\#define \bf{LOG\_\-TAG\_\-EEWRITE\_\-SRC}~0x02
+\item 
+\#define \bf{LOG\_\-TAG\_\-EEWRITE\_\-LEN}~0x03
+\item 
+\#define \bf{LOG\_\-TAG\_\-EEREAD\_\-DST}~0x04
+\item 
+\#define \bf{LOG\_\-TAG\_\-EEREAD\_\-SRC}~0x05
+\item 
+\#define \bf{LOG\_\-TAG\_\-EEREAD\_\-LEN}~0x06
+\item 
+\#define \bf{LOG\_\-TAG\_\-FSCREATE}~0x07
+\item 
+\#define \bf{LOG\_\-TAG\_\-RANDOM}~0x08
+\item 
+\#define \bf{log\_\-init}()
+\begin{CompactList}\small\item\em Initialize global logging variables. \item\end{CompactList}\item 
+\#define \bf{log\_\-add}(tag, data, len)
+\begin{CompactList}\small\item\em Log data. \item\end{CompactList}\end{CompactItemize}
+\subsubsection*{Variables}
+\begin{CompactItemize}
+\item 
+\bf{bool} \bf{log\_\-enable}
+\begin{CompactList}\small\item\em Enables/disables logging. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+Logging declarations. 
+
+This logging facility can be used to assist debugging. It appends TLV objects (Tag, Length, Value) to logging area starting at LOG\_\-START+2. At LOG\_\-START the address of the end of data is maintained. This is in native byte order. (Native of architecture or compiler.)
+
+Tags can be used to specify what data has been logged. This is meant to assist testing, so be free to change the tags as needed.
+
+\begin{Desc}
+\item[Id]\doxyref{log.h}{p.}{log_8h},v 1.5 2002/12/22 15:42:55 m Exp \end{Desc}
+
+
+\subsubsection{Define Documentation}
+\index{log.h@{log.h}!log_add@{log\_\-add}}
+\index{log_add@{log\_\-add}!log.h@{log.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define log\_\-add(tag, data, len)}\hfill\label{log_8h_c0b4895ad0e0b6238ffebadc3a1f9bb1}
+
+
+Log data. 
+
+Tag, length and then the data itself is append to the log data. It can be called even, when CONF\_\-WITH\_\-LOGGING is not 1, because it is then neutralized with a define.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em tag}]Tag descriping the data. \item[{\em data}]Pointer to the data. \item[{\em len}]Length of the data in bytes. \end{description}
+\end{Desc}
+\index{log.h@{log.h}!log_init@{log\_\-init}}
+\index{log_init@{log\_\-init}!log.h@{log.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define log\_\-init()}\hfill\label{log_8h_cce8a93734a55d65a8a102a47c787b9d}
+
+
+Initialize global logging variables. 
+
+This function must be called before using log\_\-add. It can be called even, when CONF\_\-WITH\_\-LOGGING is not 1, because it is then neutralized with a define. \index{log.h@{log.h}!LOG_START@{LOG\_\-START}}
+\index{LOG_START@{LOG\_\-START}!log.h@{log.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define LOG\_\-START~0x1800}\hfill\label{log_8h_4c5da377aedf46d6e87f65e8cbcef12a}
+
+
+\index{log.h@{log.h}!LOG_TAG_EEREAD_DST@{LOG\_\-TAG\_\-EEREAD\_\-DST}}
+\index{LOG_TAG_EEREAD_DST@{LOG\_\-TAG\_\-EEREAD\_\-DST}!log.h@{log.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define LOG\_\-TAG\_\-EEREAD\_\-DST~0x04}\hfill\label{log_8h_abd96314c796c93f6b24d664687e6e62}
+
+
+\index{log.h@{log.h}!LOG_TAG_EEREAD_LEN@{LOG\_\-TAG\_\-EEREAD\_\-LEN}}
+\index{LOG_TAG_EEREAD_LEN@{LOG\_\-TAG\_\-EEREAD\_\-LEN}!log.h@{log.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define LOG\_\-TAG\_\-EEREAD\_\-LEN~0x06}\hfill\label{log_8h_a8a4f45515905b2bafd3340a3543b602}
+
+
+\index{log.h@{log.h}!LOG_TAG_EEREAD_SRC@{LOG\_\-TAG\_\-EEREAD\_\-SRC}}
+\index{LOG_TAG_EEREAD_SRC@{LOG\_\-TAG\_\-EEREAD\_\-SRC}!log.h@{log.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define LOG\_\-TAG\_\-EEREAD\_\-SRC~0x05}\hfill\label{log_8h_2f6f39692e5e67548d45540794ef0ee4}
+
+
+\index{log.h@{log.h}!LOG_TAG_EEWRITE_DST@{LOG\_\-TAG\_\-EEWRITE\_\-DST}}
+\index{LOG_TAG_EEWRITE_DST@{LOG\_\-TAG\_\-EEWRITE\_\-DST}!log.h@{log.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define LOG\_\-TAG\_\-EEWRITE\_\-DST~0x01}\hfill\label{log_8h_f841ab6d6fafadd887efd2d0851e80fd}
+
+
+\index{log.h@{log.h}!LOG_TAG_EEWRITE_LEN@{LOG\_\-TAG\_\-EEWRITE\_\-LEN}}
+\index{LOG_TAG_EEWRITE_LEN@{LOG\_\-TAG\_\-EEWRITE\_\-LEN}!log.h@{log.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define LOG\_\-TAG\_\-EEWRITE\_\-LEN~0x03}\hfill\label{log_8h_482e4d9211895d73b550926ef29abf04}
+
+
+\index{log.h@{log.h}!LOG_TAG_EEWRITE_SRC@{LOG\_\-TAG\_\-EEWRITE\_\-SRC}}
+\index{LOG_TAG_EEWRITE_SRC@{LOG\_\-TAG\_\-EEWRITE\_\-SRC}!log.h@{log.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define LOG\_\-TAG\_\-EEWRITE\_\-SRC~0x02}\hfill\label{log_8h_18932d2faf4c8f336bbcca397272ba9a}
+
+
+\index{log.h@{log.h}!LOG_TAG_FSCREATE@{LOG\_\-TAG\_\-FSCREATE}}
+\index{LOG_TAG_FSCREATE@{LOG\_\-TAG\_\-FSCREATE}!log.h@{log.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define LOG\_\-TAG\_\-FSCREATE~0x07}\hfill\label{log_8h_454df4328215d8e40fd45e226d8f1520}
+
+
+\index{log.h@{log.h}!LOG_TAG_JOKER@{LOG\_\-TAG\_\-JOKER}}
+\index{LOG_TAG_JOKER@{LOG\_\-TAG\_\-JOKER}!log.h@{log.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define LOG\_\-TAG\_\-JOKER~0x\-FE}\hfill\label{log_8h_ff886d705f611cb105c5098ebb61f778}
+
+
+\index{log.h@{log.h}!LOG_TAG_RANDOM@{LOG\_\-TAG\_\-RANDOM}}
+\index{LOG_TAG_RANDOM@{LOG\_\-TAG\_\-RANDOM}!log.h@{log.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define LOG\_\-TAG\_\-RANDOM~0x08}\hfill\label{log_8h_b4f8b83dd9e063992c527ddc34b22bfc}
+
+
+
+
+\subsubsection{Variable Documentation}
+\index{log.h@{log.h}!log_enable@{log\_\-enable}}
+\index{log_enable@{log\_\-enable}!log.h@{log.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} \bf{log\_\-enable}}\hfill\label{log_8h_47528543f9fdf3d4eda64b9e1fddcb7e}
+
+
+Enables/disables logging. 
+
+This must be set the TRUE, before any log\_\-add has an effect. It can be also changed in between to switch off and on logging to reduce unwanted data in the logging area. 

@@ -1,0 +1,68 @@
+\subsection{fstest.c File Reference}
+\label{fstest_8c}\index{fstest.c@{fstest.c}}
+Test program for file system functions. 
+
+{\tt \#include $<$stdio.h$>$}\par
+{\tt \#include $<$auth.h$>$}\par
+{\tt \#include $<$fs.h$>$}\par
+{\tt \#include $<$fstream.h$>$}\par
+{\tt \#include $<$hal.h$>$}\par
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \bf{main} (int argc, char $\ast$argv[$\,$])
+\end{CompactItemize}
+\subsubsection*{Variables}
+\begin{CompactItemize}
+\item 
+\bf{iu16} \bf{fsstart}
+\begin{CompactList}\small\item\em Start address of the MF file header. \item\end{CompactList}\item 
+\bf{iu16} \bf{fssize}
+\begin{CompactList}\small\item\em Size of the content area of the MF. \item\end{CompactList}\item 
+\bf{iu8} \bf{authstate}
+\begin{CompactList}\small\item\em Variable indicating current authentication state. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+Test program for file system functions. 
+
+\begin{Desc}
+\item[Id]\doxyref{fstest.c}{p.}{fstest_8c},v 1.11 2002/12/22 15:42:55 m Exp \end{Desc}
+
+
+\subsubsection{Function Documentation}
+\index{fstest.c@{fstest.c}!main@{main}}
+\index{main@{main}!fstest.c@{fstest.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}int main (int {\em argc}, char $\ast$ {\em argv}[$\,$])}\hfill\label{fstest_8c_0ddf1224851353fc92bfbff6f499fa97}
+
+
+
+
+\subsubsection{Variable Documentation}
+\index{fstest.c@{fstest.c}!authstate@{authstate}}
+\index{authstate@{authstate}!fstest.c@{fstest.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu8} \bf{authstate}}\hfill\label{fstest_8c_c023311503326e98022248d8e937b837}
+
+
+Variable indicating current authentication state. 
+
+Single bit flags indicate, which authorization process has been successful. The flag is cleared, at the reset of the card and after unsuccessful authorization processes.
+
+Valid flags are:
+
+\begin{itemize}
+\item AUTH\_\-FLAG\_\-PIN\item AUTH\_\-FLAG\_\-KEY \end{itemize}
+\index{fstest.c@{fstest.c}!fssize@{fssize}}
+\index{fssize@{fssize}!fstest.c@{fstest.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu16} \bf{fssize}}\hfill\label{fstest_8c_70ebcad91d36b8f6fc7f2f3ba5d292a6}
+
+
+Size of the content area of the MF. 
+
+\index{fstest.c@{fstest.c}!fsstart@{fsstart}}
+\index{fsstart@{fsstart}!fstest.c@{fstest.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu16} \bf{fsstart}}\hfill\label{fstest_8c_3120fb23f27b2aed57412777711a2ce6}
+
+
+Start address of the MF file header. 
+

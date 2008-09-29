@@ -1,0 +1,107 @@
+\subsection{transaction.h File Reference}
+\label{transaction_8h}\index{transaction.h@{transaction.h}}
+Transaction declarations. 
+
+{\tt \#include $<$types.h$>$}\par
+\subsubsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \bf{TRANSAC\_\-STATE\_\-CLEAN}~0x00
+\item 
+\#define \bf{TRANSAC\_\-STATE\_\-DATA}~0x\-A5
+\begin{CompactList}\small\item\em Transaction buffer contains data. \item\end{CompactList}\end{CompactItemize}
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+\bf{bool} \bf{ta\_\-setdata} (\bf{iu8} $\ast$data, \bf{iu8} len, \bf{iu16} dst)
+\begin{CompactList}\small\item\em Begins a transaction and sets the data. \item\end{CompactList}\item 
+\bf{bool} \bf{ta\_\-commit} (void)
+\begin{CompactList}\small\item\em Commits the data in the transaction buffer. \item\end{CompactList}\item 
+\bf{bool} \bf{ta\_\-rollback} (void)
+\begin{CompactList}\small\item\em Do a rollback and discard the data in the transaction buffer. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+Transaction declarations. 
+
+\begin{Desc}
+\item[Note:]Is the current transaction implementation secure against tearing? IMO it should be nearly be. Let's consider following scenarios:\end{Desc}
+1) Card is removed while writing the data for the transaction: This is no problem, because the state is still TRANSAC\_\-STATE\_\-CLEAN.
+
+2) Card is removed while writing the status byte: This is most likely no problem. If the state is anything other than TRANSAC\_\-STATE\_\-DATA, it is regarded as clean, which it is. The only problem is, when it accidently is TRANSAC\_\-STATE\_\-DATA, which is IMO very unlikely, because the erased state is totally different. But on the other side, if the card tearing occured shortly after the state update, the state really is TRANSAC\_\-STATE\_\-DATA.
+
+3) Card is removed while doing a commit and writing the data therein: This is no problem, because after the next reset the commit is tried again.
+
+4) Card is removed after a commit, while reseting the status byte: This is no problem, because most likely the new state is interpreted as TRANSAC\_\-STATE\_\-CLEAN, which it is, and if the new state is really TRANSAC\_\-STATE\_\-DATA, it is just a second time written.
+
+5) Card is removed while writing status byte in a rollback: This might be a problem, because the rollback might file, when the unlikely event occures, that the state is TRANSAC\_\-STATE\_\-DATA. But this can also happen, if the card is removed before the rollback, because the state is there already TRANSAC\_\-STATE\_\-DATA.
+
+\begin{Desc}
+\item[Id]\doxyref{transaction.h}{p.}{transaction_8h},v 1.9 2002/12/22 15:42:56 m Exp \end{Desc}
+
+
+\subsubsection{Define Documentation}
+\index{transaction.h@{transaction.h}!TRANSAC_STATE_CLEAN@{TRANSAC\_\-STATE\_\-CLEAN}}
+\index{TRANSAC_STATE_CLEAN@{TRANSAC\_\-STATE\_\-CLEAN}!transaction.h@{transaction.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define TRANSAC\_\-STATE\_\-CLEAN~0x00}\hfill\label{transaction_8h_ca24633392a9ecbc750ce1202abd45f0}
+
+
+Transaction buffer is clean. (Also all other values not being 0x\-A5 are interpreted as clean. \index{transaction.h@{transaction.h}!TRANSAC_STATE_DATA@{TRANSAC\_\-STATE\_\-DATA}}
+\index{TRANSAC_STATE_DATA@{TRANSAC\_\-STATE\_\-DATA}!transaction.h@{transaction.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define TRANSAC\_\-STATE\_\-DATA~0x\-A5}\hfill\label{transaction_8h_03d3caf4f4e69fb09b746c5d1053357e}
+
+
+Transaction buffer contains data. 
+
+
+
+\subsubsection{Function Documentation}
+\index{transaction.h@{transaction.h}!ta_commit@{ta\_\-commit}}
+\index{ta_commit@{ta\_\-commit}!transaction.h@{transaction.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} ta\_\-commit (void)}\hfill\label{transaction_8h_cacd724418635980cbe9ff7caab01e9c}
+
+
+Commits the data in the transaction buffer. 
+
+Data is written to the destination specified in \doxyref{ta\_\-setdata()}{p.}{transaction_8c_e0ead4e9d2dc0e305973f13324a356aa}. The state is then set to clean.
+
+This function must be called after each reset to commit pending transactions.
+
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{transaction.h@{transaction.h}!ta_rollback@{ta\_\-rollback}}
+\index{ta_rollback@{ta\_\-rollback}!transaction.h@{transaction.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} ta\_\-rollback (void)}\hfill\label{transaction_8h_a7051804d3c2320a9510087b4bf945c2}
+
+
+Do a rollback and discard the data in the transaction buffer. 
+
+The state is set to clean.
+
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{transaction.h@{transaction.h}!ta_setdata@{ta\_\-setdata}}
+\index{ta_setdata@{ta\_\-setdata}!transaction.h@{transaction.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} ta\_\-setdata (\bf{iu8} $\ast$ {\em data}, \bf{iu8} {\em len}, \bf{iu16} {\em dst})}\hfill\label{transaction_8h_e0ead4e9d2dc0e305973f13324a356aa}
+
+
+Begins a transaction and sets the data. 
+
+{\em data/len\/} bytes are written to the transaction buffer. The destination address is also stored there. Then the state is set to TRANSAC\_\-STATE\_\-DATA.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]Pointer to the data to write into the transaction buffer. \item[{\em len}]Length of the data. (Max.: TRANSAC\_\-DATA\_\-LEN) \item[{\em dst}]Destination of the data in EEPROM.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}

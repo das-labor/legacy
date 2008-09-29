@@ -1,0 +1,358 @@
+\subsection{auth.h File Reference}
+\label{auth_8h}\index{auth.h@{auth.h}}
+Authentication declarations. 
+
+{\tt \#include $<$types.h$>$}\par
+\subsubsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \bf{AUTH\_\-FLAG\_\-PIN}~0x01
+\begin{CompactList}\small\item\em Flag for authstate signalling a successful PIN verification. \item\end{CompactList}\item 
+\#define \bf{AUTH\_\-FLAG\_\-KEY}~0x02
+\begin{CompactList}\small\item\em Flag for authstate signalling a successful external authentication or key verification. \item\end{CompactList}\item 
+\#define \bf{AUTH\_\-AC\_\-ALW}~0x0
+\begin{CompactList}\small\item\em Access Condition: Always. \item\end{CompactList}\item 
+\#define \bf{AUTH\_\-AC\_\-PIN}~0x1
+\begin{CompactList}\small\item\em Access Condition: PIN. \item\end{CompactList}\item 
+\#define \bf{AUTH\_\-AC\_\-ADM}~0x2
+\begin{CompactList}\small\item\em Access Condition: Key. \item\end{CompactList}\item 
+\#define \bf{AUTH\_\-AC\_\-POA}~0x3
+\begin{CompactList}\small\item\em Access Condition: PIN or Key. \item\end{CompactList}\item 
+\#define \bf{AUTH\_\-AC\_\-PAA}~0x4
+\begin{CompactList}\small\item\em Access Condition: PIN and Key. \item\end{CompactList}\item 
+\#define \bf{AUTH\_\-AC\_\-NEV}~0x\-F
+\begin{CompactList}\small\item\em Access Condition: Never. \item\end{CompactList}\item 
+\#define \bf{PIN\_\-MAX\_\-RETRIES}~3
+\begin{CompactList}\small\item\em Default max. retries for PIN. \item\end{CompactList}\item 
+\#define \bf{PUK\_\-MAX\_\-RETRIES}~10
+\begin{CompactList}\small\item\em Default max. retries for PUK. \item\end{CompactList}\item 
+\#define \bf{PIN\_\-TYPE\_\-PIN}~0
+\begin{CompactList}\small\item\em PIN type: PIN. \item\end{CompactList}\item 
+\#define \bf{PIN\_\-TYPE\_\-PUK}~1
+\begin{CompactList}\small\item\em PIN type: PUK. \item\end{CompactList}\item 
+\#define \bf{PIN\_\-TYPE\_\-EXT}~2
+\begin{CompactList}\small\item\em PIN type: Key for external authentication. \item\end{CompactList}\item 
+\#define \bf{PIN\_\-TYPE\_\-INT}~3
+\begin{CompactList}\small\item\em PIN type: Key for internal authentication. \item\end{CompactList}\item 
+\#define \bf{KEY\_\-MAX\_\-RETRIES}~10
+\begin{CompactList}\small\item\em Default max. retries for keys. \item\end{CompactList}\item 
+\#define \bf{AUTH\_\-FID\_\-EXTAUTH}~0x\-FF00
+\begin{CompactList}\small\item\em FID for file with external authentication key. \item\end{CompactList}\item 
+\#define \bf{AUTH\_\-FID\_\-INTAUTH}~0x\-FF01
+\begin{CompactList}\small\item\em FID for file with internal authentication key. \item\end{CompactList}\item 
+\#define \bf{AUTH\_\-FID\_\-PINPUK}~0x\-FF02
+\begin{CompactList}\small\item\em FID for file with PIN and PUK. \item\end{CompactList}\end{CompactItemize}
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+\bf{bool} \bf{auth\_\-init} (void)
+\begin{CompactList}\small\item\em Initialize authentication variables. \item\end{CompactList}\item 
+\bf{bool} \bf{auth\_\-check\-Ac} (\bf{iu8} ac)
+\begin{CompactList}\small\item\em Check fullfillment of access condition. \item\end{CompactList}\item 
+\bf{bool} \bf{auth\_\-get\-Check\-Pin\-Len} (\bf{iu8} pintype, \bf{iu8} pinlen, \bf{iu16} $\ast$addr, \bf{iu8} $\ast$len, \bf{iu16} $\ast$rcaddr, \bf{iu8} $\ast$maxret)
+\begin{CompactList}\small\item\em Verifies length of PIN and returns addresses of PIN in EEPROM. \item\end{CompactList}\item 
+\bf{bool} \bf{auth\_\-set\-Pin} (\bf{iu8} pintype, \bf{iu8} $\ast$pin, \bf{iu8} pinlen)
+\begin{CompactList}\small\item\em Write PIN, PUK, External Authentication key or Internal Authentication key. \item\end{CompactList}\item 
+\bf{bool} \bf{auth\_\-verify\-Pin} (\bf{iu8} pintype, \bf{iu8} $\ast$pin, \bf{iu8} pinlen)
+\begin{CompactList}\small\item\em Verifies PIN, PUK or External Authentication key and sets flags in authstate. \item\end{CompactList}\item 
+\bf{bool} \bf{auth\_\-get\-Challenge} (\bf{iu8} $\ast$dst, \bf{iu8} rndlen)
+\begin{CompactList}\small\item\em Returns 8 byte challenge for External Authentication. \item\end{CompactList}\item 
+\bf{bool} \bf{auth\_\-create\-Verify\-Cryptogram} (\bf{iu8} $\ast$cry, \bf{iu8} crylen, \bf{bool} create, \bf{bool} enc)
+\begin{CompactList}\small\item\em Encrypt or decrypt challenge or verify cryptogram. \item\end{CompactList}\end{CompactItemize}
+\subsubsection*{Variables}
+\begin{CompactItemize}
+\item 
+\bf{iu8} \bf{challvalidity}
+\begin{CompactList}\small\item\em Validity of challenge. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+Authentication declarations. 
+
+Here are the declarations and definitions for the authentication functions. The authentication types supported are:
+
+\begin{itemize}
+\item PIN/PUK \item External Authentication \item Internal Authentication \end{itemize}
+
+
+\begin{Desc}
+\item[\bf{Todo}]Here are certainly some optimizations possible to reduce code size.\end{Desc}
+\begin{Desc}
+\item[Id]\doxyref{auth.h}{p.}{auth_8h},v 1.11 2002/12/22 15:42:55 m Exp \end{Desc}
+
+
+\subsubsection{Define Documentation}
+\index{auth.h@{auth.h}!AUTH_AC_ADM@{AUTH\_\-AC\_\-ADM}}
+\index{AUTH_AC_ADM@{AUTH\_\-AC\_\-ADM}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define AUTH\_\-AC\_\-ADM~0x2}\hfill\label{auth_8h_db433f11e23690ebc205ad9b03da9a74}
+
+
+Access Condition: Key. 
+
+\index{auth.h@{auth.h}!AUTH_AC_ALW@{AUTH\_\-AC\_\-ALW}}
+\index{AUTH_AC_ALW@{AUTH\_\-AC\_\-ALW}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define AUTH\_\-AC\_\-ALW~0x0}\hfill\label{auth_8h_06f918f6ed2d5e24c682eb3ae194bca4}
+
+
+Access Condition: Always. 
+
+\index{auth.h@{auth.h}!AUTH_AC_NEV@{AUTH\_\-AC\_\-NEV}}
+\index{AUTH_AC_NEV@{AUTH\_\-AC\_\-NEV}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define AUTH\_\-AC\_\-NEV~0x\-F}\hfill\label{auth_8h_af38cf2754820c9bbcbc5957fe7e509e}
+
+
+Access Condition: Never. 
+
+\index{auth.h@{auth.h}!AUTH_AC_PAA@{AUTH\_\-AC\_\-PAA}}
+\index{AUTH_AC_PAA@{AUTH\_\-AC\_\-PAA}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define AUTH\_\-AC\_\-PAA~0x4}\hfill\label{auth_8h_f7bd31be6d42c810ad1468f5442b5de5}
+
+
+Access Condition: PIN and Key. 
+
+\index{auth.h@{auth.h}!AUTH_AC_PIN@{AUTH\_\-AC\_\-PIN}}
+\index{AUTH_AC_PIN@{AUTH\_\-AC\_\-PIN}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define AUTH\_\-AC\_\-PIN~0x1}\hfill\label{auth_8h_fc10b497322dc030b5ac5071323404e9}
+
+
+Access Condition: PIN. 
+
+\index{auth.h@{auth.h}!AUTH_AC_POA@{AUTH\_\-AC\_\-POA}}
+\index{AUTH_AC_POA@{AUTH\_\-AC\_\-POA}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define AUTH\_\-AC\_\-POA~0x3}\hfill\label{auth_8h_3272751b0b790ce197a9c07e3b5d2d2f}
+
+
+Access Condition: PIN or Key. 
+
+\index{auth.h@{auth.h}!AUTH_FID_EXTAUTH@{AUTH\_\-FID\_\-EXTAUTH}}
+\index{AUTH_FID_EXTAUTH@{AUTH\_\-FID\_\-EXTAUTH}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define AUTH\_\-FID\_\-EXTAUTH~0x\-FF00}\hfill\label{auth_8h_541eaea66766d1a05996828684dcb8db}
+
+
+FID for file with external authentication key. 
+
+It is only searched for the file in the MF and not in any DF. \index{auth.h@{auth.h}!AUTH_FID_INTAUTH@{AUTH\_\-FID\_\-INTAUTH}}
+\index{AUTH_FID_INTAUTH@{AUTH\_\-FID\_\-INTAUTH}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define AUTH\_\-FID\_\-INTAUTH~0x\-FF01}\hfill\label{auth_8h_3a7070ba17e95804b8d5b2ba35b3dfd3}
+
+
+FID for file with internal authentication key. 
+
+It is only searched for the file in the MF and not in any DF. \index{auth.h@{auth.h}!AUTH_FID_PINPUK@{AUTH\_\-FID\_\-PINPUK}}
+\index{AUTH_FID_PINPUK@{AUTH\_\-FID\_\-PINPUK}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define AUTH\_\-FID\_\-PINPUK~0x\-FF02}\hfill\label{auth_8h_e7b41b442d484fa239a006c8b9a5f93c}
+
+
+FID for file with PIN and PUK. 
+
+It is only searched for the file in the MF and not in any DF. \index{auth.h@{auth.h}!AUTH_FLAG_KEY@{AUTH\_\-FLAG\_\-KEY}}
+\index{AUTH_FLAG_KEY@{AUTH\_\-FLAG\_\-KEY}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define AUTH\_\-FLAG\_\-KEY~0x02}\hfill\label{auth_8h_1defcbb7e6fa25bac6924c00f4614d35}
+
+
+Flag for authstate signalling a successful external authentication or key verification. 
+
+\index{auth.h@{auth.h}!AUTH_FLAG_PIN@{AUTH\_\-FLAG\_\-PIN}}
+\index{AUTH_FLAG_PIN@{AUTH\_\-FLAG\_\-PIN}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define AUTH\_\-FLAG\_\-PIN~0x01}\hfill\label{auth_8h_eaa1f3d53530fd751bea7f48a6ee7cc6}
+
+
+Flag for authstate signalling a successful PIN verification. 
+
+\index{auth.h@{auth.h}!KEY_MAX_RETRIES@{KEY\_\-MAX\_\-RETRIES}}
+\index{KEY_MAX_RETRIES@{KEY\_\-MAX\_\-RETRIES}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define KEY\_\-MAX\_\-RETRIES~10}\hfill\label{auth_8h_e20960801ae4dbb25ee1ee1144bf254f}
+
+
+Default max. retries for keys. 
+
+\index{auth.h@{auth.h}!PIN_MAX_RETRIES@{PIN\_\-MAX\_\-RETRIES}}
+\index{PIN_MAX_RETRIES@{PIN\_\-MAX\_\-RETRIES}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define PIN\_\-MAX\_\-RETRIES~3}\hfill\label{auth_8h_9d8b6ae7a1c5ef072de2ad65e09d83d0}
+
+
+Default max. retries for PIN. 
+
+\index{auth.h@{auth.h}!PIN_TYPE_EXT@{PIN\_\-TYPE\_\-EXT}}
+\index{PIN_TYPE_EXT@{PIN\_\-TYPE\_\-EXT}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define PIN\_\-TYPE\_\-EXT~2}\hfill\label{auth_8h_6a0731f5c1b41bc071daa21d4c8fa6f7}
+
+
+PIN type: Key for external authentication. 
+
+\index{auth.h@{auth.h}!PIN_TYPE_INT@{PIN\_\-TYPE\_\-INT}}
+\index{PIN_TYPE_INT@{PIN\_\-TYPE\_\-INT}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define PIN\_\-TYPE\_\-INT~3}\hfill\label{auth_8h_6bd15adfa11f15032db1be399133900d}
+
+
+PIN type: Key for internal authentication. 
+
+\index{auth.h@{auth.h}!PIN_TYPE_PIN@{PIN\_\-TYPE\_\-PIN}}
+\index{PIN_TYPE_PIN@{PIN\_\-TYPE\_\-PIN}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define PIN\_\-TYPE\_\-PIN~0}\hfill\label{auth_8h_aac17c4b13fe3e78f5f1a24e91028c77}
+
+
+PIN type: PIN. 
+
+\index{auth.h@{auth.h}!PIN_TYPE_PUK@{PIN\_\-TYPE\_\-PUK}}
+\index{PIN_TYPE_PUK@{PIN\_\-TYPE\_\-PUK}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define PIN\_\-TYPE\_\-PUK~1}\hfill\label{auth_8h_793126c282da300f00f6a8ce2186fc53}
+
+
+PIN type: PUK. 
+
+\index{auth.h@{auth.h}!PUK_MAX_RETRIES@{PUK\_\-MAX\_\-RETRIES}}
+\index{PUK_MAX_RETRIES@{PUK\_\-MAX\_\-RETRIES}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define PUK\_\-MAX\_\-RETRIES~10}\hfill\label{auth_8h_c9ce57082eb69177a95b5f63576cb2a1}
+
+
+Default max. retries for PUK. 
+
+
+
+\subsubsection{Function Documentation}
+\index{auth.h@{auth.h}!auth_checkAc@{auth\_\-checkAc}}
+\index{auth_checkAc@{auth\_\-checkAc}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} auth\_\-check\-Ac (\bf{iu8} {\em ac})}\hfill\label{auth_8h_c9b9b2622243783169e7ae66af6f0ae0}
+
+
+Check fullfillment of access condition. 
+
+This function checks, if the current setting of authstate fullfills the condition specified with {\em ac\/}.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ac}]A nibble specifying an access condition.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{auth.h@{auth.h}!auth_createVerifyCryptogram@{auth\_\-createVerifyCryptogram}}
+\index{auth_createVerifyCryptogram@{auth\_\-createVerifyCryptogram}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} auth\_\-create\-Verify\-Cryptogram (\bf{iu8} $\ast$ {\em cry}, \bf{iu8} {\em crylen}, \bf{bool} {\em create}, \bf{bool} {\em enc})}\hfill\label{auth_8h_317f35613a5f25da955d5ec69a8671c7}
+
+
+Encrypt or decrypt challenge or verify cryptogram. 
+
+To include the decryption process CONF\_\-WITH\_\-DECRYPT must be set to 1.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em cry}]Pointer to byte array, which supplies challenge and which is used to return the encrypted or decrypted challenge or a cryptogram. \item[{\em crylen}]Length of challenge or cryptogram. \item[{\em create}]If set to TRUE, a challenge is processed, else a cryptogram is verified. \item[{\em enc}]If CONF\_\-WITH\_\-DECRYPT is not set to 1, this has no effect. Otherwise, if TRUE encrypt the challenge, else decrypt it. If {\em create\/} is FALSE, this parameter is ignored.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{auth.h@{auth.h}!auth_getChallenge@{auth\_\-getChallenge}}
+\index{auth_getChallenge@{auth\_\-getChallenge}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} auth\_\-get\-Challenge (\bf{iu8} $\ast$ {\em dst}, \bf{iu8} {\em rndlen})}\hfill\label{auth_8h_946f4f893b73a4170f27f9c8a181e9bb}
+
+
+Returns 8 byte challenge for External Authentication. 
+
+The challenge is also written to the challenge array and challvalidity is set to 2.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em dst}]Destination byte array. \item[{\em rndlen}]Length of requested data. This must be 8.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{auth.h@{auth.h}!auth_getCheckPinLen@{auth\_\-getCheckPinLen}}
+\index{auth_getCheckPinLen@{auth\_\-getCheckPinLen}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} auth\_\-get\-Check\-Pin\-Len (\bf{iu8} {\em pintype}, \bf{iu8} {\em pinlen}, \bf{iu16} $\ast$ {\em addr}, \bf{iu8} $\ast$ {\em len}, \bf{iu16} $\ast$ {\em rcaddr}, \bf{iu8} $\ast$ {\em maxret})}\hfill\label{auth_8h_57b022e6fdb6bbdd9c479d3a6b9fb6c0}
+
+
+Verifies length of PIN and returns addresses of PIN in EEPROM. 
+
+This functions does depending on {\em pintype\/}:
+
+\begin{itemize}
+\item Check the length of the PIN or key. \item Return the address of the PIN or key in EEPROM. \item Return the length of the PIN or key in EEPROM. \item Return the address of the retry counter in EEPROM. \item Return the default max. value for the retry counter. \end{itemize}
+
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em pintype}]PIN type. One of the PIN\_\-TYPE defines. \item[{\em pinlen}]Length of supplied PIN or key. \item[{\em addr}]Returns the address of the PIN or key in EEPROM. \item[{\em len}]Returns the length ofthe PIN or key in EEPROM. \item[{\em rcaddr}]Returns the address of the retry counter for the PIN or key. \item[{\em maxret}]Returns the default max. value for the retry counter.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{auth.h@{auth.h}!auth_init@{auth\_\-init}}
+\index{auth_init@{auth\_\-init}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} auth\_\-init (void)}\hfill\label{auth_8h_98aca8fb3854ee1499ce6540ae5b893f}
+
+
+Initialize authentication variables. 
+
+This function resets authstate and challvalidity. It must be called after reset.
+
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{auth.h@{auth.h}!auth_setPin@{auth\_\-setPin}}
+\index{auth_setPin@{auth\_\-setPin}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} auth\_\-set\-Pin (\bf{iu8} {\em pintype}, \bf{iu8} $\ast$ {\em pin}, \bf{iu8} {\em pinlen})}\hfill\label{auth_8h_f345ee6ff731358a899c18c49bb43505}
+
+
+Write PIN, PUK, External Authentication key or Internal Authentication key. 
+
+The process is secured by transactions.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em pintype}]Type of the PIN/Key. May be one of the PIN\_\-TYPE\_\-$\ast$ defines. \item[{\em pin}]Pointer to byte array containing PIN/Key. \item[{\em pinlen}]Length of PIN/Key.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{auth.h@{auth.h}!auth_verifyPin@{auth\_\-verifyPin}}
+\index{auth_verifyPin@{auth\_\-verifyPin}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} auth\_\-verify\-Pin (\bf{iu8} {\em pintype}, \bf{iu8} $\ast$ {\em pin}, \bf{iu8} {\em pinlen})}\hfill\label{auth_8h_cc47f8e744b936363d64dc20e818ac09}
+
+
+Verifies PIN, PUK or External Authentication key and sets flags in authstate. 
+
+The update of the retry counter is secured by transactions.
+
+{\em Warning: Currently the retry counter is not handled in a secure way. For more information see e.g. Rankl/Effing.\/}
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em pintype}]Type of the PIN/Key. May be one of the PIN\_\-TYPE\_\-$\ast$ defines. \item[{\em pin}]Pointer to byte array containing PIN/Key. \item[{\em pinlen}]Length of PIN/Key.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+
+
+\subsubsection{Variable Documentation}
+\index{auth.h@{auth.h}!challvalidity@{challvalidity}}
+\index{challvalidity@{challvalidity}!auth.h@{auth.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu8} \bf{challvalidity}}\hfill\label{auth_8h_dd47c1a71dba136bb77c433df3b0914b}
+
+
+Validity of challenge. 
+
+The initial value if challvalidity is 2. This is decremented at the start of the command loop, so that it is 1 at the command following a Get Challenge. 

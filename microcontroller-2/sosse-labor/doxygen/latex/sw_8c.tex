@@ -1,0 +1,47 @@
+\subsection{sw.c File Reference}
+\label{sw_8c}\index{sw.c@{sw.c}}
+Errno functions. 
+
+{\tt \#include $<$config.h$>$}\par
+{\tt \#include $<$sw.h$>$}\par
+{\tt \#include $<$types.h$>$}\par
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+void \bf{sw\_\-set} (\bf{iu16} value)
+\begin{CompactList}\small\item\em Function for setting sw. \item\end{CompactList}\end{CompactItemize}
+\subsubsection*{Variables}
+\begin{CompactItemize}
+\item 
+\bf{iu16} \bf{sw}
+\begin{CompactList}\small\item\em Status word returned by functions. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+Errno functions. 
+
+\begin{Desc}
+\item[Id]\doxyref{sw.c}{p.}{sw_8c},v 1.1 2002/12/22 15:42:55 m Exp \end{Desc}
+
+
+\subsubsection{Function Documentation}
+\index{sw.c@{sw.c}!sw_set@{sw\_\-set}}
+\index{sw_set@{sw\_\-set}!sw.c@{sw.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void sw\_\-set (\bf{iu16} {\em value})}\hfill\label{sw_8c_06244878ad482424dc04d05cfdc81b7b}
+
+
+Function for setting sw. 
+
+This function reduces the code size on the AVR architecture. 
+
+\subsubsection{Variable Documentation}
+\index{sw.c@{sw.c}!sw@{sw}}
+\index{sw@{sw}!sw.c@{sw.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu16} \bf{sw}}\hfill\label{sw_8c_814d554b939d5196ce21afb6562e0a05}
+
+
+Status word returned by functions. 
+
+The state of sw is undefined, on return value TRUE.
+
+The content of this variable is returned at the end of the command interpreter loop. Functions falled from the command interpreter loop should set it to SW\_\-OK if they return without error. 

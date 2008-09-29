@@ -1,0 +1,319 @@
+\subsection{commands.h File Reference}
+\label{commands_8h}\index{commands.h@{commands.h}}
+Command declarations. 
+
+\subsubsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \bf{CLA\_\-PROP}~0x80
+\begin{CompactList}\small\item\em CLA byte: Proprietary. \item\end{CompactList}\item 
+\#define \bf{INS\_\-WRITE}~0x02
+\begin{CompactList}\small\item\em INS byte: Write EEPROM. \item\end{CompactList}\item 
+\#define \bf{INS\_\-READ}~0x04
+\begin{CompactList}\small\item\em INS byte: Read EEPROM. \item\end{CompactList}\item 
+\#define \bf{INS\_\-LED}~0x06
+\begin{CompactList}\small\item\em INS byte: LED Effects. \item\end{CompactList}\item 
+\#define \bf{INS\_\-CHANGE\_\-PIN}~0x24
+\begin{CompactList}\small\item\em INS byte: Change PIN. \item\end{CompactList}\item 
+\#define \bf{INS\_\-CREATE}~0x\-E0
+\begin{CompactList}\small\item\em INS byte: Create File. \item\end{CompactList}\item 
+\#define \bf{INS\_\-DELETE}~0x\-E4
+\begin{CompactList}\small\item\em INS byte: Delete File. \item\end{CompactList}\item 
+\#define \bf{INS\_\-EXTERNAL\_\-AUTH}~0x82
+\begin{CompactList}\small\item\em INS byte: External Authentication. \item\end{CompactList}\item 
+\#define \bf{INS\_\-GET\_\-CHALLENGE}~0x84
+\begin{CompactList}\small\item\em INS byte: Get Challenge. \item\end{CompactList}\item 
+\#define \bf{INS\_\-GET\_\-RESPONSE}~0x\-C0
+\begin{CompactList}\small\item\em INS byte: Get Response. \item\end{CompactList}\item 
+\#define \bf{INS\_\-INTERNAL\_\-AUTH}~0x88
+\begin{CompactList}\small\item\em INS byte: Internal Authentication. \item\end{CompactList}\item 
+\#define \bf{INS\_\-READ\_\-BINARY}~0x\-B0
+\begin{CompactList}\small\item\em INS byte: Read Binary. \item\end{CompactList}\item 
+\#define \bf{INS\_\-SELECT}~0x\-A4
+\begin{CompactList}\small\item\em INS byte: Select File. \item\end{CompactList}\item 
+\#define \bf{INS\_\-UNBLOCK\_\-PIN}~0x2C
+\begin{CompactList}\small\item\em INS byte: Unblock PIN. \item\end{CompactList}\item 
+\#define \bf{INS\_\-UPDATE\_\-BINARY}~0x\-D6
+\begin{CompactList}\small\item\em INS byte: Update Binary. \item\end{CompactList}\item 
+\#define \bf{INS\_\-VERIFY\_\-KEY}~0x2A
+\begin{CompactList}\small\item\em INS byte: Verify Key. \item\end{CompactList}\item 
+\#define \bf{INS\_\-VERIFY\_\-PIN}~0x20
+\begin{CompactList}\small\item\em INS byte: Verify PIN. \item\end{CompactList}\end{CompactItemize}
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+void \bf{cmd\_\-write} (void)
+\begin{CompactList}\small\item\em Write EEPROM. (Test command). \item\end{CompactList}\item 
+void \bf{cmd\_\-read} (void)
+\begin{CompactList}\small\item\em Read EEPROM. (Test command). \item\end{CompactList}\item 
+void \bf{cmd\_\-led} (void)
+\begin{CompactList}\small\item\em LED Effects. \item\end{CompactList}\item 
+void \bf{cmd\_\-change\-Unblock\-PIN} (void)
+\begin{CompactList}\small\item\em Change or Unblock PIN. \item\end{CompactList}\item 
+void \bf{cmd\_\-create} (void)
+\begin{CompactList}\small\item\em Create File. \item\end{CompactList}\item 
+void \bf{cmd\_\-delete} (void)
+\begin{CompactList}\small\item\em Delete File. \item\end{CompactList}\item 
+void \bf{cmd\_\-ext\-Auth} (void)
+\begin{CompactList}\small\item\em External Authentication. \item\end{CompactList}\item 
+void \bf{cmd\_\-get\-Challenge} (void)
+\begin{CompactList}\small\item\em Get Challenge. \item\end{CompactList}\item 
+void \bf{cmd\_\-get\-Response} (void)
+\begin{CompactList}\small\item\em Get Response. \item\end{CompactList}\item 
+void \bf{cmd\_\-int\-Auth} (void)
+\begin{CompactList}\small\item\em Internal Authentication. \item\end{CompactList}\item 
+void \bf{cmd\_\-read\-Binary} (void)
+\begin{CompactList}\small\item\em Read Binary. \item\end{CompactList}\item 
+void \bf{cmd\_\-select} (void)
+\begin{CompactList}\small\item\em Select File. \item\end{CompactList}\item 
+void \bf{cmd\_\-update\-Binary} (void)
+\begin{CompactList}\small\item\em Update Binary. \item\end{CompactList}\item 
+void \bf{cmd\_\-verify\-Key\-PIN} (void)
+\begin{CompactList}\small\item\em Verify Key/Verify PIN. \item\end{CompactList}\end{CompactItemize}
+\subsubsection*{Variables}
+\begin{CompactItemize}
+\item 
+\bf{iu8} \bf{resplen}
+\begin{CompactList}\small\item\em Valid data in response array. Invalid if zero. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+Command declarations. 
+
+The documentation of the commands is on the main page of the doxygen documentation.
+
+\begin{Desc}
+\item[Id]\doxyref{commands.h}{p.}{commands_8h},v 1.15 2002/12/22 15:42:55 m Exp \end{Desc}
+
+
+\subsubsection{Define Documentation}
+\index{commands.h@{commands.h}!CLA_PROP@{CLA\_\-PROP}}
+\index{CLA_PROP@{CLA\_\-PROP}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CLA\_\-PROP~0x80}\hfill\label{commands_8h_2d55f37426841e15553978604ebd8276}
+
+
+CLA byte: Proprietary. 
+
+\index{commands.h@{commands.h}!INS_CHANGE_PIN@{INS\_\-CHANGE\_\-PIN}}
+\index{INS_CHANGE_PIN@{INS\_\-CHANGE\_\-PIN}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define INS\_\-CHANGE\_\-PIN~0x24}\hfill\label{commands_8h_552ff23181a3d48412c2f22915b8e090}
+
+
+INS byte: Change PIN. 
+
+\index{commands.h@{commands.h}!INS_CREATE@{INS\_\-CREATE}}
+\index{INS_CREATE@{INS\_\-CREATE}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define INS\_\-CREATE~0x\-E0}\hfill\label{commands_8h_79634e482db218a7af4b10e1c65ffc16}
+
+
+INS byte: Create File. 
+
+\index{commands.h@{commands.h}!INS_DELETE@{INS\_\-DELETE}}
+\index{INS_DELETE@{INS\_\-DELETE}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define INS\_\-DELETE~0x\-E4}\hfill\label{commands_8h_c662f809d6a4765a3902968207081433}
+
+
+INS byte: Delete File. 
+
+\index{commands.h@{commands.h}!INS_EXTERNAL_AUTH@{INS\_\-EXTERNAL\_\-AUTH}}
+\index{INS_EXTERNAL_AUTH@{INS\_\-EXTERNAL\_\-AUTH}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define INS\_\-EXTERNAL\_\-AUTH~0x82}\hfill\label{commands_8h_19739bea0713af68ec29b93df998b327}
+
+
+INS byte: External Authentication. 
+
+\index{commands.h@{commands.h}!INS_GET_CHALLENGE@{INS\_\-GET\_\-CHALLENGE}}
+\index{INS_GET_CHALLENGE@{INS\_\-GET\_\-CHALLENGE}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define INS\_\-GET\_\-CHALLENGE~0x84}\hfill\label{commands_8h_35a091081cf0842ca576a014111349dd}
+
+
+INS byte: Get Challenge. 
+
+\index{commands.h@{commands.h}!INS_GET_RESPONSE@{INS\_\-GET\_\-RESPONSE}}
+\index{INS_GET_RESPONSE@{INS\_\-GET\_\-RESPONSE}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define INS\_\-GET\_\-RESPONSE~0x\-C0}\hfill\label{commands_8h_0409c5ab8555b3f157f6c7d4bd950023}
+
+
+INS byte: Get Response. 
+
+\index{commands.h@{commands.h}!INS_INTERNAL_AUTH@{INS\_\-INTERNAL\_\-AUTH}}
+\index{INS_INTERNAL_AUTH@{INS\_\-INTERNAL\_\-AUTH}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define INS\_\-INTERNAL\_\-AUTH~0x88}\hfill\label{commands_8h_ca1912031e7b996c7890446abbca405f}
+
+
+INS byte: Internal Authentication. 
+
+\index{commands.h@{commands.h}!INS_LED@{INS\_\-LED}}
+\index{INS_LED@{INS\_\-LED}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define INS\_\-LED~0x06}\hfill\label{commands_8h_8332023793371475ec58155bc839cbc8}
+
+
+INS byte: LED Effects. 
+
+\index{commands.h@{commands.h}!INS_READ@{INS\_\-READ}}
+\index{INS_READ@{INS\_\-READ}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define INS\_\-READ~0x04}\hfill\label{commands_8h_5f92713c8e0f858af4a2ecc4d4ad3ac6}
+
+
+INS byte: Read EEPROM. 
+
+\index{commands.h@{commands.h}!INS_READ_BINARY@{INS\_\-READ\_\-BINARY}}
+\index{INS_READ_BINARY@{INS\_\-READ\_\-BINARY}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define INS\_\-READ\_\-BINARY~0x\-B0}\hfill\label{commands_8h_87b08ebf06462622377ab14b70472102}
+
+
+INS byte: Read Binary. 
+
+\index{commands.h@{commands.h}!INS_SELECT@{INS\_\-SELECT}}
+\index{INS_SELECT@{INS\_\-SELECT}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define INS\_\-SELECT~0x\-A4}\hfill\label{commands_8h_ef01811fe4398a2410cb8a841f623bd3}
+
+
+INS byte: Select File. 
+
+\index{commands.h@{commands.h}!INS_UNBLOCK_PIN@{INS\_\-UNBLOCK\_\-PIN}}
+\index{INS_UNBLOCK_PIN@{INS\_\-UNBLOCK\_\-PIN}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define INS\_\-UNBLOCK\_\-PIN~0x2C}\hfill\label{commands_8h_af88efe9f5fa4131077e1933a1fbdb8f}
+
+
+INS byte: Unblock PIN. 
+
+\index{commands.h@{commands.h}!INS_UPDATE_BINARY@{INS\_\-UPDATE\_\-BINARY}}
+\index{INS_UPDATE_BINARY@{INS\_\-UPDATE\_\-BINARY}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define INS\_\-UPDATE\_\-BINARY~0x\-D6}\hfill\label{commands_8h_7738515b7ae95fc786fe586dd1d6800f}
+
+
+INS byte: Update Binary. 
+
+\index{commands.h@{commands.h}!INS_VERIFY_KEY@{INS\_\-VERIFY\_\-KEY}}
+\index{INS_VERIFY_KEY@{INS\_\-VERIFY\_\-KEY}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define INS\_\-VERIFY\_\-KEY~0x2A}\hfill\label{commands_8h_0b21e21ccc1be6a72c0ca2351e598fc4}
+
+
+INS byte: Verify Key. 
+
+\index{commands.h@{commands.h}!INS_VERIFY_PIN@{INS\_\-VERIFY\_\-PIN}}
+\index{INS_VERIFY_PIN@{INS\_\-VERIFY\_\-PIN}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define INS\_\-VERIFY\_\-PIN~0x20}\hfill\label{commands_8h_b3fd3dfa9c56438998e9252c405ecb7c}
+
+
+INS byte: Verify PIN. 
+
+\index{commands.h@{commands.h}!INS_WRITE@{INS\_\-WRITE}}
+\index{INS_WRITE@{INS\_\-WRITE}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define INS\_\-WRITE~0x02}\hfill\label{commands_8h_cafde0a50dc9db5df49502153b4f1fd6}
+
+
+INS byte: Write EEPROM. 
+
+
+
+\subsubsection{Function Documentation}
+\index{commands.h@{commands.h}!cmd_changeUnblockPIN@{cmd\_\-changeUnblockPIN}}
+\index{cmd_changeUnblockPIN@{cmd\_\-changeUnblockPIN}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-change\-Unblock\-PIN (void)}\hfill\label{commands_8h_ece92ed730ad9d4e7ccb4cd08555c0b7}
+
+
+Change or Unblock PIN. 
+
+\index{commands.h@{commands.h}!cmd_create@{cmd\_\-create}}
+\index{cmd_create@{cmd\_\-create}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-create (void)}\hfill\label{commands_8h_3c4d6ec9b132006edab635f42f6b1143}
+
+
+Create File. 
+
+\index{commands.h@{commands.h}!cmd_delete@{cmd\_\-delete}}
+\index{cmd_delete@{cmd\_\-delete}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-delete (void)}\hfill\label{commands_8h_b5e91199098e25652dd3dbc7aea27683}
+
+
+Delete File. 
+
+\index{commands.h@{commands.h}!cmd_extAuth@{cmd\_\-extAuth}}
+\index{cmd_extAuth@{cmd\_\-extAuth}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-ext\-Auth (void)}\hfill\label{commands_8h_6479b741d6f5b343e356290db8153021}
+
+
+External Authentication. 
+
+\index{commands.h@{commands.h}!cmd_getChallenge@{cmd\_\-getChallenge}}
+\index{cmd_getChallenge@{cmd\_\-getChallenge}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-get\-Challenge (void)}\hfill\label{commands_8h_6feeac5b3883560af0faec05f1a090b2}
+
+
+Get Challenge. 
+
+\index{commands.h@{commands.h}!cmd_getResponse@{cmd\_\-getResponse}}
+\index{cmd_getResponse@{cmd\_\-getResponse}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-get\-Response (void)}\hfill\label{commands_8h_7002865ca7ee8fef5c52493a90809e48}
+
+
+Get Response. 
+
+\index{commands.h@{commands.h}!cmd_intAuth@{cmd\_\-intAuth}}
+\index{cmd_intAuth@{cmd\_\-intAuth}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-int\-Auth (void)}\hfill\label{commands_8h_d18d7d2bb0f030accf5e0456b2927411}
+
+
+Internal Authentication. 
+
+\index{commands.h@{commands.h}!cmd_led@{cmd\_\-led}}
+\index{cmd_led@{cmd\_\-led}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-led (void)}\hfill\label{commands_8h_1def26040edfd6ccc2b26fa2cbb56e99}
+
+
+LED Effects. 
+
+\index{commands.h@{commands.h}!cmd_read@{cmd\_\-read}}
+\index{cmd_read@{cmd\_\-read}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-read (void)}\hfill\label{commands_8h_18edf53f42c45ade3a6a886e5db0df5c}
+
+
+Read EEPROM. (Test command). 
+
+\index{commands.h@{commands.h}!cmd_readBinary@{cmd\_\-readBinary}}
+\index{cmd_readBinary@{cmd\_\-readBinary}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-read\-Binary (void)}\hfill\label{commands_8h_892cbb2f7983a3bca95719fa78397eb4}
+
+
+Read Binary. 
+
+\index{commands.h@{commands.h}!cmd_select@{cmd\_\-select}}
+\index{cmd_select@{cmd\_\-select}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-select (void)}\hfill\label{commands_8h_338c589b70e1e97960452b9f7b124c46}
+
+
+Select File. 
+
+\index{commands.h@{commands.h}!cmd_updateBinary@{cmd\_\-updateBinary}}
+\index{cmd_updateBinary@{cmd\_\-updateBinary}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-update\-Binary (void)}\hfill\label{commands_8h_a4f0817c641ea482d8bbd9a62d4a56b5}
+
+
+Update Binary. 
+
+\index{commands.h@{commands.h}!cmd_verifyKeyPIN@{cmd\_\-verifyKeyPIN}}
+\index{cmd_verifyKeyPIN@{cmd\_\-verifyKeyPIN}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-verify\-Key\-PIN (void)}\hfill\label{commands_8h_8483dd469cbec8917e02d57f1059ef9c}
+
+
+Verify Key/Verify PIN. 
+
+This function is a combined implementation of Verify Key and Verify PIN. This is done to save code size. \index{commands.h@{commands.h}!cmd_write@{cmd\_\-write}}
+\index{cmd_write@{cmd\_\-write}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-write (void)}\hfill\label{commands_8h_6bf9e78c68d51c4b10b884a13fc32aa4}
+
+
+Write EEPROM. (Test command). 
+
+
+
+\subsubsection{Variable Documentation}
+\index{commands.h@{commands.h}!resplen@{resplen}}
+\index{resplen@{resplen}!commands.h@{commands.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu8} \bf{resplen}}\hfill\label{commands_8h_fb1c04452b9c94821029fc854326f6be}
+
+
+Valid data in response array. Invalid if zero. 
+

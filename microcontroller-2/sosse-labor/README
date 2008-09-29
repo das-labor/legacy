@@ -1,0 +1,10 @@
+SOSSE is documented inside the source. Printable/browsable documentation
+is generated with doxygen. A "make" in the top level directory will
+also build the documentation. If you do not have doxygen installed and
+do not want to install it, you find the most important documentation in
+"src/main.h". You can also browse it online at:
+
+<http://www.mbsks.franken.de/sosse/>
+
+This version of SOSSE includes changes by Daniel Otte (daniel.otte@rub.de) to
+make it compatible with current versions of avr-libc.

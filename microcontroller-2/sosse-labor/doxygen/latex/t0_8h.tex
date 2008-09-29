@@ -1,0 +1,134 @@
+\subsection{t0.h File Reference}
+\label{t0_8h}\index{t0.h@{t0.h}}
+T=0 declarations. 
+
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+void \bf{t0\_\-send\-Ack} (void)
+\begin{CompactList}\small\item\em Send ACK byte. \item\end{CompactList}\item 
+void \bf{t0\_\-send\-CAck} (void)
+\begin{CompactList}\small\item\em Send complemented ACK byte. \item\end{CompactList}\item 
+void \bf{t0\_\-send\-Sw} (void)
+\begin{CompactList}\small\item\em Send word in sw. \item\end{CompactList}\item 
+void \bf{t0\_\-send\-Word} (\bf{iu16} w)
+\begin{CompactList}\small\item\em Send word. \item\end{CompactList}\item 
+void \bf{t0\_\-rec\-Block} (\bf{iu8} $\ast$dst, \bf{iu8} len)
+\begin{CompactList}\small\item\em Receive mutiple bytes. \item\end{CompactList}\item 
+\bf{bool} \bf{t0\_\-test\-P1P2} (\bf{iu16} p1p2)
+\begin{CompactList}\small\item\em Test P1P2 for correct content. \item\end{CompactList}\item 
+\bf{bool} \bf{t0\_\-test\-P3} (\bf{iu8} p3)
+\begin{CompactList}\small\item\em Test P3 for correct content. \item\end{CompactList}\end{CompactItemize}
+\subsubsection*{Variables}
+\begin{CompactItemize}
+\item 
+\bf{iu8} \bf{header} [5]
+\begin{CompactList}\small\item\em Header of the current command. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+T=0 declarations. 
+
+T=0 is not implemented fully as library, but must be partly done in the commands itself. This reduces the RAM requirements. E.g. when doing an Update Binary the data must not be received in total before writing, but can be received and written in single bytes.
+
+\begin{Desc}
+\item[Id]\doxyref{t0.h}{p.}{t0_8h},v 1.12 2002/12/22 15:42:55 m Exp \end{Desc}
+
+
+\subsubsection{Function Documentation}
+\index{t0.h@{t0.h}!t0_recBlock@{t0\_\-recBlock}}
+\index{t0_recBlock@{t0\_\-recBlock}!t0.h@{t0.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void t0\_\-rec\-Block (\bf{iu8} $\ast$ {\em dst}, \bf{iu8} {\em len})}\hfill\label{t0_8h_5419cbdf36cc2942a04070ec60486346}
+
+
+Receive mutiple bytes. 
+
+Receive {\em len\/} bytes and write them to {\em dst\/}.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em dst}]Pointer to destination area in RAM. \item[{\em len}]Data bytes to receive. \end{description}
+\end{Desc}
+\index{t0.h@{t0.h}!t0_sendAck@{t0\_\-sendAck}}
+\index{t0_sendAck@{t0\_\-sendAck}!t0.h@{t0.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void t0\_\-send\-Ack (void)}\hfill\label{t0_8h_66185e38e65e9a6578930f13601b20b8}
+
+
+Send ACK byte. 
+
+Sends the for the current command correct ACK byte to the terminal. \index{t0.h@{t0.h}!t0_sendCAck@{t0\_\-sendCAck}}
+\index{t0_sendCAck@{t0\_\-sendCAck}!t0.h@{t0.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void t0\_\-send\-CAck (void)}\hfill\label{t0_8h_88c4c061649e7862b87be5ee05443c61}
+
+
+Send complemented ACK byte. 
+
+Sends the for the current command correct complemented ACK byte to the terminal. \index{t0.h@{t0.h}!t0_sendSw@{t0\_\-sendSw}}
+\index{t0_sendSw@{t0\_\-sendSw}!t0.h@{t0.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void t0\_\-send\-Sw (void)}\hfill\label{t0_8h_08bf4056ff75f0ac8fc01cafc51a7c9d}
+
+
+Send word in sw. 
+
+Sends the word in sw the the terminal. This is used to return the status word at the end of the command interpreter loop in \doxyref{main()}{p.}{authtest_8c_0ddf1224851353fc92bfbff6f499fa97}. \index{t0.h@{t0.h}!t0_sendWord@{t0\_\-sendWord}}
+\index{t0_sendWord@{t0\_\-sendWord}!t0.h@{t0.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void t0\_\-send\-Word (\bf{iu16} {\em w})}\hfill\label{t0_8h_dab516e464f021b20d67bf25e1032301}
+
+
+Send word. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em w}]Word to send. \end{description}
+\end{Desc}
+\index{t0.h@{t0.h}!t0_testP1P2@{t0\_\-testP1P2}}
+\index{t0_testP1P2@{t0\_\-testP1P2}!t0.h@{t0.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} t0\_\-test\-P1P2 (\bf{iu16} {\em p1p2})}\hfill\label{t0_8h_0a5fec56b63d21ea44278bd8b3c151c3}
+
+
+Test P1P2 for correct content. 
+
+Compares the values of P1 and P2 in {\em header\/} to {\em p1p2\/}. If they differ, sw is set to SW\_\-WRONG\_\-P1P2 and FALSE is returned.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em p1p2}]Target value of P1P2.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{t0.h@{t0.h}!t0_testP3@{t0\_\-testP3}}
+\index{t0_testP3@{t0\_\-testP3}!t0.h@{t0.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} t0\_\-test\-P3 (\bf{iu8} {\em p3})}\hfill\label{t0_8h_4fb7c1ea98c7bb6a8d85bad1ad79f36c}
+
+
+Test P3 for correct content. 
+
+Compares the value of P3 in {\em header\/} to {\em p3\/}. If they differ, sw is set to SW\_\-WRONG\_\-P1P2 and FALSE is returned.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em p3}]Target value of P3.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+
+
+\subsubsection{Variable Documentation}
+\index{t0.h@{t0.h}!header@{header}}
+\index{header@{header}!t0.h@{t0.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu8} \bf{header}[5]}\hfill\label{t0_8h_309a16173373bae33919e7c0f13732b5}
+
+
+Header of the current command. 
+
+This global variable contains the header (CLA INS P1 P2 P3) of the current command. It is fetched in the command interpreter loop in \doxyref{main()}{p.}{authtest_8c_0ddf1224851353fc92bfbff6f499fa97}. 

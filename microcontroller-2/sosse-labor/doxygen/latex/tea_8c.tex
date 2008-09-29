@@ -1,0 +1,79 @@
+\subsection{tea.c File Reference}
+\label{tea_8c}\index{tea.c@{tea.c}}
+TEA functions. 
+
+{\tt \#include $<$config.h$>$}\par
+{\tt \#include $<$tea.h$>$}\par
+{\tt \#include $<$tools.h$>$}\par
+\subsubsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \bf{TEA\_\-SMALL}
+\item 
+\#define \bf{hton\_\-ul}(x, y)
+\end{CompactItemize}
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+\bf{iu32} \bf{tea\_\-func} (\bf{iu32} $\ast$in, \bf{iu32} $\ast$sum, \bf{iu32} $\ast$k)
+\item 
+void \bf{tea\_\-enc} (\bf{iu32} $\ast$v, \bf{iu32} $\ast$k)
+\begin{CompactList}\small\item\em TEA encryption function. \item\end{CompactList}\item 
+void \bf{tea\_\-dec} (\bf{iu32} $\ast$v, \bf{iu32} $\ast$k)
+\begin{CompactList}\small\item\em TEA decryption function. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+TEA functions. 
+
+\begin{Desc}
+\item[Id]\doxyref{tea.c}{p.}{tea_8c},v 1.6 2003/04/02 23:57:54 m Exp \end{Desc}
+
+
+\subsubsection{Define Documentation}
+\index{tea.c@{tea.c}!hton_ul@{hton\_\-ul}}
+\index{hton_ul@{hton\_\-ul}!tea.c@{tea.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define hton\_\-ul(x, y)}\hfill\label{tea_8c_c0de559b1de7df84709f253b5276a71a}
+
+
+\index{tea.c@{tea.c}!TEA_SMALL@{TEA\_\-SMALL}}
+\index{TEA_SMALL@{TEA\_\-SMALL}!tea.c@{tea.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define TEA\_\-SMALL}\hfill\label{tea_8c_cc11a6fe68ea2492d21b88fb5f61e6c4}
+
+
+
+
+\subsubsection{Function Documentation}
+\index{tea.c@{tea.c}!tea_dec@{tea\_\-dec}}
+\index{tea_dec@{tea\_\-dec}!tea.c@{tea.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void tea\_\-dec (\bf{iu32} $\ast$ {\em v}, \bf{iu32} $\ast$ {\em k})}\hfill\label{tea_8c_1cd09c6d04d02c89bf0fddb0b6cb519c}
+
+
+TEA decryption function. 
+
+This function decrypts {\em v\/} with {\em k\/} and returns the decrypted data in {\em v\/}.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em v}]Array of two long values containing the data block. \item[{\em k}]Array of four long values containing the key. \end{description}
+\end{Desc}
+\index{tea.c@{tea.c}!tea_enc@{tea\_\-enc}}
+\index{tea_enc@{tea\_\-enc}!tea.c@{tea.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void tea\_\-enc (\bf{iu32} $\ast$ {\em v}, \bf{iu32} $\ast$ {\em k})}\hfill\label{tea_8c_af7981a928cc6a0ce5165eaf70009a11}
+
+
+TEA encryption function. 
+
+This function encrypts {\em v\/} with {\em k\/} and returns the encrypted data in {\em v\/}.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em v}]Array of two long values containing the data block. \item[{\em k}]Array of four long values containing the key. \end{description}
+\end{Desc}
+\index{tea.c@{tea.c}!tea_func@{tea\_\-func}}
+\index{tea_func@{tea\_\-func}!tea.c@{tea.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu32} tea\_\-func (\bf{iu32} $\ast$ {\em in}, \bf{iu32} $\ast$ {\em sum}, \bf{iu32} $\ast$ {\em k})}\hfill\label{tea_8c_66d024df327c9f63b991754cccfa507b}
+
+

@@ -1,0 +1,72 @@
+\subsection{authtest.c File Reference}
+\label{authtest_8c}\index{authtest.c@{authtest.c}}
+Test program for authentication functions. 
+
+{\tt \#include $<$stdio.h$>$}\par
+{\tt \#include $<$config.h$>$}\par
+{\tt \#include $<$auth.h$>$}\par
+{\tt \#include $<$sw.h$>$}\par
+{\tt \#include $<$fs.h$>$}\par
+{\tt \#include $<$hal.h$>$}\par
+{\tt \#include $<$transaction.h$>$}\par
+{\tt \#include $<$netinet/in.h$>$}\par
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \bf{main} (int argc, char $\ast$argv[$\,$])
+\end{CompactItemize}
+\subsubsection*{Variables}
+\begin{CompactItemize}
+\item 
+\bf{iu8} \bf{authstate}
+\begin{CompactList}\small\item\em Variable indicating current authentication state. \item\end{CompactList}\item 
+\bf{iu32} \bf{challenge} [2]
+\begin{CompactList}\small\item\em Value of the last with Get Challenge fetched random challenge. \item\end{CompactList}\item 
+\bf{iu8} \bf{challvalidity}
+\begin{CompactList}\small\item\em Validity of challenge. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+Test program for authentication functions. 
+
+\begin{Desc}
+\item[Id]\doxyref{authtest.c}{p.}{authtest_8c},v 1.11 2002/12/22 15:42:55 m Exp \end{Desc}
+
+
+\subsubsection{Function Documentation}
+\index{authtest.c@{authtest.c}!main@{main}}
+\index{main@{main}!authtest.c@{authtest.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}int main (int {\em argc}, char $\ast$ {\em argv}[$\,$])}\hfill\label{authtest_8c_0ddf1224851353fc92bfbff6f499fa97}
+
+
+
+
+\subsubsection{Variable Documentation}
+\index{authtest.c@{authtest.c}!authstate@{authstate}}
+\index{authstate@{authstate}!authtest.c@{authtest.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu8} \bf{authstate}}\hfill\label{authtest_8c_c023311503326e98022248d8e937b837}
+
+
+Variable indicating current authentication state. 
+
+Single bit flags indicate, which authorization process has been successful. The flag is cleared, at the reset of the card and after unsuccessful authorization processes.
+
+Valid flags are:
+
+\begin{itemize}
+\item AUTH\_\-FLAG\_\-PIN\item AUTH\_\-FLAG\_\-KEY \end{itemize}
+\index{authtest.c@{authtest.c}!challenge@{challenge}}
+\index{challenge@{challenge}!authtest.c@{authtest.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu32} \bf{challenge}[2]}\hfill\label{authtest_8c_5618de2390f5500a383c231b62c551c4}
+
+
+Value of the last with Get Challenge fetched random challenge. 
+
+\index{authtest.c@{authtest.c}!challvalidity@{challvalidity}}
+\index{challvalidity@{challvalidity}!authtest.c@{authtest.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu8} \bf{challvalidity}}\hfill\label{authtest_8c_dd47c1a71dba136bb77c433df3b0914b}
+
+
+Validity of challenge. 
+
+The initial value if challvalidity is 2. This is decremented at the start of the command loop, so that it is 1 at the command following a Get Challenge. 
