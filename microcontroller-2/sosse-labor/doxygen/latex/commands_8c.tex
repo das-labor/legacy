@@ -1,0 +1,194 @@
+\subsection{commands.c File Reference}
+\label{commands_8c}\index{commands.c@{commands.c}}
+Commands. 
+
+{\tt \#include $<$auth.h$>$}\par
+{\tt \#include $<$hal.h$>$}\par
+{\tt \#include $<$commands.h$>$}\par
+{\tt \#include $<$config.h$>$}\par
+{\tt \#include $<$crypt.h$>$}\par
+{\tt \#include $<$fs.h$>$}\par
+{\tt \#include $<$log.h$>$}\par
+{\tt \#include $<$stddef.h$>$}\par
+{\tt \#include $<$string.h$>$}\par
+{\tt \#include $<$sw.h$>$}\par
+{\tt \#include $<$t0.h$>$}\par
+{\tt \#include $<$tools.h$>$}\par
+{\tt \#include $<$types.h$>$}\par
+\subsubsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \bf{pinssize}~(PIN\_\-LEN+PIN\_\-LEN)
+\item 
+\#define \bf{pin1len}~PIN\_\-LEN
+\end{CompactItemize}
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+void \bf{cmd\_\-write} (void)
+\begin{CompactList}\small\item\em Write EEPROM. (Test command). \item\end{CompactList}\item 
+void \bf{cmd\_\-read} (void)
+\begin{CompactList}\small\item\em Read EEPROM. (Test command). \item\end{CompactList}\item 
+void \bf{cmd\_\-change\-Unblock\-PIN} (void)
+\begin{CompactList}\small\item\em Change or Unblock PIN. \item\end{CompactList}\item 
+void \bf{cmd\_\-create} (void)
+\begin{CompactList}\small\item\em Create File. \item\end{CompactList}\item 
+void \bf{cmd\_\-delete} (void)
+\begin{CompactList}\small\item\em Delete File. \item\end{CompactList}\item 
+void \bf{cmd\_\-ext\-Auth} (void)
+\begin{CompactList}\small\item\em External Authentication. \item\end{CompactList}\item 
+void \bf{cmd\_\-get\-Challenge} (void)
+\begin{CompactList}\small\item\em Get Challenge. \item\end{CompactList}\item 
+void \bf{cmd\_\-get\-Response} (void)
+\begin{CompactList}\small\item\em Get Response. \item\end{CompactList}\item 
+void \bf{cmd\_\-int\-Auth} (void)
+\begin{CompactList}\small\item\em Internal Authentication. \item\end{CompactList}\item 
+void \bf{cmd\_\-read\-Binary} (void)
+\begin{CompactList}\small\item\em Read Binary. \item\end{CompactList}\item 
+void \bf{cmd\_\-select} (void)
+\begin{CompactList}\small\item\em Select File. \item\end{CompactList}\item 
+void \bf{cmd\_\-update\-Binary} (void)
+\begin{CompactList}\small\item\em Update Binary. \item\end{CompactList}\item 
+void \bf{cmd\_\-verify\-Key\-PIN} (void)
+\begin{CompactList}\small\item\em Verify Key/Verify PIN. \item\end{CompactList}\end{CompactItemize}
+\subsubsection*{Variables}
+\begin{CompactItemize}
+\item 
+\bf{iu8} \bf{resplen}
+\begin{CompactList}\small\item\em Valid data in response array. Invalid if zero. \item\end{CompactList}\item 
+\bf{iu8} \bf{response} [8]
+\begin{CompactList}\small\item\em Data returned by Get Response command. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+Commands. 
+
+The documentation of the commands is on the main page of the doxygen documentation.
+
+\begin{Desc}
+\item[Id]\doxyref{commands.c}{p.}{commands_8c},v 1.27 2003/03/30 12:42:21 m Exp \end{Desc}
+
+
+\subsubsection{Define Documentation}
+\index{commands.c@{commands.c}!pin1len@{pin1len}}
+\index{pin1len@{pin1len}!commands.c@{commands.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define pin1len~PIN\_\-LEN}\hfill\label{commands_8c_393f9f89ceaa14111c80ffbb885554da}
+
+
+\index{commands.c@{commands.c}!pinssize@{pinssize}}
+\index{pinssize@{pinssize}!commands.c@{commands.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define pinssize~(PIN\_\-LEN+PIN\_\-LEN)}\hfill\label{commands_8c_b87daf0e7a0fb01566f60b776204bee5}
+
+
+
+
+\subsubsection{Function Documentation}
+\index{commands.c@{commands.c}!cmd_changeUnblockPIN@{cmd\_\-changeUnblockPIN}}
+\index{cmd_changeUnblockPIN@{cmd\_\-changeUnblockPIN}!commands.c@{commands.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-change\-Unblock\-PIN (void)}\hfill\label{commands_8c_ece92ed730ad9d4e7ccb4cd08555c0b7}
+
+
+Change or Unblock PIN. 
+
+\index{commands.c@{commands.c}!cmd_create@{cmd\_\-create}}
+\index{cmd_create@{cmd\_\-create}!commands.c@{commands.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-create (void)}\hfill\label{commands_8c_3c4d6ec9b132006edab635f42f6b1143}
+
+
+Create File. 
+
+\index{commands.c@{commands.c}!cmd_delete@{cmd\_\-delete}}
+\index{cmd_delete@{cmd\_\-delete}!commands.c@{commands.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-delete (void)}\hfill\label{commands_8c_b5e91199098e25652dd3dbc7aea27683}
+
+
+Delete File. 
+
+\index{commands.c@{commands.c}!cmd_extAuth@{cmd\_\-extAuth}}
+\index{cmd_extAuth@{cmd\_\-extAuth}!commands.c@{commands.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-ext\-Auth (void)}\hfill\label{commands_8c_6479b741d6f5b343e356290db8153021}
+
+
+External Authentication. 
+
+\index{commands.c@{commands.c}!cmd_getChallenge@{cmd\_\-getChallenge}}
+\index{cmd_getChallenge@{cmd\_\-getChallenge}!commands.c@{commands.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-get\-Challenge (void)}\hfill\label{commands_8c_6feeac5b3883560af0faec05f1a090b2}
+
+
+Get Challenge. 
+
+\index{commands.c@{commands.c}!cmd_getResponse@{cmd\_\-getResponse}}
+\index{cmd_getResponse@{cmd\_\-getResponse}!commands.c@{commands.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-get\-Response (void)}\hfill\label{commands_8c_7002865ca7ee8fef5c52493a90809e48}
+
+
+Get Response. 
+
+\index{commands.c@{commands.c}!cmd_intAuth@{cmd\_\-intAuth}}
+\index{cmd_intAuth@{cmd\_\-intAuth}!commands.c@{commands.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-int\-Auth (void)}\hfill\label{commands_8c_d18d7d2bb0f030accf5e0456b2927411}
+
+
+Internal Authentication. 
+
+\index{commands.c@{commands.c}!cmd_read@{cmd\_\-read}}
+\index{cmd_read@{cmd\_\-read}!commands.c@{commands.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-read (void)}\hfill\label{commands_8c_18edf53f42c45ade3a6a886e5db0df5c}
+
+
+Read EEPROM. (Test command). 
+
+\index{commands.c@{commands.c}!cmd_readBinary@{cmd\_\-readBinary}}
+\index{cmd_readBinary@{cmd\_\-readBinary}!commands.c@{commands.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-read\-Binary (void)}\hfill\label{commands_8c_892cbb2f7983a3bca95719fa78397eb4}
+
+
+Read Binary. 
+
+\index{commands.c@{commands.c}!cmd_select@{cmd\_\-select}}
+\index{cmd_select@{cmd\_\-select}!commands.c@{commands.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-select (void)}\hfill\label{commands_8c_338c589b70e1e97960452b9f7b124c46}
+
+
+Select File. 
+
+\index{commands.c@{commands.c}!cmd_updateBinary@{cmd\_\-updateBinary}}
+\index{cmd_updateBinary@{cmd\_\-updateBinary}!commands.c@{commands.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-update\-Binary (void)}\hfill\label{commands_8c_a4f0817c641ea482d8bbd9a62d4a56b5}
+
+
+Update Binary. 
+
+\index{commands.c@{commands.c}!cmd_verifyKeyPIN@{cmd\_\-verifyKeyPIN}}
+\index{cmd_verifyKeyPIN@{cmd\_\-verifyKeyPIN}!commands.c@{commands.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-verify\-Key\-PIN (void)}\hfill\label{commands_8c_8483dd469cbec8917e02d57f1059ef9c}
+
+
+Verify Key/Verify PIN. 
+
+This function is a combined implementation of Verify Key and Verify PIN. This is done to save code size. \index{commands.c@{commands.c}!cmd_write@{cmd\_\-write}}
+\index{cmd_write@{cmd\_\-write}!commands.c@{commands.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void cmd\_\-write (void)}\hfill\label{commands_8c_6bf9e78c68d51c4b10b884a13fc32aa4}
+
+
+Write EEPROM. (Test command). 
+
+
+
+\subsubsection{Variable Documentation}
+\index{commands.c@{commands.c}!resplen@{resplen}}
+\index{resplen@{resplen}!commands.c@{commands.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu8} \bf{resplen}}\hfill\label{commands_8c_fb1c04452b9c94821029fc854326f6be}
+
+
+Valid data in response array. Invalid if zero. 
+
+\index{commands.c@{commands.c}!response@{response}}
+\index{response@{response}!commands.c@{commands.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu8} \bf{response}[8]}\hfill\label{commands_8c_0c7b4be43b0611ed017299d85d8fdf71}
+
+
+Data returned by Get Response command. 
+
+The size of this array is the max. of sizeof(S\_\-FINFO) and CRYPT\_\-BLOCK\_\-LEN. 

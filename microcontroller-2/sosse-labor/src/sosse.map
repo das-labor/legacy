@@ -1,0 +1,511 @@
+Archive member included because of file (symbol)
+
+/usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_prologue.o)
+                              auth.o (__prologue_saves__)
+/usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_epilogue.o)
+                              auth.o (__epilogue_restores__)
+/usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_exit.o)
+                              /usr/lib/gcc/avr/4.3.1/../../../../avr/lib/avr5/crtm161.o (exit)
+/usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_copy_data.o)
+                              auth.o (__do_copy_data)
+/usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_clear_bss.o)
+                              auth.o (__do_clear_bss)
+/usr/lib/gcc/avr/4.3.1/../../../../avr/lib/avr5/libc.a(memcmp.o)
+                              auth.o (memcmp)
+/usr/lib/gcc/avr/4.3.1/../../../../avr/lib/avr5/libc.a(memset.o)
+                              fs.o (memset)
+
+Allocating common symbols
+Common symbol       size              file
+
+response            0x8               commands.o
+resplen             0x1               commands.o
+log_enable          0x1               log.o
+challvalidity       0x1               auth.o
+direction           0x1               io.o
+challenge           0x8               auth.o
+fssize              0x2               fs.o
+fsstart             0x2               fs.o
+selected            0x4               fs.o
+sw                  0x2               sw.o
+header              0x5               t0.o
+authstate           0x1               auth.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+text             0x0000000000000000 0x0000000000020000 xr
+data             0x0000000000800060 0x000000000000ffa0 rw !x
+eeprom           0x0000000000810000 0x0000000000010000 rw !x
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD /usr/lib/gcc/avr/4.3.1/../../../../avr/lib/avr5/crtm161.o
+LOAD auth.o
+LOAD hal.o
+LOAD commands.o
+LOAD fs.o
+LOAD fstream.o
+LOAD log.o
+LOAD main.o
+LOAD newdes-sk.o
+LOAD skipjack.o
+LOAD sw.o
+LOAD t0.o
+LOAD tools.o
+LOAD transaction.o
+LOAD eepromi2c.o
+LOAD io.o
+LOAD tea-atmega161.o
+LOAD /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a
+LOAD /usr/lib/gcc/avr/4.3.1/../../../../avr/lib/avr5/libc.a
+LOAD /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a
+
+.hash
+ *(.hash)
+
+.dynsym
+ *(.dynsym)
+
+.dynstr
+ *(.dynstr)
+
+.gnu.version
+ *(.gnu.version)
+
+.gnu.version_d
+ *(.gnu.version_d)
+
+.gnu.version_r
+ *(.gnu.version_r)
+
+.rel.init
+ *(.rel.init)
+
+.rela.init
+ *(.rela.init)
+
+.rel.text
+ *(.rel.text)
+ *(.rel.text.*)
+ *(.rel.gnu.linkonce.t*)
+
+.rela.text
+ *(.rela.text)
+ *(.rela.text.*)
+ *(.rela.gnu.linkonce.t*)
+
+.rel.fini
+ *(.rel.fini)
+
+.rela.fini
+ *(.rela.fini)
+
+.rel.rodata
+ *(.rel.rodata)
+ *(.rel.rodata.*)
+ *(.rel.gnu.linkonce.r*)
+
+.rela.rodata
+ *(.rela.rodata)
+ *(.rela.rodata.*)
+ *(.rela.gnu.linkonce.r*)
+
+.rel.data
+ *(.rel.data)
+ *(.rel.data.*)
+ *(.rel.gnu.linkonce.d*)
+
+.rela.data
+ *(.rela.data)
+ *(.rela.data.*)
+ *(.rela.gnu.linkonce.d*)
+
+.rel.ctors
+ *(.rel.ctors)
+
+.rela.ctors
+ *(.rela.ctors)
+
+.rel.dtors
+ *(.rel.dtors)
+
+.rela.dtors
+ *(.rela.dtors)
+
+.rel.got
+ *(.rel.got)
+
+.rela.got
+ *(.rela.got)
+
+.rel.bss
+ *(.rel.bss)
+
+.rela.bss
+ *(.rela.bss)
+
+.rel.plt
+ *(.rel.plt)
+
+.rela.plt
+ *(.rela.plt)
+
+.text           0x0000000000000000     0x1e0a
+ *(.vectors)
+ .vectors       0x0000000000000000       0x54 /usr/lib/gcc/avr/4.3.1/../../../../avr/lib/avr5/crtm161.o
+                0x0000000000000000                __vectors
+                0x0000000000000000                __vector_default
+ *(.vectors)
+ *(.progmem.gcc*)
+ *(.progmem*)
+                0x0000000000000054                . = ALIGN (0x2)
+                0x0000000000000054                __trampolines_start = .
+ *(.trampolines)
+ .trampolines   0x0000000000000054        0x0 linker stubs
+ *(.trampolines*)
+                0x0000000000000054                __trampolines_end = .
+ *(.jumptables)
+ *(.jumptables*)
+ *(.lowtext)
+ *(.lowtext*)
+                0x0000000000000054                __ctors_start = .
+ *(.ctors)
+                0x0000000000000054                __ctors_end = .
+                0x0000000000000054                __dtors_start = .
+ *(.dtors)
+                0x0000000000000054                __dtors_end = .
+ SORT(*)(.ctors)
+ SORT(*)(.dtors)
+ *(.init0)
+ .init0         0x0000000000000054        0x0 /usr/lib/gcc/avr/4.3.1/../../../../avr/lib/avr5/crtm161.o
+                0x0000000000000054                __init
+ *(.init0)
+ *(.init1)
+ *(.init1)
+ *(.init2)
+ .init2         0x0000000000000054        0xc /usr/lib/gcc/avr/4.3.1/../../../../avr/lib/avr5/crtm161.o
+ *(.init2)
+ *(.init3)
+ *(.init3)
+ *(.init4)
+ .init4         0x0000000000000060       0x16 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_copy_data.o)
+                0x0000000000000060                __do_copy_data
+ .init4         0x0000000000000076       0x10 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_clear_bss.o)
+                0x0000000000000076                __do_clear_bss
+ *(.init4)
+ *(.init5)
+ *(.init5)
+ *(.init6)
+ *(.init6)
+ *(.init7)
+ *(.init7)
+ *(.init8)
+ *(.init8)
+ *(.init9)
+ .init9         0x0000000000000086        0x8 /usr/lib/gcc/avr/4.3.1/../../../../avr/lib/avr5/crtm161.o
+ *(.init9)
+ *(.text)
+ .text          0x000000000000008e        0x4 /usr/lib/gcc/avr/4.3.1/../../../../avr/lib/avr5/crtm161.o
+                0x000000000000008e                __vector_1
+                0x000000000000008e                __vector_12
+                0x000000000000008e                __bad_interrupt
+                0x000000000000008e                __vector_6
+                0x000000000000008e                __vector_3
+                0x000000000000008e                __vector_11
+                0x000000000000008e                __vector_13
+                0x000000000000008e                __vector_17
+                0x000000000000008e                __vector_19
+                0x000000000000008e                __vector_7
+                0x000000000000008e                __vector_5
+                0x000000000000008e                __vector_4
+                0x000000000000008e                __vector_9
+                0x000000000000008e                __vector_2
+                0x000000000000008e                __vector_15
+                0x000000000000008e                __vector_8
+                0x000000000000008e                __vector_14
+                0x000000000000008e                __vector_10
+                0x000000000000008e                __vector_16
+                0x000000000000008e                __vector_18
+                0x000000000000008e                __vector_20
+ .text          0x0000000000000092      0x4ec auth.o
+                0x0000000000000148                auth_getCheckPinLen
+                0x00000000000003b6                auth_verifyPin
+                0x0000000000000092                auth_init
+                0x0000000000000108                auth_getChallenge
+                0x000000000000009e                auth_checkAc
+                0x000000000000050a                auth_setPin
+                0x0000000000000266                auth_createVerifyCryptogram
+ .text          0x000000000000057e      0x16e hal.o
+                0x000000000000059c                hal_io_sendByteT0
+                0x00000000000005fc                hal_eeprom_read
+                0x0000000000000596                hal_io_recByteT0
+                0x00000000000005a2                hal_eeprom_write
+                0x000000000000064c                hal_rnd_getBlock
+                0x000000000000057e                hal_init
+ .text          0x00000000000006ec      0x6a8 commands.o
+                0x0000000000000ba0                cmd_create
+                0x0000000000000ac0                cmd_getChallenge
+                0x000000000000099e                cmd_getResponse
+                0x000000000000083e                cmd_select
+                0x0000000000000b1e                cmd_delete
+                0x00000000000008d0                cmd_readBinary
+                0x0000000000000c2e                cmd_changeUnblockPIN
+                0x0000000000000a6c                cmd_extAuth
+                0x000000000000076c                cmd_updateBinary
+                0x00000000000006ec                cmd_verifyKeyPIN
+                0x0000000000000d14                cmd_write
+                0x0000000000000ca2                cmd_read
+                0x0000000000000a08                cmd_intAuth
+ .text          0x0000000000000d94      0x63a fs.o
+                0x0000000000000e00                fs_seek
+                0x00000000000012be                fs_getFPath
+                0x0000000000000eca                fs_getData
+                0x0000000000000d94                fs_seekEnd
+                0x0000000000001386                fs_init
+                0x0000000000001134                fs_delete
+                0x0000000000000f5e                fs_create
+ .text          0x00000000000013ce       0xcc fstream.o
+                0x00000000000013ce                fstream_test
+                0x0000000000001446                fstream_read
+                0x00000000000013f2                fstream_write
+ .text          0x000000000000149a       0xc8 log.o
+                0x0000000000001542                log_init
+                0x000000000000149a                log_add
+ .text          0x0000000000001562      0x178 main.o
+                0x0000000000001562                main
+ .text          0x00000000000016da        0x0 newdes-sk.o
+ .text          0x00000000000016da        0x0 skipjack.o
+ .text          0x00000000000016da        0xa sw.o
+                0x00000000000016da                sw_set
+ .text          0x00000000000016e4       0xa6 t0.o
+                0x0000000000001780                t0_sendAck
+                0x0000000000001762                t0_sendSw
+                0x0000000000001774                t0_sendCAck
+                0x00000000000016e4                t0_testP3
+                0x0000000000001722                t0_recBlock
+                0x000000000000174e                t0_sendWord
+                0x00000000000016fc                t0_testP1P2
+ .text          0x000000000000178a       0x16 tools.o
+                0x000000000000178a                hton_us
+ .text          0x00000000000017a0      0x150 transaction.o
+                0x00000000000017a0                ta_commit
+                0x000000000000185a                ta_setdata
+ .text          0x00000000000018f0      0x11e eepromi2c.o
+                0x0000000000001944                xewrt
+                0x0000000000001908                xeread
+ .text          0x0000000000001a0e      0x110 io.o
+                0x0000000000001aa4                sendbytet0
+                0x0000000000001a1a                recbytet0
+                0x0000000000001a16                delay1etu
+ .text          0x0000000000001b1e      0x252 tea-atmega161.o
+                0x0000000000001b1e                tea_func
+                0x0000000000001bb0                tea_enc
+                0x0000000000001c8c                tea_dec
+ .text          0x0000000000001d70        0x0 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_prologue.o)
+ .text          0x0000000000001d70        0x0 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_epilogue.o)
+ .text          0x0000000000001d70        0x0 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_exit.o)
+ .text          0x0000000000001d70        0x0 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_copy_data.o)
+ .text          0x0000000000001d70        0x0 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_clear_bss.o)
+ .text          0x0000000000001d70       0x1a /usr/lib/gcc/avr/4.3.1/../../../../avr/lib/avr5/libc.a(memcmp.o)
+                0x0000000000001d70                memcmp
+ .text          0x0000000000001d8a        0xe /usr/lib/gcc/avr/4.3.1/../../../../avr/lib/avr5/libc.a(memset.o)
+                0x0000000000001d8a                memset
+                0x0000000000001d98                . = ALIGN (0x2)
+ *(.text.*)
+ .text.libgcc   0x0000000000001d98       0x38 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_prologue.o)
+                0x0000000000001d98                __prologue_saves__
+ .text.libgcc   0x0000000000001dd0       0x36 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_epilogue.o)
+                0x0000000000001dd0                __epilogue_restores__
+ .text.libgcc   0x0000000000001e06        0x0 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_exit.o)
+ .text.libgcc   0x0000000000001e06        0x0 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_copy_data.o)
+ .text.libgcc   0x0000000000001e06        0x0 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_clear_bss.o)
+                0x0000000000001e06                . = ALIGN (0x2)
+ *(.fini9)
+ .fini9         0x0000000000001e06        0x0 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_exit.o)
+                0x0000000000001e06                exit
+                0x0000000000001e06                _exit
+ *(.fini9)
+ *(.fini8)
+ *(.fini8)
+ *(.fini7)
+ *(.fini7)
+ *(.fini6)
+ *(.fini6)
+ *(.fini5)
+ *(.fini5)
+ *(.fini4)
+ *(.fini4)
+ *(.fini3)
+ *(.fini3)
+ *(.fini2)
+ *(.fini2)
+ *(.fini1)
+ *(.fini1)
+ *(.fini0)
+ .fini0         0x0000000000001e06        0x4 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_exit.o)
+ *(.fini0)
+                0x0000000000001e0a                _etext = .
+
+.data           0x0000000000800060        0x2 load address 0x0000000000001e0a
+                0x0000000000800060                PROVIDE (__data_start, .)
+ *(.data)
+ .data          0x0000000000800060        0x0 /usr/lib/gcc/avr/4.3.1/../../../../avr/lib/avr5/crtm161.o
+ .data          0x0000000000800060        0x0 auth.o
+ .data          0x0000000000800060        0x0 hal.o
+ .data          0x0000000000800060        0x0 commands.o
+ .data          0x0000000000800060        0x0 fs.o
+ .data          0x0000000000800060        0x0 fstream.o
+ .data          0x0000000000800060        0x2 log.o
+                0x0000000000800060                dst
+ .data          0x0000000000800062        0x0 main.o
+ .data          0x0000000000800062        0x0 newdes-sk.o
+ .data          0x0000000000800062        0x0 skipjack.o
+ .data          0x0000000000800062        0x0 sw.o
+ .data          0x0000000000800062        0x0 t0.o
+ .data          0x0000000000800062        0x0 tools.o
+ .data          0x0000000000800062        0x0 transaction.o
+ .data          0x0000000000800062        0x0 eepromi2c.o
+ .data          0x0000000000800062        0x0 io.o
+ .data          0x0000000000800062        0x0 tea-atmega161.o
+ .data          0x0000000000800062        0x0 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_prologue.o)
+ .data          0x0000000000800062        0x0 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_epilogue.o)
+ .data          0x0000000000800062        0x0 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_exit.o)
+ .data          0x0000000000800062        0x0 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_copy_data.o)
+ .data          0x0000000000800062        0x0 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_clear_bss.o)
+ .data          0x0000000000800062        0x0 /usr/lib/gcc/avr/4.3.1/../../../../avr/lib/avr5/libc.a(memcmp.o)
+ .data          0x0000000000800062        0x0 /usr/lib/gcc/avr/4.3.1/../../../../avr/lib/avr5/libc.a(memset.o)
+ *(.data*)
+ *(.rodata)
+ *(.rodata*)
+ *(.gnu.linkonce.d*)
+                0x0000000000800062                . = ALIGN (0x2)
+                0x0000000000800062                _edata = .
+                0x0000000000800062                PROVIDE (__data_end, .)
+
+.bss            0x0000000000800062       0x24 load address 0x0000000000001e0c
+                0x0000000000800062                PROVIDE (__bss_start, .)
+ *(.bss)
+ .bss           0x0000000000800062        0x0 /usr/lib/gcc/avr/4.3.1/../../../../avr/lib/avr5/crtm161.o
+ .bss           0x0000000000800062        0x0 auth.o
+ .bss           0x0000000000800062        0x0 hal.o
+ .bss           0x0000000000800062        0x0 commands.o
+ .bss           0x0000000000800062        0x0 fs.o
+ .bss           0x0000000000800062        0x0 fstream.o
+ .bss           0x0000000000800062        0x0 log.o
+ .bss           0x0000000000800062        0x0 main.o
+ .bss           0x0000000000800062        0x0 newdes-sk.o
+ .bss           0x0000000000800062        0x0 skipjack.o
+ .bss           0x0000000000800062        0x0 sw.o
+ .bss           0x0000000000800062        0x0 t0.o
+ .bss           0x0000000000800062        0x0 tools.o
+ .bss           0x0000000000800062        0x0 transaction.o
+ .bss           0x0000000000800062        0x0 eepromi2c.o
+ .bss           0x0000000000800062        0x0 io.o
+ .bss           0x0000000000800062        0x0 tea-atmega161.o
+ .bss           0x0000000000800062        0x0 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_prologue.o)
+ .bss           0x0000000000800062        0x0 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_epilogue.o)
+ .bss           0x0000000000800062        0x0 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_exit.o)
+ .bss           0x0000000000800062        0x0 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_copy_data.o)
+ .bss           0x0000000000800062        0x0 /usr/lib/gcc/avr/4.3.1/avr5/libgcc.a(_clear_bss.o)
+ .bss           0x0000000000800062        0x0 /usr/lib/gcc/avr/4.3.1/../../../../avr/lib/avr5/libc.a(memcmp.o)
+ .bss           0x0000000000800062        0x0 /usr/lib/gcc/avr/4.3.1/../../../../avr/lib/avr5/libc.a(memset.o)
+ *(.bss*)
+ *(COMMON)
+ COMMON         0x0000000000800062        0xa auth.o
+                0x0000000000800062                challvalidity
+                0x0000000000800063                challenge
+                0x000000000080006b                authstate
+ COMMON         0x000000000080006c        0x9 commands.o
+                0x000000000080006c                response
+                0x0000000000800074                resplen
+ COMMON         0x0000000000800075        0x8 fs.o
+                0x0000000000800075                fssize
+                0x0000000000800077                fsstart
+                0x0000000000800079                selected
+ COMMON         0x000000000080007d        0x1 log.o
+                0x000000000080007d                log_enable
+ COMMON         0x000000000080007e        0x2 sw.o
+                0x000000000080007e                sw
+ COMMON         0x0000000000800080        0x5 t0.o
+                0x0000000000800080                header
+ COMMON         0x0000000000800085        0x1 io.o
+                0x0000000000800085                direction
+                0x0000000000800086                PROVIDE (__bss_end, .)
+                0x0000000000001e0a                __data_load_start = LOADADDR (.data)
+                0x0000000000001e0c                __data_load_end = (__data_load_start + SIZEOF (.data))
+
+.noinit         0x0000000000800086        0x0
+                0x0000000000800086                PROVIDE (__noinit_start, .)
+ *(.noinit*)
+                0x0000000000800086                PROVIDE (__noinit_end, .)
+                0x0000000000800086                _end = .
+                0x0000000000800086                PROVIDE (__heap_start, .)
+
+.eeprom         0x0000000000810000        0x0
+ *(.eeprom*)
+                0x0000000000810000                __eeprom_end = .
+
+.stab
+ *(.stab)
+
+.stabstr
+ *(.stabstr)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment
+ *(.comment)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges
+ *(.debug_aranges)
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info
+ *(.debug_info)
+ *(.gnu.linkonce.wi.*)
+
+.debug_abbrev
+ *(.debug_abbrev)
+
+.debug_line
+ *(.debug_line)
+
+.debug_frame
+ *(.debug_frame)
+
+.debug_str
+ *(.debug_str)
+
+.debug_loc
+ *(.debug_loc)
+
+.debug_macinfo
+ *(.debug_macinfo)
+OUTPUT(sosse elf32-avr)
+LOAD linker stubs

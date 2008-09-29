@@ -1,0 +1,74 @@
+\subsection{newdes-sk.h File Reference}
+\label{newdes-sk_8h}\index{newdes-sk.h@{newdes-sk.h}}
+NEWDES-SK declarations. 
+
+{\tt \#include $<$types.h$>$}\par
+\subsubsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \bf{NEWDESSK\_\-KEY\_\-LEN}~15
+\begin{CompactList}\small\item\em NEWDES-SK key size. \item\end{CompactList}\item 
+\#define \bf{NEWDESSK\_\-BLOCK\_\-LEN}~8
+\begin{CompactList}\small\item\em NEWDES-SK block length. \item\end{CompactList}\end{CompactItemize}
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+void \bf{newdessk\_\-enc} (\bf{iu8} $\ast$v, \bf{iu8} $\ast$k)
+\begin{CompactList}\small\item\em NEWDES-SK encryption function. \item\end{CompactList}\item 
+void \bf{newdessk\_\-dec} (\bf{iu8} $\ast$v, \bf{iu8} $\ast$k)
+\begin{CompactList}\small\item\em NEWDES-SK decryption function. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+NEWDES-SK declarations. 
+
+\begin{Desc}
+\item[Id]\doxyref{newdes-sk.h}{p.}{newdes-sk_8h},v 1.1 2003/03/30 12:42:21 m Exp \end{Desc}
+
+
+\subsubsection{Define Documentation}
+\index{newdes-sk.h@{newdes-sk.h}!NEWDESSK_BLOCK_LEN@{NEWDESSK\_\-BLOCK\_\-LEN}}
+\index{NEWDESSK_BLOCK_LEN@{NEWDESSK\_\-BLOCK\_\-LEN}!newdes-sk.h@{newdes-sk.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define NEWDESSK\_\-BLOCK\_\-LEN~8}\hfill\label{newdes-sk_8h_78ce1251bba5aa2cb5a9bae51b3c068c}
+
+
+NEWDES-SK block length. 
+
+\index{newdes-sk.h@{newdes-sk.h}!NEWDESSK_KEY_LEN@{NEWDESSK\_\-KEY\_\-LEN}}
+\index{NEWDESSK_KEY_LEN@{NEWDESSK\_\-KEY\_\-LEN}!newdes-sk.h@{newdes-sk.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define NEWDESSK\_\-KEY\_\-LEN~15}\hfill\label{newdes-sk_8h_c00ffa9196b77a8b42a544de3258e53e}
+
+
+NEWDES-SK key size. 
+
+
+
+\subsubsection{Function Documentation}
+\index{newdes-sk.h@{newdes-sk.h}!newdessk_dec@{newdessk\_\-dec}}
+\index{newdessk_dec@{newdessk\_\-dec}!newdes-sk.h@{newdes-sk.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void newdessk\_\-dec (\bf{iu8} $\ast$ {\em v}, \bf{iu8} $\ast$ {\em k})}\hfill\label{newdes-sk_8h_8d52f79081a3b4d520b0e21ecf24d397}
+
+
+NEWDES-SK decryption function. 
+
+This function decrypts {\em v\/} with {\em k\/} and returns the decrypted data in {\em v\/}.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em v}]Array of eight iu8 values containing the data block. \item[{\em k}]Array of 15 iu8 values containing the key. \end{description}
+\end{Desc}
+\index{newdes-sk.h@{newdes-sk.h}!newdessk_enc@{newdessk\_\-enc}}
+\index{newdessk_enc@{newdessk\_\-enc}!newdes-sk.h@{newdes-sk.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void newdessk\_\-enc (\bf{iu8} $\ast$ {\em v}, \bf{iu8} $\ast$ {\em k})}\hfill\label{newdes-sk_8h_314c77c87cefb8e6645e28ef96d95e78}
+
+
+NEWDES-SK encryption function. 
+
+This function encrypts {\em v\/} with {\em k\/} and returns the encrypted data in {\em v\/}.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em v}]Array of eight iu8 values containing the data block. \item[{\em k}]Array of 15 iu8 values containing the key. \end{description}
+\end{Desc}

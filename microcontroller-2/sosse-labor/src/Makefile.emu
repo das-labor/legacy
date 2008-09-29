@@ -1,0 +1,59 @@
+CC=gcc
+AS=as
+OBJCOPY=objcopy
+
+CFLAGS=-Wall -I. -O6 -g -DDEBUG
+
+SRC=\
+	auth.c \
+	hal-emu.c \
+	commands.c \
+	sw.c \
+	fs.c \
+	fstream.c \
+	log.c \
+	newdes-sk.c \
+	skipjack.c \
+	t0.c \
+	tea.c \
+	tools.c \
+	transaction.c
+
+OBJ=\
+	auth.o \
+	hal-emu.o \
+	commands.o \
+	sw.o \
+	fs.o \
+	fstream.o \
+	log.o \
+	newdes-sk.o \
+	skipjack.o \
+	t0.o \
+	tea.o \
+	tools.o \
+	transaction.o
+
+all: sosse fstest authtest
+
+sosse: $(OBJ) main.o
+	$(CC) $(CFLAGS) -o sosse-emu $(OBJ) main.o -L. -lsio
+
+fstest: $(OBJ) fstest.o
+	$(CC) $(CFLAGS) -o fstest $(OBJ) fstest.o -L. -lsio
+
+authtest: $(OBJ) authtest.o
+	$(CC) $(CFLAGS) -o authtest $(OBJ) authtest.o -L. -lsio
+
+clean: clean-sosse clean-fstest clean-authtest
+	rm -rf core
+
+clean-sosse:
+	rm -rf $(OBJ) main.o sosse-emu
+
+clean-fstest:
+	rm -rf fstest.o fstest dumpfs.bin gmon.out
+
+clean-authtest:
+	rm -rf authtest.o authtest dumppin.bin gmon.out
+

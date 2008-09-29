@@ -1,0 +1,76 @@
+\subsection{skipjack.h File Reference}
+\label{skipjack_8h}\index{skipjack.h@{skipjack.h}}
+Skipjack declarations. 
+
+{\tt \#include $<$types.h$>$}\par
+\subsubsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \bf{SKIPJACK\_\-KEY\_\-LEN}~10
+\begin{CompactList}\small\item\em SKIPJACK key size. \item\end{CompactList}\item 
+\#define \bf{SKIPJACK\_\-BLOCK\_\-LEN}~8
+\begin{CompactList}\small\item\em SKIPJACK block length. \item\end{CompactList}\end{CompactItemize}
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+void \bf{skipjack\_\-enc} (\bf{iu8} $\ast$v, \bf{iu8} $\ast$k)
+\begin{CompactList}\small\item\em Skipjack encryption function. \item\end{CompactList}\item 
+void \bf{skipjack\_\-dec} (\bf{iu8} $\ast$v, \bf{iu8} $\ast$k)
+\begin{CompactList}\small\item\em Skipjack decryption function. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+Skipjack declarations. 
+
+Documentation for Skipjack is available at \tt{http://csrc.nist.gov/encryption/skipjack/skipjack-kea.htm.}
+
+\begin{Desc}
+\item[Id]\doxyref{skipjack.h}{p.}{skipjack_8h},v 1.1 2003/03/30 12:42:21 m Exp \end{Desc}
+
+
+\subsubsection{Define Documentation}
+\index{skipjack.h@{skipjack.h}!SKIPJACK_BLOCK_LEN@{SKIPJACK\_\-BLOCK\_\-LEN}}
+\index{SKIPJACK_BLOCK_LEN@{SKIPJACK\_\-BLOCK\_\-LEN}!skipjack.h@{skipjack.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define SKIPJACK\_\-BLOCK\_\-LEN~8}\hfill\label{skipjack_8h_f7732d46f89b865a8731e0fc21bd34f7}
+
+
+SKIPJACK block length. 
+
+\index{skipjack.h@{skipjack.h}!SKIPJACK_KEY_LEN@{SKIPJACK\_\-KEY\_\-LEN}}
+\index{SKIPJACK_KEY_LEN@{SKIPJACK\_\-KEY\_\-LEN}!skipjack.h@{skipjack.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define SKIPJACK\_\-KEY\_\-LEN~10}\hfill\label{skipjack_8h_3ff09044580ee9880804c7d674f6bf3b}
+
+
+SKIPJACK key size. 
+
+
+
+\subsubsection{Function Documentation}
+\index{skipjack.h@{skipjack.h}!skipjack_dec@{skipjack\_\-dec}}
+\index{skipjack_dec@{skipjack\_\-dec}!skipjack.h@{skipjack.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void skipjack\_\-dec (\bf{iu8} $\ast$ {\em v}, \bf{iu8} $\ast$ {\em k})}\hfill\label{skipjack_8h_756248cd02688142577b6335b785d0ff}
+
+
+Skipjack decryption function. 
+
+This function decrypts {\em v\/} with {\em k\/} and returns the decrypted data in {\em v\/}.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em v}]Array of eight iu8 values containing the data block. \item[{\em k}]Array of ten iu8 values containing the key. \end{description}
+\end{Desc}
+\index{skipjack.h@{skipjack.h}!skipjack_enc@{skipjack\_\-enc}}
+\index{skipjack_enc@{skipjack\_\-enc}!skipjack.h@{skipjack.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void skipjack\_\-enc (\bf{iu8} $\ast$ {\em v}, \bf{iu8} $\ast$ {\em k})}\hfill\label{skipjack_8h_fcca26adc0d1023fd076333bfa12c07d}
+
+
+Skipjack encryption function. 
+
+This function encrypts {\em v\/} with {\em k\/} and returns the encrypted data in {\em v\/}.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em v}]Array of eight iu8 values containing the data block. \item[{\em k}]Array of ten iu8 values containing the key. \end{description}
+\end{Desc}

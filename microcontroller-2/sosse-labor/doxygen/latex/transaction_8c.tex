@@ -1,0 +1,61 @@
+\subsection{transaction.c File Reference}
+\label{transaction_8c}\index{transaction.c@{transaction.c}}
+Transaction functions. 
+
+{\tt \#include $<$config.h$>$}\par
+{\tt \#include $<$sw.h$>$}\par
+{\tt \#include $<$hal.h$>$}\par
+{\tt \#include $<$transaction.h$>$}\par
+{\tt \#include $<$types.h$>$}\par
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+\bf{bool} \bf{ta\_\-setdata} (\bf{iu8} $\ast$data, \bf{iu8} len, \bf{iu16} dst)
+\begin{CompactList}\small\item\em Begins a transaction and sets the data. \item\end{CompactList}\item 
+\bf{bool} \bf{ta\_\-commit} (void)
+\begin{CompactList}\small\item\em Commits the data in the transaction buffer. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+Transaction functions. 
+
+\begin{Desc}
+\item[Id]\doxyref{transaction.c}{p.}{transaction_8c},v 1.11 2002/12/22 15:42:56 m Exp \end{Desc}
+
+
+\subsubsection{Function Documentation}
+\index{transaction.c@{transaction.c}!ta_commit@{ta\_\-commit}}
+\index{ta_commit@{ta\_\-commit}!transaction.c@{transaction.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} ta\_\-commit (void)}\hfill\label{transaction_8c_cacd724418635980cbe9ff7caab01e9c}
+
+
+Commits the data in the transaction buffer. 
+
+Data is written to the destination specified in \doxyref{ta\_\-setdata()}{p.}{transaction_8c_e0ead4e9d2dc0e305973f13324a356aa}. The state is then set to clean.
+
+This function must be called after each reset to commit pending transactions.
+
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{transaction.c@{transaction.c}!ta_setdata@{ta\_\-setdata}}
+\index{ta_setdata@{ta\_\-setdata}!transaction.c@{transaction.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} ta\_\-setdata (\bf{iu8} $\ast$ {\em data}, \bf{iu8} {\em len}, \bf{iu16} {\em dst})}\hfill\label{transaction_8c_e0ead4e9d2dc0e305973f13324a356aa}
+
+
+Begins a transaction and sets the data. 
+
+{\em data/len\/} bytes are written to the transaction buffer. The destination address is also stored there. Then the state is set to TRANSAC\_\-STATE\_\-DATA.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]Pointer to the data to write into the transaction buffer. \item[{\em len}]Length of the data. (Max.: TRANSAC\_\-DATA\_\-LEN) \item[{\em dst}]Destination of the data in EEPROM.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}

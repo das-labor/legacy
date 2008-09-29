@@ -1,0 +1,94 @@
+\subsection{tea.h File Reference}
+\label{tea_8h}\index{tea.h@{tea.h}}
+TEA declarations. 
+
+{\tt \#include $<$types.h$>$}\par
+\subsubsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \bf{TEA\_\-KEY\_\-LEN}~16
+\begin{CompactList}\small\item\em TEA key size. \item\end{CompactList}\item 
+\#define \bf{TEA\_\-BLOCK\_\-LEN}~8
+\begin{CompactList}\small\item\em TEA block length. \item\end{CompactList}\item 
+\#define \bf{DELTA}~0x9E3779B9
+\begin{CompactList}\small\item\em Magic value. (Golden number $\ast$ 2$^\wedge$31). \item\end{CompactList}\item 
+\#define \bf{ROUNDS}~32
+\begin{CompactList}\small\item\em Number of rounds. \item\end{CompactList}\end{CompactItemize}
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+void \bf{tea\_\-enc} (\bf{iu32} $\ast$v, \bf{iu32} $\ast$k)
+\begin{CompactList}\small\item\em TEA encryption function. \item\end{CompactList}\item 
+void \bf{tea\_\-dec} (\bf{iu32} $\ast$v, \bf{iu32} $\ast$k)
+\begin{CompactList}\small\item\em TEA decryption function. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+TEA declarations. 
+
+Documentation for TEA is available at \tt{http://www.cl.cam.ac.uk/ftp/users/djw3/tea.ps.}
+
+\begin{Desc}
+\item[Id]\doxyref{tea.h}{p.}{tea_8h},v 1.5 2002/12/22 15:42:55 m Exp \end{Desc}
+
+
+\subsubsection{Define Documentation}
+\index{tea.h@{tea.h}!DELTA@{DELTA}}
+\index{DELTA@{DELTA}!tea.h@{tea.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define DELTA~0x9E3779B9}\hfill\label{tea_8h_3fd2b1bcd7ddcf506237987ad780f495}
+
+
+Magic value. (Golden number $\ast$ 2$^\wedge$31). 
+
+\index{tea.h@{tea.h}!ROUNDS@{ROUNDS}}
+\index{ROUNDS@{ROUNDS}!tea.h@{tea.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define ROUNDS~32}\hfill\label{tea_8h_69479655ab94c875413d38689002ff98}
+
+
+Number of rounds. 
+
+\index{tea.h@{tea.h}!TEA_BLOCK_LEN@{TEA\_\-BLOCK\_\-LEN}}
+\index{TEA_BLOCK_LEN@{TEA\_\-BLOCK\_\-LEN}!tea.h@{tea.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define TEA\_\-BLOCK\_\-LEN~8}\hfill\label{tea_8h_42fe1c2852561ea40a1380fc426d9c81}
+
+
+TEA block length. 
+
+\index{tea.h@{tea.h}!TEA_KEY_LEN@{TEA\_\-KEY\_\-LEN}}
+\index{TEA_KEY_LEN@{TEA\_\-KEY\_\-LEN}!tea.h@{tea.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define TEA\_\-KEY\_\-LEN~16}\hfill\label{tea_8h_c52845e68e2ba28492bfe7713ecd4446}
+
+
+TEA key size. 
+
+
+
+\subsubsection{Function Documentation}
+\index{tea.h@{tea.h}!tea_dec@{tea\_\-dec}}
+\index{tea_dec@{tea\_\-dec}!tea.h@{tea.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void tea\_\-dec (\bf{iu32} $\ast$ {\em v}, \bf{iu32} $\ast$ {\em k})}\hfill\label{tea_8h_1cd09c6d04d02c89bf0fddb0b6cb519c}
+
+
+TEA decryption function. 
+
+This function decrypts {\em v\/} with {\em k\/} and returns the decrypted data in {\em v\/}.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em v}]Array of two long values containing the data block. \item[{\em k}]Array of four long values containing the key. \end{description}
+\end{Desc}
+\index{tea.h@{tea.h}!tea_enc@{tea\_\-enc}}
+\index{tea_enc@{tea\_\-enc}!tea.h@{tea.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void tea\_\-enc (\bf{iu32} $\ast$ {\em v}, \bf{iu32} $\ast$ {\em k})}\hfill\label{tea_8h_af7981a928cc6a0ce5165eaf70009a11}
+
+
+TEA encryption function. 
+
+This function encrypts {\em v\/} with {\em k\/} and returns the encrypted data in {\em v\/}.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em v}]Array of two long values containing the data block. \item[{\em k}]Array of four long values containing the key. \end{description}
+\end{Desc}

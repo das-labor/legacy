@@ -1,0 +1,59 @@
+\subsection{s\_\-finfo Struct Reference}
+\label{structs__finfo}\index{s_finfo@{s\_\-finfo}}
+File info struct. This is directly written as a file header in the file system.  
+
+
+{\tt \#include $<$fs.h$>$}
+
+\subsubsection*{Data Fields}
+\begin{CompactItemize}
+\item 
+\bf{iu16} \bf{size}
+\begin{CompactList}\small\item\em Size of the file content. \item\end{CompactList}\item 
+\bf{iu16} \bf{fid}
+\begin{CompactList}\small\item\em ID of the file. \item\end{CompactList}\item 
+\bf{iu8} \bf{type}
+\begin{CompactList}\small\item\em Type of the file. (FS\_\-TYPE\_\-$\ast$). \item\end{CompactList}\item 
+\bf{iu8} \bf{ac} [1]
+\begin{CompactList}\small\item\em Access conditions of the file. (See CREATE FILE dox.). \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+File info struct. This is directly written as a file header in the file system. 
+
+
+
+\subsubsection{Field Documentation}
+\index{s_finfo@{s\_\-finfo}!ac@{ac}}
+\index{ac@{ac}!s_finfo@{s\_\-finfo}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu8} \bf{s\_\-finfo::ac}[1]}\hfill\label{structs__finfo_1f5a3947c58b7f6f5be099bf2e84b1aa}
+
+
+Access conditions of the file. (See CREATE FILE dox.). 
+
+\index{s_finfo@{s\_\-finfo}!fid@{fid}}
+\index{fid@{fid}!s_finfo@{s\_\-finfo}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu16} \bf{s\_\-finfo::fid}}\hfill\label{structs__finfo_864b248ae358e708aec64b7d7ddc35f3}
+
+
+ID of the file. 
+
+\index{s_finfo@{s\_\-finfo}!size@{size}}
+\index{size@{size}!s_finfo@{s\_\-finfo}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu16} \bf{s\_\-finfo::size}}\hfill\label{structs__finfo_e59b244a2c42920a988419568a0d4ab5}
+
+
+Size of the file content. 
+
+\index{s_finfo@{s\_\-finfo}!type@{type}}
+\index{type@{type}!s_finfo@{s\_\-finfo}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu8} \bf{s\_\-finfo::type}}\hfill\label{structs__finfo_41bbc495939ea65ac01a8e210bf9a47c}
+
+
+Type of the file. (FS\_\-TYPE\_\-$\ast$). 
+
+
+
+The documentation for this struct was generated from the following file:\begin{CompactItemize}
+\item 
+\bf{fs.h}\end{CompactItemize}

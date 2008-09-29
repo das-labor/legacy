@@ -1,0 +1,82 @@
+\subsection{fstream.c File Reference}
+\label{fstream_8c}\index{fstream.c@{fstream.c}}
+File stream functions. 
+
+{\tt \#include $<$sw.h$>$}\par
+{\tt \#include $<$fstream.h$>$}\par
+{\tt \#include $<$hal.h$>$}\par
+{\tt \#include $<$types.h$>$}\par
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+\bf{bool} \bf{fstream\_\-read} (\bf{S\_\-FSTREAM} $\ast$fs, \bf{iu8} $\ast$dst, \bf{iu8} len)
+\begin{CompactList}\small\item\em Read data from a stream. \item\end{CompactList}\item 
+\bf{bool} \bf{fstream\_\-write} (\bf{S\_\-FSTREAM} $\ast$fs, \bf{iu8} $\ast$src, \bf{iu8} len)
+\begin{CompactList}\small\item\em Write data to a stream. \item\end{CompactList}\item 
+\bf{bool} \bf{fstream\_\-test} (\bf{S\_\-FSTREAM} $\ast$fs, \bf{iu16} len)
+\begin{CompactList}\small\item\em This function tests, if enough space is available to read or write {\em len\/} bytes. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+File stream functions. 
+
+\begin{Desc}
+\item[Id]\doxyref{fstream.c}{p.}{fstream_8c},v 1.11 2002/12/22 15:42:55 m Exp \end{Desc}
+
+
+\subsubsection{Function Documentation}
+\index{fstream.c@{fstream.c}!fstream_read@{fstream\_\-read}}
+\index{fstream_read@{fstream\_\-read}!fstream.c@{fstream.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} fstream\_\-read (\bf{S\_\-FSTREAM} $\ast$ {\em fs}, \bf{iu8} $\ast$ {\em dst}, \bf{iu8} {\em len})}\hfill\label{fstream_8c_386424e62f60cec15c42698f322001e8}
+
+
+Read data from a stream. 
+
+Either this functions reads all data or nothing.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fs}]Pointer to S\_\-FSTREAM, on which it should be operated. \item[{\em dst}]Pointer to the data destination. \item[{\em len}]Length of the data\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{fstream.c@{fstream.c}!fstream_test@{fstream\_\-test}}
+\index{fstream_test@{fstream\_\-test}!fstream.c@{fstream.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} fstream\_\-test (\bf{S\_\-FSTREAM} $\ast$ {\em fs}, \bf{iu16} {\em len})}\hfill\label{fstream_8c_73854dd54261634e486b4ca9eba03be9}
+
+
+This function tests, if enough space is available to read or write {\em len\/} bytes. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fs}]Pointer to S\_\-FSTREAM, on which it should be operated. \item[{\em len}]Length of the data\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{fstream.c@{fstream.c}!fstream_write@{fstream\_\-write}}
+\index{fstream_write@{fstream\_\-write}!fstream.c@{fstream.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} fstream\_\-write (\bf{S\_\-FSTREAM} $\ast$ {\em fs}, \bf{iu8} $\ast$ {\em src}, \bf{iu8} {\em len})}\hfill\label{fstream_8c_e973258fc48b63c8cc36ccc7168b1908}
+
+
+Write data to a stream. 
+
+This functions tries to write all or nothing.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fs}]Pointer to S\_\-FSTREAM, on which it should be operated. \item[{\em src}]Pointer to data source. \item[{\em len}]Length of the data\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}

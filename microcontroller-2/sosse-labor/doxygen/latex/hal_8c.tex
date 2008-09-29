@@ -1,0 +1,184 @@
+\subsection{hal.c File Reference}
+\label{hal_8c}\index{hal.c@{hal.c}}
+HAL (Hardware Abstraction Layer). 
+
+{\tt \#include $<$config.h$>$}\par
+{\tt \#include $<$crypt.h$>$}\par
+{\tt \#include $<$hal.h$>$}\par
+{\tt \#include $<$avr/eeprom.h$>$}\par
+{\tt \#include $<$avr/io.h$>$}\par
+{\tt \#include $<$log.h$>$}\par
+{\tt \#include $<$string.h$>$}\par
+{\tt \#include $<$tools.h$>$}\par
+{\tt \#include $<$types.h$>$}\par
+\subsubsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \bf{outb}(a, b)~(b)=(a)
+\item 
+\#define \bf{eeprom\_\-rb}~eeprom\_\-read\_\-byte
+\item 
+\#define \bf{eeprom\_\-wb}~eeprom\_\-write\_\-byte
+\end{CompactItemize}
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+void \bf{hal\_\-init} (void)
+\begin{CompactList}\small\item\em Initializes the HAL. \item\end{CompactList}\item 
+\bf{iu8} \bf{xeread} (\bf{iu16} addr)
+\item 
+void \bf{xewrt} (\bf{iu16} addr, \bf{iu8} b)
+\item 
+\bf{bool} \bf{hal\_\-eeprom\_\-read} (\bf{iu8} $\ast$dst, \bf{iu16} src, \bf{iu8} len)
+\begin{CompactList}\small\item\em Read data from EEPROM. \item\end{CompactList}\item 
+\bf{bool} \bf{hal\_\-eeprom\_\-write} (\bf{iu16} dst, \bf{iu8} $\ast$src, \bf{iu8} len)
+\begin{CompactList}\small\item\em Write data to EEPROM. \item\end{CompactList}\item 
+void \bf{sendbytet0} (\bf{iu8} b)
+\item 
+\bf{iu8} \bf{recbytet0} (void)
+\item 
+void \bf{hal\_\-io\_\-send\-Byte\-T0} (\bf{iu8} b)
+\begin{CompactList}\small\item\em Send a byte with T=0 error detection and recovery. \item\end{CompactList}\item 
+\bf{iu8} \bf{hal\_\-io\_\-rec\-Byte\-T0} (void)
+\begin{CompactList}\small\item\em Receive a byte with T=0 error detection and recovery. \item\end{CompactList}\item 
+\bf{bool} \bf{hal\_\-rnd\_\-get\-Block} (\bf{iu8} $\ast$dst)
+\begin{CompactList}\small\item\em Returns 8 random bytes. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+HAL (Hardware Abstraction Layer). 
+
+\begin{Desc}
+\item[Id]\doxyref{hal.c}{p.}{hal_8c},v 1.22 2003/03/30 12:42:21 m Exp \end{Desc}
+
+
+\subsubsection{Define Documentation}
+\index{hal.c@{hal.c}!eeprom_rb@{eeprom\_\-rb}}
+\index{eeprom_rb@{eeprom\_\-rb}!hal.c@{hal.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define eeprom\_\-rb~eeprom\_\-read\_\-byte}\hfill\label{hal_8c_40d2117eb6625e443b9dee4ca113a97f}
+
+
+\index{hal.c@{hal.c}!eeprom_wb@{eeprom\_\-wb}}
+\index{eeprom_wb@{eeprom\_\-wb}!hal.c@{hal.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define eeprom\_\-wb~eeprom\_\-write\_\-byte}\hfill\label{hal_8c_6ca82673b18a6ec65b460f7d8219195e}
+
+
+\index{hal.c@{hal.c}!outb@{outb}}
+\index{outb@{outb}!hal.c@{hal.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define outb(a, b)~(b)=(a)}\hfill\label{hal_8c_c2141048c5fbf9063d5a5a65850b2263}
+
+
+
+
+\subsubsection{Function Documentation}
+\index{hal.c@{hal.c}!hal_eeprom_read@{hal\_\-eeprom\_\-read}}
+\index{hal_eeprom_read@{hal\_\-eeprom\_\-read}!hal.c@{hal.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} hal\_\-eeprom\_\-read (\bf{iu8} $\ast$ {\em dst}, \bf{iu16} {\em src}, \bf{iu8} {\em len})}\hfill\label{hal_8c_e23736f92fbd6e59f6e67a191e69ecef}
+
+
+Read data from EEPROM. 
+
+The internal EEPROM begins at address 0, the external EEPROM is located subsequently.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em dst}]Pointer to destination area. \item[{\em src}]EEPROM source address. \item[{\em len}]Length of data in bytes.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{hal.c@{hal.c}!hal_eeprom_write@{hal\_\-eeprom\_\-write}}
+\index{hal_eeprom_write@{hal\_\-eeprom\_\-write}!hal.c@{hal.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} hal\_\-eeprom\_\-write (\bf{iu16} {\em dst}, \bf{iu8} $\ast$ {\em src}, \bf{iu8} {\em len})}\hfill\label{hal_8c_19f6e1f1e627521793f250459c5e49b8}
+
+
+Write data to EEPROM. 
+
+The internal EEPROM begins at address 0, the external EEPROM is located subsequently.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em dst}]EEPROM destination address \item[{\em src}]Pointer to source area. \item[{\em len}]Length of data in bytes.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{hal.c@{hal.c}!hal_init@{hal\_\-init}}
+\index{hal_init@{hal\_\-init}!hal.c@{hal.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void hal\_\-init (void)}\hfill\label{hal_8c_f5ea8985a12feedc3ac25fbb50712183}
+
+
+Initializes the HAL. 
+
+Must be called after each reset. \index{hal.c@{hal.c}!hal_io_recByteT0@{hal\_\-io\_\-recByteT0}}
+\index{hal_io_recByteT0@{hal\_\-io\_\-recByteT0}!hal.c@{hal.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu8} hal\_\-io\_\-rec\-Byte\-T0 (void)}\hfill\label{hal_8c_6f2a2f946cf90cb7bd613f2c3ada355c}
+
+
+Receive a byte with T=0 error detection and recovery. 
+
+Currently only 9600 bps at 3.58MHz with direct convention is supported.
+
+\begin{Desc}
+\item[Returns:]This function returns a received byte. There can't be an error, because T=0 tries endlessly to receive a characters. (And if there is really an error, what should SOSSE do with it anyway?) \end{Desc}
+\index{hal.c@{hal.c}!hal_io_sendByteT0@{hal\_\-io\_\-sendByteT0}}
+\index{hal_io_sendByteT0@{hal\_\-io\_\-sendByteT0}!hal.c@{hal.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void hal\_\-io\_\-send\-Byte\-T0 (\bf{iu8} {\em b})}\hfill\label{hal_8c_50f4270db8dcf34e7e98f1e2b43d1135}
+
+
+Send a byte with T=0 error detection and recovery. 
+
+Currently only 9600 bps at 3.58MHz with direct convention is supported.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]Byte to send. \end{description}
+\end{Desc}
+\index{hal.c@{hal.c}!hal_rnd_getBlock@{hal\_\-rnd\_\-getBlock}}
+\index{hal_rnd_getBlock@{hal\_\-rnd\_\-getBlock}!hal.c@{hal.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} hal\_\-rnd\_\-get\-Block (\bf{iu8} $\ast$ {\em dst})}\hfill\label{hal_8c_4dfdfc55f93a2f674edd64b10e8332ae}
+
+
+Returns 8 random bytes. 
+
+{\em The current AVR implementation does not produce real random numbers, but pseudo random numbers. These are produced by a X9.17 generator modified to use a counter instead of a timer. The state of this PRNG is held at RAND\_\-STATE\_\-ADDR. The start value (at least the key) at this address should be unique for every card.\/}
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em dst}]Pointer to the destination, where the 8 random bytes should be written.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Note:]There is still a simpler PRNG in the code, which uses 16 bytes RAM and 126 bytes ROM less than the X9.17 generator. \end{Desc}
+\index{hal.c@{hal.c}!recbytet0@{recbytet0}}
+\index{recbytet0@{recbytet0}!hal.c@{hal.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu8} recbytet0 (void)}\hfill\label{hal_8c_9a3093898ae4cf654a737752e559f198}
+
+
+\index{hal.c@{hal.c}!sendbytet0@{sendbytet0}}
+\index{sendbytet0@{sendbytet0}!hal.c@{hal.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void sendbytet0 (\bf{iu8} {\em b})}\hfill\label{hal_8c_1c1c09f7e82f4ad3d90198d4c0020320}
+
+
+\index{hal.c@{hal.c}!xeread@{xeread}}
+\index{xeread@{xeread}!hal.c@{hal.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu8} xeread (\bf{iu16} {\em addr})}\hfill\label{hal_8c_479e01d268dbe4531acd66486fb03e5e}
+
+
+\index{hal.c@{hal.c}!xewrt@{xewrt}}
+\index{xewrt@{xewrt}!hal.c@{hal.c}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void xewrt (\bf{iu16} {\em addr}, \bf{iu8} {\em b})}\hfill\label{hal_8c_28b06176b0c2f2b9476a55c18cfaa65d}
+
+

@@ -1,0 +1,329 @@
+\subsection{ctapi.h File Reference}
+\label{ctapi_8h}\index{ctapi.h@{ctapi.h}}
+Declarations for virtual CT-API library. 
+
+{\tt \#include $<$types.h$>$}\par
+\subsubsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \bf{CTAPI\_\-AD\_\-ICC1}~0
+\item 
+\#define \bf{CTAPI\_\-AD\_\-CT}~1
+\item 
+\#define \bf{CTAPI\_\-AD\_\-HOST}~2
+\item 
+\#define \bf{CTAPI\_\-RV\_\-OK}~0
+\item 
+\#define \bf{CTAPI\_\-RV\_\-ERR\_\-INVALID}~-1
+\item 
+\#define \bf{CTAPI\_\-RV\_\-ERR\_\-CT}~-8
+\item 
+\#define \bf{CTAPI\_\-RV\_\-ERR\_\-TRANS}~-10
+\item 
+\#define \bf{CTAPI\_\-RV\_\-ERR\_\-MEMORY}~-11
+\item 
+\#define \bf{CTAPI\_\-RV\_\-ERR\_\-HOST}~-127
+\item 
+\#define \bf{CTAPI\_\-RV\_\-ERR\_\-HTSI}~-128
+\item 
+\#define \bf{CTAPI\_\-PORT}~1
+\item 
+\#define \bf{CTAPI\_\-CLA}~0x20
+\item 
+\#define \bf{CTAPI\_\-INS\_\-RESET\_\-CT}~0x11
+\item 
+\#define \bf{CTAPI\_\-INS\_\-REQUEST\_\-ICC}~0x12
+\item 
+\#define \bf{CTAPI\_\-INS\_\-GET\_\-STATUS}~0x13
+\item 
+\#define \bf{CTAPI\_\-INS\_\-EJECT\_\-ICC}~0x14
+\item 
+\#define \bf{CTAPI\_\-INS\_\-EEPROM}~0x\-E0
+\end{CompactItemize}
+\subsubsection*{Typedefs}
+\begin{CompactItemize}
+\item 
+typedef unsigned char \bf{IU8}
+\item 
+typedef signed char \bf{IS8}
+\item 
+typedef unsigned short \bf{IU16}
+\item 
+typedef signed short \bf{IS16}
+\item 
+typedef unsigned long \bf{IU32}
+\item 
+typedef signed long \bf{IS32}
+\end{CompactItemize}
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+\bf{IS8} \bf{CT\_\-fork\-Icc} (void)
+\item 
+\bf{IS8} \bf{CT\_\-stop\-Icc} (void)
+\item 
+\bf{IS8} \bf{CT\_\-ifd\-Cmd\-Eeprom\-File} (\bf{IU16} lenc, \bf{IU8} $\ast$command, \bf{IU16} $\ast$lenr, \bf{IU8} $\ast$\bf{response})
+\begin{CompactList}\small\item\em Parses EEPROM FILE command. \item\end{CompactList}\item 
+\bf{IS8} \bf{CT\_\-ifd\-Cmd\-Reset\-CT} (\bf{IU16} lenc, \bf{IU8} $\ast$command, \bf{IU16} $\ast$lenr, \bf{IU8} $\ast$\bf{response})
+\item 
+\bf{IS8} \bf{CT\_\-ifd\-Cmd\-Request\-ICC} (\bf{IU16} lenc, \bf{IU8} $\ast$command, \bf{IU16} $\ast$lenr, \bf{IU8} $\ast$\bf{response})
+\item 
+\bf{IS8} \bf{CT\_\-ifd\-Cmd\-Get\-Status} (\bf{IU16} lenc, \bf{IU8} $\ast$command, \bf{IU16} $\ast$lenr, \bf{IU8} $\ast$\bf{response})
+\item 
+\bf{IS8} \bf{CT\_\-ifd\-Cmd\-Eject\-ICC} (\bf{IU16} lenc, \bf{IU8} $\ast$command, \bf{IU16} $\ast$lenr, \bf{IU8} $\ast$\bf{response})
+\item 
+\bf{IS8} \bf{CT\_\-ifd\-Cmd} (\bf{IU16} lenc, \bf{IU8} $\ast$command, \bf{IU16} $\ast$lenr, \bf{IU8} $\ast$\bf{response})
+\item 
+\bf{IS8} \bf{CT\_\-icc\-Cmd} (\bf{IU8} $\ast$dad, \bf{IU8} $\ast$sad, \bf{IU16} lenc, \bf{IU8} $\ast$command, \bf{IU16} $\ast$lenr, \bf{IU8} $\ast$\bf{response})
+\item 
+\bf{IS8} \bf{CT\_\-init} (\bf{IU16} ctn, \bf{IU16} pn)
+\item 
+\bf{IS8} \bf{CT\_\-data} (\bf{IU16} ctn, \bf{IU8} $\ast$dad, \bf{IU8} $\ast$sad, \bf{IU16} lenc, \bf{IU8} $\ast$command, \bf{IU16} $\ast$lenr, \bf{IU8} $\ast$\bf{response})
+\item 
+\bf{IS8} \bf{CT\_\-close} (\bf{IU16} ctn)
+\end{CompactItemize}
+\subsubsection*{Variables}
+\begin{CompactItemize}
+\item 
+int \bf{fd\_\-from\-Card} [2]
+\item 
+int \bf{fd\_\-to\-Card} [2]
+\item 
+int \bf{load\-Eeprom\-File}
+\item 
+int \bf{save\-Eeprom\-File}
+\item 
+char \bf{eeprom\-File} [256]
+\item 
+int \bf{fd\-Eeprom\-File}
+\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+Declarations for virtual CT-API library. 
+
+\begin{Desc}
+\item[Id]\doxyref{ctapi.h}{p.}{ctapi_8h},v 1.2 2002/12/22 23:16:15 m Exp \end{Desc}
+
+
+\subsubsection{Define Documentation}
+\index{ctapi.h@{ctapi.h}!CTAPI_AD_CT@{CTAPI\_\-AD\_\-CT}}
+\index{CTAPI_AD_CT@{CTAPI\_\-AD\_\-CT}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CTAPI\_\-AD\_\-CT~1}\hfill\label{ctapi_8h_67f0456fae34d97ced4956aa74d11247}
+
+
+\index{ctapi.h@{ctapi.h}!CTAPI_AD_HOST@{CTAPI\_\-AD\_\-HOST}}
+\index{CTAPI_AD_HOST@{CTAPI\_\-AD\_\-HOST}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CTAPI\_\-AD\_\-HOST~2}\hfill\label{ctapi_8h_fd739a4469528c521cc146dd4c517d66}
+
+
+\index{ctapi.h@{ctapi.h}!CTAPI_AD_ICC1@{CTAPI\_\-AD\_\-ICC1}}
+\index{CTAPI_AD_ICC1@{CTAPI\_\-AD\_\-ICC1}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CTAPI\_\-AD\_\-ICC1~0}\hfill\label{ctapi_8h_57efec63134aeb32b94cc993dffaf5c5}
+
+
+\index{ctapi.h@{ctapi.h}!CTAPI_CLA@{CTAPI\_\-CLA}}
+\index{CTAPI_CLA@{CTAPI\_\-CLA}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CTAPI\_\-CLA~0x20}\hfill\label{ctapi_8h_2ca3f438ec43f581efbd8a83f3ed8b2d}
+
+
+\index{ctapi.h@{ctapi.h}!CTAPI_INS_EEPROM@{CTAPI\_\-INS\_\-EEPROM}}
+\index{CTAPI_INS_EEPROM@{CTAPI\_\-INS\_\-EEPROM}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CTAPI\_\-INS\_\-EEPROM~0x\-E0}\hfill\label{ctapi_8h_5183589777ef4b73ee19b742bac44cf4}
+
+
+\index{ctapi.h@{ctapi.h}!CTAPI_INS_EJECT_ICC@{CTAPI\_\-INS\_\-EJECT\_\-ICC}}
+\index{CTAPI_INS_EJECT_ICC@{CTAPI\_\-INS\_\-EJECT\_\-ICC}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CTAPI\_\-INS\_\-EJECT\_\-ICC~0x14}\hfill\label{ctapi_8h_70bbad4c8868c45b77e94f2d081e2a69}
+
+
+\index{ctapi.h@{ctapi.h}!CTAPI_INS_GET_STATUS@{CTAPI\_\-INS\_\-GET\_\-STATUS}}
+\index{CTAPI_INS_GET_STATUS@{CTAPI\_\-INS\_\-GET\_\-STATUS}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CTAPI\_\-INS\_\-GET\_\-STATUS~0x13}\hfill\label{ctapi_8h_df1f0f0e8d49dc5f7bf18347debadf9e}
+
+
+\index{ctapi.h@{ctapi.h}!CTAPI_INS_REQUEST_ICC@{CTAPI\_\-INS\_\-REQUEST\_\-ICC}}
+\index{CTAPI_INS_REQUEST_ICC@{CTAPI\_\-INS\_\-REQUEST\_\-ICC}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CTAPI\_\-INS\_\-REQUEST\_\-ICC~0x12}\hfill\label{ctapi_8h_c46c8518f356b7fe04a0830204967a4b}
+
+
+\index{ctapi.h@{ctapi.h}!CTAPI_INS_RESET_CT@{CTAPI\_\-INS\_\-RESET\_\-CT}}
+\index{CTAPI_INS_RESET_CT@{CTAPI\_\-INS\_\-RESET\_\-CT}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CTAPI\_\-INS\_\-RESET\_\-CT~0x11}\hfill\label{ctapi_8h_80ade8fb60386f68f29edfda531f058a}
+
+
+\index{ctapi.h@{ctapi.h}!CTAPI_PORT@{CTAPI\_\-PORT}}
+\index{CTAPI_PORT@{CTAPI\_\-PORT}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CTAPI\_\-PORT~1}\hfill\label{ctapi_8h_c6a92f7776385b682d6a52a5bd685be7}
+
+
+\index{ctapi.h@{ctapi.h}!CTAPI_RV_ERR_CT@{CTAPI\_\-RV\_\-ERR\_\-CT}}
+\index{CTAPI_RV_ERR_CT@{CTAPI\_\-RV\_\-ERR\_\-CT}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CTAPI\_\-RV\_\-ERR\_\-CT~-8}\hfill\label{ctapi_8h_da0fdfc5541d3ad3abbf96be734a6aa1}
+
+
+\index{ctapi.h@{ctapi.h}!CTAPI_RV_ERR_HOST@{CTAPI\_\-RV\_\-ERR\_\-HOST}}
+\index{CTAPI_RV_ERR_HOST@{CTAPI\_\-RV\_\-ERR\_\-HOST}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CTAPI\_\-RV\_\-ERR\_\-HOST~-127}\hfill\label{ctapi_8h_50291573b5e5183e0c3d1cbe00de9ca8}
+
+
+\index{ctapi.h@{ctapi.h}!CTAPI_RV_ERR_HTSI@{CTAPI\_\-RV\_\-ERR\_\-HTSI}}
+\index{CTAPI_RV_ERR_HTSI@{CTAPI\_\-RV\_\-ERR\_\-HTSI}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CTAPI\_\-RV\_\-ERR\_\-HTSI~-128}\hfill\label{ctapi_8h_5cfecb2d395d7ce1de0326cc231afd3c}
+
+
+\index{ctapi.h@{ctapi.h}!CTAPI_RV_ERR_INVALID@{CTAPI\_\-RV\_\-ERR\_\-INVALID}}
+\index{CTAPI_RV_ERR_INVALID@{CTAPI\_\-RV\_\-ERR\_\-INVALID}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CTAPI\_\-RV\_\-ERR\_\-INVALID~-1}\hfill\label{ctapi_8h_2d648e46219b2871618bf1ed73d2f743}
+
+
+\index{ctapi.h@{ctapi.h}!CTAPI_RV_ERR_MEMORY@{CTAPI\_\-RV\_\-ERR\_\-MEMORY}}
+\index{CTAPI_RV_ERR_MEMORY@{CTAPI\_\-RV\_\-ERR\_\-MEMORY}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CTAPI\_\-RV\_\-ERR\_\-MEMORY~-11}\hfill\label{ctapi_8h_ae1f3fab27f6fd255920f310589d9e15}
+
+
+\index{ctapi.h@{ctapi.h}!CTAPI_RV_ERR_TRANS@{CTAPI\_\-RV\_\-ERR\_\-TRANS}}
+\index{CTAPI_RV_ERR_TRANS@{CTAPI\_\-RV\_\-ERR\_\-TRANS}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CTAPI\_\-RV\_\-ERR\_\-TRANS~-10}\hfill\label{ctapi_8h_f5b2461e4c94ce82f4a9e90524b6b1a3}
+
+
+\index{ctapi.h@{ctapi.h}!CTAPI_RV_OK@{CTAPI\_\-RV\_\-OK}}
+\index{CTAPI_RV_OK@{CTAPI\_\-RV\_\-OK}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CTAPI\_\-RV\_\-OK~0}\hfill\label{ctapi_8h_067c4b4bee15536c57fbcb7d0c736ffc}
+
+
+
+
+\subsubsection{Typedef Documentation}
+\index{ctapi.h@{ctapi.h}!IS16@{IS16}}
+\index{IS16@{IS16}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}typedef signed short \bf{IS16}}\hfill\label{ctapi_8h_3186692362938d461c0baec1173ce1e7}
+
+
+\index{ctapi.h@{ctapi.h}!IS32@{IS32}}
+\index{IS32@{IS32}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}typedef signed long \bf{IS32}}\hfill\label{ctapi_8h_1c3fcd7da6f72230cadc6952f51c14aa}
+
+
+\index{ctapi.h@{ctapi.h}!IS8@{IS8}}
+\index{IS8@{IS8}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}typedef signed char \bf{IS8}}\hfill\label{ctapi_8h_5c1918daa61799e8f263267c79c98775}
+
+
+\index{ctapi.h@{ctapi.h}!IU16@{IU16}}
+\index{IU16@{IU16}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned short \bf{IU16}}\hfill\label{ctapi_8h_efb072b16108a72c92fa2f9d44e474a5}
+
+
+\index{ctapi.h@{ctapi.h}!IU32@{IU32}}
+\index{IU32@{IU32}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned long \bf{IU32}}\hfill\label{ctapi_8h_9780b620d4bf5bee153ead1f3e3c11dc}
+
+
+\index{ctapi.h@{ctapi.h}!IU8@{IU8}}
+\index{IU8@{IU8}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned char \bf{IU8}}\hfill\label{ctapi_8h_b15a19eb300c109e1d94e2b234454126}
+
+
+
+
+\subsubsection{Function Documentation}
+\index{ctapi.h@{ctapi.h}!CT_close@{CT\_\-close}}
+\index{CT_close@{CT\_\-close}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{IS8} CT\_\-close (\bf{IU16} {\em ctn})}\hfill\label{ctapi_8h_67b4abae7b7747f70770a4cd0a96ae94}
+
+
+\index{ctapi.h@{ctapi.h}!CT_data@{CT\_\-data}}
+\index{CT_data@{CT\_\-data}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{IS8} CT\_\-data (\bf{IU16} {\em ctn}, \bf{IU8} $\ast$ {\em dad}, \bf{IU8} $\ast$ {\em sad}, \bf{IU16} {\em lenc}, \bf{IU8} $\ast$ {\em command}, \bf{IU16} $\ast$ {\em lenr}, \bf{IU8} $\ast$ {\em response})}\hfill\label{ctapi_8h_13d6bd18636dbb982be987e695a4b747}
+
+
+\index{ctapi.h@{ctapi.h}!CT_forkIcc@{CT\_\-forkIcc}}
+\index{CT_forkIcc@{CT\_\-forkIcc}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{IS8} CT\_\-fork\-Icc (void)}\hfill\label{ctapi_8h_98caba510268b73db36f0782254f733f}
+
+
+\index{ctapi.h@{ctapi.h}!CT_iccCmd@{CT\_\-iccCmd}}
+\index{CT_iccCmd@{CT\_\-iccCmd}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{IS8} CT\_\-icc\-Cmd (\bf{IU8} $\ast$ {\em dad}, \bf{IU8} $\ast$ {\em sad}, \bf{IU16} {\em lenc}, \bf{IU8} $\ast$ {\em command}, \bf{IU16} $\ast$ {\em lenr}, \bf{IU8} $\ast$ {\em response})}\hfill\label{ctapi_8h_6e8efacf1d6a9c2baec39122663eb693}
+
+
+\index{ctapi.h@{ctapi.h}!CT_ifdCmd@{CT\_\-ifdCmd}}
+\index{CT_ifdCmd@{CT\_\-ifdCmd}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{IS8} CT\_\-ifd\-Cmd (\bf{IU16} {\em lenc}, \bf{IU8} $\ast$ {\em command}, \bf{IU16} $\ast$ {\em lenr}, \bf{IU8} $\ast$ {\em response})}\hfill\label{ctapi_8h_2721d2def6d1963a8e2ae2c030e58c7a}
+
+
+\index{ctapi.h@{ctapi.h}!CT_ifdCmdEepromFile@{CT\_\-ifdCmdEepromFile}}
+\index{CT_ifdCmdEepromFile@{CT\_\-ifdCmdEepromFile}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{IS8} CT\_\-ifd\-Cmd\-Eeprom\-File (\bf{IU16} {\em lenc}, \bf{IU8} $\ast$ {\em command}, \bf{IU16} $\ast$ {\em lenr}, \bf{IU8} $\ast$ {\em response})}\hfill\label{ctapi_8h_3f9effa1af0997b57f4fcf5f5ca6b063}
+
+
+Parses EEPROM FILE command. 
+
+\begin{itemize}
+\item CLA: '20'\item INS: 'E0'\item P1:\begin{itemize}
+\item bit 1: Save EEPROM to file at eject or reset.\item bit 2: Load EEPROM from file at reset.\end{itemize}
+\item P2: RFU\item Lc: Length of file name\item Data: File name (possibly including path) without null-termination \end{itemize}
+\index{ctapi.h@{ctapi.h}!CT_ifdCmdEjectICC@{CT\_\-ifdCmdEjectICC}}
+\index{CT_ifdCmdEjectICC@{CT\_\-ifdCmdEjectICC}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{IS8} CT\_\-ifd\-Cmd\-Eject\-ICC (\bf{IU16} {\em lenc}, \bf{IU8} $\ast$ {\em command}, \bf{IU16} $\ast$ {\em lenr}, \bf{IU8} $\ast$ {\em response})}\hfill\label{ctapi_8h_101877b1f26262069c4bf34174f28004}
+
+
+\index{ctapi.h@{ctapi.h}!CT_ifdCmdGetStatus@{CT\_\-ifdCmdGetStatus}}
+\index{CT_ifdCmdGetStatus@{CT\_\-ifdCmdGetStatus}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{IS8} CT\_\-ifd\-Cmd\-Get\-Status (\bf{IU16} {\em lenc}, \bf{IU8} $\ast$ {\em command}, \bf{IU16} $\ast$ {\em lenr}, \bf{IU8} $\ast$ {\em response})}\hfill\label{ctapi_8h_b333926cd2df6b77b6a911881e184af7}
+
+
+\index{ctapi.h@{ctapi.h}!CT_ifdCmdRequestICC@{CT\_\-ifdCmdRequestICC}}
+\index{CT_ifdCmdRequestICC@{CT\_\-ifdCmdRequestICC}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{IS8} CT\_\-ifd\-Cmd\-Request\-ICC (\bf{IU16} {\em lenc}, \bf{IU8} $\ast$ {\em command}, \bf{IU16} $\ast$ {\em lenr}, \bf{IU8} $\ast$ {\em response})}\hfill\label{ctapi_8h_a40ac7ec66071913781ff96226845110}
+
+
+\index{ctapi.h@{ctapi.h}!CT_ifdCmdResetCT@{CT\_\-ifdCmdResetCT}}
+\index{CT_ifdCmdResetCT@{CT\_\-ifdCmdResetCT}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{IS8} CT\_\-ifd\-Cmd\-Reset\-CT (\bf{IU16} {\em lenc}, \bf{IU8} $\ast$ {\em command}, \bf{IU16} $\ast$ {\em lenr}, \bf{IU8} $\ast$ {\em response})}\hfill\label{ctapi_8h_c4eb9ba08eb13cae90eb9c989f578abe}
+
+
+\index{ctapi.h@{ctapi.h}!CT_init@{CT\_\-init}}
+\index{CT_init@{CT\_\-init}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{IS8} CT\_\-init (\bf{IU16} {\em ctn}, \bf{IU16} {\em pn})}\hfill\label{ctapi_8h_1e1238e91c7a0daad5d29c3a5b96c59c}
+
+
+\index{ctapi.h@{ctapi.h}!CT_stopIcc@{CT\_\-stopIcc}}
+\index{CT_stopIcc@{CT\_\-stopIcc}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{IS8} CT\_\-stop\-Icc (void)}\hfill\label{ctapi_8h_7db4e593d403b5155420634f7bdd9ba5}
+
+
+
+
+\subsubsection{Variable Documentation}
+\index{ctapi.h@{ctapi.h}!eepromFile@{eepromFile}}
+\index{eepromFile@{eepromFile}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}char \bf{eeprom\-File}[256]}\hfill\label{ctapi_8h_91595ea16849581ca08f6b850bccf4d6}
+
+
+\index{ctapi.h@{ctapi.h}!fd_fromCard@{fd\_\-fromCard}}
+\index{fd_fromCard@{fd\_\-fromCard}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}int \bf{fd\_\-from\-Card}[2]}\hfill\label{ctapi_8h_7290409d96c589b579b6b52d0c1f85d1}
+
+
+\index{ctapi.h@{ctapi.h}!fd_toCard@{fd\_\-toCard}}
+\index{fd_toCard@{fd\_\-toCard}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}int \bf{fd\_\-to\-Card}[2]}\hfill\label{ctapi_8h_748c2a8296faf59f5e7ef53b672f0122}
+
+
+\index{ctapi.h@{ctapi.h}!fdEepromFile@{fdEepromFile}}
+\index{fdEepromFile@{fdEepromFile}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}int \bf{fd\-Eeprom\-File}}\hfill\label{ctapi_8h_5f7757661982a05e978dbb4cd0f70bc1}
+
+
+\index{ctapi.h@{ctapi.h}!loadEepromFile@{loadEepromFile}}
+\index{loadEepromFile@{loadEepromFile}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}int \bf{load\-Eeprom\-File}}\hfill\label{ctapi_8h_59c083ae3f67fa2dac32718136d60e96}
+
+
+\index{ctapi.h@{ctapi.h}!saveEepromFile@{saveEepromFile}}
+\index{saveEepromFile@{saveEepromFile}!ctapi.h@{ctapi.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}int \bf{save\-Eeprom\-File}}\hfill\label{ctapi_8h_4792ff850c85ef5072714ffd0a56ef1d}
+
+

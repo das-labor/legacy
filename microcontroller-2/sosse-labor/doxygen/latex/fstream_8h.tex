@@ -1,0 +1,103 @@
+\subsection{fstream.h File Reference}
+\label{fstream_8h}\index{fstream.h@{fstream.h}}
+File stream declarations. 
+
+{\tt \#include $<$types.h$>$}\par
+\subsubsection*{Data Structures}
+\begin{CompactItemize}
+\item 
+struct \bf{s\_\-fstream}
+\begin{CompactList}\small\item\em Stream struct. \item\end{CompactList}\end{CompactItemize}
+\subsubsection*{Typedefs}
+\begin{CompactItemize}
+\item 
+typedef \bf{s\_\-fstream} \bf{S\_\-FSTREAM}
+\begin{CompactList}\small\item\em Stream struct. \item\end{CompactList}\end{CompactItemize}
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+\bf{bool} \bf{fstream\_\-read} (\bf{S\_\-FSTREAM} $\ast$fs, \bf{iu8} $\ast$dst, \bf{iu8} len)
+\begin{CompactList}\small\item\em Read data from a stream. \item\end{CompactList}\item 
+\bf{bool} \bf{fstream\_\-write} (\bf{S\_\-FSTREAM} $\ast$fs, \bf{iu8} $\ast$src, \bf{iu8} len)
+\begin{CompactList}\small\item\em Write data to a stream. \item\end{CompactList}\item 
+\bf{bool} \bf{fstream\_\-test} (\bf{S\_\-FSTREAM} $\ast$fs, \bf{iu16} len)
+\begin{CompactList}\small\item\em This function tests, if enough space is available to read or write {\em len\/} bytes. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+File stream declarations. 
+
+These streams are used to pass more easily EEPROM areas around and to reduce the chances of overwriting unwanted EEPROM areas, e.g. by overflowing the data area.
+
+This is a very slim version of the streams implemented in cryptlib from Peter Gutmann.
+
+\begin{Desc}
+\item[Id]\doxyref{fstream.h}{p.}{fstream_8h},v 1.8 2002/12/22 15:42:55 m Exp \end{Desc}
+
+
+\subsubsection{Typedef Documentation}
+\index{fstream.h@{fstream.h}!S_FSTREAM@{S\_\-FSTREAM}}
+\index{S_FSTREAM@{S\_\-FSTREAM}!fstream.h@{fstream.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}typedef struct \bf{s\_\-fstream}  \bf{S\_\-FSTREAM}}\hfill\label{fstream_8h_d0bbd174862667009671df759105bc9b}
+
+
+Stream struct. 
+
+
+
+\subsubsection{Function Documentation}
+\index{fstream.h@{fstream.h}!fstream_read@{fstream\_\-read}}
+\index{fstream_read@{fstream\_\-read}!fstream.h@{fstream.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} fstream\_\-read (\bf{S\_\-FSTREAM} $\ast$ {\em fs}, \bf{iu8} $\ast$ {\em dst}, \bf{iu8} {\em len})}\hfill\label{fstream_8h_386424e62f60cec15c42698f322001e8}
+
+
+Read data from a stream. 
+
+Either this functions reads all data or nothing.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fs}]Pointer to S\_\-FSTREAM, on which it should be operated. \item[{\em dst}]Pointer to the data destination. \item[{\em len}]Length of the data\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{fstream.h@{fstream.h}!fstream_test@{fstream\_\-test}}
+\index{fstream_test@{fstream\_\-test}!fstream.h@{fstream.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} fstream\_\-test (\bf{S\_\-FSTREAM} $\ast$ {\em fs}, \bf{iu16} {\em len})}\hfill\label{fstream_8h_73854dd54261634e486b4ca9eba03be9}
+
+
+This function tests, if enough space is available to read or write {\em len\/} bytes. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fs}]Pointer to S\_\-FSTREAM, on which it should be operated. \item[{\em len}]Length of the data\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{fstream.h@{fstream.h}!fstream_write@{fstream\_\-write}}
+\index{fstream_write@{fstream\_\-write}!fstream.h@{fstream.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} fstream\_\-write (\bf{S\_\-FSTREAM} $\ast$ {\em fs}, \bf{iu8} $\ast$ {\em src}, \bf{iu8} {\em len})}\hfill\label{fstream_8h_e973258fc48b63c8cc36ccc7168b1908}
+
+
+Write data to a stream. 
+
+This functions tries to write all or nothing.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fs}]Pointer to S\_\-FSTREAM, on which it should be operated. \item[{\em src}]Pointer to data source. \item[{\em len}]Length of the data\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}

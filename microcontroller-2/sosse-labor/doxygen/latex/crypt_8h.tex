@@ -1,0 +1,85 @@
+\subsection{crypt.h File Reference}
+\label{crypt_8h}\index{crypt.h@{crypt.h}}
+Crypto declarations. 
+
+{\tt \#include $<$config.h$>$}\par
+{\tt \#include $<$sw.h$>$}\par
+{\tt \#include $<$string.h$>$}\par
+{\tt \#include $<$types.h$>$}\par
+{\tt \#include $<$tea.h$>$}\par
+\subsubsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \bf{CRYPT\_\-ALGO\_\-TEA}~0
+\begin{CompactList}\small\item\em Algorithm ID: TEA. \item\end{CompactList}\item 
+\#define \bf{CRYPT\_\-ALGO\_\-SKIPJACK}~1
+\begin{CompactList}\small\item\em Algorithm ID: Skipjack. \item\end{CompactList}\item 
+\#define \bf{CRYPT\_\-ALGO\_\-NEWDESSK}~2
+\begin{CompactList}\small\item\em Algorithm ID: NEWDES-SK. \item\end{CompactList}\item 
+\#define \bf{CRYPT\_\-KEY\_\-LEN}~TEA\_\-KEY\_\-LEN
+\begin{CompactList}\small\item\em Length of key in octets. \item\end{CompactList}\item 
+\#define \bf{CRYPT\_\-BLOCK\_\-LEN}~TEA\_\-BLOCK\_\-LEN
+\begin{CompactList}\small\item\em Length of cipher block in octets. \item\end{CompactList}\item 
+\#define \bf{crypt\_\-enc}(v, k)~tea\_\-enc((\bf{iu32}$\ast$)(v),(\bf{iu32}$\ast$)(k))
+\begin{CompactList}\small\item\em Single block encryption function. \item\end{CompactList}\item 
+\#define \bf{crypt\_\-dec}(v, k)~tea\_\-dec((\bf{iu32}$\ast$)(v),(\bf{iu32}$\ast$)(k))
+\begin{CompactList}\small\item\em Single block decryption function. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+Crypto declarations. 
+
+\begin{Desc}
+\item[Id]\doxyref{crypt.h}{p.}{crypt_8h},v 1.1 2003/03/30 12:42:21 m Exp \end{Desc}
+
+
+\subsubsection{Define Documentation}
+\index{crypt.h@{crypt.h}!CRYPT_ALGO_NEWDESSK@{CRYPT\_\-ALGO\_\-NEWDESSK}}
+\index{CRYPT_ALGO_NEWDESSK@{CRYPT\_\-ALGO\_\-NEWDESSK}!crypt.h@{crypt.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CRYPT\_\-ALGO\_\-NEWDESSK~2}\hfill\label{crypt_8h_3417264ca23998ebd98918e67f124ca5}
+
+
+Algorithm ID: NEWDES-SK. 
+
+\index{crypt.h@{crypt.h}!CRYPT_ALGO_SKIPJACK@{CRYPT\_\-ALGO\_\-SKIPJACK}}
+\index{CRYPT_ALGO_SKIPJACK@{CRYPT\_\-ALGO\_\-SKIPJACK}!crypt.h@{crypt.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CRYPT\_\-ALGO\_\-SKIPJACK~1}\hfill\label{crypt_8h_17a499eabb156a7102f79492662e8cae}
+
+
+Algorithm ID: Skipjack. 
+
+\index{crypt.h@{crypt.h}!CRYPT_ALGO_TEA@{CRYPT\_\-ALGO\_\-TEA}}
+\index{CRYPT_ALGO_TEA@{CRYPT\_\-ALGO\_\-TEA}!crypt.h@{crypt.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CRYPT\_\-ALGO\_\-TEA~0}\hfill\label{crypt_8h_a6d5db38f2e246b357efddb439ce6bff}
+
+
+Algorithm ID: TEA. 
+
+\index{crypt.h@{crypt.h}!CRYPT_BLOCK_LEN@{CRYPT\_\-BLOCK\_\-LEN}}
+\index{CRYPT_BLOCK_LEN@{CRYPT\_\-BLOCK\_\-LEN}!crypt.h@{crypt.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CRYPT\_\-BLOCK\_\-LEN~TEA\_\-BLOCK\_\-LEN}\hfill\label{crypt_8h_43b1d04245c8e15c46757997a948488d}
+
+
+Length of cipher block in octets. 
+
+\index{crypt.h@{crypt.h}!crypt_dec@{crypt\_\-dec}}
+\index{crypt_dec@{crypt\_\-dec}!crypt.h@{crypt.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define crypt\_\-dec(v, k)~tea\_\-dec((\bf{iu32}$\ast$)(v),(\bf{iu32}$\ast$)(k))}\hfill\label{crypt_8h_cf91dd768c8cafdd5ff51dffe52a23f4}
+
+
+Single block decryption function. 
+
+\index{crypt.h@{crypt.h}!crypt_enc@{crypt\_\-enc}}
+\index{crypt_enc@{crypt\_\-enc}!crypt.h@{crypt.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define crypt\_\-enc(v, k)~tea\_\-enc((\bf{iu32}$\ast$)(v),(\bf{iu32}$\ast$)(k))}\hfill\label{crypt_8h_2b72079265df1125bb812c9c16fbe801}
+
+
+Single block encryption function. 
+
+\index{crypt.h@{crypt.h}!CRYPT_KEY_LEN@{CRYPT\_\-KEY\_\-LEN}}
+\index{CRYPT_KEY_LEN@{CRYPT\_\-KEY\_\-LEN}!crypt.h@{crypt.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define CRYPT\_\-KEY\_\-LEN~TEA\_\-KEY\_\-LEN}\hfill\label{crypt_8h_ebb6985d9f62e300c6ca9ef11218a4b3}
+
+
+Length of key in octets. 
+

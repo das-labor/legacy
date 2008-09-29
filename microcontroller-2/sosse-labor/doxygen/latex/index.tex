@@ -1,0 +1,848 @@
+\subsection*{Overview}
+
+SOSSE is a simple operating system for smart cards which is opensource and free. It has been developed to provide a smart card platform for learning, experimenting and implementing inovative concepts. The hardware platform choosen for this project are the Funcards based on commercial-of-the-shelf AVR microcontrollers, because the hardware documentation is available without non-disclosure agreement.
+
+
+
+\subsection*{Hardware}
+
+All of the currently supported cards use the AVR-Microcontrollers from {\tt Atmel}. The are e.g. called Funcard, Jupiter or Pink card. The used AVRs are the AT90S2323, AT90S2343, AT90S8515 and AT90S8535. There are even a few boards with the ATmega161 available. The data sheets for all Atmel AVR microcontrollers are available on the Atmel website.
+
+ \begin{Image}
+\begin{center}
+\includegraphics[width=8cm]{purple}\caption{Connection scheme for the AVR cards.}
+\end{center}
+\end{Image}
+
+
+The pinout of the AVR cards is as follows:
+
+\begin{itemize}
+\item C1 (VCC): Vcc \item C2 (RST): RESET \item C3 (CLK): XTAL \item C4: MOSI \item C5 (VSS): Vss \item C6: Not connected \item C7 (I/O): MISO \item C8: SCK \end{itemize}
+
+
+Additional to the smart cards, a programmer is needed. These are available at the same shops as the AVR cards.
+
+\subsection*{Software}
+
+SOSSE has been developed using the GCC development tools. These are available at {\tt http://combio.de/avr/}. There are the sources, binaries and RPMs for Linux and binaries for MS Windows.
+
+\subsection*{Design Decisions}
+
+\subsubsection*{Programming Language}
+
+The C programming language has been choosen instead of assembler, because:
+
+\begin{itemize}
+\item It is easier to understand C source code. \item Modern smart card operating systems are probably all written mostly in C. Who does want to write and verify 128k\-B assembler code? \item When new smart card architectures are available for SOSSE, these can be utilized more easily. \end{itemize}
+
+
+\subsection*{Building Instructions}
+
+\subsubsection*{Standard Build}
+
+\begin{enumerate}
+\item Go to the src directory and edit \doxyref{config.h}{p.}{config_8h}. This file contains the configuration data for the build process. The meaning of the options is described in the doxygen documention of \doxyref{config.h}{p.}{config_8h} itself. (It is not possible to switch on all features, because then the code size is above 8k\-B.)
+
+\item You can edit eedata.S if you want to change the EEPROM data loaded onto the AVR card. You might want to change the card serial number, the start value for the random number generator, the keys, the file permissions or the created files.
+
+\item There are two defines in the Makefile, which could need editing. The first is the -mmcu setting in CC and the second is -mtiny-stack in CFLAGS. Adjust these to reflect your used AVR card.
+
+\item To build the HEX files start {\em make\/}.
+
+\item The resulting HEX files sosse.hex and eedata.hex (or BIN files sosse.bin and eedata.bin) have then to be loaded on the card with the programmer and an apropriate software. The destination for sosse.hex is the Flash and for eedata.hex the internal EEPROM.
+
+\end{enumerate}
+
+
+\subsubsection*{Debugging}
+
+Test programms which run natively on the host operating system are built running:
+
+make -f Makefile.emu
+
+These can be used for comfortable debugging and testing using the normal GNU debugger. When the reset sequence is implemented, this can be used to simulate a SOSSE smart card via e.g. a Season interface.
+
+\subsubsection*{CT-API driver}
+
+\paragraph*{Building}
+
+A virtual card sitting in a virtual reader can be build with:
+
+make -f Makefile.ctapi
+
+This builds a CT-API driver, which can be used to test applications and to debug using a normal debugger.
+
+\paragraph*{Supported CT-BCS commands}
+
+\begin{itemize}
+\item EJECT ICC: Supported with functional unit ICC1. P2 is ignored. \item GET STATUS: Supported tag is 80. Possible card states are 01 and 05. \item REQUEST ICC: Supported with functional unit ICC1 and response data none and complete ATR. Display settings are ignored. \item RESET CT: Supported with functional unit CT and ICC1 and response data none and complete ATR. This command is the same as REQUEST ICC, but does support reseting the CT, which stops the ICC. \end{itemize}
+
+
+\paragraph*{Proprietary command: EEPROM FILE}
+
+\paragraph*{Header}
+
+\begin{TabularC}{5}
+\hline
+CLA &INS &P1 &P2 &P3  \\\hline
+20 &E0 &Flags &RFU &Length  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Command data}
+
+\begin{TabularC}{3}
+\hline
+Byte(s) &Description &Length  \\\hline
+1 - Length &File name &Length  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Status words}
+
+\begin{TabularC}{2}
+\hline
+SW &Description  \\\hline
+90 00 &Command completed successfully  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Description}
+
+This command sets the parameter for EEPROM loading and saving for the virtual card.
+
+If bit 1 of P1 is set, the EEPROM is saved at stopping of the ICC and if bit 2 is set, the EEPROM loaded at starting of the ICC. The file name for this operation is specified in the data field of the command.
+
+{\em The proprietary commands must be executed before a REQUEST ICC and RESET CT, because the parameters are held in RAM, which is separated by a fork at card reset.\/}
+
+{\em A success of the command means only, that the variables have correctly been set. It does not verify, that the file is createable, readable or writeable.\/}
+
+\subsection*{More Information and Download}
+
+The web page with up to date information about SOSSE is at:\par
+{\tt http://www.mbsks.franken.de/sosse/}
+
+The download location of the SOSSE sources is at:\par
+\tt{ftp://ftp.franken.de/pub/crypt/chipcards/sosse/}
+
+The documentation was generated using Doxy\-Gen:\par
+\tt{http://www.doxygen.org/}
+
+\subsection*{Special Files}
+
+These File are only used, when filesystem support is compiled in. Otherwise special absolut locations in EEPROM are used to hold the data.
+
+\subsubsection*{EF Ext Auth}
+
+Path: 3F00FF00
+
+Content:
+
+\begin{itemize}
+\item 16 Bytes Key \item 1 Byte Retry Counter (resets to 10) \end{itemize}
+
+
+\subsubsection*{EF Int Auth}
+
+Path: 3F00FF01
+
+Content:
+
+\begin{itemize}
+\item 16 Bytes Key \item 1 Byte Retry Counter (unused) \end{itemize}
+
+
+\subsubsection*{EF PIN}
+
+Path: 3F00FF02
+
+Content:
+
+\begin{itemize}
+\item 8 Bytes PIN \item 1 Byte Retry Counter (resets to 3) \item 8 Bytes PUK \item 1 Byte Retry Counter (resets to 10) \end{itemize}
+
+
+\subsection*{Commands}
+
+\subsubsection*{Write EEPROM. (Test command)}
+
+\paragraph*{Header}
+
+\begin{TabularC}{5}
+\hline
+CLA &INS &P1 &P2 &P3  \\\hline
+80 &02 &Address high &Address low &Length  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Command data}
+
+\begin{TabularC}{3}
+\hline
+Byte(s) &Description &Length  \\\hline
+1 - Length &Data to write to {\em Address\/} &Length  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Status words}
+
+\begin{TabularC}{2}
+\hline
+SW &Description  \\\hline
+90 00 &Command completed successfully  \\\hline
+65 00 &Memory failure (unsuccessful writing)  \\\hline
+67 00 &Wrong Lc  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Description}
+
+This command can be used to directly write into EEPROM. The start address is specified in P1P2 and the data length in P3. If there exists an internal and external EEPROM, the address convention of the HAL is used. Currently the internal EEPROM is in the address range 0 - sizeof internal EEPROM. The external EEPROM starts directly afterwards.
+
+{\em This command should be disabled by setting CONF\_\-WITH\_\-TESTCMDS to 0 for a production version.\/}
+
+{\em Data updates are NOT protected with transactions.\/}
+
+\subsubsection*{Read EEPROM. (Test command)}
+
+\paragraph*{Header}
+
+\begin{TabularC}{5}
+\hline
+CLA &INS &P1 &P2 &P3  \\\hline
+80 &04 &Address high &Address low &Length  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Response data}
+
+\begin{TabularC}{3}
+\hline
+Byte(s) &Description &Length  \\\hline
+1 - Length &Data read from {\em Address\/} &Length  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Status words}
+
+\begin{TabularC}{2}
+\hline
+SW &Description  \\\hline
+90 00 &Command completed successfully  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Description}
+
+This command can be used to directly read from EEPROM. The start address is specified in P1P2 and the data length in P3. If there exists an internal and external EEPROM, the address convention of the HAL is used. Currently the internal EEPROM is in the address range 0 - sizeof internal EEPROM. The external EEPROM starts directly afterwards.
+
+{\em This command should be disabled by setting CONF\_\-WITH\_\-TESTCMDS to 0 for a production version.\/}
+
+\subsubsection*{LED Effects (Fun command)}
+
+\paragraph*{Header}
+
+\begin{TabularC}{5}
+\hline
+CLA &INS &P1 &P2 &P3  \\\hline
+80 &06 &Effect &Parameter &00  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Status words}
+
+\begin{TabularC}{2}
+\hline
+SW &Description  \\\hline
+90 00 &Command completed successfully  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Description}
+
+This command does control the LEDs present on some PCB AVR cards and shows some nice effects.
+
+Effect type 0x01 does switch the LEDs specified in P2 on. Each bit controlls one LED. Which LED is controlled may be card dependent. Currently bits 0 - 6 control the leds beginning from the left, when looking down at them with the contacts to the top.
+
+Effect type 0x02 does implement a runlight with the left 4 LED block. It may need adjustment on other cards to select the correct LEDs.
+
+{\em This command is only enabled when setting CONF\_\-WITH\_\-FUNNY to 1.\/}
+
+
+
+\subsubsection*{Change PIN.}
+
+\paragraph*{Header}
+
+\begin{TabularC}{5}
+\hline
+CLA &INS &P1 &P2 &P3  \\\hline
+80 &24 &00 &00 &10  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Command data}
+
+\begin{TabularC}{3}
+\hline
+Byte(s) &Description &Length  \\\hline
+1 - 8 &Current PIN &8  \\\hline
+9 - 16 &New PIN &8  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Status words}
+
+\begin{TabularC}{2}
+\hline
+SW &Description  \\\hline
+90 00 &Command completed successfully  \\\hline
+63 CX &Verification failed, retry counter specified  \\\hline
+67 00 &Wrong Lc  \\\hline
+69 83 &Authentication method blocked  \\\hline
+6A 86 &Incorrect parameters P1-P2  \\\hline
+6A 88 &Referenced data not found  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Description}
+
+This command changes the PIN of the card. The first four bytes of the data is the current PIN, which is checked for correctness. The second four bytes of the data is the new PIN, which will be written. On success the AUTH\_\-FLAG\_\-PIN bit in authstate is set, on fauilure it is cleared.
+
+{\em Warning: Currently the retry counter is not handled in a secure way. For more information see e.g. Rankl/Effing.\/}
+
+{\em PIN update is protected with transactions.\/}
+
+\subsubsection*{Create File.}
+
+\paragraph*{Header}
+
+\begin{TabularC}{5}
+\hline
+CLA &INS &P1 &P2 &P3  \\\hline
+80 &E0 &00 &00 &06  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Command data}
+
+\begin{TabularC}{3}
+\hline
+Byte(s) &Description &Length  \\\hline
+1 - 2 &Size &2  \\\hline
+3 - 4 &FID &2  \\\hline
+5 &File type (DF: 38, EF: 00) &1  \\\hline
+6 &Access conditions (DF: Create/Delete, EF: Update/Read) &1  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Status words}
+
+\begin{TabularC}{2}
+\hline
+SW &Description  \\\hline
+90 00 &Command completed successfully  \\\hline
+67 00 &Wrong Lc  \\\hline
+69 82 &Security status not satisfied  \\\hline
+69 86 &Command not allowed (no DF selected)  \\\hline
+6A 80 &Incorrect arameters in the data field  \\\hline
+6A 84 &Not enough free space in DF  \\\hline
+6A 86 &Incorrect parameters P1-P2  \\\hline
+6A 89 &File exists already  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Description}
+
+This command creates an elementary or dedicated file. To succeed the current file must be a dedicated file or the master file and the access conditions for file creation must be fulfilled.
+
+The data of the command is the file header. It consists of a 2-byte size, 2-byte FID, 1-byte type and 1-byte access conditions. Size can't be 0000. The FID can't be 3F00 or FFFF. Valid file types are 00 for EF and 38 for DF. The access conditions are described in the next tables.
+
+\begin{TabularC}{3}
+\hline
+File type &High Nibble &Low Nibble  \\\hline
+DF &Create File &Delete File  \\\hline
+EF &Update &Read  \\\hline
+\end{TabularC}
+
+
+\begin{TabularC}{2}
+\hline
+Nibble Value &Access condition  \\\hline
+0 &Always  \\\hline
+1 &PIN verified  \\\hline
+2 &External Authentication key verified  \\\hline
+3 &PIN or External Authentication Key verified  \\\hline
+4 &PIN and External Authentication Key verified  \\\hline
+F &Never  \\\hline
+\end{TabularC}
+
+
+{\em File header updates are protected with transactions.\/}
+
+\subsubsection*{Delete File.}
+
+\paragraph*{Header}
+
+\begin{TabularC}{5}
+\hline
+CLA &INS &P1 &P2 &P3  \\\hline
+80 &E4 &00 &00 &02  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Command data}
+
+\begin{TabularC}{3}
+\hline
+Byte(s) &Description &Length  \\\hline
+1 - 2 &FID &2  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Status words}
+
+\begin{TabularC}{2}
+\hline
+SW &Description  \\\hline
+90 00 &Command completed successfully  \\\hline
+67 00 &Wrong Lc  \\\hline
+69 82 &Security status not satisfied  \\\hline
+69 86 &Command not allowed (no DF selected)  \\\hline
+6A 82 &File not found  \\\hline
+6A 86 &Incorrect parameters P1-P2  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Description}
+
+The file with the specified FID is deleted from the current file, which must be a DF or the MF. Also the access conditions for delete must be satisfied and the specified file must be the last one in the DF/MF. Deletion of a DF, which contains EFs, is possible.
+
+{\em File header updates are protected with transactions.\/}
+
+\subsubsection*{External Authentication.}
+
+\paragraph*{Header}
+
+\begin{TabularC}{5}
+\hline
+CLA &INS &P1 &P2 &P3  \\\hline
+80 &82 &00 &00 &08  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Command data}
+
+\begin{TabularC}{3}
+\hline
+Byte(s) &Description &Length  \\\hline
+1 - 8 &Encrypted Challenge &8  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Status words}
+
+\begin{TabularC}{2}
+\hline
+SW &Description  \\\hline
+90 00 &Command completed successfully  \\\hline
+63 CX &Verification failed, retry counter specified  \\\hline
+67 00 &Wrong Lc  \\\hline
+69 83 &Authentication method blocked  \\\hline
+69 85 &Conditions of use not satisfied  \\\hline
+6A 86 &Incorrect parameters P1-P2  \\\hline
+6A 88 &Referenced data not found  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Description}
+
+Directly before this command a 8 byte challenge must be fetched from the card with the Get Challenge command. This challenge must then be encrypted with the TEA algorithm and the External Authentication key. For authentication the resulting data must then be sent back via this command.
+
+{\em Warning: Currently the retry counter is not handled in a secure way. For more information see e.g. Rankl/Effing.\/}
+
+\subsubsection*{Get Challenge}
+
+\paragraph*{Header}
+
+\begin{TabularC}{5}
+\hline
+CLA &INS &P1 &P2 &P3  \\\hline
+80 &84 &00 &00 &08  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Response data}
+
+\begin{TabularC}{3}
+\hline
+Byte(s) &Description &Length  \\\hline
+1 - 8 &Random Challenge &8  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Status words}
+
+\begin{TabularC}{2}
+\hline
+SW &Description  \\\hline
+90 00 &Command completed successfully  \\\hline
+67 00 &Wrong Le  \\\hline
+6A 86 &Incorrect parameters P1-P2  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Description}
+
+Returns a challenge usable for the External Authentication command, which must then be the next issued command.
+
+{\em Warning: On the current hardware this challenge is produced with a PRNG based on TEA. It is not evaluated, if the current mechanism is appropriate for this task.\/}
+
+\subsubsection*{Get Response.}
+
+\paragraph*{Header}
+
+\begin{TabularC}{5}
+\hline
+CLA &INS &P1 &P2 &P3  \\\hline
+80 &C0 &00 &00 &Length  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Response data after Internal Authenticate}
+
+\begin{TabularC}{3}
+\hline
+Byte(s) &Description &Length  \\\hline
+1 - 8 &Internal Authentication key encrypted challenge &8  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Response data after Select}
+
+\begin{TabularC}{3}
+\hline
+Byte(s) &Description &Length  \\\hline
+1 - 2 &Size &2  \\\hline
+3 - 4 &FID &2  \\\hline
+5 &File type (DF: 38, EF: 00) &1  \\\hline
+6 &Access conditions &1  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Status words}
+
+\begin{TabularC}{2}
+\hline
+SW &Description  \\\hline
+90 00 &Command completed successfully  \\\hline
+69 85 &Wrong condition (No data available)  \\\hline
+6A 86 &Incorrect parameters P1-P2  \\\hline
+6C XX &Wrong Le  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Description}
+
+This command fetches data from Internal Authentication and Select. These commands signal the availability of data with the status word 61XX. For more details about the data returned after a Select, see at the Create command.
+
+\subsubsection*{Internal Authentication.}
+
+\paragraph*{Header}
+
+\begin{TabularC}{5}
+\hline
+CLA &INS &P1 &P2 &P3  \\\hline
+80 &88 &00 &Decrypt &08  \\\hline
+\end{TabularC}
+
+
+This command decrypts the data if P2 is 01. This functionality is only enabled when CONF\_\-WITH\_\-DECRYPT is set to 1.
+
+\paragraph*{Command data}
+
+\begin{TabularC}{3}
+\hline
+Byte(s) &Description &Length  \\\hline
+1 - 8 &Random Challenge &8  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Status words}
+
+\begin{TabularC}{2}
+\hline
+SW &Description  \\\hline
+61 08 &Command completed successfully (Data available)  \\\hline
+67 00 &Wrong Lc  \\\hline
+69 85 &Conditions of use not satisfied  \\\hline
+6A 86 &Incorrect parameters P1-P2  \\\hline
+6A 88 &Referenced data not found  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Description}
+
+Provieds a random challenge to the card. It encryptes the challenge with TEA and the Internal Authentication key and makes it available via Get Response. For the successful execution either the PIN or the External Authentication key must have been successfully verified previously.
+
+Because of possibility to decrypt data, this command can easily be used to implement some form of Remotely Keyed Encryption.
+
+\subsubsection*{Read Binary.}
+
+\paragraph*{Header}
+
+\begin{TabularC}{5}
+\hline
+CLA &INS &P1 &P2 &P3  \\\hline
+80 &B0 &Offset high &Offest low &Length  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Response data}
+
+\begin{TabularC}{3}
+\hline
+Byte(s) &Description &Length  \\\hline
+1 - Length &Data &Length  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Status words}
+
+\begin{TabularC}{2}
+\hline
+SW &Description  \\\hline
+90 00 &Command completed successfully  \\\hline
+69 82 &Security status not satisfied  \\\hline
+69 86 &Command not allowed (no EF selected)  \\\hline
+6A 82 &File not found  \\\hline
+6A 84 &File to short  \\\hline
+6B 00 &Wrong parameters (offset outside EF)  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Description}
+
+Reads {\em Lenght\/} bytes from {\em Offset\/} of the currently selected EF.
+
+\subsubsection*{Select File.}
+
+\paragraph*{Header}
+
+\begin{TabularC}{5}
+\hline
+CLA &INS &P1 &P2 &P3  \\\hline
+80 &A4 &00 &00 &02  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Command data}
+
+\begin{TabularC}{3}
+\hline
+Byte(s) &Description &Length  \\\hline
+1 - 2 &FID &2  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Status words}
+
+\begin{TabularC}{2}
+\hline
+SW &Description  \\\hline
+61 06 &Command completed successfully  \\\hline
+67 00 &Wrong Lc  \\\hline
+6A 82 &File not found  \\\hline
+6A 86 &Incorrect parameters P1-P2  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Description}
+
+It tries to select a file with the specified FID and searches for it in the following order:
+
+\begin{enumerate}
+\item EF in the current MF/DF \item DF in MF \end{enumerate}
+
+
+If FID is 3F00, the MF is always selected.
+
+\subsubsection*{Unblock PIN.}
+
+\paragraph*{Header}
+
+\begin{TabularC}{5}
+\hline
+CLA &INS &P1 &P2 &P3  \\\hline
+80 &2C &00 &00 &10  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Command data}
+
+\begin{TabularC}{3}
+\hline
+Byte(s) &Description &Length  \\\hline
+1 - 8 &PUK &8  \\\hline
+9 - 16 &New PIN &8  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Status words}
+
+\begin{TabularC}{2}
+\hline
+SW &Description  \\\hline
+90 00 &Command completed successfully  \\\hline
+63 CX &Verification failed, retry counter specified  \\\hline
+67 00 &Wrong Lc  \\\hline
+69 83 &Authentication method blocked  \\\hline
+6A 86 &Incorrect parameters P1-P2  \\\hline
+6A 88 &Referenced data not found  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Description}
+
+This command changes the PIN of the card and resets the retry counter of this PIN. The first eight bytes of the data is the PUK, which is checked for correctness. The second four bytes of the data is the new PIN, which will be written. On success the AUTH\_\-FLAG\_\-PIN bit in authstate is set, on fauilure it is cleared.
+
+{\em Warning: Currently the retry counter is not handled in a secure way. For more information see e.g. Rankl/Effing.\/}
+
+{\em PIN update is protected with transactions.\/}
+
+\subsubsection*{Update Binary.}
+
+\paragraph*{Header}
+
+\begin{TabularC}{5}
+\hline
+CLA &INS &P1 &P2 &P3  \\\hline
+80 &D6 &Offset high &Offset low &Length  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Command data}
+
+\begin{TabularC}{3}
+\hline
+Byte(s) &Description &Length  \\\hline
+1 - Length &Data &Length  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Status words}
+
+\begin{TabularC}{2}
+\hline
+SW &Description  \\\hline
+90 00 &Command completed successfully  \\\hline
+65 00 &Memory failure (unsuccessful writing)  \\\hline
+67 00 &Wrong Le  \\\hline
+69 82 &Security status not satisfied  \\\hline
+69 86 &Command not allowed (no EF selected)  \\\hline
+6A 82 &File not found  \\\hline
+6A 84 &File to short  \\\hline
+6B 00 &Wrong parameters (offset outside EF)  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Description}
+
+Writes {\em Lenght\/} bytes to {\em Offset\/} of the currently selected EF.
+
+{\em Data updates are NOT protected with transactions.\/}
+
+\subsubsection*{Verify Key}
+
+\paragraph*{Header}
+
+\begin{TabularC}{5}
+\hline
+CLA &INS &P1 &P2 &P3  \\\hline
+80 &2A &00 &00 &10  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Command data}
+
+\begin{TabularC}{3}
+\hline
+Byte(s) &Description &Length  \\\hline
+1 - 16 &External Authentication Key &16  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Status words}
+
+\begin{TabularC}{2}
+\hline
+SW &Description  \\\hline
+90 00 &Command completed successfully  \\\hline
+63 CX &Verification failed, retry counter specified  \\\hline
+67 00 &Wrong Lc  \\\hline
+69 83 &Authentication method blocked  \\\hline
+6A 86 &Incorrect parameters P1-P2  \\\hline
+6A 88 &Referenced data not found  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Description}
+
+Verifies the External Authentication key as 16 byte plain text in the data part of the command. On success the AUTH\_\-FLAG\_\-KEY bit in authstate is set, on failure it is cleared.
+
+{\em Warning: Currently the retry counter is not handled in a secure way. For more information see e.g. Rankl/Effing.\/}
+
+\subsubsection*{Verify PIN}
+
+\paragraph*{Header}
+
+\begin{TabularC}{5}
+\hline
+CLA &INS &P1 &P2 &P3  \\\hline
+80 &20 &00 &00 &08  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Command data}
+
+\begin{TabularC}{3}
+\hline
+Byte(s) &Description &Length  \\\hline
+1 - 8 &PIN &8  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Status words}
+
+\begin{TabularC}{2}
+\hline
+SW &Description  \\\hline
+90 00 &Command completed successfully  \\\hline
+63 CX &Verification failed, retry counter specified  \\\hline
+67 00 &Wrong Lc  \\\hline
+69 83 &Authentication method blocked  \\\hline
+6A 86 &Incorrect parameters P1-P2  \\\hline
+6A 88 &Referenced data not found  \\\hline
+\end{TabularC}
+
+
+\paragraph*{Description}
+
+This command verifies the PIN. The four data bytes contain the user supplied PIN, which is checked for correctness. On success the AUTH\_\-FLAG\_\-PIN bit in authstate is set, on fauilure it is cleared.
+
+{\em Warning: Currently the retry counter is not handled in a secure way. For more information see e.g. Rankl/Effing.\/}
+
+\subsection*{Developers}
+
+\begin{itemize}
+\item Matthias Bruestle $<$\tt{m@mbsks.franken.de}$>$ \end{itemize}
+
+
+\subsection*{License}
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 

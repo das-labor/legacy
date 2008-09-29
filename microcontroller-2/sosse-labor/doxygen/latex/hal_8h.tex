@@ -1,0 +1,170 @@
+\subsection{hal.h File Reference}
+\label{hal_8h}\index{hal.h@{hal.h}}
+HAL (Hardware Abstraction Layer) declarations. 
+
+{\tt \#include $<$types.h$>$}\par
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+void \bf{hal\_\-init} (void)
+\begin{CompactList}\small\item\em Initializes the HAL. \item\end{CompactList}\item 
+\bf{bool} \bf{hal\_\-eeprom\_\-read} (\bf{iu8} $\ast$dst, \bf{iu16} src, \bf{iu8} len)
+\begin{CompactList}\small\item\em Read data from EEPROM. \item\end{CompactList}\item 
+\bf{bool} \bf{hal\_\-eeprom\_\-write} (\bf{iu16} dst, \bf{iu8} $\ast$src, \bf{iu8} len)
+\begin{CompactList}\small\item\em Write data to EEPROM. \item\end{CompactList}\item 
+void \bf{hal\_\-io\_\-send\-Byte\-T0} (\bf{iu8} b)
+\begin{CompactList}\small\item\em Send a byte with T=0 error detection and recovery. \item\end{CompactList}\item 
+\bf{iu8} \bf{hal\_\-io\_\-rec\-Byte\-T0} (void)
+\begin{CompactList}\small\item\em Receive a byte with T=0 error detection and recovery. \item\end{CompactList}\item 
+\bf{bool} \bf{hal\_\-rnd\_\-add\-Entropy} (void)
+\begin{CompactList}\small\item\em Adds entropy to the random number generator state. \item\end{CompactList}\item 
+\bf{bool} \bf{hal\_\-rnd\_\-get\-Block} (\bf{iu8} $\ast$dst)
+\begin{CompactList}\small\item\em Returns 8 random bytes. \item\end{CompactList}\item 
+\bf{bool} \bf{hal\_\-led} (char set)
+\begin{CompactList}\small\item\em Sets the LEDs on Jupiter 2 cards. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+HAL (Hardware Abstraction Layer) declarations. 
+
+\begin{Desc}
+\item[Id]\doxyref{hal.h}{p.}{hal_8h},v 1.15 2002/12/22 15:42:55 m Exp \end{Desc}
+
+
+\subsubsection{Function Documentation}
+\index{hal.h@{hal.h}!hal_eeprom_read@{hal\_\-eeprom\_\-read}}
+\index{hal_eeprom_read@{hal\_\-eeprom\_\-read}!hal.h@{hal.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} hal\_\-eeprom\_\-read (\bf{iu8} $\ast$ {\em dst}, \bf{iu16} {\em src}, \bf{iu8} {\em len})}\hfill\label{hal_8h_e23736f92fbd6e59f6e67a191e69ecef}
+
+
+Read data from EEPROM. 
+
+The internal EEPROM begins at address 0, the external EEPROM is located subsequently.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em dst}]Pointer to destination area. \item[{\em src}]EEPROM source address. \item[{\em len}]Length of data in bytes.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{hal.h@{hal.h}!hal_eeprom_write@{hal\_\-eeprom\_\-write}}
+\index{hal_eeprom_write@{hal\_\-eeprom\_\-write}!hal.h@{hal.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} hal\_\-eeprom\_\-write (\bf{iu16} {\em dst}, \bf{iu8} $\ast$ {\em src}, \bf{iu8} {\em len})}\hfill\label{hal_8h_19f6e1f1e627521793f250459c5e49b8}
+
+
+Write data to EEPROM. 
+
+The internal EEPROM begins at address 0, the external EEPROM is located subsequently.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em dst}]EEPROM destination address \item[{\em src}]Pointer to source area. \item[{\em len}]Length of data in bytes.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{hal.h@{hal.h}!hal_init@{hal\_\-init}}
+\index{hal_init@{hal\_\-init}!hal.h@{hal.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void hal\_\-init (void)}\hfill\label{hal_8h_f5ea8985a12feedc3ac25fbb50712183}
+
+
+Initializes the HAL. 
+
+Must be called after each reset. \index{hal.h@{hal.h}!hal_io_recByteT0@{hal\_\-io\_\-recByteT0}}
+\index{hal_io_recByteT0@{hal\_\-io\_\-recByteT0}!hal.h@{hal.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{iu8} hal\_\-io\_\-rec\-Byte\-T0 (void)}\hfill\label{hal_8h_6f2a2f946cf90cb7bd613f2c3ada355c}
+
+
+Receive a byte with T=0 error detection and recovery. 
+
+Currently only 9600 bps at 3.58MHz with direct convention is supported.
+
+\begin{Desc}
+\item[Returns:]This function returns a received byte. There can't be an error, because T=0 tries endlessly to receive a characters. (And if there is really an error, what should SOSSE do with it anyway?) \end{Desc}
+\index{hal.h@{hal.h}!hal_io_sendByteT0@{hal\_\-io\_\-sendByteT0}}
+\index{hal_io_sendByteT0@{hal\_\-io\_\-sendByteT0}!hal.h@{hal.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}void hal\_\-io\_\-send\-Byte\-T0 (\bf{iu8} {\em b})}\hfill\label{hal_8h_50f4270db8dcf34e7e98f1e2b43d1135}
+
+
+Send a byte with T=0 error detection and recovery. 
+
+Currently only 9600 bps at 3.58MHz with direct convention is supported.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]Byte to send. \end{description}
+\end{Desc}
+\index{hal.h@{hal.h}!hal_led@{hal\_\-led}}
+\index{hal_led@{hal\_\-led}!hal.h@{hal.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} hal\_\-led (char {\em set})}\hfill\label{hal_8h_85750f9688545f3782c376eb54ec091a}
+
+
+Sets the LEDs on Jupiter 2 cards. 
+
+This can be used for example for debugging to show some state or to get a Nightrider feeling.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em set}]Bits 0-6 are currently used for specifying LEDs.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]is currently returned\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Note:]This function is always included when compiling for the AT90S8535, which is AFAIK the only processor, which is available as PCB with LEDs. \end{Desc}
+\index{hal.h@{hal.h}!hal_rnd_addEntropy@{hal\_\-rnd\_\-addEntropy}}
+\index{hal_rnd_addEntropy@{hal\_\-rnd\_\-addEntropy}!hal.h@{hal.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} hal\_\-rnd\_\-add\-Entropy (void)}\hfill\label{hal_8h_9bf6b66f6f08018eb3de87fe98fbf361}
+
+
+Adds entropy to the random number generator state. 
+
+{\bf The idea:} Adding real randomness to the RAND\_\-STATE via random events and a high speed timer.
+
+{\bf The implementation:} Timer 0 is started at the beginning and incremented every clock cycle, i.e. normally 3.58 million times per second. The timer is read at the beginning and at the end of the execution of every command. After every 8 timer values gathered in this way, RAND\_\-STATE is read and encrypted with RAND\_\-STATE and timer values as key. The result is written back to RAND\_\-STATE.
+
+{\bf The analysis:} The analysis has been done by calculating the difference of each consecutive timer value pair. From these value two distributions are build. The first is the frequency for the timer value differences within the command and the second is the frequency for the timer value differences outside the command, i.e. while communicating with the terminal. The command used for this evaluation is the Read EEPROM command (80 04 18 00 10), which should have a relatively constant execution time and does not receive bytes from the terminal.
+
+{\bf Terminal randomness:} As expected the randomness of the distribution depends on the external system, i.e. card reader and host. Different distributions have been seen e.g. for Towitoko Chipdrive and Intertext IX2. This randomness can increas the randomness in the RAND\_\-STATE buffer, when the card is in the hand of the owner of the card. By this, it changes RAND\_\-STATE in a non-deterministic way for the institution writing the starting value of RAND\_\-STATE
+
+{\bf Command randomness:} Because there is no obvious possibility for different runtimes, the expected result would be to have exactly the same delta values for all command runs, but this is not the case. The result is a 9 - 10 ticks wide curved distribution. The reason for this might be the I2C routine communicating with the external EEPROM, because Get Response and Read EE in the internal EEPROM area have the expected result with a single delta value. Independed of the source of the clock tick variations, there is probably not much non-determinism for a skilled attacker, because he can count the clocks a command has executed.
+
+\begin{Desc}
+\item[Note:]This function and the initialization in \doxyref{hal\_\-init()}{p.}{hal-emu_8c_f5ea8985a12feedc3ac25fbb50712183} is currently commented out.\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{hal.h@{hal.h}!hal_rnd_getBlock@{hal\_\-rnd\_\-getBlock}}
+\index{hal_rnd_getBlock@{hal\_\-rnd\_\-getBlock}!hal.h@{hal.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} hal\_\-rnd\_\-get\-Block (\bf{iu8} $\ast$ {\em dst})}\hfill\label{hal_8h_4dfdfc55f93a2f674edd64b10e8332ae}
+
+
+Returns 8 random bytes. 
+
+{\em The current AVR implementation does not produce real random numbers, but pseudo random numbers. These are produced by a X9.17 generator modified to use a counter instead of a timer. The state of this PRNG is held at RAND\_\-STATE\_\-ADDR. The start value (at least the key) at this address should be unique for every card.\/}
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em dst}]Pointer to the destination, where the 8 random bytes should be written.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Note:]There is still a simpler PRNG in the code, which uses 16 bytes RAM and 126 bytes ROM less than the X9.17 generator. \end{Desc}

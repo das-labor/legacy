@@ -1,0 +1,256 @@
+\subsection{fs.h File Reference}
+\label{fs_8h}\index{fs.h@{fs.h}}
+File system declarations. 
+
+{\tt \#include $<$types.h$>$}\par
+{\tt \#include $<$fstream.h$>$}\par
+\subsubsection*{Data Structures}
+\begin{CompactItemize}
+\item 
+struct \bf{s\_\-fpath}
+\begin{CompactList}\small\item\em File path specifier. \item\end{CompactList}\item 
+struct \bf{s\_\-finfo}
+\begin{CompactList}\small\item\em File info struct. This is directly written as a file header in the file system. \item\end{CompactList}\end{CompactItemize}
+\subsubsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \bf{FS\_\-TYPE\_\-DF}~0x38
+\begin{CompactList}\small\item\em File type DF. \item\end{CompactList}\item 
+\#define \bf{FS\_\-TYPE\_\-EF}~0x00
+\begin{CompactList}\small\item\em File type EF. \item\end{CompactList}\item 
+\#define \bf{FS\_\-HEADER\_\-SIZE}~sizeof(\bf{S\_\-FINFO})
+\begin{CompactList}\small\item\em Size of the file header, which is the same as S\_\-FINFO. \item\end{CompactList}\end{CompactItemize}
+\subsubsection*{Typedefs}
+\begin{CompactItemize}
+\item 
+typedef \bf{s\_\-fpath} \bf{S\_\-FPATH}
+\begin{CompactList}\small\item\em File path specifier. \item\end{CompactList}\item 
+typedef \bf{s\_\-finfo} \bf{S\_\-FINFO}
+\begin{CompactList}\small\item\em File info struct. This is directly written as a file header in the file system. \item\end{CompactList}\end{CompactItemize}
+\subsubsection*{Functions}
+\begin{CompactItemize}
+\item 
+\bf{bool} \bf{fs\_\-init} (void)
+\begin{CompactList}\small\item\em Initialize file system variables. \item\end{CompactList}\item 
+\bf{bool} \bf{fs\_\-seek} (\bf{iu16} fid, \bf{S\_\-FSTREAM} $\ast$fs, \bf{S\_\-FINFO} $\ast$fi, \bf{iu8} type)
+\begin{CompactList}\small\item\em Look for a file in a stream. \item\end{CompactList}\item 
+\bf{bool} \bf{fs\_\-seek\-End} (\bf{S\_\-FSTREAM} $\ast$fs)
+\begin{CompactList}\small\item\em Look for the end of files in the stream. \item\end{CompactList}\item 
+\bf{bool} \bf{fs\_\-get\-Data} (\bf{S\_\-FPATH} $\ast$fp, \bf{S\_\-FSTREAM} $\ast$fs, \bf{S\_\-FINFO} $\ast$fi)
+\begin{CompactList}\small\item\em Get stream and info for a file specified as a path. \item\end{CompactList}\item 
+\bf{bool} \bf{fs\_\-get\-FPath} (\bf{iu16} fid, \bf{S\_\-FPATH} $\ast$fp, \bf{S\_\-FSTREAM} $\ast$fs, \bf{S\_\-FINFO} $\ast$fi)
+\begin{CompactList}\small\item\em Get path, stream and info for a file specified as a FID. \item\end{CompactList}\item 
+\bf{bool} \bf{fs\_\-delete} (\bf{iu16} fid)
+\begin{CompactList}\small\item\em Delete file specified as fid. \item\end{CompactList}\item 
+\bf{bool} \bf{fs\_\-create} (\bf{S\_\-FINFO} $\ast$fi)
+\begin{CompactList}\small\item\em The function creates a file. \item\end{CompactList}\end{CompactItemize}
+\subsubsection*{Variables}
+\begin{CompactItemize}
+\item 
+\bf{S\_\-FPATH} \bf{selected}
+\begin{CompactList}\small\item\em Path specified of the currently selected file. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsubsection{Detailed Description}
+File system declarations. 
+
+SOSSE implements a very simple file system. Each file starts with following header:
+
+\begin{itemize}
+\item 2 Byte: Content size\item 2 Byte: ID\item 1 Byte: Type\item 1 Byte: Access conditions\end{itemize}
+
+
+Directly after that the content area is located. If the file is a DF, this content area is directly used to add header/content sequences.
+
+After the content area of a file, a content size of 0 must be writen as an end of data marker. This means the data capacity of a MF or DF is the total content size of it minus 2.
+
+Currently the file system support only one level of DFs, i.e. the maximum depth is MF:DF:EF.
+
+There are probably a lot optimization possibilities in this file system, but I think this is not bad for my first designed and implemented file system.
+
+\begin{Desc}
+\item[\bf{Todo}]Here are certainly some optimizations possible to reduce code size.\end{Desc}
+\begin{Desc}
+\item[Id]\doxyref{fs.h}{p.}{fs_8h},v 1.13 2002/12/22 15:42:55 m Exp \end{Desc}
+
+
+\subsubsection{Define Documentation}
+\index{fs.h@{fs.h}!FS_HEADER_SIZE@{FS\_\-HEADER\_\-SIZE}}
+\index{FS_HEADER_SIZE@{FS\_\-HEADER\_\-SIZE}!fs.h@{fs.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define FS\_\-HEADER\_\-SIZE~sizeof(\bf{S\_\-FINFO})}\hfill\label{fs_8h_1031facaa31a457c28f86cf221f16bc0}
+
+
+Size of the file header, which is the same as S\_\-FINFO. 
+
+\index{fs.h@{fs.h}!FS_TYPE_DF@{FS\_\-TYPE\_\-DF}}
+\index{FS_TYPE_DF@{FS\_\-TYPE\_\-DF}!fs.h@{fs.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define FS\_\-TYPE\_\-DF~0x38}\hfill\label{fs_8h_f16ffe1e067c0ea1b1e911c36becf620}
+
+
+File type DF. 
+
+\index{fs.h@{fs.h}!FS_TYPE_EF@{FS\_\-TYPE\_\-EF}}
+\index{FS_TYPE_EF@{FS\_\-TYPE\_\-EF}!fs.h@{fs.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\#define FS\_\-TYPE\_\-EF~0x00}\hfill\label{fs_8h_c1246e5b596fad2ca69d5740720dce64}
+
+
+File type EF. 
+
+
+
+\subsubsection{Typedef Documentation}
+\index{fs.h@{fs.h}!S_FINFO@{S\_\-FINFO}}
+\index{S_FINFO@{S\_\-FINFO}!fs.h@{fs.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}typedef struct \bf{s\_\-finfo}  \bf{S\_\-FINFO}}\hfill\label{fs_8h_69886b9db44928da9d4b49d46de14687}
+
+
+File info struct. This is directly written as a file header in the file system. 
+
+\index{fs.h@{fs.h}!S_FPATH@{S\_\-FPATH}}
+\index{S_FPATH@{S\_\-FPATH}!fs.h@{fs.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}typedef struct \bf{s\_\-fpath}  \bf{S\_\-FPATH}}\hfill\label{fs_8h_05724eefbb251b0605e377d023303f40}
+
+
+File path specifier. 
+
+\begin{Desc}
+\item[\bf{Todo}]There is probably a potential for simplification, when the file type (DF/EF) is not handled so rigid. \end{Desc}
+
+
+\subsubsection{Function Documentation}
+\index{fs.h@{fs.h}!fs_create@{fs\_\-create}}
+\index{fs_create@{fs\_\-create}!fs.h@{fs.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} fs\_\-create (\bf{S\_\-FINFO} $\ast$ {\em fi})}\hfill\label{fs_8h_f3cd0f092dc20a811aefb18cda7b0260}
+
+
+The function creates a file. 
+
+The functions creates a file with the data in {\em fi\/}. The current file must be a MF or DF. In case the current file is a DF, the file, which should be created, can't be a DF.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fi}]Pointer to S\_\-FINFO, which contains the data of the file to create.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{fs.h@{fs.h}!fs_delete@{fs\_\-delete}}
+\index{fs_delete@{fs\_\-delete}!fs.h@{fs.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} fs\_\-delete (\bf{iu16} {\em fid})}\hfill\label{fs_8h_5b9133c311ff42d94c92599c2a9d9d96}
+
+
+Delete file specified as fid. 
+
+The function looks for the fid in the current file, which must be a MF or DF. The file, which should be deleted must be the last one in the current MF or DF.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fid}]ID of the file to delete.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{fs.h@{fs.h}!fs_getData@{fs\_\-getData}}
+\index{fs_getData@{fs\_\-getData}!fs.h@{fs.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} fs\_\-get\-Data (\bf{S\_\-FPATH} $\ast$ {\em fp}, \bf{S\_\-FSTREAM} $\ast$ {\em fs}, \bf{S\_\-FINFO} $\ast$ {\em fi})}\hfill\label{fs_8h_53716a136dbb532afc17ffc353b9d69c}
+
+
+Get stream and info for a file specified as a path. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fp}]Pointer to S\_\-FPATH, which is used to supply the information about the file wanted. \item[{\em fs}]Pointer to S\_\-FSTREAM, which will be filled with data on success. \item[{\em fi}]Pointer to S\_\-FINFO, which will be filled with data on success.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{fs.h@{fs.h}!fs_getFPath@{fs\_\-getFPath}}
+\index{fs_getFPath@{fs\_\-getFPath}!fs.h@{fs.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} fs\_\-get\-FPath (\bf{iu16} {\em fid}, \bf{S\_\-FPATH} $\ast$ {\em fp}, \bf{S\_\-FSTREAM} $\ast$ {\em fs}, \bf{S\_\-FINFO} $\ast$ {\em fi})}\hfill\label{fs_8h_69a59c2c985e21a61a4bbeb844ed900b}
+
+
+Get path, stream and info for a file specified as a FID. 
+
+The file is searched for in the order described in the SELECT FILE documentation on the main page.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fid}]File ID to look for. \item[{\em fp}]Pointer to S\_\-FPATH, which will be filled with data on success. \item[{\em fs}]Pointer to S\_\-FSTREAM, which will be filled with data on success. This can be NULL when no data is wanted. \item[{\em fi}]Pointer to S\_\-FINFO, which will be filled with data on success. This can be NULL when no data is wanted.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{fs.h@{fs.h}!fs_init@{fs\_\-init}}
+\index{fs_init@{fs\_\-init}!fs.h@{fs.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} fs\_\-init (void)}\hfill\label{fs_8h_fb19e37469a751aa61de3dcd0c70b4b0}
+
+
+Initialize file system variables. 
+
+This looks e.g. for the start of the file system and it's size. It must be called after each reset.
+
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+\index{fs.h@{fs.h}!fs_seek@{fs\_\-seek}}
+\index{fs_seek@{fs\_\-seek}!fs.h@{fs.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} fs\_\-seek (\bf{iu16} {\em fid}, \bf{S\_\-FSTREAM} $\ast$ {\em fs}, \bf{S\_\-FINFO} $\ast$ {\em fi}, \bf{iu8} {\em type})}\hfill\label{fs_8h_4d8d9be27ddc2dcba0f38f8e27f470d7}
+
+
+Look for a file in a stream. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fid}]File ID to look for. \item[{\em fs}]Pointer to S\_\-FSTREAM, where the FID is searched for. It returns on success a stream on the file found. \item[{\em fi}]Pointer to S\_\-FINFO, which will be filled with data on success. \item[{\em type}]Type of file wanted.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[\bf{Todo}]There is probably a potential for simplification, when the file type is not handled so rigid. \end{Desc}
+\index{fs.h@{fs.h}!fs_seekEnd@{fs\_\-seekEnd}}
+\index{fs_seekEnd@{fs\_\-seekEnd}!fs.h@{fs.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{bool} fs\_\-seek\-End (\bf{S\_\-FSTREAM} $\ast$ {\em fs})}\hfill\label{fs_8h_17c9e75dcbad83e1e24dfc89286fbc2b}
+
+
+Look for the end of files in the stream. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fs}]Pointer to S\_\-FSTREAM, which supplies a directory stream and which will be used to return the end position on success.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em TRUE}]on success. \item[{\em FALSE}]on failure. Error code given in sw. \end{description}
+\end{Desc}
+
+
+\subsubsection{Variable Documentation}
+\index{fs.h@{fs.h}!selected@{selected}}
+\index{selected@{selected}!fs.h@{fs.h}}
+\paragraph{\setlength{\rightskip}{0pt plus 5cm}\bf{S\_\-FPATH} \bf{selected}}\hfill\label{fs_8h_fa513b91ca575d59f5d6c481a521ab17}
+
+
+Path specified of the currently selected file. 
+
+\begin{Desc}
+\item[\bf{Todo}]Saving here a S\_\-FINFO and/or S\_\-FSTREAM of the selected file might reduce the code size. \end{Desc}
