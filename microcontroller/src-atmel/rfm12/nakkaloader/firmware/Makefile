@@ -16,7 +16,7 @@ AVRDUDE = avrdude -c usbasp -p $(DEVICE) # edit this line for your programmer
 CFLAGS  = -I.  -DDEBUG_LEVEL=0
 OBJECTS = nl_main.o rfm12.o 
 
-COMPILE = avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE)
+COMPILE = avr-gcc -Wall -Os -o main.bin -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE)
 
 ##############################################################################
 # Fuse values for particular devices
@@ -105,8 +105,10 @@ help:
 	@echo "make fuse ...... to flash the fuses"
 	@echo "make flash ..... to flash the firmware (use this on metaboard)"
 	@echo "make clean ..... to delete objects and hex file"
+	@echo "make bin ....... compile the program in binary format"
 
 hex: main.hex
+bin: main.bin
 
 program: flash fuse
 
@@ -122,7 +124,8 @@ flash: main.hex
 
 # rule for deleting dependent files (those which can be built by Make):
 clean:
-	rm -f nl_main.hex nl_main.lst nl_main.obj nl_main.cof nl_main.list nl_main.map nl_main.eep.hex nl_main.elf *.o 
+	rm -f nl_main.hex nl_main.lst nl_main.obj nl_main.cof nl_main.list nl_main.map nl_main.eep.hex nl_main.elf *.o \
+		nl_main.bin
 
 # Generic rule for compiling C files:
 .c.o:
@@ -159,3 +162,8 @@ disasm:	main.elf
 
 cpp:
 	$(COMPILE) -E main.c
+
+main.bin: main.elf
+	rm -f main.bin
+	avr-objcopy -j .text -j .data -O binary main.elf main.bin
+#	avr-size main.bin

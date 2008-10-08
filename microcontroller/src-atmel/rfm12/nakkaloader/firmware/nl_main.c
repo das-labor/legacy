@@ -9,7 +9,7 @@
 #include "rfm12_config.h"
 #include "rfm12.h"
 #include "nl_config.h"
-#include "nl_protocol.h"
+#include "../common/nl_protocol.h"
 
 /* simple for-loop to "wrap" around an error-prone section */
 // #define NL_ERRORWRAP for (i=0;i < NL_MAXFAILS || NL_MAXFAILS == 0;i++)
@@ -195,14 +195,14 @@ int main (void)
 			{
 				uint32_t pagenum = 0;
 				
-				rfm12_rx_clear();
-				
 				k = NL_ADDRESSSIZE + 1;
 
 				pagenum = (uint32_t) rxbuf[k++] << 24;
 				pagenum += (uint32_t) rxbuf[k++] << 16;
 				pagenum += (uint32_t) rxbuf[k++] << 8;
 				pagenum += (uint32_t) (rxbuf[k++]);
+
+				rfm12_rx_clear();
 
 				boot_program_page (pagenum, mypage);
 				break;
