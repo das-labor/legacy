@@ -5,10 +5,6 @@
  */
 #define NL_PACKETSIZE 64
 
-/* Define which packet type to respond to
- */
-#define NL_PACKETTYPE 0xE0
-
 /* the position in the eeprom where the device's network address is stored at */
 #define NL_ADDRESSPOS 0
 
