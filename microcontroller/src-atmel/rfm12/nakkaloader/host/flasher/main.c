@@ -44,7 +44,7 @@ rfmusb_packetbuffer packetBuffer;
 usb_dev_handle *udhandle = NULL;
 
 //usage
-void nf_help()
+void nf_usage()
 {
 	printf(
 		"NakkaFlash Utility\r\n\r\n"
@@ -198,7 +198,7 @@ int main (int argc, char* argv[])
 	if (usbOpenDevice (&udhandle, vid, vendor, pid, product, NULL, NULL, NULL) != 0)
 	{
 		printf ("Can't find USB Device w/ uid %04X, pid %04X\r\n", vid, pid);
-		nf_exit(__LINE__ * -1);
+		exit(__LINE__ * -1);
 		return __LINE__ * -1;
 	}
 
@@ -213,7 +213,11 @@ int main (int argc, char* argv[])
 	tmp=0;
 	i=0;
 
-	nf_parse_args (argc, argv, myconfig);
+	if(nf_parse_args (argc, argv, myconfig) == 0)
+	{
+        nf_usage();
+        exit(0);
+	}
 
 	printf ("\r\n");
 
@@ -229,7 +233,7 @@ int main (int argc, char* argv[])
 		{
 			fprintf (stderr, "USB error: %s\r\n", usb_strerror());
 
-			nf_exit (__LINE__ * -1);
+			exit (__LINE__ * -1);
 		}
 
 		//verify that this is a valid packet

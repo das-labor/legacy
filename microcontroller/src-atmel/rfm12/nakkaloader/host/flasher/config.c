@@ -62,7 +62,7 @@ uint8_t nf_parse_args (int in_argc, char *in_argv[], nf_config_t *out_conf)
 
 					argmask |= 0x01;
 				break;
-				case 'b': /* source file */
+				case 'f': /* source file */
 					if (in_argc <= ++i)
 					{
 						printf("No filename given.\n");
