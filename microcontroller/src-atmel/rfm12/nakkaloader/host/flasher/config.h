@@ -1,6 +1,6 @@
-#include <stdint.h>
-
 #ifndef NF_CONFIG_H
+
+#include <stdint.h>
 
 typedef struct
 {

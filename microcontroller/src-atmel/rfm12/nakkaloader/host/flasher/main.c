@@ -15,12 +15,14 @@
 //rfm12usb includes
 #include "../../../rfm12usb/host/common/opendevice.h"
 #include "../../../rfm12usb/firmware/usbconfig.h"
+#include "../../../rfm12usb/common/usb_id.h"
 
 //include c driver interface
 #include "../../../rfm12usb/host/CDriver/RfmUsb.h"
 
 //project specific
 #include "../../common/nl_protocol.h"
+#include "config.h"
 
 /* defines for the expect function */
 #define EXP_ADD   0x00 /* add an entry to the list */
@@ -137,14 +139,18 @@ uint_fast8_t nl_packet_match (uint_fast8_t in_len, rfmusb_packetbuffer *in_packe
 
 int main (int argc, char* argv[])
 {
-	uint8_t tmpchar = 0x00;
+    //usb stuff
+	int vid, pid, tmp;
+
+	//various variables
+    uint8_t tmpchar = 0x00;
 	uint_fast16_t i;
 	ssize_t l;
 	uint_fast8_t ptype;
-	int vid, pid, tmp;
 	uint_fast32_t packetcounter = 0;
 	nf_config_t *myconfig;
 
+    //config stuff
 	myconfig = malloc(sizeof(nf_config_t));
 	myconfig->verbosity = 0;
 
@@ -157,15 +163,14 @@ int main (int argc, char* argv[])
 		USB_CFG_DEVICE_ID
 	};
 
-	char vendor[] = {
+	char vendor[] =
 	{
 		USB_CFG_VENDOR_NAME, 0
 	},
-		product[] =
-		{
-			USB_CFG_DEVICE_NAME, 0
-		}
-	};
+	product[] =
+    {
+        USB_CFG_DEVICE_NAME, 0
+    };
 
 	usb_init();
 

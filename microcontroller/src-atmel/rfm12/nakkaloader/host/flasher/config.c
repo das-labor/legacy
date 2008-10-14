@@ -57,7 +57,7 @@ uint8_t nf_parse_args (int in_argc, char *in_argv[], nf_config_t *out_conf)
 						return (-1 * __LINE__); /* no argument given */
 					}
 
-					out_conf->addr = hex2bin(in_argv[i]);
+//					out_conf->addr = hex2bin(in_argv[i]);
 					if (out_conf->addr < 0) return (-1 * __LINE__);
 
 					argmask |= 0x01;
@@ -69,7 +69,7 @@ uint8_t nf_parse_args (int in_argc, char *in_argv[], nf_config_t *out_conf)
 						return (-1 * __LINE__); /* no argument given */
 					}
 
-					out_conf->fname_len = strlen(in_argv[i] * sizeof(char));
+//					out_conf->fname_len = strlen(in_argv[i] * sizeof(char));
 					out_conf->fname = malloc(out_conf->fname_len);
 					strncpy (out_conf->fname, in_argv[i], out_conf->fname_len);
 
@@ -83,7 +83,7 @@ uint8_t nf_parse_args (int in_argc, char *in_argv[], nf_config_t *out_conf)
 				case 'h':
 					return 0;
 				default:
-					printf ("Argument not understood: %c\n", argv[i][1]);
+//					printf ("Argument not understood: %c\n", argv[i][1]);
 					return (-1 * __LINE__);
 			}
 		}
