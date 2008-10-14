@@ -43,13 +43,7 @@ void boot_program_page (uint32_t page, uint8_t *buf)
 	boot_page_write (page);     // Store buffer in flash page.
 	boot_spm_busy_wait();       // Wait until the memory is written.
 
-	// Reenable RWW-section again. We need this if we want to jump back
-	// to the application after bootloading.
-
-	boot_rww_enable ();
-
 	// Re-enable interrupts (if they were ever enabled).
-
 	SREG = sreg;
 	sei();
 }
@@ -97,6 +91,8 @@ void nl_boot_app ( void )
 	rfm12_tick();
 	#endif
 	
+	/* re-enable flash */
+	boot_rww_enable ();
 	cli();
 	app_ptr();
 }
