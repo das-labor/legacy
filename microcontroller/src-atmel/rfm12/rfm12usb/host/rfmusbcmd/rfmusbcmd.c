@@ -17,6 +17,7 @@
 #define	usleep(x) sleep(x)
 #endif
 
+#define USB_TXPACKET 0x42
 #define RFM12_MAX_PACKET_LENGTH 30
 #define RADIO_TXBUFFER_HEADER_LEN 2
 #define DEFAULT_USB_TIMEOUT 1000
@@ -71,7 +72,7 @@ int radio_rx_dump(void)
 
         	//dump packet
         	printf ("--RX--  len: %02i, type: %02x, num: #%010u  --RX--\r\n", packetBuffer.len, packetBuffer.type, packetCnt);
-        	for (i = 0;(i < packetLen) && (i < RFM12_MAX_PACKET_LENGTH); i++)
+        	for (i = 0;(i < packetBuffer.len) && (i < RFM12_MAX_PACKET_LENGTH); i++)
         	{
         		printf("%c", packetBuffer.buffer[i]);
         	}
