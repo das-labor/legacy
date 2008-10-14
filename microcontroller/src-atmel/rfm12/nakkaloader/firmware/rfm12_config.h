@@ -44,14 +44,12 @@
 	SCK             | SCK
 	nSEL            | Slave select pin defined below
 */
-#ifndef RFM12_CONFIG_H
 
-#include <avr/io.h>
 
 //Pin that the RFM12's slave select is connected to
 #define DDR_SS DDRB
 #define PORT_SS PORTB
-#define BIT_SS 2
+#define BIT_SS 0
 
 //SPI port
 #define DDR_SPI DDRB
@@ -87,17 +85,15 @@
 /**** UART DEBUGGING
  * en- or disable debugging via uart.
  */
-#define RFM12_UART_DEBUG 0
+//#define RFM12_UART_DEBUG 0
 
 /**** INTERRUPT VECTOR
  * set the name for the interrupt vector here
  */
 #define RFM12_INT_VECT (INT0_vect)
 #define RFM12_INT_BIT (INT0)
-//interrupt mask register
-#define RFM12_INT_MSK (GICR)
-//setup Interrupt for falling egde trigger
-#define RFM12_INT_SETUP() (MCUCR |= (1<<ISC01))
+//the Interrupt mask register
+#define RFM12_INT_MSK GICR
+//setup the interrupt to trigger on negative edge
+#define RFM12_INT_SETUP()   MCUCR |= (1<<ISC01)
 
-#define RFM12_CONFIG_H
-#endif
