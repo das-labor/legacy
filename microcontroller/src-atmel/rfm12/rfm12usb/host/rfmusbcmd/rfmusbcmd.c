@@ -12,12 +12,13 @@
 //common includes
 #include "../../common/usb_id.h"
 #include "../../common/requests.h"
+#include "../../common/rfm12_buffer_size.h"
 
 #ifdef WIN32
 #define	usleep(x) Sleep(x)
 #endif
 
-#define RFM12_MAX_PACKET_LENGTH 30
+
 #define RADIO_TXBUFFER_HEADER_LEN 2
 #define DEFAULT_USB_TIMEOUT 1000
 
@@ -25,7 +26,7 @@
 typedef struct{
 	unsigned char len;			                       //length byte - number of bytes in buffer
 	unsigned char type;			                       //type field for airlab
-	unsigned char buffer[RFM12_MAX_PACKET_LENGTH];     //generic buffer
+	unsigned char buffer[RFM12_BUFFER_SIZE];     //generic buffer
 } radio_packetbuffer;
 
 
@@ -71,7 +72,7 @@ int radio_rx_dump(void)
 
         	//dump packet
         	printf ("--RX--  len: %02i, type: %02x, num: #%010u  --RX--\r\n", packetBuffer.len, packetBuffer.type, packetCnt);
-        	for (i = 0;(i < packetBuffer.len) && (i < RFM12_MAX_PACKET_LENGTH); i++)
+        	for (i = 0;(i < packetBuffer.len) && (i < RFM12_BUFFER_SIZE); i++)
         	{
         		printf("%c", packetBuffer.buffer[i]);
         	}
@@ -109,7 +110,7 @@ int radio_tx(unsigned char len, unsigned char type, unsigned char *data)
     int packetLen;
 
     //trim packet length
-    packetLen = RADIO_TXBUFFER_HEADER_LEN + ((len > RFM12_MAX_PACKET_LENGTH)?RFM12_MAX_PACKET_LENGTH:len);
+    packetLen = RADIO_TXBUFFER_HEADER_LEN + ((len > RFM12_BUFFER_SIZE)?RFM12_BUFFER_SIZE:len);
 
     //setup buffer
     buf.len = len;
@@ -129,7 +130,7 @@ int radio_tx(unsigned char len, unsigned char type, unsigned char *data)
 //ask the user for the packet to transmit
 void UI_send_raw()
 {
-    unsigned char length, type, buf[RFM12_MAX_PACKET_LENGTH];
+    unsigned char length, type, buf[RFM12_BUFFER_SIZE];
     int i, tmp;
 
     printf("Packet length? ");
@@ -142,9 +143,9 @@ void UI_send_raw()
     fflush(stdin);
     type =  tmp & 0xff;
 
-    if(length > RFM12_MAX_PACKET_LENGTH)
+    if(length > RFM12_BUFFER_SIZE)
     {
-        length = RFM12_MAX_PACKET_LENGTH;
+        length = RFM12_BUFFER_SIZE;
     }
 
     for(i = 0; i < length; i++)
