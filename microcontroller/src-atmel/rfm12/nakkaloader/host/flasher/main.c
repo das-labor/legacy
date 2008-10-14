@@ -24,6 +24,12 @@
 #include "../../common/nl_protocol.h"
 #include "config.h"
 
+
+#ifdef WIN32
+#define	usleep(x) Sleep(x)
+#endif
+
+
 /* defines for the expect function */
 #define EXP_ADD   0x00 /* add an entry to the list */
 #define EXP_MATCH 0x01 /* match against current list */
@@ -50,11 +56,17 @@ void nf_help()
 }
 
 
-#ifndef WIN32
 void nf_exit (int in_signal)
 {
         printf ("\r\nNakkaflash closing...\r\n");
         exit (in_signal);
+}
+
+
+#ifdef WIN32
+void winexit(void)
+{
+    nf_exit(128);
 }
 #endif
 
@@ -194,6 +206,8 @@ int main (int argc, char* argv[])
 	signal (SIGINT, nf_exit);
 	signal (SIGKILL, nf_exit);
 	signal (SIGHUP, nf_exit);
+#else
+    atexit((void * )winexit);
 #endif
 
 	tmp=0;
@@ -208,13 +222,14 @@ int main (int argc, char* argv[])
 	while (23)
 	{
 		//try to fetch a packet from the air
-		tmp = rfmusb_RxPacket (&packetBuffer);
+		tmp = rfmusb_RxPacket (udhandle, &packetBuffer);
 
 		//if an error occurs...
 		if (tmp < 0)
 		{
 			fprintf (stderr, "USB error: %s\r\n", usb_strerror());
-			nl_exit (__LINE__ * -1);
+
+			nf_exit (__LINE__ * -1);
 		}
 
 		//verify that this is a valid packet
@@ -225,12 +240,12 @@ int main (int argc, char* argv[])
 			{
 				//slave has sent it's configuration
 				case NLPROTO_SLAVE_CONFIG:
-					printf("got slave config!\n");
+					printf("got slave config!\nPagesize: %i\n", ((nl_config *)(packetBuffer.buffer + 2))->pagesize);
 				break;
 			}
 
 			//transmit packet prototype
-			//int rfmusb_TxPacket (unsigned char type, unsigned char len, unsigned char * data);
+			//int rfmusb_TxPacket (udhandle, unsigned char type, unsigned char len, unsigned char * data);
 		}
 
 		//this is done to prevent stressing the usb connection too much
