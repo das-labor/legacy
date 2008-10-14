@@ -17,7 +17,6 @@
 #define	usleep(x) sleep(x)
 #endif
 
-#define USB_TXPACKET 0x42
 #define RFM12_MAX_PACKET_LENGTH 30
 #define RADIO_TXBUFFER_HEADER_LEN 2
 #define DEFAULT_USB_TIMEOUT 1000
