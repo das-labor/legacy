@@ -244,7 +244,7 @@ uint8_t usbrfm_usbTxRfmBuf(uint8_t packetType, uchar *data, uint8_t len)
 		memcpy(&rfmusb_usbTxBuf[2], data, len);
 		rfmusb_usbTxBuf[0] = len;
 		rfmusb_usbTxBuf[1] = packetType;
-		rfmusb_usbTxLen = len + RFMUSB_NOTIFYBUFFER_OVERHEAD;
+		rfmusb_usbTxLen = len + 2; //add overhead; FIXME: move constant value to define.
 	}
 	else
 	{
