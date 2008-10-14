@@ -19,6 +19,7 @@
 #include <usb.h>
 #include <unistd.h>
 
+/* cleanup these please */
 #include "../../common/console.h"
 #include "../../common/configvars.h"
 #include "../../common/requests.h"
@@ -27,14 +28,21 @@
 #include "../../firmware/usbconfig.h"
 #include "../../firmware/requests.h"
 
+//working includes
 #include "termio.h"
 #include "dump.h"
+
+//include c driver interface
+#include "../../../rfm12usb/host/CDriver/RfmUsb.h
 
 /* defines for the expect function */
 #define EXP_ADD   0x00 /* add an entry to the list */
 #define EXP_MATCH 0x01 /* match against current list */
 #define EXP_DEL   0x02 /* delete a single entry */
 #define EXP_REP   0x03 /* replace entire list */
+
+//rfmusb packetbuffer; stores received packets
+rfmusb_packetbuffer packetBuffer;
 
 usb_dev_handle *udhandle = NULL;
 
@@ -59,7 +67,7 @@ void nf_exit (int in_signal)
 /* @description this function maintains a list of valid packet types for each state of the
  * flasher and can be used to match a given packet against them.
  */
-uint_fast8_t nl_packet_match (uint_fast8_t in_len, uint8_t *in_packet, uint_fast8_t in_function)
+uint_fast8_t nl_packet_match (uint_fast8_t in_len, rfmusb_packetbuffer *in_packet, uint_fast8_t in_function)
 {
 	static uint8_t *valid_packets = malloc(256);
 	static uint_fast8_t listlen = 0;
@@ -75,7 +83,7 @@ uint_fast8_t nl_packet_match (uint_fast8_t in_len, uint8_t *in_packet, uint_fast
 		case EXP_MATCH:
 			if (in_len < 2) return 0;
 			for (i=0;i<listlen;i++)
-				if (valid_packets[i] == (uint8_t) in_packet[2]) return valid_packets[i];
+				if (valid_packets[i] == (uint8_t) in_packet->buffer[0]) return valid_packets[i];
 			return 0;
 
 		case EXP_DEL:
@@ -103,7 +111,6 @@ int main (int argc, char* argv[])
 	uint8_t tmpchar = 0x00;
 	uint_fast16_t i;
 	ssize_t l;
-	uint8_t buf[512];
 	uint_fast8_t ptype;
 	int vid, pid, tmp;
 	uint_fast32_t packetcounter = 0;
@@ -164,30 +171,32 @@ int main (int argc, char* argv[])
 
 	while (23)
 	{
-		tmp = usb_control_msg (udhandle,
-				USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
-				RFMUSB_RQ_RFM12_GET, 0, 0, buf, sizeof (buf),
-				5000);
+		//try to fetch a packet from the air
+		tmp = rfmusb_RxPacket (&packetBuffer);
 
+		//if an error occures...
 		if (tmp < 0)
 		{
 			fprintf (stderr, "USB error: %s\r\n", usb_strerror());
 			nl_exit (__LINE__ * -1);
-		} else if (ptype = nl_packet_match(tmp, buf, EXP_MATCH))
-		{    /* packet may be destined for us... */
+		}
+		
+		//verify that this is a valid packet
+		else if (ptype = nl_packet_match(tmp, &packetBuffer, EXP_MATCH))
+		{		
+			//see what to do for given packet type
 			switch (ptype)
 			{
+				//slave has sent it's configuration
 				case NLPROTO_SLAVE_CONFIG:
+					printf("got slave config!\n");
 				break;
 			}
 
-
-			continue;
-			tmp = usb_control_msg (udhandle,
-				USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
-				RFMUSB_RQ_RFM12_PUT, USB_TXPACKET, 0, buf, 2,
-				5000);
+			//transmit packet prototype
+			//int rfmusb_TxPacket (unsigned char type, unsigned char len, unsigned char * data);
 		}
+		
 		usleep (1000);
 	}
 }
