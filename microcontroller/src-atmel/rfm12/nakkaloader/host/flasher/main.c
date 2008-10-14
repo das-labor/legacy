@@ -7,45 +7,35 @@
  * Copyright (c) Soeren Heisrath <forename@surname.org>
  */
 
-
-#include <stdlib.h>
+//from stdinclude path
 #include <stdio.h>
-#include <termios.h>
-#include <string.h>
-#include <signal.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
 #include <stdint.h>
 #include <usb.h>
-#include <unistd.h>
 
-/* cleanup these please */
-#include "../../common/console.h"
-#include "../../common/configvars.h"
-#include "../../common/requests.h"
-#include "../common/opendevice.h"
-
-#include "../../firmware/usbconfig.h"
-#include "../../firmware/requests.h"
-
-//working includes
-#include "termio.h"
-#include "dump.h"
+//rfm12usb includes
+#include "../../../rfm12usb/host/common/opendevice.h"
+#include "../../../rfm12usb/firmware/usbconfig.h"
 
 //include c driver interface
-#include "../../../rfm12usb/host/CDriver/RfmUsb.h
+#include "../../../rfm12usb/host/CDriver/RfmUsb.h"
+
+//project specific
+#include "../../common/nl_protocol.h"
 
 /* defines for the expect function */
 #define EXP_ADD   0x00 /* add an entry to the list */
 #define EXP_MATCH 0x01 /* match against current list */
 #define EXP_DEL   0x02 /* delete a single entry */
-#define EXP_REP   0x03 /* replace entire list */
+
+/**
+   GLOBALS
+**/
 
 //rfmusb packetbuffer; stores received packets
 rfmusb_packetbuffer packetBuffer;
-
 usb_dev_handle *udhandle = NULL;
 
+//usage
 void nf_help()
 {
 	printf(
@@ -58,11 +48,13 @@ void nf_help()
 }
 
 
+#ifndef WIN32
 void nf_exit (int in_signal)
 {
         printf ("\r\nNakkaflash closing...\r\n");
         exit (in_signal);
 }
+#endif
 
 
 uint8_t *read_buf_from_hex(FILE *f, size_t *size, size_t *offset)
@@ -109,7 +101,7 @@ error:
  */
 uint_fast8_t nl_packet_match (uint_fast8_t in_len, rfmusb_packetbuffer *in_packet, uint_fast8_t in_function)
 {
-	static uint8_t *valid_packets = malloc(256);
+	static uint8_t valid_packet_types[256];
 	static uint_fast8_t listlen = 0;
 	uint_fast8_t i;
 
@@ -117,32 +109,29 @@ uint_fast8_t nl_packet_match (uint_fast8_t in_len, rfmusb_packetbuffer *in_packe
 	{
 		case EXP_ADD:
 			if (in_len + listlen > 256) return 0; /* list is full (unlikely) */
-			memcpy (valid_packets[listlen], in_packet, in_len);
+
+			//add type to list
+			valid_packet_types[listlen] = in_len;
 			return 1;
 
 		case EXP_MATCH:
 			if (in_len < 2) return 0;
 			for (i=0;i<listlen;i++)
-				if (valid_packets[i] == (uint8_t) in_packet->buffer[0]) return valid_packets[i];
+				if (valid_packet_types[i] == (uint8_t) in_packet->buffer[0]) return valid_packet_types[i];
 			return 0;
 
 		case EXP_DEL:
 			for (i=0;i<listlen;i++)
 			{
-				if (valid_packets[i] == (uint8_t) *in_packet)
+				if (valid_packet_types[i] == in_len)
 				{
 					if (i+1 < listlen)
-						valid_packets[i] = valid_packets[listlen];
+						valid_packet_types[i] = valid_packet_types[listlen];
 					listlen--;
 					return listlen;
 				}
 			}
 			return 0;
-
-		case EXP_REP:
-			listlen = in_len;
-			memcpy (valid_packets, in_packet, listlen);
-			return 1;
 	}
 }
 
@@ -169,7 +158,7 @@ int main (int argc, char* argv[])
 	};
 
 	char vendor[] = {
-	{ 
+	{
 		USB_CFG_VENDOR_NAME, 0
 	},
 		product[] =
@@ -177,14 +166,14 @@ int main (int argc, char* argv[])
 			USB_CFG_DEVICE_NAME, 0
 		}
 	};
-	
+
 	usb_init();
 
 
 	/* */
 	// l = read(*myconfig->fname, &tmpchar, 1);
 	// if (l > 0) ;
-	
+
 	/* usb setup */
 	vid = rawVid[1] * 256 + rawVid[0];
 	pid = rawPid[1] * 256 + rawPid[0];
@@ -196,9 +185,11 @@ int main (int argc, char* argv[])
 		return __LINE__ * -1;
 	}
 
+#ifndef WIN32
 	signal (SIGINT, nf_exit);
 	signal (SIGKILL, nf_exit);
 	signal (SIGHUP, nf_exit);
+#endif
 
 	tmp=0;
 	i=0;
@@ -220,10 +211,10 @@ int main (int argc, char* argv[])
 			fprintf (stderr, "USB error: %s\r\n", usb_strerror());
 			nl_exit (__LINE__ * -1);
 		}
-		
+
 		//verify that this is a valid packet
 		else if (ptype = nl_packet_match(tmp, &packetBuffer, EXP_MATCH))
-		{		
+		{
 			//see what to do for given packet type
 			switch (ptype)
 			{
@@ -236,7 +227,7 @@ int main (int argc, char* argv[])
 			//transmit packet prototype
 			//int rfmusb_TxPacket (unsigned char type, unsigned char len, unsigned char * data);
 		}
-		
+
 		//this is done to prevent stressing the usb connection too much
 		usleep (1000);
 	}
