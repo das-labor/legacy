@@ -34,7 +34,7 @@ int rfmusb_TxPacket (unsigned char type, unsigned char len, unsigned char *data)
     //request to send packet and return result
     return usb_control_msg (udhandle,
         USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
-        RFMUSB_RQ_RFM12_PUT, USB_TXPACKET, 0, (char *)&buf, packetLen,
+        RFMUSB_RQ_RFM12_PUT, 0, 0, (char *)&buf, packetLen,
         DEFAULT_USB_TIMEOUT);
 }
 
