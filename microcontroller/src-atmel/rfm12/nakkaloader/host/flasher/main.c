@@ -64,6 +64,46 @@ void nf_exit (int in_signal)
         exit (in_signal);
 }
 
+
+uint8_t *read_buf_from_hex(FILE *f, size_t *size, size_t *offset)
+{
+	int i, tt;
+	uint8_t *buf;
+
+	if (fscanf(f, ":%2x", size) != 1)
+		goto error;
+
+	if (fscanf(f, "%4x", offset) != 1)
+		goto error;
+
+	if (fscanf(f, "%2x", &tt) != 1)
+		goto error;
+
+	if(tt == 1) {
+		*size  = 0;
+		return 0;
+	}
+
+	i = *size;
+	buf = malloc(*size);
+	uint8_t *ptr = buf;
+	for(;i > 0; i--) {
+		if (fscanf(f, "%2x", ptr++) != 1)
+			goto error;
+	}
+	if (fscanf(f, "%2x", &tt) != 1)	 // checksum
+		goto error;
+
+	fscanf(f, "\n");
+
+	return buf;
+
+error:
+	*size = -1;
+	return 0;
+}
+
+
 /* @description this function maintains a list of valid packet types for each state of the
  * flasher and can be used to match a given packet against them.
  */
@@ -174,7 +214,7 @@ int main (int argc, char* argv[])
 		//try to fetch a packet from the air
 		tmp = rfmusb_RxPacket (&packetBuffer);
 
-		//if an error occures...
+		//if an error occurs...
 		if (tmp < 0)
 		{
 			fprintf (stderr, "USB error: %s\r\n", usb_strerror());
@@ -197,6 +237,7 @@ int main (int argc, char* argv[])
 			//int rfmusb_TxPacket (unsigned char type, unsigned char len, unsigned char * data);
 		}
 		
+		//this is done to prevent stressing the usb connection too much
 		usleep (1000);
 	}
 }
