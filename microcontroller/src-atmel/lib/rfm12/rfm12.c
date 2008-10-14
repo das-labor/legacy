@@ -425,7 +425,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK){
 void rfm12_tick()
 {
 	uint16_t status;
-	static uint8_t channel_free_count;
+	static uint8_t channel_free_count = 16;
 
 #if RFM12_UART_DEBUG
 	static uint8_t oldmode;
