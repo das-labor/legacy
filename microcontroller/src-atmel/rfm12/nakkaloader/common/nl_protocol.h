@@ -1,8 +1,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "rfm12_config.h"
-#include "nl_config.h"
+#include "../../rfm12usb/common/rfm12_buffer_size.h"
 
 #ifndef NL_PROTOCOL_H
 
@@ -29,7 +28,7 @@
 typedef struct
 {
 	uint8_t pkttype;
-	uint8_t payload[RFM12_RX_BUFFER_SIZE-1];
+	uint8_t payload[RFM12_BUFFER_SIZE-1];
 } nl_packet;
 
 typedef struct
