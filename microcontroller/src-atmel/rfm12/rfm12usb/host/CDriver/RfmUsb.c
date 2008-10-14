@@ -7,18 +7,18 @@
  * Copyright (c) Soeren Heisrath <forename@surname.org>
  */
 
-#include <usb.h> 
+#include <usb.h>
 #include "RfmUsb.h"
 
 //common includes
 #include "../../common/usb_id.h"
 #include "../../common/requests.h"
- 
+
 //move to common header soon
 #define RADIO_TXBUFFER_HEADER_LEN 2
-int rfmusb_TxPacket (unsigned char type, unsigned char len, unsigned char *data)
+int rfmusb_TxPacket (rfmusb_dev_handle *udhandle, unsigned char type, unsigned char len, unsigned char *data)
 {
-    radio_packetbuffer buf;
+    rfmusb_packetbuffer buf;
     int packetLen;
 
     //trim packet length
@@ -39,7 +39,7 @@ int rfmusb_TxPacket (unsigned char type, unsigned char len, unsigned char *data)
 }
 
 
-int rfmusb_RxPacket (rfmusb_packetbuffer * packetBuffer)
+int rfmusb_RxPacket (rfmusb_dev_handle *udhandle, rfmusb_packetbuffer * packetBuffer)
 {
     //clear buffer
     memset (packetBuffer, 0x00, sizeof(rfmusb_packetbuffer));
