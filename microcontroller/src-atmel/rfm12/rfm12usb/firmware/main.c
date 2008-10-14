@@ -37,7 +37,6 @@
 //FIXME: rework packet transmission system (full packet, short/fast (1byte packet))
 //FIXME: move these defines to common header, which yet has to be commited by soeren
 #define USB_SENDCHAR 0x23
-#define USB_TXPACKET 0x42
 
 
 ////////
@@ -68,47 +67,38 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 	//don't expect the cases to break, they may also return
 	switch(rq->bRequest)
 	{
-		//host wants to write packets to the rfm12
+		//host wants to write a raw packet to the rfm12
 		case RFMUSB_RQ_RFM12_PUT:
-			switch (rq->wValue.bytes[0])
-			{
-				//send a single character
-				//FIXME: please cleanup define name and location
-				case USB_SENDCHAR:
-					//copy data
-					rfmusb_usbRxBuf[0] = rq->wIndex.bytes[0];
+			// initialize position index
+			rfmusb_usbRxCnt = 0;
 
-					//send
-					rfm12_tx (1, 0, rfmusb_usbRxBuf);
+			// store the amount of data to be received
+			rfmusb_usbRxLen = rq->wLength.bytes[0];
 
-					//toggle led
-					LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
+			// limit to buffer size
+			if(rfmusb_usbRxLen > RFMUSB_USBRXBUFFER_SIZE)
+				rfmusb_usbRxLen = RFMUSB_USBRXBUFFER_SIZE;
 
-					//use default return value
-					break;
+			//toggle status led
+			LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
 
-				//transfer a raw rfm12 packet
-				case USB_TXPACKET:
-					// initialize position index
-					rfmusb_usbRxCnt = 0;
+			// tell driver to use usbFunctionWrite()
+			return USB_NO_MSG;
+			
+		//send a single character
+		//FIXME: please cleanup define name and location
+		case USB_SENDCHAR:
+			//copy data
+			rfmusb_usbRxBuf[0] = rq->wIndex.bytes[0];
 
-					// store the amount of data to be received
-					rfmusb_usbRxLen = rq->wLength.bytes[0];
+			//send
+			rfm12_tx (1, 0, rfmusb_usbRxBuf);
 
-					// limit to buffer size
-					if(rfmusb_usbRxLen > RFMUSB_USBRXBUFFER_SIZE)
-						rfmusb_usbRxLen = RFMUSB_USBRXBUFFER_SIZE;
+			//toggle led
+			LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
 
-					//toggle status led
-					LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
-
-					// tell driver to use usbFunctionWrite()
-					return USB_NO_MSG;
-
-				//use default return value
-				default:
-					break;
-			}
+			//use default return value
+			break;			
 
 		//host wants to read rfm12 packet data
 		case RFMUSB_RQ_RFM12_GET:
