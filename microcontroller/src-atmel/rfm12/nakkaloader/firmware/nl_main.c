@@ -120,7 +120,9 @@ int main (void)
 	/* read address */
 	for (i=0;i<NL_ADDRESSSIZE;i++)
 	{
-		myaddress[i] = eeprom_read_byte ((uint8_t *) i + NL_ADDRESSPOS);
+		myaddress[i] = 
+			eeprom_read_byte (
+				(uint8_t *) (((uint8_t) i) + ((uint8_t) NL_ADDRESSPOS)));
 	}
 
 	rfm12_init();
