@@ -83,7 +83,7 @@ else ifeq ($(MCU),atmega128)
 	LFUSE = 0xef
 endif
 
-LDFLAGS += -Wl,-Map,--section-start=.text=$(BOOT_SECTION_START)
+LDFLAGS += -Wl,-Map=nakkaflash.map,--section-start=.text=$(BOOT_SECTION_START)
 CFLAGS += -DBOOT_SECTION_START=$(BOOT_SECTION_START)
 
 # won't do on win32
