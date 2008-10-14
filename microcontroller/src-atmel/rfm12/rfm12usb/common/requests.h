@@ -21,7 +21,7 @@
  * random data to test the reliability of the communication.
  */
 
- //put data into the rfm12 transmit buffer
+//put data into the rfm12 transmit buffer
 #define RFMUSB_RQ_RFM12_PUT			0x01
 
 //poll for rfm12 received data
@@ -29,7 +29,6 @@
 
 //poll for notifications
 #define RFMUSB_RQ_GETNOTIFICATION	0x03
-#define USB_TXPACKET 0x42
 
 
 #endif /* __REQUESTS_H_INCLUDED__ */
