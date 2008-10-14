@@ -1,0 +1,31 @@
+/* Utility functions for receiving and transmitting data from and to the target device.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 as published
+ * by the Free Software Foundation.
+ *
+ * Copyright (c) Soeren Heisrath <forename@surname.org>, Hans-Gert Dahmen <sexyludernatascha@gmail.com>
+ */
+ 
+#pragma once
+ 
+//FIXME: this shouldn't be defined here.... put it somewhere else 
+//common header? dynamically gettable from device? dynamically negotiated between rfm12peer<->rfm12peer<->hostpc ?!)
+//put to common header first (also in cpp driver!!)
+#define RFM12_MAX_PACKET_LENGTH 30
+
+//FIXME: make this settable
+#define DEFAULT_USB_TIMEOUT 1000
+
+ //tx and rx raw packet buffer struct
+typedef struct{
+	unsigned char len;			                       //length byte - number of bytes in buffer
+	unsigned char type;			                       //type field for airlab
+	unsigned char buffer[RFM12_MAX_PACKET_LENGTH];     //generic buffer
+} rfmusb_packetbuffer;
+
+
+/* @description Formats a given chunk of data accordingly and hands it over to the
+ * transmitting function. */
+int rfmusb_TxPacket (unsigned char type, unsigned char len, unsigned char * data);
+int rfmusb_RxPacket (rfmusb_packetbuffer * packetBuffer);
