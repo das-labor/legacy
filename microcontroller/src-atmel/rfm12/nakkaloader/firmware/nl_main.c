@@ -95,9 +95,6 @@ void nl_boot_app ( void )
 	app_ptr();
 }
 
-#define RFM12_INT_ON() RFM12_INT_MSK |= (1<<RFM12_INT_BIT)
-#define RFM12_INT_OFF() RFM12_INT_MSK &= ~(1<<RFM12_INT_BIT)
-
 int main (void) __attribute__ ((naked));
 int main (void)
 {
@@ -207,13 +204,7 @@ int main (void)
 
 			/* commit page write */
 			case NLPROTO_PAGE_COMMIT:
-			{
-				//turn off rfm12 int
-//				RFM12_INT_OFF();
-			
-
-
-				
+			{			
 				k = NL_ADDRESSSIZE + 1;
 
 				pagenum = (uint32_t) (rxbuf[k++]);
