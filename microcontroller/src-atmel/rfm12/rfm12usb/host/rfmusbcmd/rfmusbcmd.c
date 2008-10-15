@@ -74,7 +74,7 @@ int radio_rx_dump(void)
         	printf ("--RX--  len: %02i, type: %02x, num: #%010u  --RX--\r\n", packetBuffer.len, packetBuffer.type, packetCnt);
         	for (i = 0;(i < packetBuffer.len) && (i < RFM12_BUFFER_SIZE); i++)
         	{
-        		printf("%c", packetBuffer.buffer[i]);
+        		printf("%.2x ", packetBuffer.buffer[i]);
         	}
         	printf("\r\n");
         }
