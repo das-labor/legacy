@@ -19,6 +19,7 @@ include avr.mk
 ifeq ($(MCU),atmega8)
 	# atmega8 with 1024 words bootloader:
 	# bootloader section starts at 0xc00 (word-address) == 0x1800 (byte-address)
+	# BOOT_SECTION_START = 0x1800
 	BOOT_SECTION_START = 0x1800
 	#
 	# atmega8 with 512 words bootloader:
