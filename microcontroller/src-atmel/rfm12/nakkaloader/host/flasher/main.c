@@ -198,7 +198,7 @@ void push_page( uint8_t dst, uint8_t *buf, size_t size )
 
 	while(off < size) {
 		while(1) {
-			uint8_t tmp = rfmusb_RxPacket (udhandle, &packetBuffer);
+			int8_t tmp = rfmusb_RxPacket (udhandle, &packetBuffer);
 			if ((tmp > 0) && (packetBuffer.buffer[1] == dst) && (packetBuffer.type == NL_PACKETTYPE) && (packetBuffer.buffer[0] == NLPROTO_PAGE_CHKSUM))
 				break;
 
@@ -235,6 +235,7 @@ void push_page( uint8_t dst, uint8_t *buf, size_t size )
         uint8_t tmp = rfmusb_RxPacket (udhandle, &packetBuffer);
         if ((packetBuffer.buffer[1] == dst) && (packetBuffer.type == NL_PACKETTYPE) && (packetBuffer.buffer[0] == NLPROTO_PAGE_CHKSUM))
             break;
+        usleep (250);
     }
 
 	printf(".\n");
@@ -263,7 +264,7 @@ void flash(char * filename, uint8_t addr, uint16_t pagesize, uint8_t pagecount)
 	if (size != 0)
 		goto fileerror;
 
-	int i,j;
+	unsigned int i,j;
 	for( i=0; i<pagecount; i ++) {
 		for(j=i; j<i+pagesize; j++) {
 			if (mask[j] == 0xff) {
@@ -276,25 +277,25 @@ void flash(char * filename, uint8_t addr, uint16_t pagesize, uint8_t pagecount)
 
 		//push page i
         ((nl_flashcmd *)&pktbuf)->pagenum = i;
-        nl_tx_packet(NLPROTO_PAGE_COMMIT, dst, sizeof(pktbuf), (unsigned char*)&pktbuf);
+        nl_tx_packet(NLPROTO_PAGE_COMMIT, addr, sizeof(pktbuf), (unsigned char*)&pktbuf);
 
-        /*while(1) {
-			uint8_t tmp = rfmusb_RxPacket (udhandle, &packetBuffer);
-			if ((tmp > 0) && (packetBuffer.buffer[1] == dst) && (packetBuffer.type == NL_PACKETTYPE) && (packetBuffer.buffer[0] == NLPROTO_PAGE_COMMITED))
-				break;
+        while(1)
+        {
+            int8_t tmp = rfmusb_RxPacket (udhandle, &packetBuffer);
+            if ((tmp > 0) && (packetBuffer.buffer[1] == addr) && (packetBuffer.type == NL_PACKETTYPE) && (packetBuffer.buffer[0] == NLPROTO_PAGE_COMMITED))
+                break;
 
-            if(tmp > 0)
-            {
-                printf("ERR 0x%.2x\n", packetBuffer.buffer[0]);
-            }
             usleep (250);
-		}*/
+        }
 	}
 
 	free(mem);
 	free(mask);
 
 	fclose(fd);
+
+	//send app boot
+    nl_tx_packet(NLPROTO_BOOT, addr, 0, NULL);
 
 	return;
 
@@ -406,7 +407,7 @@ int main (int argc, char* argv[])
 			{
 				//slave has sent it's configuration
 				case NLPROTO_SLAVE_CONFIG:
-                    if(istate == 0)
+                    if((istate == 0) || (istate == 1))
                     {
                         istate = 1;
                         memcpy(&slave_cfg, packetBuffer.buffer + 2, sizeof(nl_config));
@@ -427,10 +428,17 @@ int main (int argc, char* argv[])
 
                         //flash
                         flash(myconfig->fname, myconfig->addr , slave_cfg.pagesize, 128);
+
+                        //ready again
+                        istate = 2;
                     }
 				break;
 			}
 		}
+
+		//flashing done
+		if(istate == 2)
+            break;
 
 		//this is done to prevent stressing the usb connection too much
 		usleep (1000);
