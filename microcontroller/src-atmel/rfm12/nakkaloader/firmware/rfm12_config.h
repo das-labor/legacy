@@ -49,7 +49,7 @@
 //Pin that the RFM12's slave select is connected to
 #define DDR_SS DDRB
 #define PORT_SS PORTB
-#define BIT_SS 0
+#define BIT_SS 2
 
 //SPI port
 #define DDR_SPI DDRB
@@ -93,7 +93,7 @@
 #define RFM12_INT_VECT (INT0_vect)
 #define RFM12_INT_BIT (INT0)
 //the Interrupt mask register
-#define RFM12_INT_MSK GICR
+#define RFM12_INT_MSK (GICR)
 //setup the interrupt to trigger on negative edge
-#define RFM12_INT_SETUP()   MCUCR |= (1<<ISC01)
+#define RFM12_INT_SETUP() (MCUCR |= (1<<ISC01))
 

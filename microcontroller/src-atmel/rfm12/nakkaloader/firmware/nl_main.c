@@ -5,6 +5,7 @@
 #include <avr/pgmspace.h>
 #include <stdint.h>
 #include <string.h>
+#include <util/crc16.h>
 
 #include "rfm12_config.h"
 #include "rfm12.h"
@@ -14,7 +15,7 @@
 /* simple for-loop to "wrap" around an error-prone section */
 // #define NL_ERRORWRAP for (i=0;i < NL_MAXFAILS || NL_MAXFAILS == 0;i++)
 
-void (*app_ptr)(void) = (void *)0x0000;
+void (*app_ptr)(void)  = (void *)0x0000;
 uint8_t myaddress[NL_ADDRESSSIZE];
 
 void boot_program_page (uint32_t page, uint8_t *buf)
@@ -77,11 +78,10 @@ void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 	if (in_len)
 	{
 		for (;k<in_len;k++)
-			txpacket[i] = *(in_payload + k);
-		i++;
+			txpacket[i++] = *(in_payload + k);
 	}
 	
-	rfm12_tx (i + NL_ADDRESSSIZE + 1, NL_PACKETTYPE, txpacket);
+	rfm12_tx (i, NL_PACKETTYPE, txpacket);
 }
 
 void nl_boot_app ( void )
@@ -106,7 +106,8 @@ int main (void)
 	nl_config myconfig;
 	nl_flashcmd mycmd;
 
-	
+	DDRD |= _BV(PD6);
+
 	/* fill config variables */
 	myconfig.pagesize = SPM_PAGESIZE;
 	myconfig.rxbufsize = RFM12_RX_BUFFER_SIZE;
@@ -120,6 +121,10 @@ int main (void)
 			eeprom_read_byte (
 				(uint8_t *) (((uint8_t) i) + ((uint8_t) NL_ADDRESSPOS)));
 	}
+
+	/* move interrupt vector table to bootloader section */
+	GICR = (1<<IVCE);
+	GICR = (1<<IVSEL);
 
 	rfm12_init();
 	sei();
@@ -148,19 +153,23 @@ int main (void)
 			
 		i=0; /* somebody cares about us. reset error counter */
 
-		switch (rxbuf[NL_ADDRESSSIZE])
+		switch (rxbuf[0])
 		{
 			/* they're out there... */
 			case NLPROTO_MASTER_EHLO:
 			{
 				rfm12_rx_clear();
 				mystate = 1;
+				PORTD ^= _BV(PD6);
+
+				nl_tx_packet (NLPROTO_MASTER_EHLO, 0, mypage);
 			}
 			break;
 
 			/* master is ready to flash */
 			case NLPROTO_PAGE_FILL:
 			{
+				uint16_t crcsum = 0;
 				k = NL_ADDRESSSIZE + 1;
 				memcpy (&mycmd, rxbuf + k, sizeof(nl_flashcmd));
 				
@@ -180,10 +189,16 @@ int main (void)
 					break;
 				}
 
-				memcpy (&mypage + mycmd.addr_start, rxbuf,
+				memcpy (&mypage + mycmd.addr_start, rxbuf + NL_ADDRESSSIZE + sizeof(mycmd),
 					mycmd.addr_end - mycmd.addr_start);
 
+				for (k=0;k<mycmd.addr_end - mycmd.addr_start;k++)
+					crcsum = _crc16_update (crcsum, *(rxbuf + NL_ADDRESSSIZE + 1 + k));
+
 				rfm12_rx_clear();
+
+				nl_tx_packet (NLPROTO_PAGE_CHKSUM, 2, (uint8_t *) &crcsum);
+
 				break; /* TODO: return checksum to master */	
 			}
 			break;
@@ -203,7 +218,8 @@ int main (void)
 				rfm12_rx_clear();
 
 				boot_program_page (pagenum, mypage);
-				break;
+				
+				nl_tx_packet (NLPROTO_PAGE_COMMIT, 0, mypage);
 			}
 			break;
 			
@@ -211,6 +227,7 @@ int main (void)
 			case NLPROTO_BOOT:
 			{
 				rfm12_rx_clear();
+				nl_tx_packet (NLPROTO_BOOT, 0, mypage);
 
 				nl_boot_app();
 			}
