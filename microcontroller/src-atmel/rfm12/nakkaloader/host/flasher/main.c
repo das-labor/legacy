@@ -185,6 +185,19 @@ uint16_t crc16_update(uint16_t crc, uint8_t a)
     return crc;
 }
 
+uint16_t calc_crc(uint8_t * buf, uint_fast8_t buflen)
+{
+    uint_fast8_t runner;
+    uint16_t crc16 = 0;
+
+    for(runner = 0; runner < buflen; runner++)
+    {
+        crc16 = crc16_update(crc16, buf[runner]);
+    }
+
+    return crc16;
+}
+
 #define CHUNK_TRANSFER_SIZE (sizeof(pktbuf) - sizeof(nl_flashcmd))
 void push_page(uint8_t dst, uint8_t *buf, size_t size)
 {
@@ -194,6 +207,7 @@ void push_page(uint8_t dst, uint8_t *buf, size_t size)
 	//-2 == type + address
 	//8 == pagenum, addr start, addr end == sizeof(nl_flashcmd)
     uint8_t pktbuf[RFM12_BUFFER_SIZE-2];
+    uint16_t crc16;
 
 
     //first tx
@@ -203,12 +217,14 @@ void push_page(uint8_t dst, uint8_t *buf, size_t size)
     {
         ((nl_flashcmd *)&pktbuf)->addr_end = size;
         memcpy(pktbuf + sizeof(nl_flashcmd), ptr, size);
+        crc16 = calc_crc(pktbuf, size + sizeof(nl_flashcmd));
         off = size;
     }
     else
     {
         ((nl_flashcmd *)&pktbuf)->addr_end = CHUNK_TRANSFER_SIZE;
         memcpy(pktbuf + sizeof(nl_flashcmd), ptr, CHUNK_TRANSFER_SIZE);
+        crc16 = calc_crc(pktbuf, CHUNK_TRANSFER_SIZE + sizeof(nl_flashcmd));
         off += CHUNK_TRANSFER_SIZE;
     }
 
@@ -230,13 +246,6 @@ void push_page(uint8_t dst, uint8_t *buf, size_t size)
 			{
 			    if ((packetBuffer.buffer[1] == dst) && (packetBuffer.type == NL_PACKETTYPE) && (packetBuffer.buffer[0] == NLPROTO_PAGE_CHKSUM))
 			    {
-                    uint16_t crc16;
-                    int runner;
-                    for(runner = 0; runner < sizeof(pktbuf); runner++)
-                    {
-                        crc16 = crc16_update(crc16, pktbuf[runner]);
-                    }
-
                     if(crc16 != *(uint16_t *)(packetBuffer.buffer + 2))
                     {
                         printf("CRC mismatch! Client: %.4x, Host: %.4x\n", *(uint16_t *)(packetBuffer.buffer + 2), crc16);
@@ -257,13 +266,15 @@ void push_page(uint8_t dst, uint8_t *buf, size_t size)
         if((size - off) < CHUNK_TRANSFER_SIZE)
         {
             ((nl_flashcmd *)&pktbuf)->addr_end = size;
-            memcpy(pktbuf + sizeof(nl_flashcmd), ptr + off, size);
+            memcpy(pktbuf + sizeof(nl_flashcmd), ptr + off, size - off);
+            crc16 = calc_crc(pktbuf, size - off + sizeof(nl_flashcmd));
             off = size;
         }
         else
         {
             ((nl_flashcmd *)&pktbuf)->addr_end = off + CHUNK_TRANSFER_SIZE;
             memcpy(pktbuf + sizeof(nl_flashcmd), ptr + off, CHUNK_TRANSFER_SIZE);
+            crc16 = calc_crc(pktbuf, CHUNK_TRANSFER_SIZE + sizeof(nl_flashcmd));
             off += CHUNK_TRANSFER_SIZE;
         }
 
@@ -279,13 +290,6 @@ void push_page(uint8_t dst, uint8_t *buf, size_t size)
         {
             if ((packetBuffer.buffer[1] == dst) && (packetBuffer.type == NL_PACKETTYPE) && (packetBuffer.buffer[0] == NLPROTO_PAGE_CHKSUM))
             {
-                uint16_t crc16;
-                int runner;
-                for(runner = 0; runner < sizeof(pktbuf); runner++)
-                {
-                    crc16 = crc16_update(crc16, pktbuf[runner]);
-                }
-
                 if(crc16 != *(uint16_t *)(packetBuffer.buffer + 2))
                 {
                     printf("CRC mismatch! Client: %.4x, Host: %.4x\n", *(uint16_t *)(packetBuffer.buffer + 2), crc16);
@@ -372,7 +376,7 @@ void flash(char * filename, uint8_t addr, uint16_t pageSize, uint8_t pageCount)
 			{
 				// trasfer page stating at i
 				printf("Transmitting page 0x%.4x ", pageNum);
-				//push_page(addr, &(mem[pageStart]), pageSize);
+				push_page(addr, &(mem[pageStart]), pageSize);
 				printf("\n");
 
                 dump_page(mem, pageStart, pageEnd);
@@ -387,9 +391,9 @@ void flash(char * filename, uint8_t addr, uint16_t pageSize, uint8_t pageCount)
 		    continue;
 		}
 
-		//push page i
-        /*((nl_flashcmd *)&pktbuf)->pagenum = i;
-        nl_tx_packet(NLPROTO_PAGE_COMMIT, addr, sizeof(flashcmd), (unsigned char*)&pktbuf);
+		//commit page
+        ((nl_flashcmd *)&pktbuf)->pagenum = pageNum;
+        nl_tx_packet(NLPROTO_PAGE_COMMIT, addr, sizeof(nl_flashcmd), (unsigned char*)&pktbuf);
 
         while(1)
         {
@@ -402,7 +406,7 @@ void flash(char * filename, uint8_t addr, uint16_t pageSize, uint8_t pageCount)
                 break;
 
             usleep (250);
-        }*/
+        }
 	}
 
 
