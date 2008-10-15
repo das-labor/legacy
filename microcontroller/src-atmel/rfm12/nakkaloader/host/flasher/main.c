@@ -198,6 +198,8 @@ uint16_t calc_crc(uint8_t * buf, uint_fast8_t buflen)
     return crc16;
 }
 
+/* THIS IS SO F****NG CRUDE, STAY AWAY !!! */
+
 #define CHUNK_TRANSFER_SIZE (sizeof(pktbuf) - sizeof(nl_flashcmd))
 void push_page(uint8_t dst, uint8_t *buf, size_t size)
 {
@@ -316,11 +318,11 @@ void dump_page(uint8_t *mem, uint32_t pageStart, uint32_t pageEnd)
     }
     printf("\n");
 
-    for(x = pageStart; x < pageEnd; x++)
+    /*for(x = pageStart; x < pageEnd; x++)
     {
         printf("%c", mem[x]);
     }
-    printf("\n");
+    printf("\n");*/
 }
 
 void flash(char * filename, uint8_t addr, uint16_t pageSize, uint8_t pageCount)
@@ -333,8 +335,8 @@ void flash(char * filename, uint8_t addr, uint16_t pageSize, uint8_t pageCount)
     size_t size, dst;
     uint8_t *buf;
 
-    //packetbuffer stuff
-    uint8_t pktbuf[RFM12_BUFFER_SIZE-2];
+    //packet stuff
+    nl_flashcmd flashcmd;
 
 
     //open input file
@@ -392,18 +394,28 @@ void flash(char * filename, uint8_t addr, uint16_t pageSize, uint8_t pageCount)
 		}
 
 		//commit page
-        ((nl_flashcmd *)&pktbuf)->pagenum = pageNum;
-        nl_tx_packet(NLPROTO_PAGE_COMMIT, addr, sizeof(nl_flashcmd), (unsigned char*)&pktbuf);
+        flashcmd.pagenum = pageNum;
+        nl_tx_packet(NLPROTO_PAGE_COMMIT, addr, sizeof(nl_flashcmd), (unsigned char*)&flashcmd);
 
         while(1)
         {
             int8_t tmp = rfmusb_RxPacket (udhandle, &packetBuffer);
-            if(tmp > 0)
+
+            if (tmp > 0)
             {
-                printf("ERR 0x%.2x %u\n", packetBuffer.buffer[0], ((nl_flashcmd *)&packetBuffer.buffer[2])->pagenum);
+                if ((packetBuffer.buffer[1] == addr) && (packetBuffer.type == NL_PACKETTYPE) && (packetBuffer.buffer[0] == NLPROTO_PAGE_COMMITED))
+                {
+                    //see if pageNum matches
+                    if(pageNum != ((nl_flashcmd *)&packetBuffer.buffer[2])->pagenum)
+                    {
+                        printf("PageNum mismatch! Client: %.4x, Host: %.4x\n", ((nl_flashcmd *)&packetBuffer.buffer[2])->pagenum, pageNum);
+                    }
+
+                    break;
+                }
+
+                printf("ERR 0x%.2x\n", packetBuffer.buffer[0]);
             }
-            if ((tmp > 0) && (packetBuffer.buffer[1] == addr) && (packetBuffer.type == NL_PACKETTYPE) && (packetBuffer.buffer[0] == NLPROTO_PAGE_COMMITED))
-                break;
 
             usleep (250);
         }
