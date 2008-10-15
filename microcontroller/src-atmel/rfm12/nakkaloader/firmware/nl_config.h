@@ -38,6 +38,6 @@
  * 2 - Send additional debug information
  *
  * */
-#define NL_VERBOSITY 0
+#define NL_VERBOSITY 1
 
 #endif

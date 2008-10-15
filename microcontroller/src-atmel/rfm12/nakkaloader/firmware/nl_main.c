@@ -44,8 +44,11 @@ void boot_program_page (uint32_t page, uint8_t *buf)
 	boot_page_write (page);     // Store buffer in flash page.
 	boot_spm_busy_wait();       // Wait until the memory is written.
 
+	PORTD ^= _BV(PD6);
 	// Re-enable interrupts (if they were ever enabled).
 	SREG = sreg;
+	GICR = (1<<IVCE);
+	GICR = (1<<IVSEL);
 	sei();
 }
 
@@ -160,7 +163,6 @@ int main (void)
 			{
 				rfm12_rx_clear();
 				mystate = 1;
-				PORTD ^= _BV(PD6);
 
 				nl_tx_packet (NLPROTO_MASTER_EHLO, 0, mypage);
 			}
@@ -189,7 +191,7 @@ int main (void)
 					break;
 				}
 
-				memcpy (&mypage + mycmd.addr_start, rxbuf + NL_ADDRESSSIZE + sizeof(mycmd),
+				memcpy (&mypage + mycmd.addr_start, rxbuf + NL_ADDRESSSIZE + sizeof(nl_flashcmd),
 					mycmd.addr_end - mycmd.addr_start);
 
 				for (k=0;k<mycmd.addr_end - mycmd.addr_start;k++)
@@ -199,7 +201,7 @@ int main (void)
 
 				nl_tx_packet (NLPROTO_PAGE_CHKSUM, 2, (uint8_t *) &crcsum);
 
-				break; /* TODO: return checksum to master */	
+				break;
 			}
 			break;
 
@@ -219,7 +221,7 @@ int main (void)
 
 				boot_program_page (pagenum, mypage);
 				
-				nl_tx_packet (NLPROTO_PAGE_COMMIT, 0, mypage);
+				nl_tx_packet (NLPROTO_PAGE_COMMITED, 0, mypage);
 			}
 			break;
 			
