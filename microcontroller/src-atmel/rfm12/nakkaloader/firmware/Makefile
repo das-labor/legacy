@@ -90,8 +90,8 @@ CFLAGS += -DBOOT_SECTION_START=$(BOOT_SECTION_START)
 # won't do on win32
 # OBJECTS += $(patsubst %.c,%.o,$(shell echo *.c))
 HEADERS += $(shell echo *.h)
-CFLAGS += -Werror -Os -g
-LDFLAGS += -L/usr/local/avr/avr/lib
+CFLAGS += -Werror -g
+LDFLAGS += -L/usr/local/avr/avr/lib -nostdlib
 
 
 .PHONY: all 

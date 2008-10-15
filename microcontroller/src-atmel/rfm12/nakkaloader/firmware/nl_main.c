@@ -46,9 +46,6 @@ void boot_program_page (uint32_t page, uint8_t *buf)
 
 	// Re-enable interrupts (if they were ever enabled).
 	SREG = sreg;
-	GICR = (1<<IVCE);
-	GICR = (1<<IVSEL);
-	sei();
 }
 
 uint8_t nl_match_packet (uint8_t *in_packet)
@@ -101,6 +98,7 @@ void nl_boot_app ( void )
 #define RFM12_INT_ON() RFM12_INT_MSK |= (1<<RFM12_INT_BIT)
 #define RFM12_INT_OFF() RFM12_INT_MSK &= ~(1<<RFM12_INT_BIT)
 
+int main (void) __attribute__ ((naked));
 int main (void)
 {
 	uint32_t i;
@@ -192,7 +190,7 @@ int main (void)
 					break;
 				}
 
-				memcpy (&mypage + mycmd.addr_start, rxbuf + NL_ADDRESSSIZE + sizeof(nl_flashcmd),
+				memcpy (&mypage + mycmd.addr_start, rxbuf + NL_ADDRESSSIZE + 1 + sizeof(nl_flashcmd),
 					mycmd.addr_end - mycmd.addr_start);
 
 				for (k=0;k<sizeof(nl_flashcmd) + mycmd.addr_end - mycmd.addr_start;k++)
