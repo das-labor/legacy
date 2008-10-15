@@ -91,7 +91,7 @@ CFLAGS += -DBOOT_SECTION_START=$(BOOT_SECTION_START)
 # OBJECTS += $(patsubst %.c,%.o,$(shell echo *.c))
 HEADERS += $(shell echo *.h)
 CFLAGS += -Werror -g
-LDFLAGS += -L/usr/local/avr/avr/lib -nostdlib
+LDFLAGS += -L/usr/local/avr/avr/lib 
 
 
 .PHONY: all 
