@@ -181,8 +181,6 @@ int main (void)
 				/* check boundaries */
 				if (mycmd.addr_start + (mycmd.addr_end - mycmd.addr_start) > SPM_PAGESIZE)
 				{
-					rfm12_rx_clear();
-
 					#if NL_VERBOSITY > 1
 					mypage[0] = (uint8_t) ((__LINE__ >> 8));
 					mypage[1] = (uint8_t) (__LINE__);
@@ -197,8 +195,9 @@ int main (void)
 				memcpy (&mypage + mycmd.addr_start, rxbuf + NL_ADDRESSSIZE + sizeof(nl_flashcmd),
 					mycmd.addr_end - mycmd.addr_start);
 
-				for (k=0;k<mycmd.addr_end - mycmd.addr_start;k++)
-					crcsum = _crc16_update (crcsum, *(rxbuf + NL_ADDRESSSIZE + 1 + k));
+				for (k=0;k<sizeof(nl_flashcmd) + mycmd.addr_end - mycmd.addr_start;k++)
+					crcsum = _crc16_update (crcsum,
+						*(rxbuf + NL_ADDRESSSIZE + 1 + k));
 
 				rfm12_rx_clear();
 
@@ -219,10 +218,10 @@ int main (void)
 				
 				k = NL_ADDRESSSIZE + 1;
 
-				pagenum += (uint32_t) (rxbuf[k++]);
+				pagenum = (uint32_t) (rxbuf[k++]);
 				pagenum += (uint32_t) rxbuf[k++] << 8;
 				pagenum += (uint32_t) rxbuf[k++] << 16;
-				pagenum = (uint32_t) rxbuf[k++] << 24;
+				pagenum += (uint32_t) rxbuf[k++] << 24;
 
 				rfm12_rx_clear();
 				PORTD ^= _BV(PD6);
