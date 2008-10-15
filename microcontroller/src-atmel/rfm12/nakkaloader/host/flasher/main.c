@@ -515,8 +515,6 @@ int main (int argc, char* argv[])
 	nl_packet_match(NLPROTO_SLAVE_CONFIG, NULL, EXP_ADD);
 	nl_packet_match(NLPROTO_MASTER_EHLO, NULL, EXP_ADD);
 
-    flash(myconfig->fname, myconfig->addr , 64, 128);
-    return;
 	while (23)
 	{
 		//try to fetch a packet from the air
