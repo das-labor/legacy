@@ -169,6 +169,23 @@ int nl_tx_packet(uint8_t nl_type, uint8_t addr, uint8_t len, uint8_t * data)
     return rfmusb_TxPacket (udhandle, NL_PACKETTYPE, len + 2, (unsigned char *)&pkt);
 }
 
+uint16_t crc16_update(uint16_t crc, uint8_t a)
+{
+    int i;
+
+    crc ^= a;
+    for (i = 0; i < 8; ++i)
+    {
+        if (crc & 1)
+            crc = (crc >> 1) ^ 0xA001;
+        else
+            crc = (crc >> 1);
+    }
+
+    return crc;
+}
+
+
 void push_page( uint8_t dst, uint8_t *buf, size_t size )
 {
 	uint8_t *ptr = buf;
@@ -180,6 +197,7 @@ void push_page( uint8_t dst, uint8_t *buf, size_t size )
 
 
     //first tx
+    ((nl_flashcmd *)&pktbuf)->pagenum = 0;
     ((nl_flashcmd *)&pktbuf)->addr_start = 0;
     if(size < (sizeof(pktbuf) - sizeof(nl_flashcmd)))
     {
@@ -194,18 +212,41 @@ void push_page( uint8_t dst, uint8_t *buf, size_t size )
         off += sizeof(pktbuf) - sizeof(nl_flashcmd);
     }
 
+   /* int halk;
+    for(halk = 0; halk < sizeof(pktbuf); halk++)
+    {
+        printf("%.2x ", pktbuf[halk]);
+    }
+    printf("\n");*/
+
     nl_tx_packet(NLPROTO_PAGE_FILL, dst, sizeof(pktbuf), (unsigned char*)&pktbuf);
 
 	while(off < size) {
-		while(1) {
+		while(1)
+		{
 			int8_t tmp = rfmusb_RxPacket (udhandle, &packetBuffer);
-			if ((tmp > 0) && (packetBuffer.buffer[1] == dst) && (packetBuffer.type == NL_PACKETTYPE) && (packetBuffer.buffer[0] == NLPROTO_PAGE_CHKSUM))
-				break;
 
-            if(tmp > 0)
-            {
-                printf("ERR 0x%.2x\n", packetBuffer.buffer[0]);
-            }
+			if (tmp > 0)
+			{
+			    if ((packetBuffer.buffer[1] == dst) && (packetBuffer.type == NL_PACKETTYPE) && (packetBuffer.buffer[0] == NLPROTO_PAGE_CHKSUM))
+			    {
+                    uint16_t crc16;
+                    int runner;
+                    for(runner = 0; runner < sizeof(pktbuf); runner++)
+                    {
+                        crc16 = crc16_update(crc16, pktbuf[runner]);
+                    }
+
+                    if(crc16 != *(uint16_t *)(packetBuffer.buffer + 2))
+                    {
+                        printf("CRC mismatch! Client: %.4x, Host: %.4x\n", *(uint16_t *)(packetBuffer.buffer + 2), crc16);
+                    }
+
+                    break;
+			    }
+
+			    printf("ERR 0x%.2x\n", packetBuffer.buffer[0]);
+			}
 
             usleep (250);
 		}
@@ -232,9 +273,30 @@ void push_page( uint8_t dst, uint8_t *buf, size_t size )
 	//wait for last ack
     while(1)
     {
-        uint8_t tmp = rfmusb_RxPacket (udhandle, &packetBuffer);
-        if ((packetBuffer.buffer[1] == dst) && (packetBuffer.type == NL_PACKETTYPE) && (packetBuffer.buffer[0] == NLPROTO_PAGE_CHKSUM))
-            break;
+        int8_t tmp = rfmusb_RxPacket (udhandle, &packetBuffer);
+
+        if (tmp > 0)
+        {
+            if ((packetBuffer.buffer[1] == dst) && (packetBuffer.type == NL_PACKETTYPE) && (packetBuffer.buffer[0] == NLPROTO_PAGE_CHKSUM))
+            {
+                uint16_t crc16;
+                int runner;
+                for(runner = 0; runner < sizeof(pktbuf); runner++)
+                {
+                    crc16 = crc16_update(crc16, pktbuf[runner]);
+                }
+
+                if(crc16 != *(uint16_t *)(packetBuffer.buffer + 2))
+                {
+                    printf("CRC mismatch! Client: %.4x, Host: %.4x\n", *(uint16_t *)(packetBuffer.buffer + 2), crc16);
+                }
+
+                break;
+            }
+
+            printf("ERR 0x%.2x\n", packetBuffer.buffer[0]);
+        }
+
         usleep (250);
     }
 
@@ -265,14 +327,20 @@ void flash(char * filename, uint8_t addr, uint16_t pagesize, uint8_t pagecount)
 		goto fileerror;
 
 	unsigned int i,j;
-	for( i=0; i<pagecount; i ++) {
-		for(j=i; j<i+pagesize; j++) {
+	for( i = 0; i < pagecount; i ++)
+	{
+		for(j = (i * pagesize); j < ((i * pagesize) + pagesize); j++)
+		{
 			if (mask[j] == 0xff) {
 				// trasfer page stating at i
 				printf("Transmitting %4x ", i);
-				push_page(addr, &(mem[i]), pagesize);
+				push_page(addr, &(mem[i * pagesize]), pagesize);
 				break;
 			}
+		}
+
+		if (mask[j] != 0xff) {
+		    break;
 		}
 
 		//push page i
@@ -282,6 +350,10 @@ void flash(char * filename, uint8_t addr, uint16_t pagesize, uint8_t pagecount)
         while(1)
         {
             int8_t tmp = rfmusb_RxPacket (udhandle, &packetBuffer);
+            if(tmp > 0)
+            {
+                printf("ERR 0x%.2x %u\n", packetBuffer.buffer[0], ((nl_flashcmd *)&packetBuffer.buffer[2])->pagenum);
+            }
             if ((tmp > 0) && (packetBuffer.buffer[1] == addr) && (packetBuffer.type == NL_PACKETTYPE) && (packetBuffer.buffer[0] == NLPROTO_PAGE_COMMITED))
                 break;
 
