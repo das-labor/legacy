@@ -15,7 +15,7 @@
 /* simple for-loop to "wrap" around an error-prone section */
 // #define NL_ERRORWRAP for (i=0;i < NL_MAXFAILS || NL_MAXFAILS == 0;i++)
 
-void (*app_ptr)(void)  = (void *)0x0000;
+void (*app_ptr)(void) = (void *)0x0000;
 uint8_t myaddress[NL_ADDRESSSIZE];
 
 void boot_program_page (uint32_t page, uint8_t *buf)
@@ -67,6 +67,7 @@ void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 	uint8_t i = NL_ADDRESSSIZE + 1, k = 0;
 
 	txpacket[1] = myaddress[0];
+//	txpacket[1] = 0xff;
 
 	#if NL_ADDRESSSIZE == 2
 	txpacket[2] = myaddress[1];
@@ -95,7 +96,7 @@ void nl_boot_app ( void )
 	app_ptr();
 }
 
-int main (void) __attribute__ ((naked));
+//int main (void) __attribute__ ((naked));
 int main (void)
 {
 	uint32_t i;
@@ -162,7 +163,9 @@ int main (void)
 				rfm12_rx_clear();
 				mystate = 1;
 
+				PORTD |= _BV(PD6);
 				nl_tx_packet (NLPROTO_MASTER_EHLO, 0, mypage);
+				PORTD |= _BV(PD5);
 			}
 			break;
 
@@ -187,12 +190,12 @@ int main (void)
 					break;
 				}
 
-				memcpy (&mypage + mycmd.addr_start, rxbuf + NL_ADDRESSSIZE + 1 + sizeof(nl_flashcmd),
+				memcpy (mypage + mycmd.addr_start, rxbuf + NL_ADDRESSSIZE + 1 + sizeof(nl_flashcmd),
 					mycmd.addr_end - mycmd.addr_start);
 
-				for (k=0;k<sizeof(nl_flashcmd) + mycmd.addr_end - mycmd.addr_start;k++)
+				for (k=mycmd.addr_start;k<mycmd.addr_end;k++)
 					crcsum = _crc16_update (crcsum,
-						*(rxbuf + NL_ADDRESSSIZE + 1 + k));
+						*(mypage + k));
 
 				rfm12_rx_clear();
 
