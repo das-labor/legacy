@@ -219,14 +219,14 @@ void push_page(uint8_t dst, uint8_t *buf, size_t size)
     {
         ((nl_flashcmd *)&pktbuf)->addr_end = size;
         memcpy(pktbuf + sizeof(nl_flashcmd), ptr, size);
-        crc16 = calc_crc(pktbuf, size + sizeof(nl_flashcmd));
+        crc16 = calc_crc(pktbuf + sizeof(nl_flashcmd), size);
         off = size;
     }
     else
     {
         ((nl_flashcmd *)&pktbuf)->addr_end = CHUNK_TRANSFER_SIZE;
         memcpy(pktbuf + sizeof(nl_flashcmd), ptr, CHUNK_TRANSFER_SIZE);
-        crc16 = calc_crc(pktbuf, CHUNK_TRANSFER_SIZE + sizeof(nl_flashcmd));
+        crc16 = calc_crc(pktbuf + sizeof(nl_flashcmd), CHUNK_TRANSFER_SIZE);
         off += CHUNK_TRANSFER_SIZE;
     }
 
@@ -269,14 +269,14 @@ void push_page(uint8_t dst, uint8_t *buf, size_t size)
         {
             ((nl_flashcmd *)&pktbuf)->addr_end = size;
             memcpy(pktbuf + sizeof(nl_flashcmd), ptr + off, size - off);
-            crc16 = calc_crc(pktbuf, size - off + sizeof(nl_flashcmd));
+            crc16 = calc_crc(pktbuf + sizeof(nl_flashcmd), size - off);
             off = size;
         }
         else
         {
             ((nl_flashcmd *)&pktbuf)->addr_end = off + CHUNK_TRANSFER_SIZE;
             memcpy(pktbuf + sizeof(nl_flashcmd), ptr + off, CHUNK_TRANSFER_SIZE);
-            crc16 = calc_crc(pktbuf, CHUNK_TRANSFER_SIZE + sizeof(nl_flashcmd));
+            crc16 = calc_crc(pktbuf + sizeof(nl_flashcmd), CHUNK_TRANSFER_SIZE);
             off += CHUNK_TRANSFER_SIZE;
         }
 
@@ -547,7 +547,7 @@ int main (int argc, char* argv[])
                         memcpy(&slave_cfg, packetBuffer.buffer + 2, sizeof(nl_config));
 
                         //printf("got slave config!\nPagesize: %i\nAir Packet Size: %i\nVersion: %i\n", ((nl_config *)(packetBuffer.buffer + 2))->pagesize, ((nl_config *)(packetBuffer.buffer + 2))->rxbufsize, ((nl_config *)(packetBuffer.buffer + 2))->version);
-                        printf("Got slave config!\nPagesize: %i\nAir Packet Size: %i\nVersion: %i\n\n", slave_cfg.pagesize, slave_cfg.rxbufsize, slave_cfg.version);
+                        printf("Got slave config!\nPagesize: %i\nAir Packet Size: %i\nVersion: %i\nAddress: %i\n\n", slave_cfg.pagesize, slave_cfg.rxbufsize, slave_cfg.version, packetBuffer.buffer[1]);
 
                         //reply now
                         nl_tx_packet(NLPROTO_MASTER_EHLO, myconfig->addr, 0, NULL);
