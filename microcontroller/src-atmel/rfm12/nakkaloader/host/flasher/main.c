@@ -185,8 +185,8 @@ uint16_t crc16_update(uint16_t crc, uint8_t a)
     return crc;
 }
 
-
-void push_page( uint8_t dst, uint8_t *buf, size_t size )
+#define CHUNK_TRANSFER_SIZE (sizeof(pktbuf) - sizeof(nl_flashcmd))
+void push_page(uint8_t dst, uint8_t *buf, size_t size)
 {
 	uint8_t *ptr = buf;
 	int off = 0;
@@ -199,7 +199,7 @@ void push_page( uint8_t dst, uint8_t *buf, size_t size )
     //first tx
     ((nl_flashcmd *)&pktbuf)->pagenum = 0;
     ((nl_flashcmd *)&pktbuf)->addr_start = 0;
-    if(size < (sizeof(pktbuf) - sizeof(nl_flashcmd)))
+    if(size < CHUNK_TRANSFER_SIZE)
     {
         ((nl_flashcmd *)&pktbuf)->addr_end = size;
         memcpy(pktbuf + sizeof(nl_flashcmd), ptr, size);
@@ -207,9 +207,9 @@ void push_page( uint8_t dst, uint8_t *buf, size_t size )
     }
     else
     {
-        ((nl_flashcmd *)&pktbuf)->addr_end = sizeof(pktbuf) - sizeof(nl_flashcmd);
-        memcpy(pktbuf + sizeof(nl_flashcmd), ptr, sizeof(pktbuf) - sizeof(nl_flashcmd));
-        off += sizeof(pktbuf) - sizeof(nl_flashcmd);
+        ((nl_flashcmd *)&pktbuf)->addr_end = CHUNK_TRANSFER_SIZE;
+        memcpy(pktbuf + sizeof(nl_flashcmd), ptr, CHUNK_TRANSFER_SIZE);
+        off += CHUNK_TRANSFER_SIZE;
     }
 
    /* int halk;
@@ -254,7 +254,7 @@ void push_page( uint8_t dst, uint8_t *buf, size_t size )
 		printf(".");
 
         ((nl_flashcmd *)&pktbuf)->addr_start = off;
-        if((size - off) < (sizeof(pktbuf) - sizeof(nl_flashcmd)))
+        if((size - off) < CHUNK_TRANSFER_SIZE)
         {
             ((nl_flashcmd *)&pktbuf)->addr_end = size;
             memcpy(pktbuf + sizeof(nl_flashcmd), ptr + off, size);
@@ -262,9 +262,9 @@ void push_page( uint8_t dst, uint8_t *buf, size_t size )
         }
         else
         {
-            ((nl_flashcmd *)&pktbuf)->addr_end = off + (sizeof(pktbuf) - sizeof(nl_flashcmd));
-            memcpy(pktbuf + sizeof(nl_flashcmd), ptr + off, sizeof(pktbuf) - sizeof(nl_flashcmd));
-            off += sizeof(pktbuf) - sizeof(nl_flashcmd);
+            ((nl_flashcmd *)&pktbuf)->addr_end = off + CHUNK_TRANSFER_SIZE;
+            memcpy(pktbuf + sizeof(nl_flashcmd), ptr + off, CHUNK_TRANSFER_SIZE);
+            off += CHUNK_TRANSFER_SIZE;
         }
 
         nl_tx_packet(NLPROTO_PAGE_FILL, dst, sizeof(pktbuf), (unsigned char*)&pktbuf);
@@ -300,23 +300,52 @@ void push_page( uint8_t dst, uint8_t *buf, size_t size )
         usleep (250);
     }
 
-	printf(".\n");
+	printf(".");
 }
 
-void flash(char * filename, uint8_t addr, uint16_t pagesize, uint8_t pagecount)
+void dump_page(uint8_t *mem, uint32_t pageStart, uint32_t pageEnd)
 {
+    int x;
+    for(x = pageStart; x < pageEnd; x++)
+    {
+        printf("%.2x ", mem[x]);
+    }
+    printf("\n");
+
+    for(x = pageStart; x < pageEnd; x++)
+    {
+        printf("%c", mem[x]);
+    }
+    printf("\n");
+}
+
+void flash(char * filename, uint8_t addr, uint16_t pageSize, uint8_t pageCount)
+{
+    //page transfer related variables
+    unsigned int j;
+    unsigned int pageNum;
+
+    //hex file reading variables
+    size_t size, dst;
+    uint8_t *buf;
+
+    //packetbuffer stuff
+    uint8_t pktbuf[RFM12_BUFFER_SIZE-2];
+
+
+    //open input file
     printf( "Flashing file: %s\n", filename );
 	FILE *fd = fopen(filename,"r");
-	uint8_t pktbuf[RFM12_BUFFER_SIZE-2];
 
-	// allocate ATMega memory
-	uint8_t *mem  = malloc(pagecount * pagesize);
-	uint8_t *mask = malloc(pagecount * pagesize);
-	memset( mem,  0xff, pagecount * pagesize );
-	memset( mask, 0x00, pagecount * pagesize );
 
-	size_t size, dst;
-	uint8_t *buf;
+	//allocate ATMega memory
+	uint8_t *mem  = malloc(pageCount * pageSize);
+	uint8_t *mask = malloc(pageCount * pageSize);
+	memset( mem,  0xff, pageCount * pageSize );
+	memset( mask, 0x00, pageCount * pageSize );
+
+
+    //read in hex file
 	while ((buf = read_buf_from_hex(fd, &size, &dst)) != 0)
 	{
 		memcpy( &mem[dst], buf, size);
@@ -326,26 +355,41 @@ void flash(char * filename, uint8_t addr, uint16_t pagesize, uint8_t pagecount)
 	if (size != 0)
 		goto fileerror;
 
-	unsigned int i,j;
-	for( i = 0; i < pagecount; i ++)
+
+    //for every page do
+	for(pageNum = 0; pageNum < pageCount; pageNum ++)
 	{
-		for(j = (i * pagesize); j < ((i * pagesize) + pagesize); j++)
+	    //calculate page boundaries
+	    int pageStart = (pageNum * pageSize);
+	    int pageEnd = ((pageNum * pageSize) + pageSize);
+
+	    //the j loop is for scanning the page for data-to-write
+	    //this transfers a whole page, as long as there's something in it, somewhere
+		for(j = pageStart; j < pageEnd; j++)
 		{
-			if (mask[j] == 0xff) {
+		    //data found
+			if (mask[j] == 0xff)
+			{
 				// trasfer page stating at i
-				printf("Transmitting %4x ", i);
-				push_page(addr, &(mem[i * pagesize]), pagesize);
-				break;
+				printf("Transmitting page 0x%.4x ", pageNum);
+				//push_page(addr, &(mem[pageStart]), pageSize);
+				printf("\n");
+
+                dump_page(mem, pageStart, pageEnd);
+                printf("\n");
+                break;
 			}
 		}
 
-		if (mask[j] != 0xff) {
-		    break;
+        //this skips writing this page, as we found no data
+		if (mask[j] != 0xff)
+		{
+		    continue;
 		}
 
 		//push page i
-        ((nl_flashcmd *)&pktbuf)->pagenum = i;
-        nl_tx_packet(NLPROTO_PAGE_COMMIT, addr, sizeof(pktbuf), (unsigned char*)&pktbuf);
+        /*((nl_flashcmd *)&pktbuf)->pagenum = i;
+        nl_tx_packet(NLPROTO_PAGE_COMMIT, addr, sizeof(flashcmd), (unsigned char*)&pktbuf);
 
         while(1)
         {
@@ -358,13 +402,15 @@ void flash(char * filename, uint8_t addr, uint16_t pagesize, uint8_t pagecount)
                 break;
 
             usleep (250);
-        }
+        }*/
 	}
 
+
+    //cleanup
 	free(mem);
 	free(mask);
-
 	fclose(fd);
+
 
 	//send app boot
     nl_tx_packet(NLPROTO_BOOT, addr, 0, NULL);
@@ -453,6 +499,8 @@ int main (int argc, char* argv[])
 	nl_packet_match(NLPROTO_SLAVE_CONFIG, NULL, EXP_ADD);
 	nl_packet_match(NLPROTO_MASTER_EHLO, NULL, EXP_ADD);
 
+    flash(myconfig->fname, myconfig->addr , 64, 128);
+    return;
 	while (23)
 	{
 		//try to fetch a packet from the air
