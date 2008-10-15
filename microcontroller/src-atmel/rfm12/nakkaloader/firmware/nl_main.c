@@ -100,6 +100,9 @@ void nl_boot_app ( void )
 	app_ptr();
 }
 
+#define RFM12_INT_ON() RFM12_INT_MSK |= (1<<RFM12_INT_BIT)
+#define RFM12_INT_OFF() RFM12_INT_MSK &= ~(1<<RFM12_INT_BIT)
+
 int main (void)
 {
 	uint32_t i;
@@ -208,6 +211,9 @@ int main (void)
 			/* commit page write */
 			case NLPROTO_PAGE_COMMIT:
 			{
+				//turn off rfm12 int
+				RFM12_INT_OFF();
+			
 				uint32_t pagenum = 0;
 				
 				k = NL_ADDRESSSIZE + 1;
@@ -220,6 +226,9 @@ int main (void)
 				rfm12_rx_clear();
 
 				boot_program_page (pagenum, mypage);
+				
+				//turn on rfm12 int
+				RFM12_INT_ON();
 				
 				nl_tx_packet (NLPROTO_PAGE_COMMITED, 0, mypage);
 			}
