@@ -26,6 +26,8 @@ void boot_program_page (uint32_t page, uint8_t *buf)
 	sreg = SREG;
 	cli();
 
+	page *= SPM_PAGESIZE;
+
 	eeprom_busy_wait ();
 
 	boot_page_erase (page);
@@ -33,18 +35,15 @@ void boot_program_page (uint32_t page, uint8_t *buf)
 
 	for (i=0; i<SPM_PAGESIZE; i+=2)
 	{
-		// Set up little-endian word.
-
-		uint16_t w = *buf++;
-		w += (*buf++) << 8;
-
-		boot_page_fill (page + i, w);
+		boot_page_fill (page + i, *((uint16_t *) (buf + i)));
 	}
 
 	boot_page_write (page);     // Store buffer in flash page.
 	boot_spm_busy_wait();       // Wait until the memory is written.
 
-	PORTD ^= _BV(PD6);
+	/* re-enable flash */
+	boot_rww_enable ();
+
 	// Re-enable interrupts (if they were ever enabled).
 	SREG = sreg;
 	GICR = (1<<IVCE);
@@ -89,13 +88,12 @@ void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 
 void nl_boot_app ( void )
 {
-	#if (NL_VERBOSITY >= 1)
+	PORTD |= _BV(PD5) | _BV(PD6);
+	#if (NL_VERBOSITY >= 100)
 	nl_tx_packet (NLPROTO_BOOT, NL_ADDRESSSIZE, myaddress);
 	rfm12_tick();
 	#endif
 	
-	/* re-enable flash */
-	boot_rww_enable ();
 	cli();
 	app_ptr();
 }
@@ -109,10 +107,12 @@ int main (void)
 	uint8_t k, mystate = 0x00;
 	uint8_t *rxbuf;
 	uint8_t mypage[SPM_PAGESIZE];
+	uint32_t pagenum = 0;
 	nl_config myconfig;
 	nl_flashcmd mycmd;
 
-	DDRD |= _BV(PD6);
+	DDRD |= _BV(PD6) | _BV(PD5);
+	PORTD = 0x00;
 
 	/* fill config variables */
 	myconfig.pagesize = SPM_PAGESIZE;
@@ -138,7 +138,7 @@ int main (void)
 	for (i=0;i < NL_MAXFAILS || NL_MAXFAILS == 0;i++)
 	{
 		/* (re)transmit our configuration if master hasn't responded yet. */
-		if ((i & 0x7fff) == 0 && mystate == 0)
+		if ((i & 0x1ffff) == 0 && mystate == 0)
 		{
 			nl_tx_packet (NLPROTO_SLAVE_CONFIG, sizeof(myconfig), (uint8_t *) &myconfig);
 		}
@@ -212,25 +212,24 @@ int main (void)
 			case NLPROTO_PAGE_COMMIT:
 			{
 				//turn off rfm12 int
-				RFM12_INT_OFF();
+//				RFM12_INT_OFF();
 			
-				uint32_t pagenum = 0;
+
+
 				
 				k = NL_ADDRESSSIZE + 1;
 
-				pagenum = (uint32_t) rxbuf[k++] << 24;
-				pagenum += (uint32_t) rxbuf[k++] << 16;
-				pagenum += (uint32_t) rxbuf[k++] << 8;
 				pagenum += (uint32_t) (rxbuf[k++]);
+				pagenum += (uint32_t) rxbuf[k++] << 8;
+				pagenum += (uint32_t) rxbuf[k++] << 16;
+				pagenum = (uint32_t) rxbuf[k++] << 24;
 
 				rfm12_rx_clear();
+				PORTD ^= _BV(PD6);
 
 				boot_program_page (pagenum, mypage);
 				
-				//turn on rfm12 int
-				RFM12_INT_ON();
-				
-				nl_tx_packet (NLPROTO_PAGE_COMMITED, 0, mypage);
+				nl_tx_packet (NLPROTO_PAGE_COMMITED, 4, (uint8_t *) &pagenum);
 			}
 			break;
 			
