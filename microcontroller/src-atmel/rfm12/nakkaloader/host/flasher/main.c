@@ -122,10 +122,10 @@ uint_fast8_t nl_packet_match (uint_fast8_t in_len, rfmusb_packetbuffer *in_packe
 	switch (in_function)
 	{
 		case EXP_ADD:
-			if (in_len + listlen > 256) return 0; /* list is full (unlikely) */
+			if (1 + listlen > 256) return 0; /* list is full (unlikely) */
 
 			//add type to list
-			valid_packet_types[listlen] = in_len;
+			valid_packet_types[listlen++] = in_len;
 			return 1;
 
 		case EXP_MATCH:
@@ -149,6 +149,160 @@ uint_fast8_t nl_packet_match (uint_fast8_t in_len, rfmusb_packetbuffer *in_packe
 	}
 }
 
+int nl_tx_packet(uint8_t nl_type, uint8_t addr, uint8_t len, uint8_t * data)
+{
+    nl_packet pkt;
+
+    //check len
+    //sub 2 for type and 1-byte addr (FIXME)
+    if(len > (sizeof(nl_packet) - 2))
+    {
+        return -512;
+    }
+
+    //form packet
+    pkt.pkttype = nl_type;
+    pkt.payload[0] = addr;
+    memcpy(pkt.payload + 1, data, len);
+
+    //transmit packet
+    return rfmusb_TxPacket (udhandle, NL_PACKETTYPE, len + 2, (unsigned char *)&pkt);
+}
+
+void push_page( uint8_t dst, uint8_t *buf, size_t size )
+{
+	uint8_t *ptr = buf;
+	int off = 0;
+	rfmusb_packetbuffer packetBuffer;
+	//-2 == type + address
+	//8 == pagenum, addr start, addr end == sizeof(nl_flashcmd)
+    uint8_t pktbuf[RFM12_BUFFER_SIZE-2];
+
+
+    //first tx
+    ((nl_flashcmd *)&pktbuf)->addr_start = 0;
+    if(size < (sizeof(pktbuf) - sizeof(nl_flashcmd)))
+    {
+        ((nl_flashcmd *)&pktbuf)->addr_end = size;
+        memcpy(pktbuf + sizeof(nl_flashcmd), ptr, size);
+        off = size;
+    }
+    else
+    {
+        ((nl_flashcmd *)&pktbuf)->addr_end = sizeof(pktbuf) - sizeof(nl_flashcmd);
+        memcpy(pktbuf + sizeof(nl_flashcmd), ptr, sizeof(pktbuf) - sizeof(nl_flashcmd));
+        off += sizeof(pktbuf) - sizeof(nl_flashcmd);
+    }
+
+    nl_tx_packet(NLPROTO_PAGE_FILL, dst, sizeof(pktbuf), (unsigned char*)&pktbuf);
+
+	while(off < size) {
+		while(1) {
+			uint8_t tmp = rfmusb_RxPacket (udhandle, &packetBuffer);
+			if ((tmp > 0) && (packetBuffer.buffer[1] == dst) && (packetBuffer.type == NL_PACKETTYPE) && (packetBuffer.buffer[0] == NLPROTO_PAGE_CHKSUM))
+				break;
+
+            if(tmp > 0)
+            {
+                printf("ERR 0x%.2x\n", packetBuffer.buffer[0]);
+            }
+
+            usleep (250);
+		}
+
+		printf(".");
+
+        ((nl_flashcmd *)&pktbuf)->addr_start = off;
+        if((size - off) < (sizeof(pktbuf) - sizeof(nl_flashcmd)))
+        {
+            ((nl_flashcmd *)&pktbuf)->addr_end = size;
+            memcpy(pktbuf + sizeof(nl_flashcmd), ptr + off, size);
+            off = size;
+        }
+        else
+        {
+            ((nl_flashcmd *)&pktbuf)->addr_end = off + (sizeof(pktbuf) - sizeof(nl_flashcmd));
+            memcpy(pktbuf + sizeof(nl_flashcmd), ptr + off, sizeof(pktbuf) - sizeof(nl_flashcmd));
+            off += sizeof(pktbuf) - sizeof(nl_flashcmd);
+        }
+
+        nl_tx_packet(NLPROTO_PAGE_FILL, dst, sizeof(pktbuf), (unsigned char*)&pktbuf);
+	}
+
+	//wait for last ack
+    while(1)
+    {
+        uint8_t tmp = rfmusb_RxPacket (udhandle, &packetBuffer);
+        if ((packetBuffer.buffer[1] == dst) && (packetBuffer.type == NL_PACKETTYPE) && (packetBuffer.buffer[0] == NLPROTO_PAGE_CHKSUM))
+            break;
+    }
+
+	printf(".\n");
+}
+
+void flash(char * filename, uint8_t addr, uint16_t pagesize, uint8_t pagecount)
+{
+    printf( "Flashing file: %s\n", filename );
+	FILE *fd = fopen(filename,"r");
+	uint8_t pktbuf[RFM12_BUFFER_SIZE-2];
+
+	// allocate ATMega memory
+	uint8_t *mem  = malloc(pagecount * pagesize);
+	uint8_t *mask = malloc(pagecount * pagesize);
+	memset( mem,  0xff, pagecount * pagesize );
+	memset( mask, 0x00, pagecount * pagesize );
+
+	size_t size, dst;
+	uint8_t *buf;
+	while ((buf = read_buf_from_hex(fd, &size, &dst)) != 0)
+	{
+		memcpy( &mem[dst], buf, size);
+		memset( &mask[dst], 0xff, size );
+		free(buf);
+	}
+	if (size != 0)
+		goto fileerror;
+
+	int i,j;
+	for( i=0; i<pagecount; i ++) {
+		for(j=i; j<i+pagesize; j++) {
+			if (mask[j] == 0xff) {
+				// trasfer page stating at i
+				printf("Transmitting %4x ", i);
+				push_page(addr, &(mem[i]), pagesize);
+				break;
+			}
+		}
+
+		//push page i
+        ((nl_flashcmd *)&pktbuf)->pagenum = i;
+        nl_tx_packet(NLPROTO_PAGE_COMMIT, dst, sizeof(pktbuf), (unsigned char*)&pktbuf);
+
+        /*while(1) {
+			uint8_t tmp = rfmusb_RxPacket (udhandle, &packetBuffer);
+			if ((tmp > 0) && (packetBuffer.buffer[1] == dst) && (packetBuffer.type == NL_PACKETTYPE) && (packetBuffer.buffer[0] == NLPROTO_PAGE_COMMITED))
+				break;
+
+            if(tmp > 0)
+            {
+                printf("ERR 0x%.2x\n", packetBuffer.buffer[0]);
+            }
+            usleep (250);
+		}*/
+	}
+
+	free(mem);
+	free(mask);
+
+	fclose(fd);
+
+	return;
+
+fileerror:
+	printf( "Given file is not in Intel Hex format");
+	return;
+}
+
 int main (int argc, char* argv[])
 {
     //usb stuff
@@ -156,11 +310,11 @@ int main (int argc, char* argv[])
 
 	//various variables
     uint8_t tmpchar = 0x00;
-	uint_fast16_t i;
-	ssize_t l;
 	uint_fast8_t ptype;
 	uint_fast32_t packetcounter = 0;
 	nf_config_t *myconfig;
+	nl_config slave_cfg;
+	int istate = 0;
 
     //config stuff
 	myconfig = malloc(sizeof(nf_config_t));
@@ -210,8 +364,6 @@ int main (int argc, char* argv[])
     atexit((void * )winexit);
 #endif
 
-	tmp=0;
-	i=0;
 
 	if(nf_parse_args (argc, argv, myconfig) == 0)
 	{
@@ -221,12 +373,22 @@ int main (int argc, char* argv[])
 
 	printf ("\r\n");
 
-	printf ("Connection established.\r\n");
+	myconfig->addr = 0xff;
+
+	printf ("Waiting for slave %x\r\n\r\n", myconfig->addr);
+
+	nl_packet_match(NLPROTO_SLAVE_CONFIG, NULL, EXP_ADD);
+	nl_packet_match(NLPROTO_MASTER_EHLO, NULL, EXP_ADD);
 
 	while (23)
 	{
 		//try to fetch a packet from the air
 		tmp = rfmusb_RxPacket (udhandle, &packetBuffer);
+
+		if(tmp > 0)
+		{
+            printf("RX 0x%.2x\n", packetBuffer.buffer[0]);
+		}
 
 		//if an error occurs...
 		if (tmp < 0)
@@ -236,20 +398,38 @@ int main (int argc, char* argv[])
 			exit (__LINE__ * -1);
 		}
 
-		//verify that this is a valid packet
-		else if (ptype = nl_packet_match(tmp, &packetBuffer, EXP_MATCH))
+		//verify that this is a valid packet from the right slave with the right type
+		else if ((packetBuffer.buffer[1] == myconfig->addr) && (packetBuffer.type == NL_PACKETTYPE) && ( ptype = nl_packet_match(tmp, &packetBuffer, EXP_MATCH)))
 		{
 			//see what to do for given packet type
 			switch (ptype)
 			{
 				//slave has sent it's configuration
 				case NLPROTO_SLAVE_CONFIG:
-					printf("got slave config!\nPagesize: %i\n", ((nl_config *)(packetBuffer.buffer + 2))->pagesize);
+                    if(istate == 0)
+                    {
+                        istate = 1;
+                        memcpy(&slave_cfg, packetBuffer.buffer + 2, sizeof(nl_config));
+
+                        //printf("got slave config!\nPagesize: %i\nAir Packet Size: %i\nVersion: %i\n", ((nl_config *)(packetBuffer.buffer + 2))->pagesize, ((nl_config *)(packetBuffer.buffer + 2))->rxbufsize, ((nl_config *)(packetBuffer.buffer + 2))->version);
+                        printf("Got slave config!\nPagesize: %i\nAir Packet Size: %i\nVersion: %i\n\n", slave_cfg.pagesize, slave_cfg.rxbufsize, slave_cfg.version);
+
+                        //reply now
+                        nl_tx_packet(NLPROTO_MASTER_EHLO, myconfig->addr, 0, NULL);
+                    }
+				break;
+
+				//slave has ACKed EHLO, ready to accept pagefills
+				case NLPROTO_MASTER_EHLO:
+                    if(istate == 1)
+                    {
+                        printf("Slave is ready to be flashed now.\n");
+
+                        //flash
+                        flash(myconfig->fname, myconfig->addr , slave_cfg.pagesize, 128);
+                    }
 				break;
 			}
-
-			//transmit packet prototype
-			//int rfmusb_TxPacket (udhandle, unsigned char type, unsigned char len, unsigned char * data);
 		}
 
 		//this is done to prevent stressing the usb connection too much

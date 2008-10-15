@@ -57,8 +57,7 @@ uint8_t nf_parse_args (int in_argc, char *in_argv[], nf_config_t *out_conf)
 						return (-1 * __LINE__); /* no argument given */
 					}
 
-//					out_conf->addr = hex2bin(in_argv[i]);
-					if (out_conf->addr < 0) return (-1 * __LINE__);
+					if (sscanf(in_argv[i], "0x%2x", out_conf->addr) != 1) return (-1 * __LINE__);
 
 					argmask |= 0x01;
 				break;
