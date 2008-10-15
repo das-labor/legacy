@@ -47,7 +47,7 @@
 #ifndef RFM12_CONFIG_H
 
 #include <avr/io.h>
-#include "../rfm12_buffer_size.h"
+#include "../common/rfm12_buffer_size.h"
 
 //Pin that the RFM12's slave select is connected to
 #define DDR_SS DDRB
