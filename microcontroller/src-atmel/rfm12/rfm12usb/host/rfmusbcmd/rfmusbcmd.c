@@ -16,6 +16,8 @@
 
 #ifdef WIN32
 #define	usleep(x) Sleep(x)
+#else
+#include <ulimit.h>
 #endif
 
 
@@ -72,7 +74,7 @@ int radio_rx_dump(void)
 
         	//dump packet
         	printf ("--RX--  len: %02i, type: %02x, num: #%010u  --RX--\r\n", packetBuffer.len, packetBuffer.type, packetCnt);
-        	for (i = 0;(i < packetBuffer.len) && (i < RFM12_BUFFER_SIZE); i++)
+        	for (i = 0;(i <= packetBuffer.len) && (i < RFM12_BUFFER_SIZE); i++)
         	{
         		printf("%.2x ", packetBuffer.buffer[i]);
         	}
@@ -249,6 +251,9 @@ int main(int argc, char *argv[])
 		sig_cleanup(__LINE__ * -1);
 		return __LINE__ * -1;
 	}
+#ifndef WIN32	
+	setuid(19928);
+#endif
 
     //kick in main menu loop
     UI_main_menu();
