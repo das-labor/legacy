@@ -45,10 +45,12 @@
 	nSEL            | Slave select pin defined below
 */
 
+#ifndef RFM12_CONFIG_H
 
 //Pin that the RFM12's slave select is connected to
 #define DDR_SS DDRB
 #define PORT_SS PORTB
+//#define BIT_SS 4
 #define BIT_SS 1
 
 //SPI port
@@ -85,14 +87,19 @@
 /**** UART DEBUGGING
  * en- or disable debugging via uart.
  */
-/* #define RFM12_UART_DEBUG 1 */
+#define RFM12_UART_DEBUG 0
 
 /**** INTERRUPT VECTOR
  * set the name for the interrupt vector here
  */
+//the Interrupt mask register
+//setup the interrupt to trigger on negative edge
+
 #define RFM12_INT_VECT (INT2_vect)
 #define RFM12_INT_BIT (INT2)
 
 #define RFM12_INT_MSK GICR
 #define RFM12_INT_SETUP()   MCUCR |= (1<<ISC01)
 
+#define RFM12_CONFIG_H
+#endif

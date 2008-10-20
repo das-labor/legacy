@@ -30,5 +30,16 @@
 #define RB_LEFT       0x01
 #define RB_RIGHT      0x02
 
+#define IDX_R         0x00
+#define IDX_L         0x01
+
+typedef struct
+{
+	uint8_t dststate;
+	uint8_t cstate;
+} motor_state_t;
+
 void motor_ctrl_direct (uint8_t in_val);
 void motor_init (void);
+void motor_pwm (void);
+void motor_ctrl (uint8_t in_val);
