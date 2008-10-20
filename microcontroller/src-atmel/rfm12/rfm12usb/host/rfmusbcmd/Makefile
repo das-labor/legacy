@@ -28,7 +28,7 @@ NAME = rfmusbcmd
 OBJECTS = ../common/opendevice.o $(NAME).o
 
 CC		= gcc
-CFLAGS	= $(CPPFLAGS) $(USBFLAGS) -O -g -Wall
+CFLAGS	= $(CPPFLAGS) $(USBFLAGS) -O -g #-Wall
 LIBS	= $(USBLIBS)
 
 PROGRAM = $(NAME)$(EXE_SUFFIX)
