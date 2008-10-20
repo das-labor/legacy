@@ -1,5 +1,5 @@
 PRG            = pingpong
-OBJ            = motor.o main.o rfm12.o
+OBJ            = motor.o main.o rfm12.o eyes.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 
