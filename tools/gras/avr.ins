@@ -1,5 +1,5 @@
 =begin
-    avr.rb is part of the GeneRic ASsembler (GRAS)
+    avr.ins is part of the GeneRic ASsembler (GRAS)
     Copyright (C) 2008  Daniel Otte (daniel.otte@rub.de)
 
     This program is free software: you can redistribute it and/or modify
@@ -27,9 +27,26 @@ parameters{
   RH = r[16..31];
   RW = r24,r26,r28,r30;
   RM = r[16..23];
-  RPTR = X,Y,Z;
-  K = [0..63];
+  RE = r[0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30];
+  X = "X";
+  Y = "Y";
+  Z = "Z";
+  X+ = "X+";
+  Y+ = "Y+";
+  Z+ = "Z+";
+  -X = "-X";
+  -Y = "-Y";
+  -Z = "-Z";
+  Y+q = Y+[0..63];
+  Z+q = Z+[0..63];
+  M64K = [0..65535];
+  ADDR4M = [0..4194303];
+  K6 = [0..63];
+  srel = [-64..63];
+  rel12 = [-2048..2047];
   Byte = [0..255];
+  IOA = [0..31];
+  b = [0..7];
 }  
 
 
@@ -39,7 +56,8 @@ cpu{
 }
 
 instructionset{
-  ADD
+  cycles=1;
+  ADD{
     R,R{
       modify_flags=HSVNZC;
       description="Add with Carry";
@@ -54,10 +72,11 @@ instructionset{
     }
   }
   ADIW{
-    RW,K{
+    RW,K6{
       modify_flags=SVNZC;
+      cycles=2;
       description="Add Immediate to Word";
-      opcode=0b1001.0110_kkdd.kkk;
+      opcode=0b1001.0110_kkdd.kkkk;
     }
   }
   SUB{
@@ -84,6 +103,7 @@ instructionset{
   SBCI{
     RH,Byte{
       modify_flags=HSVNZC;
+      cycles=2;
       description="Subtract Immediate with Carry";
       opcode=0b0100.kkkk_dddd.kkkk;
     }
@@ -104,7 +124,7 @@ instructionset{
     }
   }
   ANDI{
-    RH,byte{
+    RH,Byte{
       modify_flags=SNZ;
       clear_flags=V;
       description="Logical AND with Immediate";
@@ -160,7 +180,7 @@ instructionset{
     }
   }
   CBR{
-    R,byte{
+    R,Byte{
       modify_flags=SNZ;
       clear_flags=0;
       description="Clear Bit(s) in Register";
@@ -182,7 +202,7 @@ instructionset{
     }
   }
   TST{
-    {
+    R{
       modify_flags=SNZ;
       clear_flags=V;
       description="Test for Zero or Minus";
@@ -207,6 +227,7 @@ instructionset{
   MUL{
     R,R{
       modify_flags=ZC;
+      cycles=2;
       description="Multiply Unsigned";
       opcode=0b1001.11rd_dddd.rrrr;
     }
@@ -214,6 +235,7 @@ instructionset{
   MULS{
     RH,RH{
       modify_flags=ZC;
+      cycles=2;
       description="Multiply Signed";
       opcode=0b000.0010_dddd.rrrr;
     }
@@ -221,6 +243,7 @@ instructionset{
   MULSU{
     RM,RM{
       modify_flags=ZC;
+      cycles=2;
       description="Multiply Signed with Unsigned";
       opcode=0b0000.0011_0ddd.0rrr;
     }
@@ -228,6 +251,7 @@ instructionset{
   FMUL{
     RM,RM{
       modify_flags=ZC;
+      cycles=2;
       description="Fractional Multiply Unsigned";
       opcode=0b0000.0011_0ddd.1rrr;
     }
@@ -235,6 +259,7 @@ instructionset{
   FMULS{
     RM,RM{
       modify_flags=ZC;
+      cycles=2;
       description="Fractional Multiply Signed";
       opcode=0b0000.0011_1ddd.0rrr;
     }
@@ -242,6 +267,7 @@ instructionset{
   FMULSU{
     RM,RM{
       modify_flags=ZC;
+      cycles=2;
       description="Fractional Multiply Signed with Unsigned";
       opcode=0b0000.0011_1ddd.1rrr;
     }
@@ -249,6 +275,7 @@ instructionset{
   RJMP{
     rel12{
       modify_flags=;
+      cycles=2;
       description="Relative Jump";
       opcode=0b1100.kkkk_kkkk.kkkk;
     }
@@ -256,6 +283,7 @@ instructionset{
   IJMP{
     none{
       modify_flags=;
+      cycles=2;
       description="Indirect Jump to (Z)";
       opcode=0x9409;
     }
@@ -263,20 +291,23 @@ instructionset{
   EIJMP{
     none{
       modify_flags=;
+      cycles=2;
       description="Extended Indirect Jump to (Z)";
       opcode=0x9419;
     }
   }
   JMP{
-    k{
+    ADDR4M{
       modify_flags=;
       description="Jump";
+      cycles=3;
       opcode=0b1001.010k_kkkk.110k_kkkk.kkkk_kkkk.kkkk;
     }
   }
   RCALL{
     rel12{
       modify_flags=;
+      cycles=3,4;
       description="Relative Call Subroutine";
       opcode=0b1101.kkkk_kkkk.kkkk;
     }
@@ -284,6 +315,7 @@ instructionset{
   ICALL{
     none{
       modify_flags=;
+      cycles=3,4;
       description="Indirect Call to (Z)";
       opcode=0x9509;
     }
@@ -291,13 +323,15 @@ instructionset{
   EICALL{
     none{
       modify_flags=;
+      cycles=4;
       description="Extended Indirect Call to (Z)";
       opcode=0x9519;
     }
   }
   CALL{
-    abs{
+    ADDR4M{
       modify_flags=;
+      cycles=4,5;
       description="Call Subroutine";
       opcode=0b1001.010a_aaaa.111a_aaaa.aaaa_aaaa.aaaa;
     }
@@ -305,6 +339,7 @@ instructionset{
   RET{
     none{
       modify_flags=;
+      cycles=4,5;
       description="Subroutine Return";
       opcode=0b1001.0101_0000.1000;
     }
@@ -312,6 +347,7 @@ instructionset{
   RETI{
     none{
       modify_flags=;
+      cycles=4,5;
       description="Interrupt Return";
       opcode=0b1001.0101_0001.1000;
     }
@@ -319,6 +355,7 @@ instructionset{
   CPSE{
     R,R{
       modify_flags=;
+      cycles=1,2,3;
       description="Compare, Skip if Equal";
       opcode=0b0001.00rd_dddd.rrrr;
     }
@@ -338,7 +375,7 @@ instructionset{
     }
   }
   CPI{
-    RH,byte{
+    RH,Byte{
       modify_flags=HSVNZC;
       description="Compare with Immediate";
       opcode=0b0011.kkkk_dddd.kkkk;
@@ -347,6 +384,7 @@ instructionset{
   SBRC{
     R,b{
       modify_flags=;
+      cycles=1,2,3;
       description="Skip if Bit in Register Cleared";
       opcode=0b1111.110r_rrrr.0bbb;
     }
@@ -354,6 +392,7 @@ instructionset{
   SBRS{
     R,b{
       modify_flags=;
+      cycles=1,2,3;
       description="Skip if Bit in Register Set";
       opcode=0b1111.111r_rrrr.0bbb;
     }
@@ -361,6 +400,7 @@ instructionset{
   SBIC{
     IOA,b{
       modify_flags=;
+      cycles=1,2,3;
       description="Skip if Bit in I/O Register Cleared";
       opcode=0b1001.1001_aaaa.abbb;
     }
@@ -368,6 +408,7 @@ instructionset{
   SBIS{
     IOA,b{
       modify_flags=;
+      cycles=1,2,3;
       description="Skip if Bit in I/O Register Set";
       opcode=0b1001.1011_aaaa.abbb;
     }
@@ -375,6 +416,7 @@ instructionset{
   BRBS{
     b,srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if Status Flag Set";
       opcode=0b1111.00rr_rrrr.rbbb;
     }
@@ -382,6 +424,7 @@ instructionset{
   BRBC{
     b,srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if Status Flag Cleared";
       opcode=0b1111.01rr_rrrr.rbbb;
     }
@@ -389,13 +432,15 @@ instructionset{
   BREQ{
     srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if Equal";
       opcode=0b1111.00rr_rrrr.r001;
     }
   }
   BRNE{
-    {
+    srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if Not Equal";
       opcode=0b1111.01rr_rrrr.r001;
     }
@@ -403,6 +448,7 @@ instructionset{
   BRCS{
     srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if Carry Set";
       opcode=0b1111.00rr_rrrr.r000;
     }
@@ -410,6 +456,7 @@ instructionset{
   BRCC{
     srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if Carry Cleared";
       opcode=0b1111.01rr_rrrr_r000;
     }
@@ -417,6 +464,7 @@ instructionset{
   BRSH{
     srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if Same or Higher";
       opcode=0b1111.01rr_rrrr.r000;
     }
@@ -424,6 +472,7 @@ instructionset{
   BRLO{
     srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if Lower";
       opcode=0b1111.00rr_rrrr.r000;
     }
@@ -431,6 +480,7 @@ instructionset{
   BRMI{
     srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if Minus";
       opcode=0b1111.00rr_rrrr.r010;
     }
@@ -438,6 +488,7 @@ instructionset{
   BRPL{
     srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if Plus";
       opcode=0b1111.01rr_rrrr.r010;
     }
@@ -445,6 +496,7 @@ instructionset{
   BRGE{
     srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if Greater or Equal, Signed";
       opcode=0b1111.01rr_rrrr.r100;
     }
@@ -452,6 +504,7 @@ instructionset{
   BRLT{
     srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if Less Than, Signed";
       opcode=0b1111.00rr_rrrr.r100;
     }
@@ -459,6 +512,7 @@ instructionset{
   BRHS{
     srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if Half Carry Flag Set";
       opcode=0b1111.00rr_rrrr.r101;
     }
@@ -466,6 +520,7 @@ instructionset{
   BRHC{
     srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if Half Carry Flag Cleared";
       opcode=0b1111.01rr_rrrr.r101;
     }
@@ -473,6 +528,7 @@ instructionset{
   BRTS{
     srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if T Flag Set";
       opcode=0b1111.00rr_rrrr.r110;
     }
@@ -480,6 +536,7 @@ instructionset{
   BRTC{
     srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if T Flag Cleared";
       opcode=0b1111.01rr_rrrr.r110;
     }
@@ -487,6 +544,7 @@ instructionset{
   BRVS{
     srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if Overflow Flag is Set";
       opcode=0b1111.00rr_rrrr.r011;
     }
@@ -494,6 +552,7 @@ instructionset{
   BRVC{
     srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if Overflow Flag is Cleared";
       opcode=0b1111.01rr_rrrr.r011;
     }
@@ -501,6 +560,7 @@ instructionset{
   BRIE{
     srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if Interrupt Enabled";
       opcode=0b1111.00rr_rrrr.r111;
     }
@@ -508,6 +568,7 @@ instructionset{
   BRID{
     srel{
       modify_flags=;
+      cycles=1,2;
       description="Branch if Interrupt Disabled";
       opcode=0b1111.01rr_rrrr.r111;
     }
@@ -536,11 +597,13 @@ instructionset{
   LDS{
     R,M64K{
       modify_flags=;
+      cycles=2;
       description="Load Direct from data space";
       opcode=0b1001.000d_dddd.0000_kkkk.kkkk_kkkk.kkkk;
     }
   }
   LD{
+    cycles=2;
     R,X{
       description="Load Indirect";
       opcode=0b1001.000d_dddd.1100;
@@ -579,6 +642,7 @@ instructionset{
     }
   }
   LDD{
+    cycles=2;
     R,Y+q{
       modify_flags=;
       description="Load Indirect with Displacement";
@@ -591,12 +655,14 @@ instructionset{
     }
   }
   STS{
+    cycles=2;
     M64K,R{
       description="Store Direct to data space";
       opcode=0b1001.001r_rrrr.0000_kkkk.kkkk_kkkk.kkkk;
     }
   }
   ST{
+    cycles=2;
     X,R{
       description="Store Indirect";
       opcode=0b1001.001r_rrrr.1100;
@@ -635,6 +701,7 @@ instructionset{
     }
   }
   STD{
+    cycles=2;
     Y+q,R{
       description="Store Indirect with Displacement";
       opcode=0b10q0.qq1r_rrrr.1qqq;
@@ -645,6 +712,7 @@ instructionset{
     }
   }
   LPM{
+    cycles=3;
     none{
       modify_flags=;
       description="Load Program Memory";
@@ -662,6 +730,7 @@ instructionset{
     }
   }
   ELPM{
+    cycles=3;
     modify_flags=;
     description="Extended Load Program Memory";
     none{
@@ -675,6 +744,7 @@ instructionset{
     }
   }
   SPM{
+    cycles=-;
     none{
       modify_flags=;
       description="Store Program Memory";
@@ -696,6 +766,7 @@ instructionset{
     }
   }
   PUSH{
+    cycles=2;
     R{
       modify_flags=;
       description="Push Register on Stack";
@@ -703,6 +774,7 @@ instructionset{
     }
   }
   POP{
+    cycles=2;
     R{
       modify_flags=;
       description="Pop Register from Stack";
@@ -766,6 +838,7 @@ instructionset{
     }
   }
   SBI{
+    cycles=2;
     IOA,b{
       modify_flags=;
       description="Set Bit in I/O Register";
@@ -773,7 +846,8 @@ instructionset{
     }
   }
   CBI{
-    ioa,b{
+    cycles=2;
+    IOA,b{
       modify_flags=;
       description="Clear Bit in I/O Register";
       opcode=0b1001.1000_aaaa.abbb;
@@ -822,14 +896,14 @@ instructionset{
     }
   }
   SEZ{
-    {
+    none{
       modify_flags=;
       description="Set Zero Flag";
       opcode=0b1001.0100_0001.1000;
     }
   }
   CLZ{
-    {
+    none{
       modify_flags=;
       description="Clear Zero Flag";
       opcode=0b1001.0100_1001.1000;
