@@ -11,8 +11,7 @@
 ** HARDWARE [V2]
 + Construct top lighting, possibly use 68 ohm resistors
 + Finish hot-glue roof
-+ Removed front/back and top lighting enable transistor base resistor (as this is an emitter thingy)
-+ Added steering neutral position detector (using a light barrier)
+++ Before doing this, finish bootloading
 
 
 ** CHASSIS [V1] ** FEATURE COMPLETE
@@ -58,9 +57,14 @@
 + Document accu pack (5x NiMH = 6.0V, motor runs best @ 5V -> diode eats 0,7v)
 
 
+** HARDWARE [V2] DOC
++ Added steering neutral position detector (using a light barrier)
++ No front/back and top lighting enable transistor base resistor (as this is an emitter thingy)
+
+
 ** TESTS
 + Test acc sensor fullscale select
-+ (Test opamp current amplification) as soon as measure line is ready
++ (Test opamp current amplification) as soon as measure line is ready | DONE
 
 
 ** RFM12USB
