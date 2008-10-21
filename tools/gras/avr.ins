@@ -1,0 +1,937 @@
+=begin
+    avr.rb is part of the GeneRic ASsembler (GRAS)
+    Copyright (C) 2008  Daniel Otte (daniel.otte@rub.de)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+=end
+#
+# This file contains the instruction set and parameter data
+# used to generate a AVR assembler and disassembler
+#
+#
+
+parameters{
+  R = r[0..31];
+  RL = r[0..15];
+  RH = r[16..31];
+  RW = r24,r26,r28,r30;
+  RM = r[16..23];
+  RPTR = X,Y,Z;
+  K = [0..63];
+  Byte = [0..255];
+}  
+
+
+cpu{
+  flags=C,Z,N,V,S,H,T,I;
+  registers=r[0..31],X,Y,Z;
+}
+
+instructionset{
+  ADD
+    R,R{
+      modify_flags=HSVNZC;
+      description="Add with Carry";
+      opcode=0b0000.11rd_dddd.rrrr;
+    }
+  }
+  ADC{
+    R,R{
+      modify_flags=HSVNZC;
+      description="Add with Carry";
+      opcode=0b0001.11rd_dddd.rrrr;
+    }
+  }
+  ADIW{
+    RW,K{
+      modify_flags=SVNZC;
+      description="Add Immediate to Word";
+      opcode=0b1001.0110_kkdd.kkk;
+    }
+  }
+  SUB{
+    R,R{
+      modify_flags=HSVNZC;
+      description="Subtract without Carry";
+      opcode=0b0001.10rd_dddd.rrrr;
+    }
+  }
+  SUBI{
+    R,Byte{
+      modify_flags=HSVNZC;
+      description="Subtract Immediate";
+      opcode=0b0101.kkkk_dddd.kkkk;
+    }
+  }
+  SBC{
+    R,R{
+      modify_flags=HSVNZC;
+      description="Subtract with Carry";
+      opcode=0b0000.10rd_dddd.rrrr;
+    }
+  }
+  SBCI{
+    RH,Byte{
+      modify_flags=HSVNZC;
+      description="Subtract Immediate with Carry";
+      opcode=0b0100.kkkk_dddd.kkkk;
+    }
+  }
+  SBIW{
+    RW,K6{
+      modify_flags=SVNZC;
+      description="Subtract Immediate from Word";
+      opcode=0b1001.0111_kkdd.kkkk;
+    }
+  }
+  AND{
+    R,R{
+      modify_flags=SNZ;
+      clear_flags=V;
+      description="Logical AND";
+      opcode=0b0010.00rd_dddd.rrrr;
+    }
+  }
+  ANDI{
+    RH,byte{
+      modify_flags=SNZ;
+      clear_flags=V;
+      description="Logical AND with Immediate";
+      opcode=0b0111.kkkk_dddd.kkkk;
+    }
+  }
+  OR{
+    R,R{
+      modify_flags=SNZ;
+      clear_flags=V;
+      description="Logical OR";
+      opcode=0b0010.10rd_dddd.rrrr;
+    }
+  }
+  ORI{
+    RH,Byte{
+      modify_flags=SNZ;
+      clear_flags=V;
+      description="Logical OR with Immediate";
+      opcode=0b0100.kkkk_dddd.kkkk;
+    }
+  }
+  EOR{
+    R,R{
+      modify_flags=SNZ;
+      clear_flags=V
+      description="Exclusive OR";
+      opcode=0b0010.01r_dddd.rrrr;
+    }
+  }
+  COM{
+    R{
+      modify_flags=SNZ;
+      clear_flags=V;
+      set_flags=C;
+      description="One’s Complement";
+      opcode=0b1001.010d_dddd.0000;
+    }
+  }
+  NEG{
+    R{
+      modify_flags=HSVNZC;
+      description="Two’s Complement";
+      opcode=0b1001.010d_dddd_0001;
+    }
+  }
+  SBR{
+    RH,Byte{
+      modify_flags=SNZ;
+      clear_flags=V;
+      description="Set Bit(s) in Register";
+      opcode=0b0110.kkkk_dddd.kkkk;
+    }
+  }
+  CBR{
+    R,byte{
+      modify_flags=SNZ;
+      clear_flags=0;
+      description="Clear Bit(s) in Register";
+      same=ANDI;
+    }
+  }
+  INC{
+    R{
+      modify_flags=SVNZ;
+      description="Increment";
+      opcode=0b1001.010d_dddd.0011;
+    }
+  }
+  DEC{
+    R{
+      modify_flags=SVNZ;
+      description="Decrement";
+      opcode=0b1001.010d_dddd.1010;
+    }
+  }
+  TST{
+    {
+      modify_flags=SNZ;
+      clear_flags=V;
+      description="Test for Zero or Minus";
+      opcode=0b0010.00dD_dddd.DDDD;
+    }
+  }
+  CLR{
+    R{
+      clear_flags=SVN;
+      set_flags=Z;
+      description="Clear Register";
+      opcode=0b0010.01dD_ddddD;
+    }
+  }
+  SER{
+    RH{
+      modify_flags=;
+      description="Set Register";
+      opcode=0b1110.1111_dddd.1111;
+    }
+  }
+  MUL{
+    R,R{
+      modify_flags=ZC;
+      description="Multiply Unsigned";
+      opcode=0b1001.11rd_dddd.rrrr;
+    }
+  }
+  MULS{
+    RH,RH{
+      modify_flags=ZC;
+      description="Multiply Signed";
+      opcode=0b000.0010_dddd.rrrr;
+    }
+  }
+  MULSU{
+    RM,RM{
+      modify_flags=ZC;
+      description="Multiply Signed with Unsigned";
+      opcode=0b0000.0011_0ddd.0rrr;
+    }
+  }
+  FMUL{
+    RM,RM{
+      modify_flags=ZC;
+      description="Fractional Multiply Unsigned";
+      opcode=0b0000.0011_0ddd.1rrr;
+    }
+  }
+  FMULS{
+    RM,RM{
+      modify_flags=ZC;
+      description="Fractional Multiply Signed";
+      opcode=0b0000.0011_1ddd.0rrr;
+    }
+  }
+  FMULSU{
+    RM,RM{
+      modify_flags=ZC;
+      description="Fractional Multiply Signed with Unsigned";
+      opcode=0b0000.0011_1ddd.1rrr;
+    }
+  }
+  RJMP{
+    rel12{
+      modify_flags=;
+      description="Relative Jump";
+      opcode=0b1100.kkkk_kkkk.kkkk;
+    }
+  }
+  IJMP{
+    none{
+      modify_flags=;
+      description="Indirect Jump to (Z)";
+      opcode=0x9409;
+    }
+  }
+  EIJMP{
+    none{
+      modify_flags=;
+      description="Extended Indirect Jump to (Z)";
+      opcode=0x9419;
+    }
+  }
+  JMP{
+    k{
+      modify_flags=;
+      description="Jump";
+      opcode=0b1001.010k_kkkk.110k_kkkk.kkkk_kkkk.kkkk;
+    }
+  }
+  RCALL{
+    rel12{
+      modify_flags=;
+      description="Relative Call Subroutine";
+      opcode=0b1101.kkkk_kkkk.kkkk;
+    }
+  }
+  ICALL{
+    none{
+      modify_flags=;
+      description="Indirect Call to (Z)";
+      opcode=0x9509;
+    }
+  }
+  EICALL{
+    none{
+      modify_flags=;
+      description="Extended Indirect Call to (Z)";
+      opcode=0x9519;
+    }
+  }
+  CALL{
+    abs{
+      modify_flags=;
+      description="Call Subroutine";
+      opcode=0b1001.010a_aaaa.111a_aaaa.aaaa_aaaa.aaaa;
+    }
+  }
+  RET{
+    none{
+      modify_flags=;
+      description="Subroutine Return";
+      opcode=0b1001.0101_0000.1000;
+    }
+  }
+  RETI{
+    none{
+      modify_flags=;
+      description="Interrupt Return";
+      opcode=0b1001.0101_0001.1000;
+    }
+  }
+  CPSE{
+    R,R{
+      modify_flags=;
+      description="Compare, Skip if Equal";
+      opcode=0b0001.00rd_dddd.rrrr;
+    }
+  }
+  CP{
+    R,R{
+      modify_flags=HSVNZC;
+      description="Compare";
+      opcode=0b0001.01rd_dddd.rrrr;
+    }
+  }
+  CPC{
+    R,R{
+      modify_flags=HSVNZC;
+      description="Compare with Carry";
+      opcode=0b0000.01rd_dddd.rrrr;
+    }
+  }
+  CPI{
+    RH,byte{
+      modify_flags=HSVNZC;
+      description="Compare with Immediate";
+      opcode=0b0011.kkkk_dddd.kkkk;
+    }
+  }
+  SBRC{
+    R,b{
+      modify_flags=;
+      description="Skip if Bit in Register Cleared";
+      opcode=0b1111.110r_rrrr.0bbb;
+    }
+  }
+  SBRS{
+    R,b{
+      modify_flags=;
+      description="Skip if Bit in Register Set";
+      opcode=0b1111.111r_rrrr.0bbb;
+    }
+  }
+  SBIC{
+    IOA,b{
+      modify_flags=;
+      description="Skip if Bit in I/O Register Cleared";
+      opcode=0b1001.1001_aaaa.abbb;
+    }
+  }
+  SBIS{
+    IOA,b{
+      modify_flags=;
+      description="Skip if Bit in I/O Register Set";
+      opcode=0b1001.1011_aaaa.abbb;
+    }
+  }
+  BRBS{
+    b,srel{
+      modify_flags=;
+      description="Branch if Status Flag Set";
+      opcode=0b1111.00rr_rrrr.rbbb;
+    }
+  }
+  BRBC{
+    b,srel{
+      modify_flags=;
+      description="Branch if Status Flag Cleared";
+      opcode=0b1111.01rr_rrrr.rbbb;
+    }
+  }
+  BREQ{
+    srel{
+      modify_flags=;
+      description="Branch if Equal";
+      opcode=0b1111.00rr_rrrr.r001;
+    }
+  }
+  BRNE{
+    {
+      modify_flags=;
+      description="Branch if Not Equal";
+      opcode=0b1111.01rr_rrrr.r001;
+    }
+  }
+  BRCS{
+    srel{
+      modify_flags=;
+      description="Branch if Carry Set";
+      opcode=0b1111.00rr_rrrr.r000;
+    }
+  }
+  BRCC{
+    srel{
+      modify_flags=;
+      description="Branch if Carry Cleared";
+      opcode=0b1111.01rr_rrrr_r000;
+    }
+  }
+  BRSH{
+    srel{
+      modify_flags=;
+      description="Branch if Same or Higher";
+      opcode=0b1111.01rr_rrrr.r000;
+    }
+  }
+  BRLO{
+    srel{
+      modify_flags=;
+      description="Branch if Lower";
+      opcode=0b1111.00rr_rrrr.r000;
+    }
+  }
+  BRMI{
+    srel{
+      modify_flags=;
+      description="Branch if Minus";
+      opcode=0b1111.00rr_rrrr.r010;
+    }
+  }
+  BRPL{
+    srel{
+      modify_flags=;
+      description="Branch if Plus";
+      opcode=0b1111.01rr_rrrr.r010;
+    }
+  }
+  BRGE{
+    srel{
+      modify_flags=;
+      description="Branch if Greater or Equal, Signed";
+      opcode=0b1111.01rr_rrrr.r100;
+    }
+  }
+  BRLT{
+    srel{
+      modify_flags=;
+      description="Branch if Less Than, Signed";
+      opcode=0b1111.00rr_rrrr.r100;
+    }
+  }
+  BRHS{
+    srel{
+      modify_flags=;
+      description="Branch if Half Carry Flag Set";
+      opcode=0b1111.00rr_rrrr.r101;
+    }
+  }
+  BRHC{
+    srel{
+      modify_flags=;
+      description="Branch if Half Carry Flag Cleared";
+      opcode=0b1111.01rr_rrrr.r101;
+    }
+  }
+  BRTS{
+    srel{
+      modify_flags=;
+      description="Branch if T Flag Set";
+      opcode=0b1111.00rr_rrrr.r110;
+    }
+  }
+  BRTC{
+    srel{
+      modify_flags=;
+      description="Branch if T Flag Cleared";
+      opcode=0b1111.01rr_rrrr.r110;
+    }
+  }
+  BRVS{
+    srel{
+      modify_flags=;
+      description="Branch if Overflow Flag is Set";
+      opcode=0b1111.00rr_rrrr.r011;
+    }
+  }
+  BRVC{
+    srel{
+      modify_flags=;
+      description="Branch if Overflow Flag is Cleared";
+      opcode=0b1111.01rr_rrrr.r011;
+    }
+  }
+  BRIE{
+    srel{
+      modify_flags=;
+      description="Branch if Interrupt Enabled";
+      opcode=0b1111.00rr_rrrr.r111;
+    }
+  }
+  BRID{
+    srel{
+      modify_flags=;
+      description="Branch if Interrupt Disabled";
+      opcode=0b1111.01rr_rrrr.r111;
+    }
+  }
+  MOV{
+    R,R{
+      modify_flags=;
+      description="Copy Register";
+      opcode=0b0010.11rd_dddd.rrrr;
+    }
+  }
+  MOVW{
+    RE,RE{
+      modify_flags=;
+      description="Copy Register Pair";
+      opcode=0b0000.0001_dddd.rrrr;
+    }
+  }
+  LDI{
+    RH,Byte{
+      modify_flags=;
+      description="Load Immediate";
+      opcode=0b1110.kkkk_dddd.kkkk;
+    }
+  }
+  LDS{
+    R,M64K{
+      modify_flags=;
+      description="Load Direct from data space";
+      opcode=0b1001.000d_dddd.0000_kkkk.kkkk_kkkk.kkkk;
+    }
+  }
+  LD{
+    R,X{
+      description="Load Indirect";
+      opcode=0b1001.000d_dddd.1100;
+    }
+    R,X+{
+      description="Load Indirect with Post increment";
+      opcode=0b1001.000d_dddd.1101;
+    }
+    R,-X{
+      description="Load Indirect with Pret decrement";
+      opcode=0b1001.000d_dddd.1110;
+    }
+    R,Y{
+      description="Load Indirect";
+      opcode=0b1000.000d_dddd.1000;
+    }
+    R,Y+{
+      description="Load Indirect with Post increment";
+      opcode=0b1001.000d_dddd.1001;
+    }
+    R,-Y{
+      description="Load Indirect with Pret decrement";
+      opcode=0b1001.000d_dddd.1010;
+    }
+    R,Z{
+      description="Load Indirect";
+      opcode=0b1000.000d_dddd.0000;
+    }
+    R,Z+{
+      description="Load Indirect with Post increment";
+      opcode=0b1001.000d_dddd.0001;
+    }
+    R,-Z{
+      description="Load Indirect with Pret decrement";
+      opcode=0b1001.000d_dddd.0010;
+    }
+  }
+  LDD{
+    R,Y+q{
+      modify_flags=;
+      description="Load Indirect with Displacement";
+      opcode=0b10q0.qq0d_dddd.0qqq;
+    }
+    R,Z+q{
+      modify_flags=;
+      description="Load Indirect with Displacement";
+      opcode=0b10q0.qq0d_dddd.1qqq;
+    }
+  }
+  STS{
+    M64K,R{
+      description="Store Direct to data space";
+      opcode=0b1001.001r_rrrr.0000_kkkk.kkkk_kkkk.kkkk;
+    }
+  }
+  ST{
+    X,R{
+      description="Store Indirect";
+      opcode=0b1001.001r_rrrr.1100;
+    }
+    X+,R{
+      description="Store Indirect with Post increment";
+      opcode=0b1001.001r_rrrr.1101;
+    }
+    -X,R{
+      description="Store Indirect with Pre decrement";
+      opcode=0b1001.001r_rrrr.1110;
+    }
+    Y,R{
+      description="Store Indirect";
+      opcode=0b1000.001r_rrrr.1000;
+    }
+    Y+,R{
+      description="Store Indirect with Post increment";
+      opcode=0b1001.001r_rrrr.1001;
+    }
+    -Y,R{
+      description="Store Indirect with Pre decrement";
+      opcode=0b1001.001r_rrrr.1010;
+    }
+    Z,R{
+      description="Store Indirect";
+      opcode=0b1000.001r_rrrr.0000;
+    }
+    Z+,R{
+      description="Store Indirect with Post increment";
+      opcode=0b1001.001r_rrrr.0001;
+    }
+    -Z,R{
+      description="Store Indirect with Pre decrement";
+      opcode=0b1001.001r_rrrr.0010;
+    }
+  }
+  STD{
+    Y+q,R{
+      description="Store Indirect with Displacement";
+      opcode=0b10q0.qq1r_rrrr.1qqq;
+    }
+    Z+q,R{
+      description="Store Indirect with Displacement";
+      opcode=0b10q0.qq1r_rrrr.0qqq;
+    }
+  }
+  LPM{
+    none{
+      modify_flags=;
+      description="Load Program Memory";
+      opcode=0b1001.0101_1100.1000;
+    }
+    R,Z{
+      modify_flags=;
+      description="Load Program Memory";
+      opcode=0b1001.000d_dddd.0100;
+    }
+    R,Z+{
+      modify_flags=;
+      description="Load Program Memory with Post increment";
+      opcode=0b1001.000d_dddd.0101;
+    }
+  }
+  ELPM{
+    modify_flags=;
+    description="Extended Load Program Memory";
+    none{
+      opcode=0x95D8;
+    }
+    R,Z{
+      opcode=0b1001.00d_dddd.0110;
+    }
+    R,Z+{
+      opcode=0b1001.00d_dddd.0111;
+    }
+  }
+  SPM{
+    none{
+      modify_flags=;
+      description="Store Program Memory";
+      opcode=0b1001.0101_1110.1000;
+    }
+  }
+  IN{
+    R,IOA{
+      modify_flags=;
+      description="In From I/O Location";
+      opcode=0b1011.0xxd_dddd.xxxx;
+    }
+  }
+  OUT{
+    IOA,R{
+      modify_flags=;
+      description="Out To I/O Location";
+      opcode=0b1011.1aar_rrrr.aaaa;
+    }
+  }
+  PUSH{
+    R{
+      modify_flags=;
+      description="Push Register on Stack";
+      opcode=0b1001.001d_dddd.1111;
+    }
+  }
+  POP{
+    R{
+      modify_flags=;
+      description="Pop Register from Stack";
+      opcode=0b1001.000d_dddd.1111;
+    }
+  }
+  LSL{
+    R{
+      modify_flags=HSVNZC;
+      description="Logical Shift Left";
+      opcode=0b0000.11dD_dddd.DDDD;
+    }
+  }
+  LSR{
+    R{
+      modify_flags=SVZC;
+      clear_flags=N;
+      description="Logical Shift Right";
+      opcode=0b1001.010d_dddd.0110;
+    }
+  }
+  ROL{
+    R{
+      modify_flags=HSVNZC;
+      description="Rotate Left Through Carry";
+      opcode=0b0001.11dD_dddd.DDDD;
+    }
+  }
+  ROR{
+    R{
+      modify_flags=SVNZC;
+      description="Rotate Right Through Carry";
+      opcode=0b1001.010d_dddd.0111;
+    }
+  }
+  ASR{
+    R{
+      modify_flags=SVNZC;
+      description="Arithmetic Shift Right";
+      opcode=0b1001.010d_dddd.0101;
+    }
+  }
+  SWAP{
+    R{
+      description="Swap Nibbles";
+      opcode=0b1001.010d_dddd.0010;
+    }
+  }
+  BSET{
+    b{
+      modify_flags=ITHSVNZC;
+      description="Flag Set";
+      opcode=0b1001.0100_0bbb.1000;
+    }
+  }
+  BCLR{
+    b{
+      modify_flags=ITHSVNZC;
+      description="Flag Clear";
+      opcode=0b1001.0100_1bbb.1000;
+    }
+  }
+  SBI{
+    IOA,b{
+      modify_flags=;
+      description="Set Bit in I/O Register";
+      opcode=0b1001.1010_aaaa.abbb;
+    }
+  }
+  CBI{
+    ioa,b{
+      modify_flags=;
+      description="Clear Bit in I/O Register";
+      opcode=0b1001.1000_aaaa.abbb;
+    }
+  }
+  BST{
+    R,b{
+      modify_flags=T;
+      description="Bit Store from Register to T";
+      opcode=0b1111.101r_rrrr.0xxx;
+    }
+  }
+  BLD{
+    R,b{
+      modify_flags=;
+      description="Bit load from T to Register";
+      opcode=0b1111.100d_dddd.0xxx;
+    }
+  }
+  SEC{
+    none{
+      set_flags=C;
+      description="Set Carry";
+      opcode=0b1001.0100_0000.1000;
+    }
+  }
+  CLC{
+    none{
+      clear_flags=C;
+      description="Clear Carry";
+      opcode=0b1001.0100_1000.1000;
+    }
+  }
+  SEN{
+    none{
+      set_flags=N;
+      description="Set Negative Flag";
+      opcode=0b1001.0100_0010.1000;
+    }
+  }
+  CLN{
+    none{
+      clear_flags=N;
+      description="Clear Negative Flag";
+      opcode=0b1001.0100_1010.1000;
+    }
+  }
+  SEZ{
+    {
+      modify_flags=;
+      description="Set Zero Flag";
+      opcode=0b1001.0100_0001.1000;
+    }
+  }
+  CLZ{
+    {
+      modify_flags=;
+      description="Clear Zero Flag";
+      opcode=0b1001.0100_1001.1000;
+    }
+  }
+  SEI{
+    none{
+      set_flags=I;
+      description="Global Interrupt Enable";
+      opcode=0b1001.0100_0111.1000;
+    }
+  }
+  CLI{
+    none{
+      clear_flags=I;
+      description="Global Interrupt Disable";
+      opcode=0b1001.0100_1111.1000;
+    }
+  }
+  SES{
+    none{
+      set_flags=S;
+      description="Set Signed Test Flag";
+      opcode=0b1001.0100_0100.1000;
+    }
+  }
+  CLS{
+    none{
+      clear_flags=S;
+      description="Clear Signed Test Flag";
+      opcode=0b1001.0100_1100.1000;
+    }
+  }
+  SEV{
+    none{
+      set_flags=V;
+      description="Set Two’s Complement Overflow";
+      opcode=0b1001.0100_0011.1000;
+    }
+  }
+  CLV{
+    none{
+      clear_flags=V;
+      description="Clear Two’s Complement Overflow";
+      opcode=0b1001.0100_1011.1000;
+    }
+  }
+  SET{
+    none{
+      set_flags=T;
+      description="Set T in SREG";
+      opcode=0b1001.0100_0110.1000;
+    }
+  }
+  CLT{
+    none{
+      clear_flags=T;
+      description="Clear T in SREG";
+      opcode=0b1001.0100_1110.1000;
+    }
+  }
+  SEH{
+    none{
+      set_flags=H;
+      description="Set Half Carry Flag in SREG";
+      opcode=0b1001.0100_0101.1000;
+    }
+  }
+  CLH{
+    none{
+      clear_flags=H;
+      description="Clear Half Carry Flag in SREG";
+      opcode=0b1001.0100_1101.1000;
+    }
+  }
+  BREAK{
+    none{
+      modify_flags=;
+      description="Break";
+      opcode=0x9598;
+    }
+  }
+  NOP{
+    none{
+      modify_flags=;
+      description="No Operation";
+      opcode=0x0000;
+    }
+  }
+  SLEEP{
+    none{
+      modify_flags=;
+      description="Sleep";
+      opcode=0b1001.0101_1000.1000;
+    }
+  }
+  WDR{
+    none{
+      modify_flags=;
+      description="Watchdog Reset";
+      opcode=0b1001.0101_1010.1000;
+    }
+  }
+}
+
