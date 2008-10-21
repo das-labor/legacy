@@ -67,6 +67,15 @@ def new_value(block, key, value)
 end
 
 $linenumber = 0
+
+def parse_lexpr(expr)
+  expr.strip!
+  if expr==""
+    puts("[l:" + $linenumber.to_s + "] empty lvalue!");
+  end
+  expr
+end
+
 $left_expr=""
 def parse_l2(line)
   if /^[\s]*$/.match(line)
@@ -75,14 +84,16 @@ def parse_l2(line)
   if m = /([\w\s,._<>+-]*)([^\{\}=]*)(.*)/.match(line)
     $left_expr += m[1];
     if m[2]!=""
-      puts("[l:" + $linenumber + "] Garbage: "+m[2]);
+      puts("[l:" + $linenumber.to_s + "] Garbage: "+m[2]);
     end
     if m2 = /=([^;]*);(.*)/.match(m[3])
+      $left_expr = parse_lexpr($left_expr) 
       new_value($current_block, $left_expr, m2[1])
       $left_expr = ""
       parse_l2(m2[2])    
     end
     if m2 = /\{(.*)/.match(m[3])
+      $left_expr = parse_lexpr($left_expr)
       new_block($current_block, $left_expr)
       $left_expr = ""
       parse_l2(m2[1])
@@ -93,7 +104,7 @@ def parse_l2(line)
       parse_l2(m2[1])
     end
   else
-    puts("[l:" + $linenumber + "] What???")
+    puts("[l:" + $linenumber.to_s + "] What???")
   end
 end
 
