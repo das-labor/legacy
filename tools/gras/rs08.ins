@@ -1,0 +1,568 @@
+=begin
+    rs08.rb is part of the GeneRic ASsembler (GRAS)
+    Copyright (C) 2008  Daniel Otte (daniel.otte@rub.de)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+=end
+#
+# This file contains the instruction set and parameter data
+# used to generate a RS08 assembler and disassembler
+#
+#
+
+parameters{
+#  paramtypes: A X DX n x opr8i opr4a opr5a opr8a opr16a rel
+
+  A = "A";
+  X = "X";
+  DX = "D[X]" | ",X";
+  n = [0..7];
+  opr8i = imm [0..255] | imm [-128..127];
+  opr4a = [0..15];
+  opr5a = [0..31];
+  opr8a = [0..255];
+  opr16a = [0..65535];
+  rel = [-128..127];
+}
+
+cpu{
+  flags=ZC;
+  registers=A,X;
+}
+
+instructionset{
+
+ADC{
+  modify_flags = Z,C;
+  description="Add with Carry";
+  opr8i{
+    opcode = 0xA9pp;
+    cycles = 2;
+    
+  }  
+  opr8a{
+    opcode = 0xB9pp;
+    cycles = 3;
+  }
+
+}
+
+ADD{
+  modify_flags = ZC;
+  description="Add without Carry";
+  opr8i{
+    opcode = 0xABpp;
+    cycles = 2;
+  }
+  opr8a{
+    opcode = 0xBBpp;
+    cycles = 3;
+  }
+  opr4a{
+    opcode = 0x6p;
+    cycles = 3;
+  }
+}
+
+AND{
+  modify_flags = Z;
+  description="Logical AND";
+  opr8i{
+    opcode = 0xA4pp;
+    cycles = 2;
+  }
+  opr8a{
+    opcode = 0xB4pp;
+    cycles = 3;
+  }
+}
+
+BCC{
+  description="Branch if Carry Bit Clear";
+  rel{
+    opcode = 0x34rr;
+    cycles = 3;
+  }
+}
+
+BCLR{
+  description="Clear Bit n in Memory";
+  n,opr8a{
+    opcode = 0b0001.nnn1_pppp.pppp;
+    cycles = 5;
+  }
+}
+
+BCS{
+  description="Branch if Carry Bit Set";
+  rel{
+    opcode = 0x35rr;
+    cycles = 3;
+  } 
+}
+
+BEQ{
+  description="Branch if Equal";
+  rel{
+    opcode = 0x37rr;
+    cycles = 3;
+  } 
+}
+
+BGND{
+  description="Background";
+  none{
+    opcode = 0xBF;
+    cycles = 5;
+  }
+}
+
+BHS = BCC;
+BLO = BCS;
+
+BNE{
+  description="Branch if Not Equal";
+  rel{
+    opcode = 0x36rr;
+    cycles = 3;
+  } 
+}
+
+BRA{
+  description="Branch Always";
+  rel{
+    opcode = 0x30rr;
+    cycles = 3;
+  } 
+}
+
+BRN{
+  description="Branch Never";
+  rel{
+    opcode = 0x30rr;
+    cycles = 3;
+  } 
+}
+
+BRCLR{
+  modify_flags=C;
+  description="Branch if Bit n in Memory Clear";
+  n,opr8a,rel{
+    opcode = 0b0000.nnn1_pppp.pppp_rrrr.rrrr;
+    cycles = 5;
+  } 
+}
+
+BRSET{
+  modify_flags=C;
+  description="Branch if Bit n in Memory Set";
+  n,opr8a,rel{
+    opcode = 0b0000.nnn0_pppp.pppp_rrrr.rrrr;
+    cycles = 5;
+  } 
+}
+
+
+BSET{
+  description="Set Bit n in Memory";
+  n,opr8a{
+    opcode = 0b0001.nnn0_pppp.pppp;
+    cycles = 5;
+  }
+}
+
+BSR{
+  description="Branch Subroutine";
+  rel{
+    opcode = 0xADrr;
+    cycles = 3;
+  }
+}
+
+CBEQ{
+  description="Compare and Branch if Equal";
+  opr8a,rel{
+    opcode = 0x31pprr;
+    cycles = 5;
+  }
+  opr8i,rel{
+    opcode = 0x41iirr;
+    cycles = 4;
+  }
+}
+
+CBEQA = CBEQ;
+
+CLC{
+  description="Clear Carry Bit";
+  clear_flags = C;
+  none{
+    opcode = 0x38;
+    cycles = 1;
+  }
+}
+
+CLR{
+  description="Clear";
+  set_flags = Z;
+  A{
+    opcode = 0x4F;
+    cycles = 1;
+  }
+  opr5a{
+    opcode = 0b100p_pppp;
+    cycles = 2;
+  }
+  opr8a{
+    opcode = 0x3Fpp;
+    cycles = 3; 
+  }
+}
+
+CLRA = CLR A;
+CLRX = CLR X;
+
+CMP{
+  modify_flags = ZC;
+  description="Compare Accumulator with Memory";
+  opr8i{
+    opcode = 0xA1ii;
+    cycles = 2;
+  }
+  opr8a{
+    opcode = 0xB1pp;
+    cycles = 3;
+  }
+}
+
+COMA{
+  modify_flags = Z;
+  description="Complement";
+  set_flags = C;
+  none{
+    opcode = 0x43;
+    cycles = 1;
+  }
+}
+
+DBNZ{
+  description="Decrement and Branch if Not Zero";
+  opr8a,rel{
+    opcode = 0x3Dpprr;
+    cycles = 7;
+  }
+  rel{
+    opcode = 0x4Brr;
+    cycles = 4;
+  }
+}
+
+DBNZA = DBNZ;
+
+DEC{
+  description="Decremnent";
+  modify_flags = Z;
+  opr8a{
+    opcode = 0x3App;
+    cycles = 5;
+  }
+  opr4a{
+    opcode = 0x5p;
+    cycles = 4;
+  }
+  none{
+    opcode = 0x4A;
+    cycles = 1;
+  }
+}
+
+DECA = DEC;
+
+EOR{
+  modify_flags = Z;
+  description="Exclusive OR Memory with Accumulator";
+  opr8i{
+    opcode = 0xA8ii;
+    cycles = 2;
+  }
+  opr8a{
+    opcode = 0xB8pp;
+    cycles = 3;
+  }
+}
+
+INC{
+  modify_flags = Z;
+  description="Increment";
+  opr8a{
+    opcode = 0x3Cpp;
+    cycles = 5;
+  }
+  opr4a{
+    opcode = 0x2p;
+    cycles = 4;
+  }
+  none{
+    opcode = 0x4C;
+    cycles = 1;
+  }
+}
+
+INCA = INC;
+
+JMP{
+  description="Jump";
+  opr16a{
+    opcode = 0xBCpppp;
+    cycles = 4;
+  }
+}
+
+JSR{
+  description="Jump to Subroutine";
+  opr16a{
+    opcode = 0xBDpppp;
+    cycles = 4;
+  }
+}
+
+LDA{
+  modify_flags = Z;
+  description="Load Accumulator from Memory";
+  opr8i{
+    opcode = 0xA6ii;
+    cycles = 2;
+  }
+  opr8a{
+    opcode = 0xB6pp;
+    cycles = 3;
+  }
+  opr5a{
+    opcode = 0b110p.pppp;
+    cycles = 3;
+  }
+}
+
+LSLA{
+  modify_flags = ZC;
+  description="Logical Shift Left";
+  none{
+    opcode = 0x48;
+    cycles = 1;
+  }
+}
+
+LSRA{
+  modify_flags = ZC;
+  description="Logical Shift Right";
+  none{
+    opcode = 0x44;
+    cycles = 1;
+  }
+}
+
+MOV{
+  modify_flags = Z;
+  description="Move";
+  opr8a,opr8a{
+    opcode = 0x4Eppqq;
+    cycles = 5;
+  }
+  opr8i,opr8a{
+    opcode = 0x3Eppqq;
+    cycles = 4;
+  }
+}
+
+NOP{
+  description="No Operation";
+  none{
+    opcode = 0xAC;
+    cycles = 1;
+  }
+}
+
+ORA{
+  modify_flags = Z;
+  description="Inclusive OR Accumulator and Memory";
+  opr8i{
+    opcode = 0xAAii;
+    cycles = 2;
+  }
+  opr8a{
+    opcode = 0xBApp;
+    cycles = 3;
+  }
+}
+
+ROLA{
+  modify_flags = ZC;
+  description="Rotate Left through Carry";
+  none{
+    opcode = 0x49;
+    cycles = 1;
+  }
+}
+
+RORA{
+  modify_flags = ZC;
+  description="Rotate Right through Carry";
+  none{
+    opcode = 0x46;
+    cycles = 1;
+  }
+}
+
+RTS{
+  description="Return from Subroutine";
+  none{
+    opcode = 0xBE;
+    cycles = 3;
+  }
+}
+
+SBC{
+  modify_flags = ZC;
+  description="Subtract with Carry";
+  opr8i{
+    opcode = 0xA2ii;
+    cycles = 2;
+  }
+  opr8a{
+    opcode = 0xB2pp;
+    cycles = 3;
+  }
+}
+
+SEC{
+  set_flags = C;
+  description="Set Carry Bit";
+  none{
+    opcode = 0x39;
+    cycles = 1;
+  }
+}
+
+SHA{
+  description="Swap Shadow PC High with A";
+  none{
+    opcode = 0x45;
+    cycles = 1;
+  }
+}
+
+SLA{
+  description="Swap Shadow PC Low with A";
+  none{
+    opcode = 0x42;
+    cycles = 1;
+  }
+}
+
+STA{
+  modify_flags = Z;
+  description="Store Accumulator in Memory";
+  opr8a{
+    opcode = 0xB7pp;
+    cycles = 3;
+  }
+  opr5a{
+    opcode = 0b111p.pppp;
+    cycles = 2;
+  }
+}
+
+STOP{
+  description="Put MCU into stop mode";
+  none{
+    opcode = 0xAE;
+    cycles = 2;
+  }
+}
+
+SUB{
+  modify_flags = ZC;
+  description="Subtract";
+  opr8i{
+    opcode = 0xA0ii;
+    cycles = 2;
+  }
+  opr8a{
+    opcode = 0xB0pp;
+    cycles = 3;
+  }
+  opr4a{
+    opcode = 0x7p;
+    cycles = 3;
+  }
+}
+
+TAX{
+  modify_flags = Z;
+  description="Transfer A to X";
+  none{
+    opcode = 0xEF;
+    cycles = 2;
+  }
+}
+
+TST{
+  modify_flags = Z;
+  description="Test for Zero";
+  opr8a{
+    opcode = 0x4EppPP;
+    cycles = 5;
+  }
+  none{
+    opcode = 0xAA00;
+    cycles = 2;
+  }
+}
+
+TSTA = TST;
+
+TXA{
+  modify_flags = Z;
+  description="Transfer X to A";
+  none{
+    opcode = 0xCF;
+    cycles = 2;
+  }
+}
+
+WAIT{
+  description="Put MCU into WAIT mode";
+  none{
+    opcode = 0xAF;
+    cycles = 2;
+  }
+}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
