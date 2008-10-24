@@ -18,14 +18,32 @@
 		<end-regex>&quot;</end-regex>
 	</string>
 
-
-	<keyword-list _name = "Keywords" style = "Keyword" case-sensitive="TRUE">
-		<keyword>asm</keyword>
-		<keyword>description</keyword>
+	<keyword-list _name = "main_blocks" style = "Keyword" case-sensitive="TRUE">
 		<keyword>instructionset</keyword>
+		<keyword>parameters</keyword>
+		<keyword>cpu</keyword>
+	</keyword-list>
+
+	<keyword-list _name = "parameter_Keywords" style = "Keyword" case-sensitive="TRUE">
+		<keyword>first</keyword>
+		<keyword>msb</keyword>
+		<keyword>lsb</keyword>
+		<keyword>imm</keyword>
+		<keyword>lmap</keyword>
+		<keyword>map</keyword>
+		<keyword>relative</keyword>
+	</keyword-list>
+
+	<keyword-list _name = "cpu_Keywords" style = "Keyword" case-sensitive="TRUE">
+		<keyword>flags</keyword>
+		<keyword>registers</keyword>
+	</keyword-list>
+
+	<keyword-list _name = "instructionset_Keywords" style = "Keyword" case-sensitive="TRUE">
+		<keyword>description</keyword>
 		<keyword>opcode</keyword>
 		<keyword>cycles</keyword>
-		<keyword>parameters</keyword>
+		<keyword>code</keyword>
 		<keyword>modify_flags</keyword>
 		<keyword>set_flags</keyword>
       		<keyword>clear_flags</keyword>
@@ -47,19 +65,19 @@
 	</string>
 
 	<pattern-item _name = "Decimal" style = "Decimal">
-		<regex>\b([1-9][0-9]*|0)([Uu]([Ll]|LL|ll)?|([Ll]|LL|ll)[Uu]?)?\b</regex>
-	</pattern-item>
-
-	<pattern-item _name = "Floating Point Number" style = "Floating Point">
-		<regex>\b([0-9]+[Ee][-]?[0-9]+|([0-9]*\.[0-9]+|[0-9]+\.)([Ee][-]?[0-9]+)?)[fFlL]?</regex>
+		<regex>\b([1-9][0-9]*|0)\b</regex>
 	</pattern-item>
 
 	<pattern-item _name = "Octal Number" style = "Base-N Integer">
-		<regex>\b0[0-7]+([Uu]([Ll]|LL|ll)?|([Ll]|LL|ll)[Uu]?)?\b</regex>
+		<regex>\b0[0-7._]+\b</regex>
 	</pattern-item>
 
 	<pattern-item _name = "Hex Number" style = "Base-N Integer">
-		<regex>\b0[xX][0-9a-fA-F]+([Uu]([Ll]|LL|ll)?|([Ll]|LL|ll)[Uu]?)?\b</regex>
+		<regex>\b0[xX][0-9a-fA-F._]+\b</regex>
+	</pattern-item>
+	
+	<pattern-item _name = "Binary Number" style = "Base-N Integer">
+		<regex>\b0[bB][01._]+\b</regex>
 	</pattern-item>
 
 

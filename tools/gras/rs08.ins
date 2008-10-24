@@ -1,5 +1,5 @@
 =begin
-    rs08.rb is part of the GeneRic ASsembler (GRAS)
+    rs08.ins is part of the GeneRic ASsembler (GRAS)
     Copyright (C) 2008  Daniel Otte (daniel.otte@rub.de)
 
     This program is free software: you can redistribute it and/or modify
@@ -24,27 +24,55 @@
 parameters{
 #  paramtypes: A X DX n x opr8i opr4a opr5a opr8a opr16a rel
 
-  A = "A";
-  X = "X";
-  DX = "D[X]" | ",X";
-  n = [0..7];
-  opr8i = imm [0..255] | imm [-128..127];
-  opr4a = [0..15];
-  opr5a = [0..31];
-  opr8a = [0..255];
-  opr16a = [0..65535];
-  rel = [-128..127];
+  A{
+    name="A";
+  }
+  X{
+    name="X";
+  }
+  DX{
+    name="D[X]" | ",X";
+  }
+  n{
+    name=[0..7];
+    lmap=0..7;
+  }
+  opr8i{
+    name=[0..255]|[-128..127];
+    lmap=0..255 | -128..127;
+  }
+  opr4a{
+    name=[0..15];
+    lmap=0..15;
+  }
+  opr5a{
+    name=[0..31];
+    lmap=0..31;
+  }
+  opr8a{
+    name=[0..255];
+    lmap=0..255;
+  }
+  opr16a{
+    name=[0..65535];
+    lmap=0..65535;
+  }
+  rel{
+    name=[-128..127];
+    lmap=-128..127;
+    relative=true;
 }
 
 cpu{
   flags=ZC;
   registers=A,X;
+  cwlength=16;
 }
 
 instructionset{
 
 ADC{
-  modify_flags = Z,C;
+  modify_flags = ZC;
   description="Add with Carry";
   opr8i{
     opcode = 0xA9pp;
