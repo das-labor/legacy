@@ -66,12 +66,13 @@ def new_value(block, key, value)
   block.key_value[key] = value
 end
 
+$filename = ""
 $linenumber = 0
 
 def parse_lexpr(expr)
   expr.strip!
   if expr==""
-    puts("[l:" + $linenumber.to_s + "] empty lvalue!");
+    puts($filename +":" + $linenumber.to_s + ": error: empty lvalue!");
   end
   expr
 end
@@ -84,7 +85,7 @@ def parse_l2(line)
   if m = /([\w\s,._<>+-]*)([^\{\}=]*)(.*)/.match(line)
     $left_expr += m[1];
     if m[2]!=""
-      puts("[l:" + $linenumber.to_s + "] Garbage: "+m[2]);
+      puts($filename +":"  + $linenumber.to_s + "] Garbage: "+m[2]);
     end
     if m2 = /=([^;]*);(.*)/.match(m[3])
       $left_expr = parse_lexpr($left_expr) 
@@ -104,18 +105,63 @@ def parse_l2(line)
       parse_l2(m2[1])
     end
   else
-    puts("[l:" + $linenumber.to_s + "] What???")
+    puts($filename +":"  + $linenumber.to_s + "] What???")
   end
 end
 
 def loadfile(fname)
   file=File.open(fname)
+  $filename = fname
   while line=file.gets do
     $linenumber += 1
     parse_l2(parse_line_l1(line))
   end
 end
 
+$mnemonics = Hash.new
 
+def gen_mnemonics(insblock)
+  def_opcode=""
+  def_cycles=1
+  def_set_flags=""
+  def_clear_flags=""
+  def_modify_flags=""
+
+  def_opcode       = (insblock.key_value["opcode"]==nil)?(""):(insblock.key_value["opcode"])
+  def_cycles       = (insblock.key_value["cycles"]==nil)?(1):(insblock.key_value["cycles"])
+  def_set_flags    = (insblock.key_value["set_flags"]==nil)?(""):(insblock.key_value["set_flags"])	
+  def_clear_flags  = (insblock.key_value["clear_flags"]==nil)?(""):(insblock.key_value["clear_flags"])
+  def_modify_flags = (insblock.key_value["modify_flags"]==nil)?(""):(insblock.key_value["modify_flags"])
+  def_desc         = (insblock.key_value["description"]==nil)?(""):(insblock.key_value["description"])
+
+  insblock.sub_blocks.each_pair{ |mnem,data|
+    $mnemonics[mnem] = Mnemonic.new(mnem)
+
+    mnem_opcode       = (data.key_value["opcode"]==nil)?(def_opcode):(data.key_value["opcode"])
+    mnem_cycles       = (data.key_value["cycles"]==nil)?(def_cycles):(data.key_value["cycles"])
+    mnem_set_flags    = (data.key_value["set_flags"]==nil)?(def_set_flags):(data.key_value["set_flags"])	
+    mnem_clear_flags  = (data.key_value["clear_flags"]==nil)?(def_clear_flags):(data.key_value["clear_flags"])
+    mnem_modify_flags = (data.key_value["modify_flags"]==nil)?(def_modify_flags):(data.key_value["modify_flags"])
+    mnem_desc         = (data.key_value["description"]==nil)?(def_desc):(data.key_value["description"])
+
+    data.sub_blocks.each_pair{ |params,insdata|
+      p = Array.new;
+      p = params.split(',');
+    
+      opcode       = (insdata.key_value["opcode"]==nil)?(mnem_opcode):(insdata.key_value["opcode"])
+      cycles       = (insdata.key_value["cycles"]==nil)?(mnem_cycles):(insdata.key_value["cycles"])
+      set_flags    = (insdata.key_value["set_flags"]==nil)?(mnem_set_flags):(insdata.key_value["set_flags"])	
+      clear_flags  = (insdata.key_value["clear_flags"]==nil)?(mnem_clear_flags):(insdata.key_value["clear_flags"])
+      modify_flags = (insdata.key_value["modify_flags"]==nil)?(mnem_modify_flags):(insdata.key_value["modify_flags"])
+      desc         = (insdata.key_value["description"]==nil)?(mnem_desc):(insdata.key_value["description"])
+
+      if m = /^\[([\d\s,+-]*)\]$/.match(opcode)
+        opcode=m[1].split(',').collect {|x| x.to_i}
+      end
+      $mnemonics[mnem].add_instruction(p, opcode, cycles, modify_flags, set_flags, clear_flags)
+    }
+  }
+  nil
+end
 
 

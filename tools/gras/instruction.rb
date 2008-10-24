@@ -1,5 +1,5 @@
 =begin
-    mnemonic.rb is part of the GeneRic ASsembler (GRAS)
+    instruction.rb is part of the GeneRic ASsembler (GRAS)
     Copyright (C) 2008  Daniel Otte (daniel.otte@rub.de)
 
     This program is free software: you can redistribute it and/or modify
@@ -16,17 +16,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 =end
 
-require 'jcode'
-
-class Mnemonic
-  @@mnemonics = Array.new
-
-  def initialize(name,description="")
-    @name = name
-    @@mnemonics << name
-    @params = Array.new
-    @description = description
-  end
+class Instruction
+  attr_reader :name, :description, :length, :varbits, :parameters
+  attr_reader :cycles, :modify_flags, :set_flags, :clear_flags
+  attr_accessor :key_value, :sub_blocks
 
   def singelton_class
     class << self
@@ -72,7 +65,6 @@ class Mnemonic
     opcode.delete("._")
   end
 
-#=begin
   def convert2bincode(opcode)
     bin_opcode = String.new
     if /^0x/ =~ opcode 
@@ -144,9 +136,8 @@ class Mnemonic
     end
     bin_opcode
   end # def convert2bincode
-#=end
 
-  def add_instruction(parameters, opcode, cycles=1, modify_flags="", set_flags="", clear_flags="")
+  def initialize(parameters, opcode, cycles=1, modify_flags="", set_flags="", clear_flags="")
     if opcode.class == String
       opcode = preparse_opcode(opcode)
       bin_opcode = convert2bincode(opcode)
@@ -173,16 +164,14 @@ class Mnemonic
     varbits = 0;
     process_code.each{ |x| if (x<=>varbits)==1 then varbits=x end}
 
-    singelton_class().class_eval{define_method(parameters.join("_")+"__length",  lambda{bin_opcode.length})};
-    singelton_class().class_eval{define_method(parameters.join("_")+"__varbits", lambda{varbits})};
-    singelton_class().class_eval{define_method(parameters.join("_")+"__cycles",  lambda{cycles})};
-    singelton_class().class_eval{define_method(parameters.join("_")+"__modifyflags", lambda{modify_flags})};
-    singelton_class().class_eval{define_method(parameters.join("_")+"__setflags",    lambda{set_flags})};
-    singelton_class().class_eval{define_method(parameters.join("_")+"__cleaeflags",  lambda{clear_flags})};
+    @length = bin_opcode.length;
+    @varbits = varbits += 1;
+    @cycles = cycles;
+    @modify_flags = modify_flags;
+    @set_flags = set_flags;
+    @clear_flags = clear_flags;
     singelton_class().class_eval{define_method(parameters.join("_")+"__assemble", assemble_code)};
   end
 
-end # class Mnemonic
-
-
+end
 
