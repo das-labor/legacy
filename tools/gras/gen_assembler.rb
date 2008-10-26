@@ -60,6 +60,9 @@ end
 
 def close_block(block)
   $current_block = block.root
+  if $current_block==nil
+    puts($filename +":" + $linenumber.to_s + ": error: too much '}'");
+  end
 end
 
 def new_value(block, key, value)
@@ -120,7 +123,7 @@ end
 
 $mnemonics = Hash.new
 
-def gen_mnemonics(insblock)
+def gen_mnemonics(insblock=$main_block.sub_blocks["instructionset"])
   def_opcode=""
   def_cycles=1
   def_set_flags=""
@@ -158,10 +161,22 @@ def gen_mnemonics(insblock)
       if m = /^\[([\d\s,+-]*)\]$/.match(opcode)
         opcode=m[1].split(',').collect {|x| x.to_i}
       end
-      $mnemonics[mnem].add_instruction(p, opcode, cycles, modify_flags, set_flags, clear_flags)
+      $mnemonics[mnem].add_instruction(p, opcode, cycles, modify_flags, set_flags, clear_flags, desc)
     }
   }
   nil
 end
+
+def simple_instructionset(iset=$mnemonics)
+  reasons = Array.new
+  iset.each_pair{|mnem,ins|
+    if (ins.max_length != ins.min_length)
+      reasons << mnem 
+    #  puts mnem
+    end
+  }
+  return "1" if reasons.empty?
+  
+end 
 
 

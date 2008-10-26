@@ -17,8 +17,10 @@
 =end
 
 require 'jcode'
+require 'instruction.rb'
 
 class Mnemonic
+  attr_reader :instructions, :max_length, :min_length, :description 
   @@mnemonics = Array.new
 
   def initialize(name,description="")
@@ -26,6 +28,9 @@ class Mnemonic
     @@mnemonics << name
     @params = Array.new
     @description = description
+    @instructions = Hash.new
+    @max_length = -1
+    @min_length = -1
   end
 
   def singelton_class
@@ -34,152 +39,17 @@ class Mnemonic
     end
   end
 
-  def gen_param_code(bin_opcode)
-    params = Array.new
-    alphas = Hash.new
-    alphas.default = 0
-    bin_opcode.each_char do |x|
-      if (x!="0") && (x!="1") 
-        alphas[x.downcase] += 1
-      end
-    end
-    accu = 0
-    param_start = Hash.new
-    param_start.default = -1
-    ("a".."z").each do |x|
-      if(alphas[x] != 0) 
-        param_start[x] = accu
-        param_start[x.upcase] = accu
-        accu += alphas[x]
-      end
-    end
-    param_code = Array.new
-    last_alpha = -1
-    accu=0
-    bin_opcode.each_char do |x|
-      if (x=="0") or (x=="1")
-        param_code << -1 if x=="1"
-        param_code << -2 if x=="0"
-      else
-        param_code << param_start[x]
-        param_start[x] += 1
-      end # if (x=="0") or (x=="1")
-    end
-    param_code
+  def add_instruction_direct(instr)
+ #   instr.description = @description if (instr.description == "")
+    @instructions[instr.parameters] = instr
+    @max_length = instr.length if instr.length > @max_length
+    @min_length = instr.length if (instr.length < @min_length) or (@min_length == -1)
   end
 
-  def preparse_opcode(opcode)
-    opcode.delete("._")
-  end
-
-#=begin
-  def convert2bincode(opcode)
-    bin_opcode = String.new
-    if /^0x/ =~ opcode 
-      opcode.each_char do |x| 
-        case x
-	  when "0"
-	    bin_opcode << "0000"
-	  when "1"
-	    bin_opcode << "0001"
-	  when "2"
-	    bin_opcode << "0010"
-	  when "3"
-	    bin_opcode << "0011"
-	  when "4"
-	    bin_opcode << "0100"
-	  when "5"
-	    bin_opcode << "0101"
-	  when "6"
-	    bin_opcode << "0110"
-	  when "7"
-	    bin_opcode << "0111"
-	  when "8"
-	    bin_opcode << "1000"
-	  when "9"
-	    bin_opcode << "1001"
-	  when "a", "A"
-	    bin_opcode << "1010"
-	  when "b", "B"
-	    bin_opcode << "1011"
-	  when "c", "C"
-	    bin_opcode << "1100"
-	  when "d", "D"
-	    bin_opcode << "1101"
-	  when "e", "E"
-	    bin_opcode << "1110"
-	  when "f", "F"
-	    bin_opcode << "1111"
-          else
-            bin_opcode << x * 4
-	end # case x
-      end # opcode.each_char do
-    end # if /^0x/ =~ opcode
-    if /^0[0-7]/ =~ opcode
-      opcode.each_char do |x| 
-        case x
-	  when "0"
-	    bin_opcode << "000"
-	  when "1"
-	    bin_opcode << "001"
-	  when "2"
-	    bin_opcode << "010"
-	  when "3"
-	    bin_opcode << "011"
-	  when "4"
-	    bin_opcode << "100"
-	  when "5"
-	    bin_opcode << "101"
-	  when "6"
-	    bin_opcode << "110"
-	  when "7"
-	    bin_opcode << "111"
-          else
-            bin_opcode << x * 3
-	end # case x
-      end # opcode.each_char do
-    end # if /^0[0-7]/ =~ opcode
-    if /^0b/ =~ opcode 
-      bin_opcode = opcode[2,opcode.length-2]
-    end
-    bin_opcode
-  end # def convert2bincode
-#=end
-
-  def add_instruction(parameters, opcode, cycles=1, modify_flags="", set_flags="", clear_flags="")
-    if opcode.class == String
-      opcode = preparse_opcode(opcode)
-      bin_opcode = convert2bincode(opcode)
-      process_code = Array.new
-      process_code = gen_param_code(bin_opcode)    
-    else 
-      if opcode.class == Array
-        process_code = opcode
-      else
-        puts("ERROR: invalid opcode type")
-      end
-    end
-    assemble_code = lambda {|param| 
-      ret = String.new 
-      param=param.join() 
-      process_code.each do |x| 
-        ret << "1" if x==-1
-        ret << "0" if x==-2
-        ret << param[x] if x>=0
-      end
-      ret
-    }
-    @params += parameters
-    varbits = 0;
-    process_code.each{ |x| if (x<=>varbits)==1 then varbits=x end}
-
-    singelton_class().class_eval{define_method(parameters.join("_")+"__length",  lambda{bin_opcode.length})};
-    singelton_class().class_eval{define_method(parameters.join("_")+"__varbits", lambda{varbits})};
-    singelton_class().class_eval{define_method(parameters.join("_")+"__cycles",  lambda{cycles})};
-    singelton_class().class_eval{define_method(parameters.join("_")+"__modifyflags", lambda{modify_flags})};
-    singelton_class().class_eval{define_method(parameters.join("_")+"__setflags",    lambda{set_flags})};
-    singelton_class().class_eval{define_method(parameters.join("_")+"__cleaeflags",  lambda{clear_flags})};
-    singelton_class().class_eval{define_method(parameters.join("_")+"__assemble", assemble_code)};
+  def add_instruction(parameters, opcode, cycles=1, modify_flags="", set_flags="", clear_flags="", description="")
+    instr = Instruction.new(parameters, opcode, cycles,
+      modify_flags, set_flags, clear_flags, (description=="")?(@description):(description))
+    add_instruction_direct(instr)
   end
 
 end # class Mnemonic
