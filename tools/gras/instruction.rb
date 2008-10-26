@@ -137,7 +137,7 @@ class Instruction
     bin_opcode
   end # def convert2bincode
 
-  def initialize(parameters, opcode, cycles=1, modify_flags="", set_flags="", clear_flags="")
+  def initialize(parameters, opcode, cycles=1, modify_flags="", set_flags="", clear_flags="", description="")
     if opcode.class == String
       opcode = preparse_opcode(opcode)
       bin_opcode = convert2bincode(opcode)
@@ -160,7 +160,7 @@ class Instruction
       end
       ret
     }
-    @params += parameters
+    @parameters = parameters
     varbits = 0;
     process_code.each{ |x| if (x<=>varbits)==1 then varbits=x end}
 
@@ -170,7 +170,8 @@ class Instruction
     @modify_flags = modify_flags;
     @set_flags = set_flags;
     @clear_flags = clear_flags;
-    singelton_class().class_eval{define_method(parameters.join("_")+"__assemble", assemble_code)};
+    @description = description;
+    singelton_class().class_eval{define_method("assemble", assemble_code)};
   end
 
 end
