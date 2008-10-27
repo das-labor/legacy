@@ -67,7 +67,8 @@ class Instruction
 
   def convert2bincode(opcode)
     bin_opcode = String.new
-    if /^0x/ =~ opcode 
+    if m= /^0[xX](.*)/.match(opcode)
+      opcode = m[1] 
       opcode.each_char do |x| 
         case x
 	  when "0"
@@ -106,8 +107,9 @@ class Instruction
             bin_opcode << x * 4
 	end # case x
       end # opcode.each_char do
-    end # if /^0x/ =~ opcode
-    if /^0[0-7]/ =~ opcode
+    # if /^0x/ =~ opcode
+    elsif m= /^0([0-7].*)/.match(opcode)
+      opcode=m[1];
       opcode.each_char do |x| 
         case x
 	  when "0"
@@ -130,8 +132,8 @@ class Instruction
             bin_opcode << x * 3
 	end # case x
       end # opcode.each_char do
-    end # if /^0[0-7]/ =~ opcode
-    if /^0b/ =~ opcode 
+    # if /^0[0-7]/ =~ opcode
+    elsif /^0[bB]/ =~ opcode 
       bin_opcode = opcode[2,opcode.length-2]
     end
     bin_opcode
