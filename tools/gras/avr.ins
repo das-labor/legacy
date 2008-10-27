@@ -230,7 +230,7 @@ instructionset{
       modify_flags=SNZ;
       clear_flags=V
       description="Exclusive OR";
-      opcode=0b0010.01r_dddd.rrrr;
+      opcode=0b0010.01rd_dddd.rrrr;
     }
   }
   COM{
@@ -263,6 +263,7 @@ instructionset{
       clear_flags=0;
       description="Clear Bit(s) in Register";
       same=ANDI;
+      opcode=0b0111.kkkk_dddd.kkkk;
     }
   }
   INC{
@@ -292,7 +293,7 @@ instructionset{
       clear_flags=SVN;
       set_flags=Z;
       description="Clear Register";
-      opcode=0b0010.01dD_ddddD;
+      opcode=0b0010.01dD_dddd.DDDD;
     }
   }
   SER{
@@ -315,7 +316,7 @@ instructionset{
       modify_flags=ZC;
       cycles=2;
       description="Multiply Signed";
-      opcode=0b000.0010_dddd.rrrr;
+      opcode=0b0000.0010_dddd.rrrr;
     }
   }
   MULSU{
@@ -815,10 +816,10 @@ instructionset{
       opcode=0x95D8;
     }
     R,Z{
-      opcode=0b1001.00d_dddd.0110;
+      opcode=0b1001.000d_dddd.0110;
     }
     R,Z+{
-      opcode=0b1001.00d_dddd.0111;
+      opcode=0b1001.000d_dddd.0111;
     }
   }
   SPM{

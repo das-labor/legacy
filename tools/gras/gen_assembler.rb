@@ -92,7 +92,7 @@ def parse_l2(line)
     end
     if m2 = /=([^;]*);(.*)/.match(m[3])
       $left_expr = parse_lexpr($left_expr) 
-      new_value($current_block, $left_expr, m2[1])
+      new_value($current_block, $left_expr, m2[1].strip)
       $left_expr = ""
       parse_l2(m2[2])    
     end
@@ -175,8 +175,30 @@ def simple_instructionset(iset=$mnemonics)
     #  puts mnem
     end
   }
-  return "1" if reasons.empty?
-  
+ # return 1 if reasons.empty?
+  reasons
 end 
+
+def length_hist(iset=$mnemonics)
+  hist = Hash.new
+  hist.default = 0
+  iset.each_pair{|mnem,inst|
+    inst.instructions.each_pair{|params,iblock|
+      hist[iblock.length] += 1; 
+    }
+  }
+  hist.each_pair{|key,value|
+    puts(key.to_s + " => " + value.to_s)
+  }
+end
+
+def analyze(fname)
+  $main_block = Block.new("root_block", nil)
+  $current_block = $main_block
+  loadfile(fname)
+  gen_mnemonics
+  puts simple_instructionset().join(',')
+  length_hist
+end
 
 
