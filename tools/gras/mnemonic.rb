@@ -41,13 +41,13 @@ class Mnemonic
 
   def add_instruction_direct(instr)
  #   instr.description = @description if (instr.description == "")
-    @instructions[instr.parameters] = instr
+    @instructions[instr.parameters.join(',')] = instr
     @max_length = instr.length if instr.length > @max_length
     @min_length = instr.length if (instr.length < @min_length) or (@min_length == -1)
   end
 
-  def add_instruction(parameters, opcode, cycles=1, modify_flags="", set_flags="", clear_flags="", description="")
-    instr = Instruction.new(parameters, opcode, cycles,
+  def add_instruction(name, parameters, opcode, cycles=1, modify_flags="", set_flags="", clear_flags="", description="")
+    instr = Instruction.new(name, parameters, opcode, cycles,
       modify_flags, set_flags, clear_flags, (description=="")?(@description):(description))
     add_instruction_direct(instr)
   end

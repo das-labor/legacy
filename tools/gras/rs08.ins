@@ -67,8 +67,10 @@ parameters{
 cpu{
   flags=ZC;
   registers=A,X;
-  cwlength=16;
+  instruction_size=8;
 }
+
+
 
 instructionset{
 
@@ -178,8 +180,8 @@ BRA{
 
 BRN{
   description="Branch Never";
-  rel{
-    opcode = 0x30rr;
+  none{
+    opcode = 0x3000;
     cycles = 3;
   } 
 }
