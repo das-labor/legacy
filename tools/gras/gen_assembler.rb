@@ -18,112 +18,12 @@
 
 
 require 'mnemonic.rb'
-
-class Block
-  attr_reader :name, :root 
-  attr_accessor :key_value, :sub_blocks
-  def initialize(name, root)
-    @name = name
-    @root = root
-    @key_value = Hash.new
-    @sub_blocks = Hash.new
-  end
-end
-
-#strip commands
-$in_block_comment = false
-def parse_line_l1(line)
-  line = /[^#]*/.match(line).to_s
-  if $in_block_comment
-    if /.*=end/.match(line)
-      $in_block_comment = false
-      return /.*=end([^#]*)/.match(line)[1]
-    else
-      return ""
-    end
-  else
-    if /(.*)=begin/.match(line)
-      $in_block_comment = true
-      return /(.*)=begin/.match(line)[1]
-    end
-  end
-  line
-end
+require 'blockparser.rb'
 
 
-$main_block = Block.new("root_block", nil)
-$current_block = $main_block
 
-def new_block(root, name)
-  $current_block = $current_block.sub_blocks[name] = Block.new(name, $current_block)
-end
-
-def close_block(block)
-  $current_block = block.root
-  if $current_block==nil
-    puts($filename +":" + $linenumber.to_s + ": error: too much '}'");
-  end
-end
-
-def new_value(block, key, value)
-  block.key_value[key] = value
-end
-
-$filename = ""
-$linenumber = 0
-
-def parse_lexpr(expr)
-  expr.strip!
-  if expr==""
-    puts($filename +":" + $linenumber.to_s + ": error: empty lvalue!");
-  end
-  expr
-end
-
-$left_expr=""
-def parse_l2(line)
-  if /^[\s]*$/.match(line)
-    return
-  end
-  if m = /([\w\s,._<>+-]*)([^\{\}=]*)(.*)/.match(line)
-    $left_expr += m[1];
-    if m[2]!=""
-      puts($filename +":"  + $linenumber.to_s + "] Garbage: "+m[2]);
-    end
-    if m2 = /=([^;]*);(.*)/.match(m[3])
-      $left_expr = parse_lexpr($left_expr) 
-      new_value($current_block, $left_expr, m2[1].strip)
-      $left_expr = ""
-      parse_l2(m2[2])    
-    end
-    if m2 = /\{(.*)/.match(m[3])
-      $left_expr = parse_lexpr($left_expr)
-      new_block($current_block, $left_expr)
-      $left_expr = ""
-      parse_l2(m2[1])
-    end
-    if m2 = /\}(.*)/.match(m[3])
-      close_block($current_block)
-      $left_expr = ""
-      parse_l2(m2[1])
-    end
-  else
-    puts($filename +":"  + $linenumber.to_s + "] What???")
-  end
-end
-
-def loadfile(fname)
-  file=File.open(fname)
-  $filename = fname
-  while line=file.gets do
-    $linenumber += 1
-    parse_l2(parse_line_l1(line))
-  end
-end
-
-$mnemonics = Hash.new
-
-def gen_mnemonics(insblock=$main_block.sub_blocks["instructionset"])
+def gen_mnemonics(insblock)
+  mnemonics = Hash.new
   def_opcode=""
   def_cycles=1
   def_set_flags=""
@@ -138,7 +38,7 @@ def gen_mnemonics(insblock=$main_block.sub_blocks["instructionset"])
   def_desc         = (insblock.key_value["description"]==nil)?(""):(insblock.key_value["description"])
 
   insblock.sub_blocks.each_pair{ |mnem,data|
-    $mnemonics[mnem] = Mnemonic.new(mnem)
+    mnemonics[mnem] = Mnemonic.new(mnem)
 
     mnem_opcode       = (data.key_value["opcode"]==nil)?(def_opcode):(data.key_value["opcode"])
     mnem_cycles       = (data.key_value["cycles"]==nil)?(def_cycles):(data.key_value["cycles"])
@@ -161,44 +61,9 @@ def gen_mnemonics(insblock=$main_block.sub_blocks["instructionset"])
       if m = /^\[([\d\s,+-]*)\]$/.match(opcode)
         opcode=m[1].split(',').collect {|x| x.to_i}
       end
-      $mnemonics[mnem].add_instruction(p, opcode, cycles, modify_flags, set_flags, clear_flags, desc)
+      mnemonics[mnem].add_instruction(mnem, p, opcode, cycles, modify_flags, set_flags, clear_flags, desc)
     }
   }
-  nil
+  mnemonics
 end
-
-def simple_instructionset(iset=$mnemonics)
-  reasons = Array.new
-  iset.each_pair{|mnem,ins|
-    if (ins.max_length != ins.min_length)
-      reasons << mnem 
-    #  puts mnem
-    end
-  }
- # return 1 if reasons.empty?
-  reasons
-end 
-
-def length_hist(iset=$mnemonics)
-  hist = Hash.new
-  hist.default = 0
-  iset.each_pair{|mnem,inst|
-    inst.instructions.each_pair{|params,iblock|
-      hist[iblock.length] += 1; 
-    }
-  }
-  hist.each_pair{|key,value|
-    puts(key.to_s + " => " + value.to_s)
-  }
-end
-
-def analyze(fname)
-  $main_block = Block.new("root_block", nil)
-  $current_block = $main_block
-  loadfile(fname)
-  gen_mnemonics
-  puts simple_instructionset().join(',')
-  length_hist
-end
-
 

@@ -16,15 +16,34 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 =end
 
+require 'jcode'
+
 class Instruction
-  attr_reader :name, :description, :length, :varbits, :parameters
-  attr_reader :cycles, :modify_flags, :set_flags, :clear_flags
+  attr_reader :name, :description, :length, :varbits, :parameters, :prefix
+  attr_reader :cycles, :modify_flags, :set_flags, :clear_flags, :xcode, :pcode
   attr_accessor :key_value, :sub_blocks
 
   def singelton_class
     class << self
       self
     end
+  end
+
+  def is_subinstruction(subinstr)
+    ret = Array.new
+    return nil if subinstr.class != Instruction
+    return []  if subinstr.length != @length
+    return []  if subinstr.varbits > @varbits
+
+    (0...@length).each{|i|
+      if (@pcode[i]== -2) or (@pcode[i]== -1)
+        return [] if subinstr.pcode[i]!=@pcode[i]
+        ret << @pcode[i]
+      else
+        ret << subinstr.pcode[i]
+      end
+    }
+    return ret
   end
 
   def gen_param_code(bin_opcode)
@@ -139,7 +158,8 @@ class Instruction
     bin_opcode
   end # def convert2bincode
 
-  def initialize(parameters, opcode, cycles=1, modify_flags="", set_flags="", clear_flags="", description="")
+  def initialize(name, parameters, opcode, cycles=1, modify_flags="", set_flags="", clear_flags="", description="")
+    @name = name
     if opcode.class == String
       opcode = preparse_opcode(opcode)
       bin_opcode = convert2bincode(opcode)
@@ -162,12 +182,17 @@ class Instruction
       end
       ret
     }
+    @pcode = process_code
+    @xcode = ""
+    bin_opcode.each_char{|x| if (x=="1" or x=="0") then @xcode += x else @xcode += 'x' end}
     @parameters = parameters
     varbits = 0;
     process_code.each{ |x| if (x<=>varbits)==1 then varbits=x end}
-
-    @length = bin_opcode.length;
     @varbits = varbits += 1;
+    @prefix = ""
+    process_code.each{ |x| if (x===(-2..-1)) then prefix + (x+2).to_s else break end}
+     
+    @length = bin_opcode.length;
     @cycles = cycles;
     @modify_flags = modify_flags;
     @set_flags = set_flags;
