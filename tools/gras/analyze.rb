@@ -17,9 +17,28 @@
 =end
 
 require 'gen_assembler.rb'
+require 'gen_disassembler.rb'
 
 
-def simple_instructionset(iset=$mnemonics)
+def count_mnemonics(iset)
+  c = 0
+  iset.each_key{|key|
+    c += 1
+  }
+  c
+end
+
+def count_instructions(iset)
+  c = 0
+  iset.each_value{|instrs|
+    instrs.instructions.each_key{|key|
+      c += 1
+    }
+  }
+  c
+end
+
+def simple_instructionset(iset)
   reasons = Array.new
   iset.each_pair{|mnem,ins|
     if (ins.max_length != ins.min_length)
@@ -31,7 +50,7 @@ def simple_instructionset(iset=$mnemonics)
   reasons
 end 
 
-def length_hist(iset=$mnemonics)
+def length_hist(iset)
   hist = Hash.new
   hist.default = 0
   min = 65536
@@ -49,7 +68,7 @@ def length_hist(iset=$mnemonics)
   [hist,min,max]
 end
 
-def find_subintructions(iset=$mnemonics)
+def find_subintructions(iset)
   iset.each_pair{ |mnem,instrs|
     instrs.instructions.each_pair{ |params,iblock|
 #      puts(mnem + '.' + params + ' : ' + iblock.pcode.join(','))
@@ -115,7 +134,19 @@ def analyze(fname)
   puts 'generating histogram of parameter position usage ...'
   h = gen_parampositionhistogram(mnemonics)
   print_parampositionhistogram(h, lh[2])
-
+  lg2 = Math.log(2)
+  printf( "%3d mnemonics (%f bits) / %3d instructions (%f bits)\n", 
+    count_mnemonics(mnemonics), 
+    Math.log(count_mnemonics(mnemonics))/lg2, 
+    count_instructions(mnemonics),
+    Math.log(count_instructions(mnemonics))/lg2
+  )
+  
+  puts 'searching for disassembler strategy ...'
+  s = find_dasm_strategy(mnemonics,lh[1], 0.15)
+  puts 'generating disassembler primary table ...'
+  dt = build_dasm_table(mnemonics, s)
+  print_dasm_table_infos(dt)
 end
 
 
