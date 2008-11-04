@@ -86,13 +86,17 @@ void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 
 void nl_boot_app ( void )
 {
-	PORTD |= _BV(PD5) | _BV(PD6);
 	#if (NL_VERBOSITY >= 100)
 	nl_tx_packet (NLPROTO_BOOT, NL_ADDRESSSIZE, myaddress);
 	rfm12_tick();
 	#endif
 	
 	cli();
+	
+	//move interrupts back (also disables rfm12 int)
+	GICR = (1 << IVCE);
+	GICR = 0;
+	
 	app_ptr();
 }
 
@@ -107,9 +111,6 @@ int main (void)
 	nl_config myconfig;
 	nl_flashcmd mycmd;
 
-	DDRD |= _BV(PD6) | _BV(PD5);
-	PORTD = 0x00;
-
 	/* fill config variables */
 	myconfig.pagesize = SPM_PAGESIZE;
 	myconfig.rxbufsize = RFM12_RX_BUFFER_SIZE;
@@ -117,16 +118,19 @@ int main (void)
 
 
 	/* read address */
-	for (i=0;i<NL_ADDRESSSIZE;i++)
+	/*for (i=0;i<NL_ADDRESSSIZE;i++)
 	{
 		myaddress[i] = 
 			eeprom_read_byte (
 				(uint8_t *) (((uint8_t) i) + ((uint8_t) NL_ADDRESSPOS)));
-	}
-
+	}*/
+	
+	myaddress[0] = 0xff;
+	
 	/* move interrupt vector table to bootloader section */
 	GICR = (1<<IVCE);
 	GICR = (1<<IVSEL);
+	
 
 	rfm12_init();
 	sei();
@@ -138,6 +142,8 @@ int main (void)
 		{
 			nl_tx_packet (NLPROTO_SLAVE_CONFIG, sizeof(myconfig), (uint8_t *) &myconfig);
 		}
+		
+		
 
 		rfm12_tick();
 		
