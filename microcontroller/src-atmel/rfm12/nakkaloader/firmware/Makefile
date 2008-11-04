@@ -5,7 +5,7 @@ OBJECTS = rfm12.o nl_main.o
 
 # microcontroller and project specific settings (everything can be overridden using config.mk)
 F_CPU = 16000000UL
-MCU = atmega8
+MCU = atmega32
 #CFLAGS += -DBOOTLOADER_DDR=DDRC
 #CFLAGS += -DBOOTLOADER_PORT=PORTC
 #CFLAGS += -DBOOTLOADER_PIN=PINC
@@ -45,13 +45,22 @@ else ifeq ($(MCU),atmega168)
 	# bootloader section starts at 0x1e00 (word-address) == 0x3c00 (byte-address)
 	#BOOT_SECTION_START = 0x3c00
 else ifeq ($(MCU),atmega32)
+	# atmega32 with 2048 words bootloader:
+	# bootloader section starts at 0x3800 (word-address) == 0x7000 (byte-address)
+	BOOT_SECTION_START = 0x7000
+	#BOOTSZ1, BOOTSZ0 -> 0 -> SET, BOOTRST -> 0 -> SET
+	HFUSE = 0xc8
+	LFUSE = 0x9f
+	#
 	# atmega32 with 1024 words bootloader:
 	# bootloader section starts at 0x3c00 (word-address) == 0x7800 (byte-address)
 	#BOOT_SECTION_START = 0x7800
 	#
 	# atmega32 with 512 words bootloader:
 	# bootloader section starts at 0x3e00 (word-address) == 0x7c00 (byte-address)
-	BOOT_SECTION_START = 0x7c00
+	#BOOT_SECTION_START = 0x7c00	
+	#
+	#Fuses for Xtal/16MHz, bootloader at 0x1c00
 else ifeq ($(MCU),atmega644)
 	# atmega644 with 1024 words bootloader:
 	# bootloader section starts at 0x7c00 (word-address) == 0xf800 (byte-address)
@@ -129,10 +138,10 @@ uploadtest: datatestfile.raw
 	@echo "uploading datatestfile"
 	$(AVRDUDE) $(AVRDUDE_FLAGS) -c $(SERIAL_PROG) -s -u -P $(SERIAL_DEV) -U f:w:$<:r
 
-lock:
-	$(AVRDUDE) $(AVRDUDE_FLAGS) -c $(ISP_PROG) -P $(ISP_DEV) -U lock:w:0x2f:m
+#lock:
+#	$(AVRDUDE) $(AVRDUDE_FLAGS) -c $(ISP_PROG) -P $(ISP_DEV) -U lock:w:0x2f:m
 	
 fuse:
-	$(AVRDUDE) $(AVRDUDE_FLAGS) -c $(ISP_PROG) -P $(ISP_DEV) -U hfuse:w:$(HFUSE):m
-	$(AVRDUDE) $(AVRDUDE_FLAGS) -c $(ISP_PROG) -P $(ISP_DEV) -U lfuse:w:$(LFUSE):m
+	$(AVRDUDE) $(AVRDUDE_FLAGS) -c $(ISP_PROG) -U hfuse:w:$(HFUSE):m
+	$(AVRDUDE) $(AVRDUDE_FLAGS) -c $(ISP_PROG) -U lfuse:w:$(LFUSE):m
 
