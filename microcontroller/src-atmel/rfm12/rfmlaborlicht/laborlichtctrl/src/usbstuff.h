@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stdlib.h>
-#include "../../../../../rfm12usb/common/rfm12_buffer_size.h"
+#include "../../../rfm12usb/common/rfm12_buffer_size.h"
 
 typedef struct{
 	unsigned char len;			                       //length byte - number of bytes in buffer

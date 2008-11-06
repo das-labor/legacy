@@ -22,10 +22,10 @@
 
 #include "opendevice.h"
 
-#include "../../../../common/protocol.h"
+#include "../common/protocol.h"
 #include "usb_id.h"
-#include "../../../../../rfm12usb/common/requests.h"
-#include "../../../../../rfm12usb/common/rfm12_buffer_size.h"
+#include "../../../rfm12usb/common/requests.h"
+#include "../../../rfm12usb/common/rfm12_buffer_size.h"
 #include "usbstuff.h"
 
 #define DEFAULT_USB_TIMEOUT 1000
