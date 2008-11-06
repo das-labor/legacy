@@ -1,0 +1,4 @@
+#define RLIGHT_FADETO       0x00
+#define RLIGHT_SETCOLOR     0x01
+
+#define RLIGHT_PACKETTYPE 0xE2
