@@ -74,13 +74,15 @@ void draw_stone(stone_t *stone)
 			pieceLala <<= stone->x;
 
 			//DRUUUUUUUUUUUWWWWWWWWWWWWWWW!!!!!!!!!!! eerrr /U/A/s
-			for (x = 0; x < 16; ++x)
+			ydraw = (stone->y / YSCALE) + y;
+			if((ydraw < NUM_ROWS) && (ydraw > 3)) //drawing begins @ 3, to make piece of height 4 scroll in
 			{
-				ydraw = (stone->y / YSCALE) + y;
-
-				if(pieceLala & (1 << x) && (ydraw < NUM_ROWS))
+				for (x = 0; x < 16; ++x)
 				{
-					setpixel((pixel){ x, ydraw }, stone->color);
+					if(pieceLala & (1 << x))
+					{
+						setpixel((pixel){ x, ydraw - 4 }, stone->color);
+					}
 				}
 			}
 		}	
@@ -97,16 +99,18 @@ void draw_invader(uint8_t ypos, uint8_t xpos)
 			pieceLala = invader[y];
 
 			// shift bitmap line to current x pos (this is nonsense overhead... BUT I LIKE IT!)
-			pieceLala <<= xpos;
+			pieceLala <<= xpos;			
 
 			//DRUUUUUUUUUUUWWWWWWWWWWWWWWW!!!!!!!!!!! eerrr /U/A/s
-			for (x = 0; x < 16; ++x)
+			ydraw = (ypos  / 2) + y;
+			if((ydraw < NUM_ROWS) && (ydraw > (sizeof(invader) - 1))) //drawing begins @ 5, to make invader of height 6 scroll in
 			{
-				ydraw = ypos + y;
-
-				if(pieceLala & (1 << x) && (ydraw < NUM_ROWS))
+				for (x = 0; x < 16; ++x)
 				{
-					setpixel((pixel){ x, ydraw }, 1);
+					if(pieceLala & (1 << x))
+					{
+						setpixel((pixel){ x, ydraw - sizeof(invader) }, 1);
+					}
 				}
 			}
 		}	
@@ -132,7 +136,7 @@ void stonefly(void)
 	while(counter--)
 	{
 		//see if invasion is done!
-		if(invay >= NUM_ROWS)
+		if((invay / 2) >= NUM_ROWS)
 		{
 			invasion = 0;
 		}
