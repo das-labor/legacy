@@ -1,0 +1,888 @@
+=begin
+    8051.ins is part of the GeneRic ASsembler (GRAS)
+    Copyright (C) 2008  Daniel Otte (daniel.otte@rub.de)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+=end
+#
+# This file contains the instruction set and parameter data
+# used to generate a 8051 assembler and disassembler
+#
+#
+
+parameters{
+  first=msb;
+  A{
+    name="A"
+  }
+  B{
+    name="B"
+  }
+  AB{
+    name="AB"
+  }
+  C{
+    name="C"
+  }
+  @DPTR{
+    name="@DPTR"
+  }
+  @Ri{
+    name=@R[0..1];
+    lmap=0..1;
+  }
+  Rn{
+    name=R[0..7];
+    lmap=0..7;
+  }
+  \#data{
+    name=[-128..256]
+    lmap=-128..-1,0..255
+  }
+  addr11{
+    name=[0..2047]
+    lmap=0..2047
+  }
+  addr16{
+    name=[0..65535]
+    lmap=0..65535
+  }
+  rel{
+    name=[-128..127]
+    lmap=-128..127
+  }
+  direct{
+    name=[0.255]
+    lmap=0.255
+  }
+  bit{
+    name=[0.255]
+    lmap=0.255
+  }
+  -bit{
+    name=[0.255]
+    lmap=0.255
+  }
+}  
+
+
+cpu{
+  flags=C,Z,OV,AC;
+  registers=A,B,R[0..7];
+  instruction_size=8,16,24
+}
+
+
+
+instructionset{
+  ACALL{
+    addr11{
+      cycles=24;
+      description="Absolute Subroutine Call";
+      length=2;
+      opcode = 0baaa1.0001_aaaa.aaaa;
+    }
+  }
+
+  ADDC{
+    A,\#data{
+      cycles=12;
+      description="Add immediate data to Accumulator with Carry";
+      length=2;
+      opcode = 0b0011.0100_dddd.dddd;
+    }
+    A,direct{
+      cycles=12;
+      description="Add direct byte to Accumulator with Carry";
+      length=2;
+      opcode = 0b0011.0101_aaaa.aaaa;
+    }
+    A,@Ri{
+      cycles=12;
+      description="Add indirect RAM to Accumulator with Carry";
+      length=1;
+      opcode = 0b0011.011i;
+    }
+    A,Rn{
+      cycles=12;
+      description="Add register to Accumulator with Carry";
+      length=1;
+      opcode = 0b0011.1rrr;
+    }
+  }
+
+  ADD{
+    A,\#data{
+      cycles=12;
+      description="Add immediate data to Accumulator";
+      length=2;
+      opcode = 0b0010.0100_dddd.dddd;
+    }
+    A,direct{
+      cycles=12;
+      description="Add direct byte to Accumulator";
+      length=2;
+      opcode = 0b0010.0101_aaaa.aaaa;
+    }
+    A,@Ri{
+      cycles=12;
+      description="Add indirect RAM to Accumulator";
+      length=1;
+      opcode = 0b0010.011i;
+    }
+    A,Rn{
+      cycles=12;
+      description="Add register to Accumulator";
+      length=1;
+      opcode = 0b0010.1rrr;
+    }
+  }
+
+  AJMP{
+    addr11{
+      cycles=24;
+      description="Absolute Jump";
+      length=2;
+      opcode = 0baaa0.0001_aaaa.aaaa;
+    }
+  }
+
+  ANL{
+    A,\#data{
+      cycles=12;
+      description="AND immediate data to Accumulator";
+      length=2;
+      opcode = 0b0101.0100_dddd.dddd;
+    }
+    A,direct{
+      cycles=12;
+      description="AND direct byte to Accumulator";
+      length=2;
+      opcode = 0b0101.0101_aaaa.aaaa;
+    }
+    A,@Ri{
+      cycles=12;
+      description="AND indirect RAM to Accumulator";
+      length=1;
+      opcode = 0b0101.011i;
+    }
+    A,Rn{
+      cycles=12;
+      description="AND Register to Accumulator";
+      length=1;
+      opcode = 0b0101.1rrr;
+    }
+    C,-bit{
+      cycles=24;
+      description="AND complement of direct bit to Carry";
+      length=2;
+      opcode = 0b1011.0000_bbbb.bbbb;
+    }
+    C,bit{
+      cycles=24;
+      description="AND direct bit to CARRY";
+      length=2;
+      opcode = 0b1000.0010_bbbb.bbbb;
+    }
+    direct,A{
+      cycles=12;
+      description="AND Accumulator to direct byte";
+      length=2;
+      opcode = 0b0101.0010_aaaa.aaaa;
+    }
+    direct,\#data{
+      cycles=24;
+      description="AND immediate data to direct byte";
+      length=3;
+      opcode = 0b0101.0011_aaaa.aaaa_dddd.dddd;
+    }
+  }
+
+  CJNE{
+    A,\#data,rel{
+      cycles=24;
+      description="Compare immediate to Acc and Jump if Not Equal";
+      length=3;
+      opcode = 0b1011.0100_dddd.dddd_rrrr.rrrr;
+    }
+    A,direct,rel{
+      cycles=24;
+      description="Compare direct byte to Acc and Jump if Not Equal";
+      length=3;
+      opcode = 0b1011.0101_aaaa.aaaa_rrrr.rrrr;
+    }
+    @Ri,\#data,rel{
+      cycles=24;
+      description="Compare immediate to indirect and Jump if Not Equal";
+      length=3;
+      opcode = 0b1011.011a_dddd.dddd_rrrr.rrrr;
+    }
+    Rn,\#data,rel{
+      cycles=24;
+      description="Compare immediate to register and Jump if Not Equal";
+      length=3;
+      opcode = 0b1011.1aaa_dddd.dddd_rrrr.rrrr;
+    }
+  }
+
+  CLR{
+    A{
+      cycles=12;
+      description="Clear Accumulator";
+      length=1;
+      opcode = 0b1110.0100;
+    }
+    bit{
+      cycles=12;
+      description="Clear direct bit";
+      length=2;
+      opcode = 0b1100.0010_bbbb.bbbb;
+    }
+    C{
+      cycles=12;
+      description="Clear Carry";
+      length=1;
+      opcode = 0b1100.0011;
+    }
+  }
+
+  CPL{
+    A{
+      cycles=12;
+      description="Complement Accumulator";
+      length=1;
+      opcode = 0b1111.0100;
+    }
+    bit{
+      cycles=12;
+      description="Complement direct bit";
+      length=2;
+      opcode = 0b1011.0010_bbbb.bbbb;
+    }
+    C{
+      cycles=12;
+      description="Complement Carry";
+      length=1;
+      opcode = 0b1011.0011;
+    }
+  }
+
+  DA{
+    A{
+      cycles=12;
+      description="Decimal Adjust Accumulator";
+      length=1;
+      opcode = 0b1101.0100;
+    }
+  }
+
+  DEC{
+    A{
+      cycles=12;
+      description="Decrement Accumulator";
+      length=1;
+      opcode = 0b0001.0100;
+    }
+    direct{
+      cycles=12;
+      description="Decrement direct byte";
+      length=2;
+      opcode = 0b0001.0101_aaaa.aaaa;
+    }
+    @Ri{
+      cycles=12;
+      description="Decrement indirect RAM";
+      length=1;
+      opcode = 0b0001.011i;
+    }
+    Rn{
+      cycles=12;
+      description="Decrement Register";
+      length=1;
+      opcode = 0b0001.1rrr;
+    }
+  }
+
+  DIV{
+    AB{
+      cycles=48;
+      description="Divide A by B";
+      length=1;
+      opcode = 0b1000.0100;
+    }
+  }
+
+  DJNZ{
+    direct,rel{
+      cycles=24;
+      description="Decrement direct byte and Jump if Not Zero";
+      length=3;
+      opcode = 0b1101.0101_aaaa.aaaa_rrrr.rrrr;
+    }
+    Rn,rel{
+      cycles=24;
+      description="Decrement register and Jump if Not Zero";
+      length=2;
+      opcode = 0b1101.1aaa_rrrr.rrrr;
+    }
+  }
+
+  INC{
+    A{
+      cycles=12;
+      description="Increment Accumulator";
+      length=1;
+      opcode = 0b0000.0100;
+    }
+    direct{
+      cycles=12;
+      description="Increment direct byte";
+      length=2;
+      opcode = 0b0000.0101_aaaa.aaaa;
+    }
+    DPTR{
+      cycles=24;
+      description="Increment Data Pointer";
+      length=1;
+      opcode = 0b1010.0011;
+    }
+    @Ri{
+      cycles=12;
+      description="Increment direct RAM";
+      length=1;
+      opcode = 0b0000.011i;
+    }
+    Rn{
+      cycles=12;
+      description="Increment register";
+      length=1;
+      opcode = 0b0000.1rrr;
+    }
+  }
+
+  JBC{
+    bit,rel{
+      cycles=24;
+      description="Jump if direct Bit is set clear bit";
+      length=3;
+      opcode = 0b0001.0000_bbbb.bbbb_rrrr.rrrr;
+    }
+  }
+
+  JB{
+    bit,rel{
+      cycles=24;
+      description="Jump if direct Bit is set";
+      length=3;
+      opcode = 0b0010.0000_bbbb.bbbb_rrrr.rrrr;
+    }
+  }
+
+  JC{
+    rel{
+      cycles=24;
+      description="Jump if Carry is set";
+      length=2;
+      opcode = 0b0100.0000_rrrr.rrrr;
+    }
+  }
+
+  JMP{
+    @A+DPTR{
+      cycles=24;
+      description="Jump indirect relative to the DPTR";
+      length=1;
+      opcode = 0b0111.0011;
+    }
+  }
+
+  JNB{
+    bit,rel{
+      cycles=24;
+      description="Jump if direct Bit is Not set";
+      length=3;
+      opcode = 0b0011.0000_bbbb.bbbb_rrrr.rrrr;
+    }
+  }
+
+  JNC{
+    rel{
+      cycles=24;
+      description="Jump if Carry not set";
+      length=2;
+      opcode = 0b0101.0000_rrrr.rrrr;
+    }
+  }
+
+  JNZ{
+    rel{
+      cycles=24;
+      description="Jump if Accumulator is Not Zero";
+      length=2;
+      opcode = 0b0111.0000_rrrr.rrrr;
+    }
+  }
+
+  JZ{
+    rel{
+      cycles=24;
+      description="Jump if Accumulator is Zero";
+      length=2;
+      opcode = 0b0110.0000_rrrr.rrrr;
+    }
+  }
+
+  LCALL{
+    addr16{
+      cycles=24;
+      description="Long Subroutine Call";
+      length=3;
+      opcode = 0b0001.0010_aaaa.aaaa_aaaa.aaaa;
+    }
+  }
+
+  LJMP{
+    addr16{
+      cycles=24;
+      description="Long Jump";
+      length=3;
+      opcode = 0b0000.0010_aaaa.aaaa_aaaa.aaaa;
+    }
+  }
+
+  MOVC{
+    A,@A+DPTR{
+      cycles=24;
+      description="Move Code byte relative to DPTR to Accumulator";
+      length=1;
+      opcode = 0b1001.0011;
+    }
+    A,@A+PC{
+      cycles=24;
+      description="Move Code byte relative to PC to Accumulator";
+      length=1;
+      opcode = 0b1000.0011;
+    }
+  }
+
+  MOV{
+    A,\#data{
+      cycles=12;
+      description="Move immediate data to Accumulator";
+      length=2;
+      opcode = 0b0111.0100_dddd.dddd;
+    }
+    A,direct{
+      cycles=12;
+      description="Move direct byte to Accumulator";
+      length=2;
+      opcode = 0b1110.0101_aaaa.aaaa;
+    }
+    A,@Ri{
+      cycles=12;
+      description="Move indirect RAM to Accumulator";
+      length=1;
+      opcode = 0b1110.011i;
+    }
+    A,Rn{
+      cycles=12;
+      description="Move register to Accumulator";
+      length=1;
+      opcode = 0b1110.1rrr;
+    }
+    bit,C{
+      cycles=24;
+      description="Move Carry to direct bit";
+      length=2;
+      opcode = 0b1001.0010_bbbb.bbbb;
+    }
+    C,bit{
+      cycles=12;
+      description="Move direct bit to Carry";
+      length=2;
+      opcode = 0b1010.0010_bbbb.bbbb;
+    }
+    direct,A{
+      cycles=12;
+      description="Move Accumulator to direct byte";
+      length=2;
+      opcode = 0b1111.0101_aaaa.aaaa;
+    }
+    direct,\#data{
+      cycles=24;
+      description="Move immediate data to direct byte";
+      length=3;
+      opcode = 0b0111.0101_aaaa.aaaa_dddd.dddd;
+    }
+    direct,direct{
+      cycles=24;
+      description="Move direct byte to direct";
+      length=3;
+      opcode = 0b1000.0101_aaaa.aaaa_dddd.dddd;
+    }
+    direct,@Ri{
+      cycles=24;
+      description="Move indirect RAM to direct byte";
+      length=2;
+      opcode = 0b1000.011i_aaaa.aaaa;
+    }
+    direct,Rn{
+      cycles=24;
+      description="Move register to direct byte";
+      length=2;
+      opcode = 0b1000.1rrr_aaaa.aaaa;
+    }
+    DPTR,\#data16{
+      cycles=24;
+      description="Load Data Pointer with a 16-bit constant";
+      length=3;
+      opcode = 0b1001.0000_dddd.dddd_dddd.dddd;
+    }
+    @Ri,A{
+      cycles=12;
+      description="Move Accumulator to indirect RAM";
+      length=1;
+      opcode = 0b1111.011i;
+    }
+    @Ri,\#data{
+      cycles=12;
+      description="Move immediate data to indirect RAM";
+      length=2;
+      opcode = 0b0111.011i_zzzz.zzzz;
+    }
+    @Ri,direct{
+      cycles=24;
+      description="Move direct byte to indirect RAM";
+      length=2;
+      opcode = 0b1010.011i_zzzz.zzzz;
+    }
+    Rn,A{
+      cycles=12;
+      description="Move Accumulator to register";
+      length=1;
+      opcode = 0b1111.1rrr;
+    }
+    Rn,\#data{
+      cycles=12;
+      description="Move immediate data to register";
+      length=2;
+      opcode = 0b0111.1rrr_zzzz.zzzz;
+    }
+    Rn,direct{
+      cycles=24;
+      description="Move direct byte to register";
+      length=2;
+      opcode = 0b1010.1rrr_zzzz.zzzz;
+    }
+  }
+
+  MOVX{
+    A,@DPTR{
+      cycles=24;
+      description="Move Exernal RAM (16-bit addr) to Accumulator";
+      length=1;
+      opcode = 0b1110.0000;
+    }
+    A,@Ri{
+      cycles=24;
+      description="Move External RAM (8-bit addr) to Accumulator";
+      length=1;
+      opcode = 0b1110.001i;
+    }
+    @DPTR,A{
+      cycles=24;
+      description="Move Acc to External RAM (16-bit addr)";
+      length=1;
+      opcode = 0b1111.0000;
+    }
+    @Ri,A{
+      cycles=24;
+      description="Move Acc to External RAM (8-bit addr)";
+      length=1;
+      opcode = 0b1111.001i;
+    }
+  }
+
+  MUL{
+    AB{
+      cycles=48;
+      description="Multiply A & B";
+      length=1;
+      opcode = 0b1010.0100;
+    }
+  }
+
+  NOP{
+    none{
+      cycles=12;
+      description="No Operation";
+      length=1;
+      opcode = 0b0000.0000;
+    }
+  }
+
+  ORL{
+    A,\#data{
+      cycles=12;
+      description="OR immediate data to Accumulator";
+      length=2;
+      opcode = 0b0100.0100_dddd.dddd;
+    }
+    A,direct{
+      cycles=12;
+      description="OR direct byte to Accumulator";
+      length=2;
+      opcode = 0b0100.0101_aaaa.aaaa;
+    }
+    A,@Ri{
+      cycles=12;
+      description="OR indirect RAM to Accumulator";
+      length=1;
+      opcode = 0b0100.011i;
+    }
+    A,Rn{
+      cycles=12;
+      description="OR register to Accumulator";
+      length=1;
+      opcode = 0b0100.1rrr;
+    }
+    C,-bit{
+      cycles=24;
+      description="OR complement of direct bit to Carry";
+      length=2;
+      opcode = 0b1010.0000_bbbb.bbbb;
+    }
+    C,bit{
+      cycles=24;
+      description="OR direct bit to Carry";
+      length=2;
+      opcode = 0b0111.0010_bbbb.bbbb;
+    }
+    direct,A{
+      cycles=12;
+      description="OR Accumulator to direct byte";
+      length=2;
+      opcode = 0b0100.0010_aaaa.aaaa;
+    }
+    direct,\#data{
+      cycles=24;
+      description="OR immediate data to direct byte";
+      length=3;
+      opcode = 0b0100.0011_aaaa.aaaa_dddd.dddd;
+    }
+  }
+
+  POP{
+    direct{
+      cycles=24;
+      description="Pop direct byte from stack";
+      length=2;
+      opcode = 0b1101.0000_aaaa.aaaa;
+    }
+  }
+
+  PUSH{
+    direct{
+      cycles=24;
+      description="Push direct byte onto stack";
+      length=2;
+      opcode = 0b1100.0000_aaaa.aaaa;
+    }
+  }
+
+  RETI{
+    none{
+      cycles=24;
+      description="Return from interrupt";
+      length=1;
+      opcode = 0b0011.0010;
+    }
+  }
+
+  RET{
+    none{
+      cycles=24;
+      description="Return from Subroutine";
+      length=1;
+      opcode = 0b0010.0010;
+    }
+  }
+
+  RLC{
+    A{
+      cycles=12;
+      description="Rotate Accumulator Left through the Carry";
+      length=1;
+      opcode = 0b0011.0011;
+    }
+  }
+
+  RL{
+    A{
+      cycles=12;
+      description="Rotate Accumulator Left";
+      length=1;
+      opcode = 0b0010.0011;
+    }
+  }
+
+  RRC{
+    A{
+      cycles=12;
+      description="Rotate Accumulator Right through the Carry";
+      length=1;
+      opcode = 0b0001.0011;
+    }
+  }
+
+  RR{
+    A{
+      cycles=12;
+      description="Rotate Accumulator Right";
+      length=1;
+      opcode = 0b0000.0011;
+    }
+  }
+
+  SETB{
+    bit{
+      cycles=12;
+      description="Set direct bit";
+      length=2;
+      opcode = 0b1101.0010_bbbb.bbbb;
+    }
+    C{
+      cycles=12;
+      description="Set Carry";
+      length=1;
+      opcode = 0b1101.0011;
+    }
+  }
+
+  SJMP{
+    rel{
+      cycles=24;
+      description="Short Jump (relative addr)";
+      length=2;
+      opcode = 0b1000.0000_rrrr.rrrr;
+    }
+  }
+
+  SUBB{
+    A,\#data{
+      cycles=12;
+      description="Subtract immediate data from  Accumulator with borrow";
+      length=2;
+      opcode = 0b1001.0100;
+    }
+    A,direct{
+      cycles=12;
+      description="Subtract direct byte from Accumulator with borrow";
+      length=2;
+      opcode = 0b1001.0101;
+    }
+    A,@Ri{
+      cycles=12;
+      description="Subtract indirect RAM from Accumulator with borrow";
+      length=1;
+      opcode = 0b1001.011i;
+    }
+    A,Rn{
+      cycles=12;
+      description="Subtract Register from Accumulator with borrow";
+      length=1;
+      opcode = 0b1001.1rrr;
+    }
+  }
+
+  SWAP{
+    A{
+      cycles=12;
+      description="Swap nibbles within the Accumulator";
+      length=1;
+      opcode = 0b1100.0100;
+    }
+  }
+
+  XCHD{
+    A,@Ri{
+      cycles=12;
+      description="Exchange low-order Digit indirect RAM with Accumulator";
+      length=1;
+      opcode = 0b1101.011i;
+    }
+  }
+
+  XCH{
+    A,direct{
+      cycles=12;
+      description="Exchange direct byte with Accumulator";
+      length=2;
+      opcode = 0b1100.0101_aaaa.aaaa;
+    }
+    A,@Ri{
+      cycles=12;
+      description="Exchange indirect RAM with Accumulator";
+      length=1;
+      opcode = 0b1100.011i;
+    }
+    A,Rn{
+      cycles=12;
+      description="Exchange register with Accumulator";
+      length=1;
+      opcode = 0b1100.1rrr;
+    }
+  }
+
+  XRL{
+    A,\#data{
+      cycles=12;
+      description="Exclusive-OR immediate data to Accumulator";
+      length=2;
+      opcode = 0b0110.0100_dddd.dddd;
+    }
+    A,direct{
+      cycles=12;
+      description="Exclusive-OR direct byte to Accumulator";
+      length=2;
+      opcode = 0b0110.0101_aaaa.aaaa;
+    }
+    A,@Ri{
+      cycles=12;
+      description="Exclusive-OR indirect RAM to Accumulator";
+      length=1;
+      opcode = 0b0110.011i;
+    }
+    A,Rn{
+      cycles=12;
+      description="Exclusive-OR register to Accumulator";
+      length=1;
+      opcode = 0b0110.1rrr;
+    }
+    direct,A{
+      cycles=12;
+      description="Exclusive-OR Accumulator to direct byte";
+      length=2;
+      opcode = 0b0110.0010_aaaa.aaaa;
+    }
+    direct,\#data{
+      cycles=24;
+      description="Exclusive-OR immediate data to direct byte";
+      length=3;
+      opcode = 0b0110.0011_aaaa.aaaa_dddd.dddd;
+    }
+  }
+}
+
+

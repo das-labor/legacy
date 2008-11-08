@@ -25,6 +25,8 @@ require 'analyze.rb'
 strategy_thesh = 0.15 # 15%
 
 class Bucket < Array
+  attr_accessor :strategy
+
 end
 
 class DasmStrategy
@@ -55,7 +57,7 @@ class DasmStrategy
   end
 end
 
-def find_dasm_strategy(iset, length, thresh)
+def find_dasm_strategy(iset, length, thresh, strategy_mask=[])
   h = gen_parampositionhistogram(iset)
   strategy= Array.new
   (0...length).each{|i|
@@ -63,17 +65,21 @@ def find_dasm_strategy(iset, length, thresh)
       strategy << i
     end
   }
+  strategy_mask.each { |mitem|
+    strategy.delete(mitem)
+  }
   strategy
 end
 
 def build_dasm_table(iset, strategy)
   s = DasmStrategy.new(strategy)
-  table = Array.new(2**strategy.length){|i| Array.new}
+  table = Bucket.new(2**strategy.length){|i| Bucket.new}
+  table.strategy= strategy
   iset.each_pair{|mnem,instrs|
     instrs.instructions.each_pair{|params,iblock|
       s.pcode_iter(iblock.pcode){ |i|
 #        puts mnem +'.'+params+': pcode= '+iblock.pcode.join(',')+'  code:'+i.to_s
-	table[i] = Array.new if table[i]==nil
+	table[i] = Bucket.new if table[i]==nil
         table[i] << iblock
       }
       
@@ -82,12 +88,39 @@ def build_dasm_table(iset, strategy)
   table
 end
 
-def print_dasm_table_infos(table)
+def auto_build_dasm_table(iset, length, thresh=0.15, per_bucket_limit=10)
+  s = find_dasm_strategy(iset, length, thresh)
+#  puts 'strategy: ' + s.join(',')
+  t = build_dasm_table(iset, s)
+  t.each_with_index{|bucket,index|
+    if bucket.length >= per_bucket_limit
+      bucket_iset = Hash.new
+      bucket.each{|iblock|
+        bucket_iset[iblock.name] = Mnemonic.new(iblock.name)
+        bucket_iset[iblock.name].add_instruction_direct(iblock)
+      }
+      subs = find_dasm_strategy(bucket_iset, length, thresh, s)
+#      puts 'substrategy: ' + subs.join(',')
+      t[index] = Bucket.new
+      t[index].strategy = subs
+      t[index] = build_dasm_table(bucket_iset, subs)
+    end
+  }
+  t
+end
+
+def print_dasm_table_infos(table,spacing=0)
+  puts ' '*spacing + 'strategy: ' + table.strategy.join(',')
   table.each_with_index{|bucket,index|
     if bucket!=nil
-      printf '[%03d](% 5d): ', index, bucket.length
-      s = bucket.collect{|b| b.name+'.'+b.parameters.join(',')}
-      puts s.join(';')
+      printf ' '*spacing+'[%03d](% 3d): ', index, bucket.length  if bucket.length>0
+      if bucket[0].class == Bucket
+        puts 'subcluster' 
+        print_dasm_table_infos(bucket,spacing+3)
+      else
+        s = bucket.collect{|b| b.name+'.'+b.parameters.join(',')}
+        puts s.join('; ') if bucket.length>0
+      end
     end
   }
   nil
