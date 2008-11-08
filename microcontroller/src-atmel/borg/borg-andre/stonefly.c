@@ -10,6 +10,16 @@
 
 //this is hackish, i'll be drunk in a couple of minutes; no comments.
 
+/* space invader
+001000100 0x0044
+101111101 0x017D
+110111011 0x01BB
+011111110 0x00FE
+010000010 0x0082
+*/
+
+uint16_t invader[] = {0x0044, 0x017D, 0x01BB, 0x01BB, 0x00FE, 0x0082};
+
 typedef struct
 {
 	uint8_t x;
@@ -31,7 +41,8 @@ void create_stone(stone_t *stone)
 	stone->y = 0;
 
 	//random x
-	stone->x = random8() % NUM_COLS;	
+	//4 is piece width
+	stone->x = random8() % (NUM_COLS - 4);	
 
 	//random shape at random angle (untyped enums rock! yay!)
 	stone->piece.shape = random8() % 7;
@@ -59,7 +70,7 @@ void draw_stone(stone_t *stone)
 			// -> translates to: get the correct row out of the bitmap and right-align
 			pieceLala = (nPieceMap & (0x000F << (y << 2))  ) >> (y << 2);
 
-			// shift bitmap line to current x pos
+			// shift bitmap line to current x pos (this can be done faster... BUT I WANT IT SO!)
 			pieceLala <<= stone->x;
 
 			//DRUUUUUUUUUUUWWWWWWWWWWWWWWW!!!!!!!!!!! eerrr /U/A/s
@@ -69,7 +80,31 @@ void draw_stone(stone_t *stone)
 
 				if(pieceLala & (1 << x) && (ydraw < NUM_ROWS))
 				{
-					setpixel((pixel){ x, ydraw}, stone->color);
+					setpixel((pixel){ x, ydraw }, stone->color);
+				}
+			}
+		}	
+}
+
+
+void draw_invader(uint8_t ypos, uint8_t xpos)
+{
+		uint8_t y, x, ydraw;
+		uint16_t pieceLala;
+
+		for(y = 0; y < sizeof(invader); y++)
+		{
+			// shift bitmap line to current x pos (this is nonsense overhead... BUT I LIKE IT!)
+			pieceLala <<= xpos;
+
+			//DRUUUUUUUUUUUWWWWWWWWWWWWWWW!!!!!!!!!!! eerrr /U/A/s
+			for (x = 0; x < 16; ++x)
+			{
+				ydraw = ypos + y;
+
+				if(pieceLala & (1 << x) && (ydraw < NUM_ROWS))
+				{
+					setpixel((pixel){ x, ydraw }, 2);
 				}
 			}
 		}	
@@ -82,19 +117,35 @@ void stonefly(void)
 	uint8_t i;
 	stone_t stones[MAX_STONES];
 	uint8_t stoneCount = 0;
-	uint16_t counter = 6222; /* run 622 cycles */
+	uint16_t counter = 622; /* run 622 cycles */
+	uint8_t invax, invay, invasion = 0;
 
 	//init all stones to zero
 	for(i = 0; i < MAX_STONES; i++)
 	{
-		stones[i].speed = 0;		
+		stones[i].speed = 0;
 	}
 
 	//main loop
 	while(counter--)
 	{
+		//see if invasion is done!
+		if(invay >= NUM_ROWS)
+		{
+			invasion = 0;
+		}
+
 		//clear scruuuun!
 		clear_screen(0);
+
+		//invade screen!!!
+		if(invasion)
+		{
+			draw_invader(invax, invay);
+
+			//advancarrrr
+			invay++;
+		}
 
 		//loop through all stones
 		for(i = 0; i < stoneCount; i++)
@@ -122,6 +173,15 @@ void stonefly(void)
 			if(random8() < 48)
 			{
 				create_stone(&stones[stoneCount++]);
+			}
+
+			//invasion time!!!
+			if(random8() < 8)
+			{
+				//9 is invader width
+				invax = random8() % (NUM_COLS - 9);
+				invay = 0;
+				invasion = 1;
 			}
 		}
 
