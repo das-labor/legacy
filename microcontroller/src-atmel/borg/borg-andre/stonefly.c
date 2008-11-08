@@ -106,7 +106,7 @@ void draw_invader(uint8_t ypos, uint8_t xpos)
 
 				if(pieceLala & (1 << x) && (ydraw < NUM_ROWS))
 				{
-					setpixel((pixel){ x, ydraw }, 2);
+					setpixel((pixel){ x, ydraw }, 1);
 				}
 			}
 		}	
@@ -143,7 +143,7 @@ void stonefly(void)
 		//invade screen!!!
 		if(invasion)
 		{
-			draw_invader(invax, invay);
+			draw_invader(invay, invax);
 
 			//advancarrrr
 			invay++;
