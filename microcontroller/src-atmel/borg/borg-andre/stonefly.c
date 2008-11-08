@@ -94,7 +94,7 @@ void draw_invader(uint8_t ypos, uint8_t xpos)
 		uint8_t y, x, ydraw;
 		uint16_t pieceLala;
 
-		for(y = 0; y < sizeof(invader); y++)
+		for(y = 0; y < 6; y++)
 		{
 			pieceLala = invader[y];
 
@@ -182,7 +182,7 @@ void stonefly(void)
 			}
 
 			//invasion time!!!
-			if(random8() < 8)
+			if((random8() < 8) && (invasion == 0))
 			{
 				//9 is invader width
 				invax = random8() % (NUM_COLS - 9);
