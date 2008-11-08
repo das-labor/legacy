@@ -80,7 +80,7 @@ void stonefly(void)
 	uint8_t i;
 	stone_t stones[MAX_STONES];
 	uint8_t stoneCount = 0;
-	uint16_t counter = 500; /* run 500 cycles */
+	uint16_t counter = 6222; /* run 622 cycles */
 
 	//init all stones to zero
 	for(i = 0; i < MAX_STONES; i++)
@@ -101,7 +101,7 @@ void stonefly(void)
 			if((stones[i].y / YSCALE) >= NUM_ROWS)
 			{
 				//DIEEEE!!
-				stones[i] = stones[(stoneCount--) - 1];
+				stones[i] = stones[--stoneCount];
 				continue;
 			}
 
@@ -113,11 +113,11 @@ void stonefly(void)
 		}
 
 		//if there are less than max_stones flying, there's a chance to spawn one
-		if(stoneCount < MAX_STONES)	
+		if(stoneCount <= MAX_STONES)	
 		{
 			if(random8() < 48)
 			{
-				create_stone(&stones[++stoneCount]);
+				create_stone(&stones[stoneCount++]);
 			}
 		}
 
