@@ -1,0 +1,620 @@
+instructionset{
+  INDEX{
+    none{
+      modify_flags = Z;
+      opcode = 0xFx;
+    }
+  }
+  JNZ{
+    none{
+      modify_flags = ;
+      opcode = 0xBx;
+    }
+  }
+  ASR{
+    A{
+      modify_flags = CZ;
+      opcode = 0x67;
+    }
+    [X+expr]{
+      modify_flags = CZ;
+      opcode = 0x69;
+    }
+    [expr]{
+      modify_flags = CZ;
+      opcode = 0x68;
+    }
+  }
+  MVI{
+    A,[[expr]++]{
+      modify_flags = Z;
+      opcode = 0x3E;
+    }
+    [[expr]++],A{
+      modify_flags = ;
+      opcode = 0x3F;
+    }
+  }
+  SUB{
+    [expr],A{
+      modify_flags = CZ;
+      opcode = 0x14;
+    }
+    [X+expr],A{
+      modify_flags = CZ;
+      opcode = 0x15;
+    }
+    A,expr{
+      modify_flags = CZ;
+      opcode = 0x11;
+    }
+    A,[X+expr]{
+      modify_flags = CZ;
+      opcode = 0x13;
+    }
+    A,[expr]{
+      modify_flags = CZ;
+      opcode = 0x12;
+    }
+    [X+expr],expr{
+      modify_flags = CZ;
+      opcode = 0x17;
+    }
+    [expr],expr{
+      modify_flags = CZ;
+      opcode = 0x16;
+    }
+  }
+  ADC{
+    [expr],A{
+      modify_flags = CZ;
+      opcode = 0x0C;
+    }
+    [X+expr],A{
+      modify_flags = CZ;
+      opcode = 0x0D;
+    }
+    A,expr{
+      modify_flags = CZ;
+      opcode = 0x09;
+    }
+    A,[X+expr]{
+      modify_flags = CZ;
+      opcode = 0x0B;
+    }
+    A,[expr]{
+      modify_flags = CZ;
+      opcode = 0x0A;
+    }
+    [X+expr],expr{
+      modify_flags = CZ;
+      opcode = 0x0F;
+    }
+    [expr],expr{
+      modify_flags = CZ;
+      opcode = 0x0E;
+    }
+  }
+  RET{
+    none{
+      modify_flags = ;
+      opcode = 0x7F;
+    }
+  }
+  HALT{
+    none{
+      modify_flags = ;
+      opcode = 0x30;
+    }
+  }
+  AND{
+    reg[expr],expr{
+      modify_flags = Z;
+      opcode = 0x41;
+    }
+    [expr],A{
+      modify_flags = Z;
+      opcode = 0x24;
+    }
+    [X+expr],A{
+      modify_flags = Z;
+      opcode = 0x25;
+    }
+    A,expr{
+      modify_flags = Z;
+      opcode = 0x21;
+    }
+    F,expr{
+      modify_flags = CZ;
+      opcode = 0x70;
+    }
+    A,[X+expr]{
+      modify_flags = Z;
+      opcode = 0x23;
+    }
+    A,[expr]{
+      modify_flags = Z;
+      opcode = 0x22;
+    }
+    [X+expr],expr{
+      modify_flags = Z;
+      opcode = 0x27;
+    }
+    reg[X+expr],expr{
+      modify_flags = Z;
+      opcode = 0x42;
+    }
+    [expr],expr{
+      modify_flags = Z;
+      opcode = 0x26;
+    }
+  }
+  ADD{
+    [expr],A{
+      modify_flags = CZ;
+      opcode = 0x04;
+    }
+    [X+expr],A{
+      modify_flags = CZ;
+      opcode = 0x05;
+    }
+    A,expr{
+      modify_flags = CZ;
+      opcode = 0x01;
+    }
+    A,[X+expr]{
+      modify_flags = CZ;
+      opcode = 0x03;
+    }
+    A,[expr]{
+      modify_flags = CZ;
+      opcode = 0x02;
+    }
+    [X+expr],expr{
+      modify_flags = CZ;
+      opcode = 0x07;
+    }
+    SP,expr{
+      modify_flags = ;
+      opcode = 0x38;
+    }
+    [expr],expr{
+      modify_flags = CZ;
+      opcode = 0x06;
+    }
+  }
+  JMP{
+    none{
+      modify_flags = ;
+      opcode = 0x8x;
+    }
+  }
+  DEC{
+    A{
+      modify_flags = CZ;
+      opcode = 0x78;
+    }
+    X{
+      modify_flags = CZ;
+      opcode = 0x79;
+    }
+    [X+expr]{
+      modify_flags = CZ;
+      opcode = 0x7B;
+    }
+    [expr]{
+      modify_flags = CZ;
+      opcode = 0x7A;
+    }
+  }
+  JC{
+    none{
+      modify_flags = ;
+      opcode = 0xCx;
+    }
+  }
+  RRC{
+    A{
+      modify_flags = CZ;
+      opcode = 0x6D;
+    }
+    [X+expr]{
+      modify_flags = CZ;
+      opcode = 0x6F;
+    }
+    [expr]{
+      modify_flags = CZ;
+      opcode = 0x6E;
+    }
+  }
+  OR{
+    reg[expr],expr{
+      modify_flags = Z;
+      opcode = 0x43;
+    }
+    [expr],A{
+      modify_flags = Z;
+      opcode = 0x2C;
+    }
+    [X+expr],A{
+      modify_flags = Z;
+      opcode = 0x2D;
+    }
+    A,expr{
+      modify_flags = Z;
+      opcode = 0x29;
+    }
+    F,expr{
+      modify_flags = CZ;
+      opcode = 0x71;
+    }
+    A,[X+expr]{
+      modify_flags = Z;
+      opcode = 0x2B;
+    }
+    A,[expr]{
+      modify_flags = Z;
+      opcode = 0x2A;
+    }
+    [X+expr],expr{
+      modify_flags = Z;
+      opcode = 0x2F;
+    }
+    reg[X+expr],expr{
+      modify_flags = Z;
+      opcode = 0x44;
+    }
+    [expr],expr{
+      modify_flags = Z;
+      opcode = 0x2E;
+    }
+  }
+  SSC{
+    none{
+      modify_flags = ;
+      opcode = 0x00;
+    }
+  }
+  ASL{
+    A{
+      modify_flags = CZ;
+      opcode = 0x64;
+    }
+    [X+expr]{
+      modify_flags = CZ;
+      opcode = 0x66;
+    }
+    [expr]{
+      modify_flags = CZ;
+      opcode = 0x65;
+    }
+  }
+  NOP{
+    none{
+      modify_flags = ;
+      opcode = 0x40;
+    }
+  }
+  JACC{
+    none{
+      modify_flags = ;
+      opcode = 0xEx;
+    }
+  }
+  JZ{
+    none{
+      modify_flags = ;
+      opcode = 0xAx;
+    }
+  }
+  LJMP{
+    none{
+      modify_flags = ;
+      opcode = 0x7D;
+    }
+  }
+  XOR{
+    reg[expr],expr{
+      modify_flags = Z;
+      opcode = 0x45;
+    }
+    [expr],A{
+      modify_flags = Z;
+      opcode = 0x34;
+    }
+    [X+expr],A{
+      modify_flags = Z;
+      opcode = 0x35;
+    }
+    A,expr{
+      modify_flags = Z;
+      opcode = 0x31;
+    }
+    F,expr{
+      modify_flags = CZ;
+      opcode = 0x72;
+    }
+    A,[X+expr]{
+      modify_flags = Z;
+      opcode = 0x33;
+    }
+    A,[expr]{
+      modify_flags = Z;
+      opcode = 0x32;
+    }
+    [X+expr],expr{
+      modify_flags = Z;
+      opcode = 0x37;
+    }
+    reg[X+expr],expr{
+      modify_flags = Z;
+      opcode = 0x46;
+    }
+    [expr],expr{
+      modify_flags = Z;
+      opcode = 0x36;
+    }
+  }
+  CMP{
+    A,expr{
+      modify_flags = ZC;
+      opcode = 0x39;
+    }
+    A,[X+expr]{
+      modify_flags = ZC;
+      opcode = 0x3B;
+    }
+    A,[expr]{
+      modify_flags = ZC;
+      opcode = 0x3A;
+    }
+    [X+expr],expr{
+      modify_flags = ZC;
+      opcode = 0x3D;
+    }
+    [expr],expr{
+      modify_flags = ZC;
+      opcode = 0x3C;
+    }
+  }
+  POP{
+    A{
+      modify_flags = Z;
+      opcode = 0x18;
+    }
+    X{
+      modify_flags = ;
+      opcode = 0x20;
+    }
+  }
+  CALL{
+    none{
+      modify_flags = ;
+      opcode = 0x9x;
+    }
+  }
+  RETI{
+    none{
+      modify_flags = CZ;
+      opcode = 0x7E;
+    }
+  }
+  INC{
+    A{
+      modify_flags = CZ;
+      opcode = 0x74;
+    }
+    X{
+      modify_flags = CZ;
+      opcode = 0x75;
+    }
+    [X+expr]{
+      modify_flags = CZ;
+      opcode = 0x77;
+    }
+    [expr]{
+      modify_flags = CZ;
+      opcode = 0x76;
+    }
+  }
+  SWAP{
+    A,SP{
+      modify_flags = Z;
+      opcode = 0x4E;
+    }
+    A,X{
+      modify_flags = Z;
+      opcode = 0x4B;
+    }
+    X,[expr]{
+      modify_flags = ;
+      opcode = 0x4D;
+    }
+    A,[expr]{
+      modify_flags = Z;
+      opcode = 0x4C;
+    }
+  }
+  ROMX{
+    none{
+      modify_flags = Z;
+      opcode = 0x28;
+    }
+  }
+  SBB{
+    [expr],A{
+      modify_flags = CZ;
+      opcode = 0x1C;
+    }
+    [X+expr],A{
+      modify_flags = CZ;
+      opcode = 0x1D;
+    }
+    A,expr{
+      modify_flags = CZ;
+      opcode = 0x19;
+    }
+    A,[X+expr]{
+      modify_flags = CZ;
+      opcode = 0x1B;
+    }
+    A,[expr]{
+      modify_flags = CZ;
+      opcode = 0x1A;
+    }
+    [X+expr],expr{
+      modify_flags = CZ;
+      opcode = 0x1F;
+    }
+    [expr],expr{
+      modify_flags = CZ;
+      opcode = 0x1E;
+    }
+  }
+  PUSH{
+    A{
+      modify_flags = ;
+      opcode = 0x08;
+    }
+    X{
+      modify_flags = ;
+      opcode = 0x10;
+    }
+  }
+  JNC{
+    none{
+      modify_flags = ;
+      opcode = 0xDx;
+    }
+  }
+  CPL{
+    A{
+      modify_flags = Z;
+      opcode = 0x73;
+    }
+  }
+  RLC{
+    A{
+      modify_flags = CZ;
+      opcode = 0x6A;
+    }
+    [X+expr]{
+      modify_flags = CZ;
+      opcode = 0x6C;
+    }
+    [expr]{
+      modify_flags = CZ;
+      opcode = 0x6B;
+    }
+  }
+  MOV{
+    reg[expr],expr{
+      modify_flags = ;
+      opcode = 0x62;
+    }
+    reg[expr],A{
+      modify_flags = ;
+      opcode = 0x60;
+    }
+    [expr],[expr]{
+      modify_flags = ;
+      opcode = 0x5F;
+    }
+    X,A{
+      modify_flags = ;
+      opcode = 0x5C;
+    }
+    A,X{
+      modify_flags = Z;
+      opcode = 0x5B;
+    }
+    X,expr{
+      modify_flags = ;
+      opcode = 0x57;
+    }
+    [expr],A{
+      modify_flags = ;
+      opcode = 0x53;
+    }
+    reg[X+expr],A{
+      modify_flags = ;
+      opcode = 0x61;
+    }
+    [expr],X{
+      modify_flags = ;
+      opcode = 0x5A;
+    }
+    X,[X+expr]{
+      modify_flags = ;
+      opcode = 0x59;
+    }
+    A,reg[expr]{
+      modify_flags = Z;
+      opcode = 0x5D;
+    }
+    [X+expr],A{
+      modify_flags = ;
+      opcode = 0x54;
+    }
+    A,expr{
+      modify_flags = Z;
+      opcode = 0x50;
+    }
+    X,[expr]{
+      modify_flags = ;
+      opcode = 0x58;
+    }
+    A,[X+expr]{
+      modify_flags = Z;
+      opcode = 0x52;
+    }
+    A,[expr]{
+      modify_flags = Z;
+      opcode = 0x51;
+    }
+    X,SP{
+      modify_flags = ;
+      opcode = 0x4F;
+    }
+    A,reg[X+expr]{
+      modify_flags = Z;
+      opcode = 0x5E;
+    }
+    [X+expr],expr{
+      modify_flags = ;
+      opcode = 0x56;
+    }
+    reg[X+expr],expr{
+      modify_flags = ;
+      opcode = 0x63;
+    }
+    [expr],expr{
+      modify_flags = ;
+      opcode = 0x55;
+    }
+  }
+  LCALL{
+    none{
+      modify_flags = ;
+      opcode = 0x7C;
+    }
+  }
+  TST{
+    reg[expr],expr{
+      modify_flags = Z;
+      opcode = 0x49;
+    }
+    [X+expr],expr{
+      modify_flags = Z;
+      opcode = 0x48;
+    }
+    reg[X+expr],expr{
+      modify_flags = Z;
+      opcode = 0x4A;
+    }
+    [expr],expr{
+      modify_flags = Z;
+      opcode = 0x47;
+    }
+  }
+}

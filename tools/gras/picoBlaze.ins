@@ -1,0 +1,278 @@
+parameters{
+  msb=first;
+  sX{
+    name=s[0..15];
+    name=s[0..9,A..F];
+    lmap=0..15;
+  }
+  kk{
+    name=[-128..255];
+    map=byte;
+  }
+  ss{
+    name=[0..63]
+    lmap=0..63
+  }
+  aa{
+    name=[0..262143];
+    lmap=0..262143;
+  }
+  pp{
+    name=[0..255];
+    lmap=0..255;
+  }
+  Z{
+    name="Z";
+  }
+  NZ{
+    name="NZ";
+  }
+  C{
+    name="C";
+  }
+  NC{
+    name="NC";
+  }
+  
+}
+
+
+
+instructionset{
+  cycles = 2;
+  ADD{
+    description="Add Operand to Register";
+    sX,kk{
+      opcode = 0b011000xxxxzzzzzzzz; 
+    }
+    sX,sX{
+      opcode = 0b011001xxxxyyyy0000; 
+    }
+  }
+  ADDCY{
+    sX,kk{
+      opcode = 0b011010xxxxzzzzzzzz; 
+    }
+    sX,sX{
+      opcode = 0b011011xxxxyyyy0000; 
+    }
+  }
+  AND{
+    sX,kk{
+      opcode = 0b001010xxxxzzzzzzzz; 
+    }
+    sX,sX{
+      opcode = 0b001011xxxxyyyy0000; 
+    }
+  }
+  CALL{
+    aa{
+      opcode = 0b11000000aaaaaaaaaa; 
+    }
+    C,aa{ # C
+      opcode = 0b11000110aaaaaaaaaa; 
+    }
+    NC,aa{ # NC
+      opcode = 0b11000111aaaaaaaaaa; 
+    }
+    NZ,aa{ # NZ
+      opcode = 0b11000101aaaaaaaaaa; 
+    }
+    Z,aa{ # Z
+      opcode = 0b11000100aaaaaaaaaa; 
+    }
+  }
+  COMPARE{
+    sX,kk{
+      opcode = 0b010100xxxxzzzzzzzz; 
+    }
+    sX,sX{
+      opcode = 0b010101xxxxyyyy0000; 
+    }
+  }
+  DISABLE_INTERRUPT{
+    none{
+      opcode = 0b111100000000000000; 
+    }
+  }
+  ENABLE_INTERRUPT{
+    none{
+      opcode = 0b111100000000000001; 
+    }
+  }
+  FETCH{
+    sX,ss{
+      opcode = 0b000110xxxx00zzzzzz; 
+    }
+    sX,(sX){
+      opcode = 0b000111xxxxyyyy0000; 
+    }
+  }
+  INPUT{
+    sX,(sX){
+      opcode = 0b000101xxxxyyyy0000; 
+    }
+    sX,pp{
+      opcode = 0b000100xxxxzzzzzzzz; 
+    }
+  }
+  JUMP{
+    aa{
+      opcode = 0b11010000aaaaaaaaaa; 
+    }
+    C,aa{ # C
+      opcode = 0b11010110aaaaaaaaaa; 
+    }
+    NC,aa{ # NC
+      opcode = 0b11010111aaaaaaaaaa; 
+    }
+    NZ,aa{ # NZ
+      opcode = 0b11010101aaaaaaaaaa; 
+    }
+    Z,aa{ # Z
+      opcode = 0b11010100aaaaaaaaaa; 
+    }
+  }
+  LOAD{
+    sX,kk{
+      opcode = 0b000000xxxxzzzzzzzz; 
+    }
+    sX,sX{
+      opcode = 0b000001xxxxyyyy0000; 
+    }
+  }
+  OR{
+    sX,kk{
+      opcode = 0b001100xxxxzzzzzzzz; 
+    }
+    sX,sX{
+      opcode = 0b001101xxxxyyyy0000; 
+    }
+  }
+  OUTPUT{
+    sX,(sX)    {
+      opcode = 0b101101xxxxyyyy0000; 
+    }
+    sX,pp{
+      opcode = 0b101100xxxxzzzzzzzz; 
+    }
+  }
+  RETURN{
+    none{
+      opcode = 0b101010000000000000; 
+    }
+    C{ # C
+      opcode = 0b101011100000000000; 
+    }
+    NC{ # NC
+      opcode = 0b101011110000000000; 
+    }
+    NZ{ # NZ
+      opcode = 0b101011010000000000; 
+    }
+    Z{ #Z
+      opcode = 0b101011000000000000; 
+    }
+  }
+  RETURNI_DISABLE{
+    none{
+      opcode = 0b111000000000000000; 
+    }
+  }
+  RETURNI_ENABLE{
+    none{
+      opcode = 0b111000000000000001; 
+    }
+  }
+  RL{
+    sX{
+      opcode = 0b100000xxxx00000010; 
+    }
+  }
+  RR{
+    sX{
+      opcode = 0b100000xxxx00001100; 
+    }
+  }
+  SL0{
+    sX{
+      opcode = 0b100000xxxx00000110; 
+    }
+  }
+  SL1{
+    sX{
+      opcode = 0b100000xxxx00000111; 
+    }
+  }
+  SLA{
+    sX{
+      opcode = 0b100000xxxx00000000; 
+    }
+  }
+  SLX{
+    sX{
+      opcode = 0b100000xxxx00000100; 
+    }
+  }
+  SR0{
+    sX{
+      opcode = 0b100000xxxx00001110; 
+    }
+  }
+  SR1{
+    sX{
+      opcode = 0b100000xxxx00001111; 
+    }
+  }
+  SRA{
+    sX{
+      opcode = 0b100000xxxx00001000; 
+    }
+  }
+  SRX{
+    sX{
+      opcode = 0b100000xxxx00001010; 
+    }
+  }
+  STORE{
+    sX,ss{
+      opcode = 0b101110xxxx00zzzzzz; 
+    }
+    sX,(sX){
+      opcode = 0b101111xxxxyyyy0000; 
+    }
+  }
+  SUB{
+    sX,kk{
+      opcode = 0b011100xxxxzzzzzzzz; 
+    }
+    sX,sX{
+      opcode = 0b011101xxxxyyyy0000; 
+    }
+  }
+  SUBCY{
+    sX,kk{
+      opcode = 0b011110xxxxzzzzzzzz; 
+    }
+    sX,sX{
+      opcode = 0b011111xxxxyyyy0000; 
+    }
+  }
+  TEST{
+    sX,kk{
+      opcode = 0b010010xxxxzzzzzzzz; 
+    }
+    sX,sX{
+      opcode = 0b010011xxxxyyyy0000; 
+    }
+  }
+  XOR{
+    sX,kk{
+      opcode = 0b001110xxxxzzzzzzzz; 
+    }
+    sX,sX{
+      opcode = 0b001111xxxxyyyy0000; 
+    }
+  }
+}
+

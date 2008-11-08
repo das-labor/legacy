@@ -58,6 +58,9 @@ def length_hist(iset)
   iset.each_pair{|mnem,inst|
     inst.instructions.each_pair{|params,iblock|
       hist[iblock.length] += 1; 
+  #    if(iblock.length%8!=0)
+  #      puts '  '+iblock.name+'.'+iblock.parameters.join(',')+' ('+iblock.length.to_s+')'
+  #    end
     }
   }
   hist.each_pair{|key,value|
@@ -142,10 +145,10 @@ def analyze(fname)
     Math.log(count_instructions(mnemonics))/lg2
   )
   
-  puts 'searching for disassembler strategy ...'
-  s = find_dasm_strategy(mnemonics,lh[1], 0.15)
+#  puts 'searching for disassembler strategy ...'
+#  s = find_dasm_strategy(mnemonics,lh[1], 0.15)
   puts 'generating disassembler primary table ...'
-  dt = build_dasm_table(mnemonics, s)
+  dt = auto_build_dasm_table(mnemonics, lh[1])
   print_dasm_table_infos(dt)
 end
 

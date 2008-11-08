@@ -32,7 +32,8 @@ end
 #strip comments
 $in_block_comment = false
 def parse_line_l1(line)
-  line = /[^#]*/.match(line).to_s
+  line = /([^#]*[\\#]*[^#]*|[^#]*'[^']*'[^#]*|[^#]*"[^"]*"[^#]*|[^#]*)*/.match(line).to_s
+  line.gsub!(/(\\#)/, '#')
   if $in_block_comment
     if /.*=end/.match(line)
       $in_block_comment = false
@@ -50,7 +51,11 @@ def parse_line_l1(line)
 end
 
 def new_block(root, name)
-  $current_block = $current_block.sub_blocks[name] = Block.new(name, $current_block)
+  if $current_block.sub_blocks[name] == nil
+    $current_block = $current_block.sub_blocks[name] = Block.new(name, $current_block)
+  else
+    $current_block = $current_block.sub_blocks[name]
+  end
 end
 
 def close_block(block)
@@ -80,7 +85,7 @@ def parse_l2(line)
   if /^[\s]*$/.match(line)
     return
   end
-  if m = /([\w\s,._<>+-]*)([^\{\}=]*)(.*)/.match(line)
+  if m = /([\w\s,._<>+@$\[\]\(\)-]*)([^\{\}=]*)(.*)/.match(line)
     $left_expr += m[1];
     if m[2]!=""
       puts($filename +":"  + $linenumber.to_s + ": Garbage: "+m[2]);
@@ -116,6 +121,28 @@ def loadfile(fname)
     $linenumber += 1
     parse_l2(parse_line_l1(line))
   end
+  file.close
   return $main_block
+end
+
+def writeblock(f, block, deep=0)
+  f.puts ' '*(deep*2) + block.name + '{'
+
+  block.key_value.each_pair{|key,value|
+    f.puts(' '*((deep+1)*2) + key.to_s() + ' = ' + value.to_s() +';')
+  }
+  if not block.sub_blocks.empty?
+    block.sub_blocks.each_value{|value|
+      writeblock(f, value, deep+1)
+    }
+  end
+  f.puts ' '*deep*2 + '}'
+end
+
+def savefile(fname, block)
+  file=File.open(fname,'w')
+  deep = 0;
+  writeblock(file,block,0) 
+  file.close
 end
 
