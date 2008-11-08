@@ -48,7 +48,7 @@ void create_stone(stone_t *stone)
 //simply draw the stone at it's specified position
 void draw_stone(stone_t *stone)
 {
-		uint8_t y, x;
+		uint8_t y, x, ydraw;
 		uint16_t nPieceMap = tetris_piece_getBitmap(&stone->piece);
 		uint16_t pieceLala;
 
@@ -65,9 +65,11 @@ void draw_stone(stone_t *stone)
 			//DRUUUUUUUUUUUWWWWWWWWWWWWWWW!!!!!!!!!!! eerrr /U/A/s
 			for (x = 0; x < 16; ++x)
 			{
-				if(pieceLala & (1 << x))
+				ydraw = (stone->y / YSCALE) + y;
+
+				if(pieceLala & (1 << x) && (ydraw < NUM_ROWS))
 				{
-					setpixel((pixel){ x, (stone->y / YSCALE) + y}, stone->color);
+					setpixel((pixel){ x, ydraw}, stone->color);
 				}
 			}
 		}	
