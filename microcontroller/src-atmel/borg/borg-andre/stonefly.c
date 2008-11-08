@@ -74,14 +74,19 @@ void draw_stone(stone_t *stone)
 			pieceLala <<= stone->x;
 
 			//DRUUUUUUUUUUUWWWWWWWWWWWWWWW!!!!!!!!!!! eerrr /U/A/s
-			ydraw = (stone->y / YSCALE) + y;
-			if((ydraw < (NUM_ROWS + 4)) && (ydraw > 3)) //drawing begins @ 3, to make piece of height 4 scroll in
+			ydraw = (stone->y / YSCALE);
+			if(ydraw > 3) //drawing begins @ 3, to make piece of height 4 scroll in
 			{
-				for (x = 0; x < 16; ++x)
+				ydraw += y;
+				
+				if(ydraw < (NUM_ROWS + 4))
 				{
-					if(pieceLala & (1 << x))
+					for (x = 0; x < 16; ++x)
 					{
-						setpixel((pixel){ x, ydraw - 4 }, stone->color);
+						if(pieceLala & (1 << x))
+						{
+							setpixel((pixel){ x, ydraw - 4 }, stone->color);
+						}
 					}
 				}
 			}
@@ -102,14 +107,18 @@ void draw_invader(uint8_t ypos, uint8_t xpos)
 			pieceLala <<= xpos;			
 
 			//DRUUUUUUUUUUUWWWWWWWWWWWWWWW!!!!!!!!!!! eerrr /U/A/s
-			ydraw = (ypos  / 2) + y;
-			if((ydraw < (NUM_ROWS + sizeof(invader))) && (ydraw > (sizeof(invader) - 1))) //drawing begins @ 5, to make invader of height 6 scroll in
+			ydraw = (ypos  / 2);
+			if(ydraw > (sizeof(invader) - 1)) //drawing begins @ 5, to make invader of height 6 scroll in
 			{
-				for (x = 0; x < 16; ++x)
+				ydraw += y;
+				if(ydraw < (NUM_ROWS + sizeof(invader)))
 				{
-					if(pieceLala & (1 << x))
+					for (x = 0; x < 16; ++x)
 					{
-						setpixel((pixel){ x, ydraw - sizeof(invader) }, 1);
+						if(pieceLala & (1 << x))
+						{
+							setpixel((pixel){ x, ydraw - sizeof(invader) }, 1);
+						}
 					}
 				}
 			}
