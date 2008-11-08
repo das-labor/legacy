@@ -109,7 +109,7 @@ void draw_invader(uint8_t ypos, uint8_t xpos)
 				{
 					if(pieceLala & (1 << x))
 					{
-						setpixel((pixel){ x, ydraw - 6) }, 1);
+						setpixel((pixel){ x, ydraw - 6 }, 1);
 					}
 				}
 			}
