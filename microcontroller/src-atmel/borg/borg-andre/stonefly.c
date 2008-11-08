@@ -94,6 +94,8 @@ void draw_invader(uint8_t ypos, uint8_t xpos)
 
 		for(y = 0; y < sizeof(invader); y++)
 		{
+			pieceLala = invader[y];
+
 			// shift bitmap line to current x pos (this is nonsense overhead... BUT I LIKE IT!)
 			pieceLala <<= xpos;
 
