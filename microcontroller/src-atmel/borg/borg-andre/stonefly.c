@@ -46,23 +46,24 @@ void draw_stone(stone_t *stone)
 {
 		uint8_t y, x;
 		uint16_t nPieceMap = tetris_piece_getBitmap(&stone->piece);
+		uint16_t pieceLala;
 
 		for(y = 0; y < 4; y++)
 		{
 			// clear all bits of the piece we are not interested in and
 			// align the remaining row to LSB
 			// -> translates to: get the correct row out of the bitmap and right-align
-			nPieceMap = (nPieceMap & (0x000F << (y << 2))  ) >> (y << 2);
+			pieceLala = (nPieceMap & (0x000F << (y << 2))  ) >> (y << 2);
 
 			// shift bitmap line to current x pos
-			nPieceMap <<= stone->x;
+			pieceLala <<= stone->x;
 
 			//DRUUUUUUUUUUUWWWWWWWWWWWWWWW!!!!!!!!!!! eerrr /U/A/s
-			for (x = 0; x < 4; ++x)
+			for (x = 0; x < 16; ++x)
 			{
-				if((nPieceMap & (1 << x)) && ((stone->x + x) < NUM_ROWS))
+				if(pieceLala & (1 << x))
 				{
-					setpixel((pixel){ stone->x + x, (stone->y / YSCALE) + y}, 3);
+					setpixel((pixel){ x, (stone->y / YSCALE) + y}, 3);
 				}
 			}
 		}	
@@ -110,7 +111,7 @@ void stonefly(void)
 		//if there are less than max_stones flying, there's a chance to spawn one
 		if(stoneCount < MAX_STONES)	
 		{
-			if(random8() < 32)
+			if(random8() < 48)
 			{
 				create_stone(&stones[++stoneCount]);
 			}
