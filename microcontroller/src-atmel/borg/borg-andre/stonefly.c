@@ -101,8 +101,10 @@ void stonefly(void)
 			if((stones[i].y / YSCALE) >= NUM_ROWS)
 			{
 				//DIEEEE!!
-				stones[i] = stones[--stoneCount];
-				continue;
+				if(--stoneCount == i)
+					continue;
+				else
+					stones[i] = stones[stoneCount];
 			}
 
 			//draw stone!!
