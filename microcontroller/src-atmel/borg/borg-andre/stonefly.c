@@ -75,7 +75,7 @@ void draw_stone(stone_t *stone)
 
 			//DRUUUUUUUUUUUWWWWWWWWWWWWWWW!!!!!!!!!!! eerrr /U/A/s
 			ydraw = (stone->y / YSCALE) + y;
-			if((ydraw < NUM_ROWS) && (ydraw > 3)) //drawing begins @ 3, to make piece of height 4 scroll in
+			if((ydraw < (NUM_ROWS + 4)) && (ydraw > 3)) //drawing begins @ 3, to make piece of height 4 scroll in
 			{
 				for (x = 0; x < 16; ++x)
 				{
@@ -103,7 +103,7 @@ void draw_invader(uint8_t ypos, uint8_t xpos)
 
 			//DRUUUUUUUUUUUWWWWWWWWWWWWWWW!!!!!!!!!!! eerrr /U/A/s
 			ydraw = (ypos  / 2) + y;
-			if((ydraw < NUM_ROWS) && (ydraw > (sizeof(invader) - 1))) //drawing begins @ 5, to make invader of height 6 scroll in
+			if((ydraw < (NUM_ROWS + sizeof(invader))) && (ydraw > (sizeof(invader) - 1))) //drawing begins @ 5, to make invader of height 6 scroll in
 			{
 				for (x = 0; x < 16; ++x)
 				{
