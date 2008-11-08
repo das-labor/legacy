@@ -15,6 +15,7 @@ typedef struct
 	uint8_t x;
 	uint8_t y;
 	uint8_t speed;
+	uint8_t color;
 	tetris_piece_t piece;
 } stone_t;
 
@@ -38,6 +39,9 @@ void create_stone(stone_t *stone)
 
 	//chose a random speed from 1-2
 	stone->speed = (random8() % YSCALE) + 1;
+
+	//chose a random color
+	stone->color = (random8() % NUMPLANE) + 1;
 }
 
 
@@ -63,7 +67,7 @@ void draw_stone(stone_t *stone)
 			{
 				if(pieceLala & (1 << x))
 				{
-					setpixel((pixel){ x, (stone->y / YSCALE) + y}, 3);
+					setpixel((pixel){ x, (stone->y / YSCALE) + y}, stone->color);
 				}
 			}
 		}	
@@ -97,7 +101,7 @@ void stonefly(void)
 			if((stones[i].y / YSCALE) >= NUM_ROWS)
 			{
 				//DIEEEE!!
-				stones[i] = stones[stoneCount--];
+				stones[i] = stones[(stoneCount--) - 1];
 				continue;
 			}
 
