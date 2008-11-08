@@ -136,7 +136,7 @@ void stonefly(void)
 	while(counter--)
 	{
 		//see if invasion is done!
-		if((invay / 2) >= NUM_ROWS)
+		if((invay / 2) >= (NUM_ROWS + sizeof(invader)))
 		{
 			invasion = 0;
 		}
@@ -157,7 +157,7 @@ void stonefly(void)
 		for(i = 0; i < stoneCount; i++)
 		{
 			//rapunzel!
-			if((stones[i].y / YSCALE) >= NUM_ROWS)
+			if((stones[i].y / YSCALE) >= (NUM_ROWS + 4))
 			{
 				//DIEEEE!!
 				if(--stoneCount == i)
