@@ -16,6 +16,7 @@
 #include "persistentCounter.h"
 #include "menu.h"
 #include "util.h"
+#include "stonefly.h"
 
 volatile unsigned char oldMode, oldOldmode, mode;
 
@@ -44,33 +45,36 @@ int main (void){
 			}
 			break;
 		case 2:
-			spirale(5);
+			stonefly();
 			break;
 		case 3:
-			joern1();
+			spirale(5);
 			break;
 		case 4:
-			snake();
+			joern1();
 			break;
 		case 5:
-			schachbrett(20);
+			snake();
 			break;
 		case 6:
-			feuer();
+			schachbrett(20);
 			break;
 		case 7:
-			matrix();
+			feuer();
 			break;
 		case 8:
+			matrix();
+			break;
+		case 9:
 			random_bright(200);
 			break;
-		case 9:	
+		case 10:	
 			gameoflife();
 			mode = 1;
 			break;
 			
 		//do nothing - used for blinkenmovie/picture display
-		case 10:
+		case 11:
 			while(1)
 			{
 				//process borg stuff
