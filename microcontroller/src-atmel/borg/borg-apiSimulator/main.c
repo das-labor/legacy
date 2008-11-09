@@ -27,6 +27,7 @@
 #include "tetris/logic.h"
 #include "trackball.h"
 #include "snake.h"
+#include "stonefly.h"
 
 #include "scrolltext.h"
 
@@ -202,30 +203,33 @@ void *display_loop(void * unused) {
 		oldMode = mode;
 		switch(mode++) {
 		case 1:
-			breakpoint();
+			stonefly();
 			break;
 		case 2:
-			schwarzesLoch();
+			breakpoint();
 			break;
 		case 3:
-			scrolltext("</#Scrolltext3 Test");
+			schwarzesLoch();
 			break;
 		case 4:
-			spirale(20);
+			scrolltext("</#Scrolltext3 Test");
 			break;
 		case 5:
-			joern1();
+			spirale(20);
 			break;
 		case 6:
-			snake();
+			joern1();
 			break;
 		case 7:
-			schachbrett(20);
+			snake();
 			break;
 		case 8:
-			feuer();
+			schachbrett(20);
 			break;
 		case 9:
+			feuer();
+			break;
+		case 10:
 			matrix();
 			break;
 		case 31:

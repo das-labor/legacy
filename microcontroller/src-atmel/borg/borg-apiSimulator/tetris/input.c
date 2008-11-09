@@ -201,7 +201,7 @@ void tetris_input_destruct(tetris_input_t *pIn)
  * input related functions *
  ***************************/
 
-/* Function:       retris_input_getCommand
+/* Function:       tetris_input_getCommand
  * Description:    retrieves commands from joystick or loop interval
  * Argument pIn:   pointer to an input object
  * Argument nPace: falling pace (see definition of tetris_input_pace_t)
