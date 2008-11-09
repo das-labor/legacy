@@ -18,7 +18,9 @@
 010000010 0x0082
 */
 
-uint16_t invader[] = {0x0044, 0x017D, 0x01BB, 0x01BB, 0x00FE, 0x0082};
+uint16_t invader[] = {0x0044, 0x017D, 0x01BB, 0x00FE, 0x0082};
+
+#define INV_HEIGHT (sizeof(invader) / sizeof(uint16_t))
 
 typedef struct
 {
@@ -42,7 +44,7 @@ void create_stone(stone_t *stone)
 
 	//random x
 	//4 is piece width
-	stone->x = random8() % (NUM_COLS - 4);	
+	stone->x = random8() % (NUM_COLS - 4);
 
 	//random shape at random angle (untyped enums rock! yay!)
 	stone->piece.shape = random8() % 7;
@@ -85,7 +87,7 @@ void draw_stone(stone_t *stone)
 					}
 				}
 			}
-		}	
+		}
 }
 
 
@@ -94,26 +96,26 @@ void draw_invader(uint8_t ypos, uint8_t xpos)
 		uint8_t y, x, ydraw;
 		uint16_t pieceLala;
 
-		for(y = 0; y < 6; y++)
+		for(y = 0; y < INV_HEIGHT; y++)
 		{
 			pieceLala = invader[y];
 
 			// shift bitmap line to current x pos (this is nonsense overhead... BUT I LIKE IT!)
-			pieceLala <<= xpos;			
+			pieceLala <<= xpos;
 
 			//DRUUUUUUUUUUUWWWWWWWWWWWWWWW!!!!!!!!!!! eerrr /U/A/s
 			ydraw = (ypos  / 2) + y;
-			if((ydraw < (NUM_ROWS + 6)) && (ydraw > 5)) //drawing begins @ 5, to make invader of height 6 scroll in
+			if((ydraw < (NUM_ROWS + INV_HEIGHT)) && (ydraw > (INV_HEIGHT - 1))) //drawing begins @ 5, to make invader of height 6 scroll in
 			{
 				for (x = 0; x < 16; ++x)
 				{
 					if(pieceLala & (1 << x))
 					{
-						setpixel((pixel){ x, ydraw - 6 }, 1);
+						setpixel((pixel){ x, ydraw - INV_HEIGHT }, 1);
 					}
 				}
 			}
-		}	
+		}
 }
 
 
@@ -136,7 +138,7 @@ void stonefly(void)
 	while(counter--)
 	{
 		//see if invasion is done!
-		if((invay / 2) >= (NUM_ROWS + sizeof(invader)))
+		if((invay / 2) >= (NUM_ROWS + INV_HEIGHT))
 		{
 			invasion = 0;
 		}
@@ -157,7 +159,7 @@ void stonefly(void)
 		for(i = 0; i < stoneCount; i++)
 		{
 			//rapunzel!
-			if((stones[i].y / YSCALE) >= (NUM_ROWS + 4))
+			while(((stones[i].y / YSCALE) >= (NUM_ROWS + 4)) && (stoneCount > 0))
 			{
 				//DIEEEE!!
 				if(--stoneCount == i)
@@ -174,7 +176,7 @@ void stonefly(void)
 		}
 
 		//if there are less than max_stones flying, there's a chance to spawn one
-		if(stoneCount <= MAX_STONES)	
+		if(stoneCount < MAX_STONES)
 		{
 			if(random8() < 48)
 			{
@@ -192,6 +194,6 @@ void stonefly(void)
 		}
 
 		//loop delay
-		wait(60);	
+		wait(60);
 	}
 }
