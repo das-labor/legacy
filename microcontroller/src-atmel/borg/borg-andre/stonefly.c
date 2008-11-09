@@ -135,8 +135,13 @@ void stonefly(void)
 	}
 
 	//main loop
-	while(counter--)
+	while(counter || stoneCount || invasion)
 	{
+		if(counter > 0)
+		{
+			counter--;
+		}
+
 		//see if invasion is done!
 		if((invay / 2) >= (NUM_ROWS + INV_HEIGHT))
 		{
@@ -176,7 +181,7 @@ void stonefly(void)
 		}
 
 		//if there are less than max_stones flying, there's a chance to spawn one
-		if(stoneCount < MAX_STONES)
+		if((stoneCount < MAX_STONES) && (counter > 0)
 		{
 			if(random8() < 48)
 			{
