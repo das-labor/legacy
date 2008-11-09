@@ -181,7 +181,7 @@ void stonefly(void)
 		}
 
 		//if there are less than max_stones flying, there's a chance to spawn one
-		if((stoneCount < MAX_STONES) && (counter > 0)
+		if((stoneCount < MAX_STONES) && (counter > 0))
 		{
 			if(random8() < 48)
 			{
