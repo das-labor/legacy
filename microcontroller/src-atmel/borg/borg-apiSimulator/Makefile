@@ -12,7 +12,7 @@ OBJ = breakpoint.o font_arial8.o font_small6.o font_uni53.o invader_draw.o \
   invader_init.o invader_proc.o invaders2.o joystick.o main.o menu.o pixel.o \
   programm.o scrolltext3.o snake.o trackball.o util.o tetris/input.o \
   tetris/logic.o tetris/piece.o tetris/playfield.o tetris/view.o prng.o \
-  memxor_c.o noekeon.o
+  memxor_c.o noekeon.o stonefly.o
 
 all: $(PRG)
 
@@ -106,3 +106,6 @@ tetris/view.o: tetris/view.c config.h pixel.h util.h scrolltext.h \
   tetris/logic.h tetris/piece.h tetris/playfield.h tetris/view.h
 	$(CC) $(CFLAGS) -c -o tetris/view.o tetris/view.c
 
+stonefly.o: stonefly.h stonefly.c pixel.h util.h config.h prng.h \
+  ../borg-base/prng.h tetris/piece.h
+	$(CC) $(CFLAGS) -c -o stonefly.o stonefly.c

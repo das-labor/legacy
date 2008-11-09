@@ -116,15 +116,15 @@ unsigned char image23c3[3][17][4] = {
  , {0xFF, 0xFF, 0xFF, 0xF9}
  }
  };
- 
 
 
-// Position in 
+
+// Position in
 //	  i[][0][0]	i[][0][1]
-//	  
-// 
-//    p[][0][0] p[][0][1] 
-//    10001001  10010101 
+//
+//
+//    p[][0][0] p[][0][1]
+//    10001001  10010101
 
 // image
 
@@ -136,7 +136,7 @@ void drawPixmapPos(int x, int y) {
 			for (i = 0; i < 16; i++) {
 				buf = bp_image[p][(i+y)%18][(0 + x/8)%8] <<  8;
 				if (x < 58)
-					buf |= bp_image[p][(i+y)%18][(1 + x/8)%8] << 16; 
+					buf |= bp_image[p][(i+y)%18][(1 + x/8)%8] << 16;
 				if (x > 7)
 					buf |= bp_image[p][(i+y)%18][(-1 + x/8)%8];
 				pixmap[p][i][1] = (unsigned char) (buf >> ((x%8)+8));
@@ -152,7 +152,7 @@ void breakpoint() {
 		drawPixmapPos(i, 2)	;
 		wait(45);
 	}
-	wait(100);	
+	wait(100);
 	for (i = 63; i > 7; i--) {
 		drawPixmapPos(i, 0)	;
 		wait(45);
@@ -164,8 +164,8 @@ void breakpoint() {
 				pixmap[p][i][0] = (pixmap[p][i][0] & 0xf0) << 1 |
 				                  (pixmap[p][i][0] & 0x0f) >> 1;
 				pixmap[p][i][1] = (pixmap[p][i][1] & 0xf0) << 1 |
-				                  (pixmap[p][i][1] & 0x0f) >> 1;				  
-								
+				                  (pixmap[p][i][1] & 0x0f) >> 1;
+
 			}
 		}
 		wait(200);
@@ -181,14 +181,14 @@ void breakpoint() {
 
 /** Table for the calculation of sinus. It only has one half wave, because
  *  the others can be generated of it.
- *  
+ *
  *  64 = sin(90 grad) = 1.0 = sinTab[16]
  */
 char sinTab[] = {0, 6, 12, 19, 24, 30, 36, 41, 45, 49, 53, 56, 59, 61, 63, 64, 64};
 
 /** Sin(64) = sin(360 grad) and sin(90 grad) = Sin(16) = 64. Its using the one halfwave
  *  of sinTab to generate a whole sinus. It e
- */		 
+ */
 char Sin(unsigned char a) {
 	a %= 64;
 	if (a < 17) {
@@ -200,9 +200,9 @@ char Sin(unsigned char a) {
 	} else {
 		return -sinTab[64-a];
 	}
-}	
+}
 
-inline char Cos(unsigned char a) {
+char Cos(unsigned char a) {
 	return Sin(a+16);
 }
 
@@ -213,24 +213,24 @@ void schwarzesLoch2() {
 	unsigned char  i, j, firstRadius = 80, helpRadius, angle = 0;
 	unsigned int k;
 	// init data
-	for (k = 0; k < 400; k++) {	
+	for (k = 0; k < 400; k++) {
 		helpRadius = firstRadius;
 		for (i = 0; i < NUM_CIRCLE; i++) {
 			for (j = 0; j < 8; j++) {
 				if (i & 1) {
 					circlePoints[i][j].x = 64 + (Cos(angle + i*8)*helpRadius)/64;
 					circlePoints[i][j].y = 64 + (Sin(angle + i*8)*helpRadius)/64;
-				
+
 				} else {
 					circlePoints[i][j].x = 64 + (Cos(angle + i*8 + 4)*helpRadius)/64;
 					circlePoints[i][j].y = 64 + (Sin(angle + i*8 + 4)*helpRadius)/64;
-				} 
+				}
 				// only for testing
 				if (circlePoints[i][j].x < 64 &&
 				    circlePoints[i][j].y < 64)
 					setpixel((pixel) {circlePoints[i][j].x/8, circlePoints[i][j].y/8}, 3);
 			}
-			helpRadius = (helpRadius*2)/3; 
+			helpRadius = (helpRadius*2)/3;
 		}
 		wait(50);
 		clear_screen(0);
@@ -255,17 +255,17 @@ void schwarzesLoch() {
 				if (j & 1) {
 					circlePoints[i][j].x = 64 + (Cos(angle + j*8)*helpRadius)/64;
 					circlePoints[i][j].y = 64 + (Sin(angle + add + j*8)*helpRadius)/64;
-				
+
 				} else {
 					circlePoints[i][j].x = 64 + (Cos(angle + j*8 + 4)*helpRadius)/64;
 					circlePoints[i][j].y = 64 + (Sin(angle + add + j*8 + 4)*helpRadius)/64;
-				} 
+				}
 				x = circlePoints[i][j].x/8;
 				y = circlePoints[i][j].y/8;
 				if (x < 16 && y < 16)
 					setpixel((pixel) {x, y}, 3);
 			}
-			helpRadius = (helpRadius*2)/3; 
+			helpRadius = (helpRadius*2)/3;
 		}
 		wait(30);
 		clear_screen(0);
