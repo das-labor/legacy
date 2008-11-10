@@ -127,6 +127,7 @@ void stonefly(void)
 	uint8_t stoneCount = 0;
 	uint16_t counter = 622; /* run 622 cycles */
 	uint8_t invax, invay, invasion = 0;
+	uint8_t draw;
 
 	//init all stones to zero
 	for(i = 0; i < MAX_STONES; i++)
@@ -163,21 +164,29 @@ void stonefly(void)
 		//loop through all stones
 		for(i = 0; i < stoneCount; i++)
 		{
+			draw = 1;
+
 			//rapunzel!
 			while(((stones[i].y / YSCALE) >= (NUM_ROWS + 4)) && (stoneCount > 0))
 			{
 				//DIEEEE!!
 				if(--stoneCount == i)
-					continue;
+				{
+					draw = 0;
+					break;
+				}
 				else
 					stones[i] = stones[stoneCount];
 			}
 
-			//draw stone!!
-			draw_stone(&stones[i]);
+			if(draw)
+			{
+				//draw stone!!
+				draw_stone(&stones[i]);
 
-			//advance!
-			stones[i].y += stones[i].speed;
+				//advance!
+				stones[i].y += stones[i].speed;
+			}
 		}
 
 		//if there are less than max_stones flying, there's a chance to spawn one
