@@ -1,6 +1,8 @@
 void test1();
 void testShift();
 void testAnim();
+void pyramide();
+
 void fnordLicht();
 void symetricRandom();
 void symetricRoutes();	

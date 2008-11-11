@@ -45,6 +45,13 @@ unsigned char easyRandom();
 void drawLine3D(char px1, char py1, char pz1, 
  			    char px2, char py2, char pz2, color value);
 
+char Sin(unsigned char a);
+#define Cos(a) Sin((a)+16)
+
+void rotate(char a, char b, char c, voxel* points, 
+			voxel* resPoints, int numPoint, voxel rotP);
+void scale(char sx, char sy, char sz, voxel* points, 
+			voxel* resPoints, int numPoint, voxel scaleP);
 /* not jet implementet
 
 void blurX(unsigned char filter[3]);

@@ -302,6 +302,87 @@ void drawLine3D(char px1, char py1, char pz1,
    	setVoxel((voxel) {curx, cury, curz}, value);
 }
 
+// 16 = sin(90¡) = 1
+char sinTab[] = {0, 6, 12, 19, 24, 30, 36, 41, 45, 49, 53, 56, 59, 61, 63, 64, 64};
+		 
+char Sin(unsigned char a) {
+	a %= 64;
+	if (a < 17) {
+		return  sinTab[a];
+	} else if (a < 33) {
+		return  sinTab[32-a];
+	} else if (a < 49) {
+		return -sinTab[a-32];
+	} else {
+		return -sinTab[64-a];
+	}
+}	
+
+
+voxel mulMatrixPoint(char *mat, voxel *p) {
+	return (voxel) {
+		(mat[0]*(char)p->x)/64 + (mat[1]*(char)p->y)/64 + (mat[2]*(char)p->z)/64 + mat[3],
+		(mat[4]*(char)p->x)/64 + (mat[5]*(char)p->y)/64 + (mat[6]*(char)p->z)/64 + mat[7],
+		(mat[8]*(char)p->x)/64 + (mat[9]*(char)p->y)/64 + (mat[10]*(char)p->z)/64 + mat[11]
+	};
+}
+
+/*
+Matrix Format
+
+  0  1  2  3
+  4  5  6  7  
+  8  9 10 11
+(12 13 14 15) not exist  because normally 0 0 0 1
+              but works intern with homogen coordiantes
+*/
+void rotate(char a, char b, char c, voxel* points, 
+			voxel* resPoints, int numPoint, voxel rotP) {
+	char mat[12];
+	unsigned char i;
+					
+	// Initialiesierung der Rotationsmatrix				
+	mat[0] = (Cos(b)*Cos(c))/64;
+	mat[1] = (-Cos(b)*Sin(c))/64;
+	mat[2] = -Sin(b);
+		
+	mat[4] = (((-Sin(a)*Sin(b))/64)*Cos(c))/64 + (Cos(a)*Sin(c))/64;
+	mat[5] = (((Sin(a)*Sin(b))/64)*Sin(c))/64 + (Cos(a)*Cos(c))/64;
+	mat[6] = (-Sin(a)*Cos(b))/64;
+		
+	mat[8]  = (((Cos(a)*Sin(b))/64)*Cos(c))/64 + (Sin(a)*Sin(c))/64;
+	mat[9]  = (((-Cos(a)*Sin(b))/64)*Sin(c))/64 + (Sin(a)*Cos(c))/64;
+	mat[10] = (Cos(a)*Cos(b))/64;
+					
+	if (rotP.x == 0 && rotP.y == 0 && rotP.z == 0) {
+		mat[3]  = 0;
+		mat[7]  = 0;
+		mat[11] = 0;
+	} else {
+		mat[3]  = rotP.x - ((mat[0]*(char)rotP.x)/64 + (mat[1]*(char)rotP.y)/64 + (mat[2]*(char)rotP.z)/64);
+		mat[7]  = rotP.y - ((mat[4]*(char)rotP.x)/64 + (mat[5]*(char)rotP.y)/64 + (mat[6]*(char)rotP.z)/64);
+		mat[11] = rotP.z - ((mat[8]*(char)rotP.x)/64 + (mat[9]*(char)rotP.y)/64 + (mat[10]*(char)rotP.z)/64);
+	}
+	/*
+	for (i = 0; i < 3; i++) {
+		printf("%d\t%d\t%d\t%d\n", mat[(i*4)], mat[(i*4)+1], mat[(i*4)+2], mat[(i*4)+3]);
+	}*/
+	
+	for (i = 0; i < numPoint; i++) {
+		resPoints[i] = mulMatrixPoint(mat, &points[i]);
+	}	
+}
+
+void scale(char sx, char sy, char sz, voxel* points, 
+			voxel* resPoints, int numPoint, voxel scaleP) {
+	char mat[12] = {sx,  0,  0,  scaleP.x - (sx*scaleP.x)/64,
+					 0, sy,  0,  scaleP.y - (sy*scaleP.y)/64,
+					 0,  0, sz,  scaleP.z - (sz*scaleP.z)/64};
+	unsigned char i;
+ 	for (i = 0; i < numPoint; i++) {
+		resPoints[i] = mulMatrixPoint(mat, &points[i]);
+	}			
+}					
 
 /*
 void blurX(unsigned char filter[3]) {
