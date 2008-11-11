@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 extern void *conf_handler (uint_fast8_t in_idx, void* in_val)
 {
 	static uint_fast16_t termwidth = 80;

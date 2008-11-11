@@ -39,7 +39,7 @@ int hex2bin (size_t in_len, char* in_str)
 	return out;
 }
 
-uint8_t nf_parse_args (int in_argc, char *in_argv[], nf_config_t *out_conf)
+uint8_t nf_parse_args (int in_argc, char **in_argv, nf_flashconfig_t *out_conf)
 {
 	uint_fast16_t i;
 	uint_fast16_t argmask = 0x00;
@@ -57,7 +57,7 @@ uint8_t nf_parse_args (int in_argc, char *in_argv[], nf_config_t *out_conf)
 						return (-1 * __LINE__); /* no argument given */
 					}
 
-					if (sscanf(in_argv[i], "0x%2x", out_conf->addr) != 1) return (-1 * __LINE__);
+					if (sscanf(in_argv[i], "0x%2x", out_conf->dstaddr) != 1) return (-1 * __LINE__);
 
 					argmask |= 0x01;
 				break;
