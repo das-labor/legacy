@@ -10,6 +10,7 @@
 //from stdinclude path
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 #include <usb.h>
 
 //rfm12usb includes
@@ -27,6 +28,9 @@
 
 #ifdef WIN32
 #define	usleep(x) Sleep(x)
+#else
+#include <unistd.h>
+#include <signal.h>
 #endif
 
 
