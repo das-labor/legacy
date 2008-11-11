@@ -99,4 +99,4 @@
 #define RFM12_INT_SETUP() (MCUCR |= (1<<ISC01))
 
 /* blindly transmit data without caring about channel occupance */
-#define RFM12_BE_RUDE 1
+#define RFM12_BE_RUDE 0

@@ -8,6 +8,7 @@
  */
 
 #include <usb.h>
+#include <string.h>
 #include "RfmUsb.h"
 
 //common includes

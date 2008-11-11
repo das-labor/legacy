@@ -5,8 +5,8 @@
 
 // #include "config.h"
 // #include "rf.h"
+#include "rfm12_config.h"
 #include "rfm12.h"
-#include "../../lib/rfm12/rfm12_hw.h"
 
 volatile static uint8_t transmissions;
 volatile static uint8_t txcode; /* array index for transmission code */
@@ -24,62 +24,12 @@ const uint32_t switchcodes[] = {
 
 void timer_init()
 {
-	TCCR0 |= ( _BV(CS00) | _BV(CS01) ); /* clk/64 */
+	TCCR0 |= (  _BV(CS01) ); /* clk/64 */
 	TIMSK |= (_BV(TOIE0));
 	TIFR |= (1<<TOV0);
 }
 
-#if 0
-ISR (TIMER0_OVF_vect)
-{
-	static uint32_t msk = 0x80000000;
-
-	if (!transmissions) return;
-
-	if (switchcodes[txcode] & msk)
-	{
-	//	rfm12_tx (2, 0xff, tmp);
-		PORTD |= (_BV(PD5));
-		RFM12_INT_OFF();
-		
-		//disable receiver - is this needed?
-		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
-	
-		//set mode for interrupt handler
-	//	rfm12_mode = MODE_TX;
-		
-		//fill 2byte 0xAA preamble into data register
-		//this is explicitly done, just to be sure
-		//(hint: the tx FIFO [if el is enabled] is two staged, so we can safely write 2 bytes before starting)
-		rfm12_data(RFM12_CMD_TX | PREAMBLE);
-		rfm12_data(RFM12_CMD_TX | PREAMBLE);
-		rfm12_data(RFM12_CMD_TX | PREAMBLE);
-		rfm12_data(RFM12_CMD_TX | PREAMBLE);
-		
-		//set ET in power register to enable transmission
-		//(hint: TX starts now)
-		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);
-	
-		RFM12_INT_ON();
-		PORTD &= ~(_BV(PD5));
-	}
-	TCNT0 = 157; /* set timer register so that the next iteration will be in 400 microseconds */
-
-
-	/* 2 bytes preamble, 2 bytes airlab, 1 byte data == 40 bytes -> 40 byte/400 microseconds */
-	
-	//rfm12_tick();
-
-	msk >>= 1;
-
-	if (!msk)
-	{
-		msk = 0x80000000;
-		transmissions--;
-	}
-
-}
-#else
+#if 1
 ISR (TIMER0_OVF_vect)
 {
 	static uint8_t pauseticks = 0;
@@ -95,19 +45,14 @@ ISR (TIMER0_OVF_vect)
 	
 	PORTD |= (_BV(PD5));
 
-	rfm12_tick();
-	rfm12_tick();
-	rfm12_tick();
-	rfm12_tick();
-
 	if ((uint32_t) switchcodes[0] & (uint32_t) msk)
 	{
-		rfm12_tx (6, 0xaa, tmp);
+		rfm12_tx (9, 0xaa, tmp);
 		TCNT0 = 10;
 	} else
 	{
-		rfm12_tx (0, 0xaa, tmp);
-		TCNT0 = 70;
+		rfm12_tx (1, 0xaa, tmp);
+		TCNT0 = 40;
 	}
 
 	msk >>= 1;
@@ -116,8 +61,9 @@ ISR (TIMER0_OVF_vect)
 	{
 		msk = 0x80000000;
 		transmissions--;
-		pauseticks = 10;
+		pauseticks = 0;
 	}
+	rfm12_tick();
 
 	PORTD &= ~(_BV(PD5));
 }

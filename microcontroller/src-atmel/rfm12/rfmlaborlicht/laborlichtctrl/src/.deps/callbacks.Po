@@ -364,7 +364,7 @@ callbacks.o callbacks.o: callbacks.c config.h /usr/include/unistd.h \
   /usr/include/sys/select.h /usr/include/bits/select.h \
   /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h \
   /usr/include/bits/pthreadtypes.h /usr/include/alloca.h \
-  ../../../../../rfm12usb/common/rfm12_buffer_size.h
+  ../../../rfm12usb/common/rfm12_buffer_size.h
 
 config.h:
 
@@ -1210,4 +1210,4 @@ usbstuff.h:
 
 /usr/include/alloca.h:
 
-../../../../../rfm12usb/common/rfm12_buffer_size.h:
+../../../rfm12usb/common/rfm12_buffer_size.h:
