@@ -17,6 +17,8 @@
 #define PORTFL PORTC
 #define DDRFL DDRC
 
+/* number of seconds before rfmlight starts autonomous fading */
+#define CONF_TIMEOUT 2
 
 #if F_CPU == 16000000
 uint16_t PROGMEM timeTable [] = { 0, 0, 0, 0, 0, 0, 0, 0, 210, 56, 62, 69, 75, 82, 89, 95, 102, 108, 115, 121, 128, 
@@ -48,10 +50,12 @@ uint16_t PROGMEM timeTable [] = { 0, 0, 0, 0, 0, 0, 0, 0, 105, 28, 31, 35, 75, 3
 #endif
 
 uint8_t color[3] = {0, 0, 0}; 
+volatile uint8_t seconds = 0, timeoutticks = 0;
 
 
 SIGNAL(SIG_OUTPUT_COMPARE1A) {
 	static uint8_t bright = 7;
+	static uint16_t secticks = 0;
 	TCNT1 = 0;
 	OCR1A  = PW(timeTable[++bright]);
 
@@ -72,23 +76,31 @@ SIGNAL(SIG_OUTPUT_COMPARE1A) {
 	}
 	if (bright == 255)
 		bright = 7;
+	
+	secticks++;
+	if (secticks != 64000) return;
+	
+	timeoutticks++;
+	seconds++;
+	secticks = 0;
 }
 
 
-void timer1_init() {
+void timer1_init()
+{
 	TCCR1A = 0; 			
-	TCCR1B = 1;		// Counter clk
-	OCR1A  = 250;		
+	TCCR1B = 1;		// Counter clk (once per clockcycle)
+	OCR1A  = 250;
 	TCNT1  = 0;
 	TIFR   = (1 << OCF1A);
 	TIMSK  = (1 << OCIE1A);
-	
 }
 
 
-void fadeToColor(uint8_t *fadeColor, uint8_t steps) {
-	uint8_t i;
-	int16_t helpColor[3], addColor[3];
+void fadeToColor(uint8_t *fadeColor, uint8_t steps)
+{
+	static uint16_t i;
+	static int16_t helpColor[3], addColor[3];
 	
 	if (!steps)
 		return;
@@ -101,14 +113,19 @@ void fadeToColor(uint8_t *fadeColor, uint8_t steps) {
 	addColor[1] = ((fadeColor[1]*128)-helpColor[1])/(int16_t)steps;
 	addColor[2] = ((fadeColor[2]*128)-helpColor[2])/(int16_t)steps;
 	
-	for (i = 0; i < steps; ++i) {
+//	for (i = 0; i < steps; ++i)
+	++i;
+	{
 		helpColor[0] += addColor[0];
 		helpColor[1] += addColor[1];
 		helpColor[2] += addColor[2];
 		color[0] = (helpColor[0]+64)/128;
 		color[1] = (helpColor[1]+64)/128;
 		color[2] = (helpColor[2]+64)/128;
+		_delay_ms (10);
 	}
+
+	if (i >= steps) i = 0;
 	color[0] = fadeColor[0];
 	color[1] = fadeColor[1];
 	color[2] = fadeColor[2];
@@ -124,21 +141,41 @@ void rlight_process_msg (uint8_t *in_buf)
 
 	switch (in_buf[0])
 	{
-		case RLIGHT_FADETO:
+		case RLIGHT_SETCOLOR:
 			if (rfm12_rx_len() < 4) return;
 			for (i=1;i<4;i++)
 				mycolor[i-1] = in_buf[i];
 			
+			fadeToColor (mycolor, 1);
+			seconds = 0;
+		break;
+		case RLIGHT_FADETO:
+			if (rfm12_rx_len() < 4) return;
 			tmp = 128;
-			fadeToColor (mycolor, tmp);
+			for (i=1;i<4;i++)
+				mycolor[i-1] = in_buf[i];
+			fadeToColor (mycolor, tmp);	
+			seconds = 0;
 		break;
 	}
 }
+
+volatile uint8_t fadecolors[6][3] = 
+{
+	{0xff, 0x00, 0x00},
+	{0xff, 0xff, 0x00},
+	{0x00, 0xff, 0x00},
+	{0x00, 0xff, 0xff},
+	{0x00, 0x00, 0xff},
+	{0xff, 0x00, 0xff}
+};
 
 int main(void)
 {
 	const uint8_t PROGMEM strhello[] = "LABORLICHT ALIVE!\r\n";
 	uint8_t *rxbuf;
+	uint8_t currentcolor = 0; 
+	uint8_t csteps;
 	// Initialiesierung
 	DDRFL = 0xff;
 	PORTFL = 0x00;
@@ -171,6 +208,24 @@ int main(void)
 
 			rlight_process_msg (rxbuf);
 			rfm12_rx_clear();
+		}
+
+		if (seconds > CONF_TIMEOUT)
+		{
+			seconds = CONF_TIMEOUT+1;
+			
+			if (timeoutticks != 3) continue;
+			csteps = 250;
+			timeoutticks = 0;
+			currentcolor++;
+			if (currentcolor == 6) currentcolor = 0;
+
+		}
+
+		if (csteps)
+		{
+			fadeToColor (fadecolors[currentcolor], csteps);
+			csteps = 0;
 		}
 	}
 	  

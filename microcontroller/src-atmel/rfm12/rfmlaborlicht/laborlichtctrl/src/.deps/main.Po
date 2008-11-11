@@ -363,7 +363,7 @@ main.o main.o: main.c config.h /usr/include/gtk-2.0/gtk/gtk.h \
   /usr/include/sys/sysmacros.h /usr/include/bits/pthreadtypes.h \
   /usr/include/alloca.h interface.h support.h usbstuff.h \
   /usr/include/stdint.h /usr/include/bits/wchar.h \
-  ../../../../../rfm12usb/common/rfm12_buffer_size.h
+  ../../../rfm12usb/common/rfm12_buffer_size.h
 
 config.h:
 
@@ -1205,4 +1205,4 @@ usbstuff.h:
 
 /usr/include/bits/wchar.h:
 
-../../../../../rfm12usb/common/rfm12_buffer_size.h:
+../../../rfm12usb/common/rfm12_buffer_size.h:
