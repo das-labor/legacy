@@ -1,4 +1,4 @@
-#ruby
+#!/usr/bin/ruby
 #
 # License: GPLv3
 # Author: Daniel Otte (daniel.otte@rub.de)
@@ -31,15 +31,15 @@ end
 def handle_line(line)
   rid = nil
   if(m = /^([\w_][\w._]*):(.*)/.match(line))
+    return nil if m[2].strip == ''
     rid = get_id(m[1])
-    if(m[2])
-      s = m[2].split
-      s.each do |x|
-        lid = get_id(x)
-        new_connection(rid, lid)
-      end
-    end  
+    s = m[2].split
+    s.each do |x|
+      lid = get_id(x)
+      new_connection(rid, lid)
+    end
   end
+  nil
 end
 
 ###############
