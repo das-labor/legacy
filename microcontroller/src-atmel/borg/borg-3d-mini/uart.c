@@ -9,7 +9,7 @@
 #include <avr/io.h>
 
 
-void uart_init(){
+void uart_init() {
 	PORTD |= 0x01;					//Pullup an RXD an
 
 	UCSRB |= (1<<TXEN);				//UART TX einschalten
@@ -17,8 +17,8 @@ void uart_init(){
 
 	UCSRB |= ( 1 << RXEN );			//Uart RX einschalten
 
-	UBRRH=(uint8_t) (UART_BAUD_CALC(UART_BAUD_RATE,F_CPU)>>8);
-	UBRRL=(uint8_t) UART_BAUD_CALC(UART_BAUD_RATE,F_CPU);
+	UBRRH  = (uint8_t) (UART_BAUD_CALC(UART_BAUD_RATE,F_CPU) >> 8);
+	UBRRL  = (uint8_t)  UART_BAUD_CALC(UART_BAUD_RATE,F_CPU);
 }
 
 void uart_putc(uint8_t c){
@@ -27,8 +27,15 @@ void uart_putc(uint8_t c){
 
 }
 
+void uart_putstr(char *p) {
+	while (*p != 0) {
+		uart_putc(*p++);
+
+	}
+}
+
 /* Zeichen empfangen */
-uint8_t uart_getc(){
+uint8_t uart_getc() {
     while (!(UCSRA & (1<<RXC)));  // warten bis Zeichen verfuegbar
     return UDR;                   // Zeichen aus UDR an Aufrufer zurueckgeben
 }

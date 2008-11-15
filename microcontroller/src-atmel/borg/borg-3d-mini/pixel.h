@@ -2,11 +2,14 @@
 extern unsigned char shl_table[];
 #endif
 
-
 #define NUMPLANE 3
 
+#define MAXBRITH 3
+#define MAX_Z    3
+#define MAX_Y    3
+
 #ifndef MAIN_C
-extern unsigned char pixmap[NUMPLANE][6];
+extern unsigned char pixmap[MAXBRITH][MAX_Z][MAX_Y];
 #endif
 
 typedef struct {
