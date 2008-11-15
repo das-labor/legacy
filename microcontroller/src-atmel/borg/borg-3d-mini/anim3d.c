@@ -2,7 +2,6 @@
 #include "util.h"
 #include "pixel.h"
 #include "anim3d.h"
-#include "display.h"
 
 void test1() {
 	unsigned char x, y, z;

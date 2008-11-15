@@ -4,32 +4,26 @@
 
 unsigned char shl_table[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
 
-
 void clear_screen(unsigned char value){
-	unsigned char x, plane;
-	for (plane = 0; plane < NUMPLANE; plane++) {
-		for (x = 0; x < 6; x++) {
-			pixmap[plane][x] = 0;
+	unsigned char z, y;
+	unsigned char brith;
+	for (brith = 0; brith < 3; brith++) {
+		for (z = 0; z < 3; z++) {
+			for (y = 0; y < 6; y++) {
+				pixmap[brith][z][y] = 0;
+			}
 		}
 	}
 }
 
 void setpixel3d(pixel3d p, unsigned char value ) {
-	signed char plane;
+	signed char brith;
 
-	for (plane=0; plane<NUMPLANE; plane++) {
-		if ( plane < value ) { 
-			switch (p.y) { 
-				case 0: pixmap[plane][(p.x%3)+3] |= shl_table[p.z%3]; break;
-				case 1: pixmap[plane][p.x%3] |= shl_table[p.z%3]; break;
-				case 2: pixmap[plane][p.x%3] |= shl_table[(p.z%3)+3]; break;
-			}
+	for (brith = 0; brith < 3; brith++) {
+		if ( brith < value ) { 
+			pixmap[brith][p.z][p.y] |=  shl_table[p.x];
 		} else {
-			switch (p.y) { 
-				case 0: pixmap[plane][(p.x%3)+3] &= ~shl_table[p.z%3]; break;
-				case 1: pixmap[plane][p.x%3] &= ~shl_table[p.z%3]; break;
-				case 2: pixmap[plane][p.x%3] &= ~shl_table[(p.z%3)+3]; break;
-			}
+			pixmap[brith][p.z][p.y] &= ~shl_table[p.x];
 		}
 	}
 }
@@ -37,20 +31,11 @@ void setpixel3d(pixel3d p, unsigned char value ) {
 void clearpixel3d(pixel3d p){
 	unsigned char plane;
 	for (plane=0; plane<NUMPLANE; plane++)
-		switch (p.y) { 
-			case 0: pixmap[plane][(p.x%3)+3] &= ~shl_table[p.z%3]; break;
-			case 1: pixmap[plane][p.x%3] &= ~shl_table[p.z%3]; break;
-			case 2: pixmap[plane][p.x%3] &= ~shl_table[(p.z%3)+3]; break;
-		}
+		pixmap[plane][p.z][p.y] &= ~shl_table[p.x];
 }
 
 unsigned char get_pixel3d(pixel3d p){ // XXX
-	switch (p.y) { 
-		case 0:  return (pixmap[0][(p.x%3)+3] & shl_table[p.z%3])?1:0; break;
-		case 1:  return (pixmap[0][p.x%3] & shl_table[p.z%3])?1:0; break;
-		case 2:  return (pixmap[0][p.x%3] & shl_table[(p.z%3)+3])?1:0; break;
-	}
-	return 1;	
+	return (pixmap[0][p.z][p.y] & shl_table[p.x])?1:0;
 }
 
 unsigned char get_next_pixel3d(pixel3d p, direction dir) {
