@@ -11,13 +11,12 @@
 #include <stdint.h>
 #include <string.h>
 
-uint8_t random_state[16];
-uint8_t random_key[16];
-
+static uint8_t random_state[16];
+static uint8_t random_key[16];
+static uint8_t i=0;
 
 uint8_t random8(void){
 	static uint8_t sr[16];
-	static uint8_t i=0;	
 	
 	if(i==0){
 		noekeon_enc(random_state, random_key);
@@ -30,6 +29,7 @@ uint8_t random8(void){
 }
 
 void random_block(void* dest){
+	i=0;
 	noekeon_enc(random_state, random_key);
 	memcpy(dest, random_state, 16);
 }
