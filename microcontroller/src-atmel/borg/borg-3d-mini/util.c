@@ -16,12 +16,28 @@ void wait(int ms){
 		 1    1    0       clk/256
 		 1    1    1       clk/1024	
 */
+
+/*
 	TCCR2 = 0x0D;	//CTC Mode, clk/128
 	OCR2 = (F_CPU/128000);	//1000Hz 
 	for(;ms>0;ms--){
 		while(!(TIFR&0x80));	//wait for compare matzch flag
 		TIFR=0x80;		//reset flag
 	}
+*/
+	
+	for(;ms>0;ms--){
+	
+		volatile uint16_t x=500;
+
+		while(x--);
+	
+	}
+
+	
+
+
+
 }
 
 
