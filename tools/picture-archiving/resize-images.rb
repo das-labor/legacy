@@ -40,6 +40,7 @@ def process_images(dir)
 				resize_image(fimg)
 			end
 		end
+		GC.start
 	}
 end
 
