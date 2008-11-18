@@ -35,11 +35,13 @@ main (int argc, char *argv[])
    * the project. Delete any components that you don't want shown initially.
    */
   main = create_main ();
+  read_questions ("questions.txt");
   vote_init (main);
+  //startquest();
   gtk_widget_show (main);
+update_txtfield ("Test your buttons!");
 
 
   gtk_main ();
   return 0;
 }
-

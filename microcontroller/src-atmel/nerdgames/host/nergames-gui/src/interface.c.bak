@@ -38,7 +38,9 @@ create_main (void)
   GtkWidget *btn_c2;
   GtkWidget *btn_c3;
   GtkWidget *btn_c4;
+  GtkWidget *vbox2;
   GtkWidget *lbl_question;
+  GtkWidget *img_main;
   GtkWidget *hbuttonbox1;
   GtkWidget *btn_backwards;
   GtkWidget *btn_mode;
@@ -74,7 +76,7 @@ create_main (void)
 
   hbuttonbox2 = gtk_hbutton_box_new ();
   gtk_widget_show (hbuttonbox2);
-  gtk_box_pack_start (GTK_BOX (vbox1), hbuttonbox2, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox1), hbuttonbox2, FALSE, TRUE, 0);
 
   btn_c1 = gtk_button_new_with_mnemonic (_("1"));
   gtk_widget_show (btn_c1);
@@ -83,7 +85,7 @@ create_main (void)
   gtk_container_set_border_width (GTK_CONTAINER (btn_c1), 1);
   GTK_WIDGET_SET_FLAGS (btn_c1, GTK_CAN_DEFAULT);
   gtk_widget_add_accelerator (btn_c1, "clicked", accel_group,
-                              GDK_1, (GdkModifierType) 0,
+                              GDK_G, (GdkModifierType) GDK_SHIFT_MASK,
                               GTK_ACCEL_VISIBLE);
 
   btn_c2 = gtk_button_new_with_mnemonic (_("2"));
@@ -92,7 +94,7 @@ create_main (void)
   gtk_widget_set_size_request (btn_c2, 100, 100);
   GTK_WIDGET_SET_FLAGS (btn_c2, GTK_CAN_DEFAULT);
   gtk_widget_add_accelerator (btn_c2, "clicked", accel_group,
-                              GDK_2, (GdkModifierType) 0,
+                              GDK_I, (GdkModifierType) GDK_SHIFT_MASK,
                               GTK_ACCEL_VISIBLE);
 
   btn_c3 = gtk_button_new_with_mnemonic (_("3"));
@@ -101,11 +103,10 @@ create_main (void)
   gtk_widget_set_size_request (btn_c3, 100, 100);
   GTK_WIDGET_SET_FLAGS (btn_c3, GTK_CAN_DEFAULT);
   gtk_widget_add_accelerator (btn_c3, "clicked", accel_group,
-                              GDK_3, (GdkModifierType) 0,
+                              GDK_J, (GdkModifierType) GDK_SHIFT_MASK,
                               GTK_ACCEL_VISIBLE);
 
   btn_c4 = gtk_button_new_with_mnemonic (_("4"));
-  gtk_widget_show (btn_c4);
   gtk_container_add (GTK_CONTAINER (hbuttonbox2), btn_c4);
   gtk_widget_set_size_request (btn_c4, 100, 100);
   GTK_WIDGET_SET_FLAGS (btn_c4, GTK_CAN_DEFAULT);
@@ -113,15 +114,23 @@ create_main (void)
                               GDK_4, (GdkModifierType) 0,
                               GTK_ACCEL_VISIBLE);
 
+  vbox2 = gtk_vbox_new (FALSE, 0);
+  gtk_widget_show (vbox2);
+  gtk_box_pack_start (GTK_BOX (vbox1), vbox2, TRUE, TRUE, 0);
+
   lbl_question = gtk_label_new (_("<span foreground=\"blue\" size=\"xx-large\">Blue text</span>"));
   gtk_widget_show (lbl_question);
-  gtk_box_pack_start (GTK_BOX (vbox1), lbl_question, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox2), lbl_question, TRUE, FALSE, 0);
   gtk_label_set_use_markup (GTK_LABEL (lbl_question), TRUE);
   gtk_label_set_line_wrap (GTK_LABEL (lbl_question), TRUE);
 
+  img_main = create_pixmap (main, NULL);
+  gtk_widget_show (img_main);
+  gtk_box_pack_start (GTK_BOX (vbox2), img_main, TRUE, TRUE, 0);
+
   hbuttonbox1 = gtk_hbutton_box_new ();
   gtk_widget_show (hbuttonbox1);
-  gtk_box_pack_start (GTK_BOX (vbox1), hbuttonbox1, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox1), hbuttonbox1, FALSE, TRUE, 0);
 
   btn_backwards = gtk_button_new_from_stock ("gtk-go-back");
   gtk_widget_show (btn_backwards);
@@ -216,7 +225,9 @@ create_main (void)
   GLADE_HOOKUP_OBJECT (main, btn_c2, "btn_c2");
   GLADE_HOOKUP_OBJECT (main, btn_c3, "btn_c3");
   GLADE_HOOKUP_OBJECT (main, btn_c4, "btn_c4");
+  GLADE_HOOKUP_OBJECT (main, vbox2, "vbox2");
   GLADE_HOOKUP_OBJECT (main, lbl_question, "lbl_question");
+  GLADE_HOOKUP_OBJECT (main, img_main, "img_main");
   GLADE_HOOKUP_OBJECT (main, hbuttonbox1, "hbuttonbox1");
   GLADE_HOOKUP_OBJECT (main, btn_backwards, "btn_backwards");
   GLADE_HOOKUP_OBJECT (main, btn_mode, "btn_mode");

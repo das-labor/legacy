@@ -15,4 +15,17 @@ static int votecounter[4] = {0, 0, 0, 0};
 
 void setvote (uint8_t in_num, GtkButton *in_btn);
 uint8_t getvote (void);
+void countvote (void);
+void resetvote ();
+void togglevotemode();
+void update_txtfield (char *in_string);
 void vote_init (GtkButton *in_btn);
+
+typedef struct
+{
+	int qlen, ilen, alen;
+	char *question;
+	char *image;
+	char *answer;
+	void *next;
+} question_t;
