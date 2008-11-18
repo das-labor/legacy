@@ -70,7 +70,7 @@ void nf_exit (int in_signal)
 #ifdef WIN32
 void winexit(void)
 {
-    nf_exit(128);
+    nf_exit(0);
 }
 #endif
 
@@ -576,7 +576,11 @@ int main (int argc, char* argv[])
 
 		//flashing done
 		if(istate == 2)
+		{
+		    printf("Done!\n");
+
             break;
+		}
 
 		//this is done to prevent stressing the usb connection too much
 		usleep (1000);
