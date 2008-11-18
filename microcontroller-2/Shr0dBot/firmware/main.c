@@ -272,7 +272,7 @@ void radio_debug()
 void radio_comm(void)
 {
 	//receive
-	/*if(rfm12_rx_status() == STATUS_COMPLETE)
+	if(rfm12_rx_status() == STATUS_COMPLETE)
 	{
 		//process "valid" robo type packets, drop all others
 		if((rfm12_rx_type() == RADIO_TYPE_ROBO) && (rfm12_rx_len() == 3))
@@ -298,7 +298,7 @@ void radio_comm(void)
 
 		//clear and switch receive buffer
 		rfm12_rx_clear();
-	}*/
+	}
 
 	//send debug information
 	radio_debug();
@@ -571,7 +571,7 @@ int main(void)
 		}
 
 		//use joystick control
-		drive_joy();
+		//drive_joy();
 
 
 		//radio communication
