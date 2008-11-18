@@ -15,6 +15,49 @@
 #include "../../common/usb_id.h"
 #include "../../common/requests.h"
 
+
+//connect extended function
+//returns != 0 on error
+int rfmusb_ConnectEx(usb_dev_handle * handle, int vid, int pid, char *vendor, char *product)
+{
+	/* usb setup */
+	usb_init();
+
+	return usbOpenDevice (handle, vid, vendor, pid, product, NULL, NULL, NULL);
+}
+
+//connect function
+//returns != 0 on error
+int rfmusb_Connect(usb_dev_handle * handle)
+{
+	int vid, pid;
+
+	const unsigned char rawVid[2] =
+	{
+		USB_CFG_VENDOR_ID
+	},
+	rawPid[2] =
+	{
+		USB_CFG_DEVICE_ID
+	};
+
+	char vendor[] =
+	{
+		USB_CFG_VENDOR_NAME, 0
+	},
+	product[] =
+	{
+		USB_CFG_DEVICE_NAME, 0
+	};
+
+	vid = rawVid[1] * 256 + rawVid[0];
+	pid = rawPid[1] * 256 + rawPid[0];
+
+    //try to open the device
+	return rfmusb_ConnectEx(handle, vid, pid, vendor, product);
+}
+
+
 //move to common header soon
 #define RADIO_TXBUFFER_HEADER_LEN 2
 int rfmusb_TxPacket (rfmusb_dev_handle *udhandle, unsigned char type, unsigned char len, unsigned char *data)
