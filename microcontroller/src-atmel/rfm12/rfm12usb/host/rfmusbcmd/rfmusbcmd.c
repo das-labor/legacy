@@ -1,3 +1,12 @@
+/* Utility functions for receiving and transmitting data from and to the target device.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 as published
+ * by the Free Software Foundation.
+ *
+ * Copyright (c) Hans-Gert Dahmen <sexyludernatascha@gmail.com>, Soeren Heisrath <forename@surname.org>
+ */
+
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
@@ -8,6 +17,9 @@
 
 //for simple usbOpenDevice
 #include "../common/opendevice.h"
+
+//use my usb driver
+#include "../CDriver/RfmUsb.h"
 
 //common includes
 #include "../../common/usb_id.h"
@@ -21,26 +33,14 @@
 #endif
 
 
-#define RADIO_TXBUFFER_HEADER_LEN 2
-#define DEFAULT_USB_TIMEOUT 1000
-
-//tx and rx raw packet buffer struct
-typedef struct{
-	unsigned char len;			                       //length byte - number of bytes in buffer
-	unsigned char type;			                       //type field for airlab
-	unsigned char buffer[RFM12_BUFFER_SIZE];     //generic buffer
-} radio_packetbuffer;
-
-
 //globals
 usb_dev_handle *udhandle = NULL;
-radio_packetbuffer packetBuffer;
+rfmusb_packetbuffer packetBuffer;
+
 
 //forward declarations
 void sig_cleanup(int in_signum);
 int radio_rx_dump(void);
-int radio_rx(void);
-int radio_tx(unsigned char len, unsigned char type, unsigned char *data);
 void UI_main_menu(void);
 void UI_menu_show(void);
 void UI_send_raw(void);
@@ -57,14 +57,8 @@ int radio_rx_dump(void)
         //rate limit (don't be faster than 10us for a 16MHz device
         usleep(10);
 
-        //clear buffer
-        memset (&packetBuffer, 0x00, sizeof(packetBuffer));
-
         //request raw packet
-        packetLen = usb_control_msg (udhandle,
-        		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
-        		RFMUSB_RQ_RFM12_GET, 0, 0, (char *)&packetBuffer, sizeof(packetBuffer),
-        		DEFAULT_USB_TIMEOUT);
+        packetLen = rfmusb_RxPacket (udhandle, &packetBuffer);
 
         //if something has been received
         if (packetLen > 0)
@@ -88,44 +82,6 @@ int radio_rx_dump(void)
     }
     //FIXME: implement nicer way to quit the packetdump than ctrl+c
     while(42);
-}
-
-
-//receive a packet into the standard packet buffer
-int radio_rx(void)
-{
-    //clear buffer
-    memset (&packetBuffer, 0x00, sizeof(packetBuffer));
-
-    //request raw packet and return length
-    return usb_control_msg (udhandle,
-            USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
-            RFMUSB_RQ_RFM12_GET, 0, 0, (char *)&packetBuffer, sizeof(packetBuffer),
-            DEFAULT_USB_TIMEOUT);
-}
-
-
-//transmit a packet
-int radio_tx(unsigned char len, unsigned char type, unsigned char *data)
-{
-    radio_packetbuffer buf;
-    int packetLen;
-
-    //trim packet length
-    packetLen = RADIO_TXBUFFER_HEADER_LEN + ((len > RFM12_BUFFER_SIZE)?RFM12_BUFFER_SIZE:len);
-
-    //setup buffer
-    buf.len = len;
-    buf.type = type;
-
-    //copy data
-    memcpy(buf.buffer, data, len);
-
-    //request to send packet and return result
-    return usb_control_msg (udhandle,
-        USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
-        RFMUSB_RQ_RFM12_PUT, 0, 0, (char *)&buf, packetLen,
-        DEFAULT_USB_TIMEOUT);
 }
 
 
@@ -159,7 +115,7 @@ void UI_send_raw()
     }
 
     //directly tx packet
-    radio_tx(length, type, buf);
+	rfmusb_TxPacket (udhandle, type, length, buf);
 }
 
 
@@ -176,10 +132,9 @@ void UI_menu_show(void)
 
 void UI_main_menu(void)
 {
-    int choice, run;
+    int choice;
 
-    run = 23 + 42 + 31337;
-    while(run)
+    do
 	{
         UI_menu_show();
 
@@ -188,10 +143,6 @@ void UI_main_menu(void)
 
         switch(choice)
         {
-            case 0:
-                run = 0;
-                break;
-
             case 1:
                 radio_rx_dump();
                 break;
@@ -204,6 +155,7 @@ void UI_main_menu(void)
                 break;
         }
     }
+	while(choice);
 
     printf("Exiting.\n");
 }
@@ -211,26 +163,6 @@ void UI_main_menu(void)
 
 int main(int argc, char *argv[])
 {
-	int vid, pid;
-
-	const unsigned char rawVid[2] =
-	{
-		USB_CFG_VENDOR_ID
-	},
-	rawPid[2] =
-	{
-		USB_CFG_DEVICE_ID
-	};
-
-	char vendor[] =
-	{
-		USB_CFG_VENDOR_NAME, 0
-	},
-	product[] =
-	{
-		USB_CFG_DEVICE_NAME, 0
-	};
-
 	/* signals */
 #ifndef WIN32
 	signal (SIGKILL, sig_cleanup);
@@ -238,20 +170,14 @@ int main(int argc, char *argv[])
 	signal (SIGHUP, sig_cleanup);
 #endif
 
-	usb_init();
-
-	/* usb setup */
-	vid = rawVid[1] * 256 + rawVid[0];
-	pid = rawPid[1] * 256 + rawPid[0];
-
     //try to open the device
-	if (usbOpenDevice (&udhandle, vid, vendor, pid, product, NULL, NULL, NULL) != 0)
+	if (rfmusb_Connect(&udhandle) != 0)
 	{
-		printf ("Can't find USB Device w/ uid %04X, pid %04X\r\n", vid, pid);
+		printf ("Can't find RfmUSB Device\r\n");
 		sig_cleanup(__LINE__ * -1);
 		return __LINE__ * -1;
 	}
-#ifndef WIN32	
+#ifndef WIN32
 	setuid(19928);
 #endif
 
