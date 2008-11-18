@@ -4,7 +4,7 @@
  * under the terms of the GNU General Public License version 2 as published
  * by the Free Software Foundation.
  *
- * Copyright (c) Soeren Heisrath <forename@surname.org>
+ * Copyright (c) Hans-Gert Dahmen <sexyludernatascha@gmail.com>, Soeren Heisrath <forename@surname.org>
  */
 
 #include <usb.h>
