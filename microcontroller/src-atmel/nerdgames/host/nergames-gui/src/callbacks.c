@@ -68,8 +68,27 @@ void
 on_btn_forward_clicked                 (GtkButton       *button,
                                         gpointer         user_data)
 {
+	static uint8_t mystate = 1;
+	static uint_fast8_t init_done = 0;
+
 	countvote();
 	resetvote();
+	
+	init_done = (!init_done) ? 1 : 1;
+
+	if (mystate == 1)
+	{
+		nextquestion();
+		displayquestion();
+		mystate = 0;
+		gtk_button_set_label (button, "Solve");
+	}
+	else
+	{
+		gtk_button_set_label (button, "Next");
+		resolvequestion();
+		mystate = 1;
+	}
 }
 
 
