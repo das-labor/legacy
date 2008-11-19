@@ -1,0 +1,39 @@
+
+mainmenu_name "Borg Configuration"
+
+###################### General Setup Menu #####################################
+mainmenu_option next_comment
+comment "General Setup"
+
+#bool 'Prompt for experimental code' CONFIG_EXPERIMENTAL
+
+choice 'Target MCU'			\
+   "ATmega8                atmega8	\
+    ATmega32		           atmega32	\
+    ATmega644              atmega644	\
+    ATmega644p             atmega644p"	\
+   'ATmega32' MCU 
+
+int "MCU frequency" F_CPU 16000000
+
+
+endmenu
+###############################################################################
+
+###################### Borg Hardware Menu #####################################
+mainmenu_option next_comment
+comment "Borg Hardware"
+
+choice 'Hardware Driver'			\
+   "Borg-16                BORG_16 \
+    Andre-borg             BORG_ANDRE \
+    Laufschrift-borg	     BORG_LS \
+    Borg-mini              BORG_MINI" \
+   'Borg-16' BORG_HW
+
+
+endmenu
+
+
+###############################################################################
+
