@@ -5,46 +5,28 @@
 
 #include <avr/io.h>
 #include <avr/pgmspace.h>
+#include <util/delay.h>
 #include "hd44780.h"
 //set this for 4bit mode
 //The Data Lines 7:4 shall be connected to the Display Port 3:0 then
 
-//#define IF4BIT
+#define IF4BIT
 
-#ifdef FAXFRONT
+#define PIN_RS PD4
+#define PIN_RW PD7
+#define PIN_E  PD5
 
-#undef IF4BIT
-#define PIN_RS PD7
-#define PIN_E  PD6
-#define PIN_RW PD5
-
+//Port, to which the Datalines of the Display are connected
 #define DISP_DDR_D DDRA
 #define DISP_PORT_D PORTA
 #define DISP_PIN PINA
 
+//Port, to which the Control Lines of the Display are connected
 #define DISP_DDR_C DDRD
 #define DISP_PORT_C PORTD
 
-#else
-
-#define PIN_RS PC1
-#define PIN_RW PC3
-#define PIN_E  PC2
-
-//Port, to which the Datalines of the Display are connected
-#define DISP_DDR_D DDRD
-#define DISP_PORT_D PORTD
-#define DISP_PIN PIND
-
-//Port, to which the Control Lines of the Display are connected
-#define DISP_DDR_C DDRC
-#define DISP_PORT_C PORTC
-
-#define DISP_LEN 24
+#define DISP_LEN 16
 #define DISP_LINES 2
-
-
-#endif
 
 
 /* Instructions */
@@ -59,14 +41,13 @@
 
 
 void wait50ms(){
-	uint16_t x; char y;
-	for (y=1;y<8;y++){
-		for (x=1;x<50000;x++){};
-	}
+	uint8_t x;
+        for(x=0;x<50;x++){
+        	_delay_ms(1);
+        }
 }
 void wait200us(){
-	uint8_t x;
-	for (x=1;x<200;x++){};
+	_delay_us(100);
 }
 
 void hd44780_send(uint8_t data){
