@@ -3,6 +3,9 @@ TOPDIR = .
 
 SRC = \
 	main.c \
+	eeprom_reserve.c \
+	pixel.c \
+	
 
 
 export TOPDIR
@@ -26,11 +29,12 @@ include defaults.mk
 
 .subdirs: autoconf.h
 	$(RM) -f $@
+	echo "SUBDIRS += borg_hw" >> $@
 	(for subdir in `grep -e "^#define .*_SUPPORT" autoconf.h \
 	      | sed -e "s/^#define //" -e "s/_SUPPORT.*//" \
 	      | tr "[A-Z]\\n" "[a-z] " `; do \
 	  test -d $$subdir && echo "SUBDIRS += $$subdir" ; \
-	done) | sort -u > $@
+	done) | sort -u >> $@
 
 ifneq ($(no_deps),t)
 ifneq ($(MAKECMDGOALS),clean)
@@ -52,7 +56,7 @@ compile-subdirs:
 	for dir in $(SUBDIRS); do make -C $$dir lib$$dir.a || exit 5; done
 
 .PHONY: compile-$(TARGET)
-compile-$(TARGET): compile-subdirs $(TARGET).hex $(TARGET).bin
+compile-$(TARGET): compile-subdirs $(TARGET).hex $(TARGET).bin $(TARGET).lst
 
 OBJECTS += $(patsubst %.c,%.o,${SRC})
 LINKLIBS = $(foreach subdir,$(SUBDIRS),$(subdir)/lib$(subdir).a)
@@ -89,12 +93,11 @@ endif
 %.eep.hex: %
 	$(OBJCOPY) --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 -O ihex -j .eeprom $< $@
 
-%.lss: %
+%.lst: %
 	$(OBJDUMP) -h -S $< > $@
 
 %-size: %.hex
 	$(SIZE) $<
-
 
 ##############################################################################
 CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
@@ -125,7 +128,7 @@ what-now-msg:
 ##############################################################################
 clean:
 	$(MAKE) -f rules.mk no_deps=t clean-common
-	$(RM) $(TARGET) $(TARGET).bin $(TARGET).hex pinning.c .subdirs
+	$(RM) $(TARGET) $(TARGET).bin $(TARGET).hex .subdirs
 	for subdir in `find . -type d`; do \
 	  test "x$$subdir" != "x." \
 	  && test -e $$subdir/Makefile \
@@ -136,16 +139,6 @@ mrproper:
 	$(RM) -f autoconf.h .config config.mk .menuconfig.log .config.old
 
 .PHONY: clean mrproper
-
-
-##############################################################################
-# MCU specific pinning code generation
-#
-PINNING_FILES=pinning/header.m4 pinning/generic.m4 pinning/$(MCU).m4 pinning/footer.m4
-pinning.c: $(PINNING_FILES) autoconf.h
-	m4 -I$(TOPDIR)/pinning `grep -e "^#define .*_SUPPORT" autoconf.h | \
-	  sed -e "s/^#define /-Dconf_/" -e "s/_SUPPORT.*//"` $(PINNING_FILES) > $@
-
 
 ##############################################################################
 # configure ethersex

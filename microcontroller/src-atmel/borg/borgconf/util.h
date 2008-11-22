@@ -1,2 +1,8 @@
+#ifndef UTIL_H
+#define UTIL_H
 
-#include "../borg-base/util.h"
+#include <avr/io.h>
+
+void wait(int ms);
+
+#endif
