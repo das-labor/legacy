@@ -14,7 +14,7 @@ choice 'Target MCU'			\
     ATmega644p             atmega644p"	\
    'ATmega32' MCU 
 
-int "MCU frequency" F_CPU 16000000
+int "MCU frequency" FREQ 16000000
 
 
 endmenu
@@ -24,11 +24,17 @@ endmenu
 mainmenu_option next_comment
 comment "Borg Hardware"
 
+int "Number of rows   " NUM_ROWS 16
+int "Number of columns" NUM_COLS 16
+int "Number of brightnes-levels" NUMPLANE 3
+
+
+
 choice 'Hardware Driver'			\
-   "Borg-16                BORG_16 \
-    Andre-borg             BORG_ANDRE \
-    Laufschrift-borg	     BORG_LS \
-    Borg-mini              BORG_MINI" \
+   "Borg-16                HW_BORG_16 \
+    Andre-borg             HW_BORG_ANDRE \
+    Laufschrift-borg	     HW_BORG_LS \
+    Borg-mini              HW_BORG_MINI" \
    'Borg-16' BORG_HW
 
 
@@ -36,4 +42,3 @@ endmenu
 
 
 ###############################################################################
-

@@ -939,7 +939,7 @@ function parse_config_files () {
 		echo -n "."
 		source ./$i
 	done
-	rm -f MCmenu*
+	#rm -f MCmenu*
 }
 
 #
