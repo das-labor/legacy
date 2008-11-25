@@ -1,0 +1,77 @@
+mainmenu_option next_comment
+comment "Borg16 port setup"
+
+#define COLPORT1  PORTC
+#define COLDDR1   DDRC
+
+#define COLPORT2  PORTA
+#define COLDDR2   DDRA
+
+#// Der andere Port übernimmt die Steuerung der Schieberegister
+#define ROWPORT PORTD
+#define ROWDDR   DDRD
+#// Clock und reset gehen gemeinsam an beide Schieberegister
+#// der reset pin ist negiert
+#define PIN_RST  PD4  
+#define PIN_CLK  PD6
+#//das dier sind die individuellen Dateneingänge für die Schieberegister
+#define PIN_SHFT1 PD7
+
+
+choice 'Column Port 1 (right)'			\
+   "PORTA  C \
+    PORTB  A \
+    PORTC  B \
+    PORTD  C" \
+   'PORTC' COLPORT1_LETTER 
+
+choice 'Column Port 2 (left)'			\
+   "PORTA  A \
+    PORTB  B \
+    PORTC  C \
+    PORTD  D" \
+   'PORTA' COLPORT2_LETTER 
+
+choice 'port for row shiftregisters'			\
+   "PORTA  D \
+    PORTB  A \
+    PORTC  B \
+    PORTD  C" \
+   'PORTD' ROWPORT_LETTER
+
+comment "pin numbers on shiftregister port"
+
+choice '/MCLR Pin'			\
+   "Pin0 PD4 \
+    Pin1 PD0 \
+    Pin2 PD1 \
+    Pin3 PD2 \
+    Pin4 PD3 \
+    Pin5 PD5 \
+    Pin6 PD6 \
+    Pin7 PD7" \
+   'Pin4' PIN_MCLR
+   
+choice 'CLK Pin'			\
+   "Pin0 PD6 \
+    Pin1 PD0 \
+    Pin2 PD1 \
+    Pin3 PD2 \
+    Pin4 PD3 \
+    Pin5 PD4 \
+    Pin6 PD5 \
+    Pin7 PD7" \
+   'Pin6' PIN_CLK
+   
+choice 'DATA Pin'			\
+   "Pin0 PD7 \
+    Pin1 PD0 \
+    Pin2 PD1 \
+    Pin3 PD2 \
+    Pin4 PD3 \
+    Pin5 PD4 \
+    Pin5 PD5 \
+    Pin6 PD6" \
+   'Pin7' PIN_DATA
+
+endmenu

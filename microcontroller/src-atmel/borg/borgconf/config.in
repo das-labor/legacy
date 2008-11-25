@@ -21,24 +21,5 @@ endmenu
 ###############################################################################
 
 ###################### Borg Hardware Menu #####################################
-mainmenu_option next_comment
-comment "Borg Hardware"
-
-int "Number of rows   " NUM_ROWS 16
-int "Number of columns" NUM_COLS 16
-int "Number of brightnes-levels" NUMPLANE 3
-
-
-
-choice 'Hardware Driver'			\
-   "Borg-16                HW_BORG_16 \
-    Andre-borg             HW_BORG_ANDRE \
-    Laufschrift-borg	     HW_BORG_LS \
-    Borg-mini              HW_BORG_MINI" \
-   'Borg-16' BORG_HW
-
-
-endmenu
-
-
+source borg_hw/config.in
 ###############################################################################

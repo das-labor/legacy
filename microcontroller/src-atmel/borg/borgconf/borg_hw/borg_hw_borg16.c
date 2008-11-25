@@ -6,7 +6,10 @@
 #include <avr/wdt.h>
 #include "borg_hw.h"
 
-// 16 Spalten insgesamt direkt gesteuert, dafür 2 Ports
+/*
+ Diese #defines werden nun durch menuconfig gesetzt
+
+ // 16 Spalten insgesamt direkt gesteuert, dafür 2 Ports
 #define COLPORT1  PORTC
 #define COLDDR1   DDRC
 
@@ -22,8 +25,8 @@
 #define PIN_CLK  PD6
 //das dier sind die individuellen Dateneingänge für die Schieberegister
 #define PIN_SHFT1 PD7
-
-
+*/
+ 
 //Der Puffer, in dem das aktuelle Bild gespeichert wird
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
