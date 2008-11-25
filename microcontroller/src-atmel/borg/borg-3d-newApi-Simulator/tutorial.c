@@ -7,9 +7,9 @@
  * One problem is that int on the avr is 16 bit and on the pc 32 bit. so please 
  * use short insted.
  * 
- * In order to write an new animation you'll have to write a function.
- * In this function you can use the api, that is defint in pixel3d.h. Please
- * read the documentation in the api.h and apic.
+ * In order to write a new animation you'll have to write a function.
+ * In this function you can use the api which is defined in pixel3d.h. Please
+ * read the documentation in the api.h and api.c.
  *
  */ 
  
@@ -20,25 +20,25 @@
  * Mit der Funktion setpixel3d(pixel3d p, unsigned char value)
  * können einzelne LEDs mit den Farbwert value gesetzt werden.
  * 0 = Aus   1 = Dunkel   2 = Mittel   3 = Hell
- * Welche LED gesetzt werden soll wird mit Hilfe der Strucktur pixel3d gemacht.
- * mit setpixel3d((pixel3d) {1, 2, 3}, 2); setzt man an der Position x = 1,
- * y = 2 und z = 3. Die z-Achse zeigt oben, x und y Achse verlaufen horizontal.
+ * Welche LED gesetzt werden soll wird mit Hilfe der Struktur pixel3d festgelegt.
+ * Mit setpixel3d((pixel3d) {1, 2, 3}, 2); setzt man die LED an der Position x = 1,
+ * y = 2 und z = 3. Die z-Achse zeigt nach oben, x und y Achse verlaufen horizontal.
  *      z ^   ^ y        
  *        |  /        
  *        | /          
  *        |/                
  *        -------> x
- * Die LED an dem Schnittpunkt der drei Achsen hat x=0, y=0 und z=0.    
+ * Die LED im Koordinatenursprung hat x=0, y=0 und z=0.    
  *
  * Mit der Funktion clear_screen(unsigned char value) kann der gesamte Würfel auf
  * einen Farbwerdet gesetzt werden.
  *
  * Mit der Funktion wait(unsigned int ms) wartet das Programm ms viele 
- * Milisekunken (tausentstel Sekunden).
+ * Milisekunken (tausendstel Sekunden).
  */
 
 /* Mit Hilfe der Funktion set_pixel3d() sollen alle 8 Ecken der Würfels zum 
- * leuchten gebracht werden und anschließend soll eine Sekunde gewarten werden.
+ * Leuchten gebracht werden und anschließend soll eine Sekunde gewarten werden.
  */
 void aufgabe1()
 {
@@ -46,11 +46,11 @@ void aufgabe1()
 }
 
 /* Tragen sie in der Datei displayLoop.c (sozusagen in der Playlist) die funktion
- * aufgabe2(); ein so dass sie vor aufgabe1(); ausgeführt wird.
+ * aufgabe2(); ein, so dass sie vor aufgabe1(); ausgeführt wird.
  * Und jetzt kommen wir zur eigentlichen Aufgabe.
- * Es sollen alle LEDs der untersten Ebene zum leuchten zu bringen. Ich empfehle
- * dafür 2 in einander geschachtelte for schleifen zu benutzen.
- * Anschließend soll wieder 1 Sekunde gewartet werden.
+ * Es sollen alle LEDs der untersten Ebene zum leuchten gebracht werden. Ich empfehle
+ * dafür 2 in eininander geschachtelte for-Schleifen zu benutzen.
+ * Anschließend soll wieder eine Sekunde gewartet werden.
  * (maximal 10 Zeilen, Zeilenlänge nicht über 80 Zeichen, ohne die Funktion
  *  set_plane())
  */  
@@ -75,8 +75,8 @@ void aufgabe3()
 	wait(1000);
 }
 
-/* programmieren sie begendes Strichmänchen. 
- * (Tip mit drawLine3D kann man konfortabel dreidimensionale linien zeichenen)
+/* Programmieren sie ein sich bewegendes Strichmänchen. 
+ * (Tip mit drawLine3D kann man komfortabel dreidimensionale Linien zeichenen.)
  */
 void aufgabe4()
 {
