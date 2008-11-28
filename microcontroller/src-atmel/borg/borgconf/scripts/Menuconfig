@@ -324,15 +324,28 @@ function choice () {
 	set -- $choices
 	firstchoice=$2
 
-	while [ -n "$2" ]
-	do
-		if eval [ \"_\$$2\" = \"_y\" ]
-		then
-			current=$1
-			break
-		fi
-		shift ; shift
-	done
+	if [ -n "$define_symbol" ]
+	then
+		while [ -n "$2" ]
+		do
+			if eval [ \"_\$$4\" == \"_$2\" ]
+			then
+				current=$1
+				break
+			fi
+			shift ; shift
+		done
+	else
+		while [ -n "$2" ]
+		do
+			if eval [ \"_\$$2\" = \"_y\" ]
+			then
+				current=$1
+				break
+			fi
+			shift ; shift
+		done
+	fi
 
 	: ${current:=$default}
 
@@ -794,7 +807,11 @@ function l_choice () {
 		then
 			eval $2=\"y\"
 			if [ \! -z "$define_symbol" ]; then
+				echo foobar
+				echo $define_symbol
+				echo $2
 				eval $define_symbol="$2"
+				echo $PIN_MCLR
 			fi
 		else
 			eval $2=\"n\"
@@ -1431,14 +1448,19 @@ save_configuration () {
 						if [ \! -z "$define_symbol" ]; then
 							echo "$define_symbol=$2" 		>>$CONFIG
 							echo "#define $define_symbol $2"	>>$CONFIG_H
+						else
+							define_bool "$2" "y"
 						fi
 
-						define_bool "$2" "y"
 						chosen=1
 					else
-						define_bool "$2" "n"
+						if [   -z "$define_symbol" ]; then
+							define_bool "$2" "n"
+						fi
 					fi ;;
-			*)		define_bool "$2" "n" ;;
+			*)		if [   -z "$define_symbol" ]; then
+							define_bool "$2" "n"
+					fi ;;
 			esac
 			shift ; shift
 		done
