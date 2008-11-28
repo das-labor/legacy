@@ -1,7 +1,6 @@
 #ifndef PIXEL_H
 #define PIXEL_H
 
-#include "config.h"
 
 #define LINEBYTES (((NUM_COLS-1)/8)+1)
 
