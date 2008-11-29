@@ -1,0 +1,13 @@
+
+dep_bool_menu "Scrolltext Support" SCROLLTEXT_SUPPORT y
+
+choice 'Scrolltext Font'			\
+   'Arial-8              ARIAL8 \
+    Small-6              SMALL6 \
+    Uni-53               UNI53' \
+   'Arial-8' SCROLLTEXT_FONT
+
+
+
+
+endmenu
