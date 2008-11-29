@@ -1,7 +1,8 @@
 
-#include "prng.h"
-#include "pixel.h"
-#include "util.h"
+#include "../config.h"
+#include "../random/prng.h"
+#include "../pixel.h"
+#include "../util.h"
 
 #ifdef AVR
 	#include <avr/io.h>
@@ -9,6 +10,7 @@
 
 #define RANDOM8() (random8())
 
+#ifdef ANIMATION_TESTS
 void test1(){
 	unsigned char x,y;
 	for (y=0;y<NUM_ROWS;y++){
@@ -75,7 +77,9 @@ void test_palette(){
 	}
 	for(;;) wait(100);
 }
+#endif
 
+#ifdef ANIMATION_OFF
 void off()
 {
 	clear_screen(0);
@@ -84,7 +88,9 @@ void off()
 		wait(100);
 
 }
+#endif
 
+#ifdef ANIMATION_SPIRALE
 void spirale(unsigned int delay){
 	clear_screen(0);
 
@@ -118,7 +124,9 @@ void spirale(unsigned int delay){
 		}
 	}
 }
+#endif
 
+#ifdef ANIMATION_JOERN1
 void joern1(){
 unsigned char i, j, x;
 	unsigned char rolr=0x01 , rol;
@@ -134,7 +142,9 @@ unsigned char i, j, x;
 		wait(100);
 	}
 }
+#endif
 
+#ifdef ANIMATION_SCHACHBRETT
 void schachbrett(unsigned char times){
 	clear_screen(0);
 	unsigned char j;
@@ -152,23 +162,11 @@ void schachbrett(unsigned char times){
 		wait(200);
 	}
 }
+#endif
 
-void fadein()
-{
-	unsigned char value, x, y;
 
-	for(value=1; value < 4; value++) {
-	 	for(y=0; y<NUM_ROWS; y++)
-			for(x=0; x<NUM_COLS; x++) {
-				setpixel( (pixel){x,y}, value );
-				wait(10);
-			}
-	}
-
-}
-
+#ifdef ANIMATION_FEUER
 #define FEUER_Y (NUM_ROWS + 3)
-
 
 void feuer()
 {
@@ -203,106 +201,9 @@ void feuer()
 		wait(FEUER_DELAY);
 	}
 }
+#endif
 
-/*
-void tetris(){
-	PORTB = 0x0f;
-	clear_screen(0);
-	unsigned char i;
-	for (i=0;i<NUM_ROWS;i++){
-		setpixel((pixel){8,i},3);
-	}
-	struct block{
-		pixel pix[4];
-	};	
-	struct block press (struct block foobar,unsigned char taste){
-			unsigned char go;
-			struct block aktuell=foobar;
-			if(taste == 14){
-			
-			}
-			if(taste == 7){
-				for(i=0;i<4;i++){
-					if((get_pixel((pixel){aktuell.pix[i].x+1,aktuell.pix[i].y}))){
-						go=0;
-						break;
-					}
-					else {
-						go=1;
-					}
-				}
-				if(go){
-					for(i=0;i<4;i++){
-						aktuell.pix[i].x++;
-					}
-				}
-			}
-			if(taste == 11){
-				for(i=0;i<4;i++){
-					if(aktuell.pix[i].x==0){
-						go=0;
-						break;
-					}
-					else {
-						go=1;
-					}
-				}
-				if(go){
-					for(i=0;i<4;i++){
-						aktuell.pix[i].x--;
-					}
-				}
-			}
-		
-		return aktuell;
-	}
-	struct block line = {{{0,0},{0,1},{0,2},{0,3}}};
-	struct block square={{{0,0},{0,1},{1,0},{1,1}}};	
-	struct block left={{{1,0},{1,1},{0,1},{0,2}}};
-	void dropin(struct block foobar){
-		struct block aktuell = foobar;
-			unsigned char i;
-			unsigned char h=1;
-			unsigned char taste = PINB & 0x0F;
-			aktuell = press(aktuell,taste);
-			struct block next=aktuell;
-			for(i=0;i<4;i++){
-				setpixel(aktuell.pix[i],3);
-			}
-			wait(450);
-			for(i=0;i<4;i++){
-				clearpixel(aktuell.pix[i]);
-			}
-			for(i=0;i<4;i++){
-				next.pix[i].y++;
-			}
-			for(i=0;i<4;i++){
-				h = get_pixel(next.pix[i]);
-				if(h){break;}
-			}
-			if (!h){
-	  				  dropin(next);
-			}else{
-				for(i=0;i<4;i++){
-					setpixel(aktuell.pix[i],3);
-				}
-			}
-	}
-	dropin(square);	
-	dropin(line);
-	dropin(left);
-	dropin(square);	
-	dropin(square);	
-	dropin(line);
-	dropin(left);
-	dropin(square);	
-	dropin(line);
-	dropin(left);
-	dropin(line);
-	dropin(left);
-}
-*/
-
+#ifdef ANIMATION_RANDOM_BRIGHT
 /**
  * void random_bright(void)
  *  by Daniel Otte
@@ -323,4 +224,4 @@ void random_bright(unsigned cycles){
 		wait(200);
 	}
 }
-
+#endif

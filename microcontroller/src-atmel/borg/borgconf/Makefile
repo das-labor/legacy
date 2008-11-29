@@ -2,9 +2,10 @@ TARGET := image
 TOPDIR = .
 
 SRC = \
-	main.c \
-	eeprom_reserve.c \
-	pixel.c \
+	main.c            \
+	eeprom_reserve.c  \
+	pixel.c           \
+	util.c            \
 	
 
 
@@ -30,6 +31,7 @@ include defaults.mk
 .subdirs: autoconf.h
 	$(RM) -f $@
 	echo "SUBDIRS += borg_hw" >> $@
+	echo "SUBDIRS += animations" >> $@
 	(for subdir in `grep -e "^#define .*_SUPPORT" autoconf.h \
 	      | sed -e "s/^#define //" -e "s/_SUPPORT.*//" \
 	      | tr "[A-Z]\\n" "[a-z] " `; do \

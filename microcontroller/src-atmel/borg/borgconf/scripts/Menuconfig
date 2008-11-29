@@ -183,7 +183,7 @@ function dep_tristate () {
 function dep_bool () {
 	ques="$1"
 	var="$2"
-	dep=y
+	dep="$3"
 	shift 2
 	while [ $# -gt 0 ]; do
 		if [ "$1" = y ]; then
@@ -390,13 +390,13 @@ ${var}:\\
 
      if [ -z "$text" ]
      then
-          echo "There is no help available for this kernel option."
+          echo "There is no help available for this option."
 	  return 1
      else
 	  echo "$text"
      fi
   else
-	 echo "There is no help available for this kernel option."
+	 echo "There is no help available for this option."
          return 1
   fi
 }
@@ -980,7 +980,7 @@ function activate_menu () {
 			clear
 			cat <<EOM
 
-Menuconfig has encountered a possible error in one of the kernel's
+Menuconfig has encountered a possible error in one of the
 configuration files and is unable to continue.  Here is the error
 report:
 
@@ -988,11 +988,6 @@ EOM
 			sed 's/^/ Q> /' MCerror
 			cat <<EOM
 
-Please report this to the maintainer <mec@shout.net>.  You may also
-send a problem report to <linux-kernel@vger.kernel.org>.
-
-Please indicate the kernel version you are trying to configure and
-which menu you were trying to enter when this error occurred.
 
 EOM
 			cleanup
@@ -1049,10 +1044,6 @@ installed on your machine.
 You may also need to rebuild lxdialog.  This can be done by moving to
 the /usr/src/linux/scripts/lxdialog directory and issuing the 
 "make clean all" command.
-
-If you have verified that your ncurses install is correct, you may email
-the maintainer <mec@shout.net> or post a message to
-<linux-kernel@vger.kernel.org> for additional assistance. 
 
 EOM
 			cleanup
@@ -1250,7 +1241,7 @@ function load_config_file () {
 #
 save_configuration () {
         echo
-	echo -n "Saving your Ethersex configuration."
+	echo -n "Saving your Borg configuration."
 
 	#
 	# Now, let's redefine the configuration functions for final
@@ -1616,7 +1607,7 @@ Use the <TAB> key to move from the input field to the buttons below it."
 
 DIALOG="./scripts/lxdialog/lxdialog"
 
-backtitle="Ethersex Configuration"
+backtitle="Borg Configuration"
 
 trap "cleanup ; exit 1" 1 2 15
 
@@ -1683,17 +1674,17 @@ cleanup1
 # Confirm and Save
 #
 if $DIALOG --backtitle "$backtitle" \
-	   --yesno "Do you wish to save your new kernel configuration?" 5 60
+	   --yesno "Do you wish to save your new Borg configuration?" 5 60
 then
 	save_configuration
 	echo
 	echo
-	echo "*** End of Ethersex configuration."
+	echo "*** End of Borg configuration."
 	echo
 else
 	echo
     	echo 
-	echo Your Ethersex configuration changes were NOT saved.
+	echo Your Borg configuration changes were NOT saved.
 	echo
 fi
 

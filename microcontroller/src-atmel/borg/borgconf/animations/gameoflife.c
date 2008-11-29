@@ -9,10 +9,10 @@
 #include <stdint.h>
 #include <util/delay.h>
 #include <avr/sfr_defs.h> /* for debugging */
-#include "config.h"
-#include "prng.h"
-#include "pixel.h"
-#include "util.h"
+#include "../config.h"
+#include "../random/prng.h"
+#include "../pixel.h"
+#include "../util.h"
 
 /******************************************************************************/ 
 
