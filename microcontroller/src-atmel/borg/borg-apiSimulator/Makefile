@@ -92,8 +92,8 @@ prng.o: prng.c prng.h noekeon.h memxor.h
 tetris/input.o: tetris/input.c joystick.h util.h tetris/input.h
 	$(CC) $(CFLAGS) -c -o tetris/input.o tetris/input.c
 
-tetris/logic.o: tetris/logic.c tetris/logic.h tetris/piece.h \
-  tetris/playfield.h tetris/view.h tetris/input.h
+logic.o: tetris/logic.c tetris/logic.h tetris/piece.h tetris/playfield.h \
+  tetris/view.h tetris/input.h prng.h ../borg-base/prng.h
 	$(CC) $(CFLAGS) -c -o tetris/logic.o tetris/logic.c
 
 tetris/piece.o: tetris/piece.c tetris/piece.h
