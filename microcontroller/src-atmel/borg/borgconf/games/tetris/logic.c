@@ -59,6 +59,13 @@ uint16_t tetris_logic_retrieveHighscore(void)
 #ifdef EEMEM
 	uint16_t nHighscore = 0;
 	nHighscore = eeprom_read_word(&tetris_logic_nHighscore);
+
+	// a score of 65535 is most likely caused by uninitialized EEPROM addresses
+	if (nHighscore == 65535)
+	{
+		nHighscore = 0;
+	}
+
 	return nHighscore;
 #else
 	return 0;
