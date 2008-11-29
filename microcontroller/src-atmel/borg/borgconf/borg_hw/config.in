@@ -20,6 +20,20 @@ if [ "$BORG_HW" == "HW_BORG_16" ] ; then
   source borg_hw/config_borg16.in
 fi
 
+if [ "$BORG_HW" == "HW_BORG_ANDRE" ] ; then
+  source borg_hw/config_andreborg.in
+fi
+
+if [ "$BORG_HW" == "HW_BORG_LS" ] ; then
+  source borg_hw/config_borg_ls.in
+fi
+
+if [ "$BORG_HW" == "HW_BORG_MINI" ] ; then
+  source borg_hw/config_borg_mini.in
+fi
+
+
+
 
 #		case $x in
 #		y) flag="*" ;;

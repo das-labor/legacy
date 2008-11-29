@@ -1,11 +1,15 @@
 
 #include "../config.h"
+#include "../makros.h"
 
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <avr/wdt.h>
 
 #include "borg_hw.h"
+
+/*
+// Diese #defines werden nun durch menuconfig gesetzt
 
 #define ROWPORT  PORTB
 #define ROWDDR DDRB
@@ -14,9 +18,13 @@
 #define COLDDR DDRD
 
 #define PIN_DATA     PC4
-#define PIN_CLK      PC6 /*active low*/
-#define PIN_LINE_EN  PC5 /*active low*/
+#define PIN_CLK      PC6 //active low
+#define PIN_LINE_EN  PC5 //active low
 
+*/
+
+#define COLDDR  DDR(COLPORT)
+#define ROWDDR  DDR(ROWPORT)
 
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
@@ -28,17 +36,14 @@ inline void rowshow(unsigned char row, unsigned char plane){
 	
 
 	unsigned char b, d, x;
-//	for(b=LINEBYTES-1;b!=0xFF;b--){
 	for(b=0;b<LINEBYTES;b++){
 		d = pixmap[plane][row][b];
 		for(x=0;x<8;x++){
-//			if(d & 0x80){
 			if(d & 0x01){
 				COLPORT |= (1<<PIN_DATA);
 			}else{
 				COLPORT &= ~(1<<PIN_DATA);
 			}
-//			d<<=1;
 			d>>=1;
 			COLPORT &= ~(1<<PIN_CLK);
 			COLPORT |= (1<<PIN_CLK);

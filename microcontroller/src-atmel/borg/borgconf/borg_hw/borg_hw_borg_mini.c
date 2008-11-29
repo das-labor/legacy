@@ -7,6 +7,9 @@
 
 #include "borg_hw.h"
 
+/*
+// Diese #defines werden nun durch menuconfig gesetzt
+
 //An diesen Pins ist das Schieberegister
 //für die Spalten angeschlossen.
 #define COLPORT  PORTC
@@ -14,15 +17,18 @@
 #define BIT_DAT	4 //Daten-Eingang
 #define BIT_CLK 5 //Takt-Eingang
 
-
-
 //An diesem Port sind die Zeilentreiber angeschlossen.
 //Ein Null-Pegel schaltet den jeweiligen Transistor an.
-#define ROWPORT PORTD
-#define ROWDDR   DDRD
+#define ROWPORT1 PORTD
+#define ROWDDR1   DDRD
 
 #define ROWPORT2 PORTC
 #define ROWDDR2 DDRC
+*/
+
+#define COLDDR   DDR(COLPORT)
+#define ROWDDR1  DDR(ROWPORT1)
+#define ROWDDR2  DDR(ROWPORT2)
 
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
@@ -31,7 +37,7 @@ inline void rowshow(unsigned char row, unsigned char plane){
 	uint8_t x, tmp;
 	
 	//alle Zeilentreiber aus
-	ROWPORT |= 0xF3;
+	ROWPORT1 |= 0xF3;
 	ROWPORT2 |= 0x0C;
 	
 	for(x=0;x<10;x++){
@@ -101,7 +107,7 @@ inline void rowshow(unsigned char row, unsigned char plane){
 		COLPORT &= ~(1<<BIT_CLK);
 	}
 	//nächste Zeile anschalten
-	ROWPORT &= rowmask | 0x0C;
+	ROWPORT1 &= rowmask | 0x0C;
 	ROWPORT2 &= rowmask | 0xF3;
 }
 
@@ -143,9 +149,9 @@ void timer0_on(){
 
 void borg_hw_init(){
 	// Alle Zeilentransistoren aus.
-	ROWPORT |= 0xF3;
+	ROWPORT1 |= 0xF3;
 	// Port für Zeilentransistoren auf Ausgang
-	ROWDDR |= 0xF3;
+	ROWDDR1 |= 0xF3;
 	
 	ROWPORT2 |=0x0C;
 	ROWDDR2 |=0x0C;

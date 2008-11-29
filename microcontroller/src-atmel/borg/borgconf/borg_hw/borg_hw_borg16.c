@@ -1,5 +1,6 @@
 
 #include "../config.h"
+#include "../makros.h"
 
 #include <avr/interrupt.h>
 #include <avr/io.h>
@@ -7,7 +8,7 @@
 #include "borg_hw.h"
 
 /*
- Diese #defines werden nun durch menuconfig gesetzt
+// Diese #defines werden nun durch menuconfig gesetzt
 
  // 16 Spalten insgesamt direkt gesteuert, dafür 2 Ports
 #define COLPORT1  PORTC
@@ -21,21 +22,15 @@
 #define ROWDDR   DDRD
 // Clock und reset gehen gemeinsam an beide Schieberegister
 // der reset pin ist negiert
-#define PIN_RST  PD4  
+#define PIN_MCLR  PD4  
 #define PIN_CLK  PD6
 //das dier sind die individuellen Dateneingänge für die Schieberegister
-#define PIN_SHFT1 PD7
+#define PIN_DATA PD7
 */
 
-
-
-
-#define PORT() PORT
-
-#define COLPORT1 PORT() ## COLPORT1_LETTER 
-#define COLDDR1  PORT() ## COLPORT1_LETTER 
-
-
+#define COLDDR1  DDR(COLPORT1)
+#define COLDDR2  DDR(COLPORT2)
+#define ROWDDR   DDR(ROWPORT)
 
 //Der Puffer, in dem das aktuelle Bild gespeichert wird
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
@@ -46,6 +41,10 @@ inline void nextrow(uint8_t row){
 	//Die Zustände von der vorherigen Zeile löschen
 	COLPORT1 = 0;
 	COLPORT2 = 0;
+
+	PORTA = 0;
+	DDRA  = 0;
+
 	
 	//kurze Warteschleife, damit die Treiber auch wirklich ausschalten
 	
@@ -57,17 +56,17 @@ inline void nextrow(uint8_t row){
 	if (row == 0){
 		//Zeile 0: Das erste Schieberegister initialisieren
 #ifndef INVERSE_ROWS
-		ROWPORT&= ~(1<<PIN_RST);
-		ROWPORT|= (1<<PIN_RST);
-		ROWPORT|= (1<<PIN_SHFT1);
+		ROWPORT&= ~(1<<PIN_MCLR);
+		ROWPORT|= (1<<PIN_MCLR);
+		ROWPORT|= (1<<PIN_DATA);
 		ROWPORT|= (1<<PIN_CLK);
 		ROWPORT&= ~(1<<PIN_CLK);
-		ROWPORT&= ~(1<<PIN_SHFT1);
+		ROWPORT&= ~(1<<PIN_DATA);
 #else
-		ROWPORT&= ~(1<<PIN_SHFT1);
+		ROWPORT&= ~(1<<PIN_DATA);
 		ROWPORT|= (1<<PIN_CLK);
 		ROWPORT&= ~(1<<PIN_CLK);
-		ROWPORT|= (1<<PIN_SHFT1);
+		ROWPORT|= (1<<PIN_DATA);
 
 #endif
 	}else{
@@ -195,7 +194,7 @@ void borg_hw_init(){
 	COLDDR2 = 0xFF;
 	
 	//Pins am Zeilenport auf Ausgang
-	ROWDDR = (1<<PIN_RST) | (1<<PIN_CLK) | (1<< PIN_SHFT1);
+	ROWDDR = (1<<PIN_MCLR) | (1<<PIN_CLK) | (1<< PIN_DATA);
 	
 	//Alle Spalten erstmal aus
 	COLPORT1 = 0;

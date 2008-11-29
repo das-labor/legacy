@@ -1,10 +1,14 @@
 
 #include "../config.h"
+#include "../makros.h"
 
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include "borg_hw.h"
+
+/*
+// Diese #defines werden nun durch menuconfig gesetzt
 
 // 16 Spalten insgesamt direkt gesteuert, dafür 2 Ports
 #define COLPORT1  PORTA
@@ -18,11 +22,16 @@
 #define ROWDDR   DDRD
 // Clock und reset gehen gemeinsam an beide Schieberegister
 // der reset pin ist negiert
-#define PIN_RST  PD4  
+#define PIN_MCLR  PD4  
 #define PIN_CLK  PD5
 //das dier sind die individuellen Dateneingänge für die Schieberegister
-#define PIN_SHFT1 PD6
-#define PIN_SHFT2 PD7
+#define PIN_DATA1 PD6
+#define PIN_DATA2 PD7
+*/
+
+#define COLDDR1  DDR(COLPORT1)
+#define COLDDR2  DDR(COLPORT2)
+#define ROWDDR   DDR(ROWPORT)
 
 //Der Puffer, in dem das aktuelle Bild gespeichert wird
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
@@ -43,12 +52,12 @@ inline void rowshow(unsigned char row, unsigned char plane){
 	
 	if (row == 0){
 		//Zeile 0: Das erste Schieberegister initialisieren
-		ROWPORT&= ~(1<<PIN_RST);
-		ROWPORT|= (1<<PIN_RST);
-		ROWPORT|= (1<<PIN_SHFT1);
+		ROWPORT&= ~(1<<PIN_MCLR);
+		ROWPORT|= (1<<PIN_MCLR);
+		ROWPORT|= (1<<PIN_DATA1);
 		ROWPORT|= (1<<PIN_CLK);
 		ROWPORT&= ~(1<<PIN_CLK);
-		ROWPORT&= ~(1<<PIN_SHFT1);
+		ROWPORT&= ~(1<<PIN_DATA1);
 		
 		//Je nachdem, welche der Ebenen wir Zeichnen, die Zeile verschieden lange Anzeigen
 		switch (plane){
@@ -63,12 +72,12 @@ inline void rowshow(unsigned char row, unsigned char plane){
 		}
 	}else if(row == 8){
 		//Zeile 8: Das Zweite Schieberegister initialisieren
-		ROWPORT&= ~(1<<PIN_RST);
-		ROWPORT|= (1<<PIN_RST);
-		ROWPORT|= (1<<PIN_SHFT2);
+		ROWPORT&= ~(1<<PIN_MCLR);
+		ROWPORT|= (1<<PIN_MCLR);
+		ROWPORT|= (1<<PIN_DATA2);
 		ROWPORT|= (1<<PIN_CLK);
 		ROWPORT&= ~(1<<PIN_CLK);
-		ROWPORT&= ~(1<<PIN_SHFT2);
+		ROWPORT&= ~(1<<PIN_DATA2);
 	}else{
 		//In jeder anderen Zeile einfach nur einen weiter schieben
 		ROWPORT|= (1<<PIN_CLK);
@@ -142,7 +151,7 @@ void borg_hw_init(){
 	COLDDR2 = 0xFF;
 	
 	//Pins am Zeilenport auf Ausgang
-	ROWDDR = (1<<PIN_RST) | (1<<PIN_CLK) | (1<< PIN_SHFT1) | (1<<PIN_SHFT2);
+	ROWDDR = (1<<PIN_MCLR) | (1<<PIN_CLK) | (1<< PIN_DATA1) | (1<<PIN_DATA2);
 	
 	//Alle Spalten erstmal aus
 	COLPORT1 = 0;
