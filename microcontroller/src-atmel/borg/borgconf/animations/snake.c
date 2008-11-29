@@ -1,9 +1,10 @@
 
-#include "pixel.h"
-#include "util.h"
-#include "prng.h"
+#include "../config.h"
+#include "../pixel.h"
+#include "../util.h"
+#include "../random/prng.h"
 #include "snake.h"
-#include "joystick.h"
+#include "../joystick.h"
 
 #define RANDOM8() (random8())
 

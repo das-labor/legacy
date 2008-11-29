@@ -1,14 +1,9 @@
-/**
- * 
- * 
- * 
- * 
- */
 
+#include "../config.h"
 #include <stdint.h> 
-#include "prng.h"
-#include "pixel.h"
-#include "util.h"
+#include "../random/prng.h"
+#include "../pixel.h"
+#include "../util.h"
 
 
 typedef struct{

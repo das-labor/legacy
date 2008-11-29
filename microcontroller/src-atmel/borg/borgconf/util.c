@@ -1,14 +1,15 @@
 #include <avr/io.h>
 #include <setjmp.h>
+
+#include "joystick.h"
+
+//this buffer is declared in main
 extern jmp_buf newmode_jmpbuf;
 
-#ifdef BORG_CAN
-#  include "borg_can.h"
+#ifdef CAN_SUPPORT
+#  include "can/borg_can.h"
 #endif
 
-#ifndef F_CPU
-#define F_CPU 16000000
-#endif
 
 void wait(int ms){
 
@@ -27,29 +28,21 @@ void wait(int ms){
 	OCR2 = (F_CPU/128000);	//1000Hz 
 	for(;ms>0;ms--){
 
-#ifdef BORG_CAN
+#ifdef CAN_SUPPORT
 		bcan_process_messages();
 #endif
+
+#ifdef JOYSTICK_SUPPORT
 		if (waitForFire) {
 			//PORTJOYGND &= ~(1<<BITJOY0);
 			//PORTJOYGND &= ~(1<<BITJOY1);		
-		#ifndef RHEINFIRECONTROL	
 			if (JOYISFIRE) {
 				longjmp(newmode_jmpbuf, 43);
 			}
-		#else
-			if (JOYISUP) {
-				waitForFire=0;
-				longjmp(newmode_jmpbuf, 43);
-			}
-		#endif
 		}
+#endif
 
-		while(!(TIFR&0x80));	//wait for compare matzch flag
+		while(!(TIFR&0x80));	//wait for compare match flag
 		TIFR=0x80;		//reset flag
 	}
-
 }
-
-#define BIT_S(var,b) ((var&(1<<b))?1:0)
-
