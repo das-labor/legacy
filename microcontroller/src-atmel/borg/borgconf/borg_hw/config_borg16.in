@@ -19,10 +19,10 @@ comment "Borg16 port setup"
 
 
 choice 'Column Port 1 (right)'			\
-   "PORTA  C \
-    PORTB  A \
-    PORTC  B \
-    PORTD  C" \
+   "PORTA  A \
+    PORTB  B \
+    PORTC  C \
+    PORTD  D" \
    'PORTC' COLPORT1_LETTER 
 
 choice 'Column Port 2 (left)'			\
@@ -33,45 +33,45 @@ choice 'Column Port 2 (left)'			\
    'PORTA' COLPORT2_LETTER 
 
 choice 'port for row shiftregisters'			\
-   "PORTA  D \
-    PORTB  A \
-    PORTC  B \
-    PORTD  C" \
+   "PORTA  A \
+    PORTB  B \
+    PORTC  C \
+    PORTD  D" \
    'PORTD' ROWPORT_LETTER
 
 comment "pin numbers on shiftregister port"
 
 choice '/MCLR Pin'			\
-   "Pin0 PD4 \
-    Pin1 PD0 \
-    Pin2 PD1 \
-    Pin3 PD2 \
-    Pin4 PD3 \
+   "Pin0 PD0 \
+    Pin1 PD1 \
+    Pin2 PD2 \
+    Pin3 PD3 \
+    Pin4 PD4 \
     Pin5 PD5 \
     Pin6 PD6 \
     Pin7 PD7" \
    'Pin4' PIN_MCLR
    
 choice 'CLK Pin'			\
-   "Pin0 PD6 \
-    Pin1 PD0 \
-    Pin2 PD1 \
-    Pin3 PD2 \
-    Pin4 PD3 \
-    Pin5 PD4 \
-    Pin6 PD5 \
+   "Pin0 PD0 \
+    Pin1 PD1 \
+    Pin2 PD2 \
+    Pin3 PD3 \
+    Pin4 PD4 \
+    Pin5 PD5 \
+    Pin6 PD6 \
     Pin7 PD7" \
    'Pin6' PIN_CLK
    
 choice 'DATA Pin'			\
-   "Pin0 PD7 \
-    Pin1 PD0 \
-    Pin2 PD1 \
-    Pin3 PD2 \
-    Pin4 PD3 \
-    Pin5 PD4 \
+   "Pin0 PD0 \
+    Pin1 PD1 \
+    Pin2 PD2 \
+    Pin3 PD3 \
+    Pin4 PD4 \
     Pin5 PD5 \
-    Pin6 PD6" \
+    Pin6 PD6 \
+    Pin7 PD7" \
    'Pin7' PIN_DATA
 
 endmenu

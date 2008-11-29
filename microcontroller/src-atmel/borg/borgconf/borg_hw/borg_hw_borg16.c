@@ -26,7 +26,17 @@
 //das dier sind die individuellen Dateneingänge für die Schieberegister
 #define PIN_SHFT1 PD7
 */
- 
+
+
+
+
+#define PORT() PORT
+
+#define COLPORT1 PORT() ## COLPORT1_LETTER 
+#define COLDDR1  PORT() ## COLPORT1_LETTER 
+
+
+
 //Der Puffer, in dem das aktuelle Bild gespeichert wird
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
