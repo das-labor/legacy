@@ -1059,6 +1059,13 @@ g_dflt_config () {
 }
 
 get_dflt_config () {
+	config_files=`ls ./profiles/`
+	choices=""
+    for file in $config_files
+	do
+		choices="$choices $file $file 0"
+	done
+
 	while true
 	do
 		$DIALOG --title "Load Default Configuration" \
@@ -1067,21 +1074,15 @@ get_dflt_config () {
 Select the default profile you wish to load. \
 <Esc><Esc> to abort." \
 			15 70 7 \
-			defconfig	  "Etherrape"			0 \
-			ethersex	  "Standard Ethersex"		0 \
-			bootloader	  "Ethernet Bootloader"		0 \
-			rfm12-teensy	  "RFM12 Standalone"		0 \
-			zbus-teensy	  "ZBUS Standalone"		0 \
-			usb-teensy	  "USB (Network) Standalone"	0 \
-			usb-rfm12-dongle  "USB RFM12 Dongle"		0 \
-			no-network	  "No Networking (USB only)"	0 \
+			$choices \
 			 2>MCdialog.out
-
+	
 		exit_status=$?
 
 		if [ $exit_status -eq 0 ]; then
 			choice=`cat MCdialog.out`
-			load_config_file "scripts/profiles/$choice"
+		echo $choice
+			load_config_file "./profiles/$choice"
 			break
 		elif [ $exit_status -eq 255 ]; then
 			break # ESC-ESC ...
