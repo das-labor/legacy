@@ -6,8 +6,10 @@ SRC = \
 	eeprom_reserve.c  \
 	pixel.c           \
 	util.c            \
-	
 
+
+LAUNCH_BOOTLOADER = launch-bootloader
+SERIAL = /dev/ttyUSB0	
 
 export TOPDIR
 ##############################################################################
@@ -140,8 +142,13 @@ mrproper:
 	$(MAKE) clean
 	$(RM) -f autoconf.h .config config.mk .menuconfig.log .config.old
 
-.PHONY: clean mrproper
+sflash: $(TARGET).hex
+	$(LAUNCH_BOOTLOADER) $(SERIAL) 115200
+	avrdude -p m32 -b 115200 -u -c avr109 -P $(SERIAL) -U f:w:$< -F
+	echo X > $(SERIAL)
 
+
+.PHONY: clean mrproper sflash
 ##############################################################################
 # configure ethersex
 #

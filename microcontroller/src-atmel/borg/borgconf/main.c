@@ -127,9 +127,6 @@ int main (void){
 		case 33:
 			test_level3();
 			break;
-		case 34:
-			fadein();
-			break;
 		case 35:
 			test1();
 			while(1);

@@ -13,14 +13,8 @@
 can_addr myaddr;
 extern jmp_buf newmode_jmpbuf;
 
-
-char default_text[] PROGMEM = SCROLLTEXT_DEFAULT;
-char scrolltext_text[SCROLLTEXT_STRING_SIZE];
-
-
 void bcan_init() 
 {
-	strcpy_P(scrolltext_text, default_text);
 	spi_init();
 	can_init();
 

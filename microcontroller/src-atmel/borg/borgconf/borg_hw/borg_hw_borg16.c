@@ -41,10 +41,6 @@ inline void nextrow(uint8_t row){
 	//Die Zustände von der vorherigen Zeile löschen
 	COLPORT1 = 0;
 	COLPORT2 = 0;
-
-	PORTA = 0;
-	DDRA  = 0;
-
 	
 	//kurze Warteschleife, damit die Treiber auch wirklich ausschalten
 	
