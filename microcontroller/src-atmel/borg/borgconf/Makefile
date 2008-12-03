@@ -33,10 +33,11 @@ include defaults.mk
 #
 
 .subdirs: autoconf.h
-	$(RM) -f $@
-	echo "SUBDIRS += borg_hw" >> $@
-	echo "SUBDIRS += animations" >> $@
-	(for subdir in `grep -e "^#define .*_SUPPORT" autoconf.h \
+	@ echo "checking in which subdirs to build"
+	@ $(RM) -f $@
+	@ echo "SUBDIRS += borg_hw" >> $@
+	@ echo "SUBDIRS += animations" >> $@
+	@ (for subdir in `grep -e "^#define .*_SUPPORT" autoconf.h \
 	      | sed -e "s/^#define //" -e "s/_SUPPORT.*//" \
 	      | tr "[A-Z]\\n" "[a-z] " `; do \
 	  test -d $$subdir && echo "SUBDIRS += $$subdir" ; \
@@ -47,8 +48,8 @@ ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),mrproper)
 ifneq ($(MAKECMDGOALS),menuconfig)
 
-include $(TOPDIR)/.subdirs
-include $(TOPDIR)/.config
+-include $(TOPDIR)/.subdirs
+-include $(TOPDIR)/.config
 
 endif # MAKECMDGOALS!=menuconfig
 endif # MAKECMDGOALS!=mrproper
@@ -59,7 +60,7 @@ endif # no_deps!=t
 
 .PHONY: compile-subdirs
 compile-subdirs:
-	for dir in $(SUBDIRS); do make -C $$dir objects_avr || exit 5; done
+	@ for dir in $(SUBDIRS); do make -C $$dir objects_avr || exit 5; done
 
 .PHONY: compile-$(TARGET)
 compile-$(TARGET): compile-subdirs $(TARGET).hex $(TARGET).bin $(TARGET).lst
@@ -74,8 +75,9 @@ $(TARGET): $(OBJECTS) $(SUBDIROBJECTS)
 ##############################################################################
 
 ./obj_avr/%.o: %.c
-	if [ ! -d obj_avr ]; then mkdir obj_avr ; fi
-	$(CC) -o $@ $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -c $<
+	@ if [ ! -d obj_avr ]; then mkdir obj_avr ; fi
+	@ echo "compiling $<"
+	@ $(CC) -o $@ $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -c $<
 
 %.hex: %
 	$(OBJCOPY) -O ihex -R .eeprom $< $@
