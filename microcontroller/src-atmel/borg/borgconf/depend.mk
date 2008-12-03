@@ -10,7 +10,8 @@ ifneq ($(MAKECMDGOALS),mrproper)
 ifneq ($(MAKECMDGOALS),menuconfig)  
 
 # For each .o file we need a .d file.
--include $(subst .o,.d,$(filter %.o,$(OBJECTS))) /dev/null
+#-include $(subst .o,.d,$(filter %.o,$(OBJECTS))) /dev/null
+-include $(subst .o,.d,$(filter %.o,$(OBJECTS)))
 
 endif
 endif
@@ -27,6 +28,6 @@ if test -s $@.new; then mv -f $@.new $@; else rm -f $@.new; fi
 endef
 
 # Here is how to make .d files from .c files
-%.d: %.c $(TOPDIR)/pinning.c; $(make-deps)
+obj_avr/%.d: %.c ; $(make-deps)
 
-%.d: %.S ; $(make-deps)
+obj_avr/%.d: %.S ; $(make-deps)
