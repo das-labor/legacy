@@ -1,10 +1,10 @@
 
+
+##############################################################################
+# rules for buildung AVR objects
+
 OBJECTS += $(patsubst %.c,obj_avr/%.o,${SRC})
 OBJECTS += $(patsubst %.S,obj_avr/%.o,${ASRC})
-
-#./obj_avr/%.a: $(OBJECTS)
-#	$(AR) qcv $@ $^
-#	$(STRIP) --strip-unneeded $@
 
 ./obj_avr/%.o: %.S
 	@ if [ ! -d obj_avr ]; then mkdir obj_avr ; fi
@@ -16,18 +16,41 @@ OBJECTS += $(patsubst %.S,obj_avr/%.o,${ASRC})
 	@ echo "compiling $<"
 	@ $(CC) -o $@ $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -c $<
 
+objects_avr: $(OBJECTS)
+	@ echo "writing object ineventory"
+	@ echo $(OBJECTS) > obj_avr/.objects
+	
+
+##############################################################################
+# rules for buildung simulator objects
+
+SRC_SIM = $(SRC)
+OBJECTS_SIM += $(patsubst %.c,obj_sim/%.o,${SRC_SIM})
+
+./obj_sim/%.o: %.c
+	@ if [ ! -d obj_sim ]; then mkdir obj_sim ; fi
+	@ echo "compiling $<"
+	@ $(HOSTCC) -o $@ $(CFLAGS_SIM) -c $<
+
+objects_sim: $(OBJECTS_SIM)
+	@ echo "writing object ineventory"
+	@ echo $(OBJECTS) > obj_sim/.objects
+
+
+
+
+
+
+
 clean-common:
 	$(RM) $(TARGET) *.[odasE] *.d.new *~
 	$(RM) -r ./obj_avr
+	$(RM) -r ./obj_sim
 
 clean: clean-common
 
 all:
 	make -C $(TOPDIR) all
-	
-objects_avr: $(OBJECTS)
-	@ echo "writing object ineventory"
-	@ echo $(OBJECTS) > obj_avr/.objects
 	
 
 include $(TOPDIR)/depend.mk

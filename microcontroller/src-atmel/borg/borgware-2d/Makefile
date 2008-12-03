@@ -1,4 +1,5 @@
-TARGET := image
+TARGET     := image
+TARGET_SIM := borgsim
 TOPDIR = .
 
 SRC = \
@@ -13,16 +14,6 @@ SERIAL = /dev/ttyUSB0
 
 export TOPDIR
 ##############################################################################
-all: compile-$(TARGET)
-	@echo "==============================="
-	@echo "$(TARGET) compiled for: $(MCU)"
-	@echo "size is: "
-	@${TOPDIR}/scripts/size $(TARGET)
-	@echo "==============================="
-
-simulator: autoconf.h .config .subdirs
-	$(MAKE) -f Makefile.simulator
-
 ##############################################################################
 # generic fluff
 include defaults.mk
@@ -57,13 +48,20 @@ endif # MAKECMDGOALS!=clean
 endif # no_deps!=t
 
 ##############################################################################
+all: compile-$(TARGET)
+	@echo "==============================="
+	@echo "$(TARGET) compiled for: $(MCU)"
+	@echo "size is: "
+	@${TOPDIR}/scripts/size $(TARGET)
+	@echo "==============================="
 
-.PHONY: compile-subdirs
-compile-subdirs:
+
+.PHONY: compile-subdirs_avr
+compile-subdirs_avr:
 	@ for dir in $(SUBDIRS); do make -C $$dir objects_avr || exit 5; done
 
 .PHONY: compile-$(TARGET)
-compile-$(TARGET): compile-subdirs $(TARGET).hex $(TARGET).bin $(TARGET).lst
+compile-$(TARGET): compile-subdirs_avr $(TARGET).hex $(TARGET).bin $(TARGET).lst
 
 OBJECTS += $(patsubst %.c,./obj_avr/%.o,${SRC})
 SUBDIROBJECTS = $(foreach subdir,$(SUBDIRS),$(foreach object,$(shell cat $(subdir)/obj_avr/.objects),$(subdir)/$(object)))
@@ -73,7 +71,7 @@ $(TARGET): $(OBJECTS) $(SUBDIROBJECTS)
 
 
 ##############################################################################
-
+#generic rules for AVR-Build
 ./obj_avr/%.o: %.c
 	@ if [ ! -d obj_avr ]; then mkdir obj_avr ; fi
 	@ echo "compiling $<"
@@ -93,6 +91,21 @@ $(TARGET): $(OBJECTS) $(SUBDIROBJECTS)
 
 %-size: %.hex
 	$(SIZE) $<
+
+##############################################################################
+#Rules for simulator build
+
+.PHONY: compile-subdirs_sim
+compile-subdirs_sim:
+	@ for dir in $(SUBDIRS); do make -C $$dir objects_sim || exit 5; done
+	@ make -C ./simulator/ objects_sim || exit 5;
+
+simulator: autoconf.h .config .subdirs compile-subdirs_sim $(TARGET_SIM)
+
+SUBDIROBJECTS_SIM = $(foreach subdir,$(SUBDIRS),$(foreach object,$(shell cat $(subdir)/obj_sim/.objects),$(subdir)/$(object)))
+
+$(TARGET_SIM): $(SUBDIROBJECTS_SIM)
+	$(HOSTCC) $(LDFLAGS_SIM) $(LIBS_SIM) -o $@ $(SUBDIROBJECTS_SIM)
 
 ##############################################################################
 CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
