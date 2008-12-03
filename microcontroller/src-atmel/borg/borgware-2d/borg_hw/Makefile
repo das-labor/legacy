@@ -1,6 +1,8 @@
 TARGET = libborg_hw.a
 TOPDIR = ..
 
+SRC_SIM := 
+
 include $(TOPDIR)/defaults.mk
 
 

@@ -25,6 +25,13 @@ CFLAGS += -g -Os -std=gnu99 -fgnu89-inline
 LDFLAGS += -mmcu=$(MCU)
 
 
+#############################################################################
+#Settings for Simulator build
+CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O2
+LDFLAGS_SIM = -Wl
+LIBS_SIM    = LIBS = -lglut -lpthread -lGL -lGLU
+
+
 ##############################################################################
 # the default target
 $(TARGET):
