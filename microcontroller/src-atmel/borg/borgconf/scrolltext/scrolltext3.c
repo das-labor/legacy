@@ -3,16 +3,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
+
+#include "../config.h"
 #include "scrolltext.h"
 #ifdef AVR
-#   include "borg_hw.h"
+#   include "../borg_hw/borg_hw.h"
 #endif
 
-#include "pixel.h"
-#include "util.h"
+#include "../pixel.h"
+#include "../util.h"
 #include "font_arial8.h"
 #include "font_small6.h"
-//#include "font-v5.h"
 #include "font_uni53.h"
 
 #define MAX_FONTS 1
@@ -23,6 +24,8 @@ unsigned char PROGMEM colorTable[MAX_SPECIALCOLORS*NUM_ROWS] = {1, 1, 2, 3, 3, 2
                                                                 3, 3, 2, 2, 3, 3, 2, 2
 };
 
+char default_text[] PROGMEM = SCROLLTEXT_TEXT;
+char scrolltext_text[SCROLLTEXT_BUFFER_SIZE];
 
 /* Konzept
    =======
@@ -31,7 +34,7 @@ z.B.
 
 #b</#LABOR
 
-Es werden die Zeiger aus dem Eingabestring direkt übernommen, mit Stinglen.
+Es werden die Zeiger aus dem Eingabestring direkt übernommen, mit Stringlen.
 Wenn der Command abgearbeitet ist wird automatisch das nächste Token eingelesen.
 
  */
@@ -488,14 +491,17 @@ extern jmp_buf newmode_jmpbuf;
 
 void scrolltext(char *str) {
 	jmp_buf tmp_jmpbuf;
-	char tmp_str[SCROLLTEXT_STRING_SIZE];
+	char tmp_str[SCROLLTEXT_BUFFER_SIZE];
 	int ljmp_retval;
-	
+    
 	fonts[0] = SCROLLTEXT_FONT;
 	
 	text_pixmap = malloc(NUM_ROWS * LINEBYTES);
 	
-	memcpy(tmp_str, str, SCROLLTEXT_STRING_SIZE);
+  if(scrolltext_text[0] == 0){
+    strcpy_P(scrolltext_text, default_text);
+  }
+	memcpy(tmp_str, str, SCROLLTEXT_BUFFER_SIZE);
 	
 	blob_t *startblob=0, *aktblob, *nextblob=0;
 

@@ -3,7 +3,6 @@
 
 #include "autoconf.h"
 
-#define SCROLLTXT_DELAY 60
 #define STREAMER_NUM 30
 
 #define FEUER_N 5
@@ -13,11 +12,11 @@
 
 #define SNAKE_DELAY 100
 
-#define SCROLLTEXT_STRING_SIZE 128
-#define SCROLLTEXT_FONT font_arial8
-#define SCROLLTEXT_DEFAULT "</#www.das-labor.org#</#Neuer borg-16 Bausatz"
-#define SCROLL_X_SPEED 20
-#define SCROLL_Y_SPEED 20
+//#define SCROLLTEXT_STRING_SIZE 128
+//#define SCROLLTEXT_FONT font_arial8
+//#define SCROLLTEXT_DEFAULT "</#www.das-labor.org"
+//#define SCROLL_X_SPEED 20
+//#define SCROLL_Y_SPEED 20
 
 #define BORG_CAN
 

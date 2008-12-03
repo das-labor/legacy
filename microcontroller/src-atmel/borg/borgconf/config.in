@@ -23,8 +23,12 @@ endmenu
 ###################### Borg Hardware Menu #####################################
 source borg_hw/config.in
 ###############################################################################
+mainmenu_option next_comment
+comment "Features"
 
+bool    "prng random number generator" RANDOM_SUPPORT y
 
+endmenu
 ########################## Scrolltext Menu ####################################
 source scrolltext/config.in
 ###############################################################################
