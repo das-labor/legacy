@@ -1,4 +1,4 @@
-TARGET = libscrolltext.a
+TARGET = objects
 TOPDIR = ..
 
 include $(TOPDIR)/defaults.mk
