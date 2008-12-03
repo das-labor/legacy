@@ -18,7 +18,6 @@ HOSTCC := gcc
 export HOSTCC
 
 # flags for the compiler
-CPPFLAGS += -mmcu=$(MCU)  
 CFLAGS ?= -Wall -W -Wno-unused-parameter -Wno-sign-compare
 CFLAGS += -g -Os -std=gnu99 -fgnu89-inline
 
