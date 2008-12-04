@@ -24,7 +24,7 @@ objects_avr: $(OBJECTS)
 ##############################################################################
 # rules for buildung simulator objects
 
-SRC_SIM = $(SRC)
+SRC_SIM ?= $(SRC)
 OBJECTS_SIM += $(patsubst %.c,obj_sim/%.o,${SRC_SIM})
 
 ./obj_sim/%.o: %.c
@@ -34,7 +34,8 @@ OBJECTS_SIM += $(patsubst %.c,obj_sim/%.o,${SRC_SIM})
 
 objects_sim: $(OBJECTS_SIM)
 	@ echo "writing object ineventory"
-	@ echo $(OBJECTS) > obj_sim/.objects
+	@ if [ ! -d obj_sim ]; then mkdir obj_sim ; fi
+	@ echo $(OBJECTS_SIM) > obj_sim/.objects
 
 
 

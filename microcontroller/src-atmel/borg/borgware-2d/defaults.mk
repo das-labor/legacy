@@ -29,7 +29,8 @@ LDFLAGS += -mmcu=$(MCU)
 #Settings for Simulator build
 CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O2
 LDFLAGS_SIM = -Wl
-LIBS_SIM    = LIBS = -lglut -lpthread -lGL -lGLU
+#LIBS_SIM    = -lglut -lpthread -lGL -lGLU
+LIBS_SIM    =  -lglut32 -lglu32 -lopengl32
 
 
 ##############################################################################
