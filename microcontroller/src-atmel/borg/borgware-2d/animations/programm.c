@@ -4,10 +4,6 @@
 #include "../pixel.h"
 #include "../util.h"
 
-#ifdef AVR
-	#include <avr/io.h>
-#endif
-
 #define RANDOM8() (random8())
 
 #ifdef ANIMATION_TESTS

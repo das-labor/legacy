@@ -4,9 +4,14 @@ TOPDIR = .
 
 SRC = \
 	main.c            \
+	display_loop.c    \
 	eeprom_reserve.c  \
 	pixel.c           \
 	util.c            \
+
+SRC_SIM = \
+	display_loop.c    \
+	pixel.c           \
 
 
 LAUNCH_BOOTLOADER = launch-bootloader
@@ -14,6 +19,14 @@ SERIAL = /dev/ttyUSB0
 
 export TOPDIR
 ##############################################################################
+
+all: compile-$(TARGET)
+	@echo "==============================="
+	@echo "$(TARGET) compiled for: $(MCU)"
+	@echo "size is: "
+	@${TOPDIR}/scripts/size $(TARGET)
+	@echo "==============================="
+
 ##############################################################################
 # generic fluff
 include defaults.mk
@@ -26,7 +39,6 @@ include defaults.mk
 .subdirs: autoconf.h
 	@ echo "checking in which subdirs to build"
 	@ $(RM) -f $@
-	@ echo "SUBDIRS += borg_hw" >> $@
 	@ echo "SUBDIRS += animations" >> $@
 	@ (for subdir in `grep -e "^#define .*_SUPPORT" autoconf.h \
 	      | sed -e "s/^#define //" -e "s/_SUPPORT.*//" \
@@ -39,7 +51,7 @@ ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),mrproper)
 ifneq ($(MAKECMDGOALS),menuconfig)
 
--include $(TOPDIR)/.subdirs
+include $(TOPDIR)/.subdirs
 -include $(TOPDIR)/.config
 
 endif # MAKECMDGOALS!=menuconfig
@@ -48,23 +60,21 @@ endif # MAKECMDGOALS!=clean
 endif # no_deps!=t
 
 ##############################################################################
-all: compile-$(TARGET)
-	@echo "==============================="
-	@echo "$(TARGET) compiled for: $(MCU)"
-	@echo "size is: "
-	@${TOPDIR}/scripts/size $(TARGET)
-	@echo "==============================="
 
+SUBDIRS_AVR = borg_hw
+SUBDIRS_AVR += $(SUBDIRS)
 
 .PHONY: compile-subdirs_avr
 compile-subdirs_avr:
-	@ for dir in $(SUBDIRS); do make -C $$dir objects_avr || exit 5; done
+	@ for dir in $(SUBDIRS_AVR); do make -C $$dir objects_avr || exit 5; done
 
 .PHONY: compile-$(TARGET)
 compile-$(TARGET): compile-subdirs_avr $(TARGET).hex $(TARGET).bin $(TARGET).lst
+	@ echo "foobar"
+
 
 OBJECTS += $(patsubst %.c,./obj_avr/%.o,${SRC})
-SUBDIROBJECTS = $(foreach subdir,$(SUBDIRS),$(foreach object,$(shell cat $(subdir)/obj_avr/.objects),$(subdir)/$(object)))
+SUBDIROBJECTS = $(foreach subdir,$(SUBDIRS_AVR),$(foreach object,$(shell cat $(subdir)/obj_avr/.objects),$(subdir)/$(object)))
 
 $(TARGET): $(OBJECTS) $(SUBDIROBJECTS)
 	$(CC) $(LDFLAGS) -o $@ $(OBJECTS) $(SUBDIROBJECTS)
@@ -95,17 +105,27 @@ $(TARGET): $(OBJECTS) $(SUBDIROBJECTS)
 ##############################################################################
 #Rules for simulator build
 
+SUBDIRS_SIM  = simulator
+SUBDIRS_SIM += $(SUBDIRS)
+
 .PHONY: compile-subdirs_sim
 compile-subdirs_sim:
-	@ for dir in $(SUBDIRS); do make -C $$dir objects_sim || exit 5; done
+	@ for dir in $(SUBDIRS_SIM); do make -C $$dir objects_sim || exit 5; done
 	@ make -C ./simulator/ objects_sim || exit 5;
 
 simulator: autoconf.h .config .subdirs compile-subdirs_sim $(TARGET_SIM)
 
-SUBDIROBJECTS_SIM = $(foreach subdir,$(SUBDIRS),$(foreach object,$(shell cat $(subdir)/obj_sim/.objects),$(subdir)/$(object)))
+SUBDIROBJECTS_SIM = $(foreach subdir,$(SUBDIRS_SIM),$(foreach object,$(shell cat $(subdir)/obj_sim/.objects),$(subdir)/$(object)))
 
-$(TARGET_SIM): $(SUBDIROBJECTS_SIM)
+OBJECTS_SIM = $(patsubst %.c,obj_sim/%.o,${SRC_SIM})
+
+$(TARGET_SIM): $(OBJECTS_SIM) $(SUBDIROBJECTS_SIM)
 	$(HOSTCC) $(LDFLAGS_SIM) $(LIBS_SIM) -o $@ $(SUBDIROBJECTS_SIM)
+
+./obj_sim/%.o: %.c
+	@ if [ ! -d obj_sim ]; then mkdir obj_sim ; fi
+	@ echo "compiling $<"
+	@ $(HOSTCC) -o $@ $(CFLAGS_SIM) -c $<
 
 ##############################################################################
 CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \

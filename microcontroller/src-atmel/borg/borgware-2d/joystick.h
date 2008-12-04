@@ -1,8 +1,6 @@
 #ifndef JOYSTICK_H
 #define JOYSTICK_H
 
-#include <avr/io.h>
-
 unsigned char waitForFire;
 void joy_init();
 

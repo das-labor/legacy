@@ -20,16 +20,17 @@
 
 #include <stdio.h>
 #include <setjmp.h>
-#include "config.h"
-#include "pixel.h"
-#include "programm.h"
-#include "menu.h"
-#include "tetris/logic.h"
+#include "../config.h"
+#include "../display_loop.h"
+#include "../pixel.h"
+//#include "programm.h"
+//#include "menu.h"
+//#include "../tetris/logic.h"
 #include "trackball.h"
-#include "snake.h"
-#include "stonefly.h"
+//#include "../games/snake.h"
+//#include "stonefly.h"
 
-#include "scrolltext.h"
+//#include "scrolltext.h"
 
 
 
@@ -194,59 +195,8 @@ void timf(int value) {
   glutTimerFunc(1, timf, 0);
 }*/
 
-void *display_loop(void * unused) {
-	unsigned char mode;;;
-	mode = setjmp(newmode_jmpbuf);
-	oldOldmode = oldMode;
-	waitForFire = 1;
-			scrolltext("</#Scrolltext3 Test");
-	for(;;){
-		oldMode = mode;
-		switch(mode++) {
-		case 1:
-			stonefly();
-			break;
-		case 2:
-			breakpoint();
-			break;
-		case 3:
-			schwarzesLoch();
-			break;
-		case 4:
-			scrolltext("</#Scrolltext3 Test");
-			break;
-		case 5:
-			spirale(20);
-			break;
-		case 6:
-			joern1();
-			break;
-		case 7:
-			snake();
-			break;
-		case 8:
-			schachbrett(20);
-			break;
-		case 9:
-			feuer();
-			break;
-		case 10:
-			matrix();
-			break;
-		case 31:
-			fadein();
-			break;
-		case 32:
-			test1();
-			break;
-		case 43:
-			menu();
-			mode = oldOldmode;
-		default:
-			break;
-		}
-	}
-
+void *display_loop_run(void * unused) {
+	display_loop();
 }
 
 int main(int argc, char **argv){
@@ -299,9 +249,9 @@ int main(int argc, char **argv){
 
 	// start display_loop thread
 #ifdef _WIN32
-    _beginthread((void (*)(void*))display_loop, 0, NULL);
+    _beginthread((void (*)(void*))display_loop_run, 0, NULL);
 #else
-    pthread_create(&simthread, NULL, display_loop, NULL);
+    pthread_create(&simthread, NULL, display_loop_run, NULL);
 #endif
     //glutTimerFunc(40, timf, 0); // Set up timer for 40ms, about 25 fps
     glutMainLoop();
