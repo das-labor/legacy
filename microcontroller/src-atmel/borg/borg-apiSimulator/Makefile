@@ -1,10 +1,12 @@
 PRG = borgSim
 OPTIMIZE = -O0
-LIBS = -lglut -lpthread -lGL -lGLU
+#LIBS = -lglut -lpthread -lGL -lGLU
+LIBS = -lglut32 -lglu32 -lopengl32
+
 CC = gcc
 LD = ld
 
-override CFLAGS        = -g -Wall -pedantic -std=c99 $(OPTIMIZE)
+override CFLAGS        =  -g -Wall -pedantic -std=c99 $(OPTIMIZE)
 $(DEFS)
 override LDFLAGS       = -Wl,-Map,$(PRG).map
 
