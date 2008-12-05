@@ -6,8 +6,8 @@
  */
 
 #include <stdint.h>
-#include <avr/interrupt.h> /* cli() & sei() */
-#include <avr/eeprom.h>
+#include "../compat/interrupt.h" /* cli() & sei() */
+#include "../compat/eeprom.h"
 #include "../config.h"
 
 #ifdef ERROR_HANDLING

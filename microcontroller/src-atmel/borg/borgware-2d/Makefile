@@ -52,7 +52,7 @@ ifneq ($(MAKECMDGOALS),mrproper)
 ifneq ($(MAKECMDGOALS),menuconfig)
 
 include $(TOPDIR)/.subdirs
--include $(TOPDIR)/.config
+include $(TOPDIR)/.config
 
 endif # MAKECMDGOALS!=menuconfig
 endif # MAKECMDGOALS!=mrproper
@@ -74,7 +74,7 @@ compile-$(TARGET): compile-subdirs_avr $(TARGET).hex $(TARGET).bin $(TARGET).lst
 
 
 OBJECTS += $(patsubst %.c,./obj_avr/%.o,${SRC})
-SUBDIROBJECTS = $(foreach subdir,$(SUBDIRS_AVR),$(foreach object,$(shell cat $(subdir)/obj_avr/.objects),$(subdir)/$(object)))
+SUBDIROBJECTS = $(foreach subdir,$(SUBDIRS_AVR),$(foreach object,$(shell cat $(subdir)/obj_avr/.objects 2>/dev/null),$(subdir)/$(object)))
 
 $(TARGET): $(OBJECTS) $(SUBDIROBJECTS)
 	$(CC) $(LDFLAGS) -o $@ $(OBJECTS) $(SUBDIROBJECTS)
@@ -115,7 +115,7 @@ compile-subdirs_sim:
 
 simulator: autoconf.h .config .subdirs compile-subdirs_sim $(TARGET_SIM)
 
-SUBDIROBJECTS_SIM = $(foreach subdir,$(SUBDIRS_SIM),$(foreach object,$(shell cat $(subdir)/obj_sim/.objects),$(subdir)/$(object)))
+SUBDIROBJECTS_SIM = $(foreach subdir,$(SUBDIRS_SIM),$(foreach object,$(shell cat $(subdir)/obj_sim/.objects 2>/dev/null),$(subdir)/$(object)))
 
 OBJECTS_SIM = $(patsubst %.c,obj_sim/%.o,${SRC_SIM})
 

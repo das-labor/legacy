@@ -1,7 +1,7 @@
 #ifndef FONT_H
 #define FONT_H
 
-#include "../pgmspace.h"
+#include "../compat/pgmspace.h"
 
 typedef struct{
 	unsigned char fontHeight;
