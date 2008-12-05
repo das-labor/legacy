@@ -120,7 +120,7 @@ SUBDIROBJECTS_SIM = $(foreach subdir,$(SUBDIRS_SIM),$(foreach object,$(shell cat
 OBJECTS_SIM = $(patsubst %.c,obj_sim/%.o,${SRC_SIM})
 
 $(TARGET_SIM): $(OBJECTS_SIM) $(SUBDIROBJECTS_SIM)
-	$(HOSTCC) $(LDFLAGS_SIM) $(LIBS_SIM) -o $@ $(SUBDIROBJECTS_SIM)
+	$(HOSTCC) $(LDFLAGS_SIM) -o $@ $(OBJECTS_SIM) $(SUBDIROBJECTS_SIM) $(LIBS_SIM)
 
 ./obj_sim/%.o: %.c
 	@ if [ ! -d obj_sim ]; then mkdir obj_sim ; fi
