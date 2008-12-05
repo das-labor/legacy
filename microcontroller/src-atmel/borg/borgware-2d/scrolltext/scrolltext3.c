@@ -6,12 +6,10 @@
 
 #include "../config.h"
 #include "scrolltext.h"
-#ifdef AVR
-#   include "../borg_hw/borg_hw.h"
-#endif
 
 #include "../pixel.h"
 #include "../util.h"
+#include "../pgmspace.h"
 #include "font_arial8.h"
 #include "font_small6.h"
 #include "font_uni53.h"

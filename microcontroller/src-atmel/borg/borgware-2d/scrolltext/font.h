@@ -1,12 +1,7 @@
 #ifndef FONT_H
 #define FONT_H
-#ifdef AVR
-#   include <avr/pgmspace.h>
-#else 
-#   define PROGMEM
-#   define pgm_read_byte(B) *(B)      
-#   define pgm_read_word(B) *(B)  
-#endif
+
+#include "../pgmspace.h"
 
 typedef struct{
 	unsigned char fontHeight;
