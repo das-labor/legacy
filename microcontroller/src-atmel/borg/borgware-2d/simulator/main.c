@@ -197,6 +197,7 @@ void timf(int value) {
 
 void *display_loop_run(void * unused) {
 	display_loop();
+	return 0;
 }
 
 int main(int argc, char **argv){

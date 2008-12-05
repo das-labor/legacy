@@ -1,5 +1,6 @@
 
 #include <setjmp.h>
+#include <stdio.h>
 
 #include "config.h"
 #include "scrolltext/scrolltext.h"
@@ -33,10 +34,6 @@ void display_loop(){
 #ifdef ANIMATION_SCROLLTEXT
 		case 1:
 			scrolltext(scrolltext_text);
-			{ char a[14];
-				sprintf(a,"</# counter == %lu  ", percnt_get());
-				scrolltext(a);
-			}
 			break;
 #endif
 

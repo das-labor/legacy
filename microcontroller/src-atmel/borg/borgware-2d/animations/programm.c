@@ -87,6 +87,15 @@ void off()
 #endif
 
 #ifdef ANIMATION_SPIRALE
+
+void walk(cursor* cur, unsigned char steps, unsigned int delay){
+	unsigned char x;
+	for(x=0;x<steps;x++){
+		set_cursor(cur, next_pixel(cur->pos, cur->dir));
+		wait(delay);
+	}
+}
+
 void spirale(unsigned int delay){
 	clear_screen(0);
 
