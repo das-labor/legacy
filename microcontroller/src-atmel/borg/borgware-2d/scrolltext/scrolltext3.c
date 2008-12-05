@@ -9,7 +9,6 @@
 
 #include "../pixel.h"
 #include "../util.h"
-#include "../pgmspace.h"
 #include "font_arial8.h"
 #include "font_small6.h"
 #include "font_uni53.h"

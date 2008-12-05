@@ -7,8 +7,10 @@
  */
 
 #include <stdint.h>
-#include <util/delay.h>
-#include <avr/sfr_defs.h> /* for debugging */
+#ifdef AVR
+	#include <util/delay.h>
+	#include <avr/sfr_defs.h> /* for debugging */
+#endif
 #include "../config.h"
 #include "../random/prng.h"
 #include "../pixel.h"

@@ -1,0 +1,3 @@
+
+#define sei()
+#define cli()

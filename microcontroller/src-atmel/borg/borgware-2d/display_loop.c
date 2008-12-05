@@ -24,6 +24,10 @@ jmp_buf newmode_jmpbuf;
 void display_loop(){
 //	mcuf_serial_mode();
 	
+#ifdef RANDOM_SUPPORT
+	percnt_inc();
+#endif
+
 	mode = setjmp(newmode_jmpbuf);
 	oldOldmode = oldMode;
 	waitForFire = 1;
@@ -34,6 +38,13 @@ void display_loop(){
 #ifdef ANIMATION_SCROLLTEXT
 		case 1:
 			scrolltext(scrolltext_text);
+			
+#ifdef RANDOM_SUPPORT
+			{ char a[14];
+				sprintf(a,"</# counter == %lu  ", percnt_get());
+				scrolltext(a);
+			}
+#endif
 			break;
 #endif
 

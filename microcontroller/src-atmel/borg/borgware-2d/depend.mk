@@ -10,8 +10,8 @@ ifneq ($(MAKECMDGOALS),mrproper)
 ifneq ($(MAKECMDGOALS),menuconfig)  
 
 # For each .o file we need a .d file.
-#-include $(subst .o,.d,$(filter %.o,$(OBJECTS))) /dev/null
 -include $(subst .o,.d,$(filter %.o,$(OBJECTS)))
+-include $(subst .o,.d,$(filter %.o,$(OBJECTS_SIM)))
 
 endif
 endif
@@ -33,3 +33,16 @@ endef
 obj_avr/%.d: %.c ; @ $(make-deps)
 
 obj_avr/%.d: %.S ; @ $(make-deps)
+
+
+define make-deps-sim
+echo "checking dependencies for $<"
+if [ ! -d obj_sim ]; then mkdir obj_sim ; fi
+set -e; $(HOSTCC) $(SIM_CFLAGS) -M -MM $<  | \
+sed > $@.new -e 's;$(*F)\.o:;$@ obj_sim/$*.o obj_sim/$*.E $*.s:;' \
+	     -e 's% [^ ]*/gcc-lib/[^ ]*\.h%%g'
+if test -s $@.new; then mv -f $@.new $@; else rm -f $@.new; fi
+endef
+
+
+obj_sim/%.d: %.c ; $(make-deps-sim)
