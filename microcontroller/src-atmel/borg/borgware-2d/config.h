@@ -18,7 +18,7 @@
 //#define SCROLL_X_SPEED 20
 //#define SCROLL_Y_SPEED 20
 
-#define BORG_CAN
+//#define BORG_CAN
 
 // spi.[ch] defines
 #define SPI_HARDWARE

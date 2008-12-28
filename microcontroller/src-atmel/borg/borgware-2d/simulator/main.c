@@ -1,4 +1,6 @@
 
+#include <stdio.h>
+#include <setjmp.h>
 
 #ifdef _WIN32
 #  include <GL/glut.h>
@@ -18,24 +20,12 @@
 #  include <unistd.h>
 #endif
 
-#include <stdio.h>
-#include <setjmp.h>
 #include "../config.h"
 #include "../display_loop.h"
 #include "../pixel.h"
-//#include "programm.h"
-//#include "menu.h"
-//#include "../tetris/logic.h"
 #include "trackball.h"
-//#include "../games/snake.h"
-//#include "stonefly.h"
-
-//#include "scrolltext.h"
-
-
 
 unsigned char fakeport;
-jmp_buf newmode_jmpbuf;
 volatile unsigned char oldMode, oldOldmode, mode;
 extern unsigned char waitForFire;
 
