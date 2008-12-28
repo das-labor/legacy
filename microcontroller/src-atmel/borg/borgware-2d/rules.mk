@@ -40,9 +40,6 @@ objects_sim: $(OBJECTS_SIM)
 
 
 
-
-
-
 clean-common:
 	$(RM) $(TARGET) *.[odasE] *.d.new *~
 	$(RM) -r ./obj_avr

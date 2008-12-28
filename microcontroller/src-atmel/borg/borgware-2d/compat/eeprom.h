@@ -13,6 +13,6 @@
 	uint16_t eeprom_read_word (const uint16_t *p);
 	
 	#define eeprom_busy_wait()
-	#define EEMEM
+	#define 	EEMEM   __attribute__((section(".eeprom")))
 	
 #endif

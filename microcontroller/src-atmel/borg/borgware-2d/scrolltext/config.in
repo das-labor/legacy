@@ -8,7 +8,6 @@ choice 'Scrolltext Font'			\
    'Arial_8' SCROLLTEXT_FONT
 
 int "Scrolltest buffer size" SCROLLTEXT_BUFFER_SIZE 128
-int "Scrolltext default delay" SCROLLTEXT_DELAY 60
 
 int "Default x speed" SCROLL_X_SPEED 20
 int "Default y speed" SCROLL_Y_SPEED 20

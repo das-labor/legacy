@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
+#include <stdint.h>
 
 #include "../config.h"
 #include "scrolltext.h"
@@ -16,6 +17,11 @@
 #define MAX_FONTS 1
 font fonts[MAX_FONTS];
 #define MAX_SPECIALCOLORS 3
+
+#ifndef AVR
+	#define strtok_r(s,d,l) strtok(s,d)	
+#endif
+
 unsigned char PROGMEM colorTable[MAX_SPECIALCOLORS*NUM_ROWS] = {1, 1, 2, 3, 3, 2, 1, 1,   
                                                                 3, 3, 2, 1, 1, 2, 3, 3,    
                                                                 3, 3, 2, 2, 3, 3, 2, 2
