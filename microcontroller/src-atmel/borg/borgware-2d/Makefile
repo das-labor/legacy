@@ -15,8 +15,8 @@ SRC_SIM = \
 
 
 LAUNCH_BOOTLOADER = launch-bootloader
-SERIAL = /dev/ttyUSB0	
-
+#SERIAL = /dev/ttyUSB0	
+SERIAL = COM5
 export TOPDIR
 ##############################################################################
 
@@ -40,6 +40,7 @@ include defaults.mk
 	@ echo "checking in which subdirs to build"
 	@ $(RM) -f $@
 	@ echo "SUBDIRS += animations" >> $@
+#	@ echo "SUBDIRS += animations games menu" >> $@
 	@ (for subdir in `grep -e "^#define .*_SUPPORT" autoconf.h \
 	      | sed -e "s/^#define //" -e "s/_SUPPORT.*//" \
 	      | tr "[A-Z]\\n" "[a-z] " `; do \
@@ -159,7 +160,7 @@ mrproper:
 	$(RM) -f autoconf.h .config config.mk .menuconfig.log .config.old
 
 sflash: $(TARGET).hex
-	$(LAUNCH_BOOTLOADER) $(SERIAL) 115200
+#	$(LAUNCH_BOOTLOADER) $(SERIAL) 115200
 	avrdude -p m32 -b 115200 -u -c avr109 -P $(SERIAL) -U f:w:$< -F
 	echo X > $(SERIAL)
 

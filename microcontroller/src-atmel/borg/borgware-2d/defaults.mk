@@ -22,7 +22,7 @@ CFLAGS ?= -Wall -W -Wno-unused-parameter -Wno-sign-compare
 CFLAGS += -g -Os -std=gnu99 -fgnu89-inline
 
 # flags for the linker
-LDFLAGS += -mmcu=$(MCU)
+LDFLAGS += -mmcu=$(MCU) -T avr5.x
 
 
 #############################################################################

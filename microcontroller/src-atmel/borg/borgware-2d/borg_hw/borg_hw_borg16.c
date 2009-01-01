@@ -51,7 +51,7 @@ inline void nextrow(uint8_t row){
 	
 	if (row == 0){
 		//Zeile 0: Das erste Schieberegister initialisieren
-#ifndef INVERSE_ROWS
+#ifndef INVERT_ROWS
 		ROWPORT&= ~(1<<PIN_MCLR);
 		ROWPORT|= (1<<PIN_MCLR);
 		ROWPORT|= (1<<PIN_DATA);
@@ -104,7 +104,7 @@ inline void rowshow(unsigned char row, unsigned char plane){
 	tmp  = pixmap[plane][row][0];
 	tmp1 = pixmap[plane][row][1];
 #endif
-#ifdef REVERSED_HARDWARE
+#ifdef REVERSE_COLS
 	tmp = (tmp >> 4) | (tmp << 4);
 	tmp = ((tmp & 0xcc) >> 2) | ((tmp & 0x33)<< 2); //0xcc = 11001100, 0x33 = 00110011
 	tmp = ((tmp & 0xaa) >> 1) | ((tmp & 0x55)<< 1); //0xaa = 10101010, 0x55 = 1010101

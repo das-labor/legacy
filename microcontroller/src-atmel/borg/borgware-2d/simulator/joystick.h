@@ -1,7 +1,7 @@
 #ifndef JOYSTICK_H_
 #define JOYSTICK_H_
 
-unsigned char fakeport;
+extern unsigned char fakeport;
 
 #define JOYISFIRE  (0x01 & fakeport)
 #define JOYISLEFT  (0x02 & fakeport)

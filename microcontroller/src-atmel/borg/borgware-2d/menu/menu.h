@@ -8,6 +8,7 @@
 
 #include <inttypes.h>
 
+/*
 typedef enum menu_item_t
 {
 	MENU_ITEM_SNAKE,
@@ -16,6 +17,7 @@ typedef enum menu_item_t
 	MENU_ITEM_MAX // fake entry to mark the end
 }
 menu_item_t;
+*/
 
 typedef enum menu_direction_t
 {
@@ -25,9 +27,15 @@ typedef enum menu_direction_t
 }
 menu_direction_t;
 
+typedef struct{
+	void(*run)(void);
+	uint8_t * icon;
+}game_descriptor_t;
+
+
 void menu();
-void menu_animate(menu_item_t currentItem, menu_direction_t direction);
-uint8_t menu_getIconPixel(menu_item_t item, int8_t x, int8_t y);
+void menu_animate(uint8_t currentItem, menu_direction_t direction);
+uint8_t menu_getIconPixel(uint8_t item, int8_t x, int8_t y);
 void menu_setpixel(int8_t x, int8_t y, int8_t isSet);
 
 #endif /*MENU_H_*/

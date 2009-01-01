@@ -38,7 +38,10 @@ SECTIONS
     *(.data2)
     *(SORT(.data$*))
     *(.jcr)
-    __data_end__ = . ;
+    __game_descriptors_start__ = . ;    
+    *(.game_descriptors)    
+    __game_descriptors_end__ = . ;    
+		__data_end__ = . ;
     *(.data_cygwin_nocopy)
   }
   .rdata BLOCK(__section_alignment__) :

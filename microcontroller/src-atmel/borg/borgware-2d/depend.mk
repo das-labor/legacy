@@ -45,4 +45,4 @@ if test -s $@.new; then mv -f $@.new $@; else rm -f $@.new; fi
 endef
 
 
-obj_sim/%.d: %.c ; $(make-deps-sim)
+obj_sim/%.d: %.c ; @ $(make-deps-sim)
