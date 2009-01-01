@@ -74,4 +74,15 @@ choice 'DATA Pin'			\
     Pin7 7" \
    'Pin7' PIN_DATA
 
+comment "fixing hardwareproblems in software"
+
+
+bool "reverse cols" REVERSE_COLS n
+bool "invert rows " INVERT_ROWS n
+
+comment "for borg jacket"
+
+bool "interlaced rows" INTERLACED_ROWS n
+bool "interlaced cols" INTERLACED_COLS n
+
 endmenu

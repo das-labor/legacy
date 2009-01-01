@@ -12,13 +12,8 @@
 
 #define SNAKE_DELAY 100
 
-//#define SCROLLTEXT_STRING_SIZE 128
-//#define SCROLLTEXT_FONT font_arial8
-//#define SCROLLTEXT_DEFAULT "</#www.das-labor.org"
-//#define SCROLL_X_SPEED 20
-//#define SCROLL_Y_SPEED 20
-
-//#define BORG_CAN
+/*
+#define BORG_CAN
 
 // spi.[ch] defines
 #define SPI_HARDWARE
@@ -40,18 +35,10 @@
 #define CAN_RX_BUFFER_SIZE 2	//only used for Interrupt
 #define CAN_TX_BUFFER_SIZE 2	//only used for Interrupt
 #define F_MCP F_CPU
+*/
 
 #define INIT_EEPROM
 
 //#define UART_BAUD_RATE 115200L
-
-#define REVERSED_HARDWARE
-//#define INVERSE_ROWS
-
-//#define INTERLACED_ROWS
-//#define INTERLACED_COLS
-
-
-
 
 #endif /* CONFIG_H_ */

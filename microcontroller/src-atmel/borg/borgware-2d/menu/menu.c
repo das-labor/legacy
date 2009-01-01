@@ -8,24 +8,21 @@
 #include <inttypes.h>
 
 // architecture dependent stuff
-#ifdef __AVR__
-#include <avr/pgmspace.h>
-#define WAIT(ms) wait(ms)
-#else
-#define PROGMEM
-#define WAIT(ms) myWait(ms)
-#endif
+#include "../compat/pgmspace.h"
 
 #include "menu.h"
-#include "config.h"
-#include "util.h"
-#include "pixel.h"
-#include "joystick.h"
-#include "snake.h"
-#include "tetris/logic.h"
-#include "invaders2.h"
+#include "../config.h"
+#include "../util.h"
+#include "../pixel.h"
+#include "../joystick.h"
+
+
+extern game_descriptor_t _game_descriptors_start__[];
+extern game_descriptor_t _game_descriptors_end__[];
 
 // defines
+#define MENU_ITEM_MAX (((int)_game_descriptors_end__ - (int)_game_descriptors_start__)/sizeof(game_descriptor_t))
+
 #define MENU_WIDTH_ICON 8
 #define MENU_HEIGHT_ICON 8
 #define MENU_WIDTH_DELIMITER 2
@@ -48,11 +45,11 @@ void menu()
 	// wait as long the fire button is pressed to prevent unwanted selections
 	while (JOYISFIRE)
 	{
-		WAIT(MENU_POLL_INTERVAL);
+		wait(MENU_POLL_INTERVAL);
 	}
 
 	// set initial menu item
-	static menu_item_t miSelection = MENU_ITEM_TETRIS;
+	static uint8_t miSelection = 0;
 	// scroll in currently selected menu item
 	menu_animate(MENU_PREVITEM(miSelection), MENU_DIRECTION_LEFT);
 
@@ -66,27 +63,17 @@ void menu()
 			// prevent unwanted selections
 			while (JOYISFIRE)
 			{
-				WAIT(MENU_POLL_INTERVAL);
+				wait(MENU_POLL_INTERVAL);
 			}
 			// work against the chatter effects of dump joysticks
-			WAIT(MENU_WAIT_CHATTER);
+			wait(MENU_WAIT_CHATTER);
 
 			// call corresponding function
-			switch (miSelection)
-			{
-			case MENU_ITEM_SNAKE:
-				snake_game();
-				break;
-			case MENU_ITEM_SPACEINVADERS:
-				borg_invaders();
-				break;
-			case MENU_ITEM_TETRIS:
-				tetris();
-				break;
-			default:
-				break;
-			}
+
+			_game_descriptors_start__[miSelection].run();
+
 			break;
+
 		}
 		// change selected item and do some scrolling
 		else if (JOYISRIGHT)
@@ -109,7 +96,7 @@ void menu()
 		// return if timeout is reached
 		else
 		{
-			WAIT(MENU_POLL_INTERVAL);
+			wait(MENU_POLL_INTERVAL);
 			if (--nMenuIterations == 0)
 				break;
 		}
@@ -119,23 +106,24 @@ void menu()
 	return;
 }
 
-uint8_t menu_getIconPixel(menu_item_t item, int8_t x, int8_t y)
+
+uint8_t menu_getIconPixel(uint8_t item, int8_t x, int8_t y)
 {
+/*
+
 	// MSB is leftmost pixel
 	static uint8_t nIcon[][8] PROGMEM =
 		{{0xff, 0x81, 0xbd, 0xa5, 0xa5, 0xad, 0xa1, 0xbf},  // Snake icon
 		 {0x66, 0x18, 0x3c, 0x5a, 0xff, 0xbd, 0xa5, 0x18},  // Invaders icon
 		 {0x0f, 0x0f, 0xc3, 0xdb, 0xdb, 0xc3, 0xf0, 0xf0}}; // Tetris icon
 
+*/
+
 	// is x within the icon or do we have reached the delimiter?
 	if (x < MENU_WIDTH_ICON)
 	{
 		// return pixel
-#ifdef __AVR__
-		return (0x80 >> x) & pgm_read_word(&nIcon[item][y]);
-#else
-		return (0x80 >> x) & nIcon[item][y];
-#endif
+		return (0x80 >> x) & pgm_read_word(&_game_descriptors_start__[item].icon[y]);
 	}
 	else
 	{
@@ -144,7 +132,7 @@ uint8_t menu_getIconPixel(menu_item_t item, int8_t x, int8_t y)
 	}
 }
 
-void menu_animate(menu_item_t miInitial, menu_direction_t direction)
+void menu_animate(uint8_t miInitial, menu_direction_t direction)
 {
 	int16_t nWait= MENU_WAIT_INITIAL;
 
@@ -152,7 +140,7 @@ void menu_animate(menu_item_t miInitial, menu_direction_t direction)
 	int8_t nWidthSide = (NUM_COLS - MENU_WIDTH_ICON) / 2;
 
 	// determine the icon at the leftmost position
-	menu_item_t mi = miInitial + MENU_ITEM_MAX;
+	uint8_t mi = miInitial + MENU_ITEM_MAX;
 	int8_t nBack = nWidthSide / (MENU_WIDTH_ICON + MENU_WIDTH_DELIMITER);
 	if ((nWidthSide % (MENU_WIDTH_ICON + MENU_WIDTH_DELIMITER)) != 0)
 	{
@@ -203,7 +191,7 @@ void menu_animate(menu_item_t miInitial, menu_direction_t direction)
 		int8_t y;
 		for (y = 0; y < MENU_HEIGHT_ICON; ++y)
 		{
-			menu_item_t miCurrent = mi;
+			uint8_t miCurrent = mi;
 			int8_t nIconOffset = nInitialSideOffset;
 			int8_t x;
 			for (x = 0; x < NUM_COLS; ++x)
@@ -231,7 +219,7 @@ void menu_animate(menu_item_t miInitial, menu_direction_t direction)
 		}
 
 		// wait between the frames so that the animation can be seen
-		WAIT(nWait);
+		wait(nWait);
 		// animation speed can be throtteled
 		nWait += MENU_WAIT_INCREMENT;
 	}

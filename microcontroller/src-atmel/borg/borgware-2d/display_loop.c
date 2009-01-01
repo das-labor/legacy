@@ -30,7 +30,11 @@ void display_loop(){
 
 	mode = setjmp(newmode_jmpbuf);
 	oldOldmode = oldMode;
+
+#ifdef JOYSTICK_SUPPORT	
 	waitForFire = 1;
+#endif
+
 	for(;;){
 		oldMode = mode;
 		switch(mode++) {
