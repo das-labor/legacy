@@ -3,6 +3,6 @@ TOPDIR = ../..
 
 include $(TOPDIR)/defaults.mk
 
-SRC = piece.c playfield.c view.c logic.c input.c
+SRC = snake_game.c
 
 include $(TOPDIR)/rules.mk

@@ -40,7 +40,6 @@ include defaults.mk
 	@ echo "checking in which subdirs to build"
 	@ $(RM) -f $@
 	@ echo "SUBDIRS += animations" >> $@
-#	@ echo "SUBDIRS += animations games menu" >> $@
 	@ (for subdir in `grep -e "^#define .*_SUPPORT" autoconf.h \
 	      | sed -e "s/^#define //" -e "s/_SUPPORT.*//" \
 	      | tr "[A-Z]\\n" "[a-z] " `; do \
@@ -54,11 +53,13 @@ ifneq ($(MAKECMDGOALS),menuconfig)
 
 include $(TOPDIR)/.subdirs
 include $(TOPDIR)/.config
+include $(TOPDIR)/games/games.mk
 
 endif # MAKECMDGOALS!=menuconfig
 endif # MAKECMDGOALS!=mrproper
 endif # MAKECMDGOALS!=clean
 endif # no_deps!=t
+
 
 ##############################################################################
 

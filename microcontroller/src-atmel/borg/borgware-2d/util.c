@@ -1,7 +1,7 @@
 #include <avr/io.h>
 #include <setjmp.h>
 
-#include "joystick.h"
+#include "joystick/joystick.h"
 
 //this buffer is declared in main
 extern jmp_buf newmode_jmpbuf;

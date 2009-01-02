@@ -3,6 +3,6 @@ TOPDIR = ../..
 
 include $(TOPDIR)/defaults.mk
 
-SRC = piece.c playfield.c view.c logic.c input.c
+SRC = invader_init.c invader_draw.c invader_proc.c invaders2.c
 
 include $(TOPDIR)/rules.mk

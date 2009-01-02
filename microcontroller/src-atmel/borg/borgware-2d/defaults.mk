@@ -22,7 +22,7 @@ CFLAGS ?= -Wall -W -Wno-unused-parameter -Wno-sign-compare
 CFLAGS += -g -Os -std=gnu99 -fgnu89-inline
 
 # flags for the linker
-LDFLAGS += -mmcu=$(MCU) -T avr5.x
+LDFLAGS += -T ./avr5.x -mmcu=$(MCU) 
 
 
 #############################################################################
@@ -34,11 +34,11 @@ OSTYPE = $(shell echo $$OSTYPE)
 ifeq ($(OSTYPE),cygwin)  
   CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O2 -D_WIN32 -mno-cygwin
   LDFLAGS_SIM = -Wl -mno-cygwin -T simulator/i386pe.x
-	LIBS_SIM    = -lglut32 -lglu32 -lopengl32
+  LIBS_SIM    = -lglut32 -lglu32 -lopengl32
 else
   CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O2
   LDFLAGS_SIM = -Wl
-	LIBS_SIM    = -lglut -lpthread -lGL -lGLU
+  LIBS_SIM    = -lglut -lpthread -lGL -lGLU
 endif
 
 ##############################################################################

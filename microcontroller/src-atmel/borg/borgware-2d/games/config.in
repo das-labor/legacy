@@ -1,0 +1,9 @@
+mainmenu_option next_comment
+comment "Games"
+
+dep_bool "tetris"         GAME_TETRIS           $JOYSTICK_SUPPORT $RANDOM_SUPPORT
+dep_bool "space invaders" GAME_SPACE_INVADERS   $JOYSTICK_SUPPORT $RANDOM_SUPPORT
+dep_bool "snake"          GAME_SNAKE            $JOYSTICK_SUPPORT $RANDOM_SUPPORT
+
+
+endmenu

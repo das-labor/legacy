@@ -14,7 +14,7 @@
 #include "mcuf/mcuf.h"
 #include "menu/menu.h"
 #include "pixel.h"
-#include "joystick.h"
+#include "joystick/joystick.h"
 
 
 volatile unsigned char oldMode, oldOldmode, mode;

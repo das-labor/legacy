@@ -3,8 +3,6 @@ OUTPUT_FORMAT(pei-i386)
 SEARCH_DIR("/usr/i686-pc-cygwin/lib"); SEARCH_DIR("/usr/local/lib"); SEARCH_DIR("/usr/lib"); SEARCH_DIR("/usr/lib/w32api");
 SECTIONS
 {
-  . = 0;
-  /*.eeprom (NOLOAD) : { *.(eeprom) }*/
   /* Make the virtual address and file offset synced if the alignment is
      lower than the target page size. */
   . = SIZEOF_HEADERS;
@@ -38,7 +36,9 @@ SECTIONS
     *(.data2)
     *(SORT(.data$*))
     *(.jcr)
-    __game_descriptors_start__ = . ;    
+    __eeprom_start__ = . ;    
+    *(.eeprom)
+	__game_descriptors_start__ = . ;    
     *(.game_descriptors)    
     __game_descriptors_end__ = . ;    
 		__data_end__ = . ;

@@ -9,6 +9,11 @@
 #include "random/prng.h"
 #include "random/persistentCounter.h"
 #include "display_loop.h"
+#include "pixel.h"
+
+#ifdef JOYSTICK_SUPPORT
+	#include "joystick/joystick.h"
+#endif
 
 int main (void){
 	clear_screen(0);

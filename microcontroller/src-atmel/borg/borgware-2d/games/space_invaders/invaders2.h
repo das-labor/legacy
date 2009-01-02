@@ -9,13 +9,11 @@
 
 #ifndef INVADERS2_H
 #define INVADERS2_H
-
-#define USE_ORIGINAL_PIXEL_API
-
-/*CONNECTION TO SIMULATOR*/
-//extern char fkey;
-
 /* TEST PARTS NEW API */
+
+#include "../../config.h"
+#include "../../pixel.h"
+
 
 typedef struct
 {
@@ -29,11 +27,10 @@ typedef struct
 	unsigned char y;
 } uPixel;
 
-//for compatibility to pisel.h api!
+#define USE_ORIGINAL_PIXEL_API
+
+//for compatibility to pixel.h api!
 #ifdef USE_ORIGINAL_PIXEL_API
-#include "pixel.h"
-#include "scrolltext.h"
-#include "joystick.h"
 
 //typedef uPixel pixel;
 #define uPixel pixel

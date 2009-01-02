@@ -1,12 +1,24 @@
 #include <stdio.h>
-#include "util.h"
+#include "../../util.h"
+#include "../../compat/eeprom.h"
+#include "../../compat/pgmspace.h"
+#include "../../menu/menu.h"
+#include "../../scrolltext/scrolltext.h"
 #include "invaders2.h"
 
 //#include <stdio.h>
 
-#ifndef __AVR__
-#define wait(_X) myWait(_X)
-#endif
+// MSB is leftmost pixel
+static uint8_t icon[8] PROGMEM =
+	 {0x66, 0x18, 0x3c, 0x5a, 0xff, 0xbd, 0xa5, 0x18}; // Invaders icon
+
+void borg_invaders();
+
+game_descriptor_t invaders_game_descriptor __attribute__((section(".game_descriptors"))) ={
+	&borg_invaders,
+	icon,
+};
+
 
 void borg_invaders()
 {
@@ -118,9 +130,11 @@ void borg_invaders()
 
 	clearScreen ();
 	//wait(5000);
-	char text[64];
-	snprintf(text, 64, "</#points: %u", pl.points);
-	scrolltext(text);
+	#ifdef SCROLLTEXT_SUPPORT
+		char text[64];
+		snprintf(text, 64, "</#points: %u", pl.points);
+		scrolltext(text);
+	#endif
 	//printf("scores: %d\n", pl.points);
 
 

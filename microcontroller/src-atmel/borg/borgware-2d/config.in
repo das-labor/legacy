@@ -20,19 +20,36 @@ comment "General Setup"
 endmenu
 ###############################################################################
 
+
 ###################### Borg Hardware Menu #####################################
 source borg_hw/config.in
 ###############################################################################
+
+
+########################### Features Menu #####################################
 mainmenu_option next_comment
 comment "Features"
 
 bool    "prng random number generator" RANDOM_SUPPORT y
 
 endmenu
+###############################################################################
+
+
 ########################## Scrolltext Menu ####################################
 source scrolltext/config.in
 ###############################################################################
 
+
+############################ Joystick Menu ####################################
+source joystick/config.in
+###############################################################################
+
+dep_bool "menu support" MENU_SUPPORT $JOYSTICK_SUPPORT
+
+############################ Game Menu ########################################
+source games/config.in
+###############################################################################
 
 
 ######################### Animations Menu #####################################
@@ -40,15 +57,15 @@ mainmenu_option next_comment
 comment "Animations"
 	comment "selects which animations are displayed in main loop"
 	
-	dep_bool "Scrolltext"    ANIMATION_SCROLLTEXT $SCROLLTEXT_SUPPORT
+	dep_bool "Scrolltext"    ANIMATION_SCROLLTEXT    $SCROLLTEXT_SUPPORT
 	bool     "Spirale"       ANIMATION_SPIRALE
 	bool     "Joern1"        ANIMATION_JOERN1
-	bool     "Snake"         ANIMATION_SNAKE
+	dep_bool "Snake"         ANIMATION_SNAKE         $RANDOM_SUPPORT
 	bool     "Schachbrett"   ANIMATION_SCHACHBRETT
-	bool     "Feuer"         ANIMATION_FEUER
-	bool     "Matrix"        ANIMATION_MATRIX
-	bool     "Random bright" ANIMATION_RANDOM_BRIGHT
-	bool     "Game of Life"  ANIMATION_GAMEOFLIFE
+	dep_bool "Feuer"         ANIMATION_FEUER         $RANDOM_SUPPORT
+	dep_bool "Matrix"        ANIMATION_MATRIX        $RANDOM_SUPPORT
+	dep_bool "Random bright" ANIMATION_RANDOM_BRIGHT $RANDOM_SUPPORT
+	dep_bool "Game of Life"  ANIMATION_GAMEOFLIFE    $RANDOM_SUPPORT
 	
 	comment "Special Animations"
     bool     "Test Animations"  ANIMATION_TESTS
