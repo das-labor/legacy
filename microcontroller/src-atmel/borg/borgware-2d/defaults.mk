@@ -37,7 +37,7 @@ ifeq ($(OSTYPE),cygwin)
   LIBS_SIM    = -lglut32 -lglu32 -lopengl32
 else
   CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O2
-  LDFLAGS_SIM = -Wl
+  LDFLAGS_SIM = -Wl -T simulator/elf_i386.x
   LIBS_SIM    = -lglut -lpthread -lGL -lGLU
 endif
 
