@@ -33,9 +33,11 @@ static void init(){
 	}
 }
 
+extern uint8_t _eeprom_start__[];
+
 uint16_t conv_addr(uint8_t * p){
 	uint16_t addr;
-	addr = (unsigned int)p;
+	addr = (unsigned int)p - (unsigned int)_eeprom_start__;
 	if(addr >= EEPROM_SIZE){
 		printf ("warning: eeprom write to %X\n",addr);
 	}
@@ -52,8 +54,8 @@ void 	eeprom_write_byte (uint8_t *p, uint8_t value){
 
 void 	eeprom_write_word (uint16_t *p, uint16_t value){
 	init();
-	eemem[conv_addr(p)  ] = value & 0xff;
-	eemem[conv_addr(p)+1] = value >> 8;
+	eemem[conv_addr((uint8_t*)p)  ] = value & 0xff;
+	eemem[conv_addr((uint8_t*)p)+1] = value >> 8;
 	
 	fseek(fp, 0, SEEK_SET);
 	fwrite(eemem, 1, EEPROM_SIZE, fp);
@@ -67,5 +69,5 @@ uint8_t  eeprom_read_byte (uint8_t *p){
 
 uint16_t eeprom_read_word (uint16_t *p){
 	init();
-	return eemem[conv_addr(p)] | (eemem[conv_addr(p)+1]<<8);
+	return eemem[conv_addr((uint8_t*)p)] | (eemem[conv_addr((uint8_t*)p)+1]<<8);
 }

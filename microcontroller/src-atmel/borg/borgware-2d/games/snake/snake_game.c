@@ -1,11 +1,11 @@
 
-#include "../config.h"
-#include "../compat/pgmspace.h"
-#include "../menu/menu.h"
-#include "../pixel.h"
-#include "../random/prng.h"
-#include "../util.h"
-#include "../joystick.h"
+#include "../../config.h"
+#include "../../compat/pgmspace.h"
+#include "../../menu/menu.h"
+#include "../../pixel.h"
+#include "../../random/prng.h"
+#include "../../util.h"
+#include "../../joystick/joystick.h"
 
 	// MSB is leftmost pixel
 static uint8_t icon[8] PROGMEM =

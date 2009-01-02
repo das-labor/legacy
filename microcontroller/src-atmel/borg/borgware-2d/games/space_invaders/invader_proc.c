@@ -1,5 +1,7 @@
 #include <stdlib.h>
-#include "prng.h"
+#include "../../config.h"
+#include "../../joystick/joystick.h"
+#include "../../random/prng.h"
 #include "invaders2.h"
 
 void procCannon(Cannon * cn, uPixel * shot)

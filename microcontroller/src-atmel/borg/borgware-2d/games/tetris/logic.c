@@ -8,17 +8,16 @@
 #include <assert.h>
 #include <inttypes.h>
 
-#ifdef __AVR__
-	#include <avr/eeprom.h>
-	#include <avr/interrupt.h>
-#endif
+#include "../../compat/eeprom.h"
+#include "../../compat/pgmspace.h"
+#include "../../menu/menu.h"
 
 #include "logic.h"
 #include "piece.h"
 #include "playfield.h"
 #include "view.h"
 #include "input.h"
-#include "../prng.h"
+#include "../../random/prng.h"
 
 
 #ifdef EEMEM
@@ -28,6 +27,18 @@
 
 	uint16_t tetris_logic_nHighscore EEMEM;
 #endif
+
+	// MSB is leftmost pixel
+static uint8_t icon[8] PROGMEM =
+	 {0x0f, 0x0f, 0xc3, 0xdb, 0xdb, 0xc3, 0xf0, 0xf0}; // Tetris icon
+
+void tetris();
+
+game_descriptor_t tetris_game_descriptor __attribute__((section(".game_descriptors"))) ={
+	&tetris,
+	icon,
+};
+
 
 /***************************
  * non-interface functions *

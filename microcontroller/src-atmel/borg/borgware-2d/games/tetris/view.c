@@ -3,22 +3,16 @@
 #include <stdio.h>
 #include <assert.h>
 #include <inttypes.h>
-#include "../config.h"
-#include "../pixel.h"
-#include "../util.h"
-#include "../scrolltext.h"
+#include "../../config.h"
+#include "../../pixel.h"
+#include "../../util.h"
+#include "../../scrolltext/scrolltext.h"
 #include "logic.h"
 #include "piece.h"
 #include "playfield.h"
 #include "view.h"
 
-/* the API simulator and the real API have different named wait functions */
-#ifdef __AVR__
-	#define WAIT(ms) wait(ms)
-#else
-	#define WAIT(ms) myWait(ms)
-#endif
-
+#define WAIT(ms) wait(ms)
 
 /***********
  * defines *
@@ -416,6 +410,8 @@ void tetris_view_showResults(tetris_view_t *pV)
 			"</#Lines %u    New Highscore %u", nLines, nScore);
 	}
 
+#ifdef SCROLLTEXT_SUPPORT
 	scrolltext(pszResults);
+#endif
 }
 

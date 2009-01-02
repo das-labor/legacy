@@ -2,23 +2,14 @@
 #include <string.h>
 #include <inttypes.h>
 #include <assert.h>
-#include "../joystick.h"
-#include "../util.h"
+#include "../../config.h"
+#include "../../joystick/joystick.h"
+#include "../../util.h"
 #include "input.h"
 
-/* - the API simulator and the real API have different named wait functions
- * - the macro PM helps in reading values from PROGMEM on the AVR arch
- */
-#ifdef __AVR__
-	#include <avr/pgmspace.h>
-	#define WAIT(ms) wait(ms)
-	#define PM(value) pgm_read_word(&value)
-#else
-	#define PROGMEM
-	#define WAIT(ms) myWait(ms)
-	#define PM(value) (value)
-#endif
-
+#include "../../compat/pgmspace.h"
+#define WAIT(ms) wait(ms)
+#define PM(value) pgm_read_word(&value)
 
 /***********
  * defines *
@@ -70,7 +61,7 @@ void tetris_input_chatterProtect (tetris_input_t *pIn,
 
 	// amount of loop cycles a command is ignored after its button has been
 	// released (every command has its own counter)
-	const static uint8_t nInitialIgnoreValue[TETRIS_INCMD_NONE] PROGMEM =
+	static const uint8_t nInitialIgnoreValue[TETRIS_INCMD_NONE] PROGMEM =
 	{
 		TETRIS_INPUT_CHATTER_TICKS_ROT_CW,
 		TETRIS_INPUT_CHATTER_TICKS_ROT_CCW,

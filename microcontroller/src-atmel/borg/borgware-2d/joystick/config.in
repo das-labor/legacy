@@ -1,0 +1,101 @@
+dep_bool_menu "joystick support" JOYSTICK_SUPPORT y
+
+###################### Parallel joystick menu #################################
+dep_bool_menu "parallel joystick support" PARALLEL_JOYSTICK_SUPPORT y
+
+choice 'Pin up'			\
+   "PINA  PINA \
+    PINB  PINB \
+    PINC  PINC \
+    PIND  PIND" \
+   'PINB' JOYSTICK_PIN_UP
+
+choice 'Bit up'			\
+   "Bit0 0 \
+    Bit1 1 \
+    Bit2 2 \
+    Bit3 3 \
+    Bit4 4 \
+    Bit5 5 \
+    Bit6 6 \
+    Bit7 7" \
+   'Bit0' JOYSTICK_BIT_UP
+
+choice 'Pin down'			\
+   "PINA  PINA \
+    PINB  PINB \
+    PINC  PINC \
+    PIND  PIND" \
+   'PINB' JOYSTICK_PIN_DOWN
+
+choice 'Bit down'			\
+   "Bit0 0 \
+    Bit1 1 \
+    Bit2 2 \
+    Bit3 3 \
+    Bit4 4 \
+    Bit5 5 \
+    Bit6 6 \
+    Bit7 7" \
+   'Bit1' JOYSTICK_BIT_DOWN
+
+choice 'Pin left'			\
+   "PINA  PINA \
+    PINB  PINB \
+    PINC  PINC \
+    PIND  PIND" \
+   'PINB' JOYSTICK_PIN_LEFT
+
+choice 'Bit left'			\
+   "Bit0 0 \
+    Bit1 1 \
+    Bit2 2 \
+    Bit3 3 \
+    Bit4 4 \
+    Bit5 5 \
+    Bit6 6 \
+    Bit7 7" \
+   'Bit2' JOYSTICK_BIT_LEFT
+
+choice 'Pin right'			\
+   "PINA  PINA \
+    PINB  PINB \
+    PINC  PINC \
+    PIND  PIND" \
+   'PINB' JOYSTICK_PIN_RIGHT
+
+choice 'Bit right'			\
+   "Bit0 0 \
+    Bit1 1 \
+    Bit2 2 \
+    Bit3 3 \
+    Bit4 4 \
+    Bit5 5 \
+    Bit6 6 \
+    Bit7 7" \
+   'Bit3' JOYSTICK_BIT_RIGHT
+
+choice 'Pin fire'			\
+   "PINA  PINA \
+    PINB  PINB \
+    PINC  PINC \
+    PIND  PIND" \
+   'PIND' JOYSTICK_PIN_FIRE
+
+choice 'Bit fire'			\
+   "Bit0 0 \
+    Bit1 1 \
+    Bit2 2 \
+    Bit3 3 \
+    Bit4 4 \
+    Bit5 5 \
+    Bit6 6 \
+    Bit7 7" \
+   'Bit3' JOYSTICK_BIT_FIRE
+   
+endmenu
+###############################################################################
+
+
+
+endmenu

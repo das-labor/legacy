@@ -154,9 +154,9 @@ SECTIONS
     *(.rodata)  /* We need to include .rodata here if gcc is used */
     *(.rodata*) /* with -fdata-sections.  */
     *(.gnu.linkonce.d*)
-    __game_descriptors_start__ = . ;    
+     PROVIDE (_game_descriptors_start__ = .) ;    
     *(.game_descriptors)    
-    __game_descriptors_end__ = . ;      
+     PROVIDE (_game_descriptors_end__ = .) ;
     . = ALIGN(2);
      _edata = . ;
      PROVIDE (__data_end = .) ;

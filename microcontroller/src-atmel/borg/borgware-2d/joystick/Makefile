@@ -1,8 +1,9 @@
 TARGET =
-TOPDIR = ../..
+TOPDIR = ..
 
 include $(TOPDIR)/defaults.mk
 
-SRC = piece.c playfield.c view.c logic.c input.c
+SRC  = joystick.c
+SRC_SIM =
 
 include $(TOPDIR)/rules.mk

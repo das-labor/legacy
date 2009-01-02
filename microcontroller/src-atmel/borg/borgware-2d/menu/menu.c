@@ -14,14 +14,14 @@
 #include "../config.h"
 #include "../util.h"
 #include "../pixel.h"
-#include "../joystick.h"
+#include "../joystick/joystick.h"
 
 
 extern game_descriptor_t _game_descriptors_start__[];
 extern game_descriptor_t _game_descriptors_end__[];
 
 // defines
-#define MENU_ITEM_MAX (((int)_game_descriptors_end__ - (int)_game_descriptors_start__)/sizeof(game_descriptor_t))
+#define MENU_ITEM_MAX (((unsigned int)_game_descriptors_end__ - (unsigned int)_game_descriptors_start__)/sizeof(game_descriptor_t))
 
 #define MENU_WIDTH_ICON 8
 #define MENU_HEIGHT_ICON 8
@@ -47,6 +47,8 @@ void menu()
 	{
 		wait(MENU_POLL_INTERVAL);
 	}
+
+	if(MENU_ITEM_MAX == 0) goto end;
 
 	// set initial menu item
 	static uint8_t miSelection = 0;
@@ -102,6 +104,7 @@ void menu()
 		}
 	}
 
+end:
 	waitForFire = 1;
 	return;
 }
@@ -109,16 +112,6 @@ void menu()
 
 uint8_t menu_getIconPixel(uint8_t item, int8_t x, int8_t y)
 {
-/*
-
-	// MSB is leftmost pixel
-	static uint8_t nIcon[][8] PROGMEM =
-		{{0xff, 0x81, 0xbd, 0xa5, 0xa5, 0xad, 0xa1, 0xbf},  // Snake icon
-		 {0x66, 0x18, 0x3c, 0x5a, 0xff, 0xbd, 0xa5, 0x18},  // Invaders icon
-		 {0x0f, 0x0f, 0xc3, 0xdb, 0xdb, 0xc3, 0xf0, 0xf0}}; // Tetris icon
-
-*/
-
 	// is x within the icon or do we have reached the delimiter?
 	if (x < MENU_WIDTH_ICON)
 	{
