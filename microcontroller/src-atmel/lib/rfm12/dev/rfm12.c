@@ -182,7 +182,7 @@ static inline uint8_t rfm12_read_int_flags_inline()
 static inline void rfm12_data_inline(uint8_t cmd, uint8_t d)
 {
 	SS_ASSERT();
-#ifndef SPI_SOFTWARE	
+#ifndef SPI_SOFTWARE
 	SPDR = cmd;
 	while(!(SPSR & (1<<SPIF)));
 
@@ -458,7 +458,8 @@ void rfm12_tick()
 	status = rfm12_read(RFM12_CMD_STATUS);
 	
 	RFM12_INT_ON();
-	
+
+#if !RFM12_BE_RUDE
 	//check if we see a carrier
 	if(status & RFM12_STATUS_RSSI){
 		//yes: reset free counter
@@ -469,6 +470,7 @@ void rfm12_tick()
 		//is the channel free long enough ?
 		if(channel_free_count == 0){
 			channel_free_count = 1;
+#endif
 
 			//do we have something to transmit?
 			if(rf_tx_buffer.status == STATUS_OCCUPIED)
@@ -496,8 +498,10 @@ void rfm12_tick()
 			
 				RFM12_INT_ON();
 			}
+#if !RFM12_BE_RUDE
 		}
 	}
+#endif
 
 }
 

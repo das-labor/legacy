@@ -46,6 +46,10 @@
 
 #define RFM12_TX_ENQUEUED 0x80
 
+#ifndef RFM12_BE_RUDE
+	#define RFM12_BE_RUDE 0
+#endif
+
 
 
 
