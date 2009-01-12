@@ -51,6 +51,10 @@
 #endif
 
 
+#ifndef RFM12_LIVECTRL
+	#define RFM12_LIVECTRL 0
+#endif
+
 
 
 //function protoypes
