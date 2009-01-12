@@ -97,6 +97,10 @@
 //setup the interrupt to trigger on negative edge
 #define RFM12_INT_SETUP()   MCUCR |= (1<<ISC01)
 
-/* ignore other devices when sending
- **/
+/* ignore other devices when sending */
 #define RFM12_BE_RUDE 1
+
+/* control rate, frequency, etc during runtime
+ * this setting will certainly add a bit code
+ **/
+#define RFM12_LIVECTRL 0

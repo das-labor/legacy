@@ -763,3 +763,15 @@ uint8_t rfm12_lowPowerTx( uint8_t len, uint8_t type, uint8_t *data )
 	return retVal;
 }
 #endif
+
+#if RFM12_LIVECTRL
+inline void rfm12_set_rate (uint16_t in_datarate)
+{
+	rfm12_data(RFM12_CMD_DATARATE | DATARATE_VALUE );
+}
+
+inline void rfm12_set_frequency (uint16_t in_freq)
+{
+	rfm12_data(RFM12_CMD_FREQUENCY | in_freq );
+}
+#endif
