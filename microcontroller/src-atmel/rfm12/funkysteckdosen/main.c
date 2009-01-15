@@ -15,13 +15,20 @@ volatile static uint8_t tmp[2] = {0xff, 0xff};
 #undef PREAMBLE
 #define PREAMBLE 0xff
 
-const uint32_t switchcodes[] = {
-	0x00141151, /* B An */
-	0x14115100,
-	0x00510550, /*switch a on*/
-	0x0015050d, /*A 1 on*/
-	0x00510550, /*switch a on*/
-	0xAAAAAAAA  /* testcode */
+const uint32_t switchcodes[12][2] = {
+	{ 0x14115400, 0x14115100 /* experimentierdose */ },
+	{ 0x14055400, 0x14055100 /* experimentierdose */ },
+	{ 0x14145400, 0x14145100 /* experimentierdose */ },
+	{ 0x01000040 /*Fluter aus*/,				0x010000C0 /*Fluter an*/			},
+	{ 0x14451500 /*Hinten Fluter aus*/,			0x15451500 /*Hinten Fluter an*/		},
+	{ 0x14051500 /*Theke aus*/,					0x15051500 /*Theke an*/				},
+	{ 0x14055500 /*Bastelecken Licht aus*/,		0x15055500 /*Bastelecken Licht an*/	},
+	{ 0x54140000 /*Steckdose C (Bastelecke)*/,	0x51140000	},
+	{ 0x54050000 /*Steckdose A (Couch)*/,		0x51050000	},
+	{ 0x14150000 /*Steckdose D (Bar)*/,			0x11150000	},
+	{ 0x00010000 /*Steckdose REV(Flipperecke)*/,0x00000400	},
+	{ 0x54110100, 0x51110100 } /* reaktorraum B an/aus */,
+	{ 0x54140100, 0x51140100 }  /* reaktorraum C an/aus */
 };
 
 // 141151+0
@@ -35,12 +42,16 @@ void timer_init()
 #if 1
 ISR (TIMER0_OVF_vect)
 {
-	static uint8_t pauseticks = 0, ontime = 0;
+	static uint8_t pauseticks = 0, ontime = 0, tnum = 0;
 	static uint32_t msk = 0x80000000;
 	const uint8_t tmp[12] = {0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa};
 
+	if (tnum > 9) return;
 	if (!transmissions)
 	{
+		tnum++;
+		transmissions = 30;
+		pauseticks = 40;
 		rfm12_tx_off();
 		return;
 	}
@@ -66,17 +77,17 @@ ISR (TIMER0_OVF_vect)
 	PORTD |= (_BV(PD5));
 	
 	/* long tx */
-	if ((uint32_t) switchcodes[1] & (uint32_t) msk)
+	if ((uint32_t) switchcodes[tnum][1] & (uint32_t) msk)
 	{
 //		rfm12_tx (10, 0xaa, tmp);
 //		TCNT0 = 3;
-		ontime = 4;
+		ontime = 3;
 	} else
 	{
 	/* short period */
 //		rfm12_tx (1, 0xaa, tmp);
 //		TCNT0 = 9;
-		ontime = 10;
+		ontime = 9;
 	}
 	pauseticks = 10;
 	rfm12_tx_on();
