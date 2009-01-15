@@ -1,4 +1,4 @@
 
 #include "rfm12_config.h"
-#include "../../lib/rfm12/rfm12.c"
+#include "../../lib/rfm12/dev/rfm12.c"
 
