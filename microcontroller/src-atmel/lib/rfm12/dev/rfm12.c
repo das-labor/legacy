@@ -81,7 +81,14 @@ rf_rx_buffer_t rf_rx_buffer;
 //mode we are in - rx or tx
 #define MODE_RX 0
 #define MODE_TX 1
+#define MODE_RAW 2
 uint8_t rfm12_mode;
+
+
+#ifdef RFM12_RAW_TX
+uint8_t rfm12_raw_tx;
+#endif
+
 
 /* @description Actual sending function to send raw data to the Module
  * @note do NOT call this function directly, unless you know what you're doing.
@@ -425,7 +432,9 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK){
 void rfm12_tick()
 {
 	uint16_t status;
+#if !RFM12_BE_RUDE
 	static uint8_t channel_free_count = 16;
+#endif
 
 #if RFM12_UART_DEBUG
 	static uint8_t oldmode;
@@ -449,7 +458,7 @@ void rfm12_tick()
 #endif
 
 	//don't disturb RFM12 if transmitting
-	if(rfm12_mode == MODE_TX)
+	if(rfm12_mode == MODE_TX || rfm12_mode == MODE_RAW)
 		return;
 
 	//disable the interrupt (as we're working directly with the transceiver now)
@@ -644,6 +653,45 @@ uint8_t rfm12_tx ( uint8_t len, uint8_t type, uint8_t *data )
 	return rfm12_start_tx (type, len);
 }
 
+#ifdef RFM12_RAW_TX
+/* @description Enable the transmitter immediately.
+ */
+inline void rfm12_tx_on (void)
+{
+/*	rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
+	rfm12_data(RFM12_CMD_TX | PREAMBLE);
+	rfm12_data(RFM12_CMD_TX | PREAMBLE);
+	/* set enable transmission bit now. */
+	rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);
+}
+/* @description Set default settings (usually transmitter off, receiver on)
+ */
+inline void rfm12_tx_off (void)
+{
+	/* turn off everything. */
+	rfm12_data(RFM12_CMD_PWRMGT);
+}
+
+/* @description en- or disable raw transmissions.
+ */
+void rfm12_rawmode (uint8_t in_setting)
+{
+	rfm12_raw_tx = in_setting;
+
+	if (in_setting)
+	{
+		rfm12_mode = MODE_RAW;
+		RFM12_INT_OFF();
+	} else
+	{
+		/* re-enable the receiver */
+		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ER);
+		RFM12_INT_ON();
+		rfm12_mode = MODE_RX;
+	}
+}
+#endif
+
 void spi_init()
 {
 	DDR_SPI |= (1<<BIT_MOSI) | (1<<BIT_SCK) | (1<<BIT_SPI_SS);
@@ -660,6 +708,10 @@ void rfm12_init()
 	DDR_SS |= (1<<BIT_SS);
 	
 	spi_init();
+
+	#ifdef RFM12_RAW_TX
+	rfm12_raw_tx = 0;
+	#endif
 
 	rf_tx_buffer.sync[0] = SYNC_MSB;
 	rf_tx_buffer.sync[1] = SYNC_LSB;

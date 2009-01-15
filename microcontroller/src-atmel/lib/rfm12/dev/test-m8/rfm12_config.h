@@ -85,7 +85,7 @@
 /**** UART DEBUGGING
  * en- or disable debugging via uart.
  */
-#define RFM12_UART_DEBUG 1
+#define RFM12_UART_DEBUG 0
 
 /**** INTERRUPT VECTOR
  * set the name for the interrupt vector here
@@ -103,4 +103,4 @@
 /* control rate, frequency, etc during runtime
  * this setting will certainly add a bit code
  **/
-#define RFM12_LIVECTRL 0
+#define RFM12_LIVECTRL 1

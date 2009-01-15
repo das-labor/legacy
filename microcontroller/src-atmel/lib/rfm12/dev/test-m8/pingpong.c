@@ -13,7 +13,6 @@ int main ( void )
 
 	uint16_t ticker = 0;
 
-	uint8_t tv[] = "testvektor\r\n";
 	
 	uart_init();
 
