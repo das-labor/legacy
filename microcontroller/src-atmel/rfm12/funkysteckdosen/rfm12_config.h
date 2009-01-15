@@ -67,6 +67,7 @@
 #define FREQ 433920000UL
 
 //use this for datarates >= 2700 Baud
+//#define DATARATE_VALUE RFM12_DATARATE_CALC_HIGH(56000.0)
 //#define DATARATE_VALUE RFM12_DATARATE_CALC_HIGH(100200.0)
 #define DATARATE_VALUE RFM12_DATARATE_CALC_HIGH(115200.0)
 
@@ -100,3 +101,4 @@
 
 /* blindly transmit data without caring about channel occupance */
 #define RFM12_BE_RUDE 0
+#define RFM12_RAW_TX 1
