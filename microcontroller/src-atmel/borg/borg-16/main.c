@@ -76,6 +76,12 @@ int main (void){
 			break;
 		case 9:	
 			gameoflife();
+			break;
+		case 10:	
+			xoni_study1();
+			break;
+		case 11:	
+			snake_ki23();
 			mode = 1;
 			break;
 		case 31:

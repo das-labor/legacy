@@ -4,7 +4,7 @@ OBJ            = borg_hw.o main.o util.o pixel.o programm.o borg_can.o can.o \
 				 eeprom_reserve.o persistentCounter.o prng.o matrix.o \
 				 invader_draw.o invader_init.o invader_proc.o invaders2.o \
 				 tetris/tetris.o menu.o gameoflife.o memxor.o noekeon_asm.o \
-				 mcuf.o uart.o
+				 mcuf.o uart.o xoni_study.o
 
 CANADDR        = 0x43
 

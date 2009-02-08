@@ -7,6 +7,233 @@
 
 #define RANDOM8() (random8())
 
+void snake_ki23(){
+	pixel pixels[256];
+	pixels[0] = (pixel){0, 0};
+	pixels[1] = (pixel){0, 1};
+	
+	pixel * head = &pixels[1];
+	pixel * tail = &pixels[0];
+	pixel old_head;
+
+	pixel apples[10];
+	unsigned char apple_num = 0, schlangenlaenge=2, sauber_verlegt=2;
+	
+	direction dir = down;
+
+	clear_screen(0);
+
+	unsigned char x=0, dead=0;
+	while(1){
+		x++;
+		old_head = *head;
+		if(++head == pixels + 256) head = pixels;
+		
+		unsigned char dead_cnt=0;
+		unsigned char apple_found = 0, j;
+
+		//abkuerzung nehmen?
+		uint8_t abkuerzen_ok = 1;
+		if (schlangenlaenge > 23 && ((sauber_verlegt<schlangenlaenge && schlangenlaenge > 135) || sauber_verlegt<schlangenlaenge/2 || schlangenlaenge > 223) && old_head.y > 1 && old_head.y != 15) {
+			abkuerzen_ok = 0;
+			if (old_head.x % 2) {
+				// sollrichtung ist hoch
+				dir = up;
+			} else {
+				// sollrichtung ist runter
+				dir = down;
+			}
+		}
+		// sind wir in der letzten spalte? dann schnell nach oben!
+		if (old_head.x == 15) {
+			if(old_head.y != 15 && dir != up) {
+				dir = up;
+				if (sauber_verlegt>10) sauber_verlegt-=10; else sauber_verlegt=0;
+			}
+			if (schlangenlaenge > 123) sauber_verlegt = 0;
+		} else if (abkuerzen_ok && old_head.y > 1 && old_head.y != 15) { //sind wir weder in einer der beiden oberster noch der unterstern zeile? (sonst: nur std-ki ausführen)
+			if (dir == left) {
+				if (sauber_verlegt>23) sauber_verlegt-=23; else sauber_verlegt=0;
+				//wir sind schon auf ner abkuerzung.
+				// liegt in aktueller spalte in soll-fahrtrichtung ein apfel?
+				for(j=0;j<apple_num;){
+					if (apples[j].x ==  old_head.x){
+						break;
+					}
+					j++;
+				}
+				if (j<apple_num) {
+					if (old_head.x % 2) {
+						// sollrichtung ist hoch
+						if (apples[j].y <  old_head.y) {
+							dir = up;
+						}
+					} else {
+						// sollrichtung ist runter
+						if (apples[j].y >  old_head.y) {
+							dir = down;
+						}
+					}
+				} else if (old_head.x < 15) {
+					// oder liegt in der nächsten spalte ein pixel in nicht der dann geltenden fahrtrichtung?
+					for(j=0;j<apple_num;){
+						if (apples[j].x ==  old_head.x + 1){
+							break;
+						}
+						j++;
+					}
+					if (j<apple_num) {
+						if (old_head.x % 2) {
+							// sollrichtung ist im moment hoch
+							if (apples[j].y <  old_head.y) {
+								dir = up;
+							}
+						} else {
+							// sollrichtung ist im moment runter
+							if (apples[j].y >  old_head.y) {
+								dir = down;
+							}
+						}
+					}
+				}
+			} else {
+				// wie sind im moment auf dem std-pfad
+				//suche nach am weitesten rechts liegenden apfel der links von mir liegt
+				pixel kleinstersapfle = (pixel){15,15};
+				uint8_t abkuerzung_gefunden = 0;
+				uint8_t normaler_weg_ist_bester = 0;
+				for(j=0;j<apple_num;j++){
+					if (apples[j].y != 0) { //ignoriere aepfle in der obersten zeile
+						if (apples[j].x == old_head.x) {
+							normaler_weg_ist_bester = 1;
+							break;
+						}
+						if (apples[j].x >  old_head.x && apples[j].x <= kleinstersapfle.x){
+							if (apples[j].x == kleinstersapfle.x) {
+								if (apples[j].y < kleinstersapfle.y) {
+									if (dir == up) {
+										kleinstersapfle = (pixel){apples[j].x,apples[j].y};
+										abkuerzung_gefunden = 1;
+									}
+								} else {
+									if (dir == down) {
+										kleinstersapfle = (pixel){apples[j].x,apples[j].y};
+										abkuerzung_gefunden = 1;
+									}
+								}
+							} else {
+								kleinstersapfle = (pixel){apples[j].x,apples[j].y};
+								abkuerzung_gefunden = 1;
+							}
+						}
+					}
+					if (abkuerzung_gefunden && kleinstersapfle.x == old_head.x + 1) {
+						if (dir == up) {
+							if (kleinstersapfle.y < old_head.y) {
+								normaler_weg_ist_bester = 1;
+							}
+						} else {
+							if (kleinstersapfle.y > old_head.y) {
+								normaler_weg_ist_bester = 1;
+							}
+						}
+					}
+				}
+				if (!normaler_weg_ist_bester) {
+					if (abkuerzung_gefunden) {
+						if (dir == up) {
+							//liegt er unter oder neben mir? dann einen rüber und wenn in passender spalte angekommen wieder auf std-weg
+							if (kleinstersapfle.y <= old_head.y) {
+								dir = left;
+								if (sauber_verlegt>23) sauber_verlegt-=23; else sauber_verlegt=0;
+							}
+						} else {
+							//liegt er ueber oder neben mir? dann einen rüber und wenn in passender spalte angekommen wieder auf std-weg
+							if (kleinstersapfle.y >= old_head.y) {
+								dir = left;
+								if (sauber_verlegt>23) sauber_verlegt-=23; else sauber_verlegt=0;
+							}
+							
+						}
+					} else {
+						// kein apfel mehr links von uns? dann die ganz kurze abkürzung:
+						if (schlangenlaenge<123) {
+							dir = left;
+							if (sauber_verlegt>23) sauber_verlegt-=23; else sauber_verlegt=0;
+						}
+					}
+				}
+			}
+		}
+
+		//std-ki
+		if (old_head.y == 1 && old_head.x != 15 && old_head.x != 0) {
+			dir = direction_r(dir);
+			dir = direction_r(dir);
+			dir = direction_r(dir);
+		} else if(old_head.y == 15) {
+			dir = direction_r(dir);
+		} else if (old_head.y == 0 && (old_head.x == 0 || old_head.x == 15)) {
+			dir = direction_r(dir);
+		}
+
+		for(j=0;j<apple_num;j++){
+			if ( (next_pixel(old_head, dir).x == apples[j].x) && (next_pixel(old_head, dir).y == apples[j].y) ){
+				apple_found = 1;
+				apple_num--;
+				for(;j<apple_num;j++){
+					apples[j]=apples[j+1];
+				}
+				break;
+			}
+		}
+
+		if(!apple_found){
+			sauber_verlegt++;
+			if(get_next_pixel(old_head, dir) || schlangenlaenge > 200 /* hier bis max 254 anpassen */){
+				dead = 1;
+			}
+		} else {
+			schlangenlaenge++;
+		}
+
+		if(!dead){
+			*head = next_pixel(old_head, dir);
+			setpixel(*head, 3);
+
+			if( (apple_num<9) && ((RANDOM8()&0xff)<10) ){
+				pixel new_apple = (pixel){RANDOM8()%NUM_COLS,RANDOM8()%NUM_ROWS};
+				if(!get_pixel(new_apple)){
+					apples[apple_num++]=new_apple;
+				}
+			}
+
+			if(!apple_found){
+				clearpixel(*tail);
+				if(++tail == pixels + 256) tail = pixels;
+			}
+		}else{
+			while(tail != head){
+				clearpixel(*tail);
+				if((++tail)>pixels+256) tail = pixels;
+				wait (60);
+			}
+			break;
+		}
+		
+		for(j=0;j<apple_num;j++){
+			if(x%2){
+				setpixel(apples[j], 3);
+			}else{
+				clearpixel(apples[j]);
+			}
+		}
+		
+		wait (80);
+	}
+}
+
+
 void snake(){
 	pixel pixels[64];
 	pixels[0] = (pixel){NUM_COLS/2, NUM_ROWS/2};
