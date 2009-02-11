@@ -1,3 +1,7 @@
+/*
+ * PC0 = schalter
+ */
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdint.h>
@@ -8,6 +12,8 @@
 #include "rfm12_config.h"
 #include "rfm12.h"
 
+#define DEFAULT_TRANS 35
+
 volatile static uint8_t transmissions;
 volatile static uint8_t txcode; /* array index for transmission code */
 volatile static uint8_t tmp[2] = {0xff, 0xff};
@@ -15,20 +21,13 @@ volatile static uint8_t tmp[2] = {0xff, 0xff};
 #undef PREAMBLE
 #define PREAMBLE 0xff
 
-const uint32_t switchcodes[12][2] = {
-	{ 0x14115400, 0x14115100 /* experimentierdose */ },
-	{ 0x14055400, 0x14055100 /* experimentierdose */ },
-	{ 0x14145400, 0x14145100 /* experimentierdose */ },
-	{ 0x01000040 /*Fluter aus*/,				0x010000C0 /*Fluter an*/			},
-	{ 0x14451500 /*Hinten Fluter aus*/,			0x15451500 /*Hinten Fluter an*/		},
-	{ 0x14051500 /*Theke aus*/,					0x15051500 /*Theke an*/				},
-	{ 0x14055500 /*Bastelecken Licht aus*/,		0x15055500 /*Bastelecken Licht an*/	},
-	{ 0x54140000 /*Steckdose C (Bastelecke)*/,	0x51140000	},
-	{ 0x54050000 /*Steckdose A (Couch)*/,		0x51050000	},
-	{ 0x14150000 /*Steckdose D (Bar)*/,			0x11150000	},
-	{ 0x00010000 /*Steckdose REV(Flipperecke)*/,0x00000400	},
-	{ 0x54110100, 0x51110100 } /* reaktorraum B an/aus */,
-	{ 0x54140100, 0x51140100 }  /* reaktorraum C an/aus */
+const uint32_t switchcodes[6][2] = {
+	{ 0x41115400, 0x41115100 }, /* stehlampe */
+	{ 0x41154400, 0x41154100 }, /* schreibtisch */
+	{ 0x41151400, 0x41151100 }, /* drucker */
+	{ 0x41145400, 0x41145100 }, /* musi */
+	{ 0x45055400, 0x45055100 }, /* gateway */ 
+	{ 0x00, 0x00 }
 };
 
 // 141151+0
@@ -42,15 +41,24 @@ void timer_init()
 #if 1
 ISR (TIMER0_OVF_vect)
 {
-	static uint8_t pauseticks = 0, ontime = 0, tnum = 0;
+	static uint8_t pauseticks = 0, ontime = 0, tnum = 0, oldstat, swstate;
 	static uint32_t msk = 0x80000000;
 	const uint8_t tmp[12] = {0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa};
 
-	if (tnum > 9) return;
+	if (oldstat != (PINC & _BV(PC0)))
+	{
+		swstate = (PINC & _BV(PC0)) ? 0 : 1;
+		transmissions = DEFAULT_TRANS;
+		tnum = 0;
+	}
+	
+	oldstat = (PINC & _BV(PC0));
+
+	if (tnum > 4) return;
 	if (!transmissions)
 	{
 		tnum++;
-		transmissions = 30;
+		transmissions = DEFAULT_TRANS;
 		pauseticks = 40;
 		rfm12_tx_off();
 		return;
@@ -81,7 +89,7 @@ ISR (TIMER0_OVF_vect)
 	{
 //		rfm12_tx (10, 0xaa, tmp);
 //		TCNT0 = 3;
-		ontime = 3;
+		ontime = 4;
 	} else
 	{
 	/* short period */
@@ -114,7 +122,6 @@ int main(void)
 	uint16_t i = 0;
 	uint8_t tmp[5] = {0xaa, 0x55, 0xff, 0xf9, 0x9f};
 	rfm12_init();
-	timer_init();
 
 	DDRD |= (_BV(PD5) | _BV(PD6)) | _BV(PD7);
 	PORTD |= _BV(PD7);
@@ -122,10 +129,12 @@ int main(void)
 	DDRB |= (_BV(PB3)) | _BV(PB2);
 	PORTB |= (_BV(PB3)) | _BV(PB2);
 
+	PORTC |= _BV(PC0); /* pullup for switch */
+
 	//PORTD ^= _BV(PD5);
 	
 	rfm12_rawmode (1);
-	transmissions = 40;
+	transmissions = DEFAULT_TRANS;
 	txcode = 0;
 	PORTD ^= _BV(PD6);
 	_delay_ms(250);
@@ -133,6 +142,7 @@ int main(void)
 	sei();
 	_delay_ms(250);
 	_delay_ms(250);
+	timer_init();
 	PORTD ^= _BV(PD6);
 
 
