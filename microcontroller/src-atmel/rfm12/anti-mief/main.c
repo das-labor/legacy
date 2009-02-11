@@ -11,7 +11,6 @@
 #include "rfm12.h"
 
 #include "lcd.h"
-#include "fan.h"
 #include "input.h"
 #include "numprint.h"
 
@@ -27,6 +26,7 @@ ISR (TIMER0_OVF_vect)
 
 	cyclecount++;
 //	if (!(cyclecount & 0x03))
+	rot_poll();
 
 	if (cyclecount < 65) return;
 
@@ -111,8 +111,8 @@ int main (void)
 	while (42)
 	{
 		asm volatile ("nop");
-		rot_poll();
 		_delay_ms(1);
+		task_queue (0, 0);
 	}
 }
 
