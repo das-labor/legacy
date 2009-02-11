@@ -209,6 +209,7 @@ int main(void)
 			rlight_process_msg (rxbuf);
 			rfm12_rx_clear();
 		}
+		continue;
 
 		if (seconds > CONF_TIMEOUT)
 		{
