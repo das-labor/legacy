@@ -4,9 +4,8 @@
 #define BTN_UP     0x00
 #define BTN_DOWN   0x01
 #define BTN_SELECT 0x02
-#define NUM_BTNS   3
-
-#define BTN_ANY    0xff
+#define BTN_ANY    0x03
+#define NUM_BTNS   4
 
 /* HW config */
 #define BV_RT_A       (_BV(PD3))
