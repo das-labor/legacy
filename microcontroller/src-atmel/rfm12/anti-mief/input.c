@@ -4,7 +4,6 @@
 
 #include "fan.h"
 #include "input.h"
-#include "menu.h"
 
 //typedef (void ((*)())) fnptr; // myhooks[NUM_BTNS];
 //static fnptr myhooks[NUM_BTNS]; // myhooks[NUM_BTNS];

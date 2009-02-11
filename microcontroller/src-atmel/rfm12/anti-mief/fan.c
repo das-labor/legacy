@@ -2,7 +2,6 @@
 #include <stdint.h>
 
 #include "fan.h"
-#include "menu.h"
 #include "cron.h"
 
 inline void fan_off(volatile uint16_t in_dummy)

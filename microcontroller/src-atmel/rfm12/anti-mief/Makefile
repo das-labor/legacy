@@ -1,5 +1,5 @@
 PRG            = anti-mief
-OBJ            = main.o menu.o cron.o lcd.o rfm12.o fan.o washing.o input.o numprint.o
+OBJ            = main.o menu.o cron.o lcd.o rfm12.o fan.o washing.o input.o numprint.o clock.o
 MCU_TARGET     = atmega8
 OPTIMIZE       = -Os
 

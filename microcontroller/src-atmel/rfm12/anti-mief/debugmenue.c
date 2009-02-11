@@ -9,21 +9,9 @@
 #include "numprint.h"
 
 
-static uint8_t mystate;
-static uint8_t tmp, runtime, delaytime, numcycles;
-
-void wstuff_init ()
+void debugmenue ()
 {
-	mystate = WSTATE_INIT;
-	numcycles = 0;
-	runtime = 0;
-	delaytime = 0;
-}
-
-void wstuff_custom ()
-{
-	wstuff_init();
-	input_hook (BTN_SELECT, wstuff_query);
+	input_hook (BTN_SELECT, dbg_exec);
 	input_hook (BTN_UP,     wstuff_inc);
 	input_hook (BTN_DOWN,   wstuff_dec);
 	wstuff_query();
@@ -66,8 +54,6 @@ void wstuff_query ()
 		break;
 	}
 	tmp = 10;
-	lcd_gotoxy (12,0);
-	print_uint8_lz (tmp);
 }
 
 void wstuff_inc()

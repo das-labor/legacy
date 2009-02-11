@@ -1,6 +1,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include "fan.h"
+#include "washing.h"
+
 #ifndef MENU_H
 
 typedef struct
@@ -11,15 +14,13 @@ typedef struct
 	void ((*func)());
 } menuentry_t;
 
-extern menuentry_t mymenu[9];
-
 void menu_init();
 void menu_select();
 void menu_next();
 void menu_display();
 void menu_last();
-void menu_setactive ();
-void menu_setinactive ();
+void mdebug_jump (uint16_t );
+void dbg_reboot ();
 
 #define MENU_H
 #endif
