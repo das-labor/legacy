@@ -58,7 +58,7 @@ void menu_init()
 	mymenu[0] =
 		(menuentry_t) {
 			"5  Minuten",
-			1, 300,
+			1, 10,
 			fan_kick
 		};
 

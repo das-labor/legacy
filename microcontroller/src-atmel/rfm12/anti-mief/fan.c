@@ -24,9 +24,8 @@ void fan_init()
 /* turn on the fan for in_seconds */
 void fan_kick (uint16_t in_seconds)
 {
-	fan_on(0);
 	if (!in_seconds) return;
-
+	fan_on(0);
 	cron_add (in_seconds, fan_off, 0);
 }
 

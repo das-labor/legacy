@@ -33,12 +33,14 @@ void cron_init()
 uint8_t task_queue (void ((*in_func)(uint16_t)), uint16_t in_param)
 {
 	static void ((*myfunc)(uint16_t)) = 0; // ((void *)()) 0;
+	static uint16_t myparam;
 	
 	if (in_func != 0) /* add a function */
 	{
 		if (myfunc != 0) return 0;
 
 		myfunc = in_func;
+		myparam = in_param;
 
 		return 1;
 	}
@@ -46,8 +48,8 @@ uint8_t task_queue (void ((*in_func)(uint16_t)), uint16_t in_param)
 	/* execute a function */
 	if (myfunc == 0) return 0;
 
+	myfunc(myparam);
 	myfunc = 0;
-	myfunc(in_param);
 
 	return 1;
 }
@@ -61,10 +63,11 @@ void cron_tick()
 		if (!myjobs[i].time) continue;
 
 		myjobs[i].time--;
+
 		if (!myjobs[i].time)
 		{
-			if (!task_queue(myjobs[i].func, myjobs[i].func_param)) myjobs[i].time = 1;
+			if (!task_queue(myjobs[i].func, myjobs[i].func_param))
+				myjobs[i].time = 1;
 		}
 	}
-
 }

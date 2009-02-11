@@ -4,7 +4,6 @@
 
 #include "fan.h"
 #include "input.h"
-#include "lcd.h"
 #include "menu.h"
 
 //typedef (void ((*)())) fnptr; // myhooks[NUM_BTNS];
@@ -61,12 +60,10 @@ void rot_poll ()
 		if (((PIN_RT_A & BV_RT_A) && (PIN_RT_B & BV_RT_B))
 			|| (!(PIN_RT_A & BV_RT_A) && !(PIN_RT_B & BV_RT_B)))
 		{
-			lcd_gotoxy (0,1); lcd_putc ('D');
 			input_exec (BTN_DOWN);
 		} else
 		{
 			input_exec (BTN_UP);
-			lcd_gotoxy (0,1); lcd_putc ('U');
 		}
 	}
 	lasta = (PIN_RT_A & BV_RT_A);
