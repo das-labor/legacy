@@ -3,8 +3,12 @@
 /* definitions for the sw interface */
 #define BTN_UP     0x00
 #define BTN_DOWN   0x01
+
 #define BTN_SELECT 0x02
+
+/* executed when ANY button is pressed. */
 #define BTN_ANY    0x03
+
 #define NUM_BTNS   4
 
 /* HW config */
@@ -24,10 +28,20 @@
 #define PIN_RT_SELECT   PINC
 #define PIN_RT_B        PIND
 
-#define RT_TICKS 30
+
+/* @description Change/Add a hook for a button.
+ * @return The return value is the function pointer that
+ * 	was previously in place.
+ */
+void *input_hook (uint8_t in_btn, void ((*in_func)()));
 
 
-void input_hook (uint8_t in_btn, void ((*in_func)()));
 void input_exec (uint8_t in_btn);
+
+/* @description Polling function for the buttons
+ */
 void rot_poll ();
+
+/* Init DDRs, pullups, etc..
+ */
 void input_init ();

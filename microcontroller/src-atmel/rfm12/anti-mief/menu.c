@@ -143,7 +143,7 @@ void menu_init()
 
 void menu_last()
 {
-	if (midx == 0)
+	if (midx == MTOP_DEFAULT + 1 || midx == 0)
 		midx = mtop;
 
 	midx--;

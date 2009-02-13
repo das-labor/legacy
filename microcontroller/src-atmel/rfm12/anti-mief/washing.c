@@ -29,12 +29,6 @@ void wstuff_custom ()
 	wstuff_query();
 }
 
-void wstuff_runprog (uint8_t in_runtime, uint8_t in_delay, uint8_t in_cycles)
-{
-	
-}
-
-
 /* query the user for the variables */
 void wstuff_query ()
 {
