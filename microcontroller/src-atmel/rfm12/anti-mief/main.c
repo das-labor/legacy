@@ -17,7 +17,7 @@
 
 #define RESET_TIMEOUT 15
 #define VER_MAJOR 0
-#define VER_MINOR 10
+#define VER_MINOR 11
 
 static uint8_t timeout;
 static inline void reset_timeout ();
@@ -27,7 +27,6 @@ ISR (TIMER0_OVF_vect)
 	static uint8_t cyclecount = 0, oddeven = 0;
 
 	cyclecount++;
-//	if (!(cyclecount & 0x03))
 	rot_poll();
 
 	if (cyclecount < 63) return;
@@ -38,7 +37,6 @@ ISR (TIMER0_OVF_vect)
 		TCNT0 = 123;
 	else
 		TCNT0 = 124;
-		TCNT0 = 123;
 
 	oddeven++;
 	cron_tick();

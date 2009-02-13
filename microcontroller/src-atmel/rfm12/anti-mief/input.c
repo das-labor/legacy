@@ -5,24 +5,17 @@
 #include "fan.h"
 #include "input.h"
 
-//typedef (void ((*)())) fnptr; // myhooks[NUM_BTNS];
-//static fnptr myhooks[NUM_BTNS]; // myhooks[NUM_BTNS];
 static void (*myhooks[NUM_BTNS]) ();
 
-/* @description set a function that's executed when a given button is pressed.
- */
-void input_hook (uint8_t in_btn, void ((*in_func)()))
+void *input_hook (uint8_t in_btn, void ((*in_func)()))
 {
+	void (*oldhook)() = myhooks[in_btn];
 	myhooks[in_btn] = in_func;
+	return oldhook;
 }
 
 void input_init ()
 {
-#if 0
-	/* interrupt */
-	MCUCR |= (_BV(ISC11)); // | _BV(ISC11));
-	GICR |= _BV(INT1);
-#endif
 	DDR_RT_A &= ~(BV_RT_A);
 	DDR_RT_B &= ~(BV_RT_B);
 	DDR_RT_SELECT &= ~(BV_RT_SELECT);
@@ -31,7 +24,6 @@ void input_init ()
 	PORT_RT_A      |= (BV_RT_A);
 	PORT_RT_B      |= (BV_RT_B);
 	PORT_RT_SELECT |= (BV_RT_SELECT);
-
 }
 
 void input_exec (uint8_t in_btn)
