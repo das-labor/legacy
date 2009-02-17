@@ -1,12 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        font.cpp
-// Purpose:     wxFont demo
-// Author:      Vadim Zeitlin
-// Modified by:
-// Created:     30.09.99
-// RCS-ID:      $Id: font.cpp,v 1.47 2004/10/06 20:53:15 ABX Exp $
-// Copyright:   (c) 1999 Vadim Zeitlin
-// Licence:     wxWindows licence
+// Bitte mit wxWidgets 2.6 compilieren
 /////////////////////////////////////////////////////////////////////////////
 
 // For compilers that support precompilation, includes "wx/wx.h".
@@ -32,6 +25,8 @@
 #include "wx/textfile.h"
 #include "wx/dcclient.h"
 #include "wx/colour.h"
+#include "wx/textdlg.h"
+#include "wx/string.h"
 
 #ifdef __WXMAC__
 #undef wxFontDialog
@@ -243,7 +238,7 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
     menuFile->Append(Font_ViewMsg, wxT("&View...\tCtrl-V"),
                      wxT("View an email message file"));
 	menuFile->Append(Font_Convert, wxT("&Convert\tCtrl-C"),
-                     wxT("Convert a font to a c-File"));  
+                     wxT("Convert a font to a c-File"));
     menuFile->AppendSeparator();
     menuFile->Append(Font_About, wxT("&About...\tCtrl-A"), wxT("Show about dialog"));
     menuFile->AppendSeparator();
@@ -707,8 +702,20 @@ void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
                  wxOK | wxICON_INFORMATION, this);
 }
 
-void MyFrame::OnConvert(wxCommandEvent& WXUNUSED(event)) 
+void MyFrame::OnConvert(wxCommandEvent& WXUNUSED(event))
 {
+    wxString fontName = wxGetTextFromUser(wxT("Please enter the name of the font"), wxT("Fontname"));
+    wxString cFileName = "font_" + fontName + ".c";
+    wxString hFileName = "font_" + fontName + ".h";
+
+    int skip_width  = wxGetNumberFromUser(wxT("How many Pixel do you want to skip in the font width?"),
+                                          wxT("skip_width"),
+                                          wxT("pixel:"), 0, -1, 2);
+
+    int skip_height = wxGetNumberFromUser(wxT("How many Pixel do you want to skip in the font height? You can center the font with this command."),
+                                          wxT("skip_height"),
+                                          wxT("pixel:"), 0, -4, 4);
+
     wxClientDC dc(m_canvas);
     PrepareDC(dc);
 
@@ -716,7 +723,7 @@ void MyFrame::OnConvert(wxCommandEvent& WXUNUSED(event))
     dc.SetBackground(wxBrush(wxT("white"), wxSOLID));
     dc.Clear();
 
-    FILE* headerFile = fopen("font_.c", "w");
+    FILE* outFile = fopen(cFileName, "w");
     wxCoord hLine = dc.GetCharHeight();
 
     // the current text origin
@@ -725,15 +732,14 @@ void MyFrame::OnConvert(wxCommandEvent& WXUNUSED(event))
     // prepare to draw the font
     dc.SetFont(m_canvas->m_font);
     dc.SetTextForeground(*wxBLACK);
-#   define SKIPHEIGHT 0
-#   define SKIPWIDTH 0
+
     // the size of one cell (Normally biggest char + small margin)
     wxChar c;
     wxChar charWidth = 20, maxCharWidth;
-    wxChar charHeight = dc.GetCharHeight()-SKIPHEIGHT;
+    wxChar charHeight = dc.GetCharHeight()-skip_height;
     unsigned char encodedFont[100000];
     int i, j;
-    
+
     for (i = 0; i < 1000; i++)
         encodedFont[i] = 0;
     int fontIndex = 0;
@@ -743,7 +749,9 @@ void MyFrame::OnConvert(wxCommandEvent& WXUNUSED(event))
     if (charHeight > 16)
        store_bytes++;
     wxColour colour;
-    fprintf(headerFile, "#include \"font.h\"\n\nunsigned int PROGMEM fontIndex_[] = {\n");
+    fprintf(outFile, "// This file is generated through fontConverter see \n// svn co https://roulette.das-labor.org/svn/microcontroller/tools/fontConverter\n");
+    fprintf(outFile, "#include \"%s\"\n\nunsigned int PROGMEM fontIndex_%s[] = {\n",
+            hFileName.c_str(), fontName.c_str());
     for (c = ' '; c <= '~'; c++) {
         dc.Clear();
         //dc.GetTextExtent(c, &charWidth, &charHeight);
@@ -751,55 +759,61 @@ void MyFrame::OnConvert(wxCommandEvent& WXUNUSED(event))
         maxCharWidth = 0;
         for (x = 0; x < charWidth; x++) {
             for (y = 0; y < charHeight; y++) {
-                dc.GetPixel(y+SKIPWIDTH, x+SKIPHEIGHT, &colour);
+                dc.GetPixel(y+skip_width, x+skip_height, &colour);
                 //if (colour != *wxWHITE) {
-                   
+
                    if (colour == *wxBLACK) {
-                      if (maxCharWidth < y) 
-                         maxCharWidth = y;        
+                      if (maxCharWidth < y)
+                         maxCharWidth = y;
                       // Pixel set
                       encodedFont[(fontIndex+y)*store_bytes+x/8] |= (1 << x%8);
                    } //else {
                       // antialiesed pixel set
                    //}
                 //}
-             }    
+             }
         }
 
-        fprintf(headerFile, "                                    %d, /* %c */\n", fontIndex*store_bytes, c);
-        fontIndex += maxCharWidth+1;
-         
+        fprintf(outFile, "                                    %d, /* %c */\n", fontIndex*store_bytes, c);
+        fontIndex += maxCharWidth + 1;
+
     }
-    fprintf(headerFile, "                                    %d\n};\n\nunsigned char PROGMEM fontData_[] = {\n", fontIndex*store_bytes);
+    fprintf(outFile, "                                    %d\n};\n\nunsigned char PROGMEM fontData_%s[] = {\n", fontIndex*store_bytes, fontName.c_str());
     for (i = 0; i < fontIndex; i++) {
         //if (i % 15 == 0 && i)
-        //   fprintf(headerFile, "\n                                ");
-        //fprintf(headerFile, "0x%02x, ", encodedFont[i]);
+        //   fprintf(outFile, "\n                                ");
+        //fprintf(outFile, "0x%02x, ", encodedFont[i]);
         if (store_bytes == 1) {
             for (j = 0; j < 8; j++)
                 helpStr[7-j] = encodedFont[i] & (1 << j) ? '#':' ';
             helpStr[8] = 0;
-            fprintf(headerFile, "                                0x%02x, /* %s */\n", encodedFont[i], helpStr);
+            fprintf(outFile, "                                0x%02x, /* %s */\n", encodedFont[i], helpStr);
         } else if (store_bytes == 2) {
             for (j = 0; j < 8; j++)
                 helpStr[7-j] = encodedFont[(2*i)+1] & (1 << j) ? '#':' ';
             for (j = 0; j < 8; j++)
                 helpStr[15-j] = encodedFont[2*i] & (1 << j) ? '#':' ';
             helpStr[16] = 0;
-            fprintf(headerFile, "                                0x%02x, 0x%02x, /* %s */\n", encodedFont[(2*i)+1], encodedFont[2*i], helpStr);
+            fprintf(outFile, "                                0x%02x, 0x%02x, /* %s */\n", encodedFont[(2*i)+1], encodedFont[2*i], helpStr);
         }else if (store_bytes == 3) {
             for (j = 0; j < 8; j++)
                 helpStr[7-j] = encodedFont[(3*i)+2] & (1 << j) ? '#':' ';
             for (j = 0; j < 8; j++)
                 helpStr[15-j] = encodedFont[(3*i)+1] & (1 << j) ? '#':' ';
             for (j = 0; j < 8; j++)
-                helpStr[23-j] = encodedFont[3*i] & (1 << j) ? '#':' ';    
+                helpStr[23-j] = encodedFont[3*i] & (1 << j) ? '#':' ';
             helpStr[24] = 0;
-            fprintf(headerFile, "                                0x%02x, 0x%02x, 0x%02x, /* %s */\n",encodedFont[(2*i)+2] , encodedFont[(2*i)+1], encodedFont[2*i], helpStr);
+            fprintf(outFile, "                                0x%02x, 0x%02x, 0x%02x, /* %s */\n",encodedFont[(2*i)+2] , encodedFont[(2*i)+1], encodedFont[2*i], helpStr);
         }
     }
-    fprintf(headerFile, "};\nfont font_ = {%d, fontIndex_, fontData_, ' ', '~', '.', %d};\n", charHeight, store_bytes);
-    fclose(headerFile);
+    fprintf(outFile, "};\nfont font_%s = {%d, fontIndex_%s, fontData_%s, ' ', '~', '.', %d};\n",
+            fontName.c_str(), charHeight, fontName.c_str(), fontName.c_str(), store_bytes);
+    fclose(outFile);
+    outFile = fopen(hFileName, "w");
+    fprintf(outFile, "// This file is generated through fontConverter see \n// svn co https://roulette.das-labor.org/svn/microcontroller/tools/fontConverter\n");
+    fprintf(outFile, "#include \"font.h\"\n\nextern font font_%s;\n",
+            fontName.c_str(), charHeight, fontName.c_str(), fontName.c_str(), store_bytes);
+    fclose(outFile);
     m_canvas->Refresh();
 }
 

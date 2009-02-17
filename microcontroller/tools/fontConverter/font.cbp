@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="font" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="default">
+				<Option output="font" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-g" />
+			<Add option="-mthreads" />
+			<Add option="-D__WXMSW__" />
+		</Compiler>
+		<Linker>
+			<Add option="-mthreads" />
+			<Add option="-Wl,--subsystem,windows" />
+			<Add option="-mwindows" />
+			<Add library="wxmsw26" />
+			<Add library="rpcrt4" />
+			<Add library="oleaut32" />
+			<Add library="ole32" />
+			<Add library="uuid" />
+			<Add library="odbc32" />
+			<Add library="winspool" />
+			<Add library="winmm" />
+			<Add library="shell32" />
+			<Add library="comctl32" />
+			<Add library="comdlg32" />
+			<Add library="ctl3d32" />
+			<Add library="advapi32" />
+			<Add library="wsock32" />
+			<Add library="gdi32" />
+			<Add directory="C:\Programme\CodeBlocks\lib\gcc_lib" />
+		</Linker>
+		<Unit filename="font.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
