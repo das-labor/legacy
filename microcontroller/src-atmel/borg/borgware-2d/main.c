@@ -5,7 +5,7 @@
 
 #include "config.h"
 #include "borg_hw/borg_hw.h"
-#include "can/borg_can.h"
+// #include "can/borg_can.h"
 #include "random/prng.h"
 #include "random/persistentCounter.h"
 #include "display_loop.h"

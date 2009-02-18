@@ -1,0 +1,45 @@
+mainmenu_option next_comment
+comment "MH Laufschrift-Borg port setup"
+
+
+choice 'port for the 8 clock lines'			\
+   "PORTA  PORTA \
+    PORTB  PORTB \
+    PORTC  PORTC \
+    PORTD  PORTD" \
+   'PORTA' CLOCKPORT
+
+
+choice 'port for enable and data line'			\
+   "PORTA  PORTA \
+    PORTB  PORTB \
+    PORTC  PORTC \
+    PORTD  PORTD" \
+   'PORTA' DATAPORT 
+ 
+comment "pin numbers for enable and data"  
+
+   
+choice 'DATA Pin'			\
+   "Pin0 0 \
+    Pin1 1 \
+    Pin2 2 \
+    Pin3 3 \
+    Pin4 4 \
+    Pin5 5 \
+    Pin6 6 \
+    Pin7 7" \
+   'Pin1' PIN_DATA
+
+choice 'LINE_EN Pin'			\
+   "Pin0 0 \
+    Pin1 1 \
+    Pin2 2 \
+    Pin3 3 \
+    Pin4 4 \
+    Pin5 5 \
+    Pin6 6 \
+    Pin7 7" \
+   'Pin0' PIN_ENABLE
+
+endmenu
