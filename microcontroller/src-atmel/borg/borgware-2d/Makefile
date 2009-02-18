@@ -165,8 +165,10 @@ sflash: $(TARGET).hex
 	avrdude -p m32 -b 115200 -u -c avr109 -P $(SERIAL) -U f:w:$< -F
 	echo X > $(SERIAL)
 
+uflash: $(TARGET).hex
+	avrdude -c usbasp  -p atmega32 -V -U f:w:$< -F
 
-.PHONY: clean mrproper sflash
+.PHONY: clean mrproper sflash uflash
 ##############################################################################
 # configure ethersex
 #

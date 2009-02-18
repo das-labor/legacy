@@ -28,9 +28,9 @@ void display_loop(){
 	percnt_inc();
 #endif
 
-	mode = setjmp(newmode_jmpbuf);
+//	mode = setjmp(newmode_jmpbuf);
 	oldOldmode = oldMode;
-
+        mode =0;
 #ifdef JOYSTICK_SUPPORT	
 	waitForFire = 1;
 #endif
@@ -54,6 +54,10 @@ void display_loop(){
 
 #ifdef ANIMATION_SPIRALE
 		case 2:
+                      movinglines();
+                      test_lines();
+                       rectangles();
+                       scrolltext("d/#ABC");
 			spirale(5);
 			break;
 #endif
@@ -72,7 +76,7 @@ void display_loop(){
 
 #ifdef ANIMATION_SCHACHBRETT
 		case 5:
-			schachbrett(20);
+			//schachbrett(10);
 			break;
 #endif			
 
@@ -101,22 +105,26 @@ void display_loop(){
 #endif
 
 		case 29:
-		  mode = 1;
+		 // mode = 1;
 		  break;
 
 #ifdef ANIMATION_TESTS
 		case 31:
-			test_level1();
+			//test_level1();
+			
 			break;
 		case 32:
-			test_level2();
+			//test_level2();
+			
 			break;
 		case 33:
-			test_level3();
+			//test_level3();
+
 			break;
 		case 35:
-			test1();
-			while(1);
+			test_palette();
+                        test_palette2();
+			
 			break;
 #endif
 

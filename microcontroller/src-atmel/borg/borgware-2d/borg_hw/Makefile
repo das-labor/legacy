@@ -18,8 +18,8 @@ ifeq ($(BORG_HW),HW_BORG_LS)
   SRC = borg_hw_borg_ls.c
 endif
 
-ifeq ($(BORG_HW),HW_BORG_LS)
-  SRC = borg_hw_borg_ls.c
+ifeq ($(BORG_HW),HW_BORG_MH)
+  SRC = borg_hw_borg_mh.c
 endif
 
 ifeq ($(BORG_HW),HW_BORG_MINI)

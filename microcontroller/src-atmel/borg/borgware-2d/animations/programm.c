@@ -9,6 +9,7 @@
 #ifdef ANIMATION_TESTS
 void test1(){
 	unsigned char x,y;
+        
 	for (y=0;y<NUM_ROWS;y++){
 		for (x=0;x<NUM_COLS;x++){
 			setpixel((pixel){x,y}, 3);
@@ -25,7 +26,7 @@ void test_level1(){
 			wait(5);
 		}
 	}
-	for(;;) wait(100);
+	wait(2000);
 }
 
 void test_level2(){
@@ -36,7 +37,7 @@ void test_level2(){
 			wait(5);
 		}
 	}
-	for(;;) wait(100);
+	wait(2000);
 }
 
 void test_level3(){
@@ -47,7 +48,7 @@ void test_level3(){
 			wait(5);
 		}
 	}
-	for(;;) wait(100);
+	wait(2000);
 }
 
 void test_levels(){
@@ -68,11 +69,168 @@ void test_palette(){
 		b=y%4;
 		for (x=0;x<NUM_COLS;x++){
 			setpixel((pixel){x,y}, b);
-			wait(1);
+			// wait(1);
 		}
 	}
-	for(;;) wait(100);
+	wait(2000);
 }
+
+void test_palette2(){
+	unsigned char x,y,b;
+	for (x=0;x<NUM_COLS;x++){
+		b=x%4;
+		for (y=0;y<NUM_ROWS;y++){
+			setpixel((pixel){x,y}, b);
+			// wait(1);
+		}
+	}
+        wait(1000);
+        for (x=0;x<NUM_COLS;x++){
+         // shift image right                        
+        shift_pixmap_l();
+        wait(30);
+        }
+        
+
+}
+
+void test_lines(){
+ 
+unsigned char n, delay=80;
+
+line((pixel){0,0}, (pixel){7,0}  ,3);
+  wait(delay);
+  line((pixel){7,0}, (pixel){7,7}  ,3);
+ wait(delay);
+line((pixel){7,7}, (pixel){0,7}  ,3);
+ wait(delay);
+ line((pixel){0,7}, (pixel){0,0}  ,3);
+ wait(delay);
+
+ line((pixel){7,7}, (pixel){0,0}  ,3);
+ wait(delay);
+ line((pixel){0,7}, (pixel){7,0}  ,3);
+ wait(delay);
+
+ //sunrays
+for (n=0;n<=NUMPLANE;n++){
+ line((pixel){15,0}, (pixel){63,0}  ,n);
+ wait(delay);
+  line((pixel){15,0}, (pixel){32,7}  ,n);
+  wait(delay); 
+   line((pixel){15,0}, (pixel){63,7}  ,n);
+  wait(delay); 
+   line((pixel){15,0}, (pixel){15,7}  ,n);
+ wait(delay);
+ }
+ 
+ for (n=NUMPLANE;n!=255;n--){
+ line((pixel){15,0}, (pixel){63,0}  ,n);
+ wait(delay);
+  line((pixel){15,0}, (pixel){32,7}  ,n);
+  wait(delay); 
+   line((pixel){15,0}, (pixel){63,7}  ,n);
+  wait(delay); 
+   line((pixel){15,0}, (pixel){15,7}  ,n);
+}
+   
+  
+ wait(500);
+ 
+}
+
+void movinglines(){
+  unsigned char x,y;
+
+  line((pixel){63,7}, (pixel){63,0}  ,3);
+
+  // linie wandert nach rechts
+  for (x=0;x<64;x++){
+    shift_pixmap_l();
+    wait(10);          
+  }
+  
+  // von unten nach oben
+  for (y=7;y!=255;y--){               
+    line((pixel){0,y}, (pixel){63,y}  ,3);
+    wait(20);
+    line((pixel){0,y}, (pixel){63,y}  ,0);
+    //wait(10);
+  }
+
+  //eine linie von rechts nach links und
+  // 8 mal von oben nach unten
+  // gleichzeitig 
+  for (x=0;x<63;x++){
+    y=x%8;               
+    line((pixel){0,y}, (pixel){63,y}  ,3);
+    line((pixel){x,0}, (pixel){x,7}  ,3);
+    wait(50);
+        
+    line((pixel){0,y}, (pixel){63,y}  ,0);
+    line((pixel){x,0}, (pixel){x,7}  ,0);
+    //wait(10);
+    
+  }
+
+}
+
+void rectangles(){
+  
+  unsigned char x;
+  unsigned int delay=500;
+  
+   clear_screen(0);
+  filled_rectangle((pixel){1,1},4,2,3);
+  wait(delay);
+   filled_rectangle((pixel){10,1},5,5,3);
+   wait(delay);
+    filled_rectangle((pixel){30,2},30,5,2);
+     wait(delay);
+     filled_rectangle((pixel){40,0},8,8,1);
+       wait(delay);
+       
+     filled_rectangle((pixel){1,1},4,2,2);
+  wait(delay);
+   filled_rectangle((pixel){10,1},5,5,1);
+   wait(delay);
+    filled_rectangle((pixel){30,2},30,5,3);
+     wait(delay);
+     filled_rectangle((pixel){40,0},8,8,2);
+       wait(delay);   
+       
+       
+        for (x=0;x<64;x++){
+    shift_pixmap_l();
+    wait(30);          
+  }
+    
+   filled_rectangle((pixel){30,0},8,8,3);
+  wait(delay);
+   filled_rectangle((pixel){31,1},6,6,2);
+   wait(delay);
+    filled_rectangle((pixel){32,2},4,4,1);
+     wait(delay);
+     filled_rectangle((pixel){33,3},2,2,3);
+       wait(delay);   
+    wait(delay);  
+    wait(delay);   
+    filled_rectangle((pixel){33,3},2,2,1);
+      wait(delay);   
+     filled_rectangle((pixel){32,2},4,4,2);
+     wait(delay); 
+     filled_rectangle((pixel){31,1},6,6,3);
+   wait(delay);
+    filled_rectangle((pixel){30,0},8,8,1);
+  wait(delay);
+  
+   
+   
+       wait(delay);   
+    wait(delay);  
+    wait(delay);  
+}
+
 #endif
 
 #ifdef ANIMATION_OFF

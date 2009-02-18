@@ -14,7 +14,7 @@
 #include "font_small6.h"
 #include "font_uni53.h"
 
-#define MAX_FONTS 1
+#define MAX_FONTS 3
 font fonts[MAX_FONTS];
 #define MAX_SPECIALCOLORS 3
 
