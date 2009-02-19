@@ -18,12 +18,12 @@
 int main (void){
 	clear_screen(0);
 
-	borg_hw_init();
-
 #ifdef RANDOM_SUPPORT
 	srandom32(percnt_get());
 	percnt_inc();
 #endif
+
+	borg_hw_init();
 
 #ifdef CAN_SUPPORT
 	bcan_init();

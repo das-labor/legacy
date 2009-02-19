@@ -24,11 +24,7 @@ jmp_buf newmode_jmpbuf;
 void display_loop(){
 //	mcuf_serial_mode();
 	
-#ifdef RANDOM_SUPPORT
-	percnt_inc();
-#endif
-
-//	mode = setjmp(newmode_jmpbuf);
+	mode = setjmp(newmode_jmpbuf);
 	oldOldmode = oldMode;
         mode =0;
 #ifdef JOYSTICK_SUPPORT	

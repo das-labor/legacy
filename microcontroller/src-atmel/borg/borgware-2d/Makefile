@@ -16,7 +16,7 @@ SRC_SIM = \
 
 LAUNCH_BOOTLOADER = launch-bootloader
 #SERIAL = /dev/ttyUSB0	
-SERIAL = COM5
+SERIAL = COM6
 export TOPDIR
 ##############################################################################
 
