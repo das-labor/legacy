@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include <avr/io.h>
 #include <setjmp.h>
 
