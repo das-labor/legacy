@@ -46,6 +46,7 @@ uint16_t conv_addr(uint8_t * p){
 }
 
 void 	eeprom_write_byte (uint8_t *p, uint8_t value){
+	printf("sim eeprom write [%04X]=%02X\n", conv_addr(p), value);
 	init();
 	eemem[conv_addr(p)] = value;
 	fseek(fp, 0, SEEK_SET);
@@ -53,6 +54,8 @@ void 	eeprom_write_byte (uint8_t *p, uint8_t value){
 }
 
 void 	eeprom_write_word (uint16_t *p, uint16_t value){
+	printf("sim eeprom write [%04X]=%04X\n", conv_addr(p), value);
+
 	init();
 	eemem[conv_addr((uint8_t*)p)  ] = value & 0xff;
 	eemem[conv_addr((uint8_t*)p)+1] = value >> 8;
