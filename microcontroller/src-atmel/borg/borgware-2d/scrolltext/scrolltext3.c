@@ -11,10 +11,10 @@
 #include "../pixel.h"
 #include "../util.h"
 #include "font_arial8.h"
-#include "font_small6.h"
-#include "font_uni53.h"
+// #include "font_small6.h"
+// #include "font_uni53.h"
 
-#define MAX_FONTS 3
+#define MAX_FONTS 1
 font fonts[MAX_FONTS];
 #define MAX_SPECIALCOLORS 3
 

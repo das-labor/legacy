@@ -96,8 +96,10 @@ void test_palette2(){
 
 void test_lines(){
  
-unsigned char n, delay=80;
+unsigned char n,x, delay=250;
 
+
+// checkbox
 line((pixel){0,0}, (pixel){7,0}  ,3);
   wait(delay);
   line((pixel){7,0}, (pixel){7,7}  ,3);
@@ -107,31 +109,40 @@ line((pixel){7,7}, (pixel){0,7}  ,3);
  line((pixel){0,7}, (pixel){0,0}  ,3);
  wait(delay);
 
+ // diagonal
  line((pixel){7,7}, (pixel){0,0}  ,3);
  wait(delay);
  line((pixel){0,7}, (pixel){7,0}  ,3);
  wait(delay);
+wait(delay);
+wait(delay);
 
+  for (x=0;x<NUM_COLS;x++){
+         // shift image right                        
+        shift_pixmap_l();
+        wait(30);
+        }
+ 
  //sunrays
 for (n=0;n<=NUMPLANE;n++){
- line((pixel){15,0}, (pixel){63,0}  ,n);
+ line((pixel){15,0}, (pixel){NUM_COLS-1,0}  ,n);
  wait(delay);
-  line((pixel){15,0}, (pixel){32,7}  ,n);
+  line((pixel){15,0}, (pixel){7,NUM_ROWS-1}  ,n);
   wait(delay); 
-   line((pixel){15,0}, (pixel){63,7}  ,n);
+   line((pixel){15,0}, (pixel){NUM_COLS-1,NUM_ROWS-1}  ,n);
   wait(delay); 
-   line((pixel){15,0}, (pixel){15,7}  ,n);
+   line((pixel){15,0}, (pixel){15,NUM_ROWS-1}  ,n);
  wait(delay);
  }
  
  for (n=NUMPLANE;n!=255;n--){
- line((pixel){15,0}, (pixel){63,0}  ,n);
+ line((pixel){15,0}, (pixel){NUM_COLS-1,0}  ,n);
  wait(delay);
-  line((pixel){15,0}, (pixel){32,7}  ,n);
+  line((pixel){15,0}, (pixel){7,NUM_ROWS-1}  ,n);
   wait(delay); 
-   line((pixel){15,0}, (pixel){63,7}  ,n);
+   line((pixel){15,0}, (pixel){NUM_COLS-1,NUM_ROWS-1}  ,n);
   wait(delay); 
-   line((pixel){15,0}, (pixel){15,7}  ,n);
+   line((pixel){15,0}, (pixel){15,NUM_ROWS-1}  ,n);
 }
    
   
@@ -142,33 +153,33 @@ for (n=0;n<=NUMPLANE;n++){
 void movinglines(){
   unsigned char x,y;
 
-  line((pixel){63,7}, (pixel){63,0}  ,3);
+  line((pixel){NUM_COLS-1,NUM_ROWS-1}, (pixel){NUM_COLS-1,0}  ,3);
 
   // linie wandert nach rechts
-  for (x=0;x<64;x++){
+  for (x=0;x<NUM_COLS;x++){
     shift_pixmap_l();
-    wait(10);          
+    wait(100);          
   }
   
   // von unten nach oben
-  for (y=7;y!=255;y--){               
-    line((pixel){0,y}, (pixel){63,y}  ,3);
-    wait(20);
-    line((pixel){0,y}, (pixel){63,y}  ,0);
+  for (y=NUM_ROWS-1;y!=255;y--){               
+    line((pixel){0,y}, (pixel){NUM_COLS-1,y}  ,3);
+    wait(100);
+    line((pixel){0,y}, (pixel){NUM_COLS-1,y}  ,0);
     //wait(10);
   }
 
   //eine linie von rechts nach links und
   // 8 mal von oben nach unten
   // gleichzeitig 
-  for (x=0;x<63;x++){
-    y=x%8;               
-    line((pixel){0,y}, (pixel){63,y}  ,3);
-    line((pixel){x,0}, (pixel){x,7}  ,3);
+  for (x=0;x<NUM_COLS-1;x++){
+    y=x%NUM_ROWS;               
+    line((pixel){0,y}, (pixel){NUM_COLS-1,y}  ,3);
+    line((pixel){x,0}, (pixel){x,NUM_ROWS-1}  ,3);
     wait(50);
         
-    line((pixel){0,y}, (pixel){63,y}  ,0);
-    line((pixel){x,0}, (pixel){x,7}  ,0);
+    line((pixel){0,y}, (pixel){NUM_COLS-1,y}  ,0);
+    line((pixel){x,0}, (pixel){x,NUM_ROWS-1}  ,0);
     //wait(10);
     
   }
@@ -177,58 +188,57 @@ void movinglines(){
 
 void rectangles(){
   
-  unsigned char x;
+  unsigned char x,value,xcenter,ycenter,size;
   unsigned int delay=500;
   
-   clear_screen(0);
+  xcenter = NUM_COLS/2;
+  ycenter = NUM_ROWS/2;
+  
+  
+  clear_screen(0);
   filled_rectangle((pixel){1,1},4,2,3);
+  wait(delay);
   wait(delay);
    filled_rectangle((pixel){10,1},5,5,3);
    wait(delay);
-    filled_rectangle((pixel){30,2},30,5,2);
-     wait(delay);
-     filled_rectangle((pixel){40,0},8,8,1);
-       wait(delay);
+   wait(delay);
+   // filled_rectangle((pixel){30,2},30,5,2);
+   //  wait(delay);
+   //  filled_rectangle((pixel){40,0},8,8,1);
+   //    wait(delay);
        
      filled_rectangle((pixel){1,1},4,2,2);
   wait(delay);
    filled_rectangle((pixel){10,1},5,5,1);
    wait(delay);
-    filled_rectangle((pixel){30,2},30,5,3);
-     wait(delay);
-     filled_rectangle((pixel){40,0},8,8,2);
-       wait(delay);   
+ 
        
-       
-        for (x=0;x<64;x++){
+        for (x=0;x<NUM_ROWS;x++){
     shift_pixmap_l();
     wait(30);          
   }
     
-   filled_rectangle((pixel){30,0},8,8,3);
-  wait(delay);
-   filled_rectangle((pixel){31,1},6,6,2);
-   wait(delay);
-    filled_rectangle((pixel){32,2},4,4,1);
-     wait(delay);
-     filled_rectangle((pixel){33,3},2,2,3);
-       wait(delay);   
-    wait(delay);  
-    wait(delay);   
-    filled_rectangle((pixel){33,3},2,2,1);
-      wait(delay);   
-     filled_rectangle((pixel){32,2},4,4,2);
-     wait(delay); 
-     filled_rectangle((pixel){31,1},6,6,3);
-   wait(delay);
-    filled_rectangle((pixel){30,0},8,8,1);
-  wait(delay);
+  size=NUM_ROWS;
+  value=3;
   
+   for (x=8;x>0;x--){
    
+     if (value<NUMPLANE)
+       value++;
+     else
+       value=0;
+       
+   filled_rectangle((pixel){(xcenter-x),(ycenter-x)},size,size,value);
+   wait(delay);
+    size-=2;
+   }
    
        wait(delay);   
     wait(delay);  
     wait(delay);  
+    
+    
+    
 }
 
 #endif

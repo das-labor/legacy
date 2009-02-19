@@ -26,7 +26,7 @@ void display_loop(){
 	
 	mode = setjmp(newmode_jmpbuf);
 	oldOldmode = oldMode;
-        mode =0;
+
 #ifdef JOYSTICK_SUPPORT	
 	waitForFire = 1;
 #endif

@@ -102,8 +102,8 @@ void filled_rectangle(pixel p1, unsigned char w, unsigned char h ,unsigned char 
 
 unsigned char y;
 
-for (y=p1.y;y<=(p1.y+h);y++){
-    line((pixel){p1.x,y}, (pixel){(p1.x+w),y} ,value);
+for (y=p1.y;y<(p1.y+h);y++){
+    line((pixel){p1.x,y}, (pixel){(p1.x+w-1),y} ,value);
 
   }
 
