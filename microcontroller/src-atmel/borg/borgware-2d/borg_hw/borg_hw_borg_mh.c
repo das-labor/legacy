@@ -73,13 +73,13 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 
   switch (plane){
     case 0:
-      OCR0 = 30;
-      break;
-    case 1:
       OCR0 = 60;
       break;
+    case 1:
+      OCR0 = 120;
+      break;
     case 2:
-      OCR0 = 80;
+      OCR0 = 160;
       break;
    // case 3:
      // OCR0 = 24;

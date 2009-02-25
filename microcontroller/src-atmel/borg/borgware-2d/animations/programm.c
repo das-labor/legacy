@@ -94,12 +94,12 @@ void test_palette2(){
 
 }
 
-void test_lines(){
+void checkbox(){
  
-unsigned char n,x, delay=250;
+unsigned char x, delay=250;
 
 
-// checkbox
+// quadrat aus linien
 line((pixel){0,0}, (pixel){7,0}  ,3);
   wait(delay);
   line((pixel){7,0}, (pixel){7,7}  ,3);
@@ -109,7 +109,7 @@ line((pixel){7,7}, (pixel){0,7}  ,3);
  line((pixel){0,7}, (pixel){0,0}  ,3);
  wait(delay);
 
- // diagonal
+ // 2 diagonale lininen
  line((pixel){7,7}, (pixel){0,0}  ,3);
  wait(delay);
  line((pixel){0,7}, (pixel){7,0}  ,3);
@@ -123,35 +123,10 @@ wait(delay);
         wait(30);
         }
  
- //sunrays
-for (n=0;n<=NUMPLANE;n++){
- line((pixel){15,0}, (pixel){NUM_COLS-1,0}  ,n);
- wait(delay);
-  line((pixel){15,0}, (pixel){7,NUM_ROWS-1}  ,n);
-  wait(delay); 
-   line((pixel){15,0}, (pixel){NUM_COLS-1,NUM_ROWS-1}  ,n);
-  wait(delay); 
-   line((pixel){15,0}, (pixel){15,NUM_ROWS-1}  ,n);
- wait(delay);
- }
- 
- for (n=NUMPLANE;n!=255;n--){
- line((pixel){15,0}, (pixel){NUM_COLS-1,0}  ,n);
- wait(delay);
-  line((pixel){15,0}, (pixel){7,NUM_ROWS-1}  ,n);
-  wait(delay); 
-   line((pixel){15,0}, (pixel){NUM_COLS-1,NUM_ROWS-1}  ,n);
-  wait(delay); 
-   line((pixel){15,0}, (pixel){15,NUM_ROWS-1}  ,n);
-}
-   
-  
- wait(500);
- 
 }
 
 void movinglines(){
-  unsigned char x,y;
+  unsigned char x,y,n;
 
   line((pixel){NUM_COLS-1,NUM_ROWS-1}, (pixel){NUM_COLS-1,0}  ,3);
 
@@ -170,54 +145,36 @@ void movinglines(){
   }
 
   //eine linie von rechts nach links und
-  // 8 mal von oben nach unten
-  // gleichzeitig 
-  for (x=0;x<NUM_COLS-1;x++){
-    y=x%NUM_ROWS;               
-    line((pixel){0,y}, (pixel){NUM_COLS-1,y}  ,3);
-    line((pixel){x,0}, (pixel){x,NUM_ROWS-1}  ,3);
-    wait(50);
+  //1-8 mal von oben nach unten
+  // je nach display format
+  // das ganze 4 mal 
+  for (n=0;n<4;n++){
+    for (x=0;x<NUM_COLS-1;x++){
+      y=x%NUM_ROWS;               
+      line((pixel){0,y}, (pixel){NUM_COLS-1,y}  ,3);
+      line((pixel){x,0}, (pixel){x,NUM_ROWS-1}  ,3);
+      wait(50);
         
-    line((pixel){0,y}, (pixel){NUM_COLS-1,y}  ,0);
-    line((pixel){x,0}, (pixel){x,NUM_ROWS-1}  ,0);
+      line((pixel){0,y}, (pixel){NUM_COLS-1,y}  ,0);
+      line((pixel){x,0}, (pixel){x,NUM_ROWS-1}  ,0);
     //wait(10);
     
+    }
   }
-
 }
 
-void rectangles(){
+//rechteckmuster mit helligkeitsstufen
+
+void rectangle1(){
   
   unsigned char x,value,xcenter,ycenter,size;
   unsigned int delay=500;
   
   xcenter = NUM_COLS/2;
   ycenter = NUM_ROWS/2;
-  
-  
-  clear_screen(0);
-  filled_rectangle((pixel){1,1},4,2,3);
-  wait(delay);
-  wait(delay);
-   filled_rectangle((pixel){10,1},5,5,3);
-   wait(delay);
-   wait(delay);
-   // filled_rectangle((pixel){30,2},30,5,2);
-   //  wait(delay);
-   //  filled_rectangle((pixel){40,0},8,8,1);
-   //    wait(delay);
-       
-     filled_rectangle((pixel){1,1},4,2,2);
-  wait(delay);
-   filled_rectangle((pixel){10,1},5,5,1);
-   wait(delay);
- 
-       
-        for (x=0;x<NUM_ROWS;x++){
-    shift_pixmap_l();
-    wait(30);          
-  }
     
+  clear_screen(0);
+
   size=NUM_ROWS;
   value=3;
   
@@ -233,12 +190,103 @@ void rectangles(){
     size-=2;
    }
    
-       wait(delay);   
+    wait(delay);   
     wait(delay);  
     wait(delay);  
+
+}
+
+
+// zufallsrechtecke
+void rectangles(){
+
+  unsigned char value,n,x,y,h,w;
+
+   clear_screen(0);
+
+   for (n=0;n<60;n++){
+  x = RANDOM8()%NUM_COLS;
+  y = RANDOM8()%NUM_ROWS;
+    h = RANDOM8()%NUM_COLS/2;
+  w = RANDOM8()%NUM_ROWS/2;
+ value= RANDOM8()%(NUMPLANE+1);
+ 
+  filled_rectangle((pixel){x,y},w,h,value);
+  wait(500+RANDOM8()%3000);
+
     
+  }
+
+}
+
+// schräge linien die aufblitzen
+void lines1(){
+
+  unsigned char value,n,x,y,h,w,i,j;
+  unsigned int delay=500;
+  
+   clear_screen(0);
+
+   for (n=0;n<200;n++){
+  x = RANDOM8()%NUM_COLS;
+  y = RANDOM8()%NUM_ROWS;
+    h = RANDOM8()%NUM_COLS;
+    w = RANDOM8()%NUM_ROWS;
+ value= RANDOM8()%(NUMPLANE+1);
+  
+  line((pixel){x,y},(pixel){w,h},value);
+  wait(RANDOM8()%delay);
+  line((pixel){x,y},(pixel){w,h},0);
     
+  }
+
+}
+
+// random dots
+void dots1(){
+  unsigned char delay=100,n,x,y;
+
+   clear_screen(0);
+
+   for (n=0;n<50;n++){
+  x = RANDOM8()%NUM_COLS;
+  y = RANDOM8()%NUM_ROWS;
+ 
+  setpixel((pixel){x,y} , 1);
+  wait(delay);
+  setpixel((pixel){x,y} , 2);
+  wait(delay);
+  setpixel((pixel){x,y} , 3);
+  wait(delay);
+  setpixel((pixel){x,y} , 2);
+  wait(delay);
+  setpixel((pixel){x,y} , 1);
+  wait((RANDOM8()%255)*10);
+
+  }
+
+}
+
+
+// punkte, die von links nach rechts fliegen
+void flydots(){
+  unsigned char value,y;
+  unsigned int n,delay=100;
+  
+   clear_screen(0);
+
+   for (n=0;n<200;n++){
+  
+  y = RANDOM8()%NUM_ROWS;
+  value= RANDOM8()%(NUMPLANE+1);
+  
+  setpixel((pixel){NUM_COLS-1,y} , value);
+    shift_pixmap_l();
+  wait(delay);
+     
     
+  }
+  
 }
 
 #endif
