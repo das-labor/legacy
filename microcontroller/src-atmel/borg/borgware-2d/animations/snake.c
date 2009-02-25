@@ -117,9 +117,11 @@ void snake(){
 		
 		for(j=0;j<apple_num;j++){
 			if(x%2){
-				setpixel(apples[j], 3);
+				setpixel(apples[j], 2);
 			}else{
+                        #ifdef CAN_SUPPORT
 				clearpixel(apples[j]);
+                        #endif
 			}
 		}
 		

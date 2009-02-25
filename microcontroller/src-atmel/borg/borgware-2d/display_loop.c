@@ -50,10 +50,6 @@ void display_loop(){
 
 #ifdef ANIMATION_SPIRALE
 		case 2:
-                      movinglines();
-                      test_lines();
-                       rectangles();
-                       scrolltext("d/#ABC");
 			spirale(5);
 			break;
 #endif
@@ -72,7 +68,7 @@ void display_loop(){
 
 #ifdef ANIMATION_SCHACHBRETT
 		case 5:
-			//schachbrett(10);
+			schachbrett(10);
 			break;
 #endif			
 
@@ -90,7 +86,7 @@ void display_loop(){
 
 #ifdef ANIMATION_RANDOM_BRIGHT
 		case 8:
-			random_bright(200);
+			random_bright(30);
 			break;
 #endif
 
@@ -100,6 +96,17 @@ void display_loop(){
 			break;
 #endif
 
+//#ifdef ANIMATION_RECTAGLES
+		case 10:
+                	flydots();
+                	lines1();
+                	dots1();
+                	movinglines();
+                        checkbox();
+			rectangle1();
+                        rectangles();
+			break;
+//#endif
 		case 29:
 		 // mode = 1;
 		  break;
