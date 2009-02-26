@@ -14,13 +14,28 @@ void test_level3();
 void test_levels();
 void test_palette();
 void test_palette2();
+
+// randon dots appear and stay
 void dots1();
+
+// dots fly from left to right
 void flydots();
+
+// rectangle-pattern
 void rectangle1();
+
+// random rectangles
 void rectangles();
-void lines();
+
+// lines show and disappear quickly
+void lines1();
+
+//  8x8 rectangle with a cross inside 
 void checkbox();
+
+// a scanner effect with moving h & v lines
 void movinglines();
+
 void snake();
 void matrix();
 void fadein();
