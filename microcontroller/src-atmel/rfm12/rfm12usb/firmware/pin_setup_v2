@@ -1,0 +1,10 @@
+(looking at the backside of the board, rfm module facing downwards, usb plug upwards)
+
+left                  right
+ 1     2    3      4    5
+MOSI  MISO  SCK   GND  RESET
+
+
+VCC   GND   GND    GND   GND
+MOSI  FREE  RESET  SCK  MISO
+ 1           5      3     2

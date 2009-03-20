@@ -12,13 +12,6 @@
  */
 
 
-#define LED_PORT_DDR        DDRD
-#define LED_PORT_OUTPUT     PORTD
-#define LED_BIT_RED         6
-#define LED_BIT_GREEN		7
-
-//the time after which the red led is turned off
-#define LED_OFFTIME_RED		0x0003FFFF
 
 #include <avr/io.h>
 #include <avr/wdt.h>
@@ -33,9 +26,9 @@
 #include "../common/requests.h"       /* The custom request numbers we use */
 #include "rfm12.h"
 #include "rfmusb.h"
+#include "rfmusb_hw.h"
 
 //FIXME: rework packet transmission system (full packet, short/fast (1byte packet))
-//FIXME: move these defines to common header, which yet has to be commited by soeren
 #define USB_SENDCHAR 0x23
 
 
@@ -80,7 +73,7 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 				rfmusb_usbRxLen = RFMUSB_USBRXBUFFER_SIZE;
 
 			//toggle status led
-			LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
+			LED_STATUS_TOGGLE;
 
 			// tell driver to use usbFunctionWrite()
 			return USB_NO_MSG;
@@ -95,7 +88,7 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 			rfm12_tx (1, 0, rfmusb_usbRxBuf);
 
 			//toggle led
-			LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
+			LED_STATUS_TOGGLE;
 
 			//use default return value
 			break;			
@@ -115,7 +108,7 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 				rfmusb_usbTxLen = 0;
 
 				//switch led
-				LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
+				LED_STATUS_TOGGLE;
 
 				//tell the driver to send n bytes
 				return tmp;
@@ -159,7 +152,7 @@ uchar usbFunctionWrite(uchar *data, uchar len)
 {
     uchar i;
 
-    LED_PORT_OUTPUT ^= _BV(LED_BIT_GREEN);
+	LED_STATUS_TOGGLE;
 
     //if this is the last incomplete chunk
     if(len > rfmusb_usbRxLen)
@@ -271,7 +264,7 @@ void init()
 	//init rfm12
 	rfm12_init();
 
-	LED_PORT_DDR |= _BV(LED_BIT_RED) | _BV(LED_BIT_GREEN);   /* make the LED bit an output */
+	LED_PORT_DDR |= (LED_BIT_RED | LED_BIT_GREEN);   /* make the LED bit an output */
 }
 
 
@@ -286,7 +279,7 @@ int main(void)
 	sei();
 
 	//power led on
-	LED_PORT_OUTPUT |= _BV(LED_BIT_GREEN);
+	LED_STATUS_SET(1);
 
 	//reset led on count
 	led_cnt_red = 0;
@@ -300,7 +293,7 @@ int main(void)
 		if (rfm12_rx_status() == STATUS_COMPLETE)
 		{
 			//toggle receive led
-			LED_PORT_OUTPUT ^= _BV(LED_BIT_RED);
+			LED_STATUS_TOGGLE;
 
 			//copy packet into usb transmit buffer
 			//TODO: check return value and issue rx traffic limit exeeded notification if the buffer is full
@@ -311,10 +304,10 @@ int main(void)
 		}
 
 		//if the red led is on for some time
-		if((LED_PORT_OUTPUT & _BV(LED_BIT_RED)) && (led_cnt_red++ >= LED_OFFTIME_RED))
+		if((LED_PORT_OUTPUT & LED_BIT_RED) && (led_cnt_red++ >= LED_OFFTIME_RED))
 		{
 			//turn it off
-			LED_PORT_OUTPUT &= ~_BV(LED_BIT_RED);
+			LED_STATUS_SET(1);
 
 			//reset counter
 			led_cnt_red = 0;
