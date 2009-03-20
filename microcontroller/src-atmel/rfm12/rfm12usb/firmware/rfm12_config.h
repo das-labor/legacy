@@ -48,11 +48,16 @@
 
 #include <avr/io.h>
 #include "../common/rfm12_buffer_size.h"
+#include "rfmusb_hw.h"
 
-//Pin that the RFM12's slave select is connected to
-#define DDR_SS DDRB
-#define PORT_SS PORTB
-#define BIT_SS 0
+/* Pin that the RFM12's slave select is connected to
+ * NOTE: This is defined rfmusb_hw.h from now on
+ */
+#ifndef DDR_SS
+	#define DDR_SS DDRC
+	#define PORT_SS PORTC
+	#define BIT_SS 2
+#endif
 
 //SPI port
 #define DDR_SPI DDRB

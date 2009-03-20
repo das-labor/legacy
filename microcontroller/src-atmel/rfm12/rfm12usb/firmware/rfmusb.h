@@ -46,3 +46,4 @@ typedef struct
 } rfmusb_notifyPacket;
 
 #endif
+
