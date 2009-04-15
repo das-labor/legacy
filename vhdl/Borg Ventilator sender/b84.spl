@@ -1,0 +1,8 @@
+[Inputs]
+=a[7:0]=
+[Outputs]
+q1
+q2
+q3
+q4
+[BiDir]

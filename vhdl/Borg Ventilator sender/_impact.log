@@ -1,0 +1,544 @@
+iMPACT Version: 
+iMPACT log file Started on Tue Apr 14 13:54:27 2009
+
+// *** BATCH CMD : setMode -bs
+// *** BATCH CMD : setMode -bs
+// *** BATCH CMD : addDevice -p 1 -file "D:/borg_sender/pBlazIDE36/test.xsvf"
+INFO:iMPACT:501 - '1': Added Device BoundaryScanFile successfully.
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+GUI --- Auto connect to cable...
+// *** BATCH CMD : setCable -port auto
+AutoDetecting cable. Please wait.
+PROGRESS_START - Starting Operation.
+Connecting to cable (Parallel Port - LPT1).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Parallel Port - LPT2).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Parallel Port - LPT3).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Parallel Port - LPT4).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Usb Port - USB21).
+Checking cable driver.
+ Driver version: 1027 (1027).
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+PROGRESS_END - End Operation.
+Elapsed time =      4 sec.
+Cable autodetection failed.
+WARNING:iMPACT:923 - Can not find cable, check cable setup ! Count ReleaseSemaphore rc = 298.
+GUI --- Auto connect to cable...
+// *** BATCH CMD : setCable -port auto
+AutoDetecting cable. Please wait.
+PROGRESS_START - Starting Operation.
+Connecting to cable (Parallel Port - LPT1).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Parallel Port - LPT2).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Parallel Port - LPT3).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Parallel Port - LPT4).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Usb Port - USB21).
+Checking cable driver.
+ Driver version: 1027 (1027).
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+ Cable PID = 0008.
+ Max current requested during enumeration is 74 mA.
+Type = 0x0004.
+ Cable Type = 3, Revision = 0.
+ Setting cable speed to 6 MHz.
+Cable connection established.
+Firmware version = 1029.
+File version of C:/Xilinx92i/data/xusb_xlp.hex = 1301.
+Firmware hex file version = 1301.
+Downloading C:/Xilinx92i/data/xusb_xlp.hex.
+Downloaded firmware version = 1301.
+ESN Family Code: 01
+ESN: 000011E4170C
+CPLD file version = 0012h.
+CPLD version = 0012h.
+PROGRESS_END - End Operation.
+Elapsed time =      2 sec.
+// *** BATCH CMD : Play 
+Verbose level = 4
+XSVF Interpreter v5.01, Xilinx, Inc.
+XSVF file = D:/borg_sender/pBlazIDE36/test.xsvf
+PROGRESS_START - Starting Operation.
+Execution Time = 1.828 seconds
+The xsvf execute operation completed sucessfully.
+PROGRESS_END - End Operation.
+Elapsed time =      2 sec.
+Attempting to identify devices in the boundary-scan chain configuration...// *** BATCH CMD : Identify 
+PROGRESS_START - Starting Operation.
+Identifying chain contents ....'1': : Manufacturer's ID =Xilinx xcf02s, Version : 15
+INFO:iMPACT:1777 - 
+   Reading C:/Xilinx92i/xcf/data/xcf02s.bsd...
+INFO:iMPACT:501 - '1': Added Device xcf02s successfully.
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+'2': : Manufacturer's ID =Xilinx xc3s200, Version : 0
+INFO:iMPACT:1777 - 
+   Reading C:/Xilinx92i/spartan3/data/xc3s200.bsd...
+INFO:iMPACT:501 - '1': Added Device xc3s200 successfully.
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+done.
+PROGRESS_END - End Operation.
+Elapsed time =      1 sec.
+// *** BATCH CMD : identifyMPM 
+// *** BATCH CMD : assignFile -p 1 -file "D:/borg_sender/sender/top.bit"
+'1': Loading file 'D:/borg_sender/sender/top.bit' ...
+done.
+INFO:iMPACT:2257 - Startup Clock has been changed to 'JtagClk' in the bitstream   stored in memory,
+   but the original bitstream file remains unchanged.
+INFO:iMPACT:501 - '1': Added Device xc3s200 successfully.
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+// *** BATCH CMD : Program -p 1 -defaultVersion 0 
+Maximum TCK operating frequency for this device chain: 15000000.
+Validating chain...
+Boundary-scan chain validated successfully.
+'1': Programming device...
+PROGRESS_START - Starting Operation.
+done.
+'1': Reading status register contents...
+CRC error                                         :         0
+RESERVED                                          :         0
+DCM locked                                        :         1
+DCI Matched                                       :         1
+legacy input error                                :         0
+status of GTS_CFG_B                               :         1
+status of GWE                                     :         1
+status of GHIGH                                   :         1
+value of MODE pin M0                              :         0
+value of MODE pin M1                              :         0
+value of MODE pin M2                              :         0
+value of CFG_RDY (INIT_B)                         :         1
+DONEIN input from DONE pin                        :         1
+ID_ERROR                                          :         0
+RESERVED                                          :         0
+RESERVED                                          :         0
+INFO:iMPACT:2219 - Status register values:
+INFO:iMPACT - 0011 0111 0001 1000 0000 0000 0000 0000 
+INFO:iMPACT:579 - '1': Completed downloading bit file to device.
+INFO:iMPACT - '1': Checking done pin....done.
+'1': Programmed successfully.
+PROGRESS_END - End Operation.
+Elapsed time =      1 sec.
+// *** BATCH CMD : Erase -p 2 
+Maximum TCK operating frequency for this device chain: 15000000.
+Validating chain...
+Boundary-scan chain validated successfully.
+PROGRESS_START - Starting Operation.
+'2': Erasing device...
+'2': Erasure completed successfully.
+PROGRESS_END - End Operation.
+Elapsed time =      6 sec.
+The following values are set for this run of the wizard
+SUBMODE_TYPE is SUBMODE_PFFSERIAL
+MULTIBOOT_DEVICE is DEVICE_NONE
+MULTIBOOT_TYPE is TYPE_NONE
+Downstream Daisy-Chain type is CHAINTYPE_NONE
+setMultiBootSelect is FALSE
+setSPISelect is FALSE
+// *** BATCH CMD : setMode -pff
+// *** BATCH CMD : setMode -pff
+// *** BATCH CMD : addConfigDevice  -name "Untitled" -path"D:\borg_sender\sender\"
+// *** BATCH CMD : setSubmode -pffserial
+// *** BATCH CMD : setAttribute -configdevice -attr multibootBpiType -value ""
+// *** BATCH CMD : addDesign -version 0 -name ""
+// *** BATCH CMD : setMode -pff
+// *** BATCH CMD : addDeviceChain -index 0
+// *** BATCH CMD : setMode -pff
+// *** BATCH CMD : addDeviceChain -index 0
+Override chain at index 0.
+Overriding chain at index 0.
+// *** BATCH CMD : setAttribute -configdevice -attr compressed -value "FALSE"
+// *** BATCH CMD : setAttribute -configdevice -attr compressed -value "FALSE"
+// *** BATCH CMD : setAttribute -configdevice -attr autoSize -value "FALSE"
+// *** BATCH CMD : setAttribute -configdevice -attr fileFormat -value "mcs"
+// *** BATCH CMD : setAttribute -configdevice -attr fillValue -value "FF"
+// *** BATCH CMD : setAttribute -configdevice -attr swapBit -value "FALSE"
+// *** BATCH CMD : setAttribute -configdevice -attr dir -value "UP"
+// *** BATCH CMD : setAttribute -configdevice -attr multiboot -value "FALSE"
+// *** BATCH CMD : setAttribute -configdevice -attr multiboot -value "FALSE"
+// *** BATCH CMD : setAttribute -configdevice -attr spiSelected -value "FALSE"
+// *** BATCH CMD : setAttribute -configdevice -attr spiSelected -value "FALSE"
+// *** BATCH CMD : addPromDevice -p 1 -size 0 -name xcf02s
+'1': Added Device xcf02s successfully.
+----------------------------------------------------------------------
+// *** BATCH CMD : setMode -pff
+------------------------  GUI: PFFView Wizard Data Report ------------------------
+SubMode: PFF_SERIAL
+MB Master Device: 
+MB Mode: 
+MB Chain: 
+getMultiBootSelected(): FALSE
+getSPISelected(): FALSE
+------------------------  GUI: End PFFView Report  ------------------------
+// *** BATCH CMD : setMode -pff
+// *** BATCH CMD : deletePromDevice -position 1
+// *** BATCH CMD : setCurrentDesign -version 0
+// *** BATCH CMD : setCurrentDeviceChain -index 0
+// *** BATCH CMD : setCurrentDeviceChain -index 0
+// *** BATCH CMD : deleteDesign -version 0
+// *** BATCH CMD : setCurrentDesign -version -1
+// *** BATCH CMD : setMode -pff
+// *** BATCH CMD : addConfigDevice -size 512 -name "Untitled" -path"D:\borg_sender\sender\/"
+// *** BATCH CMD : setSubmode -pffserial
+// *** BATCH CMD : setAttribute -configdevice -attr dir -value "UP"
+// *** BATCH CMD : setAttribute -configdevice -attr flashDataWidth -value "8"
+// *** BATCH CMD : addPromDevice -p 1 -size 0 -name xcf02s
+'1': Added Device xcf02s successfully.
+----------------------------------------------------------------------
+// *** BATCH CMD : setMode -pff
+// *** BATCH CMD : setSubmode -pffserial
+// *** BATCH CMD : setAttribute -configdevice -attr dir -value "UP"
+// *** BATCH CMD : addDesign -version 0 -name "0000"
+// *** BATCH CMD : setMode -pff
+// *** BATCH CMD : addDeviceChain -index 0
+// *** BATCH CMD : setCurrentDeviceChain -index 0
+------------------------  GUI: Wizard Data Report  ---------------------------
+      PROM Mode : Serial
+      Compression : false
+      Fill Value : FF
+      Output Format : mcs
+      Swap Bits : true
+      LoadDirection : UP
+      PROM Basename : Untitled
+      File Location : D:\borg_sender\sender\/
+      Auto Selcet : false
+      Number of Data Stream : 1
+      Number of PROMs : 1
+      PROM Name : xcf02s		PROM Size : 262144 Bytes
+-------------------------- END of Report ----------------------------
+// *** BATCH CMD : setCurrentDeviceChain -index 0
+// *** BATCH CMD : setAttribute -design -attr name -value "0"
+// *** BATCH CMD : addDevice -p 1 -file "D:/borg_sender/sender/top.bit"
+'1': Loading file 'D:/borg_sender/sender/top.bit' ...
+INFO:iMPACT - Elapsed time =      0 sec.
+done.
+INFO:iMPACT:501 - '1': Added Device xc3s200 successfully.
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+Add one device.// *** BATCH CMD : setMode -pff
+// *** BATCH CMD : setSubmode -pffserial
+// *** BATCH CMD : setAttribute -configdevice -attr fillValue -value "FF"
+// *** BATCH CMD : setAttribute -configdevice -attr fileFormat -value "mcs"
+// *** BATCH CMD : setAttribute -configdevice -attr dir -value "UP"
+// *** BATCH CMD : setAttribute -configdevice -attr path -value"D:\borg_sender\sender\/"
+// *** BATCH CMD : setAttribute -configdevice -attr name -value "Untitled"
+Total configuration bit size = 1047616 bits.
+// *** BATCH CMD : generate
+Total configuration byte size = 130952 bytes.
+// *** BATCH CMD : setCurrentDesign -version 0
+Swap bit can only be disabled in Hex file format only.
+0x1ff88 (130952) bytes loaded up from 0x0
+Using user-specified prom size of 256K
+Writing file "D:\borg_sender\sender\//Untitled.mcs".
+Writing file "D:\borg_sender\sender\//Untitled.prm".
+Writing file "D:\borg_sender\sender\//Untitled.sig".
+// *** BATCH CMD : setMode -bs
+// *** BATCH CMD : setMode -bs
+// *** BATCH CMD : assignFile -p 2 -file "D:/borg_sender/sender/Untitled.mcs"
+'2': Loading file 'D:/borg_sender/sender/Untitled.mcs' ...
+done.
+// *** BATCH CMD : setAttribute -position 2 -attr packageName -value "(null)"
+// *** BATCH CMD : Program -p 2 -e -v -defaultVersion 0 
+Maximum TCK operating frequency for this device chain: 15000000.
+Validating chain...
+Boundary-scan chain validated successfully.
+'2': Erasing device...
+PROGRESS_START - Starting Operation.
+'2': Erasure completed successfully.
+'2': Programming device...
+done.
+'2': Putting device in ISP mode...done.
+'2': Putting device in ISP mode...done.
+'2': Verifying device...done.
+'2': Verification completed successfully.
+'2': Calculated checksum matches expected checksum, 002098f22
+'2': Putting device in ISP mode...done.
+'2': Putting device in ISP mode...done.
+'2': Setting user-programmable bits...
+done.
+'2': Putting device in ISP mode...done.
+'2': Programming completed successfully.
+'2': Programming completed successfully.
+PROGRESS_END - End Operation.
+Elapsed time =     10 sec.
+// *** BATCH CMD : setMode -pff
+// *** BATCH CMD : setMode -pff
+// *** BATCH CMD : setMode -bs
+// *** BATCH CMD : deleteDevice -position 2
+----------------------------------------------------------------------
+// *** BATCH CMD : deleteDevice -position 1
+// *** BATCH CMD : setMode -pff
+// *** BATCH CMD : deletePromDevice -position 1
+// *** BATCH CMD : setCurrentDesign -version 0
+// *** BATCH CMD : setCurrentDeviceChain -index 0
+// *** BATCH CMD : deleteDevice -position 1
+// *** BATCH CMD : setCurrentDeviceChain -index 0
+// *** BATCH CMD : deleteDesign -version 0
+// *** BATCH CMD : setCurrentDesign -version -1
+// *** BATCH CMD : setMode -bs
+// *** BATCH CMD : setMode -bs
+// *** BATCH CMD : setMode -bs
+// *** BATCH CMD : addDevice -p 1 -file "D:/borg_sender/pBlazIDE36/test.xsvf"
+INFO:iMPACT:501 - '1': Added Device BoundaryScanFile successfully.
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+GUI --- Auto connect to cable...
+// *** BATCH CMD : setCable -port auto
+AutoDetecting cable. Please wait.
+PROGRESS_START - Starting Operation.
+Connecting to cable (Parallel Port - LPT1).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Parallel Port - LPT2).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Parallel Port - LPT3).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Parallel Port - LPT4).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Usb Port - USB21).
+Checking cable driver.
+ Driver version: 1027 (1027).
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+ Cable PID = 0008.
+ Max current requested during enumeration is 74 mA.
+Type = 0x0004.
+ Cable Type = 3, Revision = 0.
+ Setting cable speed to 6 MHz.
+Cable connection established.
+Firmware version = 1301.
+File version of C:/Xilinx92i/data/xusb_xlp.hex = 1301.
+Firmware hex file version = 1301.
+ESN Family Code: 01
+ESN: 000011E4170C
+CPLD file version = 0012h.
+CPLD version = 0012h.
+PROGRESS_END - End Operation.
+Elapsed time =      2 sec.
+// *** BATCH CMD : Play 
+Verbose level = 4
+XSVF Interpreter v5.01, Xilinx, Inc.
+XSVF file = D:/borg_sender/pBlazIDE36/test.xsvf
+PROGRESS_START - Starting Operation.
+Execution Time = 1.829 seconds
+The xsvf execute operation completed sucessfully.
+PROGRESS_END - End Operation.
+Elapsed time =      2 sec.
+// *** BATCH CMD : setMode -bs
+// *** BATCH CMD : deleteDevice -position 1
+// *** BATCH CMD : setMode -bs
+// *** BATCH CMD : setMode -bs
+GUI --- Auto connect to cable...
+// *** BATCH CMD : setCable -port auto
+AutoDetecting cable. Please wait.
+PROGRESS_START - Starting Operation.
+Connecting to cable (Parallel Port - LPT1).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Parallel Port - LPT2).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Parallel Port - LPT3).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Parallel Port - LPT4).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Usb Port - USB21).
+Checking cable driver.
+ Driver version: 1027 (1027).
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+ Cable PID = 0008.
+ Max current requested during enumeration is 74 mA.
+Type = 0x0004.
+ Cable Type = 3, Revision = 0.
+ Setting cable speed to 6 MHz.
+Cable connection established.
+Firmware version = 1301.
+File version of C:/Xilinx92i/data/xusb_xlp.hex = 1301.
+Firmware hex file version = 1301.
+ESN Family Code: 01
+ESN: 000011E4170C
+CPLD file version = 0012h.
+CPLD version = 0012h.
+PROGRESS_END - End Operation.
+Elapsed time =      3 sec.
+Attempting to identify devices in the boundary-scan chain configuration...// *** BATCH CMD : Identify 
+PROGRESS_START - Starting Operation.
+Identifying chain contents ....'1': : Manufacturer's ID =Xilinx xcf02s, Version : 15
+INFO:iMPACT:1777 - 
+   Reading C:/Xilinx92i/xcf/data/xcf02s.bsd...
+INFO:iMPACT:501 - '1': Added Device xcf02s successfully.
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+'2': : Manufacturer's ID =Xilinx xc3s200, Version : 0
+INFO:iMPACT:1777 - 
+   Reading C:/Xilinx92i/spartan3/data/xc3s200.bsd...
+INFO:iMPACT:501 - '1': Added Device xc3s200 successfully.
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+done.
+PROGRESS_END - End Operation.
+Elapsed time =      0 sec.
+// *** BATCH CMD : identifyMPM 
+// *** BATCH CMD : assignFile -p 1 -file "D:/borg_sender/sender/top.bit"
+'1': Loading file 'D:/borg_sender/sender/top.bit' ...
+done.
+INFO:iMPACT:2257 - Startup Clock has been changed to 'JtagClk' in the bitstream   stored in memory,
+   but the original bitstream file remains unchanged.
+INFO:iMPACT:501 - '1': Added Device xc3s200 successfully.
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+// *** BATCH CMD : assignFile -p 2 -file "D:/borg_sender/sender/Untitled.mcs"
+'2': Loading file 'D:/borg_sender/sender/Untitled.mcs' ...
+done.
+// *** BATCH CMD : setAttribute -position 2 -attr packageName -value "(null)"
+// *** BATCH CMD : Program -p 1 -defaultVersion 0 
+Maximum TCK operating frequency for this device chain: 15000000.
+Validating chain...
+Boundary-scan chain validated successfully.
+'1': Programming device...
+PROGRESS_START - Starting Operation.
+done.
+'1': Reading status register contents...
+CRC error                                         :         0
+RESERVED                                          :         0
+DCM locked                                        :         1
+DCI Matched                                       :         1
+legacy input error                                :         0
+status of GTS_CFG_B                               :         1
+status of GWE                                     :         1
+status of GHIGH                                   :         1
+value of MODE pin M0                              :         0
+value of MODE pin M1                              :         0
+value of MODE pin M2                              :         0
+value of CFG_RDY (INIT_B)                         :         1
+DONEIN input from DONE pin                        :         1
+ID_ERROR                                          :         0
+RESERVED                                          :         0
+RESERVED                                          :         0
+INFO:iMPACT:2219 - Status register values:
+INFO:iMPACT - 0011 0111 0001 1000 0000 0000 0000 0000 
+INFO:iMPACT:579 - '1': Completed downloading bit file to device.
+INFO:iMPACT - '1': Checking done pin....done.
+'1': Programmed successfully.
+PROGRESS_END - End Operation.
+Elapsed time =      1 sec.
+// *** BATCH CMD : setMode -bs
+// *** BATCH CMD : deleteDevice -position 2
+----------------------------------------------------------------------
+// *** BATCH CMD : deleteDevice -position 1
+// *** BATCH CMD : setMode -bs
+// *** BATCH CMD : setMode -bs
+// *** BATCH CMD : addDevice -p 1 -file "D:/borg_sender/sender/picoblaze.xsvf"
+INFO:iMPACT:501 - '1': Added Device BoundaryScanFile successfully.
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+GUI --- Auto connect to cable...
+// *** BATCH CMD : setCable -port auto
+AutoDetecting cable. Please wait.
+PROGRESS_START - Starting Operation.
+Connecting to cable (Parallel Port - LPT1).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Parallel Port - LPT2).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Parallel Port - LPT3).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Parallel Port - LPT4).
+Checking cable driver.
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+Cable connection failed.
+Connecting to cable (Usb Port - USB21).
+Checking cable driver.
+ Driver version: 1027 (1027).
+ Driver windrvr6.sys version = 8.1.1.0. WinDriver v8.11 Jungo (c) 1997 - 2006 Build Date: Oct 16 2006 X86 32bit SYS12:35:07, version = 811.
+ Cable PID = 0008.
+ Max current requested during enumeration is 74 mA.
+Type = 0x0004.
+ Cable Type = 3, Revision = 0.
+ Setting cable speed to 6 MHz.
+Cable connection established.
+Firmware version = 1301.
+File version of C:/Xilinx92i/data/xusb_xlp.hex = 1301.
+Firmware hex file version = 1301.
+ESN Family Code: 01
+ESN: 000011E4170C
+CPLD file version = 0012h.
+CPLD version = 0012h.
+PROGRESS_END - End Operation.
+Elapsed time =      3 sec.
+// *** BATCH CMD : Play 
+Verbose level = 4
+XSVF Interpreter v5.01, Xilinx, Inc.
+XSVF file = D:/borg_sender/sender/picoblaze.xsvf
+PROGRESS_START - Starting Operation.
+Execution Time = 1.812 seconds
+The xsvf execute operation completed sucessfully.
+PROGRESS_END - End Operation.
+Elapsed time =      1 sec.
+// *** BATCH CMD : Play 
+Verbose level = 4
+XSVF Interpreter v5.01, Xilinx, Inc.
+XSVF file = D:/borg_sender/sender/picoblaze.xsvf
+PROGRESS_START - Starting Operation.
+Execution Time = 1.891 seconds
+The xsvf execute operation completed sucessfully.
+PROGRESS_END - End Operation.
+Elapsed time =      2 sec.
+// *** BATCH CMD : Play 
+Verbose level = 4
+XSVF Interpreter v5.01, Xilinx, Inc.
+XSVF file = D:/borg_sender/sender/picoblaze.xsvf
+PROGRESS_START - Starting Operation.
+Execution Time = 1.828 seconds
+The xsvf execute operation completed sucessfully.
+PROGRESS_END - End Operation.
+Elapsed time =      2 sec.
+// *** BATCH CMD : setMode -bs
+// *** BATCH CMD : deleteDevice -position 1
+WARNING:ProjectMgmt - Could not remove the file   <D:/borg_sender/sender/_impact.cmd> - cleanup failed.
+WARNING:ProjectMgmt - Could not remove the file   <D:/borg_sender/sender/_impact.log> - cleanup failed.
