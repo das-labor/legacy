@@ -1,0 +1,49 @@
+ command line:
+   ./tbtpg_isim_beh.exe
+     -intstyle  ise
+     -ipchost  localhost
+     -ipcport  3058
+
+Mon Apr 13 16:18:32 2009
+
+Total Line Count : 109
+
+ Elaboration time : 0.015625 sec.
+
+ Estimate current memory usage : 120.304 Meg. 
+
+ Total Signals          : 26
+ Total Nets             : 129
+ Total Signal Drivers   : 13
+ Total Blocks           : 7
+ Total Primitive Blocks : 1
+ Total Processes        : 10
+ Total Traceable Variables  : 0
+ Total Scalar Nets and Variables : 129
+ntrace select -o on -n /tbtpg/clk 
+ntrace select -o on -n /tbtpg/a 
+ntrace select -o on -n /tbtpg/b 
+ntrace select -o on -n /tbtpg/c 
+ntrace select -o on -n /tbtpg/d 
+ntrace select -o on -n /tbtpg/q1 
+ntrace select -o on -n /tbtpg/q2 
+ntrace select -o on -n /tbtpg/q3 
+ntrace select -o on -n /tbtpg/q4 
+ntrace start 
+isimrun 1000 ns 
+Simulator is doing circuit initialization process.
+Finished circuit initialization process.
+isimrun 1000 ns 
+isimrun 1000 ns 
+isimrun 1000 ns 
+isimrun 1000 ns 
+isimrun 1000 ns 
+isimrun 1000 ns 
+isimrun 1000 ns 
+
+ Simulation time 0.09375 sec.
+
+ Estimate current memory usage : 128.692 Meg. 
+
+Mon Apr 13 16:21:05 2009
+

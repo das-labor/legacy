@@ -1,0 +1,8 @@
+[Inputs]
+clk
+=b8_code[7:0]=
+[Outputs]
+q1
+rdy
+=counter[9:0]=
+[BiDir]
