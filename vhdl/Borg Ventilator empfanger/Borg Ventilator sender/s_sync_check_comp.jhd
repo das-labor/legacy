@@ -1,3 +1,0 @@
-MODULE s_sync_check_comp
-	SUBMODULE s_511
-		INSTANCE XLXI_30

@@ -1,8 +1,0 @@
-[Inputs]
-clk
-wr_str
-=p_id[7:0]=
-=out_p[7:0]=
-[Outputs]
-=Display[11:0]=
-[BiDir]
