@@ -1,0 +1,13 @@
+[Inputs]
+data_in
+clk
+[Outputs]
+rdy
+synchron
+crc_ok
+crc_er
+sync_ok
+sync_er
+=data_out[7:0]=
+=counter[9:0]=
+[BiDir]
