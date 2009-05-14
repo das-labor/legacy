@@ -1,0 +1,161 @@
+; ------------------------------------------------
+; Fehlerbehandlung FPGA Komunikation 11/2008 SAURON
+; ------------------------------------------------
+
+; Bei der Assemblierung wird ein ROM Baustein erstellt
+ VHDL      "template.vhd", "picoblaze_rom.vhd", "pb_rom"
+
+; Portmap für den Simulator
+counter1            DSIO      0
+counter2            DSIO      1
+
+adress              DSOUT     2                   ; Adresse nach Blockram
+daten               DSOUT     3                   ; Daten nach Blockram
+write               DSOUT     $80                  ; schreibsignal
+c_out               DSOUT     $81
+; ------------------------------------------------
+; --         16 mal 16 Bit Counter              --
+; ------------------------------------------------
+
+
+start:              LOAD      s9, 0
+                    IN        sA, counter1
+                    OUT       sA, counter1
+                    IN        sB, counter2
+                    OUT       sB, counter2
+                    LOAD      s8, sA              ; die einzelnen bits von counter1 werden von rechts nach links
+searchbit1:         CALL      incbittest
+                    COMP      s9, $08
+                    JUMP      NZ, searchbit1      ; durchsucht nach gesetzten bits
+                    LOAD      s8, sB
+searchloop1:        CALL      incbittest          ; Und das selbe für counter2
+                    COMP      s9, $10
+                    JUMP      NZ, searchloop1
+                    CALL      err_count           ; Die Verschieden fehler zusammenzählen
+                    CALL      bram_out            ; Scratchpad übertragen ins BlockRam
+                    FETCH     s0, 1
+                    OUT       s0, c_out
+                    JUMP      start
+; -------------------------------------------------
+incbittest:         TEST      s8, %00000001
+                    CALL      NZ, inc16           ; überprüft, ob bit gesetzt. wenn ja, dann sprung nach inc16
+                    SR0       s8
+                    ADD       s9, 1               ; in s9 wird übergeben, welches bit gesetzt ist.
+                    RET       
+; -------------------------------------------------
+inc16:              LOAD      s2, s9              ; das passende scratchpad ram
+                    SL0       s2
+                    FETCH     s0, s2              ; um 1 erhöhen
+                    ADD       s2, 1
+                    FETCH     s1, s2              ; bei überlauf hi byte erhöhen
+                    ADD       s1, 1
+                    ADDC      s0, 0
+                    STORE     s1, s2
+                    ADD       s2, $FF
+                    STORE     s0, s2
+; -- scratchpad zum counter1 bearbeiten--
+                    LOAD      s0, %11111110       ; das passende bit
+                    LOAD      s1, s9
+                    COMP      s1, 8
+                    JUMP      NC, byte2
+incloop1:           COMP      s1, 0               ; im register suchen
+                    JUMP      Z, cont1
+                    SL1       s0                  ; und löschen
+                    ADD       s1, $FF
+                    JUMP      incloop1
+cont1:              AND       sA, s0
+                    OUT       sA, counter1
+; -- scratchpad zum counter2 bearbeiten--
+byte2:              LOAD      s0, %11111110
+                    LOAD      s1, s9
+                    ADD       s1, $F8
+loop6:              COMP      s1, 0
+                    JUMP      Z, cont3
+                    SL1       s0
+                    ADD       s1, $FF
+                    JUMP      loop6
+cont3:              AND       sB, s0
+                    OUT       sB, counter2
+                    RET       
+; -- Scratchpad ram übertragen in Bloch_ram --
+; bram_out:
+; LOAD      s8, 0
+; LOAD      s9, $80
+; bram_loop:          FETCH     s0, s8
+; OUT       s0, s9
+; ADD       s8, 1
+; ADD       s9, 1
+; COMP      s8, $28
+; JUMP      NZ, bram_loop
+; --------------------------------------------------------------------------
+err_count:          FETCH     s8, $00             ; CRC Fehler zusammenzählen
+                    FETCH     s9, $01
+                    FETCH     sA, $08
+                    FETCH     sB, $09
+                    FETCH     sC, $10
+                    FETCH     sD, $11
+                    FETCH     sE, $18
+                    FETCH     sF, $19
+                    CALL      add416
+                    STORE     s8, $20
+                    STORE     s9, $21
+
+                    FETCH     s8, $02             ; CRC OK zusammenzählen
+                    FETCH     s9, $03
+                    FETCH     sA, $0A
+                    FETCH     sB, $0B
+                    FETCH     sC, $12
+                    FETCH     sD, $13
+                    FETCH     sE, $1A
+                    FETCH     sF, $1B
+                    CALL      add416
+                    STORE     s8, $22
+                    STORE     s9, $23
+
+                    FETCH     s8, $04             ; SYNC Fehler zusammenzählen
+                    FETCH     s9, $05
+                    FETCH     sA, $0C
+                    FETCH     sB, $0D
+                    FETCH     sC, $14
+                    FETCH     sD, $15
+                    FETCH     sE, $1C
+                    FETCH     sF, $1D
+                    CALL      add416
+                    STORE     s8, $24
+                    STORE     s9, $25
+
+
+                    FETCH     s8, $06             ; SYNC OK zusammenzählen
+                    FETCH     s9, $07
+                    FETCH     sA, $0E
+                    FETCH     sB, $0F
+                    FETCH     sC, $16
+                    FETCH     sD, $17
+                    FETCH     sE, $1E
+                    FETCH     sF, $1F
+                    CALL      add416
+                    STORE     s8, $26
+                    STORE     s9, $27
+
+                    RET       
+
+add416:             ADD       s9, sB              ; lo 0 + lo 1
+                    ADDC      s8, sA              ; Hi 0 + hi 1
+                    ADD       sD, sF              ; lo 2 + lo 3
+                    ADDC      sC, sE              ; hi 2 + hi 3
+                    ADD       s9, sD
+                    ADDC      s8, sC
+                    RET       
+; ------------------------------------------------
+; --               bram Verbindung              --
+; ------------------------------------------------
+bram_out: 
+                    LOAD      s8, 0
+bram_1:             FETCH     s9, s8
+                    OUT       s8, adress
+                    OUT       s9, daten
+                    OUT       s8, write
+                    ADD       s8, 1
+                    COMP      s8, $40
+                    JUMP      NZ, bram_1
+                    RET       
