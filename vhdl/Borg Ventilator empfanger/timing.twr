@@ -1,3 +1,5 @@
+Number of Timing Constraints that were not applied: 1
+
 Asterisk (*) preceding a constraint indicates it was not met.
    This may be due to a setup or hold violation.
 
@@ -5,11 +7,33 @@ Asterisk (*) preceding a constraint indicates it was not met.
   Constraint                                |  Check  | Worst Case |  Best Case | Timing |   Timing   
                                             |         |    Slack   | Achievable | Errors |    Score   
 ------------------------------------------------------------------------------------------------------
-  Autotimespec constraint for clock net clk | SETUP   |         N/A|     6.985ns|     N/A|         692
-  20                                        | HOLD    |     0.429ns|            |       0|           0
+* TS_clk200 = PERIOD TIMEGRP "clk200" 200 M | SETUP   |    -1.111ns|     6.111ns|       3|        1265
+  Hz LOW 50%                                | HOLD    |     0.702ns|            |       0|           0
 ------------------------------------------------------------------------------------------------------
-  Autotimespec constraint for clock net clk | SETUP   |         N/A|     4.492ns|     N/A|           0
-  200                                       | HOLD    |     0.703ns|            |       0|           0
+  TS_clk60 = PERIOD TIMEGRP "clk60" 60 MHz  | SETUP   |     6.501ns|    10.165ns|       0|           0
+  LOW 50%                                   | HOLD    |     0.742ns|            |       0|           0
+------------------------------------------------------------------------------------------------------
+  TS_U_TO_J = MAXDELAY FROM TIMEGRP "U_CLK" | SETUP   |    10.045ns|     4.955ns|       0|           0
+   TO TIMEGRP "J_CLK" 15 ns                 |         |            |            |        |            
+------------------------------------------------------------------------------------------------------
+  TS_U_TO_U = MAXDELAY FROM TIMEGRP "U_CLK" | SETUP   |    13.558ns|     1.442ns|       0|           0
+   TO TIMEGRP "U_CLK" 15 ns                 |         |            |            |        |            
+------------------------------------------------------------------------------------------------------
+  TS_XLXI_313_CLK0_BUF = PERIOD TIMEGRP "XL | SETUP   |    14.827ns|    10.173ns|       0|           0
+  XI_313_CLK0_BUF" TS_clk20 PHASE         - | HOLD    |     0.696ns|            |       0|           0
+  2.344 ns LOW 50%                          |         |            |            |        |            
+------------------------------------------------------------------------------------------------------
+  TS_J_TO_J = MAXDELAY FROM TIMEGRP "J_CLK" | SETUP   |    20.718ns|     9.282ns|       0|           0
+   TO TIMEGRP "J_CLK" 30 ns                 |         |            |            |        |            
+------------------------------------------------------------------------------------------------------
+  TS_clk20 = PERIOD TIMEGRP "clk20" 40 MHz  | SETUP   |    21.897ns|     3.103ns|       0|           0
+  LOW 50%                                   | HOLD    |     0.781ns|            |       0|           0
+------------------------------------------------------------------------------------------------------
+  PATH "TS_U_TO_D_path" TIG                 | N/A     |         N/A|         N/A|     N/A|         N/A
+------------------------------------------------------------------------------------------------------
+  PATH "TS_J_TO_D_path" TIG                 | SETUP   |         N/A|     5.372ns|     N/A|           0
+------------------------------------------------------------------------------------------------------
+  PATH "TS_D_TO_J_path" TIG                 | SETUP   |         N/A|     6.179ns|     N/A|           0
 ------------------------------------------------------------------------------------------------------
 
 

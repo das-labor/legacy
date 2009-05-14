@@ -43,10 +43,9 @@ entity packet_read is
 	 synchron      :  out  std_logic;
 	 crc_ok        :  out  std_logic;
 	 crc_er        :  out  std_logic;
-	 sync_ok       :  out  std_logic;
-	 sync_er       :  out  std_logic;
-	 diag_crccount :  out  std_logic_vector (7  downto 0)
-	 
+    sync_ok       :  out  std_logic;
+    sync_er       :  out  std_logic
+    --diag_crccount :  out  std_logic_vector (7  downto 0)
 	 --crc_tmpout    :  out  std_logic_vector (15  downto 0)
     --frame_out     :  out  std_logic;
 	 --code_err2     :  out  std_logic;
@@ -312,7 +311,7 @@ if rising_edge(clk) then
   end if;
 end if;
 end process crcok;
-diag_crccount<= crccount;
+--diag_crccount<= crccount;
 
 crcer:process (clk)-- Impuls wenn CRC nicht OK
 begin

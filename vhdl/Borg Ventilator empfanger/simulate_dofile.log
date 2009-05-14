@@ -1,0 +1,5 @@
+run 1000 ns
+run 500 us
+run 500 us
+run 5000 us
+exit

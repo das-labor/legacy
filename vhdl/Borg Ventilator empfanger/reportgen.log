@@ -1,0 +1,72 @@
+Release 9.2.04i reportgen J.40
+Copyright (c) 1995-2007 Xilinx, Inc.  All rights reserved.
+
+SAURONS-LAPTOP::  Wed May 13 06:33:08 2009
+
+C:\Xilinx92i\bin\nt\reportgen.exe -intstyle ise -delay -o videodaten
+videodaten.ncd 
+
+Loading device for application Rf_Device from file '3s400.nph' in environment
+C:\Xilinx92i.
+   "videodaten" is an NCD, version 3.1, device xc3s400, package ft256, speed -5
+ReportGen:LoadDesign: 'videodaten.ncd'
+Initializing temperature to 85.000 Celsius. (default - Range: 0.000 to 85.000
+Celsius)
+Initializing voltage to 1.140 Volts. (default - Range: 1.140 to 1.260 Volts)
+Device speed data version:  "PRODUCTION 1.39 2007-10-19".
+WARNING:Timing:3223 - Timing constraint PATH "TS_U_TO_D_path" TIG; ignored
+   during timing analysis.
+
+Generating Delay Report: videodaten.dly
+
+
+   The Delay Summary Report
+
+
+The NUMBER OF SIGNALS NOT COMPLETELY ROUTED for this design is: 0
+
+   The AVERAGE CONNECTION DELAY for this design is:        0.975
+   The MAXIMUM PIN DELAY IS:                               6.217
+   The AVERAGE CONNECTION DELAY on the 10 WORST NETS is:   4.517
+
+   Listing Pin Delays by value: (nsec)
+
+    d < 1.00   < d < 2.00  < d < 3.00  < d < 4.00  < d < 7.00  d >= 7.00
+   ---------   ---------   ---------   ---------   ---------   ---------
+        4527        2234         426          51          11           0
+
+
+**************************
+Generating Clock Report
+**************************
+
++---------------------+--------------+------+------+------------+-------------+
+|        Clock Net    |   Resource   |Locked|Fanout|Net Skew(ns)|Max Delay(ns)|
++---------------------+--------------+------+------+------------+-------------+
+|    icon_control0<0> |      BUFGMUX1| No   |  124 |  0.018     |  0.901      |
++---------------------+--------------+------+------+------------+-------------+
+|            slow_clk |      BUFGMUX2| No   |  385 |  0.018     |  0.902      |
++---------------------+--------------+------+------+------------+-------------+
+|              clk200 |      BUFGMUX5| No   |  180 |  0.018     |  0.901      |
++---------------------+--------------+------+------+------------+-------------+
+|               clk60 |      BUFGMUX6| No   |  150 |  0.054     |  0.937      |
++---------------------+--------------+------+------+------------+-------------+
+|     XLXI_249/XLXN_4 |         Local|      |    3 |  0.002     |  2.572      |
++---------------------+--------------+------+------+------------+-------------+
+|U_icon_pro/iupdate_o |              |      |      |            |             |
+|                  ut |         Local|      |    1 |  0.000     |  0.599      |
++---------------------+--------------+------+------+------------+-------------+
+|      XLXI_317/en128 |         Local|      |    2 |  0.014     |  1.700      |
++---------------------+--------------+------+------+------------+-------------+
+
+* Net Skew is the difference between the minimum and maximum routing
+only delays for the net. Note this is different from Clock Skew which
+is reported in TRCE timing report. Clock Skew is the difference between
+the minimum and maximum path delays which includes logic delays.
+
+
+Number of error messages: 0
+Number of warning messages: 1
+Number of info messages: 0
+
+reportgen done!

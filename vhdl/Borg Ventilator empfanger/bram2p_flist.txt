@@ -1,0 +1,11 @@
+# Output products list for <bram2p>
+bram2p.asy
+bram2p.ngc
+bram2p.sym
+bram2p.v
+bram2p.veo
+bram2p.vhd
+bram2p.vho
+bram2p.xco
+bram2p_flist.txt
+bram2p_xmdf.tcl
