@@ -1,0 +1,5 @@
+setMode -bscan        
+setCable -port usb21 -baud -1            
+addDevice -position 1 -file d:\borg_sender\sender\picoblaze.xsvf  
+play                       
+quit
