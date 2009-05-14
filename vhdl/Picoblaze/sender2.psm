@@ -1,0 +1,100 @@
+; ------------------------------------------------
+; Fehlerbehandlung FPGA Komunikation 04/2009 SAURON
+; ------------------------------------------------
+
+; Bei der Assemblierung wird ein ROM Baustein erstellt
+                    VHDL      "jtag_template.vhd", "d:\\borg_sender\sender\picoblaze_rom.vhd", "pb_rom"
+                    MEM       "picoblaze.mem"
+                    EXEC      "transfer.bat"
+; Portmap für den Simulator
+
+i0                  DSIN      0                   ; Eingangs Ports
+i1                  DSIN      1
+i2                  DSIN      2
+i3                  DSIN      3
+
+mem_wr_en           DSOUT     10                  ; Ausgangs Ports
+                  DSOUT     11
+q2                  DSOUT     12
+q3                  DSOUT     13
+
+int_hi              DSOUT     24                  ; segment encoding
+int_lo              DSOUT     25                  ; .     0
+bin0                DSOUT     26                  ; .    ---
+bin1                DSOUT     27                  ; . 5 |   | 1
+bin2                DSOUT     28                  ; .    ---   <- 6
+bin3                DSOUT     29                  ; . 4 |   | 2
+hell0               DSOUT     30                  ; .    ---  *
+hell1               DSOUT     31                  ; .     3   7
+hell2               DSOUT     32
+hell3               DSOUT     33
+hex_mode            DSOUT     34
+bin_mode            DSOUT     35
+punkte              DSOUT     36
+
+led                 DSOUT     40                  ; LEDS
+
+schalter            DSIN      50                  ; Schalter und Taster
+Taster              DSIN      51
+
+
+                    LOAD      s4, 0
+                    LOAD      s5, 0
+                    LOAD      s6, 0
+                    LOAD      s7, 0
+loop: 
+                    IN        sE, schalter
+                    OUT       sE, int_lo
+                    ADD       s4, 255
+                    ADD       s5, 1
+                    ADD       s6, 1
+                    ADD       s7, 255
+                    OUT       s4, hell0
+                    OUT       s5, hell1
+                    OUT       s6, hell2
+                    OUT       s7, hell3
+                    ADD       sF, 1
+                    LOAD      sA, 0
+loop2: 
+                    LOAD      sB, 0
+loop3: 
+                    ADD       sB, 1
+                    COMP      sB, 255
+                    JUMP      NZ, loop3
+                    ADD       sA, 1
+                    COMP      sA, 255
+                    JUMP      NZ, loop2
+                    JUMP      loop
+
+                    IN        s2, schalter
+                    OUT       s2, hex_mode
+                    SR0       s2
+                    OUT       s2, bin_mode
+
+                    IN        s0, taster          ; Taster Laden
+                    COMP      s0, sF              ; vergleichen auf änderung
+                    LOAD      sF, s0              ; alten wert sichern in sf
+                    CALL      NZ, wechsel         ; springe wenn flankenwechsel
+                    OUT       sF, punkte          ; Punkte auf Display = Taster
+
+
+                    IN        sA, schalter
+                    OUT       sA, bin0
+                    OUT       sE, bin1
+                    LOAD      s0, 255
+                    OUT       s0, bin2
+                    OUT       sD, bin3
+
+
+                    JUMP      loop                ; und von vorne
+wechsel: 
+                    ADD       sE, s0
+                    ADDC      sD, 0
+                    OUT       sE, int_lo
+                    OUT       sD, int_hi
+                    IN        sA, schalter
+                    OUT       sA, bin0
+                    OUT       sE, bin1
+                    OUT       sD, bin3
+                    RET       
+

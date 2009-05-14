@@ -1,0 +1,104 @@
+; ------------------------------------------------
+; Fehlerbehandlung FPGA Komunikation 04/2009 SAURON
+; ------------------------------------------------
+
+; Bei der Assemblierung wird ein ROM Baustein mit JTAG Anschluss erstellt
+                    VHDL      "jtag_template.vhd", "d:\\borg_sender\sender\picoblaze_rom.vhd", "pb_rom"
+                    MEM       "picoblaze.mem"     ; Assembliertes Programm exportieren
+                    EXEC      "transfer.bat"      ; und übertragen an den FPGA
+; Portmap für den Simulator
+
+; Eingangs - Ports
+mem_datain          DSIN      0
+i1                  DSIN      1
+i2                  DSIN      2
+i3                  DSIN      3
+; Ausgangs - Ports
+mem_wr_en           DSOUT     10                  ; q0
+mem_dataout         DSOUT     11                  ; q1
+mem_addr            DSOUT     12                  ; q2
+
+tpg_pattern         DSOUT     13                  ; q3
+tpg_mux             DSOUT     14                  ; q4
+tpg_i1              DSOUT     15                  ; q5
+tpg_i2              DSOUT     16                  ; q6
+tpg_i3              DSOUT     17                  ; q7
+tpg_i4              DSOUT     18                  ; q8
+q9                  DSOUT     19
+; Anbindung an 7-Segment Display
+int_hi              DSOUT     24                  ; segment encoding
+int_lo              DSOUT     25                  ; .     0
+bin0                DSOUT     26                  ; .    ---
+bin1                DSOUT     27                  ; . 5 |   | 1
+bin2                DSOUT     28                  ; .    ---   <- 6
+bin3                DSOUT     29                  ; . 4 |   | 2
+hell0               DSOUT     30                  ; .    ---  *
+hell1               DSOUT     31                  ; .     3   7
+hell2               DSOUT     32
+hell3               DSOUT     33
+hex_mode            DSOUT     34
+bin_mode            DSOUT     35
+punkte              DSOUT     36
+; kleinkram
+led                 DSOUT     40                  ; LEDS
+
+schalter            DSIN      50                  ; Schalter und Taster
+Taster              DSIN      51
+
+
+                    LOAD      s8, 0               ; Speicher Adresse
+memloop: 
+                    OUT       sE, hell0           ; Helligkeit in abhängigkeit
+                    OUT       sE, hell1           ; von se stellen
+                    OUT       sE, hell2
+                    OUT       sE, hell3
+                    IN        sA, schalter        ; ändern um sa Schritte
+                    COMP      sA, 0               ; sa=0 ? dann
+                    JUMP      NZ, memloop2        ; sa=1
+                    LOAD      sA, 1
+memloop2:           IN        s9, taster
+                    LOAD      s0, s9
+                    XOR       s0, %00001000
+                    CALL      Z, memplus          ; Taster BTN3 gedrückt
+
+                    LOAD      s0, s9
+                    XOR       s0, %00000100       ; Taster BTN2 gedrückt
+                    CALL      Z, memminus
+                    OUT       s8, int_lo
+
+                    LOAD      s0, s9
+                    COMP      s0, 0               ; nichts gedrückt ?
+                    JUMP      Z, memloop3         ; dann kurz warten
+                    LOAD      sE, 255
+                    LOAD      sF, 255             ; Wartezeit zurücksetzen
+                    JUMP      memloop
+memloop3: 
+                    SUB       sF, 1
+                    JUMP      NZ, memloop3
+                    SUB       sE, 1
+                    JUMP      NZ, memloop
+                    JUMP      memloop
+
+
+memplus: 
+                    CALL      debounce
+                    ADD       s8, sA              ; Anzahl sa schritte nach vorne springen
+                    RET       
+
+
+memminus: 
+                    CALL      debounce
+                    SUB       s8, sA              ; Anzahl sa schritte nach hinten springen
+                    RET       
+
+debounce: 
+                    IN        s9, taster
+                    COMP      s9, 0
+                    JUMP      NZ, debounce
+                    LOAD      s1, 255
+debounceloop2:      LOAD      s0, 255
+debounceloop:       SUB       s0, 1
+                    JUMP      NZ, debounceloop
+                    SUB       s1, 1
+                    JUMP      NZ, debounceloop2
+                    RET       
