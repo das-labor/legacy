@@ -5,7 +5,7 @@
      behavior or data corruption.  It is strongly advised that
      users do not edit the contents of this file. -->
 <messages>
-<msg type="info" file="NetListWriters" num="635" delta="new" >The generated VHDL netlist contains Xilinx <arg fmt="%s" index="1">SIMPRIM</arg> simulation primitives and has to be used with <arg fmt="%s" index="2">SIMPRIM</arg> library for correct compilation and simulation. 
+<msg type="info" file="NetListWriters" num="635" delta="old" >The generated VHDL netlist contains Xilinx <arg fmt="%s" index="1">SIMPRIM</arg> simulation primitives and has to be used with <arg fmt="%s" index="2">SIMPRIM</arg> library for correct compilation and simulation. 
 </msg>
 
 </messages>

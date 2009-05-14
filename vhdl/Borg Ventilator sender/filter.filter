@@ -5,11 +5,30 @@
 <!--                                                                                                 -->
 <filters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='$XILINX/data/xml/Portability/filter.xsd'>
 <filter task="xst" file="Xst" num="2591" type="warning"></filter>
-<filter task="xst" file="Xst" num="753" type="warning"></filter>
+<filter task="xst" file="Xst" num="646" type="warning"><arg index="1">shift</arg></filter>
+<filter task="xst" file="Xst" num="646" type="warning"><arg index="1">doa</arg></filter>
+<filter task="xst" file="Xst" num="646" type="warning"><arg index="1">drck2</arg></filter>
+<filter task="xst" file="Xst" num="646" type="warning"><arg index="1">reset</arg></filter>
+<filter task="xst" file="Xst" num="653" type="warning"><arg index="1">tdo2</arg><arg index="2">0</arg></filter>
+<filter task="xst" file="Xst" num="646" type="warning"><arg index="1">capture</arg></filter>
+<filter task="xst" file="Xst" num="646" type="warning"><arg index="1">dopa&lt;0&gt;</arg></filter>
+<filter task="xst" file="Xst" num="646" type="warning"><arg index="1">sel2</arg></filter>
+<filter task="xst" file="Xst" num="1961" type="warning"><arg index="1">INIT</arg><arg index="2">arith_loop[7].msb_arith.arith_carry_out_lut</arg><arg index="3">2</arg><arg index="4">4</arg></filter>
+<filter task="xst" file="Xst" num="2211" type="warning"></filter>
+<filter task="xst" file="Xst" num="1780" type="warning"></filter>
 <filter task="xst" file="Xst" num="2261" type="info"></filter>
-<filter task="xst" file="Xst" num="1710" type="warning"></filter>
-<filter task="xst" file="Xst" num="1895" type="warning"></filter>
 <filter task="xst" file="Xst" num="2677" type="warning"></filter>
-<filter task="xst" file="Xst" num="1293" type="warning"></filter>
 <filter task="xst" file="Xst" num="2260" type="info"></filter>
+<filter task="xst" file="Xst" num="2734" type="warning"></filter>
+<filter task="xst" file="Xst" num="647" type="warning"></filter>
+<filter task="xst" file="Xst" num="1989" type="warning"></filter>
+<filter task="xst" file="Xst" num="753" type="warning"></filter>
+<filter task="map" file="PhysDesignRules" num="1063" type="warning"></filter>
+<filter task="map" file="PhysDesignRules" num="812" type="warning"></filter>
+<filter task="bitgen" file="PhysDesignRules" num="1063" type="warning"></filter>
+<filter task="bitgen" file="PhysDesignRules" num="812" type="warning"></filter>
+<filter task="xst" file="Xst" num="2506" type="info"><arg index="1">testpattern</arg><arg index="2">Mrom_trig_mux0000</arg></filter>
+<filter task="map" file="LIT" num="243" type="warning"></filter>
+<filter task="xst" file="Xst" num="2506" type="info"><arg index="1">tgb</arg><arg index="2">Mrom_trig_mux0000</arg></filter>
+<filter task="xst" file="Xst" num="646" type="warning"></filter>
 </filters>

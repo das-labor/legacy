@@ -10,7 +10,7 @@ Target Device  : xc3s200
 Target Package : ft256
 Target Speed   : -5
 Mapper Version : spartan3 -- $Revision: 1.36 $
-Mapped Date    : Tue Apr 14 16:44:09 2009
+Mapped Date    : Sat May 02 19:37:25 2009
 
 Mapping design into LUTs...
 Running directed packing...
@@ -22,35 +22,36 @@ Design Summary
 
 Design Summary:
 Number of errors:      0
-Number of warnings:    5
+Number of warnings:    9 (6 filtered)
 Logic Utilization:
-  Number of Slice Flip Flops:         289 out of   3,840    7%
-  Number of 4 input LUTs:             306 out of   3,840    7%
+  Number of Slice Flip Flops:         769 out of   3,840   20%
+  Number of 4 input LUTs:             949 out of   3,840   24%
 Logic Distribution:
-  Number of occupied Slices:                          309 out of   1,920   16%
-    Number of Slices containing only related logic:     309 out of     309  100%
-    Number of Slices containing unrelated logic:          0 out of     309    0%
+  Number of occupied Slices:                          825 out of   1,920   42%
+    Number of Slices containing only related logic:     825 out of     825  100%
+    Number of Slices containing unrelated logic:          0 out of     825    0%
       *See NOTES below for an explanation of the effects of unrelated logic
-Total Number of 4 input LUTs:            436 out of   3,840   11%
-  Number used as logic:                306
-  Number used as a route-thru:          53
+Total Number of 4 input LUTs:          1,165 out of   3,840   30%
+  Number used as logic:                949
+  Number used as a route-thru:         131
   Number used for Dual Port RAMs:       16
     (Two LUTs used per Dual Port RAM)
   Number used for 32x1 RAMs:            52
     (Two LUTs used per 32x1 RAM)
-  Number used as Shift registers:        9
-  Number of bonded IOBs:               81 out of     173   46%
-    IOB Flip Flops:                    21
-  Number of Block RAMs:                2 out of      12   16%
-  Number of GCLKs:                     5 out of       8   62%
-  Number of DCMs:                      2 out of       4   50%
+  Number used as Shift registers:       17
+  Number of bonded IOBs:               49 out of     173   28%
+    IOB Flip Flops:                    22
+  Number of Block RAMs:                5 out of      12   41%
+  Number of GCLKs:                     6 out of       8   75%
+  Number of DCMs:                      3 out of       4   75%
   Number of BSCANs:                    1 out of       1  100%
 
-Total equivalent gate count for design:  158,589
-Additional JTAG gate count for IOBs:  3,888
-Peak Memory Usage:  129 MB
-Total REAL time to MAP completion:  5 secs 
-Total CPU time to MAP completion:   5 secs 
+   Number of RPM macros:            1
+Total equivalent gate count for design:  371,516
+Additional JTAG gate count for IOBs:  2,352
+Peak Memory Usage:  135 MB
+Total REAL time to MAP completion:  4 secs 
+Total CPU time to MAP completion:   4 secs 
 
 NOTES:
 

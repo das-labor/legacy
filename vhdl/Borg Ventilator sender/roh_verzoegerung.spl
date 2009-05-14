@@ -1,0 +1,6 @@
+[Inputs]
+clk200
+a
+[Outputs]
+q
+[BiDir]

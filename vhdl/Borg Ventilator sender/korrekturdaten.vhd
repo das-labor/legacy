@@ -101,7 +101,7 @@ end component;
 			c_yenb_is_high => 1,
 			c_pipe_stages_a => 0,
 			c_yclkb_is_rising => 1,
-			c_yydisable_warnings => 1,
+			c_yydisable_warnings => 0,
 			c_enable_rlocs => 0,
 			c_ysinitb_is_high => 1,
 			c_has_web => 1,

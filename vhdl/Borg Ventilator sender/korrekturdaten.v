@@ -111,7 +111,7 @@ input web;
 		.c_yuse_single_primitive(0),
 		.c_ywea_is_high(1),
 		.c_yweb_is_high(1),
-		.c_yydisable_warnings(1))
+		.c_yydisable_warnings(0))
 	inst (
 		.ADDRA(addra),
 		.ADDRB(addrb),
