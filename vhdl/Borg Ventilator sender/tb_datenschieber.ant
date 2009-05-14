@@ -1,0 +1,217 @@
+--------------------------------------------------------------------------------
+-- Copyright (c) 1995-2007 Xilinx, Inc.
+-- All Right Reserved.
+--------------------------------------------------------------------------------
+--   ____  ____ 
+--  /   /\/   / 
+-- /___/  \  /    Vendor: Xilinx 
+-- \   \   \/     Version : 9.2.04i
+--  \   \         Application : ISE
+--  /   /         Filename : tb_datenschieber.ant
+-- /___/   /\     Timestamp : Sat Apr 18 01:09:16 2009
+-- \   \  /  \ 
+--  \___\/\___\ 
+--
+--Command: 
+--Design Name: tb_datenschieber
+--Device: Xilinx
+--
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+USE IEEE.STD_LOGIC_TEXTIO.ALL;
+USE STD.TEXTIO.ALL;
+
+ENTITY tb_datenschieber IS
+END tb_datenschieber;
+
+ARCHITECTURE testbench_arch OF tb_datenschieber IS
+    FILE RESULTS: TEXT OPEN WRITE_MODE IS "D:\borg_sender\sender\tb_datenschieber.ano";
+
+    COMPONENT Daten_schieber
+        PORT (
+            clk20 : In std_logic;
+            clk200 : In std_logic;
+            data1_in : In std_logic;
+            data2_in : In std_logic;
+            data3_in : In std_logic;
+            data4_in : In std_logic;
+            data_out1 : Out std_logic;
+            wenb : In std_logic_vector (7 DownTo 0);
+            switch_o : Out std_logic_vector (2 DownTo 0);
+            pattern_o : Out std_logic_vector (7 DownTo 0);
+            cnt : Out std_logic_vector (7 DownTo 0);
+            inb : In std_logic_vector (7 DownTo 0);
+            addrb : In std_logic_vector (7 DownTo 0);
+            outb : Out std_logic_vector (7 DownTo 0)
+        );
+    END COMPONENT;
+
+    SIGNAL clk20 : std_logic := '0';
+    SIGNAL clk200 : std_logic := '0';
+    SIGNAL data1_in : std_logic := '0';
+    SIGNAL data2_in : std_logic := '0';
+    SIGNAL data3_in : std_logic := '0';
+    SIGNAL data4_in : std_logic := '0';
+    SIGNAL data_out1 : std_logic := '0';
+    SIGNAL wenb : std_logic_vector (7 DownTo 0) := "00000000";
+    SIGNAL switch_o : std_logic_vector (2 DownTo 0) := "000";
+    SIGNAL pattern_o : std_logic_vector (7 DownTo 0) := "00000000";
+    SIGNAL cnt : std_logic_vector (7 DownTo 0) := "00000000";
+    SIGNAL inb : std_logic_vector (7 DownTo 0) := "00000000";
+    SIGNAL addrb : std_logic_vector (7 DownTo 0) := "00000000";
+    SIGNAL outb : std_logic_vector (7 DownTo 0) := "00000000";
+
+    SHARED VARIABLE TX_ERROR : INTEGER := 0;
+    SHARED VARIABLE TX_OUT : LINE;
+
+    constant PERIOD : time := 200 ns;
+    constant DUTY_CYCLE : real := 0.5;
+    constant OFFSET : time := 100 ns;
+
+    BEGIN
+        UUT : Daten_schieber
+        PORT MAP (
+            clk20 => clk20,
+            clk200 => clk200,
+            data1_in => data1_in,
+            data2_in => data2_in,
+            data3_in => data3_in,
+            data4_in => data4_in,
+            data_out1 => data_out1,
+            wenb => wenb,
+            switch_o => switch_o,
+            pattern_o => pattern_o,
+            cnt => cnt,
+            inb => inb,
+            addrb => addrb,
+            outb => outb
+        );
+
+        PROCESS    -- clock process for clk20
+        BEGIN
+            WAIT for OFFSET;
+            CLOCK_LOOP : LOOP
+                clk20 <= '0';
+                WAIT FOR (PERIOD - (PERIOD * DUTY_CYCLE));
+                clk20 <= '1';
+                WAIT FOR (PERIOD * DUTY_CYCLE);
+            END LOOP CLOCK_LOOP;
+        END PROCESS;
+
+        PROCESS    -- Annotation process for clk20
+            VARIABLE TX_TIME : INTEGER := 0;
+
+            PROCEDURE ANNOTATE_data_out1(
+                TX_TIME : INTEGER
+            ) IS
+                VARIABLE TX_STR : String(1 to 4096);
+                VARIABLE TX_LOC : LINE;
+            BEGIN
+                STD.TEXTIO.write(TX_LOC, string'("Annotate["));
+                STD.TEXTIO.write(TX_LOC, TX_TIME);
+                STD.TEXTIO.write(TX_LOC, string'(", data_out1, "));
+                IEEE.STD_LOGIC_TEXTIO.write(TX_LOC, data_out1);
+                STD.TEXTIO.write(TX_LOC, string'("]"));
+                TX_STR(TX_LOC.all'range) := TX_LOC.all;
+                STD.TEXTIO.writeline(RESULTS, TX_LOC);
+                STD.TEXTIO.Deallocate(TX_LOC);
+            END;
+            PROCEDURE ANNOTATE_switch_o(
+                TX_TIME : INTEGER
+            ) IS
+                VARIABLE TX_STR : String(1 to 4096);
+                VARIABLE TX_LOC : LINE;
+            BEGIN
+                STD.TEXTIO.write(TX_LOC, string'("Annotate["));
+                STD.TEXTIO.write(TX_LOC, TX_TIME);
+                STD.TEXTIO.write(TX_LOC, string'(", switch_o, "));
+                IEEE.STD_LOGIC_TEXTIO.write(TX_LOC, switch_o);
+                STD.TEXTIO.write(TX_LOC, string'("]"));
+                TX_STR(TX_LOC.all'range) := TX_LOC.all;
+                STD.TEXTIO.writeline(RESULTS, TX_LOC);
+                STD.TEXTIO.Deallocate(TX_LOC);
+            END;
+            PROCEDURE ANNOTATE_pattern_o(
+                TX_TIME : INTEGER
+            ) IS
+                VARIABLE TX_STR : String(1 to 4096);
+                VARIABLE TX_LOC : LINE;
+            BEGIN
+                STD.TEXTIO.write(TX_LOC, string'("Annotate["));
+                STD.TEXTIO.write(TX_LOC, TX_TIME);
+                STD.TEXTIO.write(TX_LOC, string'(", pattern_o, "));
+                IEEE.STD_LOGIC_TEXTIO.write(TX_LOC, pattern_o);
+                STD.TEXTIO.write(TX_LOC, string'("]"));
+                TX_STR(TX_LOC.all'range) := TX_LOC.all;
+                STD.TEXTIO.writeline(RESULTS, TX_LOC);
+                STD.TEXTIO.Deallocate(TX_LOC);
+            END;
+            PROCEDURE ANNOTATE_cnt(
+                TX_TIME : INTEGER
+            ) IS
+                VARIABLE TX_STR : String(1 to 4096);
+                VARIABLE TX_LOC : LINE;
+            BEGIN
+                STD.TEXTIO.write(TX_LOC, string'("Annotate["));
+                STD.TEXTIO.write(TX_LOC, TX_TIME);
+                STD.TEXTIO.write(TX_LOC, string'(", cnt, "));
+                IEEE.STD_LOGIC_TEXTIO.write(TX_LOC, cnt);
+                STD.TEXTIO.write(TX_LOC, string'("]"));
+                TX_STR(TX_LOC.all'range) := TX_LOC.all;
+                STD.TEXTIO.writeline(RESULTS, TX_LOC);
+                STD.TEXTIO.Deallocate(TX_LOC);
+            END;
+            PROCEDURE ANNOTATE_outb(
+                TX_TIME : INTEGER
+            ) IS
+                VARIABLE TX_STR : String(1 to 4096);
+                VARIABLE TX_LOC : LINE;
+            BEGIN
+                STD.TEXTIO.write(TX_LOC, string'("Annotate["));
+                STD.TEXTIO.write(TX_LOC, TX_TIME);
+                STD.TEXTIO.write(TX_LOC, string'(", outb, "));
+                IEEE.STD_LOGIC_TEXTIO.write(TX_LOC, outb);
+                STD.TEXTIO.write(TX_LOC, string'("]"));
+                TX_STR(TX_LOC.all'range) := TX_LOC.all;
+                STD.TEXTIO.writeline(RESULTS, TX_LOC);
+                STD.TEXTIO.Deallocate(TX_LOC);
+            END;
+        BEGIN
+            WAIT for 1 fs;
+            ANNOTATE_data_out1(0);
+            ANNOTATE_switch_o(0);
+            ANNOTATE_pattern_o(0);
+            ANNOTATE_cnt(0);
+            ANNOTATE_outb(0);
+            WAIT for OFFSET;
+            TX_TIME := TX_TIME + 100;
+            ANNO_LOOP : LOOP
+                --Rising Edge
+                WAIT for 115 ns;
+                TX_TIME := TX_TIME + 115;
+                ANNOTATE_data_out1(TX_TIME);
+                ANNOTATE_switch_o(TX_TIME);
+                ANNOTATE_pattern_o(TX_TIME);
+                ANNOTATE_cnt(TX_TIME);
+                ANNOTATE_outb(TX_TIME);
+                WAIT for 85 ns;
+                TX_TIME := TX_TIME + 85;
+            END LOOP ANNO_LOOP;
+        END PROCESS;
+
+        PROCESS
+            BEGIN
+                WAIT FOR 1200 ns;
+
+                STD.TEXTIO.write(TX_OUT, string'("Total[]"));
+                STD.TEXTIO.writeline(RESULTS, TX_OUT);
+                ASSERT (FALSE) REPORT
+                    "Success! Simulation for annotation completed"
+                    SEVERITY FAILURE;
+            END PROCESS;
+
+    END testbench_arch;
+

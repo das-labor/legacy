@@ -1,0 +1,132 @@
+--------------------------------------------------------------------------------
+-- Copyright (c) 1995-2007 Xilinx, Inc.
+-- All Right Reserved.
+--------------------------------------------------------------------------------
+--   ____  ____ 
+--  /   /\/   / 
+-- /___/  \  /    Vendor: Xilinx 
+-- \   \   \/     Version : 9.2.04i
+--  \   \         Application : ISE
+--  /   /         Filename : tb_roh_verzogerung.ant
+-- /___/   /\     Timestamp : Sat Apr 18 23:28:55 2009
+-- \   \  /  \ 
+--  \___\/\___\ 
+--
+--Command: 
+--Design Name: tb_roh_verzogerung
+--Device: Xilinx
+--
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+USE IEEE.STD_LOGIC_TEXTIO.ALL;
+USE STD.TEXTIO.ALL;
+
+ENTITY tb_roh_verzogerung IS
+END tb_roh_verzogerung;
+
+ARCHITECTURE testbench_arch OF tb_roh_verzogerung IS
+    FILE RESULTS: TEXT OPEN WRITE_MODE IS "D:\borg_sender\sender\tb_roh_verzogerung.ano";
+
+    COMPONENT roh_verzoegerung
+        PORT (
+            clk200 : In std_logic;
+            a : In std_logic;
+            q : Out std_logic
+        );
+    END COMPONENT;
+
+    SIGNAL clk200 : std_logic := '0';
+    SIGNAL a : std_logic := '0';
+    SIGNAL q : std_logic := '0';
+
+    SHARED VARIABLE TX_ERROR : INTEGER := 0;
+    SHARED VARIABLE TX_OUT : LINE;
+
+    constant PERIOD : time := 10 ns;
+    constant DUTY_CYCLE : real := 0.5;
+    constant OFFSET : time := 5 ns;
+
+    BEGIN
+        UUT : roh_verzoegerung
+        PORT MAP (
+            clk200 => clk200,
+            a => a,
+            q => q
+        );
+
+        PROCESS    -- clock process for clk200
+        BEGIN
+            WAIT for OFFSET;
+            CLOCK_LOOP : LOOP
+                clk200 <= '0';
+                WAIT FOR (PERIOD - (PERIOD * DUTY_CYCLE));
+                clk200 <= '1';
+                WAIT FOR (PERIOD * DUTY_CYCLE);
+            END LOOP CLOCK_LOOP;
+        END PROCESS;
+
+        PROCESS    -- Annotation process for clk200
+            VARIABLE TX_TIME : INTEGER := 0;
+
+            PROCEDURE ANNOTATE_q(
+                TX_TIME : INTEGER
+            ) IS
+                VARIABLE TX_STR : String(1 to 4096);
+                VARIABLE TX_LOC : LINE;
+            BEGIN
+                STD.TEXTIO.write(TX_LOC, string'("Annotate["));
+                STD.TEXTIO.write(TX_LOC, TX_TIME);
+                STD.TEXTIO.write(TX_LOC, string'(", q, "));
+                IEEE.STD_LOGIC_TEXTIO.write(TX_LOC, q);
+                STD.TEXTIO.write(TX_LOC, string'("]"));
+                TX_STR(TX_LOC.all'range) := TX_LOC.all;
+                STD.TEXTIO.writeline(RESULTS, TX_LOC);
+                STD.TEXTIO.Deallocate(TX_LOC);
+            END;
+        BEGIN
+            WAIT for 1 fs;
+            ANNOTATE_q(0);
+            WAIT for OFFSET;
+            TX_TIME := TX_TIME + 5;
+            ANNO_LOOP : LOOP
+                --Rising Edge
+                WAIT for 6 ns;
+                TX_TIME := TX_TIME + 6;
+                ANNOTATE_q(TX_TIME);
+                WAIT for 4 ns;
+                TX_TIME := TX_TIME + 4;
+            END LOOP ANNO_LOOP;
+        END PROCESS;
+
+        PROCESS
+            BEGIN
+                -- -------------  Current Time:  199ns
+                WAIT FOR 199 ns;
+                a <= '1';
+                -- -------------------------------------
+                -- -------------  Current Time:  289ns
+                WAIT FOR 90 ns;
+                a <= '0';
+                -- -------------------------------------
+                -- -------------  Current Time:  389ns
+                WAIT FOR 100 ns;
+                a <= '1';
+                -- -------------------------------------
+                -- -------------  Current Time:  689ns
+                WAIT FOR 300 ns;
+                a <= '0';
+                -- -------------------------------------
+                WAIT FOR 321 ns;
+
+                STD.TEXTIO.write(TX_OUT, string'("Total[]"));
+                STD.TEXTIO.writeline(RESULTS, TX_OUT);
+                ASSERT (FALSE) REPORT
+                    "Success! Simulation for annotation completed"
+                    SEVERITY FAILURE;
+            END PROCESS;
+
+    END testbench_arch;
+

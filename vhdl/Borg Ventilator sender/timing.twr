@@ -1,0 +1,29 @@
+Number of Timing Constraints that were not applied: 1
+
+Asterisk (*) preceding a constraint indicates it was not met.
+   This may be due to a setup or hold violation.
+
+------------------------------------------------------------------------------------------------------
+  Constraint                                |  Check  | Worst Case |  Best Case | Timing |   Timing   
+                                            |         |    Slack   | Achievable | Errors |    Score   
+------------------------------------------------------------------------------------------------------
+* TS_clk200 = PERIOD TIMEGRP "clk200" 200 M | SETUP   |    -0.249ns|     5.249ns|      10|        1906
+  Hz LOW 50%                                | HOLD    |     0.719ns|            |       0|           0
+------------------------------------------------------------------------------------------------------
+  TS_clk = PERIOD TIMEGRP "clk" 50 MHz LOW  | SETUP   |     7.327ns|    12.673ns|       0|           0
+  50%                                       | HOLD    |     0.719ns|            |       0|           0
+------------------------------------------------------------------------------------------------------
+  TS_clk20 = PERIOD TIMEGRP "clk20" 20 MHz  | SETUP   |    41.615ns|     8.385ns|       0|           0
+  LOW 50%                                   | HOLD    |     0.703ns|            |       0|           0
+------------------------------------------------------------------------------------------------------
+  TS_XLXI_31_XLXI_18_CLK90_BUF = PERIOD TIM | N/A     |         N/A|         N/A|     N/A|         N/A
+  EGRP "XLXI_31_XLXI_18_CLK90_BUF"          |         |            |            |        |            
+  TS_clk20 PHASE 12.5 ns LOW 50%            |         |            |            |        |            
+------------------------------------------------------------------------------------------------------
+
+
+1 constraint not met.
+INFO:Timing:2761 - N/A entries in the Constraints list may indicate that the 
+   constraint does not cover any paths or that it has no requested value.
+
+

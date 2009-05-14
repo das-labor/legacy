@@ -1,1 +1,3 @@
+vhdl work "D:\borg_sender\sender\encoder_b8b10b.vhd"
+vhdl work "D:\borg_sender\sender\packed_write.vhd"
 vhdl work "D:\borg_sender\sender\tgb.vhd"
