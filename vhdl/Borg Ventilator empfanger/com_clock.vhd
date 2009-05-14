@@ -1,29 +1,3 @@
---------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------
--- Hackerspace:		Das Labor    www.das-labor.org											--
--- Hacker: 				Sauron																			--
--- 																											--
--- Datum:    			23.03.2009        															--
--- Projekt: 			Der Borg Ventilator															--
--- Modul Name:     	com_clock   																	--
--- Beschreibung: 		Ich verdoppel ein 10 Mhz Signal ohne Jitter auf                --
---							den Steigenden Flanken und behalte die Phasenlage              --
---							bei, ich brauche 200 MHz zum Arbeiten;           		         --
---																												--
--- Dependencies: 		evtl ein DCM                                                   --
---                                                                                  --
--- CONSTRAINTS:		PIN "com_clk" TNM_NET = "c1";                                  --
---							NET "XLXI_1/*" TNM_NET = "c2";                                 --
---							TIMESPEC "TS_1" = FROM "c1" TO "c2" 5.5 ns;                    --
---                                                                                  -- 
---																												--
--- Version:          V9.3.1																			--
--- 																											--
--- Additional Comments: Widerstand ist Zwecklos		   										--
---																												--
---------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------
-
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
@@ -32,7 +6,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity com_clock is
     Port ( com_clk     : in  STD_LOGIC;
            MHZ_200     : in  STD_LOGIC;
-           com_clk_2x  : out  STD_LOGIC;
+           com_clk_2x  : out STD_LOGIC;
 			  diag_cf1,diag_cf2: out STD_LOGIC_VECTOR (6 downto 0):="0000000";
 			  diag_ff1,diag_ff2,diag_res1,diag_res2: out STD_LOGIC);
 end com_clock;
@@ -41,6 +15,7 @@ architecture Behavioral of com_clock is
 
 signal NQ_INT1,Q_INT1,NQ_INT3,Q_INT3,res1,res2,cci: std_logic;
 signal cf1,cf2: std_logic_vector (6 downto 0);
+constant sl : integer := 7;
 
 begin
 
@@ -80,6 +55,8 @@ end process;
  
 -----------------------------------------------------------------------
 
+
+
 com_clk_2x <= q_int1 or q_int3;
 
 -- Für Die Fehlersuche:
@@ -92,8 +69,7 @@ diag_res2 <=res2;
 
 -----KOMBINATORISCHE-FF---(UNGETAKTET)-------------------------------------
 
---Jedes FF wird Sofort bei einem Flankenwechsel gesetzt. Das vermeidet Jitter,
---erzeugt jedoch eine warnung : Kombinatorischer Loop
+--Jedes FF wird Sofort bei einem Flankenwechsel gesetzt. Das vermeidet Jitter
 nq_int1 <= cci nor  q_int1;
  q_int1 <= res1 nor nq_int1;
 

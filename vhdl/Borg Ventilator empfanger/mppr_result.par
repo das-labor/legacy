@@ -1,0 +1,14 @@
+
+Constraints file: videodaten.pcf.
+
+Level/      Design      Timing      Number      Number     Number      Number      Run         NCD
+Cost [ncd]  Score       Score       Unrouted    Errors     Warnings    Infos       Time        Status
+----------  ------      --------    --------    -----      --------    ------     ------      ------------
+H_H_3   *   174         0           0           0           3           1           0:30        Complete        
+H_H_1   *   2191        197         0           0           5           1           0:32        Complete        
+H_H_2   *   2191        372         0           0           4           1           0:40        Complete        
+
+
+* : Design saved.
+
+PAR done!

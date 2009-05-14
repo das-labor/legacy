@@ -1,0 +1,299 @@
+////////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 1995-2007 Xilinx, Inc.
+// All Right Reserved.
+////////////////////////////////////////////////////////////////////////////////
+//   ____  ____ 
+//  /   /\/   / 
+// /___/  \  /    Vendor: Xilinx 
+// \   \   \/     Version : 9.2.04i
+//  \   \         Application : ISE
+//  /   /         Filename : tb_picoblaze.ant
+// /___/   /\     Timestamp : Wed May 13 04:27:07 2009
+// \   \  /  \ 
+//  \___\/\___\ 
+//
+//Command: 
+//Design Name: tb_picoblaze
+//Device: Xilinx
+//
+`timescale 1ns/1ps
+
+module tb_picoblaze;
+    reg clk = 1'b0;
+    reg in0 = 1'b0;
+    reg in1 = 1'b0;
+    reg in2 = 1'b0;
+    reg in3 = 1'b0;
+    reg in4 = 1'b0;
+    reg in5 = 1'b0;
+    reg in6 = 1'b0;
+    reg in7 = 1'b0;
+    reg in8 = 1'b0;
+    reg in9 = 1'b0;
+    reg in10 = 1'b0;
+    reg in11 = 1'b0;
+    reg in12 = 1'b0;
+    reg in13 = 1'b0;
+    reg in14 = 1'b0;
+    reg in15 = 1'b0;
+    wire wr_str;
+    wire [7:0] p_id;
+    wire [7:0] out_p;
+    wire [7:0] diag_q0;
+    wire [7:0] diag_q1;
+    wire [7:0] diag_imp0;
+    wire [7:0] diag_imp1;
+    reg irq = 1'b0;
+    wire irq_ack;
+    wire [7:0] q2;
+    wire [7:0] q3;
+    wire en_ram;
+
+    parameter PERIOD = 20;
+    parameter real DUTY_CYCLE = 0.5;
+    parameter OFFSET = 10;
+
+    initial    // Clock process for clk
+    begin
+        #OFFSET;
+        forever
+        begin
+            clk = 1'b0;
+            #(PERIOD-(PERIOD*DUTY_CYCLE)) clk = 1'b1;
+            #(PERIOD*DUTY_CYCLE);
+        end
+    end
+
+    Picoblaze_e UUT (
+        .clk(clk),
+        .in0(in0),
+        .in1(in1),
+        .in2(in2),
+        .in3(in3),
+        .in4(in4),
+        .in5(in5),
+        .in6(in6),
+        .in7(in7),
+        .in8(in8),
+        .in9(in9),
+        .in10(in10),
+        .in11(in11),
+        .in12(in12),
+        .in13(in13),
+        .in14(in14),
+        .in15(in15),
+        .wr_str(wr_str),
+        .p_id(p_id),
+        .out_p(out_p),
+        .diag_q0(diag_q0),
+        .diag_q1(diag_q1),
+        .diag_imp0(diag_imp0),
+        .diag_imp1(diag_imp1),
+        .irq(irq),
+        .irq_ack(irq_ack),
+        .q2(q2),
+        .q3(q3),
+        .en_ram(en_ram));
+
+    integer TX_FILE = 0;
+    integer TX_ERROR = 0;
+    
+    initial begin    // Annotation process for clock clk
+        #0;
+        ANNOTATE_wr_str;
+        ANNOTATE_p_id;
+        ANNOTATE_out_p;
+        ANNOTATE_diag_q0;
+        ANNOTATE_diag_q1;
+        ANNOTATE_diag_imp0;
+        ANNOTATE_diag_imp1;
+        ANNOTATE_irq_ack;
+        ANNOTATE_q2;
+        ANNOTATE_q3;
+        ANNOTATE_en_ram;
+        #OFFSET;
+        forever begin
+            #11;
+            ANNOTATE_wr_str;
+            ANNOTATE_p_id;
+            ANNOTATE_out_p;
+            ANNOTATE_diag_q0;
+            ANNOTATE_diag_q1;
+            ANNOTATE_diag_imp0;
+            ANNOTATE_diag_imp1;
+            ANNOTATE_irq_ack;
+            ANNOTATE_q2;
+            ANNOTATE_q3;
+            ANNOTATE_en_ram;
+            #9;
+        end
+    end
+
+    initial begin  // Open the annotations file...
+        TX_FILE = $fopen("D:\\borg_empfanger\\tb_picoblaze.ano");
+        #500020 // Final time:  500020 ns
+        $display("Success! Annotation Simulation Complete.");
+        $fdisplay(TX_FILE, "Total[%d]", TX_ERROR);
+        $fclose(TX_FILE);
+        $finish;
+    end
+
+    initial begin
+        // -------------  Current Time:  639ns
+        #639;
+        in0 = 1'b1;
+        in1 = 1'b1;
+        in10 = 1'b1;
+        in11 = 1'b1;
+        in12 = 1'b1;
+        in13 = 1'b1;
+        in14 = 1'b1;
+        in15 = 1'b1;
+        in2 = 1'b1;
+        in3 = 1'b1;
+        in4 = 1'b1;
+        in5 = 1'b1;
+        in6 = 1'b1;
+        in7 = 1'b1;
+        in8 = 1'b1;
+        in9 = 1'b1;
+        // -------------------------------------
+        // -------------  Current Time:  659ns
+        #20;
+        in0 = 1'b0;
+        in1 = 1'b0;
+        in10 = 1'b0;
+        in11 = 1'b0;
+        in12 = 1'b0;
+        in13 = 1'b0;
+        in14 = 1'b0;
+        in15 = 1'b0;
+        in2 = 1'b0;
+        in3 = 1'b0;
+        in4 = 1'b0;
+        in5 = 1'b0;
+        in6 = 1'b0;
+        in7 = 1'b0;
+        in8 = 1'b0;
+        in9 = 1'b0;
+        // -------------------------------------
+        // -------------  Current Time:  59839ns
+        #59180;
+        in6 = 1'b1;
+        // -------------------------------------
+        // -------------  Current Time:  59859ns
+        #20;
+        in6 = 1'b0;
+        // -------------------------------------
+        // -------------  Current Time:  96059ns
+        #36200;
+        in6 = 1'b1;
+        // -------------------------------------
+        // -------------  Current Time:  96119ns
+        #60;
+        in6 = 1'b0;
+        // -------------------------------------
+        // -------------  Current Time:  237839ns
+        #141720;
+        in6 = 1'b1;
+        // -------------------------------------
+        // -------------  Current Time:  237899ns
+        #60;
+        in6 = 1'b0;
+        // -------------------------------------
+        // -------------  Current Time:  309319ns
+        #71420;
+        in6 = 1'b1;
+        // -------------------------------------
+    end
+
+    task ANNOTATE_wr_str;
+        #0 begin
+            $fdisplay(TX_FILE, "Annotate[%d,wr_str,%b]", $time, wr_str);
+            $fflush(TX_FILE);
+            TX_ERROR = TX_ERROR + 1;
+        end
+    endtask
+
+    task ANNOTATE_p_id;
+        #0 begin
+            $fdisplay(TX_FILE, "Annotate[%d,p_id,%b]", $time, p_id);
+            $fflush(TX_FILE);
+            TX_ERROR = TX_ERROR + 1;
+        end
+    endtask
+
+    task ANNOTATE_out_p;
+        #0 begin
+            $fdisplay(TX_FILE, "Annotate[%d,out_p,%b]", $time, out_p);
+            $fflush(TX_FILE);
+            TX_ERROR = TX_ERROR + 1;
+        end
+    endtask
+
+    task ANNOTATE_diag_q0;
+        #0 begin
+            $fdisplay(TX_FILE, "Annotate[%d,diag_q0,%b]", $time, diag_q0);
+            $fflush(TX_FILE);
+            TX_ERROR = TX_ERROR + 1;
+        end
+    endtask
+
+    task ANNOTATE_diag_q1;
+        #0 begin
+            $fdisplay(TX_FILE, "Annotate[%d,diag_q1,%b]", $time, diag_q1);
+            $fflush(TX_FILE);
+            TX_ERROR = TX_ERROR + 1;
+        end
+    endtask
+
+    task ANNOTATE_diag_imp0;
+        #0 begin
+            $fdisplay(TX_FILE, "Annotate[%d,diag_imp0,%b]", $time, diag_imp0);
+            $fflush(TX_FILE);
+            TX_ERROR = TX_ERROR + 1;
+        end
+    endtask
+
+    task ANNOTATE_diag_imp1;
+        #0 begin
+            $fdisplay(TX_FILE, "Annotate[%d,diag_imp1,%b]", $time, diag_imp1);
+            $fflush(TX_FILE);
+            TX_ERROR = TX_ERROR + 1;
+        end
+    endtask
+
+    task ANNOTATE_irq_ack;
+        #0 begin
+            $fdisplay(TX_FILE, "Annotate[%d,irq_ack,%b]", $time, irq_ack);
+            $fflush(TX_FILE);
+            TX_ERROR = TX_ERROR + 1;
+        end
+    endtask
+
+    task ANNOTATE_q2;
+        #0 begin
+            $fdisplay(TX_FILE, "Annotate[%d,q2,%b]", $time, q2);
+            $fflush(TX_FILE);
+            TX_ERROR = TX_ERROR + 1;
+        end
+    endtask
+
+    task ANNOTATE_q3;
+        #0 begin
+            $fdisplay(TX_FILE, "Annotate[%d,q3,%b]", $time, q3);
+            $fflush(TX_FILE);
+            TX_ERROR = TX_ERROR + 1;
+        end
+    endtask
+
+    task ANNOTATE_en_ram;
+        #0 begin
+            $fdisplay(TX_FILE, "Annotate[%d,en_ram,%b]", $time, en_ram);
+            $fflush(TX_FILE);
+            TX_ERROR = TX_ERROR + 1;
+        end
+    endtask
+
+endmodule
+

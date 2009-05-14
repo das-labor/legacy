@@ -1,0 +1,68 @@
+ command line:
+   ./tb_picoblaze_isim_beh.exe
+     -intstyle  ise
+     -ipchost  localhost
+     -ipcport  1871
+
+Wed May 13 04:27:14 2009
+
+Total Line Count : 998
+
+ Elaboration time : 0.03125 sec.
+
+ Estimate current memory usage : 123.355 Meg. 
+
+ Total Signals          : 1589
+ Total Nets             : 1656
+ Total Signal Drivers   : 398
+ Total Blocks           : 314
+ Total Primitive Blocks : 302
+ Total Processes        : 392
+ Total Traceable Variables  : 324
+ Total Scalar Nets and Variables : 22445
+ntrace select -o on -n /tb_picoblaze/wr_str 
+ntrace select -o on -n /tb_picoblaze/p_id 
+ntrace select -o on -n /tb_picoblaze/out_p 
+ntrace select -o on -n /tb_picoblaze/q2 
+ntrace select -o on -n /tb_picoblaze/q3 
+ntrace select -o on -n /tb_picoblaze/diag_q0 
+ntrace select -o on -n /tb_picoblaze/diag_q1 
+ntrace select -o on -n /tb_picoblaze/diag_imp0 
+ntrace select -o on -n /tb_picoblaze/diag_imp1 
+ntrace select -o on -n /tb_picoblaze/en_ram 
+ntrace select -o on -n /tb_picoblaze/clk 
+ntrace select -o on -n /tb_picoblaze/in0 
+ntrace select -o on -n /tb_picoblaze/in1 
+ntrace select -o on -n /tb_picoblaze/in2 
+ntrace select -o on -n /tb_picoblaze/in3 
+ntrace select -o on -n /tb_picoblaze/in4 
+ntrace select -o on -n /tb_picoblaze/in5 
+ntrace select -o on -n /tb_picoblaze/in6 
+ntrace select -o on -n /tb_picoblaze/in7 
+ntrace select -o on -n /tb_picoblaze/in8 
+ntrace select -o on -n /tb_picoblaze/in9 
+ntrace select -o on -n /tb_picoblaze/in10 
+ntrace select -o on -n /tb_picoblaze/in11 
+ntrace select -o on -n /tb_picoblaze/in12 
+ntrace select -o on -n /tb_picoblaze/in13 
+ntrace select -o on -n /tb_picoblaze/in14 
+ntrace select -o on -n /tb_picoblaze/in15 
+ntrace start 
+isimrun 1000 ns 
+Simulator is doing circuit initialization process.
+Finished circuit initialization process.
+WARNING:Simulator:29 - at 260.000 ns(1): Warning: There is an
+   'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+restart
+isimrun 500 us 
+Simulator is doing circuit initialization process.
+Finished circuit initialization process.
+isimrun 500 us 
+isimrun 5000 us 
+
+ Simulation time 57.125 sec.
+
+ Estimate current memory usage : 129.647 Meg. 
+
+Wed May 13 04:41:25 2009
+
