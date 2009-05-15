@@ -53,6 +53,82 @@ korrekturdaten YourInstanceName (
 
  
 		</Template>
+		<Template label="korrekturdaten1" treetype="template">
+ 
+ 
+// The following must be inserted into your Verilog file for this
+// core to be instantiated. Change the instance name and port connections
+// (in parentheses) to your own signal names.
+ 
+korrekturdaten1 YourInstanceName (
+    .addra(addra), // Bus [7 : 0] 
+    .addrb(addrb), // Bus [7 : 0] 
+    .clka(clka),
+    .clkb(clkb),
+    .dinb(dinb), // Bus [2 : 0] 
+    .douta(douta), // Bus [2 : 0] 
+    .doutb(doutb), // Bus [2 : 0] 
+    .web(web));
+
+ 
+		</Template>
+		<Template label="korrekturdaten2" treetype="template">
+ 
+ 
+// The following must be inserted into your Verilog file for this
+// core to be instantiated. Change the instance name and port connections
+// (in parentheses) to your own signal names.
+ 
+korrekturdaten2 YourInstanceName (
+    .addra(addra), // Bus [7 : 0] 
+    .addrb(addrb), // Bus [7 : 0] 
+    .clka(clka),
+    .clkb(clkb),
+    .dinb(dinb), // Bus [2 : 0] 
+    .douta(douta), // Bus [2 : 0] 
+    .doutb(doutb), // Bus [2 : 0] 
+    .web(web));
+
+ 
+		</Template>
+		<Template label="korrekturdaten4" treetype="template">
+ 
+ 
+// The following must be inserted into your Verilog file for this
+// core to be instantiated. Change the instance name and port connections
+// (in parentheses) to your own signal names.
+ 
+korrekturdaten4 YourInstanceName (
+    .addra(addra), // Bus [7 : 0] 
+    .addrb(addrb), // Bus [7 : 0] 
+    .clka(clka),
+    .clkb(clkb),
+    .dinb(dinb), // Bus [2 : 0] 
+    .douta(douta), // Bus [2 : 0] 
+    .doutb(doutb), // Bus [2 : 0] 
+    .web(web));
+
+ 
+		</Template>
+		<Template label="korrekturdaten3" treetype="template">
+ 
+ 
+// The following must be inserted into your Verilog file for this
+// core to be instantiated. Change the instance name and port connections
+// (in parentheses) to your own signal names.
+ 
+korrekturdaten3 YourInstanceName (
+    .addra(addra), // Bus [7 : 0] 
+    .addrb(addrb), // Bus [7 : 0] 
+    .clka(clka),
+    .clkb(clkb),
+    .dinb(dinb), // Bus [2 : 0] 
+    .douta(douta), // Bus [2 : 0] 
+    .doutb(doutb), // Bus [2 : 0] 
+    .web(web));
+
+ 
+		</Template>
 	</Folder>
 	<Folder label="VHDL Component Instantiation" treetype="folder">
 		<Template label="encoder_b8b10b" treetype="template">
@@ -142,6 +218,150 @@ end component;
 -- Substitute your own instance name and net names.
  
 your_instance_name : korrekturdaten
+        port map (
+            addra =&gt; addra,
+            addrb =&gt; addrb,
+            clka =&gt; clka,
+            clkb =&gt; clkb,
+            dinb =&gt; dinb,
+            douta =&gt; douta,
+            doutb =&gt; doutb,
+            web =&gt; web);
+ 
+		</Template>
+		<Template label="korrekturdaten1" treetype="template">
+ 
+ 
+-- The following code must appear in the VHDL architecture header:
+ 
+component korrekturdaten1
+    port (
+    addra: IN std_logic_VECTOR(7 downto 0);
+    addrb: IN std_logic_VECTOR(7 downto 0);
+    clka: IN std_logic;
+    clkb: IN std_logic;
+    dinb: IN std_logic_VECTOR(2 downto 0);
+    douta: OUT std_logic_VECTOR(2 downto 0);
+    doutb: OUT std_logic_VECTOR(2 downto 0);
+    web: IN std_logic);
+end component;
+
+
+ 
+-------------------------------------------------------------
+ 
+-- The following code must appear in the VHDL architecture body.
+-- Substitute your own instance name and net names.
+ 
+your_instance_name : korrekturdaten1
+        port map (
+            addra =&gt; addra,
+            addrb =&gt; addrb,
+            clka =&gt; clka,
+            clkb =&gt; clkb,
+            dinb =&gt; dinb,
+            douta =&gt; douta,
+            doutb =&gt; doutb,
+            web =&gt; web);
+ 
+		</Template>
+		<Template label="korrekturdaten2" treetype="template">
+ 
+ 
+-- The following code must appear in the VHDL architecture header:
+ 
+component korrekturdaten2
+    port (
+    addra: IN std_logic_VECTOR(7 downto 0);
+    addrb: IN std_logic_VECTOR(7 downto 0);
+    clka: IN std_logic;
+    clkb: IN std_logic;
+    dinb: IN std_logic_VECTOR(2 downto 0);
+    douta: OUT std_logic_VECTOR(2 downto 0);
+    doutb: OUT std_logic_VECTOR(2 downto 0);
+    web: IN std_logic);
+end component;
+
+
+ 
+-------------------------------------------------------------
+ 
+-- The following code must appear in the VHDL architecture body.
+-- Substitute your own instance name and net names.
+ 
+your_instance_name : korrekturdaten2
+        port map (
+            addra =&gt; addra,
+            addrb =&gt; addrb,
+            clka =&gt; clka,
+            clkb =&gt; clkb,
+            dinb =&gt; dinb,
+            douta =&gt; douta,
+            doutb =&gt; doutb,
+            web =&gt; web);
+ 
+		</Template>
+		<Template label="korrekturdaten4" treetype="template">
+ 
+ 
+-- The following code must appear in the VHDL architecture header:
+ 
+component korrekturdaten4
+    port (
+    addra: IN std_logic_VECTOR(7 downto 0);
+    addrb: IN std_logic_VECTOR(7 downto 0);
+    clka: IN std_logic;
+    clkb: IN std_logic;
+    dinb: IN std_logic_VECTOR(2 downto 0);
+    douta: OUT std_logic_VECTOR(2 downto 0);
+    doutb: OUT std_logic_VECTOR(2 downto 0);
+    web: IN std_logic);
+end component;
+
+
+ 
+-------------------------------------------------------------
+ 
+-- The following code must appear in the VHDL architecture body.
+-- Substitute your own instance name and net names.
+ 
+your_instance_name : korrekturdaten4
+        port map (
+            addra =&gt; addra,
+            addrb =&gt; addrb,
+            clka =&gt; clka,
+            clkb =&gt; clkb,
+            dinb =&gt; dinb,
+            douta =&gt; douta,
+            doutb =&gt; doutb,
+            web =&gt; web);
+ 
+		</Template>
+		<Template label="korrekturdaten3" treetype="template">
+ 
+ 
+-- The following code must appear in the VHDL architecture header:
+ 
+component korrekturdaten3
+    port (
+    addra: IN std_logic_VECTOR(7 downto 0);
+    addrb: IN std_logic_VECTOR(7 downto 0);
+    clka: IN std_logic;
+    clkb: IN std_logic;
+    dinb: IN std_logic_VECTOR(2 downto 0);
+    douta: OUT std_logic_VECTOR(2 downto 0);
+    doutb: OUT std_logic_VECTOR(2 downto 0);
+    web: IN std_logic);
+end component;
+
+
+ 
+-------------------------------------------------------------
+ 
+-- The following code must appear in the VHDL architecture body.
+-- Substitute your own instance name and net names.
+ 
+your_instance_name : korrekturdaten3
         port map (
             addra =&gt; addra,
             addrb =&gt; addrb,

@@ -28,3 +28,9 @@ sch2vhdl -intstyle ise -family spartan3 -flat -suppress -w "D:/borg_sender/sende
 sch2vhdl -intstyle ise -family spartan3 -flat -suppress -w "D:/borg_sender/sender/takt2.sch" takt2.vhf
 sch2vhdl -intstyle ise -family spartan3 -flat -suppress -w "D:/borg_sender/sender/takt2.sch" takt2.vhf
 sch2vhdl -intstyle ise -family spartan3 -flat -suppress -w "D:/borg_sender/sender/takt2.sch" takt2.vhf
+sch2vhdl -intstyle ise -family spartan3 -flat -suppress -w "D:/Borg Ventilator sender/takt2.sch" takt2.vhf
+sch2vhdl -intstyle ise -family spartan3 -flat -suppress -w "D:/Borg Ventilator sender/takt2.sch" takt2.vhf
+sch2vhdl -intstyle ise -family spartan3 -flat -suppress -w "D:/Borg Ventilator sender/takt2.sch" takt2.vhf
+sch2vhdl -intstyle ise -family spartan3 -flat -suppress -w "D:/Borg Ventilator sender/takt2.sch" takt2.vhf
+sch2vhdl -intstyle ise -family spartan3 -flat -suppress -w "D:/Borg Ventilator sender/takt2.sch" takt2.vhf
+sch2vhdl -intstyle ise -family spartan3 -flat -suppress -w "D:/Borg Ventilator sender/takt2.sch" takt2.vhf

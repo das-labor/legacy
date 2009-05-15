@@ -21,7 +21,7 @@ BEGIN SCHEMATIC
         PORT Input clk
         PORT Output g90_c10
         BEGIN BLOCKDEF takt
-            TIMESTAMP 2009 4 12 21 4 48
+            TIMESTAMP 2009 5 14 21 52 56
             LINE N 64 -96 0 -96 
             LINE N 272 -64 336 -64 
             LINE N 64 -32 0 -32 
@@ -30,12 +30,12 @@ BEGIN SCHEMATIC
             LINE N 272 -96 336 -96 
         END BLOCKDEF
         BEGIN BLOCKDEF f_null
-            TIMESTAMP 2009 4 19 21 14 4
+            TIMESTAMP 2009 5 14 21 52 56
             RECTANGLE N 60 -44 96 -20 
             LINE N 96 -32 160 -32 
         END BLOCKDEF
         BEGIN BLOCKDEF clk20
-            TIMESTAMP 2009 4 27 0 1 58
+            TIMESTAMP 2009 5 14 21 52 56
             LINE N 320 32 384 32 
             LINE N 64 -96 0 -96 
             LINE N 320 -96 384 -96 
@@ -43,7 +43,7 @@ BEGIN SCHEMATIC
             RECTANGLE N 64 -128 320 64 
         END BLOCKDEF
         BEGIN BLOCKDEF com_takt
-            TIMESTAMP 2009 5 2 16 41 51
+            TIMESTAMP 2009 5 14 21 52 56
             LINE N 448 -192 512 -192 
             LINE N 448 -144 512 -144 
             LINE N 64 -288 0 -288 
