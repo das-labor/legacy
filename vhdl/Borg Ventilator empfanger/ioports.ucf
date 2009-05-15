@@ -46,5 +46,5 @@ NET "tp1" LOC = "p5"| DRIVE = 12  | SLEW = fast; # Pin 17
 NET "tp2" LOC = "p6"| DRIVE = 12  | SLEW = fast; # Pin 23
 NET "tp3" LOC = "r6"| DRIVE = 12  | SLEW = fast; # Pin 25
 
-#NET "out2" LOC = "J3";
+NET "led" LOC = "N6";
 

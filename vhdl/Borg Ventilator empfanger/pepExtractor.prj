@@ -1,1 +1,3 @@
-work	D:/borg_empfanger/Picoblaze.vhd
+work	Picoblaze.vhd
+work	kcpsm3.vhd
+work	picoblaze_rom.vhd
