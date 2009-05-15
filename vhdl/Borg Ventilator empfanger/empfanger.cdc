@@ -1,23 +1,24 @@
 #ChipScope Core Inserter Project File Version 3.0
-#Thu May 14 21:32:07 CEST 2009
-Project.device.designInputFile=D\:\\borg_empfanger\\videodaten_cs.ngc
-Project.device.designOutputFile=D\:\\borg_empfanger\\videodaten_cs.ngc
+#Fri May 15 02:38:57 CEST 2009
+Project.device.designInputFile=D\:\\Borg Ventilator empfanger\\videodaten_cs.ngc
+Project.device.designOutputFile=D\:\\Borg Ventilator empfanger\\videodaten_cs.ngc
 Project.device.deviceFamily=6
 Project.device.enableRPMs=true
-Project.device.outputDirectory=D\:\\borg_empfanger\\_ngo
+Project.device.outputDirectory=D\:\\Borg Ventilator empfanger\\_ngo
 Project.device.useSRL16=true
-Project.filter.dimension=11
+Project.filter.dimension=12
 Project.filter<0>=slow*
-Project.filter<10>=*200*
+Project.filter<10>=*RAM*
+Project.filter<11>=*data*
 Project.filter<1>=
-Project.filter<2>=*q3*
-Project.filter<3>=*q2*
-Project.filter<4>=*xlxn_18*
-Project.filter<5>=*xlxn_17*
-Project.filter<6>=*17*
-Project.filter<7>=bram*
-Project.filter<8>=*RAM*
-Project.filter<9>=*data*
+Project.filter<2>=*200*
+Project.filter<3>=*1009*
+Project.filter<4>=*q3*
+Project.filter<5>=*q2*
+Project.filter<6>=*xlxn_18*
+Project.filter<7>=*xlxn_17*
+Project.filter<8>=*17*
+Project.filter<9>=bram*
 Project.icon.boundaryScanChain=0
 Project.icon.disableBUFGInsertion=false
 Project.icon.enableExtTriggerIn=false
@@ -75,7 +76,7 @@ Project.unit<0>.dataChannel<6>=data1<6>
 Project.unit<0>.dataChannel<7>=data1<7>
 Project.unit<0>.dataChannel<8>=data2<0>
 Project.unit<0>.dataChannel<9>=data2<1>
-Project.unit<0>.dataDepth=512
+Project.unit<0>.dataDepth=4096
 Project.unit<0>.dataEqualsTrigger=true
 Project.unit<0>.dataPortWidth=48
 Project.unit<0>.enableGaps=false

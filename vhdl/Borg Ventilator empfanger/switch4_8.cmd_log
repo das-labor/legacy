@@ -39,3 +39,9 @@ sch2verilog -intstyle ise -family spartan3   -w "D:/borg_empfanger/switch4_8.sch
 sch2verilog -intstyle ise -family spartan3   -w "D:/borg_empfanger/switch4_8.sch" switch4_8.vf
 sch2verilog -intstyle ise -family spartan3   -w "D:/borg_empfanger/switch4_8.sch" switch4_8.vf
 sch2verilog -intstyle ise -family spartan3   -w "D:/borg_empfanger/switch4_8.sch" switch4_8.vf
+sch2verilog -intstyle ise -family spartan3   -w "D:/Borg Ventilator empfanger/switch4_8.sch" switch4_8.vf
+sch2verilog -intstyle ise -family spartan3   -w "D:/Borg Ventilator empfanger/switch4_8.sch" switch4_8.vf
+sch2verilog -intstyle ise -family spartan3   -w "D:/Borg Ventilator empfanger/switch4_8.sch" switch4_8.vf
+sch2verilog -intstyle ise -family spartan3   -w "D:/Borg Ventilator empfanger/switch4_8.sch" switch4_8.vf
+sch2verilog -intstyle ise -family spartan3   -w "D:/Borg Ventilator empfanger/switch4_8.sch" switch4_8.vf
+sch2verilog -intstyle ise -family spartan3   -w "D:/Borg Ventilator empfanger/switch4_8.sch" switch4_8.vf

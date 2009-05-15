@@ -3,15 +3,15 @@ Xilinx Map Application Log File for Design 'videodaten'
 
 Design Information
 ------------------
-Command Line   : C:\Xilinx92i\bin\nt\map.exe -ise
-D:/borg_empfanger/empfanger.ise -intstyle ise -p xc3s400-ft256-5 -timing
--logic_opt off -ol med -t 1 -cm area -pr b -k 4 -power off -o videodaten_map.ncd
-videodaten.ngd videodaten.pcf 
+Command Line   : C:\Xilinx92i\bin\nt\map.exe -ise D:/Borg Ventilator
+empfanger/empfanger.ise -intstyle ise -p xc3s400-ft256-5 -timing -logic_opt off
+-ol med -t 1 -cm area -pr b -k 4 -power off -o videodaten_map.ncd videodaten.ngd
+videodaten.pcf 
 Target Device  : xc3s400
 Target Package : ft256
 Target Speed   : -5
 Mapper Version : spartan3 -- $Revision: 1.36 $
-Mapped Date    : Thu May 14 21:42:42 2009
+Mapped Date    : Fri May 15 02:39:24 2009
 
 Mapping design into LUTs...
 Running directed packing...
@@ -19,16 +19,16 @@ Running delay-based LUT packing...
 Running timing-driven packing...
 
 Phase 1.1
-Phase 1.1 (Checksum:997b85) REAL time: 1 secs 
+Phase 1.1 (Checksum:998535) REAL time: 2 secs 
 
 Phase 2.7
 INFO:Place:834 - Only a subset of IOs are locked. Out of 55 IOs, 4 are locked
    and 51 are not locked. If you would like to print the names of these IOs,
    please set the environment variable XIL_PAR_DESIGN_CHECK_VERBOSE to 1. 
-Phase 2.7 (Checksum:1312cfe) REAL time: 1 secs 
+Phase 2.7 (Checksum:1312cfe) REAL time: 2 secs 
 
 Phase 3.31
-Phase 3.31 (Checksum:1c9c37d) REAL time: 1 secs 
+Phase 3.31 (Checksum:1c9c37d) REAL time: 2 secs 
 
 Phase 4.2
 ......
@@ -42,34 +42,34 @@ Phase 6.5
 Phase 6.5 (Checksum:39386fa) REAL time: 2 secs 
 
 Phase 7.4
-..........
-Phase 7.4 (Checksum:42c1d79) REAL time: 4 secs 
+.....................................................................
+Phase 7.4 (Checksum:42c1d79) REAL time: 5 secs 
 
 Phase 8.28
-Phase 8.28 (Checksum:4c4b3f8) REAL time: 4 secs 
+Phase 8.28 (Checksum:4c4b3f8) REAL time: 5 secs 
 
 Phase 9.8
-..................
-..
-..................
+......................................................................
+.
+...................................................................
 ...............
 ...............
-Phase 9.8 (Checksum:b8ef60) REAL time: 11 secs 
+Phase 9.8 (Checksum:bc7ea0) REAL time: 14 secs 
 
 Phase 10.29
-Phase 10.29 (Checksum:5f5e0f6) REAL time: 11 secs 
+Phase 10.29 (Checksum:5f5e0f6) REAL time: 14 secs 
 
 Phase 11.5
-Phase 11.5 (Checksum:68e7775) REAL time: 11 secs 
+Phase 11.5 (Checksum:68e7775) REAL time: 14 secs 
 
 Phase 12.18
-Phase 12.18 (Checksum:7270df4) REAL time: 18 secs 
+Phase 12.18 (Checksum:7270df4) REAL time: 22 secs 
 
 Phase 13.5
-Phase 13.5 (Checksum:7bfa473) REAL time: 18 secs 
+Phase 13.5 (Checksum:7bfa473) REAL time: 22 secs 
 
-REAL time consumed by placer: 18 secs 
-CPU  time consumed by placer: 18 secs 
+REAL time consumed by placer: 23 secs 
+CPU  time consumed by placer: 22 secs 
 Inspecting route info ...
 Route info done.
 
@@ -80,16 +80,16 @@ Design Summary:
 Number of errors:      0
 Number of warnings:    7 (1 filtered)
 Logic Utilization:
-  Number of Slice Flip Flops:       1,298 out of   7,168   18%
-  Number of 4 input LUTs:             929 out of   7,168   12%
+  Number of Slice Flip Flops:       1,319 out of   7,168   18%
+  Number of 4 input LUTs:             942 out of   7,168   13%
 Logic Distribution:
-  Number of occupied Slices:                        1,165 out of   3,584   32%
-    Number of Slices containing only related logic:   1,165 out of   1,165  100%
-    Number of Slices containing unrelated logic:          0 out of   1,165    0%
+  Number of occupied Slices:                        1,210 out of   3,584   33%
+    Number of Slices containing only related logic:   1,210 out of   1,210  100%
+    Number of Slices containing unrelated logic:          0 out of   1,210    0%
       *See NOTES below for an explanation of the effects of unrelated logic
-Total Number of 4 input LUTs:          1,402 out of   7,168   19%
-  Number used as logic:                929
-  Number used as a route-thru:         270
+Total Number of 4 input LUTs:          1,425 out of   7,168   19%
+  Number used as logic:                942
+  Number used as a route-thru:         280
   Number used for Dual Port RAMs:       16
     (Two LUTs used per Dual Port RAM)
   Number used for 32x1 RAMs:            52
@@ -99,17 +99,17 @@ Total Number of 4 input LUTs:          1,402 out of   7,168   19%
     IOB Flip Flops:                    16
     IOB Master Pads:                    5
     IOB Slave Pads:                     5
-  Number of Block RAMs:                4 out of      16   25%
+  Number of Block RAMs:               15 out of      16   93%
   Number of GCLKs:                     6 out of       8   75%
   Number of DCMs:                      3 out of       4   75%
   Number of BSCANs:                    1 out of       1  100%
 
    Number of RPM macros:           36
-Total equivalent gate count for design:  318,847
+Total equivalent gate count for design:  1,040,067
 Additional JTAG gate count for IOBs:  3,120
-Peak Memory Usage:  191 MB
-Total REAL time to MAP completion:  30 secs 
-Total CPU time to MAP completion:   29 secs 
+Peak Memory Usage:  204 MB
+Total REAL time to MAP completion:  35 secs 
+Total CPU time to MAP completion:   35 secs 
 
 Mapping completed.
 See MAP report file "videodaten_map.mrp" for details.
