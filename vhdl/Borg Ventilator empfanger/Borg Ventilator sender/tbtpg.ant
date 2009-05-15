@@ -1,0 +1,240 @@
+--------------------------------------------------------------------------------
+-- Copyright (c) 1995-2007 Xilinx, Inc.
+-- All Right Reserved.
+--------------------------------------------------------------------------------
+--   ____  ____ 
+--  /   /\/   / 
+-- /___/  \  /    Vendor: Xilinx 
+-- \   \   \/     Version : 9.2.04i
+--  \   \         Application : ISE
+--  /   /         Filename : tbtpg.ant
+-- /___/   /\     Timestamp : Mon Apr 13 16:10:13 2009
+-- \   \  /  \ 
+--  \___\/\___\ 
+--
+--Command: 
+--Design Name: tbtpg
+--Device: Xilinx
+--
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+USE IEEE.STD_LOGIC_TEXTIO.ALL;
+USE STD.TEXTIO.ALL;
+
+ENTITY tbtpg IS
+END tbtpg;
+
+ARCHITECTURE testbench_arch OF tbtpg IS
+    FILE RESULTS: TEXT OPEN WRITE_MODE IS "D:\borg_sender\sender\tbtpg.ano";
+
+    COMPONENT tgb
+        PORT (
+            clk : In std_logic;
+            a : In std_logic_vector (7 DownTo 0);
+            b : In std_logic_vector (7 DownTo 0);
+            c : In std_logic_vector (7 DownTo 0);
+            d : In std_logic_vector (7 DownTo 0);
+            q1 : Out std_logic_vector (7 DownTo 0);
+            q2 : Out std_logic_vector (7 DownTo 0);
+            q3 : Out std_logic_vector (7 DownTo 0);
+            q4 : Out std_logic_vector (7 DownTo 0)
+        );
+    END COMPONENT;
+
+    SIGNAL clk : std_logic := '0';
+    SIGNAL a : std_logic_vector (7 DownTo 0) := "00000000";
+    SIGNAL b : std_logic_vector (7 DownTo 0) := "00000000";
+    SIGNAL c : std_logic_vector (7 DownTo 0) := "00000000";
+    SIGNAL d : std_logic_vector (7 DownTo 0) := "00000000";
+    SIGNAL q1 : std_logic_vector (7 DownTo 0) := "00000000";
+    SIGNAL q2 : std_logic_vector (7 DownTo 0) := "00000000";
+    SIGNAL q3 : std_logic_vector (7 DownTo 0) := "00000000";
+    SIGNAL q4 : std_logic_vector (7 DownTo 0) := "00000000";
+
+    SHARED VARIABLE TX_ERROR : INTEGER := 0;
+    SHARED VARIABLE TX_OUT : LINE;
+
+    constant PERIOD : time := 200 ns;
+    constant DUTY_CYCLE : real := 0.5;
+    constant OFFSET : time := 100 ns;
+
+    BEGIN
+        UUT : tgb
+        PORT MAP (
+            clk => clk,
+            a => a,
+            b => b,
+            c => c,
+            d => d,
+            q1 => q1,
+            q2 => q2,
+            q3 => q3,
+            q4 => q4
+        );
+
+        PROCESS    -- clock process for clk
+        BEGIN
+            WAIT for OFFSET;
+            CLOCK_LOOP : LOOP
+                clk <= '0';
+                WAIT FOR (PERIOD - (PERIOD * DUTY_CYCLE));
+                clk <= '1';
+                WAIT FOR (PERIOD * DUTY_CYCLE);
+            END LOOP CLOCK_LOOP;
+        END PROCESS;
+
+        PROCESS    -- Annotation process for clk
+            VARIABLE TX_TIME : INTEGER := 0;
+
+            PROCEDURE ANNOTATE_q1(
+                TX_TIME : INTEGER
+            ) IS
+                VARIABLE TX_STR : String(1 to 4096);
+                VARIABLE TX_LOC : LINE;
+            BEGIN
+                STD.TEXTIO.write(TX_LOC, string'("Annotate["));
+                STD.TEXTIO.write(TX_LOC, TX_TIME);
+                STD.TEXTIO.write(TX_LOC, string'(", q1, "));
+                IEEE.STD_LOGIC_TEXTIO.write(TX_LOC, q1);
+                STD.TEXTIO.write(TX_LOC, string'("]"));
+                TX_STR(TX_LOC.all'range) := TX_LOC.all;
+                STD.TEXTIO.writeline(RESULTS, TX_LOC);
+                STD.TEXTIO.Deallocate(TX_LOC);
+            END;
+            PROCEDURE ANNOTATE_q2(
+                TX_TIME : INTEGER
+            ) IS
+                VARIABLE TX_STR : String(1 to 4096);
+                VARIABLE TX_LOC : LINE;
+            BEGIN
+                STD.TEXTIO.write(TX_LOC, string'("Annotate["));
+                STD.TEXTIO.write(TX_LOC, TX_TIME);
+                STD.TEXTIO.write(TX_LOC, string'(", q2, "));
+                IEEE.STD_LOGIC_TEXTIO.write(TX_LOC, q2);
+                STD.TEXTIO.write(TX_LOC, string'("]"));
+                TX_STR(TX_LOC.all'range) := TX_LOC.all;
+                STD.TEXTIO.writeline(RESULTS, TX_LOC);
+                STD.TEXTIO.Deallocate(TX_LOC);
+            END;
+            PROCEDURE ANNOTATE_q3(
+                TX_TIME : INTEGER
+            ) IS
+                VARIABLE TX_STR : String(1 to 4096);
+                VARIABLE TX_LOC : LINE;
+            BEGIN
+                STD.TEXTIO.write(TX_LOC, string'("Annotate["));
+                STD.TEXTIO.write(TX_LOC, TX_TIME);
+                STD.TEXTIO.write(TX_LOC, string'(", q3, "));
+                IEEE.STD_LOGIC_TEXTIO.write(TX_LOC, q3);
+                STD.TEXTIO.write(TX_LOC, string'("]"));
+                TX_STR(TX_LOC.all'range) := TX_LOC.all;
+                STD.TEXTIO.writeline(RESULTS, TX_LOC);
+                STD.TEXTIO.Deallocate(TX_LOC);
+            END;
+            PROCEDURE ANNOTATE_q4(
+                TX_TIME : INTEGER
+            ) IS
+                VARIABLE TX_STR : String(1 to 4096);
+                VARIABLE TX_LOC : LINE;
+            BEGIN
+                STD.TEXTIO.write(TX_LOC, string'("Annotate["));
+                STD.TEXTIO.write(TX_LOC, TX_TIME);
+                STD.TEXTIO.write(TX_LOC, string'(", q4, "));
+                IEEE.STD_LOGIC_TEXTIO.write(TX_LOC, q4);
+                STD.TEXTIO.write(TX_LOC, string'("]"));
+                TX_STR(TX_LOC.all'range) := TX_LOC.all;
+                STD.TEXTIO.writeline(RESULTS, TX_LOC);
+                STD.TEXTIO.Deallocate(TX_LOC);
+            END;
+        BEGIN
+            WAIT for 1 fs;
+            ANNOTATE_q1(0);
+            ANNOTATE_q2(0);
+            ANNOTATE_q3(0);
+            ANNOTATE_q4(0);
+            WAIT for OFFSET;
+            TX_TIME := TX_TIME + 100;
+            ANNO_LOOP : LOOP
+                --Rising Edge
+                WAIT for 115 ns;
+                TX_TIME := TX_TIME + 115;
+                ANNOTATE_q1(TX_TIME);
+                ANNOTATE_q2(TX_TIME);
+                ANNOTATE_q3(TX_TIME);
+                ANNOTATE_q4(TX_TIME);
+                WAIT for 85 ns;
+                TX_TIME := TX_TIME + 85;
+            END LOOP ANNO_LOOP;
+        END PROCESS;
+
+        PROCESS
+            BEGIN
+                -- -------------  Current Time:  385ns
+                WAIT FOR 385 ns;
+                d <= "01011111";
+                -- -------------------------------------
+                -- -------------  Current Time:  585ns
+                WAIT FOR 200 ns;
+                b <= "00000001";
+                d <= "11001000";
+                -- -------------------------------------
+                -- -------------  Current Time:  785ns
+                WAIT FOR 200 ns;
+                b <= "00000010";
+                d <= "10010001";
+                -- -------------------------------------
+                -- -------------  Current Time:  985ns
+                WAIT FOR 200 ns;
+                b <= "00000011";
+                d <= "00011101";
+                -- -------------------------------------
+                -- -------------  Current Time:  1185ns
+                WAIT FOR 200 ns;
+                b <= "00000100";
+                d <= "11101010";
+                -- -------------------------------------
+                -- -------------  Current Time:  1385ns
+                WAIT FOR 200 ns;
+                b <= "00000101";
+                d <= "01110011";
+                -- -------------------------------------
+                -- -------------  Current Time:  1585ns
+                WAIT FOR 200 ns;
+                b <= "00000110";
+                d <= "01110100";
+                -- -------------------------------------
+                -- -------------  Current Time:  1785ns
+                WAIT FOR 200 ns;
+                b <= "00000111";
+                d <= "10101000";
+                -- -------------------------------------
+                -- -------------  Current Time:  2585ns
+                WAIT FOR 800 ns;
+                c <= "11111111";
+                -- -------------------------------------
+                -- -------------  Current Time:  3185ns
+                WAIT FOR 600 ns;
+                b <= "11111111";
+                -- -------------------------------------
+                -- -------------  Current Time:  3585ns
+                WAIT FOR 400 ns;
+                a <= "11111111";
+                -- -------------------------------------
+                -- -------------  Current Time:  3985ns
+                WAIT FOR 400 ns;
+                d <= "11111111";
+                -- -------------------------------------
+                WAIT FOR 6215 ns;
+
+                STD.TEXTIO.write(TX_OUT, string'("Total[]"));
+                STD.TEXTIO.writeline(RESULTS, TX_OUT);
+                ASSERT (FALSE) REPORT
+                    "Success! Simulation for annotation completed"
+                    SEVERITY FAILURE;
+            END PROCESS;
+
+    END testbench_arch;
+

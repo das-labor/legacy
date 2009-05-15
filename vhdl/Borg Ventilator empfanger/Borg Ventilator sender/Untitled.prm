@@ -1,0 +1,17 @@
+PROMGEN: Xilinx Prom Generator J.40
+Copyright (c) 1995-2007 Xilinx, Inc.  All rights reserved.
+
+promgen -w -p mcs -c FF -o D:\borg_sender\sender\//Untitled -u 0 D:/borg_sender/sender/top.bit -x xcf02s 
+
+PROM D:\borg_sender\sender\//Untitled.prm map: Tue Apr 14 16:06:47 2009
+
+Calculating PROM checksum with fill value ff
+
+Format        Mcs86 (32-bit)
+Size          256K
+PROM start    0000:0000
+PROM end      0003:ffff
+PROM checksum 02098f22
+
+        Addr1        Addr2                     Date File(s)
+    0000:0000    0001:ff87     Apr 14 13:54:26 2009 D:/borg_sender/sender/top.bit

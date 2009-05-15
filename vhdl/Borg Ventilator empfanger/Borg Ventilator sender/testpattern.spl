@@ -1,0 +1,11 @@
+[Inputs]
+clk20
+=Pattern[7:0]=
+[Outputs]
+q1
+q2
+q3
+q4
+trig
+=cnt[1:0]=
+[BiDir]

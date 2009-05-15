@@ -1,0 +1,11 @@
+# Output products list for <encoder_b8b10b>
+encoder_b8b10b.asy
+encoder_b8b10b.ngc
+encoder_b8b10b.sym
+encoder_b8b10b.v
+encoder_b8b10b.veo
+encoder_b8b10b.vhd
+encoder_b8b10b.vho
+encoder_b8b10b.xco
+encoder_b8b10b_flist.txt
+encoder_b8b10b_xmdf.tcl

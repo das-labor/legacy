@@ -1,0 +1,7 @@
+[Inputs]
+clk
+=address[9:0]=
+[Outputs]
+proc_reset
+=instruction[17:0]=
+[BiDir]
