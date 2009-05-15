@@ -1,0 +1,6 @@
+
+#NET "XLXI_11/CLKFX_BUF" TNM_NET = "clk200";
+#TIMESPEC "TS_clk200" = PERIOD "clk200" 200 MHz LOW 50 %;
+
+NET "clk" TNM_NET = "clk20";
+TIMESPEC "TS_clk20" = PERIOD "clk20" 20 MHz LOW 50 %;

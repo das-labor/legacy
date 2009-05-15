@@ -1,0 +1,299 @@
+VERSION 6
+BEGIN SCHEMATIC
+    BEGIN ATTR DeviceFamilyName "spartan3"
+        DELETE all:0
+        EDITNAME all:0
+        EDITTRAIT all:0
+    END ATTR
+    BEGIN NETLIST
+        SIGNAL seg0
+        SIGNAL seg1
+        SIGNAL seg2
+        SIGNAL seg3
+        SIGNAL display(11:0)
+        SIGNAL segment(1:0)
+        SIGNAL bcd_cnt(15:0)
+        SIGNAL bcd_out(15:0)
+        SIGNAL int_hi(7:0)
+        SIGNAL int_lo(7:0)
+        SIGNAL bin0(7:0)
+        SIGNAL bin1(7:0)
+        SIGNAL bin2(7:0)
+        SIGNAL bin3(7:0)
+        SIGNAL clk
+        SIGNAL XLXN_5
+        SIGNAL XLXN_6
+        SIGNAL XLXN_7(7:0)
+        SIGNAL XLXN_8(7:0)
+        SIGNAL XLXN_9(7:0)
+        SIGNAL XLXN_10(7:0)
+        SIGNAL XLXN_11
+        SIGNAL XLXN_12
+        SIGNAL XLXN_13
+        SIGNAL XLXN_14(0:7)
+        SIGNAL XLXN_15(0:7)
+        SIGNAL XLXN_16(0:7)
+        SIGNAL XLXN_17(0:7)
+        SIGNAL XLXN_18(0:7)
+        PORT Output seg0
+        PORT Output seg1
+        PORT Output seg2
+        PORT Output seg3
+        PORT Output display(11:0)
+        PORT Output segment(1:0)
+        PORT Output bcd_cnt(15:0)
+        PORT Output bcd_out(15:0)
+        PORT Input int_hi(7:0)
+        PORT Input int_lo(7:0)
+        PORT Input bin0(7:0)
+        PORT Input bin1(7:0)
+        PORT Input bin2(7:0)
+        PORT Input bin3(7:0)
+        PORT Input clk
+        BEGIN BLOCKDEF display2
+            TIMESTAMP 2009 4 5 16 9 33
+            RECTANGLE N 64 -960 400 0 
+            LINE N 64 -928 0 -928 
+            LINE N 64 -864 0 -864 
+            LINE N 64 -800 0 -800 
+            RECTANGLE N 0 -748 64 -724 
+            LINE N 64 -736 0 -736 
+            RECTANGLE N 0 -684 64 -660 
+            LINE N 64 -672 0 -672 
+            RECTANGLE N 0 -620 64 -596 
+            LINE N 64 -608 0 -608 
+            RECTANGLE N 0 -556 64 -532 
+            LINE N 64 -544 0 -544 
+            RECTANGLE N 0 -492 64 -468 
+            LINE N 64 -480 0 -480 
+            RECTANGLE N 0 -428 64 -404 
+            LINE N 64 -416 0 -416 
+            RECTANGLE N 0 -364 64 -340 
+            LINE N 64 -352 0 -352 
+            RECTANGLE N 0 -300 64 -276 
+            LINE N 64 -288 0 -288 
+            RECTANGLE N 0 -236 64 -212 
+            LINE N 64 -224 0 -224 
+            RECTANGLE N 0 -172 64 -148 
+            LINE N 64 -160 0 -160 
+            RECTANGLE N 0 -108 64 -84 
+            LINE N 64 -96 0 -96 
+            RECTANGLE N 0 -44 64 -20 
+            LINE N 64 -32 0 -32 
+            LINE N 400 -928 464 -928 
+            LINE N 400 -800 464 -800 
+            LINE N 400 -672 464 -672 
+            LINE N 400 -544 464 -544 
+            RECTANGLE N 400 -428 464 -404 
+            LINE N 400 -416 464 -416 
+            RECTANGLE N 400 -300 464 -276 
+            LINE N 400 -288 464 -288 
+            RECTANGLE N 400 -172 464 -148 
+            LINE N 400 -160 464 -160 
+            RECTANGLE N 400 -44 464 -20 
+            LINE N 400 -32 464 -32 
+        END BLOCKDEF
+        BEGIN BLOCKDEF f_eins
+            TIMESTAMP 2009 4 5 19 4 37
+            RECTANGLE N 68 -64 128 0 
+            LINE N 128 -32 192 -32 
+        END BLOCKDEF
+        BEGIN BLOCKDEF f_null
+            TIMESTAMP 2009 4 5 19 5 30
+            RECTANGLE N 40 -64 96 0 
+            LINE N 96 -32 160 -32 
+        END BLOCKDEF
+        BEGIN BLOCKDEF f00_8
+            TIMESTAMP 2009 4 5 20 2 52
+            RECTANGLE N 320 20 384 44 
+            LINE N 320 32 384 32 
+            RECTANGLE N 320 84 384 108 
+            LINE N 320 96 384 96 
+            RECTANGLE N 320 148 384 172 
+            LINE N 320 160 384 160 
+            RECTANGLE N 320 212 384 236 
+            LINE N 320 224 384 224 
+            RECTANGLE N 320 276 384 300 
+            LINE N 320 288 384 288 
+            RECTANGLE N 320 340 384 364 
+            LINE N 320 352 384 352 
+            RECTANGLE N 320 404 384 428 
+            LINE N 320 416 384 416 
+            RECTANGLE N 64 -64 320 448 
+        END BLOCKDEF
+        BEGIN BLOCKDEF takt
+            TIMESTAMP 2009 4 5 19 41 39
+            RECTANGLE N 64 -192 400 0 
+            LINE N 64 -160 0 -160 
+            LINE N 64 -32 0 -32 
+            LINE N 400 -160 464 -160 
+            LINE N 400 -96 464 -96 
+            LINE N 400 -32 464 -32 
+        END BLOCKDEF
+        BEGIN BLOCK XLXI_1 display2
+            PIN clk XLXN_13
+            PIN hex XLXN_11
+            PIN binaer XLXN_12
+            PIN bcd01(7:0) XLXN_18(0:7)
+            PIN bcd23(7:0) XLXN_18(0:7)
+            PIN int_hi(7:0) int_hi(7:0)
+            PIN int_lo(7:0) int_lo(7:0)
+            PIN bin0(7:0) bin0(7:0)
+            PIN bin1(7:0) bin1(7:0)
+            PIN bin2(7:0) bin2(7:0)
+            PIN bin3(7:0) bin3(7:0)
+            PIN hell0(7:0) XLXN_17(0:7)
+            PIN hell1(7:0) XLXN_16(0:7)
+            PIN hell2(7:0) XLXN_15(0:7)
+            PIN hell3(7:0) XLXN_14(0:7)
+            PIN seg0_diag seg0
+            PIN seg1_diag seg1
+            PIN seg2_diag seg2
+            PIN seg3_diag seg3
+            PIN Display(11:0) display(11:0)
+            PIN segment_diag(1:0) segment(1:0)
+            PIN bcd_cnt_diag(15:0) bcd_cnt(15:0)
+            PIN bcd_out(15:0) bcd_out(15:0)
+        END BLOCK
+        BEGIN BLOCK XLXI_3 f_eins
+            PIN f1 XLXN_12
+        END BLOCK
+        BEGIN BLOCK XLXI_4 f_null
+            PIN fo XLXN_11
+        END BLOCK
+        BEGIN BLOCK XLXI_5 f00_8
+            PIN q0(0:7) XLXN_18(0:7)
+            PIN q40(0:7)
+            PIN q80(0:7)
+            PIN q120(0:7) XLXN_17(0:7)
+            PIN q150(0:7) XLXN_16(0:7)
+            PIN q200(0:7) XLXN_15(0:7)
+            PIN q255(0:7) XLXN_14(0:7)
+        END BLOCK
+        BEGIN BLOCK XLXI_6 takt
+            PIN RST_IN XLXN_11
+            PIN CLKIN_IN clk
+            PIN LOCKED_OUT
+            PIN CLKIN_IBUFG_OUT
+            PIN CLK0_OUT XLXN_13
+        END BLOCK
+    END NETLIST
+    BEGIN SHEET 1 3520 2720
+        BEGIN INSTANCE XLXI_1 1712 1600 R0
+        END INSTANCE
+        BEGIN BRANCH seg0
+            WIRE 2176 672 2208 672
+        END BRANCH
+        IOMARKER 2208 672 seg0 R0 28
+        BEGIN BRANCH seg1
+            WIRE 2176 800 2208 800
+        END BRANCH
+        IOMARKER 2208 800 seg1 R0 28
+        BEGIN BRANCH seg2
+            WIRE 2176 928 2208 928
+        END BRANCH
+        IOMARKER 2208 928 seg2 R0 28
+        BEGIN BRANCH seg3
+            WIRE 2176 1056 2208 1056
+        END BRANCH
+        IOMARKER 2208 1056 seg3 R0 28
+        BEGIN BRANCH display(11:0)
+            WIRE 2176 1184 2208 1184
+        END BRANCH
+        IOMARKER 2208 1184 display(11:0) R0 28
+        BEGIN BRANCH segment(1:0)
+            WIRE 2176 1312 2208 1312
+        END BRANCH
+        IOMARKER 2208 1312 segment(1:0) R0 28
+        BEGIN BRANCH bcd_cnt(15:0)
+            WIRE 2176 1440 2208 1440
+        END BRANCH
+        IOMARKER 2208 1440 bcd_cnt(15:0) R0 28
+        BEGIN BRANCH bcd_out(15:0)
+            WIRE 2176 1568 2208 1568
+        END BRANCH
+        IOMARKER 2208 1568 bcd_out(15:0) R0 28
+        BEGIN BRANCH int_hi(7:0)
+            WIRE 1680 992 1712 992
+        END BRANCH
+        IOMARKER 1680 992 int_hi(7:0) R180 28
+        BEGIN BRANCH int_lo(7:0)
+            WIRE 1680 1056 1712 1056
+        END BRANCH
+        IOMARKER 1680 1056 int_lo(7:0) R180 28
+        BEGIN BRANCH bin0(7:0)
+            WIRE 1680 1120 1712 1120
+        END BRANCH
+        IOMARKER 1680 1120 bin0(7:0) R180 28
+        BEGIN BRANCH bin1(7:0)
+            WIRE 1680 1184 1712 1184
+        END BRANCH
+        IOMARKER 1680 1184 bin1(7:0) R180 28
+        BEGIN BRANCH bin2(7:0)
+            WIRE 1680 1248 1712 1248
+        END BRANCH
+        IOMARKER 1680 1248 bin2(7:0) R180 28
+        BEGIN BRANCH bin3(7:0)
+            WIRE 1680 1312 1712 1312
+        END BRANCH
+        IOMARKER 1680 1312 bin3(7:0) R180 28
+        BEGIN BRANCH clk
+            WIRE 528 800 704 800
+        END BRANCH
+        IOMARKER 528 800 clk R180 28
+        BEGIN INSTANCE XLXI_3 1104 928 R0
+        END INSTANCE
+        BEGIN INSTANCE XLXI_4 1136 1072 R0
+        END INSTANCE
+        BEGIN INSTANCE XLXI_6 704 832 R0
+        END INSTANCE
+        BEGIN BRANCH XLXN_13
+            WIRE 1168 800 1376 800
+            WIRE 1376 672 1376 800
+            WIRE 1376 672 1712 672
+        END BRANCH
+        BEGIN BRANCH XLXN_11
+            WIRE 624 592 624 672
+            WIRE 624 672 704 672
+            WIRE 624 592 1328 592
+            WIRE 1328 592 1328 736
+            WIRE 1328 736 1328 1040
+            WIRE 1328 736 1712 736
+            WIRE 1296 1040 1328 1040
+        END BRANCH
+        BEGIN BRANCH XLXN_12
+            WIRE 1296 896 1392 896
+            WIRE 1392 800 1392 896
+            WIRE 1392 800 1712 800
+        END BRANCH
+        BEGIN INSTANCE XLXI_5 992 1200 R0
+        END INSTANCE
+        BEGIN BRANCH XLXN_14(0:7)
+            WIRE 1376 1616 1536 1616
+            WIRE 1536 1568 1536 1616
+            WIRE 1536 1568 1712 1568
+        END BRANCH
+        BEGIN BRANCH XLXN_15(0:7)
+            WIRE 1376 1552 1536 1552
+            WIRE 1536 1504 1536 1552
+            WIRE 1536 1504 1712 1504
+        END BRANCH
+        BEGIN BRANCH XLXN_16(0:7)
+            WIRE 1376 1488 1536 1488
+            WIRE 1536 1440 1536 1488
+            WIRE 1536 1440 1712 1440
+        END BRANCH
+        BEGIN BRANCH XLXN_17(0:7)
+            WIRE 1376 1424 1536 1424
+            WIRE 1536 1376 1536 1424
+            WIRE 1536 1376 1712 1376
+        END BRANCH
+        BEGIN BRANCH XLXN_18(0:7)
+            WIRE 1376 1232 1504 1232
+            WIRE 1504 864 1712 864
+            WIRE 1504 864 1504 928
+            WIRE 1504 928 1504 1232
+            WIRE 1504 928 1712 928
+        END BRANCH
+    END SHEET
+END SCHEMATIC

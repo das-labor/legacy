@@ -1,0 +1,15 @@
+MODULE search_sync_mark
+	SUBMODULE f_eins
+		INSTANCE XLXI_45
+	SUBMODULE search_sync_byte
+		INSTANCE XLXI_47
+	SUBMODULE search_sync_byte
+		INSTANCE XLXI_48
+	SUBMODULE search_sync_byte
+		INSTANCE XLXI_49
+	SUBMODULE search_sync_byte
+		INSTANCE XLXI_50
+	SUBMODULE search_sync_byte
+		INSTANCE XLXI_51
+	SUBMODULE search_sync_byte
+		INSTANCE XLXI_52
