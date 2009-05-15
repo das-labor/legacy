@@ -1,0 +1,7 @@
+sch2verilog -intstyle ise -family spartan3   -w "D:/Borg Ventilator empfanger/clock.sch" clock.vf
+sch2verilog -intstyle ise -family spartan3   -w "D:/Borg Ventilator empfanger/clock.sch" clock.vf
+sch2verilog -intstyle ise -family spartan3   -w "D:/Borg Ventilator empfanger/clock.sch" clock.vf
+sch2verilog -intstyle ise -family spartan3   -w "D:/Borg Ventilator empfanger/clock.sch" clock.vf
+sch2verilog -intstyle ise -family spartan3   -w "D:/Borg Ventilator empfanger/clock.sch" clock.vf
+sch2verilog -intstyle ise -family spartan3   -w "D:/Borg Ventilator empfanger/clock.sch" clock.vf
+sch2verilog -intstyle ise -family spartan3   -w "D:/Borg Ventilator empfanger/clock.sch" clock.vf
