@@ -39,3 +39,9 @@ sch2verilog -intstyle ise -family spartan3   -w "D:/borg_empfanger/pushbutton_to
 sch2verilog -intstyle ise -family spartan3   -w "D:/borg_empfanger/pushbutton_tog.sch" pushbutton_tog.vf
 sch2verilog -intstyle ise -family spartan3   -w "D:/borg_empfanger/pushbutton_tog.sch" pushbutton_tog.vf
 sch2verilog -intstyle ise -family spartan3   -w "D:/borg_empfanger/pushbutton_tog.sch" pushbutton_tog.vf
+sch2verilog -intstyle ise -family spartan3   -w "D:/Borg Ventilator empfanger/pushbutton_tog.sch" pushbutton_tog.vf
+sch2verilog -intstyle ise -family spartan3   -w "D:/Borg Ventilator empfanger/pushbutton_tog.sch" pushbutton_tog.vf
+sch2verilog -intstyle ise -family spartan3   -w "D:/Borg Ventilator empfanger/pushbutton_tog.sch" pushbutton_tog.vf
+sch2verilog -intstyle ise -family spartan3   -w "D:/Borg Ventilator empfanger/pushbutton_tog.sch" pushbutton_tog.vf
+sch2verilog -intstyle ise -family spartan3   -w "D:/Borg Ventilator empfanger/pushbutton_tog.sch" pushbutton_tog.vf
+sch2verilog -intstyle ise -family spartan3   -w "D:/Borg Ventilator empfanger/pushbutton_tog.sch" pushbutton_tog.vf
