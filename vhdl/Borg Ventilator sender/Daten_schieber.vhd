@@ -105,7 +105,7 @@ signal addrb2      : STD_LOGIC_VECTOR (7 downto 0);
 signal addrb3      : STD_LOGIC_VECTOR (7 downto 0);
 signal addrb4      : STD_LOGIC_VECTOR (7 downto 0);
 
-component korrekturdaten
+component korrekturdaten1
 	port (
 	addra: IN std_logic_VECTOR(7 downto 0);
 	addrb: IN std_logic_VECTOR(7 downto 0);
@@ -117,6 +117,41 @@ component korrekturdaten
 	web: IN std_logic);
 end component;
 
+component korrekturdaten2
+	port (
+	addra: IN std_logic_VECTOR(7 downto 0);
+	addrb: IN std_logic_VECTOR(7 downto 0);
+	clka: IN std_logic;
+	clkb: IN std_logic;
+	dinb: IN std_logic_VECTOR(2 downto 0);
+	douta: OUT std_logic_VECTOR(2 downto 0);
+	doutb: OUT std_logic_VECTOR(2 downto 0);
+	web: IN std_logic);
+end component;
+
+component korrekturdaten3
+	port (
+	addra: IN std_logic_VECTOR(7 downto 0);
+	addrb: IN std_logic_VECTOR(7 downto 0);
+	clka: IN std_logic;
+	clkb: IN std_logic;
+	dinb: IN std_logic_VECTOR(2 downto 0);
+	douta: OUT std_logic_VECTOR(2 downto 0);
+	doutb: OUT std_logic_VECTOR(2 downto 0);
+	web: IN std_logic);
+end component;
+
+component korrekturdaten4
+	port (
+	addra: IN std_logic_VECTOR(7 downto 0);
+	addrb: IN std_logic_VECTOR(7 downto 0);
+	clka: IN std_logic;
+	clkb: IN std_logic;
+	dinb: IN std_logic_VECTOR(2 downto 0);
+	douta: OUT std_logic_VECTOR(2 downto 0);
+	doutb: OUT std_logic_VECTOR(2 downto 0);
+	web: IN std_logic);
+end component;
 
 ------------------------DIE-SCHIEBEREGISTER----------------------------------------------------------
 begin
@@ -294,7 +329,7 @@ data_out3 <= do3;
 data_out4 <= do4;
 ---------------------------Memory-------------------------------------------------------------------
 -- Anbindung Block Ram für Kanal 1
-k1 :korrekturdaten
+k1 :korrekturdaten1
 port map (     addra=>pattern,
 	            addrb=>addrb1,
 	             clka=>clk200,
@@ -309,7 +344,7 @@ dinb1 <=inb1 (2 downto 0);
 outb1 <= "00000" & doutb1;
 
 -- Anbindung Block Ram für Kanal 2
-k2 :korrekturdaten
+k2 :korrekturdaten2
 port map (     addra=>pattern,
 	            addrb=>addrb2,
 	             clka=>clk200,
@@ -324,7 +359,7 @@ dinb2 <=inb2 (2 downto 0);
 outb2 <= "00000" & doutb2;
 
 -- Anbindung Block Ram für Kanal 3
-k3 :korrekturdaten
+k3 :korrekturdaten3
 port map (     addra=>pattern,
 	            addrb=>addrb3,
 	             clka=>clk200,
@@ -339,7 +374,7 @@ dinb3 <=inb3 (2 downto 0);
 outb3 <= "00000" & doutb3;
 
 -- Anbindung Block Ram für Kanal 4
-k4 :korrekturdaten
+k4 :korrekturdaten4
 port map (     addra=>pattern,
 	            addrb=>addrb4,
 	             clka=>clk200,

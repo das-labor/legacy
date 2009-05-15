@@ -3,14 +3,14 @@ Xilinx Map Application Log File for Design 'top'
 
 Design Information
 ------------------
-Command Line   : C:\Xilinx92i\bin\nt\map.exe -ise
-D:/borg_sender/sender/sender.ise -intstyle ise -p xc3s200-ft256-5 -cm area -pr b
--k 4 -c 100 -o top_map.ncd top.ngd top.pcf 
+Command Line   : C:\Xilinx92i\bin\nt\map.exe -ise D:/Borg Ventilator
+sender/sender.ise -intstyle ise -p xc3s200-ft256-5 -cm area -pr b -k 4 -c 100 -o
+top_map.ncd top.ngd top.pcf 
 Target Device  : xc3s200
 Target Package : ft256
 Target Speed   : -5
 Mapper Version : spartan3 -- $Revision: 1.36 $
-Mapped Date    : Sat May 02 19:37:25 2009
+Mapped Date    : Fri May 15 16:04:52 2009
 
 Mapping design into LUTs...
 Running directed packing...
@@ -49,9 +49,9 @@ Total Number of 4 input LUTs:          1,165 out of   3,840   30%
    Number of RPM macros:            1
 Total equivalent gate count for design:  371,516
 Additional JTAG gate count for IOBs:  2,352
-Peak Memory Usage:  135 MB
-Total REAL time to MAP completion:  4 secs 
-Total CPU time to MAP completion:   4 secs 
+Peak Memory Usage:  145 MB
+Total REAL time to MAP completion:  3 secs 
+Total CPU time to MAP completion:   3 secs 
 
 NOTES:
 

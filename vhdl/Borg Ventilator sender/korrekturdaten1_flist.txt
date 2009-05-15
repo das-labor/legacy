@@ -1,0 +1,12 @@
+# Output products list for <korrekturdaten1>
+korrekturdaten1.asy
+korrekturdaten1.mif
+korrekturdaten1.ngc
+korrekturdaten1.sym
+korrekturdaten1.v
+korrekturdaten1.veo
+korrekturdaten1.vhd
+korrekturdaten1.vho
+korrekturdaten1.xco
+korrekturdaten1_flist.txt
+korrekturdaten1_xmdf.tcl

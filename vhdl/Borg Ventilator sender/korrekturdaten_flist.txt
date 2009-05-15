@@ -1,5 +1,6 @@
 # Output products list for <korrekturdaten>
 korrekturdaten.asy
+korrekturdaten.mif
 korrekturdaten.ngc
 korrekturdaten.sym
 korrekturdaten.v
