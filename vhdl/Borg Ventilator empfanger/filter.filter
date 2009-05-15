@@ -18,4 +18,5 @@
 <filter task="map" file="PhysDesignRules" num="772" type="info"><arg index="1">XLXI_277/DCM_INST/XLXI_277/DCM_INST</arg></filter>
 <filter task="trce" file="Timing" num="3339" type="info"></filter>
 <filter task="map" file="LIT" num="243" type="warning"><arg index="1">icon_control0&lt;10&gt;</arg></filter>
+<filter task="xst" file="Xst" num="646" type="warning"><arg index="1">q4&lt;7:1&gt;</arg></filter>
 </filters>

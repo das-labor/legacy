@@ -47,8 +47,10 @@ entity Picoblaze_e is
 	 in13          : in  STD_LOGIC;
 	 in14          : in  STD_LOGIC;
 	 in15          : in  STD_LOGIC;
+    led           : out STD_LOGIC;
 	 wr_str        : out STD_LOGIC;
 	 p_id,out_p    : out STD_LOGIC_VECTOR (7 downto 0);
+
 --	 diag_q0,diag_q1,diag_imp0,diag_imp1         : out STD_LOGIC_VECTOR (7 downto 0);
 	 
 	 irq           : in  STD_LOGIC;
@@ -69,13 +71,12 @@ signal in_port       : std_logic_vector(7 downto 0);
 signal in_port_i     : std_logic_vector(7 downto 0);
 signal q0_old,q0     : std_logic_vector(7 downto 0):=x"00";
 signal q1_old,q1     : std_logic_vector(7 downto 0):=x"00";
---signal q129          : std_logic_vector(7 downto 0);
+signal q4            : std_logic_vector(7 downto 0);
 signal i0,i1         : std_logic_vector(7 downto 0):=x"ff";
 signal imp0,imp1     : std_logic_vector(7 downto 0):=x"00";
 signal en0,en1       : std_logic;
 signal en2,en3       : std_logic;
-signal en128         : std_logic;
---signal en129         : std_logic;
+signal en4,en128     : std_logic;
 signal read_strobe   : std_logic;
 signal write_strobe  : std_logic;
 signal reset         : std_logic;
@@ -154,11 +155,10 @@ process (clk) begin if RISING_EDGE(clk) then if port_id = x"02"  then en2  <= '1
 else en2 <= '0';end if;end if;end process;  
 process (clk) begin if RISING_EDGE(clk) then if port_id = x"03"  then en3  <= '1';
 else en3 <= '0';end if;end if;end process;  
+process (clk) begin if RISING_EDGE(clk) then if port_id = x"04"  then en4  <= '1';
+else en4 <= '0';end if;end if;end process;  
 process (clk) begin if RISING_EDGE(clk) then if port_id = x"80" then en128 <= '1';
 else en128 <= '0';end if;end if;end process;  
---process (clk) begin if RISING_EDGE(clk) then if port_id = x"81" then en129 <= '1';
---else en129 <= '0';end if;end if;end process;  
-
 
 
 --                        Port xx ausgeben und in FF speichern
@@ -176,10 +176,11 @@ process (clk) begin if RISING_EDGE(clk) then if en2 = '1' and write_strobe = '1'
 then q2 <= out_port;end if;end if;end process;  
 process (clk) begin if RISING_EDGE(clk) then if en3 = '1' and write_strobe = '1' 
 then q3 <= out_port;end if;end if;end process;  
---process (clk) begin if RISING_EDGE(clk) then if en129 = '1' and write_strobe = '1' 
---then ram_out <= out_port;end if;end if;end process;  
+process (clk) begin if RISING_EDGE(clk) then if en4 = '1' and write_strobe = '1' 
+then q4 <= out_port;end if;end if;end process;  
 
-en_ram<=en128;
+en_ram <= en128;
+led    <= not q4(0);
 
 ----------IMPULS-PORTS---------------------------------------
 --ports zusammenfassen zu Bytes
