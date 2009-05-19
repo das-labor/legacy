@@ -7,7 +7,7 @@
 -- \   \   \/     Version : 9.2.04i
 --  \   \         Application : xaw2vhdl
 --  /   /         Filename : clk20.vhd
--- /___/   /\     Timestamp : 05/19/2009 23:16:32
+-- /___/   /\     Timestamp : 05/20/2009 00:03:44
 -- \   \  /  \ 
 --  \___\/\___\ 
 --
@@ -28,16 +28,18 @@ library UNISIM;
 use UNISIM.Vcomponents.ALL;
 
 entity clk20 is
-   port ( CLKIN_IN  : in    std_logic; 
-          CLKFX_OUT : out   std_logic; 
-          CLK0_OUT  : out   std_logic);
+   port ( CLKIN_IN   : in    std_logic; 
+          CLKFX_OUT  : out   std_logic; 
+          CLK0_OUT   : out   std_logic; 
+          CLK180_OUT : out   std_logic);
 end clk20;
 
 architecture BEHAVIORAL of clk20 is
-   signal CLKFB_IN  : std_logic;
-   signal CLKFX_BUF : std_logic;
-   signal CLK0_BUF  : std_logic;
-   signal GND_BIT   : std_logic;
+   signal CLKFB_IN   : std_logic;
+   signal CLKFX_BUF  : std_logic;
+   signal CLK0_BUF   : std_logic;
+   signal CLK180_BUF : std_logic;
+   signal GND_BIT    : std_logic;
 begin
    GND_BIT <= '0';
    CLK0_OUT <= CLKFB_IN;
@@ -48,6 +50,10 @@ begin
    CLK0_BUFG_INST : BUFG
       port map (I=>CLK0_BUF,
                 O=>CLKFB_IN);
+   
+   CLK180_BUFG_INST : BUFG
+      port map (I=>CLK180_BUF,
+                O=>CLK180_OUT);
    
    DCM_INST : DCM
    generic map( CLK_FEEDBACK => "1X",
@@ -78,7 +84,7 @@ begin
                 CLK2X=>open,
                 CLK2X180=>open,
                 CLK90=>open,
-                CLK180=>open,
+                CLK180=>CLK180_BUF,
                 CLK270=>open,
                 LOCKED=>open,
                 PSDONE=>open,
