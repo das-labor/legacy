@@ -1,5 +1,0 @@
-[Inputs]
-=a[7:0]=
-[Outputs]
-=q[2:0]=
-[BiDir]
