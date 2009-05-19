@@ -1,3 +1,0 @@
-MODULE tb_picoblaze
-SUBMODULE Picoblaze_e
-INSTANCE UUT
