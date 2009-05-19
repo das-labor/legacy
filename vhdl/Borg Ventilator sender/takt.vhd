@@ -7,7 +7,7 @@
 -- \   \   \/     Version : 9.2.04i
 --  \   \         Application : xaw2vhdl
 --  /   /         Filename : takt.vhd
--- /___/   /\     Timestamp : 05/19/2009 23:16:29
+-- /___/   /\     Timestamp : 05/20/2009 00:03:42
 -- \   \  /  \ 
 --  \___\/\___\ 
 --
