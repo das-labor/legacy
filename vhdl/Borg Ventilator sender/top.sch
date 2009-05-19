@@ -60,7 +60,7 @@ BEGIN SCHEMATIC
         PORT Output irq_ack
         PORT Output trig
         BEGIN BLOCKDEF display2
-            TIMESTAMP 2009 5 19 10 30 2
+            TIMESTAMP 2009 5 19 21 3 10
             LINE N 64 -160 0 -160 
             RECTANGLE N 64 -192 288 4 
             RECTANGLE N 0 -44 64 -20 
@@ -72,12 +72,12 @@ BEGIN SCHEMATIC
             LINE N 64 -96 0 -96 
         END BLOCKDEF
         BEGIN BLOCKDEF f_null
-            TIMESTAMP 2009 5 19 10 30 2
+            TIMESTAMP 2009 5 19 21 3 11
             RECTANGLE N 40 -64 96 0 
             LINE N 96 -32 160 -32 
         END BLOCKDEF
         BEGIN BLOCKDEF takt
-            TIMESTAMP 2009 5 19 10 30 2
+            TIMESTAMP 2009 5 19 21 3 11
             LINE N 64 -96 0 -96 
             LINE N 272 -64 336 -64 
             LINE N 64 -32 0 -32 
@@ -86,7 +86,7 @@ BEGIN SCHEMATIC
             LINE N 272 -96 336 -96 
         END BLOCKDEF
         BEGIN BLOCKDEF Picoblaze
-            TIMESTAMP 2009 5 19 10 30 2
+            TIMESTAMP 2009 5 19 21 3 10
             LINE N 64 -416 0 -416 
             LINE N 320 -416 384 -416 
             RECTANGLE N 320 -396 384 -372 
@@ -132,7 +132,7 @@ BEGIN SCHEMATIC
             LINE N 320 144 384 144 
         END BLOCKDEF
         BEGIN BLOCKDEF Daten_schieber
-            TIMESTAMP 2009 5 19 10 30 2
+            TIMESTAMP 2009 5 19 21 3 11
             RECTANGLE N 0 20 64 44 
             LINE N 64 32 0 32 
             RECTANGLE N 0 52 64 76 
@@ -160,14 +160,14 @@ BEGIN SCHEMATIC
             LINE N 64 0 0 0 
         END BLOCKDEF
         BEGIN BLOCKDEF clk20
-            TIMESTAMP 2009 5 19 10 30 2
+            TIMESTAMP 2009 5 19 21 3 10
             RECTANGLE N 64 -128 320 0 
             LINE N 64 -96 0 -96 
             LINE N 320 -96 384 -96 
             LINE N 320 -32 384 -32 
         END BLOCKDEF
         BEGIN BLOCKDEF testdaten
-            TIMESTAMP 2009 5 19 10 30 2
+            TIMESTAMP 2009 5 19 21 3 10
             RECTANGLE N 64 -448 288 -124 
             LINE N 64 -416 0 -416 
             RECTANGLE N 0 -396 64 -372 
