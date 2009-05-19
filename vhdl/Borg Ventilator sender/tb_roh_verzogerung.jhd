@@ -1,3 +1,0 @@
-MODULE tb_roh_verzogerung
-SUBMODULE roh_verzoegerung
-INSTANCE UUT
