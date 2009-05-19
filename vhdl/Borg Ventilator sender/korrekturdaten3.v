@@ -30,14 +30,14 @@
 // supported by Xilinx, Mentor Graphics and Synplicity synthesis
 // tools. Ensure they are correct for your synthesis tool(s).
 
-// You must compile the wrapper file korrekturdaten.v when simulating
-// the core, korrekturdaten. When compiling the wrapper file, be sure to
+// You must compile the wrapper file korrekturdaten3.v when simulating
+// the core, korrekturdaten3. When compiling the wrapper file, be sure to
 // reference the XilinxCoreLib Verilog simulation library. For detailed
 // instructions, please refer to the "CORE Generator Help".
 
 `timescale 1ns/1ps
 
-module korrekturdaten(
+module korrekturdaten3(
 	addra,
 	addrb,
 	clka,
@@ -85,7 +85,7 @@ input web;
 		.c_has_wea(0),
 		.c_has_web(1),
 		.c_limit_data_pitch(18),
-		.c_mem_init_file("korrekturdaten.mif"),
+		.c_mem_init_file("korrekturdaten3.mif"),
 		.c_pipe_stages_a(0),
 		.c_pipe_stages_b(0),
 		.c_reg_inputsa(0),
@@ -139,7 +139,7 @@ input web;
 
 // XST black box declaration
 // box_type "black_box"
-// synthesis attribute box_type of korrekturdaten is "black_box"
+// synthesis attribute box_type of korrekturdaten3 is "black_box"
 
 endmodule
 

@@ -26,8 +26,8 @@
 --     (c) Copyright 1995-2007 Xilinx, Inc.                                   --
 --     All rights reserved.                                                   --
 --------------------------------------------------------------------------------
--- You must compile the wrapper file korrekturdaten.vhd when simulating
--- the core, korrekturdaten. When compiling the wrapper file, be sure to
+-- You must compile the wrapper file korrekturdaten1.vhd when simulating
+-- the core, korrekturdaten1. When compiling the wrapper file, be sure to
 -- reference the XilinxCoreLib VHDL simulation library. For detailed
 -- instructions, please refer to the "CORE Generator Help".
 
@@ -40,7 +40,7 @@ USE ieee.std_logic_1164.ALL;
 -- synthesis translate_off
 Library XilinxCoreLib;
 -- synthesis translate_on
-ENTITY korrekturdaten IS
+ENTITY korrekturdaten1 IS
 	port (
 	addra: IN std_logic_VECTOR(7 downto 0);
 	addrb: IN std_logic_VECTOR(7 downto 0);
@@ -50,11 +50,11 @@ ENTITY korrekturdaten IS
 	douta: OUT std_logic_VECTOR(2 downto 0);
 	doutb: OUT std_logic_VECTOR(2 downto 0);
 	web: IN std_logic);
-END korrekturdaten;
+END korrekturdaten1;
 
-ARCHITECTURE korrekturdaten_a OF korrekturdaten IS
+ARCHITECTURE korrekturdaten1_a OF korrekturdaten1 IS
 -- synthesis translate_off
-component wrapped_korrekturdaten
+component wrapped_korrekturdaten1
 	port (
 	addra: IN std_logic_VECTOR(7 downto 0);
 	addrb: IN std_logic_VECTOR(7 downto 0);
@@ -67,7 +67,7 @@ component wrapped_korrekturdaten
 end component;
 
 -- Configuration specification 
-	for all : wrapped_korrekturdaten use entity XilinxCoreLib.blkmemdp_v6_3(behavioral)
+	for all : wrapped_korrekturdaten1 use entity XilinxCoreLib.blkmemdp_v6_3(behavioral)
 		generic map(
 			c_reg_inputsb => 0,
 			c_reg_inputsa => 0,
@@ -115,7 +115,7 @@ end component;
 			c_sim_collision_check => "NONE",
 			c_has_enb => 0,
 			c_has_ena => 0,
-			c_mem_init_file => "korrekturdaten.mif",
+			c_mem_init_file => "korrekturdaten1.mif",
 			c_depth_b => 256,
 			c_depth_a => 256,
 			c_has_doutb => 1,
@@ -124,7 +124,7 @@ end component;
 -- synthesis translate_on
 BEGIN
 -- synthesis translate_off
-U0 : wrapped_korrekturdaten
+U0 : wrapped_korrekturdaten1
 		port map (
 			addra => addra,
 			addrb => addrb,
@@ -136,5 +136,5 @@ U0 : wrapped_korrekturdaten
 			web => web);
 -- synthesis translate_on
 
-END korrekturdaten_a;
+END korrekturdaten1_a;
 

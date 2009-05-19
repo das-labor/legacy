@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version J.40
-# Date: Fri May 15 12:14:48 2009
+# Date: Fri May 15 14:03:37 2009
 #
 ##############################################################
 #
@@ -35,8 +35,8 @@ SET vhdlsim = True
 SELECT Dual_Port_Block_Memory family Xilinx,_Inc. 6.3
 # END Select
 # BEGIN Parameters
-CSET coefficient_file="D:\Borg Ventilator sender\kanal1.coe"
-CSET component_name=korrekturdaten
+CSET coefficient_file="D:\Borg Ventilator sender\kanal3.coe"
+CSET component_name=korrekturdaten3
 CSET configuration_port_a=Read_Only
 CSET configuration_port_b=Read_And_Write
 CSET depth_a=256
@@ -72,5 +72,5 @@ CSET write_mode_port_a=Read_After_Write
 CSET write_mode_port_b=Read_After_Write
 # END Parameters
 GENERATE
-# CRC: 8b298f12
+# CRC: 23799083
 
