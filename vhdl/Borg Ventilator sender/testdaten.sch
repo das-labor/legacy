@@ -31,7 +31,7 @@ BEGIN SCHEMATIC
         PORT Output q4
         PORT Input clk20
         BEGIN BLOCKDEF tgb
-            TIMESTAMP 2009 4 19 0 21 15
+            TIMESTAMP 2009 5 19 22 59 21
             RECTANGLE N 64 -320 256 -88 
             LINE N 64 -304 0 -304 
             LINE N 256 -288 320 -288 
