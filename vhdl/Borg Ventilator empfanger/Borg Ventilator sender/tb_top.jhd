@@ -1,3 +1,0 @@
-MODULE tb_top
-SUBMODULE top
-INSTANCE UUT
