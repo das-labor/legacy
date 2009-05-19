@@ -22,14 +22,8 @@ BEGIN SCHEMATIC
         SIGNAL display(11:0)
         SIGNAL XLXN_87
         SIGNAL XLXN_92
-        SIGNAL XLXN_114
-        SIGNAL XLXN_115
-        SIGNAL XLXN_117
-        SIGNAL XLXN_116
         SIGNAL XLXN_120
         SIGNAL data_roh
-        SIGNAL XLXN_62
-        SIGNAL XLXN_63
         SIGNAL XLXN_64
         SIGNAL data_out
         SIGNAL f_cnt(7:0)
@@ -48,9 +42,7 @@ BEGIN SCHEMATIC
         SIGNAL trig
         SIGNAL XLXN_172
         SIGNAL XLXN_173
-        SIGNAL XLXN_174
         SIGNAL XLXN_175(7:0)
-        SIGNAL XLXN_176(7:0)
         PORT Input clk
         PORT Input irq
         PORT Input i1(7:0)
@@ -68,7 +60,7 @@ BEGIN SCHEMATIC
         PORT Output irq_ack
         PORT Output trig
         BEGIN BLOCKDEF display2
-            TIMESTAMP 2009 4 11 9 16 24
+            TIMESTAMP 2009 5 19 10 30 2
             LINE N 64 -160 0 -160 
             RECTANGLE N 64 -192 288 4 
             RECTANGLE N 0 -44 64 -20 
@@ -80,12 +72,12 @@ BEGIN SCHEMATIC
             LINE N 64 -96 0 -96 
         END BLOCKDEF
         BEGIN BLOCKDEF f_null
-            TIMESTAMP 2009 4 5 19 5 30
+            TIMESTAMP 2009 5 19 10 30 2
             RECTANGLE N 40 -64 96 0 
             LINE N 96 -32 160 -32 
         END BLOCKDEF
         BEGIN BLOCKDEF takt
-            TIMESTAMP 2009 4 12 21 4 48
+            TIMESTAMP 2009 5 19 10 30 2
             LINE N 64 -96 0 -96 
             LINE N 272 -64 336 -64 
             LINE N 64 -32 0 -32 
@@ -94,7 +86,7 @@ BEGIN SCHEMATIC
             LINE N 272 -96 336 -96 
         END BLOCKDEF
         BEGIN BLOCKDEF Picoblaze
-            TIMESTAMP 2009 4 13 17 41 54
+            TIMESTAMP 2009 5 19 10 30 2
             LINE N 64 -416 0 -416 
             LINE N 320 -416 384 -416 
             RECTANGLE N 320 -396 384 -372 
@@ -140,7 +132,7 @@ BEGIN SCHEMATIC
             LINE N 320 144 384 144 
         END BLOCKDEF
         BEGIN BLOCKDEF Daten_schieber
-            TIMESTAMP 2009 4 13 17 28 4
+            TIMESTAMP 2009 5 19 10 30 2
             RECTANGLE N 0 20 64 44 
             LINE N 64 32 0 32 
             RECTANGLE N 0 52 64 76 
@@ -168,14 +160,14 @@ BEGIN SCHEMATIC
             LINE N 64 0 0 0 
         END BLOCKDEF
         BEGIN BLOCKDEF clk20
-            TIMESTAMP 2009 4 13 12 15 40
+            TIMESTAMP 2009 5 19 10 30 2
             RECTANGLE N 64 -128 320 0 
             LINE N 64 -96 0 -96 
             LINE N 320 -96 384 -96 
             LINE N 320 -32 384 -32 
         END BLOCKDEF
         BEGIN BLOCKDEF testdaten
-            TIMESTAMP 2009 4 13 17 22 29
+            TIMESTAMP 2009 5 19 10 30 2
             RECTANGLE N 64 -448 288 -124 
             LINE N 64 -416 0 -416 
             RECTANGLE N 0 -396 64 -372 

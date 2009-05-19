@@ -30,7 +30,6 @@ BEGIN SCHEMATIC
         SIGNAL XLXN_32
         SIGNAL mux(7:0)
         SIGNAL trig
-        SIGNAL XLXN_50
         SIGNAL I1(7:0)
         SIGNAL I2(7:0)
         SIGNAL I3(7:0)
@@ -52,7 +51,7 @@ BEGIN SCHEMATIC
         PORT Input I3(7:0)
         PORT Input i4(7:0)
         BEGIN BLOCKDEF tgb
-            TIMESTAMP 2009 4 13 16 19 39
+            TIMESTAMP 2009 5 19 10 30 2
             LINE N 64 -288 0 -288 
             RECTANGLE N 64 -320 272 28 
             RECTANGLE N 0 -252 64 -228 
@@ -77,7 +76,7 @@ BEGIN SCHEMATIC
             LINE N 272 -48 336 -48 
         END BLOCKDEF
         BEGIN BLOCKDEF packet_write
-            TIMESTAMP 2009 4 11 9 13 20
+            TIMESTAMP 2009 5 19 10 30 2
             RECTANGLE N 64 -176 272 -48 
             LINE N 64 -144 0 -144 
             RECTANGLE N 0 -124 64 -100 
@@ -88,7 +87,7 @@ BEGIN SCHEMATIC
             LINE N 272 -80 336 -80 
         END BLOCKDEF
         BEGIN BLOCKDEF testpattern
-            TIMESTAMP 2009 4 12 20 36 6
+            TIMESTAMP 2009 5 19 10 30 2
             LINE N 64 -224 0 -224 
             RECTANGLE N 64 -256 256 -20 
             RECTANGLE N 0 -188 64 -164 
@@ -115,7 +114,7 @@ BEGIN SCHEMATIC
             LINE N 0 -160 96 -160 
         END BLOCKDEF
         BEGIN BLOCKDEF b84
-            TIMESTAMP 2009 4 13 16 5 35
+            TIMESTAMP 2009 5 19 10 30 2
             RECTANGLE N 64 -256 208 -124 
             LINE N 208 -240 272 -240 
             RECTANGLE N 0 -252 64 -228 

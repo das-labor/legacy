@@ -8,3 +8,5 @@ sch2vhdl -intstyle ise -family spartan3 -flat -suppress -w "D:/borg_sender/sende
 sch2vhdl -intstyle ise -family spartan3 -flat -suppress -w "D:/borg_sender/sender/testdaten.sch" testdaten.vhf
 sch2vhdl -intstyle ise -family spartan3 -flat -suppress -w "D:/borg_sender/sender/testdaten.sch" testdaten.vhf
 sch2vhdl -intstyle ise -family spartan3 -flat -suppress -w "D:/borg_sender/sender/testdaten.sch" testdaten.vhf
+sch2vhdl -intstyle ise -family spartan3 -flat -suppress -w "D:/Borg Ventilator Sender/testdaten.sch" testdaten.vhf
+sch2vhdl -intstyle ise -family spartan3 -flat -suppress -w "D:/Borg Ventilator Sender/testdaten.sch" testdaten.vhf
