@@ -7,11 +7,11 @@
 -- \   \   \/     Version : 9.2.04i
 --  \   \         Application : xaw2vhdl
 --  /   /         Filename : clk.vhd
--- /___/   /\     Timestamp : 05/19/2009 23:16:32
+-- /___/   /\     Timestamp : 04/05/2009 21:29:49
 -- \   \  /  \ 
 --  \___\/\___\ 
 --
---Command: xaw2vhdl-intstyle D:/Borg Ventilator Sender/clk.xaw -st clk.vhd
+--Command: xaw2vhdl-intstyle D:/borg_sender/sender/clk.xaw -st clk.vhd
 --Design Name: clk
 --Device: xc3s400-5ft256
 --
