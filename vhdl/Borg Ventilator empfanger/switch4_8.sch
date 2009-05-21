@@ -27,7 +27,7 @@ BEGIN SCHEMATIC
         PORT Input c(7:0)
         PORT Input d(7:0)
         BEGIN BLOCKDEF pushbutton_tog
-            TIMESTAMP 2009 5 17 12 9 0
+            TIMESTAMP 2009 5 20 23 44 52
             RECTANGLE N 64 -128 320 0 
             LINE N 64 -96 0 -96 
             LINE N 64 -32 0 -32 
@@ -35,7 +35,7 @@ BEGIN SCHEMATIC
             LINE N 320 -32 384 -32 
         END BLOCKDEF
         BEGIN BLOCKDEF mux_2_8
-            TIMESTAMP 2009 5 17 12 9 0
+            TIMESTAMP 2009 5 20 23 44 51
             RECTANGLE N 64 -192 320 0 
             RECTANGLE N 0 -172 64 -148 
             LINE N 64 -160 0 -160 
@@ -46,7 +46,7 @@ BEGIN SCHEMATIC
             LINE N 320 -160 384 -160 
         END BLOCKDEF
         BEGIN BLOCKDEF f_eins
-            TIMESTAMP 2009 5 17 12 9 0
+            TIMESTAMP 2009 5 20 23 44 52
             RECTANGLE N 192 -64 320 0 
             LINE N 320 -32 384 -32 
         END BLOCKDEF
