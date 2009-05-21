@@ -68,7 +68,7 @@ BEGIN SCHEMATIC
         PORT Output gnd0
         PORT Output out0
         BEGIN BLOCKDEF display2
-            TIMESTAMP 2009 5 19 23 58 59
+            TIMESTAMP 2009 5 20 23 44 40
             RECTANGLE N 64 -132 256 -16 
             LINE N 64 -96 0 -96 
             LINE N 64 -112 0 -112 
@@ -80,12 +80,12 @@ BEGIN SCHEMATIC
             LINE N 64 -32 0 -32 
         END BLOCKDEF
         BEGIN BLOCKDEF f_null
-            TIMESTAMP 2009 5 19 23 58 59
+            TIMESTAMP 2009 5 20 23 44 40
             RECTANGLE N 60 -44 96 -20 
             LINE N 96 -32 160 -32 
         END BLOCKDEF
         BEGIN BLOCKDEF Picoblaze
-            TIMESTAMP 2009 5 19 23 58 59
+            TIMESTAMP 2009 5 20 23 44 40
             LINE N 64 -416 0 -416 
             LINE N 320 -416 384 -416 
             RECTANGLE N 320 -396 384 -372 
@@ -131,7 +131,7 @@ BEGIN SCHEMATIC
             LINE N 320 144 384 144 
         END BLOCKDEF
         BEGIN BLOCKDEF Daten_schieber
-            TIMESTAMP 2009 5 19 23 58 58
+            TIMESTAMP 2009 5 20 23 44 39
             LINE N 64 -256 0 -256 
             LINE N 64 -224 0 -224 
             LINE N 64 -176 0 -176 
@@ -161,14 +161,14 @@ BEGIN SCHEMATIC
             RECTANGLE N 64 -288 320 112 
         END BLOCKDEF
         BEGIN BLOCKDEF roh_verzoegerung
-            TIMESTAMP 2009 5 19 23 58 59
+            TIMESTAMP 2009 5 20 23 44 39
             RECTANGLE N 64 -84 160 -16 
             LINE N 64 -32 0 -32 
             LINE N 64 -64 0 -64 
             LINE N 160 -32 224 -32 
         END BLOCKDEF
         BEGIN BLOCKDEF tgb
-            TIMESTAMP 2009 5 19 23 58 59
+            TIMESTAMP 2009 5 20 23 44 40
             RECTANGLE N 64 -320 256 -88 
             LINE N 64 -304 0 -304 
             LINE N 256 -288 320 -288 
@@ -190,7 +190,7 @@ BEGIN SCHEMATIC
             LINE N 256 -128 320 -128 
         END BLOCKDEF
         BEGIN BLOCKDEF takt2
-            TIMESTAMP 2009 5 19 23 58 59
+            TIMESTAMP 2009 5 20 23 44 39
             RECTANGLE N 64 -320 240 -96 
             LINE N 64 -288 0 -288 
             LINE N 240 -288 304 -288 
