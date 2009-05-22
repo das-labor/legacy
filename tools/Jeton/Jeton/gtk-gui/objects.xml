@@ -1,4 +1,16 @@
-<objects>
+<objects attr-sync="on">
+  <object type="Jeton.AdminScreen" palette-category="Jeton" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="Jeton.KasseScreen" palette-category="Jeton" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="Jeton.BestandScreen" palette-category="Jeton" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
   <object type="Jeton.ArtikelChooser" palette-category="Jeton" allow-children="false" base-type="Gtk.Bin">
     <itemgroups>
       <itemgroup label="ArtikelChooser Properties">
@@ -11,22 +23,6 @@
       </itemgroup>
     </signals>
   </object>
-  <object type="Jeton.BestellWidget" palette-category="Jeton" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
-  <object type="Jeton.AdminScreen" palette-category="Jeton" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
-  <object type="Jeton.BestandScreen" palette-category="Jeton" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
-  <object type="Jeton.KasseScreen" palette-category="Jeton" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
   <object type="Jeton.LabCtrlScreen" palette-category="Jeton" allow-children="false" base-type="Gtk.Bin">
     <itemgroups />
     <signals />
@@ -35,11 +31,7 @@
     <itemgroups />
     <signals />
   </object>
-  <object type="Jeton.ArtikelButtonContent" palette-category="Jeton" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
-  <object type="Jeton.MainWindow" palette-category="Jeton" allow-children="false" base-type="Gtk.Window">
+  <object type="Jeton.BestellWidget" palette-category="Jeton" allow-children="false" base-type="Gtk.Bin">
     <itemgroups />
     <signals />
   </object>

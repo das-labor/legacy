@@ -1,16 +1,17 @@
-<Project name="Jeton" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+<Project name="Jeton" fileversion="2.0" language="C#" clr-version="Net_2_0" targetFramework="2.0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Debug" assembly="jeton" />
       <Build debugmode="True" target="Exe" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
-      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" definesymbols="DEBUG" generatexmldocumentation="False" win32Icon="." langversion="ISO_2" ctype="CSharpCompilerParameters" />
+      <EnvironmentVariables />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" definesymbols="DEBUG" generatexmldocumentation="False" langversion="ISO_2" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Release" assembly="jeton" />
       <Build debugmode="False" target="Exe" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
-      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" win32Icon="." langversion="ISO_2" ctype="CSharpCompilerParameters" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" langversion="ISO_2" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
   <Contents>
@@ -29,7 +30,6 @@
     <File name="Widgets" subtype="Directory" buildaction="Compile" />
     <File name="Widgets/ArtikelButtonContent.cs" subtype="Code" buildaction="Compile" />
     <File name="Widgets/ArtikelChooser.cs" subtype="Code" buildaction="Compile" />
-    <File name="Widgets/BestellWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="../Pictures/LaborLogo.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="../Pictures/mate.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="gtk-gui/Jeton.ArtikelChooser.cs" subtype="Code" buildaction="Compile" />
@@ -47,6 +47,7 @@
     <File name="gtk-gui/Jeton.NumericInputDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="Dialogs/TextualInputDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/Jeton.TextualInputDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="Widgets/BestellWidget.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -59,32 +60,8 @@
     <ProjectReference type="Project" localcopy="True" refto="JetonDb" />
     <ProjectReference type="Project" localcopy="True" refto="CTapi" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Security, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Assembly" localcopy="True" specificVersion="False" refto="../../../../usr/lib/monodevelop/AddIns/MonoDevelop.GtkCore/libstetic.dll" />
   </References>
+  <LanguageParameters ApplicationIcon="." ctype="CSharpProjectParameters" />
   <Deployment.LinuxDeployData scriptName="jeton" />
-  <GtkDesignInfo isWidgetLibrary="True" gtkVersion="2.12.0">
-    <ExportedWidgets>
-      <Widget>Jeton.Kauf</Widget>
-      <Widget>Jeton.BestandScreen</Widget>
-      <Widget>Jeton.KasseScreen</Widget>
-      <Widget>Jeton.LabCtrlScreen</Widget>
-      <Widget>Jeton.AdminScreen</Widget>
-      <Widget>Jeton.KaufenScreen</Widget>
-      <Widget>Jeton.ArtikelButton</Widget>
-      <Widget>Jeton.ArtikelButtonContent</Widget>
-      <Widget>Jeton.ArtikelChooser</Widget>
-      <Widget>Jeton.OrderWidget</Widget>
-      <Widget>Jeton.BestellWidget</Widget>
-      <Widget>Jeton.KaufenScreen</Widget>
-      <Widget>Jeton.LabCtrlScreen</Widget>
-      <Widget>Jeton.Kauf</Widget>
-      <Widget>Jeton.ArtikelButtonContent</Widget>
-      <Widget>Jeton.KasseScreen</Widget>
-      <Widget>Jeton.MainWindow</Widget>
-      <Widget>Jeton.ArtikelChooser</Widget>
-      <Widget>Jeton.BestellWidget</Widget>
-      <Widget>Jeton.AdminScreen</Widget>
-      <Widget>Jeton.BestandScreen</Widget>
-      <Widget>Jeton.ModalScreen</Widget>
-    </ExportedWidgets>
-  </GtkDesignInfo>
 </Project>

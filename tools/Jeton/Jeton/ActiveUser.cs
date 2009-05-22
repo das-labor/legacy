@@ -89,6 +89,7 @@ namespace Jeton
 		/// </summary>
 		public bool OpenCT(int port)
 		{
+			/*
 			// Open CardTerminal
 			try {
 				ct = new CT(port);
@@ -98,6 +99,8 @@ namespace Jeton
 				System.Console.WriteLine( ex );
 				return false;
 			}
+			*/
+			return true;
 		}
 		
 		/// <summary>

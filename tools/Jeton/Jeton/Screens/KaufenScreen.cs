@@ -4,6 +4,8 @@ using JetonDb;
 
 namespace Jeton
 {
+	[System.ComponentModel.Category("Jeton")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class KaufenScreen : Gtk.Bin
 	{
 		public KaufenScreen()

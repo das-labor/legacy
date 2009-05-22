@@ -7,6 +7,8 @@ namespace Jeton
 {
 	public delegate void ArtikelChoosenHandler(object sender, Artikel a);  
 	
+	[System.ComponentModel.Category("Jeton")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class ArtikelChooser : Gtk.Bin
 	{
 		List<Artikel> _artikel;

@@ -15,7 +15,7 @@ namespace JetonAdmin {
 			JetonCtrl.Open();
 			
 			// Open Database
-			/*
+			
 			Artikel mate = JetonCtrl.CreateArtikel();
 			mate.Name      = "Mate";
 			mate.Bestand   = 13;
@@ -39,10 +39,10 @@ namespace JetonAdmin {
 			Artikel schoka = JetonCtrl.CreateArtikel();
 			schoka.Name      = "SchokaKola";
 			schoka.Bestand   = 5;
-			schoka.Preis     = 1.00m;
+			schoka.Preis     = 2.50m;
 			schoka.ProKasten = 12;
 			JetonCtrl.SaveArtikel(schoka);
-*/
+
 
 			Application.Init ();
 			MainWindow win = new MainWindow ();
