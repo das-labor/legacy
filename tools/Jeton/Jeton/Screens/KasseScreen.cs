@@ -4,6 +4,8 @@ using Gtk;
 
 namespace Jeton
 {
+	[System.ComponentModel.Category("Jeton")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class KasseScreen : Gtk.Bin
 	{
 		

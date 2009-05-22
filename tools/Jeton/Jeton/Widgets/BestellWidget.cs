@@ -5,6 +5,9 @@ using JetonDb;
 
 namespace Jeton
 {
+	[System.ComponentModel.Category("Jeton")]
+	[System.ComponentModel.ToolboxItem(true)]
+
 	public partial class BestellWidget : Gtk.Bin
 	{
 		const int Rows = 12;
