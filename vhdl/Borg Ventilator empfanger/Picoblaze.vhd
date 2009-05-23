@@ -47,7 +47,9 @@ entity Picoblaze_e is
 	 in13          : in  STD_LOGIC;
 	 in14          : in  STD_LOGIC;
 	 in15          : in  STD_LOGIC;
-    led           : out STD_LOGIC;
+	 dcm_sts       : in  STD_LOGIC_VECTOR (7 downto 0);
+	 led           : out STD_LOGIC;
+	 com_res       : out STD_LOGIC;
 	 wr_str        : out STD_LOGIC;
 	 p_id,out_p    : out STD_LOGIC_VECTOR (7 downto 0);
 
@@ -71,11 +73,11 @@ signal in_port       : std_logic_vector(7 downto 0);
 signal in_port_i     : std_logic_vector(7 downto 0);
 signal q0_old,q0     : std_logic_vector(7 downto 0):=x"00";
 signal q1_old,q1     : std_logic_vector(7 downto 0):=x"00";
-signal q4            : std_logic_vector(7 downto 0);
-signal i0,i1         : std_logic_vector(7 downto 0):=x"ff";
+signal q4,q5         : std_logic_vector(7 downto 0);
+signal i0,i1,i5      : std_logic_vector(7 downto 0):=x"ff";
 signal imp0,imp1     : std_logic_vector(7 downto 0):=x"00";
 signal en0,en1       : std_logic;
-signal en2,en3       : std_logic;
+signal en2,en3,en5   : std_logic;
 signal en4,en128     : std_logic;
 signal read_strobe   : std_logic;
 signal write_strobe  : std_logic;
@@ -157,6 +159,8 @@ process (clk) begin if RISING_EDGE(clk) then if port_id = x"03"  then en3  <= '1
 else en3 <= '0';end if;end if;end process;  
 process (clk) begin if RISING_EDGE(clk) then if port_id = x"04"  then en4  <= '1';
 else en4 <= '0';end if;end if;end process;  
+process (clk) begin if RISING_EDGE(clk) then if port_id = x"05"  then en5  <= '1';
+else en5 <= '0';end if;end if;end process;  
 process (clk) begin if RISING_EDGE(clk) then if port_id = x"80" then en128 <= '1';
 else en128 <= '0';end if;end if;end process;  
 
@@ -178,9 +182,12 @@ process (clk) begin if RISING_EDGE(clk) then if en3 = '1' and write_strobe = '1'
 then q3 <= out_port;end if;end if;end process;  
 process (clk) begin if RISING_EDGE(clk) then if en4 = '1' and write_strobe = '1' 
 then q4 <= out_port;end if;end if;end process;  
+process (clk) begin if RISING_EDGE(clk) then if en5 = '1' and write_strobe = '1' 
+then q5 <= out_port;end if;end if;end process;  
 
 en_ram <= en128;
 led    <= not q4(0);
+com_res<= q5(0);
 
 ----------IMPULS-PORTS---------------------------------------
 --ports zusammenfassen zu Bytes
@@ -242,11 +249,15 @@ end process;
 -------------EINGANGS_PORTS--------------------------------------------------------
 
 
-process (port_id,i0,i1)
+process (port_id,i0,i1,i5)
 begin
    case port_id is
       when x"00" => in_port_i <= i0;                   -- port  0
       when x"01" => in_port_i <= i1;                   -- port  1
+		
+		when x"05" => in_port_i <= dcm_sts;              -- port  5 dcm_status
+		
+		
       when others => in_port_i <= (others =>'-');
    end case;
 end process;
