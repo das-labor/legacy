@@ -8,7 +8,6 @@ BEGIN SCHEMATIC
     BEGIN NETLIST
         SIGNAL clk_20
         SIGNAL clk50
-        SIGNAL clk200
         SIGNAL tmp1
         SIGNAL clk
         SIGNAL XLXN_93
@@ -17,17 +16,15 @@ BEGIN SCHEMATIC
         SIGNAL XLXN_103
         PORT Output clk_20
         PORT Output clk50
-        PORT Output clk200
         PORT Input clk
         PORT Output g90_c10
         BEGIN BLOCKDEF takt
-            TIMESTAMP 2009 5 20 23 44 40
+            TIMESTAMP 2009 5 23 0 33 3
             LINE N 64 -96 0 -96 
             LINE N 272 -64 336 -64 
             LINE N 64 -32 0 -32 
             LINE N 272 -32 336 -32 
             RECTANGLE N 64 -128 272 0 
-            LINE N 272 -96 336 -96 
         END BLOCKDEF
         BEGIN BLOCKDEF f_null
             TIMESTAMP 2009 5 20 23 44 40
@@ -78,7 +75,6 @@ BEGIN SCHEMATIC
             PIN CLKIN_IN clk
             PIN CLKIN_IBUFG_OUT tmp1
             PIN CLK0_OUT clk50
-            PIN CLKFX_OUT clk200
         END BLOCK
         BEGIN BLOCK XLXI_4 f_null
             PIN fo XLXN_93
@@ -129,13 +125,7 @@ BEGIN SCHEMATIC
         BEGIN INSTANCE XLXI_17 752 976 R0
         END INSTANCE
         IOMARKER 640 656 clk R180 28
-        IOMARKER 1456 688 clk200 R0 28
         IOMARKER 1456 816 clk_20 R0 28
-        BEGIN BRANCH clk200
-            WIRE 1152 592 1408 592
-            WIRE 1408 592 1408 688
-            WIRE 1408 688 1456 688
-        END BRANCH
         BEGIN BRANCH clk_20
             WIRE 784 1088 784 1280
             WIRE 784 1280 800 1280
