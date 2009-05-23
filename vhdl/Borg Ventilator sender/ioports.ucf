@@ -1,11 +1,11 @@
 #Netze Für Takt definition
 NET "xlxi_31/xlxi_6/clk0*"   TNM_NET = "clk";
-NET "xlxi_31/xlxi_6/clkfx*"  TNM_NET = "clk200";
+#NET "xlxi_31/xlxi_6/clkfx*"  TNM_NET = "clk200";
 NET "xlxi_31/xlxi_17/clkfx*" TNM_NET = "clk20";
 
 #Takte den Netzen zuweisen
 TIMESPEC "TS_clk"    = PERIOD "clk"     50 Mhz LOW 50 %;
-TIMESPEC "TS_clk200" = PERIOD "clk200" 200 Mhz LOW 50 %;
+#TIMESPEC "TS_clk200" = PERIOD "clk200" 200 Mhz LOW 50 %;
 TIMESPEC "TS_clk20"  = PERIOD "clk20"   20 Mhz LOW 50 %;
 
 # Master Clock (50 Mhz)
@@ -51,16 +51,16 @@ NET "led<7>" LOC = "P11";
 
 #NET "pr1"  LOC = "D5"  | DRIVE = 24  | SLEW = fast ; # Pin 5
 
-NET "out0"  LOC = "D10"  | IOSTANDARD = LVCMOS33 |DRIVE = 20 | SLEW = fast ; # Pin 15
-NET "gnd0"  LOC = "B4"   | IOSTANDARD = LVCMOS33 |DRIVE = 20 | SLEW = fast ; # Pin 17
-NET "out1"  LOC = "B5"   | IOSTANDARD = LVCMOS33 |DRIVE = 20 | SLEW = fast ; # Pin 19
-NET "gnd1"  LOC = "B6"   | IOSTANDARD = LVCMOS33 |DRIVE = 20 | SLEW = fast ; # Pin 21
-NET "out2"  LOC = "A7"   | IOSTANDARD = LVCMOS33 |DRIVE = 20 | SLEW = fast ; # Pin 23
-NET "gnd2"  LOC = "A8"   | IOSTANDARD = LVCMOS33 |DRIVE = 20 | SLEW = fast ; # Pin 25
-NET "out3"  LOC = "B10"  | IOSTANDARD = LVCMOS33 |DRIVE = 20 | SLEW = fast ; # Pin 27
-NET "gnd3"  LOC = "B11"  | IOSTANDARD = LVCMOS33 |DRIVE = 20 | SLEW = fast ; # Pin 29
-NET "out4"  LOC = "A12"  | IOSTANDARD = LVCMOS33 |DRIVE = 20 | SLEW = fast ; # Pin 31
-NET "gnd4"  LOC = "A13"  | IOSTANDARD = LVCMOS33 |DRIVE = 20 | SLEW = fast ; # Pin 33
+NET "out0"  LOC = "D10"  | IOSTANDARD = LVCMOS33 |DRIVE = 12 | SLEW = fast ; # Pin 15
+NET "gnd0"  LOC = "B4"   | IOSTANDARD = LVCMOS33 |DRIVE = 12 | SLEW = fast ; # Pin 17
+NET "out1"  LOC = "B5"   | IOSTANDARD = LVCMOS33 |DRIVE = 12 | SLEW = fast ; # Pin 19
+NET "gnd1"  LOC = "B6"   | IOSTANDARD = LVCMOS33 |DRIVE = 12 | SLEW = fast ; # Pin 21
+NET "out2"  LOC = "A7"   | IOSTANDARD = LVCMOS33 |DRIVE = 12 | SLEW = fast ; # Pin 23
+NET "gnd2"  LOC = "A8"   | IOSTANDARD = LVCMOS33 |DRIVE = 12 | SLEW = fast ; # Pin 25
+NET "out3"  LOC = "B10"  | IOSTANDARD = LVCMOS33 |DRIVE = 12 | SLEW = fast ; # Pin 27
+NET "gnd3"  LOC = "B11"  | IOSTANDARD = LVCMOS33 |DRIVE = 12 | SLEW = fast ; # Pin 29
+NET "out4"  LOC = "A12"  | IOSTANDARD = LVCMOS33 |DRIVE = 12 | SLEW = fast ; # Pin 31
+NET "gnd4"  LOC = "A13"  | IOSTANDARD = LVCMOS33 |DRIVE = 12 | SLEW = fast ; # Pin 33
 #
 #NET "se1a"  LOC = "D7" | IOSTANDARD = LVDS_25 ; # Pin 11
 #NET "se1b"  LOC = "E7" | IOSTANDARD = LVDS_25 ; # Pin 09

@@ -31,4 +31,15 @@
 <filter task="map" file="LIT" num="243" type="warning"></filter>
 <filter task="xst" file="Xst" num="2506" type="info"><arg index="1">tgb</arg><arg index="2">Mrom_trig_mux0000</arg></filter>
 <filter task="xst" file="Xst" num="646" type="warning"></filter>
+<filter task="xst" file="Xst" num="653" type="warning"><arg index="1">XLXI_19_CLR_openSignal</arg><arg index="2">0</arg></filter>
+<filter task="xst" file="Xst" num="653" type="warning"><arg index="1">XLXI_8_i2_openSignal</arg><arg index="2">00000000</arg></filter>
+<filter task="xst" file="Xst" num="653" type="warning"><arg index="1">XLXI_8_i0_openSignal</arg><arg index="2">00000000</arg></filter>
+<filter task="xst" file="Xst" num="653" type="warning"><arg index="1">XLXI_8_i3_openSignal</arg><arg index="2">00000000</arg></filter>
+<filter task="xst" file="Xst" num="653" type="warning"><arg index="1">XLXI_8_i1_openSignal</arg><arg index="2">00000000</arg></filter>
+<filter task="ngdbuild" file="NgdBuild" num="740" type="info"></filter>
+<filter task="ngdbuild" file="NgdBuild" num="738" type="info"></filter>
+<filter task="xst" file="Xst" num="2506" type="info"></filter>
+<filter task="par" file="Place" num="834" type="info"><arg index="1">46</arg><arg index="2">44</arg><arg index="3">2</arg><arg index="4">If you would like to print the names of these IOs, please set the environment variable XIL_PAR_DESIGN_CHECK_VERBOSE to 1.</arg></filter>
+<filter task="trce" file="Timing" num="3339" type="info"></filter>
+<filter task="xst" file="Xst" num="653" type="warning"></filter>
 </filters>
