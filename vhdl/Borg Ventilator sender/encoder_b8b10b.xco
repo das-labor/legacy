@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version J.40
-# Date: Thu May 21 00:03:39 2009
+# Date: Sat May 23 15:02:34 2009
 #
 ##############################################################
 #
@@ -18,7 +18,7 @@ SET asysymbol = True
 SET busformat = BusFormatAngleBracketNotRipped
 SET createndf = False
 SET designentry = VHDL
-SET device = xc3s400
+SET device = xc3s200
 SET devicefamily = spartan3
 SET flowvendor = Foundation_iSE
 SET formalverification = False
@@ -54,5 +54,5 @@ CSET new_data=false
 CSET secondary_encoder=false
 # END Parameters
 GENERATE
-# CRC: 29a52af5
+# CRC: bfb75fcc
 
