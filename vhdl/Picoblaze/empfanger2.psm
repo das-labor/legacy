@@ -3,8 +3,8 @@
 ; ------------------------------------------------
 
 ; Bei der Assemblierung wird ein ROM Baustein erstellt
-; VHDL      "jtag_template.vhd", "d:\borg_empfanger\picoblaze_rom.vhd", "pb_rom"
-                    VHDL      "template.vhd", "d:\borg_empfanger\picoblaze_rom.vhd", "pb_rom"
+; VHDL      "jtag_template.vhd", "d:\borg ventilator empfanger\picoblaze_rom.vhd", "pb_rom"
+                    VHDL      "template.vhd", "d:\borg ventilator empfanger\picoblaze_rom.vhd", "pb_rom"
 
 
 ; Portmap für den Simulator
@@ -13,20 +13,26 @@ counter2            DSIO      1
 
 adress              DSOUT     2                   ; Adresse nach Blockram
 daten               DSOUT     3                   ; Daten nach Blockram
+led                 DSOUT     4                   ; LED
+dcm_status          DSIN      5                   ; dcm status
+
 write               DSOUT     $80                 ; schreibsignal
+
+
+
 ; c_out               DSOUT     $81				  ; wofür ???
-; ------------------------------------------------
-; --         16 mal 16 Bit Counter              --
-; ------------------------------------------------
 
 init:               LOAD      s0, 0
                     LOAD      s1, $FF
-                    OUT       s0, counter1; Initialisierung der Zähler
-                    OUT       s0, counter2; durch steigende Flange
-                    OUT       s1, counter1; und Anschliessendes
-                    OUT       s1, counter2; auf '0' setzen
+                    OUT       s0, counter1        ; Initialisierung der Zähler
+                    OUT       s0, counter2        ; durch steigende Flange
+                    OUT       s1, counter1        ; und Anschliessendes
+                    OUT       s1, counter2        ; auf '0' setzen
                     OUT       s0, counter1
                     OUT       s0, counter2
+; ------------------------------------------------
+; --         16 mal 16 Bit Counter              --
+; ------------------------------------------------
 
 start:              LOAD      s9, 0
                     IN        sA, counter1
@@ -43,8 +49,8 @@ searchloop1:        CALL      incbittest          ; Und das selbe für counter2
                     JUMP      NZ, searchloop1
                     CALL      err_count           ; Die Verschieden fehler zusammenzählen
                     CALL      bram_out            ; Scratchpad übertragen ins BlockRam
-; FETCH     s0, 1
-; OUT       s0, c_out
+                    CALL      led_sub
+                    CALL      dcm
                     JUMP      start
 ; -------------------------------------------------
 incbittest:         TEST      s8, %00000001
@@ -87,16 +93,6 @@ loop6:              COMP      s1, 0
 cont3:              AND       sB, s0
                     OUT       sB, counter2
                     RET       
-; -- Scratchpad ram übertragen in Bloch_ram --
-; bram_out:
-; LOAD      s8, 0
-; LOAD      s9, $80
-; bram_loop:          FETCH     s0, s8
-; OUT       s0, s9
-; ADD       s8, 1
-; ADD       s9, 1
-; COMP      s8, $28
-; JUMP      NZ, bram_loop
 ; --------------------------------------------------------------------------
 err_count:          FETCH     s8, $00             ; CRC Fehler zusammenzählen
                     FETCH     s9, $01
@@ -169,3 +165,41 @@ bram_1:             FETCH     s9, s8
                     COMP      s8, $40
                     JUMP      NZ, bram_1
                     RET       
+
+; -- Erzeugt einen kurzen Blitz an der LED
+led_sub: 
+                    FETCH     s0, $23             ; hat sich
+                    FETCH     s1, $30             ; der Fehler Counter
+                    STORE     s0, $30             ; (sichern)
+                    COMP      s0, s1              ; verändert ?
+                    JUMP      Z, led_sub2         ; 
+                    LOAD      s0, 1               ; LED
+                    OUT       s0, led             ; einschalten
+                    LOAD      s0, $FF             ; Zeit für Blitz angeben
+                    STORE     s0, $31             ; und in $31 speichern
+                    JUMP      led_ret
+led_sub2: 
+                    FETCH     s0, $31             ; ist der Zähler auf 0 ?
+                    COMP      s0, 0
+                    JUMP      Z, led_ret          ; wenn nein dann
+                    SUB       s0, 1               ; einen abziehen
+                    STORE     s0, $31             ; und wieder speichern
+                    COMP      s0, 0
+                    JUMP      NZ, led_ret         ; nun =0
+                    LOAD      s0, 0
+                    OUT       s0, led             ; dann led aus
+led_ret:            RET       
+
+; ------------  DCM STEUERUNG ---------------------------
+
+dcm: 
+; BIT 0 : not Locked
+; BIT 1 : Phase Shifter Overflow
+; BIT 2 : Loos input clock
+; other Bits unused
+                    IN        s0, dcm_status
+                    STORE     s0, $28
+
+                    RET       
+
+
