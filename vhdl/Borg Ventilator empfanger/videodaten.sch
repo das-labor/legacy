@@ -56,12 +56,10 @@ BEGIN SCHEMATIC
         SIGNAL tp1
         SIGNAL tp2
         SIGNAL XLXN_1027
-        SIGNAL XLXN_1031
         SIGNAL XLXN_1032
         SIGNAL XLXN_1033(7:0)
         SIGNAL XLXN_1034(7:0)
-        SIGNAL XLXN_1035
-        SIGNAL XLXN_1036(7:0)
+        SIGNAL XLXN_1037
         PORT Input clk
         PORT Output XLXN_981(7:0)
         PORT Input in0b
@@ -366,7 +364,7 @@ BEGIN SCHEMATIC
         END BLOCK
         BEGIN BLOCK XLXI_313 com_20
             PIN CLKIN_IN XLXN_1009
-            PIN RST_IN
+            PIN RST_IN XLXN_1037
             PIN LOCKED_OUT XLXN_1032
             PIN CLK0_OUT com20
             PIN STATUS_OUT(7:0) XLXN_1033(7:0)
@@ -402,7 +400,7 @@ BEGIN SCHEMATIC
             PIN irq
             PIN dcm_sts(7:0) XLXN_1034(7:0)
             PIN led led
-            PIN com_res
+            PIN com_res XLXN_1037
             PIN wr_str XLXN_1026
             PIN irq_ack XLXN_1025
             PIN en_ram XLXN_1022
@@ -739,6 +737,13 @@ BEGIN SCHEMATIC
             WIRE 1648 2576 2576 2576
             WIRE 2576 1648 2848 1648
             WIRE 2576 1648 2576 2576
+        END BRANCH
+        BEGIN BRANCH XLXN_1037
+            WIRE 112 1760 112 1984
+            WIRE 112 1984 160 1984
+            WIRE 112 1760 3312 1760
+            WIRE 3232 1616 3312 1616
+            WIRE 3312 1616 3312 1760
         END BRANCH
     END SHEET
 END SCHEMATIC
