@@ -15,12 +15,13 @@ adress              DSOUT     2                   ; Adresse nach Blockram
 daten               DSOUT     3                   ; Daten nach Blockram
 led                 DSOUT     4                   ; LED
 dcm_status          DSIN      5                   ; dcm status
+dcm_reset           DSOUT     5                   ; dcm_reset
 
 write               DSOUT     $80                 ; schreibsignal
 
 
 
-; c_out               DSOUT     $81				  ; wofür ???
+
 
 init:               LOAD      s0, 0
                     LOAD      s1, $FF
@@ -197,9 +198,25 @@ dcm:
 ; BIT 1 : Phase Shifter Overflow
 ; BIT 2 : Loos input clock
 ; other Bits unused
-                    IN        s0, dcm_status
-                    STORE     s0, $28
-
-                    RET       
+                    IN        s0, dcm_status      ; Status abfragen
+                    STORE     s0, $28             ; und speichern in $28
+                    COMP      s0, 0               ; Status =0 ?
+                    JUMP      Z, dcm2             ; dann zurück
+                    FETCH     s0, $29             ; Fehlercounter
+                    ADD       s0, 1               ; um 1
+                    STORE     s0, $29             ; erhöhen
+                    COMP      s0, 40              ; Fehlercounter Maximum
+                    JUMP      NZ, dcm3            ; erreicht ?
+; -- DCM Resetten --
+                    FETCH     s0, $2A             ; Resetcounter
+                    ADD       s0, 1               ; um 1
+                    STORE     s0, $2A             ; erhöhen
+                    LOAD      s0, 1               ; einen kurzen
+                    OUT       s0, dcm_reset       ; impuls auf
+                    LOAD      s0, 0               ; den DCM
+                    OUT       s0, dcm_reset       ; reset eingang
+dcm2:               LOAD      s0, 0               ; Fehlercounter
+                    STORE     s0, $29             ; auf 0 setzen
+dcm3:               RET       
 
 
