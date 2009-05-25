@@ -54,7 +54,7 @@ end packet_write;
 architecture Behavioral of packet_write is
 
 --****************************************************************
-CONSTANT packetlange: integer := 512;  -- Länge der Datenpakete  *
+CONSTANT packetlange: integer := 514;  -- Länge der Datenpakete  *
 --****************************************************************
 
 
@@ -74,7 +74,7 @@ signal kin2         : std_logic;
 signal encoder_ce   : std_logic;
 signal q1_i1        : std_logic;
 signal q1_i2        : std_logic;
-signal bytecounter  : integer range 0 to 521;
+signal bytecounter  : integer range 0 to packetlange+9;
 	
 
 --------------------KOMPONENTEN-BEKANNTMACHEN-----------------------------------------
