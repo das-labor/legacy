@@ -14,12 +14,16 @@ BEGIN SCHEMATIC
         SIGNAL XLXN_97
         SIGNAL g90_c10
         SIGNAL XLXN_103
+        SIGNAL XLXN_104
+        SIGNAL XLXN_105
+        SIGNAL XLXN_107
+        SIGNAL XLXN_111
         PORT Output clk_20
         PORT Output clk50
         PORT Input clk
         PORT Output g90_c10
         BEGIN BLOCKDEF takt
-            TIMESTAMP 2009 5 23 14 55 50
+            TIMESTAMP 2009 5 24 21 36 47
             LINE N 64 -96 0 -96 
             LINE N 272 -64 336 -64 
             LINE N 64 -32 0 -32 
@@ -27,12 +31,12 @@ BEGIN SCHEMATIC
             RECTANGLE N 64 -128 272 0 
         END BLOCKDEF
         BEGIN BLOCKDEF f_null
-            TIMESTAMP 2009 5 23 14 55 48
+            TIMESTAMP 2009 5 24 21 36 47
             RECTANGLE N 60 -44 96 -20 
             LINE N 96 -32 160 -32 
         END BLOCKDEF
         BEGIN BLOCKDEF clk20
-            TIMESTAMP 2009 5 23 14 55 48
+            TIMESTAMP 2009 5 24 21 36 47
             LINE N 320 32 384 32 
             LINE N 64 -96 0 -96 
             LINE N 320 -96 384 -96 
@@ -40,14 +44,14 @@ BEGIN SCHEMATIC
             RECTANGLE N 64 -128 320 64 
         END BLOCKDEF
         BEGIN BLOCKDEF com_takt
-            TIMESTAMP 2009 5 23 14 55 48
-            LINE N 448 -192 512 -192 
+            TIMESTAMP 2009 5 24 23 31 51
             LINE N 448 -144 512 -144 
             LINE N 64 -288 0 -288 
             LINE N 64 -240 0 -240 
             LINE N 448 -288 512 -288 
-            LINE N 448 -240 512 -240 
             RECTANGLE N 64 -320 448 -120 
+            LINE N 448 -240 512 -240 
+            LINE N 448 -192 512 -192 
         END BLOCKDEF
         BEGIN BLOCKDEF ftc
             TIMESTAMP 2000 1 1 10 10 10
@@ -88,13 +92,13 @@ BEGIN SCHEMATIC
         BEGIN BLOCK XLXI_18 com_takt
             PIN CLKIN_IN clk_20
             PIN RST_IN XLXN_93
-            PIN CLK180_OUT
             PIN CLK0_OUT
+            PIN CLK270_OUT XLXN_111
             PIN CLK90_OUT
-            PIN CLK270_OUT XLXN_103
+            PIN CLK180_OUT
         END BLOCK
         BEGIN BLOCK XLXI_19 ftc
-            PIN C XLXN_103
+            PIN C XLXN_107
             PIN CLR
             PIN T XLXN_97
             PIN Q g90_c10
@@ -102,6 +106,10 @@ BEGIN SCHEMATIC
         BEGIN BLOCK XLXI_20 inv
             PIN I XLXN_93
             PIN O XLXN_97
+        END BLOCK
+        BEGIN BLOCK XLXI_21 inv
+            PIN I XLXN_111
+            PIN O XLXN_107
         END BLOCK
     END NETLIST
     BEGIN SHEET 1 3520 2720
@@ -153,19 +161,23 @@ BEGIN SCHEMATIC
         BEGIN BRANCH XLXN_97
             WIRE 1136 1456 1200 1456
             WIRE 1200 1456 1200 1520
-            WIRE 1200 1520 1584 1520
-            WIRE 1584 1328 1584 1520
-            WIRE 1584 1328 1776 1328
+            WIRE 1200 1520 1728 1520
+            WIRE 1728 1328 1776 1328
+            WIRE 1728 1328 1728 1520
         END BRANCH
         BEGIN BRANCH g90_c10
             WIRE 2160 1328 2416 1328
         END BRANCH
         IOMARKER 1408 736 clk50 R0 28
         IOMARKER 2416 1328 g90_c10 R0 28
-        BEGIN BRANCH XLXN_103
-            WIRE 1312 1376 1536 1376
-            WIRE 1536 1376 1536 1456
-            WIRE 1536 1456 1776 1456
+        INSTANCE XLXI_21 1456 1488 R0
+        BEGIN BRANCH XLXN_107
+            WIRE 1680 1456 1776 1456
+        END BRANCH
+        BEGIN BRANCH XLXN_111
+            WIRE 1312 1376 1376 1376
+            WIRE 1376 1376 1376 1456
+            WIRE 1376 1456 1456 1456
         END BRANCH
     END SHEET
 END SCHEMATIC
