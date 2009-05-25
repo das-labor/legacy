@@ -62,7 +62,7 @@ end packet_read;
 architecture Behavioral of packet_read is
 
 --**********************************************************************
-CONSTANT packetlange: integer := 512 ; -- Länge der Datenpakete (byte) *
+CONSTANT packetlange: integer := 514 ; -- Länge der Datenpakete (byte) *
 CONSTANT kb_puls    : integer :=  64 ; -- alle x KB ein OK Impuls      *
 --**********************************************************************
 
@@ -70,7 +70,7 @@ CONSTANT oksum      : integer :=((1024/packetlange)*kb_puls)-1 ;
 
 
 ----------------Signale-innerhalb-der--Architecture-----------------------------------
-signal bytecounter  : integer range 0 to 521;
+signal bytecounter  : integer range 0 to packetlange+9;
 signal sc_i         : integer range 0 to 65535;
 signal bitcounter   : integer range 0 to 9;
 signal framecounter : integer range 0 to 65535; 

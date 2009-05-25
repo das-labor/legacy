@@ -36,7 +36,6 @@ BEGIN SCHEMATIC
         SIGNAL in4a
         SIGNAL in4b
         SIGNAL XLXN_1009
-        SIGNAL com20
         SIGNAL in3b
         SIGNAL in3a
         SIGNAL in2a
@@ -60,6 +59,8 @@ BEGIN SCHEMATIC
         SIGNAL XLXN_1033(7:0)
         SIGNAL XLXN_1034(7:0)
         SIGNAL XLXN_1037
+        SIGNAL com20
+        SIGNAL XLXN_1039
         PORT Input clk
         PORT Output XLXN_981(7:0)
         PORT Input in0b
@@ -95,7 +96,7 @@ BEGIN SCHEMATIC
             LINE N 0 -16 48 -16 
         END BLOCKDEF
         BEGIN BLOCKDEF f_null
-            TIMESTAMP 2009 5 23 14 54 38
+            TIMESTAMP 2009 5 24 21 36 24
             RECTANGLE N 280 -48 320 -16 
             LINE N 320 -32 384 -32 
         END BLOCKDEF
@@ -108,7 +109,7 @@ BEGIN SCHEMATIC
             LINE N 224 -32 128 -32 
         END BLOCKDEF
         BEGIN BLOCKDEF takt
-            TIMESTAMP 2009 5 23 14 54 40
+            TIMESTAMP 2009 5 24 21 36 25
             LINE N 64 -160 0 -160 
             LINE N 400 -160 464 -160 
             RECTANGLE N 64 -192 400 -44 
@@ -117,7 +118,7 @@ BEGIN SCHEMATIC
             LINE N 64 -96 0 -96 
         END BLOCKDEF
         BEGIN BLOCKDEF bram2p
-            TIMESTAMP 2009 5 23 15 7 9
+            TIMESTAMP 2009 5 24 21 38 0
             RECTANGLE N 32 0 256 496 
             BEGIN LINE W 0 48 32 48 
             END LINE
@@ -132,12 +133,12 @@ BEGIN SCHEMATIC
             END LINE
         END BLOCKDEF
         BEGIN BLOCKDEF f_eins
-            TIMESTAMP 2009 5 23 14 54 40
+            TIMESTAMP 2009 5 24 21 36 25
             RECTANGLE N 192 -64 320 0 
             LINE N 320 -32 384 -32 
         END BLOCKDEF
         BEGIN BLOCKDEF switch4_8
-            TIMESTAMP 2009 5 23 14 54 38
+            TIMESTAMP 2009 5 24 21 36 24
             RECTANGLE N 64 -300 320 0 
             LINE N 64 -16 0 -16 
             RECTANGLE N 0 -124 64 -100 
@@ -153,7 +154,7 @@ BEGIN SCHEMATIC
             LINE N 320 -256 384 -256 
         END BLOCKDEF
         BEGIN BLOCKDEF com_clock
-            TIMESTAMP 2009 5 23 14 54 38
+            TIMESTAMP 2009 5 24 21 36 24
             RECTANGLE N 64 -276 320 -12 
             RECTANGLE N 320 -44 384 -20 
             LINE N 320 -32 384 -32 
@@ -168,7 +169,7 @@ BEGIN SCHEMATIC
             LINE N 64 -224 0 -224 
         END BLOCKDEF
         BEGIN BLOCKDEF clk_200
-            TIMESTAMP 2009 5 23 14 54 40
+            TIMESTAMP 2009 5 24 21 36 24
             RECTANGLE N 64 -192 368 -80 
             LINE N 64 -160 0 -160 
             LINE N 368 -160 432 -160 
@@ -177,7 +178,7 @@ BEGIN SCHEMATIC
             LINE N 64 -128 0 -128 
         END BLOCKDEF
         BEGIN BLOCKDEF packet_read
-            TIMESTAMP 2009 5 23 17 46 47
+            TIMESTAMP 2009 5 24 21 36 24
             RECTANGLE N 64 -320 288 -80 
             LINE N 64 -288 0 -288 
             LINE N 64 -192 0 -192 
@@ -199,17 +200,20 @@ BEGIN SCHEMATIC
             LINE N 0 -32 64 -32 
         END BLOCKDEF
         BEGIN BLOCKDEF com_20
-            TIMESTAMP 2009 5 23 17 21 42
+            TIMESTAMP 2009 5 25 0 39 57
+            LINE N 400 32 464 32 
             LINE N 64 -160 0 -160 
             LINE N 64 -32 0 -32 
             LINE N 400 -160 464 -160 
-            LINE N 400 -32 464 -32 
-            RECTANGLE N 64 -192 400 0 
             RECTANGLE N 400 -108 464 -84 
             LINE N 400 -96 464 -96 
+            RECTANGLE N 64 -192 400 192 
+            LINE N 400 80 464 80 
+            LINE N 400 128 464 128 
+            LINE N 400 -16 464 -16 
         END BLOCKDEF
         BEGIN BLOCKDEF Picoblaze_e
-            TIMESTAMP 2009 5 23 21 2 56
+            TIMESTAMP 2009 5 24 21 36 24
             RECTANGLE N 4 372 68 396 
             LINE N 68 384 4 384 
             LINE N 320 352 384 352 
@@ -246,7 +250,7 @@ BEGIN SCHEMATIC
             RECTANGLE N 68 -300 320 440 
         END BLOCKDEF
         BEGIN BLOCKDEF com_20_status
-            TIMESTAMP 2009 5 23 20 52 45
+            TIMESTAMP 2009 5 24 21 36 24
             RECTANGLE N 64 -80 176 20 
             LINE N 64 -64 0 -64 
             RECTANGLE N 176 -76 240 -52 
@@ -365,9 +369,12 @@ BEGIN SCHEMATIC
         BEGIN BLOCK XLXI_313 com_20
             PIN CLKIN_IN XLXN_1009
             PIN RST_IN XLXN_1037
-            PIN LOCKED_OUT XLXN_1032
-            PIN CLK0_OUT com20
             PIN STATUS_OUT(7:0) XLXN_1033(7:0)
+            PIN LOCKED_OUT XLXN_1032
+            PIN CLK90_OUT
+            PIN CLK180_OUT com20
+            PIN CLK270_OUT
+            PIN CLK0_OUT
         END BLOCK
         BEGIN BLOCK XLXI_263 ibufds
             PIN I in3a
@@ -569,9 +576,6 @@ BEGIN SCHEMATIC
         INSTANCE XLXI_215 1456 1408 R0
         IOMARKER 1392 1360 in4a R180 28
         IOMARKER 1392 1392 in4b R180 28
-        BEGIN BRANCH com20
-            WIRE 624 2112 784 2112
-        END BRANCH
         BEGIN BRANCH in3b
             WIRE 1344 208 1408 208
         END BRANCH
@@ -744,6 +748,13 @@ BEGIN SCHEMATIC
             WIRE 112 1760 3312 1760
             WIRE 3232 1616 3312 1616
             WIRE 3312 1616 3312 1760
+        END BRANCH
+        BEGIN BRANCH com20
+            WIRE 624 2224 784 2224
+            WIRE 704 2112 784 2112
+            WIRE 704 2112 704 2208
+            WIRE 704 2208 784 2208
+            WIRE 784 2208 784 2224
         END BRANCH
     END SHEET
 END SCHEMATIC
