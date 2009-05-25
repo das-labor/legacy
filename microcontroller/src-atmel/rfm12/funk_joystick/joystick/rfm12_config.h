@@ -105,3 +105,5 @@
 
 #define RFM12_TRANSMIT_ONLY
 
+#define CHANNEL_FREE_TIME 1
+
