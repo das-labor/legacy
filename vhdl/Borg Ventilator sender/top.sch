@@ -33,11 +33,12 @@ BEGIN SCHEMATIC
         SIGNAL out3
         SIGNAL out4
         SIGNAL trig
-        SIGNAL gnd1
-        SIGNAL gnd2
-        SIGNAL gnd3
-        SIGNAL gnd4
         SIGNAL display(11:0)
+        SIGNAL gnd4
+        SIGNAL gnd3
+        SIGNAL gnd2
+        SIGNAL gnd1
+        SIGNAL XLXN_224
         SIGNAL out0
         SIGNAL gnd0
         PORT Input irq
@@ -51,11 +52,11 @@ BEGIN SCHEMATIC
         PORT Output out3
         PORT Output out4
         PORT Output trig
-        PORT Output gnd1
-        PORT Output gnd2
-        PORT Output gnd3
-        PORT Output gnd4
         PORT Output display(11:0)
+        PORT Output gnd4
+        PORT Output gnd3
+        PORT Output gnd2
+        PORT Output gnd1
         PORT Output out0
         PORT Output gnd0
         BEGIN BLOCKDEF display2
@@ -69,11 +70,6 @@ BEGIN SCHEMATIC
             RECTANGLE N 0 -76 64 -52 
             LINE N 64 -64 0 -64 
             LINE N 64 -32 0 -32 
-        END BLOCKDEF
-        BEGIN BLOCKDEF f_null
-            TIMESTAMP 2009 5 24 21 36 47
-            RECTANGLE N 60 -44 96 -20 
-            LINE N 96 -32 160 -32 
         END BLOCKDEF
         BEGIN BLOCKDEF Picoblaze
             TIMESTAMP 2009 5 24 21 36 47
@@ -152,19 +148,32 @@ BEGIN SCHEMATIC
             LINE N 240 -224 304 -224 
         END BLOCKDEF
         BEGIN BLOCKDEF io_out
-            TIMESTAMP 2009 5 24 21 36 47
-            RECTANGLE N 64 -176 144 12 
+            TIMESTAMP 2009 5 25 18 38 48
             LINE N 64 -160 0 -160 
             LINE N 64 -128 0 -128 
-            LINE N 144 -128 208 -128 
             LINE N 64 -96 0 -96 
-            LINE N 144 -96 208 -96 
             LINE N 64 -64 0 -64 
+            LINE N 64 -32 0 -32 
+            LINE N 144 -128 208 -128 
+            LINE N 144 -96 208 -96 
             LINE N 144 -64 208 -64 
+            LINE N 144 -32 208 -32 
             LINE N 64 0 0 0 
             LINE N 144 0 208 0 
-            LINE N 64 -32 0 -32 
-            LINE N 144 -32 208 -32 
+            RECTANGLE N 64 -176 144 144 
+            LINE N 144 32 208 32 
+            LINE N 144 64 208 64 
+            LINE N 144 96 208 96 
+            LINE N 144 128 208 128 
+        END BLOCKDEF
+        BEGIN BLOCKDEF inv
+            TIMESTAMP 2000 1 1 10 10 10
+            LINE N 0 -32 64 -32 
+            LINE N 224 -32 160 -32 
+            LINE N 64 -64 128 -32 
+            LINE N 128 -32 64 0 
+            LINE N 64 0 64 -64 
+            CIRCLE N 128 -48 160 -16 
         END BLOCKDEF
         BEGIN BLOCK XLXI_8 Picoblaze
             PIN clk XLXN_92
@@ -211,18 +220,6 @@ BEGIN SCHEMATIC
             PIN clk50 XLXN_92
             PIN g90_c10 out0
         END BLOCK
-        BEGIN BLOCK XLXI_23 f_null
-            PIN fo gnd1
-        END BLOCK
-        BEGIN BLOCK XLXI_26 f_null
-            PIN fo gnd2
-        END BLOCK
-        BEGIN BLOCK XLXI_27 f_null
-            PIN fo gnd3
-        END BLOCK
-        BEGIN BLOCK XLXI_28 f_null
-            PIN fo gnd4
-        END BLOCK
         BEGIN BLOCK XLXI_1 display2
             PIN wr_str wr_str
             PIN clk XLXN_92
@@ -232,19 +229,24 @@ BEGIN SCHEMATIC
         END BLOCK
         BEGIN BLOCK XLXI_33 io_out
             PIN i2 XLXN_173
-            PIN i3 XLXN_172
             PIN i4 XLXN_64
-            PIN i5 XLXN_213
             PIN i1 XLXN_185
             PIN clk clk_20
-            PIN o2 out2
-            PIN o3 out3
-            PIN o4 out4
-            PIN o5 trig
-            PIN o1 out1
+            PIN i3 XLXN_172
+            PIN o1a out1
+            PIN o2a out2
+            PIN o3a out3
+            PIN o4a out4
+            PIN trig XLXN_213
+            PIN trib_o trig
+            PIN o1b gnd1
+            PIN o2b gnd2
+            PIN o3b gnd3
+            PIN o4b gnd4
         END BLOCK
-        BEGIN BLOCK XLXI_19 f_null
-            PIN fo gnd0
+        BEGIN BLOCK XLXI_41 inv
+            PIN I out0
+            PIN O gnd0
         END BLOCK
     END NETLIST
     BEGIN SHEET 1 3520 2720
@@ -267,8 +269,7 @@ BEGIN SCHEMATIC
         END BRANCH
         IOMARKER 864 1616 led(7:0) R0 28
         BEGIN BRANCH wr_str
-            WIRE 832 1472 848 1472
-            WIRE 848 1472 928 1472
+            WIRE 832 1472 928 1472
         END BRANCH
         BEGIN BRANCH XLXN_64
             WIRE 1584 1872 1632 1872
@@ -332,12 +333,10 @@ BEGIN SCHEMATIC
             WIRE 1200 1728 1520 1728
         END BRANCH
         BEGIN BRANCH p_id(7:0)
-            WIRE 832 1504 848 1504
-            WIRE 848 1504 928 1504
+            WIRE 832 1504 928 1504
         END BRANCH
         BEGIN BRANCH out_p(7:0)
-            WIRE 832 1536 848 1536
-            WIRE 848 1536 928 1536
+            WIRE 832 1536 928 1536
         END BRANCH
         BEGIN BRANCH XLXN_213
             WIRE 1584 1904 1584 1936
@@ -363,30 +362,6 @@ BEGIN SCHEMATIC
         IOMARKER 1872 1840 out3 R0 28
         IOMARKER 1872 1872 out4 R0 28
         IOMARKER 1872 1904 trig R0 28
-        BEGIN INSTANCE XLXI_23 1680 2000 R0
-        END INSTANCE
-        BEGIN BRANCH gnd1
-            WIRE 1840 1968 1872 1968
-        END BRANCH
-        BEGIN INSTANCE XLXI_26 1680 2032 R0
-        END INSTANCE
-        BEGIN BRANCH gnd2
-            WIRE 1840 2000 1872 2000
-        END BRANCH
-        BEGIN INSTANCE XLXI_27 1680 2064 R0
-        END INSTANCE
-        BEGIN BRANCH gnd3
-            WIRE 1840 2032 1872 2032
-        END BRANCH
-        BEGIN INSTANCE XLXI_28 1680 2096 R0
-        END INSTANCE
-        BEGIN BRANCH gnd4
-            WIRE 1840 2064 1872 2064
-        END BRANCH
-        IOMARKER 1872 1968 gnd1 R0 28
-        IOMARKER 1872 2000 gnd2 R0 28
-        IOMARKER 1872 2032 gnd3 R0 28
-        IOMARKER 1872 2064 gnd4 R0 28
         BEGIN INSTANCE XLXI_1 928 1568 R0
         END INSTANCE
         BEGIN BRANCH display(11:0)
@@ -395,15 +370,33 @@ BEGIN SCHEMATIC
         IOMARKER 1296 1456 display(11:0) R0 28
         BEGIN INSTANCE XLXI_33 1632 1904 R0
         END INSTANCE
+        BEGIN BRANCH gnd4
+            WIRE 1840 2032 1872 2032
+        END BRANCH
+        IOMARKER 1872 2032 gnd4 R0 28
+        BEGIN BRANCH gnd3
+            WIRE 1840 2000 1872 2000
+        END BRANCH
+        IOMARKER 1872 2000 gnd3 R0 28
+        BEGIN BRANCH gnd2
+            WIRE 1840 1968 1872 1968
+        END BRANCH
+        BEGIN BRANCH gnd1
+            WIRE 1840 1936 1872 1936
+        END BRANCH
+        IOMARKER 1872 1936 gnd1 R0 28
+        IOMARKER 1872 1968 gnd2 R0 28
+        INSTANCE XLXI_41 1088 720 R0
         BEGIN BRANCH out0
-            WIRE 608 560 656 560
+            WIRE 608 560 976 560
+            WIRE 976 560 976 688
+            WIRE 976 688 1088 688
+            WIRE 976 560 1344 560
         END BRANCH
-        IOMARKER 656 560 out0 R0 28
-        BEGIN INSTANCE XLXI_19 448 672 R0
-        END INSTANCE
         BEGIN BRANCH gnd0
-            WIRE 608 640 656 640
+            WIRE 1312 688 1344 688
         END BRANCH
-        IOMARKER 656 640 gnd0 R0 28
+        IOMARKER 1344 688 gnd0 R0 28
+        IOMARKER 1344 560 out0 R0 28
     END SHEET
 END SCHEMATIC
