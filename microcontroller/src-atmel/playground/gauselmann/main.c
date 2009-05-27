@@ -72,12 +72,16 @@
 #define KEY_COIN_SLOT2	PS2_KEY_6
 #define KEY_ESCAPE		PS2_KEY_ESC
 
+
+#define DEBOUNCE_DELAY 255
+
 typedef struct{
 	volatile uint8_t *port;
 	uint8_t mask;
 	uint8_t state;
 	uint16_t release_key;	//key to be released(for key combinations)
 	uint16_t key;
+	uint8_t timer;
 }keymap_t;
 
 
@@ -218,36 +222,42 @@ int main(){
 		for(x=0; x<(sizeof(keymappings)/sizeof(keymap_t)); x++){
 			uint8_t aktstate;
 			keymap_t *km = &keymappings[x];
-			aktstate = ((*km->port) & km->mask)?0:1;
-			if( (!!aktstate) == (! km->state) ){
-				if(aktstate){
-					uint8_t comb_taken = 0;
-					
-					LED_ON();
-					for(y=0; y<(sizeof(keycombinations)/sizeof(keycomb_t)); y++){
-						if(	(keycombinations[y].action_keynum == x) && 
-						   (keymappings[keycombinations[y].modifier_keynum].state) ){
-							comb_taken = 1;
-							key_make_b(keycombinations[y].result_key);
-							km->state = 2; //remember keypress triggered combination for release
-							km->release_key = keycombinations[y].result_key;
-						}
-					}
-					if(!comb_taken){
-						key_make_b(km->key);
-						km->state = 1;
-					}
-					LED_OFF();
-				}else{
-					LED_ON();
+			
+			if(km->timer > 0){
+				km->timer --;
+			}else{
+				aktstate = ((*km->port) & km->mask)?0:1;
+				if( (!!aktstate) == (! km->state) ){
+					km->timer = DEBOUNCE_DELAY;
+					if(aktstate){
+						uint8_t comb_taken = 0;
 						
-					if(km->state != 2){
-						key_break_b(km->key);
+						LED_ON();
+						for(y=0; y<(sizeof(keycombinations)/sizeof(keycomb_t)); y++){
+							if(	(keycombinations[y].action_keynum == x) && 
+							   (keymappings[keycombinations[y].modifier_keynum].state) ){
+								comb_taken = 1;
+								key_make_b(keycombinations[y].result_key);
+								km->state = 2; //remember keypress triggered combination for release
+								km->release_key = keycombinations[y].result_key;
+							}
+						}
+						if(!comb_taken){
+							key_make_b(km->key);
+							km->state = 1;
+						}
+						LED_OFF();
 					}else{
-						key_break_b(km->release_key);
+						LED_ON();
+							
+						if(km->state != 2){
+							key_break_b(km->key);
+						}else{
+							key_break_b(km->release_key);
+						}
+						LED_OFF();
+						km->state = 0;
 					}
-					LED_OFF();
-					km->state = 0;
 				}
 			}
 		}
