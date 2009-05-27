@@ -51,8 +51,8 @@ NET "led<7>" LOC = "P11";
 
 #NET "pr1"  LOC = "D5"  | DRIVE = 24  | SLEW = fast ; # Pin 5
 
-NET "out0"  LOC = "D10"  | IOSTANDARD = LVCMOS33 |DRIVE = 16 | SLEW = fast ; # Pin 15
-NET "gnd0"  LOC = "B4"   | IOSTANDARD = LVCMOS33 |DRIVE = 16 | SLEW = fast ; # Pin 17
+NET "out0"  LOC = "A4"   | IOSTANDARD = LVCMOS33 |DRIVE = 16 | SLEW = fast ; # Pin 15
+NET "gnd0"  LOC = "A5"   | IOSTANDARD = LVCMOS33 |DRIVE = 16 | SLEW = fast ; # Pin 17
 NET "out1"  LOC = "B5"   | IOSTANDARD = LVCMOS33 |DRIVE = 16 | SLEW = fast ; # Pin 19
 NET "gnd1"  LOC = "B6"   | IOSTANDARD = LVCMOS33 |DRIVE = 16 | SLEW = fast ; # Pin 21
 NET "out2"  LOC = "A7"   | IOSTANDARD = LVCMOS33 |DRIVE = 16 | SLEW = fast ; # Pin 23
