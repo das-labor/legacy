@@ -421,6 +421,9 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK){
 	RFM12_INT_ON();
 }
 
+#ifndef CHANNEL_FREE_TIME
+	#define CHANNEL_FREE_TIME 200
+#endif
 
 void rfm12_tick()
 {
@@ -462,7 +465,7 @@ void rfm12_tick()
 	//check if we see a carrier
 	if(status & RFM12_STATUS_RSSI){
 		//yes: reset free counter
-		channel_free_count = 200;
+		channel_free_count = CHANNEL_FREE_TIME;
 	}else{
 		//no: decrement counter
 		channel_free_count--;
