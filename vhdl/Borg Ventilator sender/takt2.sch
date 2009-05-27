@@ -13,11 +13,7 @@ BEGIN SCHEMATIC
         SIGNAL XLXN_93
         SIGNAL XLXN_97
         SIGNAL g90_c10
-        SIGNAL XLXN_103
-        SIGNAL XLXN_104
-        SIGNAL XLXN_105
-        SIGNAL XLXN_107
-        SIGNAL XLXN_111
+        SIGNAL XLXN_116
         PORT Output clk_20
         PORT Output clk50
         PORT Input clk
@@ -93,12 +89,12 @@ BEGIN SCHEMATIC
             PIN CLKIN_IN clk_20
             PIN RST_IN XLXN_93
             PIN CLK0_OUT
-            PIN CLK270_OUT XLXN_111
+            PIN CLK270_OUT
             PIN CLK90_OUT
-            PIN CLK180_OUT
+            PIN CLK180_OUT XLXN_116
         END BLOCK
         BEGIN BLOCK XLXI_19 ftc
-            PIN C XLXN_107
+            PIN C XLXN_116
             PIN CLR
             PIN T XLXN_97
             PIN Q g90_c10
@@ -106,10 +102,6 @@ BEGIN SCHEMATIC
         BEGIN BLOCK XLXI_20 inv
             PIN I XLXN_93
             PIN O XLXN_97
-        END BLOCK
-        BEGIN BLOCK XLXI_21 inv
-            PIN I XLXN_111
-            PIN O XLXN_107
         END BLOCK
     END NETLIST
     BEGIN SHEET 1 3520 2720
@@ -170,14 +162,10 @@ BEGIN SCHEMATIC
         END BRANCH
         IOMARKER 1408 736 clk50 R0 28
         IOMARKER 2416 1328 g90_c10 R0 28
-        INSTANCE XLXI_21 1456 1488 R0
-        BEGIN BRANCH XLXN_107
-            WIRE 1680 1456 1776 1456
-        END BRANCH
-        BEGIN BRANCH XLXN_111
-            WIRE 1312 1376 1376 1376
-            WIRE 1376 1376 1376 1456
-            WIRE 1376 1456 1456 1456
+        BEGIN BRANCH XLXN_116
+            WIRE 1312 1328 1536 1328
+            WIRE 1536 1328 1536 1456
+            WIRE 1536 1456 1776 1456
         END BRANCH
     END SHEET
 END SCHEMATIC
