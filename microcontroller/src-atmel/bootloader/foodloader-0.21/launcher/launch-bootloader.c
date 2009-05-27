@@ -20,6 +20,7 @@
 #include <termios.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 
 #include "../config.h"
 
@@ -87,9 +88,9 @@ main(int argc, char* argv[])
         }
 
         /* set baud rate */
-        err = cfsetspeed(&t, bitrate);
+        err = cfsetospeed(&t, bitrate);
         if(err < 0) {
-            fprintf(stderr, "cfsetspeed: %s\n", strerror(errno));
+            fprintf(stderr, "cfsetospeed: %s\n", strerror(errno));
             close(fd);
             exit(4);
         }
