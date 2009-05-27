@@ -53,14 +53,16 @@ BEGIN SCHEMATIC
         SIGNAL led
         SIGNAL tp3
         SIGNAL tp1
-        SIGNAL tp2
         SIGNAL XLXN_1027
         SIGNAL XLXN_1032
         SIGNAL XLXN_1033(7:0)
         SIGNAL XLXN_1034(7:0)
         SIGNAL XLXN_1037
-        SIGNAL com20
-        SIGNAL XLXN_1039
+        SIGNAL XLXN_1043
+        SIGNAL XLXN_1044
+        SIGNAL tp2
+        SIGNAL XLXN_1049
+        SIGNAL XLXN_1050
         PORT Input clk
         PORT Output XLXN_981(7:0)
         PORT Input in0b
@@ -299,7 +301,7 @@ BEGIN SCHEMATIC
         BEGIN BLOCK XLXI_214 ibufds
             PIN I in0a
             PIN IB in0b
-            PIN O XLXN_976
+            PIN O XLXN_1049
         END BLOCK
         BEGIN BLOCK XLXI_270 com_clock
             PIN diag_cf2(6:0)
@@ -308,8 +310,8 @@ BEGIN SCHEMATIC
             PIN diag_res1
             PIN diag_ff2
             PIN diag_ff1
-            PIN com_clk XLXN_976
-            PIN com_clk_2x XLXN_1009
+            PIN com_clk XLXN_1049
+            PIN com_clk_2x XLXN_1044
             PIN MHZ_200 clk200
         END BLOCK
         BEGIN BLOCK XLXI_282 packet_read
@@ -353,7 +355,7 @@ BEGIN SCHEMATIC
             PIN synchron
         END BLOCK
         BEGIN BLOCK XLXI_287 bufg
-            PIN I com20
+            PIN I XLXN_1050
             PIN O slow_clk
         END BLOCK
         BEGIN BLOCK XLXI_172 ibufds
@@ -367,14 +369,14 @@ BEGIN SCHEMATIC
             PIN O kanal2
         END BLOCK
         BEGIN BLOCK XLXI_313 com_20
-            PIN CLKIN_IN XLXN_1009
+            PIN CLKIN_IN XLXN_1044
             PIN RST_IN XLXN_1037
             PIN STATUS_OUT(7:0) XLXN_1033(7:0)
             PIN LOCKED_OUT XLXN_1032
             PIN CLK90_OUT
-            PIN CLK180_OUT com20
+            PIN CLK180_OUT
             PIN CLK270_OUT
-            PIN CLK0_OUT
+            PIN CLK0_OUT XLXN_1050
         END BLOCK
         BEGIN BLOCK XLXI_263 ibufds
             PIN I in3a
@@ -424,14 +426,14 @@ BEGIN SCHEMATIC
             PIN I kanal2
             PIN O tp1
         END BLOCK
-        BEGIN BLOCK XLXI_316 obuf
-            PIN I kanal3
-            PIN O tp2
-        END BLOCK
         BEGIN BLOCK XLXI_318 com_20_status
             PIN a XLXN_1032
             PIN q(7:0) XLXN_1034(7:0)
             PIN b(7:0) XLXN_1033(7:0)
+        END BLOCK
+        BEGIN BLOCK XLXI_316 obuf
+            PIN I XLXN_1049
+            PIN O tp2
         END BLOCK
     END NETLIST
     BEGIN SHEET 1 3520 2720
@@ -515,9 +517,6 @@ BEGIN SCHEMATIC
         END BRANCH
         BEGIN BRANCH in0a
             WIRE 176 816 240 816
-        END BRANCH
-        BEGIN BRANCH XLXN_976
-            WIRE 464 832 544 832
         END BRANCH
         BEGIN INSTANCE XLXI_270 544 1088 R0
         END INSTANCE
@@ -688,12 +687,6 @@ BEGIN SCHEMATIC
         END BRANCH
         INSTANCE XLXI_312 1840 2368 R0
         IOMARKER 2160 2336 tp3 R0 28
-        BEGIN BRANCH kanal3
-            WIRE 1632 1968 1680 1968
-            WIRE 1680 1968 1744 1968
-            WIRE 1680 1968 1680 2240
-            WIRE 1680 2240 1824 2240
-        END BRANCH
         BEGIN BRANCH kanal0
             WIRE 1632 192 1760 192
         END BRANCH
@@ -705,11 +698,6 @@ BEGIN SCHEMATIC
         END BRANCH
         INSTANCE XLXI_276 1648 1696 R0
         IOMARKER 1968 1664 tp1 R0 28
-        BEGIN BRANCH tp2
-            WIRE 2048 2240 2144 2240
-        END BRANCH
-        INSTANCE XLXI_316 1824 2272 R0
-        IOMARKER 2144 2240 tp2 R0 28
         BEGIN BRANCH XLXN_1027
             WIRE 240 192 288 192
             WIRE 288 192 496 192
@@ -718,13 +706,6 @@ BEGIN SCHEMATIC
         END BRANCH
         BEGIN INSTANCE XLXI_313 160 2144 R0
         END INSTANCE
-        BEGIN BRANCH XLXN_1009
-            WIRE 96 1296 96 2112
-            WIRE 96 2112 160 2112
-            WIRE 96 1296 1056 1296
-            WIRE 928 832 1056 832
-            WIRE 1056 832 1056 1296
-        END BRANCH
         INSTANCE XLXI_287 784 2144 R0
         BEGIN INSTANCE XLXI_318 672 2048 R0
         END INSTANCE
@@ -737,8 +718,7 @@ BEGIN SCHEMATIC
         BEGIN BRANCH XLXN_1034(7:0)
             WIRE 912 1984 1104 1984
             WIRE 1104 1984 1104 2576
-            WIRE 1104 2576 1648 2576
-            WIRE 1648 2576 2576 2576
+            WIRE 1104 2576 2576 2576
             WIRE 2576 1648 2848 1648
             WIRE 2576 1648 2576 2576
         END BRANCH
@@ -749,12 +729,33 @@ BEGIN SCHEMATIC
             WIRE 3232 1616 3312 1616
             WIRE 3312 1616 3312 1760
         END BRANCH
-        BEGIN BRANCH com20
-            WIRE 624 2224 784 2224
+        BEGIN BRANCH kanal3
+            WIRE 1632 1968 1744 1968
+        END BRANCH
+        BEGIN BRANCH XLXN_1044
+            WIRE 96 1296 1056 1296
+            WIRE 96 1296 96 2112
+            WIRE 96 2112 160 2112
+            WIRE 928 832 1056 832
+            WIRE 1056 832 1056 1296
+        END BRANCH
+        BEGIN BRANCH tp2
+            WIRE 704 1200 800 1200
+        END BRANCH
+        INSTANCE XLXI_316 480 1232 R0
+        IOMARKER 800 1200 tp2 R0 28
+        BEGIN BRANCH XLXN_1049
+            WIRE 416 1104 416 1200
+            WIRE 416 1200 480 1200
+            WIRE 416 1104 496 1104
+            WIRE 464 832 496 832
+            WIRE 496 832 544 832
+            WIRE 496 832 496 1104
+        END BRANCH
+        BEGIN BRANCH XLXN_1050
+            WIRE 624 2128 704 2128
+            WIRE 704 2112 704 2128
             WIRE 704 2112 784 2112
-            WIRE 704 2112 704 2208
-            WIRE 704 2208 784 2208
-            WIRE 784 2208 784 2224
         END BRANCH
     END SHEET
 END SCHEMATIC
