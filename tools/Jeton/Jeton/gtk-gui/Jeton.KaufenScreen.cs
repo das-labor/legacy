@@ -27,6 +27,7 @@ namespace Jeton {
             // Container child Jeton.KaufenScreen.Gtk.Container+ContainerChild
             this.hpaned1 = new Gtk.HPaned();
             this.hpaned1.CanFocus = true;
+            this.hpaned1.Name = "hpaned1";
             this.hpaned1.Position = 262;
             // Container child hpaned1.Gtk.Paned+PanedChild
             this.artikelChooser = new Jeton.ArtikelChooser();

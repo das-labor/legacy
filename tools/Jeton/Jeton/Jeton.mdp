@@ -61,6 +61,7 @@
     <ProjectReference type="Project" localcopy="True" refto="CTapi" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Security, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Assembly" localcopy="True" specificVersion="False" refto="../../../../usr/lib/monodevelop/AddIns/MonoDevelop.GtkCore/libstetic.dll" />
+    <ProjectReference type="Project" localcopy="True" refto="I2cUsb" />
   </References>
   <LanguageParameters ApplicationIcon="." ctype="CSharpProjectParameters" />
   <Deployment.LinuxDeployData scriptName="jeton" />

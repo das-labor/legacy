@@ -99,6 +99,7 @@ namespace JetonAdmin {
             // Container child JetonAdmin.UserScreen.Gtk.Container+ContainerChild
             this.hpaned1 = new Gtk.HPaned();
             this.hpaned1.CanFocus = true;
+            this.hpaned1.Name = "hpaned1";
             this.hpaned1.Position = 221;
             // Container child hpaned1.Gtk.Paned+PanedChild
             this.vbox2 = new Gtk.VBox();
@@ -128,7 +129,6 @@ namespace JetonAdmin {
             w3.Position = 1;
             // Container child vbox2.Gtk.Box+BoxChild
             this.hbuttonbox1 = new Gtk.HButtonBox();
-            this.hbuttonbox1.Name = "hbuttonbox1";
             this.hbuttonbox1.Homogeneous = true;
             // Container child hbuttonbox1.Gtk.ButtonBox+ButtonBoxChild
             this.button1 = new Gtk.Button();
