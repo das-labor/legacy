@@ -42,13 +42,16 @@ OBJECTS = $(patsubst %.c,%.o,${SRC})
 PROGRAM = $(NAME)$(EXE_SUFFIX)
 
 
-all: $(PROGRAM)
+all: $(PROGRAM) libI2cUsb.so
 
 #.c.o:
 #	$(CC) $(CFLAGS) -c $<
 
 $(PROGRAM): $(OBJECTS)
 	$(CC) -o $(PROGRAM) $(OBJECTS) $(LIBS)
+
+libI2cUsb.so: ./CDriver/i2cUsb.o ./common/opendevice.o
+	$(CC) -shared $^ -o $@ $(LIBS)
 
 strip: $(PROGRAM)
 	strip $(PROGRAM)
