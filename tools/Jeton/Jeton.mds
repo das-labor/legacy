@@ -1,29 +1,32 @@
-<Combine name="Jeton" fileversion="2.0">
+<Combine fileversion="2.0" name="Jeton">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
-      <CustomCommands>
-        <Command type="Custom" />
-      </CustomCommands>
       <Entry build="True" name="Jeton" configuration="Debug" />
       <Entry build="True" name="JetonDb" configuration="Debug" />
       <Entry build="True" name="JetonAdmin" configuration="Debug" />
-      <Entry build="True" name="Packages" configuration="" />
+      <Entry build="True" name="Packages" configuration="Debug" />
       <Entry build="True" name="CTapi" configuration="Debug" />
+      <Entry build="True" name="I2cUsb" configuration="Debug" />
+      <CustomCommands>
+        <Command type="Custom" />
+      </CustomCommands>
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="Jeton" configuration="Release" />
       <Entry build="True" name="JetonDb" configuration="Release" />
       <Entry build="True" name="JetonAdmin" configuration="Release" />
-      <Entry build="True" name="Packages" configuration="" />
+      <Entry build="True" name="Packages" configuration="Release" />
       <Entry build="True" name="CTapi" configuration="Release" />
+      <Entry build="True" name="I2cUsb" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="Jeton" single="True">
-    <Execute type="None" entry="SchubserPos" />
+    <Execute type="None" entry="Jeton" />
     <Execute type="None" entry="JetonDb" />
     <Execute type="None" entry="JetonAdmin" />
     <Execute type="None" entry="Packages" />
     <Execute type="None" entry="CTapi" />
+    <Execute type="None" entry="I2cUsb" />
   </StartMode>
   <MonoDevelop.ChangeLogAddIn.ChangeLogInfo policy="UpdateNearestChangeLog" />
   <Entries>
@@ -32,5 +35,6 @@
     <Entry filename="JetonAdmin/JetonAdmin.mdp" />
     <Entry filename="Packages.mdse" />
     <Entry filename="CTapi/CTapi.mdp" />
+    <Entry filename="I2cUsb/I2cUsb.mdp" />
   </Entries>
 </Combine>

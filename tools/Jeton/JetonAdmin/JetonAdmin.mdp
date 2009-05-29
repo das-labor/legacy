@@ -1,4 +1,4 @@
-<Project name="JetonAdmin" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+<Project name="JetonAdmin" fileversion="2.0" language="C#" clr-version="Net_2_0" targetFramework="2.0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Debug" assembly="JetonAdmin" />
@@ -37,9 +37,4 @@
     <ProjectReference type="Project" localcopy="True" refto="JetonDb" />
   </References>
   <Deployment.LinuxDeployData scriptName="jeton-admin" />
-  <GtkDesignInfo gtkVersion="2.12.0">
-    <ExportedWidgets>
-      <Widget>JetonAdmin.UserScreen</Widget>
-    </ExportedWidgets>
-  </GtkDesignInfo>
 </Project>

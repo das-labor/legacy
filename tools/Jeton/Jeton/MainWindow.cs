@@ -2,6 +2,7 @@ using System;
 using Gtk;
 using CTapi;
 using JetonDb;
+using I2cUsb;
 
 namespace Jeton
 {
@@ -36,10 +37,18 @@ namespace Jeton
 			Fullscreen();
 			
 			// Open CardTerminal
-			ActiveUser au = ActiveUser.Instance;
-			au.OpenCT(1);
-			au.ActiveUserChanged   += new ActiveUserChangedHandler( OnActiveUserChanged );
-			au.CardTerminalProblem += new CardTerminalProblemHandler( OnCardTerminalProblem );
+			//ActiveUser au = ActiveUser.Instance;
+			//au.OpenCT(1);
+			//au.ActiveUserChanged   += new ActiveUserChangedHandler( OnActiveUserChanged );
+			//au.CardTerminalProblem += new CardTerminalProblemHandler( OnCardTerminalProblem );
+			
+			I2cUsb.I2cUsb i = new I2cUsb.I2cUsb();
+			byte[] foo = i.ReadCard(0,0x80);
+			
+			CT ct = new CT(1);
+			ct.Hexify(foo,0x80);
+			
+			
 		}
 
 		/// <value>
