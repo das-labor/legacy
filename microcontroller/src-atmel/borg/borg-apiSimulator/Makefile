@@ -1,7 +1,7 @@
 PRG = borgSim
 OPTIMIZE = -O0
-#LIBS = -lglut -lpthread -lGL -lGLU
-LIBS = -lglut32 -lglu32 -lopengl32
+LIBS = -lglut -lpthread -lGL -lGLU
+#LIBS = -lglut32 -lglu32 -lopengl32
 
 CC = gcc
 LD = ld
