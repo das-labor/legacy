@@ -28,15 +28,15 @@
 	uint16_t tetris_logic_nHighscore EEMEM;
 #endif
 
-	// MSB is leftmost pixel
+       // MSB is leftmost pixel
 static uint8_t icon[8] PROGMEM =
-	 {0x0f, 0x0f, 0xc3, 0xdb, 0xdb, 0xc3, 0xf0, 0xf0}; // Tetris icon
+        {0x0f, 0x0f, 0xc3, 0xdb, 0xdb, 0xc3, 0xf0, 0xf0}; // Tetris icon
 
 void tetris();
 
 game_descriptor_t tetris_game_descriptor __attribute__((section(".game_descriptors"))) ={
-	&tetris,
-	icon,
+       &tetris,
+       icon,
 };
 
 
@@ -92,6 +92,7 @@ void tetris_logic_saveHighscore(uint16_t nHighscore)
 	}
 #endif
 }
+
 
 /****************************
  * construction/destruction *
@@ -285,6 +286,9 @@ void tetris ()
 
 		// the piece has irrevocably hit the ground
 		case TETRIS_PFS_DOCKED:
+			// avoid accidentally issued "down" commands
+			tetris_input_resetDownKeyRepeat(pIn);
+
 			// remove complete lines (if any)
 			tetris_playfield_removeCompleteLines(pPl);
 
@@ -292,6 +296,7 @@ void tetris ()
 			// and whether the level gets changed
 			tetris_logic_removedLines(pLogic, tetris_playfield_getRowMask(pPl));
 			tetris_input_setLevel(pIn, tetris_logic_getLevel(pLogic));
+
 			break;
 
 		// avoid compiler warnings
@@ -475,4 +480,3 @@ tetris_piece_t* tetris_logic_getPreviewPiece(tetris_logic_t *pLogic)
 	assert(pLogic != NULL);
 	return pLogic->pPreviewPiece;
 }
-
