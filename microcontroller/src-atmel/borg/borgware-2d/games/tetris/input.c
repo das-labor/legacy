@@ -30,8 +30,8 @@
 #define TETRIS_INPUT_GLIDE_CYCLES 75
 
 // here you can adjust the delays (in loop cycles) for key repeat
-#define TETRIS_INPUT_REPEAT_INITIALDELAY 40
-#define TETRIS_INPUT_REPEAT_DELAY 10
+#define TETRIS_INPUT_REPEAT_INITIALDELAY 35
+#define TETRIS_INPUT_REPEAT_DELAY 5
 
 // Here you can adjust the amount of loop cycles a command is ignored after
 // its button has been released (to reduce joystick chatter)
@@ -41,6 +41,10 @@
 #define TETRIS_INPUT_CHATTER_TICKS_RIGHT   12
 #define TETRIS_INPUT_CHATTER_TICKS_DOWN    12
 #define TETRIS_INPUT_CHATTER_TICKS_DROP    24
+
+// wait cycles per level (array of uint8_t)
+#define TETRIS_INPUT_LVL_CYCLES 200, 133, 100, 80, 66, 57, 50, 44, 40, 36, 33, \
+	30, 28, 26, 25, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9
 
 
 /***************************
@@ -192,7 +196,7 @@ void tetris_input_destruct(tetris_input_t *pIn)
  * input related functions *
  ***************************/
 
-/* Function:       retris_input_getCommand
+/* Function:       tetris_input_getCommand
  * Description:    retrieves commands from joystick or loop interval
  * Argument pIn:   pointer to an input object
  * Argument nPace: falling pace (see definition of tetris_input_pace_t)
@@ -383,9 +387,26 @@ void tetris_input_setLevel(tetris_input_t *pIn,
 {
 	assert(pIn != NULL);
 	assert(nLvl <= TETRIS_INPUT_LEVELS - 1);
+
+	static const uint8_t nCycles[] = {TETRIS_INPUT_LVL_CYCLES};
+
 	if (pIn->nLevel != nLvl)
 	{
 		pIn->nLevel = nLvl;
-		pIn->nMaxCycles = 400 / (nLvl + 2);
+		pIn->nMaxCycles = nCycles[nLvl];
+	}
+}
+
+/* Function:      tetris_input_resetDownKeyRepeat
+ * Description:   resets the key repeat count for the down key
+ * Argument pIn:  pointer to an input object
+ * Return value:  void
+ */
+void tetris_input_resetDownKeyRepeat(tetris_input_t *pIn)
+{
+	assert(pIn != NULL);
+	if (pIn->cmdLast == TETRIS_INCMD_DOWN)
+	{
+		pIn->nRepeatCount = -TETRIS_INPUT_REPEAT_INITIALDELAY;
 	}
 }

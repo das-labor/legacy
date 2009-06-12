@@ -14,6 +14,7 @@
 
 #define WAIT(ms) wait(ms)
 
+
 /***********
  * defines *
  ***********/
@@ -409,7 +410,6 @@ void tetris_view_showResults(tetris_view_t *pV)
 		snprintf(pszResults, 48 * sizeof(char),
 			"</#Lines %u    New Highscore %u", nLines, nScore);
 	}
-
 #ifdef SCROLLTEXT_SUPPORT
 	scrolltext(pszResults);
 #endif
