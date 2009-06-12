@@ -9,7 +9,7 @@
  ***********/
 
 // number of levels
-#define TETRIS_INPUT_LEVELS 20
+#define TETRIS_INPUT_LEVELS 30
 
 
 /*********
@@ -50,7 +50,7 @@ typedef struct tetris_input_t
 	// set via the tetris_input_setLevel() function.
 	uint8_t nMaxCycles;
 
-	// This counter keeps track of the number of loop cycles whoch have been
+	// This counter keeps track of the number of loop cycles which have been
 	// done since the last forced piece movement. It gets reset if it either
 	// reaches a well defined value (causing a gravity command to be issued)
 	// or the player has moved down the piece herself/himself.
@@ -63,7 +63,7 @@ typedef struct tetris_input_t
 	// if that value is reached).
 	int8_t nRepeatCount;
 
-	// Keeps track of the number loop cycles which have been run while in
+	// Keeps track of the number of loop cycles which have been run while in
 	// pause mode. As soon as a well defined value is reached, the game
 	// continues (in case someone paused the game and forgot to resume it).
 	uint16_t nPauseCount;
@@ -125,5 +125,12 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 void tetris_input_setLevel(tetris_input_t *pIn,
                            uint8_t nLvl);
 
+
+/* Function:      tetris_input_resetDownKeyRepeat
+ * Description:   resets the key repeat count for the down key
+ * Argument pIn:  pointer to an input object
+ * Return value:  void
+ */
+void tetris_input_resetDownKeyRepeat(tetris_input_t *pIn);
 
 #endif /*INPUT_H_*/
