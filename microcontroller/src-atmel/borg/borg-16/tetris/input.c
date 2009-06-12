@@ -74,7 +74,7 @@ void tetris_input_chatterProtect (tetris_input_t *pIn,
 
 	// amount of loop cycles a command is ignored after its button has been
 	// released (every command has its own counter)
-	const static uint8_t nInitialIgnoreValue[TETRIS_INCMD_NONE] PROGMEM =
+	static const uint8_t nInitialIgnoreValue[TETRIS_INCMD_NONE] PROGMEM =
 	{
 		TETRIS_INPUT_CHATTER_TICKS_ROT_CW,
 		TETRIS_INPUT_CHATTER_TICKS_ROT_CCW,
