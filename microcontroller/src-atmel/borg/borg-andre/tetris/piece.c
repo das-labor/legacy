@@ -49,7 +49,7 @@ void tetris_piece_destruct(tetris_piece_t *pPc)
  ****************************/
 
 /* Function:     tetris_piece_getBitmap
- * Description:  returns bitfield representation of the piece 
+ * Description:  returns bitfield representation of the piece
  * Argument pPc: piece from which the bitfield shuld be retrieved
  * Return value: bitfield representation of the piece
  *               - nth nibble is nth row of the piece (from upper left)
@@ -62,7 +62,7 @@ uint16_t tetris_piece_getBitmap(tetris_piece_t *pPc)
 	// Lookup table:
 	// A value in an array represents a piece in a specific angle (rotating
 	// clockwise from index 0).
-	const static uint16_t piece[][4] PROGMEM =
+	static const uint16_t piece[][4] PROGMEM =
 		{{0x0F00, 0x2222, 0x0F00, 0x2222},  // LINE
 		 {0x4E00, 0x4640, 0x0E40, 0x4C40},  // T
 		 {0x0660, 0x0660, 0x0660, 0x0660},  // SQUARE

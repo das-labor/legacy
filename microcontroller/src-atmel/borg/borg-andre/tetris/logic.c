@@ -82,6 +82,7 @@ void tetris_logic_saveHighscore(uint16_t nHighscore)
 #endif
 }
 
+
 /****************************
  * construction/destruction *
  ****************************/
@@ -274,6 +275,9 @@ void tetris ()
 
 		// the piece has irrevocably hit the ground
 		case TETRIS_PFS_DOCKED:
+			// avoid accidentally issued "down" commands
+			tetris_input_resetDownKeyRepeat(pIn);
+
 			// remove complete lines (if any)
 			tetris_playfield_removeCompleteLines(pPl);
 
@@ -281,6 +285,7 @@ void tetris ()
 			// and whether the level gets changed
 			tetris_logic_removedLines(pLogic, tetris_playfield_getRowMask(pPl));
 			tetris_input_setLevel(pIn, tetris_logic_getLevel(pLogic));
+
 			break;
 
 		// avoid compiler warnings
@@ -464,4 +469,3 @@ tetris_piece_t* tetris_logic_getPreviewPiece(tetris_logic_t *pLogic)
 	assert(pLogic != NULL);
 	return pLogic->pPreviewPiece;
 }
-
