@@ -39,7 +39,7 @@ NET "in3b"  LOC = "D1" | IOSTANDARD = LVDS_25 ; # Pin 16
 NET "in4a"  LOC = "E4" | IOSTANDARD = LVDS_25 ; # Pin 25
 NET "in4b"  LOC = "F4" | IOSTANDARD = LVDS_25 ; # Pin 27
 
-#NET "out1" LOC = "E6"| DRIVE = 24  | SLEW = fast;
+NET "out1" LOC = "E6"| DRIVE = 24  | SLEW = fast;
 #NET "taste" LOC = "D8";
 
 NET "tp1" LOC = "p5"| DRIVE = 12  | SLEW = fast; # Pin 17 
