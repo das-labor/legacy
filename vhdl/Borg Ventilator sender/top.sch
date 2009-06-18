@@ -38,9 +38,9 @@ BEGIN SCHEMATIC
         SIGNAL gnd3
         SIGNAL gnd2
         SIGNAL gnd1
-        SIGNAL XLXN_224
         SIGNAL out0
         SIGNAL gnd0
+        SIGNAL XLXN_240
         PORT Input irq
         PORT Input schaltin(7:0)
         PORT Input tast(3:0)
@@ -59,6 +59,7 @@ BEGIN SCHEMATIC
         PORT Output gnd1
         PORT Output out0
         PORT Output gnd0
+        PORT Output XLXN_240
         BEGIN BLOCKDEF display2
             TIMESTAMP 2009 5 24 21 36 47
             RECTANGLE N 64 -132 256 -16 
@@ -175,6 +176,25 @@ BEGIN SCHEMATIC
             LINE N 64 0 64 -64 
             CIRCLE N 128 -48 160 -16 
         END BLOCKDEF
+        BEGIN BLOCKDEF memory_control
+            TIMESTAMP 2009 6 10 18 24 51
+            RECTANGLE N 64 -448 320 0 
+            LINE N 64 -416 0 -416 
+            LINE N 320 -352 384 -352 
+            LINE N 320 -384 384 -384 
+            RECTANGLE N 320 -428 384 -404 
+            LINE N 320 -416 384 -416 
+            LINE N 320 -256 384 -256 
+            LINE N 320 -224 384 -224 
+            LINE N 320 -192 384 -192 
+            RECTANGLE N 320 -300 384 -276 
+            LINE N 320 -288 384 -288 
+            LINE N 320 -32 384 -32 
+            LINE N 320 -64 384 -64 
+            LINE N 320 -96 384 -96 
+            RECTANGLE N 320 -140 384 -116 
+            LINE N 320 -128 384 -128 
+        END BLOCKDEF
         BEGIN BLOCK XLXI_8 Picoblaze
             PIN clk XLXN_92
             PIN irq irq
@@ -248,6 +268,20 @@ BEGIN SCHEMATIC
             PIN I out0
             PIN O gnd0
         END BLOCK
+        BEGIN BLOCK XLXI_44 memory_control
+            PIN clk XLXN_92
+            PIN sram_we
+            PIN sram_oe XLXN_240
+            PIN sram_adr(17:0)
+            PIN sram_1_ce
+            PIN sram_1_ub
+            PIN sram_1_lb
+            PIN sram_1_io(15:0)
+            PIN sram_2_lb
+            PIN sram_2_ub
+            PIN sram_2_ce
+            PIN sram_2_io(15:0)
+        END BLOCK
     END NETLIST
     BEGIN SHEET 1 3520 2720
         BEGIN INSTANCE XLXI_8 448 1888 R0
@@ -295,15 +329,6 @@ BEGIN SCHEMATIC
         END BRANCH
         BEGIN BRANCH XLXN_166(7:0)
             WIRE 832 1952 1264 1952
-        END BRANCH
-        BEGIN BRANCH XLXN_92
-            WIRE 448 1296 448 1472
-            WIRE 448 1296 816 1296
-            WIRE 816 1296 864 1296
-            WIRE 864 1296 864 1456
-            WIRE 864 1456 928 1456
-            WIRE 608 528 816 528
-            WIRE 816 528 816 1296
         END BRANCH
         BEGIN INSTANCE XLXI_22 1264 2064 R0
         END INSTANCE
@@ -398,5 +423,26 @@ BEGIN SCHEMATIC
         END BRANCH
         IOMARKER 1344 688 gnd0 R0 28
         IOMARKER 1344 560 out0 R0 28
+        BEGIN INSTANCE XLXI_44 2448 2160 R0
+        END INSTANCE
+        BEGIN BRANCH XLXN_240
+            WIRE 2832 1776 2864 1776
+        END BRANCH
+        IOMARKER 2864 1776 XLXN_240 R0 28
+        BEGIN BRANCH XLXN_92
+            WIRE 448 1296 448 1472
+            WIRE 448 1296 816 1296
+            WIRE 816 1296 864 1296
+            WIRE 864 1296 864 1456
+            WIRE 864 1456 928 1456
+            WIRE 608 528 816 528
+            WIRE 816 528 816 1040
+            WIRE 816 1040 816 1296
+            WIRE 816 1040 1776 1040
+            WIRE 1776 1040 1776 1056
+            WIRE 1776 1056 1856 1056
+            WIRE 1856 1056 1856 1744
+            WIRE 1856 1744 2448 1744
+        END BRANCH
     END SHEET
 END SCHEMATIC

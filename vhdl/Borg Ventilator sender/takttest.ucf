@@ -1,0 +1,4 @@
+NET "clk"   TNM_NET = "clk";
+TIMESPEC "TS_clk"    = PERIOD "clk"   50 Mhz LOW 50 %;
+NET "clk100"   TNM_NET = "clk100";
+TIMESPEC "TS_clk100"    = PERIOD "clk100"   100 Mhz LOW 50 %;

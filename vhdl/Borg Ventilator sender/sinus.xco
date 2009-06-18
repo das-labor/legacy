@@ -1,0 +1,57 @@
+##############################################################
+#
+# Xilinx Core Generator version J.40
+# Date: Sun Jun 14 10:24:46 2009
+#
+##############################################################
+#
+#  This file contains the customisation parameters for a
+#  Xilinx CORE Generator IP GUI. It is strongly recommended
+#  that you do not manually alter this file as it may cause
+#  unexpected and unsupported behavior.
+#
+##############################################################
+#
+# BEGIN Project Options
+SET addpads = False
+SET asysymbol = True
+SET busformat = BusFormatAngleBracketNotRipped
+SET createndf = False
+SET designentry = VHDL
+SET device = xc3s200
+SET devicefamily = spartan3
+SET flowvendor = Foundation_iSE
+SET formalverification = False
+SET foundationsym = False
+SET implementationfiletype = Ngc
+SET package = ft256
+SET removerpms = False
+SET simulationfiles = Behavioral
+SET speedgrade = -5
+SET verilogsim = True
+SET vhdlsim = True
+# END Project Options
+# BEGIN Select
+SELECT Sine-Cosine_Look-Up_Table family Xilinx,_Inc. 5.0
+# END Select
+# BEGIN Parameters
+CSET aclr_pin=false
+CSET clock_enable=false
+CSET component_name=sinus
+CSET create_rpm=false
+CSET function=Sine_and_Cosine
+CSET handshaking_enabled=false
+CSET input_options=Registered
+CSET memory_type=Distributed_ROM
+CSET negative_cosine=true
+CSET negative_sine=true
+CSET output_options=Non_Registered
+CSET output_symmetry=Non_Symmetric
+CSET output_width=9
+CSET pipeline_stages=0
+CSET sclr_pin=false
+CSET theta_input_width=10
+# END Parameters
+GENERATE
+# CRC: 6697adbc
+

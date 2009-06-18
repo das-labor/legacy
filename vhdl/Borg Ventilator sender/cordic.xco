@@ -1,0 +1,66 @@
+##############################################################
+#
+# Xilinx Core Generator version J.40
+# Date: Sun Jun 07 15:26:44 2009
+#
+##############################################################
+#
+#  This file contains the customisation parameters for a
+#  Xilinx CORE Generator IP GUI. It is strongly recommended
+#  that you do not manually alter this file as it may cause
+#  unexpected and unsupported behavior.
+#
+##############################################################
+#
+# BEGIN Project Options
+SET addpads = False
+SET asysymbol = True
+SET busformat = BusFormatAngleBracketNotRipped
+SET createndf = False
+SET designentry = VHDL
+SET device = xc3s200
+SET devicefamily = spartan3
+SET flowvendor = Foundation_iSE
+SET formalverification = False
+SET foundationsym = False
+SET implementationfiletype = Ngc
+SET package = ft256
+SET removerpms = False
+SET simulationfiles = Behavioral
+SET speedgrade = -5
+SET verilogsim = True
+SET vhdlsim = True
+# END Project Options
+# BEGIN Select
+SELECT CORDIC family Xilinx,_Inc. 3.0
+# END Select
+# BEGIN Parameters
+CSET aclr=false
+CSET architectural_configuration=Word_Serial
+CSET ce=false
+CSET coarse_rotation=true
+CSET compensation_scaling=No_Scale_Compensation
+CSET component_name=cordic
+CSET create_rpm=false
+CSET data_format=SignedFraction
+CSET functional_selection=Sin_and_Cos
+CSET input_width=16
+CSET iterations=0
+CSET nd=true
+CSET output_width=16
+CSET phase_format=Scaled_Radians
+CSET phase_output=false
+CSET pipelining_mode=Optimal
+CSET precision=0
+CSET rdy=true
+CSET register_inputs=false
+CSET register_outputs=false
+CSET round_mode=Round_Pos_Neg_Inf
+CSET sclr=false
+CSET synchronization_enable=No_Override
+CSET x_out=true
+CSET y_out=true
+# END Parameters
+GENERATE
+# CRC: 5e96d73b
+
