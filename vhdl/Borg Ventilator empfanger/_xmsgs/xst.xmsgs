@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- IMPORTANT: This is an internal file that has been generated
+     by the Xilinx ISE software.  Any direct editing or
+     changes made to this file may result in unpredictable
+     behavior or data corruption.  It is strongly advised that
+     users do not edit the contents of this file. -->
+<messages>
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;videodaten.vf&quot; line 112:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">IOSTANDARD</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on entity</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;videodaten.vf&quot; line 122:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">IOSTANDARD</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on entity</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;videodaten.vf&quot; line 126:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">IOSTANDARD</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on entity</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;videodaten.vf&quot; line 130:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">IOSTANDARD</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on entity</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;videodaten.vf&quot; line 149:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">IOSTANDARD</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on entity</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;videodaten.vf&quot; line 162:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">DRIVE</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on entity</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;videodaten.vf&quot; line 162:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">IOSTANDARD</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on entity</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;videodaten.vf&quot; line 162:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">SLEW</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on entity</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;videodaten.vf&quot; line 206:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">DRIVE</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on entity</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;videodaten.vf&quot; line 206:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">IOSTANDARD</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on entity</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;videodaten.vf&quot; line 206:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">SLEW</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on entity</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;videodaten.vf&quot; line 219:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">SLEW</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on entity</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;videodaten.vf&quot; line 219:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">DRIVE</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on entity</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;videodaten.vf&quot; line 219:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">IOSTANDARD</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on entity</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 289:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 1200:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 452:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 483:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 606:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 614:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 381:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 423:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 525:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 597:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 682:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 1109:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 1136:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 1220:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 1269:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 332:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 371:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 403:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 413:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 432:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 442:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 468:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 493:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 554:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 587:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 794:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 871:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 886:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 937:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 956:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 1244:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 1301:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 1311:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 1327:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 1415:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 1448:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 828:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 1368:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/kcpsm3.vhd&quot; line 906:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_00</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_01</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_02</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_03</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_04</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_05</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_06</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_07</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_08</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_09</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_0A</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_0B</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_0C</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_0D</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_0E</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_0F</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_10</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_11</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_12</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_13</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_14</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_15</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_16</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_17</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_18</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_19</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_1A</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_1B</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_1C</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_1D</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_1E</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_1F</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_20</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_21</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_22</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_23</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_24</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_25</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_26</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_27</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_28</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_29</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_2A</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_2B</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_2C</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_2D</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_2E</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_2F</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_30</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_31</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_32</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_33</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_34</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_35</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_36</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_37</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_38</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_39</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_3A</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_3B</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_3C</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_3D</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_3E</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INIT_3F</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INITP_00</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INITP_01</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INITP_02</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INITP_03</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INITP_04</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INITP_05</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INITP_06</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="2591" filtered="1" delta="old" ><arg fmt="%s" index="1">&quot;D:/Borg Ventilator empfanger/picoblaze_rom.vhd&quot; line 182:</arg> <arg fmt="%s" index="2">attribute on instance</arg> &lt;<arg fmt="%s" index="3">INITP_07</arg>&gt; overrides <arg fmt="%s" index="4">generic/parameter on component</arg>. It is possible that simulator will not take this attribute into account.
+</msg>
+
+<msg type="warning" file="Xst" num="852" filtered="1" delta="old" >&quot;<arg fmt="%s" index="1">videodaten.vf</arg>&quot; line <arg fmt="%d" index="2">224</arg>: Unconnected input port &apos;<arg fmt="%s" index="3">in2</arg>&apos; of instance &apos;<arg fmt="%s" index="4">XLXI_317</arg>&apos; is tied to GND.
+</msg>
+
+<msg type="warning" file="Xst" num="852" filtered="1" delta="old" >&quot;<arg fmt="%s" index="1">videodaten.vf</arg>&quot; line <arg fmt="%d" index="2">224</arg>: Unconnected input port &apos;<arg fmt="%s" index="3">in3</arg>&apos; of instance &apos;<arg fmt="%s" index="4">XLXI_317</arg>&apos; is tied to GND.
+</msg>
+
+<msg type="warning" file="Xst" num="852" filtered="1" delta="old" >&quot;<arg fmt="%s" index="1">videodaten.vf</arg>&quot; line <arg fmt="%d" index="2">224</arg>: Unconnected input port &apos;<arg fmt="%s" index="3">in6</arg>&apos; of instance &apos;<arg fmt="%s" index="4">XLXI_317</arg>&apos; is tied to GND.
+</msg>
+
+<msg type="warning" file="Xst" num="852" filtered="1" delta="old" >&quot;<arg fmt="%s" index="1">videodaten.vf</arg>&quot; line <arg fmt="%d" index="2">224</arg>: Unconnected input port &apos;<arg fmt="%s" index="3">in7</arg>&apos; of instance &apos;<arg fmt="%s" index="4">XLXI_317</arg>&apos; is tied to GND.
+</msg>
+
+<msg type="warning" file="Xst" num="852" filtered="1" delta="old" >&quot;<arg fmt="%s" index="1">videodaten.vf</arg>&quot; line <arg fmt="%d" index="2">224</arg>: Unconnected input port &apos;<arg fmt="%s" index="3">in10</arg>&apos; of instance &apos;<arg fmt="%s" index="4">XLXI_317</arg>&apos; is tied to GND.
+</msg>
+
+<msg type="warning" file="Xst" num="852" filtered="1" delta="old" >&quot;<arg fmt="%s" index="1">videodaten.vf</arg>&quot; line <arg fmt="%d" index="2">224</arg>: Unconnected input port &apos;<arg fmt="%s" index="3">in11</arg>&apos; of instance &apos;<arg fmt="%s" index="4">XLXI_317</arg>&apos; is tied to GND.
+</msg>
+
+<msg type="warning" file="Xst" num="852" filtered="1" delta="old" >&quot;<arg fmt="%s" index="1">videodaten.vf</arg>&quot; line <arg fmt="%d" index="2">224</arg>: Unconnected input port &apos;<arg fmt="%s" index="3">in14</arg>&apos; of instance &apos;<arg fmt="%s" index="4">XLXI_317</arg>&apos; is tied to GND.
+</msg>
+
+<msg type="warning" file="Xst" num="852" filtered="1" delta="old" >&quot;<arg fmt="%s" index="1">videodaten.vf</arg>&quot; line <arg fmt="%d" index="2">224</arg>: Unconnected input port &apos;<arg fmt="%s" index="3">in15</arg>&apos; of instance &apos;<arg fmt="%s" index="4">XLXI_317</arg>&apos; is tied to GND.
+</msg>
+
+<msg type="warning" file="Xst" num="852" filtered="1" delta="old" >&quot;<arg fmt="%s" index="1">videodaten.vf</arg>&quot; line <arg fmt="%d" index="2">224</arg>: Unconnected input port &apos;<arg fmt="%s" index="3">irq</arg>&apos; of instance &apos;<arg fmt="%s" index="4">XLXI_317</arg>&apos; is tied to GND.
+</msg>
+
+<msg type="warning" file="Xst" num="852" filtered="1" delta="old" >&quot;<arg fmt="%s" index="1">switch4_8.vf</arg>&quot; line <arg fmt="%d" index="2">138</arg>: Unconnected input port &apos;<arg fmt="%s" index="3">CLR</arg>&apos; of instance &apos;<arg fmt="%s" index="4">XLXI_246</arg>&apos; is tied to GND.
+</msg>
+
+<msg type="warning" file="Xst" num="819" delta="old" >&quot;<arg fmt="%s" index="1">D:/Borg Ventilator empfanger/Picoblaze.vhd</arg>&quot; line <arg fmt="%d" index="2">252</arg>: The following signals are missing in the process sensitivity list:
+<arg fmt="%s" index="3">dcm_sts</arg>.
+</msg>
+
+<msg type="warning" file="Xst" num="1961" filtered="1" delta="old" >The length of the hex value for the attribute <arg fmt="%s" index="1">INIT</arg> on instance <arg fmt="%s" index="2">arith_loop[7].msb_arith.arith_carry_out_lut</arg> should be <arg fmt="%d" index="3">2</arg> bits long. The current value set is <arg fmt="%d" index="4">4</arg> bits long.  Value has been truncated
+</msg>
+
+<msg type="warning" file="Xst" num="647" delta="old" >Input &lt;<arg fmt="%s" index="1">b&lt;7:2&gt;</arg>&gt; is never used.
+</msg>
+
+<msg type="warning" file="Xst" num="646" delta="old" >Signal &lt;<arg fmt="%s" index="1">sync_er</arg>&gt; is assigned but never used.
+</msg>
+
+<msg type="warning" file="Xst" num="646" delta="old" >Signal &lt;<arg fmt="%s" index="1">sync_ok</arg>&gt; is assigned but never used.
+</msg>
+
+<msg type="warning" file="Xst" num="1780" delta="old" >Signal &lt;<arg fmt="%s" index="1">i5</arg>&gt; is never used or assigned.
+</msg>
+
+<msg type="warning" file="Xst" num="646" filtered="1" delta="old" >Signal &lt;<arg fmt="%s" index="1">q4&lt;7:1&gt;</arg>&gt; is assigned but never used.
+</msg>
+
+<msg type="warning" file="Xst" num="646" delta="old" >Signal &lt;<arg fmt="%s" index="1">q5&lt;7:1&gt;</arg>&gt; is assigned but never used.
+</msg>
+
+<msg type="warning" file="Xst" num="646" delta="old" >Signal &lt;<arg fmt="%s" index="1">XLXN_1022</arg>&gt; is assigned but never used.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">q4_1</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">picoblaze_e</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">q4_2</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">picoblaze_e</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">q4_3</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">picoblaze_e</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">q4_4</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">picoblaze_e</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">q4_5</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">picoblaze_e</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">q4_6</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">picoblaze_e</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">q4_7</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">picoblaze_e</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">q5_1</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">picoblaze_e</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">q5_2</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">picoblaze_e</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">q5_3</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">picoblaze_e</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">q5_4</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">picoblaze_e</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">q5_5</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">picoblaze_e</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">q5_6</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">picoblaze_e</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">q5_7</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">picoblaze_e</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">rdy_i</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">XLXI_282</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">rdy_i</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">XLXI_283</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">rdy_i</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">XLXI_284</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">rdy_i</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">XLXI_286</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">en5</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">XLXI_317</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">q5_0</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">XLXI_317</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">rdy</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">XLXI_319</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2170" filtered="1" delta="old" >Unit <arg fmt="%s" index="1">videodaten</arg> : the following signal(s) form a combinatorial loop: </msg>
+
+<msg type="warning" file="Xst" num="2170" filtered="1" delta="old" >Unit <arg fmt="%s" index="1">videodaten</arg> : the following signal(s) form a combinatorial loop: </msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">XLXI_286/rdy_i</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">videodaten</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">XLXI_284/rdy_i</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">videodaten</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">XLXI_283/rdy_i</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">videodaten</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">XLXI_282/rdy_i</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">videodaten</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">XLXI_319/rdy</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">videodaten</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">XLXI_317/q5_0</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">videodaten</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" filtered="1" delta="old" >Node &lt;<arg fmt="%s" index="1">XLXI_317/en5</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">videodaten</arg>&gt;.
+</msg>
+
+<msg type="info" file="Xst" num="2260" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">U0/first_encoder/disp_run</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">BU2</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">2 FFs/Latches</arg> : <arg fmt="%s" index="4">&lt;U0/first_encoder/disp_run_1&gt; &lt;U0/first_encoder/disp_run_2&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2260" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">U0/first_encoder/disp_run</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">BU2</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">2 FFs/Latches</arg> : <arg fmt="%s" index="4">&lt;U0/first_encoder/disp_run_1&gt; &lt;U0/first_encoder/disp_run_2&gt; </arg>
+</msg>
+
+<msg type="warning" file="Xst" num="1336" delta="old" > (*) More than 100% of Device resources are used
+</msg>
+
+<msg type="info" file="Xst" num="2169" delta="old" >HDL ADVISOR - Some clock signals were not automatically buffered by XST with BUFG/BUFR resources. Please use the buffer_type constraint in order to insert these buffers to the clock signals to help prevent skew problems.
+</msg>
+
+</messages>
+

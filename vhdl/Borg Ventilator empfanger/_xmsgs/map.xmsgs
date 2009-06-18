@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- IMPORTANT: This is an internal file that has been generated
+     by the Xilinx ISE software.  Any direct editing or
+     changes made to this file may result in unpredictable
+     behavior or data corruption.  It is strongly advised that
+     users do not edit the contents of this file. -->
+<messages>
+<msg type="warning" file="LIT" num="243" filtered="1" delta="old" >Logical network <arg fmt="%s" index="1">icon_control0&lt;10&gt;</arg> has no load.
+</msg>
+
+<msg type="warning" file="LIT" num="395" delta="old" >The above <arg fmt="%s" index="1">warning</arg> message <arg fmt="%s" index="2">base_net_load_rule</arg> is repeated <arg fmt="%d" index="3">126</arg> more times for the following (max. 5 shown):
+<arg fmt="%s" index="4">icon_control0&lt;11&gt;,
+icon_control0&lt;15&gt;,
+icon_control0&lt;16&gt;,
+icon_control0&lt;17&gt;,
+icon_control0&lt;18&gt;</arg>
+To see the details of these <arg fmt="%s" index="5">warning</arg> messages, please use the -detail switch.
+</msg>
+
+<msg type="info" file="MapLib" num="562" delta="old" >No environment variables are currently set.
+</msg>
+
+<msg type="info" file="MapLib" num="863" delta="old" >The following Virtex BUFG(s) is/are being retargeted to Virtex2 BUFGMUX(s) with input tied to I0 and Select pin tied to constant 0:
+<arg fmt="%s" index="1">BUFG symbol &quot;U_icon_pro/icon_pro/u_icon/i_yes_bscan/u_bs/i_bufg/u_bufg&quot; (output signal=icon_control0&lt;0&gt;),
+BUFG symbol &quot;XLXI_203/CLK0_BUFG_INST&quot; (output signal=clk60),
+BUFG symbol &quot;XLXI_277/CLK0_BUFG_INST&quot; (output signal=XLXI_277/CLK0_OUT),
+BUFG symbol &quot;XLXI_277/CLKFX_BUFG_INST&quot; (output signal=clk200),
+BUFG symbol &quot;XLXI_287&quot; (output signal=slow_clk),
+BUFG symbol &quot;XLXI_313/CLK0_BUFG_INST&quot; (output signal=XLXN_1050),
+BUFG symbol &quot;XLXI_313/CLK90_BUFG_INST&quot; (output signal=XLXN_1080),
+BUFG symbol &quot;XLXI_336&quot; (output signal=XLXN_1081)</arg>
+</msg>
+
+<msg type="warning" file="LIT" num="159" delta="old" >CLKIN pin of <arg fmt="%s" index="1">DCM symbol &quot;physical_group_XLXI_313/CLK0_BUF/XLXI_313/DCM_INST&quot; (output signal=XLXI_313/CLK0_BUF)</arg> is driven by <arg fmt="%s" index="2">pin OUT of LUT2 symbol &quot;XLXI_270/com_clk_2x1&quot; (output signal=XLXN_1044)</arg>. Proper phase relationship to the original clock cannot be guaranteed if the driver is not an IBUF or BUFGMUX. Timing analysis results may not be valid.
+</msg>
+
+<msg type="info" file="LIT" num="66" delta="old" >BUFGMUX chain detected. Two or more BUFMGUXs are connected in series. Because non-standard routing resources must be used to connect the BUFGMUXs, this chain can result in: 1) skew between the clocks derived from outputs of different stages of this chain, and/or 2) skew between the resulting clock and clocks that use other BUFGMUX paths.
+</msg>
+
+<msg type="warning" file="Pack" num="1186" delta="old" >One or more I/O components have conflicting property values.  For each occurrence, the system will use the property value attached to the pad.  Otherwise, the system will use the first property value read.  To view each occurrence, create a detailed map report (run map using the -detail option).
+</msg>
+
+<msg type="info" file="PhysDesignRules" num="772" filtered="1" delta="old" >To achieve optimal frequency synthesis performance with the CLKFX and CLKFX180 outputs of the DCM comp <arg fmt="%s" index="1">XLXI_277/DCM_INST/XLXI_277/DCM_INST</arg>, consult the device Interactive Data Sheet.
+</msg>
+
+</messages>
+
