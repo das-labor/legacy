@@ -20,17 +20,11 @@ BEGIN SCHEMATIC
         SIGNAL XLXN_3
         SIGNAL o2b
         SIGNAL XLXN_6
-        SIGNAL XLXN_7
         SIGNAL o3b
         SIGNAL XLXN_9
         SIGNAL o4b
         SIGNAL XLXN_11
-        SIGNAL XLXN_14
-        SIGNAL XLXN_15
-        SIGNAL XLXN_16
         SIGNAL i3
-        SIGNAL XLXN_18
-        SIGNAL XLXN_19
         PORT Input i2
         PORT Output o2a
         PORT Output o3a

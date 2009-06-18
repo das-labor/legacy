@@ -7,7 +7,9 @@
 -- Änderung:         10.04.2009                                                   --
 -- Projekt: 			Der Borg Ventilator													    --
 -- Modul Name:     	picoblaze.vhd                                                --
--- Beschreibung: 		Ich enthalte eine picoblaze cpu, verbunden mit einem rom,    --
+-- Beschreibung: 		Meine Aufgabe ist es hier für eine ordentliche diagnose      --
+--                   und einfache Testumgebung zu sorgen                          --
+--                   Ich enthalte eine picoblaze cpu, verbunden mit einem rom,    --
 --                   ein paar freie ports und interface zu 7seg display, leds,    --
 --							Tastern und schaltern            									 --
 --																											 --

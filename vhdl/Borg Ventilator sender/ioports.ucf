@@ -49,6 +49,72 @@ NET "led<5>" LOC = "N12";
 NET "led<6>" LOC = "P12";
 NET "led<7>" LOC = "P11";
 
+#Speicher
+
+#NET "SRAM_OE"  LOC = "k4";
+#NET "SRAM_WE"  LOC = "g3";
+#
+#NET "SRAM_ADR<0>"  LOC = "L5";
+#NET "SRAM_ADR<1>"  LOC = "N3";
+#NET "SRAM_ADR<2>"  LOC = "M4";
+#NET "SRAM_ADR<3>"  LOC = "M3";
+#NET "SRAM_ADR<4>"  LOC = "L4";
+#NET "SRAM_ADR<5>"  LOC = "G4";
+#NET "SRAM_ADR<6>"  LOC = "F3";
+#NET "SRAM_ADR<7>"  LOC = "F4";
+#NET "SRAM_ADR<8>"  LOC = "E3";
+#NET "SRAM_ADR<9>"  LOC = "E4";
+#NET "SRAM_ADR<10>" LOC = "G5";
+#NET "SRAM_ADR<11>" LOC = "H3";
+#NET "SRAM_ADR<12>" LOC = "H4";
+#NET "SRAM_ADR<13>" LOC = "J4";
+#NET "SRAM_ADR<14>" LOC = "J3";
+#NET "SRAM_ADR<15>" LOC = "K3";
+#NET "SRAM_ADR<16>" LOC = "K5";
+#NET "SRAM_ADR<17>" LOC = "L3";
+#
+#NET "SRAM_1_IO<0>"  LOC = "n7";
+#NET "SRAM_1_IO<1>"  LOC = "t8";
+#NET "SRAM_1_IO<2>"  LOC = "r6";
+#NET "SRAM_1_IO<3>"  LOC = "t5";
+#NET "SRAM_1_IO<4>"  LOC = "r5";
+#NET "SRAM_1_IO<5>"  LOC = "c2";
+#NET "SRAM_1_IO<6>"  LOC = "c1";
+#NET "SRAM_1_IO<7>"  LOC = "b1";
+#NET "SRAM_1_IO<8>"  LOC = "d3";
+#NET "SRAM_1_IO<9>"  LOC = "p8";
+#NET "SRAM_1_IO<10>" LOC = "f2";
+#NET "SRAM_1_IO<11>" LOC = "h1";
+#NET "SRAM_1_IO<12>" LOC = "j2";
+#NET "SRAM_1_IO<13>" LOC = "l2";
+#NET "SRAM_1_IO<14>" LOC = "p1";
+#NET "SRAM_1_IO<15>" LOC = "r1";
+#
+#NET "SRAM_1_ce" LOC = "p7";
+#NET "SRAM_1_ub" LOC = "t4";
+#NET "SRAM_1_lb" LOC = "p6";
+#
+#NET "SRAM_2_IO<0>"  LOC = "p2";
+#NET "SRAM_2_IO<1>"  LOC = "n2";
+#NET "SRAM_2_IO<2>"  LOC = "m2";
+#NET "SRAM_2_IO<3>"  LOC = "k1";
+#NET "SRAM_2_IO<4>"  LOC = "j1";
+#NET "SRAM_2_IO<5>"  LOC = "g2";
+#NET "SRAM_2_IO<6>"  LOC = "e1";
+#NET "SRAM_2_IO<7>"  LOC = "d1";
+#NET "SRAM_2_IO<8>"  LOC = "d2";
+#NET "SRAM_2_IO<9>"  LOC = "e2";
+#NET "SRAM_2_IO<10>" LOC = "g1";
+#NET "SRAM_2_IO<11>" LOC = "f5";
+#NET "SRAM_2_IO<12>" LOC = "c3";
+#NET "SRAM_2_IO<13>" LOC = "k2";
+#NET "SRAM_2_IO<14>" LOC = "m1";
+#NET "SRAM_2_IO<15>" LOC = "n1";
+#
+#NET "SRAM_2_ce" LOC = "n5";
+#NET "SRAM_2_ub" LOC = "r4";
+#NET "SRAM_2_lb" LOC = "p5";
+
 #NET "pr1"  LOC = "D5"  | DRIVE = 24  | SLEW = fast ; # Pin 5
 
 NET "out0"  LOC = "A4"   | IOSTANDARD = LVCMOS33 |DRIVE = 16 | SLEW = fast ; # Pin 15
