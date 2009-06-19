@@ -96,7 +96,7 @@ void display_loop(){
 			break;
 #endif
 
-//#ifdef ANIMATION_RECTAGLES
+#ifdef ANIMATION_MHERWEG
 		case 10:
                 	flydots();
                 	lines1();
@@ -106,7 +106,7 @@ void display_loop(){
 			rectangle1();
                         rectangles();
 			break;
-//#endif
+#endif
 		case 29:
 		 // mode = 1;
 		  break;

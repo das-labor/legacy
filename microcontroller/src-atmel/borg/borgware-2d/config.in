@@ -66,6 +66,7 @@ comment "Animations"
 	dep_bool "Matrix"        ANIMATION_MATRIX        $RANDOM_SUPPORT
 	dep_bool "Random bright" ANIMATION_RANDOM_BRIGHT $RANDOM_SUPPORT
 	dep_bool "Game of Life"  ANIMATION_GAMEOFLIFE    $RANDOM_SUPPORT
+	bool     "M Herweg"      ANIMATION_MHERWEG
 	
 	comment "Special Animations"
     bool     "Test Animations"  ANIMATION_TESTS
