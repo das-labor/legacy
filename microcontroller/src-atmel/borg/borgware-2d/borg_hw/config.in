@@ -13,7 +13,8 @@ choice 'Hardware Driver'			\
     Andre-borg             HW_BORG_ANDRE \
     Laufschrift-borg	   HW_BORG_LS \
     Laufschrift-borg-mh    HW_BORG_MH \
-    Borg-mini              HW_BORG_MINI" \
+    Borg-mini              HW_BORG_MINI \
+    Panel-One              HW_PANEL_ONE" \
    'Borg-16' BORG_HW
 
 
@@ -33,9 +34,12 @@ if [ "$BORG_HW" == "HW_BORG_MH" ] ; then
   source borg_hw/config_borg_mh.in
 fi
 
-
 if [ "$BORG_HW" == "HW_BORG_MINI" ] ; then
   source borg_hw/config_borg_mini.in
+fi
+
+if [ "$BORG_HW" == "HW_PANEL_ONE" ] ; then
+  source borg_hw/config_panel_one.in
 fi
 
 

@@ -94,6 +94,10 @@ void test_palette2(){
 
 }
 
+#endif
+
+#ifdef ANIMATION_MHERWEG
+
 void checkbox(){
  
 unsigned char x, delay=250;
