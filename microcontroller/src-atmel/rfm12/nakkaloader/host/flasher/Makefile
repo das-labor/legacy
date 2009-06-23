@@ -9,6 +9,7 @@ all:
 		../../../rfm12usb/firmware/usbconfig.h \
 		../../../rfm12usb/common/usb_id.h \
 		../../../rfm12usb/host/CDriver/RfmUsb.c \
+                crc.c \
 		main.c
 
 
