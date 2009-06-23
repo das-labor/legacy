@@ -62,6 +62,7 @@ void nf_usage()
 
 void nf_exit (int in_signal)
 {
+	printf ("L: %i\n", __LINE__);
         printf ("\r\nNakkaflash closing...\r\n");
         exit (in_signal);
 }
@@ -219,6 +220,7 @@ void push_page(uint8_t dst, uint8_t *buf, size_t size)
     //first tx
     ((nl_flashcmd *)&pktbuf)->pagenum = 0;
     ((nl_flashcmd *)&pktbuf)->addr_start = 0;
+    printf("L: %i\n");
     if(size < CHUNK_TRANSFER_SIZE)
     {
         ((nl_flashcmd *)&pktbuf)->addr_end = size;
@@ -233,6 +235,7 @@ void push_page(uint8_t dst, uint8_t *buf, size_t size)
         crc16 = calc_crc(pktbuf + sizeof(nl_flashcmd), CHUNK_TRANSFER_SIZE);
         off += CHUNK_TRANSFER_SIZE;
     }
+    printf("L: %i\n");
 
    /* int halk;
     for(halk = 0; halk < sizeof(pktbuf); halk++)
@@ -240,8 +243,10 @@ void push_page(uint8_t dst, uint8_t *buf, size_t size)
         printf("%.2x ", pktbuf[halk]);
     }
     printf("\n");*/
+    printf("L: %i\n");
 
     nl_tx_packet(NLPROTO_PAGE_FILL, dst, sizeof(pktbuf), (unsigned char*)&pktbuf);
+    printf("L: %i\n");
 
 	while(off < size) {
 		while(1)
@@ -479,6 +484,8 @@ int main (int argc, char* argv[])
 
 	usb_init();
 
+	printf("L: %i\n");
+
 
 	/* */
 	// l = read(*myconfig->fname, &tmpchar, 1);
@@ -494,23 +501,30 @@ int main (int argc, char* argv[])
 		exit(__LINE__ * -1);
 		return __LINE__ * -1;
 	}
+	printf ("L: %i\n", __LINE__);
 
-#ifndef WIN32
+//#ifndef WIN32 & 0
+#if 0
 	signal (SIGINT, nf_exit);
 	signal (SIGKILL, nf_exit);
 	signal (SIGHUP, nf_exit);
 #else
-    atexit((void * )winexit);
+//    atexit((void * )winexit);
 #endif
+	printf ("L: %i\n", __LINE__);
 
 
+/*
 	if(nf_parse_args (argc, argv, myconfig) == 0)
 	{
-        nf_usage();
-        exit(0);
+		nf_usage();
+		exit(0);
 	}
+*/
+	myconfig->fname = malloc (255);
+	strncpy (myconfig->fname, argv[1], strlen(argv[1]));
 
-	printf ("\r\n");
+	printf ("L: %i\n", __LINE__);
 
 	myconfig->addr = 0xff;
 
