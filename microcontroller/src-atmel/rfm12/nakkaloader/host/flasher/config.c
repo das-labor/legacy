@@ -57,11 +57,13 @@ uint8_t nf_parse_args (int in_argc, char **in_argv, nf_flashconfig_t *out_conf)
 						return (-1 * __LINE__); /* no argument given */
 					}
 
-					if (sscanf(in_argv[i], "0x%2x", out_conf->dstaddr) != 1) return (-1 * __LINE__);
+					// if (sscanf(in_argv[i], "0x%2x", out_conf->dstaddr) != 1) return (-1 * __LINE__);
+					out_conf->dstaddr = 0;
 
 					argmask |= 0x01;
 				break;
 				case 'f': /* source file */
+	printf ("L: %i\n", __LINE__);
 					if (in_argc <= ++i)
 					{
 						printf("No filename given.\n");
@@ -69,8 +71,10 @@ uint8_t nf_parse_args (int in_argc, char **in_argv, nf_flashconfig_t *out_conf)
 					}
 
 //					out_conf->fname_len = strlen(in_argv[i] * sizeof(char));
+	printf ("L: %i\n", __LINE__);
 					out_conf->fname = malloc(out_conf->fname_len);
 					strncpy (out_conf->fname, in_argv[i], out_conf->fname_len);
+	printf ("L: %i\n", __LINE__);
 
 					argmask |= 0x03;
 				break;
