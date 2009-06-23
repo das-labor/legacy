@@ -13,11 +13,6 @@
 #include <string.h>
 #include <usb.h>
 
-//rfm12usb includes
-#include "../../../rfm12usb/host/common/opendevice.h"
-#include "../../../rfm12usb/firmware/usbconfig.h"
-#include "../../../rfm12usb/common/usb_id.h"
-
 //include c driver interface
 #include "../../../rfm12usb/host/CDriver/RfmUsb.h"
 
@@ -45,7 +40,7 @@
 
 //rfmusb packetbuffer; stores received packets
 rfmusb_packetbuffer packetBuffer;
-usb_dev_handle *udhandle = NULL;
+rfmusb_dev_handle *udhandle = NULL;
 
 //usage
 void nf_usage()
@@ -449,59 +444,29 @@ fileerror:
 
 int main (int argc, char* argv[])
 {
-    //usb stuff
+        //usb stuff
 	int vid, pid, tmp;
 
 	//various variables
-    uint8_t tmpchar = 0x00;
+        uint8_t tmpchar = 0x00;
 	uint_fast8_t ptype;
 	uint_fast32_t packetcounter = 0;
 	nf_config_t *myconfig;
 	nl_config slave_cfg;
 	int istate = 0;
 
-    //config stuff
+        //config stuff
 	myconfig = malloc(sizeof(nf_config_t));
 	myconfig->verbosity = 0;
 
-	const unsigned char rawVid[2] =
+        //try to open the device
+	if (rfmusb_Connect(&udhandle) != 0)
 	{
-		USB_CFG_VENDOR_ID
-	},
-	rawPid[2] =
-	{
-		USB_CFG_DEVICE_ID
-	};
-
-	char vendor[] =
-	{
-		USB_CFG_VENDOR_NAME, 0
-	},
-	product[] =
-    {
-        USB_CFG_DEVICE_NAME, 0
-    };
-
-	usb_init();
-
-	printf("L: %i\n");
-
-
-	/* */
-	// l = read(*myconfig->fname, &tmpchar, 1);
-	// if (l > 0) ;
-
-	/* usb setup */
-	vid = rawVid[1] * 256 + rawVid[0];
-	pid = rawPid[1] * 256 + rawPid[0];
-
-	if (usbOpenDevice (&udhandle, vid, vendor, pid, product, NULL, NULL, NULL) != 0)
-	{
-		printf ("Can't find USB Device w/ uid %04X, pid %04X\r\n", vid, pid);
-		exit(__LINE__ * -1);
+		printf ("Can't find RfmUSB Device!\r\n");
+                //FIXME -> what's this?
+		//sig_cleanup(__LINE__ * -1);
 		return __LINE__ * -1;
 	}
-	printf ("L: %i\n", __LINE__);
 
 //#ifndef WIN32 & 0
 #if 0
