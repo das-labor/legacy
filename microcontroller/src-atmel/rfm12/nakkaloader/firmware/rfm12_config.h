@@ -85,7 +85,7 @@
 /**** UART DEBUGGING
  * en- or disable debugging via uart.
  */
-//#define RFM12_UART_DEBUG 0
+#define RFM12_UART_DEBUG 0
 
 /**** INTERRUPT VECTOR
  * set the name for the interrupt vector here
@@ -93,7 +93,23 @@
 #define RFM12_INT_VECT (INT0_vect)
 #define RFM12_INT_BIT (INT0)
 //the Interrupt mask register
-#define RFM12_INT_MSK (GICR)
+#define RFM12_INT_MSK GICR
 //setup the interrupt to trigger on negative edge
-#define RFM12_INT_SETUP() (MCUCR |= (1<<ISC01))
+#define RFM12_INT_SETUP()   MCUCR |= (1<<ISC01)
+//#define RFM12_INT_SETUP()  
 
+/*
+This is a bitmask that defines how "rude" this library behaves
+	0x01: ignore other devices when sending
+	0x04: don't use return values for transmission functions
+*/
+
+
+
+
+/* control rate, frequency, etc during runtime
+ * this setting will certainly add a bit code
+ **/
+#define RFM12_LIVECTRL 0
+#define RFM12_NORETURNS 1
+#define RFM12_NOCOLISSIONDETECTION 1

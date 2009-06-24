@@ -1,5 +1,5 @@
 # Programmer used for In System Programming
-ISP_PROG = dapa
+ISP_PROG = usbasp
 # device the ISP programmer is connected to
 ISP_DEV = /dev/parport0
 # Programmer used for serial programming (using the bootloader)
