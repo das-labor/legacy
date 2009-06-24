@@ -88,8 +88,9 @@ int main (int argc, char* argv[])
 	myconfig = malloc(sizeof(nf_config_t));
 	myconfig->verbosity = 0;
 
+	printf ("L: %i\n", __LINE__);
         //try to open the device
-	if (rfmusb_Connect(udhandle) != 0)
+	if (rfmusb_Connect(&udhandle) != 0)
 	{
 		printf ("Can't find RfmUSB Device!\r\n");
                 //FIXME -> what's this?
@@ -97,13 +98,12 @@ int main (int argc, char* argv[])
 		return __LINE__ * -1;
 	}
 
-//#ifndef WIN32 & 0
-#if 0
+#ifndef WIN32
 	signal (SIGINT, nf_exit);
 	signal (SIGKILL, nf_exit);
 	signal (SIGHUP, nf_exit);
 #else
-//    atexit((void * )winexit);
+	atexit((void * )winexit);
 #endif
 	printf ("L: %i\n", __LINE__);
 
@@ -163,6 +163,7 @@ int main (int argc, char* argv[])
 
                         //reply now
                         nl_tx_packet(udhandle, NLPROTO_MASTER_EHLO, myconfig->addr, 0, NULL);
+			printf("reply sent\n");
                     }
 				break;
 
@@ -173,7 +174,7 @@ int main (int argc, char* argv[])
                         printf("Slave is ready to be flashed now.\n");
 
                         //flash
-                        nl_flash(udhandle, myconfig->fname, myconfig->addr , slave_cfg.pagesize, 128);
+                        nl_flash(udhandle, myconfig->fname, myconfig->addr , slave_cfg.pagesize, 32);
 
                         //ready again
                         istate = 2;
