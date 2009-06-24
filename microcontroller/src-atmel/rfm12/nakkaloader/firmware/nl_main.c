@@ -3,9 +3,10 @@
 #include <avr/boot.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
+#include <util/delay.h>
 #include <stdint.h>
 #include <string.h>
-#include <util/crc16.h>
+// #include <util/crc16.h>
 
 #include "rfm12_config.h"
 #include "rfm12.h"
@@ -48,6 +49,7 @@ void boot_program_page (uint32_t page, uint8_t *buf)
 	SREG = sreg;
 }
 
+#if 0
 uint8_t nl_match_packet (uint8_t *in_packet)
 {
 	#if NL_ADDRESSSIZE == 1
@@ -60,6 +62,7 @@ uint8_t nl_match_packet (uint8_t *in_packet)
 	#endif
 	return 1;
 }
+#endif
 
 void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 {
@@ -67,7 +70,7 @@ void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 	uint8_t i = NL_ADDRESSSIZE + 1, k = 0;
 
 	txpacket[1] = myaddress[0];
-//	txpacket[1] = 0xff;
+	txpacket[1] = 0xff;
 
 	#if NL_ADDRESSSIZE == 2
 	txpacket[2] = myaddress[1];
@@ -108,9 +111,13 @@ int main (void)
 	uint8_t *rxbuf;
 	uint8_t mypage[SPM_PAGESIZE];
 	uint32_t pagenum = 0;
+	uint8_t narf[] = "narf.";
 	nl_config myconfig;
 	nl_flashcmd mycmd;
 
+	//DDRD |= (_BV(PD7) | _BV(PD5) | _BV(PD6));
+	//PORTD |= _BV(PD7);
+#if 0
 	/* fill config variables */
 	myconfig.pagesize = SPM_PAGESIZE;
 	myconfig.rxbufsize = RFM12_RX_BUFFER_SIZE;
@@ -126,17 +133,25 @@ int main (void)
 	}*/
 	
 	myaddress[0] = 0xff;
+#endif
 	
+	_delay_ms(250);
+	_delay_ms(250);
+	_delay_ms(250);
 	/* move interrupt vector table to bootloader section */
-	GICR = (1<<IVCE);
-	GICR = (1<<IVSEL);
-	
 
 	rfm12_init();
-	sei();
+	GICR = (1<<IVCE);
+	GICR = (1<<IVSEL);
 
-	for (i=0;i < NL_MAXFAILS || NL_MAXFAILS == 0;i++)
+	sei();
+	rfm12_tx (sizeof(narf), 0, narf);
+
+//	for (i=0;i < NL_MAXFAILS || NL_MAXFAILS == 0;i++)
+	while (1)
 	{
+		i++;
+		rfm12_tick();
 		/* (re)transmit our configuration if master hasn't responded yet. */
 		if ((i & 0x1ffff) == 0 && mystate == 0)
 		{
@@ -145,15 +160,14 @@ int main (void)
 		
 		
 
-		rfm12_tick();
 		
 		if (rfm12_rx_status() != STATUS_COMPLETE)
 			continue;
 			
 		rxbuf = rfm12_rx_buffer();
 
-		if (rfm12_rx_type() != NL_PACKETTYPE
-			|| !nl_match_packet (rxbuf))
+		if (rfm12_rx_type() != NL_PACKETTYPE)
+//			|| !nl_match_packet (rxbuf))
 		{
 			rfm12_rx_clear();
 			continue;
@@ -169,9 +183,7 @@ int main (void)
 				rfm12_rx_clear();
 				mystate = 1;
 
-				PORTD |= _BV(PD6);
 				nl_tx_packet (NLPROTO_MASTER_EHLO, 0, mypage);
-				PORTD |= _BV(PD5);
 			}
 			break;
 
@@ -179,7 +191,11 @@ int main (void)
 			case NLPROTO_PAGE_FILL:
 			{
 				uint16_t crcsum = 0;
+				uint8_t i = 0;
+
 				k = NL_ADDRESSSIZE + 1;
+
+
 				memcpy (&mycmd, rxbuf + k, sizeof(nl_flashcmd));
 				
 				/* check boundaries */
@@ -199,9 +215,9 @@ int main (void)
 				memcpy (mypage + mycmd.addr_start, rxbuf + NL_ADDRESSSIZE + 1 + sizeof(nl_flashcmd),
 					mycmd.addr_end - mycmd.addr_start);
 
-				for (k=mycmd.addr_start;k<mycmd.addr_end;k++)
+/*				for (k=mycmd.addr_start;k<mycmd.addr_end;k++)
 					crcsum = _crc16_update (crcsum,
-						*(mypage + k));
+						*(mypage + k)); */
 
 				rfm12_rx_clear();
 
@@ -222,7 +238,6 @@ int main (void)
 				pagenum += (uint32_t) rxbuf[k++] << 24;
 
 				rfm12_rx_clear();
-				PORTD ^= _BV(PD6);
 
 				boot_program_page (pagenum, mypage);
 				
@@ -233,8 +248,8 @@ int main (void)
 			/* jump into application */
 			case NLPROTO_BOOT:
 			{
-				rfm12_rx_clear();
-				nl_tx_packet (NLPROTO_BOOT, 0, mypage);
+//				rfm12_rx_clear();
+//				nl_tx_packet (NLPROTO_BOOT, 0, mypage);
 
 				nl_boot_app();
 			}

@@ -3,7 +3,7 @@
 /* Maximum size of packets transmitted and received by this
  * bootloader.
  */
-#define NL_PACKETSIZE 64
+#define NL_PACKETSIZE 30
 
 /* the position in the eeprom where the device's network address is stored at */
 #define NL_ADDRESSPOS 0
@@ -14,7 +14,7 @@
 #define NL_ADDRESSSIZE 1
 
 /* address bitmask */
-#define NL_ADDRESSMASK 0xFFFF
+#define NL_ADDRESSMASK 0xFF
 
 /* maximum failure count - increase value in noisy environments.
  *
@@ -38,6 +38,6 @@
  * 2 - Send additional debug information
  *
  * */
-#define NL_VERBOSITY 1
+#define NL_VERBOSITY 0
 
 #endif

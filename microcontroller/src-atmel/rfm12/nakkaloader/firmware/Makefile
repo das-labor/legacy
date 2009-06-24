@@ -5,7 +5,7 @@ OBJECTS = rfm12.o nl_main.o
 
 # microcontroller and project specific settings (everything can be overridden using config.mk)
 F_CPU = 16000000UL
-MCU = atmega32
+MCU = atmega8
 #CFLAGS += -DBOOTLOADER_DDR=DDRC
 #CFLAGS += -DBOOTLOADER_PORT=PORTC
 #CFLAGS += -DBOOTLOADER_PIN=PINC
@@ -19,15 +19,17 @@ include avr.mk
 ifeq ($(MCU),atmega8)
 	# atmega8 with 1024 words bootloader:
 	# bootloader section starts at 0xc00 (word-address) == 0x1800 (byte-address)
-	# BOOT_SECTION_START = 0x1800
+#	BOOT_SECTION_START = 0x00
 	BOOT_SECTION_START = 0x1800
+#	BOOT_SECTION_START = 0x0800
+	#BOOT_SECTION_START = 0xc00
 	#
 	# atmega8 with 512 words bootloader:
 	# bootloader section starts at 0xe00 (word-address) == 0x1c00 (byte-address)
 	# BOOT_SECTION_START = 0x1c00
 	#Fuses for Xtal/16MHz, bootloader at 0x1c00
-	HFUSE = 0xc2
-	LFUSE = 0xef
+	HFUSE = 0xc9
+	LFUSE = 0x9f
 else ifeq ($(MCU),atmega88)
 	# atmega88 with 1024 words bootloader:
 	# bootloader section starts at 0xc00 (word-address) == 0x1800 (byte-address)
@@ -126,7 +128,7 @@ install: program-isp-$(TARGET)
 clean: clean-$(TARGET) clean-uploadtest
 
 clean-$(TARGET):
-	rm -f *.o
+	rm -f *.o *.map nl_main
 
 clean-uploadtest:
 	rm -f datatestfile.raw
