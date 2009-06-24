@@ -4,6 +4,7 @@
 #include "../../rfm12usb/common/rfm12_buffer_size.h"
 
 #ifndef NL_PROTOCOL_H
+#define NL_PROTOCOL_H
 
 /* defines for the nakkaloader protocol
  **/
@@ -31,7 +32,7 @@ typedef struct
 	uint8_t payload[RFM12_BUFFER_SIZE-1];
 } nl_packet;
 
-typedef struct
+typedef const struct
 {
 	uint16_t pagesize;
 	uint8_t rxbufsize;

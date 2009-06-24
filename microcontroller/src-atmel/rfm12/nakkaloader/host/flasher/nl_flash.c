@@ -1,6 +1,10 @@
 #include "nl_flash.h"
 //for memcpy and memset
 #include <string.h> 
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 
 //fixme - this shouldn't be a global, i suppose
@@ -12,6 +16,7 @@ uint8_t *read_buf_from_hex(FILE *f, size_t *size, size_t *offset)
 	int i, tt;
 	uint8_t *buf;
 
+	printf("%20s, %5i\n", __FILE__, __LINE__);
 	if (fscanf(f, ":%2x", size) != 1)
 		goto error;
 
@@ -25,22 +30,30 @@ uint8_t *read_buf_from_hex(FILE *f, size_t *size, size_t *offset)
 		*size  = 0;
 		return 0;
 	}
+	printf("%20s, %5i\n", __FILE__, __LINE__);
 
 	i = *size;
+	printf("%20s, %5i\n", __FILE__, __LINE__);
 	buf = malloc(*size);
+	printf("%20s, %5i\n", __FILE__, __LINE__);
 	uint8_t *ptr = buf;
 	for(;i > 0; i--) {
+	printf("%20s, %5i\n", __FILE__, __LINE__);
 		if (fscanf(f, "%2x", ptr++) != 1)
 			goto error;
+	printf("%20s, %5i\n", __FILE__, __LINE__);
 	}
+	printf("%20s, %5i\n", __FILE__, __LINE__);
 	if (fscanf(f, "%2x", &tt) != 1)	 // checksum
 		goto error;
 
 	fscanf(f, "\n");
+	printf("%20s, %5i\n", __FILE__, __LINE__);
 
 	return buf;
 
 error:
+	printf("%20s, %5i\n", __FILE__, __LINE__);
 	*size = -1;
 	return 0;
 }
@@ -245,10 +258,11 @@ void nl_flash(rfmusb_dev_handle *udhandle, char * filename, uint8_t addr, uint16
     //packet stuff
     nl_flashcmd flashcmd;
 
-
+	buf = malloc (256 * 1024);
+	memset (buf, 0xff, 262144);
     //open input file
     printf( "Flashing file: %s\n", filename );
-	FILE *fd = fopen(filename,"r");
+	int fd = open (filename, O_RDONLY);
 
 
 	//allocate ATMega memory
@@ -257,16 +271,22 @@ void nl_flash(rfmusb_dev_handle *udhandle, char * filename, uint8_t addr, uint16
 	memset( mem,  0xff, pageCount * pageSize );
 	memset( mask, 0x00, pageCount * pageSize );
 
-
+	printf("%20s, %5i\n", __FILE__, __LINE__);
     //read in hex file
-	while ((buf = read_buf_from_hex(fd, &size, &dst)) != 0)
+/*	while ((buf = read_buf_from_hex(fd, &size, &dst)) != 0)
 	{
 		memcpy( &mem[dst], buf, size);
 		memset( &mask[dst], 0xff, size );
 		free(buf);
 	}
-	if (size != 0)
+*/
+	size = read (fd, buf, 262144);
+	printf("*********************************************\n\t\t\t\t\tread %i bytes\n", size);
+
+	printf("%20s, %5i\n", __FILE__, __LINE__);
+	if (size <= 0)
 		goto fileerror;
+	printf("%20s, %5i, %i, %i\n", __FILE__, __LINE__, pageCount, pageSize);
 
 
     //for every page do
@@ -281,14 +301,14 @@ void nl_flash(rfmusb_dev_handle *udhandle, char * filename, uint8_t addr, uint16
 		for(j = pageStart; j < pageEnd; j++)
 		{
 		    //data found
-			if (mask[j] == 0xff)
+//			if (mask[j] == 0xff)
 			{
 				// trasfer page stating at i
-				printf("Transmitting page 0x%.4x ", pageNum);
-				nl_push_page(udhandle, addr, &(mem[pageStart]), pageSize);
+				printf("Transmitting page 0x%.4x, %04x, %04x", pageNum, pageStart, pageEnd);
+				nl_push_page(udhandle, addr, buf + (pageNum * pageSize), pageSize);
 				printf("\n");
 
-                nl_dump_page(mem, pageStart, pageEnd);
+                nl_dump_page(buf, pageStart, pageEnd);
                 printf("\n");
                 break;
 			}
@@ -297,10 +317,11 @@ void nl_flash(rfmusb_dev_handle *udhandle, char * filename, uint8_t addr, uint16
         //this skips writing this page, as we found no data
 		if (mask[j] != 0xff)
 		{
-		    continue;
+		    // continue;
 		}
 
 		//commit page
+		printf("commit.\n");
         flashcmd.pagenum = pageNum;
         nl_tx_packet(udhandle, NLPROTO_PAGE_COMMIT, addr, sizeof(nl_flashcmd), (unsigned char*)&flashcmd);
 
@@ -332,11 +353,16 @@ void nl_flash(rfmusb_dev_handle *udhandle, char * filename, uint8_t addr, uint16
         //cleanup
 	free(mem);
 	free(mask);
-	fclose(fd);
+	close(fd);
 
 
 	//send app boot
-        nl_tx_packet(udhandle, NLPROTO_BOOT, addr, 0, NULL);
+	while (42)
+	{
+	        nl_tx_packet(udhandle, NLPROTO_BOOT, addr, 0, NULL);
+		printf("boot\n");
+		sleep(1);
+	}
 
 	return;
 

@@ -12,13 +12,10 @@
 #include "nl_config.h"
 #include "../common/nl_protocol.h"
 
-/* simple for-loop to "wrap" around an error-prone section */
-// #define NL_ERRORWRAP for (i=0;i < NL_MAXFAILS || NL_MAXFAILS == 0;i++)
-
 void (*app_ptr)(void) = (void *)0x0000;
 uint8_t myaddress[NL_ADDRESSSIZE];
 
-void boot_program_page (uint32_t page, uint8_t *buf)
+void boot_program_page (uint16_t page, uint8_t *buf)
 {
 	uint16_t i;
 	uint8_t sreg;
@@ -108,22 +105,22 @@ void nl_boot_app ( void )
 //int main (void) __attribute__ ((naked));
 int main (void)
 {
-	uint32_t i;
+	uint16_t i = 1;
 	uint8_t k, mystate = NLPROTO_SLAVE_CONFIG;
 	uint8_t *rxbuf;
 	uint8_t mypage[SPM_PAGESIZE];
-	uint32_t pagenum = 0;
+	uint16_t pagenum = 0;
 	uint16_t crcsum = 0;
-	nl_config myconfig;
+	nl_config myconfig = {SPM_PAGESIZE, RFM12_RX_BUFFER_SIZE, NL_VERSION};
 	nl_flashcmd *mycmd;
 
 	DDRD |= (_BV(PD7) | _BV(PD5) | _BV(PD6));
 	PORTD |= _BV(PD7);
-#if 1
+#if 0
 	/* fill config variables */
 	myconfig.pagesize = SPM_PAGESIZE;
 	myconfig.rxbufsize = RFM12_RX_BUFFER_SIZE;
-	myconfig.version = NL_VERSION;
+//	myconfig.version = NL_VERSION;
 
 
 	/* read address */
@@ -145,10 +142,12 @@ int main (void)
 	sei();
 
 //	for (i=0;i < NL_MAXFAILS || NL_MAXFAILS == 0;i++)
-	while (1)
+	while (2)
 	{
 		i++;
-		
+
+		if (i == 0xffff) break;
+
 		if (rfm12_rx_status() == STATUS_COMPLETE)
 		{
 			rxbuf = rfm12_rx_buffer();
@@ -168,7 +167,7 @@ int main (void)
 					break;
 
 				case NLPROTO_BOOT:
-					nl_boot_app();
+					i = 0;
 					break;
 
 			}
@@ -179,7 +178,7 @@ int main (void)
 
 
 		/* (re)transmit our configuration if master hasn't responded yet. */
-		if ((i & 0x5fff) == 0)
+		if ((i & 0x7fff) == 0)
 		{
 			switch (mystate)
 			{
@@ -194,7 +193,7 @@ int main (void)
 				/* master is ready to flash */
 				case NLPROTO_PAGE_FILL:
 					mycmd = (nl_flashcmd *) (rxbuf + NL_ADDRESSSIZE + 1);
-					
+#if 0
 					/* check boundaries */
 					if (mycmd->addr_start + (mycmd->addr_end - mycmd->addr_start) > SPM_PAGESIZE)
 					{
@@ -209,7 +208,7 @@ int main (void)
 						rfm12_rx_clear();
 						break;
 					}
-
+#endif
 					memcpy (mypage + mycmd->addr_start,
 						rxbuf + NL_ADDRESSSIZE + 1 + sizeof(nl_flashcmd),
 						mycmd->addr_end - mycmd->addr_start);
@@ -229,12 +228,12 @@ int main (void)
 
 				/* commit page write */
 				case NLPROTO_PAGE_COMMIT:
-					k = NL_ADDRESSSIZE + 1;
+//					k = NL_ADDRESSSIZE + 1;
 
-					pagenum = (uint32_t) (rxbuf[k++]);
-					pagenum += (uint32_t) rxbuf[k++] << 8;
-					pagenum += (uint32_t) rxbuf[k++] << 16;
-					pagenum += (uint32_t) rxbuf[k++] << 24;
+					pagenum = (uint32_t) (rxbuf[NL_ADDRESSSIZE +1]);
+	/*				pagenum += (uint32_t) rxbuf[k++] << 8;
+					/* pagenum += (uint32_t) rxbuf[k++] << 16;
+					pagenum += (uint32_t) rxbuf[k++] << 24; */
 
 					rfm12_rx_clear();
 
