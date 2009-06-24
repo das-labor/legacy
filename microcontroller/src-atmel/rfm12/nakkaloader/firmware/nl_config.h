@@ -3,7 +3,7 @@
 /* Maximum size of packets transmitted and received by this
  * bootloader.
  */
-#define NL_PACKETSIZE 30
+#define NL_PACKETSIZE 72
 
 /* the position in the eeprom where the device's network address is stored at */
 #define NL_ADDRESSPOS 0

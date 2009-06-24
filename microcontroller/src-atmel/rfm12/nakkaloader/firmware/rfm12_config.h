@@ -74,13 +74,13 @@
 
 /**** TX BUFFER SIZE
  */
-#define RFM12_TX_BUFFER_SIZE 30
+#define RFM12_TX_BUFFER_SIZE 100
 
 /**** RX BUFFER SIZE
  * there are going to be 2 Buffers of this size
  * (double_buffering)
  */
-#define RFM12_RX_BUFFER_SIZE 30
+#define RFM12_RX_BUFFER_SIZE 100
 
 /**** UART DEBUGGING
  * en- or disable debugging via uart.
