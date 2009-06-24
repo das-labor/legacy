@@ -3,7 +3,7 @@ OBJ            = pingpong.o uart.o rfm12.o
 MCU_TARGET     = atmega8
 OPTIMIZE       = -Os
 
-FLASHCMD       = uisp -dprog=bsd --upload if=$(PRG).hex
+FLASHCMD       = avrdude -c usbasp -p m8 -U flash:w:$(PRG).hex
 ERASECMD       = uisp -dprog=bsd --erase
 LAUNCH_BOOTLOADER = foodloader-0.21/launcher/launch-bootloader
 
@@ -36,8 +36,8 @@ clean:
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
 
 flash:
-	$(ERASECMD)
-	sleep 1
+#	$(ERASECMD)
+#	sleep 1
 	$(FLASHCMD)
 
 sflash: $(PRG).hex

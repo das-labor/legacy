@@ -49,7 +49,7 @@
 //Pin that the RFM12's slave select is connected to
 #define DDR_SS DDRB
 #define PORT_SS PORTB
-#define BIT_SS 0
+#define BIT_SS 2
 
 //SPI port
 #define DDR_SPI DDRB
@@ -97,10 +97,18 @@
 //setup the interrupt to trigger on negative edge
 #define RFM12_INT_SETUP()   MCUCR |= (1<<ISC01)
 
-/* ignore other devices when sending */
-#define RFM12_BE_RUDE 1
+/*
+This is a bitmask that defines how "rude" this library behaves
+	0x01: ignore other devices when sending
+	0x04: don't use return values for transmission functions
+*/
+
+
+
 
 /* control rate, frequency, etc during runtime
  * this setting will certainly add a bit code
  **/
-#define RFM12_LIVECTRL 1
+#define RFM12_LIVECTRL 0
+#define RFM12_NORETURNS 1
+#define RFM12_NOCOLISSIONDETECTION 1
