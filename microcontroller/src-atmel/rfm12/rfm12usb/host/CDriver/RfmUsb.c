@@ -9,6 +9,7 @@
 
 #include <usb.h>
 #include <string.h>
+#include <stdio.h>
 #include "RfmUsb.h"
 
 //common includes
@@ -18,17 +19,19 @@
 
 //connect extended function
 //returns != 0 on error
-int rfmusb_ConnectEx(usb_dev_handle * handle, int vid, int pid, char *vendor, char *product)
+int rfmusb_ConnectEx(usb_dev_handle ** handle, int vid, int pid, char *vendor, char *product)
 {
 	/* usb setup */
+	printf("F: %20s, %5i\n", __FILE__, __LINE__);
 	usb_init();
+	printf("F: %20s, %5i\n", __FILE__, __LINE__);
 
 	return usbOpenDevice (handle, vid, vendor, pid, product, NULL, NULL, NULL);
 }
 
 //connect function
 //returns != 0 on error
-int rfmusb_Connect(usb_dev_handle * handle)
+int rfmusb_Connect(usb_dev_handle ** handle)
 {
 	int vid, pid;
 

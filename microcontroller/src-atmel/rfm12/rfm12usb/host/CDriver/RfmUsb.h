@@ -1,3 +1,5 @@
+#include <usb.h>
+
 /* Utility functions for receiving and transmitting data from and to the target device.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -30,11 +32,11 @@ typedef struct{
 
 /* @description Connects to a rfmusb device
  * returns != 0 on error */
-int rfmusb_Connect(usb_dev_handle * handle);
+int rfmusb_Connect(usb_dev_handle **);
 
 /* @description Connects to a rfmusb device with the given vid, pid, vendor and product string
  * returns != 0 on error */
-int rfmusb_ConnectEx(usb_dev_handle * handle, int vid, int pid, char *vendor, char *product);
+int rfmusb_ConnectEx(usb_dev_handle **, int vid, int pid, char *vendor, char *product);
 
 /* @description Formats a given chunk of data accordingly and hands it over to the
  * transmitting function. */
