@@ -36,6 +36,14 @@
 #define STATUS_RECEIVING 1
 #define STATUS_IGNORING  2
 
+#ifndef RFM12_NORETURNS
+	#define RFM12_NORETURNS 0
+#endif
+
+#ifndef RFM12_NOCOLISSIONDETECTION
+	#define RFM12_NOCOLISSIONDETECTION 0
+#endif
+
 // possible return values for rfm12_tx() and
 // rfm12_start_tx()
 #define RFM12_TX_SUCCESS 0x00
@@ -45,10 +53,6 @@
 #define RFM12_TX_OCCUPIED 0x03
 
 #define RFM12_TX_ENQUEUED 0x80
-
-#ifndef RFM12_BE_RUDE
-	#define RFM12_BE_RUDE 0
-#endif
 
 
 #ifndef RFM12_LIVECTRL
@@ -63,11 +67,15 @@ void rfm12_data(uint16_t d);
 
 void rfm12_tick();
 
+
+#if (RFM12_NORETURNS)
+void rfm12_start_tx(uint8_t type, uint8_t length);
+void rfm12_tx(uint8_t len, uint8_t type, uint8_t *data);
+#else
 uint8_t rfm12_start_tx(uint8_t type, uint8_t length);
-
 uint8_t rfm12_tx(uint8_t len, uint8_t type, uint8_t *data);
-
-//static inline uint8_t rfm12_tx_status();
+#endif
+// uint8_t rfm12_tx_status();
 
 static inline uint8_t *rfm12_rx_buffer();
 static inline void rfm12_rx_clear();
@@ -157,7 +165,7 @@ static inline uint8_t *rfm12_rx_buffer()
 
 
 //inline function to clear buffer complete/occupied status
-static inline void rfm12_rx_clear()
+void rfm12_rx_clear()
 {
 	//mark the current buffer as empty
 	rf_rx_buffer.rf_buffer_out->status = STATUS_FREE;
