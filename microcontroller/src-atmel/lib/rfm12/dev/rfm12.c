@@ -122,7 +122,9 @@ static uint8_t spi_data(uint8_t c){
 #endif
 
 
-void rfm12_data(uint16_t d)
+//non-inlined version of rfm12_data
+//warning: without the attribute, gcc will inline this even if -Os is set
+void __attribute__ ((noinline)) rfm12_data(uint16_t d)
 {
 	SS_ASSERT();
 #ifndef SPI_SOFTWARE	
@@ -139,7 +141,9 @@ void rfm12_data(uint16_t d)
 }
 
 
-uint16_t rfm12_read(uint16_t c)
+//non-inlined version of rfm12_read
+//warning: without the attribute, gcc will inline this even if -Os is set
+uint16_t __attribute__ ((noinline)) rfm12_read(uint16_t c)
 {
 	uint16_t retval;
 	SS_ASSERT();
