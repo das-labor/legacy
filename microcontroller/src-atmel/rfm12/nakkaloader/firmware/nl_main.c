@@ -7,10 +7,18 @@
 #include <string.h>
 // #include <util/crc16.h>
 
+
 #include "rfm12_config.h"
 #include "rfm12.h"
 #include "nl_config.h"
 #include "../common/nl_protocol.h"
+
+//warning: rfm12_rx_clear() is inlined...
+void rxclear(void)
+{
+	rfm12_rx_clear();
+}
+
 
 void (*app_ptr)(void) = (void *)0x0000;
 uint8_t myaddress[NL_ADDRESSSIZE];
@@ -76,14 +84,10 @@ void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 
 	if (in_len)
 	{
-		for (;k<in_len;k++)
-		{
-			txpacket[i] = *(in_payload + k);
-			i++;
-		}
+		memcpy(txpacket + NL_ADDRESSSIZE + 1, in_payload, in_len);
 	}
 	
-	rfm12_tx (i, NL_PACKETTYPE, txpacket);
+	rfm12_tx (in_len, NL_PACKETTYPE, txpacket);
 }
 
 void nl_boot_app ( void )
@@ -102,8 +106,7 @@ void nl_boot_app ( void )
 	app_ptr();
 }
 
-//int main (void) __attribute__ ((naked));
-int main (void)
+int __attribute__ ((naked)) main (void)
 {
 	uint16_t i = 1;
 	uint8_t k, mystate = NLPROTO_SLAVE_CONFIG;
@@ -154,7 +157,7 @@ int main (void)
 
 			if (rfm12_rx_type() != NL_PACKETTYPE)
 			{
-				rfm12_rx_clear();
+				rxclear();
 				continue;
 			}
 
@@ -163,7 +166,7 @@ int main (void)
 			switch (rxbuf[0])
 			{
 				case NLPROTO_MASTER_EHLO:
-					rfm12_rx_clear();
+					rxclear();
 					break;
 
 				case NLPROTO_BOOT:
@@ -205,7 +208,7 @@ int main (void)
 						#elif NL_VERBOSITY > 0
 						nl_tx_packet (NLPROTO_ERROR, 0, mypage);
 						#endif
-						rfm12_rx_clear();
+						rxclear();
 						break;
 					}
 #endif
@@ -217,7 +220,7 @@ int main (void)
 						crcsum = _crc16_update (crcsum,
 							*(mypage + k)); */
 
-					rfm12_rx_clear();
+					rxclear();
 
 					mystate = NLPROTO_PAGE_CHKSUM;
 					/* no break for retransmission purposes */
@@ -228,14 +231,9 @@ int main (void)
 
 				/* commit page write */
 				case NLPROTO_PAGE_COMMIT:
-//					k = NL_ADDRESSSIZE + 1;
+					pagenum = (uint16_t) (rxbuf[NL_ADDRESSSIZE +1]);
 
-					pagenum = (uint32_t) (rxbuf[NL_ADDRESSSIZE +1]);
-	/*				pagenum += (uint32_t) rxbuf[k++] << 8;
-					/* pagenum += (uint32_t) rxbuf[k++] << 16;
-					pagenum += (uint32_t) rxbuf[k++] << 24; */
-
-					rfm12_rx_clear();
+					rxclear();
 
 					boot_program_page (pagenum, mypage);
 					
