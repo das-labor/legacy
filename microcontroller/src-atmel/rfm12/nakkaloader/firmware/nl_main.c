@@ -71,7 +71,6 @@ uint8_t nl_match_packet (uint8_t *in_packet)
 void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 {
 	uint8_t txpacket[NL_ADDRESSSIZE + 1 + sizeof(nl_config)];
-	uint8_t i = NL_ADDRESSSIZE + 1, k = 0;
 
 //	txpacket[1] = myaddress[0];
 	txpacket[1] = 0xff;
