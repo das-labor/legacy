@@ -128,7 +128,7 @@ install: program-isp-$(TARGET)
 clean: clean-$(TARGET) clean-uploadtest
 
 clean-$(TARGET):
-	rm -f *.o *.map nl_main
+	rm -f *.o *.map $(TARGET)
 
 clean-uploadtest:
 	rm -f datatestfile.raw
