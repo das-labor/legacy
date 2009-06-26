@@ -5,9 +5,9 @@
 /* struct to store local config data */
 typedef struct {
 	/* device/protocol-related */
-	uint_fast32_t pagesize;      /* amount of bytes per page */
-	uint_fast32_t dstaddr;       /* id of the target */
-	uint_fast32_t myaddr;        /* our address */
+	uint16_t pagesize;      /* amount of bytes per page */
+	uint32_t dstaddr;       /* id of the target */
+	uint32_t myaddr;        /* our address */
 	uint_fast8_t  addrlen;       /* length of address field the target uses (in bits) */
 	uint_fast8_t  rxbufsize;     /* size of the target's buffer */
 	uint_fast8_t  protooffset;   /* offset before the nakkaloader protocol header starts */
