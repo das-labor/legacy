@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <endian.h>
 
 //include rfmusb c driver interface
 //#include "../../../rfm12usb/host/CDriver/RfmUsb.h"
@@ -57,7 +58,7 @@ void nf_usage()
 
 void nf_exit (int in_signal)
 {
-	printf ("L: %i\n", __LINE__);
+	
         printf ("\r\nNakkaflash closing...\r\n");
         exit (in_signal);
 }
@@ -88,7 +89,7 @@ int main (int argc, char* argv[])
 	myconfig = malloc(sizeof(nf_config_t));
 	myconfig->verbosity = 0;
 
-	printf ("L: %i\n", __LINE__);
+	
         //try to open the device
 	if (rfmusb_Connect(&udhandle) != 0)
 	{
@@ -105,7 +106,7 @@ int main (int argc, char* argv[])
 #else
 	atexit((void * )winexit);
 #endif
-	printf ("L: %i\n", __LINE__);
+	
 
 
 /*
@@ -118,7 +119,7 @@ int main (int argc, char* argv[])
 	myconfig->fname = malloc (255);
 	strncpy (myconfig->fname, argv[1], strlen(argv[1]));
 
-	printf ("L: %i\n", __LINE__);
+	
 
 	myconfig->addr = 0xff;
 
@@ -157,6 +158,9 @@ int main (int argc, char* argv[])
                     {
                         istate = 1;
                         memcpy(&slave_cfg, packetBuffer.buffer + 2, sizeof(nl_config));
+			slave_cfg.pagesize = be16toh(packetBuffer.buffer[2]);
+			slave_cfg.pagesize = 64;
+			slave_cfg.rxbufsize = 20; /* Fixed val for now... */
 
                         //printf("got slave config!\nPagesize: %i\nAir Packet Size: %i\nVersion: %i\n", ((nl_config *)(packetBuffer.buffer + 2))->pagesize, ((nl_config *)(packetBuffer.buffer + 2))->rxbufsize, ((nl_config *)(packetBuffer.buffer + 2))->version);
                         printf("Got slave config!\nPagesize: %i\nAir Packet Size: %i\nVersion: %i\nAddress: %i\n\n", slave_cfg.pagesize, slave_cfg.rxbufsize, slave_cfg.version, packetBuffer.buffer[1]);
@@ -174,7 +178,7 @@ int main (int argc, char* argv[])
                         printf("Slave is ready to be flashed now.\n");
 
                         //flash
-                        nl_flash(udhandle, myconfig->fname, myconfig->addr , slave_cfg.pagesize, 32);
+                        nl_flash(udhandle, myconfig->fname, myconfig->addr , slave_cfg.pagesize, 16);
 
                         //ready again
                         istate = 2;
