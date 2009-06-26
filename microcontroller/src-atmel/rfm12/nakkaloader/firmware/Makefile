@@ -28,7 +28,7 @@ ifeq ($(MCU),atmega8)
 	# bootloader section starts at 0xe00 (word-address) == 0x1c00 (byte-address)
 	# BOOT_SECTION_START = 0x1c00
 	#Fuses for Xtal/16MHz, bootloader at 0x1c00
-	HFUSE = 0xc9
+	HFUSE = 0xc8
 	LFUSE = 0x9f
 else ifeq ($(MCU),atmega88)
 	# atmega88 with 1024 words bootloader:
