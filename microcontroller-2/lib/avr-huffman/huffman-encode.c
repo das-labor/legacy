@@ -23,15 +23,15 @@
 #include <stdlib.h>
 
 typedef struct{
-	uint8_t depth;
-	uint8_t value;
+	uint8_t  depth;
+	uint16_t value;
 	uint32_t weight;
-	void* left;
-	void* right;
+	void*    left;
+	void*    right;
 } node_t;
 
 typedef struct{
-	uint8_t  value;
+	uint16_t value;
 	unsigned depth;
 	void*    encoding;
 } item_t;
@@ -45,7 +45,7 @@ typedef struct{
 } node2_t;
 
 uint32_t histogram[256];
-node_t*  pool[256];
+node_t*  pool[256+1];
 unsigned poolsize;
 unsigned item_count;
 node_t*  tree;
@@ -56,6 +56,7 @@ unsigned itemindex=0;
 node2_t* node2list=NULL;
 unsigned node2list_index=0;
 item_t*  valueencode[256];
+item_t*  eof_encoding;
 
 void reset_histogram(void){
 	memset(histogram, 0, 256*sizeof(uint32_t));
@@ -63,9 +64,10 @@ void reset_histogram(void){
 
 void build_histogram(char* fname){
 	FILE* f;
+	int t;
 	f = fopen(fname, "r");
-	while(!feof(f)){
-		histogram[fgetc(f)]++;	
+	while((t=fgetc(f))!=EOF){
+		histogram[(uint8_t)t&0xFF]++;	
 	}
 	fclose(f);
 }
@@ -97,20 +99,31 @@ void build_pool(void){
 		pool[j]->weight = histogram[i];
 		j++;
 	}
+	pool[j] = malloc(sizeof(node_t));
+	if(pool[j]==NULL){
+		fprintf(stderr,"out of memory error (%d)!\n", __LINE__);
+		exit(-1);		
+	}
+	pool[j]->depth  = 0;
+	pool[j]->value  = 0xFFFF;
+	pool[j]->left   = NULL;
+	pool[j]->right  = NULL;
+	pool[j]->weight = 1;
+	j++;
 	poolsize = j;
 	item_count = j;
 }
 
 void find_lightest2(unsigned* a, unsigned* b, unsigned* depth){
-	unsigned ia;
-	unsigned ib;
+	unsigned ia=0;
+	unsigned ib=0;
 	uint32_t wa, wb;
 	unsigned i;
 	wa = wb = 0xFFFFFFFF;
 	for(i=0; i<poolsize; ++i){
 		if(pool[i]==NULL)
 			continue;		
-		if(wa>pool[i]->weight){
+		if(wa>=pool[i]->weight){
 			wb = wa;
 			ib = ia;
 			wa = pool[i]->weight;
@@ -143,7 +156,7 @@ void init_tree(void){
 		fprintf(stderr,"out of memory error (%d)!\n", __LINE__);
 		exit(-1);		
 	}
-	printf("treenodes := %p\n", treenodes);
+	printf("treenodes := %p\n", (void*)treenodes);
 }
 
 void print_pool(FILE* f){
@@ -152,13 +165,13 @@ void print_pool(FILE* f){
 		printf("  idx = %d\n"
 		       "    self   = %p\n"
 		       "    weight = %d\n"
-                       "    depth  = %d\n", i, pool[i],pool[i]->weight,pool[i]->depth);
+                       "    depth  = %d\n", i, (void*)(pool[i]),pool[i]->weight,pool[i]->depth);
 		if(pool[i]->depth==0){
-			char c = pool[i]->value;
+			uint8_t c = pool[i]->value;
 			printf("    value  = %2.2X (%c)\n", c, (c>32&&c<128)?c:' ');
 		} else {
 			printf("    left   = %p\n"
-			       "    right  = %p\n", pool[i]->left, pool[i]->right);
+			       "    right  = %p\n", (void*)(pool[i]->left), (void*)(pool[i]->right));
 		}
 	}
 }
@@ -169,16 +182,18 @@ void update_tree(void){
 	unsigned a,b, depth;
 //	print_pool(stdout);
 	find_lightest2(&a,&b,&depth);
-//	printf("joining %d and %d\n", a,b);
+	printf("joining %d and %d\n", a,b);
 	treenodes[treeindex].depth  = depth+1;
 	treenodes[treeindex].weight = pool[a]->weight + pool[b]->weight;
 	treenodes[treeindex].left   = (pool[a]);
 	treenodes[treeindex].right  = (pool[b]);
-/*
-	printf("  idx = %d\n    self   = %p\n    depth  = %d\n    weight = %d\n    left   = %p\n    right  = %p\n",
-	       treeindex, &(treenodes[treeindex]), treenodes[treeindex].depth, treenodes[treeindex].weight,
-	       treenodes[treeindex].left, treenodes[treeindex].right); 
-*/
+
+	printf("  idx = %d\n    self   = %p\n    depth  = %d\n    weight = %d\n"
+	       "    left   = %p\n    right  = %p\n",
+	       treeindex, (void*)&(treenodes[treeindex]), treenodes[treeindex].depth,
+		   treenodes[treeindex].weight, treenodes[treeindex].left, 
+		   treenodes[treeindex].right); 
+
 	pool[a] = &(treenodes[treeindex]);
 	pool[b] = pool[poolsize-1];
 	pool[poolsize-1] = NULL;
@@ -197,13 +212,13 @@ void build_tree(void){
 void print_subtree(FILE* f, node_t* node){
 	if(node->depth==0){
 		char c = node->value;
-		fprintf(f,"  n%p [label=\"%2.2X (%c)\",fillcolor=green,style=filled]\n", node, c, (c>32&&c<128&&c!='"'	)?c:' ');
+		fprintf(f,"  n%p [label=\"%2.2X (%c)\",fillcolor=green,style=filled]\n", (void*)node, c, (c>32&&c<128&&c!='"'	)?c:' ');
 		return;	
 	}else{
-		fprintf(f,"  n%p [label=\"%d\"]\n", node, node->weight);
+		fprintf(f,"  n%p [label=\"%d\"]\n", (void*)node, node->weight);
 	}	
-	fprintf(f, "  n%p -> n%p [label=\"0\"]\n", node, node->left);
-	fprintf(f, "  n%p -> n%p [label=\"1\"]\n", node, node->right);
+	fprintf(f, "  n%p -> n%p [label=\"0\"]\n", (void*)node, node->left);
+	fprintf(f, "  n%p -> n%p [label=\"1\"]\n", (void*)node, node->right);
 	print_subtree(f, node->left);
 	print_subtree(f, node->right);
 }
@@ -225,7 +240,7 @@ void free_leaf(node_t* node){
 
 void free_tree(void){
 	free_leaf(tree);
-	printf("treenodes  = %p\n", treenodes);
+	printf("treenodes  = %p\n", (void*)treenodes);
 	free(treenodes); 
 	printf("free successfull\n");
 	tree = NULL;
@@ -274,12 +289,17 @@ void print_itemlist(FILE* f){
 			fprintf(f, "nil");
 		}
 		fprintf(f,"\n");	
-		totalsize += (itemlist[i].depth) * histogram[itemlist[i].value];
+		if(itemlist[i].value!=0xFFFF)
+			totalsize += (itemlist[i].depth) * histogram[itemlist[i].value];
 	}
 	fprintf(f, "compressed size = %lu bits (%lu bytes)\n", totalsize, (totalsize+7)/8);
 }
 
 int item_compare_depth(const void* a, const void* b){
+	if(((item_t*)a)->value==0xFFFF)
+		return  1;
+	if(((item_t*)b)->value==0xFFFF)
+		return -1;	
 	return ((item_t*)a)->depth - ((item_t*)b)->depth;
 }
 
@@ -314,7 +334,7 @@ void gen_itemencoding(void){
 	uint8_t prefix[PREFIX_SIZE_B];
 	memset(prefix, 0, PREFIX_SIZE_B);
 	unsigned depth=0;
-	unsigned depth_B;
+	unsigned depth_B=0;
 	unsigned i,j;	
 	for(i=0; i<item_count; ++i){
 		if(depth!=itemlist[i].depth){
@@ -334,7 +354,7 @@ void gen_itemencoding(void){
 }
 
 void add_item2(item_t* item){
-	int       i,j;
+	int       i;
 	uint8_t   t;
 	node2_t*  current;
 	current = node2list;
@@ -383,7 +403,6 @@ void add_item2(item_t* item){
 
 void gen_tree2(void){
 	unsigned i;	
-	unsigned index=0;
 	node2list = calloc(2*item_count-1, sizeof(node2_t));
 	printf("item_count = %d\n", item_count);
 	if(node2list==NULL){
@@ -398,7 +417,8 @@ void gen_tree2(void){
 void print_sub_tree2(FILE* f, node2_t* node){
 	if(node->item){
 		char c = node->item->value;
-		fprintf(f,"  n%p [label=\"%2.2X (%c)\",fillcolor=green,style=filled]\n", node, c, (c>32&&c<128&&c!='"'	)?c:' ');
+		fprintf(f,"  n%p [label=\"%2.2X (%c)\",fillcolor=green,style=filled]\n",
+		        (void*)node, c, (c>32&&c<128&&c!='"'	)?c:' ');
 		if(node->left)
 			fprintf(f,"# node left defined\n");
 		if(node->left)
@@ -407,11 +427,11 @@ void print_sub_tree2(FILE* f, node2_t* node){
 			return;	
 	}
 	if(node->left){
-		fprintf(f, "  n%p -> n%p [label=\"0\"]\n", node, node->left);
+		fprintf(f, "  n%p -> n%p [label=\"0\"]\n", (void*)node, node->left);
 		print_sub_tree2(f, node->left);
 	}
 	if(node->right){
-		fprintf(f, "  n%p -> n%p [label=\"1\"]\n", node, node->right);
+		fprintf(f, "  n%p -> n%p [label=\"1\"]\n", (void*)node, node->right);
 		print_sub_tree2(f, node->right);
 	}
 }
@@ -452,9 +472,10 @@ void encoding_writer(FILE* f, uint8_t* data, uint16_t length){
 void build_valueencode(void){
 	unsigned i;
 	memset(valueencode, 0, 256*sizeof(void*));
-	for(i=0; i<item_count; ++i){
+	for(i=0; i<item_count-1; ++i){
 		valueencode[itemlist[i].value] = &(itemlist[i]);
 	}
+	eof_encoding = &(itemlist[i]);
 }
 
 void write_tree(FILE* f){
@@ -493,12 +514,14 @@ void write_tree(FILE* f){
 void compress_file(FILE* fin, FILE* fout){
 	int t;
 	while((t=fgetc(fin))!=EOF){
+		t = (uint8_t)t;
 		if(valueencode[t]==NULL){
 			fprintf(stderr,"no encoding for %2.2X (%c) found!\n",t,(t>32&&t<128)?t:' ');
 			exit(-3);
 		}
 		encoding_writer(fout, valueencode[t]->encoding, valueencode[t]->depth);		
 	};		
+	encoding_writer(fout, eof_encoding->encoding, eof_encoding->depth);
 	encoding_writer(fout, NULL, 0);
 }
 
@@ -518,30 +541,37 @@ int main(int argc, char** argv){
 		puts("build pool");		
 		build_pool();
 		puts("init tree");
-	//	print_pool(stdout);
+		print_pool(stdout);
 		init_tree();
 		puts("build tree");
 		build_tree();
-	//	printf("\n");
+		puts("\nfinish build tree");
 		gf = fopen("testgraph.dot", "w");		
 		print_tree(gf);
 		fclose(gf);		
 		init_itemlist();
 		build_itemlist();
 		free_tree();
+		puts("sorting itemlist ...");
 		sort_itemlist();	
-	//	print_itemlist(stdout);
+		puts("print itemlist ...");
+		print_itemlist(stdout);
+		puts("generating item encoding ...");
 		gen_itemencoding();			
 		print_itemlist(stdout);
 		gen_tree2();
 		puts("optimized tree build successfuly");
 		gf = fopen("testgraph2.dot", "w");		
+		puts("print tree ...");
 		print_tree2(gf);
 		fclose(gf);
+		puts("build value encoding ...");
 		build_valueencode();
 		fin  = fopen(argv[i], "r");
 		fout = fopen(fnameout, "w");
+		puts("writing tree ...");
 		write_tree(fout);
+		puts("writing compressed data ...");
 		compress_file(fin, fout);
 		fclose(fin);
 		fclose(fout);

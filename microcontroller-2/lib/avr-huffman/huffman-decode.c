@@ -103,6 +103,13 @@ uint8_t append_tree(int16_t value, uint16_t depth){
 	return prefix[depth/8]&(1<<(depth%8));
 }
 
+void set_last_to_eof(void){
+	node_t* current=tree;
+	while(current->value==V_NODE)
+		current=current->right;
+	current->value=V_EOF;
+}
+
 void build_tree(FILE* f){
 	tree = calloc(1, sizeof(node_t));
 	tree->value = V_NODE;
@@ -120,26 +127,35 @@ void build_tree(FILE* f){
 		printf("adding %2.2X (%c) @ depth = %d\n",v,(v>32&&v<128)?v:' ',depth);
 		--count;
 	}while(!append_tree(v, depth));		
+	set_last_to_eof();
 }
 
 void print_sub_tree(FILE* f, node_t* node){
 	if(node->value==V_NODE){
-		fprintf(f, "  n%p -> n%p [label=\"0\"]\n", node, node->left);
-		fprintf(f, "  n%p -> n%p [label=\"1\"]\n", node, node->right);
+		fprintf(f, "  n%p -> n%p [label=\"0\"]\n", (void*)node, node->left);
+		fprintf(f, "  n%p -> n%p [label=\"1\"]\n", (void*)node, node->right);
 		print_sub_tree(f, node->left);
 		print_sub_tree(f, node->right);
 	}else{
 		int v;
 		v = node->value;
 		fprintf(f, "  n%p [label=\"%2.2X (%c)\", fillcolor=green,style=filled]\n",
-
-		        node, v, (v>32&&v<128&&v!='"')?v:' '); 
+		        (void*)node, v, (v>32&&v<128&&v!='"')?v:' '); 
 	}
 }
 void print_tree(FILE* f){
 	fprintf(f, "digraph G{\n");
 	print_sub_tree(f, tree);
 	fprintf(f, "}\n");
+}
+
+void free_tree(node_t* node){
+	if(node->value==V_NODE){
+		free_tree(node->left);
+		free_tree(node->right);
+	}
+	free(node);
+	
 }
 
 FILE* outfile;
@@ -194,10 +210,11 @@ int main(int argc, char** argv){
 	int i;
 	FILE* fin;
 	FILE* fg;
-	outfile=stdout;
+//	outfile=stdout;
 	for(i=1;i<argc;++i){
 		fin = fopen(argv[i], "r");
 		fg  = fopen("graphout.dot", "w");
+		outfile = fopen("decompress.out", "w");
 		puts("building tree ...");
 		build_tree(fin);
 		puts("printing tree ...");
@@ -206,6 +223,8 @@ int main(int argc, char** argv){
 		infile=fin;
 		decompress();
 		fclose(fin);
+		fclose(outfile);
+		free_tree(tree);
 	}
 	return 0;
 }
