@@ -59,6 +59,24 @@
 	#define RFM12_LIVECTRL 0
 #endif
 
+/* backward compatibility for the spi stuff
+ * these values weren't set in older revisions of this library
+ * so they're now assumed to be on the same pin/port
+ */
+#ifndef DDR_MOSI
+	#define DDR_MOSI DDR_SPI
+	#define PORT_MOSI PORT_SPI
+#endif
+
+#ifndef DDR_MISO
+	#define DDR_MISO DDR_SPI
+	#define PIN_MISO PIN_SPI
+#endif
+
+#ifndef DDR_SCK
+	#define DDR_SCK DDR_SPI
+	#define PORT_SPI DDR_SPI
+#endif
 
 
 //function protoypes
