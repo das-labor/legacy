@@ -1,1 +1,0 @@
-sch2vhdl -intstyle ise -family spartan3 -flat -suppress -w "D:/Borg_sender2/borg_sender/takt2.sch" takt2.vhf
