@@ -1,3 +1,28 @@
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+-- Hackerspace:		Das Labor    www.das-labor.org											--
+-- Hacker: 				Sauron																			--
+-- 																											--
+-- Datum:    			30.06.2009        															--
+-- Projekt: 			Der Borg Ventilator															--
+-- Modul Name:     	ram_read.vhd     																--
+-- Beschreibung: 		Ich berechne die Adresse zum lesen aus dem Arbeitsspeicher     --
+--                   dann gehe ich alle LED's der reihe nach durch und berechne     --
+--                   für die aktuelle led und den aktuellen winkel die Adresse      --
+--							im Speicher. Die Leds sind zueinander im 90 grad winkel        --
+--                   angeordnet. Eine neue Adresse wird nur generiert, wenn nicht   --
+--                   geschrieben wird.                                              --
+-- Pipelining:       																		         --
+-- Latenz:           6 clk                                                          --
+--																												--
+-- Dependencies: 		xy_polar.vhd  (sinus.xco, multiplier_xy.xco)      					--
+--																												--
+-- Version:          V9.6.1       																	--
+-- 																											--
+-- Additional Comments: Wiederstand ist Zwecklos		         							--
+--																												--
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -25,8 +50,8 @@ component xy_polar
 		led_v    : OUT std_logic_vector( 7 downto 0));
 end component;
 	-- stufe 1
-	signal fluegel_winkel_1 : std_logic_vector( 9 downto 0);
-	signal led_nr_1         : std_logic_vector( 7 downto 0);
+	signal fluegel_winkel_1 : std_logic_vector( 9 downto 0):= (others => '0');
+	signal led_nr_1         : std_logic_vector( 7 downto 0):= (others => '0');
 	signal write_enable_1   : std_logic;
 	--stufe 2
 	signal led_nr_2			: std_logic_vector( 7 downto 0);
@@ -39,7 +64,7 @@ begin -- und ab gehts
 -- winkel in ein Register übernehmen,
 -- damit alle leds für den selben winkel berechnet werden
 process (clk) begin -- #u1#
- if rising_edge (clk) and led_nr_1 = 0 then
+ if rising_edge (clk) and led_nr_1 = 255 then
    fluegel_winkel_1 <= winkel;
   end if;
 end process;
@@ -83,8 +108,10 @@ end process;
 		   led => led_nr_2,
 	  mem_adr => ram_adr,
 	 winkel_v => winkel_diag,
-   	 led_v => led_nr	);
+   	 led_v => led_nr
 
+		 );
 
+--led_nr <= led;
 end Behavioral;
 
