@@ -22,6 +22,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#define DEBUG 0
+#define XDEBUG 0
+
 typedef struct{
 	uint8_t  depth;
 	uint16_t value;
@@ -156,7 +159,9 @@ void init_tree(void){
 		fprintf(stderr,"out of memory error (%d)!\n", __LINE__);
 		exit(-1);		
 	}
+#if XDEBUG	
 	printf("treenodes := %p\n", (void*)treenodes);
+#endif
 }
 
 void print_pool(FILE* f){
@@ -170,6 +175,7 @@ void print_pool(FILE* f){
 			uint8_t c = pool[i]->value;
 			printf("    value  = %2.2X (%c)\n", c, (c>32&&c<128)?c:' ');
 		} else {
+
 			printf("    left   = %p\n"
 			       "    right  = %p\n", (void*)(pool[i]->left), (void*)(pool[i]->right));
 		}
@@ -180,20 +186,21 @@ void update_tree(void){
 	if(poolsize<2)
 		return;
 	unsigned a,b, depth;
-//	print_pool(stdout);
 	find_lightest2(&a,&b,&depth);
+#if XDEBUG
 	printf("joining %d and %d\n", a,b);
+#endif
 	treenodes[treeindex].depth  = depth+1;
 	treenodes[treeindex].weight = pool[a]->weight + pool[b]->weight;
 	treenodes[treeindex].left   = (pool[a]);
 	treenodes[treeindex].right  = (pool[b]);
-
+#if XDEBUG
 	printf("  idx = %d\n    self   = %p\n    depth  = %d\n    weight = %d\n"
 	       "    left   = %p\n    right  = %p\n",
 	       treeindex, (void*)&(treenodes[treeindex]), treenodes[treeindex].depth,
 		   treenodes[treeindex].weight, treenodes[treeindex].left, 
 		   treenodes[treeindex].right); 
-
+#endif
 	pool[a] = &(treenodes[treeindex]);
 	pool[b] = pool[poolsize-1];
 	pool[poolsize-1] = NULL;
@@ -203,7 +210,6 @@ void update_tree(void){
 
 void build_tree(void){
 	while(poolsize>1){
-	//	printf("  poolsize = %d\n", poolsize);
 		update_tree();
 	}
 	tree = &(treenodes[treeindex-1]);
@@ -240,9 +246,7 @@ void free_leaf(node_t* node){
 
 void free_tree(void){
 	free_leaf(tree);
-	printf("treenodes  = %p\n", (void*)treenodes);
 	free(treenodes); 
-	printf("free successfull\n");
 	tree = NULL;
 }
 
@@ -404,7 +408,9 @@ void add_item2(item_t* item){
 void gen_tree2(void){
 	unsigned i;	
 	node2list = calloc(2*item_count-1, sizeof(node2_t));
+#if XDEBUG
 	printf("item_count = %d\n", item_count);
+#endif
 	if(node2list==NULL){
 		fprintf(stderr,"out of memory error (%d)!\n", __LINE__);
 		exit(-1);		
@@ -481,7 +487,10 @@ void build_valueencode(void){
 void write_tree(FILE* f){
 	unsigned i,j;
 	unsigned last=0;
-	unsigned last_depth=1;	
+	unsigned last_depth=1;
+	fputc(0xc0, f);
+	fputc(0xde + (item_count>>8), f);	
+	fputc(item_count,f);
 	for(i=0; i<item_count; ++i){
 		if(itemlist[i].depth!=last_depth){
 			if(i-last>=255){
@@ -535,43 +544,69 @@ int main(int argc, char** argv){
 		strcpy(fnameout, argv[i]);
 		strcat(fnameout, ".hfm");
 		reset_histogram();
+#if DEBUG	
 		printf("== %s ==\n", argv[i]);
+#endif
 		build_histogram(argv[i]);
 	//	print_histogram();
+#if DEBUG	
 		puts("build pool");		
+#endif
 		build_pool();
+#if DEBUG	
 		puts("init tree");
 		print_pool(stdout);
+#endif
 		init_tree();
+#if DEBUG	
 		puts("build tree");
+#endif
 		build_tree();
+#if DEBUG	
 		puts("\nfinish build tree");
+#endif
 		gf = fopen("testgraph.dot", "w");		
 		print_tree(gf);
 		fclose(gf);		
 		init_itemlist();
 		build_itemlist();
 		free_tree();
+#if DEBUG	
 		puts("sorting itemlist ...");
+#endif
 		sort_itemlist();	
+#if DEBUG	
 		puts("print itemlist ...");
 		print_itemlist(stdout);
 		puts("generating item encoding ...");
+#endif
 		gen_itemencoding();			
+#if DEBUG	
 		print_itemlist(stdout);
+#endif
 		gen_tree2();
+#if DEBUG	
 		puts("optimized tree build successfuly");
+#endif
 		gf = fopen("testgraph2.dot", "w");		
+#if DEBUG	
 		puts("print tree ...");
+#endif
 		print_tree2(gf);
 		fclose(gf);
+#if DEBUG	
 		puts("build value encoding ...");
+#endif
 		build_valueencode();
 		fin  = fopen(argv[i], "r");
 		fout = fopen(fnameout, "w");
+#if DEBUG	
 		puts("writing tree ...");
+#endif
 		write_tree(fout);
+#if DEBUG	
 		puts("writing compressed data ...");
+#endif
 		compress_file(fin, fout);
 		fclose(fin);
 		fclose(fout);
