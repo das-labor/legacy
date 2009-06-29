@@ -1,0 +1,58 @@
+##############################################################
+#
+# Xilinx Core Generator version J.40
+# Date: Wed May 27 22:06:47 2009
+#
+##############################################################
+#
+#  This file contains the customisation parameters for a
+#  Xilinx CORE Generator IP GUI. It is strongly recommended
+#  that you do not manually alter this file as it may cause
+#  unexpected and unsupported behavior.
+#
+##############################################################
+#
+# BEGIN Project Options
+SET addpads = False
+SET asysymbol = True
+SET busformat = BusFormatAngleBracketNotRipped
+SET createndf = False
+SET designentry = VHDL
+SET device = xc3s400
+SET devicefamily = spartan3
+SET flowvendor = Foundation_iSE
+SET formalverification = False
+SET foundationsym = False
+SET implementationfiletype = Ngc
+SET package = ft256
+SET removerpms = False
+SET simulationfiles = Behavioral
+SET speedgrade = -5
+SET verilogsim = True
+SET vhdlsim = True
+# END Project Options
+# BEGIN Select
+SELECT Encode_8b/10b family Xilinx,_Inc. 5.0
+# END Select
+# BEGIN Parameters
+CSET b_clock_enable=false
+CSET b_code_error_output=false
+CSET b_disparity_output=false
+CSET b_force_code=false
+CSET b_force_code_symbol=B_D_10_2_neg
+CSET b_force_disparity=false
+CSET b_new_data=false
+CSET clock_enable=true
+CSET code_error_output=false
+CSET component_name=encoder_b8b10b
+CSET disparity_output=false
+CSET force_code=false
+CSET force_code_symbol=D_10_2_neg
+CSET force_disparity=false
+CSET implementation=LUT_Based
+CSET new_data=false
+CSET secondary_encoder=false
+# END Parameters
+GENERATE
+# CRC: 29a52af5
+
