@@ -83,7 +83,7 @@ BEGIN SCHEMATIC
         PORT Output sram_1_o(15:0)
         PORT Output XLXN_327(15:0)
         BEGIN BLOCKDEF display2
-            TIMESTAMP 2009 5 24 21 36 47
+            TIMESTAMP 2009 6 29 11 32 47
             RECTANGLE N 64 -132 256 -16 
             LINE N 64 -96 0 -96 
             LINE N 64 -112 0 -112 
@@ -95,7 +95,7 @@ BEGIN SCHEMATIC
             LINE N 64 -32 0 -32 
         END BLOCKDEF
         BEGIN BLOCKDEF Picoblaze
-            TIMESTAMP 2009 6 20 1 55 59
+            TIMESTAMP 2009 6 29 11 32 47
             RECTANGLE N 320 196 384 220 
             LINE N 320 208 384 208 
             RECTANGLE N 320 228 384 252 
@@ -142,7 +142,7 @@ BEGIN SCHEMATIC
             LINE N 320 336 384 336 
         END BLOCKDEF
         BEGIN BLOCKDEF tgb
-            TIMESTAMP 2009 5 24 21 36 47
+            TIMESTAMP 2009 6 29 11 32 47
             RECTANGLE N 64 -320 256 -88 
             LINE N 64 -304 0 -304 
             LINE N 256 -288 320 -288 
@@ -164,7 +164,7 @@ BEGIN SCHEMATIC
             LINE N 256 -128 320 -128 
         END BLOCKDEF
         BEGIN BLOCKDEF takt2
-            TIMESTAMP 2009 6 19 22 54 29
+            TIMESTAMP 2009 6 29 11 32 47
             LINE N 240 -192 304 -192 
             LINE N 64 -288 0 -288 
             LINE N 240 -288 304 -288 
@@ -173,7 +173,7 @@ BEGIN SCHEMATIC
             RECTANGLE N 64 -320 240 -164 
         END BLOCKDEF
         BEGIN BLOCKDEF io_out
-            TIMESTAMP 2009 5 25 18 38 48
+            TIMESTAMP 2009 6 29 11 32 47
             LINE N 64 -160 0 -160 
             LINE N 64 -128 0 -128 
             LINE N 64 -96 0 -96 
