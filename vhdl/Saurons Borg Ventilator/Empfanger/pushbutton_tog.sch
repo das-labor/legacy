@@ -55,7 +55,7 @@ BEGIN SCHEMATIC
             LINE N 0 -128 64 -128 
         END BLOCKDEF
         BEGIN BLOCKDEF f_null
-            TIMESTAMP 2009 5 24 21 36 24
+            TIMESTAMP 2009 6 29 11 10 14
             RECTANGLE N 280 -48 320 -16 
             LINE N 320 -32 384 -32 
         END BLOCKDEF
@@ -73,7 +73,7 @@ BEGIN SCHEMATIC
             RECTANGLE N 64 -384 320 -64 
         END BLOCKDEF
         BEGIN BLOCKDEF f_eins
-            TIMESTAMP 2009 5 24 21 36 25
+            TIMESTAMP 2009 6 29 11 10 14
             RECTANGLE N 192 -64 320 0 
             LINE N 320 -32 384 -32 
         END BLOCKDEF
