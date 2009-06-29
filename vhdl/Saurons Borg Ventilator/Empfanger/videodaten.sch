@@ -99,7 +99,7 @@ BEGIN SCHEMATIC
             LINE N 0 -16 48 -16 
         END BLOCKDEF
         BEGIN BLOCKDEF f_null
-            TIMESTAMP 2009 6 29 11 10 14
+            TIMESTAMP 2009 6 29 11 32 51
             RECTANGLE N 280 -48 320 -16 
             LINE N 320 -32 384 -32 
         END BLOCKDEF
@@ -112,7 +112,7 @@ BEGIN SCHEMATIC
             LINE N 224 -32 128 -32 
         END BLOCKDEF
         BEGIN BLOCKDEF takt
-            TIMESTAMP 2009 6 29 11 10 14
+            TIMESTAMP 2009 6 29 11 32 51
             LINE N 64 -160 0 -160 
             LINE N 400 -160 464 -160 
             RECTANGLE N 64 -192 400 -44 
@@ -121,7 +121,7 @@ BEGIN SCHEMATIC
             LINE N 64 -96 0 -96 
         END BLOCKDEF
         BEGIN BLOCKDEF bram2p
-            TIMESTAMP 2009 6 29 11 18 13
+            TIMESTAMP 2009 6 29 11 40 45
             RECTANGLE N 32 0 256 496 
             BEGIN LINE W 0 48 32 48 
             END LINE
@@ -136,12 +136,12 @@ BEGIN SCHEMATIC
             END LINE
         END BLOCKDEF
         BEGIN BLOCKDEF f_eins
-            TIMESTAMP 2009 6 29 11 10 14
+            TIMESTAMP 2009 6 29 11 32 51
             RECTANGLE N 192 -64 320 0 
             LINE N 320 -32 384 -32 
         END BLOCKDEF
         BEGIN BLOCKDEF switch4_8
-            TIMESTAMP 2009 6 29 11 10 14
+            TIMESTAMP 2009 6 29 11 32 51
             RECTANGLE N 64 -300 320 0 
             LINE N 64 -16 0 -16 
             RECTANGLE N 0 -124 64 -100 
@@ -157,7 +157,7 @@ BEGIN SCHEMATIC
             LINE N 320 -256 384 -256 
         END BLOCKDEF
         BEGIN BLOCKDEF com_clock
-            TIMESTAMP 2009 6 29 11 10 14
+            TIMESTAMP 2009 6 29 11 32 51
             RECTANGLE N 64 -276 320 -12 
             RECTANGLE N 320 -44 384 -20 
             LINE N 320 -32 384 -32 
@@ -172,7 +172,7 @@ BEGIN SCHEMATIC
             LINE N 64 -224 0 -224 
         END BLOCKDEF
         BEGIN BLOCKDEF clk_200
-            TIMESTAMP 2009 6 29 11 10 14
+            TIMESTAMP 2009 6 29 11 32 51
             RECTANGLE N 64 -192 368 -80 
             LINE N 64 -160 0 -160 
             LINE N 368 -160 432 -160 
@@ -181,7 +181,7 @@ BEGIN SCHEMATIC
             LINE N 64 -128 0 -128 
         END BLOCKDEF
         BEGIN BLOCKDEF packet_read
-            TIMESTAMP 2009 6 29 11 10 14
+            TIMESTAMP 2009 6 29 11 32 51
             RECTANGLE N 64 -320 288 -80 
             LINE N 64 -288 0 -288 
             LINE N 64 -192 0 -192 
@@ -203,7 +203,7 @@ BEGIN SCHEMATIC
             LINE N 0 -32 64 -32 
         END BLOCKDEF
         BEGIN BLOCKDEF com_20
-            TIMESTAMP 2009 6 29 11 10 14
+            TIMESTAMP 2009 6 29 11 32 51
             LINE N 400 32 464 32 
             LINE N 64 -160 0 -160 
             LINE N 64 -32 0 -32 
@@ -216,7 +216,7 @@ BEGIN SCHEMATIC
             LINE N 400 -16 464 -16 
         END BLOCKDEF
         BEGIN BLOCKDEF Picoblaze_e
-            TIMESTAMP 2009 6 29 11 10 14
+            TIMESTAMP 2009 6 29 11 32 51
             RECTANGLE N 4 372 68 396 
             LINE N 68 384 4 384 
             LINE N 320 352 384 352 
@@ -253,7 +253,7 @@ BEGIN SCHEMATIC
             RECTANGLE N 68 -300 320 440 
         END BLOCKDEF
         BEGIN BLOCKDEF com_20_status
-            TIMESTAMP 2009 6 29 11 10 14
+            TIMESTAMP 2009 6 29 11 32 51
             RECTANGLE N 64 -80 176 20 
             LINE N 64 -64 0 -64 
             RECTANGLE N 176 -76 240 -52 
@@ -262,7 +262,7 @@ BEGIN SCHEMATIC
             LINE N 64 0 0 0 
         END BLOCKDEF
         BEGIN BLOCKDEF packet_write
-            TIMESTAMP 2009 6 29 11 10 14
+            TIMESTAMP 2009 6 29 11 32 51
             RECTANGLE N 64 -152 288 -36 
             RECTANGLE N 0 -108 64 -84 
             LINE N 64 -96 0 -96 
