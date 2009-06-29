@@ -7,11 +7,11 @@
 // \   \   \/     Version : 9.2.04i
 //  \   \         Application : xaw2verilog
 //  /   /         Filename : com_20.v
-// /___/   /\     Timestamp : 05/28/2009 00:19:14
+// /___/   /\     Timestamp : 06/29/2009 13:19:24
 // \   \  /  \ 
 //  \___\/\___\ 
 //
-//Command: xaw2verilog -intstyle D:/Borg Ventilator empfanger/com_20.xaw -st com_20.v
+//Command: xaw2verilog -intstyle D:/Saurons Borg Ventilator/Empfanger/com_20.xaw -st com_20.v
 //Design Name: com_20
 //Device: xc3s400-5ft256
 //

@@ -7,11 +7,11 @@
 // \   \   \/     Version : 9.2.04i
 //  \   \         Application : xaw2verilog
 //  /   /         Filename : clk_200.v
-// /___/   /\     Timestamp : 05/28/2009 00:19:12
+// /___/   /\     Timestamp : 06/29/2009 13:19:23
 // \   \  /  \ 
 //  \___\/\___\ 
 //
-//Command: xaw2verilog -intstyle D:/Borg Ventilator empfanger/clk_200.xaw -st clk_200.v
+//Command: xaw2verilog -intstyle D:/Saurons Borg Ventilator/Empfanger/clk_200.xaw -st clk_200.v
 //Design Name: clk_200
 //Device: xc3s400-5ft256
 //

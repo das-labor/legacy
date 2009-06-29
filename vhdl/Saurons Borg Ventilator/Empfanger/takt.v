@@ -7,11 +7,11 @@
 // \   \   \/     Version : 9.2.04i
 //  \   \         Application : xaw2verilog
 //  /   /         Filename : takt.v
-// /___/   /\     Timestamp : 05/28/2009 00:19:22
+// /___/   /\     Timestamp : 06/29/2009 13:19:31
 // \   \  /  \ 
 //  \___\/\___\ 
 //
-//Command: xaw2verilog -intstyle D:/Borg Ventilator empfanger/takt.xaw -st takt.v
+//Command: xaw2verilog -intstyle D:/Saurons Borg Ventilator/Empfanger/takt.xaw -st takt.v
 //Design Name: takt
 //Device: xc3s400-5ft256
 //
