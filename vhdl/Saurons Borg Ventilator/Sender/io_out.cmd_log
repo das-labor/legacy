@@ -1,0 +1,1 @@
+sch2vhdl -intstyle ise -family spartan3 -flat -suppress -w "D:/Borg_sender2/borg_sender/io_out.sch" io_out.vhf
