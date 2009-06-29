@@ -55,9 +55,21 @@
 #define DDR_SPI DDRB
 #define PORT_SPI PORTB
 #define PIN_SPI PINB
+
+#define PIN_MOSI PIN_SPI
+#define DDR_MOSI DDR_SPI
 #define BIT_MOSI 3
+
+#define PORT_MISO PORT_SPI
+#define DDR_MISO DDR_SPI
 #define BIT_MISO 4
+
+#define PORT_SCK PORT_SPI
+#define DDR_SCK DDR_SPI
 #define BIT_SCK  5
+
+#define PORT_SPI_SS PORT_SPI
+#define DDR_SPI_SS DDR_SPI
 #define BIT_SPI_SS 2
 //this is the hardware SS pin of the AVR - it 
 //needs to be set to output for the spi-interface to work 
@@ -112,3 +124,8 @@ This is a bitmask that defines how "rude" this library behaves
 #define RFM12_LIVECTRL 0
 #define RFM12_NORETURNS 1
 #define RFM12_NOCOLISSIONDETECTION 1
+
+/* Disable interrupt vector and run purely inline. This may be useful for
+ * configurations where a hardware interrupt is not available.
+ */
+#define RFM12_NOIRQ 1

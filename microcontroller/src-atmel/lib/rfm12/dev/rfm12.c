@@ -105,16 +105,16 @@ static uint8_t spi_data(uint8_t c){
 	uint8_t x, d=d;
 	for(x=0;x<8;x++){
 		if(c & 0x80){
-			PORT_SPI |= (1<<BIT_MOSI);
+			PORT_MOSI |= (1<<BIT_MOSI);
 		}else{
-			PORT_SPI &= ~(1<<BIT_MOSI);	
+			PORT_MOSI &= ~(1<<BIT_MOSI);	
 		}
-		PORT_SPI |= (1<<BIT_SCK);
+		PORT_SCK |= (1<<BIT_SCK);
 		d<<=1;
-		if(PIN_SPI & (1<<BIT_MISO)){
+		if(PIN_MISO & (1<<BIT_MISO)){
 			d|=1;
 		}
-		PORT_SPI &= ~(1<<BIT_SCK);
+		PORT_SCK &= ~(1<<BIT_SCK);
 		c<<=1;
 	}
 	return d;
@@ -179,14 +179,14 @@ uint16_t __attribute__ ((noinline)) rfm12_read(uint16_t c)
 
 #else
 	unsigned char x, d=d;
-	PORT_SPI &= ~(1<<BIT_MOSI);	
+	PORT_MOSI &= ~(1<<BIT_MOSI);	
 	for(x=0;x<8;x++){
-		PORT_SPI |= (1<<BIT_SCK);
+		PORT_SCK |= (1<<BIT_SCK);
 		d<<=1;
-		if(PIN_SPI & (1<<BIT_MISO)){
+		if(PIN_MISO & (1<<BIT_MISO)){
 			d|=1;
 		}
-		PORT_SPI &= ~(1<<BIT_SCK);
+		PORT_SCK &= ~(1<<BIT_SCK);
 	}
 	SS_RELEASE();
 	return d;
@@ -508,7 +508,7 @@ void rfm12_tick()
 				RFM12_INT_OFF();
 				
 				//disable receiver - is this needed?
-//				rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
+				rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
 			
 				//set mode for interrupt handler
 				rfm12_mode = MODE_TX;
@@ -536,7 +536,12 @@ void rfm12_tick()
 
 rfrxbuf_t cw_rxbuf;
 
-ISR(ADC_vect, ISR_NOBLOCK){
+#if RFM12_NOIRQ
+void rfm12_poll()
+#else
+ISR(ADC_vect, ISR_NOBLOCK)
+#endif
+{
 	static uint16_t adc_average;
 	static uint8_t pulse_timer;
 	
@@ -727,7 +732,12 @@ void rfm12_rawmode (uint8_t in_setting)
 
 void spi_init()
 {
-	DDR_SPI |= (1<<BIT_MOSI) | (1<<BIT_SCK) | (1<<BIT_SPI_SS);
+	DDR_MOSI   |= (_BV(BIT_MOSI));
+	DDR_SCK    |= (_BV(BIT_SCK));
+	DDR_SPI_SS |= (_BV(BIT_SPI_SS));
+	DDR_MISO   &= ~(_BV(BIT_MISO));
+
+
 #ifndef SPI_SOFTWARE	
 	SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);//SPI Master, clk/16
 #endif
@@ -756,7 +766,7 @@ void rfm12_init()
 	//this was no good idea, because when one writes the PWRMGT register
 	//two times in a short time, the second write seems to be delayed.
 	//the PWRMGT register is written at the end of this function.
-	//rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
+	rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
 
 	//enable internal data register and fifo
 	rfm12_data(RFM12_CMD_CFG | RFM12_CFG_EL | RFM12_CFG_EF | RFM12_BAND_433 | RFM12_XTAL_12PF);
