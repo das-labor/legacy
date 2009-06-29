@@ -38,6 +38,7 @@ typedef struct {
 } node_t;
 
 node_t* tree=NULL;
+uint16_t tree_index;
 
 void prefix_increment(uint8_t* prefix){
 	uint8_t i;
@@ -78,7 +79,8 @@ uint8_t append_tree(int16_t value, uint16_t depth){
 			putchar('0');
 #endif
 			if(current->left==NULL){
-				current->left=calloc(1, sizeof(node_t));
+			//	current->left=calloc(1, sizeof(node_t));
+				current->left=&(tree[tree_index++]);
 				((node_t*)(current->left))->value = V_NODE;
 			}
 			current = current->left;
@@ -87,8 +89,9 @@ uint8_t append_tree(int16_t value, uint16_t depth){
 			putchar('1');
 #endif
 			if(current->right==NULL){
-				current->right=calloc(1, sizeof(node_t));
-				((node_t*)(current->right))->value=V_NODE;
+			//	current->right=calloc(1, sizeof(node_t));
+				current->right=&(tree[tree_index++]);
+				((node_t*)(current->right))->value = V_NODE;
 			}
 			current = current->right;
 		}
@@ -111,8 +114,25 @@ void set_last_to_eof(void){
 }
 
 void build_tree(FILE* f){
-	tree = calloc(1, sizeof(node_t));
+	uint16_t treesize;
+	uint16_t x1, x2;
+	x1 =fgetc(f);
+	x2 =fgetc(f);
+	if(x1!=0xc0 || (x2&0xFE)!=0xde){
+		fprintf(stderr,"No magic values found!\n");
+	}
+	treesize= fgetc(f);
+	if(treesize>0xff){
+		fprintf(stderr,"You are trying to uncompress an empty file!\n");
+		exit(-3);
+	}
+	treesize = 2*(((x2&1)<<8)+treesize)-1;
+	tree = calloc(treesize, sizeof(node_t));
+	if(tree==NULL)
+		ALLOC_ERROR
+	printf("tree = %p\n", (void*)tree);
 	tree->value = V_NODE;
+	tree_index=1;
 	uint16_t depth=0;
 	uint16_t count=0;
 	uint8_t  v;
@@ -124,7 +144,9 @@ void build_tree(FILE* f){
 				count += fgetc(f);
 		}
 		v = fgetc(f);
+#if DEBUG		
 		printf("adding %2.2X (%c) @ depth = %d\n",v,(v>32&&v<128)?v:' ',depth);
+#endif
 		--count;
 	}while(!append_tree(v, depth));		
 	set_last_to_eof();
@@ -150,12 +172,14 @@ void print_tree(FILE* f){
 }
 
 void free_tree(node_t* node){
+/*
 	if(node->value==V_NODE){
 		free_tree(node->left);
 		free_tree(node->right);
 	}
-	free(node);
-	
+*/
+	printf("node = %p\n", (void*)node);
+	free((void*)node);
 }
 
 FILE* outfile;
@@ -192,6 +216,10 @@ uint16_t decompress_byte(void){
 		} else {
 			current=current->right;
 		}
+		if(current==NULL){
+			fprintf(stderr, "Tree damaged!\n");
+			exit(-4);
+		}
 	}
 	return current->value;
 }
@@ -221,9 +249,14 @@ int main(int argc, char** argv){
 		print_tree(fg);
 		fclose(fg);
 		infile=fin;
+		puts("decompression ...");
 		decompress();
+		puts("decompression finished");
+		puts("closing 'fin'");
 		fclose(fin);
+		puts("closing 'outfile'");
 		fclose(outfile);
+		puts("freeing memory ...");
 		free_tree(tree);
 	}
 	return 0;
