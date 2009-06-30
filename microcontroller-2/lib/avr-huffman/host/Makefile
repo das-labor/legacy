@@ -22,15 +22,19 @@ SHELL = sh
 OPTIMIZE   = -O2
 CC         = gcc
 CSTD       = c99
+DEP_DIR    = deps/
 override CFLAGS	= -MMD -MF$(DEP_DIR)$(patsubst %.c,%.d,$<) -I. -gdwarf-2 -pedantic -std=$(CSTD) -Wall -Wstrict-prototypes $(OPTIMIZE) $(DEFS)
 
-all: huffman-decode huffman-encode
+all: huffman-decode huffman-encode bin2avrS
 
 clean:
-	rm huffman-decode huffman-encode
+	rm -f huffman-decode huffman-encode bin2avrS
 	
 %.hfm: %
 	./huffman-encode $<
+
+#%.S: %
+#	./bin2avrS $<
 
 DEPS := $(wildcard $(DEP_DIR)*.d)
 

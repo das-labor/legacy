@@ -130,7 +130,6 @@ void build_tree(FILE* f){
 	tree = calloc(treesize, sizeof(node_t));
 	if(tree==NULL)
 		ALLOC_ERROR
-	printf("tree = %p\n", (void*)tree);
 	tree->value = V_NODE;
 	tree_index=1;
 	uint16_t depth=0;
@@ -178,8 +177,7 @@ void free_tree(node_t* node){
 		free_tree(node->right);
 	}
 */
-	printf("node = %p\n", (void*)node);
-	free((void*)node);
+	free(node);
 }
 
 FILE* outfile;
@@ -243,20 +241,16 @@ int main(int argc, char** argv){
 		fin = fopen(argv[i], "r");
 		fg  = fopen("graphout.dot", "w");
 		outfile = fopen("decompress.out", "w");
-		puts("building tree ...");
+//		puts("building tree ...");
 		build_tree(fin);
-		puts("printing tree ...");
+//		puts("printing tree ...");
 		print_tree(fg);
 		fclose(fg);
 		infile=fin;
-		puts("decompression ...");
+//		puts("decompression ...");
 		decompress();
-		puts("decompression finished");
-		puts("closing 'fin'");
 		fclose(fin);
-		puts("closing 'outfile'");
 		fclose(outfile);
-		puts("freeing memory ...");
 		free_tree(tree);
 	}
 	return 0;
