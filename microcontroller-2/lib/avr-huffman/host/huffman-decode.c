@@ -22,8 +22,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define V_NODE -2
-#define V_EOF  -1
+#define V_NODE (-2)
+#define V_EOF  (-1)
 
 #define PREFIX_SIZE_B 32 
 
