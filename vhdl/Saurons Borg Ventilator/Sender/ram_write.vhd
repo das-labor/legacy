@@ -3,23 +3,21 @@
 -- Hackerspace:		Das Labor    www.das-labor.org											--
 -- Hacker: 				Sauron																			--
 -- 																											--
--- Datum:    			28.06.2009        															--
+-- Datum:    			30.06.2009        															--
 -- Projekt: 			Der Borg Ventilator															--
 -- Modul Name:     	ram_write.vhd     															--
 -- Beschreibung: 		Daten in den Arbeitsspeicher schieben                          --
 --                   Ich nehmen Daten entgegen entweder von einer CPU oder          --
 --                   von einem AD wandler. Anschliessend geht es in einen FIFO      --
---							passenden Abstand vom Mittelpunkt                              --
---                   Anschliessend wird der Koordinaten-nullpunkt nach Links-unten  --
---                   verschoben (0-511)                                             --
---							Danach wird mit den xy-koordinaten die Adresse im Speicher     --
---                   bestimmt                                                       --
--- Pipelining:       | sin/cos 2 | multiplikation | Addressberechnung |             --
--- Latenz:           4 clk                                                          --
+--							wenn der fifo voll ist, wird in das ram geschrieben.           --
+--                   wenn ein vollständiges bild geschrieben wurde, wird            --
+--                   zum anderen speicher chip gewechselt                           --
+-- Pipelining:                                                                      --
+-- Latenz:           6 clk                                                          --
 --																												--
--- Dependencies: 		sinus.xco, multiplier_xy.xco                      					--
+-- Dependencies: 		fifo.xco                                        					--
 --																												--
--- Version:          V9.6.2       																	--
+-- Version:          V9.6.1       																	--
 -- 																											--
 -- Additional Comments: Wiederstand ist Zwecklos		         							--
 --																												--
@@ -38,6 +36,7 @@ entity ram_write is
             sram_dat : out   STD_LOGIC_VECTOR (15 downto 0) :="0000000000000000";
             sram_wrt : out   STD_LOGIC := '0';
             sram_sel : out   STD_LOGIC := '0';
+			write_enable: out   STD_LOGIC;
 			  
 	           ad_adr : in    STD_LOGIC_VECTOR (17 downto 0);
               ad_dat : in    STD_LOGIC_VECTOR (15 downto 0);
@@ -75,6 +74,24 @@ signal dout_5             : std_logic_vector (33 downto 0);
 signal writemem_5         : std_logic;
 --signale für die pipeline stufe 6
 signal chip_6             : std_logic :='0';
+signal sram_adr_6         : STD_LOGIC_VECTOR (17 downto 0);
+signal sram_dat_6         : STD_LOGIC_VECTOR (15 downto 0);
+signal sram_wrt_6         : STD_LOGIC ;
+--signale für die pipeline stufe 7
+signal sram_adr_7         : STD_LOGIC_VECTOR (17 downto 0);
+signal sram_dat_7         : STD_LOGIC_VECTOR (15 downto 0);
+signal sram_wrt_7         : STD_LOGIC ;
+signal sram_sel_7         : STD_LOGIC ;
+--signale für die pipeline stufe 8
+signal sram_adr_8         : STD_LOGIC_VECTOR (17 downto 0);
+signal sram_dat_8         : STD_LOGIC_VECTOR (15 downto 0);
+signal sram_wrt_8         : STD_LOGIC ;
+signal sram_sel_8         : STD_LOGIC ;
+--signale für die pipeline stufe 9
+signal sram_adr_9         : STD_LOGIC_VECTOR (17 downto 0);
+signal sram_dat_9         : STD_LOGIC_VECTOR (15 downto 0);
+signal sram_wrt_9         : STD_LOGIC ;
+signal sram_sel_9         : STD_LOGIC ;
 
 component fifo
 	port(
@@ -139,8 +156,10 @@ process (clk) begin -- #34#
   if rising_edge (clk) then
     if prog_full_3 = '1' then
 	     writemem_4 <= '1';
+		  write_enable <= '1';
 	 elsif prog_empty_3 = '1' then
         writemem_4 <= '0';
+		  write_enable <= '0';
 	 end if;	  
   end if;
 end process;
@@ -155,13 +174,13 @@ end process;
 process (clk) begin -- #56#
   if rising_edge (clk) then
     if writemem_5 = '1' then-- bei einem schreibvorgang adresse und daten ausgeben
-        sram_adr <= dout_5 (33 downto 16);
-	     sram_dat <= dout_5 (15 downto  0);
-        sram_wrt <= '1';
+        sram_adr_6 <= dout_5 (33 downto 16);
+	     sram_dat_6 <= dout_5 (15 downto  0);
+        sram_wrt_6 <= '1';
 	 else -- es gibt nix zu schreiben, also nix ausgeben.
-        sram_adr <= (others => '0');	 
-	     sram_dat <= (others => '0');
-		  sram_wrt <= '0';
+        sram_adr_6 <= (others => '0');	 
+	     sram_dat_6 <= (others => '0');
+		  sram_wrt_6 <= '0';
 	 end if;
 -- bei dout = 1111... ist das aktuelle Bild komplett, und es wird ab sofort 
 -- in den anderen Speicher chip geschrieben.		  
@@ -175,7 +194,25 @@ process (clk) begin -- #56#
   end if;
 end process;
 
--- chip select ausgeben
-sram_sel <= chip_6;
+
+
+--Zeitliches Synchronisieren mit Ram_read
+process (clk) begin
+	if rising_edge (clk) then
+	sram_adr_7 <= sram_adr_6;	sram_dat_7 <= sram_dat_6;
+	sram_wrt_7 <= sram_wrt_6;	sram_sel_7 <= chip_6;
+
+	sram_adr_8 <= sram_adr_7;	sram_dat_8 <= sram_dat_7;
+	sram_wrt_8 <= sram_wrt_7;	sram_sel_8 <= sram_sel_7;
+
+	sram_adr_9 <= sram_adr_8;	sram_dat_9 <= sram_dat_8;
+	sram_wrt_9 <= sram_wrt_8;	sram_sel_9 <= sram_sel_8;
+
+	sram_adr <= sram_adr_9;	sram_dat <= sram_dat_9;
+	sram_wrt <= sram_wrt_9;	sram_sel <= sram_sel_9;
+
+
+	end if;
+end process;
 
 end Behavioral;
