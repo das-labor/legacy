@@ -2,6 +2,11 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_unsigned.all;
 USE ieee.numeric_std.ALL;
+use IEEE.MATH_REAL.all;
+
+use work.sim_bmppack.all;
+
+
 
 ENTITY vtb_ram_control2_vhd IS
 END vtb_ram_control2_vhd;
@@ -92,6 +97,8 @@ ARCHITECTURE behavior OF vtb_ram_control2_vhd IS
 	
 		signal count_i: std_logic_vector(17 downto 0):= (others =>'0');
 		signal read_help : std_logic_vector(15 downto 0):= (others =>'0');
+		signal colordata : std_logic_vector(23 downto 0) := x"ffffff";
+	
 
 BEGIN
 
@@ -133,6 +140,7 @@ BEGIN
 		sram_pos  => sram_pos
 	);
 
+-- generiere 50 Mhz Takt
 process begin
 		clk50 <= '1';
 		wait for 10 ns;
@@ -140,6 +148,7 @@ process begin
 		wait for 10 ns; 
 end process;
 
+-- generiere 100 Mhz Takt
 process begin
 		clk100 <= '1';
 		wait for 5 ns;
@@ -147,6 +156,8 @@ process begin
 		wait for 5 ns; 
 end process;
 
+
+-- erzeuge ein Testmuster für den ad_wandler eingang
 process (clk50) begin
 	if rising_edge (clk50) then
 		if ad_wr = '0' then ad_wr <= '1';
@@ -162,13 +173,49 @@ process (clk50) begin
 	end if;
 end process;
 
-process (clk100) begin
-	if rising_edge (clk100) then
-		sram_1_io <= read_help;
-		sram_2_io <= read_help;
-		read_help <= read_help + read_help + 1;
-		if read_help = "1111111111111111" then read_help <= (others => '0');end if;
-	end if;
+-- testpattern für leseoperationen
+--process (clk100) begin
+--	if rising_edge (clk100) then
+--		sram_1_io <= read_help;
+--		sram_2_io <= read_help;
+--		read_help <= read_help + 1;
+--		if read_help = "1111111111111111" then read_help <= (others => '0');end if;
+--	end if;
+--end process;
+
+
+-- RAM Lesezugriffe auf ein reales Bild umleiten 
+-- Das Bild muss 512 x 512 pixel gross sein
+process begin
+    ReadFile("lena.bmp");
+	wait;
 end process;
 
+
+process (clk50)
+variable read_x : integer; 
+variable read_y : integer; 
+  begin
+
+  if rising_edge (clk50) then
+	 
+	if sram_we = '1' and sram_oe = '0' then 
+	
+	read_x := CONV_INTEGER(sram_adr( 8 downto 0));
+	read_y := CONV_INTEGER(sram_adr(17 downto 9));
+	
+		
+		getpixel(read_x,read_y,colordata);
+		
+							
+		-- Farbauflösung von 16M auf 64k reduzieren
+		sram_1_io <= colordata (23 downto 19) & colordata (15 downto 10) & colordata (7 downto 3);
+		
+	else 
+		sram_1_io <= (others => 'Z');
+
+	end if;
+  end if;
+
+end process;
 END;
