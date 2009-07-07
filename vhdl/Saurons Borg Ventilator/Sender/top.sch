@@ -44,16 +44,18 @@ BEGIN SCHEMATIC
         SIGNAL XLXN_295(7:0)
         SIGNAL XLXN_296(7:0)
         SIGNAL XLXN_297
+        SIGNAL XLXN_336
         SIGNAL sram_oe
         SIGNAL sram_we
+        SIGNAL sram_adr(17:0)
+        SIGNAL sram_1_io(15:0)
         SIGNAL sram_1_ce
         SIGNAL sram_1_ub
         SIGNAL sram_1_lb
-        SIGNAL sram_1_io(15:0)
-        SIGNAL sram_adr(17:0)
         SIGNAL sram_2_ce
-        SIGNAL sram_1_o(15:0)
-        SIGNAL XLXN_327(15:0)
+        SIGNAL sram_2_io(15:0)
+        SIGNAL sram_2_ub
+        SIGNAL sram_2_lb
         PORT Input schaltin(7:0)
         PORT Input tast(3:0)
         PORT Output led(7:0)
@@ -74,14 +76,15 @@ BEGIN SCHEMATIC
         PORT Output gnd4
         PORT Output sram_oe
         PORT Output sram_we
+        PORT Output sram_adr(17:0)
+        PORT BiDirectional sram_1_io(15:0)
         PORT Output sram_1_ce
         PORT Output sram_1_ub
         PORT Output sram_1_lb
-        PORT BiDirectional sram_1_io(15:0)
-        PORT Output sram_adr(17:0)
         PORT Output sram_2_ce
-        PORT Output sram_1_o(15:0)
-        PORT Output XLXN_327(15:0)
+        PORT BiDirectional sram_2_io(15:0)
+        PORT Output sram_2_ub
+        PORT Output sram_2_lb
         BEGIN BLOCKDEF display2
             TIMESTAMP 2009 6 29 11 32 47
             RECTANGLE N 64 -132 256 -16 
@@ -200,6 +203,49 @@ BEGIN SCHEMATIC
             LINE N 64 0 64 -64 
             CIRCLE N 128 -48 160 -16 
         END BLOCKDEF
+        BEGIN BLOCKDEF ram_control
+            TIMESTAMP 2009 7 6 23 52 54
+            RECTANGLE N 64 -896 448 -228 
+            LINE N 64 -864 0 -864 
+            LINE N 64 -608 0 -608 
+            LINE N 448 -864 512 -864 
+            LINE N 448 -672 512 -672 
+            LINE N 448 -544 512 -544 
+            LINE N 448 -832 512 -832 
+            LINE N 448 -640 512 -640 
+            LINE N 448 -704 512 -704 
+            LINE N 448 -512 512 -512 
+            LINE N 448 -480 512 -480 
+            RECTANGLE N 448 -812 512 -788 
+            LINE N 448 -800 512 -800 
+            RECTANGLE N 448 -748 512 -724 
+            LINE N 448 -736 512 -736 
+            RECTANGLE N 448 -588 512 -564 
+            LINE N 448 -576 512 -576 
+            RECTANGLE N 448 -428 512 -404 
+            LINE N 448 -416 512 -416 
+            RECTANGLE N 448 -380 512 -356 
+            LINE N 448 -368 512 -368 
+            LINE N 64 -640 0 -640 
+            LINE N 64 -832 0 -832 
+            LINE N 64 -688 0 -688 
+            RECTANGLE N 0 -748 64 -724 
+            LINE N 64 -736 0 -736 
+            RECTANGLE N 0 -796 64 -772 
+            LINE N 64 -784 0 -784 
+            RECTANGLE N 0 -572 64 -548 
+            LINE N 64 -560 0 -560 
+            RECTANGLE N 0 -524 64 -500 
+            LINE N 64 -512 0 -512 
+            RECTANGLE N 0 -412 64 -388 
+            LINE N 64 -400 0 -400 
+            RECTANGLE N 0 -460 64 -436 
+            LINE N 64 -448 0 -448 
+            LINE N 64 -352 0 -352 
+            LINE N 64 -320 0 -320 
+            RECTANGLE N 0 -284 64 -260 
+            LINE N 64 -272 0 -272 
+        END BLOCKDEF
         BEGIN BLOCK XLXI_8 Picoblaze
             PIN clk clk50
             PIN irq
@@ -274,6 +320,35 @@ BEGIN SCHEMATIC
         BEGIN BLOCK XLXI_41 inv
             PIN I out0
             PIN O gnd0
+        END BLOCK
+        BEGIN BLOCK XLXI_42 ram_control
+            PIN clk50 clk50
+            PIN cpu_adr_lo_hi
+            PIN sram_oe sram_oe
+            PIN sram_1_ub sram_1_ub
+            PIN sram_2_ce sram_2_ce
+            PIN sram_we sram_we
+            PIN sram_1_lb sram_1_lb
+            PIN sram_1_ce sram_1_ce
+            PIN sram_2_ub sram_2_ub
+            PIN sram_2_lb sram_2_lb
+            PIN sram_adr(17:0) sram_adr(17:0)
+            PIN sram_1_io(15:0) sram_1_io(15:0)
+            PIN sram_2_io(15:0) sram_2_io(15:0)
+            PIN sram_read(15:0)
+            PIN sram_pos(7:0)
+            PIN cpu_adr_hi_hi
+            PIN clk100 clk100
+            PIN ad_wr
+            PIN ad_dat(15:0)
+            PIN ad_adr(17:0)
+            PIN cpu_adr_hi_lo(7:0)
+            PIN cpu_adr_lo_lo(7:0)
+            PIN cpu_dat_y(7:0)
+            PIN cpu_dat_x(7:0)
+            PIN cpu_write
+            PIN cpu_enable
+            PIN winkel(9:0)
         END BLOCK
     END NETLIST
     BEGIN SHEET 1 3520 2720
@@ -408,15 +483,6 @@ BEGIN SCHEMATIC
         BEGIN BRANCH gnd4
             WIRE 1840 2032 1872 2032
         END BRANCH
-        BEGIN BRANCH clk100
-            WIRE 608 592 624 592
-            WIRE 624 592 624 992
-            WIRE 624 992 2032 992
-            WIRE 2032 992 2032 1024
-            WIRE 2032 1024 2080 1024
-            WIRE 2032 992 2208 992
-            WIRE 2208 992 2352 992
-        END BRANCH
         BEGIN BRANCH clk50
             WIRE 448 1296 448 1472
             WIRE 448 1296 816 1296
@@ -426,8 +492,7 @@ BEGIN SCHEMATIC
             WIRE 608 528 816 528
             WIRE 816 528 816 960
             WIRE 816 960 2048 960
-            WIRE 2048 960 2208 960
-            WIRE 2208 960 2352 960
+            WIRE 2048 960 2352 960
             WIRE 816 960 816 1296
             WIRE 2048 928 2080 928
             WIRE 2048 928 2048 960
@@ -459,46 +524,59 @@ BEGIN SCHEMATIC
             WIRE 2272 2048 2352 2048
             WIRE 2272 2048 2272 2224
         END BRANCH
+        BEGIN BRANCH clk100
+            WIRE 608 592 624 592
+            WIRE 624 592 624 992
+            WIRE 624 992 2032 992
+            WIRE 2032 992 2032 1024
+            WIRE 2032 1024 2080 1024
+            WIRE 2032 992 2352 992
+        END BRANCH
+        BEGIN INSTANCE XLXI_42 2352 1824 R0
+        END INSTANCE
         BEGIN BRANCH sram_oe
-            WIRE 2784 992 2816 992
+            WIRE 2864 960 2896 960
         END BRANCH
-        IOMARKER 2816 992 sram_oe R0 28
         BEGIN BRANCH sram_we
-            WIRE 2784 1024 2816 1024
+            WIRE 2864 992 2896 992
         END BRANCH
-        IOMARKER 2816 1024 sram_we R0 28
+        IOMARKER 2896 960 sram_oe R0 28
+        IOMARKER 2896 992 sram_we R0 28
+        BEGIN BRANCH sram_adr(17:0)
+            WIRE 2864 1024 2896 1024
+        END BRANCH
+        IOMARKER 2896 1024 sram_adr(17:0) R0 28
+        BEGIN BRANCH sram_1_io(15:0)
+            WIRE 2864 1088 2896 1088
+        END BRANCH
+        IOMARKER 2896 1088 sram_1_io(15:0) R0 28
         BEGIN BRANCH sram_1_ce
-            WIRE 2784 1120 2800 1120
-            WIRE 2800 1120 2816 1120
+            WIRE 2864 1120 2896 1120
         END BRANCH
         BEGIN BRANCH sram_1_ub
-            WIRE 2784 1152 2816 1152
+            WIRE 2864 1152 2896 1152
         END BRANCH
-        IOMARKER 2816 1152 sram_1_ub R0 28
         BEGIN BRANCH sram_1_lb
-            WIRE 2784 1184 2816 1184
+            WIRE 2864 1184 2896 1184
         END BRANCH
-        IOMARKER 2816 1184 sram_1_lb R0 28
-        IOMARKER 2816 1120 sram_1_ce R0 28
-        BEGIN BRANCH sram_1_io(15:0)
-            WIRE 2784 1088 2816 1088
-        END BRANCH
-        IOMARKER 2816 1088 sram_1_io(15:0) R0 28
-        BEGIN BRANCH sram_adr(17:0)
-            WIRE 2784 960 2816 960
-        END BRANCH
-        IOMARKER 2816 960 sram_adr(17:0) R0 28
+        IOMARKER 2896 1152 sram_1_ub R0 28
+        IOMARKER 2896 1184 sram_1_lb R0 28
+        IOMARKER 2896 1120 sram_1_ce R0 28
         BEGIN BRANCH sram_2_ce
-            WIRE 2784 1280 2816 1280
+            WIRE 2864 1280 2896 1280
         END BRANCH
-        IOMARKER 2816 1280 sram_2_ce R0 28
-        BEGIN BRANCH sram_1_o(15:0)
-            WIRE 2784 1856 2816 1856
+        IOMARKER 2896 1280 sram_2_ce R0 28
+        BEGIN BRANCH sram_2_io(15:0)
+            WIRE 2864 1248 2896 1248
         END BRANCH
-        IOMARKER 2816 1856 sram_1_o(15:0) R0 28
-        BEGIN BRANCH XLXN_327(15:0)
-            WIRE 2784 2144 2816 2144
+        IOMARKER 2896 1248 sram_2_io(15:0) R0 28
+        BEGIN BRANCH sram_2_ub
+            WIRE 2864 1312 2896 1312
         END BRANCH
-        IOMARKER 2816 2144 XLXN_327(15:0) R0 28
+        IOMARKER 2896 1312 sram_2_ub R0 28
+        BEGIN BRANCH sram_2_lb
+            WIRE 2864 1344 2896 1344
+        END BRANCH
+        IOMARKER 2896 1344 sram_2_lb R0 28
     END SHEET
 END SCHEMATIC
