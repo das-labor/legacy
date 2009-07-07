@@ -33,8 +33,9 @@ architecture testbench of sim_tb_bmpread is
 
   
   signal clk                     : std_logic                     := '0';
-  signal data                    : std_logic_vector(23 downto 0) := x"ffffff";
+  signal data ,data2                   : std_logic_vector(23 downto 0) := x"ffffff";
   signal ImageWidth, ImageHeight : integer                       := 0;
+  signal xd,yd : integer;
   
 begin
 
@@ -60,10 +61,11 @@ begin
 
     for y in 0 to ImageHeight-1 loop
       for x in 0 to ImageWidth-1 loop
-        
+        xd <= x; yd <= y;
         GetPixel(x, y, data);
         wait until clk = '1' and clk'event;
-        SetPixel(x, y, data);
+		  data2 <= data ( 23 downto 21)&"00000" & data (15 downto 12)&"0000" & data (7 downto 5)&"00000" ;
+        SetPixel(x, y, data2);
         wait until clk = '1' and clk'event;
 
       end loop;

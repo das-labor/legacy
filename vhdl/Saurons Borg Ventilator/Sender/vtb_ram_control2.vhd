@@ -1,6 +1,7 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_unsigned.all;
+USE ieee.std_logic_arith.all;
 USE ieee.numeric_std.ALL;
 use IEEE.MATH_REAL.all;
 
@@ -32,13 +33,6 @@ ARCHITECTURE behavior OF vtb_ram_control2_vhd IS
 		cpu_enable : IN std_logic;    
 		sram_1_io : INOUT std_logic_vector(15 downto 0);
 		sram_2_io : INOUT std_logic_vector(15 downto 0);      
---		write_adr_d : OUT std_logic_vector(17 downto 0);
---		write_dat_d : OUT std_logic_vector(15 downto 0);
---		write_wrt_d : OUT std_logic;
---		write_sel_d : OUT std_logic;
---		read_adr_d : OUT std_logic_vector(17 downto 0);
---		led_nr_d : OUT std_logic_vector(7 downto 0);
---		winkel_diag_d : OUT std_logic_vector(9 downto 0);
 		sram_adr : OUT std_logic_vector(17 downto 0);
 		sram_oe : OUT std_logic;
 		sram_we : OUT std_logic;
@@ -75,13 +69,6 @@ ARCHITECTURE behavior OF vtb_ram_control2_vhd IS
 	SIGNAL sram_2_io :  std_logic_vector(15 downto 0);
 
 	--Outputs
---	SIGNAL write_adr_d :  std_logic_vector(17 downto 0);
---	SIGNAL write_dat_d :  std_logic_vector(15 downto 0);
---	SIGNAL write_wrt_d :  std_logic;
---	SIGNAL write_sel_d :  std_logic;
---	SIGNAL read_adr_d :  std_logic_vector(17 downto 0);
---	SIGNAL led_nr_d :  std_logic_vector(7 downto 0);
---	SIGNAL winkel_diag_d :  std_logic_vector(9 downto 0);
 	SIGNAL sram_adr :  std_logic_vector(17 downto 0);
 	SIGNAL sram_oe :  std_logic;
 	SIGNAL sram_we :  std_logic;
@@ -98,6 +85,8 @@ ARCHITECTURE behavior OF vtb_ram_control2_vhd IS
 		signal count_i: std_logic_vector(17 downto 0):= (others =>'0');
 		signal read_help : std_logic_vector(15 downto 0):= (others =>'0');
 		signal colordata : std_logic_vector(23 downto 0) := x"ffffff";
+		signal colordata2: std_logic_vector(23 downto 0) := x"ffffff";
+		
 	
 
 BEGIN
@@ -118,13 +107,6 @@ BEGIN
 		cpu_adr_lo_hi => cpu_adr_lo_hi,
 		cpu_write => cpu_write,
 		cpu_enable => cpu_enable,
---		write_adr_d => write_adr_d,
---		write_dat_d => write_dat_d,
---		write_wrt_d => write_wrt_d,
---		write_sel_d => write_sel_d,
---		read_adr_d => read_adr_d,
---		led_nr_d => led_nr_d,
---		winkel_diag_d => winkel_diag_d,
 		sram_adr => sram_adr,
 		sram_oe => sram_oe,
 		sram_we => sram_we,
@@ -157,65 +139,71 @@ process begin
 end process;
 
 
--- erzeuge ein Testmuster für den ad_wandler eingang
-process (clk50) begin
-	if rising_edge (clk50) then
-		if ad_wr = '0' then ad_wr <= '1';
-		else ad_wr <= '0';
-		end if;
-		
-		if ad_wr = '0' then
-		count_i <= count_i + 1;
-		end if;
-		
-		ad_dat <= count_i (17 downto 10) & count_i (8 downto 1);
-		ad_adr <= count_i;
-	end if;
-end process;
-
--- testpattern für leseoperationen
---process (clk100) begin
---	if rising_edge (clk100) then
---		sram_1_io <= read_help;
---		sram_2_io <= read_help;
---		read_help <= read_help + 1;
---		if read_help = "1111111111111111" then read_help <= (others => '0');end if;
---	end if;
---end process;
-
-
--- RAM Lesezugriffe auf ein reales Bild umleiten 
--- Das Bild muss 512 x 512 pixel gross sein
-process begin
-    ReadFile("lena.bmp");
-	wait;
-end process;
-
 
 process (clk50)
 variable read_x : integer; 
 variable read_y : integer; 
-  begin
+begin
+	if clk50'event then
 
-  if rising_edge (clk50) then
+
 	 
-	if sram_we = '1' and sram_oe = '0' then 
-	
-	read_x := CONV_INTEGER(sram_adr( 8 downto 0));
-	read_y := CONV_INTEGER(sram_adr(17 downto 9));
-	
-		
-		getpixel(read_x,read_y,colordata);
-		
-							
-		-- Farbauflösung von 16M auf 64k reduzieren
-		sram_1_io <= colordata (23 downto 19) & colordata (15 downto 10) & colordata (7 downto 3);
-		
-	else 
-		sram_1_io <= (others => 'Z');
+		if sram_we = '1' and sram_oe = '0' then -- lesen aus speicher
 
+			read_x := CONV_INTEGER(sram_adr( 8 downto 0));
+			read_y := CONV_INTEGER(sram_adr(17 downto 9));
+if clk50 = '0' then	
+			getpixel (read_x,read_y,colordata);
+else
+
+			setpixel (read_x,read_y,colordata);
+end if;
+		end if;
 	end if;
-  end if;
 
+end process;
+
+process begin
+wait for 20 us;
+winkel <= winkel + 1;
+end process;
+
+process
+variable fname : string ( 1 to 16):="lena_copy000.bmp";
+variable char1,char2,char3 : character ;
+			
+begin
+    ReadFile("lena.bmp");
+	 			colordata2 <= x"ffffff";
+
+
+	for a in 0 to 512 loop
+		for b in 0 to 512 loop
+		  
+			setpixel (a,b,colordata2);
+		end loop;
+	end loop;
+	 
+	 	 
+	 
+for x in 0 to 9 loop
+ for y in 0 to 9 loop
+  for z in 0 to 9 loop
+
+	wait for 400 us;
+		
+   report "Jetzt ist das Bild fertig...";
+	
+	char1 := character'VAL(conv_integer((x)+48));
+	char2 := character'VAL(conv_integer((y)+48));
+	char3 := character'VAL(conv_integer((z)+48));
+  
+   fname := "lena_copy" & char1 & char2 & char3 & ".bmp";
+	report fname;
+	 WriteFile (fname);
+  end loop;
+ end loop;
+end loop;
+wait;
 end process;
 END;
