@@ -40,7 +40,7 @@ void decompress(PGM_VOID_P addr){
 	uint16_t c;
 	huffman_dec_init(&ctx, read_byte_pgm);
 	huffman_dec_set_addr(&ctx, (uint16_t)addr);
-	cli_putstr_P(PSTR("\r\ndecompressing data at "));
+	cli_putstr_P(PSTR("\r\ndecompressing data at 0x"));
 	cli_hexdump_rev(&addr, 2);
 	cli_putstr_P(PSTR("\r\n"));
 	for(;;){
@@ -88,7 +88,6 @@ cmdlist_entry_t cmdlist[] PROGMEM = {
 
 int main (void){
 	uart_init();
-		
 	cli_rx = uart_getc;
 	cli_tx = uart_putc;	 	
 	for(;;){

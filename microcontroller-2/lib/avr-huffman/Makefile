@@ -1,7 +1,7 @@
 PRG            = main-huffman-test
-OBJ            =  main-huffman-test.o cli.o string-extras.o uart.o avr-huffman-decode.o \
+OBJ            =  main-huffman-test.o cli.o string-extras.o uart.o avr-huffman-decode-asm.o \
                   dump.o hexdigit_tab.o data/test.txt.hfm.elf \
-				  data/hacker_manifesto_borg.txt.hfm.elf data/COPYING.gpl3.hfm.elf
+                  data/hacker_manifesto_borg.txt.hfm.elf data/COPYING.gpl3.hfm.elf
                  
 MCU_TARGET     = atmega644
 OPTIMIZE       = 
@@ -19,7 +19,7 @@ LIBS           =
 # You should not have to change anything below here.
 
 CC             = avr-gcc
-
+AS             = avr-as
 
 # Override is only needed by avr-lib build system.
 
@@ -28,7 +28,7 @@ CC             = avr-gcc
 override CFLAGS        = -g -pedantic -std=c99 -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -morder1
 # -fnew-ra
 override LDFLAGS       = -Wl,-Map,$(PRG).map
-override ASFLAGS	   = -mmcu=$(MCU_TARGET)
+override ASFLAGS       = -mmcu=$(MCU_TARGET)
 
 HUFFMAN_ENC    = ./host/huffman-encode
 OBJCOPY        = avr-objcopy
