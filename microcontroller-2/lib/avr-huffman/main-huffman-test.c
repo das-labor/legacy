@@ -74,14 +74,14 @@ void decompress_GPL(void){
 const char hacker_str[]  PROGMEM = "hacker_manifesto";
 const char test_str[]    PROGMEM = "test";
 const char GPL_str[]     PROGMEM = "gpl_license";
-//const char dump_str[]    PROGMEM = "dump";
+const char dump_str[]    PROGMEM = "dump";
 const char echo_str[]    PROGMEM = "echo";
 
 cmdlist_entry_t cmdlist[] PROGMEM = {
 	{ test_str,        NULL, decompress_test},
 	{ hacker_str,      NULL, decompress_hacker },
 	{ GPL_str,         NULL, decompress_GPL}, 
-/*	{ dump_str,    (void*)1, (void_fpt)dump}, */
+	{ dump_str,    (void*)1, (void_fpt)dump}, 
 	{ echo_str,    (void*)1, (void_fpt)echo_ctrl},
 	{ NULL,            NULL, NULL}
 };
@@ -89,7 +89,7 @@ cmdlist_entry_t cmdlist[] PROGMEM = {
 int main (void){
 	uart_init();
 	cli_rx = uart_getc;
-	cli_tx = uart_putc;	 	
+	cli_tx = uart_putc;
 	for(;;){
 		cli_putstr_P(PSTR("\r\n\r\nAVR-Huffman testing system"));
 		cli_putstr_P(PSTR("\r\n  *** loaded and running*** \r\n"));

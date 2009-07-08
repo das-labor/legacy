@@ -1,6 +1,7 @@
 PRG            = main-huffman-test
-OBJ            =  main-huffman-test.o cli.o string-extras-asm.o uart.o avr-huffman-decode-asm.o \
-                  hexdigit_tab.o data/test.txt.hfm.elf \
+OBJ            =  main-huffman-test.o cli-stub.o cli-basics.o cli-hexdump.o string-extras-asm.o \
+                  uart.o avr-huffman-decode-asm.o \
+                  dump.o hexdigit_tab.o data/test.txt.hfm.elf \
                   data/hacker_manifesto_borg.txt.hfm.elf data/COPYING.gpl3.hfm.elf
                  
 MCU_TARGET     = atmega644
