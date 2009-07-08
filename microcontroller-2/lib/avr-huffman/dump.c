@@ -28,7 +28,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <ctype.h>
 #include <avr/pgmspace.h>
 #include "cli.h" 
@@ -48,6 +47,16 @@ void dump_chars(uint8_t* buffer){
 		}
 	}
 	cli_putc('|');
+}
+
+static 
+void print_aligned(unsigned long value, uint8_t align){
+	char str[10];
+	uint8_t i;
+	ultoa(value, str, 16);
+	for(i=strlen(str);i<align;++i)
+		cli_putc(' ');
+	cli_putstr(str);
 }
 
 
@@ -93,9 +102,10 @@ void dump(char* s){
 		}else{
 			memcpy(buffer, (void*)((uint16_t)addr), DUMP_WIDTH);
 		}
-		ultoa(addr, tstr, 16);
-		sprintf(tstr,"%6lX", addr);
-		cli_putstr(tstr);
+//		ultoa(addr, tstr, 16);
+		print_aligned(addr, 6);
+//		sprintf(tstr,"%6lX", addr);
+//		cli_putstr(tstr);
 		cli_putstr_P(PSTR(": "));	
 		cli_hexdump2(buffer, DUMP_WIDTH);
 		cli_putc('\t');
@@ -116,9 +126,10 @@ void dump(char* s){
 		}else{
 			memcpy(buffer, (void*)((uint16_t)addr), size);
 		}
-		ultoa(addr, tstr, 16);
-		sprintf(tstr,"%6lX", addr);
-		cli_putstr(tstr);
+//		ultoa(addr, tstr, 16);
+		print_aligned(addr, 6);
+//		sprintf(tstr,"%6lX", addr);
+//		cli_putstr(tstr);
 		cli_putstr_P(PSTR(": "));	
 		cli_hexdump2(buffer, size);
 		cli_putstr_P(PSTR("\r\n"));
