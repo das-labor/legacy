@@ -184,7 +184,7 @@ process (clk) begin -- #56#
 	 end if;
 -- bei dout = 1111... ist das aktuelle Bild komplett, und es wird ab sofort 
 -- in den anderen Speicher chip geschrieben.		  
-    if dout_5 = "0000000000000000000000000000000000"  and writemem_5 = '1' then
+    if dout_5(33 downto 16)="111111111111111111"  then
 		if chip_6 = '0' then
 			chip_6 <= '1';
 		else

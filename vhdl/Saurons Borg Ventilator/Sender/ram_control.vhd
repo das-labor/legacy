@@ -40,7 +40,8 @@ entity ram_control is Port (
 	        sram_2_io : inout std_logic_vector (15 downto 0);
 			  
 			  sram_read : out std_logic_vector (15 downto 0);
-			  sram_pos  : out std_logic_vector ( 7 downto 0)
+			  sram_pos  : out std_logic_vector ( 7 downto 0);
+			  write_sel_diag  : out std_logic
 			  
 														);
 end ram_control;
@@ -230,6 +231,7 @@ if rising_edge (clk50) then
 end if;
 end process;	
 
+write_sel_diag <= write_sel_1;
 
 end Behavioral;
 
