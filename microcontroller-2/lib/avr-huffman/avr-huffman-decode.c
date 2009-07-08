@@ -57,7 +57,7 @@ void huffman_dec_init(huffman_dec_ctx_t* ctx, uint16_t(*rb_func)(uint32_t)){
 	ctx->tree = NULL;
 	ctx->addr = 0;
 	ctx->read_byte = rb_func;
-	ctx->rbuffer_index = 0;
+	ctx->rbuffer_index = 8;
 }
 
 #if HUFFMAN_USE_ADDR_16
@@ -68,7 +68,7 @@ void huffman_dec_set_addr(huffman_dec_ctx_t* ctx, uint32_t addr){
 	ctx->addr = addr;
 }
 
-static void prefix_increment(uint8_t* prefix){
+static inline void prefix_increment(uint8_t* prefix){
 	uint8_t i;
 	for(i=0; i<PREFIX_SIZE_B; ++i){
 		prefix[i] += 1;
@@ -77,7 +77,7 @@ static void prefix_increment(uint8_t* prefix){
 	}
 }
 
-static void prefix_shiftleft(uint8_t* prefix){
+static inline void prefix_shiftleft(uint8_t* prefix){
 	uint8_t i;
 	uint8_t c[2]={0,0};
 	uint8_t ci=0;	
@@ -89,7 +89,7 @@ static void prefix_shiftleft(uint8_t* prefix){
 	}
 }
 
-void set_last_to_eof(node_t* start){
+static inline void set_last_to_eof(node_t* start){
 	node_t* current = start;
 	while(current->value==V_NODE){
 		current=current->right;
@@ -220,19 +220,20 @@ void free_tree(node_t* node){
 	
 }
 
-uint8_t read_bit(huffman_dec_ctx_t* ctx){
+static uint8_t read_bit(huffman_dec_ctx_t* ctx){
 	uint16_t x;
 	uint8_t t;
-	if(ctx->rbuffer_index==0){
+	if(ctx->rbuffer_index==8){
 		x=ctx->read_byte(ctx->addr);
 		ctx->addr++;
 		if(t>0xff)
 			return 0xFF;
 		ctx->rbuffer = (uint8_t)x;
+		ctx->rbuffer_index=0;
 	}
 	t=(ctx->rbuffer)>>7;
 	ctx->rbuffer<<=1;
-	ctx->rbuffer_index = (ctx->rbuffer_index+1)%8;
+	ctx->rbuffer_index++;
 	return t;
 }
 
@@ -270,5 +271,6 @@ uint16_t huffman_dec_byte(huffman_dec_ctx_t* ctx){
 	}
 	eof_detected:
 		free_tree(ctx->tree);	
+		ctx->tree = NULL;
 		return 0xFFFF;
 }
