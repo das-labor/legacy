@@ -150,6 +150,9 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 	//Watchdog zurücksetzen
 	wdt_reset();
 	
+	//Tasten für joystick einlesen
+	readButtons();
+
 	for(row=0; row < 8; row++){
 		pd1165_write(row, pixmap[plane][row][0]);
 		CTRLPORT &= ~((1<<BIT_CS3)|(1<<BIT_RW));
@@ -243,7 +246,7 @@ void timer2_on(){
 		
 */
 		TCCR2 = (1<<WGM21) | (1<<COM20) | 1 ; //CTC, OC2 toggle, clk/1
-		OCR2 = 100; //80kHz clock on OC2
+		OCR2 = 92; //80kHz clock on OC2
 
 }
 

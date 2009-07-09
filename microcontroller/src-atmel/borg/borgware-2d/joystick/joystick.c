@@ -8,6 +8,7 @@ unsigned char waitForFire;
 
 
 inline void joy_init(){
+
 	PORT_FROM_PIN(JOYSTICK_PIN_UP   ) |= (1<<JOYSTICK_BIT_UP   );
 	PORT_FROM_PIN(JOYSTICK_PIN_DOWN ) |= (1<<JOYSTICK_BIT_DOWN );
 	PORT_FROM_PIN(JOYSTICK_PIN_LEFT ) |= (1<<JOYSTICK_BIT_LEFT );
