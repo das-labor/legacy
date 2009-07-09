@@ -30,8 +30,8 @@ ifeq ($(BORG_HW),HW_PANEL_ONE)
   SRC = borg_hw_panel_one.c
 endif
 
-ifeq ($(BORG_HW),HW_PD1165_TEST)
-  SRC = borg_hw_pd1165_test.c
+ifeq ($(BORG_HW),HW_PD1165)
+  SRC = borg_hw_pd1165.c
 endif
 
 ifeq ($(SRC),'')
