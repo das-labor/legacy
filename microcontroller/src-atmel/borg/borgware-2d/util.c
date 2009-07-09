@@ -26,8 +26,13 @@ void wait(int ms){
 		 1    1    0       clk/256
 		 1    1    1       clk/1024	
 */
-	TCCR2 = 0x0D;	//CTC Mode, clk/128
-	OCR2 = (F_CPU/128000);	//1000Hz 
+	//TCCR2 = 0x0D;	//CTC Mode, clk/128
+	//OCR2 = (F_CPU/128000);	//1000Hz 
+	
+	TCCR1B = (1<<WGM12) | 4;//CTC Mode, clk/256
+	OCR1A = (F_CPU/256000);	//1000Hz 
+	
+	
 	for(;ms>0;ms--){
 
 #ifdef CAN_SUPPORT
@@ -44,7 +49,7 @@ void wait(int ms){
 		}
 #endif
 
-		while(!(TIFR&0x80));	//wait for compare match flag
-		TIFR=0x80;		//reset flag
+		while(!(TIFR&(1<<OCF1A)));	//wait for compare match flag
+		TIFR=(1<<OCF1A);		//reset flag
 	}
 }

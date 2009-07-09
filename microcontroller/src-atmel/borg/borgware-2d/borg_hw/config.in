@@ -14,7 +14,8 @@ choice 'Hardware Driver'			\
     Laufschrift-borg	   HW_BORG_LS \
     Laufschrift-borg-mh    HW_BORG_MH \
     Borg-mini              HW_BORG_MINI \
-    Panel-One              HW_PANEL_ONE" \
+    Panel-One              HW_PANEL_ONE \
+    PD1165-test            HW_PD1165_TEST" \
    'Borg-16' BORG_HW
 
 
@@ -41,6 +42,11 @@ fi
 if [ "$BORG_HW" == "HW_PANEL_ONE" ] ; then
   source borg_hw/config_panel_one.in
 fi
+
+if [ "$BORG_HW" == "HW_PD1165_TEST" ] ; then
+  source borg_hw/config_pd1165_test.in
+fi
+
 
 
 
