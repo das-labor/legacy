@@ -15,7 +15,7 @@ choice 'Hardware Driver'			\
     Laufschrift-borg-mh    HW_BORG_MH \
     Borg-mini              HW_BORG_MINI \
     Panel-One              HW_PANEL_ONE \
-    PD1165-test            HW_PD1165" \
+    4xPD1165               HW_PD1165" \
    'Borg-16' BORG_HW
 
 
