@@ -32,21 +32,23 @@
 //#define COLDDR2  DDR(COLPORT2)
 //#define ROWDDR   DDR(ROWPORT)
 
-#define DATAPORT PORTC
+//#define DATAPORT PORTC
 #define DATADDR  DDR(DATAPORT)
 
-#define ADDRPORT PORTA
+//#define ADDRPORT PORTA
 #define ADDRDDR  DDR(ADDRPORT)
 
-#define CTRLPORT PORTD
+//#define CTRLPORT PORTD
 #define CTRLDDR  DDR(CTRLPORT)
 
-#define BIT_CS0 2
-#define BIT_CS1 3
-#define BIT_CS2 4
-#define BIT_CS3 5
+#define RDIMDDR DDR(RDIMPORT)
 
-#define BIT_RW 6
+//#define BIT_CS0 2
+//#define BIT_CS1 3
+//#define BIT_CS2 4
+//#define BIT_CS3 5
+
+//#define BIT_RW 6
 
 //Der Puffer, in dem das aktuelle Bild gespeichert wird
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
@@ -195,10 +197,7 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 void timer0_off(){
 	cli();
 
-	COLPORT1 = 0;
-	COLPORT2 = 0;
-	ROWPORT = 0;
-
+	
 	TCCR0 = 0x00;
 	sei();
 }
@@ -268,12 +267,9 @@ void borg_hw_init(){
 	
 	DDRD |= 1<<PD7; //OC2 pin to output
 	
-	PORTA |= (1<<PA4);
-	DDRA  |= (1<<PA4);
+	RDIMPORT |= (1<<BIT_RDIM);
+	RDIMDDR  |= (1<<BIT_RDIM);
 	
-	
-	PORTD |= (1<<PD7);
-
 	//Watchdog Timer aktivieren
 	wdt_reset();
 	wdt_enable(0x00);	// 17ms Watchdog
