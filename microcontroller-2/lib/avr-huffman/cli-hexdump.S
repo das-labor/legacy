@@ -164,4 +164,81 @@ cli_hexdump2:
 	subi r16, 1
 	sbci r17, 0
 	rjmp 1b
+
+/******************************************************************************/
+/* void cli_hexdump_block(const void* data, uint16_t length, uint8_t indent, uint8_t width)
+ *   param data:     r24:r25
+ *   param length:   r22:r23
+ *   param indent:   r20
+ *   param width:    r18
+ */
+WIDTH  =  2
+INDENT =  3
+DATA_0 = 28
+DATA_1 = 29
+LENG_0 = 16
+LENG_1 = 17
+
+.global cli_hexdump_block
+cli_hexdump_block:
+	tst r22
+	brne 1f
+	tst r23
+	brne 1f
+	ret
+1:
+ 	push WIDTH
+	push INDENT
+	push DATA_0
+	push DATA_1
+	push LENG_0
+	push LENG_1
+	push r4
+	mov WIDTH, r18
+	mov INDENT, r20
+	movw DATA_0, r24
+	movw LENG_0, r22 
+2:
+	clr r25
+	ldi r24, '\r'
+	rcall cli_putc
+	clr r25
+	ldi r24, '\n'
+	rcall cli_putc
+	mov r4, INDENT
+	tst r4
+	breq 4f
+3:	clr r25
+	ldi r24, ' '
+	rcall cli_putc
+	dec r4
+	brne 3b
+4:
+	movw r24, DATA_0
+	clr r23
+	mov r22, WIDTH
+	tst LENG_1
+	brne 7f
+	cp WIDTH, LENG_0
+	breq 6f
+	brmi 7f
+	mov r22, LENG_0
+6:	inc r4	
+7:	
+	rcall cli_hexdump2
+	add DATA_0, WIDTH
+	adc DATA_1, r1
+	sub LENG_0, WIDTH
+	sbc LENG_0, r1
+	tst r4
+	breq 2b	
+	pop r4
+	pop LENG_1
+	pop LENG_0
+	pop DATA_1
+	pop DATA_0
+	pop INDENT
+	pop WIDTH
+	ret
+	
 	
