@@ -160,15 +160,17 @@ process (clk100) begin
 	if rising_edge (clk100) then
 		if write_wrt_1 = '1' then			-- in den Speicher schreiben
 				sram_adr <= write_adr_1;				-- Adresse zum schreiben
-				sram_1_io  <= write_dat_1;				-- Daten schreiben 
-				sram_2_io  <= write_dat_1;
 				sram_oe <= '1';				-- schreiben beschleunigen durch
 			if write_sel_1 = '0' then		-- abschalten der sram ausgänge
 				sram_1_ce <= '0';				-- schreiben in
 				sram_2_ce <= '1';				-- sram 1
+				sram_1_io  <= write_dat_1;	-- Daten schreiben 
+				sram_2_io  <= (others => 'Z');
 			else
 				sram_1_ce <= '1';				-- Sram 2 
 				sram_2_ce <= '0';
+				sram_1_io  <= (others => 'Z');		-- Daten schreiben 
+				sram_2_io  <= write_dat_1;
 			end if;	
 		
 		else --                        Aus speicher lesen
