@@ -4,25 +4,39 @@
 extern unsigned char waitForFire;
 void joy_init();
 
+
 #ifdef AVR
 
-#include <avr/io.h>
+#	include <avr/io.h>
+#	ifdef NES_PAD_SUPPORT
 
-#define JOYISUP    (!(JOYSTICK_PIN_UP    & (1<<JOYSTICK_BIT_UP   )))
-#define JOYISDOWN  (!(JOYSTICK_PIN_DOWN  & (1<<JOYSTICK_BIT_DOWN )))
-#define JOYISLEFT  (!(JOYSTICK_PIN_LEFT  & (1<<JOYSTICK_BIT_LEFT )))
-#define JOYISRIGHT (!(JOYSTICK_PIN_RIGHT & (1<<JOYSTICK_BIT_RIGHT)))
-#define JOYISFIRE  (!(JOYSTICK_PIN_FIRE  & (1<<JOYSTICK_BIT_FIRE )))
+		extern volatile unsigned char fakeport;
 
+#		define JOYISUP    (!! ((1<<4) & fakeport))
+#		define JOYISDOWN  (!! ((1<<5) & fakeport))
+#		define JOYISLEFT  (!! ((1<<6) & fakeport))
+#		define JOYISRIGHT (!! ((1<<7) & fakeport))
+#		define JOYISFIRE  (!! ((1<<0) & fakeport))
+
+
+#	else
+
+#		define JOYISUP    (!(JOYSTICK_PIN_UP    & (1<<JOYSTICK_BIT_UP   )))
+#		define JOYISDOWN  (!(JOYSTICK_PIN_DOWN  & (1<<JOYSTICK_BIT_DOWN )))
+#		define JOYISLEFT  (!(JOYSTICK_PIN_LEFT  & (1<<JOYSTICK_BIT_LEFT )))
+#		define JOYISRIGHT (!(JOYSTICK_PIN_RIGHT & (1<<JOYSTICK_BIT_RIGHT)))
+#		define JOYISFIRE  (!(JOYSTICK_PIN_FIRE  & (1<<JOYSTICK_BIT_FIRE )))
+
+#	endif
 #else
 
-extern unsigned char fakeport;
+	extern volatile unsigned char fakeport;
 
-#define JOYISUP    (0x10 & fakeport)
-#define JOYISDOWN  (0x08 & fakeport)    
-#define JOYISLEFT  (0x02 & fakeport)
-#define JOYISRIGHT (0x04 & fakeport)
-#define JOYISFIRE  (0x01 & fakeport)
+#	define JOYISUP    (0x10 & fakeport)
+#	define JOYISDOWN  (0x08 & fakeport)    
+#	define JOYISLEFT  (0x02 & fakeport)
+#	define JOYISRIGHT (0x04 & fakeport)
+#	define JOYISFIRE  (0x01 & fakeport)
 
 #endif
 

@@ -1,5 +1,11 @@
 dep_bool_menu "joystick support" JOYSTICK_SUPPORT y
 
+choice 'Joystick type'			\
+   "NES-Pad  JOYSTICK_NES \
+    Parallel  JOYSTICK_PARALLEL" \
+   'JOYSTICK_PARALLEL' JOYSTICK_TYPE
+
+
 ###################### Parallel joystick menu #################################
 dep_bool_menu "parallel joystick support" PARALLEL_JOYSTICK_SUPPORT y
 
@@ -96,6 +102,67 @@ choice 'Bit fire'			\
 endmenu
 ###############################################################################
 
+###################### NES-Pad menu #################################
+dep_bool_menu "nes-pad support" NES_PAD_SUPPORT y
+
+choice 'Port clk'			\
+   "PORTA  PORTA \
+    PORTB  PORTB \
+    PORTC  PORTC \
+    PORTD  PORTD" \
+   'PORTB' NES_PAD_PORT_CLK
+
+choice 'Port ds'			\
+   "PORTA  PORTA \
+    PORTB  PORTB \
+    PORTC  PORTC \
+    PORTD  PORTD" \
+   'PORTB' NES_PAD_PORT_PL 
+
+choice 'Pin pl'			\
+   "PINA  PINA \
+    PINB  PINB \
+    PINC  PINC \
+    PIND  PIND" \
+   'PINB' NES_PAD_PIN_DS
+
+
+choice 'Bit clk'			\
+   "Bit0 0 \
+    Bit1 1 \
+    Bit2 2 \
+    Bit3 3 \
+    Bit4 4 \
+    Bit5 5 \
+    Bit6 6 \
+    Bit7 7" \
+   'Bit0' NES_PAD_BIT_CLK
+
+choice 'Bit pl'			\
+   "Bit0 0 \
+    Bit1 1 \
+    Bit2 2 \
+    Bit3 3 \
+    Bit4 4 \
+    Bit5 5 \
+    Bit6 6 \
+    Bit7 7" \
+   'Bit0' NES_PAD_BIT_PL
+
+choice 'Bit ds'			\
+   "Bit0 0 \
+    Bit1 1 \
+    Bit2 2 \
+    Bit3 3 \
+    Bit4 4 \
+    Bit5 5 \
+    Bit6 6 \
+    Bit7 7" \
+   'Bit0' NES_PAD_BIT_DS
+
+  
+endmenu
+###############################################################################
 
 
 endmenu
