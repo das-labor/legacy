@@ -147,7 +147,7 @@ choice 'Bit pl'			\
     Bit5 5 \
     Bit6 6 \
     Bit7 7" \
-   'Bit0' NES_PAD_BIT_PL
+   'Bit1' NES_PAD_BIT_PL
 
 choice 'Bit ds'			\
    "Bit0 0 \
@@ -158,7 +158,7 @@ choice 'Bit ds'			\
     Bit5 5 \
     Bit6 6 \
     Bit7 7" \
-   'Bit0' NES_PAD_BIT_DS
+   'Bit2' NES_PAD_BIT_DS
 
   
 endmenu
