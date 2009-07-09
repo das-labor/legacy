@@ -1,5 +1,5 @@
 mainmenu_option next_comment
-comment "Borg16 port setup"
+comment "PD1165 Port Setup"
 
 #define COLPORT1  PORTC
 #define COLDDR1   DDRC
@@ -18,30 +18,37 @@ comment "Borg16 port setup"
 #define PIN_SHFT1 PD7
 
 
-choice 'Column Port 1 (right)'			\
+choice 'Data Port'			\
    "PORTA  PORTA \
     PORTB  PORTB \
     PORTC  PORTC \
     PORTD  PORTD" \
-   'PORTC' COLPORT1 
+   'PORTC' DATAPORT 
 
-choice 'Column Port 2 (left)'			\
+choice 'Address Port (Bits0-3)'			\
    "PORTA  PORTA \
     PORTB  PORTB \
     PORTC  PORTC \
     PORTD  PORTD" \
-   'PORTA' COLPORT2 
+   'PORTA' ADDRPORT 
 
-choice 'port for row shiftregisters'			\
+choice 'Control Port'			\
    "PORTA  PORTA \
     PORTB  PORTB \
     PORTC  PORTC \
     PORTD  PORTD" \
-   'PORTD' ROWPORT
+   'PORTD' CTRLPORT
 
-comment "pin numbers on shiftregister port"
+choice 'Rdim Port'			\
+   "PORTA  PORTA \
+    PORTB  PORTB \
+    PORTC  PORTC \
+    PORTD  PORTD" \
+   'PORTA' RDIMPORT
 
-choice '/MCLR Pin'			\
+comment "pin numbers on Control Port"
+
+choice 'CS0 Pin'			\
    "Pin0 0 \
     Pin1 1 \
     Pin2 2 \
@@ -50,9 +57,9 @@ choice '/MCLR Pin'			\
     Pin5 5 \
     Pin6 6 \
     Pin7 7" \
-   'Pin4' PIN_MCLR
+   'Pin2' BIT_CS0
    
-choice 'CLK Pin'			\
+choice 'CS1 Pin'			\
    "Pin0 0 \
     Pin1 1 \
     Pin2 2 \
@@ -61,9 +68,9 @@ choice 'CLK Pin'			\
     Pin5 5 \
     Pin6 6 \
     Pin7 7" \
-   'Pin6' PIN_CLK
+   'Pin3' BIT_CS1
    
-choice 'DATA Pin'			\
+choice 'CS2 Pin'			\
    "Pin0 0 \
     Pin1 1 \
     Pin2 2 \
@@ -72,17 +79,43 @@ choice 'DATA Pin'			\
     Pin5 5 \
     Pin6 6 \
     Pin7 7" \
-   'Pin7' PIN_DATA
+   'Pin4' BIT_CS2
+   
+choice 'CS3 Pin'			\
+   "Pin0 0 \
+    Pin1 1 \
+    Pin2 2 \
+    Pin3 3 \
+    Pin4 4 \
+    Pin5 5 \
+    Pin6 6 \
+    Pin7 7" \
+   'Pin5' BIT_CS3
+   
+choice 'RW Pin'			\
+   "Pin0 0 \
+    Pin1 1 \
+    Pin2 2 \
+    Pin3 3 \
+    Pin4 4 \
+    Pin5 5 \
+    Pin6 6 \
+    Pin7 7" \
+   'Pin6' BIT_RW
 
-comment "fixing hardwareproblems in software"
+comment "pin number on Rdim Port"
 
+   
+choice 'RDim Pin'			\
+   "Pin0 0 \
+    Pin1 1 \
+    Pin2 2 \
+    Pin3 3 \
+    Pin4 4 \
+    Pin5 5 \
+    Pin6 6 \
+    Pin7 7" \
+   'Pin4' BIT_RDIM
 
-bool "reverse cols" REVERSE_COLS n
-bool "invert rows " INVERT_ROWS n
-
-comment "for borg jacket"
-
-bool "interlaced rows" INTERLACED_ROWS n
-bool "interlaced cols" INTERLACED_COLS n
 
 endmenu
