@@ -120,11 +120,11 @@ choice 'Port ds'			\
    'PORTB' NES_PAD_PORT_PL 
 
 choice 'Pin pl'			\
-   "PINA  PINA \
-    PINB  PINB \
-    PINC  PINC \
-    PIND  PIND" \
-   'PINB' NES_PAD_PIN_DS
+   "PORTA  PORTA \
+    PORTB  PORTB \
+    PORTC  PORTC \
+    PORTD  PORTD" \
+   'PORTB' NES_PAD_PORT_DS
 
 
 choice 'Bit clk'			\
