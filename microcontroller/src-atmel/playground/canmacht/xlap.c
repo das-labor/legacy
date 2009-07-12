@@ -53,7 +53,7 @@ void process_data() {
 		nextsensor = nextsensor->next;
 	}
 
-	sensor_t *newsensor = malloc(sizeof(sensor_t));
+	sensor_t *newsensor = (sensor_t *) malloc(sizeof(sensor_t));
 	newsensor->typ = rx_msg.data[0];
 	newsensor->wert = rx_msg.data[1];
 	newsensor->next = NULL;

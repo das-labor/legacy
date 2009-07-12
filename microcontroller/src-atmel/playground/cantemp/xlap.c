@@ -34,13 +34,10 @@ void process_mgt_msg() {
 			msg.data[0] = PORT_TEMP;
 			can_put(&msg);
 			break;
-		case FKT_MGT_WRADR:
-			eeprom_write_byte(0, rx_msg.data[1]);
-			break;
-		case FKT_MGT_ADDSENSOR:
+		case FKT_MGT_WREEPR0M:
 			eeprom_write_byte(rx_msg.data[1], rx_msg.data[2]);
 			break;
-	}	
+	}
 }
 
 AVRX_GCC_TASKDEF(laptask, 55, 3) {

@@ -39,15 +39,15 @@ FALSE	= 0
 #MCU      = atmega128
 #MCU      = at90s8515
 
-MCU = atmega32
+MCU = atmega8
 
-TARGET = canmacht
+TARGET = pwmtest
 CANADDR = 67
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
 
-SRC = main.c text.c font_small6.c grafiklcd.c ks0108.c menu.c stuff.c ../../lib/rfmxx-avrx/rf12.c
+SRC = pwmtest.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
@@ -59,7 +59,7 @@ SRC = main.c text.c font_small6.c grafiklcd.c ks0108.c menu.c stuff.c ../../lib/
 
 #ASRC = ../avrx/serialio.S
 
-GCCLIB = ../../lib/AvrX2.6f/avrx/avrx.a
+GCCLIB = 
 
 # Optimization level, can be [0, 1, 2, 3, s].
 # 0 = turn off optimization. s = optimize for size.
@@ -88,7 +88,7 @@ CSTANDARD = -std=gnu99
 CDEFS = -DF_CPU=$(CPUCLK) -DTICKRATE=$(TICKRATE) -DBAUDRATE=$(BAUDRATE)
 
 # Place -I options here
-CINCS = -I../../lib/AvrX2.6f/avrx
+CINCS = 
 
 
 # Compiler flags.
@@ -268,8 +268,8 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 # Default target.
 Samples:
-	make all TARGET=canmacht
-	
+	make all $(TARGET)
+
 #all: begin gccversion sizebefore build sizeafter finished end
 all: sizebefore build sizeafter
 
