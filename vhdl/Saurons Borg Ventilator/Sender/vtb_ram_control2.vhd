@@ -106,6 +106,7 @@ signal colordataf: std_logic_vector(23 downto 0) ; signal xf,yf:integer;
 signal colordatag: std_logic_vector(23 downto 0) ; signal xg,yg:integer;
 signal colordatah: std_logic_vector(23 downto 0) ; signal xh,yh:integer;
 signal colordatai: std_logic_vector(23 downto 0) ; signal xi,yi:integer;
+signal colordatak: std_logic_vector(23 downto 0):= x"000000" ; signal xk,yk:integer:=0;
 
 
 shared variable fname : string ( 1 to 16):="lena_copy000.bmp";
@@ -113,6 +114,7 @@ shared variable fname : string ( 1 to 16):="lena_copy000.bmp";
 type memory2 is array (0 to 511, 0 to 511) of bit_vector (15 downto 0);
 
 shared variable visual : memory2; 
+shared variable input_picture : memory2;
 
 
 BEGIN
@@ -205,16 +207,16 @@ w := ((real(w_int) / 1023.0)* 6.28) + 3.14;
 s := sin(w) * real (conv_integer (sram_pos) );
 c := cos(w) * real (conv_integer (sram_pos) );
 
--- x / y Koordinaten f+r den winkel 
+-- x / y Koordinaten fur den winkel 
 x := center_x + s;
 y := center_y + c;
 
 			
--- Schwarz gelesen ?? dann Rot draus machen (für debugging)
+---- Schwarz gelesen ?? dann Rot draus machen (für debugging)
 --if sram_read = x"0000" then 
 --	colordatae <= x"008f";
 --else
-	colordatae <= 	sram_read;
+	                          colordatae <= 	sram_read;
 --end if ;						
  								
 xe <= integer(x) ; ye <= integer(y) ;
@@ -341,13 +343,16 @@ begin
 
 wait until rising_edge (clk50);
 
--- Daten für ad_dat / ad_adr generieren
+-- Daten für ad_dat / ad_adr aus dem speicher lesen
 			ad_adr <= conv_std_logic_vector(y,9) & conv_std_logic_vector(x,9);
 		
-			getpixel(x,y,colordata4);
-
+--			getpixel(x,y,colordata4);
+--       adaten := To_StdLogicVector(input_picture(x,y));
+         ad_dat <= To_StdLogicVector(input_picture(x,y));
+--			ad_dat <= colordata_4;
+			
 						-- farben von 16M auf 64K reduzieren
-			ad_dat <= colordata4(23 downto 19) & colordata4(15 downto 10) & colordata4(7 downto 3) ;
+--			ad_dat <= colordata4(23 downto 19) & colordata4(15 downto 10) & colordata4(7 downto 3) ;
 	
 		-- nach count takten schreib-impuls erzeugen
 		count := count + 1;
@@ -380,9 +385,24 @@ if ad_adr = "111111111111111111" and ad_wr = '1' then
   
    wname := "wurfel0" & char1 & char2 & char3 & ".bmp";
 
-	report " ------------------------- Lade ein neues Bild ----------------------------";
+	report " ----------------------------------------- Lade ein neues Bild ----------------------------";
 	report wname;
 	readfile (wname); -- Datei Laden
+	
+	-- und in den speicher input_picture kopieren
+	for ybc in 0 to 511 loop
+	 	for xbc in 0 to 511 loop
+		wait for 1 ps;           
+		getpixel (xbc,ybc,colordatak);
+		xk <= xbc ; yk <= ybc;
+		
+		input_picture(xk,yk) := To_bitvector(colordatak) (23 downto 19) &
+										To_bitvector(colordatak) (15 downto 10) &
+										To_bitvector(colordatak) ( 7 downto  3) ;
+		end loop;
+	end loop;
+		
+		
 
 end if;
 
@@ -455,36 +475,23 @@ wait for 10 ns;
 		 
 --nach einer eingestellten zeit ein neues Bild speichern 
 for xxx in 0 to 999 loop
- 
---	ReadFile(fname);
-	
-	-- Bild kopieren
+
+	wait for 5000 us; -- Zeit bis zum nächsten bild 200
+		
+   report "Jetzt ist das Bild fertig...";
+
 	for ny in 0 to 511 loop
 		for nx in 0 to 511 loop
 		wait for 1 ps;
-		getpixel (nx,ny,colordatag);
-		xg <= nx ; yg <= ny;
-		setpixel (xg,yg,(colordatag));
-		end loop;
-	end loop;
-
-	for ny in 0 to 511 loop
-		for nx in 512 to 1023 loop
-		wait for 1 ps;
-		colordatai <= To_StdLogicVector(visual ((nx-512),ny) (15 downto 11)) & "000" &
-						  To_StdLogicVector(visual ((nx-512),ny) (10 downto  5)) & "00"  &
-						  To_StdLogicVector(visual ((nx-512),ny) ( 4 downto  0)) & "000";
+		colordatai <= To_StdLogicVector(visual ((nx),ny) (15 downto 11)) & "000" &
+						  To_StdLogicVector(visual ((nx),ny) (10 downto  5)) & "00"  &
+						  To_StdLogicVector(visual ((nx),ny) ( 4 downto  0)) & "000";
 								
 		xi <= nx ; yi <= ny;
 		setpixel (xi,yi,(colordatai));
 		end loop;
 	end loop;
 
-
-
-	wait for 800 us; -- Zeit bis zum nächsten bild 200
-		
-   report "Jetzt ist das Bild fertig...";
 	
 	filename_counter := filename_counter + 1;
 	
@@ -497,6 +504,8 @@ for xxx in 0 to 999 loop
 	char3 := character'VAL(conv_integer((z)+48));
   
    fname := "lena_copy" & char1 & char2 & char3 & ".bmp";
+	
+	
 	report fname;
 	WriteFile (fname);
 
