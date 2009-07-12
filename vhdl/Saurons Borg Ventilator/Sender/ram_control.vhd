@@ -41,7 +41,9 @@ entity ram_control is Port (
 			  
 			  sram_read : out std_logic_vector (15 downto 0);
 			  sram_pos  : out std_logic_vector ( 7 downto 0);
-			  write_sel_diag  : out std_logic
+			  write_sel_diag  : out std_logic;
+			  write_sel_diag2  : out std_logic
+			  
 			  
 														);
 end ram_control;
@@ -77,14 +79,14 @@ architecture Behavioral of ram_control is
 		winkel 			: IN std_logic_vector(9 downto 0);
 		write_enable 	: IN std_logic;          
 		ram_adr 			: OUT std_logic_vector(17 downto 0);
-		led_nr 			: OUT std_logic_vector(7 downto 0);
-		winkel_diag 	: OUT std_logic_vector(9 downto 0)
+		led_nr 			: OUT std_logic_vector(7 downto 0)
 		);
 	END COMPONENT;
 
 signal write_enable	: std_logic;
 signal write_help		: std_logic;
 signal read_help		: std_logic:='0';
+signal sram_read_2  : std_logic_vector (15 downto 0);
 signal sram_read_3a  : std_logic_vector (15 downto 0);
 signal sram_read_4   : std_logic_vector (15 downto 0);
 signal led_nr_2      : std_logic_vector ( 7 downto 0);
@@ -98,7 +100,6 @@ signal write_wrt_u   : std_logic;
 signal write_sel_u   : std_logic;
 signal read_adr_u    : std_logic_vector (17 downto 0);
 signal led_nr_u      : std_logic_vector ( 7 downto 0);
-signal winkel_diag_u : std_logic_vector ( 9 downto 0);
 
 -- stufe 1
 signal write_adr_1	: std_logic_vector (17 downto 0);
@@ -107,7 +108,11 @@ signal write_wrt_1   : std_logic;
 signal write_sel_1   : std_logic;
 signal read_adr_1    : std_logic_vector (17 downto 0);
 signal led_nr_1      : std_logic_vector ( 7 downto 0);
-signal winkel_diag_1 : std_logic_vector ( 9 downto 0);
+
+signal write_wrt_2   : std_logic;
+signal write_wrt_3   : std_logic;
+signal write_wrt_4   : std_logic;
+
 
 begin
 
@@ -137,8 +142,7 @@ begin
 		winkel => winkel,
 		write_enable => write_enable ,
 		ram_adr => read_adr_u,
-		led_nr => led_nr_u,
-		winkel_diag => winkel_diag_u
+		led_nr => led_nr_u
 	);
 
 
@@ -151,13 +155,15 @@ process (clk100) begin
 		write_sel_1	<= write_sel_u;
 		 read_adr_1 <= read_adr_u;
 		   led_nr_1 <= led_nr_u;
-	 winkel_diag_1 <= winkel_diag_u;
+	 	write_wrt_3 <= write_wrt_2;
+		write_wrt_4 <= write_wrt_3;
+
 	end if;
 end process;
 
 
-process (clk100) begin
-	if rising_edge (clk100) then
+process (clk50) begin
+	if rising_edge (clk50) then
 		if write_wrt_1 = '1' then			-- in den Speicher schreiben
 				sram_adr <= write_adr_1;				-- Adresse zum schreiben
 				sram_oe <= '1';				-- schreiben beschleunigen durch
@@ -186,15 +192,17 @@ process (clk100) begin
 				sram_1_ce <= '1';				-- Sram 2 
 				sram_2_ce <= '0';
 			end if;	
-	
 		end if;
+	end if;
+end process;
 		
 			sram_1_ub <= '0';							-- Alle Bytes ansprechen
 			sram_1_lb <= '0';
 			sram_2_ub <= '0';
 			sram_2_lb <= '0';
 			
-			
+process (clk100) begin
+  if rising_edge (clk100) then
 		if write_wrt_1 = '1' then					-- Signal zum schreiben erzeugen
 			write_help <= not write_help;
 			sram_we <= write_wrt_1 and write_help;
@@ -202,38 +210,51 @@ process (clk100) begin
 			write_help <='0';
 			sram_we <= '1';
 		end if;
+	end if;
+end process;
 							
 
+process (clk100) begin
+  if rising_edge (clk100) then
 														-- Aus sram lesen
-		if write_wrt_1 = '0' then
-			read_help <= not read_help;
-			
+		if write_wrt_4 = '0' or write_wrt_4 = '0' then
+
+			read_help <= not read_help;		--jeden 2. takt (100 mhz)
 			if read_help = '1' then					-- flanke zum lesen
+			
 				if write_sel_1 = '0'  then
-					sram_read_3a <= sram_1_io;
+					sram_read_2 <= sram_2_io;
 				else 
-					sram_read_3a <= sram_2_io;
+					sram_read_2 <= sram_1_io;
 				end if;
 			end if;
+			
 			else
-					read_help <= '0';
-					sram_read_3a <= (others => '0');
+					read_help <= '1';
 		end if;
 	end if;
 end process;
 
+
+
+
+
 process (clk50) begin
 if rising_edge (clk50) then
-	sram_read_4 <= sram_read_3a;
-	sram_read   <= sram_read_4;
+	sram_read_3a <= sram_read_2;
+	sram_read   <= sram_read_3a;
 	led_nr_2		<= led_nr_1;
 	led_nr_3		<= led_nr_2;
 	led_nr_4		<= led_nr_3;
 	sram_pos		<= led_nr_4;
+	write_wrt_2 <= write_wrt_1;
+	
 end if;
 end process;	
 
-write_sel_diag <= write_sel_1;
+write_sel_diag <= write_wrt_2;
+write_sel_diag2 <= write_wrt_4;
+
 
 end Behavioral;
 
