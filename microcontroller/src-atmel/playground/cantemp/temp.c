@@ -38,7 +38,7 @@ AVRX_GCC_TASKDEF(temp, 40, 3) {
 	//tempact = 0;
 	//temp.addr_dst = rx_msg.addr_src;
 	while (1) {
-		AvrXDelay(&switchtimer3, 1000);
+		AvrXDelay (&switchtimer3, 1000);
 		//if (tempact > 0) {
 			for (uint8_t j = 0; j < sensors; j++) {
 				if (i2c_start(sensor[j] + I2C_READ)) {			// set device address and read mode
@@ -47,10 +47,10 @@ AVRX_GCC_TASKDEF(temp, 40, 3) {
 				}
 				else {
 					hbyte = i2c_readAck();
-					lbyte = i2c_readNak();				// msb byte2 test for .5 degree
+					lbyte = i2c_readNak();				// msb byte2 
 					i2c_stop();
 				}
-				if(buffer[j][0] != hbyte && buffer[j][1] != lbyte) {
+				if (buffer[j][0] != hbyte && buffer[j][1] != lbyte) {
 					temp.data[0] = sensor[j];
 					temp.data[1] = buffer[j][0] = hbyte;
 					temp.data[2] = buffer[j][1] = lbyte;

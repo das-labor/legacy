@@ -1,0 +1,7 @@
+Nachttischlampe
+
+Funktionen:
+CAN-BUS interface
+KSQ für powerLED dimmbar über PWM
+farbdiplay
+uhr/wecker ntp
