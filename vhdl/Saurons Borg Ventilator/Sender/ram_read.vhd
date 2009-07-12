@@ -57,8 +57,7 @@ end component;
 	signal led_nr_2			: std_logic_vector( 7 downto 0);
 	signal led_winkel_2		: std_logic_vector( 9 downto 0);
 	--stufe 6
---	signal mem_adr_6			: std_logic_vector(17 downto 0);
---	signal led_nr_6			: std_logic_vector( 7 downto 0);
+
 begin -- und ab gehts
  
 -- winkel in ein Register übernehmen,
@@ -112,6 +111,5 @@ end process;
 
 		 );
 
---led_nr <= led;
 end Behavioral;
 
