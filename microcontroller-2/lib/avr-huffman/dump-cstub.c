@@ -65,111 +65,16 @@ const char ram_desc[]    PROGMEM = "ram";
 const char eeprom_desc[] PROGMEM = "eeprom";
 
 typedef struct {
-	void (*fpt)(void*, uint32_t, uint8_t);
 	PGM_P trigger;
 	PGM_P desc;
+	void (*fpt)(void*, uint32_t, uint8_t);
 } memtype_desc_t;
 
 memtype_desc_t memtype_desc[] PROGMEM = {
-	{ pgm_read_block,  flash_trigger,   flash_desc  },
-	{ ee_read_block,   eeprom_trigger,  eeprom_desc },
-	{ ram_read_block,  ram_trigger,     ram_desc    },
+	{ flash_trigger,   flash_desc,      pgm_read_block },
+	{ eeprom_trigger,  eeprom_desc,     ee_read_block  },
+	{ ram_trigger,     ram_desc   ,     ram_read_block },
 	{ NULL,            NULL,            NULL        }
 };
 
-uint8_t charisinstr_P(char c, PGM_P str){
-	char t;
-	do{
-		t=pgm_read_byte(str++);
-		if(t==c)
-			return 1;
-	}while(t);
-	return 0;
-} 
-
-static
-void dump_chars(uint8_t* buffer, uint8_t len){
-	uint8_t i;
-	cli_putc('|');
-	for(i=0; i<len; ++i){
-		if(isprint(buffer[i])){
-			cli_putc(buffer[i]);
-		}else{
-			cli_putc('.');
-		}
-	}
-	for(;len<DUMP_WIDTH; ++len){
-		cli_putc(' ');
-	}
-	cli_putc('|');
-}
-
-static 
-void print_aligned(unsigned long value, uint8_t align){
-	char str[10];
-	uint8_t i;
-	ultoa(value, str, 16);
-	for(i=strlen(str);i<align;++i)
-		cli_putc(' ');
-	cli_putstr(str);
-}
-
-
-void dump(char* s){
-	uint8_t mem_idx=0;
-	uint8_t readlen;
-	uint32_t addr=0;
-	uint32_t size=128;
-	uint8_t buffer[DUMP_WIDTH];
-	PGM_P ptemp;
-	char tstr[9];
-	s=strstrip(s);
-	do{
-		ptemp = (void*)pgm_read_word(&(memtype_desc[mem_idx].trigger));
-		if(charisinstr_P(*s, ptemp))
-			break;
-		++mem_idx;
-	}while(ptemp);
-	if(ptemp==NULL)
-		mem_idx=0;	
-	if(isalpha(*s)){
-		while(isalpha(*s))
-			++s;
-	}
-	char* eptr;
-	if(*s)
-		addr = strtoul(s, &eptr, 0);
-	if(eptr)
-		size = strtoul(eptr, NULL, 0);
-	if(!size)
-		size = 32;	
-	ptemp = (void*)pgm_read_word(&(memtype_desc[mem_idx].desc));
-	cli_putstr_P(PSTR("\r\ndumping "));	
-	ultoa(size, tstr, 10);
-	cli_putstr(tstr);
-	cli_putstr_P(PSTR(" bytes of "));
-	cli_putstr_P(ptemp);
-	cli_putstr_P(PSTR(", beginning at 0x"));	
-	ultoa(addr, tstr, 16);
-	cli_putstr(tstr);
-	cli_putstr_P(PSTR(":\r\n"));
-	ptemp = (void*)pgm_read_word(&(memtype_desc[mem_idx].fpt));
-	uint8_t t;
-	while(size){
-		readlen = (size>DUMP_WIDTH)?DUMP_WIDTH:size;
-		((void(*)(void*,uint32_t,uint8_t))((uint16_t)ptemp))(buffer, addr, readlen);
-		print_aligned(addr, 6);
-		cli_putstr_P(PSTR(": "));	
-		cli_hexdump2(buffer, readlen);
-		t=(DUMP_WIDTH-readlen)*3;
-		while(t--){
-			cli_putc(' ');
-		}
-		cli_putc('\t');
-		dump_chars(buffer,readlen);
-		addr+=readlen;
-		size-=readlen;
-		cli_putstr_P(PSTR("\r\n"));
-	}
-}
-
+void dump(char* s);
