@@ -18,7 +18,8 @@
 */
 
 #include "avr-asm-macros.S"
-
+#include <avr/io.h>
+#include <avr/sfr_defs.h>
 #define DUMP_WIDTH 16
 
 #define ADDR_BASE 16
@@ -351,3 +352,96 @@ beginning:
 suffix:
 .asciz ":\r\n"
 .byte 0
+
+/******************************************************************************/
+/* void pgm_read_block(void* buffer, uint32_t addr, uint8_t length)
+ *   param buffer:  r24:r25
+ *   param addr:    r20:r23
+ *   param length:  r18
+ */
+.global pgm_read_block
+pgm_read_block:
+#if RAMEND<0x10000
+	movw r26, r24
+	movw r30, r20
+	tst r18
+	breq 3f
+1:
+	lpm r20, Z+
+	st X+, r20
+	dec r18
+	brne 1b
+3:	
+	ret
+#else
+	movw r26, r24
+	movw r30, r20
+	out RAMPZ, r22
+	tst r18
+	breq 3f
+1:
+	elpm r20, Z+
+	st X+, r20
+	dec r18
+	brne 1b
+3:	
+	ret
+
+#endif	
+	
+/******************************************************************************/
+/* void ram_read_block(void* buffer, uint32_t addr, uint8_t length)
+ *   param buffer:  r24:r25
+ *   param addr:    r20:r23
+ *   param length:  r18
+ */
+.global ram_read_block
+ram_read_block:
+	movw r26, r24
+	movw r30, r20
+	tst r18
+	breq 3f
+1:
+	ld r20, Z+
+	st X+, r20
+	dec r18
+	brne 1b
+3:	
+	ret
+
+/* don't know why the definitions in avr/io.h don't work*/
+#undef EEARH 
+#undef EEARL
+#undef EEDR 
+#undef EECR 
+
+#define EEARH 0x22
+#define EEARL 0x21
+#define EEDR  0x20
+#define EECR  0x1F
+
+/******************************************************************************/
+/* void ee_read_block(void* buffer, uint32_t addr, uint8_t length)
+ *   param buffer:  r24:r25
+ *   param addr:    r20:r23
+ *   param length:  r18
+ */
+.global ee_read_block
+ee_read_block:
+	movw r26, r24
+	movw r30, r20
+	tst r18
+	breq 3f
+1:
+	sbic EECR, EEPE
+	rjmp 1b
+	out EEARH, r31
+	out EEARL, r30
+	sbi EECR, EERE
+	adiw r30, 1
+	in r20, EEDR
+	st X+, r20
+	dec r18
+	brne 1b
+3:	
+	ret

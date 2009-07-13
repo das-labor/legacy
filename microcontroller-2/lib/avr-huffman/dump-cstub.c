@@ -36,25 +36,9 @@
  
 #define DUMP_WIDTH 16
 
-void pgm_read_block(void* buffer, uint32_t addr, uint8_t length){
-	while(length--){
-#ifdef pgm_read_byte_far				
-		*((uint8_t*)buffer) = (uint8_t)pgm_read_byte_far(addr);
-#else
-		*((uint8_t*)buffer) = (uint8_t)pgm_read_byte((uint16_t)addr);
-#endif
-		buffer = (uint8_t*)buffer +1;
-		++addr;
-	}
-}
-
-void ee_read_block(void* buffer, uint32_t addr, uint8_t length){
-	eeprom_read_block(buffer, (void*)((uint16_t)addr), length);
-}
-
-void ram_read_block(void* buffer, uint32_t addr, uint8_t length){
-	memcpy(buffer, (void*)((uint16_t)addr), length);
-} 
+void pgm_read_block(void* buffer, uint32_t addr, uint8_t length);
+void ee_read_block(void* buffer, uint32_t addr, uint8_t length);
+void ram_read_block(void* buffer, uint32_t addr, uint8_t length);
 
 const char flash_trigger[]  PROGMEM = "fF";
 const char ram_trigger[]    PROGMEM = "sSrRmM";
