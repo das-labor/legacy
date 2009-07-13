@@ -24,7 +24,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <avr/pgmspace.h>
-
+#include <avr/eeprom.h>	
+#include <avr/io.h>
 
 extern uint8_t* _binary_data_hacker_manifesto_borg_txt_hfm_start PROGMEM;
 extern uint8_t* _binary_data_test_txt_hfm_start PROGMEM;
@@ -35,10 +36,14 @@ uint16_t read_byte_pgm(uint16_t addr){
 	return pgm_read_byte((PGM_VOID_P)addr);
 }
 
-void decompress(PGM_VOID_P addr){
+uint16_t read_byte_ee(uint16_t addr){
+	return eeprom_read_byte((uint8_t*)addr);
+}
+
+void decompress(PGM_VOID_P addr, uint16_t(*fp)(uint16_t)){
 	huffman_dec_ctx_t ctx;
 	uint16_t c;
-	huffman_dec_init(&ctx, read_byte_pgm);
+	huffman_dec_init(&ctx, fp);
 	huffman_dec_set_addr(&ctx, (uint16_t)addr);
 	cli_putstr_P(PSTR("\r\ndecompressing data at 0x"));
 	cli_hexdump_rev(&addr, 2);
@@ -58,15 +63,24 @@ void decompress(PGM_VOID_P addr){
 }
 
 void decompress_test(void){
-	decompress(&_binary_data_test_txt_hfm_start);
+	decompress(&_binary_data_test_txt_hfm_start,read_byte_pgm);
 }
 
 void decompress_hacker(void){
-	decompress(&_binary_data_hacker_manifesto_borg_txt_hfm_start);
+	decompress(&_binary_data_hacker_manifesto_borg_txt_hfm_start,read_byte_pgm);
 }
 
 void decompress_GPL(void){
-	decompress(&_binary_data_COPYING_gpl3_hfm_start);
+	decompress(&_binary_data_COPYING_gpl3_hfm_start, read_byte_pgm);
+}
+
+void beep(void){
+	DDRD |= _BV(7);
+	TCCR2A |= _BV(6); /* set toggle of OCR2A */
+	TCCR2A |= _BV(1); /* set CTC mode */
+	TCNT2 = 0;
+	OCR2A = 0x20;
+	TCCR2B |=  _BV(1) | _BV(0); /* set prescaler to 1024 */
 }
 
 /******************************************************************************/
@@ -74,6 +88,7 @@ void decompress_GPL(void){
 const char hacker_str[]  PROGMEM = "hacker_manifesto";
 const char test_str[]    PROGMEM = "test";
 const char GPL_str[]     PROGMEM = "gpl_license";
+const char beep_str[]    PROGMEM = "beep";
 const char dump_str[]    PROGMEM = "dump";
 const char echo_str[]    PROGMEM = "echo";
 
@@ -81,6 +96,7 @@ cmdlist_entry_t cmdlist[] PROGMEM = {
 	{ test_str,        NULL, decompress_test},
 	{ hacker_str,      NULL, decompress_hacker },
 	{ GPL_str,         NULL, decompress_GPL}, 
+	{ beep_str,        NULL, beep},
 	{ dump_str,    (void*)1, (void_fpt)dump}, 
 	{ echo_str,    (void*)1, (void_fpt)echo_ctrl},
 	{ NULL,            NULL, NULL}
