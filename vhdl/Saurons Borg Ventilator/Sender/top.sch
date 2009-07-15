@@ -203,8 +203,9 @@ BEGIN SCHEMATIC
             CIRCLE N 128 -48 160 -16 
         END BLOCKDEF
         BEGIN BLOCKDEF ram_control
-            TIMESTAMP 2009 7 8 9 10 52
-            RECTANGLE N 64 -896 448 -228 
+            TIMESTAMP 2009 7 13 22 20 3
+            LINE N 448 -240 512 -240 
+            LINE N 448 -208 512 -208 
             LINE N 64 -864 0 -864 
             LINE N 64 -608 0 -608 
             LINE N 448 -864 512 -864 
@@ -244,6 +245,7 @@ BEGIN SCHEMATIC
             LINE N 64 -320 0 -320 
             RECTANGLE N 0 -284 64 -260 
             LINE N 64 -272 0 -272 
+            RECTANGLE N 64 -896 448 -164 
         END BLOCKDEF
         BEGIN BLOCK XLXI_8 Picoblaze
             PIN clk clk50
@@ -322,32 +324,34 @@ BEGIN SCHEMATIC
         END BLOCK
         BEGIN BLOCK XLXI_42 ram_control
             PIN clk50 clk50
-            PIN cpu_adr_lo_hi
-            PIN sram_oe sram_oe
-            PIN sram_1_ub sram_1_ub
-            PIN sram_2_ce sram_2_ce
-            PIN sram_we sram_we
-            PIN sram_1_lb sram_1_lb
-            PIN sram_1_ce sram_1_ce
-            PIN sram_2_ub sram_2_ub
-            PIN sram_2_lb sram_2_lb
-            PIN sram_adr(17:0) sram_adr(17:0)
-            PIN sram_1_io(15:0) sram_1_io(15:0)
-            PIN sram_2_io(15:0) sram_2_io(15:0)
-            PIN sram_read(15:0)
-            PIN sram_pos(7:0)
-            PIN cpu_adr_hi_hi
             PIN clk100 clk100
             PIN ad_wr
-            PIN ad_dat(15:0)
-            PIN ad_adr(17:0)
-            PIN cpu_adr_hi_lo(7:0)
-            PIN cpu_adr_lo_lo(7:0)
-            PIN cpu_dat_y(7:0)
-            PIN cpu_dat_x(7:0)
+            PIN cpu_adr_hi_hi
+            PIN cpu_adr_lo_hi
             PIN cpu_write
             PIN cpu_enable
             PIN winkel(9:0)
+            PIN ad_adr(17:0)
+            PIN ad_dat(15:0)
+            PIN cpu_dat_x(7:0)
+            PIN cpu_dat_y(7:0)
+            PIN cpu_adr_hi_lo(7:0)
+            PIN cpu_adr_lo_lo(7:0)
+            PIN sram_1_io(15:0) sram_1_io(15:0)
+            PIN sram_2_io(15:0) sram_2_io(15:0)
+            PIN sram_oe sram_oe
+            PIN sram_we sram_we
+            PIN sram_1_ce sram_1_ce
+            PIN sram_1_ub sram_1_ub
+            PIN sram_1_lb sram_1_lb
+            PIN sram_2_ce sram_2_ce
+            PIN sram_2_ub sram_2_ub
+            PIN sram_2_lb sram_2_lb
+            PIN sram_adr(17:0) sram_adr(17:0)
+            PIN sram_read(15:0)
+            PIN sram_pos(7:0)
+            PIN write_sel_diag
+            PIN write_sel_diag2
         END BLOCK
     END NETLIST
     BEGIN SHEET 1 3520 2720

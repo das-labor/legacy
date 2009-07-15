@@ -43,10 +43,8 @@ ARCHITECTURE behavior OF vtb_ram_control2_vhd IS
 		sram_2_ub : OUT std_logic;
 		sram_2_lb : OUT std_logic;
 		sram_read : OUT std_logic_vector(15 downto 0);
- 	   sram_pos  : out std_logic_vector ( 7 downto 0);
-		write_sel_diag: out std_logic;
-		write_sel_diag2: out std_logic
-		
+ 	   sram_pos  : OUT std_logic_vector ( 7 downto 0);
+      winkel_diag: OUT std_logic_vector ( 9 downto 0)
 
 		);
 	END COMPONENT;
@@ -72,9 +70,9 @@ ARCHITECTURE behavior OF vtb_ram_control2_vhd IS
 	SIGNAL sram_2_io :  std_logic_vector(15 downto 0);
 
 	--Outputs
-	SIGNAL sram_adr :  std_logic_vector(17 downto 0);
-	SIGNAL sram_oe :  std_logic;
-	SIGNAL sram_we :  std_logic;
+	SIGNAL sram_adr  :  std_logic_vector(17 downto 0);
+	SIGNAL sram_oe   :  std_logic;
+	SIGNAL sram_we   :  std_logic;
 	SIGNAL sram_1_ce :  std_logic;
 	SIGNAL sram_1_ub :  std_logic;
 	SIGNAL sram_1_lb :  std_logic;
@@ -83,8 +81,9 @@ ARCHITECTURE behavior OF vtb_ram_control2_vhd IS
 	SIGNAL sram_2_lb :  std_logic;
 	SIGNAL sram_read :  std_logic_vector(15 downto 0);
 	SIGNAL sram_pos  :  std_logic_vector ( 7 downto 0);
-	signal write_sel_diag:std_logic;
-	signal write_sel_diag2:std_logic;
+	signal write_sel_diag  :std_logic;
+	signal write_sel_diag2 :std_logic;
+	signal winkel_diag     :std_logic_vector ( 9 downto 0);
 
 	
 		signal count_i: std_logic_vector(17 downto 0):= (others =>'0');
@@ -94,17 +93,17 @@ ARCHITECTURE behavior OF vtb_ram_control2_vhd IS
 		signal colordata3: std_logic_vector(23 downto 0) := x"ffffff";
 		signal colordata4: std_logic_vector(23 downto 0) := x"ffffff";
 		signal xg2,yg2   : integer;
-		signal colordatag2:std_logic_vector(23 downto 0);
+--		signal colordatag2:std_logic_vector(23 downto 0);
 		
 
-signal colordataa: std_logic_vector(23 downto 0) ; signal xa,ya:integer;
-signal colordatab: std_logic_vector(23 downto 0) ; signal xb,yb:integer;
-signal colordatac: std_logic_vector(23 downto 0) ; signal xc,yc:integer;
-signal colordatad: std_logic_vector(23 downto 0) ; signal xd,yd:integer;
+--signal colordataa: std_logic_vector(23 downto 0) ; signal xa,ya:integer;
+--signal colordatab: std_logic_vector(23 downto 0) ; signal xb,yb:integer;
+--signal colordatac: std_logic_vector(23 downto 0) ; signal xc,yc:integer;
+--signal colordatad: std_logic_vector(23 downto 0) ; signal xd,yd:integer;
 signal colordatae: std_logic_vector(15 downto 0):= x"0000" ; signal xe,ye:integer:=0;
 signal colordataf: std_logic_vector(23 downto 0) ; signal xf,yf:integer;
-signal colordatag: std_logic_vector(23 downto 0) ; signal xg,yg:integer;
-signal colordatah: std_logic_vector(23 downto 0) ; signal xh,yh:integer;
+--signal colordatag: std_logic_vector(23 downto 0) ; signal xg,yg:integer;
+--signal colordatah: std_logic_vector(23 downto 0) ; signal xh,yh:integer;
 signal colordatai: std_logic_vector(23 downto 0) ; signal xi,yi:integer;
 signal colordatak: std_logic_vector(23 downto 0):= x"000000" ; signal xk,yk:integer:=0;
 
@@ -148,9 +147,7 @@ BEGIN
 		sram_2_io => sram_2_io,
 		sram_read => sram_read,
 		sram_pos  => sram_pos,
-		write_sel_diag => write_sel_diag,
-		write_sel_diag2 => write_sel_diag2
-		
+      winkel_diag => winkel_diag
 	);
 
 ---------------------
@@ -213,11 +210,11 @@ y := center_y + c;
 
 			
 ---- Schwarz gelesen ?? dann Rot draus machen (für debugging)
---if sram_read = x"0000" then 
---	colordatae <= x"008f";
---else
+if sram_read = x"0000" then 
+	colordatae <= x"008f";
+else
 	                          colordatae <= 	sram_read;
---end if ;						
+end if ;						
  								
 xe <= integer(x) ; ye <= integer(y) ;
 
@@ -235,38 +232,38 @@ end process;
 ------------------------------------
 -- LEDS nach einer zeit abdunkeln --
 ------------------------------------
-process 
-
-variable dunkel   : integer;
-variable read_byte: std_logic_vector(15 downto 0);
-variable r,g,b    : integer; 
-begin
-
-wait for 1500 us;
-
-for dunkel_y in 0 to 511 loop
-	for dunkel_x in 0 to 511 loop
-	
-	read_byte := To_StdLogicVector(visual (dunkel_x,dunkel_y));
-	
-
-		r := CONV_INTEGER (read_byte ( 4 downto  0));
-		g := CONV_INTEGER (read_byte (10 downto  5));
-		b := CONV_INTEGER (read_byte (15 downto 11));
-		
-		r := r - 1 ; if r < 0 then r:= 0; end if;
-		g := g - 1 ; if g < 0 then g:= 0; end if;
-		b := b - 1 ; if b < 0 then b:= 0; end if;
-		
-		read_byte   := CONV_STD_LOGIC_VECTOR (b,5) & 
-							CONV_STD_LOGIC_VECTOR (g,6) &
-							CONV_STD_LOGIC_VECTOR (r,5);
-
-	visual (dunkel_x, dunkel_y) := To_bitvector(read_byte);
-	
-	end loop;
-end loop;
-end process;
+--process 
+--
+--variable dunkel   : integer;
+--variable read_byte: std_logic_vector(15 downto 0);
+--variable r,g,b    : integer; 
+--begin
+--
+--wait for 1500 us;
+--
+--for dunkel_y in 0 to 511 loop
+--	for dunkel_x in 0 to 511 loop
+--	
+--	read_byte := To_StdLogicVector(visual (dunkel_x,dunkel_y));
+--	
+--
+--		r := CONV_INTEGER (read_byte ( 4 downto  0));
+--		g := CONV_INTEGER (read_byte (10 downto  5));
+--		b := CONV_INTEGER (read_byte (15 downto 11));
+--		
+--		r := r - 1 ; if r < 0 then r:= 0; end if;
+--		g := g - 1 ; if g < 0 then g:= 0; end if;
+--		b := b - 1 ; if b < 0 then b:= 0; end if;
+--		
+--		read_byte   := CONV_STD_LOGIC_VECTOR (b,5) & 
+--							CONV_STD_LOGIC_VECTOR (g,6) &
+--							CONV_STD_LOGIC_VECTOR (r,5);
+--
+--	visual (dunkel_x, dunkel_y) := To_bitvector(read_byte);
+--	
+--	end loop;
+--end loop;
+--end process;
 
 
 ----------------------
@@ -346,14 +343,9 @@ wait until rising_edge (clk50);
 -- Daten für ad_dat / ad_adr aus dem speicher lesen
 			ad_adr <= conv_std_logic_vector(y,9) & conv_std_logic_vector(x,9);
 		
---			getpixel(x,y,colordata4);
---       adaten := To_StdLogicVector(input_picture(x,y));
          ad_dat <= To_StdLogicVector(input_picture(x,y));
---			ad_dat <= colordata_4;
+--         ad_dat <= ad_adr (15 downto 0);
 			
-						-- farben von 16M auf 64K reduzieren
---			ad_dat <= colordata4(23 downto 19) & colordata4(15 downto 10) & colordata4(7 downto 3) ;
-	
 		-- nach count takten schreib-impuls erzeugen
 		count := count + 1;
 		if count = 4 then count := 0; end if;
@@ -474,7 +466,7 @@ wait for 10 ns;
 		
 		 
 --nach einer eingestellten zeit ein neues Bild speichern 
-for xxx in 0 to 999 loop
+for xxx in 1 to 999 loop
 
 	wait for 5000 us; -- Zeit bis zum nächsten bild 200
 		

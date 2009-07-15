@@ -42,7 +42,7 @@ entity ram_control is Port (
 
 		cpu_dat_x		: IN 	std_logic_vector(7 downto 0);
 		cpu_dat_y 		: IN 	std_logic_vector(7 downto 0);
-   	cpu_adr_hi_lo 	: IN 	std_logic_vector(7 downto 0);
+--		cpu_adr_hi_lo 	: IN 	std_logic_vector(7 downto 0);
 		cpu_adr_hi_hi 	: IN 	std_logic;
 		cpu_adr_lo_lo 	: IN 	std_logic_vector(7 downto 0);
 		cpu_adr_lo_hi 	: IN 	std_logic;
@@ -114,7 +114,6 @@ signal sram_read_3a  : std_logic_vector (15 downto 0);
 signal led_nr_2      : std_logic_vector ( 7 downto 0);
 signal led_nr_3      : std_logic_vector ( 7 downto 0);
 signal led_nr_4      : std_logic_vector ( 7 downto 0);
-signal led_nr_5      : std_logic_vector ( 7 downto 0);
 
 -- stufe u
 signal write_adr_u	: std_logic_vector (17 downto 0);
@@ -125,13 +124,16 @@ signal read_adr_u    : std_logic_vector (17 downto 0);
 signal led_nr_u      : std_logic_vector ( 7 downto 0);
 
 -- stufe 1
+signal write_adr_1	: std_logic_vector (17 downto 0);
 signal write_dat_1   : std_logic_vector (15 downto 0);
 signal write_wrt_1   : std_logic;
 signal write_sel_1   : std_logic;
+signal read_adr_1    : std_logic_vector (17 downto 0);
 signal led_nr_1      : std_logic_vector ( 7 downto 0);
 
 signal write_wrt_2   : std_logic;
 signal write_wrt_3   : std_logic;
+signal write_wrt_4   : std_logic;
 signal winkel_diag1  : std_logic_vector (9 downto 0);
 signal winkel_diag2  : std_logic_vector (9 downto 0);
 signal winkel_diag3  : std_logic_vector (9 downto 0);
@@ -141,12 +143,6 @@ signal winkel_diag6  : std_logic_vector (9 downto 0);
 signal winkel_diag7  : std_logic_vector (9 downto 0);
 signal winkel_diag8  : std_logic_vector (9 downto 0);
 signal winkel_diag9  : std_logic_vector (9 downto 0);
-
-signal		sram_1_io_1: std_logic_vector (15 downto 0);
-signal		sram_2_io_1: std_logic_vector (15 downto 0);
-signal		sram_1_io_2: std_logic_vector (15 downto 0);
-signal		sram_2_io_2: std_logic_vector (15 downto 0);
-
 
 
 begin
@@ -164,7 +160,7 @@ begin
 		ad_wr 			=> ad_wr,
 		cpu_dat_x 		=> cpu_dat_x,
 		cpu_dat_y 		=> cpu_dat_y,
-		cpu_adr_hi_lo 	=> cpu_adr_hi_lo,
+		cpu_adr_hi_lo 	=> "00000000",
 		cpu_adr_hi_hi 	=> cpu_adr_hi_hi,
 		cpu_adr_lo_lo 	=> cpu_adr_lo_lo,
 		cpu_adr_lo_hi 	=> cpu_adr_lo_hi,
@@ -185,24 +181,24 @@ begin
 -- synchronisieren zum 100 mhz clk
 process (clk100) begin
 	if rising_edge (clk100) then
+		write_adr_1	<= write_adr_u;
+		write_dat_1	<= write_dat_u;
+		write_wrt_1	<= write_wrt_u;
+		write_sel_1	<= write_sel_u;
+		 read_adr_1 <= read_adr_u;
 		   led_nr_1 <= led_nr_u;
 	 	write_wrt_3 <= write_wrt_2;
-		sram_1_io_1 <= sram_1_io;
-		sram_2_io_1 <= sram_2_io;
-		sram_1_io_2 <= sram_1_io_1;
-		sram_2_io_2 <= sram_2_io_1;
-		
-		
+		write_wrt_4 <= write_wrt_3;
 	end if;
 end process;
 
 
 process (clk50) begin
 	if rising_edge (clk50) then
-		if write_wrt_u = '1' then			-- in den Speicher schreiben
-				sram_adr <= write_adr_u;				-- Adresse zum schreiben
+		if write_wrt_1 = '1' then			-- in den Speicher schreiben
+				sram_adr <= write_adr_1;				-- Adresse zum schreiben
 				sram_oe <= '1';				-- schreiben beschleunigen durch
-			if write_sel_u = '0' then		-- abschalten der sram ausgänge
+			if write_sel_1 = '0' then		-- abschalten der sram ausgänge
 				sram_1_ce <= '0';				-- schreiben in
 				sram_2_ce <= '1';				-- sram 1 oder sram 2
 			else
@@ -211,10 +207,10 @@ process (clk50) begin
 			end if;	
 		
 		else --                        Aus speicher lesen
-				sram_adr <= read_adr_u;					-- Adresse zum Lesen
+				sram_adr <= read_adr_1;					-- Adresse zum Lesen
 				sram_oe <= '0';
 			
-			if write_sel_u = '1' then		 
+			if write_sel_1 = '1' then		 
 				sram_1_ce <= '0';				-- lesen von 
 				sram_2_ce <= '1';				-- sram 1
 			else	
@@ -225,8 +221,8 @@ process (clk50) begin
 	end if;
 end process;
 
-sram_1_io  <= write_dat_1 when (write_sel_1='0' and write_wrt_1='1') else (others => 'Z');    
-sram_2_io  <= write_dat_1 when (write_sel_1='1' and write_wrt_1='1') else (others => 'Z');
+--sram_1_io  <= write_dat_1 when (write_sel_1='0' and write_wrt_1='1') else (others => 'Z');    
+--sram_2_io  <= write_dat_1 when (write_sel_1='1' and write_wrt_1='1') else (others => 'Z');
 
 		
 			sram_1_ub <= '0';							-- Alle Bytes ansprechen
@@ -237,11 +233,11 @@ sram_2_io  <= write_dat_1 when (write_sel_1='1' and write_wrt_1='1') else (other
 -- Write Enable erzeugen			
 process (clk100) begin
   if rising_edge (clk100) then
-		if write_wrt_u = '1' then					-- Signal zum schreiben erzeugen
+		if write_wrt_1 = '1' then					-- Signal zum schreiben erzeugen
 			write_help <= not write_help;
-			sram_we <= write_wrt_u and write_help;
+			sram_we <= write_wrt_1 and write_help;
 		else
-			write_help <='1';
+			write_help <='0';
 			sram_we <= '1';
 		end if;
 	end if;
@@ -251,15 +247,15 @@ end process;
 process (clk100) begin
   if rising_edge (clk100) then
 														-- Aus sram lesen
-		if write_wrt_3 = '0' then
+		if write_wrt_4 = '0' or write_wrt_4 = '0' then
 
 			read_help <= not read_help;		--jeden 2. takt (100 mhz)
 			if read_help = '1' then					-- flanke zum lesen
 			
-				if write_sel_u = '0'  then
-					sram_read_2 <= sram_2_io_2;
+				if write_sel_1 = '0'  then
+					sram_read_2 <= sram_2_io;
 				else 
-					sram_read_2 <= sram_1_io_2;
+					sram_read_2 <= sram_1_io;
 				end if;
 			end if;
 			
@@ -280,8 +276,7 @@ if rising_edge (clk50) then
 	led_nr_2		<= led_nr_1;
 	led_nr_3		<= led_nr_2;
 	led_nr_4		<= led_nr_3;
-	led_nr_5		<= led_nr_4;
-	sram_pos		<= led_nr_5;
+	sram_pos		<= led_nr_4;
 	write_wrt_2 <= write_wrt_1;
 end if;
 end process;	
@@ -299,10 +294,7 @@ if rising_edge (clk50) then
 	winkel_diag8 <= winkel_diag7;
 	winkel_diag9 <= winkel_diag8;
 	winkel_diag  <= winkel_diag9;
-	write_dat_1	 <= write_dat_u;
-		write_wrt_1	<= write_wrt_u;
-		write_sel_1	<= write_sel_u;
-
+	
 end if;
 end process;	
 
