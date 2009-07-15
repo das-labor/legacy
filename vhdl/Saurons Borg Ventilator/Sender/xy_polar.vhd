@@ -39,7 +39,7 @@ entity xy_polar is
             winkel : in   STD_LOGIC_VECTOR ( 9 downto 0);
                led : in   STD_LOGIC_VECTOR ( 7 downto 0);
            mem_adr : out  STD_LOGIC_VECTOR (17 downto 0);
-          winkel_v : out  STD_LOGIC_VECTOR ( 9 downto 0);
+--          winkel_v : out  STD_LOGIC_VECTOR ( 9 downto 0);
              led_v : out  STD_LOGIC_VECTOR ( 7 downto 0)
 			
 				 );
@@ -51,8 +51,8 @@ signal sine_3,cosine_3    :std_logic_VECTOR( 8 downto 0);
 signal x_signed_5         :std_logic_VECTOR( 8 downto 0);
 signal y_signed_5         :std_logic_VECTOR( 8 downto 0);
 signal x_5,y_5            :std_logic_VECTOR( 8 downto 0);
-signal winkel_3,winkel_4  :std_logic_VECTOR( 9 downto 0);
-signal winkel_5           :std_logic_VECTOR( 9 downto 0);
+--signal winkel_3,winkel_4  :std_logic_VECTOR( 9 downto 0);
+--signal winkel_5           :std_logic_VECTOR( 9 downto 0);
 signal led_3,led_4        :std_logic_VECTOR( 7 downto 0);
 signal led_5              :std_logic_VECTOR( 7 downto 0);
 
@@ -132,10 +132,10 @@ end process;
 	 
   
 -- Winkel um 4 Takte verzögert Ausgeben
-process (clk) begin  if rising_edge (clk) then winkel_3 <= winkel;   end if; end process;  
-process (clk) begin  if rising_edge (clk) then winkel_4 <= winkel_3; end if; end process;  
-process (clk) begin  if rising_edge (clk) then winkel_5 <= winkel_4; end if; end process;
-process (clk) begin  if rising_edge (clk) then winkel_v <= winkel_5; end if; end process;
+--process (clk) begin  if rising_edge (clk) then winkel_3 <= winkel;   end if; end process;  
+--process (clk) begin  if rising_edge (clk) then winkel_4 <= winkel_3; end if; end process;  
+--process (clk) begin  if rising_edge (clk) then winkel_5 <= winkel_4; end if; end process;
+--process (clk) begin  if rising_edge (clk) then winkel_v <= winkel_5; end if; end process;
   
 
 -- LED um 4 Takte verzögert Ausgeben

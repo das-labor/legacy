@@ -92,8 +92,8 @@ package body sim_bmppack is
     file read_file       : bit_vector_file open read_mode is FileName;
 
   begin
-    report "Read File";
-    report FileName;
+    report "                                        Read File" ;
+    
 
     index := 0;
 
@@ -101,7 +101,7 @@ package body sim_bmppack is
     -- Header einlesen
     ---------------------------------------------------------------------------
 
-    report "Read Header";
+--    report "Read Header";
     for i in 0 to 53 loop
       read(read_file, next_vector, actual_len);
       if actual_len > next_vector'length then
@@ -116,7 +116,7 @@ package body sim_bmppack is
     pImageHeight := GetHeigth(header);
     pImageSize   := pImageWidth * pImageHeight;
 
-    report "Read Image";
+--    report "Read Image";
     index := 0;
     while not endfile(read_file) loop
       read(read_file, next_vector, actual_len);
@@ -129,7 +129,7 @@ package body sim_bmppack is
       end if;
     end loop;
 
-    report "Okay";
+--    report "Okay";
   end ReadFile;
 
   -----------------------------------------------------------------------------
@@ -206,10 +206,10 @@ package body sim_bmppack is
     file write_file      : char_file open write_mode is FileName;
 
   begin
-    report "Write File...";
+    report "                                        Write File...";
     report FileName;
 
-    report "write Header";
+--    report "write Header";
     index := 0;
     for i in 0 to 53 loop
       next_vector := character'val(conv_integer(header(index)));
@@ -218,7 +218,7 @@ package body sim_bmppack is
     end loop;
 
 
-    report "write Image";
+--    report "write Image";
     index := 0;
     while index < pImageSize*3 loop
       next_vector := character'val(conv_integer(memory_out(index)));
@@ -226,7 +226,7 @@ package body sim_bmppack is
       index       := index + 1;
     end loop;
 
-    report "Okay";
+--    report "Okay";
 
   end WriteFile;
 

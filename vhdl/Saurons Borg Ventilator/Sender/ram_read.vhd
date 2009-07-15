@@ -46,7 +46,7 @@ component xy_polar
 		winkel   : IN  std_logic_vector( 9 downto 0);
 		led      : IN  std_logic_vector( 7 downto 0);          
 		mem_adr  : OUT std_logic_vector(17 downto 0);
-		winkel_v : OUT std_logic_vector( 9 downto 0);
+--		winkel_v : OUT std_logic_vector( 9 downto 0);
 		led_v    : OUT std_logic_vector( 7 downto 0));
 end component;
 	-- stufe 1
@@ -67,6 +67,9 @@ process (clk) begin -- #u1#
    fluegel_winkel_1 <= winkel;
   end if;
 end process;
+
+	winkel_diag      <= fluegel_winkel_1;
+
   
 -- leds von innen nach aussen durchgehen und den 90 grad
 -- versatz zueinander beachten	
@@ -78,8 +81,6 @@ process (clk) begin--#U1#
 			write_enable_1 <= write_enable;
 	end if;	
 end process;	 
-
-
 
 process (clk) begin-- #12#	 
 if rising_edge (clk) then
@@ -106,7 +107,7 @@ end process;
 		winkel => led_winkel_2,
 		   led => led_nr_2,
 	  mem_adr => ram_adr,
-	 winkel_v => winkel_diag,
+--	 winkel_v => winkel_diag,
    	 led_v => led_nr
 
 		 );
