@@ -71,6 +71,7 @@ signal prog_empty_3       : std_logic;
 --signale für die pipeline stufe 4
 signal writemem_4         : std_logic;
 signal prog_full_4        : std_logic;
+signal prog_empty_4       : std_logic;
 --signale für die pipeline stufe 5
 signal dout_5             : std_logic_vector (33 downto 0);
 signal writemem_5         : std_logic;
@@ -167,9 +168,9 @@ end process;
 -- Signal für ram_read generieren
 process (clk) begin -- #34#
   if rising_edge (clk) then
-    if prog_full_4 = '1' then
+    if prog_full_3 = '1' then
 		  write_enable <= '1';
-	 elsif prog_empty_3 = '1' then
+	 elsif prog_empty_4 = '1' then
 		  write_enable <= '0';
 	 end if;	  
   end if;
@@ -178,6 +179,7 @@ end process;
 process (clk) begin -- #34#
   if rising_edge (clk) then
      prog_full_4 <= prog_full_3;
+	 prog_empty_4 <= prog_empty_3;
   end if;
 end process;
 

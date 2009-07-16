@@ -350,7 +350,7 @@ wait until rising_edge (clk50);
 			ad_adr <= conv_std_logic_vector(y,9) & conv_std_logic_vector(x,9);
 		
          ad_dat <= To_StdLogicVector(input_picture(x,y));
-         ad_dat <= ad_adr (15 downto 0);
+--         ad_dat <= ad_adr (15 downto 0);
 			
 		-- nach count takten schreib-impuls erzeugen
 		count := count + 1;
