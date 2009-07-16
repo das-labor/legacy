@@ -37,6 +37,7 @@ entity ram_write is
             sram_wrt : out   STD_LOGIC := '0';
             sram_sel : out   STD_LOGIC := '0';
 			write_enable: out   STD_LOGIC;
+			totes_lesen : out   STD_logic;
 			  
 	           ad_adr : in    STD_LOGIC_VECTOR (17 downto 0);
               ad_dat : in    STD_LOGIC_VECTOR (15 downto 0);
@@ -69,6 +70,7 @@ signal prog_full_3        : std_logic;
 signal prog_empty_3       : std_logic;
 --signale für die pipeline stufe 4
 signal writemem_4         : std_logic;
+signal prog_full_4        : std_logic;
 --signale für die pipeline stufe 5
 signal dout_5             : std_logic_vector (33 downto 0);
 signal writemem_5         : std_logic;
@@ -156,13 +158,29 @@ process (clk) begin -- #34#
   if rising_edge (clk) then
     if prog_full_3 = '1' then
 	     writemem_4 <= '1';
-		  write_enable <= '1';
 	 elsif prog_empty_3 = '1' then
         writemem_4 <= '0';
+	 end if;	  
+  end if;
+end process;
+
+-- Signal für ram_read generieren
+process (clk) begin -- #34#
+  if rising_edge (clk) then
+    if prog_full_4 = '1' then
+		  write_enable <= '1';
+	 elsif prog_empty_3 = '1' then
 		  write_enable <= '0';
 	 end if;	  
   end if;
 end process;
+
+process (clk) begin -- #34#
+  if rising_edge (clk) then
+     prog_full_4 <= prog_full_3;
+  end if;
+end process;
+
 
 process (clk) begin -- #45#
   if rising_edge (clk) then
@@ -214,5 +232,20 @@ process (clk) begin
 
 	end if;
 end process;
+
+
+-- Totes Lesen (Dem SRAM_IO zeit geben, zum umschalten auf schreiben)
+-- Dadurch entfällt ein Datenbus
+process (clk) begin
+   if rising_edge (clk) then
+      if sram_wrt_8 = '1' and sram_wrt_9 = '0' 
+		then totes_lesen <= '1';
+		elsif sram_wrt_8 = '1' and sram_wrt_9 = '1'
+		then totes_lesen <= '0';
+		end if;
+	end if;
+end process;
+
+
 
 end Behavioral;

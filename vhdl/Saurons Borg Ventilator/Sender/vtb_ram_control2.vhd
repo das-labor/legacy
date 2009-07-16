@@ -44,7 +44,9 @@ ARCHITECTURE behavior OF vtb_ram_control2_vhd IS
 		sram_2_lb : OUT std_logic;
 		sram_read : OUT std_logic_vector(15 downto 0);
  	   sram_pos  : OUT std_logic_vector ( 7 downto 0);
-      winkel_diag: OUT std_logic_vector ( 9 downto 0)
+      winkel_diag: OUT std_logic_vector ( 9 downto 0);
+		totes_lesen_diag: OUT std_logic;
+		write_lesen_diag: OUT std_logic
 
 		);
 	END COMPONENT;
@@ -84,6 +86,8 @@ ARCHITECTURE behavior OF vtb_ram_control2_vhd IS
 	signal write_sel_diag  :std_logic;
 	signal write_sel_diag2 :std_logic;
 	signal winkel_diag     :std_logic_vector ( 9 downto 0);
+	signal totes_lesen_diag:std_logic;
+	signal Write_lesen_diag:std_logic;
 
 	
 		signal count_i: std_logic_vector(17 downto 0):= (others =>'0');
@@ -147,7 +151,9 @@ BEGIN
 		sram_2_io => sram_2_io,
 		sram_read => sram_read,
 		sram_pos  => sram_pos,
-      winkel_diag => winkel_diag
+      winkel_diag => winkel_diag,
+		totes_lesen_diag => totes_lesen_diag,
+		write_lesen_diag => write_lesen_diag
 	);
 
 ---------------------
@@ -344,7 +350,7 @@ wait until rising_edge (clk50);
 			ad_adr <= conv_std_logic_vector(y,9) & conv_std_logic_vector(x,9);
 		
          ad_dat <= To_StdLogicVector(input_picture(x,y));
---         ad_dat <= ad_adr (15 downto 0);
+         ad_dat <= ad_adr (15 downto 0);
 			
 		-- nach count takten schreib-impuls erzeugen
 		count := count + 1;

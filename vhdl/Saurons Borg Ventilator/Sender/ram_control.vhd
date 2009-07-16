@@ -17,7 +17,7 @@
 --	                                                                                 --
 -- Dependencies: 	   ram_write.vhd / ram_read.vhd                                   --
 --	                                                                                 --
--- Version:          V9.7.1                                                         --
+-- Version:          V9.7.2                                                         --
 --                                                                                  --
 -- Additional Comments: Widerstand ist Zwecklos                                     --
 --	                                                                                 --
@@ -66,7 +66,9 @@ entity ram_control is Port (
 			  
 		sram_read      : out std_logic_vector (15 downto 0);
 		sram_pos       : out std_logic_vector ( 7 downto 0);
-		winkel_diag    : out std_logic_vector ( 9 downto 0)
+		winkel_diag    : out std_logic_vector ( 9 downto 0);
+	  totes_lesen_diag: out std_logic;
+	  write_lesen_diag: out std_logic
 			  			  
 														);
 end ram_control;
@@ -91,7 +93,8 @@ architecture Behavioral of ram_control is
 		sram_dat 		: OUT std_logic_vector(15 downto 0);
 		sram_wrt 		: OUT std_logic;
 		sram_sel 		: OUT std_logic;
-		write_enable 	: OUT std_logic
+		write_enable 	: OUT std_logic;
+		totes_lesen    : OUT std_logic
 		);
 	END COMPONENT;
 	
@@ -144,8 +147,16 @@ signal winkel_diag9  : std_logic_vector (9 downto 0);
 
 signal		sram_1_io_1: std_logic_vector (15 downto 0);
 signal		sram_2_io_1: std_logic_vector (15 downto 0);
-signal		sram_1_io_2: std_logic_vector (15 downto 0);
-signal		sram_2_io_2: std_logic_vector (15 downto 0);
+--signal		sram_1_io_2: std_logic_vector (15 downto 0);
+--signal		sram_2_io_2: std_logic_vector (15 downto 0);
+signal totes_lesen   : std_logic;
+signal write_lesen   : std_logic;
+
+signal write_l1 : std_logic;
+signal write_l2 : std_logic;
+signal write_l3 : std_logic;
+signal write_l4 : std_logic;
+
 
 
 
@@ -169,7 +180,8 @@ begin
 		cpu_adr_lo_lo 	=> cpu_adr_lo_lo,
 		cpu_adr_lo_hi 	=> cpu_adr_lo_hi,
 		cpu_write 		=> cpu_write,
-		cpu_enable 		=> cpu_enable
+		cpu_enable 		=> cpu_enable,
+		totes_lesen    => totes_lesen
 	);
 
 	u1: ram_read PORT MAP(
@@ -187,10 +199,8 @@ process (clk100) begin
 	if rising_edge (clk100) then
 		   led_nr_1 <= led_nr_u;
 	 	write_wrt_3 <= write_wrt_2;
-		sram_1_io_1 <= sram_1_io;
-		sram_2_io_1 <= sram_2_io;
-		sram_1_io_2 <= sram_1_io_1;
-		sram_2_io_2 <= sram_2_io_1;
+--		sram_1_io_2 <= sram_1_io_1;
+--		sram_2_io_2 <= sram_2_io_1;
 		
 		
 	end if;
@@ -211,8 +221,13 @@ process (clk50) begin
 			end if;	
 		
 		else --                        Aus speicher lesen
+			if totes_lesen='0' then
 				sram_adr <= read_adr_u;					-- Adresse zum Lesen
 				sram_oe <= '0';
+			else
+				sram_adr <= (others => '0');
+				sram_oe <= '1';
+			end if;	
 			
 			if write_sel_u = '1' then		 
 				sram_1_ce <= '0';				-- lesen von 
@@ -251,15 +266,15 @@ end process;
 process (clk100) begin
   if rising_edge (clk100) then
 														-- Aus sram lesen
-		if write_wrt_3 = '0' then
+		if write_lesen = '1' then
 
 			read_help <= not read_help;		--jeden 2. takt (100 mhz)
 			if read_help = '1' then					-- flanke zum lesen
 			
 				if write_sel_u = '0'  then
-					sram_read_2 <= sram_2_io_2;
+					sram_read_2 <= sram_2_io_1;
 				else 
-					sram_read_2 <= sram_1_io_2;
+					sram_read_2 <= sram_1_io_1;
 				end if;
 			end if;
 			
@@ -271,7 +286,20 @@ end process;
 
 
 
+process (clk50) 
+variable a,b : std_logic;
+begin
+if rising_edge (clk50) then
 
+a := not write_l1; -- ende des schreibens
+b := not write_wrt_u; -- beginn des schreibens
+	write_lesen <= (a and b);
+	
+
+
+end if;
+end process;	
+write_lesen_diag <= write_lesen;
 
 process (clk50) begin
 if rising_edge (clk50) then
@@ -283,6 +311,15 @@ if rising_edge (clk50) then
 	led_nr_5		<= led_nr_4;
 	sram_pos		<= led_nr_5;
 	write_wrt_2 <= write_wrt_1;
+		sram_1_io_1 <= sram_1_io;
+		sram_2_io_1 <= sram_2_io;
+		
+		write_l1  <= write_wrt_u;
+		write_l2  <= write_l1;
+		write_l3  <= write_l2;
+		write_l4  <= write_l3;
+		
+
 end if;
 end process;	
 
@@ -306,6 +343,7 @@ if rising_edge (clk50) then
 end if;
 end process;	
 
+totes_lesen_diag <= totes_lesen;
 
 end Behavioral;
 

@@ -17,7 +17,7 @@
 --																												--
 -- Dependencies: 		xy_polar.vhd  (sinus.xco, multiplier_xy.xco)      					--
 --																												--
--- Version:          V9.6.1       																	--
+-- Version:          V9.6.2       																	--
 -- 																											--
 -- Additional Comments: Wiederstand ist Zwecklos		         							--
 --																												--
@@ -46,7 +46,6 @@ component xy_polar
 		winkel   : IN  std_logic_vector( 9 downto 0);
 		led      : IN  std_logic_vector( 7 downto 0);          
 		mem_adr  : OUT std_logic_vector(17 downto 0);
---		winkel_v : OUT std_logic_vector( 9 downto 0);
 		led_v    : OUT std_logic_vector( 7 downto 0));
 end component;
 	-- stufe 1
