@@ -138,8 +138,7 @@ huffman_dec_byte:
 	rcall read_bit
 	tst r25
 	brne 9f /* eof occured */
-	tst r24
-	breq 7f /* take the left way */
+	cpse r24, r1 /* take the left way if r24==0 */
 	/* take the right way */
 	adiw r28, 2
 7:
@@ -245,9 +244,7 @@ build_tree:
 	movw r30, CTX_0
 	st Z+, r24
 	st Z+, r25
-	tst r24
-	brne 4f
-	tst r25
+	adiw r24, 0
 	brne 4f
 	/* calloc returned NULL */
 	ldi r24, 4
@@ -376,9 +373,7 @@ build_tree:
 790:
 	movw r28, r22
 791:	
-	tst r24		/* check if count is 0 */
-	brne 70b
-	tst r25
+	adiw r24, 0 /* check if count is 0 */
 	brne 70b		
 80:
 	std Y+0, TMP_0 /* store value in node, making it a leaf */
@@ -438,8 +433,7 @@ read_byte:
 	std Y+7, r25
 	movw r24, r22
 	icall
-	tst r25
-	brne 1f
+	sbrs r25, 0
 	ret
 1:
 	ldi r24, 1

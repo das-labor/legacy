@@ -40,6 +40,10 @@ cli_rx_fpt cli_rx = NULL;
 cli_tx_fpt cli_tx = NULL;
 uint8_t cli_echo=1;
 
+void echo_ctrl(char* s);
+uint16_t max_cmd_length(PGM_VOID_P cmdlist);
+
+
 static
 void cli_auto_help(uint16_t maxcmdlength, PGM_VOID_P cmdlist){
 	cmdlist_entry_t item;
@@ -75,22 +79,6 @@ void cli_auto_help(uint16_t maxcmdlength, PGM_VOID_P cmdlist){
 		}
 		cli_hexdump_rev(&item.cmd_function, 2);	
 		cli_putstr_P(PSTR("\r\n"));
-	}
-}
-
-void echo_ctrl(char* s){
-	s = strstrip(s);
-	if(s==NULL || *s=='\0'){
-		cli_putstr_P(PSTR("\r\necho is "));
-		cli_putstr_P(cli_echo?PSTR("on"):PSTR("off"));
-		cli_putstr_P(PSTR("\r\n"));		
-	}
-	strlwr(s);
-	if(!strcmp_P(s, PSTR("true")) || !strcmp_P(s, PSTR("on")) || *s=='1'){
-		cli_echo=1;
-	}
-	if(!strcmp_P(s, PSTR("false")) || !strcmp_P(s, PSTR("off")) || *s=='0'){
-		cli_echo=0;
 	}
 }
 
@@ -143,20 +131,6 @@ int8_t search_and_call(char* cmd, uint16_t maxcmdlength, PGM_VOID_P cmdlist){
 		
 	}	
 	return 1;	 
-}
-
-uint16_t max_cmd_length(PGM_VOID_P cmdlist){
-	uint16_t t,ret=0;
-	char* str;
-	for(;;){
-		str = (char*)pgm_read_word(cmdlist);
-		cmdlist = (uint8_t*)cmdlist + CMDLIST_ENTRY_SIZE;
-		if(str==NULL)
-			return ret;
-		t = strlen_P(str);
-		if(t>ret)
-			ret=t;
-	}
 }
 
 uint8_t cli_completion(char* buffer, uint16_t maxcmdlength, PGM_VOID_P cmdlist){
