@@ -45,14 +45,13 @@ stridentcnt_P:
 1:
 	ld r22, X+
 	lpm r23, Z+
-	cp r22, r23
-	brne 5f
-	tst r22
-	breq 5f
+	cpse r22, r23
+	ret
+	cpse r22, r1
+	ret
 	adiw r24, 1
 	rjmp 1b
-5:
-	ret		
+		
 
 /******************************************************************************/
 /*
@@ -77,9 +76,7 @@ firstword_length:
 	clr r25
 	ld r24, Y+
 	call isgraph
-	tst r24
-	brne 1b
-	tst r25
+	adiw r24, 0
 	brne 1b
 	movw r24, r28
 	sbiw r24, 1
@@ -115,6 +112,8 @@ firstword_length:
 .global strstrip
 strstrip:
 	movw r26, r24
+	adiw r26, 0
+	breq 9f
 1:
 	ld r22, X+
 	cpi r22, ' '
@@ -135,4 +134,5 @@ strstrip:
 	breq 3b
 	st Z, r1
 	movw r24, r26
+9:
 	ret

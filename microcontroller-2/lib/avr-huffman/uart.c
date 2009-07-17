@@ -94,9 +94,9 @@
 #define UART_BAUD_CALC(UART_BAUD_RATE,F_OSC) ((F_OSC)/((UART_BAUD_RATE)*16L)-1)
 
 #ifdef UART_XON_XOFF
-	typedef enum{go=1,nogo=0} gonogo;
-	static gonogo txon=go;
-	static gonogo rxon=go;
+	typedef enum{go=1,nogo=0} gonogo_t;
+	static gonogo_t txon=go;
+	static gonogo_t rxon=go;
 #endif
 
 #ifdef UART_INTERRUPT
@@ -106,7 +106,7 @@ volatile static char *volatile rxhead, *volatile rxtail;
 volatile static char *volatile txhead, *volatile txtail;
 
 #ifdef UART_HOOK	
-	 void (*uart_hook) (uint8_t) = (void*)0;	/* this is a pointer to a function ;-) */
+	 void (*uart_hook)(uint8_t) = (void*)0;	/* this is a pointer to a function ;-) */
 #endif
 
 ISR(USART_UDRE_vect) {

@@ -33,11 +33,11 @@ cli_hexdump:
 	push r2
 	movw r28, r24
 	movw r16, r22
-1:
-	tst r16
-	brne 2f
-	tst r17
+	movw r26, r22
+	adiw r26, 0
+1:	
 	breq hexdump_exit
+	movw r16, r26
 2:
 	ld r2, Y+
 	mov r24, r2
@@ -59,8 +59,8 @@ cli_hexdump:
 	clr r25
 	lpm r24, Z
 	rcall cli_putc
-	subi r16, 1
-	sbci r17, 0
+	movw r26, r16
+	sbiw r26, 1
 	rjmp 1b
 hexdump_exit:	
 	pop r2

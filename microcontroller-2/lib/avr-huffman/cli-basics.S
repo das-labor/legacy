@@ -28,23 +28,22 @@
 cli_putc:
 	lds r30, cli_tx
 	lds r31, cli_tx+1
-	tst r30
+	adiw r30, 0
+	breq 2f
 	ijmp
-	tst r31
-	ijmp
-	ret
-	
+
 /******************************************************************************/
 .global cli_getc
 cli_getc:
 	lds r30, cli_rx
 	lds r31, cli_rx+1
-	tst r30
+	adiw r30, 0
+	breq 1f
 	ijmp
-	tst r31
-	ijmp
+1:
 	ser r24
 	ser r25
+2:
 	ret
 
 /******************************************************************************/
@@ -52,9 +51,7 @@ cli_getc:
 cli_getc_cecho:
 	lds r30, cli_rx
 	lds r31, cli_rx+1
-	tst r30
-	brne 1f
-	tst r31
+	adiw r30, 0
 	brne 1f
 	ser r25
 	ser r24
@@ -125,26 +122,23 @@ cli_getsn:
 	push r17
 	movw r28, r24
 	ldi r20, 2
-	tst r22
-	brne 1f
-	tst r23
+	movw r24, r22
+	adiw r24, 0
 	breq 9f
 1:
 	movw r16, r22
-	clr r20
-2:	rcall cli_getc
+2:	clr r20
+	rcall cli_getc
 	cpi r24, '\r'
-	rjmp 9f
+	breq 9f
+	ldi r20, 1
 	tst r24
-	rjmp 9f
+	breq 9f
 	st Y+, r24
-	subi r16, 1
-	sbci r17, 0
-	tst r16
+	movw r26, r16
+	sbiw r26, 1
+	movw r16, r24
 	brne 2b
-	tst r17
-	brne 2b
-	mov r20, 1
 9:	
 	clr r25
 	mov r24, r20

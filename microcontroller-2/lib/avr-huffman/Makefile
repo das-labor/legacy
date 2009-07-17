@@ -1,6 +1,7 @@
 PRG            = main-huffman-test
-OBJ            =  main-huffman-test.o cli-stub.o cli-basics.o cli-hexdump.o string-extras-asm.o \
-                  uart.o avr-huffman-decode-asm.o dump-cstub.o dump-asm.o \
+OBJ            =  main-huffman-test.o string-extras-asm.o \
+                  cli-stub.o cli-core.o cli-basics.o cli-hexdump.o \
+				  uart.o avr-huffman-decode-asm.o dump-cstub.o dump-asm.o \
                   hexdigit_tab.o data/test.txt.hfm.elf \
                   data/hacker_manifesto_borg.txt.hfm.elf data/COPYING.gpl3.hfm.elf
                  
