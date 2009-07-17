@@ -307,9 +307,9 @@ if rising_edge (clk50) then
 	sram_read   <= sram_read_3a;
 	led_nr_2		<= led_nr_1;
 	led_nr_3		<= led_nr_2;
---	led_nr_4		<= led_nr_3;
+	led_nr_4		<= led_nr_3;
 --	led_nr_5		<= led_nr_4;
-	sram_pos		<= led_nr_3;
+	sram_pos		<= led_nr_4;
 	write_wrt_2 <= write_wrt_1;
 		sram_1_io_1 <= sram_1_io;
 		sram_2_io_1 <= sram_2_io;
