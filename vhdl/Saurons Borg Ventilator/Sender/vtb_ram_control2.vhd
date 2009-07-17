@@ -110,6 +110,7 @@ signal colordataf: std_logic_vector(23 downto 0) ; signal xf,yf:integer;
 --signal colordatah: std_logic_vector(23 downto 0) ; signal xh,yh:integer;
 signal colordatai: std_logic_vector(23 downto 0) ; signal xi,yi:integer;
 signal colordatak: std_logic_vector(23 downto 0):= x"000000" ; signal xk,yk:integer:=0;
+signal colordatal: std_logic_vector(23 downto 0):= x"000000" ; signal xl,yl:integer:=0;
 
 
 shared variable fname : string ( 1 to 16):="lena_copy000.bmp";
@@ -451,23 +452,37 @@ wait for 10 ns;
     ReadFile("wurfel0000.bmp");
 wait for 10 ns;
 
-	
--- bild in den ausgabe puffer kopieren 	
-	for cy in 0 to 511 loop
-		for cx in 0 to 511 loop
-		wait for 1 ps;           -- WTF ???
-		getpixel (cx,cy,colordataf);
-		xf <= cx ; yf <= cy;
-		setpixel (xf,yf,colordataf);
+-- und in den speicher input_picture kopieren
+	for ybl in 0 to 511 loop
+	 	for xbl in 0 to 511 loop
+		wait for 1 ps;           
+		getpixel (xbl,ybl,colordatal);
+		xl <= xbl ; yl <= ybl;
+		
+		input_picture(xl,yl) := To_bitvector(colordatal) (23 downto 19) &
+										To_bitvector(colordatal) (15 downto 10) &
+										To_bitvector(colordatal) ( 7 downto  3) ;
 		end loop;
 	end loop;
+
+
 	
-wait for 10 ns;	
-
-
--- und das bild wieder speichern
-	fname := "lena_copy000.bmp";
-	writefile (fname);
+-- bild in den ausgabe puffer kopieren 	
+--	for cy in 0 to 511 loop
+--		for cx in 0 to 511 loop
+--		wait for 1 ps;           -- WTF ???
+--		getpixel (cx,cy,colordataf);
+--		xf <= cx ; yf <= cy;
+--		setpixel (xf,yf,colordataf);
+--		end loop;
+--	end loop;
+--	
+--wait for 10 ns;	
+--
+--
+---- und das bild wieder speichern
+--	fname := "lena_copy000.bmp";
+--	writefile (fname);
 	 
 		
 		 

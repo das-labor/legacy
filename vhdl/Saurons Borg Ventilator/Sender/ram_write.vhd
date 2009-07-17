@@ -13,7 +13,7 @@
 --                   wenn ein vollständiges bild geschrieben wurde, wird            --
 --                   zum anderen speicher chip gewechselt                           --
 -- Pipelining:                                                                      --
--- Latenz:           6 clk                                                          --
+-- Latenz:           10 clk                                                          --
 --																												--
 -- Dependencies: 		fifo.xco                                        					--
 --																												--
@@ -95,6 +95,11 @@ signal sram_adr_9         : STD_LOGIC_VECTOR (17 downto 0);
 signal sram_dat_9         : STD_LOGIC_VECTOR (15 downto 0);
 signal sram_wrt_9         : STD_LOGIC ;
 signal sram_sel_9         : STD_LOGIC ;
+--signale für die pipeline stufe 10
+signal sram_adr_10        : STD_LOGIC_VECTOR (17 downto 0);
+signal sram_dat_10        : STD_LOGIC_VECTOR (15 downto 0);
+signal sram_wrt_10        : STD_LOGIC ;
+signal sram_sel_10        : STD_LOGIC ;
 
 component fifo
 	port(
@@ -170,7 +175,7 @@ process (clk) begin -- #34#
   if rising_edge (clk) then
     if prog_full_3 = '1' then
 		  write_enable <= '1';
-	 elsif prog_empty_4 = '1' then
+	 elsif prog_empty_4 = '1' then-- Verletzung der pipeline !!
 		  write_enable <= '0';
 	 end if;	  
   end if;
@@ -228,8 +233,11 @@ process (clk) begin
 	sram_adr_9 <= sram_adr_8;	sram_dat_9 <= sram_dat_8;
 	sram_wrt_9 <= sram_wrt_8;	sram_sel_9 <= sram_sel_8;
 
-	sram_adr <= sram_adr_9;	sram_dat <= sram_dat_9;
-	sram_wrt <= sram_wrt_9;	sram_sel <= sram_sel_9;
+	sram_adr_10 <= sram_adr_9;	sram_dat_10 <= sram_dat_9;
+	sram_wrt_10 <= sram_wrt_9;	sram_sel_10 <= sram_sel_9;
+
+	sram_adr <= sram_adr_10;	sram_dat <= sram_dat_10;
+	sram_wrt <= sram_wrt_10;	sram_sel <= sram_sel_10;
 
 
 	end if;
@@ -240,9 +248,9 @@ end process;
 -- Dadurch entfällt ein Datenbus
 process (clk) begin
    if rising_edge (clk) then
-      if sram_wrt_8 = '1' and sram_wrt_9 = '0' 
+      if sram_wrt_9 = '1' and sram_wrt_10 = '0' 
 		then totes_lesen <= '1';
-		elsif sram_wrt_8 = '1' and sram_wrt_9 = '1'
+		elsif sram_wrt_9 = '1' and sram_wrt_10 = '1'
 		then totes_lesen <= '0';
 		end if;
 	end if;
