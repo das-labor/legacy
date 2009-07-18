@@ -29,6 +29,7 @@ LDFLAGS += -T ./avr5.x -mmcu=$(MCU)
 #Settings for Simulator build
 
 OSTYPE = $(shell echo $$OSTYPE)
+MACHINE = $(shell uname -m)
 #$(info $(OSTYPE))
 
 ifeq ($(OSTYPE),cygwin)  
@@ -37,7 +38,11 @@ ifeq ($(OSTYPE),cygwin)
   LIBS_SIM    = -lglut32 -lglu32 -lopengl32
 else
   CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O2
-  LDFLAGS_SIM = -Wl -T simulator/elf_i386.x
+  ifeq ($(MACHINE),x86_64)
+    LDFLAGS_SIM = -Wl -T simulator/elf_x86_64.x
+  else
+    LDFLAGS_SIM = -Wl -T simulator/elf_i386.x
+  endif
   LIBS_SIM    = -lglut -lpthread -lGL -lGLU
 endif
 
