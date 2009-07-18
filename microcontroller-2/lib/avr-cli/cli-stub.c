@@ -44,7 +44,6 @@ void echo_ctrl(char* s);
 uint16_t max_cmd_length(PGM_VOID_P cmdlist);
 
 
-static
 void cli_auto_help(uint16_t maxcmdlength, PGM_VOID_P cmdlist){
 	cmdlist_entry_t item;
 	uint16_t i;
@@ -87,52 +86,8 @@ typedef void(*str_fpt)(char*);
 #define CLI_BACKSPACE  8
 #define CLI_TABULATOR  9
 
-int8_t search_and_call(char* cmd, uint16_t maxcmdlength, PGM_VOID_P cmdlist){
-	PGM_VOID_P cmdlist_orig = cmdlist;
-	if(*cmd=='\0' || *cmd=='#')
-		return 1;
-	if(!strcmp_P(cmd, PSTR("exit")))
-		return 0;
-	if((!strcmp_P(cmd, PSTR("help"))) || (!strcmp_P(cmd, PSTR("?")))){
-		cli_auto_help(maxcmdlength, cmdlist);
-		return 1;
-	}
-	uint16_t fwlength=firstword_length(cmd);
-	char fw[fwlength+1];
-	memcpy(fw, cmd, fwlength);
-	fw[fwlength] = '\0';
-	cmdlist_entry_t item;
-	do{
-		item.cmd_name =      (void*)pgm_read_word(cmdlist+0);
-		item.cmd_param_str = (void*)pgm_read_word(cmdlist+2);
-		item.cmd_function =  (void_fpt)pgm_read_word(cmdlist+4);
-		cmdlist = (uint8_t*)cmdlist+CMDLIST_ENTRY_SIZE;
-	}while(item.cmd_name!=NULL && strcmp_P(fw, item.cmd_name));
-	if(item.cmd_name==NULL){
-		cli_auto_help(maxcmdlength, cmdlist_orig);
-	} else {
-		if(item.cmd_function==NULL)
-			return 2;
-		switch((uint16_t)item.cmd_param_str){
-			case 0:
-				item.cmd_function();
-				break;
-			case 1:
-				if(cmd[fwlength]=='\0'){
-					((str_fpt)item.cmd_function)(cmd+fwlength);
-				} else {
-					((str_fpt)item.cmd_function)(cmd+fwlength+1);
-				}
-				break;
-			default:
-				cli_putstr_P(PSTR("\r\nparam parsing currently not implemented!\r\n"));
-				break;
-		}	
-		
-	}	
-	return 1;	 
-}
-
+int8_t search_and_call(char* cmd, uint16_t maxcmdlength, PGM_VOID_P cmdlist);
+	
 uint8_t cli_completion(char* buffer, uint16_t maxcmdlength, PGM_VOID_P cmdlist){
 	uint8_t i=0;
 	char ref[maxcmdlength+1];

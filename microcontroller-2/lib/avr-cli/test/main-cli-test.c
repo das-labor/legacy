@@ -29,6 +29,13 @@ void test(void){
 	cli_putstr_P(PSTR("\r\nHello World!\r\n"));
 }
 
+void foo(void){
+	cli_putstr_P(PSTR("\r\nfoo\r\n"));
+}
+
+void foobar(void){
+	cli_putstr_P(PSTR("\r\nfoobar\r\n"));
+}
 void print(char* s){
 	cli_putc('\r');
 	cli_putc('\n');
@@ -51,6 +58,9 @@ const char print_str[]   PROGMEM = "print";
 const char beep_str[]    PROGMEM = "beep";
 const char dump_str[]    PROGMEM = "dump";
 const char echo_str[]    PROGMEM = "echo";
+const char foo_str[]     PROGMEM = "foo";
+const char foobar_str[]  PROGMEM = "foobar";
+
 
 cmdlist_entry_t cmdlist[] PROGMEM = {
 	{ test_str,        NULL, test},
@@ -58,6 +68,8 @@ cmdlist_entry_t cmdlist[] PROGMEM = {
 	{ beep_str,        NULL, beep},
 	{ dump_str,    (void*)1, (void_fpt)dump}, 
 	{ echo_str,    (void*)1, (void_fpt)echo_ctrl},
+	{ foobar_str,      NULL, foobar},
+	{ foo_str,         NULL, foo},
 	{ NULL,            NULL, NULL}
 };
 
