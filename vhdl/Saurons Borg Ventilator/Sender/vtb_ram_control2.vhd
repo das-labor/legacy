@@ -45,7 +45,7 @@ ARCHITECTURE behavior OF vtb_ram_control2_vhd IS
 		sram_read : OUT std_logic_vector(15 downto 0);
  	   sram_pos  : OUT std_logic_vector ( 7 downto 0);
       winkel_diag: OUT std_logic_vector ( 9 downto 0);
-		totes_lesen_diag: OUT std_logic;
+--		totes_lesen_diag: OUT std_logic;
 		write_lesen_diag: OUT std_logic
 
 		);
@@ -86,7 +86,7 @@ ARCHITECTURE behavior OF vtb_ram_control2_vhd IS
 	signal write_sel_diag  :std_logic;
 	signal write_sel_diag2 :std_logic;
 	signal winkel_diag     :std_logic_vector ( 9 downto 0);
-	signal totes_lesen_diag:std_logic;
+--	signal totes_lesen_diag:std_logic;
 	signal Write_lesen_diag:std_logic;
 
 	
@@ -153,7 +153,7 @@ BEGIN
 		sram_read => sram_read,
 		sram_pos  => sram_pos,
       winkel_diag => winkel_diag,
-		totes_lesen_diag => totes_lesen_diag,
+--		totes_lesen_diag => totes_lesen_diag,
 		write_lesen_diag => write_lesen_diag
 	);
 
@@ -217,11 +217,11 @@ y := center_y + c;
 
 			
 ---- Schwarz gelesen ?? dann Rot draus machen (für debugging)
-if sram_read = x"0000" then 
-	colordatae <= x"008f";
-else
+--if sram_read = x"0000" then 
+--	colordatae <= x"008f";
+--else
 	                          colordatae <= 	sram_read;
-end if ;						
+--end if ;						
  								
 xe <= integer(x) ; ye <= integer(y) ;
 

@@ -43,12 +43,14 @@ entity ram_write is
               ad_dat : in    STD_LOGIC_VECTOR (15 downto 0);
 	            ad_wr : in    STD_LOGIC;
 
-           cpu_dat_x : in    STD_LOGIC_VECTOR ( 7 downto 0);
-           cpu_dat_y : in    STD_LOGIC_VECTOR ( 7 downto 0);
-       cpu_adr_hi_lo : in    STD_LOGIC_VECTOR ( 7 downto 0);
-		 cpu_adr_hi_hi : in    STD_LOGIC;
-       cpu_adr_lo_lo : in    STD_LOGIC_VECTOR ( 7 downto 0);
-		 cpu_adr_lo_hi : in    STD_LOGIC;	 
+             cpu_rot : in    STD_LOGIC_VECTOR ( 7 downto 0);
+            cpu_grun : in    STD_LOGIC_VECTOR ( 7 downto 0);
+            cpu_blau : in    STD_LOGIC_VECTOR ( 7 downto 0);
+            cpu_x_lo : in    STD_LOGIC_VECTOR ( 7 downto 0);
+            cpu_x_hi : in    STD_LOGIC_VECTOR ( 7 downto 0);
+            cpu_y_lo : in    STD_LOGIC_VECTOR ( 7 downto 0);
+            cpu_y_hi	: in    STD_LOGIC_VECTOR ( 7 downto 0);
+
            cpu_write : in    STD_LOGIC;			 
           cpu_enable : in    STD_LOGIC:='0'
 			 
@@ -70,7 +72,6 @@ signal prog_full_3        : std_logic;
 signal prog_empty_3       : std_logic;
 --signale für die pipeline stufe 4
 signal writemem_4         : std_logic;
-signal prog_full_4        : std_logic;
 signal prog_empty_4       : std_logic;
 --signale für die pipeline stufe 5
 signal dout_5             : std_logic_vector (33 downto 0);
@@ -126,8 +127,8 @@ begin ----------   und los gehts --------------
 process (clk) begin-- #U1#
   if rising_edge (clk) then
     if cpu_enable = '1' then--  fifo wird von cpu gefüttert
-       fifo_dat_1 <= cpu_dat_y  & cpu_dat_x;
-       fifo_adr_1 <= cpu_adr_hi_hi &  cpu_adr_hi_lo &  cpu_adr_lo_hi &  cpu_adr_lo_lo;
+       fifo_dat_1 <= cpu_blau (7 downto 3) & cpu_grun (7 downto 2) & cpu_rot (7 downto 3);
+       fifo_adr_1 <= cpu_y_hi(0) &  cpu_y_lo &  cpu_x_hi(0) &  cpu_x_lo;
        fifo_wr_1  <= (not cpu_write_last) and cpu_write; -- Flankenerkennung
     else -- fifo wird von ad_wandler gefüttert
        fifo_dat_1 <= ad_dat;	 
@@ -175,7 +176,7 @@ process (clk) begin -- #34#
   if rising_edge (clk) then
     if prog_full_3 = '1' then
 		  write_enable <= '1';
-	 elsif prog_empty_4 = '1' then-- Verletzung der pipeline !!
+	 elsif prog_empty_4 = '1' then
 		  write_enable <= '0';
 	 end if;	  
   end if;
@@ -183,7 +184,6 @@ end process;
 
 process (clk) begin -- #34#
   if rising_edge (clk) then
-     prog_full_4 <= prog_full_3;
 	 prog_empty_4 <= prog_empty_3;
   end if;
 end process;

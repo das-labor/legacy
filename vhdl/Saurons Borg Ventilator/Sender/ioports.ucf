@@ -1,12 +1,13 @@
 #Netze Für Takt definition
 NET "xlxi_31/xlxi_6/clk0*"   TNM_NET = "clk";
-#NET "xlxi_31/xlxi_6/clkfx*"  TNM_NET = "clk200";
 NET "xlxi_31/xlxi_17/clkfx*" TNM_NET = "clk20";
+NET "xlxi_31/xlxi_6/clk2x*"  TNM_NET = "clk100";
+
 
 #Takte den Netzen zuweisen
 TIMESPEC "TS_clk"    = PERIOD "clk"     50 Mhz LOW 50 %;
-#TIMESPEC "TS_clk200" = PERIOD "clk200" 200 Mhz LOW 50 %;
 TIMESPEC "TS_clk20"  = PERIOD "clk20"   20 Mhz LOW 50 %;
+TIMESPEC "TS_clk100" = PERIOD "clk100" 100 Mhz LOW 50 %;
 
 # Master Clock (50 Mhz)
 NET "clk" LOC = "T9";
