@@ -32,7 +32,7 @@ override CFLAGS        = -g -pedantic -std=c99 -Wall $(OPTIMIZE) -mmcu=$(MCU_TAR
 override LDFLAGS       = -Wl,-Map,$(PRG).map
 override ASFLAGS       = -mmcu=$(MCU_TARGET)
 
-HUFFMAN_ENC    = ./host/huffman-encode
+HUFFMAN_ENC    = ../host/huffman-encode
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
 
