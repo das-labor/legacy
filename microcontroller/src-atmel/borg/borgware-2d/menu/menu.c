@@ -37,75 +37,75 @@ extern game_descriptor_t _game_descriptors_end__[];
 
 void menu()
 {
-	// don't let WAIT() query fire button to prevent endless circular jumps
-	waitForFire = 0;
-
-	clear_screen(0);
-
-	// wait as long the fire button is pressed to prevent unwanted selections
-	while (JOYISFIRE)
+	if (MENU_ITEM_MAX != 0)
 	{
-		wait(MENU_POLL_INTERVAL);
-	}
+		// don't let WAIT() query fire button to prevent endless circular jumps
+		waitForFire = 0;
 
-	if(MENU_ITEM_MAX == 0) goto end;
+		clear_screen(0);
 
-	// set initial menu item
-	static uint8_t miSelection = 0;
-	// scroll in currently selected menu item
-	menu_animate(MENU_PREVITEM(miSelection), MENU_DIRECTION_LEFT);
-
-	uint16_t nMenuIterations= MENU_TIMEOUT_ITERATIONS;
-
-	while (1)
-	{
-		// the user has made her/his choice
-		if (JOYISFIRE)
-		{
-			// prevent unwanted selections
-			while (JOYISFIRE)
-			{
-				wait(MENU_POLL_INTERVAL);
-			}
-			// work against the chatter effects of dump joysticks
-			wait(MENU_WAIT_CHATTER);
-
-			// call corresponding function
-
-			_game_descriptors_start__[miSelection].run();
-
-			break;
-
-		}
-		// change selected item and do some scrolling
-		else if (JOYISRIGHT)
-		{
-			menu_animate(miSelection, MENU_DIRECTION_LEFT);
-			miSelection = MENU_NEXTITEM(miSelection);
-			nMenuIterations = MENU_TIMEOUT_ITERATIONS;
-		}
-		else if (JOYISLEFT)
-		{
-			menu_animate(miSelection, MENU_DIRECTION_RIGHT);
-			miSelection = MENU_PREVITEM(miSelection);
-			nMenuIterations = MENU_TIMEOUT_ITERATIONS;
-		}
-		// exit menu
-		else if (JOYISUP)
-		{
-			break;
-		}
-		// return if timeout is reached
-		else
+		// wait as long as "fire" is pressed to prevent unwanted selections
+		while (JOYISFIRE)
 		{
 			wait(MENU_POLL_INTERVAL);
-			if (--nMenuIterations == 0)
-				break;
 		}
-	}
 
-end:
-	waitForFire = 1;
+		// set initial menu item
+		static uint8_t miSelection = 0;
+		// scroll in currently selected menu item
+		menu_animate(MENU_PREVITEM(miSelection), MENU_DIRECTION_LEFT);
+
+		uint16_t nMenuIterations= MENU_TIMEOUT_ITERATIONS;
+
+		while (1)
+		{
+			// the user has made her/his choice
+			if (JOYISFIRE)
+			{
+				// prevent unwanted selections
+				while (JOYISFIRE)
+				{
+					wait(MENU_POLL_INTERVAL);
+				}
+				// work against the chatter effects of dump joysticks
+				wait(MENU_WAIT_CHATTER);
+
+				// call corresponding function
+
+				_game_descriptors_start__[miSelection].run();
+
+				break;
+
+			}
+			// change selected item and do some scrolling
+			else if (JOYISRIGHT)
+			{
+				menu_animate(miSelection, MENU_DIRECTION_LEFT);
+				miSelection = MENU_NEXTITEM(miSelection);
+				nMenuIterations = MENU_TIMEOUT_ITERATIONS;
+			}
+			else if (JOYISLEFT)
+			{
+				menu_animate(miSelection, MENU_DIRECTION_RIGHT);
+				miSelection = MENU_PREVITEM(miSelection);
+				nMenuIterations = MENU_TIMEOUT_ITERATIONS;
+			}
+			// exit menu
+			else if (JOYISUP)
+			{
+				break;
+			}
+			// return if timeout is reached
+			else
+			{
+				wait(MENU_POLL_INTERVAL);
+				if (--nMenuIterations == 0)
+					break;
+			}
+		}
+
+		waitForFire = 1;
+	}
 	return;
 }
 
@@ -116,7 +116,8 @@ uint8_t menu_getIconPixel(uint8_t item, int8_t x, int8_t y)
 	if (x < MENU_WIDTH_ICON)
 	{
 		// return pixel
-		return (0x80 >> x) & pgm_read_word(&_game_descriptors_start__[item].icon[y]);
+		return (0x80 >> x) &
+			pgm_read_word(&_game_descriptors_start__[item].icon[y]);
 	}
 	else
 	{
