@@ -59,6 +59,8 @@ lst:  $(PRG).lst
 
 %.lst: %.elf
 	$(OBJDUMP) -h -S $< > $@
+%.s: %.c
+	$(CC) $(CFLAGS) -S $<
 
 # Rules for building the .text rom images
 
