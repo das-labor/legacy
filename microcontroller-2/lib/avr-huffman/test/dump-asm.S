@@ -409,17 +409,6 @@ ram_read_block:
 3:	
 	ret
 
-/* don't know why the definitions in avr/io.h don't work*/
-#undef EEARH 
-#undef EEARL
-#undef EEDR 
-#undef EECR 
-
-#define EEARH 0x22
-#define EEARL 0x21
-#define EEDR  0x20
-#define EECR  0x1F
-
 /******************************************************************************/
 /* void ee_read_block(void* buffer, uint32_t addr, uint8_t length)
  *   param buffer:  r24:r25
@@ -433,13 +422,13 @@ ee_read_block:
 	tst r18
 	breq 3f
 1:
-	sbic EECR, EEPE
+	sbic _SFR_IO_ADDR(EECR), EEPE
 	rjmp 1b
-	out EEARH, r31
-	out EEARL, r30
-	sbi EECR, EERE
+	out _SFR_IO_ADDR(EEARH), r31
+	out _SFR_IO_ADDR(EEARL), r30
+	sbi _SFR_IO_ADDR(EECR), EERE
 	adiw r30, 1
-	in r20, EEDR
+	in r20, _SFR_IO_ADDR(EEDR)
 	st X+, r20
 	dec r18
 	brne 1b
