@@ -138,26 +138,127 @@ pecho:
  *    param maxcmdlength: r22:r23
  *    param cmdlist:      r20:r21
  */
-/* 
-.global search_and_call
-search_and_call:
-	adiw r24, 0
-	breq return_1
-	movw r26, r24
-	ld r18, X
-	cpi r18, 0
-	breq return_1
-	cpi r18, '#'
-	breq return_1
-	cpi r18, '?'
-	breq auto_help
-	
-auto_help:
+LEN_0 = 14
+LEN_1 = 15
+CMD_0 = 16
+CMD_1 = 17
+
+snc_auto_help:
 	movw r24, r22
 	movw r22, r20
 	rcall cli_auto_help	
-return_1:
+snc_return_1:
 	clr r25
 	ldi r24, 1
 	ret	 
-*/
+snc_return_2:
+	clr r25
+	ldi r24, 2
+	ret	 
+
+.global search_and_call
+search_and_call:
+	adiw r24, 0
+	breq snc_return_1
+1:	movw r26, r24
+	ld r18, X+
+	cpi r18, 0
+	breq snc_return_1
+	cpi r18, '#'
+	breq snc_return_1
+	cpi r18, '?'
+	breq 2f
+	cpi r18, 'h'
+	brne 1f
+	ld r18, X+
+	cpi r18, 'e'
+	brne 1f
+	ld r18, X+
+	cpi r18, 'l'
+	brne 1f
+	ld r18, X+
+	cpi r18, 'p'
+	brne 1f
+	ld r18, X+
+	tst r18
+	brne 1f
+2:	rjmp snc_auto_help
+1:	
+	push r28
+	push r29
+	push CMD_0
+	push CMD_1
+	push LEN_0
+	push LEN_1
+	movw CMD_0, r24
+	movw r28, r20
+	rcall firstword_length
+	movw LEN_0, r24
+	movw r26, CMD_0
+	add r26, LEN_0
+	adc r27, LEN_1
+	st X, r1
+	movw r24, CMD_0
+	ldi r22, lo8(exit_str)
+	ldi r23, hi8(exit_str)
+	call strcmp_P
+	adiw r24, 0
+	breq snc_return_0
+1:
+	movw r30, r28
+	lpm r24, Z+
+	lpm r25, Z+
+	adiw r24, 0
+	brne 3f
+	ldi r24, lo8(nocommand_str)
+	ldi r25, hi8(nocommand_str)
+	rcall cli_putstr_P
+	ldi r24, 1
+	rjmp 5f
+3:	movw r22, r24
+	movw r24, CMD_0
+	call strcmp_P
+	adiw r24, 0
+	breq snc_found
+	adiw r28, CMDLIST_ENTRY_SIZE
+	rjmp 1b
+snc_found:
+	movw r24, CMD_0
+	add r24, LEN_0
+	adc r25, LEN_1
+	adiw r24, 1
+	movw r30, r28
+	adiw r30, 4
+	lpm r22, Z+
+	lpm r23, Z+
+	movw r30, r22
+	pop LEN_1
+	pop LEN_0
+	pop CMD_1
+	pop CMD_0
+	pop r29
+	pop r28
+	adiw r30, 0
+	breq 4f ;snc_return_2
+	icall
+	rjmp snc_return_1
+4:	ldi r24, 2	
+snc_return_0:
+	clr r24
+5:	clr r25
+	pop LEN_1
+	pop LEN_0
+	pop CMD_1
+	pop CMD_0
+	pop r29
+	pop r28
+	clr r25
+	ret
+		
+
+exit_str:
+.asciz "exit"
+help_str:
+.asciz "help"
+nocommand_str:
+.asciz "\r\ncommand not found, try 'help'"
