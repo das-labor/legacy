@@ -3,7 +3,7 @@
 -- Hackerspace:      Das Labor    www.das-labor.org                                 --
 -- Hacker:           Sauron                                                         --
 --                                                                                  --
--- Datum:            14.07.2009                                                     --
+-- Datum:            19.07.2009                                                     --
 -- Projekt:          Der Borg Ventilator                                            --
 -- Modul Name:       ram_control.vhd                                                --
 -- Beschreibung: 	   Ich Koordiniere die Lese und Schreibzugriffe auf den           --
@@ -17,10 +17,10 @@
 --	                                                                                 --
 -- Dependencies: 	   ram_write.vhd / ram_read.vhd                                   --
 --	                                                                                 --
--- Version:          V9.7.2                                                         --
+-- Version:          V9.7.5                                                         --
 --                                                                                  --
--- Additional Comments: Widerstand ist Zwecklos                                     --
---	                                                                                 --
+-- Additional Comments: SRAM_2_IO und SRAM_x_UB/LB können auf einer eigenen         --
+--	                     Platine Eingespart werden (20 Pins weniger ! )              --
 --------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------
 
@@ -34,37 +34,37 @@ entity ram_control is Port (
 
 	  clk50 			   : IN 	std_logic;
 	  clk100			   : IN	std_logic;
-	  winkel 			: IN 	std_logic_vector (9 downto 0);
+	  winkel 			: IN 	std_logic_vector( 9 downto 0);
 	
 	  ad_adr 			: IN 	std_logic_vector(17 downto 0);
 	  ad_dat 			: IN 	std_logic_vector(15 downto 0);
 	  ad_wr 			   : IN 	std_logic;
 		
 	  wr_str          : IN 	std_logic;
-	  p_id            : IN 	std_logic_vector (7 downto 0);
-	  out_p           : IN 	std_logic_vector (7 downto 0);
+	  p_id            : IN 	std_logic_vector( 7 downto 0);
+	  out_p           : IN 	std_logic_vector( 7 downto 0);
 
-	  sram_adr	      : out std_logic_vector (17 downto 0);
+	  sram_adr	      : out std_logic_vector(17 downto 0);
 	  sram_oe         : out std_logic;
 	  sram_we         : out std_logic;
 
 	  sram_1_ce       : out std_logic;
 	  sram_1_ub       : out std_logic;
 	  sram_1_lb       : out std_logic;
-	  sram_1_io       : inout std_logic_vector (15 downto 0);
+	  sram_1_io       : inout std_logic_vector(15 downto 0);
 
 	  sram_2_ce       : out std_logic;
 	  sram_2_ub       : out std_logic;
 	  sram_2_lb       : out std_logic;
-	  sram_2_io       : inout std_logic_vector (15 downto 0);
+	  sram_2_io       : inout std_logic_vector(15 downto 0);
 			  
-	  sram_read       : out std_logic_vector (15 downto 0);
-	  sram_pos        : out std_logic_vector ( 7 downto 0);
-	  winkel_diag     : out std_logic_vector ( 9 downto 0);
+	  sram_read       : out std_logic_vector(15 downto 0);
+	  sram_pos        : out std_logic_vector( 7 downto 0);
+	  winkel_diag     : out std_logic_vector( 9 downto 0);
 	  write_lesen_diag: out std_logic
-			  			  
 														);
 end ram_control;
+
 
 architecture Behavioral of ram_control is
 
@@ -74,13 +74,13 @@ architecture Behavioral of ram_control is
 		ad_adr 			: IN 	std_logic_vector(17 downto 0);
 		ad_dat 			: IN 	std_logic_vector(15 downto 0);
 		ad_wr 			: IN 	std_logic;
-      cpu_rot        : IN  std_logic_vector ( 7 downto 0);
-      cpu_grun       : IN  std_logic_vector ( 7 downto 0);
-      cpu_blau       : IN  std_logic_vector ( 7 downto 0);
-      cpu_x_lo       : IN  std_logic_vector ( 7 downto 0);
-      cpu_x_hi       : IN  std_logic_vector ( 7 downto 0);
-      cpu_y_lo       : IN  std_logic_vector ( 7 downto 0);
-      cpu_y_hi	      : IN  std_logic_vector ( 7 downto 0);
+      cpu_rot        : IN  std_logic_vector( 7 downto 0);
+      cpu_grun       : IN  std_logic_vector( 7 downto 0);
+      cpu_blau       : IN  std_logic_vector( 7 downto 0);
+      cpu_x_lo       : IN  std_logic_vector( 7 downto 0);
+      cpu_x_hi       : IN  std_logic_vector( 7 downto 0);
+      cpu_y_lo       : IN  std_logic_vector( 7 downto 0);
+      cpu_y_hi	      : IN  std_logic_vector( 7 downto 0);
 		cpu_write 		: IN 	std_logic;
 		cpu_enable 		: IN  std_logic;          
 		sram_adr 		: OUT std_logic_vector(17 downto 0);
@@ -103,6 +103,11 @@ architecture Behavioral of ram_control is
 		);
 	END COMPONENT;
 
+
+-------------------------
+-- Signal Definitionen --
+-------------------------
+
 -- inteface für picoblace	
 constant adr    : integer := 0; -- Startadresse für Interface
 signal cpu_rot       : std_logic_vector ( 7 downto 0);
@@ -115,23 +120,7 @@ signal cpu_y_hi	   : std_logic_vector ( 7 downto 0);
 signal cpu_write 		: std_logic_vector ( 7 downto 0);
 signal cpu_enable		: std_logic_vector ( 7 downto 0);
 
-
-
--- wilde signale (aufräumen erforderlich)
-
---signal write_enable	: std_logic;
-signal write_help		: std_logic;
-signal read_help		: std_logic:='0';
---signal sram_read_2   : std_logic_vector (15 downto 0);
---signal write_dat     : std_logic_vector (15 downto 0);
-signal tristate      : std_logic;
-signal totes_lesen_4 : std_logic;
---signal sram_read_1   : std_logic_vector (15 downto 0);
-
-
 -- stufe u
-
-
 signal write_adr_u	: std_logic_vector (17 downto 0);
 signal write_dat_u   : std_logic_vector (15 downto 0);
 signal write_wrt_u   : std_logic;
@@ -139,7 +128,49 @@ signal write_sel_u   : std_logic;
 signal write_enable_u: std_logic;
 signal totes_lesen_u : std_logic;
 signal read_adr_u    : std_logic_vector (17 downto 0);
---signal led_nr_u      : std_logic_vector ( 7 downto 0);
+
+-- stufe 1
+signal write_adr_1	: std_logic_vector (17 downto 0);
+signal write_dat_1   : std_logic_vector (15 downto 0);
+signal write_wrt_1   : std_logic;
+signal write_sel_1   : std_logic;
+signal write_enable_1: std_logic;
+signal totes_lesen_1 : std_logic;
+signal read_adr_1    : std_logic_vector (17 downto 0);
+
+-- stufe 2
+signal write_adr_2	: std_logic_vector (17 downto 0);
+signal write_dat_2   : std_logic_vector (15 downto 0);
+signal write_wrt_2   : std_logic;
+signal write_sel_2   : std_logic;
+signal write_enable_2: std_logic;
+signal totes_lesen_2 : std_logic;
+signal read_adr_2    : std_logic_vector (17 downto 0);
+
+-- stufe 3
+signal write_adr_3	: std_logic_vector (17 downto 0);
+signal write_dat_3   : std_logic_vector (15 downto 0);
+signal write_wrt_3   : std_logic;
+signal write_sel_3   : std_logic;
+signal write_enable_3: std_logic;
+signal totes_lesen_3 : std_logic;
+signal read_adr_3    : std_logic_vector (17 downto 0);
+
+-- led_nr
+signal led_nr_a: std_logic_vector (7 downto 0);
+signal led_nr_b: std_logic_vector (7 downto 0);
+signal led_nr_c: std_logic_vector (7 downto 0);
+signal led_nr_d: std_logic_vector (7 downto 0);
+signal led_nr_e: std_logic_vector (7 downto 0);
+
+-- Read / Write
+signal write_wrt_4: std_logic;
+signal write_wrt_5: std_logic;
+signal write_dat_4: std_logic_vector (15 downto 0);
+signal sram_read_a: std_logic_vector (15 downto 0);
+signal sram_read_b: std_logic_vector (15 downto 0);
+
+-- Winkel
 signal winkel_diag_u : std_logic_vector ( 9 downto 0);
 signal winkel_diag_1 : std_logic_vector ( 9 downto 0);
 signal winkel_diag_2 : std_logic_vector ( 9 downto 0);
@@ -151,60 +182,11 @@ signal winkel_diag_7 : std_logic_vector ( 9 downto 0);
 signal winkel_diag_8 : std_logic_vector ( 9 downto 0);
 signal winkel_diag_9 : std_logic_vector ( 9 downto 0);
 
-
--- stufe 1
-signal write_adr_1	: std_logic_vector (17 downto 0);
-signal write_dat_1   : std_logic_vector (15 downto 0);
-signal write_wrt_1   : std_logic;
-signal write_sel_1   : std_logic;
-signal write_enable_1: std_logic;
-signal totes_lesen_1 : std_logic;
-signal read_adr_1    : std_logic_vector (17 downto 0);
---signal led_nr_1      : std_logic_vector ( 7 downto 0);
-
--- stufe 2
-signal write_adr_2	: std_logic_vector (17 downto 0);
-signal write_dat_2   : std_logic_vector (15 downto 0);
-signal write_wrt_2   : std_logic;
-signal write_sel_2   : std_logic;
-signal write_enable_2: std_logic;
-signal totes_lesen_2 : std_logic;
-signal read_adr_2    : std_logic_vector (17 downto 0);
---signal led_nr_2      : std_logic_vector ( 7 downto 0);
-
--- stufe 3
-signal write_adr_3	: std_logic_vector (17 downto 0);
-signal write_dat_3   : std_logic_vector (15 downto 0);
-signal write_wrt_3   : std_logic;
-signal write_sel_3   : std_logic;
-signal write_enable_3: std_logic;
-signal totes_lesen_3 : std_logic;
-signal read_adr_3    : std_logic_vector (17 downto 0);
---signal led_nr_3      : std_logic_vector ( 7 downto 0);
-
-
--- noch mehr wilde signale ( noch mehr aufräumen erforderlich)
-
-
--- stufe a
---signal sram_adr_a    : std_logic_vector(17 downto 0);
---signal write_lesen   : std_logic;
---signal write_l1 : std_logic;
---signal en50 : std_logic;
-
--- ordentliche signale
-signal led_nr_a: std_logic_vector (7 downto 0);
-signal led_nr_b: std_logic_vector (7 downto 0);
-signal led_nr_c: std_logic_vector (7 downto 0);
-signal led_nr_d: std_logic_vector (7 downto 0);
-signal led_nr_e: std_logic_vector (7 downto 0);
-
-signal write_wrt_4: std_logic;
-signal write_wrt_5: std_logic;
-signal write_dat_4   : std_logic_vector (15 downto 0);
-signal sram_read_a: std_logic_vector (15 downto 0);
-signal sram_read_b: std_logic_vector (15 downto 0);
---signal sram_read_c: std_logic_vector (15 downto 0);
+-- sonstiges
+signal write_help		: std_logic;
+signal read_help		: std_logic:='0';
+signal tristate      : std_logic;
+signal totes_lesen_4 : std_logic;
 
 
 
@@ -215,9 +197,10 @@ begin
 			sram_2_ub <= '0';							-- Speicher-
 			sram_2_lb <= '0';                   -- bausteinen
 
----------------
--- Port Maps --
----------------
+
+---------------------------
+-----    Port Maps    -----
+---------------------------
 
 	u0: ram_write PORT MAP(
 
@@ -280,68 +263,50 @@ process (clk50) begin if rising_edge (clk50) then if p_id = adr + 8  and wr_str 
 process (clk100) begin
 	if rising_edge (clk100) then
 	
---	 Signale von SRAM_WRITE
 		write_adr_1 	<= write_adr_u;
 		write_dat_1 	<= write_dat_u;
 		write_wrt_1 	<= write_wrt_u;
 		write_sel_1 	<= write_sel_u;
 		write_enable_1 <= write_enable_u;
 		totes_lesen_1  <= totes_lesen_u;
-		
--- Signale von SRAM_READ
 		read_adr_1     <= read_adr_u;
---		led_nr_1       <= led_nr_u;
 		
 --------------------------------------------------
 
---	 Signale von SRAM_WRITE
 		write_adr_2 	<= write_adr_1;
 		write_dat_2 	<= write_dat_1;
 		write_wrt_2 	<= write_wrt_1;
 		write_sel_2 	<= write_sel_1;
 		write_enable_2 <= write_enable_1;
 		totes_lesen_2  <= totes_lesen_1;
-
--- Signale von SRAM_READ
 		read_adr_2     <= read_adr_1;
---		led_nr_2       <= led_nr_1;
 
 --------------------------------------------------
 
---	 Signale von SRAM_WRITE
 		write_adr_3 	<= write_adr_2;
 		write_dat_3 	<= write_dat_2;
 		write_wrt_3 	<= write_wrt_2;
 		write_sel_3 	<= write_sel_2;
 		write_enable_3 <= write_enable_2;
 		totes_lesen_3  <= totes_lesen_2;
-
--- Signale von SRAM_READ
 		read_adr_3     <= read_adr_2;
---		led_nr_3       <= led_nr_2;
 
 	end if;
 end process;
 
 
 -- Sonstige Verzögerungen
+
 process (clk100) begin
 	if rising_edge (clk100) then
+
 		totes_lesen_4 <= totes_lesen_3; 			-- für sram_oe & sram_ce
+
+		write_wrt_3 <= write_wrt_2;				--
       write_wrt_4 <= write_wrt_3;				-- für sram_read
-      write_wrt_5 <= write_wrt_4;				-- für sram_read
+      write_wrt_5 <= write_wrt_4;				-- 
+
 		write_dat_4 <= write_dat_3;				-- für sram_io (schreiben)
-	end if;
-end process;
-
-
-process (clk100) begin
-	if rising_edge (clk100) then
-
--- sonstige verzögerungen
-		write_wrt_3    <= write_wrt_2;
-		write_wrt_4		<= write_wrt_3;
-		
 	end if;
 end process;
 
@@ -477,19 +442,10 @@ begin
 end process;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
--- Position zu den gelesenen Daten Bestimmen
+----------------------------
+-- gelesene Daten mit     --
+-- 50 MHt synchronisieren --
+----------------------------
 
 process (clk50) begin
 	if rising_edge (clk50) then
@@ -506,17 +462,7 @@ process (clk50) begin
 end Process;
 
 
-write_lesen_diag <= totes_lesen_3;
-
-----------------------------
--- gelesene Daten mit     --
--- 50 MHt synchronisieren --
-----------------------------
-
-
-	
-
--- Diagnose
+-- Winkel in den richtigen Zeitlichen bezug bringen
 
 process (clk50) begin
 if rising_edge (clk50) then
@@ -534,6 +480,10 @@ end if;
 end process;	
 
 
+
+-- Diagnose
+
+write_lesen_diag <= totes_lesen_3;
 
 end Behavioral;
 
