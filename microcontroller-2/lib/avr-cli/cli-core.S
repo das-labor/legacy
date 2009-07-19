@@ -148,12 +148,12 @@ snc_auto_help:
 	movw r22, r20
 	rcall cli_auto_help	
 snc_return_1:
-	clr r25
 	ldi r24, 1
-	ret	 
+	rjmp snc_return
 snc_return_2:
-	clr r25
 	ldi r24, 2
+snc_return:
+	clr r25
 	ret	 
 
 .global search_and_call
@@ -232,29 +232,21 @@ snc_found:
 	lpm r22, Z+
 	lpm r23, Z+
 	movw r30, r22
-	pop LEN_1
-	pop LEN_0
-	pop CMD_1
-	pop CMD_0
-	pop r29
-	pop r28
 	adiw r30, 0
 	breq 4f ;snc_return_2
 	icall
-	rjmp snc_return_1
+	ldi r24, 1
+	rjmp 5f
 4:	ldi r24, 2	
 snc_return_0:
 	clr r24
-5:	clr r25
-	pop LEN_1
+5:	pop LEN_1
 	pop LEN_0
 	pop CMD_1
 	pop CMD_0
 	pop r29
 	pop r28
-	clr r25
-	ret
-		
+	rjmp snc_return
 
 exit_str:
 .asciz "exit"
@@ -262,3 +254,71 @@ help_str:
 .asciz "help"
 nocommand_str:
 .asciz "\r\ncommand not found, try 'help'"
+
+/******************************************************************************/
+/* void cli_option_listing(char* buffer, PGM_VOID_P cmdlist)
+ *   param buffer:    r24:r25
+ *   param cmdlist:   r22:r23
+ */
+ITM_0 = 12
+ITM_1 = 13 
+CMD_0 = 14
+CMD_1 = 15
+LEN_0 = 16
+LEN_1 = 17
+LST_0 = 28
+LST_1 = 29
+.global cli_option_listing
+cli_option_listing:
+	push_range 12, 17
+	push_range 28, 29
+	movw CMD_0, r24
+	movw LST_0, r22
+	call strlen
+	sbiw r24, 1
+	movw LEN_0, r24
+1:
+	movw r30, LST_0
+	lpm r24, Z+
+	lpm r25, Z+
+	movw ITM_0, r24
+	adiw r24, 0
+	breq 99f
+	movw r22, r24
+	movw r24, CMD_0
+	movw r20, LEN_0
+	adiw r28, CMDLIST_ENTRY_SIZE
+	call strncmp_P
+	adiw r24, 0
+	brne 1b
+	ldi r24, lo8(itemprefix_str)
+	ldi r25, hi8(itemprefix_str)
+	rcall cli_putstr_P
+	movw r24, ITM_0
+	rcall cli_putstr_P
+	rjmp 1b
+99:	
+	ldi r24, lo8(prompt_str)
+	ldi r25, hi8(prompt_str)
+	rcall cli_putstr_P
+	movw r24, CMD_0
+	rcall cli_putstr
+	pop_range 28, 29
+	pop_range 12, 17
+	ret
+
+prompt_str:	
+.asciz "\r\n>"
+itemprefix_str:	
+.asciz "\r\n   "
+
+
+
+
+
+
+
+
+
+
+

@@ -42,7 +42,8 @@ uint8_t cli_echo=1;
 
 void echo_ctrl(char* s);
 uint16_t max_cmd_length(PGM_VOID_P cmdlist);
-
+int8_t search_and_call(char* cmd, uint16_t maxcmdlength, PGM_VOID_P cmdlist);
+	
 
 void cli_auto_help(uint16_t maxcmdlength, PGM_VOID_P cmdlist){
 	cmdlist_entry_t item;
@@ -86,8 +87,6 @@ typedef void(*str_fpt)(char*);
 #define CLI_BACKSPACE  8
 #define CLI_TABULATOR  9
 
-int8_t search_and_call(char* cmd, uint16_t maxcmdlength, PGM_VOID_P cmdlist);
-	
 uint8_t cli_completion(char* buffer, uint16_t maxcmdlength, PGM_VOID_P cmdlist){
 	uint8_t i=0;
 	char ref[maxcmdlength+1];
@@ -116,7 +115,8 @@ uint8_t cli_completion(char* buffer, uint16_t maxcmdlength, PGM_VOID_P cmdlist){
 		strcpy(buffer, ref);
 	return ~i;
 }
-
+void cli_option_listing(char* buffer, PGM_VOID_P cmdlist);
+/*
 void cli_option_listing(char* buffer, PGM_VOID_P cmdlist){
 	char* itemstr;
 	uint16_t len=strlen(buffer);
@@ -134,7 +134,7 @@ void cli_option_listing(char* buffer, PGM_VOID_P cmdlist){
 		}
 	}
 }
-
+*/
 int8_t cmd_interface(PGM_VOID_P cmd_desc){
 	uint16_t cli_buffer_size;
 	uint16_t cli_buffer_index;
