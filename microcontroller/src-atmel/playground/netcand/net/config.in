@@ -1,0 +1,30 @@
+dep_bool "MDNS service announcement (Avahi)" MDNS_SD_SUPPORT $UDP_SUPPORT
+dep_bool "Stella Light" STELLA_SUPPORT $UDP_SUPPORT
+dep_bool "UDP Echo" UDP_ECHO_NET_SUPPORT $UDP_SUPPORT
+
+mainmenu_option next_comment
+comment "DynDNS support"
+  dep_bool "Update DNS records at dyn.metafnord.de" DYNDNS_SUPPORT $UIP_SUPPORT
+  if [ "$DYNDNS_SUPPORT" = "y" ]; then
+    string "Hostname" CONF_DYNDNS_HOSTNAME "camera1"
+    string "Username" CONF_DYNDNS_USERNAME "user"
+    string "Password" CONF_DYNDNS_PASSWORD "secret"
+  fi
+endmenu
+
+dep_bool_editor "Watch IO changes (and react)" WATCHCAT_SUPPORT "watchcat/config" $ECMD_SENDER_SUPPORT $PORTIO_SUPPORT
+dep_bool "Simple Network Managment Protocol support (snmp)" SNMP_SUPPORT $UDP_SUPPORT $CONFIG_EXPERIMENTAL
+
+dep_bool_menu "Sendmail support (smtp)" SENDMAIL_SUPPORT $TCP_SUPPORT $CONFIG_EXPERIMENTAL
+if [ "$SENDMAIL_SUPPORT" = "y" ]; then
+  ip "SMTP IP address" CONF_SENDMAIL_IP "78.47.210.246"
+  string "SMTP From Address" CONF_SENDMAIL_FROM "root@sex.metafnord.de"
+  string "SMTP To Address" CONF_SENDMAIL_TO "stesie@brokenpipe.de"
+  dep_bool "SMTP Auth Support" SENDMAIL_AUTH_SUPPORT $SENDMAIL_SUPPORT
+  if [ "$SENDMAIL_AUTH_SUPPORT" = "y" ]; then
+    string "SMTP Auth Username" CONF_SENDMAIL_USERNAME "tester"
+    string "SMTP Auth Password" CONF_SENDMAIL_PASSWORD "tester"
+  fi
+fi
+endmenu 
+

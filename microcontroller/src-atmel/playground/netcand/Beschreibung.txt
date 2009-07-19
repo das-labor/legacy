@@ -1,0 +1,9 @@
+CAN-BUS Netzwerk Brücke
+
+ICs:
+mega32
+mcp2510/5
+enc28j60
+
+mcp2510: cleanup, kommentieren
+
