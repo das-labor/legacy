@@ -16,6 +16,8 @@ int main()
 	while( 1 )
     {
         _delay_ms(1000);
+        OCR1A = 0;
+        _delay_ms(1000);
         OCR1A = 50;
         _delay_ms(1000);
         OCR1A = 100;
@@ -24,6 +26,6 @@ int main()
         _delay_ms(1000);
         OCR1A = 200;
         _delay_ms(1000);
-        OCR1A = 250;
+        OCR1A = 255;
     }
 }
