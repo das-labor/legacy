@@ -312,12 +312,94 @@ prompt_str:
 itemprefix_str:	
 .asciz "\r\n   "
 
+/******************************************************************************/
+/* void cli_auto_help(uint16_t maxcmdlength, PGM_VOID_P cmdlist)
+ *   param maxcmdlength:  r24:r25
+ *   param cmdlist:       r22:r23
+ */
 
-
-
-
-
-
+TMP_0 = 14
+TMP_1 = 15 
+LEN_0 = 16
+LEN_1 = 17
+LST_0 = 28
+LST_1 = 29
+cli_auto_help:
+	push_range 16, 17
+	push_range 28, 29
+	movw LEN_0, r24
+	movw r28, r22
+	ldi r24, lo8(ahelphead_str)
+	ldi r25, hi8(ahelphead_str)
+	rcall cli_putstr_P
+1:
+	movw r30, r28
+	lpm r24, Z+
+	lpm r25, Z+
+	movw r28, r30
+	adiw r24, 0
+	breq 99f	
+	movw TMP_0, r24
+	rcall cli_putstr_P
+	movw r24, TMP_0
+	call strlen_P
+	movw TMP_0, LEN_0
+	sub TMP_0, r24
+	sbc TMP_1, r25
+	breq 4f
+2:	ldi r24, ' '
+	clr r25
+	rcall cli_putc
+	dec TMP_0
+	brne 2b
+4:	ldi r24, lo8(sep_str)
+	ldi r25, hi8(sep_str)
+	ldi r22, lo8(none_str)
+	ldi r23, hi8(none_str)
+	rcall cli_putstr_P
+	movw r30, r28
+	lpm r24, Z+
+	lpm r25, Z+
+	movw r28, r30
+	adiw r24, 0
+	breq 5f
+	ldi r22, lo8(yes_str)
+	ldi r23, hi8(yes_str)
+5:	movw r24, r22
+	rcall cli_putstr_P	
+	ldi r24, lo8(sep2_str)
+	ldi r25, hi8(sep2_str)
+	rcall cli_putstr_P
+	movw r30, r28
+	adiw r30, 1
+	lpm r24, Z
+	rcall cli_hexdump_byte
+	movw r30, r28
+	lpm r24, Z
+	rcall cli_hexdump_byte
+	ldi r24, '\r'
+	clr r25
+	rcall cli_putc
+	ldi r24, '\n'
+	clr r25
+	rcall cli_putc
+	adiw r28, CMDLIST_ENTRY_SIZE-4
+	rjmp 1b
+99:	
+	pop_range 28, 29
+	pop_range 14, 17
+	ret
+ahelphead_str:
+.asciz "\r\n[auto help] available commands:\r\n <command> - <params> - <address>\r\n"
+sep_str:
+.asciz " - "
+none_str:
+.asciz "none"
+yes_str:
+.asciz "yes "
+sep2_str:
+.asciz" \t - 0x"
+.byte 0
 
 
 

@@ -18,6 +18,32 @@
 */
 
 #include "avr-asm-macros.S"
+/******************************************************************************/
+/* cli_hexdump_byte 
+ *   param data:   r24
+ */
+.global cli_hexdump_byte
+cli_hexdump_byte:
+	push r24
+	swap r24
+	andi r24, 0x0f
+	ldi r30, lo8(hexdigit_tab_P)
+	ldi r31, hi8(hexdigit_tab_P)
+	add r30, r24
+	adc r31, r1
+	clr r25
+	lpm r24, Z
+	rcall cli_putc
+	pop r24
+	andi r24, 0x0f
+	ldi r30, lo8(hexdigit_tab_P)
+	ldi r31, hi8(hexdigit_tab_P)
+	add r30, r24
+	adc r31, r1
+	clr r25
+	lpm r24, Z
+	rcall cli_putc
+	ret	
 
 /******************************************************************************/
 /* cli_hexdump 
@@ -30,40 +56,18 @@ cli_hexdump:
 	push r29
 	push r16
 	push r17
-	push r2
 	movw r28, r24
 	movw r16, r22
 	movw r26, r22
 	adiw r26, 0
-1:	
 	breq hexdump_exit
-	movw r16, r26
 2:
-	ld r2, Y+
-	mov r24, r2
-	swap r24
-	ldi r25, 0x0f
-	and r24, r25
-	and r2, r25
-	ldi r30, lo8(hexdigit_tab_P)
-	ldi r31, hi8(hexdigit_tab_P)
-	add r30, r24
-	adc r31, r1
-	clr r25
-	lpm r24, Z
-	rcall cli_putc
-	ldi r30, lo8(hexdigit_tab_P)
-	ldi r31, hi8(hexdigit_tab_P)
-	add r30, r2
-	adc r31, r1
-	clr r25
-	lpm r24, Z
-	rcall cli_putc
-	movw r26, r16
-	sbiw r26, 1
-	rjmp 1b
+	ld r24, Y+
+	rcall cli_hexdump_byte	
+	subi r16, 1
+	sbc  r17, r1
+	brne 2b
 hexdump_exit:	
-	pop r2
 	pop r17
 	pop r16
 	pop r29
@@ -71,7 +75,7 @@ hexdump_exit:
 	ret
 	
 /******************************************************************************/
-/* cli_hexdump 
+/* cli_hexdump_rev 
  *   param data:   r24:r25
  *   param length: r22:r23
  */
@@ -81,44 +85,22 @@ cli_hexdump_rev:
 	push r29
 	push r16
 	push r17
-	push r2
 	movw r28, r24
 	movw r16, r22
 	add r28, r22
 	adc r29, r23
+	movw r26, r22
+	adiw r26, 0
 1:
-	tst r16
-	brne 2f
-	tst r17
 	breq hexdump_exit
-2:
-	ld r2, -Y
-	mov r24, r2
-	swap r24
-	ldi r25, 0x0f
-	and r24, r25
-	and r2, r25
-	ldi r30, lo8(hexdigit_tab_P)
-	ldi r31, hi8(hexdigit_tab_P)
-	add r30, r24
-	adc r31, r1
-	clr r25
-	lpm r24, Z
-	rcall cli_putc
-	ldi r30, lo8(hexdigit_tab_P)
-	ldi r31, hi8(hexdigit_tab_P)
-	add r30, r2
-	adc r31, r1
-	clr r25
-	lpm r24, Z
-	rcall cli_putc
-	
+	ld r24, -Y
+	rcall cli_hexdump_byte	
 	subi r16, 1
 	sbci r17, 0
 	rjmp 1b
 	
 /******************************************************************************/
-/* cli_hexdump 
+/* cli_hexdump2
  *   param data:   r24:r25
  *   param length: r22:r23
  */
@@ -128,35 +110,14 @@ cli_hexdump2:
 	push r29
 	push r16
 	push r17
-	push r2
 	movw r28, r24
 	movw r16, r22
-1:
-	tst r16
-	brne 2f
-	tst r17
+	movw r26, r16
+	adiw r26, 0
+1:	
 	breq hexdump_exit
-2:
-	ld r2, Y+
-	mov r24, r2
-	swap r24
-	ldi r25, 0x0f
-	and r24, r25
-	and r2, r25
-	ldi r30, lo8(hexdigit_tab_P)
-	ldi r31, hi8(hexdigit_tab_P)
-	add r30, r24
-	adc r31, r1
-	clr r25
-	lpm r24, Z
-	rcall cli_putc
-	ldi r30, lo8(hexdigit_tab_P)
-	ldi r31, hi8(hexdigit_tab_P)
-	add r30, r2
-	adc r31, r1
-	clr r25
-	lpm r24, Z
-	rcall cli_putc
+	ld r24, Y+
+	rcall cli_hexdump_byte
 	clr r25
 	ldi r24,' '
 	rcall cli_putc

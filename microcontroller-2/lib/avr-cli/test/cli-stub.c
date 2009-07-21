@@ -43,9 +43,11 @@ uint8_t cli_echo=1;
 void echo_ctrl(char* s);
 uint16_t max_cmd_length(PGM_VOID_P cmdlist);
 int8_t search_and_call(char* cmd, uint16_t maxcmdlength, PGM_VOID_P cmdlist);
+void cli_option_listing(char* buffer, PGM_VOID_P cmdlist);
 	
 
-void cli_auto_help(uint16_t maxcmdlength, PGM_VOID_P cmdlist){
+void cli_auto_help(uint16_t maxcmdlength, PGM_VOID_P cmdlist);/*
+{
 	cmdlist_entry_t item;
 	uint16_t i;
 	if(!cli_tx)
@@ -81,7 +83,7 @@ void cli_auto_help(uint16_t maxcmdlength, PGM_VOID_P cmdlist){
 		cli_putstr_P(PSTR("\r\n"));
 	}
 }
-
+*/
 typedef void(*str_fpt)(char*);
 #define CLI_ENTER     13
 #define CLI_BACKSPACE  8
@@ -115,26 +117,7 @@ uint8_t cli_completion(char* buffer, uint16_t maxcmdlength, PGM_VOID_P cmdlist){
 		strcpy(buffer, ref);
 	return ~i;
 }
-void cli_option_listing(char* buffer, PGM_VOID_P cmdlist);
-/*
-void cli_option_listing(char* buffer, PGM_VOID_P cmdlist){
-	char* itemstr;
-	uint16_t len=strlen(buffer);
-	for(;;){
-		itemstr = (char*)pgm_read_word(cmdlist);
-		if(itemstr==NULL){
-			cli_putstr_P(PSTR("\r\n>"));
-			cli_putstr(buffer);
-			return;
-		}
-		cmdlist = (uint8_t*)cmdlist +CMDLIST_ENTRY_SIZE;
-		if(!strncmp_P(buffer, itemstr, len)){
-			cli_putstr_P(PSTR("\r\n    "));
-			cli_putstr_P(itemstr);
-		}
-	}
-}
-*/
+
 int8_t cmd_interface(PGM_VOID_P cmd_desc){
 	uint16_t cli_buffer_size;
 	uint16_t cli_buffer_index;
