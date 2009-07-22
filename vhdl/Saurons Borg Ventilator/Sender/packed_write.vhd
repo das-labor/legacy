@@ -39,14 +39,6 @@ entity packet_write is
 		 rdy             :  out std_logic;
 		 counter         :  out std_logic_vector (9 downto 0)
 
---		 diag_bitcounter :  out std_logic_vector (3 downto 0);
---		 diag_schieb_reg :  out std_logic_vector (9 downto 0);
---	    diag_b10        :  out std_logic_vector (9 downto 0);
---		 diag_crc1       :  out std_logic_vector (7 downto 0);
---		 diag_crc2       :  out std_logic_vector (7 downto 0);
---		 diag_daten      :  out std_logic_vector (7 downto 0);
---		 diag_crc		  :  out std_logic_vector (15 downto 0)
-	 
 	 
 			 );
 
@@ -61,9 +53,6 @@ CONSTANT packetlange: integer := 514;  -- Länge der Datenpakete  *
 ----------------SIGNALE-INNERHALB-DER-ARCHITECTURE------------------------------------
 
 signal bitcounter   : integer range 0 to 10;
-
---signal sync_res     : std_logic;
---signal rdy_i        : std_logic;
 signal schieb_reg   : std_logic_vector (9 downto 0);
 signal daten_i      : std_logic_vector (7 downto 0);
 signal b10_code     : std_logic_vector (9 downto 0);
@@ -92,7 +81,6 @@ attribute box_type : string;
 attribute box_type of encoder_b8b10b : component is "black_box";
 
 
-----------------------BEGINN-ARCHITECTURE---------------------------------------------
 BEGIN
 
 ----------------------BITS-EINES-BYTES-ZÄHLEN-----------------------------------------
@@ -106,7 +94,6 @@ begin
 		end if;
 	end if;
 end process bitcount;
---diag_bitcounter<= CONV_STD_LOGIC_VECTOR(bitcounter, 4);
 
 
 ---------------------BYTES-EINES-DATENPAKETES-ZÄHLEN----------------------------------
@@ -153,8 +140,7 @@ if rising_edge (clk) then
 	end if;
 end if;  
 end process schieb;
---diag_schieb_reg <= schieb_reg;
---diag_b10        <=b10_code;
+
 q1_i1 <=schieb_reg (9);
 
 ----------------------DATEN-AUF-CLOCK-SYNCHRONISIEREN-(2*FF)--------------------------
@@ -189,7 +175,6 @@ if rising_edge (clk) then
 	end if;
 end if;  
 end process daten;
---diag_daten <= daten_i;
 ---------CHECKSUMME-BERECHNEN--------------------------------------------------------- 
 
 crccount:process (clk)
@@ -213,9 +198,6 @@ if rising_edge(clk) then
 end if;
 end process crcsave;
 
---diag_crc <= crc_tmp;
---diag_crc1 <= crc1;
---diag_crc2 <= crc2;
 -------------------------B8B10-ENCODER-EINBINDEN--------------------------------------
 u1 : encoder_b8b10b
 		port map (
