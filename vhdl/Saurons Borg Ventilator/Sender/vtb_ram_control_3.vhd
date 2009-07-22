@@ -459,9 +459,11 @@ wait for 10 ns;
 		
 		 
 --nach einer eingestellten zeit ein neues Bild speichern 
+wait for 10240 us;
+
 for xxx in 1 to 999 loop
 
-	wait for 5000 us; -- Zeit bis zum nächsten bild 200
+	wait for 20480 us; -- Zeit bis zum nächsten bild 200 | 5000
 		
    report "Jetzt ist das Bild fertig...";
 
