@@ -51,10 +51,8 @@ BEGIN SCHEMATIC
         SIGNAL sram_2_ub
         SIGNAL sram_2_lb
         SIGNAL winkel(9:0)
-        BEGIN SIGNAL sram_read(15:0)
-        END SIGNAL
-        BEGIN SIGNAL sram_pos(7:0)
-        END SIGNAL
+        SIGNAL sram_read(15:0)
+        SIGNAL sram_pos(7:0)
         SIGNAL winkel_ram(9:0)
         SIGNAL b10code
         SIGNAL rdy_diag
@@ -218,7 +216,7 @@ BEGIN SCHEMATIC
             CIRCLE N 128 -48 160 -16 
         END BLOCKDEF
         BEGIN BLOCKDEF ram_control
-            TIMESTAMP 2009 7 18 10 41 53
+            TIMESTAMP 2009 7 20 19 30 54
             LINE N 448 -864 512 -864 
             LINE N 448 -672 512 -672 
             LINE N 448 -544 512 -544 
@@ -257,7 +255,7 @@ BEGIN SCHEMATIC
             LINE N 112 -528 48 -528 
         END BLOCKDEF
         BEGIN BLOCKDEF packet_buffer
-            TIMESTAMP 2009 7 22 22 11 7
+            TIMESTAMP 2009 7 23 7 3 15
             RECTANGLE N 64 -384 304 84 
             LINE N 64 -352 0 -352 
             LINE N 64 -320 0 -320 
