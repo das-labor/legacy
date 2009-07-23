@@ -75,7 +75,12 @@
 
 #ifndef DDR_SCK
 	#define DDR_SCK DDR_SPI
-	#define PORT_SPI DDR_SPI
+	#define PORT_SCK PORT_SPI
+#endif
+
+#ifndef DDR_SPI_SS
+	#define DDR_SPI_SS DDR_SPI
+	#define PORT_SPI_SS PORT_SPI
 #endif
 
 
@@ -193,19 +198,5 @@ void rfm12_rx_clear()
 	rf_rx_buffer.rf_buffer_out = &rf_rx_buffer.rf_buffers[rf_rx_buffer.buffer_out_num];
 }
 
-#ifdef RFM12_RECEIVE_CW
-#define RFRXBUF_SIZE 55
-#define STATE_EMPTY 0
-#define STATE_RECEIVING 1
-#define STATE_FULL 2
-
-typedef struct{
-volatile	uint8_t p;
-volatile	uint8_t state;
-	uint8_t buf[RFRXBUF_SIZE];
-}rfrxbuf_t;
-
-
-extern rfrxbuf_t cw_rxbuf;
-#endif
-
+#include "rfm12_raw.h"
+#include "rfm12_ctrl.h"

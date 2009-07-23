@@ -89,127 +89,14 @@ rf_rx_buffer_t rf_rx_buffer;
 #define MODE_RAW 2
 uint8_t rfm12_mode;
 
+/* include spi functions into here */
+#include "rfm12_spi.c"
 
-#ifdef RFM12_RAW_TX
-uint8_t rfm12_raw_tx;
-#endif
+/* include control / init functions into here */
+#include "rfm12_ctrl.c"
 
-
-/* @description Actual sending function to send raw data to the Module
- * @note do NOT call this function directly, unless you know what you're doing.
- */
-
-
-#ifdef SPI_SOFTWARE
-static uint8_t spi_data(uint8_t c){
-	uint8_t x, d=d;
-	for(x=0;x<8;x++){
-		if(c & 0x80){
-			PORT_MOSI |= (1<<BIT_MOSI);
-		}else{
-			PORT_MOSI &= ~(1<<BIT_MOSI);	
-		}
-		PORT_SCK |= (1<<BIT_SCK);
-		d<<=1;
-		if(PIN_MISO & (1<<BIT_MISO)){
-			d|=1;
-		}
-		PORT_SCK &= ~(1<<BIT_SCK);
-		c<<=1;
-	}
-	return d;
-}
-#endif
-
-
-//non-inlined version of rfm12_data
-//warning: without the attribute, gcc will inline this even if -Os is set
-void __attribute__ ((noinline)) rfm12_data(uint16_t d)
-{
-	SS_ASSERT();
-#ifndef SPI_SOFTWARE	
-	SPDR = d>>8;
-	while(!(SPSR & (1<<SPIF)));
-
-	SPDR = d & 0xff;
-	while(!(SPSR & (1<<SPIF)));
-#else
-	spi_data(d >> 8   );
-	spi_data(d &  0xff);
-#endif
-	SS_RELEASE();
-}
-
-
-//non-inlined version of rfm12_read
-//warning: without the attribute, gcc will inline this even if -Os is set
-uint16_t __attribute__ ((noinline)) rfm12_read(uint16_t c)
-{
-	uint16_t retval;
-	SS_ASSERT();
-	
-#ifndef SPI_SOFTWARE	
-	SPDR = c>>8;
-	while(!(SPSR & (1<<SPIF)));
-	retval = SPDR<<8;
-	SPDR = c & 0xff;
-	while(!(SPSR & (1<<SPIF)));
-	retval |= SPDR;
-#else
-	retval =  spi_data(c >> 8   );
-	retval <<= 8;
-	retval |= spi_data(c &  0xff);
-#endif
-	SS_RELEASE();
-	return retval;
-}
-
-
-/* @description reads the upper 8 bits of the status
- * register (the interrupt flags)
- */
- uint8_t rfm12_read_int_flags_inline()
-{
-	SS_ASSERT();
-#ifndef SPI_SOFTWARE	
-	SPDR = 0;
-	while(!(SPSR & (1<<SPIF)));
-	SS_RELEASE();
-	return SPDR;
-
-#else
-	unsigned char x, d=d;
-	PORT_MOSI &= ~(1<<BIT_MOSI);	
-	for(x=0;x<8;x++){
-		PORT_SCK |= (1<<BIT_SCK);
-		d<<=1;
-		if(PIN_MISO & (1<<BIT_MISO)){
-			d|=1;
-		}
-		PORT_SCK &= ~(1<<BIT_SCK);
-	}
-	SS_RELEASE();
-	return d;
-#endif
-}
-
-/* @description inline version of rfm12_data for use in interrupt
- */
- void rfm12_data_inline(uint8_t cmd, uint8_t d)
-{
-	SS_ASSERT();
-#ifndef SPI_SOFTWARE
-	SPDR = cmd;
-	while(!(SPSR & (1<<SPIF)));
-
-	SPDR = d;
-	while(!(SPSR & (1<<SPIF)));
-#else
-	spi_data( cmd );
-	spi_data( d   );
-#endif
-	SS_RELEASE();
-}
+/* include raw transceiving functions here */
+#include "rfm12_raw.c"
 
 
 void rfm12_reset_fifo()
@@ -217,31 +104,6 @@ void rfm12_reset_fifo()
 	rf_rx_buffer.status = STATUS_IDLE;
 	rfm12_data_inline(RFM12_CMD_FIFORESET>>8, CLEAR_FIFO_INLINE);
 	rfm12_data_inline(RFM12_CMD_FIFORESET>>8, ACCEPT_DATA_INLINE);
-}
-
-/* @description inline function for reading the fifo
- */
-uint8_t rfm12_read_fifo_inline()
-{
-	SS_ASSERT();
-
-#ifndef SPI_SOFTWARE	
-	SPDR =  ( RFM12_CMD_READ >> 8 );
-	while(!(SPSR & (1<<SPIF)));
-
-	SPDR = 0;
-	while(!(SPSR & (1<<SPIF)));
-
-	SS_RELEASE();
-	return SPDR;
-#else
-	uint8_t retval;
-	spi_data( RFM12_CMD_READ >> 8 );
-	retval = spi_data( 0   );
-
-	SS_RELEASE();
-	return retval;
-#endif
 }
 
 
@@ -532,99 +394,6 @@ void rfm12_tick()
 
 }
 
-#ifdef RFM12_RECEIVE_CW
-
-rfrxbuf_t cw_rxbuf;
-
-#if RFM12_NOIRQ
-void rfm12_poll()
-#else
-ISR(ADC_vect, ISR_NOBLOCK)
-#endif
-{
-	static uint16_t adc_average;
-	static uint8_t pulse_timer;
-	
-	       uint8_t    value;
-	static uint8_t oldvalue;
-	static uint8_t ignore;
-	uint16_t adc;
-	
-
-	
-	ADCSRA = (1<<ADEN) | (1<<ADFR) | (0<<ADIE) //start free running mode
-			| (1<<ADPS2) | (1<<ADPS1);  //preescaler to clk/64
-										//samplerate = 16MHz/(64*13) = 19231 Hz
-
-	
-	adc = ADC;
-	
-	adc_average -= adc_average/64;
-	adc_average +=adc;
-	
-	value = (ADC > ((adc_average/64)+50) )?1:0;
-	
-	if(value){
-		PORTD |= (1<<PD7);
-	}else{
-		PORTD &= ~(1<<PD7);
-	}
-
-
-	if(TCNT0 > 0xE0){
-		ignore = 0;
-	}
-	
-	if(cw_rxbuf.state == STATE_EMPTY){
-		if(value && (!ignore) ){
-			//pulse_timer = 0;
-			TCNT0 = 0;
-			cw_rxbuf.p   = 0;
-			cw_rxbuf.state = STATE_RECEIVING;
-		}
-	}else if(cw_rxbuf.state == STATE_FULL){
-		if(value){
-			TCNT0 = 0;
-			ignore = 1;
-		}
-		
-	}else if(cw_rxbuf.state == STATE_RECEIVING){
-		if(value != oldvalue){
-
-			cw_rxbuf.buf[cw_rxbuf.p] = TCNT0;
-			TCNT0 = 0;
-			//pulse_timer = 0;
-			if(cw_rxbuf.p != (RFRXBUF_SIZE-1) ) cw_rxbuf.p++;
-		}else if(TCNT0 > 0xe0){
-			//if( !value ){
-			//PORTD |= (1<<PD6);
-				cw_rxbuf.state = STATE_FULL;
-			//}else{
-			//	cw_rxbuf.state = STATE_EMPTY;
-			//}
-		}
-	}
-
-	oldvalue = value;
-
-	ADCSRA = (1<<ADEN) | (1<<ADFR) | (1<<ADIE) //start free running mode
-			| (1<<ADPS2) | (1<<ADPS1);  //preescaler to clk/64
-										//samplerate = 16MHz/(64*13) = 19231 Hz
-
-
-}
-
-void adc_init(){
-	ADMUX  = (1<<REFS0) | (1<<REFS1); //Internal 2.56V Reference, MUX0
-	
-	ADCSRA = (1<<ADEN) | (1<<ADSC) | (1<<ADFR) | (1<<ADIE) //start free running mode
-			| (1<<ADPS2) | (1<<ADPS1);  //preescaler to clk/64
-										//samplerate = 16MHz/(64*13) = 19231 Hz
-	
-}
-
-#endif
-
 
 /* @description ask the rfm12 to transmit a packet when possible (carrier sense)
  * the data should be written to the tx buffer first after asking if
@@ -691,45 +460,6 @@ rfm12_tx ( uint8_t len, uint8_t type, uint8_t *data )
 #endif
 }
 
-#if RFM12_RAW_TX > 0
-/* @description Enable the transmitter immediately.
- */
-inline void rfm12_tx_on (void)
-{
-/*	rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
-	rfm12_data(RFM12_CMD_TX | PREAMBLE);
-	rfm12_data(RFM12_CMD_TX | PREAMBLE);
-	/* set enable transmission bit now. */
-	rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);
-}
-/* @description Set default settings (usually transmitter off, receiver on)
- */
-inline void rfm12_tx_off (void)
-{
-	/* turn off everything. */
-	rfm12_data(RFM12_CMD_PWRMGT);
-}
-
-/* @description en- or disable raw transmissions.
- */
-void rfm12_rawmode (uint8_t in_setting)
-{
-	rfm12_raw_tx = in_setting;
-
-	if (in_setting)
-	{
-		rfm12_mode = MODE_RAW;
-		RFM12_INT_OFF();
-	} else
-	{
-		/* re-enable the receiver */
-		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ER);
-		RFM12_INT_ON();
-		rfm12_mode = MODE_RX;
-	}
-}
-#endif
-
 void spi_init()
 {
 	DDR_MOSI   |= (_BV(BIT_MOSI));
@@ -740,79 +470,6 @@ void spi_init()
 
 #ifndef SPI_SOFTWARE	
 	SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);//SPI Master, clk/16
-#endif
-}
-
-
-
-void rfm12_init()
-{
-	SS_RELEASE();
-	DDR_SS |= (1<<BIT_SS);
-	
-	spi_init();
-
-	#ifdef RFM12_RAW_TX
-	rfm12_raw_tx = 0;
-	#endif
-
-	rf_tx_buffer.sync[0] = SYNC_MSB;
-	rf_tx_buffer.sync[1] = SYNC_LSB;
-	
-	rf_rx_buffer.rf_buffer_out = &rf_rx_buffer.rf_buffers[0];
-	rf_rx_buffer.rf_buffer_in  = &rf_rx_buffer.rf_buffers[0];
-	
-	//disable all power
-	//this was no good idea, because when one writes the PWRMGT register
-	//two times in a short time, the second write seems to be delayed.
-	//the PWRMGT register is written at the end of this function.
-	rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
-
-	//enable internal data register and fifo
-	rfm12_data(RFM12_CMD_CFG | RFM12_CFG_EL | RFM12_CFG_EF | RFM12_BAND_433 | RFM12_XTAL_12PF);
-	
-	//automatic clock lock control(AL), digital Filter(!S), Data quality
-	//detector value 3
-	rfm12_data(RFM12_CMD_DATAFILTER | RFM12_DATAFILTER_AL | 3);
-	
-	//2 Byte Sync Pattern, Start fifo fill when sychron pattern received,
-	//disable sensitive reset, Fifo filled interrupt at 8 bits
-	rfm12_data(RFM12_CMD_FIFORESET | RFM12_FIFORESET_DR | (8<<4));
-
-	//set AFC to automatic, (+4 or -3)*2.5kHz Limit, fine mode, active and enabled
-	rfm12_data(RFM12_CMD_AFC | RFM12_AFC_AUTO_KEEP | RFM12_AFC_LIMIT_4
-				| RFM12_AFC_FI | RFM12_AFC_OE | RFM12_AFC_EN);
-	
-	//set frequency
-	rfm12_data(RFM12_CMD_FREQUENCY | RFM12_FREQUENCY_CALC_433(FREQ) );
-
-	//set datarate
-	rfm12_data(RFM12_CMD_DATARATE | DATARATE_VALUE );
-
-	//set rx parameters: int-in/vdi-out pin is vdi-out,
-	//Bandwith, LNA, RSSI
-	rfm12_data(RFM12_CMD_RXCTRL | RFM12_RXCTRL_P16_VDI 
-			| RFM12_RXCTRL_VDI_FAST | RFM12_RXCTRL_BW_400 | RFM12_RXCTRL_LNA_6 
-			| RFM12_RXCTRL_RSSI_79 );
-	
-	//set TX Power to -0dB, frequency shift = +-125kHz
-	rfm12_data(RFM12_CMD_TXCONF | RFM12_TXCONF_POWER_0 | RFM12_TXCONF_FS_CALC(125000) );
-	
-	//enable receiver
-	rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ER);
-		
-	//init receiver fifo, we now begin receiving.
-	rfm12_data(CLEAR_FIFO);
-	rfm12_data(ACCEPT_DATA);
-
-	//setup interrupt for falling edge trigger
-	RFM12_INT_SETUP();
-	
-	//activate the interrupt
-	RFM12_INT_ON();
-
-#ifdef RFM12_RECEIVE_CW
-	adc_init();
 #endif
 }
 
@@ -859,14 +516,4 @@ uint8_t rfm12_lowPowerTx( uint8_t len, uint8_t type, uint8_t *data )
 }
 #endif
 
-#if RFM12_LIVECTRL
-inline void rfm12_set_rate (uint16_t in_datarate)
-{
-	rfm12_data(RFM12_CMD_DATARATE | DATARATE_VALUE );
-}
 
-inline void rfm12_set_frequency (uint16_t in_freq)
-{
-	rfm12_data(RFM12_CMD_FREQUENCY | in_freq );
-}
-#endif
