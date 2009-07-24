@@ -1,0 +1,70 @@
+====================
+= Usage of uart_ni =
+====================
+
+= About =
+uart_ni is an implementation of the uart interface of AVR microcontrollers.
+It's intended to be small and not using interrupt mechanisms.
+Usage of first and second uart is supported.
+
+= Files =
+uart_ni.h     - header file, declaring the functions for interfacing the uart
+uart_ni-asm.S - assembly code file implementing the interface
+uart_defs.h   - header file, declaring macros for the uart configuration
+config.h      - header file, examples for configuring the uarts
+test/*        - files implementing a testsuit for the uart interface
+docu/*        - documentation
+COPYING.gpl3  - license file containing the GPLv3 license
+
+= Configuration =
+The uart is configured at compile time by setting the macros in config.h to
+the appropriate values.
+
+== Macros ==
+UART0 - set to 1 for enableing the first uart, set to 0 for disableing
+UART1 - set to 1 for enableing the second uart, set to 0 for disableing
+UARTn_BAUD_RATE - set baudrate for uart n
+UARTn_STOPBITS  - set ammount of stopbits for uart n
+UARTn_DATABITS  - set ammount of databits for uart n
+UARTn_PARATY    - set paraty mode for uart n
+The baudrate is given as immediate value, while the other parameters use
+special macros for configuration. These macros are defined in uart_defs.h .
+
+=== STOPBIT macros ===
+UART_STOPBITS_1: one stop bit
+UART_STOPBITS_2: two stop bits
+
+=== DATABIT macros ===
+UART_DATABIRTS_5: five data bit
+UART_DATABIRTS_6: six data bit
+UART_DATABIRTS_7: seven data bit
+UART_DATABIRTS_8: eight data bit
+UART_DATABIRTS_9: nine data bit
+
+=== PARATY macros ===
+UART_PARATY_NONE: no paraty bit
+UART_PARATY_EVEN: even paraty
+UART_PARATY_ODD:  odd paraty
+
+= API =
+== init ==
+uart0_init is used to initialize the first uart
+uart1_init is used to initialize the second uart
+
+== putc ==
+uart0_putc is used to write data on the first uart
+uart1_putc is used to write data on the second uart
+
+== getc ==
+uart0_getc reads data from the first uart
+uart1_getc reads data from the second uart
+These function block until data is available. The read data is given to the
+calling function by the return value.
+
+== dataavail ==
+uart0_dataavail returns zero if no data on the first uart is avaliable, 
+                if no data is available the return value is non-zero
+uart0_dataavail returns zero if no data on the second uart is avaliable, 
+                if no data is available the return value is non-zero
+
+
