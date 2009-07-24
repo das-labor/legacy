@@ -15,7 +15,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
  *
- * @author Peter Fuhrmann, Hans-Gert Dahme, Soeren Heisrath
+ * @author Peter Fuhrmann, Hans-Gert Dahmen, Soeren Heisrath
  */
 
 /******************************************************
@@ -26,7 +26,7 @@
  *                                                    *
  ******************************************************/
  
-#ifdef _RFM12_H
+#ifndef _RFM12_H
 #define _RFM12_H
 
 //FIXME: evil hack

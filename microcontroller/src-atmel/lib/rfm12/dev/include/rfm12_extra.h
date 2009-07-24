@@ -18,7 +18,8 @@
  * @author Peter Fuhrmann, Hans-Gert Dahmen, Soeren Heisrath
  */
  
-#pragma once
+#ifndef _RFM12_EXTRA_H
+#define _RFM12_EXTRA_H
  
 /******************************************************
  *                                                    *
@@ -62,9 +63,9 @@ void adc_init();
 * 	amplitude modulated raw tx mode				 *
  ******************************************************/
  
- #if RFM12_RAW_TX > 0
+#if RFM12_RAW_TX > 0
  
- /******************************************************
+/******************************************************
 * 	function protoypes						 *
  ******************************************************/
  
@@ -97,3 +98,5 @@ void rfm12_set_wakeup_timer(uint16_t val);
 void rfm12_powerDown();
 uint8_t rfm12_lowPowerTx( uint8_t len, uint8_t type, uint8_t *data );
 #endif /* RFM12_LOW_POWER */
+
+#endif /* _RFM12_EXTRA_H */

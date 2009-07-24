@@ -15,21 +15,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
  *
- * @author Peter Fuhrmann, Hans-Gert Dahme, Soeren Heisrath
+ * @author Peter Fuhrmann, Hans-Gert Dahmen, Soeren Heisrath
  */
  
- #pragma once
+#ifndef _RFM12_CTRL_H
+#define _RFM12_CTRL_H
 
-/******************************************************
- *                                                    *
- *    NO  C O N F I G U R A T I O N  IN THIS FILE     *
- *                                                    *
- *      ( thou shalt not change lines below )         *
- *                                                    *
- ******************************************************/
-
-/******************************************************
-* 	function protoypes						 *
- ******************************************************/
+/************************
+* function protoypes	
+*/
  
-void rfm12_init();
+#if RFM12_LIVECTRL > 0
+void rfm12_set_rate (uint16_t in_datarate);
+void rfm12_set_frequency (uint16_t in_freq);
+#endif /* RFM12_LIVECTRL */
+
+#endif /* _RFM12_EXTRA_H */
