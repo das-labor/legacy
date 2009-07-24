@@ -111,14 +111,14 @@ typedef struct
 	uint8_t bytecount;
 	
 	//points to the rf_buffer in rf_buffers that will be filled next
-	rf_buffer_t * rf_buffer_in;
+	rf_rx_buffer_t * rf_buffer_in;
 	
 	//points to the rf_buffer in rf_buffers that will be retruned for reading next
-	rf_buffer_t * rf_buffer_out;
+	rf_rx_buffer_t * rf_buffer_out;
 	
 	//the numbers of the currently used in / out receive buffers
 	uint8_t buffer_in_num;
-	uint8_t buffer_out_num;	
+	uint8_t buffer_out_num;
 } rfm12_control_t;
 
 
@@ -144,25 +144,25 @@ extern rfm12_control_t ctrl;
 //(returns STATUS_FREE or STATUS_COMPLETE)
 static inline uint8_t rfm12_rx_status()
 {
-	return rf_rx_buffer.rf_buffer_out->status;
+	return ctrl.rf_buffer_out->status;
 }
 
 //inline function to return the rx buffer length field
 static inline uint8_t rfm12_rx_len()
 {
-	return rf_rx_buffer.rf_buffer_out->len;
+	return ctrl.rf_buffer_out->len;
 }
 
 //inline function to return the rx buffer type field
 static inline uint8_t rfm12_rx_type()
 {
-	return rf_rx_buffer.rf_buffer_out->type;
+	return ctrl.rf_buffer_out->type;
 }
 
 //inline function to retreive current rf buffer contents
 static inline uint8_t *rfm12_rx_buffer()
 {
-	return (uint8_t*) rf_rx_buffer.rf_buffer_out->buffer;
+	return (uint8_t*) ctrl.rf_buffer_out->buffer;
 }
 
 

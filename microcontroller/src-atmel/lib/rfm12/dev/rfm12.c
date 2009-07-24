@@ -43,11 +43,14 @@
  * library internal globals
 */
 
-//Buffer and status for the message to be transmitted
+//buffer and status for the message to be transmitted
 rf_tx_buffer_t rf_tx_buffer;
 
-//buffer and status for the message to be received
-rf_rx_buffer_t rf_rx_buffer;
+//buffers for the message to be received
+rf_rx_buffer_t rf_rx_buffers[2];
+
+//the control struct
+rfm12_control_t ctrl;
 
 
 /************************
@@ -95,7 +98,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 {
 	RFM12_INT_OFF();
 	uint8_t status;
-	static uint8_t checksum;
+	static uint8_t checksum; //static local variables produce smaller code size than globals
 
 	//first we read the first byte of the status register
 	//to get the interrupt flags
@@ -108,7 +111,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 		
 		//FIXME: crude aproach of using rfm12_mode to decide what to write to PWRMGT register.
 		//should be changed to using a shadow var for the PWRMGT state
-		if(rfm12_state != STATE_TX)
+		if(ctrl.rfm12_state != STATE_TX)
 		{
 			rfm12_data(RFM12_CMD_PWRMGT | (PWRMGT_DEFAULT & ~RFM12_PWRMGT_EW) | RFM12_PWRMGT_ER );
 			rfm12_data(RFM12_CMD_PWRMGT |  PWRMGT_DEFAULT                     | RFM12_PWRMGT_ER );
@@ -129,7 +132,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 		uart_putc('F');
 	#endif		
 	
-	switch(rfm12_state)
+	switch(ctrl.rfm12_state)
 	{
 		case STATE_TX:
 			//debug
@@ -137,10 +140,10 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 			uart_putc('T');
 			#endif
 
-			if(rf_tx_buffer.bytecount < rf_tx_buffer.num_bytes)
+			if(ctrl.bytecount < ctrl.num_bytes)
 			{
 				//load the next byte from our buffer struct.
-				rfm12_data_inline( (RFM12_CMD_TX>>8), rf_tx_buffer.sync[rf_tx_buffer.bytecount++]);
+				rfm12_data_inline( (RFM12_CMD_TX>>8), rf_tx_buffer.sync[ctrl.bytecount++]);
 				
 				//end the interrupt without resetting the fifo
 				goto END;
@@ -150,10 +153,10 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 			/* the fifo will be resetted at the end of the function */
 			
 			//flag the buffer as free again
-			rf_tx_buffer.status = STATUS_FREE;
+			ctrl.txstate = STATUS_FREE;
 			
 			//we are now accepting transmissions again
-			rfm12_state = STATE_RX_IDLE;
+			ctrl.rfm12_state = STATE_RX_IDLE;
 			
 			//turn off the transmitter
 			//and enable receiver
@@ -163,16 +166,16 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 			rfm12_data_inline( (RFM12_CMD_TX>>8), 0xaa);			
 			break;
 			
-		case RFM_STATE_RX_IDLE:
+		case STATE_RX_IDLE:
 			//init the bytecounter - remember, we will read the length byte, so this must be 1
-			rf_rx_buffer.bytecount = 1;
+			ctrl.bytecount = 1;
 
 			//read the length byte,  and write it to the checksum
 			//remember, the first byte is the length byte			
 			checksum = rfm12_read_fifo_inline();
 			
 			//add the packet overhead and store it into a working variable
-			rf_rx_buffer.num_bytes = checksum + PACKET_OVERHEAD;
+			ctrl.num_bytes = checksum + PACKET_OVERHEAD;
 			
 			//debug
 			#if RFM12_UART_DEBUG >= 2
@@ -182,14 +185,14 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 			
 			//see whether our buffer is free
 			//FIXME: put this into global statekeeping struct, the free state can be set by the function which pulls the packet, i guess
-			if(rf_rx_buffer.rf_buffer_in->status == STATUS_FREE)
+			if(ctrl.rf_buffer_in->status == STATUS_FREE)
 			{
 				//the current receive buffer is empty, so we start receiving
-				rfm12_state = STATE_RX_ACTIVE;
+				ctrl.rfm12_state = STATE_RX_ACTIVE;
 			
 				//FIXME:  why the hell do we need this?!
 				//in principle, the length is stored alongside with the buffer.. the only problem is, that the buffer might be cleared during reception
-				rf_rx_buffer.rf_buffer_in->len = rf_rx_buffer.num_bytes;
+				ctrl.rf_buffer_in->len = ctrl.num_bytes;
 				
 				//end the interrupt without resetting the fifo
 				goto END;
@@ -200,7 +203,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 			
 		case STATE_RX_ACTIVE:			
 			//check if transmission is complete
-			if(rf_rx_buffer.bytecount < rf_rx_buffer.num_bytes)
+			if(ctrl.bytecount < ctrl.num_bytes)
 			{
 				uint8_t data;
 				
@@ -218,21 +221,21 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 				checksum ^= data;
 				
 				//put next byte into buffer, if there is enough space
-				if(rf_rx_buffer.bytecount < (RFM12_RX_BUFFER_SIZE + 3))
+				if(ctrl.bytecount < (RFM12_RX_BUFFER_SIZE + 3))
 				{
 					//hackhack: begin writing to struct at offsetof len
-					(& rf_rx_buffer.rf_buffer_in->len)[rf_rx_buffer.bytecount] = data;
+					(& ctrl.rf_buffer_in->len)[ctrl.bytecount] = data;
 				}
 				
 				//check header against checksum
-				if (rf_rx_buffer.bytecount == 2 && checksum != 0xff)
+				if (ctrl.bytecount == 2 && checksum != 0xff)
 				{
 					//if the checksum does not match, reset the fifo
 					break;
 				}
 
 				//increment bytecount
-				rf_rx_buffer.bytecount++;
+				ctrl.bytecount++;
 				
 				//end the interrupt without resetting the fifo
 				goto END;
@@ -247,16 +250,16 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 			#endif
 			
 			//indicate that the buffer is ready to be used
-			rf_rx_buffer.rf_buffer_in->status = STATUS_COMPLETE;
+			ctrl.rf_buffer_in->status = STATUS_COMPLETE;
 			
 			//switch to other buffer
-			rf_rx_buffer.buffer_in_num = (rf_rx_buffer.buffer_in_num + 1) % 2;
-			rf_rx_buffer.rf_buffer_in = &rf_rx_buffer.rf_buffers[rf_rx_buffer.buffer_in_num];		
+			ctrl.buffer_in_num = (ctrl.buffer_in_num + 1) % 2;
+			ctrl.rf_buffer_in = &rf_rx_buffers[ctrl.buffer_in_num];		
 			break;
 	}
 	
 	//reset the fifo and resets the state machine to idle
-	rfm12_state = STATE_RX_IDLE;
+	ctrl.rfm12_state = STATE_RX_IDLE;
 	rfm12_data_inline(RFM12_CMD_FIFORESET>>8, CLEAR_FIFO_INLINE);
 	rfm12_data_inline(RFM12_CMD_FIFORESET>>8, ACCEPT_DATA_INLINE);
 		
@@ -271,13 +274,13 @@ void rfm12_tick()
 	
 	#if !(RFM12_NOCOLLISIONDETECTION)
 	//start with a channel free count of 16, this is necessary for the CW (ADC)  receive feature to work
-	static uint8_t channel_free_count = 16;
+	static uint8_t channel_free_count = 16; //static local variables produce smaller code size than globals
 	#endif
 
 	//debug
 	#if RFM12_UART_DEBUG
 	static uint8_t oldstate;
-	uint8_t state = rfm12_state;
+	uint8_t state = ctrl.rfm12_state;
 	if (oldstate != state)
 	{
 		uart_putstr ("mode change: ");
@@ -301,7 +304,7 @@ void rfm12_tick()
 
 	//don't disturb RFM12 if trasnmitting or receiving
 	//FIXME: raw tx mode is excluded from this check now
-	if(rfm12_state != STATE_RX_IDLE)
+	if(ctrl.rfm12_state != STATE_RX_IDLE)
 	{
 		return;
 	}
@@ -336,14 +339,21 @@ void rfm12_tick()
 	#endif	
 	
 	//do we have something to transmit?
-	if(rf_tx_buffer.status == STATUS_OCCUPIED)
+	if(ctrl.txstate == STATUS_OCCUPIED)
 	{ //yes: start transmitting
 		//disable the interrupt (as we're working directly with the transceiver now)
 		//hint: we could be losing an interrupt here, too
 		RFM12_INT_OFF();
 		
+		//calculate number of bytes to be sent by ISR
+		//2 sync bytes + len byte + type byte + checksum + message length + 1 dummy byte
+		ctrl.num_bytes = rf_tx_buffer.len + 6;
+		
+		//reset byte sent counter
+		ctrl.bytecount = 0;		
+		
 		//set mode for interrupt handler
-		rfm12_state = STATE_TX;
+		ctrl.rfm12_state = STATE_TX;
 		
 		//fill 2byte 0xAA preamble into data register
 		//the preamble helps the receivers AFC circuit to lock onto the exact frequency
@@ -375,15 +385,8 @@ uint8_t
 rfm12_start_tx(uint8_t type, uint8_t length)
 {
 	//exit if the buffer isn't free
-	if(rf_tx_buffer.status != STATUS_FREE)
+	if(ctrl.txstate != STATUS_FREE)
 		return TXRETURN(RFM12_TX_OCCUPIED);
-	
-	//calculate number of bytes to be sent by ISR
-	//2 sync bytes + len byte + type byte + checksum + message length + 1 dummy byte
-	rf_tx_buffer.num_bytes = length + 6;
-	
-	//reset byte sent counter
-	rf_tx_buffer.bytecount = 0;
 	
 	//write airlab header to buffer
 	rf_tx_buffer.len = length;
@@ -391,7 +394,7 @@ rfm12_start_tx(uint8_t type, uint8_t length)
 	rf_tx_buffer.checksum = length ^ type ^ 0xff;
 	
 	//schedule packet for transmission
-	rf_tx_buffer.status = STATUS_OCCUPIED;
+	ctrl.txstate = STATUS_OCCUPIED;
 	
 	return TXRETURN(RFM12_TX_ENQUEUED);
 }
@@ -414,7 +417,7 @@ rfm12_tx ( uint8_t len, uint8_t type, uint8_t *data )
 	if (len > RFM12_TX_BUFFER_SIZE) return TXRETURN(RFM12_TX_ERROR);
 
 	//exit if the buffer isn't free
-	if(rf_tx_buffer.status != STATUS_FREE)
+	if(ctrl.txstate != STATUS_FREE)
 		return TXRETURN(RFM12_TX_OCCUPIED);
 	
 	memcpy ( rf_tx_buffer.buffer, data, len );
@@ -431,11 +434,11 @@ rfm12_tx ( uint8_t len, uint8_t type, uint8_t *data )
 void rfm12_rx_clear()
 {
 	//mark the current buffer as empty
-	rf_rx_buffer.rf_buffer_out->status = STATUS_FREE;
+	ctrl.rf_buffer_out->status = STATUS_FREE;
 	
 	//switch to the other buffer
-	rf_rx_buffer.buffer_out_num = (rf_rx_buffer.buffer_out_num + 1 ) % 2 ;
-	rf_rx_buffer.rf_buffer_out = &rf_rx_buffer.rf_buffers[rf_rx_buffer.buffer_out_num];
+	ctrl.buffer_out_num = (ctrl.buffer_out_num + 1 ) % 2 ;
+	ctrl.rf_buffer_out = &rf_rx_buffers[ctrl.buffer_out_num];
 }
 
 
@@ -457,8 +460,8 @@ void rfm12_init()
 	rf_tx_buffer.sync[0] = SYNC_MSB;
 	rf_tx_buffer.sync[1] = SYNC_LSB;
 	
-	rf_rx_buffer.rf_buffer_out = &rf_rx_buffer.rf_buffers[0];
-	rf_rx_buffer.rf_buffer_in  = &rf_rx_buffer.rf_buffers[0];
+	ctrl.rf_buffer_out = &rf_rx_buffers[0];
+	ctrl.rf_buffer_in  = &rf_rx_buffers[0];
 	
 	//disable all power
 	//this was no good idea, because when one writes the PWRMGT register
