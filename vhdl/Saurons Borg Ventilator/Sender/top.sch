@@ -60,6 +60,7 @@ BEGIN SCHEMATIC
         SIGNAL winkel_diag(9:0)
         SIGNAL addra_diag(11:0)
         SIGNAL b8_code_diag(7:0)
+        SIGNAL counter_diag(9:0)
         PORT Input schaltin(7:0)
         PORT Input tast(3:0)
         PORT Output led(7:0)
@@ -97,6 +98,7 @@ BEGIN SCHEMATIC
         PORT Output winkel_diag(9:0)
         PORT Output addra_diag(11:0)
         PORT Output b8_code_diag(7:0)
+        PORT Output counter_diag(9:0)
         BEGIN BLOCKDEF display2
             TIMESTAMP 2009 7 16 13 56 18
             RECTANGLE N 64 -132 256 -16 
@@ -255,8 +257,9 @@ BEGIN SCHEMATIC
             LINE N 112 -528 48 -528 
         END BLOCKDEF
         BEGIN BLOCKDEF packet_buffer
-            TIMESTAMP 2009 7 23 7 3 15
-            RECTANGLE N 64 -384 304 84 
+            TIMESTAMP 2009 7 23 22 51 30
+            RECTANGLE N 304 84 368 108 
+            LINE N 304 96 368 96 
             LINE N 64 -352 0 -352 
             LINE N 64 -320 0 -320 
             RECTANGLE N 0 -284 64 -260 
@@ -275,6 +278,7 @@ BEGIN SCHEMATIC
             LINE N 304 -80 368 -80 
             LINE N 304 -128 368 -128 
             LINE N 304 -336 368 -336 
+            RECTANGLE N 64 -384 304 116 
         END BLOCKDEF
         BEGIN BLOCK XLXI_8 Picoblaze
             PIN clk clk50
@@ -357,12 +361,13 @@ BEGIN SCHEMATIC
             PIN sram_read(15:0) sram_read(15:0)
             PIN sram_pos(7:0) sram_pos(7:0)
             PIN winkel(9:0) winkel_ram(9:0)
-            PIN b8_code_diag(7:0) b8_code_diag(7:0)
-            PIN addra_diag(11:0) addra_diag(11:0)
-            PIN winkel_diag(9:0) winkel_diag(9:0)
-            PIN freeze_diag(2:0) freeze_diag(2:0)
-            PIN rdy_diag rdy_diag
             PIN b10code b10code
+            PIN rdy_diag rdy_diag
+            PIN freeze_diag(2:0) freeze_diag(2:0)
+            PIN winkel_diag(9:0) winkel_diag(9:0)
+            PIN addra_diag(11:0) addra_diag(11:0)
+            PIN b8_code_diag(7:0) b8_code_diag(7:0)
+            PIN counter_diag(9:0) counter_diag(9:0)
         END BLOCK
         BEGIN BLOCK XLXI_42 ram_control
             PIN sram_1_io(15:0) sram_1_io(15:0)
@@ -668,5 +673,9 @@ BEGIN SCHEMATIC
             WIRE 2768 2272 2800 2272
         END BRANCH
         IOMARKER 2800 2272 b8_code_diag(7:0) R0 28
+        BEGIN BRANCH counter_diag(9:0)
+            WIRE 2768 2304 2800 2304
+        END BRANCH
+        IOMARKER 2800 2304 counter_diag(9:0) R0 28
     END SHEET
 END SCHEMATIC
