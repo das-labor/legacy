@@ -41,22 +41,23 @@
 #define STATUS_OCCUPIED 1
 #define STATUS_COMPLETE 2
 
-// possible return values for rfm12_tx() and
-// rfm12_start_tx()
+// possible return values for rfm12_tx() and rfm12_start_tx()
 #define RFM12_TX_SUCCESS 0x00
-
 #define RFM12_TX_OVERFLOW 0x01
 #define RFM12_TX_ERROR 0x02
 #define RFM12_TX_OCCUPIED 0x03
-
 #define RFM12_TX_ENQUEUED 0x80
 
+/************************
+ * function protoypes
+*/
 
-//function protoypes
 void rfm12_init();
 void rfm12_data(uint16_t d);
 void rfm12_tick();
-
+void rfm12_rx_clear();
+//FIXME: the tx function should return a status, do we need to do this also?
+// uint8_t rfm12_tx_status();
 
 #if (RFM12_NORETURNS)
 void rfm12_start_tx(uint8_t type, uint8_t length);
@@ -65,63 +66,80 @@ void rfm12_tx(uint8_t len, uint8_t type, uint8_t *data);
 uint8_t rfm12_start_tx(uint8_t type, uint8_t length);
 uint8_t rfm12_tx(uint8_t len, uint8_t type, uint8_t *data);
 #endif
-// uint8_t rfm12_tx_status();
-
-static inline uint8_t *rfm12_rx_buffer();
-static inline void rfm12_rx_clear();
 
 
-/* Private structs needed for inline functions */
+/************************
+ * private control structs
+ */
 
+//the transmission buffer
 typedef struct{
-	volatile uint8_t status;//is the buffer free or occupied?
-	uint8_t num_bytes; 		//number of bytes to transmit (size in buffer)
-	uint8_t bytecount;   //counter for the byte we are transmitting at the moment
-	
 	//we transmit the bytes beginning here
 	uint8_t sync[2]; 		//sync bytes for receiver to start filling fifo
 	uint8_t len;			//length byte - number of bytes in buffer
 	uint8_t type;			//type field for airlab
 	uint8_t checksum;		//checksum over the former 2
 	uint8_t buffer[RFM12_TX_BUFFER_SIZE];//buffer for the raw bytes to be transmitted
-}rf_tx_buffer_t;
+} rf_tx_buffer_t;
 
 
-//for storing the received bytes.
+//a receive buffer
 typedef struct{
 	volatile uint8_t status;//is the buffer free or is there complete data in it?
 	uint8_t len;			//length byte - number of bytes in buffer
 	uint8_t type;			//type field for airlab
 	uint8_t checksum;		//rx checksum
 	uint8_t buffer[RFM12_RX_BUFFER_SIZE]; //receive buffer
-}rf_buffer_t;
+} rf_rx_buffer_t;
+ 
 
-
-typedef struct{
-	volatile uint8_t status;//are we idle, receiving or ignoring?
-	uint8_t num_bytes;		//number of bytes to be received
-	uint8_t bytecount;		//received bytes counter
+//NEW AND SHINY CONTROL STRUCT
+typedef struct
+{
+	//this is the internal state machine
+	uint8_t	rfm12_state;
 	
-	//Buffers for storing incoming transmissions
-	rf_buffer_t rf_buffers[2];
+	//tx buffer status
+	//(free or occupied -> transmission enqueued)
+	volatile uint8_t txstate;
+	
+	//number of bytes to transmit or receive
+	//(size in buffer)
+	uint8_t num_bytes;
+	
+	//counter for the byte we are transmitting or receiving at the moment
+	uint8_t bytecount;
 	
 	//points to the rf_buffer in rf_buffers that will be filled next
 	rf_buffer_t * rf_buffer_in;
-	uint8_t buffer_in_num;
 	
 	//points to the rf_buffer in rf_buffers that will be retruned for reading next
 	rf_buffer_t * rf_buffer_out;
-	uint8_t buffer_out_num;
-}rf_rx_buffer_t;
+	
+	//the numbers of the currently used in / out receive buffers
+	uint8_t buffer_in_num;
+	uint8_t buffer_out_num;	
+} rfm12_control_t;
 
+
+/************************
+ * GLOBALS
+ */
 
 //Buffer and status for the message to be transmitted
 extern rf_tx_buffer_t rf_tx_buffer;
 
-//buffer and status for the message to be received
-extern rf_rx_buffer_t rf_rx_buffer;
+//buffers for storing incoming transmissions
+extern rf_rx_buffer_t rf_rx_buffers[2];
+
+//the control struct
+extern rfm12_control_t ctrl;
 
 
+/************************
+ * INLINE FUNCTIONS
+ */
+ 
 //inline function to return the rx buffer status byte
 //(returns STATUS_FREE or STATUS_COMPLETE)
 static inline uint8_t rfm12_rx_status()
@@ -129,42 +147,30 @@ static inline uint8_t rfm12_rx_status()
 	return rf_rx_buffer.rf_buffer_out->status;
 }
 
+//inline function to return the rx buffer length field
 static inline uint8_t rfm12_rx_len()
 {
 	return rf_rx_buffer.rf_buffer_out->len;
 }
 
+//inline function to return the rx buffer type field
 static inline uint8_t rfm12_rx_type()
 {
 	return rf_rx_buffer.rf_buffer_out->type;
 }
 
-
-
-//inline function to retreive current rf buffer
+//inline function to retreive current rf buffer contents
 static inline uint8_t *rfm12_rx_buffer()
 {
 	return (uint8_t*) rf_rx_buffer.rf_buffer_out->buffer;
 }
 
 
-
-//inline function to clear buffer complete/occupied status
-void rfm12_rx_clear()
-{
-	//mark the current buffer as empty
-	rf_rx_buffer.rf_buffer_out->status = STATUS_FREE;
-	
-	//switch to the other buffer
-	rf_rx_buffer.buffer_out_num = (rf_rx_buffer.buffer_out_num + 1 ) % 2 ;
-	rf_rx_buffer.rf_buffer_out = &rf_rx_buffer.rf_buffers[rf_rx_buffer.buffer_out_num];
-}
-
-/*
+/************************
  * include headers for all the optional stuff in here
  * this way the user only needs to include rfm12.h
 */
-#include "rfm12_extra.h"
-#include "rfm12_ctrl.h"
+#include "include/rfm12_extra.h"
+#include "include/rfm12_ctrl.h"
 
 #endif /* _RFM12_H */

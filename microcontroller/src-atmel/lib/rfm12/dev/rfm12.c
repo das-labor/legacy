@@ -49,9 +49,6 @@ rf_tx_buffer_t rf_tx_buffer;
 //buffer and status for the message to be received
 rf_rx_buffer_t rf_rx_buffer;
 
-//this is the internal state machine
-uint8_t rfm12_state;
-
 
 /************************
  * load other core and external components
@@ -104,23 +101,23 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 	//to get the interrupt flags
 	status = rfm12_read_int_flags_inline();
 
-	#if RFM12_USE_WAKEUP_TIMER > 0
-		if(status & (RFM12_STATUS_WKUP>>8))
+	//wakeup timer feature
+	#if RFM12_USE_WAKEUP_TIMER
+	if(status & (RFM12_STATUS_WKUP>>8))
+	{
+		
+		//FIXME: crude aproach of using rfm12_mode to decide what to write to PWRMGT register.
+		//should be changed to using a shadow var for the PWRMGT state
+		if(rfm12_state != STATE_TX)
 		{
-			
-			//FIXME: crude aproach of using rfm12_mode to decide what to write to 
-			//PWRMGT register.
-			//should be changed to using a shadow var for the PWRMGT state
-			if(rfm12_mode == MODE_RX)
-			{
-				rfm12_data(RFM12_CMD_PWRMGT | (PWRMGT_DEFAULT & ~RFM12_PWRMGT_EW) | RFM12_PWRMGT_ER );
-				rfm12_data(RFM12_CMD_PWRMGT |  PWRMGT_DEFAULT                     | RFM12_PWRMGT_ER );
-			}else
-			{
-				rfm12_data(RFM12_CMD_PWRMGT | (PWRMGT_DEFAULT & ~RFM12_PWRMGT_EW) | RFM12_PWRMGT_ET );
-				rfm12_data(RFM12_CMD_PWRMGT |  PWRMGT_DEFAULT                     | RFM12_PWRMGT_ET );
-			}
+			rfm12_data(RFM12_CMD_PWRMGT | (PWRMGT_DEFAULT & ~RFM12_PWRMGT_EW) | RFM12_PWRMGT_ER );
+			rfm12_data(RFM12_CMD_PWRMGT |  PWRMGT_DEFAULT                     | RFM12_PWRMGT_ER );
+		}else
+		{
+			rfm12_data(RFM12_CMD_PWRMGT | (PWRMGT_DEFAULT & ~RFM12_PWRMGT_EW) | RFM12_PWRMGT_ET );
+			rfm12_data(RFM12_CMD_PWRMGT |  PWRMGT_DEFAULT                     | RFM12_PWRMGT_ET );
 		}
+	}
 	#endif
 	
 	//check if the fifo interrupt occurred
@@ -166,7 +163,8 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 			rfm12_data_inline( (RFM12_CMD_TX>>8), 0xaa);			
 			break;
 			
-		case STATE_RX_IDLE:		
+		case RFM_STATE_RX_IDLE:
+			//init the bytecounter - remember, we will read the length byte, so this must be 1
 			rf_rx_buffer.bytecount = 1;
 
 			//read the length byte,  and write it to the checksum
@@ -174,8 +172,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 			checksum = rfm12_read_fifo_inline();
 			
 			//add the packet overhead and store it into a working variable
-			//FIXME: make the overhead a define
-			rf_rx_buffer.num_bytes = checksum + 3;
+			rf_rx_buffer.num_bytes = checksum + PACKET_OVERHEAD;
 			
 			//debug
 			#if RFM12_UART_DEBUG >= 2
@@ -271,8 +268,9 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 void rfm12_tick()
 {
 	uint16_t status;
+	
 	#if !(RFM12_NOCOLLISIONDETECTION)
-	//FIXME: define the value
+	//start with a channel free count of 16, this is necessary for the CW (ADC)  receive feature to work
 	static uint8_t channel_free_count = 16;
 	#endif
 
@@ -310,7 +308,8 @@ void rfm12_tick()
 
 	#if !(RFM12_NOCOLLISIONDETECTION)
 	//disable the interrupt (as we're working directly with the transceiver now)
-	//FIXME: we could be losing an interrupt here (check status flag if int is set, launch int and exit ...
+	//hint: we could be losing an interrupt here 
+	//solutions: check status flag if int is set, launch int and exit ... OR implement packet retransmission
 	RFM12_INT_OFF();	
 	status = rfm12_read(RFM12_CMD_STATUS);
 	RFM12_INT_ON();
@@ -319,8 +318,7 @@ void rfm12_tick()
 	if(status & RFM12_STATUS_RSSI)
 	{
 		//yes: reset free counter and return
-		//FIXME: define the value
-		channel_free_count = 200;
+		channel_free_count = CHANNEL_FREE_TIME;
 		return;
 	}
 	
@@ -341,7 +339,7 @@ void rfm12_tick()
 	if(rf_tx_buffer.status == STATUS_OCCUPIED)
 	{ //yes: start transmitting
 		//disable the interrupt (as we're working directly with the transceiver now)
-		//FIXME: again, we need to read the status byte here and see if an int occured, if yes, abort the whole operation and start receiving
+		//hint: we could be losing an interrupt here, too
 		RFM12_INT_OFF();
 		
 		//set mode for interrupt handler
@@ -421,14 +419,27 @@ rfm12_tx ( uint8_t len, uint8_t type, uint8_t *data )
 	
 	memcpy ( rf_tx_buffer.buffer, data, len );
 
-#if (!(RFM12_NORETURNS))
+	#if (!(RFM12_NORETURNS))
 	return rfm12_start_tx (type, len);
-#else
+	#else
 	rfm12_start_tx (type, len);
-#endif
+	#endif
 }
 
 
+//function to clear buffer complete/occupied status
+void rfm12_rx_clear()
+{
+	//mark the current buffer as empty
+	rf_rx_buffer.rf_buffer_out->status = STATUS_FREE;
+	
+	//switch to the other buffer
+	rf_rx_buffer.buffer_out_num = (rf_rx_buffer.buffer_out_num + 1 ) % 2 ;
+	rf_rx_buffer.rf_buffer_out = &rf_rx_buffer.rf_buffers[rf_rx_buffer.buffer_out_num];
+}
+
+
+//main library initialization function
 void rfm12_init()
 {
 	SS_RELEASE();
@@ -436,7 +447,7 @@ void rfm12_init()
 	
 	spi_init();
 
-	#if RFM12_RAW_TX > 0
+	#if RFM12_RAW_TX
 	rfm12_raw_tx = 0;
 	#endif
 
@@ -498,8 +509,8 @@ void rfm12_init()
 	//activate the interrupt
 	RFM12_INT_ON();
 
-#if RFM12_RECEIVE_CW > 0
+	#if RFM12_RECEIVE_CW
 	adc_init();
-#endif
+	#endif
 }
 

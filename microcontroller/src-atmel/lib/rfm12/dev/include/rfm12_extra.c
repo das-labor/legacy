@@ -24,7 +24,7 @@
  ******************************************************/
 
 
-#if RFM12_RECEIVE_CW > 0
+#if RFM12_RECEIVE_CW
 
 rfrxbuf_t cw_rxbuf;
 
@@ -127,7 +127,7 @@ void adc_init()
 #endif
 
 
-#if RFM12_RAW_TX > 0
+#if RFM12_RAW_TX
 
 /*
  * @description en- or disable raw transmissions.
@@ -152,7 +152,7 @@ void rfm12_rawmode (uint8_t in_setting)
 #endif
 
 
-#if RFM12_USE_WAKEUP_TIMER > 0
+#if RFM12_USE_WAKEUP_TIMER
 void rfm12_set_wakeup_timer(uint16_t val)
 {
 	rfm12_data (RFM12_CMD_WAKEUP | val);
@@ -160,7 +160,7 @@ void rfm12_set_wakeup_timer(uint16_t val)
 #endif /* RFM12_USE_WAKEUP_TIMER */
 
 
-#if RFM12_LOW_POWER > 0
+#if RFM12_LOW_POWER
 void rfm12_powerDown()
 {
 	RFM12_INT_OFF();

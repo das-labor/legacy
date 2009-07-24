@@ -25,7 +25,7 @@
 * function protoypes	
 */
  
-#if RFM12_LIVECTRL > 0
+#if RFM12_LIVECTRL
 void rfm12_set_rate (uint16_t in_datarate);
 void rfm12_set_frequency (uint16_t in_freq);
 #endif /* RFM12_LIVECTRL */
