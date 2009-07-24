@@ -30,8 +30,8 @@
 	/* LED setup */
 	#define LED_PORT_DDR      DDRD
 	#define LED_PORT_OUTPUT   PORTD
-	#define LED_BIT_RED       (_BV(PD5))
-	#define LED_BIT_GREEN     (_BV(PD4))
+	#define LED_BIT_RED       (_BV(PD6))
+	#define LED_BIT_GREEN     (_BV(PD7))
 
 	/* RFM12 slave select pin */
 	#define DDR_SS DDRB

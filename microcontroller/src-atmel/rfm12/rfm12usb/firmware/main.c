@@ -11,7 +11,8 @@
  * OBJECTIVE DEVELOPMENT Software GmbH.
  */
 
-
+//use hardware version 1
+#define HWREF 1
 
 #include <avr/io.h>
 #include <avr/wdt.h>
@@ -315,41 +316,6 @@ int main(void)
     }
 
     return 0;
-}
-
-
-void foo(){
-
-	while(1){
-		if (rfm12_rx_status() == STATUS_COMPLETE)
-		{
-
-			//uart_putstr ("new packet:\r\n");
-
-			//bufcontents = rfm12_rx_buffer();
-
-			// dump buffer contents to uart
-			//for (i=0;i<rfm12_rx_len();i++)
-			{
-				//uart_putc ( bufcontents[i] );
-			}
-
-			// tell the implementation that the buffer
-			// can be reused for the next data.
-			rfm12_rx_clear();
-
-		}
-
-
-//		if (!(PINB & (_BV(PB0))) && (ticker % 3000 == 0))
-//		{
-//			uart_putc ('#');
-//			rfm12_tx (sizeof(tv), 0, tv);
-//		}
-
-		rfm12_tick();
-	}
-
 }
 
 
