@@ -52,6 +52,8 @@ int radio_rx_dump(void)
     uint_fast16_t i;
 	uint_fast32_t packetCnt = 0, packetLen;
 
+	printf("dumping packets:\n");
+
     do
 	{
         //rate limit (don't be faster than 10us for a 16MHz device
@@ -70,7 +72,8 @@ int radio_rx_dump(void)
         	printf ("--RX--  len: %02i, type: %02x, num: #%010u  --RX--\r\n", packetBuffer.len, packetBuffer.type, packetCnt);
         	for (i = 0;(i <= packetBuffer.len) && (i < RFM12_BUFFER_SIZE); i++)
         	{
-        		printf("%.2x ", packetBuffer.buffer[i]);
+        		printf("%.2x ", packetBuffer.buffer[i]); //hex
+        		//printf("%c", packetBuffer.buffer[i]); //char
         	}
         	printf("\r\n");
         }
@@ -118,6 +121,64 @@ void UI_send_raw()
 	rfmusb_TxPacket (udhandle, type, length, buf);
 }
 
+#define JOY_UP 0x01
+#define JOY_DOWN 0x02
+#define JOY_LEFT 0x04
+#define JOY_RIGHT 0x08
+#define JOY_FIRE1 0x10
+#define JOY_FIRE2 0x20
+
+//be a joystick emulator!
+void UI_joystick()
+{
+    unsigned char length, type, joy;
+    char c;
+
+    length = 1;
+    type =  0x69;
+
+    printf("Use 'wsad' to set the direction bits, q+e for fire1+2, any other key to clear and x to quit.\n");
+
+    while((c = getch()) != 'x')
+    {
+        switch(c)
+        {
+            case 'w':
+                joy = JOY_UP;
+                break;
+
+            case 's':
+                joy = JOY_DOWN;
+                break;
+
+            case 'a':
+                joy = JOY_LEFT;
+                break;
+
+            case 'd':
+                joy = JOY_RIGHT;
+                break;
+
+            case 'q':
+                joy = JOY_FIRE1;
+                break;
+
+            case 'e':
+                joy = JOY_FIRE2;
+                break;
+
+            default:
+                joy = 0;
+                break;
+        }
+
+        printf(" %.2x ", joy);
+
+        //tx packet
+        rfmusb_TxPacket (udhandle, type, length, &joy);
+    }
+}
+
 
 //show the menu
 void UI_menu_show(void)
@@ -125,6 +186,7 @@ void UI_menu_show(void)
      printf("Menu:\n");
      printf("1\tairdump\n");
      printf("2\tsend raw packet\n");
+     printf("3\tjoystick mode\n");
      printf("0\texit\n");
      printf("\n> ");
 }
@@ -132,30 +194,33 @@ void UI_menu_show(void)
 
 void UI_main_menu(void)
 {
-    int choice;
+    char choice;
 
     do
 	{
         UI_menu_show();
 
-        scanf("%i", &choice);
-        fflush(stdin);
+        choice = getch();
 
         switch(choice)
         {
-            case 1:
+            case '1':
                 radio_rx_dump();
                 break;
 
-            case 2:
+            case '2':
                 UI_send_raw();
+                break;
+
+            case '3':
+                UI_joystick();
                 break;
 
             default:
                 break;
         }
     }
-	while(choice);
+	while(choice != '0');
 
     printf("Exiting.\n");
 }

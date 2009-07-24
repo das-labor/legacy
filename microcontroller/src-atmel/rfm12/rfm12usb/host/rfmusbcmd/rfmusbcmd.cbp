@@ -19,10 +19,13 @@
 			<Add option="C:/Programme/LibUSB-Win32/lib/gcc/libusb.a" />
 			<Add directory="C:\Programme\LibUSB-Win32\lib\gcc" />
 		</Linker>
-		<Unit filename="rfmusbcmd.c">
+		<Unit filename="..\CDriver\RfmUsb.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="..\example\opendevice.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="rfmusbcmd.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>
