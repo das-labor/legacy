@@ -15,8 +15,9 @@ entity packet_buffer is
     winkel_diag  : out STD_LOGIC_VECTOR ( 9 downto 0);
     addra_diag   : out STD_LOGIC_VECTOR (11 downto 0);
     b8_code_diag : out STD_LOGIC_VECTOR ( 7 downto 0);
-    rdy_diag     : out STD_LOGIC
-
+    rdy_diag     : out STD_LOGIC;
+	 counter_diag : out STD_LOGIC_VECTOR ( 9 downto 0)
+ 
 																						);
 end packet_buffer;
 
@@ -53,7 +54,7 @@ signal rdy      : std_logic;
 signal winkel_1 : std_logic_VECTOR( 9 downto 0);
 signal winkel_2 : std_logic_VECTOR( 9 downto 0);
 signal counter_1: std_logic_VECTOR( 9 downto 0);
-signal freeze   : std_logic_VECTOR( 2 downto 0);
+signal freeze   : std_logic_VECTOR( 2 downto 0):= (others => '0');
 
 
 begin
@@ -119,6 +120,7 @@ winkel_diag  <= winkel;
 addra_diag   <= addra;
 b8_code_diag <= b8_code;
 rdy_diag     <= rdy;
+counter_diag <= counter;
 
 end Behavioral;
 

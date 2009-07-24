@@ -1,24 +1,15 @@
--- Vhdl test bench created from schematic D:\SauronsBorgVentilator\Sender\top.sch - Thu Jul 23 09:18:02 2009
---
--- Notes: 
--- 1) This testbench template has been automatically generated using types
--- std_logic and std_logic_vector for the ports of the unit under test.
--- Xilinx recommends that these types always be used for the top-level
--- I/O of a design in order to guarantee that the testbench will bind
--- correctly to the timing (post-route) simulation model.
--- 2) To use this template as your testbench, change the filename to any
--- name of your choice with the extension .vhd, and use the "Source->Add"
--- menu in Project Navigator to import the testbench. Then
--- edit the user defined section below, adding code to generate the 
--- stimulus for your design.
---
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
+USE ieee.std_logic_unsigned.all;
+USE ieee.std_logic_arith.all;
 USE ieee.numeric_std.ALL;
-LIBRARY UNISIM;
-USE UNISIM.Vcomponents.ALL;
+use IEEE.MATH_REAL.all;
+use work.sim_bmppack.all;
+
+
 ENTITY top_top_sch_tb IS
 END top_top_sch_tb;
+
 ARCHITECTURE behavioral OF top_top_sch_tb IS 
 
    COMPONENT top
@@ -58,7 +49,10 @@ ARCHITECTURE behavioral OF top_top_sch_tb IS
           freeze_diag	:	OUT	STD_LOGIC_VECTOR (2 DOWNTO 0); 
           winkel_diag	:	OUT	STD_LOGIC_VECTOR (9 DOWNTO 0); 
           addra_diag	:	OUT	STD_LOGIC_VECTOR (11 DOWNTO 0); 
-          b8_code_diag	:	OUT	STD_LOGIC_VECTOR (7 DOWNTO 0));
+          b8_code_diag	:	OUT	STD_LOGIC_VECTOR (7 DOWNTO 0);
+			 counter_diag  :	OUT	STD_LOGIC_VECTOR (9 DOWNTO 0)
+			 
+			 );
    END COMPONENT;
 
    SIGNAL schaltin	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
@@ -90,7 +84,7 @@ ARCHITECTURE behavioral OF top_top_sch_tb IS
    SIGNAL sram_2_io	:	STD_LOGIC_VECTOR (15 DOWNTO 0);
    SIGNAL sram_2_ub	:	STD_LOGIC;
    SIGNAL sram_2_lb	:	STD_LOGIC;
-   SIGNAL winkel	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
+   SIGNAL winkel	:	STD_LOGIC_VECTOR (9 DOWNTO 0):= (others => '0');
    SIGNAL winkel_ram	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
    SIGNAL b10code	:	STD_LOGIC;
    SIGNAL rdy_diag	:	STD_LOGIC;
@@ -98,6 +92,23 @@ ARCHITECTURE behavioral OF top_top_sch_tb IS
    SIGNAL winkel_diag	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
    SIGNAL addra_diag	:	STD_LOGIC_VECTOR (11 DOWNTO 0);
    SIGNAL b8_code_diag	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
+   SIGNAL counter_diag	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
+
+
+
+signal colordatae: std_logic_vector(15 downto 0):= x"0000" ; signal xe,ye:integer:=0;
+signal colordatai: std_logic_vector(23 downto 0) ; signal xi,yi:integer;
+signal colordatal: std_logic_vector(23 downto 0):= x"000000" ; signal xl,yl:integer:=0;
+
+type memory2 is array (0 to 511, 0 to 511) of bit_vector (15 downto 0);
+shared variable visual : memory2; 
+shared variable input_picture : memory2;
+
+shared variable fname : string ( 1 to 16):="lena_copy000.bmp";
+
+
+
+
 
 BEGIN
 
@@ -138,7 +149,8 @@ BEGIN
 		freeze_diag => freeze_diag, 
 		winkel_diag => winkel_diag, 
 		addra_diag => addra_diag, 
-		b8_code_diag => b8_code_diag
+		b8_code_diag => b8_code_diag,
+		counter_diag => counter_diag
    );
 
 -- *** Test Bench - User Defined Section ***
@@ -148,9 +160,9 @@ BEGIN
 
 -- generiere 50 Mhz Takt
 process begin
-		clk50 <= '1';
+		clk <= '1';
 		wait for 10 ns;
-		clk50 <= '0';
+		clk <= '0';
 		wait for 10 ns; 
 end process;
 
@@ -172,11 +184,11 @@ if rising_edge (clk50) then
 w_int := (conv_integer(winkel_diag));
 
 -- Jeder Flügel ist 90 Grad (256) versetzt
-		if    sram_pos(1 downto 0) = "01" then  
+		if    addra_diag(1 downto 0) = "01" then  
 				w_int := w_int + 256;
-		elsif sram_pos(1 downto 0) = "10" then  
+		elsif addra_diag(1 downto 0) = "10" then  
 				w_int := w_int + 512;
-		elsif sram_pos(1 downto 0) = "11" then
+		elsif addra_diag(1 downto 0) = "11" then
 				w_int := w_int + 768;
 		end if;
 
@@ -194,16 +206,16 @@ if addra_diag < 512 then
 	x := center_x + s;
 	y := center_y + c;
 else 
-	x := 0;
-	y := 0:
+	x := 0.0;
+	y := 0.0;
 end if;
 			
----- Schwarz gelesen ?? dann Rot draus machen (für debugging)
---if sram_read = x"0000" then 
---	colordatae <= x"008f";
---else
-	                          colordatae <= 	b8_code_diag;
---end if ;						
+-- Schwarz gelesen ?? dann Rot draus machen (für debugging)
+if b8_code_diag = x"0000" then 
+	colordatae <= x"008f";
+else
+	                          colordatae (7 downto 0) <= 	b8_code_diag;
+end if ;						
  								
 xe <= integer(x) ; ye <= integer(y) ;
 
@@ -469,7 +481,7 @@ wait for 10 ns;
 		
 		 
 --nach einer eingestellten zeit ein neues Bild speichern 
-wait for 10240 us;
+wait for 100 us;
 
 for xxx in 1 to 999 loop
 
