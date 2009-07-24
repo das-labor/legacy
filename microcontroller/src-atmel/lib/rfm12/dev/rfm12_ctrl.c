@@ -14,6 +14,9 @@ void rfm12_init()
 	rfm12_raw_tx = 0;
 	#endif
 
+	//store the syncronization pattern to the transmission buffer
+	//the sync pattern is used by the receiver to distinguish noise from real transmissions
+	//the sync pattern is hardcoded into the receiver
 	rf_tx_buffer.sync[0] = SYNC_MSB;
 	rf_tx_buffer.sync[1] = SYNC_LSB;
 	

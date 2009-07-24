@@ -28,6 +28,13 @@
  
 #pragma once
 
+//FIXME: evil hack
+//this has to be in here, to ensure that all includers see this hack
+#ifdef RFM12_TRANSMIT_ONLY
+#undef RFM12_PWRMGT_ER
+#define RFM12_PWRMGT_ER 0
+#endif
+
 //states for the rx and tx buffers
 #define STATUS_FREE 0
 #define STATUS_OCCUPIED 1
@@ -47,7 +54,6 @@
 //function protoypes
 void rfm12_init();
 void rfm12_data(uint16_t d);
-
 void rfm12_tick();
 
 

@@ -1,11 +1,5 @@
 #pragma once
 
-//FIXME: evil hack
-#ifdef RFM12_TRANSMIT_ONLY
-#undef RFM12_PWRMGT_ER
-#define RFM12_PWRMGT_ER 0
-#endif
-
 /******************************************************
 * 	VARIOUS RFM RELATED DEFINES FOR INTERNAL USE		*
 *	(defines which shall be visible to the user are located in rfm12.h	*

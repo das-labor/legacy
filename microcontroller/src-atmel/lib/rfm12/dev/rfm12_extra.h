@@ -78,9 +78,6 @@ void adc_init();
  */
 inline void rfm12_tx_on (void)
 {
-/*	rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
-	rfm12_data(RFM12_CMD_TX | PREAMBLE);
-	rfm12_data(RFM12_CMD_TX | PREAMBLE);
 	/* set enable transmission bit now. */
 	rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);
 }
