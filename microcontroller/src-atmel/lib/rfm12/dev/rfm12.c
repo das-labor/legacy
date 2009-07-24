@@ -18,10 +18,17 @@
  * @author Peter Fuhrmann, Hans-Gert Dahmen, Soeren Heisrath
  */
 
+/************************
+ * standard includes
+*/
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <string.h>
 
+/************************
+ * library internal includes
+ * the order in which they are included is important
+*/
 #include "include/rfm12_hw.h"
 #include "rfm12.h"
 #include "include/rfm12_core.h"
@@ -31,8 +38,9 @@
 	#include "test/uart.h"
 #endif
 
-/*
-	Begin of library
+
+/************************
+ * library internal globals
 */
 
 //Buffer and status for the message to be transmitted
@@ -43,6 +51,12 @@ rf_rx_buffer_t rf_rx_buffer;
 
 //this is the internal state machine
 uint8_t rfm12_state;
+
+
+/************************
+ * load other core and external components
+ * (putting them directly into here allows the GCC to optimize better)
+*/
 
 /* include spi functions into here */
 #include "include/rfm12_spi.c"
@@ -60,6 +74,10 @@ uint8_t rfm12_state;
 #include "include/rfm12_extra.c"
 
 
+/************************
+ * Begin of library
+*/
+
 /*
 	interrupt handler for interrupts from rfm12
 	
@@ -76,7 +94,6 @@ uint8_t rfm12_state;
 	*these shouldn't occur - we'll just ignore them. These flags are cleared
 	 by reading status.
 */
-
 ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 {
 	RFM12_INT_OFF();
