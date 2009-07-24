@@ -35,13 +35,6 @@
 	Begin of library
 */
 
-
-#if (RFM12_NORETURNS)
-	#define TXRETURN(a)
-#else
-	#define TXRETURN(a) (a)
-#endif
-
 //Buffer and status for the message to be transmitted
 rf_tx_buffer_t rf_tx_buffer;
 

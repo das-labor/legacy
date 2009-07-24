@@ -14,27 +14,6 @@
 
 
 /******************************************************
-* 	HELPER MACROS			*
- ******************************************************/
-
-//macros to turn the int on and off
-#define RFM12_INT_ON() RFM12_INT_MSK |= (1<<RFM12_INT_BIT)
-#define RFM12_INT_OFF() RFM12_INT_MSK &= ~(1<<RFM12_INT_BIT)
-
-/*
- * the following macros help to manage the rfm12 fifo
- * default fiforeset is as follows:
- * 2 Byte Sync Pattern, disable sensitive reset, fifo filled interrupt at 8 bits
- */
-//default fiforeset register value to accept data
-#define ACCEPT_DATA (RFM12_CMD_FIFORESET | RFM12_FIFORESET_DR | (8<<4) | RFM12_FIFORESET_FF)
-#define ACCEPT_DATA_INLINE (RFM12_FIFORESET_DR | (8<<4) | RFM12_FIFORESET_FF)
-//default fiforeset register value to clear fifo
-#define CLEAR_FIFO (RFM12_CMD_FIFORESET | RFM12_FIFORESET_DR | (8<<4))
-#define CLEAR_FIFO_INLINE (RFM12_FIFORESET_DR | (8<<4))
-
-
-/******************************************************
 * 	LIBRARY DEFAULT SETTINGS						*
  ******************************************************/
 //if notreturns is not defined, we won't use this feature
@@ -102,4 +81,32 @@
 #ifndef DDR_SPI_SS
 	#define DDR_SPI_SS DDR_SPI
 	#define PORT_SPI_SS PORT_SPI
+#endif
+
+
+/******************************************************
+* 	HELPER MACROS			*
+ ******************************************************/
+
+//macros to turn the int on and off
+#define RFM12_INT_ON() RFM12_INT_MSK |= (1<<RFM12_INT_BIT)
+#define RFM12_INT_OFF() RFM12_INT_MSK &= ~(1<<RFM12_INT_BIT)
+
+/*
+ * the following macros help to manage the rfm12 fifo
+ * default fiforeset is as follows:
+ * 2 Byte Sync Pattern, disable sensitive reset, fifo filled interrupt at 8 bits
+ */
+//default fiforeset register value to accept data
+#define ACCEPT_DATA (RFM12_CMD_FIFORESET | RFM12_FIFORESET_DR | (8<<4) | RFM12_FIFORESET_FF)
+#define ACCEPT_DATA_INLINE (RFM12_FIFORESET_DR | (8<<4) | RFM12_FIFORESET_FF)
+//default fiforeset register value to clear fifo
+#define CLEAR_FIFO (RFM12_CMD_FIFORESET | RFM12_FIFORESET_DR | (8<<4))
+#define CLEAR_FIFO_INLINE (RFM12_FIFORESET_DR | (8<<4))
+
+//this macro helps to encapsulate the return values, when noreturn is set to on
+#if (RFM12_NORETURNS)
+	#define TXRETURN(a)
+#else
+	#define TXRETURN(a) (a)
 #endif
