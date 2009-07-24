@@ -1,9 +1,10 @@
 #pragma once
 
-/******************************************************
-* 	VARIOUS RFM RELATED DEFINES FOR INTERNAL USE		*
-*	(defines which shall be visible to the user are located in rfm12.h	*
- ******************************************************/
+
+/************************
+* VARIOUS RFM RELATED DEFINES FOR INTERNAL USE	
+*(defines which shall be visible to the user are located in rfm12.h)
+*/
 
 //default preamble (altrernating 1s and 0s)
 #define PREAMBLE 0xAA
@@ -20,9 +21,10 @@
 #define MODE_RAW 2
 
 
-/******************************************************
-* 	LIBRARY DEFAULT SETTINGS						*
- ******************************************************/
+/************************
+* LIBRARY DEFAULT SETTINGS	
+ */
+ 
 //if notreturns is not defined, we won't use this feature
 #ifndef RFM12_NORETURNS
 	#define RFM12_NORETURNS 0
@@ -91,9 +93,9 @@
 #endif
 
 
-/******************************************************
-* 	HELPER MACROS			*
- ******************************************************/
+/************************
+* HELPER MACROS
+*/
 
 //macros to turn the int on and off
 #define RFM12_INT_ON() RFM12_INT_MSK |= (1<<RFM12_INT_BIT)

@@ -159,5 +159,9 @@ void rfm12_rx_clear()
 	rf_rx_buffer.rf_buffer_out = &rf_rx_buffer.rf_buffers[rf_rx_buffer.buffer_out_num];
 }
 
+/*
+ * include headers for all the optional stuff in here
+ * this way the user only needs to include rfm12.h
+*/
 #include "rfm12_extra.h"
 #include "rfm12_ctrl.h"
