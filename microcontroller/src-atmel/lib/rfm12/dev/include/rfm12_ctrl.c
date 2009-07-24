@@ -24,7 +24,7 @@
  ******************************************************/
 
 
-#if RFM12_LIVECTRL > 0
+#if RFM12_LIVECTRL
 void rfm12_set_rate (uint16_t in_datarate)
 {
 	rfm12_data(RFM12_CMD_DATARATE | DATARATE_VALUE );

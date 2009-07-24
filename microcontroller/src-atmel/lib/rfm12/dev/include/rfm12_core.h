@@ -40,6 +40,9 @@
 //FIXME: raw mode...
 #define MODE_RAW 2
 
+//packet header length in bytes
+#define PACKET_OVERHEAD 3
+
 
 /************************
 * LIBRARY DEFAULT SETTINGS	
@@ -79,11 +82,21 @@
 #ifndef RFM12_RECEIVE_CW
 	#define RFM12_RECEIVE_CW 0
 #endif
+
+//if software spi is not defined, we won't use this feature
+#ifndef RFM12_SPI_SOFTWARE
+	#define RFM12_SPI_SOFTWARE 0
+#endif
  
 //default value for powermanagement register
 //this allows one to select whether the reset generator, the oscillator or the wakeup timer shall be active
 #ifndef PWRMGT_DEFAULT
 	#define PWRMGT_DEFAULT (RFM12_PWRMGT_DC)
+#endif
+
+//default channel free time, if not defined elsewhere
+#ifndef CHANNEL_FREE_TIME
+	#define CHANNEL_FREE_TIME 200
 #endif
 
 /*
