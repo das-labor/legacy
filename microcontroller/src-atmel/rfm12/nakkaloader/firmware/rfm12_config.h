@@ -46,6 +46,10 @@
 */
 
 
+/************************
+ * PIN DEFINITIONS
+ */
+
 //Pin that the RFM12's slave select is connected to
 #define DDR_SS DDRB
 #define PORT_SS PORTB
@@ -63,6 +67,11 @@
 //needs to be set to output for the spi-interface to work 
 //correctly, independently of the CS pin used for the RFM12
 
+
+/************************
+ * RFM12 CONFIGURATION OPTIONS
+ */
+ 
 //frequency to use
 #define FREQ 433000000UL
 
@@ -72,22 +81,19 @@
 //use this for 340 Baud < datarate < 2700 Baud
 //#define DATARATE_VALUE RFM12_DATARATE_CALC_LOW(1200.0)
 
-/**** TX BUFFER SIZE
- */
+//TX BUFFER SIZE
 #define RFM12_TX_BUFFER_SIZE 100
 
-/**** RX BUFFER SIZE
+/*
+ * RX BUFFER SIZE
  * there are going to be 2 Buffers of this size
  * (double_buffering)
  */
 #define RFM12_RX_BUFFER_SIZE 100
 
-/**** UART DEBUGGING
- * en- or disable debugging via uart.
- */
-#define RFM12_UART_DEBUG 0
 
-/**** INTERRUPT VECTOR
+/************************
+ * INTERRUPT VECTOR
  * set the name for the interrupt vector here
  */
 //the Interrupt mask register
@@ -95,22 +101,32 @@
 //setup the interrupt to trigger on negative edge
 //#define RFM12_INT_SETUP() (MCUCSR &= ~(_BV(ISC2))) ; GIFR |= _BV(INTF2)
 #define RFM12_INT_SETUP()   MCUCR |= (1<<ISC01)
-#define RFM12_INT_VECT (INT0_vect)
-#define RFM12_INT_BIT (INT0)
+#define RFM12_INT_VECT (INT1_vect)
+#define RFM12_INT_BIT (INT1)
 //the Interrupt mask register
 
+
+/************************
+ * FEATURE CONFIGURATION
+ */
+ 
 /*
-This is a bitmask that defines how "rude" this library behaves
+FIXME: noreturn stuff here
+	This is a bitmask that defines how "rude" this library behaves
 	0x01: ignore other devices when sending
 	0x04: don't use return values for transmission functions
 */
-
-
-
-
 /* control rate, frequency, etc during runtime
  * this setting will certainly add a bit code
  **/
 #define RFM12_LIVECTRL 0
 #define RFM12_NORETURNS 0
-#define RFM12_NOCOLISSIONDETECTION 0
+#define RFM12_NOCOLLISIONDETECTION 0
+#define RFM12_USE_WAKEUP_TIMER 0
+#define RFM12_LOW_POWER 0
+
+/*
+ * UART DEBUGGING
+ * en- or disable debugging via uart.
+ */
+#define RFM12_UART_DEBUG 0
