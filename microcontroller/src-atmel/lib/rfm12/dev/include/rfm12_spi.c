@@ -1,3 +1,9 @@
+/******************************************************
+ *    THIS FILE IS BEING INCLUDED DIRECTLY		*
+ *		(for performance reasons)				*
+ ******************************************************/
+ 
+
 #define SS_ASSERT() PORT_SS &= ~(1<<BIT_SS)
 #define SS_RELEASE() PORT_SS |= (1<<BIT_SS)
 

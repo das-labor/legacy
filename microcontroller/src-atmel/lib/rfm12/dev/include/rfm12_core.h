@@ -12,6 +12,13 @@
 #define SYNC_MSB 0x2D
 #define SYNC_LSB 0xD4
 
+//these are the states for the receive/transmit state machine
+#define STATE_RX_IDLE 0
+#define STATE_RX_ACTIVE 1
+#define STATE_TX 2
+//FIXME: raw mode...
+#define MODE_RAW 2
+
 
 /******************************************************
 * 	LIBRARY DEFAULT SETTINGS						*
