@@ -337,7 +337,7 @@ void rfm12_tick()
 		rfm12_state = STATE_TX;
 		
 		//fill 2byte 0xAA preamble into data register
-		//this is explicitly done, just to be sure
+		//the preamble helps the receivers AFC circuit to lock onto the exact frequency
 		//(hint: the tx FIFO [if el is enabled] is two staged, so we can safely write 2 bytes before starting)
 		rfm12_data(RFM12_CMD_TX | PREAMBLE);
 		rfm12_data(RFM12_CMD_TX | PREAMBLE);
