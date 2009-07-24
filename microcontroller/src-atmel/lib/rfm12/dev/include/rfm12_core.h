@@ -1,5 +1,5 @@
-#pragma once
-
+#ifdef _RFM12_CORE_H
+#define _RFM12_CORE_H
 
 /************************
 * VARIOUS RFM RELATED DEFINES FOR INTERNAL USE	
@@ -119,3 +119,5 @@
 #else
 	#define TXRETURN(a) (a)
 #endif
+
+#endif /* _RFM12_CORE_H */

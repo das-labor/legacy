@@ -26,7 +26,8 @@
  *                                                    *
  ******************************************************/
  
-#pragma once
+#ifdef _RFM12_H
+#define _RFM12_H
 
 //FIXME: evil hack
 //this has to be in here, to ensure that all includers see this hack
@@ -165,3 +166,5 @@ void rfm12_rx_clear()
 */
 #include "rfm12_extra.h"
 #include "rfm12_ctrl.h"
+
+#endif /* _RFM12_H */
