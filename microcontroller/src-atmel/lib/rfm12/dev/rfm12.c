@@ -22,54 +22,19 @@
 #include <avr/interrupt.h>
 #include <string.h>
 
-#include "rfm12_hw.h"
+#include "include/rfm12_hw.h"
 #include "rfm12.h"
+#include "include/rfm12_core.h"
 
+//for uart debugging
 #if RFM12_UART_DEBUG
 	#include "test/uart.h"
 #endif
-
-//evil hack
-#ifdef RFM12_TRANSMIT_ONLY
-#undef RFM12_PWRMGT_ER
-#define RFM12_PWRMGT_ER 0
-#endif
-
-
-//default value for powermanagement register
-//here it can be selected, if we want the reset generator or the
-//oscillator or the wakeup timer to be active
-#ifndef PWRMGT_DEFAULT
-#define PWRMGT_DEFAULT (RFM12_PWRMGT_DC)
-#endif
-
-//default preamble (altrernating 1s and 0s)
-#define PREAMBLE 0xAA
-
-//default synchron pattern
-#define SYNC_MSB 0x2D
-#define SYNC_LSB 0xD4
 
 /*
 	Begin of library
 */
 
-#define SS_ASSERT() PORT_SS &= ~(1<<BIT_SS)
-#define SS_RELEASE() PORT_SS |= (1<<BIT_SS)
-
-#define RFM12_INT_ON() RFM12_INT_MSK |= (1<<RFM12_INT_BIT)
-#define RFM12_INT_OFF() RFM12_INT_MSK &= ~(1<<RFM12_INT_BIT)
-
-
-//default fiforeset is as follows:
-//2 Byte Sync Pattern,
-//disable sensitive reset, Fifo filled interrupt at 8 bits
-//default fiforeset register value to accept data
-#define ACCEPT_DATA (RFM12_CMD_FIFORESET | RFM12_FIFORESET_DR | (8<<4) | RFM12_FIFORESET_FF)
-#define ACCEPT_DATA_INLINE (RFM12_FIFORESET_DR | (8<<4) | RFM12_FIFORESET_FF)
-//default fiforeset register value to clear fifo
-#define CLEAR_FIFO (RFM12_CMD_FIFORESET | RFM12_FIFORESET_DR | (8<<4))
-#define CLEAR_FIFO_INLINE (RFM12_FIFORESET_DR | (8<<4))
 
 #if (RFM12_NORETURNS)
 	#define TXRETURN(a)
@@ -84,19 +49,21 @@ rf_tx_buffer_t rf_tx_buffer;
 rf_rx_buffer_t rf_rx_buffer;
 
 //these are the states for the receive/transmit state machine
-#define MODE_RX 0
-#define MODE_TX 1
+#define STATE_RX_IDLE 0
+#define STATE_RX_ACTIVE 1
+#define STATE_TX 2
+//FIXME: raw mode...
 #define MODE_RAW 2
 uint8_t rfm12_state;
 
 /* include spi functions into here */
-#include "rfm12_spi.c"
+#include "include/rfm12_spi.c"
 
 /* include control / init functions into here */
 #include "rfm12_ctrl.c"
 
-/* include raw transceiving functions here */
-#include "rfm12_raw.c"
+/* include extra features here */
+#include "rfm12_extra.c"
 
 
 /*
@@ -126,7 +93,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 	//to get the interrupt flags
 	status = rfm12_read_int_flags_inline();
 
-	#ifdef RFM12_USE_WAKEUP_TIMER
+	#if RFM12_USE_WAKEUP_TIMER > 0
 		if(status & (RFM12_STATUS_WKUP>>8))
 		{
 			
@@ -156,7 +123,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 	
 	switch(rfm12_state)
 	{
-		STATE_TX:
+		case STATE_TX:
 			//debug
 			#if RFM12_UART_DEBUG >= 2
 			uart_putc('T');
@@ -188,7 +155,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 			rfm12_data_inline( (RFM12_CMD_TX>>8), 0xaa);			
 			break;
 			
-		STATE_RX_IDLE:		
+		case STATE_RX_IDLE:		
 			rf_rx_buffer.bytecount = 1;
 
 			//read the length byte,  and write it to the checksum
@@ -210,7 +177,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 			if(rf_rx_buffer.rf_buffer_in->status == STATUS_FREE)
 			{
 				//the current receive buffer is empty, so we start receiving
-				my_state = STATE_RX_INRX;
+				rfm12_state = STATE_RX_ACTIVE;
 			
 				//FIXME:  why the hell do we need this?!
 				//in principle, the length is stored alongside with the buffer.. the only problem is, that the buffer might be cleared during reception
@@ -223,7 +190,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 			/* if we're here, the buffer is full, so we ignore this transmission by resetting the fifo (at the end of the function)  */
 			break;
 			
-		STATE_RX_INRX:			
+		case STATE_RX_ACTIVE:			
 			//check if transmission is complete
 			if(rf_rx_buffer.bytecount < rf_rx_buffer.num_bytes)
 			{
@@ -281,7 +248,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 	}
 	
 	//reset the fifo and resets the state machine to idle
-	rf_rx_buffer.status = STATUS_IDLE;
+	rfm12_state = STATE_RX_IDLE;
 	rfm12_data_inline(RFM12_CMD_FIFORESET>>8, CLEAR_FIFO_INLINE);
 	rfm12_data_inline(RFM12_CMD_FIFORESET>>8, ACCEPT_DATA_INLINE);
 		
@@ -293,29 +260,34 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 void rfm12_tick()
 {
 	uint16_t status;
-	#if !(RFM12_NOCOLISSIONDETECTION)
+	#if !(RFM12_NOCOLLISIONDETECTION)
+	//FIXME: define the value
 	static uint8_t channel_free_count = 16;
 	#endif
 
+	//debug
 	#if RFM12_UART_DEBUG
-		static uint8_t oldmode;
-		uint8_t mode = rfm12_mode;
-		if (oldmode != mode)
+	static uint8_t oldstate;
+	uint8_t state = rfm12_state;
+	if (oldstate != state)
+	{
+		uart_putstr ("mode change: ");
+		switch (mode)
 		{
-			uart_putstr ("mode change: ");
-			switch (mode)
-			{
-				case MODE_RX:
-					uart_putc ('r');
+			case STATE_RX_IDLE:
+				uart_putc ('i');
 				break;
-				case MODE_TX:
-					uart_putc ('t');
+			case STATE_RX_ACTIVE:
+				uart_putc ('r');
 				break;
-				default:
-					uart_putc ('?');
-			}
-			oldmode = mode;
+			case STATE_TX:
+				uart_putc ('t');
+				break;
+			default:
+				uart_putc ('?');
 		}
+		oldstate = state;
+	}
 	#endif
 
 	//don't disturb RFM12 if trasnmitting or receiving
@@ -325,7 +297,7 @@ void rfm12_tick()
 		return;
 	}
 
-	#if !(RFM12_NOCOLISSIONDETECTION)
+	#if !(RFM12_NOCOLLISIONDETECTION)
 	//disable the interrupt (as we're working directly with the transceiver now)
 	//FIXME: we could be losing an interrupt here (check status flag if int is set, launch int and exit ...
 	RFM12_INT_OFF();	
@@ -336,6 +308,7 @@ void rfm12_tick()
 	if(status & RFM12_STATUS_RSSI)
 	{
 		//yes: reset free counter and return
+		//FIXME: define the value
 		channel_free_count = 200;
 		return;
 	}
@@ -443,64 +416,5 @@ rfm12_tx ( uint8_t len, uint8_t type, uint8_t *data )
 	rfm12_start_tx (type, len);
 #endif
 }
-
-void spi_init()
-{
-	DDR_MOSI   |= (_BV(BIT_MOSI));
-	DDR_SCK    |= (_BV(BIT_SCK));
-	DDR_SPI_SS |= (_BV(BIT_SPI_SS));
-	DDR_MISO   &= ~(_BV(BIT_MISO));
-
-
-#ifndef SPI_SOFTWARE	
-	SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);//SPI Master, clk/16
-#endif
-}
-
-
-#ifdef RFM12_USE_WAKEUP_TIMER
-void rfm12_set_wakeup_timer(uint16_t val)
-{
-	rfm12_data (RFM12_CMD_WAKEUP | val);
-}
-#endif
-
-
-#ifdef RFM12_LOW_POWER
-void rfm12_powerDown()
-{
-	RFM12_INT_OFF();
-	rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);	
-}
-
-
-uint8_t rfm12_lowPowerTx( uint8_t len, uint8_t type, uint8_t *data )
-{
-	uint8_t retVal;
-	
-	//enable whole receiver chain
-	rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ER);
-	
-	//tick once (reactivates rfm12 int)
-	rfm12_tick();
-	
-	//tx
-	retVal = rfm12_tx(len, type, data);
-	
-	//tx packet
-	while(rfm12_mode != RFM12_TX)	
-	{
-		rfm12_tick();
-	}
-	
-	//wait for tx complete
-	while(rf_tx_buffer.status != STATUS_FREE);
-	
-	//powerdown rfm12
-	rfm12_powerDown();
-	
-	return retVal;
-}
-#endif
 
 

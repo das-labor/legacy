@@ -1,3 +1,6 @@
+#define SS_ASSERT() PORT_SS &= ~(1<<BIT_SS)
+#define SS_RELEASE() PORT_SS |= (1<<BIT_SS)
+
 /* @description Actual sending function to send raw data to the Module
  * @note do NOT call this function directly, unless you know what you're doing.
  */
@@ -138,5 +141,18 @@ uint8_t rfm12_read_fifo_inline()
 
 	SS_RELEASE();
 	return retval;
+#endif
+}
+
+void spi_init()
+{
+	DDR_MOSI   |= (_BV(BIT_MOSI));
+	DDR_SCK    |= (_BV(BIT_SCK));
+	DDR_SPI_SS |= (_BV(BIT_SPI_SS));
+	DDR_MISO   &= ~(_BV(BIT_MISO));
+
+
+#ifndef SPI_SOFTWARE	
+	SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);//SPI Master, clk/16
 #endif
 }

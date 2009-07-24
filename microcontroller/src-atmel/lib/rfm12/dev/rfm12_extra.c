@@ -4,7 +4,7 @@
  ******************************************************/
 
 
-#ifdef RFM12_RECEIVE_CW
+#if RFM12_RECEIVE_CW > 0
 
 rfrxbuf_t cw_rxbuf;
 
@@ -130,3 +130,49 @@ void rfm12_rawmode (uint8_t in_setting)
 }
 
 #endif
+
+
+#if RFM12_USE_WAKEUP_TIMER > 0
+void rfm12_set_wakeup_timer(uint16_t val)
+{
+	rfm12_data (RFM12_CMD_WAKEUP | val);
+}
+#endif /* RFM12_USE_WAKEUP_TIMER */
+
+
+#if RFM12_LOW_POWER > 0
+void rfm12_powerDown()
+{
+	RFM12_INT_OFF();
+	rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);	
+}
+
+
+uint8_t rfm12_lowPowerTx( uint8_t len, uint8_t type, uint8_t *data )
+{
+	uint8_t retVal;
+	
+	//enable whole receiver chain
+	rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ER);
+	
+	//tick once (reactivates rfm12 int)
+	rfm12_tick();
+	
+	//tx
+	retVal = rfm12_tx(len, type, data);
+	
+	//tx packet
+	while(rfm12_mode != RFM12_TX)	
+	{
+		rfm12_tick();
+	}
+	
+	//wait for tx complete
+	while(rf_tx_buffer.status != STATUS_FREE);
+	
+	//powerdown rfm12
+	rfm12_powerDown();
+	
+	return retVal;
+}
+#endif /* RFM12_LOW_POWER */

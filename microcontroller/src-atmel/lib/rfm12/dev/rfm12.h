@@ -25,24 +25,13 @@
  *      ( thou shalt not change lines below )         *
  *                                                    *
  ******************************************************/
+ 
+#pragma once
 
 //states for the rx and tx buffers
 #define STATUS_FREE 0
 #define STATUS_OCCUPIED 1
 #define STATUS_COMPLETE 2
-
-//states for the rx state machine
-#define STATUS_IDLE      0
-#define STATUS_RECEIVING 1
-#define STATUS_IGNORING  2
-
-#ifndef RFM12_NORETURNS
-	#define RFM12_NORETURNS 0
-#endif
-
-#ifndef RFM12_NOCOLISSIONDETECTION
-	#define RFM12_NOCOLISSIONDETECTION 0
-#endif
 
 // possible return values for rfm12_tx() and
 // rfm12_start_tx()
@@ -53,35 +42,6 @@
 #define RFM12_TX_OCCUPIED 0x03
 
 #define RFM12_TX_ENQUEUED 0x80
-
-
-#ifndef RFM12_LIVECTRL
-	#define RFM12_LIVECTRL 0
-#endif
-
-/* backward compatibility for the spi stuff
- * these values weren't set in older revisions of this library
- * so they're now assumed to be on the same pin/port
- */
-#ifndef DDR_MOSI
-	#define DDR_MOSI DDR_SPI
-	#define PORT_MOSI PORT_SPI
-#endif
-
-#ifndef DDR_MISO
-	#define DDR_MISO DDR_SPI
-	#define PIN_MISO PIN_SPI
-#endif
-
-#ifndef DDR_SCK
-	#define DDR_SCK DDR_SPI
-	#define PORT_SCK PORT_SPI
-#endif
-
-#ifndef DDR_SPI_SS
-	#define DDR_SPI_SS DDR_SPI
-	#define PORT_SPI_SS PORT_SPI
-#endif
 
 
 //function protoypes
@@ -155,11 +115,6 @@ extern rf_tx_buffer_t rf_tx_buffer;
 extern rf_rx_buffer_t rf_rx_buffer;
 
 
-void rfm12_set_wakeup_timer(uint16_t val);
-void rfm12_powerDown();
-uint8_t rfm12_lowPowerTx( uint8_t len, uint8_t type, uint8_t *data );
-
-
 //inline function to return the rx buffer status byte
 //(returns STATUS_FREE or STATUS_COMPLETE)
 static inline uint8_t rfm12_rx_status()
@@ -179,7 +134,7 @@ static inline uint8_t rfm12_rx_type()
 
 
 
-//inline function to retrieve current rf buffer
+//inline function to retreive current rf buffer
 static inline uint8_t *rfm12_rx_buffer()
 {
 	return (uint8_t*) rf_rx_buffer.rf_buffer_out->buffer;
@@ -198,5 +153,5 @@ void rfm12_rx_clear()
 	rf_rx_buffer.rf_buffer_out = &rf_rx_buffer.rf_buffers[rf_rx_buffer.buffer_out_num];
 }
 
-#include "rfm12_raw.h"
+#include "rfm12_extra.h"
 #include "rfm12_ctrl.h"

@@ -1,5 +1,7 @@
-#include "rfm12_hw.h"
-#include "rfm12.h"
+/******************************************************
+ *    THIS FILE IS BEING INCLUDED DIRECTLY		*
+ *		(for performance reasons)				*
+ ******************************************************/
 
 void rfm12_init()
 {
@@ -8,7 +10,7 @@ void rfm12_init()
 	
 	spi_init();
 
-	#ifdef RFM12_RAW_TX
+	#if RFM12_RAW_TX > 0
 	rfm12_raw_tx = 0;
 	#endif
 
@@ -67,7 +69,7 @@ void rfm12_init()
 	//activate the interrupt
 	RFM12_INT_ON();
 
-#ifdef RFM12_RECEIVE_CW
+#if RFM12_RECEIVE_CW > 0
 	adc_init();
 #endif
 }
