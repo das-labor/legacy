@@ -1,0 +1,15 @@
+hansi:
+(please don't do this, I've got a plan)
+beautify & repair feature modes from rfm12_extra.*
+improve buffer management (see fixmes)
+
+whoever wants to do this:
+add more livectrl functions
+
+
+
+DO MORE THOROUGH BURN-IN TESTS
+we need at least three devices
+one transmitting only, one receiving only, one changing modes
+this test shall see if switching to tx mode during heavy rx activity
+it might be possible that we'll end up in strange states
