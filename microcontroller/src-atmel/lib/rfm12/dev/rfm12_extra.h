@@ -18,7 +18,7 @@
  * @author Peter Fuhrmann, Hans-Gert Dahmen, Soeren Heisrath
  */
  
- #pragma once
+#pragma once
  
 /******************************************************
  *    THIS FILE IS BEING INCLUDED DIRECTLY		*
@@ -38,7 +38,7 @@
 * 	amplitude modulation receive mode				 *
  ******************************************************/
  
-#ifdef RFM12_RECEIVE_CW
+#if RFM12_RECEIVE_CW > 0
 #define RFRXBUF_SIZE 55
 #define STATE_EMPTY 0
 #define STATE_RECEIVING 1
@@ -95,3 +95,13 @@ inline void rfm12_tx_off (void)
 }
 
 #endif /* RFM12_RAW_TX  */
+
+
+#if RFM12_USE_WAKEUP_TIMER > 0
+void rfm12_set_wakeup_timer(uint16_t val);
+#endif /* RFM12_USE_WAKEUP_TIMER */
+
+#if RFM12_LOW_POWER > 0
+void rfm12_powerDown();
+uint8_t rfm12_lowPowerTx( uint8_t len, uint8_t type, uint8_t *data );
+#endif /* RFM12_LOW_POWER */
