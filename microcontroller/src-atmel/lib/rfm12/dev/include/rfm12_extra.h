@@ -21,11 +21,6 @@
 #pragma once
  
 /******************************************************
- *    THIS FILE IS BEING INCLUDED DIRECTLY		*
- *		(for performance reasons)				*
- ******************************************************/
- 
-/******************************************************
  *                                                    *
  *    NO  C O N F I G U R A T I O N  IN THIS FILE     *
  *                                                    *
