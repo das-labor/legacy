@@ -64,7 +64,7 @@ uint16_t uart0_getc(void);
  * returns if data is available or not.
  * \return zero if no data is available else a value different from zero is returned
  */
-uint8_t uart0_dataavail(void)
+uint8_t uart0_dataavail(void);
 
 #endif
 
@@ -98,7 +98,7 @@ uint16_t uart1_getc(void);
  * returns if data is available or not.
  * \return zero if no data is available else a value different from zero is returned
  */
-uint8_t uart1_dataavail(void)
+uint8_t uart1_dataavail(void);
 
 #endif
 

@@ -29,7 +29,7 @@
 #define UART0_PARATY    UART_PARATY_NONE /* paraty configuration for uart0 */
 
 
-#define UART1 1 /* set this to '1' if you want to use the second uart, otherwise set to '0' */
+#define UART1 0 /* set this to '1' if you want to use the second uart, otherwise set to '0' */
 #define UART1_BAUD_RATE 38400 /* baudrate for uart1 */
 #define UART1_STOPBITS  UART_STOPBITS_1 /* stopbit configuration for uart1 */
 #define UART1_DATABITS  UART_DATABITS_8 /* databit configuration for uart1 */
