@@ -99,7 +99,24 @@ uint16_t uart0_getc(void){
 #endif		
 }
 
-#endif
+uint16_t uart0_getc(void){
+	uint16_t c;
+	while(!(UCSR0A & _BV(RXC0))) /* wait for data to arrive */
+     ;
+#if UART0_DATABITS == UART_DATABITS_9
+	c = (UCSR0B>>1)&1
+	c <<= 8;
+	c |= UDR0; 
+	return c;
+#else
+	return UDR0;
+#endif		
+
+uint8_t uart0_dataavail(void){
+	return(UCSR0A & _BV(RXC0));
+}
+
+#endif /* UART0 */
 
 /******************************************************************************/
 /******************************************************************************/
@@ -144,4 +161,8 @@ uint16_t uart1_getc(void){
 #endif		
 }
 
-#endif
+uint8_t uart1_dataavail(void){
+	return(UCSR1A & _BV(RXC1));
+}
+
+#endif /* UART1 */

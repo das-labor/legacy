@@ -22,10 +22,22 @@
 #include "config.h"
 #include <stdint.h>
 
-void uart0_init(void);
+#if UART0
 
-void uart0_putc(unsigned char c);
+void     uart0_init(void);
+void     uart0_putc(uint16_t c);
+uint16_t uart0_getc(void);
+uint8_t  uart0_dataavail(void)
 
-unsigned char uart0_getc(void);
+#endif
+
+#if UART1
+
+void     uart1_init(void);
+void     uart1_putc(uint16_t c);
+uint16_t uart1_getc(void);
+uint8_t  uart1_dataavail(void)
+
+#endif
 
 #endif /* UART_NI_H_ */
