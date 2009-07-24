@@ -22,18 +22,18 @@
 
 #define F_CPU 16000000
 
-#define UART0 1
-#define UART0_BAUD_RATE 38400
-#define UART0_STOPBITS  UART_STOPBITS_1
-#define UART0_DATABITS  UART_DATABITS_8
-#define UART0_PARATY    UART_PARATY_NONE
+#define UART0 1 /* set this to '1' if you want to use the first uart, otherwise set to '0' */
+#define UART0_BAUD_RATE 38400 /* baudrate for uart0 */
+#define UART0_STOPBITS  UART_STOPBITS_1 /* stopbit configuration for uart0 */
+#define UART0_DATABITS  UART_DATABITS_8 /* databit configuration for uart0 */
+#define UART0_PARATY    UART_PARATY_NONE /* paraty configuration for uart0 */
 
-#define UART1 0
-#define UART1_BAUD_RATE 38400
-#define UART1_STOPBITS  UART_STOPBITS_2
-#define UART1_DATABITS  UART_DATABITS_9
-#define UART1_PARATY    UART_PARATY_EVEN
 
+#define UART1 1 /* set this to '1' if you want to use the second uart, otherwise set to '0' */
+#define UART1_BAUD_RATE 38400 /* baudrate for uart1 */
+#define UART1_STOPBITS  UART_STOPBITS_1 /* stopbit configuration for uart1 */
+#define UART1_DATABITS  UART_DATABITS_8 /* databit configuration for uart1 */
+#define UART1_PARATY    UART_PARATY_NONE /* paraty configuration for uart1 */
 
 
 #endif /* CONFIG_H_ */

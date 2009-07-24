@@ -20,15 +20,15 @@
 #ifndef UART_DEFS_H_
 #define UART_DEFS_H_
 
-#define UART_PARATY_NONE 0
-#define UART_PARATY_EVEN 2
-#define UART_PARATY_ODD  3
-#define UART_STOPBITS_1 0 
-#define UART_STOPBITS_2 1
-#define UART_DATABITS_5 0
-#define UART_DATABITS_6 1
-#define UART_DATABITS_7 2
-#define UART_DATABITS_8 3
-#define UART_DATABITS_9 7
+#define UART_PARATY_NONE 0 /** define no paraty */
+#define UART_PARATY_EVEN 2 /** define even paraty */
+#define UART_PARATY_ODD  3 /** define odd paraty */
+#define UART_STOPBITS_1 0 /** define 1 stop bit */
+#define UART_STOPBITS_2 1 /** define 2 stop bits */
+#define UART_DATABITS_5 0 /** define 5 data bits */
+#define UART_DATABITS_6 1 /** define 6 data bits */
+#define UART_DATABITS_7 2 /** define 7 data bits */
+#define UART_DATABITS_8 3 /** define 8 data bits */
+#define UART_DATABITS_9 7 /** define 9 data bits */
 
 #endif /* UART_DEFS_H_ */
