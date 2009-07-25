@@ -1,5 +1,5 @@
-PRG            = pingpong
-OBJ            = pingpong.o uart.o rfm12.o
+PRG            = txtest
+OBJ            = txtest.o uart.o rfm12.o
 MCU_TARGET     = atmega8
 OPTIMIZE       = -Os
 
