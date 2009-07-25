@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version J.40
-# Date: Wed Jul 22 21:26:16 2009
+# Date: Fri Jul 24 13:21:53 2009
 #
 ##############################################################
 #
@@ -38,8 +38,8 @@ SELECT Dual_Port_Block_Memory family Xilinx,_Inc. 6.3
 CSET component_name=frame_full
 CSET configuration_port_a=Read_Only
 CSET configuration_port_b=Write_Only
-CSET depth_a=4096
-CSET depth_b=2048
+CSET depth_a=16384
+CSET depth_b=8192
 CSET disable_warning_messages=true
 CSET global_init_value=0
 CSET load_init_file=false
@@ -71,5 +71,5 @@ CSET write_mode_port_a=Read_After_Write
 CSET write_mode_port_b=Read_After_Write
 # END Parameters
 GENERATE
-# CRC: beaad51a
+# CRC: 6cd4a40e
 

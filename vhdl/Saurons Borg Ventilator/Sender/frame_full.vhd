@@ -42,8 +42,8 @@ Library XilinxCoreLib;
 -- synthesis translate_on
 ENTITY frame_full IS
 	port (
-	addra: IN std_logic_VECTOR(11 downto 0);
-	addrb: IN std_logic_VECTOR(10 downto 0);
+	addra: IN std_logic_VECTOR(13 downto 0);
+	addrb: IN std_logic_VECTOR(12 downto 0);
 	clka: IN std_logic;
 	clkb: IN std_logic;
 	dinb: IN std_logic_VECTOR(15 downto 0);
@@ -56,8 +56,8 @@ ARCHITECTURE frame_full_a OF frame_full IS
 -- synthesis translate_off
 component wrapped_frame_full
 	port (
-	addra: IN std_logic_VECTOR(11 downto 0);
-	addrb: IN std_logic_VECTOR(10 downto 0);
+	addra: IN std_logic_VECTOR(13 downto 0);
+	addrb: IN std_logic_VECTOR(12 downto 0);
 	clka: IN std_logic;
 	clkb: IN std_logic;
 	dinb: IN std_logic_VECTOR(15 downto 0);
@@ -92,8 +92,8 @@ end component;
 			c_has_rdyb => 0,
 			c_yuse_single_primitive => 0,
 			c_has_rdya => 0,
-			c_addra_width => 12,
-			c_addrb_width => 11,
+			c_addra_width => 14,
+			c_addrb_width => 13,
 			c_has_limit_data_pitch => 0,
 			c_default_data => "0",
 			c_pipe_stages_b => 0,
@@ -115,9 +115,9 @@ end component;
 			c_sim_collision_check => "NONE",
 			c_has_enb => 0,
 			c_has_ena => 1,
-			c_depth_b => 2048,
+			c_depth_b => 8192,
 			c_mem_init_file => "mif_file_16_1",
-			c_depth_a => 4096,
+			c_depth_a => 16384,
 			c_has_doutb => 0,
 			c_has_douta => 1,
 			c_yprimitive_type => "16kx1");

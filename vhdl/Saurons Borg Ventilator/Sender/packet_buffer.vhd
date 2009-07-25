@@ -11,9 +11,9 @@ entity packet_buffer is
     sram_pos  :  in  STD_LOGIC_VECTOR ( 7 downto 0);
     winkel    :  in  STD_LOGIC_VECTOR ( 9 downto 0);
     b10code   : out  STD_LOGIC;			  
-    freeze_diag  : out STD_LOGIC_VECTOR ( 2 downto 0);
+    freeze_diag  : out STD_LOGIC_VECTOR ( 4 downto 0);
     winkel_diag  : out STD_LOGIC_VECTOR ( 9 downto 0);
-    addra_diag   : out STD_LOGIC_VECTOR (11 downto 0);
+    addra_diag   : out STD_LOGIC_VECTOR (13 downto 0);
     b8_code_diag : out STD_LOGIC_VECTOR ( 7 downto 0);
     rdy_diag     : out STD_LOGIC;
 	 counter_diag : out STD_LOGIC_VECTOR ( 9 downto 0)
@@ -25,8 +25,8 @@ architecture Behavioral of packet_buffer is
 
 component frame_full
 	port (
-	addra: IN  std_logic_VECTOR(11 downto 0);
-	addrb: IN  std_logic_VECTOR(10 downto 0);
+	addra: IN  std_logic_VECTOR(13 downto 0);
+	addrb: IN  std_logic_VECTOR(12 downto 0);
 	clka : IN  std_logic;
 	clkb : IN  std_logic;
 	dinb : IN  std_logic_VECTOR(15 downto 0);
@@ -45,16 +45,17 @@ component packet_write
 	counter : OUT std_logic_vector(9 downto 0));
 end component;
 
-signal addra    : std_logic_VECTOR(11 downto 0);
-signal addrb    : std_logic_VECTOR(10 downto 0);
+signal addra    : std_logic_VECTOR(13 downto 0);
+signal addrb    : std_logic_VECTOR(12 downto 0);
 signal dinb     : std_logic_VECTOR(15 downto 0);
 signal b8_code  : std_logic_VECTOR( 7 downto 0);
 signal counter  : std_logic_VECTOR( 9 downto 0);
 signal rdy      : std_logic;
-signal winkel_1 : std_logic_VECTOR( 9 downto 0);
-signal winkel_2 : std_logic_VECTOR( 9 downto 0);
-signal counter_1: std_logic_VECTOR( 9 downto 0);
-signal freeze   : std_logic_VECTOR( 2 downto 0):= (others => '0');
+signal winkel_1 : std_logic_VECTOR( 9 downto 0):= (others => '0');
+signal winkel_2 : std_logic_VECTOR( 9 downto 0):= (others => '0');
+signal counter_1: std_logic_VECTOR( 9 downto 0):= (others => '0');
+signal freeze   : std_logic_VECTOR( 4 downto 0):= (others => '0');
+signal douta    : std_logic_VECTOR( 7 downto 0):= (others => '0');
 
 
 begin
@@ -68,7 +69,7 @@ bram : frame_full
 			clka  => clk20,
 			clkb  => clk50,
 			dinb  => dinb,
-			douta => b8_code,
+			douta => douta,
 			ena   => rdy,
 			web   => '1');
 
@@ -85,7 +86,7 @@ pwrite: packet_write
 -- Daten in Blockram schreiben (Kanal B)
 process (clk50) begin
 	if rising_edge (clk50) then
-		addrb <= winkel(2 downto 0) & sram_pos;
+		addrb <= winkel(4 downto 0) & sram_pos;
 		 dinb <= sram_read;
 	end if;
 end process;
@@ -105,7 +106,7 @@ end process;
 process (clk20) begin
 	if rising_edge (clk20) then
 		if counter = 0 and counter_1 /= 0 then
-			freeze <= winkel_2(2 downto 0) - 1;
+			freeze <= winkel_2(4 downto 0) - 1;
 		end if;
 	end if;
 end process;
@@ -115,6 +116,20 @@ end process;
 
 addra <= freeze & counter (8 downto 0);
 
+
+
+-- Ein byte aus Bram lesen
+process (clk20) begin
+	if rising_edge (clk20) then
+		if (counter < 512) and rdy = '1' then
+			b8_code <= douta;
+		end if;
+	end if;
+end process;
+
+
+
+
 freeze_diag  <= freeze;
 winkel_diag  <= winkel;
 addra_diag   <= addra;
@@ -123,4 +138,3 @@ rdy_diag     <= rdy;
 counter_diag <= counter;
 
 end Behavioral;
-

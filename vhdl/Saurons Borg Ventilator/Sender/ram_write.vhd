@@ -37,7 +37,7 @@ entity ram_write is
             sram_wrt : out   STD_LOGIC := '0';
             sram_sel : out   STD_LOGIC := '0';
 			write_enable: out   STD_LOGIC;
-			totes_lesen : out   STD_logic;
+			totes_lesen : out   STD_logic := '0';
 			  
 	           ad_adr : in    STD_LOGIC_VECTOR (17 downto 0);
               ad_dat : in    STD_LOGIC_VECTOR (15 downto 0);
