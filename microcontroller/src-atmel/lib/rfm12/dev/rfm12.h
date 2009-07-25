@@ -97,7 +97,7 @@ typedef struct{
 typedef struct
 {
 	//this is the internal state machine
-	uint8_t	rfm12_state;
+	volatile uint8_t rfm12_state;
 	
 	//tx buffer status
 	//(free or occupied -> transmission enqueued)
