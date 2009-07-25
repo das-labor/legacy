@@ -1,5 +1,5 @@
 PRG            = main-cbbuffer-test
-OBJ            = main-cbbuffer-test.o circularbytebuffer-asm.o uart_ni-asm.o
+OBJ            = main-cbbuffer-test.o circularbytebuffer.o uart_ni-asm.o
                  
 MCU_TARGET     = atmega644
 OPTIMIZE       = 

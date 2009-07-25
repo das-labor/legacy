@@ -35,6 +35,9 @@
 	 uint8_t* top;
 } circularbytebuffer_t;
 */
+
+#include "config.h"
+
 #define BUFFER_SIZE_OFFSET 0
 #define FILLCOUNT_OFFSET   1
 #define BUFFER_OFFSET      2
@@ -42,31 +45,40 @@
 #define TAIL_OFFSET        6
 #define TOP_OFFSET         8
 
+#ifndef CIRCULARBYTEBUFFER_NO_MALLOC
+#  define CIRCULARBYTEBUFFER_NO_MALLOC 0
+#endif
+
+#ifndef CIRCULARBYTEBUFFER_NO_INIT2
+#  define CIRCULARBYTEBUFFER_NO_INIT2 0
+#endif
+
+#if CIRCULARBYTEBUFFER_NO_MALLOC==0
+
 /******************************************************************************/
 /*
- *	uint8_t circularbytebuffer_init(uint8_t buffersize, circularbytebuffer_t* buffer){
- *		buffer->buffer_size = buffersize;
- *		buffer->buffer = malloc(buffersize);
- *		buffer->head = buffer->tail = buffer->buffer;
- *		buffer->top = buffer->buffer+buffer->buffer_size;
- *		buffer->fillcount = 0;
- *		if(buffer->buffer)
+ *	uint8_t circularbytebuffer_init(uint8_t buffersize, circularbytebuffer_t* cb){
+ *		cb->buffer_size = buffersize;
+ *		cb->buffer = malloc(buffersize);
+ *		cb->head = cb->tail = cb->buffer;
+ *		cb->top = cb->buffer + cb->buffer_size;
+ *		cb->fillcount = 0;
+ *		if(cb->buffer)
  *			return 1; / * success * /
  *		return 0; / * malloc failed * /	
  *	}
  * 
- * param buffersize: r24
- * param buffer:     r22:r23
+ * param buffersize:  r24
+ * param cb:          r22:r23
  */
 .global circularbytebuffer_init
 circularbytebuffer_init:
 	push r28
 	push r29
 	movw r28, r22
-	std Y+0, r22 /* set buffer_size */
+	std Y+0, r24 /* set buffer_size */
 	std Y+1, r1  /* set fillcount to 0 */
 	clr r25
-	mov r24, r22
 	call malloc
 	adiw r24, 0
 	brne 10f
@@ -93,21 +105,6 @@ circularbytebuffer_init:
 
 /******************************************************************************/
 /*
- *	uint8_t circularbytebuffer_cnt(circularbytebuffer_t* cb){
- *		return (cb->fillcount);
- *	}
- *
- * param cb:  r24:r25
- */
-.global circularbytebuffer_cnt
-circularbytebuffer_cnt:
-	movw r30, r24
-	ldd r24, Z+FILLCOUNT_OFFSET
-	clr r25
-	ret
-
-/******************************************************************************/
-/*
  *	void circularbytebuffer_free(circularbytebuffer_t* cb){
  *		free(cb->buffer);
  *	}
@@ -120,6 +117,58 @@ circularbytebuffer_free:
 	ldd r24, Z+BUFFER_OFFSET
 	ldd r25, Z+BUFFER_OFFSET+1
 	rjmp free
+
+#endif /* CIRCULARBYTEBUFFER_NO_MALLOC==0 */
+
+#if CIRCULARBYTEBUFFER_NO_INIT2==0
+
+/******************************************************************************/
+/*
+ *	void circularbytebuffer_init2(uint8_t buffersize, circularbytebuffer_t* cb, void* buffer){
+ *		cb->buffer_size = buffersize;
+ *		cb->buffer = buffer
+ *		cb->head = cb->tail = cb->buffer;
+ *		cb->top = cb->buffer + cb->buffer_size;
+ *		cb->fillcount = 0;
+ *	}
+ * 
+ * param buffersize:  r24
+ * param cb:          r22:r23
+ * param buffer:      r20:r21
+ */
+.global circularbytebuffer_init2
+circularbytebuffer_init2:
+	movw r30, r22
+	std Z+0, r24 /* set buffer_size */
+	std Z+1, r1  /* set fillcount to 0 */
+	std Z+2, r20
+	std Z+3, r21
+	std Z+4, r20
+	std Z+5, r21
+	std Z+6, r20
+	std Z+7, r21
+	add r20, r24
+	adc r21, r1
+	std Z+8, r20
+	std Z+9, r21
+	ret
+
+#endif /* CIRCULARBYTEBUFFER_NO_INIT2==0 */
+
+/******************************************************************************/
+/*
+ *	uint8_t circularbytebuffer_cnt(circularbytebuffer_t* cb){
+ *		return (cb->fillcount);
+ *	}
+ *
+ * param cb:  r24:r25
+ */
+.global circularbytebuffer_cnt
+circularbytebuffer_cnt:
+	movw r30, r24
+	ldd r24, Z+FILLCOUNT_OFFSET
+	clr r25
+	ret
 	
 /******************************************************************************/
 /*
