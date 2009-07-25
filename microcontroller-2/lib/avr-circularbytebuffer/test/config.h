@@ -35,6 +35,9 @@
 #define UART1_DATABITS  UART_DATABITS_8 /* databit configuration for uart1 */
 #define UART1_PARATY    UART_PARATY_NONE /* paraty configuration for uart1 */
 
+#define CIRCULARBYTEBUFFER_NO_MALLOC 1
+#define CIRCULARBYTEBUFFER_NO_INIT2  0
+
 
 #endif /* CONFIG_H_ */
 

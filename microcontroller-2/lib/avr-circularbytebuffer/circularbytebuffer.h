@@ -25,11 +25,13 @@
  * \ingroup  circularbytebuffer
  * \brief    declaration for circular byte buffer
  */
- #include <stdint.h>
- #include <stdlib.h>
  
 #ifndef CIRCULARBYTEBUFFER_H_
 #define CIRCULARBYTEBUFFER_H_
+
+#include <stdint.h>
+#include <stdlib.h>
+#include "config.h"
  
  typedef struct {
 	 uint8_t buffer_size;
@@ -40,7 +42,13 @@
 	 uint8_t* top;
 } circularbytebuffer_t;
 
-uint8_t circularbytebuffer_init(uint8_t buffersize, circularbytebuffer_t* buffer);
+
+#if CIRCULARBYTEBUFFER_NO_MALLOC==0
+uint8_t circularbytebuffer_init(uint8_t buffersize, circularbytebuffer_t* cb);
+#endif
+#if CIRCULARBYTEBUFFER_NO_INIT2==0
+void    circularbytebuffer_init2(uint8_t buffersize, circularbytebuffer_t* cb, void* buffer);
+#endif
 uint16_t circularbytebuffer_get_lifo(circularbytebuffer_t* cb);
 uint16_t circularbytebuffer_get_fifo(circularbytebuffer_t* cb);
 uint8_t circularbytebuffer_append(uint8_t, circularbytebuffer_t* cb);

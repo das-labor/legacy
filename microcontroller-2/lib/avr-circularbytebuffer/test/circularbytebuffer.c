@@ -29,17 +29,38 @@
  #include <stdlib.h>
  #include <string.h>
  #include "circularbytebuffer.h"
+ 
 
-uint8_t circularbytebuffer_init(uint8_t buffersize, circularbytebuffer_t* buffer){
-	buffer->buffer_size = buffersize;
-	buffer->buffer = malloc(buffersize);
-	buffer->head = buffer->tail = buffer->buffer;
-	buffer->top = buffer->buffer+buffer->buffer_size;
-	buffer->fillcount = 0;
-	if(buffer->buffer)
+#ifndef CIRCULARBYTEBUFFER_NO_MALLOC
+#  define CIRCULARBYTEBUFFER_NO_MALLOC 0
+#endif
+
+#ifndef CIRCULARBYTEBUFFER_NO_INIT2
+#  define CIRCULARBYTEBUFFER_NO_INIT2 0
+#endif
+
+#if CIRCULARBYTEBUFFER_NO_MALLOC==0
+uint8_t circularbytebuffer_init(uint8_t buffersize, circularbytebuffer_t* cb){
+	cb->buffer_size = buffersize;
+	cb->buffer = malloc(buffersize);
+	cb->head = cb->tail = cb->buffer;
+	cb->top = cb->buffer + cb->buffer_size;
+	cb->fillcount = 0;
+	if(cb->buffer)
 		return 1; /* success */
 	return 0; /* malloc failed */	
 }
+#endif
+
+#if CIRCULARBYTEBUFFER_NO_INIT2==0
+void circularbytebuffer_init2(uint8_t buffersize, circularbytebuffer_t* cb, void* buffer){
+	cb->buffer_size = buffersize;
+	cb->buffer = buffer;
+	cb->head = cb->tail = cb->buffer;
+	cb->top = cb->buffer + cb->buffer_size;
+	cb->fillcount = 0;
+}
+#endif
 
 uint16_t circularbytebuffer_get_lifo(circularbytebuffer_t* cb){
 	uint8_t ret;
@@ -95,6 +116,8 @@ uint8_t circularbytebuffer_cnt(circularbytebuffer_t* cb){
 	return (cb->fillcount);
 }
 
+#if CIRCULARBYTEBUFFER_NO_MALLOC==0
 void circularbytebuffer_free(circularbytebuffer_t* cb){
 	free(cb->buffer);
 }
+#endif

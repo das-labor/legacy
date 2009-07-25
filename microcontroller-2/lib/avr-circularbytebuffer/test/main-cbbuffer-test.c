@@ -47,7 +47,8 @@ void printhex(unsigned char c){
 int main (void){
 	uint16_t r;
 	circularbytebuffer_t cbb;
-	circularbytebuffer_init(10, &cbb);
+	uint8_t buffer[10];
+	circularbytebuffer_init2(10, &cbb, buffer);
 	for(r=0;r<10;++r){
 		cbb.buffer[r]=r;
 	}
