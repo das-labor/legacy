@@ -133,39 +133,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 	#endif		
 	
 	switch(ctrl.rfm12_state)
-	{
-		case STATE_TX:
-			//debug
-			#if RFM12_UART_DEBUG >= 2
-			uart_putc('T');
-			#endif
-
-			if(ctrl.bytecount < ctrl.num_bytes)
-			{
-				//load the next byte from our buffer struct.
-				rfm12_data_inline( (RFM12_CMD_TX>>8), rf_tx_buffer.sync[ctrl.bytecount++]);
-				
-				//end the interrupt without resetting the fifo
-				goto END;
-			}
-			
-			/* if we're here, we're finished transmitting the bytes */
-			/* the fifo will be resetted at the end of the function */
-			
-			//flag the buffer as free again
-			ctrl.txstate = STATUS_FREE;
-			
-			//we are now accepting transmissions again
-			ctrl.rfm12_state = STATE_RX_IDLE;
-			
-			//turn off the transmitter
-			//and enable receiver
-			rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ER);
-			
-			//load a dummy byte to clear int status
-			rfm12_data_inline( (RFM12_CMD_TX>>8), 0xaa);			
-			break;
-			
+	{			
 		case STATE_RX_IDLE:
 			//init the bytecounter - remember, we will read the length byte, so this must be 1
 			ctrl.bytecount = 1;
@@ -190,9 +158,10 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 				//the current receive buffer is empty, so we start receiving
 				ctrl.rfm12_state = STATE_RX_ACTIVE;
 			
+				//store the received length into the packet buffer
 				//FIXME:  why the hell do we need this?!
 				//in principle, the length is stored alongside with the buffer.. the only problem is, that the buffer might be cleared during reception
-				ctrl.rf_buffer_in->len = ctrl.num_bytes;
+				ctrl.rf_buffer_in->len = checksum;
 				
 				//end the interrupt without resetting the fifo
 				goto END;
@@ -256,6 +225,36 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 			ctrl.buffer_in_num = (ctrl.buffer_in_num + 1) % 2;
 			ctrl.rf_buffer_in = &rf_rx_buffers[ctrl.buffer_in_num];		
 			break;
+			
+		case STATE_TX:
+			//debug
+			#if RFM12_UART_DEBUG >= 2
+			uart_putc('T');
+			#endif
+
+			if(ctrl.bytecount < ctrl.num_bytes)
+			{
+				//load the next byte from our buffer struct.
+				rfm12_data_inline( (RFM12_CMD_TX>>8), rf_tx_buffer.sync[ctrl.bytecount++]);
+							
+				//end the interrupt without resetting the fifo
+				goto END;
+			}
+			
+			/* if we're here, we're finished transmitting the bytes */
+			/* the fifo will be reset at the end of the function */
+			
+			//flag the buffer as free again
+			ctrl.txstate = STATUS_FREE;
+			
+			//turn off the transmitter
+			//and enable receiver
+			rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ER);
+			
+			//load a dummy byte to clear int status
+			//does not seem to be necessary
+			//rfm12_data_inline( (RFM12_CMD_TX>>8), 0xaa);			
+			break;			
 	}
 	
 	//reset the fifo and resets the state machine to idle
@@ -343,14 +342,21 @@ void rfm12_tick()
 	{ //yes: start transmitting
 		//disable the interrupt (as we're working directly with the transceiver now)
 		//hint: we could be losing an interrupt here, too
+		//we could also disturb an ongoing reception,
+		//if it just started some cpu cycles ago 
+		//(as the check for this case is some lines (cpu cycles) above)
+		//anyhow, we MUST transmit at some point...
 		RFM12_INT_OFF();
+		
+		//disable receiver - if you don't do this, tx packets will get lost
+		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
 		
 		//calculate number of bytes to be sent by ISR
 		//2 sync bytes + len byte + type byte + checksum + message length + 1 dummy byte
 		ctrl.num_bytes = rf_tx_buffer.len + 6;
 		
 		//reset byte sent counter
-		ctrl.bytecount = 0;		
+		ctrl.bytecount = 0;
 		
 		//set mode for interrupt handler
 		ctrl.rfm12_state = STATE_TX;
