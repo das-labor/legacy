@@ -1,7 +1,7 @@
 VERSION 5
 BEGIN SYMBOL packet_buffer
 SYMBOLTYPE BLOCK
-TIMESTAMP 2009 7 23 22 51 30
+TIMESTAMP 2009 7 24 13 28 38
 SYMPIN 0 -352 Input clk20
 SYMPIN 0 -320 Input clk50
 SYMPIN 0 -272 Input sram_read(15:0)
@@ -9,9 +9,9 @@ SYMPIN 0 -224 Input sram_pos(7:0)
 SYMPIN 0 -176 Input winkel(9:0)
 SYMPIN 368 -336 Output b10code
 SYMPIN 368 -128 Output rdy_diag
-SYMPIN 368 -80 Output freeze_diag(2:0)
+SYMPIN 368 -80 Output freeze_diag(4:0)
 SYMPIN 368 -32 Output winkel_diag(9:0)
-SYMPIN 368 16 Output addra_diag(11:0)
+SYMPIN 368 16 Output addra_diag(13:0)
 SYMPIN 368 64 Output b8_code_diag(7:0)
 SYMPIN 368 96 Output counter_diag(9:0)
 BEGIN DISPLAY 256 -392 ATTR SymbolName
@@ -41,7 +41,7 @@ BEGIN DISPLAY 296 -128 PIN rdy_diag ATTR PinName
     ALIGNMENT RIGHT
     FONT 24 "Arial"
 END DISPLAY
-BEGIN DISPLAY 296 -80 PIN freeze_diag(2:0) ATTR PinName
+BEGIN DISPLAY 296 -80 PIN freeze_diag(4:0) ATTR PinName
     ALIGNMENT RIGHT
     FONT 24 "Arial"
 END DISPLAY
@@ -49,7 +49,7 @@ BEGIN DISPLAY 296 -32 PIN winkel_diag(9:0) ATTR PinName
     ALIGNMENT RIGHT
     FONT 24 "Arial"
 END DISPLAY
-BEGIN DISPLAY 296 16 PIN addra_diag(11:0) ATTR PinName
+BEGIN DISPLAY 296 16 PIN addra_diag(13:0) ATTR PinName
     ALIGNMENT RIGHT
     FONT 24 "Arial"
 END DISPLAY

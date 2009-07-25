@@ -17,6 +17,7 @@ ARCHITECTURE behavioral OF top_top_sch_tb IS
           tast	:	IN	STD_LOGIC_VECTOR (3 DOWNTO 0); 
           led	:	OUT	STD_LOGIC_VECTOR (7 DOWNTO 0); 
           clk50	:	OUT	STD_LOGIC; 
+          clk20	:	OUT	STD_LOGIC; 
           clk	:	IN	STD_LOGIC; 
           out1	:	OUT	STD_LOGIC; 
           out2	:	OUT	STD_LOGIC; 
@@ -46,19 +47,36 @@ ARCHITECTURE behavioral OF top_top_sch_tb IS
           winkel_ram	:	OUT	STD_LOGIC_VECTOR (9 DOWNTO 0); 
           b10code	:	OUT	STD_LOGIC; 
           rdy_diag	:	OUT	STD_LOGIC; 
-          freeze_diag	:	OUT	STD_LOGIC_VECTOR (2 DOWNTO 0); 
+          freeze_diag	:	OUT	STD_LOGIC_VECTOR (4 DOWNTO 0); 
           winkel_diag	:	OUT	STD_LOGIC_VECTOR (9 DOWNTO 0); 
-          addra_diag	:	OUT	STD_LOGIC_VECTOR (11 DOWNTO 0); 
+          addra_diag	:	OUT	STD_LOGIC_VECTOR (13 DOWNTO 0); 
           b8_code_diag	:	OUT	STD_LOGIC_VECTOR (7 DOWNTO 0);
-			 counter_diag  :	OUT	STD_LOGIC_VECTOR (9 DOWNTO 0)
+			 counter_diag  :	OUT	STD_LOGIC_VECTOR (9 DOWNTO 0);
+			 sram_read  :	OUT	STD_LOGIC_VECTOR (15 DOWNTO 0);
+			 sram_pos  :	OUT	STD_LOGIC_VECTOR (7 DOWNTO 0)
 			 
 			 );
    END COMPONENT;
+	
+	
+		COMPONENT packet_read
+	PORT(
+		data_in : IN std_logic;
+		clk : IN std_logic;          
+		data_out : OUT std_logic_vector(7 downto 0);
+		counter : OUT std_logic_vector(9 downto 0);
+		rdy : OUT std_logic;
+		synchron : OUT std_logic;
+		crc_ok : OUT std_logic;
+		crc_er : OUT std_logic
+		);
+	END COMPONENT;
 
    SIGNAL schaltin	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
    SIGNAL tast	:	STD_LOGIC_VECTOR (3 DOWNTO 0);
    SIGNAL led	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
    SIGNAL clk50	:	STD_LOGIC;
+   SIGNAL clk20	:	STD_LOGIC;
    SIGNAL clk	:	STD_LOGIC;
    SIGNAL out1	:	STD_LOGIC;
    SIGNAL out2	:	STD_LOGIC;
@@ -88,23 +106,40 @@ ARCHITECTURE behavioral OF top_top_sch_tb IS
    SIGNAL winkel_ram	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
    SIGNAL b10code	:	STD_LOGIC;
    SIGNAL rdy_diag	:	STD_LOGIC;
-   SIGNAL freeze_diag	:	STD_LOGIC_VECTOR (2 DOWNTO 0);
+   SIGNAL freeze_diag	:	STD_LOGIC_VECTOR (4 DOWNTO 0);
    SIGNAL winkel_diag	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
-   SIGNAL addra_diag	:	STD_LOGIC_VECTOR (11 DOWNTO 0);
+   SIGNAL addra_diag	:	STD_LOGIC_VECTOR (13 DOWNTO 0);
    SIGNAL b8_code_diag	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
    SIGNAL counter_diag	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
+   SIGNAL sram_read	:	STD_LOGIC_VECTOR (15 DOWNTO 0);
+   SIGNAL sram_pos	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
+   SIGNAL decode_data	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
+   SIGNAL decode_data_last	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
+   SIGNAL decode_counter	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
+   SIGNAL decode_rdy	:	STD_LOGIC;
+   SIGNAL decode_synchron	:	STD_LOGIC;
+   SIGNAL decode_crc_ok	:	STD_LOGIC;
+   SIGNAL decode_crc_er	:	STD_LOGIC;
+	
 
+   SIGNAL visual_abstand	:	STD_LOGIC_VECTOR (7 DOWNTO 0):= (others => '0');
+   SIGNAL visual_winkel	:	STD_LOGIC_VECTOR (9 DOWNTO 0):= (others => '0');
+   SIGNAL visual_color	:	STD_LOGIC_VECTOR (15 DOWNTO 0):= (others => '0');
 
 
 signal colordatae: std_logic_vector(15 downto 0):= x"0000" ; signal xe,ye:integer:=0;
 signal colordatai: std_logic_vector(23 downto 0) ; signal xi,yi:integer;
 signal colordatal: std_logic_vector(23 downto 0):= x"000000" ; signal xl,yl:integer:=0;
 
+type memory is array (0 to 1023, 0 to 511) of bit_vector (15 downto 0);
 type memory2 is array (0 to 511, 0 to 511) of bit_vector (15 downto 0);
+
+shared variable ram : memory; 
 shared variable visual : memory2; 
 shared variable input_picture : memory2;
 
 shared variable fname : string ( 1 to 16):="lena_copy000.bmp";
+
 
 
 
@@ -117,6 +152,7 @@ BEGIN
 		tast => tast, 
 		led => led, 
 		clk50 => clk50, 
+		clk20 => clk20, 
 		clk => clk, 
 		out1 => out1, 
 		out2 => out2, 
@@ -150,13 +186,30 @@ BEGIN
 		winkel_diag => winkel_diag, 
 		addra_diag => addra_diag, 
 		b8_code_diag => b8_code_diag,
-		counter_diag => counter_diag
+		counter_diag => counter_diag,
+		sram_read => sram_read,
+		sram_pos => sram_pos
    );
+	
+	
+-- modul zum pakete dekodieren	
+	decode: packet_read PORT MAP(
+		data_in => b10code,
+		clk => clk20,
+		data_out => decode_data,
+		counter => decode_counter,
+		rdy => decode_rdy,
+		synchron => decode_synchron,
+		crc_ok => decode_crc_ok,
+		crc_er => decode_crc_er
+	);
+	
 
--- *** Test Bench - User Defined Section ***
 ---------------------
 --  Takterzeugung  --
 ---------------------
+
+-- Nur ein takt, die anderen takte werden über dcm's generiert
 
 -- generiere 50 Mhz Takt
 process begin
@@ -167,117 +220,31 @@ process begin
 end process;
 
 
-----------------------------------------
--- Visualisierung der gelesenen Daten --
-----------------------------------------
-process (clk50) 
-constant center_x : real := 255.5;
-constant center_y : real := 255.5;
-variable w			: real;
-variable s,c,x,y 	: real;
-variable w_int    : integer;
+------------------------------------------
+--  Simulierte Drehung des Ventilators  --
+------------------------------------------
+
+process 
 begin
 
-if rising_edge (clk50) then
-
---  winkel berechnen
-w_int := (conv_integer(winkel_diag));
-
--- Jeder Flügel ist 90 Grad (256) versetzt
-		if    addra_diag(1 downto 0) = "01" then  
-				w_int := w_int + 256;
-		elsif addra_diag(1 downto 0) = "10" then  
-				w_int := w_int + 512;
-		elsif addra_diag(1 downto 0) = "11" then
-				w_int := w_int + 768;
-		end if;
-
--- Winkel gröser eine Umdrehung ? 
-if w_int > 1023 then w_int := w_int - 1023; end if;
-
-
-w := ((real(w_int) / 1023.0)* 6.28) + 3.14;
-
-s := sin(w) * real (conv_integer (addra_diag) );
-c := cos(w) * real (conv_integer (addra_diag) );
-
--- x / y Koordinaten fur den winkel 
-if addra_diag < 512 then
-	x := center_x + s;
-	y := center_y + c;
-else 
-	x := 0.0;
-	y := 0.0;
-end if;
-			
--- Schwarz gelesen ?? dann Rot draus machen (für debugging)
-if b8_code_diag = x"0000" then 
-	colordatae <= x"008f";
-else
-	                          colordatae (7 downto 0) <= 	b8_code_diag;
-end if ;						
- 								
-xe <= integer(x) ; ye <= integer(y) ;
-
-
--- Entgülige Daten in einen Ram Speicher schieben
-visual ((xe+0),(ye+0)):= To_bitvector(colordatae);
-visual ((xe+1),(ye+0)):= To_bitvector(colordatae);
-visual ((xe+0),(ye+1)):= To_bitvector(colordatae);
-
-
-
-end if;
+wait for 20 us;
+winkel <= winkel + 1;
 end process;
-
-------------------------------------
--- LEDS nach einer zeit abdunkeln --
-------------------------------------
---process 
---
---variable dunkel   : integer;
---variable read_byte: std_logic_vector(15 downto 0);
---variable r,g,b    : integer; 
---begin
---
---wait for 1500 us;
---
---for dunkel_y in 0 to 511 loop
---	for dunkel_x in 0 to 511 loop
---	
---	read_byte := To_StdLogicVector(visual (dunkel_x,dunkel_y));
---	
---
---		r := CONV_INTEGER (read_byte ( 4 downto  0));
---		g := CONV_INTEGER (read_byte (10 downto  5));
---		b := CONV_INTEGER (read_byte (15 downto 11));
---		
---		r := r - 1 ; if r < 0 then r:= 0; end if;
---		g := g - 1 ; if g < 0 then g:= 0; end if;
---		b := b - 1 ; if b < 0 then b:= 0; end if;
---		
---		read_byte   := CONV_STD_LOGIC_VECTOR (b,5) & 
---							CONV_STD_LOGIC_VECTOR (g,6) &
---							CONV_STD_LOGIC_VECTOR (r,5);
---
---	visual (dunkel_x, dunkel_y) := To_bitvector(read_byte);
---	
---	end loop;
---end loop;
---end process;
+-- 20 us = 3000 u/min
+-- 30 us = 2000 u/min 
+-- 60 us = 1000 u/min
 
 
-----------------------
--- SRAM Simulieren  --
-----------------------
+
+----------------------			Hier wird ein SRAM Simuliert,
+-- SRAM Simulieren  --			die Daten werden in einem Array Abgelegt
+----------------------			Das Array wird weiter unten initialisiert
 
 process (clk100)
 type memory is array (0 to 1023, 0 to 511) of bit_vector (15 downto 0);
 
-variable ram : memory; 
 variable x,xr :integer;
 variable y,yr :integer;
-constant readcolor : std_logic_vector (23 downto 0) :=x"8040a0";
 
 begin
 
@@ -323,105 +290,92 @@ if rising_edge (clk100) then
 end if;
 end process;
 
--------------------------
---  ad eingang testen  --
--------------------------
 
-----liest das bild unten links und gibt es über das ad interface aus; 
---
---process 
---variable x,y:integer:=0;
---variable count : integer := 0;
---variable picture_counter :integer := 0;
---variable w1,w2,w3 : integer ; 
---variable wname : string ( 1 to 14):="wurfel0000.bmp";
---variable char1,char2,char3 : character ;
---
---begin
---
---wait until rising_edge (clk50);
---
----- Daten für ad_dat / ad_adr aus dem speicher lesen
---			ad_adr <= conv_std_logic_vector(y,9) & conv_std_logic_vector(x,9);
---		
---         ad_dat <= To_StdLogicVector(input_picture(x,y));
-----         ad_dat <= ad_adr (15 downto 0);
---			
---		-- nach count takten schreib-impuls erzeugen
---		count := count + 1;
---		if count = 4 then count := 0; end if;
---			
---		if count = 0 then ad_wr<='1';
---		else ad_wr<='0';
---		end if;
---			
---		if ad_wr = '1' then x := x + 1 ; end if;
---
-----------------------------
----- ein neues Bild Laden --
-----------------------------
---
----- aktuelles bild ist fertig
---if ad_adr = "111111111111111111" and ad_wr = '1' then  
---
----- filename zum laden 
---	
---	picture_counter := picture_counter + 1;
---	
---   w1 := picture_counter / 100;
---	w2 := ((picture_counter - (w1*100)) / 10);
---	w3 := picture_counter - (w1*100) - (w2*10); 
---	
---	char1 := character'VAL(conv_integer((w1)+48));
---	char2 := character'VAL(conv_integer((w2)+48));
---	char3 := character'VAL(conv_integer((w3)+48));
---  
---   wname := "wurfel0" & char1 & char2 & char3 & ".bmp";
---
---	report " ----------------------------------------- Lade ein neues Bild ----------------------------";
---	report wname;
---	readfile (wname); -- Datei Laden
---	
---	-- und in den speicher input_picture kopieren
---	for ybc in 0 to 511 loop
---	 	for xbc in 0 to 511 loop
---		wait for 1 ps;           
---		getpixel (xbc,ybc,colordatak);
---		xk <= xbc ; yk <= ybc;
---		
---		input_picture(xk,yk) := To_bitvector(colordatak) (23 downto 19) &
---										To_bitvector(colordatak) (15 downto 10) &
---										To_bitvector(colordatak) ( 7 downto  3) ;
---		end loop;
---	end loop;
---		
---		
---
---end if;
---
---
---if x >= 512 then x := x - 512; y := y + 1; end if;
---if y >= 512 then y := 0; end if;
---
---		
---
---end process;
---	
---	
+schaltin <= (others => '0');
+tast <= (others => '0');
 
-------------------------------------------
---  Simulierte Drehung des Ventilators  --
-------------------------------------------
 
-process 
+
+
+----------------------------------------		Eingang : Winkel , abstand vom  mittelpunkt 
+-- Visualisierung der gelesenen Daten --		und den Farbwert des Pixels 
+----------------------------------------		Ausgang : Bild als Array  (visual)
+process (clk20) 
+constant center_x : real := 255.5;
+constant center_y : real := 255.5;
+variable w			: real;
+variable s,c,x,y 	: real;
+variable w_int    : integer;
 begin
 
-wait for 20 us;
-winkel <= winkel + 1;
+if rising_edge (clk20) then
+
+-------------Farbe bestimmen---------------
+if decode_rdy = '1' then
+	decode_data_last <= decode_data;
+	if decode_counter (0) = '1' then
+		visual_color <= decode_data & decode_data_last;
+	end if;
+end if;
+
+---------------Winkel bestimmen---------------
+if decode_rdy = '1' and decode_counter = 0 then
+visual_winkel <= winkel_diag ;
+end if;
+
+---------------Abstand bestimmen-----------------
+if decode_rdy = '1' and decode_counter < 512 then
+visual_abstand <= decode_counter (8 downto 1);
+end if;
+
+
+
+
+w_int := (conv_integer(visual_winkel));
+
+-- Jeder Flügel ist 90 Grad (256) versetzt
+		if    visual_abstand(1 downto 0) = "01" then  
+				w_int := w_int + 256;
+		elsif visual_abstand(1 downto 0) = "10" then  
+				w_int := w_int + 512;
+		elsif visual_abstand(1 downto 0) = "11" then
+				w_int := w_int + 768;
+		end if;
+
+-- Winkel gröser eine Umdrehung ? 
+if w_int > 1023 then w_int := w_int - 1023; end if;
+
+
+w := ((real(w_int) / 1023.0)* 6.28) + 3.14;
+
+s := sin(w) * real (conv_integer (visual_abstand));
+c := cos(w) * real (conv_integer (visual_abstand));
+
+-- x / y Koordinaten fur den winkel 
+	x := center_x + s;
+	y := center_y + c;
+			
+-- Schwarz gelesen ?? dann Rot draus machen (für debugging)
+if b8_code_diag = x"0000" then 
+	colordatae <= x"001f";
+else
+												colordatae <= visual_color;
+end if ;						
+ 								
+xe <= integer(x) ; ye <= integer(y) ;
+
+
+-- Entgülige Daten in einen Ram Speicher schieben
+if decode_counter < 512 then
+	visual ((xe),(ye)):= To_bitvector(colordatae);
+end if;
+
+end if;
 end process;
--- 20 us = 3000 u/min
--- 30 us = 2000 u/min 
--- 60 us = 1000 u/min
+
+
+
+
 
 
 ----------------------------------
@@ -453,35 +407,33 @@ wait for 10 ns;
 		getpixel (xbl,ybl,colordatal);
 		xl <= xbl ; yl <= ybl;
 		
-		input_picture(xl,yl) := To_bitvector(colordatal) (23 downto 19) &
+		          ram(xl,yl) := To_bitvector(colordatal) (23 downto 19) &
 										To_bitvector(colordatal) (15 downto 10) &
 										To_bitvector(colordatal) ( 7 downto  3) ;
+
+		      ram(xl+512,yl) := To_bitvector(colordatal) (23 downto 19) &
+										To_bitvector(colordatal) (15 downto 10) &
+										To_bitvector(colordatal) ( 7 downto  3) ;
+										
+--		       visual(xl,yl) := To_bitvector(colordatal) (23 downto 19) &
+--										To_bitvector(colordatal) (15 downto 10) &
+--										To_bitvector(colordatal) ( 7 downto  3) ;
+
+										
+
+
+
 		end loop;
 	end loop;
 
 
-	
--- bild in den ausgabe puffer kopieren 	
---	for cy in 0 to 511 loop
---		for cx in 0 to 511 loop
---		wait for 1 ps;           -- WTF ???
---		getpixel (cx,cy,colordataf);
---		xf <= cx ; yf <= cy;
---		setpixel (xf,yf,colordataf);
---		end loop;
---	end loop;
---	
---wait for 10 ns;	
---
---
----- und das bild wieder speichern
---	fname := "lena_copy000.bmp";
---	writefile (fname);
+   report ".........................................................Speicher sind initialisiert";	
 	 
 		
 		 
 --nach einer eingestellten zeit ein neues Bild speichern 
-wait for 100 us;
+
+--wait for 100 us;
 
 for xxx in 1 to 999 loop
 

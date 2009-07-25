@@ -13,7 +13,7 @@ BEGIN SCHEMATIC
         SIGNAL p_id(7:0)
         SIGNAL led(7:0)
         SIGNAL clk50
-        SIGNAL clk_20
+        SIGNAL clk20
         SIGNAL XLXN_64
         SIGNAL XLXN_161(7:0)
         SIGNAL XLXN_162(7:0)
@@ -56,15 +56,16 @@ BEGIN SCHEMATIC
         SIGNAL winkel_ram(9:0)
         SIGNAL b10code
         SIGNAL rdy_diag
-        SIGNAL freeze_diag(2:0)
+        SIGNAL freeze_diag(4:0)
         SIGNAL winkel_diag(9:0)
-        SIGNAL addra_diag(11:0)
+        SIGNAL addra_diag(13:0)
         SIGNAL b8_code_diag(7:0)
         SIGNAL counter_diag(9:0)
         PORT Input schaltin(7:0)
         PORT Input tast(3:0)
         PORT Output led(7:0)
         PORT Output clk50
+        PORT Output clk20
         PORT Input clk
         PORT Output out1
         PORT Output out2
@@ -91,12 +92,14 @@ BEGIN SCHEMATIC
         PORT Output sram_2_ub
         PORT Output sram_2_lb
         PORT Input winkel(9:0)
+        PORT Output sram_read(15:0)
+        PORT Output sram_pos(7:0)
         PORT Output winkel_ram(9:0)
         PORT Output b10code
         PORT Output rdy_diag
-        PORT Output freeze_diag(2:0)
+        PORT Output freeze_diag(4:0)
         PORT Output winkel_diag(9:0)
-        PORT Output addra_diag(11:0)
+        PORT Output addra_diag(13:0)
         PORT Output b8_code_diag(7:0)
         PORT Output counter_diag(9:0)
         BEGIN BLOCKDEF display2
@@ -257,7 +260,7 @@ BEGIN SCHEMATIC
             LINE N 112 -528 48 -528 
         END BLOCKDEF
         BEGIN BLOCKDEF packet_buffer
-            TIMESTAMP 2009 7 23 22 51 30
+            TIMESTAMP 2009 7 24 13 28 38
             RECTANGLE N 304 84 368 108 
             LINE N 304 96 368 96 
             LINE N 64 -352 0 -352 
@@ -307,7 +310,7 @@ BEGIN SCHEMATIC
             PIN q4
         END BLOCK
         BEGIN BLOCK XLXI_22 tgb
-            PIN clk20 clk_20
+            PIN clk20 clk20
             PIN q1 XLXN_185
             PIN a(7:0) XLXN_163(7:0)
             PIN b(7:0) XLXN_164(7:0)
@@ -322,7 +325,7 @@ BEGIN SCHEMATIC
         END BLOCK
         BEGIN BLOCK XLXI_31 takt2
             PIN clk clk
-            PIN clk_20 clk_20
+            PIN clk_20 clk20
             PIN clk50 clk50
             PIN g90_c10 out0
             PIN clk100 clk100
@@ -331,7 +334,7 @@ BEGIN SCHEMATIC
             PIN i2 XLXN_173
             PIN i4 XLXN_64
             PIN i1 XLXN_185
-            PIN clk clk_20
+            PIN clk clk20
             PIN i3 XLXN_172
             PIN o1a out1
             PIN o2a out2
@@ -356,16 +359,16 @@ BEGIN SCHEMATIC
             PIN p_id(7:0) p_id(7:0)
         END BLOCK
         BEGIN BLOCK XLXI_44 packet_buffer
-            PIN clk20 clk_20
+            PIN clk20 clk20
             PIN clk50 clk50
             PIN sram_read(15:0) sram_read(15:0)
             PIN sram_pos(7:0) sram_pos(7:0)
             PIN winkel(9:0) winkel_ram(9:0)
             PIN b10code b10code
             PIN rdy_diag rdy_diag
-            PIN freeze_diag(2:0) freeze_diag(2:0)
+            PIN freeze_diag(4:0) freeze_diag(4:0)
             PIN winkel_diag(9:0) winkel_diag(9:0)
-            PIN addra_diag(11:0) addra_diag(11:0)
+            PIN addra_diag(13:0) addra_diag(13:0)
             PIN b8_code_diag(7:0) b8_code_diag(7:0)
             PIN counter_diag(9:0) counter_diag(9:0)
         END BLOCK
@@ -457,19 +460,23 @@ BEGIN SCHEMATIC
             WIRE 128 496 304 496
         END BRANCH
         IOMARKER 128 496 clk R180 28
-        BEGIN BRANCH clk_20
-            WIRE 608 496 1520 496
-            WIRE 1520 496 1520 1632
-            WIRE 1520 1632 1520 1728
-            WIRE 1520 1728 1600 1728
-            WIRE 1600 1728 1600 1744
-            WIRE 1600 1744 1632 1744
-            WIRE 1520 1632 2096 1632
+        BEGIN BRANCH clk20
+            WIRE 608 496 688 496
+            WIRE 688 496 688 928
+            WIRE 688 928 1648 928
+            WIRE 1648 928 1648 1632
+            WIRE 1648 1632 2096 1632
             WIRE 2096 1632 2096 1856
             WIRE 2096 1856 2400 1856
+            WIRE 688 496 768 496
             WIRE 1200 1728 1200 1760
             WIRE 1200 1760 1264 1760
             WIRE 1200 1728 1520 1728
+            WIRE 1520 1728 1600 1728
+            WIRE 1600 1728 1600 1744
+            WIRE 1600 1744 1632 1744
+            WIRE 1520 1632 1520 1728
+            WIRE 1520 1632 1648 1632
         END BRANCH
         BEGIN BRANCH p_id(7:0)
             WIRE 832 1504 880 1504
@@ -525,47 +532,42 @@ BEGIN SCHEMATIC
         END BRANCH
         IOMARKER 1872 1936 gnd1 R0 28
         IOMARKER 1872 1968 gnd2 R0 28
-        INSTANCE XLXI_41 1088 720 R0
         BEGIN BRANCH out0
-            WIRE 608 560 976 560
-            WIRE 976 560 976 688
-            WIRE 976 688 1088 688
-            WIRE 976 560 1344 560
+            WIRE 608 560 704 560
+            WIRE 704 560 704 608
+            WIRE 704 608 720 608
+            WIRE 704 560 976 560
         END BRANCH
         BEGIN BRANCH gnd0
-            WIRE 1312 688 1344 688
+            WIRE 944 608 976 608
         END BRANCH
-        IOMARKER 1344 688 gnd0 R0 28
-        IOMARKER 1344 560 out0 R0 28
         BEGIN BRANCH gnd4
             WIRE 1840 2032 1856 2032
         END BRANCH
         BEGIN BRANCH clk50
             WIRE 448 1296 448 1472
-            WIRE 448 1296 816 1296
-            WIRE 816 1296 928 1296
-            WIRE 608 528 816 528
-            WIRE 816 528 816 960
-            WIRE 816 960 816 1296
-            WIRE 816 960 1680 960
+            WIRE 448 1296 656 1296
+            WIRE 656 1296 928 1296
+            WIRE 608 528 656 528
+            WIRE 656 528 656 960
+            WIRE 656 960 656 1296
+            WIRE 656 960 1680 960
             WIRE 1680 960 2112 960
             WIRE 1680 960 1680 1664
             WIRE 1680 1664 2064 1664
             WIRE 2064 1664 2064 1888
             WIRE 2064 1888 2400 1888
-            WIRE 816 416 896 416
-            WIRE 816 416 816 528
+            WIRE 656 464 768 464
+            WIRE 656 464 656 528
         END BRANCH
         BEGIN BRANCH clk100
             WIRE 608 592 624 592
             WIRE 624 592 624 992
             WIRE 624 992 2112 992
-            WIRE 624 368 896 368
-            WIRE 624 368 624 592
+            WIRE 624 432 768 432
+            WIRE 624 432 624 592
         END BRANCH
         IOMARKER 1856 2032 gnd4 R0 28
-        IOMARKER 896 416 clk50 R0 28
-        IOMARKER 896 368 clk100 R0 28
         BEGIN INSTANCE XLXI_1 928 1408 R0
         END INSTANCE
         BEGIN BRANCH display(11:0)
@@ -657,18 +659,18 @@ BEGIN SCHEMATIC
             WIRE 2768 2080 2800 2080
         END BRANCH
         IOMARKER 2800 2080 rdy_diag R0 28
-        BEGIN BRANCH freeze_diag(2:0)
+        BEGIN BRANCH freeze_diag(4:0)
             WIRE 2768 2128 2800 2128
         END BRANCH
-        IOMARKER 2800 2128 freeze_diag(2:0) R0 28
+        IOMARKER 2800 2128 freeze_diag(4:0) R0 28
         BEGIN BRANCH winkel_diag(9:0)
             WIRE 2768 2176 2800 2176
         END BRANCH
         IOMARKER 2800 2176 winkel_diag(9:0) R0 28
-        BEGIN BRANCH addra_diag(11:0)
+        BEGIN BRANCH addra_diag(13:0)
             WIRE 2768 2224 2800 2224
         END BRANCH
-        IOMARKER 2800 2224 addra_diag(11:0) R0 28
+        IOMARKER 2800 2224 addra_diag(13:0) R0 28
         BEGIN BRANCH b8_code_diag(7:0)
             WIRE 2768 2272 2800 2272
         END BRANCH
@@ -677,5 +679,13 @@ BEGIN SCHEMATIC
             WIRE 2768 2304 2800 2304
         END BRANCH
         IOMARKER 2800 2304 counter_diag(9:0) R0 28
+        IOMARKER 768 496 clk20 R0 28
+        IOMARKER 768 464 clk50 R0 28
+        IOMARKER 768 432 clk100 R0 28
+        INSTANCE XLXI_41 720 640 R0
+        IOMARKER 976 608 gnd0 R0 28
+        IOMARKER 976 560 out0 R0 28
+        IOMARKER 2928 1408 sram_read(15:0) R0 28
+        IOMARKER 2928 1440 sram_pos(7:0) R0 28
     END SHEET
 END SCHEMATIC
