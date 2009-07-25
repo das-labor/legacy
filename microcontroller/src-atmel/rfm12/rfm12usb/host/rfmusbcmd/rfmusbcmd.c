@@ -70,7 +70,7 @@ int radio_rx_dump(void)
 
         	//dump packet
         	printf ("--RX--  len: %02i, type: %02x, num: #%010u  --RX--\r\n", packetBuffer.len, packetBuffer.type, packetCnt);
-        	for (i = 0;(i <= packetBuffer.len) && (i < RFM12_BUFFER_SIZE); i++)
+        	for (i = 0;(i < packetBuffer.len) && (i < RFM12_BUFFER_SIZE); i++)
         	{
         		printf("%.2x ", packetBuffer.buffer[i]); //hex
         		//printf("%c", packetBuffer.buffer[i]); //char
@@ -235,13 +235,63 @@ int main(int argc, char *argv[])
 	signal (SIGHUP, sig_cleanup);
 #endif
 
+    //////////HACKHACK FOR MULTIPLE DEVICES
+	int vid, pid;
+	unsigned tmp = 0;
+
+	const unsigned char rawVid[2] =
+	{
+		USB_CFG_VENDOR_ID
+	},
+	rawPid[2] =
+	{
+		USB_CFG_DEVICE_ID
+	};
+
+	char vendor[] =
+	{
+		USB_CFG_VENDOR_NAME, 0
+	},
+	product[] =
+	{
+		USB_CFG_DEVICE_NAME, 0
+	};
+
+	vid = rawVid[1] * 256 + rawVid[0];
+	pid = rawPid[1] * 256 + rawPid[0];
+
+    int devcnt = usbCountDevices(vid, vendor, pid, product, NULL, NULL, NULL);
+    printf("Found %i devices..\n", devcnt);
+
+    if(devcnt == 0)
+    {
+        printf ("Can't find RfmUSB Device\r\n");
+		sig_cleanup(__LINE__ * -1);
+		return __LINE__ * -1;
+    }
+
+    struct usb_device **devices = malloc(sizeof(void *) * devcnt);
+    usbListDevices(devices, vid, vendor, pid, product, NULL, NULL, NULL);
+
+    if(devcnt > 1)
+    {
+        printf("Which device (num)? ");
+        scanf("%u", &tmp);
+        fflush(stdin);
+    }
+
+    udhandle = usb_open(devices[tmp]);
+
+    ///////////////////HACK END
+
+
     //try to open the device
-	if (rfmusb_Connect(&udhandle) != 0)
+	/*if (rfmusb_Connect(&udhandle) != 0)
 	{
 		printf ("Can't find RfmUSB Device\r\n");
 		sig_cleanup(__LINE__ * -1);
 		return __LINE__ * -1;
-	}
+	}*/
 #ifndef WIN32
 	setuid(19928);
 #endif
