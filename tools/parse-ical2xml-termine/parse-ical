@@ -1,0 +1,153 @@
+#!/usr/bin/env ruby
+
+
+
+#XMLFILE="/srv/www.das-labor.org/htdoc/termine.xml";
+#ICALFILE="/srv/www.das-labor.org/htdoc/termine.ical";
+XMLFILE="termine.xml";
+ICALFILE="termine.ical";
+
+#############################################################################
+# Starts Here
+require 'rubygems' 
+require 'icalendar'
+require 'date'
+
+require 'namedregexp.rb'
+
+include Icalendar
+
+class LaborTermine 
+  attr_reader "termine"
+
+	def initialize()
+		@termine = Array.new
+	end
+	
+	def parse()	
+		cal_file = File.open(ICALFILE)
+		cals = Icalendar.parse(cal_file)
+		cal = cals.first
+		cal.events.each{|e|
+			t = Hash.new	# one hash table per event (contains date, title, link)
+#			puts "Termin:"
+
+			t["date"] = e.dtstart
+#			puts e.dtstart
+
+			t["text"] = e.summary
+#			puts "Title:" + e.summary
+
+			t["link"] = e.description
+#			puts "Link:" + e.description
+			@termine.push(t) 	# store the hash table in an global array
+		}
+	end
+	
+	def sort()		# events are not necessarily ordered by date
+#		puts "Sorting by date ..."
+		d = Array.new	# array to sort dates
+		ttermine = Array.new 	# temp array to overwrite @termine with
+		@termine.each{|t|
+			d.push(t["date"])
+		}
+		d.sort!
+#		puts "Sorting @termine by date ..."
+		d.each{|da|
+			@termine.each{|t|
+				if t["date"] == da then
+			#		puts t["date"]
+					ttermine.push(t)	
+				end
+			}
+		} 
+		@termine.clear()
+		@termine = ttermine
+	end
+
+	def properdate()
+		@termine.each{|t|
+
+			# padding with leading zeros and add the results as idividual keys to our hash
+			t["day"] = "%02d" % t["date"].day.to_s
+			t["month"] = "%02d" % t["date"].mon.to_s
+			t["year"] = t["date"].year.to_s
+			t["hour"] = "%02d" % t["date"].hour.to_s
+			t["min"] = "%02d" % t["date"].min.to_s
+	
+			# translate numeric day of week to a meaningful string
+			twd = t["date"].wday
+			if twd == 0 then
+				t["wday"] = "So"
+			elsif twd == 1 then
+				t["wday"] = "Mo"
+			elsif twd == 2 then
+				t["wday"] = "Di"
+			elsif twd == 3 then
+				t["wday"] = "Mi"
+			elsif twd == 4 then
+				t["wday"] = "Do"
+			elsif twd == 5 then
+				t["wday"] = "Fr"
+			elsif twd == 6 then
+				t["wday"] = "Sa"
+			end
+
+			t.delete("date")	# currently we do not need the comlete date anymore => delete it
+		}
+	end
+
+	def outputtermine()
+		puts "Debug output: content of @termine"
+		@termine.each{|t|
+			puts "Termin"
+			puts t["year"]
+			puts t["month"]
+			puts t["day"]
+			puts t["hour"]
+			puts t["min"]
+			puts t["wday"]
+			puts t["title"]
+			puts t["link"]
+		}
+	end
+
+  # Main
+	def run
+		parse()
+		sort()
+		properdate()
+#		outputtermine()
+	end
+end
+
+
+
+####
+# MAIN
+#
+
+class Array
+  def to_h
+    Hash[*self]
+  end
+end
+
+
+
+lt = LaborTermine.new;	# create instance
+lt.run;	# run the parser
+
+
+File.open( XMLFILE, "w" ) { |f|
+  f.puts "<termine>"
+  lt.termine.each { |termin|
+    puts "#{termin["day"]}.#{termin["month"]}.#{termin["year"]} #{termin["hour"]}:#{termin["min"]} #{termin["text"]}"
+    f.puts "<termin>"
+      termin.each { |key,val|
+        f.puts "  <#{key}>#{val}</#{key}>"
+    	}
+    f.puts "</termin>"
+  }
+  f.puts "</termine>"
+}
