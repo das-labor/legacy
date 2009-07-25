@@ -30,7 +30,7 @@
 	RFM12           | AVR
 	----------------+------------
 	SDO             | MISO
-	nIRQ            | INT0
+	nIRQ            | INT1
 	FSK/DATA/nFFS   | VCC
 	DCLK/CFIL/FFIT  |  -
 	CLK             |  -
