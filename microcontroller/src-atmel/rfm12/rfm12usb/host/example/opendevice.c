@@ -26,7 +26,7 @@ libusb or libusb-win32.
 /* private interface: match text and p, return MATCH_SUCCESS, MATCH_FAILED, or MATCH_ABORT. */
 static int  _shellStyleMatch(char *text, char *p)
 {
-int last, matched, reverse;
+    int last, matched, reverse;
 
     for(; *p; text++, p++){
         if(*text == 0 && *p != '*')
@@ -85,8 +85,8 @@ static int shellStyleMatch(char *text, char *pattern)
 
 int usbGetStringAscii(usb_dev_handle *dev, int index, char *buf, int buflen)
 {
-char    buffer[256];
-int     rval, i;
+    char    buffer[256];
+    int     rval, i;
 
     if((rval = usb_get_string_simple(dev, index, buf, buflen)) >= 0) /* use libusb version if it works */
         return rval;
@@ -115,10 +115,10 @@ int     rval, i;
 
 int usbOpenDevice(usb_dev_handle **device, int vendorID, char *vendorNamePattern, int productID, char *productNamePattern, char *serialNamePattern, FILE *printMatchingDevicesFp, FILE *warningsFp)
 {
-struct usb_bus      *bus;
-struct usb_device   *dev;
-usb_dev_handle      *handle = NULL;
-int                 errorCode = USBOPEN_ERR_NOTFOUND;
+    struct usb_bus      *bus;
+    struct usb_device   *dev;
+    usb_dev_handle      *handle = NULL;
+    int                 errorCode = USBOPEN_ERR_NOTFOUND;
 
     usb_find_busses();
     usb_find_devices();
@@ -198,6 +198,172 @@ int                 errorCode = USBOPEN_ERR_NOTFOUND;
     if(printMatchingDevicesFp != NULL)  /* never return an error for listing only */
         errorCode = 0;
     return errorCode;
+}
+
+int usbCountDevices(int vendorID, char *vendorNamePattern, int productID, char *productNamePattern, char *serialNamePattern, FILE *printMatchingDevicesFp, FILE *warningsFp)
+{
+    struct usb_bus      *bus;
+    struct usb_device   *dev;
+    usb_dev_handle      *handle = NULL;
+    int                 errorCode = USBOPEN_ERR_NOTFOUND;
+    int                 devicescount = 0;
+
+    usb_find_busses();
+    usb_find_devices();
+    for(bus = usb_get_busses(); bus; bus = bus->next){
+        for(dev = bus->devices; dev; dev = dev->next){  /* iterate over all devices on all busses */
+            if((vendorID == 0 || dev->descriptor.idVendor == vendorID)
+                        && (productID == 0 || dev->descriptor.idProduct == productID)){
+                char    vendor[256], product[256], serial[256];
+                int     len;
+                handle = usb_open(dev); /* we need to open the device in order to query strings */
+
+                if(!handle){
+                    errorCode = USBOPEN_ERR_ACCESS;
+                    if(warningsFp != NULL)
+                        fprintf(warningsFp, "Warning: cannot open VID=0x%04x PID=0x%04x: %s\n", dev->descriptor.idVendor, dev->descriptor.idProduct, usb_strerror());
+                    continue;
+                }
+
+                /* now check whether the names match: */
+                len = vendor[0] = 0;
+                if(dev->descriptor.iManufacturer > 0){
+                    len = usbGetStringAscii(handle, dev->descriptor.iManufacturer, vendor, sizeof(vendor));
+                }
+                if(len < 0){
+                    errorCode = USBOPEN_ERR_ACCESS;
+                    if(warningsFp != NULL)
+                        fprintf(warningsFp, "Warning: cannot query manufacturer for VID=0x%04x PID=0x%04x: %s\n", dev->descriptor.idVendor, dev->descriptor.idProduct, usb_strerror());
+                }else{
+                    errorCode = USBOPEN_ERR_NOTFOUND;
+                    /* printf("seen device from vendor ->%s<-\n", vendor); */
+                    if(shellStyleMatch(vendor, vendorNamePattern)){
+                        len = product[0] = 0;
+                        if(dev->descriptor.iProduct > 0){
+                            len = usbGetStringAscii(handle, dev->descriptor.iProduct, product, sizeof(product));
+                        }
+                        if(len < 0){
+                            errorCode = USBOPEN_ERR_ACCESS;
+                            if(warningsFp != NULL)
+                                fprintf(warningsFp, "Warning: cannot query product for VID=0x%04x PID=0x%04x: %s\n", dev->descriptor.idVendor, dev->descriptor.idProduct, usb_strerror());
+                        }else{
+                            errorCode = USBOPEN_ERR_NOTFOUND;
+                            /* printf("seen product ->%s<-\n", product); */
+                            if(shellStyleMatch(product, productNamePattern)){
+                                len = serial[0] = 0;
+                                if(dev->descriptor.iSerialNumber > 0){
+                                    len = usbGetStringAscii(handle, dev->descriptor.iSerialNumber, serial, sizeof(serial));
+                                }
+                                if(len < 0){
+                                    errorCode = USBOPEN_ERR_ACCESS;
+                                    if(warningsFp != NULL)
+                                        fprintf(warningsFp, "Warning: cannot query serial for VID=0x%04x PID=0x%04x: %s\n", dev->descriptor.idVendor, dev->descriptor.idProduct, usb_strerror());
+                                }
+                                if(shellStyleMatch(serial, serialNamePattern)){
+                                    if(printMatchingDevicesFp != NULL){
+                                        if(serial[0] == 0){
+                                            fprintf(printMatchingDevicesFp, "VID=0x%04x PID=0x%04x vendor=\"%s\" product=\"%s\"\n", dev->descriptor.idVendor, dev->descriptor.idProduct, vendor, product);
+                                        }else{
+                                            fprintf(printMatchingDevicesFp, "VID=0x%04x PID=0x%04x vendor=\"%s\" product=\"%s\" serial=\"%s\"\n", dev->descriptor.idVendor, dev->descriptor.idProduct, vendor, product, serial);
+                                        }
+                                    }else{
+                                        usb_close(handle);
+                                        handle = NULL;
+                                        devicescount++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+    return devicescount;
+}
+
+int usbListDevices(struct usb_device **devices, int vendorID, char *vendorNamePattern, int productID, char *productNamePattern, char *serialNamePattern, FILE *printMatchingDevicesFp, FILE *warningsFp)
+{
+    struct usb_bus      *bus;
+    struct usb_device   *dev;
+    usb_dev_handle      *handle = NULL;
+    int                 errorCode = USBOPEN_ERR_NOTFOUND;
+    int                 devicescount = 0;
+
+    usb_find_busses();
+    usb_find_devices();
+    for(bus = usb_get_busses(); bus; bus = bus->next){
+        for(dev = bus->devices; dev; dev = dev->next){  /* iterate over all devices on all busses */
+            if((vendorID == 0 || dev->descriptor.idVendor == vendorID)
+                        && (productID == 0 || dev->descriptor.idProduct == productID)){
+                char    vendor[256], product[256], serial[256];
+                int     len;
+                handle = usb_open(dev); /* we need to open the device in order to query strings */
+
+                if(!handle){
+                    errorCode = USBOPEN_ERR_ACCESS;
+                    if(warningsFp != NULL)
+                        fprintf(warningsFp, "Warning: cannot open VID=0x%04x PID=0x%04x: %s\n", dev->descriptor.idVendor, dev->descriptor.idProduct, usb_strerror());
+                    continue;
+                }
+
+                /* now check whether the names match: */
+                len = vendor[0] = 0;
+                if(dev->descriptor.iManufacturer > 0){
+                    len = usbGetStringAscii(handle, dev->descriptor.iManufacturer, vendor, sizeof(vendor));
+                }
+                if(len < 0){
+                    errorCode = USBOPEN_ERR_ACCESS;
+                    if(warningsFp != NULL)
+                        fprintf(warningsFp, "Warning: cannot query manufacturer for VID=0x%04x PID=0x%04x: %s\n", dev->descriptor.idVendor, dev->descriptor.idProduct, usb_strerror());
+                }else{
+                    errorCode = USBOPEN_ERR_NOTFOUND;
+                    /* printf("seen device from vendor ->%s<-\n", vendor); */
+                    if(shellStyleMatch(vendor, vendorNamePattern)){
+                        len = product[0] = 0;
+                        if(dev->descriptor.iProduct > 0){
+                            len = usbGetStringAscii(handle, dev->descriptor.iProduct, product, sizeof(product));
+                        }
+                        if(len < 0){
+                            errorCode = USBOPEN_ERR_ACCESS;
+                            if(warningsFp != NULL)
+                                fprintf(warningsFp, "Warning: cannot query product for VID=0x%04x PID=0x%04x: %s\n", dev->descriptor.idVendor, dev->descriptor.idProduct, usb_strerror());
+                        }else{
+                            errorCode = USBOPEN_ERR_NOTFOUND;
+                            /* printf("seen product ->%s<-\n", product); */
+                            if(shellStyleMatch(product, productNamePattern)){
+                                len = serial[0] = 0;
+                                if(dev->descriptor.iSerialNumber > 0){
+                                    len = usbGetStringAscii(handle, dev->descriptor.iSerialNumber, serial, sizeof(serial));
+                                }
+                                if(len < 0){
+                                    errorCode = USBOPEN_ERR_ACCESS;
+                                    if(warningsFp != NULL)
+                                        fprintf(warningsFp, "Warning: cannot query serial for VID=0x%04x PID=0x%04x: %s\n", dev->descriptor.idVendor, dev->descriptor.idProduct, usb_strerror());
+                                }
+                                if(shellStyleMatch(serial, serialNamePattern)){
+                                    if(printMatchingDevicesFp != NULL){
+                                        if(serial[0] == 0){
+                                            fprintf(printMatchingDevicesFp, "VID=0x%04x PID=0x%04x vendor=\"%s\" product=\"%s\"\n", dev->descriptor.idVendor, dev->descriptor.idProduct, vendor, product);
+                                        }else{
+                                            fprintf(printMatchingDevicesFp, "VID=0x%04x PID=0x%04x vendor=\"%s\" product=\"%s\" serial=\"%s\"\n", dev->descriptor.idVendor, dev->descriptor.idProduct, vendor, product, serial);
+                                        }
+                                    }else{
+                                        usb_close(handle);
+                                        handle = NULL;
+                                        devices[devicescount++] = dev;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+    return devicescount;
 }
 
 /* ------------------------------------------------------------------------- */
