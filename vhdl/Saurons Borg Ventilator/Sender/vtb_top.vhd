@@ -46,13 +46,13 @@ ARCHITECTURE behavioral OF top_top_sch_tb IS
           winkel	:	IN	STD_LOGIC_VECTOR (9 DOWNTO 0); 
           winkel_ram	:	OUT	STD_LOGIC_VECTOR (9 DOWNTO 0); 
           b10code	:	OUT	STD_LOGIC; 
-          rdy_diag	:	OUT	STD_LOGIC; 
-          freeze_diag	:	OUT	STD_LOGIC_VECTOR (4 DOWNTO 0); 
+--          rdy_diag	:	OUT	STD_LOGIC; 
+--          freeze_diag	:	OUT	STD_LOGIC_VECTOR (4 DOWNTO 0); 
           winkel_diag	:	OUT	STD_LOGIC_VECTOR (9 DOWNTO 0); 
-          addrb_diag	:	OUT	STD_LOGIC_VECTOR (12 DOWNTO 0); 
-			 doutb_diag :  OUT   STD_LOGIC_VECTOR (15 DOWNTO 0);
-          b8_code_diag	:	OUT	STD_LOGIC_VECTOR (7 DOWNTO 0);
-			 counter_diag  :	OUT	STD_LOGIC_VECTOR (9 DOWNTO 0);
+--          addrb_diag	:	OUT	STD_LOGIC_VECTOR (12 DOWNTO 0); 
+--			 doutb_diag :  OUT   STD_LOGIC_VECTOR (15 DOWNTO 0);
+--          b8_code_diag	:	OUT	STD_LOGIC_VECTOR (7 DOWNTO 0);
+--			 counter_diag  :	OUT	STD_LOGIC_VECTOR (9 DOWNTO 0);
 			 sram_read  :	OUT	STD_LOGIC_VECTOR (15 DOWNTO 0);
 			 sram_pos  :	OUT	STD_LOGIC_VECTOR (7 DOWNTO 0)
 			 
@@ -106,13 +106,13 @@ ARCHITECTURE behavioral OF top_top_sch_tb IS
    SIGNAL winkel	:	STD_LOGIC_VECTOR (9 DOWNTO 0):= (others => '0');
    SIGNAL winkel_ram	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
    SIGNAL b10code	:	STD_LOGIC;
-   SIGNAL rdy_diag	:	STD_LOGIC;
-   SIGNAL freeze_diag	:	STD_LOGIC_VECTOR (4 DOWNTO 0);
+--   SIGNAL rdy_diag	:	STD_LOGIC;
+--   SIGNAL freeze_diag	:	STD_LOGIC_VECTOR (4 DOWNTO 0);
    SIGNAL winkel_diag	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
-   SIGNAL addrb_diag	:	STD_LOGIC_VECTOR (12 DOWNTO 0);
-	SIGNAL doutb_diag : STD_LOGIC_VECTOR (15 DOWNTO 0);
-   SIGNAL b8_code_diag	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
-   SIGNAL counter_diag	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
+--   SIGNAL addrb_diag	:	STD_LOGIC_VECTOR (12 DOWNTO 0);
+--	SIGNAL doutb_diag : STD_LOGIC_VECTOR (15 DOWNTO 0);
+--   SIGNAL b8_code_diag	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
+--   SIGNAL counter_diag	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
    SIGNAL sram_read	:	STD_LOGIC_VECTOR (15 DOWNTO 0);
    SIGNAL sram_pos	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
    SIGNAL decode_data	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
@@ -185,13 +185,13 @@ BEGIN
 		winkel => winkel, 
 		winkel_ram => winkel_ram, 
 		b10code => b10code, 
-		rdy_diag => rdy_diag, 
-		freeze_diag => freeze_diag, 
+--		rdy_diag => rdy_diag, 
+--		freeze_diag => freeze_diag, 
 		winkel_diag => winkel_diag, 
-		addrb_diag => addrb_diag, 
-		doutb_diag => doutb_diag,
-		b8_code_diag => b8_code_diag,
-		counter_diag => counter_diag,
+--		addrb_diag => addrb_diag, 
+--		doutb_diag => doutb_diag,
+--		b8_code_diag => b8_code_diag,
+--		counter_diag => counter_diag,
 		sram_read => sram_read,
 		sram_pos => sram_pos
    );
@@ -348,6 +348,8 @@ w_int := (conv_integer(visual_winkel));
 				w_int := w_int + 768;
 		end if;
 
+w_int := w_int + 256;--  Unbekannte verdrehung ausgleichen
+
 -- Winkel gröser eine Umdrehung ? 
 if w_int > 1023 then w_int := w_int - 1023; end if;
 
@@ -362,11 +364,11 @@ c := cos(w) * real (conv_integer (visual_abstand));
 	y := center_y + c;
 			
 -- Schwarz gelesen ?? dann Rot draus machen (für debugging)
-if b8_code_diag = x"0000" then 
-	colordatae <= x"001f";
-else
+--if b8_code_diag = x"0000" then 
+--	colordatae <= x"001f";
+--else
 												colordatae <= visual_color;
-end if ;						
+--end if ;						
  								
 xe <= integer(x) ; ye <= integer(y) ;
 

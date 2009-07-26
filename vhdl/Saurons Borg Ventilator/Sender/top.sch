@@ -55,13 +55,7 @@ BEGIN SCHEMATIC
         SIGNAL sram_pos(7:0)
         SIGNAL winkel_ram(9:0)
         SIGNAL b10code
-        SIGNAL rdy_diag
-        SIGNAL freeze_diag(4:0)
         SIGNAL winkel_diag(9:0)
-        SIGNAL b8_code_diag(7:0)
-        SIGNAL counter_diag(9:0)
-        SIGNAL addrb_diag(12:0)
-        SIGNAL doutb_diag(15:0)
         PORT Input schaltin(7:0)
         PORT Input tast(3:0)
         PORT Output led(7:0)
@@ -97,13 +91,7 @@ BEGIN SCHEMATIC
         PORT Output sram_pos(7:0)
         PORT Output winkel_ram(9:0)
         PORT Output b10code
-        PORT Output rdy_diag
-        PORT Output freeze_diag(4:0)
         PORT Output winkel_diag(9:0)
-        PORT Output b8_code_diag(7:0)
-        PORT Output counter_diag(9:0)
-        PORT Output addrb_diag(12:0)
-        PORT Output doutb_diag(15:0)
         BEGIN BLOCKDEF display2
             TIMESTAMP 2009 7 16 13 56 18
             RECTANGLE N 64 -132 256 -16 
@@ -369,13 +357,13 @@ BEGIN SCHEMATIC
             PIN sram_pos(7:0) sram_pos(7:0)
             PIN winkel(9:0) winkel_ram(9:0)
             PIN b10code b10code
-            PIN rdy_diag rdy_diag
-            PIN freeze_diag(4:0) freeze_diag(4:0)
+            PIN rdy_diag
+            PIN freeze_diag(4:0)
             PIN winkel_diag(9:0) winkel_diag(9:0)
-            PIN b8_code_diag(7:0) b8_code_diag(7:0)
-            PIN counter_diag(9:0) counter_diag(9:0)
-            PIN addrb_diag(12:0) addrb_diag(12:0)
-            PIN doutb_diag(15:0) doutb_diag(15:0)
+            PIN b8_code_diag(7:0)
+            PIN counter_diag(9:0)
+            PIN addrb_diag(12:0)
+            PIN doutb_diag(15:0)
         END BLOCK
         BEGIN BLOCK XLXI_42 ram_control
             PIN sram_1_io(15:0) sram_1_io(15:0)
@@ -660,26 +648,6 @@ BEGIN SCHEMATIC
             WIRE 2768 1872 2800 1872
         END BRANCH
         IOMARKER 2800 1872 b10code R0 28
-        BEGIN BRANCH rdy_diag
-            WIRE 2768 2080 2800 2080
-        END BRANCH
-        IOMARKER 2800 2080 rdy_diag R0 28
-        BEGIN BRANCH freeze_diag(4:0)
-            WIRE 2768 2128 2800 2128
-        END BRANCH
-        IOMARKER 2800 2128 freeze_diag(4:0) R0 28
-        BEGIN BRANCH winkel_diag(9:0)
-            WIRE 2768 2176 2800 2176
-        END BRANCH
-        IOMARKER 2800 2176 winkel_diag(9:0) R0 28
-        BEGIN BRANCH b8_code_diag(7:0)
-            WIRE 2768 2272 2800 2272
-        END BRANCH
-        IOMARKER 2800 2272 b8_code_diag(7:0) R0 28
-        BEGIN BRANCH counter_diag(9:0)
-            WIRE 2768 2304 2800 2304
-        END BRANCH
-        IOMARKER 2800 2304 counter_diag(9:0) R0 28
         IOMARKER 768 496 clk20 R0 28
         IOMARKER 768 464 clk50 R0 28
         IOMARKER 768 432 clk100 R0 28
@@ -688,13 +656,9 @@ BEGIN SCHEMATIC
         IOMARKER 976 560 out0 R0 28
         IOMARKER 2928 1408 sram_read(15:0) R0 28
         IOMARKER 2928 1440 sram_pos(7:0) R0 28
-        BEGIN BRANCH addrb_diag(12:0)
-            WIRE 2768 2336 2800 2336
+        BEGIN BRANCH winkel_diag(9:0)
+            WIRE 2768 2176 2800 2176
         END BRANCH
-        IOMARKER 2800 2336 addrb_diag(12:0) R0 28
-        BEGIN BRANCH doutb_diag(15:0)
-            WIRE 2768 2368 2800 2368
-        END BRANCH
-        IOMARKER 2800 2368 doutb_diag(15:0) R0 28
+        IOMARKER 2800 2176 winkel_diag(9:0) R0 28
     END SHEET
 END SCHEMATIC
