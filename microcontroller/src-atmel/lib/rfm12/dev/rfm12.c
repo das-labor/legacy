@@ -35,7 +35,7 @@
 
 //for uart debugging
 #if RFM12_UART_DEBUG
-	#include "test/uart.h"
+	#include "test-m8/uart.h"
 #endif
 
 
@@ -127,11 +127,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 	if((!status & (RFM12_STATUS_FFIT>>8)))
 		goto END;
 	
-	//debug
-	#if RFM12_UART_DEBUG >= 2
-		uart_putc('F');
-	#endif		
-	
+	//see what we have to do (start rx, rx or tx)
 	switch(ctrl.rfm12_state)
 	{			
 		case STATE_RX_IDLE:
@@ -147,8 +143,8 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 			
 			//debug
 			#if RFM12_UART_DEBUG >= 2
-			uart_putc('I');
-			uart_putc(rfm12_read_fifo_inline());
+				uart_putc('I');
+				uart_putc(checksum);
 			#endif
 			
 			//see whether our buffer is free
@@ -181,8 +177,8 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 				
 				//debug
 				#if RFM12_UART_DEBUG >= 2
-				uart_putc('R');
-				uart_putc(data);
+					uart_putc('R');
+					uart_putc(data);
 				#endif
 				
 				//xor the remaining bytes onto the checksum
@@ -215,7 +211,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 
 			//debug
 			#if RFM12_UART_DEBUG >= 2
-			uart_putc('D');
+				uart_putc('D');
 			#endif
 			
 			//indicate that the buffer is ready to be used
@@ -229,7 +225,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 		case STATE_TX:
 			//debug
 			#if RFM12_UART_DEBUG >= 2
-			uart_putc('T');
+				uart_putc('T');
 			#endif
 
 			if(ctrl.bytecount < ctrl.num_bytes)
@@ -283,7 +279,7 @@ void rfm12_tick()
 	if (oldstate != state)
 	{
 		uart_putstr ("mode change: ");
-		switch (mode)
+		switch (state)
 		{
 			case STATE_RX_IDLE:
 				uart_putc ('i');
@@ -297,6 +293,7 @@ void rfm12_tick()
 			default:
 				uart_putc ('?');
 		}
+		uart_putstr ("\r\n");
 		oldstate = state;
 	}
 	#endif
@@ -349,6 +346,7 @@ void rfm12_tick()
 		RFM12_INT_OFF();
 		
 		//disable receiver - if you don't do this, tx packets will get lost
+		//as the fifo seems to be in use by the receiver
 		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
 		
 		//calculate number of bytes to be sent by ISR
@@ -368,7 +366,11 @@ void rfm12_tick()
 		rfm12_data(RFM12_CMD_TX | PREAMBLE);
 		
 		//set ET in power register to enable transmission (hint: TX starts now)
-		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);
+		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);	
+
+		//clear int flasg before turning on the int, otherwise we won't be able to transmit
+		//this is really important...
+		RFM12_INT_FLAG |= (1<<RFM12_FLAG_BIT);
 
 		//enable the interrupt to continue the transmission
 		RFM12_INT_ON();
@@ -416,10 +418,9 @@ uint8_t
 rfm12_tx ( uint8_t len, uint8_t type, uint8_t *data )
 {
 	#if RFM12_UART_DEBUG
-		uart_putstr ("sending: ");
-		uart_putstr ((char*)data);
-		uart_putstr ("\r\n");
+		uart_putstr ("sending packet\r\n");
 	#endif
+	
 	if (len > RFM12_TX_BUFFER_SIZE) return TXRETURN(RFM12_TX_ERROR);
 
 	//exit if the buffer isn't free
@@ -457,7 +458,7 @@ void rfm12_init()
 	spi_init();
 
 	#if RFM12_RAW_TX
-	rfm12_raw_tx = 0;
+		rfm12_raw_tx = 0;
 	#endif
 
 	//store the syncronization pattern to the transmission buffer
@@ -519,7 +520,7 @@ void rfm12_init()
 	RFM12_INT_ON();
 
 	#if RFM12_RECEIVE_CW
-	adc_init();
+		adc_init();
 	#endif
 }
 

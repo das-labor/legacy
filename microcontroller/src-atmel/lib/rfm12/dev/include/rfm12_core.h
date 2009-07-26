@@ -87,6 +87,11 @@
 #ifndef RFM12_SPI_SOFTWARE
 	#define RFM12_SPI_SOFTWARE 0
 #endif
+
+//if uart debug is not defined, we won't use this feature
+#ifndef RFM12_UART_DEBUG
+	#define RFM12_UART_DEBUG 0
+#endif
  
 //default value for powermanagement register
 //this allows one to select whether the reset generator, the oscillator or the wakeup timer shall be active

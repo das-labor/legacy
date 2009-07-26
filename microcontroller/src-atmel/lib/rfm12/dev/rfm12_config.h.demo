@@ -46,6 +46,10 @@
 */
 
 
+/************************
+ * PIN DEFINITIONS
+ */
+
 //Pin that the RFM12's slave select is connected to
 #define DDR_SS DDRB
 #define PORT_SS PORTB
@@ -63,6 +67,11 @@
 //needs to be set to output for the spi-interface to work 
 //correctly, independently of the CS pin used for the RFM12
 
+
+/************************
+ * RFM12 CONFIGURATION OPTIONS
+ */
+ 
 //frequency to use
 #define FREQ 433000000UL
 
@@ -72,58 +81,62 @@
 //use this for 340 Baud < datarate < 2700 Baud
 //#define DATARATE_VALUE RFM12_DATARATE_CALC_LOW(1200.0)
 
-/**** TX BUFFER SIZE
- */
-#define RFM12_TX_BUFFER_SIZE 30
+//TX BUFFER SIZE
+#define RFM12_TX_BUFFER_SIZE 100
 
-/**** RX BUFFER SIZE
+/*
+ * RX BUFFER SIZE
  * there are going to be 2 Buffers of this size
  * (double_buffering)
  */
-#define RFM12_RX_BUFFER_SIZE 30
+#define RFM12_RX_BUFFER_SIZE 100
 
-/**** INTERRUPT VECTOR
- * define the interrupt vector settings here
+
+/************************
+ * INTERRUPT VECTOR
+ * set the name for the interrupt vector here
  */
  
 //the interrupt vector
-#define RFM12_INT_VECT (INT0_vect)
+#define RFM12_INT_VECT (INT1_vect)
 
 //the interrupt mask register
 #define RFM12_INT_MSK GICR
 
 //the interrupt bit in the mask register
-#define RFM12_INT_BIT (INT0)
+#define RFM12_INT_BIT (INT1)
 
 //the interrupt flag register
 #define RFM12_INT_FLAG GIFR
 
 //the interrupt bit in the flag register
-#define RFM12_FLAG_BIT (INTF0)
+#define RFM12_FLAG_BIT (INTF1)
 
 //setup the interrupt to trigger on negative edge
 #define RFM12_INT_SETUP()   MCUCR |= (1<<ISC01)
 
 
-/**** UART DEBUGGING
- * en- or disable debugging via uart.
+/************************
+ * FEATURE CONFIGURATION
  */
-#define RFM12_UART_DEBUG 0
-
+ 
 /*
-This is a bitmask that defines how "rude" this library behaves
+FIXME: noreturn stuff here
+	This is a bitmask that defines how "rude" this library behaves
 	0x01: ignore other devices when sending
 	0x04: don't use return values for transmission functions
 */
-
 /* control rate, frequency, etc during runtime
  * this setting will certainly add a bit code
  **/
 #define RFM12_LIVECTRL 0
 #define RFM12_NORETURNS 0
 #define RFM12_NOCOLLISIONDETECTION 0
+#define RFM12_USE_WAKEUP_TIMER 0
+#define RFM12_LOW_POWER 0
 
-/* Disable interrupt vector and run purely inline. This may be useful for
- * configurations where a hardware interrupt is not available.
+/*
+ * UART DEBUGGING
+ * en- or disable debugging via uart.
  */
-#define RFM12_NOIRQ 0
+#define RFM12_UART_DEBUG 0
