@@ -42,35 +42,35 @@ Library XilinxCoreLib;
 -- synthesis translate_on
 ENTITY frame_full IS
 	port (
-	addra: IN std_logic_VECTOR(13 downto 0);
+	addra: IN std_logic_VECTOR(12 downto 0);
 	addrb: IN std_logic_VECTOR(12 downto 0);
 	clka: IN std_logic;
 	clkb: IN std_logic;
-	dinb: IN std_logic_VECTOR(15 downto 0);
-	douta: OUT std_logic_VECTOR(7 downto 0);
-	ena: IN std_logic;
-	web: IN std_logic);
+	dina: IN std_logic_VECTOR(15 downto 0);
+	doutb: OUT std_logic_VECTOR(15 downto 0);
+	enb: IN std_logic;
+	wea: IN std_logic);
 END frame_full;
 
 ARCHITECTURE frame_full_a OF frame_full IS
 -- synthesis translate_off
 component wrapped_frame_full
 	port (
-	addra: IN std_logic_VECTOR(13 downto 0);
+	addra: IN std_logic_VECTOR(12 downto 0);
 	addrb: IN std_logic_VECTOR(12 downto 0);
 	clka: IN std_logic;
 	clkb: IN std_logic;
-	dinb: IN std_logic_VECTOR(15 downto 0);
-	douta: OUT std_logic_VECTOR(7 downto 0);
-	ena: IN std_logic;
-	web: IN std_logic);
+	dina: IN std_logic_VECTOR(15 downto 0);
+	doutb: OUT std_logic_VECTOR(15 downto 0);
+	enb: IN std_logic;
+	wea: IN std_logic);
 end component;
 
 -- Configuration specification 
 	for all : wrapped_frame_full use entity XilinxCoreLib.blkmemdp_v6_3(behavioral)
 		generic map(
-			c_reg_inputsb => 1,
-			c_reg_inputsa => 0,
+			c_reg_inputsb => 0,
+			c_reg_inputsa => 1,
 			c_has_ndb => 0,
 			c_has_nda => 0,
 			c_ytop_addr => "1024",
@@ -83,7 +83,7 @@ end component;
 			c_ysinita_is_high => 1,
 			c_ybottom_addr => "0",
 			c_width_b => 16,
-			c_width_a => 8,
+			c_width_a => 16,
 			c_sinita_value => "0",
 			c_sinitb_value => "0",
 			c_limit_data_pitch => 18,
@@ -92,7 +92,7 @@ end component;
 			c_has_rdyb => 0,
 			c_yuse_single_primitive => 0,
 			c_has_rdya => 0,
-			c_addra_width => 14,
+			c_addra_width => 13,
 			c_addrb_width => 13,
 			c_has_limit_data_pitch => 0,
 			c_default_data => "0",
@@ -104,22 +104,22 @@ end component;
 			c_yydisable_warnings => 1,
 			c_enable_rlocs => 0,
 			c_ysinitb_is_high => 1,
-			c_has_web => 1,
+			c_has_web => 0,
 			c_has_default_data => 1,
 			c_has_sinitb => 0,
-			c_has_wea => 0,
+			c_has_wea => 1,
 			c_has_sinita => 0,
-			c_has_dinb => 1,
-			c_has_dina => 0,
+			c_has_dinb => 0,
+			c_has_dina => 1,
 			c_ymake_bmm => 0,
 			c_sim_collision_check => "NONE",
-			c_has_enb => 0,
-			c_has_ena => 1,
+			c_has_enb => 1,
+			c_has_ena => 0,
 			c_depth_b => 8192,
 			c_mem_init_file => "mif_file_16_1",
-			c_depth_a => 16384,
-			c_has_doutb => 0,
-			c_has_douta => 1,
+			c_depth_a => 8192,
+			c_has_doutb => 1,
+			c_has_douta => 0,
 			c_yprimitive_type => "16kx1");
 -- synthesis translate_on
 BEGIN
@@ -130,10 +130,10 @@ U0 : wrapped_frame_full
 			addrb => addrb,
 			clka => clka,
 			clkb => clkb,
-			dinb => dinb,
-			douta => douta,
-			ena => ena,
-			web => web);
+			dina => dina,
+			doutb => doutb,
+			enb => enb,
+			wea => wea);
 -- synthesis translate_on
 
 END frame_full_a;
