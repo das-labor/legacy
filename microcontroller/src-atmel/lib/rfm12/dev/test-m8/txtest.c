@@ -27,14 +27,24 @@ int main ( void )
 
 	uart_putstr ("\r\n");
 	uart_putstr ("Hello\r\n");
+	
+	DDRB   &= ~(_BV(1));
 
 	while (42)
 	{
-		i++;
-
-		if((ticker++ % 0xff) == 0)
+		if(!(PINB & (_BV(1))))
 		{
+			ticker = 1;
+		}
+		
+		if(ticker && (PINB & (_BV(1))))
+		{
+			ticker = 0;
+			
+			uart_putstr ("tx ");			
 			rfm12_tx (1, 0x23, &i);
+			
+			i++;
 		}
 
 		rfm12_tick();
