@@ -113,7 +113,7 @@
 #define RFM12_FLAG_BIT (INTF1)
 
 //setup the interrupt to trigger on negative edge
-#define RFM12_INT_SETUP()   MCUCR |= (1<<ISC01)
+#define RFM12_INT_SETUP()   MCUCR |= (1<<ISC11)
 
 
 /************************
