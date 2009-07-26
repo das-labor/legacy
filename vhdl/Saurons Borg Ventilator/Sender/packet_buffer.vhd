@@ -13,7 +13,8 @@ entity packet_buffer is
     b10code   : out  STD_LOGIC;			  
     freeze_diag  : out STD_LOGIC_VECTOR ( 4 downto 0);
     winkel_diag  : out STD_LOGIC_VECTOR ( 9 downto 0);
-    addra_diag   : out STD_LOGIC_VECTOR (13 downto 0);
+    addrb_diag   : out STD_LOGIC_VECTOR (12 downto 0);
+	 doutb_diag   : out STD_LOGIC_VECTOR (15 downto 0);
     b8_code_diag : out STD_LOGIC_VECTOR ( 7 downto 0);
     rdy_diag     : out STD_LOGIC;
 	 counter_diag : out STD_LOGIC_VECTOR ( 9 downto 0)
@@ -25,14 +26,14 @@ architecture Behavioral of packet_buffer is
 
 component frame_full
 	port (
-	addra: IN  std_logic_VECTOR(13 downto 0);
+	addra: IN  std_logic_VECTOR(12 downto 0);
 	addrb: IN  std_logic_VECTOR(12 downto 0);
 	clka : IN  std_logic;
 	clkb : IN  std_logic;
-	dinb : IN  std_logic_VECTOR(15 downto 0);
-	douta: OUT std_logic_VECTOR( 7 downto 0);
-	ena  : IN  std_logic;
-	web  : IN  std_logic);
+	dina : IN  std_logic_VECTOR(15 downto 0);
+	doutb: OUT std_logic_VECTOR(15 downto 0);
+	enb  : IN  std_logic;
+	wea  : IN  std_logic		);
 end component;
 
 
@@ -45,9 +46,9 @@ component packet_write
 	counter : OUT std_logic_vector(9 downto 0));
 end component;
 
-signal addra    : std_logic_VECTOR(13 downto 0);
+signal addra    : std_logic_VECTOR(12 downto 0);
 signal addrb    : std_logic_VECTOR(12 downto 0);
-signal dinb     : std_logic_VECTOR(15 downto 0);
+signal dina     : std_logic_VECTOR(15 downto 0);
 signal b8_code  : std_logic_VECTOR( 7 downto 0);
 signal counter  : std_logic_VECTOR( 9 downto 0);
 signal rdy      : std_logic;
@@ -55,12 +56,12 @@ signal winkel_1 : std_logic_VECTOR( 9 downto 0):= (others => '0');
 signal winkel_2 : std_logic_VECTOR( 9 downto 0):= (others => '0');
 signal counter_1: std_logic_VECTOR( 9 downto 0):= (others => '0');
 signal freeze   : std_logic_VECTOR( 4 downto 0):= (others => '0');
-signal douta    : std_logic_VECTOR( 7 downto 0):= (others => '0');
+signal doutb    : std_logic_VECTOR(15 downto 0):= (others => '0');
 
 
 begin
 
--- Port A Lesen  / Port B Schreiben
+-- Port A Schreiben  / Port B Lesen
 
 bram : frame_full
 		port map (
@@ -68,10 +69,10 @@ bram : frame_full
 			addrb => addrb,
 			clka  => clk20,
 			clkb  => clk50,
-			dinb  => dinb,
-			douta => douta,
-			ena   => rdy,
-			web   => '1');
+			dina  => dina,
+			doutb => doutb,
+			enb   => rdy,
+			wea   => '1');
 
 
 pwrite: packet_write
@@ -83,11 +84,11 @@ pwrite: packet_write
 			counter => counter );
 
 
--- Daten in Blockram schreiben (Kanal B)
+-- Daten in Blockram schreiben (Kanal A)
 process (clk50) begin
 	if rising_edge (clk50) then
-		addrb <= winkel(4 downto 0) & sram_pos;
-		 dinb <= sram_read;
+		addra <= winkel(4 downto 0) & sram_pos;
+		 dina <= sram_read;
 	end if;
 end process;
 
@@ -114,15 +115,23 @@ end process;
 
 -- Addresse zum Lesen
 
-addra <= freeze & counter (8 downto 0);
+addrb <= freeze & counter (8 downto 1);
 
 
 
--- Ein byte aus Bram lesen
-process (clk20) begin
+-- Eine Farbe aus Bram lesen
+process (clk20) 
+variable read_color : std_logic_vector (15 downto 0);
+begin
+
 	if rising_edge (clk20) then
-		if (counter < 512) and rdy = '1' then
-			b8_code <= douta;
+		if (counter < 512) and rdy = '1' then		-- Ich brauche einen
+			read_color := doutb;							-- Farbwert  JETZT
+			if counter (0) = '0' then 
+				b8_code <= doutb (15 downto 8);		-- Erst High Byte
+			else 
+				b8_code <= doutb ( 7 downto 0);		-- Dann low Byte
+			end if;
 		end if;
 	end if;
 end process;
@@ -132,7 +141,8 @@ end process;
 
 freeze_diag  <= freeze;
 winkel_diag  <= winkel;
-addra_diag   <= addra;
+addrb_diag   <= addrb;
+doutb_diag   <= doutb;
 b8_code_diag <= b8_code;
 rdy_diag     <= rdy;
 counter_diag <= counter;

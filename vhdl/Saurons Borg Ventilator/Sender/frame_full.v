@@ -42,37 +42,37 @@ module frame_full(
 	addrb,
 	clka,
 	clkb,
-	dinb,
-	douta,
-	ena,
-	web);
+	dina,
+	doutb,
+	enb,
+	wea);
 
 
-input [13 : 0] addra;
+input [12 : 0] addra;
 input [12 : 0] addrb;
 input clka;
 input clkb;
-input [15 : 0] dinb;
-output [7 : 0] douta;
-input ena;
-input web;
+input [15 : 0] dina;
+output [15 : 0] doutb;
+input enb;
+input wea;
 
 // synthesis translate_off
 
       BLKMEMDP_V6_3 #(
-		.c_addra_width(14),
+		.c_addra_width(13),
 		.c_addrb_width(13),
 		.c_default_data("0"),
-		.c_depth_a(16384),
+		.c_depth_a(8192),
 		.c_depth_b(8192),
 		.c_enable_rlocs(0),
 		.c_has_default_data(1),
-		.c_has_dina(0),
-		.c_has_dinb(1),
-		.c_has_douta(1),
-		.c_has_doutb(0),
-		.c_has_ena(1),
-		.c_has_enb(0),
+		.c_has_dina(1),
+		.c_has_dinb(0),
+		.c_has_douta(0),
+		.c_has_doutb(1),
+		.c_has_ena(0),
+		.c_has_enb(1),
 		.c_has_limit_data_pitch(0),
 		.c_has_nda(0),
 		.c_has_ndb(0),
@@ -82,18 +82,18 @@ input web;
 		.c_has_rfdb(0),
 		.c_has_sinita(0),
 		.c_has_sinitb(0),
-		.c_has_wea(0),
-		.c_has_web(1),
+		.c_has_wea(1),
+		.c_has_web(0),
 		.c_limit_data_pitch(18),
 		.c_mem_init_file("mif_file_16_1"),
 		.c_pipe_stages_a(0),
 		.c_pipe_stages_b(0),
-		.c_reg_inputsa(0),
-		.c_reg_inputsb(1),
+		.c_reg_inputsa(1),
+		.c_reg_inputsb(0),
 		.c_sim_collision_check("NONE"),
 		.c_sinita_value("0"),
 		.c_sinitb_value("0"),
-		.c_width_a(8),
+		.c_width_a(16),
 		.c_width_b(16),
 		.c_write_modea(0),
 		.c_write_modeb(0),
@@ -117,13 +117,13 @@ input web;
 		.ADDRB(addrb),
 		.CLKA(clka),
 		.CLKB(clkb),
-		.DINB(dinb),
-		.DOUTA(douta),
-		.ENA(ena),
-		.WEB(web),
-		.DINA(),
-		.DOUTB(),
-		.ENB(),
+		.DINA(dina),
+		.DOUTB(doutb),
+		.ENB(enb),
+		.WEA(wea),
+		.DINB(),
+		.DOUTA(),
+		.ENA(),
 		.NDA(),
 		.NDB(),
 		.RFDA(),
@@ -132,7 +132,7 @@ input web;
 		.RDYB(),
 		.SINITA(),
 		.SINITB(),
-		.WEA());
+		.WEB());
 
 
 // synthesis translate_on

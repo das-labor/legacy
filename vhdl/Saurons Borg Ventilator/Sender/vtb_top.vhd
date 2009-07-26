@@ -49,7 +49,8 @@ ARCHITECTURE behavioral OF top_top_sch_tb IS
           rdy_diag	:	OUT	STD_LOGIC; 
           freeze_diag	:	OUT	STD_LOGIC_VECTOR (4 DOWNTO 0); 
           winkel_diag	:	OUT	STD_LOGIC_VECTOR (9 DOWNTO 0); 
-          addra_diag	:	OUT	STD_LOGIC_VECTOR (13 DOWNTO 0); 
+          addrb_diag	:	OUT	STD_LOGIC_VECTOR (12 DOWNTO 0); 
+			 doutb_diag :  OUT   STD_LOGIC_VECTOR (15 DOWNTO 0);
           b8_code_diag	:	OUT	STD_LOGIC_VECTOR (7 DOWNTO 0);
 			 counter_diag  :	OUT	STD_LOGIC_VECTOR (9 DOWNTO 0);
 			 sram_read  :	OUT	STD_LOGIC_VECTOR (15 DOWNTO 0);
@@ -108,7 +109,8 @@ ARCHITECTURE behavioral OF top_top_sch_tb IS
    SIGNAL rdy_diag	:	STD_LOGIC;
    SIGNAL freeze_diag	:	STD_LOGIC_VECTOR (4 DOWNTO 0);
    SIGNAL winkel_diag	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
-   SIGNAL addra_diag	:	STD_LOGIC_VECTOR (13 DOWNTO 0);
+   SIGNAL addrb_diag	:	STD_LOGIC_VECTOR (12 DOWNTO 0);
+	SIGNAL doutb_diag : STD_LOGIC_VECTOR (15 DOWNTO 0);
    SIGNAL b8_code_diag	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
    SIGNAL counter_diag	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
    SIGNAL sram_read	:	STD_LOGIC_VECTOR (15 DOWNTO 0);
@@ -123,6 +125,8 @@ ARCHITECTURE behavioral OF top_top_sch_tb IS
 	
 
    SIGNAL visual_abstand	:	STD_LOGIC_VECTOR (7 DOWNTO 0):= (others => '0');
+   SIGNAL visual_abstand_a	:	STD_LOGIC_VECTOR (7 DOWNTO 0):= (others => '0');
+	
    SIGNAL visual_winkel	:	STD_LOGIC_VECTOR (9 DOWNTO 0):= (others => '0');
    SIGNAL visual_color	:	STD_LOGIC_VECTOR (15 DOWNTO 0):= (others => '0');
 
@@ -184,7 +188,8 @@ BEGIN
 		rdy_diag => rdy_diag, 
 		freeze_diag => freeze_diag, 
 		winkel_diag => winkel_diag, 
-		addra_diag => addra_diag, 
+		addrb_diag => addrb_diag, 
+		doutb_diag => doutb_diag,
 		b8_code_diag => b8_code_diag,
 		counter_diag => counter_diag,
 		sram_read => sram_read,
@@ -314,7 +319,7 @@ if rising_edge (clk20) then
 if decode_rdy = '1' then
 	decode_data_last <= decode_data;
 	if decode_counter (0) = '1' then
-		visual_color <= decode_data & decode_data_last;
+		visual_color <= decode_data_last & decode_data;
 	end if;
 end if;
 
@@ -325,7 +330,8 @@ end if;
 
 ---------------Abstand bestimmen-----------------
 if decode_rdy = '1' and decode_counter < 512 then
-visual_abstand <= decode_counter (8 downto 1);
+visual_abstand_a <= decode_counter (8 downto 1);
+visual_abstand <= visual_abstand_a; -- um ein Byte verzögern um synchron zur farbe zu sein
 end if;
 
 
@@ -433,11 +439,11 @@ wait for 10 ns;
 		 
 --nach einer eingestellten zeit ein neues Bild speichern 
 
---wait for 100 us;
+wait for 200 us;
 
 for xxx in 1 to 999 loop
 
-	wait for 100 us; -- Zeit bis zum nächsten bild 200 | 5000
+	wait for 200 us; -- Zeit bis zum nächsten bild 200 | 5000
 		
    report "Jetzt ist das Bild fertig...";
 

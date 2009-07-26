@@ -58,9 +58,10 @@ BEGIN SCHEMATIC
         SIGNAL rdy_diag
         SIGNAL freeze_diag(4:0)
         SIGNAL winkel_diag(9:0)
-        SIGNAL addra_diag(13:0)
         SIGNAL b8_code_diag(7:0)
         SIGNAL counter_diag(9:0)
+        SIGNAL addrb_diag(12:0)
+        SIGNAL doutb_diag(15:0)
         PORT Input schaltin(7:0)
         PORT Input tast(3:0)
         PORT Output led(7:0)
@@ -99,9 +100,10 @@ BEGIN SCHEMATIC
         PORT Output rdy_diag
         PORT Output freeze_diag(4:0)
         PORT Output winkel_diag(9:0)
-        PORT Output addra_diag(13:0)
         PORT Output b8_code_diag(7:0)
         PORT Output counter_diag(9:0)
+        PORT Output addrb_diag(12:0)
+        PORT Output doutb_diag(15:0)
         BEGIN BLOCKDEF display2
             TIMESTAMP 2009 7 16 13 56 18
             RECTANGLE N 64 -132 256 -16 
@@ -260,7 +262,11 @@ BEGIN SCHEMATIC
             LINE N 112 -528 48 -528 
         END BLOCKDEF
         BEGIN BLOCKDEF packet_buffer
-            TIMESTAMP 2009 7 24 13 28 38
+            TIMESTAMP 2009 7 26 3 26 22
+            RECTANGLE N 304 116 368 140 
+            LINE N 304 128 368 128 
+            RECTANGLE N 304 148 368 172 
+            LINE N 304 160 368 160 
             RECTANGLE N 304 84 368 108 
             LINE N 304 96 368 96 
             LINE N 64 -352 0 -352 
@@ -273,15 +279,13 @@ BEGIN SCHEMATIC
             LINE N 64 -176 0 -176 
             RECTANGLE N 304 52 368 76 
             LINE N 304 64 368 64 
-            RECTANGLE N 304 4 368 28 
-            LINE N 304 16 368 16 
             RECTANGLE N 304 -44 368 -20 
             LINE N 304 -32 368 -32 
             RECTANGLE N 304 -92 368 -68 
             LINE N 304 -80 368 -80 
             LINE N 304 -128 368 -128 
             LINE N 304 -336 368 -336 
-            RECTANGLE N 64 -384 304 116 
+            RECTANGLE N 64 -384 304 180 
         END BLOCKDEF
         BEGIN BLOCK XLXI_8 Picoblaze
             PIN clk clk50
@@ -368,9 +372,10 @@ BEGIN SCHEMATIC
             PIN rdy_diag rdy_diag
             PIN freeze_diag(4:0) freeze_diag(4:0)
             PIN winkel_diag(9:0) winkel_diag(9:0)
-            PIN addra_diag(13:0) addra_diag(13:0)
             PIN b8_code_diag(7:0) b8_code_diag(7:0)
             PIN counter_diag(9:0) counter_diag(9:0)
+            PIN addrb_diag(12:0) addrb_diag(12:0)
+            PIN doutb_diag(15:0) doutb_diag(15:0)
         END BLOCK
         BEGIN BLOCK XLXI_42 ram_control
             PIN sram_1_io(15:0) sram_1_io(15:0)
@@ -667,10 +672,6 @@ BEGIN SCHEMATIC
             WIRE 2768 2176 2800 2176
         END BRANCH
         IOMARKER 2800 2176 winkel_diag(9:0) R0 28
-        BEGIN BRANCH addra_diag(13:0)
-            WIRE 2768 2224 2800 2224
-        END BRANCH
-        IOMARKER 2800 2224 addra_diag(13:0) R0 28
         BEGIN BRANCH b8_code_diag(7:0)
             WIRE 2768 2272 2800 2272
         END BRANCH
@@ -687,5 +688,13 @@ BEGIN SCHEMATIC
         IOMARKER 976 560 out0 R0 28
         IOMARKER 2928 1408 sram_read(15:0) R0 28
         IOMARKER 2928 1440 sram_pos(7:0) R0 28
+        BEGIN BRANCH addrb_diag(12:0)
+            WIRE 2768 2336 2800 2336
+        END BRANCH
+        IOMARKER 2800 2336 addrb_diag(12:0) R0 28
+        BEGIN BRANCH doutb_diag(15:0)
+            WIRE 2768 2368 2800 2368
+        END BRANCH
+        IOMARKER 2800 2368 doutb_diag(15:0) R0 28
     END SHEET
 END SCHEMATIC
