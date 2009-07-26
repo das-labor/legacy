@@ -67,11 +67,11 @@ bram : frame_full
 		port map (
 			addra => addra,
 			addrb => addrb,
-			clka  => clk20,
-			clkb  => clk50,
+			clka  => clk50,
+			clkb  => clk20,
 			dina  => dina,
 			doutb => doutb,
-			enb   => rdy,
+			enb   => '1',
 			wea   => '1');
 
 
