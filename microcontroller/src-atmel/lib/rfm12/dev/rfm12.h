@@ -122,7 +122,13 @@ typedef struct
 		//the numbers of the currently used in / out receive buffers
 		uint8_t buffer_in_num;
 		uint8_t buffer_out_num;
-	#endif /* !(RFM12_TRANSMIT_ONLY) */	
+	#endif /* !(RFM12_TRANSMIT_ONLY) */
+	
+	//wakeup timer feature
+	#if RFM12_USE_WAKEUP_TIMER
+		//power management shadow register
+		uint16_t pwrmgt_shadow
+	#endif /* RFM12_USE_WAKEUP_TIMER */
 } rfm12_control_t;
 
 

@@ -108,20 +108,11 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 	#if RFM12_USE_WAKEUP_TIMER
 	if(status & (RFM12_STATUS_WKUP>>8))
 	{
-		
-		//FIXME: crude aproach of using rfm12_mode to decide what to write to PWRMGT register.
-		//should be changed to using a shadow var for the PWRMGT state
-		if(ctrl.rfm12_state != STATE_TX)
-		{
-			rfm12_data(RFM12_CMD_PWRMGT | (PWRMGT_DEFAULT & ~RFM12_PWRMGT_EW) | RFM12_PWRMGT_ER );
-			rfm12_data(RFM12_CMD_PWRMGT |  PWRMGT_DEFAULT                     | RFM12_PWRMGT_ER );
-		}else
-		{
-			rfm12_data(RFM12_CMD_PWRMGT | (PWRMGT_DEFAULT & ~RFM12_PWRMGT_EW) | RFM12_PWRMGT_ET );
-			rfm12_data(RFM12_CMD_PWRMGT |  PWRMGT_DEFAULT                     | RFM12_PWRMGT_ET );
-		}
+		//restart the wakeup timer by toggling the bit on and off
+		rfm12_data(ctrl.pwrmgt_shadow & ~RFM12_PWRMGT_EW);
+		rfm12_data(ctrl.pwrmgt_shadow);
 	}
-	#endif
+	#endif /* RFM12_USE_WAKEUP_TIMER */
 	
 	//check if the fifo interrupt occurred
 	if((!status & (RFM12_STATUS_FFIT>>8)))
@@ -253,9 +244,19 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 			#if !(RFM12_TRANSMIT_ONLY)
 				//turn off the transmitter and enable receiver
 				rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ER);
+				
+				//wakeup timer feature
+				#if RFM12_USE_WAKEUP_TIMER		
+					ctrl.pwrmgt_shadow = (RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ER);
+				#endif /* RFM12_USE_WAKEUP_TIMER */
 			#else
 				//turn off the transmitter only
 				rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
+				
+				//wakeup timer feature
+				#if RFM12_USE_WAKEUP_TIMER	
+					ctrl.pwrmgt_shadow = (RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
+				#endif /* RFM12_USE_WAKEUP_TIMER */	
 			#endif /* !(RFM12_TRANSMIT_ONLY) */
 			break;			
 	}
@@ -379,7 +380,12 @@ void rfm12_tick()
 		rfm12_data(RFM12_CMD_TX | PREAMBLE);
 		
 		//set ET in power register to enable transmission (hint: TX starts now)
-		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);	
+		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);
+		
+		//wakeup timer feature
+		#if RFM12_USE_WAKEUP_TIMER		
+			ctrl.pwrmgt_shadow = (RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);
+		#endif /* RFM12_USE_WAKEUP_TIMER */		
 
 		//clear int flasg before turning on the int, otherwise we won't be able to transmit
 		//this is really important...
@@ -538,6 +544,18 @@ void rfm12_init()
 	//init receiver fifo, we now begin receiving.
 	rfm12_data(CLEAR_FIFO);
 	rfm12_data(ACCEPT_DATA);
+	
+	//wakeup timer feature setup
+	#if RFM12_USE_WAKEUP_TIMER		
+		//if receive mode is not disabled (default)
+		#if !(RFM12_TRANSMIT_ONLY)	
+			//set power management shadow register to power off
+			ctrl.pwrmgt_shadow = (RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
+		#else
+			//set power management shadow register to receiver chain enabled
+			ctrl.pwrmgt_shadow = (RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ER);
+		#endif /* !(RFM12_TRANSMIT_ONLY) */
+	#endif /* RFM12_USE_WAKEUP_TIMER */
 
 	//setup interrupt for falling edge trigger
 	RFM12_INT_SETUP();
