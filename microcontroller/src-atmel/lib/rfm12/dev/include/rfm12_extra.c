@@ -23,176 +23,146 @@
  *		(for performance reasons)				*
  ******************************************************/
 
+ 
+/************************
+ * amplitude modulation receive mode
+*/
 
 #if RFM12_RECEIVE_CW
+	rfrxbuf_t cw_rxbuf;
 
-rfrxbuf_t cw_rxbuf;
-
-ISR(ADC_vect, ISR_NOBLOCK)
-{
-	static uint16_t adc_average;
-	static uint8_t pulse_timer;
-	
-	       uint8_t    value;
-	static uint8_t oldvalue;
-	static uint8_t ignore;
-	uint16_t adc;
-	
-
-	
-	ADCSRA = (1<<ADEN) | (1<<ADFR) | (0<<ADIE) //start free running mode
-			| (1<<ADPS2) | (1<<ADPS1);  //preescaler to clk/64
-										//samplerate = 16MHz/(64*13) = 19231 Hz
-
-	
-	adc = ADC;
-	
-	adc_average -= adc_average/64;
-	adc_average +=adc;
-	
-	value = (ADC > ((adc_average/64)+50) )?1:0;
-	
-	if(value)
+	ISR(ADC_vect, ISR_NOBLOCK)
 	{
-		PORTD |= (1<<PD7);
-	}else
-	{
-		PORTD &= ~(1<<PD7);
-	}
+		static uint16_t adc_average;
+		static uint8_t pulse_timer;
+		
+			   uint8_t    value;
+		static uint8_t oldvalue;
+		static uint8_t ignore;
+		uint16_t adc;
+		
 
+		
+		ADCSRA = (1<<ADEN) | (1<<ADFR) | (0<<ADIE) //start free running mode
+				| (1<<ADPS2) | (1<<ADPS1);  //preescaler to clk/64
+											//samplerate = 16MHz/(64*13) = 19231 Hz
 
-	if(TCNT0 > 0xE0){
-		ignore = 0;
-	}
-	
-	if(cw_rxbuf.state == STATE_EMPTY)
-	{
-		if(value && (!ignore) )
-		{
-			//pulse_timer = 0;
-			TCNT0 = 0;
-			cw_rxbuf.p   = 0;
-			cw_rxbuf.state = STATE_RECEIVING;
-		}
-	}else if(cw_rxbuf.state == STATE_FULL)
-	{
+		
+		adc = ADC;
+		
+		adc_average -= adc_average/64;
+		adc_average +=adc;
+		
+		value = (ADC > ((adc_average/64)+50) )?1:0;
+		
 		if(value)
 		{
-			TCNT0 = 0;
-			ignore = 1;
+			PORTD |= (1<<PD7);
+		}else
+		{
+			PORTD &= ~(1<<PD7);
+		}
+
+
+		if(TCNT0 > 0xE0){
+			ignore = 0;
 		}
 		
-	}else if(cw_rxbuf.state == STATE_RECEIVING)
-	{
-		if(value != oldvalue)
+		if(cw_rxbuf.state == STATE_EMPTY)
 		{
-
-			cw_rxbuf.buf[cw_rxbuf.p] = TCNT0;
-			TCNT0 = 0;
-			//pulse_timer = 0;
-			if(cw_rxbuf.p != (RFRXBUF_SIZE-1) )
+			if(value && (!ignore) )
 			{
-				cw_rxbuf.p++;
+				//pulse_timer = 0;
+				TCNT0 = 0;
+				cw_rxbuf.p   = 0;
+				cw_rxbuf.state = STATE_RECEIVING;
 			}
-		}else if(TCNT0 > 0xe0)
+		}else if(cw_rxbuf.state == STATE_FULL)
 		{
-			//if( !value ){
-			//PORTD |= (1<<PD6);
-				cw_rxbuf.state = STATE_FULL;
-			//}else{
-			//	cw_rxbuf.state = STATE_EMPTY;
-			//}
+			if(value)
+			{
+				TCNT0 = 0;
+				ignore = 1;
+			}
+			
+		}else if(cw_rxbuf.state == STATE_RECEIVING)
+		{
+			if(value != oldvalue)
+			{
+
+				cw_rxbuf.buf[cw_rxbuf.p] = TCNT0;
+				TCNT0 = 0;
+				//pulse_timer = 0;
+				if(cw_rxbuf.p != (RFRXBUF_SIZE-1) )
+				{
+					cw_rxbuf.p++;
+				}
+			}else if(TCNT0 > 0xe0)
+			{
+				//if( !value ){
+				//PORTD |= (1<<PD6);
+					cw_rxbuf.state = STATE_FULL;
+				//}else{
+				//	cw_rxbuf.state = STATE_EMPTY;
+				//}
+			}
 		}
+
+		oldvalue = value;
+
+		ADCSRA = (1<<ADEN) | (1<<ADFR) | (1<<ADIE) //start free running mode
+				| (1<<ADPS2) | (1<<ADPS1);  //preescaler to clk/64
+											//samplerate = 16MHz/(64*13) = 19231 Hz
+
+
 	}
 
-	oldvalue = value;
+	void adc_init()
+	{
+		ADMUX  = (1<<REFS0) | (1<<REFS1); //Internal 2.56V Reference, MUX0
+		
+		ADCSRA = (1<<ADEN) | (1<<ADSC) | (1<<ADFR) | (1<<ADIE) //start free running mode
+				| (1<<ADPS2) | (1<<ADPS1);  //preescaler to clk/64
+											//samplerate = 16MHz/(64*13) = 19231 Hz
+		
+	}
+#endif /* RFM12_RECEIVE_CW */
 
-	ADCSRA = (1<<ADEN) | (1<<ADFR) | (1<<ADIE) //start free running mode
-			| (1<<ADPS2) | (1<<ADPS1);  //preescaler to clk/64
-										//samplerate = 16MHz/(64*13) = 19231 Hz
 
-
-}
-
-void adc_init()
-{
-	ADMUX  = (1<<REFS0) | (1<<REFS1); //Internal 2.56V Reference, MUX0
-	
-	ADCSRA = (1<<ADEN) | (1<<ADSC) | (1<<ADFR) | (1<<ADIE) //start free running mode
-			| (1<<ADPS2) | (1<<ADPS1);  //preescaler to clk/64
-										//samplerate = 16MHz/(64*13) = 19231 Hz
-	
-}
-
-#endif
-
+/************************
+ * amplitude modulated raw tx mode
+*/
 
 #if RFM12_RAW_TX
-
-/*
- * @description en- or disable raw transmissions.
- */
-void rfm12_rawmode (uint8_t in_setting)
-{
-	rfm12_raw_tx = in_setting;
-
-	if (in_setting)
+	/*
+	 * @description en- or disable raw transmissions.
+	 */
+	void rfm12_rawmode (uint8_t in_setting)
 	{
-		rfm12_mode = MODE_RAW;
-		RFM12_INT_OFF();
-	} else
-	{
-		/* re-enable the receiver */
-		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ER);
-		RFM12_INT_ON();
-		rfm12_mode = MODE_RX;
+		rfm12_raw_tx = in_setting;
+
+		if (in_setting)
+		{
+			rfm12_mode = MODE_RAW;
+			RFM12_INT_OFF();
+		} else
+		{
+			/* re-enable the receiver */
+			rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ER);
+			RFM12_INT_ON();
+			rfm12_mode = MODE_RX;
+		}
 	}
-}
+#endif /* RFM12_RAW_TX */
 
-#endif
 
+/************************
+ * rfm12 wakeup timer mode
+*/
 
 #if RFM12_USE_WAKEUP_TIMER
-void rfm12_set_wakeup_timer(uint16_t val)
-{
-	rfm12_data (RFM12_CMD_WAKEUP | val);
-}
-#endif /* RFM12_USE_WAKEUP_TIMER */
-
-
-#if RFM12_LOW_POWER
-void rfm12_powerDown()
-{
-	RFM12_INT_OFF();
-	rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);	
-}
-
-
-uint8_t rfm12_lowPowerTx( uint8_t len, uint8_t type, uint8_t *data )
-{
-	uint8_t retVal;
-	
-	//enable whole receiver chain
-	rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ER);
-	
-	//tick once (reactivates rfm12 int)
-	rfm12_tick();
-	
-	//tx
-	retVal = rfm12_tx(len, type, data);
-	
-	//tx packet
-	while(rfm12_mode != RFM12_TX)	
+	void rfm12_set_wakeup_timer(uint16_t val)
 	{
-		rfm12_tick();
+		rfm12_data (RFM12_CMD_WAKEUP | val);
 	}
-	
-	//wait for tx complete
-	while(rf_tx_buffer.status != STATUS_FREE);
-	
-	//powerdown rfm12
-	rfm12_powerDown();
-	
-	return retVal;
-}
-#endif /* RFM12_LOW_POWER */
+#endif /* RFM12_USE_WAKEUP_TIMER */
