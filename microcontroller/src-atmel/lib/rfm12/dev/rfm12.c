@@ -46,8 +46,11 @@
 //buffer and status for the message to be transmitted
 rf_tx_buffer_t rf_tx_buffer;
 
-//buffers for the message to be received
-rf_rx_buffer_t rf_rx_buffers[2];
+//if receive mode is not disabled (default)
+#if !(RFM12_TRANSMIT_ONLY)
+	//buffers for the message to be received
+	rf_rx_buffer_t rf_rx_buffers[2];
+#endif /* RFM12_USE_WAKEUP_TIMER */
 
 //the control struct
 rfm12_control_t ctrl;
@@ -280,11 +283,11 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 
 
 void rfm12_tick()
-{
-	uint16_t status;
-	
+{	
 	//collision detection is enabled by default
 	#if !(RFM12_NOCOLLISIONDETECTION)
+		uint16_t status;
+		
 		//start with a channel free count of 16, this is necessary for the CW (ADC)  receive feature to work
 		static uint8_t channel_free_count = 16; //static local variables produce smaller code size than globals
 	#endif
