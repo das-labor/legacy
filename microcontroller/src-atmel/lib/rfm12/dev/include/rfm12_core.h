@@ -53,6 +53,18 @@
 	#define RFM12_NORETURNS 0
 #endif
 
+//if transmit only is not defined, we won't use this feature
+//else we will set some extra configuration
+#ifndef RFM12_TRANSMIT_ONLY
+	#define RFM12_TRANSMIT_ONLY 0
+#else
+	//disable collision detection, as we won't be able to receive data
+	#ifdef RFM12_NOCOLLISIONDETECTION
+		#undef RFM12_NOCOLLISIONDETECTION
+	#endif
+	#define RFM12_NOCOLLISIONDETECTION 1
+#endif
+
 //if nocollisiondetection is not defined, we won't use this feature
 #ifndef RFM12_NOCOLLISIONDETECTION
 	#define RFM12_NOCOLLISIONDETECTION 0
@@ -63,14 +75,22 @@
 	#define RFM12_LIVECTRL 0
 #endif
 
-//if low power is not defined, we won't use this feature
-#ifndef RFM12_LOW_POWER
-	#define RFM12_LOW_POWER 0
-#endif
-
 //if wakeuptimer is not defined, we won't use this feature
+//else we will set the default power management to use the wakeup timer
 #ifndef RFM12_USE_WAKEUP_TIMER
 	#define RFM12_USE_WAKEUP_TIMER 0
+#else
+	//define the default power management setting with wakeuptimer
+	//if it's not set already
+	#ifndef PWRMGT_DEFAULT
+		#define PWRMGT_DEFAULT (RFM12_PWRMGT_EW | RFM12_PWRMGT_DC)
+	#else
+		//check if the default power management setting has the EW bit set
+		//and warn the user if it's not
+		#if !((PWRMGT_DEFAULT) & RFM12_PWRMGT_EW)
+			#warning "You are using the RFM12 wakeup timer, but PWRMGT_DEFAULT has the wakeup timer bit unset."
+		#endif
+	#endif
 #endif
 
 //if raw tx is not defined, we won't use this feature

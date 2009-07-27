@@ -18,85 +18,71 @@
  * @author Peter Fuhrmann, Hans-Gert Dahmen, Soeren Heisrath
  */
  
-#ifndef _RFM12_EXTRA_H
-#define _RFM12_EXTRA_H
- 
-/******************************************************
+ /******************************************************
  *                                                    *
  *    NO  C O N F I G U R A T I O N  IN THIS FILE     *
  *                                                    *
  *      ( thou shalt not change lines below )         *
  *                                                    *
  ******************************************************/
+ 
+#ifndef _RFM12_EXTRA_H
+#define _RFM12_EXTRA_H
 
- 
-/******************************************************
-* 	amplitude modulation receive mode				 *
- ******************************************************/
- 
+/************************
+ * amplitude modulation receive mode
+*/
+
 #if RFM12_RECEIVE_CW
-#define RFRXBUF_SIZE 55
-#define STATE_EMPTY 0
-#define STATE_RECEIVING 1
-#define STATE_FULL 2
+	#define RFRXBUF_SIZE 55
+	#define STATE_EMPTY 0
+	#define STATE_RECEIVING 1
+	#define STATE_FULL 2
 
-typedef struct
-{
-	volatile	uint8_t p;
-	volatile	uint8_t state;
-	uint8_t 	buf[RFRXBUF_SIZE];
-} rfrxbuf_t;
+	typedef struct
+	{
+		volatile	uint8_t p;
+		volatile	uint8_t state;
+		uint8_t 	buf[RFRXBUF_SIZE];
+	} rfrxbuf_t;
 
-extern rfrxbuf_t cw_rxbuf;
-
-
-/******************************************************
-* 	function protoypes						 *
- ******************************************************/
- 
-void adc_init();
-
+	extern rfrxbuf_t cw_rxbuf;
+	 
+	void adc_init();
 #endif /* RFM12_RECEIVE_CW */
 
 
-/******************************************************
-* 	amplitude modulated raw tx mode				 *
- ******************************************************/
+/************************
+ * amplitude modulated raw tx mode
+*/
  
 #if RFM12_RAW_TX
- 
-/******************************************************
-* 	function protoypes						 *
- ******************************************************/
- 
-/*
- * @description Enable the transmitter immediately.
- */
-inline void rfm12_tx_on (void)
-{
-	/* set enable transmission bit now. */
-	rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);
-}
+	/*
+	 * @description Enable the transmitter immediately.
+	 */
+	inline void rfm12_tx_on (void)
+	{
+		/* set enable transmission bit now. */
+		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);
+	}
 
-/*
- * @description Set default settings (usually transmitter off, receiver on)
- */
-inline void rfm12_tx_off (void)
-{
-	/* turn off everything. */
-	rfm12_data(RFM12_CMD_PWRMGT);
-}
-
+	/*
+	 * @description Set default settings (usually transmitter off, receiver on)
+	 */
+	inline void rfm12_tx_off (void)
+	{
+		/* turn off everything. */
+		rfm12_data(RFM12_CMD_PWRMGT);
+	}
 #endif /* RFM12_RAW_TX  */
 
 
-#if RFM12_USE_WAKEUP_TIMER
-void rfm12_set_wakeup_timer(uint16_t val);
-#endif /* RFM12_USE_WAKEUP_TIMER */
+/************************
+ * rfm12 wakeup timer mode
+*/
 
-#if RFM12_LOW_POWER
-void rfm12_powerDown();
-uint8_t rfm12_lowPowerTx( uint8_t len, uint8_t type, uint8_t *data );
-#endif /* RFM12_LOW_POWER */
+#if RFM12_USE_WAKEUP_TIMER
+	void rfm12_set_wakeup_timer(uint16_t val);
+#endif /* RFM12_USE_WAKEUP_TIMER */
 
 #endif /* _RFM12_EXTRA_H */
