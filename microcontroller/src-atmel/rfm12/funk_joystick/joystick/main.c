@@ -5,13 +5,10 @@
 #include <avr/sleep.h>
 
 #include "rfm12.h"
-#include "uart.h"
 
 
 int main ( void )
-{
-	uint8_t *bufp;
-	
+{	
 	PORTB = 0x1f; //Pullups on
 	PORTD = 0x60;
 	
@@ -40,18 +37,6 @@ int main ( void )
 	
 	while (42)
 	{
-		if (rfm12_rx_status() == STATUS_COMPLETE)
-		{
-
-			bufp = rfm12_rx_buffer();
-
-			
-			// tell the implementation that the buffer
-			// can be reused for the next data.
-			rfm12_rx_clear();
-
-		}
-
 		//PB0 Up
 		//PB1 Down
 		//PB2 Left
@@ -73,10 +58,9 @@ int main ( void )
 		}
 
 		rfm12_tick();
-	#define __BV _BV
+		
+		#define __BV _BV
 //		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 		sleep_mode();
-
-
 	}
 }
