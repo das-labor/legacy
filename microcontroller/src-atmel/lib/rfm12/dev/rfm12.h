@@ -127,7 +127,7 @@ typedef struct
 	//wakeup timer feature
 	#if RFM12_USE_WAKEUP_TIMER
 		//power management shadow register
-		uint16_t pwrmgt_shadow
+		uint16_t pwrmgt_shadow;
 	#endif /* RFM12_USE_WAKEUP_TIMER */
 } rfm12_control_t;
 
