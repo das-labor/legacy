@@ -556,11 +556,11 @@ void rfm12_init()
 	#if RFM12_USE_WAKEUP_TIMER		
 		//if receive mode is not disabled (default)
 		#if !(RFM12_TRANSMIT_ONLY)	
+			//set power management shadow register to receiver chain enabled
+			ctrl.pwrmgt_shadow = (RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ER);			
+		#else
 			//set power management shadow register to power off
 			ctrl.pwrmgt_shadow = (RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
-		#else
-			//set power management shadow register to receiver chain enabled
-			ctrl.pwrmgt_shadow = (RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ER);
 		#endif /* !(RFM12_TRANSMIT_ONLY) */
 	#endif /* RFM12_USE_WAKEUP_TIMER */
 
