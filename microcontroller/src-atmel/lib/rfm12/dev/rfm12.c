@@ -98,7 +98,11 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 {
 	RFM12_INT_OFF();
 	uint8_t status;
-	static uint8_t checksum; //static local variables produce smaller code size than globals
+	
+	//if receive mode is not disabled (default)
+	#if !(RFM12_TRANSMIT_ONLY)
+		static uint8_t checksum; //static local variables produce smaller code size than globals
+	#endif /* !(RFM12_TRANSMIT_ONLY) */
 
 	//first we read the first byte of the status register
 	//to get the interrupt flags
