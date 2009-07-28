@@ -1,0 +1,30 @@
+partitionmasker is a script for Linux to ease the creation of
+virtual block devices that map an existing device with a BIOS disk
+label (MBR, partition table), mapping some parts read-only and some
+read-write.
+
+See the file "LICENSE" for license and copyright.
+
+HELP/USAGE
+==========
+
+Help can be found inside the source file "partitionmasker" itself,
+at the very beginning, or with
+
+partitionmasker -h
+
+as soon as it is installed.
+
+INSTALLATION
+============
+
+partitionmasker relies on ruby, blockdev, sfdisk, losetup and
+of course dmsetup. Make sure all these tools are installed on your
+system.
+
+Move the file partitionmasker to some location inside your $PATH, and
+set appropriate permissions. Make sure that the ruby interpreter path
+on the first line of the file is correct.
+
+If you want to use a configuration file, use (a copy of) the file
+config_example as a start.
