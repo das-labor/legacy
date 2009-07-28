@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <avr/interrupt.h>
 #include "config.h"
+#include "circularbytebuffer.h"
 #include "uart_i.h"
 
 #define XON_VALUE  0x11
