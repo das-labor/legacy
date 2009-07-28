@@ -3,7 +3,7 @@ OBJ            = main.o rfm12.o
 MCU_TARGET     = at90s2313
 OPTIMIZE       = -Os
 
-FLASHCMD       = uisp -dprog=bsd --erase --upload if=$(PRG).hex
+FLASHCMD       = avrdude -c usbasp -p $(MCU_TARGET) -U flash:w:main.hex:i
 LAUNCH_BOOTLOADER = foodloader-0.21/launcher/launch-bootloader
 
 #SERIAL = /dev/ttyS0
