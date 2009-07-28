@@ -54,10 +54,12 @@
 #endif
 
 //if transmit only is not defined, we won't use this feature
-//else we will set some extra configuration
 #ifndef RFM12_TRANSMIT_ONLY
 	#define RFM12_TRANSMIT_ONLY 0
-#else
+#endif
+
+//if transmit only is on, we need to turn of collision detection
+#if RFM12_TRANSMIT_ONLY
 	//disable collision detection, as we won't be able to receive data
 	#ifdef RFM12_NOCOLLISIONDETECTION
 		#undef RFM12_NOCOLLISIONDETECTION
@@ -76,10 +78,12 @@
 #endif
 
 //if wakeuptimer is not defined, we won't use this feature
-//else we will set the default power management to use the wakeup timer
 #ifndef RFM12_USE_WAKEUP_TIMER
 	#define RFM12_USE_WAKEUP_TIMER 0
-#else
+#endif
+
+//if wakeuptimer is on, we will set the default power management to use the wakeup timer
+#if RFM12_USE_WAKEUP_TIMER
 	//define the default power management setting with wakeuptimer
 	//if it's not set already
 	#ifndef PWRMGT_DEFAULT
