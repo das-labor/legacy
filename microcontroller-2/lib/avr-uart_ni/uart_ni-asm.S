@@ -18,10 +18,10 @@
 */
 #include "config.h"
 #include <avr/io.h>
-
+#include "avr-asm-macros.S"
 /******************************************************************************/
 
-#if UART0
+#if UART0_NI
 
 #ifndef UART0_PARATY
 # warning "UART0: using default paraty: 'none'"
@@ -128,17 +128,9 @@
 .global uart0_init
 uart0_init:
 	ldi r24, UBRRH_VALUE
-#if _SFR_IO_REG_P(UBRR0H)
-	out _SFR_IO_ADDR(UBRR0H), r24 
-#else 
-	sts _SFR_MEM_ADDR(UBRR0H), r24
-#endif
+	STOREIO UBRR0H, r24
 	ldi r24, UBRRL_VALUE
-#if _SFR_IO_REG_P(UBRR0L)
-	out _SFR_IO_ADDR(UBRR0L), r24 
-#else 
-	sts _SFR_MEM_ADDR(UBRR0L), r24
-#endif
+	STOREIO UBRR0L, r24
 #if _SFR_IO_REG_P(UCSR0A)
   #if USE_2X
 	sbi _SFR_IO_ADDR(UCSR0A), 1
@@ -155,17 +147,9 @@ uart0_init:
 	sts _SFR_MEM_ADDR(UCSR0A), r24
 #endif
 	ldi r24, (UART0_PARATY<<4)|(UART0_STOPBITS<<3)|((UART0_DATABITS&3)<<1)
-#if _SFR_IO_REG_P(UCSR0C)
-	out _SFR_IO_ADDR(UCSR0C), r24 
-#else 
-	sts _SFR_MEM_ADDR(UCSR0C), r24
-#endif
+	STOREIO UCSR0C, r24
 	ldi r24, _BV(TXEN0)|_BV(RXEN0)|((UART0_DATABITS>>2)<<2)  
-#if _SFR_IO_REG_P(UCSR0B)
-	out _SFR_IO_ADDR(UCSR0B), r24 
-#else 
-	sts _SFR_MEM_ADDR(UCSR0B), r24
-#endif
+	STOREIO UCSR0B, r24
 	ret
 
 /******************************************************************************/
@@ -192,11 +176,7 @@ uart0_putc:
 	sts _SFR_MEM_ADDR(UCSR0B), r23
 #  endif
 #endif
-#if _SFR_IO_REG_P(UDR0)
-	out _SFR_IO_ADDR(UDR0), r24
-#else	
-	sts _SFR_MEM_ADDR(UDR0), r24
-#endif
+	STOREIO UDR0, r24
 	ret
 	
 /******************************************************************************/
@@ -213,43 +193,31 @@ uart0_getc:
 #endif
 
 #if UART0_DATABITS == UART_DATABITS_9
-#  if _SFR_IO_REG_P(UCSR0B)
-	in r25, _SFR_IO_ADDR(UCSR0B)
-#  else	
-	lds r25, _SFR_MEM_ADDR(UCSR0B)
-#  endif
+	LOADIO r25, UCSR0B
 	lsr r25
 	andi r25, 1
 #else
 	clr r25
 #endif	
-#if _SFR_IO_REG_P(UDR0)
-	in r24, _SFR_IO_ADDR(UDR0)
-#else	
-	lds r24, _SFR_MEM_ADDR(UDR0)
-#endif
+	LOADIO r24, UDR0
 	ret
 	
 /******************************************************************************/
 	
 .global uart0_dataavail
 uart0_dataavail:
-#if _SFR_IO_REG_P(UCSR0A)
-	in r24, _SFR_IO_ADDR(UCSR0A)
-#else
-	lds r24, _SFR_MEM_ADDR(UCSR0A)
-#endif
+	LOADIO r24, UCSR0A
 	andi r24, _BV(RXC0)
 	clr r25
 	ret
 
-#endif /* UART0 */
+#endif /* UART0_NI */
 
 /******************************************************************************/
 /******************************************************************************/
 /******************************************************************************/
 
-#if UART1
+#if UART1_NI
 
 #ifndef UDRE1
 # error "registernames for second UART not defined"
@@ -341,17 +309,9 @@ uart0_dataavail:
 .global uart1_init
 uart1_init:
 	ldi r24, UBRRH_VALUE
-#if _SFR_IO_REG_P(UBRR1H)
-	out _SFR_IO_ADDR(UBRR1H), r24 
-#else 
-	sts _SFR_MEM_ADDR(UBRR1H), r24
-#endif
+	STOREIO UBRR1H, r24
 	ldi r24, UBRRL_VALUE
-#if _SFR_IO_REG_P(UBRR1L)
-	out _SFR_IO_ADDR(UBRR1L), r24 
-#else 
-	sts _SFR_MEM_ADDR(UBRR1L), r24
-#endif
+	STOREIO UBRR1L, r24
 #if _SFR_IO_REG_P(UCSR1A)
   #if USE_2X
 	sbi _SFR_IO_ADDR(UCSR1A), 1
@@ -368,17 +328,9 @@ uart1_init:
 	sts _SFR_MEM_ADDR(UCSR1A), r24
 #endif
 	ldi r24, (UART1_PARATY<<4)|(UART1_STOPBITS<<3)|((UART1_DATABITS&3)<<1)
-#if _SFR_IO_REG_P(UCSR1C)
-	out _SFR_IO_ADDR(UCSR1C), r24 
-#else 
-	sts _SFR_MEM_ADDR(UCSR1C), r24
-#endif
-	ldi r24, _BV(TXEN1)|_BV(RXEN1)|((UART1_DATABITS>>2)<<2)
-#if _SFR_IO_REG_P(UCSR1B)
-	out _SFR_IO_ADDR(UCSR1B), r24 
-#else 
-	sts _SFR_MEM_ADDR(UCSR1B), r24
-#endif
+	STOREIO UCSR1C, r24
+	ldi r24, _BV(TXEN1)|_BV(RXEN1)|((UART1_DATABITS>>2)<<2)  
+	STOREIO UCSR1B, r24
 	ret
 	
 /******************************************************************************/
@@ -405,11 +357,7 @@ uart1_putc:
 	sts _SFR_MEM_ADDR(UCSR1B), r23
 #  endif
 #endif
-#if _SFR_IO_REG_P(UDR1)
-	out _SFR_IO_ADDR(UDR1), r24
-#else	
-	sts _SFR_MEM_ADDR(UDR1), r24
-#endif
+	STOREIO UDR1, r24
 	ret
 	
 /******************************************************************************/
@@ -425,34 +373,22 @@ uart1_getc:
 	rjmp uart1_getc
 #endif
 #if UART1_DATABITS == UART_DATABITS_9
-#  if _SFR_IO_REG_P(UCSR1B)
-	in r25, _SFR_IO_ADDR(UCSR1B)
-#  else	
-	lds r25, _SFR_MEM_ADDR(UCSR1B)
-#  endif
+	LOADIO r25, UCSR1B
 	lsr r25
 	andi r25, 1
 #else
 	clr r25
 #endif	
-#if _SFR_IO_REG_P(UDR1)
-	in r24, _SFR_IO_ADDR(UDR1)
-#else	
-	lds r24, _SFR_MEM_ADDR(UDR1)
-#endif
+	LOADIO r24, UDR1
 	ret
 	
 /******************************************************************************/
 
 .global uart1_dataavail
 uart1_dataavail:
-#if _SFR_IO_REG_P(UCSR1A)
-	in r24, _SFR_IO_ADDR(UCSR1A)
-#else
-	lds r24, _SFR_MEM_ADDR(UCSR1A)
-#endif
+	LOADIO r24, UCSR1A
 	andi r24, _BV(RXC1)
 	clr r25
 	ret
 
-#endif /* UART1 */
+#endif /* UART1_NI */

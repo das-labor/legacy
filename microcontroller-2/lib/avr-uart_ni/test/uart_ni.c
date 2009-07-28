@@ -22,7 +22,7 @@
 #include <avr/io.h>
 #include "uart_ni.h"
 
-#if UART0
+#if UART0_NI
 
 #ifndef UART0_PARATY
 # warning "UART0: using default paraty: 'none'"
@@ -116,13 +116,13 @@ uint8_t uart0_dataavail(void){
 	return(UCSR0A & _BV(RXC0));
 }
 
-#endif /* UART0 */
+#endif /* UART0_NI */
 
 /******************************************************************************/
 /******************************************************************************/
 /******************************************************************************/
 
-#if UART1
+#if UART1_NI
 
 void uart1_init(void){
 	#define BAUD UART0_BAUD_RATE
@@ -165,4 +165,4 @@ uint8_t uart1_dataavail(void){
 	return(UCSR1A & _BV(RXC1));
 }
 
-#endif /* UART1 */
+#endif /* UART1_NI */
