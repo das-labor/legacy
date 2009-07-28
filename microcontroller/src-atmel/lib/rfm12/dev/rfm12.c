@@ -318,7 +318,7 @@ void rfm12_tick()
 		}
 	#endif
 
-	//don't disturb RFM12 if trasnmitting or receiving
+	//don't disturb RFM12 if transmitting or receiving
 	//FIXME: raw tx mode is excluded from this check now
 	if(ctrl.rfm12_state != STATE_RX_IDLE)
 	{
@@ -366,6 +366,15 @@ void rfm12_tick()
 		//anyhow, we MUST transmit at some point...
 		RFM12_INT_OFF();
 		
+		//poll the status register once if it hasn't been done before,
+		//like in no collision detection mode		
+		//this seems to make no sense, but it resets some flags in the rfm12
+		//(i guess it's an int we might have missed, or something alike)
+		//anyway, if we don't do this, the ugly beast will just not transmit
+		#if RFM12_NOCOLLISIONDETECTION
+			rfm12_read(RFM12_CMD_STATUS);
+		#endif
+		
 		//disable receiver - if you don't do this, tx packets will get lost
 		//as the fifo seems to be in use by the receiver
 		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
@@ -380,6 +389,11 @@ void rfm12_tick()
 		//set mode for interrupt handler
 		ctrl.rfm12_state = STATE_TX;
 		
+		//wakeup timer feature
+		#if RFM12_USE_WAKEUP_TIMER		
+			ctrl.pwrmgt_shadow = (RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);
+		#endif /* RFM12_USE_WAKEUP_TIMER */
+		
 		//fill 2byte 0xAA preamble into data register
 		//the preamble helps the receivers AFC circuit to lock onto the exact frequency
 		//(hint: the tx FIFO [if el is enabled] is two staged, so we can safely write 2 bytes before starting)
@@ -387,12 +401,7 @@ void rfm12_tick()
 		rfm12_data(RFM12_CMD_TX | PREAMBLE);
 		
 		//set ET in power register to enable transmission (hint: TX starts now)
-		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);
-		
-		//wakeup timer feature
-		#if RFM12_USE_WAKEUP_TIMER		
-			ctrl.pwrmgt_shadow = (RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);
-		#endif /* RFM12_USE_WAKEUP_TIMER */		
+		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);			
 
 		//clear int flasg before turning on the int, otherwise we won't be able to transmit
 		//this is really important...
@@ -503,8 +512,8 @@ void rfm12_init()
 		//init buffer pointers
 		ctrl.rf_buffer_out = &rf_rx_buffers[0];
 		ctrl.rf_buffer_in  = &rf_rx_buffers[0];
-		ctrl.buffer_in_num = 0;
-		ctrl.buffer_out_num = 0;
+		//ctrl.buffer_in_num = 0;
+		//ctrl.buffer_out_num = 0;
 	#endif /* !(RFM12_TRANSMIT_ONLY) */	
 	
 	//disable all power
@@ -553,7 +562,7 @@ void rfm12_init()
 	rfm12_data(ACCEPT_DATA);
 	
 	//wakeup timer feature setup
-	#if RFM12_USE_WAKEUP_TIMER		
+	#if RFM12_USE_WAKEUP_TIMER
 		//if receive mode is not disabled (default)
 		#if !(RFM12_TRANSMIT_ONLY)	
 			//set power management shadow register to receiver chain enabled
