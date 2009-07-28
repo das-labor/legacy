@@ -1,0 +1,46 @@
+# Example configuration file for partitionmasker
+
+# Note that this config file is just a piece of ruby code evaluated
+# by partitionmasker.
+
+# GLOBAL OPTIONS
+
+# **Option reuse_loops, same as -L, --reuse-loops on the command line
+#  Reuse existing intermediary ro/rw loop devices for the source.
+#  Only use this option if you are sure that any existing loops onto
+#  the source do not have an offset into the source and will not
+#  change their read-write status later on.
+# Defaulting to false, don't reuse loops
+##Config.reuse_loops = true
+
+# **Option verbose, same as -v, --verbose on the command line
+#  show what is being done. Show the table passed to dmsetup.
+# Defaulting to false
+##Config.verbose = true
+
+# **Option fake, same as -f, --fake on the command line
+#  don't call any tools that actually change the system,
+#  fake output of these calls. Nice for debugging and learning.
+#  This implies -v
+# Defaulting to false
+##Config.fake = true
+
+# MAPPINGS
+
+#Create a device "/dev/mapper/virthd", mapping contents of "/dev/sda"
+Device.create do
+  source("/dev/sda")
+  target "virthd"
+
+  #map first primary partition read-write
+  add_rw_mapping("/dev/sda1")
+
+  #map first logical partition read-write
+  add_rw_mapping("/dev/sda5") do
+    #...but only if file system/swap/LVM physical volume
+    #has the expected UUID
+    is_uuid("01234567-89ab-cdef-0123-4567890abcde")
+    #this will check if "/dev/disks/by-uuid/<uuid above>" is a symlink
+    #to "/dev/sda5", refusing operation if not.
+  end
+end

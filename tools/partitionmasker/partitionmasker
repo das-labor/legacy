@@ -1,0 +1,590 @@
+#!/usr/bin/ruby
+#= Name
+#
+# partitionmasker: create a mapped device mapping an entire partitioned disk
+#
+#= Synopsis
+#
+# partitionmasker [-vfL] -c <configfile> [<source> <target> <partition1> ...]
+# partitionmasker [-vfL] <source> <target> <partition1> ...
+#
+#= Purpose
+#
+#partitionmasker can be used to create a virtual device (the target)
+#resembling an existing device (the source device <source>). The target
+#device is created using the kernel device mapper and will most probably
+#show up as /dev/mapper/<target>. Read/write operations to the target are
+#redirected inside the kernel to the source, so the target is a live virtual
+#copy of the source. All access to the target is restricted to
+#read-only operations, except for access to the partitions given
+#on the command line.
+#
+#The purpose is to grant a virtualization program access to an operating
+#system installed on one or more partitions of a block device (possibly the
+#hard disk that is used by the host system), but restricting write
+#access to a limited set of well-known partitions.
+#
+#Restricting only write access, but granting read access to the entire
+#device has the disadvantage of exposing host system data to the guest,
+#but it helps to solve boot problems. In particular, if the guest system
+#is also used on the bare hardware (in a dual-boot setup), it will most
+#probably be bootable in the guest on the target device without any further
+#reconfiguration.
+#
+#Make sure no partitions of the host system are passed as arguments,
+#and the guest system will not be able to tamper with it.
+#
+#= Operation
+#
+#partitionmasker creates two intermediary loop devices (with losetup)
+#mapping the source. One is used to enforce the read-only restriction
+#by creating the loop device as read-only. A loop device for read-write
+#access is (with most kernels) needed as well because the kernel device
+#mapper cannot map onto devices that are marked as in use.
+#
+#partitionmasker can search for existing loop devices, check their
+#read-write status and reuse them. This can be just what you want,
+#especially if you tend to run out of free loop devices. However,
+#other software which created the loops in the first place can change
+#the read-write status later on. Even worse, the loops can have been
+#created with a mapping offset onto the source device, which cannot be
+#detected by partitionmasker. Obviously, such an unexpected offset
+#can produce severe data corruption and damage. Therefore, you can
+#tell partitionmasker not to reuse loop devices, and this is the
+#default.
+#
+#partitionmasker queries sfdisk for the partition layout of the source
+#and creates a table for dmsetup, mapping partitions and unpartitioned
+#space to one of the loop devices, according to your wishes. Finally
+#it passes this table to dmsetup.
+#
+#= Options
+#
+#[-h, --help:]
+#  show help
+#
+#[-c <configfile>, --config <configfile>:]
+#  specify configuration file to use
+#
+#[-v, --verbose:]
+#   show what is being done. Show the table passed to dmsetup.
+#
+#[-f, --fake:]
+#  don't call any tools that actually change the system,
+#  fake output of these calls. Nice for debugging and learning.
+#  This implies -v
+#
+#[-L, --reuse-loops:]
+#  Reuse existing intermediary ro/rw loop devices for the source.
+#  Only use this option if you are sure that any existing loops onto
+#  the source do not have an offset into the source and will not
+#  change their read-write status later on.
+#
+#= Configuration file
+#
+#A configuration file can be passed to partitionmasker. See the file
+#<t>config_example</t> for the expected syntax. Note that a config file
+#is just a piece of ruby code, so misspellings might give errors from
+#ruby directly.
+#
+#In addition to the options on the command line, for each partition
+#to be mapped read-write, it is possible to specify a UUID.
+#If a UUID is given, partitionmasker will ensure that
+#/dev/disks/by-uuid/<uuid> will be a symlink to the partition.
+#It will refuse to create the mapping if the symlink is not as expected.
+#
+#= Known bugs and limitations
+#
+#Bugs: certainly some
+#
+#partitionmasker does some very simple checks to see if the partition
+#table given by sfdisk makes sense. It has to parse the output of
+#sfdisk, blockdev and losetup and can possibly break, should the format
+#of their output change. It will give up with an error in case it cannot
+#make sense of their output.
+#
+#Only (old/legacy/<your rant here>) BIOS partition layouts are
+#supported since we rely on sfdisk.
+
+require 'getoptlong'
+require 'rdoc/usage'
+
+module PartitionMasker
+
+module Error
+  def Error.exit(msg)
+    $stderr << msg << "\n"
+    $stderr << "#{$0}: exiting with error\n"
+    Kernel::exit(1)
+  end
+
+  def Error.exit_bad_config(msg)
+    exit("Error in configuration: #{msg}")
+  end
+
+  def Error.exit_bad_parameters(msg)
+    $stderr << "Bad parameter list: " << msg << "\n"
+    RDoc::usage(1, "Synopsis")
+  end
+end
+
+module Configuration
+  KEYS = [:reuse_loops, :verbose, :fake]
+
+  class CHash < Hash
+    attr_writer :child
+
+    alias_method :get, :[]
+    #attribute setting is NOT checking key validity
+    #check in higher levels!
+
+    def initialize
+      @child = nil
+    end
+
+    def init_with_defaults
+      KEYS.each { |ky| self[ky] = false }
+    end
+
+    # merge child to self, freeze child, reset child relationship
+    def rec_merge #returns self
+      return self if @child.nil?
+      merge!(@child.rec_merge.freeze)
+      @child = nil
+      self[:verbose] = true if get(:fake)
+      return self
+    end
+
+    def [](ky)
+      raise "bad configuration key '#{ky}'" unless
+          KEYS.include?(ky)
+      rec_merge
+      get(ky)
+    end
+  end
+
+  MASTER = CHash.new
+  FILECONF = CHash.new
+  MASTER.child = FILECONF
+  CMDCONF = CHash.new
+  CMDCONF.child = FILECONF
+
+  # global access function for active settings
+  def Configuration.[](ky)
+    MASTER[ky]
+  end
+
+  module Assertions
+    def self.delay_assertion(&block)
+      @all ||= []
+      @all << block
+    end
+
+    def self.assert_now
+      @all ||= []
+      @all.freeze
+      @all.each { |a| a.call }
+    end
+  end
+
+  class ConfiguredDevice
+    attr_reader :source, :target, :mappings
+
+    def initialize(source, target, mappings)
+      @source = source
+      @target = target
+      @mappings = mappings.freeze
+
+      @@all ||= []
+      @@all << self
+    end
+
+    def self.all
+      @@all ||= []
+      @@all.freeze
+    end
+  end
+
+  module Config #evaluation scope for config file!
+    #user can call fex. "fake = true"
+    KEYS.each do |ky|
+      sym = ky.to_s + '='
+      define_method(sym) do |val|
+        FILECONF[ky] = val
+      end
+      module_function(sym)
+    end
+  
+    class Device
+      attr_writer :source, :target
+
+      #convenience methods for the config file
+      alias_method :source, :source=
+      alias_method :target, :target=
+      #because of these, no getters available!
+
+      def initialize
+        @source = @target = nil
+        @mappings = []
+      end
+
+      class MappingAsserterContext
+        def initialize(partition)
+          @partition = partition
+        end
+
+        #assertion helper functions
+        def is_uuid(uuid)
+          Error::exit_bad_config("bad uuid '#{uuid}'") if /[^0-9a-f-]/.match(uuid)
+          begin
+            relpath = File.readlink("/dev/disk/by-uuid/#{uuid}")
+          rescue SystemCallError => err
+            Error::exit("Safety check failed: partition '#{@partition}' cannot have expected uuid '#{uuid}' (readlink failed: #{err})")
+          end
+          raise("Internal Error: unexpected relative path") unless
+              %r{^\.\./\.\./(.*)$}.match(relpath)
+          mappath = "/dev/#{$1}"
+          Error::exit("Safety check failed: uuid '#{uuid}' maps to '#{mappath}', not '#{@partition}'") unless
+              mappath == @partition
+        end
+      end
+
+      def add_rw_mapping(partition, &block)
+        @mappings << partition
+        return if block.nil?
+        context = MappingAsserterContext.new(partition)
+        Assertions::delay_assertion { context.instance_eval(&block) }
+      end
+
+      def valid?
+        !(@source.nil? || @target.nil?)
+      end
+
+      def self.create(&block)
+        d = new
+        d.instance_eval(&block)
+        Error::exit_bad_config("incomplete 'Device' section: source or target missing") unless
+            d.valid?
+        d.instance_eval do #we do this because the attr readers are not available
+          ConfiguredDevice.new(@source, @target, @mappings)
+        end
+      end
+    end #class Device
+  end #module Config
+
+  def Configuration.use_config_file(fname)
+    confrb = nil
+    begin
+      f = File.open(fname, "r")
+      confrb = f.read
+    rescue => msg
+      Error.exit("Couldn't load config file: " + msg)
+    ensure
+      f.close unless f.nil?
+    end
+    Config.module_eval(confrb, fname)
+  end
+
+  def Configuration.get_argv_options #returns config file (nil if none)
+    result = nil
+    opts = GetoptLong.new(
+      [ '--help', '-h', GetoptLong::NO_ARGUMENT ],
+      [ '--config', '-c', GetoptLong::REQUIRED_ARGUMENT ],
+      [ '--verbose', '-v', GetoptLong::NO_ARGUMENT ],
+      [ '--fake', '-f', GetoptLong::NO_ARGUMENT ],
+      [ '--reuse-loops', '-L', GetoptLong::NO_ARGUMENT ]
+    )
+    opts.each do |opt, arg|
+      case opt
+        when '--help'
+          RDoc::usage
+        when '--config'
+          result = arg
+        else
+          CMDCONF[opt[2..-1].tr('-','_').to_sym] = true
+      end
+    end
+    return result
+  end
+
+  def Configuration.parse_argv_arguments(config_file_given)
+    return if config_file_given && ARGV.length == 0
+    Error.exit_bad_parameters("wrong number of arguments") if ARGV.length < 3
+    ConfiguredDevice.new(ARGV.shift, ARGV.shift, ARGV)
+  end
+end
+
+module External
+  @fakeable = false
+  @fakeval = 0
+
+  def External.fakeable_do #not nestable!
+    @fakeable = true
+    res = yield
+    @fakeable = false
+    return res
+  end
+
+  def External.capture(cmd, redir_stderr=false)
+    if Configuration[:fake] and @fakeable then
+      myfakeval, @fakeval = "fakeval#{@fakeval}", @fakeval + 1
+      $stderr << "#{$0}: NOT calling '#{cmd}'\n"
+      $stderr << "#{$0}: taking fake output '#{myfakeval}' instead\n"
+      return myfakeval
+    else
+      $stderr << "#{$0}: calling '#{cmd}'\n" if Configuration[:verbose]
+      real_cmd = redir_stderr ? cmd + " 2>/dev/null" : cmd
+      res = `#{real_cmd}`
+      Error.exit("'#{cmd}' failed") unless $?.success?
+      return res
+    end
+  end
+
+  def External.pipe_to(cmd, input)
+    if Configuration[:fake] and @fakeable then
+      $stderr << "#{$0}: NOT calling '#{cmd}'; stdin would be:\n"
+      $stderr << input << "\n"
+    else
+      if Configuration[:verbose] then
+        $stderr << "#{$0}: calling '#{cmd}' with stdin:\n"
+        $stderr << input << "\n"
+      end
+      io = IO.popen(cmd, "w")
+      io.write(input)
+      io.close
+      Error.exit("'#{cmd}' failed") unless $?.success?
+    end
+  end
+end
+
+class PartitionedDevice
+  attr_reader :partitions
+
+  #master error
+  class PartitionedDeviceError < RuntimeError
+    def initialize(msg)
+      @msg = msg
+    end
+
+    def to_s
+      @msg
+    end
+  end
+
+  class PartitionNotFoundError < PartitionedDeviceError
+    def initialize(partition)
+      super("Partition '#{partition}' not found")
+    end
+  end
+
+  class ExtendedPartitionError < PartitionedDeviceError
+    def initialize(partition)
+      super("Partition '#{partition}' is an extended partition")
+    end
+  end
+
+  class DoubleTaggingError < PartitionedDeviceError
+    def initialize(partition)
+      super("Partition '#{partition}' mapping requested more than once")
+    end
+  end
+
+  class Partitions
+    def initialize(parthash)
+      @parthash = parthash
+    end
+
+    def tag(partition, tag)
+      error = Proc.new { |cname| raise cname.new(partition) }
+      error.call(PartitionNotFoundError) unless @parthash.has_key?(partition)
+      part_data = @parthash[partition]
+
+      error.call(DoubleTaggingError) if part_data.has_key?(:tag)
+      error.call(PartitionNotFoundError) if part_data[:geom][:size].zero?
+      error.call(ExtendedPartitionError) if part_data[:geom][:Id] == "5"
+
+      part_data[:tag] = tag
+    end
+  end
+
+  def initialize(node)
+    @node = node
+    @num_sectors = External.capture("blockdev --getsize #{node}").to_i
+
+    @partitions = Partitions.new(@parthash = {})
+
+    External.capture("sfdisk -duSL #{@node}", true).each_line do |line|
+      if %r{^(/dev/[^ :]+) ?: ?(.*)$}.match(line)
+        partition = $1
+
+        bad_format = Proc.new do
+          raise("Output from sfdisk for device #{@node} not understood")
+        end
+
+        geom_hsh =  {}
+        options = $2.split(/ *, */)
+        bad_format.call unless options.length == 3
+        options.collect do |k_and_v|
+          key, value = k_and_v.split(/= */, 2)
+          bad_format.call if value.nil?
+          key = key.to_sym
+          case key
+          when :size, :start:
+            geom_hsh[key] = value.to_i
+          when :Id:
+            geom_hsh[key] = value
+          else
+            bad_format.call
+          end
+        end
+
+        @parthash[partition] = {:geom => geom_hsh}
+      end
+    end
+  end
+
+  def segments(default_tag) #return array of arrays [start, length, tag]
+    @parthash.freeze
+
+    # step 1: clone out partition and mapping structure
+    # and remove empty and extended partitions
+    clone = @parthash.reject do |partition, part_data|
+      geom = part_data[:geom]
+      geom[:Id] == "5" || geom[:size].zero?
+    end
+    # step 2: convert to new structure (array of arrays [start, size, tag])
+    # and sort by start
+    clone = clone.map do |partition, part_data|
+      geom = part_data[:geom]
+      [geom[:start].to_i, geom[:size].to_i, part_data[:tag]]
+    end.sort! { |a, b| a[0] <=> b[0] }
+
+    segments = nil
+    #fill with segments from clone, fill holes, tag untagged default
+    if clone.empty? then
+      segments = [[0, @num_sectors, default_tag]]
+    else
+      segments = []
+      last_sector_seen = 0
+      clone.each do |ary|
+        ary[2] = default_tag if ary[2].nil?
+        skip = ary[0] - last_sector_seen
+        case skip <=> 0
+        when -1:
+          raise("Overlapping partitions detected on device '#{@node}'")
+        when 0:
+          segments << ary
+          last_sector_seen += ary[1]
+        when 1:
+          segments << [last_sector_seen, skip, default_tag] << ary
+          last_sector_seen = ary[0] + ary[1]
+        end
+      end
+      skip = @num_sectors - last_sector_seen
+      case skip <=> 0
+      when -1:
+        raise("Partition lies beyond end of device '#{@node}'")
+      when 1:
+        segments << [last_sector_seen, skip, default_tag]
+      end
+    end
+    return segments
+  end
+end
+
+class Loop
+  #@loophash is a hash "mapped device" => hash of loop devices
+  #with entries "loop device" => rw
+  #where rw is one of :rw, :ro, :dunno
+
+  def Loop.get(dev, rw)
+    prepare #make sure @loophash is what we expect
+
+    loops = @loophash[dev]
+    case rw
+    when true
+      rw = :rw
+    when false
+      rw = :ro
+    when :rw, :ro
+    else
+      raise("Bad 'rw' argument to Loop.get")
+    end
+
+    vals = loops.values
+    if vals.include?(rw) then
+      loops.each { |ky,val| return ky if val == rw }
+    else
+      if vals.include?(:dunno) then
+        loops.each_pair do |ky, rws|
+          if rws == :dunno then
+            cmd = "blockdev --getro #{ky}"
+            case External.capture(cmd).chomp
+            when "0"
+              return ky if (loops[ky] = :ro) == rw
+            when "1"
+              return ky if (loops[ky] = :rw) == rw
+            else
+              raise("Output from '#{cmd}' not understood")
+            end
+          end
+          #skip those with known r/w state
+        end
+      end
+      #since we got here: no known loop device with desired rw state!
+
+      cmd = "losetup -sf#{rw == :ro ? "r" : ""} #{dev}"
+      ky = External.fakeable_do { External.capture(cmd).chomp }
+      loops[ky] = rw
+      return ky
+    end
+  end
+
+  #internal
+  def Loop.prepare
+    return if instance_variable_defined?(:@loophash)
+    @loophash = Hash.new { |hsh, ky| hsh[ky] = {} }
+
+    return unless Configuration[:reuse_loops]
+
+    loops = External.capture("losetup -a")
+    loops.each_line do |line|
+      if %r{^(/dev/[^:]+):[^(]*\(([^)]+)\)$}.match(line).nil? then
+        raise("Output from 'losetup -a' not understood")
+      end
+      @loophash[$2][$1] = :dunno
+    end
+  end
+end
+
+cfilename = Configuration.get_argv_options
+
+Configuration.use_config_file(cfilename) unless cfilename.nil?
+
+Configuration::Assertions.assert_now
+
+Configuration.parse_argv_arguments(!cfilename.nil?)
+
+Configuration::ConfiguredDevice.all.each do |cd|
+  pd = PartitionedDevice.new(cd.source)
+  begin
+    cd.mappings.each { |partition| pd.partitions.tag(partition, :rw) }
+  rescue PartitionedDevice::PartitionedDeviceError => err
+    Error.exit("Error processing target '#{cd.target}':\n#{err}")
+  end
+
+  segments = pd.segments(:ro) #sanity checks for partition layout are done here
+
+  rol = Loop.get(cd.source, :ro)
+  rwl = Loop.get(cd.source, :rw)
+
+  table = pd.segments(:ro).collect do |ary|
+    "#{ary[0]} #{ary[1]} linear #{ary[2] == :rw ? rwl : rol} #{ary[0]}"
+  end.join("\n")
+
+  External.fakeable_do do
+    External.pipe_to("dmsetup create #{cd.target}", table)
+  end
+end
+
+end #module PartitionMasker
