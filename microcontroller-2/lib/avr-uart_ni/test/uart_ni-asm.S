@@ -62,66 +62,7 @@
 #endif
 
 #define BAUD (UART0_BAUD_RATE)
-/* #include <util/setbaud.h> */
-/* we use a modifyed version of util/setbaud where the UL suffix is remove
- * since the preprocessor can not handle that.
- */
-#ifndef F_CPU
-#  error "uart_ni requires F_CPU to be defined"
-#endif
-
-#ifndef BAUD
-#  error "uart_ni requires UART0_BAUD_RATE to be defined"
-#endif
-
-#if !(F_CPU)
-#  error "F_CPU must be a constant value"
-#endif
-
-#if !(BAUD)
-#  error "UART0_BAUD_RATE must be a constant value"
-#endif
-
-#undef USE_2X
-
-/* Baud rate tolerance is 2 % unless previously defined */
-#ifndef BAUD_TOL
-#  define BAUD_TOL 2
-#endif
-
-#define UBRR_VALUE (((F_CPU) + 8 * (BAUD)) / (16 * (BAUD)) -1)
-
-#if 100 * (F_CPU) > \
-  (16 * ((UBRR_VALUE) + 1)) * (100 * (BAUD) + (BAUD) * (BAUD_TOL))
-#  define USE_2X 1
-#elif 100 * (F_CPU) < \
-  (16 * ((UBRR_VALUE) + 1)) * (100 * (BAUD) - (BAUD) * (BAUD_TOL))
-#  define USE_2X 1
-#else
-#  define USE_2X 0
-#endif
-
-#if USE_2X
-/* U2X required, recalculate */
-#undef UBRR_VALUE
-#define UBRR_VALUE (((F_CPU) + 4 * (BAUD)) / (8 * (BAUD)) -1)
-
-#if 100 * (F_CPU) > \
-  (8 * ((UBRR_VALUE) + 1)) * (100 * (BAUD) + (BAUD) * (BAUD_TOL))
-#  warning "Baud rate achieved is higher than allowed"
-#endif
-
-#if 100 * (F_CPU) < \
-  (8 * ((UBRR_VALUE) + 1)) * (100 * (BAUD) - (BAUD) * (BAUD_TOL))
-#  warning "Baud rate achieved is lower than allowed"
-#endif
-
-#endif /* USE_U2X */
-
-#ifdef UBRR_VALUE
-#  define UBRRL_VALUE ((UBRR_VALUE) & 0xff)
-#  define UBRRH_VALUE ((UBRR_VALUE) >> 8)
-#endif
+#include "setbaud_asm.inc"
 
 /******************************************************************************/
 
@@ -243,66 +184,8 @@ uart0_dataavail:
 #endif
 
 #define BAUD (UART1_BAUD_RATE)
-/* #include <util/setbaud.h> */
-/* we use a modifyed version of util/setbaud where the UL suffix is remove
- * since the preprocessor can not handle that.
- */
-#ifndef F_CPU
-#  error "uart_ni requires F_CPU to be defined"
-#endif
 
-#ifndef BAUD
-#  error "uart_ni requires UART1_BAUD_RATE to be defined"
-#endif
-
-#if !(F_CPU)
-#  error "F_CPU must be a constant value"
-#endif
-
-#if !(BAUD)
-#  error "UART1_BAUD_RATE must be a constant value"
-#endif
-
-#undef USE_2X
-
-/* Baud rate tolerance is 2 % unless previously defined */
-#ifndef BAUD_TOL
-#  define BAUD_TOL 2
-#endif
-
-#define UBRR_VALUE (((F_CPU) + 8 * (BAUD)) / (16 * (BAUD)) -1)
-
-#if 100 * (F_CPU) > \
-  (16 * ((UBRR_VALUE) + 1)) * (100 * (BAUD) + (BAUD) * (BAUD_TOL))
-#  define USE_2X 1
-#elif 100 * (F_CPU) < \
-  (16 * ((UBRR_VALUE) + 1)) * (100 * (BAUD) - (BAUD) * (BAUD_TOL))
-#  define USE_2X 1
-#else
-#  define USE_2X 0
-#endif
-
-#if USE_2X
-/* U2X required, recalculate */
-#undef UBRR_VALUE
-#define UBRR_VALUE (((F_CPU) + 4 * (BAUD)) / (8 * (BAUD)) -1)
-
-#if 100 * (F_CPU) > \
-  (8 * ((UBRR_VALUE) + 1)) * (100 * (BAUD) + (BAUD) * (BAUD_TOL))
-#  warning "Baud rate achieved is higher than allowed"
-#endif
-
-#if 100 * (F_CPU) < \
-  (8 * ((UBRR_VALUE) + 1)) * (100 * (BAUD) - (BAUD) * (BAUD_TOL))
-#  warning "Baud rate achieved is lower than allowed"
-#endif
-
-#endif /* USE_U2X */
-
-#ifdef UBRR_VALUE
-#  define UBRRL_VALUE ((UBRR_VALUE) & 0xff)
-#  define UBRRH_VALUE ((UBRR_VALUE) >> 8)
-#endif
+#include "setbaud_asm.inc"
 
 /******************************************************************************/
 
