@@ -13,27 +13,13 @@ END top_top_sch_tb;
 ARCHITECTURE behavioral OF top_top_sch_tb IS 
 
    COMPONENT top
-   PORT( schaltin	:	IN	STD_LOGIC_VECTOR (7 DOWNTO 0); 
-          tast	:	IN	STD_LOGIC_VECTOR (3 DOWNTO 0); 
-          led	:	OUT	STD_LOGIC_VECTOR (7 DOWNTO 0); 
-          clk50	:	OUT	STD_LOGIC; 
-          clk20	:	OUT	STD_LOGIC; 
-          clk	:	IN	STD_LOGIC; 
-          out1	:	OUT	STD_LOGIC; 
-          out2	:	OUT	STD_LOGIC; 
-          out3	:	OUT	STD_LOGIC; 
-          out4	:	OUT	STD_LOGIC; 
-          trig	:	OUT	STD_LOGIC; 
-          gnd3	:	OUT	STD_LOGIC; 
-          gnd2	:	OUT	STD_LOGIC; 
-          gnd1	:	OUT	STD_LOGIC; 
-          out0	:	OUT	STD_LOGIC; 
-          gnd0	:	OUT	STD_LOGIC; 
-          clk100	:	OUT	STD_LOGIC; 
-          gnd4	:	OUT	STD_LOGIC; 
-          display	:	OUT	STD_LOGIC_VECTOR (11 DOWNTO 0); 
-          sram_oe	:	OUT	STD_LOGIC; 
-          sram_we	:	OUT	STD_LOGIC; 
+   PORT( 
+          clk50		:	OUT	STD_LOGIC; 
+          clk20		:	OUT	STD_LOGIC; 
+          clk			:	IN		STD_LOGIC; 
+          clk100		:	OUT	STD_LOGIC; 
+          sram_oe		:	OUT	STD_LOGIC; 
+          sram_we		:	OUT	STD_LOGIC; 
           sram_adr	:	OUT	STD_LOGIC_VECTOR (17 DOWNTO 0); 
           sram_1_io	:	INOUT	STD_LOGIC_VECTOR (15 DOWNTO 0); 
           sram_1_ce	:	OUT	STD_LOGIC; 
@@ -43,18 +29,56 @@ ARCHITECTURE behavioral OF top_top_sch_tb IS
           sram_2_io	:	INOUT	STD_LOGIC_VECTOR (15 DOWNTO 0); 
           sram_2_ub	:	OUT	STD_LOGIC; 
           sram_2_lb	:	OUT	STD_LOGIC; 
-          winkel	:	IN	STD_LOGIC_VECTOR (9 DOWNTO 0); 
+          winkel		:	IN		STD_LOGIC_VECTOR (9 DOWNTO 0); 
           winkel_ram	:	OUT	STD_LOGIC_VECTOR (9 DOWNTO 0); 
-          b10code	:	OUT	STD_LOGIC; 
---          rdy_diag	:	OUT	STD_LOGIC; 
---          freeze_diag	:	OUT	STD_LOGIC_VECTOR (4 DOWNTO 0); 
-          winkel_diag	:	OUT	STD_LOGIC_VECTOR (9 DOWNTO 0); 
---          addrb_diag	:	OUT	STD_LOGIC_VECTOR (12 DOWNTO 0); 
---			 doutb_diag :  OUT   STD_LOGIC_VECTOR (15 DOWNTO 0);
---          b8_code_diag	:	OUT	STD_LOGIC_VECTOR (7 DOWNTO 0);
---			 counter_diag  :	OUT	STD_LOGIC_VECTOR (9 DOWNTO 0);
 			 sram_read  :	OUT	STD_LOGIC_VECTOR (15 DOWNTO 0);
-			 sram_pos  :	OUT	STD_LOGIC_VECTOR (7 DOWNTO 0)
+			 sram_pos  	:	OUT	STD_LOGIC_VECTOR (7 DOWNTO 0);
+
+         b10code_k1		 :	OUT	STD_LOGIC; 
+         b10code_k2		 :	OUT	STD_LOGIC; 
+         b10code_k3		 :	OUT	STD_LOGIC; 
+         b10code_k4		 :	OUT	STD_LOGIC; 
+         winkel_diag     :	OUT	STD_LOGIC_VECTOR (9 DOWNTO 0); 
+			addrb_diag   	 : out STD_LOGIC_VECTOR (12 downto 0);
+			doutb_diag   	 : out STD_LOGIC_VECTOR (15 downto 0);
+			b8_code_k1_diag : out STD_LOGIC_VECTOR ( 7 downto 0);
+			b8_code_k2_diag : out STD_LOGIC_VECTOR ( 7 downto 0);
+			b8_code_k3_diag : out STD_LOGIC_VECTOR ( 7 downto 0);
+			b8_code_k4_diag : out STD_LOGIC_VECTOR ( 7 downto 0);
+			rdy_k1_diag     : out STD_LOGIC;
+			rdy_k2_diag     : out STD_LOGIC;
+			rdy_k3_diag     : out STD_LOGIC;
+			rdy_k4_diag     : out STD_LOGIC;
+			freeze_k1_diag  : out STD_LOGIC_VECTOR ( 4 downto 0);
+			freeze_k2_diag  : out STD_LOGIC_VECTOR ( 4 downto 0);
+			freeze_k3_diag  : out STD_LOGIC_VECTOR ( 4 downto 0);
+			freeze_k4_diag  : out STD_LOGIC_VECTOR ( 4 downto 0);
+			counter_k1_diag : out STD_LOGIC_VECTOR ( 9 downto 0);
+			counter_k2_diag : out STD_LOGIC_VECTOR ( 9 downto 0);
+			counter_k3_diag : out STD_LOGIC_VECTOR ( 9 downto 0);
+			counter_k4_diag : out STD_LOGIC_VECTOR ( 9 downto 0);
+			doutb_k1_diag   : out STD_LOGIC_VECTOR (15 downto 0);
+			doutb_k2_diag   : out STD_LOGIC_VECTOR (15 downto 0);
+			doutb_k3_diag   : out STD_LOGIC_VECTOR (15 downto 0);
+			doutb_k4_diag   : out STD_LOGIC_VECTOR (15 downto 0)
+
+
+--          schaltin		:	IN		STD_LOGIC_VECTOR (7 DOWNTO 0); 
+--          tast			:	IN		STD_LOGIC_VECTOR (3 DOWNTO 0); 
+--          led			:	OUT	STD_LOGIC_VECTOR (7 DOWNTO 0); 
+--          display		:	OUT	STD_LOGIC_VECTOR (11 DOWNTO 0); 
+--          out0			:	OUT	STD_LOGIC; 
+--          out1			:	OUT	STD_LOGIC; 
+--          out2			:	OUT	STD_LOGIC; 
+--          out3			:	OUT	STD_LOGIC; 
+--          out4			:	OUT	STD_LOGIC; 
+--          gnd0			:	OUT	STD_LOGIC; 
+--          gnd1			:	OUT	STD_LOGIC; 
+--          gnd2			:	OUT	STD_LOGIC; 
+--          gnd3			:	OUT	STD_LOGIC; 
+--          gnd4			:	OUT	STD_LOGIC; 
+--          trig			:	OUT	STD_LOGIC 
+
 			 
 			 );
    END COMPONENT;
@@ -62,38 +86,38 @@ ARCHITECTURE behavioral OF top_top_sch_tb IS
 	
 		COMPONENT packet_read
 	PORT(
-		data_in : IN std_logic;
-		clk : IN std_logic;          
+		data_in 	: IN 	std_logic;
+		clk 		: IN 	std_logic;          
 		data_out : OUT std_logic_vector(7 downto 0);
-		counter : OUT std_logic_vector(9 downto 0);
-		rdy : OUT std_logic;
+		counter 	: OUT std_logic_vector(9 downto 0);
+		rdy 		: OUT std_logic;
 		synchron : OUT std_logic;
-		crc_ok : OUT std_logic;
-		crc_er : OUT std_logic
+		crc_ok 	: OUT std_logic;
+		crc_er 	: OUT std_logic
 		);
 	END COMPONENT;
 
    SIGNAL schaltin	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
-   SIGNAL tast	:	STD_LOGIC_VECTOR (3 DOWNTO 0);
-   SIGNAL led	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
-   SIGNAL clk50	:	STD_LOGIC;
-   SIGNAL clk20	:	STD_LOGIC;
-   SIGNAL clk	:	STD_LOGIC;
-   SIGNAL out1	:	STD_LOGIC;
-   SIGNAL out2	:	STD_LOGIC;
-   SIGNAL out3	:	STD_LOGIC;
-   SIGNAL out4	:	STD_LOGIC;
-   SIGNAL trig	:	STD_LOGIC;
-   SIGNAL gnd3	:	STD_LOGIC;
-   SIGNAL gnd2	:	STD_LOGIC;
-   SIGNAL gnd1	:	STD_LOGIC;
-   SIGNAL out0	:	STD_LOGIC;
-   SIGNAL gnd0	:	STD_LOGIC;
-   SIGNAL clk100	:	STD_LOGIC;
-   SIGNAL gnd4	:	STD_LOGIC;
-   SIGNAL display	:	STD_LOGIC_VECTOR (11 DOWNTO 0);
-   SIGNAL sram_oe	:	STD_LOGIC;
-   SIGNAL sram_we	:	STD_LOGIC;
+   SIGNAL tast			:	STD_LOGIC_VECTOR (3 DOWNTO 0);
+   SIGNAL led			:	STD_LOGIC_VECTOR (7 DOWNTO 0);
+   SIGNAL clk50		:	STD_LOGIC;
+   SIGNAL clk20		:	STD_LOGIC;
+   SIGNAL clk			:	STD_LOGIC;
+   SIGNAL out1			:	STD_LOGIC;
+   SIGNAL out2			:	STD_LOGIC;
+   SIGNAL out3			:	STD_LOGIC;
+   SIGNAL out4			:	STD_LOGIC;
+   SIGNAL trig			:	STD_LOGIC;
+   SIGNAL gnd3			:	STD_LOGIC;
+   SIGNAL gnd2			:	STD_LOGIC;
+   SIGNAL gnd1			:	STD_LOGIC;
+   SIGNAL out0			:	STD_LOGIC;
+   SIGNAL gnd0			:	STD_LOGIC;
+   SIGNAL clk100		:	STD_LOGIC;
+   SIGNAL gnd4			:	STD_LOGIC;
+   SIGNAL display		:	STD_LOGIC_VECTOR (11 DOWNTO 0);
+   SIGNAL sram_oe		:	STD_LOGIC;
+   SIGNAL sram_we		:	STD_LOGIC;
    SIGNAL sram_adr	:	STD_LOGIC_VECTOR (17 DOWNTO 0);
    SIGNAL sram_1_io	:	STD_LOGIC_VECTOR (15 DOWNTO 0);
    SIGNAL sram_1_ce	:	STD_LOGIC;
@@ -103,32 +127,81 @@ ARCHITECTURE behavioral OF top_top_sch_tb IS
    SIGNAL sram_2_io	:	STD_LOGIC_VECTOR (15 DOWNTO 0);
    SIGNAL sram_2_ub	:	STD_LOGIC;
    SIGNAL sram_2_lb	:	STD_LOGIC;
-   SIGNAL winkel	:	STD_LOGIC_VECTOR (9 DOWNTO 0):= (others => '0');
+   SIGNAL winkel		:	STD_LOGIC_VECTOR (9 DOWNTO 0):= (others => '0');
    SIGNAL winkel_ram	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
-   SIGNAL b10code	:	STD_LOGIC;
---   SIGNAL rdy_diag	:	STD_LOGIC;
---   SIGNAL freeze_diag	:	STD_LOGIC_VECTOR (4 DOWNTO 0);
-   SIGNAL winkel_diag	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
---   SIGNAL addrb_diag	:	STD_LOGIC_VECTOR (12 DOWNTO 0);
---	SIGNAL doutb_diag : STD_LOGIC_VECTOR (15 DOWNTO 0);
---   SIGNAL b8_code_diag	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
---   SIGNAL counter_diag	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
+   SIGNAL b10code_k1		:	STD_LOGIC;
+   SIGNAL b10code_k2		:	STD_LOGIC;
+   SIGNAL b10code_k3		:	STD_LOGIC;
+   SIGNAL b10code_k4		:	STD_LOGIC;
+   SIGNAL b8_code_k1_diag : STD_LOGIC_VECTOR ( 7 downto 0);
+   SIGNAL b8_code_k2_diag : STD_LOGIC_VECTOR ( 7 downto 0);
+   SIGNAL b8_code_k3_diag : STD_LOGIC_VECTOR ( 7 downto 0);
+   SIGNAL b8_code_k4_diag : STD_LOGIC_VECTOR ( 7 downto 0);
+   SIGNAL rdy_k1_diag     : STD_LOGIC;
+   SIGNAL rdy_k2_diag     : STD_LOGIC;
+   SIGNAL rdy_k3_diag     : STD_LOGIC;
+   SIGNAL rdy_k4_diag     : STD_LOGIC;
+   SIGNAL freeze_k1_diag : STD_LOGIC_VECTOR ( 4 downto 0);
+   SIGNAL freeze_k2_diag : STD_LOGIC_VECTOR ( 4 downto 0);
+   SIGNAL freeze_k3_diag : STD_LOGIC_VECTOR ( 4 downto 0);
+   SIGNAL freeze_k4_diag : STD_LOGIC_VECTOR ( 4 downto 0);
+   SIGNAL counter_k1_diag : STD_LOGIC_VECTOR ( 9 downto 0);
+   SIGNAL counter_k2_diag : STD_LOGIC_VECTOR ( 9 downto 0);
+   SIGNAL counter_k3_diag : STD_LOGIC_VECTOR ( 9 downto 0);
+   SIGNAL counter_k4_diag : STD_LOGIC_VECTOR ( 9 downto 0);
+   SIGNAL addrb_diag   	: STD_LOGIC_VECTOR (12 downto 0);
+   SIGNAL doutb_diag   	: STD_LOGIC_VECTOR (15 downto 0);
+   SIGNAL winkel_diag:	STD_LOGIC_VECTOR (9 DOWNTO 0);
    SIGNAL sram_read	:	STD_LOGIC_VECTOR (15 DOWNTO 0);
    SIGNAL sram_pos	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
-   SIGNAL decode_data	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
-   SIGNAL decode_data_last	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
-   SIGNAL decode_counter	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
-   SIGNAL decode_rdy	:	STD_LOGIC;
-   SIGNAL decode_synchron	:	STD_LOGIC;
-   SIGNAL decode_crc_ok	:	STD_LOGIC;
-   SIGNAL decode_crc_er	:	STD_LOGIC;
-	
-
-   SIGNAL visual_abstand	:	STD_LOGIC_VECTOR (7 DOWNTO 0):= (others => '0');
-   SIGNAL visual_abstand_a	:	STD_LOGIC_VECTOR (7 DOWNTO 0):= (others => '0');
-	
-   SIGNAL visual_winkel	:	STD_LOGIC_VECTOR (9 DOWNTO 0):= (others => '0');
-   SIGNAL visual_color	:	STD_LOGIC_VECTOR (15 DOWNTO 0):= (others => '0');
+   SIGNAL decode_data_k1:	STD_LOGIC_VECTOR (7 DOWNTO 0);
+   SIGNAL decode_data_k2:	STD_LOGIC_VECTOR (7 DOWNTO 0);
+   SIGNAL decode_data_k3:	STD_LOGIC_VECTOR (7 DOWNTO 0);
+   SIGNAL decode_data_k4:	STD_LOGIC_VECTOR (7 DOWNTO 0);
+   SIGNAL decode_data_k1_last	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
+   SIGNAL decode_data_k2_last	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
+   SIGNAL decode_data_k3_last	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
+   SIGNAL decode_data_k4_last	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
+   SIGNAL decode_counter_k1	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
+   SIGNAL decode_counter_k2	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
+   SIGNAL decode_counter_k3	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
+   SIGNAL decode_counter_k4	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
+   SIGNAL decode_rdy_k1			:	STD_LOGIC;
+   SIGNAL decode_rdy_k2			:	STD_LOGIC;
+   SIGNAL decode_rdy_k3			:	STD_LOGIC;
+   SIGNAL decode_rdy_k4			:	STD_LOGIC;
+   SIGNAL decode_rdy_a_k1		:	STD_LOGIC;
+   SIGNAL decode_rdy_a_k2		:	STD_LOGIC;
+   SIGNAL decode_rdy_a_k3		:	STD_LOGIC;
+   SIGNAL decode_rdy_a_k4		:	STD_LOGIC;
+   SIGNAL decode_synchron_k1	:	STD_LOGIC;
+   SIGNAL decode_synchron_k2	:	STD_LOGIC;
+   SIGNAL decode_synchron_k3	:	STD_LOGIC;
+   SIGNAL decode_synchron_k4	:	STD_LOGIC;
+   SIGNAL doutb_k1_diag   		: STD_LOGIC_VECTOR (15 downto 0);
+   SIGNAL doutb_k2_diag   		: STD_LOGIC_VECTOR (15 downto 0);
+   SIGNAL doutb_k3_diag   		: STD_LOGIC_VECTOR (15 downto 0);
+   SIGNAL doutb_k4_diag   		: STD_LOGIC_VECTOR (15 downto 0);
+   SIGNAL visual_abstand		:	STD_LOGIC_VECTOR (7 DOWNTO 0):= (others => '0');
+   SIGNAL visual_abstand_k1	:	STD_LOGIC_VECTOR (7 DOWNTO 0):= (others => '0');
+   SIGNAL visual_abstand_k2	:	STD_LOGIC_VECTOR (7 DOWNTO 0):= (others => '0');
+   SIGNAL visual_abstand_k3	:	STD_LOGIC_VECTOR (7 DOWNTO 0):= (others => '0');
+   SIGNAL visual_abstand_k4	:	STD_LOGIC_VECTOR (7 DOWNTO 0):= (others => '0');
+   SIGNAL visual_abstand_a		:	STD_LOGIC_VECTOR (7 DOWNTO 0):= (others => '0');
+   SIGNAL visual_abstand_a_k1	:	STD_LOGIC_VECTOR (7 DOWNTO 0):= (others => '0');
+   SIGNAL visual_abstand_a_k2	:	STD_LOGIC_VECTOR (7 DOWNTO 0):= (others => '0');
+   SIGNAL visual_abstand_a_k3	:	STD_LOGIC_VECTOR (7 DOWNTO 0):= (others => '0');
+   SIGNAL visual_abstand_a_k4	:	STD_LOGIC_VECTOR (7 DOWNTO 0):= (others => '0');
+   SIGNAL visual_winkel			:	STD_LOGIC_VECTOR (9 DOWNTO 0):= (others => '0');
+   SIGNAL visual_winkel_k1		:	STD_LOGIC_VECTOR (9 DOWNTO 0):= (others => '0');
+   SIGNAL visual_winkel_k2		:	STD_LOGIC_VECTOR (9 DOWNTO 0):= (others => '0');
+   SIGNAL visual_winkel_k3		:	STD_LOGIC_VECTOR (9 DOWNTO 0):= (others => '0');
+   SIGNAL visual_winkel_k4		:	STD_LOGIC_VECTOR (9 DOWNTO 0):= (others => '0');
+   SIGNAL visual_color			:	STD_LOGIC_VECTOR (15 DOWNTO 0):= (others => '0');
+   SIGNAL visual_color_k1		:	STD_LOGIC_VECTOR (15 DOWNTO 0):= (others => '0');
+   SIGNAL visual_color_k2		:	STD_LOGIC_VECTOR (15 DOWNTO 0):= (others => '0');
+   SIGNAL visual_color_k3		:	STD_LOGIC_VECTOR (15 DOWNTO 0):= (others => '0');
+   SIGNAL visual_color_k4		:	STD_LOGIC_VECTOR (15 DOWNTO 0):= (others => '0');
 
 
 signal colordatae: std_logic_vector(15 downto 0):= x"0000" ; signal xe,ye:integer:=0;
@@ -145,34 +218,15 @@ shared variable input_picture : memory2;
 shared variable fname : string ( 1 to 16):="lena_copy000.bmp";
 
 
-
-
-
-
 BEGIN
 
    UUT: top PORT MAP(
-		schaltin => schaltin, 
-		tast => tast, 
-		led => led, 
-		clk50 => clk50, 
-		clk20 => clk20, 
-		clk => clk, 
-		out1 => out1, 
-		out2 => out2, 
-		out3 => out3, 
-		out4 => out4, 
-		trig => trig, 
-		gnd3 => gnd3, 
-		gnd2 => gnd2, 
-		gnd1 => gnd1, 
-		out0 => out0, 
-		gnd0 => gnd0, 
-		clk100 => clk100, 
-		gnd4 => gnd4, 
-		display => display, 
-		sram_oe => sram_oe, 
-		sram_we => sram_we, 
+		clk50 	=> clk50, 
+		clk20 	=> clk20, 
+		clk 		=> clk, 
+		clk100 	=> clk100, 
+		sram_oe 	=> sram_oe, 
+		sram_we 	=> sram_we, 
 		sram_adr => sram_adr, 
 		sram_1_io => sram_1_io, 
 		sram_1_ce => sram_1_ce, 
@@ -182,32 +236,102 @@ BEGIN
 		sram_2_io => sram_2_io, 
 		sram_2_ub => sram_2_ub, 
 		sram_2_lb => sram_2_lb, 
-		winkel => winkel, 
-		winkel_ram => winkel_ram, 
-		b10code => b10code, 
---		rdy_diag => rdy_diag, 
---		freeze_diag => freeze_diag, 
-		winkel_diag => winkel_diag, 
---		addrb_diag => addrb_diag, 
---		doutb_diag => doutb_diag,
---		b8_code_diag => b8_code_diag,
---		counter_diag => counter_diag,
-		sram_read => sram_read,
-		sram_pos => sram_pos
+		winkel 	 => winkel, 
+		winkel_ram 	=> winkel_ram, 
+		sram_read 	=> sram_read,
+		sram_pos 	=> sram_pos,
+
+		b10code_k1 		=> b10code_k1, 
+		b10code_k2 		=> b10code_k2, 
+		b10code_k3 		=> b10code_k3, 
+		b10code_k4 		=> b10code_k4, 
+		winkel_diag => winkel_diag,
+		addrb_diag    => addrb_diag,
+		doutb_diag    => doutb_diag,
+		b8_code_k1_diag  => b8_code_k1_diag,
+		b8_code_k2_diag  => b8_code_k2_diag,
+		b8_code_k3_diag  => b8_code_k3_diag,
+		b8_code_k4_diag  => b8_code_k4_diag,
+		rdy_k1_diag      => rdy_k1_diag,
+		rdy_k2_diag      => rdy_k2_diag,
+		rdy_k3_diag      => rdy_k3_diag,
+		rdy_k4_diag      => rdy_k4_diag,
+		freeze_k1_diag   => freeze_k1_diag,
+		freeze_k2_diag   => freeze_k2_diag,
+		freeze_k3_diag   => freeze_k3_diag,
+		freeze_k4_diag   => freeze_k4_diag,
+		counter_k1_diag  => counter_k1_diag,
+		counter_k2_diag  => counter_k2_diag,
+		counter_k3_diag  => counter_k3_diag,
+		counter_k4_diag  => counter_k4_diag,
+		doutb_k1_diag	  => doutb_k1_diag,
+		doutb_k2_diag	  => doutb_k2_diag,
+		doutb_k3_diag	  => doutb_k3_diag,
+		doutb_k4_diag	  => doutb_k4_diag
+   
+
+		
+
+--		schaltin => schaltin, 
+--		tast 		=> tast, 
+--		led 		=> led, 
+--		display 	=> display, 
+--		out0 		=> out0, 
+--		out1 		=> out1, 
+--		out2 		=> out2, 
+--		out3 		=> out3, 
+--		out4 		=> out4, 
+--		gnd0 		=> gnd0, 
+--		gnd1 		=> gnd1, 
+--		gnd2 		=> gnd2, 
+--		gnd3 		=> gnd3, 
+--		gnd4 		=> gnd4, 
+--		trig 		=> trig, 
+
+
    );
 	
 	
 -- modul zum pakete dekodieren	
-	decode: packet_read PORT MAP(
-		data_in => b10code,
-		clk => clk20,
-		data_out => decode_data,
-		counter => decode_counter,
-		rdy => decode_rdy,
-		synchron => decode_synchron,
-		crc_ok => decode_crc_ok,
-		crc_er => decode_crc_er
+	Kanal_1 : packet_read 
+	PORT MAP(
+		data_in 	=> b10code_k1,
+		clk 		=> clk20,
+		data_out => decode_data_k1,
+		counter 	=> decode_counter_k1,
+		rdy 		=> decode_rdy_k1,
+		synchron => decode_synchron_k1
 	);
+	
+--	Kanal_2 : packet_read 
+--	PORT MAP(
+--		data_in 	=> b10code_k2,
+--		clk 		=> clk20,
+--		data_out => decode_data_k2,
+--		counter 	=> decode_counter_k2,
+--		rdy 		=> decode_rdy_k2,
+--		synchron => decode_synchron_k2
+--	);
+	
+	Kanal_3 : packet_read 
+	PORT MAP(
+		data_in 	=> b10code_k3,
+		clk 		=> clk20,
+		data_out => decode_data_k3,
+		counter 	=> decode_counter_k3,
+		rdy 		=> decode_rdy_k3,
+		synchron => decode_synchron_k3
+	);
+	
+--	Kanal_4 : packet_read 
+--	PORT MAP(
+--		data_in 	=> b10code_k4,
+--		clk 		=> clk20,
+--		data_out => decode_data_k4,
+--		counter 	=> decode_counter_k4,
+--		rdy 		=> decode_rdy_k4,
+--		synchron => decode_synchron_k4
+--	);
 	
 
 ---------------------
@@ -315,27 +439,70 @@ begin
 
 if rising_edge (clk20) then
 
--------------Farbe bestimmen---------------
-if decode_rdy = '1' then
-	decode_data_last <= decode_data;
-	if decode_counter (0) = '1' then
-		visual_color <= decode_data_last & decode_data;
+-------------Farbe bestimmen------KANAL 1 ----------
+if decode_rdy_k1 = '1' then
+	decode_data_k1_last <= decode_data_k1;
+	if decode_counter_k1 (0) = '1' and decode_counter_k1 < 512 then
+		visual_color_k1 <= decode_data_k1_last & decode_data_k1;
 	end if;
 end if;
 
----------------Winkel bestimmen---------------
-if decode_rdy = '1' and decode_counter = 0 then
-visual_winkel <= winkel_diag ;
+
+-------------Farbe bestimmen------KANAL 3 ----------
+if decode_rdy_k3 = '1' then
+	decode_data_k3_last <= decode_data_k3;
+	if decode_counter_k3 (0) = '1' and decode_counter_k3 < 512 then
+		visual_color_k3 <= decode_data_k3_last & decode_data_k3;
+	end if;
 end if;
 
----------------Abstand bestimmen-----------------
-if decode_rdy = '1' and decode_counter < 512 then
-visual_abstand_a <= decode_counter (8 downto 1);
-visual_abstand <= visual_abstand_a; -- um ein Byte verzögern um synchron zur farbe zu sein
+---------------Winkel bestimmen------KANAL 1---------
+if decode_rdy_k1 = '1' and decode_counter_k1 = 0 then
+visual_winkel_k1 <= winkel_diag ;
 end if;
 
 
+---------------Winkel bestimmen------KANAL 3---------
+if decode_rdy_k3 = '1' and decode_counter_k3 = 0 then
+visual_winkel_k3 <= winkel_diag ;
+end if;
 
+
+---------------Abstand bestimmen-----KANAL 1-----
+if decode_rdy_k1 = '1' and decode_counter_k1 < 512 then
+visual_abstand_a_k1 <= decode_counter_k1 (8 downto 1);
+visual_abstand_k1 <= visual_abstand_a_k1; -- um ein Byte verzögern um synchron zur farbe zu sein
+end if;
+
+
+---------------Abstand bestimmen-----KANAL 3-----
+if decode_rdy_k3 = '1' and decode_counter_k3 < 512 then
+visual_abstand_a_k3 <= decode_counter_k3 (8 downto 1);
+visual_abstand_k3 <= visual_abstand_a_k3; -- um ein Byte verzögern um synchron zur farbe zu sein
+end if;
+
+
+----------Passenden Kanal Decodieren-------------------------
+decode_rdy_a_k1 <= decode_rdy_k1;
+decode_rdy_a_k2 <= decode_rdy_k2;
+decode_rdy_a_k3 <= decode_rdy_k3;
+decode_rdy_a_k4 <= decode_rdy_k4;
+
+if decode_rdy_a_k1 = '1' and decode_counter_k1(1) = '0' and decode_counter_k1 < 512 then
+	visual_color   <= visual_color_k1; 
+	visual_winkel  <= visual_winkel_k1;
+	visual_abstand <= visual_abstand_k1;
+
+
+elsif decode_rdy_a_k3 = '1' and decode_counter_k3(1) = '0' and decode_counter_k3 < 512 then
+	visual_color   <= visual_color_k3; 
+	visual_winkel  <= visual_winkel_k3;
+	visual_abstand <= visual_abstand_k3;
+
+
+end if;
+
+------ Gemeinsame Zeichenroutine --------------------
 
 w_int := (conv_integer(visual_winkel));
 
@@ -348,7 +515,7 @@ w_int := (conv_integer(visual_winkel));
 				w_int := w_int + 768;
 		end if;
 
-w_int := w_int + 256;--  Unbekannte verdrehung ausgleichen
+
 
 -- Winkel gröser eine Umdrehung ? 
 if w_int > 1023 then w_int := w_int - 1023; end if;
@@ -363,20 +530,15 @@ c := cos(w) * real (conv_integer (visual_abstand));
 	x := center_x + s;
 	y := center_y + c;
 			
--- Schwarz gelesen ?? dann Rot draus machen (für debugging)
---if b8_code_diag = x"0000" then 
---	colordatae <= x"001f";
---else
-												colordatae <= visual_color;
---end if ;						
+	colordatae <= visual_color;
  								
 xe <= integer(x) ; ye <= integer(y) ;
 
 
 -- Entgülige Daten in einen Ram Speicher schieben
-if decode_counter < 512 then
+--if decode_counter_k1 < 512 then
 	visual ((xe),(ye)):= To_bitvector(colordatae);
-end if;
+--end if;
 
 end if;
 end process;
@@ -423,29 +585,20 @@ wait for 10 ns;
 										To_bitvector(colordatal) (15 downto 10) &
 										To_bitvector(colordatal) ( 7 downto  3) ;
 										
---		       visual(xl,yl) := To_bitvector(colordatal) (23 downto 19) &
---										To_bitvector(colordatal) (15 downto 10) &
---										To_bitvector(colordatal) ( 7 downto  3) ;
-
-										
-
-
 
 		end loop;
 	end loop;
 
 
-   report ".........................................................Speicher sind initialisiert";	
-	 
 		
 		 
 --nach einer eingestellten zeit ein neues Bild speichern 
 
-wait for 200 us;
+--wait for 10000 us;
 
 for xxx in 1 to 999 loop
 
-	wait for 200 us; -- Zeit bis zum nächsten bild 200 | 5000
+	wait for 1000 us; -- Zeit bis zum nächsten bild 200 | 5000
 		
    report "Jetzt ist das Bild fertig...";
 

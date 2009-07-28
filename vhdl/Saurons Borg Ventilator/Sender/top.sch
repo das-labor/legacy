@@ -6,39 +6,15 @@ BEGIN SCHEMATIC
         EDITTRAIT all:0
     END ATTR
     BEGIN NETLIST
-        SIGNAL wr_str
-        SIGNAL out_p(7:0)
-        SIGNAL schaltin(7:0)
-        SIGNAL tast(3:0)
-        SIGNAL p_id(7:0)
-        SIGNAL led(7:0)
         SIGNAL clk50
         SIGNAL clk20
-        SIGNAL XLXN_64
-        SIGNAL XLXN_161(7:0)
-        SIGNAL XLXN_162(7:0)
-        SIGNAL XLXN_163(7:0)
-        SIGNAL XLXN_164(7:0)
-        SIGNAL XLXN_165(7:0)
-        SIGNAL XLXN_166(7:0)
-        SIGNAL XLXN_172
-        SIGNAL XLXN_173
-        SIGNAL XLXN_185
         SIGNAL clk
-        SIGNAL XLXN_213
-        SIGNAL out1
-        SIGNAL out2
-        SIGNAL out3
-        SIGNAL out4
-        SIGNAL trig
-        SIGNAL gnd3
-        SIGNAL gnd2
-        SIGNAL gnd1
         SIGNAL out0
         SIGNAL gnd0
         SIGNAL clk100
-        SIGNAL gnd4
-        SIGNAL display(11:0)
+        SIGNAL sram_read(15:0)
+        SIGNAL sram_pos(7:0)
+        SIGNAL winkel_ram(9:0)
         SIGNAL sram_oe
         SIGNAL sram_we
         SIGNAL sram_adr(17:0)
@@ -51,30 +27,48 @@ BEGIN SCHEMATIC
         SIGNAL sram_2_ub
         SIGNAL sram_2_lb
         SIGNAL winkel(9:0)
-        SIGNAL sram_read(15:0)
-        SIGNAL sram_pos(7:0)
-        SIGNAL winkel_ram(9:0)
-        SIGNAL b10code
+        SIGNAL XLXN_24
+        SIGNAL freeze_k2_diag(4:0)
+        SIGNAL freeze_k4_diag(4:0)
+        SIGNAL freeze_k3_diag(4:0)
+        SIGNAL freeze_k1_diag(4:0)
+        SIGNAL b8_code_k1_diag(7:0)
+        SIGNAL counter_k4_diag(9:0)
+        SIGNAL counter_k3_diag(9:0)
+        SIGNAL counter_k2_diag(9:0)
+        SIGNAL counter_k1_diag(9:0)
+        SIGNAL b8_code_k4_diag(7:0)
+        SIGNAL b8_code_k3_diag(7:0)
+        SIGNAL b8_code_k2_diag(7:0)
+        SIGNAL rdy_k4_diag
+        SIGNAL rdy_k3_diag
+        SIGNAL rdy_k2_diag
+        SIGNAL rdy_k1_diag
+        SIGNAL b10code_k4
+        SIGNAL b10code_k3
+        SIGNAL b10code_k2
+        SIGNAL doutb_diag(15:0)
+        SIGNAL addrb_diag(12:0)
+        SIGNAL b10code_k1
         SIGNAL winkel_diag(9:0)
-        PORT Input schaltin(7:0)
-        PORT Input tast(3:0)
-        PORT Output led(7:0)
+        SIGNAL XLXN_94(15:0)
+        SIGNAL XLXN_95(7:0)
+        SIGNAL XLXN_96(9:0)
+        SIGNAL XLXN_97
+        SIGNAL XLXN_98
+        SIGNAL doutb_k1_diag(15:0)
+        SIGNAL doutb_k2_diag(15:0)
+        SIGNAL doutb_k3_diag(15:0)
+        SIGNAL doutb_k4_diag(15:0)
         PORT Output clk50
         PORT Output clk20
         PORT Input clk
-        PORT Output out1
-        PORT Output out2
-        PORT Output out3
-        PORT Output out4
-        PORT Output trig
-        PORT Output gnd3
-        PORT Output gnd2
-        PORT Output gnd1
         PORT Output out0
         PORT Output gnd0
         PORT Output clk100
-        PORT Output gnd4
-        PORT Output display(11:0)
+        PORT Output sram_read(15:0)
+        PORT Output sram_pos(7:0)
+        PORT Output winkel_ram(9:0)
         PORT Output sram_oe
         PORT Output sram_we
         PORT Output sram_adr(17:0)
@@ -87,92 +81,33 @@ BEGIN SCHEMATIC
         PORT Output sram_2_ub
         PORT Output sram_2_lb
         PORT Input winkel(9:0)
-        PORT Output sram_read(15:0)
-        PORT Output sram_pos(7:0)
-        PORT Output winkel_ram(9:0)
-        PORT Output b10code
+        PORT Output freeze_k2_diag(4:0)
+        PORT Output freeze_k4_diag(4:0)
+        PORT Output freeze_k3_diag(4:0)
+        PORT Output freeze_k1_diag(4:0)
+        PORT Output b8_code_k1_diag(7:0)
+        PORT Output counter_k4_diag(9:0)
+        PORT Output counter_k3_diag(9:0)
+        PORT Output counter_k2_diag(9:0)
+        PORT Output counter_k1_diag(9:0)
+        PORT Output b8_code_k4_diag(7:0)
+        PORT Output b8_code_k3_diag(7:0)
+        PORT Output b8_code_k2_diag(7:0)
+        PORT Output rdy_k4_diag
+        PORT Output rdy_k3_diag
+        PORT Output rdy_k2_diag
+        PORT Output rdy_k1_diag
+        PORT Output b10code_k4
+        PORT Output b10code_k3
+        PORT Output b10code_k2
+        PORT Output doutb_diag(15:0)
+        PORT Output addrb_diag(12:0)
+        PORT Output b10code_k1
         PORT Output winkel_diag(9:0)
-        BEGIN BLOCKDEF display2
-            TIMESTAMP 2009 7 16 13 56 18
-            RECTANGLE N 64 -132 256 -16 
-            LINE N 64 -96 0 -96 
-            LINE N 64 -112 0 -112 
-            RECTANGLE N 256 -124 320 -100 
-            LINE N 256 -112 320 -112 
-            RECTANGLE N 0 -44 64 -20 
-            RECTANGLE N 0 -76 64 -52 
-            LINE N 64 -64 0 -64 
-            LINE N 64 -32 0 -32 
-        END BLOCKDEF
-        BEGIN BLOCKDEF Picoblaze
-            TIMESTAMP 2009 7 16 13 56 17
-            RECTANGLE N 320 196 384 220 
-            LINE N 320 208 384 208 
-            RECTANGLE N 320 228 384 252 
-            LINE N 320 240 384 240 
-            RECTANGLE N 320 260 384 284 
-            LINE N 320 272 384 272 
-            RECTANGLE N 320 292 384 316 
-            LINE N 320 304 384 304 
-            LINE N 64 -416 0 -416 
-            LINE N 320 -416 384 -416 
-            RECTANGLE N 320 -396 384 -372 
-            LINE N 320 -384 384 -384 
-            RECTANGLE N 320 -364 384 -340 
-            LINE N 320 -352 384 -352 
-            RECTANGLE N 320 -284 384 -260 
-            LINE N 320 -272 384 -272 
-            LINE N 64 -32 0 -32 
-            RECTANGLE N 0 -204 64 -180 
-            LINE N 64 -192 0 -192 
-            RECTANGLE N 0 -172 64 -148 
-            LINE N 64 -160 0 -160 
-            RECTANGLE N 0 -140 64 -116 
-            LINE N 64 -128 0 -128 
-            RECTANGLE N 0 -108 64 -84 
-            LINE N 64 -96 0 -96 
-            RECTANGLE N 0 -284 64 -260 
-            LINE N 64 -272 0 -272 
-            RECTANGLE N 0 -316 64 -292 
-            LINE N 64 -304 0 -304 
-            RECTANGLE N 320 -108 384 -84 
-            LINE N 320 -96 384 -96 
-            RECTANGLE N 320 -76 384 -52 
-            LINE N 320 -64 384 -64 
-            RECTANGLE N 320 -44 384 -20 
-            LINE N 320 -32 384 -32 
-            RECTANGLE N 320 -12 384 12 
-            LINE N 320 0 384 0 
-            RECTANGLE N 320 20 384 44 
-            LINE N 320 32 384 32 
-            RECTANGLE N 320 52 384 76 
-            LINE N 320 64 384 64 
-            LINE N 316 144 380 144 
-            RECTANGLE N 64 -448 320 364 
-            LINE N 320 336 384 336 
-        END BLOCKDEF
-        BEGIN BLOCKDEF tgb
-            TIMESTAMP 2009 7 16 13 56 18
-            RECTANGLE N 64 -320 256 -88 
-            LINE N 64 -304 0 -304 
-            LINE N 256 -288 320 -288 
-            RECTANGLE N 0 -220 64 -196 
-            LINE N 64 -208 0 -208 
-            RECTANGLE N 0 -188 64 -164 
-            LINE N 64 -176 0 -176 
-            RECTANGLE N 0 -156 64 -132 
-            LINE N 64 -144 0 -144 
-            RECTANGLE N 0 -124 64 -100 
-            LINE N 64 -112 0 -112 
-            RECTANGLE N 0 -252 64 -228 
-            LINE N 64 -240 0 -240 
-            RECTANGLE N 0 -284 64 -260 
-            LINE N 64 -272 0 -272 
-            LINE N 256 -256 320 -256 
-            LINE N 256 -224 320 -224 
-            LINE N 256 -192 320 -192 
-            LINE N 256 -128 320 -128 
-        END BLOCKDEF
+        PORT Output doutb_k1_diag(15:0)
+        PORT Output doutb_k2_diag(15:0)
+        PORT Output doutb_k3_diag(15:0)
+        PORT Output doutb_k4_diag(15:0)
         BEGIN BLOCKDEF takt2
             TIMESTAMP 2009 7 16 13 56 18
             LINE N 240 -192 304 -192 
@@ -181,25 +116,6 @@ BEGIN SCHEMATIC
             LINE N 240 -256 304 -256 
             LINE N 240 -224 304 -224 
             RECTANGLE N 64 -320 240 -164 
-        END BLOCKDEF
-        BEGIN BLOCKDEF io_out
-            TIMESTAMP 2009 7 16 13 56 18
-            LINE N 64 -160 0 -160 
-            LINE N 64 -128 0 -128 
-            LINE N 64 -96 0 -96 
-            LINE N 64 -64 0 -64 
-            LINE N 64 -32 0 -32 
-            LINE N 144 -128 208 -128 
-            LINE N 144 -96 208 -96 
-            LINE N 144 -64 208 -64 
-            LINE N 144 -32 208 -32 
-            LINE N 64 0 0 0 
-            LINE N 144 0 208 0 
-            RECTANGLE N 64 -176 144 144 
-            LINE N 144 32 208 32 
-            LINE N 144 64 208 64 
-            LINE N 144 96 208 96 
-            LINE N 144 128 208 128 
         END BLOCKDEF
         BEGIN BLOCKDEF inv
             TIMESTAMP 2000 1 1 10 10 10
@@ -250,13 +166,21 @@ BEGIN SCHEMATIC
             LINE N 112 -528 48 -528 
         END BLOCKDEF
         BEGIN BLOCKDEF packet_buffer
-            TIMESTAMP 2009 7 26 3 26 22
-            RECTANGLE N 304 116 368 140 
-            LINE N 304 128 368 128 
-            RECTANGLE N 304 148 368 172 
-            LINE N 304 160 368 160 
-            RECTANGLE N 304 84 368 108 
-            LINE N 304 96 368 96 
+            TIMESTAMP 2009 7 27 21 25 1
+            RECTANGLE N 420 404 484 428 
+            LINE N 420 416 484 416 
+            RECTANGLE N 420 436 484 460 
+            LINE N 420 448 484 448 
+            RECTANGLE N 420 468 484 492 
+            LINE N 420 480 484 480 
+            RECTANGLE N 420 500 484 524 
+            LINE N 420 512 484 512 
+            RECTANGLE N 420 308 484 332 
+            LINE N 420 320 484 320 
+            RECTANGLE N 420 340 484 364 
+            LINE N 420 352 484 352 
+            RECTANGLE N 420 372 484 396 
+            LINE N 420 384 484 384 
             LINE N 64 -352 0 -352 
             LINE N 64 -320 0 -320 
             RECTANGLE N 0 -284 64 -260 
@@ -265,56 +189,40 @@ BEGIN SCHEMATIC
             LINE N 64 -224 0 -224 
             RECTANGLE N 0 -188 64 -164 
             LINE N 64 -176 0 -176 
-            RECTANGLE N 304 52 368 76 
-            LINE N 304 64 368 64 
-            RECTANGLE N 304 -44 368 -20 
-            LINE N 304 -32 368 -32 
-            RECTANGLE N 304 -92 368 -68 
-            LINE N 304 -80 368 -80 
-            LINE N 304 -128 368 -128 
-            LINE N 304 -336 368 -336 
-            RECTANGLE N 64 -384 304 180 
+            RECTANGLE N 416 -348 480 -324 
+            LINE N 416 -336 480 -336 
+            LINE N 416 -224 480 -224 
+            LINE N 416 -192 480 -192 
+            LINE N 416 -160 480 -160 
+            LINE N 416 -128 480 -128 
+            LINE N 416 -96 480 -96 
+            LINE N 416 -64 480 -64 
+            LINE N 416 -32 480 -32 
+            LINE N 416 0 480 0 
+            RECTANGLE N 416 20 480 44 
+            LINE N 416 32 480 32 
+            RECTANGLE N 416 52 480 76 
+            LINE N 416 64 480 64 
+            RECTANGLE N 416 84 480 108 
+            LINE N 416 96 480 96 
+            RECTANGLE N 416 116 480 140 
+            LINE N 416 128 480 128 
+            RECTANGLE N 416 148 480 172 
+            LINE N 416 160 480 160 
+            RECTANGLE N 416 180 480 204 
+            LINE N 416 192 480 192 
+            RECTANGLE N 416 212 480 236 
+            LINE N 416 224 480 224 
+            RECTANGLE N 416 244 480 268 
+            LINE N 416 256 480 256 
+            RECTANGLE N 416 276 480 300 
+            LINE N 416 288 480 288 
+            RECTANGLE N 416 -300 480 -276 
+            LINE N 416 -288 480 -288 
+            RECTANGLE N 416 -268 480 -244 
+            LINE N 416 -256 480 -256 
+            RECTANGLE N 64 -384 420 544 
         END BLOCKDEF
-        BEGIN BLOCK XLXI_8 Picoblaze
-            PIN clk clk50
-            PIN irq
-            PIN i0(7:0)
-            PIN i1(7:0)
-            PIN i2(7:0)
-            PIN i3(7:0)
-            PIN schalter(7:0) schaltin(7:0)
-            PIN taster(3:0) tast(3:0)
-            PIN wr_str wr_str
-            PIN irq_ack
-            PIN p_id(7:0) p_id(7:0)
-            PIN out_p(7:0) out_p(7:0)
-            PIN led(7:0) led(7:0)
-            PIN q13(7:0) XLXN_161(7:0)
-            PIN q14(7:0) XLXN_162(7:0)
-            PIN q15(7:0) XLXN_163(7:0)
-            PIN q16(7:0) XLXN_164(7:0)
-            PIN q17(7:0) XLXN_165(7:0)
-            PIN q18(7:0) XLXN_166(7:0)
-            PIN q0(7:0)
-            PIN q1(7:0)
-            PIN q2(7:0)
-            PIN q3(7:0)
-            PIN q4
-        END BLOCK
-        BEGIN BLOCK XLXI_22 tgb
-            PIN clk20 clk20
-            PIN q1 XLXN_185
-            PIN a(7:0) XLXN_163(7:0)
-            PIN b(7:0) XLXN_164(7:0)
-            PIN c(7:0) XLXN_165(7:0)
-            PIN d(7:0) XLXN_166(7:0)
-            PIN mux(7:0) XLXN_162(7:0)
-            PIN pattern(7:0) XLXN_161(7:0)
-            PIN q2 XLXN_173
-            PIN q3 XLXN_172
-            PIN q4 XLXN_64
-            PIN trig XLXN_213
-        END BLOCK
         BEGIN BLOCK XLXI_31 takt2
             PIN clk clk
             PIN clk_20 clk20
@@ -322,48 +230,9 @@ BEGIN SCHEMATIC
             PIN g90_c10 out0
             PIN clk100 clk100
         END BLOCK
-        BEGIN BLOCK XLXI_33 io_out
-            PIN i2 XLXN_173
-            PIN i4 XLXN_64
-            PIN i1 XLXN_185
-            PIN clk clk20
-            PIN i3 XLXN_172
-            PIN o1a out1
-            PIN o2a out2
-            PIN o3a out3
-            PIN o4a out4
-            PIN trig XLXN_213
-            PIN trib_o trig
-            PIN o1b gnd1
-            PIN o2b gnd2
-            PIN o3b gnd3
-            PIN o4b gnd4
-        END BLOCK
         BEGIN BLOCK XLXI_41 inv
             PIN I out0
             PIN O gnd0
-        END BLOCK
-        BEGIN BLOCK XLXI_1 display2
-            PIN wr_str wr_str
-            PIN clk clk50
-            PIN Display(11:0) display(11:0)
-            PIN out_p(7:0) out_p(7:0)
-            PIN p_id(7:0) p_id(7:0)
-        END BLOCK
-        BEGIN BLOCK XLXI_44 packet_buffer
-            PIN clk20 clk20
-            PIN clk50 clk50
-            PIN sram_read(15:0) sram_read(15:0)
-            PIN sram_pos(7:0) sram_pos(7:0)
-            PIN winkel(9:0) winkel_ram(9:0)
-            PIN b10code b10code
-            PIN rdy_diag
-            PIN freeze_diag(4:0)
-            PIN winkel_diag(9:0) winkel_diag(9:0)
-            PIN b8_code_diag(7:0)
-            PIN counter_diag(9:0)
-            PIN addrb_diag(12:0)
-            PIN doutb_diag(15:0)
         END BLOCK
         BEGIN BLOCK XLXI_42 ram_control
             PIN sram_1_io(15:0) sram_1_io(15:0)
@@ -386,145 +255,53 @@ BEGIN SCHEMATIC
             PIN ad_dat(15:0)
             PIN ad_wr
             PIN ad_adr(17:0)
-            PIN wr_str wr_str
-            PIN p_id(7:0) p_id(7:0)
-            PIN out_p(7:0) out_p(7:0)
+            PIN wr_str
+            PIN p_id(7:0)
+            PIN out_p(7:0)
             PIN winkel(9:0) winkel(9:0)
+        END BLOCK
+        BEGIN BLOCK XLXI_44 packet_buffer
+            PIN clk20 clk20
+            PIN clk50 clk50
+            PIN sram_read(15:0) sram_read(15:0)
+            PIN sram_pos(7:0) sram_pos(7:0)
+            PIN winkel(9:0) winkel_ram(9:0)
+            PIN b10code_k1 b10code_k1
+            PIN b10code_k2 b10code_k2
+            PIN b10code_k3 b10code_k3
+            PIN b10code_k4 b10code_k4
+            PIN rdy_k1_diag rdy_k1_diag
+            PIN rdy_k2_diag rdy_k2_diag
+            PIN rdy_k3_diag rdy_k3_diag
+            PIN rdy_k4_diag rdy_k4_diag
+            PIN freeze_k1_diag(4:0) freeze_k1_diag(4:0)
+            PIN freeze_k2_diag(4:0) freeze_k2_diag(4:0)
+            PIN freeze_k3_diag(4:0) freeze_k3_diag(4:0)
+            PIN freeze_k4_diag(4:0) freeze_k4_diag(4:0)
+            PIN winkel_diag(9:0) winkel_diag(9:0)
+            PIN addrb_diag(12:0) addrb_diag(12:0)
+            PIN doutb_diag(15:0) doutb_diag(15:0)
+            PIN b8_code_k1_diag(7:0) b8_code_k1_diag(7:0)
+            PIN b8_code_k2_diag(7:0) b8_code_k2_diag(7:0)
+            PIN b8_code_k3_diag(7:0) b8_code_k3_diag(7:0)
+            PIN b8_code_k4_diag(7:0) b8_code_k4_diag(7:0)
+            PIN counter_k1_diag(9:0) counter_k1_diag(9:0)
+            PIN counter_k2_diag(9:0) counter_k2_diag(9:0)
+            PIN counter_k3_diag(9:0) counter_k3_diag(9:0)
+            PIN counter_k4_diag(9:0) counter_k4_diag(9:0)
+            PIN doutb_k1_diag(15:0) doutb_k1_diag(15:0)
+            PIN doutb_k2_diag(15:0) doutb_k2_diag(15:0)
+            PIN doutb_k3_diag(15:0) doutb_k3_diag(15:0)
+            PIN doutb_k4_diag(15:0) doutb_k4_diag(15:0)
         END BLOCK
     END NETLIST
     BEGIN SHEET 1 3520 2720
-        BEGIN INSTANCE XLXI_8 448 1888 R0
-        END INSTANCE
-        BEGIN BRANCH schaltin(7:0)
-            WIRE 416 1616 448 1616
-        END BRANCH
-        IOMARKER 416 1616 schaltin(7:0) R180 28
-        BEGIN BRANCH tast(3:0)
-            WIRE 416 1584 448 1584
-        END BRANCH
-        IOMARKER 416 1584 tast(3:0) R180 28
-        BEGIN BRANCH led(7:0)
-            WIRE 832 1616 864 1616
-        END BRANCH
-        IOMARKER 864 1616 led(7:0) R0 28
-        BEGIN BRANCH wr_str
-            WIRE 832 1472 864 1472
-            WIRE 864 1472 1504 1472
-            WIRE 864 1312 928 1312
-            WIRE 864 1312 864 1472
-            WIRE 1504 1168 1504 1472
-            WIRE 1504 1168 2112 1168
-        END BRANCH
-        BEGIN BRANCH XLXN_64
-            WIRE 1584 1872 1632 1872
-        END BRANCH
-        BEGIN BRANCH XLXN_161(7:0)
-            WIRE 832 1792 1264 1792
-        END BRANCH
-        BEGIN BRANCH XLXN_162(7:0)
-            WIRE 832 1824 1264 1824
-        END BRANCH
-        BEGIN BRANCH XLXN_163(7:0)
-            WIRE 832 1856 1264 1856
-        END BRANCH
-        BEGIN BRANCH XLXN_164(7:0)
-            WIRE 832 1888 1264 1888
-        END BRANCH
-        BEGIN BRANCH XLXN_165(7:0)
-            WIRE 832 1920 1264 1920
-        END BRANCH
-        BEGIN BRANCH XLXN_166(7:0)
-            WIRE 832 1952 1264 1952
-        END BRANCH
-        BEGIN INSTANCE XLXI_22 1264 2064 R0
-        END INSTANCE
-        BEGIN BRANCH XLXN_172
-            WIRE 1584 1840 1632 1840
-        END BRANCH
-        BEGIN BRANCH XLXN_173
-            WIRE 1584 1808 1632 1808
-        END BRANCH
-        BEGIN BRANCH XLXN_185
-            WIRE 1584 1776 1632 1776
-        END BRANCH
         BEGIN INSTANCE XLXI_31 304 784 R0
         END INSTANCE
         BEGIN BRANCH clk
             WIRE 128 496 304 496
         END BRANCH
         IOMARKER 128 496 clk R180 28
-        BEGIN BRANCH clk20
-            WIRE 608 496 688 496
-            WIRE 688 496 688 928
-            WIRE 688 928 1648 928
-            WIRE 1648 928 1648 1632
-            WIRE 1648 1632 2096 1632
-            WIRE 2096 1632 2096 1856
-            WIRE 2096 1856 2400 1856
-            WIRE 688 496 768 496
-            WIRE 1200 1728 1200 1760
-            WIRE 1200 1760 1264 1760
-            WIRE 1200 1728 1520 1728
-            WIRE 1520 1728 1600 1728
-            WIRE 1600 1728 1600 1744
-            WIRE 1600 1744 1632 1744
-            WIRE 1520 1632 1520 1728
-            WIRE 1520 1632 1648 1632
-        END BRANCH
-        BEGIN BRANCH p_id(7:0)
-            WIRE 832 1504 880 1504
-            WIRE 880 1504 1536 1504
-            WIRE 880 1344 880 1504
-            WIRE 880 1344 928 1344
-            WIRE 1536 1200 1536 1504
-            WIRE 1536 1200 2112 1200
-        END BRANCH
-        BEGIN BRANCH out_p(7:0)
-            WIRE 832 1536 896 1536
-            WIRE 896 1536 1552 1536
-            WIRE 896 1376 896 1536
-            WIRE 896 1376 928 1376
-            WIRE 1552 1232 1552 1536
-            WIRE 1552 1232 2112 1232
-        END BRANCH
-        BEGIN BRANCH XLXN_213
-            WIRE 1584 1904 1584 1936
-            WIRE 1584 1904 1632 1904
-        END BRANCH
-        BEGIN BRANCH out1
-            WIRE 1840 1776 1872 1776
-        END BRANCH
-        BEGIN BRANCH out2
-            WIRE 1840 1808 1872 1808
-        END BRANCH
-        BEGIN BRANCH out3
-            WIRE 1840 1840 1872 1840
-        END BRANCH
-        BEGIN BRANCH out4
-            WIRE 1840 1872 1872 1872
-        END BRANCH
-        BEGIN BRANCH trig
-            WIRE 1840 1904 1872 1904
-        END BRANCH
-        IOMARKER 1872 1776 out1 R0 28
-        IOMARKER 1872 1808 out2 R0 28
-        IOMARKER 1872 1840 out3 R0 28
-        IOMARKER 1872 1872 out4 R0 28
-        IOMARKER 1872 1904 trig R0 28
-        BEGIN INSTANCE XLXI_33 1632 1904 R0
-        END INSTANCE
-        BEGIN BRANCH gnd3
-            WIRE 1840 2000 1872 2000
-        END BRANCH
-        IOMARKER 1872 2000 gnd3 R0 28
-        BEGIN BRANCH gnd2
-            WIRE 1840 1968 1872 1968
-        END BRANCH
-        BEGIN BRANCH gnd1
-            WIRE 1840 1936 1872 1936
-        END BRANCH
-        IOMARKER 1872 1936 gnd1 R0 28
-        IOMARKER 1872 1968 gnd2 R0 28
         BEGIN BRANCH out0
             WIRE 608 560 704 560
             WIRE 704 560 704 608
@@ -534,131 +311,227 @@ BEGIN SCHEMATIC
         BEGIN BRANCH gnd0
             WIRE 944 608 976 608
         END BRANCH
-        BEGIN BRANCH gnd4
-            WIRE 1840 2032 1856 2032
-        END BRANCH
-        BEGIN BRANCH clk50
-            WIRE 448 1296 448 1472
-            WIRE 448 1296 656 1296
-            WIRE 656 1296 928 1296
-            WIRE 608 528 656 528
-            WIRE 656 528 656 960
-            WIRE 656 960 656 1296
-            WIRE 656 960 1680 960
-            WIRE 1680 960 2112 960
-            WIRE 1680 960 1680 1664
-            WIRE 1680 1664 2064 1664
-            WIRE 2064 1664 2064 1888
-            WIRE 2064 1888 2400 1888
-            WIRE 656 464 768 464
-            WIRE 656 464 656 528
-        END BRANCH
         BEGIN BRANCH clk100
             WIRE 608 592 624 592
-            WIRE 624 592 624 992
-            WIRE 624 992 2112 992
+            WIRE 624 592 624 1104
+            WIRE 624 1104 1712 1104
             WIRE 624 432 768 432
             WIRE 624 432 624 592
+            WIRE 1712 240 2016 240
+            WIRE 1712 240 1712 1104
         END BRANCH
-        IOMARKER 1856 2032 gnd4 R0 28
-        BEGIN INSTANCE XLXI_1 928 1408 R0
-        END INSTANCE
-        BEGIN BRANCH display(11:0)
-            WIRE 1248 1296 1296 1296
-        END BRANCH
-        IOMARKER 1296 1296 display(11:0) R0 28
-        BEGIN INSTANCE XLXI_42 2064 1824 R0
-        END INSTANCE
-        BEGIN BRANCH sram_oe
-            WIRE 2576 960 2608 960
-        END BRANCH
-        BEGIN BRANCH sram_we
-            WIRE 2576 992 2608 992
-        END BRANCH
-        BEGIN BRANCH sram_adr(17:0)
-            WIRE 2576 1024 2608 1024
-        END BRANCH
-        BEGIN BRANCH sram_1_io(15:0)
-            WIRE 2576 1088 2608 1088
-        END BRANCH
-        BEGIN BRANCH sram_1_ce
-            WIRE 2576 1120 2608 1120
-        END BRANCH
-        BEGIN BRANCH sram_1_ub
-            WIRE 2576 1152 2608 1152
-        END BRANCH
-        BEGIN BRANCH sram_1_lb
-            WIRE 2576 1184 2608 1184
-        END BRANCH
-        BEGIN BRANCH sram_2_ce
-            WIRE 2576 1280 2608 1280
-        END BRANCH
-        BEGIN BRANCH sram_2_io(15:0)
-            WIRE 2576 1248 2608 1248
-        END BRANCH
-        BEGIN BRANCH sram_2_ub
-            WIRE 2576 1312 2608 1312
-        END BRANCH
-        BEGIN BRANCH sram_2_lb
-            WIRE 2576 1344 2608 1344
-        END BRANCH
-        BEGIN BRANCH winkel(9:0)
-            WIRE 2080 1296 2112 1296
-        END BRANCH
-        BEGIN BRANCH sram_read(15:0)
-            WIRE 2240 1696 2240 1936
-            WIRE 2240 1936 2400 1936
-            WIRE 2240 1696 2704 1696
-            WIRE 2576 1408 2704 1408
-            WIRE 2704 1408 2704 1696
-            WIRE 2704 1408 2928 1408
-        END BRANCH
-        BEGIN BRANCH sram_pos(7:0)
-            WIRE 2224 1680 2224 1984
-            WIRE 2224 1984 2400 1984
-            WIRE 2224 1680 2688 1680
-            WIRE 2576 1440 2688 1440
-            WIRE 2688 1440 2688 1680
-            WIRE 2688 1440 2928 1440
-        END BRANCH
-        BEGIN BRANCH winkel_ram(9:0)
-            WIRE 2208 1664 2672 1664
-            WIRE 2208 1664 2208 2032
-            WIRE 2208 2032 2400 2032
-            WIRE 2576 1536 2672 1536
-            WIRE 2672 1536 2928 1536
-            WIRE 2672 1536 2672 1664
-        END BRANCH
-        IOMARKER 2608 960 sram_oe R0 28
-        IOMARKER 2608 992 sram_we R0 28
-        IOMARKER 2608 1024 sram_adr(17:0) R0 28
-        IOMARKER 2608 1088 sram_1_io(15:0) R0 28
-        IOMARKER 2608 1152 sram_1_ub R0 28
-        IOMARKER 2608 1184 sram_1_lb R0 28
-        IOMARKER 2608 1120 sram_1_ce R0 28
-        IOMARKER 2608 1280 sram_2_ce R0 28
-        IOMARKER 2608 1248 sram_2_io(15:0) R0 28
-        IOMARKER 2608 1312 sram_2_ub R0 28
-        IOMARKER 2608 1344 sram_2_lb R0 28
-        IOMARKER 2080 1296 winkel(9:0) R180 28
-        IOMARKER 2928 1536 winkel_ram(9:0) R0 28
-        BEGIN INSTANCE XLXI_44 2400 2208 R0
-        END INSTANCE
-        BEGIN BRANCH b10code
-            WIRE 2768 1872 2800 1872
-        END BRANCH
-        IOMARKER 2800 1872 b10code R0 28
         IOMARKER 768 496 clk20 R0 28
         IOMARKER 768 464 clk50 R0 28
         IOMARKER 768 432 clk100 R0 28
         INSTANCE XLXI_41 720 640 R0
         IOMARKER 976 608 gnd0 R0 28
         IOMARKER 976 560 out0 R0 28
-        IOMARKER 2928 1408 sram_read(15:0) R0 28
-        IOMARKER 2928 1440 sram_pos(7:0) R0 28
-        BEGIN BRANCH winkel_diag(9:0)
-            WIRE 2768 2176 2800 2176
+        BEGIN BRANCH sram_oe
+            WIRE 2480 208 2512 208
         END BRANCH
-        IOMARKER 2800 2176 winkel_diag(9:0) R0 28
+        BEGIN BRANCH sram_we
+            WIRE 2480 240 2512 240
+        END BRANCH
+        BEGIN BRANCH sram_adr(17:0)
+            WIRE 2480 272 2512 272
+        END BRANCH
+        BEGIN BRANCH sram_1_io(15:0)
+            WIRE 2480 336 2512 336
+        END BRANCH
+        BEGIN BRANCH sram_1_ce
+            WIRE 2480 368 2512 368
+        END BRANCH
+        BEGIN BRANCH sram_1_ub
+            WIRE 2480 400 2512 400
+        END BRANCH
+        BEGIN BRANCH sram_1_lb
+            WIRE 2480 432 2512 432
+        END BRANCH
+        BEGIN BRANCH sram_2_ce
+            WIRE 2480 528 2512 528
+        END BRANCH
+        BEGIN BRANCH sram_2_io(15:0)
+            WIRE 2480 496 2512 496
+        END BRANCH
+        BEGIN BRANCH sram_2_ub
+            WIRE 2480 560 2512 560
+        END BRANCH
+        BEGIN BRANCH sram_2_lb
+            WIRE 2480 592 2512 592
+        END BRANCH
+        BEGIN BRANCH winkel(9:0)
+            WIRE 1984 544 2016 544
+        END BRANCH
+        BEGIN BRANCH sram_read(15:0)
+            WIRE 1920 928 1920 1120
+            WIRE 1920 1120 2032 1120
+            WIRE 1920 928 2624 928
+            WIRE 2480 656 2624 656
+            WIRE 2624 656 2624 928
+            WIRE 2624 656 2832 656
+        END BRANCH
+        BEGIN BRANCH sram_pos(7:0)
+            WIRE 1904 912 1904 1168
+            WIRE 1904 1168 2032 1168
+            WIRE 1904 912 2608 912
+            WIRE 2480 688 2608 688
+            WIRE 2608 688 2608 912
+            WIRE 2608 688 2832 688
+        END BRANCH
+        BEGIN BRANCH winkel_ram(9:0)
+            WIRE 1888 896 2592 896
+            WIRE 1888 896 1888 1216
+            WIRE 1888 1216 2032 1216
+            WIRE 2480 784 2592 784
+            WIRE 2592 784 2832 784
+            WIRE 2592 784 2592 896
+        END BRANCH
+        BEGIN INSTANCE XLXI_42 1968 1072 R0
+        END INSTANCE
+        IOMARKER 2512 208 sram_oe R0 28
+        IOMARKER 2512 240 sram_we R0 28
+        IOMARKER 2512 272 sram_adr(17:0) R0 28
+        IOMARKER 2512 336 sram_1_io(15:0) R0 28
+        IOMARKER 2512 400 sram_1_ub R0 28
+        IOMARKER 2512 432 sram_1_lb R0 28
+        IOMARKER 2512 368 sram_1_ce R0 28
+        IOMARKER 2512 528 sram_2_ce R0 28
+        IOMARKER 2512 496 sram_2_io(15:0) R0 28
+        IOMARKER 2512 560 sram_2_ub R0 28
+        IOMARKER 2512 592 sram_2_lb R0 28
+        IOMARKER 1984 544 winkel(9:0) R180 28
+        IOMARKER 2832 784 winkel_ram(9:0) R0 28
+        IOMARKER 2832 656 sram_read(15:0) R0 28
+        IOMARKER 2832 688 sram_pos(7:0) R0 28
+        BEGIN BRANCH clk50
+            WIRE 608 528 656 528
+            WIRE 656 528 656 1072
+            WIRE 656 1072 1680 1072
+            WIRE 1680 1072 2032 1072
+            WIRE 656 464 768 464
+            WIRE 656 464 656 528
+            WIRE 1680 208 2016 208
+            WIRE 1680 208 1680 1072
+        END BRANCH
+        BEGIN BRANCH clk20
+            WIRE 608 496 688 496
+            WIRE 688 496 768 496
+            WIRE 688 496 688 1040
+            WIRE 688 1040 2032 1040
+        END BRANCH
+        BEGIN BRANCH freeze_k2_diag(4:0)
+            WIRE 2512 1712 2544 1712
+        END BRANCH
+        BEGIN BRANCH freeze_k4_diag(4:0)
+            WIRE 2512 1776 2544 1776
+        END BRANCH
+        BEGIN BRANCH freeze_k3_diag(4:0)
+            WIRE 2512 1744 2544 1744
+        END BRANCH
+        BEGIN BRANCH freeze_k1_diag(4:0)
+            WIRE 2512 1424 2544 1424
+        END BRANCH
+        BEGIN BRANCH b8_code_k1_diag(7:0)
+            WIRE 2512 1456 2544 1456
+        END BRANCH
+        BEGIN BRANCH counter_k4_diag(9:0)
+            WIRE 2512 1680 2544 1680
+        END BRANCH
+        BEGIN BRANCH counter_k3_diag(9:0)
+            WIRE 2512 1648 2544 1648
+        END BRANCH
+        BEGIN BRANCH counter_k2_diag(9:0)
+            WIRE 2512 1616 2544 1616
+        END BRANCH
+        BEGIN BRANCH counter_k1_diag(9:0)
+            WIRE 2512 1584 2544 1584
+        END BRANCH
+        BEGIN BRANCH b8_code_k4_diag(7:0)
+            WIRE 2512 1552 2544 1552
+        END BRANCH
+        BEGIN BRANCH b8_code_k3_diag(7:0)
+            WIRE 2512 1520 2544 1520
+        END BRANCH
+        BEGIN BRANCH b8_code_k2_diag(7:0)
+            WIRE 2512 1488 2544 1488
+        END BRANCH
+        BEGIN BRANCH rdy_k4_diag
+            WIRE 2512 1392 2544 1392
+        END BRANCH
+        BEGIN BRANCH rdy_k3_diag
+            WIRE 2512 1360 2544 1360
+        END BRANCH
+        BEGIN BRANCH rdy_k2_diag
+            WIRE 2512 1328 2544 1328
+        END BRANCH
+        BEGIN BRANCH rdy_k1_diag
+            WIRE 2512 1296 2544 1296
+        END BRANCH
+        BEGIN BRANCH b10code_k4
+            WIRE 2512 1264 2544 1264
+        END BRANCH
+        BEGIN BRANCH b10code_k3
+            WIRE 2512 1232 2544 1232
+        END BRANCH
+        BEGIN BRANCH b10code_k2
+            WIRE 2512 1200 2544 1200
+        END BRANCH
+        BEGIN BRANCH doutb_diag(15:0)
+            WIRE 2512 1136 2544 1136
+        END BRANCH
+        BEGIN BRANCH addrb_diag(12:0)
+            WIRE 2512 1104 2544 1104
+        END BRANCH
+        BEGIN BRANCH b10code_k1
+            WIRE 2512 1168 2544 1168
+        END BRANCH
+        BEGIN BRANCH winkel_diag(9:0)
+            WIRE 2512 1056 2544 1056
+        END BRANCH
+        BEGIN INSTANCE XLXI_44 2032 1392 R0
+        END INSTANCE
+        IOMARKER 2544 1776 freeze_k4_diag(4:0) R0 28
+        IOMARKER 2544 1744 freeze_k3_diag(4:0) R0 28
+        IOMARKER 2544 1712 freeze_k2_diag(4:0) R0 28
+        IOMARKER 2544 1424 freeze_k1_diag(4:0) R0 28
+        IOMARKER 2544 1456 b8_code_k1_diag(7:0) R0 28
+        IOMARKER 2544 1680 counter_k4_diag(9:0) R0 28
+        IOMARKER 2544 1648 counter_k3_diag(9:0) R0 28
+        IOMARKER 2544 1616 counter_k2_diag(9:0) R0 28
+        IOMARKER 2544 1584 counter_k1_diag(9:0) R0 28
+        IOMARKER 2544 1552 b8_code_k4_diag(7:0) R0 28
+        IOMARKER 2544 1520 b8_code_k3_diag(7:0) R0 28
+        IOMARKER 2544 1488 b8_code_k2_diag(7:0) R0 28
+        IOMARKER 2544 1392 rdy_k4_diag R0 28
+        IOMARKER 2544 1360 rdy_k3_diag R0 28
+        IOMARKER 2544 1328 rdy_k2_diag R0 28
+        IOMARKER 2544 1296 rdy_k1_diag R0 28
+        IOMARKER 2544 1264 b10code_k4 R0 28
+        IOMARKER 2544 1232 b10code_k3 R0 28
+        IOMARKER 2544 1200 b10code_k2 R0 28
+        IOMARKER 2544 1136 doutb_diag(15:0) R0 28
+        IOMARKER 2544 1104 addrb_diag(12:0) R0 28
+        IOMARKER 2544 1168 b10code_k1 R0 28
+        IOMARKER 2544 1056 winkel_diag(9:0) R0 28
+        BEGIN BRANCH doutb_k1_diag(15:0)
+            WIRE 2512 1808 2528 1808
+            WIRE 2528 1808 2544 1808
+        END BRANCH
+        BEGIN BRANCH doutb_k2_diag(15:0)
+            WIRE 2512 1840 2528 1840
+            WIRE 2528 1840 2544 1840
+        END BRANCH
+        BEGIN BRANCH doutb_k3_diag(15:0)
+            WIRE 2512 1872 2528 1872
+            WIRE 2528 1872 2544 1872
+        END BRANCH
+        BEGIN BRANCH doutb_k4_diag(15:0)
+            WIRE 2512 1904 2528 1904
+            WIRE 2528 1904 2544 1904
+        END BRANCH
+        IOMARKER 2544 1904 doutb_k4_diag(15:0) R0 28
+        IOMARKER 2544 1872 doutb_k3_diag(15:0) R0 28
+        IOMARKER 2544 1840 doutb_k2_diag(15:0) R0 28
+        IOMARKER 2544 1808 doutb_k1_diag(15:0) R0 28
     END SHEET
 END SCHEMATIC

@@ -3,7 +3,7 @@
 -- Hackerspace:		Das Labor    www.das-labor.org											--
 -- Hacker: 				Sauron																			--
 -- 																											--
--- Datum:    			09.03.2009        															--
+-- Datum:    			27.07.2009        															--
 -- Projekt: 			Der Borg Ventilator															--
 -- Modul Name:     	packed_write 																	--
 -- Beschreibung: 		Ich Erstelle einen seriellen Datenstream, der Gleichspannungs- --
@@ -12,7 +12,7 @@
 --																												--
 -- Dependencies: 		B8B10 Encoder																	--
 --																												--
--- Version:          V9.3.1																			--
+-- Version:          V9.7.1																			--
 -- 																											--
 -- Additional Comments: Wiederstand ist Zwecklos												--
 --																												--
@@ -35,6 +35,7 @@ entity packet_write is
 
        b8_code         :  in  std_logic_vector (7 downto 0);
 		 clk             :  in  std_logic;
+		 en              :  in  std_logic;
 		 q1				  :  out std_logic;
 		 rdy             :  out std_logic;
 		 counter         :  out std_logic_vector (9 downto 0)
@@ -86,7 +87,7 @@ BEGIN
 ----------------------BITS-EINES-BYTES-ZÄHLEN-----------------------------------------
 bitcount:process (clk)
 begin
-   if rising_edge (clk) then  
+   if rising_edge (clk) and en = '1' then  
 		if bitcounter=9 then
 			bitcounter <= 0;
 		else
@@ -100,7 +101,7 @@ end process bitcount;
 bytecount:process (clk)
 
 begin	 
-  if rising_edge (clk) then
+  if rising_edge (clk) and en = '1' then
       if bytecounter=(packetlange+8) then bytecounter <=0;
 		  else 
 		    if bitcounter = 0 then bytecounter <= bytecounter + 1;
