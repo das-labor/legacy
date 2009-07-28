@@ -245,15 +245,15 @@ begin
 -- Interface für Picoblaze --
 -----------------------------
 
-process (clk50) begin if rising_edge (clk50) then if p_id = adr + 0  and wr_str = '1' then  cpu_rot    <= out_p   ; end if;end if; end process;
-process (clk50) begin if rising_edge (clk50) then if p_id = adr + 1  and wr_str = '1' then  cpu_grun   <= out_p   ; end if;end if; end process;
-process (clk50) begin if rising_edge (clk50) then if p_id = adr + 2  and wr_str = '1' then  cpu_blau   <= out_p   ; end if;end if; end process;
-process (clk50) begin if rising_edge (clk50) then if p_id = adr + 3  and wr_str = '1' then  cpu_x_hi   <= out_p   ; end if;end if; end process;
-process (clk50) begin if rising_edge (clk50) then if p_id = adr + 4  and wr_str = '1' then  cpu_x_lo   <= out_p   ; end if;end if; end process;
-process (clk50) begin if rising_edge (clk50) then if p_id = adr + 5  and wr_str = '1' then  cpu_y_hi   <= out_p   ; end if;end if; end process;
-process (clk50) begin if rising_edge (clk50) then if p_id = adr + 6  and wr_str = '1' then  cpu_y_lo   <= out_p   ; end if;end if; end process;
-process (clk50) begin if rising_edge (clk50) then if p_id = adr + 7  and wr_str = '1' then  cpu_write  <= out_p   ; end if;end if; end process;
-process (clk50) begin if rising_edge (clk50) then if p_id = adr + 8  and wr_str = '1' then  cpu_enable <= out_p   ; end if;end if; end process;
+--process (clk50) begin if rising_edge (clk50) then if p_id = adr + 0  and wr_str = '1' then  cpu_rot    <= out_p   ; end if;end if; end process;
+--process (clk50) begin if rising_edge (clk50) then if p_id = adr + 1  and wr_str = '1' then  cpu_grun   <= out_p   ; end if;end if; end process;
+--process (clk50) begin if rising_edge (clk50) then if p_id = adr + 2  and wr_str = '1' then  cpu_blau   <= out_p   ; end if;end if; end process;
+--process (clk50) begin if rising_edge (clk50) then if p_id = adr + 3  and wr_str = '1' then  cpu_x_hi   <= out_p   ; end if;end if; end process;
+--process (clk50) begin if rising_edge (clk50) then if p_id = adr + 4  and wr_str = '1' then  cpu_x_lo   <= out_p   ; end if;end if; end process;
+--process (clk50) begin if rising_edge (clk50) then if p_id = adr + 5  and wr_str = '1' then  cpu_y_hi   <= out_p   ; end if;end if; end process;
+--process (clk50) begin if rising_edge (clk50) then if p_id = adr + 6  and wr_str = '1' then  cpu_y_lo   <= out_p   ; end if;end if; end process;
+--process (clk50) begin if rising_edge (clk50) then if p_id = adr + 7  and wr_str = '1' then  cpu_write  <= out_p   ; end if;end if; end process;
+--process (clk50) begin if rising_edge (clk50) then if p_id = adr + 8  and wr_str = '1' then  cpu_enable <= out_p   ; end if;end if; end process;
 
 	
 -------------------------------------
@@ -453,7 +453,7 @@ process (clk50) begin
       led_nr_c <= led_nr_b;
       led_nr_d <= led_nr_c;
       led_nr_e <= led_nr_d;
-		sram_pos <= led_nr_e;
+		sram_pos <= led_nr_d;
 		
 	sram_read_b <= sram_read_a;	
 	sram_read   <= sram_read_b;	

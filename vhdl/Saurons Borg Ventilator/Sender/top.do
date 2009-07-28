@@ -2,19 +2,17 @@ onerror {resume}
 quietly WaveActivateNextPane {} 0
 add wave -noupdate -format Logic /top_top_sch_tb/clk50
 add wave -noupdate -format Logic /top_top_sch_tb/clk20
-add wave -noupdate -format Literal -radix unsigned /top_top_sch_tb/winkel
 add wave -noupdate -format Literal -radix unsigned /top_top_sch_tb/visual_winkel
-add wave -noupdate -format Literal -radix unsigned /top_top_sch_tb/sram_read
-add wave -noupdate -format Literal -radix unsigned /top_top_sch_tb/sram_pos
-add wave -noupdate -format Literal -radix unsigned /top_top_sch_tb/decode_counter
-add wave -noupdate -format Logic /top_top_sch_tb/decode_synchron
-add wave -noupdate -format Literal -radix unsigned /top_top_sch_tb/visual_winkel
-add wave -noupdate -format Literal -radix hexadecimal /top_top_sch_tb/decode_data
-add wave -noupdate -format Literal -radix hexadecimal /top_top_sch_tb/visual_color
 add wave -noupdate -format Literal -radix unsigned /top_top_sch_tb/visual_abstand
-add wave -noupdate -format Logic /top_top_sch_tb/decode_rdy
+add wave -noupdate -format Literal -radix hexadecimal /top_top_sch_tb/visual_color
+add wave -noupdate -format Literal -radix unsigned /top_top_sch_tb/visual_winkel_k1
+add wave -noupdate -format Literal -radix unsigned /top_top_sch_tb/visual_abstand_k1
+add wave -noupdate -format Literal -radix hexadecimal /top_top_sch_tb/visual_color_k1
+add wave -noupdate -format Literal -radix unsigned /top_top_sch_tb/visual_winkel_k3
+add wave -noupdate -format Literal -radix unsigned /top_top_sch_tb/visual_abstand_k3
+add wave -noupdate -format Literal -radix hexadecimal /top_top_sch_tb/visual_color_k3
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {782930000 ps} 0}
+WaveRestoreCursors {{Cursor 1} {912730000 ps} 0}
 configure wave -namecolwidth 289
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left
@@ -29,4 +27,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {0 ps} {21264 ps}
+WaveRestoreZoom {1092115764 ps} {1115208468 ps}
