@@ -21,8 +21,8 @@ The uart is configured at compile time by setting the macros in config.h to
 the appropriate values.
 
 == Macros ==
-UART0 - set to 1 for enableing the first uart, set to 0 for disableing
-UART1 - set to 1 for enableing the second uart, set to 0 for disableing
+UART0_NI - set to 1 for enableing the first uart, set to 0 for disableing
+UART1_NI - set to 1 for enableing the second uart, set to 0 for disableing
 UARTn_BAUD_RATE - set baudrate for uart n
 UARTn_STOPBITS  - set ammount of stopbits for uart n
 UARTn_DATABITS  - set ammount of databits for uart n
