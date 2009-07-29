@@ -115,6 +115,11 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 	#if RFM12_USE_WAKEUP_TIMER
 	if(status & (RFM12_STATUS_WKUP>>8))
 	{
+		//debug
+		#if RFM12_UART_DEBUG >= 2
+			uart_putc('W');
+		#endif
+		
 		//restart the wakeup timer by toggling the bit on and off
 		rfm12_data(ctrl.pwrmgt_shadow & ~RFM12_PWRMGT_EW);
 		rfm12_data(ctrl.pwrmgt_shadow);
@@ -265,6 +270,9 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 					ctrl.pwrmgt_shadow = (RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
 				#endif /* RFM12_USE_WAKEUP_TIMER */	
 			#endif /* !(RFM12_TRANSMIT_ONLY) */
+			
+			//load a dummy byte to clear int status
+			rfm12_data_inline( (RFM12_CMD_TX>>8), 0xaa);
 			break;			
 	}
 	
@@ -275,9 +283,10 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 	#if !(RFM12_TRANSMIT_ONLY)
 		rfm12_data_inline(RFM12_CMD_FIFORESET>>8, CLEAR_FIFO_INLINE);
 		rfm12_data_inline(RFM12_CMD_FIFORESET>>8, ACCEPT_DATA_INLINE);
-	#endif /* !(RFM12_TRANSMIT_ONLY) */
+	#endif /* !(RFM12_TRANSMIT_ONLY) */	
 		
 	END:
+	//turn the int back on
 	RFM12_INT_ON();
 }
 
@@ -317,14 +326,14 @@ void rfm12_tick()
 			oldstate = state;
 		}
 	#endif
-
+	
 	//don't disturb RFM12 if transmitting or receiving
 	//FIXME: raw tx mode is excluded from this check now
 	if(ctrl.rfm12_state != STATE_RX_IDLE)
 	{
 		return;
-	}
-
+	}	
+		
 	//collision detection is enabled by default
 	#if !(RFM12_NOCOLLISIONDETECTION)
 		//disable the interrupt (as we're working directly with the transceiver now)
@@ -366,15 +375,6 @@ void rfm12_tick()
 		//anyhow, we MUST transmit at some point...
 		RFM12_INT_OFF();
 		
-		//poll the status register once if it hasn't been done before,
-		//like in no collision detection mode		
-		//this seems to make no sense, but it resets some flags in the rfm12
-		//(i guess it's an int we might have missed, or something alike)
-		//anyway, if we don't do this, the ugly beast will just not transmit
-		#if RFM12_NOCOLLISIONDETECTION
-			rfm12_read(RFM12_CMD_STATUS);
-		#endif
-		
 		//disable receiver - if you don't do this, tx packets will get lost
 		//as the fifo seems to be in use by the receiver
 		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
@@ -403,8 +403,7 @@ void rfm12_tick()
 		//set ET in power register to enable transmission (hint: TX starts now)
 		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);			
 
-		//clear int flasg before turning on the int, otherwise we won't be able to transmit
-		//this is really important...
+		//clear int flag before turning on the int, otherwise we won't be able to transmit
 		RFM12_INT_FLAG |= (1<<RFM12_FLAG_BIT);
 
 		//enable the interrupt to continue the transmission
@@ -492,9 +491,9 @@ rfm12_tx ( uint8_t len, uint8_t type, uint8_t *data )
 //main library initialization function
 void rfm12_init()
 {
+	//initialize spi
 	SS_RELEASE();
-	DDR_SS |= (1<<BIT_SS);
-	
+	DDR_SS |= (1<<BIT_SS);	
 	spi_init();
 
 	#if RFM12_RAW_TX
@@ -515,18 +514,30 @@ void rfm12_init()
 		//ctrl.buffer_in_num = 0;
 		//ctrl.buffer_out_num = 0;
 	#endif /* !(RFM12_TRANSMIT_ONLY) */	
-	
-	//disable all power
-	//this was no good idea, because when one writes the PWRMGT register
-	//two times in a short time, the second write seems to be delayed.
-	//the PWRMGT register is written at the end of this function.
-	rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
 
 	//enable internal data register and fifo
+	//setup selected band
 	rfm12_data(RFM12_CMD_CFG | RFM12_CFG_EL | RFM12_CFG_EF | RFM12_BAND_433 | RFM12_XTAL_12PF);
 	
-	//automatic clock lock control(AL), digital Filter(!S), Data quality
-	//detector value 3
+	//set power default state (usually disable clock output)
+	//do not write the power register two times in a short time
+	//as it seems to need some recovery
+	rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
+
+	//set frequency
+	rfm12_data(RFM12_CMD_FREQUENCY | RFM12_FREQUENCY_CALC_433(FREQ) );
+
+	//set datarate
+	rfm12_data(RFM12_CMD_DATARATE | DATARATE_VALUE );
+	
+	//set rx parameters: int-in/vdi-out pin is vdi-out,
+	//Bandwith, LNA, RSSI
+	rfm12_data(RFM12_CMD_RXCTRL | RFM12_RXCTRL_P16_VDI 
+			| RFM12_RXCTRL_VDI_FAST | RFM12_RXCTRL_BW_400 | RFM12_RXCTRL_LNA_6 
+			| RFM12_RXCTRL_RSSI_79 );	
+	
+	//automatic clock lock control(AL), digital Filter(!S),
+	//Data quality detector value 3, slow clock recovery lock
 	rfm12_data(RFM12_CMD_DATAFILTER | RFM12_DATAFILTER_AL | 3);
 	
 	//2 Byte Sync Pattern, Start fifo fill when sychron pattern received,
@@ -537,34 +548,24 @@ void rfm12_init()
 	rfm12_data(RFM12_CMD_AFC | RFM12_AFC_AUTO_KEEP | RFM12_AFC_LIMIT_4
 				| RFM12_AFC_FI | RFM12_AFC_OE | RFM12_AFC_EN);
 	
-	//set frequency
-	rfm12_data(RFM12_CMD_FREQUENCY | RFM12_FREQUENCY_CALC_433(FREQ) );
-
-	//set datarate
-	rfm12_data(RFM12_CMD_DATARATE | DATARATE_VALUE );
-
-	//set rx parameters: int-in/vdi-out pin is vdi-out,
-	//Bandwith, LNA, RSSI
-	rfm12_data(RFM12_CMD_RXCTRL | RFM12_RXCTRL_P16_VDI 
-			| RFM12_RXCTRL_VDI_FAST | RFM12_RXCTRL_BW_400 | RFM12_RXCTRL_LNA_6 
-			| RFM12_RXCTRL_RSSI_79 );
-	
 	//set TX Power to -0dB, frequency shift = +-125kHz
 	rfm12_data(RFM12_CMD_TXCONF | RFM12_TXCONF_POWER_0 | RFM12_TXCONF_FS_CALC(125000) );
+	
+	//disable low dutycycle mode
+	rfm12_data(RFM12_CMD_DUTYCYCLE);
+	
+	//disable wakeup timer
+	rfm12_data(RFM12_CMD_WAKEUP);
 	
 	//enable rf receiver chain, if receiving is not disabled (default)
 	#if !(RFM12_TRANSMIT_ONLY)
 		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ER);
 	#endif /* !(RFM12_TRANSMIT_ONLY) */
-		
-	//init receiver fifo, we now begin receiving.
-	rfm12_data(CLEAR_FIFO);
-	rfm12_data(ACCEPT_DATA);
 	
 	//wakeup timer feature setup
 	#if RFM12_USE_WAKEUP_TIMER
 		//if receive mode is not disabled (default)
-		#if !(RFM12_TRANSMIT_ONLY)	
+		#if !(RFM12_TRANSMIT_ONLY)
 			//set power management shadow register to receiver chain enabled
 			ctrl.pwrmgt_shadow = (RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ER);			
 		#else
@@ -575,6 +576,13 @@ void rfm12_init()
 
 	//setup interrupt for falling edge trigger
 	RFM12_INT_SETUP();
+	
+	//clear int flag
+	RFM12_INT_FLAG |= (1<<RFM12_FLAG_BIT);
+	
+	//init receiver fifo, we now begin receiving.
+	rfm12_data(CLEAR_FIFO);
+	rfm12_data(ACCEPT_DATA);
 	
 	//activate the interrupt
 	RFM12_INT_ON();
