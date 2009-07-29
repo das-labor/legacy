@@ -111,6 +111,20 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 	//to get the interrupt flags
 	status = rfm12_read_int_flags_inline();
 
+	//low battery detector feature
+	#if RFM12_LOW_BATT_DETECTOR
+	if(status & (RFM12_STATUS_LBD>>8))
+	{
+		//debug
+		#if RFM12_UART_DEBUG >= 2
+			uart_putc('L');
+		#endif
+		
+		//set status variable to low battery
+		ctrl.low_batt = RFM12_BATT_LOW;
+	}
+	#endif /* RFM12_LOW_BATT_DETECTOR */	
+	
 	//wakeup timer feature
 	#if RFM12_USE_WAKEUP_TIMER
 	if(status & (RFM12_STATUS_WKUP>>8))
@@ -125,20 +139,6 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 		rfm12_data(ctrl.pwrmgt_shadow);
 	}
 	#endif /* RFM12_USE_WAKEUP_TIMER */
-	
-	//low battery detector feature
-	#if RFM12_LOW_BATT_DETECTOR
-	if(status & (RFM12_STATUS_LBD>>8))
-	{
-		//debug
-		#if RFM12_UART_DEBUG >= 2
-			uart_putc('L');
-		#endif
-		
-		//set status variable to low battery
-		ctrl.low_batt = RFM12_BATT_LOW;
-	}
-	#endif /* RFM12_LOW_BATT_DETECTOR */	
 	
 	//check if the fifo interrupt occurred
 	if((!status & (RFM12_STATUS_FFIT>>8)))
