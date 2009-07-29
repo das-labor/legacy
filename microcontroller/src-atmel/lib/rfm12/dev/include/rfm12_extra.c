@@ -161,13 +161,35 @@
 */
 
 #if RFM12_USE_WAKEUP_TIMER
+	//this function sets the wakeup timer register
+	//(see datasheet for values)
 	void rfm12_set_wakeup_timer(uint16_t val)
 	{	
 		//set wakeup timer
-		rfm12_data (RFM12_CMD_WAKEUP | (val & 0x7F));
+		rfm12_data (RFM12_CMD_WAKEUP | (val & 0x1FFF));
 	
 		//reset wakeup timer
 		rfm12_data(RFM12_CMD_PWRMGT | (PWRMGT_DEFAULT & ~RFM12_PWRMGT_EW));
 		rfm12_data(RFM12_CMD_PWRMGT |  PWRMGT_DEFAULT);		
 	}
 #endif /* RFM12_USE_WAKEUP_TIMER */
+
+
+/************************
+ * rfm12 low battery detector mode
+*/
+
+#if RFM12_LOW_BATT_DETECTOR
+	//this function sets the low battery detector and microcontroller clock divider register
+	//(see datasheet for values)
+	void rfm12_set_batt_detector(uint16_t val)
+	{	
+		//set the low battery detector and microcontroller clock divider register
+		rfm12_data (RFM12_CMD_WAKEUP | (val & 0x01FF));
+	}
+	
+	uint8_t rfm12_get_batt_status()
+	{
+		return ctrl.low_batt;
+	}
+#endif /* RFM12_LOW_BATT_DETECTOR */
