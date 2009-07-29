@@ -471,9 +471,9 @@ rfm12_tx ( uint8_t len, uint8_t type, uint8_t *data )
 //if receive mode is not disabled (default)
 #if !(RFM12_TRANSMIT_ONLY)
 	//function to clear buffer complete/occupied status
-	void rfm12_rx_clear()
+	//warning: without the attribute, gcc will inline this even if -Os is set
+	void __attribute__ ((noinline)) void rfm12_rx_clear()
 	{
-		
 			//mark the current buffer as empty
 			ctrl.rf_buffer_out->status = STATUS_FREE;
 			
@@ -575,7 +575,8 @@ void rfm12_init()
 	RFM12_INT_SETUP();
 	
 	//clear int flag
-	RFM12_INT_FLAG |= (1<<RFM12_FLAG_BIT);
+	rfm12_read(RFM12_CMD_STATUS);
+	RFM12_INT_FLAG |= (1<<RFM12_FLAG_BIT);		
 	
 	//init receiver fifo, we now begin receiving.
 	rfm12_data(CLEAR_FIFO);
