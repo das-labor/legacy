@@ -1,7 +1,10 @@
 /* uart.c */
 /*
     This file is part of the AVR-Crypto-Lib.
-    Copyright (C) 2008  Daniel Otte (daniel.otte@rub.de)
+    Copyright (C) 2005-2009  
+	    Peter Fuhrmann, 
+	    Jörg Bornschein,
+		Daniel Otte (daniel.otte@rub.de)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -264,31 +267,6 @@ void uart_putc(char c) {
 	UDR = c;                  /* schreibt das Zeichen x auf die Schnittstelle */
 }
 #endif // UART_INTERRUPT
-
-
-void uart_putstr(char *str) {
-	while(*str) {
-		uart_putc(*str++);
-	}
-}
-
-void uart_putstr_P(PGM_P str) {
-	char tmp;
-	while((tmp = pgm_read_byte(str))) {
-		uart_putc(tmp);
-		str++;
-	}
-}
-
-void uart_hexdump(const void* buf, int len)
-{
-	while(len--){
-		uart_putc(pgm_read_byte(hexdigit_tab_P + ((*((uint8_t*)buf))>>4)));
-		uart_putc(pgm_read_byte(hexdigit_tab_P + ((*((uint8_t*)buf))&0xf)));
-		uart_putc(' ');
-		buf=(uint8_t*)buf+1;
-	}
-}
 
 
 #ifdef UART_INTERRUPT

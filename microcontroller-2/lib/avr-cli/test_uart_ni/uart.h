@@ -1,4 +1,4 @@
-/* config.h */
+/* uart.h */
 /*
     This file is part of the AVR-Crypto-Lib.
     Copyright (C) 2008  Daniel Otte (daniel.otte@rub.de)
@@ -16,39 +16,39 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef __CONFIG_H__
-#define __CONFIG_H__
-#include <avr/io.h>
-// #define F_CPU 20000000
- #define F_CPU 16000000         /* Oszillator-Frequenz in Hz */
-// #define F_CPU 14745600
+#ifndef UART_H
+#define UART_H
+
+/**
+ * UART Library
+ *
+ * #define F_CPU 16000000         // Oszillator-Frequenz in Hz
+ * #define UART_INTERRUPT 1
+ * #define UART_BAUD_RATE 19200
+ * #define UART_RXBUFSIZE 16
+ * #define UART_TXBUFSIZE 16
+ * #define UART_LINE_BUFFER_SIZE 40
+ * #define UART_LEDS             // LED1 and LED2 toggle on tx and rx interrupt
+ *
+ */
 
 
+#include "config.h"
+#include <inttypes.h>
+#include <avr/pgmspace.h>
 
-#define DEBUG uart
+void uart_init(void);
 
-/* uart.[ch] defines */
-#define UART_INTERRUPT 1
-#define UART_BAUD_RATE 38400
-#define UART_RXBUFSIZE 64
-#define UART_TXBUFSIZE 64
-#define UART_LINE_BUFFER_SIZE 40
-#define UART_XON_XOFF
-#define UART_XON_XOFF_THRESHOLD_1 (UART_RXBUFSIZE - 24)
-#define UART_XON_XOFF_THRESHOLD_2 (UART_RXBUFSIZE - 60)
+void uart_putc(char c);
 
-#undef UART_LEDS
+char uart_getc(void);
+char uart_getc_nb(char *c);		/* returns 1 on success */
+
 /*
-#define UART_HWFLOWCONTROL
-#define UART_RTS_PORT PORTA
-#define UART_RTS_DDR DDRA
-#define UART_CTS_PIN PINA
-#define UART_CTS_DDR DDRA
-#define UART_RTS_BIT 0
-#define UART_CTS_BIT 1
+  get one Cariage return terminated line
+  echo charakters back on Uart
+  returns buffer with zero terminated line on success, 0 pointer otherwise
 */
-//#define TWISTER_MUL_TABLE
-#define CLI_AUTO_HELP 
+char * uart_getline_nb(void);
 
 #endif
-
