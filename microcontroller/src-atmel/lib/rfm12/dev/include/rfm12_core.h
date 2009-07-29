@@ -87,13 +87,13 @@
 #if RFM12_LOW_BATT_DETECTOR 1
 	//define PWRMGMT_LOW_BATT  with low batt detector
 	//it will be used later
-	#define PWRMGMT_LOW_BATT (RFM12_PWRMGT_LB)
+	#define PWRMGMT_LOW_BATT (RFM12_PWRMGT_EB)
 	
 	//check if the default power management setting has the LB bit set
 	//and warn the user if it's not
 	#ifdef PWRMGT_DEFAULT
-		#if !((PWRMGT_DEFAULT) & RFM12_PWRMGT_LB)
-			#warning "You are using the RFM12 wakeup timer, but PWRMGT_DEFAULT has the wakeup timer bit unset."
+		#if !((PWRMGT_DEFAULT) & RFM12_PWRMGT_EB)
+			#warning "You are using the RFM12 low battery detector, but PWRMGT_DEFAULT has the low battery detector bit unset."
 		#endif
 	#endif
 #endif /* RFM12_LOW_BATT_DETECTOR */
