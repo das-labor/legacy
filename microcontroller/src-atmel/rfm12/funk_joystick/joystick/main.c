@@ -22,10 +22,7 @@ int main ( void )
 	DDRD |= (1<<PD4);
 	PORTD |= (1<<PD4);
 	
-	uint16_t x=200;
-	
-	while(x--)
-		_delay_ms(1);
+	_delay_ms(250);		
 
 	rfm12_init();
 	rfm12_set_wakeup_timer(10);
@@ -36,7 +33,7 @@ int main ( void )
 	uint8_t joy_old = 0;
 	
 	while (42)
-	{
+	{		
 		//PB0 Up
 		//PB1 Down
 		//PB2 Left
@@ -52,15 +49,15 @@ int main ( void )
 		
 		if(joy ^ joy_old)
 		{
-			if(RFM12_TX_ENQUEUED == rfm12_tx (2, 0x69, &joy)){
+			if(RFM12_TX_ENQUEUED == rfm12_tx (1, 0x69, &joy)){
 				joy_old = joy;
 			}
 		}
 
 		rfm12_tick();
 		
-		#define __BV _BV
-//		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+		//sleep
+		//set_sleep_mode(SLEEP_MODE_PWR_DOWN);	
 		sleep_mode();
 	}
 }
