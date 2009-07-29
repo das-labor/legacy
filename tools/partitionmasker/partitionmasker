@@ -17,7 +17,8 @@
 #redirected inside the kernel to the source, so the target is a live virtual
 #copy of the source. All access to the target is restricted to
 #read-only operations, except for access to the partitions given
-#on the command line.
+#on the command line meant for read-write access. It is also possible
+#to "hide" a partition, replacing it virtually by blocks with zeroes.
 #
 #The purpose is to grant a virtualization program access to an operating
 #system installed on one or more partitions of a block device (possibly the
@@ -33,6 +34,9 @@
 #
 #Make sure no partitions of the host system are passed as arguments,
 #and the guest system will not be able to tamper with it.
+#
+#Hiding partitions can be useful in the presence of
+#LVM volumes.
 #
 #= Operation
 #
@@ -87,11 +91,16 @@
 #is just a piece of ruby code, so misspellings might give errors from
 #ruby directly.
 #
-#In addition to the options on the command line, for each partition
-#to be mapped read-write, it is possible to specify a UUID.
-#If a UUID is given, partitionmasker will ensure that
-#/dev/disks/by-uuid/<uuid> will be a symlink to the partition.
-#It will refuse to create the mapping if the symlink is not as expected.
+#In addition to the options on the command line, a configuration file
+#provides settings for
+#* hiding a partition by mapping it to zero, that means that reads on
+#  the partition area in the target will return zero blocks and writes
+#  are silently dropped
+#* sanity checking that a mapped partition contains the expected
+#  filesystem/swap/LVM physical volume by specifying a UUID (this
+#  prevents undesired mismappings after repartitioning). partitionmasker
+#  will refuse to set up the mapping if the UUID does not match the
+#  partition data.
 #
 #= Known bugs and limitations
 #
@@ -167,7 +176,7 @@ module Configuration
   FILECONF = CHash.new
   MASTER.child = FILECONF
   CMDCONF = CHash.new
-  CMDCONF.child = FILECONF
+  FILECONF.child = CMDCONF
 
   # global access function for active settings
   def Configuration.[](ky)
@@ -247,13 +256,23 @@ module Configuration
           Error::exit("Safety check failed: uuid '#{uuid}' maps to '#{mappath}', not '#{@partition}'") unless
               mappath == @partition
         end
+
+        def self.register_assertion(partition, &block)
+          context = new(partition)
+          Assertions::delay_assertion { context.instance_eval(&block) }
+        end
       end
 
       def add_rw_mapping(partition, &block)
-        @mappings << partition
+        @mappings << [partition, :rw]
         return if block.nil?
-        context = MappingAsserterContext.new(partition)
-        Assertions::delay_assertion { context.instance_eval(&block) }
+        MappingAsserterContext.register_assertion(partition, &block)
+      end
+
+      def add_null_mapping(partition, &block)
+        @mappings << [partition, :null]
+        return if block.nil?
+        MappingAsserterContext.register_assertion(partition, &block)
       end
 
       def valid?
@@ -568,7 +587,7 @@ Configuration.parse_argv_arguments(!cfilename.nil?)
 Configuration::ConfiguredDevice.all.each do |cd|
   pd = PartitionedDevice.new(cd.source)
   begin
-    cd.mappings.each { |partition| pd.partitions.tag(partition, :rw) }
+    cd.mappings.each { |partition, type| pd.partitions.tag(partition, type) }
   rescue PartitionedDevice::PartitionedDeviceError => err
     Error.exit("Error processing target '#{cd.target}':\n#{err}")
   end
@@ -579,7 +598,14 @@ Configuration::ConfiguredDevice.all.each do |cd|
   rwl = Loop.get(cd.source, :rw)
 
   table = pd.segments(:ro).collect do |ary|
-    "#{ary[0]} #{ary[1]} linear #{ary[2] == :rw ? rwl : rol} #{ary[0]}"
+    "#{ary[0]} #{ary[1]} " + case ary[2]
+    when :rw
+      "linear #{rwl} #{ary[0]}"
+    when :null
+      "zero"
+    else
+      "linear #{rol} #{ary[0]}"
+    end
   end.join("\n")
 
   External.fakeable_do do

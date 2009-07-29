@@ -35,11 +35,16 @@ Device.create do
   #map first primary partition read-write
   add_rw_mapping("/dev/sda1")
 
+  #hide second primary partition by replacing it virtually with zeroes
+  add_null_mapping("/dev/sda2")
+
   #map first logical partition read-write
   add_rw_mapping("/dev/sda5") do
     #...but only if file system/swap/LVM physical volume
     #has the expected UUID
+    
     is_uuid("01234567-89ab-cdef-0123-4567890abcde")
+    
     #this will check if "/dev/disks/by-uuid/<uuid above>" is a symlink
     #to "/dev/sda5", refusing operation if not.
   end
