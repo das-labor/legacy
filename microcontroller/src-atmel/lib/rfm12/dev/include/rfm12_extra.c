@@ -162,8 +162,12 @@
 
 #if RFM12_USE_WAKEUP_TIMER
 	void rfm12_set_wakeup_timer(uint16_t val)
-	{
+	{	
 		//set wakeup timer
-		rfm12_data (RFM12_CMD_WAKEUP | val);		
+		rfm12_data (RFM12_CMD_WAKEUP | (val & 0x7F));
+	
+		//reset wakeup timer
+		rfm12_data(RFM12_CMD_PWRMGT | (PWRMGT_DEFAULT & ~RFM12_PWRMGT_EW));
+		rfm12_data(RFM12_CMD_PWRMGT |  PWRMGT_DEFAULT);		
 	}
 #endif /* RFM12_USE_WAKEUP_TIMER */
