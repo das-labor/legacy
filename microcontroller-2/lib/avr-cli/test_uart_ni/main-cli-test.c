@@ -17,9 +17,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#define UART_NI 1
+
 #include "cli.h"
 #include "dump.h"
+#if UART_NI
+#include "uart_ni.h"
+#define uart_putc uart0_putc
+#define uart_getc uart0_getc
+#define uart_init uart0_init
+#else
 #include "uart.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <avr/pgmspace.h>
