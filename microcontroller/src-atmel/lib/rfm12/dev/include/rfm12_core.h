@@ -84,7 +84,7 @@
 #endif
 
 //if the low battery detector feature is used, we will set some extra pwrmgmt options
-#if RFM12_LOW_BATT_DETECTOR 1
+#if RFM12_LOW_BATT_DETECTOR
 	//define PWRMGMT_LOW_BATT  with low batt detector
 	//it will be used later
 	#define PWRMGMT_LOW_BATT (RFM12_PWRMGT_EB)
