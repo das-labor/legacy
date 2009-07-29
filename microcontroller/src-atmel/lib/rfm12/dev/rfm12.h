@@ -129,6 +129,10 @@ typedef struct
 		//power management shadow register
 		uint16_t pwrmgt_shadow;
 	#endif /* RFM12_USE_WAKEUP_TIMER */
+	
+	#if RFM12_LOW_BATT_DETECTOR
+		uint8_t low_batt;
+	#endif /* RFM12_LOW_BATT_DETECTOR */
 } rfm12_control_t;
 
 

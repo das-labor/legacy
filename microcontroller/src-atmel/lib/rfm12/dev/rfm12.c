@@ -126,6 +126,20 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 	}
 	#endif /* RFM12_USE_WAKEUP_TIMER */
 	
+	//low battery detector feature
+	#if RFM12_LOW_BATT_DETECTOR
+	if(status & (RFM12_STATUS_LBD>>8))
+	{
+		//debug
+		#if RFM12_UART_DEBUG >= 2
+			uart_putc('L');
+		#endif
+		
+		//set status variable to low battery
+		ctrl.low_batt = RFM12_BATT_LOW;
+	}
+	#endif /* RFM12_LOW_BATT_DETECTOR */	
+	
 	//check if the fifo interrupt occurred
 	if((!status & (RFM12_STATUS_FFIT>>8)))
 		goto END;
@@ -493,25 +507,6 @@ void rfm12_init()
 	DDR_SS |= (1<<BIT_SS);	
 	spi_init();
 
-	#if RFM12_RAW_TX
-		rfm12_raw_tx = 0;
-	#endif
-
-	//store the syncronization pattern to the transmission buffer
-	//the sync pattern is used by the receiver to distinguish noise from real transmissions
-	//the sync pattern is hardcoded into the receiver
-	rf_tx_buffer.sync[0] = SYNC_MSB;
-	rf_tx_buffer.sync[1] = SYNC_LSB;
-	
-	//if receive mode is not disabled (default)
-	#if !(RFM12_TRANSMIT_ONLY)
-		//init buffer pointers
-		ctrl.rf_buffer_out = &rf_rx_buffers[0];
-		ctrl.rf_buffer_in  = &rf_rx_buffers[0];
-		//ctrl.buffer_in_num = 0;
-		//ctrl.buffer_out_num = 0;
-	#endif /* !(RFM12_TRANSMIT_ONLY) */	
-
 	//enable internal data register and fifo
 	//setup selected band
 	rfm12_data(RFM12_CMD_CFG | RFM12_CFG_EL | RFM12_CFG_EF | RFM12_BAND_433 | RFM12_XTAL_12PF);
@@ -553,6 +548,31 @@ void rfm12_init()
 	
 	//disable wakeup timer
 	rfm12_data(RFM12_CMD_WAKEUP);
+
+	//store the syncronization pattern to the transmission buffer
+	//the sync pattern is used by the receiver to distinguish noise from real transmissions
+	//the sync pattern is hardcoded into the receiver
+	rf_tx_buffer.sync[0] = SYNC_MSB;
+	rf_tx_buffer.sync[1] = SYNC_LSB;
+	
+	//if receive mode is not disabled (default)
+	#if !(RFM12_TRANSMIT_ONLY)
+		//init buffer pointers
+		ctrl.rf_buffer_out = &rf_rx_buffers[0];
+		ctrl.rf_buffer_in  = &rf_rx_buffers[0];
+		//ctrl.buffer_in_num = 0;
+		//ctrl.buffer_out_num = 0;
+	#endif /* !(RFM12_TRANSMIT_ONLY) */
+	
+	//raw tx feature initialization
+	#if RFM12_RAW_TX
+		rfm12_raw_tx = 0;
+	#endif
+	
+	//low battery detector feature initialization
+	#if RFM12_LOW_BATT_DETECTOR
+		ctrl.low_batt = RFM12_BATT_OKAY;
+	#endif /* RFM12_LOW_BATT_DETECTOR */
 	
 	//enable rf receiver chain, if receiving is not disabled (default)
 	#if !(RFM12_TRANSMIT_ONLY)
@@ -570,6 +590,11 @@ void rfm12_init()
 			ctrl.pwrmgt_shadow = (RFM12_CMD_PWRMGT | PWRMGT_DEFAULT);
 		#endif /* !(RFM12_TRANSMIT_ONLY) */
 	#endif /* RFM12_USE_WAKEUP_TIMER */
+	
+	//raw receive mode feature initialization
+	#if RFM12_RECEIVE_CW
+		adc_init();
+	#endif
 
 	//setup interrupt for falling edge trigger
 	RFM12_INT_SETUP();
@@ -583,10 +608,6 @@ void rfm12_init()
 	rfm12_data(ACCEPT_DATA);
 	
 	//activate the interrupt
-	RFM12_INT_ON();
-
-	#if RFM12_RECEIVE_CW
-		adc_init();
-	#endif
+	RFM12_INT_ON();	
 }
 

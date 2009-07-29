@@ -112,6 +112,11 @@
 	#define RFM12_SPI_SOFTWARE 0
 #endif
 
+//if low battery detector is not defined, we won't use this feature
+#ifndef RFM12_LOW_BATT_DETECTOR
+	#define RFM12_LOW_BATT_DETECTOR 0
+#endif
+
 //if uart debug is not defined, we won't use this feature
 #ifndef RFM12_UART_DEBUG
 	#define RFM12_UART_DEBUG 0
