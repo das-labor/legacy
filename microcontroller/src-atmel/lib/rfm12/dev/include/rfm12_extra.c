@@ -185,7 +185,7 @@
 	void rfm12_set_batt_detector(uint16_t val)
 	{	
 		//set the low battery detector and microcontroller clock divider register
-		rfm12_data (RFM12_CMD_LBDCMD | (val & 0x01FF));
+		rfm12_data (RFM12_CMD_LBDMCD | (val & 0x01FF));
 	}
 	
 	uint8_t rfm12_get_batt_status()
