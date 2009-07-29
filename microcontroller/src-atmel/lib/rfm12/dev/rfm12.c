@@ -401,10 +401,7 @@ void rfm12_tick()
 		rfm12_data(RFM12_CMD_TX | PREAMBLE);
 		
 		//set ET in power register to enable transmission (hint: TX starts now)
-		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);			
-
-		//clear int flag before turning on the int, otherwise we won't be able to transmit
-		RFM12_INT_FLAG |= (1<<RFM12_FLAG_BIT);
+		rfm12_data(RFM12_CMD_PWRMGT | PWRMGT_DEFAULT | RFM12_PWRMGT_ET);
 
 		//enable the interrupt to continue the transmission
 		RFM12_INT_ON();
