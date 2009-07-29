@@ -32,6 +32,16 @@ class LaTweet
 		base.update("#{txt}")
 	end
 
+	def getmsgsto()
+		msgs = Array.new
+		httpauth = Twitter::HTTPAuth.new(TUSERNAME, TPASSWD)
+		base = Twitter::Base.new(httpauth)
+		base.replies.each{|r|
+			msgs.push(r.text)
+		}
+		puts msgs[0]
+	end
+
 	def tweetwithurl(txt,url)
 		surl = shorten(url)
 	    tweet = "#{txt} #{surl}"
@@ -49,7 +59,3 @@ class LaTweet
 #		puts "Somebody tweeted ..."
 	end
 end
-
-#ltw = LaTweet.new
-#puts "output"
-#ltw.tweetwithurl("I must not develop Ruby apps when I am supposed to learn for the exam in system security. I must not develop Ruby apps while I am supposed to learn for my exam in Sytem Security", "http://www.das-labor.org/wiki/Projekte")
