@@ -3,6 +3,7 @@
 
 
 XMLFILE="termine.xml";
+NRXMLFILE="talksworkshops.xml";
 ICALFILE="termine.ical";
 
 #############################################################################
@@ -15,13 +16,18 @@ require 'date'
 include Icalendar
 
 class LaborTermine 
-  attr_reader "termine"
+	attr_reader "termine"
+	attr_reader "nrtermine"
 
 	def initialize()
 		@termine = Array.new
+		@nrtermine = Array.new
 	end
 	
 	def parse()	
+		term = Array.new
+		nrterm = Array.new
+
 		cal_file = File.open(ICALFILE)
 		cals = Icalendar.parse(cal_file)
 		cal = cals.first
@@ -37,33 +43,53 @@ class LaborTermine
 
 			t["link"] = e.description
 #			puts "Link:" + e.description
-			@termine.push(t) 	# store the hash table in an global array
+			term.push(t) 	# store the hash table in an global array
 		}
+		cal.events.each{|e|
+			h = Hash.new	# one hash table per event (contains date, title, link)
+#			puts "Termin:"
+
+			h["date"] = e.dtstart
+#			puts e.dtstart
+
+			h["text"] = e.summary
+#			puts "Title:" + e.summary
+
+			h["link"] = e.description
+#			puts "Link:" + e.description
+            if e.recurrence_rules.to_ical == "" then
+                nrterm.push(h)  # only non-recurring events
+            end
+		}
+
+		thash = Hash.new
+		thash["termine"] = term
+		thash["nrtermine"] = nrterm
+		return thash
 	end
 	
-	def sort()		# events are not necessarily ordered by date
+	def sort(tarr)		# events are not necessarily ordered by date
 #		puts "Sorting by date ..."
 		d = Array.new	# array to sort dates
 		ttermine = Array.new 	# temp array to overwrite @termine with
-		@termine.each{|t|
+
+		tarr.each{|t|
 			d.push(t["date"])
 		}
 		d.sort!
 #		puts "Sorting @termine by date ..."
 		d.each{|da|
-			@termine.each{|t|
+			tarr.each{|t|
 				if t["date"] == da then
-			#		puts t["date"]
 					ttermine.push(t)	
 				end
 			}
 		} 
-		@termine.clear()
-		@termine = ttermine
+		return ttermine
 	end
 
-	def properdate()
-		@termine.each{|t|
+	def properdate(tarr)
+		tarr.each{|t|
 
 			# padding with leading zeros and add the results as idividual keys to our hash
 			t["day"] = "%02d" % t["date"].day.to_s
@@ -92,29 +118,38 @@ class LaborTermine
 
 			t.delete("date")	# currently we do not need the comlete date anymore => delete it
 		}
+		return tarr
 	end
 
-	def outputtermine()
-		puts "Debug output: content of @termine"
-		@termine.each{|t|
+	def outputtermine(tarr)
+		puts "Debug output: content of events array of hashes"
+		tarr.each{|t|
 			puts "Termin"
+			puts t["text"]
+			puts t["link"]
+			puts t["date"]
 			puts t["year"]
 			puts t["month"]
 			puts t["day"]
 			puts t["hour"]
 			puts t["min"]
 			puts t["wday"]
-			puts t["title"]
-			puts t["link"]
 		}
 	end
 
   # Main
 	def run
-		parse()
-		sort()
-		properdate()
-#		outputtermine()
+		parsedtermine = parse()
+
+		# all events
+#		puts "handling all events ..."
+		termine = sort(parsedtermine["termine"])
+		@termine = properdate(termine)
+
+		# non-recurring events only
+#		puts "handling non-recurring events ..."
+		nrtermine = sort(parsedtermine["nrtermine"])
+		@nrtermine = properdate(nrtermine)	
 	end
 end
 
@@ -135,10 +170,24 @@ end
 lt = LaborTermine.new;	# create instance
 lt.run;	# run the parser
 
-
+puts "Alle Termine:"
 File.open( XMLFILE, "w" ) { |f|
   f.puts "<termine>"
   lt.termine.each { |termin|
+    puts "#{termin["day"]}.#{termin["month"]}.#{termin["year"]} #{termin["hour"]}:#{termin["min"]} #{termin["text"]}"
+    f.puts "<termin>"
+      termin.each { |key,val|
+        f.puts "  <#{key}>#{val}</#{key}>"
+    	}
+    f.puts "</termin>"
+  }
+  f.puts "</termine>"
+}
+
+puts "Vorträge und Workshops:"
+File.open( NRXMLFILE, "w" ) { |f|
+  f.puts "<termine>"
+  lt.nrtermine.each { |termin|
     puts "#{termin["day"]}.#{termin["month"]}.#{termin["year"]} #{termin["hour"]}:#{termin["min"]} #{termin["text"]}"
     f.puts "<termin>"
       termin.each { |key,val|
