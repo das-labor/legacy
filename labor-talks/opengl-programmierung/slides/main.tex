@@ -1,0 +1,122 @@
+\documentclass{beamer}
+
+\usepackage{wrapfig}
+\usepackage{beamerbaseverbatim}
+\usepackage{beamerthemesplit}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+
+\title{Grafikprogrammierung mit OpenGL}
+\author{S\"oren Heisrath}
+\date{\today}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\section[\"Ubersicht]{}
+\frame{\tableofcontents}
+
+% =========================== INTRO ===========================
+\section{Wichtige Primitiven}
+% \subsection{Linux ab Werk}
+\frame
+{
+	\frametitle{Koordinatensystem}
+	\begin{itemize}
+		\item X horizontal (Links negativ, Rechts positiv)
+		\item Y Vertikal (Unten negativ, Oben positiv)
+		\item Z Der Blickrichtung entgegen positiv
+	\end{itemize}
+}
+
+\frame
+{
+	\frametitle{Zeichenprimitiven}
+	\begin{itemize}
+		\item Vertexes
+		\item Lines
+		\item Triangles
+		\item Quads
+		\item Polygone
+	\end{itemize}
+}
+
+\section{Texturierung}
+\frame
+{
+	\frametitle{Dimensionen}
+	\begin{itemize}
+		\item 1D ''Texturen'' (Linien)
+		\item 2D Texturen
+		\item 3D Texturen - Multi-Layer Texturen
+	\end{itemize}
+}
+
+\frame
+{
+	\frametitle{Blending}
+	\begin{itemize}
+		\item Alpha-Blending ((Teil)transparenz)
+		\item Reflektionen
+		\item Fl\"ussige "Uberg\"ange
+	\end{itemize}
+}
+
+\section{Wichtige Funktionen}
+\frame
+{
+	\large{\texttt{glLoadIdentity()}}
+	\\
+	R\"uckkehr zum Koordinatenursprung
+}
+
+\frame
+{
+	\large{\texttt{glEnable() / glDisable()}}
+	\\
+	An/Ausschalten von OpenGL Features
+}
+
+\frame
+{
+	\large{\texttt{glBegin() ... glEnd()}}
+	\\
+	Zeichenbefehle
+}
+
+\frame
+{
+	\large{\texttt{glRotateXX()}}
+	\\
+	Rotationsfunktionen - z.B.:\\
+	\texttt{glRotate4f (90.0f, 0.0f, 1.0f, 0.0f)}
+}
+
+\frame
+{
+	\large{\texttt{glVertexXX()}}
+	\\
+	Zeichenfunktion f\"ur ein Vertex - z.B.\\
+	\texttt{glVertex3f (1.0f, 1.0f, 0.0f)}
+}
+
+\frame
+{
+	\frametitle{Das erste Dreieck...}
+	\texttt{glBegin(GL\_TRIANGLES)\\  glVertex3f (0.0f, 1.0f, 0.0f);\\  glVertex3f (-0.5f, 0.0f, 0.0f);\\  glVertex3f (0.5f, 0.0f, 0.0f);\\glEnd()}
+}
+
+\frame
+{
+	\large{\texttt{glTexCoordXX()}}
+	z.B. \texttt{glTexCoord2f (0.0f, 1.0f)}
+}
+
+\frame
+{
+	\frametitle{Das erste Dreieck mit Texturen...}
+	\texttt{glBegin(GL\_TRIANGLES)\\  glTexCoord2f (0.0f, 0.0f);\\  glVertex3f (0.0f, 1.0f, 0.0f);\\  glTexCoord2f (0.0f, 1.0f);\\  glVertex3f (-0.5f, 0.0f, 0.0f);\\  glTexCoord2f (1.0f, 0.0f);\\  glVertex3f (0.5f, 0.0f, 0.0f);\\glEnd()}
+}
+\end{document}
+
