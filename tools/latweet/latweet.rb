@@ -11,8 +11,6 @@ require 'twitter'
 #SERVICEURL = "http://r.im/api/index.cfm?long_url="		# gets you to a meta-page first
 SERVICEURL = "http://is.gd/api.php?longurl="
 
-#TUSERNAME = "waytohighUID"
-#TPASSWD = "foobar23"
 
 class LaTweet
 	def initialize()
@@ -56,6 +54,6 @@ class LaTweet
 #		puts tweet.length
 #		puts "Posting ..."
 		post(tweet)
-#		puts "Somebody tweeted ..."
+#		puts "Loose tweets sink fleets!"
 	end
 end
