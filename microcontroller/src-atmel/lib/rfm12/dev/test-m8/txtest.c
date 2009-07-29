@@ -22,6 +22,7 @@ int main ( void )
 	_delay_ms(250);
 	_delay_ms(250);
 	rfm12_init();
+	_delay_ms(250);
 	rfm12_set_wakeup_timer(10);	
 			
 	sei();
