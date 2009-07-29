@@ -77,20 +77,42 @@
 	#define RFM12_LIVECTRL 0
 #endif
 
+//if low battery detector is not defined, we won't use this feature
+#ifndef RFM12_LOW_BATT_DETECTOR
+	#define RFM12_LOW_BATT_DETECTOR 0
+	#define PWRMGMT_LOW_BATT 0
+#endif
+
+//if the low battery detector feature is used, we will set some extra pwrmgmt options
+#if RFM12_LOW_BATT_DETECTOR 1
+	//define PWRMGMT_LOW_BATT  with low batt detector
+	//it will be used later
+	#define PWRMGMT_LOW_BATT (RFM12_PWRMGT_LB)
+	
+	//check if the default power management setting has the LB bit set
+	//and warn the user if it's not
+	#ifdef PWRMGT_DEFAULT
+		#if !((PWRMGT_DEFAULT) & RFM12_PWRMGT_LB)
+			#warning "You are using the RFM12 wakeup timer, but PWRMGT_DEFAULT has the wakeup timer bit unset."
+		#endif
+	#endif
+#endif /* RFM12_LOW_BATT_DETECTOR */
+
 //if wakeuptimer is not defined, we won't use this feature
 #ifndef RFM12_USE_WAKEUP_TIMER
 	#define RFM12_USE_WAKEUP_TIMER 0
+	#define PWRMGMT_WKUP 0
 #endif
 
 //if wakeuptimer is on, we will set the default power management to use the wakeup timer
 #if RFM12_USE_WAKEUP_TIMER
-	//define the default power management setting with wakeuptimer
-	//if it's not set already
-	#ifndef PWRMGT_DEFAULT
-		#define PWRMGT_DEFAULT (RFM12_PWRMGT_EW | RFM12_PWRMGT_DC)
-	#else
-		//check if the default power management setting has the EW bit set
-		//and warn the user if it's not
+	//define PWRMGMT_LOW_BATT  with low batt detector
+	//it will be used later
+	#define PWRMGMT_WKUP (RFM12_PWRMGT_EW)
+	
+	//check if the default power management setting has the EW bit set
+	//and warn the user if it's not
+	#ifdef PWRMGT_DEFAULT
 		#if !((PWRMGT_DEFAULT) & RFM12_PWRMGT_EW)
 			#warning "You are using the RFM12 wakeup timer, but PWRMGT_DEFAULT has the wakeup timer bit unset."
 		#endif
@@ -112,20 +134,14 @@
 	#define RFM12_SPI_SOFTWARE 0
 #endif
 
-//if low battery detector is not defined, we won't use this feature
-#ifndef RFM12_LOW_BATT_DETECTOR
-	#define RFM12_LOW_BATT_DETECTOR 0
-#endif
-
 //if uart debug is not defined, we won't use this feature
 #ifndef RFM12_UART_DEBUG
 	#define RFM12_UART_DEBUG 0
 #endif
  
 //default value for powermanagement register
-//this allows one to select whether the reset generator, the oscillator or the wakeup timer shall be active
 #ifndef PWRMGT_DEFAULT
-	#define PWRMGT_DEFAULT (RFM12_PWRMGT_DC)
+	#define PWRMGT_DEFAULT (RFM12_PWRMGT_DC | PWRMGMT_WKUP | PWRMGMT_LOW_BATT)
 #endif
 
 //default channel free time, if not defined elsewhere
