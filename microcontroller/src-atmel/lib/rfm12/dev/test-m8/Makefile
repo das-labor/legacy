@@ -1,5 +1,5 @@
 PRG            = txtest
-OBJ            = txtest.o uart.o rfm12.o
+OBJ            = txtest.o rfm12.o uart.o
 MCU_TARGET     = atmega8
 OPTIMIZE       = -Os
 
