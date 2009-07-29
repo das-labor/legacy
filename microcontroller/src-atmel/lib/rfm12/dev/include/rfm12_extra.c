@@ -163,6 +163,7 @@
 #if RFM12_USE_WAKEUP_TIMER
 	void rfm12_set_wakeup_timer(uint16_t val)
 	{
-		rfm12_data (RFM12_CMD_WAKEUP | val);
+		//set wakeup timer
+		rfm12_data (RFM12_CMD_WAKEUP | val);		
 	}
 #endif /* RFM12_USE_WAKEUP_TIMER */
