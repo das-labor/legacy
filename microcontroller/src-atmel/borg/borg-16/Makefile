@@ -10,7 +10,7 @@ CANADDR        = 0x43
 
 SERIAL = /dev/ttyUSB0
 
-include ../../make/avr.mk
+include make/avr.mk
 
 .PHONY: tetris/tetris.o
 tetris/tetris.o:
