@@ -116,7 +116,7 @@ circularbytebuffer_free:
 	movw r30, r24
 	ldd r24, Z+BUFFER_OFFSET
 	ldd r25, Z+BUFFER_OFFSET+1
-	rjmp free
+	jmp free
 
 #endif /* CIRCULARBYTEBUFFER_NO_MALLOC==0 */
 
@@ -229,6 +229,8 @@ circularbytebuffer_get_lifo:
  *	}
  *
  * param cb:  r24:r25
+ * return:    r24
+ * modifys:   r22-r27,r30,r31
  */
 .global circularbytebuffer_get_fifo
 circularbytebuffer_get_fifo:
