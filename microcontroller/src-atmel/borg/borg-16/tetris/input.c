@@ -3,7 +3,7 @@
 #include <inttypes.h>
 #include <assert.h>
 #include "../joystick.h"
-#include "../util.h"
+#include "lib/util.h"
 #include "input.h"
 
 /* - the API simulator and the real API have different named wait functions

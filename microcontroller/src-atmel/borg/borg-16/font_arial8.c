@@ -1,3 +1,3 @@
 
-#include "../borg-base/font_arial8.c"
+#include "borg-base/font_arial8.c"
 

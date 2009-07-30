@@ -1,4 +1,4 @@
 
 #include "config.h"
-#include "../borg-base/pixel.c"
+#include "borg-base/pixel.c"
 

@@ -4,9 +4,9 @@
 #include <assert.h>
 #include <inttypes.h>
 #include "../config.h"
-#include "../pixel.h"
-#include "../util.h"
-#include "../scrolltext.h"
+#include "borg-base/pixel.h"
+#include "lib/util.h"
+#include "borg-base/scrolltext.h"
 #include "logic.h"
 #include "piece.h"
 #include "playfield.h"
