@@ -1,7 +1,7 @@
 PRG            = main-uart_i-test
-OBJ            = main-uart_i-test.o uart_i-asm.o circularbytebuffer-asm.o
+OBJ            = main-uart_i-test.o uart_i-asm.o circularbytebuffer-asm.o md5-asm.o
                  
-MCU_TARGET     = atmega32
+MCU_TARGET     = atmega644
 OPTIMIZE       = 
 PROGRAMMER     = avr911
 FLASHCMD       = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB0 -c $(PROGRAMMER) -U flash:w:$(PRG).hex  
