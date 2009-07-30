@@ -18,7 +18,7 @@
 #include "playfield.h"
 #include "view.h"
 #include "input.h"
-#include "../prng.h"
+#include "lib/prng.h"
 
 
 #ifdef EEMEM
