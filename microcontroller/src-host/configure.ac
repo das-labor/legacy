@@ -6,6 +6,7 @@ AC_INIT(lap-host, 0.0.1)
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR(src/cand/main.c)
 AM_CONFIG_HEADER(config.h)
+AC_CONFIG_MACRO_DIR([m4])
 
 # Checks for programs.
 AC_PROG_CC
