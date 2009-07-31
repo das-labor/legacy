@@ -1,1 +1,1 @@
-../cand/cann.c
+#include "../cand/cann.c"

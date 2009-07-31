@@ -1,1 +1,1 @@
-../../../lib/can-uart.c
+#include "lib/can-uart.c"

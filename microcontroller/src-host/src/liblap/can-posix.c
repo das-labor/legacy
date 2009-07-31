@@ -1,1 +1,1 @@
-../lapcontrol/can-posix.c
+#include "../lapcontrol/can-posix.c"

@@ -1,1 +1,1 @@
-../../../lib/can.c
+#include "lib/can.c"
