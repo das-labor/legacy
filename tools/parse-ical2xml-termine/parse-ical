@@ -4,7 +4,7 @@
 
 XMLFILE="termine.xml";
 NRXMLFILE="talksworkshops.xml";
-ICALFILE="termine.ical";
+ICALFILE="termine.ics";
 
 #############################################################################
 # Starts Here
@@ -41,8 +41,12 @@ class LaborTermine
 			t["text"] = e.summary
 #			puts "Title:" + e.summary
 
-			t["link"] = e.description
-#			puts "Link:" + e.description
+#			t["desc"] = e.description	# if we want to use a longer description, too
+#			puts "Description:" + e.description
+			
+			t["link"] = e.attachments[0]
+#			puts "Link: " + e.attachments[0]
+
 			term.push(t) 	# store the hash table in an global array
 		}
 		cal.events.each{|e|
@@ -55,8 +59,8 @@ class LaborTermine
 			h["text"] = e.summary
 #			puts "Title:" + e.summary
 
-			h["link"] = e.description
-#			puts "Link:" + e.description
+			h["link"] = e.attachments[0]
+#			puts "Link:" + e.attachments[0]
             if e.recurrence_rules.to_ical == "" then
                 nrterm.push(h)  # only non-recurring events
             end
