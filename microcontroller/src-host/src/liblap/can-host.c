@@ -1,1 +1,1 @@
-../cand/can-host.c
+#include "../cand/can-host.c"

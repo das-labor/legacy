@@ -1,3 +1,3 @@
 
-#include "../../../lib/proto_lampe.h"
+#include "lib/proto_lampe.h"
 

@@ -1,3 +1,3 @@
 
-#include "../../../lib/lap.h"
+#include "lib/lap.h"
 

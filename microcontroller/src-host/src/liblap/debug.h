@@ -1,1 +1,1 @@
-../cand/debug.h
+#include "../cand/debug.h"
