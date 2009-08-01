@@ -3,4 +3,4 @@ OBJ     = main.o uart.o util.o pixel.o anim3d.o
 MCU_TARGET = atmega8
 
 
-include ../../make/avr.mk
+include make/avr.mk
