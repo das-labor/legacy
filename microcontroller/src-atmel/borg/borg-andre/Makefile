@@ -7,7 +7,7 @@ OBJ            = borg_hw.o main.o util.o pixel.o programm.o borg_can.o can.o \
 				 noekeon_asm.o stonefly.o
 CANADDR        = 0x42
 
-include ../../make/avr.mk
+include make/avr.mk
 
 .PHONY: tetris/tetris.o
 tetris/tetris.o:
