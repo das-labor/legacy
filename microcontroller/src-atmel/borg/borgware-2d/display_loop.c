@@ -23,11 +23,11 @@ jmp_buf newmode_jmpbuf;
 
 void display_loop(){
 //	mcuf_serial_mode();
-	
+
 	mode = setjmp(newmode_jmpbuf);
 	oldOldmode = oldMode;
 
-#ifdef JOYSTICK_SUPPORT	
+#ifdef JOYSTICK_SUPPORT
 	waitForFire = 1;
 #endif
 
@@ -38,9 +38,9 @@ void display_loop(){
 #ifdef ANIMATION_SCROLLTEXT
 		case 1:
 			scrolltext(scrolltext_text);
-			
+
 #ifdef RANDOM_SUPPORT
-			{ char a[14];
+			{ char a[28];
 				sprintf(a,"</# counter == %lu  ", percnt_get());
 				scrolltext(a);
 			}
@@ -70,7 +70,7 @@ void display_loop(){
 		case 5:
 			schachbrett(10);
 			break;
-#endif			
+#endif
 
 #ifdef ANIMATION_FEUER
 		case 6:
@@ -91,7 +91,7 @@ void display_loop(){
 #endif
 
 #ifdef ANIMATION_GAMEOFLIFE
-		case 9:	
+		case 9:
 			gameoflife();
 			break;
 #endif
@@ -114,11 +114,11 @@ void display_loop(){
 #ifdef ANIMATION_TESTS
 		case 31:
 			//test_level1();
-			
+
 			break;
 		case 32:
 			//test_level2();
-			
+
 			break;
 		case 33:
 			//test_level3();
@@ -127,7 +127,7 @@ void display_loop(){
 		case 35:
 			test_palette();
                         test_palette2();
-			
+
 			break;
 #endif
 
