@@ -18,12 +18,8 @@
 font fonts[MAX_FONTS];
 #define MAX_SPECIALCOLORS 3
 
-#ifndef AVR
-	#define strtok_r(s,d,l) strtok(s,d)	
-#endif
-
-unsigned char PROGMEM colorTable[MAX_SPECIALCOLORS*NUM_ROWS] = {1, 1, 2, 3, 3, 2, 1, 1,   
-                                                                3, 3, 2, 1, 1, 2, 3, 3,    
+unsigned char PROGMEM colorTable[MAX_SPECIALCOLORS*NUM_ROWS] = {1, 1, 2, 3, 3, 2, 1, 1,
+                                                                3, 3, 2, 1, 1, 2, 3, 3,
                                                                 3, 3, 2, 2, 3, 3, 2, 2
 };
 
@@ -58,7 +54,7 @@ void clear_text_pixmap(unsigned char value){
 			(*text_pixmap)[y][z] = 0;
 		}
 	}
-	
+
 }
 
 void update_pixmap(){
@@ -102,7 +98,7 @@ typedef struct blob_t_struct{
 	unsigned char visible;
 	unsigned char direction;
 	unsigned int timer;
-	
+
 	const unsigned int* fontIndex;
 	const unsigned char* fontData;
 	unsigned char font_storebytes;/*bytes per char*/
@@ -144,12 +140,12 @@ unsigned int getLen(blob_t *blob) {
 	unsigned int strLen = 0;
 	unsigned char * str = (unsigned char*)blob->str;
 	uint8_t space = blob->space * blob->font_storebytes;
-	
+
 	while ((glyph = *str++)) {
 		glyph -= 1;
-		strLen += PW(blob->fontIndex[glyph+1]) - PW(blob->fontIndex[glyph]); 
+		strLen += PW(blob->fontIndex[glyph+1]) - PW(blob->fontIndex[glyph]);
 		strLen += space;
-	}      
+	}
 	return strLen/blob->font_storebytes;
 }
 
@@ -157,14 +153,14 @@ unsigned int getLen(blob_t *blob) {
 unsigned int getnum(blob_t * blob){
 	unsigned int num=0;
 	unsigned char gotnum = 0;
-	
+
 	while( (*blob->commands >= '0') && (*blob->commands <='9') ){
 		gotnum = 1;
 		num *= 10;
 		num += *blob->commands - '0';
 		blob->commands++;
 	}
-	
+
 	if(gotnum){
 		return num;
 	}else{
@@ -179,7 +175,7 @@ unsigned char blobNextCommand(blob_t * blob){
 		switch (*blob->commands++){
 		case '<':
 			blob->direction &= ~DIRECTION_RIGHT;
-			if((tmp = getnum(blob)) != 0xFFFF){ 
+			if((tmp = getnum(blob)) != 0xFFFF){
 				blob->delayx_rld = tmp;
 			}else{
 				blob->delayx_rld = SCROLL_X_SPEED;
@@ -188,7 +184,7 @@ unsigned char blobNextCommand(blob_t * blob){
 			break;
 		case '>':
 			blob->direction |= DIRECTION_RIGHT;
-			if((tmp = getnum(blob)) != 0xFFFF){ 
+			if((tmp = getnum(blob)) != 0xFFFF){
 				blob->delayx_rld = tmp;
 			}else{
 				blob->delayx_rld = SCROLL_X_SPEED;
@@ -197,7 +193,7 @@ unsigned char blobNextCommand(blob_t * blob){
 			break;
 		case 'd':
 			blob->direction |= DIRECTION_DOWN;
-			if((tmp = getnum(blob)) != 0xFFFF){ 
+			if((tmp = getnum(blob)) != 0xFFFF){
 				blob->delayy_rld = tmp;
 			}else{
 				blob->delayy_rld = SCROLL_Y_SPEED;
@@ -206,7 +202,7 @@ unsigned char blobNextCommand(blob_t * blob){
 			break;
 		case 'u':
 			blob->direction &= ~DIRECTION_DOWN;
-			if((tmp = getnum(blob)) != 0xFFFF){ 
+			if((tmp = getnum(blob)) != 0xFFFF){
 				blob->delayy_rld = tmp;
 			}else{
 				blob->delayy_rld = SCROLL_Y_SPEED;
@@ -214,19 +210,19 @@ unsigned char blobNextCommand(blob_t * blob){
 			blob->delayy = blob->delayy_rld;
 			break;
 		case 'x'://Place string at this x Position
-			if((tmp = getnum(blob)) != 0xFFFF){ 
+			if((tmp = getnum(blob)) != 0xFFFF){
 				blob->posx = tmp;
 			}else{
 				blob->posx =  NUM_COLS/2 + blob->sizex/2;
 			}
 			break;
 		case 'y'://Place string at this y Position
-			if((tmp = getnum(blob)) != 0xFFFF){ 
+			if((tmp = getnum(blob)) != 0xFFFF){
 				blob->posy = tmp - blob->sizey;
 			}
 			break;
 		case 'b'://blink blob
-			if((tmp = getnum(blob)) != 0xFFFF){ 
+			if((tmp = getnum(blob)) != 0xFFFF){
 				blob->delayb_rld = tmp;
 			}else{
 				blob->delayb_rld = 50;
@@ -234,7 +230,7 @@ unsigned char blobNextCommand(blob_t * blob){
 			blob->delayb = blob->delayb_rld;
 			break;
 		case '|':
-			if((tmp = getnum(blob)) != 0xFFFF){ 
+			if((tmp = getnum(blob)) != 0xFFFF){
 				blob->tox = tmp;
 			}else{
 				blob->tox =  (NUM_COLS - 2 + blob->sizex)/2;
@@ -243,7 +239,7 @@ unsigned char blobNextCommand(blob_t * blob){
 			return retval;
 			break;
 		case '-':
-			if((tmp = getnum(blob)) != 0xFFFF){ 
+			if((tmp = getnum(blob)) != 0xFFFF){
 				blob->toy = tmp;
 			}else{
 				blob->toy =  (NUM_ROWS-blob->sizey) / 2;
@@ -254,7 +250,7 @@ unsigned char blobNextCommand(blob_t * blob){
 		case 'p':
 			blob->delayx_rld = 0;
 			blob->delayy_rld = 0;
-			if((tmp = getnum(blob)) != 0xFFFF){ 
+			if((tmp = getnum(blob)) != 0xFFFF){
 				blob->timer = tmp*64;
 			}else{
 				blob->timer =  30*64;
@@ -284,33 +280,45 @@ unsigned char blobNextCommand(blob_t * blob){
 
 
 blob_t * setupBlob(char * str){
-	/*char * strtok_r ( char * string, const char * delim, char ** last)*/ 
+#ifndef AVR
+	// strtok_r must not be used on string literals so we copy the string to
+	// the heap (at least on non-AVR based processors)
+	int n;
+	char *scrolltext = NULL;
+	if ((str != NULL) && ((n = (strlen(str))) != 0)) {
+		scrolltext = malloc(n + 1);
+		strcpy(scrolltext, str);
+		str = scrolltext;
+	}
+#endif
+
 	static unsigned char chop_cnt;
 	static char *last; static char delim[] = "#";
 	static char *lastcommands;
 	unsigned int tmp;
-	
+
 	if(str){
 		chop_cnt = 0;
 	}
-	
+
 	blob_t *blob = malloc(sizeof (blob_t));
-	
+
 	if(!chop_cnt){
 		blob->commands = strtok_r (str, delim, &last);
+
 		if( blob->commands == 0) goto fail;
-		
+
 		if((tmp = getnum(blob)) != 0xFFFF){
 			chop_cnt = tmp;
 			lastcommands = blob->commands;
 		}
 	}
-	
+
 	if(chop_cnt){
 		chop_cnt--;
 		blob->commands = lastcommands;
 	}
-	
+
 	blob->str = strtok_r (0, delim, &last);
 
 	if ( blob->str == 0) goto fail;
@@ -318,7 +326,7 @@ blob_t * setupBlob(char * str){
 	blob->fontIndex = fonts[0].fontIndex;
 	blob->fontData = fonts[0].fontData;
 	blob->font_storebytes = fonts[0].storebytes;
-	
+
 	unsigned char tmp1, *strg = (unsigned char*)blob->str;
 	unsigned char glyph_beg = fonts[0].glyph_beg;
 	unsigned char glyph_end = fonts[0].glyph_end;
@@ -332,9 +340,9 @@ blob_t * setupBlob(char * str){
 		}
 		strg++;
 	}
-	
+
 	blob->space = 1;
-	
+
 	blob->sizey = fonts[0].fontHeight;
 	blob->sizex = getLen(blob);
 	if(*blob->commands == '<'){
@@ -350,33 +358,40 @@ blob_t * setupBlob(char * str){
 		blob->posy = blob->sizey;
 		blob->posx = (NUM_COLS - 2 + blob->sizex)/2;
 	}
-	
+
 	blob->delayx_rld = 0;
 	blob->delayy_rld = 0;
 	blob->delayb_rld = 0;
-	
+
 	blob->waitfor = wait_new;
-	
+
 	return blob;
-	
+
 fail:
 	free(blob);
+
+#ifndef AVR
+	if (scrolltext != NULL) {
+		free(scrolltext);
+	}
+#endif
+
 	return 0;//no more blobs to parse
 }
 
 
 unsigned char updateBlob(blob_t * blob){
-	
+
 	if(blob->delayx_rld && (!(blob->delayx--))){
 		blob->delayx = blob->delayx_rld;
 		(blob->direction & DIRECTION_RIGHT)?blob->posx--:blob->posx++;
 	}
-	
+
 	if(blob->delayy_rld && (!(blob->delayy--))){
 		blob->delayy = blob->delayy_rld;
 		(blob->direction & DIRECTION_DOWN)?blob->posy++:blob->posy--;
 	}
-	
+
 	if(blob->delayb_rld){
 		if(!(blob->delayb--)){
 			blob->delayb = blob->delayb_rld;
@@ -385,7 +400,7 @@ unsigned char updateBlob(blob_t * blob){
 	}else{
 		blob->visible = 1;
 	}
-	
+
 	unsigned char done=0;
 	switch (blob->waitfor){
 		case wait_posy:
@@ -432,31 +447,31 @@ unsigned char updateBlob(blob_t * blob){
 }
 
 void drawBlob(blob_t *blob) {
-	char x, y; 
-	unsigned char byte=0, glyph, storebytes; 
+	char x, y;
+	unsigned char byte=0, glyph, storebytes;
 	unsigned int charPos, charEnd;
-	
+
 	unsigned int posx; unsigned char posy, toy;
-	
+
 	if(!blob->visible) return;
-	
+
 	unsigned char * str = (unsigned char*)blob->str;
 	posx = blob->posx;
 	posy = blob->posy;
 	toy = posy + blob->sizey;
 	storebytes = blob->font_storebytes;
-	
+
 	glyph = (*blob->str)-1;
 	charPos = PW(blob->fontIndex[glyph]);
 	charEnd = PW(blob->fontIndex[glyph+1]);
 
 	while (posx >= NUM_COLS) {
 		charPos += storebytes;
-		if (charPos < charEnd) {                  
+		if (charPos < charEnd) {
 			posx--;
 		}else{
 			posx -= blob->space + 1;
-			if (!(glyph = *++str)) return;      
+			if (!(glyph = *++str)) return;
 			glyph -= 1;
 			charPos = PW(blob->fontIndex[glyph]);
 			charEnd = PW(blob->fontIndex[glyph+1]);
@@ -466,15 +481,15 @@ void drawBlob(blob_t *blob) {
 		unsigned char mask = 0;
 		unsigned int datpos;
 		datpos = charPos;
-		
+
 		for (y = posy; (y < NUM_ROWS) && (y < toy); y++) {
-			
+
 			if((mask<<=1) == 0){
 				mask = 0x01;
 				byte = PB(blob->fontData[datpos++]);
 			}
-				
-			if ((byte & mask) && y >= 0 ) {	
+
+			if ((byte & mask) && y >= 0 ) {
 					text_setpixel((pixel){x, y},1);
 			}
 		}
@@ -482,8 +497,8 @@ void drawBlob(blob_t *blob) {
 		if (charPos < charEnd) {
 		}else{
 			x -= blob->space;
-			if (!(glyph = *++str)) return;       
-			glyph -= 1;   
+			if (!(glyph = *++str)) return;
+			glyph -= 1;
 			charPos = PW(blob->fontIndex[glyph]);
 			charEnd = PW(blob->fontIndex[glyph+1]);
 		}
@@ -496,21 +511,21 @@ void scrolltext(char *str) {
 	jmp_buf tmp_jmpbuf;
 	char tmp_str[SCROLLTEXT_BUFFER_SIZE];
 	int ljmp_retval;
-    
+
 	fonts[0] = SCROLLTEXT_FONT;
-	
+
 	text_pixmap = malloc(NUM_ROWS * LINEBYTES);
-	
+
   if(scrolltext_text[0] == 0){
     strcpy_P(scrolltext_text, default_text);
   }
 	memcpy(tmp_str, str, SCROLLTEXT_BUFFER_SIZE);
-	
+
 	blob_t *startblob=0, *aktblob, *nextblob=0;
 
 	memcpy (tmp_jmpbuf, newmode_jmpbuf, sizeof(jmp_buf));
-	
-	
+
+
 	if((ljmp_retval = setjmp(newmode_jmpbuf))){
 		while(startblob){
 			aktblob = startblob;
@@ -521,11 +536,11 @@ void scrolltext(char *str) {
 		memcpy (newmode_jmpbuf, tmp_jmpbuf, sizeof(jmp_buf));
 		longjmp(newmode_jmpbuf, ljmp_retval);
 	}
-	
+
 	if (!(startblob = setupBlob(tmp_str))){
 		goto exit;
 	}
-	
+
 	unsigned char retval;
 	do{
 		startblob->next = 0;
@@ -561,7 +576,7 @@ void scrolltext(char *str) {
 				}
 				aktblob = nextblob;
 			}
-						
+
 			aktblob = startblob;
 			clear_text_pixmap(0);
 			while(aktblob){
@@ -569,13 +584,13 @@ void scrolltext(char *str) {
 				aktblob = aktblob->next;
 			}
 			update_pixmap();
-			wait(2);	
+			wait(2);
 		};
 		startblob = setupBlob(0);
 		//showBlob(startblob);
 	}while(startblob);
-	
-exit:	
+
+exit:
 	free(text_pixmap);
 	memcpy (newmode_jmpbuf, tmp_jmpbuf, sizeof(jmp_buf));
 }
