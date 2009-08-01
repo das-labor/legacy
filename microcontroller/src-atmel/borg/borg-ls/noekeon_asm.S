@@ -1,3 +1,3 @@
 
-#include "../borg-base/noekeon_asm.S"
+#include "lib/noekeon_asm.S"
 
