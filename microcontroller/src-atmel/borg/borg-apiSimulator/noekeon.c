@@ -1,3 +1,3 @@
 
-#include "../borg-base/noekeon.c"
+#include "lib/noekeon.c"
 
