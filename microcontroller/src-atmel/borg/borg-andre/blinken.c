@@ -1,2 +1,2 @@
 #include "config.h"
-#include "../borg-base/blinken.c"
+#include "borg-base/blinken.c"
