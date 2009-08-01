@@ -9,11 +9,9 @@ ICALFILE="termine.ics";
 #############################################################################
 # Starts Here
 require 'rubygems' 
-require 'icalendar'
+require 'ri_cal'
 require 'date'
 
-
-include Icalendar
 
 class LaborTermine 
 	attr_reader "termine"
@@ -24,54 +22,60 @@ class LaborTermine
 		@nrtermine = Array.new
 	end
 	
+
 	def parse()	
-		term = Array.new
-		nrterm = Array.new
+		term = Array.new	# array to return (all events)
+		nrterm = Array.new	# array to return (non-recurring events only)
 
-		cal_file = File.open(ICALFILE)
-		cals = Icalendar.parse(cal_file)
-		cal = cals.first
-		cal.events.each{|e|
-			t = Hash.new	# one hash table per event (contains date, title, link)
-#			puts "Termin:"
+		cals= File.open(ICALFILE, "r")
+		cal = RiCal.parse(cals)
 
-			t["date"] = e.dtstart
-#			puts e.dtstart
+		## sort recurring from non-recurring events
 
-			t["text"] = e.summary
-#			puts "Title:" + e.summary
+		cal.first.events.each{|e|
 
-#			t["desc"] = e.description	# if we want to use a longer description, too
-#			puts "Description:" + e.description
-			
-			t["link"] = e.attachments[0]
-#			puts "Link: " + e.attachments[0]
+			# push non-reccurring event parameters into hash table
+			if !e.recurs? then
+				e.occurrences(:starting => Date.today).each{|nre|
+					nrt = Hash.new
+					#puts ":::::::..NON-RECURRING EVENT..:::::::"
+					#puts nre.dtstart
+					nrt["date"] = nre.dtstart
+	
+					#puts nre.summary
+					nrt["text"] = nre.summary
+	
+					#puts nre.attach
+					nrt["link"] = nre.attach
 
-			term.push(t) 	# store the hash table in an global array
+					# push hash table into array
+					nrterm.push(nrt)
+				}
+			end
+
+			# put all relevant occurances of an event
+			e.occurrences(:before => Date.today+(14) >> 1, :starting => Date.today).each{|re|
+				t = Hash.new
+				#puts "::::::::..ANY EVENT..::::::::"
+				#puts re.dtstart
+				t["date"] = re.dtstart
+
+				#puts re.summary
+				t["text"] = re.summary
+
+				#puts re.attach
+				t["link"] = re.attach
+
+				#push event hash table into array
+				term.push(t)
+			}
 		}
-		cal.events.each{|e|
-			h = Hash.new	# one hash table per event (contains date, title, link)
-#			puts "Termin:"
-
-			h["date"] = e.dtstart
-#			puts e.dtstart
-
-			h["text"] = e.summary
-#			puts "Title:" + e.summary
-
-			h["link"] = e.attachments[0]
-#			puts "Link:" + e.attachments[0]
-            if e.recurrence_rules.to_ical == "" then
-                nrterm.push(h)  # only non-recurring events
-            end
-		}
-
 		thash = Hash.new
 		thash["termine"] = term
-		thash["nrtermine"] = nrterm
+		thash["nrtermine"] = nrterm	
 		return thash
 	end
-	
+
 	def sort(tarr)		# events are not necessarily ordered by date
 #		puts "Sorting by date ..."
 		d = Array.new	# array to sort dates
@@ -94,7 +98,6 @@ class LaborTermine
 
 	def properdate(tarr)
 		tarr.each{|t|
-
 			# padding with leading zeros and add the results as idividual keys to our hash
 			t["day"] = "%02d" % t["date"].day.to_s
 			t["month"] = "%02d" % t["date"].mon.to_s
@@ -125,23 +128,17 @@ class LaborTermine
 		return tarr
 	end
 
-	def outputtermine(tarr)
-		puts "Debug output: content of events array of hashes"
-		tarr.each{|t|
-			puts "Termin"
-			puts t["text"]
-			puts t["link"]
-			puts t["date"]
-			puts t["year"]
-			puts t["month"]
-			puts t["day"]
-			puts t["hour"]
-			puts t["min"]
-			puts t["wday"]
+	def debug(arr)
+		puts "\n \n ::::::::::::::::..Debug output..::::::::::::::::::::"
+		arr.each{|e|
+			puts ":::::::..Event..::::::::"
+			puts e["date"]
+			puts e["date"].gregorian?
+			puts e["text"]
+			puts e["link"]
 		}
 	end
 
-  # Main
 	def run
 		parsedtermine = parse()
 
@@ -159,20 +156,22 @@ end
 
 
 
+
 ####
 # MAIN
 #
 
-class Array
-  def to_h
-    Hash[*self]
-  end
-end
+#class Array
+#  def to_h
+#    Hash[*self]
+#  end
+#end
 
 
 
 lt = LaborTermine.new;	# create instance
 lt.run;	# run the parser
+
 
 puts "Alle Termine:"
 File.open( XMLFILE, "w" ) { |f|
