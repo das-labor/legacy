@@ -1,1 +1,2 @@
-../borg-base/scrolltext.h
+#include "config.h"
+#include "borg-base/scrolltext.h"
