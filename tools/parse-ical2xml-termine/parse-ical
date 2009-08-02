@@ -77,7 +77,7 @@ class LaborTermine
 	end
 
 	def sort(tarr)		# events are not necessarily ordered by date
-#		puts "Sorting by date ..."
+#		puts "Sorting dates ..."
 		d = Array.new	# array to sort dates
 		ttermine = Array.new 	# temp array to overwrite @termine with
 
@@ -85,7 +85,7 @@ class LaborTermine
 			d.push(t["date"])
 		}
 		d.sort!
-#		puts "Sorting @termine by date ..."
+#		puts "Sorting events by date ..."
 		d.each{|da|
 			tarr.each{|t|
 				if t["date"] == da then
@@ -98,7 +98,7 @@ class LaborTermine
 
 	def properdate(tarr)
 		tarr.each{|t|
-			# padding with leading zeros and add the results as idividual keys to our hash
+			# pad with leading zeros and add the results as idividual keys to our hash
 			t["day"] = "%02d" % t["date"].day.to_s
 			t["month"] = "%02d" % t["date"].mon.to_s
 			t["year"] = t["date"].year.to_s
@@ -129,7 +129,7 @@ class LaborTermine
 	end
 
 	def debug(arr)
-		puts "\n \n ::::::::::::::::..Debug output..::::::::::::::::::::"
+		puts "\n \n::::::::::::::::..Debug output..::::::::::::::::::::"
 		arr.each{|e|
 			puts ":::::::..Event..::::::::"
 			puts e["date"]
@@ -159,14 +159,6 @@ end
 
 ####
 # MAIN
-#
-
-#class Array
-#  def to_h
-#    Hash[*self]
-#  end
-#end
-
 
 
 lt = LaborTermine.new;	# create instance
