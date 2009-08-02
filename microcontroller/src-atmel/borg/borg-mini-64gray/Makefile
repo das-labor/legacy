@@ -9,4 +9,4 @@ DEFS          = -DF_CPU=8000000
 LFUSE = 0xa4
 HFUSE = 0xd3
 
-include ../../make/avr_tut.mk
+include make/avr_tut.mk
