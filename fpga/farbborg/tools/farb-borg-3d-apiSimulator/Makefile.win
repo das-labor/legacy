@@ -1,0 +1,59 @@
+# Project: borg-3d-apiSimulator
+# Makefile created by Dev-C++ 4.9.9.2
+
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = 
+OBJ  = main.o util.o trackball.o colorMatrix.o colorSnake.o fileParser.o slh.o testAnim.o api.o displayLoop.o plasmaAnims.o $(RES)
+LINKOBJ  = main.o util.o trackball.o colorMatrix.o colorSnake.o fileParser.o slh.o testAnim.o api.o displayLoop.o plasmaAnims.o $(RES)
+LIBS =  -L"lib" -mwindows -lglut32s -lglu32 -lopengl32 -lwinmm -lgdi32 -lm  
+INCS =  -I"include" 
+CXXINCS =  -I"lib/gcc/mingw32/3.4.2/include"  -I"include/c++/3.4.2/backward"  -I"include/c++/3.4.2/mingw32"  -I"include/c++/3.4.2"  -I"include" 
+BIN  = Win32-devcpp.exe
+CXXFLAGS = $(CXXINCS) -O1
+CFLAGS = $(INCS) -D_WIN32 -O1
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before Win32-devcpp.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CC) $(LINKOBJ) -o "Win32-devcpp.exe" $(LIBS)
+
+main.o: main.c
+	$(CC) -c main.c -o main.o $(CFLAGS)
+
+util.o: util.c
+	$(CC) -c util.c -o util.o $(CFLAGS)
+
+trackball.o: trackball.c
+	$(CC) -c trackball.c -o trackball.o $(CFLAGS)
+
+colorMatrix.o: colorMatrix.c
+	$(CC) -c colorMatrix.c -o colorMatrix.o $(CFLAGS)
+
+colorSnake.o: colorSnake.c
+	$(CC) -c colorSnake.c -o colorSnake.o $(CFLAGS)
+
+fileParser.o: fileParser.c
+	$(CC) -c fileParser.c -o fileParser.o $(CFLAGS)
+
+slh.o: slh.c
+	$(CC) -c slh.c -o slh.o $(CFLAGS)
+
+testAnim.o: testAnim.c
+	$(CC) -c testAnim.c -o testAnim.o $(CFLAGS)
+
+api.o: api.c
+	$(CC) -c api.c -o api.o $(CFLAGS)
+
+displayLoop.o: displayLoop.c
+	$(CC) -c displayLoop.c -o displayLoop.o $(CFLAGS)
+
+plasmaAnims.o: plasmaAnims.c
+	$(CC) -c plasmaAnims.c -o plasmaAnims.o $(CFLAGS)

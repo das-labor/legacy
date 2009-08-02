@@ -1,0 +1,32 @@
+[size] 1440 852
+[pos] -1 -1
+*-28.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+@28
+pwm_tb.pwm1.clk
+pwm_tb.pwm1.cp2
+pwm_tb.pwm1.reset
+@22
+pwm_tb.pwm1.latch_data[7:0]
+pwm_tb.pwm1.latchcount[3:0]
+pwm_tb.pwm1.line[63:0]
+@28
+pwm_tb.pwm1.lsr_c
+pwm_tb.pwm1.lsr_clk_en
+pwm_tb.pwm1.lsr_clr
+pwm_tb.pwm1.lsr_d
+pwm_tb.pwm1.planecount[2:0]
+@22
+pwm_tb.pwm1.newpwmcount[8:0]
+@28
+pwm_tb.pwm1.psr_c
+pwm_tb.pwm1.psr_d
+pwm_tb.pwm1.pwm_enable
+@22
+pwm_tb.pwm1.pwmcount[8:0]
+pwm_tb.pwm1.pwmdata[15:0]
+@28
+pwm_tb.pwm1.trigger
+pwm_tb.pwm1.we
+pwm_tb.pwm1.we_br1
+pwm_tb.pwm1.we_br2
+pwm_tb.pwm1.we_br3

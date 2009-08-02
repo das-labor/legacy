@@ -1,0 +1,344 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7308192B0E044F7500B69D30 /* displayLoop.c in Sources */ = {isa = PBXBuildFile; fileRef = 730819270E044F7500B69D30 /* displayLoop.c */; };
+		7308192C0E044F7500B69D30 /* plasmaAnims.c in Sources */ = {isa = PBXBuildFile; fileRef = 730819290E044F7500B69D30 /* plasmaAnims.c */; };
+		73496C1A0B7BD38A00D4554C /* util.c in Sources */ = {isa = PBXBuildFile; fileRef = 734968100B7BCF2400D4554C /* util.c */; };
+		73496C1B0B7BD38A00D4554C /* trackball.c in Sources */ = {isa = PBXBuildFile; fileRef = 7349680E0B7BCF2400D4554C /* trackball.c */; };
+		73496C1C0B7BD38C00D4554C /* testAnim.c in Sources */ = {isa = PBXBuildFile; fileRef = 7349680C0B7BCF2400D4554C /* testAnim.c */; };
+		73496C1D0B7BD38C00D4554C /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 7349680B0B7BCF2400D4554C /* main.c */; };
+		73496C1E0B7BD38E00D4554C /* fileParser.c in Sources */ = {isa = PBXBuildFile; fileRef = 734968090B7BCF2400D4554C /* fileParser.c */; };
+		73496C1F0B7BD38F00D4554C /* api.c in Sources */ = {isa = PBXBuildFile; fileRef = 734968060B7BCF2400D4554C /* api.c */; };
+		73496C250B7BD40000D4554C /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 734968220B7BCFE600D4554C /* AppKit.framework */; };
+		73496C260B7BD40100D4554C /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 734968230B7BCFE600D4554C /* Carbon.framework */; };
+		73496C270B7BD40200D4554C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 734968240B7BCFE600D4554C /* Foundation.framework */; };
+		73496C280B7BD40200D4554C /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 734968250B7BCFE600D4554C /* GLUT.framework */; };
+		73496C290B7BD40300D4554C /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 734968260B7BCFE600D4554C /* OpenGL.framework */; };
+		73496C2D0B7BD45000D4554C /* anim1.pr0n in Resources */ = {isa = PBXBuildFile; fileRef = 73496BFB0B7BD22900D4554C /* anim1.pr0n */; };
+		73496C2E0B7BD45000D4554C /* playlist.apl in Resources */ = {isa = PBXBuildFile; fileRef = 73496BFC0B7BD22900D4554C /* playlist.apl */; };
+		73496C2F0B7BD45000D4554C /* sample.pr0n in Resources */ = {isa = PBXBuildFile; fileRef = 73496BFD0B7BD22900D4554C /* sample.pr0n */; };
+		73496C350B7BDE7C00D4554C /* farbborg.icns in Resources */ = {isa = PBXBuildFile; fileRef = 73496C340B7BDE7C00D4554C /* farbborg.icns */; };
+		73E10D2A0D2546E6005D39F9 /* colorMatrix.c in Sources */ = {isa = PBXBuildFile; fileRef = 73E10D280D2546E6005D39F9 /* colorMatrix.c */; };
+		73E10D2B0D2546E6005D39F9 /* colorSnake.c in Sources */ = {isa = PBXBuildFile; fileRef = 73E10D290D2546E6005D39F9 /* colorSnake.c */; };
+		73E10D310D254810005D39F9 /* slh.c in Sources */ = {isa = PBXBuildFile; fileRef = 73E10D2F0D254810005D39F9 /* slh.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		730819270E044F7500B69D30 /* displayLoop.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = displayLoop.c; path = ../displayLoop.c; sourceTree = SOURCE_ROOT; };
+		730819280E044F7500B69D30 /* displayLoop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = displayLoop.h; path = ../displayLoop.h; sourceTree = SOURCE_ROOT; };
+		730819290E044F7500B69D30 /* plasmaAnims.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = plasmaAnims.c; path = ../plasmaAnims.c; sourceTree = SOURCE_ROOT; };
+		7308192A0E044F7500B69D30 /* plasmaAnims.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = plasmaAnims.h; path = ../plasmaAnims.h; sourceTree = SOURCE_ROOT; };
+		734968060B7BCF2400D4554C /* api.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = api.c; path = ../api.c; sourceTree = SOURCE_ROOT; };
+		734968070B7BCF2400D4554C /* api.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = api.h; path = ../api.h; sourceTree = SOURCE_ROOT; };
+		734968080B7BCF2400D4554C /* config.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../config.h; sourceTree = SOURCE_ROOT; };
+		734968090B7BCF2400D4554C /* fileParser.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = fileParser.c; path = ../fileParser.c; sourceTree = SOURCE_ROOT; };
+		7349680A0B7BCF2400D4554C /* fileParser.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = fileParser.h; path = ../fileParser.h; sourceTree = SOURCE_ROOT; };
+		7349680B0B7BCF2400D4554C /* main.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = main.c; path = ../main.c; sourceTree = SOURCE_ROOT; };
+		7349680C0B7BCF2400D4554C /* testAnim.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = testAnim.c; path = ../testAnim.c; sourceTree = SOURCE_ROOT; };
+		7349680D0B7BCF2400D4554C /* testAnim.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = testAnim.h; path = ../testAnim.h; sourceTree = SOURCE_ROOT; };
+		7349680E0B7BCF2400D4554C /* trackball.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = trackball.c; path = ../trackball.c; sourceTree = SOURCE_ROOT; };
+		7349680F0B7BCF2400D4554C /* trackball.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = trackball.h; path = ../trackball.h; sourceTree = SOURCE_ROOT; };
+		734968100B7BCF2400D4554C /* util.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = util.c; path = ../util.c; sourceTree = SOURCE_ROOT; };
+		734968110B7BCF2400D4554C /* util.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = util.h; path = ../util.h; sourceTree = SOURCE_ROOT; };
+		734968220B7BCFE600D4554C /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		734968230B7BCFE600D4554C /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		734968240B7BCFE600D4554C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		734968250B7BCFE600D4554C /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = /System/Library/Frameworks/GLUT.framework; sourceTree = "<absolute>"; };
+		734968260B7BCFE600D4554C /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		73496BFB0B7BD22900D4554C /* anim1.pr0n */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = anim1.pr0n; path = ../anim1.pr0n; sourceTree = SOURCE_ROOT; };
+		73496BFC0B7BD22900D4554C /* playlist.apl */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = playlist.apl; path = ../playlist.apl; sourceTree = SOURCE_ROOT; };
+		73496BFD0B7BD22900D4554C /* sample.pr0n */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = sample.pr0n; path = ../sample.pr0n; sourceTree = SOURCE_ROOT; };
+		73496C0E0B7BD2E200D4554C /* farbborgSim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = farbborgSim.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		73496C100B7BD2E200D4554C /* farbborgSim-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "farbborgSim-Info.plist"; sourceTree = "<group>"; };
+		73496C340B7BDE7C00D4554C /* farbborg.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = farbborg.icns; sourceTree = "<group>"; };
+		73E10D280D2546E6005D39F9 /* colorMatrix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = colorMatrix.c; path = ../colorMatrix.c; sourceTree = SOURCE_ROOT; };
+		73E10D290D2546E6005D39F9 /* colorSnake.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = colorSnake.c; path = ../colorSnake.c; sourceTree = SOURCE_ROOT; };
+		73E10D2D0D254751005D39F9 /* colorMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = colorMatrix.h; path = ../colorMatrix.h; sourceTree = SOURCE_ROOT; };
+		73E10D2E0D254751005D39F9 /* colorSnake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = colorSnake.h; path = ../colorSnake.h; sourceTree = SOURCE_ROOT; };
+		73E10D2F0D254810005D39F9 /* slh.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = slh.c; path = ../slh.c; sourceTree = SOURCE_ROOT; };
+		73E10D300D254810005D39F9 /* slh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = slh.h; path = ../slh.h; sourceTree = SOURCE_ROOT; };
+		C6859E8B029090EE04C91782 /* osx.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = osx.1; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		73496C0C0B7BD2E200D4554C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				73496C250B7BD40000D4554C /* AppKit.framework in Frameworks */,
+				73496C260B7BD40100D4554C /* Carbon.framework in Frameworks */,
+				73496C270B7BD40200D4554C /* Foundation.framework in Frameworks */,
+				73496C280B7BD40200D4554C /* GLUT.framework in Frameworks */,
+				73496C290B7BD40300D4554C /* OpenGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* osx */ = {
+			isa = PBXGroup;
+			children = (
+				73496C340B7BDE7C00D4554C /* farbborg.icns */,
+				73496C240B7BD3D700D4554C /* Animaitons */,
+				73496A0B0B7BCFF800D4554C /* Frameworks */,
+				08FB7795FE84155DC02AAC07 /* Source */,
+				C6859E8C029090F304C91782 /* Documentation */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+				73496C100B7BD2E200D4554C /* farbborgSim-Info.plist */,
+			);
+			name = osx;
+			sourceTree = "<group>";
+		};
+		08FB7795FE84155DC02AAC07 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				730819270E044F7500B69D30 /* displayLoop.c */,
+				730819280E044F7500B69D30 /* displayLoop.h */,
+				730819290E044F7500B69D30 /* plasmaAnims.c */,
+				7308192A0E044F7500B69D30 /* plasmaAnims.h */,
+				73E10D2F0D254810005D39F9 /* slh.c */,
+				73E10D300D254810005D39F9 /* slh.h */,
+				73E10D2D0D254751005D39F9 /* colorMatrix.h */,
+				73E10D2E0D254751005D39F9 /* colorSnake.h */,
+				73E10D280D2546E6005D39F9 /* colorMatrix.c */,
+				73E10D290D2546E6005D39F9 /* colorSnake.c */,
+				734968060B7BCF2400D4554C /* api.c */,
+				734968070B7BCF2400D4554C /* api.h */,
+				734968080B7BCF2400D4554C /* config.h */,
+				734968090B7BCF2400D4554C /* fileParser.c */,
+				7349680A0B7BCF2400D4554C /* fileParser.h */,
+				7349680B0B7BCF2400D4554C /* main.c */,
+				7349680C0B7BCF2400D4554C /* testAnim.c */,
+				7349680D0B7BCF2400D4554C /* testAnim.h */,
+				7349680E0B7BCF2400D4554C /* trackball.c */,
+				7349680F0B7BCF2400D4554C /* trackball.h */,
+				734968100B7BCF2400D4554C /* util.c */,
+				734968110B7BCF2400D4554C /* util.h */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				73496C0E0B7BD2E200D4554C /* farbborgSim.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		73496A0B0B7BCFF800D4554C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				734968220B7BCFE600D4554C /* AppKit.framework */,
+				734968230B7BCFE600D4554C /* Carbon.framework */,
+				734968240B7BCFE600D4554C /* Foundation.framework */,
+				734968250B7BCFE600D4554C /* GLUT.framework */,
+				734968260B7BCFE600D4554C /* OpenGL.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		73496C240B7BD3D700D4554C /* Animaitons */ = {
+			isa = PBXGroup;
+			children = (
+				73496BFB0B7BD22900D4554C /* anim1.pr0n */,
+				73496BFC0B7BD22900D4554C /* playlist.apl */,
+				73496BFD0B7BD22900D4554C /* sample.pr0n */,
+			);
+			name = Animaitons;
+			sourceTree = "<group>";
+		};
+		C6859E8C029090F304C91782 /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+				C6859E8B029090EE04C91782 /* osx.1 */,
+			);
+			name = Documentation;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		73496C0D0B7BD2E200D4554C /* farbborgSim */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 73496C110B7BD2E300D4554C /* Build configuration list for PBXNativeTarget "farbborgSim" */;
+			buildPhases = (
+				73496C0A0B7BD2E200D4554C /* Resources */,
+				73496C0B0B7BD2E200D4554C /* Sources */,
+				73496C0C0B7BD2E200D4554C /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = farbborgSim;
+			productName = farbborgSim;
+			productReference = 73496C0E0B7BD2E200D4554C /* farbborgSim.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = NO;
+			};
+			buildConfigurationList = 1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "osx" */;
+			compatibilityVersion = "Xcode 2.4";
+			hasScannedForEncodings = 1;
+			mainGroup = 08FB7794FE84155DC02AAC07 /* osx */;
+			projectDirPath = "";
+			projectRoot = ..;
+			targets = (
+				73496C0D0B7BD2E200D4554C /* farbborgSim */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		73496C0A0B7BD2E200D4554C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				73496C2D0B7BD45000D4554C /* anim1.pr0n in Resources */,
+				73496C2E0B7BD45000D4554C /* playlist.apl in Resources */,
+				73496C2F0B7BD45000D4554C /* sample.pr0n in Resources */,
+				73496C350B7BDE7C00D4554C /* farbborg.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		73496C0B0B7BD2E200D4554C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				73496C1A0B7BD38A00D4554C /* util.c in Sources */,
+				73496C1B0B7BD38A00D4554C /* trackball.c in Sources */,
+				73496C1C0B7BD38C00D4554C /* testAnim.c in Sources */,
+				73496C1D0B7BD38C00D4554C /* main.c in Sources */,
+				73496C1E0B7BD38E00D4554C /* fileParser.c in Sources */,
+				73496C1F0B7BD38F00D4554C /* api.c in Sources */,
+				73E10D2A0D2546E6005D39F9 /* colorMatrix.c in Sources */,
+				73E10D2B0D2546E6005D39F9 /* colorSnake.c in Sources */,
+				73E10D310D254810005D39F9 /* slh.c in Sources */,
+				7308192B0E044F7500B69D30 /* displayLoop.c in Sources */,
+				7308192C0E044F7500B69D30 /* plasmaAnims.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB923608733DC60010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = OSX_;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				OTHER_LDFLAGS = "-lpthread";
+				PREBINDING = NO;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+			};
+			name = Debug;
+		};
+		1DEB923708733DC60010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = OSX_;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				OTHER_LDFLAGS = "-lpthread";
+				PREBINDING = NO;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+			};
+			name = Release;
+		};
+		73496C120B7BD2E300D4554C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G4;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
+				INFOPLIST_FILE = "farbborgSim-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Carbon,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = farbborgSim;
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		73496C130B7BD2E300D4554C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				COPY_PHASE_STRIP = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G4;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
+				INFOPLIST_FILE = "farbborgSim-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Carbon,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = farbborgSim;
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "osx" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB923608733DC60010E9CD /* Debug */,
+				1DEB923708733DC60010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		73496C110B7BD2E300D4554C /* Build configuration list for PBXNativeTarget "farbborgSim" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				73496C120B7BD2E300D4554C /* Debug */,
+				73496C130B7BD2E300D4554C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}

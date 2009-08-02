@@ -1,0 +1,34 @@
+[size] 1440 853
+[pos] -1 -1
+*-24.196104 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+@28
+wb_farbborg_tb.wb_farbborg1.clk
+wb_farbborg_tb.wb_farbborg1.clk_pwm
+@22
+wb_farbborg_tb.wb_farbborg1.latch_data[7:0]
+@28
+wb_farbborg_tb.wb_farbborg1.lsr_c
+wb_farbborg_tb.wb_farbborg1.lsr_clr
+wb_farbborg_tb.wb_farbborg1.lsr_d
+@22
+wb_farbborg_tb.wb_farbborg1.plane_out[4:0]
+@28
+wb_farbborg_tb.wb_farbborg1.psr_c
+wb_farbborg_tb.wb_farbborg1.psr_d
+wb_farbborg_tb.wb_farbborg1.wb_ack_o
+@22
+wb_farbborg_tb.wb_farbborg1.wb_adr_i[12:0]
+@28
+wb_farbborg_tb.wb_farbborg1.wb_cyc_i
+@22
+wb_farbborg_tb.wb_farbborg1.wb_dat_i[7:0]
+wb_farbborg_tb.wb_farbborg1.wb_dat_o[7:0]
+wb_farbborg_tb.wb_farbborg1.wb_sel_i[3:0]
+@28
+wb_farbborg_tb.wb_farbborg1.we
+@22
+wb_farbborg_tb.wb_farbborg1.pwm1.dpr1.addra[8:0]
+wb_farbborg_tb.wb_farbborg1.pwm1.dpr1.addrb[7:0]
+wb_farbborg_tb.wb_farbborg1.pwm1.dpr1.dia[7:0]
+wb_farbborg_tb.wb_farbborg1.pwm1.dpr21.dia[7:0]
+wb_farbborg_tb.wb_farbborg1.pwm1.dpr22.dia[7:0]
