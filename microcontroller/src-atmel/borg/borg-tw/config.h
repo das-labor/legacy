@@ -21,7 +21,7 @@
 #define SCROLLTEXT_DEFAULT ">5+:<5|90>6:<6|78>:p10d50/#Labor#<5;>5|30<6;>6|40<6;p10+d50/# Borg#2d50-+/#Widerstand#ist#d50-b20p15#ZWECKLOS !"
 #define SCROLL_X_SPEED 10
 #define SCROLL_Y_SPEED 30
-#define SCROLLTEXT_FONT font_uni53
+#define SCROLLTEXT_FONT font_small6
 
 
 //c uart.[ch] defines
