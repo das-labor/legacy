@@ -103,6 +103,9 @@ typedef struct blob_t_struct{
 	const unsigned char* fontData;
 	unsigned char font_storebytes;/*bytes per char*/
 	unsigned char space;
+#ifndef AVR
+	char scrolltextBuffer[SCROLLTEXT_BUFFER_SIZE];
+#endif
 }blob_t;
 
 
@@ -280,28 +283,22 @@ unsigned char blobNextCommand(blob_t * blob){
 
 
 blob_t * setupBlob(char * str){
-#ifndef AVR
-	// strtok_r must not be used on string literals so we copy the string to
-	// the heap (at least on non-AVR based processors)
-	int n;
-	char *scrolltext = NULL;
-	if ((str != NULL) && ((n = (strlen(str))) != 0)) {
-		scrolltext = malloc(n + 1);
-		strcpy(scrolltext, str);
-		str = scrolltext;
-	}
-#endif
-
 	static unsigned char chop_cnt;
 	static char *last; static char delim[] = "#";
 	static char *lastcommands;
 	unsigned int tmp;
 
+	blob_t *blob = malloc(sizeof (blob_t));
+
 	if(str){
+#ifndef AVR
+		// on non-AVR archs strtok_r fails for some reason if it operates on a
+		// string which is located on another stack frame, so we need our own copy
+		memcpy (&blob->scrolltextBuffer, str, SCROLLTEXT_BUFFER_SIZE);
+		str = &blob->scrolltextBuffer;
+#endif
 		chop_cnt = 0;
 	}
-
-	blob_t *blob = malloc(sizeof (blob_t));
 
 	if(!chop_cnt){
 		blob->commands = strtok_r (str, delim, &last);
@@ -369,13 +366,6 @@ blob_t * setupBlob(char * str){
 
 fail:
 	free(blob);
-
-#ifndef AVR
-	if (scrolltext != NULL) {
-		free(scrolltext);
-	}
-#endif
-
 	return 0;//no more blobs to parse
 }
 
