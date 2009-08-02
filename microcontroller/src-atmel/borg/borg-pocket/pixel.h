@@ -1,1 +1,2 @@
-../borg-base/pixel.h
+#include "config.h"
+#include "borg-base/pixel.h"
