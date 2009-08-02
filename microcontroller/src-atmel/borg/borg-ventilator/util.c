@@ -1,4 +1,4 @@
 
 #include "config.h"
-#include "../borg-base/util.c"
+#include "lib/util.c"
 

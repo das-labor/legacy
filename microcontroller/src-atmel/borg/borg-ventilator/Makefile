@@ -1,10 +1,10 @@
 
-OBJ            = borg_hw.o main.o util.o pixel.o programm.o  \
+OBJ            = borg_hw.o main.o util.o pixel.o programm.o  memxor.S noekeon_asm.S \
 				 spi.o scrolltext3.o font_arial8.o joystick.o snake.o \
 				 eeprom_reserve.o persistentCounter.o prng.o matrix.o
 CANADDR        = 0x42
 
-include ../../make/avr.mk
+include make/avr.mk
 
 #.PHONY: tetris/tetris.o
 #tetris/tetris.o:

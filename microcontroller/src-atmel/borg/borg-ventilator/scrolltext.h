@@ -1,3 +1,3 @@
 
-#include "../borg-base/scrolltext.h"
+#include "borg-base/scrolltext.h"
 

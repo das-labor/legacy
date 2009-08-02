@@ -1,3 +1,3 @@
 
-#include "../borg-base/prng.h"
+#include "lib/prng.h"
 
