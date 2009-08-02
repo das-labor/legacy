@@ -8,4 +8,4 @@ OBJ            = main.o util.o pixel.o  scrolltext3.o \
 #MCU_TARGET    = atmega8
 MCU_TARGET    = atmega16
 DEFS          = -DF_CPU=8000000
-include ../../make/avr.mk
+include make/avr.mk
