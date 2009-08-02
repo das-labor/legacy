@@ -1,0 +1,76 @@
+--------------------------------------------------------------------------------------
+Timing Analyzer Summary
+--------------------------------------------------------------------------------------
+
+Type           : Worst-case tsu
+Slack          : N/A
+Required Time  : None
+Actual Time    : 8.822 ns
+From           : key_n[0]
+To             : wb_spi:spi0|wb_dat_o[7]
+From Clock     : --
+To Clock       : clock_50
+Failed Paths   : 0
+
+Type           : Worst-case tco
+Slack          : N/A
+Required Time  : None
+Actual Time    : 16.707 ns
+From           : lm32_cpu:lm0|lm32_instruction_unit:instruction_unit|i_adr_o[19]
+To             : ledr[2]
+From Clock     : clock_50
+To Clock       : --
+Failed Paths   : 0
+
+Type           : Worst-case tpd
+Slack          : N/A
+Required Time  : None
+Actual Time    : 10.493 ns
+From           : key_n[0]
+To             : gpio_0[2]
+From Clock     : --
+To Clock       : --
+Failed Paths   : 0
+
+Type           : Worst-case th
+Slack          : N/A
+Required Time  : None
+Actual Time    : 0.290 ns
+From           : sw[3]
+To             : wb_gpio:gpio0|wb_dat_o[1]
+From Clock     : --
+To Clock       : clock_50
+Failed Paths   : 0
+
+Type           : Clock Setup: 'clock_50'
+Slack          : N/A
+Required Time  : None
+Actual Time    : 87.07 MHz ( period = 11.485 ns )
+From           : lm32_cpu:lm0|lm32_instruction_unit:instruction_unit|i_adr_o[19]
+To             : lac:lac0|probe_r[2]
+From Clock     : clock_50
+To Clock       : clock_50
+Failed Paths   : 0
+
+Type           : Clock Hold: 'clock_50'
+Slack          : Not operational: Clock Skew > Data Delay
+Required Time  : None
+Actual Time    : N/A
+From           : wb_farbborg:farbborg0|pwm:pwm1|pwm_enable
+To             : wb_farbborg:farbborg0|pwm:pwm1|col_enable
+From Clock     : clock_50
+To Clock       : clock_50
+Failed Paths   : 1
+
+Type           : Total number of failed paths
+Slack          : 
+Required Time  : 
+Actual Time    : 
+From           : 
+To             : 
+From Clock     : 
+To Clock       : 
+Failed Paths   : 1
+
+--------------------------------------------------------------------------------------
+

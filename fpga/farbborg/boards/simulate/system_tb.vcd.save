@@ -1,0 +1,31 @@
+[size] 1024 699
+[pos] -1 -1
+*-21.000000 213305000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+@28
+system_tb.dut.clk
+@200
+-LM32 I
+@28
+system_tb.dut.lm32i_cyc
+system_tb.dut.lm32i_stb
+system_tb.dut.lm32i_ack
+@22
+system_tb.dut.lm32i_adr[31:0]
+@200
+-LM32 D
+@28
+system_tb.dut.lm32d_stb
+system_tb.dut.lm32d_cyc
+system_tb.dut.lm32d_ack
+system_tb.dut.lm32d_we
+@22
+system_tb.dut.lm32d_adr[31:0]
+@200
+-BRAM1
+@28
+system_tb.dut.bram1_stb
+system_tb.dut.bram1_cyc
+system_tb.dut.bram1_ack
+system_tb.dut.bram1_we
+@22
+system_tb.dut.intr_n[31:0]
