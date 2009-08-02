@@ -294,7 +294,7 @@ blob_t * setupBlob(char * str){
 #ifndef AVR
 		// on non-AVR archs strtok_r fails for some reason if it operates on a
 		// string which is located on another stack frame, so we need our own copy
-		memcpy (&blob->scrolltextBuffer, str, SCROLLTEXT_BUFFER_SIZE);
+		memcpy (blob->scrolltextBuffer, str, SCROLLTEXT_BUFFER_SIZE);
 		str = blob->scrolltextBuffer;
 #endif
 		chop_cnt = 0;
