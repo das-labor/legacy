@@ -1,0 +1,12 @@
+Hi,
+
+this is a hacked version of the files of the Ubuntu 9.04 packet
+gtkvncviewer
+in version 0.4-1. It expands the "Send keys" menu by the most
+important key combinations on a german keyboard that need a working
+AltR (AltGr) key. It is not a fix but an ugly workaround.
+
+The modifications are under the same license as the original software
+and given without any warranty.
+
+Replace the files in /usr/share/gtkvncviewer by these modified ones.
