@@ -1,0 +1,150 @@
+#!/usr/bin/env ruby
+
+require "serialport.so"
+require "optparse"
+
+port_baud     = 115200
+port_path     = "/dev/ttyUSB0"
+terminal_mode = false
+verose        = false
+
+#############################################################################
+# Extend SerialPort class with low-leven binary communication
+class SerialPort 
+	BOOT_SIG = "**soc-lm32/bootloader**" 
+
+	def put_uint32(i)
+		putc( (i >> 24) & 0xff )
+		putc( (i >> 16) & 0xff )
+		putc( (i >>  8) & 0xff )
+		putc( (i >>  0) & 0xff )
+	end
+
+	def download(addr, size)
+		a = Array.new(size)
+		putc 'd'
+		put_uint32 addr
+		put_uint32 size
+		size.times do |i|
+			a[i] = getc
+		end
+		return a
+	end
+
+	def upload(addr, data)
+		putc 'u'
+		put_uint32 addr
+		put_uint32 data.length
+		data.each do |c| 
+			putc c
+		end
+	end
+
+	def find_bootloader(max_tries = 32)
+		old_timeout = read_timeout
+		read_timeout = 500
+		count = 0;
+		begin
+			count = count + 1
+			if (count == max_tries) then
+				raise "Bootloader (#{BOOT_SIG}) not not found"
+			end
+			putc '\r'
+			l = gets
+		end while l.nil? or not l.index( BOOT_SIG )
+		read_timeout = old_timeout
+	end
+end
+
+#############################################################################
+# Main
+
+opts = OptionParser.new do |o|
+	o.banner = "Usage: upload.rb [options] <file.srec>"
+
+	o.on( "-b", "--baud BAUDRATE", Integer, 
+			"Serial port baudrate (default: #{port_baud})" ) do |baud|
+		port_baud = baud
+	end
+
+	o.on( "-s", "--serial SERIALPORT", 
+	         "Path to serial port (default: #{port_path})" ) do |port|
+		port_path = port
+	end
+
+	o.on( "-v", "--verbose", 
+	        "Be verbose and show serial I/O" ) do
+		verbose = true
+	end
+
+	o.on_tail( "-h", "--help", "Display this help message" ) do
+		puts o
+		exit 0
+	end
+end
+
+# Check arguments, open serial port and file
+begin
+	opts.parse!(ARGV)
+
+	port = SerialPort.new(port_path, port_baud, 8, 1, SerialPort::NONE)
+	raise "Could not open serial port." if not port;
+
+rescue => e
+	STDERR.puts "\nERROR: #{e.message}"
+	STDERR.puts
+	STDERR.puts opts
+	STDERR.puts
+	exit 1
+end
+
+
+
+begin
+	BLOCK_SIZE = 0x800
+	TEST_SIZE  = 0x10000
+	TEST_BASE  = 0x40000000
+
+	STDOUT.sync = true
+
+	# Find bootloader
+	print "Looking for soc-lm32 bootloader..."
+	port.find_bootloader
+	puts "found."
+
+	# generate random data
+	data = Array.new( TEST_SIZE )
+	data.map! do |e| e = rand(256) end
+
+	# upload random data
+	print "Uploading 0x%X random bytes to 0x%X..." % [TEST_SIZE, TEST_BASE]
+	(TEST_SIZE / BLOCK_SIZE).times do |i|
+		print "."
+		offset = i*BLOCK_SIZE
+		block = data[ offset .. (offset+BLOCK_SIZE-1) ]
+		port.upload( TEST_BASE + i*BLOCK_SIZE, block )
+	end
+	puts "done."
+	
+	# download again
+	print "Downloading again..."
+	ddata = Array.new
+	(TEST_SIZE / BLOCK_SIZE).times do |i|
+		print "."
+		ddata += port.download( TEST_BASE + i*BLOCK_SIZE, BLOCK_SIZE )
+	end
+	puts "done."
+
+	puts "Checking for memory errors..."
+	TEST_SIZE.times do |i|
+		if data[i] != ddata[i] then
+			puts "0x%08x:  %02x %02x" % [i, data[i], ddata[i] ]
+		end
+	end
+	puts "done."
+ensure 
+    port.close unless port.nil?
+end
+
+
+

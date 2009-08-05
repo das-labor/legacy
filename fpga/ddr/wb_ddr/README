@@ -1,0 +1,29 @@
+
+== Directory Structure ==
+
+rtl/      -- The actual memory controller.
+
+bench/    -- Components used in test benches. Used for both, simulation
+             targets and real hardware targets.
+
+sim/      -- Components used only by simulation targets. 
+             (for example a DDR memory model or FPGA on-chip components
+              like the DCM)
+
+boards/*  -- Contains a subdirectory for each supported board. Each 
+             directory contains a top level component in the file 
+             "system.v".  The file system_sim.v is a simulation 
+             testbench instantiating a system and a model of a 
+             Micron DDR DRAM chip.
+
+== Targets ==
+
+Xilinx Spartan3E-500 Starter Kit 
+
+
+== Contact ==
+
+I'd be happy to hear from you if you use this component in one of your
+projects.  Joerg Bornschein, <jb@capsec.org>
+
+

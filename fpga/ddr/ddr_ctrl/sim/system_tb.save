@@ -1,0 +1,72 @@
+[size] 1024 699
+[pos] 0 24
+*-26.000000 34800000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+@28
+system_tb.dut.clk
+system_tb.dut.reset
+system_tb.dut.ctrl0.pulse79_gen.pulse78
+@200
+-DDR SIGNALS
+@28
+system_tb.dut.ddr_clk
+system_tb.dut.ddr_ras_n
+system_tb.dut.ddr_cas_n
+system_tb.dut.ddr_we_n
+system_tb.dut.ddr_ba[1:0]
+@22
+system_tb.dut.ddr_a[12:0]
+@28
+system_tb.dut.ddr_dqs[1:0]
+@22
+system_tb.dut.ddr_dq[15:0]
+@28
+system_tb.dut.ddr_dm[1:0]
+@200
+-FML-MEMTEST
+@28
+system_tb.dut.test0.fml_rd
+system_tb.dut.test0.fml_wr
+system_tb.dut.test0.fml_done
+@22
+system_tb.dut.test0.fml_adr[25:4]
+system_tb.dut.test0.fml_rdata[127:0]
+system_tb.dut.test0.fml_wdata[127:0]
+@200
+-DDR CONTROLLER
+@28
+system_tb.dut.ctrl0.state[1:0]
+system_tb.dut.ctrl0.init_done
+system_tb.dut.ctrl0.init_req
+system_tb.dut.ctrl0.ar_req
+system_tb.dut.ctrl0.fml_act_req
+system_tb.dut.ctrl0.fml_pre_req
+system_tb.dut.ctrl0.fml_read_req
+system_tb.dut.ctrl0.fml_write_req
+@22
+system_tb.dut.ctrl0.cba_fifo_din[17:0]
+@200
+-READ PATH
+@28
+system_tb.dut.ctrl0.rpath0.clk
+system_tb.dut.ctrl0.rpath0.sample
+system_tb.dut.ctrl0.rpath0.sample180
+@22
+system_tb.dut.ctrl0.rpath0.rfifo_din[31:0]
+system_tb.dut.ctrl0.wpath0.cba_fifo.Data_in[17:0]
+system_tb.dut.ctrl0.wpath0.cba_fifo.Data_out[17:0]
+@200
+-STATUS LEDS
+@28
+(0)system_tb.led[7:0]
+(1)system_tb.led[7:0]
+(2)system_tb.led[7:0]
+(3)system_tb.led[7:0]
+(4)system_tb.led[7:0]
+(5)system_tb.led[7:0]
+(6)system_tb.led[7:0]
+(7)system_tb.led[7:0]
+@22
+system_tb.dut.test0.fml_rdata[127:0]
+system_tb.dut.test0.fml_wdata[127:0]
+system_tb.dut.test0.r_data[127:0]
+system_tb.dut.test0.r_adr[25:4]

@@ -1,0 +1,217 @@
+#!/usr/bin/env ruby
+
+require "serialport.so"
+require "optparse"
+
+port_baud     = 115200
+port_path     = "/dev/ttyUSB0"
+terminal_mode = false
+verbose       = false
+check         = false
+
+#############################################################################
+# Extend SerialPort class with bootloader communication
+class SerialPort 
+	BOOT_SIG = "**soc-lm32/bootloader**" 
+
+	def put_uint32(i)
+		putc( (i >> 24) & 0xff )
+		putc( (i >> 16) & 0xff )
+		putc( (i >>  8) & 0xff )
+		putc( (i >>  0) & 0xff )
+	end
+
+	def download(addr, size)
+		a = Array.new(size)
+		putc 'd'
+		put_uint32 addr
+		put_uint32 size
+		size.times do |i|
+			a[i] = getc
+		end
+		return a
+	end
+
+	def upload(addr, data)
+		putc 'u'
+		put_uint32 addr
+		put_uint32 data.length
+		data.each do |c| 
+			putc c
+		end
+	end
+
+	def find_bootloader(max_tries = 32)
+		old_timeout = read_timeout
+		read_timeout = 500
+		count = 0;
+		begin
+			count = count + 1
+			if (count == max_tries) then
+				raise "Bootloader (#{BOOT_SIG}) not not found"
+			end
+			putc '\r'
+			l = gets
+		end while l.nil? or not l.index( BOOT_SIG )
+		read_timeout = old_timeout
+	end
+end
+
+#############################################################################
+# Main
+
+opts = OptionParser.new do |o|
+	o.banner = "Usage: upload [options] <file.srec>"
+
+	o.on( "-b", "--baud BAUDRATE", Integer, 
+			"Serial port baudrate (default: #{port_baud})" ) do |baud|
+		port_baud = baud
+	end
+
+	o.on( "-s", "--serial SERIALPORT", 
+	         "Path to serial port (default: #{port_path})" ) do |port|
+		port_path = port
+	end
+
+	o.on( "-v", "--verbose", 
+	        "Be verbose and show serial I/O" ) do
+		verbose = true
+	end
+
+	o.on( "-t", "--terminal", 
+	        "Switch to terminal mode after upload" ) do 
+		terminal_mode = true
+	end
+
+	o.on( "-c", "--check", 
+			"Check RAM after upload and verify everything is correct" ) do
+		check = true
+	end
+
+	o.on_tail( "-h", "--help", "Display this help message" ) do
+		puts o
+		exit 0
+	end
+end
+
+# Check arguments, open serial port and file
+begin
+	opts.parse!(ARGV)
+
+	raise "SREC file argument missing" if ARGV.length != 1;
+
+	file_path = ARGV[0]
+
+	uploadFile = File.open( file_path, "r" )
+	raise "Could not SREC file." if not uploadFile;
+
+	fileSize = File.size( file_path )
+
+	port = SerialPort.new(port_path, port_baud, 8, 1, SerialPort::NONE)
+	raise "Could not open serial port." if not port;
+
+rescue => e
+	STDERR.puts "\nERROR: #{e.message}"
+	STDERR.puts
+	STDERR.puts opts
+	STDERR.puts
+	exit 1
+end
+
+begin
+	STDOUT.sync = true
+
+	print "Looking for soc-lm32 bootloader..."
+	port.find_bootloader
+    puts "found."
+	
+	data = Array.new(0x2000).map do |e| e = 0x23 end
+	port.upload(0x40000000, data );
+
+#	ist_data = port.download(0x40000000, 0x2000)
+#p ist_data
+
+	# read SREC file
+	startAddress = nil
+
+	print "Uploading SREC file..."
+    uploadFile.each_line do |line|
+		line.chomp!
+		if line[0..1] == "S7" then
+			startAddress = line[4..11].hex
+		end
+		if line[0..1] == "S3" then 
+			count = line[2..3].hex
+			addr  = line[4..11].hex
+			dat   = line[12..-3]
+			cksum = line[-2..-1].hex
+			
+			count = count - 5
+			data = Array.new( count )
+			count.times do |i|
+				data[i] = ( dat[ (2*i) .. (2*i+1) ] ).hex
+			end
+			port.upload(addr, data)
+			if verbose then
+				print " [0x%08x] " % addr
+				data.each do |e| print " %02x" % e; end
+				puts
+			else 
+				print "."
+			end
+		end
+	end
+	puts "done."
+	
+	if check then
+		print "verifieing RAM content..."
+		uploadFile.seek(0)
+
+	    uploadFile.each_line do |line|
+			printf "."
+			line.chomp!
+			if line[0..1] == "S3" then 
+				count = line[2..3].hex
+				addr  = line[4..11].hex
+				dat   = line[12..-3]
+				chsum = line[-2..-1].hex
+				
+				count = count/2 - 1
+				soll_data = Array.new( count )
+				count.times do |i|
+					soll_data[i] = ( dat[ (2*i) .. (2*i+1) ] ).hex
+				end
+				ist_data = port.download(addr, count)
+
+				count.times do |i|
+					if soll_data[i] != ist_data[i] then
+						puts "0x%08x: 0x%02x <-> 0x%02x" % [addr+i, soll_data[i], ist_data[i]]
+					end
+				end
+
+			end
+		end
+		puts "done."
+	end
+
+	if not startAddress.nil? then
+		puts "Jumping to start address 0x%08x." % startAddress
+		port.putc 'g'
+		port.put_uint32 startAddress
+	end
+
+
+	if terminal_mode 
+		puts "------ entering terminal mode ------"
+		while true do
+			a = select( [port, STDIN], nil, nil );
+
+        	STDOUT.putc(port.getc) if a[0].include?( port  )
+        	port.putc(STDIN.getc)  if a[0].include?( STDIN )
+		end
+	end
+   
+ensure 
+    uploadFile.close unless uploadFile.nil?
+    port.close unless port.nil?
+end

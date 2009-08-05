@@ -1,0 +1,128 @@
+#!/usr/bin/env ruby
+#
+# Tool to control a LogicAnalyzerComponent 
+#
+# You need to install ruby 1.8 (or later) and ruby-serialport 
+# There are various programs to view .vcd files -- e.g. GtkWave
+#
+
+require "serialport.so"
+require "optparse"
+
+$PORT_PATH = "/dev/ttyUSB0"
+$PORT_BAUD = 115200
+$TIMESCALE = "10ns"
+
+opts = OptionParser.new do |o|
+	o.banner = "Usage: lac-tool [options] SELECT TRIGGER TRIGGERMASK FILENAME\n"
+	o.separator ""
+	o.separator "  SELECT       Hexadevimal select value transferred to the LAC"
+	o.separator "  TRIGGER      Hexadecimal trigger value"
+	o.separator "  TRIGGERMASK  Haxadevimal triggermask"
+	o.separator "  FILENAME     .vcd file to be written"
+	o.separator ""
+
+	o.on( "-b", "--baud BAUDRATE", Integer,
+	         "Serial port baudrate (default: #{$PORT_BAUD})" ) do |baud|
+		$PORT_BAUD = baud
+	end
+
+	o.on( "-s", "--serial SERIALPORT", 
+	         "Path to serial port (default: #{$PORT_PATH})" ) do |port|
+		$PORT_PATH = port
+	end
+
+	o.on( "-t", "--timescale TIMESCALE",
+	         "Timescale announced in .vcd file (default: 10ns)" ) do |ts|
+		$TIMESCALE = ts
+	end
+
+	o.on( "-h", "--help", "Display this help message" ) do 
+		puts o
+		exit 0
+	end
+
+	o.separator ""
+	o.separator "Example:"
+	o.separator "   ./lac-tool 0x00 0x02 0x03 trace.vcd  --  Sets SELECT to 0 and waits for probe to be ??????10"
+	o.separator ""
+end
+
+###
+# Check arguments
+begin
+	opts.parse!( ARGV ) 
+
+	raise "Missing arguments" if ARGV.length != 4;
+
+	select   = ARGV[1].hex
+	trig     = ARGV[2].hex
+	trigmask = ARGV[3].hex
+	filename = ARGV[4]
+rescue => e
+	STDERR.puts "\n#{e.message}"
+	STDERR.puts
+	STDERR.puts opts
+	exit 1
+end
+
+###
+# Open serial port
+begin
+	ser = SerialPort.new( $PORT_PATH, $PORT_BAUD, 8, 1, SerialPort::NONE )
+	ser.flow_control=SerialPort::NONE;
+rescue => e
+	STDERR.puts "\nCould not open serial port: #{e.message}"
+	exit 1
+end
+
+begin
+	f = File.open( filename, mode="w" );
+rescue => e
+	STDERR.puts "\nCould not open output file: #{e.message}"
+	exit 1
+end
+
+# Write VCD header
+f.puts "$date" 
+f.puts "\t" +  Time.now.to_s
+f.puts "$end"
+f.puts "$version" 
+f.puts "\tLogicAnalyzerComponent (http://www.das-labor.org/)"
+f.puts "$end"
+f.puts "$timescale" 
+f.puts "\t#{$TIMESCALE}"
+f.puts "$end"
+
+# Declare wires
+f.puts "$scope module lac $end"
+f.puts "$var wire 8 P probe[7:0] $end"
+f.puts "$enddefinitions $end"
+
+# RESET LM
+6.times do 
+	ser.putc 0x00      # CMD_DISARM
+end
+
+# Here we go
+ser.putc 0x01      # send CMD_ARM
+ser.putc select    # set select value 
+ser.putc trigmask  # set trigger mask
+ser.putc trig      # set trigger compare value
+ser.putc 0x00      # set pre-trigger value
+
+puts "LAC armed; waiting for trigger condition..."
+
+size = ser.getc;
+size = 1 << size;
+
+printf( "TRIGGERED -- Reading 0x%x bytes...\n", size );
+
+size.times { |step|
+	byte = ser.getc
+	f.puts "\##{step}"
+	f.printf "b%08b P\n", byte
+}
+
+ser.close
+f.close
