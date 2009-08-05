@@ -1,0 +1,43 @@
+//--------------------------------------
+//  LatticeMico32 based SoC platform  //
+//--------------------------------------
+
+soc-lm32 is a complete open source "system on a chip" based upon the Lattice
+Mico32 32 bit RISC CPU core.  See 
+
+   https://roulette.das-labor.org/bzrtrac/wiki/soc-lm32
+
+for uptodate information.
+
+
+== Directory Structure ==:
+
+ /rtl/      Actual Verilog components for simulation & synthesis
+ /sim/      Components only needed for simulation
+ /tools/    Various tools running on the developers machine 
+ /firmware/ Software running on the LM32 SoC
+ /boards/   Top-Level design files, constraint files and Makefiles 
+            for various development boards
+
+
+== SoC Layout ==
+
+1.1 Memory Map
+
+  [0x00000000,0x00000800) bram0      -- Bootloader BlockRAM 
+  [0x40000000,0x40000000) sram0/ddr0 -- Externam RAM (size depends on actual board)
+  [0x70000000,0x70010000) uart0      -- serial communication  component
+  [0x70010000,0x70020000) timer0     -- 32 bit dual timer engine
+  [0x70020000,0x70020000) gpio0      -- General Purpose IO 
+
+  [0x80000000,0xFFFFFFFF] Non-Cached mirror of [0x00000000,0x7FFFFFFF]
+
+== Interrupts ==
+
+   0      uart0
+   1      timer0.0
+   2-5    NONE
+   7      timer0.1
+   8-31   NONE
+
+

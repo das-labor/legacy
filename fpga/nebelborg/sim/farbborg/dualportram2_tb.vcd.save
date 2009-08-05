@@ -1,0 +1,15 @@
+[size] 1440 852
+[pos] -1 -1
+*-15.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+@22
+dualportram2_tb.dut.addra[10:0]
+dualportram2_tb.dut.addrb[8:0]
+@28
+dualportram2_tb.dut.clka
+dualportram2_tb.dut.clkb
+@22
+dualportram2_tb.dut.dia[7:0]
+dualportram2_tb.dut.dob[31:0]
+dualportram2_tb.dut.read_addrb[8:0]
+@28
+dualportram2_tb.dut.wea

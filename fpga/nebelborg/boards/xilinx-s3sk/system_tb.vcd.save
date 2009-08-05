@@ -1,0 +1,35 @@
+[size] 1280 955
+[pos] -1 -1
+*-22.000000 460000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+@28
+system_tb.dut.clk
+system_tb.dut.rst
+@200
+-LM32 CPU 
+@28
+system_tb.dut.lm32i_stb
+system_tb.dut.lm32i_ack
+@22
+system_tb.dut.lm32i_adr[31:0]
+@28
+system_tb.dut.lm32d_stb
+system_tb.dut.lm32d_we
+system_tb.dut.lm32d_ack
+@22
+system_tb.dut.lm32d_adr[31:0]
+system_tb.dut.lm32d_dat_r[31:0]
+system_tb.dut.lm32d_dat_w[31:0]
+system_tb.dut.intr_n[31:0]
+@28
+system_tb.dut.uart0_txd
+system_tb.dut.uart0_rxd
+@200
+-SRAM
+@28
+system_tb.dut.sram_ce_n
+system_tb.dut.sram_oe_n
+system_tb.dut.sram_we_n
+@22
+system_tb.dut.sram_adr[17:0]
+system_tb.dut.sram_dat[31:0]
+system_tb.dut.sram_be_n[3:0]

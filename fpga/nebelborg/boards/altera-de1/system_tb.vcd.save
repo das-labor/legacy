@@ -1,0 +1,57 @@
+[size] 1440 853
+[pos] -1 -1
+*-16.000000 14630000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+@28
+system_tb.dut.clk
+system_tb.dut.rst
+@200
+-LM32 CPU 
+@28
+system_tb.dut.lm32i_stb
+system_tb.dut.lm32i_ack
+@22
+system_tb.dut.lm32i_adr[31:0]
+@28
+system_tb.dut.lm32d_stb
+system_tb.dut.lm32d_we
+system_tb.dut.lm32d_ack
+@22
+system_tb.dut.lm32d_adr[31:0]
+system_tb.dut.lm32d_dat_r[31:0]
+system_tb.dut.lm32d_dat_w[31:0]
+system_tb.dut.intr_n[31:0]
+@28
+system_tb.dut.uart0_txd
+system_tb.dut.uart0_rxd
+@200
+-SRAM
+@28
+system_tb.dut.sram_ce_n
+system_tb.dut.sram_oe_n
+system_tb.dut.sram_we_n
+@22
+system_tb.dut.farbborg0.pwm1.dpr1.dia[7:0]
+@28
+system_tb.dut.farbborg0.pwm1.dpr1.wea
+@22
+system_tb.dut.farbborg0.pwm1.dpr21.dia[7:0]
+@28
+system_tb.dut.farbborg0.pwm1.dpr21.wea
+system_tb.dut.farbborg0.lsr_c
+@22
+system_tb.dut.farbborg0.latch_data[7:0]
+@28
+system_tb.dut.farbborg0.lsr_clr
+system_tb.dut.farbborg0.lsr_c
+system_tb.dut.farbborg0.lsr_clr
+system_tb.dut.farbborg0.lsr_d
+system_tb.dut.farbborg0.psr_c
+system_tb.dut.farbborg0.psr_d
+system_tb.dut.farbborg0.reset
+system_tb.dut.farbborg0.wb_ack_o
+system_tb.dut.farbborg0.wb_cyc_i
+system_tb.dut.farbborg0.wb_stb_i
+system_tb.dut.farbborg0.wb_we_i
+@22
+system_tb.dut.farbborg0.pwm1.dpr1.addra[8:0]
+system_tb.dut.farbborg0.pwm1.dpr21.addra[10:0]

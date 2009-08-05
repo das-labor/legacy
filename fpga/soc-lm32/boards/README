@@ -1,0 +1,19 @@
+
+Each directory contains a design for a supported board:
+
+ altera-de1
+
+ altium-livedesign  Livedesign board equipped with Xilinx Spartan-3-1000 and
+                    2 * 1Mbit SRAM. Supplied by <bert.lange@web.de>
+
+ xilinx-s3sk        Xilinx Spartan-3 Starter Board with a xc3s200 and 
+                    1 Mbit SRAM.
+
+ xilinx-s3esk       Xilinx Spartan-3E Starter Kit with an xc3s500e and
+                    512 Mbit DDR DRAM.
+
+ xilinx-xupv2p   
+                 
+ simulation         Simulation only target which can be used to simulate 
+                    a programm running on soc-lm32
+

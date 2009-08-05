@@ -1,0 +1,98 @@
+# ==== Clock inputs (CLK) ====
+NET "clk" LOC = "AJ15" | IOSTANDARD = LVCMOS25 ;
+NET "clk" PERIOD = 10 HIGH 50%;
+
+NET "reset_n" LOC = "AH5" | IOSTANDARD = LVTTL;
+
+# ==== LED output ===
+NET "led_n<0>"  LOC = "AC4" | IOSTANDARD = LVTTL | SLEW = SLOW | DRIVE = 8 ;
+NET "led_n<1>"  LOC = "AC3" | IOSTANDARD = LVTTL | SLEW = SLOW | DRIVE = 8 ;
+NET "led_n<2>"  LOC = "AA6" | IOSTANDARD = LVTTL | SLEW = SLOW | DRIVE = 8 ;
+NET "led_n<3>"  LOC = "AA5" | IOSTANDARD = LVTTL | SLEW = SLOW | DRIVE = 8 ;
+
+# ==== PUSH BUTTONS ====
+NET "btn_n<0>"  LOC = "AG5" | IOSTANDARD = LVTTL | PULLDOWN ;   # CENTER
+NET "btn_n<1>"  LOC = "AH2" | IOSTANDARD = LVTTL | PULLDOWN ;   # RIGHT
+NET "btn_n<2>"  LOC = "AH4" | IOSTANDARD = LVTTL | PULLDOWN ;   # UP
+NET "btn_n<3>"  LOC = "AH1" | IOSTANDARD = LVTTL | PULLDOWN ;   # LEFT
+NET "btn_n<4>"  LOC = "AG3" | IOSTANDARD = LVTTL | PULLDOWN ;   # DOWN
+
+# ==== SWITCHES ====
+NET "sw<0>" LOC = "AC11" | IOSTANDARD = LVCMOS25;
+NET "sw<1>" LOC = "AD11" | IOSTANDARD = LVCMOS25;
+NET "sw<2>" LOC = "AF8"  | IOSTANDARD = LVCMOS25;
+NET "sw<3>" LOC = "AF9"  | IOSTANDARD = LVCMOS25;
+
+# ==== UART ====
+NET "uart_txd" LOC = "AE7" | IOSTANDARD = LVCMOS25 | SLEW = SLOW | DRIVE = 8 ;
+NET "uart_rts" LOC = "AK8" | IOSTANDARD = LVCMOS25;
+NET "uart_rxd" LOC = "AJ8" | IOSTANDARD = LVCMOS25;
+NET "uart_cts" LOC = "AE8" | IOSTANDARD = LVCMOS25 | SLEW = SLOW | DRIVE = 8 ;
+
+# ==== DDR SDRAM (SD) ====   
+NET "ddr_clk<0>"      LOC = "AC27" | IOSTANDARD = SSTL2_II ;
+NET "ddr_clk<1>"      LOC = "AD29" | IOSTANDARD = SSTL2_II ;
+NET "ddr_clk<2>"      LOC = "AB23" | IOSTANDARD = SSTL2_II ;
+NET "ddr_clk_n<0>"    LOC = "AC28" | IOSTANDARD = SSTL2_II ;
+NET "ddr_clk_n<1>"    LOC = "AD30" | IOSTANDARD = SSTL2_II ;
+NET "ddr_clk_n<2>"    LOC = "AB24" | IOSTANDARD = SSTL2_II ;
+#
+NET "ddr_a<0>"        LOC = "M25" | IOSTANDARD = SSTL2_II ;
+NET "ddr_a<1>"        LOC = "N25" | IOSTANDARD = SSTL2_II ;
+NET "ddr_a<2>"        LOC = "L26" | IOSTANDARD = SSTL2_II ;
+NET "ddr_a<3>"        LOC = "M29" | IOSTANDARD = SSTL2_II ;
+NET "ddr_a<4>"        LOC = "K30" | IOSTANDARD = SSTL2_II ;
+NET "ddr_a<5>"        LOC = "G25" | IOSTANDARD = SSTL2_II ;
+NET "ddr_a<6>"        LOC = "G26" | IOSTANDARD = SSTL2_II ;
+NET "ddr_a<7>"        LOC = "D26" | IOSTANDARD = SSTL2_II ;
+NET "ddr_a<8>"        LOC = "J24" | IOSTANDARD = SSTL2_II ;
+NET "ddr_a<9>"        LOC = "K24" | IOSTANDARD = SSTL2_II ;
+NET "ddr_a<10>"       LOC = "F28" | IOSTANDARD = SSTL2_II ;
+NET "ddr_a<11>"       LOC = "F30" | IOSTANDARD = SSTL2_II ;
+NET "ddr_a<12>"       LOC = "M24" | IOSTANDARD = SSTL2_II ;
+NET "ddr_ba<0>"       LOC = "M26" | IOSTANDARD = SSTL2_II ;
+NET "ddr_ba<1>"       LOC = "K26" | IOSTANDARD = SSTL2_II ;
+
+NET "ddr_dq<0>"       LOC = "C27" | IOSTANDARD = SSTL2_II ;
+NET "ddr_dq<1>"       LOC = "D28" | IOSTANDARD = SSTL2_II ;
+NET "ddr_dq<2>"       LOC = "D29" | IOSTANDARD = SSTL2_II ;
+NET "ddr_dq<3>"       LOC = "D30" | IOSTANDARD = SSTL2_II ;
+NET "ddr_dq<4>"       LOC = "H25" | IOSTANDARD = SSTL2_II ;
+NET "ddr_dq<5>"       LOC = "H26" | IOSTANDARD = SSTL2_II ;
+NET "ddr_dq<6>"       LOC = "E27" | IOSTANDARD = SSTL2_II ;
+NET "ddr_dq<7>"       LOC = "E28" | IOSTANDARD = SSTL2_II ;
+NET "ddr_dq<8>"       LOC = "J26" | IOSTANDARD = SSTL2_II ;
+NET "ddr_dq<9>"       LOC = "G27" | IOSTANDARD = SSTL2_II ;
+NET "ddr_dq<10>"      LOC = "G28" | IOSTANDARD = SSTL2_II ;
+NET "ddr_dq<11>"      LOC = "G30" | IOSTANDARD = SSTL2_II ;
+NET "ddr_dq<12>"      LOC = "L23" | IOSTANDARD = SSTL2_II ;
+NET "ddr_dq<13>"      LOC = "L24" | IOSTANDARD = SSTL2_II ;
+NET "ddr_dq<14>"      LOC = "H27" | IOSTANDARD = SSTL2_II ;
+NET "ddr_dq<15>"      LOC = "H28" | IOSTANDARD = SSTL2_II ;
+
+NET "ddr_dm<0>"       LOC = "U26" | IOSTANDARD = SSTL2_II ;
+NET "ddr_dm<1>"       LOC = "V29" | IOSTANDARD = SSTL2_II ;
+NET "ddr_dqs<0>"      LOC = "E30" | IOSTANDARD = SSTL2_II ;
+NET "ddr_dqs<1>"      LOC = "J29" | IOSTANDARD = SSTL2_II ;
+NET "ddr_cs_n<0>"     LOC = "R24" | IOSTANDARD = SSTL2_II ;
+NET "ddr_cs_n<1>"     LOC = "R23" | IOSTANDARD = SSTL2_II ;
+NET "ddr_cke<0>"      LOC = "R26" | IOSTANDARD = SSTL2_II ;
+NET "ddr_cke<1>"      LOC = "R25" | IOSTANDARD = SSTL2_II ;
+NET "ddr_ras_n"       LOC = "N29" | IOSTANDARD = SSTL2_II ;
+NET "ddr_cas_n"       LOC = "L27" | IOSTANDARD = SSTL2_II ;
+NET "ddr_we_n"        LOC = "N26" | IOSTANDARD = SSTL2_II ;
+
+NET "clk_IBUFG"               TNM="SYS_CLK";
+NET "*/ctrl0/write_clk"       TNM="WRITE_CLK";
+NET "*/ctrl0/write_clk90"     TNM="WRITE_CLK";
+NET "*/ctrl0/read_clk"        TNM="READ_CLK";
+
+TIMESPEC "TS_SYS_DDRREAD"=FROM "SYS_CLK" TO "WRITE_CLK" TIG;
+TIMESPEC "TS_DDRREAD_SYS"=FROM "WRITE_CLK" TO "SYS_CLK" TIG;
+
+TIMESPEC "TS_SYS_DDRWRITE"=FROM "SYS_CLK" TO "READ_CLK" TIG;
+TIMESPEC "TS_DDRWRITE_SYS"=FROM "READ_CLK" TO "SYS_CLK" TIG;
+
+TIMESPEC "TS_DDRREAD_DDRWRITE"=FROM "READ_CLK" TO "WRITE_CLK" TIG;
+TIMESPEC "TS_DDRWRITE_DDRREAD"=FROM "WRITE_CLK" TO "READ_CLK" TIG;
+

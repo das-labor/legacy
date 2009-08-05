@@ -1,0 +1,36 @@
+__DYNAMIC = 0;
+
+_RAM_START = 0xb0000000;
+_RAM_SIZE  = 0x00040000;
+_RAM_END   = 0xb0040000;
+
+MEMORY {
+  ram     : ORIGIN = 0xb0000000, LENGTH = 0x40000
+}
+
+SECTIONS
+{
+  .text : 
+  {
+    _stext = .;
+    *(.text)
+    _etext = .;
+  } > ram
+
+  .data : 
+  {
+    _sdata = .;
+    *(.data)
+    *(.rodata)
+    *(.rodata.*)
+    _edata = .;
+  } > ram
+
+ 
+  .bss :
+  {
+    _sbss = .;
+    *(.bss)
+    _ebss = .;
+  } > ram
+}

@@ -1,0 +1,14 @@
+verilog work ../rtl/ddr_clkgen.v
+verilog work ../rtl/ddr_pulse78.v
+verilog work ../rtl/ddr_ctrl.v
+verilog work ../rtl/ddr_init.v
+verilog work ../rtl/ddr_rpath.v
+verilog work ../rtl/ddr_wpath.v
+verilog work ../rtl/async_fifo.v
+verilog work ../rtl/gray_counter.v
+verilog work ../rtl/rotary.v
+verilog work ../bench/fml_memtest.v
+verilog work ../bench/system.v
+verilog work ../bench/lac/lac.v
+verilog work ../bench/lac/dp_ram.v
+verilog work ../bench/lac/uart.v
