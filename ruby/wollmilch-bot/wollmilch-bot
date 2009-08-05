@@ -1,0 +1,247 @@
+#!/usr/bin/env ruby
+
+require 'xmpp4r'
+require 'xmpp4r/roster/helper/roster'
+require 'xmpp4r/muc/helper/simplemucclient'
+require 'date'
+require 'optparse'
+require 'timeout'
+
+##############################################################################
+# Messages
+InviteMsg      = "join this conference if you are chatty"
+
+NotUnderstoodMsg = <<ENDL
+Huh? I'm just simple a Bot, nothing like that fancy eliza girl...  Send '?' for help, or join the Jabber MUC at labor@conference.das-labor.org if you're chatty.
+ENDL
+
+PrivHelpMsg    = <<ENDL
+I'm WollmilchBot, I'm totally connected and get things done! On the other hand, 
+I'll help you to verpeil, so you're screwed....
+
+Commands:
+
+  help, ?      Request this message
+ENDL
+
+
+##############################################################################
+# Utility Functions
+def debug( level, msg )
+	if @VerboseLevel >= level then
+		@LogIO.puts "#{Time.now.strftime("%Y-%m-%d %H:%M:%S")} - #{msg}"
+		@LogIO.flush
+	end
+end
+
+# somethings broken in xmpp4r or ejabberd_mod_muc -- Jabber::MUC::invite
+# does not work -- so we use our own implementation.
+def muc_invite(muc, invitee, reason)
+	from    = muc.my_jid
+	to      = muc.jid.node + "@" + muc.jid.domain
+	@client.send <<ENDMSG
+<message from="#{from}" to="#{to}">
+  <x xmlns="http://jabber.org/protocol/muc#user">
+    <invite to="#{invitee}">
+      <reason>#{reason}</reason>
+    </invite>
+  </x>
+</message>
+ENDMSG
+end
+
+
+##############################################################################
+# 
+
+def handle_priv_msg(msg)
+	return if msg.body.nil?
+
+	text = msg.body.strip
+	debug(5, "Got normal message from <#{msg.from.strip}>: #{text}")
+
+	if text =~ /^\?/ || text =~ /help/ || text =~ /hilfe/ then
+		reply = Jabber::Message.new( msg.from, PrivHelpMsg )
+		@client.send( reply )
+	else 
+		reply = Jabber::Message.new( msg.from, NotUnderstoodMsg )
+		@client.send( reply )
+		muc_invite( @muc, msg.from, InviteMsg )
+	end
+end
+
+def handle_pub_msg(nick, text)
+	debug(5, "MUC message from <#{nick}>: #{text}")
+end
+
+
+##############################################################################
+# Labor status Watscher -- run in its own thread
+def watch_labor_status
+	lab_state = :closed
+
+	while true do
+	begin
+		debug 5, "Connecting to lapd..."
+		lapd_socket = TCPSocket.new('rl', 2343);
+		lapd_socket.puts "watch POWER_COUCH"
+	
+		while true do 
+			Timeout::timeout(120) do  # implement keepalive (and conn_check!)
+			begin
+				line = lapd_socket.gets
+				if line.nil? then raise "Lost connectin to lapd"; end
+				debug 7, "Got lapd line: #{line}"
+
+				if line =~ /^info POWER_COUCH (\d)/ then
+					lab_state = :open   if $1 == "1";
+					lab_state = :closed if $1 == "0";
+
+					debug 1, "Labor-State is now \"#{lab_state}\""
+					if lab_state == :open then
+						pres = Jabber::Presence.new(:chat).set_status( "Offen!" ) 
+					else
+						pres = Jabber::Presence.new(:xa).set_status( "Geschlossen..." ) 
+					end
+
+					@client.send( pres )
+				end
+
+			rescue Timeout::Error => e
+				lapd_socket.puts "get LAMP_COUCHFLUTER"
+			rescue => e
+				raise
+			end end
+		end 
+	rescue => e
+		debug 1, "Connection to lapd failed: #{e}"
+		debug 1, "Waiting some time, then try again..."
+		sleep(10)
+	end end
+end
+
+##############################################################################
+# Connect to Jabber service, using global @client 
+def reconnect
+	debug 5, "Connecting to jabber server..."
+	@client.connect
+	@client.auth( @MyPasswd )
+	@client.send( Jabber::Presence.new(:xa).set_status( "Geschlossen..." ) )
+end
+
+##############################################################################
+# MAIN
+
+@VerboseLevel = 3
+@LogIO = STDERR
+
+opts = OptionParser.new do |o|
+	o.banner = "Usage: wollmilch-bot -j JID -p PASSWD -r ROOM [OTHER_OPTIONS]"
+	o.separator ""
+	
+	o.on( "-j", "--jid JID", 
+			"This bots Jabber ID" ) do |jid|
+		@MyJID = jid
+	end
+
+	o.on( "-p", "--password PASSWD",
+			"Please use \"-\" for STDIN and pesonal security" ) do |passwd|
+		if passwd == "-" then 
+			@MyPasswd = STDIN.gets.strip
+		else
+			@MyPasswd = passwd
+		end
+	end
+
+	o.on( "-r", "--room ROOM", 
+			"MUC conference room to join" ) do |room|
+		@MyRoom = room 
+	end
+
+	o.on( "-v", "--verbose LEVEL", Integer,
+			"Set verbosity to LEVEL" ) do |level|
+		@VerboseLevel = level
+	end
+
+	o.on( "-l", "--logfile FILE", 
+			"Path to logfile (default: STDERR)" ) do |path|
+		@LogIO = File.open( path, "a" );
+	end
+
+	o.on( "-h", "--help", 
+			"Display help message" ) do 
+		puts
+		puts opts
+		exit 0
+	end
+
+	o.separator ""
+end
+
+begin
+	opts.parse!( ARGV )
+
+	raise "Mandatory argument missing" if @MyJID.nil? or @MyPasswd.nil? or @MyRoom.nil?;
+
+rescue => e
+	STDERR.puts 
+	STDERR.puts "Fatal Error: #{e}"
+	STDERR.puts 
+	STDERR.puts opts
+	exit 1
+end
+
+debug 2, "== labor-wollmilch-bot starting == "
+debug 2, "JID:           #{@MyJID}"
+debug 7, "Password:      #{@MyPasswd}"
+debug 2, "MUC Room:      #{@MyRoom}"
+debug 2, "VerboseLevel:  #{@VerboseLevel}"
+
+
+###############################################################
+# Startup and connect to jabber service 
+@client = Jabber::Client.new( Jabber::JID.new( @MyJID ) )
+reconnect
+
+@client.on_exception do |e,stream,where| 
+	debug 1, "Caught exeption in Jabber thread: (#{where}, #{e})"
+	sleep 2
+	reconnect
+end
+
+###############################################################
+# Handle incoming messaged
+@client.add_message_callback do |m|
+	handle_priv_msg(m)
+end
+
+###############################################################
+# Handle Roster Operationen
+@roster = Jabber::Roster::Helper.new( @client )
+@roster.add_subscription_request_callback do |item,pres| 
+	debug 1, "Accepting subscription request from #{pres.from}" 
+	@roster.accept_subscription(pres.from)
+end
+
+###############################################################
+# Join MUC
+debug 5, "Join MUC..."
+@muc = Jabber::MUC::SimpleMUCClient.new( @client )
+@muc.on_message do |time,nick,text|
+	handle_pub_msg(nick, text) unless time
+end
+#@muc.on_private_message do |time,nick,text|
+#	puts "Priv: <#{nick}> #{test}"
+#end
+@muc.join( Jabber::JID.new( @MyRoom ) )
+
+###############################################################
+# Start Labor Monitoring Thread
+labmon_thread = Thread.new do
+	watch_labor_status
+end
+
+debug( 5, "Setup Done, entering sleep..." )
+Thread.stop
+
+@client.close
