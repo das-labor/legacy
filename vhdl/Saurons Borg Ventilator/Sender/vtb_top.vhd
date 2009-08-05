@@ -37,30 +37,30 @@ ARCHITECTURE behavioral OF top_top_sch_tb IS
          b10code_k1		 :	OUT	STD_LOGIC; 
          b10code_k2		 :	OUT	STD_LOGIC; 
          b10code_k3		 :	OUT	STD_LOGIC; 
-         b10code_k4		 :	OUT	STD_LOGIC; 
-         winkel_diag     :	OUT	STD_LOGIC_VECTOR (9 DOWNTO 0); 
-			addrb_diag   	 : out STD_LOGIC_VECTOR (12 downto 0);
-			doutb_diag   	 : out STD_LOGIC_VECTOR (15 downto 0);
-			b8_code_k1_diag : out STD_LOGIC_VECTOR ( 7 downto 0);
-			b8_code_k2_diag : out STD_LOGIC_VECTOR ( 7 downto 0);
-			b8_code_k3_diag : out STD_LOGIC_VECTOR ( 7 downto 0);
-			b8_code_k4_diag : out STD_LOGIC_VECTOR ( 7 downto 0);
-			rdy_k1_diag     : out STD_LOGIC;
-			rdy_k2_diag     : out STD_LOGIC;
-			rdy_k3_diag     : out STD_LOGIC;
-			rdy_k4_diag     : out STD_LOGIC;
-			freeze_k1_diag  : out STD_LOGIC_VECTOR ( 4 downto 0);
-			freeze_k2_diag  : out STD_LOGIC_VECTOR ( 4 downto 0);
-			freeze_k3_diag  : out STD_LOGIC_VECTOR ( 4 downto 0);
-			freeze_k4_diag  : out STD_LOGIC_VECTOR ( 4 downto 0);
-			counter_k1_diag : out STD_LOGIC_VECTOR ( 9 downto 0);
-			counter_k2_diag : out STD_LOGIC_VECTOR ( 9 downto 0);
-			counter_k3_diag : out STD_LOGIC_VECTOR ( 9 downto 0);
-			counter_k4_diag : out STD_LOGIC_VECTOR ( 9 downto 0);
-			doutb_k1_diag   : out STD_LOGIC_VECTOR (15 downto 0);
-			doutb_k2_diag   : out STD_LOGIC_VECTOR (15 downto 0);
-			doutb_k3_diag   : out STD_LOGIC_VECTOR (15 downto 0);
-			doutb_k4_diag   : out STD_LOGIC_VECTOR (15 downto 0)
+         b10code_k4		 :	OUT	STD_LOGIC 
+--         winkel_diag     :	OUT	STD_LOGIC_VECTOR (9 DOWNTO 0); 
+--			addrb_diag   	 : out STD_LOGIC_VECTOR (12 downto 0);
+--			doutb_diag   	 : out STD_LOGIC_VECTOR (15 downto 0);
+--			b8_code_k1_diag : out STD_LOGIC_VECTOR ( 7 downto 0);
+--			b8_code_k2_diag : out STD_LOGIC_VECTOR ( 7 downto 0);
+--			b8_code_k3_diag : out STD_LOGIC_VECTOR ( 7 downto 0);
+--			b8_code_k4_diag : out STD_LOGIC_VECTOR ( 7 downto 0);
+--			rdy_k1_diag     : out STD_LOGIC;
+--			rdy_k2_diag     : out STD_LOGIC;
+--			rdy_k3_diag     : out STD_LOGIC;
+--			rdy_k4_diag     : out STD_LOGIC;
+--			freeze_k1_diag  : out STD_LOGIC_VECTOR ( 4 downto 0);
+--			freeze_k2_diag  : out STD_LOGIC_VECTOR ( 4 downto 0);
+--			freeze_k3_diag  : out STD_LOGIC_VECTOR ( 4 downto 0);
+--			freeze_k4_diag  : out STD_LOGIC_VECTOR ( 4 downto 0);
+--			counter_k1_diag : out STD_LOGIC_VECTOR ( 9 downto 0);
+--			counter_k2_diag : out STD_LOGIC_VECTOR ( 9 downto 0);
+--			counter_k3_diag : out STD_LOGIC_VECTOR ( 9 downto 0);
+--			counter_k4_diag : out STD_LOGIC_VECTOR ( 9 downto 0);
+--			doutb_k1_diag   : out STD_LOGIC_VECTOR (15 downto 0);
+--			doutb_k2_diag   : out STD_LOGIC_VECTOR (15 downto 0);
+--			doutb_k3_diag   : out STD_LOGIC_VECTOR (15 downto 0);
+--			doutb_k4_diag   : out STD_LOGIC_VECTOR (15 downto 0)
 
 
 --          schaltin		:	IN		STD_LOGIC_VECTOR (7 DOWNTO 0); 
@@ -244,30 +244,30 @@ BEGIN
 		b10code_k1 		=> b10code_k1, 
 		b10code_k2 		=> b10code_k2, 
 		b10code_k3 		=> b10code_k3, 
-		b10code_k4 		=> b10code_k4, 
-		winkel_diag => winkel_diag,
-		addrb_diag    => addrb_diag,
-		doutb_diag    => doutb_diag,
-		b8_code_k1_diag  => b8_code_k1_diag,
-		b8_code_k2_diag  => b8_code_k2_diag,
-		b8_code_k3_diag  => b8_code_k3_diag,
-		b8_code_k4_diag  => b8_code_k4_diag,
-		rdy_k1_diag      => rdy_k1_diag,
-		rdy_k2_diag      => rdy_k2_diag,
-		rdy_k3_diag      => rdy_k3_diag,
-		rdy_k4_diag      => rdy_k4_diag,
-		freeze_k1_diag   => freeze_k1_diag,
-		freeze_k2_diag   => freeze_k2_diag,
-		freeze_k3_diag   => freeze_k3_diag,
-		freeze_k4_diag   => freeze_k4_diag,
-		counter_k1_diag  => counter_k1_diag,
-		counter_k2_diag  => counter_k2_diag,
-		counter_k3_diag  => counter_k3_diag,
-		counter_k4_diag  => counter_k4_diag,
-		doutb_k1_diag	  => doutb_k1_diag,
-		doutb_k2_diag	  => doutb_k2_diag,
-		doutb_k3_diag	  => doutb_k3_diag,
-		doutb_k4_diag	  => doutb_k4_diag
+		b10code_k4 		=> b10code_k4 
+--		winkel_diag => winkel_diag,
+--		addrb_diag    => addrb_diag,
+--		doutb_diag    => doutb_diag,
+--		b8_code_k1_diag  => b8_code_k1_diag,
+--		b8_code_k2_diag  => b8_code_k2_diag,
+--		b8_code_k3_diag  => b8_code_k3_diag,
+--		b8_code_k4_diag  => b8_code_k4_diag,
+--		rdy_k1_diag      => rdy_k1_diag,
+--		rdy_k2_diag      => rdy_k2_diag,
+--		rdy_k3_diag      => rdy_k3_diag,
+--		rdy_k4_diag      => rdy_k4_diag,
+--		freeze_k1_diag   => freeze_k1_diag,
+--		freeze_k2_diag   => freeze_k2_diag,
+--		freeze_k3_diag   => freeze_k3_diag,
+--		freeze_k4_diag   => freeze_k4_diag,
+--		counter_k1_diag  => counter_k1_diag,
+--		counter_k2_diag  => counter_k2_diag,
+--		counter_k3_diag  => counter_k3_diag,
+--		counter_k4_diag  => counter_k4_diag,
+--		doutb_k1_diag	  => doutb_k1_diag,
+--		doutb_k2_diag	  => doutb_k2_diag,
+--		doutb_k3_diag	  => doutb_k3_diag,
+--		doutb_k4_diag	  => doutb_k4_diag
    
 
 		
@@ -323,15 +323,15 @@ BEGIN
 		synchron => decode_synchron_k3
 	);
 	
---	Kanal_4 : packet_read 
---	PORT MAP(
---		data_in 	=> b10code_k4,
---		clk 		=> clk20,
---		data_out => decode_data_k4,
---		counter 	=> decode_counter_k4,
---		rdy 		=> decode_rdy_k4,
---		synchron => decode_synchron_k4
---	);
+	Kanal_4 : packet_read 
+	PORT MAP(
+		data_in 	=> b10code_k4,
+		clk 		=> clk20,
+		data_out => decode_data_k4,
+		counter 	=> decode_counter_k4,
+		rdy 		=> decode_rdy_k4,
+		synchron => decode_synchron_k4
+	);
 	
 
 ---------------------
@@ -448,6 +448,15 @@ if decode_rdy_k1 = '1' then
 end if;
 
 
+-------------Farbe bestimmen------KANAL 2 ----------
+if decode_rdy_k2 = '1' then
+	decode_data_k2_last <= decode_data_k2;
+	if decode_counter_k2 (0) = '1' and decode_counter_k2 < 512 then
+		visual_color_k2 <= decode_data_k2_last & decode_data_k2;
+	end if;
+end if;
+
+
 -------------Farbe bestimmen------KANAL 3 ----------
 if decode_rdy_k3 = '1' then
 	decode_data_k3_last <= decode_data_k3;
@@ -456,15 +465,36 @@ if decode_rdy_k3 = '1' then
 	end if;
 end if;
 
+-------------Farbe bestimmen------KANAL 4 ----------
+if decode_rdy_k4 = '1' then
+	decode_data_k4_last <= decode_data_k4;
+	if decode_counter_k4 (0) = '1' and decode_counter_k4 < 512 then
+		visual_color_k4 <= decode_data_k4_last & decode_data_k4;
+	end if;
+end if;
+
+
 ---------------Winkel bestimmen------KANAL 1---------
 if decode_rdy_k1 = '1' and decode_counter_k1 = 0 then
-visual_winkel_k1 <= winkel_diag ;
+visual_winkel_k1 <= winkel ;
+end if;
+
+
+---------------Winkel bestimmen------KANAL 2---------
+if decode_rdy_k2 = '1' and decode_counter_k2 = 0 then
+visual_winkel_k2 <= winkel ;
 end if;
 
 
 ---------------Winkel bestimmen------KANAL 3---------
 if decode_rdy_k3 = '1' and decode_counter_k3 = 0 then
-visual_winkel_k3 <= winkel_diag ;
+visual_winkel_k3 <= winkel ;
+end if;
+
+
+---------------Winkel bestimmen------KANAL 4---------
+if decode_rdy_k4 = '1' and decode_counter_k4 = 0 then
+visual_winkel_k4 <= winkel ;
 end if;
 
 
@@ -475,10 +505,24 @@ visual_abstand_k1 <= visual_abstand_a_k1; -- um ein Byte verzögern um synchron z
 end if;
 
 
+---------------Abstand bestimmen-----KANAL 2-----
+if decode_rdy_k2 = '1' and decode_counter_k2 < 512 then
+visual_abstand_a_k2 <= decode_counter_k2 (8 downto 1);
+visual_abstand_k2 <= visual_abstand_a_k2; -- um ein Byte verzögern um synchron zur farbe zu sein
+end if;
+
+
 ---------------Abstand bestimmen-----KANAL 3-----
 if decode_rdy_k3 = '1' and decode_counter_k3 < 512 then
 visual_abstand_a_k3 <= decode_counter_k3 (8 downto 1);
 visual_abstand_k3 <= visual_abstand_a_k3; -- um ein Byte verzögern um synchron zur farbe zu sein
+end if;
+
+
+---------------Abstand bestimmen-----KANAL 4-----
+if decode_rdy_k4 = '1' and decode_counter_k4 < 512 then
+visual_abstand_a_k4 <= decode_counter_k4 (8 downto 1);
+visual_abstand_k4 <= visual_abstand_a_k4; -- um ein Byte verzögern um synchron zur farbe zu sein
 end if;
 
 
@@ -494,10 +538,22 @@ if decode_rdy_a_k1 = '1' and decode_counter_k1(1) = '0' and decode_counter_k1 < 
 	visual_abstand <= visual_abstand_k1;
 
 
+elsif decode_rdy_a_k2 = '1' and decode_counter_k2(1) = '0' and decode_counter_k2 < 512 then
+	visual_color   <= visual_color_k2; 
+	visual_winkel  <= visual_winkel_k2;
+	visual_abstand <= visual_abstand_k2;
+
+
 elsif decode_rdy_a_k3 = '1' and decode_counter_k3(1) = '0' and decode_counter_k3 < 512 then
 	visual_color   <= visual_color_k3; 
 	visual_winkel  <= visual_winkel_k3;
 	visual_abstand <= visual_abstand_k3;
+
+
+elsif decode_rdy_a_k4 = '1' and decode_counter_k4(1) = '0' and decode_counter_k4 < 512 then
+	visual_color   <= visual_color_k4; 
+	visual_winkel  <= visual_winkel_k4;
+	visual_abstand <= visual_abstand_k4;
 
 
 end if;
@@ -598,7 +654,7 @@ wait for 10 ns;
 
 for xxx in 1 to 999 loop
 
-	wait for 1000 us; -- Zeit bis zum nächsten bild 200 | 5000
+	wait for 100 us; -- Zeit bis zum nächsten bild 200 | 5000
 		
    report "Jetzt ist das Bild fertig...";
 

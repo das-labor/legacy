@@ -13,42 +13,42 @@ TIMESPEC "TS_clk100" = PERIOD "clk100" 100 Mhz LOW 50 %;
 NET "clk" LOC = "T9";
 
 # Display Ports
-NET "display<0>" LOC = "E14"  | IOSTANDARD = LVCMOS25;
-NET "display<1>" LOC = "G13"  | IOSTANDARD = LVCMOS25;
-NET "display<2>" LOC = "N15"  | IOSTANDARD = LVCMOS25;
-NET "display<3>" LOC = "P15"  | IOSTANDARD = LVCMOS25;
-NET "display<4>" LOC = "R16"  | IOSTANDARD = LVCMOS25;
-NET "display<5>" LOC = "F13"  | IOSTANDARD = LVCMOS25;
-NET "display<6>" LOC = "N16"  | IOSTANDARD = LVCMOS25;
-NET "display<7>" LOC = "P16"  | IOSTANDARD = LVCMOS25;
-NET "display<8>" LOC = "E13"  | IOSTANDARD = LVCMOS25;
-NET "display<9>" LOC = "F14"  | IOSTANDARD = LVCMOS25;
-NET "display<10>" LOC = "G14" | IOSTANDARD = LVCMOS25;
-NET "display<11>" LOC = "D14" | IOSTANDARD = LVCMOS25;
+#NET "display<0>" LOC = "E14"  | IOSTANDARD = LVCMOS25;
+#NET "display<1>" LOC = "G13"  | IOSTANDARD = LVCMOS25;
+#NET "display<2>" LOC = "N15"  | IOSTANDARD = LVCMOS25;
+#NET "display<3>" LOC = "P15"  | IOSTANDARD = LVCMOS25;
+#NET "display<4>" LOC = "R16"  | IOSTANDARD = LVCMOS25;
+#NET "display<5>" LOC = "F13"  | IOSTANDARD = LVCMOS25;
+#NET "display<6>" LOC = "N16"  | IOSTANDARD = LVCMOS25;
+#NET "display<7>" LOC = "P16"  | IOSTANDARD = LVCMOS25;
+#NET "display<8>" LOC = "E13"  | IOSTANDARD = LVCMOS25;
+#NET "display<9>" LOC = "F14"  | IOSTANDARD = LVCMOS25;
+#NET "display<10>" LOC = "G14" | IOSTANDARD = LVCMOS25;
+#NET "display<11>" LOC = "D14" | IOSTANDARD = LVCMOS25;
 
 # Schalter
-NET "schaltin<0>" LOC = "F12" | IOSTANDARD = LVCMOS25;
-NET "schaltin<1>" LOC = "G12" | IOSTANDARD = LVCMOS25;
-NET "schaltin<2>" LOC = "H14" | IOSTANDARD = LVCMOS25;
-NET "schaltin<3>" LOC = "H13" | IOSTANDARD = LVCMOS25;
-NET "schaltin<4>" LOC = "J14" | IOSTANDARD = LVCMOS25;
-NET "schaltin<5>" LOC = "J13" | IOSTANDARD = LVCMOS25;
-NET "schaltin<6>" LOC = "K14" | IOSTANDARD = LVCMOS25;
-NET "schaltin<7>" LOC = "K13" | IOSTANDARD = LVCMOS25;
-NET "tast<0>" LOC = "M13" | IOSTANDARD = LVCMOS25;
-NET "tast<1>" LOC = "M14" | IOSTANDARD = LVCMOS25;
-NET "tast<2>" LOC = "L13" | IOSTANDARD = LVCMOS25;
-NET "tast<3>" LOC = "L14" | IOSTANDARD = LVCMOS25;
+#NET "schaltin<0>" LOC = "F12" | IOSTANDARD = LVCMOS25;
+#NET "schaltin<1>" LOC = "G12" | IOSTANDARD = LVCMOS25;
+#NET "schaltin<2>" LOC = "H14" | IOSTANDARD = LVCMOS25;
+#NET "schaltin<3>" LOC = "H13" | IOSTANDARD = LVCMOS25;
+#NET "schaltin<4>" LOC = "J14" | IOSTANDARD = LVCMOS25;
+#NET "schaltin<5>" LOC = "J13" | IOSTANDARD = LVCMOS25;
+#NET "schaltin<6>" LOC = "K14" | IOSTANDARD = LVCMOS25;
+#NET "schaltin<7>" LOC = "K13" | IOSTANDARD = LVCMOS25;
+#NET "tast<0>" LOC = "M13" | IOSTANDARD = LVCMOS25;
+#NET "tast<1>" LOC = "M14" | IOSTANDARD = LVCMOS25;
+#NET "tast<2>" LOC = "L13" | IOSTANDARD = LVCMOS25;
+#NET "tast<3>" LOC = "L14" | IOSTANDARD = LVCMOS25;
 
 # LED's
-NET "led<0>" LOC = "K12" | IOSTANDARD = LVCMOS25;
-NET "led<1>" LOC = "P14" | IOSTANDARD = LVCMOS25;
-NET "led<2>" LOC = "L12" | IOSTANDARD = LVCMOS25;
-NET "led<3>" LOC = "N14" | IOSTANDARD = LVCMOS25;
-NET "led<4>" LOC = "P13" | IOSTANDARD = LVCMOS25;
-NET "led<5>" LOC = "N12" | IOSTANDARD = LVCMOS25;
-NET "led<6>" LOC = "P12" | IOSTANDARD = LVCMOS25;
-NET "led<7>" LOC = "P11" | IOSTANDARD = LVCMOS25;
+#NET "led<0>" LOC = "K12" | IOSTANDARD = LVCMOS25;
+#NET "led<1>" LOC = "P14" | IOSTANDARD = LVCMOS25;
+#NET "led<2>" LOC = "L12" | IOSTANDARD = LVCMOS25;
+#NET "led<3>" LOC = "N14" | IOSTANDARD = LVCMOS25;
+#NET "led<4>" LOC = "P13" | IOSTANDARD = LVCMOS25;
+#NET "led<5>" LOC = "N12" | IOSTANDARD = LVCMOS25;
+#NET "led<6>" LOC = "P12" | IOSTANDARD = LVCMOS25;
+#NET "led<7>" LOC = "P11" | IOSTANDARD = LVCMOS25;
 
 #Speicher
 
@@ -117,22 +117,22 @@ NET "SRAM_2_ub" LOC = "r4";
 NET "SRAM_2_lb" LOC = "p5";
 
 #NET "pr1"  LOC = "D5"  | DRIVE = 24  | SLEW = fast ; # Pin 5
-
-NET "out0"  LOC = "A4"   |DRIVE = 16 | SLEW = fast ; # Pin 15
-NET "gnd0"  LOC = "A5"   |DRIVE = 16 | SLEW = fast ; # Pin 17
-NET "out1"  LOC = "B5"   |DRIVE = 16 | SLEW = fast ; # Pin 19
-NET "gnd1"  LOC = "B6"   |DRIVE = 16 | SLEW = fast ; # Pin 21
-NET "out2"  LOC = "A7"   |DRIVE = 16 | SLEW = fast ; # Pin 23
-NET "gnd2"  LOC = "A8"   |DRIVE = 16 | SLEW = fast ; # Pin 25
-NET "out3"  LOC = "B10"  |DRIVE = 16 | SLEW = fast ; # Pin 27
-NET "gnd3"  LOC = "B11"  |DRIVE = 16 | SLEW = fast ; # Pin 29
-NET "out4"  LOC = "A12"  |DRIVE = 16 | SLEW = fast ; # Pin 31
-NET "gnd4"  LOC = "A13"  |DRIVE = 16 | SLEW = fast ; # Pin 33
+#
+#NET "out0"  LOC = "A4"   |DRIVE = 16 | SLEW = fast ; # Pin 15
+#NET "gnd0"  LOC = "A5"   |DRIVE = 16 | SLEW = fast ; # Pin 17
+#NET "out1"  LOC = "B5"   |DRIVE = 16 | SLEW = fast ; # Pin 19
+#NET "gnd1"  LOC = "B6"   |DRIVE = 16 | SLEW = fast ; # Pin 21
+#NET "out2"  LOC = "A7"   |DRIVE = 16 | SLEW = fast ; # Pin 23
+#NET "gnd2"  LOC = "A8"   |DRIVE = 16 | SLEW = fast ; # Pin 25
+#NET "out3"  LOC = "B10"  |DRIVE = 16 | SLEW = fast ; # Pin 27
+#NET "gnd3"  LOC = "B11"  |DRIVE = 16 | SLEW = fast ; # Pin 29
+#NET "out4"  LOC = "A12"  |DRIVE = 16 | SLEW = fast ; # Pin 31
+#NET "gnd4"  LOC = "A13"  |DRIVE = 16 | SLEW = fast ; # Pin 33
 #
 #NET "se1a"  LOC = "D7" | IOSTANDARD = LVDS_25; # Pin 11
 #NET "se1b"  LOC = "E7" | IOSTANDARD = LVDS_25; # Pin 09
 #
-NET "trig" LOC = "t3" | IOSTANDARD = LVCMOS25;
+#NET "trig" LOC = "t3" | IOSTANDARD = LVCMOS25;
 #NET "test1" LOC = "n11";
 
 
