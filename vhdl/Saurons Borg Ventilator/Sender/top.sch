@@ -27,39 +27,10 @@ BEGIN SCHEMATIC
         SIGNAL sram_2_ub
         SIGNAL sram_2_lb
         SIGNAL winkel(9:0)
-        SIGNAL XLXN_24
-        SIGNAL freeze_k2_diag(4:0)
-        SIGNAL freeze_k4_diag(4:0)
-        SIGNAL freeze_k3_diag(4:0)
-        SIGNAL freeze_k1_diag(4:0)
-        SIGNAL b8_code_k1_diag(7:0)
-        SIGNAL counter_k4_diag(9:0)
-        SIGNAL counter_k3_diag(9:0)
-        SIGNAL counter_k2_diag(9:0)
-        SIGNAL counter_k1_diag(9:0)
-        SIGNAL b8_code_k4_diag(7:0)
-        SIGNAL b8_code_k3_diag(7:0)
-        SIGNAL b8_code_k2_diag(7:0)
-        SIGNAL rdy_k4_diag
-        SIGNAL rdy_k3_diag
-        SIGNAL rdy_k2_diag
-        SIGNAL rdy_k1_diag
         SIGNAL b10code_k4
         SIGNAL b10code_k3
         SIGNAL b10code_k2
-        SIGNAL doutb_diag(15:0)
-        SIGNAL addrb_diag(12:0)
         SIGNAL b10code_k1
-        SIGNAL winkel_diag(9:0)
-        SIGNAL XLXN_94(15:0)
-        SIGNAL XLXN_95(7:0)
-        SIGNAL XLXN_96(9:0)
-        SIGNAL XLXN_97
-        SIGNAL XLXN_98
-        SIGNAL doutb_k1_diag(15:0)
-        SIGNAL doutb_k2_diag(15:0)
-        SIGNAL doutb_k3_diag(15:0)
-        SIGNAL doutb_k4_diag(15:0)
         PORT Output clk50
         PORT Output clk20
         PORT Input clk
@@ -81,33 +52,10 @@ BEGIN SCHEMATIC
         PORT Output sram_2_ub
         PORT Output sram_2_lb
         PORT Input winkel(9:0)
-        PORT Output freeze_k2_diag(4:0)
-        PORT Output freeze_k4_diag(4:0)
-        PORT Output freeze_k3_diag(4:0)
-        PORT Output freeze_k1_diag(4:0)
-        PORT Output b8_code_k1_diag(7:0)
-        PORT Output counter_k4_diag(9:0)
-        PORT Output counter_k3_diag(9:0)
-        PORT Output counter_k2_diag(9:0)
-        PORT Output counter_k1_diag(9:0)
-        PORT Output b8_code_k4_diag(7:0)
-        PORT Output b8_code_k3_diag(7:0)
-        PORT Output b8_code_k2_diag(7:0)
-        PORT Output rdy_k4_diag
-        PORT Output rdy_k3_diag
-        PORT Output rdy_k2_diag
-        PORT Output rdy_k1_diag
         PORT Output b10code_k4
         PORT Output b10code_k3
         PORT Output b10code_k2
-        PORT Output doutb_diag(15:0)
-        PORT Output addrb_diag(12:0)
         PORT Output b10code_k1
-        PORT Output winkel_diag(9:0)
-        PORT Output doutb_k1_diag(15:0)
-        PORT Output doutb_k2_diag(15:0)
-        PORT Output doutb_k3_diag(15:0)
-        PORT Output doutb_k4_diag(15:0)
         BEGIN BLOCKDEF takt2
             TIMESTAMP 2009 7 16 13 56 18
             LINE N 240 -192 304 -192 
@@ -270,29 +218,29 @@ BEGIN SCHEMATIC
             PIN b10code_k2 b10code_k2
             PIN b10code_k3 b10code_k3
             PIN b10code_k4 b10code_k4
-            PIN rdy_k1_diag rdy_k1_diag
-            PIN rdy_k2_diag rdy_k2_diag
-            PIN rdy_k3_diag rdy_k3_diag
-            PIN rdy_k4_diag rdy_k4_diag
-            PIN freeze_k1_diag(4:0) freeze_k1_diag(4:0)
-            PIN freeze_k2_diag(4:0) freeze_k2_diag(4:0)
-            PIN freeze_k3_diag(4:0) freeze_k3_diag(4:0)
-            PIN freeze_k4_diag(4:0) freeze_k4_diag(4:0)
-            PIN winkel_diag(9:0) winkel_diag(9:0)
-            PIN addrb_diag(12:0) addrb_diag(12:0)
-            PIN doutb_diag(15:0) doutb_diag(15:0)
-            PIN b8_code_k1_diag(7:0) b8_code_k1_diag(7:0)
-            PIN b8_code_k2_diag(7:0) b8_code_k2_diag(7:0)
-            PIN b8_code_k3_diag(7:0) b8_code_k3_diag(7:0)
-            PIN b8_code_k4_diag(7:0) b8_code_k4_diag(7:0)
-            PIN counter_k1_diag(9:0) counter_k1_diag(9:0)
-            PIN counter_k2_diag(9:0) counter_k2_diag(9:0)
-            PIN counter_k3_diag(9:0) counter_k3_diag(9:0)
-            PIN counter_k4_diag(9:0) counter_k4_diag(9:0)
-            PIN doutb_k1_diag(15:0) doutb_k1_diag(15:0)
-            PIN doutb_k2_diag(15:0) doutb_k2_diag(15:0)
-            PIN doutb_k3_diag(15:0) doutb_k3_diag(15:0)
-            PIN doutb_k4_diag(15:0) doutb_k4_diag(15:0)
+            PIN rdy_k1_diag
+            PIN rdy_k2_diag
+            PIN rdy_k3_diag
+            PIN rdy_k4_diag
+            PIN freeze_k1_diag(4:0)
+            PIN freeze_k2_diag(4:0)
+            PIN freeze_k3_diag(4:0)
+            PIN freeze_k4_diag(4:0)
+            PIN winkel_diag(9:0)
+            PIN addrb_diag(12:0)
+            PIN doutb_diag(15:0)
+            PIN b8_code_k1_diag(7:0)
+            PIN b8_code_k2_diag(7:0)
+            PIN b8_code_k3_diag(7:0)
+            PIN b8_code_k4_diag(7:0)
+            PIN counter_k1_diag(9:0)
+            PIN counter_k2_diag(9:0)
+            PIN counter_k3_diag(9:0)
+            PIN counter_k4_diag(9:0)
+            PIN doutb_k1_diag(15:0)
+            PIN doutb_k2_diag(15:0)
+            PIN doutb_k3_diag(15:0)
+            PIN doutb_k4_diag(15:0)
         END BLOCK
     END NETLIST
     BEGIN SHEET 1 3520 2720
@@ -362,30 +310,6 @@ BEGIN SCHEMATIC
         BEGIN BRANCH winkel(9:0)
             WIRE 1984 544 2016 544
         END BRANCH
-        BEGIN BRANCH sram_read(15:0)
-            WIRE 1920 928 1920 1120
-            WIRE 1920 1120 2032 1120
-            WIRE 1920 928 2624 928
-            WIRE 2480 656 2624 656
-            WIRE 2624 656 2624 928
-            WIRE 2624 656 2832 656
-        END BRANCH
-        BEGIN BRANCH sram_pos(7:0)
-            WIRE 1904 912 1904 1168
-            WIRE 1904 1168 2032 1168
-            WIRE 1904 912 2608 912
-            WIRE 2480 688 2608 688
-            WIRE 2608 688 2608 912
-            WIRE 2608 688 2832 688
-        END BRANCH
-        BEGIN BRANCH winkel_ram(9:0)
-            WIRE 1888 896 2592 896
-            WIRE 1888 896 1888 1216
-            WIRE 1888 1216 2032 1216
-            WIRE 2480 784 2592 784
-            WIRE 2592 784 2832 784
-            WIRE 2592 784 2592 896
-        END BRANCH
         BEGIN INSTANCE XLXI_42 1968 1072 R0
         END INSTANCE
         IOMARKER 2512 208 sram_oe R0 28
@@ -400,9 +324,6 @@ BEGIN SCHEMATIC
         IOMARKER 2512 560 sram_2_ub R0 28
         IOMARKER 2512 592 sram_2_lb R0 28
         IOMARKER 1984 544 winkel(9:0) R180 28
-        IOMARKER 2832 784 winkel_ram(9:0) R0 28
-        IOMARKER 2832 656 sram_read(15:0) R0 28
-        IOMARKER 2832 688 sram_pos(7:0) R0 28
         BEGIN BRANCH clk50
             WIRE 608 528 656 528
             WIRE 656 528 656 1072
@@ -419,54 +340,6 @@ BEGIN SCHEMATIC
             WIRE 688 496 688 1040
             WIRE 688 1040 2032 1040
         END BRANCH
-        BEGIN BRANCH freeze_k2_diag(4:0)
-            WIRE 2512 1712 2544 1712
-        END BRANCH
-        BEGIN BRANCH freeze_k4_diag(4:0)
-            WIRE 2512 1776 2544 1776
-        END BRANCH
-        BEGIN BRANCH freeze_k3_diag(4:0)
-            WIRE 2512 1744 2544 1744
-        END BRANCH
-        BEGIN BRANCH freeze_k1_diag(4:0)
-            WIRE 2512 1424 2544 1424
-        END BRANCH
-        BEGIN BRANCH b8_code_k1_diag(7:0)
-            WIRE 2512 1456 2544 1456
-        END BRANCH
-        BEGIN BRANCH counter_k4_diag(9:0)
-            WIRE 2512 1680 2544 1680
-        END BRANCH
-        BEGIN BRANCH counter_k3_diag(9:0)
-            WIRE 2512 1648 2544 1648
-        END BRANCH
-        BEGIN BRANCH counter_k2_diag(9:0)
-            WIRE 2512 1616 2544 1616
-        END BRANCH
-        BEGIN BRANCH counter_k1_diag(9:0)
-            WIRE 2512 1584 2544 1584
-        END BRANCH
-        BEGIN BRANCH b8_code_k4_diag(7:0)
-            WIRE 2512 1552 2544 1552
-        END BRANCH
-        BEGIN BRANCH b8_code_k3_diag(7:0)
-            WIRE 2512 1520 2544 1520
-        END BRANCH
-        BEGIN BRANCH b8_code_k2_diag(7:0)
-            WIRE 2512 1488 2544 1488
-        END BRANCH
-        BEGIN BRANCH rdy_k4_diag
-            WIRE 2512 1392 2544 1392
-        END BRANCH
-        BEGIN BRANCH rdy_k3_diag
-            WIRE 2512 1360 2544 1360
-        END BRANCH
-        BEGIN BRANCH rdy_k2_diag
-            WIRE 2512 1328 2544 1328
-        END BRANCH
-        BEGIN BRANCH rdy_k1_diag
-            WIRE 2512 1296 2544 1296
-        END BRANCH
         BEGIN BRANCH b10code_k4
             WIRE 2512 1264 2544 1264
         END BRANCH
@@ -476,62 +349,41 @@ BEGIN SCHEMATIC
         BEGIN BRANCH b10code_k2
             WIRE 2512 1200 2544 1200
         END BRANCH
-        BEGIN BRANCH doutb_diag(15:0)
-            WIRE 2512 1136 2544 1136
-        END BRANCH
-        BEGIN BRANCH addrb_diag(12:0)
-            WIRE 2512 1104 2544 1104
-        END BRANCH
         BEGIN BRANCH b10code_k1
             WIRE 2512 1168 2544 1168
         END BRANCH
-        BEGIN BRANCH winkel_diag(9:0)
-            WIRE 2512 1056 2544 1056
-        END BRANCH
         BEGIN INSTANCE XLXI_44 2032 1392 R0
         END INSTANCE
-        IOMARKER 2544 1776 freeze_k4_diag(4:0) R0 28
-        IOMARKER 2544 1744 freeze_k3_diag(4:0) R0 28
-        IOMARKER 2544 1712 freeze_k2_diag(4:0) R0 28
-        IOMARKER 2544 1424 freeze_k1_diag(4:0) R0 28
-        IOMARKER 2544 1456 b8_code_k1_diag(7:0) R0 28
-        IOMARKER 2544 1680 counter_k4_diag(9:0) R0 28
-        IOMARKER 2544 1648 counter_k3_diag(9:0) R0 28
-        IOMARKER 2544 1616 counter_k2_diag(9:0) R0 28
-        IOMARKER 2544 1584 counter_k1_diag(9:0) R0 28
-        IOMARKER 2544 1552 b8_code_k4_diag(7:0) R0 28
-        IOMARKER 2544 1520 b8_code_k3_diag(7:0) R0 28
-        IOMARKER 2544 1488 b8_code_k2_diag(7:0) R0 28
-        IOMARKER 2544 1392 rdy_k4_diag R0 28
-        IOMARKER 2544 1360 rdy_k3_diag R0 28
-        IOMARKER 2544 1328 rdy_k2_diag R0 28
-        IOMARKER 2544 1296 rdy_k1_diag R0 28
         IOMARKER 2544 1264 b10code_k4 R0 28
         IOMARKER 2544 1232 b10code_k3 R0 28
         IOMARKER 2544 1200 b10code_k2 R0 28
-        IOMARKER 2544 1136 doutb_diag(15:0) R0 28
-        IOMARKER 2544 1104 addrb_diag(12:0) R0 28
         IOMARKER 2544 1168 b10code_k1 R0 28
-        IOMARKER 2544 1056 winkel_diag(9:0) R0 28
-        BEGIN BRANCH doutb_k1_diag(15:0)
-            WIRE 2512 1808 2528 1808
-            WIRE 2528 1808 2544 1808
+        BEGIN BRANCH sram_pos(7:0)
+            WIRE 1904 912 1904 1168
+            WIRE 1904 1168 2032 1168
+            WIRE 1904 912 2608 912
+            WIRE 2480 688 2608 688
+            WIRE 2608 688 2608 912
+            WIRE 2608 688 2704 688
         END BRANCH
-        BEGIN BRANCH doutb_k2_diag(15:0)
-            WIRE 2512 1840 2528 1840
-            WIRE 2528 1840 2544 1840
+        BEGIN BRANCH sram_read(15:0)
+            WIRE 1920 928 1920 1120
+            WIRE 1920 1120 2032 1120
+            WIRE 1920 928 2624 928
+            WIRE 2480 656 2624 656
+            WIRE 2624 656 2624 928
+            WIRE 2624 656 2704 656
         END BRANCH
-        BEGIN BRANCH doutb_k3_diag(15:0)
-            WIRE 2512 1872 2528 1872
-            WIRE 2528 1872 2544 1872
+        BEGIN BRANCH winkel_ram(9:0)
+            WIRE 1888 896 1888 1216
+            WIRE 1888 1216 2032 1216
+            WIRE 1888 896 2592 896
+            WIRE 2480 784 2592 784
+            WIRE 2592 784 2592 896
+            WIRE 2592 784 2688 784
         END BRANCH
-        BEGIN BRANCH doutb_k4_diag(15:0)
-            WIRE 2512 1904 2528 1904
-            WIRE 2528 1904 2544 1904
-        END BRANCH
-        IOMARKER 2544 1904 doutb_k4_diag(15:0) R0 28
-        IOMARKER 2544 1872 doutb_k3_diag(15:0) R0 28
-        IOMARKER 2544 1840 doutb_k2_diag(15:0) R0 28
-        IOMARKER 2544 1808 doutb_k1_diag(15:0) R0 28
+        IOMARKER 2704 656 sram_read(15:0) R0 28
+        IOMARKER 2704 688 sram_pos(7:0) R0 28
+        IOMARKER 2688 784 winkel_ram(9:0) R0 28
     END SHEET
 END SCHEMATIC
