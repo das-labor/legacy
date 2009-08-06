@@ -303,15 +303,15 @@ BEGIN
 		synchron => decode_synchron_k1
 	);
 	
---	Kanal_2 : packet_read 
---	PORT MAP(
---		data_in 	=> b10code_k2,
---		clk 		=> clk20,
---		data_out => decode_data_k2,
---		counter 	=> decode_counter_k2,
---		rdy 		=> decode_rdy_k2,
---		synchron => decode_synchron_k2
---	);
+	Kanal_2 : packet_read 
+	PORT MAP(
+		data_in 	=> b10code_k2,
+		clk 		=> clk20,
+		data_out => decode_data_k2,
+		counter 	=> decode_counter_k2,
+		rdy 		=> decode_rdy_k2,
+		synchron => decode_synchron_k2
+	);
 	
 	Kanal_3 : packet_read 
 	PORT MAP(
