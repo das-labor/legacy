@@ -46,7 +46,7 @@ architecture Behavioral of packet_buffer is
 
 component frame_full
 	port (
-	addra: IN  std_logic_VECTOR(12 downto 0);
+	addra: IN  std_logic_VECTOR(12 downto 0);-- 8192
 	addrb: IN  std_logic_VECTOR(12 downto 0);
 	clka : IN  std_logic;
 	clkb : IN  std_logic;
