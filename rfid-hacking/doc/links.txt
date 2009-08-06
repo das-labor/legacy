@@ -4,3 +4,6 @@ http://svn.navi.cx/misc/trunk/avrfid/
 
 http://instruct1.cit.cornell.edu/courses/ee476/FinalProjects/s2006/cjr37/Website/index.htm
 
+http://www.rf-dump.org/
+
+
