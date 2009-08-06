@@ -1,2 +1,3 @@
 http://www.microchip.com/stellent/idcplg?IdcService=SS_GET_PAGE&nodeId=1469
 
+http://svn.navi.cx/misc/trunk/avrfid/
