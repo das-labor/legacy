@@ -57,7 +57,7 @@ BEGIN SCHEMATIC
         PORT Output b10code_k2
         PORT Output b10code_k1
         BEGIN BLOCKDEF takt2
-            TIMESTAMP 2009 7 16 13 56 18
+            TIMESTAMP 2009 8 6 10 21 13
             LINE N 240 -192 304 -192 
             LINE N 64 -288 0 -288 
             LINE N 240 -288 304 -288 
@@ -75,7 +75,7 @@ BEGIN SCHEMATIC
             CIRCLE N 128 -48 160 -16 
         END BLOCKDEF
         BEGIN BLOCKDEF ram_control
-            TIMESTAMP 2009 7 20 19 30 54
+            TIMESTAMP 2009 8 6 10 21 13
             LINE N 448 -864 512 -864 
             LINE N 448 -672 512 -672 
             LINE N 448 -544 512 -544 
@@ -114,7 +114,7 @@ BEGIN SCHEMATIC
             LINE N 112 -528 48 -528 
         END BLOCKDEF
         BEGIN BLOCKDEF packet_buffer
-            TIMESTAMP 2009 7 27 21 25 1
+            TIMESTAMP 2009 8 6 10 21 14
             RECTANGLE N 420 404 484 428 
             LINE N 420 416 484 416 
             RECTANGLE N 420 436 484 460 
