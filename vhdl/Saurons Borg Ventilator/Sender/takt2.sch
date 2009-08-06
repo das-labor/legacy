@@ -8,26 +8,29 @@ BEGIN SCHEMATIC
     BEGIN NETLIST
         SIGNAL clk_20
         SIGNAL clk50
-        SIGNAL tmp1
         SIGNAL clk
         SIGNAL XLXN_93
         SIGNAL XLXN_97
         SIGNAL g90_c10
         SIGNAL XLXN_116
         SIGNAL clk100
+        SIGNAL XLXN_118
         PORT Output clk_20
         PORT Output clk50
         PORT Input clk
         PORT Output g90_c10
         PORT Output clk100
         BEGIN BLOCKDEF takt
-            TIMESTAMP 2009 8 6 10 21 14
+            TIMESTAMP 2009 8 6 21 0 31
+            RECTANGLE N 272 20 336 44 
+            LINE N 272 32 336 32 
+            LINE N 272 64 336 64 
             LINE N 272 0 336 0 
             LINE N 64 -96 0 -96 
             LINE N 272 -64 336 -64 
             LINE N 64 -32 0 -32 
             LINE N 272 -32 336 -32 
-            RECTANGLE N 64 -128 272 32 
+            RECTANGLE N 64 -128 272 96 
         END BLOCKDEF
         BEGIN BLOCKDEF f_null
             TIMESTAMP 2009 8 6 10 21 14
@@ -76,15 +79,17 @@ BEGIN SCHEMATIC
         BEGIN BLOCK XLXI_6 takt
             PIN RST_IN XLXN_93
             PIN CLKIN_IN clk
-            PIN CLKIN_IBUFG_OUT tmp1
-            PIN CLK0_OUT clk50
             PIN CLK2X_OUT clk100
+            PIN CLKIN_IBUFG_OUT XLXN_118
+            PIN CLK0_OUT clk50
+            PIN STATUS_OUT(7:0)
+            PIN LOCKED_OUT
         END BLOCK
         BEGIN BLOCK XLXI_4 f_null
             PIN fo XLXN_93
         END BLOCK
         BEGIN BLOCK XLXI_17 clk20
-            PIN CLKIN_IN tmp1
+            PIN CLKIN_IN XLXN_118
             PIN CLKFX_OUT clk_20
             PIN CLK0_OUT
             PIN CLK180_OUT
@@ -110,15 +115,7 @@ BEGIN SCHEMATIC
     END NETLIST
     BEGIN SHEET 1 3520 2720
         BEGIN BRANCH clk50
-            WIRE 1152 656 1168 656
-            WIRE 1168 656 1360 656
-        END BRANCH
-        BEGIN BRANCH tmp1
-            WIRE 688 752 688 880
-            WIRE 688 880 752 880
-            WIRE 688 752 1232 752
-            WIRE 1152 624 1232 624
-            WIRE 1232 624 1232 752
+            WIRE 1152 656 1360 656
         END BRANCH
         BEGIN BRANCH clk
             WIRE 640 656 816 656
@@ -175,5 +172,15 @@ BEGIN SCHEMATIC
             WIRE 1168 688 1360 688
         END BRANCH
         IOMARKER 1360 688 clk100 R0 28
+        BEGIN BRANCH XLXN_118
+            WIRE 640 832 944 832
+            WIRE 944 832 1264 832
+            WIRE 640 832 640 848
+            WIRE 640 848 640 880
+            WIRE 640 880 752 880
+            WIRE 1152 624 1264 624
+            WIRE 1264 624 1264 816
+            WIRE 1264 816 1264 832
+        END BRANCH
     END SHEET
 END SCHEMATIC

@@ -57,7 +57,7 @@ BEGIN SCHEMATIC
         PORT Output b10code_k2
         PORT Output b10code_k1
         BEGIN BLOCKDEF takt2
-            TIMESTAMP 2009 8 6 10 21 13
+            TIMESTAMP 2009 8 6 20 50 17
             LINE N 240 -192 304 -192 
             LINE N 64 -288 0 -288 
             LINE N 240 -288 304 -288 
