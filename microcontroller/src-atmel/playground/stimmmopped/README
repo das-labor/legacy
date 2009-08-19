@@ -1,0 +1,12 @@
+
+just type make for compile.
+
+Unfortunatially i found out the on avr-gcc-4.3.0 the program compiles but not runs. On my old Version avr-gcc-3.4.6 runs.
+
+If avr-gcc-3.4.6 is not the current version, use avr-gcc-select or  
+
+export MCU_CC=avr-gcc-3.4.6; make 
+
+In the folder eagle you find the layout and the shematics.
+I used the free version of eagle.
+
