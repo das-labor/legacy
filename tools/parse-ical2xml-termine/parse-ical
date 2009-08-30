@@ -42,14 +42,14 @@ class LaborTermine
 					#puts nre.dtstart
 					nrt["date"] = nre.dtstart
 	
-					puts nre.summary
+					#puts nre.summary
 					nrt["text"] = nre.summary
 					
 					if nre.url != nil then
-						puts nre.url
+						#puts nre.url
 						nrt["link"] = nre.url
 					else
-						puts nre.attach
+						#puts nre.attach
 						nrt["link"] = nre.attach
 					end
 
@@ -65,14 +65,14 @@ class LaborTermine
 				#puts re.dtstart
 				t["date"] = re.dtstart
 
-				puts re.summary
+				#puts re.summary
 				t["text"] = re.summary
 	
 				if re.url != nil then
-					puts re.url
+					#puts re.url
 					t["link"] = re.url
 				else
-					puts re.attach
+					#puts re.attach
 					t["link"] = re.attach
 				end
 
