@@ -1,10 +1,9 @@
 #!/bin/bash
 
 GENERALPREFIX=/srv
-GITBASEDIR=${GENERALPREFIX}/GITs
+WEBDAVBASEDIR=${GENERALPREFIX}/WEBDAVs
 TRACBASEDIR=${GENERALPREFIX}/TRACs
 TRACADMIN=/usr/bin/trac-admin
-GITADMIN=/usr/bin/git
 APACHEUSER="www-data"
 APACHEGROUP="www-data"
 HTPASSWD=/usr/bin/htpasswd
@@ -30,15 +29,15 @@ PASSWORD=nimda \ #das trac-admin Passwort
 TRACNAME="mein super Projekt" \ # der name fuer das Trac
 TRACSHORT="msp" \ # der Kurzname zu dem Projekt. die ist auch 
                 \ # der Verzeichnisname
-./create_user_trac_git.sh
+./create_user_trac_webdav.sh
 
 
 was passiert beim Aufrufen:
 * es wird ein trac unter /srv/TRACs/TRACSHORT erstellt
-* es wird ein svn unter /srv/GITs/TRACSHORT erstellt
+* es wird ein webdav unter /srv/WEBDAVs/TRACSHORT erstellt
 * es wird im trac der user USERNAME angelegt der Adminrechte hat
-* es wird im git der user USERNAME angelegt der schreibrechte hat
-* es wird fuer trac+git eine apacheconfig angelegt in 
+* es wird im webdav der user USERNAME angelegt der schreibrechte hat
+* es wird fuer trac+webdav eine apacheconfig angelegt in 
   /etc/apache2/userSVNandTRAC.available
 * es wird ein symlink von userSVNandTRAC.available nach
   userSVNandTRAC.enabled angelegt
@@ -47,7 +46,7 @@ was dann noch zu tun ist, ist ein neustart des apache also
 
 /etc/init.d/apache2 restart
 
-danach sollte das git+trac fuer den benutzer vorhanden sein
+danach sollte das webdav+trac fuer den benutzer vorhanden sein
 und er/sie alle hat die moeglichkeit benutzer hinzu zufuegen und
 zu loeschen.
 
@@ -77,31 +76,21 @@ if [[ x${PASSWORD} == x ]];then
 fi
 
 if [[ -e ${TRACBASEDIR}/${TRACSHORT} ]];then
-    echo "sorry das TRAC ${GITBASEDIR}/${TRACSHORT} gibt es schon"
+    echo "sorry das TRAC ${WEBDAVBASEDIR}/${TRACSHORT} gibt es schon"
     exit 1
 fi
 
-if [[ -e ${GITBASEDIR}/${TRACSHORT} ]];then
-    echo "sorry das SVN ${GITBASEDIR}/${TRACSHORT} gibt es schon"
+if [[ -e ${WEBDAVBASEDIR}/${TRACSHORT} ]];then
+    echo "sorry das SVN ${WEBDAVBASEDIR}/${TRACSHORT} gibt es schon"
     exit 1
 fi
 
 echo "Sieht alles gut aus, erstelle TRAC und SVN"
 mkdir -p ${GENERALPREFIX}
-mkdir -p ${GITBASEDIR}/${TRACSHORT}
+mkdir -p ${WEBDAVBASEDIR}/${TRACSHORT}
 mkdir -p ${TRACBASEDIR}
 
-FOO=$(pwd)
-cd ${GITBASEDIR}/${TRACSHORT}
-${GITADMIN} init 
-cd ${FOO}
-echo ""
-echo "svn done..."
-echo ""
-echo ""
-echo "permission gesetzt"
-echo ""
-${TRACADMIN} "${TRACBASEDIR}/${TRACSHORT}" initenv "${TRACNAME}" sqlite:db/trac.db git "${GITBASEDIR}/${TRACSHORT}"
+${TRACADMIN} "${TRACBASEDIR}/${TRACSHORT}" initenv "${TRACNAME}" sqlite:db/trac.db "svn" "${WEBDAVBASEDIR}/${TRACSHORT}"
 echo ""
 echo "trac erstellt"
 echo ""
@@ -116,8 +105,8 @@ echo ""
 
 cat <<EOF > /etc/apache2/userSVNandTRAC.available/${TRACSHORT}.conf
 
-Alias /usergit/${TRACSHORT} "/srv/GITs/${TRACSHORT}/"
-<Location /usergit/${TRACSHORT}>
+Alias /userwebdav/${TRACSHORT} "/srv/WEBDAVs/${TRACSHORT}/"
+<Location /userwebdav/${TRACSHORT}>
         Dav On
 
         AuthType Basic
@@ -157,7 +146,6 @@ cp ${TRACPLUGINBASE}/TracSectionEditPlugin-0.1-py2.6.egg ${TRACBASEDIR}/${TRACSH
 cp ${TRACPLUGINBASE}/TracTags-0.6-py2.6.egg ${TRACBASEDIR}/${TRACSHORT}/plugins/
 cp ${TRACPLUGINBASE}/TracTocMacro-11.0.0.3-py2.6.egg ${TRACBASEDIR}/${TRACSHORT}/plugins/
 cp ${TRACPLUGINBASE}/TracWikiToPdfPlugin-2.3.1-py2.6.egg ${TRACBASEDIR}/${TRACSHORT}/plugins/
-cp ${TRACPLUGINBASE}/TracGit-0.11.0.2-py2.6.egg ${TRACBASEDIR}/${TRACSHORT}/plugins/
 
 
 echo erstelle Trac-Konfiguration 
@@ -194,21 +182,8 @@ render_unsafe_content = false
 max_diff_bytes = 10000000
 max_diff_files = 0
 wiki_format_messages = true
-[git]
-## let Trac cache meta-data via CachedRepository wrapper; default: false
-cached_repository = true
-
-## disable automatic garbage collection for in-memory commit-tree cache; default: false
-persistent_cache = true
-
-## length revision sha-sums should be tried to be abbreviated to (must be >= 4 and <= 40); default: 7
-shortrev_len = 7
-
-## executable file name (optionally with path) of git binary; default: 'git'
-git_bin = /usr/bin/git
 
 [components]
-tracext.git.* = enabled 
 acct_mgr.admin.* = enabled
 acct_mgr.api.* = enabled
 acct_mgr.db.* = enabled
@@ -345,8 +320,8 @@ ignore_auth_case = false
 mainnav = wiki,timeline,roadmap,browser,tickets,newticket,search
 metanav = login,logout,settings,help,about
 permission_store = DefaultPermissionStore
-repository_dir = ${GITBASEDIR}/${TRACSHORT}/.git
-repository_type = git
+repository_dir = 
+repository_type = svn
 timeout = 20
 
 [wiki]
@@ -359,7 +334,7 @@ EOF
 echo "fast fertig"
 trac-admin ${TRACBASEDIR}/${TRACSHORT} upgrade
 chown -R ${APACHEUSER}:${APACHEGROUP} ${TRACBASEDIR}/${TRACSHORT}
-chown -R ${APACHEUSER}:${APACHEGROUP} ${GITBASEDIR}/${TRACSHORT}
+chown -R ${APACHEUSER}:${APACHEGROUP} ${WEBDAVBASEDIR}/${TRACSHORT}
 
 cat << EOF
 
@@ -367,7 +342,7 @@ DONE!
 
 TRAC :      https://www.das-labor.org/usertrac/${TRACSHORT}
 
-SVN  :      https://www.das-labor.org/usergit/${TRACSHORT}
+WEBDAV  :      https://www.das-labor.org/userwebdav/${TRACSHORT}
 
 
 bitte den Apache einmal neu starten

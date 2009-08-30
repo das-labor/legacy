@@ -122,7 +122,7 @@ Alias /userbzr/${TRACSHORT} "/srv/BZRs/${TRACSHORT}/"
 
         AuthType Basic
 	AuthName "${TRACSHORT} Bazaar Repository"
-        AuthUserFile ${TRACBASEDIR}/${TRACSHORT}/conf/trac.htpasswd
+        AuthUserFile ${TRACBASEDIR}/${TRACSHORT}/conf/htpasswd.labor
 
         <LimitExcept GET OPTIONS>
                 Require valid-user
