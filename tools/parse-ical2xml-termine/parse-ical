@@ -42,11 +42,16 @@ class LaborTermine
 					#puts nre.dtstart
 					nrt["date"] = nre.dtstart
 	
-					#puts nre.summary
+					puts nre.summary
 					nrt["text"] = nre.summary
-	
-					#puts nre.attach
-					nrt["link"] = nre.attach
+					
+					if nre.url != nil then
+						puts nre.url
+						nrt["link"] = nre.url
+					else
+						puts nre.attach
+						nrt["link"] = nre.attach
+					end
 
 					# push hash table into array
 					nrterm.push(nrt)
@@ -60,11 +65,16 @@ class LaborTermine
 				#puts re.dtstart
 				t["date"] = re.dtstart
 
-				#puts re.summary
+				puts re.summary
 				t["text"] = re.summary
-
-				#puts re.attach
-				t["link"] = re.attach
+	
+				if re.url != nil then
+					puts re.url
+					t["link"] = re.url
+				else
+					puts re.attach
+					t["link"] = re.attach
+				end
 
 				#push event hash table into array
 				term.push(t)
