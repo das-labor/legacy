@@ -6,6 +6,7 @@
 
 #include "rfm12.h"
 
+extern rfm12_control_t ctrl;
 
 int main ( void )
 {	
@@ -56,9 +57,15 @@ int main ( void )
 		
 		if(joy ^ joy_old)
 		{
-			if(RFM12_TX_ENQUEUED == rfm12_tx (1, 0x69, &joy)){
+			//use rfm12_start_tx instead of rfm12_tx  to avoid memcpy for 1 byte
+			*rf_tx_buffer.buffer = joy;
+			if(RFM12_TX_ENQUEUED == rfm12_start_tx (0x69, 1))
+			{
 				joy_old = joy;
-			}
+				
+				while(ctrl.rfm12_state != 0)
+				rfm12_tick();
+			}					
 		}
 
 		rfm12_tick();
