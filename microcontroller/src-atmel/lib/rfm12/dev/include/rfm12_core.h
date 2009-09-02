@@ -80,7 +80,6 @@
 //if low battery detector is not defined, we won't use this feature
 #ifndef RFM12_LOW_BATT_DETECTOR
 	#define RFM12_LOW_BATT_DETECTOR 0
-	#define PWRMGMT_LOW_BATT 0
 #endif
 
 //if the low battery detector feature is used, we will set some extra pwrmgmt options
@@ -96,12 +95,13 @@
 			#warning "You are using the RFM12 low battery detector, but PWRMGT_DEFAULT has the low battery detector bit unset."
 		#endif
 	#endif
+#else
+	#define PWRMGMT_LOW_BATT 0
 #endif /* RFM12_LOW_BATT_DETECTOR */
 
 //if wakeuptimer is not defined, we won't use this feature
 #ifndef RFM12_USE_WAKEUP_TIMER
 	#define RFM12_USE_WAKEUP_TIMER 0
-	#define PWRMGMT_WKUP 0
 #endif
 
 //if wakeuptimer is on, we will set the default power management to use the wakeup timer
@@ -117,7 +117,9 @@
 			#warning "You are using the RFM12 wakeup timer, but PWRMGT_DEFAULT has the wakeup timer bit unset."
 		#endif
 	#endif
-#endif
+#else
+	#define PWRMGMT_WKUP 0
+#endif /* RFM12_USE_WAKEUP_TIMER */
 
 //if raw tx is not defined, we won't use this feature
 #ifndef RFM12_RAW_TX
