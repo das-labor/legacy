@@ -1,5 +1,3 @@
-
-
 #ifdef _WIN32
 #  include <GL/glut.h>
 #  include <windows.h>

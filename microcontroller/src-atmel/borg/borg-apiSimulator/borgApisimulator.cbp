@@ -47,6 +47,14 @@
 			<Add library="opengl32" />
 			<Add library="winmm" />
 			<Add library="gdi32" />
+			<Add library="C:\Programme\CodeBlocks\MinGW\lib\glut32.lib" />
+			<Add library="C:\Programme\CodeBlocks\MinGW\lib\libglu32.a" />
+			<Add library="C:\Programme\CodeBlocks\MinGW\lib\libopengl32.a" />
+			<Add library="C:\Programme\CodeBlocks\MinGW\lib\libglut32.a" />
+			<Add library="C:\Programme\CodeBlocks\MinGW\lib\libglut.a" />
+			<Add library="C:\Programme\CodeBlocks\MinGW\lib\libglaux.a" />
+			<Add library="C:\Programme\CodeBlocks\MinGW\lib\libgdi32.a" />
+			<Add library="C:\Programme\CodeBlocks\MinGW\lib\libwinmm.a" />
 			<Add directory="C:\Programme\CodeBlocks\lib" />
 		</Linker>
 		<Unit filename="breakpoint.c">
@@ -58,6 +66,15 @@
 		<Unit filename="font_arial8.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="font_arial8.h" />
+		<Unit filename="font_small6.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="font_small6.h" />
+		<Unit filename="font_uni53.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="font_uni53.h" />
 		<Unit filename="invader_draw.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -78,14 +95,29 @@
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="memxor.h" />
+		<Unit filename="memxor_c.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="menu.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="menu.h" />
+		<Unit filename="noekeon.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="noekeon.h" />
 		<Unit filename="pixel.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="pixel.h" />
+		<Unit filename="plasma.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="prng.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="prng.h" />
 		<Unit filename="programm.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -98,6 +130,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="snake.h" />
+		<Unit filename="stonefly.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="stonefly.h" />
 		<Unit filename="tetris\input.c">
 			<Option compilerVar="CC" />
 		</Unit>
