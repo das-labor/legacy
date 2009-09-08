@@ -55,7 +55,7 @@
 		73496BFC0B7BD22900D4554C /* playlist.apl */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = playlist.apl; path = ../playlist.apl; sourceTree = SOURCE_ROOT; };
 		73496BFD0B7BD22900D4554C /* sample.pr0n */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = sample.pr0n; path = ../sample.pr0n; sourceTree = SOURCE_ROOT; };
 		73496C0E0B7BD2E200D4554C /* farbborgSim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = farbborgSim.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		73496C100B7BD2E200D4554C /* farbborgSim-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "farbborgSim-Info.plist"; sourceTree = "<group>"; };
+		73496C100B7BD2E200D4554C /* farbborgSim-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "farbborgSim-Info.plist"; sourceTree = "<group>"; };
 		73496C340B7BDE7C00D4554C /* farbborg.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = farbborg.icns; sourceTree = "<group>"; };
 		73E10D280D2546E6005D39F9 /* colorMatrix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = colorMatrix.c; path = ../colorMatrix.c; sourceTree = SOURCE_ROOT; };
 		73E10D290D2546E6005D39F9 /* colorSnake.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = colorSnake.c; path = ../colorSnake.c; sourceTree = SOURCE_ROOT; };

@@ -10,6 +10,96 @@
 void flashLight();
 void fadeTest();
 
+
+void drawPixmapZ(char x1, char y1, char x2, char y2, unsigned char* pixmap, color col) {
+	signed char i, dx, dy, sdx, sdy, dxabs, dyabs, x, y, px, py;
+	unsigned char z, j=0;
+	dx = x2 - x1;      // the horizontal distance of the line
+	dy = y2 - y1;      // the vertical distance of the line 
+	dxabs = dx >= 0 ? dx: -dx; //abs
+	dyabs = dy >= 0 ? dy: -dy; //abs
+	sdx = dx >= 0 ? 1: -1;     //sgn
+	sdy = dy >= 0 ? 1: -1;     //sgn
+	x = dyabs >> 1;
+	y = dxabs >> 1;
+	px = x1;
+	py = y1;
+	for (z = 0; z < 5; z++) {
+		if (pixmap[0] & (1 << z))
+			setVoxel((voxel){x1, y1, z}, col);
+	}
+	j++;
+	
+	if (dxabs >= dyabs) { // the line is more horizontal than vertical  
+		for (i = 0; i < dxabs; i++) {
+			y += dyabs; 
+			if (y >= dxabs) {
+				y -= dxabs;
+				py += sdy;
+			}
+			px += sdx;
+			for (z = 0; z < 5; z++) {
+				if (pixmap[j] & (1 << z))
+					setVoxel((voxel){px, py, z}, col);
+					
+			}
+			j++;
+		}
+	} else { // the line is more vertical than horizontal
+		for (i = 0; i < dyabs; i++) {
+			x += dxabs;
+			if (x >= dyabs) {
+				x -= dyabs;
+				px += sdx;
+			}
+			py += sdy;
+			for (z = 0; z < 5; z++) {
+				if (pixmap[j] & (1 << z))
+					setVoxel((voxel){px, py, z}, col);	
+			}
+			j++;
+		}
+	}
+}	  
+
+void drawPixmapZAngle(unsigned char angle, unsigned char* pixmap, color col) {
+	// could be optimised in programcode
+	unsigned char x1[] = {0, 0, 0, 1, 2, 3, 4, 4, 4, 4, 4, 3, 2, 1, 0, 0};
+	unsigned char y1[] = {2, 3, 4, 4, 4, 4, 4, 3, 2, 1, 0, 0, 0, 0, 0, 1};
+	drawPixmapZ(x1[angle], y1[angle], 2, 2, pixmap, col);	
+}
+
+void rotatingHeard() {
+	unsigned char heart[5] =    {0x0c, 0x1E, 0x0F}; 
+    unsigned char* pixmap = heart;
+	unsigned char i;
+	color farbe = red;
+	
+	for (i = 0; i < 255; i++) {
+		farbe.g++;
+		drawPixmapZAngle(i%16, pixmap, farbe);
+		drawPixmapZAngle((i+8)%16, pixmap, farbe);
+		fade(4, 10);
+		clearImage(black);
+	}
+	for (i = 0; i < 255; i++) {
+		farbe.g--;
+		drawPixmapZAngle(i%16, pixmap, farbe);
+		drawPixmapZAngle((i+6)%16, pixmap, farbe);
+		drawPixmapZAngle((i+10)%16, pixmap, farbe);
+		fade(4, 10);
+		clearImage(black);
+	}
+	for (i = 0; i < 255; i++) {
+		drawPixmapZAngle(i%16, pixmap, farbe);
+		drawPixmapZAngle((i+4)%16, pixmap, farbe);
+		drawPixmapZAngle((i+8)%16, pixmap, farbe);
+		drawPixmapZAngle((i+12)%16, pixmap, farbe);
+		fade(4, 10);
+		clearImage(black);
+	}
+}
+
 void testBlur() {
 	int i, j;
 	for (i = 0; i < 23; i++)

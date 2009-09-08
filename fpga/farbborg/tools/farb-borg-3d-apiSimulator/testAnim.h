@@ -17,5 +17,6 @@ void planeBall();
 void movingArrows();
 void funkyBeat();
 void brightnesTest();
+void rotatingHeard();
 
 #endif
