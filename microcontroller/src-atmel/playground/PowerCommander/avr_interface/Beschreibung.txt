@@ -1,0 +1,12 @@
+Lizenz: GPL3+
+
+Eingänge:
+
+
+I2C Bus für Kommunikation mit Ausführungs Prozessor
+Bekommt Zustände für Ports und liefert die auf Anfrage zurück.
+
+SPI:
+	CAN Bus für Labor anbindung
+	TFT Anzeige im großen Sicherungskasten und Steuertasten
+

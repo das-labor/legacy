@@ -1,0 +1,10 @@
+Lizenz: GPL3+
+
+Steuert Ausgänge:
+6 * Hardware PWM als 0V - 10V Ausgänge für EVGs
+8 * TTL für Relais
+
+
+I2C Bus für Kommunikation
+Bekommt Zustände für Ports und liefert die auf Anfrage zurück.
+
