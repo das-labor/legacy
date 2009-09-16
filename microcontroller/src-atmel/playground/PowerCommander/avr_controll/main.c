@@ -5,6 +5,7 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
+#include "twi_slave/general.h"
 #include "twi_slave/twi_slave.h"
 
 
@@ -33,13 +34,13 @@ int main (void)
     DDRD |= _BV(PD3) | _BV(PD5) | _BV(PD6);                 // pwm ausgänge
     
     TCCR2A |= _BV(WGM20) | _BV(COM2A1) | _BV(COM2A0) | _BV(COM2B1) | _BV(COM2B0); // FastPWM, Set OC0A on Compare Match, clear OCxx at BOTTOM, (inverting mode).
-    TCCR2B |= _BV(WGM22) | _BV(CS22) | _BV(CS21) | _BV(CS20);                     // FastPWM bit 2, clk/1024
+    TCCR2B |= _BV(WGM21) | _BV(CS22) | _BV(CS21) | _BV(CS20);                     // FastPWM bit 2, clk/1024
     
    	TCCR1A |= _BV(WGM10) | _BV(COM1A1) | _BV(COM1A0) | _BV(COM1B1) | _BV(COM1B0); // FastPWM, Set OC0A on Compare Match, clear OCxx at BOTTOM, (inverting mode).
   	TCCR1B |= _BV(WGM12) | _BV(CS12) | _BV(CS10);                                 // FastPWM bit 2, clk/1024
   	
-  	TCCR0A |= _BV(WGM00) | _BV(COM0A1) | _BV(COM0A0) | _BV(COM0B1) | _BV(COM0B0); // FastPWM, Set OC0A on Compare Match, clear OCxx at BOTTOM, (inverting mode).
-    TCCR0B |= _BV(WGM02) | _BV(CS02) | _BV(CS00);                                 // FastPWM bit 2, clk/1024
+  	TCCR0A |= _BV(WGM01) | _BV(WGM00) | _BV(COM0A1) | _BV(COM0A0) | _BV(COM0B1) | _BV(COM0B0); // FastPWM, Set OC0A on Compare Match, clear OCxx at BOTTOM, (inverting mode).
+    TCCR0B |= _BV(CS02) | _BV(CS00);                                 // FastPWM bit 2, clk/1024
   	
     TCNT2 = 0;     // pwm timer clear
     OCR2A = 0;   // pwm timer compare target
