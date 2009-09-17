@@ -501,7 +501,7 @@ int main (void)
 
 
 
-/* ISR(TIMER0_OVF)  TODO muss interrupt aktiviert werden?
+/* ISR(TIMER0_OVF_vect)  TODO muss interrupt aktiviert werden?
 {
     tick++; ?
     // wann ist es dimmen / tasten, zähler löschen
@@ -514,7 +514,7 @@ int main (void)
 }
 */
  
-/* ISR(PCINT2)
+/* ISR(PCINT2_vect)
 {
     if (pcint18)
         i1++;
