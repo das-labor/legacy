@@ -10,6 +10,385 @@
 
 #define ADRESSE 15 // I2C Adresse
 
+// immer wieder der gleiche scheiss!
+#define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
+
+// was willst du von dem Relai / Optokoppler
+enum action { 
+  swon=0,   // einschalten
+  swoff,    // ausschalten
+  swstatus, // status
+  num_action // ist immer der letzte eintrag
+};
+
+// was soll mit der lampe passieren?
+enum brightaction{
+  brset =0,   // helligkeit setzen
+  num_brightaction // ist immer der letzte eintrag
+};
+
+// welches relai willst du ansteuern?
+
+enum relais {
+  switch00 = 0,
+  switch01,
+  switch02,
+  switch03,
+  switch04,
+  switch05,
+  switch06,
+  switch07,
+  num_switch // muss immer der letzte sein
+};
+
+// welchen optokoppler willst du?
+enum optokop {
+  optokopp00=num_switch,
+  optokopp01,
+  num_optokopp // muss immer der letzte sein
+};
+
+
+// welche lampe willst du veraendern?
+enum bright {
+  tafel=num_optokopp,
+  beamer,
+  schraenke,
+  flipper,
+  free1,
+  lounge,
+  num_bright // ist immer der letzte eintrag
+};
+
+// struktur die daten enthaelt und das FLAG wenn daten
+// auf den I2C geschrieben werden sollen
+struct t_status{
+  uint8_t data;
+  uint8_t write_data;
+};
+
+/*
+  fuer jedes objekt gibt es funktionen der form:
+  unit8_t NAME_ACTION(struct t_status * data)
+  
+  der name ist erstmal nicht wichtig, auch die Action nicht wirklich
+  sie soll hier nur das lesen vereinfachen
+
+  wenn du also ein neues objekt hinzufuegen willst, dann muss 
+  erstmal nur die Funktion diesem schema entsprechen.
+
+  der Rueckgabe wert kann, muss aber nicht ueberprueft werden.
+  dies ist im Moment nicht der Fall.
+
+  in jeder funktion muss entschieden werden, ob sie Informationen 
+  zurueck gibt. wenn
+
+  (*data).write_data = 0;
+  
+  verwendet wird, werden keine daten zurueck gegeben. wird
+
+  (*data).write_data = 1;
+  
+  verwendet, wird das auf den Bus gegeben, was sich in 
+
+  (*data).data; 
+
+  befindet.
+  
+  Daten auf denen gearbeitet werden soll, stehen beim start der Funktion 
+  in (*data).data;
+
+  auf diese Art lassen sich auch recht einfach neue Aktionen erstellen
+  die ihre eigene Funktion haben. und auch ein Byte daten aus dem I2C 
+  annehmen
+
+*/
+
+uint8_t switch00_off(struct t_status * data)
+{
+  PORTC &= ~_BV(PC3);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t switch00_on(struct t_status * data)
+{
+  PORTC |= _BV(PC3);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t switch00_status(struct t_status * data)
+{
+  (*data).data=(PORTC >> PC3) & 1;
+  (*data).write_data = 1;
+  return 0;
+}
+
+uint8_t switch01_off(struct t_status * data)
+{
+  PORTC &= ~_BV(PC2);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t switch01_on(struct t_status * data)
+{
+  PORTC |= _BV(PC2);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t switch01_status(struct t_status * data)
+{
+  (*data).data=(PORTC >> PC2) & 1;
+  (*data).write_data = 1;
+  return 0;
+}
+
+
+uint8_t switch02_off(struct t_status * data)
+{
+  PORTC &= ~_BV(PC1);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t switch02_on(struct t_status * data)
+{
+  PORTC |= _BV(PC1);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t switch02_status(struct t_status * data)
+{
+  (*data).data=(PORTC >> PC1) & 1;
+  (*data).write_data = 1;
+  return 0;
+}
+
+
+uint8_t switch03_off(struct t_status * data)
+{
+  PORTC &= ~_BV(PC0);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t switch03_on(struct t_status * data)
+{
+  PORTC |= _BV(PC0);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t switch03_status(struct t_status * data)
+{
+  (*data).data=(PORTC >> PC0) & 1;
+  (*data).write_data = 1;
+  return 0;
+}
+
+
+uint8_t switch04_off(struct t_status * data)
+{
+  PORTB &= ~_BV(PB5);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t switch04_on(struct t_status * data)
+{
+  PORTB |= _BV(PB5);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t switch04_status(struct t_status * data)
+{
+  (*data).data=(PORTB >> PB5) & 1;
+  (*data).write_data = 1;
+  return 0;
+}
+
+
+uint8_t switch05_off(struct t_status * data)
+{
+  PORTB &= ~_BV(PB4);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t switch05_on(struct t_status * data)
+{
+  PORTB |= _BV(PB4);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t switch05_status(struct t_status * data)
+{
+  (*data).data=(PORTB >> PB4) & 1;
+  (*data).write_data = 1;
+  return 0;
+}
+
+uint8_t switch06_off(struct t_status * data)
+{
+  PORTB &= ~_BV(PB0);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t switch06_on(struct t_status * data)
+{
+  PORTB |= _BV(PB0);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t switch06_status(struct t_status * data)
+{
+  (*data).data=(PORTB >> PB0) & 1;
+  (*data).write_data = 1;
+  return 0;
+}
+
+
+uint8_t switch07_off(struct t_status * data)
+{
+  PORTD &= ~_BV(PD7);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t switch07_on(struct t_status * data)
+{
+  PORTD |= _BV(PD7);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t switch07_status(struct t_status * data)
+{
+  (*data).data=(PORTD >> PD7) & 1;
+  (*data).write_data = 1;
+  return 0;
+}
+
+
+uint8_t opto00_off(struct t_status * data)
+{
+  PORTD &= ~_BV(PD0);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t opto00_on(struct t_status * data)
+{
+  PORTD |= _BV(PD0);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t opto00_status(struct t_status * data)
+{
+  (*data).data=(PORTD >> PD0) & 1;
+  (*data).write_data = 1;
+  return 0;
+}
+
+uint8_t opto01_off(struct t_status * data)
+{
+  PORTD &= ~_BV(PD1);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t opto01_on(struct t_status * data)
+{
+  PORTD |= _BV(PD1);
+  (*data).write_data = 0;
+  return 0;
+}
+
+uint8_t opto01_status(struct t_status * data)
+{
+  (*data).data=(PORTD >> PD1) & 1;
+  (*data).write_data = 1;
+  return 0;
+}
+
+uint8_t bright_tafel_set(struct t_status *data)
+{
+  OCR0A = (*data).data;
+  (*data).write_data=0;
+  return 0;
+}
+
+uint8_t bright_beamer_set(struct t_status *data)
+{
+  OCR0B = (*data).data;
+  (*data).write_data=0;
+  return 0;
+}
+
+uint8_t bright_schraenke_set(struct t_status *data)
+{
+  OCR1A = (*data).data;
+  (*data).write_data=0;
+  return 0;
+}
+
+uint8_t bright_flipper_set(struct t_status *data)
+{
+  OCR1B = (*data).data;
+  (*data).write_data=0;
+  return 0;
+}
+
+uint8_t bright_free_set(struct t_status *data)
+{
+  OCR2A = (*data).data;
+  (*data).write_data=0;
+  return 0;
+}
+
+
+uint8_t bright_lounge_set(struct t_status *data)
+{
+  OCR2B = (*data).data;
+  (*data).write_data=0;
+  return 0;
+}
+
+// diese funktion ist eine dummyfunktion 
+// sie wird ueberall da in der Matrix verwendet, wo eigentlich 
+// nichts passieren sollte - aka dauerhaft abschalten
+uint8_t dummy_switch_null(struct t_status *data)
+{
+  (*data).write_data=0;
+  return 0;
+}
+
+uint8_t dummy_opto_null(struct t_status *data)
+{
+  (*data).write_data=0;
+  return 0;
+}
+
+uint8_t dummy_bright_null(struct t_status *data)
+{
+  (*data).write_data=0;
+  return 0;
+}
+
+// funktionsmatrix fuer switch-controlle - passt nur wenn die als "muss letztes sein" 
+// immer da ist und ganz hinten steht... sonst mact es hier bum
+
+//uint8_t (*DoIt[num_bright][3])(struct t_status *data);
+
 
 void reset_commander()
 {
@@ -61,12 +440,66 @@ void reset_commander()
 int main (void)
 {
 
-	uint8_t tmp = 0;
 	uint8_t stat_haupt = 0; // status des Hauptschalters 0=ist aus; 1=ist an;<1 ist gesperrt
-	uint8_t	byte[2];
+	uint8_t	recv_buffer[3];
 	uint8_t	TWIS_ResonseType;
+	
+	uint8_t hasharray[num_bright];  // ich benutze hier num_bright als die anzahl aller objekte
+	struct t_status workparameter;
+
+	uint8_t (*DoIt[num_bright][MAX(num_action,num_brightaction)])(struct t_status *data);
 
 	reset_commander();
+
+	/* 
+	   hier wird jedem Objekt und jeder Funktion ihre Aufgabe zugewiesen.
+	*/
+	// switchmatrix aufbauen 
+	DoIt[switch00][swoff]    = switch00_off; DoIt[switch00][swon] = switch00_on; DoIt[switch00][swstatus] = switch00_status;
+	DoIt[switch01][swoff]    = switch01_off; DoIt[switch01][swon] = switch01_on; DoIt[switch01][swstatus] = switch01_status;
+	DoIt[switch02][swoff]    = switch02_off; DoIt[switch02][swon] = switch02_on; DoIt[switch02][swstatus] = switch02_status;
+	DoIt[switch03][swoff]    = switch03_off; DoIt[switch03][swon] = switch03_on; DoIt[switch03][swstatus] = switch03_status;
+	DoIt[switch04][swoff]    = switch04_off; DoIt[switch04][swon] = switch04_on; DoIt[switch04][swstatus] = switch04_status;
+	DoIt[switch05][swoff]    = switch05_off; DoIt[switch05][swon] = switch05_on; DoIt[switch05][swstatus] = switch05_status;
+	DoIt[switch06][swoff]    = switch06_off; DoIt[switch06][swon] = switch06_on; DoIt[switch06][swstatus] = switch06_status;
+	DoIt[switch07][swoff]    = switch07_off; DoIt[switch07][swon] = switch07_on; DoIt[switch07][swstatus] = switch07_status;
+
+	// optokopplermatrix
+	DoIt[optokopp00][swoff]    = opto00_off; DoIt[optokopp00][swon] = opto00_on; DoIt[optokopp00][swstatus] = opto00_status;
+	DoIt[optokopp01][swoff]    = opto01_off; DoIt[optokopp01][swon] = opto01_on; DoIt[optokopp01][swstatus] = opto01_status;
+
+	/*
+	  Die Anzahl der Aktionen fuer Lampen und Relais/Switche ist leider nicht identisch. Daher ist es 
+	  notwendig an den fehlenden Punkten in der Matrix trotzdem eine Funktion zuzuweisen.
+	 */
+	// helligkeitsmatrix
+	DoIt[tafel][brset]     = bright_tafel_set;     DoIt[tafel][1]     = dummy_bright_null; DoIt[tafel][2]     = dummy_bright_null;
+	DoIt[beamer][brset]    = bright_beamer_set;    DoIt[beamer][1]    = dummy_bright_null; DoIt[beamer][2]    = dummy_bright_null;
+	DoIt[schraenke][brset] = bright_schraenke_set; DoIt[schraenke][1] = dummy_bright_null; DoIt[schraenke][2] = dummy_bright_null;
+	DoIt[flipper][brset]   = bright_flipper_set;   DoIt[flipper][1]   = dummy_bright_null; DoIt[flipper][2]   = dummy_bright_null;
+	DoIt[free1][brset]     = bright_free_set;      DoIt[free1][1]     = dummy_bright_null; DoIt[free1][2]     = dummy_bright_null;
+	DoIt[lounge][brset]    = bright_lounge_set;    DoIt[lounge][1]    = dummy_bright_null; DoIt[lounge][2]    = dummy_bright_null;
+
+
+	// host sendet und will damit objekt foo addressieren - er sendet 0 und will switch00
+	hasharray[0] = switch00;
+	hasharray[1] = switch01;
+	hasharray[2] = switch02;
+	hasharray[3] = switch03;
+	hasharray[4] = switch04;
+	hasharray[5] = switch05;
+	hasharray[6] = switch06;
+	hasharray[7] = switch07;
+	hasharray[8] = optokopp00;
+	hasharray[9] = optokopp01;
+	hasharray[10] = tafel;
+	hasharray[11] = beamer;
+	hasharray[12] = schraenke;
+	hasharray[13] = flipper;
+	hasharray[14] = lounge;
+	hasharray[15] = free1;
+
+
 
 /* TIMER0 OVF  TODO muss interrupt aktiviert werden?
 {
@@ -128,284 +561,17 @@ int main (void)
 */
 				case TWIS_ReadBytes:
 				{
-					byte[0] = TWIS_ReadAck();   // byte 1 lesen
-					byte[1] = TWIS_ReadNack();  // byte 2 lesen
+					recv_buffer[0] = TWIS_ReadAck();   // byte 1 lesen
+					recv_buffer[1] = TWIS_ReadAck();   // byte 2 lesen
+					recv_buffer[2] = TWIS_ReadNack();  // byte 3 lesen
 					TWIS_Stop();                // I2C stop
-	    				
-					switch (byte[0])            // ziel suchen
-					{
-						case 0:
-						{
-							switch(byte[1])
-							{
-								case 0:
-								{
-									PORTC &= ~_BV(PC3);
-								}
-								break;
-								case 1:
-								{
-									PORTC |= _BV(PC3);
-								}
-								break;
-								case 2: 
-								{
-									tmp = (PORTC >> PC3) & 1;
-								}
-								break;
-								default:
-								break;
-							}
-						}
-						break;
-						case 1:
-						{
-							switch(byte[1])
-							{
-								case 0:
-								{
-									PORTC &= ~_BV(PC2);
-								}
-								break;
-								case 1:
-								{
-									PORTC |= _BV(PC2);
-								}
-								break;
-								case 2:
-								{ 
-									tmp = (PORTC >> PC2) & 1;
-								}
-								break;
-								default:
-								break;
-							}
-						}
-						break;
-	    					case 2:
-						{
-							switch(byte[1])
-							{
-								case 0:
-								{
-									PORTC &= ~_BV(PC1);
-								}
-								break;
-								case 1:
-								{
-									PORTC |= _BV(PC1);
-								}
-								break;
-								case 2:
-								{
-									tmp = (PORTC >> PC1) & 1;
-								}
-								break;
-								default:
-								break;
-							}
-						}
-						break;
-	    					case 3:
-						{
-							switch(byte[1])
-							{
-								case 1:
-								{
-									PORTC |= _BV(PC0);
-								}
-								break;
-								case 2:
-								{
-									tmp = (PORTC >> PC0) & 1;
-								}
-								break;
-								case 0: 
-								{
-									PORTC &= ~_BV(PC0);
-								}
-								break;
-								default:
-								break;
-							}
-						}
-						break;
-						case 4:
-						{
-							switch(byte[1])
-							{
-								case 1:
-								{
-									  PORTB |= _BV(PB5);
-								}
-								break;
-								case 2: 
-								{
-									tmp = (PORTB >> PB5) & 1;
-								}
-								break;
-								case 0: 
-								{
-									PORTB &= ~_BV(PB5);
-								}
-								break;
-								default:
-								break;
-							}
-						}
-						break;
-						case 5:
-						{
-							switch(byte[1])
-							{
-								case 1:
-								{
-									PORTB |= _BV(PB4);
-								}
-								break;
-								case 2:
-								{
-									tmp = (PORTB >> PB4) & 1;
-								}
-								break;
-								case 0:
-								{
-									PORTB &= ~_BV(PB4);
-								}
-								break;
-								default:
-								break;
-							}
-						}
-						break;
-	    					case 6:
-						{
-							switch (byte[1])
-							{
-								case 1:
-								{
-									PORTB |= _BV(PB0);
-								}
-								break;
-								case 2:
-								{
-									tmp = (PORTB >> PB0) & 1;
-								}
-								break;
-								case 0:
-								{
-									PORTB &= ~_BV(PB0);
-								}
-								break;
-								default:
-								break;
-							}
-						}
-						break;
-						case 7:
-						{
-							switch (byte[1])
-							{
-								case 1:
-								{
-									PORTD |= _BV(PD7);
-								}
-								break;
-								case 2:
-								{
-									tmp = (PORTD >> PD7) & 1;
-								}
-								break;
-								case 0:
-								{
-									PORTD &= ~_BV(PD7);
-								}
-								break;
-								default:
-								break;
-							}
-						  }
-						  break;
-	    					case 8:
-						{
-							switch (byte[1])
-							{
-								case 1:
-								{
-									PORTD |= _BV(PD1);
-								}
-								break;
-								case 2:
-								{
-									tmp = (PORTD >> PD1) & 1;
-								}
-								break;
-								case 3:
-								{
-									PORTD &= ~_BV(PD1);
-								}
-								break;
-								default:
-								break;
-							}
-						}
-						break;
-	    					case 9:
-						{
-							switch (byte[1])
-							{
-								case 1:
-								{
-									PORTD |= _BV(PD0);
-								}
-								break;
-								case 2:
-								{
-									tmp = (PORTD >> PD0) & 1;
-								}
-								break;
-								case 0:
-								{
-									PORTD &= ~_BV(PD0);
-								}
-								break;
-							}
-						}
-						break;
-						case 10:
-						{
-							OCR0A = byte[1];
-						}
-						break;
-	    					case 11:
-						{
-							OCR0B = byte[1];
-						}
-						break;
-	    					case 12:
-						{
-							OCR1A = byte[1];
-						}
-						break;
-	    					case 13:
-						{
-							OCR1B = byte[1];
-						}
-						break;
-	    					case 14:
-						{
-							OCR2A = byte[1];
-						}
-						break;
-						case 15:
-						{
-							OCR2B = byte[1];
-						}
-						break;
-						default:
-						break;
-					}
-					break;
+					// Range checken
+					if(recv_buffer[0] >= num_bright) break; // nochmal num_bright ist anzahl aller Objekte
+					if(recv_buffer[1] >= MAX(num_action,num_brightaction)) break;
+
+					workparameter.data=recv_buffer[2];
+					workparameter.write_data=0;
+					DoIt[hasharray[recv_buffer[0]]][recv_buffer[1]](&workparameter);
 	/*
 	** Slave is requested to send bytes to the master.
 	*/
@@ -413,8 +579,10 @@ int main (void)
 				break;
 	    			case TWIS_WriteBytes:
 				{
-					TWIS_Write(tmp);        // byte das in Leseoperation befüllt wurde schreiben
-					TWIS_Stop();
+				  // nur schreiben wenn auch wirklich daten da waren
+				  if (workparameter.write_data==1)
+				    TWIS_Write(workparameter.data);        // byte das in Leseoperation befüllt wurde schreiben
+				  TWIS_Stop();
 				}
 				break;
 				default:
