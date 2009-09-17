@@ -15,15 +15,15 @@
 
 // was willst du von dem Relai / Optokoppler
 enum action { 
-  swon=0,   // einschalten
+  swon = 0,   // einschalten
   swoff,    // ausschalten
   swstatus, // status
   num_action // ist immer der letzte eintrag
 };
 
 // was soll mit der lampe passieren?
-enum brightaction{
-  brset =0,   // helligkeit setzen
+enum brightaction {
+  brset = 0,   // helligkeit setzen
   num_brightaction // ist immer der letzte eintrag
 };
 
@@ -43,7 +43,7 @@ enum relais {
 
 // welchen optokoppler willst du?
 enum optokop {
-  optokopp00=num_switch,
+  optokopp00 = num_switch,
   optokopp01,
   num_optokopp // muss immer der letzte sein
 };
@@ -62,7 +62,7 @@ enum bright {
 
 // struktur die daten enthaelt und das FLAG wenn daten
 // auf den I2C geschrieben werden sollen
-struct t_status{
+struct t_status {
   uint8_t data;
   uint8_t write_data;
 };
@@ -411,24 +411,24 @@ void reset_commander()
 	DDRB |= _BV(PB1) | _BV(PB2) | _BV(PB3);                 // pwm ausgänge | müssen die wirklich gesetzt werden?
 	DDRD |= _BV(PD3) | _BV(PD5) | _BV(PD6);                 // pwm ausgänge
     
-	TCCR2A |= _BV(WGM20) | _BV(COM2A1) | _BV(COM2A0) | _BV(COM2B1) | _BV(COM2B0); // FastPWM, Set OC0A on Compare Match, clear OCxx at BOTTOM, (inverting mode).
-	TCCR2B |= _BV(WGM21) | _BV(CS22) | _BV(CS21) | _BV(CS20);                     // FastPWM bit 2, clk/1024
-    
-   	TCCR1A |= _BV(WGM10) | _BV(COM1A1) | _BV(COM1A0) | _BV(COM1B1) | _BV(COM1B0); // FastPWM, Set OC0A on Compare Match, clear OCxx at BOTTOM, (inverting mode).
-  	TCCR1B |= _BV(WGM12) | _BV(CS12) | _BV(CS10);                                 // FastPWM bit 2, clk/1024
-  	
-	TCCR0A |= _BV(WGM01) | _BV(WGM00) | _BV(COM0A1) | _BV(COM0A0) | _BV(COM0B1) | _BV(COM0B0); // FastPWM, Set OC0A on Compare Match, clear OCxx at BOTTOM, (inverting mode).
-	TCCR0B |= _BV(CS02) | _BV(CS00);                                 // FastPWM bit 2, clk/1024
+	TCCR2A |= _BV(WGM21) | _BV(WGM20) | _BV(COM2A1) | _BV(COM2A0) | _BV(COM2B1) | _BV(COM2B0);	// FastPWM, Set OC2X on Compare Match, clear OC2X at BOTTOM, (inverting mode).
+	TCCR2B |= _BV(CS22) | _BV(CS21) | _BV(CS20);												// clk/64
 
-	TCNT2 = 0;     // pwm timer clear
+	TCCR1A |= _BV(WGM10) | _BV(COM1A1) | _BV(COM1A0) | _BV(COM1B1) | _BV(COM1B0); // FastPWM, Set OC1X on Compare Match, clear OC1X at BOTTOM, (inverting mode).
+	TCCR1B |= _BV(WGM12) | _BV(CS11) | _BV(CS11);                                 // FastPWM bit 2, clk/64
+
+	TCCR0A |= _BV(WGM01) | _BV(WGM00) | _BV(COM0A1) | _BV(COM0A0) | _BV(COM0B1) | _BV(COM0B0); // FastPWM, Set OC0X on Compare Match, clear OC0x at BOTTOM, (inverting mode).
+	TCCR0B |= _BV(CS01) | _BV(CS00);                                                           // clk/64
+
+	TCNT2 = 0;   // pwm timer clear
 	OCR2A = 0;   // pwm timer compare target
 	OCR2B = 0;   // pwm timer compare target
   	
-  	TCNT1 = 0;     // pwm timer clear
+  	TCNT1 = 0;   // pwm timer clear
 	OCR1A = 0;   // pwm timer compare target
 	OCR1B = 0;   // pwm timer compare target
 	
-	TCNT0 = 0;     // pwm timer clear
+	TCNT0 = 0;   // pwm timer clear
 	OCR0A = 0;   // pwm timer compare target
 	OCR0B = 0;   // pwm timer compare target
 	// PCICR |= _BV(PCIE1);
@@ -501,7 +501,7 @@ int main (void)
 
 
 
-/* TIMER0 OVF  TODO muss interrupt aktiviert werden?
+/* ISR(TIMER0_OVF)  TODO muss interrupt aktiviert werden?
 {
     tick++; ?
     // wann ist es dimmen / tasten, zähler löschen
@@ -514,7 +514,7 @@ int main (void)
 }
 */
  
-/* PCINT2
+/* ISR(PCINT2)
 {
     if (pcint18)
         i1++;
