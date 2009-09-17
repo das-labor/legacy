@@ -17,7 +17,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* Version 0.20 */
+/* Version 0.21 */
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -54,18 +54,18 @@
 
 #define TIME_INAKIVE  100*30 // 30 Sekunden
 
-unsigned char tasten_timer[2];
-unsigned char timer1_corrcet = 0;
-unsigned short timer1_max;
+volatile unsigned char tasten_timer[2];
+volatile unsigned char timer1_corrcet = 0;
+volatile unsigned short timer1_max;
 
-unsigned char taste1_ent, taste2_ent, taste1_sf, taste2_sf; // ff flase
+volatile unsigned char taste1_ent, taste2_ent, taste1_sf, taste2_sf; // ff flase
 #define TIME_DEBOUNCE   3    // 80 ms
 #define TIME_NOTE     150
 #define TIME_OCTAVE    70
 
-unsigned char logicTimer   = 0;
-unsigned char displayTimer = 0;
-unsigned char displayState = 0;
+volatile unsigned char logicTimer   = 0;
+volatile unsigned char displayTimer = 0;
+volatile unsigned char displayState = 0;
 
 unsigned long timeInaktive;
 
@@ -353,7 +353,7 @@ unsigned char midi_notes_bass[] = {
 };
 
 unsigned char midi_notes_bass_half_down[] = {
-	22, 27, 32, 37, 42, 0
+	22, 25, 27, 32, 37, 42, 0
 };
 
 unsigned char midi_notes_guitar[] = {
