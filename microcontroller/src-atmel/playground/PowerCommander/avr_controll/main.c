@@ -176,9 +176,9 @@ ISR(PCINT2_vect)
     } else {
       timing_counter.tastacounter_vortrag--;
     }
-    if ( timing_counter.tastacounter_vortrag == 0 )
+    if ( timing_counter.tastacounter_vortrag == MAXHELL )
       vortrag_cur.dimDirection = MACHDUNKEL;
-    if ( timing_counter.tastacounter_vortrag == 255 )
+    if ( timing_counter.tastacounter_vortrag == MAXDUNKEL )
       vortrag_cur.dimDirection = MACHHELL;
   }
 
@@ -188,9 +188,9 @@ ISR(PCINT2_vect)
     } else {
       timing_counter.tastacounter_lounge--;
     }
-    if ( timing_counter.tastacounter_lounge == 0 )
+    if ( timing_counter.tastacounter_lounge == MAXHELL )
       lounge_cur.dimDirection = MACHDUNKEL;
-    if ( timing_counter.tastacounter_lounge == 255 )
+    if ( timing_counter.tastacounter_lounge == MAXDUNKEL )
       lounge_cur.dimDirection = MACHHELL;
   }
 
