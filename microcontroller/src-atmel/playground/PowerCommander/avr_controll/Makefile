@@ -5,7 +5,7 @@ FUSE_H  = 0xc9
 AVRDUDE = avrdude -c usbasp -p $(DEVICE) # edit this line for your programmer
 
 CFLAGS  = -I. -DDEBUG_LEVEL=0
-OBJECTS =  main.c twi_slave/twi_slave.c
+OBJECTS =  main.c twi_slave/twi_slave.c bright.c opto.c switch.c
 
 COMPILE = avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE) -std=c99
 

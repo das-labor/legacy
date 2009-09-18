@@ -4,68 +4,51 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include <inttypes.h>
 
 #include "twi_slave/twi_slave.h"
 
+#include "PowerCommander.h"
+#include "switch.h"
+#include "opto.h"
+#include "bright.h"
 
-#define ADRESSE 15 // I2C Adresse
+// aktuller zustand
+struct t_state_vortrag vortrag_cur = { 0 , 0 , 0 , 0 , MACHDUNKEL }; // init sonst working
+struct t_state_lounge lounge_cur = { 0 , 0 ,  MACHDUNKEL }; // init sonst working
 
-// immer wieder der gleiche scheiss!
-#define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
+// volle belaeuchtung - dimmrichtung dunkler
+struct t_state_vortrag vortrag_default = { 0 , 0 , 0 , 0, MACHDUNKEL};
+struct t_state_lounge lounge_default = { 0 , 0 , MACHDUNKEL};
 
-// was willst du von dem Relai / Optokoppler
-enum action { 
-  swon = 0,   // einschalten
-  swoff,    // ausschalten
-  swstatus, // status
-  num_action // ist immer der letzte eintrag
-};
+// tafel hell rest dunkel
+struct t_state_vortrag vortrag_vortrag1 = { 0 , 255 , 255 , 255 , MACHHELL};
+// flipper hell rest dunkel
+struct t_state_vortrag vortrag_vortrag2 = { 255 , 255 , 255 , 0 , MACHHELL};
 
-// was soll mit der lampe passieren?
-enum brightaction {
-  brset = 0,   // helligkeit setzen
-  num_brightaction // ist immer der letzte eintrag
-};
+uint8_t helligkeitsstufen[] = { 1, 2 , 4 , 
+				8, 16 , 24, 32, 
+				48, 64 , 96, 128, 
+				192, 255};
 
-// welches relai willst du ansteuern?
+struct t_counter_status timing_counter = { 0,0,0,0,0};
 
-enum relais {
-  switch00 = 0,
-  switch01,
-  switch02,
-  switch03,
-  switch04,
-  switch05,
-  switch06,
-  switch07,
-  num_switch // muss immer der letzte sein
-};
+/*
+  pro sekunde kommen 100 Events an (50Hz , up, down)
+  
+  wir brauchen also ranges fuer der schalter lange und wann 
+  er kurz gedrueck wurde. Es handelt sich hierbei um die
+  Anzahl der Events.
 
-// welchen optokoppler willst du?
-enum optokop {
-  optokopp00 = num_switch,
-  optokopp01,
-  num_optokopp // muss immer der letzte sein
-};
+  x < 25 Events (1/4 sekunde) , dann kurz gedrueckt, 
+  25 < x < 500 (1/4 - 5 sekunden) lange gedrueckt 
+  500 < x < 700 tafel hell rest dunkel
+  700 < x < 900 flipper hell, rest dunkel
+  x> 900 freakshow!
+*/
 
 
-// welche lampe willst du veraendern?
-enum bright {
-  tafel=num_optokopp,
-  beamer,
-  schraenke,
-  flipper,
-  free1,
-  lounge,
-  num_bright // ist immer der letzte eintrag
-};
-
-// struktur die daten enthaelt und das FLAG wenn daten
-// auf den I2C geschrieben werden sollen
-struct t_status {
-  uint8_t data;
-  uint8_t write_data;
-};
+uint16_t schaltinterval[] = { 25, 500 ,700, 900 };
 
 /*
   fuer jedes objekt gibt es funktionen der form:
@@ -104,264 +87,8 @@ struct t_status {
 
 */
 
-uint8_t switch00_off(struct t_status * data)
-{
-  PORTC &= ~_BV(PC3);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t switch00_on(struct t_status * data)
-{
-  PORTC |= _BV(PC3);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t switch00_status(struct t_status * data)
-{
-  (*data).data=(PORTC >> PC3) & 1;
-  (*data).write_data = 1;
-  return 0;
-}
-
-uint8_t switch01_off(struct t_status * data)
-{
-  PORTC &= ~_BV(PC2);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t switch01_on(struct t_status * data)
-{
-  PORTC |= _BV(PC2);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t switch01_status(struct t_status * data)
-{
-  (*data).data=(PORTC >> PC2) & 1;
-  (*data).write_data = 1;
-  return 0;
-}
 
 
-uint8_t switch02_off(struct t_status * data)
-{
-  PORTC &= ~_BV(PC1);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t switch02_on(struct t_status * data)
-{
-  PORTC |= _BV(PC1);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t switch02_status(struct t_status * data)
-{
-  (*data).data=(PORTC >> PC1) & 1;
-  (*data).write_data = 1;
-  return 0;
-}
-
-
-uint8_t switch03_off(struct t_status * data)
-{
-  PORTC &= ~_BV(PC0);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t switch03_on(struct t_status * data)
-{
-  PORTC |= _BV(PC0);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t switch03_status(struct t_status * data)
-{
-  (*data).data=(PORTC >> PC0) & 1;
-  (*data).write_data = 1;
-  return 0;
-}
-
-
-uint8_t switch04_off(struct t_status * data)
-{
-  PORTB &= ~_BV(PB5);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t switch04_on(struct t_status * data)
-{
-  PORTB |= _BV(PB5);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t switch04_status(struct t_status * data)
-{
-  (*data).data=(PORTB >> PB5) & 1;
-  (*data).write_data = 1;
-  return 0;
-}
-
-
-uint8_t switch05_off(struct t_status * data)
-{
-  PORTB &= ~_BV(PB4);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t switch05_on(struct t_status * data)
-{
-  PORTB |= _BV(PB4);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t switch05_status(struct t_status * data)
-{
-  (*data).data=(PORTB >> PB4) & 1;
-  (*data).write_data = 1;
-  return 0;
-}
-
-uint8_t switch06_off(struct t_status * data)
-{
-  PORTB &= ~_BV(PB0);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t switch06_on(struct t_status * data)
-{
-  PORTB |= _BV(PB0);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t switch06_status(struct t_status * data)
-{
-  (*data).data=(PORTB >> PB0) & 1;
-  (*data).write_data = 1;
-  return 0;
-}
-
-
-uint8_t switch07_off(struct t_status * data)
-{
-  PORTD &= ~_BV(PD7);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t switch07_on(struct t_status * data)
-{
-  PORTD |= _BV(PD7);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t switch07_status(struct t_status * data)
-{
-  (*data).data=(PORTD >> PD7) & 1;
-  (*data).write_data = 1;
-  return 0;
-}
-
-
-uint8_t opto00_off(struct t_status * data)
-{
-  PORTD &= ~_BV(PD0);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t opto00_on(struct t_status * data)
-{
-  PORTD |= _BV(PD0);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t opto00_status(struct t_status * data)
-{
-  (*data).data=(PORTD >> PD0) & 1;
-  (*data).write_data = 1;
-  return 0;
-}
-
-uint8_t opto01_off(struct t_status * data)
-{
-  PORTD &= ~_BV(PD1);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t opto01_on(struct t_status * data)
-{
-  PORTD |= _BV(PD1);
-  (*data).write_data = 0;
-  return 0;
-}
-
-uint8_t opto01_status(struct t_status * data)
-{
-  (*data).data=(PORTD >> PD1) & 1;
-  (*data).write_data = 1;
-  return 0;
-}
-
-uint8_t bright_tafel_set(struct t_status *data)
-{
-  OCR0A = (*data).data;
-  (*data).write_data=0;
-  return 0;
-}
-
-uint8_t bright_beamer_set(struct t_status *data)
-{
-  OCR0B = (*data).data;
-  (*data).write_data=0;
-  return 0;
-}
-
-uint8_t bright_schraenke_set(struct t_status *data)
-{
-  OCR1A = (*data).data;
-  (*data).write_data=0;
-  return 0;
-}
-
-uint8_t bright_flipper_set(struct t_status *data)
-{
-  OCR1B = (*data).data;
-  (*data).write_data=0;
-  return 0;
-}
-
-uint8_t bright_free_set(struct t_status *data)
-{
-  OCR2A = (*data).data;
-  (*data).write_data=0;
-  return 0;
-}
-
-
-uint8_t bright_lounge_set(struct t_status *data)
-{
-  OCR2B = (*data).data;
-  (*data).write_data=0;
-  return 0;
-}
 
 // diese funktion ist eine dummyfunktion 
 // sie wird ueberall da in der Matrix verwendet, wo eigentlich 
@@ -388,6 +115,88 @@ uint8_t dummy_bright_null(struct t_status *data)
 // immer da ist und ganz hinten steht... sonst mact es hier bum
 
 //uint8_t (*DoIt[num_bright][3])(struct t_status *data);
+
+
+//interrupt fuer schalter
+void itr_schalter_vortrag()
+{
+  
+}
+
+ISR(TIMER0_OVF_vect)  // TODO muss interrupt aktiviert werden?
+{
+  // andere interrupts aus!
+  cli();
+  /* 
+     alle 9.8 ticks sollte sollte was vom schalter kommen
+     also sagen wir, dass wenn sich nach 32ticks nichts am schalter
+     getan hat, dann wurde er los gelassen. Wir koennen den 
+     Counter fuer die eingaben auf null setzen
+  */
+  if ( (timing_counter.tickscounter & 0x001F) == 0) { // alle 32 ticks ... 0.032 sekunden
+    if ( timing_counter.tastacounter_vortrag != 0){
+      if ( timing_counter.tastacounter_vortrag == timing_counter.tastacounter_vortrag_last) {
+	// keine aenderung festgestellt folglich call to set fuer vortrag
+	itr_schalter_vortrag();
+	timing_counter.tastacounter_vortrag =0;
+	timing_counter.tastacounter_vortrag_last = 0;
+      } else {
+	timing_counter.tastacounter_vortrag_last = timing_counter.tastacounter_vortrag_last;
+      }
+    }
+    if ( timing_counter.tastacounter_lounge != 0){
+      if ( timing_counter.tastacounter_lounge == timing_counter.tastacounter_lounge_last) {
+	// keine aenderung festgestellt folglich call to set fur lounge
+	timing_counter.tastacounter_lounge =0;
+	timing_counter.tastacounter_lounge_last = 0;
+      } else {
+	timing_counter.tastacounter_lounge_last = timing_counter.tastacounter_lounge_last;
+      }
+    }
+  }
+
+  if ( (timing_counter.tickscounter & 0x03FF) == 0) { // alle 1024 ticks ... ca 1sec
+    {}
+
+  if ( (timing_counter.tickscounter & 0x14FF) == 0) { // alle 5120 ticks ... ca 5sec
+    {}
+
+  timing_counter.tickscounter++;
+  // und alle interrupts wieder auf go!
+  sei();
+}
+
+ISR(PCINT2_vect)
+{
+  cli();
+
+  if (PCINT18){
+    if (vortrag_cur.dimDirection == MACHDUNKEL){
+      timing_counter.tastacounter_vortrag++;
+    } else {
+      timing_counter.tastacounter_vortrag--;
+    }
+    if ( timing_counter.tastacounter_vortrag == 0 )
+      vortrag_cur.dimDirection = MACHDUNKEL;
+    if ( timing_counter.tastacounter_vortrag == 255 )
+      vortrag_cur.dimDirection = MACHHELL;
+  }
+
+  if (PCINT20) {
+    if (lounge_cur.dimDirection == MACHDUNKEL){
+      timing_counter.tastacounter_lounge++;
+    } else {
+      timing_counter.tastacounter_lounge--;
+    }
+    if ( timing_counter.tastacounter_lounge == 0 )
+      lounge_cur.dimDirection = MACHDUNKEL;
+    if ( timing_counter.tastacounter_lounge == 255 )
+      lounge_cur.dimDirection = MACHHELL;
+  }
+
+  sei();
+}
+
 
 
 void reset_commander()
@@ -500,28 +309,6 @@ int main (void)
 	hasharray[15] = free1;
 
 
-
-/* ISR(TIMER0_OVF_vect)  TODO muss interrupt aktiviert werden?
-{
-    tick++; ?
-    // wann ist es dimmen / tasten, zähler löschen
-    if (i1/2 == )
-    
-    PORT |= 
-    
-    if (i2 / 2 == )
-    PORT |= 
-}
-*/
- 
-/* ISR(PCINT2_vect)
-{
-    if (pcint18)
-        i1++;
-    if (pcint20)
-        i2++;
-}
-*/
 
 
 

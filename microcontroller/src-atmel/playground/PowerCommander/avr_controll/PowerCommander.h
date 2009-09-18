@@ -1,0 +1,98 @@
+#ifndef POWERCOMMANDER_H
+#define POWERCOMMANDER_H
+
+#include <inttypes.h>
+
+#define MACHDUNKEL 0
+#define MACHHELL 1
+
+// immer wieder der gleiche scheiss!
+#define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
+
+#define ADRESSE 15 // I2C Adresse
+
+// was willst du von dem Relai / Optokoppler
+enum action { 
+  swon = 0,   // einschalten
+  swoff,    // ausschalten
+  swstatus, // status
+  num_action // ist immer der letzte eintrag
+};
+
+// was soll mit der lampe passieren?
+enum brightaction {
+  brset = 0,   // helligkeit setzen
+  num_brightaction // ist immer der letzte eintrag
+};
+
+// welches relai willst du ansteuern?
+
+enum relais {
+  switch00 = 0,
+  switch01,
+  switch02,
+  switch03,
+  switch04,
+  switch05,
+  switch06,
+  switch07,
+  num_switch // muss immer der letzte sein
+};
+
+// welchen optokoppler willst du?
+enum optokop {
+  optokopp00 = num_switch,
+  optokopp01,
+  num_optokopp // muss immer der letzte sein
+};
+
+
+// welche lampe willst du veraendern?
+enum bright {
+  tafel=num_optokopp,
+  beamer,
+  schraenke,
+  flipper,
+  free1,
+  lounge,
+  num_bright // ist immer der letzte eintrag
+};
+
+// struktur die daten enthaelt und das FLAG wenn daten
+// auf den I2C geschrieben werden sollen
+struct t_status {
+  uint8_t data;
+  uint8_t write_data;
+};
+
+// den status nur fuer den Vortrag
+struct t_state_vortrag {
+  uint8_t bright_tafel;
+  uint8_t bright_beamer;
+  uint8_t bright_schraenke;
+  uint8_t bright_flipper;
+  uint8_t dimDirection;
+};
+
+
+// den status nur fuer die lounge
+struct t_state_lounge {
+  uint8_t bright_lounge;
+  uint8_t bright_free;
+  uint8_t dimDirection;
+};
+
+// mitzaehlen der Events von einem Taster
+// und mitbekommen, wann er losgelassen wurde
+struct t_counter_status {
+  uint16_t tastacounter_vortrag;
+  uint16_t tastacounter_lounge;
+  uint16_t tastacounter_vortrag_last;
+  uint16_t tastacounter_lounge_last;
+  uint16_t tickscounter;
+};
+
+
+
+
+#endif
