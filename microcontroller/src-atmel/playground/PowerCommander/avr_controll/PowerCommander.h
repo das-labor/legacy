@@ -6,6 +6,10 @@
 #define MACHDUNKEL 0
 #define MACHHELL 1
 
+// pwm ... daher hier invers
+#define MAXHELL 0
+#define MAXDUNKEL 255
+
 // immer wieder der gleiche scheiss!
 #define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
 
