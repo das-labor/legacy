@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 2 -*- */
 #ifndef POWERCOMMANDER_BRIGHT_H
 #define POWERCOMMANDER_BRIGHT_H
 

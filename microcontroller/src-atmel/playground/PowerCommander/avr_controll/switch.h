@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 2 -*- */
 #ifndef POWERCOMMAND_SWITCH_H
 #define POWERCOMMAND_SWITCH_H
 #include "PowerCommander.h"

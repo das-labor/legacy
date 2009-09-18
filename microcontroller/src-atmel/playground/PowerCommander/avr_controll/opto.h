@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 2 -*- */
 #ifndef POWERCOMMAND_OPTO_H
 #define POWERCOMMAND_OPTO_H
 

@@ -1,4 +1,4 @@
-
+/* -*- Mode: C; tab-width: 2 -*- */
 #include "PowerCommander.h"
 #include <avr/io.h>
 uint8_t opto00_off(struct t_status * data)
