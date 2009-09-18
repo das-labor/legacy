@@ -140,21 +140,21 @@ ISR(TIMER0_OVF_vect)  // TODO muss interrupt aktiviert werden?
      Counter fuer die eingaben auf null setzen
   */
   if ( (timing_counter.tickscounter & 0x001F) == 0) { // alle 32 ticks ... 0.032 sekunden
-    if ( timing_counter.tastercounter_vortrag != 0){
+    if ( timing_counter.tastercounter_vortrag != 0) {
       if ( timing_counter.tastercounter_vortrag == timing_counter.tastercounter_vortrag_last) {
 	// keine aenderung festgestellt folglich call to set fuer vortrag
 	itr_schalter_vortrag();
-	timing_counter.tastercounter_vortrag =0;
+	timing_counter.tastercounter_vortrag = 0;
 	timing_counter.tastercounter_vortrag_last = 0;
       } else {
 	timing_counter.tastercounter_vortrag_last = timing_counter.tastercounter_vortrag_last;
       }
     }
-    if ( timing_counter.tastercounter_lounge != 0){
+    if ( timing_counter.tastercounter_lounge != 0) {
       if ( timing_counter.tastercounter_lounge == timing_counter.tastercounter_lounge_last) {
 	// keine aenderung festgestellt folglich call to set fur lounge
 	itr_schalter_lounge();
-	timing_counter.tastercounter_lounge =0;
+	timing_counter.tastercounter_lounge = 0;
 	timing_counter.tastercounter_lounge_last = 0;
       } else {
 	timing_counter.tastercounter_lounge_last = timing_counter.tastercounter_lounge_last;
@@ -177,8 +177,8 @@ ISR(PCINT2_vect)
 {
   cli();
 
-  if (PCINT18){
-    if (vortrag_cur.dimDirection == MACHDUNKEL){
+  if (PCINT18) {
+    if (vortrag_cur.dimDirection == MACHDUNKEL) {
       timing_counter.tastercounter_vortrag++;
     } else {
       timing_counter.tastercounter_vortrag--;
@@ -190,7 +190,7 @@ ISR(PCINT2_vect)
   }
 
   if (PCINT20) {
-    if (lounge_cur.dimDirection == MACHDUNKEL){
+    if (lounge_cur.dimDirection == MACHDUNKEL) {
       timing_counter.tastercounter_lounge++;
     } else {
       timing_counter.tastercounter_lounge--;
@@ -206,7 +206,7 @@ ISR(PCINT2_vect)
 
 
 
-void reset_commander()
+void init_commander()
 {
 	// Disable Analog Comparator (power save)
 	ACSR = _BV(ACD);
@@ -265,7 +265,7 @@ int main (void)
 
 	uint8_t (*DoIt[num_bright][MAX(num_action,num_brightaction)])(struct t_status *data);
 
-	reset_commander();
+	init_commander();
 
 	/* 
 	   hier wird jedem Objekt und jeder Funktion ihre Aufgabe zugewiesen.
