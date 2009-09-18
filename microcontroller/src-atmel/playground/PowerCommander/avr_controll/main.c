@@ -95,19 +95,19 @@ uint16_t schaltinterval[] = { 25, 500 ,700, 900 };
 // nichts passieren sollte - aka dauerhaft abschalten
 uint8_t dummy_switch_null(struct t_status *data)
 {
-  (*data).write_data=0;
+  (*data).write_data = 0;
   return 0;
 }
 
 uint8_t dummy_opto_null(struct t_status *data)
 {
-  (*data).write_data=0;
+  (*data).write_data = 0;
   return 0;
 }
 
 uint8_t dummy_bright_null(struct t_status *data)
 {
-  (*data).write_data=0;
+  (*data).write_data = 0;
   return 0;
 }
 
@@ -364,7 +364,7 @@ int main (void)
 					if(recv_buffer[1] >= MAX(num_action,num_brightaction)) break;
 
 					workparameter.data=recv_buffer[2];
-					workparameter.write_data=0;
+					workparameter.write_data = 0;
 					DoIt[hasharray[recv_buffer[0]]][recv_buffer[1]](&workparameter);
 	/*
 	** Slave is requested to send bytes to the master.
@@ -374,7 +374,7 @@ int main (void)
 	    			case TWIS_WriteBytes:
 				{
 				  // nur schreiben wenn auch wirklich daten da waren
-				  if (workparameter.write_data==1)
+				  if (workparameter.write_data == 1)
 				    TWIS_Write(workparameter.data);        // byte das in Leseoperation befüllt wurde schreiben
 				  TWIS_Stop();
 				}
