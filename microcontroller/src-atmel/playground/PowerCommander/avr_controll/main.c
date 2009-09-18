@@ -117,8 +117,14 @@ uint8_t dummy_bright_null(struct t_status *data)
 //uint8_t (*DoIt[num_bright][3])(struct t_status *data);
 
 
-//interrupt fuer schalter
+//interrupt fuer schalter im vortrag
 void itr_schalter_vortrag()
+{
+  
+}
+
+//interrupt fuer schalter im lounge
+void itr_schalter_lounge()
 {
   
 }
@@ -134,23 +140,24 @@ ISR(TIMER0_OVF_vect)  // TODO muss interrupt aktiviert werden?
      Counter fuer die eingaben auf null setzen
   */
   if ( (timing_counter.tickscounter & 0x001F) == 0) { // alle 32 ticks ... 0.032 sekunden
-    if ( timing_counter.tastacounter_vortrag != 0){
-      if ( timing_counter.tastacounter_vortrag == timing_counter.tastacounter_vortrag_last) {
+    if ( timing_counter.tastercounter_vortrag != 0){
+      if ( timing_counter.tastercounter_vortrag == timing_counter.tastercounter_vortrag_last) {
 	// keine aenderung festgestellt folglich call to set fuer vortrag
 	itr_schalter_vortrag();
-	timing_counter.tastacounter_vortrag =0;
-	timing_counter.tastacounter_vortrag_last = 0;
+	timing_counter.tastercounter_vortrag =0;
+	timing_counter.tastercounter_vortrag_last = 0;
       } else {
-	timing_counter.tastacounter_vortrag_last = timing_counter.tastacounter_vortrag_last;
+	timing_counter.tastercounter_vortrag_last = timing_counter.tastercounter_vortrag_last;
       }
     }
-    if ( timing_counter.tastacounter_lounge != 0){
-      if ( timing_counter.tastacounter_lounge == timing_counter.tastacounter_lounge_last) {
+    if ( timing_counter.tastercounter_lounge != 0){
+      if ( timing_counter.tastercounter_lounge == timing_counter.tastercounter_lounge_last) {
 	// keine aenderung festgestellt folglich call to set fur lounge
-	timing_counter.tastacounter_lounge =0;
-	timing_counter.tastacounter_lounge_last = 0;
+	itr_schalter_lounge();
+	timing_counter.tastercounter_lounge =0;
+	timing_counter.tastercounter_lounge_last = 0;
       } else {
-	timing_counter.tastacounter_lounge_last = timing_counter.tastacounter_lounge_last;
+	timing_counter.tastercounter_lounge_last = timing_counter.tastercounter_lounge_last;
       }
     }
   }
@@ -172,25 +179,25 @@ ISR(PCINT2_vect)
 
   if (PCINT18){
     if (vortrag_cur.dimDirection == MACHDUNKEL){
-      timing_counter.tastacounter_vortrag++;
+      timing_counter.tastercounter_vortrag++;
     } else {
-      timing_counter.tastacounter_vortrag--;
+      timing_counter.tastercounter_vortrag--;
     }
-    if ( timing_counter.tastacounter_vortrag == MAXHELL )
+    if ( timing_counter.tastercounter_vortrag == MAXHELL )
       vortrag_cur.dimDirection = MACHDUNKEL;
-    if ( timing_counter.tastacounter_vortrag == MAXDUNKEL )
+    if ( timing_counter.tastercounter_vortrag == MAXDUNKEL )
       vortrag_cur.dimDirection = MACHHELL;
   }
 
   if (PCINT20) {
     if (lounge_cur.dimDirection == MACHDUNKEL){
-      timing_counter.tastacounter_lounge++;
+      timing_counter.tastercounter_lounge++;
     } else {
-      timing_counter.tastacounter_lounge--;
+      timing_counter.tastercounter_lounge--;
     }
-    if ( timing_counter.tastacounter_lounge == MAXHELL )
+    if ( timing_counter.tastercounter_lounge == MAXHELL )
       lounge_cur.dimDirection = MACHDUNKEL;
-    if ( timing_counter.tastacounter_lounge == MAXDUNKEL )
+    if ( timing_counter.tastercounter_lounge == MAXDUNKEL )
       lounge_cur.dimDirection = MACHHELL;
   }
 
