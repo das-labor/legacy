@@ -89,6 +89,12 @@ uint16_t schaltinterval[] = { 25, 500 ,700, 900 };
 */
 
 
+uint8_t schalterstatus(struct t_status * data)
+{
+  (*data).data=(uint8_t)(timing_counter.tastercounter_vortrag & 0xFF);
+  (*data).write_data = 1;
+  return 0;
+}
 
 /*
 	diese funktion ist eine dummyfunktion 
@@ -311,7 +317,11 @@ int main (void)
 	/*
 		helligkeitsmatrix
 	*/
-	DoIt[tafel][brset]     = bright_tafel_set;     DoIt[tafel][1]     = dummy_bright_null; DoIt[tafel][2]     = dummy_bright_null;
+
+	DoIt[tafel][brset]     = bright_tafel_set;     DoIt[tafel][1]     = schalterstatus; DoIt[tafel][2]     = dummy_bright_null;
+
+
+	//	DoIt[tafel][brset]     = bright_tafel_set;     DoIt[tafel][1]     = dummy_bright_null; DoIt[tafel][2]     = dummy_bright_null;
 	DoIt[beamer][brset]    = bright_beamer_set;    DoIt[beamer][1]    = dummy_bright_null; DoIt[beamer][2]    = dummy_bright_null;
 	DoIt[schraenke][brset] = bright_schraenke_set; DoIt[schraenke][1] = dummy_bright_null; DoIt[schraenke][2] = dummy_bright_null;
 	DoIt[flipper][brset]   = bright_flipper_set;   DoIt[flipper][1]   = dummy_bright_null; DoIt[flipper][2]   = dummy_bright_null;
