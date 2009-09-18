@@ -19,20 +19,20 @@ struct t_state_vortrag vortrag_cur = { 0 , 0 , 0 , 0 , MACHDUNKEL }; // init son
 struct t_state_lounge lounge_cur = { 0 , 0 ,  MACHDUNKEL }; // init sonst working
 
 // volle belaeuchtung - dimmrichtung dunkler
-struct t_state_vortrag vortrag_default = { 0 , 0 , 0 , 0, MACHDUNKEL};
-struct t_state_lounge lounge_default = { 0 , 0 , MACHDUNKEL};
+struct t_state_vortrag vortrag_default = { 0 , 0 , 0 , 0, MACHDUNKEL };
+struct t_state_lounge lounge_default = { 0 , 0 , MACHDUNKEL };
 
 // tafel hell rest dunkel
-struct t_state_vortrag vortrag_vortrag1 = { 0 , 255 , 255 , 255 , MACHHELL};
+struct t_state_vortrag vortrag_vortrag1 = { 0 , 255 , 255 , 255 , MACHHELL };
 // flipper hell rest dunkel
-struct t_state_vortrag vortrag_vortrag2 = { 255 , 255 , 255 , 0 , MACHHELL};
+struct t_state_vortrag vortrag_vortrag2 = { 255 , 255 , 255 , 0 , MACHHELL };
 
 uint8_t helligkeitsstufen[] = { 1, 2 , 4 , 
 																8, 16 , 24, 32, 
 																48, 64 , 96, 128, 
-																192, 255};
+																192, 255 };
 
-struct t_counter_status timing_counter = { 0,0,0,0,0};
+struct t_counter_status timing_counter = { 0,0,0,0,0 };
 
 /*
 	pro sekunde kommen 100 Events an (50Hz , up, down)
@@ -91,7 +91,7 @@ uint16_t schaltinterval[] = { 25, 500 ,700, 900 };
 
 uint8_t schalterstatus(struct t_status * data)
 {
-  (*data).data=(uint8_t)(timing_counter.tastercounter_vortrag & 0xFF);
+  (*data).data = (uint8_t)(timing_counter.tastercounter_vortrag & 0xFF);
   (*data).write_data = 1;
   return 0;
 }
@@ -246,6 +246,9 @@ void init_commander()
 	DDRD |= _BV(PD7) | _BV(PD1) | _BV(PD0);                 // relais ausgang 8, 230V 1-2
 	PORTD &= ~(_BV(PD7) | _BV(PD1) | _BV(PD0));             // aus
 
+	DDRD  &= ~(_BV(PD4) | _BV(PD2));  /* Pin PD2 und PD4 als Eingange für Taster blau und gelb */
+	PORTC |= _BV(PC4) | _BV(PD2);
+
 
 	DDRB |= _BV(PB1) | _BV(PB2) | _BV(PB3);                 // pwm ausgänge | müssen die wirklich gesetzt werden?
 	DDRD |= _BV(PD3) | _BV(PD5) | _BV(PD6);                 // pwm ausgänge
@@ -392,7 +395,7 @@ int main (void)
 					if(recv_buffer[0] >= num_bright) break; // nochmal num_bright ist anzahl aller Objekte
 					if(recv_buffer[1] >= MAX(num_action,num_brightaction)) break;
 
-					workparameter.data=recv_buffer[2];
+					workparameter.data = recv_buffer[2];
 					workparameter.write_data = 0;
 					DoIt[hasharray[recv_buffer[0]]][recv_buffer[1]](&workparameter);
 					/*
