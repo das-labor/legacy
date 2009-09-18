@@ -406,16 +406,17 @@ int main (void)
 		}
 		if ((!(PINB & _BV(PB7))) && stat_haupt == 0)   // Hauptschalter geht aus
 		  {
-		    PORTC &= ~(_BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0)); //TODO Status merken?
+		    PORTC &= ~(_BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0)); // TODO Status merken?
 		    PORTB &= ~(_BV(PB5) | _BV(PB4) | _BV(PB0));
 		    PORTD &= ~(_BV(PD7) | _BV(PD1) | _BV(PD0));
 		    
-		    /*		    OCR2A = 0;  
-									OCR2B = 0;
-									OCR1A = 0;
-									OCR1B = 0;
-									OCR0A = 0;
-									OCR0B = 0; */
+		    /*
+		 		OCR2A = 0;  
+				OCR2B = 0;
+				OCR1A = 0;
+				OCR1B = 0;
+				OCR0A = 0;
+				OCR0B = 0; */
 		    stat_haupt = 1;
 		  }
 		if ((PINB & _BV(PB7)) && stat_haupt == 1)   // Hauptschalter geht an
@@ -423,12 +424,13 @@ int main (void)
 		    // PORTC |= _BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0);
 		    // PORTB |= _BV(PC5) | _BV(PC4) | _BV(PB0);
 		    PORTD |= _BV(PD1) | _BV(PD0);
-		    /*		    OCR2A = 0;
-									OCR2B = 0;
-									OCR1A = 0;
-									OCR1B = 0;
-									OCR0A = 0;
-									OCR0B = 0; */
+		    /*
+		    OCR2A = 0;
+		    OCR2B = 0;
+				OCR1A = 0;
+        OCR1B = 0;
+        OCR0A = 0;
+				OCR0B = 0; */
 		    stat_haupt = 0;
 		  }
 		//        if (nachtmodus) über can?!
