@@ -89,10 +89,10 @@ struct t_state_lounge {
 // mitzaehlen der Events von einem Taster
 // und mitbekommen, wann er losgelassen wurde
 struct t_counter_status {
-  uint16_t tastacounter_vortrag;
-  uint16_t tastacounter_lounge;
-  uint16_t tastacounter_vortrag_last;
-  uint16_t tastacounter_lounge_last;
+  uint16_t tastercounter_vortrag;
+  uint16_t tastercounter_lounge;
+  uint16_t tastercounter_vortrag_last;
+  uint16_t tastercounter_lounge_last;
   uint16_t tickscounter;
 };
 
