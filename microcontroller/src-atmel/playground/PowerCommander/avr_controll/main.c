@@ -160,7 +160,7 @@ ISR(TIMER0_OVF_vect)  // TODO muss interrupt aktiviert werden?
 					 keine aenderung festgestellt folglich call to set fuer vortrag
 				*/
 				itr_schalter_vortrag();
-				timing_counter.tastercounter_vortrag = 0;
+				//				timing_counter.tastercounter_vortrag = 0;
 				timing_counter.tastercounter_vortrag_last = 0;
 			} else {
 				timing_counter.tastercounter_vortrag_last = timing_counter.tastercounter_vortrag_last;
@@ -172,7 +172,7 @@ ISR(TIMER0_OVF_vect)  // TODO muss interrupt aktiviert werden?
 					 keine aenderung festgestellt folglich call to set fur lounge 
 				*/
 				itr_schalter_lounge();
-				timing_counter.tastercounter_lounge = 0;
+				//				timing_counter.tastercounter_lounge = 0;
 				timing_counter.tastercounter_lounge_last = 0;
 			} else {
 				timing_counter.tastercounter_lounge_last = timing_counter.tastercounter_lounge_last;
