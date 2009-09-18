@@ -246,8 +246,8 @@ void init_commander()
 	DDRD |= _BV(PD7) | _BV(PD1) | _BV(PD0);                 // relais ausgang 8, 230V 1-2
 	PORTD &= ~(_BV(PD7) | _BV(PD1) | _BV(PD0));             // aus
 
-	DDRD  &= ~(_BV(PD4) | _BV(PD2));  /* Pin PD2 und PD4 als Eingange für Taster blau und gelb */
-	PORTC |= _BV(PC4) | _BV(PD2);
+	DDRD  &= ~(_BV(PD4) | _BV(PD2));	/* Pin PD2 und PD4 als Eingange für Taster blau und gelb */
+	PORTD |= _BV(PD4) | _BV(PD2);			/* Pull Ups setzen */
 
 
 	DDRB |= _BV(PB1) | _BV(PB2) | _BV(PB3);                 // pwm ausgänge | müssen die wirklich gesetzt werden?
