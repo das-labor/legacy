@@ -10,6 +10,9 @@
 #define MAXHELL 0
 #define MAXDUNKEL 255
 
+// der schalter generiert $Anzahl von events pro sekunde
+
+
 // immer wieder der gleiche scheiss!
 #define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
 
