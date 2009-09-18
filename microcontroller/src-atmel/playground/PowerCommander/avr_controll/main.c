@@ -155,10 +155,10 @@ ISR(TIMER0_OVF_vect)  // TODO muss interrupt aktiviert werden?
     }
   }
 
-  if ( (timing_counter.tickscounter & 0x03FF) == 0) { // alle 1024 ticks ... ca 1sec
+  if ( (timing_counter.tickscounter & 0x03FF) == 0) // alle 1024 ticks ... ca 1sec
     {}
 
-  if ( (timing_counter.tickscounter & 0x14FF) == 0) { // alle 5120 ticks ... ca 5sec
+  if ( (timing_counter.tickscounter & 0x14FF) == 0) // alle 5120 ticks ... ca 5sec
     {}
 
   timing_counter.tickscounter++;
