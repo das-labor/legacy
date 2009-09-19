@@ -119,7 +119,7 @@ void dummy_bright_null(struct t_status *data)
 /*
 	interrupt fuer schalter im vortrag
 */
-inline void itr_schalter_vortrag_statisch()
+void itr_schalter_vortrag_statisch()
 {
 	// licht kurz an
 	if (timing_counter.tastercounter_vortrag > schaltinterval[0] &&
@@ -153,21 +153,35 @@ inline void itr_schalter_vortrag_statisch()
 		freak_cur.bright_tafel=255;      freak_cur.bright_beamer=255;
 		freak_cur.bright_schraenke=255;  freak_cur.bright_flipper=255;
 		bright_vortrag_set(&freak_cur);
+		_delay_ms(500);
 		freak_cur.bright_tafel=0;      freak_cur.bright_beamer=255;
 		freak_cur.bright_schraenke=255;  freak_cur.bright_flipper=255;
 		bright_vortrag_set(&freak_cur);
+		_delay_ms(500);
 		freak_cur.bright_tafel=255;      freak_cur.bright_beamer=0;
 		freak_cur.bright_schraenke=255;  freak_cur.bright_flipper=255;
 		bright_vortrag_set(&freak_cur);
+		_delay_ms(500);
 		freak_cur.bright_tafel=255;      freak_cur.bright_beamer=255;
 		freak_cur.bright_schraenke=0;  freak_cur.bright_flipper=255;
 		bright_vortrag_set(&freak_cur);
+		_delay_ms(500);
 		freak_cur.bright_tafel=255;      freak_cur.bright_beamer=255;
 		freak_cur.bright_schraenke=255;  freak_cur.bright_flipper=0;
 		bright_vortrag_set(&freak_cur);
+		_delay_ms(500);
 		freak_cur.bright_tafel=255;      freak_cur.bright_beamer=255;
 		freak_cur.bright_schraenke=255;  freak_cur.bright_flipper=255;
 		bright_vortrag_set(&freak_cur);
+		_delay_ms(500);
+		freak_cur.bright_tafel=0;      freak_cur.bright_beamer=0;
+		freak_cur.bright_schraenke=0;  freak_cur.bright_flipper=0;
+		bright_vortrag_set(&freak_cur);
+		_delay_ms(500);
+		freak_cur.bright_tafel=255;      freak_cur.bright_beamer=255;
+		freak_cur.bright_schraenke=255;  freak_cur.bright_flipper=255;
+		bright_vortrag_set(&freak_cur);
+		_delay_ms(500);
 		bright_vortrag_set(&vortrag_cur);
 	}
 }
@@ -380,6 +394,9 @@ inline void init_commander()
 	PCMSK2 |= _BV(PCINT20);						// Enable PCI18 (pin PD4) as Pin Change Interrupt
 	
 	TIMSK0 |= _BV(TOIE0);							// Enable Timer0 Overflow Interrupt
+
+	
+
 }
 
 
