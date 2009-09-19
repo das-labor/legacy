@@ -13,19 +13,19 @@
 
 
 // aktuller zustand
-struct t_state_vortrag vortrag_cur = { 0 , 0 , 0 , 0 , MACHDUNKEL }; // init sonst working
-struct t_state_lounge lounge_cur = { 0 , 0 , MACHDUNKEL }; // init sonst working
+struct t_state_vortrag vortrag_cur = { MAXHELL , MAXHELL , MAXHELL , MAXHELL , MACHDUNKEL }; // init sonst working
+struct t_state_lounge lounge_cur = { MAXHELL , MAXHELL , MACHDUNKEL }; // init sonst working
 
 // volle belaeuchtung - dimmrichtung dunkler
-struct t_state_vortrag vortrag_default = { 0 , 0 , 0 , 0, MACHDUNKEL };
-struct t_state_lounge lounge_default = { 0 , 0 , MACHDUNKEL };
+struct t_state_vortrag vortrag_default = { MAXHELL , MAXHELL , MAXHELL , MAXHELL, MACHDUNKEL };
+struct t_state_lounge lounge_default = { MAXHELL , MAXHELL , MACHDUNKEL };
 
 // tafel hell rest dunkel
-struct t_state_vortrag vortrag_vortrag1 = { 0 , 255 , 255 , 255 , MACHHELL };
+struct t_state_vortrag vortrag_vortrag1 = { MAXHELL , MAXDUNKEL , MAXDUNKEL , MAXDUNKEL , MACHHELL };
 // flipper hell rest dunkel
-struct t_state_vortrag vortrag_vortrag2 = { 255 , 255 , 255 , 0 , MACHHELL };
+struct t_state_vortrag vortrag_vortrag2 = { MAXDUNKEL , MAXDUNKEL , MAXDUNKEL , MAXHELL , MACHHELL };
 
-struct t_state_vortrag freak_cur = { 0 , 0 , 0 , 0 , MACHDUNKEL }; // init sonst working
+struct t_state_vortrag freak_cur = { MAXHELL , MAXHELL , MAXHELL , MAXHELL , MACHDUNKEL }; // init sonst working
 
 uint8_t helligkeitsstufen[] = { 1, 2 , 4 , 
 																8, 16 , 24, 32, 
@@ -49,7 +49,17 @@ struct t_counter_status timing_counter = { 0,0,0,0,0 };
 */
 
 
-uint16_t schaltinterval[] = { 0, 50, 150 ,900, 1250, 1350, 1700 };
+/*
+	sequenzen: 
+	0-50 = kurz drauf  (< 0.5 sekunden auf dem schalter)
+	50-150 = lang drauf (0.5 < 1.5 sekunden auf dem schalter)
+	150-900 = dimmen (1.5 < 9.0 sekunden auf dem schalter)
+	900-1000 = vortragsbeleuchtung 1
+	1000-1400 = vortragsbeleuchtung 2
+	...
+	
+ */
+uint16_t schaltinterval[] = { 0, 50, 150 ,900, 1000, 1400, 1700 };
 
 /*
 	fuer jedes objekt gibt es funktionen der form:
