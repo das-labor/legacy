@@ -1,12 +1,186 @@
+This is the scoure-code of the optical guitar and bass tuner called
+Stimmmoppet.
 
-just type make for compile.
-
-Unfortunatially i found out the on avr-gcc-4.3.0 the program compiles but not runs. On my old Version avr-gcc-3.4.6 runs.
-
-If avr-gcc-3.4.6 is not the current version, use avr-gcc-select or  
-
-export MCU_CC=avr-gcc-3.4.6; make 
+Please see our wiki: (sorry it´s in german bur there are some nice pictures)
+http://www.das-labor.org/wiki/Stimmmopped
 
 In the folder eagle you find the layout and the shematics.
 I used the free version of eagle.
 
+How it functions:  (TODO translate)
+===================================
+
+Diese Stimmgerät funktioniert rein optisch, indem es die Saite in der richtigen Frequenz beleucht.
+Dazu leuchtet eine LED für ein 10tel der Sinus-Periode beim ersten Nulldurchlauf (0°) und die andere
+für ein 10tel der Sinus-Periode beim zweiten Nulldurchlauf (180°). Stimmt die Frequenz der Saite 
+nicht mit der der LEDs überein, so sind zwei stehende Striche auf der Saite zu erkennen.
+Je mehr die beiden Striche sich bewegen, desto weiter liegen die beiden Frequenzen auseinander 
+und so verstimmter ist die Saite.
+
+Compiling:
+==========
+
+If you don´t want to compile the projekt use the precompiled 
+hexfiled. 
+
+Otherwise you need avr-gcc >=3.4.6
+
+just type 
+
+make 		          for the atmega48 or
+make -f Makefile.m88  for the atmega88
+ 
+to compile.
+
+Getting the Firmware in to the microcontroller:
+===============================================
+
+The first time you programm your microcontroller you have to fuse the controller.
+
+Low-Fuse      = 0xf7
+High-Fuse     = 0xdf
+Extended-Fuse = 0xf9
+
+If you use avrdude add following parameters:
+
+-U lfuse:w:0xf7:m -U hfuse:w:0xdf:m -U efuse:w:0xf9:m
+
+For example:
+
+avrdude -c usbasb -p m48 -U lfuse:w:0xf7:m -U hfuse:w:0xdf:m -U efuse:w:0xf9:m
+avrdude -c usbasb -p m88 -U lfuse:w:0xf7:m -U hfuse:w:0xdf:m -U efuse:w:0xf9:m
+
+(Don´t forget the jumper for the slowspeedmode on usbasb.)
+
+For both processors there are precompiled hexfiles available.
+
+You can progamm it with avrdude with following command:
+
+avrdude -c usbasb -p m48 -U flash:w:stimmopped_m48.hex
+avrdude -c usbasb -p m88 -U flash:w:stimmopped_m88.hex
+
+Using the Simmmoppet:
+=====================
+Menu
+
+Switch S1 (right): is used for switching between instument notes and instument chooser menu.
+
+The instument chooser menu is displayed brighter. You can change the current instument with
+switch S2 (left). The following programmed instuments are available:
+
+b  bass (5 strings and also droped)
++--> with notes b0 (string 5), d1 (string 4 droped), E1 (sting 4), A1 (string 3), 
+                d2 (string 2), G2 (string 1)
+b. Bass (5 strings and also droped) half step down
++--> with notes A#0 (string 5), C#1 (string 4 droped), d#1 (string 4), G#1 (string 3), 
+                C#2 (string 2), F#2 (string 1)
+G  Guitar (also dorped)
++--> with notes d2 (string 6 droped), E2 (string 6), A2 (string 5), d3 (string 4), 
+                G3 (string 3), b3 (string 2), E4 (string 1)
+G. Guitar (also dorped) half step down
++--> with notes C#2 (string 6 droped), d#2 (string 6), G#2 (Sstringaite 5), C#3 (string 4), 
+                F#3 (string 3), A#3 (string 2), d#4 (string 1)
+
+Through S1 you can switch to the instument notes and the first note of the table is showen.
+On the display now the notename and the octave in a switching cycle showen.
+
+Just plug the corresponding string at the postion 12 and tune the sting. if the lines are still
+its tuned.
+
+Switch the note through S2.
+
+After 30 secounds of not touching a switch. The device is going into power safe mode.
+
+You can turn it on and off throuch touching S1 for more than 2 secounds.
+
+Midinotes:
+==========
+no  notename
+88	C8
+87	B7
+86	A#7/Bb7
+85	A7
+84	G#7/Ab7
+83	G7
+82	F#7/Gb7
+81	F7
+80	E7
+79	D#7/Eb7
+78	D7
+77	C#7/Db7
+76	C7
+75	B6
+74	A#6/Bb6
+73	A6
+72	G#6/Ab6
+71	G6
+70	F#6/Gb6
+69	F6
+68	E6
+67	D#6/Eb6
+66	D6
+65	C#6/Db6
+64	C6
+63	B5
+62	A#5/Bb5
+61	A5
+60	G#5/Ab5
+59	G5
+58	F#5/Gb5
+57	F5
+56	E5
+55	D#5/Eb5
+54	D5
+53	C#5/Db5
+52	C5
+51	B4
+50	A#4/Bb4
+49	A4 concert pitch 
+48	G#4/Ab4
+47	G4
+46	F#4/Gb4
+45	F4
+44	E4
+43	D#4/Eb4
+42	D4
+41	C#4/Db4
+40	C4 (middle C)
+39	B3
+38	A#3/Bb3
+37	A3
+36	G#3/Ab3
+35	G3
+34	F#3/Gb3
+33	F3
+32	E3
+31	D#3/Eb3
+30	D3
+29	C#3/Db3
+28	C3
+27	B2
+26	A#2/Bb2
+25	A2
+24	G#2/Ab2
+23	G2
+22	F#2/Gb2
+21	F2
+20	E2
+19	D#2/Eb2
+18	D2
+17	C#2/Db2
+16	C2
+15	B1
+14	A#1/Bb1
+13	A1
+12	G#1/Ab1
+11	G1
+10	F#1/Gb1
+9	F1
+8	E1
+7	D#1/Eb1
+6	D1
+5	C#1/Db1
+4	C1
+3	B0
+2	A#0/Bb0
+1	A0
