@@ -91,14 +91,6 @@ uint16_t schaltinterval[] = { 0, 50, 150 ,650, 900, 1100, 1500 };
 #include "switch.c"
 #include "bright.c"
 
-void schalterstatus(struct t_status * data)
-{
-  (*data).data = (uint8_t)(timing_counter.tastercounter_lounge & 0xFF);
-  (*data).write_data = 1;
-}
-
-
-
 /*
 	diese funktion ist eine dummyfunktion 
 	sie wird ueberall da in der Matrix verwendet, wo eigentlich 
@@ -109,11 +101,6 @@ void dummy_bright_null(struct t_status *data)
 {
 	(*data).write_data = 0;
 }
-
-/*
-	funktionsmatrix fuer switch-controlle - passt nur wenn die als "muss letztes sein" 
-	immer da ist und ganz hinten steht... sonst mact es hier bum
-*/
 
 
 /*
@@ -130,7 +117,7 @@ void itr_schalter_vortrag_statisch()
 		else
 			PORTC |= _BV(PC1);
 	}
-	// lich lange an
+	// licht lange an
 	if (timing_counter.tastercounter_vortrag > schaltinterval[1] &&
 			 timing_counter.tastercounter_vortrag < schaltinterval[2]) {
 		//		bright_vortrag_set(&vortrag_default);
@@ -205,8 +192,8 @@ inline void itr_schalter_vortrag_dynamisch()
 			vortrag_cur.bright_schraenke--;
 			vortrag_cur.bright_flipper--;
 		}
-		if (vortrag_cur.bright_tafel <= MAXHELL) vortrag_cur.dimDirection = MACHDUNKEL;
-		if (vortrag_cur.bright_tafel >= MAXDUNKEL) vortrag_cur.dimDirection = MACHHELL;
+		if (vortrag_cur.bright_tafel == MAXHELL) vortrag_cur.dimDirection = MACHDUNKEL;
+		if (vortrag_cur.bright_tafel == MAXDUNKEL) vortrag_cur.dimDirection = MACHHELL;
 																							 
 		bright_vortrag_set(&vortrag_cur);
 	}
@@ -395,9 +382,19 @@ inline void init_commander()
 	
 	TIMSK0 |= _BV(TOIE0);							// Enable Timer0 Overflow Interrupt
 
+	/* 
+		 nach dem flashen das licht einschalten
+	*/
+	/*
+		Helligkeiten auf default
+	*/
 	bright_lounge_state_set(&lounge_default);
 	bright_vortrag_set(&vortrag_default);
-
+	/* 
+		 und auch einschalten
+	*/
+	PORTC |= _BV(PC0);  // lounge
+	PORTC |= _BV(PC1); // vortrag
 }
 
 
@@ -430,10 +427,7 @@ int main (void)
 		helligkeitsmatrix
 	*/
 
-	DoIt[tafel][brset]     = bright_tafel_set;     DoIt[tafel][1]     = schalterstatus; DoIt[tafel][2]     = dummy_bright_null;
-
-
-	//	DoIt[tafel][brset]     = bright_tafel_set;     DoIt[tafel][1]     = dummy_bright_null; DoIt[tafel][2]     = dummy_bright_null;
+	DoIt[tafel][brset]     = bright_tafel_set;     DoIt[tafel][1]     = dummy_bright_null; DoIt[tafel][2]     = dummy_bright_null;
 	DoIt[beamer][brset]    = bright_beamer_set;    DoIt[beamer][1]    = dummy_bright_null; DoIt[beamer][2]    = dummy_bright_null;
 	DoIt[schraenke][brset] = bright_schraenke_set; DoIt[schraenke][1] = dummy_bright_null; DoIt[schraenke][2] = dummy_bright_null;
 	DoIt[flipper][brset]   = bright_flipper_set;   DoIt[flipper][1]   = dummy_bright_null; DoIt[flipper][2]   = dummy_bright_null;
