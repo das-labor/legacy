@@ -3,6 +3,17 @@
 #include "PowerCommander.h"
 
 
+uint8_t bright_vortrag_set(struct t_state_vortrag *data){
+	struct t_status lampe = { (*data).bright_tafel, 0 };
+	bright_tafel_set(&lampe);
+	lampe.data = (*data).bright_beamer;
+	bright_beamer_set(&lampe);
+	lampe.data = (*data).bright_schraenke;
+	bright_schraenke_set(&lampe);
+	lampe.data = (*data).bright_flipper;
+	bright_flipper_set(&lampe);
+}
+
 uint8_t bright_tafel_set(struct t_status *data)
 {
 	OCR0A = (*data).data;
