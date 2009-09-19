@@ -121,6 +121,7 @@ inline void itr_schalter_vortrag_statisch()
 {
 	if (timing_counter.tastercounter_vortrag > schaltinterval[0] &&
 			 timing_counter.tastercounter_vortrag < schaltinterval[1]) {
+		bright_vortrag_set(&vortrag_default);
 		if ((PORTC >> PC1) & 1)
 			PORTC &= ~_BV(PC1);
 		else
@@ -128,14 +129,26 @@ inline void itr_schalter_vortrag_statisch()
 	}
 }
 
+/*
+	dynamisch ... die interrupts kommen weiter rein und laufen auch weiter
+*/
 inline void itr_schalter_vortrag_dynamisch()
 {
-	if (timing_counter.tastercounter_lounge > schaltinterval[1] &&
-			timing_counter.tastercounter_lounge < schaltinterval[2])
+	if (timing_counter.tastercounter_vortrag > schaltinterval[1] &&
+			timing_counter.tastercounter_vortrag < schaltinterval[2]) {
+		vortrag_cur.bright_tafel++;
+		vortrag_cur.bright_beamer++;
+		vortrag_cur.bright_schraenke++;
+		vortrag_cur.bright_flipper++;
+		bright_vortrag_set(&vortrag_cur);
+	}
+	if (timing_counter.tastercounter_vortrag > schaltinterval[2] &&
+			timing_counter.tastercounter_vortrag < schaltinterval[3])
 		bright_vortrag_set(&vortrag_vortrag1);
-	if (timing_counter.tastercounter_lounge > schaltinterval[2] &&
-			timing_counter.tastercounter_lounge < schaltinterval[3])
+	if (timing_counter.tastercounter_vortrag > schaltinterval[3] &&
+			timing_counter.tastercounter_vortrag < schaltinterval[4])
 		bright_vortrag_set(&vortrag_vortrag2);
+
 }
 
 /*
@@ -386,12 +399,15 @@ int main (void)
 					recv_buffer[2] = TWIS_ReadNack();  // byte 3 lesen
 					TWIS_Stop();                // I2C stop
 					// Range checken
-					if(recv_buffer[0] >= num_bright) break; // nochmal num_bright ist anzahl aller Objekte
+					if(recv_buffer[0] >= (num_bright+num_switch)) break; // nochmal num_bright ist anzahl aller Objekte
 					if(recv_buffer[1] >= MAX(num_action,num_brightaction)) break;
 
 					workparameter.data = recv_buffer[2];
 					workparameter.write_data = 0;
 					if ( recv_buffer[0] < 10 ) { 
+						/* 
+							 wir brauchen keine zusaetzlichen daten
+						*/
 						workparameter.data = recv_buffer[0];
 						switchDoIt[recv_buffer[1]](&workparameter);
 					}
