@@ -119,6 +119,21 @@ void dummy_bright_null(struct t_status *data)
 */
 inline void itr_schalter_vortrag_statisch()
 {
+/* 	if (timing_counter.tastercounter_vortrag > schaltinterval[0] && */
+/* 			 timing_counter.tastercounter_vortrag < schaltinterval[1]) { */
+/* 		bright_vortrag_set(&vortrag_default); */
+/* 		if ((PORTC >> PC1) & 1) */
+/* 			PORTC &= ~_BV(PC1); */
+/* 		else */
+/* 			PORTC |= _BV(PC1); */
+/* 	} */
+}
+
+/*
+	dynamisch ... die interrupts kommen weiter rein und laufen auch weiter
+*/
+inline void itr_schalter_vortrag_dynamisch()
+{
 	if (timing_counter.tastercounter_vortrag > schaltinterval[0] &&
 			 timing_counter.tastercounter_vortrag < schaltinterval[1]) {
 		bright_vortrag_set(&vortrag_default);
@@ -127,13 +142,6 @@ inline void itr_schalter_vortrag_statisch()
 		else
 			PORTC |= _BV(PC1);
 	}
-}
-
-/*
-	dynamisch ... die interrupts kommen weiter rein und laufen auch weiter
-*/
-inline void itr_schalter_vortrag_dynamisch()
-{
 	if (timing_counter.tastercounter_vortrag > schaltinterval[1] &&
 			timing_counter.tastercounter_vortrag < schaltinterval[2]) {
 		vortrag_cur.bright_tafel++;
@@ -188,19 +196,20 @@ ISR(TIMER0_OVF_vect)
 					was soll passieren wenn der schlater losgelassen wurde
 					in erster linie sicher ein Rest
 				*/
-				itr_schalter_vortrag_statisch();
+				itr_schalter_vortrag_dynamisch();
 				timing_counter.tastercounter_vortrag = 0;
 				timing_counter.tastercounter_vortrag_last = 0;
 			} else {
-				/*
-					der schalter wird noch gedrueckt. wir haben also einen 
-					dynamischen Bereich
-				*/
-				itr_schalter_vortrag_dynamisch();
+
 				/*
 					und wir zaehlen natuerlich weiter
 				*/
 				timing_counter.tastercounter_vortrag_last = timing_counter.tastercounter_vortrag;
+				/*
+					der schalter wird noch gedrueckt. wir haben also einen 
+					dynamischen Bereich
+				*/
+				//				itr_schalter_vortrag_dynamisch();
 			}
 		}
 		if ( timing_counter.tastercounter_lounge != 0) {
