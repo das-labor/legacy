@@ -395,7 +395,8 @@ inline void init_commander()
 	
 	TIMSK0 |= _BV(TOIE0);							// Enable Timer0 Overflow Interrupt
 
-	
+	bright_lounge_state_set(&lounge_default);
+	bright_vortrag_set(&vortrag_default);
 
 }
 
