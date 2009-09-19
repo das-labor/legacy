@@ -49,7 +49,7 @@ struct t_counter_status timing_counter = { 0,0,0,0,0 };
 */
 
 
-uint16_t schaltinterval[] = { 0, 50, 150 ,650, 900, 1100, 1500 };
+uint16_t schaltinterval[] = { 0, 50, 150 ,900, 1250, 1350, 1700 };
 
 /*
 	fuer jedes objekt gibt es funktionen der form:
@@ -128,8 +128,11 @@ void itr_schalter_vortrag_statisch()
 	}
 	if (timing_counter.tastercounter_vortrag > schaltinterval[2] &&
 			timing_counter.tastercounter_vortrag < schaltinterval[3]) {
-		if ( vortrag_cur.dimDirection == MACHDUNKEL ) vortrag_cur.dimDirection = MACHHELL;
-		if ( vortrag_cur.dimDirection == MACHHELL ) vortrag_cur.dimDirection = MACHDUNKEL;
+		if ( vortrag_cur.dimDirection == MACHDUNKEL ) {
+			vortrag_cur.dimDirection = MACHHELL;
+		} else {
+			vortrag_cur.dimDirection = MACHDUNKEL;
+		}
 	}
 	if (timing_counter.tastercounter_vortrag > schaltinterval[5] &&
 			timing_counter.tastercounter_vortrag < schaltinterval[6]) {
@@ -169,6 +172,52 @@ void itr_schalter_vortrag_statisch()
 		freak_cur.bright_schraenke=255;  freak_cur.bright_flipper=255;
 		bright_vortrag_set(&freak_cur);
 		_delay_ms(500);
+		freak_cur.bright_tafel=255;      freak_cur.bright_beamer=0;
+		freak_cur.bright_schraenke=255;  freak_cur.bright_flipper=0;
+		bright_vortrag_set(&freak_cur);
+		_delay_ms(500);
+		freak_cur.bright_tafel=0;      freak_cur.bright_beamer=255;
+		freak_cur.bright_schraenke=0;  freak_cur.bright_flipper=255;
+		bright_vortrag_set(&freak_cur);
+		_delay_ms(500);
+		freak_cur.bright_tafel=255;      freak_cur.bright_beamer=255;
+		freak_cur.bright_schraenke=255;  freak_cur.bright_flipper=255;
+		bright_vortrag_set(&freak_cur);
+		_delay_ms(500);
+		freak_cur.bright_tafel=0;      freak_cur.bright_beamer=255;
+		freak_cur.bright_schraenke=255;  freak_cur.bright_flipper=255;
+		bright_vortrag_set(&freak_cur);
+		_delay_ms(500);
+		freak_cur.bright_tafel=0;      freak_cur.bright_beamer=0;
+		freak_cur.bright_schraenke=255;  freak_cur.bright_flipper=255;
+		bright_vortrag_set(&freak_cur);
+		_delay_ms(500);
+		freak_cur.bright_tafel=0;      freak_cur.bright_beamer=0;
+		freak_cur.bright_schraenke=0;  freak_cur.bright_flipper=255;
+		bright_vortrag_set(&freak_cur);
+		_delay_ms(500);
+		freak_cur.bright_tafel=0;      freak_cur.bright_beamer=0;
+		freak_cur.bright_schraenke=0;  freak_cur.bright_flipper=0;
+		bright_vortrag_set(&freak_cur);
+		_delay_ms(500);
+		freak_cur.bright_tafel=255;      freak_cur.bright_beamer=0;
+		freak_cur.bright_schraenke=0;  freak_cur.bright_flipper=0;
+		bright_vortrag_set(&freak_cur);
+		_delay_ms(500);
+		freak_cur.bright_tafel=255;      freak_cur.bright_beamer=255;
+		freak_cur.bright_schraenke=0;  freak_cur.bright_flipper=0;
+		bright_vortrag_set(&freak_cur);
+		_delay_ms(500);
+		freak_cur.bright_tafel=255;      freak_cur.bright_beamer=255;
+		freak_cur.bright_schraenke=255;  freak_cur.bright_flipper=0;
+		bright_vortrag_set(&freak_cur);
+		_delay_ms(500);
+		freak_cur.bright_tafel=255;      freak_cur.bright_beamer=255;
+		freak_cur.bright_schraenke=255;  freak_cur.bright_flipper=255;
+		bright_vortrag_set(&freak_cur);
+		_delay_ms(500);
+
+
 		bright_vortrag_set(&vortrag_cur);
 	}
 }
@@ -183,17 +232,21 @@ inline void itr_schalter_vortrag_dynamisch()
 		if ( vortrag_cur.dimDirection == MACHDUNKEL ){
 			vortrag_cur.bright_tafel++;
 			vortrag_cur.bright_beamer++;
-			vortrag_cur.bright_schraenke++;
 			vortrag_cur.bright_flipper++;
+			vortrag_cur.bright_schraenke++;
+
 		}
 		if ( vortrag_cur.dimDirection == MACHHELL ){
-			vortrag_cur.bright_tafel--;
 			vortrag_cur.bright_beamer--;
-			vortrag_cur.bright_schraenke--;
 			vortrag_cur.bright_flipper--;
+			vortrag_cur.bright_tafel--;
+			vortrag_cur.bright_schraenke--;
 		}
-		if (vortrag_cur.bright_tafel == MAXHELL) vortrag_cur.dimDirection = MACHDUNKEL;
-		if (vortrag_cur.bright_tafel == MAXDUNKEL) vortrag_cur.dimDirection = MACHHELL;
+		if (vortrag_cur.bright_tafel == MAXHELL) { 
+			vortrag_cur.dimDirection = MACHDUNKEL;
+		} else {
+			vortrag_cur.dimDirection = MACHHELL;
+		}
 																							 
 		bright_vortrag_set(&vortrag_cur);
 	}
@@ -235,8 +288,11 @@ inline void itr_schalter_lounge_dynamisch()
 			lounge_cur.bright_lounge--;
 			lounge_cur.bright_free--;
 		}
-		if (lounge_cur.bright_lounge == MAXHELL) lounge_cur.dimDirection = MACHDUNKEL;
-		if (lounge_cur.bright_lounge == MAXDUNKEL) lounge_cur.dimDirection = MACHHELL;
+		if (lounge_cur.bright_lounge == MAXHELL) { 
+			lounge_cur.dimDirection = MACHDUNKEL;
+		} else {
+			lounge_cur.dimDirection = MACHHELL;
+		}
 																							 
 		bright_lounge_state_set(&lounge_cur);
 	}
