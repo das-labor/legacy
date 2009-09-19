@@ -12,7 +12,10 @@
 #include "PowerCommander.h"
 
 
-
+/* 
+	 TODO
+	 funktionenn die keinen pointer brauchen als inline
+*/
 // aktuller zustand
 struct t_state_vortrag vortrag_cur = { 0 , 0 , 0 , 0 , MACHDUNKEL }; // init sonst working
 struct t_state_lounge lounge_cur = { 0 , 0 , MACHDUNKEL }; // init sonst working
@@ -88,7 +91,6 @@ uint16_t schaltinterval[] = { 5, 500 ,700, 900 };
 */
 
 #include "switch.c"
-//#include "opto.c"
 #include "bright.c"
 
 void schalterstatus(struct t_status * data)
@@ -119,7 +121,7 @@ void dummy_bright_null(struct t_status *data)
 /*
 	interrupt fuer schalter im vortrag
 */
-void itr_schalter_vortrag()
+inline void itr_schalter_vortrag_statisch()
 {
 	if (timing_counter.tastercounter_vortrag > schaltinterval[0] &&
 			 timing_counter.tastercounter_vortrag < schaltinterval[1]) {
@@ -130,10 +132,14 @@ void itr_schalter_vortrag()
 	}
 }
 
+inline void itr_schalter_vortrag_dynamisch()
+{
+}
+
 /*
 	interrupt fuer schalter im lounge
 */
-void itr_schalter_lounge()
+inline void itr_schalter_lounge_statisch()
 {
 		if (timing_counter.tastercounter_lounge > schaltinterval[0] &&
 			 timing_counter.tastercounter_lounge < schaltinterval[1]) {
@@ -142,6 +148,10 @@ void itr_schalter_lounge()
 		else
 			PORTC |= _BV(PC0);
 	}
+}
+
+inline void itr_schalter_lounge_dynamisch()
+{
 }
 
 ISR(TIMER0_OVF_vect)
@@ -160,12 +170,21 @@ ISR(TIMER0_OVF_vect)
 		if (timing_counter.tastercounter_vortrag != 0) {
 			if (timing_counter.tastercounter_vortrag == timing_counter.tastercounter_vortrag_last) {
 				/* 
-					 keine aenderung festgestellt folglich call to set fuer vortrag
+					was soll passieren wenn der schlater losgelassen wurde
+					in erster linie sicher ein Rest
 				*/
-				itr_schalter_vortrag();
+				itr_schalter_vortrag_statisch();
 				timing_counter.tastercounter_vortrag = 0;
 				timing_counter.tastercounter_vortrag_last = 0;
 			} else {
+				/*
+					der schalter wird noch gedrueckt. wir haben also einen 
+					dynamischen Bereich
+				*/
+				itr_schalter_vortrag_dynamisch();
+				/*
+					und wir zaehlen natuerlich weiter
+				*/
 				timing_counter.tastercounter_vortrag_last = timing_counter.tastercounter_vortrag;
 			}
 		}
@@ -174,10 +193,11 @@ ISR(TIMER0_OVF_vect)
 				/* 
 					 keine aenderung festgestellt folglich call to set fur lounge 
 				*/
-				itr_schalter_lounge();
+				itr_schalter_lounge_statisch();
 				timing_counter.tastercounter_lounge = 0;
 				timing_counter.tastercounter_lounge_last = 0;
 			} else {
+				itr_schalter_lounge_dynamisch();
 				timing_counter.tastercounter_lounge_last = timing_counter.tastercounter_lounge;
 			}
 		}
@@ -189,6 +209,9 @@ ISR(TIMER0_OVF_vect)
 	if ( (timing_counter.tickscounter & 0x14FF) == 0) // alle 5120 ticks ... ca 5sec
 		{}
 
+	/* 
+		 ueberlaeufe sind ok!
+	*/
 	timing_counter.tickscounter++;
 	/*
 		und alle interrupts wieder auf go!
@@ -199,32 +222,18 @@ ISR(TIMER0_OVF_vect)
 ISR(PCINT2_vect)
 {
 	cli();
-//	if (vortrag_cur.dimDirection == MACHDUNKEL)
-		timing_counter.tastercounter_vortrag++;
-/*	else 
-		timing_counter.tastercounter_vortrag--;
-	if ( timing_counter.tastercounter_vortrag == MAXHELL )
-		vortrag_cur.dimDirection = MACHDUNKEL;
-	if ( timing_counter.tastercounter_vortrag == MAXDUNKEL )
-		vortrag_cur.dimDirection = MACHHELL;*/
+	timing_counter.tastercounter_vortrag++;
 	sei();
 }
 
 ISR(INT0_vect)
 {
 	cli();
-//	if (lounge_cur.dimDirection == MACHDUNKEL)
-		timing_counter.tastercounter_lounge++;
-/*	else
-		timing_counter.tastercounter_lounge--;
-	if ( timing_counter.tastercounter_lounge == MAXHELL )
-		lounge_cur.dimDirection = MACHDUNKEL;
-	if ( timing_counter.tastercounter_lounge == MAXDUNKEL )
-		lounge_cur.dimDirection = MACHHELL;*/
+	timing_counter.tastercounter_lounge++;
 	sei();
 }
 
-void init_commander()
+inline void init_commander()
 {
 	/* 
 		 Disable Analog Comparator (power save)
