@@ -12,10 +12,6 @@
 #include "PowerCommander.h"
 
 
-/* 
-	 TODO
-	 funktionenn die keinen pointer brauchen als inline
-*/
 // aktuller zustand
 struct t_state_vortrag vortrag_cur = { 0 , 0 , 0 , 0 , MACHDUNKEL }; // init sonst working
 struct t_state_lounge lounge_cur = { 0 , 0 , MACHDUNKEL }; // init sonst working
@@ -134,6 +130,12 @@ inline void itr_schalter_vortrag_statisch()
 
 inline void itr_schalter_vortrag_dynamisch()
 {
+	if (timing_counter.tastercounter_lounge > schaltinterval[1] &&
+			timing_counter.tastercounter_lounge < schaltinterval[2])
+		bright_vortrag_set(&vortrag_vortrag1);
+	if (timing_counter.tastercounter_lounge > schaltinterval[2] &&
+			timing_counter.tastercounter_lounge < schaltinterval[3])
+		bright_vortrag_set(&vortrag_vortrag2);
 }
 
 /*
