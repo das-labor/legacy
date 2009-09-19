@@ -57,3 +57,10 @@ void bright_vortrag_set(struct t_state_vortrag *data){
 	bright_flipper_set(&lampe);
 	
 }
+
+void bright_lounge_state_set(struct t_state_lounge *data){
+	struct t_status lampe = { (*data).bright_lounge, 0 };
+	bright_lounge_set(&lampe);
+	lampe.data = (*data).bright_free;
+	bright_free_set(&lampe);
+}
