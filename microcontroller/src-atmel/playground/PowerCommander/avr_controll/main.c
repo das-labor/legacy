@@ -141,7 +141,7 @@ void itr_schalter_lounge()
 	
 }
 
-ISR(TIMER0_OVF_vect)  // TODO muss interrupt aktiviert werden?
+ISR(TIMER0_OVF_vect)
 {
 	/*
 		andere interrupts aus!
@@ -196,34 +196,30 @@ ISR(TIMER0_OVF_vect)  // TODO muss interrupt aktiviert werden?
 ISR(PCINT2_vect)
 {
 	cli();
-
-	if (PCINT18) {		// TODO das ist nur pseudocode, ist immer true
-		if (vortrag_cur.dimDirection == MACHDUNKEL) {
-			timing_counter.tastercounter_vortrag++;
-		} else {
-			timing_counter.tastercounter_vortrag--;
-		}
-		if ( timing_counter.tastercounter_vortrag == MAXHELL )
-			vortrag_cur.dimDirection = MACHDUNKEL;
-		if ( timing_counter.tastercounter_vortrag == MAXDUNKEL )
-			vortrag_cur.dimDirection = MACHHELL;
-	}
-
-	if (PCINT20) { // TODO das ist nur pseudocode, ist immer true
-		if (lounge_cur.dimDirection == MACHDUNKEL) {
-			timing_counter.tastercounter_lounge++;
-		} else {
-			timing_counter.tastercounter_lounge--;
-		}
-		if ( timing_counter.tastercounter_lounge == MAXHELL )
-			lounge_cur.dimDirection = MACHDUNKEL;
-		if ( timing_counter.tastercounter_lounge == MAXDUNKEL )
-			lounge_cur.dimDirection = MACHHELL;
-	}
+	if (vortrag_cur.dimDirection == MACHDUNKEL)
+		timing_counter.tastercounter_vortrag++;
+	else 
+		timing_counter.tastercounter_vortrag--;
+	if ( timing_counter.tastercounter_vortrag == MAXHELL )
+		vortrag_cur.dimDirection = MACHDUNKEL;
+	if ( timing_counter.tastercounter_vortrag == MAXDUNKEL )
+		vortrag_cur.dimDirection = MACHHELL;
 	sei();
 }
 
-
+ISR(INT0_vect)
+{
+	cli();
+	if (lounge_cur.dimDirection == MACHDUNKEL)
+		timing_counter.tastercounter_lounge++;
+	else
+		timing_counter.tastercounter_lounge--;
+	if ( timing_counter.tastercounter_lounge == MAXHELL )
+		lounge_cur.dimDirection = MACHDUNKEL;
+	if ( timing_counter.tastercounter_lounge == MAXDUNKEL )
+		lounge_cur.dimDirection = MACHHELL;
+	sei();
+}
 
 void init_commander()
 {
@@ -274,9 +270,13 @@ void init_commander()
 	OCR0A = 0;   // pwm timer compare target
 	OCR0B = 0;   // pwm timer compare target
 	
+	EICRA |= _BV(ISC01) | _BV(ISC00);	// Trigger Interrupt on any logical change on pin pd2
+	EIMSK |= _BV(INT0);								// Enable External Interrupt Request 0
 	
-	PCICR  |= _BV(PCIE1);										// Enable Pin Change Interrupt 1
-	PCMSK2 |= _BV(PCINT18) | _BV(PCINT20);	// Enable PCI18 and 20 as Pin Change Interrupt
+	PCICR  |= _BV(PCIE2);							// Enable Pin Change Interrupt 2
+	PCMSK2 |= _BV(PCINT20);						// Enable PCI18 (pin PD4) as Pin Change Interrupt
+	
+	TIMSK0 |= _BV(TOIE0);							// Enable Timer0 Overflow Interrupt
 }
 
 
