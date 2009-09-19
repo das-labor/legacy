@@ -47,7 +47,7 @@ struct t_counter_status timing_counter = { 0,0,0,0,0 };
 */
 
 
-uint16_t schaltinterval[] = { 5, 500 ,700, 900 };
+uint16_t schaltinterval[] = { 5, 500 ,700, 900, 20000 };
 
 /*
 	fuer jedes objekt gibt es funktionen der form:
@@ -399,7 +399,7 @@ int main (void)
 					recv_buffer[2] = TWIS_ReadNack();  // byte 3 lesen
 					TWIS_Stop();                // I2C stop
 					// Range checken
-					if(recv_buffer[0] >= (num_bright+num_switch)) break; // nochmal num_bright ist anzahl aller Objekte
+					if(recv_buffer[0] >= (num_bright+num_switch)) break; 
 					if(recv_buffer[1] >= MAX(num_action,num_brightaction)) break;
 
 					workparameter.data = recv_buffer[2];
