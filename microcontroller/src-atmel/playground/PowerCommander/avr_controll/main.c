@@ -240,7 +240,7 @@ void init_commander()
 	PORTC &= ~(_BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0));  // aus damit
 
 	DDRB |= _BV(PB5) | _BV(PB4) | _BV(PB0);                 // relais ausgänge 5-7 tischsteckdose lounge, geschaltete serverschrank steckdose,
-	PORTB &= ~(_BV(PB4) | _BV(PB0));             // aus damit
+	PORTB &= ~(_BV(PB4) | _BV(PB0));             						// aus damit
 	PORTB |= _BV(PB5);	
 
 	DDRD |= _BV(PD7) | _BV(PD1) | _BV(PD0);                 // relais ausgang 8, 230V 1-2
@@ -250,11 +250,11 @@ void init_commander()
 	PORTD |= _BV(PD4) | _BV(PD2);			/* Pull Ups setzen */
 
 
-	DDRB |= _BV(PB1) | _BV(PB2) | _BV(PB3);                 // pwm ausgänge | müssen die wirklich gesetzt werden?
-	DDRD |= _BV(PD3) | _BV(PD5) | _BV(PD6);                 // pwm ausgänge
+	DDRB |= _BV(PB1) | _BV(PB2) | _BV(PB3);                 // Pins mit pwm als ausgänge
+	DDRD |= _BV(PD3) | _BV(PD5) | _BV(PD6);                 // Pins mit pwm als ausgänge
   
 	TCCR2A |= _BV(WGM21) | _BV(WGM20) | _BV(COM2A1) | _BV(COM2A0) | _BV(COM2B1) | _BV(COM2B0);	// FastPWM, Set OC2X on Compare Match, clear OC2X at BOTTOM, (inverting mode).
-	TCCR2B |= _BV(CS22) | _BV(CS21) | _BV(CS20);												// clk/64
+	TCCR2B |= _BV(CS22) | _BV(CS21) | _BV(CS20);																								// clk/64
 
 	TCCR1A |= _BV(WGM10) | _BV(COM1A1) | _BV(COM1A0) | _BV(COM1B1) | _BV(COM1B0); // FastPWM, Set OC1X on Compare Match, clear OC1X at BOTTOM, (inverting mode).
 	TCCR1B |= _BV(WGM12) | _BV(CS11) | _BV(CS11);                                 // FastPWM bit 2, clk/64
@@ -409,10 +409,10 @@ int main (void)
 			}
 		}
 		if ((!(PINB & _BV(PB7))) && stat_haupt == 0)   // Hauptschalter geht aus
-		{
-			PORTC &= ~(_BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0)); // TODO Status merken?
-			PORTB &= ~(_BV(PB5) | _BV(PB4) | _BV(PB0));
-			PORTD &= ~(_BV(PD7) | _BV(PD1) | _BV(PD0));
+		{ // TODO Status merken?
+			PORTC &= ~(_BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0));	// Küche, Beamer, Blau, Gelb aus
+			PORTB &= ~(_BV(PB5) | _BV(PB4) | _BV(PB0));	// Tisch steckdose, Serverschrank steckdose aus
+			PORTD &= ~(_BV(PD7) | _BV(PD1) | _BV(PD0));	// relais 8 aus, schütze aus
 
 			/*
 		 	OCR2A = 0;  
@@ -427,7 +427,9 @@ int main (void)
 		{
 			// PORTC |= _BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0);
 			// PORTB |= _BV(PC5) | _BV(PC4) | _BV(PB0);
-			PORTD |= _BV(PD1) | _BV(PD0);
+			PORTD |= _BV(PD1) | _BV(PD0); // Schütze an
+			PORTB |= _BV(PB5) | _BV(PB4); // Tisch steckdose, Serverschrank steckdose an
+			
 			/*
 			OCR2A = 0;
 			OCR2B = 0;
