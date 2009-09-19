@@ -33,7 +33,7 @@ uint8_t helligkeitsstufen[] = { 1, 2 , 4 ,
 struct t_counter_status timing_counter = { 0,0,0,0,0 };
 
 /*
-	pro sekunde kommen 50 Events an (50Hz , eine halbwelle)
+	pro sekunde kommen 100 Events an (50Hz , eine halbwelle)
 
 	wir brauchen also ranges fuer der schalter lange und wann 
 	er kurz gedrueck wurde. Es handelt sich hierbei um die
@@ -47,7 +47,7 @@ struct t_counter_status timing_counter = { 0,0,0,0,0 };
 */
 
 
-uint16_t schaltinterval[] = { 5, 500 ,700, 900, 20000 };
+uint16_t schaltinterval[] = { 0, 50, 150 ,650, 900, 1100 };
 
 /*
 	fuer jedes objekt gibt es funktionen der form:
@@ -119,21 +119,7 @@ void dummy_bright_null(struct t_status *data)
 */
 inline void itr_schalter_vortrag_statisch()
 {
-/* 	if (timing_counter.tastercounter_vortrag > schaltinterval[0] && */
-/* 			 timing_counter.tastercounter_vortrag < schaltinterval[1]) { */
-/* 		bright_vortrag_set(&vortrag_default); */
-/* 		if ((PORTC >> PC1) & 1) */
-/* 			PORTC &= ~_BV(PC1); */
-/* 		else */
-/* 			PORTC |= _BV(PC1); */
-/* 	} */
-}
-
-/*
-	dynamisch ... die interrupts kommen weiter rein und laufen auch weiter
-*/
-inline void itr_schalter_vortrag_dynamisch()
-{
+	// licht kurz an
 	if (timing_counter.tastercounter_vortrag > schaltinterval[0] &&
 			 timing_counter.tastercounter_vortrag < schaltinterval[1]) {
 		bright_vortrag_set(&vortrag_default);
@@ -142,19 +128,47 @@ inline void itr_schalter_vortrag_dynamisch()
 		else
 			PORTC |= _BV(PC1);
 	}
+	// lich lange an
 	if (timing_counter.tastercounter_vortrag > schaltinterval[1] &&
-			timing_counter.tastercounter_vortrag < schaltinterval[2]) {
-		vortrag_cur.bright_tafel++;
-		vortrag_cur.bright_beamer++;
-		vortrag_cur.bright_schraenke++;
-		vortrag_cur.bright_flipper++;
+			 timing_counter.tastercounter_vortrag < schaltinterval[2]) {
+		bright_vortrag_set(&vortrag_default);
+		if ((PORTC >> PC1) & 1)
+			PORTC &= ~_BV(PC1);
+		else
+			PORTC |= _BV(PC1);
+	}
+
+}
+
+/*
+	dynamisch ... die interrupts kommen weiter rein und laufen auch weiter
+*/
+inline void itr_schalter_vortrag_dynamisch()
+{
+	if (timing_counter.tastercounter_vortrag > schaltinterval[2] &&
+			timing_counter.tastercounter_vortrag < schaltinterval[3]) {
+		if ( vortrag_cur.dimDirection == MACHDUNKEL ){
+			vortrag_cur.bright_tafel++;
+			vortrag_cur.bright_beamer++;
+			vortrag_cur.bright_schraenke++;
+			vortrag_cur.bright_flipper++;
+		}
+		if ( vortrag_cur.dimDirection == MACHHELL ){
+			vortrag_cur.bright_tafel--;
+			vortrag_cur.bright_beamer--;
+			vortrag_cur.bright_schraenke--;
+			vortrag_cur.bright_flipper--;
+		}
+		if (vortrag_cur.bright_tafel == MAXHELL) vortrag_cur.dimDirection = MACHDUNKEL;
+		if (vortrag_cur.bright_tafel == MAXDUNKEL) vortrag_cur.dimDirection = MACHHELL;
+																							 
 		bright_vortrag_set(&vortrag_cur);
 	}
-	if (timing_counter.tastercounter_vortrag > schaltinterval[2] &&
-			timing_counter.tastercounter_vortrag < schaltinterval[3])
-		bright_vortrag_set(&vortrag_vortrag1);
 	if (timing_counter.tastercounter_vortrag > schaltinterval[3] &&
 			timing_counter.tastercounter_vortrag < schaltinterval[4])
+		bright_vortrag_set(&vortrag_vortrag1);
+	if (timing_counter.tastercounter_vortrag > schaltinterval[4] &&
+			timing_counter.tastercounter_vortrag < schaltinterval[5])
 		bright_vortrag_set(&vortrag_vortrag2);
 
 }
@@ -196,7 +210,7 @@ ISR(TIMER0_OVF_vect)
 					was soll passieren wenn der schlater losgelassen wurde
 					in erster linie sicher ein Rest
 				*/
-				
+				itr_schalter_vortrag_statisch();
 				timing_counter.tastercounter_vortrag = 0;
 				timing_counter.tastercounter_vortrag_last = 0;
 			} else {
