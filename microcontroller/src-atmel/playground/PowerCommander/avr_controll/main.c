@@ -25,6 +25,8 @@ struct t_state_vortrag vortrag_vortrag1 = { 0 , 255 , 255 , 255 , MACHHELL };
 // flipper hell rest dunkel
 struct t_state_vortrag vortrag_vortrag2 = { 255 , 255 , 255 , 0 , MACHHELL };
 
+struct t_state_vortrag freak_cur = { 0 , 0 , 0 , 0 , MACHDUNKEL }; // init sonst working
+
 uint8_t helligkeitsstufen[] = { 1, 2 , 4 , 
 																8, 16 , 24, 32, 
 																48, 64 , 96, 128, 
@@ -47,7 +49,7 @@ struct t_counter_status timing_counter = { 0,0,0,0,0 };
 */
 
 
-uint16_t schaltinterval[] = { 0, 50, 150 ,650, 900, 1100 };
+uint16_t schaltinterval[] = { 0, 50, 150 ,650, 900, 1100, 1500 };
 
 /*
 	fuer jedes objekt gibt es funktionen der form:
@@ -137,7 +139,37 @@ inline void itr_schalter_vortrag_statisch()
 		else
 			PORTC |= _BV(PC1);
 	}
-
+	if (timing_counter.tastercounter_vortrag > schaltinterval[2] &&
+			timing_counter.tastercounter_vortrag < schaltinterval[3]) {
+		if ( vortrag_cur.dimDirection == MACHDUNKEL ) vortrag_cur.dimDirection = MACHHELL;
+		if ( vortrag_cur.dimDirection == MACHHELL ) vortrag_cur.dimDirection = MACHDUNKEL;
+	}
+	if (timing_counter.tastercounter_vortrag > schaltinterval[5] &&
+			timing_counter.tastercounter_vortrag < schaltinterval[6]) {
+		/*
+			starting freakshow
+		*/
+		bright_vortrag_set(&freak_cur);
+		freak_cur.bright_tafel=255;      freak_cur.bright_beamer=255;
+		freak_cur.bright_schraenke=255;  freak_cur.bright_flipper=255;
+		bright_vortrag_set(&freak_cur);
+		freak_cur.bright_tafel=0;      freak_cur.bright_beamer=255;
+		freak_cur.bright_schraenke=255;  freak_cur.bright_flipper=255;
+		bright_vortrag_set(&freak_cur);
+		freak_cur.bright_tafel=255;      freak_cur.bright_beamer=0;
+		freak_cur.bright_schraenke=255;  freak_cur.bright_flipper=255;
+		bright_vortrag_set(&freak_cur);
+		freak_cur.bright_tafel=255;      freak_cur.bright_beamer=255;
+		freak_cur.bright_schraenke=0;  freak_cur.bright_flipper=255;
+		bright_vortrag_set(&freak_cur);
+		freak_cur.bright_tafel=255;      freak_cur.bright_beamer=255;
+		freak_cur.bright_schraenke=255;  freak_cur.bright_flipper=0;
+		bright_vortrag_set(&freak_cur);
+		freak_cur.bright_tafel=255;      freak_cur.bright_beamer=255;
+		freak_cur.bright_schraenke=255;  freak_cur.bright_flipper=255;
+		bright_vortrag_set(&freak_cur);
+		bright_vortrag_set(&vortrag_cur);
+	}
 }
 
 /*
@@ -159,8 +191,8 @@ inline void itr_schalter_vortrag_dynamisch()
 			vortrag_cur.bright_schraenke--;
 			vortrag_cur.bright_flipper--;
 		}
-		if (vortrag_cur.bright_tafel == MAXHELL) vortrag_cur.dimDirection = MACHDUNKEL;
-		if (vortrag_cur.bright_tafel == MAXDUNKEL) vortrag_cur.dimDirection = MACHHELL;
+		if (vortrag_cur.bright_tafel <= MAXHELL) vortrag_cur.dimDirection = MACHDUNKEL;
+		if (vortrag_cur.bright_tafel >= MAXDUNKEL) vortrag_cur.dimDirection = MACHHELL;
 																							 
 		bright_vortrag_set(&vortrag_cur);
 	}
@@ -170,7 +202,10 @@ inline void itr_schalter_vortrag_dynamisch()
 	if (timing_counter.tastercounter_vortrag > schaltinterval[4] &&
 			timing_counter.tastercounter_vortrag < schaltinterval[5])
 		bright_vortrag_set(&vortrag_vortrag2);
-
+	if (timing_counter.tastercounter_vortrag > schaltinterval[5] &&
+			timing_counter.tastercounter_vortrag < schaltinterval[6])
+		bright_vortrag_set(&vortrag_default);
+	
 }
 
 /*

@@ -7,7 +7,7 @@
 #define MACHHELL 1
 
 // pwm ... daher hier invers
-#define MAXHELL 0
+#define MAXHELL 20
 #define MAXDUNKEL 249
 
 // der schalter generiert $Anzahl von events pro sekunde
