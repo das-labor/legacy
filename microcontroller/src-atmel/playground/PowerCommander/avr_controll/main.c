@@ -89,12 +89,21 @@ uint16_t schaltinterval[] = { 25, 500 ,700, 900 };
 */
 
 
-uint8_t schalterstatus(struct t_status * data)
+uint8_t schalterstatus2(struct t_status * data)
 {
   (*data).data = (uint8_t)(timing_counter.tastercounter_vortrag & 0xFF);
   (*data).write_data = 1;
   return 0;
 }
+
+uint8_t schalterstatus(struct t_status * data)
+{
+  (*data).data = (uint8_t)(timing_counter.tastercounter_lounge & 0xFF);
+  (*data).write_data = 1;
+  return 0;
+}
+
+
 
 /*
 	diese funktion ist eine dummyfunktion 
@@ -132,7 +141,7 @@ void itr_schalter_vortrag()
 {
 	if ( timing_counter.tastercounter_vortrag > schaltinterval[0] &&
 			 timing_counter.tastercounter_vortrag < schaltinterval[1] ) {
-		struct t_status testvector = { 128,0}
+		struct t_status testvector = { 128,0};
 		bright_beamer_set(&testvector);
 	}
 }
@@ -328,10 +337,11 @@ int main (void)
 	*/
 
 	DoIt[tafel][brset]     = bright_tafel_set;     DoIt[tafel][1]     = schalterstatus; DoIt[tafel][2]     = dummy_bright_null;
+	DoIt[beamer][brset]     = bright_tafel_set;     DoIt[tafel][1]     = schalterstatus2; DoIt[tafel][2]     = dummy_bright_null;
 
 
 	//	DoIt[tafel][brset]     = bright_tafel_set;     DoIt[tafel][1]     = dummy_bright_null; DoIt[tafel][2]     = dummy_bright_null;
-	DoIt[beamer][brset]    = bright_beamer_set;    DoIt[beamer][1]    = dummy_bright_null; DoIt[beamer][2]    = dummy_bright_null;
+//	DoIt[beamer][brset]    = bright_beamer_set;    DoIt[beamer][1]    = dummy_bright_null; DoIt[beamer][2]    = dummy_bright_null;
 	DoIt[schraenke][brset] = bright_schraenke_set; DoIt[schraenke][1] = dummy_bright_null; DoIt[schraenke][2] = dummy_bright_null;
 	DoIt[flipper][brset]   = bright_flipper_set;   DoIt[flipper][1]   = dummy_bright_null; DoIt[flipper][2]   = dummy_bright_null;
 	DoIt[free1][brset]     = bright_free_set;      DoIt[free1][1]     = dummy_bright_null; DoIt[free1][2]     = dummy_bright_null;
