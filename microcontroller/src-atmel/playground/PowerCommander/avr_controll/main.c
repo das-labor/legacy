@@ -16,7 +16,7 @@
 
 // aktuller zustand
 struct t_state_vortrag vortrag_cur = { 0 , 0 , 0 , 0 , MACHDUNKEL }; // init sonst working
-struct t_state_lounge lounge_cur = { 0 , 0 ,  MACHDUNKEL }; // init sonst working
+struct t_state_lounge lounge_cur = { 0 , 0 , MACHDUNKEL }; // init sonst working
 
 // volle belaeuchtung - dimmrichtung dunkler
 struct t_state_vortrag vortrag_default = { 0 , 0 , 0 , 0, MACHDUNKEL };
@@ -35,7 +35,7 @@ uint8_t helligkeitsstufen[] = { 1, 2 , 4 ,
 struct t_counter_status timing_counter = { 0,0,0,0,0 };
 
 /*
-	pro sekunde kommen 100 Events an (50Hz , up, down)
+	pro sekunde kommen 50 Events an (50Hz , eine halbwelle)
 
 	wir brauchen also ranges fuer der schalter lange und wann 
 	er kurz gedrueck wurde. Es handelt sich hierbei um die
@@ -197,7 +197,7 @@ ISR(PCINT2_vect)
 {
 	cli();
 
-	if (PCINT18) {
+	if (PCINT18) {		// TODO das ist nur pseudocode, ist immer true
 		if (vortrag_cur.dimDirection == MACHDUNKEL) {
 			timing_counter.tastercounter_vortrag++;
 		} else {
@@ -209,7 +209,7 @@ ISR(PCINT2_vect)
 			vortrag_cur.dimDirection = MACHHELL;
 	}
 
-	if (PCINT20) {
+	if (PCINT20) { // TODO das ist nur pseudocode, ist immer true
 		if (lounge_cur.dimDirection == MACHDUNKEL) {
 			timing_counter.tastercounter_lounge++;
 		} else {
@@ -355,7 +355,7 @@ int main (void)
 	/*
 	** Clear any interrupt
 	*/
-	cli();  //TODO  ist das noch aktuell?
+	cli();
 	
 	
 	/*
@@ -405,12 +405,12 @@ int main (void)
 				break;
 			case TWIS_WriteBytes:
 				{
-				  // nur schreiben wenn auch wirklich daten da waren
-				  if (workparameter.write_data == 1)
-				    TWIS_Write(workparameter.data);        // byte das in Leseoperation befüllt wurde schreiben
-					else 
+					// nur schreiben wenn auch wirklich daten da waren
+					if (workparameter.write_data == 1)
+						TWIS_Write(workparameter.data);        // byte das in Leseoperation befüllt wurde schreiben
+					else
 						TWIS_Write(0);
-				  TWIS_Stop();
+					TWIS_Stop();
 				}
 				break;
 			default:
@@ -423,28 +423,28 @@ int main (void)
 			PORTB &= ~(_BV(PB5) | _BV(PB4) | _BV(PB0));
 			PORTD &= ~(_BV(PD7) | _BV(PD1) | _BV(PD0));
 
-				/*
-		 		OCR2A = 0;  
-				OCR2B = 0;
-				OCR1A = 0;
-				OCR1B = 0;
-				OCR0A = 0;
-				OCR0B = 0; */
-				stat_haupt = 1;
+			/*
+		 	OCR2A = 0;  
+			OCR2B = 0;
+			OCR1A = 0;
+			OCR1B = 0;
+			OCR0A = 0;
+			OCR0B = 0; */
+			stat_haupt = 1;
 		}
 		if ((PINB & _BV(PB7)) && stat_haupt == 1)   // Hauptschalter geht an
 		{
-				// PORTC |= _BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0);
-				// PORTB |= _BV(PC5) | _BV(PC4) | _BV(PB0);
-				PORTD |= _BV(PD1) | _BV(PD0);
-				/*
-				OCR2A = 0;
-				OCR2B = 0;
-				OCR1A = 0;
-				OCR1B = 0;
-				OCR0A = 0;
-				OCR0B = 0; */
-				stat_haupt = 0;
+			// PORTC |= _BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0);
+			// PORTB |= _BV(PC5) | _BV(PC4) | _BV(PB0);
+			PORTD |= _BV(PD1) | _BV(PD0);
+			/*
+			OCR2A = 0;
+			OCR2B = 0;
+			OCR1A = 0;
+			OCR1B = 0;
+			OCR0A = 0;
+			OCR0B = 0; */
+			stat_haupt = 0;
 		}
 		//        if (nachtmodus) über can?!
 		
