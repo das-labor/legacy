@@ -56,4 +56,5 @@ uint8_t bright_vortrag_set(struct t_state_vortrag *data){
 	bright_schraenke_set(&lampe);
 	lampe.data = (*data).bright_flipper;
 	bright_flipper_set(&lampe);
+	return 0;
 }
