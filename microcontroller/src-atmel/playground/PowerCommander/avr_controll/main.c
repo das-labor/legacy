@@ -130,7 +130,11 @@ uint8_t dummy_bright_null(struct t_status *data)
 */
 void itr_schalter_vortrag()
 {
-	
+	if ( timing_counter.tastercounter_vortrag > schaltinterval[0] &&
+			 timing_counter.tastercounter_vortrag < schaltinterval[1] ) {
+		struct t_status testvector = { 128,0}
+		bright_beamer_set(&testvector);
+	}
 }
 
 /*
