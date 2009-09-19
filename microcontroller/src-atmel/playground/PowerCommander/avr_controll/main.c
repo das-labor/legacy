@@ -273,8 +273,10 @@ void init_commander()
 	TCNT0 = 0;   // pwm timer clear
 	OCR0A = 0;   // pwm timer compare target
 	OCR0B = 0;   // pwm timer compare target
-	PCICR |= _BV(PCIE1);
-	PCMSK2 |= _BV(PCINT18) | _BV(PCINT20);
+	
+	
+	PCICR  |= _BV(PCIE1);										// Enable Pin Change Interrupt 1
+	PCMSK2 |= _BV(PCINT18) | _BV(PCINT20);	// Enable PCI18 and 20 as Pin Change Interrupt
 }
 
 
