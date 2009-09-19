@@ -419,10 +419,10 @@ int main (void)
 				break;
 			}
 		}
-		if ((!(PINB & _BV(PB7))) && stat_haupt == 0)   // Hauptschalter geht aus
+		if ((!(PINB & _BV(PB7))) && stat_haupt == 1)   // Hauptschalter geht aus
 		{ // TODO Status merken?
 			PORTC &= ~(_BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0));	// Küche, Beamer, Blau, Gelb aus
-			PORTB &= ~(_BV(PB5) | _BV(PB4) | _BV(PB0));	// Tisch steckdose, Serverschrank steckdose aus
+			PORTB &= ~(_BV(PB5) | _BV(PB4) | _BV(PB0));	// Tisch steckdose, Küche aus
 			PORTD &= ~(_BV(PD7) | _BV(PD1) | _BV(PD0));	// relais 8 aus, schütze aus
 
 			/*
@@ -432,14 +432,14 @@ int main (void)
 			OCR1B = 0;
 			OCR0A = 0;
 			OCR0B = 0; */
-			stat_haupt = 1;
+			stat_haupt = 0;
 		}
-		if ((PINB & _BV(PB7)) && stat_haupt == 1)   // Hauptschalter geht an
+		else if (stat_haupt == 0)   // Hauptschalter geht an
 		{
 			// PORTC |= _BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0);
 			// PORTB |= _BV(PC5) | _BV(PC4) | _BV(PB0);
 			PORTD |= _BV(PD1) | _BV(PD0); // Schütze an
-			PORTB |= _BV(PB5) | _BV(PB4); // Tisch steckdose, Serverschrank steckdose an
+			PORTB |= _BV(PB5) | _BV(PB4); // Tisch steckdose, Klo an
 			
 			/*
 			OCR2A = 0;
@@ -448,7 +448,7 @@ int main (void)
 			OCR1B = 0;
 			OCR0A = 0;
 			OCR0B = 0; */
-			stat_haupt = 0;
+			stat_haupt = 1;
 		}
 		//        if (nachtmodus) über can?!
 		
