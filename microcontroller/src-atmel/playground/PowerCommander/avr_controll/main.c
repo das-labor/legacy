@@ -196,11 +196,12 @@ ISR(TIMER0_OVF_vect)
 					was soll passieren wenn der schlater losgelassen wurde
 					in erster linie sicher ein Rest
 				*/
-				itr_schalter_vortrag_dynamisch();
+				
 				timing_counter.tastercounter_vortrag = 0;
 				timing_counter.tastercounter_vortrag_last = 0;
 			} else {
 
+				itr_schalter_vortrag_dynamisch();
 				/*
 					und wir zaehlen natuerlich weiter
 				*/
