@@ -10,9 +10,8 @@
 #include "twi_slave/twi_slave.h"
 
 #include "PowerCommander.h"
-#include "switch.h"
-#include "opto.h"
-#include "bright.h"
+
+
 
 // aktuller zustand
 struct t_state_vortrag vortrag_cur = { 0 , 0 , 0 , 0 , MACHDUNKEL }; // init sonst working
@@ -88,12 +87,14 @@ uint16_t schaltinterval[] = { 5, 500 ,700, 900 };
 
 */
 
+#include "switch.c"
+//#include "opto.c"
+#include "bright.c"
 
-uint8_t schalterstatus(struct t_status * data)
+void schalterstatus(struct t_status * data)
 {
   (*data).data = (uint8_t)(timing_counter.tastercounter_lounge & 0xFF);
   (*data).write_data = 1;
-  return 0;
 }
 
 
@@ -103,22 +104,10 @@ uint8_t schalterstatus(struct t_status * data)
 	sie wird ueberall da in der Matrix verwendet, wo eigentlich 
 	nichts passieren sollte - aka dauerhaft abschalten
 */
-uint8_t dummy_switch_null(struct t_status *data)
-{
-	(*data).write_data = 0;
-	return 0;
-}
 
-uint8_t dummy_opto_null(struct t_status *data)
+void dummy_bright_null(struct t_status *data)
 {
 	(*data).write_data = 0;
-	return 0;
-}
-
-uint8_t dummy_bright_null(struct t_status *data)
-{
-	(*data).write_data = 0;
-	return 0;
 }
 
 /*
@@ -305,7 +294,8 @@ int main (void)
 	uint8_t hasharray[num_bright];  // ich benutze hier num_bright als die anzahl aller objekte
 	struct t_status workparameter;
 
-	uint8_t (*DoIt[num_bright][MAX(num_action,num_brightaction)])(struct t_status *data);
+	void (*DoIt[num_bright][num_brightaction])(struct t_status *data);
+	void (*switchDoIt[num_action])(struct t_status *data);
 
 	init_commander();
 
@@ -315,25 +305,10 @@ int main (void)
 	/* 
 		 switchmatrix aufbauen 
 	*/
-	DoIt[switch00][swoff]    = switch00_off; DoIt[switch00][swon] = switch00_on; DoIt[switch00][swstatus] = switch00_status;
-	DoIt[switch01][swoff]    = switch01_off; DoIt[switch01][swon] = switch01_on; DoIt[switch01][swstatus] = switch01_status;
-	DoIt[switch02][swoff]    = switch02_off; DoIt[switch02][swon] = switch02_on; DoIt[switch02][swstatus] = switch02_status;
-	DoIt[switch03][swoff]    = switch03_off; DoIt[switch03][swon] = switch03_on; DoIt[switch03][swstatus] = switch03_status;
-	DoIt[switch04][swoff]    = switch04_off; DoIt[switch04][swon] = switch04_on; DoIt[switch04][swstatus] = switch04_status;
-	DoIt[switch05][swoff]    = switch05_off; DoIt[switch05][swon] = switch05_on; DoIt[switch05][swstatus] = switch05_status;
-	DoIt[switch06][swoff]    = switch06_off; DoIt[switch06][swon] = switch06_on; DoIt[switch06][swstatus] = switch06_status;
-	DoIt[switch07][swoff]    = switch07_off; DoIt[switch07][swon] = switch07_on; DoIt[switch07][swstatus] = switch07_status;
+	switchDoIt[swoff]    = switch_off;
+	switchDoIt[swon]     = switch_on;
+	switchDoIt[swstatus] = switch_status;
 
-	/* 
-		 optokopplermatrix
-	*/
-	DoIt[optokopp00][swoff]    = opto00_off; DoIt[optokopp00][swon] = opto00_on; DoIt[optokopp00][swstatus] = opto00_status;
-	DoIt[optokopp01][swoff]    = opto01_off; DoIt[optokopp01][swon] = opto01_on; DoIt[optokopp01][swstatus] = opto01_status;
-
-	/*
-		Die Anzahl der Aktionen fuer Lampen und Relais/Switche ist leider nicht identisch. Daher ist es 
-		notwendig an den fehlenden Punkten in der Matrix trotzdem eine Funktion zuzuweisen.
-	*/
 	/*
 		helligkeitsmatrix
 	*/
@@ -352,22 +327,12 @@ int main (void)
 	/*
 		host sendet und will damit objekt foo addressieren - er sendet 0 und will switch00
 	*/
-	hasharray[0] = switch00;
-	hasharray[1] = switch01;
-	hasharray[2] = switch02;
-	hasharray[3] = switch03;
-	hasharray[4] = switch04;
-	hasharray[5] = switch05;
-	hasharray[6] = switch06;
-	hasharray[7] = switch07;
-	hasharray[8] = optokopp00;
-	hasharray[9] = optokopp01;
-	hasharray[10] = tafel;
-	hasharray[11] = beamer;
-	hasharray[12] = schraenke;
-	hasharray[13] = flipper;
-	hasharray[14] = lounge;
-	hasharray[15] = free1;
+	hasharray[0] = tafel;
+	hasharray[1] = beamer;
+	hasharray[2] = schraenke;
+	hasharray[3] = flipper;
+	hasharray[4] = lounge;
+	hasharray[5] = free1;
 
 	/*
 	** Clear any interrupt
@@ -415,7 +380,13 @@ int main (void)
 
 					workparameter.data = recv_buffer[2];
 					workparameter.write_data = 0;
-					DoIt[hasharray[recv_buffer[0]]][recv_buffer[1]](&workparameter);
+					if ( recv_buffer[0] < 10 ) { 
+						workparameter.data = recv_buffer[0];
+						switchDoIt[recv_buffer[1]](&workparameter);
+					}
+					else {
+						DoIt[hasharray[recv_buffer[0]-num_switch]][recv_buffer[1]](&workparameter);
+					}
 					/*
 					** Slave is requested to send bytes to the master.
 					*/

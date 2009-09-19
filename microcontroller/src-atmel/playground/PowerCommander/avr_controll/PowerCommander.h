@@ -43,20 +43,16 @@ enum relais {
   switch05,
   switch06,
   switch07,
+  optokopp00,
+  optokopp01,
   num_switch // muss immer der letzte sein
 };
 
-// welchen optokoppler willst du?
-enum optokop {
-  optokopp00 = num_switch,
-  optokopp01,
-  num_optokopp // muss immer der letzte sein
-};
 
 
 // welche lampe willst du veraendern?
 enum bright {
-  tafel=num_optokopp,
+  tafel=0,
   beamer,
   schraenke,
   flipper,
