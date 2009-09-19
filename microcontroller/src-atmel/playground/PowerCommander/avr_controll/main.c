@@ -49,7 +49,7 @@ struct t_counter_status timing_counter = { 0,0,0,0,0 };
 */
 
 
-uint16_t schaltinterval[] = { 25, 500 ,700, 900 };
+uint16_t schaltinterval[] = { 5, 500 ,700, 900 };
 
 /*
 	fuer jedes objekt gibt es funktionen der form:
@@ -88,13 +88,6 @@ uint16_t schaltinterval[] = { 25, 500 ,700, 900 };
 
 */
 
-
-uint8_t schalterstatus2(struct t_status * data)
-{
-  (*data).data = (uint8_t)(timing_counter.tastercounter_vortrag & 0xFF);
-  (*data).write_data = 1;
-  return 0;
-}
 
 uint8_t schalterstatus(struct t_status * data)
 {
@@ -139,10 +132,12 @@ uint8_t dummy_bright_null(struct t_status *data)
 */
 void itr_schalter_vortrag()
 {
-	if ( timing_counter.tastercounter_vortrag > schaltinterval[0] &&
-			 timing_counter.tastercounter_vortrag < schaltinterval[1] ) {
-		struct t_status testvector = { 128,0};
-		bright_beamer_set(&testvector);
+	if (timing_counter.tastercounter_vortrag > schaltinterval[0] &&
+			 timing_counter.tastercounter_vortrag < schaltinterval[1]) {
+		if ((PORTC >> PC1) & 1)
+			PORTC &= ~_BV(PC1);
+		else
+			PORTC |= _BV(PC1);
 	}
 }
 
@@ -151,7 +146,13 @@ void itr_schalter_vortrag()
 */
 void itr_schalter_lounge()
 {
-	
+		if (timing_counter.tastercounter_lounge > schaltinterval[0] &&
+			 timing_counter.tastercounter_lounge < schaltinterval[1]) {
+		if ((PORTC >> PC0) & 1)
+			PORTC &= ~_BV(PC0);
+		else
+			PORTC |= _BV(PC0);
+	}
 }
 
 ISR(TIMER0_OVF_vect)
@@ -166,17 +167,17 @@ ISR(TIMER0_OVF_vect)
 		 getan hat, dann wurde er los gelassen. Wir koennen den 
 		 Counter fuer die eingaben auf null setzen
 	*/
-	if ( (timing_counter.tickscounter & 0x001F) == 0) { // alle 32 ticks ... 0.032 sekunden
-		if ( timing_counter.tastercounter_vortrag != 0) {
-			if ( timing_counter.tastercounter_vortrag == timing_counter.tastercounter_vortrag_last) {
+	if ((timing_counter.tickscounter & 0x001F) == 0) { // alle 32 ticks ... 0.032 sekunden
+		if (timing_counter.tastercounter_vortrag != 0) {
+			if (timing_counter.tastercounter_vortrag == timing_counter.tastercounter_vortrag_last) {
 				/* 
 					 keine aenderung festgestellt folglich call to set fuer vortrag
 				*/
 				itr_schalter_vortrag();
-				//				timing_counter.tastercounter_vortrag = 0;
+				timing_counter.tastercounter_vortrag = 0;
 				timing_counter.tastercounter_vortrag_last = 0;
 			} else {
-				timing_counter.tastercounter_vortrag_last = timing_counter.tastercounter_vortrag_last;
+				timing_counter.tastercounter_vortrag_last = timing_counter.tastercounter_vortrag;
 			}
 		}
 		if ( timing_counter.tastercounter_lounge != 0) {
@@ -185,10 +186,10 @@ ISR(TIMER0_OVF_vect)
 					 keine aenderung festgestellt folglich call to set fur lounge 
 				*/
 				itr_schalter_lounge();
-				//				timing_counter.tastercounter_lounge = 0;
+				timing_counter.tastercounter_lounge = 0;
 				timing_counter.tastercounter_lounge_last = 0;
 			} else {
-				timing_counter.tastercounter_lounge_last = timing_counter.tastercounter_lounge_last;
+				timing_counter.tastercounter_lounge_last = timing_counter.tastercounter_lounge;
 			}
 		}
 	}
@@ -209,28 +210,28 @@ ISR(TIMER0_OVF_vect)
 ISR(PCINT2_vect)
 {
 	cli();
-	if (vortrag_cur.dimDirection == MACHDUNKEL)
+//	if (vortrag_cur.dimDirection == MACHDUNKEL)
 		timing_counter.tastercounter_vortrag++;
-	else 
+/*	else 
 		timing_counter.tastercounter_vortrag--;
 	if ( timing_counter.tastercounter_vortrag == MAXHELL )
 		vortrag_cur.dimDirection = MACHDUNKEL;
 	if ( timing_counter.tastercounter_vortrag == MAXDUNKEL )
-		vortrag_cur.dimDirection = MACHHELL;
+		vortrag_cur.dimDirection = MACHHELL;*/
 	sei();
 }
 
 ISR(INT0_vect)
 {
 	cli();
-	if (lounge_cur.dimDirection == MACHDUNKEL)
+//	if (lounge_cur.dimDirection == MACHDUNKEL)
 		timing_counter.tastercounter_lounge++;
-	else
+/*	else
 		timing_counter.tastercounter_lounge--;
 	if ( timing_counter.tastercounter_lounge == MAXHELL )
 		lounge_cur.dimDirection = MACHDUNKEL;
 	if ( timing_counter.tastercounter_lounge == MAXDUNKEL )
-		lounge_cur.dimDirection = MACHHELL;
+		lounge_cur.dimDirection = MACHHELL;*/
 	sei();
 }
 
@@ -283,7 +284,7 @@ void init_commander()
 	OCR0A = 0;   // pwm timer compare target
 	OCR0B = 0;   // pwm timer compare target
 	
-	EICRA |= _BV(ISC01) | _BV(ISC00);	// Trigger Interrupt on any logical change on pin pd2
+	EICRA |= _BV(ISC00);	// Trigger Interrupt on any logical change on pin pd2
 	EIMSK |= _BV(INT0);								// Enable External Interrupt Request 0
 	
 	PCICR  |= _BV(PCIE2);							// Enable Pin Change Interrupt 2
@@ -337,11 +338,10 @@ int main (void)
 	*/
 
 	DoIt[tafel][brset]     = bright_tafel_set;     DoIt[tafel][1]     = schalterstatus; DoIt[tafel][2]     = dummy_bright_null;
-	DoIt[beamer][brset]     = bright_tafel_set;     DoIt[tafel][1]     = schalterstatus2; DoIt[tafel][2]     = dummy_bright_null;
 
 
 	//	DoIt[tafel][brset]     = bright_tafel_set;     DoIt[tafel][1]     = dummy_bright_null; DoIt[tafel][2]     = dummy_bright_null;
-//	DoIt[beamer][brset]    = bright_beamer_set;    DoIt[beamer][1]    = dummy_bright_null; DoIt[beamer][2]    = dummy_bright_null;
+	DoIt[beamer][brset]    = bright_beamer_set;    DoIt[beamer][1]    = dummy_bright_null; DoIt[beamer][2]    = dummy_bright_null;
 	DoIt[schraenke][brset] = bright_schraenke_set; DoIt[schraenke][1] = dummy_bright_null; DoIt[schraenke][2] = dummy_bright_null;
 	DoIt[flipper][brset]   = bright_flipper_set;   DoIt[flipper][1]   = dummy_bright_null; DoIt[flipper][2]   = dummy_bright_null;
 	DoIt[free1][brset]     = bright_free_set;      DoIt[free1][1]     = dummy_bright_null; DoIt[free1][2]     = dummy_bright_null;
@@ -388,6 +388,7 @@ int main (void)
 	/*
 	  mainloop
 	*/
+	sei();
 
 	while (1)
 	{
