@@ -422,6 +422,8 @@ int main (void)
 			case TWIS_WriteBytes:
 				{
 					// nur schreiben wenn auch wirklich daten da waren
+					workparameter.write_data = 1;
+					workparameter.data = 11;
 					if (workparameter.write_data == 1)
 						TWIS_Write(workparameter.data);        // byte das in Leseoperation befüllt wurde schreiben
 					else
