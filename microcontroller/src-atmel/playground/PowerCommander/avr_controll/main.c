@@ -122,7 +122,7 @@ inline void itr_schalter_vortrag_statisch()
 	// licht kurz an
 	if (timing_counter.tastercounter_vortrag > schaltinterval[0] &&
 			 timing_counter.tastercounter_vortrag < schaltinterval[1]) {
-		bright_vortrag_set(&vortrag_default);
+		//		bright_vortrag_set(&vortrag_default);
 		if ((PORTC >> PC1) & 1)
 			PORTC &= ~_BV(PC1);
 		else
@@ -131,7 +131,7 @@ inline void itr_schalter_vortrag_statisch()
 	// lich lange an
 	if (timing_counter.tastercounter_vortrag > schaltinterval[1] &&
 			 timing_counter.tastercounter_vortrag < schaltinterval[2]) {
-		bright_vortrag_set(&vortrag_default);
+		//		bright_vortrag_set(&vortrag_default);
 		if ((PORTC >> PC1) & 1)
 			PORTC &= ~_BV(PC1);
 		else
@@ -189,6 +189,22 @@ inline void itr_schalter_lounge_statisch()
 
 inline void itr_schalter_lounge_dynamisch()
 {
+	if (timing_counter.tastercounter_lounge > schaltinterval[2] &&
+			timing_counter.tastercounter_lounge < schaltinterval[3]) {
+		if ( lounge_cur.dimDirection == MACHDUNKEL ){
+			lounge_cur.bright_lounge++;
+			lounge_cur.bright_free++;
+		}
+		if ( lounge_cur.dimDirection == MACHHELL ){
+			lounge_cur.bright_lounge--;
+			lounge_cur.bright_free--;
+		}
+		if (lounge_cur.bright_lounge == MAXHELL) lounge_cur.dimDirection = MACHDUNKEL;
+		if (lounge_cur.bright_lounge == MAXDUNKEL) lounge_cur.dimDirection = MACHHELL;
+																							 
+		bright_lounge_state_set(&lounge_cur);
+	}
+
 }
 
 ISR(TIMER0_OVF_vect)
