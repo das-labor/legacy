@@ -18,10 +18,10 @@
 
 #define ADRESSE 15 // I2C Adresse
 
-// was willst du von dem Relai / Optokoppler
+// was willst du von dem Relais / Optokoppler
 enum action { 
-  swon = 0,   // einschalten
-  swoff,    // ausschalten
+  swoff,   // einschalten
+  swon,    // ausschalten
   swstatus, // status
   num_action // ist immer der letzte eintrag
 };
