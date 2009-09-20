@@ -588,7 +588,7 @@ int main (void)
 				break;
 			}
 		}
-		if ((!(PINB & _BV(PB7))) && stat_haupt == 1)   // Hauptschalter geht aus
+		if ((!(PINB & _BV(PINB7))) && stat_haupt == 1)   // Hauptschalter geht aus
 		{ // TODO Status merken?
 			PORTC &= ~(_BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0));	// Küche, Beamer, Blau, Gelb aus
 			PORTB &= ~(_BV(PB5) | _BV(PB4) | _BV(PB0));	// Tisch steckdose, Küche aus
@@ -603,7 +603,7 @@ int main (void)
 			OCR0B = 0; */
 			stat_haupt = 0;
 		}
-		else if (stat_haupt == 0)   // Hauptschalter geht an
+		if ((PINB & _BV(PINB7)) && stat_haupt == 0)   // Hauptschalter geht an
 		{
 			// PORTC |= _BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0);
 			// PORTB |= _BV(PC5) | _BV(PC4) | _BV(PB0);
