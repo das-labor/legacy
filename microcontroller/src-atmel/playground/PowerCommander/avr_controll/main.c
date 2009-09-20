@@ -403,11 +403,11 @@ inline void init_commander()
 	ADCSRA = 0;
 
 	DDRC |= _BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0);      // relais ausgänge 1-4 küche licht, beamer, vortrag licht, lounge licht
-	PORTC &= ~(_BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0));  // aus damit
+	PORTC &= ~(_BV(PC3) | _BV(PC2));  // aus damit
 
 	DDRB |= _BV(PB5) | _BV(PB4) | _BV(PB0);                 // relais ausgänge 5-7 tischsteckdose lounge, geschaltete serverschrank steckdose,
-	PORTB &= ~(_BV(PB4) | _BV(PB0));             						// aus damit
-	PORTB |= _BV(PB5);	
+	PORTB &= ~(_BV(PB4)); // | _BV(PB0));             						// aus damit
+	PORTB |= _BV(PB5) | _BV(PB0);	
 
 	DDRD |= _BV(PD7) | _BV(PD1) | _BV(PD0);                 // relais ausgang 8, 230V 1-2
 	PORTD &= ~(_BV(PD7) | _BV(PD1) | _BV(PD0));             // aus
@@ -591,7 +591,7 @@ int main (void)
 		if ((!(PINB & _BV(PINB7))) && stat_haupt == 1)   // Hauptschalter geht aus
 		{ // TODO Status merken?
 			PORTC &= ~(_BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0));	// Küche, Beamer, Blau, Gelb aus
-			PORTB &= ~(_BV(PB5) | _BV(PB4) | _BV(PB0));	// Tisch steckdose, Küche aus
+			PORTB &= ~(_BV(PB5) | _BV(PB4) | _BV(PB0));	// Tisch steckdose, Küche aus, schütze aus
 			PORTD &= ~(_BV(PD7) | _BV(PD1) | _BV(PD0));	// relais 8 aus, schütze aus
 
 			/*
@@ -608,7 +608,7 @@ int main (void)
 			// PORTC |= _BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0);
 			// PORTB |= _BV(PC5) | _BV(PC4) | _BV(PB0);
 			PORTD |= _BV(PD1) | _BV(PD0); // Schütze an
-			PORTB |= _BV(PB5) | _BV(PB4); // Tisch steckdose, Klo an
+			PORTB |= _BV(PB5) | _BV(PB4) | _PB(PB0); // Tisch steckdose, Klo an, schütze an
 			
 			/*
 			OCR2A = 0;
