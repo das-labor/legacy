@@ -17,9 +17,9 @@ SPI: mcp 2510 CAN Bus für Labor anbindung
 
 
 Fuses:
-lfuse:
-hfuse:
-efuse:
+lfuse:0x00
+hfuse:0xd0
+
 
 
 Bootloader:

@@ -50,51 +50,52 @@ AVRX_GCC_TASKDEF(laptask, 50, 3)
             } else
             if (rx_msg.port_dst == 0x01)
             {
-/*                if (rx_msg.data[0] <= 0x03)
-                { */
-                    if (!TWIM_Start(SLAVE, TWIM_WRITE))
-                    {
-                        TWIM_Stop();
-                    }
-                    else
-                    {
-                        TWIM_Write(rx_msg.data[0]);
-                        TWIM_Write(rx_msg.data[1]);
-                        TWIM_Stop();
-                        
-                        if (rx_msg.data[0] == 0x00 && rx_msg.data[1] == 0x02)
-                        {
-                            _delay_ms(10);
-                            if (!TWIM_Start (SLAVE, TWIM_READ))
-                            {
-                                TWIM_Stop();
-                            }
-                            else
-                            {
-                                tmp = TWIM_ReadNack();
-                                TWIM_Stop();
-                            }
-                            msg.port_dst = 0x01;
-                            msg.addr_dst = rx_msg.addr_src;
-                            msg.data[0] = rx_msg.data[1];
-                            can_put(&msg);
-                        }
-  
-                    } /*
-               }
-                if (rx_msg.data[0] > 0x03 && rx_msg.data[0] <= 0x09)
+                if (!TWIM_Start(SLAVE, TWIM_WRITE))
                 {
-                    if (!TWIM_Start(SLAVE, TWIM_WRITE))
+                    TWIM_Stop();
+                }
+                else
+                {
+                    TWIM_Write(rx_msg.data[0]);
+                    TWIM_Write(rx_msg.data[1]);
+                    TWIM_Write(rx_msg.data[2]);                        
+                    TWIM_Stop();
+                    
+                    if (rx_msg.data[0] == 0x00 && rx_msg.data[1] == 0x02)
                     {
-                        TWIM_Stop();
+                        _delay_ms(10);
+                        if (!TWIM_Start (SLAVE, TWIM_READ))
+                        {
+                            TWIM_Stop();
+                        }
+                        else
+                        {
+                            tmp = TWIM_ReadNack();
+                            TWIM_Stop();
+                        }
+                        msg.port_dst = 0x01;
+                        msg.addr_dst = rx_msg.addr_src;
+                        msg.data[0] = rx_msg.data[tmp];
+                        can_put(&msg);
                     }
-                    else
+                    if (rx_msg.data[0] == 0x0a && rx_msg.data[1] == 0x01)
                     {
-                        TWIM_Write(rx_msg.data[0]);
-                        TWIM_Write(rx_msg.data[1]);
-                        TWIM_Stop();
+                    	_delay_ms(10);
+                        if (!TWIM_Start (SLAVE, TWIM_READ))
+                        {
+                            TWIM_Stop();
+                        }
+                        else
+                        {
+                            tmp = TWIM_ReadNack();
+                            TWIM_Stop();
+                        }
+                        msg.port_dst = 0x00;
+                        msg.addr_dst = rx_msg.addr_src;
+                        msg.data[0] = rx_msg.data[tmp];
+                        can_put(&msg);
                     }
-                }*/
+                }
             }
         }
     }

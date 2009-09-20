@@ -16,9 +16,9 @@ Bekommt Zustände für Ports und liefert diese auf Anfrage zurück.
 
 
 Fuses:
-lfuse
-hfuse
-efuse
+lfuse: 0xC0
+hfuse: 0xD4
+efuse: 0xf9
 
 Bootloader:
 
