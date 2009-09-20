@@ -608,7 +608,7 @@ int main (void)
 			// PORTC |= _BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0);
 			// PORTB |= _BV(PC5) | _BV(PC4) | _BV(PB0);
 			PORTD |= _BV(PD1) | _BV(PD0); // Schütze an
-			PORTB |= _BV(PB5) | _BV(PB4) | _PB(PB0); // Tisch steckdose, Klo an, schütze an
+			PORTB |= _BV(PB5) | _BV(PB4) | _BV(PB0); // Tisch steckdose, Klo an, schütze an
 			
 			/*
 			OCR2A = 0;
