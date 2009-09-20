@@ -52,14 +52,14 @@ struct t_counter_status timing_counter = { 0,0,0,0,0 };
 /*
 	sequenzen: 
 	0-50 = kurz drauf  (< 0.5 sekunden auf dem schalter)
-	50-150 = lang drauf (0.5 < 1.5 sekunden auf dem schalter)
-	150-900 = dimmen (1.5 < 9.0 sekunden auf dem schalter)
+	50-100 = lang drauf (0.5 < 1.0 sekunden auf dem schalter)
+	100-900 = dimmen (1.0 < 9.0 sekunden auf dem schalter)
 	900-1000 = vortragsbeleuchtung 1
 	1000-1400 = vortragsbeleuchtung 2
 	...
 	
  */
-uint16_t schaltinterval[] = { 0, 50, 150 ,900, 1000, 1400, 1700 };
+uint16_t schaltinterval[] = { 0, 50, 100 ,900, 1000, 1400, 1700 };
 
 /*
 	fuer jedes objekt gibt es funktionen der form:
