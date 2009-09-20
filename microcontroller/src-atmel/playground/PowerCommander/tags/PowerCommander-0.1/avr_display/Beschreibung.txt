@@ -1,0 +1,29 @@
+Lizenz:
+
+
+Display in Sicherungskastendeckel
+Uhrzeit
+Borg
+Informationen über Labor öffnungzeit
+Aktueller Stromfluß
+Spannung
+
+
+ATMega644
+
+EIA232: Verbindung mit avr_interface
+
+SPI: LS020
+
+Eingänge:
+4 Taster
+
+
+Bootloader:
+über rs232
+
+
+Fuses:
+lfuse
+hfuse
+efuse
