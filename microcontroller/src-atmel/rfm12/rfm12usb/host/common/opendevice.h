@@ -75,3 +75,4 @@ int usbOpenDevice(usb_dev_handle **device, int vendorID, char *vendorNamePattern
 #define USB_PID_OBDEV_SHARED_MIDI   1508    /* shared PID for MIDI class devices */
 
 #endif /* __OPENDEVICE_H_INCLUDED__ */
+
