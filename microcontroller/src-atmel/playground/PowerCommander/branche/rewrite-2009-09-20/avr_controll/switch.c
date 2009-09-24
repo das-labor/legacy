@@ -27,6 +27,7 @@ inline void switch_fkt(struct t_switch_parameter *sw_para, struct t_busdata *dat
 		default:
 			break;
 		}
+
 }
 
 		
