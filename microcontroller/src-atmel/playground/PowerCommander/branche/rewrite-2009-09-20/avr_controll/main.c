@@ -208,10 +208,11 @@ ISR(TIMER0_OVF_vect)
 	cli();
 	/* 
 		 etwa 0.000512 sekunden
+		 gibt es hier leider nicht
 	*/
-	if (( tickscounter & (TICKS_A0) ) == TICKS_A0 ){
-		deque(QUEUE_A0);
-	}
+/* 	if (( tickscounter & (TICKS_A0) ) == TICKS_A0 ){ */
+/* 		deque(QUEUE_A0); */
+/* 	} */
 	/* 
 		 etwa 0.0025 sekunden
 	*/

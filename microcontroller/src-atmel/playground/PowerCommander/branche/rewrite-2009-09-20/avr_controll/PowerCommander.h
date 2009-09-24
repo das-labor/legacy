@@ -102,23 +102,24 @@
 
 // bei Timer/counter = 256 auf 16MHz
 // etwa 0.000512 sekunden
-#define TICKS_A0 (0x0020)  
-// etwa 0.0025
-#define TICKS_A1 (0x009D)
-// etwa 0.005
-#define TICKS_A2 (0x0138)
-// etwa 0.01
-#define TICKS_A3 (0x0271)
-// etwa 0.04
-#define TICKS_A4 (0x09C4)
+// gibt es hier leider nicht ... ist aber auch nicht so das problem
+// #define TICKS_A0 (0x0020)  
+// etwa 0.002048
+#define TICKS_A1 (0x0002)
+// etwa 0.005120
+#define TICKS_A2 (0x0005)
+// etwa 0.01024
+#define TICKS_A3 (0x000A)
+// etwa 0.04096
+#define TICKS_A4 (0x0028)
 // etwa 0.125 sekunden
-#define TICKS_A5 (0x1E84)
+#define TICKS_A5 (0x007A)
 // etwa 0.25 sekunden
-#define TICKS_A6 (0x3D09)
+#define TICKS_A6 (0x00F4)
 // etwa 0.5 sekunden
-#define TICKS_A7 (0x7A12)
+#define TICKS_A7 (0x01E8)
 // etwa 1.0 sekunden
-#define TICKS_A8 (0xF424)
+#define TICKS_A8 (0x03D1)
 
 #define RINGBUFFERSIZE (3)
 #define QUEUE_SIZE (35)
