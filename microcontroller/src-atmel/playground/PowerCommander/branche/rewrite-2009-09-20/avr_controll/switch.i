@@ -8,19 +8,19 @@ inline void switch_fkt(struct t_switch_parameter *sw_para, struct t_busdata *dat
 		{
 		case A_SW_OFF:
 			{
-				(*sw_para).write_port &= ~_BV((*sw_para).pin);
+				*((*sw_para).write_port) &= ~_BV((*sw_para).pin);
 				(*data).write_data = HASNDATA;
 			}
 			break;
 		case A_SW_ON:
 			{
-				(*sw_para).write_port |= _BV((*sw_para).pin);
+				*((*sw_para).write_port) |= _BV((*sw_para).pin);
 				(*data).write_data = HASNDATA;
 			}
 			break;
 		case A_SW_STATUS:
 			{
-				(*data).out_data=((*sw_para).read_port >> (*sw_para).pin) & 1;
+				(*data).out_data= (*((*sw_para).read_port) >> (*sw_para).pin) & 1;
 				(*data).write_data = HASDATA;
 			}
 			break;
@@ -40,7 +40,7 @@ inline void switch_ro_fkt(struct t_switch_parameter_ro *sw_para, struct t_busdat
 		{
 		case A_SW_STATUS:
 			{
-				(*data).out_data=((*sw_para).read_port >> (*sw_para).pin) & 1;
+				(*data).out_data=(*((*sw_para).read_port) >> (*sw_para).pin) & 1;
 				(*data).write_data = HASDATA;
 			}
 			break;
