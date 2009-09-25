@@ -1,8 +1,8 @@
 /* -*- Mode: C; tab-width: 2 -*- */
-//#include "PowerCommander.h"
 
-//#include <avr/io.h>
-
+/*
+	std-switch oder optokoppler
+*/
 inline void switch_fkt(struct t_switch_parameter *sw_para, struct t_busdata *data)	{
 	switch( (*data).in_data[1]) 
 		{
@@ -31,7 +31,9 @@ inline void switch_fkt(struct t_switch_parameter *sw_para, struct t_busdata *dat
 }
 
 		
-// readonly switch
+/*
+	readonly switch
+*/
 
 inline void switch_ro_fkt(struct t_switch_parameter_ro *sw_para, struct t_busdata *data)	{
 	switch( (*data).in_data[1]) 
