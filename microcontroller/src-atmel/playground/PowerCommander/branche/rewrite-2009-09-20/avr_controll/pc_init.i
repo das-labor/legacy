@@ -72,4 +72,3 @@ inline void init_timer()
 	OCR0B = 0;   // pwm timer compare target
 
 }
-
