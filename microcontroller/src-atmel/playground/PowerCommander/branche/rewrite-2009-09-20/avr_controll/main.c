@@ -11,9 +11,9 @@
 
 
 #include "PowerCommander.h"
-#include "pc_init.c"
-#include "switch.c"
-#include "bright.c"
+#include "pc_init.i"
+#include "switch.i"
+#include "bright.i"
 
 struct t_busdata busdata = { { 0, 0, 0}, 0,HASNDATA};
 
@@ -50,7 +50,7 @@ uint8_t helligkeitsstufen[] = { 1, 2 , 4 ,
 
 uint16_t tickscounter=0;
 
-#include "queue.c"
+#include "queue.i"
 
 inline void ringbuffer_flush(struct t_ringbuffer *rb){
 	uint8_t i=0;
@@ -97,7 +97,7 @@ ISR(TIMER0_OVF_vect)
 	*/
 	if (( tickscounter & (TICKS_A2) ) == TICKS_A2 ){
 		// hier werden die clicks erfasst
-#include "click_events.c"
+#include "click_events.i"
 		for(taster_i=0;taster_i<U_COUNT;taster_i++){
 			/*
 				check auf klick
@@ -112,13 +112,13 @@ ISR(TIMER0_OVF_vect)
 			case U_VORTRAG:
 				{
 					// die events die durch den vortrags-taster ausgeloesst werden
-#include "events_vortrag.c"
+#include "events_vortrag.i"
 				}
 				break;
 			case U_LOUNGE:
 				{
 					// die events die durch den lounge-taster ausgeloesst werden
-#include "events_lounge.c"
+#include "events_lounge.i"
 				}
 				break;
 			default:
@@ -202,7 +202,7 @@ int main(void)
 	init_relais();
 	init_timer();
 
-#include "matrix_init.c"
+#include "matrix_init.i"
 	/*
 	** Clear any interrupt
 	*/
