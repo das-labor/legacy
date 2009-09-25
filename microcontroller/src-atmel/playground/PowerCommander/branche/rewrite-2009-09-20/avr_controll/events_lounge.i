@@ -13,44 +13,59 @@
 	if ( (rb[taster_i].clickstate[0] <= T_CLICKDELAY) && 
 			 (rb[taster_i].clickstate_free[1] > T_CLICKDELAY))
 		{
-			/*
-				squenz hinzufuegen
-				t=0 an
-				0<t<=20sec = hell  k=1,2,3,4
-				20<t<=25 = dunkel  k=5
-				25<t<30 = hell     k=6
-				t=3 aus
-			*/
-			lounge_cur.onoff=A_SW_ON;
-			lounge_cur.bright_lounge=MAXHELL;
-			lounge_cur.bright_free=MAXHELL;
-			/*
-				20 sekunden
-			*/
-			for (i=0;i<20;i++)	{
-				add_queue_l(QUEUE_A8,&lounge_cur);
+			switch(vortrag_cur.onoff){
+			case A_SW_ON:
+				{
+					/*
+						wenn das licht schon an ist, schalten wir es aus
+					*/
+					vortrag_cur.onoff=A_SW_OFF;
+					add_queue_l(QUEUE_A5,&lounge_cur);
+				}
+				break;
+			case A_SW_OFF:
+				{
+					/*
+						squenz hinzufuegen
+						t=0 an
+						0<t<=20sec = hell  k=1,2,3,4
+						20<t<=25 = dunkel  k=5
+						25<t<30 = hell     k=6
+						t=3 aus
+					*/
+					lounge_cur.onoff=A_SW_ON;
+					lounge_cur.bright_lounge=MAXHELL;
+					lounge_cur.bright_free=MAXHELL;
+					/*
+						20 sekunden
+					*/
+					for (i=0;i<4;i++)	{
+						add_queue_l(QUEUE_A9,&lounge_cur);
+					}
+					lounge_cur.bright_lounge=MAXDUNKEL;
+					lounge_cur.bright_free=MAXDUNKEL;
+					/*
+						5 sekunden
+					*/
+					add_queue_l(QUEUE_A9,&lounge_cur);
+
+					lounge_cur.bright_lounge=MAXHELL;
+					lounge_cur.bright_free=MAXHELL;
+					/*
+						5 sekunden
+					*/
+					add_queue_l(QUEUE_A9,&lounge_cur);
+
+					/*
+						aus
+					*/
+					lounge_cur.onoff=A_SW_OFF;
+					add_queue_l(QUEUE_A5,&lounge_cur);
+				}
+				break;
+			default:
+				break;
 			}
-			lounge_cur.bright_lounge=MAXDUNKEL;
-			lounge_cur.bright_free=MAXDUNKEL;
-			/*
-				5 sekunden
-			*/
-			for (i=0;i<5;i++)	{
-				add_queue_l(QUEUE_A8,&lounge_cur);
-			}
-			lounge_cur.bright_lounge=MAXHELL;
-			lounge_cur.bright_free=MAXHELL;
-			/*
-				5 sekunden
-			*/
-			for (i=0;i<5;i++)	{
-				add_queue_l(QUEUE_A8,&lounge_cur);
-			}
-			/*
-				aus
-			*/
-			lounge_cur.onoff=A_SW_OFF;
-			add_queue_l(QUEUE_A8,&lounge_cur);
 		}
 
 	/*

@@ -17,7 +17,7 @@
 				rb[taster_i].clickstate_free[rb[taster_i].clickpos]++;
 			}
 			/*
-				ring-buffer
+				ring-buffer - 
 			*/
 			if ((rb[taster_i].clickstate_free[rb[taster_i].clickpos] > 0) && 
 					(rb[taster_i].clickstate[rb[taster_i].clickpos] > 0) )
@@ -26,6 +26,10 @@
 					rb[taster_i].clickstate[rb[taster_i].clickpos]=0;
 					rb[taster_i].clickstate_free[rb[taster_i].clickpos]=0;
 				}
-			if (rb[taster_i].clickpos > 2) ringbuffer_flush(&(rb[taster_i]));
+			/*
+				ringbuffer_flush ist in der main definiert
+				sie setzt auch clickpos wieder auf Null
+			*/
+			if (rb[taster_i].clickpos >= RINGBUFFERSIZE ) ringbuffer_flush(&(rb[taster_i]));
 		}
 }
