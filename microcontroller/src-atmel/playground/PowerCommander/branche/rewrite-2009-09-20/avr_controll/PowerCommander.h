@@ -148,8 +148,8 @@ struct t_busdata {
 };
 
 static struct t_switch_parameter{
-	uint8_t write_port;
-	uint8_t read_port;
+	volatile uint8_t *write_port;
+	volatile uint8_t *read_port;
 	uint8_t pin;
 }swp_matrix[]={
 	{ 0 , 0 , 0 },
@@ -164,7 +164,7 @@ static struct t_switch_parameter{
 	{ 0 , 0 , 0 } 
 };
 
-static uint8_t lp_matrix[] = { 0, 0, 0, 0, 0, 0 };
+volatile uint8_t* lp_matrix[] = { 0, 0, 0, 0, 0, 0 };
 
 static struct t_ringbuffer{
 	uint16_t tastercounter; // mitzaehlen
@@ -244,7 +244,7 @@ static struct t_queue_object {
 
 
 static struct t_switch_parameter_ro {
-  uint8_t read_port;
+  volatile uint8_t *read_port;
   uint8_t pin;
 }tp_matrix[]={ 
 	{ 0, 0},
