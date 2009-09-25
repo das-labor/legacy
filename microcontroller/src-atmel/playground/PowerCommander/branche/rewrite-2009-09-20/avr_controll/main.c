@@ -91,8 +91,8 @@ inline void ringbuffer_flush(struct t_ringbuffer *rb){
 	uint8_t i=0;
 	for(;i<RINGBUFFERSIZE;i++) 
 		{
-			(*rb).clickstate[i]=0;
-			(*rb).clickstate_free[i]=0;
+			(*rb).clickstate[i]=0;	
+		(*rb).clickstate_free[i]=0;
 		}
 	(*rb).clickpos=0;
 }
@@ -125,7 +125,7 @@ ISR(TIMER0_OVF_vect)
 		 etwa 0.0025 sekunden
 	*/
 	if (( tickscounter & (TICKS_A1) ) == TICKS_A1 ){
-		deque(QUEUE_A1);
+		//		deque(QUEUE_A1);
 	}
 	/* 
 		 etwa 0.0050 sekunden
@@ -160,14 +160,14 @@ ISR(TIMER0_OVF_vect)
 				break;
 			}
 		}
-		deque(QUEUE_A2);
+		//		deque(QUEUE_A2);
 	}
 
 	/* 
 		 etwa 0.01 sekunden
 	*/
 	if (( tickscounter & (TICKS_A3) ) == TICKS_A3 ){
-		deque(QUEUE_A3);
+		//		deque(QUEUE_A3);
 	}
 	/* 
 		 etwa 0.04 sekunden
@@ -179,11 +179,11 @@ ISR(TIMER0_OVF_vect)
 		*/
 		if ((!(PINB & _BV(PINB7))) == 1)   // Hauptschalter geht aus
 		{ // TODO Status merken?
-			add_queue(&poweroff);
+			//			add_queue(&poweroff);
 		}
 		else if ((PINB & _BV(PINB7))  == 0)   // Hauptschalter geht an
 		{
-			add_queue(&poweron);
+			//add_queue(&poweron);
 		}
 		/*
 			if (nachtmodus == on) 
@@ -195,38 +195,38 @@ ISR(TIMER0_OVF_vect)
 			  add_queue(&poweron);
 			}
 		*/
-		deque(QUEUE_A4);
+		//		deque(QUEUE_A4);
 	}
 
 	/* 
 		 etwa 0.125 sekunden
 	*/
 	if (( tickscounter & (TICKS_A5) ) == TICKS_A5 ){
-		deque(QUEUE_A5);
+		//		deque(QUEUE_A5);
 	}
 	/* 
 		 etwa 0.25 sekunden
 	*/
 	if (( tickscounter & (TICKS_A6) ) == TICKS_A6 ){
-		deque(QUEUE_A6);
+		//		deque(QUEUE_A6);
 	}
 	/* 
 		 etwa 0.5 sekunden
 	*/
 	if (( tickscounter & (TICKS_A7) ) == TICKS_A7 ){
-		deque(QUEUE_A7);
+		//		deque(QUEUE_A7);
 	}
 	/* 
 		 etwa 1 sekunde
 	*/
 	if (( tickscounter & (TICKS_A8) ) == TICKS_A8 ){
-		deque(QUEUE_A8);
+		//		deque(QUEUE_A8);
 	}
 	/* 
 		 etwa 5 sekunde - im moment nur die sequenzen
 	*/
 	if (( tickscounter & (TICKS_A9) ) == TICKS_A9 ){
-		deque(QUEUE_A9);
+		//		deque(QUEUE_A9);
 	}
 
 	/* 
