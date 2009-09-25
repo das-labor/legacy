@@ -32,19 +32,54 @@ struct t_state_vortrag vortrag_vortrag2 = { MAXDUNKEL , MAXDUNKEL , MAXDUNKEL , 
 
 struct t_state_vortrag freak_cur = { MAXHELL , MAXHELL , MAXHELL , MAXHELL , MACHDUNKEL,A_SW_ON }; // init sonst working
 
+
+struct t_queue_object poweroff = { QUEUE_A1, 
+																	 { BRIGHT_NO_CHANGE, BRIGHT_NO_CHANGE, BRIGHT_NO_CHANGE, BRIGHT_NO_CHANGE, BRIGHT_NO_CHANGE, BRIGHT_NO_CHANGE }, 
+																	 { A_SW_OFF, // kuechenlicht
+																		 A_SW_OFF, // beamer
+																		 A_SW_OFF, // licht vortrag
+																		 A_SW_OFF, // licht lounge
+																		 A_SW_OFF, // tischsteckdose
+																		 A_SW_OFF, // klo
+																		 A_SW_OFF, // hauptschuetz
+																		 A_SW_OFF, // frei
+																		 A_SW_OFF, // licht+serverschrank-schuetz
+																		 A_SW_OFF  // alle steckdosen (herd) schuetz
+																	 }
+};
+
+struct t_queue_object sleepmode = { QUEUE_A1, 
+																		{ BRIGHT_NO_CHANGE, BRIGHT_NO_CHANGE, BRIGHT_NO_CHANGE, BRIGHT_NO_CHANGE, BRIGHT_NO_CHANGE, BRIGHT_NO_CHANGE }, 
+																		{ A_SW_NOCHANGE, // kuechenlicht
+																			A_SW_OFF,      // beamer
+																			A_SW_NOCHANGE, // licht vortrag
+																			A_SW_NOCHANGE, // licht lounge
+																			A_SW_NOCHANGE, // tischsteckdose
+																			A_SW_NOCHANGE, // klo
+																			A_SW_OFF,      // hauptschuetz
+																			A_SW_NOCHANGE, // frei
+																			A_SW_OFF,      // licht+serverschrank-schuetz
+																			A_SW_NOCHANGE  // alle steckdosen (herd) schuetz
+																		}
+};
+
+struct t_queue_object poweron = { QUEUE_A1, 
+																	{ BRIGHT_NO_CHANGE, BRIGHT_NO_CHANGE, BRIGHT_NO_CHANGE, BRIGHT_NO_CHANGE, BRIGHT_NO_CHANGE, BRIGHT_NO_CHANGE }, 
+																	{ A_SW_NOCHANGE, // kuechenlicht
+																		A_SW_NOCHANGE, // beamer
+																		A_SW_NOCHANGE, // licht vortrag
+																		A_SW_NOCHANGE, // licht lounge
+																		A_SW_ON, // tischsteckdose
+																		A_SW_ON, // klo
+																		A_SW_ON, // hauptschuetz
+																		A_SW_NOCHANGE, // frei
+																		A_SW_ON, // licht+serverschrank-schuetz
+																		A_SW_ON  // alle steckdosen (herd) schuetz
+																	}
+};
+
 /*
-	switch-parameter-matrix
-	write/read/pin
-*/
-
-uint8_t helligkeitsstufen[] = { 1, 2 , 4 , 
-																8, 16 , 24, 32, 
-																48, 64 , 96, 128, 
-																192, 255 };
-
-
-/*
-	nehme drei fuer Ringbuffersize an ... das kann sich auch aendern!
+	XXX nehme drei fuer Ringbuffersize an ... das kann sich auch aendern!
 */
 
 
@@ -125,9 +160,8 @@ ISR(TIMER0_OVF_vect)
 				break;
 			}
 		}
+		deque(QUEUE_A2);
 	}
-	deque(QUEUE_A2);
-		
 
 	/* 
 		 etwa 0.01 sekunden
@@ -139,6 +173,28 @@ ISR(TIMER0_OVF_vect)
 		 etwa 0.04 sekunden
 	*/
 	if (( tickscounter & (TICKS_A4) ) == TICKS_A4 ){
+		/*
+			check ob der Hauptschalter umgelegt wurde 
+			muss ja nicht staendig passieren
+		*/
+		if ((!(PINB & _BV(PINB7))) == 1)   // Hauptschalter geht aus
+		{ // TODO Status merken?
+			add_queue(&poweroff);
+		}
+		else if ((PINB & _BV(PINB7))  == 0)   // Hauptschalter geht an
+		{
+			add_queue(&poweron);
+		}
+		/*
+			if (nachtmodus == on) 
+			{
+			  add_queue(&sleepmode);
+      }
+			else if (nachtmodus == off)
+			{
+			  add_queue(&poweron);
+			}
+		*/
 		deque(QUEUE_A4);
 	}
 
@@ -165,6 +221,12 @@ ISR(TIMER0_OVF_vect)
 	*/
 	if (( tickscounter & (TICKS_A8) ) == TICKS_A8 ){
 		deque(QUEUE_A8);
+	}
+	/* 
+		 etwa 5 sekunde - im moment nur die sequenzen
+	*/
+	if (( tickscounter & (TICKS_A9) ) == TICKS_A9 ){
+		deque(QUEUE_A9);
 	}
 
 	/* 
@@ -240,6 +302,11 @@ int main(void)
 								busdata.in_data[2] = TWIS_ReadNack();  // byte 3 lesen
 								busdata.write_data = HASNDATA;
 								TWIS_Stop();                // I2C stop
+								/*
+									die Anweisungen die ueber I2C kommen gehen an der queue vorbei
+									d.h. die queue bleibt erhalten wenn eine i2c nachricht rein kommt
+									XXX ... ist das gut oder schlecht?
+								*/
 								if (( busdata.in_data[0] >= (O_SW_FIRST)) && 
 										( busdata.in_data[0] <= (O_SW_LAST)))	{
 									switch_fkt(&(swp_matrix[busdata.in_data[0]]), &busdata);
