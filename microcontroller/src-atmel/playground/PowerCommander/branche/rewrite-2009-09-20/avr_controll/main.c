@@ -160,14 +160,14 @@ ISR(TIMER0_OVF_vect)
 				break;
 			}
 		}
-		//		deque(QUEUE_A2);
+		deque(QUEUE_A2);
 	}
 
 	/* 
 		 etwa 0.01 sekunden
 	*/
 	if (( tickscounter & (TICKS_A3) ) == TICKS_A3 ){
-		//		deque(QUEUE_A3);
+		deque(QUEUE_A3);
 	}
 	/* 
 		 etwa 0.04 sekunden
@@ -195,38 +195,38 @@ ISR(TIMER0_OVF_vect)
 			  add_queue(&poweron);
 			}
 		*/
-		//		deque(QUEUE_A4);
+		deque(QUEUE_A4);
 	}
 
 	/* 
 		 etwa 0.125 sekunden
 	*/
 	if (( tickscounter & (TICKS_A5) ) == TICKS_A5 ){
-		//		deque(QUEUE_A5);
+		deque(QUEUE_A5);
 	}
 	/* 
 		 etwa 0.25 sekunden
 	*/
 	if (( tickscounter & (TICKS_A6) ) == TICKS_A6 ){
-		//		deque(QUEUE_A6);
+		deque(QUEUE_A6);
 	}
 	/* 
 		 etwa 0.5 sekunden
 	*/
 	if (( tickscounter & (TICKS_A7) ) == TICKS_A7 ){
-		//		deque(QUEUE_A7);
+		deque(QUEUE_A7);
 	}
 	/* 
 		 etwa 1 sekunde
 	*/
 	if (( tickscounter & (TICKS_A8) ) == TICKS_A8 ){
-		//		deque(QUEUE_A8);
+		deque(QUEUE_A8);
 	}
 	/* 
 		 etwa 5 sekunde - im moment nur die sequenzen
 	*/
 	if (( tickscounter & (TICKS_A9) ) == TICKS_A9 ){
-		//		deque(QUEUE_A9);
+		deque(QUEUE_A9);
 	}
 
 	/* 
