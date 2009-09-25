@@ -202,7 +202,7 @@ ISR(TIMER0_OVF_vect)
 		 etwa 0.125 sekunden
 	*/
 	if (( tickscounter & (TICKS_A5) ) == TICKS_A5 ){
-		deque(QUEUE_A5);
+		//		deque(QUEUE_A5);
 	}
 	/* 
 		 etwa 0.25 sekunden
@@ -226,7 +226,7 @@ ISR(TIMER0_OVF_vect)
 		 etwa 5 sekunde - im moment nur die sequenzen
 	*/
 	if (( tickscounter & (TICKS_A9) ) == TICKS_A9 ){
-		deque(QUEUE_A9);
+		//		deque(QUEUE_A9);
 	}
 
 	/* 
