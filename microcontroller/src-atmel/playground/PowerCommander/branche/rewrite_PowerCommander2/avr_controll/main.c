@@ -82,6 +82,10 @@ int main(void)
 										pwm_fkt(&i2cslave);
 									}
 									break;
+								case C_VIRT:
+									{
+										virt_fkt(&i2cslave);
+									}
 								default:
 									break;
 								}

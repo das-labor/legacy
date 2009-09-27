@@ -35,6 +35,7 @@
 */
 #define C_SW  (0x00)
 #define C_PWM (0x01)
+#define C_VIRT (0x02)
 #define C_NDEF (0xFF)
 
 /*
@@ -57,9 +58,9 @@
 #define O_NDEF (0xFF)
 
 // switch lampe
-#define SWL_TAFEL       (O_SW0A)
-#define SWL_BEAMER      (O_SW0B)
-#define SWL_SCHRANK     (O_SW0C)
+#define SWL_TAFEL       (O_SW10)
+#define SWL_BEAMER      (O_SW11)
+#define SWL_SCHRANK     (O_SW12)
 #define SWL_FLIPPER     (O_SW00)
 #define SWL_LOUNGE      (O_SW03)
 #define SWL_KLO         (O_SW05)
@@ -88,6 +89,10 @@
 #define O_PWM04 (0x04)
 #define O_PWM05 (0x05)
 #define O_PWM_NDEF (0xFF)
+
+#define O_VIRT00 (0x00)
+
+#define VIRT_POWER (O_VIRT00)
 
 #define PWM_TAFEL    (O_PWM00)
 #define PWM_BEAMER   (O_PWM01)
