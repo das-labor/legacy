@@ -45,7 +45,6 @@ int main(void)
 	*/
 	TWIS_Init(I2CADRESSE, 100000);
 
-	sei();
 	/*
 		mainloop - die ist die kommunikation mit einem entferntem
 		host

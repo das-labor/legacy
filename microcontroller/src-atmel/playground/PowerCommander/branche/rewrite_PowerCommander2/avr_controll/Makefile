@@ -37,16 +37,16 @@ pc_init.c: pc_init.h
 
 main.c: twi_slave/twi_slave.h PowerCommander.h pc_init.h fkt.h 
 
-main.o: main.c
+main.o: main.c twi_slave/twi_slave.h PowerCommander.h pc_init.h fkt.h 
 	avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE) -std=c99 -o main.o -c main.c
 
 twi_slave/twi_slave.o: twi_slave/twi_slave.h PowerCommander.h
 	avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE) -std=c99 -o twi_slave/twi_slave.o -c twi_slave/twi_slave.c
 
-pc_init.o: pc_init.c
+pc_init.o: pc_init.c pc_init.h
 	avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE) -std=c99 -o pc_init.o -c pc_init.c
 
-fkt.o: fkt.c
+fkt.o: fkt.c fkt.h PowerCommander.h PowerCommander_matrix.h
 	avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE) -std=c99 -o fkt.o -c fkt.c
 
 
