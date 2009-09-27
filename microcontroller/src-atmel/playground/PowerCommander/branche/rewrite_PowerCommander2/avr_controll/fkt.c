@@ -8,7 +8,7 @@
 
 void switch_fkt(struct t_i2cproto* i2cproto)
 {
-	switch(i2cproto->fkt){
+	switch(i2cproto->fkt) {
 	case F_SW_OFF:
 		{
 			switch_on(sw_matrix[i2cproto->object].port, 
@@ -25,7 +25,7 @@ void switch_fkt(struct t_i2cproto* i2cproto)
 		{
 			switch_status(sw_matrix[i2cproto->object].port, 
 										sw_matrix[i2cproto->object].pin, 
-										&(i2cproto->out_data) );
+										&(i2cproto->out_data));
 			i2cproto->has_out_data = HASDATA;
 		}
 		break;
@@ -36,7 +36,7 @@ void switch_fkt(struct t_i2cproto* i2cproto)
 
 void pwm_fkt(struct t_i2cproto* i2cproto)
 {
-	switch(i2cproto->fkt){
+	switch(i2cproto->fkt) {
 	case F_PWM_SET:
 		{
 			pwm_set(pwm_matrix[i2cproto->object].port, i2cproto->in_data);

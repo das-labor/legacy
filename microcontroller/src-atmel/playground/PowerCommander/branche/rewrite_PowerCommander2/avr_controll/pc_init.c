@@ -9,15 +9,19 @@
 void init_relais()
 {
 	DDRC |= _BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0);      // relais ausgänge 1-4 küche licht, beamer, vortrag licht, lounge licht
-	PORTC &= ~(_BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0));  // aus damit
+	PORTC &= ~(_BV(PC3) | _BV(PC2));												// aus damit
 
-	DDRB |= _BV(PB5) | _BV(PB4) | _BV(PB0);                 // relais ausgänge 5-7 tischsteckdose lounge, geschaltete serverschrank steckdose,
-	PORTB &= ~(_BV(PB4) | _BV(PB0));             						// aus damit
-	PORTB |= _BV(PB5);	
+	DDRB |= _BV(PB7) | _BV(PB5) | _BV(PB4) | _BV(PB0);      // licht 4, relais ausgänge 5-7, tischsteckdose lounge, licht toilette
+	PORTB &= ~(_BV(PB4));             											// aus damit
+	PORTB |= _BV(PB5) | _BV(PB0) | _BV(PB7);
 
-	DDRD |= _BV(PD7) | _BV(PD1) | _BV(PD0);                 // relais ausgang 8, 230V 1-2
-	PORTD &= ~(_BV(PD7) | _BV(PD1) | _BV(PD0));             // aus
+	DDRD |= _BV(PD7) | _BV(PD4) | _BV(PD2) | _BV(PD1) | _BV(PD0);   	// relais ausgang 8, hauptschütz, licht 3, licht 2, licht 1
+	PORTD &= ~(_BV(PD7));																							// aus
+	PORTD |= _BV(PD2) | _BV(PD1) | _BV(PD0);
 
+
+	DDRB |= _BV(PB1) | _BV(PB2) | _BV(PB3);                 // Pins mit pwm als ausgänge
+	DDRD |= _BV(PD3) | _BV(PD5) | _BV(PD6);                 // Pins mit pwm als ausgänge
 }
 
 void init_modi()
@@ -31,21 +35,6 @@ void init_modi()
 		 Disable Analog to Digital converter (power save)
 	*/
 	ADCSRA = 0;
-
-	DDRD  &= ~(_BV(PD4) | _BV(PD2));	/* Pin PD2 und PD4 als Eingange für Taster blau und gelb */
-	PORTD |= _BV(PD4) | _BV(PD2);			/* Pull Ups setzen */
-
-	DDRB |= _BV(PB1) | _BV(PB2) | _BV(PB3);                 // Pins mit pwm als ausgänge
-	DDRD |= _BV(PD3) | _BV(PD5) | _BV(PD6);                 // Pins mit pwm als ausgänge
-
-	EICRA |= _BV(ISC00);	// Trigger Interrupt on any logical change on pin pd2
-	EIMSK |= _BV(INT0);								// Enable External Interrupt Request 0
-	
-	PCICR  |= _BV(PCIE2);							// Enable Pin Change Interrupt 2
-	PCMSK2 |= _BV(PCINT20);						// Enable PCI18 (pin PD4) as Pin Change Interrupt
-	
-	TIMSK0 |= _BV(TOIE0);							// Enable Timer0 Overflow Interrupt
-
 }
 
 void init_timer()
