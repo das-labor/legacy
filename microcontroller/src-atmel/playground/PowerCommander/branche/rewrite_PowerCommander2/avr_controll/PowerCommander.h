@@ -53,19 +53,14 @@
 #define O_SW10 (0x0A)
 #define O_SW11 (0x0B)
 #define O_SW12 (0x0C)
-#define O_OPTO00 (O_SW08)
-#define O_OPTO01 (O_SW09)
-#define O_OPTO02 (O_SW0A)
-#define O_OPTO03 (O_SW0B)
-#define O_OPTO04 (O_SW0C)
-#define O_OPTO05 (O_SW00)
+
 #define O_NDEF (0xFF)
 
 // switch lampe
-#define SWL_TAFEL       (O_OPTO02)
-#define SWL_BEAMER      (O_OPTO03)
-#define SWL_SCHRANK     (O_OPTO04)
-#define SWL_FLIPPER     (O_OPTO05)
+#define SWL_TAFEL       (O_SW0A)
+#define SWL_BEAMER      (O_SW0B)
+#define SWL_SCHRANK     (O_SW0C)
+#define SWL_FLIPPER     (O_SW00)
 #define SWL_LOUNGE      (O_SW03)
 #define SWL_KLO         (O_SW05)
 #define SWL_KUECHE      (O_SW00)
@@ -98,8 +93,9 @@
 #define PWM_BEAMER   (O_PWM01)
 #define PWM_SCHRANK  (O_PWM02)
 #define PWM_FLIPPER  (O_PWM03)
-#define PWM_FREE     (O_PWM04)
-#define PWM_LOUNGE   (O_PWM05)
+#define PWM_LOUNGE   (O_PWM04)
+#define PWM_KUECHE   (O_PWM05)
+
 
 // ports - addressen
 #define O_SW00_PORT (&(PORTC))
@@ -116,13 +112,6 @@
 #define O_SW0B_PORT (&(PORTB))
 #define O_SW0C_PORT (&(PORTD))
 
-#define O_PWM00_PORT (&(OCR0A))
-#define O_PWM01_PORT (&(OCR0B))
-#define O_PWM02_PORT (&(OCR1AL))
-#define O_PWM03_PORT (&(OCR1BL))
-#define O_PWM04_PORT (&(OCR2A))
-#define O_PWM05_PORT (&(OCR2B))
-
 // PINs - uin8_t
 #define O_SW00_PIN (PC3)
 #define O_SW01_PIN (PC2)
@@ -137,6 +126,13 @@
 #define O_SW0A_PIN (PD2)
 #define O_SW0B_PIN (PB7)
 #define O_SW0C_PIN (PD4)
+
+#define O_PWM00_PORT (&(OCR0A))
+#define O_PWM01_PORT (&(OCR0B))
+#define O_PWM02_PORT (&(OCR1AL))
+#define O_PWM03_PORT (&(OCR1BL))
+#define O_PWM04_PORT (&(OCR2A))
+#define O_PWM05_PORT (&(OCR2B))
 
 // Anordnen von Schaltern in einer Matrix
 // so, dass wird die mittels i++ durchgehen koennen
