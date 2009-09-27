@@ -4,10 +4,10 @@
 
 #include "PowerCommander.h"
 
-static struct t_switch_parameter{
+static struct t_switch_parameter {
 	volatile uint8_t *port;
 	uint8_t pin;
-}sw_matrix[]={
+} sw_matrix[] = {
 	{ O_SW00_PORT , O_SW00_PIN},
 	{ O_SW01_PORT , O_SW01_PIN},
 	{ O_SW02_PORT , O_SW02_PIN},
@@ -24,9 +24,9 @@ static struct t_switch_parameter{
 };
 
 // das gleiche fuer die PWMs
-static struct t_pwm_parameter{
+static struct t_pwm_parameter {
 	volatile uint8_t *port;
-}pwm_matrix[]={
+} pwm_matrix[] = {
 	{ O_PWM00_PORT },
 	{ O_PWM01_PORT },
 	{ O_PWM02_PORT },
