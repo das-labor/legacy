@@ -40,7 +40,7 @@ FALSE	= 0
 #MCU      = at90s8515
 
 CPUCLK = 16000000UL
-MCU = atmega644p
+MCU = atmega32
 
 TARGET = main
 CANADDR = 0x02
@@ -48,7 +48,7 @@ CANADDR = 0x02
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
 
-SRC = main.c xcan.c spi.c xlap.c twi_master/twi_master.c
+SRC = main.c xcan.c spi.c xlap.c twi_master/twi_master.c switch.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
