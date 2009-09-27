@@ -40,7 +40,7 @@ FALSE	= 0
 #MCU      = at90s8515
 
 CPUCLK = 16000000UL
-MCU = atmega32
+MCU = atmega644p
 
 TARGET = main
 CANADDR = 0x02
