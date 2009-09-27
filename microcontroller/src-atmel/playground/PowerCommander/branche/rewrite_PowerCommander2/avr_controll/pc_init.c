@@ -4,8 +4,9 @@
  */
 
 #include <avr/io.h>
+#include "pc_init.h"
 
-inline void init_relais()
+void init_relais()
 {
 	DDRC |= _BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0);      // relais ausgänge 1-4 küche licht, beamer, vortrag licht, lounge licht
 	PORTC &= ~(_BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0));  // aus damit
@@ -19,7 +20,7 @@ inline void init_relais()
 
 }
 
-inline void init_modi()
+void init_modi()
 {
 	/* 
 		 Disable Analog Comparator (power save)
@@ -47,7 +48,7 @@ inline void init_modi()
 
 }
 
-inline void init_timer()
+void init_timer()
 {
 	TCCR2A |= _BV(WGM21) | _BV(WGM20) | _BV(COM2A1) | _BV(COM2A0) | _BV(COM2B1) | _BV(COM2B0);	// FastPWM, Set OC2X on Compare Match, clear OC2X at BOTTOM, (inverting mode).
 	TCCR2B |= _BV(CS22) | _BV(CS21) | _BV(CS20);																								// clk/64
