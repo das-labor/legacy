@@ -5,7 +5,6 @@
 
 #include <avr/io.h>
 
-
 inline void init_relais()
 {
 	DDRC |= _BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0);      // relais ausgänge 1-4 küche licht, beamer, vortrag licht, lounge licht

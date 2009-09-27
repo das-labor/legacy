@@ -5,21 +5,44 @@ FUSE_H  = 0xc9
 AVRDUDE = avrdude -c usbasp -p $(DEVICE) # edit this line for your programmer
 
 CFLAGS  = -I. -DDEBUG_LEVEL=0
-OBJECTS =  main.c twi_slave/twi_slave.c 
+OBJECTS =  main.o twi_slave/twi_slave.o pc_init.o fkt.o
 
 COMPILE = avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE) -std=c99
 
+hex: main.hex
+
 help:
 	@echo "This Makefile has no default rule. Use one of the following:"
-	@echo "make hex ....... to build main.hex"
+	@echo "make hex ....... to build main.hex (default)"
 	@echo "make program ... to flash fuses and firmware"
 	@echo "make fuse ...... to flash the fuses"
 	@echo "make flash ..... to flash the firmware (use this on metaboard)"
 	@echo "make clean ..... to delete objects and hex file"
 
-hex: main.hex
-
 program: flash fuse
+
+fkt.h:
+
+PowerCommander_matrix.h:
+
+PowerCommander.h:
+
+pc_init.h:
+
+twi_slave/twi_slave.h:
+
+main.o: twi_slave/twi_slave.h PowerCommander.h pc_init.h fkt.h
+	avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE) -std=c99 -o main.o -c main.c
+
+twi_slave/twi_slave.o: twi_slave/twi_slave.h PowerCommander.h
+	avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE) -std=c99 -o twi_slave/twi_slave.o -c twi_slave/twi_slave.c
+
+pc_init.o: pc_init.h
+	avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE) -std=c99 -o pc_init.o -c pc_init.c
+
+fkt.o: fkt.h PowerCommander.h PowerCommander_matrix.h
+	avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE) -std=c99 -o fkt.o -c fkt.c
+
 
 # rule for programming fuse bits:
 fuse:
@@ -51,7 +74,7 @@ clean:
 	$(COMPILE) -S $< -o $@
 # file targets:
 
-main.elf: 	# usbdrv dependency only needed because we copy it
+main.elf: twi_slave/twi_slave.o main.o pc_init.o fkt.o	# usbdrv dependency only needed because we copy it
 	$(COMPILE) -o main.elf $(OBJECTS)
 
 main.hex: main.elf
