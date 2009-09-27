@@ -200,7 +200,7 @@ void message_fetch(){
 AVRX_SIGINT(SIG_INTERRUPT0)
 {
 	IntProlog();             // Switch to kernel stack/context
-	EIMSK &= ~_BV(INT0);
+	GICR &= ~_BV(INT0);
 	EndCritical();
 	unsigned char status = mcp_status();
 
@@ -224,7 +224,7 @@ AVRX_SIGINT(SIG_INTERRUPT0)
 			AvrXIntSetSemaphore(&tx_mutex); //Signal were ready for new messages
 		}
 	}
-	EIMSK |= _BV(INT0);
+	GICR |= _BV(INT0);
 	Epilog();                // Return to tasks
 }
 
@@ -337,8 +337,8 @@ void can_init(){
 #else
 	//this turns on INT0 on the Atmega
 	//MCUCR |=  (1<<ISC01);
-//	GICR |= (1<<INT0);
-	EIMSK |= _BV(INT0);
+	GICR |= (1<<INT0);
+//	EIMSK |= _BV(INT0);
 #endif
 
 }
@@ -358,8 +358,8 @@ uint16_t can_put(can_message_t * msg){
 	memcpy (&tx_fifo.buf[tx_fifo.in], msg, sizeof(can_message_t));
 	tx_fifo.in = t;
 	//AvrXSetSemaphore(&p->Producer);
-	EIMSK &= ~_BV(INT0);
+	GICR &= ~_BV(INT0);
 	mcp_bitmod(CANINTE, (1<<TX0IE), 0xff); //enable interrupt
-	EIMSK |= _BV(INT0);
+	GICR |= _BV(INT0);
 	return FIFO_OK;
 }
