@@ -23,7 +23,7 @@
 int main(void)
 {
 	uint8_t TWIS_ResonseType;
-	struct t_i2cproto i2cslave = { C_NDEF, O_NDEF, F_NDEF, HASNDATA, HASNDATA, 0 ,0 };
+	struct t_i2cproto i2cslave = { C_NDEF, O_NDEF, F_NDEF, HASNDATA, HASNDATA, D_NDEF ,D_NDEF };
 
 	init_modi();
 	init_relais();
