@@ -11,14 +11,14 @@ void switch_fkt(struct t_i2cproto* i2cproto)
 	switch(i2cproto->fkt) {
 	case F_SW_OFF:
 		{
-			switch_on(sw_matrix[i2cproto->object].port, 
-								sw_matrix[i2cproto->object].pin);
+			switch_off(sw_matrix[i2cproto->object].port, 
+								 sw_matrix[i2cproto->object].pin);
 		}
 		break;
 	case F_SW_ON:
 		{
-			switch_off(sw_matrix[i2cproto->object].port, 
-								 sw_matrix[i2cproto->object].pin);
+			switch_on(sw_matrix[i2cproto->object].port, 
+								sw_matrix[i2cproto->object].pin);
 		}
 		break;
 	case F_SW_STATUS:
@@ -94,12 +94,8 @@ void virt_power_on()
 	switch_on(sw_matrix[SWL_FLIPPER].port, sw_matrix[SWL_FLIPPER].pin);
 	switch_on(sw_matrix[SWL_LOUNGE].port, sw_matrix[SWL_LOUNGE].pin);
 	switch_on(sw_matrix[SWL_KLO].port, sw_matrix[SWL_KLO].pin);
-	switch_on(sw_matrix[SWL_KUECHE].port, sw_matrix[SWL_KUECHE].pin);
 	switch_on(sw_matrix[SWA_HS].port, sw_matrix[SWA_HS].pin);
-	switch_on(sw_matrix[SWA_BEAMER].port, sw_matrix[SWA_BEAMER].pin);
 	switch_on(sw_matrix[SWA_FREE].port, sw_matrix[SWA_FREE].pin);
-	switch_on(sw_matrix[SWA_LSSS].port, sw_matrix[SWA_LSSS].pin);
-	switch_on(sw_matrix[SWA_HERD].port, sw_matrix[SWA_HERD].pin);
 	switch_on(sw_matrix[SWA_STECKDOSEN].port, sw_matrix[SWA_STECKDOSEN].pin);
 }
 
@@ -115,8 +111,6 @@ void virt_power_off()
 	switch_off(sw_matrix[SWA_HS].port, sw_matrix[SWA_HS].pin);
 	switch_off(sw_matrix[SWA_BEAMER].port, sw_matrix[SWA_BEAMER].pin);
 	switch_off(sw_matrix[SWA_FREE].port, sw_matrix[SWA_FREE].pin);
-	switch_off(sw_matrix[SWA_LSSS].port, sw_matrix[SWA_LSSS].pin);
-	switch_off(sw_matrix[SWA_HERD].port, sw_matrix[SWA_HERD].pin);
 	switch_off(sw_matrix[SWA_STECKDOSEN].port, sw_matrix[SWA_STECKDOSEN].pin);
 }
 

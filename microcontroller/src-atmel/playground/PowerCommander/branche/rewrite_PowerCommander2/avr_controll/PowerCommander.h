@@ -58,10 +58,10 @@
 #define O_NDEF (0xFF)
 
 // switch lampe
-#define SWL_TAFEL       (O_SW10)
-#define SWL_BEAMER      (O_SW11)
-#define SWL_SCHRANK     (O_SW12)
-#define SWL_FLIPPER     (O_SW00)
+#define SWL_TAFEL       (O_SW08)
+#define SWL_BEAMER      (O_SW09)
+#define SWL_SCHRANK     (O_SW10)
+#define SWL_FLIPPER     (O_SW11)
 #define SWL_LOUNGE      (O_SW03)
 #define SWL_KLO         (O_SW05)
 #define SWL_KUECHE      (O_SW00)
@@ -73,10 +73,6 @@
 #define SWA_BEAMER      (O_SW01)
 // freier schalter
 #define SWA_FREE        (O_SW07)
-// licht+serverschrank-schuetz
-#define SWA_LSSS        (O_SW08)
-// alle steckdosen (herd) schuetz
-#define SWA_HERD        (O_SW09)
 // tischsteckdose
 #define SWA_STECKDOSEN  (O_SW04)
 
