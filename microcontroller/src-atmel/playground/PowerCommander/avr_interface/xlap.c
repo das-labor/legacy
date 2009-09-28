@@ -62,7 +62,7 @@ AVRX_GCC_TASKDEF(laptask, 50, 3)
                     TWIM_Write(rx_msg.data[3]);                                   
                     TWIM_Stop();
                     
-                    if (rx_msg.data[0] == 0x00 && rx_msg.data[1] == 0x02)
+                    if (rx_msg.data[0] == 0x00 && rx_msg.data[1] == 0x00 && rx_msg.data[2] == 0x02)
                     {
                         _delay_ms(10);
                         if (!TWIM_Start (SLAVE, TWIM_READ))
