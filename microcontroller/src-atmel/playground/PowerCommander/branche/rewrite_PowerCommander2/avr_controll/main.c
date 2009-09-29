@@ -49,65 +49,62 @@ int main(void)
 		mainloop - die ist die kommunikation mit einem entferntem
 		host
 	*/
-	while(1) 
+	while (1) 
+	{
+		if (TWIS_ResonseRequired(&TWIS_ResonseType))
 		{
-			if (TWIS_ResonseRequired(&TWIS_ResonseType))
+			switch (TWIS_ResonseType)
+			{
+				/*
+				** Slave is requests to read bytes from the master.
+				*/
+				case TWIS_ReadBytes:
 				{
-					switch (TWIS_ResonseType)
+					i2cslave.class   = TWIS_ReadAck();
+					i2cslave.object  = TWIS_ReadAck();
+					i2cslave.fkt     = TWIS_ReadAck();
+					i2cslave.in_data = TWIS_ReadNack();
+					i2cslave.has_out_data = HASNDATA;
+					TWIS_Stop();                // I2C stop
+					switch(i2cslave.class)
+					{
+						case C_SW:
 						{
-							/*
-							** Slave is requests to read bytes from the master.
-							*/
-						case TWIS_ReadBytes:
-							{
-								i2cslave.class   = TWIS_ReadAck();
-								i2cslave.object  = TWIS_ReadAck();
-								i2cslave.fkt     = TWIS_ReadAck();
-								i2cslave.in_data = TWIS_ReadNack();
-								i2cslave.has_out_data = HASNDATA;
-								TWIS_Stop();                // I2C stop
-								/*
-									die Anweisungen die ueber I2C kommen gehen an der queue vorbei
-									d.h. die queue bleibt erhalten wenn eine i2c nachricht rein kommt
-									XXX ... ist das gut oder schlecht?
-								*/
-								switch(i2cslave.class){
-								case C_SW:
-									{
-										switch_fkt(&i2cslave);
-									}
-									break;
-								case C_PWM:
-									{
-										pwm_fkt(&i2cslave);
-									}
-									break;
-								case C_VIRT:
-									{
-										virt_fkt(&i2cslave);
-									}
-								default:
-									break;
-								}
-							}
-							break;
-						case TWIS_WriteBytes:
-							{
-								if(i2cslave.has_out_data == HASDATA){
-									TWIS_Write(i2cslave.out_data);
-								} else {
-									TWIS_Write(D_NDEF);
-								}
-								i2cslave.has_out_data = HASNDATA;
-								i2cslave.out_data = D_NDEF;
-								TWIS_Stop();
-							}
-							break;
-						default:
-							break;
+							switch_fkt(&i2cslave);
 						}
+						break;
+						case C_PWM:
+						{
+							pwm_fkt(&i2cslave);
+						}
+						break;
+						case C_VIRT:
+						{
+							virt_fkt(&i2cslave);
+						}
+						default:
+						break;
+					}
 				}
+				break;
+				case TWIS_WriteBytes:
+				{
+					if (i2cslave.has_out_data == HASDATA)
+					{
+						TWIS_Write(i2cslave.out_data);
+					} else
+					{
+						TWIS_Write(D_NDEF);
+					}
+					i2cslave.has_out_data = HASNDATA;
+					i2cslave.out_data = D_NDEF;
+					TWIS_Stop();
+				}
+				break;
+				default:
+				break;
+			}
 		}
+	}
 }
-
 
