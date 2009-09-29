@@ -8,16 +8,14 @@
 
 void init_relais()
 {
-	DDRC |= _BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0);      // relais ausgänge 1-4 küche licht, beamer, vortrag licht, lounge licht
-	PORTC &= ~(_BV(PC3) | _BV(PC2));												// aus damit
+	DDRC |= _BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0);	// relais ausgänge 1-4 küche licht, beamer, vortrag licht, lounge licht
+	PORTC &= ~(_BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0));	// aus damit
 
-	DDRB |= _BV(PB7) | _BV(PB5) | _BV(PB4) | _BV(PB0);      // licht 4, relais ausgänge 5-7, tischsteckdose lounge, licht toilette
-	PORTB &= ~(_BV(PB4));             											// aus damit
-	PORTB |= _BV(PB5) | _BV(PB0) | _BV(PB7);
+	DDRB |= _BV(PB7) | _BV(PB5) | _BV(PB4) | _BV(PB0);	// licht 4, relais ausgänge 5-7, tischsteckdose lounge, licht toilette
+	PORTB &= ~(_BV(PB7) | _BV(PB5)| _BV(PB4) | _BV(PB0));	// aus damit
 
-	DDRD |= _BV(PD7) | _BV(PD4) | _BV(PD2) | _BV(PD1) | _BV(PD0);   	// relais ausgang 8, hauptschütz, licht 3, licht 2, licht 1
-	PORTD &= ~(_BV(PD7));																							// aus
-	PORTD |= _BV(PD2) | _BV(PD1) | _BV(PD0);
+	DDRD |= _BV(PD7) | _BV(PD4) | _BV(PD2) | _BV(PD1) | _BV(PD0);		// relais ausgang 8, hauptschütz, licht 3, licht 2, licht 1
+	PORTD &= ~(_BV(PD7) | _BV(PD4) | _BV(PD2) | _BV(PD1) | _BV(PD0));	// aus
 
 
 	DDRB |= _BV(PB1) | _BV(PB2) | _BV(PB3);                 // Pins mit pwm als ausgänge
