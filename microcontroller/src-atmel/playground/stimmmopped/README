@@ -1,8 +1,10 @@
 This is the scoure-code of the optical guitar and bass tuner called
 Stimmmoppet.
 
-Please see our wiki: (sorry it´s in german bur there are some nice pictures)
-http://www.das-labor.org/wiki/Stimmmopped
+Please see our wiki: 
+http://www.das-labor.org/wiki/Stimmmopped/en
+or
+http://www.das-labor.org/wiki/Stimmmopped (for the german version)
 
 In the folder eagle you find the layout and the shematics.
 I used the free version of eagle.
@@ -10,12 +12,12 @@ I used the free version of eagle.
 How it functions:  (TODO translate)
 ===================================
 
-Diese Stimmgerät funktioniert rein optisch, indem es die Saite in der richtigen Frequenz beleucht.
-Dazu leuchtet eine LED für ein 10tel der Sinus-Periode beim ersten Nulldurchlauf (0°) und die andere
-für ein 10tel der Sinus-Periode beim zweiten Nulldurchlauf (180°). Stimmt die Frequenz der Saite 
-nicht mit der der LEDs überein, so sind zwei stehende Striche auf der Saite zu erkennen.
-Je mehr die beiden Striche sich bewegen, desto weiter liegen die beiden Frequenzen auseinander 
-und so verstimmter ist die Saite.
+This tool assists you in tuning your string instrument to a given tone. It utilizes the 
+stroboscopic effect to give feedback about the adjustment of your instrument. The two LEDs on 
+the board blink with the frequency that the chosen tone has. When the string vibrates with the 
+correct frequency, two lines are projected at a fixed position on the string. If frequencies 
+don't match, the lines appear to be blinking or moving to the observer's eye. The moving or 
+blinking effect decreases with decreasing difference between the two frequencies.
 
 Compiling:
 ==========
