@@ -62,21 +62,26 @@ AVRX_GCC_TASKDEF(laptask, 50, 3)
                     TWIM_Write(rx_msg.data[3]);                                   
                     TWIM_Stop();
                     
-                    if (rx_msg.data[0] == 0x00 && rx_msg.data[1] == 0x00 && rx_msg.data[2] == 0x02)
+                    if (rx_msg.data[0] == 0x00 && rx_msg.data[1] == 0x00)
                     {
-                        _delay_ms(10);
-                        if (!TWIM_Start (SLAVE, TWIM_READ))
-                        {
-                            TWIM_Stop();
+                    	if (rx_msg.data[2] == 0x02)
+                    	{
+                        	_delay_ms(10);
+                        	if (!TWIM_Start (SLAVE, TWIM_READ))
+                        	{
+                           		TWIM_Stop();
+                        	}
+                        	else
+                        	{
+                            	tmp = TWIM_ReadNack();
+                        		TWIM_Stop();
+                        	}
                         }
                         else
-                        {
-                            tmp = TWIM_ReadNack();
-                            TWIM_Stop();
-                        }
+                        	tmp = rx_msg.data[2];
                         msg.port_dst = 0x01;
-                        msg.addr_dst = rx_msg.addr_src;
-                        msg.data[0] = rx_msg.data[tmp];
+                        msg.addr_dst = 0x23;
+                        msg.data[0] = tmp;
                         can_put(&msg);
                     }
                 }
