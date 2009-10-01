@@ -92,6 +92,7 @@ void virt_power_on()
 	switch_on(sw_matrix[SWL_BEAMER].port, sw_matrix[SWL_BEAMER].pin);
 	switch_on(sw_matrix[SWL_SCHRANK].port, sw_matrix[SWL_SCHRANK].pin);
 	switch_on(sw_matrix[SWL_FLIPPER].port, sw_matrix[SWL_FLIPPER].pin);
+	switch_on(sw_matrix[SWL_VORTRAG].port, sw_matrix[SWL_VORTRAG].pin);
 	switch_on(sw_matrix[SWL_LOUNGE].port, sw_matrix[SWL_LOUNGE].pin);
 	switch_on(sw_matrix[SWL_KLO].port, sw_matrix[SWL_KLO].pin);
 	switch_on(sw_matrix[SWA_HS].port, sw_matrix[SWA_HS].pin);
@@ -105,6 +106,7 @@ void virt_power_off()
 	switch_off(sw_matrix[SWL_BEAMER].port, sw_matrix[SWL_BEAMER].pin);
 	switch_off(sw_matrix[SWL_SCHRANK].port, sw_matrix[SWL_SCHRANK].pin);
 	switch_off(sw_matrix[SWL_FLIPPER].port, sw_matrix[SWL_FLIPPER].pin);
+	switch_off(sw_matrix[SWL_VORTRAG].port, sw_matrix[SWL_VORTRAG].pin);
 	switch_off(sw_matrix[SWL_LOUNGE].port, sw_matrix[SWL_LOUNGE].pin);
 	switch_off(sw_matrix[SWL_KLO].port, sw_matrix[SWL_KLO].pin);
 	switch_off(sw_matrix[SWL_KUECHE].port, sw_matrix[SWL_KUECHE].pin);
@@ -126,7 +128,7 @@ void switch_off(volatile uint8_t *port,uint8_t pin)
 
 void switch_status(volatile uint8_t *port,uint8_t pin, uint8_t *result)
 {
-	(*result) = (*port) >> _BV(pin) & 1;
+	(*result) = ((*port) >> _BV(pin)) & 1;
 }
 
 void pwm_set(volatile uint8_t *port,uint8_t value)

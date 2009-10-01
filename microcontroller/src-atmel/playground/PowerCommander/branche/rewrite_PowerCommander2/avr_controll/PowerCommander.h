@@ -62,6 +62,7 @@
 #define SWL_BEAMER      (O_SW09)
 #define SWL_SCHRANK     (O_SW10)
 #define SWL_FLIPPER     (O_SW11)
+#define SWL_VORTRAG			(O_SW02)
 #define SWL_LOUNGE      (O_SW03)
 #define SWL_KLO         (O_SW05)
 #define SWL_KUECHE      (O_SW00)
