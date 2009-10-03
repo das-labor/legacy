@@ -41,8 +41,7 @@ int usbOpenDevice(usb_dev_handle **device, int vendorID, int productID)
                 if(!handle)
 				{
                     errorCode = USBOPEN_ERR_ACCESS;
-                    if(warningsFp != NULL)
-                        fprintf(stderr, "Warning: cannot open VID=0x%04x PID=0x%04x: %s\n", dev->descriptor.idVendor, dev->descriptor.idProduct, usb_strerror());
+                    fprintf(stderr, "Warning: cannot open VID=0x%04x PID=0x%04x: %s\n", dev->descriptor.idVendor, dev->descriptor.idProduct, usb_strerror());
                     continue;
                 }
 				else break;

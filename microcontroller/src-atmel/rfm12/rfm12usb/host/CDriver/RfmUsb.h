@@ -32,17 +32,21 @@ typedef struct{
 
 /* @description Connects to a rfmusb device
  * returns != 0 on error */
-int rfmusb_Connect(usb_dev_handle **);
+int rfmusb_Connect(rfmusb_dev_handle **handle);
 
 /* @description Connects to a rfmusb device with the given vid, pid, vendor and product string
  * returns != 0 on error */
-int rfmusb_ConnectEx(usb_dev_handle **, int vid, int pid, char *vendor, char *product);
+int rfmusb_ConnectEx(rfmusb_dev_handle **handle, int vid, int pid);
+
+/* @description Closes a device
+ * returns < 0 on error */
+int rfmusb_Close (rfmusb_dev_handle *handle);
 
 /* @description Formats a given chunk of data accordingly and hands it over to the
  * transmitting function. */
-int rfmusb_TxPacket (rfmusb_dev_handle *udhandle, unsigned char type, unsigned char len, unsigned char *data);
+int rfmusb_TxPacket (rfmusb_dev_handle *handle, unsigned char type, unsigned char len, unsigned char *data);
 
 /* @description Receives a packet */
-int rfmusb_RxPacket (rfmusb_dev_handle *udhandle, rfmusb_packetbuffer * packetBuffer);
+int rfmusb_RxPacket (rfmusb_dev_handle *handle, rfmusb_packetbuffer * packetBuffer);
 
 
