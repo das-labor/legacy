@@ -40,7 +40,7 @@ FALSE	= 0
 #MCU      = at90s8515
 
 CPUCLK = 16000000UL
-MCU = atmega644p
+MCU = atmega32
 
 TARGET = main
 CANADDR = 0x02
@@ -60,7 +60,7 @@ SRC = main.c xcan.c spi.c xlap.c twi_master/twi_master.c
 
 #ASRC = ../avrx/serialio.S
 
-GCCLIB = /home/alex/labor/SVN-redesign/svn/microcontroller/src-atmel/lib/AvrX2.6f/avrx/avrx.a
+GCCLIB = ../../../../../lib/AvrX2.6f/avrx/avrx.a
 
 # Optimization level, can be [0, 1, 2, 3, s].
 # 0 = turn off optimization. s = optimize for size.
@@ -89,7 +89,7 @@ CSTANDARD = -std=gnu99
 CDEFS = -DF_CPU=$(CPUCLK) -DTICKRATE=$(TICKRATE) -DBAUDRATE=$(BAUDRATE)
 
 # Place -I options here
-CINCS = -I/home/alex/labor/SVN-redesign/svn/microcontroller/src-atmel/lib/AvrX2.6f/avrx/
+CINCS = -I ../../../../../lib/AvrX2.6f/avrx/
 
 
 # Compiler flags.
