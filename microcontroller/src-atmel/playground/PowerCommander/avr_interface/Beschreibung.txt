@@ -6,14 +6,18 @@ Eingänge:
 
 RCD Steckdosen
 RCD Licht
+RCD Server
 24V OK
+Hauptschaler
+2 * Taster Licht
+
 
 
 I2C Bus für Kommunikation mit Ausführungs Controller
 
-EIA232 für Kommunikation mit Display
+EIA232
 
-SPI: mcp 2510 CAN Bus für Labor anbindung
+SPI: mcp 2515 CAN Bus für Labor anbindung
 
 
 Fuses:
