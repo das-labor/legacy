@@ -28,12 +28,12 @@ int main(void)
 {
 	AvrXSetKernelStack(0);
 
-	MCUCR = 1<<SE;      	    // Enable "sleep" mode (low power when idle)
-	TCNT0 = TCNT0_INIT;		    // Load overflow counter of timer0
-	// TCCR0 = TMC8_CK256;		// Set Timer0 to CPUCLK/256
-	TCCR0B = TMC8_CK256;		  // set timer0 atmega644p
-	// TIMSK = 1<<TOIE0;		  // Enable interrupt flag
-	TIMSK0 = _BV(TOIE0);		  // Enable interrupt flag atmega644p
+	MCUCR |= _BV(SE);      	    // Enable "sleep" mode (low power when idle)
+	TCNT0 |= TCNT0_INIT;		    // Load overflow counter of timer0
+	 TCCR0 |= TMC8_CK256;		// Set Timer0 to CPUCLK/256
+//	TCCR0B |= TMC8_CK256;		  // set timer0 atmega644p
+	 TIMSK |= _BV(TOIE0);		  // Enable interrupt flag
+//	TIMSK0 |= _BV(TOIE0);		  // Enable interrupt flag atmega644p
 
 	DDRA |= _BV(PA7) | _BV(PA6); // Debug LED
 
