@@ -11,7 +11,7 @@
 #include "xcan.h"
 #include "xlap.h"
 #include "switch.h"
-
+#include "led.h"
 
 #include "twi_master/twi_master.h"
 
@@ -35,10 +35,9 @@ int main(void)
 	 TIMSK |= _BV(TOIE0);		  // Enable interrupt flag
 //	TIMSK0 |= _BV(TOIE0);		  // Enable interrupt flag atmega644p
 
-	DDRA |= _BV(PA7) | _BV(PA6); // Debug LED
+	DDRA |= _BV(PA7); // Debug LED
 
 //	_delay_ms(1000);
-
 
 /*
 ** Initiate TWI Master Interface with bitrate of 100000 Hz
@@ -56,10 +55,11 @@ int main(void)
 	AvrXRunTask(TCB(i2ccom_out));
 
 	//	AvrXRunTask(TCB(laptask));
-	//	AvrXRunTask(TCB(switchtask));
-
+	AvrXRunTask(TCB(switchtask));
+	AvrXRunTask(TCB(led));
+	
 	/* Needed for EEPROM access in monitor */
-	AvrXSetSemaphore(&EEPromMutex);
+	//AvrXSetSemaphore(&EEPromMutex);
 
 	Epilog();                   // Switch from AvrX Stack to first task
 	while(1);
