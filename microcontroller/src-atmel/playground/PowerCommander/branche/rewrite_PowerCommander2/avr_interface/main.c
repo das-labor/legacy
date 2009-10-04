@@ -56,6 +56,8 @@ int main(void)
 
 	//	AvrXRunTask(TCB(laptask));
 	AvrXRunTask(TCB(switchtask));
+	AvrXRunTask(TCB(switch_lounge));
+	AvrXRunTask(TCB(switch_vortrag));
 	AvrXRunTask(TCB(led));
 	
 	/* Needed for EEPROM access in monitor */
