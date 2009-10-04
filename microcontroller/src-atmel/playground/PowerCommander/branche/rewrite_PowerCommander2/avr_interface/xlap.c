@@ -23,13 +23,6 @@ uint8_t myaddr;
 
 static can_message_t msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
 
-/*
-	gesehen von interface aus
-*/
-MessageQueue        i2cQueue_out;    // The message queue
-MessageQueue        i2cQueue_in;    // The message queue
-MessageQueue        canQueue_out;    // The message queue
-MessageQueue        canQueue_in;    // The message queue
 TimerControlBlock   i2cResponseTimer;             // Declare the control blocks needed for timers
 
 
