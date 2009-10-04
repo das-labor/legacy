@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 2 -*- */
 #include <avr/io.h>
 #include <string.h>
+#include <util/delay.h>
 
 #include <avrx.h>
 #include <avrx-io.h>
@@ -13,8 +14,8 @@
 #include "xcan.h"
 #include "spi.h"
 
-#define spi_clear_ss() SPI_PORT |= (1<<SPI_PIN_SS)
-#define spi_set_ss() SPI_PORT &= ~(1<<SPI_PIN_SS)
+#define spi_clear_ss() SPI_PORT |= _BV(SPI_PIN_CS)
+#define spi_set_ss() SPI_PORT &= ~_BV(SPI_PIN_CS)
 
 
 // ******************** Global Variables ***************************************
@@ -112,10 +113,10 @@ void message_fetch()
 
 
 // *********************** Interrupt handler**********************************
-AVRX_SIGINT(SIG_INTERRUPT0)
+AVRX_SIGINT(MCP_INT_VEC)
 {
 	IntProlog(); // Switch to kernel stack/context
-	EIMSK &= ~_BV(INT0);
+	MCP_INT_REG &= ~_BV(MCP_INT_MASK);
 	EndCritical();
 	unsigned char status = mcp_status();
 
@@ -145,7 +146,7 @@ AVRX_SIGINT(SIG_INTERRUPT0)
 			AvrXIntSetSemaphore(&tx_mutex); //Signal were ready for new messages
 		}
 	}
-	EIMSK |= _BV(INT0);
+	MCP_INT_REG |= _BV(MCP_INT_MASK);
 	Epilog();// Return to tasks
 }
 
@@ -207,7 +208,7 @@ void can_setled(unsigned char led, unsigned char state)
 void can_init()
 {
 	//set Slave select high
-	SPI_PORT |= (1 << SPI_PIN_SS);
+	spi_set_ss();
 
 	mcp_reset();
 	
@@ -260,21 +261,8 @@ void can_init()
 	can_setfilter();
 	can_setmode(normal);
 
-#ifdef CLASSIC_ATMEL
-	/*
-		this turns on INT0 on the Atmel
-	*/
-	MCUCR |= _BV(ISC01);
-	GIMSK |= _BV(INT0);
-#else
-	/*
-		this turns on INT0 on the Atmega
-
-		MCUCR |=(1<<ISC01);
-		GICR |= (1<<INT0);
-	*/
-	EIMSK |= _BV(INT0);
-#endif
+	//this turns on INT_ on the Atmega
+	MCP_INT_REG |= _BV(MCP_INT_MASK);
 
 }
 
@@ -299,8 +287,8 @@ uint16_t can_put(can_message_t * msg)
 	memcpy (&tx_fifo.buf[tx_fifo.in], msg, sizeof(can_message_t));
 	tx_fifo.in = t;
 	//AvrXSetSemaphore(&p->Producer);
-	EIMSK &= ~_BV(INT0);
-	mcp_bitmod(CANINTE, (1<<TX0IE), 0xff); //enable interrupt
-	EIMSK |= _BV(INT0);
+	MCP_INT_REG &= ~_BV(MCP_INT_MASK);
+	mcp_bitmod(CANINTE, (1 << TX0IE), 0xff); //enable interrupt
+	MCP_INT_REG |= _BV(MCP_INT_MASK);
 	return FIFO_OK;
 }
