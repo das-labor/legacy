@@ -193,6 +193,17 @@ AVRX_GCC_TASKDEF(cancom_in, 50, 3)
 				case PORT_POWERCOMMANDER:
 				{
 					/*
+						unterbinden, dass ueber can ein paar sachen umgelegt werden koennen
+					*/
+					if( (rx_msg.data[0] == C_VIRT) &&	(rx_msg.data[1] == VIRT_POWER) || 
+							(rx_msg.data[0] == C_SW) && (rx_msg.data[1]==SWA_HS) ||
+							(rx_msg.data[0] == C_SW) && (rx_msg.data[1]==SWA_STECKDOSEN) ||
+							(rx_msg.data[0] == C_SW) && (rx_msg.data[1]==SWA_230Haupt) ||
+							(rx_msg.data[0] == C_SW) && (rx_msg.data[1]==SWA_KLO))
+						break;
+						
+							
+					/*
 						gehe davon aus, dass genau so viele daten die
 						via can reingekommen sind auch wieder auf i2c raus sollen
 									
