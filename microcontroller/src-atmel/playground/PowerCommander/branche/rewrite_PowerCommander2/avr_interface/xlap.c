@@ -99,7 +99,7 @@ AVRX_GCC_TASKDEF(i2ccom_in, 50, 3)
 
 		for (i = 0; i < CAN_OUTDATACOUNT; i++)
 		{
-			can_outdata.outdata[i]=((t_i2cMessage_in*)p)->indata[i];
+			can_outdata.outdata[i] = ((t_i2cMessage_in*)p)->indata[i];
 		}
 			
 		AvrXSendMessage(&canQueue_out, &can_outdata.mcb);
