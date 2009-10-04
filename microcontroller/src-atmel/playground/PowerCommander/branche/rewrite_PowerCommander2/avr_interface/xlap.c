@@ -50,6 +50,11 @@ void process_mgt_msg()
 
 
 /*
+	allg ablauf:
+	can_msg liegt an -> object in i2c_out_queue -> i2c_in_queue -> can_msg_out
+*/
+
+/*
 	ein task der nur daten vom i2c-slave abholt - es ist jetzt 
 	nicht eingebaut, dass unterschiedlich viele Daten abgeholt
 	werden, sondern es wird immer die gesamte Arraygroesse
@@ -157,9 +162,9 @@ AVRX_GCC_TASKDEF(i2ccom_out, 50, 3)
 				werden - aka via can wo anders hin gesendet werden oder so
 			*/
 			// if Daten von i2c abzuholen dann...
-			AvrXSendMessage(&i2cQueue_in, &i2c_indata.mcb);
-			AvrXWaitMessageAck(&i2c_indata.mcb);
-			// else eben nicht
+/* 			AvrXSendMessage(&i2cQueue_in, &i2c_indata.mcb); */
+/* 			AvrXWaitMessageAck(&i2c_indata.mcb); */
+/* 			// else eben nicht */
 				
 			// final dann selber fertig sagen
 			AvrXAckMessage(p);
