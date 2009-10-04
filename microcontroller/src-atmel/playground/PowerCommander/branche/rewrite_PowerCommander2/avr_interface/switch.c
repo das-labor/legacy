@@ -64,7 +64,7 @@ AVRX_GCC_TASKDEF(switch_vortrag, 60, 7)
 					AvrXWaitMessageAck(&i2c_outdata.mcb);
 
 					AvrXDelay(&switch_timer_vortrag, 1000);
-					stat_vortrag=1;
+					stat_vortrag=0;
 				}
 			if ((PINA & _BV(PA2)) && stat_vortrag == 0)
 				{
