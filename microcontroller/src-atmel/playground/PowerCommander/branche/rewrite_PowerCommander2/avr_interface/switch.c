@@ -9,8 +9,6 @@
 #include "twi_master/twi_master.h"
 #include "queue.h"
 
-#define PIN_SWITCH PIND
-#define BIT_SWITCH PD0
 
 TimerControlBlock switchtimer;
 

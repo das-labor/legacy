@@ -55,7 +55,7 @@ void process_mgt_msg()
 	werden, sondern es wird immer die gesamte Arraygroesse
 	aus edm i2c-bus gezogen
 */
-AVRX_GCC_TASKDEF(i2ccom_in,10,3)
+AVRX_GCC_TASKDEF(i2ccom_in, 50, 3)
 {
 	MessageControlBlock *p;
 	uint8_t i=0; // keep compiler happy
@@ -115,7 +115,7 @@ AVRX_GCC_TASKDEF(i2ccom_in,10,3)
 	dieser Task wird aktiv, wenn es in der i2cQueue_out
 	ein Datenobjekt gibt
 */
-AVRX_GCC_TASKDEF(i2ccom_out, 10, 3)
+AVRX_GCC_TASKDEF(i2ccom_out, 50, 3)
 {
 	MessageControlBlock *p;
 	uint8_t i=0; // keep compiler happy
@@ -173,24 +173,23 @@ AVRX_GCC_TASKDEF(i2ccom_out, 10, 3)
 	der can-nachrichten an den i2c 
 	XXX - hier ist der punkt wo man ntp einbauen sollte
 */
-AVRX_GCC_TASKDEF(cancom_in,50,3)
+AVRX_GCC_TASKDEF(cancom_in, 50, 3)
 {
 	static t_i2cMessage_out i2c_outdata;
 	uint8_t i=0;
 	while(1)
-		{
-			
+	{
 			can_get(); //get next canmessage in rx_msg
 			if(rx_msg.addr_dst == myaddr)
+			{
+				switch(rx_msg.port_dst)
 				{
-					switch(rx_msg.port_dst)
+					case PORT_MGT:
 						{
-						case PORT_MGT:
-							{
-								process_mgt_msg();
-							}
-							break;
-						case PORT_POWERCOMMANDER:
+							process_mgt_msg();
+						}
+						break;
+					case PORT_POWERCOMMANDER:
 							{
 								/*
 									gehe davon aus, dass genau so viele daten die
@@ -220,25 +219,27 @@ AVRX_GCC_TASKDEF(cancom_in,50,3)
 }
 
 
-AVRX_GCC_TASKDEF(cancom_out,50,3)
+AVRX_GCC_TASKDEF(cancom_out, 50, 3)
 {
 	MessageControlBlock *p;
-	uint8_t i=0; // keep compiler happy
-	while(1){
+	uint8_t i = 0; // keep compiler happy
+	while (1)
+	{
 		p = AvrXWaitMessage(&canQueue_out); 
-		for(i=0;i<CAN_OUTDATACOUNT;i++)
-			{
+		for (i = 0; i < CAN_OUTDATACOUNT; i++)
+		{
 				msg.data[i]=((t_canMessage_out*)p)->outdata[i];
-			}
-		msg.port_dst=PORT_POWERCOMMANDER;
-		msg.addr_dst=rx_msg.addr_src;
+		}
+		msg.port_dst = PORT_POWERCOMMANDER;
+		msg.addr_dst = rx_msg.addr_src;
 		can_put(&msg);
 		AvrXAckMessage(p);
 	}
 }
 	
 
-void xlap_init() {
+void xlap_init()
+{
 	myaddr = eeprom_read_byte(0x00);
 	msg.addr_src = myaddr;
 	spi_init();
