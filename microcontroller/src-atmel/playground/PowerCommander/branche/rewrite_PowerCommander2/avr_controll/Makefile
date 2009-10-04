@@ -4,7 +4,7 @@ FUSE_L  = 0x9f  # see below for fuse values for particular devices
 FUSE_H  = 0xc9
 AVRDUDE = avrdude -c usbasp -p $(DEVICE) # edit this line for your programmer
 
-CFLAGS  = -I. -DDEBUG_LEVEL=0
+CFLAGS  = -I. -DDEBUG_LEVEL=0 -I../include
 OBJECTS =  main.o twi_slave/twi_slave.o pc_init.o fkt.o
 
 COMPILE = avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE) -std=c99
