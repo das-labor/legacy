@@ -43,9 +43,9 @@ int main(void)
 ** Initiate TWI Master Interface with bitrate of 100000 Hz
 */
 	if (!TWIM_Init(100000))
-		{
-			while (1);
-		}
+	{
+		while (1);
+	}
 	//InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
 	xlap_init();
 
