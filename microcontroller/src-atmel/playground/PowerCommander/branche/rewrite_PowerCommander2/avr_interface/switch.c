@@ -21,7 +21,7 @@ AVRX_GCC_TASKDEF(switch_vortrag, 60, 7)
 	static t_i2cMessage_out i2c_outdata;
 	while(1)
 		{
-			if (!(PINA & _BV(PA2)) && stat_vortrag == 1)
+			if (PINA & _BV(PA2) && stat_vortrag == 1)
 				{
 					i2c_outdata.outdata[0]=C_SW;
 					i2c_outdata.outdata[1]=SWL_TAFEL;
@@ -121,7 +121,7 @@ AVRX_GCC_TASKDEF(switch_lounge, 60, 7)
 	static t_i2cMessage_out i2c_outdata;
 	while(1)
 		{
-			if (!(PINB & _BV(PB0)) && stat_lounge == 1)
+			if (PINB & _BV(PB0) && stat_lounge == 1)
 				{
 					i2c_outdata.outdata[0]=C_SW;
 					i2c_outdata.outdata[1]=SWL_LOUNGE;
