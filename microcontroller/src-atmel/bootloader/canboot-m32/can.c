@@ -5,6 +5,7 @@
 #include "config.h"
 #include "can.h"
 #include "mcp2515reg.h"
+#include "bootloader.h"
 
 can_message Rx_msg, Tx_msg;
 

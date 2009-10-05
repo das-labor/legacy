@@ -1,7 +1,7 @@
 #include <avr/boot.h>
 //#include "pgmspace.h"
 #include <avr/io.h>
-#include <avr/delay.h>
+#include <util/delay.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <inttypes.h>
@@ -9,7 +9,6 @@
 #include "config.h"
 #include "bootloader.h"
 
-#include "spi.h"
 #include "can.h"
 #include "util.h"
 
