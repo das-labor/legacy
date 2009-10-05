@@ -1,5 +1,5 @@
 PRG            = bootloader
-OBJ            = bootloader.o util.o can.o
+OBJ            = bootloader.o util.o
 MCU            = atmega644
 OPTIMIZE       = -Os -fshort-enums
 SIZE = avr-size
@@ -30,7 +30,7 @@ CC             = avr-gcc
 
 # Override is only needed by avr-lib build system.
 
-override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU) $(DEFS) 
+override CFLAGS        = -Wall $(OPTIMIZE) -mmcu=$(MCU) $(DEFS) 
 override LDFLAGS       = -Wl,-Map,$(PRG).map,--section-start=.text=$(BOOTLOADER_START)
 
 OBJCOPY        = avr-objcopy
