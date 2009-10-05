@@ -5,8 +5,8 @@
 #include <avr/pgmspace.h>
 #include <inttypes.h>
 
-#include "config.h"
-#include "bootloader.h"
+//#include "config.h"
+//#include "bootloader.h"
 
 #include "can.h"
 #include "util.h"
@@ -74,7 +74,7 @@ int main (void)
 	
 	uint16_t Address;
 	uint16_t Size;
-	unsigned char x;
+
 	
 	cli();
 	
@@ -98,22 +98,23 @@ int main (void)
 	can_transmit();
 	
 	unsigned char count=20, toggle=0x1C;
-	while (count--)
-	{
-//		mcp_write(BFPCTRL, toggle);
-		toggle ^= 0x10;
+	do{
+	
+	  //		mcp_write(BFPCTRL, toggle);
+	  //	toggle ^= 0x10;
 		_delay_ms(100);
 
 		if (can_get_nb())
 			goto sdo_server;
-	}
+		count--;
+	}while (count);
 
 	start_app:
 	asm volatile("jmp 0");
 
 	sdo_server:
 
-	while (1)
+	for(;;)
 	{
 		if (Rx_msg.port_dst == PORT_SDO_CMD)
 		{
@@ -126,7 +127,7 @@ int main (void)
 			
 			if (msg->cmd == SDO_CMD_READ)
 			{
-				switch (msg->index)
+			  switch (msg->index)
 				{
 					case 0xFF00:	//device information
 						my_memcpy_P(sizeof(Device_info_msg), Tx_msg.data, Device_info_msg);
@@ -138,10 +139,12 @@ int main (void)
 						break;
 					case 0xFF02:
 						goto start_app;
-					default:
-						Tx_msg.dlc = 1;
-						Tx_msg.data[0] = SDO_CMD_ERROR_INDEX;
-						break;
+				default:
+				  {
+				    Tx_msg.dlc = 1;
+				    Tx_msg.data[0] = SDO_CMD_ERROR_INDEX;
+				    
+				  }
 				}
 				can_transmit();
 			}
@@ -169,7 +172,7 @@ int main (void)
 
 	programm:
 
-	while (1) {
+	for(;;) {
 		while (!can_get_nb());
 		if (Rx_msg.port_dst != PORT_SDO_DATA)
 		{
@@ -178,9 +181,10 @@ int main (void)
 		}
 		else
 		{
-			for (x = 0; x < 4; x++)
+		  unsigned char i;
+			for (i=0; i < 4; i++)
 			{
-				boot_page_fill (Address,((sdo_data_message*)Rx_msg.data)->data[x]);
+				boot_page_fill (Address,((sdo_data_message*)Rx_msg.data)->data[i]);
 				Address += 2;
 			}
 			

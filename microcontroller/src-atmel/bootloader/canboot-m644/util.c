@@ -1,7 +1,4 @@
-#include <avr/pgmspace.h>
-#include <avr/boot.h>
-
-#include "util.h"
+#include <avr/pgmspace.h> 
 
 void my_memcpy_P (unsigned char size, void * dest, PGM_VOID_P source){
 		asm volatile(
