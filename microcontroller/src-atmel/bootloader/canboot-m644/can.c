@@ -65,8 +65,8 @@ void mcp_write_b(PGM_P stream)
 	}
 }
 
-unsigned char mcp_txreq_str[]  ={
-	3, WRITE, TXB0CTRL, (1<<TXREQ), 0, 0
+unsigned char mcp_txreq_str[]  = {
+	3, WRITE, TXB0CTRL, _BV(TXREQ), 0, 0
 };
 
 //load a message to mcp2515 and start transmission
@@ -88,8 +88,8 @@ void can_transmit()
 	mcp_write_b(mcp_txreq_str);
 }
 
-unsigned char mcp_canintf_str[]  ={
-	3, BIT_MODIFY, CANINTF, (1<<RX0IF), 0, 0
+unsigned char mcp_canintf_str[]  = {
+	3, BIT_MODIFY, CANINTF, _BV(RX0IF), 0, 0
 };
 
 //get a message from mcp2515 and disable RX interrupt Condition
