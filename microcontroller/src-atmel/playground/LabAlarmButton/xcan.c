@@ -167,7 +167,7 @@ void message_load(can_message_t * tx_msg){
 	spi_set_ss();
 	spi_data(WRITE);
 	spi_data(TXB0CTRL);
-	spi_data( (1<<TXREQ) );
+	spi_data(_BV(TXREQ));
 	spi_clear_ss();
 }
 
