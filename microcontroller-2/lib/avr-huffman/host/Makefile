@@ -33,8 +33,9 @@ clean:
 %.hfm: %
 	./huffman-encode $<
 
-#%.S: %
-#	./bin2avrS $<
+%.png: %.dot
+	dot -Tpng $< -o $@
+
 
 DEPS := $(wildcard $(DEP_DIR)*.d)
 
