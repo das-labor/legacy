@@ -38,19 +38,22 @@ unsigned char Station_id __attribute__ ((section (".eeprom"))) = 0x34;
 #define SDO_TYPE_STRING_RW 0x81
 #define SDO_TYPE_STRING_WO 0x82
 
-typedef struct{
+typedef struct
+{
 	unsigned char cmd;
 	unsigned int index;
 	unsigned int size;
 	unsigned int address;
-}sdo_message;
+} sdo_message;
 
-typedef struct{
+typedef struct
+{
 	unsigned int data[4];
-}sdo_data_message;
+} sdo_data_message;
 
 
-unsigned char Device_info_msg[] __attribute__ ((section (".progdata"))) ={
+unsigned char Device_info_msg[] __attribute__ ((section (".progdata"))) =
+{
 	SDO_CMD_REPLY,
 	SDO_TYPE_UINT32_RO,
 	(unsigned char)SPM_PAGESIZE,
@@ -59,20 +62,14 @@ unsigned char Device_info_msg[] __attribute__ ((section (".progdata"))) ={
 	0
 };
 
-unsigned char Flash_info_msg[] __attribute__ ((section (".progdata"))) ={
+unsigned char Flash_info_msg[] __attribute__ ((section (".progdata"))) =
+{
 	SDO_CMD_REPLY,
 	SDO_TYPE_STRING_WO,
 	(unsigned char)((unsigned char)FLASHEND+1),
 	((unsigned int)FLASHEND+1)>>8
 };
 
-
-static inline void delay_100ms(){
-	unsigned int x;
-	for(x=0;x<65535;x++){
-		asm volatile("nop");
-	}
-}
 
 unsigned char Station_id;
 
@@ -109,7 +106,7 @@ int bootloader(void){
 	while(count--){
 		mcp_write(BFPCTRL, toggle);
 		toggle ^= 0x10;
-		delay_100ms();
+		_delay_ms(100);
 		
 		if(can_get_nb()){
 			goto sdo_server;

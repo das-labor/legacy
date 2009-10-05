@@ -5,6 +5,7 @@
 #include "config.h"
 #include "can.h"
 #include "mcp2515reg.h"
+#include "bootloader.h"
 
 can_message Rx_msg, Tx_msg;
 
@@ -159,6 +160,7 @@ unsigned char mcp_config_str1[] __attribute__ ((section (".progdata"))) = {
 		0x05,			//CNF3
 		0xf1,			//CNF2
 		0x40 | CNF1_T,		//CNF1
+	2, RXB0CTRL,(0<<RXM1) | (0<<RXM0),
 	9, RXF0SIDH,
 		(FLT_PORT_SRC << 2) | (FLT_PORT_DST1 >> 4 ),
 		((FLT_PORT_DST1 & 0x0C) << 3) | (1<<EXIDE) | (FLT_PORT_DST1 & 0x03),
@@ -173,7 +175,6 @@ unsigned char mcp_config_str1[] __attribute__ ((section (".progdata"))) = {
 		((MSK_PORT_DST & 0x0C) << 3) | (MSK_PORT_DST & 0x03),
 		MSK_ADDR_SRC,
 		MSK_ADDR_DST,
-	2, RXB0CTRL,(0<<RXM1) | (0<<RXM0),
 	0
 };
 	
