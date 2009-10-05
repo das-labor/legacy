@@ -1,7 +1,7 @@
 
 #ifndef __C64__
 #include <avr/io.h>
-#include <avr/signal.h>
+#include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #define asm asm volatile
 #endif
@@ -9,9 +9,6 @@
 
 #include "config.h"
 #include "can.h"
-#include "spi.h"
-
-//#include "mcp2515.inc"
 
 //Registers
 #define RXF0SIDH 0x00
@@ -150,7 +147,7 @@ inline static void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned ch
 
 
 
-unsigned char mcp_txreq_str[] __attribute__ ((section (".progdata"))) ={
+unsigned char mcp_txreq_str[] ={
 	2, TXB0CTRL, (1<<TXREQ), 0, 0
 };
 
@@ -173,14 +170,6 @@ void can_transmit(){
 	spi_clear_ss();
 	
 	mcp_write_b(mcp_txreq_str);
-	
-	/*
-	spi_set_ss();
-	spi_data(WRITE);
-	spi_data(TXB0CTRL);
-	spi_data( (1<<TXREQ) );
-	spi_clear_ss();
-	*/
 }
 
 
@@ -323,14 +312,12 @@ static inline void spi_init(){
 #endif 
 
 
-unsigned char mcp_config_str1[] __attribute__ ((section (".progdata"))) ={
+unsigned char mcp_config_str1[] ={
 	2, BFPCTRL, 0x0C,		//RXBF Pins to Output
 	4, CNF3,
 		0x05,			//CNF3
 		0xf1,			//CNF2
 		0x40 | CNF1_T,		//CNF1
-		
-	2, RXB0CTRL,(0<<RXM1) | (0<<RXM0),
 	9, RXF0SIDH,
 		(FLT_PORT_SRC << 2) | (FLT_PORT_DST1 >> 4 ),
 		((FLT_PORT_DST1 & 0x0C) << 3) | (1<<EXIDE) | (FLT_PORT_DST1 & 0x03),
@@ -345,11 +332,12 @@ unsigned char mcp_config_str1[] __attribute__ ((section (".progdata"))) ={
 		((MSK_PORT_DST & 0x0C) << 3) | (MSK_PORT_DST & 0x03),
 		MSK_ADDR_SRC,
 		MSK_ADDR_DST,
+	2, RXB0CTRL,(0<<RXM1) | (0<<RXM0),
 	0
 };
 	
 	
-unsigned char mcp_config_str2[] __attribute__ ((section (".progdata"))) ={	
+unsigned char mcp_config_str2[] ={	
 	2, CANCTRL, 0,
 	2, CANINTE, (1<<RX0IE),
 	0
@@ -367,7 +355,7 @@ void can_init(){
 	mcp_write(RXF0EID0, tmp );
 	mcp_write(RXF1EID0, tmp );
 
-	mcp_write_b(mcp_config_str2);	
+	mcp_write_b(mcp_config_str2);
 }
 
 
