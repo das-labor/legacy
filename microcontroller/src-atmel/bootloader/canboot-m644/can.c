@@ -76,8 +76,8 @@ void can_transmit()
 	spi_data(WRITE);
 	spi_data(TXB0SIDH);
 
-	spi_data(((unsigned char)(Tx_msg.port_src << 2)) | (Tx_msg.port_dst >> 4 ));
-	spi_data((unsigned char)((Tx_msg.port_dst & 0x0C) << 3) | (1<<EXIDE) | (Tx_msg.port_dst & 0x03) );
+	spi_data(((unsigned char)(Tx_msg.port_src << 2)) | (Tx_msg.port_dst >> 4));
+	spi_data((unsigned char)((Tx_msg.port_dst & 0x0C) << 3) | (1<<EXIDE) | (Tx_msg.port_dst & 0x03));
 	spi_data(Tx_msg.addr_src);
 	spi_data(Tx_msg.addr_dst);
 	spi_data(Tx_msg.dlc);
@@ -105,11 +105,10 @@ static inline void message_fetch()
 	Rx_msg.port_src = tmp1 >> 2;
 	tmp2 = spi_data(0);
 	tmp3 = (unsigned char)((unsigned char)(tmp2 >> 3) & 0x0C);
-	Rx_msg.port_dst = ((unsigned char)(tmp1 <<4 ) & 0x30) | tmp3 | (unsigned char)(tmp2 & 0x03);
-
+	Rx_msg.port_dst = ((unsigned char)(tmp1 << 4 ) & 0x30) | tmp3 | (unsigned char)(tmp2 & 0x03);
 	Rx_msg.addr_src = spi_data(0);
 	Rx_msg.addr_dst = spi_data(0);
-	Rx_msg.dlc = spi_data(0) & 0x0F;	
+	Rx_msg.dlc = spi_data(0) & 0x0F;
 	for (x = 0; x < Rx_msg.dlc; x++)
 		Rx_msg.data[x] = spi_data(0);
 	spi_clear_ss();
@@ -146,7 +145,8 @@ static inline void message_fetch()
 #else
 #error Can Baudrate is only defined for 8, 16 and 20 MHz
 #endif 
-unsigned char mcp_config_str1[] ={
+unsigned char mcp_config_str1[] =
+{
 	3, WRITE, BFPCTRL, 0x0C,		//RXBF Pins to Output
 	6, WRITE, CNF3,
 		0x05,			//CNF3
@@ -155,11 +155,11 @@ unsigned char mcp_config_str1[] ={
 		(1<<RX0IE),
 	10, WRITE, RXF0SIDH,
 		(FLT_PORT_SRC << 2) | (FLT_PORT_DST1 >> 4 ),
-		((FLT_PORT_DST1 & 0x0C) << 3) | (1<<EXIDE) | (FLT_PORT_DST1 & 0x03),
+		((FLT_PORT_DST1 & 0x0C) << 3) | (1 << EXIDE) | (FLT_PORT_DST1 & 0x03),
 		FLT_ADDR_SRC,
 		0x35,
 		(FLT_PORT_SRC << 2) | (FLT_PORT_DST2 >> 4 ),
-		((FLT_PORT_DST2 & 0x0C) << 3) | (1<<EXIDE) | (FLT_PORT_DST2 & 0x03),
+		((FLT_PORT_DST2 & 0x0C) << 3) | (1 << EXIDE) | (FLT_PORT_DST2 & 0x03),
 		FLT_ADDR_SRC,
 		0x35,
 	6, WRITE, RXM0SIDH,
@@ -167,7 +167,7 @@ unsigned char mcp_config_str1[] ={
 		((MSK_PORT_DST & 0x0C) << 3) | (MSK_PORT_DST & 0x03),
 		MSK_ADDR_SRC,
 		MSK_ADDR_DST,
-	3, WRITE, RXB0CTRL, (0<<RXM1) | (0<<RXM0),
+	3, WRITE, RXB0CTRL, (0 << RXM1) | (0 << RXM0),
 	3, WRITE, CANCTRL, 0,
 	0
 };
