@@ -63,7 +63,7 @@ AVRX_GCC_TASKDEF(switch_vortrag, 60, 7)
 					AvrXSendMessage(&i2cQueue_out, &i2c_outdata.mcb);
 					AvrXWaitMessageAck(&i2c_outdata.mcb);
 
-					AvrXDelay(&switch_timer_vortrag, 1000);
+					AvrXDelay(&switch_timer_vortrag, 3000);
 					stat_vortrag=0;
 				}
 			if ((!(PINA & _BV(PA2))) && stat_vortrag == 0)
@@ -108,9 +108,10 @@ AVRX_GCC_TASKDEF(switch_vortrag, 60, 7)
 					AvrXSendMessage(&i2cQueue_out, &i2c_outdata.mcb);
 					AvrXWaitMessageAck(&i2c_outdata.mcb);
 
-					AvrXDelay(&switch_timer_vortrag, 1000);
+					AvrXDelay(&switch_timer_vortrag, 3000);
 					stat_vortrag=1;
 				}
+				AvrXDelay(&switch_timer_vortrag, 1);
 		}
 
 }
@@ -121,7 +122,7 @@ AVRX_GCC_TASKDEF(switch_lounge, 60, 7)
 	static t_i2cMessage_out i2c_outdata;
 	while(1)
 		{
-			if (PINB & _BV(PB0) && stat_lounge == 1)
+			if ((!(PINB & _BV(PB0))) && stat_lounge == 1)
 				{
 					i2c_outdata.outdata[0]=C_SW;
 					i2c_outdata.outdata[1]=SWL_LOUNGE;
@@ -131,10 +132,10 @@ AVRX_GCC_TASKDEF(switch_lounge, 60, 7)
 					AvrXSendMessage(&i2cQueue_out, &i2c_outdata.mcb);
 					AvrXWaitMessageAck(&i2c_outdata.mcb);
 
-					AvrXDelay(&switch_timer_lounge, 1000);
+					AvrXDelay(&switch_timer_lounge, 3000);
 					stat_lounge=0;
 				}
-			if ((PINB & _BV(PB0)) && stat_lounge == 0)
+			if ((!(PINB & _BV(PB0))) && stat_lounge == 0)
 				{
 					i2c_outdata.outdata[0]=C_SW;
 					i2c_outdata.outdata[1]=SWL_LOUNGE;
@@ -144,10 +145,11 @@ AVRX_GCC_TASKDEF(switch_lounge, 60, 7)
 					AvrXSendMessage(&i2cQueue_out, &i2c_outdata.mcb);
 					AvrXWaitMessageAck(&i2c_outdata.mcb);
 
-					AvrXDelay(&switch_timer_lounge, 1000);
+					AvrXDelay(&switch_timer_lounge, 3000);
 					
 					stat_lounge=1;
 				}
+				AvrXDelay(&switch_timer_lounge, 1);
 		}
 	
 }
@@ -191,6 +193,6 @@ AVRX_GCC_TASKDEF(switchtask, 60, 7)
 					AvrXDelay(&switchtimer, 1000);
 
 				}
-
+			AvrXDelay(&switchtimer, 1);
   	}
 }
