@@ -10,7 +10,7 @@
 #include "xcan.h"
 #include "xlap.h"
 #include "switch.h"
-#include "licht_schalter.h"
+//#include "licht_schalter.h"
 
 //AVRX_GCC_TASK(Monitor, 20, 0);          // External Task: Debug Monitor
 
@@ -26,7 +26,7 @@ AVRX_SIGINT(SIG_OVERFLOW0)
     Epilog();                   // Restore context of next running task
 };
 
-ISR(TIMER0_OVF_vect)
+ISR(TIMER2_OVF_vect)
 {
 	/*
 		andere interrupts aus!
@@ -38,6 +38,8 @@ ISR(TIMER0_OVF_vect)
 		 getan hat, dann wurde er los gelassen. Wir koennen den 
 		 Counter fuer die eingaben auf null setzen
 	*/
+	if (!(PINB & _BV(PB1)))
+			counter++;
 	if ((timing_counter.tickscounter & 0x001F) == 0) { // alle 32 ticks ... 0.032 sekunden
 		if (timing_counter.tastercounter_vortrag != 0) {
 			if (timing_counter.tastercounter_vortrag == timing_counter.tastercounter_vortrag_last) {
@@ -120,11 +122,11 @@ int main(void)
     //AvrXRunTask(TCB(Monitor));
 	AvrXRunTask(TCB(laptask));
 	AvrXRunTask(TCB(switchtask));
-	AvrXRunTask(TCB(licht_task));
+//	AvrXRunTask(TCB(licht_task));
 	
 
     /* Needed for EEPROM access in monitor */
-	AvrXSetSemaphore(&EEPromMutex);
+//	AvrXSetSemaphore(&EEPromMutex);
 	
 
     Epilog();                   // Switch from AvrX Stack to first task
