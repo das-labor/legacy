@@ -36,7 +36,8 @@ int main(void)
 //	TIMSK0 |= _BV(TOIE0);		  // Enable interrupt flag atmega644p
 
 	DDRA |= _BV(PA7); // Debug LED
-
+	PORTA |= _BV(PA2); // Pullup Taster vortrag
+	PORTB |= _BV(PB0); // Pullup Taster lounge
 //	_delay_ms(1000);
 
 /*
