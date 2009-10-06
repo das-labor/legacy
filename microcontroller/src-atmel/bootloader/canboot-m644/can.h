@@ -23,17 +23,13 @@
  * Types
  */
 
-typedef unsigned char can_addr;
-typedef unsigned char can_port;
-
 typedef struct
 {
-	can_addr      addr_src;
-	can_addr      addr_dst;
-	can_port      port_src;
-	can_port      port_dst;
-	unsigned char dlc;
-	unsigned char data[8];
+	uint8_t      addr;
+	uint8_t      port_src;
+	uint8_t      port_dst;
+	uint8_t dlc;
+	uint8_t data[7];
 } can_message;
 
 
@@ -64,7 +60,7 @@ typedef struct
 can_message Rx_msg, Tx_msg;
 
 /* MCP */
-//unsigned char mcp_read(unsigned char reg);
+//uint8_t mcp_read(uint8_t reg);
 
 
 // Functions
@@ -73,7 +69,7 @@ can_message Rx_msg, Tx_msg;
 #define spi_set_ss() SPI_PORT &= ~_BV(SPI_PIN_SS)
 
 
-unsigned char spi_data(unsigned char c)
+uint8_t spi_data(uint8_t c)
 {
 	SPDR = c;
 	while (!(SPSR & _BV(SPIF)));
@@ -83,7 +79,7 @@ unsigned char spi_data(unsigned char c)
 
 void mcp_write_b(PGM_P stream)
 {
-	unsigned char len;
+	uint8_t len;
 	
 	while ((len = pgm_read_byte(stream++)))
 	{
@@ -97,7 +93,7 @@ void mcp_write_b(PGM_P stream)
 	}
 }
 
-unsigned char mcp_txreq_str[]  ={
+uint8_t mcp_txreq_str[]  ={
 	3, WRITE, TXB0CTRL, (1<<TXREQ), 0, 0
 };
 
@@ -108,10 +104,10 @@ void can_transmit()
 	spi_data(WRITE);
 	spi_data(TXB0SIDH);
 
-	spi_data(((unsigned char)(Tx_msg.port_src << 2)) | (Tx_msg.port_dst >> 4 ));
-	spi_data((unsigned char)((Tx_msg.port_dst & 0x0C) << 3) | (1<<EXIDE) | (Tx_msg.port_dst & 0x03) );
-	spi_data(Tx_msg.addr_src);
-	spi_data(Tx_msg.addr_dst);
+	spi_data(((uint8_t)(Tx_msg.port_src << 2)) | (Tx_msg.port_dst >> 4));
+	spi_data((uint8_t)((Tx_msg.port_dst & 0x0C) << 3) | (1<<EXIDE) | (Tx_msg.port_dst & 0x03));
+	spi_data(0x02); // quelladresse
+	spi_data(Tx_msg.addr);
 	spi_data(Tx_msg.dlc);
 	while (Tx_msg.dlc)
 		spi_data(Tx_msg.data[Tx_msg.dlc--]);
@@ -120,15 +116,15 @@ void can_transmit()
 	mcp_write_b(mcp_txreq_str);
 }
 
-unsigned char mcp_canintf_str[]  ={
+uint8_t mcp_canintf_str[]  ={
 	3, BIT_MODIFY, CANINTF, (1<<RX0IF), 0, 0
 };
 
 //get a message from mcp2515 and disable RX interrupt Condition
 static inline void message_fetch()
 {
-	unsigned char tmp1, tmp2, tmp3;
-	unsigned char x;
+	uint8_t tmp1, tmp2, tmp3;
+	uint8_t x;
 
 	spi_set_ss();
 	spi_data(READ);
@@ -136,11 +132,11 @@ static inline void message_fetch()
 	tmp1 = spi_data(0);
 	Rx_msg.port_src = tmp1 >> 2;
 	tmp2 = spi_data(0);
-	tmp3 = (unsigned char)((unsigned char)(tmp2 >> 3) & 0x0C);
-	Rx_msg.port_dst = ((unsigned char)(tmp1 <<4 ) & 0x30) | tmp3 | (unsigned char)(tmp2 & 0x03);
+	tmp3 = (uint8_t)((uint8_t)(tmp2 >> 3) & 0x0C);
+	Rx_msg.port_dst = ((uint8_t)(tmp1 << 4 ) & 0x30) | tmp3 | (uint8_t)(tmp2 & 0x03);
 
-	Rx_msg.addr_src = spi_data(0);
-	Rx_msg.addr_dst = spi_data(0);
+	Rx_msg.addr = spi_data(0);
+	x = spi_data(0);   // nicht benötigte adresse
 	Rx_msg.dlc = spi_data(0) & 0x0F;	
 	for (x = 0; x < Rx_msg.dlc; x++)
 		Rx_msg.data[x] = spi_data(0);
@@ -178,7 +174,7 @@ static inline void message_fetch()
 #else
 #error Can Baudrate is only defined for 8, 16 and 20 MHz
 #endif 
-unsigned char mcp_config_str1[] ={
+uint8_t mcp_config_str1[] ={
 	3, WRITE, BFPCTRL, 0x0C,		//RXBF Pins to Output
 	6, WRITE, CNF3,
 		0x05,			//CNF3
@@ -227,7 +223,7 @@ static inline void can_init()
 }
 
 
-unsigned char can_get_nb()
+uint8_t can_get_nb()
 {
 	//check the pin, that the MCP's Interrup output connects to
 	if (SPI_REG_PIN_MCP_INT & _BV(SPI_PIN_MCP_INT))

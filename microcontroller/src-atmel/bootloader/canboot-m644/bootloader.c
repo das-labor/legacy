@@ -36,31 +36,33 @@
 #define SDO_TYPE_STRING_RW 0x81
 #define SDO_TYPE_STRING_WO 0x82
 
-typedef struct{
-	unsigned char cmd;
+typedef struct
+{
+	uint8_t cmd;
 	unsigned int index;
 	unsigned int size;
 	unsigned int address;
-}sdo_message;
+} sdo_message;
 
-typedef struct{
-	unsigned int data[4];
-}sdo_data_message;
+typedef struct
+{
+	unsigned int data[3];
+} sdo_data_message;
 
 
-unsigned char Device_info_msg[]  ={
+uint8_t Device_info_msg[]  ={
 	SDO_CMD_REPLY,
 	SDO_TYPE_UINT32_RO,
-	(unsigned char)SPM_PAGESIZE,
-	(unsigned char)SPM_PAGESIZE>>8,
+	(uint8_t)SPM_PAGESIZE,
+	(uint8_t)SPM_PAGESIZE>>8,
 	32,
 	0
 };
 
-unsigned char Flash_info_msg[]  ={
+uint8_t Flash_info_msg[]  ={
 	SDO_CMD_REPLY,
 	SDO_TYPE_STRING_WO,
-	(unsigned char)((unsigned char)FLASHEND+1),
+	(uint8_t)((uint8_t)FLASHEND+1),
 	((unsigned int)FLASHEND+1)>>8
 };
 
@@ -73,7 +75,6 @@ int main (void)
 //	PORTC = 0x01;
 	
 	uint16_t Address;
-	uint16_t Size;
 
 	
 	cli();
@@ -88,8 +89,7 @@ int main (void)
 		
 	can_init();
 	
-	Tx_msg.addr_src = EEDR;
-	Tx_msg.addr_dst = 0;
+	Tx_msg.addr = 0;
 	Tx_msg.port_src = PORT_MGT;
 	Tx_msg.port_dst = PORT_MGT;
 	Tx_msg.dlc = 1;
@@ -97,8 +97,8 @@ int main (void)
 	
 	can_transmit();
 	
-	unsigned char count=20, toggle=0x1C;
-	do{
+	uint8_t count = 20, toggle = 0x1C;
+	do {
 	
 	  //		mcp_write(BFPCTRL, toggle);
 	  //	toggle ^= 0x10;
@@ -107,27 +107,27 @@ int main (void)
 		if (can_get_nb())
 			goto sdo_server;
 		count--;
-	}while (count);
+	} while (count);
 
 	start_app:
 	asm volatile("jmp 0");
 
 	sdo_server:
 
-	for(;;)
+	for (;;)
 	{
 		if (Rx_msg.port_dst == PORT_SDO_CMD)
 		{
 			sdo_message * msg = (sdo_message*)Rx_msg.data;
 			
 			Tx_msg.port_src = PORT_SDO_CMD;
-			Tx_msg.addr_dst = Rx_msg.addr_src;
+			Tx_msg.addr = Rx_msg.addr;
 			Tx_msg.port_dst = Rx_msg.port_src;
-			
+			Tx_msg.dlc = 1;	
 			
 			if (msg->cmd == SDO_CMD_READ)
 			{
-			  switch (msg->index)
+				switch (msg->index)
 				{
 					case 0xFF00:	//device information
 						my_memcpy_P(sizeof(Device_info_msg), Tx_msg.data, Device_info_msg);
@@ -139,29 +139,22 @@ int main (void)
 						break;
 					case 0xFF02:
 						goto start_app;
-				default:
-				  {
-				    Tx_msg.dlc = 1;
-				    Tx_msg.data[0] = SDO_CMD_ERROR_INDEX;
-				    
-				  }
+					default:
+						Tx_msg.data[0] = SDO_CMD_ERROR_INDEX;
 				}
 				can_transmit();
 			}
 			else if (msg->cmd == SDO_CMD_WRITE_BLK)
 			{
-				if (msg->index==0xFF01)
+				if (msg->index == 0xFF01)
 				{
 					Address = msg->address;
-					Size = msg->size;
-					Tx_msg.dlc = 1;
 					Tx_msg.data[0] = SDO_CMD_WRITE_BLK_ACK;
 					can_transmit();
 					goto programm;
 				}
 				else
 				{
-					Tx_msg.dlc = 1;
 					Tx_msg.data[0] = SDO_CMD_ERROR_INDEX;
 					can_transmit();
 				}
@@ -172,7 +165,7 @@ int main (void)
 
 	programm:
 
-	for(;;) {
+	for (;;) {
 		while (!can_get_nb());
 		if (Rx_msg.port_dst != PORT_SDO_DATA)
 		{
@@ -181,18 +174,18 @@ int main (void)
 		}
 		else
 		{
-		  unsigned char i;
-			for (i=0; i < 4; i++)
+		  uint8_t i;
+			for (i = 0; i < 4; i++)
 			{
-				boot_page_fill (Address,((sdo_data_message*)Rx_msg.data)->data[i]);
+				boot_page_fill(Address, ((sdo_data_message*)Rx_msg.data)->data[i]);
 				Address += 2;
 			}
 			
 			if ((Address%SPM_PAGESIZE) == 0)
 			{
-				boot_page_erase (Address-SPM_PAGESIZE);
-				boot_spm_busy_wait ();      // Wait until the memory is erased.
-				boot_page_write (Address-SPM_PAGESIZE);     // Store buffer in flash page.
+				boot_page_erase(Address - SPM_PAGESIZE);
+				boot_spm_busy_wait();      // Wait until the memory is erased.
+				boot_page_write(Address - SPM_PAGESIZE);     // Store buffer in flash page.
 				boot_spm_busy_wait();       // Wait until the memory is written.
 			}
 			
