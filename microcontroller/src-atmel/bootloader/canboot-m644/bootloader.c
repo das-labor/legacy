@@ -49,24 +49,23 @@ typedef struct
 	unsigned int data[3];
 } sdo_data_message;
 
-
-uint8_t Device_info_msg[]  ={
+uint8_t Device_info_msg[] =
+{
 	SDO_CMD_REPLY,
 	SDO_TYPE_UINT32_RO,
 	(uint8_t)SPM_PAGESIZE,
-	(uint8_t)SPM_PAGESIZE>>8,
+	(uint8_t)(SPM_PAGESIZE >> 8),
 	32,
 	0
 };
 
-uint8_t Flash_info_msg[]  ={
+uint8_t Flash_info_msg[] =
+{
 	SDO_CMD_REPLY,
 	SDO_TYPE_STRING_WO,
-	(uint8_t)((uint8_t)FLASHEND+1),
-	((unsigned int)FLASHEND+1)>>8
+	(uint8_t)((uint8_t)FLASHEND + 1),
+	((unsigned int)FLASHEND + 1) >> 8
 };
-
-
 
 
 int main (void)
