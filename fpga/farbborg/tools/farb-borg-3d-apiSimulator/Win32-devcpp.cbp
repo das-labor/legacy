@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="borg-3d-apiSimulator" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="default">
+				<Option output="borg-3d-apiSimulator" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-D_WIN32" />
+		</Compiler>
+		<Linker>
+			<Add library="glut32" />
+			<Add library="glu32" />
+			<Add library="opengl32" />
+			<Add library="winmm" />
+			<Add library="gdi32" />
+		</Linker>
+		<Unit filename="api.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="api.h" />
+		<Unit filename="colorMatrix.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="colorMatrix.h" />
+		<Unit filename="colorSnake.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="colorSnake.h" />
+		<Unit filename="config.h" />
+		<Unit filename="displayLoop.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="displayLoop.h" />
+		<Unit filename="fileParser.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="fileParser.h" />
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="plasmaAnims.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="plasmaAnims.h" />
+		<Unit filename="slh.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="slh.h" />
+		<Unit filename="spike_hw.h" />
+		<Unit filename="testAnim.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="testAnim.h" />
+		<Unit filename="trackball.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="trackball.h" />
+		<Unit filename="util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="util.h" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

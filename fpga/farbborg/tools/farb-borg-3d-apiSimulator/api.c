@@ -165,7 +165,6 @@ void fade(unsigned int msProStep, unsigned int steps) {
 		help = (int32_t *) helpColor;
 		pix  = (uint32_t *) pixmap;
 		pixr = (uint32_t *) pixmap_readback;
-		im   = (uint32_t *) imag;
 		for (z = 0; z < MAX_Z; z++) {
 			//pix = &PIXMAP[128*z];
 			for (i = 0; i < MAX_Y*MAX_X*COLOR_BYTES; i++) {
@@ -589,7 +588,7 @@ void blur() {
 									}; 
 	uint32_t help_imag[MAX_Z][MAX_Y][MAX_X][COLOR_BYTES];
 	uint32_t *im = (uint32_t *) imag, *hi = (uint32_t *) help_imag;									
-	int32_t x, y, z, i, j, k, l, m, n, c, curVoxelColor, temp, test;
+	int32_t x, y, z, i, j, k, l, m, n, c, curVoxelColor, temp;
 
 	for (z = 0; z < 5; z++) {
 		for (y = 0; y < 5; y ++) {
@@ -609,9 +608,7 @@ void blur() {
 								if (l >= 0 && l < 5 && m >= 0 && m < 5 && n >= 0 && n < 5)
 								{
 								   temp = ((imag[l][m][n][c]*256) + (imag[l][m][n][c] >> 24)) * filter[i][j][k];
-								   test = imag[l][m][n][c];
-								   if (test)
-									test++;
+						
 								   /*dP("c", c);
 								   dP("l", l);
 								   dP("m", m);

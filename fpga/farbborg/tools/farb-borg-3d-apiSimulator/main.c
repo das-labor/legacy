@@ -87,7 +87,7 @@ void drawLED(int color, float pos_x, float pos_y, float pos_z) {
  */
 void display(void){
   	int x, y, z, color = 0;
-	unsigned char *pix;
+	//unsigned char *pix;
   	tbReshape(WindWidth, WindHeight);
   	glClear(GL_COLOR_BUFFER_BIT);
   	glPushMatrix();
