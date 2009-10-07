@@ -38,7 +38,7 @@ int main(void)
 	/*
 	** Wait 1 second for POR
 	*/
-	_delay_ms(500);
+	_delay_ms(1000);
 
 	/*
 	** Start TWI Slave with address 15 and bitrate of 100000 Hz
