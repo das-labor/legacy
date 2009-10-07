@@ -71,6 +71,10 @@ AVRX_GCC_TASKDEF(i2ccom_in, 50, 3)
 		if (!TWIM_Start (SLAVE, TWIM_READ))
 		{
 			TWIM_Stop();
+			for (i = 0; i < CAN_OUTDATACOUNT; i++)
+				{
+					can_outdata.outdata[i] = 0xff;
+				}
 		}
 		else
 		{
@@ -90,18 +94,18 @@ AVRX_GCC_TASKDEF(i2ccom_in, 50, 3)
 				i2c aus
 			*/
 				TWIM_Stop();
-		}
+
 		/*
 			daten wurden gelesen und wandern in die can_send_queue
 			wir gehen dabei davon aus, dass die can-daten genau 
 			so gross sind wie die i2c-daten, resp es genau so viele sind
 		*/
 
-		for (i = 0; i < CAN_OUTDATACOUNT; i++)
-		{
-			can_outdata.outdata[i] = ((t_i2cMessage_in*)p)->indata[i];
-		}
-			
+				for (i = 0; i < CAN_OUTDATACOUNT; i++)
+					{
+						can_outdata.outdata[i] = ((t_i2cMessage_in*)p)->indata[i];
+					}
+		}			
 		AvrXSendMessage(&canQueue_out, &can_outdata.mcb);
 		AvrXWaitMessageAck(&can_outdata.mcb);
 
@@ -195,11 +199,12 @@ AVRX_GCC_TASKDEF(cancom_in, 50, 3)
 					/*
 						unterbinden, dass ueber can ein paar sachen umgelegt werden koennen
 					*/
-					if( (rx_msg.data[0] == C_VIRT) &&	(rx_msg.data[1] == VIRT_POWER) || 
-							(rx_msg.data[0] == C_SW) && (rx_msg.data[1]==SWA_HS) ||
-							(rx_msg.data[0] == C_SW) && (rx_msg.data[1]==SWA_STECKDOSEN) ||
-							(rx_msg.data[0] == C_SW) && (rx_msg.data[1]==SWA_230Haupt) ||
-							(rx_msg.data[0] == C_SW) && (rx_msg.data[1]==SWA_KLO))
+					if( ( (rx_msg.data[0] == C_VIRT) &&	(rx_msg.data[1] == VIRT_POWER)) || 
+							( (rx_msg.data[0] == C_SW) && 
+								( (rx_msg.data[1]==SWA_HS) || 
+									(rx_msg.data[1]==SWA_STECKDOSEN) ||
+									(rx_msg.data[1]==SWA_230Haupt) ||
+									(rx_msg.data[1]==SWA_KLO) ) ) 
 						break;
 						
 							
@@ -220,7 +225,7 @@ AVRX_GCC_TASKDEF(cancom_in, 50, 3)
 					/*
 						warten bis sie fertig ist
 					*/
-					AvrXWaitMessageAck(&i2c_outdata.mcb);
+					//					AvrXWaitMessageAck(&i2c_outdata.mcb);
 								
 				}
 				break;
