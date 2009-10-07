@@ -9,8 +9,8 @@ http://www.das-labor.org/wiki/Stimmmopped (for the german version)
 In the folder eagle you find the layout and the shematics.
 I used the free version of eagle.
 
-How it functions:  (TODO translate)
-===================================
+How it functions:
+=================
 
 This tool assists you in tuning your string instrument to a given tone. It utilizes the 
 stroboscopic effect to give feedback about the adjustment of your instrument. The two LEDs on 
@@ -22,7 +22,7 @@ blinking effect decreases with decreasing difference between the two frequencies
 Compiling:
 ==========
 
-If you don´t want to compile the projekt use the precompiled 
+If you don't want to compile the projekt use the precompiled 
 hexfiled. 
 
 Otherwise you need avr-gcc >=3.4.6
@@ -137,52 +137,52 @@ no  notename
 52	C5
 51	B4
 50	A#4/Bb4
-49	A4 concert pitch 
+49	A4 concert pitch (440 Hz)
 48	G#4/Ab4
 47	G4
 46	F#4/Gb4
 45	F4
-44	E4
+44	E4                  (guitar string 1)
 43	D#4/Eb4
 42	D4
 41	C#4/Db4
 40	C4 (middle C)
-39	B3
+39	B3                  (guitar string 2)
 38	A#3/Bb3
 37	A3
 36	G#3/Ab3
-35	G3
+35	G3                  (guitar string 3)
 34	F#3/Gb3
 33	F3
 32	E3
 31	D#3/Eb3
-30	D3
+30	D3                  (guitar string 4)
 29	C#3/Db3
 28	C3
 27	B2
 26	A#2/Bb2
-25	A2
+25	A2                  (guitar string 5)	
 24	G#2/Ab2
-23	G2
+23	G2                                      (bass string 1)
 22	F#2/Gb2
 21	F2
-20	E2
+20	E2                  (guitar string 6)
 19	D#2/Eb2
-18	D2
+18	D2                                      (bass string 2)
 17	C#2/Db2
 16	C2
 15	B1
 14	A#1/Bb1
-13	A1
+13	A1                                      (bass string 3)
 12	G#1/Ab1
 11	G1
 10	F#1/Gb1
 9	F1
-8	E1
+8	E1                                      (bass string 4)
 7	D#1/Eb1
 6	D1
 5	C#1/Db1
 4	C1
-3	B0
+3	B0                                      (bass string 5)
 2	A#0/Bb0
 1	A0
