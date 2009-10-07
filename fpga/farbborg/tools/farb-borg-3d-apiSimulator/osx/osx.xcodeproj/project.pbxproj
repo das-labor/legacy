@@ -63,7 +63,6 @@
 		73E10D2E0D254751005D39F9 /* colorSnake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = colorSnake.h; path = ../colorSnake.h; sourceTree = SOURCE_ROOT; };
 		73E10D2F0D254810005D39F9 /* slh.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = slh.c; path = ../slh.c; sourceTree = SOURCE_ROOT; };
 		73E10D300D254810005D39F9 /* slh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = slh.h; path = ../slh.h; sourceTree = SOURCE_ROOT; };
-		C6859E8B029090EE04C91782 /* osx.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = osx.1; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,7 +157,6 @@
 		C6859E8C029090F304C91782 /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
-				C6859E8B029090EE04C91782 /* osx.1 */,
 			);
 			name = Documentation;
 			sourceTree = "<group>";

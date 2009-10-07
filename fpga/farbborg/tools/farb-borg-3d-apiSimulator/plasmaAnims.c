@@ -582,7 +582,6 @@ void plasmaBall()
 	int dingsVal;
 
 	scale = 10*0x5000;
-	dist = 0;
 	ioffset = 0;
 	
 	while (!false)
