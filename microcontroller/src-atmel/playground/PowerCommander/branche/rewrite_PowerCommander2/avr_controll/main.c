@@ -96,12 +96,14 @@ int main(void)
 					{
 						TWIS_Write(D_NDEF);
 					}
+					TWIS_Stop();
 					i2cslave.has_out_data = HASNDATA;
 					i2cslave.out_data = D_NDEF;
-					TWIS_Stop();
+					
 				}
 				break;
 				default:
+					TWIS_Stop();
 				break;
 			}
 		}
