@@ -162,8 +162,8 @@ AVRX_GCC_TASKDEF(i2ccom_out, 50, 3)
 			werden - aka via can wo anders hin gesendet werden oder so
 		*/
 		// if Daten von i2c abzuholen dann...
-//		AvrXSendMessage(&i2cQueue_in, &i2c_indata.mcb);
-//		AvrXWaitMessageAck(&i2c_indata.mcb);
+		AvrXSendMessage(&i2cQueue_in, &i2c_indata.mcb);
+		AvrXWaitMessageAck(&i2c_indata.mcb);
 		// else eben nicht
 				
 		// final dann selber fertig sagen
