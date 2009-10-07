@@ -19,6 +19,7 @@ AVRX_GCC_TASKDEF(switch_vortrag, 60, 7)
 {
 	uint8_t stat_vortrag=0; // nur an oder aus 
 	static t_i2cMessage_out i2c_outdata;
+
 	while(1)
 		{
 			if ((!(PINA & _BV(PA2))) && (stat_vortrag == 1))
