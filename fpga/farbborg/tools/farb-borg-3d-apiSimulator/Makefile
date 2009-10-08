@@ -1,19 +1,29 @@
-PRG = farbborgSim
-OBJ = main.o testAnim.o slh.o colorMatrix.o colorSnake.o fileParser.o \
-      trackball.o util.o api.o displayLoop.o plasmaAnims.o
+-include common.mk
+LIBS     = -lglut -lpthread -lGL -lGLU
+CC       = gcc
+OBJ_2    = $(patsubst %.o,.obj/%.o,$(OBJ))
 OPTIMIZE = -O2
-LIBS = -lglut -lpthread -lGL -lGLU
-CC = gcc
+CFLAGS        = -g -Wall $(OPTIMIZE) -MMD -MP
+LDFLAGS       = -Wl,-Map,$(PRG).map
 
-OPTIMIZE = -O2
-override CFLAGS        = -g -Wall $(OPTIMIZE)
-$(DEFS)
-override LDFLAGS       = -Wl,-Map,$(PRG).map
+all: .obj .dep Makefile common.mk $(PRG) 
 
-all: $(PRG) 
+.obj:
+	mkdir .obj
 
-$(PRG): $(OBJ)
+.dep:
+	mkdir .dep
+
+$(PRG): $(OBJ_2)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
+.obj/%.o: %.c
+	$(CC) $(CFLAGS) -MF .dep/$<.d -c $< -o $@
+
 clean:
-	rm -rf *.o $(PRG) $(PRG).map
+	rm -rf .dep/ .obj/ $(PRG) 
+
+DEPS := $(wildcard .dep/*.d)
+ifneq ($(DEPS),)
+include $(DEPS)
+endif
