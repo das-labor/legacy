@@ -59,104 +59,6 @@ void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val)
 	spi_clear_ss();
 }
 
-//load a message to mcp2515 and start transmission
-void message_load(can_message_t * tx_msg)
-{
-	unsigned char x;
-
-	spi_set_ss();
-	spi_data(WRITE);
-	spi_data(TXB0SIDH);
-
-	spi_data( ((unsigned char)(tx_msg->port_src << 2)) | (tx_msg->port_dst >> 4 ) );
-	spi_data( (unsigned char)((tx_msg->port_dst & 0x0C) << 3) | (1 << EXIDE) | (tx_msg->port_dst & 0x03) );
-	spi_data(tx_msg->addr_src);
-	spi_data(tx_msg->addr_dst);
-	spi_data(tx_msg->dlc);
-	for (x = 0; x < tx_msg->dlc; x++)
-	{
-		spi_data(tx_msg->data[x]);
-	}
-	spi_clear_ss();
-	spi_set_ss();
-	spi_data(WRITE);
-	spi_data(TXB0CTRL);
-	spi_data((1 << TXREQ));
-	spi_clear_ss();
-}
-
-//get a message from mcp2515 and disable RX interrupt Condition
-void message_fetch()
-{
-	unsigned char tmp1, tmp2, tmp3;
-	unsigned char x;
-
-	spi_set_ss();
-	spi_data(READ);
-	spi_data(RXB0SIDH);
-	tmp1 = spi_data(0);
-	rx_msg.port_src = tmp1 >> 2;
-	tmp2 = spi_data(0);
-	tmp3 = (unsigned char)((unsigned char)(tmp2 >> 3) & 0x0C);
-	rx_msg.port_dst = ((unsigned char)(tmp1 <<4 ) & 0x30) | tmp3 | (unsigned char)(tmp2 & 0x03);
-	rx_msg.addr_src = spi_data(0);
-	rx_msg.addr_dst = spi_data(0);
-	rx_msg.dlc = spi_data(0) & 0x0F;	
-	for (x = 0; x < rx_msg.dlc; x++)
-	{
-		rx_msg.data[x] = spi_data(0);
-	}
-	spi_clear_ss();
-
-	mcp_bitmod(CANINTF, (1 << RX0IF), 0x00);
-}
-
-
-// *********************** Interrupt handler**********************************
-AVRX_SIGINT(MCP_INT_VEC)
-{
-	IntProlog(); // Switch to kernel stack/context
-	MCP_INT_REG &= ~_BV(MCP_INT_MASK);
-	EndCritical();
-	unsigned char status = mcp_status();
-
-	if (status & 0x01)											// Message in RX0
-	{
-		mcp_bitmod(CANINTE, (1 << RX0IE), 0x00);	//disable interrupt
-		AvrXIntSetSemaphore(&rx_mutex);
-	}
-	else
-	if (status & 0x08)
-	{	// TX0 empty
-		if (tx_fifo.in == tx_fifo.out)	// tx_fifo is Empty
-		{
-			mcp_bitmod(CANINTE, (1 << TX0IE), 0x00); //disable interrupt
-		}
-		else
-		{
-			//Pull can message from fifo and transmit it
-			message_load (&tx_fifo.buf[tx_fifo.out]);
-			uint8_t t = tx_fifo.out + 1;
-			if (t >= tx_fifo.size)
-			{
-				t = 0;
-			}
-			tx_fifo.out = t;
-			mcp_bitmod(CANINTF, (1 << TX0IF), 0x00); //clear interrupt condition
-			AvrXIntSetSemaphore(&tx_mutex); //Signal were ready for new messages
-		}
-	}
-	MCP_INT_REG |= _BV(MCP_INT_MASK);
-	Epilog();// Return to tasks
-}
-
-void mcp_reset()
-{
-	spi_set_ss();
-	spi_data(RESET);
-	spi_clear_ss();
-}
-
 void mcp_write(unsigned char reg, unsigned char data)
 {
 	spi_set_ss();
@@ -179,7 +81,7 @@ unsigned char mcp_read(unsigned char reg)
 }
 
 /* Management */
-void can_setmode( can_mode_t mode )
+void can_setmode(can_mode_t mode)
 {
 	unsigned char val = mode << 5;
 	val |= 0x04;		// CLKEN
@@ -196,7 +98,7 @@ void can_setfilter()
 		10 " only 29bit Identifier
 		11 any
 	*/
-	mcp_write(RXB0CTRL, (1 << RXM1) | (1 << RXM0));
+	mcp_write(RXB0CTRL, _BV(RXM1) | _BV(RXM0));
 }
 
 void can_setled(unsigned char led, unsigned char state)
@@ -209,8 +111,9 @@ void can_init()
 {
 	//set Slave select high
 	spi_set_ss();
-
-	mcp_reset();
+	
+	spi_data(RESET);
+	spi_clear_ss();
 	
 	tx_fifo.size = TX_SIZE;
 	tx_fifo.in = 0;
@@ -251,12 +154,12 @@ void can_init()
 		configure IRQ
 		this only configures the INT Output of the mcp2515, not the int on the Atmel
 	*/
-	mcp_write(CANINTE, (1 << RX0IE));
+	mcp_write(CANINTE, _BV(RX0IE));
 
 	/*
 		the TX Interrupt is enabled when needed, so set flag that buffer is empty
 	*/
-	mcp_bitmod(CANINTF, (1 << TX0IF), 0xff);
+	mcp_bitmod(CANINTF, _BV(TX0IF), 0xff);
 
 	can_setfilter();
 	can_setmode(normal);
@@ -266,11 +169,102 @@ void can_init()
 
 }
 
+//load a message to mcp2515 and start transmission
+void message_load(can_message_t * tx_msg)
+{
+	unsigned char x;
+
+	spi_set_ss();
+	spi_data(WRITE);
+	spi_data(TXB0SIDH);
+
+	spi_data( ((unsigned char)(tx_msg->port_src << 2)) | (tx_msg->port_dst >> 4));
+	spi_data( (unsigned char)((tx_msg->port_dst & 0x0C) << 3) | (1 << EXIDE) | (tx_msg->port_dst & 0x03));
+	spi_data(tx_msg->addr_src);
+	spi_data(tx_msg->addr_dst);
+	spi_data(tx_msg->dlc);
+	for (x = 0; x < tx_msg->dlc; x++)
+	{
+		spi_data(tx_msg->data[x]);
+	}
+	spi_clear_ss();
+	spi_set_ss();
+	spi_data(WRITE);
+	spi_data(TXB0CTRL);
+	spi_data(_BV(TXREQ));
+	spi_clear_ss();
+}
+
+//get a message from mcp2515 and disable RX interrupt Condition
+void message_fetch()
+{
+	unsigned char tmp1, tmp2, tmp3;
+	unsigned char x;
+
+	spi_set_ss();
+	spi_data(READ);
+	spi_data(RXB0SIDH);
+	tmp1 = spi_data(0);
+	rx_msg.port_src = tmp1 >> 2;
+	tmp2 = spi_data(0);
+	tmp3 = (unsigned char)((unsigned char)(tmp2 >> 3) & 0x0C);
+	rx_msg.port_dst = ((unsigned char)(tmp1 << 4) & 0x30) | tmp3 | (unsigned char)(tmp2 & 0x03);
+	rx_msg.addr_src = spi_data(0);
+	rx_msg.addr_dst = spi_data(0);
+	rx_msg.dlc = spi_data(0) & 0x0F;	
+	for (x = 0; x < rx_msg.dlc; x++)
+	{
+		rx_msg.data[x] = spi_data(0);
+	}
+	spi_clear_ss();
+
+	mcp_bitmod(CANINTF, _BV(RX0IF), 0x00);
+}
+
+
+// *********************** Interrupt handler**********************************
+AVRX_SIGINT(MCP_INT_VEC)
+{
+	IntProlog(); // Switch to kernel stack/context
+	MCP_INT_REG &= ~_BV(MCP_INT_MASK);
+	EndCritical();
+	unsigned char status = mcp_status();
+
+	if (status & 0x01)											// Message in RX0
+	{
+		mcp_bitmod(CANINTE, _BV(RX0IE), 0x00);	//disable interrupt
+		AvrXIntSetSemaphore(&rx_mutex);
+	}
+	else
+	if (status & 0x08)
+	{	// TX0 empty
+		if (tx_fifo.in == tx_fifo.out)	// tx_fifo is Empty
+		{
+			mcp_bitmod(CANINTE, _BV(TX0IE), 0x00); //disable interrupt
+		}
+		else
+		{
+			//Pull can message from fifo and transmit it
+			message_load (&tx_fifo.buf[tx_fifo.out]);
+			uint8_t t = tx_fifo.out + 1;
+			if (t >= tx_fifo.size)
+			{
+				t = 0;
+			}
+			tx_fifo.out = t;
+			mcp_bitmod(CANINTF, _BV(TX0IF), 0x00); //clear interrupt condition
+			AvrXIntSetSemaphore(&tx_mutex); //Signal were ready for new messages
+		}
+	}
+	MCP_INT_REG |= _BV(MCP_INT_MASK);
+	Epilog();// Return to tasks
+}
+
 void can_get()
 {
 	AvrXWaitSemaphore(&rx_mutex);
 	message_fetch();
-	mcp_bitmod(CANINTE, (1 << RX0IE), 0xff); //interrupt back on
+	mcp_bitmod(CANINTE, _BV(RX0IE), 0xff); //interrupt back on
 }
 
 uint16_t can_put(can_message_t * msg)
@@ -288,7 +282,7 @@ uint16_t can_put(can_message_t * msg)
 	tx_fifo.in = t;
 	//AvrXSetSemaphore(&p->Producer);
 	MCP_INT_REG &= ~_BV(MCP_INT_MASK);
-	mcp_bitmod(CANINTE, (1 << TX0IE), 0xff); //enable interrupt
+	mcp_bitmod(CANINTE, _BV(TX0IE), 0xff); //enable interrupt
 	MCP_INT_REG |= _BV(MCP_INT_MASK);
 	return FIFO_OK;
 }
