@@ -63,21 +63,20 @@
 #define SWL_SCHRANK     (O_SW10)
 #define SWL_FLIPPER     (O_SW11)
 #define SWL_LOUNGE      (O_SW03)
-#define SWL_KLO         (O_SW05)
 #define SWL_KUECHE      (O_SW00)
 #define SWL_VORTRAG     (O_SW02)
 
 // switch andere
-// Hauptschuetz
-#define SWA_HS          (O_SW06)
 // beamer anaus
 #define SWA_BEAMER      (O_SW01)
-// freier schalter
-#define SWA_FREE        (O_SW07)
 // tischsteckdose
 #define SWA_STECKDOSEN  (O_SW04)
-// Opto 230V Hauptschuetze
-#define SWA_230Haupt    (O_SW12)
+// Toilette Lich + Steckdosen
+#define SWA_KLO         (O_SW05)
+// Hauptschuetz
+#define SWA_HS          (O_SW06)
+// freier schalter
+#define SWA_FREE        (O_SW07)
 
 // PWMs als Objekte
 #define O_PWM00 (0x00)

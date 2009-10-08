@@ -16,6 +16,7 @@
 #include "lap.h"
 #include "twi_master/twi_master.h"
 #include "queue.h"
+#include "PowerCommander.h"
 
 #define SLAVE 15
 
@@ -201,10 +202,9 @@ AVRX_GCC_TASKDEF(cancom_in, 50, 3)
 					*/
 					if( ( (rx_msg.data[0] == C_VIRT) &&	(rx_msg.data[1] == VIRT_POWER)) || 
 							( (rx_msg.data[0] == C_SW) && 
-								( (rx_msg.data[1]==SWA_HS) || 
-									(rx_msg.data[1]==SWA_STECKDOSEN) ||
-									(rx_msg.data[1]==SWA_230Haupt) ||
-									(rx_msg.data[1]==SWA_KLO) ) ) 
+								( (rx_msg.data[1] == SWA_HS) || 
+									(rx_msg.data[1] == SWA_STECKDOSEN) ||
+									(rx_msg.data[1] == SWA_KLO)))) 
 						break;
 						
 							
