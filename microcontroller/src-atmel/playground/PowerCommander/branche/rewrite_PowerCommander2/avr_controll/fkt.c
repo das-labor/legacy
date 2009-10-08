@@ -8,7 +8,8 @@
 
 void switch_fkt(struct t_i2cproto* i2cproto)
 {
-	switch(i2cproto->fkt) {
+	switch(i2cproto->fkt)
+	{
 	case F_SW_OFF:
 		{
 			switch_off(sw_matrix[i2cproto->object].port, 
@@ -36,7 +37,8 @@ void switch_fkt(struct t_i2cproto* i2cproto)
 
 void pwm_fkt(struct t_i2cproto* i2cproto)
 {
-	switch(i2cproto->fkt) {
+	switch(i2cproto->fkt)
+	{
 	case F_PWM_SET:
 		{
 			pwm_set(pwm_matrix[i2cproto->object].port, i2cproto->in_data);
@@ -56,11 +58,12 @@ void pwm_fkt(struct t_i2cproto* i2cproto)
 
 void virt_fkt(struct t_i2cproto* i2cproto)
 {
-	switch(i2cproto->object){
+	switch(i2cproto->object)
+	{
 	case VIRT_POWER:
-		{
-			virt_power(i2cproto);
-		}
+		virt_power(i2cproto);
+		break;
+	case VIRT_VORTRAG:
 		break;
 	default:
 		break;
@@ -69,7 +72,8 @@ void virt_fkt(struct t_i2cproto* i2cproto)
 
 void virt_power(struct t_i2cproto* i2cproto)
 {
-	switch(i2cproto->fkt){
+	switch(i2cproto->fkt)
+	{
 	case F_SW_ON:
 		{
 			virt_power_on();
@@ -83,20 +87,28 @@ void virt_power(struct t_i2cproto* i2cproto)
 	default:
 		break;
 	}
+}
+
+void virt_vortrag(struct t_i2cproto* i2cproto)
+{
+	switch(i2cproto->fkt)
+	{
+	case F_SW_ON:
+		virt_vortrag_on();
+		break;
+	case F_SW_OFF:
+		virt_vortrag_off();
+		break;
+	default:
+		break;
+	}
 	
 }
 
 void virt_power_on()
 {
-/*	switch_on(sw_matrix[SWL_TAFEL].port, sw_matrix[SWL_TAFEL].pin);
-	switch_on(sw_matrix[SWL_BEAMER].port, sw_matrix[SWL_BEAMER].pin);
-	switch_on(sw_matrix[SWL_SCHRANK].port, sw_matrix[SWL_SCHRANK].pin);
-	switch_on(sw_matrix[SWL_FLIPPER].port, sw_matrix[SWL_FLIPPER].pin);
-	switch_on(sw_matrix[SWL_VORTRAG].port, sw_matrix[SWL_VORTRAG].pin);
-	switch_on(sw_matrix[SWL_LOUNGE].port, sw_matrix[SWL_LOUNGE].pin); */
 	switch_on(sw_matrix[SWL_KLO].port, sw_matrix[SWL_KLO].pin);
 	switch_on(sw_matrix[SWA_HS].port, sw_matrix[SWA_HS].pin);
-//	switch_on(sw_matrix[SWA_FREE].port, sw_matrix[SWA_FREE].pin);
 	switch_on(sw_matrix[SWA_STECKDOSEN].port, sw_matrix[SWA_STECKDOSEN].pin);
 }
 
@@ -112,8 +124,25 @@ void virt_power_off()
 	switch_off(sw_matrix[SWL_KUECHE].port, sw_matrix[SWL_KUECHE].pin);
 	switch_off(sw_matrix[SWA_HS].port, sw_matrix[SWA_HS].pin);
 	switch_off(sw_matrix[SWA_BEAMER].port, sw_matrix[SWA_BEAMER].pin);
-//	switch_off(sw_matrix[SWA_FREE].port, sw_matrix[SWA_FREE].pin);
 	switch_off(sw_matrix[SWA_STECKDOSEN].port, sw_matrix[SWA_STECKDOSEN].pin);
+}
+
+void virt_vortrag_on()
+{
+	switch_on(sw_matrix[SWL_TAFEL].port, sw_matrix[SWL_TAFEL].pin);
+	switch_on(sw_matrix[SWL_BEAMER].port, sw_matrix[SWL_BEAMER].pin);
+	switch_on(sw_matrix[SWL_SCHRANK].port, sw_matrix[SWL_SCHRANK].pin);
+	switch_on(sw_matrix[SWL_FLIPPER].port, sw_matrix[SWL_FLIPPER].pin);
+	switch_on(sw_matrix[SWL_VORTRAG].port, sw_matrix[SWL_VORTRAG].pin);
+}
+
+void virt_vortrag_off()
+{
+	switch_off(sw_matrix[SWL_TAFEL].port, sw_matrix[SWL_TAFEL].pin);
+	switch_off(sw_matrix[SWL_BEAMER].port, sw_matrix[SWL_BEAMER].pin);
+	switch_off(sw_matrix[SWL_SCHRANK].port, sw_matrix[SWL_SCHRANK].pin);
+	switch_off(sw_matrix[SWL_FLIPPER].port, sw_matrix[SWL_FLIPPER].pin);
+	switch_off(sw_matrix[SWL_VORTRAG].port, sw_matrix[SWL_VORTRAG].pin);
 }
 
 void switch_on(volatile uint8_t *port,uint8_t pin)
