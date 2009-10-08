@@ -1,5 +1,5 @@
-#ifndef SPI_H
-#define SPI_H
+#ifndef _SPI_H
+#define _SPI_H
 
 #include "config.h"
 
@@ -25,4 +25,4 @@ unsigned char spi_data(unsigned char c);
 
 
 
-#endif
+#endif // _SPI_H

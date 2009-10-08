@@ -3,7 +3,8 @@
 #include "spi.h"
 
 
-void spi_init(){
+void spi_init()
+{
 	/*
 		set output SPI pins to output
 	*/
