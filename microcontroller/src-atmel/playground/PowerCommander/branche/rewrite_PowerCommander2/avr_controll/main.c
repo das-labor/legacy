@@ -22,7 +22,7 @@
 
 int main(void)
 {
-	uint8_t TWIS_ResonseType;
+	uint8_t TWIS_ResonseType, test = 0;
 	struct t_i2cproto i2cslave = { C_NDEF, O_NDEF, F_NDEF, HASNDATA, HASNDATA, D_NDEF ,D_NDEF };
 
 	init_modi();
@@ -36,9 +36,9 @@ int main(void)
 
 
 	/*
-	** Wait 1 second for POR
+	** Wait 0.5 second for POR
 	*/
-	_delay_ms(1000);
+	_delay_ms(500);
 
 	/*
 	** Start TWI Slave with address 15 and bitrate of 100000 Hz
@@ -82,6 +82,14 @@ int main(void)
 						{
 							virt_fkt(&i2cslave);
 						}
+						break;
+						case 3:
+							i2cslave.has_out_data = HASDATA;
+							if (i2cslave.in_data == 0)
+								i2cslave.out_data = test;
+							else
+								test = i2cslave.out_data;
+						break;
 						default:
 						break;
 					}

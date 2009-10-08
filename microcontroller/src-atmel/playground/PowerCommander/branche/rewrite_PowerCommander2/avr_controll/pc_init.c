@@ -46,16 +46,16 @@ void init_timer()
 	TCCR0A |= _BV(WGM01) | _BV(WGM00) | _BV(COM0A1) | _BV(COM0B1);	// FastPWM, Set OC0X on Compare Match, clear OC0x at BOTTOM, (non inverting mode).
 	TCCR0B |= _BV(CS01) | _BV(CS00);								// clk/64
 
-	TCNT2 = 0;   // pwm timer clear
-	OCR2A = 0;   // pwm timer compare target
-	OCR2B = 0;   // pwm timer compare target
+	TCNT2 = 255;   // pwm timer clear
+	OCR2A = 255;   // pwm timer compare target
+	OCR2B = 255;   // pwm timer compare target
 	
-	TCNT1 = 0;   // pwm timer clear
-	OCR1A = 0;   // pwm timer compare target
-	OCR1B = 0;   // pwm timer compare target
+	TCNT1 = 255;   // pwm timer clear
+	OCR1A = 255;   // pwm timer compare target
+	OCR1B = 255;   // pwm timer compare target
 
-	TCNT0 = 0;   // pwm timer clear
-	OCR0A = 0;   // pwm timer compare target
-	OCR0B = 0;   // pwm timer compare target
+	TCNT0 = 255;   // pwm timer clear
+	OCR0A = 255;   // pwm timer compare target
+	OCR0B = 255;   // pwm timer compare target
 
 }
