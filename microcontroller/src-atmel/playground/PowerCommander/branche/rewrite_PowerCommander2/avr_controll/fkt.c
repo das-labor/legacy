@@ -107,7 +107,7 @@ void virt_vortrag(struct t_i2cproto* i2cproto)
 
 void virt_power_on()
 {
-	switch_on(sw_matrix[SWL_KLO].port, sw_matrix[SWL_KLO].pin);
+	switch_on(sw_matrix[SWA_KLO].port, sw_matrix[SWA_KLO].pin);
 	switch_on(sw_matrix[SWA_HS].port, sw_matrix[SWA_HS].pin);
 	switch_on(sw_matrix[SWA_STECKDOSEN].port, sw_matrix[SWA_STECKDOSEN].pin);
 }
@@ -120,7 +120,7 @@ void virt_power_off()
 	switch_off(sw_matrix[SWL_FLIPPER].port, sw_matrix[SWL_FLIPPER].pin);
 	switch_off(sw_matrix[SWL_VORTRAG].port, sw_matrix[SWL_VORTRAG].pin);
 	switch_off(sw_matrix[SWL_LOUNGE].port, sw_matrix[SWL_LOUNGE].pin);
-	switch_off(sw_matrix[SWL_KLO].port, sw_matrix[SWL_KLO].pin);
+	switch_off(sw_matrix[SWA_KLO].port, sw_matrix[SWA_KLO].pin);
 	switch_off(sw_matrix[SWL_KUECHE].port, sw_matrix[SWL_KUECHE].pin);
 	switch_off(sw_matrix[SWA_HS].port, sw_matrix[SWA_HS].pin);
 	switch_off(sw_matrix[SWA_BEAMER].port, sw_matrix[SWA_BEAMER].pin);
