@@ -89,8 +89,10 @@
 #define O_PWM_NDEF (0xFF)
 
 #define O_VIRT00 (0x00)
+#define O_VIRT01 (0x01)
 
 #define VIRT_POWER (O_VIRT00)
+#define VIRT_VORTRAG (O_VIRT01)
 
 #define PWM_TAFEL    (O_PWM00)
 #define PWM_BEAMER   (O_PWM01)
