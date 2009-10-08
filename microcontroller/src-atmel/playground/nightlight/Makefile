@@ -39,15 +39,16 @@ FALSE	= 0
 #MCU      = atmega128
 #MCU      = at90s8515
 
-MCU = atmega8
+CPUCLK = 16000000UL
+MCU = atmega168
 
-TARGET = pwmtest
-CANADDR = 67
+TARGET = main
+CANADDR = 0x02
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
 
-SRC = pwmtest.c
+SRC = main.c xcan.c spi.c xlap.c ls020/glcd.c ls020/ls020.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
@@ -59,7 +60,7 @@ SRC = pwmtest.c
 
 #ASRC = ../avrx/serialio.S
 
-GCCLIB = 
+GCCLIB = ../../lib/AvrX2.6f/avrx/avrx.a
 
 # Optimization level, can be [0, 1, 2, 3, s].
 # 0 = turn off optimization. s = optimize for size.
@@ -88,7 +89,7 @@ CSTANDARD = -std=gnu99
 CDEFS = -DF_CPU=$(CPUCLK) -DTICKRATE=$(TICKRATE) -DBAUDRATE=$(BAUDRATE)
 
 # Place -I options here
-CINCS = 
+CINCS = -I../../lib/AvrX2.6f/avrx
 
 
 # Compiler flags.
@@ -171,7 +172,7 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 # Type: avrdude -c ?
 # to get a full listing.
 #
-AVRDUDE_PROGRAMMER = stk500v2
+AVRDUDE_PROGRAMMER = stk500
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
 #AVRDUDE_PORT = com4    # programmer connected to serial device
@@ -268,8 +269,8 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 # Default target.
 Samples:
-	make all $(TARGET)
-
+	make all TARGET=main
+	
 #all: begin gccversion sizebefore build sizeafter finished end
 all: sizebefore build sizeafter
 
@@ -410,13 +411,13 @@ clean_list :
 	$(REMOVE) $(TARGET).eep
 	$(REMOVE) $(TARGET).obj
 	$(REMOVE) $(TARGET).cof
-#	$(REMOVE) $(TARGET).elf
+	$(REMOVE) $(TARGET).elf
 	$(REMOVE) $(TARGET).map
 	$(REMOVE) $(TARGET).a90
 	$(REMOVE) $(TARGET).sym
 	$(REMOVE) $(TARGET).lnk
 	$(REMOVE) $(TARGET).lss
-#	$(REMOVE) $(OBJ)
+	$(REMOVE) $(OBJ)
 	$(REMOVE) *.o *.lst *.map *.lss *.sym *.cof *.eep
 	$(REMOVE) $(LST)
 	$(REMOVE) $(SRC:.c=.s)
