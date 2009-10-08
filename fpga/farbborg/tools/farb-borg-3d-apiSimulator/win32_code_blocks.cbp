@@ -2,20 +2,22 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="borg-3d-apiSimulator" />
+		<Option title="farbborgSim" />
 		<Option pch_mode="2" />
-		<Option compiler="gcc" />
+		<Option compiler="mingw_gcc__crosscompiler" />
 		<Build>
 			<Target title="default">
-				<Option output="borg-3d-apiSimulator" prefix_auto="1" extension_auto="1" />
+				<Option output="farbborgSim" prefix_auto="1" extension_auto="1" />
 				<Option type="0" />
-				<Option compiler="gcc" />
+				<Option compiler="mingw_gcc__crosscompiler" />
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-Os" />
 			<Add option="-D_WIN32" />
 		</Compiler>
 		<Linker>
+			<Add option="-s" />
 			<Add library="glut32" />
 			<Add library="glu32" />
 			<Add library="opengl32" />
@@ -70,6 +72,7 @@
 		<Extensions>
 			<code_completion />
 			<debugger />
+			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

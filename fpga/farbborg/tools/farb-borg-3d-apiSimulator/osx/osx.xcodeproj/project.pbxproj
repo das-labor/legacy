@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4BCF64BC107E497100A89273 /* anim1.prn in Resources */ = {isa = PBXBuildFile; fileRef = 4BCF64B9107E497100A89273 /* anim1.prn */; };
+		4BCF64BD107E497100A89273 /* playlist.apl in Resources */ = {isa = PBXBuildFile; fileRef = 4BCF64BA107E497100A89273 /* playlist.apl */; };
+		4BCF64BE107E497100A89273 /* sample.prn in Resources */ = {isa = PBXBuildFile; fileRef = 4BCF64BB107E497100A89273 /* sample.prn */; };
 		7308192B0E044F7500B69D30 /* displayLoop.c in Sources */ = {isa = PBXBuildFile; fileRef = 730819270E044F7500B69D30 /* displayLoop.c */; };
 		7308192C0E044F7500B69D30 /* plasmaAnims.c in Sources */ = {isa = PBXBuildFile; fileRef = 730819290E044F7500B69D30 /* plasmaAnims.c */; };
 		73496C1A0B7BD38A00D4554C /* util.c in Sources */ = {isa = PBXBuildFile; fileRef = 734968100B7BCF2400D4554C /* util.c */; };
@@ -20,9 +23,6 @@
 		73496C270B7BD40200D4554C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 734968240B7BCFE600D4554C /* Foundation.framework */; };
 		73496C280B7BD40200D4554C /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 734968250B7BCFE600D4554C /* GLUT.framework */; };
 		73496C290B7BD40300D4554C /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 734968260B7BCFE600D4554C /* OpenGL.framework */; };
-		73496C2D0B7BD45000D4554C /* anim1.pr0n in Resources */ = {isa = PBXBuildFile; fileRef = 73496BFB0B7BD22900D4554C /* anim1.pr0n */; };
-		73496C2E0B7BD45000D4554C /* playlist.apl in Resources */ = {isa = PBXBuildFile; fileRef = 73496BFC0B7BD22900D4554C /* playlist.apl */; };
-		73496C2F0B7BD45000D4554C /* sample.pr0n in Resources */ = {isa = PBXBuildFile; fileRef = 73496BFD0B7BD22900D4554C /* sample.pr0n */; };
 		73496C350B7BDE7C00D4554C /* farbborg.icns in Resources */ = {isa = PBXBuildFile; fileRef = 73496C340B7BDE7C00D4554C /* farbborg.icns */; };
 		73E10D2A0D2546E6005D39F9 /* colorMatrix.c in Sources */ = {isa = PBXBuildFile; fileRef = 73E10D280D2546E6005D39F9 /* colorMatrix.c */; };
 		73E10D2B0D2546E6005D39F9 /* colorSnake.c in Sources */ = {isa = PBXBuildFile; fileRef = 73E10D290D2546E6005D39F9 /* colorSnake.c */; };
@@ -30,6 +30,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4BCF64B9107E497100A89273 /* anim1.prn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = anim1.prn; path = ../anims/anim1.prn; sourceTree = SOURCE_ROOT; };
+		4BCF64BA107E497100A89273 /* playlist.apl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = playlist.apl; path = ../anims/playlist.apl; sourceTree = SOURCE_ROOT; };
+		4BCF64BB107E497100A89273 /* sample.prn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = sample.prn; path = ../anims/sample.prn; sourceTree = SOURCE_ROOT; };
 		730819270E044F7500B69D30 /* displayLoop.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = displayLoop.c; path = ../displayLoop.c; sourceTree = SOURCE_ROOT; };
 		730819280E044F7500B69D30 /* displayLoop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = displayLoop.h; path = ../displayLoop.h; sourceTree = SOURCE_ROOT; };
 		730819290E044F7500B69D30 /* plasmaAnims.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = plasmaAnims.c; path = ../plasmaAnims.c; sourceTree = SOURCE_ROOT; };
@@ -51,9 +54,6 @@
 		734968240B7BCFE600D4554C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		734968250B7BCFE600D4554C /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = /System/Library/Frameworks/GLUT.framework; sourceTree = "<absolute>"; };
 		734968260B7BCFE600D4554C /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
-		73496BFB0B7BD22900D4554C /* anim1.pr0n */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = anim1.pr0n; path = ../anim1.pr0n; sourceTree = SOURCE_ROOT; };
-		73496BFC0B7BD22900D4554C /* playlist.apl */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = playlist.apl; path = ../playlist.apl; sourceTree = SOURCE_ROOT; };
-		73496BFD0B7BD22900D4554C /* sample.pr0n */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = sample.pr0n; path = ../sample.pr0n; sourceTree = SOURCE_ROOT; };
 		73496C0E0B7BD2E200D4554C /* farbborgSim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = farbborgSim.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		73496C100B7BD2E200D4554C /* farbborgSim-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "farbborgSim-Info.plist"; sourceTree = "<group>"; };
 		73496C340B7BDE7C00D4554C /* farbborg.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = farbborg.icns; sourceTree = "<group>"; };
@@ -147,9 +147,9 @@
 		73496C240B7BD3D700D4554C /* Animaitons */ = {
 			isa = PBXGroup;
 			children = (
-				73496BFB0B7BD22900D4554C /* anim1.pr0n */,
-				73496BFC0B7BD22900D4554C /* playlist.apl */,
-				73496BFD0B7BD22900D4554C /* sample.pr0n */,
+				4BCF64B9107E497100A89273 /* anim1.prn */,
+				4BCF64BA107E497100A89273 /* playlist.apl */,
+				4BCF64BB107E497100A89273 /* sample.prn */,
 			);
 			name = Animaitons;
 			sourceTree = "<group>";
@@ -206,10 +206,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				73496C2D0B7BD45000D4554C /* anim1.pr0n in Resources */,
-				73496C2E0B7BD45000D4554C /* playlist.apl in Resources */,
-				73496C2F0B7BD45000D4554C /* sample.pr0n in Resources */,
 				73496C350B7BDE7C00D4554C /* farbborg.icns in Resources */,
+				4BCF64BC107E497100A89273 /* anim1.prn in Resources */,
+				4BCF64BD107E497100A89273 /* playlist.apl in Resources */,
+				4BCF64BE107E497100A89273 /* sample.prn in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
