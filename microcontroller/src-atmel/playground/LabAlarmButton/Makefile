@@ -30,7 +30,7 @@
 #
 # To rebuild project do "make clean" then "make all".
 #
-CPUCLK   = 16000000UL
+CPUCLK	= 16000000UL
 TRUE	= 1
 FALSE	= 0
 

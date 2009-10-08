@@ -1,5 +1,6 @@
-#ifndef CAN_H
-#define CAN_H
+/* -*- Mode: C; tab-width: 2 -*- */
+#ifndef _CAN_H
+#define _CAN_H
 
 #include "config.h"
 
@@ -63,4 +64,4 @@ void can_get();
 
 uint16_t can_put(can_message_t *msg);
 
-#endif
+#endif // _CAN_H
