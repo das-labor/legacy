@@ -1,11 +1,19 @@
 #include "nl_flash.h"
 //for memcpy and memset
-#include <string.h> 
+#include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include "../../common/nl_protocol.h"
+
+#ifdef WIN32
+#define	usleep(x) Sleep(x)
+#else
+#include <unistd.h>
+#include <signal.h>
+#endif
 
 //fixme - this shouldn't be a global, i suppose
 rfmusb_packetbuffer packetBuffer;
@@ -365,7 +373,7 @@ void nl_flash(rfmusb_dev_handle *udhandle, char * filename, uint8_t addr, uint16
 	{
 		nl_tx_packet(udhandle, NLPROTO_BOOT, addr, 0, NULL);
 		printf("boot\n");
-		sleep(1);
+		usleep(1);
 	}
 
 	return;

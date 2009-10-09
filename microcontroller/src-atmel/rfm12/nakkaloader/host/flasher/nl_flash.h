@@ -8,7 +8,7 @@
 #include "../../../rfm12usb/host/CDriver/RfmUsb.h"
 
 //nakkaloader protocol
-#include "../../common/nl_protocol.h"
+//#include "../../common/nl_protocol.h"
 
 /* defines for the expect function */
 #define EXP_ADD   0x00 /* add an entry to the list */

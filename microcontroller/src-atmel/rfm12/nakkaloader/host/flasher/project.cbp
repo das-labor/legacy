@@ -24,9 +24,21 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="config.h" />
+		<Unit filename="crc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="crc.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="nl_flash.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="nl_flash.h" />
+		<Unit filename="settings.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="settings.h" />
 		<Unit filename="..\..\..\rfm12usb\host\CDriver\RfmUsb.c">
 			<Option compilerVar="CC" />
 		</Unit>
