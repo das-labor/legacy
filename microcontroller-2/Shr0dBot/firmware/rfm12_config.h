@@ -51,7 +51,7 @@
 
 //Pin that the RFM12's slave select is connected to
 #define DDR_SS DDRC
-#define PORT_SS PORC
+#define PORT_SS PORTC
 #define BIT_SS 0
 
 //SPI port

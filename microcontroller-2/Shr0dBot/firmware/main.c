@@ -331,7 +331,7 @@ void radio_comm(void)
 	sensorData.currentDrain = robo_currentDrain;
 	sensorData.curSpeed = robo_curSpeed;
 	sensorData.encAPos = enc_A;
-	rfm12_tx(sizeof(sensorData), RADIO_TYPE_ROBO, (uint8_t *)sensorData);
+	rfm12_tx(sizeof(sensorData), RADIO_TYPE_ROBO, (uint8_t *)&sensorData);
 	
 	//send debug information
 	//radio_debug();
