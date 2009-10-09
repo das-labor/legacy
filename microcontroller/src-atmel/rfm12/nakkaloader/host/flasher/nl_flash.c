@@ -5,11 +5,15 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+//#include <endian.h>
 
 #include "../../common/nl_protocol.h"
 
 #ifdef WIN32
 #define	usleep(x) Sleep(x)
+#define htole32(x) (x)
+#define htole16(x) (x)
+#define le32toh(x) (x)
 #else
 #include <unistd.h>
 #include <signal.h>
