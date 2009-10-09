@@ -3,21 +3,27 @@
 	<FileVersion major="1" minor="6" />
 	<Project>
 		<Option title="farbborgSim" />
+		<Option makefile="Makefile.win" />
 		<Option pch_mode="2" />
-		<Option compiler="mingw_gcc__crosscompiler" />
+		<Option compiler="gcc" />
 		<Build>
 			<Target title="default">
 				<Option output="farbborgSim" prefix_auto="1" extension_auto="1" />
 				<Option type="0" />
-				<Option compiler="mingw_gcc__crosscompiler" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
 			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Os" />
+			<Add option="-Wall" />
+			<Add option="-g" />
+			<Add option="-std=c99" />
 			<Add option="-D_WIN32" />
 		</Compiler>
 		<Linker>
-			<Add option="-s" />
 			<Add library="glut32" />
 			<Add library="glu32" />
 			<Add library="opengl32" />
