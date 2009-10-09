@@ -45,10 +45,13 @@
 	nSEL            | Slave select pin defined below
 */
 
+/************************
+ * PIN DEFINITIONS
+ */
 
 //Pin that the RFM12's slave select is connected to
 #define DDR_SS DDRC
-#define PORT_SS PORTC
+#define PORT_SS PORC
 #define BIT_SS 0
 
 //SPI port
@@ -59,11 +62,19 @@
 #define BIT_MISO 6
 #define BIT_SCK  7
 #define BIT_SPI_SS 4
-//this is the hardware SS pin of the AVR - it
-//needs to be set to output for the spi-interface to work
+//this is the hardware SS pin of the AVR - it 
+//needs to be set to output for the spi-interface to work 
 //correctly, independently of the CS pin used for the RFM12
 
-//frequency to use
+
+/************************
+ * RFM12 CONFIGURATION OPTIONS
+ */
+
+//baseband of the module (either RFM12_BAND_433, RFM12_BAND_868 or RFM12_BAND_912)
+#define RFM12_BASEBAND RFM12_BAND_433
+
+//center frequency to use (+-125kHz FSK frequency shift)
 #define FREQ 433000000UL
 
 //use this for datarates >= 2700 Baud
@@ -72,27 +83,57 @@
 //use this for 340 Baud < datarate < 2700 Baud
 //#define DATARATE_VALUE RFM12_DATARATE_CALC_LOW(1200.0)
 
-/**** TX BUFFER SIZE
- */
-#define RFM12_TX_BUFFER_SIZE 50
+//TX BUFFER SIZE
+#define RFM12_TX_BUFFER_SIZE 30
 
-/**** RX BUFFER SIZE
- * there are going to be 2 Buffers of this size
- * (double_buffering)
- */
-#define RFM12_RX_BUFFER_SIZE 50
+//RX BUFFER SIZE (there are going to be 2 Buffers of this size for double_buffering)
+#define RFM12_RX_BUFFER_SIZE 30
 
-/**** UART DEBUGGING
- * en- or disable debugging via uart.
- */
-/* #define RFM12_UART_DEBUG 1 */
 
-/**** INTERRUPT VECTOR
+/************************
+ * INTERRUPT VECTOR
  * set the name for the interrupt vector here
  */
+ 
+//the interrupt vector
 #define RFM12_INT_VECT (INT2_vect)
+
+//the interrupt mask register
+#define RFM12_INT_MSK GICR
+
+//the interrupt bit in the mask register
 #define RFM12_INT_BIT (INT2)
 
-#define RFM12_INT_MSK GICR
+//the interrupt flag register
+#define RFM12_INT_FLAG GIFR
+
+//the interrupt bit in the flag register
+#define RFM12_FLAG_BIT (INTF2)
+
+//setup the interrupt to trigger on negative edge
 #define RFM12_INT_SETUP()   MCUCSR &= ~(1<<ISC2)
 
+
+/************************
+ * FEATURE CONFIGURATION
+ */
+
+#define RFM12_LIVECTRL 0
+#define RFM12_NORETURNS 0
+#define RFM12_NOCOLLISIONDETECTION 0
+#define RFM12_TRANSMIT_ONLY 0
+#define RFM12_SPI_SOFTWARE 0
+#define RFM12_USE_POLLING 0
+#define RFM12_RECEIVE_ASK 0
+#define RFM12_TRANSMIT_ASK 0
+#define RFM12_USE_WAKEUP_TIMER 0
+#define RFM12_LOW_POWER 0
+
+
+/************************
+ * UART DEBUGGING
+ * en- or disable debugging via uart.
+ */
+ 
+#define RFM12_UART_DEBUG 0
+#define RFM12_UART_DEBUG 0
