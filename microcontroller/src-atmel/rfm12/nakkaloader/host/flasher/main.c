@@ -4,14 +4,14 @@
  * under the terms of the GNU General Public License version 2 as published
  * by the Free Software Foundation.
  *
- * Copyright (c) Soeren Heisrath <forename@surname.org>
+ * Copyright (c) Soeren Heisrath <forename@surname.org>, Hans-Gert Dahmen <sexyludernatascha@gmail.com>
  */
 
 //from stdinclude path
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include <endian.h>
+//#include <endian.h>
 
 //include rfmusb c driver interface
 //#include "../../../rfm12usb/host/CDriver/RfmUsb.h"
@@ -44,7 +44,7 @@ rfmusb_packetbuffer packetBuffer;
 rfmusb_dev_handle *udhandle = NULL;
 
 //usage
-void nf_usage()
+void usage()
 {
 	printf(
 		"NakkaFlash Utility\r\n\r\n"
@@ -56,9 +56,9 @@ void nf_usage()
 }
 
 
-void nf_exit (int in_signal)
+void myexit (int in_signal)
 {
-	
+
         printf ("\r\nNakkaflash closing...\r\n");
         exit (in_signal);
 }
@@ -67,7 +67,7 @@ void nf_exit (int in_signal)
 #ifdef WIN32
 void winexit(void)
 {
-    nf_exit(0);
+    myexit(0);
 }
 #endif
 
@@ -89,7 +89,7 @@ int main (int argc, char* argv[])
 	myconfig = malloc(sizeof(nf_config_t));
 	myconfig->verbosity = 0;
 
-	
+
         //try to open the device
 	if (rfmusb_Connect(&udhandle) != 0)
 	{
@@ -100,26 +100,26 @@ int main (int argc, char* argv[])
 	}
 
 #ifndef WIN32
-	signal (SIGINT, nf_exit);
-	signal (SIGKILL, nf_exit);
-	signal (SIGHUP, nf_exit);
+	signal (SIGINT, myexit);
+	signal (SIGKILL, myexit);
+	signal (SIGHUP, myexit);
 #else
 	atexit((void * )winexit);
 #endif
-	
 
 
-/*
+
+
 	if(nf_parse_args (argc, argv, myconfig) == 0)
 	{
-		nf_usage();
+		usage();
 		exit(0);
 	}
-*/
+
 	myconfig->fname = malloc (255);
 	strncpy (myconfig->fname, argv[1], strlen(argv[1]));
 
-	
+
 
 	myconfig->addr = 0xff;
 
@@ -127,6 +127,7 @@ int main (int argc, char* argv[])
 
 	nl_packet_match(NLPROTO_SLAVE_CONFIG, NULL, EXP_ADD);
 	nl_packet_match(NLPROTO_MASTER_EHLO, NULL, EXP_ADD);
+
 
 	while (23)
 	{
@@ -158,7 +159,7 @@ int main (int argc, char* argv[])
                     {
                         istate = 1;
                         memcpy(&slave_cfg, packetBuffer.buffer + 2, sizeof(nl_config));
-			slave_cfg.pagesize = be16toh(packetBuffer.buffer[2]);
+			/*slave_cfg.pagesize = be16toh(packetBuffer.buffer[2]);
 			slave_cfg.pagesize = 64;
 			slave_cfg.rxbufsize = 20; /* Fixed val for now... */
 

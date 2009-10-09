@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-extern void *conf_handler (uint_fast8_t in_idx, void* in_val)
+/*extern void *conf_handler (uint_fast8_t in_idx, void* in_val)
 {
 	static uint_fast16_t termwidth = 80;
 	static uint_fast8_t dumpmode = CONF_DUMP_HEX;
@@ -13,5 +13,5 @@ extern void *conf_handler (uint_fast8_t in_idx, void* in_val)
 		case CONF_DUMPMODE:
 			if (in_val != NULL) dumpmode = in_val;
 			return dumpmode;
-	}	
-}
+	}
+}*/
