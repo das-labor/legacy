@@ -14,6 +14,7 @@ void virt_fkt(struct t_i2cproto* i2cproto);
 void virt_power(struct t_i2cproto* i2cproto);
 void virt_power_on();
 void virt_power_off();
+void virt_vortrag(struct t_i2cproto* i2cproto);
 void virt_vortrag_on();
 void virt_vortrag_off();
 #endif
