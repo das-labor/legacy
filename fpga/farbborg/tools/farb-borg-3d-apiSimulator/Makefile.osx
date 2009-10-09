@@ -1,19 +1,12 @@
 -include common.mk
+
 APP      = $(PRG).app/Contents/MacOS/$(PRG)
-OBJ_2    = $(patsubst %.o,.obj/%.o,$(OBJ))
-OPTIMIZE = -O2
-LIBS     =  -lpthread -framework Carbon -framework GLUT -framework OpenGL -framework Foundation -framework AppKit
+LIBS     = -lpthread -framework Carbon -framework GLUT -framework OpenGL -framework Foundation -framework AppKit
 CC       = gcc
-CFLAGS   = -g -Wall $(OPTIMIZE) -DOSX_ -MMD -MP
+CFLAGS  += -DOSX_
 LDFLAGS  = -Wall -prebind
 
 all: .obj .dep Makefile.osx common.mk $(APP)	
-
-.obj:
-	mkdir .obj
-
-.dep:
-	mkdir .dep
 
 $(APP): $(OBJ_2)
 	test -d $(PRG).app/Contents/MacOS/ || mkdir -p $(PRG).app/Contents/MacOS/
@@ -23,13 +16,7 @@ $(APP): $(OBJ_2)
 	cp -f osx/PkgInfo $(PRG).app/Contents/PkgInfo
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-.obj/%.o: %.c
-	$(CC) $(CFLAGS) -MF .dep/$<.d -c $< -o $@
-
 clean:
 	rm -rf .dep/ .obj/ $(PRG) $(PRG).app/
 
-DEPS := $(wildcard .dep/*.d)
-ifneq ($(DEPS),)
-include $(DEPS)
-endif
+-include common_footer.mk

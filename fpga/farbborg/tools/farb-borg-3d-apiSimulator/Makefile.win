@@ -1,29 +1,19 @@
 -include common.mk
+
 LIBS     = -lglut32 -lglu32 -lopengl32 -lwinmm -lgdi32
 CC       = gcc
-OBJ_2    = $(patsubst %.o,.obj/%.o,$(OBJ))
-OPTIMIZE = -O2
-CFLAGS        = -g -Wall $(OPTIMIZE) -D_WIN32 -MMD -MP
-LDFLAGS       = -Wl,-Map,$(PRG).map 
+CFLAGS  += -D_WIN32
+
 
 all: .obj .dep Makefile.win common.mk $(PRG).exe 
-
-.obj:
-	mkdir .obj
-
-.dep:
-	mkdir .dep
 
 $(PRG).exe: $(OBJ_2)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-.obj/%.o: %.c
-	$(CC) $(CFLAGS) -MF .dep/$<.d -c $< -o $@
-
 clean:
 	rm -rf .dep .obj $(PRG).exe $(PRG).map
 
-DEPS := $(wildcard .dep/*.d)
-ifneq ($(DEPS),)
-include $(DEPS)
-endif
+default: all
+cleandefault: clean
+
+-include common_footer.mk
