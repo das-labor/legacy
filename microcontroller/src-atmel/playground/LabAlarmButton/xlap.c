@@ -33,15 +33,6 @@ void process_mgt_msg()
 			break;
 	}
 }
-/*
-void process_remote_msg(){
-	AvrXPutFifo(rftxfifo, *(uint32_t*)rx_msg.data);
-}
-
-void process_lapd_msg(){
-	AvrXPutFifo(lapd_fifo, *(uint32_t*)rx_msg.data);
-}
-*/
 
 AVRX_GCC_TASKDEF(laptask, 50, 3)
 {
@@ -54,20 +45,21 @@ AVRX_GCC_TASKDEF(laptask, 50, 3)
 			{
 				process_mgt_msg();
 			}
-			else if (rx_msg.port_dst == 0x01)
+		}
+		else
+		if ((rx_msg.addr_dst == 0x02) && (rx_msg.port_dst == 0x01) && (rx_msg.data[0] == 0x00) && (rx_msg.data[1] == 0x00))
+		{
+			if (rx_msg.data[2] == 0x01)
 			{
-				if (rx_msg.data[0] == 0x01)
-				{
-				    klight_stat = 1;
-				    PORTC |= _BV(PC3);
-				    PORTC &= ~_BV(PC4);
-				}
-				else if (rx_msg.data[0] == 0x00)
-				{
-                                    klight_stat = 0;
-				    PORTC |= _BV(PC4);
-				    PORTC &= ~_BV(PC3);
-				}
+			    klight_stat = 1;
+			    PORTC |= _BV(PC3);
+			    PORTC &= ~_BV(PC4);
+			}
+			else if (rx_msg.data[2] == 0x00)
+			{
+				klight_stat = 0;
+				PORTC |= _BV(PC4);
+				PORTC &= ~_BV(PC3);
 			}
 		}
     }

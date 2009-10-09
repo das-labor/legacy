@@ -332,12 +332,12 @@ void can_init(){
 
 #ifdef CLASSIC_ATMEL
 	//this turns on INT0 on the Atmel
-	MCUCR |=  (1<<ISC01);
-	GIMSK |= (1<<INT0);
+	MCUCR |=  _BV(ISC01);
+	GIMSK |= _BV(INT0);
 #else
 	//this turns on INT0 on the Atmega
 	//MCUCR |=  (1<<ISC01);
-	GICR |= (1<<INT0);
+	GICR |= _BV(INT0);
 //	EIMSK |= _BV(INT0);
 #endif
 
