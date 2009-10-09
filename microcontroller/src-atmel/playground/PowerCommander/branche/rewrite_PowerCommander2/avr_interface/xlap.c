@@ -59,10 +59,10 @@ void process_mgt_msg()
 AVRX_GCC_TASKDEF(i2ccom_in, 50, 3)
 {
 	MessageControlBlock *p;
-	uint8_t i=0; // keep compiler happy
+	uint8_t i = 0; // keep compiler happy
 	static t_canMessage_out can_outdata;
 	
-	while(1)
+	while (1)
 	{
 		/*
 			Es ist notwendig daten von i2c zu lesen
@@ -94,7 +94,7 @@ AVRX_GCC_TASKDEF(i2ccom_in, 50, 3)
 			/*
 				i2c aus
 			*/
-				TWIM_Stop();
+			TWIM_Stop();
 
 		/*
 			daten wurden gelesen und wandern in die can_send_queue
@@ -102,11 +102,11 @@ AVRX_GCC_TASKDEF(i2ccom_in, 50, 3)
 			so gross sind wie die i2c-daten, resp es genau so viele sind
 		*/
 
-				for (i = 0; i < CAN_OUTDATACOUNT; i++)
-					{
-						can_outdata.outdata[i] = ((t_i2cMessage_in*)p)->indata[i];
-					}
-		}			
+			for (i = 0; i < CAN_OUTDATACOUNT; i++)
+			{
+				can_outdata.outdata[i] = ((t_i2cMessage_in*)p)->indata[i];
+			}
+		}	
 		AvrXSendMessage(&canQueue_out, &can_outdata.mcb);
 		AvrXWaitMessageAck(&can_outdata.mcb);
 
@@ -123,7 +123,7 @@ AVRX_GCC_TASKDEF(i2ccom_in, 50, 3)
 AVRX_GCC_TASKDEF(i2ccom_out, 50, 3)
 {
 	MessageControlBlock *p;
-	uint8_t i=0; // keep compiler happy
+	uint8_t i = 0; // keep compiler happy
 	static t_i2cMessage_in i2c_indata;
 	
 	while (1)
@@ -162,9 +162,12 @@ AVRX_GCC_TASKDEF(i2ccom_out, 50, 3)
 			und warten darauf, dass sie von dort entfernt
 			werden - aka via can wo anders hin gesendet werden oder so
 		*/
-		// if Daten von i2c abzuholen dann...
-		AvrXSendMessage(&i2cQueue_in, &i2c_indata.mcb);
-		AvrXWaitMessageAck(&i2c_indata.mcb);
+		if (((((t_i2cMessage_out*)p)->outdata[0] == 0) && (((t_i2cMessage_out*)p)->outdata[2] == 2)) ||
+		   ((((t_i2cMessage_out*)p)->outdata[0] == 1) && (((t_i2cMessage_out*)p)->outdata[2] == 1)))
+		{
+			AvrXSendMessage(&i2cQueue_in, &i2c_indata.mcb);
+			AvrXWaitMessageAck(&i2c_indata.mcb);
+		}
 		// else eben nicht
 				
 		// final dann selber fertig sagen
@@ -182,13 +185,13 @@ AVRX_GCC_TASKDEF(i2ccom_out, 50, 3)
 AVRX_GCC_TASKDEF(cancom_in, 50, 3)
 {
 	static t_i2cMessage_out i2c_outdata;
-	uint8_t i=0;
-	while(1)
+	uint8_t i = 0;
+	while (1)
 	{
 		can_get(); //get next canmessage in rx_msg
-		if(rx_msg.addr_dst == myaddr)
+		if (rx_msg.addr_dst == myaddr)
 		{
-			switch(rx_msg.port_dst)
+			switch (rx_msg.port_dst)
 			{
 				case PORT_MGT:
 				{
@@ -200,14 +203,13 @@ AVRX_GCC_TASKDEF(cancom_in, 50, 3)
 					/*
 						unterbinden, dass ueber can ein paar sachen umgelegt werden koennen
 					*/
-					if( ( (rx_msg.data[0] == C_VIRT) &&	(rx_msg.data[1] == VIRT_POWER)) || 
-							( (rx_msg.data[0] == C_SW) && 
-								( (rx_msg.data[1] == SWA_HS) || 
+					if ( ( (rx_msg.data[0] == C_VIRT) &&	(rx_msg.data[1] == VIRT_POWER)) ||
+							( (rx_msg.data[0] == C_SW) &&
+								( (rx_msg.data[1] == SWA_HS) ||
 									(rx_msg.data[1] == SWA_STECKDOSEN) ||
-									(rx_msg.data[1] == SWA_KLO)))) 
+									(rx_msg.data[1] == SWA_KLO))))
 						break;
-						
-							
+
 					/*
 						gehe davon aus, dass genau so viele daten die
 						via can reingekommen sind auch wieder auf i2c raus sollen
@@ -243,7 +245,7 @@ AVRX_GCC_TASKDEF(cancom_out, 50, 3)
 	uint8_t i = 0; // keep compiler happy
 	while (1)
 	{
-		p = AvrXWaitMessage(&canQueue_out); 
+		p = AvrXWaitMessage(&canQueue_out);
 		for (i = 0; i < CAN_OUTDATACOUNT; i++)
 		{
 				msg.data[i] = ((t_canMessage_out*)p)->outdata[i];

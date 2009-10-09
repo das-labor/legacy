@@ -64,6 +64,7 @@ void virt_fkt(struct t_i2cproto* i2cproto)
 		virt_power(i2cproto);
 		break;
 	case VIRT_VORTRAG:
+		virt_vortrag(i2cproto);
 		break;
 	default:
 		break;
