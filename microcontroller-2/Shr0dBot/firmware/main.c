@@ -51,6 +51,22 @@ uint8_t move_mode;
 #define MOVE_MODE_FREE 1
 #define MOVE_MODE_STOP 0
 
+//temporary solution
+typedef struct
+{
+	int16_t		acc_curX;			//current x acceleration
+	int16_t		acc_curY;			//current y acceleration
+	int16_t		acc_curZ;			//current z acceleration
+	uint16_t	battVolts;		//battery voltage
+	uint16_t	currentDrain;	//motor current usage
+	int16_t		curSpeed;		//the robots current speed	
+	int32_t		encAPos;		//the encoder A count
+} radio_sensorData;
+
+#define RADIO_TYPE_ROBO 0x42
+#define RADIO_CMD_STOP 0x01
+#define RADIO_CMD_GOTO 0x02
+
 //debug
 int16_t pid;
 
@@ -243,9 +259,10 @@ ISR(TIMER0_OVF_vect)
 	robo_sysCnt++;
 }
 
-int td;
+
+//int td;
 //debug string transmission
-void radio_debug()
+/*void radio_debug()
 {
 	char msg[255];
 
@@ -256,52 +273,68 @@ void radio_debug()
 	//sprintf(msg, "o:%i v:%i t:%i s:%i m:%i\r\n", pid, robo_curSpeed, robo_targSpeed, move_setSpeed, move_mode);
 
 	//debug adc - accelerometer
-	//sprintf(msg, "aX:%i aY:%i aZ:%i b:%i\r\n", acc_curX, acc_curY, acc_curZ, robo_battVolts);
+	sprintf(msg, "aX:%i aY:%i aZ:%i b:%i\r\n", acc_curX, acc_curY, acc_curZ, robo_battVolts);
 	
 	//debug adc - other, steering neutral position detector state
-	sprintf(msg, "c:%i b:%i n:%hi\r\n", robo_currentDrain, robo_battVolts, PINC & _BV(7));	
+	//sprintf(msg, "c:%i b:%i n:%hi\r\n", robo_currentDrain, robo_battVolts, PINC & _BV(7));	
 
 	rfm12_tx(strlen(msg), 0, (uint8_t *)msg);
+}*/
+
+
+//radio receive handler
+void radio_rx()
+{
+	//process "valid" robo type packets, drop all others
+	if((rfm12_rx_type() == RADIO_TYPE_ROBO) && (rfm12_rx_len() == 3))
+	{
+		switch(rfm12_rx_buffer()[0])
+		{
+			case RADIO_CMD_GOTO:
+				move_encTarg = enc_A - rfm12_rx_buffer()[1];
+				move_setSpeed = rfm12_rx_buffer()[2];
+				move_mode = MOVE_MODE_GOTO;
+				break;
+
+
+			case RADIO_CMD_STOP:
+			default:
+				robo_targSpeed = 0;
+				move_setSpeed = 0;
+				move_mode = MOVE_MODE_STOP;
+				break;
+		}
+	}
+	
+	//clear and switch receive buffer
+	rfm12_rx_clear();
 }
 
 
 //radio communication
-#define RADIO_TYPE_ROBO 0x42
-#define RADIO_CMD_STOP 0x01
-#define RADIO_CMD_GOTO 0x02
 void radio_comm(void)
 {
+	radio_sensorData sensorData;
+	
 	//receive
 	if(rfm12_rx_status() == STATUS_COMPLETE)
 	{
-		//process "valid" robo type packets, drop all others
-		if((rfm12_rx_type() == RADIO_TYPE_ROBO) && (rfm12_rx_len() == 3))
-		{
-			switch(rfm12_rx_buffer()[0])
-			{
-				case RADIO_CMD_GOTO:
-					move_encTarg = enc_A - rfm12_rx_buffer()[1];
-					move_setSpeed = rfm12_rx_buffer()[2];
-					move_mode = MOVE_MODE_GOTO;
-					break;
-
-
-				case RADIO_CMD_STOP:
-				default:
-					robo_targSpeed = 0;
-					move_setSpeed = 0;
-					move_mode = MOVE_MODE_STOP;
-					break;
-			}
-		}
-
-
-		//clear and switch receive buffer
-		rfm12_rx_clear();
+		//handle reception
+		radio_rx();
 	}
 
+	//transmit sensor data
+	sensorData.acc_curX = acc_curX;
+	sensorData.acc_curY = acc_curY;
+	sensorData.acc_curZ = acc_curZ;
+	sensorData.battVolts = robo_battVolts;
+	sensorData.currentDrain = robo_currentDrain;
+	sensorData.curSpeed = robo_curSpeed;
+	sensorData.encAPos = enc_A;
+	rfm12_tx(sizeof(sensorData), RADIO_TYPE_ROBO, (uint8_t *)sensorData);
+	
 	//send debug information
-	radio_debug();
+	//radio_debug();
 
 	//send alive message
 	//rfm12_tx(sizeof(MSG_ALIVE), 0, MSG_ALIVE);
