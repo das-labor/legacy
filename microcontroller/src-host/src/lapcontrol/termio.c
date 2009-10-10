@@ -1,3 +1,3 @@
 
-#include "../cansole/client/termio.c"
+#include "cansole/client/termio.c"
 

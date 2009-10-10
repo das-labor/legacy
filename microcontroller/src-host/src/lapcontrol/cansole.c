@@ -7,7 +7,7 @@
 #include <fcntl.h>
 
 #include "can.h"
-#include "../cansole/client/termio.h"
+#include "cansole/client/termio.h"
 
 int mytty;
 
