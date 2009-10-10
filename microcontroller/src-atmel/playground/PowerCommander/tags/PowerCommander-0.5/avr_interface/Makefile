@@ -60,7 +60,7 @@ SRC = main.c xcan.c spi.c xlap.c twi_master/twi_master.c switch.c led.c
 
 #ASRC = ../avrx/serialio.S
 
-GCCLIB = ../../../../../lib/AvrX2.6f/avrx/avrx.a
+GCCLIB = AvrX2.6f/avrx/avrx.a
 
 # Optimization level, can be [0, 1, 2, 3, s].
 # 0 = turn off optimization. s = optimize for size.
@@ -89,7 +89,7 @@ CSTANDARD = -std=gnu99
 CDEFS = -DF_CPU=$(CPUCLK) -DTICKRATE=$(TICKRATE) -DBAUDRATE=$(BAUDRATE)
 
 # Place -I options here
-CINCS = -I ../../../../../lib/AvrX2.6f/avrx/
+CINCS = -I AvrX2.6f/avrx/
 
 
 # Compiler flags.
