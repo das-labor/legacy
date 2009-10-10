@@ -51,9 +51,9 @@ AVRX_GCC_TASKDEF(laptask, 50, 3)
 		{
 			if (rx_msg.data[2] == 0x01)
 			{
-			    klight_stat = 1;
-			    PORTC |= _BV(PC3);
-			    PORTC &= ~_BV(PC4);
+				klight_stat = 1;
+				PORTC |= _BV(PC3);
+				PORTC &= ~_BV(PC4);
 			}
 			else if (rx_msg.data[2] == 0x00)
 			{

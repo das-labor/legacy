@@ -12,7 +12,7 @@
 
 
 
-/*
+
 // mitzaehlen der Events von einem Taster
 // und mitbekommen, wann er losgelassen wurde
 struct t_counter_status {
@@ -31,7 +31,7 @@ AVRX_SIGINT(SIG_OVERFLOW0)
 	AvrXTimerHandler();         // Process Timer queue
 	Epilog();                   // Restore context of next running task
 };
-
+/*
 ISR(TIMER2_OVF_vect)
 {
 	
@@ -47,24 +47,27 @@ ISR(TIMER2_OVF_vect)
 	if (!(PINB & _BV(PB1)))
 			timing_counter.tastercounter++;
 	if ((timing_counter.tickscounter & 0x001F) == 0) { // alle 32 ticks ... 0.032 sekunden
-		if (timing_counter.tastercounter != 0) {
-			if (timing_counter.tastercounter == timing_counter.tastercounter_last) {
-				 
-				//	was soll passieren wenn der schlater losgelassen wurde
+		if (timing_counter.tastercounter != 0)
+		{
+			if (timing_counter.tastercounter == timing_counter.tastercounter_last)
+			{
+
+				//	was soll passieren wenn der schalter losgelassen wurde
 				//	in erster linie sicher ein Rest
-				
+
 
 				timing_counter.tastercounter = 0;
 				timing_counter.tastercounter_last = 0;
-			} else {
+			} else
+			{
 
 
-				
+
 				//	und wir zaehlen natuerlich weiter
-				
+
 				timing_counter.tastercounter_last = timing_counter.tastercounter;
-				
-				//	der schalter wird noch gedrueckt. wir haben also einen 
+
+				//	der schalter wird noch gedrueckt. wir haben also einen
 				//	dynamischen Bereich
 				
 				//				itr_schalter_vortrag_dynamisch();
@@ -72,19 +75,19 @@ ISR(TIMER2_OVF_vect)
 		}
 	}
 
-	if ( (timing_counter.tickscounter & 0x03FF) == 0) // alle 1024 ticks ... ca 1sec
+	if ((timing_counter.tickscounter & 0x03FF) == 0) // alle 1024 ticks ... ca 1sec
 		{}
 
-	if ( (timing_counter.tickscounter & 0x14FF) == 0) // alle 5120 ticks ... ca 5sec
+	if ((timing_counter.tickscounter & 0x14FF) == 0) // alle 5120 ticks ... ca 5sec
 		{}
 
-	 
+
 	//	 ueberlaeufe sind ok!
-	
+
 	timing_counter.tickscounter++;
-	
+
 	//	und alle interrupts wieder auf go!
-	
+
 	sei();
 }
 */

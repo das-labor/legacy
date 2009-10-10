@@ -39,20 +39,24 @@ AVRX_GCC_TASKDEF(licht_task, 60, 6)
             msg.data[0] = 0x00;
             msg.data[1] = 0x00;
 
-            if (klight_stat == 0)
-            {
-                msg.data[2] = 0x01;
-                klight_stat = 1;
-            }
-            else
-            {
-                msg.data[2] = 0x00;
-                klight_stat = 0;
-            }
-            can_put(&msg);
-            AvrXDelay(&switchtimer, 3000);
+			if (klight_stat == 0)
+			{
+				msg.data[2] = 0x01;
+				PORTC |= _BV(PC3);
+				PORTC &= ~_BV(PC4);
+				klight_stat = 1;
+			}
+			else
+			{
+				msg.data[2] = 0x00;
+				PORTC |= _BV(PC3);
+				PORTC &= ~_BV(PC4);
+				klight_stat = 0;
+			}
+			can_put(&msg);
+			AvrXDelay(&switchtimer, 3000);
         }
-	AvrXDelay(&switchtimer, 1);
+		AvrXDelay(&switchtimer, 1);
     }
 }
 
