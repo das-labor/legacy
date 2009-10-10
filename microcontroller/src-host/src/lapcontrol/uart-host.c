@@ -1,3 +1,3 @@
 
-#include "../cand/uart-host.c"
+#include "cand/uart-host.c"
 
