@@ -207,13 +207,20 @@ void tetris_view_drawBorders(uint8_t nColor)
 		setpixel((pixel){4, y}, nColor);
 		setpixel((pixel){15, y}, nColor);
 	}
+
+	uint8_t nPen;
+
 	for (y = 0; y < 5; ++y)
 	{
 		for (x = 0; x <= 3; ++x){
-			setpixel((pixel){x, y}, nColor);
-			setpixel((pixel){x, y + 11}, nColor);
+		  
+		  if ((y<1 || y>3) || (x<1 || y>3)){  
+		    setpixel((pixel){x, y}, nColor);
+		    setpixel((pixel){x, y + 11}, nColor);
+		  }
 		}
 	}
+	
 }
 
 
@@ -238,6 +245,8 @@ void tetris_view_blinkBorders()
  * Argmument pPl: pointer to the playfield whose complete lines should blink
  * Return value:  void
  */
+
+
 void tetris_view_blinkLines(tetris_playfield_t *pPl)
 {
 	// reduce necessity of pointer arithmetic
@@ -277,6 +286,72 @@ void tetris_view_blinkLines(tetris_playfield_t *pPl)
 	}
 }
 
+
+/* Function:        tetris_view_showLineNumbers
+ * Description:     displays completed Lines (0-99)
+ * Argmument pV:    pointer to the view
+ * Argument nColor: color
+ * Return value:    void
+ */
+void tetris_view_showLineNumbers (tetris_view_t *pV, uint8_t nColor)
+{
+  //Get number of completed lines
+  uint8_t Lines = tetris_logic_getLines(pV->pLogic);
+  uint8_t nPen;
+
+  int x=0, y=0, i;
+  int ones, tens;  
+  
+  ones= Lines%10;
+  tens=(Lines/10)%10;
+
+  //pick drawing color, dark if ones=0, bright (piece color) otherwise
+  if ((ones%10)!=0)
+      nPen=TETRIS_VIEW_COLORPIECE;
+  else nPen=TETRIS_VIEW_COLORSPACE;
+
+  //Draws ones in the upper part of the border as a 3x3 square with 0-9 pixels  
+  //Start at column 1
+  y=1; 
+  for (i=1;i<=9;i++)
+    {
+      //Start at line 1, increase every loop cycle
+      x++; 
+      
+      //the square is just three pixels wide, start over in next column once the row is full
+      if (x%4==0) 	
+	{
+	  y++;
+	  x=1;
+	}
+      setpixel((pixel){x,y}, nPen);
+      //only draw as many ones as there are, make the rest of the square dark.
+      if (i==ones) nPen=TETRIS_VIEW_COLORSPACE;
+    }
+
+  //back to normal color, but only if tens is not divisible by 10
+  if ((tens%10)!=0)
+      nPen=TETRIS_VIEW_COLORPIECE;
+  else nPen=TETRIS_VIEW_COLORSPACE;
+  
+  //Draws ones in the lower part of the border as a 3x3 square with 0-9 pixels
+  x=0;
+  y=12; //offset for lower part of the border
+  for (i=1;i<=9;i++)
+    {
+      x++; //Start at line 1, increase every loop cycle
+      
+      //the square is just three pixels wide, start over in next column once the row is full
+      if (x%4==0)
+	{
+	  y++;
+	  x=1;
+	}
+      setpixel((pixel){x,y}, nPen);  
+      //only draw as many ones as there are, make the rest of the square dark.
+      if (i==tens) nPen=TETRIS_VIEW_COLORSPACE;
+    }    
+}
 
 /****************************
  * construction/destruction *
@@ -369,6 +444,7 @@ void tetris_view_update(tetris_view_t *pV)
 	if (tetris_playfield_getRowMask(pV->pPl) != 0)
 	{
 		tetris_view_blinkLines(pV->pPl);
+		tetris_view_showLineNumbers(pV, TETRIS_VIEW_COLORPIECE);
 	}
 
 	// draw preview piece
@@ -384,6 +460,7 @@ void tetris_view_update(tetris_view_t *pV)
 		tetris_view_blinkBorders();
 		pV->nOldLevel = nLevel;
 	}
+	
 }
 
 
