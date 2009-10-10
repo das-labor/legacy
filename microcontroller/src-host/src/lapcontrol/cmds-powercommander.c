@@ -66,7 +66,7 @@ void cmd_powercommander_help()
 	printf("es findet keine logische ueberpruefung statt... d.h. man kann das auch falsch zusammenstellen, also bitte die eigene logik ueberpruefen. Es macht beispielsweise keinen Sinn die Klasse PWMs auszuwaehlen und dann ein Switchobjekt zu definiern und dieses am ende setzen zu wollen auf einen wert von 0xff oder so.\n\n");
 	printf("Was aber geht ist in etwa folgendes: alle switche haben ein, aus, status; alle pwms haben set, get; virtuelle Objekte sind eigenstaendig definiert\n\n");
 	
-	for (i = 0; i < 29; i++)
+	for (i = 0; strcmp(nametovalue[i].name, "D_NDEF") !=0; i++)
 	{
 		printf("%s \t%s\n", nametovalue[i].name, nametovalue[i].desc);
 	}
@@ -93,16 +93,16 @@ void cmd_powercommander(int argc, char **argv)
 	if (argc == 5)
 	{ 
 		msg = (pdo_message *)can_buffer_get();
-		msg->addr_src = 0x00;
-		msg->addr_dst = 0x02;
-		msg->port_src = 0x00;
-		msg->port_dst = 0x01;
+		msg->addr_src = POWERCMD_SENDER_ADDR;
+		msg->addr_dst = POWERCMD_IFACE_ADDR;
+		msg->port_src = POWERCMD_SENDER_PORT;
+		msg->port_dst = POWERCMD_IFACE_PORT;
 		msg->dlc = 4;
 		msg->cmd = C_NDEF; // von PowerCommander.h
 		msg->data[0] = O_NDEF;
 		msg->data[1] = F_NDEF;
 		msg->data[2] = D_NDEF;
-		for (k = 0; k < 29; k++)
+		for (k = 0; strcmp(nametovalue[k].name, "D_NDEF") !=0 ; k++)
 		{
 			if (strcmp(nametovalue[k].name, argv[1]) == 0)
 			{
@@ -111,7 +111,7 @@ void cmd_powercommander(int argc, char **argv)
 		}
 		for (i = 0; i < 2; i++)
 		{
-			for (k = 0; k < 29; k++)
+			for (k = 0;  strcmp(nametovalue[k].name, "D_NDEF") !=0 ; k++)
 			{
 				//	printf("%s %s - res %d \n\n", argv[i+2], nametovalue[k].name, strcmp(nametovalue[k].name, argv[i + 2]));
 				if (strcmp(nametovalue[k].name, argv[i + 2]) == 0)
@@ -126,21 +126,52 @@ void cmd_powercommander(int argc, char **argv)
 			cmd_powercommander_help();
 			return;
 		}
-		msg->data[2] = i;
-		printf("%d - %d - %d - %d : foobar\n", msg->cmd, msg->data[0], msg->data[1], msg->data[2]);
-		printf("%s %s %s %s\n", argv[1], argv[2], argv[3], argv[4]);
+		msg->data[2]=i;
+		printf("translated: %s - %s - %s - %s\n",argv[1],argv[2],argv[3],argv[4]);
+		printf("to:         %d - %d - %d - %d\n",msg->cmd,msg->data[0],msg->data[1],msg->data[2]);
+
 		if ( msg->cmd == C_NDEF ||
 				 msg->data[0] == O_NDEF ||
 				 msg->data[1] == F_NDEF)
 		{
-			printf("%d - %d - %d - %d : foobar", msg->cmd, msg->data[0], msg->data[1], msg->data[2]);
+			printf("%d - %d - %d - %d : ", msg->cmd, msg->data[0], msg->data[1], msg->data[2]);
 			cmd_powercommander_help();
 			return;
 		}
 		
 		can_transmit((can_message*)msg);
-	} else
-	{
+		/*
+			wann muss ne meldung raus gehen
+		*/
+		if ( ( ( msg->cmd == C_PWM ) && ( msg->data[1] == F_PWM_GET)) ||
+				 ( ( msg->cmd == C_SW ) && (msg->data[1] == F_SW_STATUS)) )
+			{
+				/*
+					empfange nachrichten - mache das aber maximal 100 mal
+				*/
+				can_message *rx_msg;
+				for(i=0;i<MAX_CAN_GET_TRY;i++) {
+					rx_msg = can_get();
+					if(rx_msg) {
+
+						if ( (rx_msg->addr_dst == POWERCMD_SENDER_ADDR) &&  
+								 (rx_msg->port_dst == POWERCMD_IFACE_PORT) &&
+								 (rx_msg->addr_src == POWERCMD_IFACE_ADDR) 
+								 //								 (rx_msg->port_src == POWERCMD_IFACE_PORT)
+								 )
+							{
+								printf("returned: 0x%02x\n",rx_msg->data[0]);
+								i=MAX_CAN_GET_TRY+1;
+							}
+						can_free(rx_msg);
+					}
+					usleep(100);
+				}
+				if(i==MAX_CAN_GET_TRY) {
+					printf("returned: (none)\n");
+				}
+			}
+	} else {
 		cmd_powercommander_help();
 	}
 	/* show help */

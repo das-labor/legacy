@@ -5,6 +5,11 @@
 #include <inttypes.h>
 
 #define I2CADRESSE 15 // I2C Adresse
+#define POWERCMD_IFACE_ADDR (0x02)
+#define POWERCMD_IFACE_PORT (0x01)
+#define POWERCMD_SENDER_ADDR (0x00)
+#define POWERCMD_SENDER_PORT (0x00)
+
 
 #define HASDATA (0x01)
 #define HASNDATA (0x00)
