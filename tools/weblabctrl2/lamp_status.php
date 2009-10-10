@@ -1,0 +1,1 @@
+$status=array("TAFEL","BEAMER","SCHRANK","FLIPPER","LOUNGE","KUECHE");
