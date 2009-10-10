@@ -113,10 +113,10 @@ void virt_vortrag_pwm_set(struct t_i2cproto* i2cproto)
 {
 	if (i2cproto->fkt == F_PWM_SET)
 	{
-		pwm_set(sw_matrix[PWM_TAFEL].port, i2cproto->in_data);
-		pwm_set(sw_matrix[PWM_BEAMER].port, i2cproto->in_data);
-		pwm_set(sw_matrix[PWM_SCHRANK].port, i2cproto->in_data);
-		pwm_set(sw_matrix[PWM_FLIPPER].port, i2cproto->in_data);
+		pwm_set(pwm_matrix[PWM_TAFEL].port, i2cproto->in_data);
+		pwm_set(pwm_matrix[PWM_BEAMER].port, i2cproto->in_data);
+		pwm_set(pwm_matrix[PWM_SCHRANK].port, i2cproto->in_data);
+		pwm_set(pwm_matrix[PWM_FLIPPER].port, i2cproto->in_data);
 	}
 }
 
