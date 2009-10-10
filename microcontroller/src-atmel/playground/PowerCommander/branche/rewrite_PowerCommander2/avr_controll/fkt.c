@@ -170,7 +170,7 @@ void switch_off(volatile uint8_t *port, uint8_t pin)
 
 void switch_status(volatile uint8_t *port, uint8_t pin, uint8_t *result)
 {
-	(*result) = (((*port) >> _BV(pin)) & 0x01);
+	(*result) = ((*port) >> pin) & 1;
 }
 
 void pwm_set(volatile uint8_t *port, uint8_t value)
