@@ -69,13 +69,18 @@ can_message Rx_msg, Tx_msg;
 #define spi_set_ss() SPI_PORT &= ~_BV(SPI_PIN_SS)
 
 
-uint8_t spi_data(uint8_t c)
+uint8_t inline spi_data(uint8_t c)
 {
 	SPDR = c;
 	while (!(SPSR & _BV(SPIF)));
 	return(SPDR);
 }
 
+spi_out(uint8_t c)
+{
+	SPDR = c;
+	while (!(SPSR & _BV(SPIF)));
+}
 
 void mcp_write_b(PGM_P stream)
 {
@@ -86,8 +91,7 @@ void mcp_write_b(PGM_P stream)
 		spi_set_ss();
 		while (len--)
 		{
-			SPDR = (pgm_read_byte(stream++));
-			while (!(SPSR & _BV(SPIF)));
+			spi_out(pgm_read_byte(stream++));
 		}
 		spi_clear_ss();
 	}
@@ -101,16 +105,16 @@ uint8_t mcp_txreq_str[]  ={
 void can_transmit()
 {
 	spi_set_ss();
-	spi_data(WRITE);
-	spi_data(TXB0SIDH);
+	spi_out(WRITE);
+	spi_out(TXB0SIDH);
 
-	spi_data(((uint8_t)(Tx_msg.port_src << 2)) | (Tx_msg.port_dst >> 4));
-	spi_data((uint8_t)((Tx_msg.port_dst & 0x0C) << 3) | (1<<EXIDE) | (Tx_msg.port_dst & 0x03));
-	spi_data(0x02); // quelladresse
-	spi_data(Tx_msg.addr);
-	spi_data(Tx_msg.dlc);
+	spi_out(((uint8_t)(Tx_msg.port_src << 2)) | (Tx_msg.port_dst >> 4));
+	spi_out((uint8_t)((Tx_msg.port_dst & 0x0C) << 3) | (1<<EXIDE) | (Tx_msg.port_dst & 0x03));
+	spi_out(0x02); // quelladresse
+	spi_out(Tx_msg.addr);
+	spi_out(Tx_msg.dlc);
 	while (Tx_msg.dlc)
-		spi_data(Tx_msg.data[Tx_msg.dlc--]);
+		spi_out(Tx_msg.data[Tx_msg.dlc--]);
 	spi_clear_ss();
 
 	mcp_write_b(mcp_txreq_str);
@@ -127,8 +131,8 @@ static inline void message_fetch()
 	uint8_t x;
 
 	spi_set_ss();
-	spi_data(READ);
-	spi_data(RXB0SIDH);
+	spi_out(READ);
+	spi_out(RXB0SIDH);
 	tmp1 = spi_data(0);
 	Rx_msg.port_src = tmp1 >> 2;
 	tmp2 = spi_data(0);
@@ -210,7 +214,7 @@ static inline void can_init()
 	
 	//set Slave select high
 	spi_set_ss();
-	spi_data(RESET);
+	spi_out(RESET);
 	spi_clear_ss();
 	
 //	EEAR = 0;
