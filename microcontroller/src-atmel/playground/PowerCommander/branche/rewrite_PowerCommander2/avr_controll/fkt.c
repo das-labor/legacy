@@ -8,7 +8,7 @@
 
 void switch_fkt(struct t_i2cproto* i2cproto)
 {
-	switch(i2cproto->fkt)
+	switch (i2cproto->fkt)
 	{
 	case F_SW_OFF:
 		{
@@ -37,7 +37,7 @@ void switch_fkt(struct t_i2cproto* i2cproto)
 
 void pwm_fkt(struct t_i2cproto* i2cproto)
 {
-	switch(i2cproto->fkt)
+	switch (i2cproto->fkt)
 	{
 	case F_PWM_SET:
 		{
@@ -58,13 +58,16 @@ void pwm_fkt(struct t_i2cproto* i2cproto)
 
 void virt_fkt(struct t_i2cproto* i2cproto)
 {
-	switch(i2cproto->object)
+	switch (i2cproto->object)
 	{
 	case VIRT_POWER:
 		virt_power(i2cproto);
 		break;
 	case VIRT_VORTRAG:
 		virt_vortrag(i2cproto);
+		break;
+	case VIRT_VORTRAG_PWM:
+		virt_vortrag_pwm_set(i2cproto);
 		break;
 	default:
 		break;
@@ -73,7 +76,7 @@ void virt_fkt(struct t_i2cproto* i2cproto)
 
 void virt_power(struct t_i2cproto* i2cproto)
 {
-	switch(i2cproto->fkt)
+	switch (i2cproto->fkt)
 	{
 	case F_SW_ON:
 		{
@@ -92,7 +95,7 @@ void virt_power(struct t_i2cproto* i2cproto)
 
 void virt_vortrag(struct t_i2cproto* i2cproto)
 {
-	switch(i2cproto->fkt)
+	switch (i2cproto->fkt)
 	{
 	case F_SW_ON:
 		virt_vortrag_on();
@@ -104,6 +107,17 @@ void virt_vortrag(struct t_i2cproto* i2cproto)
 		break;
 	}
 	
+}
+
+void virt_vortrag_pwm_set(struct t_i2cproto* i2cproto)
+{
+	if (i2cproto->fkt == F_PWM_SET)
+	{
+		pwm_set(sw_matrix[PWM_TAFEL].port, i2cproto->in_data);
+		pwm_set(sw_matrix[PWM_BEAMER].port, i2cproto->in_data);
+		pwm_set(sw_matrix[PWM_SCHRANK].port, i2cproto->in_data);
+		pwm_set(sw_matrix[PWM_FLIPPER].port, i2cproto->in_data);
+	}
 }
 
 void virt_power_on()
