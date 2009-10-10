@@ -1,4 +1,5 @@
 <?
+if($_GET[update]="doit") {system("svn update"); exit; }
 include "config.php";
 echo "debug";
 if($_GET[cmd]=="PWM")$cmd="PWM";

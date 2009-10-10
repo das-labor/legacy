@@ -31,6 +31,7 @@ function mpd_cmd(room,cmd,value)
 <div id="ajax">
 #debug
 </div>
+<input type="button" value="svn update" onclick="new Ajax.Updater('ajax', 'set.php?update=doit',{method:'get'});">
 <div id="status"> </div>
 <div id="pwm" class="pwm">
 <div class="pwm_top" on_click="Effect.toggle('pwm_entries','slide');">Light</div>
