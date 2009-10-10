@@ -49,8 +49,8 @@ AVRX_GCC_TASKDEF(licht_task, 60, 6)
 			else
 			{
 				msg.data[2] = 0x00;
-				PORTC |= _BV(PC3);
-				PORTC &= ~_BV(PC4);
+				PORTC |= _BV(PC4);
+				PORTC &= ~_BV(PC3);
 				klight_stat = 0;
 			}
 			can_put(&msg);
