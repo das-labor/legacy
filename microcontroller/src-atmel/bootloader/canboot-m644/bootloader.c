@@ -70,22 +70,18 @@ uint8_t Flash_info_msg[] =
 
 int main (void)
 {
-//	DDRC = 0xFF;
-//	PORTC = 0x01;
 	
 	uint16_t Address;
 
 	
 	cli();
-	
+/*	
 	asm volatile(
 		"out 0x3e, %A0\n\t"
 		"out 0x3d, %B0\n\t"
 		::"w" (RAMEND)
 	);
-	
-
-		
+*/
 	can_init();
 	
 	Tx_msg.addr = 0;
@@ -96,11 +92,12 @@ int main (void)
 	
 	can_transmit();
 	
-	uint8_t count = 20, toggle = 0x1C;
+//	uint8_t toggle = 0x1C;
+	uint8_t count = 20;
 	do {
 	
-	  //		mcp_write(BFPCTRL, toggle);
-	  //	toggle ^= 0x10;
+		//mcp_write(BFPCTRL, toggle);
+	  // toggle ^= 0x10;
 		_delay_ms(100);
 
 		if (can_get_nb())
