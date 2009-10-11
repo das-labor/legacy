@@ -385,35 +385,7 @@ void compress_file(FILE* fin, FILE* fout){
 		encoding_writer(fout, t);
 	}while(t!=EOF);
 }
-/*
-void header_writer(FILE* f){
-	unsigned i;
-	unsigned old_depth=0;
-	int old_i=-1, v;
-	fputc(0xC0, f);
-	fputc((leaf_count>=256)?0xDF:0xDE, f);
-	fputc((uint8_t)leaf_count, f);
-	for(i=0; i<leaf_count; ++i){
-		if(old_depth!=encoding_table[i].length || i==leaf_count-1){
-			while(old_depth<encoding_table[i].length){
-				fputc(0x00, f);
-				old_depth++;
-			}
-			if(old_i!=-1){
-				fputc(i-old_i, f);
-				for(;old_i<=i;++old_i){
-					v = encoding_table[old_i].value;
-					fprintf(stdout, " adding 0x%2.2X (%c)\n", v, (v>32&&v<128)?v:' ');
-					fputc((uint8_t)v, f);
-				}
-			}else{
-				old_i=0;
-			}
-		}
 
-	}
-}
-*/
 void header_writer(FILE* f){
 	unsigned i;
 	unsigned old_depth=1;
@@ -424,7 +396,12 @@ void header_writer(FILE* f){
 	for(i=0; i<leaf_count; ++i){
 		if(old_depth<encoding_table[i].length || i==leaf_count-1){
 			if(i!=leaf_count-1){
-				fputc(i-old_i, f);
+				if(i-old_i>=255){
+					fputc(255, f);
+					fputc(i-old_i-255, f);
+				}else{
+					fputc(i-old_i, f);
+				}
 				for(;old_i<i;++old_i){
 					v = encoding_table[old_i].value;
 					fputc((uint8_t)v, f);
@@ -433,12 +410,16 @@ void header_writer(FILE* f){
 					fputc(0x00, f);
 				}
 			}else{
-				fputc(i-old_i+1, f);
+				if(i-old_i+1>=255){
+					fputc(255, f);
+					fputc(i-old_i-255+1, f);
+				}else{
+					fputc(i-old_i+1, f);
+				}
 				for(;old_i<=i;++old_i){
 					v = encoding_table[old_i].value;
 					fputc((uint8_t)v, f);
 				}
-
 			}
 		}
 	}
@@ -471,7 +452,7 @@ int main(int argc, char** argv){
 		analyze(fin);
 		init_nodes();
 		build_huffmantree();
-		fprintf(stdout, "    writing tree diagram ...\n");
+		fprintf(stdout, "    writing tree diagram ... (%s)\n", treefilename);
 		print_huffmantree(treefilename);
 
 		init_encoding_table();
@@ -487,6 +468,7 @@ int main(int argc, char** argv){
 				putchar('\n');
 			}
 		}
+		fprintf(stdout, "    writing encoding tree diagram ... (%s)\n", encfilename);
 		print_encodingtree(encfilename);
 		reset_lut();
 		build_encoding_lut();
@@ -495,13 +477,12 @@ int main(int argc, char** argv){
 			fprintf(stderr, "   could not open file: %s\n", compfilename);
 			continue;
 		}
+		fprintf(stdout, "    writing compressed file ... (%s)\n", compfilename);
 		header_writer(fout);
 		compress_file(fin, fout);
 		fclose(fin);
 		fclose(fout);
 	}
-
-
 	return 0;
 }
 
