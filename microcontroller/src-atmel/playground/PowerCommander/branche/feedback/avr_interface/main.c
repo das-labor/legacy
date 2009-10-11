@@ -66,6 +66,7 @@ int main(void)
 	AvrXRunTask(TCB(switch_lounge));
 	AvrXRunTask(TCB(switch_vortrag));
 	AvrXRunTask(TCB(led));
+	AvrXRunTask(TCB(watchtask));
 	
 	/* Needed for EEPROM access in monitor */
 	//AvrXSetSemaphore(&EEPromMutex);
