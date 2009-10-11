@@ -4,5 +4,6 @@
 AVRX_EXTERNTASK(switch_vortrag);
 AVRX_EXTERNTASK(switch_lounge);
 AVRX_EXTERNTASK(switchtask);
+AVRX_EXTERNTASK(watchtask);
 
 #endif
