@@ -23,7 +23,7 @@ AVRX_GCC_TASKDEF(switch_vortrag, 60, 7)
 
 	while (1)
 	{
-		if ((!(PINA & _BV(PA2))) && (stat_vortrag == 1))
+		if ((!(PINB & _BV(PB2))) && (stat_vortrag == 1))
 		{
 					i2c_outdata.outdata[0]=C_VIRT;
 					i2c_outdata.outdata[1]=VIRT_VORTRAG;
@@ -49,7 +49,7 @@ AVRX_GCC_TASKDEF(switch_vortrag, 60, 7)
 					AvrXDelay(&switch_timer_vortrag, 3000);
 					stat_vortrag=0;
 				}
-			if ((!(PINA & _BV(PA2))) && stat_vortrag == 0)
+			if ((!(PINB & _BV(PB2))) && stat_vortrag == 0)
 				{
 					i2c_outdata.outdata[0]=C_VIRT;
 					i2c_outdata.outdata[1]=VIRT_VORTRAG;
@@ -87,7 +87,7 @@ AVRX_GCC_TASKDEF(switch_lounge, 60, 7)
 	static t_canMessage_out can_outdata;
 	while(1)
 		{
-			if ((!(PINB & _BV(PB0))) && stat_lounge == 1)
+			if ((!(PIND & _BV(PD3))) && stat_lounge == 1)
 				{
 					i2c_outdata.outdata[0]=C_SW;
 					i2c_outdata.outdata[1]=SWL_LOUNGE;
@@ -113,7 +113,7 @@ AVRX_GCC_TASKDEF(switch_lounge, 60, 7)
 					AvrXDelay(&switch_timer_lounge, 3000);
 					stat_lounge=0;
 				}
-			if ((!(PINB & _BV(PB0))) && stat_lounge == 0)
+			if ((!(PIND & _BV(PD3))) && stat_lounge == 0)
 				{
 					i2c_outdata.outdata[0]=C_SW;
 					i2c_outdata.outdata[1]=SWL_LOUNGE;
