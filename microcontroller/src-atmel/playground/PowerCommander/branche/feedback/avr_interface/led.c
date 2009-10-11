@@ -13,7 +13,7 @@ TimerControlBlock switchtimer3;
 
 AVRX_GCC_TASKDEF(led, 10, 4)
 {
-	PORTA |= _BV(PA2); // green
+
 	while (1) // blink blue
 	{
 		PORTA |= _BV(PA4);
