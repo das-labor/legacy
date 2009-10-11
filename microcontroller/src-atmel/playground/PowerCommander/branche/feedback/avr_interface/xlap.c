@@ -259,6 +259,7 @@ AVRX_GCC_TASKDEF(cancom_out, 50, 3)
 		msg.port_dst = PORT_POWERCOMMANDER;
 		msg.addr_dst = rx_msg.addr_src;
 		msg.port_src = PORT_POWERCOMMANDER;
+		msg.dlc = CAN_OUTDATACOUNT;
 		can_put(&msg);
 		AvrXAckMessage(p);
 	}
@@ -275,6 +276,7 @@ AVRX_GCC_TASKDEF(cancom_out_info, 50, 3)
 		{
 				info_msg.data[i] = ((t_canMessage_out*)p)->outdata[i];
 		}
+		info_msg.dlc = CAN_OUTDATACOUNT;
 		info_msg.addr_src = myaddr;
 		info_msg.port_dst = PORT_POWERCOMMANDER;
 		info_msg.addr_dst = 0x00; // sollte any sein
