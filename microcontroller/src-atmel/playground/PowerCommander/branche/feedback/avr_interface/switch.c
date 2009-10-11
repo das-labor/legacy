@@ -160,6 +160,9 @@ AVRX_GCC_TASKDEF(switchtask, 60, 7)
 			if (!(PINA & _BV(PA0)) && stat_haupt == 1)
 				{
 					
+					PORTA |= _BV(PA2); // green
+					PORTA &= _BV(PA3); // red
+					
 					i2c_outdata.outdata[0]=C_VIRT;
 					i2c_outdata.outdata[1]=VIRT_POWER;
 					i2c_outdata.outdata[2]=F_SW_OFF;
@@ -193,6 +196,9 @@ AVRX_GCC_TASKDEF(switchtask, 60, 7)
 				}
 			if ((PINA & _BV(PA0)) && stat_haupt == 0)
 				{
+					PORTA |= _BV(PA3); // red
+					PORTA &= _BV(PA2); // green
+					
 					i2c_outdata.outdata[0]=C_VIRT;
 					i2c_outdata.outdata[1]=VIRT_POWER;
 					i2c_outdata.outdata[2]=F_SW_ON;
