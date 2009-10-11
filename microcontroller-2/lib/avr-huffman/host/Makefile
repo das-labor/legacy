@@ -25,7 +25,7 @@ CSTD       = c99
 DEP_DIR    = deps/
 override CFLAGS	= -MMD -MF$(DEP_DIR)$(patsubst %.c,%.d,$<) -I. -gdwarf-2 -pedantic -std=$(CSTD) -Wall -Wstrict-prototypes $(OPTIMIZE) $(DEFS)
 
-all: huffman-decode huffman-encode bin2avrS
+all: huffman-decode huffman-encode 
 
 clean:
 	rm -f huffman-decode huffman-encode bin2avrS

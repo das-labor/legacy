@@ -25,11 +25,9 @@
 #define V_NODE (-2)
 #define V_EOF  (-1)
 
-#define PREFIX_SIZE_B 32 
-
-#define ALLOC_ERROR {fprintf(stderr,"failed to alloc memory in %s @ %d !\n",__FILE__, __LINE__); exit(-1);}
-
 #define DEBUG 0
+
+#define TREE_SUFFIX ".dectree.dot"
 
 typedef struct {
 	int16_t value;
@@ -37,221 +35,228 @@ typedef struct {
 	void*   right;
 } node_t;
 
+typedef int16_t leaf_t;
+
 node_t* tree=NULL;
-uint16_t tree_index;
 
-void prefix_increment(uint8_t* prefix){
-	uint8_t i;
-	for(i=0; i<PREFIX_SIZE_B; ++i){
-		prefix[i] += 1;
-		if(prefix[i]!=0)
-			return;
+int ferrorgetc(FILE* f){
+	int t;
+	t=fgetc(f);
+	if(t==EOF){
+		fprintf(stderr, "Error: got EOF when expected data\n");
+		exit(-1);
 	}
-}
-
-void prefix_shiftleft(uint8_t* prefix){
-	uint8_t i;
-	uint8_t c[2]={0,0};
-	uint8_t ci=0;	
-	for(i=0; i<PREFIX_SIZE_B; ++i){
-		c[ci] = (prefix[i])>>7;				
-		prefix[i]<<=1;
-		ci ^= 1;
-		prefix[i]|=c[ci];
-	}
-}
-
-uint8_t append_tree(int16_t value, uint16_t depth){
-	static uint8_t prefix[PREFIX_SIZE_B];
-	static uint8_t cdepth=0;	
-	node_t* current=tree;
-	int8_t i,t;
-	for(;cdepth<depth;++cdepth){
-		prefix_shiftleft(prefix);
-	}
-#if DEBUG	
-	printf("\n %2.2X (%c) => ", value, (value>32&&value<128)?(char)value:' ');
-#endif
-	for(i=depth-1; i>=0; --i){
-		t=(prefix[i/8])&(1<<(i%8));
-		if(t==0){
-#if DEBUG
-			putchar('0');
-#endif
-			if(current->left==NULL){
-			//	current->left=calloc(1, sizeof(node_t));
-				current->left=&(tree[tree_index++]);
-				((node_t*)(current->left))->value = V_NODE;
-			}
-			current = current->left;
-		} else {
-#if DEBUG
-			putchar('1');
-#endif
-			if(current->right==NULL){
-			//	current->right=calloc(1, sizeof(node_t));
-				current->right=&(tree[tree_index++]);
-				((node_t*)(current->right))->value = V_NODE;
-			}
-			current = current->right;
-		}
-	}
-#if DEBUG	
-	puts("");
-#endif	
-	if(current==NULL)
-		ALLOC_ERROR
-	current->value=value;
-	prefix_increment(prefix);
-	return prefix[depth/8]&(1<<(depth%8));
-}
-
-void set_last_to_eof(void){
-	node_t* current=tree;
-	while(current->value==V_NODE)
-		current=current->right;
-	current->value=V_EOF;
-}
-
-void build_tree(FILE* f){
-	uint16_t treesize;
-	uint16_t x1, x2;
-	x1 =fgetc(f);
-	x2 =fgetc(f);
-	if(x1!=0xc0 || (x2&0xFE)!=0xde){
-		fprintf(stderr,"No magic values found!\n");
-	}
-	treesize= fgetc(f);
-	if(treesize>0xff){
-		fprintf(stderr,"You are trying to uncompress an empty file!\n");
-		exit(-3);
-	}
-	treesize = 2*(((x2&1)<<8)+treesize)-1;
-	tree = calloc(treesize, sizeof(node_t));
-	if(tree==NULL)
-		ALLOC_ERROR
-	tree->value = V_NODE;
-	tree_index=1;
-	uint16_t depth=0;
-	uint16_t count=0;
-	uint8_t  v;
-	do{
-		while(count==0){
-			depth++;
-			count= fgetc(f);
-			if(count==255)
-				count += fgetc(f);
-		}
-		v = fgetc(f);
-#if DEBUG		
-		printf("adding %2.2X (%c) @ depth = %d\n",v,(v>32&&v<128)?v:' ',depth);
-#endif
-		--count;
-	}while(!append_tree(v, depth));		
-	set_last_to_eof();
-}
-
-void print_sub_tree(FILE* f, node_t* node){
-	if(node->value==V_NODE){
-		fprintf(f, "  n%p -> n%p [label=\"0\"]\n", (void*)node, node->left);
-		fprintf(f, "  n%p -> n%p [label=\"1\"]\n", (void*)node, node->right);
-		print_sub_tree(f, node->left);
-		print_sub_tree(f, node->right);
-	}else{
-		int v;
-		v = node->value;
-		fprintf(f, "  n%p [label=\"%2.2X (%c)\", fillcolor=green,style=filled]\n",
-		        (void*)node, v, (v>32&&v<128&&v!='"')?v:' '); 
-	}
-}
-void print_tree(FILE* f){
-	fprintf(f, "digraph G{\n");
-	print_sub_tree(f, tree);
-	fprintf(f, "}\n");
-}
-
-void free_tree(node_t* node){
-/*
-	if(node->value==V_NODE){
-		free_tree(node->left);
-		free_tree(node->right);
-	}
-*/
-	free(node);
-}
-
-FILE* outfile;
-FILE* infile;
-
-void write_char(uint8_t v){
-	fputc(v, outfile);
-}
-
-uint8_t read_bit(void){
-	static uint8_t buffer;
-	static uint8_t index=0;
-	uint8_t t;
-	if(index==0){
-		buffer = fgetc(infile);
-		if(feof(infile))
-			return 0xFF;
-	}
-	t=buffer>>7;
-	buffer<<=1;
-	index = (index+1)%8;
 	return t;
 }
 
-uint16_t decompress_byte(void){
-	node_t* current=tree;
-	uint8_t t;
-	while(current->value==V_NODE){
-		t=read_bit();
-		if(t==0xFF)
-			return EOF;
-		if(t==0){
-			current=current->left;
-		} else {
-			current=current->right;
+void build_tree(FILE* f){
+	int t;
+	int leaf_count;
+	unsigned partition_size=1;
+	node_t* node_ptr;
+	node_t* freenode_ptr;
+	leaf_t* leaf_ptr;
+	leaf_t* leaf_end_ptr;
+	fseek(f, 0, SEEK_SET);
+	t=ferrorgetc(f);
+	if(t!=0xC0){
+		fprintf(stderr, "Error: wrong magic value\n");
+		exit(-1);
+	}
+	t=ferrorgetc(f);
+	if(t>>1!=(0xDE>>1)){
+		fprintf(stderr, "Error: wrong magic value\n");
+		exit(-1);
+	}
+	leaf_count=(t&1)<<8;
+	t=ferrorgetc(f);
+	leaf_count += t;
+	if(tree)
+		free(tree);
+	tree=calloc(leaf_count*sizeof(leaf_t)+(leaf_count-1)*sizeof(node_t),1);
+	if(!tree){
+		fprintf(stderr, "Error: could not allocate memory\n");
+		exit(-1);
+	}
+	node_ptr = tree;
+	freenode_ptr = tree+1; //(uint8_t*)tree + sizeof(node_t);
+	leaf_ptr     = (leaf_t*)(((uint8_t*)tree) + (leaf_count-1)*sizeof(node_t));
+	leaf_end_ptr = leaf_ptr + leaf_count;
+	int i;
+	while(leaf_ptr!=leaf_end_ptr){
+		t=ferrorgetc(f);
+		if(t==255){
+			t+=ferrorgetc(f);
 		}
-		if(current==NULL){
-			fprintf(stderr, "Tree damaged!\n");
-			exit(-4);
+		fprintf(stdout, "DBG: t==%d, partition_size=%d\n", t, partition_size);
+		for(i=0;i<partition_size*2; ++i){
+			node_ptr->value = V_NODE;
+			if(i<t){
+				if((i&1)==0){
+					node_ptr->left = leaf_ptr;
+					fprintf(stdout, "DBG: %p --> %p (left leaf)\n",
+					        (void*)node_ptr, (void*)(leaf_ptr));
+				}else{
+					node_ptr->right = leaf_ptr;
+					fprintf(stdout, "DBG: %p --> %p (right leaf)\n",
+					        (void*)node_ptr, (void*)(leaf_ptr));
+				}
+				leaf_ptr++;
+			}else{
+				if((i&1)==0){
+					node_ptr->left  = freenode_ptr;
+					fprintf(stdout, "DBG: %p --> %p (left node)\n",
+					        (void*)node_ptr, (void*)freenode_ptr);
+				}else{
+					node_ptr->right = freenode_ptr;
+					fprintf(stdout, "DBG: %p --> %p (right node)\n",
+					        (void*)node_ptr, (void*)freenode_ptr);
+				}
+				freenode_ptr++;
+			}
+			if(i&1){
+				++node_ptr;
+			}
+		}
+		partition_size = ((uint8_t*)freenode_ptr-(uint8_t*)node_ptr)/(sizeof(node_t));
+		int j, v;
+		for(j=0;j<t;++j){
+			v = ferrorgetc(f);
+			fprintf(stdout, "DBG: %p --> %2.2X (%c)\n", (void*)&(leaf_ptr[j-t]), v, (v>32&&v<128)?v:' ');
+			leaf_ptr[j-t]=v;
 		}
 	}
-	return current->value;
+	*(--leaf_end_ptr) = V_EOF;
 }
 
-void decompress(void){
-	uint16_t t;
-	for(;;){
-		t=decompress_byte();
-		if(t==(uint16_t)EOF)
-			return;
-		write_char(t);	
+void print_huffmantree_node(FILE* f, node_t* node){
+	if(node->value==V_NODE){
+		fprintf(f,"  n%p -> n%p [label=\"0\"]\n", (void*)node, (void*)(node->left));
+		fprintf(f,"  n%p -> n%p [label=\"1\"]\n", (void*)node, (void*)(node->right));
+		print_huffmantree_node(f, node->left);
+		print_huffmantree_node(f, node->right);
+	}else{
+		int v = *((leaf_t*)node);
+		fprintf(f,"  n%p [label=\"0x%2.2X (%c)\", fillcolor=green,style=filled]\n",
+		          (void*)node, v, (v>32&&v<128&&v!='"')?v:' ');
 	}
+}
+
+void print_huffmantree(const char* fname){
+	FILE* f;
+	f=fopen(fname, "w");
+	if(f==NULL){
+		fprintf(stderr, "Error: could not open file for tree dump (%s)!\n", fname);
+		exit(-1);
+	}
+	fputs("digraph G {\n", f);
+	print_huffmantree_node(f, tree);
+	fputs("}\n", f);
+	fclose(f);
+}
+
+int read_bit(FILE* f){
+	static uint8_t bitbuffer;
+	static unsigned fill;
+	int t;
+	if(f==NULL){
+		fill=0;
+		return -2;
+	}
+	if(fill==0){
+		t=fgetc(f);
+		if(t==EOF)
+			return EOF;
+		bitbuffer=t;
+		fill=8;
+	}
+	--fill;
+	t=bitbuffer>>7;
+	bitbuffer<<=1;
+	return t;
+}
+
+void decompress_file_corpus(FILE* fin, FILE* fout){
+	node_t* current_node;
+	int t;
+	read_bit(NULL);
+	for(;;){
+		current_node=tree;
+		while(current_node->value==V_NODE){
+			t=read_bit(fin);
+			if(t==EOF){
+				fprintf(stderr, "Error: early end of file!\n");
+				return;
+			}
+			if(t){
+				current_node=current_node->right;
+			}else{
+				current_node=current_node->left;
+			}
+		}
+		if(*((leaf_t*)current_node)==V_EOF){
+			return;
+		}
+		fputc((uint8_t)*((leaf_t*)current_node), fout);
+	}
+}
+
+int fileexists(char* fname){
+	FILE* f;
+	f=fopen(fname, "r");
+	if(f){
+		fclose(f);
+		return 1;
+	}
+	return 0;
+}
+
+int endswith(const char* a, const char* suffix){
+	unsigned i;
+	i=strlen(suffix);
+	if(strlen(a)<i)
+		return 0;
+	a += strlen(a)-i;
+	return !strcmp(a, suffix);
 }
 
 int main(int argc, char** argv){
 	int i;
-	FILE* fin;
-	FILE* fg;
-//	outfile=stdout;
+	FILE *fin, *fout;
+	unsigned index;
 	for(i=1;i<argc;++i){
-		fin = fopen(argv[i], "r");
-		fg  = fopen("graphout.dot", "w");
-		outfile = fopen("decompress.out", "w");
-//		puts("building tree ...");
+		char foutname[strlen(argv[i])+10];
+		char ftreename[strlen(argv[i])+strlen(TREE_SUFFIX)+3];
+		fin=fopen(argv[i], "r");
+		if(fin==NULL){
+			fprintf(stderr, "Error: could not open input file %s\n", argv[i]);
+			continue;
+		}
 		build_tree(fin);
-//		puts("printing tree ...");
-		print_tree(fg);
-		fclose(fg);
-		infile=fin;
-//		puts("decompression ...");
-		decompress();
+		strcpy(ftreename, argv[i]);
+		strcat(ftreename, TREE_SUFFIX);
+		print_huffmantree(ftreename);
+		index=0;
+		strcpy(foutname, argv[i]);
+		unsigned v=strlen(foutname);
+		if(endswith(foutname, ".hfm")){
+			v-=4;
+			foutname[v]='\0';
+		}
+		while(fileexists(foutname)){
+			char appendix[8];
+			sprintf(appendix,".%03d", index++);
+			foutname[v] = '\0';
+			strcat(foutname, appendix);
+		}
+		fout=fopen(foutname, "w");
+		if(fout==NULL){
+			fprintf(stderr, "Error: could not open output file %s\n", argv[i]);
+			continue;
+		}
+		decompress_file_corpus(fin, fout);
 		fclose(fin);
-		fclose(outfile);
-		free_tree(tree);
+		fclose(fout);
 	}
 	return 0;
 }
