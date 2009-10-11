@@ -10,6 +10,7 @@
 #define HASDATA (0x01)
 #define HASNDATA (0x00)
 
+#define RINGBUFFERSIZE 3
 // der schalter generiert $Anzahl von events pro sekunde
 
 // immer wieder der gleiche scheiss!
