@@ -23,6 +23,7 @@
 uint8_t myaddr;
 
 static can_message_t msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
+static can_message_t info_msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
 
 TimerControlBlock   i2cResponseTimer;             // Declare the control blocks needed for timers
 
@@ -104,6 +105,10 @@ AVRX_GCC_TASKDEF(i2ccom_in, 50, 3)
 
 			for (i = 0; i < CAN_OUTDATACOUNT; i++)
 			{
+				can_outdata.outdata[i] = 0x00;
+			}
+			for (i = 0; i < I2C_INDATACOUNT; i++)
+			{
 				can_outdata.outdata[i] = ((t_i2cMessage_in*)p)->indata[i];
 			}
 		}	
@@ -162,8 +167,8 @@ AVRX_GCC_TASKDEF(i2ccom_out, 50, 3)
 			und warten darauf, dass sie von dort entfernt
 			werden - aka via can wo anders hin gesendet werden oder so
 		*/
-		if (((((t_i2cMessage_out*)p)->outdata[0] == 0) && (((t_i2cMessage_out*)p)->outdata[2] == 2)) ||
-		   ((((t_i2cMessage_out*)p)->outdata[0] == 1) && (((t_i2cMessage_out*)p)->outdata[2] == 1)))
+		if (((((t_i2cMessage_out*)p)->outdata[0] == C_SW) && (((t_i2cMessage_out*)p)->outdata[2] == F_SW_STATUS)) ||
+		   ((((t_i2cMessage_out*)p)->outdata[0] == C_PWM) && (((t_i2cMessage_out*)p)->outdata[2] == F_PWM_GET)))
 		{
 			AvrXSendMessage(&i2cQueue_in, &i2c_indata.mcb);
 			AvrXWaitMessageAck(&i2c_indata.mcb);
@@ -250,10 +255,31 @@ AVRX_GCC_TASKDEF(cancom_out, 50, 3)
 		{
 				msg.data[i] = ((t_canMessage_out*)p)->outdata[i];
 		}
+		msg.addr_src = myaddr;
 		msg.port_dst = PORT_POWERCOMMANDER;
 		msg.addr_dst = rx_msg.addr_src;
 		msg.port_src = PORT_POWERCOMMANDER;
 		can_put(&msg);
+		AvrXAckMessage(p);
+	}
+}
+
+AVRX_GCC_TASKDEF(cancom_out_info, 50, 3)
+{
+	MessageControlBlock *p;
+	uint8_t i = 0; // keep compiler happy
+	while (1)
+	{
+		p = AvrXWaitMessage(&canQueue_out_info);
+		for (i = 0; i < CAN_OUTDATACOUNT; i++)
+		{
+				info_msg.data[i] = ((t_canMessage_out*)p)->outdata[i];
+		}
+		info_msg.addr_src = myaddr;
+		info_msg.port_dst = PORT_POWERCOMMANDER;
+		info_msg.addr_dst = 0x00; // sollte any sein
+		info_msg.port_src = PORT_POWERCOMMANDER;
+		can_put(&info_msg);
 		AvrXAckMessage(p);
 	}
 }
