@@ -98,21 +98,7 @@ AVRX_SIGINT(SIG_OVERFLOW0)
 	AvrXTimerHandler();         // Process Timer queue
 	Epilog();                   // Restore context of next running task
 };
-/*
-ISR(INT2_vect)
-{
-	cli();
-	timing_counter.tastercounter_vortrag++;
-	sei();
-}
 
-ISR(INT1_vect)
-{
-	cli();
-	timing_counter.tastercounter_lounge++;
-	sei();
-}
-*/
 int main(void)
 {
 	AvrXSetKernelStack(0);
@@ -126,21 +112,11 @@ int main(void)
 
 	DDRA |= _BV(PA2) | _BV(PA3) | _BV(PA4); // Status LED G R B
 	DDRA &= ~(_BV(PA0) | _BV(PA1)); // Eingänge HS, rcd
-	//  PD7 PD6
-	// PC2
+
 	DDRB &= ~_BV(PB2); // Eingang 
 	DDRD &= ~_BV(PD3); // Eingang 
 	PORTB |= _BV(PB2); // Pullup Taster vortrag
 	PORTD |= _BV(PD3); // Pullup Taster lounge
-/*
-	MCUCR |= _BV(ISC11);	// Trigger Interrupt on any logical change on pin pd2
-	GICR |= _BV(INT1) | _BV(INT2);								// Enable External Interrupt Request 1 / 2
-	MCUCSR &= ~_BV(ISC2);
-	
-	
-	TIMSK |= _BV(TOIE0);							// Enable Timer0 Overflow Interrupt
-*/
-	
 //	_delay_ms(1000);
 
 /*
@@ -158,11 +134,11 @@ int main(void)
 	AvrXRunTask(TCB(i2ccom_in));
 	AvrXRunTask(TCB(i2ccom_out));
 
+	//	AvrXRunTask(TCB(laptask));
 	AvrXRunTask(TCB(switchtask));
 	AvrXRunTask(TCB(switch_lounge));
 	AvrXRunTask(TCB(switch_vortrag));
 	AvrXRunTask(TCB(led));
-	AvrXRunTask(TCB(watchtask));
 	
 	/* Needed for EEPROM access in monitor */
 	//AvrXSetSemaphore(&EEPromMutex);
