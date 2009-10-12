@@ -30,7 +30,7 @@ AVRX_GCC_TASKDEF(switch_vortrag, 60, 7)
 			i2c_outdata.outdata[3]=0x00;
 
 			AvrXSendMessage(&i2cQueue_out, &i2c_outdata.mcb);
-			AvrXWaitMessageAck(&i2c_outdata.mcb);
+			//			AvrXWaitMessageAck(&i2c_outdata.mcb);
 
 			AvrXDelay(&switch_timer_vortrag, 3000);
 			stat_vortrag = 0;
@@ -43,7 +43,7 @@ AVRX_GCC_TASKDEF(switch_vortrag, 60, 7)
 			i2c_outdata.outdata[3]=0x00;
 
 			AvrXSendMessage(&i2cQueue_out, &i2c_outdata.mcb);
-			AvrXWaitMessageAck(&i2c_outdata.mcb);
+			//			AvrXWaitMessageAck(&i2c_outdata.mcb);
 
 			AvrXDelay(&switch_timer_vortrag, 3000);
 			stat_vortrag = 1;
@@ -67,7 +67,7 @@ AVRX_GCC_TASKDEF(switch_lounge, 60, 7)
 			i2c_outdata.outdata[3]=0x00;
 
 			AvrXSendMessage(&i2cQueue_out, &i2c_outdata.mcb);
-			AvrXWaitMessageAck(&i2c_outdata.mcb);
+			//			AvrXWaitMessageAck(&i2c_outdata.mcb);
 
 			AvrXDelay(&switch_timer_lounge, 3000);
 			stat_lounge = 0;
@@ -80,7 +80,7 @@ AVRX_GCC_TASKDEF(switch_lounge, 60, 7)
 			i2c_outdata.outdata[3]=0x00;
 
 			AvrXSendMessage(&i2cQueue_out, &i2c_outdata.mcb);
-			AvrXWaitMessageAck(&i2c_outdata.mcb);
+			//			AvrXWaitMessageAck(&i2c_outdata.mcb);
 
 			AvrXDelay(&switch_timer_lounge, 3000);
 			
@@ -120,7 +120,7 @@ AVRX_GCC_TASKDEF(switchtask, 60, 7)
 				sende nachricht ueber can, das wir ausschalten
 			*/
 			AvrXSendMessage(&canQueue_out, &can_outdata.mcb);
-			AvrXWaitMessageAck(&can_outdata.mcb);
+			//			AvrXWaitMessageAck(&can_outdata.mcb);
 
 			/*
 				warte 5 sekunden
@@ -132,7 +132,7 @@ AVRX_GCC_TASKDEF(switchtask, 60, 7)
 			*/
 					
 			AvrXSendMessage(&i2cQueue_out, &i2c_outdata.mcb);
-			AvrXWaitMessageAck(&i2c_outdata.mcb);
+			//			AvrXWaitMessageAck(&i2c_outdata.mcb);
 					
 
 			AvrXDelay(&switchtimer, 1000);
@@ -158,7 +158,7 @@ AVRX_GCC_TASKDEF(switchtask, 60, 7)
 				sende sofort, dass einschlatsignal
 			*/
 			AvrXSendMessage(&i2cQueue_out, &i2c_outdata.mcb);
-			AvrXWaitMessageAck(&i2c_outdata.mcb);
+			//			AvrXWaitMessageAck(&i2c_outdata.mcb);
 
 			/*
 				warte 5 sekunden
@@ -170,7 +170,7 @@ AVRX_GCC_TASKDEF(switchtask, 60, 7)
 			*/
 
 			AvrXSendMessage(&canQueue_out, &can_outdata.mcb);
-			AvrXWaitMessageAck(&can_outdata.mcb); 
+			//			AvrXWaitMessageAck(&can_outdata.mcb); 
 
 			AvrXDelay(&switchtimer, 1000);
 
@@ -205,7 +205,7 @@ AVRX_GCC_TASKDEF(watchtask, 40, 7)
 			can_outdata.outdata[2] = ERROR;
 
 			AvrXSendMessage(&canQueue_out, &can_outdata.mcb);
-			AvrXWaitMessageAck(&can_outdata.mcb);
+			//AvrXWaitMessageAck(&can_outdata.mcb);
 		}
 		if ((PIND & _BV(PD6)) && stat_rcd == 0)
 		{
@@ -223,7 +223,7 @@ AVRX_GCC_TASKDEF(watchtask, 40, 7)
 			can_outdata.outdata[2] = OK;
 
 			AvrXSendMessage(&canQueue_out, &can_outdata.mcb);
-			AvrXWaitMessageAck(&can_outdata.mcb);
+			//			AvrXWaitMessageAck(&can_outdata.mcb);
 		}
 		if (!(PIND & _BV(PD7)) && stat_rcd_l == 1)
 		{				
@@ -241,7 +241,7 @@ AVRX_GCC_TASKDEF(watchtask, 40, 7)
 			can_outdata.outdata[2] = ERROR;
 
 			AvrXSendMessage(&canQueue_out, &can_outdata.mcb);
-			AvrXWaitMessageAck(&can_outdata.mcb);
+			//			AvrXWaitMessageAck(&can_outdata.mcb);
 		}
 		if ((PIND & _BV(PD7)) && stat_rcd_l == 0)
 		{
@@ -259,7 +259,7 @@ AVRX_GCC_TASKDEF(watchtask, 40, 7)
 			can_outdata.outdata[2] = OK;
 
 			AvrXSendMessage(&canQueue_out, &can_outdata.mcb);
-			AvrXWaitMessageAck(&can_outdata.mcb);
+			//			AvrXWaitMessageAck(&can_outdata.mcb);
 		}
 		if (!(PINC & _BV(PC2)) && stat_power == 1)
 		{				
@@ -277,7 +277,7 @@ AVRX_GCC_TASKDEF(watchtask, 40, 7)
 			can_outdata.outdata[2] = ERROR;
 
 			AvrXSendMessage(&canQueue_out, &can_outdata.mcb);
-			AvrXWaitMessageAck(&can_outdata.mcb);
+			//			AvrXWaitMessageAck(&can_outdata.mcb);
 		}
 		if ((PINC & _BV(PC2)) && stat_power == 0)
 		{
@@ -295,7 +295,7 @@ AVRX_GCC_TASKDEF(watchtask, 40, 7)
 			can_outdata.outdata[2] = OK;
 
 			AvrXSendMessage(&canQueue_out, &can_outdata.mcb);
-			AvrXWaitMessageAck(&can_outdata.mcb);
+			//			AvrXWaitMessageAck(&can_outdata.mcb);
 		}
 		AvrXDelay(&taskswitch_timer, 1);
 	}
