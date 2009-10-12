@@ -23,9 +23,9 @@
 uint8_t myaddr;
 
 static can_message_t msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
-static can_message_t info_msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
 
 TimerControlBlock   i2cResponseTimer;             // Declare the control blocks needed for timers
+TimerControlBlock   taskswitch_xlap;             // Declare the control blocks needed for timers
 
 
 void process_mgt_msg()
@@ -70,6 +70,7 @@ AVRX_GCC_TASKDEF(i2ccom_in, 50, 3)
 		*/
 		p = AvrXWaitMessage(&i2cQueue_in);
 		AvrXDelay(&i2cResponseTimer, 10); // 10ms auf den ctrl warten bevor wir lesen
+
 		if (!TWIM_Start (SLAVE, TWIM_READ))
 		{
 			TWIM_Stop();
@@ -116,6 +117,7 @@ AVRX_GCC_TASKDEF(i2ccom_in, 50, 3)
 		AvrXWaitMessageAck(&can_outdata.mcb);
 
 		AvrXAckMessage(p);
+		AvrXDelay(&taskswitch_xlap, 1); // 10ms auf den ctrl warten bevor wir lesen
 				 
 	}
 }
@@ -177,6 +179,7 @@ AVRX_GCC_TASKDEF(i2ccom_out, 50, 3)
 				
 		// final dann selber fertig sagen
 		AvrXAckMessage(p);
+		AvrXDelay(&taskswitch_xlap, 1); // 10ms auf den ctrl warten bevor wir lesen
 	}
 }
 
@@ -240,6 +243,7 @@ AVRX_GCC_TASKDEF(cancom_in, 50, 3)
 				break;
 			}
 		}
+		AvrXDelay(&taskswitch_xlap, 1); // 10ms auf den ctrl warten bevor wir lesen
 	}
 }
 
@@ -262,30 +266,9 @@ AVRX_GCC_TASKDEF(cancom_out, 50, 3)
 		msg.dlc = CAN_OUTDATACOUNT;
 		can_put(&msg);
 		AvrXAckMessage(p);
+		AvrXDelay(&taskswitch_xlap, 1); // 10ms auf den ctrl warten bevor wir lesen
 	}
 }
-
-AVRX_GCC_TASKDEF(cancom_out_info, 50, 3)
-{
-	MessageControlBlock *p;
-	uint8_t i = 0; // keep compiler happy
-	while (1)
-	{
-		p = AvrXWaitMessage(&canQueue_out_info);
-		for (i = 0; i < CAN_OUTDATACOUNT; i++)
-		{
-				info_msg.data[i] = ((t_canMessage_out*)p)->outdata[i];
-		}
-		info_msg.dlc = CAN_OUTDATACOUNT;
-		info_msg.addr_src = myaddr;
-		info_msg.port_dst = PORT_POWERCOMMANDER;
-		info_msg.addr_dst = 0x00; // sollte any sein
-		info_msg.port_src = PORT_POWERCOMMANDER;
-		can_put(&info_msg);
-		AvrXAckMessage(p);
-	}
-}
-	
 
 void xlap_init()
 {

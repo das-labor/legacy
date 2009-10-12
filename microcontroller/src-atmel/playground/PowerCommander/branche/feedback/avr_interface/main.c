@@ -67,7 +67,6 @@ int main(void)
 
 	AvrXRunTask(TCB(cancom_in));
 	AvrXRunTask(TCB(cancom_out));
-	AvrXRunTask(TCB(cancom_out_info));
 	AvrXRunTask(TCB(i2ccom_in));
 	AvrXRunTask(TCB(i2ccom_out));
 
