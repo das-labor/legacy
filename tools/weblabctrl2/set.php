@@ -16,28 +16,7 @@ if($cmd=="PWM")
 	else unset($_GET[value]);
 	exec("powercommander.lapcontrol powercommander $cmd $id SET 0x$value");
 	echo "powercommander.lapcontrol powercommander $cmd $id SET 0x$value";
-
-	include "status.txt";
-	$first=false;
-	$file_content = "<? \$status = array( ";
-	#foreach($status as $status_key => $status_value)
-	foreach($pwm_ids as $status_key)
-	{
-		if($first==true) $file_content .= ", ";
-		if($status_key==$id)
-		{
-			$file_content .= "\"$status_key\" => \"".hexdec($value)."\""; 
-			$script .= "slider_".$status_key."_control.setValue('".hexdec($value)."');\n";
-		}
-		else
-			$file_content .= "\"$status_key\" => \"".$status[$status_key]."\""; 
-		$first=true;
-	}
-	$file_content .= "); ?>";
-	$file=fopen("status.txt","w");
-	fwrite($file,$file_content);
-	fclose($file);
-		
+	
 }
 elseif($cmd=="SW")
 {

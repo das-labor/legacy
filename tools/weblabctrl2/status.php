@@ -1,12 +1,16 @@
 <?
 
 include "config.php";
-include "status.txt";
 
 foreach($pwm_ids as $id)
 {
-	$script .= "slider_".$id."_control.setValue('".$status[$id]."');\n";
+	unset($status);
+	exec("powercommander.lapcontrol powercommander PWM $id GET 0",$status);
+	//var_dump($status);
+	if(preg_match("/returned/",$status[3])) 
+		$script .= "slider_".$id."_control.setValue('".hexdec(substr($status[3],11,4))."');\n";
 }
+
 foreach($rooms as $room => $port)
 {
 	unset($status);
