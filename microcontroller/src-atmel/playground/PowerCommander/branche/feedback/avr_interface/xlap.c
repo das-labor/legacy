@@ -57,7 +57,7 @@ void process_mgt_msg()
 	werden, sondern es wird immer die gesamte Arraygroesse
 	aus edm i2c-bus gezogen
 */
-AVRX_GCC_TASKDEF(i2ccom_in, 100, 3)
+AVRX_GCC_TASKDEF(i2ccom_in, 100, 6)
 {
 	MessageControlBlock *p;
 	uint8_t i = 0; // keep compiler happy
@@ -127,7 +127,7 @@ AVRX_GCC_TASKDEF(i2ccom_in, 100, 3)
 	dieser Task wird aktiv, wenn es in der i2cQueue_out
 	ein Datenobjekt gibt
 */
-AVRX_GCC_TASKDEF(i2ccom_out, 100, 3)
+AVRX_GCC_TASKDEF(i2ccom_out, 100, 5)
 {
 	MessageControlBlock *p;
 	uint8_t i = 0; // keep compiler happy
@@ -189,7 +189,7 @@ AVRX_GCC_TASKDEF(i2ccom_out, 100, 3)
 	der can-nachrichten an den i2c 
 	XXX - hier ist der punkt wo man ntp einbauen sollte
 */
-AVRX_GCC_TASKDEF(cancom_in, 100, 3)
+AVRX_GCC_TASKDEF(cancom_in, 100, 4)
 {
 	static t_i2cMessage_out i2c_outdata;
 	uint8_t i = 0;
