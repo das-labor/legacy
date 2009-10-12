@@ -3,7 +3,6 @@
 
 AVRX_EXTERNTASK(cancom_in);
 AVRX_EXTERNTASK(cancom_out);
-AVRX_EXTERNTASK(cancom_out_info);
 AVRX_EXTERNTASK(i2ccom_in);
 AVRX_EXTERNTASK(i2ccom_out);
 
