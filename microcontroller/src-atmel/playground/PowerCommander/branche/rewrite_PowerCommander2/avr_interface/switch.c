@@ -97,7 +97,7 @@ AVRX_GCC_TASKDEF(switchtask, 60, 7)
 {
 	static t_i2cMessage_out i2c_outdata;
 
-
+// can nachricht senden
 	uint8_t stat_haupt = 0;
 
 	while (1)
@@ -117,6 +117,52 @@ AVRX_GCC_TASKDEF(switchtask, 60, 7)
 					AvrXDelay(&switchtimer, 1000);
 				}
 			if ((PINA & _BV(PA0)) && stat_haupt == 0)
+				{
+					i2c_outdata.outdata[0]=C_VIRT;
+					i2c_outdata.outdata[1]=VIRT_POWER;
+					i2c_outdata.outdata[2]=F_SW_ON;
+					i2c_outdata.outdata[3]=0x00;
+
+					stat_haupt = 1;
+					AvrXSendMessage(&i2cQueue_out, &i2c_outdata.mcb);
+					AvrXWaitMessageAck(&i2c_outdata.mcb);
+
+					AvrXDelay(&switchtimer, 1000);
+
+				}
+			AvrXDelay(&switchtimer, 1);
+  	}
+}
+
+
+AVRX_GCC_TASKDEF(watchtask, 20, 7)
+{
+	// PD7 rcd licht
+	// PD6 rcd server
+	// PC2 24v
+	// PA1 rcd steckdosen
+
+	uint8_t stat_rcd0 = 0;
+	uint8_t stat_rcd1 = 0;
+	uint8_t stat_rcd2 = 0;
+
+	while (1)
+  	{
+			if (!(PIND & _BV(PD7)) && stat_haupt == 1)
+				{
+					
+					i2c_outdata.outdata[0]=C_VIRT;
+					i2c_outdata.outdata[1]=VIRT_POWER;
+					i2c_outdata.outdata[2]=F_SW_OFF;
+					i2c_outdata.outdata[3]=0x00;
+
+					stat_haupt = 0;
+					AvrXSendMessage(&i2cQueue_out, &i2c_outdata.mcb);
+					AvrXWaitMessageAck(&i2c_outdata.mcb);
+
+					AvrXDelay(&switchtimer, 1000);
+				}
+			if ((PIND & _BV(PD7)) && stat_haupt == 0)
 				{
 					i2c_outdata.outdata[0]=C_VIRT;
 					i2c_outdata.outdata[1]=VIRT_POWER;
