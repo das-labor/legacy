@@ -124,7 +124,8 @@ AVRX_GCC_TASKDEF(switchtask, 60, 7)
 			AvrXWaitMessageAck(&i2c_outdata.mcb);
 
 			AvrXDelay(&switchtimer, 1000);
-
+			PORTA |= _BV(PA2); // green
+			PORTA &= ~_BV(PA3); // red
 		}
 		AvrXDelay(&switchtimer, 1);
   }
