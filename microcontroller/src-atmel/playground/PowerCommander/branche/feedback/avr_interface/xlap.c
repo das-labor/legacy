@@ -114,7 +114,7 @@ AVRX_GCC_TASKDEF(i2ccom_in, 100, 3)
 			}
 		}	
 		AvrXSendMessage(&canQueue_out, &can_outdata.mcb);
-		AvrXWaitMessageAck(&can_outdata.mcb);
+		//		AvrXWaitMessageAck(&can_outdata.mcb);
 
 		AvrXAckMessage(p);
 		AvrXDelay(&taskswitch_xlap, 1); // 10ms auf den ctrl warten bevor wir lesen
@@ -173,7 +173,7 @@ AVRX_GCC_TASKDEF(i2ccom_out, 100, 3)
 		   ((((t_i2cMessage_out*)p)->outdata[0] == C_PWM) && (((t_i2cMessage_out*)p)->outdata[2] == F_PWM_GET)))
 		{
 			AvrXSendMessage(&i2cQueue_in, &i2c_indata.mcb);
-			AvrXWaitMessageAck(&i2c_indata.mcb);
+			//			AvrXWaitMessageAck(&i2c_indata.mcb);
 		}
 				
 		// final dann selber fertig sagen
@@ -234,7 +234,7 @@ AVRX_GCC_TASKDEF(cancom_in, 100, 3)
 					/*
 						warten bis sie fertig ist
 					*/
-					AvrXWaitMessageAck(&i2c_outdata.mcb);
+					//					AvrXWaitMessageAck(&i2c_outdata.mcb);
 								
 				}
 				break;
