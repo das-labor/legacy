@@ -64,7 +64,11 @@ foreach($rooms as $room => $port)
 	echo "<input type=\"button\" id=\"".$room."_next\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','next');\" value=\"next\"><br>";
 	echo "<div id=\"".$room."_status\"></div>";
 	#if(strpos($status[0],"volume")===false) echo substr(htmlspecialchars($status[0]),0,24);
-	echo "<div id=\"slider_mpd_$room\" class=\"slider\"> 
+	echo "<div id=\"slider_mpd_volume_$room\" class=\"slider\"> 
+            <div class=\"handle\" style=\"background-color: $color;\"></div>
+        </div>\n";
+	$color="#".dechex(rand(0,255)).dechex(rand(0,255)).dechex(rand(0,255));
+	echo "<div id=\"slider_mpd_process_$room\" class=\"slider\"> 
             <div class=\"handle\" style=\"background-color: $color;\"></div>
         </div>\n";
 }
@@ -98,10 +102,10 @@ foreach($rooms as $room => $port)
 	exec("export MPD_PORT=$port; mpc volume",$volume);
 	preg_match('/volume: (..)%/',$volume[0],$volume);
 	echo "
-      var slider_mpd_$room = $('slider_mpd_$room');
+      var slider_mpd_volume_$room = $('slider_mpd_volume_$room');
 
 
-      new Control.Slider(slider_mpd_$room.select('.handle'), slider_mpd_$room, {
+      new Control.Slider(slider_mpd_volume_$room.select('.handle'), slider_mpd_volume_$room, {
       range: \$R(0, 100),
       increment: 10,
       sliderValue: [".$volume[1]."],
@@ -110,6 +114,9 @@ foreach($rooms as $room => $port)
 			mpd_cmd('$room','volume',value);
       }
     });";
+	echo "var slider_mpd_process_$room = $('slider_mpd_process_$room');
+	slider_process_".$room."_control = new Control.Slider(slider_mpd_process_$room.select('.handle'), slider_mpd_process_$room, {
+      range: \$R(0, 100),disabled:true});";
 }
 echo "  })();\n";
 echo "function update_status(){\n";
