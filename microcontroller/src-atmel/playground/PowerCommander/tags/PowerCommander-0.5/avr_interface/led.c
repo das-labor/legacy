@@ -13,12 +13,11 @@ TimerControlBlock switchtimer3;
 
 AVRX_GCC_TASKDEF(led, 10, 4)
 {
-	
 	while (1)
 	{
-		PORTA |= _BV(PA7);
+		PORTA |= _BV(PA4);
 		AvrXDelay(&switchtimer3, 2000);
-		PORTA &= ~_BV(PA7);
+		PORTA &= ~_BV(PA4);
 		AvrXDelay(&switchtimer3, 2000);
 	}
 }

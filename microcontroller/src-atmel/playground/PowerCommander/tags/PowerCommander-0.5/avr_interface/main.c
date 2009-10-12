@@ -30,14 +30,18 @@ int main(void)
 
 	MCUCR |= _BV(SE);      	    // Enable "sleep" mode (low power when idle)
 	TCNT0 |= TCNT0_INIT;		    // Load overflow counter of timer0
-	 TCCR0 |= TMC8_CK256;		// Set Timer0 to CPUCLK/256
+	TCCR0 |= TMC8_CK256;		// Set Timer0 to CPUCLK/256
 //	TCCR0B |= TMC8_CK256;		  // set timer0 atmega644p
-	 TIMSK |= _BV(TOIE0);		  // Enable interrupt flag
+	TIMSK |= _BV(TOIE0);		  // Enable interrupt flag
 //	TIMSK0 |= _BV(TOIE0);		  // Enable interrupt flag atmega644p
 
-	DDRA |= _BV(PA7); // Debug LED
-	PORTA |= _BV(PA2); // Pullup Taster vortrag
-	PORTB |= _BV(PB0); // Pullup Taster lounge
+	DDRA |= _BV(PA2) | _BV(PA3) | _BV(PA4); // Status LED G R B
+	DDRA &= ~(_BV(PA0) | _BV(PA1)); // Eingänge HS, rcd
+
+	DDRB &= ~_BV(PB2); // Eingang 
+	DDRD &= ~_BV(PD3); // Eingang 
+	PORTB |= _BV(PB2); // Pullup Taster vortrag
+	PORTD |= _BV(PD3); // Pullup Taster lounge
 //	_delay_ms(1000);
 
 /*
