@@ -83,12 +83,11 @@ int main(void)
 	AvrXRunTask(TCB(i2ccom_in));
 	AvrXRunTask(TCB(i2ccom_out));
 
-	//	AvrXRunTask(TCB(laptask));
 	AvrXRunTask(TCB(switchtask));
 	AvrXRunTask(TCB(switch_lounge));
 	AvrXRunTask(TCB(switch_vortrag));
 	AvrXRunTask(TCB(led));
-//	AvrXRunTask(TCB(watchtask));
+	AvrXRunTask(TCB(watchtask));
 	
 	/* Needed for EEPROM access in monitor */
 	//AvrXSetSemaphore(&EEPromMutex);
