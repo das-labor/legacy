@@ -162,8 +162,8 @@ AVRX_GCC_TASKDEF(i2ccom_out, 50, 3)
 			und warten darauf, dass sie von dort entfernt
 			werden - aka via can wo anders hin gesendet werden oder so
 		*/
-		if (((((t_i2cMessage_out*)p)->outdata[0] == 0) && (((t_i2cMessage_out*)p)->outdata[2] == 2)) ||
-		   ((((t_i2cMessage_out*)p)->outdata[0] == 1) && (((t_i2cMessage_out*)p)->outdata[2] == 1)))
+		if (((((t_i2cMessage_out*)p)->outdata[0] == C_SW) && (((t_i2cMessage_out*)p)->outdata[2] == F_SW_STATUS)) ||
+		   ((((t_i2cMessage_out*)p)->outdata[0] == C_PWM) && (((t_i2cMessage_out*)p)->outdata[2] == F_PWM_GET)))
 		{
 			AvrXSendMessage(&i2cQueue_in, &i2c_indata.mcb);
 			AvrXWaitMessageAck(&i2c_indata.mcb);
