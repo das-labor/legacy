@@ -37,7 +37,17 @@
 #define C_SW  (0x00)
 #define C_PWM (0x01)
 #define C_VIRT (0x02)
+#define C_STAT (0x03)
 #define C_NDEF (0xFF)
+
+#define RCD_HAUPT (0x00)
+#define RCD_LICHT (0x01)
+#define RCD_SEVER (0x02)
+#define POWER			(0x03)
+
+#define OK		(0x00)
+#define ERROR (0x01)
+
 
 /*
   schalter Objekte als defines
