@@ -23,7 +23,21 @@ AVRX_SIGINT(SIG_OVERFLOW0)
 	AvrXTimerHandler();         // Process Timer queue
 	Epilog();                   // Restore context of next running task
 };
+/*
+ISR(INT2_vect)
+{
+	cli();
+	timing_counter.tastercounter_vortrag++;
+	sei();
+}
 
+ISR(INT1_vect)
+{
+	cli();
+	timing_counter.tastercounter_lounge++;
+	sei();
+}
+*/
 int main(void)
 {
 	AvrXSetKernelStack(0);
@@ -43,15 +57,14 @@ int main(void)
 	DDRD &= ~_BV(PD3); // Eingang 
 	PORTB |= _BV(PB2); // Pullup Taster vortrag
 	PORTD |= _BV(PD3); // Pullup Taster lounge
-	/*
-	EICRA |= _BV(ISC00);	// Trigger Interrupt on any logical change on pin pd2
-	EIMSK |= _BV(INT0);								// Enable External Interrupt Request 0
+/*
+	MCUCR |= _BV(ISC11);	// Trigger Interrupt on any logical change on pin pd2
+	GICR |= _BV(INT1) | _BV(INT2);								// Enable External Interrupt Request 1 / 2
+	MCUCSR &= ~_BV(ISC2);
 	
-	PCICR  |= _BV(PCIE2);							// Enable Pin Change Interrupt 2
-	PCMSK2 |= _BV(PCINT20);						// Enable PCI18 (pin PD4) as Pin Change Interrupt
 	
-	TIMSK0 |= _BV(TOIE0);							// Enable Timer0 Overflow Interrupt
-	*/
+	TIMSK |= _BV(TOIE0);							// Enable Timer0 Overflow Interrupt
+*/
 	
 //	_delay_ms(1000);
 

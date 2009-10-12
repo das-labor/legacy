@@ -75,9 +75,9 @@ AVRX_GCC_TASKDEF(i2ccom_in, 100, 3)
 		{
 			TWIM_Stop();
 			for (i = 0; i < CAN_OUTDATACOUNT; i++)
-				{
-					can_outdata.outdata[i] = 0xff;
-				}
+			{
+				can_outdata.outdata[i] = 0xff;
+			}
 		}
 		else
 		{
@@ -175,7 +175,6 @@ AVRX_GCC_TASKDEF(i2ccom_out, 100, 3)
 			AvrXSendMessage(&i2cQueue_in, &i2c_indata.mcb);
 			AvrXWaitMessageAck(&i2c_indata.mcb);
 		}
-		// else eben nicht
 				
 		// final dann selber fertig sagen
 		AvrXAckMessage(p);
@@ -257,7 +256,7 @@ AVRX_GCC_TASKDEF(cancom_out, 100, 3)
 		p = AvrXWaitMessage(&canQueue_out);
 		for (i = 0; i < CAN_OUTDATACOUNT; i++)
 		{
-				msg.data[i] = ((t_canMessage_out*)p)->outdata[i];
+			msg.data[i] = ((t_canMessage_out*)p)->outdata[i];
 		}
 		msg.addr_src = myaddr;
 		msg.port_dst = PORT_POWERCOMMANDER;
