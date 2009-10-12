@@ -234,7 +234,7 @@ AVRX_GCC_TASKDEF(cancom_in, 100, 3)
 					/*
 						warten bis sie fertig ist
 					*/
-					//					AvrXWaitMessageAck(&i2c_outdata.mcb);
+					AvrXWaitMessageAck(&i2c_outdata.mcb);
 								
 				}
 				break;
