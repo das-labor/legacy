@@ -20,11 +20,11 @@
 #include "cli.h"
 #include "dump.h"
 #include "avr-huffman-decode.h"
-#include "uart.h"
+#include "uart_i.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <avr/pgmspace.h>
-#include <avr/eeprom.h>	
+#include <avr/eeprom.h>
 #include <avr/io.h>
 
 extern uint8_t* _binary_data_hacker_manifesto_borg_txt_hfm_start PROGMEM;
@@ -48,6 +48,11 @@ void decompress(PGM_VOID_P addr, uint16_t(*fp)(uint16_t)){
 	cli_putstr_P(PSTR("\r\ndecompressing data at 0x"));
 	cli_hexdump_rev(&addr, 2);
 	cli_putstr_P(PSTR("\r\n"));
+/*
+	build_tree(&ctx);
+	cli_putstr_P(PSTR("\r\ntree @ 0x"));
+	cli_hexdump_rev(&ctx, 2);
+*/
 	for(;;){
 		c=huffman_dec_byte(&ctx);
 		if(c>0xff){
@@ -74,38 +79,27 @@ void decompress_GPL(void){
 	decompress(&_binary_data_COPYING_gpl3_hfm_start, read_byte_pgm);
 }
 
-void beep(void){
-	DDRD |= _BV(7);
-	TCCR2A |= _BV(6); /* set toggle of OCR2A */
-	TCCR2A |= _BV(1); /* set CTC mode */
-	TCNT2 = 0;
-	OCR2A = 0x20;
-	TCCR2B |=  _BV(1) | _BV(0); /* set prescaler to 1024 */
-}
-
 /******************************************************************************/
 
 const char hacker_str[]  PROGMEM = "hacker_manifesto";
 const char test_str[]    PROGMEM = "test";
 const char GPL_str[]     PROGMEM = "gpl_license";
-const char beep_str[]    PROGMEM = "beep";
 const char dump_str[]    PROGMEM = "dump";
 const char echo_str[]    PROGMEM = "echo";
 
 cmdlist_entry_t cmdlist[] PROGMEM = {
 	{ test_str,        NULL, decompress_test},
 	{ hacker_str,      NULL, decompress_hacker },
-	{ GPL_str,         NULL, decompress_GPL}, 
-	{ beep_str,        NULL, beep},
-	{ dump_str,    (void*)1, (void_fpt)dump}, 
+	{ GPL_str,         NULL, decompress_GPL},
+	{ dump_str,    (void*)1, (void_fpt)dump},
 	{ echo_str,    (void*)1, (void_fpt)echo_ctrl},
 	{ NULL,            NULL, NULL}
 };
 
 int main (void){
-	uart_init();
-	cli_rx = uart_getc;
-	cli_tx = uart_putc;
+	uart0_init();
+	cli_rx = (cli_rx_fpt)uart0_getc;
+	cli_tx = (cli_tx_fpt)uart0_putc;
 	for(;;){
 		cli_putstr_P(PSTR("\r\n\r\nAVR-Huffman testing system"));
 		cli_putstr_P(PSTR("\r\n  *** loaded and running*** \r\n"));

@@ -21,34 +21,22 @@
 #include <avr/io.h>
 // #define F_CPU 20000000
  #define F_CPU 16000000         /* Oszillator-Frequenz in Hz */
-// #define F_CPU 14745600
 
+#define UART0_I 1 /* set this to '1' if you want to use the first uart, otherwise set to '0' */
+#define UART0_BAUD_RATE 38400 /* baudrate for uart0 */
+#define UART0_STOPBITS  UART_STOPBITS_1 /* stopbit configuration for uart0 */
+#define UART0_DATABITS  UART_DATABITS_8 /* databit configuration for uart0 */
+#define UART0_PARATY    UART_PARATY_NONE /* paraty configuration for uart0 */
 
+#define UART0_RXBUFFER_SIZE 32
+#define UART0_TXBUFFER_SIZE 32
 
-#define DEBUG uart
+#define UART0_SWFLOWCTRL 1
+#define UART0_THRESH_HIGH 20
+#define UART0_THRESH_LOW  10
+#define UART0_HOOK 0
 
-/* uart.[ch] defines */
-#define UART_INTERRUPT 1
-#define UART_BAUD_RATE 38400
-#define UART_RXBUFSIZE 64
-#define UART_TXBUFSIZE 64
-#define UART_LINE_BUFFER_SIZE 40
-#define UART_XON_XOFF
-#define UART_XON_XOFF_THRESHOLD_1 (UART_RXBUFSIZE - 24)
-#define UART_XON_XOFF_THRESHOLD_2 (UART_RXBUFSIZE - 60)
-
-#undef UART_LEDS
-/*
-#define UART_HWFLOWCONTROL
-#define UART_RTS_PORT PORTA
-#define UART_RTS_DDR DDRA
-#define UART_CTS_PIN PINA
-#define UART_CTS_DDR DDRA
-#define UART_RTS_BIT 0
-#define UART_CTS_BIT 1
-*/
-//#define TWISTER_MUL_TABLE
-#define CLI_AUTO_HELP 
+#define CLI_AUTO_HELP
 
 #endif
 

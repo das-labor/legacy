@@ -19,6 +19,7 @@
 
 #include "avr-asm-macros.S"
 
+#define PREFIX_SIZE_B 32
 
 /*
 typedef struct {
@@ -38,7 +39,7 @@ typedef struct {
 /*
  * param ctx: r24:r25
  */
-.global read_bit 
+.global read_bit
 read_bit:
 	movw r26, r24
 	adiw r26, 3		/* X points at rbuffer_index */
@@ -70,9 +71,9 @@ read_bit:
 2:
 	mov r22, r24
 	sbiw r26, 1
-	rjmp 6f	
+	rjmp 6f
 5: /* there is data in the buffer */
-	
+
 	ld r22, -X
 6:
 	lsl r22
@@ -97,18 +98,32 @@ CTX_0 = 16
 CTX_1 = 17
 .global huffman_dec_byte
 huffman_dec_byte:
+;	push r24
+;	push r25
+;	ldi r24, 'X'
+;	clr r25
+;	call cli_putc
+;	pop r25
+;	pop r24
+
 	push r28
 	push r29
 	movw r30, r24
 	ld  r28, Z
 	ldd r29, Z+1
-	tst r28
-	brne 5f
-	tst r29
+	adiw r28, 0
 	brne 5f
 	push r30
 	push r31
 	rcall build_tree
+;	/* DBG */
+;	push_range 24, 31
+;	ldi r28, '0'
+;	add r24, r28
+;	clr r25
+;	call cli_putc
+;	pop_range 24, 31
+;	/* END DBG*/
 	pop r31
 	pop r30
 	tst r24
@@ -121,7 +136,7 @@ huffman_dec_byte:
 2: /* tree has been build successfuly */
 	ld  r28, Z
 	ldd r29, Z+1
-5: /* tree is there and pointed to by Y */	
+5: /* tree is there and pointed to by Y */
 	push CTX_0
 	push CTX_1
 	movw CTX_0, r30
@@ -146,9 +161,9 @@ huffman_dec_byte:
 	ld r24, Y+
 	ld r25, Y
 	movw r28, r24
-	rjmp 6b	
-	
-8:  ld r24, Y	
+	rjmp 6b
+
+8:  ld r24, Y
 	clr r25
 	pop CTX_1
 	pop CTX_0
@@ -161,9 +176,9 @@ huffman_dec_byte:
 	ld r24, Z+
 	ld r25, Z+
 	rcall free
-;	movw r30, CTX_0
-;	st Z+, r1
-;	st Z+, r1
+;	movw r30, CTX_0 ; xxx
+;	st Z+, r1       ; xxx
+;	st Z+, r1       ; xxx
 	ser r25
 	ser r24
 	pop	CTX_1
@@ -171,56 +186,48 @@ huffman_dec_byte:
 	pop r29
 	pop r28
 	ret
-	
+
 /******************************************************************************/
 /* void huffman_dec_init(huffman_dec_ctx_t* ctx, uint16_t(*rb_func)(uint16_t))
  *  param ctx:     r24:r25
  *  param rb_func: r22:r23
  */
-.global huffman_dec_init 
+.global huffman_dec_init
 huffman_dec_init:
 	movw r30, r24
 	st Z+, r1 /* set tree to NULL */
-	st Z+, r1 
+	st Z+, r1
 	st Z+, r1 /* set rbuffer to 0 */
 	ldi r24, 8
 	st Z+, r24 /* set rbuffer_index to 8 */
 	st Z+, r22 /* set pointer to rb_func */
 	st Z+, r23
-	st Z+, r1  /* set addr to 0 */ 
+	st Z+, r1  /* set addr to 0 */
 	st Z+, r1
 	ret
-	
-/******************************************************************************/	
+
+/******************************************************************************/
 /* uint8_t build_tree(huffman_dec_ctx_t* ctx)
- *  param ctx: r24:r25	
- */	
-CTX_0       =  2
-CTX_1       =  3
-PREFIX_0    =  4
-PREFIX_1    =  5
-TMP_0       =  6
-TMP_1       =  7
-DEPTH_0     =  8
-DEPTH_1     =  9
-CDEPTH_0    = 10
-CDEPTH_1    = 11
-COUNT_0     = 12
-COUNT_1     = 13
-TREEINDEX_0 = 14
-TREEINDEX_1 = 15
+ *  param ctx: r24:r25
+ */
+CTX_0            =  2
+CTX_1            =  3
+LEAF_END_PTR_0   =  4
+LEAF_END_PTR_1   =  5
+T_0              =  6
+T_1              =  7
+PART_SIZE_0      =  8
+PART_SIZE_1      =  9
+NEXT_PART_SIZE_0 = 10
+NEXT_PART_SIZE_1 = 11
+LEAF_PTR_0       = 28
+LEAF_PTR_1       = 29
+FREE_PTR_0       = 16
+FREE_PTR_1       = 17
+.global build_tree
 build_tree:
-	push_range 2, 15
+	push_range 2, 17
 	push_range 28, 29
-	stack_alloc 32
-	adiw r30, 1
-	movw PREFIX_0, r30
-	/* set prefix to 0  */
-	ldi r22, 32
-1:
-	st Z+, r1
-	dec r22
-	brne 1b
 	movw CTX_0, r24
 	rcall read_byte
 	cpi r24, 0xC0
@@ -234,12 +241,21 @@ build_tree:
 	ldi r24, 3
 	rjmp 90f
 3:
-	clr TMP_0
-	rol TMP_0
+	clr T_0
+	rol T_0
 	rcall read_byte
-	mov r25, TMP_0
+	mov r25, T_0 /* r24:r25 contains the amount of leafs */
+	lsl r24        /* we need space for leafs and nodes */
+	rol r25        /* leaf_count*2 + (leaf_count-1)*6 = 8*leaf_count-6*/
+	movw T_0, r24
+	lsl r24
+	rol r25
+	lsl r24
+	rol r25
+	sbiw r24, 6
+	movw LEAF_END_PTR_0, r24
 	clr r23
-	ldi r22, 6
+	ldi r22, 1
 	rcall calloc
 	movw r30, CTX_0
 	st Z+, r24
@@ -250,178 +266,124 @@ build_tree:
 	ldi r24, 4
 	rjmp 90f
 4:	/* now we have allocated memory for the tree */
-	clr DEPTH_0
-	clr DEPTH_1
-	clr CDEPTH_0
-	clr CDEPTH_1
-	clr COUNT_0
-	clr COUNT_1
-	clr TREEINDEX_0
-	clr TREEINDEX_1
-	movw r28, r24
-	ldi r25, V_NODE_HIGH
-	ldi r24, V_NODE_LOW
-	std Y+0, r24
-	std Y+1, r25
-5:
-	tst COUNT_0
-	brne 60f
-	tst COUNT_1
-	brne 60f
-	inc DEPTH_0
-	brne 51f
-	inc DEPTH_1
-51:	
+	add LEAF_END_PTR_0, r24
+	adc LEAF_END_PTR_1, r25
+	movw LEAF_PTR_0, LEAF_END_PTR_0
+	sub LEAF_PTR_0, T_0
+	sbc LEAF_PTR_1, T_1
+	movw r30, r24
+	adiw r24, 6
+	movw FREE_PTR_0, r24
+	clr PART_SIZE_1
+	clr PART_SIZE_0
+	inc PART_SIZE_0
+5: /* major loop (loading new T) */
+	push r30
+	push r31
+	clr T_1
 	rcall read_byte
-	mov COUNT_0, r24
-	cpi r24, 0xff
-	brne 5b
+	mov T_0, r24
+	cpi r24, 0xFF
+	brne 501f
 	rcall read_byte
-	add COUNT_0, r24
-	adc COUNT_1, r1
-	rjmp 5b	
-60:
-	rcall read_byte
-	mov TMP_0, r24		/* store value in TMP_0 */
-	movw r24, COUNT_0
-	sbiw r24, 1
-	movw COUNT_0, r24
-61:	cp DEPTH_0, CDEPTH_0
-	brne 62f
-	cp DEPTH_1, CDEPTH_1
-	breq 65f
-62:
-	/* prefix shift left */
-	movw r30, PREFIX_0
-	clc
-	ldi r22, 32
-621:
-	ld r23, Z
-	rol r23
-	st Z+, r23
-	dec r22
-	brne 621b	
-	inc CDEPTH_0
-	brne 622f
-	inc CDEPTH_1
-622:	
-	rjmp 61b
-65:	
-	/* insert node into tree */
-	movw r30, CTX_0
-	ld r28, Z+ /* set Y to point to tree */
-	ld r29, Z
-	/* append value to tree */
-	movw r24, DEPTH_0
-70:
-	sbiw r24, 1
-	movw r22, r24
-	lsr r23 /* set r22 to (r24:r25)/8 and r21 to (r24:r25)%8 */	
-	ror r22
-	lsr r22
-	lsr r22
-	mov r21, r24
-	andi r21, 0x07
-	movw r30, PREFIX_0
-	add r30, r22
-	adc r31, r1
-	ld TMP_1, Z
-	ldi r23, 1
-
-	tst r21
-	breq 702f
-701:
-	lsl r23
-	dec r21
-	brne 701b
-702:	
-	and TMP_1, r23 /* decide if left or right */
-	breq 710f
-	adiw r28, 2
-710:
-	adiw r28, 2
-	ldd r22, Y+0
-	ldd r23, Y+1
-	tst r22
-	brne 790f
-	tst r23
-	brne 790f
-	/* generate new node */
-	movw r26, TREEINDEX_0 /* (r22:r23) = 6*TREEINDEX */
-	adiw r26, 1
-	movw TREEINDEX_0, r26
-	lsl r26
-	rol r27
-	movw r22, r26
-	lsl r26
-	rol r27
-	add r22, r26
-	adc r23, r27
-	movw r30, CTX_0 /* add ctx->tree to (r22:r23) */
-	ld r20, Z+
-	ld r21, Z+
-	add r22, r20
-	adc r23, r21
-	std Y+0, r22	/* store new node in tree */
-	std Y+1, r23
-	movw r28, r22
+	add T_0, r24
+	adc T_1, r1
+501:
+	pop r31
+	pop r30
+	clr r26
+	clr r27
+	clr NEXT_PART_SIZE_0
+	clr NEXT_PART_SIZE_1
+	ldi r20, 6
+	movw r24, PART_SIZE_0
+51: /* minor loop */
 	ldi r22, V_NODE_LOW
-	ldi r23, V_NODE_HIGH
-	std Y+0, r22
-	std Y+1, r23
-	rjmp 791f
-790:
-	movw r28, r22
-791:	
-	adiw r24, 0 /* check if count is 0 */
-	brne 70b		
-80:
-	std Y+0, TMP_0 /* store value in node, making it a leaf */
-	std Y+1, r1	
-	/* increment prefix */
-	movw r30, PREFIX_0
-801:
-	ld r22, Z
-	inc r22
 	st Z+, r22
-	breq 801b
-	movw r22, DEPTH_0
-	mov r24, r22
-	andi r24, 0x07
-	lsr r23
-	ror r22
-	lsr r22
-	lsr r22
-	movw r30, PREFIX_0
-	add r30, r22
-	adc r31, r1
-	ld TMP_1, Z
-	ldi r25, 1
-	tst r24
-	breq 804f
-802:
-	lsl r25
-	dec r24
-	brne 802b
-804:
-	and TMP_1, r25
-	brne 890f
-	rjmp 5b
-890:	
-	/* set last to EOF */
+	ldi r22, V_NODE_HIGH
+	st Z+, r22
+	cp  r26, T_0
+	cpc r27, T_1
+	brsh 53f
+	st Z+, LEAF_PTR_0
+	st Z+, LEAF_PTR_1
+	adiw LEAF_PTR_0, 2
+	adiw r26, 1
+	rjmp 531f
+53:
+	st Z+, FREE_PTR_0
+	st Z+, FREE_PTR_1
+	add FREE_PTR_0, r20
+	adc FREE_PTR_1, r1
+	adiw r26, 1
+	inc NEXT_PART_SIZE_0
+	brne 531f
+	inc NEXT_PART_SIZE_1
+531:
+	cp  r26, T_0
+	cpc r27, T_1
+	brsh 63f
+	st Z+, LEAF_PTR_0
+	st Z+, LEAF_PTR_1
+	adiw LEAF_PTR_0, 2
+	adiw r26, 1
+	rjmp 631f
+63:
+	st Z+, FREE_PTR_0
+	st Z+, FREE_PTR_1
+	add FREE_PTR_0, r20
+	adc FREE_PTR_1, r1
+	adiw r26, 1
+	inc NEXT_PART_SIZE_0
+	brne 631f
+	inc NEXT_PART_SIZE_1
+631:
+	sbiw r24, 1
+	brne 51b /* closing minor loop */
+	movw PART_SIZE_0, NEXT_PART_SIZE_0
+	push r30
+	push r31
+	movw r22, T_0
+	lsl r22
+	rol r23
+	sub LEAF_PTR_0, r22
+	sbc LEAF_PTR_1, r23
+	movw r24, T_0
+	adiw r24, 0
+	breq 71f /* T==0 */
+65:
+	rcall read_byte
+	st Y+, r24
+	st Y+, r1
+	dec T_0
+	brne 65b
+	tst T_1
+	breq 71f
+	dec T_1
+	dec T_0
+	rjmp 65b
+71:
+	pop r31
+	pop r30
+;	cp  LEAF_PTR_0, LEAF_END_PTR_0
+;	cpc LEAF_PTR_1, LEAF_END_PTR_1
+	movw r24, NEXT_PART_SIZE_0
+	adiw r24, 0
+	breq 72f
+	rjmp 5b /* closing major loop*/
+72:
+	movw r30, LEAF_PTR_0
+	ldi r22, V_EOF_HIGH
+	st -Z, r22
 	ldi r22, V_EOF_LOW
-	ldi r23, V_EOF_HIGH
-	std Y+0, r22
-	std Y+1, r23
-	clr r25
-	clr r24
+	st -Z, r22
 90:
-	stack_free 32	
 	pop_range 28, 29
-	pop_range 2, 15
+	pop_range 2, 17
 	ret
 
 read_byte:
+	push_range 28, 29
 	movw r28, CTX_0
 	ldd r30, Y+4
 	ldd r31, Y+5
@@ -433,13 +395,15 @@ read_byte:
 	std Y+7, r25
 	movw r24, r22
 	icall
+	pop_range 28, 29
 	sbrs r25, 0
 	ret
 1:
 	ldi r24, 1
 	pop r30 /* remove old return addr from stack */
-	pop r30 
-	rjmp 90b	
+	pop r30
+	rjmp 90b
+
 
 /******************************************************************************/
 /* void huffman_dec_set_addr(huffman_dec_ctx_t* ctx, uint16_t addr);
@@ -452,5 +416,5 @@ huffman_dec_set_addr:
 	std Z+6, r22
 	std Z+7, r23
 	ret
-	
+
 

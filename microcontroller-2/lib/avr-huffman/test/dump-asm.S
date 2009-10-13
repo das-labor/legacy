@@ -41,7 +41,7 @@ charisinstr_P:
 	brne 1b
 	ldi r24, 1
 	ret
-	
+
 /******************************************************************************/
 /* void dump_chars(uint8_t* buffer, uint8_t len)
  *   param buffer:  r24:r25
@@ -67,8 +67,8 @@ dump_chars:
 	ldi r24, '.'
 	adiw r28, 1
 	rjmp 3f
-2:	ld r24, Y+	
-3:	
+2:	ld r24, Y+
+3:
 	clr r25
 	call cli_putc
 	dec r17
@@ -77,7 +77,7 @@ dump_chars:
 	tst r16
 	breq 5f
 	neg r16
-4:	
+4:
 	ldi r24, ' '
 	clr r25
 	call cli_putc
@@ -86,13 +86,13 @@ dump_chars:
 5:
 	ldi r24, '|'
 	clr r25
-	call cli_putc	
+	call cli_putc
 	pop r29
 	pop r28
 	pop r17
 	pop r16
 	ret
- 
+
  /*****************************************************************************/
  /* void print_aligned(unsigned long value, uint8_t align)
   *    param value: r22:r25
@@ -120,14 +120,14 @@ print_aligned:
 	call cli_putc
 	dec r16
 	brne 1b
-3:	
+3:
 	movw r24, r28
 	call cli_putstr
 	stack_free 12
 	pop r29
 	pop r28
 	pop r16
-	ret 
+	ret
 
  /*****************************************************************************/
  /* void dump(char* s)
@@ -179,7 +179,7 @@ dump:
 5:
 	ldi r30, lo8(memtype_desc+2)
 	ldi r31, hi8(memtype_desc+2)
-6:	
+6:
 	movw MEM_0, r30
 	movw r26, STR_0
 61:
@@ -220,7 +220,7 @@ dump:
 	brne 72f
 	ldi TMP, 128
 	mov SIZE_0, TMP
-72:	
+72:
 	ldi r24, lo8(dumping)
 	ldi r25, hi8(dumping)
 	call cli_putstr_P
@@ -238,7 +238,7 @@ dump:
 	movw r30, MEM_0
 	lpm r24, Z+
 	lpm r25, Z+
-	call cli_putstr_P	
+	call cli_putstr_P
 	ldi r24, lo8(beginning)
 	ldi r25, hi8(beginning)
 	call cli_putstr_P
@@ -253,13 +253,13 @@ dump:
 	ldi r24, lo8(suffix)
 	ldi r25, hi8(suffix)
 	call cli_putstr_P
-	
+
 	movw r30, MEM_0
 	adiw r30, 2
 	lpm MEM_0, Z+
 	lpm MEM_1, Z
-	
-1:	
+
+1:
 	ldi xREADLEN, DUMP_WIDTH
 	tst SIZE_3
 	brne 3f
@@ -270,11 +270,11 @@ dump:
 	tst SIZE_0
 	brne 2f
 	rjmp 90f
-2:	
+2:
 	cp DUMP_WIDTH, SIZE_0
 	brmi 3f
 	mov xREADLEN, SIZE_0
-3:	
+3:
 	movw r24, r28
 	movw r22, ADDR_2
 	movw r20, ADDR_0
@@ -286,7 +286,7 @@ dump:
 	movw r22, ADDR_0
 	clr r21
 	ldi r20, 6
-	rcall print_aligned	
+	rcall print_aligned
 	clr r25
 	ldi r24, ':'
 	call cli_putc
@@ -336,14 +336,14 @@ dump:
 	ldi r24, '\n'
 	call cli_putc
 	rjmp 1b
-90:	
+90:
 	stack_free 2+DUMP_WIDTH
-	
+
 	pop_range 28,29
 	pop_range 4, 17
 	ret
-	 
-dumping:	 
+
+dumping:
 .asciz "\r\ndumping "
 bytesof:
 .asciz " bytes of "
@@ -371,7 +371,7 @@ pgm_read_block:
 	st X+, r20
 	dec r18
 	brne 1b
-3:	
+3:
 	ret
 #else
 	movw r26, r24
@@ -384,11 +384,11 @@ pgm_read_block:
 	st X+, r20
 	dec r18
 	brne 1b
-3:	
+3:
 	ret
 
-#endif	
-	
+#endif
+
 /******************************************************************************/
 /* void ram_read_block(void* buffer, uint32_t addr, uint8_t length)
  *   param buffer:  r24:r25
@@ -406,7 +406,7 @@ ram_read_block:
 	st X+, r20
 	dec r18
 	brne 1b
-3:	
+3:
 	ret
 
 /******************************************************************************/
@@ -432,5 +432,5 @@ ee_read_block:
 	st X+, r20
 	dec r18
 	brne 1b
-3:	
+3:
 	ret
