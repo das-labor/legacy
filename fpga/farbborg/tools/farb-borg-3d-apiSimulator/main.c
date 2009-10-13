@@ -26,7 +26,7 @@ extern void *display_loop(void * unused);
 
 // To Compile the Simulator on Windows, you have to install Code::Blocks with mingw.
 // http://www.codeblocks.org/
-// Addionally extract the following zip archive into the MinGW Subfolder (C:\Programme\CodeBlocks\MinGW).
+// Addionally extract the following zip archive into the MinGW Subfolder (C:\Programme\CodeBlocks\MinGW ).
 // http://www.das-labor.org/files/madex/glut.3.7.6_mingw_codeblocks.zip
 // And open the projectfile "win32_code_blocks.cbp". (_WIN32 is set there)
 #ifdef _WIN32

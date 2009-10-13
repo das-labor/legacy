@@ -1,3 +1,7 @@
+/* Part of farbborg. License GPLV3 or later. Copyright by Martin Ongsiek 2007. 
+ * Programminginterface for animations in the simulator.
+ */
+
 #include <math.h>
 #include <stdio.h>
 #include "spike_hw.h"
@@ -12,8 +16,9 @@ color green = {  0, 255,   0};
 color blue  = {  0,   0, 255};
 
 uint32_t imag[MAX_Z][MAX_Y][MAX_X][COLOR_BYTES];
-extern unsigned int pixmap[MAX_Z][MAX_Y][MAX_X][COLOR_BYTES];
-uint32_t pixmap_readback[MAX_Z][MAX_Y][MAX_X][COLOR_BYTES];
+extern uint32_t pixmap[MAX_Z][MAX_Y][MAX_X][COLOR_BYTES];
+//at the real farbborg you can«t read back
+uint32_t pixmap_readback[MAX_Z][MAX_Y][MAX_X][COLOR_BYTES]; 
 
 void uart_putstr(char *str) {
 	puts(str);
@@ -222,7 +227,7 @@ void clearImage(color c) {
 	}
 }
 
-#define BIT_S(var,b) ((var&(1<<b))?1:0)
+#define BIT_S(var,b) ((var>>b) & 1)
 
 unsigned char easyRandom() {
 	static unsigned int muh = 0xAA;
@@ -362,7 +367,7 @@ void shift(direction dir) {
 				*toIm++ = 0; 
 			}
 			break;
-		case down:
+		case down: // TODO implement
 			break;
 		case forward:
 			break;
@@ -535,10 +540,7 @@ void scale(char sx, char sy, char sz, voxel* points,
 	}			
 }					
 
-char testAusgabe;
 void dP(char* txt, int32_t val) {
-	if (!testAusgabe)
-		return;
 	printf("%s = %x\n", txt, val);
 }	
 
