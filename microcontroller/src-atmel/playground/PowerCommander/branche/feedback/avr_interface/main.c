@@ -133,14 +133,13 @@ int main(void)
 	PORTB |= _BV(PB2); // Pullup Taster vortrag
 	PORTD |= _BV(PD3); // Pullup Taster lounge
 /*
-	MCUCR |= _BV(ISC11);	// Trigger Interrupt on any logical change on pin pd2
-	GICR |= _BV(INT1) | _BV(INT2);								// Enable External Interrupt Request 1 / 2
+	MCUCR |= _BV(ISC11);							// Trigger Interrupt on any logical change on pin pd2
+	GICR |= _BV(INT1) | _BV(INT2);		// Enable External Interrupt Request 1 / 2
 	MCUCSR &= ~_BV(ISC2);
-	
-	
-	TIMSK |= _BV(TOIE0);							// Enable Timer0 Overflow Interrupt
+
+	TIMSK |= _BV(TOIE1);							// Enable Timer0 Overflow Interrupt
 */
-	
+
 //	_delay_ms(1000);
 
 /*
@@ -150,7 +149,7 @@ int main(void)
 	{
 		while (1);
 	}
-	//InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
+
 	xlap_init();
 
 	AvrXRunTask(TCB(cancom_in));
