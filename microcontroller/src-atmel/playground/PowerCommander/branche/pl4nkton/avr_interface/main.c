@@ -29,13 +29,14 @@ ISR(INT2_vect)
 	timing_counter.tastercounter_lounge++;
 	sei();
 }
-
-ISR(TIMER1_OVF_vect)
+*/
+//ISR(TIMER1_OVF_vect)
+void taster()
 {
 	
 	//	andere interrupts aus!
 	
-	cli();
+//	cli();
 	 
 	//	 alle 9.8 ticks sollte sollte was vom schalter kommen
 	//	 also sagen wir, dass wenn sich nach 32ticks nichts am schalter
@@ -101,15 +102,15 @@ ISR(TIMER1_OVF_vect)
 	
 		und alle interrupts wieder auf go!
 	
-	sei();
+//	sei();
 }
-*/
 
 AVRX_SIGINT(SIG_OVERFLOW0)
 {
 	IntProlog();                // Save interrupted context, switch stacks
 	TCNT0 = TCNT0_INIT;			// Reload the timer counter
 	AvrXTimerHandler();         // Process Timer queue
+	taster();
 	Epilog();                   // Restore context of next running task
 };
 
@@ -139,7 +140,7 @@ int main(void)
 	TCCR1A |= _BV(WGM10) | _BV(COM1A1) | _BV(COM1B1);	// FastPWM, Set OC1X on Compare Match, clear OC1X at BOTTOM, (non inverting mode).
 	TCCR1B |= _BV(WGM12) | _BV(CS11);	// FastPWM bit 2, clk/64
 	
-	TIMSK |= _BV(TOIE0);							// Enable Timer0 Overflow Interrupt
+//	TIMSK |= _BV(TOIE0);							// Enable Timer0 Overflow Interrupt
 */
 
 //	_delay_ms(1000);
