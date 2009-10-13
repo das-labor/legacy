@@ -596,10 +596,6 @@ void blur() {
 		for (y = 0; y < 5; y ++) {
 			for (x = 0; x < 5; x++) {
 				for (c = 0; c < 3; c++) { // colors r, g, b
-					if (z == 0 && y == 0 && x == 0)
-						testAusgabe = 1;
-					else
-						testAusgabe = 0;
 					curVoxelColor = 0; // operate filter on one Voxelcolor
 					for (i = 0; i < 3; i++) {
 						for (j = 0; j < 3; j++) {
