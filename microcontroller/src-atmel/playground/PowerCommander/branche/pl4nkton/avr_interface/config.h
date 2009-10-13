@@ -42,3 +42,7 @@
 
 //Number of Messages in Can TX Buffer
 #define TX_SIZE 10
+
+
+#define TASTER_LOUNGE INT2_vect
+#define TASTER_VORTRAG INT1_vect
