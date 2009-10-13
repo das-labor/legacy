@@ -15,7 +15,8 @@
 
 #include "twi_master/twi_master.h"
 
-/*
+struct t_counter_status timing_counter = { 0,0,0,0,0 };
+
 ISR(INT1_vect)
 {
 	cli();
@@ -29,7 +30,7 @@ ISR(INT2_vect)
 	timing_counter.tastercounter_lounge++;
 	sei();
 }
-*/
+
 //ISR(TIMER1_OVF_vect)
 void taster()
 {
@@ -162,13 +163,11 @@ int main(void)
 
 	//	AvrXRunTask(TCB(laptask));
 	AvrXRunTask(TCB(switchtask));
-	AvrXRunTask(TCB(switch_lounge));
-	AvrXRunTask(TCB(switch_vortrag));
 	AvrXRunTask(TCB(led));
 	
 	/* Needed for EEPROM access in monitor */
 	//AvrXSetSemaphore(&EEPromMutex);
 
 	Epilog();                   // Switch from AvrX Stack to first task
-	while(1);
+	while (1);
 };
