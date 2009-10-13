@@ -305,9 +305,9 @@ void tetris_view_showLineNumbers (tetris_view_t *pV, uint8_t nColor)
   ones= Lines%10;
   tens=(Lines/10)%10;
 
-  //pick drawing color, dark if ones=0, bright (piece color) otherwise
+  //pick drawing color, dark if ones=0, faded otherwise (bright counter gets confused with piece preview)
   if ((ones%10)!=0)
-      nPen=TETRIS_VIEW_COLORPIECE;
+      nPen=TETRIS_VIEW_COLORFADE;
   else nPen=TETRIS_VIEW_COLORSPACE;
 
   //Draws ones in the upper part of the border as a 3x3 square with 0-9 pixels  
@@ -331,7 +331,7 @@ void tetris_view_showLineNumbers (tetris_view_t *pV, uint8_t nColor)
 
   //back to normal color, but only if tens is not divisible by 10
   if ((tens%10)!=0)
-      nPen=TETRIS_VIEW_COLORPIECE;
+      nPen=TETRIS_VIEW_COLORFADE;
   else nPen=TETRIS_VIEW_COLORSPACE;
   
   //Draws ones in the lower part of the border as a 3x3 square with 0-9 pixels

@@ -21,11 +21,12 @@ tetris_view_mode_t;
 
 typedef struct tetris_view_t
 {
-	tetris_logic_t *pLogic;         // associated logic object
-	tetris_playfield_t *pPl;        // associated playfield
-	tetris_view_mode_t modeCurrent; // current presentation mode
-	tetris_view_mode_t modeOld;     // old presentation mode
-	uint8_t nOldLevel;              // helper variable to recognize level changes
+  tetris_logic_t *pLogic;         // associated logic object
+  tetris_playfield_t *pPl;        // associated playfield
+  tetris_view_mode_t modeCurrent; // current presentation mode
+  tetris_view_mode_t modeOld;     // old presentation mode
+  uint8_t nOldLevel;              // helper variable to recognize level changes
+
 }
 tetris_view_t;
 
