@@ -19,8 +19,6 @@
 
 #include "avr-asm-macros.S"
 
-#define PREFIX_SIZE_B 32
-
 /*
 typedef struct {
 	void* tree;
@@ -98,14 +96,6 @@ CTX_0 = 16
 CTX_1 = 17
 .global huffman_dec_byte
 huffman_dec_byte:
-;	push r24
-;	push r25
-;	ldi r24, 'X'
-;	clr r25
-;	call cli_putc
-;	pop r25
-;	pop r24
-
 	push r28
 	push r29
 	movw r30, r24
@@ -116,14 +106,6 @@ huffman_dec_byte:
 	push r30
 	push r31
 	rcall build_tree
-;	/* DBG */
-;	push_range 24, 31
-;	ldi r28, '0'
-;	add r24, r28
-;	clr r25
-;	call cli_putc
-;	pop_range 24, 31
-;	/* END DBG*/
 	pop r31
 	pop r30
 	tst r24
@@ -210,23 +192,21 @@ huffman_dec_init:
 /* uint8_t build_tree(huffman_dec_ctx_t* ctx)
  *  param ctx: r24:r25
  */
-CTX_0            =  2
-CTX_1            =  3
-LEAF_END_PTR_0   =  4
-LEAF_END_PTR_1   =  5
-T_0              =  6
-T_1              =  7
-PART_SIZE_0      =  8
-PART_SIZE_1      =  9
-NEXT_PART_SIZE_0 = 10
-NEXT_PART_SIZE_1 = 11
+BACKUP_0         =  8
+BACKUP_1         =  9
+T_0              = 10
+T_1              = 11
+FREE_PTR_0       = 12
+FREE_PTR_1       = 13
+CTX_0            = 14
+CTX_1            = 15
+PART_SIZE_0      = 16
+PART_SIZE_1      = 17
 LEAF_PTR_0       = 28
 LEAF_PTR_1       = 29
-FREE_PTR_0       = 16
-FREE_PTR_1       = 17
 .global build_tree
 build_tree:
-	push_range 2, 17
+	push_range 8, 17
 	push_range 28, 29
 	movw CTX_0, r24
 	rcall read_byte
@@ -253,7 +233,7 @@ build_tree:
 	lsl r24
 	rol r25
 	sbiw r24, 6
-	movw LEAF_END_PTR_0, r24
+	movw LEAF_PTR_0, r24
 	clr r23
 	ldi r22, 1
 	rcall calloc
@@ -266,20 +246,17 @@ build_tree:
 	ldi r24, 4
 	rjmp 90f
 4:	/* now we have allocated memory for the tree */
-	add LEAF_END_PTR_0, r24
-	adc LEAF_END_PTR_1, r25
-	movw LEAF_PTR_0, LEAF_END_PTR_0
+	add LEAF_PTR_0, r24
+	adc LEAF_PTR_1, r25
 	sub LEAF_PTR_0, T_0
 	sbc LEAF_PTR_1, T_1
 	movw r30, r24
 	adiw r24, 6
 	movw FREE_PTR_0, r24
 	clr PART_SIZE_1
-	clr PART_SIZE_0
-	inc PART_SIZE_0
+	ldi PART_SIZE_0, 1
 5: /* major loop (loading new T) */
-	push r30
-	push r31
+	movw BACKUP_0, r30
 	clr T_1
 	rcall read_byte
 	mov T_0, r24
@@ -289,14 +266,13 @@ build_tree:
 	add T_0, r24
 	adc T_1, r1
 501:
-	pop r31
-	pop r30
+	movw r30, BACKUP_0
 	clr r26
 	clr r27
-	clr NEXT_PART_SIZE_0
-	clr NEXT_PART_SIZE_1
 	ldi r20, 6
 	movw r24, PART_SIZE_0
+	clr PART_SIZE_0
+	clr PART_SIZE_1
 51: /* minor loop */
 	ldi r22, V_NODE_LOW
 	st Z+, r22
@@ -316,9 +292,9 @@ build_tree:
 	add FREE_PTR_0, r20
 	adc FREE_PTR_1, r1
 	adiw r26, 1
-	inc NEXT_PART_SIZE_0
+	inc PART_SIZE_0
 	brne 531f
-	inc NEXT_PART_SIZE_1
+	inc PART_SIZE_1
 531:
 	cp  r26, T_0
 	cpc r27, T_1
@@ -334,15 +310,13 @@ build_tree:
 	add FREE_PTR_0, r20
 	adc FREE_PTR_1, r1
 	adiw r26, 1
-	inc NEXT_PART_SIZE_0
+	inc PART_SIZE_0
 	brne 631f
-	inc NEXT_PART_SIZE_1
+	inc PART_SIZE_1
 631:
 	sbiw r24, 1
 	brne 51b /* closing minor loop */
-	movw PART_SIZE_0, NEXT_PART_SIZE_0
-	push r30
-	push r31
+	movw BACKUP_0, r30
 	movw r22, T_0
 	lsl r22
 	rol r23
@@ -363,11 +337,8 @@ build_tree:
 	dec T_0
 	rjmp 65b
 71:
-	pop r31
-	pop r30
-;	cp  LEAF_PTR_0, LEAF_END_PTR_0
-;	cpc LEAF_PTR_1, LEAF_END_PTR_1
-	movw r24, NEXT_PART_SIZE_0
+	movw r30, BACKUP_0
+	movw r24, PART_SIZE_0
 	adiw r24, 0
 	breq 72f
 	rjmp 5b /* closing major loop*/
@@ -379,7 +350,7 @@ build_tree:
 	st -Z, r22
 90:
 	pop_range 28, 29
-	pop_range 2, 17
+	pop_range  8, 17
 	ret
 
 read_byte:
