@@ -53,12 +53,14 @@
 
 #ifdef UDR
 # define OLD_UART
+#  warning "OLD-UART selected"
 # ifdef UDR0
 #  error "can not decide which registernames to use, UDR and UDR0 are defined"
 # endif
 #endif
 
 #ifdef OLD_UART
+#  warning "OLD-UART selected (2)"
 # define UCSR0A UCSRA
 # define UCSR0B UCSRB
 # define UCSR0C UCSRC
@@ -71,11 +73,8 @@
 # define RXC0   RXC
 # define TXB80  TXB8
 # define RXB80  RXB8
-# ifdef U2X
-#  define U2X0   U2X
-# else
-#  undef U2X0
-# endif
+# define UDRIE0 UDRIE
+# define U2X0   U2X
 # define UDRIE0 UDRIE
 # define RXCIE0 RXCIE
 #endif

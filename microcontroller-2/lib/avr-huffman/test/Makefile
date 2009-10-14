@@ -6,7 +6,7 @@ OBJ            =  main-huffman-test.o string-extras-asm.o \
 		  hexdigit_tab.o data/test.txt.hfm.elf \
                   data/hacker_manifesto_borg.txt.hfm.elf data/COPYING.gpl3.hfm.elf
                  
-MCU_TARGET     = atmega644
+MCU_TARGET     = atmega32
 OPTIMIZE       = 
 PROGRAMMER     = avr911
 FLASHCMD       = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB0 -c $(PROGRAMMER) -U flash:w:$(PRG).hex  
