@@ -199,16 +199,16 @@ int main(void)
 	DDRD &= ~_BV(PD3); // Eingang 
 	PORTB |= _BV(PB2); // Pullup Taster vortrag
 	PORTD |= _BV(PD3); // Pullup Taster lounge
-/*
-	MCUCR |= _BV(ISC11);							// Trigger Interrupt on any logical change on pin pd2
+
+	MCUCR |= _BV(ISC11);							// Trigger 
 	GICR |= _BV(INT1) | _BV(INT2);		// Enable External Interrupt Request 1 / 2
 	MCUCSR &= ~_BV(ISC2);
 	
-	TCCR1A |= _BV(WGM10) | _BV(COM1A1) | _BV(COM1B1);	// FastPWM, Set OC1X on Compare Match, clear OC1X at BOTTOM, (non inverting mode).
-	TCCR1B |= _BV(WGM12) | _BV(CS11);	// FastPWM bit 2, clk/64
+//	TCCR1A |= _BV(WGM10) | _BV(COM1A1) | _BV(COM1B1);	// FastPWM, Set OC1X on Compare Match, clear OC1X at BOTTOM, (non inverting mode).
+//	TCCR1B |= _BV(WGM12) | _BV(CS11);	// FastPWM bit 2, clk/64
 	
 //	TIMSK |= _BV(TOIE0);							// Enable Timer0 Overflow Interrupt
-*/
+
 
 //	_delay_ms(1000);
 
