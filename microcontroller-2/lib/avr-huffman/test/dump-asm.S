@@ -422,7 +422,15 @@ ee_read_block:
 	tst r18
 	breq 3f
 1:
+#ifdef EEPE
 	sbic _SFR_IO_ADDR(EECR), EEPE
+#else
+#ifdef EEWE
+	sbic _SFR_IO_ADDR(EECR), EEWE
+#else
+#error "EEPROM reading not supported on this device"
+#endif
+#endif
 	rjmp 1b
 	out _SFR_IO_ADDR(EEARH), r31
 	out _SFR_IO_ADDR(EEARL), r30
