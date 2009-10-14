@@ -55,32 +55,7 @@ AVRX_SIGINT(TASTER_VORTRAG)
 					 ( rb[RB_VORTRAG].clickstate[rb[RB_VORTRAG].clickpos] < SHORT_TASTER ) && 
 					 ( rb[RB_VORTRAG].clickstate_free[rb[RB_VORTRAG].clickpos] > TASTER_MIN ) )
 				{
-					if ( state_vortrag == F_SW_ON ){
-						i2c_outdata_tv.outdata[0]=C_VIRT;
-						i2c_outdata_tv.outdata[1]=VIRT_VORTRAG;
-						i2c_outdata_tv.outdata[2]=F_SW_OFF;
-						i2c_outdata_tv.outdata[3]=0x00;
-						state_vortrag = F_SW_OFF;
-					} else {
-						i2c_outdata_tv.outdata[0]=C_VIRT;
-						i2c_outdata_tv.outdata[1]=VIRT_VORTRAG;
-						i2c_outdata_tv.outdata[2]=F_SW_ON;
-						i2c_outdata_tv.outdata[3]=0x00;
-						state_vortrag = F_SW_ON;
-					}
-					AvrXSendMessage(&i2cQueue_out, &i2c_outdata_tv.mcb);
-					for ( i=0;i< RINGBUFFERSIZE;i++) {
-						rb[RB_VORTRAG].clickstate_free[i]=0;
-						rb[RB_VORTRAG].clickstate[i]=0;
-					}
-					rb[RB_VORTRAG].clickpos=0;
-
 					// process short click
-				}
-			if ( ( rb[RB_VORTRAG].clickstate_free[rb[RB_VORTRAG].clickpos - 1] > TASTER_MIN ) && 
-					 ( rb[RB_VORTRAG].clickstate[rb[RB_VORTRAG].clickpos] >= SHORT_TASTER ) && 
-					 ( rb[RB_VORTRAG].clickstate_free[rb[RB_VORTRAG].clickpos] > TASTER_MIN ) )
-				{
 					if ( state_vortrag == F_SW_ON ){
 						i2c_outdata_tv.outdata[0]=C_VIRT;
 						i2c_outdata_tv.outdata[1]=VIRT_VORTRAG;
@@ -101,7 +76,34 @@ AVRX_SIGINT(TASTER_VORTRAG)
 					}
 					rb[RB_VORTRAG].clickpos=0;
 
+
+				}
+			else if ( ( rb[RB_VORTRAG].clickstate_free[rb[RB_VORTRAG].clickpos - 1] > TASTER_MIN ) && 
+								( rb[RB_VORTRAG].clickstate[rb[RB_VORTRAG].clickpos] >= SHORT_TASTER ) && 
+								( rb[RB_VORTRAG].clickstate_free[rb[RB_VORTRAG].clickpos] > TASTER_MIN ) )
+				{
 					// process long click
+					if ( state_vortrag == F_SW_ON ){
+						i2c_outdata_tv.outdata[0]=C_VIRT;
+						i2c_outdata_tv.outdata[1]=VIRT_VORTRAG;
+						i2c_outdata_tv.outdata[2]=F_SW_OFF;
+						i2c_outdata_tv.outdata[3]=0x00;
+						state_vortrag = F_SW_OFF;
+					} else {
+						i2c_outdata_tv.outdata[0]=C_VIRT;
+						i2c_outdata_tv.outdata[1]=VIRT_VORTRAG;
+						i2c_outdata_tv.outdata[2]=F_SW_ON;
+						i2c_outdata_tv.outdata[3]=0x00;
+						state_vortrag = F_SW_ON;
+					}
+					AvrXSendMessage(&i2cQueue_out, &i2c_outdata_tv.mcb);
+					for ( i=0;i< RINGBUFFERSIZE;i++) {
+						rb[RB_VORTRAG].clickstate_free[i]=0;
+						rb[RB_VORTRAG].clickstate[i]=0;
+					}
+					rb[RB_VORTRAG].clickpos=0;
+
+
 				}
 		}
 					 
@@ -149,9 +151,9 @@ AVRX_SIGINT(TASTER_LOUNGE)
 					rb[RB_LOUNGE].clickpos=0;
 
 				}
-			if ( ( rb[RB_LOUNGE].clickstate_free[rb[RB_LOUNGE].clickpos-1] > TASTER_MIN ) && 
-					 ( rb[RB_LOUNGE].clickstate[rb[RB_LOUNGE].clickpos] >= SHORT_TASTER ) && 
-					 ( rb[RB_LOUNGE].clickstate_free[rb[RB_LOUNGE].clickpos] > TASTER_MIN ) )
+			else if ( ( rb[RB_LOUNGE].clickstate_free[rb[RB_LOUNGE].clickpos-1] > TASTER_MIN ) && 
+								( rb[RB_LOUNGE].clickstate[rb[RB_LOUNGE].clickpos] >= SHORT_TASTER ) && 
+								( rb[RB_LOUNGE].clickstate_free[rb[RB_LOUNGE].clickpos] > TASTER_MIN ) )
 				{
 					// process long click
 					if ( state_lounge == F_SW_ON ){
