@@ -168,7 +168,7 @@ struct t_i2cproto {
 #define RB_LOUNGE (0x00)
 #define RB_VORTRAG (0x01)
 // min 2/100 muss das ding gedrueckt sein, bevor wir da irgendwas machen
-#define TASTER_MIN (0x02)  
+#define TASTER_MIN (0x0120)
 #define SHORT_TASTER (0x20)
 #define DIM_DOWN (0x00)
 #define DIM_UP (0x01)
