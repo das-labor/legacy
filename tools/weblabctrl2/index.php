@@ -46,7 +46,7 @@ function beamer_on()
 foreach($pwm_ids as $id)
 {
 	$color="#".dechex(rand(0,255)).dechex(rand(0,255)).dechex(rand(0,255));
-	echo "$id <input type=\"checkbox\" onclick=\"if(this.checked)set_value('SW','LAMP_$id','ON');else set_value('SW','LAMP_$id','OFF')\">
+	echo "$id <input id=\"LAMP_$id\" type=\"checkbox\" onclick=\"if(this.checked)set_value('SW','LAMP_$id','ON');else set_value('SW','LAMP_$id','OFF')\">
 	<div id=\"slider_$id\" class=\"slider\"> 
             <div class=\"handle\" style=\"background-color: $color;\"></div>
         </div>\n";

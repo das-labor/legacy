@@ -8,12 +8,25 @@ foreach($pwm_ids as $id)
 	if(!isset($_SESSION[$id]))
 	{
 		exec("powercommander.lapcontrol powercommander PWM $id GET 0",$status);
-		echo "new status $id";
 		//var_dump($status);
 		if(preg_match("/returned/",$status[2])) 
 		$_SESSION[$id]=hexdec(substr($status[2],11,4));
 	}
 	$script .= "slider_".$id."_control.setValue('".$_SESSION[$id]."');\n";
+}
+foreach($sw_ids as $id)
+{
+	unset($status);
+	if(!isset($_SESSION[$id]))
+	{
+		exec("powercommander.lapcontrol powercommander SW $id STATUS 0",$status);
+		if(preg_match("/returned/",$status[2])) 
+		$_SESSION[$id]=hexdec(substr($status[2],11,4));
+	}
+	if($_SESSION[$id]==1)
+		$script .= "document.getElementById('$id').checked=true;\n";
+	else
+		$script .= "document.getElementById('$id').checked=false;\n";
 }
 
 foreach($rooms as $room => $port)
