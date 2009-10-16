@@ -21,11 +21,11 @@ include "config.php";
 <script>
 function set_value(cmd,id,value)
 {
-  new Ajax.Updater('ajax', 'set.php?cmd='+cmd+'&id='+id+'&value='+value,{method:'get', onComplete:done=true, evalScripts: true} );
+  new Ajax.Updater('ajax', 'set.php?cmd='+cmd+'&id='+id+'&value='+value,{method:'get', onComplete:function() {done=true;}, evalScripts: true} );
 }
 function mpd_cmd(room,cmd,value)
 {
-  new Ajax.Updater('ajax', 'mpd.php?cmd='+cmd+'&room='+room+'&value='+value,{method:'get', onComplete:done=true} );
+  new Ajax.Updater('ajax', 'mpd.php?cmd='+cmd+'&room='+room+'&value='+value,{method:'get', onComplete:function() {done=true;}} );
 }
 </script>
 <div id="ajax">
@@ -91,7 +91,8 @@ echo "
       sliderValue: [100],
       onSlide: function(values) {
                         value=Math.round(values);
-			set_value('PWM','$id',value);
+			if(done)set_value('PWM','$id',value);
+			done=false;
       }
     });";
 }
@@ -127,7 +128,7 @@ echo "}\nupdate_status();";
 new Draggable('pwm');
 new Draggable('mpd');
 
-
+var done=true
 </script>
 </body>
 </html>
