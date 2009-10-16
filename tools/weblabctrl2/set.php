@@ -32,7 +32,7 @@ elseif($cmd=="beamer_on")
 {
 	exec("powercommander.lapcontrol powercommander SW PROJEKTOR ON 0x00");
 	echo "powercommander.lapcontrol powercommander SW PROJEKTOR ON 0x00";
-	$script .= "document.getElementById('beamer_button').disabled=true;\n";;
+	$script .= "document.getElementById('beamer_button').disabled=true;\n";
 	$_SESSION['beamer_on']=1;
 }
 
