@@ -13,6 +13,8 @@ include "config.php";
   div.pwm_top {background-color:#ccccff; width: 256px; margin-bottom:5px;}
   div.mpd {position:absolute; left:350px; top: 60px; background-color:#ddddff; width: 256px; padding:5px;}
   div.mpd_top {background-color:#ccccff; width: 256px; margin-bottom:5px;}
+  div.misc {position:absolute; left:650px; top: 60px; background-color:#ddddff; width: 256px; padding:5px;}
+  div.misc_top {background-color:#ccccff; width: 256px; margin-bottom:5px;}
   body {margin: 0px; padding: 0px;}
 </style>
 
@@ -26,6 +28,10 @@ function set_value(cmd,id,value)
 function mpd_cmd(room,cmd,value)
 {
   new Ajax.Updater('ajax', 'mpd.php?cmd='+cmd+'&room='+room+'&value='+value,{method:'get', onComplete:function() {done=true;}} );
+}
+function beamer_on()
+{
+  new Ajax.Updater('ajax', 'set.php?cmd=beamer_on',{method:'get', onComplete:function() {done=true;}} );
 }
 </script>
 <div id="ajax">
@@ -74,6 +80,11 @@ foreach($rooms as $room => $port)
 }
 ?>
 </div>
+</div>
+
+<div id="misc" class="misc">
+<div class="misc_top">Misc</div>
+<input type="button" id="beamer_button" onclick="beamer_on();" value="Beamer on">
 </div>
 <script>
 
@@ -127,6 +138,7 @@ echo "}\nupdate_status();";
 ?>    
 new Draggable('pwm');
 new Draggable('mpd');
+new Draggable('misc');
 
 var done=true
 </script>
