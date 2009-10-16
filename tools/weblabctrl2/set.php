@@ -23,13 +23,15 @@ if($cmd=="PWM")
 elseif($cmd=="SW")
 {
 	if($_GET[value]=="ON" || $_GET[value]=="OFF") $value=$_GET[value];
+	if($value=="ON")$_SESSION[$id]=1;
+	if($value=="OFF")$_SESSION[$id]=0;
 	echo "powercommander.lapcontrol powercommander $cmd $id $value 0x00";
 	exec("powercommander.lapcontrol powercommander $cmd $id $value 0x00");
 }
 elseif($cmd=="beamer_on")
 {
 	exec("powercommander.lapcontrol powercommander SW PROJEKTOR ON 0x00");
-	echo("powercommander.lapcontrol powercommander SW PROJEKTOR ON 0x00");
+	echo "powercommander.lapcontrol powercommander SW PROJEKTOR ON 0x00";
 	$script .= "document.getElementById('beamer_button').disabled=true;\n";;
 	$_SESSION['beamer_on']=1;
 }
