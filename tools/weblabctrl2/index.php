@@ -7,6 +7,7 @@ include "config.php";
 <script src="scriptaculous/scriptaculous.js" type="text/javascript"></script>
 <script src="weblabctrl.js" type="text/javascript"></script>
 <style type="text/css">
+  * {font-family:Arial;}
   div.slider { width:256px; margin:10px 0; background-color:#ccc; height:10px; position: relative; }
   div.slider div.handle { width:10px; height:15px; background-color:#f00; cursor:move; position: absolute; }
   div.pwm {position:absolute; left:50px; top: 60px; background-color:#ddddff; width: 256px; padding:5px;}
@@ -16,6 +17,7 @@ include "config.php";
   div.misc {position:absolute; left:650px; top: 60px; background-color:#ddddff; width: 256px; padding:5px;}
   div.misc_top {background-color:#ccccff; width: 256px; margin-bottom:5px;}
   body {margin: 0px; padding: 0px;}
+  input {}
 </style>
 
 </head>
@@ -32,6 +34,10 @@ function mpd_cmd(room,cmd,value)
 function beamer_on()
 {
   new Ajax.Updater('ajax', 'set.php?cmd=beamer_on',{method:'get', onComplete:function() {done=true;}} );
+}
+function text_the_borg(text)
+{
+  new Ajax.Updater('ajax', 'set.php?cmd=text_the_borg&text='+text,{method:'get', onComplete:function() {done=true;}} );
 }
 </script>
 <div id="ajax">
@@ -85,6 +91,8 @@ foreach($rooms as $room => $port)
 <div id="misc" class="misc">
 <div class="misc_top">Misc</div>
 <input type="button" id="beamer_button" onclick="beamer_on();" value="Beamer on">
+<br>Laufschriftborg
+<input type="text"  onchange="text_the_borg(this.value);this.value='';" value="">
 </div>
 <script>
 
