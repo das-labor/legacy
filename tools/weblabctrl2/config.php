@@ -1,5 +1,6 @@
 <?
-
+session_id("nakka");
+session_start();
 #light
 $pwm_ids=array("TAFEL","BEAMER","SCHRANK","FLIPPER","LOUNGE","KUECHE");
 $sw_ids=array("LAMP_TAFEL","LAMP_BEAMER","LAMP_SCHRANK","LAMP_FLIPPER","LAMP_LOUNGE","LAMP_KUECHE","LAMP_VORTRAG");
