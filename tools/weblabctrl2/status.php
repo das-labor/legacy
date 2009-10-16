@@ -8,6 +8,7 @@ foreach($pwm_ids as $id)
 	if(!isset($_SESSION[$id]))
 	{
 		exec("powercommander.lapcontrol powercommander PWM $id GET 0",$status);
+		echo "new status $id";
 		//var_dump($status);
 		if(preg_match("/returned/",$status[2])) 
 		$_SESSION[$id]=hexdec(substr($status[2],11,4));
