@@ -48,10 +48,5 @@ if(!isset($_SESSION['beamer_on']))
 		$_SESSION['beamer_on']=hexdec(substr($status[2],11,4));
 }
 
-if($_SESSION['beamer_on']==1)
-	$script .= "document.getElementById('beamer_button').disabled=true;\n";
-else
-	$script .= "document.getElementById('beamer_button').disabled=false;\n";
-
 echo "<script>$script</script>";
 ?>
