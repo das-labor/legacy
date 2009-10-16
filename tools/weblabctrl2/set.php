@@ -14,6 +14,7 @@ if($cmd=="PWM")
 {
 	if(preg_match("/[!0-9]/",$_GET[value]) && $_GET[value]<=255 && $_GET[value]>=0) $value=dechex($_GET[value]);
 	else unset($_GET[value]);
+	$_SESSION[$id]=hexdec($value);
 	exec("powercommander.lapcontrol powercommander $cmd $id SET 0x$value");
 	echo "powercommander.lapcontrol powercommander $cmd $id SET 0x$value";
 	

@@ -5,10 +5,14 @@ include "config.php";
 foreach($pwm_ids as $id)
 {
 	unset($status);
-	exec("powercommander.lapcontrol powercommander PWM $id GET 0",$status);
-	//var_dump($status);
-	if(preg_match("/returned/",$status[3])) 
-		$script .= "slider_".$id."_control.setValue('".hexdec(substr($status[3],11,4))."');\n";
+	if(!isset($_SESSION[$id]))
+	{
+		exec("powercommander.lapcontrol powercommander PWM $id GET 0",$status);
+		//var_dump($status);
+		if(preg_match("/returned/",$status[2])) 
+		$_SESSION[$id]=hexdec(substr($status[2],11,4));
+	}
+	$script .= "slider_".$id."_control.setValue('".$_SESSION[$id]."');\n";
 }
 
 foreach($rooms as $room => $port)
