@@ -27,5 +27,18 @@ foreach($rooms as $room => $port)
 	if(strpos($status[1],"paused")!==false) $script .= "document.getElementById('".$room."_pause').style.backgroundColor='#aaaaaa';\n";;
 	if(preg_match("/\(([0-9]{1,2}%)\)/",$status[1],$volume)) $script .= "slider_process_".$room."_control.setValue('".substr($volume[1],0,-1)."');\n";
 }
+if(!isset($_SESSION['beamer_on']))
+{
+	unset($status);
+	exec("powercommander.lapcontrol powercommander SW  PROJEKTOR STATUS 0",$status);
+	if(preg_match("/returned/",$status[2]))
+		$_SESSION['beamer_on']=hexdec(substr($status[2],11,4));
+}
+
+if($_SESSION['beamer_on']==1)
+	$script .= "document.getElementById('beamer_button').disabled=true;\n";
+else
+	$script .= "document.getElementById('beamer_button').disabled=false;\n";
+
 echo "<script>$script</script>";
 ?>
