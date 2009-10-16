@@ -123,7 +123,8 @@ foreach($rooms as $room => $port)
       sliderValue: [".$volume[1]."],
       onSlide: function(values) {
                         value=Math.round(values);
-			mpd_cmd('$room','volume',value);
+			if(done)mpd_cmd('$room','volume',value);
+			done=false;
       }
     });";
 	echo "var slider_mpd_process_$room = $('slider_mpd_process_$room');
