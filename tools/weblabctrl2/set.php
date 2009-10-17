@@ -1,11 +1,11 @@
 <?
 if($_GET[update]=="doit") {system("svn update"); exit; }
 include "config.php";
-echo "debug";
 if($_GET[cmd]=="PWM")$cmd="PWM";
 elseif($_GET[cmd]=="SW")$cmd="SW";
 elseif($_GET[cmd]=="beamer_on")$cmd="beamer_on";
 elseif($_GET[cmd]=="text_the_borg")$cmd="text_the_borg";
+elseif($_GET[cmd]=="save_pos")$cmd="save_pos";
 else unset($_GET[cmd]);
 
 if(in_array($_GET[id],$pwm_ids)) $id=$_GET[id];
@@ -41,6 +41,12 @@ elseif($cmd=="text_the_borg")
 	echo "borg";
 	exec("lapcontrol -s rl borg scroll 0x24 '2<5|+30/#".escapeshellcmd($_GET[text])."'");
 	exec("lapcontrol -s rl borg mode 0x24 1");
+}
+elseif($cmd=="save_pos")
+{
+	setcookie($_GET[div]."x",$_GET[x]);
+	setcookie($_GET[div]."y",$_GET[y]);
+	echo "Element $_GET[div] $_GET[x] $_GET[y]";
 }
 
 echo "<script>$script</script>";
