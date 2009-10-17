@@ -6,19 +6,33 @@ include "config.php";
 <script src="scriptaculous/prototype.js" type="text/javascript"></script>
 <script src="scriptaculous/scriptaculous.js" type="text/javascript"></script>
 <script src="weblabctrl.js" type="text/javascript"></script>
-<style type="text/css">
+<?
+if($_COOKIE['pwmx']) $pwmx=$_COOKIE['pwmx'];
+else $pwmx=50;
+if($_COOKIE['pwmy']) $pwmy=$_COOKIE['pwmy'];
+else $pwmy=60;
+if($_COOKIE['mpdx']) $mpdx=$_COOKIE['mpdx'];
+else $mpdx=350;
+if($_COOKIE['mpdy']) $mpdy=$_COOKIE['mpdy'];
+else $mpdy=60;
+if($_COOKIE['miscx']) $miscx=$_COOKIE['miscx'];
+else $miscx=650;
+if($_COOKIE['miscy']) $miscy=$_COOKIE['miscy'];
+else $miscy=60;
+echo "<style type=\"text/css\">
   * {font-family:Arial;}
   div.slider { width:256px; margin:10px 0; background-color:#ccc; height:10px; position: relative; }
   div.slider div.handle { width:10px; height:15px; background-color:#f00; cursor:move; position: absolute; }
-  div.pwm {position:absolute; left:50px; top: 60px; background-color:#ddddff; width: 256px; padding:5px;}
+  div.pwm {position:absolute; left:".$pwmx."; top: ".$pwmy."; background-color:#ddddff; width: 256px; padding:5px;}
   div.pwm_top {background-color:#ccccff; width: 256px; margin-bottom:5px;}
-  div.mpd {position:absolute; left:350px; top: 60px; background-color:#ddddff; width: 256px; padding:5px;}
+  div.mpd {position:absolute; left:".$mpdx."; top: ".$mpdy."; background-color:#ddddff; width: 256px; padding:5px;}
   div.mpd_top {background-color:#ccccff; width: 256px; margin-bottom:5px;}
-  div.misc {position:absolute; left:650px; top: 60px; background-color:#ddddff; width: 256px; padding:5px;}
+  div.misc {position:absolute; left:".$miscx."; top: ".$miscy."; background-color:#ddddff; width: 256px; padding:5px;}
   div.misc_top {background-color:#ccccff; width: 256px; margin-bottom:5px;}
   body {margin: 0px; padding: 0px;}
   input {}
-</style>
+</style>";
+?>
 
 </head>
 <body>
@@ -39,6 +53,10 @@ function text_the_borg(text)
 {
   new Ajax.Updater('ajax', 'set.php?cmd=text_the_borg&text='+text,{method:'get', onComplete:function() {done=true;}} );
 }
+function save_pos(element)
+{
+  new Ajax.Updater('ajax', 'set.php?cmd=save_pos&x='+document.getElementById(element.id).style.left+'&y='+document.getElementById(element.id).style.top,{method:'get', onComplete:function() {done=true;}} );
+}
 </script>
 <div id="ajax">
 #debug
@@ -51,7 +69,7 @@ function text_the_borg(text)
 <?
 foreach($pwm_ids as $id)
 {
-	$color="#".dechex(rand(0,255)).dechex(rand(0,255)).dechex(rand(0,255));
+	$color=sprintf('#%02X%02X%02X',rand(0,255),rand(0,255),rand(0,255));
 	echo "$id <input id=\"LAMP_$id\" type=\"checkbox\" onclick=\"if(this.checked)set_value('SW','LAMP_$id','ON');else set_value('SW','LAMP_$id','OFF')\">
 	<div id=\"slider_$id\" class=\"slider\"> 
             <div class=\"handle\" style=\"background-color: $color;\"></div>
@@ -69,7 +87,8 @@ foreach($rooms as $room => $port)
 {
 	#unset($status);
 	#exec("export MPD_PORT=$port; mpc",$status);
-	$color="#".dechex(rand(0,255)).dechex(rand(0,255)).dechex(rand(0,255));
+	$color=sprintf('#%02X%02X%02X',rand(0,255),rand(0,255),rand(0,255));
+	#$color="#".dechex(rand(0,255)).dechex(rand(0,255)).dechex(rand(0,255));
 	echo "$room<br> <input type=\"button\" id=\"".$room."_pause\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','pause');\" value=\"pause\">";
 	echo "<input type=\"button\" id=\"".$room."_play\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','play');\" value=\"play\">";
 	echo "<input type=\"button\" id=\"".$room."_prev\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','prev');\" value=\"prev\">";
@@ -79,7 +98,8 @@ foreach($rooms as $room => $port)
 	echo "<div id=\"slider_mpd_volume_$room\" class=\"slider\"> 
             <div class=\"handle\" style=\"background-color: $color;\"></div>
         </div>\n";
-	$color="#".dechex(rand(0,255)).dechex(rand(0,255)).dechex(rand(0,255));
+	$color=sprintf('#%02X%02X%02X',rand(0,255),rand(0,255),rand(0,255));
+	#$color="#".dechex(rand(0,255)).dechex(rand(0,255)).dechex(rand(0,255));
 	echo "<div id=\"slider_mpd_process_$room\" class=\"slider\"> 
             <div class=\"handle\" style=\"background-color: $color;\"></div>
         </div>\n";
@@ -145,11 +165,11 @@ echo "new Ajax.Updater('status', 'status.php',{method:'get', evalScripts: true} 
 echo "\nwindow.setTimeout('update_status()',1000);\n";
 echo "}\nupdate_status();";
 ?>    
-new Draggable('pwm');
-new Draggable('mpd');
-new Draggable('misc');
+new Draggable('pwm',{onEnd:function(element){new Ajax.Updater('ajax', 'set.php?cmd=save_pos&div=pwm&x='+document.getElementById('pwm').style.left+'&y='+document.getElementById('pwm').style.top,{method:'get', onComplete:function() {done=true;}} );}});
+new Draggable('mpd',{onEnd:function(element){new Ajax.Updater('ajax', 'set.php?cmd=save_pos&div=mpd&x='+document.getElementById('mpd').style.left+'&y='+document.getElementById('mpd').style.top,{method:'get', onComplete:function() {done=true;}} );}});
+new Draggable('misc',{onEnd:function(element){new Ajax.Updater('ajax', 'set.php?cmd=save_pos&div=misc&x='+document.getElementById('misc').style.left+'&y='+document.getElementById('misc').style.top,{method:'get', onComplete:function() {done=true;}} );}});
 
-var done=true
+var done=true;
 </script>
 </body>
 </html>
