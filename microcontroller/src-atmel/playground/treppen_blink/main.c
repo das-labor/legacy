@@ -106,14 +106,16 @@ void band_redraw()
 */
 void band_pingpong(element_t *band,uint8_t size,uint8_t ballsize,uint16_t speed)
 {
-  uint8_t i;
+  uint8_t i,k;
   for(i=ballsize-1;i<size;i++){
     band_shift(band,size);
     band_redraw();
     _delay_ms(speed);
   }
-  for(i=ballsize;i<size;i++){
-    band_shiftback(band,size);
+  for(i=ballsize-1;i<size;i++){ 
+    for(k=ballsize;k<size;k++){
+      band_shift(band,size);
+    }
     band_redraw();
     _delay_ms(speed);
   }
