@@ -81,6 +81,15 @@ int main(void)
 	PORTD |= _BV(DATA) | _BV(CLK);
 //	int i, j, k, x = 0;
 	uint8_t i;
+	for(i=0;i<LAMPS;i++)
+	  {
+	    band[i].red=0;
+	    band[i].green=0;
+	    band[i].blue=0;
+	  }
+	band[0].red=0x0FFF;
+	band[0].green=0x0FFF;
+	band[0].blue=0x0FFF;
 	while (1)
 	{
 		for (i = 0; i < LAMPS; i++)
