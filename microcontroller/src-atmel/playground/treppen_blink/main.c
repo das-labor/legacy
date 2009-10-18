@@ -76,18 +76,18 @@ void band_shiftback(element_t *band, uint8_t size)
 {
 	element_t tmp_el = {0, 0, 0};
 	uint8_t i;
-	tmp_el.red = band[size-1].red;
-	tmp_el.green = band[size-1].green;
-	tmp_el.blue = band[size-1].blue;
+	tmp_el.red = band[0].red;
+	tmp_el.green = band[0].green;
+	tmp_el.blue = band[0].blue;
 	for (i = size-1; i >0; i--)
 	{
 		band[i].red = band[i-1].red;
 		band[i].green = band[i-1].green;
 		band[i].blue = band[i-1].blue;
 	}
-	band[0].red=tmp_el.red;
-	band[0].green=tmp_el.green;
-	band[0].blue=tmp_el.blue;  
+	band[size-1].red=tmp_el.red;
+	band[size-1].green=tmp_el.green;
+	band[size-1].blue=tmp_el.blue;  
 }
 
 void band_redraw()
