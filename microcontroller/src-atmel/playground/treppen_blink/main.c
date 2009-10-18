@@ -19,6 +19,17 @@ typedef struct {
 
 element_t band[LAMPS];
 
+void update()
+{
+	uint8_t i;
+	_delay_us(10);
+	for (i = 0; i < 5; i++)
+	{
+		PORTD |= _BV(DATA);
+		PORTD &= ~_BV(DATA);
+	}
+}
+
 
 void element_set(element_t *myel)
 {
@@ -99,7 +110,6 @@ int main(void)
 		for (j = 0; j < 5; j++)
 		{
 			PORTD |= _BV(DATA);
-//			_delay_us(2);
 			PORTD &= ~_BV(DATA);
 		}
 		_delay_ms(300);
