@@ -75,6 +75,7 @@ void band_shif(element_t *band, uint8_t size)
 
 void band_redraw()
 {
+  uint8_t i;
   for (i = 0; i < LAMPS; i++)
     {
       element_set(&(band[i]));
