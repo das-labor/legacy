@@ -17,8 +17,6 @@ typedef struct {
   uint16_t blue;
 } element_t;
 
-element_t myband[LAMPS];
-
 void update()
 {
 	uint8_t i;
@@ -94,7 +92,7 @@ void band_shiftback(element_t *band, uint8_t size)
 void band_redraw(element_t *band,uint8_t size)
 {
   uint8_t i;
-  for (i = 0; i < LAMPS; i++)
+  for (i = 0; i < size; i++)
     {
       element_set(&(band[i]));
     }
@@ -123,6 +121,7 @@ void band_pingpong(element_t *band,uint8_t size,uint8_t ballsize,uint16_t speed)
 
 int main(void)
 {
+  element_t myband[LAMPS];
 	DDRD |= _BV(DATA) | _BV(CLK);
 	PORTD |= _BV(DATA) | _BV(CLK);
 //	int i, j, k, x = 0;
@@ -133,13 +132,19 @@ int main(void)
 	    myband[i].green=0;
 	    myband[i].blue=0;
 	  }
+	myband[0].red=0x0FF0;
+	myband[0].green=0x0FF0;
+	myband[0].blue=0x0FF0;
 	myband[0].red=0x0FFF;
 	myband[0].green=0x0FFF;
 	myband[0].blue=0x0FFF;
+	myband[0].red=0x0FF0;
+	myband[0].green=0x0FF0;
+	myband[0].blue=0x0FF0;
 	while (1)
 	{
 	  //	  band_redraw();
-	  band_pingpong(myband,LAMPS,1,100);
+	  band_pingpong(myband,LAMPS,3,200);
 	  //	  band_shift(band,LAMPS);
 	  //	  _delay_ms(250);
 
