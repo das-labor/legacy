@@ -54,7 +54,7 @@ void element_set(element_t *myel)
 	}
 }
 
-void band_shif(element_t *band, uint8_t size)
+void band_shift(element_t *band, uint8_t size)
 {
 	element_t tmp_el = {0, 0, 0};
 	uint8_t i;
@@ -72,6 +72,23 @@ void band_shif(element_t *band, uint8_t size)
 	band[size-1].blue=tmp_el.blue;  
 }
 
+void band_shiftback(element_t *band, uint8_t size)
+{
+	element_t tmp_el = {0, 0, 0};
+	uint8_t i;
+	tmp_el.red = band[size-1].red;
+	tmp_el.green = band[size-1].green;
+	tmp_el.blue = band[size-1].blue;
+	for (i = 0; i < size - 1; i++)
+	{
+		band[i+1].red = band[i].red;
+		band[i+1].green = band[i].green;
+		band[i+1].blue = band[i].blue;
+	}
+	band[0].red=tmp_el.red;
+	band[0].green=tmp_el.green;
+	band[0].blue=tmp_el.blue;  
+}
 
 void band_redraw()
 {
@@ -82,6 +99,26 @@ void band_redraw()
     }
   update();
 }
+
+/*
+  ball ist schon auf dem feld
+*/
+void band_pingpong(element_t *band,uint8_t size,uint8_t ballsize,uint16_t speed)
+{
+  uint8_t i;
+  for(i=ballsize-1;i<size;i++){
+    band_shift(band,size);
+    band_redraw();
+    _delay_ms(speed);
+  }
+  for(i=ballsize-1;i<size;i++){
+    band_shiftback(band,size);
+    band_redraw();
+    _delay_ms(speed);
+  }
+  
+}
+
 
 int main(void)
 {
@@ -101,8 +138,9 @@ int main(void)
 	while (1)
 	{
 	  band_redraw();
-	  band_shif(band,LAMPS);
-	  _delay_ms(250);
+	  band_pingpong(band,LAMPS,1,100);
+	  //	  band_shift(band,LAMPS);
+	  //	  _delay_ms(250);
 
 /*		for (k = 0; k < LAMPS; k++)
 		{
