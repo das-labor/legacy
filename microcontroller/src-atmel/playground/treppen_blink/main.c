@@ -7,6 +7,59 @@
 #define DATA PD6
 #define CLK  PD7
 #define LAMPS 5
+#define OUTPORT PORTD
+
+#define BITSPERLAMP 12
+
+typedef struct {
+  uint16_t red;
+  uint16_t green;
+  uint16_t blue;
+} element_t;
+
+element_t band[LAMPS];
+
+
+void element_set(element_t *myel)
+{
+	uint8_t k;
+	for (k = 0 ; k< BITSPERLAMP; k++)
+    {
+		OUTPORT = (((myel->blue & _BV(k)) >> k) << DATA);
+		PORTD |= _BV(CLK);
+		PORTD &= ~_BV(CLK);
+	}
+	for (k = 0; k < BITSPERLAMP; k++)
+	{
+		OUTPORT = (((myel->green & _BV(k)) >> k) << DATA);
+		PORTD |= _BV(CLK);
+		PORTD &= ~_BV(CLK);
+	}
+	for (k = 0; k < BITSPERLAMP; k++)
+	{
+		OUTPORT = (((myel->red & _BV(k)) >> k) << DATA);
+		PORTD |= _BV(CLK);
+		PORTD &= ~_BV(CLK);
+	}
+}
+
+void band_shif(element_t *band, uint8_t size)
+{
+	element_t tmp_el = {0, 0, 0};
+	uint8_t i;
+	tmp_el.red = band[0].red;
+	tmp_el.green = band[0].green;
+	tmp_el.blue = band[0].blue;
+	for (i = 0; i < size - 1; i++)
+	{
+		band[i].red = band[i+1].red;
+		band[i].green = band[i+1].green;
+		band[i].blue = band[i+1].blue;
+	}
+	band[size-1].red=tmp_el.red;
+	band[size-1].green=tmp_el.green;
+	band[size-1].blue=tmp_el.blue;  
+}
 
 
 
@@ -15,10 +68,15 @@ int main(void)
 {
 	DDRD |= _BV(DATA) | _BV(CLK);
 	PORTD |= _BV(DATA) | _BV(CLK);
-	int i, j, k, x = 0;
+//	int i, j, k, x = 0;
+	uint8_t i;
 	while (1)
 	{
-		for (k = 0; k < LAMPS; k++)
+		for (i = 0; i < LAMPS; i++)
+		{
+    		element_set(&(band[i]));
+  		}
+/*		for (k = 0; k < LAMPS; k++)
 		{
 			for (i = 0; i < 3; i++)
 			{
@@ -30,7 +88,6 @@ int main(void)
 					else
 						PORTD |= _BV(DATA);
 					PORTD |= _BV(CLK);
-//					_delay_us(2);
 					PORTD &= ~_BV(CLK);
 				}
 				x *= 3;
@@ -46,7 +103,7 @@ int main(void)
 			PORTD &= ~_BV(DATA);
 		}
 		_delay_ms(300);
-	/*
+	
 		for (k = 0; k < LAMPS; k++)
 		{
 			for (i = 0; i < 3; i++)
