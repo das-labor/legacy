@@ -73,7 +73,14 @@ void band_shif(element_t *band, uint8_t size)
 }
 
 
-
+void band_redraw()
+{
+  for (i = 0; i < LAMPS; i++)
+    {
+      element_set(&(band[i]));
+    }
+  update();
+}
 
 int main(void)
 {
@@ -92,10 +99,10 @@ int main(void)
 	band[0].blue=0x0FFF;
 	while (1)
 	{
-		for (i = 0; i < LAMPS; i++)
-		{
-    		element_set(&(band[i]));
-  		}
+	  band_redraw();
+	  band_shif(band,LAMPS);
+	  _delay_ms(250);
+
 /*		for (k = 0; k < LAMPS; k++)
 		{
 			for (i = 0; i < 3; i++)
