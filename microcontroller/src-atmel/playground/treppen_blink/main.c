@@ -80,7 +80,7 @@ void band_shiftback(element_t *band, uint8_t size)
 	tmp_el.green = band[0].green;
 	tmp_el.blue = band[0].blue;
 
-	for (i = 1; i < size-1 ; i++)
+	for (i = 1; i < size ; i++)
 	{
 		band[i-1].red = band[i].red;
 		band[i-1].green = band[i].green;
