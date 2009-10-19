@@ -1,9 +1,4 @@
-#include "config.h"
 #include "api.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "fileparser.h"
 
 /*

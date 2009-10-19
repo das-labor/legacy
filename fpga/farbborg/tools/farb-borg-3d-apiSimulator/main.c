@@ -11,15 +11,9 @@
  *     with all animationprograms
  */
 
-// type make -f Makefile.osx
-// to compile the simulator for MacOSX (tested on 10.2, 10.3, 10.4)
-#ifdef OSX_
-#  include <GLUT/glut.h>
-#else
-#  include <GL/glut.h>  
-#endif
 
 #include <stdio.h>
+#include "main.h"
 
 extern void *display_loop(void * unused);
 
@@ -36,6 +30,8 @@ extern void *display_loop(void * unused);
 #else
 #  include <pthread.h>   // for threads in linux
 #  include <stdlib.h>
+#  include <stdarg.h>
+#  include <stdio.h>
 #  include <sys/time.h>
 #  include <sys/types.h>
 #  include <unistd.h>
@@ -44,6 +40,11 @@ extern void *display_loop(void * unused);
 
 #include "trackball.h"
 #include "config.h"
+char strInit[] = "Test";
+
+char *animStr = strInit;
+unsigned int curFrame = 0;
+volatile unsigned int speed = 100;
 
 // variables for the simulator screensize
 int WindWidth, WindHeight;
@@ -80,27 +81,68 @@ void drawLED(int color, float pos_x, float pos_y, float pos_z) {
 	glPopMatrix();
 }
 
+void drawKoord(float dist, float size) {
+	glPushMatrix();
+	glTranslatef(-dist, -dist, -dist);
+	glColor3f(1., 0., 0.); // red == x
+	glBegin(GL_LINES);
+		glVertex3f(0., 0., 0.);
+		glVertex3f(size, 0., 0.);
+	glEnd();
+	glColor3f(0., 1., 0.); // red == x
+	glBegin(GL_LINES);
+		glVertex3f(0., 0., 0.);
+		glVertex3f(0., size, 0.);
+	glEnd();
+	glColor3f(0., 0., 1.); // red == x
+	glBegin(GL_LINES);
+		glVertex3f(0., 0., 0.);
+		glVertex3f(0., 0., size);
+	glEnd();
+	glPopMatrix();
+
+}
+
+
+void output(GLfloat x, GLfloat y, char *format,...)
+{
+  va_list args;
+  char buffer[200], *p;
+
+  va_start(args, format);
+  vsprintf(buffer, format, args);
+  va_end(args);
+  glPushMatrix();
+  glTranslatef(x, y, 0);
+  for (p = buffer; *p; p++)
+    glutStrokeCharacter(GLUT_STROKE_ROMAN, *p);
+  glPopMatrix();
+}
+
 /** This is the most importend function, because it puts the virtual LEDs 
  *  onto the screen.
  */
 void display(void){
   	int x, y, z, color = 0;
 	//unsigned char *pix;
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glMatrixMode(GL_MODELVIEW);
+	
   	tbReshape(WindWidth, WindHeight);
+  	
   	glClear(GL_COLOR_BUFFER_BIT);
   	glPushMatrix();
+  	//glScalef((float) WindHeight/(float) WindWidth, 1., 1.);
 	glTranslatef(MAX_X*2., MAX_Y*2., MAX_Z*2.);
 	tbMatrix(); // Adds the rotationspart of the trackball 
   	glRotatef(view_rotx, 1.0, 0.0, 0.0);
   	glRotatef(view_roty, 0.0, 1.0, 0.0);
 	glRotatef(view_rotz, 0.0, 0.0, 1.0);
+	drawKoord(12., 7.);
 	glTranslatef(-MAX_X*2., -MAX_Y*2., -MAX_Z*2.);
   	for (x = 0; x < MAX_X; x++) {
 		for (y = 0; y < MAX_Y; y++) { 
 			for (z = 0; z < MAX_Z; z++) {
-				/*printf("%f %f %f\n", pixmap[z][y][x][0]/64.0, 
-									 pixmap[z][y][x][1]/64.0, 
-									 pixmap[z][y][x][2]/64.0); */
 				glColor4f((pixmap[z][y][x][0] & 0xff)/255.0, 
 						  (pixmap[z][y][x][1] & 0xff)/255.0, 
 						  (pixmap[z][y][x][2] & 0xff)/255.0,
@@ -112,7 +154,30 @@ void display(void){
 		}
   	}
 	glPopMatrix();
-	glutSwapBuffers();
+	// Overlay Textdarstellung
+	glPushAttrib(GL_ENABLE_BIT);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, 3500, 0, 3500);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    glColor3f(1., 0., 0.);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glEnable(GL_LINE_SMOOTH);
+    glLineWidth(2.0);
+    output(80, 3300, "Animation: %s - Speed = %d %", animStr, speed);
+    output(80, 3100, "Frame: %d",     curFrame++);
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glPopAttrib();
+
+    glutSwapBuffers();
 	// waits. If this value is lower, only the CPU-time rises. you cant see it.
 #ifdef _WIN32
 	Sleep(20);
@@ -130,15 +195,34 @@ void keyboard(unsigned char key, int x, int y){
     		glutDestroyWindow(win);
     		exit(0); 
 			break;
+		
+		case 'r':
+			view_rotx = 0.;
+			view_roty = 0.;
+			view_rotz = 0.;
+			tbReset();
+			break;
+			
+		case 't':
+		    speed++;
+			break;
+			
+		case 'g':
+		    speed--;
+			break;
+			
         case 'w':
     	    joy1_up++;
    	        break;
+   	        
         case 's':
    	        joy1_down++;
      	    break;
+     	    
         case 'd':	
    	        joy1_right++;
      	    break;
+     	    
         case 'a':
      	    joy1_left++;
      	    break;
@@ -162,17 +246,15 @@ void motion(int x, int y)
 void reshape(int width, int height)
 {
   tbReshape(width, height);
-
+  glLoadIdentity();
   glViewport(0, 0, width, height);
-  
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  gluPerspective(60.0, (float)WindHeight/(float)WindWidth, 5., 1000.);
+  glClearColor(0.1,0.1,0.1,0.1);
+  gluPerspective(60.0, (float) width / (float) height, 5., 1000.);
   gluLookAt(MAX_X*2., MAX_Y*2.+50., MAX_Z*2.,
             MAX_X*2., MAX_Y*2.,     MAX_Z*2.,
-            0.0,      0.0,          1.0); 
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
+            0.0, 0.0, 1.0); 
 
   WindWidth  = width;
   WindHeight = height;
@@ -215,7 +297,7 @@ int main(int argc, char **argv) {
     win = glutCreateWindow("Farb Borg 3D Simulator");
     
     // callback functions
-    //glutReshapeFunc(reshape);
+    glutReshapeFunc(reshape);
     glutDisplayFunc(display);
     glutIdleFunc(display);
     glutKeyboardFunc(keyboard);
@@ -225,7 +307,7 @@ int main(int argc, char **argv) {
     
     // clearcolor & main loop
     glClearColor(0.1,0.1,0.1,0.1);
-    gluPerspective(60.0, (float) WindHeight/(float) WindWidth, 5., 1000.);
+    gluPerspective(60.0, 1.0, 5., 1000.);
     gluLookAt(MAX_X*2., MAX_Y*2.+50., MAX_Z*2.,
               MAX_X*2., MAX_Y*2.,     MAX_Z*2.,
               0.0, 0.0, 1.0); 

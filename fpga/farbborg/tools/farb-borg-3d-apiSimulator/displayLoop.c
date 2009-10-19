@@ -7,11 +7,34 @@
 #include "colorSnake.h"
 #include "fileParser.h"
 #include "plasmaAnims.h"
+#include "animations.h"
+#include "main.h"
+
+extern char *animStr;
+extern unsigned int curFrame;
+
+#define ADD_ANIMATION(function_ptr) \
+        uart_putstr("playing " #function_ptr ""); \
+        animStr = "" #function_ptr ""; \
+        curFrame = 0; \
+		function_ptr (); \
+		function_ptr ## end: 
+
+
+//typedef struct  
 
 // Playlist
 void *display_loop(void * unused)  {
-	while (1) {
-		rotatingHeard();
+	
+	ADD_ANIMATION(rotatingHeard);
+	ADD_ANIMATION(plasmaBall);
+	ADD_ANIMATION(plasmaSea);
+	ADD_ANIMATION(fnordLicht);
+	
+	//while (1) {
+		
+	
+/*		rotatingHeard();
 		plasmaWave();
 		plasmaSea();
 		plasmaBall();
@@ -76,7 +99,9 @@ void *display_loop(void * unused)  {
 		testAnim();
 		//uart_putstr("fnordLicht()\n");
 		//fnordLicht();
-		
-	}
-	return 0;
+		*/
+	//}
+	
+	glutDestroyWindow(win);
+    exit(0);
 }
