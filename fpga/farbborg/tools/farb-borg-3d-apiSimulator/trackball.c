@@ -151,6 +151,16 @@ void tbAnimate(GLboolean animate)
   tb_animate = animate;
 }
 
+void tbReset(void)
+{
+	tb_angle = 0.0;
+	glPushMatrix();
+    glLoadIdentity();
+    glGetFloatv(GL_MODELVIEW_MATRIX, (GLfloat *)tb_transform);
+    glPopMatrix();
+}
+
+
 void tbInit(GLuint button)
 {
   tb_button = button;

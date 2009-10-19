@@ -78,7 +78,7 @@
     void tbInit(GLuint button);
 
  void tbMatrix(void);
-
+ void tbReset(void);
  void tbReshape(int width, int height);
 
  void tbMouse(int button, int state, int x, int y);

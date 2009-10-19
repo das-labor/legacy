@@ -4,11 +4,13 @@
  *  defined.
  */
 
-/** This defines how many Streams in matrix are used.
- *  FIXME: Better define directly above the animation-program. */
+#ifndef CONFIG_H
+#define CONFIG_H
 
 #define MAX_X 5
 #define MAX_Y 5
 #define MAX_Z 5
 
 #define COLOR_BYTES 3
+
+#endif

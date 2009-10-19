@@ -605,10 +605,9 @@ void movingArrows() {
      clearImage(black);
 	 fade(10, 50);
 }
-
-void fnordLicht() {
-	unsigned char i, j;
-	unsigned short k;
+/*
+void fnordLicht() {  // Rewrite mit ClearImage und fade
+	unsigned char i;
 	uint32_t *im;
 	clearImage(red);
 	fade(10, 40);
@@ -642,6 +641,7 @@ void fnordLicht() {
 		}
 	}
 }
+*/
 
 void symetricRandom() {
 	unsigned char  i, j;

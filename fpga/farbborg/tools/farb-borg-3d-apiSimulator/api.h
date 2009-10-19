@@ -6,6 +6,8 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include "config.h"
+#include "util.h"
 
 // In the most cases only the BASIC API is used!
 
