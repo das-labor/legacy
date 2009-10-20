@@ -1,14 +1,16 @@
--include common.mk
+OSTYPES = beos cygwin freebsd linux mingw mac
+ifeq ($(findstring $(OSTYPE), $(OSTYPES)),)
+  $(error Unkown OSTYPE "$(OSTYPE)", must be one of "$(OSTYPES)")
+endif
 
-LIBS     = -lglut -lpthread -lGL -lGLU
-CC       = gcc
+ifeq ($(OSTYPE),mingw)
+	INCLUDE = Makefile.win
+else
+ifeq ($(OSTYPE),mac)
+    INCLUDE = Makefile.mac
+else
+    INCLUDE = Makefile.lin
+endif
+endif
 
-all: .obj .dep Makefile common.mk $(PRG) 
-
-$(PRG): $(OBJ_2)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
-
-clean:
-	rm -rf .dep/ .obj/ $(PRG) 
-
--include common_footer.mk
+-include $(INCLUDE)
