@@ -47,6 +47,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="colorSnake.h" />
+		<Unit filename="common.mk" />
 		<Unit filename="config.h" />
 		<Unit filename="displayLoop.c">
 			<Option compilerVar="CC" />
