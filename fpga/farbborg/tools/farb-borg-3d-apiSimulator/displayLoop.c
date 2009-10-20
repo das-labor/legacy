@@ -15,7 +15,7 @@ extern unsigned int curFrame;
 
 #define ADD_ANIMATION(function_ptr) \
         uart_putstr("playing " #function_ptr ""); \
-        animStr = "" #function_ptr ""; \
+        setAnimName("" #function_ptr ""); \
         curFrame = 0; \
 		function_ptr (); \
 		function_ptr ## end: 
