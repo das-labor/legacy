@@ -1,9 +1,9 @@
-/** This is the main file of Simulator and includes the opengl code. 
- *  Only the trackball, for rotating the cube with the mouse is defined 
+/** This is the main file of Simulator and includes the opengl code.
+ *  Only the trackball, for rotating the cube with the mouse is defined
  *  "trackball.c" and "trackball.h".
  *  The program has two parts, witch are running in saperate threads.
  *
- *  1. The simulator visualisates the the imagebuffer pixmap in OpenGl. 
+ *  1. The simulator visualisates the the imagebuffer pixmap in OpenGl.
  *     It has the same format as the orginal one. Its compareable to the
  *     Interrupt-Service-Routine of the real one.
  *  2. display_loop() is the secound thread and it includes the animationsprogramms.
@@ -40,29 +40,27 @@ extern void *display_loop(void * unused);
 
 #include "trackball.h"
 #include "config.h"
-char strInit[] = "Test";
 
+char strInit[] = "Test";
 char *animStr = strInit;
-unsigned int curFrame = 0;
-volatile unsigned int speed = 100;
-unsigned int speedSave = 100;
-unsigned char showKoord = 1;
+volatile unsigned int curFrame   =   0;
+volatile unsigned int speed      = 100;
+volatile unsigned int speedSave  = 100;
+volatile unsigned char showKoord =   1;
 
 // variables for the simulator screensize
 int WindWidth, WindHeight;
 
-/** 
+/**
  *
  */
 unsigned int pixmap[MAX_Z][MAX_Y][MAX_X][COLOR_BYTES];
 
-
-
 // rotations variables for keyboardrotation
 float view_rotx = 0., view_roty = 0., view_rotz = 180.;
-// stores the glut window 
+// stores the glut window
 int win;
-// manage the joystick -> please look at joystick.h 
+// manage the joystick -> please look at joystick.h
 char joy1_up = 0, joy1_down = 0, joy1_right = 0, joy1_left = 0, joy_en0 = 0;
 
 // variable for the thread
@@ -79,8 +77,8 @@ void setAnimName(char* str) {
 
 
 /** draws a LED to the position (pos_x, pos_y, poy_z) to the screen.
- *  It has the brightness color. 0 = off -> 3 = full on. Its done by 
- *  using glCallLists. They a defined in main() and because they were put 
+ *  It has the brightness color. 0 = off -> 3 = full on. Its done by
+ *  using glCallLists. They a defined in main() and because they were put
  *  onto the graficcard, are much more faster.
  */
 void drawLED(int color, float pos_x, float pos_y, float pos_z) {
@@ -129,22 +127,22 @@ void output(GLfloat x, GLfloat y, char *format,...)
   glPopMatrix();
 }
 
-/** This is the most importend function, because it puts the virtual LEDs 
+/** This is the most importend function, because it puts the virtual LEDs
  *  onto the screen.
  */
-void display(void){
+void display(void) {
   	int x, y, z, color = 0;
 	//unsigned char *pix;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
-	
+
   	tbReshape(WindWidth, WindHeight);
-  	
+
   	glClear(GL_COLOR_BUFFER_BIT);
   	glPushMatrix();
-  	//glScalef((float) WindHeight/(float) WindWidth, 1., 1.);
+
 	glTranslatef(MAX_X*2., MAX_Y*2., MAX_Z*2.);
-	tbMatrix(); // Adds the rotationspart of the trackball 
+	tbMatrix(); // Adds the rotationspart of the trackball
   	glRotatef(view_rotx, 1.0, 0.0, 0.0);
   	glRotatef(view_roty, 0.0, 1.0, 0.0);
 	glRotatef(view_rotz, 0.0, 0.0, 1.0);
@@ -152,10 +150,10 @@ void display(void){
 		drawKoord(12., 7.);
 	glTranslatef(-MAX_X*2., -MAX_Y*2., -MAX_Z*2.);
   	for (x = 0; x < MAX_X; x++) {
-		for (y = 0; y < MAX_Y; y++) { 
+		for (y = 0; y < MAX_Y; y++) {
 			for (z = 0; z < MAX_Z; z++) {
-				glColor4f((pixmap[z][y][x][0] & 0xff)/255.0, 
-						  (pixmap[z][y][x][1] & 0xff)/255.0, 
+				glColor4f((pixmap[z][y][x][0] & 0xff)/255.0,
+						  (pixmap[z][y][x][1] & 0xff)/255.0,
 						  (pixmap[z][y][x][2] & 0xff)/255.0,
 						  1);
 				// display the LEDs in a the original size grid
@@ -201,19 +199,19 @@ void display(void){
  *
  */
 void keyboard(unsigned char key, int x, int y){
-	switch (key) {  
+	switch (key) {
 		case 'q': printf("Quit\n");
     		glutDestroyWindow(win);
-    		exit(0); 
+    		exit(0);
 			break;
-		
+
 		case 'r':
 			view_rotx = 0.;
 			view_roty = 0.;
 			view_rotz = 180.;
 			tbReset();
 			break;
-			
+
 		case ' ':
 			if (speed) { // pause
 				speedSave = speed;
@@ -221,41 +219,41 @@ void keyboard(unsigned char key, int x, int y){
 			} else { // resume
 				speed = speedSave;
 			}
-				
-			break;	
-			
+
+			break;
+
 		case 'z':
 			if (showKoord)
 				showKoord = 0;
 			else
 				showKoord = 1;
-			break;	
-			
+			break;
+
 		case 't':
 		    speed++;
 			break;
-			
+
 		case 'x':
 			speed = 100000;
 			break;
-			
+
 		case 'g':
 		    if (speed)
 		    	speed--;
 			break;
-			
+
         case 'w':
     	    joy1_up++;
    	        break;
-   	        
+
         case 's':
    	        joy1_down++;
      	    break;
-     	    
-        case 'd':	
+
+        case 'd':
    	        joy1_right++;
      	    break;
-     	    
+
         case 'a':
      	    joy1_left++;
      	    break;
@@ -279,7 +277,6 @@ void motion(int x, int y)
 void reshape(int width, int height)
 {
   tbReshape(width, height);
-  glLoadIdentity();
   glViewport(0, 0, width, height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -287,7 +284,9 @@ void reshape(int width, int height)
   gluPerspective(60.0, (float) width / (float) height, 5., 1000.);
   gluLookAt(MAX_X*2., MAX_Y*2.+50., MAX_Z*2.,
             MAX_X*2., MAX_Y*2.,     MAX_Z*2.,
-            0.0, 0.0, 1.0); 
+            0.0, 0.0, 1.0);
+  glMatrixMode (GL_MODELVIEW);
+  glLoadIdentity ();
 
   WindWidth  = width;
   WindHeight = height;
@@ -323,12 +322,12 @@ void timf(int value) {
 int main(int argc, char **argv) {
     // init
     WindHeight = 600;
-    WindWidth  = 600;         
+    WindWidth  = 600;
     glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
     glutInitWindowSize(WindHeight, WindWidth);
     win = glutCreateWindow("Farb Borg 3D Simulator");
-    
+
     // callback functions
     glutReshapeFunc(reshape);
     glutDisplayFunc(display);
@@ -337,27 +336,27 @@ int main(int argc, char **argv) {
     glutSpecialFunc(special);
     glutMouseFunc(mouse);
     glutMotionFunc(motion);
-    
+
     // clearcolor & main loop
     glClearColor(0.1,0.1,0.1,0.1);
     gluPerspective(60.0, 1.0, 5., 1000.);
     gluLookAt(MAX_X*2., MAX_Y*2.+50., MAX_Z*2.,
               MAX_X*2., MAX_Y*2.,     MAX_Z*2.,
-              0.0, 0.0, 1.0); 
+              0.0, 0.0, 1.0);
 
 	// init Call List for LED. The List number is
-	// the brightnessnumber of the LED	
+	// the brightnessnumber of the LED
 	quad = gluNewQuadric();
 	glNewList(0, GL_COMPILE);
 		gluCylinder(quad, 0.45, 0.45, 2.0, 6, 1);
 	glEndList();
-	
+
 	tbInit(GLUT_LEFT_BUTTON);
 	tbAnimate(GL_FALSE);
-	
-	// start display_loop thread 
+
+	// start display_loop thread
 #ifdef _WIN32
-    _beginthread((void (*)(void*))display_loop, 0, NULL);   
+    _beginthread((void (*)(void*))display_loop, 0, NULL);
 #else
     pthread_create(&simthread, NULL, display_loop, NULL);
 #endif
