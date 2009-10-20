@@ -45,6 +45,8 @@ char strInit[] = "Test";
 char *animStr = strInit;
 unsigned int curFrame = 0;
 volatile unsigned int speed = 100;
+unsigned int speedSave = 100;
+unsigned char showKoord = 1;
 
 // variables for the simulator screensize
 int WindWidth, WindHeight;
@@ -55,8 +57,9 @@ int WindWidth, WindHeight;
 unsigned int pixmap[MAX_Z][MAX_Y][MAX_X][COLOR_BYTES];
 
 
+
 // rotations variables for keyboardrotation
-float view_rotx = 0, view_roty = 0, view_rotz = 0;
+float view_rotx = 0., view_roty = 0., view_rotz = 180.;
 // stores the glut window 
 int win;
 // manage the joystick -> please look at joystick.h 
@@ -66,6 +69,13 @@ char joy1_up = 0, joy1_down = 0, joy1_right = 0, joy1_left = 0, joy_en0 = 0;
 pthread_t simthread;
 // its needed to draw spheres
 GLUquadric* quad;
+
+void setAnimName(char* str) {
+	if (str)
+		animStr = str;
+	if (speed > 1000)
+		speed = 100;
+}
 
 
 /** draws a LED to the position (pos_x, pos_y, poy_z) to the screen.
@@ -138,7 +148,8 @@ void display(void){
   	glRotatef(view_rotx, 1.0, 0.0, 0.0);
   	glRotatef(view_roty, 0.0, 1.0, 0.0);
 	glRotatef(view_rotz, 0.0, 0.0, 1.0);
-	drawKoord(12., 7.);
+	if (showKoord)
+		drawKoord(12., 7.);
 	glTranslatef(-MAX_X*2., -MAX_Y*2., -MAX_Z*2.);
   	for (x = 0; x < MAX_X; x++) {
 		for (y = 0; y < MAX_Y; y++) { 
@@ -171,7 +182,7 @@ void display(void){
     glEnable(GL_LINE_SMOOTH);
     glLineWidth(2.0);
     output(80, 3300, "Animation: %s - Speed = %d %", animStr, speed);
-    output(80, 3100, "Frame: %d",     curFrame++);
+    output(80, 3100, "Waits: %d",     curFrame);
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
@@ -199,16 +210,38 @@ void keyboard(unsigned char key, int x, int y){
 		case 'r':
 			view_rotx = 0.;
 			view_roty = 0.;
-			view_rotz = 0.;
+			view_rotz = 180.;
 			tbReset();
 			break;
+			
+		case ' ':
+			if (speed) { // pause
+				speedSave = speed;
+				speed = 0;
+			} else { // resume
+				speed = speedSave;
+			}
+				
+			break;	
+			
+		case 'z':
+			if (showKoord)
+				showKoord = 0;
+			else
+				showKoord = 1;
+			break;	
 			
 		case 't':
 		    speed++;
 			break;
 			
+		case 'x':
+			speed = 100000;
+			break;
+			
 		case 'g':
-		    speed--;
+		    if (speed)
+		    	speed--;
 			break;
 			
         case 'w':

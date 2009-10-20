@@ -8,11 +8,14 @@
 #endif
 
 extern volatile unsigned int speed;
+extern int curFrame;
 
 void myWait(unsigned int ms) {
 #ifdef _WIN32
 	Sleep(ms);
 #else
+	curFrame++;
+	while (speed == 0) ; // pause
 	usleep(ms*10*(10000/speed));
 #endif
 }

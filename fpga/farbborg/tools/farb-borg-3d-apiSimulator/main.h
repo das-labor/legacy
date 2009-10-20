@@ -9,6 +9,7 @@
 #  include <GL/glut.h>  
 #endif
 
+void setAnimName(char* str);
 extern int win;
 
 #endif
