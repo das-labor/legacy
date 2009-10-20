@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include "spike_hw.h"
 #include "config.h"
-#include "util.h"
 #include "api.h"
 
 color black = {  0,   0,   0};

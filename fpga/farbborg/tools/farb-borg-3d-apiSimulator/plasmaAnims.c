@@ -1,5 +1,4 @@
 #include "plasmaAnims.h"
-#include "config.h"
 #include "api.h"
 #include <math.h>
 
