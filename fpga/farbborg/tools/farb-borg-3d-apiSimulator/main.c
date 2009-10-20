@@ -43,10 +43,11 @@ extern void *display_loop(void * unused);
 
 char strInit[] = "Test";
 char *animStr = strInit;
-volatile unsigned int curFrame   =   0;
-volatile unsigned int speed      = 100;
-volatile unsigned int speedSave  = 100;
-volatile unsigned char showKoord =   1;
+volatile unsigned int curFrame   =   0;  // counts the waits
+volatile unsigned int speed      = 100;  // speed in %
+volatile unsigned int speedSave  = 100;  // saved speed for pause
+volatile unsigned char showKoord =   1;  // show or hide coordinate system
+volatile int debug_val_1 = 0, debug_val_2 = 0, debug_val_3 = 0;
 
 // variables for the simulator screensize
 int WindWidth, WindHeight;
@@ -68,13 +69,17 @@ pthread_t simthread;
 // its needed to draw spheres
 GLUquadric* quad;
 
+// sets the name of the animation and stopps skipping
 void setAnimName(char* str) {
+	curFrame = 0;
+	debug_val_1 = 0;
+	debug_val_2 = 0;
+	debug_val_3 = 0;
 	if (str)
 		animStr = str;
 	if (speed > 1000)
 		speed = 100;
 }
-
 
 /** draws a LED to the position (pos_x, pos_y, poy_z) to the screen.
  *  It has the brightness color. 0 = off -> 3 = full on. Its done by
@@ -123,7 +128,7 @@ void output(GLfloat x, GLfloat y, char *format,...)
   glPushMatrix();
   glTranslatef(x, y, 0);
   for (p = buffer; *p; p++)
-    glutStrokeCharacter(GLUT_STROKE_ROMAN, *p);
+    glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, *p);
   glPopMatrix();
 }
 
@@ -170,7 +175,7 @@ void display(void) {
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    gluOrtho2D(0, 3500, 0, 3500);
+    gluOrtho2D(0, (WindWidth*5000)/WindHeight, 0, 5000);
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
@@ -179,8 +184,8 @@ void display(void) {
     glEnable(GL_BLEND);
     glEnable(GL_LINE_SMOOTH);
     glLineWidth(2.0);
-    output(80, 3300, "Animation: %s - Speed = %d %", animStr, speed);
-    output(80, 3100, "Waits: %d",     curFrame);
+    output(100, 4800, "Animation: %s - Speed = %d \%", animStr, speed);
+    output(100, 4600, "Waits: %d, x1: %d, x2: %d, x3: %d", curFrame, debug_val_1, debug_val_3, debug_val_3);
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
@@ -232,6 +237,14 @@ void keyboard(unsigned char key, int x, int y){
 		case 't':
 		    speed++;
 			break;
+
+		case 'i':
+            debug_val_1++;
+            break;
+
+        case 'k':
+            debug_val_1--;
+            break;
 
 		case 'x':
 			speed = 100000;
