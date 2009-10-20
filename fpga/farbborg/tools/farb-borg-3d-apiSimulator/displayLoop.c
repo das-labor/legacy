@@ -2,8 +2,6 @@
 #include "api.h"
 #include "testAnim.h"
 #include "spike_hw.h"
-#include "colorMatrix.h"
-#include "colorSnake.h"
 #include "fileParser.h"
 #include "plasmaAnims.h"
 #include "animations.h"
@@ -27,8 +25,8 @@ extern unsigned int curFrame;
 
 // Playlist
 void *display_loop(void * unused)  {
-	
-	ADD_ANIMATION(rotatingHeard);
+	ADD_ANIMATION(movingCubes);
+	//ADD_ANIMATION(rotatingHeard);
 	ADD_ANIMATION(plasmaBall);
 	ADD_ANIMATION(plasmaSea);
 	ADD_ANIMATION(fnordLicht);
