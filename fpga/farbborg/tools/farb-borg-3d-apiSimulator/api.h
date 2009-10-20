@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include "config.h"
 #include "util.h"
 
@@ -100,8 +101,11 @@ void dP(char* txt, int32_t val);
 
 // ADVANCED API ----------------------------------------------------------------
 
+
 //! For the simulator you have 3 debug_values, that are shown. debug_val_1 can be changed through keys.
+
 extern volatile int debug_val_1, debug_val_2, debug_val_3;
+
 
 //! Sets the whole cube to a color with swap.
 /*! Sets the whole cube to the color c and display it.

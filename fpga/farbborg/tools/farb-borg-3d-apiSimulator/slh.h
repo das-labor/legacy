@@ -1,8 +1,6 @@
 #ifndef SANTASLITTLEHELPER_H
 #define SANTASLITTLEHELPER_H
 
-#include "config.h"
-#include "util.h"
 #include "api.h"
 
 #define FADE_BY 10

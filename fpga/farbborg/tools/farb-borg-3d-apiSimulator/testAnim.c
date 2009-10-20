@@ -1,8 +1,5 @@
-#include "config.h"
-#include "util.h"
 #include "api.h"
 #include "testAnim.h"
-#include "spike_hw.h"
 #include "plasmaAnims.h"
 
 #define SNAKE_LEN 100
