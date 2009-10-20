@@ -37,7 +37,6 @@ extern void *display_loop(void * unused);
 #  include <unistd.h>
 #endif
 
-
 #include "trackball.h"
 #include "config.h"
 
@@ -69,12 +68,17 @@ pthread_t simthread;
 // its needed to draw spheres
 GLUquadric* quad;
 
+
 // sets the name of the animation and stopps skipping
 void setAnimName(char* str) {
 	curFrame = 0;
+
 	debug_val_1 = 0;
+
 	debug_val_2 = 0;
+
 	debug_val_3 = 0;
+
 	if (str)
 		animStr = str;
 	if (speed > 1000)
@@ -94,6 +98,9 @@ void drawLED(int color, float pos_x, float pos_y, float pos_z) {
 	glPopMatrix();
 }
 
+
+/** draws the coordinate system. red for x, green for y and blue for z-axis.
+ */
 void drawKoord(float dist, float size) {
 	glPushMatrix();
 	glTranslatef(-dist, -dist, -dist);
@@ -116,7 +123,8 @@ void drawKoord(float dist, float size) {
 
 }
 
-
+/** writes text on the simulator
+ */
 void output(GLfloat x, GLfloat y, char *format,...)
 {
   va_list args;
@@ -238,13 +246,21 @@ void keyboard(unsigned char key, int x, int y){
 		    speed++;
 			break;
 
+
+
 		case 'i':
+
             debug_val_1++;
+
             break;
 
+
         case 'k':
+
             debug_val_1--;
+
             break;
+
 
 		case 'x':
 			speed = 100000;
@@ -299,7 +315,9 @@ void reshape(int width, int height)
             MAX_X*2., MAX_Y*2.,     MAX_Z*2.,
             0.0, 0.0, 1.0);
   glMatrixMode (GL_MODELVIEW);
+
   glLoadIdentity ();
+
 
   WindWidth  = width;
   WindHeight = height;

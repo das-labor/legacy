@@ -1,4 +1,7 @@
-#include "colorMatrix.h"
+#include "api.h"
+#include "slh.h"
+
+#define MATRIX(x)
 
 void colorMatrix() {
 	pixel3d worker;
@@ -43,4 +46,3 @@ void colorMatrix() {
 	clearScreen(black);
 	swapAndWait(255);
 }
-
