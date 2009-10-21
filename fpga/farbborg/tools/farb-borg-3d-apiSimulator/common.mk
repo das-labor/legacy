@@ -6,8 +6,9 @@ ANIM_OBJ += anim_movingCubes.o
 ANIM_OBJ += plasmaAnims.o
 ANIM_OBJ += testAnim.o
 
-# PRG
+# Name of the programm
 PRG  = farbborgSim
+
 # Objets needed anyway
 MAIN_OBJ = main.o trackball.o fileParser.o slh.o util.o api.o displayLoop.o 
 
