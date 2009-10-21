@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 2 -*- */
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdint.h>
@@ -12,9 +13,9 @@
 #define BITSPERLAMP 12
 
 typedef struct {
-  uint16_t red;
-  uint16_t green;
-  uint16_t blue;
+	uint16_t red;
+	uint16_t green;
+	uint16_t blue;
 } element_t;
 
 void update()
@@ -22,10 +23,10 @@ void update()
 	uint8_t i;
 	_delay_us(10);
 	for (i = 0; i < 5; i++)
-	{
-		PORTD |= _BV(DATA);
-		PORTD &= ~_BV(DATA);
-	}
+		{
+			PORTD |= _BV(DATA);
+			PORTD &= ~_BV(DATA);
+		}
 }
 
 
@@ -33,11 +34,11 @@ void element_set(element_t *myel)
 {
 	uint8_t k;
 	for (k = 0 ; k< BITSPERLAMP; k++)
-    {
-		OUTPORT = (((myel->blue & _BV(k)) >> k) << DATA);
-		PORTD |= _BV(CLK);
-		PORTD &= ~_BV(CLK);
-	}
+		{
+			OUTPORT = (((myel->blue & _BV(k)) >> k) << DATA);
+			PORTD |= _BV(CLK);
+			PORTD &= ~_BV(CLK);
+		}
 	for (k = 0; k < BITSPERLAMP; k++)
 	{
 		OUTPORT = (((myel->green & _BV(k)) >> k) << DATA);
@@ -56,47 +57,47 @@ void band_shift(element_t *band, uint8_t size)
 {
 	element_t tmp_el = {0, 0, 0};
 	uint8_t i;
-	tmp_el.red = band[0].red;
-	tmp_el.green = band[0].green;
-	tmp_el.blue = band[0].blue;
-	for (i = 0; i < size - 1; i++)
-	{
-		band[i].red = band[i+1].red;
-		band[i].green = band[i+1].green;
-		band[i].blue = band[i+1].blue;
-	}
-	band[size-1].red=tmp_el.red;
-	band[size-1].green=tmp_el.green;
-	band[size-1].blue=tmp_el.blue;  
+	tmp_el.red = band[size-1].red;
+	tmp_el.green = band[size-1].green;
+	tmp_el.blue = band[size-1].blue;
+	for (i = (size-1); i > 0; i--)
+		{
+			band[i].red = band[i-1].red;
+			band[i].green = band[i-1].green;
+			band[i].blue = band[i-1].blue;
+		}
+	band[0].red=tmp_el.red;
+	band[0].green=tmp_el.green;
+	band[0].blue=tmp_el.blue;  
 }
 
 void band_shiftback(element_t *band, uint8_t size)
 {
 	element_t tmp_el = {0, 0, 0};
 	uint8_t i;
-	tmp_el.red = band[size-1].red;
-	tmp_el.green = band[size-1].green;
-	tmp_el.blue = band[size-1].blue;
+	tmp_el.red = band[0].red;
+	tmp_el.green = band[0].green;
+	tmp_el.blue = band[0].blue;
 
-	for (i = size-1; i >0 ; i--)
-	{
-		band[i].red = band[i-1].red;
-		band[i].green = band[i-1].green;
-		band[i].blue = band[i-1].blue;
-	}
-	band[0].red=tmp_el.red;
-	band[0].green=tmp_el.green;
-	band[0].blue=tmp_el.blue;  
+	for (i = 0; i < (size-1) ; i++)
+		{
+			band[i].red = band[i+1].red;
+			band[i].green = band[i+1].green;
+			band[i].blue = band[i+1].blue;
+		}
+	band[size-1].red=tmp_el.red;
+	band[size-1].green=tmp_el.green;
+	band[size-1].blue=tmp_el.blue;  
 }
 
 void band_redraw(element_t *band,uint8_t size)
 {
-  uint8_t i;
-  for (i = 0; i < size; i++)
-    {
-      element_set(&(band[i]));
-    }
-  update();
+	uint8_t i;
+	for (i = 0; i < size; i++)
+		{
+			element_set(&(band[i]));
+		}
+	update();
 }
 
 /*
@@ -104,34 +105,49 @@ void band_redraw(element_t *band,uint8_t size)
 */
 void band_pingpong(element_t *band,uint8_t size,uint8_t ballsize,uint16_t speed)
 {
-  uint8_t i;
-  for(i=ballsize-1;i<size;i++){
-    band_shift(band,size);
-    band_redraw(band,size);
-    _delay_ms(speed);
-  }
-  for(i=ballsize-1;i<size;i++){ 
-    band_shiftback(band,size);
-    band_redraw(band,size);
-    _delay_ms(speed);
-  }
-  
+	uint8_t i;
+	band_redraw(band,size);
+	_delay_ms(speed);
+	for(i=ballsize-1;i<size;i++)
+		{
+			band_shift(band,size);
+			band_redraw(band,size);
+			_delay_ms(speed);
+		}
+	for(i=ballsize-1;i<size;i++)
+		{ 
+			band_shiftback(band,size);
+			band_redraw(band,size);
+			_delay_ms(speed);
+		}
 }
+
+void band_insert(element_t *final, uint8_t pos, element_t *toinsert, uint8_t size)
+{
+	uint8_t i;
+	for(i=0;i<size;i++)
+		{
+			final[i+(pos-1)].red = toinsert[i].red;
+			final[i+(pos-1)].green = toinsert[i].green;
+			final[i+(pos-1)].blue = toinsert[i].blue;
+		}
+}
+
 
 
 int main(void)
 {
-  element_t myband[LAMPS];
+	element_t myband[LAMPS];
 	DDRD |= _BV(DATA) | _BV(CLK);
 	PORTD |= _BV(DATA) | _BV(CLK);
 //	int i, j, k, x = 0;
-	uint8_t i;
+	int8_t i;
 	for(i=0;i<LAMPS;i++)
-	  {
-	    myband[i].red=0;
-	    myband[i].green=0;
-	    myband[i].blue=0;
-	  }
+		{
+			myband[i].red=0;
+			myband[i].green=0;
+			myband[i].blue=0;
+		}
 	myband[0].red=0x0FF0;
 	myband[0].green=0x0FF0;
 	myband[0].blue=0x0FF0;
@@ -143,59 +159,7 @@ int main(void)
 	myband[0].blue=0x0FF0;
 	while (1)
 	{
-	  //	  band_redraw();
-	  band_pingpong(myband,LAMPS,3,200);
-	  //	  band_shift(band,LAMPS);
-	  //	  _delay_ms(250);
-
-/*		for (k = 0; k < LAMPS; k++)
-		{
-			for (i = 0; i < 3; i++)
-			{
-				x++;
-				for (j = 0; j < 12; j++)
-				{
-					if (((i == 0) && (x & 1)) || ((i == 1) && (x & 2)) || ((i == 2) && (x & 4)))
-						PORTD &= ~_BV(DATA);
-					else
-						PORTD |= _BV(DATA);
-					PORTD |= _BV(CLK);
-					PORTD &= ~_BV(CLK);
-				}
-				x *= 3;
-			}
-		}
-	
-		// Trigger uebernehmen
-		_delay_us(10);
-		for (j = 0; j < 5; j++)
-		{
-			PORTD |= _BV(DATA);
-			PORTD &= ~_BV(DATA);
-		}
-		_delay_ms(300);
-	
-		for (k = 0; k < LAMPS; k++)
-		{
-			for (i = 0; i < 3; i++)
-			{
-				for (j = 0; j < 12; j++)
-				{
-					PORTD &= ~_BV(DATA);
-					PORTD |= _BV(CLK);
-//					_delay_us(2);
-					PORTD &= ~_BV(CLK);
-				}
-			}
-		}
-		_delay_us(10);
-		for (j = 0; j < 5; j++)
-		{
-			PORTD |= _BV(DATA);
-//			_delay_us(2);
-			PORTD &= ~_BV(DATA);
-		}
-		_delay_ms(300);*/
+		band_pingpong(myband,LAMPS,3,200);
 	}
 	return 0;
 }
