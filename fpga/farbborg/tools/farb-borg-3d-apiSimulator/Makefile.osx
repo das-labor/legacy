@@ -11,7 +11,7 @@ all: .obj .dep Makefile.osx common.mk $(APP)
 $(APP): $(OBJ_2)
 	test -d $(PRG).app/Contents/MacOS/ || mkdir -p $(PRG).app/Contents/MacOS/
 	test -d $(PRG).app/Contents/Resources/ || mkdir -p $(PRG).app/Contents/Resources/
-	cp -f osx/farbborg.icns anims/* $(PRG).app/Contents/Resources/
+	cp -R -f osx/farbborg.icns anims $(PRG).app/Contents/Resources/
 	cp -f osx/farbborgSim-Info.plist $(PRG).app/Contents/Info.plist
 	cp -f osx/PkgInfo $(PRG).app/Contents/PkgInfo
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
