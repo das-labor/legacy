@@ -25,6 +25,7 @@ extern unsigned int curFrame;
 
 // Playlist
 void *display_loop(void * unused)  {
+	playPlaylist("anims/playlist.apl");
 	ADD_ANIMATION(movingCubes);
 	//ADD_ANIMATION(rotatingHeard);
 	ADD_ANIMATION(plasmaBall);
@@ -33,7 +34,6 @@ void *display_loop(void * unused)  {
 	
 	//while (1) {
 		
-	
 /*		rotatingHeard();
 		plasmaWave();
 		plasmaSea();
