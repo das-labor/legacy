@@ -57,7 +57,7 @@ int WindWidth, WindHeight;
 unsigned int pixmap[MAX_Z][MAX_Y][MAX_X][COLOR_BYTES];
 
 // rotations variables for keyboardrotation
-float view_rotx = -45., view_roty = 0., view_rotz = 225.;
+float view_rotx = -30., view_roty = 0., view_rotz = 210.;
 // stores the glut window
 int win;
 // manage the joystick -> please look at joystick.h
@@ -219,9 +219,9 @@ void keyboard(unsigned char key, int x, int y){
 			break;
 
 		case 'r':
-			view_rotx = -45.;
+			view_rotx = -30.;
 			view_roty =   0.;
-			view_rotz = 180. + 45.;
+			view_rotz = 210.;
 			tbReset();
 			break;
 
