@@ -1,5 +1,4 @@
 # Hier kann man auch Kommentare reinschreiben.
-
-sample.pr0n
-sample.pr0n
-anim1.pr0n
+# Pfade sind relativ zum ausführenden Programm
+anims/sample.prn
+anims/anim1.prn

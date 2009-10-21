@@ -1,5 +1,6 @@
 #include "api.h"
 #include "fileParser.h"
+#include "main.h"
 
 /*
  * 
@@ -116,8 +117,12 @@ void playAnimFile(char *filename) {
 	
 	animFile = fopen(filename, "r");
 	if (animFile) {
+		setAnimName(filename);
+		uart_putstr(filename);
+		debug_val_2 = 0;
 		while (fgets(buffer, BUF_SIZE, animFile)) {
 			// Falls kein Kommentar
+			debug_val_2++; // Linenumber
 			if (buffer[0] != '#' && !ignoreNextLine) {
 				//printf("Command : %c(%X) cnt : %d - %s\n", com, com, inStateCnt, buffer);
 				if (inStateCnt == 0) {
