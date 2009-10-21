@@ -192,7 +192,7 @@ void display(void) {
     glEnable(GL_BLEND);
     glEnable(GL_LINE_SMOOTH);
     glLineWidth(2.0);
-    output(100, 4800, "Animation: %s - Speed = %d \%", animStr, speed);
+    output(100, 4800, "Animation: %s - Speed = %d %%", animStr, speed);
     output(100, 4600, "Waits: %d, x1: %d, x2: %d, x3: %d", curFrame, debug_val_1, debug_val_2, debug_val_3);
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
