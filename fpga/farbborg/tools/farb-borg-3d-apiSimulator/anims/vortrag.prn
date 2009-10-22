@@ -14,7 +14,7 @@ S
 S
 2000
 
-# Alle folgende befehle setzen den Voxel x=3, y=2, z=1 auf rot.
+# Alle folgende Befehle setzen den Voxel x=3, y=2, z=1 auf rot.
 #      z  y  x  c
 # imag[1][2][3][0] = 255;
 # imag[1][2][3][1] = 0;
@@ -36,3 +36,23 @@ S
 1000
 S
 1000
+
+V
+0 0 0 W
+>
+
+S
+1000
+S
+1000
+
+C
+B
+
+#fade(10, 20); // Zu dem aktullen Buffer in 20 Schritte a 10 ms faden
+F
+10
+20
+
+S
+10000
