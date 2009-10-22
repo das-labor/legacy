@@ -16,6 +16,12 @@ extern unsigned int curFrame;
 // (And resets the wait counter and stops the skipping.)
 // And the secound string is displayes "playing" and the function
 // name on the terminal.
+// for example:
+// 	ADD_ANIMATION(movingCubes);
+// expands to:
+// 	uart_putstr("playing movingCubes");
+// 	setAnimName("movingCubes");
+// 	movingCubes();
 #define ADD_ANIMATION(function_ptr) \
         uart_putstr("playing " #function_ptr ""); \
         setAnimName("" #function_ptr ""); \
@@ -27,11 +33,10 @@ extern unsigned int curFrame;
 void *display_loop(void * unused)  {
 	playPlaylist("anims/playlist.apl");
 	ADD_ANIMATION(movingCubes);
-	//ADD_ANIMATION(rotatingHeard);
 	ADD_ANIMATION(plasmaBall);
 	ADD_ANIMATION(plasmaSea);
 	ADD_ANIMATION(fnordLicht);
-	
+	ADD_ANIMATION(rotatingHeard);
 	//while (1) {
 		
 /*		rotatingHeard();
