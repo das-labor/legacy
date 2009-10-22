@@ -1,0 +1,38 @@
+# clearImgae((color) {0xFF, 0, 0});
+c
+ff0000
+
+# swapAndWait(2000); // 2 s
+S
+2000
+
+# clearImage(black);
+C
+S
+
+# swapAndWait(2000); // 2 s
+S
+2000
+
+# Alle folgende befehle setzen den Voxel x=3, y=2, z=1 auf rot.
+#      z  y  x  c
+# imag[1][2][3][0] = 255;
+# imag[1][2][3][1] = 0;
+# imag[1][2][3][2] = 0;
+# 
+# imag[1][2][3][R] = 255;
+# imag[1][2][3][G] = 0;
+# imag[1][2][3][B] = 0;
+# 
+# setVoxel((voxel) {3, 2, 1}, (color) {255, 0, 0});
+#
+# setVoxel((voxel) {3, 2, 1}, red);
+v
+3 2 1 ff0000
+>
+
+# swapAndWait(1000); // 2 s
+S
+1000
+S
+1000
