@@ -286,12 +286,50 @@ int main(void)
 /* 			myband[i].blue=0x0FFF; */
 /* 		} */
 
-	while(1) {
+	for ( i =0;i<25;i++)
+		{
+			myband[i].red = 0x0000 + (COLOR_ADD);
+			myband[i].green = 0x0000 + (COLOR_ADD);
+			myband[i].blue = 0x0000 + (COLOR_ADD);
+			myband2[i].red = 0x0000 + (COLOR_ADD);
+			myband2[i].green = 0x0000 + (COLOR_ADD);
+			myband2[i].blue = 0x0000 + (COLOR_ADD);
+		}
+
+	myband[0].red=0x0AFF + (COLOR_SET);
+	myband[0].green=0x0AFF + (COLOR_SET);
+	myband[0].blue=0x0AFF + (COLOR_SET);
+	myband[1].red=0x0AFF + (COLOR_SET);
+	myband[1].green=0x0FFF + (COLOR_SET);
+	myband[1].blue=0x0FFF + (COLOR_SET);
+	myband[2].red=0x0AFF + (COLOR_SET);
+	myband[2].green=0x0AFF + (COLOR_SET);
+	myband[2].blue=0x0AFF + (COLOR_SET);
+
+	myband2[22].red=0x0AFF + (COLOR_SET);
+	myband2[22].green=0x0AFF + (COLOR_SET);
+	myband2[22].blue=0x0AFF + (COLOR_SET);
+	myband2[23].red=0x0FFF + (COLOR_SET);
+	myband2[23].green=0x0FFF + (COLOR_SET);
+	myband2[23].blue=0x0FFF + (COLOR_SET);
+	myband2[24].red=0x0AFF + (COLOR_SET);
+	myband2[24].green=0x0AFF + (COLOR_SET);
+	myband2[24].blue=0x0AFF + (COLOR_SET);
+
+	band_insert(myfinal,0,myband,25);
+	band_insert(myfinal,25,myband2,25);
+	band_redraw(myfinal,LAMPS);
+
+	_delay_ms(1000);
+
+
+	while (1)
+	{
 		for(i=0;i<LAMPS;i++)
 			{
-				myfinal[i].red=0x0FFF;
-				myfinal[i].green=0x0FFF;
-				myfinal[i].blue=0x0FFF;
+				myfinal[i].red=0x0A00;
+				myfinal[i].green=0x0A00;
+				myfinal[i].blue=0x0A00;
 			}
 
 		band_redraw(myfinal,LAMPS);
