@@ -34,12 +34,16 @@ int main(void)
 	TIMSK |= _BV(TOIE0);		  // Enable interrupt flag
 //	TIMSK0 |= _BV(TOIE0);		  // Enable interrupt flag atmega644p
 
+	DDRD |= _BV(DATA) | _BV(CLK);
+	PORTD |= _BV(DATA) | _BV(CLK);
+
+
 
 	xlap_init();
 
 	AvrXRunTask(TCB(laptask));
-	//AvrXRunTask(TCB(bewegung));
-	AvrXRunTask(TCB(led));
+	AvrXRunTask(TCB(bewegung));
+	//AvrXRunTask(TCB(led));
 
 
 	Epilog();                   // Switch from AvrX Stack to first task

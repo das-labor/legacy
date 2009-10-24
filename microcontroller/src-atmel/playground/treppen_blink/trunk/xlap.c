@@ -2,7 +2,6 @@
 #include <avr/wdt.h>
 #include <avr/io.h>
 #include <avr/eeprom.h>
-#include <util/delay.h>
 
 #include <avrx-io.h>
 #include <avrx-signal.h>
