@@ -10,7 +10,7 @@
 
 #define TICKRATE 2500
 
-//#define MEGA8
+#define MEGA8
 
 #ifdef MEGA8
 #	define SPI_PORT PORTB
@@ -44,3 +44,9 @@
 #define TX_SIZE 10
 
 
+#define DATA PD6
+#define CLK  PD7
+#define LAMPS 50
+#define OUTPORT PORTD
+
+#define BITSPERLAMP 12
