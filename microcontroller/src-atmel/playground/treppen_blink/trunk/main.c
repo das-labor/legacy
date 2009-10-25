@@ -34,10 +34,13 @@ int main(void)
 	TIMSK |= _BV(TOIE0);		  // Enable interrupt flag
 //	TIMSK0 |= _BV(TOIE0);		  // Enable interrupt flag atmega644p
 
+	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
+
 	DDRD |= _BV(DATA) | _BV(CLK);
 	PORTD |= _BV(DATA) | _BV(CLK);
-
-
+	
+	//ADMUX |= ; // kein vref, adc0
+	//ADCSRA |= _BV(ADEN)| _BV(ADPS2) | _BV(ADPS1);	// enable adc, ADIE: enable int , ADSC: Start Conversion , clock / 64 (max clk) 250khz
 
 	xlap_init();
 
