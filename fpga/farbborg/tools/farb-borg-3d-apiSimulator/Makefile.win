@@ -5,13 +5,13 @@ CC       = gcc
 CFLAGS  += -D_WIN32
 
 
-all: .obj .dep Makefile.win common.mk $(PRG).exe 
+all: $(OBJ_FOLDER) $(DEP_FOLDER) Makefile.win common.mk $(PRG).exe 
 
 $(PRG).exe: $(OBJ_2)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 clean:
-	rm -rf .dep .obj $(PRG).exe $(PRG).map
+	rm -rf $(DEP_FOLDER) .$(OBJ_FOLDER) $(PRG).exe $(PRG).map
 
 default: all
 cleandefault: clean

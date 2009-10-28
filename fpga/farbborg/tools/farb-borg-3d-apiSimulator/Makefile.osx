@@ -6,7 +6,7 @@ CC       = gcc
 CFLAGS  += -DOSX_
 LDFLAGS  = -Wall -prebind
 
-all: .obj .dep Makefile.osx common.mk $(APP)	
+all: $(OBJ_FOLDER) $(DEP_FOLDER) Makefile.osx common.mk $(APP)	
 
 $(APP): $(OBJ_2)
 	test -d $(PRG).app/Contents/MacOS/ || mkdir -p $(PRG).app/Contents/MacOS/
@@ -17,6 +17,6 @@ $(APP): $(OBJ_2)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 clean:
-	rm -rf .dep/ .obj/ $(PRG) $(PRG).app/
+	rm -rf $(DEP_FOLDER)/ $(OBJ_FOLDER)/ $(PRG) $(PRG).app/
 
 -include common_footer.mk
