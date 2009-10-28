@@ -1,4 +1,4 @@
--include common.mk
+-include Makefile.inc.common
 
 APP      = $(PRG).app/Contents/MacOS/$(PRG)
 LIBS     = -lpthread -framework Carbon -framework GLUT -framework OpenGL -framework Foundation -framework AppKit
@@ -6,7 +6,7 @@ CC       = gcc
 CFLAGS  += -DOSX_
 LDFLAGS  = -Wall -prebind
 
-all: $(OBJ_FOLDER) $(DEP_FOLDER) Makefile.osx common.mk $(APP)	
+all: $(OBJ_FOLDER) $(DEP_FOLDER) Makefile.osx Makefile.inc.common $(APP)	
 
 $(APP): $(OBJ_2)
 	test -d $(PRG).app/Contents/MacOS/ || mkdir -p $(PRG).app/Contents/MacOS/
@@ -19,4 +19,4 @@ $(APP): $(OBJ_2)
 clean:
 	rm -rf $(DEP_FOLDER)/ $(OBJ_FOLDER)/ $(PRG) $(PRG).app/
 
--include common_footer.mk
+-include Makefile.inc.footer
