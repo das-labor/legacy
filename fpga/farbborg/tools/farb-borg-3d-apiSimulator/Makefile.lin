@@ -1,9 +1,9 @@
--include common.mk
+-include Makefile.inc.common
 
 LIBS     = -lglut -lpthread -lGL -lGLU
 CC       = gcc
 
-all: $(OBJ_FOLDER) $(DEP_FOLDER) Makefile common.mk $(PRG) 
+all: $(OBJ_FOLDER) $(DEP_FOLDER) Makefile Makefile.inc.common $(PRG) 
 
 $(PRG): $(OBJ_2)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
@@ -11,4 +11,4 @@ $(PRG): $(OBJ_2)
 clean:
 	rm -rf $(DEP_FOLDER)/ $(OBJ_FOLDER)/ $(PRG) 
 
--include common_footer.mk
+-include Makefile.inc.footer

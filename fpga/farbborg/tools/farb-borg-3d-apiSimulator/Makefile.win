@@ -1,11 +1,11 @@
--include common.mk
+-include Makefile.inc.common
 
 LIBS     = -lglut32 -lglu32 -lopengl32 -lwinmm -lgdi32
 CC       = gcc
 CFLAGS  += -D_WIN32
 
 
-all: $(OBJ_FOLDER) $(DEP_FOLDER) Makefile.win common.mk $(PRG).exe 
+all: $(OBJ_FOLDER) $(DEP_FOLDER) Makefile.win Makefile.inc.common $(PRG).exe 
 
 $(PRG).exe: $(OBJ_2)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
@@ -16,4 +16,4 @@ clean:
 default: all
 cleandefault: clean
 
--include common_footer.mk
+-include Makefile.inc.footer
