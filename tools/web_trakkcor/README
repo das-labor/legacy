@@ -1,0 +1,15 @@
+ABOUT
+
+web_trakkcor is a server-side component for Trakkcor (http://www.trakkcor.ch/).
+It uses OpenStreetMap to show the position Trakkcor last submitted to the server.
+It is kind of hackish, not written with any security in mind and provided as is 
+(see LICENSE).
+
+USAGE:
+Place folder content on webserver (PHP required, "view/position.csv" must be writeable 
+for the webserver).
+Set trakkcor to use the following URL for posting http://your_server/path/to/record.php
+Set posting method to GET
+record.php writes the file http://your_server/path/to/view/position.csv
+To view the position Trakkcor submitted point your browser to
+http://your_server/path/to/view/index.php (javascript must be enabled)
