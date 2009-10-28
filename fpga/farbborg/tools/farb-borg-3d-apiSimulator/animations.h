@@ -6,5 +6,6 @@ void fnordLicht();
 void colorMatrix();
 void colorSnake();
 void movingCubes();
+void ansteuerungZeitlupe();
 
 #endif

@@ -1,14 +1,14 @@
 # Make folders
-.obj:
-	mkdir .obj
-.dep:
-	mkdir .dep
+$(OBJ_FOLDER):
+	mkdir $(OBJ_FOLDER)
+$(DEP_FOLDER):
+	mkdir $(DEP_FOLDER)
 	
 #compile
-.obj/%.o: %.c
-	$(CC) $(CFLAGS) -MMD -MP -MF .dep/$<.d -c $< -o $@
+$(OBJ_FOLDER)/%.o: %.c
+	$(CC) $(CFLAGS) -MMD -MP -MF $(DEP_FOLDER)/$<.d -c $< -o $@
 
-DEPS := $(wildcard .dep/*.d)
+DEPS := $(wildcard $(DEP_FOLDER)/*.d)
 ifneq ($(DEPS),)
 include $(DEPS)
 endif 
