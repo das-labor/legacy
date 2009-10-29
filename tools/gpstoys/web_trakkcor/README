@@ -9,7 +9,21 @@ USAGE:
 Place folder content on webserver (PHP required, "view/position.csv" must be writeable 
 for the webserver).
 Set trakkcor to use the following URL for posting http://your_server/path/to/record.php
-Set posting method to GET
+Set posting method to GET, data format to GPGGA.
 record.php writes the file http://your_server/path/to/view/position.csv
 To view the position Trakkcor submitted point your browser to
 http://your_server/path/to/view/index.php (javascript must be enabled)
+
+
+ALTERNATIVE:
+While record.php is a logger for trakkcor, record_GET.php is a generic logger. 
+To post data, use something like the following URL/GET-Request:
+http://your_server/path/to/record_GET.php?id=&ts=&lat=&lon=&alt=&hea=&spd=
+where 
+'id' is a generice string to identify the log source (make up you own)
+'ts' is a timestamp (format: HHMMSS)
+'lat' is latitude as float
+'lon' is longitude as float
+'alt' is altitude as float (you get the pattern, I guess)
+'hea' is direction (string, float, whatever)
+'spd' is speed as float

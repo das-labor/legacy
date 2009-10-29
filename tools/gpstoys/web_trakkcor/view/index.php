@@ -5,22 +5,14 @@
 $handle = fopen ("position.csv","r") or die("can't open file"); // open for read
 
 while ( ($data = fgetcsv ($handle, 1000, ",")) !== FALSE ) { 	// read data from file into array
-		$ts = $data[2];
-        $lat = $data[3];
-        $lon = $data[5];
-		$ns = $data[4];
-		$ew = $data[6];
+		$id = $data[0];
+		$ts = $data[1];
+        $lat = $data[2];
+        $lon = $data[3];
+		$alt = $data[4];
+		$hea = $data[5];
+		$spd = $data[6];
 }
-function nmea2deg($nmea){
-	$deg = (int)($nmea/100) + ($nmea - (int)($nmea / 100) * 100) / 60;
-	return $deg;
-}
-$lat = nmea2deg($lat);	
-if ( $ns == "S" )
-	$lat = 0-$lat;
-$lon = nmea2deg($lon);
-if ( $ew == "W" )
-	$lon = 0-$lon;
 //echo $lat."\n";
 //echo $lon."\n";
 fclose ($handle);
@@ -115,7 +107,9 @@ fclose ($handle);
 
 	<!-- body.onload is called once the page is loaded (call the 'init' function) -->
 	<body>
-		<div style="text-align: center; font-family: Verdana;">Position: <?php echo $lat.", ".$lon; ?><br/>Timestamp: <?php echo $ts; ?>GMT</div>
+		<div style="text-align: center; font-family: Verdana;">Position: <?php echo $lat.", ".$lon; ?>, H&ouml;he: <?php echo $alt; ?><br/>
+			Timestamp: <?php echo $ts; ?> (GMT if not stated otherwise)<br/>DeviceID: <?php echo $id; ?><br/>
+		</div>
 		<!-- define a DIV into which the map will appear. Make it take up the whole window -->
 		<div id="map"></div>
 
