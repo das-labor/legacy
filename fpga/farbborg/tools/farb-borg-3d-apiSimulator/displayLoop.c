@@ -25,6 +25,7 @@ extern unsigned int curFrame;
 
 // Playlist
 void *display_loop(void * unused)  {
+	ADD_ANIMATION(tutorial);
 	playPlaylist("anims/playlist.apl");
 	ADD_ANIMATION(movingCubes);
 	ADD_ANIMATION(rotatingHeard);

@@ -2,6 +2,7 @@
 #define ANIMATIONS_H
 // all animation prototypes
 
+void tutorial();
 void fnordLicht();
 void colorMatrix();
 void colorSnake();
