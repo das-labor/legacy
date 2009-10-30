@@ -1,0 +1,64 @@
+Farbborg Simulator
+
+Diese Simulator sollte zum entwickeln neuer Animationen verwendet werden.
+
+Ihr benötigt subversion und libglut 
+
+Unter ubuntu
+
+sudo apt-get install glut3g-dev subversion
+
+make
+
+Unter Windows
+
+To Compile the Simulator on Windows, you have to install Code::Blocks with mingw.
+http://www.codeblocks.org/
+Addionally extract the following zip archive into the MinGW Subfolder 
+(C:\Programme\CodeBlocks\MinGW).
+http://www.das-labor.org/files/madex/glut.3.7.6_mingw_codeblocks.zip
+And open the projectfile "win32_code_blocks.cbp". (_WIN32 is set there)
+Achte unter Windows wird auch das Makefile benutzt, es reicht nicht die 
+Animation ins Projekt einzufügen.
+
+Unter MacOSX
+
+make
+
+oder 
+
+das XCode project in dem Ordner osx
+
+================================================================================
+
+Neue Aniamtion schreiben:
+
+Es gibt eine anim_tutorial.h die zum entwerfen einer neuen Animation verwendet werden kann.
+Diese werde ich auch im Vortrag verwenden.
+
+Neue neue Animationen gelten aber folgende Regeln:
+ - Pro Animation eine c-Datei
+   Dort #includiert ihr "#include "api.h""
+   und erzeut eine Funktion für euer Animation
+   void $Funktionsname()
+   {
+   }
+ - Die datei heißt anim_$Funktionsname.c 
+ 	also wenn die Funktion "void Test();" heißt, "animTest.c"
+ - Damit die Datei mitkompiliert wird muss Sie in Makefile.inc.common
+   eingetragen werden.
+   Also neue Zeile mit
+   ANIM_OBJ += anim_$Funktionsname.o
+   am Anfang einfügen.
+ - Damit die Animation bekann ist muss Sie auch in animations.h eingetragen werden
+   $Funktionsname();
+ - Damit sie angezeigt wird, muss Sie auch auch aufgerufen weren. Dies
+   geschiet in "displayLoop.c"
+   In der Funktion displayLoop() am besten am Anfang euer Animation mit
+   ADD_ANIMATION($Funktionsname);
+   hinzufügen.
+   Dies ist ein Makro weches im Grunde genommen $Funktionsname(); ausruft
+   aber zusätzlich auch den Namen der Animation oben im Simulator sowie auf der 
+   Komandozeile anzeigt.
+   
+   
