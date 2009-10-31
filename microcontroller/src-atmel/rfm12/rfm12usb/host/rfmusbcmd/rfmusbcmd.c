@@ -50,7 +50,8 @@ void UI_send_raw(void);
 int radio_rx_dump(void)
 {
     uint_fast16_t i;
-	uint_fast32_t packetCnt = 0, packetLen;
+	uint_fast32_t packetCnt = 0;
+	int packetLen;
 
 	printf("dumping packets:\n");
 
@@ -112,7 +113,7 @@ void UI_send_raw()
     for(i = 0; i < length; i++)
     {
         printf("byte: ");
-        scanf("%hd", &tmp);
+        scanf("%hd", (short *)&tmp);
         fflush(stdin);
         buf[i] =  tmp & 0xff;
     }
@@ -139,7 +140,7 @@ void UI_joystick()
 
     printf("Use 'wsad' to set the direction bits, q+e for fire1+2, any other key to clear and x to quit.\n");
 
-    while((c = getch()) != 'x')
+/*    while((c = getch()) != 'x')
     {
         switch(c)
         {
@@ -176,7 +177,7 @@ void UI_joystick()
 
         //tx packet
         rfmusb_TxPacket (udhandle, type, length, &joy);
-    }
+    }*/
 }
 
 
@@ -186,7 +187,7 @@ void UI_menu_show(void)
      printf("Menu:\n");
      printf("1\tairdump\n");
      printf("2\tsend raw packet\n");
-     printf("3\tjoystick mode\n");
+//     printf("3\tjoystick mode\n");
      printf("0\texit\n");
      printf("\n> ");
 }
@@ -200,7 +201,12 @@ void UI_main_menu(void)
 	{
         UI_menu_show();
 
+#ifdef WIN32
         choice = getch();
+#else
+		scanf("%c", &choice);
+    	fflush(stdin);
+#endif
 
         switch(choice)
         {
@@ -248,19 +254,12 @@ int main(int argc, char *argv[])
 		USB_CFG_DEVICE_ID
 	};
 
-	char vendor[] =
-	{
-		USB_CFG_VENDOR_NAME, 0
-	},
-	product[] =
-	{
-		USB_CFG_DEVICE_NAME, 0
-	};
-
 	vid = rawVid[1] * 256 + rawVid[0];
 	pid = rawPid[1] * 256 + rawPid[0];
 
-    int devcnt = usbCountDevices(vid, vendor, pid, product, NULL, NULL, NULL);
+	usb_init();
+
+    int devcnt = usbCountDevices(vid, pid);
     printf("Found %i devices..\n", devcnt);
 
     if(devcnt == 0)
@@ -271,7 +270,7 @@ int main(int argc, char *argv[])
     }
 
     struct usb_device **devices = malloc(sizeof(void *) * devcnt);
-    usbListDevices(devices, vid, vendor, pid, product, NULL, NULL, NULL);
+    usbListDevices(devices, vid, pid);
 
     if(devcnt > 1)
     {
@@ -303,12 +302,12 @@ int main(int argc, char *argv[])
 
 void sig_cleanup (int in_signum)
 {
-#ifndef WIN32
-	printf("DOES NOT COMPUTE! (Signal %i)\r\n", in_signum);
-#endif
+	printf("DOES NOT COMPUTE! (Signal %i)\r\n", in_signum);	
 	if (udhandle != NULL) usb_close ( udhandle );
+	
 #ifdef WIN32
 	system("pause");
-	exit (1);
 #endif
+
+	exit (1);
 }

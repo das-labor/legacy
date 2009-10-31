@@ -62,6 +62,7 @@ int usbOpenDevice(usb_dev_handle **device, int vendorID, int productID)
     return errorCode;
 }
 
+
 int usbCountDevices(int vendorID, int productID)
 {
     struct usb_bus      *bus;
@@ -88,7 +89,7 @@ int usbCountDevices(int vendorID, int productID)
     return dev_cnt;
 }
 
-int usbListDevices(struct usb_device **devices, int vendorID, char *vendorNamePattern, int productID, char *productNamePattern, char *serialNamePattern, FILE *printMatchingDevicesFp, FILE *warningsFp)
+int usbListDevices(struct usb_device **devices, int vendorID, int productID)
 {
     struct usb_bus      *bus;
     struct usb_device   *dev;

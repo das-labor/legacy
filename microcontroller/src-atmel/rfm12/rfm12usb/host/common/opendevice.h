@@ -26,6 +26,9 @@ files according to the GNU General Public License (GPL) version 2.
 #include <usb.h>    /* this is libusb, see http://libusb.sourceforge.net/ */
 #include <stdio.h>
 
+int usbCountDevices(int vendorID, int productID);
+int usbListDevices(struct usb_device **devices, int vendorID, int productID);
+
 int usbOpenDevice(usb_dev_handle **device, int vendorID, int productID);
 /* This function iterates over all devices on all USB busses and searches for
  * a device. Matching is done first by means of Vendor- and Product-ID (passed
