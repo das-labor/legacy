@@ -241,7 +241,7 @@ int8_t tetris_playfield_predictCompleteLines(tetris_playfield_t *pPl,
  * Argument pPiece:  the piece which should be tested
  * Argument nColumn: the column where the piece should be dropped
  * Argument nRow:    the row of interest
- * Return value:     amount of complete lines
+ * Return value:     appearance of the predicted dump row
  */
 uint16_t tetris_playfield_predictDumpRow(tetris_playfield_t *pPl,
                                          tetris_piece_t *pPiece,
