@@ -71,7 +71,10 @@
 /************************
  * RFM12 CONFIGURATION OPTIONS
  */
- 
+
+ //baseband of the module (either RFM12_BAND_433, RFM12_BAND_868 or RFM12_BAND_912)
+ #define RFM12_BASEBAND RFM12_BAND_433
+
 //frequency to use
 #define FREQ 433000000UL
 
