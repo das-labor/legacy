@@ -114,7 +114,7 @@ void tetris_playfield_advancePiece(tetris_playfield_t *pPl);
  * Description:        moves piece to the given direction
  * Argument pPl:       playfield to perform action on
  * Argument direction: direction (see tetris_playfield_direction_t)
- * Return value:       1 if piece could be moved, 0 otherwise 
+ * Return value:       1 if piece could be moved, 0 otherwise
  */
 uint8_t tetris_playfield_movePiece(tetris_playfield_t *pPl,
                                    tetris_playfield_direction_t direction);
@@ -124,7 +124,7 @@ uint8_t tetris_playfield_movePiece(tetris_playfield_t *pPl,
  * Description:  rotates piece to the given direction
  * Argument pPl: playfield to perform action on
  * Argument r:   type of rotation (see tetris_piece_rotation_t)
- * Return value: 1 if piece could be rotated, 0 otherwise 
+ * Return value: 1 if piece could be rotated, 0 otherwise
  */
 uint8_t tetris_playfield_rotatePiece(tetris_playfield_t *pPl,
                                      tetris_piece_rotation_t rotation);
@@ -183,7 +183,7 @@ int8_t tetris_playfield_getRow(tetris_playfield_t *pPl);
 
 
 /* Function:     tetris_playfield_getRowMask
- * Description:  returns the row mask relative to nRow 
+ * Description:  returns the row mask relative to nRow
  * Argument pPl: the playfield we want information from
  * Return value: the first 4 bits indicate which lines (relative to nRow)
  *               have been removed if we are in status TETRIS_PFS_READY
@@ -209,5 +209,43 @@ uint16_t tetris_playfield_getDumpRow(tetris_playfield_t *pPl,
                                      int8_t nRow);
 
 
-#endif /*TETRIS_PLAYFIELD_H_*/
+/* Function:         tetris_playfield_predictDeepestRow
+ * Description:      returns the deepest possible row of a given piece
+ * Argument pPl:     the playfield on which we want to test a piece
+ * Argument pPiece:  the piece which should be tested
+ * Argument nColumn: the column where the piece should be dropped
+ * Return value:     the row of the piece (playfield compliant coordinates)
+ */
+int8_t tetris_playfield_predictDeepestRow(tetris_playfield_t *pPl,
+                                          tetris_piece_t *pPiece,
+                                          int8_t nColumn);
 
+
+/* Function:         tetris_playfield_predictCompleteLines
+ * Description:      predicts the number of complete lines for a piece at
+ *                   a given column
+ * Argument pPl:     the playfield on which we want to test a piece
+ * Argument pPiece:  the piece which should be tested
+ * Argument nColumn: the column where the piece should be dropped
+ * Return value:     amount of complete lines
+ */
+int8_t tetris_playfield_predictCompleteLines(tetris_playfield_t *pPl,
+                                             tetris_piece_t *pPiece,
+                                             int8_t nColumn);
+
+
+/* Function:         tetris_playfield_predictDumpRow
+ * Description:      predicts the appearance of a playfield row for a piece
+ *                   at a given column
+ * Argument pPl:     the playfield on which we want to test a piece
+ * Argument pPiece:  the piece which should be tested
+ * Argument nColumn: the column where the piece should be dropped
+ * Argument nRow:    the row of interest
+ * Return value:     amount of complete lines
+ */
+uint16_t tetris_playfield_predictDumpRow(tetris_playfield_t *pPl,
+                                         tetris_piece_t *pPiece,
+                                         int8_t nColumn,
+                                         int8_t nRow);
+
+#endif /*TETRIS_PLAYFIELD_H_*/
