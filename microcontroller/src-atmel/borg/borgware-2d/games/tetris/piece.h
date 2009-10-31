@@ -74,7 +74,7 @@ tetris_piece_t *tetris_piece_construct(tetris_piece_shape_t s,
  ****************************/
 
 /* Function:     tetris_piece_getBitmap
- * Description:  returns bitfield representation of the piece 
+ * Description:  returns bitfield representation of the piece
  * Argument pPc: piece from which the bitfield shuld be retrieved
  * Return value: bitfield representation of the piece
  *               - nth nibble is nth row of the piece (from upper left)
@@ -92,6 +92,15 @@ uint16_t tetris_piece_getBitmap(tetris_piece_t *pPc);
 void tetris_piece_rotate(tetris_piece_t *pPc,
                          tetris_piece_rotation_t r);
 
+
+/* Function:       tetris_piece_change
+ * Description:    changes the shape of a piece
+ * Argument pPc:   piece to change
+ * Argument shape: the shape of interest
+ * Return value:   void
+ */
+void tetris_piece_change(tetris_piece_t *pPc,
+                         tetris_piece_shape_t shape);
 
 #endif /*TETRIS_PIECE_H_*/
 
