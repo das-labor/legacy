@@ -119,6 +119,26 @@ void tetris_playfield_reset(tetris_playfield_t *pPl)
 }
 
 
+int8_t tetris_playfield_getPieceStartPos(tetris_piece_t *pPiece)
+{
+	// set vertical start position (first piece row with matter at pos. 1)
+	uint16_t nPieceMap = tetris_piece_getBitmap(pPiece);
+	uint16_t nElementMask = 0xF000;
+	int8_t nRow = -3;
+	while ((nPieceMap & nElementMask) == 0)
+	{
+		++nRow;
+		nElementMask >>= 4;
+	}
+	if (nRow < 0)
+	{
+		++nRow;
+	}
+
+	return nRow;
+}
+
+
 /* Function:            tetris_playfield_insertPiece
  * Description:         inserts a new piece
  * Argument pPl:        playfield to perform action on
@@ -146,18 +166,7 @@ void tetris_playfield_insertPiece(tetris_playfield_t *pPl,
 	pPl->nColumn = (pPl->nWidth - 2) / 2;
 
 	// set vertical start position (first piece row with matter at pos. 1)
-	uint16_t nPieceMap = tetris_piece_getBitmap(pPl->pPiece);
-	uint16_t nElementMask = 0xF000;
-	pPl->nRow = -3;
-	while ((nPieceMap & nElementMask) == 0)
-	{
-		++pPl->nRow;
-		nElementMask >>= 4;
-	}
-	if (pPl->nRow < 0)
-	{
-		++pPl->nRow;
-	}
+	pPl->nRow = tetris_playfield_getPieceStartPos(pPl->pPiece);
 
 	// did we already collide with something?
 	if (tetris_playfield_collision(pPl, pPl->nColumn, pPl->nRow) == 1)
@@ -197,8 +206,8 @@ uint8_t tetris_playfield_collision(tetris_playfield_t *pPl,
 	// values and are aligned to LSB. In case where a piece overlaps with
 	// either the left or the right border we "enhance" the playfield part
 	// via bit shifting and set all bits representing the border to 1.
-	// 
-	// NOTE: LSB represents the left most position. 
+	//
+	// NOTE: LSB represents the left most position.
 	uint16_t nPieceMap = tetris_piece_getBitmap(pPl->pPiece);
 	uint16_t nPlayfieldPart;
 	uint16_t nPieceRowMap;
@@ -304,7 +313,7 @@ void tetris_playfield_advancePiece(tetris_playfield_t *pPl)
 		else
 		{
 			// determine valid start point for dump index
-			int8_t nStartRow = ((pPl->nRow + 3) < pPl->nHeight) ? 
+			int8_t nStartRow = ((pPl->nRow + 3) < pPl->nHeight) ?
 				(pPl->nRow + 3) : pPl->nHeight - 1;
 			for (int8_t i = nStartRow; i >= pPl->nRow; --i)
 			{
@@ -346,7 +355,7 @@ void tetris_playfield_advancePiece(tetris_playfield_t *pPl)
  * Description:        moves piece to the given direction
  * Argument pPl:       playfield to perform action on
  * Argument direction: direction (see tetris_playfield_direction_t)
- * Return value:       1 if piece could be moved, 0 otherwise 
+ * Return value:       1 if piece could be moved, 0 otherwise
  */
 uint8_t tetris_playfield_movePiece(tetris_playfield_t *pPl,
                                    tetris_playfield_direction_t direction)
@@ -375,7 +384,7 @@ uint8_t tetris_playfield_movePiece(tetris_playfield_t *pPl,
  * Description:  rotates piece to the given direction
  * Argument pPl: playfield to perform action on
  * Argument r:   type of rotation (see tetris_piece_rotation_t)
- * Return value: 1 if piece could be rotated, 0 otherwise 
+ * Return value: 1 if piece could be rotated, 0 otherwise
  */
 uint8_t tetris_playfield_rotatePiece(tetris_playfield_t *pPl,
                                      tetris_piece_rotation_t rotation)
@@ -440,7 +449,7 @@ void tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl)
 	//   for complete rows, only i gets decremented
 	int8_t nLowestRow = nStartRow;
 
-	// this loop only considers rows which are affected by the piece 
+	// this loop only considers rows which are affected by the piece
 	for (int8_t i = nStartRow; i >= nStopRow; --i)
 	{
 		// is current row a full row?
@@ -554,7 +563,7 @@ int8_t tetris_playfield_getRow(tetris_playfield_t *pPl)
 
 
 /* Function:     tetris_playfield_getRowMask
- * Description:  returns the row mask relative to nRow 
+ * Description:  returns the row mask relative to nRow
  * Argument pPl: the playfield we want information from
  * Return value: the first 4 bits indicate which lines (relative to nRow)
  *               have been removed if we are in status TETRIS_PFS_READY
@@ -593,3 +602,142 @@ uint16_t tetris_playfield_getDumpRow(tetris_playfield_t *pPl,
 	return pPl->dump[nRow];
 }
 
+/* Function:         tetris_playfield_predictDeepestRow
+ * Description:      returns the deepest possible row of a given piece
+ * Argument pPl:     the playfield on which we want to test a piece
+ * Argument pPiece:  the piece which should be tested
+ * Argument nColumn: the column where the piece should be dropped
+ * Return value:     the row of the piece (playfield compliant coordinates)
+ */
+int8_t tetris_playfield_predictDeepestRow(tetris_playfield_t *pPl,
+                                          tetris_piece_t *pPiece,
+                                          int8_t nColumn)
+{
+	int8_t nRow = tetris_playfield_getPieceStartPos(pPiece);
+	tetris_piece_t *pActualPiece  = pPl->pPiece;
+	pPl->pPiece = pPiece;
+
+	// is it actually possible to use this piece?
+	if (tetris_playfield_collision(pPl, (pPl->nWidth - 2) / 2, nRow) ||
+			(tetris_playfield_collision(pPl, nColumn, nRow)))
+	{
+		return -4;
+	}
+
+	// determine deepest row
+	while ((nRow < pPl->nHeight) &&
+			(!tetris_playfield_collision(pPl, nColumn, nRow + 1)))
+	{
+			++nRow;
+	}
+
+	// restore real piece
+	pPl->pPiece = pActualPiece;
+
+	return nRow;
+}
+
+/* Function:         tetris_playfield_predictCompleteLines
+ * Description:      predicts the number of complete lines for a piece at
+ *                   a given column
+ * Argument pPl:     the playfield on which we want to test a piece
+ * Argument pPiece:  the piece which should be tested
+ * Argument nColumn: the column where the piece should be dropped
+ * Return value:     amount of complete lines
+ */
+int8_t tetris_playfield_predictCompleteLines(tetris_playfield_t *pPl,
+                                             tetris_piece_t *pPiece,
+                                             int8_t nColumn)
+{
+	int8_t nCompleteRows = 0;
+
+	// bit mask of a full row
+	uint16_t nFullRow = 0xFFFF >> (16 - pPl->nWidth);
+
+	int8_t nRow = tetris_playfield_predictDeepestRow(pPl, pPiece, nColumn);
+	if (nRow > -4)
+	{
+		// determine sane start and stop values for the dump's index
+		int8_t nStartRow =
+			((nRow + 3) >= pPl->nHeight) ? pPl->nHeight - 1 : nRow + 3;
+		int8_t nStopRow = (nRow < 0) ? 0 : nRow;
+
+		uint16_t nPiece = tetris_piece_getBitmap(pPiece);
+
+		for (int8_t i = nStartRow; i >= nStopRow; --i)
+		{
+			int8_t y = i - nRow;
+
+			// clear all bits of the piece we are not interested in and
+			// align the rest to LSB
+			uint16_t nPieceMap = (nPiece & (0x000F << (y << 2))) >> (y << 2);
+			// shift the remaining content to the current column
+			if (nColumn >= 0)
+			{
+				nPieceMap <<= nColumn;
+			}
+			else
+			{
+				nPieceMap >>= -nColumn;
+			}
+			// embed piece in dump map
+			uint16_t nDumpMap = pPl->dump[i] | nPieceMap;
+
+			// is current row a full row?
+			if ((nFullRow & nDumpMap) == nFullRow)
+			{
+				++nCompleteRows;
+			}
+		}
+	}
+
+	return nCompleteRows;
+}
+
+
+/* Function:         tetris_playfield_predictDumpRow
+ * Description:      predicts the appearance of a playfield row for a piece
+ *                   at a given column
+ * Argument pPl:     the playfield on which we want to test a piece
+ * Argument pPiece:  the piece which should be tested
+ * Argument nColumn: the column where the piece should be dropped
+ * Argument nRow:    the row of interest
+ * Return value:     amount of complete lines
+ */
+uint16_t tetris_playfield_predictDumpRow(tetris_playfield_t *pPl,
+                                         tetris_piece_t *pPiece,
+                                         int8_t nColumn,
+                                         int8_t nRow)
+{
+	int8_t nPieceRow = tetris_playfield_predictDeepestRow(pPl, pPiece, nColumn);
+	uint16_t nPieceMap = 0;
+
+	if (nPieceRow > -4)
+	{
+		// determine sane start and stop values for the piece's indices
+		int8_t nStartRow = ((nPieceRow + 3) < pPl->nHeight) ?
+			(nPieceRow + 3) : pPl->nHeight - 1;
+
+		uint16_t nPiece = tetris_piece_getBitmap(pPiece);
+
+		if ((nRow <= nStartRow) && (nRow >= nPieceRow))
+		{
+			int8_t y = nRow - nPieceRow;
+
+			// clear all bits of the piece we are not interested in and
+			// align the rest to LSB
+			nPieceMap = (nPiece & (0x000F << (y << 2))) >> (y << 2);
+			// shift the remaining content to the current column
+			if (nColumn >= 0)
+			{
+				nPieceMap <<= nColumn;
+			}
+			else
+			{
+				nPieceMap >>= -nColumn;
+			}
+		}
+	}
+
+	return pPl->dump[nRow] | nPieceMap;
+}
