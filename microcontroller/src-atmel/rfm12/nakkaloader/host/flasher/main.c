@@ -113,11 +113,13 @@ int main (int argc, char* argv[])
 	if(nf_parse_args (argc, argv, myconfig) == 0)
 	{
 		usage();
-		exit(0);
+		//exit(0);
 	}
 
+	free(myconfig->fname);	//see parse args
+
 	myconfig->fname = malloc (255);
-	strncpy (myconfig->fname, argv[1], strlen(argv[1]));
+	strncpy (myconfig->fname, argv[1], strlen(argv[1])+1);
 
 
 
@@ -158,7 +160,7 @@ int main (int argc, char* argv[])
                     if((istate == 0) || (istate == 1))
                     {
                         istate = 1;
-                        memcpy(&slave_cfg, packetBuffer.buffer + 2, sizeof(nl_config));
+                        memcpy((void *)&slave_cfg, (void *)(packetBuffer.buffer + 2), sizeof(nl_config));
 			/*slave_cfg.pagesize = be16toh(packetBuffer.buffer[2]);
 			slave_cfg.pagesize = 64;
 			slave_cfg.rxbufsize = 20; /* Fixed val for now... */
@@ -179,7 +181,7 @@ int main (int argc, char* argv[])
                         printf("Slave is ready to be flashed now.\n");
 
                         //flash
-                        nl_flash(udhandle, myconfig->fname, myconfig->addr , slave_cfg.pagesize, 16);
+                        nl_flash(udhandle, myconfig->fname, myconfig->addr , slave_cfg.pagesize, 64);
 
                         //ready again
                         istate = 2;

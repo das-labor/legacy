@@ -1,7 +1,8 @@
 # Programmer used for In System Programming
 ISP_PROG = usbasp
+#ISP_PROG = avrispmkII
 # device the ISP programmer is connected to
-ISP_DEV = /dev/parport0
+ISP_DEV = usb
 # Programmer used for serial programming (using the bootloader)
 SERIAL_PROG = avr109
 # device the serial programmer is connected to

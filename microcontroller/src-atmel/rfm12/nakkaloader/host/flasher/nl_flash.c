@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-//#include <endian.h>
+#include <endian.h>
 
 #include "../../common/nl_protocol.h"
 
@@ -30,13 +30,22 @@ uint8_t *read_buf_from_hex(FILE *f, size_t *size, size_t *offset)
 
 
 	if (fscanf(f, ":%2x", size) != 1)
+{
+	printf("bla\n");
 		goto error;
+}
 
 	if (fscanf(f, "%4x", offset) != 1)
+{
+	printf("bla1\n");
 		goto error;
+}
 
 	if (fscanf(f, "%2x", &tt) != 1)
+{
+	printf("bla2\n");
 		goto error;
+}
 
 	if(tt == 1)
 	{
@@ -50,10 +59,12 @@ uint8_t *read_buf_from_hex(FILE *f, size_t *size, size_t *offset)
 	buf = malloc(*size);
 
 	uint8_t *ptr = buf;
+	unsigned int tmpbuf;
 	for(;i > 0; i--)
 	{
-		if (fscanf(f, "%2x", ptr++) != 1)
+		if (fscanf(f, "%2x", &tmpbuf) != 1)
 		goto error;
+		*ptr++ = (uint8_t)tmpbuf & 0xff;
 
 	}
 
@@ -157,7 +168,7 @@ void nl_push_page(rfmusb_dev_handle *udhandle, uint8_t dst, uint8_t *buf, size_t
 	//-2 == type + address
 	//8 == pagenum, addr start, addr end == sizeof(nl_flashcmd)
 	uint8_t pktbuf[RFM12_BUFFER_SIZE-2];
-	uint16_t crc16;
+	uint16_t crc16 = 0;
 	nl_flashcmd txcmd;
 
 
@@ -286,6 +297,13 @@ void nl_flash(rfmusb_dev_handle *udhandle, char * filename, uint8_t addr, uint16
 	//open input file
 	printf( "Using file: %s\n", filename );
 	int fd = open (filename, O_RDONLY);
+	//FILE * fd = fopen(filename, "r");
+
+	if(fd == NULL)
+	{
+		printf("opening file failed... exiting!\n");
+		exit(0);
+	}
 
 
 	//allocate ATMega memory
@@ -301,13 +319,15 @@ void nl_flash(rfmusb_dev_handle *udhandle, char * filename, uint8_t addr, uint16
 		memcpy( &mem[dst], buf, size);
 		memset( &mask[dst], 0xff, size );
 		free(buf);
-	}
-	*/
+	}*/
+	
 	size = read (fd, buf, 262144);
 
 	if (size <= 0)
 		goto fileerror;
-	printf("%20s, %5i, %i, %i\n", __FILE__, __LINE__, pageCount, pageSize);
+
+	//debug
+	//printf("%20s, %5i, %i, %i\n", __FILE__, __LINE__, pageCount, pageSize);
 
 
 	//for every page do
@@ -322,7 +342,7 @@ void nl_flash(rfmusb_dev_handle *udhandle, char * filename, uint8_t addr, uint16
 		for(j = pageStart; j < pageEnd; j++)
 		{
 			//data found
-			//			if (mask[j] == 0xff)
+			//if (mask[j] == 0xff)
 			{
 				// trasfer page stating at i
 				printf("Transmitting page #%04u [0x%04x .. %04x] ...", pageNum, pageStart, pageEnd);
@@ -335,7 +355,7 @@ void nl_flash(rfmusb_dev_handle *udhandle, char * filename, uint8_t addr, uint16
 			}
 		}
 
-		printf("sending commit command for page #%40u\n", pageNum);
+		printf("sending commit command for page #%u\n", pageNum);
 		flashcmd.pagenum = htole32(pageNum);
 		nl_tx_packet(udhandle, NLPROTO_PAGE_COMMIT, addr, sizeof(nl_flashcmd), (unsigned char*)&flashcmd);
 
@@ -370,16 +390,19 @@ void nl_flash(rfmusb_dev_handle *udhandle, char * filename, uint8_t addr, uint16
 	free(mem);
 	free(mask);
 	close(fd);
+	//fclose(fd);
 
 
+	j=23;
 	//send app boot
-	while (42)
+	while (j--)
 	{
 		nl_tx_packet(udhandle, NLPROTO_BOOT, addr, 0, NULL);
-		printf("boot\n");
+		printf("boot..");
 		usleep(1);
 	}
 
+	printf("\ndone\n");
 	return;
 
 	fileerror:
