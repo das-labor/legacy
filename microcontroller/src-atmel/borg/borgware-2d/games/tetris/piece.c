@@ -117,3 +117,17 @@ void tetris_piece_rotate(tetris_piece_t *pPc,
 	}
 }
 
+/* Function:       tetris_piece_change
+ * Description:    changes the shape of a piece
+ * Argument pPc:   piece to change
+ * Argument shape: the shape of interest
+ * Return value:   void
+ */
+void tetris_piece_change(tetris_piece_t *pPc,
+                         tetris_piece_shape_t shape)
+{
+	assert(pPc != NULL);
+	assert((shape >= 0) && (shape <= TETRIS_PC_Z));
+
+	pPc->shape = shape;
+}
