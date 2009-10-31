@@ -32,6 +32,7 @@ typedef struct
 	uint8_t payload[RFM12_BUFFER_SIZE-1];
 } nl_packet;
 
+#pragma packed,1
 typedef const struct
 {
 	uint16_t pagesize;

@@ -71,7 +71,7 @@ uint8_t nl_match_packet (uint8_t *in_packet)
 void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 {
 	uint8_t txpacket[NL_ADDRESSSIZE + 1 + NL_PACKETSIZE];
-	uint8_t i = NL_ADDRESSSIZE + 1, k = 2; 
+	uint8_t i = NL_ADDRESSSIZE + 1, k = 0; 
 
 //	txpacket[1] = myaddress[0];
 	txpacket[1] = 0xff;
@@ -218,10 +218,11 @@ int main (void)
 						mycmd->addr_end - mycmd->addr_start);
 
 */
-/*					for (k=mycmd->addr_start;k<mycmd->addr_end;k++)
+					crcsum=0;
+					for (k=mycmd->addr_start;k<mycmd->addr_end;k++)
 						crcsum = _crc16_update (crcsum,
-							*(mypage + k)); */
-					crcsum = mycmd->addr_start;
+							*(mypage + k));
+					//crcsum = mycmd->addr_start;
 
 //					rxclear();
 

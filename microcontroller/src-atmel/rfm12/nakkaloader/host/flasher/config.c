@@ -70,10 +70,11 @@ uint8_t nf_parse_args (int in_argc, char **in_argv, nf_flashconfig_t *out_conf)
 						return (-1 * __LINE__); /* no argument given */
 					}
 
-//					out_conf->fname_len = strlen(in_argv[i] * sizeof(char));
+					out_conf->fname_len = strlen((char *)((unsigned int)in_argv[i] * sizeof(char)));
 	printf ("L: %i\n", __LINE__);
 					out_conf->fname = malloc(out_conf->fname_len);
 					strncpy (out_conf->fname, in_argv[i], out_conf->fname_len);
+			//printf("aaa %i, %s", out_conf->fname_len,  out_conf->fname);
 	printf ("L: %i\n", __LINE__);
 
 					argmask |= 0x03;
