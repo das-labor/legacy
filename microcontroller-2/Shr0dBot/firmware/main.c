@@ -8,7 +8,7 @@
 #include "hgrobo_config.h"
 #include "hgrobo/motor.h"
 #include "hgrobo/encoder.h"
-#include "hgrobo/MotorPID.h"
+#include "hgrobo/motorPID.h"
 #include "rfm12.h"
 
 //scheduler timings

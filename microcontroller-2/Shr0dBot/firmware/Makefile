@@ -17,7 +17,8 @@ OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
 FLASHCMD      ?= avrdude -c bsd -p $(MCU_TARGET) -U flash:w:image.hex
 ERASECMD      ?= avrdude -c bsd -p $(MCU_TARGET) -e
-NAKKAFLASHCMD ?= ../../nakkaloader/host/flasher/project.exe
+#NAKKAFLASHCMD ?= ../../nakkaloader/host/flasher/project.exe
+NAKKAFLASHCMD ?= ../../../src-atmel/rfm12/nakkaloader/host/flasher/nakkaflash
 
 #############################################################################
 # Rules
