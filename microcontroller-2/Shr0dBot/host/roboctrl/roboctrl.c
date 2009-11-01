@@ -1,15 +1,15 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h>ch
 #include <usb.h>
 #include <unistd.h>
 #include <signal.h>
 
 #include "opendevice.h"
 
-#include "../../../rfm12usb/firmware/usbconfig.h"
-#include "../../../rfm12usb/common/requests.h"
+#include "common/usb_id.h"
+#include "rfmusb/CDriver/RfmUsb.h"
 
 #define BUF_IN 0
 #define BUF_OUT 1
@@ -19,7 +19,7 @@
 #endif
 
 #define USB_TXPACKET 0x42
-#define RFM12_MAX_PACKET_LENGTH 30
+#define RFM12_BUFFER_SIZE 30
 
 #define RADIO_TYPE_ROBO 0x42
 #define RADIO_CMD_STOP 0x01
@@ -41,73 +41,110 @@ void sig_cleanup (int in_signum)
 #endif
 }
 
+#define RADIO_TXBUFFER_HEADER_LEN 2
+
+//dump packets
 int radio_rx_dump(void)
 {
-    int tmp;
-    uint_fast16_t i;
-	uint8_t buffer[2][64];
-	uint16_t buflen[2] = { 0, 0 };
-	uint_fast32_t packetcounter = 0;
+	uint_fast16_t i;
+	uint_fast32_t packetCnt = 0;
+	int packetLen;
+	rfmusb_packetbuffer packetBuffer;
+
+	printf("dumping packets:\n");
 
     do
 	{
+        //rate limit (don't be faster than 10us for a 16MHz device
         usleep(10);
 
-        memset (buffer[BUF_IN], 0x00, sizeof(buffer[BUF_IN]));
-        buffer[BUF_IN][0] = 1;
+        //request raw packet
+        packetLen = rfmusb_RxPacket (udhandle, &packetBuffer);
 
-        tmp = usb_control_msg (udhandle,
-        		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
-        		RFMUSB_RQ_RFM12_GET, 0, 0, buffer[BUF_IN], sizeof (buffer[BUF_IN]),
-        		5000);
-
-        if (tmp > 0)
+        //if something has been received
+        if (packetLen > 0)
         {
-        	packetcounter++;
-        	buflen[BUF_IN] = tmp;
-        	printf ("%03i bytes received, packet #%010u --------\r\n", tmp, packetcounter);
-        	for (i=0;i<tmp;i++)
+            //increment packet counter
+        	packetCnt++;
+
+        	//dump packet
+        	printf ("--RX--  len: %02i, type: %02x, num: #%010u  --RX--\r\n", packetBuffer.len, packetBuffer.type, packetCnt);
+        	for (i = 0;(i < packetBuffer.len) && (i < RFM12_BUFFER_SIZE); i++)
         	{
-        		printf("%c", buffer[BUF_IN][i]);
+        		printf("%.2x ", packetBuffer.buffer[i]); //hex
+        		//printf("%c", packetBuffer.buffer[i]); //char
         	}
         	printf("\r\n");
-        } else if (tmp < 0)
+        }
+        else if (packetLen < 0)
         {
         	fprintf (stderr, "USB error: %s\r\n", usb_strerror());
         	return __LINE__ * -1;
         }
     }
+    //FIXME: implement nicer way to quit the packetdump than ctrl+c
     while(42);
 }
 
-typedef struct{
-	unsigned char len;			//length byte - number of bytes in buffer
-	unsigned char type;			//type field for airlab
-	unsigned char buffer[RFM12_MAX_PACKET_LENGTH]; //receive buffer
-} radio_tx_buffer;
-#define RADIO_TXBUFFER_HEADER_LEN 2
 
-void radio_tx(unsigned char len, unsigned char type, unsigned char *data)
+//temporary solution
+typedef struct
 {
-    radio_tx_buffer buf;
-    int packetlength;
+	int16_t		acc_curX;			//current x acceleration
+	int16_t		acc_curY;			//current y acceleration
+	int16_t		acc_curZ;			//current z acceleration
+	uint16_t	battVolts;		//battery voltage
+	uint16_t	currentDrain;	//motor current usage
+	int16_t		curSpeed;		//the robots current speed	
+	int32_t		encAPos;		//the encoder A count
+} radio_sensorData;
 
-    packetlength = RADIO_TXBUFFER_HEADER_LEN + ((len > RFM12_MAX_PACKET_LENGTH)?RFM12_MAX_PACKET_LENGTH:len);
 
-    buf.len = len;
-    buf.type = type;
+//dump sensor data
+int dump_sensor(void)
+{
+	uint_fast16_t i;
+	uint_fast32_t packetCnt = 0;
+	int packetLen;
+	rfmusb_packetbuffer packetBuffer;
+	radio_sensorData sd;
 
-    memcpy(buf.buffer, data, len);
+	printf("dumping sensordata:\n");
 
-    usb_control_msg (udhandle,
-        USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
-        RFMUSB_RQ_RFM12_PUT, USB_TXPACKET, 0, (char *)&buf, packetlength,
-        5000);
+    do
+	{
+        //rate limit (don't be faster than 10us for a 16MHz device
+        usleep(10);
+
+        //request raw packet
+        packetLen = rfmusb_RxPacket (udhandle, &packetBuffer);
+
+        //if something has been received
+        if (packetLen > 0 && packetBuffer.type == 0x42)
+        {
+		//increment packet counter
+        	packetCnt++;
+
+		memcpy(&sd, packetBuffer.buffer, packetBuffer.len);
+
+        	//dump packet
+        	printf ("#:%u\taccX:%h\taccY:%h\taccZ:%h\tbat:%uh\tpwr:%uh\r\n", packetCnt, sd.acc_curX, sd.acc_curY, sd.acc_curZ, sd.battVolts, sd.currentDrain);
+        }
+        else if (packetLen < 0)
+        {
+        	fprintf (stderr, "USB error: %s\r\n", usb_strerror());
+        	return __LINE__ * -1;
+        }
+    }
+    //FIXME: implement nicer way to quit the packetdump than ctrl+c
+    while(42);
 }
 
-void send_raw()
+
+//ask the user for the packet to transmit
+void UI_send_raw()
 {
-    unsigned char length, type, buf[RFM12_MAX_PACKET_LENGTH];
+    unsigned char length, type, buf[RFM12_BUFFER_SIZE];
     int i, tmp;
 
     printf("Packet length? ");
@@ -120,32 +157,31 @@ void send_raw()
     fflush(stdin);
     type =  tmp & 0xff;
 
-    if(length > RFM12_MAX_PACKET_LENGTH)
+    if(length > RFM12_BUFFER_SIZE)
     {
-        length = RFM12_MAX_PACKET_LENGTH;
+        length = RFM12_BUFFER_SIZE;
     }
-
-    //printf("%u %u", length, type);
 
     for(i = 0; i < length; i++)
     {
         printf("byte: ");
-        scanf("%hd", &tmp);
+        scanf("%hd", (short *)&tmp);
         fflush(stdin);
         buf[i] =  tmp & 0xff;
     }
 
-    radio_tx(length, type, buf);
+    //directly tx packet
+	rfmusb_TxPacket (udhandle, type, length, buf);
 }
 
 void movement_menu_show(void)
 {
-     printf("Menu:\n");
-     printf("0\texit\n");
-     printf("1\tstop\n");
-     printf("2\tjoy_fwd\n");
-	 printf("3\tJoy_back\n");
-     printf("\n> ");
+	printf("Menu:\n");
+	printf("0\texit\n");
+	printf("1\tstop\n");
+	printf("2\tjoy_fwd\n");
+	printf("3\tJoy_back\n");
+	printf("\n> ");
 }
 
 #define RADIO_TYPE_JOY 0x69
@@ -191,12 +227,13 @@ void movement_menu(void)
 
 void menu_show(void)
 {
-     printf("Menu:\n");
-     printf("0\texit\n");
-     printf("1\tairdump\n");
-     printf("2\tsend raw\n");
-	 printf("3\tmovement\n");
-     printf("\n> ");
+	printf("Menu:\n");
+	printf("0\texit\n");
+	printf("1\tairdump\n");
+	printf("2\tsend raw\n");
+	printf("3\tjoystick\n");
+	printf("4\tsee robot data\n");
+	printf("\n> ");
 }
 
 void main_menu(void)
@@ -237,9 +274,11 @@ void main_menu(void)
     printf("Exiting.\n");
 }
 
-int main(int argc, char *argv[])
+void connect()
 {
 	int vid, pid;
+	int devcnt;
+	struct usb_device **devices;
 
 	const unsigned char rawVid[2] =
 	{
@@ -250,34 +289,44 @@ int main(int argc, char *argv[])
 		USB_CFG_DEVICE_ID
 	};
 
-	char vendor[] =
-	{
-		USB_CFG_VENDOR_NAME, 0
-	},
-	product[] =
-	{
-		USB_CFG_DEVICE_NAME, 0
-	};
-
-	/* signals */
-#ifndef WIN32
-	signal (SIGKILL, sig_cleanup);
-	signal (SIGINT, sig_cleanup);
-	signal (SIGHUP, sig_cleanup);
-#endif
-
-	usb_init();
-
 	/* usb setup */
 	vid = rawVid[1] * 256 + rawVid[0];
 	pid = rawPid[1] * 256 + rawPid[0];
 
-	if (usbOpenDevice (&udhandle, vid, vendor, pid, product, NULL, NULL, NULL) != 0)
+	devcnt = usbCountDevices(vid, pid);
+	printf("Found %i devices..\n", devcnt);
+
+	if(devcnt == 0)
 	{
 		printf ("Can't find USB Device w/ uid %04X, pid %04X\r\n", vid, pid);
-		sig_cleanup(__LINE__ * -1);
-		return __LINE__ * -1;
+		sig_cleanup(__LINE__ * -1); //exit
 	}
 
-    main_menu();
+	devices = malloc(sizeof(void *) * devcnt);
+	usbListDevices(devices, vid, pid);
+
+	if(devcnt > 1)
+	{
+		printf("Which device (num)? ");
+		scanf("%u", &devcnt);
+		fflush(stdin);
+	}
+
+	udhandle = usb_open(devices[devcnt]);
+}
+
+int main(int argc, char *argv[])
+{
+	/* signals */
+	#ifndef WIN32
+		signal (SIGKILL, sig_cleanup);
+		signal (SIGINT, sig_cleanup);
+		signal (SIGHUP, sig_cleanup);
+	#endif
+
+	usb_init();
+
+	connect();
+
+    	main_menu();
 }
