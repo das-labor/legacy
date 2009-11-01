@@ -15,8 +15,8 @@ LDFLAGS        = -Wl,-Map,$(OUT).map
 # External Tools
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
-FLASHCMD      ?= avrdude -c bsd -p $(MCU_TARGET) -U flash:w:image.hex
-ERASECMD      ?= avrdude -c bsd -p $(MCU_TARGET) -e
+FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U flash:w:image.hex
+ERASECMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -e
 #NAKKAFLASHCMD ?= ../../nakkaloader/host/flasher/project.exe
 NAKKAFLASHCMD ?= ../../../src-atmel/rfm12/nakkaloader/host/flasher/nakkaflash
 
@@ -33,7 +33,7 @@ flash: $(OUT).hex
 	$(FLASHCMD)
 
 funk: $(OUT).hex
-	$(NAKKAFLASHCMD) flash  -f $(OUT).hex
+	$(NAKKAFLASHCMD) $(OUT).bin
 
 #############################################################################
 # Building Rules 
