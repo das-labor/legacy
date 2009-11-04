@@ -21,14 +21,7 @@
 
 #include "cli.h"
 #include "dump.h"
-#if UART_NI
 #include "uart_ni.h"
-#define uart_putc uart0_putc
-#define uart_getc uart0_getc
-#define uart_init uart0_init
-#else
-#include "uart.h"
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -84,9 +77,9 @@ cmdlist_entry_t cmdlist[] PROGMEM = {
 };
 
 int main (void){
-	uart_init();
-	cli_rx = uart_getc;
-	cli_tx = uart_putc;
+	uart0_init();
+	cli_rx = uart0_getc;
+	cli_tx = uart0_putc;
 	for(;;){
 		cli_putstr_P(PSTR("\r\n\r\nAVR-CLI testing system"));
 		cli_putstr_P(PSTR("\r\n  *** loaded and running*** \r\n"));

@@ -53,7 +53,6 @@ extern cli_tx_fpt cli_tx;
 extern uint8_t cli_echo;
 
 
-
 void cli_putc(char c);
 uint16_t cli_getc(void);
 uint16_t cli_getc_cecho(void);

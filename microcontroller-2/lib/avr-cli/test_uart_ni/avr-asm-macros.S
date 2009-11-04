@@ -138,6 +138,42 @@
 	out _SFR_IO_ADDR(SPL), \reg1
 .endm
 
+.macro LOAD_IO reg:req io:req
+.if _SFR_IO_REG_P(\io)
+	in \reg, _SFR_IO_ADDR(\io)
+.else
+	lds \reg, _SFR_MEM_ADDR(\io)
+.endif
+.endm
+
+.macro STORE_IO io:req reg:req
+.if _SFR_IO_REG_P(\io)
+	out _SFR_IO_ADDR(\io), \reg
+.else
+	sts _SFR_MEM_ADDR(\io), \reg
+.endif
+.endm
+
+
+.macro CLEAR_BIT_IO io:req bit:req reg:req
+.if _SFR_IO_REG_P(\io)
+	cbi _SFR_IO_ADDR(\io), bit
+.else
+	lds \reg, _SFR_MEM_ADDR(\io)
+	andi \reg, ~_BV(\bit)
+	sts _SFR_MEM_ADDR(\io), \reg
+.endif
+.endm
+
+.macro SET_BIT_IO io:req bit:req reg:req
+.if _SFR_IO_REG_P(\io)
+	sbi _SFR_IO_ADDR(\io),bit
+.else
+	lds \reg, _SFR_MEM_ADDR(\io)
+	ori \reg, _BV(\bit)
+	sts _SFR_MEM_ADDR(\io), \reg
+.endif
+.endm
 
 /*******************************************************************************
 * END of MACRO SECTION                                                         *
