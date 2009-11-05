@@ -1,10 +1,13 @@
 # Put new animations here!!
-ANIM_OBJ  = anim_tutorial.o 
 ANIM_OBJ  = anim_fnordlicht.o 
 ANIM_OBJ += anim_colorMatrix.o
 ANIM_OBJ += anim_colorSnake.o
 ANIM_OBJ += anim_movingCubes.o
+ANIM_OBJ += anim_took.o
 ANIM_OBJ += anim_tutorial.o
+ANIM_OBJ += anim_police.o
+ANIM_OBJ += anim_Benny.o
+ANIM_OBJ += anim_took.o
 #ANIM_OBJ += anim_ansteuerungZeitlupe.o
 ANIM_OBJ += plasmaAnims.o
 ANIM_OBJ += testAnim.o
