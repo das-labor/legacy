@@ -45,6 +45,20 @@ typedef struct tetris_playfield_t
 tetris_playfield_t;
 
 
+// iterator for predicted dump rows
+typedef struct tetris_playfield_iterator_t
+{
+	tetris_playfield_t *pPlayfield; // playfield to be examined
+	tetris_piece_t *pPiece;         // piece which should be tested
+	int8_t nColumn;                 // the column where the piece should be dropped
+	int8_t nDeepestPieceRow;        // the deepest possible row for a piece
+	uint16_t nFullRow;              // value of a full row
+	int8_t nCurrentRow;             // the actual row in the playfield
+	uint16_t nRowBuffer;            // internal buffer for returned row values
+}
+tetris_playfield_iterator_t;
+
+
 /****************************
  * construction/destruction *
  ****************************/
@@ -247,5 +261,32 @@ uint16_t tetris_playfield_predictDumpRow(tetris_playfield_t *pPl,
                                          tetris_piece_t *pPiece,
                                          int8_t nColumn,
                                          int8_t nRow);
+
+
+/* Function:         tetris_playfield_predictBottomRow
+ * Description:      predicts the appearance of the bottom row of the
+ *                   playfield (for a piece at a given column) and
+ *                   initializes an iterator structure
+ * Argument pIt:     a pointer to an iterator which should be initialized
+ * Argument pPl:     the playfield on which we want to test a piece
+ * Argument pPiece:  the piece which should be tested
+ * Argument nColumn: the column where the piece should be dropped
+ * Return value:     appearance of the predicted dump row at the bottom
+ */
+uint16_t* tetris_playfield_predictBottomRow(tetris_playfield_iterator_t *pIt,
+                                            tetris_playfield_t *pPl,
+                                            tetris_piece_t *pPiece,
+                                            int8_t nColumn);
+
+
+/* Function:         tetris_playfield_predictNextRow
+ * Description:      predicts the appearance of the next row of the playfield
+ *                   (for a given iterator)
+ * Argument pIt:     a pointer to a dump iterator
+ * Return value:     appearance of the next predicted dump row
+ */
+uint16_t* tetris_playfield_predictNextRow(tetris_playfield_iterator_t *pIt);
+
+
 
 #endif /*TETRIS_PLAYFIELD_H_*/
