@@ -2,8 +2,10 @@
 #include <string.h>
 #include <assert.h>
 #include <inttypes.h>
+#include "stdio.h"
 #include "playfield.h"
 #include "piece.h"
+#include "bast.h"
 
 
 /***************************
@@ -35,7 +37,7 @@ tetris_playfield_status_t tetris_playfield_hoverStatus(tetris_playfield_t* pPl)
  ****************************/
 
 /* Function:         tetris_playfield_construct
- * Description:      constructs a playfield with the given diemensions
+ * Description:      constructs a playfield with the given dimensions
  * Argument nWidth:  width of playfield (4 <= n <= 16)
  * Argument nHeight: height of playfield (4 <= n <= 124)
  * Return value:     pointer to a newly created playfield
@@ -515,8 +517,7 @@ int8_t tetris_playfield_getWidth(tetris_playfield_t *pPl)
 
 
 /* Function:     tetris_playfield_getHeight
- * Description:  returns the height of the playfield
- * Argument pPl: the playfield we want information from
+ * Description:  returns the height of the ayfield we want information from
  * Return value: height of the playfield
  */
 int8_t tetris_playfield_getHeight(tetris_playfield_t *pPl)
@@ -695,49 +696,85 @@ int8_t tetris_playfield_predictCompleteLines(tetris_playfield_t *pPl,
 }
 
 
-/* Function:         tetris_playfield_predictDumpRow
- * Description:      predicts the appearance of a playfield row for a piece
- *                   at a given column
+/* Function:         tetris_playfield_predictBottomRow
+ * Description:      predicts the appearance of the bottom row of the
+ *                   playfield (for a piece at a given column) and
+ *                   initializes an iterator structure
+ * Argument pIt:     [out] a pointer to an iterator which should be initialized
  * Argument pPl:     the playfield on which we want to test a piece
  * Argument pPiece:  the piece which should be tested
  * Argument nColumn: the column where the piece should be dropped
- * Argument nRow:    the row of interest
- * Return value:     appearance of the predicted dump row
+ * Return value:     appearance of the predicted dump row at the bottom
  */
-uint16_t tetris_playfield_predictDumpRow(tetris_playfield_t *pPl,
-                                         tetris_piece_t *pPiece,
-                                         int8_t nColumn,
-                                         int8_t nRow)
+uint16_t* tetris_playfield_predictBottomRow(tetris_playfield_iterator_t *pIt,
+                                            tetris_playfield_t *pPl,
+                                            tetris_piece_t *pPiece,
+                                            int8_t nColumn)
 {
-	int8_t nPieceRow = tetris_playfield_predictDeepestRow(pPl, pPiece, nColumn);
+	pIt->pPlayfield = pPl;
+	pIt->pPiece = pPiece;
+	pIt->nColumn = nColumn;
+	pIt->nDeepestPieceRow =
+		tetris_playfield_predictDeepestRow(pPl, pPiece, nColumn);
+	pIt->nFullRow = 0xFFFF >> (16 - pPl->nWidth);
+	pIt->nCurrentRow = pPl->nHeight - 1;
+	pIt->nRowBuffer = 0;
+	return tetris_playfield_predictNextRow(pIt);
+}
+
+
+/* Function:         tetris_playfield_predictNextRow
+ * Description:      predicts the appearance of the next row of the playfield
+ *                   (for a given iterator)
+ * Argument pIt:     a pointer to a dump iterator
+ * Return value:     appearance of the next predicted dump row
+ */
+uint16_t* tetris_playfield_predictNextRow(tetris_playfield_iterator_t *pIt)
+{
 	uint16_t nPieceMap = 0;
 
-	if (nPieceRow > -4)
+	if ((pIt->nDeepestPieceRow > -4) && (pIt->nCurrentRow >= 0))
 	{
 		// determine sane start and stop values for the piece's indices
-		int8_t nStartRow = ((nPieceRow + 3) < pPl->nHeight) ?
-			(nPieceRow + 3) : pPl->nHeight - 1;
+		int8_t nStartRow =
+			((pIt->nDeepestPieceRow + 3) < pIt->pPlayfield->nHeight) ?
+			(pIt->nDeepestPieceRow + 3) : pIt->pPlayfield->nHeight - 1;
 
-		uint16_t nPiece = tetris_piece_getBitmap(pPiece);
+		uint16_t nPiece = tetris_piece_getBitmap(pIt->pPiece);
 
-		if ((nRow <= nStartRow) && (nRow >= nPieceRow))
+		if ((pIt->nCurrentRow <= nStartRow) &&
+				(pIt->nCurrentRow >= pIt->nDeepestPieceRow))
 		{
-			int8_t y = nRow - nPieceRow;
+			int8_t y = pIt->nCurrentRow - pIt->nDeepestPieceRow;
 
 			// clear all bits of the piece we are not interested in and
 			// align the rest to LSB
 			nPieceMap = (nPiece & (0x000F << (y << 2))) >> (y << 2);
 			// shift the remaining content to the current column
-			if (nColumn >= 0)
+			if (pIt->nColumn >= 0)
 			{
-				nPieceMap <<= nColumn;
+				nPieceMap <<= pIt->nColumn;
 			}
 			else
 			{
-				nPieceMap >>= -nColumn;
+				nPieceMap >>= -pIt->nColumn;
 			}
 		}
-	}
 
-	return pPl->dump[nRow] | nPieceMap;
+		pIt->nRowBuffer = pIt->pPlayfield->dump[pIt->nCurrentRow--] | nPieceMap;
+		// don't return full (and therefore removed) rows
+		if (pIt->nRowBuffer == pIt->nFullRow)
+		{
+			// recursively determine next row
+			return tetris_playfield_predictNextRow(pIt);
+		}
+		else
+		{
+			return &pIt->nRowBuffer;
+		}
+	}
+	else
+	{
+		return NULL;
+	}
 }
