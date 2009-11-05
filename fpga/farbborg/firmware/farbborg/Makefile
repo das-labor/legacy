@@ -2,11 +2,11 @@ LM32_CC=lm32-elf-gcc
 LM32_LD=lm32-elf-gcc
 LM32_OBJCOPY=lm32-elf-objcopy
 LM32_OBJDUMP=lm32-elf-objdump
-OBJ=crt0ram.o main.o api.o slh.o ff.o mmc.o fileParser.o  colorMatrix.o colorSnake.o \
-    testAnim.o displayLoop.o plasmaAnims.o spike_hw.o util.o
+OBJ=crt0ram.o main.o api.o slh.o ff.o mmc.o fileParser.o colorMatrix.o colorSnake.o \
+    anim_Benny.o anim_took.o anim_police.o testAnim.o displayLoop.o plasmaAnims.o spike_hw.o util.o
 CPU_FLAGS=-mbarrel-shift-enabled -mmultiply-enabled -msign-extend-enabled -mdivide-enabled
 #CPU_FLAGS=-mbarrel-shift-enabled -mmultiply-enabled
-CFLAGS=-MMD -O2 -ffunction-sections -g2 -Wall -D__lm32__ -fomit-frame-pointer $(CPU_FLAGS) 
+CFLAGS=-MMD -O2 -ffunction-sections -g2 -g -Wall -D__lm32__ -fomit-frame-pointer $(CPU_FLAGS) 
 LDFLAGS=$(CPU_FLAGS) -Tram.ld -lm -lc -lgcc -Wl,--gc-sections
 SEGMENTS = -j .text -j .data -j .rodata
 

@@ -7,72 +7,49 @@
 #include "colorSnake.h"
 #include "fileParser.h"
 #include "plasmaAnims.h"
+#include "animations.h"
+
+#define ADD_ANIMATION(function_ptr) \
+        uart_putstr("playing " #function_ptr ""); \
+		function_ptr (); 
 
 // Playlist
 void *display_loop(void * unused)  {
 	while (1) {
-		rotatingHeard();
-		plasmaSea();
-		plasmaBall();
-		testBlur();
-		uart_putstr("plasmaTest()\n");
-		plasmaTest();
-		uart_putstr("spirale()\n");
-		spirale();
-		
+		ADD_ANIMATION(took);
+		ADD_ANIMATION(Benny);
+		ADD_ANIMATION(police); 
+		ADD_ANIMATION(rotatingHeard);
+		ADD_ANIMATION(plasmaSea);
+		ADD_ANIMATION(plasmaBall);
+		ADD_ANIMATION(testBlur);
+		ADD_ANIMATION(plasmaTest);
+		ADD_ANIMATION(spirale);	
 		playPlaylist("anims/playlist.apl");
-				
 		playAnimFile("anim1.prn");
-		uart_putstr("colorSnakle()\n");
-		colorSnake();
-		uart_putstr("colorMatrix()\n");
+		ADD_ANIMATION(colorSnake);
 		colorMatrix();
-		//uart_putstr("flashLight()\n");
-		//flashLight();
-		uart_putstr("plasmaSnake()\n");
-		plasmaSnake();
-		//uart_putstr("funkyBeat()\n");
-		//funkyBeat();
-		//uart_putstr("symetricRoutes()\n");
-		//symetricRoutes();	
+		//ADD_ANIMATION(flashLight);
+		ADD_ANIMATION(plasmaSnake);
+		//ADD_ANIMATION(funkyBeat);
+		//ADD_ANIMATION(symetricRoutes);	
 
-		uart_putstr("plasmaSnake()\n");
-		plasmaSnake();
-	    	//uart_putstr("shiftTest()\n");
-		//shiftTest();
-		uart_putstr("fadeTest()\n");
-		fadeTest();
-	    	//uart_putstr("symetricRoutes()\n");
-		//symetricRoutes();
-		//uart_putstr("cubes()\n");
-		//cubes();
-		//uart_putstr("brightnesTest()\n");	
-		//brightnesTest();
-		uart_putstr("movingArrows()\n");
-		movingArrows();
-		uart_putstr("plasmaSnake()\n");
-		plasmaSnake();
-		uart_putstr("upgoingRandom()\n");
-		upgoingRandom();
-		uart_putstr("planeBall()\n");
-		planeBall();
-		uart_putstr("wobbeln()\n");
-		wobbeln();
-		uart_putstr("plasmaSnake()\n");
-		plasmaSnake();
-		//uart_putstr("snake()\n");
-		//snake();
-		uart_putstr("movingCubes()\n");
-		movingCubes();
-		uart_putstr("plasmaSnake()\n");
-		plasmaSnake();
-		uart_putstr("symetricRandom()\n");
-		symetricRandom();
-		uart_putstr("testAnim()\n");
-		testAnim();
-		//uart_putstr("fnordLicht()\n");
-		//fnordLicht();
-		
+		ADD_ANIMATION(plasmaSnake);
+		//ADD_ANIMATION(shiftTest);
+		ADD_ANIMATION(fadeTest);
+		ADD_ANIMATION(symetricRoutes);
+		ADD_ANIMATION(cubes);
+		//ADD_ANIMATION(brightnesTest);
+		ADD_ANIMATION(movingArrows);
+		ADD_ANIMATION(upgoingRandom);
+		ADD_ANIMATION(planeBall);
+		ADD_ANIMATION(wobbeln);
+		ADD_ANIMATION(plasmaSnake);
+		ADD_ANIMATION(movingCubes);
+		ADD_ANIMATION(plasmaSnake);
+		ADD_ANIMATION(symetricRandom);
+		ADD_ANIMATION(testAnim);
+		//ADD_ANIMATION(fnordLicht);
 	}
 	return 0;
 }

@@ -4,6 +4,10 @@
 #include "spike_hw.h"
 #include <stdio.h>
 
+#include <stdlib.h>
+#include "config.h"
+#include "util.h"
+
 typedef   signed short  int16_t;
 typedef unsigned short uint16_t;
 
