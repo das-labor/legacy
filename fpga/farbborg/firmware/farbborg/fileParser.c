@@ -123,7 +123,7 @@ void playPlaylist(char *filename) {
 	char buffer[BUF_SIZE];
 	unsigned char ignoreNextLine = 0, x;
 	unsigned int fileOffset = 0;
-
+	uart_putstr(filename);
 	while (1) { // fgets(buffer, BUF_SIZE, apsFile)
 		if (f_open(&fil, filename,  FA_READ|FA_OPEN_EXISTING)) {
 			uart_putstr("open error\n");
