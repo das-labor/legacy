@@ -2,7 +2,6 @@
 #include <string.h>
 #include <assert.h>
 #include <inttypes.h>
-#include "stdio.h"
 #include "playfield.h"
 #include "piece.h"
 #include "bast.h"
