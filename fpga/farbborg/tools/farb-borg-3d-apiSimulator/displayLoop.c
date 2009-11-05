@@ -25,6 +25,9 @@ extern unsigned int curFrame;
 
 // Playlist
 void *display_loop(void * unused)  {
+	ADD_ANIMATION(Benny);
+	ADD_ANIMATION(police);
+	ADD_ANIMATION(took);
 	ADD_ANIMATION(tutorial);
 	playPlaylist("anims/playlist.apl");
 	ADD_ANIMATION(movingCubes);

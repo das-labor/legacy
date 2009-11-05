@@ -8,5 +8,8 @@ void colorMatrix();
 void colorSnake();
 void movingCubes();
 void ansteuerungZeitlupe();
+void took();
+void Benny();
+void police();
 
 #endif
