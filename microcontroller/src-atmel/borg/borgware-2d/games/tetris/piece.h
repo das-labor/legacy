@@ -116,7 +116,7 @@ void tetris_piece_changeAngle(tetris_piece_t *pPc,
 /* Function:     tetris_piece_angleCount
  * Description:  returns the number of different angles
  * Argument pPc: piece whose angle count is of interest
- * Return value: int8_t
+ * Return value: number of different angles
  */
 int8_t tetris_piece_angleCount(tetris_piece_t *pPc);
 
