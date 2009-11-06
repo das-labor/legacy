@@ -93,14 +93,32 @@ void tetris_piece_rotate(tetris_piece_t *pPc,
                          tetris_piece_rotation_t r);
 
 
-/* Function:       tetris_piece_change
+/* Function:       tetris_piece_changeShape
  * Description:    changes the shape of a piece
  * Argument pPc:   piece to change
  * Argument shape: the shape of interest
  * Return value:   void
  */
-void tetris_piece_change(tetris_piece_t *pPc,
-                         tetris_piece_shape_t shape);
+void tetris_piece_changeShape(tetris_piece_t *pPc,
+                              tetris_piece_shape_t shape);
+
+
+/* Function:       tetris_piece_changeAngle
+ * Description:    changes the angle of a piece
+ * Argument pPc:   piece to change
+ * Argument angle: the angle of interest
+ * Return value:   void
+ */
+void tetris_piece_changeAngle(tetris_piece_t *pPc,
+                              tetris_piece_angle_t angle);
+
+
+/* Function:     tetris_piece_angleCount
+ * Description:  returns the number of different angles
+ * Argument pPc: piece whose angle count is of interest
+ * Return value: int8_t
+ */
+int8_t tetris_piece_angleCount(tetris_piece_t *pPc);
+
 
 #endif /*TETRIS_PIECE_H_*/
-
