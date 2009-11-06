@@ -117,17 +117,52 @@ void tetris_piece_rotate(tetris_piece_t *pPc,
 	}
 }
 
-/* Function:       tetris_piece_change
+/* Function:       tetris_piece_changeShape
  * Description:    changes the shape of a piece
  * Argument pPc:   piece to change
  * Argument shape: the shape of interest
  * Return value:   void
  */
-void tetris_piece_change(tetris_piece_t *pPc,
-                         tetris_piece_shape_t shape)
+void tetris_piece_changeShape(tetris_piece_t *pPc,
+                              tetris_piece_shape_t shape)
 {
 	assert(pPc != NULL);
 	assert((shape >= 0) && (shape <= TETRIS_PC_Z));
 
 	pPc->shape = shape;
+}
+
+
+/* Function:       tetris_piece_changeAngle
+ * Description:    changes the angle of a piece
+ * Argument pPc:   piece to change
+ * Argument angle: the angle of interest
+ * Return value:   void
+ */
+void tetris_piece_changeAngle(tetris_piece_t *pPc,
+                              tetris_piece_angle_t angle)
+{
+	assert(pPc != NULL);
+	assert((angle >= TETRIS_PC_ANGLE_0) && (angle <= TETRIS_PC_ANGLE_270));
+
+	pPc->angle = angle;
+}
+
+
+/* Function:     tetris_piece_angleCount
+ * Description:  returns the number of different angles
+ * Argument pPc: piece whose angle count is of interest
+ * Return value: number of different angles
+ */
+int8_t tetris_piece_angleCount(tetris_piece_t *pPc)
+{
+	assert(pPc != NULL);
+
+	static const int8_t angleCounts[] PROGMEM = {2, 4, 1, 4, 4, 2, 2};
+
+#ifdef __AVR__
+	return pgm_read_word(&angleCounts[pPc->shape]);
+#else
+	return angleCounts[pPc->shape];
+#endif
 }
