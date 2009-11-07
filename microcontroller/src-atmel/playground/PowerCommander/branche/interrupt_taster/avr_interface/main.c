@@ -24,7 +24,6 @@ AVRX_SIGINT(SIG_OVERFLOW0)
 	Epilog();                   // Restore context of next running task
 };
 
-
 int main(void)
 {
 	AvrXSetKernelStack(0);
@@ -38,14 +37,11 @@ int main(void)
 
 	DDRA |= _BV(PA2) | _BV(PA3) | _BV(PA4); // Status LED G R B
 	DDRA &= ~(_BV(PA0) | _BV(PA1)); // Eingänge HS, rcd
-	//  PD7 PD6
-	// PC2
+
 	DDRB &= ~_BV(PB2); // Eingang 
 	DDRD &= ~_BV(PD3); // Eingang 
 	PORTB |= _BV(PB2); // Pullup Taster vortrag
 	PORTD |= _BV(PD3); // Pullup Taster lounge
-
-
 //	_delay_ms(1000);
 
 /*
@@ -55,7 +51,7 @@ int main(void)
 	{
 		while (1);
 	}
-
+	//InitSerialIO(UBRR_INIT);    // Initialize USART baud rate generator
 	xlap_init();
 
 	AvrXRunTask(TCB(cancom_in));
@@ -63,13 +59,15 @@ int main(void)
 	AvrXRunTask(TCB(i2ccom_in));
 	AvrXRunTask(TCB(i2ccom_out));
 
+	//	AvrXRunTask(TCB(laptask));
 	AvrXRunTask(TCB(switchtask));
 	AvrXRunTask(TCB(switch_lounge));
 	AvrXRunTask(TCB(switch_vortrag));
 	AvrXRunTask(TCB(led));
-	AvrXRunTask(TCB(watchtask));
-
+	
+	/* Needed for EEPROM access in monitor */
+	//AvrXSetSemaphore(&EEPromMutex);
 
 	Epilog();                   // Switch from AvrX Stack to first task
-	while (1);
+	while(1);
 };
