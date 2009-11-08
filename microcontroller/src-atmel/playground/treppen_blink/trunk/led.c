@@ -38,11 +38,11 @@ void element_set(element_t *myel)
 {
 	uint8_t k;
 	for (k = 0 ; k< BITSPERLAMP; k++)
-		{
-			OUTPORT = ( ( (myel->blue >> (BITSPERLAMP-k-1)) & 1 ) << DATA);
-			PORTD |= _BV(CLK);
-			PORTD &= ~_BV(CLK);
-		}
+	{
+		OUTPORT = ( ( (myel->blue >> (BITSPERLAMP-k-1)) & 1 ) << DATA);
+		PORTD |= _BV(CLK);
+		PORTD &= ~_BV(CLK);
+	}
 	for (k = 0; k < BITSPERLAMP; k++)
 	{
 		OUTPORT = ( ( (myel->green >> (BITSPERLAMP-k-1)) & 1 ) << DATA);
@@ -65,14 +65,14 @@ void band_shift(element_t *band, uint8_t size)
 	tmp_el.green = band[size-1].green;
 	tmp_el.blue = band[size-1].blue;
 	for (i = (size-1); i > 0; i--)
-		{
-			band[i].red = band[i-1].red;
-			band[i].green = band[i-1].green;
-			band[i].blue = band[i-1].blue;
-		}
+	{
+		band[i].red = band[i-1].red;
+		band[i].green = band[i-1].green;
+		band[i].blue = band[i-1].blue;
+	}
 	band[0].red=tmp_el.red;
 	band[0].green=tmp_el.green;
-	band[0].blue=tmp_el.blue;  
+	band[0].blue=tmp_el.blue;
 }
 
 void band_shiftback(element_t *band, uint8_t size)
