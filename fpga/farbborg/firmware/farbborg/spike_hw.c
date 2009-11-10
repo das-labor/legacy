@@ -1,10 +1,10 @@
 #include "spike_hw.h"
 
-uart_t   *uart0  = (uart_t *)   0xf0000000;
-timer_t  *timer0 = (timer_t *)  0xf0010000;
-gpio_t   *gpio0  = (gpio_t *)   0xF0002000;
+uart_t    *uart0  = (uart_t *)     0xf0000000;
+timer32_t *timer0 = (timer32_t *)  0xf0010000;
+gpio_t    *gpio0  = (gpio_t *)     0xF0002000;
 // uint32_t *sram0  = (uint32_t *) 0x40000000;
-spi_t    *spi0   = (spi_t *)    0xF0030000;
+spi_t     *spi0   = (spi_t *)      0xF0030000;
 
 
 isr_ptr_t isr_table[32];
