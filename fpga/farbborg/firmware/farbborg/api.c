@@ -1,7 +1,7 @@
+#include "spike_hw.h"
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include "spike_hw.h"
 #include "config.h"
 #include "util.h"
 #include "api.h"

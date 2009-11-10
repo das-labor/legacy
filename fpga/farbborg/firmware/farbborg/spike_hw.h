@@ -62,7 +62,7 @@ typedef struct {
 	volatile uint32_t tcr1;
 	volatile uint32_t compare1;
 	volatile uint32_t counter1;
-} timer_t;
+} timer32_t;
 
 void msleep(uint32_t msec);
 void nsleep(uint32_t nsec);
@@ -124,7 +124,7 @@ typedef struct {
  * Pointer to actual components
  */
  
-extern timer_t  *timer0;
+extern timer32_t  *timer0;
 extern uart_t   *uart0; 
 extern gpio_t   *gpio0; 
 extern spi_t	*spi0;
