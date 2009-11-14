@@ -29,7 +29,7 @@ To enable the plugin::
 Example
 =======
 
-    [[SortCSVsourceTableMacro(source:SourcCodeFilename)]]
+    [[SortCSVsourceTableMacro(source:SourceCodeFilename,header=title1,title2,...)]]
 
 
 Build EGG
