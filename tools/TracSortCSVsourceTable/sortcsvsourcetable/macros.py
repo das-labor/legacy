@@ -36,13 +36,15 @@ class SortCSVsourceTableMacro(WikiMacroBase):
             return system_message('Invalid arguments "%s"'%content)
             
         # Pull out the arguments
-        source, dest_format = args
+        source, theader = args
         try:
             source_format, source_obj = source.split(':', 1)
         except ValueError: # If no : is present, assume its a wiki page
             source_format, source_obj = 'source', source
             
         # Apply a default format if needed
+        isTheader, theader_content = theader.split("=",1)
+        
         if dest_format is None:
             try:
                 dest_format = self.default_formats[source_format]
@@ -74,24 +76,15 @@ class SortCSVsourceTableMacro(WikiMacroBase):
 #            except ParseError:
 #                out = escape(out)
         reader = str(out).split("||")
+        need_header=1;
         foo=''
         foo+='<table class="sortable"  style="border:1px solid #000;">'
         foo+='<tr>'
-        foo+='<th style="border:1px solid #000;">Name</th>'
-        foo+='<th style="border:1px solid #000;">Variante</th>'
-        foo+='<th style="border:1px solid #000;">Sprache</th>'
-        foo+='<th style="border:1px solid #000;">Groesse (Flash) (Bytes)</th>'
-        foo+='<th style="border:1px solid #000;">Groesse (Kontext) (Bytes)</th>'
-        foo+='<th style="border:1px solid #000;">Groesse (Stack) (Bytes)</th>'
-        foo+='<th style="border:1px solid #000;">Schluessellaenge (Bits)</th>'
-        foo+='<th style="border:1px solid #000;">Blockgroesse (Bits)</th>'
-        foo+='<th style="border:1px solid #000;">Taktzyklen (Initialisierung)</th>'
-        foo+='<th style="border:1px solid #000;">Taktzyklen (Verschluesselung)</th>'
-        foo+='<th style="border:1px solid #000;">Taktzyklen (Entschluesselung)</th>'
-        foo+='<th style="border:1px solid #000;">Nessie test</th>'
-        foo+='<th style="border:1px solid #000;">Angriffe</th>'
-        foo+='<th style="border:1px solid #000;">Paper</th>'
-        foo+='<th style="border:1px solid #000;">Lizenz / Patente</th>'
+        if isTheader == "header":
+            custom_theader = theader_content.split(",")
+            for theader_cell in custim_theader:
+                foo+='<th style="border:1px solid #000;">'+str(theader_cell)+'</th>'
+
         for row in str(out).splitlines():
             foo += "</tr><tr>\n"
             for cell in row.split("||"):
