@@ -1,0 +1,39 @@
+Notes
+=====
+
+This macro lets you include a table based on a csv-file in your 
+repository. The currently only one formate is supportet for
+the CSV file
+
+
+Format
+======
+
+| cell 1.1 || cell 1.2 || cell 1.3|| 
+| cell 2.1 || cell 2.2 || cell 2.3||
+...
+
+
+Configuration
+=============
+If you want support for a table which is sortable via javascript
+you need to install the tracaddheader-plugin and set it up to 
+include the sorttable.js provided in the sourcedirectory. Please see 
+the documentation of the addheader-plugin for further details
+
+To enable the plugin::
+
+    [components]
+    sortcsvsourcetable.* = enabled
+
+Example
+=======
+
+    [[SortCSVsourceTableMacro(source:SourcCodeFilename)]]
+
+
+Build EGG
+=========
+
+python setup.py bdist_egg
+ls -al dist/
