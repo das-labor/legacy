@@ -16,18 +16,55 @@ if($cmd=="PWM")
 {
 	if(preg_match("/[!0-9]/",$_GET[value]) && $_GET[value]<=255 && $_GET[value]>=0) $value=dechex($_GET[value]);
 	else unset($_GET[value]);
-	$_SESSION[$id]=hexdec($value);
-	exec("powercommander.lapcontrol powercommander $cmd $id SET 0x$value");
-	echo "powercommander.lapcontrol powercommander $cmd $id SET 0x$value";
-	
+	if($id=="VORTRAG_PWM")
+	{
+		$_SESSION[$id]=hexdec($value);
+		$_SESSION["TAFEL"]=hexdec($value);
+		$_SESSION["BEAMER"]=hexdec($value);
+		$_SESSION["SCHRANK"]=hexdec($value);
+		$_SESSION["FLIPPER"]=hexdec($value);
+		exec("powercommander.lapcontrol powercommander VIRT $id SET 0x$value");
+		echo "powercommander.lapcontrol powercommander VIRT $id SET 0x$value";
+	}
+	else
+	{
+		$_SESSION[$id]=hexdec($value);
+		exec("powercommander.lapcontrol powercommander $cmd $id SET 0x$value");
+		echo "powercommander.lapcontrol powercommander $cmd $id SET 0x$value";
+	}
 }
 elseif($cmd=="SW")
 {
 	if($_GET[value]=="ON" || $_GET[value]=="OFF") $value=$_GET[value];
-	if($value=="ON")$_SESSION[$id]=1;
-	if($value=="OFF")$_SESSION[$id]=0;
-	echo "powercommander.lapcontrol powercommander $cmd $id $value 0x00";
-	exec("powercommander.lapcontrol powercommander $cmd $id $value 0x00");
+	if($id=="LAMP_VORTRAG_PWM")
+	{
+		if($value=="ON")
+		{
+			$_SESSION[$id]=1;
+			$_SESSION["LAMP_TAFEL"]=1;
+			$_SESSION["LAMP_BEAMER"]=1;
+			$_SESSION["LAMP_SCHRANK"]=1;
+			$_SESSION["LAMP_FLIPPER"]=1;
+		}
+		if($value=="OFF")
+		{
+			$_SESSION[$id]=0;
+			$_SESSION["LAMP_TAFEL"]=0;
+			$_SESSION["LAMP_BEAMER"]=0;
+			$_SESSION["LAMP_SCHRANK"]=0;
+			$_SESSION["LAMP_FLIPPER"]=0;
+		}
+		$id="VORTRAG";
+		echo "powercommander.lapcontrol powercommander VIRT $id $value 0x00";
+		exec("powercommander.lapcontrol powercommander VIRT $id $value 0x00");
+	}
+	else
+	{
+		if($value=="ON")$_SESSION[$id]=1;
+		if($value=="OFF")$_SESSION[$id]=0;
+		echo "powercommander.lapcontrol powercommander $cmd $id $value 0x00";
+		exec("powercommander.lapcontrol powercommander $cmd $id $value 0x00");
+	}
 }
 elseif($cmd=="beamer_on")
 {
