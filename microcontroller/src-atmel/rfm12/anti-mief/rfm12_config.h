@@ -65,6 +65,7 @@
 
 //frequency to use
 #define FREQ 433920000UL
+#define RFM12_BASEBAND RFM12_BAND_433
 
 //use this for datarates >= 2700 Baud
 //#define DATARATE_VALUE RFM12_DATARATE_CALC_HIGH(100200.0)
@@ -75,13 +76,13 @@
 
 /**** TX BUFFER SIZE
  */
-#define RFM12_TX_BUFFER_SIZE 30
+#define RFM12_TX_BUFFER_SIZE 40
 
 /**** RX BUFFER SIZE
  * there are going to be 2 Buffers of this size
  * (double_buffering)
  */
-#define RFM12_RX_BUFFER_SIZE 30
+#define RFM12_RX_BUFFER_SIZE 40
 
 /**** UART DEBUGGING
  * en- or disable debugging via uart.
@@ -95,6 +96,9 @@
 #define RFM12_INT_BIT (INT0)
 //the Interrupt mask register
 #define RFM12_INT_MSK (GICR)
+
+#define RFM12_INT_FLAG (GIFR)
+#define RFM12_FLAG_BIT (INTF0)
 //setup the interrupt to trigger on negative edge
 #define RFM12_INT_SETUP() (MCUCR |= (1<<ISC01))
 
