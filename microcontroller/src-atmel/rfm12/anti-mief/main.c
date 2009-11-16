@@ -17,7 +17,7 @@
 
 #define RESET_TIMEOUT 15
 #define VER_MAJOR 0
-#define VER_MINOR 11
+#define VER_MINOR 1
 
 static uint8_t timeout;
 static inline void reset_timeout ();
@@ -66,7 +66,7 @@ int main (void)
 	input_hook (BTN_ANY, reset_timeout);
 
 	lcd_clrscr();
-	lcd_puts("Anti-Mief");
+	lcd_puts("CoffeeTimer");
 	lcd_gotoxy (0,1);
 	lcd_puts ("Version ");
 	print_uint8_lz (VER_MAJOR);
@@ -85,7 +85,6 @@ int main (void)
 
 	while (42)
 	{
-		asm volatile ("nop");
 		task_queue (0, 0); /* execute tasks in the queue */
 	}
 }
