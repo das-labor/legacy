@@ -46,6 +46,10 @@
 */
 
 
+/************************
+ * PIN DEFINITIONS
+ */
+
 //Pin that the RFM12's slave select is connected to
 #define DDR_SS DDRC
 #define PORT_SS PORTC
@@ -63,43 +67,85 @@
 //needs to be set to output for the spi-interface to work 
 //correctly, independently of the CS pin used for the RFM12
 
+
+/************************
+ * RFM12 CONFIGURATION OPTIONS
+ */
+
+ //baseband of the module (either RFM12_BAND_433, RFM12_BAND_868 or RFM12_BAND_912)
+ #define RFM12_BASEBAND RFM12_BAND_433
+
 //frequency to use
-#define FREQ 433920000UL
-#define RFM12_BASEBAND RFM12_BAND_433
+#define FREQ 433000000UL
 
 //use this for datarates >= 2700 Baud
-//#define DATARATE_VALUE RFM12_DATARATE_CALC_HIGH(100200.0)
-#define DATARATE_VALUE RFM12_DATARATE_CALC_HIGH(100000.0)
+#define DATARATE_VALUE RFM12_DATARATE_CALC_HIGH(9600.0)
 
 //use this for 340 Baud < datarate < 2700 Baud
-//#define DATARATE_VALUE RFM12_DATARATE_CALC_LOW(2500.0)
+//#define DATARATE_VALUE RFM12_DATARATE_CALC_LOW(1200.0)
 
-/**** TX BUFFER SIZE
- */
-#define RFM12_TX_BUFFER_SIZE 40
+//TX BUFFER SIZE
+#define RFM12_TX_BUFFER_SIZE 80
 
-/**** RX BUFFER SIZE
+/*
+ * RX BUFFER SIZE
  * there are going to be 2 Buffers of this size
  * (double_buffering)
  */
-#define RFM12_RX_BUFFER_SIZE 40
+#define RFM12_RX_BUFFER_SIZE 80
 
-/**** UART DEBUGGING
- * en- or disable debugging via uart.
- */
-//#define RFM12_UART_DEBUG 0
 
-/**** INTERRUPT VECTOR
+/************************
+ * INTERRUPT VECTOR
  * set the name for the interrupt vector here
  */
+ 
+//the interrupt vector
 #define RFM12_INT_VECT (INT0_vect)
+
+//the interrupt mask register
+#define RFM12_INT_MSK GICR
+
+//the interrupt bit in the mask register
 #define RFM12_INT_BIT (INT0)
-//the Interrupt mask register
-#define RFM12_INT_MSK (GICR)
 
-#define RFM12_INT_FLAG (GIFR)
+//the interrupt flag register
+#define RFM12_INT_FLAG GIFR
+
+//the interrupt bit in the flag register
 #define RFM12_FLAG_BIT (INTF0)
-//setup the interrupt to trigger on negative edge
-#define RFM12_INT_SETUP() (MCUCR |= (1<<ISC01))
 
+//setup the interrupt to trigger on negative edge
+#define RFM12_INT_SETUP() MCUCR |= (_BV(ISC01))
+
+
+/************************
+ * FEATURE CONFIGURATION
+ */
+ 
+/*
+FIXME: noreturn stuff here
+	This is a bitmask that defines how "rude" this library behaves
+	0x01: ignore other devices when sending
+	0x04: don't use return values for transmission functions
+*/
+/* control rate, frequency, etc during runtime
+ * this setting will certainly add a bit code
+ **/
+#define RFM12_LIVECTRL 0
+#define RFM12_NORETURNS 0
+#define RFM12_NOCOLLISIONDETECTION 1
+#define RFM12_TRANSMIT_ONLY 0
+#define RFM12_SPI_SOFTWARE 0
+#define RFM12_USE_POLLING 0
+#define RFM12_RECEIVE_ASK 0
 #define RFM12_TRANSMIT_ASK 1
+#define RFM12_USE_WAKEUP_TIMER 0
+#define RFM12_LOW_POWER 0
+#define RFM12_BE_RUDE 1
+
+/*
+ * UART DEBUGGING
+ * en- or disable debugging via uart.
+ */
+#define RFM12_UART_DEBUG 0

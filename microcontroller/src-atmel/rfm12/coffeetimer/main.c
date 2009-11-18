@@ -14,6 +14,7 @@
 #include "input.h"
 #include "numprint.h"
 #include "clock.h"
+#include "coffee.h"
 #include "powerplug.h"
 
 #define RESET_TIMEOUT 15
@@ -60,7 +61,7 @@ int main (void)
 	TCCR0 |= ( _BV(CS00) | _BV(CS02) ); /* clk/1024 */
 	TIMSK |= _BV(TOIE0);
 
-
+	rfm12_init();
 	cron_init();
 	pp_init();
 	lcd_init (LCD_DISP_ON);
@@ -84,10 +85,13 @@ int main (void)
 	timeout = RESET_TIMEOUT;
 
 	menu_init();
+	rfm12_tx (6, 0, "foobar");
+	send_c_on(1);
 
 	while (42)
 	{
 		task_queue (0, 0); /* execute tasks in the queue */
+		rfm12_tick();
 	}
 }
 
