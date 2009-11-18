@@ -5,7 +5,6 @@
 typedef struct
 {
 	char name[14];
-	uint8_t next;
 	uint16_t func_param;
 	void ((*func)());
 } menuentry_t;
