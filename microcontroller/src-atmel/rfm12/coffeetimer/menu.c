@@ -1,6 +1,7 @@
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
+#include <avr/pgmspace.h>
 
 #include <stdint.h>
 #include "lcd.h"
@@ -15,80 +16,80 @@
 
 static uint8_t midx = 0, mtop;
 menuentry_t *menu_p;
-#define ment(a) ((menuentry_t) (*(menu_p + (sizeof(menuentry_t) * a))))
+#define ment(a) ((menuentry_t) (*(menu_p + sizeof(menuentry_t))))
 #define mtop(a) ((sizeof(a) / sizeof(menuentry_t)) -1)
 
-const menuentry_t mainmenu[] =
+PROGMEM menuentry_t mainmenu[] =
 	{
 		(menuentry_t) {
 			"Schalt an!",
-			1, 1,
+			1,
 			send_c_on
 		},
 		(menuentry_t) {
 			"t+ 30 Min",
-			2, 1800,
+			1800,
 			send_c_on
 		},
 		(menuentry_t) {
 			"t+ 40 Min",
-			3, 2400,
+			2400,
 			send_c_on
 		},
 		(menuentry_t) {
 			"t+ 55 Min",
-			4, 3000,
+			3000,
 			send_c_on
 		},
 		(menuentry_t) {
 			"t+ 85 Min",
-			5, 5100,
+			5100,
 			send_c_on
 		},
 		(menuentry_t) {
 			"t+ 95 Min",
-			5, 5700,
+			5700,
 			send_c_on
 		},
 		(menuentry_t) {
 			"Mach aus!",
-			6, 0, /* after 10 minutes run for 15 minutes */
+			0, /* after 10 minutes run for 15 minutes */
 			send_c_off
 		},
 		(menuentry_t) {
 			"Zeitwahl >>",
-			7, 0,
+			0,
 			time_c_custom
 		},
 		(menuentry_t) {
 			"debug >>",
-			0, 0,
+			0,
 			mdebug_jump
 		}
 	};
 
 
 /* DEBUG STUFF */
-const menuentry_t debugmenue[] =
+PROGMEM menuentry_t debugmenue[] =
 	{
 		(menuentry_t) {
 			"clear cron",
-			1, 0,
+			0,
 			cron_init
 		},
 		(menuentry_t) {
 			"reboot",
-			2, 0,
+			0,
 			dbg_reboot
 		},
 		(menuentry_t) {
 			"set clock",
-			3, 0,
+			0,
 			clk_set
 		},
 		(menuentry_t) {
 			"<<<",
-			0, 0,
+			0,
 			menu_init
 		}
 	};
@@ -109,6 +110,18 @@ void mdebug_jump (uint16_t foo)
 	menu_display();
 }
 
+uint8_t id_next (uint8_t in_entry)
+{
+	if (in_entry >= mtop) return 0;
+	return in_entry +1;
+}
+
+uint8_t id_last (uint8_t in_entry)
+{
+	if (in_entry == 0) return mtop;
+	return in_entry -1;
+}
+
 void menu_display()
 {
 	lcd_clrscr();
@@ -124,7 +137,7 @@ void menu_display()
 
 	lcd_gotoxy (0,1);
 	lcd_puts(" ");
-	lcd_puts(ment(ment(midx).next).name);
+	lcd_puts(ment(id_next(midx)).name);
 }
 
 void menu_select() 
@@ -150,16 +163,13 @@ void menu_init()
 
 void menu_last()
 {
-	if (midx == mtop + 1 || midx == 0)
-		midx = mtop;
-
-	midx--;
+	midx = id_last(midx);
 	menu_display();
 	return;
 }
 
 void menu_next()
 {
-	midx = ment(midx).next;
+	midx = id_next(midx);
 	menu_display();
 }
