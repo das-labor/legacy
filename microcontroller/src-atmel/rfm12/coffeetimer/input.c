@@ -32,7 +32,13 @@ void input_exec (uint8_t in_btn)
 
 void rot_poll ()
 {
-	static uint8_t selstate = 0, lasta = 0;
+	static uint8_t selstate = 0, lasta = 0, init_done = 0;
+	
+	if (!init_done)
+	{
+		lasta = (PIN_RT_A & BV_RT_A);
+		init_done = 1;
+	}
 	
 	if (!(PIN_RT_SELECT & BV_RT_SELECT) && selstate != 1)
 	{

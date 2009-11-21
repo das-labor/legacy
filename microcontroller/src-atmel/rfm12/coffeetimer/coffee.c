@@ -33,21 +33,17 @@ void send_c_off (uint16_t in_time)
 	pp_send (0, COFFEE_CODE);
 }
 
-void tmr_init()
-{
-	tv = 0;
-}
 
 void timer_inc ()
 {
 	tv++;
-	time_c_custom(0);
+	time_c_custom(1);
 }
 
 void timer_dec ()
 {
 	tv--;
-	time_c_custom(0);
+	time_c_custom(1);
 }
 
 void leave_timer()
@@ -57,13 +53,19 @@ void leave_timer()
 	menu_init();
 }
 
-void time_c_custom (uint16_t in_dummy)
+void tmr_init()
 {
-	tmr_init();
-	lcd_clrscr();
 	input_hook (BTN_SELECT, leave_timer);
 	input_hook (BTN_UP,     timer_inc);
 	input_hook (BTN_DOWN,   timer_dec);
+	tv = 0;
+}
+
+void time_c_custom (uint16_t in_val)
+{
+	if (in_val == 0)
+		tmr_init();
+	lcd_clrscr();
 	lcd_puts ("Start in ");
 	print_uint8_lz (tv);
 	lcd_puts ("m");

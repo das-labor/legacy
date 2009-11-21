@@ -29,16 +29,16 @@ ISR (TIMER0_OVF_vect)
 	static uint8_t cyclecount = 0, oddeven = 0;
 
 	cyclecount++;
-	rot_poll();
 
+	rot_poll();
 	if (cyclecount < 63) return;
 
-	cyclecount = 0;
+	cyclecount -= 63;
 
 	if (oddeven & 0x01)
-		TCNT0 = 123;
+		TCNT0 = 133;
 	else
-		TCNT0 = 124;
+		TCNT0 = 132;
 
 	oddeven++;
 	cron_tick();
@@ -61,10 +61,9 @@ int main (void)
 	TCCR0 |= ( _BV(CS00) | _BV(CS02) ); /* clk/1024 */
 	TIMSK |= _BV(TOIE0);
 
+	lcd_init (LCD_DISP_ON);
 	rfm12_init();
 	cron_init();
-	pp_init();
-	lcd_init (LCD_DISP_ON);
 	input_init();
 	input_hook (BTN_ANY, reset_timeout);
 
@@ -77,16 +76,19 @@ int main (void)
 	print_uint8_lz (VER_MINOR);
 
 
-	
-	for (i=0;i<4;i++)
-		_delay_ms(250);
 	sei();
+	
+	for (i=0;i<6;i++)
+		_delay_ms(250);
+
+	pp_init();
 	
 	timeout = RESET_TIMEOUT;
 
 	menu_init();
-	rfm12_tx (6, 0, "foobar");
-	send_c_on(1);
+	send_c_on(0);
+	_delay_ms(250);
+	send_c_off(0);
 
 	while (42)
 	{
