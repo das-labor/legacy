@@ -4,6 +4,7 @@
 #include <avr/pgmspace.h>
 
 #include <stdint.h>
+#include <string.h>
 #include "lcd.h"
 #include "cron.h"
 #include "menu.h"
@@ -15,11 +16,14 @@
 #define NUM_ENTRIES 12
 
 static uint8_t midx = 0, mtop;
-menuentry_t *menu_p;
-#define ment(a) ((menuentry_t) (*(menu_p + sizeof(menuentry_t))))
+static volatile menuentry_t *menu_p;
+//#define ment(a) ((menuentry_t) (*(menu_p + (a*sizeof(menuentry_t)))))
+#define ment(a) ((menuentry_t) (menu_p[a])) /* * sizeof(menuentry_t)))) */
 #define mtop(a) ((sizeof(a) / sizeof(menuentry_t)) -1)
 
-PROGMEM menuentry_t mainmenu[] =
+
+/* main menu */
+volatile menuentry_t mainmenu[] =
 	{
 		(menuentry_t) {
 			"Schalt an!",
@@ -70,7 +74,7 @@ PROGMEM menuentry_t mainmenu[] =
 
 
 /* DEBUG STUFF */
-PROGMEM menuentry_t debugmenue[] =
+volatile menuentry_t debugmenue[] =
 	{
 		(menuentry_t) {
 			"clear cron",
@@ -106,7 +110,8 @@ void mdebug_jump (uint16_t foo)
 {
 	midx = 0;
 	mtop = mtop(debugmenue);
-	menu_p = (menuentry_t *) &debugmenue;
+	menu_p = (menuentry_t *) &(debugmenue);
+	//menu_p = (menuentry_t *) &(debugmenue[0]);
 	menu_display();
 }
 
@@ -129,14 +134,12 @@ void menu_display()
 	
 	lcd_putc(0x7e); /* right arrow */
 	
-	//lcd_puts ((*menu_p)[midx].name);
 	lcd_puts (ment(midx).name);
 	lcd_gotoxy (15,0);
 	
 	lcd_putc(0x7f); /* left arrow */
 
-	lcd_gotoxy (0,1);
-	lcd_puts(" ");
+	lcd_gotoxy (1,1);
 	lcd_puts(ment(id_next(midx)).name);
 }
 
@@ -151,7 +154,8 @@ void menu_init()
 
 	midx = 0;
 	mtop = mtop(mainmenu);
-	menu_p = (menuentry_t *) &mainmenu;
+	//menu_p = (menuentry_t *) &mainmenu;
+	menu_p = &mainmenu;
 	
 	/* set up input hooks */
 	input_hook (BTN_UP,     menu_next);
