@@ -3,8 +3,6 @@
 #include "api.h"
 #include "testAnim.h"
 #include "spike_hw.h"
-#include "colorMatrix.h"
-#include "colorSnake.h"
 #include "fileParser.h"
 #include "plasmaAnims.h"
 #include "animations.h"

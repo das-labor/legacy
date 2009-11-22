@@ -101,6 +101,7 @@ wb_farbborg_tb.vvp: $(WB_FARBBORG_TB_SRC)
 
 %.vcd: %.vvp
 	$(VVP) $<
+	mv dump.vcd $@
 
 %.view: %.vcd
 	$(GTKWAVE) $< $<.save

@@ -1,4 +1,7 @@
-#include "colorSnake.h"
+#include "api.h"
+#include "slh.h"
+
+#define CSNAKE_LEN 125
 
 void colorSnake() {
 	pixel3d apples[10];
