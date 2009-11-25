@@ -33,17 +33,16 @@ int main(void)
 	SPCR = 0;
 	// Disable Analog Comparator (power save)
 	ACSR = _BV(ACD);
-	
-	// Disable Analog to Digital converter (power save)
-	ADCSRA = 0;
+
 
 	DDRB = _BV(PB1);  // set pb1 as output for hardware PWM
 
-	TCCR1A = _BV(WGM10) | _BV(COM1A1) | _BV(COM1A0); // pwm setup
-	TCCR1B = _BV(WGM12) | _BV(CS22) | _BV(CS21) | _BV(CS20); // pwm setup
-	TCNT1 = 0; // pwm time clear
+	TCCR1A |= _BV(WGM10) | _BV(COM1A1) | _BV(COM1B1);	// FastPWM, Set OC1X on Compare Match, clear OC1X at BOTTOM, (non inverting mode).
+	TCCR1B |= _BV(WGM12) | _BV(CS11);			// FastPWM bit 2, clk/64
+	TCNT1 = 0; // pwm timer clear
 	OCR1A = 0; // pwm timer compare target
-
+	OCR1B = 0; // pwm timer compare target
+	
 	CMD_DIR |= _BV(LCD_CS) | _BV(LCD_RESET) | _BV(LCD_RS); // LCD Data Ports
 	
 	spi_init(); // Setup SPI

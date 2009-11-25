@@ -30,7 +30,7 @@
 
 #ifdef MEGA8
 #	define SPI_PORT PORTB
-#	define SPI_PIN_CS PB2
+#	define SPI_PIN_CS PB0
 #	define SPI_HARDWARE
 #	define SPI_DDR DDRB
 #	define SPI_PIN_SCK PB5

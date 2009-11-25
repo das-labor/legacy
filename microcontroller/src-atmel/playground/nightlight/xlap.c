@@ -56,7 +56,7 @@ void xlap_init()
 {
 	myaddr = eeprom_read_byte(0x00);
 	msg.addr_src = myaddr;
-	spi_init();
+//	spi_init();
 	can_init();
 }
 
