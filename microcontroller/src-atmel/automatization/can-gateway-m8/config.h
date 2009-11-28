@@ -6,7 +6,7 @@
 
 // uart.[ch] defines
 #define UART_INTERRUPT
-#define UART_BAUD_RATE 115200
+#define UART_BAUD_RATE 57600
 #define UART_RXBUFSIZE 50
 #define UART_TXBUFSIZE 50
 #undef  UART_LEDS

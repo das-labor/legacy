@@ -1,3 +1,3 @@
 
-#include "../../../lib/util.c"
+#include "lib/util.c"
 
