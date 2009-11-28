@@ -1,4 +1,4 @@
 
 #include "config.h"
-#include "../../../lib/uart.c"
+#include "lib/uart.c"
 
