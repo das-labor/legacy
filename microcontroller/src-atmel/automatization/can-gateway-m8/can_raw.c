@@ -1,3 +1,3 @@
 
 #include "config.h"
-#include "../../../lib/can_raw.c"
+#include "lib/can_raw.c"

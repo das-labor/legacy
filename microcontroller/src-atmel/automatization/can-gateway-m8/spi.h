@@ -1,3 +1,3 @@
 
-#include "../../../lib/spi.h"
+#include "lib/spi.h"
 
