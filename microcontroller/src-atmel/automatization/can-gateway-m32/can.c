@@ -1,4 +1,4 @@
 
 #include "config.h"
-#include "../../../lib/can.c"
+#include "lib/can.c"
 

@@ -1,4 +1,4 @@
 
 #include "config.h"
-#include "../../../lib/spi.c"
+#include "lib/spi.c"
 
