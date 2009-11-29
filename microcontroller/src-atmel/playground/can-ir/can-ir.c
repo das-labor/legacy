@@ -74,6 +74,11 @@ uint16_t ir_testTeufel[] =
 uint16_t ir_testTeufel2[] =
 {PT_OFF, PT_ON, PT_OFF, PT_ON, PT_OFF, PT_OFF, PT_OFF, PT_ON, PT_OFF, PT_OFF, PT_OFF, PT_OFF}; 
 
+//teufel test code
+//volume down = 010 100 100000
+uint16_t ir_testTeufel3[] =
+{PT_OFF, PT_ON, PT_OFF, PT_ON, PT_OFF, PT_OFF, PT_ON, PT_OFF, PT_OFF, PT_OFF, PT_OFF, PT_OFF}; 
+
 // nec test
 // power 0001 0000 1100 1000 + 1110 0001 0001 1110
 
@@ -230,10 +235,11 @@ int main(void)
 	while(1)
 	{	
 		//remote control always sends the code twice with some delay
-		ir_sendCode(ir_testTeufel, 23);
-		_delay_ms(40);
-		ir_sendCode(ir_testTeufel, 23);
-		_delay_ms(5000);
+		ir_sendCode(ir_testTeufel3, 23);
+		// repet delay for custom protocol SIGNAL MUST BE REPEATED !!
+		_delay_ms(40); // must be 35ms --- IMPORTANT 40ms are in real 35ms
+		ir_sendCode(ir_testTeufel3, 23);
+		_delay_ms(300);
 //		ir_sendCode(ir_test_nec, 67);
 	}
 }
