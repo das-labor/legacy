@@ -1,6 +1,6 @@
 //      can-ir.c
 //      
-//      Copyright 2009  <hansinator@natascha>
+//      Authors: Hans-Gert Dahmen  <sexyludernatascha@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -36,9 +36,6 @@
 #define PT_ON ((3*PT2248_A) / IR_TICK_US), (PT2248_A / IR_TICK_US)
 
 
-
-
-
 // Extended NEC Protocol
 // Pulse distance encoding
 // one additional bit for distance
@@ -51,6 +48,10 @@
 
 // bit 1 560µs on + 1,69ms off
 #define PNEC_ON (560 / IR_TICK_US), (1690 / IR_TICK_US)
+
+//macro for generating  extended nec encodings
+//x is the destination array, y is the input code
+#define IR_GEN_NECEXT(x, y, z) (ir_genCode((uint16_t *)(x+1), PNEC_ON, PNEC_OFF, y, z) + 1); x[0] = PNEC_AGC_BURST
 
 
 /*
@@ -66,7 +67,7 @@ uint16_t ir_testCode[] = {100, 50, 200};
 
 //teufel test code
 //mute = 010 010 100 000
-uint16_t ir_testTeufel[] =
+/*uint16_t ir_testTeufel[] =
 {PT_OFF, PT_ON, PT_OFF, PT_OFF, PT_ON, PT_OFF, PT_ON, PT_OFF, PT_OFF, PT_OFF, PT_OFF, PT_OFF};
 
 //teufel test code
@@ -84,7 +85,7 @@ uint16_t ir_testTeufel3[] =
 
 uint16_t ir_test_nec[] =
 {PNEC_AGC_BURST, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF,
-                 PNEC_ON, PNEC_ON, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_ON, PNEC_ON, PNEC_ON, PNEC_OFF, PNEC_OFF};
+                 PNEC_ON, PNEC_ON, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_ON, PNEC_ON, PNEC_ON, PNEC_OFF, PNEC_OFF};*/
 
 //set OC1B to input
 #define FREQGEN_OFF() DDRB &= ~(_BV(1))
@@ -122,7 +123,7 @@ void timer0_init()
 //timer1 will be in CTC mode and toggle outputs on compare match,
 //meaning we have to run @ double frequency
 //the timer base frequency will be the full ioclk (hopefully 16MHz)
-void freq_init()
+void ir_freqInit()
 {
 	//disable frequency output
 	FREQGEN_OFF();
@@ -142,6 +143,28 @@ void freq_init()
 	TCCR1B = (_BV(WGM12) | _BV(CS10)); //counter is running now
 }
 
+//system initialization
+void init()
+{
+	//disable ir code generator
+	ir_curCodeLen = 0;
+	ir_curCodeIdx = 255;
+	ir_curCode = 0;
+	
+	//disable analog comparator (to save power)
+	ACSR |= _BV(ACD);	
+	
+	//enable frequency generator
+	ir_freqInit();
+	
+	//enable our tick counter / ir code generator
+	timer0_init();
+	
+	//turn on interrupts
+	sei();
+}
+
+//handle infrared code sending via timer 0
 ISR(TIMER0_OVF_vect)
 {	
 	//see if current code index is below length
@@ -172,25 +195,41 @@ ISR(TIMER0_OVF_vect)
 	}
 }
 
-//system initialization
-void init()
+//this function converts a bit-encoded code into
+//the internal format used by the ir sending function
+//it takes an array where to place the code (must be large enough),
+//the time in timer ticks (1 tick should be 16µS) for the on/off pulse
+//combination of a one and a zero, the bitcode to convert and its length
+//as parameters
+//
+//the bitcode is assumed to be in LSB first format
+//
+//the function will return the length of the generated
+//code, which is always bitcode length * 4
+uint16_t ir_genCode(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime, uint16_t zeroOntime, uint16_t zeroOfftime, uint32_t bitCode, uint8_t codeLen)
 {
-	//disable ir code generator
-	ir_curCodeLen = 0;
-	ir_curCodeIdx = 255;
-	ir_curCode = 0;
+	uint8_t i;
 	
-	//disable analog comparator (to save power)
-	ACSR |= _BV(ACD);	
+	//convert bitcode
+	for(i = 0; i++; i < codeLen)
+	{
+		if(bitCode & 0x1)
+		{
+			//encode a one
+			destCode[i*2] = oneOntime;
+			destCode[(i*2)+1] = oneOfftime;
+		}
+		else
+		{
+			//encode a zero
+			destCode[i*2] = zeroOntime;
+			destCode[(i*2)+1] = zeroOfftime;
+		}
+		
+		bitCode >>=1;
+	}
 	
-	//enable frequency generator
-	freq_init();
-	
-	//enable our tick counter / ir code generator
-	timer0_init();
-	
-	//turn on interrupts
-	sei();
+	return codeLen * 4;
 }
 
 //send an ir code, please never use a code length of zero
@@ -228,17 +267,33 @@ void ir_sendCode(uint16_t *code, uint8_t codeLen)
 
 int main(void)
 {	
+	uint16_t teufelCode[24];
+	uint8_t teufelLen;
+	uint16_t NECCode[68];
+	uint8_t NECLen;
+	
 	//system initialization
-	init();		
+	init();
+	
+	//generate teufel code automatically
+	//this code is evil, as PT_ON & PT_OFF
+	//are actually four parameters disguised as two
+	//volume down = 010 100 010000
+	teufelLen = ir_genCode(teufelCode, PT_ON, PT_OFF, 0b010100010000, 12);
+	
+	//this macro generates nec codes automatically
+	//power 0001 0000 1100 1000 + 1110 0001 0001 1110
+	//hint: the manually defined test nec code has an additional trailing zero
+	NECLen = IR_GEN_NECEXT(NECCode, 0b00010000110010001110000100011110, 32);
 	
 	//test loop turns down volume
 	while(1)
 	{	
 		//remote control always sends the code twice with some delay
-		ir_sendCode(ir_testTeufel3, 23);
+		ir_sendCode(teufelCode, teufelLen);
 		// repet delay for custom protocol SIGNAL MUST BE REPEATED !!
 		_delay_ms(40); // must be 35ms --- IMPORTANT 40ms are in real 35ms
-		ir_sendCode(ir_testTeufel3, 23);
+		ir_sendCode(teufelCode, teufelLen);
 		_delay_ms(300);
 //		ir_sendCode(ir_test_nec, 67);
 	}
