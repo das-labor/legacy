@@ -29,10 +29,6 @@ void init_modi()
 	*/
 	ACSR = _BV(ACD);
 
-	/* 
-		 Disable Analog to Digital converter (power save)
-	*/
-	ADCSRA = 0;
 }
 
 void init_timer()

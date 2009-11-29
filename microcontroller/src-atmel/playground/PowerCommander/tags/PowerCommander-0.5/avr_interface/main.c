@@ -35,6 +35,7 @@ int main(void)
 	TIMSK |= _BV(TOIE0);		  // Enable interrupt flag
 //	TIMSK0 |= _BV(TOIE0);		  // Enable interrupt flag atmega644p
 
+	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
 	DDRA |= _BV(PA2) | _BV(PA3) | _BV(PA4); // Status LED G R B
 	DDRA &= ~(_BV(PA0) | _BV(PA1)); // Eingänge HS, rcd
 
