@@ -230,10 +230,10 @@ int main(void)
 	while(1)
 	{	
 		//remote control always sends the code twice with some delay
-//		ir_sendCode(ir_testTeufel, 23);
-//		_delay_ms(30);
-//		ir_sendCode(ir_testTeufel, 23);
+		ir_sendCode(ir_testTeufel, 23);
+		_delay_ms(40);
+		ir_sendCode(ir_testTeufel, 23);
 		_delay_ms(5000);
-		ir_sendCode(ir_test_nec, 67);
+//		ir_sendCode(ir_test_nec, 67);
 	}
 }
