@@ -202,7 +202,7 @@ ISR(TIMER0_OVF_vect)
 //combination of a one and a zero, the bitcode to convert and its length
 //as parameters
 //
-//the bitcode is assumed to be in LSB first format
+//the bitcode is assumed to be in MSB first format
 //
 //the function will return the length of the generated
 //code, which is always bitcode length * 4
@@ -213,7 +213,7 @@ uint16_t ir_genCode(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime,
 	//convert bitcode
 	for(i = 0; i++; i < codeLen)
 	{
-		if(bitCode & 0x1)
+		if(bitCode & (1 << (codeLen-1)))
 		{
 			//encode a one
 			destCode[i*2] = oneOntime;
@@ -226,7 +226,7 @@ uint16_t ir_genCode(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime,
 			destCode[(i*2)+1] = zeroOfftime;
 		}
 		
-		bitCode >>=1;
+		bitCode <<=1;
 	}
 	
 	return codeLen * 4;
