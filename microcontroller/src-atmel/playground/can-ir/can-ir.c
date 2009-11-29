@@ -35,6 +35,24 @@
 // bit 1 = 3*a on, a off
 #define PT_ON ((3*PT2248_A) / IR_TICK_US), (PT2248_A / IR_TICK_US)
 
+
+
+
+
+// Extended NEC Protocol
+// Pulse distance encoding
+// one additional bit for distance
+
+// AGC Burst 9ms + 4,5ms pause
+#define PNEC_AGC_BURST (9000 / IR_TICK_US), (4500 / IR_TICK_US)
+
+// bit 0 560µs on + 560µs off
+#define PNEC_OFF (560 / IR_TICK_US), (560 / IR_TICK_US)
+
+// bit 1 560µs on + 1,69ms off
+#define PNEC_ON (560 / IR_TICK_US), (1690 / IR_TICK_US)
+
+
 /*
  * IR codes are stored in an array of on/off pulse lengths.
  * As transmissions must always start with a one and consist
@@ -55,6 +73,13 @@ uint16_t ir_testTeufel[] =
 //volume down = 010 100 010000
 uint16_t ir_testTeufel2[] =
 {PT_OFF, PT_ON, PT_OFF, PT_ON, PT_OFF, PT_OFF, PT_OFF, PT_ON, PT_OFF, PT_OFF, PT_OFF, PT_OFF}; 
+
+// nec test
+// power 0001 0000 1100 1000 + 1110 0001 0001 1110
+
+uint16_t ir_test_nec[] =
+{PNEC_AGC_BURST, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF,
+                 PNEC_ON, PNEC_ON, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_ON, PNEC_ON, PNEC_ON, PNEC_OFF, PNEC_OFF};
 
 //set OC1B to input
 #define FREQGEN_OFF() DDRB &= ~(_BV(1))
@@ -205,9 +230,10 @@ int main(void)
 	while(1)
 	{	
 		//remote control always sends the code twice with some delay
-		ir_sendCode(ir_testTeufel, 23);
-		_delay_ms(30);
-		ir_sendCode(ir_testTeufel, 23);
-		_delay_ms(1000);
+//		ir_sendCode(ir_testTeufel, 23);
+//		_delay_ms(30);
+//		ir_sendCode(ir_testTeufel, 23);
+		_delay_ms(5000);
+		ir_sendCode(ir_test_nec, 67);
 	}
 }
