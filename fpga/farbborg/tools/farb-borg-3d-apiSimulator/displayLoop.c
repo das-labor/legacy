@@ -25,6 +25,7 @@ extern unsigned int curFrame;
 
 // Playlist
 void *display_loop(void * unused)  {
+	ADD_ANIMATION(funkyBeats);
 	ADD_ANIMATION(Benny);
 	ADD_ANIMATION(police);
 	ADD_ANIMATION(took);

@@ -11,4 +11,4 @@ $(OBJ_FOLDER)/%.o: %.c
 DEPS := $(wildcard $(DEP_FOLDER)/*.d)
 ifneq ($(DEPS),)
 include $(DEPS)
-endif 
+endif

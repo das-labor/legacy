@@ -1,5 +1,6 @@
 #ifndef ANIMATIONS_H
 #define ANIMATIONS_H
+
 // all animation prototypes
 
 void tutorial();
@@ -11,5 +12,6 @@ void ansteuerungZeitlupe();
 void took();
 void Benny();
 void police();
+void funkyBeats();
 
 #endif

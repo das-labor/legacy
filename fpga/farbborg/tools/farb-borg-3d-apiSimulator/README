@@ -45,11 +45,7 @@ Neue neue Animationen gelten aber folgende Regeln:
    }
  - Die datei heißt anim_$Funktionsname.c 
  	also wenn die Funktion "void Test();" heißt, "animTest.c"
- - Damit die Datei mitkompiliert wird muss Sie in Makefile.inc.common
-   eingetragen werden.
-   Also neue Zeile mit
-   ANIM_OBJ += anim_$Funktionsname.o
-   am Anfang einfügen.
+ - Alle anim_*.c Dateien werden automatisch mitkompiliert.
  - Damit die Animation bekann ist muss Sie auch in animations.h eingetragen werden
    $Funktionsname();
  - Damit sie angezeigt wird, muss Sie auch auch aufgerufen weren. Dies
