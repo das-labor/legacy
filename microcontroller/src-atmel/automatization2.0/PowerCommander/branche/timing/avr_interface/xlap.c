@@ -25,6 +25,8 @@ uint8_t myaddr;
 static can_message_t msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
 
 TimerControlBlock   i2cResponseTimer;             // Declare the control blocks needed for timers
+TimerControlBlock   cancom_outTimer;             // Declare the control blocks needed for timers
+TimerControlBlock   i2ccom_outTimer;             // Declare the control blocks needed for timers
 
 
 void process_mgt_msg()
@@ -68,9 +70,10 @@ AVRX_GCC_TASKDEF(i2ccom_in, 50, 3)
 			Es ist notwendig daten von i2c zu lesen
 		*/
 		p = AvrXWaitMessage(&i2cQueue_in);
-		AvrXDelay(&i2cResponseTimer, 10); // 10ms auf den ctrl warten bevor wir lesen
+		BeginCritical();
 		if (!TWIM_Start (SLAVE, TWIM_READ))
 		{
+			// verbindung zum i2c-slave ist fehlgeschlagen
 			TWIM_Stop();
 			for (i = 0; i < CAN_OUTDATACOUNT; i++)
 				{
@@ -106,10 +109,11 @@ AVRX_GCC_TASKDEF(i2ccom_in, 50, 3)
 			{
 				can_outdata.outdata[i] = ((t_i2cMessage_in*)p)->indata[i];
 			}
-		}	
+		}
+		EndCritical();
 		AvrXSendMessage(&canQueue_out, &can_outdata.mcb);
 		AvrXWaitMessageAck(&can_outdata.mcb);
-
+		AvrXDelay(&i2cResponseTimer, 10); // 10ms auf den ctrl warten bevor wir lesen
 		AvrXAckMessage(p);
 				 
 	}
@@ -135,6 +139,8 @@ AVRX_GCC_TASKDEF(i2ccom_out, 50, 3)
 		/*
 			wenn es da versuchen wir die daten an den ctrl zu senden
 		*/
+
+		BeginCritical();
 		if (!TWIM_Start(SLAVE, TWIM_WRITE))
 		{
 			TWIM_Stop();
@@ -150,7 +156,7 @@ AVRX_GCC_TASKDEF(i2ccom_out, 50, 3)
 			}
 			TWIM_Stop();
 		}
-
+		EndCritical();
 		/*
 			wann sollen wirklich daten gelesen werden - erstmal 
 			immer
@@ -169,7 +175,7 @@ AVRX_GCC_TASKDEF(i2ccom_out, 50, 3)
 			AvrXWaitMessageAck(&i2c_indata.mcb);
 		}
 		// else eben nicht
-				
+		AvrXDelay(&i2ccom_outTimer, 10); // 10ms auf den ctrl warten bevor wir lesen				
 		// final dann selber fertig sagen
 		AvrXAckMessage(p);
 	}
@@ -202,6 +208,10 @@ AVRX_GCC_TASKDEF(cancom_in, 50, 3)
 				{
 					/*
 						unterbinden, dass ueber can ein paar sachen umgelegt werden koennen
+						a) via can nicht den hauptschalter umlegen
+						b) hauptschuetz abschalten
+						c) steckdosen abschalten
+						d) Klo licht ausschalten
 					*/
 					if ( ( (rx_msg.data[0] == C_VIRT) &&	(rx_msg.data[1] == VIRT_POWER)) ||
 							( (rx_msg.data[0] == C_SW) &&
@@ -246,15 +256,18 @@ AVRX_GCC_TASKDEF(cancom_out, 50, 3)
 	while (1)
 	{
 		p = AvrXWaitMessage(&canQueue_out);
+		BeginCritical();
 		for (i = 0; i < CAN_OUTDATACOUNT; i++)
 		{
 				msg.data[i] = ((t_canMessage_out*)p)->outdata[i];
 		}
+		EndCritical();
 		msg.port_dst = PORT_POWERCOMMANDER;
 		msg.addr_dst = rx_msg.addr_src;
 		msg.port_src = PORT_POWERCOMMANDER;
 		can_put(&msg);
-		AvrXAckMessage(p);
+		AvrXDelay(&cancom_outTimer, 10); // 10ms pause ... kein stress auf dem device
+		AvrXAckMessage(p); // dann erst sind wir durch mit der Nachricht und koennen was neues machen
 	}
 }
 	
