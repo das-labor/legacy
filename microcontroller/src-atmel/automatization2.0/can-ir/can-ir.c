@@ -213,7 +213,7 @@ uint16_t ir_genCode(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime,
 	uint8_t i;
 	
 	//convert bitcode
-	for(i = 0; i++; i < codeLen)
+	for(i = 0; i < codeLen; i++)
 	{
 		if(bitCode & (1 << (codeLen-1)))
 		{
@@ -231,7 +231,7 @@ uint16_t ir_genCode(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime,
 		bitCode <<=1;
 	}
 	
-	return codeLen * 4;
+	return codeLen * 2;
 }
 
 //send an ir code, please never use a code length of zero
@@ -297,6 +297,6 @@ int main(void)
 		_delay_ms(40); // must be 35ms --- IMPORTANT 40ms are in real 35ms
 		ir_sendCode(teufelCode, teufelLen);
 		_delay_ms(300);
-//		ir_sendCode(NECCode, NECLen;
+//		ir_sendCode(NECCode, NECLen);
 	}
 }
