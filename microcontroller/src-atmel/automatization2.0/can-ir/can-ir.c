@@ -41,7 +41,9 @@
 // one additional bit for distance
 
 // AGC Burst 9ms + 4,5ms pause
-#define PNEC_AGC_BURST (9000 / IR_TICK_US), (4500 / IR_TICK_US)
+#define PNEC_AGC_ON  (9000 / IR_TICK_US)
+#define PNEC_AGC_OFF (4500 / IR_TICK_US)
+#define PNEC_AGC_BURST (PNEC_AGC_ON), (PNEC_AGC_OFF)
 
 // bit 0 560µs on + 560µs off
 #define PNEC_OFF (560 / IR_TICK_US), (560 / IR_TICK_US)
@@ -51,7 +53,7 @@
 
 //macro for generating  extended nec encodings
 //x is the destination array, y is the input code
-#define IR_GEN_NECEXT(x, y, z) (ir_genCode((uint16_t *)(x+1), PNEC_ON, PNEC_OFF, y, z) + 1); x[0] = PNEC_AGC_BURST
+#define IR_GEN_NECEXT(x, y, z) (ir_genCode((uint16_t *)(x+2), PNEC_ON, PNEC_OFF, y, z) + 2); x[0] = PNEC_AGC_ON; x[1] = PNEC_AGC_OFF
 
 
 /*
@@ -84,10 +86,10 @@ uint16_t ir_testTeufel3[] =
 // address 16bit          command 8bit - power
 //                                  inverted 8bit cmd
 // 0001 0000 1100 1000 + 1110 0001 (0001 1110)
-
+*/
 uint16_t ir_test_nec[] =
 {PNEC_AGC_BURST, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF,
-                 PNEC_ON, PNEC_ON, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_ON, PNEC_ON, PNEC_ON, PNEC_OFF, PNEC_OFF};*/
+                 PNEC_ON, PNEC_ON, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_ON, PNEC_ON, PNEC_ON, PNEC_OFF, PNEC_OFF};
 
 //set OC1B to input
 #define FREQGEN_OFF() DDRB &= ~(_BV(1))
@@ -231,7 +233,7 @@ uint16_t ir_genCode(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime,
 		bitCode <<=1;
 	}
 	
-	return codeLen * 2;
+	return (codeLen * 2) - 1;
 }
 
 //send an ir code, please never use a code length of zero
@@ -286,17 +288,26 @@ int main(void)
 	//this macro generates nec codes automatically
 	//power 0001 0000 1100 1000 + 1110 0001 0001 1110
 	//hint: the manually defined test nec code has an additional trailing zero
-	NECLen = IR_GEN_NECEXT(NECCode, 0b00010000110010001110000100011110, 32);
+	//NECLen = IR_GEN_NECEXT(NECCode, 0b000100001100100011100001000111100, 33);
+	
+//	NECLen = ir_genCode((NECCode + 2), PNEC_ON, PNEC_OFF, 0b0001000011001000, 15) + 2;
+
+	NECLen = 3;
+	NECCode[0] = PNEC_AGC_ON;
+	NECCode[1] = PNEC_AGC_OFF;
+	NECCode[2] = PNEC_AGC_ON;
+	NECCode[3] = PNEC_AGC_OFF;
 	
 	//test loop turns down volume
 	while(1)
 	{	
 		//remote control always sends the code twice with some delay
-		ir_sendCode(teufelCode, teufelLen);
+//		ir_sendCode(teufelCode, teufelLen);
 		// repeat delay for custom protocol SIGNAL MUST BE REPEATED !!
-		_delay_ms(40); // must be 35ms --- IMPORTANT 40ms are in real 35ms
-		ir_sendCode(teufelCode, teufelLen);
-		_delay_ms(300);
-//		ir_sendCode(NECCode, NECLen);
+//		_delay_ms(40); // must be 35ms --- IMPORTANT 40ms are in real 35ms
+//		ir_sendCode(teufelCode, teufelLen);
+		_delay_ms(500);
+		ir_sendCode(NECCode, NECLen);
+//		ir_sendCode(ir_test_nec, 67);
 	}
 }
