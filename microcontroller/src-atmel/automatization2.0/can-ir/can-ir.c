@@ -52,8 +52,8 @@
 #define PNEC_ON (560 / IR_TICK_US), (1690 / IR_TICK_US)
 
 //macro for generating  extended nec encodings
-//x is the destination array, y is the input code
-#define IR_GEN_NECEXT(x, y, z) (ir_genCode((uint16_t *)(x+2), PNEC_ON, PNEC_OFF, y, z) + 2); x[0] = PNEC_AGC_ON; x[1] = PNEC_AGC_OFF
+//x is the destination array, y is the input code, z is the bit count
+#define IR_GEN_NECEXT(x, y, z) (ir_genCode((uint16_t *)(x+4), PNEC_ON, PNEC_OFF, y, z) + 4); x[0] = PNEC_AGC_ON; x[1] = PNEC_AGC_OFF
 
 
 /*
@@ -209,8 +209,8 @@ ISR(TIMER0_OVF_vect)
 //the bitcode is assumed to be in MSB first format
 //
 //the function will return the length of the generated
-//code, which is always bitcode length * 4
-uint16_t ir_genCode(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime, uint16_t zeroOntime, uint16_t zeroOfftime, uint32_t bitCode, uint8_t codeLen)
+//code, which is always bitcode length * 2
+uint8_t ir_genCode(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime, uint16_t zeroOntime, uint16_t zeroOfftime, uint32_t bitCode, uint8_t codeLen)
 {
 	uint8_t i;
 	
@@ -288,15 +288,16 @@ int main(void)
 	//this macro generates nec codes automatically
 	//power 0001 0000 1100 1000 + 1110 0001 0001 1110
 	//hint: the manually defined test nec code has an additional trailing zero
-	//NECLen = IR_GEN_NECEXT(NECCode, 0b000100001100100011100001000111100, 33);
+	//hint2: maximum bit length is 32
+	NECLen = IR_GEN_NECEXT(NECCode, 0b00010000110010001110000100011110, 32);
 	
-//	NECLen = ir_genCode((NECCode + 2), PNEC_ON, PNEC_OFF, 0b0001000011001000, 15) + 2;
+	//NECLen = ir_genCode((NECCode + 2), PNEC_ON, PNEC_OFF, 0b0001000011001000, 15) + 2;
 
-	NECLen = 3;
+	/*NECLen = 3;
 	NECCode[0] = PNEC_AGC_ON;
 	NECCode[1] = PNEC_AGC_OFF;
 	NECCode[2] = PNEC_AGC_ON;
-	NECCode[3] = PNEC_AGC_OFF;
+	NECCode[3] = PNEC_AGC_OFF;*/
 	
 	//test loop turns down volume
 	while(1)
