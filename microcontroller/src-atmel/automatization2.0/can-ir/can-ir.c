@@ -53,7 +53,7 @@
 
 //macro for generating  extended nec encodings
 //x is the destination array, y is the input code, z is the bit count
-#define IR_GEN_NECEXT(x, y, z) (ir_genCode((uint16_t *)(x+4), PNEC_ON, PNEC_OFF, y, z) + 4); x[0] = PNEC_AGC_ON; x[1] = PNEC_AGC_OFF
+#define IR_GEN_NECEXT(x, y, z) (ir_genCode((uint16_t *)(x+4), PNEC_ON, PNEC_OFF, y, z) + 3); x[0] = PNEC_AGC_ON; x[1] = PNEC_AGC_OFF; x[(z * 2) + 3] = (560 / IR_TICK_US)
 
 
 /*
@@ -293,7 +293,7 @@ int main(void)
 	
 	//NECLen = ir_genCode((NECCode + 2), PNEC_ON, PNEC_OFF, 0b0001000011001000, 15) + 2;
 
-	/*NECLen = 3;
+	/*NECLen = 4;
 	NECCode[0] = PNEC_AGC_ON;
 	NECCode[1] = PNEC_AGC_OFF;
 	NECCode[2] = PNEC_AGC_ON;
