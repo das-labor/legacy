@@ -46,7 +46,7 @@ void send_error( unsigned char status )
 
 	rmsg.cmd     = RS232CAN_ERROR;
 	rmsg.len     = 1;
-	rmsg.data[0] = status;
+	rmsg.data[0] = can_error;
 
 	canu_transmit(&rmsg);
 }
