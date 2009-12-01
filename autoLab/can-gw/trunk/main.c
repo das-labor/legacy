@@ -133,13 +133,17 @@ int main(){
 		if (rmsg){ 
 			led_set(muh);
 			if ((muh<<=1)==0) muh = 1;
+			cli();
 			process_rs232_msg(rmsg);
+			sei();
 		}
 		
 		cmsg = can_get_raw_nb();
 		if (cmsg){
+			cli();
 			process_can_msg(cmsg);
 			can_free_raw(cmsg);
+			sei();
 		}
 
 		if (can_error) {
