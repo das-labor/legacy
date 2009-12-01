@@ -51,9 +51,9 @@
 // bit 1 560µs on + 1,69ms off
 #define PNEC_ON (560 / IR_TICK_US), (1690 / IR_TICK_US)
 
-//macro for generating  extended nec encodings
+//macro for generating extended nec encodings
 //x is the destination array, y is the input code, z is the bit count
-#define IR_GEN_NECEXT(x, y, z) (ir_genCode((uint16_t *)(x+4), PNEC_ON, PNEC_OFF, y, z) + 3); x[0] = PNEC_AGC_ON; x[1] = PNEC_AGC_OFF; x[(z * 2) + 3] = (560 / IR_TICK_US)
+#define IR_GEN_NECEXT(x, y, z) (ir_genCode((uint16_t *)(x + 2 * sizeof(uint16_t)), PNEC_ON, PNEC_OFF, y, z) + 3); x[0] = PNEC_AGC_ON; x[1] = PNEC_AGC_OFF; x[z * 2 + 1] = (560 / IR_TICK_US)
 
 
 /*
