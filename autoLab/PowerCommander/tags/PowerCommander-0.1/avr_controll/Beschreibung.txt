@@ -1,0 +1,31 @@
+Lizenz: GPL3+ / TWI lib siehe Header
+
+ATMega168
+
+Steuert Ausgänge:
+6 * Hardware PWM als 0V - 10V Ausgänge für EVGs
+8 * TTL für Relais
+2 * 230V Eingänge Taster
+2 * 230V Ausgänge Hauptschütz
+1 * 24V Hauptschalter
+
+
+
+I2C Bus für Kommunikation
+Bekommt Zustände für Ports und liefert diese auf Anfrage zurück.
+
+
+Fuses:
+lfuse: 0xC0
+hfuse: 0xD4
+efuse: 0xf9
+
+Bootloader:
+
+i2c per can
+
+
+todo:
+reset via i2c
+
+
