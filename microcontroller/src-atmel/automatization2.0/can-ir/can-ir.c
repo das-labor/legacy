@@ -217,7 +217,7 @@ uint8_t ir_genCode(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime, 
 	//convert bitcode
 	for(i = 0; i < codeLen; i++)
 	{
-		if(bitCode & (1 << (codeLen-1)))
+		if(bitCode & (uint32_t)((uint32_t)1 << (uint32_t)(codeLen-1)))
 		{
 			//encode a one
 			destCode[i*2] = oneOntime;
@@ -230,7 +230,7 @@ uint8_t ir_genCode(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime, 
 			destCode[(i*2)+1] = zeroOfftime;
 		}
 		
-		bitCode <<=1;
+		bitCode <<= 1;
 	}
 	
 	return (codeLen * 2) - 1;
