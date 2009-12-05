@@ -1,4 +1,4 @@
-OBJ = can-ir.o
+OBJ = can-ir.o can/can.o can/can_handler.o can/spi.o
 
 # Default values
 OUT           ?= image

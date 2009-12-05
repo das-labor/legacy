@@ -21,40 +21,13 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-//one tick is 16 µS long
-#define IR_TICK_US 16
+#include "can/can.h"
 
-//teufel signal definitions
-//see datasheet of PT2248 chip
-//all calculations are done in µS
-// a is the base time unit
-// a = (1/fOSC) * 192 -> fOSC typically is 455KHz
-#define PT2248_A 431 //431 fits best, empirically
-// bit 0 = a on, 3*a off
-#define PT_OFF (PT2248_A / IR_TICK_US), ((3*PT2248_A) / IR_TICK_US)
-// bit 1 = 3*a on, a off
-#define PT_ON ((3*PT2248_A) / IR_TICK_US), (PT2248_A / IR_TICK_US)
+#include "can/spi.h"
 
+#include "can/can_handler.h"
 
-// Extended NEC Protocol
-// Pulse distance encoding
-// one additional bit for distance
-
-// AGC Burst 9ms + 4,5ms pause
-#define PNEC_AGC_ON  (9000 / IR_TICK_US)
-#define PNEC_AGC_OFF (4500 / IR_TICK_US)
-#define PNEC_AGC_BURST (PNEC_AGC_ON), (PNEC_AGC_OFF)
-
-// bit 0 560µs on + 560µs off
-#define PNEC_OFF (560 / IR_TICK_US), (560 / IR_TICK_US)
-
-// bit 1 560µs on + 1,69ms off
-#define PNEC_ON (560 / IR_TICK_US), (1690 / IR_TICK_US)
-
-//macro for generating extended nec encodings
-//x is the destination array, y is the input code, z is the bit count
-#define IR_GEN_NECEXT(x, y, z) (ir_genCode((uint16_t *)(x + 2 * sizeof(uint16_t)), PNEC_ON, PNEC_OFF, y, z) + 4); x[0] = PNEC_AGC_ON; x[1] = PNEC_AGC_OFF; x[z * 2 + 2] = (560 / IR_TICK_US)
-
+#include "ir_code.h"
 
 /*
  * IR codes are stored in an array of on/off pulse lengths.
@@ -69,27 +42,9 @@ uint16_t ir_testCode[] = {100, 50, 200};
 
 //teufel test code
 //mute = 010 010 100 000
-/*uint16_t ir_testTeufel[] =
+uint16_t ir_testTeufel[] =
 {PT_OFF, PT_ON, PT_OFF, PT_OFF, PT_ON, PT_OFF, PT_ON, PT_OFF, PT_OFF, PT_OFF, PT_OFF, PT_OFF};
 
-//teufel test code
-//volume down = 010 100 010000
-uint16_t ir_testTeufel2[] =
-{PT_OFF, PT_ON, PT_OFF, PT_ON, PT_OFF, PT_OFF, PT_OFF, PT_ON, PT_OFF, PT_OFF, PT_OFF, PT_OFF}; 
-
-//teufel test code
-//volume down = 010 100 100000
-uint16_t ir_testTeufel3[] =
-{PT_OFF, PT_ON, PT_OFF, PT_ON, PT_OFF, PT_OFF, PT_ON, PT_OFF, PT_OFF, PT_OFF, PT_OFF, PT_OFF}; 
-
-// nec test
-// address 16bit          command 8bit - power
-//                                  inverted 8bit cmd
-// 0001 0000 1100 1000 + 1110 0001 (0001 1110)
-*/
-uint16_t ir_test_nec[] =
-{PNEC_AGC_BURST, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF,
-                 PNEC_ON, PNEC_ON, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_OFF, PNEC_OFF, PNEC_OFF, PNEC_ON, PNEC_ON, PNEC_ON, PNEC_ON, PNEC_OFF, PNEC_OFF};
 
 //set OC1B to input
 #define FREQGEN_OFF() DDRB &= ~(_BV(1))
@@ -271,25 +226,29 @@ void ir_sendCode(uint16_t *code, uint8_t codeLen)
 
 int main(void)
 {	
-	uint16_t teufelCode[24];
-	uint8_t teufelLen;
-	uint16_t NECCode[68];
-	uint8_t NECLen;
+//	uint16_t teufelCode[24];
+//	uint8_t teufelLen;
+//	uint16_t NECCode[68];
+//	uint8_t NECLen;
 	
 	//system initialization
 	init();
+	
+	spi_init();
+	
+	can_init();
 	
 	//generate teufel code automatically
 	//this code is evil, as PT_ON & PT_OFF
 	//are actually four parameters disguised as two
 	//volume down = 010 100 010000
-	teufelLen = ir_genCode(teufelCode, PT_ON, PT_OFF, 0b010100010000, 12);
+//	teufelLen = ir_genCode(teufelCode, PT_ON, PT_OFF, 0b010100100000, 12);
 	
 	//this macro generates nec codes automatically
 	//power 0001 0000 1100 1000 + 1110 0001 0001 1110
 	//hint: the manually defined test nec code has an additional trailing zero
 	//hint2: maximum bit length is 32
-	NECLen = IR_GEN_NECEXT(NECCode, 0b00010000110010001110000100011110, 32);
+//	NECLen = IR_GEN_NECEXT(NECCode, 0b00010000110010001110000100011110, 15);
 	
 	//NECLen = ir_genCode((NECCode + 2), PNEC_ON, PNEC_OFF, 0b0001000011001000, 15) + 2;
 
@@ -302,13 +261,14 @@ int main(void)
 	//test loop turns down volume
 	while(1)
 	{	
+		can_handler();
 		//remote control always sends the code twice with some delay
-//		ir_sendCode(teufelCode, teufelLen);
+//		ir_sendCode(ir_testTeufel2, 23);
 		// repeat delay for custom protocol SIGNAL MUST BE REPEATED !!
 //		_delay_ms(40); // must be 35ms --- IMPORTANT 40ms are in real 35ms
-//		ir_sendCode(teufelCode, teufelLen);
-		_delay_ms(500);
-		ir_sendCode(NECCode, NECLen);
+//		ir_sendCode(ir_testTeufel2, 23);
+//		_delay_ms(500);
+//		ir_sendCode(NECCode, NECLen);
 //		ir_sendCode(ir_test_nec, 67);
 	}
 }
