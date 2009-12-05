@@ -20,6 +20,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include <avr/pgmspace.h>
 
 #include "can/can.h"
 
@@ -222,6 +223,15 @@ void ir_sendCode(uint16_t *code, uint8_t codeLen)
 	
 	//enable code sending by setting the index to zero
 	ir_curCodeIdx = 0;
+}
+
+void read_code_to_array(uint16_t *array, uint16_t *pgmData, uint8_t pos, uint8_t len)
+{
+	uint8_t i;
+	for (i = pos; pos < len; i++)
+		array[i] = pgm_read_word(pgmData++);
+
+
 }
 
 int main(void)
