@@ -23,11 +23,8 @@
 #include <avr/pgmspace.h>
 
 #include "can/can.h"
-
 #include "can/spi.h"
-
 #include "can/can_handler.h"
-
 #include "ir_code.h"
 
 /*
@@ -37,7 +34,7 @@
  * array will be a one-pulse and every odd array index
  * will be a zero-pulse.
  */
-
+/*
 //test code
 uint16_t ir_testCode[] = {100, 50, 200};
 
@@ -45,7 +42,7 @@ uint16_t ir_testCode[] = {100, 50, 200};
 //mute = 010 010 100 000
 uint16_t ir_testTeufel[] =
 {PT_OFF, PT_ON, PT_OFF, PT_OFF, PT_ON, PT_OFF, PT_ON, PT_OFF, PT_OFF, PT_OFF, PT_OFF, PT_OFF};
-
+*/
 
 //set OC1B to input
 #define FREQGEN_OFF() DDRB &= ~(_BV(1))
@@ -166,24 +163,24 @@ ISR(TIMER0_OVF_vect)
 //
 //the function will return the length of the generated
 //code, which is always bitcode length * 2
-uint8_t ir_genCode(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime, uint16_t zeroOntime, uint16_t zeroOfftime, uint32_t bitCode, uint8_t codeLen)
+uint8_t ir_genCode(uint16_t *destCode, ir_proto *ir_code, uint8_t bitCode, uint8_t codeLen)
 {
 	uint8_t i;
-	
+
 	//convert bitcode
 	for(i = 0; i < codeLen; i++)
 	{
-		if(bitCode & (uint32_t)((uint32_t)1 << (uint32_t)(codeLen-1)))
+		if(bitCode & (1 << (codeLen-1)))
 		{
 			//encode a one
-			destCode[i*2] = oneOntime;
-			destCode[(i*2)+1] = oneOfftime;
+			destCode[i*2] = ir_code->oneOntime;
+			destCode[(i*2)+1] = ir_code->oneOfftime;
 		}
 		else
 		{
 			//encode a zero
-			destCode[i*2] = zeroOntime;
-			destCode[(i*2)+1] = zeroOfftime;
+			destCode[i*2] = ir_code->zeroOntime;
+			destCode[(i*2)+1] = ir_code->zeroOfftime;
 		}
 		
 		bitCode <<= 1;
