@@ -163,17 +163,23 @@ ISR(TIMER0_OVF_vect)
 //
 //the function will return the length of the generated
 //code, which is always bitcode length * 2
-uint8_t ir_genCode(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime, uint16_t zeroOntime,  uint16_t zeroOfftime,uint32_t bitCode, uint8_t codeLen)
+//0 means an error has occured
+uint8_t ir_genCode(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime, uint16_t zeroOntime, uint16_t zeroOfftime, uint32_t bitCode, uint8_t codeLen)
 {
 	uint8_t i;
 	
-	//pre-align bitcode
-	bitCode <<= 32 - codeLen;
-
-	//convert bitcode
-	for(i = 0; i < codeLen; i++)
+	//failsafe
+	if(codeLen > 32)
 	{
-		if(bitCode & (uint32_t)((uint32_t)1 << 31))
+		return 0;
+	}
+	
+	i = codeLen;
+	
+	//convert bitcode
+	while(i--)
+	{
+		if(bitCode & 1)
 		{
 			//encode a one
 			destCode[i*2] = oneOntime;
@@ -186,7 +192,7 @@ uint8_t ir_genCode(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime, 
 			destCode[(i*2)+1] = zeroOfftime;
 		}
 		
-		bitCode <<= 1;
+		bitCode >>= 1;
 	}
 	
 	return (codeLen * 2) - 1;
