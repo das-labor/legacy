@@ -163,24 +163,27 @@ ISR(TIMER0_OVF_vect)
 //
 //the function will return the length of the generated
 //code, which is always bitcode length * 2
-uint8_t ir_genCode(uint16_t *destCode, ir_proto *ir_code, uint8_t bitCode, uint8_t codeLen)
+uint8_t ir_genCode(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime, uint16_t zeroOntime,  uint16_t zeroOfftime,uint32_t bitCode, uint8_t codeLen)
 {
 	uint8_t i;
+	
+	//pre-align bitcode
+	bitCode <<= 32 - codeLen;
 
 	//convert bitcode
 	for(i = 0; i < codeLen; i++)
 	{
-		if(bitCode & (1 << (codeLen-1)))
+		if(bitCode & (uint32_t)((uint32_t)1 << 31))
 		{
 			//encode a one
-			destCode[i*2] = ir_code->oneOntime;
-			destCode[(i*2)+1] = ir_code->oneOfftime;
+			destCode[i*2] = oneOntime;
+			destCode[(i*2)+1] = oneOfftime;
 		}
 		else
 		{
 			//encode a zero
-			destCode[i*2] = ir_code->zeroOntime;
-			destCode[(i*2)+1] = ir_code->zeroOfftime;
+			destCode[i*2] = zeroOntime;
+			destCode[(i*2)+1] = zeroOfftime;
 		}
 		
 		bitCode <<= 1;
@@ -231,13 +234,12 @@ void read_code_to_array(uint16_t *array, uint16_t *pgmData, uint8_t pos, uint8_t
 
 }
 
+//having these arrays global seems to solve the problem
+uint16_t code[128];
+uint8_t codeLen;
+	 
 int main(void)
 {	
-//	uint16_t teufelCode[24];
-//	uint8_t teufelLen;
-//	uint16_t NECCode[68];
-//	uint8_t NECLen;
-	
 	//system initialization
 	init();
 	
@@ -249,33 +251,25 @@ int main(void)
 	//this code is evil, as PT_ON & PT_OFF
 	//are actually four parameters disguised as two
 	//volume down = 010 100 010000
-//	teufelLen = ir_genCode(teufelCode, PT_ON, PT_OFF, 0b010100100000, 12);
+	codeLen = ir_genCode(code, PT_ON, PT_OFF, 0b010100100000, 12);
 	
 	//this macro generates nec codes automatically
-	//power 0001 0000 1100 1000 + 1110 0001 0001 1110
-	//hint: the manually defined test nec code has an additional trailing zero
-	//hint2: maximum bit length is 32
-//	NECLen = IR_GEN_NECEXT(NECCode, 0b00010000110010001110000100011110, 15);
-	
-	//NECLen = ir_genCode((NECCode + 2), PNEC_ON, PNEC_OFF, 0b0001000011001000, 15) + 2;
-
-	/*NECLen = 4;
-	NECCode[0] = PNEC_AGC_ON;
-	NECCode[1] = PNEC_AGC_OFF;
-	NECCode[2] = PNEC_AGC_ON;
-	NECCode[3] = PNEC_AGC_OFF;*/
-	
+	//power 0001 0000 1100 1000 + 1110 0001 0001 1110	
+	codeLen = IR_GEN_NECEXT(code, 0b00010000110010001110000100011110, 32);
+		
 	//test loop turns down volume
 	while(1)
 	{	
-		can_handler();
+		//can_handler();
+		
 		//remote control always sends the code twice with some delay
-//		ir_sendCode(ir_testTeufel2, 23);
+		//ir_sendCode(teufelCode, teufelLen);
+		
 		// repeat delay for custom protocol SIGNAL MUST BE REPEATED !!
-//		_delay_ms(40); // must be 35ms --- IMPORTANT 40ms are in real 35ms
-//		ir_sendCode(ir_testTeufel2, 23);
-//		_delay_ms(500);
-//		ir_sendCode(NECCode, NECLen);
-//		ir_sendCode(ir_test_nec, 67);
+		//_delay_ms(40); // must be 35ms --- IMPORTANT 40ms are in real 35ms
+		
+		ir_sendCode(code, codeLen);
+		
+		_delay_ms(500);
 	}
 }
