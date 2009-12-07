@@ -34,16 +34,20 @@
 
 //macro for generating extended nec encodings
 //x is the destination array, y is the input code, z is the bit count
-#define IR_GEN_NECEXT(x, y, z) (ir_genCode((uint16_t *)(x + 2 * sizeof(uint16_t)), PNEC_ON, PNEC_OFF, y, z) + 4); x[0] = PNEC_AGC_ON; x[1] = PNEC_AGC_OFF; x[z * 2 + 2] = (560 / IR_TICK_US)
+#define IR_GEN_NECEXT(x, y, z) \
+(ir_genCode(&x[2], PNEC_ON, PNEC_OFF, y, z) + 4); \
+x[0] = PNEC_AGC_ON; \
+x[1] = PNEC_AGC_OFF; \
+x[z * 2 + 2] = (560 / IR_TICK_US);
 
 
-typedef struct {
+/*typedef struct {
 uint16_t oneOntime;
 uint16_t oneOfftime;
 uint16_t zeroOntime;
 uint16_t zeroOfftime;
 
-} ir_proto;
+} ir_proto;*/
 
 
 
