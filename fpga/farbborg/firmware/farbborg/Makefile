@@ -57,8 +57,8 @@ image.srec: image image.lst
 	$(LM32_OBJCOPY) $(SEGMENTS) -O srec image image.srec
 
 sdcard: image.bin
-	mkdir -f $(PATH_SDCARD)/sys
-	cp image.bin $(PATH_SDCARD)/sys/firmware.bin
+	test -d "$(PATH_SDCARD)/sys" || mkdir "$(PATH_SDCARD)/sys"
+	cp image.bin "$(PATH_SDCARD)/sys/firmware.bin"
 
 # funzt leider nicht
 #	ifndef ($(PATH_SDCARD))
