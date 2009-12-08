@@ -41,8 +41,8 @@ int main(void)
 
 	DDRB &= ~_BV(PB2); // Eingang 
 	DDRD &= ~_BV(PD3); // Eingang 
-	PORTB |= _BV(PB2); // Pullup Taster vortrag
-	PORTD |= _BV(PD3); // Pullup Taster lounge
+//	PORTB |= _BV(PB2); // Pullup Taster vortrag
+//	PORTD |= _BV(PD3); // Pullup Taster lounge
 //	_delay_ms(1000);
 
 /*

@@ -116,8 +116,7 @@
 #define O_SW08_PORT (&(PORTD))
 #define O_SW09_PORT (&(PORTD))
 #define O_SW0A_PORT (&(PORTD))
-#define O_SW0B_PORT (&(PORTB))
-#define O_SW0C_PORT (&(PORTD))
+#define O_SW0B_PORT (&(PORTD))
 
 // PINs - uin8_t
 #define O_SW00_PIN (PC3)
@@ -131,8 +130,7 @@
 #define O_SW08_PIN (PD0)
 #define O_SW09_PIN (PD1)
 #define O_SW0A_PIN (PD2)
-#define O_SW0B_PIN (PB7)
-#define O_SW0C_PIN (PD4)
+#define O_SW0B_PIN (PD4)
 
 #define O_PWM00_PORT (&(OCR0A))
 #define O_PWM01_PORT (&(OCR0B))

@@ -19,8 +19,7 @@ static struct t_switch_parameter {
 	{ O_SW08_PORT , O_SW08_PIN},
 	{ O_SW09_PORT , O_SW09_PIN},
 	{ O_SW0A_PORT , O_SW0A_PIN},
-	{ O_SW0B_PORT , O_SW0B_PIN},
-	{ O_SW0C_PORT , O_SW0C_PIN}
+	{ O_SW0B_PORT , O_SW0B_PIN}
 };
 
 // das gleiche fuer die PWMs
