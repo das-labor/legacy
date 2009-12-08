@@ -28,17 +28,35 @@
 #include "can/lap.h"
 #include "lab-irkit.h"
 
-/*
- * IR codes are stored in an array of on/off pulse lengths.
- * As transmissions must always start with a one and consist
- * of alternating ones and zeroes, every even index in the
- * array will be a one-pulse and every odd array index
- * will be a zero-pulse.
- */
-
 //having these arrays global seems to solve problems
 uint16_t code[128];
 uint8_t codeLen;
+
+//these are the commando codes for the teufel system
+uint16_t teufelCodes[] =
+{
+	//volume down
+	0b010100010000,
+	//volume up
+	0b010100100000,
+	//mute
+	0b010010100000,
+	//main
+	0b010001100000,
+	//front
+	0b010001010000,
+	//rear
+	0b010001001000,
+	//side
+	0b010001000100,	
+	//sub
+	0b010010010000,
+	//center
+	0b010010001000,
+};
+
+//the length of the teufel code array
+#define TEUFEL_CODE_CNT (sizeof(teufelCodes) / sizeof(uint16_t))
 
 //message handler
 //(to be beautified [with lookup tables])
@@ -79,38 +97,29 @@ void can_handler()
 			{
 				//this is a message for the teufel system
 				case 0:
-					//see which code we need to send
-					switch (rx_msg->data[1])
+					//verify if command number is within bounds
+					if(rx_msg->data[1] < TEUFEL_CODE_CNT)
 					{
-						//volume down
-						case 0:	
-							codeLen = ir_genCode(code, PT_ON, PT_OFF, 0b010100010000, 12);
-							ir_sendCode(code, codeLen);
-							_delay_ms(40);
-							ir_sendCode(code, codeLen);
-							break;
+						//lookup command and generate the pulse length array
+						codeLen = ir_genCode(code, PT_ON, PT_OFF, teufelCodes[rx_msg->data[1]], 12);
 
-						//volume up
-						case 1:
-							codeLen = ir_genCode(code, PT_ON, PT_OFF, 0b010100100000, 12);
-							ir_sendCode(code, codeLen);
-							_delay_ms(40);
-							ir_sendCode(code, codeLen);
-
-						default:
-							break;
+						//send code and repeat it after 35ms
+						//to please the teufel system
+						ir_sendCode(code, codeLen);
+						_delay_ms(40); //is in reality 35ms
+						ir_sendCode(code, codeLen);						
 					}
 					break;
 
 				//this is a message for the acer beamer
 				case 1:
 					//see which code we need to send
-					switch (rx_msg->data[1])
+					switch(rx_msg->data[1])
 					{
 						//power
 						case 0:
 							codeLen = ir_genENEC(code, 0b00010000110010001110000100011110, 32);
-							ir_sendCode(code, codeLen);
+							ir_sendCode(code, codeLen);						
 							break;
 
 						default:
@@ -121,6 +130,11 @@ void can_handler()
 				default:
 					break;
 			}
+
+			//debug ack
+			msg.addr_src = 0x10;
+			msg.addr_dst = rx_msg->addr_src;
+			can_transmit(&msg);			
 		}
 	}
 }
