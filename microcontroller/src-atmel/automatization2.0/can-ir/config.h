@@ -6,8 +6,6 @@
 #define MC_MOSI    PB3
 #define MC_CLK     PB5
 
-
-
 #define MCP_CS        PB0
 #define MCP_CMD_PORT  PORTB
 

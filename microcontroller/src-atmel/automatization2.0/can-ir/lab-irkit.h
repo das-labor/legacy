@@ -78,6 +78,7 @@ void ir_freqInit(void);
 void ir_disable(void);
 uint8_t ir_genCode(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime, uint16_t zeroOntime, uint16_t zeroOfftime, uint32_t bitCode, uint8_t codeLen);
 void ir_sendCode(uint16_t *code, uint8_t codeLen);
+void ir_init(void);
 
 //work in progress
 /*typedef struct {
