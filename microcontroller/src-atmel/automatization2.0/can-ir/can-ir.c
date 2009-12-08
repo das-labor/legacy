@@ -18,13 +18,14 @@
 //      MA 02110-1301, USA.
 
 #include <avr/io.h>
+#include <avr/wdt.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <avr/pgmspace.h>
 
 #include "can/can.h"
 #include "can/spi.h"
-#include "can/can_handler.h"
+#include "can/lap.h"
 #include "lab-irkit.h"
 
 /*
@@ -35,12 +36,94 @@
  * will be a zero-pulse.
  */
 
-/*
-//teufel test code
-//mute = 010 010 100 000
-uint16_t ir_testTeufel[] =
-{PT_OFF, PT_ON, PT_OFF, PT_OFF, PT_ON, PT_OFF, PT_ON, PT_OFF, PT_OFF, PT_OFF, PT_OFF, PT_OFF};
-*/
+//having these arrays global seems to solve problems
+uint16_t code[128];
+uint8_t codeLen;
+
+//message handler
+//(to be beautified [with lookup tables])
+void can_handler()
+{
+	static can_message msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
+	can_message *rx_msg;
+
+	//get next canmessage in rx_msg that is destined for us
+	if(((rx_msg = can_get_nb()) != 0) && (rx_msg->addr_dst == 0x10))
+	{
+		//handle management functions
+		if(rx_msg->port_dst == PORT_MGT)
+		{
+			switch(rx_msg->data[0])
+			{
+				case FKT_MGT_RESET:
+					TCCR2 = 0;
+					wdt_enable(0);
+					while(1);
+		
+				case FKT_MGT_PING:
+
+					msg.addr_src = 0x10;
+					msg.addr_dst = rx_msg->addr_src;
+					can_transmit(&msg);
+					break;
+
+				default:
+					break;
+			}
+		}
+		//handle ir commands
+		else if(rx_msg->port_dst == PORT_REMOTE)
+		{
+			//switch the remote device type
+			switch(rx_msg->data[0])
+			{
+				//this is a message for the teufel system
+				case 0:
+					//see which code we need to send
+					switch (rx_msg->data[1])
+					{
+						//volume down
+						case 0:	
+							codeLen = ir_genCode(code, PT_ON, PT_OFF, 0b010100010000, 12);
+							ir_sendCode(code, codeLen);
+							_delay_ms(40);
+							ir_sendCode(code, codeLen);
+							break;
+
+						//volume up
+						case 1:
+							codeLen = ir_genCode(code, PT_ON, PT_OFF, 0b010100100000, 12);
+							ir_sendCode(code, codeLen);
+							_delay_ms(40);
+							ir_sendCode(code, codeLen);
+
+						default:
+							break;
+					}
+					break;
+
+				//this is a message for the acer beamer
+				case 1:
+					//see which code we need to send
+					switch (rx_msg->data[1])
+					{
+						//power
+						case 0:
+							codeLen = ir_genENEC(code, 0b00010000110010001110000100011110, 32);
+							ir_sendCode(code, codeLen);
+							break;
+
+						default:
+							break;
+					}
+					break;
+
+				default:
+					break;
+			}
+		}
+	}
+}
 
 //system initialization
 void init()
@@ -48,64 +131,27 @@ void init()
 	//disable analog comparator (to save power)
 	ACSR |= _BV(ACD);
 
-	//disable ir code generator
-	ir_disable();
+	//initialize ir subsystem
+	ir_init();
+
+	//initialize spi port
+	spi_init();
 	
-	//enable frequency generator
-	ir_freqInit();
-	
-	//enable our tick counter / ir code generator
-	ir_timer0Init();
+	//initialize can communication
+	can_init();
 	
 	//turn on interrupts
 	sei();
 }
-
-void read_code_to_array(uint16_t *array, uint16_t *pgmData, uint8_t pos, uint8_t len)
-{
-	uint8_t i;
-	for (i = pos; pos < len; i++)
-		array[i] = pgm_read_word(pgmData++);
-
-
-}
-
-//having these arrays global seems to solve the problem
-uint16_t code[128];
-uint8_t codeLen;
 	 
 int main(void)
 {	
 	//system initialization
 	init();
-	
-	spi_init();
-	
-	can_init();
-	
-	//generate teufel code automatically
-	//this code is evil, as PT_ON & PT_OFF
-	//are actually four parameters disguised as two
-	//volume down = 010 100 010000
-	codeLen = ir_genCode(code, PT_ON, PT_OFF, 0b010100100000, 12);
-	
-	//this macro generates nec codes automatically
-	//power 0001 0000 1100 1000 + 1110 0001 0001 1110	
-	codeLen = ir_genENEC(code, 0b00010000110010001110000100011110, 32);
 		
-	//test loop turns down volume
+	//the main loop continuously handles can messages
 	while(1)
 	{	
-		//can_handler();
-		
-		//remote control always sends the code twice with some delay
-		//ir_sendCode(teufelCode, teufelLen);
-		
-		// repeat delay for custom protocol SIGNAL MUST BE REPEATED !!
-		//_delay_ms(40); // must be 35ms --- IMPORTANT 40ms are in real 35ms
-		
-		ir_sendCode(code, codeLen);
-		
-		_delay_ms(500);
+		can_handler();
 	}
 }

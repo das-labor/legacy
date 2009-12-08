@@ -205,3 +205,16 @@ void ir_sendCode(uint16_t *code, uint8_t codeLen)
 	//enable code sending by setting the index to zero
 	ir_curCodeIdx = 0;
 }
+
+//all-in-one initialization
+void ir_init(void)
+{
+	//disable ir code generator
+	ir_disable();
+	
+	//enable frequency generator
+	ir_freqInit();
+	
+	//enable our tick counter / ir code generator
+	ir_timer0Init();
+}
