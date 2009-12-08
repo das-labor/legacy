@@ -1,4 +1,4 @@
-OBJ = can-ir.o can/can.o can/can_handler.o can/spi.o
+OBJ = can-ir.o lab-irkit.o can/can.o can/can_handler.o can/spi.o
 
 # Default values
 OUT           ?= image
@@ -23,7 +23,7 @@ ERASECMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -e
 all: $(OUT).elf lst text eeprom
 
 clean:
-	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec
+	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec can/*.o
 	rm -rf *.srec $(OUT).elf
 
 flash: $(OUT).hex
