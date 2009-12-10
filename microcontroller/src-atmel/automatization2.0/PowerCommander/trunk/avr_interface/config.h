@@ -3,16 +3,15 @@
 
 
 // SPI
-#define MC_MOSI    PB3
-#define MC_CLK     PB5
-
+#define MC_MOSI    PB5
+#define MC_CLK     PB7
 
 
 #define MCP_CS        PB4
 #define MCP_CMD_PORT  PORTB
 
-#define SPI_REG_PIN_MCP_INT  PORTD
-#define SPI_PIN_MCP_INT      PIN2
+#define SPI_REG_PIN_MCP_INT  PIND
+#define SPI_PIN_MCP_INT      PD2
 //#define CAN_INTERRUPT
 
 
