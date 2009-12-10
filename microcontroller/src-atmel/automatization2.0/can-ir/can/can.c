@@ -367,7 +367,7 @@ can_message * can_get_nb()
 	} else
 	{
 		unsigned char status = mcp_status();
-		
+
 		if (status & 0x01)
 		{
 			//So the MCP Generates an RX Interrupt
