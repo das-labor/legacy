@@ -68,6 +68,7 @@ void can_handler()
 	//get next canmessage in rx_msg that is destined for us
 	if(((rx_msg = can_get_nb()) != 0) && (rx_msg->addr_dst == 0x10))
 	{
+		PORTD |= _BV(PD7);
 		//handle management functions
 		if(rx_msg->port_dst == PORT_MGT)
 		{
@@ -145,6 +146,12 @@ void init()
 	//disable analog comparator (to save power)
 	ACSR |= _BV(ACD);
 
+	//debug LED output
+	DDRD |= _BV(PD7);
+
+	//ir LED output
+	DDRB |= _BV(PB1);
+
 	//initialize ir subsystem
 	ir_init();
 
@@ -164,8 +171,9 @@ int main(void)
 	init();
 		
 	//the main loop continuously handles can messages
-	while(1)
+	while (1)
 	{	
 		can_handler();
+		PORTD &= ~_BV(PD7);
 	}
 }
