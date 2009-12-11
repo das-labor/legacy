@@ -21,7 +21,8 @@ class LaTweet
 		proxy = ENV['HTTP_PROXY']
 		client  = HTTPAccess2::Client.new(proxy)
 		txt   = client.get("#{SERVICEURL}#{url}").content
-		return HTMLEntities.decode_entities(txt)
+		url = HTMLEntities.decode_entities(txt)
+                return url if !url.index("Error")
 	end
 
 	def post(txt)
