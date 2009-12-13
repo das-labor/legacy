@@ -66,13 +66,13 @@ void can_handler()
 	can_message *rx_msg;
 
 	//get next canmessage in rx_msg that is destined for us
-	if(((rx_msg = can_get_nb()) != 0) && (rx_msg->addr_dst == 0x10))
+	if (((rx_msg = can_get_nb()) != 0) && (rx_msg->addr_dst == 0x10))
 	{
 		PORTD |= _BV(PD7);
 		//handle management functions
-		if(rx_msg->port_dst == PORT_MGT)
+		if (rx_msg->port_dst == PORT_MGT)
 		{
-			switch(rx_msg->data[0])
+			switch (rx_msg->data[0])
 			{
 				case FKT_MGT_RESET:
 					TCCR2 = 0;
@@ -91,15 +91,15 @@ void can_handler()
 			}
 		}
 		//handle ir commands
-		else if(rx_msg->port_dst == PORT_REMOTE)
+		else if (rx_msg->port_dst == PORT_REMOTE)
 		{
 			//switch the remote device type
-			switch(rx_msg->data[0])
+			switch (rx_msg->data[0])
 			{
 				//this is a message for the teufel system
 				case 0:
 					//verify if command number is within bounds
-					if(rx_msg->data[1] < TEUFEL_CODE_CNT)
+					if (rx_msg->data[1] < TEUFEL_CODE_CNT)
 					{
 						//lookup command and generate the pulse length array
 						codeLen = ir_genCode(code, PT_ON, PT_OFF, teufelCodes[rx_msg->data[1]], 12);
@@ -108,19 +108,19 @@ void can_handler()
 						//to please the teufel system
 						ir_sendCode(code, codeLen);
 						_delay_ms(40); //is in reality 35ms
-						ir_sendCode(code, codeLen);						
+						ir_sendCode(code, codeLen);
 					}
 					break;
 
 				//this is a message for the acer beamer
 				case 1:
 					//see which code we need to send
-					switch(rx_msg->data[1])
+					switch (rx_msg->data[1])
 					{
 						//power
 						case 0:
 							codeLen = ir_genENEC(code, 0b00010000110010001110000100011110, 32);
-							ir_sendCode(code, codeLen);						
+							ir_sendCode(code, codeLen);	
 							break;
 
 						default:
@@ -130,12 +130,7 @@ void can_handler()
 
 				default:
 					break;
-			}
-
-			//debug ack
-			msg.addr_src = 0x10;
-			msg.addr_dst = rx_msg->addr_src;
-			can_transmit(&msg);			
+			}		
 		}
 	}
 }
