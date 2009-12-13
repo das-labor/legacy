@@ -39,11 +39,7 @@ volatile uint8_t ir_curCodeIdx;
 //ir tick counter
 volatile uint16_t ir_tickCnt;
 
-//set OC1B to input
-#define FREQGEN_OFF() DDRB &= ~(_BV(1))
 
-//set OC1B to output and off, reset timer count
-#define FREQGEN_ON() PORTB &= ~(_BV(1)); TCNT1 = 0; DDRB |= _BV(1);
 
 
 //setup timer interrupt for tick counting
@@ -76,8 +72,8 @@ void ir_freqInit(void)
 	//so this is 38.095KHz
 	OCR1A = 210;
 
-	//toggle OC1A on match
-	TCCR1A = _BV(COM1A0);
+	//toggle OC1A on match  - not needet here only doku
+	//TCCR1A = _BV(COM1A0);
 	
 	//reset counter
 	TCNT1 = 0;
@@ -209,6 +205,10 @@ void ir_sendCode(uint16_t *code, uint8_t codeLen)
 //all-in-one initialization
 void ir_init(void)
 {
+	//ir LED output - PNP tansistor needs high output or led die - overcurrent driven
+	DDRB |= _BV(PB1);
+	PORTB |= _BV(PB1);
+
 	//disable ir code generator
 	ir_disable();
 	

@@ -66,11 +66,11 @@
 #define IR_GEN_NECEXT(x, y, z) (ir_genCode((uint16_t *)(x+4), PNEC_ON, PNEC_OFF, y, z) + 4); x[0] = PNEC_AGC_ON; x[1] = PNEC_AGC_OFF
 
 
-//set OC1B to input
-#define FREQGEN_OFF() DDRB &= ~(_BV(1))
+// release timer unit from pin
+#define FREQGEN_OFF() TCCR1A = 0;
 
-//set OC1B to output and off, reset timer count
-#define FREQGEN_ON() PORTB &= ~(_BV(1)); TCNT1 = 0; DDRB |= _BV(1);
+// connect timer to pin, reset timer count
+#define FREQGEN_ON() TCNT1 = 0; TCCR1A = _BV(COM1A0);
 
 //function prototypes
 void ir_timer0Init(void);

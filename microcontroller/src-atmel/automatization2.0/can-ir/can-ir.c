@@ -144,9 +144,6 @@ void init()
 	//debug LED output
 	DDRD |= _BV(PD7);
 
-	//ir LED output
-	DDRB |= _BV(PB1);
-
 	//initialize ir subsystem
 	ir_init();
 
