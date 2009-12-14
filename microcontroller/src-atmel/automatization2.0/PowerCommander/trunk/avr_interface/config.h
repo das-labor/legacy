@@ -34,19 +34,5 @@
 #	define SPI_PIN_MOSI PB5
 #endif
 
-/* ATMega32 */
-#define MCP_INT_VEC INT0_vect
-#define MCP_INT_MASK INT0
-#define MCP_INT_REG GICR
-
-/* ATMega 644 */
-/*
-#define MCP_INT_VEC INT0_vect
-#define MCP_INT_MASK INT0
-#define MCP_INT_REG EIMSK
-*/
-
-//Number of Messages in Can TX Buffer
-#define TX_SIZE 10
 
 #endif // ifndef CONFIG_H
