@@ -86,3 +86,11 @@ void twi_send(uint8_t *p)
 	}
 }
 
+void twi_send(uint8_t *p)
+{
+	static can_message msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
+
+	
+	can_transmit(&msg);
+}
+
