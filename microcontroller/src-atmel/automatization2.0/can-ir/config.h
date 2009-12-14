@@ -14,7 +14,6 @@
 //#define CAN_INTERRUPT
 
 
-//#define F_CPU 16000000UL
 #define F_MCP F_CPU
 
 
@@ -22,21 +21,15 @@
 
 #ifdef MEGA8
 #	define SPI_PORT PORTB
-#	define SPI_HARDWARE
 #	define SPI_DDR DDRB
 #	define SPI_PIN_SCK PB5
 #	define SPI_PIN_MOSI PB3
 #else
 #	define SPI_PORT PORTB
-#	define SPI_HARDWARE
 #	define SPI_DDR DDRB
 #	define SPI_PIN_SCK PB7
 #	define SPI_PIN_MOSI PB5
 #endif
-
-//Number of Messages in Can TX Buffer
-#define TX_SIZE 10
-
 
 
 #endif // ifndef CONFIG_H
