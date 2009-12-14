@@ -21,7 +21,6 @@
 #include <avr/wdt.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
-#include <avr/pgmspace.h>
 
 #include "can/can.h"
 #include "can/spi.h"
