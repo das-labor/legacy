@@ -1,15 +1,12 @@
 /* -*- Mode: C; tab-width: 2 -*- */
 
-//#include <util/delay.h>
 
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
-#include <avr/pgmspace.h>
-#include "config.h"
 
-#include "switch.h"
+#include "config.h"
 
 #include "twi_master/twi_master.h"
 #include "can/can.h"
@@ -17,6 +14,7 @@
 #include "can/spi.h"
 #include "can/lap.h"
 
+#include "switch.h"
 
 void init(void)
 {

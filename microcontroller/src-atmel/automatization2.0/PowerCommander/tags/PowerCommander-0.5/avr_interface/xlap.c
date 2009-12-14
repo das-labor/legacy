@@ -18,7 +18,7 @@
 #include "queue.h"
 #include "PowerCommander.h"
 
-#define SLAVE 15
+#define SLAVE_ADDR 15
 
 uint8_t myaddr;
 
@@ -69,7 +69,7 @@ AVRX_GCC_TASKDEF(i2ccom_in, 50, 3)
 		*/
 		p = AvrXWaitMessage(&i2cQueue_in);
 		AvrXDelay(&i2cResponseTimer, 10); // 10ms auf den ctrl warten bevor wir lesen
-		if (!TWIM_Start (SLAVE, TWIM_READ))
+		if (!TWIM_Start (SLAVE_ADDR, TWIM_READ))
 		{
 			TWIM_Stop();
 			for (i = 0; i < CAN_OUTDATACOUNT; i++)
@@ -135,7 +135,7 @@ AVRX_GCC_TASKDEF(i2ccom_out, 50, 3)
 		/*
 			wenn es da versuchen wir die daten an den ctrl zu senden
 		*/
-		if (!TWIM_Start(SLAVE, TWIM_WRITE))
+		if (!TWIM_Start(SLAVE_ADDR, TWIM_WRITE))
 		{
 			TWIM_Stop();
 		}
