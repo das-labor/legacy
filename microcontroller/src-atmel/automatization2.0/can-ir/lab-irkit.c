@@ -205,9 +205,8 @@ void ir_sendCode(uint16_t *code, uint8_t codeLen)
 //all-in-one initialization
 void ir_init(void)
 {
-	//ir LED output - PNP tansistor needs high output or led die - overcurrent driven
+	//ir LED output - NPN tansistor needs low output or LED will die - overcurrent driven
 	DDRB |= _BV(PB1);
-	PORTB |= _BV(PB1);
 
 	//disable ir code generator
 	ir_disable();

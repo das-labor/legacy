@@ -111,7 +111,6 @@ void can_handler()
 						ir_sendCode(code, codeLen);
 					}
 					break;
-
 				//this is a message for the acer beamer
 				case 1:
 					//see which code we need to send
@@ -120,7 +119,35 @@ void can_handler()
 						//power
 						case 0:
 							codeLen = ir_genENEC(code, 0b00010000110010001110000100011110, 32);
-							ir_sendCode(code, codeLen);	
+							ir_sendCode(code, codeLen);
+							break;
+						case 1: // source
+							codeLen = ir_genENEC(code, 0b00010000110010000011000111001110, 32);
+							ir_sendCode(code, codeLen);
+							break;
+						case 2: // vga
+							codeLen = ir_genENEC(code, 0b00010000110010001010011001011001, 32);
+							ir_sendCode(code, codeLen);
+							break;
+						case 3: // dvi
+							codeLen = ir_genENEC(code, 0b00010000110010000101011010101001, 32);
+							ir_sendCode(code, codeLen);
+							break;
+						case 4: // s-video
+							codeLen = ir_genENEC(code, 0b00010000110010000001011011101001, 32);
+							ir_sendCode(code, codeLen);
+							break;
+						case 5: // video
+							codeLen = ir_genENEC(code, 0b00010000110010001110011000011001, 32);
+							ir_sendCode(code, codeLen);
+							break;
+						case 6: // component
+							codeLen = ir_genENEC(code, 0b00010000110010000110011010011001, 32);
+							ir_sendCode(code, codeLen);
+							break;
+						case 7: // blank
+							codeLen = ir_genENEC(code, 0b00010000110010001111000100001110, 32);
+							ir_sendCode(code, codeLen);
 							break;
 
 						default:
@@ -143,6 +170,9 @@ void init()
 
 	//debug LED output
 	DDRD |= _BV(PD7);
+	
+	// Must be output else SPI will fail
+	DDRB |= _BV(PB2);
 
 	//initialize ir subsystem
 	ir_init();
