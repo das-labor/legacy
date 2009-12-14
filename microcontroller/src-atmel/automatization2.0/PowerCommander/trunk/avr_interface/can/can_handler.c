@@ -18,8 +18,9 @@ extern void can_handler()
 	can_message *rx_msg;
 	if ((rx_msg = can_get_nb()) != 0)			//get next canmessage in rx_msg
 	{
-		if ((rx_msg->addr_dst == 0x02))
+		if ((rx_msg->addr_dst == 0x03))
 		{
+			PORTA |= _BV(PA4);
 			if (rx_msg->port_dst == PORT_MGT)
 			{
 				switch (rx_msg->data[0])
@@ -31,7 +32,7 @@ extern void can_handler()
 			
 				case FKT_MGT_PING:
 
-					msg.addr_src = 0x10;
+					msg.addr_src = 0x03;
 					msg.addr_dst = rx_msg->addr_src;
 					can_transmit(&msg);
 					break;
@@ -47,7 +48,8 @@ extern void can_handler()
 					( (rx_msg->data[1] == SWA_HS) ||
 					(rx_msg->data[1] == SWA_STECKDOSEN) ||
 					(rx_msg->data[1] == SWA_KLO))))
-				{}
+				{
+				}
 
 				/*
 					gehe davon aus, dass genau so viele daten die
@@ -56,7 +58,8 @@ extern void can_handler()
 					XXX - check mit rx_msg->cmd und data[i] was steht wirklich wo
 				*/
 				else
-				{	twi_send(rx_msg->data);
+				{
+					twi_send(rx_msg->data);
 				}
 			}
 		}

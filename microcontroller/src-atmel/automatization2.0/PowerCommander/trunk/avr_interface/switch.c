@@ -74,8 +74,8 @@ void switch_handler()
 						_delay_ms(1000);
 			stat_haupt = 0;
 
-			PORTA |= _BV(PA3); // red
-			PORTA &= ~_BV(PA2); // green
+//			PORTA |= _BV(PA3); // red
+//			PORTA &= ~_BV(PA2); // green
 		}
 		if ((PINA & _BV(PA0)) && stat_haupt == 0)
 		{
@@ -88,8 +88,8 @@ void switch_handler()
 						_delay_ms(1000);
 			stat_haupt = 1;
 
-			PORTA |= _BV(PA2); // green
-			PORTA &= ~_BV(PA3); // red
+//			PORTA |= _BV(PA2); // green
+//			PORTA &= ~_BV(PA3); // red
 		}
 }
 

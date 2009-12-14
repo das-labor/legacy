@@ -182,7 +182,7 @@ unsigned char mcp_read(unsigned char reg)
 
 
 /* Management */
-void can_setmode( can_mode_t mode )
+void can_setmode(can_mode_t mode)
 {
 	unsigned char val = mode << 5;  
 	val |= 0x04;  // CLKEN
@@ -258,7 +258,7 @@ void can_init()
 	// configure IRQ
 	// this only configures the INT Output of the mcp2515, not the int on the Atmel
 	mcp_write(CANINTE, (1<<RX0IE));
-	mcp_bitmod(CANINTF, (1<<RX0IF), 0x00);
+
 	can_setfilter();
 	can_setmode(normal);
 
@@ -367,10 +367,10 @@ can_message * can_get_nb()
 	} else
 	{
 		unsigned char status = mcp_status();
-			
+
 		if (status & 0x01)
 		{
-			PORTA |= _BV(PA4);
+
 			//So the MCP Generates an RX Interrupt
 			message_fetch(&RX_MESSAGE);
 
