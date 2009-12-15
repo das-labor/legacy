@@ -9,23 +9,25 @@
 #include "can/can_handler.h"
 #include "../include/PowerCommander.h"
 
-struct {
-	unsigned hauptschalter:1; // 1 Bit für bStatus_1
-	unsigned vortrag:1; // 1 Bit für bStatus_2
-	unsigned lounge:1; // Und hier noch mal ein Bit
-	unsigned power_ok:1;    // Dieses Feld ist 2 Bits breit
-	unsigned rcd_server:1;
-	unsigned rcd_power:1;
-	unsigned rcd_licht:1;
-} stat_switches;
+union {
+		unsigned hauptschalter:1; // 1 Bit für bStatus_1
+		unsigned vortrag:1; // 1 Bit für bStatus_2
+		unsigned lounge:1; // Und hier noch mal ein Bit
+		unsigned power_ok:1;    // Dieses Feld ist 2 Bits breit
+		unsigned rcd_server:1;
+		unsigned rcd_power:1;
+		unsigned rcd_licht:1;
+		unsigned empty:1;
 
+	uint8_t bla;
+} stat_switches;
 
 
 
 
 void switch_handler()
 {
-
+	
 	static uint8_t outdata[8];
 // Vortragsraum
 	if ((!(PINB & _BV(PB2))) && stat_switches.vortrag)
@@ -39,7 +41,7 @@ void switch_handler()
 		stat_switches.vortrag = 0;
 		_delay_ms(200);
 	}
-	if ((!(PINB & _BV(PB2))) && (stat_switches.vortrag == 0))
+	if ((!(PINB & _BV(PB2))) && !stat_switches.vortrag)
 	{
 		outdata[0]=C_SW;
 		outdata[1]=SWL_LOUNGE;
@@ -129,6 +131,10 @@ void switch_handler()
 	}
 	if ((PIND & _BV(PD6)) && !stat_switches.rcd_server)
 	{
+		uint8_t msg[] = {1, 0};
+		msg[1] =  stat_switches.bla;
+		can_send(msg);
+		
 		stat_switches.rcd_server = 1;
 
 		PORTA |= _BV(PA2); // green
