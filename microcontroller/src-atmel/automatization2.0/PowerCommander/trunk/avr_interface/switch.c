@@ -78,29 +78,38 @@ void switch_handler()
 // Hauptschalter
 	if (!(PINA & _BV(PA0)) && stat_switches.hauptschalter == 1)
 	{
+		stat_switches.hauptschalter = 0;
+		
+		twi_send(outdata);
+		uint8_t msg[] = {1, 0};
+		msg[1] =  stat_switches.bla;
+		can_send(msg);
+		
 		outdata[0]=C_VIRT;
 		outdata[1]=VIRT_POWER;
 		outdata[2]=F_SW_OFF;
 		outdata[3]=0x00;
 		
 		twi_send(outdata);
-		stat_switches.hauptschalter = 0;
 
 		PORTA |= _BV(PA3); // red
 		PORTA &= ~_BV(PA2); // green
 		_delay_ms(500);
 	}
-	if ((PINA & _BV(PA0)) && (stat_switches.hauptschalter == 0))
+	if ((PINA & _BV(PA0)) && !(stat_switches.hauptschalter))
 	{
+		stat_switches.hauptschalter = 1;
+		
+		twi_send(outdata);
+		uint8_t msg[] = {1, 0};
+		msg[1] =  stat_switches.bla;
+		can_send(msg);
+		
 		outdata[0]=C_VIRT;
 		outdata[1]=VIRT_POWER;
 		outdata[2]=F_SW_ON;
 		outdata[3]=0x00;
 		
-		twi_send(outdata);
-
-		stat_switches.hauptschalter = 1;
-
 		PORTA |= _BV(PA2); // green
 		PORTA &= ~_BV(PA3); // red
 		_delay_ms(500);

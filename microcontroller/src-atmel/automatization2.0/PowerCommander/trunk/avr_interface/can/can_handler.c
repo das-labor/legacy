@@ -88,7 +88,7 @@ void twi_send(uint8_t *p)
 
 void can_send(uint8_t *p)
 {
-	static can_message msg = {0x02, 0, 0x02, 0x02, 4, {}};
+	static can_message msg = {0x02, 0x00, 0x00, 0x01, 2, {0}};
 	uint8_t i;
 	for (i = 0; i < 3; i++)
 		msg.data[i] = p[i];
