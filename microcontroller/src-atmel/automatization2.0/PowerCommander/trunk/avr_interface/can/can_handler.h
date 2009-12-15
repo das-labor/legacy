@@ -5,4 +5,6 @@ extern void can_handler();
 
 extern void twi_send(uint8_t *p);
 
+void can_send(uint8_t *p);
+
 #endif // ifndef CAN_HANDLER
