@@ -56,7 +56,6 @@ ISR(TIMER1_OVF_vect)
 						outdata[2]=F_SW_TOGGLE;
 						outdata[3]=0x00;
 						twi_send(outdata);
-				
 						tastercounter_vortrag = 0;
 			}
 		}
@@ -69,7 +68,6 @@ ISR(TIMER1_OVF_vect)
 						outdata[2]=F_SW_TOGGLE;
 						outdata[3]=0x00;
 						twi_send(outdata);
-				
 						tastercounter_lounge = 0;
 			}
 		}
@@ -99,8 +97,9 @@ void init(void)
 	DDRB &= ~_BV(PB2); // Eingang Lounge Taster
 	DDRD &= ~_BV(PD3); // Eingang Vortrag Taster
 	
-	PORTB |= _BV(PB2);
-	PORTD |= _BV(PD3);
+	// wird auf dem dev board gebraucht
+//	PORTB |= _BV(PB2);
+//	PORTD |= _BV(PD3);
 
 /*
 ** Initiate TWI Master Interface with bitrate of 100000 Hz
