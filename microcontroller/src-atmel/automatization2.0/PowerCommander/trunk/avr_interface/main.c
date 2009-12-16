@@ -72,7 +72,8 @@ ISR(TIMER1_OVF_vect)
 			}
 		}
 	}
-	 
+	if ( (timing_counter.tickscounter & 0x01FF) == 0) // alle 1024 ticks ... ca 1/2 sec
+	{}
 	// ueberlaeufe sind ok!
 	
 	tickscounter++;

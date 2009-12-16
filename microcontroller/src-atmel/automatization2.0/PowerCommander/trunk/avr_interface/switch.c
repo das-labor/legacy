@@ -12,13 +12,10 @@
 union {
 	struct {
 		uint8_t hauptschalter:1; // 1 Bit für bStatus_1
-		uint8_t vortrag:1; // 1 Bit für bStatus_2
-		uint8_t lounge:1; // Und hier noch mal ein Bit
 		uint8_t power_ok:1;    // Dieses Feld ist 2 Bits breit
 		uint8_t rcd_server:1;
 		uint8_t rcd_power:1;
 		uint8_t rcd_licht:1;
-		uint8_t empty:1;
 	};
 	uint8_t bla;
 } stat_switches;
@@ -30,57 +27,7 @@ void switch_handler()
 {
 	
 	static uint8_t outdata[8];
-// Vortragsraum
-
-/*
-	if ((!(PINB & _BV(PB2))) && stat_switches.vortrag)
-	{
-		stat_switches.vortrag = 0;
-		outdata[0]=C_VIRT;
-		outdata[1]=VIRT_VORTRAG;
-		outdata[2]=F_SW_OFF;
-		outdata[3]=0x00;
-		
-		twi_send(outdata);
-
-		_delay_ms(200);
-	}
-	if (((PINB & _BV(PB2))) && stat_switches.vortrag == 0)
-	{
-		stat_switches.vortrag = 1;
-		outdata[0]=C_VIRT;
-		outdata[1]=VIRT_VORTRAG;
-		outdata[2]=F_SW_ON;
-		outdata[3]=0x00;
-		
-		twi_send(outdata);
-
-		_delay_ms(200);
-	}
-// Lounge
-	if ((!(PIND & _BV(PD3))) && stat_switches.lounge)
-	{
-		stat_switches.lounge = 0;
-		outdata[0]=C_SW;
-		outdata[1]=SWL_LOUNGE;
-		outdata[2]=F_SW_OFF;
-		outdata[3]=0x00;
-		twi_send(outdata);
-
-		_delay_ms(200);
-	}
-	if (((PIND & _BV(PD3))) && (stat_switches.lounge == 0))
-	{
-		stat_switches.lounge = 1;
-		outdata[0]=C_SW;
-		outdata[1]=SWL_LOUNGE;
-		outdata[2]=F_SW_ON;
-		outdata[3]=0x00;
-		twi_send(outdata);
-
-		_delay_ms(200);
-	}
-	*/
+	
 // Hauptschalter
 	if (!(PINA & _BV(PA0)) && stat_switches.hauptschalter)
 	{
