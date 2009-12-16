@@ -21,11 +21,11 @@
 
 static uint16_t tickscounter;
 static uint8_t tastercounter_vortrag;
-static uint8_t taster_vortrag_last;
+static uint8_t tastercounter_lounge;
 static uint8_t outdata[4];
 
 
-ISR(TIMER0_OVF_vect)
+ISR(TIMER1_OVF_vect)
 {
 	
 	//	andere interrupts aus!
@@ -37,20 +37,45 @@ ISR(TIMER0_OVF_vect)
 		// getan hat, dann wurde er los gelassen. Wir koennen den 
 		// Counter fuer die eingaben auf null setzen
 
-	if ((tickscounter & 0x001F) == 0) { // alle 32 ticks ... 0.032 sekunden
+	if ((tickscounter & 0x001F) == 0) // alle 32 ticks ... 0.032 sekunden
+	{
 		if (PINB & _BV(PB2))
+		{
 			tastercounter_vortrag++;
-		if (tastercounter_vortrag != 0) {
-			if (!(PINB & _BV(PB2))) {
+		}
+		if (PIND & _BV(PD3))
+		{
+			tastercounter_lounge++;
+		}
+		if (tastercounter_vortrag != 0)
+		{
+			if (!(PINB & _BV(PB2)))
+			{
 
 						outdata[0]=C_VIRT;
 						outdata[1]=VIRT_VORTRAG;
-						outdata[2]=F_SW_OFF;
+						outdata[2]=F_SW_TOGGLE;
 						outdata[3]=0x00;
 						twi_send(outdata);
 				
 						tastercounter_vortrag = 0;
-				//timing_counter.tastercounter_vortrag_last = 0;
+
+			} else {
+
+			}
+		}
+		if (tastercounter_lounge != 0)
+		{
+			if (!(PIND & _BV(PD3)))
+			{
+						outdata[0]=C_SW;
+						outdata[1]=SWL_LOUNGE;
+						outdata[2]=F_SW_TOGGLE;
+						outdata[3]=0x00;
+						twi_send(outdata);
+				
+						tastercounter_lounge = 0;
+
 			} else {
 
 			}
@@ -106,7 +131,7 @@ void init(void)
 	OCR1A = 0;   // pwm timer compare target
 	OCR1B = 0;   // pwm timer compare target
 	
-	TIMSK |= _BV(TOIE0);							// Enable Timer0 Overflow Interrupt
+	TIMSK |= _BV(TOIE1);							// Enable Timer1 Overflow Interrupt
 	
 	//turn on interrupts
 	sei();
