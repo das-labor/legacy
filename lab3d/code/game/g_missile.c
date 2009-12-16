@@ -611,7 +611,7 @@ gentity_t *fire_foam (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->splashDamage = 0;
 	bolt->splashRadius = 0;
 	bolt->methodOfDeath = MOD_FOAMGUN;
-	bolt->splashMethodOfDeath = MOD_GRENADE_SPLASH;
+	bolt->splashMethodOfDeath = MOD_FOAMGUN;
 	bolt->clipmask = MASK_SHOT;
 	bolt->target_ent = NULL;
 
