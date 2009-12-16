@@ -1939,20 +1939,16 @@ Q3UIOBJ_ = \
   $(B)/baseq3/ui/bg_lib.o \
   $(B)/baseq3/ui/ui_addbots.o \
   $(B)/baseq3/ui/ui_atoms.o \
-  $(B)/baseq3/ui/ui_cdkey.o \
-  $(B)/baseq3/ui/ui_cinematics.o \
   $(B)/baseq3/ui/ui_confirm.o \
   $(B)/baseq3/ui/ui_connect.o \
   $(B)/baseq3/ui/ui_controls2.o \
   $(B)/baseq3/ui/ui_credits.o \
-  $(B)/baseq3/ui/ui_demo2.o \
   $(B)/baseq3/ui/ui_display.o \
   $(B)/baseq3/ui/ui_gameinfo.o \
   $(B)/baseq3/ui/ui_ingame.o \
   $(B)/baseq3/ui/ui_loadconfig.o \
   $(B)/baseq3/ui/ui_menu.o \
   $(B)/baseq3/ui/ui_mfield.o \
-  $(B)/baseq3/ui/ui_mods.o \
   $(B)/baseq3/ui/ui_network.o \
   $(B)/baseq3/ui/ui_options.o \
   $(B)/baseq3/ui/ui_playermodel.o \
@@ -1973,8 +1969,8 @@ Q3UIOBJ_ = \
   $(B)/baseq3/ui/ui_spskill.o \
   $(B)/baseq3/ui/ui_startserver.o \
   $(B)/baseq3/ui/ui_team.o \
-  $(B)/baseq3/ui/ui_teamorders.o \
   $(B)/baseq3/ui/ui_video.o \
+  $(B)/baseq3/ui/ui_teamorders.o \
   \
   $(B)/baseq3/qcommon/q_math.o \
   $(B)/baseq3/qcommon/q_shared.o

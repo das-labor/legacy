@@ -245,16 +245,6 @@ void UI_MainMenu( void ) {
 
 	trap_Cvar_Set( "sv_killserver", "1" );
 
-	if( !uis.demoversion && !ui_cdkeychecked.integer ) {
-		char	key[17];
-
-		trap_GetCDKey( key, sizeof(key) );
-		if( trap_VerifyCDKey( key, NULL ) == qfalse ) {
-			UI_CDKeyMenu();
-			return;
-		}
-	}
-	
 	memset( &s_main, 0 ,sizeof(mainmenu_t) );
 	memset( &s_errorMessage, 0 ,sizeof(errorMessage_t) );
 
@@ -289,7 +279,20 @@ void UI_MainMenu( void ) {
 	s_main.multiplayer.generic.y			= y;
 	s_main.multiplayer.generic.id			= ID_MULTIPLAYER;
 	s_main.multiplayer.generic.callback		= Main_MenuEvent; 
-	s_main.multiplayer.string				= "MULTIPLAYER";
+	s_main.multiplayer.string				= "JOIN DEFGAME";
+	s_main.multiplayer.color				= color_white;
+	s_main.multiplayer.style				= style;
+
+	y += MAIN_MENU_VERTICAL_SPACING;
+	s_main.setup.generic.type				= MTYPE_PTEXT;
+	s_main.setup.generic.flags				= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
+	s_main.multiplayer.generic.type			= MTYPE_PTEXT;
+	s_main.multiplayer.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
+	s_main.multiplayer.generic.x			= 320;
+	s_main.multiplayer.generic.y			= y;
+	s_main.multiplayer.generic.id			= ID_MULTIPLAYER;
+	s_main.multiplayer.generic.callback		= Main_MenuEvent; 
+	s_main.multiplayer.string				= "ALTERNATE SERVER";
 	s_main.multiplayer.color				= color_white;
 	s_main.multiplayer.style				= style;
 

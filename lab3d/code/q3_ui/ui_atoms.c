@@ -789,18 +789,6 @@ qboolean UI_IsFullscreen( void ) {
 	return qfalse;
 }
 
-static void NeedCDAction( qboolean result ) {
-	if ( !result ) {
-		trap_Cmd_ExecuteText( EXEC_APPEND, "quit\n" );
-	}
-}
-
-static void NeedCDKeyAction( qboolean result ) {
-	if ( !result ) {
-		trap_Cmd_ExecuteText( EXEC_APPEND, "quit\n" );
-	}
-}
-
 void UI_SetActiveMenu( uiMenuCommand_t menu ) {
 	// this should be the ONLY way the menu system is brought up
 	// enusure minumum menu data is cached
@@ -812,12 +800,6 @@ void UI_SetActiveMenu( uiMenuCommand_t menu ) {
 		return;
 	case UIMENU_MAIN:
 		UI_MainMenu();
-		return;
-	case UIMENU_NEED_CD:
-		UI_ConfirmMenu( "Insert the CD", 0, NeedCDAction );
-		return;
-	case UIMENU_BAD_CD_KEY:
-		UI_ConfirmMenu( "Bad CD Key", 0, NeedCDKeyAction );
 		return;
 	case UIMENU_INGAME:
 		/*
@@ -958,12 +940,9 @@ void UI_Cache_f( void ) {
 	PlayerModel_Cache();
 	PlayerSettings_Cache();
 	Controls_Cache();
-	Demos_Cache();
-	UI_CinematicsMenu_Cache();
 	Preferences_Cache();
 	ServerInfo_Cache();
 	SpecifyServer_Cache();
-	ArenaServers_Cache();
 	StartServer_Cache();
 	ServerOptions_Cache();
 	DriverInfo_Cache();
@@ -973,17 +952,12 @@ void UI_Cache_f( void ) {
 	UI_NetworkOptionsMenu_Cache();
 	UI_SPLevelMenu_Cache();
 	UI_SPSkillMenu_Cache();
-	UI_SPPostgameMenu_Cache();
-	TeamMain_Cache();
 	UI_AddBots_Cache();
 	UI_RemoveBots_Cache();
 	UI_SetupMenu_Cache();
 //	UI_LoadConfig_Cache();
 //	UI_SaveConfigMenu_Cache();
 	UI_BotSelectMenu_Cache();
-	UI_CDKeyMenu_Cache();
-	UI_ModsMenu_Cache();
-
 }
 
 
@@ -1015,11 +989,6 @@ qboolean UI_ConsoleCommand( int realTime ) {
 		return qtrue;
 	}
 
-	if ( Q_stricmp (cmd, "ui_cinematics") == 0 ) {
-		UI_CinematicsMenu_f();
-		return qtrue;
-	}
-
 	if ( Q_stricmp (cmd, "ui_teamOrders") == 0 ) {
 		UI_TeamOrdersMenu_f();
 		return qtrue;
@@ -1032,11 +1001,6 @@ qboolean UI_ConsoleCommand( int realTime ) {
 
 	if ( Q_stricmp (cmd, "iamamonkey") == 0 ) {
 		UI_SPUnlockMedals_f();
-		return qtrue;
-	}
-
-	if ( Q_stricmp (cmd, "ui_cdkey") == 0 ) {
-		UI_CDKeyMenu_f();
 		return qtrue;
 	}
 

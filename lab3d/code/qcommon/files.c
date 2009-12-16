@@ -2904,6 +2904,7 @@ Q3 media pak0.pk3, you'll want to remove this function
 */
 static void FS_CheckPak0( void )
 {
+	return; /* XXX: this function is disabled since checksums change a little too often in the alpha stage... */
 	searchpath_t	*path;
 	qboolean founddemo = qfalse;
 	unsigned foundPak = 0;
