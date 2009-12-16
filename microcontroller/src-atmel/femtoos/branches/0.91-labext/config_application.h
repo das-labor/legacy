@@ -22,8 +22,42 @@
  * See http://www.femtoos.org/ for details.
  */
 
-#ifndef CONFIG_TESTHELLOWORLD_H_
-#define CONFIG_TESTHELLOWORLD_H_
+#ifndef CONFIG_FEMTOOS_H_
+#define CONFIG_FEMTOOS_H_
+
+#define MC_MOSI    PB3
+#define MC_CLK     PB5
+
+#define MCP_CS        PB2
+#define MCP_CMD_PORT  PORTB
+
+#define SPI_REG_PIN_MCP_INT  PIND
+#define SPI_PIN_MCP_INT      PD2
+//#define CAN_INTERRUPT
+
+//#define PORT_REMOTE (0xf0)
+
+#define F_MCP F_CPU
+
+
+#define MEGA8
+
+#ifdef MEGA8
+#	define SPI_PORT PORTB
+#	define SPI_DDR DDRB
+#	define SPI_PIN_SCK PB5
+#	define SPI_PIN_MOSI PB3
+#else
+#	define SPI_PORT PORTB
+#	define SPI_DDR DDRB
+#	define SPI_PIN_SCK PB7
+#	define SPI_PIN_MOSI PB5
+#endif
+
+
+#if CANADDR <=0x03
+#error "you have to define a can-address which will not interfere with critical LABOR-Hardware"
+#endif
 
 /* Comments are in the config default file */
 
@@ -59,7 +93,7 @@
 #define  cfgIntOsProtected                       cfgTrue
 #define  cfgIntTickTrack                         cfgFalse
 #define  cfgIntManualTicks                       cfgFalse
-
+//#define  smallISR                                cfgFalse
 
 /* ========================================================================= */
 /* QUALITY ASSURANCE ======================================================= */
@@ -74,7 +108,7 @@
 #define  cfgCheckTaskStack                       cfgTrue
 #define  cfgCheckIsrStack                        cfgFalse
 #define  cfgCheckRegisters                       cfgTrue
-#define  cfgCheckTiming                          cfgFalse
+#define  cfgCheckTiming                          cfgTrue
 #define  cfgCheckQueuFilling                     cfgFalse
 #define  cfgCheckMethodUse                       cfgTrue
 #define  cfgCheckApplication                     cfgFalse
@@ -87,6 +121,7 @@
 #define  cfgUseEquidistantTicks                  cfgTrue
 #define  cfgUseDelay                             cfgTrue
 #define  cfgUseSynchronization                   cfgSyncNon
+//#define  cfgUseSynchronization                   cfgSyncSingleSlot
 #define  cfgUseHierarchicalRoundRobin            cfgFalse
 #define  cfgUseNestedCriticals                   cfgFalse
 #define  cfgUsePrioritizedRelease                cfgFalse
@@ -229,14 +264,19 @@
 /* TASK NAMES ============================================================== */
 /* ========================================================================= */
 
+
 #define  CN_00                                   rundown
-//#define  CN_01                                   blueout
-//#define  CN_02                                   update
+#define  CN_01                                   xcan
+
 
 
 /* ========================================================================= */
 /* INCLUDE TASKS =========================================================== */
 /* ========================================================================= */
+
+//#define  TaskIncludeOverride                     cfgStartRunning
+#define  TaskInclude_xcan                     cfgStartRunning
+//#define  TaskInclude_xcan                     cfgExclude
 
 #define  TaskInclude_rundown                     cfgStartRunning
 //#define  TaskInclude_blueout                    cfgStartRunning
@@ -247,7 +287,9 @@
 /* TASK CAPABILITIES ======================================================= */
 /* ========================================================================= */
 
-#define  CapabilitiesOverride                    cfgCapAll
+//#define  Capabilities_xcanTask                 cfgCapEvent
+#define  Capabilities_rundown                    cfgCapAll
+#define  Capabilities_xcan                    cfgCapAll
 
 
 /* ========================================================================= */
@@ -256,9 +298,9 @@
 
 #define  StackSafety                             4
 #define  StackSizeOS                             24
-#define  StackSizeISR                            0
+#define  StackSizeISR                            24
 #define  StackSizeShared                         0
-#define  StackSizeOverride                       46
+#define  StackSizeOverride                       100
 
 
 /* ========================================================================= */
@@ -284,6 +326,9 @@
 /* REGISTER USE ============================================================ */
 /* ========================================================================= */
 
+//#define  RegisterUseOverride                      registersAll
+
+#define  RegisterUse_xcan                      registersAll
 #define  RegisterUse_rundown                      registersAll
 //#define  RegisterUse_blueout                     registersAll
 //#define  RegisterUse_update                      registersAll
@@ -300,27 +345,36 @@
 /* INTERRUPT SETTING ======================================================= */
 /* ========================================================================= */
 
-#define  InterruptStartOverride                  cfgGlobSet | cfgTickSet
+//#define  InterruptStartOverride                  cfgGlobSet | cfgTickSet
+#define  InterruptStartOverride                  cfgGlobClear | cfgTickSet
 
 
 /* ========================================================================= */
 /* EVENT NAMES ============================================================= */
 /* ========================================================================= */
 
+//#define eventCANBUSrecv                          0
+//#define eventCANBUSsend                          1
 
 /* ========================================================================= */
 /* SLOT NAMES ============================================================== */
 /* ========================================================================= */
+//#define  SN_01                                   Slot1
+//#define  SN_02                                   Slot2
 
 
 /* ========================================================================= */
 /* SLOT SIZES ============================================================== */
 /* ========================================================================= */
+//#define  SlotSize_Slot1                       4
+//#define  SlotSize_Slot2                       4
 
 
 /* ========================================================================= */
 /* SLOT USAGE ============================================================== */
 /* ========================================================================= */
+//#define  SlotUse_Slot1                           cfgUseAsMutex
+//#define  SlotUse_Slot2                           cfgUseAsMutex
 
 
 /* ========================================================================= */

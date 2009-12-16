@@ -504,7 +504,7 @@ static void privEnterTask(void) defSysReduceProEpilogue;
  * It cannot be used to unlock a non blocking lock. Also, supply the return state
  * for the unblocked task (true of false)
  */
-#if (cfgUseSynchronization != cfgSyncNon) || (cfgUseFileSystem == cfgTrue)
+#if (cfgUseSynchronization != cfgSyncNon) || (cfgUseFileSystem == cfgTrue) || (cfgUseEvents == cfgTrue)
   static void privUnblockTask(Tuint08 uiControlTaskNumber);
 #endif
 
