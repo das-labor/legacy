@@ -22,6 +22,7 @@
 #define F_SW_OFF      (0x00)
 #define F_SW_ON       (0x01)
 #define F_SW_STATUS   (0x02)
+#define F_SW_TOGGLE   (0x03)
 
 #define F_PWM_SET     (0x00)
 #define F_PWM_GET     (0x01)
@@ -151,17 +152,6 @@ struct t_i2cproto {
 	uint8_t has_out_data;
 	uint8_t in_data;
 	uint8_t out_data;
-};
-
-static struct t_ringbuffer{
-	uint16_t tastercounter; // mitzaehlen
-	uint16_t tastercounter_last; // was war der wert, als wir ihn zuletzt getestet haben
-	uint8_t clickpos; 
-	uint16_t clickstate[RINGBUFFERSIZE]; 
-	uint16_t clickstate_free[RINGBUFFERSIZE];
-}rb[]={
-	{ 0, 0, 0, { 0,0,0}, {0,0,0}},
-	{ 0, 0, 0, { 0,0,0}, {0,0,0}}
 };
 
 #endif
