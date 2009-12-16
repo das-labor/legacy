@@ -18,6 +18,8 @@ void virt_power_status(struct t_i2cproto* i2cproto);
 void virt_vortrag(struct t_i2cproto* i2cproto);
 void virt_vortrag_on();
 void virt_vortrag_off();
+void virt_vortrag_status(struct t_i2cproto* i2cproto);
+void virt_vortrag_toggle();
 void virt_vortrag_pwm_set(struct t_i2cproto* i2cproto);
 #endif
 

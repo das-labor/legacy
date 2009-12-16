@@ -7,6 +7,7 @@
 #include "fkt.h"
 
 static uint8_t power_stat;
+static uint8_t virt_vortrag_stat;
 
 void switch_fkt(struct t_i2cproto* i2cproto)
 {
@@ -120,10 +121,15 @@ void virt_vortrag(struct t_i2cproto* i2cproto)
 		case F_SW_OFF:
 			virt_vortrag_off();
 		break;
+		case F_SW_STATUS:
+			virt_vortrag_status(i2cproto);
+		break;
+		case F_SW_TOGGLE:
+			virt_vortrag_toggle();
+		break;
 		default:
 		break;
 	}
-	
 }
 
 void virt_vortrag_pwm_set(struct t_i2cproto* i2cproto)
@@ -174,6 +180,7 @@ void virt_vortrag_on()
 	switch_on(sw_matrix[SWL_SCHRANK].port, sw_matrix[SWL_SCHRANK].pin);
 	switch_on(sw_matrix[SWL_FLIPPER].port, sw_matrix[SWL_FLIPPER].pin);
 	switch_on(sw_matrix[SWL_VORTRAG].port, sw_matrix[SWL_VORTRAG].pin);
+	virt_vortrag_stat = 1;
 }
 
 void virt_vortrag_off()
@@ -183,6 +190,22 @@ void virt_vortrag_off()
 	switch_off(sw_matrix[SWL_SCHRANK].port, sw_matrix[SWL_SCHRANK].pin);
 	switch_off(sw_matrix[SWL_FLIPPER].port, sw_matrix[SWL_FLIPPER].pin);
 	switch_off(sw_matrix[SWL_VORTRAG].port, sw_matrix[SWL_VORTRAG].pin);
+	virt_vortrag_stat = 0;
+}
+
+void virt_vortrag_status(struct t_i2cproto* i2cproto)
+{
+	i2cproto->out_data = virt_vortrag_stat;
+	i2cproto->has_out_data = HASDATA;
+}
+
+
+void virt_vortrag_toggle()
+{
+	if (virt_vortrag_stat)
+		virt_vortrag_off();
+	else
+		virt_vortrag_on();
 }
 
 void switch_on(volatile uint8_t *port, uint8_t pin)
