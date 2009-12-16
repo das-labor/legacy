@@ -20,7 +20,7 @@
 
 
 static uint16_t tickscounter;
-static uint8_t tastercounter_vortrag;
+static uint16_t tastercounter_vortrag;
 static uint8_t tastercounter_lounge;
 static uint8_t outdata[4];
 
@@ -39,19 +39,18 @@ ISR(TIMER1_OVF_vect)
 
 	if ((tickscounter & 0x001F) == 0) // alle 32 ticks ... 0.032 sekunden
 	{
-		if (PINB & _BV(PB2))
+		if (!(PINB & _BV(PB2)))
 		{
 			tastercounter_vortrag++;
 		}
-		if (PIND & _BV(PD3))
+		if (!(PIND & _BV(PD3)))
 		{
 			tastercounter_lounge++;
 		}
 		if (tastercounter_vortrag != 0)
 		{
-			if (!(PINB & _BV(PB2)))
+			if (PINB & _BV(PB2))
 			{
-
 						outdata[0]=C_VIRT;
 						outdata[1]=VIRT_VORTRAG;
 						outdata[2]=F_SW_TOGGLE;
@@ -59,14 +58,11 @@ ISR(TIMER1_OVF_vect)
 						twi_send(outdata);
 				
 						tastercounter_vortrag = 0;
-
-			} else {
-
 			}
 		}
 		if (tastercounter_lounge != 0)
 		{
-			if (!(PIND & _BV(PD3)))
+			if (PIND & _BV(PD3))
 			{
 						outdata[0]=C_SW;
 						outdata[1]=SWL_LOUNGE;
@@ -75,19 +71,15 @@ ISR(TIMER1_OVF_vect)
 						twi_send(outdata);
 				
 						tastercounter_lounge = 0;
-
-			} else {
-
 			}
 		}
-		//	if ((!(PIND & _BV(PD3))) && stat_switches.lounge)
 	}
 	 
-	//	 ueberlaeufe sind ok!
+	// ueberlaeufe sind ok!
 	
 	tickscounter++;
 	
-//		und alle interrupts wieder auf go!
+	// und alle interrupts wieder auf go!
 	
 	sei();
 }
@@ -107,8 +99,8 @@ void init(void)
 	DDRB &= ~_BV(PB2); // Eingang Lounge Taster
 	DDRD &= ~_BV(PD3); // Eingang Vortrag Taster
 	
-//	PORTB |= _BV(PB2);
-//	PORTD |= _BV(PD3);
+	PORTB |= _BV(PB2);
+	PORTD |= _BV(PD3);
 
 /*
 ** Initiate TWI Master Interface with bitrate of 100000 Hz
