@@ -456,7 +456,6 @@ void R_SetupFrustum (viewParms_t *dest, float xmin, float xmax, float ymax, floa
 	vec3_t ofsorigin;
 	float oppleg, adjleg, length;
 	int i;
-	static uint8_t dbgfoo = 0;
 	
 	if(stereoSep == 0 && xmin == -xmax)
 	{
