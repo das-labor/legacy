@@ -11,6 +11,7 @@
 
 #define SLAVE_ADDR 15
 
+void twi_get(uint8_t *p);
 
 extern void can_handler()
 {
@@ -60,6 +61,14 @@ extern void can_handler()
 				else
 				{
 					twi_send(rx_msg->data);
+					if (((rx_msg->data[0] == C_SW) && (rx_msg->data[2] == F_SW_STATUS)) ||
+					    ((rx_msg->data[0] == C_PWM) && (rx_msg->data[2] == F_PWM_GET)))
+					{
+						uint8_t msg_tx[1];
+						_delay_us(10);
+						twi_get(msg_tx);
+						can_send(msg_tx);
+					}
 				}
 			}
 		}
@@ -85,12 +94,33 @@ void twi_send(uint8_t *p)
 		TWIM_Stop();
 	}
 }
+#define I2C_INDATACOUNT 1
+void twi_get(uint8_t *p)
+{
+	uint8_t i;
+	if (!TWIM_Start(SLAVE_ADDR, TWIM_READ))
+	{
+		TWIM_Stop();
+	}
+	else
+	{
+		for (i = 0; i < (I2C_INDATACOUNT - 1); i++)
+		{
+			p[i] = TWIM_ReadAck();
+		}
+		
+		//	die letzte via ReadNack
+
+		p[i] = TWIM_ReadNack();
+		TWIM_Stop();
+	}
+}
 
 void can_send(uint8_t *p)
 {
-	static can_message msg = {0x02, 0x00, 0x00, 0x01, 2, {0}};
+	static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
 	uint8_t i;
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 1; i++)
 		msg.data[i] = p[i];
 	can_transmit(&msg);
 }
