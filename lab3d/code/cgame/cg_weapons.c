@@ -628,15 +628,18 @@ void CG_RegisterWeapon( int weaponNum ) {
 
 	memset( weaponInfo, 0, sizeof( *weaponInfo ) );
 	weaponInfo->registered = qtrue;
-
-	for ( item = bg_itemlist + 1 ; item->classname ; item++ ) {
-		if ( item->giType == IT_WEAPON && item->giTag == weaponNum ) {
+	
+	/* retrieve item struct from item list */
+	for ( item = bg_itemlist + 1 ; item->classname ; item++ )
+	{
+		if ( item->giType == IT_WEAPON && item->giTag == weaponNum )
+		{
 			weaponInfo->item = item;
 			break;
 		}
 	}
 	if ( !item->classname ) {
-		CG_Error( "gaah, Couldn't find weapon %i", weaponNum );
+		CG_Error ("gaah, Couldn't find weapon %i", weaponNum);
 	}
 	CG_RegisterItemVisuals( item - bg_itemlist );
 
@@ -823,7 +826,8 @@ void CG_RegisterWeapon( int weaponNum ) {
 		weaponInfo->missileSound = trap_S_RegisterSound( "sound/weapons/rocket/rockfly.wav", qfalse );
 		break;
 
-	 default:
+	case WP_FOAMGUN: /* TODO */
+	default:
 		MAKERGB( weaponInfo->flashDlightColor, 1, 1, 1 );
 		weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/rocket/rocklf1a.wav", qfalse );
 		break;
