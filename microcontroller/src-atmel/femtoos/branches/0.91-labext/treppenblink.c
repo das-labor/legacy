@@ -36,6 +36,8 @@
 /* This this the only include needed in your code .*/
 //#include <util/delay.h>
 #include "femtoos_code.h"
+#include "spi.h"
+#include "can.h"
 
 #define DATA PD6
 #define CLK  PD7
@@ -50,23 +52,88 @@ typedef struct {
 	Tuint16 green;
 	Tuint16 blue;
 } element_t;
-
 Tuint16 callnumber=0;
+
+Tuint08 blinkmode=0;
 
 void appBoot(void)
 { 
-  devSwitchDRR |= _BV(DATA) | _BV(CLK);
-  devSwitchPORT |= _BV(DATA) | _BV(CLK);
+  spi_init();
+  can_init();
+  DDRD |= _BV(DATA) | _BV(CLK);
+  PORTD |= _BV(DATA) | _BV(CLK);
+
+  //  devSwitchDRR |= _BV(DATA) | _BV(CLK);
+  //  devSwitchPORT |= _BV(DATA) | _BV(CLK);
+
+  //  Tuint08 k;
+
+/*   for (k = 0 ; k< 36; k++){ */
+/*     PORTD = ( 1 ) << DATA; */
+/*     PORTD |= _BV(CLK); */
+/*     PORTD &= ~_BV(CLK); */
+/*   } */
+
+/*   for (k = 0; k < 5; k++) */
+/*     { */
+/*       PORTD |= _BV(DATA); */
+/*       PORTD &= ~_BV(DATA); */
+/*     } */
 }
 
 /*
   set as backgroundcolor
 */
-static void makeBackground(element_t *point)
+static void makeBlue(element_t *point)
 {
   point->red=0;
   point->green=0;
   point->blue=MAXCOLORVALUE;
+}
+
+static void makeGreen(element_t *point)
+{
+  point->red=0;
+  point->green=MAXCOLORVALUE;
+  point->blue=0;
+}
+
+static void makeRed(element_t *point)
+{
+  point->red=MAXCOLORVALUE;
+  point->green=0;
+  point->blue=0;
+}
+
+
+/*
+  set as backgroundcolor
+*/
+static void makeWhite(element_t *point)
+{
+  point->red=MAXCOLORVALUE;
+  point->green=MAXCOLORVALUE;
+  point->blue=MAXCOLORVALUE;
+}
+
+/*
+  set as backgroundcolor
+*/
+static void makeOFF(element_t *point)
+{
+  point->red=0;
+  point->green=0;
+  point->blue=0;
+}
+
+/*
+  set as backgroundcolor
+*/
+static void makeGray(element_t *point)
+{
+  point->red=1024;
+  point->green=1024;
+  point->blue=1024;
 }
 
 /*
@@ -78,19 +145,41 @@ static void pushValue(Tuint16 red,Tuint16 green,Tuint16 blue)
   taskEnterGlobalCritical();
   for (k = 0 ; k< BITSPERLAMP; k++)
     {
-      OUTPORT = ( ( (blue >> (BITSPERLAMP-k-1)) & 1 ) << DATA);
+      if( ((blue >> (BITSPERLAMP-k-1)) & 1 ) ==1)
+	{
+	  OUTPORT |= _BV(DATA);
+	} 
+      else 
+	{ 
+	  OUTPORT &= ~_BV(DATA);
+	}
       PORTD |= _BV(CLK);
       PORTD &= ~_BV(CLK);
     }
   for (k = 0; k < BITSPERLAMP; k++)
     {
-      OUTPORT = ( ( (green >> (BITSPERLAMP-k-1)) & 1 ) << DATA);
+      if( ((green >> (BITSPERLAMP-k-1)) & 1 ) ==1)
+	{
+	  OUTPORT |= _BV(DATA);
+	} 
+      else 
+	{ 
+	  OUTPORT &= ~_BV(DATA);
+	}
+      
       PORTD |= _BV(CLK);
       PORTD &= ~_BV(CLK);
     }
   for (k = 0; k < BITSPERLAMP; k++)
     {
-      OUTPORT = ( ( (red >> (BITSPERLAMP-k-1)) & 1 ) << DATA);
+      if ( ((red >> (BITSPERLAMP-k-1)) & 1 ) == 1 )
+	{
+	  OUTPORT |= _BV(DATA);
+	}
+      else 
+	{
+	  OUTPORT &= ~_BV(DATA);
+	}
       PORTD |= _BV(CLK);
       PORTD &= ~_BV(CLK);
     }
@@ -146,14 +235,14 @@ static void setWhite(element_t *point, Tuint16 pos)
 static void updateLEDs()
 {
   Tuint08 i;
-  taskEnterGlobalCritical();
+  //  taskEnterGlobalCritical();
 
   for (i = 0; i < 5; i++)
     {
       PORTD |= _BV(DATA);
       PORTD &= ~_BV(DATA);
     }
-  taskExitGlobalCritical();
+  //  taskExitGlobalCritical();
 }
 
 #if (preTaskDefined(rundown))
@@ -162,19 +251,100 @@ void appLoop_rundown(void)
 { 
   Tuint08 i=0;
   element_t myelement={0,0,0};
-
+  taskDelayFromNow(1000);
   while (true)
   { 
-    
-    for(i=0;i<LAMPS;i++){
-      makeBackground(&myelement);
-      setWhite(&myelement,i);
-      pushValue(myelement.red,myelement.green,myelement.blue);
+    while(blinkmode == 0){
+      for(i=0;i<LAMPS;i++){
+	makeBlue(&myelement);
+	setWhite(&myelement,i);
+	pushValue(myelement.red,myelement.green,myelement.blue);
+      }
+      taskDelayFromNow(1);
+      updateLEDs();
+      callnumber++;
+      taskDelayFromNow(100);
+    } 
+    while(blinkmode == 1){
+      // call it stop
+      taskDelayFromNow(100);
     }
-    taskDelayFromNow(1);
-    updateLEDs();
-    callnumber++;
-    taskDelayFromNow(100);
+    while(blinkmode == 2){
+      for(i=0;i<LAMPS;i++){
+	makeWhite(&myelement);
+	pushValue(myelement.red,myelement.green,myelement.blue);
+      }
+      taskDelayFromNow(1);
+      updateLEDs();
+      taskDelayFromNow(100);
+    }
+    while(blinkmode == 3){
+      for(i=0;i<LAMPS;i++){
+	makeGray(&myelement);
+	pushValue(myelement.red,myelement.green,myelement.blue);
+      }
+      taskDelayFromNow(1);
+      updateLEDs();
+      taskDelayFromNow(100);
+    }
+    while(blinkmode == 4){
+      for(i=0;i<LAMPS;i++){
+	makeOFF(&myelement);
+	pushValue(myelement.red,myelement.green,myelement.blue);
+      }
+      taskDelayFromNow(1);
+      updateLEDs();
+      taskDelayFromNow(100);
+    }
+    while(blinkmode == 5){
+      for(i=0;i<LAMPS;i++){
+	makeGreen(&myelement);
+	setWhite(&myelement,i);
+	pushValue(myelement.red,myelement.green,myelement.blue);
+      }
+      taskDelayFromNow(1);
+      updateLEDs();
+      callnumber++;
+      taskDelayFromNow(100);
+    } 
+    while(blinkmode == 6){
+      for(i=0;i<LAMPS;i++){
+	makeRed(&myelement);
+	setWhite(&myelement,i);
+	pushValue(myelement.red,myelement.green,myelement.blue);
+      }
+      taskDelayFromNow(1);
+      updateLEDs();
+      callnumber++;
+      taskDelayFromNow(100);
+    } 
+
+    while(blinkmode == 7){
+      for(i=0;i<LAMPS;i++){
+	makeRed(&myelement);
+	pushValue(myelement.red,myelement.green,myelement.blue);
+      }
+      taskDelayFromNow(1);
+      updateLEDs();
+      taskDelayFromNow(20);
+
+      for(i=0;i<LAMPS;i++){
+	makeGreen(&myelement);
+	pushValue(myelement.red,myelement.green,myelement.blue);
+      }
+      taskDelayFromNow(1);
+      updateLEDs();
+      taskDelayFromNow(20);
+
+      for(i=0;i<LAMPS;i++){
+	makeBlue(&myelement);
+	pushValue(myelement.red,myelement.green,myelement.blue);
+      }
+      taskDelayFromNow(1);
+      updateLEDs();
+      taskDelayFromNow(20);
+    } 
+    
   }
 }
 
