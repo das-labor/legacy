@@ -240,7 +240,7 @@ void AssetCache( void ) {
 		uiInfo.uiDC.Assets.crosshairShader[n] = trap_R_RegisterShaderNoMip( va("gfx/2d/crosshair%c", 'a' + n ) );
 	}
 
-	uiInfo.newHighScoreSound = trap_S_RegisterSound("sound/feedback/voc_newhighscore.wav", qfalse);
+	uiInfo.newHighScoreSound = trap_S_RegisterSound("sound/click.wav", qfalse);
 }
 
 void _UI_DrawSides(float x, float y, float w, float h, float size) {
@@ -5243,8 +5243,8 @@ void _UI_SetActiveMenu( uiMenuCommand_t menu ) {
 	  case UIMENU_MAIN:
 			trap_Cvar_Set( "sv_killserver", "1" );
 			trap_Key_SetCatcher( KEYCATCH_UI );
-			//trap_S_StartLocalSound( trap_S_RegisterSound("sound/misc/menu_background.wav", qfalse) , CHAN_LOCAL_SOUND );
-			//trap_S_StartBackgroundTrack("sound/misc/menu_background.wav", NULL);
+			//trap_S_StartLocalSound( trap_S_RegisterSound("sound/click.wav", qfalse) , CHAN_LOCAL_SOUND );
+			//trap_S_StartBackgroundTrack("sound/click.wav", NULL);
 			if (uiInfo.inGameLoad) {
 				UI_LoadNonIngame();
 			}

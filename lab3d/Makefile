@@ -6,11 +6,12 @@
 
 DEFAULT_BASEDIR=lab3d
 
-BUILD_STANDALONE =0
+BUILD_STANDALONE =1
 BUILD_GAME_SO    = 1
 BUILD_GAME_QVM   = 1
 BUILD_CLIENT =1
 BUILD_MISSIONPACK=0
+BUILD_SERVER     =0
 
 COMPILE_PLATFORM=$(shell uname|sed -e s/_.*//|tr '[:upper:]' '[:lower:]')
 

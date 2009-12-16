@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   #define BASEGAME			"lab3d"
   #define CLIENT_WINDOW_TITLE     	"lab3d"
   #define CLIENT_WINDOW_MIN_TITLE 	"l3d"
-  #define GAMENAME_FOR_MASTER		"lab3d"	// must NOT contain whitespaces
+  #define GAMENAME_FOR_MASTER		"baseq3"	// must NOT contain whitespaces
 #else
   #define PRODUCT_NAME			"ioq3"
   #define BASEGAME			"baseq3"
