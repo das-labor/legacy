@@ -107,8 +107,8 @@ void init(void)
 	DDRB &= ~_BV(PB2); // Eingang Lounge Taster
 	DDRD &= ~_BV(PD3); // Eingang Vortrag Taster
 	
-	PORTB |= _BV(PB2);
-	PORTD |= _BV(PD3);
+//	PORTB |= _BV(PB2);
+//	PORTD |= _BV(PD3);
 
 /*
 ** Initiate TWI Master Interface with bitrate of 100000 Hz
@@ -123,7 +123,8 @@ void init(void)
 	
 	//initialize can communication
 	can_init();
-
+	
+	read_can_addr();
 	TCCR1A |= _BV(WGM10) ; // FastPWM
 	TCCR1B |= _BV(WGM12) | _BV(CS11) | _BV(CS11); // FastPWM bit 2, clk/64
 
