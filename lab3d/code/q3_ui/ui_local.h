@@ -665,6 +665,12 @@ extern void UI_TeamOrdersMenu_f( void );
 extern void UI_TeamOrdersMenu_Cache( void );
 
 //
+// ui_team.c 
+// 
+extern void UI_TeamMainMenu( void ); 
+extern void TeamMain_Cache( void ); 
+
+//
 // ui_loadconfig.c
 //
 void UI_LoadConfig_Cache( void );

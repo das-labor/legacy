@@ -283,7 +283,7 @@ typedef struct {
 
 // If you want to enable support for Raven's .mdr / md4 format, uncomment the next
 // line.
-//#define RAVENMD4
+#define RAVENMD4
 
 #ifdef RAVENMD4
 
@@ -292,8 +292,8 @@ typedef struct {
 #define	MDR_MAX_BONES	128
 
 typedef struct {
-	int			boneIndex;	// these are indexes into the boneReferences,
-	float		   boneWeight;		// not the global per-frame bone list
+	int		boneIndex;	// these are indexes into the boneReferences,
+	float		boneWeight;		// not the global per-frame bone list
 	vec3_t		offset;
 } mdrWeight_t;
 
