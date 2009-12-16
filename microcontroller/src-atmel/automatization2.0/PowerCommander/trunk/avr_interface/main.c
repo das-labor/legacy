@@ -14,11 +14,16 @@
 #include "can/spi.h"
 #include "can/lap.h"
 
+#include "../include/PowerCommander.h"
+
 #include "switch.h"
 
-/*
+
 static uint16_t tickscounter;
 static uint8_t tastercounter_vortrag;
+static uint8_t taster_vortrag_last;
+static uint8_t outdata[4];
+
 
 ISR(TIMER0_OVF_vect)
 {
@@ -33,37 +38,25 @@ ISR(TIMER0_OVF_vect)
 		// Counter fuer die eingaben auf null setzen
 
 	if ((tickscounter & 0x001F) == 0) { // alle 32 ticks ... 0.032 sekunden
+		if (PINB & _BV(PB2))
+			tastercounter_vortrag++;
 		if (tastercounter_vortrag != 0) {
-			if (tastercounter_vortrag == timing_counter.tastercounter_vortrag_last) {
-				 
-				//	was soll passieren wenn der schlater losgelassen wurde
-				//	in erster linie sicher ein Rest
+			if (!(PINB & _BV(PB2))) {
+
+						outdata[0]=C_VIRT;
+						outdata[1]=VIRT_VORTRAG;
+						outdata[2]=F_SW_OFF;
+						outdata[3]=0x00;
+						twi_send(outdata);
 				
-				itr_schalter_vortrag_statisch();
-				timing_counter.tastercounter_vortrag = 0;
-				timing_counter.tastercounter_vortrag_last = 0;
+						tastercounter_vortrag = 0;
+				//timing_counter.tastercounter_vortrag_last = 0;
 			} else {
 
-				itr_schalter_vortrag_dynamisch();
-				
-				//	und wir zaehlen natuerlich weiter
-				
-				timing_counter.tastercounter_vortrag_last = timing_counter.tastercounter_vortrag;
-				
-				//	der schalter wird noch gedrueckt. wir haben also einen 
-				//	dynamischen Bereich
-				
-				//				itr_schalter_vortrag_dynamisch();
 			}
 		}
+		//	if ((!(PIND & _BV(PD3))) && stat_switches.lounge)
 	}
-
-//	if ( (tickscounter & 0x03FF) == 0) // alle 1024 ticks ... ca 1sec
-//		{}
-
-//	if ( (tickscounter & 0x14FF) == 0) // alle 5120 ticks ... ca 5sec
-//		{}
-
 	 
 	//	 ueberlaeufe sind ok!
 	
@@ -74,7 +67,7 @@ ISR(TIMER0_OVF_vect)
 	sei();
 }
 
-*/
+
 void init(void)
 {
 
@@ -112,8 +105,11 @@ void init(void)
 	TCNT1 = 0;   // pwm timer clear
 	OCR1A = 0;   // pwm timer compare target
 	OCR1B = 0;   // pwm timer compare target
+	
+	TIMSK |= _BV(TOIE0);							// Enable Timer0 Overflow Interrupt
+	
 	//turn on interrupts
-//	sei();
+	sei();
 }
 	 
 int main(void)

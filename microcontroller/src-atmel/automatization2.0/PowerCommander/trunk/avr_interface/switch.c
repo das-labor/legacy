@@ -31,11 +31,13 @@ void switch_handler()
 	
 	static uint8_t outdata[8];
 // Vortragsraum
+
+/*
 	if ((!(PINB & _BV(PB2))) && stat_switches.vortrag)
 	{
 		stat_switches.vortrag = 0;
-		outdata[0]=C_SW;
-		outdata[1]=SWL_LOUNGE;
+		outdata[0]=C_VIRT;
+		outdata[1]=VIRT_VORTRAG;
 		outdata[2]=F_SW_OFF;
 		outdata[3]=0x00;
 		
@@ -43,11 +45,11 @@ void switch_handler()
 
 		_delay_ms(200);
 	}
-	if ((!(PINB & _BV(PB2))) && stat_switches.vortrag == 0)
+	if (((PINB & _BV(PB2))) && stat_switches.vortrag == 0)
 	{
 		stat_switches.vortrag = 1;
-		outdata[0]=C_SW;
-		outdata[1]=SWL_LOUNGE;
+		outdata[0]=C_VIRT;
+		outdata[1]=VIRT_VORTRAG;
 		outdata[2]=F_SW_ON;
 		outdata[3]=0x00;
 		
@@ -59,27 +61,26 @@ void switch_handler()
 	if ((!(PIND & _BV(PD3))) && stat_switches.lounge)
 	{
 		stat_switches.lounge = 0;
-		outdata[0]=C_VIRT;
-		outdata[1]=VIRT_VORTRAG;
+		outdata[0]=C_SW;
+		outdata[1]=SWL_LOUNGE;
 		outdata[2]=F_SW_OFF;
 		outdata[3]=0x00;
-		
 		twi_send(outdata);
 
 		_delay_ms(200);
 	}
-	if ((!(PIND & _BV(PD3))) && (stat_switches.lounge == 0))
+	if (((PIND & _BV(PD3))) && (stat_switches.lounge == 0))
 	{
 		stat_switches.lounge = 1;
-		outdata[0]=C_VIRT;
-		outdata[1]=VIRT_VORTRAG;
+		outdata[0]=C_SW;
+		outdata[1]=SWL_LOUNGE;
 		outdata[2]=F_SW_ON;
 		outdata[3]=0x00;
-		
 		twi_send(outdata);
 
 		_delay_ms(200);
 	}
+	*/
 // Hauptschalter
 	if (!(PINA & _BV(PA0)) && stat_switches.hauptschalter)
 	{
