@@ -1,7 +1,7 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <util/delay.h>
-#include <avr/pgmspace.h>
+#include <avr/eeprom.h>
 
 #include "can.h"
 #include "can_handler.h"
@@ -10,6 +10,9 @@
 #include "../../include/PowerCommander.h"
 
 #define SLAVE_ADDR 15
+#define I2C_INDATACOUNT 1
+
+uint8_t myaddr;
 
 void twi_get(uint8_t *p);
 
@@ -19,24 +22,24 @@ extern void can_handler()
 	can_message *rx_msg;
 	if ((rx_msg = can_get_nb()) != 0)			//get next canmessage in rx_msg
 	{
-		if ((rx_msg->addr_dst == 0x03))
+		if ((rx_msg->addr_dst == myaddr))
 		{
 			PORTA |= _BV(PA4);
 			if (rx_msg->port_dst == PORT_MGT)
 			{
 				switch (rx_msg->data[0])
 				{
-				case FKT_MGT_RESET:
-					TCCR2 = 0;
-					wdt_enable(0);
-					while(1);
+					case FKT_MGT_RESET:
+						TCCR2 = 0;
+						wdt_enable(0);
+						while (1);
 			
-				case FKT_MGT_PING:
+					case FKT_MGT_PING:
 
-					msg.addr_src = 0x03;
-					msg.addr_dst = rx_msg->addr_src;
-					can_transmit(&msg);
-					break;
+						msg.addr_src = myaddr;
+						msg.addr_dst = rx_msg->addr_src;
+						can_transmit(&msg);
+						break;
 				}
 			}
 			else if (rx_msg->port_dst == 1)
@@ -94,7 +97,7 @@ void twi_send(uint8_t *p)
 		TWIM_Stop();
 	}
 }
-#define I2C_INDATACOUNT 1
+
 void twi_get(uint8_t *p)
 {
 	uint8_t i;
@@ -122,6 +125,12 @@ void can_send(uint8_t *p)
 	uint8_t i;
 	for (i = 0; i < 1; i++)
 		msg.data[i] = p[i];
+	msg.addr_src = myaddr;
 	can_transmit(&msg);
+}
+
+void read_can_addr()
+{
+	myaddr = eeprom_read_byte(0x00);
 }
 
