@@ -17,7 +17,7 @@
 #define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
 
 /* 
-   Actionen als defines
+   Aktionen als defines
 */
 #define F_SW_OFF      (0x00)
 #define F_SW_ON       (0x01)
@@ -26,7 +26,8 @@
 
 #define F_PWM_SET     (0x00)
 #define F_PWM_GET     (0x01)
-
+#define F_PWM_MOD     (0x02)
+#define F_PWM_DIR     (0x03)
 
 #define F_NDEF (0xFF)
 
