@@ -8,17 +8,17 @@ include "config.php";
 <script src="weblabctrl.js" type="text/javascript"></script>
 <?
 if($_COOKIE['pwmx']) $pwmx=$_COOKIE['pwmx'];
-else $pwmx=50;
+ else $pwmx=50;
 if($_COOKIE['pwmy']) $pwmy=$_COOKIE['pwmy'];
-else $pwmy=60;
+ else $pwmy=60;
 if($_COOKIE['mpdx']) $mpdx=$_COOKIE['mpdx'];
-else $mpdx=350;
+ else $mpdx=350;
 if($_COOKIE['mpdy']) $mpdy=$_COOKIE['mpdy'];
-else $mpdy=60;
+ else $mpdy=60;
 if($_COOKIE['miscx']) $miscx=$_COOKIE['miscx'];
-else $miscx=650;
+ else $miscx=650;
 if($_COOKIE['miscy']) $miscy=$_COOKIE['miscy'];
-else $miscy=60;
+ else $miscy=60;
 echo "<style type=\"text/css\">
   * {font-family:Arial;}
   div.slider { width:256px; margin:10px 0; background-color:#ccc; height:10px; position: relative; }
@@ -37,9 +37,14 @@ echo "<style type=\"text/css\">
 </head>
 <body>
 <script>
+
 function set_value(cmd,id,value)
 {
   new Ajax.Updater('ajax', 'set.php?cmd='+cmd+'&id='+id+'&value='+value,{method:'get', onComplete:function() {done=true;}, evalScripts: true} );
+}
+function treppenblink_cmd(value)
+{
+  new Ajax.Updater('ajax', 'set.php?cmd=treppenblink&id=unused&value='+value,{methode:'get'. onComplete:function {done=true;});
 }
 function mpd_cmd(room,cmd,value)
 {
@@ -113,6 +118,18 @@ foreach($rooms as $room => $port)
 <input type="button" id="beamer_button" onclick="beamer_on();" value="Beamer on">
 <br>Laufschriftborg
 <input type="text"  onchange="text_the_borg(this.value);this.value='';" value="">
+<br>Treppenblink<br>
+<?
+# button oben, text drunter
+    echo "<table>";
+  echo "<tr>";
+  foreach ($treppenblink_modes as $tbm_key => $tbm_value)
+    echo "<td><input type=\"radio\" onclick=\"treppenblink_cmd('".$tbm_value."');\" name=\"treppenblink\" value=\"".$tbm_value."\"></td>";
+  echo "</tr><tr>";
+  foreach ($treppenblink_modes as $tbm_key => $tbm_value)
+   echo "<td>".$tbm_key."</td>";
+ echo "</tr></table>";
+?>
 </div>
 <script>
 
