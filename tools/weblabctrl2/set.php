@@ -6,6 +6,8 @@ elseif($_GET[cmd]=="SW")$cmd="SW";
 elseif($_GET[cmd]=="beamer_on")$cmd="beamer_on";
 elseif($_GET[cmd]=="text_the_borg")$cmd="text_the_borg";
 elseif($_GET[cmd]=="treppenblink")$cmd="treppenblink";
+elseif($_GET[cmd]=="canir_teufel")$cmd="canir_teufel";
+elseif($_GET[cmd]=="canir_beamer")$cmd="canir_beamer";
 elseif($_GET[cmd]=="save_pos")$cmd="save_pos";
 else unset($_GET[cmd]);
 
@@ -89,6 +91,26 @@ elseif($cmd=="treppenblink")
 
   echo "powercommander.lapcontrol treppenblink mode $real_tbm_value";
   exec("powercommander.lapcontrol treppenblink mode $real_tbm_value");
+}
+elseif($cmd=="canir_teufel")
+{
+  $real_canirteufel_value = "0x00";
+  foreach ($canir_teufel_a as $cirt_key => $cirt_value)
+    if($_GET[value]==$cirt_value || 
+       $_GET[value]==$cirt_key ) $real_canirteufel_value=$cirt_value;
+
+  echo "powercommander.lapcontrol canir teufel $real_canirteufel_value";
+  exec("powercommander.lapcontrol canir teufel $real_canirteufel_value");
+}
+elseif($cmd=="canir_beamer")
+{
+  $real_canirbeamer_value = "0x00";
+  foreach ($canir_beamer_a as $cirb_key => $cirb_value)
+    if($_GET[value]==$cirb_value || 
+       $_GET[value]==$cirb_key ) $real_canirbeamer_value=$cirt_beamer;
+
+  echo "powercommander.lapcontrol canir beamer $real_canirteufel_value";
+  exec("powercommander.lapcontrol canir beamer $real_canirteufel_value");
 }
 elseif($cmd=="save_pos")
 {
