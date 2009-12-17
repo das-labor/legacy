@@ -44,7 +44,7 @@ function set_value(cmd,id,value)
 }
 function treppenblink_cmd(value)
 {
-  new Ajax.Updater('ajax', 'set.php?cmd=treppenblink&id=unused&value='+value,{methode:'get'. onComplete:function {done=true;});
+  new Ajax.Updater('ajax', 'set.php?cmd=treppenblink&value='+value,{method:'get', onComplete:function() {done=true;}} );
 }
 function mpd_cmd(room,cmd,value)
 {
