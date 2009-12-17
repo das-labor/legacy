@@ -94,10 +94,13 @@ foreach($rooms as $room => $port)
 	#exec("export MPD_PORT=$port; mpc",$status);
 	$color=sprintf('#%02X%02X%02X',rand(0,255),rand(0,255),rand(0,255));
 	#$color="#".dechex(rand(0,255)).dechex(rand(0,255)).dechex(rand(0,255));
-	echo "$room<br> <input type=\"button\" id=\"".$room."_pause\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','pause');\" value=\"pause\">";
-	echo "<input type=\"button\" id=\"".$room."_play\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','play');\" value=\"play\">";
-	echo "<input type=\"button\" id=\"".$room."_prev\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','prev');\" value=\"prev\">";
-	echo "<input type=\"button\" id=\"".$room."_next\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','next');\" value=\"next\"><br>";
+	echo "$room";
+	echo "<table width=100%><tr>";
+	echo "<td><input type=\"button\" id=\"".$room."_pause\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','pause');\" value=\"pause\"></td>";
+	echo "<td><input type=\"button\" id=\"".$room."_play\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','play');\" value=\"play\"></td>";
+	echo "<td><input type=\"button\" id=\"".$room."_prev\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','prev');\" value=\"prev\"></td>";
+	echo "<td><input type=\"button\" id=\"".$room."_next\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','next');\" value=\"next\"></td><br>";
+	echo "</tr></table>";
 	echo "<div id=\"".$room."_status\"></div>";
 	#if(strpos($status[0],"volume")===false) echo substr(htmlspecialchars($status[0]),0,24);
 	echo "<div id=\"slider_mpd_volume_$room\" class=\"slider\"> 
@@ -121,7 +124,7 @@ foreach($rooms as $room => $port)
 <br>Treppenblink<br>
 <?
 # button oben, text drunter
-    echo "<table>";
+    echo "<table width=100%>";
   echo "<tr>";
   foreach ($treppenblink_modes as $tbm_key => $tbm_value)
     echo "<td><input type=\"radio\" onclick=\"treppenblink_cmd('".$tbm_value."');\" name=\"treppenblink\" value=\"".$tbm_value."\"></td>";
