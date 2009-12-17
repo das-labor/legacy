@@ -46,6 +46,14 @@ function treppenblink_cmd(value)
 {
   new Ajax.Updater('ajax', 'set.php?cmd=treppenblink&value='+value,{method:'get', onComplete:function() {done=true;}} );
 }
+function canir_beamer_cmd(value)
+{
+  new Ajax.Updater('ajax', 'set.php?cmd=canir_beamer&value='+value,{method:'get', onComplete:function() {done=true;}} );
+}
+function canir_teufel_cmd(value)
+{
+  new Ajax.Updater('ajax', 'set.php?cmd=canir_teufel&value='+value,{method:'get', onComplete:function() {done=true;}} );
+}
 function mpd_cmd(room,cmd,value)
 {
   new Ajax.Updater('ajax', 'mpd.php?cmd='+cmd+'&room='+room+'&value='+value,{method:'get', onComplete:function() {done=true;}} );
@@ -83,7 +91,6 @@ foreach($pwm_ids as $id)
 ?>
 </div>
 </div>
-
 <div id="mpd" class="mpd">
 <div class="mpd_top" on_click="Effect.toggle('mpd_entries','slide');">Music</div>
 <div id="mpd_entries">
@@ -118,7 +125,39 @@ foreach($rooms as $room => $port)
 
 <div id="misc" class="misc">
 <div class="misc_top">Misc</div>
-<input type="button" id="beamer_button" onclick="beamer_on();" value="Beamer on">
+Beamer<br>
+<input type="button" id="beamer_button" onclick="beamer_on();" value="MainPower on"><br>
+<?
+  $beamer_counter=0;
+  echo "<table width=100% border=0 cellpadding=0 cellspacing=0><tr>";
+  foreach ($canir_beamer_a as $cirb_key => $cirb_value){
+    if($beamer_counter==4){
+      echo "</tr><tr>";
+      $beamer_counter=1;
+    } else { 
+      $beamer_counter++;
+    }
+    echo "<td align=center><input type=\"button\" id=\"cirb_".$cirb_key."\" onclick=\"canir_beamer_cmd('".$cirb_value."');\" value=\"".$cirb_key."\"></td>";
+  }
+ echo "</tr></table>";
+?>
+
+Teufel Amp<br>
+<?
+  $teufel_counter=0;
+  echo "<table width=100% border=0 cellpadding=0 cellspacing=0><tr>";
+  foreach ($canir_teufel_a as $cirt_key => $cirt_value){
+    if($teufel_counter==4){
+      echo "</tr><tr>";
+      $teufel_counter=1;
+    } else { 
+      $teufel_counter++;
+    }
+    echo "<td align=center><input type=\"button\" id=\"cirt_".$cirb_key."\" onclick=\"canir_teufel_cmd('".$cirt_value."');\" value=\"".$cirt_key."\"></td>";
+  }
+ echo "</tr></table>";
+?>
+
 <br>Laufschriftborg
 <input type="text"  onchange="text_the_borg(this.value);this.value='';" value="">
 <br>Treppenblink<br>
@@ -133,6 +172,8 @@ foreach($rooms as $room => $port)
    echo "<td>".$tbm_key."</td>";
  echo "</tr></table>";
 ?>
+<br>CanIR<br>
+
 </div>
 <script>
 
