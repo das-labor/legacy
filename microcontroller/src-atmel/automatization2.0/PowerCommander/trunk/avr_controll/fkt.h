@@ -21,6 +21,5 @@ void virt_vortrag_off();
 void virt_vortrag_status(struct t_i2cproto* i2cproto);
 void virt_vortrag_toggle();
 void virt_vortrag_pwm_set(struct t_i2cproto* i2cproto);
-void virt_vortrag_pwm_set_all(uint8_t in_data);
 #endif
 
