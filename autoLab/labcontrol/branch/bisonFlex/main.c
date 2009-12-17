@@ -18,7 +18,6 @@
 #include "cmds-musicd.h"
 #include "cmds-flash.h"
 #include "cansole.h"
-#include "cmds-treppenblink.h"
 
 #include "cmds-powercommander.h"
 // Atmel ; LAP includes
@@ -52,7 +51,6 @@ cmd_t cmds[] = {
   { &cmd_mood,  "mood", "mood ..." ,"control mood device"},
   { &cmd_cansole, "cansole", "cansole <addr> <chan> <subchannel>", "connect to cansole at given address, channel and subchannel" },
   { &cmd_musicd, "musicd", "musicd", "starts a music control daemon in foreground" },
-  { &cmd_treppenblink, "treppenblink", "treppenblink", "mode des treppenblinks" },
   { &cmd_powercommander, "powercommander", "powercommander class object function value ... wiki->Powercommander"},
 //  { &ftk_lampe, "lampe", "lampe ...",  "Control lampe-device" }
   { NULL, NULL, NULL, NULL }
