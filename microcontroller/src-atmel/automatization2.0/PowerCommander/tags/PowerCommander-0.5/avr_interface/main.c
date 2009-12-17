@@ -39,8 +39,8 @@ int main(void)
 	DDRA |= _BV(PA2) | _BV(PA3) | _BV(PA4); // Status LED G R B
 	DDRA &= ~(_BV(PA0) | _BV(PA1)); // Eingänge HS, rcd
 
-	DDRB &= ~_BV(PB2); // Eingang 
-	DDRD &= ~_BV(PD3); // Eingang 
+	DDRB &= ~_BV(PB2); // Eingang
+	DDRD &= ~_BV(PD3); // Eingang
 //	PORTB |= _BV(PB2); // Pullup Taster vortrag
 //	PORTD |= _BV(PD3); // Pullup Taster lounge
 //	_delay_ms(1000);
@@ -70,5 +70,5 @@ int main(void)
 	//AvrXSetSemaphore(&EEPromMutex);
 
 	Epilog();                   // Switch from AvrX Stack to first task
-	while(1);
+	while (1);
 };
