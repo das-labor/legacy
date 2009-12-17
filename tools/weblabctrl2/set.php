@@ -5,6 +5,7 @@ if($_GET[cmd]=="PWM")$cmd="PWM";
 elseif($_GET[cmd]=="SW")$cmd="SW";
 elseif($_GET[cmd]=="beamer_on")$cmd="beamer_on";
 elseif($_GET[cmd]=="text_the_borg")$cmd="text_the_borg";
+elseif($_GET[cmd]=="treppenblink")$cmd="treppenblink";
 elseif($_GET[cmd]=="save_pos")$cmd="save_pos";
 else unset($_GET[cmd]);
 
@@ -78,6 +79,16 @@ elseif($cmd=="text_the_borg")
 	echo "borg";
 	exec("lapcontrol -s rl borg scroll 0x24 '2<5|+30/#".escapeshellcmd($_GET[text])."'");
 	exec("lapcontrol -s rl borg mode 0x24 1");
+}
+elseif($cmd=="treppenblink")
+{
+  $real_tbm_value = "0x00";
+  foreach ($treppenblink_modes as $tbm_key => $tbm_value)
+    if($_GET[value]==$tbm_value || 
+       $_GET[value]==$tbm_key ) $real_tbm_value=$tbm_value;
+
+  echo "powercommander.lapcontrol treppenblink mode $real_tbm_value";
+  exec("powercommander.lapcontrol treppenblink mode $real_tbm_value");
 }
 elseif($cmd=="save_pos")
 {
