@@ -172,7 +172,6 @@ Teufel Amp<br>
    echo "<td>".$tbm_key."</td>";
  echo "</tr></table>";
 ?>
-<br>CanIR<br>
 
 </div>
 <script>
