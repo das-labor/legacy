@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
 	help();
 
 done:
-	cann_close(0);
+	cann_close_singel(conn);
 
 	return 0;
 }

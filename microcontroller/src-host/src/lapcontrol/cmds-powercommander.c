@@ -160,7 +160,7 @@ void cmd_powercommander(int argc, char **argv)
 								 //								 (rx_msg->port_src == POWERCMD_IFACE_PORT)
 								 )
 							{
-								printf("returned: 0x%02x\n",rx_msg->data[0]);
+								printf("returned: 0x%02x\n",rx_msg->cmd);
 								i=MAX_CAN_GET_TRY+1;
 							}
 						can_free(rx_msg);
