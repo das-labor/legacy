@@ -8,11 +8,6 @@
 
 static uint8_t power_stat;
 static uint8_t virt_vortrag_stat;
-static uint8_t virt_vortrag_pwm_dir;
-static uint8_t virt_vortrag_pwm_value;
-
-static uint8_t virt_lounge_pwm_dir;
-static uint8_t virt_lounge_pwm_value;
 
 void switch_fkt(struct t_i2cproto* i2cproto)
 {
@@ -70,27 +65,6 @@ void pwm_fkt(struct t_i2cproto* i2cproto)
 			i2cproto->has_out_data = HASDATA;
 		}
 		break;
-		case F_PWM_MOD:
-			if (virt_lounge_pwm_value == 255)
-				virt_lounge_pwm_dir = 0;
-			if (virt_lounge_pwm_value == 0)
-				virt_lounge_pwm_dir = 1;
-			if (virt_lounge_pwm_dir)
-			{
-				virt_lounge_pwm_value += 15;
-			}
-			else
-			{
-				virt_lounge_pwm_value -= 15;
-			}
-			pwm_set(pwm_matrix[i2cproto->object].port, virt_lounge_pwm_value);
-			break;
-		case F_PWM_DIR:
-			if (virt_lounge_pwm_dir)
-				virt_lounge_pwm_dir = 0;
-			else
-				virt_lounge_pwm_dir = 1;
-			break;
 		default:
 		break;
 	}
@@ -103,12 +77,15 @@ void virt_fkt(struct t_i2cproto* i2cproto)
 		case VIRT_POWER:
 			virt_power(i2cproto);
 			break;
+			
 		case VIRT_VORTRAG:
 			virt_vortrag(i2cproto);
 			break;
+			
 		case VIRT_VORTRAG_PWM:
 			virt_vortrag_pwm_set(i2cproto);
 			break;
+			
 		default:
 			break;
 	}
@@ -165,41 +142,15 @@ void virt_vortrag_pwm_set(struct t_i2cproto* i2cproto)
 	switch (i2cproto->fkt)
 	{
 		case F_PWM_SET:
-			virt_vortrag_pwm_set_all(i2cproto->in_data);
+			pwm_set(pwm_matrix[PWM_TAFEL].port, i2cproto->out_data);
+			pwm_set(pwm_matrix[PWM_BEAMER].port, i2cproto->in_data);
+			pwm_set(pwm_matrix[PWM_SCHRANK].port, i2cproto->in_data);
+			pwm_set(pwm_matrix[PWM_FLIPPER].port, i2cproto->in_data);
 			break;
-		case F_PWM_MOD:
-			if (virt_vortrag_pwm_value == 255)
-				virt_vortrag_pwm_dir = 0;
-			if (virt_vortrag_pwm_value == 0)
-				virt_vortrag_pwm_dir = 1;
-			if (virt_vortrag_pwm_dir)
-			{
-				virt_vortrag_pwm_value += 15;
-				virt_vortrag_pwm_set_all(virt_vortrag_pwm_value);
-			}
-			else
-			{
-				virt_vortrag_pwm_value -= 15;
-				virt_vortrag_pwm_set_all(virt_vortrag_pwm_value);
-			}
-			break;
-		case F_PWM_DIR:
-			if (virt_vortrag_pwm_dir)
-				virt_vortrag_pwm_dir = 0;
-			else
-				virt_vortrag_pwm_dir = 1;
-			break;
+			
 		default:
 			break;
 	}
-}
-
-void virt_vortrag_pwm_set_all(uint8_t in_data)
-{
-	pwm_set(pwm_matrix[PWM_TAFEL].port, in_data);
-	pwm_set(pwm_matrix[PWM_BEAMER].port, in_data);
-	pwm_set(pwm_matrix[PWM_SCHRANK].port, in_data);
-	pwm_set(pwm_matrix[PWM_FLIPPER].port, in_data);
 }
 
 void virt_power_on()
