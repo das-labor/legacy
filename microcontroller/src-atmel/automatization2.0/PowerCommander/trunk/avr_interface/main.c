@@ -32,9 +32,9 @@ void init(void)
 	DDRB &= ~_BV(PB2); // Eingang Lounge Taster
 	DDRD &= ~_BV(PD3); // Eingang Vortrag Taster
 	
-	// wird auf dem dev board gebraucht
-	PORTB |= _BV(PB2);
-	PORTD |= _BV(PD3);
+	//Pullups werden nichtmehr gebraucht
+	//PORTB |= _BV(PB2);
+	//PORTD |= _BV(PD3);
 
 /*
 ** Initiate TWI Master Interface with bitrate of 100000 Hz
