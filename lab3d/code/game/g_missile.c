@@ -24,6 +24,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define	MISSILE_PRESTEP_TIME	50
 
+
+void G_disown (gentity_t *in_ent)
+{
+	in_ent->r.ownerNum = ENTITYNUM_NONE;
+}
+
+
+void G_thinkvoid (gentity_t *in_ent)
+{
+//	G_disown (in_ent);
+	in_ent->nextthink = 10000 + level.time;
+	return;
+}
+
+
 /*
 ================
 G_BounceMissile
@@ -41,7 +56,8 @@ void G_BounceMissile( gentity_t *ent, trace_t *trace ) {
 	dot = DotProduct( velocity, trace->plane.normal );
 	VectorMA( velocity, -2*dot, trace->plane.normal, ent->s.pos.trDelta );
 
-	if ( ent->s.eFlags & EF_BOUNCE_HALF ) {
+	if ( ent->s.eFlags & EF_BOUNCE_HALF )
+	{
 		VectorScale( ent->s.pos.trDelta, 0.65, ent->s.pos.trDelta );
 		// check for stop
 		if ( trace->plane.normal[2] > 0.2 && VectorLength( ent->s.pos.trDelta ) < 40 ) {
@@ -89,6 +105,15 @@ void G_ExplodeMissile( gentity_t *ent ) {
 	}
 
 	trap_LinkEntity( ent );
+}
+
+void G_foamdestroy ( gentity_t *in_self, gentity_t *in_inf, gentity_t *in_att, int in_damage, int in_mod)
+{
+	if (in_inf == in_self)
+		return;
+	in_self->takedamage = qfalse;
+	in_self->think = G_ExplodeMissile;
+	in_self->nextthink = level.time + 10;
 }
 
 
@@ -275,6 +300,28 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 #endif
 	other = &g_entities[trace->entityNum];
 
+	/* stick to surface */
+	if (ent->s.eFlags & EF_STICK && ent->count)
+	{
+		SnapVectorTowards( trace->endpos, ent->s.pos.trBase );
+		G_SetOrigin( ent, trace->endpos );
+		ent->s.pos.trType = TR_STATIONARY;
+		VectorClear( ent->s.pos.trDelta );
+
+		vectoangles( trace->plane.normal, ent->s.angles );
+		ent->s.angles[0] += 90;
+
+		// link the prox mine to the other entity
+		ent->enemy = other;
+		VectorCopy(trace->plane.normal, ent->movedir);
+		VectorSet(ent->r.mins, -4, -4, -4);
+		VectorSet(ent->r.maxs, 4, 4, 4);
+		G_disown (ent);
+		trap_LinkEntity(ent);
+
+		return;
+	}
+
 	// check for bounce
 	if ( !other->takedamage &&
 		( ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF ) ) ) {
@@ -282,6 +329,8 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 		G_AddEvent( ent, EV_GRENADE_BOUNCE, 0 );
 		return;
 	}
+
+
 
 #ifdef MISSIONPACK
 	if ( other->takedamage ) {
@@ -455,14 +504,8 @@ void G_RunMissile( gentity_t *ent ) {
 	// if this missile bounced off an invulnerability sphere
 	if ( ent->target_ent ) {
 		passent = ent->target_ent->s.number;
-	}
-#ifdef MISSIONPACK
-	// prox mines that left the owner bbox will attach to anything, even the owner
-	else if (ent->s.weapon == WP_PROX_LAUNCHER && ent->count) {
-		passent = ENTITYNUM_NONE;
-	}
-#endif
-	else {
+	} else
+	{
 		// ignore interactions with the missile owner
 		passent = ent->r.ownerNum;
 	}
@@ -478,7 +521,7 @@ void G_RunMissile( gentity_t *ent ) {
 		VectorCopy( tr.endpos, ent->r.currentOrigin );
 	}
 
-	trap_LinkEntity( ent );
+	trap_LinkEntity (ent);
 
 	if ( tr.fraction != 1 ) {
 		// never explode or bounce on sky
@@ -495,16 +538,17 @@ void G_RunMissile( gentity_t *ent ) {
 			return;		// exploded
 		}
 	}
-#ifdef MISSIONPACK
 	// if the prox mine wasn't yet outside the player body
-	if (ent->s.weapon == WP_PROX_LAUNCHER && !ent->count) {
+	if (ent->s.eFlags & EF_STICK && !ent->count)
+	{
 		// check if the prox mine is outside the owner bbox
-		trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, ent->r.currentOrigin, ENTITYNUM_NONE, ent->clipmask );
-		if (!tr.startsolid || tr.entityNum != ent->r.ownerNum) {
+		trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, ent->r.currentOrigin, ENTITYNUM_NONE, ent->clipmask);
+		if (!tr.startsolid || tr.entityNum != ent->r.ownerNum)
+		{
+//			ent->s.pos.trType = TR_STATIONARY;
 			ent->count = 1;
 		}
 	}
-#endif
 	// check think function after bouncing
 	G_RunThink( ent );
 }
@@ -589,24 +633,25 @@ gentity_t *fire_plasma (gentity_t *self, vec3_t start, vec3_t dir) {
 fire_foam
 =================
 */
-gentity_t *fire_foam (gentity_t *self, vec3_t start, vec3_t dir) {
+gentity_t *fire_foam (gentity_t *self, vec3_t start, vec3_t dir)
+{
 	gentity_t	*bolt;
 
 	VectorNormalize (dir);
 
 	bolt = G_Spawn();
 	bolt->classname = "foam";
-	bolt->nextthink = 0;		/* we don't need a thinker function */
-	bolt->think = G_ExplodeMissile;	/* doesn't really matter, since this is never executed */
+	bolt->nextthink = 1000 + level.time;		/* we don't need a thinker function */
+	bolt->think = G_thinkvoid;	/* doesn't really matter, since this is never executed */
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_FOAMGUN;
-	bolt->s.eFlags = EF_BOUNCE_HALF;
+	bolt->s.eFlags = EF_STICK;	/* make it sticky */
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
-	bolt->damage = 5;                 /* yes foam is bad for your health ;) */
-	bolt->health = 5;                 /* foam is destroyable */
-	bolt->r.contents = CONTENTS_BODY; /* make foam a solid body */
+	bolt->damage = 1;                 /* yes foam is bad for your health ;) */
+	bolt->health = 15;                 /* foam is destroyable */
+	bolt->r.contents = (CONTENTS_SOLID); // | CONTENTS_BODY); /* make foam a solid body */
 	bolt->takedamage = qtrue;
 	bolt->splashDamage = 0;
 	bolt->splashRadius = 0;
@@ -614,20 +659,22 @@ gentity_t *fire_foam (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->splashMethodOfDeath = MOD_FOAMGUN;
 	bolt->clipmask = MASK_SHOT;
 	bolt->target_ent = NULL;
+	bolt->physicsObject = qtrue;
+	bolt->physicsBounce = 1.0;
+	bolt->count = 0;
 
 	bolt->s.pos.trType = TR_GRAVITY;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
 	VectorCopy( start, bolt->s.pos.trBase );
-	VectorScale( dir, 300, bolt->s.pos.trDelta );
+	VectorScale( dir, 500, bolt->s.pos.trDelta );
 	SnapVector( bolt->s.pos.trDelta );			// save net bandwidth
+	bolt->die = G_foamdestroy;
 
 	/* make foam a 10^3 block */
 	VectorSet (bolt->r.mins, -5,-5,-5);
-	VectorSet (bolt->r.maxs, 5, 5, 5);
+	VectorSet (bolt->r.maxs, 5,5, 5);
 	VectorCopy(bolt->r.maxs, bolt->r.absmax);
-
 	VectorCopy (start, bolt->r.currentOrigin);
-
 	return bolt;
 }
 
