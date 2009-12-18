@@ -1,7 +1,7 @@
 #include <avr/io.h>
 
 #ifdef USE_FEMTOOS
-#include "config_application.h"
+#include "femtoos_code.h"
 #else
 #include "config.h"
 #endif
@@ -21,7 +21,7 @@ extern void spi_init()
 
 
 
-extern Tuint08 spi_send(Tuint08 data)
+extern uint8_t spi_send(uint8_t data)
 {
 	SPDR = data;
 	while (!(SPSR & _BV(SPIF)));

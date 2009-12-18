@@ -57,12 +57,16 @@ all: main.hex
 main.hex: main.elf
 	$(OBJCOPY) -O ihex -R .eeprom  main.elf main.hex
 
-main.elf: femtoos spi can mcp2515 treppenblink.o 
-	 $(GCC) $(LNKFLAGS) -o main.elf  ./src/femtoos_shared.o ./src/femtoos_core.o ./src/femtoos_port.o ./src/femtoos_startup.o ./src/can.o ./src/spi.o treppenblink.o 
+main.elf: femtoos spi can mcp2515 treppenblink.o can_thread.o 
+	 $(GCC) $(LNKFLAGS) -o main.elf  ./src/femtoos_shared.o ./src/femtoos_core.o ./src/femtoos_port.o ./src/femtoos_startup.o ./src/can.o ./src/spi.o treppenblink.o can_thread.o
 #./src/spi.o ./src/xcan.o ./src/mcp2515.o
 
 treppenblink.o: headers
 	$(GCC) $(CFLAGS) -c treppenblink.c -o treppenblink.o
+
+can_thread.o: headers
+	$(GCC) $(CFLAGS) -c can_thread.c -o can_thread.o
+
 clean:
 	rm -f treppenblink.o
 	rm -f treppenblink.i
