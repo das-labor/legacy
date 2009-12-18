@@ -1,7 +1,9 @@
 #ifndef POWERCOMMANDER_SWITCH_H
 #define POWERCOMMANDER_SWITCH_H
 
-void switch_handler();
+extern uint16_t tickscounter;
 
+void switch_handler();
+void switch_timer_init();
 
 #endif
