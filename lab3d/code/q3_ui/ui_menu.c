@@ -33,6 +33,7 @@ MAIN MENU
 
 
 #define ID_MULTIPLAYER			11
+#define ID_DEFGAME			13
 #define ID_SETUP				12
 #define ID_EXIT					17
 
@@ -45,7 +46,7 @@ typedef struct {
 
 	menutext_s		multiplayer;
 	menutext_s		setup;
-	menutext_s		mods;
+	menutext_s		defgame;
 	menutext_s		exit;
 
 	qhandle_t		bannerModel;
@@ -245,19 +246,17 @@ void UI_MainMenu( void ) {
 	s_main.menu.showlogo = qtrue;
 
 	y = 134;
-	s_main.multiplayer.generic.type			= MTYPE_PTEXT;
-	s_main.multiplayer.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_main.multiplayer.generic.x			= 320;
-	s_main.multiplayer.generic.y			= y;
-	s_main.multiplayer.generic.id			= ID_MULTIPLAYER;
-	s_main.multiplayer.generic.callback		= Main_MenuEvent; 
-	s_main.multiplayer.string				= "JOIN DEFGAME";
-	s_main.multiplayer.color				= color_white;
-	s_main.multiplayer.style				= style;
+	s_main.defgame.generic.type			= MTYPE_PTEXT;
+	s_main.defgame.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
+	s_main.defgame.generic.x			= 320;
+	s_main.defgame.generic.y			= y;
+	s_main.defgame.generic.id			= ID_DEFGAME;
+	s_main.defgame.generic.callback		= Main_MenuEvent; 
+	s_main.defgame.string				= "JOIN DEFGAME";
+	s_main.defgame.color				= color_white;
+	s_main.defgame.style				= style;
 
 	y += MAIN_MENU_VERTICAL_SPACING;
-	s_main.setup.generic.type				= MTYPE_PTEXT;
-	s_main.setup.generic.flags				= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_main.multiplayer.generic.type			= MTYPE_PTEXT;
 	s_main.multiplayer.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_main.multiplayer.generic.x			= 320;
@@ -290,6 +289,7 @@ void UI_MainMenu( void ) {
 	s_main.exit.color						= color_white;
 	s_main.exit.style						= style;
 
+	Menu_AddItem( &s_main.menu,	&s_main.defgame );
 	Menu_AddItem( &s_main.menu,	&s_main.multiplayer );
 	Menu_AddItem( &s_main.menu,	&s_main.setup );
 	Menu_AddItem( &s_main.menu,	&s_main.exit );             

@@ -827,6 +827,14 @@ void CG_RegisterWeapon( int weaponNum ) {
 		break;
 
 	case WP_FOAMGUN: /* TODO */
+		weaponInfo->missileModel = trap_R_RegisterModel( "models/ammo/grenade1.md3" );
+		weaponInfo->missileTrailFunc = CG_GrenadeTrail;
+		weaponInfo->wiTrailTime = 1700;
+		weaponInfo->trailRadius = 16;
+		MAKERGB( weaponInfo->flashDlightColor, 1, 0.90f, 0 );
+		weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/click.wav", qfalse );
+		cgs.media.grenadeExplosionShader = trap_R_RegisterShader( "grenadeExplosion" );
+		cgs.media.railRingsShader = trap_R_RegisterShader( "railDisc" );
 	default:
 		MAKERGB( weaponInfo->flashDlightColor, 1, 1, 1 );
 		weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/click.wav", qfalse );

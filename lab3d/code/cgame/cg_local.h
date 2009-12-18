@@ -787,6 +787,9 @@ typedef struct {
 	qhandle_t	bfgExplosionShader;
 	qhandle_t	bloodExplosionShader;
 
+	qhandle_t	foamSprayShader;
+	qhandle_t	foamExplosionShader;
+
 	// special effects models
 	qhandle_t	teleportEffectModel;
 	qhandle_t	teleportEffectShader;
