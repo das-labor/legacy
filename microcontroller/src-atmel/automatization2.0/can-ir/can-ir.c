@@ -21,6 +21,7 @@
 #include <avr/wdt.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include <avr/eeprom.h>
 
 #include "can/can.h"
 #include "can/spi.h"
@@ -30,6 +31,7 @@
 //having these arrays global seems to solve problems
 uint16_t code[128];
 uint8_t codeLen;
+uint8_t myaddr;
 
 //these are the commando codes for the teufel system
 uint16_t teufelCodes[] =
@@ -65,7 +67,7 @@ void can_handler()
 	can_message *rx_msg;
 
 	//get next canmessage in rx_msg that is destined for us
-	if (((rx_msg = can_get_nb()) != 0) && (rx_msg->addr_dst == 0x10))
+	if (((rx_msg = can_get_nb()) != 0) && (rx_msg->addr_dst == myaddr))
 	{
 		PORTD |= _BV(PD7);
 		//handle management functions
@@ -80,7 +82,7 @@ void can_handler()
 		
 				case FKT_MGT_PING:
 
-					msg.addr_src = 0x10;
+					msg.addr_src = myaddr;
 					msg.addr_dst = rx_msg->addr_src;
 					can_transmit(&msg);
 					break;
@@ -179,6 +181,7 @@ void init()
 	//initialize spi port
 	spi_init();
 	
+	myaddr = eeprom_read_byte(0x00);
 	//initialize can communication
 	can_init();
 	
