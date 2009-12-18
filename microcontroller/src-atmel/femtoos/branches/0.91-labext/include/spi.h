@@ -12,6 +12,6 @@
 
 /* prototypes */
 extern void spi_init();
-extern Tuint08 spi_send(Tuint08 data);
+extern uint8_t spi_send(uint8_t data);
 
 #endif

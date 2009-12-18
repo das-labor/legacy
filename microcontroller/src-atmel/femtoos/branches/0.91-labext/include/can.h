@@ -21,18 +21,18 @@
 #include "config.h"
 #endif
 
-typedef Tuint08 can_addr;
-typedef Tuint08 can_port;
-typedef Tuint16 can_channel_t;
-typedef Tuint08 can_subchannel_t;
+typedef uint8_t can_addr;
+typedef uint8_t can_port;
+typedef uint16_t can_channel_t;
+typedef uint8_t can_subchannel_t;
 
 typedef struct {
 	can_addr      addr_src;
 	can_addr      addr_dst;
 	can_port      port_src;
 	can_port      port_dst;
-	Tuint08 dlc;
-	Tuint08 data[8];
+	uint8_t dlc;
+	uint8_t data[8];
 } can_message;
 
 
@@ -58,7 +58,7 @@ typedef enum { normal, mode_sleep, loopback, listenonly, config } can_mode_t ;
  * Global variables
  */
 #ifdef CAN_HANDLEERROR
-  extern Tuint08 can_error;
+  extern uint8_t can_error;
 #endif
 
 
@@ -69,7 +69,7 @@ typedef enum { normal, mode_sleep, loopback, listenonly, config } can_mode_t ;
 void can_init();
 void can_setfilter();
 void can_setmode(can_mode_t);
-void can_setled(Tuint08 led, Tuint08 state);
+void can_setled(uint8_t led, uint8_t state);
 
 
 /*****************************************************************************
@@ -89,6 +89,7 @@ can_message *can_get_nb();
 void can_free(can_message * msg);
 void can_handler();
 
+void can_mgt(can_message *rx_msg);
 /*****************************************************************************
  * Sending
  */
