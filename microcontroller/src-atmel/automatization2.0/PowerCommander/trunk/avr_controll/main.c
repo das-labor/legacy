@@ -65,7 +65,7 @@ int main(void)
 					i2cslave.fkt     = TWIS_ReadAck();
 					i2cslave.in_data = TWIS_ReadNack();
 					i2cslave.has_out_data = HASNDATA;
-					TWIS_Stop();                // I2C stop
+
 					switch(i2cslave.class)
 					{
 						case C_SW:
@@ -93,6 +93,7 @@ int main(void)
 						default:
 						break;
 					}
+					TWIS_Stop();                // I2C stop
 				}
 				break;
 				case TWIS_WriteBytes:
