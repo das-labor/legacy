@@ -1,0 +1,6 @@
+#ifndef POWERCOMMANDER_SWITCH_H
+#define POWERCOMMANDER_SWITCH_H
+
+AVRX_EXTERNTASK(bewegung);
+
+#endif
