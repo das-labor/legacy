@@ -16,6 +16,11 @@
 #define COLOR_ADD ((0x01) << BITSPERLAMP)
 #define COLOR_SUB ((0x02) << BITSPERLAMP)
 
+
+// #define NEED_PINGPONG
+// #define NEED_PINGPONG_BACK
+// #define NEED_EPI
+
 typedef struct {
 	uint16_t red;
 	uint16_t green;
@@ -104,6 +109,7 @@ void band_redraw(element_t *band,uint8_t size)
 	update();
 }
 
+#ifdef NEED_PINGPONG
 /*
   ball ist schon auf dem feld
 */
@@ -126,7 +132,9 @@ void band_pingpong(element_t *band,uint8_t size,uint8_t ballsize,uint16_t speed)
 			_delay_ms(speed);
 		}
 }
+#endif
 
+#ifdef NEED_PINGPONG_BACK
 /*
   ball ist schon auf dem feld
 */
@@ -149,7 +157,7 @@ void band_pingpong_back(element_t *band,uint8_t size,uint8_t ballsize,uint16_t s
 			_delay_ms(speed);
 		}
 }
-
+#endif
 /*
 	hier ueberlagern wir zwei felder. ein basisfeld aka hintergrund
 	(final) und ein neues element (toinsert)
@@ -229,7 +237,7 @@ void band_insert(element_t *final, uint8_t pos, element_t *toinsert, uint8_t siz
 
 		}
 }
-
+#ifdef NEED_EPI
 void band_epi(element_t *band, uint8_t size)
 {
 	uint8_t i;
@@ -266,6 +274,8 @@ void band_epi(element_t *band, uint8_t size)
 		band_redraw(band,size);
 		_delay_ms(20);
 }
+
+#endif
 
 int main(void)
 {
