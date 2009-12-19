@@ -5,9 +5,6 @@ GCC=$(FEMTOOS_AVR_TOOLDIR)/bin/avr-gcc
 CC=$(FEMTOOS_AVR_TOOLDIR)/bin/avr-gcc
 AR=$(FEMTOOS_AVR_TOOLDIR)/bin/avr-ar
 
-LNKFLAGS=$(BASEFLAGS)
-LNKFLAGS+=-Wl,-Map=main.map
-
 FEMTOOS_C_SRC=femtoos_app.c femtoos_core.c femtoos_port.c femtoos_shared.c
 FEMTOOS_ASM_SRC=femtoos_startup.s
 
