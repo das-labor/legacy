@@ -71,6 +71,9 @@ clean:
 	rm -f treppenblink.o
 	rm -f treppenblink.i
 	rm -f treppenblink.s
+	rm -f can_thread.o
+	rm -f can_thread.i
+	rm -f can_thread.s
 	rm -f main.elf
 	rm -f main.map
 	rm -f main.hex
