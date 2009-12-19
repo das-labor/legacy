@@ -1,9 +1,9 @@
-FEMTOOS_AVR_TOOLDIR=/home/alex/labor/femtoos-toolchain
-FEMTOOS_HEADER_DIR=../include
+FEMTOOS_HEADER_DIR:=$(FEMTOOS_SOURCE)/../include
 
 LD=$(FEMTOOS_AVR_TOOLDIR)/bin/avr-ld
 GCC=$(FEMTOOS_AVR_TOOLDIR)/bin/avr-gcc
 CC=$(FEMTOOS_AVR_TOOLDIR)/bin/avr-gcc
+AR=$(FEMTOOS_AVR_TOOLDIR)/bin/avr-ar
 
 LNKFLAGS=$(BASEFLAGS)
 LNKFLAGS+=-Wl,-Map=main.map
@@ -13,17 +13,23 @@ FEMTOOS_ASM_SRC=femtoos_startup.s
 
 all: spi mcp2515 femtoos can
 
+
 spi: spi.o
+	@echo $(FEMTOOS_LIB_DIR)
+	$(AR) -crs $(FEMTOOS_LIB_DIR)/spi.a spi.o
 	@echo ""
 	@echo "########### spi done"
 	@echo ""
 
 femtoos: femtoos_core.o femtoos_port.o femtoos_shared.o femtoos_startup.o
+	$(AR) -crs $(FEMTOOS_LIB_DIR)/femtoos.a femtoos_core.o femtoos_port.o femtoos_shared.o 
+	cp femtoos_startup.o $(FEMTOOS_LIB_DIR)/
 	@echo ""
 	@echo "########### femtoos done"
 	@echo ""
 
 can: can.o
+	$(AR) -crs $(FEMTOOS_LIB_DIR)/can_base.a can.o
 	@echo ""
 	@echo "########### can done"
 	@echo ""
@@ -42,7 +48,7 @@ femtoos_port.o: headers
 femtoos_shared.o: headers
 	$(GCC) $(CFLAGS) -c femtoos_shared.c -o femtoos_shared.o
 
-can.o: headers $(FEMTOOS_HEADER_DIR)/xcan.h
+can.o: headers $(FEMTOOS_HEADER_DIR)/can.h
 	$(GCC) $(CFLAGS) -c can.c -o can.o
 
 spi.o: headers $(FEMTOOS_HEADER_DIR)/spi.h
@@ -72,23 +78,25 @@ clean:
 	rm -f spi.o
 	rm -f spi.i
 	rm -f spi.s
-	rm -f xcan.o
-	rm -f xcan.i
-	rm -f xcan.s
+	rm -f can.o
+	rm -f can.i
+	rm -f can.s
 	rm -f mcp2515.o
 	rm -f mcp2515.i
 	rm -f mcp2515.s
+	rm -f $(FEMTOOS_LIB_DIR)/spi.a
+	rm -f $(FEMTOOS_LIB_DIR)/can_base.a
+	rm -f $(FEMTOOS_LIB_DIR)/femtoos.a
+
 
 
 headers: $(FEMTOOS_HEADER_DIR)/femtoos_check.h $(FEMTOOS_HEADER_DIR)/femtoos_code.h $(FEMTOOS_HEADER_DIR)/femtoos_config.h $(FEMTOOS_HEADER_DIR)/femtoos_constants.h $(FEMTOOS_HEADER_DIR)/femtoos_core.h $(FEMTOOS_HEADER_DIR)/femtoos_device.h $(FEMTOOS_HEADER_DIR)/femtoos_globals.h $(FEMTOOS_HEADER_DIR)/femtoos_locals.h $(FEMTOOS_HEADER_DIR)/femtoos_order.h $(FEMTOOS_HEADER_DIR)/femtoos_port.h $(FEMTOOS_HEADER_DIR)/femtoos_shared.h $(FEMTOOS_HEADER_DIR)/femtoos_types.h
 
-$(FEMTOOS_HEADER_DIR)/xcan.h: $(FEMTOOS_HEADER_DIR)/spi.h $(FEMTOOS_HEADER_DIR)/mcp2515.h
+$(FEMTOOS_HEADER_DIR)/can.h: $(FEMTOOS_HEADER_DIR)/spi.h $(FEMTOOS_HEADER_DIR)/mcp2510.h
 
 $(FEMTOOS_HEADER_DIR)/spi.h:
 
-$(FEMTOOS_HEADER_DIR)/mcp2515.h: $(FEMTOOS_HEADER_DIR)/mcp2515reg.h
-
-$(FEMTOOS_HEADER_DIR)/mcp2515reg.h:
+$(FEMTOOS_HEADER_DIR)/mcp2510.h: 
 
 $(FEMTOOS_HEADER_DIR)/femtoos_check.h:
 

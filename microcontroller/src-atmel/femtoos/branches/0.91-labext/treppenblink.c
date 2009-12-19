@@ -245,6 +245,12 @@ static void updateLEDs()
   //  taskExitGlobalCritical();
 }
 
+void can_user_cmd(can_message *rx_msg)
+{
+  blinkmode = rx_msg->data[0];
+}
+
+
 #if (preTaskDefined(rundown))
 
 void appLoop_rundown(void)

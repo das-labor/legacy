@@ -2,7 +2,6 @@
 #include "can.h"
 #include "lap.h"
 
-extern Tuint08 blinkmode;
 void can_handler()
 {
   can_message *rx_msg;
@@ -15,7 +14,7 @@ void can_handler()
 	}
       else if (rx_msg->port_dst == CANPORT)
 	{
-	  blinkmode = rx_msg->data[0];
+	  can_user_cmd(rx_msg);
 	}
     }
 }

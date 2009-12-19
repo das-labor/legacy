@@ -1,17 +1,26 @@
 FEMTOOS_AVR_TOOLDIR=/home/alex/labor/femtoos-toolchain/
-FEMTOOS_HEADER_DIR=./include
-FEMTOOS_APPLICATION_CONFIG_DIR=./
 
+FEMTOOS_SOURCE=./
+FEMTOOS_APPLICATION_CONFIG_DIR=./
 TARGET=atmega8
 
+################ can address and port
 MY_CANADDR=0x25
 MY_CANPORT=0x0f
 
+FEMTOOS_HEADER_DIR=$(FEMTOOS_SOURCE)/include
+FEMTOOS_DIR=$(FEMTOOS_SOURCE)/src
+FEMTOOS_APPLICATIONS_DIR=$(FEMTOOS_SOURCE)/applications
+FEMTOOS_LIB_DIR=$(FEMTOOS_SOURCE)/lib
+
+################ compiletime application
 LD=$(FEMTOOS_AVR_TOOLDIR)/bin/avr-ld
 GCC=$(FEMTOOS_AVR_TOOLDIR)/bin/avr-gcc
 CC=$(FEMTOOS_AVR_TOOLDIR)/bin/avr-gcc
 OBJCOPY=$(FEMTOOS_AVR_TOOLDIR)/bin/avr-objcopy
+AR=$(FEMTOOS_AVR_TOOLDIR)/bin/avr-ar
 
+################ Basic compile options 
 BASEFLAGS= -save-temps
 BASEFLAGS+= -mint8
 BASEFLAGS+= -Wl,--defsym=__stack=xOS+xOSstackShift
@@ -31,7 +40,7 @@ BASEFLAGS+= -fpack-struct
 BASEFLAGS+= -fshort-enums
 BASEFLAGS+= -mmcu=$(TARGET)
 
-
+############### CFLAGS
 CFLAGS=$(BASEFLAGS)
 #includes
 CFLAGS+= -DdefExtReduceProEpilogue=cfgBikini 
@@ -43,12 +52,14 @@ CFLAGS+= -I./include -I./src -I./devices
 CFLAGS+= -I../include -I../src -I../devices
 CFLAGS+= -I$(FEMTOOS_APPLICATION_CONFIG_DIR) -I../$(FEMTOOS_APPLICATION_CONFIG_DIR)
 
+############## Assenbler Flags
 ASMFLAGS=$(CFLAGS)
 ASMFLAGS+=-x assembler-with-cpp 
 ASMFLAGS+=-I./include -I./src -I./devices
 ASMFLAGS+=-I../include -I../src -I../devices
 ASMFLAGS+= -I$(FEMTOOS_APPLICATION_CONFIG_DIR) -I../$(FEMTOOS_APPLICATION_CONFIG_DIR)
 
+############## Linker Flags
 LNKFLAGS=$(BASEFLAGS)
 LNKFLAGS+=-Wl,-Map=main.map
 
@@ -57,36 +68,43 @@ all: main.hex
 main.hex: main.elf
 	$(OBJCOPY) -O ihex -R .eeprom  main.elf main.hex
 
-main.elf: femtoos spi can mcp2515 treppenblink.o can_thread.o 
-	 $(GCC) $(LNKFLAGS) -o main.elf  ./src/femtoos_shared.o ./src/femtoos_core.o ./src/femtoos_port.o ./src/femtoos_startup.o ./src/can.o ./src/spi.o treppenblink.o can_thread.o
-#./src/spi.o ./src/xcan.o ./src/mcp2515.o
+main.elf: spi femtoos can_base mcp2515 application treppenblink.o 
+	 $(GCC) $(LNKFLAGS) -o main.elf  treppenblink.o $(FEMTOOS_LIB_DIR)/femtoos_startup.o $(FEMTOOS_LIB_DIR)/femtoos.a $(FEMTOOS_LIB_DIR)/spi.a $(FEMTOOS_LIB_DIR)/can_base.a $(FEMTOOS_LIB_DIR)/application.a
 
-treppenblink.o: headers
+treppenblink.o: headers 
 	$(GCC) $(CFLAGS) -c treppenblink.c -o treppenblink.o
-
-can_thread.o: headers
-	$(GCC) $(CFLAGS) -c can_thread.c -o can_thread.o
 
 clean:
 	rm -f treppenblink.o
 	rm -f treppenblink.i
 	rm -f treppenblink.s
-	rm -f can_thread.o
-	rm -f can_thread.i
-	rm -f can_thread.s
 	rm -f main.elf
 	rm -f main.map
 	rm -f main.hex
-	make TARGET=$(TARGET) -C ./src clean
+	make FEMTOOS_LIB_DIR=../$(FEMTOOS_LIB_DIR) FEMTOOS_AVR_TOOLDIR=$(FEMTOOS_AVR_TOOLDIR) FEMTOOS_SOURCE=$(FEMTOOS_SOURCE) TARGET=$(TARGET) CFLAGS='$(CFLAGS)' ASMFLAGS='$(ASMFLAGS)' -C $(FEMTOOS_DIR) clean
+	make FEMTOOS_LIB_DIR=../$(FEMTOOS_LIB_DIR) FEMTOOS_AVR_TOOLDIR=$(FEMTOOS_AVR_TOOLDIR) FEMTOOS_SOURCE=$(FEMTOOS_SOURCE) TARGET=$(TARGET) CFLAGS='$(CFLAGS)' ASMFLAGS='$(ASMFLAGS)' -C $(FEMTOOS_APPLICATIONS_DIR) clean
 
-femtoos:
-	make TARGET=$(TARGET) CFLAGS='$(CFLAGS)' ASMFLAGS='$(ASMFLAGS)' -C ./src femtoos
+femtoos: $(FEMTOOS_LIB_DIR)/femtoos.a
 
-spi:
-	make TARGET=$(TARGET) CFLAGS='$(CFLAGS)' ASMFLAGS='$(ASMFLAGS)' -C ./src spi
+$(FEMTOOS_LIB_DIR)/femtoos.a:
+	make FEMTOOS_LIB_DIR=../$(FEMTOOS_LIB_DIR) FEMTOOS_AVR_TOOLDIR=$(FEMTOOS_AVR_TOOLDIR) FEMTOOS_SOURCE=$(FEMTOOS_SOURCE) TARGET=$(TARGET) CFLAGS='$(CFLAGS)' ASMFLAGS='$(ASMFLAGS)' -C $(FEMTOOS_DIR) femtoos
 
-can:
-	make TARGET=$(TARGET) CFLAGS='$(CFLAGS)' ASMFLAGS='$(ASMFLAGS)' -C ./src can
+$(FEMTOOS_LIB_DIR)/femtoos_startup.o: femtoos
+
+spi: $(FEMTOOS_LIB_DIR)/spi.a
+
+$(FEMTOOS_LIB_DIR)/spi.a:
+	make FEMTOOS_LIB_DIR=../$(FEMTOOS_LIB_DIR) FEMTOOS_AVR_TOOLDIR=$(FEMTOOS_AVR_TOOLDIR) FEMTOOS_SOURCE=$(FEMTOOS_SOURCE) TARGET=$(TARGET) CFLAGS='$(CFLAGS)' ASMFLAGS='$(ASMFLAGS)' -C $(FEMTOOS_DIR) spi
+
+can_base: $(FEMTOOS_LIB_DIR)/can_base.a
+
+$(FEMTOOS_LIB_DIR)/can_base.a: spi
+	make FEMTOOS_LIB_DIR=../$(FEMTOOS_LIB_DIR) FEMTOOS_AVR_TOOLDIR=$(FEMTOOS_AVR_TOOLDIR) FEMTOOS_SOURCE=$(FEMTOOS_SOURCE) TARGET=$(TARGET) CFLAGS='$(CFLAGS)' ASMFLAGS='$(ASMFLAGS)' -C $(FEMTOOS_DIR) can
+
+application: $(FEMTOOS_LIB_DIR)/application.a
+
+$(FEMTOOS_LIB_DIR)/application.a: can_base
+	make FEMTOOS_LIB_DIR=../$(FEMTOOS_LIB_DIR) FEMTOOS_AVR_TOOLDIR=$(FEMTOOS_AVR_TOOLDIR) FEMTOOS_SOURCE=$(FEMTOOS_SOURCE) TARGET=$(TARGET) CFLAGS='$(CFLAGS)' ASMFLAGS='$(ASMFLAGS)' -C $(FEMTOOS_APPLICATIONS_DIR) all
 
 mcp2515:
 #	make CANADDR=${CANADDR} TARGET=$(TARGET) CFLAGS='$(CFLAGS)' ASMFLAGS='$(ASMFLAGS)' -C ./src mcp2515
