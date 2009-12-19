@@ -126,10 +126,10 @@ foreach($rooms as $room => $port)
 <div id="misc" class="misc">
 <div class="misc_top">Misc</div>
 Beamer<br>
-<input type="button" id="beamer_button" onclick="beamer_on();" value="MainPower on"><br>
 <?
-  $beamer_counter=0;
+  $beamer_counter=1;
   echo "<table width=100% border=0 cellpadding=0 cellspacing=0><tr>";
+  echo "<td align=center><input type=\"button\" id=\"beamer_button\" onclick=\"beamer_on();\" value=\"MainPower on\"></td>";  
   foreach ($canir_beamer_a as $cirb_key => $cirb_value){
     if($beamer_counter==4){
       echo "</tr><tr>";
@@ -139,10 +139,18 @@ Beamer<br>
     }
     echo "<td align=center><input type=\"button\" id=\"cirb_".$cirb_key."\" onclick=\"canir_beamer_cmd('".$cirb_value."');\" value=\"".$cirb_key."\"></td>";
   }
- echo "</tr></table>";
+echo "</tr></table>";
+$beamer_counter=0;
+echo "source select: <select onchange=\"canir_beamer_cmd('this.form.beamerSource.options[this.form.beamerSource.selectedIndex].value');\" name=\"beamerSource\" size=\"1\">";
+
+
+  foreach ($canir_beamer_a_channel as $cirb_key => $cirb_value){
+    echo "<option value=\"".$cirb_value."\">".$cirb_key."</option>";
+  }
+ echo "</select>";
 ?>
 
-Teufel Amp<br>
+<br>Teufel Amp<br>
 <?
   $teufel_counter=0;
   echo "<table width=100% border=0 cellpadding=0 cellspacing=0><tr>";
@@ -156,9 +164,17 @@ Teufel Amp<br>
     echo "<td align=center><input type=\"button\" id=\"cirt_".$cirb_key."\" onclick=\"canir_teufel_cmd('".$cirt_value."');\" value=\"".$cirt_key."\"></td>";
   }
  echo "</tr></table>";
+echo "source select: <select onchange=\"canir_teufel_cmd('this.form.teufelSource.options[this.form.teufelSource.selectedIndex].value');\" name=\"teufelSource\" size=\"1\">";
+
+
+  foreach ($canir_teufel_a_channel as $cirb_key => $cirb_value){
+    echo "<option value=\"".$cirb_value."\">".$cirb_key."</option>";
+  }
+ echo "</select>";
+
 ?>
 
-<br>Laufschriftborg
+<br>Laufschriftborg<br>
 <input type="text"  onchange="text_the_borg(this.value);this.value='';" value="">
 <br>Treppenblink<br>
 <?
