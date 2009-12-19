@@ -45,8 +45,8 @@ int main(void)
 	xlap_init();
 
 	AvrXRunTask(TCB(laptask));
-	AvrXRunTask(TCB(bewegung));
-	//AvrXRunTask(TCB(led));
+	//AvrXRunTask(TCB(bewegung));
+	AvrXRunTask(TCB(led));
 
 
 	Epilog();                   // Switch from AvrX Stack to first task
