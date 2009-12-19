@@ -3,5 +3,3 @@ treppenblink.i
 main.hex
 main.elf
 treppenblink.s
-can_thread.i
-can_thread.s

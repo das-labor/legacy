@@ -90,6 +90,9 @@ void can_free(can_message * msg);
 void can_handler();
 
 void can_mgt(can_message *rx_msg);
+void can_user_cmd(can_message *rx_msg);
+
+
 /*****************************************************************************
  * Sending
  */
