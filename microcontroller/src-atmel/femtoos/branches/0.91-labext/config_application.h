@@ -79,7 +79,7 @@
 #define  cfgSysClockDivider                      1
 #define  cfgSysSubTicksPerFullTick               32
 #define  cfgSysSubTickDivider                    256
-#define  cfgSysGCCstartup                        cfgOverride
+#define  cfgSysGCCstartup                        cfgKeep
 #define  cfgSysFsStorageSpace                    0
 
 
