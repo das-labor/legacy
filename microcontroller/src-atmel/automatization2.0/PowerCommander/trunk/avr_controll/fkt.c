@@ -9,7 +9,6 @@
 static uint8_t power_stat;
 static uint8_t virt_vortrag_stat;
 static uint8_t virt_vortrag_pwm_dir;
-static uint8_t virt_vortrag_pwm_value;
 
 static uint8_t virt_lounge_pwm_dir;
 
@@ -172,29 +171,83 @@ void virt_vortrag(struct t_i2cproto* i2cproto)
 	}
 }
 
+
+//increase/decrease value if given min/max is larger/smaller than value before
+void virt_vortrag_pwm_set_all(uint8_t min, uint8_t max)
+{
+	uint8_t objs[] = {PWM_TAFEL, PWM_BEAMER, PWM_SCHRANK, PWM_FLIPPER};
+	uint8_t tmp;
+	uint8_t x;
+
+	for(x=0;x<sizeof(objs);x++){
+		pwm_get(pwm_matrix[objs[x]].port, &tmp);
+		if(tmp < min) tmp = min;
+		if(tmp > max) tmp = max;
+		pwm_set(pwm_matrix[objs[x]].port, tmp);
+	}
+}
+
+uint8_t pwm_vortrag_get_min(){
+	uint8_t objs[] = {PWM_TAFEL, PWM_BEAMER, PWM_SCHRANK, PWM_FLIPPER};
+	uint8_t tmp;
+	uint8_t x;
+	uint8_t min = 255;
+
+	for(x=0;x<sizeof(objs);x++){
+		pwm_get(pwm_matrix[objs[x]].port, &tmp);
+		if(tmp < min) min = tmp;
+	}
+	
+	return min;
+}
+
+uint8_t pwm_vortrag_get_max(){
+	uint8_t objs[] = {PWM_TAFEL, PWM_BEAMER, PWM_SCHRANK, PWM_FLIPPER};
+	uint8_t tmp;
+	uint8_t x;
+	uint8_t max = 0;
+
+	for(x=0;x<sizeof(objs);x++){
+		pwm_get(pwm_matrix[objs[x]].port, &tmp);
+		if(tmp > max) max = tmp;
+	}
+	
+	return max;
+}
+
+
 void virt_vortrag_pwm_set(struct t_i2cproto* i2cproto)
 {
 	switch (i2cproto->fkt)
 	{
 		case F_PWM_SET:
-			virt_vortrag_pwm_set_all(i2cproto->in_data);
+			virt_vortrag_pwm_set_all(i2cproto->in_data, i2cproto->in_data);
 			break;
-		case F_PWM_MOD:
-			if (virt_vortrag_pwm_value == 255)
-				virt_vortrag_pwm_dir = 0;
-			if (virt_vortrag_pwm_value == 0)
-				virt_vortrag_pwm_dir = 1;
-			if (virt_vortrag_pwm_dir)
-			{
-				virt_vortrag_pwm_value += 15;
-				virt_vortrag_pwm_set_all(virt_vortrag_pwm_value);
+		case F_PWM_MOD:{
+			uint8_t val;
+
+			if(virt_vortrag_stat == 0){
+				virt_vortrag_on();
+				virt_vortrag_pwm_set_all(0,0);
 			}
-			else
-			{
-				virt_vortrag_pwm_value -= 15;
-				virt_vortrag_pwm_set_all(virt_vortrag_pwm_value);
+
+			if(virt_vortrag_pwm_dir == 1){
+				val = pwm_vortrag_get_min();
+				if(val == 255){
+					virt_vortrag_pwm_dir = 0;
+				}else{
+					virt_vortrag_pwm_set_all(val+1, 255);
+				}
+			}else{
+				val = pwm_vortrag_get_max();
+				if(val == 0){
+					virt_vortrag_pwm_dir = 1;
+				}else{
+					virt_vortrag_pwm_set_all(0, val-1);
+				}
 			}
-			break;
+			
+			}break;
 		case F_PWM_DIR:
 			if (virt_vortrag_pwm_dir)
 				virt_vortrag_pwm_dir = 0;
@@ -206,13 +259,6 @@ void virt_vortrag_pwm_set(struct t_i2cproto* i2cproto)
 	}
 }
 
-void virt_vortrag_pwm_set_all(uint8_t in_data)
-{
-	pwm_set(pwm_matrix[PWM_TAFEL].port, in_data);
-	pwm_set(pwm_matrix[PWM_BEAMER].port, in_data);
-	pwm_set(pwm_matrix[PWM_SCHRANK].port, in_data);
-	pwm_set(pwm_matrix[PWM_FLIPPER].port, in_data);
-}
 
 void virt_power_on()
 {
