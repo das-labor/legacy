@@ -2,7 +2,6 @@
 #include "config.h"
 #include <avr/io.h>
 
-#include <avrx-io.h>
 
 #include <stdint.h>
 #include <avr/interrupt.h>
