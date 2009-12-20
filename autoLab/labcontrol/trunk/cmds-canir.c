@@ -81,9 +81,8 @@ argerror:
 	printf("\t 0x02 \t - VGA\n");
 	printf("\t 0x03 \t - DVI\n");
 	printf("\t 0x04 \t - s-video\n");
-	printf("\t 0x05 \t - video\n");
-	printf("\t 0x06 \t - component\n");
-	printf("\t 0x07 \t - blank\n");
+	printf("\t 0x05 \t - component\n");
+	printf("\t 0x06 \t - blank\n");
 
 }
 
