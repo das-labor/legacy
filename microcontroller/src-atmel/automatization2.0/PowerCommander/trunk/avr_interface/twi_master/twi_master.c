@@ -188,7 +188,8 @@ extern uint8_t TWIM_Start(uint8_t Address, uint8_t TWIM_Type)
 ** Check value of TWI Status Register. Mask prescaler bits.
 */
 	twst = TWSR & 0xF8;
-	if ((twst != TWI_START) && (twst != TWI_REP_START)) return 0;
+	if ((twst != TWI_START) && (twst != TWI_REP_START))
+		return 0;
 /*
 ** Send device address
 */
@@ -202,7 +203,8 @@ extern uint8_t TWIM_Start(uint8_t Address, uint8_t TWIM_Type)
 ** Check value of TWI Status Register. Mask prescaler bits.
 */
 	twst = TWSR & 0xF8;
-	if ((twst != TWI_MTX_ADR_ACK) && (twst != TWI_MRX_ADR_ACK)) return 0;
+	if ((twst != TWI_MTX_ADR_ACK) && (twst != TWI_MRX_ADR_ACK))
+		return 0;
 
 	return 1;
 }
