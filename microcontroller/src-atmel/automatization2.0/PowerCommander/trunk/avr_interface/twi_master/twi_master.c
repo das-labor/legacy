@@ -258,7 +258,8 @@ extern uint8_t TWIM_Write(uint8_t byte)
 ** Check value of TWI Status Register. Mask prescaler bits
 */
 	twst = TWSR & 0xF8;
-	if (twst != TWI_MTX_DATA_ACK) return 1;
+	if (twst != TWI_MTX_DATA_ACK)
+		return 1;
 
 	return 0;
 }
