@@ -1,1 +1,0 @@
-AVRX_EXTERNTASK(switchtask);
