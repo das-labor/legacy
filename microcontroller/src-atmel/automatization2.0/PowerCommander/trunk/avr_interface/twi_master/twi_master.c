@@ -38,7 +38,7 @@ int main (void)
 // Read byte(s) from the slave.
 // It is implicitely assumed, that the slave will send
 // 8 bytes.
-    	if (!TWIM_Start (SlaveAddress, TWIM_READ))
+    	if (!TWIM_Start (SlaveAddress, TW_READ))
 			{
 			TWIM_Stop ();
 			printf ("Could not start TWI Bus for READ\n");
@@ -59,7 +59,7 @@ int main (void)
 // It is implicitely assumed, that the slave will
 // accepts 8 bytes
 
-    	if (!TWIM_Start (SlaveAddress, TWIM_WRITE))
+    	if (!TWIM_Start (SlaveAddress, TW_WRITE))
 			{
 			TWIM_Stop ();
 			printf ("Could not start TWI Bus for WRITE\n");
@@ -85,52 +85,11 @@ int main (void)
  ********************************************************/
 #include <stdio.h>
 #include <avr/interrupt.h>
+#include <util/twi.h>
 
-//#include "general.h"
 #include "twi_master.h"
 #include "../config.h"
 
-/****************************************************************************
-  TWI State codes
-****************************************************************************/
-// General TWI Master staus codes                      
-#define TWI_START					0x08  // START has been transmitted  
-#define TWI_REP_START				0x10  // Repeated START has been transmitted
-#define TWI_ARB_LOST				0x38  // Arbitration lost
-
-// TWI Master Transmitter staus codes                      
-#define TWI_MTX_ADR_ACK				0x18  // SLA+W has been tramsmitted and ACK received
-#define TWI_MTX_ADR_NACK			0x20  // SLA+W has been tramsmitted and NACK received 
-#define TWI_MTX_DATA_ACK			0x28  // Data byte has been tramsmitted and ACK received
-#define TWI_MTX_DATA_NACK			0x30  // Data byte has been tramsmitted and NACK received 
-
-// TWI Master Receiver staus codes  
-#define TWI_MRX_ADR_ACK				0x40  // SLA+R has been tramsmitted and ACK received
-#define TWI_MRX_ADR_NACK			0x48  // SLA+R has been tramsmitted and NACK received
-#define TWI_MRX_DATA_ACK			0x50  // Data byte has been received and ACK tramsmitted
-#define TWI_MRX_DATA_NACK			0x58  // Data byte has been received and NACK tramsmitted
-
-// TWI Slave Transmitter staus codes
-#define TWI_STX_ADR_ACK				0xA8  // Own SLA+R has been received; ACK has been returned
-#define TWI_STX_ADR_ACK_M_ARB_LOST	0xB0  // Arbitration lost in SLA+R/W as Master; own SLA+R has been received; ACK has been returned
-#define TWI_STX_DATA_ACK			0xB8  // Data byte in TWDR has been transmitted; ACK has been received
-#define TWI_STX_DATA_NACK			0xC0  // Data byte in TWDR has been transmitted; NOT ACK has been received
-#define TWI_STX_DATA_ACK_LAST_BYTE	0xC8  // Last data byte in TWDR has been transmitted (TWEA = “0”); ACK has been received
-
-// TWI Slave Receiver staus codes
-#define TWI_SRX_ADR_ACK				0x60  // Own SLA+W has been received ACK has been returned
-#define TWI_SRX_ADR_ACK_M_ARB_LOST	0x68  // Arbitration lost in SLA+R/W as Master; own SLA+W has been received; ACK has been returned
-#define TWI_SRX_GEN_ACK				0x70  // General call address has been received; ACK has been returned
-#define TWI_SRX_GEN_ACK_M_ARB_LOST	0x78  // Arbitration lost in SLA+R/W as Master; General call address has been received; ACK has been returned
-#define TWI_SRX_ADR_DATA_ACK		0x80  // Previously addressed with own SLA+W; data has been received; ACK has been returned
-#define TWI_SRX_ADR_DATA_NACK		0x88  // Previously addressed with own SLA+W; data has been received; NOT ACK has been returned
-#define TWI_SRX_GEN_DATA_ACK		0x90  // Previously addressed with general call; data has been received; ACK has been returned
-#define TWI_SRX_GEN_DATA_NACK		0x98  // Previously addressed with general call; data has been received; NOT ACK has been returned
-#define TWI_SRX_STOP_RESTART		0xA0  // A STOP condition or repeated START condition has been received while still addressed as Slave
-
-// TWI Miscellaneous status codes
-#define TWI_NO_STATE				0xF8  // No relevant state information available; TWINT = “0”
-#define TWI_BUS_ERROR				0x00  // Bus error due to an illegal START or STOP condition
 
 /*******************************************************
  Public Function: TWIM_Init
@@ -157,6 +116,7 @@ extern uint8_t TWIM_Init(uint32_t TWI_Bitrate)
 
 	return 1;
 }
+
 /*******************************************************
  Public Function: TWIM_Start
 
@@ -179,31 +139,31 @@ extern uint8_t TWIM_Start(uint8_t Address, uint8_t TWIM_Type)
 /*
 ** Send START condition
 */
-	TWCR = (1<<TWINT)|(1<<TWSTA)|(1<<TWEN);
+	TWCR = _BV(TWINT)|_BV(TWSTA)|_BV(TWEN);
 /*
 ** Wait until transmission completed
 */
-	while (!(TWCR & (1<<TWINT)));
+	while (!(TWCR & _BV(TWINT)));
 /*
 ** Check value of TWI Status Register. Mask prescaler bits.
 */
-	twst = TWSR & 0xF8;
-	if ((twst != TWI_START) && (twst != TWI_REP_START))
+	twst = TW_STATUS;
+	if ((twst != TW_START) && (twst != TW_REP_START))
 		return 0;
 /*
 ** Send device address
 */
 	TWDR = (Address<<1) + TWIM_Type;
-	TWCR = (1<<TWINT)|(1<<TWEN);
+	TWCR = _BV(TWINT)|_BV(TWEN);
 /*
 ** Wait until transmission completed and ACK/NACK has been received
 */
-	while (!(TWCR & (1<<TWINT)));
+	while (!(TWCR & _BV(TWINT)));
 /*
 ** Check value of TWI Status Register. Mask prescaler bits.
 */
-	twst = TWSR & 0xF8;
-	if ((twst != TWI_MTX_ADR_ACK) && (twst != TWI_MRX_ADR_ACK))
+	twst = TW_STATUS;
+	if ((twst != TW_MT_SLA_ACK) && (twst != TW_MR_SLA_ACK))
 		return 0;
 
 	return 1;
@@ -223,11 +183,11 @@ extern void TWIM_Stop (void)
 /*
 ** Send stop condition
 */
-	TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
+	TWCR = _BV(TWINT)|_BV(TWEN)|_BV(TWSTO);
 /*
 ** Wait until stop condition is executed and bus released
 */
-	while (TWCR & (1<<TWSTO));
+	while (TWCR & _BV(TWSTO));
 }
 /*******************************************************
  Public Function: TWIM_Write
@@ -238,8 +198,8 @@ extern void TWIM_Stop (void)
  	- uint8_t	Byte to be sent
 
  Return Value: uint8_t
-  	- TRUE:		OK, Byte sent
- 	- FALSE:	Error in byte transmission
+  	- TRUE:		Error in byte transmission
+ 	- FALSE:	OK, Byte sent
 
 *******************************************************/
 extern uint8_t TWIM_Write(uint8_t byte)
@@ -249,16 +209,16 @@ extern uint8_t TWIM_Write(uint8_t byte)
 ** Send data to the previously addressed device
 */
 	TWDR = byte;
-	TWCR = (1<<TWINT)|(1<<TWEN);
+	TWCR = _BV(TWINT)|_BV(TWEN);
 /*
 ** Wait until transmission completed
 */
-	while (!(TWCR & (1<<TWINT)));
+	while (!(TWCR & _BV(TWINT)));
 /*
 ** Check value of TWI Status Register. Mask prescaler bits
 */
-	twst = TWSR & 0xF8;
-	if (twst != TWI_MTX_DATA_ACK)
+	twst = TW_STATUS;
+	if (twst != TW_MT_DATA_ACK)
 		return 1;
 
 	return 0;
@@ -276,8 +236,8 @@ extern uint8_t TWIM_Write(uint8_t byte)
 *******************************************************/
 extern uint8_t TWIM_ReadAck(void)
 {
-	TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWEA);
-	while (!(TWCR & (1<<TWINT)));    
+	TWCR = _BV(TWINT)|_BV(TWEN)|_BV(TWEA);
+	while (!(TWCR & _BV(TWINT)));
 
 	return TWDR;
 }
@@ -294,8 +254,9 @@ extern uint8_t TWIM_ReadAck(void)
 *******************************************************/
 extern uint8_t TWIM_ReadNack(void)
 {
-	TWCR = (1<<TWINT)|(1<<TWEN);
-	while (!(TWCR & (1<<TWINT)));
-	
+	TWCR = _BV(TWINT)|_BV(TWEN);
+	while (!(TWCR & _BV(TWINT)));
+
 	return TWDR;
 }
+
