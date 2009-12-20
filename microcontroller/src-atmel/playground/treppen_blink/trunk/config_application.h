@@ -267,6 +267,8 @@
 
 #define  CN_00                                   rundown
 #define  CN_01                                   xcan
+#define  CN_02                                   rgbled
+#define  CN_03                                   taster
 
 
 
@@ -279,6 +281,8 @@
 //#define  TaskInclude_xcan                     cfgExclude
 
 #define  TaskInclude_rundown                     cfgStartRunning
+#define  TaskInclude_rgbled                     cfgStartRunning
+#define  TaskInclude_taster                     cfgStartRunning
 //#define  TaskInclude_blueout                    cfgStartRunning
 //#define  TaskInclude_update                     cfgStartRunning
 
@@ -290,6 +294,8 @@
 //#define  Capabilities_xcanTask                 cfgCapEvent
 #define  Capabilities_rundown                    cfgCapAll
 #define  Capabilities_xcan                    cfgCapAll
+#define  Capabilities_rgbled                    cfgCapAll
+#define  Capabilities_taster                    cfgCapAll
 
 
 /* ========================================================================= */
@@ -330,6 +336,8 @@
 
 #define  RegisterUse_xcan                      registersAll
 #define  RegisterUse_rundown                      registersAll
+#define  RegisterUse_rgbled                      registersAll
+#define  RegisterUse_taster                      registersAll
 //#define  RegisterUse_blueout                     registersAll
 //#define  RegisterUse_update                      registersAll
 
