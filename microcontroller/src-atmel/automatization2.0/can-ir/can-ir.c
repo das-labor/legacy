@@ -138,15 +138,11 @@ void can_handler()
 							codeLen = ir_genENEC(code, 0b00010000110010000001011011101001, 32);
 							ir_sendCode(code, codeLen);
 							break;
-						case 5: // video
+						case 5: // composite
 							codeLen = ir_genENEC(code, 0b00010000110010001110011000011001, 32);
 							ir_sendCode(code, codeLen);
 							break;
-						case 6: // component
-							codeLen = ir_genENEC(code, 0b00010000110010000110011010011001, 32);
-							ir_sendCode(code, codeLen);
-							break;
-						case 7: // blank
+						case 6: // blank
 							codeLen = ir_genENEC(code, 0b00010000110010001111000100001110, 32);
 							ir_sendCode(code, codeLen);
 							break;
