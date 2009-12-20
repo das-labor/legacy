@@ -85,7 +85,6 @@ int main (void)
  ********************************************************/
 #include <stdio.h>
 #include <avr/interrupt.h>
-#include <util/twi.h>
 
 #include "twi_master.h"
 #include "../config.h"

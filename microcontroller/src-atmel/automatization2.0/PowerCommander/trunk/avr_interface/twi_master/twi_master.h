@@ -10,8 +10,7 @@
 #ifndef _TWIM_H
 #define _TWIM_H
 
-#define TWIM_READ    1
-#define TWIM_WRITE   0
+#include <util/twi.h>
 
 extern uint8_t TWIM_Init(uint32_t TWI_Bitrate);
 extern uint8_t TWIM_Start(uint8_t address, uint8_t TWIM_Type);

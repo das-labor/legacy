@@ -1,6 +1,5 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
-#include <util/delay.h>
 #include <avr/eeprom.h>
 
 #include "can.h"
@@ -9,7 +8,6 @@
 #include "../twi_master/twi_master.h"
 #include "../../include/PowerCommander.h"
 
-#define SLAVE_ADDR 15
 #define I2C_INDATACOUNT 1
 
 uint8_t myaddr;
@@ -67,7 +65,6 @@ extern void can_handler()
 					    ((rx_msg->data[0] == C_PWM) && (rx_msg->data[2] == F_PWM_GET)))
 					{
 						uint8_t msg_tx[1];
-//						_delay_us(10);
 						twi_get(msg_tx);
 						can_send(msg_tx);
 					}
@@ -80,8 +77,8 @@ extern void can_handler()
 void twi_send(uint8_t *p)
 {
 	uint8_t i;
-	if (!TWIM_Start(SLAVE_ADDR, TWIM_WRITE))
-	{		
+	if (!TWIM_Start(I2CADRESSE, TW_WRITE))
+	{
 		TWIM_Stop();
 	}
 	else
@@ -101,7 +98,7 @@ void twi_send(uint8_t *p)
 void twi_get(uint8_t *p)
 {
 	uint8_t i;
-	if (!TWIM_Start(SLAVE_ADDR, TWIM_READ))
+	if (!TWIM_Start(I2CADRESSE, TW_READ))
 	{
 		TWIM_Stop();
 	}
