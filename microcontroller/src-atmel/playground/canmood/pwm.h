@@ -26,11 +26,10 @@
  }}} */
 #ifndef PWM_H
 #define PWM_H
-#include <avr/io.h>
-#include "avrx.h"
-#include <avrx-io.h>
 
-AVRX_EXTERNTASK(pwmtask);
+void pwm_handler();
+
+
 
 #define _TIMSK_TIMER1 TIMSK
 

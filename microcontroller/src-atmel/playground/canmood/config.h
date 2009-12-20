@@ -1,34 +1,21 @@
-#define TCNT0_INIT (0xFF-F_CPU/256/TICKRATE)
+#ifndef _CONFIG_H
+#define _CONFIG_H
 
-#define F_CPU 16000000UL
+
+// SPI
+#define MC_MOSI    PB3
+#define MC_CLK     PB5
+
+// Pin PB2 muss Ausgang sein wenn nicht als SS verwendet
+#define MCP_CS        PB2
+#define MCP_CMD_PORT  PORTB
+
+#define SPI_REG_PIN_MCP_INT  PIND
+#define SPI_PIN_MCP_INT      PD2
+//#define CAN_INTERRUPT
+
+
 #define F_MCP F_CPU
 
-//#define BAUDRATE 19200L
-//#define UBRR_INIT (F_CPU/(16*BAUDRATE)-1)
 
-#define TMC8_CK256 (1<<CS02)
-
-#define TICKRATE 2500
-
-#define MEGA8
-
-#ifdef MEGA8
-#	define SPI_PORT PORTB
-#	define SPI_PIN_SS PB2
-#	define SPI_HARDWARE
-#	define SPI_DDR DDRB
-#	define SPI_PIN_SCK PB5
-#	define SPI_PIN_MOSI PB3
-
-#else
-#	define SPI_PORT PORTB
-#	define SPI_PIN_SS PB4
-#	define SPI_HARDWARE
-#	define SPI_DDR DDRB
-#	define SPI_PIN_SCK PB7
-#	define SPI_PIN_MOSI PB5
-#endif
-
-//Number of Messages in Can TX Buffer
-#define TX_SIZE 10
-
+#endif // ifndef CONFIG_H

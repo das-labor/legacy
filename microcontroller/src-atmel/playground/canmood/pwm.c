@@ -27,16 +27,11 @@
 
 #include <avr/io.h>
 
-#include <avrx-io.h>
-
 #include <stdint.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 
-#include "avrx.h"               // AvrX System calls/data structures
-
 #include "config.h"
-#include "xcan.h"
 #include "pwm.h"
 #include "static_scripts.h"
 
@@ -351,19 +346,16 @@ ISR(SIG_OUTPUT_COMPARE1B) {
 
 
 
-AVRX_GCC_TASKDEF(pwmtask, 100, 5) {
-	while (1) {
-		if (global.flags.last_pulse) {
-			global.flags.last_pulse = 0;
-			update_pwm_timeslots();
-		}
-		/* at the beginning of each pwm cycle, call the fading engine and
-		* execute all script threads */
-		if (global.flags.new_cycle) {
-			global.flags.new_cycle = 0;
-			update_brightness();
-			execute_script_threads();
-			continue;
-		}
+void pwm_handler() {
+	if (global.flags.last_pulse) {
+		global.flags.last_pulse = 0;
+		update_pwm_timeslots();
+	}
+	/* at the beginning of each pwm cycle, call the fading engine and
+	* execute all script threads */
+	if (global.flags.new_cycle) {
+		global.flags.new_cycle = 0;
+		update_brightness();
+		execute_script_threads();
 	}
 }
