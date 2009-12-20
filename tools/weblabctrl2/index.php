@@ -141,13 +141,15 @@ Beamer<br>
   }
 echo "</tr></table>";
 $beamer_counter=0;
-echo "source select: <select onchange=\"canir_beamer_cmd('this.form.beamerSource.options[this.form.beamerSource.selectedIndex].value');\" name=\"beamerSource\" size=\"1\">";
+echo "<form name=\"beamerSourceForm\">";
+echo "source select: <select onchange=\"CheckBeamerSource();\" name=\"beamerSource\" size=\"1\">";
 
 
   foreach ($canir_beamer_a_channel as $cirb_key => $cirb_value){
     echo "<option value=\"".$cirb_value."\">".$cirb_key."</option>";
   }
  echo "</select>";
+echo "</form>";
 ?>
 
 <br>Teufel Amp<br>
@@ -164,14 +166,16 @@ echo "source select: <select onchange=\"canir_beamer_cmd('this.form.beamerSource
     echo "<td align=center><input type=\"button\" id=\"cirt_".$cirb_key."\" onclick=\"canir_teufel_cmd('".$cirt_value."');\" value=\"".$cirt_key."\"></td>";
   }
  echo "</tr></table>";
-echo "source select: <select onchange=\"canir_teufel_cmd('this.form.teufelSource.options[this.form.teufelSource.selectedIndex].value');\" name=\"teufelSource\" size=\"1\">";
+echo "<form name=\"teufelSourceForm\">";
+echo "source select: <select onchange=\"CheckTeufelSource()\" name=\"teufelSource\" size=\"1\">" ;
+
 
 
   foreach ($canir_teufel_a_channel as $cirb_key => $cirb_value){
     echo "<option value=\"".$cirb_value."\">".$cirb_key."</option>";
   }
  echo "</select>";
-
+echo "</form>";
 ?>
 
 <br>Laufschriftborg<br>
@@ -190,7 +194,19 @@ echo "source select: <select onchange=\"canir_teufel_cmd('this.form.teufelSource
 ?>
 
 </div>
+</form>
 <script>
+
+function CheckTeufelSource () {
+  for (i = 0; i < document.teufelSourceForm.teufelSource.length; ++i)
+    if (document.teufelSourceForm.teufelSource.options[i].selected == true)
+      canir_teufel_cmd(document.teufelSourceForm.teufelSource.options[i].value);
+}
+function CheckBeamerSource () {
+  for (i = 0; i < document.beamerSourceForm.beamerSource.length; ++i)
+    if (document.beamerSourceForm.beamerSource.options[i].selected == true)
+      canir_beamer_cmd(document.beamerSourceForm.beamerSource.options[i].value);
+}
 
   (function() {
 <?

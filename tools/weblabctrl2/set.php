@@ -96,8 +96,11 @@ elseif($cmd=="canir_teufel")
 {
   $real_canirteufel_value = "0x00";
   foreach ($canir_teufel_a as $cirt_key => $cirt_value)
-    if($_GET[value]==$cirt_value || 
-       $_GET[value]==$cirt_key ) $real_canirteufel_value=$cirt_value;
+    if($_GET['value']==$cirt_value || 
+       $_GET['value']==$cirt_key ) $real_canirteufel_value=$cirt_value;
+  foreach ($canir_teufel_a_channel as $cirt_key => $cirt_value)
+    if($_GET['value']==$cirt_value || 
+       $_GET['value']==$cirt_key ) $real_canirteufel_value=$cirt_value;
 
   echo "powercommander.lapcontrol canir teufel $real_canirteufel_value";
   exec("powercommander.lapcontrol canir teufel $real_canirteufel_value");
@@ -106,6 +109,9 @@ elseif($cmd=="canir_beamer")
 {
   $real_canirbeamer_value = "0x00";
   foreach ($canir_beamer_a as $cirb_key => $cirb_value)
+    if($_GET[value]==$cirb_value || 
+       $_GET[value]==$cirb_key ) $real_canirbeamer_value=$cirb_value;
+  foreach ($canir_beamer_a_channel as $cirb_key => $cirb_value)
     if($_GET[value]==$cirb_value || 
        $_GET[value]==$cirb_key ) $real_canirbeamer_value=$cirb_value;
 
