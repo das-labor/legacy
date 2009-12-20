@@ -107,7 +107,7 @@ elseif($cmd=="canir_beamer")
   $real_canirbeamer_value = "0x00";
   foreach ($canir_beamer_a as $cirb_key => $cirb_value)
     if($_GET[value]==$cirb_value || 
-       $_GET[value]==$cirb_key ) $real_canirbeamer_value=$cirt_beamer;
+       $_GET[value]==$cirb_key ) $real_canirbeamer_value=$cirb_value;
 
   echo "powercommander.lapcontrol canir beamer $real_canirbeamer_value";
   exec("powercommander.lapcontrol canir beamer $real_canirbeamer_value");
