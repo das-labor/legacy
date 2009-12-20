@@ -67,7 +67,7 @@ int main(void)
 	//the main loop continuously handles can messages
 	while (1)
 	{
-		PORTA &= ~_BV(PA4);
+//		PORTA &= ~_BV(PA4);
 		can_handler();
 		switch_handler();
 	}

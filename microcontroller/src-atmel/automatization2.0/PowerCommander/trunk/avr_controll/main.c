@@ -38,12 +38,13 @@ int main(void)
 	/*
 	** Wait 0.5 second for POR
 	*/
-	_delay_ms(500);
+//	_delay_ms(500);
 
 	/*
 	** Start TWI Slave with address 15 and bitrate of 100000 Hz
 	*/
 	TWIS_Init(I2CADRESSE, 100000);
+
 
 	/*
 		mainloop - die ist die kommunikation mit einem entferntem
@@ -64,6 +65,7 @@ int main(void)
 					i2cslave.object  = TWIS_ReadAck();
 					i2cslave.fkt     = TWIS_ReadAck();
 					i2cslave.in_data = TWIS_ReadNack();
+					TWIS_Stop();                // I2C stop
 					i2cslave.has_out_data = HASNDATA;
 
 					switch(i2cslave.class)
@@ -93,9 +95,9 @@ int main(void)
 						default:
 						break;
 					}
-					TWIS_Stop();                // I2C stop
 				}
 				break;
+
 				case TWIS_WriteBytes:
 				{
 					if (i2cslave.has_out_data == HASDATA)
@@ -111,6 +113,7 @@ int main(void)
 					
 				}
 				break;
+
 				default:
 					TWIS_Stop();
 				break;
