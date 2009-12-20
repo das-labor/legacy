@@ -56,13 +56,23 @@ Tuint16 callnumber=0;
 
 Tuint08 blinkmode=0;
 
+
+
 #define R_LED _BV(PC1)
 #define G_LED _BV(PC2)
 #define B_LED _BV(PC3)
 
 #define RGBCANPORT 0x10
-Tuint08 rgbled_stat=0;
 
+Tuint08 rgbled_stat=B_LED;
+  /* 
+     fix me - this is the static message for powercommander
+     we need the includes hier
+  */
+can_message swap_light_msg = {0x00, 0x02, 0x00, 0x01, 0x04, {0x02,0x01,0x03,0x00}};
+Tuint08 light=0;
+Tuint08 mode=0;
+Tuint08 lastlight=0;
 
 void appBoot(void)
 { 
@@ -78,7 +88,7 @@ void appBoot(void)
 
   // pullups aktivieren
   PORTB |= (_BV(PB0) | _BV(PB1));
-
+  //  PORTC |= R_LED;
 }
 
 /*
@@ -295,28 +305,20 @@ void appLoop_rgbled(void)
 #if (preTaskDefined(taster))
 void appLoop_taster(void)
 {
-  static Tuint08 light=0;
-  static Tuint08 mode=0;
-  static Tuint08 lastlight=0;
-  /* 
-     fix me - this is the static message for powercommander
-     we need the includes hier
-  */
-  static can_message msg = {0x00, 0x00, 0x02, 0x01, 0x04, {0x02,0x01,0x03,0x00}};
   
   while(true)
     {
-      if((PORTB & _BV(PB0)) != 0 && (light==0))
+      if((PINB & _BV(PB0)) && (light==0))
 	{
 	  light=1;
 	}
-      if((!(PORTB & _BV(PB0)) != 0) && (light==1))
+      if(!(PINB & _BV(PB0)) && (light==1))
 	{
 	  light=2;
 	}
       if(light==2)
 	{
-	  can_transmit(&msg);
+	  can_transmit(&swap_light_msg);
 	  if(lastlight == 0)
 	    {
 	      rgbled_stat=G_LED;
@@ -330,11 +332,11 @@ void appLoop_taster(void)
 	  light=0;
 	}
 
-      if((PORTB & _BV(PB1)) != 0 && (mode==0))
+      if((PINB & _BV(PB1)) && (mode==0))
 	{
 	  mode=1;
 	}
-      if((!(PORTB & _BV(PB0)) != 0) && (mode==1))
+      if(!(PINB & _BV(PB1)) && (mode==1))
 	{
 	  mode=2;
 	}
