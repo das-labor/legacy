@@ -54,7 +54,7 @@ void switch_timer_init(){
 }
 
 
-#define HOLD_THRESHOLD 40
+#define HOLD_THRESHOLD 18
 #define CLICK_THRESHOLD 0
 
 
@@ -113,7 +113,7 @@ void switch_handler()
 	sei();
 	
 	// alle 32 ticks ... 0.032 sekunden
-	if((tc - last_tickscounter) >= 8 ){
+	if((tc - last_tickscounter) >= 20 ){
 		last_tickscounter = tc;
 
 
