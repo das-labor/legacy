@@ -109,8 +109,8 @@ elseif($cmd=="canir_beamer")
     if($_GET[value]==$cirb_value || 
        $_GET[value]==$cirb_key ) $real_canirbeamer_value=$cirt_beamer;
 
-  echo "powercommander.lapcontrol canir beamer $real_canirteufel_value";
-  exec("powercommander.lapcontrol canir beamer $real_canirteufel_value");
+  echo "powercommander.lapcontrol canir beamer $real_canirbeamer_value";
+  exec("powercommander.lapcontrol canir beamer $real_canirbeamer_value");
 }
 elseif($cmd=="save_pos")
 {
