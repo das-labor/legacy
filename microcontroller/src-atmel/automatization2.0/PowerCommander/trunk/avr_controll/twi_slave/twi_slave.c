@@ -235,7 +235,11 @@ uint8_t	TWIS_ReadNack(void)
 *******************************************************/
 uint8_t	TWIS_ResponseRequired(uint8_t *TWI_ResponseType)
 {
-	*TWI_ResponseType = TWSR;
-	return TWCR & (1<<TWINT);
+	if(TWCR & (1<<TWINT)){
+		*TWI_ResponseType = TWSR;
+		return 1;
+	}else{
+		return 0;
+	}
 }
 

@@ -24,7 +24,6 @@ extern void can_handler()
 	{
 		if ((rx_msg->addr_dst == myaddr))
 		{
-			PORTA |= _BV(PA4);
 			if (rx_msg->port_dst == PORT_MGT)
 			{
 				switch (rx_msg->data[0])
@@ -68,7 +67,7 @@ extern void can_handler()
 					    ((rx_msg->data[0] == C_PWM) && (rx_msg->data[2] == F_PWM_GET)))
 					{
 						uint8_t msg_tx[1];
-						_delay_us(10);
+//						_delay_us(10);
 						twi_get(msg_tx);
 						can_send(msg_tx);
 					}
@@ -82,7 +81,7 @@ void twi_send(uint8_t *p)
 {
 	uint8_t i;
 	if (!TWIM_Start(SLAVE_ADDR, TWIM_WRITE))
-	{
+	{		
 		TWIM_Stop();
 	}
 	else
@@ -94,6 +93,7 @@ void twi_send(uint8_t *p)
 		{
 			TWIM_Write(p[i]);
 		}
+		
 		TWIM_Stop();
 	}
 }

@@ -21,6 +21,6 @@ void	TWIS_Stop (void);
 void	TWIS_Write (uint8_t byte);
 uint8_t	TWIS_ReadAck (void);
 uint8_t	TWIS_ReadNack (void);
-uint8_t	TWIS_ResonseRequired (uint8_t *TWI_ResonseType);
+uint8_t	TWIS_ResponseRequired (uint8_t *TWI_ResonseType);
 
 #endif

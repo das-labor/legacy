@@ -225,7 +225,7 @@ extern void TWIM_Stop (void)
 /*
 ** Wait until stop condition is executed and bus released
 */
-	while (TWCR & (1<<TWINT));
+	while (TWCR & (1<<TWSTO));
 }
 /*******************************************************
  Public Function: TWIM_Write
