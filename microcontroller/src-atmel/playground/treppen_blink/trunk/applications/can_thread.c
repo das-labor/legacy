@@ -12,7 +12,7 @@ void can_handler()
 	{
 	  can_mgt(rx_msg);
 	}
-      else if (rx_msg->port_dst == CANPORT)
+      else 
 	{
 	  can_user_cmd(rx_msg);
 	}
