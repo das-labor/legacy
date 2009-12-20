@@ -59,7 +59,7 @@ int main(void)
 				/*
 				** Slave is requests to read bytes from the master.
 				*/
-				case TWIS_ReadBytes:
+				case TW_SR_SLA_ACK:
 				{
 					i2cslave.class   = TWIS_ReadAck();
 					i2cslave.object  = TWIS_ReadAck();
@@ -98,7 +98,7 @@ int main(void)
 				}
 				break;
 
-				case TWIS_WriteBytes:
+				case TW_ST_SLA_ACK:
 				{
 					if (i2cslave.has_out_data == HASDATA)
 					{

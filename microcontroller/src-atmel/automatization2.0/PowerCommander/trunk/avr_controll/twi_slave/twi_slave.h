@@ -10,8 +10,7 @@
 #ifndef _TWIS
 #define _TWIS
 
-#define	TWIS_ReadBytes		0x60
-#define	TWIS_WriteBytes		0xA8
+#include <util/twi.h>
 
 /****************************************************************************
   Public Function definitions
