@@ -22,7 +22,7 @@
 
 int main(void)
 {
-	uint8_t TWIS_ResonseType, test = 0;
+	uint8_t TWIS_ResponseType, test = 0;
 	struct t_i2cproto i2cslave = { C_NDEF, O_NDEF, F_NDEF, HASNDATA, HASNDATA, D_NDEF ,D_NDEF };
 
 	init_modi();
@@ -51,9 +51,9 @@ int main(void)
 	*/
 	while (1) 
 	{
-		if (TWIS_ResonseRequired(&TWIS_ResonseType))
+		if (TWIS_ResponseRequired(&TWIS_ResponseType))
 		{
-			switch (TWIS_ResonseType)
+			switch (TWIS_ResponseType)
 			{
 				/*
 				** Slave is requests to read bytes from the master.

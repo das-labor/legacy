@@ -15,7 +15,7 @@ Bekommt Zustände für Ports und liefert diese auf Anfrage zurück.
 
 
 Fuses:
-lfuse: 0xC0
+lfuse: 0xee
 hfuse: 0xD4
 efuse: 0xf9
 
