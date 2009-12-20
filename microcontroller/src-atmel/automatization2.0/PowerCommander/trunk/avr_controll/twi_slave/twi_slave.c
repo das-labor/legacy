@@ -17,7 +17,7 @@ int main (void)
 	uint8_t		i=0;
 	uint8_t		j=0;
 	uint8_t		byte[8];
-	uint8_t		TWIS_ResonseType;
+	uint8_t		TWIS_ResponseType;
 
  // Clear any interrupt
 	cli ();
@@ -33,9 +33,9 @@ int main (void)
 		{
 
  // Is something to do for the TWI slave interface ?
-		if (TWIS_ResonseRequired (&TWIS_ResonseType))
+		if (TWIS_ResponseRequired (&TWIS_ResponseType))
 			{
-			switch (TWIS_ResonseType)
+			switch (TWIS_ResponseType)
 				{
  // TWI requests to read a byte from the master.
  // It is implicitely assumed, that the master
@@ -217,7 +217,7 @@ uint8_t	TWIS_ReadNack(void)
 	return TWDR;
 }
 /*******************************************************
- Public Function: TWIS_ResonseRequired
+ Public Function: TWIS_ResponseRequired
 
  Purpose: Get the response type to be performed by slave
 
@@ -233,9 +233,9 @@ uint8_t	TWIS_ReadNack(void)
 		FALSE: No response required
 
 *******************************************************/
-uint8_t	TWIS_ResonseRequired(uint8_t *TWI_ResonseType)
+uint8_t	TWIS_ResponseRequired(uint8_t *TWI_ResponseType)
 {
-	*TWI_ResonseType = TWSR;
+	*TWI_ResponseType = TWSR;
 	return TWCR & (1<<TWINT);
 }
 
