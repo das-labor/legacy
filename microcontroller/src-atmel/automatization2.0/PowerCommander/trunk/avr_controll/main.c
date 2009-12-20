@@ -22,7 +22,7 @@
 
 int main(void)
 {
-	uint8_t TWIS_ResponseType, test = 0;
+	uint8_t TWIS_ResponseType;
 	struct t_i2cproto i2cslave = { C_NDEF, O_NDEF, F_NDEF, HASNDATA, HASNDATA, D_NDEF ,D_NDEF };
 
 	init_modi();
@@ -68,55 +68,36 @@ int main(void)
 					TWIS_Stop();                // I2C stop
 					i2cslave.has_out_data = HASNDATA;
 
-					switch(i2cslave.class)
+					switch (i2cslave.class)
 					{
 						case C_SW:
-						{
 							switch_fkt(&i2cslave);
-						}
-						break;
+							break;
 						case C_PWM:
-						{
 							pwm_fkt(&i2cslave);
-						}
-						break;
+							break;
 						case C_VIRT:
-						{
 							virt_fkt(&i2cslave);
-						}
-						break;
-						case 3:
-							i2cslave.has_out_data = HASDATA;
-							if (i2cslave.in_data == 0)
-								i2cslave.out_data = test;
-							else
-								test = i2cslave.out_data;
-						break;
+							break;
 						default:
-						break;
+							break;
 					}
 				}
 				break;
 
 				case TW_ST_SLA_ACK:
-				{
 					if (i2cslave.has_out_data == HASDATA)
-					{
 						TWIS_Write(i2cslave.out_data);
-					} else
-					{
+					else
 						TWIS_Write(D_NDEF);
-					}
 					TWIS_Stop();
 					i2cslave.has_out_data = HASNDATA;
 					i2cslave.out_data = D_NDEF;
-					
-				}
-				break;
+					break;
 
 				default:
 					TWIS_Stop();
-				break;
+					break;
 			}
 		}
 	}
