@@ -25,7 +25,7 @@ void init(void)
 	
 	//initialize can communication
 	can_init();
-
+	read_can_addr();
 	//turn on interrupts
 //	sei();
 }
