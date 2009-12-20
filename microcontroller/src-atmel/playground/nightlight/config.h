@@ -14,17 +14,16 @@
 #define LCD_RESET   PC4
 #define LCD_RS      PC3
 
-#define TCNT0_INIT (0xFF-F_CPU/256/TICKRATE)
 
-#define BAUDRATE 19200L
-#define UBRR_INIT (F_CPU/(16*BAUDRATE)-1)
 
-#define TMC8_CK256 (1<<CS02)
+#define MCP_CS        PB0
+#define MCP_CMD_PORT  PORTB
 
-#define F_CPU 16000000UL
+#define SPI_REG_PIN_MCP_INT  PIND
+#define SPI_PIN_MCP_INT      PD2
+//#define CAN_INTERRUPT
 #define F_MCP F_CPU
 
-#define TICKRATE 2500
 
 #define MEGA8
 
@@ -57,13 +56,6 @@
 #define MCP_INT_MASK INT0
 #define MCP_INT_REG EIMSK
 
-
-
-
-
-
-//Number of Messages in Can TX Buffer
-#define TX_SIZE 10
 
 
 

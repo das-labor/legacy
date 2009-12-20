@@ -1,4 +1,4 @@
-AVRX_EXTERNTASK(menu);
+
 
 #define _TIMSK_TIMER1 TIMSK
 
