@@ -6,7 +6,7 @@
 #include "can_handler.h"
 #include "lap.h"
 
-
+static uint8_t myaddr;
 
 extern void can_handler()
 {
@@ -41,3 +41,7 @@ extern void can_handler()
 	}
 }
 
+void read_can_addr()
+{
+	myaddr = eeprom_read_byte(0x00);
+}
