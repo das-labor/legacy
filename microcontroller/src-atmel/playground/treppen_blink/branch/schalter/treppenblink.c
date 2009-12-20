@@ -56,6 +56,14 @@ Tuint16 callnumber=0;
 
 Tuint08 blinkmode=0;
 
+#define R_LED _BV(PC1)
+#define G_LED _BV(PC2)
+#define B_LED _BV(PC3)
+
+#define RGBCANPORT 0x10
+Tuint08 rgbled_stat=0;
+
+
 void appBoot(void)
 { 
   spi_init();
@@ -63,22 +71,14 @@ void appBoot(void)
   DDRD |= _BV(DATA) | _BV(CLK);
   PORTD |= _BV(DATA) | _BV(CLK);
 
-  //  devSwitchDRR |= _BV(DATA) | _BV(CLK);
-  //  devSwitchPORT |= _BV(DATA) | _BV(CLK);
+  // RGB-LED als ausgang
+  DDRC |= _BV(PC1) | _BV(PC2) | _BV(PC3);
+  // Taster als eingang
+  DDRB &= ~(_BV(PB0) | _BV(PB1));
 
-  //  Tuint08 k;
+  // pullups aktivieren
+  PORTB |= (_BV(PB0) | _BV(PB1));
 
-/*   for (k = 0 ; k< 36; k++){ */
-/*     PORTD = ( 1 ) << DATA; */
-/*     PORTD |= _BV(CLK); */
-/*     PORTD &= ~_BV(CLK); */
-/*   } */
-
-/*   for (k = 0; k < 5; k++) */
-/*     { */
-/*       PORTD |= _BV(DATA); */
-/*       PORTD &= ~_BV(DATA); */
-/*     } */
 }
 
 /*
@@ -247,9 +247,114 @@ static void updateLEDs()
 
 void can_user_cmd(can_message *rx_msg)
 {
-  blinkmode = rx_msg->data[0];
+  if (rx_msg->port_dst == CANPORT)
+    {
+      blinkmode = rx_msg->data[0];
+    }
+  else if (rx_msg->port_dst == RGBCANPORT)
+    {
+      rgbled_stat=rx_msg->data[0];
+    }
 }
 
+
+#if (preTaskDefined(rgbled))
+void appLoop_rgbled(void)
+{
+  while(true)
+    {
+      if((rgbled_stat & R_LED) !=0)
+	{
+	  PORTC |= R_LED;
+	}
+      else
+	{
+	  PORTC &= ~R_LED;
+	}
+      if((rgbled_stat & G_LED) !=0)
+	{
+	  PORTC |= G_LED;
+	}
+      else
+	{
+	  PORTC &= ~G_LED;
+	}
+      if( (rgbled_stat & B_LED) !=0)
+	{
+	  PORTC |= B_LED;
+	}
+      else
+	{
+	  PORTC &= ~B_LED;
+	}
+      taskDelayFromNow(100);
+    }
+}
+#endif
+
+#if (preTaskDefined(taster))
+void appLoop_taster(void)
+{
+  static Tuint08 light=0;
+  static Tuint08 mode=0;
+  static Tuint08 lastlight=0;
+  /* 
+     fix me - this is the static message for powercommander
+     we need the includes hier
+  */
+  static can_message msg = {0x00, 0x00, 0x02, 0x01, 0x04, {0x02,0x01,0x03,0x00}};
+  
+  while(true)
+    {
+      if((PORTB & _BV(PB0)) != 0 && (light==0))
+	{
+	  light=1;
+	}
+      if((!(PORTB & _BV(PB0)) != 0) && (light==1))
+	{
+	  light=2;
+	}
+      if(light==2)
+	{
+	  can_transmit(&msg);
+	  if(lastlight == 0)
+	    {
+	      rgbled_stat=G_LED;
+	      lastlight=1;
+	    }
+	  else 
+	    {
+	      rgbled_stat=R_LED;
+	      lastlight=0;
+	    }
+	  light=0;
+	}
+
+      if((PORTB & _BV(PB1)) != 0 && (mode==0))
+	{
+	  mode=1;
+	}
+      if((!(PORTB & _BV(PB0)) != 0) && (mode==1))
+	{
+	  mode=2;
+	}
+      if(mode==2)
+	{
+	  if(blinkmode <= 6)
+	    {
+	      blinkmode++;
+	    }
+	  else 
+	    {
+	      blinkmode=0;
+	    }
+	  mode=0;
+	}
+
+      taskDelayFromNow(100);
+    }
+}
+#endif
 
 #if (preTaskDefined(rundown))
 
