@@ -207,9 +207,6 @@ void tetris_view_drawBorders(uint8_t nColor)
 		setpixel((pixel){4, y}, nColor);
 		setpixel((pixel){15, y}, nColor);
 	}
-
-	uint8_t nPen;
-
 	for (y = 0; y < 5; ++y)
 	{
 		for (x = 0; x <= 3; ++x){
