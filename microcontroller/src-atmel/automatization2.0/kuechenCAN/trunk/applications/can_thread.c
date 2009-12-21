@@ -6,16 +6,24 @@ void can_handler()
 {
   can_message *rx_msg;
   rx_msg = can_get_nb();
-  if ((rx_msg != 0) && (rx_msg->addr_dst == CANADDR))
+  if (rx_msg != 0)
     {
-      if (rx_msg->port_dst == PORT_MGT)
+      if (rx_msg->addr_dst == CANADDR)
 	{
-	  can_mgt(rx_msg);
+	  if (rx_msg->port_dst == PORT_MGT)
+	    {
+	      can_mgt(rx_msg);
+	    }
+	  else 
+	    {
+	      can_user_cmd(rx_msg);
+	    }
 	}
-      else if (rx_msg->port_dst == CANPORT)
+      else 
 	{
-	  can_user_cmd(rx_msg);
+	  can_global_cmd(rx_msg);
 	}
+
     }
 }
 
