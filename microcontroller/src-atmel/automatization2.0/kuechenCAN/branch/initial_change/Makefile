@@ -5,25 +5,25 @@ FEMTOOS_APPLICATION_CONFIG_DIR=./
 TARGET=atmega8
 
 ################ can address and port
-MY_CANADDR=0x25
+MY_CANADDR=0x23
 MY_CANPORT=0x0f
 
 all: main.hex
 
 include Makefile.femtoos
 
-main.elf: femtoos spi can_base application treppenblink.o 
+main.elf: femtoos spi can_base application kuechenCAN.o 
 	 $(GCC) $(LNKFLAGS) -o main.elf  \
-	treppenblink.o \
+	kuechenCAN.o \
 	$(FEMTOOS_LIB_DIR)/femtoos_startup.o $(FEMTOOS_LIB_DIR)/femtoos.a $(FEMTOOS_LIB_DIR)/spi.a $(FEMTOOS_LIB_DIR)/can_base.a $(FEMTOOS_LIB_DIR)/application.a
 
-treppenblink.o: headers 
-	$(GCC) $(CFLAGS) -c treppenblink.c -o treppenblink.o
+kuechenCAN.o: headers 
+	$(GCC) $(CFLAGS) -c kuechenCAN.c -o kuechenCAN.o
 
 clean:
-	rm -f treppenblink.o
-	rm -f treppenblink.i
-	rm -f treppenblink.s
+	rm -f kuechenCAN.o
+	rm -f kuechenCAN.i
+	rm -f kuechenCAN.s
 	rm -f main.elf
 	rm -f main.map
 	rm -f main.hex

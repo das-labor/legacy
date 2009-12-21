@@ -264,9 +264,11 @@
 /* TASK NAMES ============================================================== */
 /* ========================================================================= */
 
-
-#define  CN_00                                   rundown
-#define  CN_01                                   xcan
+#define  CN_00                                   xcan
+#define  CN_01                                   leds
+#define  CN_02                                   alarm
+#define  CN_03                                   buttons
+#define  CN_04                                   alarmt
 
 
 
@@ -276,9 +278,12 @@
 
 //#define  TaskIncludeOverride                     cfgStartRunning
 #define  TaskInclude_xcan                     cfgStartRunning
-//#define  TaskInclude_xcan                     cfgExclude
+//#define  TaskInclude_xcan                     
 
-#define  TaskInclude_rundown                     cfgStartRunning
+#define  TaskInclude_buttons                     cfgStartRunning
+#define  TaskInclude_alarm                     cfgStartRunning
+#define  TaskInclude_alarmt                     cfgStartRunning
+#define  TaskInclude_leds                     cfgStartRunning
 //#define  TaskInclude_blueout                    cfgStartRunning
 //#define  TaskInclude_update                     cfgStartRunning
 
@@ -288,9 +293,11 @@
 /* ========================================================================= */
 
 //#define  Capabilities_xcanTask                 cfgCapEvent
-#define  Capabilities_rundown                    cfgCapAll
 #define  Capabilities_xcan                    cfgCapAll
-
+#define  Capabilities_leds                    cfgCapAll
+#define  Capabilities_alarm                    cfgCapAll
+#define  Capabilities_buttons                    cfgCapAll
+#define  Capabilities_alarmt                    cfgCapAll
 
 /* ========================================================================= */
 /* STACK SIZES ============================================================= */
@@ -329,7 +336,10 @@
 //#define  RegisterUseOverride                      registersAll
 
 #define  RegisterUse_xcan                      registersAll
-#define  RegisterUse_rundown                      registersAll
+#define  RegisterUse_leds                      registersAll
+#define  RegisterUse_alarm                      registersAll
+#define  RegisterUse_alarmt                      registersAll
+#define  RegisterUse_buttons                      registersAll
 //#define  RegisterUse_blueout                     registersAll
 //#define  RegisterUse_update                      registersAll
 
