@@ -23,8 +23,10 @@
 
 char *progname;
 char *serial; 
+char *logfile=NULL;
+char *scriptfile=NULL;
 
-static char *optstring = "hdv::S:p:";
+static char *optstring = "hdv::S:p:l:s:";
 struct option longopts[] =
 {
   { "help", no_argument, NULL, 'h' },
@@ -32,6 +34,8 @@ struct option longopts[] =
   { "verbose", optional_argument, NULL, 'v' },
   { "serial", required_argument, NULL, 'S' },
   { "port", required_argument, NULL, 'p' },
+  { "logfile", required_argument, NULL, 'l'},
+  { "scriptfile", required_argument, NULL, 's'},
   { NULL, 0, NULL, 0 }
 };
 
@@ -43,6 +47,8 @@ void help()
    -v, --verbose           be more verbose and display a CAN packet dump\n\
    -d, --daemon            become daemon\n\
    -S, --serial PORT       use specified serial port\n\
+   -s, --scriptfile FILE   use a scripte file to execute cmds on package\n\
+   -l, --logfile FILE      log every package to a logfile\n\    
    -p, --port PORT         use specified TCP/IP port (default: 2342)\n\n" );
 }
 
@@ -52,13 +58,95 @@ void hexdump(unsigned char * addr, int size){
 	
 	printf( "Size: %d\n", size);
 	while(size--){
-		printf("%02x ", *addr++);
+	  printf("%02x ", *addr++);
 		if(++x == 16){
-			printf("\n");
+		  printf("\n");
 			x = 0;
 		}
 	}
 	printf("\n");
+}
+
+void customscripts(rs232can_msg *msg)
+{
+  FILE *fp;
+  FILE *scriptFP;
+  char tmpstr[80];
+  char tmpstr2[80];
+  time_t mytime;
+
+  int result;
+
+  uint8_t i;
+
+  mytime = time(NULL);
+  char line[300];
+  can_message_match *in_msg = (can_message*)(msg->data);
+  can_message_match match_msg = {0x00,0x00,0x00,0x00,0x00,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}};
+
+  strftime(tmpstr2,79,"%r",localtime(&mytime));
+
+  if( (fp=fopen(logfile,"a")) != NULL)
+    {
+      result = snprintf(tmpstr,80,"%s : src: 0x%.2x:0x%.2x dst:0x%.2x:0x%.2x data: ", 
+			tmpstr2, 
+			in_msg->addr_src,in_msg->port_src,
+			in_msg->addr_dst,in_msg->port_dst );
+      if(result<=80 && result>=0) 
+	{
+	  fwrite(tmpstr,result,1,fp);
+	  for(i=0;i<in_msg->dlc;i++)
+	    {
+	      result = snprintf(tmpstr,80,"0x%.2x ",in_msg->data[i]);
+	      if(result == 5)
+		{
+		  fwrite(tmpstr,result,1,fp);
+		}
+	    }
+	  fwrite("\n",8,1,fp);
+	}
+      else 
+	{
+	  fwrite("logfail\n",8,1,fp);
+	}
+      fflush(fp);
+      fclose(fp);
+    }
+
+  if( (scriptFP=fopen(scriptfile,"r")) != NULL)
+    {  
+      // we only support full match - on src/dst and dlc
+      // example:
+      // 0x00:0x00 0x00:0x00 0x04 data -> command
+      // src:srcport dst:dstport len data... -> executable
+      while (fgets(line, 300, scriptFP) != NULL) 
+	{
+	  result = sscanf(line,"0x%hhx:0x%hhx 0x%hhx:0x%hhx 0x%hhx %s -> %s",
+			  &(match_msg.addr_src),&(match_msg.port_src),
+			  &(match_msg.addr_dst),&(match_msg.port_dst),
+			  &(match_msg.dlc),
+			  tmpstr,
+			  tmpstr2);
+	  if(result !=7)
+	    {
+	      return;
+	    }
+    
+	  if( (match_msg.addr_dst == in_msg->addr_dst) && 
+	      (match_msg.addr_src == in_msg->addr_src) && 
+	      (match_msg.port_dst == in_msg->port_dst) && 
+	      (match_msg.port_src == in_msg->port_src) && 
+	      (match_msg.dlc == in_msg->dlc))
+	    {
+	      snprintf(line,300,"%s %s",tmpstr2,tmpstr);
+	      system(line);
+	    }
+
+	}
+      fclose(scriptFP);
+    }
+
+
 }
 
 void process_uart_msg()
@@ -76,7 +164,9 @@ void process_uart_msg()
 		canu_free(msg);
 		return;
 	}
-	
+
+	customscripts(msg);
+
 	// foreach client
 	ac = cann_conns_head;
 	while(ac) {
@@ -103,6 +193,7 @@ void process_client_msg( cann_conn_t *client )
 	debug(3, "Processing message from network..." );
 	if (debug_level >= 3) hexdump((void *)msg, msg->len + 2);
 
+	customscripts(msg);
 
 	switch(msg->cmd) {
 		case RS232CAN_SETFILTER:
@@ -224,6 +315,12 @@ int main(int argc, char *argv[])
 			case 'h':
 				help();
 				exit(0);
+		case 'l':
+		  logfile = optarg;
+		  break;
+		case 's':
+		  scriptfile = optarg;
+		  break;
 			default:
 				help();
 				exit(1);
