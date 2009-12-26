@@ -98,49 +98,50 @@ void display_loop(){
 
 #ifdef ANIMATION_MHERWEG
 		case 10:
-                	flydots();
-                	lines1();
-                	dots1();
-                	movinglines();
-                        checkbox();
+			flydots();
+			lines1();
+			dots1();
+			movinglines();
+			checkbox();
 			rectangle1();
-                        rectangles();
+			rectangles();
 			break;
 #endif
-		case 29:
-		 // mode = 1;
-		  break;
 
 #ifdef ANIMATION_TESTS
 		case 31:
-			//test_level1();
+			test_level1();
 
 			break;
 		case 32:
-			//test_level2();
+			test_level2();
 
 			break;
 		case 33:
-			//test_level3();
+			test_level3();
 
 			break;
 		case 35:
 			test_palette();
-                        test_palette2();
+			test_palette2();
 
 			break;
+#endif
+
+		case 42:
+		  mode = 1;
+		  break;
+
+#ifdef MENU_SUPPORT
+		case 43:
+			menu();
+			mode = oldOldmode;
 #endif
 
 #ifdef ANIMATION_OFF
 		case 0xFF:
 			off();
 			break;
-#endif
-
-#ifdef MENU_SUPPORT
-		case 43:
-			menu();
-			mode = oldOldmode;
 #endif
 		}
 	}
