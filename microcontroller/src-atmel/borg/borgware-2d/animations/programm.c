@@ -271,28 +271,6 @@ void dots1(){
 
 }
 
-
-// punkte, die von links nach rechts fliegen
-void flydots(){
-  unsigned char value,y;
-  unsigned int n,delay=100;
-  
-   clear_screen(0);
-
-   for (n=0;n<200;n++){
-  
-  y = RANDOM8()%NUM_ROWS;
-  value= RANDOM8()%(NUMPLANE+1);
-  
-  setpixel((pixel){NUM_COLS-1,y} , value);
-    shift_pixmap_l();
-  wait(delay);
-     
-    
-  }
-  
-}
-
 #endif
 
 #ifdef ANIMATION_OFF

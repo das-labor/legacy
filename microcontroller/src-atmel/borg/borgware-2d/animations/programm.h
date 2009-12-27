@@ -18,9 +18,6 @@ void test_palette2();
 // randon dots appear and stay
 void dots1();
 
-// dots fly from left to right
-void flydots();
-
 // rectangle-pattern
 void rectangle1();
 
