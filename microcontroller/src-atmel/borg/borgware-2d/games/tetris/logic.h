@@ -46,6 +46,20 @@ void tetris_logic_destruct(tetris_logic_t *pLogic);
 void tetris();
 
 
+/* Function:     tetris_bastet
+ * Description:  runs the bastet game
+ * Return value: void
+ */
+void tetris_bastet();
+
+
+/* Function:         tetris_main
+ * Description:      runs the tetris game
+ * Argument nBastet: 0 for normal Tetris, 1 for Bastet
+ * Return value:     void
+ */
+void tetris_main(int8_t nBastet);
+
 /* Function:        tetris_logic_singleDrop
  * Description:     add points which result from single step dropping
  * Argument pLogic: the logic object we want to modify

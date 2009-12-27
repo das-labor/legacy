@@ -30,10 +30,12 @@
 #define TETRIS_VIEW_LINE_BLINK_DELAY 75
 
 // colors of game elements
-#define TETRIS_VIEW_COLORSPACE  0
-#define TETRIS_VIEW_COLORBORDER 1
-#define TETRIS_VIEW_COLORFADE   2
-#define TETRIS_VIEW_COLORPIECE  3
+#define TETRIS_VIEW_COLORSPACE   0
+#define TETRIS_VIEW_COLORBORDER  1
+#define TETRIS_VIEW_COLORFADE    2
+#define TETRIS_VIEW_COLORPIECE   3
+#define TETRIS_VIEW_COLORPAUSE   1
+#define TETRIS_VIEW_COLORCOUNTER 2
 
 
 /***************************
@@ -53,7 +55,7 @@ uint8_t tetris_view_getPieceColor (tetris_view_t *pV)
 	}
 	else
 	{
-		return TETRIS_VIEW_COLORBORDER;
+		return TETRIS_VIEW_COLORPAUSE;
 	}
 }
 
@@ -207,17 +209,18 @@ void tetris_view_drawBorders(uint8_t nColor)
 		setpixel((pixel){4, y}, nColor);
 		setpixel((pixel){15, y}, nColor);
 	}
+
 	for (y = 0; y < 5; ++y)
 	{
-		for (x = 0; x <= 3; ++x){
-		  
-		  if ((y<1 || y>3) || (x<1 || y>3)){  
-		    setpixel((pixel){x, y}, nColor);
-		    setpixel((pixel){x, y + 11}, nColor);
-		  }
+		for (x = 0; x <= 3; ++x)
+		{
+			if ((y < 1 || y > 3) || (x < 1 || y > 3))
+			{
+				setpixel((pixel){x, y}, nColor);
+				setpixel((pixel){x, y + 11}, nColor);
+			}
 		}
 	}
-	
 }
 
 
@@ -287,68 +290,38 @@ void tetris_view_blinkLines(tetris_playfield_t *pPl)
 /* Function:        tetris_view_showLineNumbers
  * Description:     displays completed Lines (0-99)
  * Argmument pV:    pointer to the view
- * Argument nColor: color
  * Return value:    void
  */
-void tetris_view_showLineNumbers (tetris_view_t *pV, uint8_t nColor)
+void tetris_view_showLineNumbers(tetris_view_t *pV)
 {
-  //Get number of completed lines
-  uint8_t Lines = tetris_logic_getLines(pV->pLogic);
-  uint8_t nPen;
+	// get number of completed lines
+	uint8_t nLines = tetris_logic_getLines(pV->pLogic);
 
-  int x=0, y=0, i;
-  int ones, tens;  
-  
-  ones= Lines%10;
-  tens=(Lines/10)%10;
+	// get decimal places
+	int8_t nOnes = nLines % 10;
+	int8_t nTens = (nLines / 10) % 10;
 
-  //pick drawing color, dark if ones=0, faded otherwise (bright counter gets confused with piece preview)
-  if ((ones%10)!=0)
-      nPen=TETRIS_VIEW_COLORFADE;
-  else nPen=TETRIS_VIEW_COLORSPACE;
-
-  //Draws ones in the upper part of the border as a 3x3 square with 0-9 pixels  
-  //Start at column 1
-  y=1; 
-  for (i=1;i<=9;i++)
-    {
-      //Start at line 1, increase every loop cycle
-      x++; 
-      
-      //the square is just three pixels wide, start over in next column once the row is full
-      if (x%4==0) 	
+	// draws the decimal places as 3x3 squares with 9 pixels
+	for (int i = 0, x = 1, y = 1; i < 9; ++i)
 	{
-	  y++;
-	  x=1;
+		// pick drawing color
+		uint8_t nOnesPen = nOnes > i ?
+			TETRIS_VIEW_COLORCOUNTER : TETRIS_VIEW_COLORSPACE;
+		uint8_t nTensPen = nTens > i ?
+			TETRIS_VIEW_COLORCOUNTER : TETRIS_VIEW_COLORSPACE;
+		// wrap lines if required
+		if ((x % 4) == 0)
+		{
+			y++;
+			x = 1;
+		}
+		// ones
+		setpixel((pixel){x, y}, nOnesPen);
+		// tens (increment x, add vertical offset for lower part of the border)
+		setpixel((pixel){x++, y + 11}, nTensPen);
 	}
-      setpixel((pixel){x,y}, nPen);
-      //only draw as many ones as there are, make the rest of the square dark.
-      if (i==ones) nPen=TETRIS_VIEW_COLORSPACE;
-    }
-
-  //back to normal color, but only if tens is not divisible by 10
-  if ((tens%10)!=0)
-      nPen=TETRIS_VIEW_COLORFADE;
-  else nPen=TETRIS_VIEW_COLORSPACE;
-  
-  //Draws ones in the lower part of the border as a 3x3 square with 0-9 pixels
-  x=0;
-  y=12; //offset for lower part of the border
-  for (i=1;i<=9;i++)
-    {
-      x++; //Start at line 1, increase every loop cycle
-      
-      //the square is just three pixels wide, start over in next column once the row is full
-      if (x%4==0)
-	{
-	  y++;
-	  x=1;
-	}
-      setpixel((pixel){x,y}, nPen);  
-      //only draw as many ones as there are, make the rest of the square dark.
-      if (i==tens) nPen=TETRIS_VIEW_COLORSPACE;
-    }    
 }
+
 
 /****************************
  * construction/destruction *
@@ -441,7 +414,7 @@ void tetris_view_update(tetris_view_t *pV)
 	if (tetris_playfield_getRowMask(pV->pPl) != 0)
 	{
 		tetris_view_blinkLines(pV->pPl);
-		tetris_view_showLineNumbers(pV, TETRIS_VIEW_COLORPIECE);
+		tetris_view_showLineNumbers(pV);
 	}
 
 	// draw preview piece

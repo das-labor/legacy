@@ -8,36 +8,53 @@
 #include <assert.h>
 #include <inttypes.h>
 
+#include "../../autoconf.h"
 #include "../../compat/eeprom.h"
 #include "../../compat/pgmspace.h"
 #include "../../menu/menu.h"
+#include "../../random/prng.h"
 
 #include "logic.h"
 #include "piece.h"
 #include "playfield.h"
 #include "view.h"
 #include "input.h"
-#include "../../random/prng.h"
+
+#ifdef GAME_BASTET
+#include "bast.h"
+#endif
 
 
 #ifdef EEMEM
-	/***********************
-	 * Highscore in EEPROM *
-	 ***********************/
+/***********************
+ * Highscore in EEPROM *
+ ***********************/
 
-	uint16_t tetris_logic_nHighscore EEMEM;
+uint16_t tetris_logic_nHighscore EEMEM;
 #endif
 
-       // MSB is leftmost pixel
-static uint8_t icon[8] PROGMEM =
-        {0x0f, 0x0f, 0xc3, 0xdb, 0xdb, 0xc3, 0xf0, 0xf0}; // Tetris icon
-
+// Tetris icon, MSB is leftmost pixel
 void tetris();
-
-game_descriptor_t tetris_game_descriptor __attribute__((section(".game_descriptors"))) ={
-       &tetris,
-       icon,
+static uint8_t tetris_icon[8] PROGMEM =
+	{ 0x0f, 0x0f, 0xc3, 0xdb, 0xdb, 0xc3, 0xf0, 0xf0 };
+game_descriptor_t tetris_game_descriptor
+	__attribute__((section(".game_descriptors"))) =
+{
+	&tetris,
+	tetris_icon,
 };
+
+#ifdef GAME_BASTET
+// Bastet icon, MSB is leftmost pixel
+static uint8_t bastet_icon[8] PROGMEM =
+	{ 0x81, 0xc3, 0xff, 0x99, 0xff, 0xff, 0x66, 0x3c };
+game_descriptor_t bastet_game_descriptor
+	__attribute__((section(".game_descriptors"))) =
+{
+	&tetris_bastet,
+	bastet_icon,
+};
+#endif
 
 
 /***************************
@@ -104,7 +121,7 @@ void tetris_logic_saveHighscore(uint16_t nHighscore)
  */
 tetris_logic_t *tetris_logic_construct()
 {
-	tetris_logic_t *pLogic = (tetris_logic_t *)malloc(sizeof(tetris_logic_t));
+	tetris_logic_t *pLogic = (tetris_logic_t *) malloc(sizeof(tetris_logic_t));
 	assert(pLogic != NULL);
 	memset(pLogic, 0, sizeof(tetris_logic_t));
 	return pLogic;
@@ -130,7 +147,28 @@ void tetris_logic_destruct(tetris_logic_t *pLogic)
  * Description:  runs the tetris game
  * Return value: void
  */
-void tetris ()
+void tetris()
+{
+	tetris_main(0);
+}
+
+
+/* Function:     tetris_bastet
+ * Description:  runs the bastet game
+ * Return value: void
+ */
+void tetris_bastet()
+{
+	tetris_main(1);
+}
+
+
+/* Function:         tetris_main
+ * Description:      runs the tetris game
+ * Argument nBastet: 0 for normal Tetris, 1 for Bastet
+ * Return value:     void
+ */
+void tetris_main(int8_t nBastet)
 {
 	// get view dependent dimensions of the playfield
 	int8_t nWidth;
@@ -145,6 +183,9 @@ void tetris ()
 	tetris_playfield_t *pPl = tetris_playfield_construct(nWidth, nHeight);
 	tetris_input_t *pIn = tetris_input_construct();
 	tetris_view_t *pView = tetris_view_construct(pLogic, pPl);
+#ifdef GAME_BASTET
+	tetris_bastet_t *pBastet;
+#endif
 
 	// runtime variable
 	int8_t nPieceRow;
@@ -157,15 +198,28 @@ void tetris ()
 	}
 
 	// initialize current and next piece
-	tetris_piece_t *pPiece = NULL;
-	tetris_piece_t *pNextPiece = pPiece =
-		tetris_piece_construct(random8() % 7, TETRIS_PC_ANGLE_0);
+	tetris_piece_t *pPiece;
+	tetris_piece_t *pNextPiece;
+#ifdef GAME_BASTET
+	if (nBastet)
+	{
+		pBastet = tetris_bastet_construct(pPl);
+		pNextPiece = pPiece = NULL;
+	}
+	else
+	{
+#endif
+		pNextPiece = pPiece =
+				tetris_piece_construct(random8() % 7, TETRIS_PC_ANGLE_0);
+		tetris_logic_setPreviewPiece(pLogic, pNextPiece);
+#ifdef GAME_BASTET
+	}
+#endif
 
 	// the view only monitors the logic and the playfield object for the game
 	// status so we must put information like the next piece or the current
 	// highscore to a place where the view can find it
 	tetris_logic_setHighscore(pLogic, nHighscore);
-	tetris_logic_setPreviewPiece(pLogic, pNextPiece);
 
 	// pace flag
 	tetris_input_pace_t inPace;
@@ -178,22 +232,45 @@ void tetris ()
 		{
 		// the playfield awaits a new piece
 		case TETRIS_PFS_READY:
-			// make preview piece the current piece and create new preview piece
-			pPiece = pNextPiece;
-			pNextPiece =
-				tetris_piece_construct(random8() % 7, TETRIS_PC_ANGLE_0);
-			tetris_logic_setPreviewPiece(pLogic, pNextPiece);
-
-			// insert new piece into playfield
-			tetris_piece_t *pOldPiece;
-			tetris_playfield_insertPiece(pPl, pPiece, &pOldPiece);
-
-			// destruct old piece (if it exists) since we don't need it anymore
-			if (pOldPiece != NULL)
+#ifdef GAME_BASTET
+			if (nBastet)
 			{
-				tetris_piece_destruct(pOldPiece);
-				pOldPiece = NULL;
+				if (pPiece != NULL)
+				{
+					tetris_piece_destruct(pPiece);
+				}
+				if (pNextPiece != NULL)
+				{
+					tetris_piece_destruct(pNextPiece);
+				}
+				pPiece = tetris_bastet_choosePiece(pBastet);
+				pNextPiece = tetris_bastet_choosePreviewPiece(pBastet);
+				tetris_piece_t *pOldPiece;
+				tetris_playfield_insertPiece(pPl, pPiece, &pOldPiece);
+				tetris_logic_setPreviewPiece(pLogic, pNextPiece);
 			}
+			else
+			{
+#endif
+				// make preview piece the current piece and create new preview piece
+				pPiece = pNextPiece;
+				pNextPiece = tetris_piece_construct(random8() % 7,
+					TETRIS_PC_ANGLE_0);
+				tetris_logic_setPreviewPiece(pLogic, pNextPiece);
+
+				// insert new piece into playfield
+				tetris_piece_t *pOldPiece;
+				tetris_playfield_insertPiece(pPl, pPiece, &pOldPiece);
+
+				// destruct old piece (if it exists) since we don't need it anymore
+				if (pOldPiece != NULL)
+				{
+					tetris_piece_destruct(pOldPiece);
+					pOldPiece = NULL;
+				}
+#ifdef GAME_BASTET
+			}
+#endif
 			break;
 
 		// a piece is hovering and can be controlled by the player
@@ -296,7 +373,6 @@ void tetris ()
 			// and whether the level gets changed
 			tetris_logic_removedLines(pLogic, tetris_playfield_getRowMask(pPl));
 			tetris_input_setLevel(pIn, tetris_logic_getLevel(pLogic));
-
 			break;
 
 		// avoid compiler warnings
@@ -320,6 +396,12 @@ void tetris ()
 	}
 
 	// clean up
+#ifdef GAME_BASTET
+	if (nBastet)
+	{
+		tetris_bastet_destruct(pBastet);
+	}
+#endif
 	tetris_view_destruct(pView);
 	tetris_input_destruct(pIn);
 	tetris_playfield_destruct(pPl);
@@ -374,18 +456,18 @@ void tetris_logic_removedLines(tetris_logic_t *pLogic,
 
 	switch (nLines)
 	{
-		case 1:
-			pLogic->nScore += 50;
-			break;
-		case 2:
-			pLogic->nScore += 150;
-			break;
-		case 3:
-			pLogic->nScore += 250;
-			break;
-		case 4:
-			pLogic->nScore += 400;
-			break;
+	case 1:
+		pLogic->nScore += 50;
+		break;
+	case 2:
+		pLogic->nScore += 150;
+		break;
+	case 3:
+		pLogic->nScore += 250;
+		break;
+	case 4:
+		pLogic->nScore += 400;
+		break;
 	}
 }
 

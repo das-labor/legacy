@@ -2,9 +2,9 @@
 #include <string.h>
 #include <assert.h>
 #include <inttypes.h>
+#include "../../autoconf.h"
 #include "playfield.h"
 #include "piece.h"
-#include "bast.h"
 
 
 /***************************
@@ -58,6 +58,7 @@ tetris_playfield_t *tetris_playfield_construct(int8_t nWidth,
 		if (pPlayfield->dump != NULL)
 		{
 			// setting desired attributes
+			pPlayfield->nFirstMatterRow = nHeight - 1;
 			pPlayfield->nWidth = nWidth;
 			pPlayfield->nHeight = nHeight;
 			tetris_playfield_reset(pPlayfield);
@@ -336,6 +337,20 @@ void tetris_playfield_advancePiece(tetris_playfield_t *pPl)
 				pPl->dump[i] |= nPieceMap;
 			}
 
+			// update value for the highest row with matter
+			int8_t nPieceRow = pPl->nRow;
+			uint16_t nMask = 0x000F;
+			for (int i = 0; i < 4; ++i, nMask <<= 4)
+			{
+				if ((nMask & nPiece) != 0)
+				{
+					nPieceRow += i;
+					break;
+				}
+			}
+			pPl->nFirstMatterRow = (pPl->nFirstMatterRow > nPieceRow) ?
+					nPieceRow : pPl->nFirstMatterRow;
+
 			// the piece has finally been docked
 			pPl->status = TETRIS_PFS_DOCKED;
 		}
@@ -456,6 +471,9 @@ void tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl)
 		// is current row a full row?
 		if ((nFullRow & pPl->dump[i]) == nFullRow)
 		{
+			// adjust value for the highest row with matter
+			pPl->nFirstMatterRow++;
+
 			// set corresponding bit for the row mask
 			// nRowMask |= 0x08 >> (nStartRow - i);
 			nRowMask |= 0x01 <<  (i - pPl->nRow);
@@ -602,6 +620,9 @@ uint16_t tetris_playfield_getDumpRow(tetris_playfield_t *pPl,
 	return pPl->dump[nRow];
 }
 
+
+#ifdef GAME_BASTET
+
 /* Function:         tetris_playfield_predictDeepestRow
  * Description:      returns the deepest possible row of a given piece
  * Argument pPl:     the playfield on which we want to test a piece
@@ -621,10 +642,14 @@ int8_t tetris_playfield_predictDeepestRow(tetris_playfield_t *pPl,
 	if (tetris_playfield_collision(pPl, (pPl->nWidth - 2) / 2, nRow) ||
 			(tetris_playfield_collision(pPl, nColumn, nRow)))
 	{
+		// restore real piece
+		pPl->pPiece = pActualPiece;
+
 		return -4;
 	}
 
 	// determine deepest row
+	nRow = (nRow < pPl->nFirstMatterRow - 4) ? pPl->nFirstMatterRow - 4 : nRow;
 	while ((nRow < pPl->nHeight) &&
 			(!tetris_playfield_collision(pPl, nColumn, nRow + 1)))
 	{
@@ -777,3 +802,5 @@ uint16_t* tetris_playfield_predictNextRow(tetris_playfield_iterator_t *pIt)
 		return NULL;
 	}
 }
+
+#endif /* GAME_BASTET */

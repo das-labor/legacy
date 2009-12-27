@@ -7,7 +7,7 @@
 #include "animations/programm.h"
 #include "animations/matrix.h"
 #include "animations/gameoflife.h"
-#include "animations/stonefly.h"
+#include "animations/stonefly.h" 
 #include "animations/flyingdots.h"
 #include "borg_hw/borg_hw.h"
 #include "can/borg_can.h"
@@ -92,12 +92,12 @@ void display_loop(){
 			break;
 #endif
 
-#ifdef ANIMATION_STONEFLY
-		case 9:
-			stonefly();
-			break;
-#endif
-
+#ifdef ANIMATION_STONEFLY 
+		case 9: 
+			stonefly(); 
+			break; 
+#endif 
+ 
 #ifdef ANIMATION_GAMEOFLIFE
 		case 10:
 			gameoflife();
@@ -109,10 +109,10 @@ void display_loop(){
 			flyingdots();
 			break;
 #endif
-	
 
 #ifdef ANIMATION_MHERWEG
-		case 11:		
+		case 11:
+			flydots();
 			lines1();
 			dots1();
 			movinglines();
@@ -141,10 +141,9 @@ void display_loop(){
 
 			break;
 #endif
-
-		case 42:
-		  mode = 1;
-		  break;
+		case 42: 
+		mode = 1; 
+		break;
 
 #ifdef MENU_SUPPORT
 		case 43:

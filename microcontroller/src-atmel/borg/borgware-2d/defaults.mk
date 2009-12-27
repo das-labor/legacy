@@ -19,7 +19,7 @@ export HOSTCC
 
 # flags for the compiler
 CFLAGS ?= -Wall -W -Wno-unused-parameter -Wno-sign-compare
-CFLAGS += -g -Os -std=gnu99 -fgnu89-inline
+CFLAGS += -g -Os -std=gnu99 -fgnu89-inline -DNDEBUG
 
 # flags for the linker
 LDFLAGS += -T ./avr5.x -mmcu=$(MCU) 
@@ -33,7 +33,7 @@ MACHINE = $(shell uname -m)
 #$(info $(OSTYPE))
 
 ifeq ($(OSTYPE),cygwin)  
-  CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O2 -D_WIN32 -mno-cygwin
+  CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O0 -D_WIN32 -mno-cygwin
   LDFLAGS_SIM = -Wl -mno-cygwin -T simulator/i386pe.x
   LIBS_SIM    = -lglut32 -lglu32 -lopengl32
 else
