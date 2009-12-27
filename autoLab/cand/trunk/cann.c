@@ -186,7 +186,7 @@ void cann_close_errors()
 			cann_conn_t *del = (*client);
 
 			*client = del->next;
-			client = &(del->next);
+			//client = &(del->next);
 
 			debug(2, "===> Closing fd %d", del->fd);
 			close(del->fd);
