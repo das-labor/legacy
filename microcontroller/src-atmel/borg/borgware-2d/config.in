@@ -64,7 +64,9 @@ comment "Animations"
 	bool     "Schachbrett"   ANIMATION_SCHACHBRETT
 	dep_bool "Feuer"         ANIMATION_FEUER         $RANDOM_SUPPORT
 	dep_bool "Matrix"        ANIMATION_MATRIX        $RANDOM_SUPPORT
-	dep_bool "Random bright" ANIMATION_RANDOM_BRIGHT $RANDOM_SUPPORT
+	dep_bool "Random Bright" ANIMATION_RANDOM_BRIGHT $RANDOM_SUPPORT
+	dep_bool "Stonefly"		 ANIMATION_STONEFLY		 $RANDOM_SUPPORT
+	dep_bool "Flying Dots"	 ANIMATION_FLYINGDOTS	 $RANDOM_SUPPORT
 	dep_bool "Game of Life"  ANIMATION_GAMEOFLIFE    $RANDOM_SUPPORT
 	bool     "M Herweg"      ANIMATION_MHERWEG
 	
