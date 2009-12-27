@@ -56,6 +56,7 @@ typedef struct tetris_playfield_iterator_t
 	int8_t nDeepestPieceRow;        // the deepest possible row for a piece
 	uint16_t nFullRow;              // value of a full row
 	int8_t nCurrentRow;             // the actual row in the playfield
+	int8_t nStopRow;                // the last row to be examined
 	uint16_t nRowBuffer;            // internal buffer for returned row values
 }
 tetris_playfield_iterator_t;
@@ -244,27 +245,14 @@ int8_t tetris_playfield_predictDeepestRow(tetris_playfield_t *pPl,
  *                   a given column
  * Argument pPl:     the playfield on which we want to test a piece
  * Argument pPiece:  the piece which should be tested
+ * Argument nRow:    the row where the given piece collides
  * Argument nColumn: the column where the piece should be dropped
  * Return value:     amount of complete lines
  */
 int8_t tetris_playfield_predictCompleteLines(tetris_playfield_t *pPl,
                                              tetris_piece_t *pPiece,
+                                             int8_t nRow,
                                              int8_t nColumn);
-
-
-/* Function:         tetris_playfield_predictDumpRow
- * Description:      predicts the appearance of a playfield row for a piece
- *                   at a given column
- * Argument pPl:     the playfield on which we want to test a piece
- * Argument pPiece:  the piece which should be tested
- * Argument nColumn: the column where the piece should be dropped
- * Argument nRow:    the row of interest
- * Return value:     appearance of the predicted dump row
- */
-uint16_t tetris_playfield_predictDumpRow(tetris_playfield_t *pPl,
-                                         tetris_piece_t *pPiece,
-                                         int8_t nColumn,
-                                         int8_t nRow);
 
 
 /* Function:         tetris_playfield_predictBottomRow
@@ -274,12 +262,14 @@ uint16_t tetris_playfield_predictDumpRow(tetris_playfield_t *pPl,
  * Argument pIt:     a pointer to an iterator which should be initialized
  * Argument pPl:     the playfield on which we want to test a piece
  * Argument pPiece:  the piece which should be tested
+ * Argument nRow:    the row where the given piece collides
  * Argument nColumn: the column where the piece should be dropped
  * Return value:     appearance of the predicted dump row at the bottom
  */
 uint16_t* tetris_playfield_predictBottomRow(tetris_playfield_iterator_t *pIt,
                                             tetris_playfield_t *pPl,
                                             tetris_piece_t *pPiece,
+                                            int8_t nRow,
                                             int8_t nColumn);
 
 
@@ -287,7 +277,7 @@ uint16_t* tetris_playfield_predictBottomRow(tetris_playfield_iterator_t *pIt,
  * Description:      predicts the appearance of the next row of the playfield
  *                   (for a given iterator)
  * Argument pIt:     a pointer to a dump iterator
- * Return value:     appearance of the next predicted dump row
+ * Return value:     appearance of next predicted row (or NULL -> no next line)
  */
 uint16_t* tetris_playfield_predictNextRow(tetris_playfield_iterator_t *pIt);
 

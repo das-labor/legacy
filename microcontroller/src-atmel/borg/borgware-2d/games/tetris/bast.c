@@ -37,13 +37,13 @@ void tetris_bastet_clearColHeights(tetris_bastet_t *pBastet,
  */
 int tetris_bastet_qsortCompare(const void *pa, const void *pb)
 {
-	tetris_bastet_scorepair_t *pScoreA = (tetris_bastet_scorepair_t *)pa;
-	tetris_bastet_scorepair_t *pScoreB = (tetris_bastet_scorepair_t *)pb;
-	if (pScoreA->nScore == pScoreB->nScore)
+	tetris_bastet_scorepair_t *pScorePairA = (tetris_bastet_scorepair_t *)pa;
+	tetris_bastet_scorepair_t *pScorePairB = (tetris_bastet_scorepair_t *)pb;
+	if (pScorePairA->nScore == pScorePairB->nScore)
 	{
 		return 0;
 	}
-	else if (pScoreA->nScore < pScoreB->nScore)
+	else if (pScorePairA->nScore < pScorePairB->nScore)
 	{
 		return -1;
 	}
@@ -109,11 +109,16 @@ int16_t tetris_bastet_evalPos(tetris_bastet_t *pBastet,
                               tetris_piece_t *pPiece,
                               int8_t nColumn)
 {
+	// the row where the given piece collides
+	int8_t nDeepestRow = tetris_playfield_predictDeepestRow(pBastet->pPlayfield,
+			pPiece, nColumn);
+
+	// initial score of the given piece
 	int16_t nScore = -32000;
 
 	// modify score based on complete lines
 	int8_t nLines =	tetris_playfield_predictCompleteLines(pBastet->pPlayfield,
-			pPiece, nColumn);
+			pPiece, nDeepestRow, nColumn);
 	nScore += 5000 * nLines;
 
 	// determine sane start and stop columns whose heights we want to calculate
@@ -140,7 +145,7 @@ int16_t tetris_bastet_evalPos(tetris_bastet_t *pBastet,
 	tetris_playfield_iterator_t iterator;
 	int8_t nHeight = 1;
 	uint16_t *pDump = tetris_playfield_predictBottomRow(&iterator,
-			pBastet->pPlayfield, pPiece, nColumn);
+			pBastet->pPlayfield, pPiece, nDeepestRow, nColumn);
 	if (pDump == NULL)
 	{
 		// an immediately returned NULL is caused by a full dump -> low score
@@ -220,10 +225,10 @@ tetris_piece_t* tetris_bastet_choosePiece(tetris_bastet_t *pBastet)
 	qsort(pBastet->nPieceScores, 7, sizeof(tetris_bastet_scorepair_t),
 		&tetris_bastet_qsortCompare);
 
-	uint8_t rnd = rand() % 100;
+	uint8_t nRnd = rand() % 100;
 	for (uint8_t i = 0; i < 7; i++)
 	{
-		if (rnd < nPercent[i])
+		if (nRnd < nPercent[i])
 		{
 			return tetris_piece_construct(pBastet->nPieceScores[i].shape,
 					TETRIS_PC_ANGLE_0);
@@ -231,7 +236,7 @@ tetris_piece_t* tetris_bastet_choosePiece(tetris_bastet_t *pBastet)
 	}
 
 	//should not arrive here
-	return  tetris_piece_construct(pBastet->nPieceScores[0].shape,
+	return tetris_piece_construct(pBastet->nPieceScores[0].shape,
 			TETRIS_PC_ANGLE_0);
 }
 
@@ -244,6 +249,6 @@ tetris_piece_t* tetris_bastet_choosePiece(tetris_bastet_t *pBastet)
  */
 tetris_piece_t* tetris_bastet_choosePreviewPiece(tetris_bastet_t *pBastet)
 {
-	return  tetris_piece_construct(pBastet->nPieceScores[6].shape,
+	return tetris_piece_construct(pBastet->nPieceScores[6].shape,
 			TETRIS_PC_ANGLE_0);
 }
