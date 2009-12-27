@@ -105,14 +105,13 @@ void display_loop(){
 #endif
 
 #ifdef ANIMATION_FLYINGDOTS
-		case 12:
+		case 11:
 			flyingdots();
 			break;
 #endif
 
 #ifdef ANIMATION_MHERWEG
-		case 11:
-			flydots();
+		case 12:
 			lines1();
 			dots1();
 			movinglines();
