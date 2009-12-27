@@ -2,6 +2,7 @@
 #define TETRIS_PLAYFIELD_H_
 
 #include <inttypes.h>
+#include "../../autoconf.h"
 #include "piece.h"
 
 
@@ -40,6 +41,7 @@ typedef struct tetris_playfield_t
 	int8_t nRow;                      // vert. piece pos. (0 is top)
 	uint8_t nRowMask;                 // removed lines relative to nRow (bitmap)
 	tetris_playfield_status_t status; // status
+	int8_t nFirstMatterRow;           // first row (from top) which contains matter
 	uint16_t *dump;                   // playfield itself
 }
 tetris_playfield_t;
@@ -223,6 +225,8 @@ uint16_t tetris_playfield_getDumpRow(tetris_playfield_t *pPl,
                                      int8_t nRow);
 
 
+#ifdef GAME_BASTET
+
 /* Function:         tetris_playfield_predictDeepestRow
  * Description:      returns the deepest possible row of a given piece
  * Argument pPl:     the playfield on which we want to test a piece
@@ -287,6 +291,6 @@ uint16_t* tetris_playfield_predictBottomRow(tetris_playfield_iterator_t *pIt,
  */
 uint16_t* tetris_playfield_predictNextRow(tetris_playfield_iterator_t *pIt);
 
-
+#endif /* GAME_BASTET */
 
 #endif /*TETRIS_PLAYFIELD_H_*/
