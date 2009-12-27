@@ -13,7 +13,7 @@
 
 /* Function:         tetris_playfield_hoverStatus;
  * Description:      determines if piece is either hovering or gliding
- * Argument pPl:     playfield perform action on
+ * Argument pPl:     the playfield we want information from
  * Return value:     TETRIS_PFS_HOVERING or TETRIS_PFS_GLIDING
  */
 tetris_playfield_status_t tetris_playfield_hoverStatus(tetris_playfield_t* pPl)
@@ -667,11 +667,13 @@ int8_t tetris_playfield_predictDeepestRow(tetris_playfield_t *pPl,
  *                   a given column
  * Argument pPl:     the playfield on which we want to test a piece
  * Argument pPiece:  the piece which should be tested
+ * Argument nRow:    the row where the given piece collides
  * Argument nColumn: the column where the piece should be dropped
  * Return value:     amount of complete lines
  */
 int8_t tetris_playfield_predictCompleteLines(tetris_playfield_t *pPl,
                                              tetris_piece_t *pPiece,
+                                             int8_t nRow,
                                              int8_t nColumn)
 {
 	int8_t nCompleteRows = 0;
@@ -679,7 +681,6 @@ int8_t tetris_playfield_predictCompleteLines(tetris_playfield_t *pPl,
 	// bit mask of a full row
 	uint16_t nFullRow = 0xFFFF >> (16 - pPl->nWidth);
 
-	int8_t nRow = tetris_playfield_predictDeepestRow(pPl, pPiece, nColumn);
 	if (nRow > -4)
 	{
 		// determine sane start and stop values for the dump's index
@@ -727,22 +728,25 @@ int8_t tetris_playfield_predictCompleteLines(tetris_playfield_t *pPl,
  * Argument pIt:     [out] a pointer to an iterator which should be initialized
  * Argument pPl:     the playfield on which we want to test a piece
  * Argument pPiece:  the piece which should be tested
+ * Argument nRow:    the row where the given piece collides
  * Argument nColumn: the column where the piece should be dropped
  * Return value:     appearance of the predicted dump row at the bottom
  */
 uint16_t* tetris_playfield_predictBottomRow(tetris_playfield_iterator_t *pIt,
                                             tetris_playfield_t *pPl,
                                             tetris_piece_t *pPiece,
+                                            int8_t nRow,
                                             int8_t nColumn)
 {
 	pIt->pPlayfield = pPl;
 	pIt->pPiece = pPiece;
 	pIt->nColumn = nColumn;
-	pIt->nDeepestPieceRow =
-		tetris_playfield_predictDeepestRow(pPl, pPiece, nColumn);
+	pIt->nDeepestPieceRow = nRow;
 	pIt->nFullRow = 0xFFFF >> (16 - pPl->nWidth);
 	pIt->nCurrentRow = pPl->nHeight - 1;
 	pIt->nRowBuffer = 0;
+	pIt->nStopRow = pPl->nFirstMatterRow < nRow ? pPl->nFirstMatterRow : nRow;
+	pIt->nStopRow = pIt->nStopRow < 0 ? 0 : pIt->nStopRow;
 	return tetris_playfield_predictNextRow(pIt);
 }
 
@@ -751,13 +755,13 @@ uint16_t* tetris_playfield_predictBottomRow(tetris_playfield_iterator_t *pIt,
  * Description:      predicts the appearance of the next row of the playfield
  *                   (for a given iterator)
  * Argument pIt:     a pointer to a dump iterator
- * Return value:     appearance of the next predicted dump row
+ * Return value:     appearance of next predicted row (or NULL -> no next line)
  */
 uint16_t* tetris_playfield_predictNextRow(tetris_playfield_iterator_t *pIt)
 {
 	uint16_t nPieceMap = 0;
 
-	if ((pIt->nDeepestPieceRow > -4) && (pIt->nCurrentRow >= 0))
+	if ((pIt->nDeepestPieceRow > -4) && (pIt->nCurrentRow >= pIt->nStopRow))
 	{
 		// determine sane start and stop values for the piece's indices
 		int8_t nStartRow =
