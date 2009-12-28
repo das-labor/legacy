@@ -70,6 +70,10 @@ function save_pos(element)
 {
   new Ajax.Updater('ajax', 'set.php?cmd=save_pos&x='+document.getElementById(element.id).style.left+'&y='+document.getElementById(element.id).style.top,{method:'get', onComplete:function() {done=true;}} );
 }
+function blue_mode(mode)
+{
+  new Ajax.Updater('ajax', 'set.php?cmd=blue_mode&mode='+mode,{method:'get', onComplete:function() {done=true;}} );
+}
 </script>
 <div id="ajax">
 #debug
@@ -186,12 +190,18 @@ echo "</form>";
     echo "<table width=100%>";
   echo "<tr>";
   foreach ($treppenblink_modes as $tbm_key => $tbm_value)
-    echo "<td><input type=\"radio\" onclick=\"treppenblink_cmd('".$tbm_value."');\" name=\"treppenblink\" value=\"".$tbm_value."\"></td>";
+    echo "<td align=\"center\"><input type=\"radio\" onclick=\"treppenblink_cmd('".$tbm_value."');\" name=\"treppenblink\" value=\"".$tbm_value."\"></td>";
   echo "</tr><tr>";
   foreach ($treppenblink_modes as $tbm_key => $tbm_value)
    echo "<td>".$tbm_key."</td>";
  echo "</tr></table>";
 ?>
+<br>Vortrag Mode<br>
+<input type="image" src="blue_mode_off.png" onclick="blue_mode('off');">
+<input type="image" src="blue_mode_on.png" onclick="blue_mode('on');">
+<input type="image" src="blue_mode_video_conference.png" onclick="blue_mode('video_conference');">
+<input type="image" src="blue_mode_speaker.png" onclick="blue_mode('speaker');">
+<input type="image" src="blue_mode_dimm.png" onclick="blue_mode('dimm');">
 
 </div>
 </form>

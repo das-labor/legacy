@@ -9,6 +9,7 @@ elseif($_GET[cmd]=="treppenblink")$cmd="treppenblink";
 elseif($_GET[cmd]=="canir_teufel")$cmd="canir_teufel";
 elseif($_GET[cmd]=="canir_beamer")$cmd="canir_beamer";
 elseif($_GET[cmd]=="save_pos")$cmd="save_pos";
+elseif($_GET[cmd]=="blue_mode")$cmd="blue_mode";
 else unset($_GET[cmd]);
 
 if(in_array($_GET[id],$pwm_ids)) $id=$_GET[id];
@@ -123,6 +124,114 @@ elseif($cmd=="save_pos")
 	setcookie($_GET[div]."x",$_GET[x]);
 	setcookie($_GET[div]."y",$_GET[y]);
 	echo "Element $_GET[div] $_GET[x] $_GET[y]";
+}
+elseif($cmd=="blue_mode")
+{
+	if($_GET[mode]=="on")
+	{
+		$_SESSION["LAMP_VORTRAG_PWM"]=1;
+		$_SESSION["VORTRAG_PWM"]=255;
+		$_SESSION["LAMP_TAFEL"]=1;
+		exec("powercommander.lapcontrol powercommander SW LAMP_TAFEL ON 0x00");
+		$_SESSION["TAFEL"]="255";
+		exec("powercommander.lapcontrol powercommander PWM TAFEL SET 0xff");
+	
+		$_SESSION["LAMP_BEAMER"]=1;
+		exec("powercommander.lapcontrol powercommander SW LAMP_BEAMER ON 0x00");
+		$_SESSION["BEAMER"]="255";
+		exec("powercommander.lapcontrol powercommander PWM BEAMER SET 0xff");
+
+		$_SESSION["LAMP_SCHRANK"]=1;
+		exec("powercommander.lapcontrol powercommander SW LAMP_SCHRANK ON 0x00");
+		$_SESSION["SCHRANK"]="255";
+		exec("powercommander.lapcontrol powercommander PWM SCHRANK SET 0xff");
+		
+		$_SESSION["LAMP_FLIPPER"]=1;
+		exec("powercommander.lapcontrol powercommander SW LAMP_FLIPPER ON 0x00");
+		$_SESSION["FLIPPER"]="255";
+		exec("powercommander.lapcontrol powercommander PWM FLIPPER SET 0xff");
+	}
+	elseif($_GET[mode]=="off")
+	{
+		$_SESSION["LAMP_VORTRAG_PWM"]=0;
+		$_SESSION["VORTRAG_PWM"]=0;
+		$_SESSION["LAMP_TAFEL"]=0;
+		exec("powercommander.lapcontrol powercommander SW LAMP_TAFEL OFF 0x00");
+		$_SESSION["LAMP_BEAMER"]=0;
+		exec("powercommander.lapcontrol powercommander SW LAMP_BEAMER OFF 0x00");
+		$_SESSION["LAMP_SCHRANK"]=0;
+		exec("powercommander.lapcontrol powercommander SW LAMP_SCHRANK OFF 0x00");
+		$_SESSION["LAMP_FLIPPER"]=0;
+		exec("powercommander.lapcontrol powercommander SW LAMP_FLIPPER OFF 0x00");
+	}
+	elseif($_GET[mode]=="video_conference")
+	{
+		$_SESSION["VORTRAG_PWM"]=0;
+		$_SESSION["LAMP_TAFEL"]=0;
+		exec("powercommander.lapcontrol powercommander SW LAMP_TAFEL OFF 0x00");
+
+		$_SESSION["LAMP_BEAMER"]=1;
+		exec("powercommander.lapcontrol powercommander SW LAMP_BEAMER ON 0x00");
+		$_SESSION["BEAMER"]="0";
+		exec("powercommander.lapcontrol powercommander PWM BEAMER SET 0x00");
+
+		$_SESSION["LAMP_SCHRANK"]=1;
+		exec("powercommander.lapcontrol powercommander SW LAMP_SCHRANK ON 0x00");
+		$_SESSION["SCHRANK"]="119";
+		exec("powercommander.lapcontrol powercommander PWM SCHRANK SET 0x77");
+
+		$_SESSION["LAMP_FLIPPER"]=1;
+		exec("powercommander.lapcontrol powercommander SW LAMP_FLIPPER ON 0x00");
+		$_SESSION["FLIPPER"]="255";
+		exec("powercommander.lapcontrol powercommander PWM FLIPPER SET 0xff");
+	}
+	elseif($_GET[mode]=="speaker")
+	{
+		$_SESSION["VORTRAG_PWM"]=0;
+		$_SESSION["LAMP_TAFEL"]=1;
+		exec("powercommander.lapcontrol powercommander SW LAMP_TAFEL ON 0x00");
+		$_SESSION["TAFEL"]="255";
+		exec("powercommander.lapcontrol powercommander PWM TAFEL SET 0xff");
+
+		$_SESSION["LAMP_BEAMER"]=1;
+		exec("powercommander.lapcontrol powercommander SW LAMP_BEAMER ON 0x00");
+		$_SESSION["BEAMER"]="0";
+		exec("powercommander.lapcontrol powercommander PWM BEAMER SET 0x00");
+
+		$_SESSION["LAMP_SCHRANK"]=1;
+		exec("powercommander.lapcontrol powercommander SW LAMP_SCHRANK ON 0x00");
+		$_SESSION["SCHRANK"]="0";
+		exec("powercommander.lapcontrol powercommander PWM SCHRANK SET 0x00");
+
+		$_SESSION["LAMP_FLIPPER"]=1;
+		exec("powercommander.lapcontrol powercommander SW LAMP_FLIPPER ON 0x00");
+		$_SESSION["FLIPPER"]="0";
+		exec("powercommander.lapcontrol powercommander PWM FLIPPER SET 0x00");
+	}
+	elseif($_GET[mode]=="dimm")
+	{
+		$_SESSION["LAMP_VORTRAG_PWM"]=1;
+		$_SESSION["VORTRAG_PWM"]=51;
+		$_SESSION["LAMP_TAFEL"]=1;
+		exec("powercommander.lapcontrol powercommander SW LAMP_TAFEL ON 0x00");
+		$_SESSION["TAFEL"]="51";
+		exec("powercommander.lapcontrol powercommander PWM TAFEL SET 0x33");
+
+		$_SESSION["LAMP_BEAMER"]=1;
+		exec("powercommander.lapcontrol powercommander SW LAMP_BEAMER ON 0x00");
+		$_SESSION["BEAMER"]="51";
+		exec("powercommander.lapcontrol powercommander PWM BEAMER SET 0x33");
+
+		$_SESSION["LAMP_SCHRANK"]=1;
+		exec("powercommander.lapcontrol powercommander SW LAMP_SCHRANK ON 0x00");
+		$_SESSION["SCHRANK"]="51";
+		exec("powercommander.lapcontrol powercommander PWM SCHRANK SET 0x33");
+
+		$_SESSION["LAMP_FLIPPER"]=1;
+		exec("powercommander.lapcontrol powercommander SW LAMP_FLIPPER ON 0x00");
+		$_SESSION["FLIPPER"]="51";
+		exec("powercommander.lapcontrol powercommander PWM FLIPPER SET 0x33");
+	}
 }
 
 echo "<script>$script</script>";
