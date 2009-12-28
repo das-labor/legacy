@@ -6,6 +6,10 @@
 #include <sys/select.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <unistd.h>
+#include <time.h>
+#include <locale.h>
+#include <langinfo.h>
 
 #include "cann.h"
 #include "debug.h"
@@ -25,6 +29,7 @@ char *progname;
 char *serial; 
 char *logfile=NULL;
 char *scriptfile=NULL;
+
 
 static char *optstring = "hdv::S:p:l:s:";
 struct option longopts[] =
@@ -48,7 +53,7 @@ void help()
    -d, --daemon            become daemon\n\
    -S, --serial PORT       use specified serial port\n\
    -s, --scriptfile FILE   use a scripte file to execute cmds on package\n\
-   -l, --logfile FILE      log every package to a logfile\n\    
+   -l, --logfile FILE      log every package to a logfile\n\
    -p, --port PORT         use specified TCP/IP port (default: 2342)\n\n" );
 }
 
@@ -69,83 +74,136 @@ void hexdump(unsigned char * addr, int size){
 
 void customscripts(rs232can_msg *msg)
 {
-  FILE *fp;
+  FILE *logFP;
   FILE *scriptFP;
   char tmpstr[80];
   char tmpstr2[80];
   time_t mytime;
+  char as_args[9][5];
+  struct tm *tm;
 
   int result;
 
   uint8_t i;
 
+  setlocale (LC_ALL, "C");
   mytime = time(NULL);
+  tm = localtime(&mytime);
+
   char line[300];
   can_message_match *in_msg = (can_message*)(msg->data);
   can_message_match match_msg = {0x00,0x00,0x00,0x00,0x00,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}};
 
-  strftime(tmpstr2,79,"%r",localtime(&mytime));
+  // logging to file - 'logfile' is global
+  memset(tmpstr,0,80);
+  memset(tmpstr2,0,80);
+  strftime(tmpstr2,79,"%c",tm);
 
-  if( (fp=fopen(logfile,"a")) != NULL)
+  if ( logfile != NULL)
     {
-      result = snprintf(tmpstr,80,"%s : src: 0x%.2x:0x%.2x dst:0x%.2x:0x%.2x data: ", 
-			tmpstr2, 
-			in_msg->addr_src,in_msg->port_src,
-			in_msg->addr_dst,in_msg->port_dst );
-      if(result<=80 && result>=0) 
+      // open logfile to append - use logrotate
+      if ( (logFP=fopen(logfile,"a")) != NULL)
 	{
-	  fwrite(tmpstr,result,1,fp);
-	  for(i=0;i<in_msg->dlc;i++)
+	  // print time and metadata to buffer
+	  result = snprintf(tmpstr,80,"%s : src: 0x%.2x:0x%.2x dst:0x%.2x:0x%.2x data: ", 
+			    tmpstr2, 
+			    in_msg->addr_src,in_msg->port_src,
+			    in_msg->addr_dst,in_msg->port_dst );
+	  // result must be in range - also snprintf limits range
+	  if(result<=80 && result>=0) 
 	    {
-	      result = snprintf(tmpstr,80,"0x%.2x ",in_msg->data[i]);
-	      if(result == 5)
+	      // write to logfile
+	      fwrite(tmpstr,result,1,logFP);
+	      memset(tmpstr,0,80);
+	      memset(tmpstr2,0,80);
+
+	      for(i=0;i<in_msg->dlc;i++)
 		{
-		  fwrite(tmpstr,result,1,fp);
+		  result = snprintf(tmpstr,80,"0x%.2x ",in_msg->data[i]);
+		  if(result == 5)
+		    {
+		      // append the data
+		      fwrite(tmpstr,result,1,logFP);
+		    }
 		}
+	      // append newline
+	      fwrite("\n",1,1,logFP);
 	    }
-	  fwrite("\n",8,1,fp);
+	  else 
+	    {
+	      // this should not happen
+	      fwrite("logfail\n",8,1,logFP);
+	    }
+	  fflush(logFP);
+	  fclose(logFP);
 	}
-      else 
-	{
-	  fwrite("logfail\n",8,1,fp);
-	}
-      fflush(fp);
-      fclose(fp);
     }
 
-  if( (scriptFP=fopen(scriptfile,"r")) != NULL)
-    {  
-      // we only support full match - on src/dst and dlc
-      // example:
-      // 0x00:0x00 0x00:0x00 0x04 data -> command
-      // src:srcport dst:dstport len data... -> executable
-      while (fgets(line, 300, scriptFP) != NULL) 
-	{
-	  result = sscanf(line,"0x%hhx:0x%hhx 0x%hhx:0x%hhx 0x%hhx %s -> %s",
-			  &(match_msg.addr_src),&(match_msg.port_src),
-			  &(match_msg.addr_dst),&(match_msg.port_dst),
-			  &(match_msg.dlc),
-			  tmpstr,
-			  tmpstr2);
-	  if(result !=7)
-	    {
-	      return;
-	    }
-    
-	  if( (match_msg.addr_dst == in_msg->addr_dst) && 
-	      (match_msg.addr_src == in_msg->addr_src) && 
-	      (match_msg.port_dst == in_msg->port_dst) && 
-	      (match_msg.port_src == in_msg->port_src) && 
-	      (match_msg.dlc == in_msg->dlc))
-	    {
-	      snprintf(line,300,"%s %s",tmpstr2,tmpstr);
-	      system(line);
-	    }
 
+  // 'scriptfile' is global
+  if ( scriptfile != NULL) 
+    {
+      if( (scriptFP=fopen(scriptfile,"r")) != NULL)
+	{  
+	  // we only support full match - on src/dst and dlc
+	  // example:
+	  // 0x00:0x00 0x00:0x00 0x04  -> command
+	  // src:srcport dst:dstport len -> executable
+	  while (fgets(line, 300, scriptFP) != NULL) 
+	    {
+	      // read instructions
+	      memset(tmpstr,0,80);
+	      memset(tmpstr2,0,80);
+  
+	      result = sscanf(line,"0x%hhx:0x%hhx 0x%hhx:0x%hhx 0x%hhx -> %s",
+			      &(match_msg.addr_src),&(match_msg.port_src),
+			      &(match_msg.addr_dst),&(match_msg.port_dst),
+			      &(match_msg.dlc),
+			      tmpstr2);
+	      memset(line,0,300);
+	      if(result !=6)
+		{
+		  // got a wrong line
+		  continue;
+		}
+	      // check for match
+	      if( (match_msg.addr_dst == in_msg->addr_dst) && 
+		  (match_msg.addr_src == in_msg->addr_src) && 
+		  (match_msg.port_dst == in_msg->port_dst) && 
+		  (match_msg.port_src == in_msg->port_src) && 
+		  (match_msg.dlc == in_msg->dlc))
+		{
+		  // fork a client to exec the command
+		  if(fork())
+		    {
+		      // dump
+		    }
+		  else
+		    {
+		      memset(as_args,0,45);
+		      snprintf(as_args[0],5,"0x%.2x",in_msg->dlc);
+		      snprintf(as_args[1],5,"0x%.2x",in_msg->data[0]);
+		      snprintf(as_args[2],5,"0x%.2x",in_msg->data[1]);
+		      snprintf(as_args[3],5,"0x%.2x",in_msg->data[2]);
+		      snprintf(as_args[4],5,"0x%.2x",in_msg->data[3]);
+		      snprintf(as_args[5],5,"0x%.2x",in_msg->data[4]);
+		      snprintf(as_args[6],5,"0x%.2x",in_msg->data[5]);
+		      snprintf(as_args[7],5,"0x%.2x",in_msg->data[6]);
+		      snprintf(as_args[8],5,"0x%.2x",in_msg->data[7]);
+
+		      // executing as a child
+		      execl(tmpstr2,as_args[0],
+			    as_args[1],as_args[2],as_args[3],as_args[4],
+			    as_args[5],as_args[6],as_args[7],as_args[8],NULL);
+
+		    } 
+		}
+	      
+	    }
+	  fclose(scriptFP);
 	}
-      fclose(scriptFP);
-    }
 
+    }
 
 }
 
