@@ -74,6 +74,14 @@ function blue_mode(mode)
 {
   new Ajax.Updater('ajax', 'set.php?cmd=blue_mode&mode='+mode,{method:'get', onComplete:function() {done=true;}} );
 }
+function moodbar(r,g,b)
+{
+  new Ajax.Updater('ajax', 'set.php?cmd=moodbar&r='+r+'&g='+g+'&b='+b,{method:'get', onComplete:function() {done=true;}} );
+}
+function moodbar_fade()
+{
+  new Ajax.Updater('ajax', 'set.php?cmd=moodbar_fade',{method:'get', onComplete:function() {done=true;}} );
+}
 </script>
 <div id="ajax">
 #debug
@@ -93,6 +101,19 @@ foreach($pwm_ids as $id)
         </div>\n";
 }
 ?>
+Moodbar
+	<div id="r_slider" class="slider">
+	    <div class="handle" style="background-color: #f00;"></div>
+	</div>
+	<div id="g_slider" class="slider">
+	    <div class="handle" style="background-color: #0f0;"></div>
+	</div>
+	<div id="b_slider" class="slider">
+	    <div class="handle" style="background-color: #00f;"></div>
+	</div>
+
+<input type="button" value="fade on" onclick="moodbar_fade();">
+
 </div>
 </div>
 <div id="mpd" class="mpd">
@@ -237,6 +258,46 @@ echo "
       }
     });";
 }
+?>
+	var r=100,g=100,b=100, timestamp;
+  (function() {
+      var r_slider = $('r_slider'),
+      	g_slider = $('g_slider'),
+      	b_slider = $('b_slider'),
+      	info = $('info');
+
+      new Control.Slider(r_slider.select('.handle'), r_slider, {
+      range: $R(0, 255),
+		increment: 16,
+      sliderValue: [100],
+      onSlide: function(values) {
+			r=Math.round(values);
+			moodbar(r,g,b);
+      }
+    });
+
+      new Control.Slider(g_slider.select('.handle'), g_slider, {
+      range: $R(0, 255),
+		increment: 16,
+      sliderValue: [100],
+      onSlide: function(values) {
+			g=Math.round(values);
+			moodbar(r,g,b);
+      }
+    });
+
+      new Control.Slider(b_slider.select('.handle'), b_slider, {
+      range: $R(0, 255),
+		increment: 16,
+      sliderValue: [100],
+      onSlide: function(values) {
+			b=Math.round(values);
+			moodbar(r,g,b);
+      }
+    });
+  })();
+
+<?
 
 foreach($rooms as $room => $port)
 {
