@@ -8,6 +8,8 @@ elseif($_GET[cmd]=="text_the_borg")$cmd="text_the_borg";
 elseif($_GET[cmd]=="treppenblink")$cmd="treppenblink";
 elseif($_GET[cmd]=="canir_teufel")$cmd="canir_teufel";
 elseif($_GET[cmd]=="canir_beamer")$cmd="canir_beamer";
+elseif($_GET[cmd]=="moodbar")$cmd="moodbar";
+elseif($_GET[cmd]=="moodbar_fade")$cmd="moodbar_fade";
 elseif($_GET[cmd]=="save_pos")$cmd="save_pos";
 elseif($_GET[cmd]=="blue_mode")$cmd="blue_mode";
 else unset($_GET[cmd]);
@@ -83,6 +85,24 @@ elseif($cmd=="text_the_borg")
 	exec("lapcontrol -s rl borg scroll 0x24 '2<5|+30/#".escapeshellcmd($_GET[text])."'");
 	exec("lapcontrol -s rl borg mode 0x24 1");
 }
+elseif($cmd=="moodbar")
+{
+  $mood_green=0;
+  $mood_blue=0;
+  $mood_red=0;
+  if($_GET[b] >=0 && $_GET[b] <=255) $mood_blue=$_GET[b];
+  if($_GET[r] >=0 && $_GET[r] <=255) $mood_red=$_GET[r];
+  if($_GET[g] >=0 && $_GET[g] <=255) $mood_green=$_GET[g];
+  echo "powercommander.lapcontrol packet 0x00:0x00 0x31:0x17 0x03,0x00 && powercommander.lapcontrol packet 0x00:0x00 0x31:0x17 0x02,0x00,".$mood_blue.",".$mood_green.",".$mood_red; // stop mood
+  exec("powercommander.lapcontrol packet 0x00:0x00 0x31:0x17 0x03,0x00 && powercommander.lapcontrol packet 0x00:0x00 0x31:0x17 0x02,0x00,".$mood_blue.",".$mood_green.",".$mood_red); // stop mood
+}
+elseif($cmd=="moodbar_fade")
+{
+  echo "powercommander.lapcontrol packet 0x00:0x00 0x31:0x17 0x03,0x01"; // enable mood
+  exec("powercommander.lapcontrol packet 0x00:0x00 0x31:0x17 0x03,0x01"); // enable mood
+
+}
+
 elseif($cmd=="treppenblink")
 {
   $real_tbm_value = "0x00";
