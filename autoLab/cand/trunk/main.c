@@ -173,28 +173,36 @@ void customscripts(rs232can_msg *msg)
 		  (match_msg.port_src == in_msg->port_src) && 
 		  (match_msg.dlc == in_msg->dlc))
 		{
-		  // fork a client to exec the command
-		  if(fork())
+		  // double fork a client to exec the command right under init
+		  if(vfork())
 		    {
-		      // dump
+		      wait();// dump
 		    }
 		  else
 		    {
-		      memset(as_args,0,45);
-		      snprintf(as_args[0],5,"0x%.2x",in_msg->dlc);
-		      snprintf(as_args[1],5,"0x%.2x",in_msg->data[0]);
-		      snprintf(as_args[2],5,"0x%.2x",in_msg->data[1]);
-		      snprintf(as_args[3],5,"0x%.2x",in_msg->data[2]);
-		      snprintf(as_args[4],5,"0x%.2x",in_msg->data[3]);
-		      snprintf(as_args[5],5,"0x%.2x",in_msg->data[4]);
-		      snprintf(as_args[6],5,"0x%.2x",in_msg->data[5]);
-		      snprintf(as_args[7],5,"0x%.2x",in_msg->data[6]);
-		      snprintf(as_args[8],5,"0x%.2x",in_msg->data[7]);
+		      //		      memset(as_args,0,45);
 
 		      // executing as a child
-		      execl(tmpstr2,as_args[0],
-			    as_args[1],as_args[2],as_args[3],as_args[4],
-			    as_args[5],as_args[6],as_args[7],as_args[8],NULL);
+		      if(vfork())
+			{
+			  _exit(0);
+			}
+		      else 
+			{
+			  snprintf(as_args[0],5,"0x%.2x",in_msg->dlc);
+			  snprintf(as_args[1],5,"0x%.2x",in_msg->data[0]);
+			  snprintf(as_args[2],5,"0x%.2x",in_msg->data[1]);
+			  snprintf(as_args[3],5,"0x%.2x",in_msg->data[2]);
+			  snprintf(as_args[4],5,"0x%.2x",in_msg->data[3]);
+			  snprintf(as_args[5],5,"0x%.2x",in_msg->data[4]);
+			  snprintf(as_args[6],5,"0x%.2x",in_msg->data[5]);
+			  snprintf(as_args[7],5,"0x%.2x",in_msg->data[6]);
+			  snprintf(as_args[8],5,"0x%.2x",in_msg->data[7]);
+			  execl(tmpstr2,tmpstr2,
+				as_args[0],
+				as_args[1],as_args[2],as_args[3],as_args[4],
+				as_args[5],as_args[6],as_args[7],as_args[8],NULL);
+			}
 
 		    } 
 		}
