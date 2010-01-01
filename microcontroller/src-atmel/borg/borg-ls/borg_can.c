@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include "can.h"
 #include "lap.h"
 #include "borg_can.h"
@@ -10,12 +12,10 @@
 #include <avr/eeprom.h>
 #include <string.h>
 
-#include "config.h"
 #include "borg_hw.h"
 
 can_addr myaddr;
 extern jmp_buf newmode_jmpbuf;
-
 
 char default_text[] PROGMEM = SCROLLTEXT_DEFAULT;
 char scrolltext_text[SCROLLTEXT_STRING_SIZE];
@@ -23,6 +23,12 @@ char scrolltext_text[SCROLLTEXT_STRING_SIZE];
 static can_message can_tx_msg;
 
 uint8_t borg_can_setmode;
+
+#ifdef LAP_TIME_EXT
+//variables to save the last received hours and  minutes
+//(accessible via lap.h)
+uint8_t lap_time_h, lap_time_m, lap_time_update = 0;
+#endif
 
 void bcan_init() 
 {
@@ -65,6 +71,16 @@ void process_mgt_msg(pdo_message *msg)
 		rmsg->dlc = 1;
 		can_transmit((can_message *)rmsg);
 		break;
+		
+	#ifdef LAP_TIME_EXT
+	//if we get a time reply,
+	//save it
+	case FKT_MGT_TIMEREPLY:
+		lap_time_h = msg->data[0];
+		lap_time_m = msg->data[1];
+		lap_time_update = 1;
+		break;
+	#endif		
 	}
 }
 

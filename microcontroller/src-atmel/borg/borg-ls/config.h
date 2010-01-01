@@ -49,5 +49,8 @@
 // PersistentCounter2 configuration
 #define PERCNT_BPC 24
 
+//enable time via can extensions
+#define LAP_TIME_EXT
+
 
 

@@ -15,6 +15,7 @@
 #include "prng.h"
 #include "percnt2.h"
 #include "util.h"
+#include "borg_time.h"
 
 jmp_buf newmode_jmpbuf;
 
@@ -41,24 +42,30 @@ int main (void){
 			} 
 			break;
 		case 2:
-			spirale(5);
+			time_anim();
 			break;
 		case 3:
-			joern1();
+			spirale(5);
 			break;
 		case 4:
-			snake();
+			joern1();
 			break;
 		case 5:
-			schachbrett(20);
+			snake();
 			break;
 		case 6:
-			feuer();
+			schachbrett(20);
 			break;
 		case 7:
+			time_anim();
+			break;			
+		case 8:
+			feuer();
+			break;		
+		case 9:
 			matrix();
 			break;
-		case 8:
+		case 10:
 			random_bright(200);
 			mode = 1;
 			break;
