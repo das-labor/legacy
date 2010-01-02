@@ -9,6 +9,7 @@
 #include "scrolltext.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <avr/pgmspace.h>
 
 //address of the time master
 #define TIME_MASTER_ADDR 0x00
@@ -22,22 +23,22 @@ extern can_addr myaddr;
 //send a time request packet via can
 void time_request(void)
 {
-	pdo_message *msg;
+	pdo_message msg;
 	
 	//source address
-	msg->addr_src = myaddr;
-	msg->port_src = PORT_MGT;
+	msg.addr_src = myaddr;
+	msg.port_src = PORT_MGT;
 	
 	//destination address
-	msg->addr_dst = TIME_MASTER_ADDR;
-	msg->port_dst = PORT_MGT;
+	msg.addr_dst = TIME_MASTER_ADDR;
+	msg.port_dst = PORT_MGT;
 	
 	//time request command
-	msg->cmd = FKT_MGT_TIMEREQUEST;
+	msg.cmd = FKT_MGT_TIMEREQUEST;
 	
 	//set length and transmit
-	msg->dlc = 1;
-	can_transmit((can_message *)msg);
+	msg.dlc = 1;
+	can_transmit((can_message *)&msg);
 }
 
 //update time via can, possibly blocking
@@ -72,7 +73,7 @@ void time_anim(void)
 	}
 	
 	//convert the time to a string	
-	sprintf(timestring, ">+:p42d50/#%02hi#<;+p42d50/# %02hi#x49b255p42d50#:", lap_time_h, lap_time_m);
+	sprintf_P(timestring, PSTR(">+:p42d50/#%02hi#<;+p42d50/# %02hi#x49b255p42d50#:"), lap_time_h, lap_time_m);
 	
 	//show the time
 	scrolltext(timestring);
