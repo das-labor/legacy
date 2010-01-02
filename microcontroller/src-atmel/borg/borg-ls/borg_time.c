@@ -63,7 +63,7 @@ uint8_t time_update(void)
 //display the time
 void time_anim(void)
 {
-	char timestring[34];
+	char timestring[45];
 	
 	//update time and return if we had no success
 	if(time_update() == 0)
@@ -72,7 +72,7 @@ void time_anim(void)
 	}
 	
 	//convert the time to a string	
-	sprintf(timestring, ">+:p20d50/#%02hi:#<;p20d50/#%02hi", lap_time_h, lap_time_m);
+	sprintf(timestring, ">+:p42d50/#%02hi#<;+p42d50/# %02hi#x49b255p42d50#:", lap_time_h, lap_time_m);
 	
 	//show the time
 	scrolltext(timestring);
