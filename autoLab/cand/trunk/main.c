@@ -91,12 +91,24 @@ void customscripts(rs232can_msg *msg)
   tm = localtime(&mytime);
 
   char line[300];
-  can_message_match *in_msg = (can_message*)(msg->data);
+  can_message_raw *in_msg = (can_message_raw*)(msg->data);
   can_message_match match_msg = {0x00,0x00,0x00,0x00,0x00,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}};
+  can_message_match dec_msg = {0x00,0x00,0x00,0x00,0x00,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}};
+
+
+  // decoding in_msg to readable format
+  dec_msg.addr_src = (uint8_t) (in_msg->id >> 8);
+  dec_msg.addr_dst = (uint8_t) (in_msg->id);
+  dec_msg.port_src = (uint8_t) ((in_msg->id >> 23) & 0x3f);
+  dec_msg.port_dst = (uint8_t) (((in_msg->id >> 16) & 0x0f) | ((in_msg->id >> 17) & 0x30));
+  dec_msg.dlc = in_msg->dlc;
+  for(i=0;i<dec_msg.dlc;i++)
+    {
+      dec_msg.data[i]=in_msg->data[i];
+    }
 
   // logging to file - 'logfile' is global
-  memset(tmpstr,0,80);
-  memset(tmpstr2,0,80);
+
   strftime(tmpstr2,79,"%c",tm);
 
   if ( logfile != NULL)
@@ -104,11 +116,13 @@ void customscripts(rs232can_msg *msg)
       // open logfile to append - use logrotate
       if ( (logFP=fopen(logfile,"a")) != NULL)
 	{
+	  memset(tmpstr,0,80);
+
 	  // print time and metadata to buffer
 	  result = snprintf(tmpstr,80,"%s : src: 0x%.2x:0x%.2x dst:0x%.2x:0x%.2x data: ", 
 			    tmpstr2, 
-			    in_msg->addr_src,in_msg->port_src,
-			    in_msg->addr_dst,in_msg->port_dst );
+			    dec_msg.addr_src,dec_msg.port_src,
+			    dec_msg.addr_dst,dec_msg.port_dst );
 	  // result must be in range - also snprintf limits range
 	  if(result<=80 && result>=0) 
 	    {
@@ -117,9 +131,9 @@ void customscripts(rs232can_msg *msg)
 	      memset(tmpstr,0,80);
 	      memset(tmpstr2,0,80);
 
-	      for(i=0;i<in_msg->dlc;i++)
+	      for(i=0;i<dec_msg.dlc;i++)
 		{
-		  result = snprintf(tmpstr,80,"0x%.2x ",in_msg->data[i]);
+		  result = snprintf(tmpstr,80,"0x%.2x ",dec_msg.data[i]);
 		  if(result == 5)
 		    {
 		      // append the data
@@ -167,11 +181,11 @@ void customscripts(rs232can_msg *msg)
 		  continue;
 		}
 	      // check for match
-	      if( (match_msg.addr_dst == in_msg->addr_dst) && 
-		  (match_msg.addr_src == in_msg->addr_src) && 
-		  (match_msg.port_dst == in_msg->port_dst) && 
-		  (match_msg.port_src == in_msg->port_src) && 
-		  (match_msg.dlc == in_msg->dlc))
+	      if( (match_msg.addr_dst == dec_msg.addr_dst) && 
+		  (match_msg.addr_src == dec_msg.addr_src) && 
+		  (match_msg.port_dst == dec_msg.port_dst) && 
+		  (match_msg.port_src == dec_msg.port_src) && 
+		  (match_msg.dlc == dec_msg.dlc))
 		{
 		  // double fork a client to exec the command right under init
 		  if(vfork())
@@ -189,15 +203,15 @@ void customscripts(rs232can_msg *msg)
 			}
 		      else 
 			{
-			  snprintf(as_args[0],5,"0x%.2x",in_msg->dlc);
-			  snprintf(as_args[1],5,"0x%.2x",in_msg->data[0]);
-			  snprintf(as_args[2],5,"0x%.2x",in_msg->data[1]);
-			  snprintf(as_args[3],5,"0x%.2x",in_msg->data[2]);
-			  snprintf(as_args[4],5,"0x%.2x",in_msg->data[3]);
-			  snprintf(as_args[5],5,"0x%.2x",in_msg->data[4]);
-			  snprintf(as_args[6],5,"0x%.2x",in_msg->data[5]);
-			  snprintf(as_args[7],5,"0x%.2x",in_msg->data[6]);
-			  snprintf(as_args[8],5,"0x%.2x",in_msg->data[7]);
+			  snprintf(as_args[0],5,"0x%.2x",dec_msg.dlc);
+			  snprintf(as_args[1],5,"0x%.2x",dec_msg.data[0]);
+			  snprintf(as_args[2],5,"0x%.2x",dec_msg.data[1]);
+			  snprintf(as_args[3],5,"0x%.2x",dec_msg.data[2]);
+			  snprintf(as_args[4],5,"0x%.2x",dec_msg.data[3]);
+			  snprintf(as_args[5],5,"0x%.2x",dec_msg.data[4]);
+			  snprintf(as_args[6],5,"0x%.2x",dec_msg.data[5]);
+			  snprintf(as_args[7],5,"0x%.2x",dec_msg.data[6]);
+			  snprintf(as_args[8],5,"0x%.2x",dec_msg.data[7]);
 			  execl(tmpstr2,tmpstr2,
 				as_args[0],
 				as_args[1],as_args[2],as_args[3],as_args[4],
