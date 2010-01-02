@@ -1,5 +1,7 @@
 //by hansi
 
+//to use the time functions, you need to define LAP_TIME_EXT in config.h
+
 #include "config.h"
 #include "can.h"
 #include "lap.h"
@@ -50,7 +52,7 @@ uint8_t time_update(void)
 	time_request();
 	
 	//wait some time for a reply in 1ms steps
-	while((lap_time_update == 0) || (timeout-- > 0))
+	while((lap_time_update == 0) && (timeout-- > 0))
 	{
 		wait(1);
 	}
@@ -61,7 +63,7 @@ uint8_t time_update(void)
 //display the time
 void time_anim(void)
 {
-	char timestring[12];
+	char timestring[34];
 	
 	//update time and return if we had no success
 	if(time_update() == 0)
@@ -69,8 +71,8 @@ void time_anim(void)
 		return;
 	}
 	
-	//convert the time to a string
-	sprintf(timestring, "</# %hi:%hi", lap_time_h, lap_time_m);
+	//convert the time to a string	
+	sprintf(timestring, ">+:p20d50/#%02hi#+b10#:#<;p20d50/#%02hi", lap_time_h, lap_time_m);
 	
 	//show the time
 	scrolltext(timestring);

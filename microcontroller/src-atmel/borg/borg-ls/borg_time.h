@@ -1,5 +1,7 @@
 //by hansi
 
+//to use the time functions, you need to define LAP_TIME_EXT in config.h
+
 //send a time request packet via can
 void time_request(void);
 
