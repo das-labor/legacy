@@ -72,7 +72,7 @@ void time_anim(void)
 	}
 	
 	//convert the time to a string	
-	sprintf(timestring, ">+:p20d50/#%02hi#+b10#:#<;p20d50/#%02hi", lap_time_h, lap_time_m);
+	sprintf(timestring, ">+:p20d50/#%02hi:#<;p20d50/#%02hi", lap_time_h, lap_time_m);
 	
 	//show the time
 	scrolltext(timestring);
