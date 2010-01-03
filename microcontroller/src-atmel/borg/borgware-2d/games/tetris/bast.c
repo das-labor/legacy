@@ -125,15 +125,15 @@ int16_t tetris_bastet_evalPos(tetris_bastet_t *pBastet,
 	int8_t nWidth = tetris_playfield_getWidth(pBastet->pPlayfield);
 	int8_t nStartCol = ((nColumn - 1) < 0) ? 0 : nColumn - 1;
 	int8_t nStopCol;
-	// do we start at the left most position?
+	// Do we start at the left most position?
+	// If we do we MUST calculate the heights of ALL columns (initial step)
 	if (nColumn <= -3)
 	{
-		// in case we start at the left most position we calculate all heights
 		nStopCol = nWidth - 1;
 		// reset all column heights to zero
 		tetris_bastet_clearColHeights(pBastet, 0 , nWidth);
 	}
-	// if not, only calculate columns which are affected by the piece
+	// If not, only calculate columns which are affected by the moved piece.
 	else
 	{
 		nStopCol = (nColumn + 3) < nWidth ? nColumn + 3 : nWidth - 1;
