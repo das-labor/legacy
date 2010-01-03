@@ -53,9 +53,10 @@ typedef struct tetris_playfield_iterator_t
 	tetris_playfield_t *pPlayfield; // playfield to be examined
 	tetris_piece_t *pPiece;         // piece which should be tested
 	int8_t nColumn;                 // the column where the piece should be dropped
-	int8_t nDeepestPieceRow;        // the deepest possible row for a piece
 	uint16_t nFullRow;              // value of a full row
 	int8_t nCurrentRow;             // the actual row in the playfield
+	int8_t nPieceHighestRow;        // the highest row index of the piece
+	int8_t nPieceLowestRow;         // the lowest row index of the piece
 	int8_t nStopRow;                // the last row to be examined
 	uint16_t nRowBuffer;            // internal buffer for returned row values
 }

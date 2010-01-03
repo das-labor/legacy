@@ -198,8 +198,8 @@ uint8_t tetris_playfield_collision(tetris_playfield_t *pPl,
 	assert(pPl != NULL);
 
 	// only allow coordinates which are within sane ranges
-	assert((nColumn >= -4) && (nColumn < pPl->nWidth));
-	assert((nRow >= -4) && (nRow < pPl->nHeight));
+	assert((nColumn > -4) && (nColumn < pPl->nWidth));
+	assert((nRow > -4) && (nRow < pPl->nHeight));
 
 	// The rows of a piece get compared with the background one by one
 	// until either a collision occures or all rows are compared. Both the
@@ -465,6 +465,9 @@ void tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl)
 	//   for complete rows, only i gets decremented
 	int8_t nLowestRow = nStartRow;
 
+	// save old value for the first dump index with matter
+	int8_t nFormerFirstMatterRow = pPl->nFirstMatterRow;
+
 	// this loop only considers rows which are affected by the piece
 	for (int8_t i = nStartRow; i >= nStopRow; --i)
 	{
@@ -493,10 +496,10 @@ void tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl)
 	uint8_t nComplete = nLowestRow - nStopRow + 1;
 	if (nComplete > 0)
 	{
-		for (int8_t i = nStopRow - 1; nLowestRow >= 0; --i)
+		for (int8_t i = nStopRow - 1; nLowestRow >= nFormerFirstMatterRow; --i)
 		{
 			// is the row we are copying from below the upper border?
-			if (i >= 0)
+			if (i >= nFormerFirstMatterRow)
 			{
 				// just copy from that row
 				pPl->dump[nLowestRow] = pPl->dump[i];
@@ -741,12 +744,19 @@ uint16_t* tetris_playfield_predictBottomRow(tetris_playfield_iterator_t *pIt,
 	pIt->pPlayfield = pPl;
 	pIt->pPiece = pPiece;
 	pIt->nColumn = nColumn;
-	pIt->nDeepestPieceRow = nRow;
 	pIt->nFullRow = 0xFFFF >> (16 - pPl->nWidth);
 	pIt->nCurrentRow = pPl->nHeight - 1;
 	pIt->nRowBuffer = 0;
+
+	// determine sane start and stop values for the piece's row indices
+	pIt->nPieceHighestRow = nRow;
+	pIt->nPieceLowestRow = ((pIt->nPieceHighestRow + 3) < pPl->nHeight) ?
+			(pIt->nPieceHighestRow + 3) : pPl->nHeight - 1;
+
+	// don't return any trailing rows which are empty, so we look for a stop row
 	pIt->nStopRow = pPl->nFirstMatterRow < nRow ? pPl->nFirstMatterRow : nRow;
 	pIt->nStopRow = pIt->nStopRow < 0 ? 0 : pIt->nStopRow;
+
 	return tetris_playfield_predictNextRow(pIt);
 }
 
@@ -761,19 +771,14 @@ uint16_t* tetris_playfield_predictNextRow(tetris_playfield_iterator_t *pIt)
 {
 	uint16_t nPieceMap = 0;
 
-	if ((pIt->nDeepestPieceRow > -4) && (pIt->nCurrentRow >= pIt->nStopRow))
+	if ((pIt->nPieceHighestRow > -4) && (pIt->nCurrentRow >= pIt->nStopRow))
 	{
-		// determine sane start and stop values for the piece's indices
-		int8_t nStartRow =
-			((pIt->nDeepestPieceRow + 3) < pIt->pPlayfield->nHeight) ?
-			(pIt->nDeepestPieceRow + 3) : pIt->pPlayfield->nHeight - 1;
-
 		uint16_t nPiece = tetris_piece_getBitmap(pIt->pPiece);
 
-		if ((pIt->nCurrentRow <= nStartRow) &&
-				(pIt->nCurrentRow >= pIt->nDeepestPieceRow))
+		if ((pIt->nCurrentRow <= pIt->nPieceLowestRow) &&
+				(pIt->nCurrentRow >= pIt->nPieceHighestRow))
 		{
-			int8_t y = pIt->nCurrentRow - pIt->nDeepestPieceRow;
+			int8_t y = pIt->nCurrentRow - pIt->nPieceHighestRow;
 
 			// clear all bits of the piece we are not interested in and
 			// align the rest to LSB
@@ -793,9 +798,10 @@ uint16_t* tetris_playfield_predictNextRow(tetris_playfield_iterator_t *pIt)
 		// don't return full (and therefore removed) rows
 		if (pIt->nRowBuffer == pIt->nFullRow)
 		{
-			// recursively determine next row
+			// recursively determine next (?) row instead
 			return tetris_playfield_predictNextRow(pIt);
 		}
+		// row isn't full
 		else
 		{
 			return &pIt->nRowBuffer;
