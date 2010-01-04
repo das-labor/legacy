@@ -12,17 +12,27 @@
 
 uint8_t *read_buf_from_hex(FILE *f, size_t *size, size_t *offset)
 {
-	int i, tt;
+	int tt;
+	size_t i; //i was int, but size_t as 8 byte on 64bit, int not - hansi
 	uint8_t *buf;
 
-	if (fscanf(f, ":%2x", size) != 1)
+	//for 64-bit systems the fscanf below will only fill
+	//the lower 32bit of size, so let it be zero
+	*size = 0;
+
+	if (fscanf(f, ":%2x", (unsigned int *)size) != 1)
 		goto error;
 
-	if (fscanf(f, "%4x", offset) != 1)
+	if (fscanf(f, "%4x", (unsigned int *)offset) != 1)
 		goto error;
 
 	if (fscanf(f, "%2x", &tt) != 1)
 		goto error;
+
+	if(*size == 0)
+	{
+		printf("ERROR: Hex file data size is zero!\n");
+	}
 
 	if(tt == 1) {
 		*size  = 0;
@@ -31,9 +41,16 @@ uint8_t *read_buf_from_hex(FILE *f, size_t *size, size_t *offset)
 
 	i = *size;
 	buf = malloc(*size);
+
+	if(buf == NULL)
+	{
+		printf("ERROR: Could not allocate hex image data buffer!\n");
+		goto error;
+	}
+
 	uint8_t *ptr = buf;
 	for(;i > 0; i--) {
-		if (fscanf(f, "%2x", ptr++) != 1)
+		if (fscanf(f, "%2x", (unsigned int *)ptr++) != 1)
 			goto error;
 	}
 	if (fscanf(f, "%2x", &tt) != 1)	 // checksum
@@ -148,6 +165,7 @@ void flash_atmel(unsigned char addr, unsigned int pagesize, char * filename){
 	while ((buf = read_buf_from_hex(fd, &size, &dst)) != 0) {
 		memcpy( &mem[dst], buf, size);
 		memset( &mask[dst], 0xff, size );
+		free(buf);
 	}
 
 	if (size != 0)
