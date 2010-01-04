@@ -25,12 +25,15 @@ void init(void)
 	read_can_addr();
 	//turn on interrupts
 	init_pwm();
-//	sei();
+	sei();
 }
 
 
 int main(void)
 {
+	init();
+	
+	
 	init_script_threads();
 	script_threads[0].handler.execute = &memory_handler_flash;
 	script_threads[0].handler.position = (uint16_t) &colorchange_red;

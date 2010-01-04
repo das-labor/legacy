@@ -112,7 +112,8 @@ volatile struct global_pwm_t global_pwm;
 /* FUNCTIONS AND INTERRUPTS */
 
 /** init timer 1 */
-inline void init_timer1(void) {
+inline void init_timer1(void)
+{
 	/* no prescaler, CTC mode */
 	TCCR1B = _BV(CS10) | _BV(WGM12);
 	//TCCR1B = _BV(CS12) | _BV(CS10) | _BV(WGM12);
