@@ -1,4 +1,4 @@
-OBJ = main.o can.o spi.o can_handler.o netvar.o
+OBJ = main.o can.o spi.o can_handler.o netvar.o test.o
 
 # Default values
 OUT           ?= main

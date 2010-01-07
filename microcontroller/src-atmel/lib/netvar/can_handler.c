@@ -38,11 +38,13 @@ extern void can_handler()
 						break;
 				}
 			}
-			else if (rx_msg->port_dst == 2)
-			{
-				netvar_handler(rx_msg);
-			}
 		}
+		
+		if (rx_msg->port_dst == 2)
+		{
+				netvar_can_handler(rx_msg);
+		}
+
 	}
 }
 
