@@ -13,14 +13,24 @@
 //  Indicator LED connected to PORTA
 
 
-int main(){
+#define FILTER_CONSTANT 32768ul
 
-	DDRA = 0xff;
+int main()
+{
 
-	while(1){
+	DDRB |= _BV(PB0);
+
+
+	uint32_t filt = FILTER_CONSTANT * 400;
+	
+	uint16_t thresh;
+
+
+	while (1)
+	{
 		uint16_t counter = 0;
 		
-		DDRD = (1<<PD6) | (1<<PD5);
+		DDRC |= _BV(PC3) | _BV(PC2);
 		
 		__asm volatile ( "nop");
 		__asm volatile ( "nop");
@@ -29,27 +39,39 @@ int main(){
 		__asm volatile ( "nop");
 		
 		
-		do{
+		do
+		{
 			counter++;
-			DDRD = 0;
+			DDRC = 0;
 			
-			PORTD = (1<<PD6);
-			DDRD = (1<<PD6);
-			DDRD = 0;
-			PORTD = 0;
+			PORTC = _BV(PC3);
+			DDRC = _BV(PC3);
+			DDRC = 0;
+			PORTC = 0;
 			
-			DDRD  = (1<<PD5);
+			DDRC  = _BV(PC2);
 			__asm volatile ( "nop");
 			__asm volatile ( "nop");
-		}while((PIND & (1<<PD6)) == 0);
+		} while ((PINC & _BV(PC3)) == 0);
 
-		DDRD = 0;
-			
+		DDRC = 0;
+		
 
-		if(counter > 155){
-			PORTA = 0x0;
-		}	else if (counter < 145){
-			PORTA = 0xff;
+
+	
+		thresh = filt/FILTER_CONSTANT;
+		
+		filt -= thresh;
+		filt += counter;
+
+
+		if (counter > (thresh-10) )
+		{
+			PORTB &= ~_BV(PB0);
+		}
+		else if (counter < (thresh - 30) )
+		{
+			PORTB |= _BV(PB0);
 		}
 	
 	}	

@@ -5,7 +5,7 @@ OBJ = main.o
 
 # Default values
 OUT           ?= image
-MCU_TARGET    ?= atmega32
+MCU_TARGET    ?= atmega8
 MCU_CC        ?= avr-gcc
 OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall
