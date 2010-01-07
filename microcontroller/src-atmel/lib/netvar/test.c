@@ -1,4 +1,5 @@
 
+#include <avr/io.h>
 #include "netvar.h"
 
 
