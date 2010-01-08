@@ -1,5 +1,5 @@
 <?
-session_id("nakka");
+session_id("weblabctrl2");
 session_start();
 #light
 $pwm_ids=array("VORTRAG_PWM","TAFEL","BEAMER","SCHRANK","FLIPPER","LOUNGE","KUECHE");
