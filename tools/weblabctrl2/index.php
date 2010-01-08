@@ -32,7 +32,7 @@ echo "<style type=\"text/css\">
   div.misc {position:absolute; left:".$miscx."; top: ".$miscy."; background-color:#ddddff; width: 300px; padding:5px;}
   div.misc_top {background-color:#ccccff; width: 300px; margin-bottom:5px;}
   body {margin: 0px; padding: 0px; background-image:url(bg.jpg);background-repeat:no-repeat;background-color:#000000;}
-  body.1 {margin: 0px; padding: 0px; background-image:url(bg/1.jpg);background-repeat:no-repeat;background-color:#000000;}
+  body.asdf {margin: 0px; padding: 0px; background-image:url(bg/1.jpg);background-repeat:no-repeat;background-color:#000000;}
   body.2 {margin: 0px; padding: 0px; background-image:url(bg/2.jpg);background-repeat:no-repeat;background-color:#000000;}
   input {}
 </style>";
@@ -80,7 +80,7 @@ function save_bg()
 }
 
 function set_bg(whichImage){
-  document.getElementById('body').className='1'
+  document.getElementById('body').className='asdf'
 
 }
 function blue_mode(mode)
