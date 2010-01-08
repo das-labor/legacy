@@ -7,6 +7,8 @@ include "config.php";
 <script src="scriptaculous/scriptaculous.js" type="text/javascript"></script>
 <script src="weblabctrl.js" type="text/javascript"></script>
 <?
+if($_COOKIE['bg']) $bg=$_COOKIE['bg'];
+ else $bg=1;
 if($_COOKIE['pwmx']) $pwmx=$_COOKIE['pwmx'];
  else $pwmx=50;
 if($_COOKIE['pwmy']) $pwmy=$_COOKIE['pwmy'];
@@ -69,6 +71,15 @@ function text_the_borg(text)
 function save_pos(element)
 {
   new Ajax.Updater('ajax', 'set.php?cmd=save_pos&x='+document.getElementById(element.id).style.left+'&y='+document.getElementById(element.id).style.top,{method:'get', onComplete:function() {done=true;}} );
+}
+function save_bg()
+{
+  new Ajax.Updater('ajax', 'set.php?cmd=save_bg&bg='document.body.background,{method:'get', onComplete:function() {done=true;}} );
+}
+function set_bg(localimage)
+{
+  document.body.background='bg/'+localimage;
+  save_bg();
 }
 function blue_mode(mode)
 {
@@ -223,6 +234,17 @@ echo "</form>";
 <input type="image" src="blue_mode_video_conference.png" onclick="blue_mode('video_conference');">
 <input type="image" src="blue_mode_speaker.png" onclick="blue_mode('speaker');">
 <input type="image" src="blue_mode_dimm.png" onclick="blue_mode('dimm');">
+<br>Background Image<br>
+   <input type="image" src="1_small.jpg" onclick="set_bg('1.jpg');">
+   <input type="image" src="2_small.jpg" onclick="set_bg('2.jpg');">
+   <input type="image" src="3_small.jpg" onclick="set_bg('3.jpg');">
+   <input type="image" src="4_small.jpg" onclick="set_bg('4.jpg');">
+   <input type="image" src="5_small.jpg" onclick="set_bg('5.jpg');">
+   <input type="image" src="6_small.jpg" onclick="set_bg('6.jpg');">
+   <input type="image" src="7_small.jpg" onclick="set_bg('7.jpg');">
+   <input type="image" src="8_small.jpg" onclick="set_bg('8.jpg');">
+   <input type="image" src="9_small.jpg" onclick="set_bg('9.jpg');">
+   <input type="image" src="10_small.jpg" onclick="set_bg('10.jpg');">
 
 </div>
 </form>

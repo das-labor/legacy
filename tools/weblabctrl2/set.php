@@ -139,6 +139,13 @@ elseif($cmd=="canir_beamer")
   echo "powercommander.lapcontrol canir beamer $real_canirbeamer_value";
   exec("powercommander.lapcontrol canir beamer $real_canirbeamer_value");
 }
+elseif($cmd=="save_bg")
+{
+  if(in_array($_GET[bg], $background_images)
+    {
+      setcookie("background",$_GET[bg]);
+    }
+}
 elseif($cmd=="save_pos")
 {
 	setcookie($_GET[div]."x",$_GET[x]);
