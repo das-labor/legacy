@@ -1,0 +1,396 @@
+Archive member included because of file (symbol)
+
+/usr/lib/gcc/avr/4.3.3/avr4/libgcc.a(_exit.o)
+                              /usr/lib/gcc/avr/4.3.3/../../../avr/lib/avr4/crtm8.o (exit)
+/usr/lib/gcc/avr/4.3.3/avr4/libgcc.a(_copy_data.o)
+                              main.o (__do_copy_data)
+/usr/lib/gcc/avr/4.3.3/avr4/libgcc.a(_clear_bss.o)
+                              main.o (__do_clear_bss)
+
+Allocating common symbols
+Common symbol       size              file
+
+TX_MESSAGE          0xe               can/can.o
+script_threads      0x36              main.o
+RX_MESSAGE          0xe               can/can.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+text             0x00000000         0x00002000         xr
+data             0x00800060         0x0000ffa0         rw !x
+eeprom           0x00810000         0x00010000         rw !x
+fuse             0x00820000         0x00000400         rw !x
+lock             0x00830000         0x00000400         rw !x
+signature        0x00840000         0x00000400         rw !x
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD /usr/lib/gcc/avr/4.3.3/../../../avr/lib/avr4/crtm8.o
+LOAD main.o
+LOAD can/can.o
+LOAD can/spi.o
+LOAD can_handler.o
+LOAD lights.o
+LOAD /usr/lib/gcc/avr/4.3.3/avr4/libgcc.a
+LOAD /usr/lib/gcc/avr/4.3.3/../../../avr/lib/avr4/libc.a
+LOAD /usr/lib/gcc/avr/4.3.3/avr4/libgcc.a
+
+.hash
+ *(.hash)
+
+.dynsym
+ *(.dynsym)
+
+.dynstr
+ *(.dynstr)
+
+.gnu.version
+ *(.gnu.version)
+
+.gnu.version_d
+ *(.gnu.version_d)
+
+.gnu.version_r
+ *(.gnu.version_r)
+
+.rel.init
+ *(.rel.init)
+
+.rela.init
+ *(.rela.init)
+
+.rel.text
+ *(.rel.text)
+ *(.rel.text.*)
+ *(.rel.gnu.linkonce.t*)
+
+.rela.text
+ *(.rela.text)
+ *(.rela.text.*)
+ *(.rela.gnu.linkonce.t*)
+
+.rel.fini
+ *(.rel.fini)
+
+.rela.fini
+ *(.rela.fini)
+
+.rel.rodata
+ *(.rel.rodata)
+ *(.rel.rodata.*)
+ *(.rel.gnu.linkonce.r*)
+
+.rela.rodata
+ *(.rela.rodata)
+ *(.rela.rodata.*)
+ *(.rela.gnu.linkonce.r*)
+
+.rel.data
+ *(.rel.data)
+ *(.rel.data.*)
+ *(.rel.gnu.linkonce.d*)
+
+.rela.data
+ *(.rela.data)
+ *(.rela.data.*)
+ *(.rela.gnu.linkonce.d*)
+
+.rel.ctors
+ *(.rel.ctors)
+
+.rela.ctors
+ *(.rela.ctors)
+
+.rel.dtors
+ *(.rel.dtors)
+
+.rela.dtors
+ *(.rela.dtors)
+
+.rel.got
+ *(.rel.got)
+
+.rela.got
+ *(.rela.got)
+
+.rel.bss
+ *(.rel.bss)
+
+.rela.bss
+ *(.rela.bss)
+
+.rel.plt
+ *(.rel.plt)
+
+.rela.plt
+ *(.rela.plt)
+
+.text           0x00000000      0x32a
+ *(.vectors)
+ .vectors       0x00000000       0x26 /usr/lib/gcc/avr/4.3.3/../../../avr/lib/avr4/crtm8.o
+                0x00000000                __vectors
+                0x00000000                __vector_default
+ *(.vectors)
+ *(.progmem.gcc*)
+ *(.progmem*)
+                0x00000026                . = ALIGN (0x2)
+                0x00000026                __trampolines_start = .
+ *(.trampolines)
+ .trampolines   0x00000026        0x0 linker stubs
+ *(.trampolines*)
+                0x00000026                __trampolines_end = .
+ *(.jumptables)
+ *(.jumptables*)
+ *(.lowtext)
+ *(.lowtext*)
+                0x00000026                __ctors_start = .
+ *(.ctors)
+                0x00000026                __ctors_end = .
+                0x00000026                __dtors_start = .
+ *(.dtors)
+                0x00000026                __dtors_end = .
+ SORT(*)(.ctors)
+ SORT(*)(.dtors)
+ *(.init0)
+ .init0         0x00000026        0x0 /usr/lib/gcc/avr/4.3.3/../../../avr/lib/avr4/crtm8.o
+                0x00000026                __init
+ *(.init0)
+ *(.init1)
+ *(.init1)
+ *(.init2)
+ .init2         0x00000026        0xc /usr/lib/gcc/avr/4.3.3/../../../avr/lib/avr4/crtm8.o
+ *(.init2)
+ *(.init3)
+ *(.init3)
+ *(.init4)
+ .init4         0x00000032       0x16 /usr/lib/gcc/avr/4.3.3/avr4/libgcc.a(_copy_data.o)
+                0x00000032                __do_copy_data
+ .init4         0x00000048       0x10 /usr/lib/gcc/avr/4.3.3/avr4/libgcc.a(_clear_bss.o)
+                0x00000048                __do_clear_bss
+ *(.init4)
+ *(.init5)
+ *(.init5)
+ *(.init6)
+ *(.init6)
+ *(.init7)
+ *(.init7)
+ *(.init8)
+ *(.init8)
+ *(.init9)
+ .init9         0x00000058        0x4 /usr/lib/gcc/avr/4.3.3/../../../avr/lib/avr4/crtm8.o
+ *(.init9)
+ *(.text)
+ .text          0x0000005c        0x2 /usr/lib/gcc/avr/4.3.3/../../../avr/lib/avr4/crtm8.o
+                0x0000005c                __vector_1
+                0x0000005c                __vector_12
+                0x0000005c                __bad_interrupt
+                0x0000005c                __vector_6
+                0x0000005c                __vector_3
+                0x0000005c                __vector_11
+                0x0000005c                __vector_13
+                0x0000005c                __vector_17
+                0x0000005c                __vector_7
+                0x0000005c                __vector_5
+                0x0000005c                __vector_4
+                0x0000005c                __vector_9
+                0x0000005c                __vector_2
+                0x0000005c                __vector_15
+                0x0000005c                __vector_8
+                0x0000005c                __vector_14
+                0x0000005c                __vector_10
+                0x0000005c                __vector_16
+                0x0000005c                __vector_18
+ .text          0x0000005e       0x16 main.o
+                0x0000005e                init
+                0x0000006c                main
+ .text          0x00000074      0x202 can/can.o
+                0x00000272                can_transmit
+                0x00000200                message_load
+                0x000000c2                mcp_read
+                0x000000a4                can_setled
+                0x000000f8                can_setfilter
+                0x00000110                can_init
+                0x00000152                message_fetch
+                0x000001d8                can_get_nb
+                0x0000007a                can_free
+                0x00000074                can_buffer_get
+                0x000000da                mcp_write
+                0x00000100                can_setmode
+                0x000001c8                can_get
+ .text          0x00000276       0x1a can/spi.o
+                0x00000286                spi_send
+                0x00000276                spi_init
+ .text          0x00000290       0x74 can_handler.o
+                0x000002a2                can_handler
+                0x00000290                read_can_addr
+ .text          0x00000304       0x22 lights.o
+                0x00000312                lights_set_raw
+                0x00000304                lights_init
+ .text          0x00000326        0x0 /usr/lib/gcc/avr/4.3.3/avr4/libgcc.a(_exit.o)
+ .text          0x00000326        0x0 /usr/lib/gcc/avr/4.3.3/avr4/libgcc.a(_copy_data.o)
+ .text          0x00000326        0x0 /usr/lib/gcc/avr/4.3.3/avr4/libgcc.a(_clear_bss.o)
+                0x00000326                . = ALIGN (0x2)
+ *(.text.*)
+ .text.libgcc   0x00000326        0x0 /usr/lib/gcc/avr/4.3.3/avr4/libgcc.a(_exit.o)
+ .text.libgcc   0x00000326        0x0 /usr/lib/gcc/avr/4.3.3/avr4/libgcc.a(_copy_data.o)
+ .text.libgcc   0x00000326        0x0 /usr/lib/gcc/avr/4.3.3/avr4/libgcc.a(_clear_bss.o)
+                0x00000326                . = ALIGN (0x2)
+ *(.fini9)
+ .fini9         0x00000326        0x0 /usr/lib/gcc/avr/4.3.3/avr4/libgcc.a(_exit.o)
+                0x00000326                exit
+                0x00000326                _exit
+ *(.fini9)
+ *(.fini8)
+ *(.fini8)
+ *(.fini7)
+ *(.fini7)
+ *(.fini6)
+ *(.fini6)
+ *(.fini5)
+ *(.fini5)
+ *(.fini4)
+ *(.fini4)
+ *(.fini3)
+ *(.fini3)
+ *(.fini2)
+ *(.fini2)
+ *(.fini1)
+ *(.fini1)
+ *(.fini0)
+ .fini0         0x00000326        0x4 /usr/lib/gcc/avr/4.3.3/avr4/libgcc.a(_exit.o)
+ *(.fini0)
+                0x0000032a                _etext = .
+
+.data           0x00800060        0xe load address 0x0000032a
+                0x00800060                PROVIDE (__data_start, .)
+ *(.data)
+ .data          0x00800060        0x0 /usr/lib/gcc/avr/4.3.3/../../../avr/lib/avr4/crtm8.o
+ .data          0x00800060        0x0 main.o
+ .data          0x00800060        0x0 can/can.o
+ .data          0x00800060        0x0 can/spi.o
+ .data          0x00800060        0xd can_handler.o
+ .data          0x0080006d        0x0 lights.o
+ .data          0x0080006d        0x0 /usr/lib/gcc/avr/4.3.3/avr4/libgcc.a(_exit.o)
+ .data          0x0080006d        0x0 /usr/lib/gcc/avr/4.3.3/avr4/libgcc.a(_copy_data.o)
+ .data          0x0080006d        0x0 /usr/lib/gcc/avr/4.3.3/avr4/libgcc.a(_clear_bss.o)
+ *(.data*)
+ *(.rodata)
+ *(.rodata*)
+ *(.gnu.linkonce.d*)
+                0x0080006e                . = ALIGN (0x2)
+ *fill*         0x0080006d        0x1 00
+                0x0080006e                _edata = .
+                0x0080006e                PROVIDE (__data_end, .)
+
+.bss            0x0080006e       0x53 load address 0x00000338
+                0x0080006e                PROVIDE (__bss_start, .)
+ *(.bss)
+ .bss           0x0080006e        0x0 /usr/lib/gcc/avr/4.3.3/../../../avr/lib/avr4/crtm8.o
+ .bss           0x0080006e        0x0 main.o
+ .bss           0x0080006e        0x0 can/can.o
+ .bss           0x0080006e        0x0 can/spi.o
+ .bss           0x0080006e        0x1 can_handler.o
+ .bss           0x0080006f        0x0 lights.o
+ .bss           0x0080006f        0x0 /usr/lib/gcc/avr/4.3.3/avr4/libgcc.a(_exit.o)
+ .bss           0x0080006f        0x0 /usr/lib/gcc/avr/4.3.3/avr4/libgcc.a(_copy_data.o)
+ .bss           0x0080006f        0x0 /usr/lib/gcc/avr/4.3.3/avr4/libgcc.a(_clear_bss.o)
+ *(.bss*)
+ *(COMMON)
+ COMMON         0x0080006f       0x36 main.o
+                0x0080006f                script_threads
+ COMMON         0x008000a5       0x1c can/can.o
+                0x008000a5                TX_MESSAGE
+                0x008000b3                RX_MESSAGE
+                0x008000c1                PROVIDE (__bss_end, .)
+                0x0000032a                __data_load_start = LOADADDR (.data)
+                0x00000338                __data_load_end = (__data_load_start + SIZEOF (.data))
+
+.noinit         0x008000c1        0x0
+                0x008000c1                PROVIDE (__noinit_start, .)
+ *(.noinit*)
+                0x008000c1                PROVIDE (__noinit_end, .)
+                0x008000c1                _end = .
+                0x008000c1                PROVIDE (__heap_start, .)
+
+.eeprom         0x00810000        0x0
+ *(.eeprom*)
+                0x00810000                __eeprom_end = .
+
+.fuse
+ *(.fuse)
+ *(.lfuse)
+ *(.hfuse)
+ *(.efuse)
+
+.lock
+ *(.lock*)
+
+.signature
+ *(.signature*)
+
+.stab           0x00000000      0x6b4
+ *(.stab)
+ .stab          0x00000000      0x6b4 /usr/lib/gcc/avr/4.3.3/../../../avr/lib/avr4/crtm8.o
+
+.stabstr        0x00000000       0x54
+ *(.stabstr)
+ .stabstr       0x00000000       0x54 /usr/lib/gcc/avr/4.3.3/../../../avr/lib/avr4/crtm8.o
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment
+ *(.comment)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges
+ *(.debug_aranges)
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info
+ *(.debug_info)
+ *(.gnu.linkonce.wi.*)
+
+.debug_abbrev
+ *(.debug_abbrev)
+
+.debug_line
+ *(.debug_line)
+
+.debug_frame
+ *(.debug_frame)
+
+.debug_str
+ *(.debug_str)
+
+.debug_loc
+ *(.debug_loc)
+
+.debug_macinfo
+ *(.debug_macinfo)
+OUTPUT(image.elf elf32-avr)
+LOAD linker stubs
