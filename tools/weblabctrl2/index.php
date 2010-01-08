@@ -76,10 +76,10 @@ function save_bg()
 {
   new Ajax.Updater('ajax', 'set.php?cmd=save_bg&bg='document.body.background,{method:'get', onComplete:function() {done=true;}} );
 }
-function set_bg(localimage)
-{
+
+function changeBGImage(whichImage){
   if (document.body){
-    document.body.background = 'bg/1.jpg';
+    document.body.background = "bg/1.jpg";
   }
 }
 function blue_mode(mode)
@@ -236,6 +236,8 @@ echo "</form>";
 <input type="image" src="blue_mode_speaker.png" onclick="blue_mode('speaker');">
 <input type="image" src="blue_mode_dimm.png" onclick="blue_mode('dimm');">
 <br>Background Image<br>
+
+<a href="javascript:changeBGImage(1)">Change</a>
 <a href="javascript:set_bg(1)">foo</a>
 <input type="image" src="bg/1_small.jpg" onclick="document.body.background='bg/'+localimage;">
 <input type="image" src="bg/2_small.jpg" onclick="set_bg('2.jpg');">
