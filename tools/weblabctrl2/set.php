@@ -141,7 +141,7 @@ elseif($cmd=="canir_beamer")
 }
 elseif($cmd=="save_bg")
 {
-  if(in_array($_GET[bg], $bg)
+  if(in_array($_GET[bg], $bg))
     {
       setcookie("bg",$_GET[bg]);
     }
