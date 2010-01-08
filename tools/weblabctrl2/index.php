@@ -235,16 +235,16 @@ echo "</form>";
 <input type="image" src="blue_mode_speaker.png" onclick="blue_mode('speaker');">
 <input type="image" src="blue_mode_dimm.png" onclick="blue_mode('dimm');">
 <br>Background Image<br>
-   <input type="image" src="1_small.jpg" onclick="document.body.background='bg/'+localimage;">
-   <input type="image" src="2_small.jpg" onclick="set_bg('2.jpg');">
-   <input type="image" src="3_small.jpg" onclick="set_bg('3.jpg');">
-   <input type="image" src="4_small.jpg" onclick="set_bg('4.jpg');">
-   <input type="image" src="5_small.jpg" onclick="set_bg('5.jpg');">
-   <input type="image" src="6_small.jpg" onclick="set_bg('6.jpg');">
-   <input type="image" src="7_small.jpg" onclick="set_bg('7.jpg');">
-   <input type="image" src="8_small.jpg" onclick="set_bg('8.jpg');">
-   <input type="image" src="9_small.jpg" onclick="set_bg('9.jpg');">
-   <input type="image" src="10_small.jpg" onclick="set_bg('10.jpg');">
+   <input type="image" src="bg/1_small.jpg" onclick="document.body.background='bg/'+localimage;">
+   <input type="image" src="bg/2_small.jpg" onclick="set_bg('2.jpg');">
+   <input type="image" src="bg/3_small.jpg" onclick="set_bg('3.jpg');">
+   <input type="image" src="bg/4_small.jpg" onclick="set_bg('4.jpg');">
+   <input type="image" src="bg/5_small.jpg" onclick="set_bg('5.jpg');">
+   <input type="image" src="bg/6_small.jpg" onclick="set_bg('6.jpg');">
+   <input type="image" src="bg/7_small.jpg" onclick="set_bg('7.jpg');">
+   <input type="image" src="bg/8_small.jpg" onclick="set_bg('8.jpg');">
+   <input type="image" src="bg/9_small.jpg" onclick="set_bg('9.jpg');">
+   <input type="image" src="bg/10_small.jpg" onclick="set_bg('10.jpg');">
 
 </div>
 </form>
