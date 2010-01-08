@@ -239,8 +239,8 @@ echo "</form>";
 <br>Background Image<br>
 
 <a href="javascript:changeBGImage(1)">Change</a>
-<a href="javascript:set_bg(1)">foo</a>
-<input type="image" src="bg/1_small.jpg" onclick="set_bg(1)">
+<a href="javascript:set_bg()">foo</a>
+<input type="image" src="bg/1_small.jpg" onclick="set_bg()">
 <input type="image" src="bg/2_small.jpg" onclick="set_bg('2.jpg');">
 <input type="image" src="bg/3_small.jpg" onclick="set_bg('3.jpg');">
 <input type="image" src="bg/4_small.jpg" onclick="set_bg('4.jpg');">
