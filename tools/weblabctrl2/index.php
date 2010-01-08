@@ -31,13 +31,15 @@ echo "<style type=\"text/css\">
   div.mpd_top {background-color:#ccccff; width: 256px; margin-bottom:5px;}
   div.misc {position:absolute; left:".$miscx."; top: ".$miscy."; background-color:#ddddff; width: 300px; padding:5px;}
   div.misc_top {background-color:#ccccff; width: 300px; margin-bottom:5px;}
-
+  body {margin: 0px; padding: 0px; background-image:url(bg.jpg);background-repeat:no-repeat;background-color:#000000;}
+  body.1 {margin: 0px; padding: 0px; background-image:url(bg/1.jpg);background-repeat:no-repeat;background-color:#000000;}
+  body.2 {margin: 0px; padding: 0px; background-image:url(bg/2.jpg);background-repeat:no-repeat;background-color:#000000;}
   input {}
 </style>";
 ?>
 
 </head>
-<body id="body" name="body">
+<body class="" id="body" name="body">
 <script>
 
 function set_value(cmd,id,value)
@@ -78,7 +80,7 @@ function save_bg()
 }
 
 function changeBGImage(whichImage){
-  document.body.background = "bg/1.jpg";
+  document.body.background = = ""
 
 }
 function blue_mode(mode)
@@ -238,7 +240,7 @@ echo "</form>";
 
 <a href="javascript:changeBGImage(1)">Change</a>
 <a href="javascript:set_bg(1)">foo</a>
-<input type="image" src="bg/1_small.jpg" onclick="document.body.background='bg/'+localimage;">
+<input type="image" src="bg/1_small.jpg" onclick="javascript:document.getElementById('body').className='1'">
 <input type="image" src="bg/2_small.jpg" onclick="set_bg('2.jpg');">
 <input type="image" src="bg/3_small.jpg" onclick="set_bg('3.jpg');">
 <input type="image" src="bg/4_small.jpg" onclick="set_bg('4.jpg');">
