@@ -78,8 +78,9 @@ function save_bg()
 }
 function set_bg(localimage)
 {
-  document.body.background='bg/1.jpg';
-  save_bg();
+  if (document.body){
+    document.body.background = 'bg/1.jpg';
+  }
 }
 function blue_mode(mode)
 {
@@ -236,7 +237,7 @@ echo "</form>";
 <input type="image" src="blue_mode_dimm.png" onclick="blue_mode('dimm');">
 <br>Background Image<br>
 <a href="javascript:set_bg('asd')">foo</a>
-input type="image" src="bg/1_small.jpg" onclick="document.body.background='bg/'+localimage;">
+<input type="image" src="bg/1_small.jpg" onclick="document.body.background='bg/'+localimage;">
 <input type="image" src="bg/2_small.jpg" onclick="set_bg('2.jpg');">
 <input type="image" src="bg/3_small.jpg" onclick="set_bg('3.jpg');">
 <input type="image" src="bg/4_small.jpg" onclick="set_bg('4.jpg');">
