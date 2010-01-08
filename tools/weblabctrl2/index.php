@@ -79,8 +79,8 @@ function save_bg()
   new Ajax.Updater('ajax', 'set.php?cmd=save_bg&bg='document.body.background,{method:'get', onComplete:function() {done=true;}} );
 }
 
-function changeBGImage(whichImage){
-  document.body.background = = ""
+function set_bg(whichImage){
+  document.getElementById('body').className='1'
 
 }
 function blue_mode(mode)
@@ -240,7 +240,7 @@ echo "</form>";
 
 <a href="javascript:changeBGImage(1)">Change</a>
 <a href="javascript:set_bg(1)">foo</a>
-<input type="image" src="bg/1_small.jpg" onclick="javascript:document.getElementById('body').className='1'">
+<input type="image" src="bg/1_small.jpg" onclick="set_bg(1)">
 <input type="image" src="bg/2_small.jpg" onclick="set_bg('2.jpg');">
 <input type="image" src="bg/3_small.jpg" onclick="set_bg('3.jpg');">
 <input type="image" src="bg/4_small.jpg" onclick="set_bg('4.jpg');">
