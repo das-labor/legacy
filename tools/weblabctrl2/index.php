@@ -78,9 +78,8 @@ function save_bg()
 }
 
 function changeBGImage(whichImage){
-  if (document.body){
-    document.body.background = "bg/1.jpg";
-  }
+  document.getElementsByTagName("BODY")[0].style.background = "margin: 0px; padding: 0px; background-image:url(bg/1.jpg);background-repeat:no-repeat;background-color:#000000;"
+
 }
 function blue_mode(mode)
 {
