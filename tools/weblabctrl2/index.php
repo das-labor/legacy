@@ -37,7 +37,7 @@ echo "<style type=\"text/css\">
 ?>
 
 </head>
-<body>
+<body id="body" name="body">
 <script>
 
 function set_value(cmd,id,value)
@@ -78,7 +78,7 @@ function save_bg()
 }
 
 function changeBGImage(whichImage){
-  document.getElementsByTagName("BODY")[0].style.background = "margin: 0px; padding: 0px; background-image:url(bg/1.jpg);background-repeat:no-repeat;background-color:#000000;"
+  document.getElementsByName("body").style.background = "margin: 0px; padding: 0px; background-image:url(bg/1.jpg);background-repeat:no-repeat;background-color:#000000;"
 
 }
 function blue_mode(mode)
