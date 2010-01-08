@@ -31,7 +31,7 @@ echo "<style type=\"text/css\">
   div.mpd_top {background-color:#ccccff; width: 256px; margin-bottom:5px;}
   div.misc {position:absolute; left:".$miscx."; top: ".$miscy."; background-color:#ddddff; width: 300px; padding:5px;}
   div.misc_top {background-color:#ccccff; width: 300px; margin-bottom:5px;}
-  body {margin: 0px; padding: 0px; background-image:url(bg.jpg);background-repeat:no-repeat;background-color:#000000;}
+
   input {}
 </style>";
 ?>
@@ -78,7 +78,7 @@ function save_bg()
 }
 
 function changeBGImage(whichImage){
-  document.getElementsByName("body").style.background = "margin: 0px; padding: 0px; background-image:url(bg/1.jpg);background-repeat:no-repeat;background-color:#000000;"
+  document.body.background = "bg/1.jpg";
 
 }
 function blue_mode(mode)
