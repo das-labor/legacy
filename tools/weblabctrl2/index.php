@@ -76,7 +76,7 @@ function save_pos(element)
 }
 function save_bg()
 {
-  new Ajax.Updater('ajax', 'set.php?cmd=save_bg&bg='document.body.background,{method:'get', onComplete:function() {done=true;}} );
+#  new Ajax.Updater('ajax', 'set.php?cmd=save_bg&bg='document.body.background,{method:'get', onComplete:function() {done=true;}} );
 }
 
 function set_bg(whichImage){
