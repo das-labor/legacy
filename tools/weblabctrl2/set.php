@@ -199,7 +199,7 @@ elseif($cmd=="save_bg")
 {
   if(in_array($_GET[bg], $background_images))
     {
-      setcookie("bg",$_GET[bg]);
+      setcookie("bg",$_GET[bg],time()+60*60*24*30);
     }
 }
 elseif($cmd=="save_pos")
