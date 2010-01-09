@@ -14,6 +14,9 @@ elseif($_GET[cmd]=="save_pos")$cmd="save_pos";
 elseif($_GET[cmd]=="save_bg")$cmd="save_bg";
 elseif($_GET[cmd]=="blue_mode")$cmd="blue_mode";
 elseif($_GET[cmd]=="toilet")$cmd="toilet";
+elseif($_GET[cmd]=="dice")$cmd="dice";
+elseif($_GET[cmd]=="coinflip")$cmd="coinflip";
+elseif($_GET[cmd]=="w20")$cmd="w20";
 else unset($_GET[cmd]);
 
 if(in_array($_GET[id],$pwm_ids)) $id=$_GET[id];
@@ -84,6 +87,30 @@ elseif($cmd=="beamer_on")
 	echo "powercommander.lapcontrol powercommander SW PROJEKTOR ON 0x00";
 	$script .= "document.getElementById('beamer_button').disabled=true;\n";
 	$_SESSION['beamer_on']=1;
+}
+elseif($cmd=="coinflip")
+{
+  $coin = 'number';
+  if (rand(0,1) == '0') $coin = 'head';
+  exec("lapcontrol -s rl borg scroll 0x24 '2<5|+30/#I fliped a coin and got ".$coin."'");
+  exec("lapcontrol -s rl borg mode 0x24 1");
+}
+elseif($cmd=="dice")
+{
+  srand (time() );
+  $dicevalue=rand(1,6);
+
+  exec("lapcontrol -s rl borg scroll 0x24 '2<5|+30/#I rolled a dice and got ".$dicevalue."'");
+  exec("lapcontrol -s rl borg mode 0x24 1");
+}
+elseif($cmd=="w20")
+{
+  srand (time() );
+  $dicevalue=rand(1,20);
+  if($dicevalue == 20) $dicevalue = 'FULL FAIL';
+  if($dicevalue == 1) $dicevalue = 'Perfect';
+  exec("lapcontrol -s rl borg scroll 0x24 '2<5|+30/#I rolled a W20 and got ".$dicevalue."'");
+  exec("lapcontrol -s rl borg mode 0x24 1");
 }
 elseif($cmd=="toilet")
 {

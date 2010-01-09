@@ -84,6 +84,18 @@ function beamer_on()
 {
   new Ajax.Updater('ajax', 'set.php?cmd=beamer_on',{method:'get', onComplete:function() {done=true;}} );
 }
+function coinflip()
+{
+  new Ajax.Updater('ajax', 'set.php?cmd=coinflip',{method:'get', onComplete:function() {done=true;}} );
+}
+function dice()
+{
+  new Ajax.Updater('ajax', 'set.php?cmd=dice',{method:'get', onComplete:function() {done=true;}} );
+}
+function w20()
+{
+  new Ajax.Updater('ajax', 'set.php?cmd=w20',{method:'get', onComplete:function() {done=true;}} );
+}
 function text_the_borg(text)
 {
   new Ajax.Updater('ajax', 'set.php?cmd=text_the_borg&text='+text,{method:'get', onComplete:function() {done=true;}} );
@@ -271,7 +283,15 @@ Vortrag Mode<br>
 <input type="image" src="blue_mode_video_conference.png" onclick="blue_mode('video_conference');">
 <input type="image" src="blue_mode_speaker.png" onclick="blue_mode('speaker');">
 <input type="image" src="blue_mode_dimm.png" onclick="blue_mode('dimm');">
-<br>Background Image<br>
+<br>Random<br>
+<table>
+   <tr>
+     <td><input type="button" id="coinflip" onclick="coinflip();" value="coinflip"></td>
+     <td><input type="button" id="dice" onclick="dice();" value="dice"></td>
+     <td><input type="button" id="w20" onclick="w20();" value="w20"></td>
+   </tr>
+</table>
+Background Image<br>
 <input type="image" src="bg/1_small.jpg" onclick="set_bg('eins')">
 <input type="image" src="bg/2_small.jpg" onclick="set_bg('zwei');">
 <input type="image" src="bg/3_small.jpg" onclick="set_bg('drei');">
