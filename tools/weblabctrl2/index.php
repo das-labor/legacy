@@ -8,7 +8,9 @@ include "config.php";
 <script src="weblabctrl.js" type="text/javascript"></script>
 <?
 if($_COOKIE['bg']) $bg=$_COOKIE['bg'];
- else $bg=1;
+ else $bg='dwarf';
+if($_COOKIE['toiletlamp']) $toiletlamp=$_COOKIE['toiletlamp'];
+ else $toiletlamp=0;
 if($_COOKIE['pwmx']) $pwmx=$_COOKIE['pwmx'];
  else $pwmx=50;
 if($_COOKIE['pwmy']) $pwmy=$_COOKIE['pwmy'];
@@ -31,20 +33,36 @@ echo "<style type=\"text/css\">
   div.mpd_top {background-color:#ccccff; width: 256px; margin-bottom:5px;}
   div.misc {position:absolute; left:".$miscx."; top: ".$miscy."; background-color:#ddddff; width: 300px; padding:5px;}
   div.misc_top {background-color:#ccccff; width: 300px; margin-bottom:5px;}
-  body {margin: 0px; padding: 0px; background-image:url(bg.jpg);background-repeat:no-repeat;background-color:#000000;}
-  body.asdf {margin: 0px; padding: 0px; background-image:url(bg/1.jpg);background-repeat:no-repeat;background-color:#000000;}
-  body.2 {margin: 0px; padding: 0px; background-image:url(bg/2.jpg);background-repeat:no-repeat;background-color:#000000;}
+  body {margin: 0px; padding: 0px; background-image:url(bg/11.jpg);background-repeat:no-repeat;background-color:#000000;}
+  body.eins {background-size: auto; width: 100%; height: 100%; margin: 0px; padding: 0px; background-image:url(bg/1.jpg);background-repeat:no-repeat;background-color:#000000;}
+  body.zwei {margin: 0px; padding: 0px; background-image:url(bg/2.jpg);background-repeat:no-repeat;background-color:#000000;}
+  body.drei {margin: 0px; padding: 0px; background-image:url(bg/3.jpg);background-repeat:no-repeat;background-color:#000000;}
+  body.vier {margin: 0px; padding: 0px; background-image:url(bg/4.jpg);background-repeat:no-repeat;background-color:#000000;}
+  body.fuenf {margin: 0px; padding: 0px; background-image:url(bg/5.jpg);background-repeat:no-repeat;background-color:#000000;}
+  body.sechs {margin: 0px; padding: 0px; background-image:url(bg/6.jpg);background-repeat:no-repeat;background-color:#000000;}
+  body.sieben {margin: 0px; padding: 0px; background-image:url(bg/7.jpg);background-repeat:no-repeat;background-color:#000000;}
+  body.acht {margin: 0px; padding: 0px; background-image:url(bg/8.jpg);background-repeat:no-repeat;background-color:#000000;}
+  body.neun {margin: 0px; padding: 0px; background-image:url(bg/9.jpg);background-repeat:no-repeat;background-color:#000000;}
+  body.zehn {margin: 0px; padding: 0px; background-image:url(bg/10.jpg);background-repeat:no-repeat;background-color:#000000;}
+  body.dwarf {margin: 0px; padding: 0px; background-image:url(bg/11.jpg);background-repeat:no-repeat;background-color:#000000;}
   input {}
 </style>";
 ?>
-
 </head>
 <body class="" id="body" name="body">
-<script>
 
+
+<script>
+<?
+  echo "set_bg('".$bg."');";
+?>
 function set_value(cmd,id,value)
 {
   new Ajax.Updater('ajax', 'set.php?cmd='+cmd+'&id='+id+'&value='+value,{method:'get', onComplete:function() {done=true;}, evalScripts: true} );
+}
+function toilet_cmd(id,value)
+{
+  new Ajax.Updater('ajax', 'set.php?cmd=toilet&id='+id+'&value='+value,{method:'get', onComplete:function() {done=true;}, evalScripts: true} );
 }
 function treppenblink_cmd(value)
 {
@@ -74,13 +92,9 @@ function save_pos(element)
 {
   new Ajax.Updater('ajax', 'set.php?cmd=save_pos&x='+document.getElementById(element.id).style.left+'&y='+document.getElementById(element.id).style.top,{method:'get', onComplete:function() {done=true;}} );
 }
-function save_bg()
-{
-
-}
-
 function set_bg(whichImage){
-  document.getElementById('body').className=whichImage
+  new Ajax.Updater('ajax', 'set.php?cmd=save_bg&bg='+whichImage,{method:'get', onComplete:function() {done=true;}} );
+  document.getElementById('body').className=whichImage;
 
 }
 function blue_mode(mode)
@@ -230,26 +244,45 @@ echo "</form>";
    echo "<td>".$tbm_key."</td>";
  echo "</tr></table>";
 ?>
-<br>Vortrag Mode<br>
+<br>ToiletLamp<br>
+<table>
+  <tr>
+    <td><input id="TOILET_0" type="checkbox" onclick="if(this.checked)toilet_cmd('TOILET_0','ON');else toilet_cmd('TOILET_0','OFF')">
+    <td colspan=3>enable random</td>
+  </tr>
+  <tr>
+    <td>
+      <input id="TOILET_1" type="checkbox" onclick="if(this.checked)toilet_cmd('TOILET_1','ON');else toilet_cmd('TOILET_1','OFF')">
+    </td>
+    <td>
+      <input id="TOILET_8" type="checkbox" onclick="if(this.checked)toilet_cmd('TOILET_8','ON');else toilet_cmd('TOILET_8','OFF')">
+    </td>
+    <td>
+      <input id="TOILET_4" type="checkbox" onclick="if(this.checked)toilet_cmd('TOILET_4','ON');else toilet_cmd('TOILET_4','OFF')">
+    </td>
+    <td>
+      <input id="TOILET_2" type="checkbox" onclick="if(this.checked)toilet_cmd('TOILET_2','ON');else toilet_cmd('TOILET_2','OFF')">
+    </td>
+  </tr>
+</table>
+Vortrag Mode<br>
 <input type="image" src="blue_mode_off.png" onclick="blue_mode('off');">
 <input type="image" src="blue_mode_on.png" onclick="blue_mode('on');">
 <input type="image" src="blue_mode_video_conference.png" onclick="blue_mode('video_conference');">
 <input type="image" src="blue_mode_speaker.png" onclick="blue_mode('speaker');">
 <input type="image" src="blue_mode_dimm.png" onclick="blue_mode('dimm');">
 <br>Background Image<br>
-
-<a href="javascript:changeBGImage(1)">Change</a>
-<a href="javascript:set_bg()">foo</a>
-<input type="image" src="bg/1_small.jpg" onclick="set_bg('1')">
-<input type="image" src="bg/2_small.jpg" onclick="set_bg('2');">
-<input type="image" src="bg/3_small.jpg" onclick="set_bg('3.jpg');">
-<input type="image" src="bg/4_small.jpg" onclick="set_bg('4.jpg');">
-<input type="image" src="bg/5_small.jpg" onclick="set_bg('5.jpg');">
-<input type="image" src="bg/6_small.jpg" onclick="set_bg('6.jpg');">
-<input type="image" src="bg/7_small.jpg" onclick="set_bg('7.jpg');">
-<input type="image" src="bg/8_small.jpg" onclick="set_bg('8.jpg');">
-<input type="image" src="bg/9_small.jpg" onclick="set_bg('9.jpg');">
-<input type="image" src="bg/10_small.jpg" onclick="set_bg('10.jpg');">
+<input type="image" src="bg/1_small.jpg" onclick="set_bg('eins')">
+<input type="image" src="bg/2_small.jpg" onclick="set_bg('zwei');">
+<input type="image" src="bg/3_small.jpg" onclick="set_bg('drei');">
+<input type="image" src="bg/4_small.jpg" onclick="set_bg('vier');">
+<input type="image" src="bg/5_small.jpg" onclick="set_bg('fuenf');">
+<input type="image" src="bg/6_small.jpg" onclick="set_bg('sechs');">
+<input type="image" src="bg/7_small.jpg" onclick="set_bg('sieben');">
+<input type="image" src="bg/8_small.jpg" onclick="set_bg('acht');">
+<input type="image" src="bg/9_small.jpg" onclick="set_bg('neun');">
+<input type="image" src="bg/10_small.jpg" onclick="set_bg('zehn');">
+<input type="image" src="bg/11_small.jpg" onclick="set_bg('dwarf');">
 
 </div>
 </form>

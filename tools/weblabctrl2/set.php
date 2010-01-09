@@ -11,12 +11,18 @@ elseif($_GET[cmd]=="canir_beamer")$cmd="canir_beamer";
 elseif($_GET[cmd]=="moodbar")$cmd="moodbar";
 elseif($_GET[cmd]=="moodbar_fade")$cmd="moodbar_fade";
 elseif($_GET[cmd]=="save_pos")$cmd="save_pos";
+elseif($_GET[cmd]=="save_bg")$cmd="save_bg";
 elseif($_GET[cmd]=="blue_mode")$cmd="blue_mode";
+elseif($_GET[cmd]=="toilet")$cmd="toilet";
 else unset($_GET[cmd]);
 
 if(in_array($_GET[id],$pwm_ids)) $id=$_GET[id];
 elseif(in_array($_GET[id],$sw_ids)) $id=$_GET[id];
+elseif(in_array($_GET[id],$toilet_ids)) $id=$_GET[id];
 else unset($_GET[id]);
+
+if($_COOKIE['toiletlamp']) $toiletlamp=$_COOKIE['toiletlamp'];
+ else $toiletlamp=0;
 
 if($cmd=="PWM")
 {
@@ -78,6 +84,56 @@ elseif($cmd=="beamer_on")
 	echo "powercommander.lapcontrol powercommander SW PROJEKTOR ON 0x00";
 	$script .= "document.getElementById('beamer_button').disabled=true;\n";
 	$_SESSION['beamer_on']=1;
+}
+elseif($cmd=="toilet")
+{
+  if($id == 'TOILET_0') {
+    if($_GET[value] == 'ON') {
+      exec('touch /tmp/toilet_random');
+    }
+    else {
+      exec('rm /tmp/toilet_random');
+    }
+  }
+  if($id == 'TOILET_1') {
+    if($_GET['value'] == 'ON') {
+      $toiletlamp=$toiletlamp+1;
+    } 
+    else {
+      $toiletlamp=$toiletlamp-1;
+    }
+  }
+  if($id == 'TOILET_2') {
+    if($_GET['value'] == 'ON') {
+      $toiletlamp=$toiletlamp+2;
+    } 
+    else {
+      $toiletlamp=$toiletlamp-2;
+    }
+  }
+  if($id == 'TOILET_4') {
+    if($_GET['value'] == 'ON') {
+      $toiletlamp=$toiletlamp+4;
+    } 
+    else {
+      $toiletlamp=$toiletlamp-4;
+    }
+  }
+  if($id == 'TOILET_8') {
+    if($_GET['value'] == 'ON') {
+      $toiletlamp=$toiletlamp+8;
+    } 
+    else {
+      $toiletlamp=$toiletlamp-8;
+    }
+  }
+  if(($toiletlamp < 0) or ($toiletlamp >15)) $toiletlamp=0;
+  setcookie("toiletlamp",$toiletlamp);
+  echo "powercommander.lapcontrol packet 0x00:0x01 0x2a:0x01 0x00,".$toiletlamp;
+  exec("powercommander.lapcontrol packet 0x00:0x01 0x2a:0x01 0x00,".$toiletlamp);
+#	echo "powercommander.lapcontrol powercommander SW PROJEKTOR ON 0x00";
+#	$script .= "document.getElementById('beamer_button').disabled=true;\n";
+#	$_SESSION['beamer_on']=1;
 }
 elseif($cmd=="text_the_borg")
 {
@@ -141,7 +197,7 @@ elseif($cmd=="canir_beamer")
 }
 elseif($cmd=="save_bg")
 {
-  if(in_array($_GET[bg], $bg))
+  if(in_array($_GET[bg], $background_images))
     {
       setcookie("bg",$_GET[bg]);
     }
