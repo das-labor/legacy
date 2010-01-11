@@ -1,12 +1,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <assert.h>
 #include <inttypes.h>
 #include "../../config.h"
 #include "../../scrolltext/scrolltext.h"
 #include "../../joystick/joystick.h"
 #include "highscore.h"
+
 
 /* Function:     tetris_highscore_inputName
  * Description:  let user input a three character name
@@ -14,72 +14,96 @@
  */
 uint16_t tetris_highscore_inputName(void)
 {
-	char nick[4], tmp[40];
-        uint8_t xpos;
-	uint8_t pos=0, blink=0, done=0, hadfire=0;
+	char pszNick[4], pszTmp[40];
+	uint8_t nOffset;
+	uint8_t nPos = 0, nBlink = 0, nDone = 0, nHadfire = 0;
 
-	sprintf(nick, "AAA");
-        while(!done)
-        {
+	sprintf(pszNick, "AAA");
+	while (!nDone)
+	{
+		// we need our own blink interval
+		nBlink = (nBlink + 1) % 4;
 
-          // We need to do our own blink interval          
-          blink = (blink+1) % 4;
+		// determine start position on screen depending on active character
+		switch (nPos)
+		{
+		case 0:
+			nOffset = 15;
+			break;
+		case 1:
+			nOffset = 19;
+			break;
+		case 2:
+			nOffset = 23;
+			break;
+		}
 
-          // Determine start position on screen
-          // depending on active character
-          switch (pos)
-          {
-            case 0: xpos = 15; break;
-            case 1: xpos = 19; break;
-            case 2: xpos = 23; break;
-          }
-          
-          // Construct command for scrolltext and execute
-  	  sprintf(tmp, "x%d+p1#%c#x%d+p1#%c#x%dp1#%c", 
-  	    xpos, (!blink && pos == 0) ? ' ' : nick[0],
- 	    xpos-8, (!blink && pos == 1 ) ? ' ' : nick[1],
- 	    xpos-15, (!blink && pos == 2 ) ? ' ' : nick[2]);
-  	  scrolltext(tmp);
- 	  
+		// construct command for scrolltext and execute
+		sprintf(pszTmp, "x%d+p1#%c#x%d+p1#%c#x%dp1#%c", nOffset,
+				(!nBlink && nPos == 0) ? ' ' : pszNick[0], nOffset - 8,
+				(!nBlink && nPos == 1) ? ' ' : pszNick[1], nOffset - 15,
+				(!nBlink && nPos == 2) ? ' ' : pszNick[2]);
+		scrolltext(pszTmp);
 
-          // up and down control current char
- 	  if (JOYISUP) 
- 	  { 
- 	    nick[pos]++; 
- 	    if (nick[pos] == '`') nick[pos] = 'A';
- 	    if (nick[pos] == '[') nick[pos] = '_'; 	    
-          }
- 	  if (JOYISDOWN)
- 	  { 
- 	    nick[pos]--; 
- 	    if (nick[pos] == '@') nick[pos] = '_';
-            if (nick[pos] == '^') nick[pos] = 'Z';
-          }
-          
-          // left and right control char selections
-          if (JOYISLEFT && pos > 0) pos--; 
-          if (JOYISRIGHT && pos < 2) pos++;
-          
-          // fire switches to next char or exits
-          if (JOYISFIRE&&!hadfire)
-          {
-            hadfire=1;
-            switch (pos)
-            {
-              case 0: pos=1; break;
-              case 1: pos=2; break;
-              case 2: done=1; break;
-            }
-          }
-          
-          if (hadfire&&!JOYISFIRE)
-            hadfire=0;
+		// up and down control current char
+		if (JOYISUP)
+		{
+			pszNick[nPos]++;
+			if (pszNick[nPos] == '`')
+			{
+				pszNick[nPos] = 'A';
+			}
+			if (pszNick[nPos] == '[')
+			{
+				pszNick[nPos] = '_';
+			}
+		}
+		else if (JOYISDOWN)
+		{
+			pszNick[nPos]--;
+			if (pszNick[nPos] == '@')
+			{
+				pszNick[nPos] = '_';
+			}
+			if (pszNick[nPos] == '^')
+			{
+				pszNick[nPos] = 'Z';
+			}
+		}
+		// left and right control char selections
+		else if (JOYISLEFT && nPos > 0)
+		{
+			nPos--;
+		}
+		else if (JOYISRIGHT && nPos < 2)
+		{
+			nPos++;
+		}
+
+		// fire switches to next char or exits
+		if (JOYISFIRE && !nHadfire)
+		{
+			nHadfire = 1;
+			switch (nPos)
+			{
+			case 0:
+				nPos = 1;
+				break;
+			case 1:
+				nPos = 2;
+				break;
+			case 2:
+				nDone = 1;
+				break;
+			}
+		}
+
+		if (nHadfire && !JOYISFIRE)
+		{
+			nHadfire = 0;
+		}
 	}
 
-        // return result
-	return(
-		(nick[0]-65)<<10 |
-		(nick[1]-65)<<5  |
-		(nick[2]-65) 
-	      );
+	// return result
+	return (pszNick[0] - 65) << 10 | (pszNick[1] - 65) << 5 | (pszNick[2] - 65);
 }

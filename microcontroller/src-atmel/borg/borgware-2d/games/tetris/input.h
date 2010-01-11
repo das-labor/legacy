@@ -34,9 +34,8 @@ tetris_input_command_t;
 typedef enum tetris_input_pace_t
 {
 	TETRIS_INPACE_HOVERING, // normal falling pace
-	TETRIS_INPACE_GLIDING   /* guarantees a minimum docking time to avoid that
-	                           pieces are docked immediately if they hit something
-	                           in higher levels */
+	TETRIS_INPACE_GLIDING   /* guarantees a minimum docking time to avoid
+	                           accidentally docked pieces in higher levels */
 }
 tetris_input_pace_t;
 

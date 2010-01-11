@@ -40,7 +40,7 @@
 #define TETRIS_INPUT_CHATTER_TICKS_LEFT    12
 #define TETRIS_INPUT_CHATTER_TICKS_RIGHT   12
 #define TETRIS_INPUT_CHATTER_TICKS_DOWN    12
-#define TETRIS_INPUT_CHATTER_TICKS_DROP    24
+#define TETRIS_INPUT_CHATTER_TICKS_DROP    48
 
 // wait cycles per level (array of uint8_t)
 #define TETRIS_INPUT_LVL_CYCLES 200, 133, 100, 80, 66, 57, 50, 44, 40, 36, 33, \
@@ -314,8 +314,8 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 				// we ensure that the variable which holds that last command
 				// isn't touched. We use this as a flag so that the loop cycle
 				// counter doesn't get incremented.
-				// We count the number of pause cycles, though. If enough pause
-				// cycles have been run, we enforce the continuation of the game.
+				// We count the number of pause cycles, though. If enough cycles
+				// have been run, we enforce the continuation of the game.
 				if ((pIn->cmdLast != TETRIS_INCMD_PAUSE) ||
 					(++pIn->nPauseCount > TETRIS_INPUT_PAUSE_CYCLES))
 				{
@@ -340,11 +340,11 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 		}
 
 		// decrement all ignore counters
-		for (int nIgnoreIndex = 0; nIgnoreIndex < TETRIS_INCMD_NONE; ++nIgnoreIndex)
+		for (int nIgnIndex = 0; nIgnIndex < TETRIS_INCMD_NONE; ++nIgnIndex)
 		{
-			if (pIn->nIgnoreCmdCounter[nIgnoreIndex] != 0)
+			if (pIn->nIgnoreCmdCounter[nIgnIndex] != 0)
 			{
-				--pIn->nIgnoreCmdCounter[nIgnoreIndex];
+				--pIn->nIgnoreCmdCounter[nIgnIndex];
 			}
 		}
 
