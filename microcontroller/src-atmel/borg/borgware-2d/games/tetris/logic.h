@@ -10,8 +10,10 @@
 
 typedef struct tetris_logic_t
 {
+	uint8_t nBastet;               // is gametype bastet?
 	uint16_t nScore;               // score of the player
 	uint16_t nHighscore;           // highscore
+	uint16_t nHighscoreName;       // name of the person who achieved highscore
 	uint8_t nLevel;                // current level
 	uint16_t nLines;               // number of completed lines
 	tetris_piece_t *pPreviewPiece; // the piece intended to be the next one
@@ -22,11 +24,12 @@ tetris_logic_t;
  * construction/destruction *
  ****************************/
 
-/* Function:     tetris_logic_construct
- * Description:  constructs a logic object
- * Return value: pointer to a newly created logic object
+/* Function:         tetris_logic_construct
+ * Description:      constructs a logic object
+ * Argument nBastet: 0 for normal tetris, 1 for bastet
+ * Return value:     pointer to a newly created logic object
  */
-tetris_logic_t *tetris_logic_construct();
+tetris_logic_t *tetris_logic_construct(uint8_t nBastet);
 
 /* Function:     tetris_logic_destruct
  * Description:  destructs a logic object
@@ -117,6 +120,23 @@ uint16_t tetris_logic_getHighscore(tetris_logic_t *pLogic);
  */
 void tetris_logic_setHighscore(tetris_logic_t *pLogic,
                                uint16_t nHighscore);
+
+
+/* Function:        tetris_logic_getHighscoreName
+ * Description:     returns the current highscore name
+ * Argument pLogic: the logic object we want information from
+ * Return value:    the highscore name packed as uint16_t
+ */
+uint16_t tetris_logic_getHighscoreName(tetris_logic_t *pLogic);
+
+
+/* Function:                 tetris_logic_setHighscoreName
+ * Description:              set highscore name
+ * Argument pLogic:          the logic object we want to modify
+ * Argmument nHighscoreName: highscore name
+ */
+void tetris_logic_setHighscoreName(tetris_logic_t *pLogic,
+                               uint16_t nHighscoreName);
 
 
 /* Function:        tetris_logic_getLevel

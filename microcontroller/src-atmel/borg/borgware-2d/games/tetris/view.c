@@ -434,6 +434,28 @@ void tetris_view_update(tetris_view_t *pV)
 }
 
 
+/* Function:                tetris_view_formatHighscoreName
+ * Description:             convert uint16_t into ascii Highscore
+ *                          (only used internally in view.c)
+ * Argument nHighscoreName: packed integer with highscoreName
+ * Argument pszName:        pointer to a char array where result is stored
+ * Return value:            void
+ */
+void tetris_view_formatHighscoreName(uint16_t nHighscoreName, char *pszName)
+{
+  pszName[0] = ((nHighscoreName>>10)&0x1F) + 65;
+  if (pszName[0] == '_') pszName[0] = ' ';
+
+  pszName[1] = ((nHighscoreName>> 5)&0x1F) + 65;
+  if (pszName[1] == '_') pszName[1] = ' ';
+
+  pszName[2] = ( nHighscoreName     &0x1F) + 65;
+  if (pszName[2] == '_') pszName[2] = ' ';
+
+  pszName[3] = 0;
+}
+
+
 /* Function:     tetris_view_showResults
  * Description:  shows results after game
  * Argument pV:  pointer to the view which should show the reults
@@ -441,20 +463,23 @@ void tetris_view_update(tetris_view_t *pV)
  */
 void tetris_view_showResults(tetris_view_t *pV)
 {
-	char pszResults[48];
+	char pszResults[54], pszHighscoreName[4];
 	uint16_t nScore = tetris_logic_getScore(pV->pLogic);
 	uint16_t nHighscore = tetris_logic_getHighscore(pV->pLogic);
 	uint16_t nLines = tetris_logic_getLines(pV->pLogic);
 
+	uint16_t nHighscoreName = tetris_logic_getHighscoreName(pV->pLogic);
+	tetris_view_formatHighscoreName(nHighscoreName, pszHighscoreName);
+
 	if (nScore <= nHighscore)
 	{
-		snprintf(pszResults, 48 * sizeof(char),
-			"</#Lines %u    Score %u    Highscore %u",
-			nLines, nScore, nHighscore);
+		snprintf(pszResults, sizeof(pszResults),
+			"</#Lines %u    Score %u    Highscore %u (%s)",
+			nLines, nScore, nHighscore, pszHighscoreName);
 	}
 	else
 	{
-		snprintf(pszResults, 48 * sizeof(char),
+		snprintf(pszResults, sizeof(pszResults),
 			"</#Lines %u    New Highscore %u", nLines, nScore);
 	}
 #ifdef SCROLLTEXT_SUPPORT

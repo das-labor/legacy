@@ -19,9 +19,13 @@
 #include "playfield.h"
 #include "view.h"
 #include "input.h"
+#include "highscore.h"
 
 #ifdef GAME_BASTET
 #include "bast.h"
+#define NUMHIGHSCORES 2
+#else
+#define NUMHIGHSCORES 1
 #endif
 
 
@@ -30,7 +34,8 @@
  * Highscore in EEPROM *
  ***********************/
 
-uint16_t tetris_logic_nHighscore EEMEM;
+uint16_t tetris_logic_nHighscore[NUMHIGHSCORES] EEMEM;
+uint16_t tetris_logic_nHighscoreName[NUMHIGHSCORES] EEMEM;
 #endif
 
 // Tetris icon, MSB is leftmost pixel
@@ -82,11 +87,11 @@ uint8_t tetris_logic_calculateLines(uint8_t nRowMask)
 	return nLines;
 }
 
-uint16_t tetris_logic_retrieveHighscore(void)
+uint16_t tetris_logic_retrieveHighscore(uint8_t nHighscoreIndex)
 {
 #ifdef EEMEM
 	uint16_t nHighscore = 0;
-	nHighscore = eeprom_read_word(&tetris_logic_nHighscore);
+	nHighscore = eeprom_read_word(&tetris_logic_nHighscore[nHighscoreIndex]);
 
 	// a score of 65535 is most likely caused by uninitialized EEPROM addresses
 	if (nHighscore == 65535)
@@ -100,13 +105,38 @@ uint16_t tetris_logic_retrieveHighscore(void)
 #endif
 }
 
-void tetris_logic_saveHighscore(uint16_t nHighscore)
+void tetris_logic_saveHighscore(uint8_t nHighscoreIndex, uint16_t nHighscore)
 {
 #ifdef EEMEM
-	if (nHighscore > tetris_logic_retrieveHighscore())
+	if (nHighscore > tetris_logic_retrieveHighscore(nHighscoreIndex))
 	{
-		eeprom_write_word(&tetris_logic_nHighscore, nHighscore);
+		eeprom_write_word(&tetris_logic_nHighscore[nHighscoreIndex], nHighscore);
 	}
+#endif
+}
+
+uint16_t tetris_logic_retrieveHighscoreName(uint8_t nHighscoreIndex)
+{
+#ifdef EEMEM
+	uint16_t nHighscoreName = 0;
+	nHighscoreName = eeprom_read_word(&tetris_logic_nHighscoreName[nHighscoreIndex]);
+
+	// a score of 65535 is most likely caused by uninitialized EEPROM addresses
+	if (nHighscoreName == 65535)
+	{
+		nHighscoreName = 0;
+	}
+
+	return nHighscoreName;
+#else
+	return 0;
+#endif
+}
+
+void tetris_logic_saveHighscoreName(uint8_t nHighscoreIndex, uint16_t nHighscoreName)
+{
+#ifdef EEMEM
+	eeprom_write_word(&tetris_logic_nHighscoreName[nHighscoreIndex], nHighscoreName);
 #endif
 }
 
@@ -115,15 +145,17 @@ void tetris_logic_saveHighscore(uint16_t nHighscore)
  * construction/destruction *
  ****************************/
 
-/* Function:     tetris_logic_construct
- * Description:  constructs a logic object
- * Return value: pointer to a newly created logic object
+/* Function:         tetris_logic_construct
+ * Description:      constructs a logic object
+ * Argument nBastet: 0 for normal tetris, 1 for bastet
+ * Return value:     pointer to a newly created logic object
  */
-tetris_logic_t *tetris_logic_construct()
+tetris_logic_t *tetris_logic_construct(uint8_t nBastet)
 {
 	tetris_logic_t *pLogic = (tetris_logic_t *) malloc(sizeof(tetris_logic_t));
 	assert(pLogic != NULL);
 	memset(pLogic, 0, sizeof(tetris_logic_t));
+	pLogic->nBastet = nBastet;
 	return pLogic;
 }
 
@@ -179,7 +211,7 @@ void tetris_main(int8_t nBastet)
 	tetris_input_command_t inCmd;
 
 	// prepare data structures that drive the game...
-	tetris_logic_t *pLogic = tetris_logic_construct();
+	tetris_logic_t *pLogic = tetris_logic_construct(nBastet);
 	tetris_playfield_t *pPl = tetris_playfield_construct(nWidth, nHeight);
 	tetris_input_t *pIn = tetris_input_construct();
 	tetris_view_t *pView = tetris_view_construct(pLogic, pPl);
@@ -192,10 +224,16 @@ void tetris_main(int8_t nBastet)
 
 	// retrieve highscore
 	static uint16_t nHighscore = 0;
+	static uint16_t nHighscoreName = 0;
+#ifndef GAME_BASTET
 	if (nHighscore == 0)
 	{
-		nHighscore = tetris_logic_retrieveHighscore();
+#endif
+		nHighscore = tetris_logic_retrieveHighscore(nBastet);
+		nHighscoreName = tetris_logic_retrieveHighscoreName(nBastet);
+#ifndef GAME_BASTET
 	}
+#endif
 
 	// initialize current and next piece
 	tetris_piece_t *pPiece;
@@ -220,6 +258,7 @@ void tetris_main(int8_t nBastet)
 	// status so we must put information like the next piece or the current
 	// highscore to a place where the view can find it
 	tetris_logic_setHighscore(pLogic, nHighscore);
+	tetris_logic_setHighscoreName(pLogic, nHighscoreName);
 
 	// pace flag
 	tetris_input_pace_t inPace;
@@ -392,7 +431,9 @@ void tetris_main(int8_t nBastet)
 	if (nScore > nHighscore)
 	{
 		nHighscore = nScore;
-		tetris_logic_saveHighscore(nHighscore);
+		nHighscoreName = tetris_highscore_inputName();
+		tetris_logic_saveHighscore(nBastet, nHighscore);
+		tetris_logic_saveHighscoreName(nBastet, nHighscoreName);
 	}
 
 	// clean up
@@ -421,6 +462,9 @@ void tetris_logic_singleDrop(tetris_logic_t *pLogic,
                              uint8_t nLines)
 {
 	assert(pLogic != 0);
+#ifdef GAME_BASTET
+	if (pLogic->nBastet) return;
+#endif
 	pLogic->nScore += nLines;
 }
 
@@ -435,6 +479,9 @@ void tetris_logic_completeDrop(tetris_logic_t *pLogic,
                                uint8_t nLines)
 {
 	assert(pLogic != 0);
+#ifdef GAME_BASTET
+	if (pLogic->nBastet) return;
+#endif
 	pLogic->nScore += nLines * 2;
 }
 
@@ -454,6 +501,13 @@ void tetris_logic_removedLines(tetris_logic_t *pLogic,
 	pLogic->nLevel = ((pLogic->nLines / 10) < TETRIS_INPUT_LEVELS) ?
 		(pLogic->nLines / 10) : (TETRIS_INPUT_LEVELS - 1);
 
+#ifdef GAME_BASTET
+	if (pLogic->nBastet)
+	{
+		pLogic->nScore += nLines;
+		return;
+	}
+#endif
 	switch (nLines)
 	{
 	case 1:
@@ -511,6 +565,32 @@ void tetris_logic_setHighscore(tetris_logic_t *pLogic,
 {
 	assert(pLogic != NULL);
 	pLogic->nHighscore = nHighscore;
+}
+
+
+/* Function:        tetris_logic_getHighscoreName
+ * Description:     returns the current highscore name
+ * Argument pLogic: the logic object we want information from
+ * Return value:    the highscore name packed as uint16_t
+ */
+uint16_t tetris_logic_getHighscoreName(tetris_logic_t *pLogic)
+{
+	assert(pLogic != NULL);
+	return pLogic->nHighscoreName;
+}
+
+
+
+/* Function:                 tetris_logic_setHighscoreName
+ * Description:              set highscore name
+ * Argument pLogic:          the logic object we want to modify
+ * Argmument nHighscoreName: highscore name
+ */
+void tetris_logic_setHighscoreName(tetris_logic_t *pLogic,
+                               uint16_t nHighscoreName)
+{
+	assert(pLogic != NULL);
+	pLogic->nHighscoreName = nHighscoreName;
 }
 
 
