@@ -2,12 +2,12 @@ OBJ = main.o can/can.o can/spi.o can_handler.o
 
 # Default values
 OUT           ?= image
-MCU_TARGET    ?= atmega8
+MCU_TARGET    ?= atmega32
 MCU_CC        ?= avr-gcc
 MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall -Winline
-DEFS          ?= -DF_CPU=16000000
+DEFS          ?= -DF_CPU=16000000l
 CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I.
 ASFLAGS	      += -mmcu=avr5
 LDFLAGS        = -Wl,-Map,$(OUT).map

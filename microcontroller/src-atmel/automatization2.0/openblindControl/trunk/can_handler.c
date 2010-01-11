@@ -1,12 +1,23 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
+#include <util/delay.h>
 
 #include "can/can.h"
 #include "can_handler.h"
 #include "can/lap.h"
 
 static uint8_t myaddr;
+
+union {
+	struct {
+		uint8_t klingel:1; // 1 Bit für bStatus_1
+		uint8_t nachtmodus:1;    // Dieses Feld ist 2 Bits breit
+		uint8_t tuerkontakt:1;
+		uint8_t schloss:1;
+	};
+	uint8_t bla;
+} stat_switches;
 
 extern void can_handler()
 {
@@ -45,3 +56,26 @@ void read_can_addr()
 {
 	myaddr = eeprom_read_byte(0x00);
 }
+
+void switch_handler()
+{
+// Hauptschalter
+	if (!(PINB & _BV(PB0)) && stat_switches.klingel)
+	{
+		stat_switches.klingel = 0;
+		_delay_ms(100);
+	}
+	if ((PINB & _BV(PB0)) && stat_switches.klingel == 0)
+	{
+		stat_switches.klingel = 1;
+
+		static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
+		
+		msg.data[0] = stat_switches.bla;
+		msg.addr_src = myaddr;
+		can_transmit(&msg);
+
+		_delay_ms(100);
+	}
+}
+
