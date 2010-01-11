@@ -136,7 +136,7 @@ uint16_t tetris_logic_getHighscoreName(tetris_logic_t *pLogic);
  * Argmument nHighscoreName: highscore name
  */
 void tetris_logic_setHighscoreName(tetris_logic_t *pLogic,
-                               uint16_t nHighscoreName);
+                                   uint16_t nHighscoreName);
 
 
 /* Function:        tetris_logic_getLevel
@@ -174,4 +174,3 @@ tetris_piece_t* tetris_logic_getPreviewPiece(tetris_logic_t *pLogic);
 
 
 #endif /*TETRIS_LOGIC_H_*/
-

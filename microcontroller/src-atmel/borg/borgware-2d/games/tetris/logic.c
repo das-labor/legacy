@@ -87,6 +87,12 @@ uint8_t tetris_logic_calculateLines(uint8_t nRowMask)
 	return nLines;
 }
 
+
+/* Function:                 tetris_logic_retrieveHighscore
+ * Description:              retrieves the highscore from storate
+ * Argument nHighscoreIndex: highscore index (for different game variants)
+ * Return value:             the highscore
+ */
 uint16_t tetris_logic_retrieveHighscore(uint8_t nHighscoreIndex)
 {
 #ifdef EEMEM
@@ -105,21 +111,36 @@ uint16_t tetris_logic_retrieveHighscore(uint8_t nHighscoreIndex)
 #endif
 }
 
+
+/* Function:                 tetris_logic_saveHighscore
+ * Description:              saves the highscore into the storage
+ * Argument nHighscoreIndex: highscore index (for different game variants)
+ * Argument nHighscoreName:  the highscore
+ * Return value:             void
+ */
 void tetris_logic_saveHighscore(uint8_t nHighscoreIndex, uint16_t nHighscore)
 {
 #ifdef EEMEM
 	if (nHighscore > tetris_logic_retrieveHighscore(nHighscoreIndex))
 	{
-		eeprom_write_word(&tetris_logic_nHighscore[nHighscoreIndex], nHighscore);
+		eeprom_write_word(&tetris_logic_nHighscore[nHighscoreIndex],
+				nHighscore);
 	}
 #endif
 }
 
+
+/* Function:                 tetris_logic_retrieveHighscoreName
+ * Description:              retrieves the initials of the champion from storage
+ * Argument nHighscoreIndex: highscore index (for different game variants)
+ * Return value:             the initials of the champion packed into a uint16_t
+ */
 uint16_t tetris_logic_retrieveHighscoreName(uint8_t nHighscoreIndex)
 {
 #ifdef EEMEM
 	uint16_t nHighscoreName = 0;
-	nHighscoreName = eeprom_read_word(&tetris_logic_nHighscoreName[nHighscoreIndex]);
+	nHighscoreName =
+			eeprom_read_word(&tetris_logic_nHighscoreName[nHighscoreIndex]);
 
 	// a score of 65535 is most likely caused by uninitialized EEPROM addresses
 	if (nHighscoreName == 65535)
@@ -133,10 +154,19 @@ uint16_t tetris_logic_retrieveHighscoreName(uint8_t nHighscoreIndex)
 #endif
 }
 
-void tetris_logic_saveHighscoreName(uint8_t nHighscoreIndex, uint16_t nHighscoreName)
+
+/* Function:                 tetris_logic_saveHighscoreName
+ * Description:              saves the initials of the champion
+ * Argument nHighscoreIndex: highscore index (for different game variants)
+ * Argument nHighscoreName:  the initials of the champion packed into a uint16_t
+ * Return value:             void
+ */
+void tetris_logic_saveHighscoreName(uint8_t nHighscoreIndex,
+                                    uint16_t nHighscoreName)
 {
 #ifdef EEMEM
-	eeprom_write_word(&tetris_logic_nHighscoreName[nHighscoreIndex], nHighscoreName);
+	eeprom_write_word(&tetris_logic_nHighscoreName[nHighscoreIndex],
+			nHighscoreName);
 #endif
 }
 
@@ -291,7 +321,8 @@ void tetris_main(int8_t nBastet)
 			else
 			{
 #endif
-				// make preview piece the current piece and create new preview piece
+				// make preview piece the current piece and create a new
+				// preview piece
 				pPiece = pNextPiece;
 				pNextPiece = tetris_piece_construct(random8() % 7,
 					TETRIS_PC_ANGLE_0);
@@ -301,7 +332,8 @@ void tetris_main(int8_t nBastet)
 				tetris_piece_t *pOldPiece;
 				tetris_playfield_insertPiece(pPl, pPiece, &pOldPiece);
 
-				// destruct old piece (if it exists) since we don't need it anymore
+				// destruct old piece (if it exists) since we don't need it
+				// anymore
 				if (pOldPiece != NULL)
 				{
 					tetris_piece_destruct(pOldPiece);
