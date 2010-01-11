@@ -354,6 +354,10 @@ blob_t * setupBlob(char * str){
 	}else if(*blob->commands == 'u'){
 		blob->posy = blob->sizey;
 		blob->posx = (NUM_COLS - 2 + blob->sizex)/2;
+	}else if(*blob->commands == 'x'){
+		blob->posy = (NUM_ROWS-blob->sizey)/2;
+	}else if(*blob->commands == 'y'){
+		blob->posx = (NUM_COLS - 2 + blob->sizex)/2;
 	}
 
 	blob->delayx_rld = 0;
