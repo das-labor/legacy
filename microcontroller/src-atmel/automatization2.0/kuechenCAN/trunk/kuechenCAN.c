@@ -41,9 +41,9 @@
 #include "can.h"
 #include "kuechenCAN.h"
 
-#define R_LED _BV(PC3)
-#define G_LED _BV(PC4)
-#define B_LED _BV(PC5)
+#define R_LED _BV(PC1)
+#define G_LED _BV(PC2)
+#define B_LED _BV(PC3)
 
 #define HOLD_THRESHOLD 18
 #define CLICK_THRESHOLD 0
@@ -79,21 +79,27 @@ can_message panic_msg = {0x23, 0x00, ALARMCANPORT, 0x00, 0x06, {0x41,0x4C,0x41,0
 
 void appBoot(void)
 { 
-	spi_init();
-	can_init();
-	rgbled_stat=R_LED;
-	//Kuechenlicht
-	DDRC |=  _BV(PC5) | _BV(PC4) | _BV(PC3); // output
-	// led power on!
-	PORTC &= ~(_BV(PC4) | _BV(PC3));
-	PORTC |= _BV(PC5);
-	// button
-	DDRB &= ~_BV(PB1);      // in
-	PORTB |= _BV(PB1);      // pullup on
+
+  spi_init();
+  can_init();
+  rgbled_stat=R_LED;
+  //Kuechenlicht
+  DDRC |=  R_LED | G_LED | B_LED; // output led taster
+  // led power on!
+  PORTC &= ~(G_LED | R_LED);
+  PORTC |= B_LED;
+  // button
+  DDRB &= ~_BV(PB1);      // in
+  PORTB |= _BV(PB1);      // pullup on
 
 
-	// Alarmbutton
-	DDRD |= _BV(PD5) | _BV(PD6) | _BV(PD7);         // output
+// XXX PC5 and PC4 are i2c for temp sense
+
+
+
+  // Alarmbutton
+  DDRD |= _BV(PD5) | _BV(PD6) | _BV(PD7);         // output
+
 
 	// led power on!
 	PORTD &= ~(_BV(PD5) | _BV(PD6) | _BV(PD7));     // off
