@@ -5,4 +5,6 @@ extern void can_handler();
 
 void read_can_addr();
 
+void switch_handler();
+
 #endif // ifndef CAN_HANDLER

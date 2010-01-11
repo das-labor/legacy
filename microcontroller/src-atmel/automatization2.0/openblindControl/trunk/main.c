@@ -27,7 +27,7 @@ void init(void)
 	can_init();
 	read_can_addr();
 	//turn on interrupts
-//	sei();
+  //	sei();
 }
 	 
 int main(void)
@@ -40,7 +40,7 @@ int main(void)
 	while (1)
 	{
 		can_handler();
-		
+		switch_handler();		
 	}
 	return 1;
 };
