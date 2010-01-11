@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 2 -*- */
 /*
  * Femto OS v 0.91 - Copyright (C) 2008-2009 Ruud Vlaming
  *
@@ -64,12 +65,27 @@ Tuint08 blinkmode=0;
 
 #define RGBCANPORT 0x10
 
+#define HOLD_THRESHOLD 18
+#define CLICK_THRESHOLD 0
+
+/*
+	XXX Powercommander.h
+*/
+#define C_VIRT (0x02)
+#define F_SW_TOGGLE   (0x03)
+#define F_PWM_MOD     (0x02)
+#define F_PWM_DIR     (0x03)
+#define O_VIRT01 (0x01)
+#define O_VIRT02 (0x02)
+#define VIRT_VORTRAG (O_VIRT01)
+#define VIRT_VORTRAG_PWM (O_VIRT02)
+
+
 Tuint08 rgbled_stat=B_LED;
   /* 
      fix me - this is the static message for powercommander
      we need the includes hier
   */
-can_message swap_light_msg = {0x00, 0x02, 0x00, 0x01, 0x04, {0x02,0x01,0x03,0x00}};
 Tuint08 light=0;
 Tuint08 mode=0;
 Tuint08 lastlight=0;
@@ -305,54 +321,91 @@ void appLoop_rgbled(void)
 #if (preTaskDefined(taster))
 void appLoop_taster(void)
 {
+  can_message dstpower = {0x25,0x02,0x00,0x01,0x04, {0x00,0x00,0x00,0x00}};
+  Tuint08 counter_0=0;
+  Tuint08 clicked_0 = 0;
+  Tuint08 held_0    = 0;
+  Tuint08 last_held_0=0;
   
   while(true)
     {
-      if((PINB & _BV(PB0)) && (light==0))
-	{
-	  light=1;
-	}
-      if(!(PINB & _BV(PB0)) && (light==1))
-	{
-	  light=2;
-	}
-      if(light==2)
-	{
-	  can_transmit(&swap_light_msg);
-	  if(lastlight == 0)
-	    {
-	      rgbled_stat=G_LED;
-	      lastlight=1;
-	    }
-	  else 
-	    {
-	      rgbled_stat=R_LED;
-	      lastlight=0;
-	    }
-	  light=0;
-	}
+			clicked_0=0;
+			held_0=0;
+			if(!(PINB & _BV(PB0))) 
+				{
+					counter_0++;
+					if(counter_0 > HOLD_THRESHOLD)
+						{
+							held_0 = 1;
+							counter_0 = HOLD_THRESHOLD;
+						}
+				} 
+			else
+				{
+					if(counter_0 > CLICK_THRESHOLD)
+						{
+							if(counter_0 < HOLD_THRESHOLD)
+								{
+									clicked_0 = 1;
+								}
+						}
+					counter_0 = 0;
+				}
+			
+			if(clicked_0 == 1)
+				{
+					dstpower.data[0] = C_VIRT;
+					dstpower.data[1] = VIRT_VORTRAG;
+					dstpower.data[2] = F_SW_TOGGLE;
+					if(rgbled_stat==R_LED)
+						{
+							rgbled_stat=G_LED;
+						}
+					else
+						{
+							rgbled_stat=R_LED;
+						}
+					can_transmit(&dstpower);
+				}
+			
+			if(held_0)
+				{
+					dstpower.data[0] = C_VIRT;
+					dstpower.data[1] = VIRT_VORTRAG_PWM;
+					dstpower.data[2] = F_PWM_MOD;
+					can_transmit(&dstpower);
+				}
+			else if(last_held_0)
+				{
+					dstpower.data[0] = C_VIRT;
+					dstpower.data[1] = VIRT_VORTRAG_PWM;
+					dstpower.data[2] = F_PWM_DIR;
+					can_transmit(&dstpower);
+				}
+			
+			last_held_0 = held_0;
 
       if((PINB & _BV(PB1)) && (mode==0))
-	{
-	  mode=1;
-	}
+				{
+					mode=1;
+				}
       if(!(PINB & _BV(PB1)) && (mode==1))
-	{
-	  mode=2;
-	}
+				{
+					mode=2;
+				}
       if(mode==2)
-	{
-	  if(blinkmode <= 6)
-	    {
-	      blinkmode++;
-	    }
-	  else 
-	    {
-	      blinkmode=0;
-	    }
-	  mode=0;
-	}
-
+				{
+					if(blinkmode <= 6)
+						{
+							blinkmode++;
+						}
+					else 
+						{
+							blinkmode=0;
+						}
+					mode=0;
+				}
+			
       taskDelayFromNow(100);
     }
 }
