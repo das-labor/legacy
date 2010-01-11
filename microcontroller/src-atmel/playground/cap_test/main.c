@@ -16,14 +16,13 @@
 // LEDs in proximity to sensor are connected to PC4(Anode) and PC5(Cathode)
 
 
-#define FILTER_CONSTANT 8192ul
-//#define FILTER_CONSTANT 1024ul
+//#define FILTER_CONSTANT 8192ul
+#define FILTER_CONSTANT 1024ul
 
 int main()
 {
 
 	DDRB |= _BV(PB0);
-
 
 	uint32_t filt = FILTER_CONSTANT * 600;
 	
@@ -46,8 +45,8 @@ int main()
 
 			__asm volatile ( "nop");
 			
-			PORTC |= _BV(PC3) ;//charge cap 
-			if(!output) PORTC |=  _BV(PC4); //activate illumination if not touched
+			PORTC |= _BV(PC3) | _BV(PC4) ;//charge cap 
+			if(output) PORTC |=  _BV(PC5); //dont activate illumination if touched
 			DDRC |= _BV(PC3) | _BV(PC4) | _BV(PC5) ;
 			__asm volatile ( "nop");
 			__asm volatile ( "nop");
@@ -55,13 +54,13 @@ int main()
 			__asm volatile ( "nop");
 			__asm volatile ( "nop");
 			
-			PORTC &= ~ _BV(PC4);
+			PORTC |=  _BV(PC5); //set all lines to high
 			
 			__asm volatile ( "nop");
 			__asm volatile ( "nop");
 			
 			DDRC &= ~(_BV(PC3) | _BV(PC4) | _BV(PC5)); //release lines
-			PORTC &= ~(_BV(PC3) | _BV(PC4));
+			PORTC &= ~(_BV(PC3) | _BV(PC4) | _BV(PC5));
 			
 			DDRC  |= _BV(PC2);//discharge plate to 100n cap
 			__asm volatile ( "nop");
