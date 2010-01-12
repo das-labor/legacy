@@ -295,7 +295,7 @@ void tetris_view_blinkLines(tetris_playfield_t *pPl)
 void tetris_view_showLineNumbers(tetris_view_t *pV)
 {
 	// get number of completed lines
-	uint8_t nLines = tetris_logic_getLines(pV->pLogic);
+	uint16_t nLines = tetris_logic_getLines(pV->pLogic);
 
 	// get decimal places
 	int8_t nOnes = nLines % 10;
