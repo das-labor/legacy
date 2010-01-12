@@ -1,4 +1,4 @@
-OBJ = main.o can/can.o can/spi.o can_handler.o
+OBJ = main.o can/can.o can/spi.o can_handler.o twi_master/twi_master.o i2c_temp.o
 
 # Default values
 OUT           ?= image

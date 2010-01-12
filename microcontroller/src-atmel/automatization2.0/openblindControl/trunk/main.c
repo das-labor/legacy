@@ -6,18 +6,25 @@
 
 #include "config.h"
 
-
+#include "twi_master/twi_master.h"
 #include "can/can.h"
 #include "can_handler.h"
 #include "can/spi.h"
 #include "can/lap.h"
+#include "i2c_temp.h"
 
 
 void init(void)
 {
 
-
-
+	/*
+	** Initiate TWI Master Interface with bitrate of 100000 Hz
+	*/
+	if (!TWIM_Init(100000))
+	{
+		while (1);
+	}
+	
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
 
 	//initialize spi port
@@ -32,7 +39,6 @@ void init(void)
 	 
 int main(void)
 {
-
 	//system initialization
 	init();
 
@@ -40,7 +46,7 @@ int main(void)
 	while (1)
 	{
 		can_handler();
-		switch_handler();		
+		switch_handler();
 	}
 	return 1;
 };
