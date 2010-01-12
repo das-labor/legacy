@@ -132,7 +132,7 @@ extern uint8_t TWIM_Init(uint32_t TWI_Bitrate)
  	- FALSE:	Error in starting TWI Master
 
 *******************************************************/
-extern uint8_t TWIM_Start(uint8_t Address, uint8_t TWIM_Type)
+extern uint8_t TWIM_Start(uint8_t address, uint8_t TWIM_Type)
 {
 	uint8_t twst;
 /*
@@ -152,7 +152,7 @@ extern uint8_t TWIM_Start(uint8_t Address, uint8_t TWIM_Type)
 /*
 ** Send device address
 */
-	TWDR = (Address<<1) + TWIM_Type;
+	TWDR = address + TWIM_Type;
 	TWCR = _BV(TWINT)|_BV(TWEN);
 /*
 ** Wait until transmission completed and ACK/NACK has been received
