@@ -7,6 +7,11 @@
 #include "../../util.h"
 #include "../../joystick/joystick.h"
 
+// if defined, joystick controls are NOT as "seen"
+// by the snake but absolute, that is, if pressing
+// up, snake goes up, etc.
+#define GAME_SNAKE_NEWCONTROL
+
 	// MSB is leftmost pixel
 static uint8_t icon[8] PROGMEM =
 	{0xff, 0x81, 0xbd, 0xa5, 0xa5, 0xad, 0xa1, 0xbf};  // Snake icon
@@ -53,7 +58,13 @@ void snake_game() {
 		++head;
 		if (head == pixels + 64) 
 				head = pixels;
-			
+
+#ifdef GAME_SNAKE_NEWCONTROL			
+		if (joy_cmd != 0xff)
+		{
+				dir = joy_cmd;
+		}
+#else
 		if (joy_cmd == right) {
 				dir = direction_r(dir);
 				joy_cmd = 0xff;
@@ -63,6 +74,7 @@ void snake_game() {
 				dir = direction_r(dir);
 				joy_cmd = 0xff;
 		} 
+#endif
 			
 		// kopf einen weiter bewegen
 		*head = next_pixel(old_head, dir);
@@ -125,6 +137,12 @@ void snake_game() {
 				joy = left;
 			}else if(JOYISRIGHT){
 				joy = right;
+#ifdef GAME_SNAKE_NEWCONTROL
+			}else if(JOYISUP) {
+				joy = up;
+			} else if(JOYISDOWN) {
+				joy = down;
+#endif
 			}else{
 				joy = 0xff;
 			}
