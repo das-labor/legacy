@@ -80,25 +80,33 @@ can_message panic_msg = {0x23, 0x00, ALARMCANPORT, 0x00, 0x06, {0x41,0x4C,0x41,0
 void appBoot(void)
 { 
 
-  spi_init();
-  can_init();
-  rgbled_stat=R_LED;
-  //Kuechenlicht
-  DDRC |=  R_LED | G_LED | B_LED; // output led taster
-  // led power on!
-  PORTC &= ~(G_LED | R_LED);
-  PORTC |= B_LED;
-  // button
-  DDRB &= ~_BV(PB1);      // in
-  PORTB |= _BV(PB1);      // pullup on
+	/*
+	** Initiate TWI Master Interface with bitrate of 100000 Hz
+	*/
+	if (!TWIM_Init(100000))
+	{
+		while (1);
+	}
+
+	spi_init();
+	can_init();
+	rgbled_stat=R_LED;
+	//Kuechenlicht
+	DDRC |=  R_LED | G_LED | B_LED; // output led taster
+	// led power on!
+	PORTC &= ~(G_LED | R_LED);
+	PORTC |= B_LED;
+	// button
+	DDRB &= ~_BV(PB1);      // in
+	PORTB |= _BV(PB1);      // pullup on
 
 
-// XXX PC5 and PC4 are i2c for temp sense
+	// XXX PC5 and PC4 are i2c for temp sense
 
 
 
-  // Alarmbutton
-  DDRD |= _BV(PD5) | _BV(PD6) | _BV(PD7);         // output
+	// Alarmbutton
+	DDRD |= _BV(PD5) | _BV(PD6) | _BV(PD7);         // output
 
 
 	// led power on!
