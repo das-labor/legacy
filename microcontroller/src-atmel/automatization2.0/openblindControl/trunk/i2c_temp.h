@@ -4,6 +4,7 @@
 
 void init_sensor();
 void get_temp(uint8_t *p);
+void get_reg(uint8_t *p);
 
 /* Initiates temperature conversions. If the part is in one-shot mode (1SHOT = 1), only one conversion is
  * performed. In continuous mode (1SHOT = 0), continuous temperature conversions are performed until a
