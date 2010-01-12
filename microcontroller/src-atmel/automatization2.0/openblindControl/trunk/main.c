@@ -17,6 +17,8 @@
 void init(void)
 {
 
+	//PORTC |= _BV(PC0) | _BV(PC1);
+
 	/*
 	** Initiate TWI Master Interface with bitrate of 100000 Hz
 	*/
@@ -24,6 +26,8 @@ void init(void)
 	{
 		while (1);
 	}
+	
+	init_sensor();
 	
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
 
