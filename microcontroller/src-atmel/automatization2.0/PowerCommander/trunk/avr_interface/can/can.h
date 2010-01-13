@@ -1,5 +1,5 @@
-#ifndef CAN_H
-#define CAN_H
+#ifndef _CAN_H
+#define _CAN_H
 
 /*****************************************************************************
  * Simple CAN Library
@@ -110,4 +110,4 @@ void can_free_raw(can_message_raw * msg);
 
 
 
-#endif // CAN_H
+#endif // _CAN_H

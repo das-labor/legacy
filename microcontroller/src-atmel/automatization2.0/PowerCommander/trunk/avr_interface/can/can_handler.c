@@ -66,7 +66,7 @@ extern void can_handler()
 					{
 						uint8_t msg_tx[1];
 						twi_get(msg_tx);
-						can_send(msg_tx);
+						can_send(0x01, msg_tx);
 					}
 				}
 			}
@@ -116,13 +116,14 @@ void twi_get(uint8_t *p)
 	}
 }
 
-void can_send(uint8_t *p)
+void can_send(uint8_t port, uint8_t *p)
 {
 	static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
 	uint8_t i;
 	for (i = 0; i < 1; i++)
 		msg.data[i] = p[i];
 	msg.addr_src = myaddr;
+	msg.port_dst = port;
 	can_transmit(&msg);
 }
 
