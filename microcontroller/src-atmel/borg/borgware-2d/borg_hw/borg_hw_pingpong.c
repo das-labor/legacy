@@ -137,13 +137,14 @@ void borg_hw_init(){
 
 	// Nötige Pins auf Ausgang
 	DDRC=0x0F; // PC0-3 - Row 0-3
-	DDRD=0xF0; // PCD-7 - Row 4-7
+	DDRD=0xF4; // PD4-7 - Row 4-7  PD2 - Masse für Joy
 	DDRB=0x1F; // PB0-1 - Row 8-9  PB2-3 - STR, CLK, d
 	
 	// Alle Spalten erstmal aus, clk aus, d und str an
-	PORTC &= 0xF0;
-	PORTD &= 0x0F;
-	PORTB = ( PORTB & 0xE0 ) | 0x14;
+	// PC4-5, PD013 Pullup an
+	PORTC=0x30;
+	PORTD=0x0B;
+	PORTB=0x14;
 	
 	timer0_on();
 
