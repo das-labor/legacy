@@ -8,7 +8,14 @@ AR=$(FEMTOOS_AVR_TOOLDIR)/bin/avr-ar
 FEMTOOS_C_SRC=femtoos_app.c femtoos_core.c femtoos_port.c femtoos_shared.c
 FEMTOOS_ASM_SRC=femtoos_startup.s
 
-all: spi mcp2515 femtoos can
+all: spi mcp2515 femtoos can twi_master
+
+twi_master: twi_master.o
+	@echo $(FEMTOOS_LIB_DIR)
+	$(AR) -crs $(FEMTOOS_LIB_DIR)/twi_master.a twi_master.o
+	@echo ""
+	@echo "########### twi_master done"
+	@echo ""
 
 
 spi: spi.o
@@ -51,6 +58,9 @@ can.o: headers $(FEMTOOS_HEADER_DIR)/can.h
 spi.o: headers $(FEMTOOS_HEADER_DIR)/spi.h
 	$(GCC) $(CFLAGS) -c spi.c -o spi.o
 
+twi_master.o: headers $(FEMTOOS_HEADER_DIR)/twi_master.h
+	$(GCC) $(CFLAGS) -c twi_master.c -o twi_master.o
+
 #mcp2515.o: headers $(FEMTOOS_HEADER_DIR)/mcp2515.h
 #	$(GCC) -DCANADDR=${CANADDR} $(CFLAGS) -c mcp2515.c -o mcp2515.o
 
@@ -83,6 +93,7 @@ clean:
 	rm -f mcp2515.s
 	rm -f $(FEMTOOS_LIB_DIR)/spi.a
 	rm -f $(FEMTOOS_LIB_DIR)/can_base.a
+	rm -f $(FEMTOOS_LIB_DIR)/twi_master.a
 	rm -f $(FEMTOOS_LIB_DIR)/femtoos.a
 
 

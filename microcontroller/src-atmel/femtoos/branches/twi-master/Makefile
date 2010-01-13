@@ -12,10 +12,15 @@ all: main.hex
 
 include Makefile.femtoos
 
-main.elf: femtoos spi can_base application treppenblink.o 
+main.elf: femtoos spi can_base application treppenblink.o twi_master
 	 $(GCC) $(LNKFLAGS) -o main.elf  \
 	treppenblink.o \
-	$(FEMTOOS_LIB_DIR)/femtoos_startup.o $(FEMTOOS_LIB_DIR)/femtoos.a $(FEMTOOS_LIB_DIR)/spi.a $(FEMTOOS_LIB_DIR)/can_base.a $(FEMTOOS_LIB_DIR)/application.a
+	$(FEMTOOS_LIB_DIR)/femtoos_startup.o \
+	$(FEMTOOS_LIB_DIR)/femtoos.a \
+	$(FEMTOOS_LIB_DIR)/spi.a \
+	$(FEMTOOS_LIB_DIR)/can_base.a \
+	$(FEMTOOS_LIB_DIR)/twi_master.a \
+	$(FEMTOOS_LIB_DIR)/application.a
 
 treppenblink.o: headers 
 	$(GCC) $(CFLAGS) -c treppenblink.c -o treppenblink.o

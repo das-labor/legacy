@@ -38,6 +38,7 @@
 #include "femtoos_code.h"
 #include "spi.h"
 #include "can.h"
+#include "twi_master.h"
 
 #define DATA PD6
 #define CLK  PD7
@@ -60,6 +61,10 @@ void appBoot(void)
 { 
   spi_init();
   can_init();
+#ifdef TWI_MTHREAD
+  TWIM_Init();
+#endif
+
   DDRD |= _BV(DATA) | _BV(CLK);
   PORTD |= _BV(DATA) | _BV(CLK);
 
@@ -249,6 +254,25 @@ void can_user_cmd(can_message *rx_msg)
 {
   blinkmode = rx_msg->data[0];
 }
+
+
+#ifdef TWI_MTHREAD
+i2c_message commblock = {0,0,0,{0,0,0,0,0,0,0,0}};
+void twi_mhandler_read(i2c_message *data)
+{
+  
+}
+void twi_mhandler_write(i2c_message *data)
+{
+  
+}
+void twi_mhandler_error(Tuint08 error,i2c_message *data)
+{
+  
+}
+#endif // TWI_MTHREAD
+
+
 
 
 #if (preTaskDefined(rundown))

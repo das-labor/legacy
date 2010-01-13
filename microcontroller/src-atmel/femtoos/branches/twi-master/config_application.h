@@ -23,7 +23,12 @@
  */
 
 #ifndef CONFIG_FEMTOOS_H_
-#define CONFIG_FEMTOOS_H_
+#define CONFIG_FEMTOOS_H
+
+// Initiate TWI Master with bitrate of 100000 Hz
+#define TWI_BITRATE 100000
+#define TWI_MTHREAD cfgTrue
+#define TWI_SLAVE (15)
 
 #define MC_MOSI    PB3
 #define MC_CLK     PB5
@@ -267,6 +272,7 @@
 
 #define  CN_00                                   rundown
 #define  CN_01                                   xcan
+#define  CN_02                                   twim
 
 
 
@@ -279,6 +285,7 @@
 //#define  TaskInclude_xcan                     cfgExclude
 
 #define  TaskInclude_rundown                     cfgStartRunning
+#define  TaskInclude_twim                     cfgStartRunning
 //#define  TaskInclude_blueout                    cfgStartRunning
 //#define  TaskInclude_update                     cfgStartRunning
 
@@ -290,6 +297,7 @@
 //#define  Capabilities_xcanTask                 cfgCapEvent
 #define  Capabilities_rundown                    cfgCapAll
 #define  Capabilities_xcan                    cfgCapAll
+#define  Capabilities_twim                    cfgCapAll
 
 
 /* ========================================================================= */
@@ -330,6 +338,7 @@
 
 #define  RegisterUse_xcan                      registersAll
 #define  RegisterUse_rundown                      registersAll
+#define  RegisterUse_twim                      registersAll
 //#define  RegisterUse_blueout                     registersAll
 //#define  RegisterUse_update                      registersAll
 

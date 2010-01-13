@@ -1,5 +1,8 @@
+#include "femtoos_code.h"
+#ifdef TWI_MTHREAD
 /*******************************************************
  Author:					Manfred Langemann
+                                                Alexander Kasper - ported to femtoos
  mailto:					Manfred.Langemann ät t-online.de
  Begin of project:			04.01.2008
  Latest version generated:	04.01.2008
@@ -87,7 +90,7 @@ int main (void)
 #include <avr/interrupt.h>
 
 #include "twi_master.h"
-#include "../config.h"
+
 
 
 /*******************************************************
@@ -103,13 +106,13 @@ int main (void)
  	- TRUE:		Bitrate OK
 
 *******************************************************/
-extern uint8_t TWIM_Init(uint32_t TWI_Bitrate)
+Tuint08 TWIM_Init()
 {
 /*
 ** Set TWI bitrate
 ** If bitrate is too high, then error return
 */
-	TWBR = ((F_CPU / TWI_Bitrate) - 16) / 2;
+	TWBR = ((F_CPU / TWI_BITRATE) - 16) / 2;
 	if (TWBR < 11)
 		return 0;
 
@@ -132,9 +135,9 @@ extern uint8_t TWIM_Init(uint32_t TWI_Bitrate)
  	- FALSE:	Error in starting TWI Master
 
 *******************************************************/
-extern uint8_t TWIM_Start(uint8_t Address, uint8_t TWIM_Type)
+Tuint08 TWIM_Start(Tuint08 Address, Tuint08 TWIM_Type)
 {
-	uint8_t twst;
+	Tuint08 twst;
 /*
 ** Send START condition
 */
@@ -177,7 +180,7 @@ extern uint8_t TWIM_Start(uint8_t Address, uint8_t TWIM_Type)
  Return Value: None
 
 *******************************************************/
-extern void TWIM_Stop (void)
+void TWIM_Stop (void)
 {
 /*
 ** Send stop condition
@@ -201,9 +204,9 @@ extern void TWIM_Stop (void)
  	- FALSE:	OK, Byte sent
 
 *******************************************************/
-extern uint8_t TWIM_Write(uint8_t byte)
+Tuint08 TWIM_Write(Tuint08 byte)
 {
-	uint8_t   twst;
+	Tuint08   twst;
 /*
 ** Send data to the previously addressed device
 */
@@ -233,7 +236,7 @@ extern uint8_t TWIM_Write(uint8_t byte)
   	- uint8_t	Read byte
 
 *******************************************************/
-extern uint8_t TWIM_ReadAck(void)
+Tuint08 TWIM_ReadAck(void)
 {
 	TWCR = _BV(TWINT)|_BV(TWEN)|_BV(TWEA);
 	while (!(TWCR & _BV(TWINT)));
@@ -251,7 +254,7 @@ extern uint8_t TWIM_ReadAck(void)
   	- uint8_t	Read byte
 
 *******************************************************/
-extern uint8_t TWIM_ReadNack(void)
+Tuint08 TWIM_ReadNack(void)
 {
 	TWCR = _BV(TWINT)|_BV(TWEN);
 	while (!(TWCR & _BV(TWINT)));
@@ -259,3 +262,4 @@ extern uint8_t TWIM_ReadNack(void)
 	return TWDR;
 }
 
+#endif
