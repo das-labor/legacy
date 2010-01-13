@@ -25,7 +25,6 @@ void twi_mhandler()
 	}
       else
 	{
-	  commblock.process -= PROCESSI2CREAD;
 	  Tuint08 i=0;
 	  // last byte via nack
 	  for(;i<((commblock.dlc)-1);i++)
@@ -34,6 +33,7 @@ void twi_mhandler()
 	    }
 	  commblock.data[i] = TWIM_ReadNack ();
 	  TWIM_Stop();
+	  commblock.process -= PROCESSI2CREAD;
 	  twi_mhandler_read(&commblock);
 
 	  // comm ok
@@ -48,13 +48,13 @@ void twi_mhandler()
 	}
       else
 	{
-	  commblock.process -= PROCESSI2CWRITE;
 	  Tuint08 i=0;
 	  for(;i<((commblock.dlc)-1);i++)
 	    {
 	      TWIM_Write (commblock.data[i]);
 	    }
 	  TWIM_Stop();
+	  commblock.process -= PROCESSI2CWRITE;
 	  twi_mhandler_write(&commblock);
 	  //comm ok
 	}
