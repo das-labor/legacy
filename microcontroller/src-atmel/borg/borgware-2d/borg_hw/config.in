@@ -15,7 +15,8 @@ choice 'Hardware Driver'			\
     Laufschrift-borg-mh    HW_BORG_MH \
     Borg-mini              HW_BORG_MINI \
     Panel-One              HW_PANEL_ONE \
-    4xPD1165               HW_PD1165" \
+    4xPD1165               HW_PD1165 \
+    PingPong               HW_PINGPONG" \
    'Borg-16' BORG_HW
 
 
@@ -47,6 +48,9 @@ if [ "$BORG_HW" == "HW_PD1165" ] ; then
   source borg_hw/config_pd1165.in
 fi
 
+if [ "$BORG_HW" == "HW_PINGPONG" ] ; then
+  source borg_hw/config_pingpong.in
+fi
 
 
 
