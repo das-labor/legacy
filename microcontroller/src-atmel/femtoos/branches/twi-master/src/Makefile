@@ -85,6 +85,9 @@ clean:
 	rm -f spi.o
 	rm -f spi.i
 	rm -f spi.s
+	rm -f twi_master.o
+	rm -f twi_master.i
+	rm -f twi_master.s
 	rm -f can.o
 	rm -f can.i
 	rm -f can.s
