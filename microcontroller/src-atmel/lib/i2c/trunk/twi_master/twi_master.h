@@ -12,11 +12,11 @@
 
 #include <util/twi.h>
 
-extern uint8_t TWIM_Init(uint32_t TWI_Bitrate);
-extern uint8_t TWIM_Start(uint8_t address, uint8_t TWIM_Type);
-extern void TWIM_Stop(void);
-extern uint8_t TWIM_Write(uint8_t byte);
-extern uint8_t TWIM_ReadAck(void);
-extern uint8_t TWIM_ReadNack(void);
+uint8_t TWIM_Init(uint32_t TWI_Bitrate);
+uint8_t TWIM_Start(uint8_t address, uint8_t TWIM_Type);
+void TWIM_Stop();
+uint8_t TWIM_Write(uint8_t byte);
+uint8_t TWIM_ReadAck();
+uint8_t TWIM_ReadNack();
 
 #endif

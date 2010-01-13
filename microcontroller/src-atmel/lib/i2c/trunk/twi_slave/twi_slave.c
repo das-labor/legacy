@@ -88,19 +88,19 @@ int main (void)
  	- TRUE:	Bitrate OK
 
 *******************************************************/
-uint8_t TWIS_Init(uint8_t Address, uint32_t Bitrate)
+uint8_t TWIS_Init(uint8_t address, uint32_t bitrate)
 {
 /*
 ** Set the TWI bitrate
 ** If TWBR is less 11, then error
 */
-	TWBR = ((F_CPU/Bitrate) - 16) / 2;
+	TWBR = ((F_CPU / bitrate) - 16) / 2;
 	if (TWBR < 11)
 		return 0;
 /*
 ** Set the TWI slave address
 */
-	TWAR = (Address << 1);
+	TWAR = address;
 /*
 ** Activate TWI interface
 */
@@ -118,7 +118,7 @@ uint8_t TWIS_Init(uint8_t Address, uint32_t Bitrate)
  Return Value: None
 
 *******************************************************/
-void TWIS_Stop(void)
+void TWIS_Stop()
 {
 	TWCR = _BV(TWINT)|_BV(TWEN)|_BV(TWSTO)|_BV(TWEA);
 }
@@ -148,7 +148,7 @@ void TWIS_Write(uint8_t byte)
   	- uint8_t	Read byte
 
 *******************************************************/
-uint8_t	TWIS_ReadAck(void)
+uint8_t	TWIS_ReadAck()
 {
 	TWCR = _BV(TWINT)|_BV(TWEN)|_BV(TWEA);
 	while (!(TWCR & _BV(TWINT)));
@@ -165,7 +165,7 @@ uint8_t	TWIS_ReadAck(void)
   	- uint8_t	Read byte
 
 *******************************************************/
-uint8_t	TWIS_ReadNack(void)
+uint8_t	TWIS_ReadNack()
 {
 	TWCR = _BV(TWINT)|_BV(TWEN);
 	while (!(TWCR & _BV(TWINT)));
