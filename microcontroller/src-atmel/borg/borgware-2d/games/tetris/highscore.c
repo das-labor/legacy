@@ -14,6 +14,7 @@
  */
 uint16_t tetris_highscore_inputName(void)
 {
+#ifdef SCROLLTEXT_SUPPORT
 	char pszNick[4], pszTmp[40];
 	uint8_t nOffset;
 	uint8_t nPos = 0, nBlink = 0, nDone = 0, nHadfire = 0;
@@ -106,4 +107,7 @@ uint16_t tetris_highscore_inputName(void)
 
 	// return result
 	return (pszNick[0] - 65) << 10 | (pszNick[1] - 65) << 5 | (pszNick[2] - 65);
+#else
+	return (0);
+#endif
 }

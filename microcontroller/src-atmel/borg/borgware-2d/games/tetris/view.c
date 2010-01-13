@@ -463,6 +463,7 @@ void tetris_view_formatHighscoreName(uint16_t nHighscoreName, char *pszName)
  */
 void tetris_view_showResults(tetris_view_t *pV)
 {
+#ifdef SCROLLTEXT_SUPPORT
 	char pszResults[54], pszHighscoreName[4];
 	uint16_t nScore = tetris_logic_getScore(pV->pLogic);
 	uint16_t nHighscore = tetris_logic_getHighscore(pV->pLogic);
@@ -482,7 +483,6 @@ void tetris_view_showResults(tetris_view_t *pV)
 		snprintf(pszResults, sizeof(pszResults),
 			"</#Lines %u    New Highscore %u", nLines, nScore);
 	}
-#ifdef SCROLLTEXT_SUPPORT
 	scrolltext(pszResults);
 #endif
 }
