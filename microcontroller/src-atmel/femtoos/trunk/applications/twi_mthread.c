@@ -33,8 +33,8 @@ void twi_mhandler()
 	    }
 	  commblock.data[i] = TWIM_ReadNack ();
 	  TWIM_Stop();
-	  commblock.process -= PROCESSI2CREAD;
 	  twi_mhandler_read(&commblock);
+	  commblock.process -= PROCESSI2CREAD;
 
 	  // comm ok
 	}
@@ -54,8 +54,8 @@ void twi_mhandler()
 	      TWIM_Write (commblock.data[i]);
 	    }
 	  TWIM_Stop();
-	  commblock.process -= PROCESSI2CWRITE;
 	  twi_mhandler_write(&commblock);
+	  commblock.process -= PROCESSI2CWRITE;
 	  //comm ok
 	}
     }
