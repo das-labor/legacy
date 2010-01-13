@@ -71,7 +71,7 @@ void switch_handler()
 
 		uint8_t msg[2];
 		msg[0] =  stat_switches.bla;
-		can_send(msg);
+		can_send(0x02, msg);
 		
 		outdata.class    = C_VIRT;
 		outdata.object   = VIRT_POWER;
@@ -90,7 +90,7 @@ void switch_handler()
 
 		uint8_t msg[2];
 		msg[0] =  stat_switches.bla;
-		can_send(msg);
+		can_send(0x02, msg);
 
 		outdata.class    = C_VIRT;
 		outdata.object   = VIRT_POWER;
@@ -113,7 +113,8 @@ void switch_handler()
 	sei();
 	
 	// alle 32 ticks ... 0.032 sekunden
-	if((tc - last_tickscounter) >= 20 ){
+	if ((tc - last_tickscounter) >= 20 )
+	{
 		last_tickscounter = tc;
 
 
@@ -124,22 +125,28 @@ void switch_handler()
 		uint8_t held_0    = 0;
 		static uint8_t last_held_0;
 
-		if (!(PINB & _BV(PB2))){
+		if (!(PINB & _BV(PB2)))
+		{
 			counter_0 ++;
-			if(counter_0 > HOLD_THRESHOLD){
+			if (counter_0 > HOLD_THRESHOLD)
+			{
 				held_0 = 1;
 				counter_0 = HOLD_THRESHOLD;
 			}
-		}else{
-			if(counter_0 > CLICK_THRESHOLD){
-				if(counter_0 < HOLD_THRESHOLD){
+		} else
+		{
+			if (counter_0 > CLICK_THRESHOLD)
+			{
+				if (counter_0 < HOLD_THRESHOLD)
+				{
 					clicked_0 = 1;
 				}
 			} 
 			counter_0 = 0;
 		}
 		
-		if(clicked_0){
+		if (clicked_0)
+		{
 			outdata.class    = C_VIRT;
 			outdata.object   = VIRT_VORTRAG;
 			outdata.function = F_SW_TOGGLE;
@@ -148,7 +155,8 @@ void switch_handler()
 			twi_send(&outdata);
 		}
 		
-		if(held_0){
+		if (held_0)
+		{
 			outdata.class    = C_VIRT;
 			outdata.object   = VIRT_VORTRAG_PWM;
 			outdata.function = F_PWM_MOD;
@@ -156,7 +164,9 @@ void switch_handler()
 		
 			twi_send(&outdata);
 			
-		}else if(last_held_0){
+		}
+		else if (last_held_0)
+		{
 			outdata.class    = C_VIRT;
 			outdata.object   = VIRT_VORTRAG_PWM;
 			outdata.function = F_PWM_DIR;
@@ -176,22 +186,29 @@ void switch_handler()
 		uint8_t held_1    = 0;
 		static uint8_t last_held_1;
 
-		if (!(PIND & _BV(PD3))){
+		if (!(PIND & _BV(PD3)))
+		{
 			counter_1 ++;
-			if(counter_1 > HOLD_THRESHOLD){
+			if (counter_1 > HOLD_THRESHOLD)
+			{
 				held_1 = 1;
 				counter_1 = HOLD_THRESHOLD;
 			}
-		}else{
-			if(counter_1 > CLICK_THRESHOLD){
-				if(counter_1 < HOLD_THRESHOLD){
+		}
+		else
+		{
+			if (counter_1 > CLICK_THRESHOLD)
+			{
+				if (counter_1 < HOLD_THRESHOLD)
+				{
 					clicked_1 = 1;
 				}
 			} 
 			counter_1 = 0;
 		}
 		
-		if(clicked_1){
+		if (clicked_1)
+		{
 			outdata.class    = C_SW;
 			outdata.object   = SWL_LOUNGE;
 			outdata.function = F_SW_TOGGLE;
@@ -200,7 +217,8 @@ void switch_handler()
 			twi_send(&outdata);
 		}
 		
-		if(held_1){
+		if (held_1)
+		{
 			outdata.class    = C_PWM;
 			outdata.object   = PWM_LOUNGE;
 			outdata.function = F_PWM_MOD;
@@ -208,41 +226,40 @@ void switch_handler()
 		
 			twi_send(&outdata);
 			
-		}else if(last_held_1){
+		}
+		else if (last_held_1)
+		{
 			outdata.class    = C_PWM;
 			outdata.object   = PWM_LOUNGE;
 			outdata.function = F_PWM_DIR;
 			outdata.data     = 0x00;
 		
 			twi_send(&outdata);
-				
 		}
 		
 		last_held_1 = held_1;
 	}
-	
-	
 
 
 
-
-
-
-
-	/*
 // PC2 - 24V power good
 	if (!(PINC & _BV(PC2)) && stat_switches.power_ok)
 	{
-
 		stat_switches.power_ok = 0;
-
+		uint8_t msg[1];
+		msg[0] =  stat_switches.bla;
+		can_send(0x02, msg);
+		
 		PORTA |= _BV(PA3); // red
 		PORTA &= ~_BV(PA2); // green
 	}
 	if ((PINC & _BV(PC2)) && stat_switches.power_ok == 0)
 	{
 		stat_switches.power_ok = 1;
-
+		uint8_t msg[1];
+		msg[0] =  stat_switches.bla;
+		can_send(0x02, msg);
+		
 		PORTA |= _BV(PA2); // green
 		PORTA &= ~_BV(PA3); // red
 	}
@@ -250,18 +267,20 @@ void switch_handler()
 	if (!(PIND & _BV(PD6)) && stat_switches.rcd_server)
 	{
 		stat_switches.rcd_server = 0;
+		uint8_t msg[1];
+		msg[0] =  stat_switches.bla;
+		can_send(0x02, msg);
 
 		PORTA |= _BV(PA3); // red
 		PORTA &= ~_BV(PA2); // green
 	}
 	if ((PIND & _BV(PD6)) && stat_switches.rcd_server == 0)
 	{
-		uint8_t msg[] = {1, 0};
-		msg[1] =  stat_switches.bla;
-		can_send(msg);
-		
 		stat_switches.rcd_server = 1;
-
+		uint8_t msg[1];
+		msg[0] =  stat_switches.bla;
+		can_send(0x02, msg);
+		
 		PORTA |= _BV(PA2); // green
 		PORTA &= ~_BV(PA3); // red
 	}
@@ -269,14 +288,20 @@ void switch_handler()
 	if (!(PINA & _BV(PA1)) && stat_switches.rcd_power)
 	{
 		stat_switches.rcd_power = 0;
-
+		uint8_t msg[1];
+		msg[0] =  stat_switches.bla;
+		can_send(0x02, msg);
+		
 		PORTA |= _BV(PA3); // red
 		PORTA &= ~_BV(PA2); // green
 	}
 	if ((PINA & _BV(PA1)) && stat_switches.rcd_power == 0)
 	{
 		stat_switches.rcd_power = 1;
-
+		uint8_t msg[1];
+		msg[0] =  stat_switches.bla;
+		can_send(0x02, msg);
+		
 		PORTA |= _BV(PA2); // green
 		PORTA &= ~_BV(PA3); // red
 	}
@@ -284,18 +309,22 @@ void switch_handler()
 	if (!(PIND & _BV(PD7)) && stat_switches.rcd_licht)
 	{
 		stat_switches.rcd_licht = 0;
-
+		uint8_t msg[1];
+		msg[0] =  stat_switches.bla;
+		can_send(0x02, msg);
+		
 		PORTA |= _BV(PA3); // red
 		PORTA &= ~_BV(PA2); // green
-		_delay_ms(500);
 	}
 	if ((PIND & _BV(PD7)) && stat_switches.rcd_licht == 0)
 	{
 		stat_switches.rcd_licht = 1;
-
+		uint8_t msg[1];
+		msg[0] =  stat_switches.bla;
+		can_send(0x02, msg);
+		
 		PORTA |= _BV(PA2); // green
 		PORTA &= ~_BV(PA3); // red
 	}
-	*/
 }
 

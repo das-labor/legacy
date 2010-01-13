@@ -28,6 +28,9 @@ void init(void)
 	
 	DDRA |= _BV(PA2) | _BV(PA3) | _BV(PA4); // Status LED G R B
 	DDRA &= ~(_BV(PA0) | _BV(PA1)); // Eingänge HS, rcd
+	DDRD &= ~(_BV(PD6) | _BV(PD7)); // Eingänge rcd licht, server
+	DDRC &= ~_BV(PC2); // Eingang power good
+		
 
 	DDRB &= ~_BV(PB2); // Eingang Lounge Taster
 	DDRD &= ~_BV(PD3); // Eingang Vortrag Taster
@@ -67,7 +70,7 @@ int main(void)
 	//the main loop continuously handles can messages
 	while (1)
 	{
-//		PORTA &= ~_BV(PA4);
+		PORTA &= ~_BV(PA4);
 		can_handler();
 		switch_handler();
 	}
