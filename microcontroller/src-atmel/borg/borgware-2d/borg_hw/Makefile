@@ -34,6 +34,10 @@ ifeq ($(BORG_HW),HW_PD1165)
   SRC = borg_hw_pd1165.c
 endif
 
+ifeq ($(BORG_HW),HW_PINGPONG)
+  SRC = borg_hw_pingpong.c
+endif
+
 ifeq ($(SRC),'')
   $(error no valid hardware driver selected )
 endif
