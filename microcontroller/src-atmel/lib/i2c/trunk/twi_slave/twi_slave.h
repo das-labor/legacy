@@ -15,11 +15,11 @@
 /****************************************************************************
   Public Function definitions
 ****************************************************************************/
-uint8_t	TWIS_Init (uint8_t Address, uint32_t Bitrate);
-void	TWIS_Stop (void);
-void	TWIS_Write (uint8_t byte);
-uint8_t	TWIS_ReadAck (void);
-uint8_t	TWIS_ReadNack (void);
-uint8_t	TWIS_ResponseRequired (uint8_t *TWI_ResonseType);
+uint8_t	TWIS_Init(uint8_t address, uint32_t bitrate);
+void	TWIS_Stop();
+void	TWIS_Write(uint8_t byte);
+uint8_t	TWIS_ReadAck();
+uint8_t	TWIS_ReadNack();
+uint8_t	TWIS_ResponseRequired(uint8_t *TWI_ResonseType);
 
 #endif

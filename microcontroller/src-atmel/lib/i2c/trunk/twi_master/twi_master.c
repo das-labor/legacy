@@ -103,7 +103,7 @@ int main (void)
  	- TRUE:		Bitrate OK
 
 *******************************************************/
-extern uint8_t TWIM_Init(uint32_t TWI_Bitrate)
+uint8_t TWIM_Init(uint32_t TWI_Bitrate)
 {
 /*
 ** Set TWI bitrate
@@ -132,7 +132,7 @@ extern uint8_t TWIM_Init(uint32_t TWI_Bitrate)
  	- FALSE:	Error in starting TWI Master
 
 *******************************************************/
-extern uint8_t TWIM_Start(uint8_t address, uint8_t TWIM_Type)
+uint8_t TWIM_Start(uint8_t address, uint8_t TWIM_Type)
 {
 	uint8_t twst;
 /*
@@ -177,7 +177,7 @@ extern uint8_t TWIM_Start(uint8_t address, uint8_t TWIM_Type)
  Return Value: None
 
 *******************************************************/
-extern void TWIM_Stop (void)
+void TWIM_Stop()
 {
 /*
 ** Send stop condition
@@ -201,7 +201,7 @@ extern void TWIM_Stop (void)
  	- FALSE:	OK, Byte sent
 
 *******************************************************/
-extern uint8_t TWIM_Write(uint8_t byte)
+uint8_t TWIM_Write(uint8_t byte)
 {
 	uint8_t   twst;
 /*
@@ -233,7 +233,7 @@ extern uint8_t TWIM_Write(uint8_t byte)
   	- uint8_t	Read byte
 
 *******************************************************/
-extern uint8_t TWIM_ReadAck(void)
+uint8_t TWIM_ReadAck()
 {
 	TWCR = _BV(TWINT)|_BV(TWEN)|_BV(TWEA);
 	while (!(TWCR & _BV(TWINT)));
@@ -251,7 +251,7 @@ extern uint8_t TWIM_ReadAck(void)
   	- uint8_t	Read byte
 
 *******************************************************/
-extern uint8_t TWIM_ReadNack(void)
+uint8_t TWIM_ReadNack()
 {
 	TWCR = _BV(TWINT)|_BV(TWEN);
 	while (!(TWCR & _BV(TWINT)));
