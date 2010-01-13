@@ -55,7 +55,7 @@ void twi_mhandler()
 	      TWIM_Write (commblock.data[i]);
 	    }
 	  TWIM_Stop();
-	  twi_mhandler_read(&commblock);
+	  twi_mhandler_write(&commblock);
 	  //comm ok
 	}
     }
