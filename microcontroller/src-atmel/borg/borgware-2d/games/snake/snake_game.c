@@ -62,6 +62,10 @@ void snake_game() {
 #ifdef GAME_SNAKE_NEWCONTROL			
 		if (joy_cmd != 0xff)
 		{
+			if ( (dir == left  && joy_cmd != right) ||
+			     (dir == right && joy_cmd != left)  ||
+			     (dir == up    && joy_cmd != down)  ||
+			     (dir == down  && joy_cmd != up)    )
 				dir = joy_cmd;
 		}
 #else
