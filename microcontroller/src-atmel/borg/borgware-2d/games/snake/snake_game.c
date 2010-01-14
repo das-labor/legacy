@@ -24,7 +24,7 @@ game_descriptor_t snake_game_descriptor __attribute__((section(".game_descriptor
 };
 
 void snake_game() {
-	pixel pixels[64] = {{4, 14},{4, 13}};
+	pixel pixels[64] = {{4, NUM_ROWS-2},{4, NUM_ROWS-3}};
 	pixel * head = &pixels[1];
 	pixel * tail = &pixels[0];
 	pixel old_head;
