@@ -14,11 +14,12 @@ static uint8_t icon[8] PROGMEM =
 
 void borg_invaders();
 
+#ifdef MENU_SUPPORT
 game_descriptor_t invaders_game_descriptor __attribute__((section(".game_descriptors"))) ={
 	&borg_invaders,
 	icon,
 };
-
+#endif
 
 void borg_invaders()
 {

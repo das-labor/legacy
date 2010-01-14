@@ -23,6 +23,13 @@ volatile unsigned char oldMode, oldOldmode, mode;
 
 jmp_buf newmode_jmpbuf;
 
+#ifndef MENU_SUPPORT
+void snake_game(void);
+void tetris(void);
+void tetris_bastet(void);
+void borg_invaders(void);
+#endif
+
 void display_loop(){
 //	mcuf_serial_mode();
 
@@ -148,6 +155,27 @@ void display_loop(){
 		case 43:
 			menu();
 			mode = oldOldmode;
+#else
+#ifdef GAME_TETRIS
+		case 43:
+			tetris();
+			break;
+#endif
+#ifdef GAME_BASTET
+		case 44:
+			tetris_bastet();
+			break;
+#endif
+#ifdef GAME_SPACE_INVADERS
+		case 45:
+			borg_invaders();
+			break;
+#endif
+#ifdef GAME_SNAKE
+		case 46:
+			snake_game();
+			break;
+#endif
 #endif
 
 #ifdef ANIMATION_OFF
