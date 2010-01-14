@@ -40,6 +40,8 @@ uint16_t tetris_logic_nHighscoreName[NUMHIGHSCORES] EEMEM;
 
 // Tetris icon, MSB is leftmost pixel
 void tetris();
+
+#ifdef MENU_SUPPORT
 static uint8_t tetris_icon[8] PROGMEM =
 	{ 0x0f, 0x0f, 0xc3, 0xdb, 0xdb, 0xc3, 0xf0, 0xf0 };
 game_descriptor_t tetris_game_descriptor
@@ -60,7 +62,7 @@ game_descriptor_t bastet_game_descriptor
 	bastet_icon,
 };
 #endif
-
+#endif /*MENU_SUPPORT*/
 
 /***************************
  * non-interface functions *

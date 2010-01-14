@@ -18,10 +18,12 @@ static uint8_t icon[8] PROGMEM =
 
 void snake_game();
 
+#ifdef MENU_SUPPORT
 game_descriptor_t snake_game_descriptor __attribute__((section(".game_descriptors"))) ={
 	&snake_game,
 	icon,
 };
+#endif
 
 void snake_game() {
 	pixel pixels[64] = {{4, NUM_ROWS-2},{4, NUM_ROWS-3}};
