@@ -3,11 +3,6 @@
 #ifndef SCORE_H
 #define SCORE_H
 
-static uint16_t score = 0;
 
 void score_add(uint8_t);
-void score_add (uint8_t in_score)
-{
-	score += in_score;
-}
 #endif

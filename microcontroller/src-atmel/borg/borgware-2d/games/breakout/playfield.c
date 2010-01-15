@@ -1,8 +1,14 @@
 #include "common.h"
+static enum game_field_t playfield[NUM_COLS][NUM_ROWS];
 
-uint8_t brick_damage (uint8_t in_x, uint8_t in_y)
+void playfield_set (uint8_t in_x, uint8_t in_y, enum game_field_t in_field)
 {
-	game_field_t newtype;
+	playfield[in_x][in_y] = in_field;
+}
+
+void brick_damage (uint8_t in_x, uint8_t in_y)
+{
+	enum game_field_t newtype;
 
 	if (playfield[in_x][in_y] > bs || playfield[in_x][in_y] == 0)
 		return;
@@ -44,29 +50,35 @@ uint8_t check_bounce (uint8_t in_x, uint8_t in_y)
 
 /* this is the actual draw function for a single field
  */
-static inline void draw_single_field (uint8_t in_x, uint8_t in_y, game_field_t in_f)
+static inline void draw_single_field (uint8_t in_x, uint8_t in_y, enum game_field_t in_f)
 {
+	pixel tmp;
+	uint8_t b;
 	switch (in_f)
 	{
 		case b1:
-			setPixel (in_x, in_y, 1);
-		return;
+			b = 1;
+		break;
+
 		case rb:
 		case b2:
-			setPixel (in_x, in_y, 2);
-		return;
+			b = 2;
+		break;
 
 		case b3:
 		case bl:
 		case bs:
-			setPixel (in_x, in_y, 3);
-		return;
+			b = 3;
+		break;
 
 		default: /* this includes freespace */
-			setPixel (in_x, in_y, 0);
-		return;
+			b = 0;
+		break;
 		
 	}
+	tmp.x = in_x;
+	tmp.y = in_y;
+	setpixel (tmp, b);
 }
 
 void playfield_draw ()
