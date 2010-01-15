@@ -8,6 +8,7 @@
  * 
  */
 
+#include <stdio.h>
 #include <inttypes.h>
 #include <avr/io.h>
 #include <avr/pgmspace.h>
@@ -456,10 +457,10 @@ void ks0108Init(uint8_t invert) {
 
 inline void ks0108Enable(void) {
 	LCD_CMD_PORT |= 0x01 << EN;						// EN high level width: min. 450ns
-	asm volatile("nop\n\t"
-				 "nop\n\t"
-				 "nop\n\t"
-				 ::);
+	__asm volatile ("nop\n"
+				 "nop\n"
+				 "nop\n"
+				 );
 	LCD_CMD_PORT &= ~(0x01 << EN);
 	for(volatile uint8_t i=0; i<8; i++);			// a little delay loop (faster than reading the busy flag)
 }
@@ -486,10 +487,9 @@ uint8_t ks0108DoReadData(uint8_t first) {
 	LCD_CMD_PORT |= 0x01 << R_W;					// R/W = 1
 	
 	LCD_CMD_PORT |= 0x01 << EN;						// EN high level width: min. 450ns
-	asm volatile("nop\n\t"
-				 "nop\n\t"
-				 "nop\n\t"
-				 ::);
+	__asm volatile ("nop\n"
+				 "nop\n"
+				 "nop\n");
 	
 	data = LCD_DATA_IN;								// read Data			 
 	

@@ -1,4 +1,5 @@
-OBJ = main.o can/can.o can/spi.o can_handler.o twi_master/twi_master.o i2c_temp.o
+OBJ = main.o can/can.o can/spi.o can_handler.o twi_master/twi_master.o i2c_temp.o 
+# GLCD/GLCD.o GLCD/ks0108.o
 
 # Default values
 OUT           ?= image
@@ -8,7 +9,7 @@ MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall -Winline
 DEFS          ?= -DF_CPU=16000000l
-CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I.
+CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=c99
 ASFLAGS	      += -mmcu=avr5
 LDFLAGS        = -Wl,-Map,$(OUT).map
 
