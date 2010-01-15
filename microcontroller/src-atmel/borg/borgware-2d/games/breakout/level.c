@@ -21,7 +21,7 @@ inline void level_field (uint8_t in_x, uint8_t in_y, uint8_t in_lvl)
 		case 3:
 			/* add a row of solid bricks right in the middle of the field */
 			if (in_y == (NUM_ROWS / 2) &&
-				(in_x > (NUM_COLS / 4) && in_x < (NUM_COLS - (NUM_COLS / 4)))
+				(in_x > (NUM_COLS / 4)) && (in_x < (NUM_COLS - (NUM_COLS / 4))))
 				return bs;
 
 			/* intentional fallthrough: the rest of level 3 is like level 2 */
