@@ -1,2 +1,4 @@
 can_thread.i
 can_thread.s
+twi_mthread.i
+twi_mthread.s
