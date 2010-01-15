@@ -23,7 +23,7 @@
  */
 
 #ifndef CONFIG_FEMTOOS_H_
-#define CONFIG_FEMTOOS_H
+#define CONFIG_FEMTOOS_H_
 
 // Initiate TWI Master with bitrate of 100000 Hz
 #define TWI_BITRATE 100000
@@ -43,6 +43,9 @@
 //#define PORT_REMOTE (0xf0)
 
 #define F_MCP F_CPU
+
+#define RGBCANPORT 0x10
+#define I2CTEMP    0x03
 
 
 #define MEGA8
@@ -273,6 +276,8 @@
 #define  CN_00                                   rundown
 #define  CN_01                                   xcan
 #define  CN_02                                   twim
+#define  CN_03                                   rgbled
+#define  CN_04                                   taster
 
 
 
@@ -282,10 +287,12 @@
 
 //#define  TaskIncludeOverride                     cfgStartRunning
 #define  TaskInclude_xcan                     cfgStartRunning
+#define  TaskInclude_twim                     cfgStartRunning
 //#define  TaskInclude_xcan                     cfgExclude
 
 #define  TaskInclude_rundown                     cfgStartRunning
-#define  TaskInclude_twim                     cfgStartRunning
+#define  TaskInclude_rgbled                     cfgStartRunning
+#define  TaskInclude_taster                     cfgStartRunning
 //#define  TaskInclude_blueout                    cfgStartRunning
 //#define  TaskInclude_update                     cfgStartRunning
 
@@ -298,6 +305,8 @@
 #define  Capabilities_rundown                    cfgCapAll
 #define  Capabilities_xcan                    cfgCapAll
 #define  Capabilities_twim                    cfgCapAll
+#define  Capabilities_rgbled                    cfgCapAll
+#define  Capabilities_taster                    cfgCapAll
 
 
 /* ========================================================================= */
@@ -308,8 +317,13 @@
 #define  StackSizeOS                             24
 #define  StackSizeISR                            24
 #define  StackSizeShared                         0
-#define  StackSizeOverride                       100
+//#define  StackSizeOverride                       100
 
+#define StackSize_rundown 100
+#define StackSize_xcan 100
+#define StackSize_twim 50
+#define StackSize_rgbled 100
+#define StackSize_taster 100
 
 /* ========================================================================= */
 /* TIMES SLICES ============================================================ */
@@ -337,8 +351,10 @@
 //#define  RegisterUseOverride                      registersAll
 
 #define  RegisterUse_xcan                      registersAll
-#define  RegisterUse_rundown                      registersAll
 #define  RegisterUse_twim                      registersAll
+#define  RegisterUse_rundown                      registersAll
+#define  RegisterUse_rgbled                      registersAll
+#define  RegisterUse_taster                      registersAll
 //#define  RegisterUse_blueout                     registersAll
 //#define  RegisterUse_update                      registersAll
 
