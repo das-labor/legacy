@@ -16,7 +16,7 @@ union {
 		uint8_t nachtmodus:1;    // Dieses Feld ist 2 Bits breit
 		uint8_t tuerkontakt:1;
 		uint8_t schloss:1;
-	};
+	} switches;
 	uint8_t bla;
 } stat_switches;
 
@@ -69,14 +69,14 @@ void read_can_addr()
 void switch_handler()
 {
 // Hauptschalter
-	if (!(PINB & _BV(PB0)) && stat_switches.klingel)
+	if (!(PINB & _BV(PB0)) && stat_switches.switches.klingel)
 	{
-		stat_switches.klingel = 0;
+		stat_switches.switches.klingel = 0;
 		_delay_ms(100);
 	}
-	if ((PINB & _BV(PB0)) && stat_switches.klingel == 0)
+	if ((PINB & _BV(PB0)) && stat_switches.switches.klingel == 0)
 	{
-		stat_switches.klingel = 1;
+		stat_switches.switches.klingel = 1;
 
 		static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
 		
