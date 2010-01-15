@@ -2,12 +2,11 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "can/can_handler.h"
 #include <util/delay.h>
 
 
 #include "twi_master/twi_master.h"
-#include "can/can_handler.h"
+#include "can_handler.h"
 #include "../include/PowerCommander.h"
 
 union {

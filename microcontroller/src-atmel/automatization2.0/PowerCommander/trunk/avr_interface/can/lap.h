@@ -1,5 +1,5 @@
-#ifndef LAP_H
-#define LAP_H
+#ifndef _LAP_H
+#define _LAP_H
 
 /****************************************************************************
  * Labor Automation Protocol
@@ -101,19 +101,21 @@ unsigned char sdo_sendbuf_nb(sdo_message *fst_msg, unsigned char *buf, unsigned 
 /////////////////////////////////////////////////////////////////////////////
 /* Usage
 
-while(1) {
+while (1)
+{
 	lap_message msg = lap_rcvpacket();
-	switch( msg->fkt_id ) {
+	switch(msg->fkt_id)
+	{
 	case FKT_BLA:
 		unsigned char length = data[0]
 
 		data
 
 		char *buf = lap_read(msg, length);
-		if ( !buf ) continue;
+		if (!buf) continue;
 
 		// interpret buffer 
 }
 */
 
-#endif
+#endif // _LAP_H

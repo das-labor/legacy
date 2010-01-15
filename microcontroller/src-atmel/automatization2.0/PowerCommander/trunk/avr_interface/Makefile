@@ -1,4 +1,4 @@
-OBJ = main.o can/can.o can/spi.o can/can_handler.c twi_master/twi_master.c switch.c
+OBJ = main.o can/can.o can/spi.o can_handler.c twi_master/twi_master.c switch.c
 
 # Default values
 OUT           ?= main
