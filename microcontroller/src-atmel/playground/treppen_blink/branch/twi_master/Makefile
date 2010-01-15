@@ -19,7 +19,7 @@ main.elf: femtoos spi can_base application treppenblink.o twi_master
 	$(FEMTOOS_LIB_DIR)/femtoos.a \
 	$(FEMTOOS_LIB_DIR)/spi.a \
 	$(FEMTOOS_LIB_DIR)/can_base.a \
-	$(FEMTOOS_LIB_DIR)/twi_master.a \
+	./src/twi_master.o \
 	$(FEMTOOS_LIB_DIR)/application.a
 
 treppenblink.o: headers 

@@ -112,7 +112,8 @@ Tuint08 TWIM_Init()
 ** Set TWI bitrate
 ** If bitrate is too high, then error return
 */
-	TWBR = ((F_CPU / TWI_BITRATE) - 16) / 2;
+
+  	TWBR = ((F_CPU / TWI_BITRATE) - 16) / 2;
 	if (TWBR < 11)
 		return 0;
 
@@ -155,7 +156,7 @@ Tuint08 TWIM_Start(Tuint08 Address, Tuint08 TWIM_Type)
 /*
 ** Send device address
 */
-	TWDR = (Address<<1) + TWIM_Type;
+	TWDR = Address + TWIM_Type;
 	TWCR = _BV(TWINT)|_BV(TWEN);
 /*
 ** Wait until transmission completed and ACK/NACK has been received
