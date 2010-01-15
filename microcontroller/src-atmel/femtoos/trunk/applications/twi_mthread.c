@@ -49,7 +49,7 @@ void twi_mhandler()
       else
 	{
 	  Tuint08 i=0;
-	  for(;i<((commblock.dlc)-1);i++)
+	  for(;i<commblock.dlc;i++)
 	    {
 	      TWIM_Write (commblock.data[i]);
 	    }
