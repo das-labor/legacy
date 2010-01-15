@@ -10,7 +10,7 @@
 
 #include "twi_master/twi_master.h"
 #include "can/can.h"
-#include "can/can_handler.h"
+#include "can_handler.h"
 #include "can/spi.h"
 #include "can/lap.h"
 

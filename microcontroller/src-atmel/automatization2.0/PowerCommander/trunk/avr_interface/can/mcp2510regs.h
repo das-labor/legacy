@@ -1,5 +1,5 @@
-#ifndef MCP2551REGS_H
-#define MCP2551REGS_H
+#ifndef _MCP2551REGS_H
+#define _MCP2551REGS_H
 
 //Registers
 #define RXF0SIDH 0x00
@@ -95,4 +95,4 @@
 #define RX_STATUS 0xB0
 #define BIT_MODIFY 0x05
 
-#endif
+#endif //_MCP2551REGS_H
