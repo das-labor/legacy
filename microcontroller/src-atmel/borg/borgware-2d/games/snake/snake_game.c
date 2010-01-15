@@ -12,13 +12,13 @@
 // up, snake goes up, etc.
 #define GAME_SNAKE_NEWCONTROL
 
-	// MSB is leftmost pixel
-static uint8_t icon[8] PROGMEM =
-	{0xff, 0x81, 0xbd, 0xa5, 0xa5, 0xad, 0xa1, 0xbf};  // Snake icon
-
 void snake_game();
 
 #ifdef MENU_SUPPORT
+// MSB is leftmost pixel
+static uint8_t icon[8] PROGMEM =
+	{0xff, 0x81, 0xbd, 0xa5, 0xa5, 0xad, 0xa1, 0xbf};  // Snake icon
+
 game_descriptor_t snake_game_descriptor __attribute__((section(".game_descriptors"))) ={
 	&snake_game,
 	icon,
