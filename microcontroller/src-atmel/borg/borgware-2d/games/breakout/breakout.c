@@ -1,11 +1,10 @@
 
 #include "../../menu/menu.h"
 
+#ifdef MENU_SUPPORT
 static uint8_t icon[8] PROGMEM =
 	 {0x03, 0x03, 0x00, 0x00, 0xff, 0xff, 0x00, 0x00}; /* our Icon */
-	
 
-#ifdef MENU_SUPPORT
 game_descriptor_t invaders_game_descriptor __attribute__((section(".game_descriptors"))) ={
 	&borg_breakout,
 	icon,
