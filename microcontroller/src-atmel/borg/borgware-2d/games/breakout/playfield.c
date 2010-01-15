@@ -44,26 +44,26 @@ uint8_t check_bounce (uint8_t in_x, uint8_t in_y)
 
 /* this is the actual draw function for a single field
  */
-static inline void draw_single_field (game_field_t in_f)
+static inline void draw_single_field (uint8_t in_x, uint8_t in_y, game_field_t in_f)
 {
 	switch (in_f)
 	{
 		case b1:
-			setPixel ();
+			setPixel (in_x, in_y, 1);
 		return;
 		case rb:
 		case b2:
-			
+			setPixel (in_x, in_y, 2);
 		return;
 
 		case b3:
 		case bl:
 		case bs:
-			
+			setPixel (in_x, in_y, 3);
 		return;
 
 		default: /* this includes freespace */
-
+			setPixel (in_x, in_y, 0);
 		return;
 		
 	}
@@ -77,7 +77,7 @@ void playfield_draw ()
 	{
 		for (y=0;y<NUM_COLS;y++)
 		{
-			
+			draw_single_field (x,y, playfield[x][y]);
 		}
 	}
 }

@@ -27,9 +27,6 @@ void ball_spawn (ball_t *in_ball, uint16_t in_x, uint16_t in_y, int16_t in_dir_x
  */
 void ball_think (ball_t *in_ball);
 
-/* @description Change the ball's moving vector according to bounce and collision type
- */
-void ball_bounce (ball_t *in_ball, enum collision_t in_coltype);
 
-void ball_die (ball_t *in_b)
+void ball_die (ball_t *in_b);
 #endif /* BALL_H */

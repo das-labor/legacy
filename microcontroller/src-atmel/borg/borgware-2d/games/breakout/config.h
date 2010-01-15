@@ -6,3 +6,9 @@
 
 /* initial amount of lifes */
 #define START_LIFES 3
+
+/* rebound size */
+#define REBOUND_SIZE 5
+
+/* "color" of the rebound */
+#define REBOUND_COLOR 2

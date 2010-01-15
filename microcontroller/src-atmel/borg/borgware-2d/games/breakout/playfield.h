@@ -1,18 +1,15 @@
-#include <stdint.h>
-#include "ball.h"
-#include "score.h"
-
 #ifndef PLAYFIELD_H
 #define PLAYFIELD_H
+#include "common.h"
 
 /* entries for the playing field */
 enum game_field_t
 {
 	sp = 0, /* space */
 	b1 = 1, b2 = 2, b3 = 3, /* bricks */
-	bs = 4 /* solid (unbreakable) brick */
+	bs = 4, /* solid (unbreakable) brick */
 	bl, /* ball */
-	rb, /* rebound */
+	rb /* rebound */
 };
 
 
