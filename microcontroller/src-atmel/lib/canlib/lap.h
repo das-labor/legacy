@@ -90,7 +90,8 @@ void lap_reset( can_addr dst );
 
 /**
  * ServiceDataObject routinen
- *
+ */
+
 unsigned char *sdo_readbuf(sdo_message *first_message, 
 		unsigned char length, unsigned char *actuallength);
 
