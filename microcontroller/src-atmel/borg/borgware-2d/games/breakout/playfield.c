@@ -4,23 +4,10 @@ uint8_t brick_damage (uint8_t in_x, uint8_t in_y)
 {
 	game_field_t newtype;
 
-	switch (playfiled[in_x][in_y])
-	{
-		case brick_1:
-			playfield[in_x][in_y] = freespace;
-			break;
-
-		case brick_2:
-			playfield[in_x][in_y] = brick_1;
-			break;
-
-		case brick_3:
-			playfield[in_x][in_y] = brick_2;
-			break;
-			
-		default:
-			return;
-	}
+	if (playfield[in_x][in_y] > bs || playfield[in_x][in_y] == 0)
+		return;
+	
+	playfield[in_x][in_y]--;
 	score_add (1);
 }
 
@@ -36,19 +23,22 @@ uint8_t check_bounce (uint8_t in_x, uint8_t in_y)
 	/* collisions with real objects */
 	switch (playfield[in_x][in_y])
 	{
-		case freespace:
-		case ball:
+		case sp:
+		case bl:
 			return 0;
 		
-		case brick_2:
-		case brick_3:
-		case brick_1:
+		case b2:
+		case b3:
+		case b1:
 			brick_damage (in_x, in_y);
 		/* intentional fallthrough */
 
-		case brick_solid:
-		case bouncer:
+		case bs:
 			return 1;		
+		
+		/* bouncing on the rebound needs special care */
+		case rb:
+			return 2;
 	}
 }
 
