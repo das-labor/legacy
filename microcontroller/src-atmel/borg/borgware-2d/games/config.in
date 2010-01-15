@@ -5,6 +5,7 @@ dep_bool "tetris"         GAME_TETRIS           $JOYSTICK_SUPPORT $RANDOM_SUPPOR
 dep_bool "bastet"         GAME_BASTET           $GAME_TETRIS
 dep_bool "space invaders" GAME_SPACE_INVADERS   $JOYSTICK_SUPPORT $RANDOM_SUPPORT
 dep_bool "snake"          GAME_SNAKE            $JOYSTICK_SUPPORT $RANDOM_SUPPORT
+dep_bool "breakout"       GAME_BREAKOUT         $JOYSTICK_SUPPORT $RANDOM_SUPPORT
 
 
 endmenu
