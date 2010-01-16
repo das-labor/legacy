@@ -36,9 +36,15 @@
 /* This this the only include needed in your code .*/
 //#include <util/delay.h>
 #include "femtoos_code.h"
+
+#ifdef CAN_THREAD
 #include "spi.h"
 #include "can.h"
+#endif // CAN_THREAD
+
+#ifdef TWI_MTHREAD
 #include "twi_master.h"
+#endif //TWI_MTHREAD
 
 #define DATA PD6
 #define CLK  PD7
@@ -48,213 +54,54 @@
 #define LAMPS 50
 
 
-typedef struct {
-	Tuint16 red;
-	Tuint16 green;
-	Tuint16 blue;
-} element_t;
-Tuint16 callnumber=0;
-
 Tuint08 blinkmode=0;
 
+
+/* 
+   diese Funktion wird beim starten des 
+   AVRs genau einmal ausgefuehrt
+*/
 void appBoot(void)
 { 
+  /* 
+     wenn in der Config CAN_THREAD definiert ist, 
+     dann initialisiere ihn 
+  */
+#ifdef CAN_THREAD
   spi_init();
   can_init();
+#endif
+  /*
+    wenn TWI_MTHREAD in der config aktiv ist,
+    dann initialisiere ihn hier
+  */
 #ifdef TWI_MTHREAD
   TWIM_Init();
 #endif
-
-  DDRD |= _BV(DATA) | _BV(CLK);
-  PORTD |= _BV(DATA) | _BV(CLK);
-
-  //  devSwitchDRR |= _BV(DATA) | _BV(CLK);
-  //  devSwitchPORT |= _BV(DATA) | _BV(CLK);
-
-  //  Tuint08 k;
-
-/*   for (k = 0 ; k< 36; k++){ */
-/*     PORTD = ( 1 ) << DATA; */
-/*     PORTD |= _BV(CLK); */
-/*     PORTD &= ~_BV(CLK); */
-/*   } */
-
-/*   for (k = 0; k < 5; k++) */
-/*     { */
-/*       PORTD |= _BV(DATA); */
-/*       PORTD &= ~_BV(DATA); */
-/*     } */
 }
 
+#ifdef CAN_THREAD
 /*
-  set as backgroundcolor
+  dies funktion wird aufgerufen wenn das Packet
+  an unser devid ging, wir uns also dafuer
+  interressieren
 */
-static void makeBlue(element_t *point)
-{
-  point->red=0;
-  point->green=0;
-  point->blue=MAXCOLORVALUE;
-}
-
-static void makeGreen(element_t *point)
-{
-  point->red=0;
-  point->green=MAXCOLORVALUE;
-  point->blue=0;
-}
-
-static void makeRed(element_t *point)
-{
-  point->red=MAXCOLORVALUE;
-  point->green=0;
-  point->blue=0;
-}
-
-
-/*
-  set as backgroundcolor
-*/
-static void makeWhite(element_t *point)
-{
-  point->red=MAXCOLORVALUE;
-  point->green=MAXCOLORVALUE;
-  point->blue=MAXCOLORVALUE;
-}
-
-/*
-  set as backgroundcolor
-*/
-static void makeOFF(element_t *point)
-{
-  point->red=0;
-  point->green=0;
-  point->blue=0;
-}
-
-/*
-  set as backgroundcolor
-*/
-static void makeGray(element_t *point)
-{
-  point->red=1024;
-  point->green=1024;
-  point->blue=1024;
-}
-
-/*
-  push value to leds
-*/
-static void pushValue(Tuint16 red,Tuint16 green,Tuint16 blue)
-{
-  Tuint08 k;
-  taskEnterGlobalCritical();
-  for (k = 0 ; k< BITSPERLAMP; k++)
-    {
-      if( ((blue >> (BITSPERLAMP-k-1)) & 1 ) ==1)
-	{
-	  OUTPORT |= _BV(DATA);
-	} 
-      else 
-	{ 
-	  OUTPORT &= ~_BV(DATA);
-	}
-      PORTD |= _BV(CLK);
-      PORTD &= ~_BV(CLK);
-    }
-  for (k = 0; k < BITSPERLAMP; k++)
-    {
-      if( ((green >> (BITSPERLAMP-k-1)) & 1 ) ==1)
-	{
-	  OUTPORT |= _BV(DATA);
-	} 
-      else 
-	{ 
-	  OUTPORT &= ~_BV(DATA);
-	}
-      
-      PORTD |= _BV(CLK);
-      PORTD &= ~_BV(CLK);
-    }
-  for (k = 0; k < BITSPERLAMP; k++)
-    {
-      if ( ((red >> (BITSPERLAMP-k-1)) & 1 ) == 1 )
-	{
-	  OUTPORT |= _BV(DATA);
-	}
-      else 
-	{
-	  OUTPORT &= ~_BV(DATA);
-	}
-      PORTD |= _BV(CLK);
-      PORTD &= ~_BV(CLK);
-    }
-  taskExitGlobalCritical();
-
-}
-
-static void setWhite(element_t *point, Tuint16 pos)
-{
-  if(pos<25)
-    switch(pos - (callnumber % 25)){
-    case 2:
-      point->red = MAXCOLORVALUE;
-      point->green = MAXCOLORVALUE;
-      point->blue= MAXCOLORVALUE;
-      break;
-    case 1:
-      point->red = MAXCOLORVALUE;
-      point->green = MAXCOLORVALUE;
-      point->blue= MAXCOLORVALUE;
-      break;
-    case 0:
-      point->red = MAXCOLORVALUE;
-      point->green = MAXCOLORVALUE;
-      point->blue= MAXCOLORVALUE;
-      break;
-    default:
-      break;
-  }
-  if(pos>=25)
-  switch(pos + (callnumber % 25)){
-  case 49:
-    point->red = MAXCOLORVALUE;
-    point->green = MAXCOLORVALUE;
-    point->blue= MAXCOLORVALUE;
-    break;
-  case 48:
-    point->red = MAXCOLORVALUE;
-    point->green = MAXCOLORVALUE;
-    point->blue= MAXCOLORVALUE;
-    break;
-  case 47:
-    point->red = MAXCOLORVALUE;
-    point->green = MAXCOLORVALUE;
-    point->blue= MAXCOLORVALUE;
-    break;
-  default:
-    break;
-  }
-
-}
-
-static void updateLEDs()
-{
-  Tuint08 i;
-  //  taskEnterGlobalCritical();
-
-  for (i = 0; i < 5; i++)
-    {
-      PORTD |= _BV(DATA);
-      PORTD &= ~_BV(DATA);
-    }
-  //  taskExitGlobalCritical();
-}
-
 void can_user_cmd(can_message *rx_msg)
 {
   blinkmode = rx_msg->data[0];
 }
 
+#ifdef CAN_SNIFFER
+/*
+  wenn wir can_sniffer anschalten, dann bekommen wir 
+  wirklich alle nachrichten mit
+*/
+void can_sniffer(can_message *rx_msg)
+{
+  // not needed
+}
+#endif // CAN_SNIFFER
+#endif // CAN_THREAD
 
 #ifdef TWI_MTHREAD
 i2c_message commblock = {0,0,0,{0,0,0,0,0,0,0,0}};
@@ -274,107 +121,13 @@ void twi_mhandler_error(Tuint08 error,i2c_message *data)
 
 
 
+#if (preTaskDefined(mainthread))
 
-#if (preTaskDefined(rundown))
-
-void appLoop_rundown(void)
+void appLoop_mainthread(void)
 { 
-  Tuint08 i=0;
-  element_t myelement={0,0,0};
-  taskDelayFromNow(1000);
   while (true)
   { 
-    while(blinkmode == 0){
-      for(i=0;i<LAMPS;i++){
-	makeBlue(&myelement);
-	setWhite(&myelement,i);
-	pushValue(myelement.red,myelement.green,myelement.blue);
-      }
-      taskDelayFromNow(1);
-      updateLEDs();
-      callnumber++;
-      taskDelayFromNow(100);
-    } 
-    while(blinkmode == 1){
-      // call it stop
-      taskDelayFromNow(100);
-    }
-    while(blinkmode == 2){
-      for(i=0;i<LAMPS;i++){
-	makeWhite(&myelement);
-	pushValue(myelement.red,myelement.green,myelement.blue);
-      }
-      taskDelayFromNow(1);
-      updateLEDs();
-      taskDelayFromNow(100);
-    }
-    while(blinkmode == 3){
-      for(i=0;i<LAMPS;i++){
-	makeGray(&myelement);
-	pushValue(myelement.red,myelement.green,myelement.blue);
-      }
-      taskDelayFromNow(1);
-      updateLEDs();
-      taskDelayFromNow(100);
-    }
-    while(blinkmode == 4){
-      for(i=0;i<LAMPS;i++){
-	makeOFF(&myelement);
-	pushValue(myelement.red,myelement.green,myelement.blue);
-      }
-      taskDelayFromNow(1);
-      updateLEDs();
-      taskDelayFromNow(100);
-    }
-    while(blinkmode == 5){
-      for(i=0;i<LAMPS;i++){
-	makeGreen(&myelement);
-	setWhite(&myelement,i);
-	pushValue(myelement.red,myelement.green,myelement.blue);
-      }
-      taskDelayFromNow(1);
-      updateLEDs();
-      callnumber++;
-      taskDelayFromNow(100);
-    } 
-    while(blinkmode == 6){
-      for(i=0;i<LAMPS;i++){
-	makeRed(&myelement);
-	setWhite(&myelement,i);
-	pushValue(myelement.red,myelement.green,myelement.blue);
-      }
-      taskDelayFromNow(1);
-      updateLEDs();
-      callnumber++;
-      taskDelayFromNow(100);
-    } 
-
-    while(blinkmode == 7){
-      for(i=0;i<LAMPS;i++){
-	makeRed(&myelement);
-	pushValue(myelement.red,myelement.green,myelement.blue);
-      }
-      taskDelayFromNow(1);
-      updateLEDs();
-      taskDelayFromNow(20);
-
-      for(i=0;i<LAMPS;i++){
-	makeGreen(&myelement);
-	pushValue(myelement.red,myelement.green,myelement.blue);
-      }
-      taskDelayFromNow(1);
-      updateLEDs();
-      taskDelayFromNow(20);
-
-      for(i=0;i<LAMPS;i++){
-	makeBlue(&myelement);
-	pushValue(myelement.red,myelement.green,myelement.blue);
-      }
-      taskDelayFromNow(1);
-      updateLEDs();
-      taskDelayFromNow(20);
-    } 
-    
+    taskDelayFromNow(1000);
   }
 }
 

@@ -1,48 +1,79 @@
+#include "femtoos_code.h"
+#ifdef CAN_THREAD
+
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <util/delay.h>
 #include <avr/eeprom.h>
-#include <avr/wdt.h>
-
-
-#ifdef USE_FEMTOOS
-#include "femtoos_code.h"
-#else
-#include "config.h"
-#endif
-
 
 
 #include "mcp2510regs.h"
 #include "can.h"
 #include "spi.h"
-#include "lap.h"
+//#include "lap.h"
 
 typedef struct
 {
 	can_message msg;
-	volatile uint8_t flags;
+	volatile Tuint08 flags;
 } can_message_x;
 
-static uint8_t myaddr;
-extern uint8_t blinkmode;
+
+can_message_x RX_MESSAGE, TX_MESSAGE;
 
 /* MCP */
-static uint8_t mcp_status();
-static void mcp_bitmod(uint8_t reg, uint8_t mask, uint8_t val);
+static Tuint08 mcp_status();
+static void mcp_bitmod(Tuint08 reg, Tuint08 mask, Tuint08 val);
 static void mcp_reset();
 
-void mcp_write(uint8_t reg, uint8_t data);
-uint8_t mcp_read(uint8_t reg);
+void mcp_write(Tuint08 reg, Tuint08 data);
+Tuint08 mcp_read(Tuint08 reg);
+
+
+/*
+  imports for size - no double
+*/
+void
+_delay_loop_1(uint8_t __count)
+{
+        __asm__ volatile (
+                "1: dec %0" "\n\t"
+                "brne 1b"
+                : "=r" (__count)
+                : "0" (__count)
+        );
+}
+
+
+
+#if F_MCP ==  8000000
+#define delayonems() _delay_loop_1(255); \
+  _delay_loop_1(255)
+#elif  F_MCP == 16000000 
+#define delayonems() _delay_loop_1(255); \
+  _delay_loop_1(255); \
+  _delay_loop_1(255); \
+  _delay_loop_1(255)
+#elif F_MCP == 20000000
+#define delayonems() _delay_loop_1(255); \
+  _delay_loop_1(255); \
+  _delay_loop_1(255); \
+  _delay_loop_1(255); \
+  _delay_loop_1(255)
+#else
+#error delayonems not defined for F_MCP
+#endif
+
+
 
 
 
 
 // Functions
 
-static uint8_t mcp_status()
+static Tuint08 mcp_status()
 {
-	uint8_t d;
+	Tuint08 d;
 	MCP_CMD_PORT &= ~_BV(MCP_CS);
 	spi_send(READ_STATUS);
 	d = spi_send(0);
@@ -50,7 +81,7 @@ static uint8_t mcp_status()
 	return d;
 }
 
-static void mcp_bitmod(uint8_t reg, uint8_t mask, uint8_t val)
+static void mcp_bitmod(Tuint08 reg, Tuint08 mask, Tuint08 val)
 {
 	MCP_CMD_PORT &= ~_BV(MCP_CS);
 	spi_send(BIT_MODIFY);
@@ -63,14 +94,14 @@ static void mcp_bitmod(uint8_t reg, uint8_t mask, uint8_t val)
 //load a message to mcp2515 and start transmission
 void message_load(can_message_x * msg)
 {
-	uint8_t x;
+	Tuint08 x;
 	
 	MCP_CMD_PORT &= ~_BV(MCP_CS);
 	spi_send(WRITE);
 	spi_send(TXB0SIDH);
 
-	spi_send( ((uint8_t)(msg->msg.port_src << 2)) | (msg->msg.port_dst >> 4 ) );
-	spi_send( (uint8_t)((msg->msg.port_dst & 0x0C) << 3) | (1<<EXIDE) | (msg->msg.port_dst & 0x03) );
+	spi_send( ((Tuint08)(msg->msg.port_src << 2)) | (msg->msg.port_dst >> 4 ) );
+	spi_send( (Tuint08)((msg->msg.port_dst & 0x0C) << 3) | (1<<EXIDE) | (msg->msg.port_dst & 0x03) );
 	spi_send(msg->msg.addr_src);
 	spi_send(msg->msg.addr_dst);
 	spi_send(msg->msg.dlc);
@@ -88,8 +119,8 @@ void message_load(can_message_x * msg)
 //get a message from mcp2515 and disable RX interrupt Condition
 void message_fetch(can_message_x * msg)
 {
-	uint8_t tmp1, tmp2, tmp3;
-	uint8_t x;
+	Tuint08 tmp1, tmp2, tmp3;
+	Tuint08 x;
 	taskEnterGlobalCritical();
 	MCP_CMD_PORT &= ~_BV(MCP_CS);
 	spi_send(READ);
@@ -97,8 +128,8 @@ void message_fetch(can_message_x * msg)
 	tmp1 = spi_send(0);
 	msg->msg.port_src = tmp1 >> 2;
 	tmp2 = spi_send(0);
-	tmp3 = (uint8_t)((uint8_t)(tmp2 >> 3) & 0x0C);
-	msg->msg.port_dst = ((uint8_t)(tmp1 <<4 ) & 0x30) | tmp3 | (uint8_t)(tmp2 & 0x03);
+	tmp3 = (Tuint08)((Tuint08)(tmp2 >> 3) & 0x0C);
+	msg->msg.port_dst = ((Tuint08)(tmp1 <<4 ) & 0x30) | tmp3 | (Tuint08)(tmp2 & 0x03);
 	msg->msg.addr_src = spi_send(0);
 	msg->msg.addr_dst = spi_send(0);
 	msg->msg.dlc = spi_send(0) & 0x0F;	
@@ -120,7 +151,7 @@ static void mcp_reset()
 	MCP_CMD_PORT |= _BV(MCP_CS);
 }
 
-void mcp_write(uint8_t reg, uint8_t data)
+void mcp_write(Tuint08 reg, Tuint08 data)
 {
 	MCP_CMD_PORT &= ~_BV(MCP_CS);
 	spi_send(WRITE);
@@ -129,9 +160,9 @@ void mcp_write(uint8_t reg, uint8_t data)
 	MCP_CMD_PORT |= _BV(MCP_CS);
 }
 
-uint8_t mcp_read(uint8_t reg)
+Tuint08 mcp_read(Tuint08 reg)
 {
-	uint8_t d;
+	Tuint08 d;
 	MCP_CMD_PORT &= ~_BV(MCP_CS);
 	spi_send(READ);
 	spi_send(reg);
@@ -144,7 +175,7 @@ uint8_t mcp_read(uint8_t reg)
 /* Management */
 void can_setmode( can_mode_t mode )
 {
-	uint8_t val = mode << 5;  
+  Tuint08 val = (Tuint08)((Tuint08)(mode) << 5);
 	val |= 0x04;  // CLKEN
 
 	mcp_write( CANCTRL, val );
@@ -161,7 +192,7 @@ void can_setfilter()
 	mcp_write(RXB0CTRL, (1<<RXM1) | (1<<RXM0));
 }
 
-void can_setled(uint8_t led, uint8_t state)
+void can_setled(Tuint08 led, Tuint08 state)
 {
 	mcp_bitmod(BFPCTRL, 0x10<<led, state?0xff:0);
 }
@@ -174,14 +205,9 @@ void can_init()
 	//set Slave select high
 	MCP_CMD_PORT &= ~_BV(MCP_CS);
 
-	
-#ifdef CAN_HANDLEERROR
-	can_error = 0;
-#endif	
-	
 	mcp_reset();
 	
-	_delay_ms(1);
+	delayonems();
 	
 	mcp_write(BFPCTRL, 0x0C);//RXBF Pins to Output
 	
@@ -215,8 +241,6 @@ void can_init()
 	mcp_write(CANINTE, (1<<RX0IE) ); //only turn RX int on
 }
 
-can_message_x RX_MESSAGE, TX_MESSAGE;
-
 can_message * can_get_nb()
 {
 	//check the pin, that the MCP's Interrup output connects to
@@ -225,7 +249,7 @@ can_message * can_get_nb()
 		return 0;
 	} else
 	{
-		uint8_t status = mcp_status();
+		Tuint08 status = mcp_status();
 
 		if (status & 0x01)
 		{
@@ -263,24 +287,4 @@ void can_free(can_message * msg)
 {
 }
 
-void can_mgt(can_message *rx_msg)
-{
-  static can_message msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
-  switch (rx_msg->data[0])
-    {
-    case FKT_MGT_RESET:
-      TCCR2 = 0;
-      wdt_enable(0);
-      while(1);
-	      
-    case FKT_MGT_PING:
-	      
-      msg.addr_src = CANADDR;
-      msg.addr_dst = rx_msg->addr_src;
-      can_transmit(&msg);
-      break;
-	      
-    default:
-      break;
-    }
-}
+#endif // CAN_THREAD
