@@ -55,8 +55,8 @@ cmd_t cmds[] = {
   { &cmd_musicd, "musicd", "musicd", "starts a music control daemon in foreground" },
   { &cmd_treppenblink, "treppenblink", "treppenblink", "mode des treppenblinks" },
   { &cmd_canir, "canir", "canir", "control thinks supposed to accept ir-commands only via can" },
-  { &cmd_powercommander, "poercommander", "powercommander", "powercommander class object function value ... wiki->Powercommander" },
-  { &cmd_cantemp, "cantemp", "cantemp", "Temperatur für Sensor" },
+  { &cmd_powercommander, "powercommander", "powercommander", "powercommander class object function value ... wiki->Powercommander" },
+  { &cmd_cantemp, "cantemp", "cantemp", "Temperatur fuer Sensor" },
   { NULL, NULL, NULL, NULL }
 };
 
