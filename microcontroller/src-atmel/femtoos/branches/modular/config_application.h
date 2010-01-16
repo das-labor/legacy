@@ -27,7 +27,7 @@
 
 // Initiate TWI Master with bitrate of 100000 Hz
 #define TWI_BITRATE 100000
-#define TWI_MTHREAD cfgTrue
+#define TWI_MTHREAD 
 #define TWI_SLAVE (15)
 
 #define MC_MOSI    PB3
@@ -44,6 +44,7 @@
 
 #define F_MCP F_CPU
 
+#define CAN_THREAD 
 
 #define MEGA8
 
@@ -270,10 +271,20 @@
 /* ========================================================================= */
 
 
-#define  CN_00                                   rundown
+#define  CN_00                                   mainthread
+#ifdef CAN_THREAD
 #define  CN_01                                   xcan
-#define  CN_02                                   twim
+#define  TaskInclude_xcan                     cfgStartRunning
+#define  Capabilities_xcan                    cfgCapAll
+#define  RegisterUse_xcan                      registersAll
 
+#endif
+#ifdef TWI_MTHREAD
+#define  CN_02                                   twim
+#define  TaskInclude_twim                     cfgStartRunning
+#define  Capabilities_twim                    cfgCapAll
+#define  RegisterUse_twim                      registersAll
+#endif
 
 
 /* ========================================================================= */
@@ -281,11 +292,11 @@
 /* ========================================================================= */
 
 //#define  TaskIncludeOverride                     cfgStartRunning
-#define  TaskInclude_xcan                     cfgStartRunning
+
 //#define  TaskInclude_xcan                     cfgExclude
 
-#define  TaskInclude_rundown                     cfgStartRunning
-#define  TaskInclude_twim                     cfgStartRunning
+#define  TaskInclude_mainthread                     cfgStartRunning
+
 //#define  TaskInclude_blueout                    cfgStartRunning
 //#define  TaskInclude_update                     cfgStartRunning
 
@@ -295,9 +306,9 @@
 /* ========================================================================= */
 
 //#define  Capabilities_xcanTask                 cfgCapEvent
-#define  Capabilities_rundown                    cfgCapAll
-#define  Capabilities_xcan                    cfgCapAll
-#define  Capabilities_twim                    cfgCapAll
+#define  Capabilities_mainthread                    cfgCapAll
+//#define  Capabilities_xcan                    cfgCapAll
+
 
 
 /* ========================================================================= */
@@ -336,9 +347,9 @@
 
 //#define  RegisterUseOverride                      registersAll
 
-#define  RegisterUse_xcan                      registersAll
-#define  RegisterUse_rundown                      registersAll
-#define  RegisterUse_twim                      registersAll
+
+#define  RegisterUse_mainthread                      registersAll
+
 //#define  RegisterUse_blueout                     registersAll
 //#define  RegisterUse_update                      registersAll
 
