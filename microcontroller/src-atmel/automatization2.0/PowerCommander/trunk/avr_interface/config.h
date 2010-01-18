@@ -34,5 +34,7 @@
 #	define SPI_PIN_MOSI PB5
 #endif
 
+// TWI_ADDRESS
+#include "../include/PowerCommander.h"
 
 #endif // ifndef CONFIG_H

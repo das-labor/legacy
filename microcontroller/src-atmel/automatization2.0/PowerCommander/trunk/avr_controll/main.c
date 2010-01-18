@@ -43,7 +43,7 @@ int main(void)
 	/*
 	** Start TWI Slave with address 15 and bitrate of 100000 Hz
 	*/
-	TWIS_Init(I2CADRESSE, 100000);
+	TWIS_Init();
 
 
 	/*
