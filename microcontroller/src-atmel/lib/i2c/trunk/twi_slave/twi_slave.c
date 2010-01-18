@@ -87,7 +87,7 @@ uint8_t TWIS_Init()
 /*
 ** Set the TWI slave address
 */
-	TWAR = ADDRESS;
+	TWAR = TWI_ADDRESS;
 /*
 ** Activate TWI interface
 */
