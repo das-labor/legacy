@@ -5,7 +5,7 @@
 #include <inttypes.h>
 #include <avr/io.h>
 
-#define I2CADRESSE 15 // I2C Adresse
+#define TWI_ADRESSE 15 // I2C Adresse
 
 #define HASDATA (0x01)
 #define HASNDATA (0x00)
