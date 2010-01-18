@@ -91,7 +91,6 @@ void can_handler();
 
 void can_mgt(can_message *rx_msg);
 void can_user_cmd(can_message *rx_msg);
-void can_global_cmd(can_message *rx_msg);
 
 
 /*****************************************************************************

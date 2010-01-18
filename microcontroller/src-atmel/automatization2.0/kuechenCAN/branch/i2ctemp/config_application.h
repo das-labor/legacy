@@ -25,6 +25,10 @@
 #ifndef CONFIG_FEMTOOS_H_
 #define CONFIG_FEMTOOS_H_
 
+#define TWI_BITRATE 100000
+#define TWI_MTHREAD 
+#define TWI_SLAVE (15)
+
 #define MC_MOSI    PB3
 #define MC_CLK     PB5
 
@@ -33,12 +37,10 @@
 
 #define SPI_REG_PIN_MCP_INT  PIND
 #define SPI_PIN_MCP_INT      PD2
-//#define CAN_INTERRUPT
-
-//#define PORT_REMOTE (0xf0)
 
 #define F_MCP F_CPU
 
+#define CAN_THREAD 
 
 #define MEGA8
 
@@ -264,11 +266,30 @@
 /* TASK NAMES ============================================================== */
 /* ========================================================================= */
 
-#define  CN_00                                   xcan
+
+
+
+#define  CN_00                                   mainthread
 #define  CN_01                                   leds
 #define  CN_02                                   alarm
-#define  CN_03                                   buttons
-#define  CN_04                                   alarmt
+#define  CN_03                                   alarmt
+
+
+
+#ifdef CAN_THREAD
+#define  CN_14                                   xcan
+#define  TaskInclude_xcan                     cfgStartRunning
+#define  Capabilities_xcan                    cfgCapAll
+#define  RegisterUse_xcan                      registersAll
+
+#endif
+#ifdef TWI_MTHREAD
+#define  CN_15                                   twim
+#define  TaskInclude_twim                     cfgStartRunning
+#define  Capabilities_twim                    cfgCapAll
+#define  RegisterUse_twim                      registersAll
+#endif
+
 
 
 
@@ -277,26 +298,20 @@
 /* ========================================================================= */
 
 //#define  TaskIncludeOverride                     cfgStartRunning
-#define  TaskInclude_xcan                     cfgStartRunning
-//#define  TaskInclude_xcan                     
 
-#define  TaskInclude_buttons                     cfgStartRunning
+#define  TaskInclude_mainthread                     cfgStartRunning
 #define  TaskInclude_alarm                     cfgStartRunning
 #define  TaskInclude_alarmt                     cfgStartRunning
 #define  TaskInclude_leds                     cfgStartRunning
-//#define  TaskInclude_blueout                    cfgStartRunning
-//#define  TaskInclude_update                     cfgStartRunning
 
 
 /* ========================================================================= */
 /* TASK CAPABILITIES ======================================================= */
 /* ========================================================================= */
 
-//#define  Capabilities_xcanTask                 cfgCapEvent
-#define  Capabilities_xcan                    cfgCapAll
 #define  Capabilities_leds                    cfgCapAll
 #define  Capabilities_alarm                    cfgCapAll
-#define  Capabilities_buttons                    cfgCapAll
+#define  Capabilities_mainthread                    cfgCapAll
 #define  Capabilities_alarmt                    cfgCapAll
 
 /* ========================================================================= */
@@ -339,9 +354,7 @@
 #define  RegisterUse_leds                      registersAll
 #define  RegisterUse_alarm                      registersAll
 #define  RegisterUse_alarmt                      registersAll
-#define  RegisterUse_buttons                      registersAll
-//#define  RegisterUse_blueout                     registersAll
-//#define  RegisterUse_update                      registersAll
+#define  RegisterUse_mainthread                     registersAll
 
 
 /* ========================================================================= */

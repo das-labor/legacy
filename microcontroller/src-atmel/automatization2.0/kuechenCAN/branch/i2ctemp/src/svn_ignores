@@ -8,3 +8,5 @@ can.s
 femtoos_shared.s
 femtoos_port.i
 femtoos_core.i
+twi_master.s
+twi_master.i
