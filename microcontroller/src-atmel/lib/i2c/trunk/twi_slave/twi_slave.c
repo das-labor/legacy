@@ -74,33 +74,20 @@ int main (void)
 
 #include "twi_slave.h"
 
-/*******************************************************
- Public Function: TWIS_Init
 
- Purpose: Initialise the TWI Slave Interface
-
- Input Parameter:
-  	- uint8_t	Slave address
- 	- uint32_t	TWI_Bitrate (Hz)
-
- Return Value: uint8_t
- 	- FALSE:	Bitrate too high
- 	- TRUE:	Bitrate OK
-
-*******************************************************/
-uint8_t TWIS_Init(uint8_t address, uint32_t bitrate)
+uint8_t TWIS_Init()
 {
 /*
 ** Set the TWI bitrate
 ** If TWBR is less 11, then error
 */
-	TWBR = ((F_CPU / bitrate) - 16) / 2;
+	TWBR = ((F_CPU / TWI_BITRATE) - 16) / 2;
 	if (TWBR < 11)
 		return 0;
 /*
 ** Set the TWI slave address
 */
-	TWAR = address;
+	TWAR = ADDRESS;
 /*
 ** Activate TWI interface
 */
@@ -108,86 +95,33 @@ uint8_t TWIS_Init(uint8_t address, uint32_t bitrate)
 
 	return 1;
 }
-/*******************************************************
- Public Function: TWIS_Stop
 
- Purpose: Stop the TWI Slave Interface
-
- Input Parameter: None
-
- Return Value: None
-
-*******************************************************/
 void TWIS_Stop()
 {
 	TWCR = _BV(TWINT)|_BV(TWEN)|_BV(TWSTO)|_BV(TWEA);
 }
-/*******************************************************
- Public Function: TWIS_Write
 
- Purpose: Write a byte to the master
-
- Input Parameter:
- 	- uint8_t	Byte to be sent
-
-*******************************************************/
 void TWIS_Write(uint8_t byte)
 {
 	TWDR = byte;
 	TWCR = _BV(TWINT)|_BV(TWEN)|_BV(TWEA);
 	while (!(TWCR & _BV(TWINT)));
 }
-/*******************************************************
- Public Function: TWIS_ReadAck
 
- Purpose: Read a byte from the master and request next byte
-
- Input Parameter: None
-
- Return Value: uint8_t
-  	- uint8_t	Read byte
-
-*******************************************************/
 uint8_t	TWIS_ReadAck()
 {
 	TWCR = _BV(TWINT)|_BV(TWEN)|_BV(TWEA);
 	while (!(TWCR & _BV(TWINT)));
 	return TWDR;
 }
-/*******************************************************
- Public Function: TWIS_ReadNack
 
- Purpose: Read the last byte from the master
-
- Input Parameter: None
-
- Return Value: uint8_t
-  	- uint8_t	Read byte
-
-*******************************************************/
 uint8_t	TWIS_ReadNack()
 {
 	TWCR = _BV(TWINT)|_BV(TWEN);
 	while (!(TWCR & _BV(TWINT)));
 	return TWDR;
 }
-/*******************************************************
- Public Function: TWIS_ResponseRequired
 
- Purpose: Get the response type to be performed by slave
-
- Input Parameter:
-  	- uint8_t*	Pointer to response type
-	on return:
-		TWIS_ReadBytes	--> Read byte(s) from master
-		TWIS_WriteBytes	--> Write byte(s) to master
-
- Return Value: uint8_t
-  	Response required
-		TRUE: Yes, response required
-		FALSE: No response required
-
-*******************************************************/
 uint8_t TWIS_ResponseRequired(uint8_t *TWI_ResponseType)
 {
 	if (TWCR & _BV(TWINT))
