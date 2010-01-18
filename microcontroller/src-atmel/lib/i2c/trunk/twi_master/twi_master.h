@@ -11,8 +11,16 @@
 #define _TWIM_H
 
 #include <util/twi.h>
+#include "../config.h"
 
-uint8_t TWIM_Init(uint32_t TWI_Bitrate);
+
+// default bitrate
+#ifndef TWI_BITRATE
+#define TWI_BITRATE 100000L
+#endif
+
+
+uint8_t TWIM_Init();
 uint8_t TWIM_Start(uint8_t address, uint8_t TWIM_Type);
 void TWIM_Stop();
 uint8_t TWIM_Write(uint8_t byte);

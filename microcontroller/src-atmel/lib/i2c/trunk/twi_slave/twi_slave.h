@@ -15,12 +15,12 @@
 
 // default bitrate
 #ifndef TWI_BITRATE
-#define TWI_BITRATE 100000
+#define TWI_BITRATE 100000L
 #endif
 
 // default Address
 #ifndef TWI_ADDRESS
-#define TWI_ADDRESS 16
+#define TWI_ADDRESS 15
 #endif
 
 

@@ -30,7 +30,7 @@ int main (void)
 	printf ("Hello world...\n");
 
 // Initiate TWI Master with bitrate of 100000 Hz
-	TWIM_Init (100000);
+	TWIM_Init ();
 
 // Endless loop
 	while (1)
@@ -52,7 +52,6 @@ int main (void)
         	Data[7] = TWIM_ReadNack ();
 			printf ("Reading Byte %d: %d\n", i, Data[i]);
 			TWIM_Stop ();
-			Delay_ms (1000);
 			}
 
 // Write byte(s) to the slave.
@@ -72,7 +71,6 @@ int main (void)
 				printf ("Byte %d sent\n", j);
 				}
 			TWIM_Stop ();
-			Delay_ms (1000);
 			}
 
 // Do something else
@@ -103,16 +101,15 @@ int main (void)
  	- TRUE:		Bitrate OK
 
 *******************************************************/
-uint8_t TWIM_Init(uint32_t TWI_Bitrate)
+uint8_t TWIM_Init()
 {
 /*
 ** Set TWI bitrate
 ** If bitrate is too high, then error return
 */
-	TWBR = ((F_CPU / TWI_Bitrate) - 16) / 2;
+	TWBR = ((F_CPU / TWI_BITRATE) - 16) / 2;
 	if (TWBR < 11)
 		return 0;
-
 	return 1;
 }
 
