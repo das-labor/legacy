@@ -39,6 +39,8 @@
 #include "femtoos_code.h"
 #include "spi.h"
 #include "can.h"
+#include "twi_master.h"
+#include "i2ctempsens.h"
 #include "kuechenCAN.h"
 
 #define R_LED _BV(PC1)
@@ -48,6 +50,7 @@
 #define HOLD_THRESHOLD 18
 #define CLICK_THRESHOLD 0
 
+#define I2CTEMPCANPORT (0x10)
 /*
 	XXX Powercommander.h
 */
@@ -83,13 +86,15 @@ void appBoot(void)
 	/*
 	** Initiate TWI Master Interface with bitrate of 100000 Hz
 	*/
-	if (!TWIM_Init(100000))
-	{
-		while (1);
-	}
+//	if (!TWIM_Init(100000))
+//	{
+//		while (1);
+//	}
+#ifdef CAN_THREAD
+  spi_init();
+  can_init();
+#endif
 
-	spi_init();
-	can_init();
 	rgbled_stat=R_LED;
 	//Kuechenlicht
 	DDRC |=  R_LED | G_LED | B_LED; // output led taster
@@ -116,6 +121,9 @@ void appBoot(void)
 	//Button
 	DDRC &= ~_BV(PC0);      // in
 	PORTC |= _BV(PC0);      // pullup on
+#ifdef TWI_MTHREAD
+  TWIM_Init();
+#endif
 
 }
 
@@ -123,29 +131,157 @@ void appBoot(void)
 	set as backgroundcolor
 */
 
+#ifdef TWI_MTHREAD
+i2c_message commblock = {0,0,0,{0,0,0,0,0,0,0,0}};
+void twi_mhandler_read(i2c_message *indata)
+{
+	Tuint08 i=0;
+	can_message dstrl = {0x23,0x00,I2CTEMPCANPORT,I2CTEMPCANPORT,0x08, {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}};
+	dstrl.dlc=indata->dlc+1;
+	dstrl.data[0]=indata->process;
+	for(i=0;i<indata->dlc;i++)
+		{
+			dstrl.data[i+1]=indata->data[i];
+		}
+	
+	can_transmit(&dstrl);
+}
+// postwrite
+void twi_mhandler_write(i2c_message *outdata)
+{
+	// not needed it is postwrite
+}
+void twi_mhandler_error(Tuint08 error,i2c_message *errdata)
+{
+	can_message dstrl = {0x23,0x00,I2CTEMPCANPORT,I2CTEMPCANPORT,0x06, {error,errdata->data[0],errdata->data[1],errdata->data[2],0x11,0x11}};
+	can_transmit(&dstrl);
+  
+}
+#endif // TWI_MTHREAD
+
+void init_sensor()
+{
+	if(TWIM_Init()==0)
+		{
+			can_message dstrl = {0x23,0x00,I2CTEMPCANPORT,I2CTEMPCANPORT,0x06, {0x33,0x33,0x33,0x33,0x33,0x33}};
+			can_transmit(&dstrl);
+			
+		}
+
+	commblock.addr_dst = 0x9e;
+	commblock.dlc = 1;
+	commblock.data[0]=SOFTWARE_POR;
+	// set command last 
+	commblock.process=PROCESSI2CWRITE;
+
+	while(commblock.process != PROCESSI2CNONE)
+		{
+			taskDelayFromNow(10);
+		}
+	
+	commblock.addr_dst = 0x9e;
+	commblock.dlc = 2;
+	commblock.data[0]=ACCESS_CONFIG;
+	commblock.data[1]=I2CDEFAULTCONFIG; 
+	commblock.process=PROCESSI2CWRITE;
+
+	while(commblock.process != PROCESSI2CNONE)
+		{
+			taskDelayFromNow(10);
+		}
+
+	commblock.addr_dst = 0x9e;
+	commblock.dlc = 1;
+	commblock.data[0]=START_CONVERT;
+	commblock.process=PROCESSI2CWRITE;
+
+	while(commblock.process != PROCESSI2CNONE)
+		{
+			taskDelayFromNow(10);
+		}
+
+}
+/* data: 0x9e 0x01 0x02 0x22 0x8c 0x00  */
+/* data: 0x9e 0x01 0x02 0xaa 0x8c 0x00  */
+/* data: 0x8c 0x00 0x01 0x00 0x00 0x00  */
+/* data: 0x9e 0x01 0x02 0x51 0x00 0x00  */
+void read_sensor()
+{
+
+	commblock.addr_dst = 0x9e;
+	commblock.dlc = 1;
+	commblock.data[0]=STOP_CONVERT;
+	// set command last 
+	commblock.process=PROCESSI2CWRITE;
+
+	while(commblock.process != PROCESSI2CNONE)
+		{
+			taskDelayFromNow(10);
+		}
+
+	commblock.addr_dst = 0x9e;
+	commblock.dlc = 1;
+	commblock.data[0]=READ_TEMPERATURE;
+	// set command last 
+	commblock.process=PROCESSI2CWRITE;
+
+	while(commblock.process != PROCESSI2CNONE)
+		{
+			taskDelayFromNow(10);
+		}
+
+	commblock.addr_dst = 0x9e;
+	commblock.dlc = 2;
+	commblock.process=PROCESSI2CREAD;
+
+	while(commblock.process != PROCESSI2CNONE)
+		{
+			taskDelayFromNow(10);
+		}
+
+	commblock.addr_dst = 0x9e;
+	commblock.dlc = 1;
+	commblock.data[0]=START_CONVERT;
+	commblock.process=PROCESSI2CWRITE;
+
+	while(commblock.process != PROCESSI2CNONE)
+		{
+			taskDelayFromNow(10);
+		}
+
+}
+
+
+#ifdef CAN_THREAD
+/*
+  dies funktion wird aufgerufen wenn das Packet
+  an unser devid ging, wir uns also dafuer
+  interressieren
+*/
 void can_user_cmd(can_message *rx_msg)
 {
-	if (rx_msg->port_dst == LIGHTCANPORT)
+  if(rx_msg->port_dst == I2CTEMPCANPORT)
 		{
-			;// what can we do
-		} 
-	else if (rx_msg->port_dst == ALARMCANPORT)
-		{
-			;// what can we do
+			read_sensor();
 		}
 }
 
-void can_global_cmd(can_message *rx_msg)
+#ifdef CAN_SNIFFER
+/*
+  wenn wir can_sniffer anschalten, dann bekommen wir 
+  wirklich alle nachrichten mit
+*/
+void can_sniffer(can_message *rx_msg)
 {
-	if (rx_msg->addr_dst == CANADDR)
-		{
-			;
-		}
+  // not needed
 }
+#endif // CAN_SNIFFER
+#endif // CAN_THREAD
 
-#if (preTaskDefined(buttons))
 
-void appLoop_buttons(void)
+#if (preTaskDefined(mainthread))
+
+void appLoop_mainthread(void)
 { 
 	can_message dstpower = {0x23,0x02,LIGHTCANPORT,0x01,0x04, {0x00,0x00,0x00,0x00}};
 	Tuint08 counter_0;
