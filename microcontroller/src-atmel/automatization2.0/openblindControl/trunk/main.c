@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 2 -*- */
 
-//#include <util/delay.h>
-
 #include <avr/io.h>
 
 #include "config.h"
@@ -16,13 +14,10 @@
 
 void init(void)
 {
-
-	//PORTC |= _BV(PC0) | _BV(PC1);
-
 	/*
-	** Initiate TWI Master Interface with bitrate of 100000 Hz
+	** Initiate TWI Master Interface
 	*/
-	if (!TWIM_Init(100000))
+	if (!TWIM_Init())
 	{
 		while (1);
 	}
@@ -52,5 +47,7 @@ int main(void)
 		can_handler();
 		switch_handler();
 	}
+	
 	return 1;
-};
+}
+
