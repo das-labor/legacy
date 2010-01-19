@@ -8,11 +8,11 @@ enum game_field_t level_field (uint8_t in_x, uint8_t in_y, uint8_t in_lvl)
 	{
 		case 1:
 			/* space for the lower half of the level */
-			if (in_y < (NUM_ROWS / 2))
+			if (in_y > (NUM_ROWS / 2))
 				return sp;
 			
 			/* type 2 bricks for 1/4th of the field */
-			if (in_y >= (NUM_ROWS / 4))
+			if (in_y <= (NUM_ROWS / 4))
 				return b2;
 			
 			/* fill the rest with type 1 */
@@ -29,15 +29,15 @@ enum game_field_t level_field (uint8_t in_x, uint8_t in_y, uint8_t in_lvl)
 
 		case 2:
 			/* space for the lower third of the level */
-			if (in_y < (NUM_ROWS / 3))
+			if (in_y > (NUM_ROWS / 3))
 				return sp;
 			
 			/* type 3 bricks for 1/8th of the field */
-			if (in_y >= (NUM_ROWS / 8))
+			if (in_y <= (NUM_ROWS / 8))
 				return b3;
 			
 			/* type 2 bricks for 1/4th of the field */
-			if (in_y >= (NUM_ROWS / 4))
+			if (in_y <= (NUM_ROWS / 4))
 				return b2;
 			
 			/* fill the rest with type 1 */
@@ -45,10 +45,10 @@ enum game_field_t level_field (uint8_t in_x, uint8_t in_y, uint8_t in_lvl)
 
 		default: /* random level generation */
 			/* space for the lower half of the level */
-			if (in_y < (NUM_ROWS / 2))
+			if (in_y > (NUM_ROWS / 2))
 				return sp;
 			
-			return random8() % 5; /* fill field with random bricks (and spaces) */
+			return random8() % 4; /* fill field with random bricks (and spaces) */
 		break;
 	}
 }

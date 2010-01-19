@@ -12,27 +12,24 @@ void brick_damage (uint8_t in_x, uint8_t in_y)
 
 	if (playfield[in_x][in_y] > bs || playfield[in_x][in_y] == 0)
 		return;
-	
-	playfield[in_x][in_y]--;
+	playfield[in_x][in_y] -= 1;
 	score_add (1);
 }
 
-uint8_t check_bounce (uint8_t in_x, uint8_t in_y)
+uint8_t check_bounce (int8_t in_x, int8_t in_y)
 {
+	uint8_t ov = 0;
 	/* overflow check */
-	if (in_x >= NUM_ROWS)
-		return 1;
+	if (in_x >= NUM_ROWS || in_x < 0)
+		ov |= BOUNCE_X;
 	
-	if (in_y >= NUM_COLS)
-		return 1;
+	if (in_y >= NUM_COLS || in_y < 0)
+		ov |= BOUNCE_Y;
 	
+	if (ov) return ov;
 	/* collisions with real objects */
-	switch (playfield[in_x][in_y])
+	switch (playfield[abs(in_x)][abs(in_y)])
 	{
-		case sp:
-		case bl:
-			return 0;
-		
 		case b2:
 		case b3:
 		case b1:
@@ -40,11 +37,17 @@ uint8_t check_bounce (uint8_t in_x, uint8_t in_y)
 		/* intentional fallthrough */
 
 		case bs:
-			return 1;		
+			return BOUNCE_UNDEF | ov;		
 		
 		/* bouncing on the rebound needs special care */
 		case rb:
-			return 2;
+			return BOUNCE_Y;
+		
+		case sp:
+		case bl:
+		default:
+			return ov;
+		
 	}
 }
 

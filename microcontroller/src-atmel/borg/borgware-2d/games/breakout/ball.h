@@ -7,8 +7,8 @@
 
 typedef struct
 {
-	uint16_t x;
-	uint16_t y;
+	int16_t x;
+	int16_t y;
 	int16_t dir_x; /* direction vector */
 	int16_t dir_y;
 	uint8_t strength;

@@ -1,6 +1,8 @@
 #ifndef COMMON_H
 #define COMMON_H
 #include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include "../../joystick/joystick.h"
 #include "../../config.h"
 #include "../../autoconf.h"

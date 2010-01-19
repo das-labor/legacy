@@ -1,5 +1,5 @@
 /* amount of speed to slow down on bounce */
-#define BOUNCE_SLOWDOWN 1
+#define BOUNCE_SLOWDOWN 0
 
 /* minimum speed of the ball */
 #define BALL_MINSPEED 0x0010
