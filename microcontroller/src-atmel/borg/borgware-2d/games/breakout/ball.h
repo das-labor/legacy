@@ -24,4 +24,6 @@ void ball_think (ball_t *in_ball);
 void ball_die (ball_t *in_b);
 
 void ball_draw (ball_t *);
+
+void ball_spawn_default (ball_t *in_b);
 #endif /* BALL_H */

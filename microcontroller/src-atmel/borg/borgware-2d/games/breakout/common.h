@@ -18,4 +18,5 @@
 #include "score.h"
 #include "level.h"
 #include "rebound.h"
+#include "messages.h"
 #endif /* COMMON_H */

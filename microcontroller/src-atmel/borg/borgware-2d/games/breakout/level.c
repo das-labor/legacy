@@ -48,7 +48,7 @@ enum game_field_t level_field (uint8_t in_x, uint8_t in_y, uint8_t in_lvl)
 			if (in_y > (NUM_ROWS / 2))
 				return sp;
 			
-			return random8() % 4; /* fill field with random bricks (and spaces) */
+			return random8() & 0x03; /* fill field with random bricks (and spaces) */
 		break;
 	}
 }
