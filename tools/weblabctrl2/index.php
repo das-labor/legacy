@@ -27,12 +27,12 @@ echo "<style type=\"text/css\">
   * {font-family:Arial;}
   div.slider { width:256px; margin:10px 0; background-color:#ccc; height:10px; position: relative; }
   div.slider div.handle { width:10px; height:15px; background-color:#f00; cursor:move; position: absolute; }
-  div.pwm {position:absolute; left:".$pwmx."; top: ".$pwmy."; background-color:#ddddff; width: 256px; padding:5px;}
+  div.pwm {position:absolute; left:".$pwmx."; top: ".$pwmy.";    background-image:url(divbg256.png); background-repeat:repeat-y; background-color: transparent; width: 256px; padding:10px;}
   div.pwm_top {background-color:#ccccff; width: 256px; margin-bottom:5px;}
-  div.mpd {position:absolute; left:".$mpdx."; top: ".$mpdy."; background-color:#ddddff; width: 256px; padding:5px;}
+  div.mpd {position:absolute; left:".$mpdx."; top: ".$mpdy.";    background-image:url(divbg256.png); background-repeat:repeat-y; background-color: transparent; width: 256px; padding:10px;}
   div.mpd_top {background-color:#ccccff; width: 256px; margin-bottom:5px;}
-  div.misc {position:absolute; left:".$miscx."; top: ".$miscy."; background-color:#ddddff; width: 300px; padding:5px;}
-  div.misc_top {background-color:#ccccff; width: 300px; margin-bottom:5px;}
+  div.misc {position:absolute; left:".$miscx."; top: ".$miscy."; background-image:url(divbg256.png); background-repeat:repeat-y; background-color: transparent; width: 256px; padding:10px;}
+  div.misc_top {background-color:#ccccff; width: 256px; margin-bottom:5px;}
   body {margin: 0px; padding: 0px; background-image:url(bg/11.jpg);background-repeat:no-repeat;background-color:#000000;}
   body.eins {background-size: auto; width: 100%; height: 100%; margin: 0px; padding: 0px; background-image:url(bg/1.jpg);background-repeat:no-repeat;background-color:#000000;}
   body.zwei {margin: 0px; padding: 0px; background-image:url(bg/2.jpg);background-repeat:no-repeat;background-color:#000000;}
@@ -135,19 +135,19 @@ foreach($pwm_ids as $id)
 {
 	$color=sprintf('#%02X%02X%02X',rand(0,255),rand(0,255),rand(0,255));
 	echo "$id <input id=\"LAMP_$id\" type=\"checkbox\" onclick=\"if(this.checked)set_value('SW','LAMP_$id','ON');else set_value('SW','LAMP_$id','OFF')\">
-	<div id=\"slider_$id\" class=\"slider\"> 
-            <div class=\"handle\" style=\"background-color: $color;\"></div>
+	<div id=\"slider_$id\" style=\"height:15px; background-image:url(sliderbg.png); background-repeat:repeat-x; background-color: transparent;\" class=\"slider\"> 
+            <div class=\"handle\" style=\"width:15px; background-image:url(1up.png); background-repeat:no-repeat; background-color: transparent; \"></div>
         </div>\n";
 }
 ?>
 Moodbar
-	<div id="r_slider" class="slider">
+	<div id="r_slider" style="height:15px; background-image:url(sliderbg.png); background-repeat:repeat-x; background-color: transparent;" class="slider">
 	    <div class="handle" style="background-color: #f00;"></div>
 	</div>
-	<div id="g_slider" class="slider">
+	<div id="g_slider" style="height:15px; background-image:url(sliderbg.png); background-repeat:repeat-x; background-color: transparent;" class="slider">
 	    <div class="handle" style="background-color: #0f0;"></div>
 	</div>
-	<div id="b_slider" class="slider">
+	<div id="b_slider" style="height:15px; background-image:url(sliderbg.png); background-repeat:repeat-x; background-color: transparent;" class="slider">
 	    <div class="handle" style="background-color: #00f;"></div>
 	</div>
 
@@ -174,13 +174,13 @@ foreach($rooms as $room => $port)
 	echo "</tr></table>";
 	echo "<div id=\"".$room."_status\"></div>";
 	#if(strpos($status[0],"volume")===false) echo substr(htmlspecialchars($status[0]),0,24);
-	echo "<div id=\"slider_mpd_volume_$room\" class=\"slider\"> 
-            <div class=\"handle\" style=\"background-color: $color;\"></div>
+	echo "<div style=\"height:15px; background-image:url(sliderbg.png); background-repeat:repeat-x; background-color: transparent;\" id=\"slider_mpd_volume_$room\" class=\"slider\"> 
+            <div class=\"handle\" style=\"width:15px; background-image:url(1up.png); background-repeat:no-repeat; background-color: transparent; \"></div>
         </div>\n";
 	$color=sprintf('#%02X%02X%02X',rand(0,255),rand(0,255),rand(0,255));
 	#$color="#".dechex(rand(0,255)).dechex(rand(0,255)).dechex(rand(0,255));
-	echo "<div id=\"slider_mpd_process_$room\" class=\"slider\"> 
-            <div class=\"handle\" style=\"background-color: $color;\"></div>
+	echo "<div style=\"height:15px; background-image:url(sliderbg.png); background-repeat:repeat-x; background-color: transparent;\"  id=\"slider_mpd_process_$room\" class=\"slider\"> 
+            <div class=\"handle\" style=\"width:15px; background-image:url(1up.png); background-repeat:no-repeat; background-color: transparent; \"></div>
         </div>\n";
 }
 ?>
@@ -247,13 +247,21 @@ echo "</form>";
 <br>Treppenblink<br>
 <?
 # button oben, text drunter
+  $foo=0;
     echo "<table width=100%>";
   echo "<tr>";
+  foreach ($treppenblink_modes as $tbm_key => $tbm_value){
+    $foo++;
+    echo "<td align=\"center\"><input type=\"radio\" onclick=\"treppenblink_cmd('".$tbm_value."');\" name=\"treppenblink\" value=\"".$tbm_value."\"><br>".$tbm_key."</td>";
+    if($foo == 4){
+	$foo=0;
+	echo "</tr><tr>";
+    }
+
+  }
+  if($foo != 0)  echo "</tr><tr>";
   foreach ($treppenblink_modes as $tbm_key => $tbm_value)
-    echo "<td align=\"center\"><input type=\"radio\" onclick=\"treppenblink_cmd('".$tbm_value."');\" name=\"treppenblink\" value=\"".$tbm_value."\"></td>";
-  echo "</tr><tr>";
-  foreach ($treppenblink_modes as $tbm_key => $tbm_value)
-   echo "<td>".$tbm_key."</td>";
+#   echo "<td>".$tbm_key."</td>";
  echo "</tr></table>";
 ?>
 <br>ToiletLamp<br>
