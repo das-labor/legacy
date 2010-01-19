@@ -20,15 +20,20 @@ void borg_breakout()
 
 	/* spawn a ball in the middle bottom of the field, let it move upwards with random speed & direction */
 	ball_spawn (&balls[0], (uint16_t) (NUM_COLS / 2) * 256, (uint16_t) (NUM_ROWS-2) * 256, -120, 150, START_LIFES);
-	level_init(3);
+	level_init(0);
 	rebound_init();
 
-	while (rungame)
+	while (23)
 	{
 		wait(50);
 		rebound_tick();
-		ball_think(&balls[0]);
+		ball_think(&(balls[0]));
 		playfield_draw();
-		ball_draw(&balls[0]);
+		ball_draw(&(balls[0]));
+		if (!balls[0].strength)
+		{
+			print_score();
+			break;
+		}
 	}
 }
