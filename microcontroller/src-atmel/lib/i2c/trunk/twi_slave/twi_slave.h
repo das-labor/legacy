@@ -20,7 +20,7 @@
 
 // default Address
 #ifndef TWI_ADDRESS
-#define TWI_ADDRESS 15
+#define TWI_ADDRESS 42
 #endif
 
 
