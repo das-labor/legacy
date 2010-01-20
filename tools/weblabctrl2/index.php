@@ -160,6 +160,15 @@ foreach($pwm_ids as $id)
 	<div id=\"slider_$id\" style=\"height:15px; background-image:url(sliderbg.png); background-repeat:repeat-x; background-color: transparent;\" class=\"slider\"> 
             <div class=\"handle\" style=\"width:15px; background-image:url(1up.png); background-repeat:no-repeat; background-color: transparent; \"></div>
         </div>\n";
+        if($id == 'VORTRAG_PWM'){
+echo "
+<input type=\"image\" src=\"blue_mode_off.png\" onclick=\"blue_mode('off');\">
+<input type=\"image\" src=\"blue_mode_on.png\" onclick=\"blue_mode('on');\">
+<input type=\"image\" src=\"blue_mode_video_conference.png\" onclick=\"blue_mode('video_conference');\">
+<input type=\"image\" src=\"blue_mode_speaker.png\" onclick=\"blue_mode('speaker');\">
+<input type=\"image\" src=\"blue_mode_dimm.png\" onclick=\"blue_mode('dimm');\">";
+	}
+
 }
 ?>
 Moodbar
@@ -312,12 +321,6 @@ Laufschriftborg<br>
     </td>
   </tr>
 </table>
-Vortrag Mode<br>
-<input type="image" src="blue_mode_off.png" onclick="blue_mode('off');">
-<input type="image" src="blue_mode_on.png" onclick="blue_mode('on');">
-<input type="image" src="blue_mode_video_conference.png" onclick="blue_mode('video_conference');">
-<input type="image" src="blue_mode_speaker.png" onclick="blue_mode('speaker');">
-<input type="image" src="blue_mode_dimm.png" onclick="blue_mode('dimm');">
 <br>Random<br>
 <table>
    <tr>
