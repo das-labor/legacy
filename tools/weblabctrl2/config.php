@@ -16,4 +16,6 @@ $background_images=array("eins","zwei","drei","vier","fuenf","sechs","sieben","a
 $rooms=array("VORTRAG" => "6603","LOUNGE" => "6600","BASTEL" => "6602","KELLER" => 6601);
 $mpd_cmd=array("pause","play","volume","next","prev");
 $room_color=array("#0000dd","#eeee00","#dd0000");
+
+$GLN=array("VORTRAG_PWM" => "gesamter Vortragsraum","TAFEL" => "Tafellampe", "BEAMER" => "Beamerlampe", "SCHRANK" => "Schranklampe","FLIPPER" => "Flipperlampe", "LOUNGE" => "gesamte Lounge", "KUECHE" => "Kuechlampe");
 ?>

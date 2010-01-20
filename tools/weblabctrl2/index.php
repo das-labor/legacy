@@ -45,6 +45,9 @@ echo "<style type=\"text/css\">
   body.neun {margin: 0px; padding: 0px; background-image:url(bg/9.jpg);background-repeat:no-repeat;background-color:#000000;}
   body.zehn {margin: 0px; padding: 0px; background-image:url(bg/10.jpg);background-repeat:no-repeat;background-color:#000000;}
   body.dwarf {margin: 0px; padding: 0px; background-image:url(bg/11.jpg);background-repeat:no-repeat;background-color:#000000;}
+input.VORTRAG_button { border-size: 0px; border-style: none; background: transparent; cursor: hand; padding: 0px;}
+
+
   input {}
 </style>";
 ?>
@@ -56,6 +59,10 @@ echo "<style type=\"text/css\">
 <?
   echo "set_bg('".$bg."');";
 ?>
+function movepic(img_name,img_src) {
+  document[img_name].src=img_src;
+}
+
 function set_value(cmd,id,value)
 {
   new Ajax.Updater('ajax', 'set.php?cmd='+cmd+'&id='+id+'&value='+value,{method:'get', onComplete:function() {done=true;}, evalScripts: true} );
@@ -134,7 +141,22 @@ function moodbar_fade()
 foreach($pwm_ids as $id)
 {
 	$color=sprintf('#%02X%02X%02X',rand(0,255),rand(0,255),rand(0,255));
-	echo "$id <input id=\"LAMP_$id\" type=\"checkbox\" onclick=\"if(this.checked)set_value('SW','LAMP_$id','ON');else set_value('SW','LAMP_$id','OFF')\">
+        echo "<input id=\"LAMP_$id\" 
+                         name=\"LAMP_$id\" 
+                         src=\"dotOFF.png\" 
+                         type=\"image\" 
+                         onclick='if(this.src.substr(-10,10)==\"dotOFF.png\")
+                                   { 
+                                     set_value(\"SW\",\"LAMP_$id\",\"ON\"); 
+                                     this.src=\"dotON.png\"; 
+                                   } 
+                                   else 
+                                   { 
+                                     set_value(\"SW\",\"LAMP_$id\",\"OFF\"); 
+                                     this.src=\"dotOFF.png\";
+                                   }' style=\"background-color: transparent;\">&nbsp;";
+	echo $GLN["$id"] ;
+	echo "
 	<div id=\"slider_$id\" style=\"height:15px; background-image:url(sliderbg.png); background-repeat:repeat-x; background-color: transparent;\" class=\"slider\"> 
             <div class=\"handle\" style=\"width:15px; background-image:url(1up.png); background-repeat:no-repeat; background-color: transparent; \"></div>
         </div>\n";
@@ -167,10 +189,17 @@ foreach($rooms as $room => $port)
 	#$color="#".dechex(rand(0,255)).dechex(rand(0,255)).dechex(rand(0,255));
 	echo "$room";
 	echo "<table width=100%><tr>";
-	echo "<td><input type=\"button\" id=\"".$room."_pause\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','pause');\" value=\"pause\"></td>";
-	echo "<td><input type=\"button\" id=\"".$room."_play\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','play');\" value=\"play\"></td>";
-	echo "<td><input type=\"button\" id=\"".$room."_prev\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','prev');\" value=\"prev\"></td>";
-	echo "<td><input type=\"button\" id=\"".$room."_next\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','next');\" value=\"next\"></td><br>";
+#	echo "<td><input type=\"button\" id=\"".$room."_pause\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','pause');\" value=\"pause\"></td>";
+	echo "<td><input src=\"pause_h.png\" type=\"image\" name=\"".$room."_pause\" id=\"".$room."_pause\" class=\"".$room."_button\" style=\"background-color: transparent;\" onclick=\"mpd_cmd('$room','pause'); \" value=\"pause\"></td>";
+	echo "<td><input src=\"play_h.png\" type=\"image\" name=\"".$room."_play\" id=\"".$room."_play\" class=\"".$room."_button\" style=\"background-color: transparent;\" onclick=\"mpd_cmd('$room','play'); \" value=\"play\"></td>";
+
+
+#	echo "<td><input type=\"button\" id=\"".$room."_play\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','play');\" value=\"play\"></td>";
+	echo "<td><input src=\"rev_h.png\" type=\"image\" name=\"".$room."_prev\" id=\"".$room."_prev\" class=\"".$room."_button\" style=\"background-color: transparent;\" onclick=\"mpd_cmd('$room','prev'); \" value=\"prev\"></td>";
+	echo "<td><input src=\"ff_h.png\" type=\"image\" name=\"".$room."_next\" id=\"".$room."_next\" class=\"".$room."_button\" style=\"background-color: transparent;\" onclick=\"mpd_cmd('$room','next'); \" value=\"next\"></td>";
+
+#	echo "<td><input type=\"button\" id=\"".$room."_prev\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','prev');\" value=\"prev\"></td>";
+#	echo "<td><input type=\"button\" id=\"".$room."_next\" class=\"".$room."_button\" onclick=\"mpd_cmd('$room','next');\" value=\"next\"></td><br>";
 	echo "</tr></table>";
 	echo "<div id=\"".$room."_status\"></div>";
 	#if(strpos($status[0],"volume")===false) echo substr(htmlspecialchars($status[0]),0,24);
@@ -215,8 +244,7 @@ echo "source select: <select onchange=\"CheckBeamerSource();\" name=\"beamerSour
  echo "</select>";
 echo "</form>";
 ?>
-
-<br>Teufel Amp<br>
+Teufel Amp<br>
 <?
   $teufel_counter=0;
   echo "<table width=100% border=0 cellpadding=0 cellspacing=0><tr>";
@@ -241,8 +269,7 @@ echo "source select: <select onchange=\"CheckTeufelSource()\" name=\"teufelSourc
  echo "</select>";
 echo "</form>";
 ?>
-
-<br>Laufschriftborg<br>
+Laufschriftborg<br>
 <input type="text"  onchange="text_the_borg(this.value);this.value='';" value="">
 <br>Treppenblink<br>
 <?
