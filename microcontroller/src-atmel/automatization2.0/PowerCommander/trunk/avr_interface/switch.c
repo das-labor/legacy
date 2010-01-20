@@ -79,8 +79,8 @@ void switch_handler()
 		
 		twi_send(&outdata);
 
-		PORTA |= _BV(PA3); // red
-		PORTA &= ~_BV(PA2); // green
+		PORTA |= LED_ROT; // red
+		PORTA &= ~LED_GRUEN; // green
 		_delay_ms(500);
 	}
 	if ((PINA & _BV(PA0)) && stat_switches.hauptschalter == 0)
@@ -98,8 +98,8 @@ void switch_handler()
 		
 		twi_send(&outdata);
 		
-		PORTA |= _BV(PA2); // green
-		PORTA &= ~_BV(PA3); // red
+		PORTA |= LED_GRUEN; // green
+		PORTA &= ~LED_ROT; // red
 		_delay_ms(500);
 	}
 
@@ -249,8 +249,8 @@ void switch_handler()
 		msg[0] =  stat_switches.bla;
 		can_send(0x02, msg);
 		
-		PORTA |= _BV(PA3); // red
-		PORTA &= ~_BV(PA2); // green
+		PORTA |= LED_ROT; // red
+		PORTA &= ~LED_GRUEN; // green
 	}
 	if ((PINC & _BV(PC2)) && stat_switches.power_ok == 0)
 	{
@@ -259,8 +259,8 @@ void switch_handler()
 		msg[0] =  stat_switches.bla;
 		can_send(0x02, msg);
 		
-		PORTA |= _BV(PA2); // green
-		PORTA &= ~_BV(PA3); // red
+		PORTA |= LED_GRUEN; // green
+		PORTA &= ~LED_ROT; // red
 	}
 // PD6 - RCD Server
 	if (!(PIND & _BV(PD6)) && stat_switches.rcd_server)
@@ -270,8 +270,8 @@ void switch_handler()
 		msg[0] =  stat_switches.bla;
 		can_send(0x02, msg);
 
-		PORTA |= _BV(PA3); // red
-		PORTA &= ~_BV(PA2); // green
+		PORTA |= LED_ROT; // red
+		PORTA &= ~LED_GRUEN; // green
 	}
 	if ((PIND & _BV(PD6)) && stat_switches.rcd_server == 0)
 	{
@@ -280,8 +280,8 @@ void switch_handler()
 		msg[0] =  stat_switches.bla;
 		can_send(0x02, msg);
 		
-		PORTA |= _BV(PA2); // green
-		PORTA &= ~_BV(PA3); // red
+		PORTA |= LED_GRUEN; // green
+		PORTA &= ~LED_ROT; // red
 	}
 // PA1 - RCD Steckdosen 
 	if (!(PINA & _BV(PA1)) && stat_switches.rcd_power)
@@ -291,8 +291,8 @@ void switch_handler()
 		msg[0] =  stat_switches.bla;
 		can_send(0x02, msg);
 		
-		PORTA |= _BV(PA3); // red
-		PORTA &= ~_BV(PA2); // green
+		PORTA |= LED_ROT; // red
+		PORTA &= ~LED_GRUEN; // green
 	}
 	if ((PINA & _BV(PA1)) && stat_switches.rcd_power == 0)
 	{
@@ -301,8 +301,8 @@ void switch_handler()
 		msg[0] =  stat_switches.bla;
 		can_send(0x02, msg);
 		
-		PORTA |= _BV(PA2); // green
-		PORTA &= ~_BV(PA3); // red
+		PORTA |= LED_GRUEN; // green
+		PORTA &= ~LED_ROT; // red
 	}
 //  PD7 - RCD Licht
 	if (!(PIND & _BV(PD7)) && stat_switches.rcd_licht)
@@ -312,8 +312,8 @@ void switch_handler()
 		msg[0] =  stat_switches.bla;
 		can_send(0x02, msg);
 		
-		PORTA |= _BV(PA3); // red
-		PORTA &= ~_BV(PA2); // green
+		PORTA |= LED_ROT; // red
+		PORTA &= ~LED_GRUEN; // green
 	}
 	if ((PIND & _BV(PD7)) && stat_switches.rcd_licht == 0)
 	{
@@ -322,8 +322,8 @@ void switch_handler()
 		msg[0] =  stat_switches.bla;
 		can_send(0x02, msg);
 		
-		PORTA |= _BV(PA2); // green
-		PORTA &= ~_BV(PA3); // red
+		PORTA |= LED_GRUEN; // green
+		PORTA &= ~LED_ROT; // red
 	}
 }
 
