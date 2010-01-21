@@ -17,5 +17,40 @@ $rooms=array("VORTRAG" => "6603","LOUNGE" => "6600","BASTEL" => "6602","KELLER" 
 $mpd_cmd=array("pause","play","volume","next","prev");
 $room_color=array("#0000dd","#eeee00","#dd0000");
 
-$GLN=array("VORTRAG_PWM" => "gesamter Vortragsraum","TAFEL" => "Tafellampe", "BEAMER" => "Beamerlampe", "SCHRANK" => "Schranklampe","FLIPPER" => "Flipperlampe", "LOUNGE" => "gesamte Lounge", "KUECHE" => "Kuechlampe");
+$GLN=array("VORTRAG_PWM" => "gesamter Vortragsraum","TAFEL" => "Tafellampe", "BEAMER" => "Beamerlampe", "SCHRANK" => "Schranklampe","FLIPPER" => "Flipperlampe", "LOUNGE" => "gesamte Lounge", "KUECHE" => "K&uuml;chlampe");
+
+
+# restroing sessionvariables and setting defaults if missing 
+
+$bg='dwarf';
+$toiletlamp=0;
+$pwmx=10;
+$pwmy=60;
+$mpdx=310;
+$mpdy=60;
+$miscx=570;
+$miscy=180;
+$vortragsdevsx=570;
+$vortragsdevsy=60;
+$treppenblinkx=830;
+$treppenblinky=60;
+$mybackgroundx=830;
+$mybackgroundy=120;
+
+if($_COOKIE['bg']) $bg=$_COOKIE['bg'];
+if($_COOKIE['toiletlamp']) $toiletlamp=$_COOKIE['toiletlamp'];
+if($_COOKIE['pwmx']) $pwmx=$_COOKIE['pwmx'];
+if($_COOKIE['pwmy']) $pwmy=$_COOKIE['pwmy'];
+if($_COOKIE['mpdx']) $mpdx=$_COOKIE['mpdx'];
+if($_COOKIE['mpdy']) $mpdy=$_COOKIE['mpdy'];
+if($_COOKIE['miscx']) $miscx=$_COOKIE['miscx'];
+if($_COOKIE['miscy']) $miscy=$_COOKIE['miscy'];
+if($_COOKIE['vortragsdevsx']) $vortragsdevsx=$_COOKIE['vortragsdevsx'];
+if($_COOKIE['vortragsdevsy']) $vortragsdevsy=$_COOKIE['vortragsdevsy'];
+if($_COOKIE['treppenblinkx']) $treppenblinkx=$_COOKIE['treppenblinkx'];
+if($_COOKIE['treppenblinky']) $treppenblinky=$_COOKIE['treppenblinky'];
+if($_COOKIE['mybackgroundx']) $mybackgroundx=$_COOKIE['mybackgroundx'];
+if($_COOKIE['mybackgroundy']) $mybackgroundy=$_COOKIE['mybackgroundy'];
+
+
 ?>
