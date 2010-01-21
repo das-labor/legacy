@@ -19,4 +19,6 @@
 #include "level.h"
 #include "rebound.h"
 #include "messages.h"
+
+#define MAX(a,b) (a > b) ? a : b
 #endif /* COMMON_H */

@@ -1,11 +1,19 @@
 #include "level.h"
 
+static uint16_t maxscore;
+
 /* real level definition */
 enum game_field_t level_field (uint8_t in_x, uint8_t in_y, uint8_t in_lvl);
 enum game_field_t level_field (uint8_t in_x, uint8_t in_y, uint8_t in_lvl)
 {
 	switch (in_lvl)
 	{
+		case 0:
+			/* space for the lower half of the level */
+			if (in_y > (NUM_ROWS / 3))
+				return sp;
+
+			return b1; /* b1-blocks for the rest */
 		case 1:
 			/* space for the lower half of the level */
 			if (in_y > (NUM_ROWS / 2))
@@ -56,13 +64,24 @@ enum game_field_t level_field (uint8_t in_x, uint8_t in_y, uint8_t in_lvl)
 void level_init (uint8_t in_levelnum)
 {
 	uint8_t x,y;
+	enum game_field_t tmp;
+	maxscore = 0;
 
 	for (x=0;x<NUM_COLS;x++)
 	{
 		for (y=0;y<NUM_ROWS;y++)
 		{
-			playfield_set (x,y, level_field (x, y, in_levelnum));
+			tmp = level_field (x, y, in_levelnum);
+			playfield_set (x,y, tmp);
+			if (tmp <= b3)
+				maxscore += tmp;
 		}
 	}
+
+	maxscore += score_get();
 }
 
+uint16_t level_getscorediff ()
+{
+	return maxscore - score_get();
+}

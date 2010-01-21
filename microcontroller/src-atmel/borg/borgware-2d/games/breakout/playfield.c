@@ -3,6 +3,10 @@ static enum game_field_t playfield[NUM_COLS][NUM_ROWS];
 
 void playfield_set (uint8_t in_x, uint8_t in_y, enum game_field_t in_field)
 {
+	if (in_x >= NUM_ROWS || in_y >= NUM_COLS)
+	{
+		return;
+	}
 	playfield[in_x][in_y] = in_field;
 }
 
@@ -10,8 +14,9 @@ void brick_damage (uint8_t in_x, uint8_t in_y)
 {
 	enum game_field_t newtype;
 
-	if (playfield[in_x][in_y] > bs || playfield[in_x][in_y] == 0)
+	if (playfield[in_x][in_y] >= bs || playfield[in_x][in_y] == 0)
 		return;
+
 	playfield[in_x][in_y] -= 1;
 	score_add (1);
 }
@@ -26,7 +31,11 @@ uint8_t check_bounce (int8_t in_x, int8_t in_y)
 	if (in_y >= NUM_COLS || in_y < 0)
 		ov |= BOUNCE_Y;
 	
-	if (ov) return ov;
+	if (ov)
+	{
+		return ov;
+	}
+
 	/* collisions with real objects */
 	switch (playfield[abs(in_x)][abs(in_y)])
 	{
@@ -35,20 +44,22 @@ uint8_t check_bounce (int8_t in_x, int8_t in_y)
 		case b1:
 			brick_damage (in_x, in_y);
 		/* intentional fallthrough */
-
 		case bs:
-			return BOUNCE_UNDEF | ov;		
+			ov |= BOUNCE_BRICK;
+			break;
 		
 		/* bouncing on the rebound needs special care */
 		case rb:
-			return BOUNCE_Y;
+			ov |= BOUNCE_Y | BOUNCE_REBOUND;
+			break;
 		
 		case sp:
 		case bl:
 		default:
-			return ov;
+			break;
 		
 	}
+	return ov;
 }
 
 /* this is the actual draw function for a single field

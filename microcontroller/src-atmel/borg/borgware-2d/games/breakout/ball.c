@@ -1,20 +1,59 @@
 #include "common.h"
 
+/* modify a vecotor according to given type of bouncing */
+void bounce_rand_vector (ball_t *in_b, uint8_t in_bouncetype);
+void bounce_rand_vector (ball_t *in_b, uint8_t in_bouncetype)
+{
+	uint8_t rval = random8();
+	
+	switch (in_bouncetype)
+	{
+		case BOUNCE_NONE: /* don't touch the vector since nothing changed */
+			return;
+
+		case BOUNCE_BRICK:
+			in_b->dir_x ^= (rval & 0x07);
+			in_b->dir_y ^= (rval & 0x07);
+			break;
+
+		case BOUNCE_REBOUND: /* the rebound is rather percise */
+			in_b->dir_x ^= (rval & 0x03);
+			in_b->dir_y ^= (rval & 0x03);
+			if (JOYISRIGHT || JOYISLEFT)
+			{
+				/* a moving rebond accelerates the ball by 1/8th */
+				in_b->dir_y += (in_b->dir_y / 8);
+				in_b->dir_x += (in_b->dir_x / 8);
+			}
+			break;
+
+		default: /* walls */
+			in_b->dir_x ^= (rval & 0x01);
+			in_b->dir_y ^= (rval & 0x01);
+	}
+	if (!in_b->dir_x)
+		in_b->dir_x = 213;
+	
+	if (!in_b->dir_y)
+		in_b->dir_y = 217;
+}
 
 void ball_think (ball_t *b)
 {
 	int8_t proj_x, proj_y, bounce;
+	
+	/*
 	if (!b->strength)
 		return;
+	*/
 	
 	/* projection of the new coordinates */
 	proj_x = (b->x + (b->dir_x)) / 256;
 	proj_y = (b->y + (b->dir_y)) / 256;
 	
-	/* ball fell out of the field */
+	/* falling out of the field */
 	if (proj_y >= NUM_ROWS)
 		ball_die (b);
-	
 
 	bounce = check_bounce (proj_x, b->y / 256);
 	if (bounce & BOUNCE_UNDEF)
@@ -28,14 +67,12 @@ void ball_think (ball_t *b)
 	if (bounce & BOUNCE_UNDEF)
 		bounce = BOUNCE_X | BOUNCE_Y;
 
-	
+	bounce_rand_vector (b, bounce);
 
 	/* bounce in x direction */
-	if (bounce & 0x01)
+	if (bounce & (BOUNCE_X | BOUNCE_BRICK))
 	{
 		b->dir_x *= -1; /* invert x vector */
-		b->dir_x ^= random8() & 0x0F; /* randomize bouncing */
-
 
 #if BOUNCE_SLOWDOWN
 		if (b->dir_x < 0)
@@ -49,10 +86,10 @@ void ball_think (ball_t *b)
 	}
 
 	/* bounce in y direction */
-	if (bounce & 0x02)
+	if (bounce & (BOUNCE_Y | BOUNCE_BRICK))
 	{
 		b->dir_y *= -1; /* invert y vector */
-		b->dir_y ^= random8() & 0x0F;
+
 #if BOUNCE_SLOWDOWN
 		if (b->dir_y < 0)
 		{
@@ -66,6 +103,11 @@ void ball_think (ball_t *b)
 
 	b->y += b->dir_y;
 	b->x += b->dir_x;
+
+	if (!b->dir_x || !b->dir_y)
+	{
+		printf("Ball stopped!\n");
+	}
 }
 	
 void ball_die (ball_t *in_b)
@@ -76,7 +118,7 @@ void ball_die (ball_t *in_b)
 	if (in_b->strength)
 	{
 		print_ballsleft(in_b);
-		ball_spawn (in_b, (uint16_t) (rebound_getpos() * 256), (uint16_t) (NUM_ROWS-2) * 256, -120, 150, in_b->strength);
+		ball_spawn_default (in_b);
 	}
 }
 
@@ -89,16 +131,22 @@ void ball_draw (ball_t *b)
 	setpixel (p, 3);
 }
 
-void ball_spawn (ball_t *in_ball, uint16_t in_x, uint16_t in_y, int16_t in_dir_x, int16_t in_dir_y, uint8_t in_strength)
+void ball_spawn (ball_t *in_ball, uint16_t in_x, uint16_t in_y, int16_t in_dir_x, int16_t in_dir_y)
 {
 	in_ball->x = in_x;
 	in_ball->y = in_y;
 	in_ball->dir_x = in_dir_x;
 	in_ball->dir_y = in_dir_y;
-	in_ball->strength = in_strength;
 }
 
 void ball_spawn_default (ball_t *in_b)
 {
-	ball_spawn (in_b, (uint16_t) (NUM_COLS / 2) * 256, (uint16_t) (NUM_ROWS-2) * 256, -120, 150, START_LIFES);
+	int16_t xdir;
+
+	xdir = 128 + (random8() & 0x3F);
+	if (random8() & 0x01)
+		xdir *= -1;
+	
+	ball_spawn (in_b, (uint16_t) rebound_getpos() * 256, (NUM_ROWS -2) * 256,
+		xdir, -131);
 }
