@@ -16,6 +16,8 @@
  *
  */
 
+#include "ball.h"
+
 /* modify a vecotor according to given type of bouncing */
 void bounce_rand_vector (ball_t *in_b, uint8_t in_bouncetype);
 void bounce_rand_vector (ball_t *in_b, uint8_t in_bouncetype)

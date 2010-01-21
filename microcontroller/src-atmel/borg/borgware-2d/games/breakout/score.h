@@ -15,7 +15,6 @@
  * Author & Copyright (C) 2010: Soeren Heisrath (forename@surename.org)
  *
  */
-#include <stdint.h>
 #include "common.h"
 
 #ifndef SCORE_H
