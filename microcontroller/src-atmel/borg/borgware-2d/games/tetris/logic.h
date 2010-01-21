@@ -55,13 +55,20 @@ void tetris();
  */
 void tetris_bastet();
 
+/* Function:     tetris_fp
+ * Description:  runs the tetris first person game
+ * Return value: void
+ */
+void tetris_fp();
+
 
 /* Function:         tetris_main
  * Description:      runs the tetris game
- * Argument nBastet: 0 for normal Tetris, 1 for Bastet
+ * Argument nMode:   0 for normal Tetris, 1 for Bastet, 
+ *                   2 for first person tetris
  * Return value:     void
  */
-void tetris_main(int8_t nBastet);
+void tetris_main(int8_t nMode);
 
 /* Function:        tetris_logic_singleDrop
  * Description:     add points which result from single step dropping
@@ -172,5 +179,12 @@ void tetris_logic_setPreviewPiece(tetris_logic_t *pLogic,
  */
 tetris_piece_t* tetris_logic_getPreviewPiece(tetris_logic_t *pLogic);
 
+#ifdef GAME_TETRIS_FP
+/* Function:     tetris_view_rotate
+ * Description:  rotate view for first person mode
+ * Return value: void
+ */
+void tetris_view_rotate(void);
+#endif
 
 #endif /*TETRIS_LOGIC_H_*/

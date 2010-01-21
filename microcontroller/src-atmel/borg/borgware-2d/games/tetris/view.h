@@ -42,7 +42,8 @@ tetris_view_t;
  * Return value: pointer to a newly created view
  */
 tetris_view_t *tetris_view_construct(tetris_logic_t *pLogic,
-                                     tetris_playfield_t *pPl);
+                                     tetris_playfield_t *pPl,
+                                     uint8_t nFirstPerson);
 
 
 /* Function:       tetris_view_destruct
@@ -91,6 +92,13 @@ void tetris_view_update(tetris_view_t *pV);
  */
 void tetris_view_showResults(tetris_view_t *pV);
 
+#ifdef GAME_TETRIS_FP
+/* Function:     tetris_view_setpixel_fp
+ * Description:  own setpixel wrapper for first person mode
+ * Return value: void
+ */
+void tetris_view_setpixel_fp(pixel p, unsigned char value);
+#endif
 
 #endif /*TETRIS_VIEW_H_*/
 
