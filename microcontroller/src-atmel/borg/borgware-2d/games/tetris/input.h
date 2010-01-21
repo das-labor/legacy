@@ -112,7 +112,8 @@ void tetris_input_destruct(tetris_input_t *pIn);
  * Return value:   see definition of tetris_input_command_t
  */
 tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
-                                               tetris_input_pace_t nPace);
+                                               tetris_input_pace_t nPace,
+                                               uint8_t nFirstPerson);
 
 
 /* Function:      tetris_input_setLevel

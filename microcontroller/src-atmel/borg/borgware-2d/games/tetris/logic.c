@@ -13,6 +13,7 @@
 #include "../../compat/pgmspace.h"
 #include "../../menu/menu.h"
 #include "../../random/prng.h"
+#include "../../pixel.h"
 
 #include "logic.h"
 #include "piece.h"
@@ -21,13 +22,15 @@
 #include "input.h"
 #include "highscore.h"
 
+#define NUMHIGHSCORES 3
+
 #ifdef GAME_BASTET
 #include "bast.h"
-#define NUMHIGHSCORES 2
-#else
-#define NUMHIGHSCORES 1
 #endif
 
+#ifdef GAME_TETRIS_FP
+#include "tetrisfp.h"
+#endif
 
 #ifdef EEMEM
 /***********************
@@ -51,6 +54,19 @@ game_descriptor_t tetris_game_descriptor
 	tetris_icon,
 };
 
+
+#ifdef GAME_TETRIS_FP
+// Bastet icon, MSB is leftmost pixel
+static uint8_t tetrisfp_icon[8] PROGMEM =
+	{ 0xee, 0x89, 0xee, 0x88, 0x88, 0x20, 0x2c, 0x6c };
+game_descriptor_t tetrisfp_game_descriptor
+	__attribute__((section(".game_descriptors"))) =
+{
+	&tetris_fp,
+	tetrisfp_icon,
+};
+#endif
+
 #ifdef GAME_BASTET
 // Bastet icon, MSB is leftmost pixel
 static uint8_t bastet_icon[8] PROGMEM =
@@ -62,6 +78,8 @@ game_descriptor_t bastet_game_descriptor
 	bastet_icon,
 };
 #endif
+
+
 #endif /*MENU_SUPPORT*/
 
 /***************************
@@ -227,12 +245,23 @@ void tetris_bastet()
 }
 
 
+/* Function:     tetris_fp
+ * Description:  runs the tetris first person game
+ * Return value: void
+ */
+void tetris_fp()
+{
+	tetris_main(2);
+}
+
+
 /* Function:         tetris_main
  * Description:      runs the tetris game
- * Argument nBastet: 0 for normal Tetris, 1 for Bastet
+ * Argument nMode:   0 for normal Tetris, 1 for Bastet
+ *                   2 for first person tetris
  * Return value:     void
  */
-void tetris_main(int8_t nBastet)
+void tetris_main(int8_t nMode)
 {
 	// get view dependent dimensions of the playfield
 	int8_t nWidth;
@@ -242,11 +271,15 @@ void tetris_main(int8_t nBastet)
 	// holds the current user command which should be processed
 	tetris_input_command_t inCmd;
 
+#ifdef GAME_TETRIS_FP
+	tetris_screendir = 0;
+#endif
+
 	// prepare data structures that drive the game...
-	tetris_logic_t *pLogic = tetris_logic_construct(nBastet);
+	tetris_logic_t *pLogic = tetris_logic_construct((nMode==1));
 	tetris_playfield_t *pPl = tetris_playfield_construct(nWidth, nHeight);
 	tetris_input_t *pIn = tetris_input_construct();
-	tetris_view_t *pView = tetris_view_construct(pLogic, pPl);
+	tetris_view_t *pView = tetris_view_construct(pLogic, pPl, (nMode==2));
 #ifdef GAME_BASTET
 	tetris_bastet_t *pBastet;
 #endif
@@ -261,8 +294,8 @@ void tetris_main(int8_t nBastet)
 	if (nHighscore == 0)
 	{
 #endif
-		nHighscore = tetris_logic_retrieveHighscore(nBastet);
-		nHighscoreName = tetris_logic_retrieveHighscoreName(nBastet);
+		nHighscore = tetris_logic_retrieveHighscore(nMode);
+		nHighscoreName = tetris_logic_retrieveHighscoreName(nMode);
 #ifndef GAME_BASTET
 	}
 #endif
@@ -271,7 +304,7 @@ void tetris_main(int8_t nBastet)
 	tetris_piece_t *pPiece;
 	tetris_piece_t *pNextPiece;
 #ifdef GAME_BASTET
-	if (nBastet)
+	if (nMode == 1)
 	{
 		pBastet = tetris_bastet_construct(pPl);
 		pNextPiece = pPiece = NULL;
@@ -304,7 +337,7 @@ void tetris_main(int8_t nBastet)
 		// the playfield awaits a new piece
 		case TETRIS_PFS_READY:
 #ifdef GAME_BASTET
-			if (nBastet)
+			if (nMode == 1)
 			{
 				if (pPiece != NULL)
 				{
@@ -361,7 +394,7 @@ void tetris_main(int8_t nBastet)
 			}
 
 			// ensure correct view mode if the game isn't paused
-			if ((inCmd = tetris_input_getCommand(pIn, inPace))
+			if ((inCmd = tetris_input_getCommand(pIn, inPace, (nMode==2)))
 					!= TETRIS_INCMD_PAUSE)
 			{
 				tetris_view_setViewMode(pView, TETRIS_VIMO_RUNNING);
@@ -403,7 +436,17 @@ void tetris_main(int8_t nBastet)
 
 			// player rotated the piece clockwise
 			case TETRIS_INCMD_ROT_CW:
-				tetris_playfield_rotatePiece(pPl, TETRIS_PC_ROT_CW);
+#ifdef GAME_TETRIS_FP
+				if (nMode == 2) {
+				  tetris_view_rotate(); 
+				  tetris_playfield_rotatePiece(pPl, TETRIS_PC_ROT_CCW);
+				} else
+				{
+#endif
+					tetris_playfield_rotatePiece(pPl, TETRIS_PC_ROT_CW);
+#ifdef GAME_TETRIS_FP
+				}
+#endif
 				break;
 
 			// player rotated the piece counter clockwise
@@ -466,13 +509,13 @@ void tetris_main(int8_t nBastet)
 	{
 		nHighscore = nScore;
 		nHighscoreName = tetris_highscore_inputName();
-		tetris_logic_saveHighscore(nBastet, nHighscore);
-		tetris_logic_saveHighscoreName(nBastet, nHighscoreName);
+		tetris_logic_saveHighscore(nMode, nHighscore);
+		tetris_logic_saveHighscoreName(nMode, nHighscoreName);
 	}
 
 	// clean up
 #ifdef GAME_BASTET
-	if (nBastet)
+	if (nMode == 1)
 	{
 		tetris_bastet_destruct(pBastet);
 	}

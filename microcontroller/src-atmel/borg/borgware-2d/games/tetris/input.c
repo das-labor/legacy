@@ -7,6 +7,10 @@
 #include "../../util.h"
 #include "input.h"
 
+#ifdef GAME_TETRIS_FP
+#include "tetrisfp.h"
+#endif
+
 #include "../../compat/pgmspace.h"
 #define WAIT(ms) wait(ms)
 #define PM(value) pgm_read_word(&value)
@@ -117,7 +121,7 @@ void tetris_input_chatterProtect (tetris_input_t *pIn,
  * Argument pIn: pointer to an input object
  * Return value: see definition of tetris_input_command_t
  */
-tetris_input_command_t tetris_input_queryJoystick()
+tetris_input_command_t tetris_input_queryJoystick(uint8_t nFirstPerson)
 {
 	tetris_input_command_t cmdReturn;
 
@@ -127,11 +131,30 @@ tetris_input_command_t tetris_input_queryJoystick()
 	}
 	else if (JOYISLEFT)
 	{
+#ifdef GAME_TETRIS_FP
+		switch (tetris_screendir) {
+		  case 0: cmdReturn = TETRIS_INCMD_LEFT; break;
+		  case 1: cmdReturn = TETRIS_INCMD_DOWN; break;
+		  case 2: cmdReturn = TETRIS_INCMD_RIGHT; break;
+		  case 3: cmdReturn = TETRIS_INCMD_ROT_CW; break;
+		}
+#else
 		cmdReturn = TETRIS_INCMD_LEFT;
+#endif
+		  
 	}
 	else if (JOYISRIGHT)
 	{
+#ifdef GAME_TETRIS_FP
+		switch (tetris_screendir) {
+		  case 0: cmdReturn = TETRIS_INCMD_RIGHT; break;
+		  case 1: cmdReturn = TETRIS_INCMD_ROT_CW; break;
+		  case 2: cmdReturn = TETRIS_INCMD_LEFT; break;
+		  case 3: cmdReturn = TETRIS_INCMD_DOWN; break;
+		}
+#else
 		cmdReturn = TETRIS_INCMD_RIGHT;
+#endif
 	}
 	else if (JOYISUP && JOYISDOWN)
 	{
@@ -140,11 +163,29 @@ tetris_input_command_t tetris_input_queryJoystick()
 	}
 	else if (JOYISDOWN)
 	{
+#ifdef GAME_TETRIS_FP
+		switch (tetris_screendir) {
+		  case 0: cmdReturn = TETRIS_INCMD_DOWN; break;
+		  case 1: cmdReturn = TETRIS_INCMD_RIGHT; break;
+		  case 2: cmdReturn = TETRIS_INCMD_ROT_CW; break;
+		  case 3: cmdReturn = TETRIS_INCMD_LEFT; break;
+		}
+#else
 		cmdReturn = TETRIS_INCMD_DOWN;
+#endif
 	}
 	else if (JOYISUP)
 	{
+#ifdef GAME_TETRIS_FP
+		switch (tetris_screendir) {
+		  case 0: cmdReturn = TETRIS_INCMD_ROT_CW; break;
+		  case 1: cmdReturn = TETRIS_INCMD_LEFT; break;
+		  case 2: cmdReturn = TETRIS_INCMD_DOWN; break;
+		  case 3: cmdReturn = TETRIS_INCMD_RIGHT; break;
+		}
+#else
 		cmdReturn = TETRIS_INCMD_ROT_CW;
+#endif
 	}
 	else
 	{
@@ -203,7 +244,8 @@ void tetris_input_destruct(tetris_input_t *pIn)
  * Return value:   see definition of tetris_input_command_t
  */
 tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
-                                               tetris_input_pace_t nPace)
+                                               tetris_input_pace_t nPace,
+                                               uint8_t nFirstPerson)
 {
 	assert (pIn != NULL);
 
@@ -230,7 +272,7 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 
 	while (pIn->nLoopCycles < nMaxCycles)
 	{
-		cmdJoystick = tetris_input_queryJoystick();
+		cmdJoystick = tetris_input_queryJoystick(nFirstPerson);
 
 		// only obey current command if it is not considered as chattering
 		if (((cmdJoystick < TETRIS_INCMD_NONE) ?

@@ -14,6 +14,12 @@
 
 #define WAIT(ms) wait(ms)
 
+#ifdef GAME_TETRIS_FP
+uint8_t tetris_screendir;
+#endif
+
+void (*setpixel_wrapper)(pixel p, unsigned char value);
+
 
 /***********
  * defines *
@@ -36,6 +42,9 @@
 #define TETRIS_VIEW_COLORPIECE   3
 #define TETRIS_VIEW_COLORPAUSE   1
 #define TETRIS_VIEW_COLORCOUNTER 2
+
+
+
 
 
 /***************************
@@ -136,7 +145,7 @@ void tetris_view_drawDump(tetris_view_t *pV)
 			{
 				nColor = TETRIS_VIEW_COLORSPACE;
 			}
-			setpixel((pixel){14-x,nRow}, nColor);
+			setpixel_wrapper((pixel){14-x,nRow}, nColor);
 			nElementMask <<= 1;
 		}
 	}
@@ -177,7 +186,7 @@ void tetris_view_drawPreviewPiece(tetris_view_t *pV, tetris_piece_t *pPc)
 				{
 					nColor = TETRIS_VIEW_COLORSPACE;
 				}
-				setpixel((pixel) {3 - x, y + 6}, nColor);
+				setpixel_wrapper((pixel) {3 - x, y + 6}, nColor);
 				nElementMask <<= 1;
 			}
 		}
@@ -188,7 +197,7 @@ void tetris_view_drawPreviewPiece(tetris_view_t *pV, tetris_piece_t *pPc)
 		{
 			for (uint8_t x = 0; x < 4; ++x)
 			{
-				setpixel((pixel) {3 - x, y + 6}, TETRIS_VIEW_COLORSPACE);
+				setpixel_wrapper((pixel) {3 - x, y + 6}, TETRIS_VIEW_COLORSPACE);
 			}
 		}
 	}
@@ -206,8 +215,8 @@ void tetris_view_drawBorders(uint8_t nColor)
 	uint8_t x, y;
 	for (y = 0; y < 16; ++y)
 	{
-		setpixel((pixel){4, y}, nColor);
-		setpixel((pixel){15, y}, nColor);
+		setpixel_wrapper((pixel){4, y}, nColor);
+		setpixel_wrapper((pixel){15, y}, nColor);
 	}
 
 	for (y = 0; y < 5; ++y)
@@ -216,8 +225,8 @@ void tetris_view_drawBorders(uint8_t nColor)
 		{
 			if ((y < 1 || y > 3) || (x < 1 || y > 3))
 			{
-				setpixel((pixel){x, y}, nColor);
-				setpixel((pixel){x, y + 11}, nColor);
+				setpixel_wrapper((pixel){x, y}, nColor);
+				setpixel_wrapper((pixel){x, y + 11}, nColor);
 			}
 		}
 	}
@@ -276,7 +285,7 @@ void tetris_view_blinkLines(tetris_playfield_t *pPl)
 
 						uint8_t nColor = (nColIdx == 0 ? TETRIS_VIEW_COLORFADE
 								: TETRIS_VIEW_COLORPIECE);
-						setpixel((pixel){14 - x, y}, nColor);
+						setpixel_wrapper((pixel){14 - x, y}, nColor);
 					}
 				}
 			}
@@ -316,9 +325,9 @@ void tetris_view_showLineNumbers(tetris_view_t *pV)
 			x = 1;
 		}
 		// ones
-		setpixel((pixel){x, y}, nOnesPen);
+		setpixel_wrapper((pixel){x, y}, nOnesPen);
 		// tens (increment x, add vertical offset for lower part of the border)
-		setpixel((pixel){x++, y + 11}, nTensPen);
+		setpixel_wrapper((pixel){x++, y + 11}, nTensPen);
 	}
 }
 
@@ -334,7 +343,8 @@ void tetris_view_showLineNumbers(tetris_view_t *pV)
  * Return value: pointer to a newly created view
  */
 tetris_view_t *tetris_view_construct(tetris_logic_t *pLogic,
-                                     tetris_playfield_t *pPl)
+                                     tetris_playfield_t *pPl,
+                                     uint8_t nFirstPerson)
 {
 	// memory allocation
 	assert((pLogic != NULL) && (pPl != NULL));
@@ -348,6 +358,16 @@ tetris_view_t *tetris_view_construct(tetris_logic_t *pLogic,
 	pView->pPl = pPl;
 	pView->modeCurrent = TETRIS_VIMO_RUNNING;
 	pView->modeOld = TETRIS_VIMO_RUNNING;
+
+#ifdef GAME_TETRIS_FP
+	// set setpixel wrapper
+	if (nFirstPerson)
+		setpixel_wrapper = tetris_view_setpixel_fp;
+	else
+		setpixel_wrapper = setpixel;
+#else
+	setpixel_wrapper = setpixel;
+#endif
 
 	// drawing some first stuff
 	clear_screen(0);
@@ -487,3 +507,59 @@ void tetris_view_showResults(tetris_view_t *pV)
 #endif
 }
 
+
+#ifdef GAME_TETRIS_FP
+/* Function:     tetris_view_setpixel_fp
+ * Description:  own setpixel wrapper for first person mode
+ * Return value: void
+ */
+void tetris_view_setpixel_fp(pixel p, unsigned char value) {
+  switch (tetris_screendir) {
+    case 0: setpixel(p,value); break;
+    case 1: setpixel((pixel){p.y,15-p.x}, value); break;
+    case 2: setpixel((pixel){15-p.x,15-p.y}, value); break;
+    case 3: setpixel((pixel){15-p.y,p.x}, value); break;
+  }
+}
+
+/* Function:     tetris_view_rotate
+ * Description:  rotate view for first person mode
+ * Return value: void
+ */
+void tetris_view_rotate(void) {
+  unsigned char plane, row, byte, shift, off, sbyte, hrow;
+  unsigned char new_pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
+
+  tetris_screendir = (tetris_screendir+1)%4;
+	
+// if ( NUM_ROWS != 16 || LINEBYTES != 2 ) return;
+
+  memset(&new_pixmap, 0, sizeof(new_pixmap));
+  for(plane=0; plane<NUMPLANE; plane++){
+    for(row=0;row<NUM_ROWS; row++){
+      for(byte=0;byte<LINEBYTES;byte++){
+        hrow = row%8;
+	shift = 7-hrow;
+	off = ((byte==0)?15:7);
+	sbyte = (row<8) ? 1 : 0;
+			  
+	new_pixmap[plane][row][1-byte] = 
+	(
+	  ( ((pixmap[plane][off  ][sbyte] >> shift)&1) << 7 ) |
+	  ( ((pixmap[plane][off-1][sbyte] >> shift)&1) << 6 ) |
+	  ( ((pixmap[plane][off-2][sbyte] >> shift)&1) << 5 ) |
+	  ( ((pixmap[plane][off-3][sbyte] >> shift)&1) << 4 ) |
+	  ( ((pixmap[plane][off-4][sbyte] >> shift)&1) << 3 ) |
+	  ( ((pixmap[plane][off-5][sbyte] >> shift)&1) << 2 ) |
+	  ( ((pixmap[plane][off-6][sbyte] >> shift)&1) << 1 ) |
+	  ( ((pixmap[plane][off-7][sbyte] >> shift)&1) << 0 )
+	);
+
+      }
+    }
+  }
+
+  memcpy(&pixmap, &new_pixmap, sizeof(pixmap));
+}
+
+#endif
