@@ -2,9 +2,12 @@
 #define PLAYFIELD_H
 #include "common.h"
 
-#define BOUNCE_X 0x01
-#define BOUNCE_Y 0x02
-#define BOUNCE_UNDEF 0x04
+#define BOUNCE_NONE    0x00
+#define BOUNCE_X       0x01
+#define BOUNCE_Y       0x02
+#define BOUNCE_UNDEF   0x04
+#define BOUNCE_BRICK   0x08
+#define BOUNCE_REBOUND 0x10
 
 /* entries for the playing field */
 enum game_field_t
