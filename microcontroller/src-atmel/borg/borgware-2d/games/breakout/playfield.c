@@ -16,7 +16,7 @@
  *
  */
 
-#include "common.h"
+#include "playfield.h"
 static enum game_field_t playfield[NUM_COLS][NUM_ROWS];
 
 void playfield_set (uint8_t in_x, uint8_t in_y, enum game_field_t in_field)
@@ -30,8 +30,6 @@ void playfield_set (uint8_t in_x, uint8_t in_y, enum game_field_t in_field)
 
 void brick_damage (uint8_t in_x, uint8_t in_y)
 {
-	enum game_field_t newtype;
-
 	if (playfield[in_x][in_y] >= bs || playfield[in_x][in_y] == 0)
 		return;
 

@@ -17,6 +17,18 @@
  */
 #include "rebound.h"
 
+/* rebound reflection: values to add to the vector at rebound field n
+ */
+const int8_t rebound_reflection[6][2] =
+{
+	{-54, -20},  /* offside */
+	{-32, -12}, /* left */
+	{-16,  -8}, /* center */
+	{ 16,  -8},
+	{ 32, -12},
+	{ 54, -20}
+};
+
 static uint8_t rbpos;
 
 void rebound_reflect (ball_t *b, int8_t in_x)
@@ -24,8 +36,6 @@ void rebound_reflect (ball_t *b, int8_t in_x)
 	uint8_t tmpidx;
 
 	tmpidx = (in_x - rbpos) +1;
-
-	printf("bounce idx %i\n", tmpidx);
 	
 	b->dir_x += rebound_reflection[tmpidx][0];
 	b->dir_y += rebound_reflection[tmpidx][1];

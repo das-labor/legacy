@@ -16,9 +16,9 @@
  *
  */
 
+#include "common.h"
 #ifndef PLAYFIELD_H
 #define PLAYFIELD_H
-#include "common.h"
 
 #define BOUNCE_NONE    0x00
 #define BOUNCE_X       0x01

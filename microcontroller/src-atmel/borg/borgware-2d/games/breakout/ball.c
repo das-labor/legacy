@@ -75,6 +75,7 @@ void ball_think (ball_t *b)
 		ball_die (b);
 
 	bounce = check_bounce (proj_x, b->y / 256);
+
 	if (bounce & BOUNCE_UNDEF)
 		bounce = (BOUNCE_X | bounce) & (BOUNCE_X | BOUNCE_Y);
 
@@ -98,7 +99,7 @@ void ball_think (ball_t *b)
 #if BOUNCE_SLOWDOWN
 	if (bounce & BOUNCE_BRICK)
 	{
-		if (b->dir_y < -BALL_MINSPEED)
+		if (b->dir_y < - BALL_MINSPEED)
 		{
 			b->dir_y += BOUNCE_SLOWDOWN;
 		} else if (b->dir_y > BALL_MINSPEED)
@@ -106,7 +107,7 @@ void ball_think (ball_t *b)
 			b->dir_y -= BOUNCE_SLOWDOWN;
 		}
 
-		if (b->dir_x < -BALL_MINSPEED)
+		if (b->dir_x < - BALL_MINSPEED)
 		{
 			b->dir_x += BOUNCE_SLOWDOWN;
 		} else if (b->dir_y > BALL_MINSPEED)
@@ -124,23 +125,18 @@ void ball_think (ball_t *b)
 	if (b->dir_x > BALL_MAXSPEED)
 		b->dir_x = BALL_MAXSPEED;
 
-	if (b->dir_x < - BALL_MAXSPEED)
-		b->dir_x = - BALL_MAXSPEED;
+	if (b->dir_x < -BALL_MAXSPEED)
+		b->dir_x = -BALL_MAXSPEED;
 
 	if (b->dir_y > BALL_MAXSPEED)
 		b->dir_y = BALL_MAXSPEED;
 
-	if (b->dir_y < - BALL_MAXSPEED)
-		b->dir_y = - BALL_MAXSPEED;
+	if (b->dir_y < -BALL_MAXSPEED)
+		b->dir_y = -BALL_MAXSPEED;
 
 
 	b->y += b->dir_y;
 	b->x += b->dir_x;
-
-	if (!b->dir_x || !b->dir_y)
-	{
-		printf("Ball stopped!\n");
-	}
 }
 	
 void ball_die (ball_t *in_b)
