@@ -21,4 +21,5 @@
 void rebound_init();
 void rebound_tick();
 uint8_t rebound_getpos ();
+void rebound_reflect (ball_t *b, int8_t in_x);
 #endif

@@ -37,9 +37,10 @@ void bounce_rand_vector (ball_t *in_b, uint8_t in_bouncetype)
 		case BOUNCE_REBOUND: /* the rebound is rather percise */
 			in_b->dir_x ^= (rval & 0x03);
 			in_b->dir_y ^= (rval & 0x03);
+			
 			if (JOYISRIGHT || JOYISLEFT)
 			{
-				/* a moving rebond accelerates the ball by 1/8th */
+				/* a moving rebond accelerates the ball 12,5% */
 				in_b->dir_y += (in_b->dir_y / 8);
 				in_b->dir_x += (in_b->dir_x / 8);
 			}
@@ -78,12 +79,7 @@ void ball_think (ball_t *b)
 		bounce = (BOUNCE_X | bounce) & (BOUNCE_X | BOUNCE_Y);
 
 	bounce |= check_bounce (b->x / 256, proj_y);
-	if (bounce & BOUNCE_UNDEF)
-		bounce = (BOUNCE_Y | bounce) & (BOUNCE_X | BOUNCE_Y);
-
 	bounce |= check_bounce (proj_x, proj_y);
-	if (bounce & BOUNCE_UNDEF)
-		bounce = BOUNCE_X | BOUNCE_Y;
 
 	bounce_rand_vector (b, bounce);
 
@@ -91,33 +87,52 @@ void ball_think (ball_t *b)
 	if (bounce & (BOUNCE_X | BOUNCE_BRICK))
 	{
 		b->dir_x *= -1; /* invert x vector */
-
-#if BOUNCE_SLOWDOWN
-		if (b->dir_x < 0)
-		{
-			b->dir_x += BOUNCE_SLOWDOWN;
-		} else
-		{
-			b->dir_x -= BOUNCE_SLOWDOWN;
-		}
-#endif
 	}
 
 	/* bounce in y direction */
 	if (bounce & (BOUNCE_Y | BOUNCE_BRICK))
 	{
 		b->dir_y *= -1; /* invert y vector */
-
+	}
+	
 #if BOUNCE_SLOWDOWN
-		if (b->dir_y < 0)
+	if (bounce & BOUNCE_BRICK)
+	{
+		if (b->dir_y < -BALL_MINSPEED)
 		{
 			b->dir_y += BOUNCE_SLOWDOWN;
-		} else
+		} else if (b->dir_y > BALL_MINSPEED)
 		{
 			b->dir_y -= BOUNCE_SLOWDOWN;
 		}
-#endif
+
+		if (b->dir_x < -BALL_MINSPEED)
+		{
+			b->dir_x += BOUNCE_SLOWDOWN;
+		} else if (b->dir_y > BALL_MINSPEED)
+		{
+			b->dir_x -= BOUNCE_SLOWDOWN;
+		}
 	}
+#endif
+
+	if (bounce & BOUNCE_REBOUND)
+	{
+		rebound_reflect(b, proj_x);
+	}
+
+	if (b->dir_x > BALL_MAXSPEED)
+		b->dir_x = BALL_MAXSPEED;
+
+	if (b->dir_x < - BALL_MAXSPEED)
+		b->dir_x = - BALL_MAXSPEED;
+
+	if (b->dir_y > BALL_MAXSPEED)
+		b->dir_y = BALL_MAXSPEED;
+
+	if (b->dir_y < - BALL_MAXSPEED)
+		b->dir_y = - BALL_MAXSPEED;
+
 
 	b->y += b->dir_y;
 	b->x += b->dir_x;
