@@ -37,7 +37,7 @@ void init_timer()
 	TCCR2B |= _BV(CS22);										// clk/64
 
 	TCCR1A |= _BV(WGM10) | _BV(COM1A1) | _BV(COM1B1);	// FastPWM, Set OC1X on Compare Match, clear OC1X at BOTTOM, (non inverting mode).
-	TCCR1B |= _BV(WGM12) | _BV(CS11);						// FastPWM bit 2, clk/64
+	TCCR1B |= _BV(WGM12) | _BV(CS11) | _BV(CS10);			// FastPWM bit 2, clk/64
 
 	TCCR0A |= _BV(WGM01) | _BV(WGM00) | _BV(COM0A1) | _BV(COM0B1);	// FastPWM, Set OC0X on Compare Match, clear OC0x at BOTTOM, (non inverting mode).
 	TCCR0B |= _BV(CS01) | _BV(CS00);								// clk/64
@@ -55,3 +55,4 @@ void init_timer()
 	OCR0B = 255;   // pwm timer compare target
 
 }
+
