@@ -31,12 +31,10 @@
 #include "../../menu/menu.h"
 #include "../../pixel.h"
 #include "config.h"
-#include "playfield.h"
 #include "ball.h"
+#include "playfield.h"
 #include "score.h"
 #include "level.h"
 #include "rebound.h"
 #include "messages.h"
-
-#define MAX(a,b) (a > b) ? a : b
 #endif /* COMMON_H */

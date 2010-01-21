@@ -15,12 +15,10 @@
  * Author & Copyright (C) 2010: Soeren Heisrath (forename@surename.org)
  *
  */
+#include "common.h"
 
 #ifndef BALL_H
 #define BALL_H
-
-#include <stdint.h>
-#include "common.h"
 
 
 typedef struct

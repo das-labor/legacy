@@ -15,11 +15,13 @@
  * Author & Copyright (C) 2010: Soeren Heisrath (forename@surename.org)
  *
  */
+#include "common.h"
+
 #ifndef REBOUND_H
 #define REBOUND_H
-#include "common.h"
 void rebound_init();
 void rebound_tick();
-uint8_t rebound_getpos ();
-void rebound_reflect (ball_t *b, int8_t in_x);
-#endif
+void rebound_draw();
+uint8_t rebound_getpos();
+void rebound_reflect(ball_t *b, int8_t in_x);
+#endif /* REBOUND_H */
