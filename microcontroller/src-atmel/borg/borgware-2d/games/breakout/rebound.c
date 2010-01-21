@@ -17,8 +17,19 @@
  */
 #include "rebound.h"
 
-#include <stdio.h>
 static uint8_t rbpos;
+
+void rebound_reflect (ball_t *b, int8_t in_x)
+{
+	uint8_t tmpidx;
+
+	tmpidx = (in_x - rbpos) +1;
+
+	printf("bounce idx %i\n", tmpidx);
+	
+	b->dir_x += rebound_reflection[tmpidx][0];
+	b->dir_y += rebound_reflection[tmpidx][1];
+}
 
 uint8_t rebound_getpos ()
 {
