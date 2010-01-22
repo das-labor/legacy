@@ -94,10 +94,12 @@ parameters{
   M64K{
     name=[0..65535];
     lmap=0..65535;
+    type = addr;
   }
   ADDR4M{
     name=[0..4194303];
-    lmap=0..4194303];
+    lmap=0..4194303;
+    type = addr;
   }
   K6{
     name=[0..63];
@@ -107,11 +109,13 @@ parameters{
     name=[-64..63];
     lmap=-64..63;
     relative=true;
+    type = addr;
   }
   rel12{
     name=[-2048..2047];
-    lmap=-2048..2047];
+    lmap=-2048..2047;
     relative=true;
+    type = addr;
   }
   Byte{
     name=[0..255];

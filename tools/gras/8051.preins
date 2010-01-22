@@ -1,0 +1,111 @@
+  ADD{\n    A,Rn{\n      cycles=12;\n      description="Add register to Accumulator";\n      length=1;\n    }\n  }\n
+  ADD{\n    A,direct{\n      cycles=12;\n      description="Add direct byte to Accumulator";\n      length=2;\n    }\n  }\n
+  ADD{\n    A,@Ri{\n      cycles=12;\n      description="Add indirect RAM to Accumulator";\n      length=1;\n    }\n  }\n
+  ADD{\n    A,#data{\n      cycles=12;\n      description="Add immediate data to Accumulator";\n      length=2;\n    }\n  }\n
+  ADDC{\n    A,Rn{\n      cycles=12;\n      description="Add register to Accumulator with Carry";\n      length=1;\n    }\n  }\n
+  ADDC{\n    A,direct{\n      cycles=12;\n      description="Add direct byte to Accumulator with Carry";\n      length=2;\n    }\n  }\n
+  ADDC{\n    A,@Ri{\n      cycles=12;\n      description="Add indirect RAM to Accumulator with Carry";\n      length=1;\n    }\n  }\n
+  ADDC{\n    A,#data{\n      cycles=12;\n      description="Add immediate data to Accumulator with Carry";\n      length=2;\n    }\n  }\n
+  SUBB{\n    A,Rn{\n      cycles=12;\n      description="Subtract Register from Accumulator with borrow";\n      length=1;\n    }\n  }\n
+  SUBB{\n    A,direct{\n      cycles=12;\n      description="Subtract direct byte from Accumulator with borrow";\n      length=2;\n    }\n  }\n
+  SUBB{\n    A,@Ri{\n      cycles=12;\n      description="Subtract indirect RAM from Accumulator with borrow";\n      length=1;\n    }\n  }\n
+  SUBB{\n    A,#data{\n      cycles=12;\n      description="Subtract immediate data from  Accumulator with borrow";\n      length=2;\n    }\n  }\n
+  INC{\n    A{\n      cycles=12;\n      description="Increment Accumulator";\n      length=1;\n    }\n  }\n
+  INC{\n    Rn{\n      cycles=12;\n      description="Increment register";\n      length=1;\n    }\n  }\n
+  INC{\n    direct{\n      cycles=12;\n      description="Increment direct byte";\n      length=2;\n    }\n  }\n
+  INC{\n    @Ri{\n      cycles=12;\n      description="Increment direct RAM";\n      length=1;\n    }\n  }\n
+  INC{\n    DPTR{\n      cycles=24;\n      description="Increment Data Pointer";\n      length=1;\n    }\n  }\n
+  DEC{\n    A{\n      cycles=12;\n      description="Decrement Accumulator";\n      length=1;\n    }\n  }\n
+  DEC{\n    Rn{\n      cycles=12;\n      description="Decrement Register";\n      length=1;\n    }\n  }\n
+  DEC{\n    direct{\n      cycles=12;\n      description="Decrement direct byte";\n      length=2;\n    }\n  }\n
+  DEC{\n    @Ri{\n      cycles=12;\n      description="Decrement indirect RAM";\n      length=1;\n    }\n  }\n
+  MUL{\n    AB{\n      cycles=48;\n      description="Multiply A & B";\n      length=1;\n    }\n  }\n
+  DIV{\n    AB{\n      cycles=48;\n      description="Divide A by B";\n      length=1;\n    }\n  }\n
+  DA{\n    A{\n      cycles=12;\n      description="Decimal Adjust Accumulator";\n      length=1;\n    }\n  }\n
+  ANL{\n    A,Rn{\n      cycles=12;\n      description="AND Register to Accumulator";\n      length=1;\n    }\n  }\n
+  ANL{\n    A,direct{\n      cycles=12;\n      description="AND direct byte to Accumulator";\n      length=2;\n    }\n  }\n
+  ANL{\n    A,@Ri{\n      cycles=12;\n      description="AND indirect RAM to Accumulator";\n      length=1;\n    }\n  }\n
+  ANL{\n    A,#data{\n      cycles=12;\n      description="AND immediate data to Accumulator";\n      length=2;\n    }\n  }\n
+  ANL{\n    direct,A{\n      cycles=12;\n      description="AND Accumulator to direct byte";\n      length=2;\n    }\n  }\n
+  ANL{\n    direct,#data{\n      cycles=24;\n      description="AND immediate data to direct byte";\n      length=3;\n    }\n  }\n
+  ANL{\n    C,bit{\n      cycles=24;\n      description="AND direct bit to CARRY";\n      length=2;\n    }\n  }\n
+  ANL{\n    C,/bit{\n      cycles=24;\n      description="AND complement of direct bit to Carry";\n      length=2;\n    }\n  }\n
+  ORL{\n    A,Rn{\n      cycles=12;\n      description="OR register to Accumulator";\n      length=1;\n    }\n  }\n
+  ORL{\n    A,direct{\n      cycles=12;\n      description="OR direct byte to Accumulator";\n      length=2;\n    }\n  }\n
+  ORL{\n    A,@Ri{\n      cycles=12;\n      description="OR indirect RAM to Accumulator";\n      length=1;\n    }\n  }\n
+  ORL{\n    A,#data{\n      cycles=12;\n      description="OR immediate data to Accumulator";\n      length=2;\n    }\n  }\n
+  ORL{\n    direct,A{\n      cycles=12;\n      description="OR Accumulator to direct byte";\n      length=2;\n    }\n  }\n
+  ORL{\n    direct,#data{\n      cycles=24;\n      description="OR immediate data to direct byte";\n      length=3;\n    }\n  }\n
+  ORL{\n    C,bit{\n      cycles=24;\n      description="OR direct bit to Carry";\n      length=2;\n    }\n  }\n
+  ORL{\n    C,/bit{\n      cycles=24;\n      description="OR complement of direct bit to Carry";\n      length=2;\n    }\n  }\n
+  XRL{\n    A,Rn{\n      cycles=12;\n      description="Exclusive-OR register to Accumulator";\n      length=1;\n    }\n  }\n
+  XRL{\n    A,direct{\n      cycles=12;\n      description="Exclusive-OR direct byte to Accumulator";\n      length=2;\n    }\n  }\n
+  XRL{\n    A,@Ri{\n      cycles=12;\n      description="Exclusive-OR indirect RAM to Accumulator";\n      length=1;\n    }\n  }\n
+  XRL{\n    A,#data{\n      cycles=12;\n      description="Exclusive-OR immediate data to Accumulator";\n      length=2;\n    }\n  }\n
+  XRL{\n    direct,A{\n      cycles=12;\n      description="Exclusive-OR Accumulator to direct byte";\n      length=2;\n    }\n  }\n
+  XRL{\n    direct,#data{\n      cycles=24;\n      description="Exclusive-OR immediate data to direct byte";\n      length=3;\n    }\n  }\n
+  CLR{\n    A{\n      cycles=12;\n      description="Clear Accumulator";\n      length=1;\n    }\n  }\n
+  CLR{\n    C{\n      cycles=12;\n      description="Clear Carry";\n      length=1;\n    }\n  }\n
+  CLR{\n    bit{\n      cycles=12;\n      description="Clear direct bit";\n      length=2;\n    }\n  }\n
+  CPL{\n    A{\n      cycles=12;\n      description="Complement Accumulator";\n      length=1;\n    }\n  }\n
+  RL{\n    A{\n      cycles=12;\n      description="Rotate Accumulator Left";\n      length=1;\n    }\n  }\n
+  RLC{\n    A{\n      cycles=12;\n      description="Rotate Accumulator Left through the Carry";\n      length=1;\n    }\n  }\n
+  RR{\n    A{\n      cycles=12;\n      description="Rotate Accumulator Right";\n      length=1;\n    }\n  }\n
+  RRC{\n    A{\n      cycles=12;\n      description="Rotate Accumulator Right through the Carry";\n      length=1;\n    }\n  }\n
+  SWAP{\n    A{\n      cycles=12;\n      description="Swap nibbles within the Accumulator";\n      length=1;\n    }\n  }\n
+  MOV{\n    A,Rn{\n      cycles=12;\n      description="Move register to Accumulator";\n      length=1;\n    }\n  }\n
+  MOV{\n    A,direct{\n      cycles=12;\n      description="Move direct byte to Accumulator";\n      length=2;\n    }\n  }\n
+  MOV{\n    A,@Ri{\n      cycles=12;\n      description="Move indirect RAM to Accumulator";\n      length=1;\n    }\n  }\n
+  MOV{\n    A,#data{\n      cycles=12;\n      description="Move immediate data to Accumulator";\n      length=2;\n    }\n  }\n
+  MOV{\n    Rn,A{\n      cycles=12;\n      description="Move Accumulator to register";\n      length=1;\n    }\n  }\n
+  MOV{\n    Rn,direct{\n      cycles=24;\n      description="Move direct byte to register";\n      length=2;\n    }\n  }\n
+  MOV{\n    Rn,#data{\n      cycles=12;\n      description="Move immediate data to register";\n      length=2;\n    }\n  }\n
+  MOV{\n    direct,A{\n      cycles=12;\n      description="Move Accumulator to direct byte";\n      length=2;\n    }\n  }\n
+  MOV{\n    direct,Rn{\n      cycles=24;\n      description="Move register to direct byte";\n      length=2;\n    }\n  }\n
+  MOV{\n    direct,direct{\n      cycles=24;\n      description="Move direct byte to direct";\n      length=3;\n    }\n  }\n
+  MOV{\n    direct,@Ri{\n      cycles=24;\n      description="Move indirect RAM to direct byte";\n      length=2;\n    }\n  }\n
+  MOV{\n    direct,#data{\n      cycles=24;\n      description="Move immediate data to direct byte";\n      length=3;\n    }\n  }\n
+  MOV{\n    @Ri,A{\n      cycles=12;\n      description="Move Accumulator to indirect RAM";\n      length=1;\n    }\n  }\n
+  MOV{\n    @Ri,direct{\n      cycles=24;\n      description="Move direct byte to indirect RAM";\n      length=2;\n    }\n  }\n
+  MOV{\n    @Ri,#data{\n      cycles=12;\n      description="Move immediate data to indirect RAM";\n      length=2;\n    }\n  }\n
+  MOV{\n    DPTR,#data16{\n      cycles=24;\n      description="Load Data Pointer with a 16-bit constant";\n      length=3;\n    }\n  }\n
+  MOV{\n    C,bit{\n      cycles=12;\n      description="Move direct bit to Carry";\n      length=2;\n    }\n  }\n
+  MOV{\n    bit,C{\n      cycles=24;\n      description="Move Carry to direct bit";\n      length=2;\n    }\n  }\n
+  MOVC{\n    A,@A+DPTR{\n      cycles=24;\n      description="Move Code byte relative to DPTR to Accumulator";\n      length=1;\n    }\n  }\n
+  MOVC{\n    A,@A+PC{\n      cycles=24;\n      description="Move Code byte relative to PC to Accumulator";\n      length=1;\n    }\n  }\n
+  MOVX{\n    A,@Ri{\n      cycles=24;\n      description="Move External RAM (8-bit addr) to Accumulator";\n      length=1;\n    }\n  }\n
+  MOVX{\n    A,@DPTR{\n      cycles=24;\n      description="Move Exernal RAM (16-bit addr) to Accumulator";\n      length=1;\n    }\n  }\n
+  MOVX{\n    @Ri,A{\n      cycles=24;\n      description="Move Acc to External RAM (8-bit addr)";\n      length=1;\n    }\n  }\n
+  MOVX{\n    @DPTR,A{\n      cycles=24;\n      description="Move Acc to External RAM (16-bit addr)";\n      length=1;\n    }\n  }\n
+  PUSH{\n    direct{\n      cycles=24;\n      description="Push direct byte onto stack";\n      length=2;\n    }\n  }\n
+  POP{\n    direct{\n      cycles=24;\n      description="Pop direct byte from stack";\n      length=2;\n    }\n  }\n
+  XCH{\n    A,Rn{\n      cycles=12;\n      description="Exchange register with Accumulator";\n      length=1;\n    }\n  }\n
+  XCH{\n    A,direct{\n      cycles=12;\n      description="Exchange direct byte with Accumulator";\n      length=2;\n    }\n  }\n
+  XCH{\n    A,@Ri{\n      cycles=12;\n      description="Exchange indirect RAM with Accumulator";\n      length=1;\n    }\n  }\n
+  XCHD{\n    A,@Ri{\n      cycles=12;\n      description="Exchange low-order Digit indirect RAM with Accumulator";\n      length=1;\n    }\n  }\n
+  SETB{\n    C{\n      cycles=12;\n      description="Set Carry";\n      length=1;\n    }\n  }\n
+  SETB{\n    bit{\n      cycles=12;\n      description="Set direct bit";\n      length=2;\n    }\n  }\n
+  CPL{\n    C{\n      cycles=12;\n      description="Complement Carry";\n      length=1;\n    }\n  }\n
+  CPL{\n    bit{\n      cycles=12;\n      description="Complement direct bit";\n      length=2;\n    }\n  }\n
+  JC{\n    rel{\n      cycles=24;\n      description="Jump if Carry is set";\n      length=2;\n    }\n  }\n
+  JNC{\n    rel{\n      cycles=24;\n      description="Jump if Carry not set";\n      length=2;\n    }\n  }\n
+  JB{\n    bit,rel{\n      cycles=24;\n      description="Jump if direct Bit is set";\n      length=3;\n    }\n  }\n
+  JNB{\n    bit,rel{\n      cycles=24;\n      description="Jump if direct Bit is Not set";\n      length=3;\n    }\n  }\n
+  JBC{\n    bit,rel{\n      cycles=24;\n      description="Jump if direct Bit is set clear bit";\n      length=3;\n    }\n  }\n
+  ACALL{\n    addr11{\n      cycles=24;\n      description="Absolute Subroutine Call";\n      length=2;\n    }\n  }\n
+  LCALL{\n    addr16{\n      cycles=24;\n      description="Long Subroutine Call";\n      length=3;\n    }\n  }\n
+  RET{\n    none{\n      cycles=24;\n      description="Return from Subroutine";\n      length=1;\n    }\n  }\n
+  RETI{\n    none{\n      cycles=24;\n      description="Return from interrupt";\n      length=1;\n    }\n  }\n
+  AJMP{\n    addr11{\n      cycles=24;\n      description="Absolute Jump";\n      length=2;\n    }\n  }\n
+  LJMP{\n    addr16{\n      cycles=24;\n      description="Long Jump";\n      length=3;\n    }\n  }\n
+  SJMP{\n    rel{\n      cycles=24;\n      description="Short Jump (relative addr)";\n      length=2;\n    }\n  }\n
+  JMP{\n    @A+DPTR{\n      cycles=24;\n      description="Jump indirect relative to the DPTR";\n      length=1;\n    }\n  }\n
+  JZ{\n    rel{\n      cycles=24;\n      description="Jump if Accumulator is Zero";\n      length=2;\n    }\n  }\n
+  JNZ{\n    rel{\n      cycles=24;\n      description="Jump if Accumulator is Not Zero";\n      length=2;\n    }\n  }\n
+  CJNE{\n    A,direct,rel{\n      cycles=24;\n      description="Compare direct byte to Acc and Jump if Not Equal";\n      length=3;\n    }\n  }\n
+  CJNE{\n    A,#data,rel{\n      cycles=24;\n      description="Compare immediate to Acc and Jump if Not Equal";\n      length=3;\n    }\n  }\n
+  CJNE{\n    Rn,#data,rel{\n      cycles=24;\n      description="Compare immediate to register and Jump if Not Equal";\n      length=3;\n    }\n  }\n
+  CJNE{\n    @Ri,#data,rel{\n      cycles=24;\n      description="Compare immediate to indirect and Jump if Not Equal";\n      length=3;\n    }\n  }\n
+  DJNZ{\n    Rn,rel{\n      cycles=24;\n      description="Decrement register and Jump if Not Zero";\n      length=2;\n    }\n  }\n
+  DJNZ{\n    direct,rel{\n      cycles=24;\n      description="Decrement direct byte and Jump if Not Zero";\n      length=3;\n    }\n  }\n
+  NOP{\n    none{\n      cycles=12;\n      description="No Operation";\n      length=1;\n    }\n  }\n
