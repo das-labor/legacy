@@ -21,6 +21,7 @@ require 'jcode'
 class Instruction
   attr_reader :name, :description, :length, :varbits, :parameters, :prefix
   attr_reader :cycles, :modify_flags, :set_flags, :clear_flags, :xcode, :pcode
+  attr_reader :opcode
   attr_accessor :key_value, :sub_blocks
 
   def singelton_class
@@ -160,6 +161,7 @@ class Instruction
 
   def initialize(name, parameters, opcode, cycles=1, modify_flags="", set_flags="", clear_flags="", description="")
     @name = name
+    @opcode = opcode
     if opcode.class == String
       opcode = preparse_opcode(opcode)
       bin_opcode = convert2bincode(opcode)
@@ -172,7 +174,7 @@ class Instruction
         puts("ERROR: invalid opcode type")
       end
     end
-    assemble_code = lambda {|param| 
+    assemble_code = lambda do |param| 
       ret = String.new 
       param=param.join() 
       process_code.each do |x| 
@@ -181,7 +183,7 @@ class Instruction
         ret << param[x] if x>=0
       end
       ret
-    }
+    end
     @pcode = process_code
     @xcode = ""
     bin_opcode.each_char{|x| if (x=="1" or x=="0") then @xcode += x else @xcode += 'x' end}

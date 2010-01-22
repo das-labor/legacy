@@ -32,8 +32,11 @@ end
 #strip comments
 $in_block_comment = false
 def parse_line_l1(line)
-  line = /([^#]*[\\#]*[^#]*|[^#]*'[^']*'[^#]*|[^#]*"[^"]*"[^#]*|[^#]*)*/.match(line).to_s
-  line.gsub!(/(\\#)/, '#')
+  line.gsub!(/(\\#)/, 0xff.chr)
+  line.gsub!(/'([^#']*)#*([^#']*)'/, "\\1\377\\2")
+  line = /^[^#]*/.match(line).to_s()
+#  line = /([^#]*(\\#)*[^#]*|[^#]*'[^']*'[^#]*|[^#]*"[^"]*"[^#]*|[^#]*)*/.match(line).to_s
+  line.gsub!("\377", '#')
   if $in_block_comment
     if /.*=end/.match(line)
       $in_block_comment = false
@@ -85,7 +88,7 @@ def parse_l2(line)
   if /^[\s]*$/.match(line)
     return
   end
-  if m = /([\w\s,._<>+@$\[\]\(\)-]*)([^\{\}=]*)(.*)/.match(line)
+  if m = /([\w\s,._<>+@$#\[\]\(\)-]*)([^\{\}=]*)(.*)/.match(line)
     $left_expr += m[1];
     if m[2]!=""
       puts($filename +":"  + $linenumber.to_s + ": Garbage: "+m[2]);

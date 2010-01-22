@@ -18,6 +18,7 @@
 
 require 'gen_assembler.rb'
 require 'gen_disassembler.rb'
+require 'gen_disassembler2.rb'
 
 
 def count_mnemonics(iset)
@@ -148,8 +149,14 @@ def analyze(fname)
 #  puts 'searching for disassembler strategy ...'
 #  s = find_dasm_strategy(mnemonics,lh[1], 0.15)
   puts 'generating disassembler primary table ...'
-  dt = auto_build_dasm_table(mnemonics, lh[1])
-  print_dasm_table_infos(dt)
+#  dt = auto_build_dasm_table(mnemonics, lh[1])
+#  print_dasm_table_infos(dt)
+
+  dt = DasmTable.new
+  dt.add_instructionset(mnemonics)
+  dt.print
+#  puts insblock.class
+#  puts insblock.inspect
 end
 
 

@@ -1,0 +1,98 @@
+keywords.txt
+################################################################################
+gas:
+ as-flow:
+  .abort
+  .ABORT
+  .else
+  .elseif
+  .endif
+ 
+ data-definition:
+  .ascii "string"...
+  .asciz "string"...
+  .byte expressions
+  .word expressions 
+  .double flonums
+  .single flonums
+  .float flonums
+  .fill repeat , size , value
+  .string "str"
+  
+ .align abs-expr , abs-expr
+ .balign abs-expr , abs-expr
+ .comm symbol , length
+ .data subsection
+ .def name
+ .desc symbol, abs-expression
+ .dim
+ .eject
+ .end
+ .endef
+ .endfunc
+ .equ symbol, expression
+ .equiv symbol, expression
+ .err
+ .exitm
+ .extern
+ .fail
+ .file string
+ .func
+ .global symbol, .globl symbol
+ .hidden names
+ .hword expressions
+ .ident
+ .incbin "file"[,skip[,count]]
+ .include "file"
+ .int expressions
+ .internal names
+ .irp symbol,values...
+ .irpc symbol,values...
+ .lcomm symbol , length
+ .lflags
+ .line line-number
+ .ln line-number
+ .linkonce [type]
+ .list
+ .long expressions
+ .macro name args...
+ .mri val
+ .nolist
+ .octa bignums
+ .org new-lc , fill
+ .p2align abs-expr , abs-expr
+ .popsection
+ .previous
+ .print string
+ .protected names
+ .psize lines, columns
+ .purgem name
+ .pushsection name
+ .quad bignums
+ .rept count
+ .sbttl "subheading"
+ .scl class
+ .section name, subsection
+ .set symbol, expression
+ .short expressions
+ .size [name , expression]
+ .skip size , fill
+ .sleb128 expressions
+ .space size , fill
+ .stabd, .stabn, .stabs
+ .struct expression
+ .subsection
+ .symver name,name2@nodename
+ .tag structname
+ .text subsection
+ .title "heading"
+ .type <int | name , type description>
+ .uleb128 expressions
+ .val addr
+ .version "string"
+ .vtable_entry table, offset
+ .vtable_inherit child, parent
+ .weak names
+
+################################################################################
+
