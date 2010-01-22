@@ -355,11 +355,11 @@ void can_init(){
 	// 0x03 : 125kbit/16MHz
 	// 0x04 : 125kbit/20MHz
 	
-#if F_MCP == 16000000
+#if FREQ == 16000000
 #define CNF1_T 0x03
-#elif F_MCP == 8000000
+#elif FREQ == 8000000
 #define CNF1_T 0x01
-#elif F_MCP == 20000000
+#elif FREQ == 20000000
 #define CNF1_T 0x04
 #else
 #error Can Baudrate is only defined for 8, 16 and 20 MHz

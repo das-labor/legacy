@@ -1,0 +1,74 @@
+dep_bool_menu "CAN bus support" CAN_SUPPORT y
+
+choice 'SPI Port'			\
+   "PORTA  0 \
+    PORTB  1 \
+    PORTC  2 \
+    PORTD  3" \
+   'PORTB' SPI_PORTIDX
+
+choice 'Bit MOSI'			\
+   "Bit0 0 \
+    Bit1 1 \
+    Bit2 2 \
+    Bit3 3 \
+    Bit4 4 \
+    Bit5 5 \
+    Bit6 6 \
+    Bit7 7" \
+   'Bit5' SPI_PIN_MOSI
+
+choice 'Bit MISO'			\
+   "Bit0 0 \
+    Bit1 1 \
+    Bit2 2 \
+    Bit3 3 \
+    Bit4 4 \
+    Bit5 5 \
+    Bit6 6 \
+    Bit7 7" \
+   'Bit6' SPI_PIN_MISO
+
+choice 'Bit SCK'			\
+   "Bit0 0 \
+    Bit1 1 \
+    Bit2 2 \
+    Bit3 3 \
+    Bit4 4 \
+    Bit5 5 \
+    Bit6 6 \
+    Bit7 7" \
+   'Bit7' SPI_PIN_SCK
+
+choice 'Bit SS'			\
+   "Bit0 0 \
+    Bit1 1 \
+    Bit2 2 \
+    Bit3 3 \
+    Bit4 4 \
+    Bit5 5 \
+    Bit6 6 \
+    Bit7 7" \
+   'Bit4' SPI_PIN_SS
+
+bool "Use interrupt" CAN_INTERRUPT
+
+choice 'Interrupt Port'			\
+   "PINA  PINA \
+    PINB  PINB \
+    PINC  PINC \
+    PIND  PIND" \
+   'PIND' SPI_REG_PIN_MCP_INT
+
+choice 'Interrupt Bit'			\
+   "Bit0 0 \
+    Bit1 1 \
+    Bit2 2 \
+    Bit3 3 \
+    Bit4 4 \
+    Bit5 5 \
+    Bit6 6 \
+    Bit7 7" \
+   'Bit2' SPI_PIN_MCP_INT
+
+endmenu

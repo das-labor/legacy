@@ -12,30 +12,34 @@
 
 #define SNAKE_DELAY 100
 
-/*
-#define BORG_CAN
+#ifdef CAN_SUPPORT
 
+#define BORG_CAN
 // spi.[ch] defines
 #define SPI_HARDWARE
-#define SPI_PORT PORTB		//for slave select
-#define SPI_PIN PINB		//for slave select
+
+#if SPI_PORTIDX == 0
+#define SPI_PORT PORTA
+#define SPI_DDR DDRA
+#define SPI_PIN PINA
+#elif SPI_PORTIDX == 1
+#define SPI_PORT PORTB
 #define SPI_DDR DDRB
-
-#define SPI_PIN_MOSI PB5
-#define SPI_PIN_MISO PB6
-#define SPI_PIN_SCK PB7
-#define SPI_PIN_SS PB4		// for slave select
-
-//interrupt pin of MCP2515 for non interrupt driven can
-#define SPI_REG_PIN_MCP_INT PIND
-#define SPI_PIN_MCP_INT PD2
+#define SPI_PIN PINB
+#elif SPI_PORTIDX == 2
+#define SPI_PORT PORTC
+#define SPI_DDR DDRC
+#define SPI_PIN PINC
+#elif SPI_PORTIDX == 3
+#define SPI_PORT PORTD
+#define SPI_DDR DDRD
+#define SPI_PIN PIND
+#endif
 
 // can.[ch] defines
-#undef  CAN_INTERRUPT		//set this to enable interrupt driven and buffering version
 #define CAN_RX_BUFFER_SIZE 2	//only used for Interrupt
 #define CAN_TX_BUFFER_SIZE 2	//only used for Interrupt
-#define F_MCP F_CPU
-*/
+#endif
 
 #define INIT_EEPROM
 

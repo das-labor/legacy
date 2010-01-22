@@ -2,7 +2,7 @@
 #include "lap.h"
 #include "borg_can.h"
 #include "spi.h"
-#include "blinken.h"
+#include "../borg_hw/borg_hw.h"
 
 #include <avr/pgmspace.h>
 #include <setjmp.h>
@@ -28,7 +28,7 @@ void bcan_init()
 	msg->cmd      = FKT_BORG_INFO;
 	msg->data[0]  = NUM_ROWS;
 	msg->data[1]  = NUM_COLS;
-	msg->data[2]  = NUM_PLANES;
+	msg->data[2]  = NUMPLANE;
 
 	can_transmit((can_message *)msg);
 }
