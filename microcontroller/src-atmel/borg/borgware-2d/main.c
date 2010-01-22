@@ -15,6 +15,10 @@
 	#include "joystick/joystick.h"
 #endif
 
+#ifdef CAN_SUPPORT
+	#include "can/borg_can.h"
+#endif
+
 int main (void){
 	clear_screen(0);
 

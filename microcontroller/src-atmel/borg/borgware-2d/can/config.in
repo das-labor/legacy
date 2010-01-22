@@ -1,5 +1,7 @@
 dep_bool_menu "CAN bus support" CAN_SUPPORT y
 
+bool 'Use MCU builtin SPI support' SPI_HARDWARE
+
 choice 'SPI Port'			\
    "PORTA  0 \
     PORTB  1 \
@@ -51,7 +53,7 @@ choice 'Bit SS'			\
     Bit7 7" \
    'Bit4' SPI_PIN_SS
 
-bool "Use interrupt" CAN_INTERRUPT
+dep_bool_menu "Use interrupt" CAN_INTERRUPT y
 
 choice 'Interrupt Port'			\
    "PINA  PINA \
@@ -70,5 +72,7 @@ choice 'Interrupt Bit'			\
     Bit6 6 \
     Bit7 7" \
    'Bit2' SPI_PIN_MCP_INT
+
+endmenu
 
 endmenu

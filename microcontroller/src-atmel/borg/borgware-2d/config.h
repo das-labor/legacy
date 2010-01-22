@@ -16,7 +16,6 @@
 
 #define BORG_CAN
 // spi.[ch] defines
-#define SPI_HARDWARE
 
 #if SPI_PORTIDX == 0
 #define SPI_PORT PORTA
