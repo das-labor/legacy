@@ -59,12 +59,7 @@ void bounce_rand_vector (ball_t *in_b, uint8_t in_bouncetype)
 
 void ball_think (ball_t *b)
 {
-	int8_t proj_x, proj_y, bounce;
-	
-	/*
-	if (!b->strength)
-		return;
-	*/
+	int8_t proj_x, proj_y, bounce, tmp;
 	
 	/* projection of the new coordinates */
 	proj_x = (b->x + (b->dir_x)) / 256;
@@ -76,22 +71,30 @@ void ball_think (ball_t *b)
 
 	bounce = check_bounce (proj_x, b->y / 256);
 
-	if (bounce & BOUNCE_UNDEF)
-		bounce = (BOUNCE_X | bounce) & (BOUNCE_X | BOUNCE_Y);
+	/* bouncing on bricks needs special handling */
+	if (bounce & (BOUNCE_BRICK))
+		bounce |= BOUNCE_X;
 
-	bounce |= check_bounce (b->x / 256, proj_y);
-	bounce |= check_bounce (proj_x, proj_y);
+	tmp = check_bounce (b->x / 256, proj_y);
+	if (tmp & (BOUNCE_BRICK))
+		bounce |= BOUNCE_Y;
+	bounce |= tmp;
+	
+	tmp = check_bounce (proj_x, proj_y);
+	if (tmp & (BOUNCE_BRICK))
+		bounce |= BOUNCE_X | BOUNCE_Y;
+	bounce |= tmp;
 
 	bounce_rand_vector (b, bounce);
 
 	/* bounce in x direction */
-	if (bounce & (BOUNCE_X | BOUNCE_BRICK))
+	if (bounce & BOUNCE_X)
 	{
 		b->dir_x *= -1; /* invert x vector */
 	}
 
 	/* bounce in y direction */
-	if (bounce & (BOUNCE_Y | BOUNCE_BRICK))
+	if (bounce & BOUNCE_Y)
 	{
 		b->dir_y *= -1; /* invert y vector */
 	}
