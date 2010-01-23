@@ -61,6 +61,7 @@ void borg_breakout()
 			ball_spawn_default (&(balls[0]));
 			balls[0].strength++;
 			level_init(level);
+			rebound_init();
 		}
 	}
 }

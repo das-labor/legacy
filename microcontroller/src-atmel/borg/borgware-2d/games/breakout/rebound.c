@@ -17,25 +17,13 @@
  */
 #include "rebound.h"
 
-/* rebound reflection: values to add to the vector at rebound field n
- */
-const int8_t rebound_reflection[6][2] =
-{
-	{-54, -20},  /* offside */
-	{-32, -12}, /* left */
-	{-16,  -8}, /* center */
-	{ 16,  -8},
-	{ 32, -12},
-	{ 54, -20}
-};
-
 static uint8_t rbpos;
 
 void rebound_reflect (ball_t *b, int8_t in_x)
 {
 	uint8_t tmpidx;
 
-	tmpidx = (in_x - rbpos) +1;
+	tmpidx = ((in_x - rbpos) +1) % (REBOUND_SIZE +2);
 	
 	b->dir_x += rebound_reflection[tmpidx][0];
 	b->dir_y += rebound_reflection[tmpidx][1];
@@ -56,10 +44,14 @@ void rebound_draw ()
 {
 	uint8_t i;
 
-	for (i=rbpos;i<rbpos + REBOUND_SIZE;i++)
+	for (i=0;i<NUM_COLS;i++)
 	{
-		playfield_set (i, NUM_ROWS-1, rb); /* set rebound pixel */
+		if (i >= rbpos && i < rbpos + REBOUND_SIZE)
+			playfield_set (i, NUM_ROWS-1, rb); /* set rebound pixel */
+		else
+			playfield_set (i, NUM_ROWS-1, sp); /* space */
 	}
+		printf("rpos: %i\n", rbpos);
 }
 
 void rebound_tick()
@@ -67,16 +59,13 @@ void rebound_tick()
 	/* directions are inverted (JOYISLEFT means RIGHT) */
 	if (JOYISRIGHT && rbpos)
 	{
-		playfield_set (rbpos + REBOUND_SIZE, NUM_ROWS-1, sp); /* clear rebound pixel */
 		rbpos--;
-		playfield_set (rbpos, NUM_ROWS-1, rb); /* set rebound pixel */
+		rebound_draw();
 	}
 
-	if (JOYISLEFT && rbpos < (NUM_COLS - (REBOUND_SIZE+1)))
+	if (JOYISLEFT && rbpos < (NUM_COLS - (REBOUND_SIZE)))
 	{
-		playfield_set (rbpos, NUM_ROWS-1, sp); /* clear rebound pixel */
 		rbpos++;
-		playfield_set (rbpos + REBOUND_SIZE, NUM_ROWS-1, rb); /* set rebound pixel */
+		rebound_draw();
 	}
-	rebound_draw();
 }
