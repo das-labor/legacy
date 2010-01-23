@@ -169,7 +169,7 @@ void init()
 	DDRD |= _BV(PD7);
 	
 	// Must be output else SPI will fail
-	DDRB |= _BV(PB2);
+//	DDRB |= _BV(PB2);
 
 	//initialize ir subsystem
 	ir_init();
