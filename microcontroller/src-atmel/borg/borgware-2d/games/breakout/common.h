@@ -30,6 +30,7 @@
 #include "../../util.h"
 #include "../../menu/menu.h"
 #include "../../pixel.h"
+#include "../../scrolltext/scrolltext.h"
 #include "config.h"
 #include "ball.h"
 #include "playfield.h"
