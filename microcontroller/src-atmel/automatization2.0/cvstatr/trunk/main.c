@@ -4,12 +4,12 @@
 
 #include "config.h"
 
-#include "twi_master/twi_master.h"
+//#include "twi_master/twi_master.h"
 #include "can/can.h"
 #include "can_handler.h"
 #include "can/spi.h"
 #include "can/lap.h"
-#include "i2c_temp.h"
+//#include "i2c_temp.h"
 
 
 void init(void)
@@ -17,17 +17,17 @@ void init(void)
 	/*
 	** Initiate TWI Master Interface
 	*/
-	if (!TWIM_Init())
-	{
-		while (1);
-	}
+//	if (!TWIM_Init())
+//	{
+//		while (1);
+//	}
 	
-	init_sensor();
+//	init_sensor();
 	
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
 
-	DDRB &= ~_BV(PB1);
-	PORTB |= _BV(PB1);
+	DDRD &= ~_BV(PD7);
+	PORTD |= _BV(PD7);
 
 	//initialize spi port
 	spi_init();
