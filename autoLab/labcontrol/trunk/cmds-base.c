@@ -47,6 +47,7 @@ void cmd_ping(int argc, char *argv[])
 
 		if (msg->addr_src == addr) {
 			printf( "Pong from 0x%x\n", addr );
+			free(msg);
 			return;
 		}
 	}

@@ -12,25 +12,25 @@
 
 void cmd_canir_teufel(int argc, char *argv[]) 
 {
-	pdo_message *msg;
+	can_message *msg;
 	int i;
 	if (argc != 2) goto argerror;
+	
+	// dst
+	if ( sscanf(argv[1], "%x", &i) != 1)
+		goto argerror;
 
-	msg = (pdo_message *)can_buffer_get();
+	msg = can_buffer_get();
 
 	msg->addr_src = 0x00;
 	msg->addr_dst = 0x10;
 	msg->port_src = 0x00;
 	msg->port_dst = 0x21;
 	msg->dlc      = 2;
-	msg->cmd      = 0x00;
-	
-	// dst
-	if ( sscanf(argv[1], "%x", &i) != 1)
-		goto argerror;
-	msg->data[0]      = i;
+	msg->data[0]  = 0x00;
+	msg->data[1]  = i;
 
-	can_transmit((can_message*)msg);
+	can_transmit(msg);
 
 	return;
 
@@ -51,26 +51,26 @@ argerror:
 
 void cmd_canir_beamer(int argc, char *argv[]) 
 {
-	pdo_message *msg;
+	can_message *msg;
 	int i;
 	if (argc != 2) goto argerror;
 
-	msg = (pdo_message *)can_buffer_get();
+	// dst
+	if (sscanf(argv[1], "%x", &i) != 1)
+		goto argerror;
+
+	msg = can_buffer_get();
 
 	msg->addr_src = 0x00;
 	msg->addr_dst = 0x10;
 	msg->port_src = 0x00;
 	msg->port_dst = 0x21;
 	msg->dlc      = 2;
-	msg->cmd      = 0x01;
+	msg->data[0]  = 0x01;
 
+	msg->data[1]  = i;
 
-	// dst
-	if ( sscanf(argv[1], "%x", &i) != 1)
-		goto argerror;
-	msg->data[0]      = i;
-
-	can_transmit((can_message*)msg);
+	can_transmit(msg);
 
 	return;
 
