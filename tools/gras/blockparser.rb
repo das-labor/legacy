@@ -27,6 +27,12 @@ class Block
     @key_value = Hash.new
     @sub_blocks = Hash.new
   end
+  def to_xml(indent)
+    puts(' '*indent+"<block name=#{@name}>")
+    @key_value.each{|k,v|puts(' '*(indent+4)+"<#{k} #{v}/>") } if @key_value
+    @sub_blocks.each{|k, v| v.to_xml(indent+4)} if @sub_blocks
+    puts(' '*indent+"</block>")
+  end
 end
 
 #strip comments

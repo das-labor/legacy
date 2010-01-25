@@ -1,0 +1,1070 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<systeminformation>
+  <cpu>
+    <flags>C,Z,N,V,S,H,T,I</flags>
+    <registers>r[0..31],X,Y,Z</registers>
+  </cpu>
+  <parameters>
+    <first>msb</first>
+    <param name="K6">
+      <name>[0..63]</name>
+      <lamp>0..63</lamp>
+    </param>
+    <param name="M64K">
+      <name>[0..65535]</name>
+      <type>addr</type>
+      <lmap>0..65535</lmap>
+    </param>
+    <param name="Z+q">
+      <name>"Z+"[0..63]</name>
+      <lamp>0..63</lamp>
+    </param>
+    <param name="-X">
+      <name>"-X"</name>
+      <lmap>""</lmap>
+    </param>
+    <param name="RH">
+      <name>r[16..31]</name>
+      <lmap>0..15</lmap>
+    </param>
+    <param name="-Y">
+      <name>"-Y"</name>
+      <lmap>""</lmap>
+    </param>
+    <param name="b">
+      <name>[0..7]</name>
+      <lmap>0..7</lmap>
+    </param>
+    <param name="-Z">
+      <name>"-Z"</name>
+      <lmap>""</lmap>
+    </param>
+    <param name="X">
+      <name>"X"</name>
+      <lmap>""</lmap>
+    </param>
+    <param name="Y">
+      <name>"Y"</name>
+      <lmap>""</lmap>
+    </param>
+    <param name="Z">
+      <name>"Z"</name>
+      <lmap>""</lmap>
+    </param>
+    <param name="RL">
+      <name>r[0..15]</name>
+      <lmap>0..15</lmap>
+    </param>
+    <param name="IOA">
+      <name>[0..31]</name>
+      <lmap>0..31</lmap>
+    </param>
+    <param name="RM">
+      <name>r[16..23]</name>
+      <lmap>0..7</lmap>
+    </param>
+    <param name="RW">
+      <name>r24,r26,r28,r30</name>
+      <lmap>0..3</lmap>
+    </param>
+    <param name="srel">
+      <name>[-64..63]</name>
+      <type>addr</type>
+      <lmap>-64..63</lmap>
+      <relative>true</relative>
+    </param>
+    <param name="Z+">
+      <name>"Z+"</name>
+      <lmap>""</lmap>
+    </param>
+    <param name="Y+">
+      <name>"Y+"</name>
+      <lmap>""</lmap>
+    </param>
+    <param name="R">
+      <name>r[0..31]</name>
+      <lmap>0..31</lmap>
+    </param>
+    <param name="Byte">
+      <name>[0..255]</name>
+      <lmap>0..255</lmap>
+    </param>
+    <param name="rel12">
+      <name>[-2048..2047]</name>
+      <type>addr</type>
+      <lmap>-2048..2047</lmap>
+      <relative>true</relative>
+    </param>
+    <param name="X+">
+      <name>"X+"</name>
+      <lmap>""</lmap>
+    </param>
+    <param name="RE">
+      <name>r[0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30]</name>
+      <lmap>0..15</lmap>
+    </param>
+    <param name="Y+q">
+      <name>"Y+"[0..63]</name>
+      <lamp>0..63</lamp>
+    </param>
+    <param name="ADDR4M">
+      <name>[0..4194303]</name>
+      <type>addr</type>
+      <lmap>0..4194303</lmap>
+    </param>
+  </parameters>
+  <instructionset>
+    <cycles>1</cycles>
+    <instruction name="CLS">
+      <param_code name="none">
+        <opcode>0b1001.0100_1100.1000</opcode>
+        <description>"Clear Signed Test Flag"</description>
+        <clear_flags>S</clear_flags>
+      </param_code>
+    </instruction>
+    <instruction name="SEI">
+      <param_code name="none">
+        <set_flags>I</set_flags>
+        <opcode>0b1001.0100_0111.1000</opcode>
+        <description>"Global Interrupt Enable"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SWAP">
+      <param_code name="R">
+        <opcode>0b1001.010d_dddd.0010</opcode>
+        <description>"Swap Nibbles"</description>
+      </param_code>
+    </instruction>
+    <instruction name="PUSH">
+      <cycles>2</cycles>
+      <param_code name="R">
+        <modify_flags></modify_flags>
+        <opcode>0b1001.001d_dddd.1111</opcode>
+        <description>"Push Register on Stack"</description>
+      </param_code>
+    </instruction>
+    <instruction name="RCALL">
+      <param_code name="rel12">
+        <modify_flags></modify_flags>
+        <opcode>0b1101.kkkk_kkkk.kkkk</opcode>
+        <cycles>3,4</cycles>
+        <description>"Relative Call Subroutine"</description>
+      </param_code>
+    </instruction>
+    <instruction name="AND">
+      <param_code name="R,R">
+        <modify_flags>SNZ</modify_flags>
+        <opcode>0b0010.00rd_dddd.rrrr</opcode>
+        <description>"Logical AND"</description>
+        <clear_flags>V</clear_flags>
+      </param_code>
+    </instruction>
+    <instruction name="SUBI">
+      <param_code name="R,Byte">
+        <modify_flags>HSVNZC</modify_flags>
+        <opcode>0b0101.kkkk_dddd.kkkk</opcode>
+        <description>"Subtract Immediate"</description>
+      </param_code>
+    </instruction>
+    <instruction name="EIJMP">
+      <param_code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0x9419</opcode>
+        <cycles>2</cycles>
+        <description>"Extended Indirect Jump to (Z)"</description>
+      </param_code>
+    </instruction>
+    <instruction name="CPC">
+      <param_code name="R,R">
+        <modify_flags>HSVNZC</modify_flags>
+        <opcode>0b0000.01rd_dddd.rrrr</opcode>
+        <description>"Compare with Carry"</description>
+      </param_code>
+    </instruction>
+    <instruction name="CLT">
+      <param_code name="none">
+        <opcode>0b1001.0100_1110.1000</opcode>
+        <description>"Clear T in SREG"</description>
+        <clear_flags>T</clear_flags>
+      </param_code>
+    </instruction>
+    <instruction name="LPM">
+      <cycles>3</cycles>
+      <param_code name="R,Z">
+        <modify_flags></modify_flags>
+        <opcode>0b1001.000d_dddd.0100</opcode>
+        <description>"Load Program Memory"</description>
+      </param_code>
+      <param_code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0b1001.0101_1100.1000</opcode>
+        <description>"Load Program Memory"</description>
+      </param_code>
+      <param_code name="R,Z+">
+        <modify_flags></modify_flags>
+        <opcode>0b1001.000d_dddd.0101</opcode>
+        <description>"Load Program Memory with Post increment"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SBRC">
+      <param_code name="R,b">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.110r_rrrr.0bbb</opcode>
+        <cycles>1,2,3</cycles>
+        <description>"Skip if Bit in Register Cleared"</description>
+      </param_code>
+    </instruction>
+    <instruction name="CLC">
+      <param_code name="none">
+        <opcode>0b1001.0100_1000.1000</opcode>
+        <description>"Clear Carry"</description>
+        <clear_flags>C</clear_flags>
+      </param_code>
+    </instruction>
+    <instruction name="BLD">
+      <param_code name="R,b">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.100d_dddd.0xxx</opcode>
+        <description>"Bit load from T to Register"</description>
+      </param_code>
+    </instruction>
+    <instruction name="MOVW">
+      <param_code name="RE,RE">
+        <modify_flags></modify_flags>
+        <opcode>0b0000.0001_dddd.rrrr</opcode>
+        <description>"Copy Register Pair"</description>
+      </param_code>
+    </instruction>
+    <instruction name="MOV">
+      <param_code name="R,R">
+        <modify_flags></modify_flags>
+        <opcode>0b0010.11rd_dddd.rrrr</opcode>
+        <description>"Copy Register"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BRSH">
+      <param_code name="srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.01rr_rrrr.r000</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if Same or Higher"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SBR">
+      <param_code name="RH,Byte">
+        <modify_flags>SNZ</modify_flags>
+        <opcode>0b0110.kkkk_dddd.kkkk</opcode>
+        <description>"Set Bit(s) in Register"</description>
+        <clear_flags>V</clear_flags>
+      </param_code>
+    </instruction>
+    <instruction name="BRVS">
+      <param_code name="srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.00rr_rrrr.r011</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if Overflow Flag is Set"</description>
+      </param_code>
+    </instruction>
+    <instruction name="COM">
+      <param_code name="R">
+        <set_flags>C</set_flags>
+        <modify_flags>SNZ</modify_flags>
+        <opcode>0b1001.010d_dddd.0000</opcode>
+        <description>"One’s Complement"</description>
+        <clear_flags>V</clear_flags>
+      </param_code>
+    </instruction>
+    <instruction name="FMULSU">
+      <param_code name="RM,RM">
+        <modify_flags>ZC</modify_flags>
+        <opcode>0b0000.0011_1ddd.1rrr</opcode>
+        <cycles>2</cycles>
+        <description>"Fractional Multiply Signed with Unsigned"</description>
+      </param_code>
+    </instruction>
+    <instruction name="CLV">
+      <param_code name="none">
+        <opcode>0b1001.0100_1011.1000</opcode>
+        <description>"Clear Two’s Complement Overflow"</description>
+        <clear_flags>V</clear_flags>
+      </param_code>
+    </instruction>
+    <instruction name="ASR">
+      <param_code name="R">
+        <modify_flags>SVNZC</modify_flags>
+        <opcode>0b1001.010d_dddd.0101</opcode>
+        <description>"Arithmetic Shift Right"</description>
+      </param_code>
+    </instruction>
+    <instruction name="ROR">
+      <param_code name="R">
+        <modify_flags>SVNZC</modify_flags>
+        <opcode>0b1001.010d_dddd.0111</opcode>
+        <description>"Rotate Right Through Carry"</description>
+      </param_code>
+    </instruction>
+    <instruction name="LDI">
+      <param_code name="RH,Byte">
+        <modify_flags></modify_flags>
+        <opcode>0b1110.kkkk_dddd.kkkk</opcode>
+        <description>"Load Immediate"</description>
+      </param_code>
+    </instruction>
+    <instruction name="RETI">
+      <param_code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0b1001.0101_0001.1000</opcode>
+        <cycles>4,5</cycles>
+        <description>"Interrupt Return"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BRLO">
+      <param_code name="srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.00rr_rrrr.r000</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if Lower"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BRTS">
+      <param_code name="srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.00rr_rrrr.r110</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if T Flag Set"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BRCS">
+      <param_code name="srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.00rr_rrrr.r000</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if Carry Set"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BRID">
+      <param_code name="srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.01rr_rrrr.r111</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if Interrupt Disabled"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BSET">
+      <param_code name="b">
+        <modify_flags>ITHSVNZC</modify_flags>
+        <opcode>0b1001.0100_0bbb.1000</opcode>
+        <description>"Flag Set"</description>
+      </param_code>
+    </instruction>
+    <instruction name="CBR">
+      <param_code name="R,Byte">
+        <modify_flags>SNZ</modify_flags>
+        <opcode>0b0111.kkkk_dddd.kkkk</opcode>
+        <same>ANDI</same>
+        <description>"Clear Bit(s) in Register"</description>
+        <clear_flags>0</clear_flags>
+      </param_code>
+    </instruction>
+    <instruction name="BRVC">
+      <param_code name="srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.01rr_rrrr.r011</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if Overflow Flag is Cleared"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BRIE">
+      <param_code name="srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.00rr_rrrr.r111</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if Interrupt Enabled"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SUB">
+      <param_code name="R,R">
+        <modify_flags>HSVNZC</modify_flags>
+        <opcode>0b0001.10rd_dddd.rrrr</opcode>
+        <description>"Subtract without Carry"</description>
+      </param_code>
+    </instruction>
+    <instruction name="WDR">
+      <param_code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0b1001.0101_1010.1000</opcode>
+        <description>"Watchdog Reset"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SEN">
+      <param_code name="none">
+        <set_flags>N</set_flags>
+        <opcode>0b1001.0100_0010.1000</opcode>
+        <description>"Set Negative Flag"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SBCI">
+      <param_code name="RH,Byte">
+        <modify_flags>HSVNZC</modify_flags>
+        <opcode>0b0100.kkkk_dddd.kkkk</opcode>
+        <cycles>2</cycles>
+        <description>"Subtract Immediate with Carry"</description>
+      </param_code>
+    </instruction>
+    <instruction name="TST">
+      <param_code name="R">
+        <modify_flags>SNZ</modify_flags>
+        <opcode>0b0010.00dD_dddd.DDDD</opcode>
+        <description>"Test for Zero or Minus"</description>
+        <clear_flags>V</clear_flags>
+      </param_code>
+    </instruction>
+    <instruction name="SBC">
+      <param_code name="R,R">
+        <modify_flags>HSVNZC</modify_flags>
+        <opcode>0b0000.10rd_dddd.rrrr</opcode>
+        <description>"Subtract with Carry"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BRTC">
+      <param_code name="srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.01rr_rrrr.r110</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if T Flag Cleared"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BRCC">
+      <param_code name="srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.01rr_rrrr_r000</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if Carry Cleared"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BRGE">
+      <param_code name="srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.01rr_rrrr.r100</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if Greater or Equal, Signed"</description>
+      </param_code>
+    </instruction>
+    <instruction name="FMUL">
+      <param_code name="RM,RM">
+        <modify_flags>ZC</modify_flags>
+        <opcode>0b0000.0011_0ddd.1rrr</opcode>
+        <cycles>2</cycles>
+        <description>"Fractional Multiply Unsigned"</description>
+      </param_code>
+    </instruction>
+    <instruction name="ADC">
+      <param_code name="R,R">
+        <modify_flags>HSVNZC</modify_flags>
+        <opcode>0b0001.11rd_dddd.rrrr</opcode>
+        <description>"Add with Carry"</description>
+      </param_code>
+    </instruction>
+    <instruction name="CPSE">
+      <param_code name="R,R">
+        <modify_flags></modify_flags>
+        <opcode>0b0001.00rd_dddd.rrrr</opcode>
+        <cycles>1,2,3</cycles>
+        <description>"Compare, Skip if Equal"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BST">
+      <param_code name="R,b">
+        <modify_flags>T</modify_flags>
+        <opcode>0b1111.101r_rrrr.0xxx</opcode>
+        <description>"Bit Store from Register to T"</description>
+      </param_code>
+    </instruction>
+    <instruction name="CPI">
+      <param_code name="RH,Byte">
+        <modify_flags>HSVNZC</modify_flags>
+        <opcode>0b0011.kkkk_dddd.kkkk</opcode>
+        <description>"Compare with Immediate"</description>
+      </param_code>
+    </instruction>
+    <instruction name="ADD">
+      <param_code name="R,R">
+        <modify_flags>HSVNZC</modify_flags>
+        <opcode>0b0000.11rd_dddd.rrrr</opcode>
+        <description>"Add with Carry"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BRMI">
+      <param_code name="srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.00rr_rrrr.r010</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if Minus"</description>
+      </param_code>
+    </instruction>
+    <instruction name="CLH">
+      <param_code name="none">
+        <opcode>0b1001.0100_1101.1000</opcode>
+        <description>"Clear Half Carry Flag in SREG"</description>
+        <clear_flags>H</clear_flags>
+      </param_code>
+    </instruction>
+    <instruction name="CLZ">
+      <param_code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0b1001.0100_1001.1000</opcode>
+        <description>"Clear Zero Flag"</description>
+      </param_code>
+    </instruction>
+    <instruction name="INC">
+      <param_code name="R">
+        <modify_flags>SVNZ</modify_flags>
+        <opcode>0b1001.010d_dddd.0011</opcode>
+        <description>"Increment"</description>
+      </param_code>
+    </instruction>
+    <instruction name="IJMP">
+      <param_code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0x9409</opcode>
+        <cycles>2</cycles>
+        <description>"Indirect Jump to (Z)"</description>
+      </param_code>
+    </instruction>
+    <instruction name="LSL">
+      <param_code name="R">
+        <modify_flags>HSVNZC</modify_flags>
+        <opcode>0b0000.11dD_dddd.DDDD</opcode>
+        <description>"Logical Shift Left"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SPM">
+      <cycles>-</cycles>
+      <param_code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0b1001.0101_1110.1000</opcode>
+        <description>"Store Program Memory"</description>
+      </param_code>
+    </instruction>
+    <instruction name="ADIW">
+      <param_code name="RW,K6">
+        <modify_flags>SVNZC</modify_flags>
+        <opcode>0b1001.0110_kkdd.kkkk</opcode>
+        <cycles>2</cycles>
+        <description>"Add Immediate to Word"</description>
+      </param_code>
+    </instruction>
+    <instruction name="MUL">
+      <param_code name="R,R">
+        <modify_flags>ZC</modify_flags>
+        <opcode>0b1001.11rd_dddd.rrrr</opcode>
+        <cycles>2</cycles>
+        <description>"Multiply Unsigned"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BRLT">
+      <param_code name="srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.00rr_rrrr.r100</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if Less Than, Signed"</description>
+      </param_code>
+    </instruction>
+    <instruction name="CLI">
+      <param_code name="none">
+        <opcode>0b1001.0100_1111.1000</opcode>
+        <description>"Global Interrupt Disable"</description>
+        <clear_flags>I</clear_flags>
+      </param_code>
+    </instruction>
+    <instruction name="ELPM">
+      <modify_flags></modify_flags>
+      <cycles>3</cycles>
+      <description>"Extended Load Program Memory"</description>
+      <param_code name="R,Z">
+        <opcode>0b1001.000d_dddd.0110</opcode>
+      </param_code>
+      <param_code name="none">
+        <opcode>0x95D8</opcode>
+      </param_code>
+      <param_code name="R,Z+">
+        <opcode>0b1001.000d_dddd.0111</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="EOR">
+      <param_code name="R,R">
+        <modify_flags>SNZ</modify_flags>
+        <opcode>0b0010.01rd_dddd.rrrr</opcode>
+        <description>"Exclusive OR"</description>
+        <clear_flags>V</clear_flags>
+      </param_code>
+    </instruction>
+    <instruction name="MULSU">
+      <param_code name="RM,RM">
+        <modify_flags>ZC</modify_flags>
+        <opcode>0b0000.0011_0ddd.0rrr</opcode>
+        <cycles>2</cycles>
+        <description>"Multiply Signed with Unsigned"</description>
+      </param_code>
+    </instruction>
+    <instruction name="RJMP">
+      <param_code name="rel12">
+        <modify_flags></modify_flags>
+        <opcode>0b1100.kkkk_kkkk.kkkk</opcode>
+        <cycles>2</cycles>
+        <description>"Relative Jump"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BRHS">
+      <param_code name="srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.00rr_rrrr.r101</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if Half Carry Flag Set"</description>
+      </param_code>
+    </instruction>
+    <instruction name="MULS">
+      <param_code name="RH,RH">
+        <modify_flags>ZC</modify_flags>
+        <opcode>0b0000.0010_dddd.rrrr</opcode>
+        <cycles>2</cycles>
+        <description>"Multiply Signed"</description>
+      </param_code>
+    </instruction>
+    <instruction name="EICALL">
+      <param_code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0x9519</opcode>
+        <cycles>4</cycles>
+        <description>"Extended Indirect Call to (Z)"</description>
+      </param_code>
+    </instruction>
+    <instruction name="FMULS">
+      <param_code name="RM,RM">
+        <modify_flags>ZC</modify_flags>
+        <opcode>0b0000.0011_1ddd.0rrr</opcode>
+        <cycles>2</cycles>
+        <description>"Fractional Multiply Signed"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BCLR">
+      <param_code name="b">
+        <modify_flags>ITHSVNZC</modify_flags>
+        <opcode>0b1001.0100_1bbb.1000</opcode>
+        <description>"Flag Clear"</description>
+      </param_code>
+    </instruction>
+    <instruction name="LD">
+      <cycles>2</cycles>
+      <param_code name="R,-Z">
+        <opcode>0b1001.000d_dddd.0010</opcode>
+        <description>"Load Indirect with Pret decrement"</description>
+      </param_code>
+      <param_code name="R,Z">
+        <opcode>0b1000.000d_dddd.0000</opcode>
+        <description>"Load Indirect"</description>
+      </param_code>
+      <param_code name="R,Z+">
+        <opcode>0b1001.000d_dddd.0001</opcode>
+        <description>"Load Indirect with Post increment"</description>
+      </param_code>
+      <param_code name="R,Y+">
+        <opcode>0b1001.000d_dddd.1001</opcode>
+        <description>"Load Indirect with Post increment"</description>
+      </param_code>
+      <param_code name="R,X+">
+        <opcode>0b1001.000d_dddd.1101</opcode>
+        <description>"Load Indirect with Post increment"</description>
+      </param_code>
+      <param_code name="R,X">
+        <opcode>0b1001.000d_dddd.1100</opcode>
+        <description>"Load Indirect"</description>
+      </param_code>
+      <param_code name="R,Y">
+        <opcode>0b1000.000d_dddd.1000</opcode>
+        <description>"Load Indirect"</description>
+      </param_code>
+      <param_code name="R,-X">
+        <opcode>0b1001.000d_dddd.1110</opcode>
+        <description>"Load Indirect with Pret decrement"</description>
+      </param_code>
+      <param_code name="R,-Y">
+        <opcode>0b1001.000d_dddd.1010</opcode>
+        <description>"Load Indirect with Pret decrement"</description>
+      </param_code>
+    </instruction>
+    <instruction name="CALL">
+      <param_code name="ADDR4M">
+        <modify_flags></modify_flags>
+        <opcode>0b1001.010a_aaaa.111a_aaaa.aaaa_aaaa.aaaa</opcode>
+        <cycles>4,5</cycles>
+        <description>"Call Subroutine"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SER">
+      <param_code name="RH">
+        <modify_flags></modify_flags>
+        <opcode>0b1110.1111_dddd.1111</opcode>
+        <description>"Set Register"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SES">
+      <param_code name="none">
+        <set_flags>S</set_flags>
+        <opcode>0b1001.0100_0100.1000</opcode>
+        <description>"Set Signed Test Flag"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SBI">
+      <cycles>2</cycles>
+      <param_code name="IOA,b">
+        <modify_flags></modify_flags>
+        <opcode>0b1001.1010_aaaa.abbb</opcode>
+        <description>"Set Bit in I/O Register"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BRNE">
+      <param_code name="srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.01rr_rrrr.r001</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if Not Equal"</description>
+      </param_code>
+    </instruction>
+    <instruction name="RET">
+      <param_code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0b1001.0101_0000.1000</opcode>
+        <cycles>4,5</cycles>
+        <description>"Subroutine Return"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SET">
+      <param_code name="none">
+        <set_flags>T</set_flags>
+        <opcode>0b1001.0100_0110.1000</opcode>
+        <description>"Set T in SREG"</description>
+      </param_code>
+    </instruction>
+    <instruction name="STS">
+      <cycles>2</cycles>
+      <param_code name="M64K,R">
+        <opcode>0b1001.001r_rrrr.0000_kkkk.kkkk_kkkk.kkkk</opcode>
+        <description>"Store Direct to data space"</description>
+      </param_code>
+    </instruction>
+    <instruction name="NEG">
+      <param_code name="R">
+        <modify_flags>HSVNZC</modify_flags>
+        <opcode>0b1001.010d_dddd_0001</opcode>
+        <description>"Two’s Complement"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SBIS">
+      <param_code name="IOA,b">
+        <modify_flags></modify_flags>
+        <opcode>0b1001.1011_aaaa.abbb</opcode>
+        <cycles>1,2,3</cycles>
+        <description>"Skip if Bit in I/O Register Set"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BRHC">
+      <param_code name="srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.01rr_rrrr.r101</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if Half Carry Flag Cleared"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BREAK">
+      <param_code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0x9598</opcode>
+        <description>"Break"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SEC">
+      <param_code name="none">
+        <set_flags>C</set_flags>
+        <opcode>0b1001.0100_0000.1000</opcode>
+        <description>"Set Carry"</description>
+      </param_code>
+    </instruction>
+    <instruction name="IN">
+      <param_code name="R,IOA">
+        <modify_flags></modify_flags>
+        <opcode>0b1011.0xxd_dddd.xxxx</opcode>
+        <description>"In From I/O Location"</description>
+      </param_code>
+    </instruction>
+    <instruction name="LDS">
+      <param_code name="R,M64K">
+        <modify_flags></modify_flags>
+        <opcode>0b1001.000d_dddd.0000_kkkk.kkkk_kkkk.kkkk</opcode>
+        <cycles>2</cycles>
+        <description>"Load Direct from data space"</description>
+      </param_code>
+    </instruction>
+    <instruction name="JMP">
+      <param_code name="ADDR4M">
+        <modify_flags></modify_flags>
+        <opcode>0b1001.010k_kkkk.110k_kkkk.kkkk_kkkk.kkkk</opcode>
+        <cycles>3</cycles>
+        <description>"Jump"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BRBS">
+      <param_code name="b,srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.00rr_rrrr.rbbb</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if Status Flag Set"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SEV">
+      <param_code name="none">
+        <set_flags>V</set_flags>
+        <opcode>0b1001.0100_0011.1000</opcode>
+        <description>"Set Two’s Complement Overflow"</description>
+      </param_code>
+    </instruction>
+    <instruction name="CLN">
+      <param_code name="none">
+        <opcode>0b1001.0100_1010.1000</opcode>
+        <description>"Clear Negative Flag"</description>
+        <clear_flags>N</clear_flags>
+      </param_code>
+    </instruction>
+    <instruction name="CBI">
+      <cycles>2</cycles>
+      <param_code name="IOA,b">
+        <modify_flags></modify_flags>
+        <opcode>0b1001.1000_aaaa.abbb</opcode>
+        <description>"Clear Bit in I/O Register"</description>
+      </param_code>
+    </instruction>
+    <instruction name="LSR">
+      <param_code name="R">
+        <modify_flags>SVZC</modify_flags>
+        <opcode>0b1001.010d_dddd.0110</opcode>
+        <description>"Logical Shift Right"</description>
+        <clear_flags>N</clear_flags>
+      </param_code>
+    </instruction>
+    <instruction name="ST">
+      <cycles>2</cycles>
+      <param_code name="Z,R">
+        <opcode>0b1000.001r_rrrr.0000</opcode>
+        <description>"Store Indirect"</description>
+      </param_code>
+      <param_code name="Z+,R">
+        <opcode>0b1001.001r_rrrr.0001</opcode>
+        <description>"Store Indirect with Post increment"</description>
+      </param_code>
+      <param_code name="X+,R">
+        <opcode>0b1001.001r_rrrr.1101</opcode>
+        <description>"Store Indirect with Post increment"</description>
+      </param_code>
+      <param_code name="Y+,R">
+        <opcode>0b1001.001r_rrrr.1001</opcode>
+        <description>"Store Indirect with Post increment"</description>
+      </param_code>
+      <param_code name="-X,R">
+        <opcode>0b1001.001r_rrrr.1110</opcode>
+        <description>"Store Indirect with Pre decrement"</description>
+      </param_code>
+      <param_code name="X,R">
+        <opcode>0b1001.001r_rrrr.1100</opcode>
+        <description>"Store Indirect"</description>
+      </param_code>
+      <param_code name="-Y,R">
+        <opcode>0b1001.001r_rrrr.1010</opcode>
+        <description>"Store Indirect with Pre decrement"</description>
+      </param_code>
+      <param_code name="Y,R">
+        <opcode>0b1000.001r_rrrr.1000</opcode>
+        <description>"Store Indirect"</description>
+      </param_code>
+      <param_code name="-Z,R">
+        <opcode>0b1001.001r_rrrr.0010</opcode>
+        <description>"Store Indirect with Pre decrement"</description>
+      </param_code>
+    </instruction>
+    <instruction name="OR">
+      <param_code name="R,R">
+        <modify_flags>SNZ</modify_flags>
+        <opcode>0b0010.10rd_dddd.rrrr</opcode>
+        <description>"Logical OR"</description>
+        <clear_flags>V</clear_flags>
+      </param_code>
+    </instruction>
+    <instruction name="ICALL">
+      <param_code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0x9509</opcode>
+        <cycles>3,4</cycles>
+        <description>"Indirect Call to (Z)"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SBIC">
+      <param_code name="IOA,b">
+        <modify_flags></modify_flags>
+        <opcode>0b1001.1001_aaaa.abbb</opcode>
+        <cycles>1,2,3</cycles>
+        <description>"Skip if Bit in I/O Register Cleared"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BRBC">
+      <param_code name="b,srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.01rr_rrrr.rbbb</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if Status Flag Cleared"</description>
+      </param_code>
+    </instruction>
+    <instruction name="NOP">
+      <param_code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0x0000</opcode>
+        <description>"No Operation"</description>
+      </param_code>
+    </instruction>
+    <instruction name="ROL">
+      <param_code name="R">
+        <modify_flags>HSVNZC</modify_flags>
+        <opcode>0b0001.11dD_dddd.DDDD</opcode>
+        <description>"Rotate Left Through Carry"</description>
+      </param_code>
+    </instruction>
+    <instruction name="STD">
+      <cycles>2</cycles>
+      <param_code name="Y+q,R">
+        <opcode>0b10q0.qq1r_rrrr.1qqq</opcode>
+        <description>"Store Indirect with Displacement"</description>
+      </param_code>
+      <param_code name="Z+q,R">
+        <opcode>0b10q0.qq1r_rrrr.0qqq</opcode>
+        <description>"Store Indirect with Displacement"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SBIW">
+      <param_code name="RW,K6">
+        <modify_flags>SVNZC</modify_flags>
+        <opcode>0b1001.0111_kkdd.kkkk</opcode>
+        <description>"Subtract Immediate from Word"</description>
+      </param_code>
+    </instruction>
+    <instruction name="ANDI">
+      <param_code name="RH,Byte">
+        <modify_flags>SNZ</modify_flags>
+        <opcode>0b0111.kkkk_dddd.kkkk</opcode>
+        <description>"Logical AND with Immediate"</description>
+        <clear_flags>V</clear_flags>
+      </param_code>
+    </instruction>
+    <instruction name="LDD">
+      <cycles>2</cycles>
+      <param_code name="R,Y+q">
+        <modify_flags></modify_flags>
+        <opcode>0b10q0.qq0d_dddd.0qqq</opcode>
+        <description>"Load Indirect with Displacement"</description>
+      </param_code>
+      <param_code name="R,Z+q">
+        <modify_flags></modify_flags>
+        <opcode>0b10q0.qq0d_dddd.1qqq</opcode>
+        <description>"Load Indirect with Displacement"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SBRS">
+      <param_code name="R,b">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.111r_rrrr.0bbb</opcode>
+        <cycles>1,2,3</cycles>
+        <description>"Skip if Bit in Register Set"</description>
+      </param_code>
+    </instruction>
+    <instruction name="DEC">
+      <param_code name="R">
+        <modify_flags>SVNZ</modify_flags>
+        <opcode>0b1001.010d_dddd.1010</opcode>
+        <description>"Decrement"</description>
+      </param_code>
+    </instruction>
+    <instruction name="BRPL">
+      <param_code name="srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.01rr_rrrr.r010</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if Plus"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SLEEP">
+      <param_code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0b1001.0101_1000.1000</opcode>
+        <description>"Sleep"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SEH">
+      <param_code name="none">
+        <set_flags>H</set_flags>
+        <opcode>0b1001.0100_0101.1000</opcode>
+        <description>"Set Half Carry Flag in SREG"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SEZ">
+      <param_code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0b1001.0100_0001.1000</opcode>
+        <description>"Set Zero Flag"</description>
+      </param_code>
+    </instruction>
+    <instruction name="POP">
+      <cycles>2</cycles>
+      <param_code name="R">
+        <modify_flags></modify_flags>
+        <opcode>0b1001.000d_dddd.1111</opcode>
+        <description>"Pop Register from Stack"</description>
+      </param_code>
+    </instruction>
+    <instruction name="OUT">
+      <param_code name="IOA,R">
+        <modify_flags></modify_flags>
+        <opcode>0b1011.1aar_rrrr.aaaa</opcode>
+        <description>"Out To I/O Location"</description>
+      </param_code>
+    </instruction>
+    <instruction name="CLR">
+      <param_code name="R">
+        <set_flags>Z</set_flags>
+        <opcode>0b0010.01dD_dddd.DDDD</opcode>
+        <description>"Clear Register"</description>
+        <clear_flags>SVN</clear_flags>
+      </param_code>
+    </instruction>
+    <instruction name="ORI">
+      <param_code name="RH,Byte">
+        <modify_flags>SNZ</modify_flags>
+        <opcode>0b0100.kkkk_dddd.kkkk</opcode>
+        <description>"Logical OR with Immediate"</description>
+        <clear_flags>V</clear_flags>
+      </param_code>
+    </instruction>
+    <instruction name="BREQ">
+      <param_code name="srel">
+        <modify_flags></modify_flags>
+        <opcode>0b1111.00rr_rrrr.r001</opcode>
+        <cycles>1,2</cycles>
+        <description>"Branch if Equal"</description>
+      </param_code>
+    </instruction>
+    <instruction name="CP">
+      <param_code name="R,R">
+        <modify_flags>HSVNZC</modify_flags>
+        <opcode>0b0001.01rd_dddd.rrrr</opcode>
+        <description>"Compare"</description>
+      </param_code>
+    </instruction>
+  </instructionset>
+</systeminformation>

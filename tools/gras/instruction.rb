@@ -162,6 +162,12 @@ class Instruction
   def initialize(name, parameters, opcode, cycles=1, modify_flags="", set_flags="", clear_flags="", description="")
     @name = name
     @opcode = opcode
+    cycles=1          if cycles==nil
+    set_flags=""      if set_flags==nil
+    modify_flags = "" if modify_flags==nil
+    clear_flags=""    if clear_flags==nil
+    description=""    if description==nil
+    
     if opcode.class == String
       opcode = preparse_opcode(opcode)
       bin_opcode = convert2bincode(opcode)
@@ -171,7 +177,8 @@ class Instruction
       if opcode.class == Array
         process_code = opcode
       else
-        puts("ERROR: invalid opcode type")
+        puts("ERROR: invalid opcode type (#{opcode.class}) [#{opcode.inspect}]")
+        return
       end
     end
     assemble_code = lambda do |param| 

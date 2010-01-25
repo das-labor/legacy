@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<systeminformation>
+  <cpu>
+    <flags>ZC</flags>
+    <registers>A,X</registers>
+    <instruction_size>8</instruction_size>
+  </cpu>
+  <parameters>
+    <param name="opr16a">
+      <name>[0..65535]</name>
+      <lmap>0..65535</lmap>
+    </param>
+    <param name="A">
+      <name>"A"</name>
+    </param>
+    <param name="opr8i">
+      <name>[0..255]|[-128..127]</name>
+      <lmap>0..255 | -128..127</lmap>
+    </param>
+    <param name="X">
+      <name>"X"</name>
+    </param>
+    <param name="rel">
+      <name>[-128..127]</name>
+      <lmap>-128..127</lmap>
+      <relative>true</relative>
+    </param>
+    <param name="n">
+      <name>[0..7]</name>
+      <lmap>0..7</lmap>
+    </param>
+    <param name="opr8a">
+      <name>[0..255]</name>
+      <lmap>0..255</lmap>
+    </param>
+    <param name="opr5a">
+      <name>[0..31]</name>
+      <lmap>0..31</lmap>
+    </param>
+    <param name="opr4a">
+      <name>[0..15]</name>
+      <lmap>0..15</lmap>
+    </param>
+    <param name="DX">
+      <name>"D[X]" | ",X"</name>
+    </param>
+  </parameters>
+  <instructionset>
+    <DBNZA>DBNZ</DBNZA>
+    <BHS>BCC</BHS>
+    <TSTA>TST</TSTA>
+    <CLRA>CLR A</CLRA>
+    <CBEQA>CBEQ</CBEQA>
+    <INCA>INC</INCA>
+    <BLO>BCS</BLO>
+    <CLRX>CLR X</CLRX>
+    <DECA>DEC</DECA>
+    <instruction name="TAX">
+      <modify_flags>Z</modify_flags>
+      <description>"Transfer A to X"</description>
+      <param_code name="none">
+        <opcode>0xEF</opcode>
+        <cycles>2</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="SUB">
+      <modify_flags>ZC</modify_flags>
+      <description>"Subtract"</description>
+      <param_code name="opr8i">
+        <opcode>0xA0ii</opcode>
+        <cycles>2</cycles>
+      </param_code>
+      <param_code name="opr8a">
+        <opcode>0xB0pp</opcode>
+        <cycles>3</cycles>
+      </param_code>
+      <param_code name="opr4a">
+        <opcode>0x7p</opcode>
+        <cycles>3</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="STA">
+      <modify_flags>Z</modify_flags>
+      <description>"Store Accumulator in Memory"</description>
+      <param_code name="opr8a">
+        <opcode>0xB7pp</opcode>
+        <cycles>3</cycles>
+      </param_code>
+      <param_code name="opr5a">
+        <opcode>0b111p.pppp</opcode>
+        <cycles>2</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="BSET">
+      <description>"Set Bit n in Memory"</description>
+      <param_code name="n,opr8a">
+        <opcode>0b0001.nnn0_pppp.pppp</opcode>
+        <cycles>5</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="ADC">
+      <modify_flags>ZC</modify_flags>
+      <description>"Add with Carry"</description>
+      <param_code name="opr8i">
+        <opcode>0xA9pp</opcode>
+        <cycles>2</cycles>
+      </param_code>
+      <param_code name="opr8a">
+        <opcode>0xB9pp</opcode>
+        <cycles>3</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="SHA">
+      <description>"Swap Shadow PC High with A"</description>
+      <param_code name="none">
+        <opcode>0x45</opcode>
+        <cycles>1</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="RORA">
+      <modify_flags>ZC</modify_flags>
+      <description>"Rotate Right through Carry"</description>
+      <param_code name="none">
+        <opcode>0x46</opcode>
+        <cycles>1</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="BSR">
+      <description>"Branch Subroutine"</description>
+      <param_code name="rel">
+        <opcode>0xADrr</opcode>
+        <cycles>3</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="AND">
+      <modify_flags>Z</modify_flags>
+      <description>"Logical AND"</description>
+      <param_code name="opr8i">
+        <opcode>0xA4pp</opcode>
+        <cycles>2</cycles>
+      </param_code>
+      <param_code name="opr8a">
+        <opcode>0xB4pp</opcode>
+        <cycles>3</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="ADD">
+      <modify_flags>ZC</modify_flags>
+      <description>"Add without Carry"</description>
+      <param_code name="opr8i">
+        <opcode>0xABpp</opcode>
+        <cycles>2</cycles>
+      </param_code>
+      <param_code name="opr8a">
+        <opcode>0xBBpp</opcode>
+        <cycles>3</cycles>
+      </param_code>
+      <param_code name="opr4a">
+        <opcode>0x6p</opcode>
+        <cycles>3</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="JMP">
+      <description>"Jump"</description>
+      <param_code name="opr16a">
+        <opcode>0xBCpppp</opcode>
+        <cycles>4</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="DEC">
+      <modify_flags>Z</modify_flags>
+      <description>"Decremnent"</description>
+      <param_code name="none">
+        <opcode>0x4A</opcode>
+        <cycles>1</cycles>
+      </param_code>
+      <param_code name="opr8a">
+        <opcode>0x3App</opcode>
+        <cycles>5</cycles>
+      </param_code>
+      <param_code name="opr4a">
+        <opcode>0x5p</opcode>
+        <cycles>4</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="COMA">
+      <set_flags>C</set_flags>
+      <modify_flags>Z</modify_flags>
+      <description>"Complement"</description>
+      <param_code name="none">
+        <opcode>0x43</opcode>
+        <cycles>1</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="CBEQ">
+      <description>"Compare and Branch if Equal"</description>
+      <param_code name="opr8i,rel">
+        <opcode>0x41iirr</opcode>
+        <cycles>4</cycles>
+      </param_code>
+      <param_code name="opr8a,rel">
+        <opcode>0x31pprr</opcode>
+        <cycles>5</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="BCC">
+      <description>"Branch if Carry Bit Clear"</description>
+      <param_code name="rel">
+        <opcode>0x34rr</opcode>
+        <cycles>3</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="WAIT">
+      <description>"Put MCU into WAIT mode"</description>
+      <param_code name="none">
+        <opcode>0xAF</opcode>
+        <cycles>2</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="BNE">
+      <description>"Branch if Not Equal"</description>
+      <param_code name="rel">
+        <opcode>0x36rr</opcode>
+        <cycles>3</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="BEQ">
+      <description>"Branch if Equal"</description>
+      <param_code name="rel">
+        <opcode>0x37rr</opcode>
+        <cycles>3</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="STOP">
+      <description>"Put MCU into stop mode"</description>
+      <param_code name="none">
+        <opcode>0xAE</opcode>
+        <cycles>2</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="NOP">
+      <description>"No Operation"</description>
+      <param_code name="none">
+        <opcode>0xAC</opcode>
+        <cycles>1</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="LSRA">
+      <modify_flags>ZC</modify_flags>
+      <description>"Logical Shift Right"</description>
+      <param_code name="none">
+        <opcode>0x44</opcode>
+        <cycles>1</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="CLC">
+      <description>"Clear Carry Bit"</description>
+      <clear_flags>C</clear_flags>
+      <param_code name="none">
+        <opcode>0x38</opcode>
+        <cycles>1</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="BRCLR">
+      <modify_flags>C</modify_flags>
+      <description>"Branch if Bit n in Memory Clear"</description>
+      <param_code name="n,opr8a,rel">
+        <opcode>0b0000.nnn1_pppp.pppp_rrrr.rrrr</opcode>
+        <cycles>5</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="BGND">
+      <description>"Background"</description>
+      <param_code name="none">
+        <opcode>0xBF</opcode>
+        <cycles>5</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="SEC">
+      <set_flags>C</set_flags>
+      <description>"Set Carry Bit"</description>
+      <param_code name="none">
+        <opcode>0x39</opcode>
+        <cycles>1</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="RTS">
+      <description>"Return from Subroutine"</description>
+      <param_code name="none">
+        <opcode>0xBE</opcode>
+        <cycles>3</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="CMP">
+      <modify_flags>ZC</modify_flags>
+      <description>"Compare Accumulator with Memory"</description>
+      <param_code name="opr8i">
+        <opcode>0xA1ii</opcode>
+        <cycles>2</cycles>
+      </param_code>
+      <param_code name="opr8a">
+        <opcode>0xB1pp</opcode>
+        <cycles>3</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="BRA">
+      <description>"Branch Always"</description>
+      <param_code name="rel">
+        <opcode>0x30rr</opcode>
+        <cycles>3</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="TXA">
+      <modify_flags>Z</modify_flags>
+      <description>"Transfer X to A"</description>
+      <param_code name="none">
+        <opcode>0xCF</opcode>
+        <cycles>2</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="ROLA">
+      <modify_flags>ZC</modify_flags>
+      <description>"Rotate Left through Carry"</description>
+      <param_code name="none">
+        <opcode>0x49</opcode>
+        <cycles>1</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="BCS">
+      <description>"Branch if Carry Bit Set"</description>
+      <param_code name="rel">
+        <opcode>0x35rr</opcode>
+        <cycles>3</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="BCLR">
+      <description>"Clear Bit n in Memory"</description>
+      <param_code name="n,opr8a">
+        <opcode>0b0001.nnn1_pppp.pppp</opcode>
+        <cycles>5</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="SLA">
+      <description>"Swap Shadow PC Low with A"</description>
+      <param_code name="none">
+        <opcode>0x42</opcode>
+        <cycles>1</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="ORA">
+      <modify_flags>Z</modify_flags>
+      <description>"Inclusive OR Accumulator and Memory"</description>
+      <param_code name="opr8i">
+        <opcode>0xAAii</opcode>
+        <cycles>2</cycles>
+      </param_code>
+      <param_code name="opr8a">
+        <opcode>0xBApp</opcode>
+        <cycles>3</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="INC">
+      <modify_flags>Z</modify_flags>
+      <description>"Increment"</description>
+      <param_code name="none">
+        <opcode>0x4C</opcode>
+        <cycles>1</cycles>
+      </param_code>
+      <param_code name="opr8a">
+        <opcode>0x3Cpp</opcode>
+        <cycles>5</cycles>
+      </param_code>
+      <param_code name="opr4a">
+        <opcode>0x2p</opcode>
+        <cycles>4</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="EOR">
+      <modify_flags>Z</modify_flags>
+      <description>"Exclusive OR Memory with Accumulator"</description>
+      <param_code name="opr8i">
+        <opcode>0xA8ii</opcode>
+        <cycles>2</cycles>
+      </param_code>
+      <param_code name="opr8a">
+        <opcode>0xB8pp</opcode>
+        <cycles>3</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="DBNZ">
+      <description>"Decrement and Branch if Not Zero"</description>
+      <param_code name="rel">
+        <opcode>0x4Brr</opcode>
+        <cycles>4</cycles>
+      </param_code>
+      <param_code name="opr8a,rel">
+        <opcode>0x3Dpprr</opcode>
+        <cycles>7</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="BRN">
+      <description>"Branch Never"</description>
+      <param_code name="none">
+        <opcode>0x3000</opcode>
+        <cycles>3</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="SBC">
+      <modify_flags>ZC</modify_flags>
+      <description>"Subtract with Carry"</description>
+      <param_code name="opr8i">
+        <opcode>0xA2ii</opcode>
+        <cycles>2</cycles>
+      </param_code>
+      <param_code name="opr8a">
+        <opcode>0xB2pp</opcode>
+        <cycles>3</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="MOV">
+      <modify_flags>Z</modify_flags>
+      <description>"Move"</description>
+      <param_code name="opr8i,opr8a">
+        <opcode>0x3Eppqq</opcode>
+        <cycles>4</cycles>
+      </param_code>
+      <param_code name="opr8a,opr8a">
+        <opcode>0x4Eppqq</opcode>
+        <cycles>5</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="LDA">
+      <modify_flags>Z</modify_flags>
+      <description>"Load Accumulator from Memory"</description>
+      <param_code name="opr8i">
+        <opcode>0xA6ii</opcode>
+        <cycles>2</cycles>
+      </param_code>
+      <param_code name="opr8a">
+        <opcode>0xB6pp</opcode>
+        <cycles>3</cycles>
+      </param_code>
+      <param_code name="opr5a">
+        <opcode>0b110p.pppp</opcode>
+        <cycles>3</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="JSR">
+      <description>"Jump to Subroutine"</description>
+      <param_code name="opr16a">
+        <opcode>0xBDpppp</opcode>
+        <cycles>4</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="CLR">
+      <set_flags>Z</set_flags>
+      <description>"Clear"</description>
+      <param_code name="A">
+        <opcode>0x4F</opcode>
+        <cycles>1</cycles>
+      </param_code>
+      <param_code name="opr8a">
+        <opcode>0x3Fpp</opcode>
+        <cycles>3</cycles>
+      </param_code>
+      <param_code name="opr5a">
+        <opcode>0b100p_pppp</opcode>
+        <cycles>2</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="BRSET">
+      <modify_flags>C</modify_flags>
+      <description>"Branch if Bit n in Memory Set"</description>
+      <param_code name="n,opr8a,rel">
+        <opcode>0b0000.nnn0_pppp.pppp_rrrr.rrrr</opcode>
+        <cycles>5</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="TST">
+      <modify_flags>Z</modify_flags>
+      <description>"Test for Zero"</description>
+      <param_code name="none">
+        <opcode>0xAA00</opcode>
+        <cycles>2</cycles>
+      </param_code>
+      <param_code name="opr8a">
+        <opcode>0x4EppPP</opcode>
+        <cycles>5</cycles>
+      </param_code>
+    </instruction>
+    <instruction name="LSLA">
+      <modify_flags>ZC</modify_flags>
+      <description>"Logical Shift Left"</description>
+      <param_code name="none">
+        <opcode>0x48</opcode>
+        <cycles>1</cycles>
+      </param_code>
+    </instruction>
+  </instructionset>
+</systeminformation>
