@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="project" />
+		<Option makefile="Makefile.win" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="default">
+				<Option output="project" prefix_auto="1" extension_auto="1" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+			</Target>
+		</Build>
+		<Compiler>
+			<Add directory="C:\Programme\LibUSB-Win32\include" />
+		</Compiler>
+		<Linker>
+			<Add option="C:/Programme/LibUSB-Win32/lib/gcc/libusb.a" />
+			<Add directory="C:\Programme\LibUSB-Win32\lib\gcc" />
+		</Linker>
+		<Unit filename="config.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="config.h" />
+		<Unit filename="crc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="crc.h" />
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="nl_flash.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="nl_flash.h" />
+		<Unit filename="settings.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="settings.h" />
+		<Unit filename="..\..\..\rfm12usb\host\CDriver\RfmUsb.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="..\..\..\rfm12usb\host\common\opendevice.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
