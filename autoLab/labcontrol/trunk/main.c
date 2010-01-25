@@ -108,10 +108,12 @@ int main(int argc, char *argv[])
 	int optc;
 
 	progname = argv[0];
-
-	while ((optc=getopt_long(argc, argv, optstring, longopts, (int *)0))
-		!= EOF) {
-		switch (optc) {
+	int option_index = 0;
+	
+	while ((optc = getopt_long(argc, argv, optstring, longopts, &option_index)) != EOF)
+	{
+		switch (optc)
+		{
 			case 'v':
 				if (optarg)
 					debug_level = atoi(optarg);
@@ -129,27 +131,25 @@ int main(int argc, char *argv[])
 				break;
 			case 'h':
 				help();
-				exit(0);
+				exit(EXIT_SUCCESS);
 			default:
 				help();
-				exit(1);
+				exit(EXIT_FAILURE);
 		}
 	} // while
-
+	cann_conn_t *conn;
 
 	if (optind == argc) {
 		help();
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	if (serial) {
-		debug(1, "Trying to establish CAN communication via serial %s", serial );
+		debug(1, "Trying to establish CAN communication via serial %s", serial);
 		canu_init(serial);
 		can_init(NULL);		// use serial
 	} else {
-		cann_conn_t *conn;
-
-		debug(1, "Trying to establish CAN communication via cand (%s:%d)", server, tcpport );
+		debug(1, "Trying to establish CAN communication via cand (%s:%d)", server, tcpport);
 		conn = cann_connect(server, tcpport);
 		can_init(conn);		// use specified connection to cand
 	}
@@ -157,19 +157,21 @@ int main(int argc, char *argv[])
 	char *arg = argv[optind];
 
 	cmd_t *cmd = cmds;
-	while(cmd->fkt) {
-		if (strcmp(arg, cmd->cmd) == 0) {
+	while (cmd->fkt) {
+		if (!strcmp(arg, cmd->cmd)) {
 			(*(cmd->fkt))(argc-optind, &(argv[optind]));
 			goto done;
 		}
 		cmd++;
 	}
 
-	debug(0, "Command not understood" );
+	debug(0, "Command not understood");
 	help();
 
 done:
-	cann_close(0);
-
+	//cann_close(0);
+	close(conn->fd);
+	//cann_close_errors();
+	free(conn);
 	return 0;
 }

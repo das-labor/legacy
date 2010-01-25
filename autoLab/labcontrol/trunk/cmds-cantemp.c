@@ -16,34 +16,32 @@
 void cmd_cantemp(int argc, char *argv[]) 
 {
 	unsigned char addr;
-	pdo_message *msg;
-	msg = (pdo_message *)can_buffer_get();
+	can_message *msg;
+	msg = can_buffer_get();
 	can_message *result;
 
 	if (argc != 2) goto argerror;
-       	if (sscanf(argv[1], "%x", &addr) != 1)
+       	if (sscanf(argv[1], "%x", (unsigned int*)&addr) != 1)
 		goto argerror;
 
-	
-	
-
-	
 
 	msg->addr_src = 0x00;
 	msg->addr_dst = addr;
 	msg->port_src = 0x00;
-	msg->port_dst = 0x03;
+	msg->port_dst = 0x10;
 	msg->dlc      = 1;
-	msg->data[0] = 0;
+	msg->data[0]  = 0;
 	
 
-	can_transmit((can_message*)msg);
+	can_transmit(msg);
 
-	for(;;) {
+	for (;;)
+	{
 		result = can_get();
 
-		if (result->addr_src == addr) {
-			printf( "Temp is %d\n", result->data[0] );
+		if (result->addr_src == addr)
+		{
+			printf("Temp is %d\n", result->data[0]);
 			return;
 		}
 	}
@@ -52,5 +50,4 @@ void cmd_cantemp(int argc, char *argv[])
 argerror:
 	debug(0, "cantemp <addr>");
 };
-
 

@@ -9,11 +9,23 @@
 
 #include "cmds-flash.h"
 
+/*
+    * : is the colon that starts every Intel HEX record.
+    * ll is the record-length field that represents the number of data bytes (dd) in the record.
+    * aaaa is the address field that represents the starting address for subsequent data in the record.
+    * tt is the field that represents the HEX record type, which may be one of the following:
+      00 - data record
+      01 - end-of-file record
+      02 - extended segment address record
+      04 - extended linear address record
+    * dd is a data field that represents one byte of data. A record may have multiple data bytes. The number of data bytes in the record must match the number specified by the ll field.
+    * cc is the checksum field that represents the checksum of the record. The checksum is calculated by summing the values of all hexadecimal digit pairs in the record modulo 256 and taking the two's complement.
+*/
 
 uint8_t *read_buf_from_hex(FILE *f, size_t *size, size_t *offset)
 {
-	int tt;
-	size_t i; //i was int, but size_t as 8 byte on 64bit, int not - hansi
+	unsigned int tt;
+	size_t i; //i was int, but size_t has 8 byte on 64bit, int not - hansi
 	uint8_t *buf;
 
 	//for 64-bit systems the fscanf below will only fill
@@ -29,34 +41,31 @@ uint8_t *read_buf_from_hex(FILE *f, size_t *size, size_t *offset)
 	if (fscanf(f, "%2x", &tt) != 1)
 		goto error;
 
-	if(*size == 0)
+	if (tt == 1) // end of file mark
 	{
-		printf("ERROR: Hex file data size is zero!\n");
-	}
-
-	if(tt == 1) {
 		*size  = 0;
 		return 0;
 	}
 
 	i = *size;
-	buf = malloc(*size);
+	buf = malloc(1 + ((*size) * sizeof(uint8_t))); // why +1 XXX braucht mehr nachdenken
 
-	if(buf == NULL)
+	if (buf == NULL)
 	{
 		printf("ERROR: Could not allocate hex image data buffer!\n");
 		goto error;
 	}
 
 	uint8_t *ptr = buf;
-	for(;i > 0; i--) {
-		if (fscanf(f, "%2x", (unsigned int *)ptr++) != 1)
+	for (;i > 0; i--)
+	{
+		if (fscanf(f, "%2hx", (short unsigned int *)ptr++) != 1)  // XXX read 2 byte wrote 4 needs better fix
 			goto error;
 	}
 	if (fscanf(f, "%2x", &tt) != 1)	 // checksum
 		goto error;
 
-	fscanf(f, "\n");
+	fscanf(f, "\n"); // XXX fetch error
 
 	return buf;
 
@@ -65,7 +74,7 @@ error:
 	return 0;
 }
 
-void push_page( can_addr dst, uint8_t *buf, size_t offset, size_t size )
+void push_page(can_addr dst, uint8_t *buf, size_t offset, size_t size)
 {
 
 	
@@ -90,14 +99,19 @@ void push_page( can_addr dst, uint8_t *buf, size_t offset, size_t size )
 	uint8_t *ptr = buf;
 	int missing = size;
 
-	while(missing > 0) {
-		while(1) {
+	while (missing > 0)
+	{
+		while (1)
+		{
 			can_message *incoming = can_get();
 			if (incoming->data[0]  == SDO_CMD_WRITE_BLK_ACK &&
 			    incoming->addr_src == dst)
+			{
+				free(incoming);
 				break;
+			}
 		}
-
+		
 		can_message *to_transmit = can_buffer_get();
 		to_transmit->addr_src = 0x00;
 		to_transmit->addr_dst = dst;
@@ -116,16 +130,21 @@ void push_page( can_addr dst, uint8_t *buf, size_t offset, size_t size )
 		can_transmit(to_transmit);
 	}
 
-	while(1) {
+	while (1)
+	{
 		can_message *incoming = can_get();
 		if (incoming->data[0]  == SDO_CMD_WRITE_BLK_ACK &&
 		    incoming->addr_src == dst)
+		{
+			free(incoming);
 			break;
+		}
 	}
 }
 
 
-void flash_atmel(unsigned char addr, unsigned int pagesize, char * filename){
+void flash_atmel(unsigned char addr, unsigned int pagesize, char * filename)
+{
 	sdo_message *smsg = (sdo_message *)can_buffer_get();
 	smsg->addr_dst = addr;
 	smsg->addr_src = 0x00;  
@@ -135,47 +154,64 @@ void flash_atmel(unsigned char addr, unsigned int pagesize, char * filename){
 	smsg->cmd      = SDO_CMD_READ;
 	smsg->index    = 0xff01;
 
-	can_transmit( (can_message *)smsg);
+	can_transmit((can_message *)smsg);
 
-	for(;;) {
-		smsg = (sdo_message *)can_get();
+	can_message *rxmsg;
+	for (;;)
+	{
+		rxmsg = can_get();
 
-		if (smsg->port_dst == PORT_SDO && smsg->addr_src == addr) {
+		if (rxmsg->port_dst == PORT_SDO && rxmsg->addr_src == addr)
+		{
 			break;
 		}
 	}
 
-	can_message *msg3 = (can_message *)smsg;
-	uint16_t flashsize = (uint16_t)(msg3->data[3]<<8) + (uint16_t)msg3->data[2];
-	printf("Flash Size: 0x%x\n",flashsize);
+	uint16_t flashsize = (uint16_t)(rxmsg->data[3] << 8) + (uint16_t)rxmsg->data[2];
+	printf("Flash Size: 0x%x\n", flashsize);
+	free(rxmsg);
 	
 	// allocate ATMega memory
 	uint8_t *mem  = malloc(flashsize);
+	if (mem == NULL)
+	{
+		printf("ERROR: Could not allocate mem data buffer!\n");
+		exit(EXIT_FAILURE);
+	}
 	uint8_t *mask = malloc(flashsize);
-	memset( mem,  0xff, flashsize );
-	memset( mask, 0x00, flashsize );
+	if (mask == NULL)
+	{
+		printf("ERROR: Could not allocate mask buffer!\n");
+		exit(EXIT_FAILURE);
+	}
+	memset(mem,  0xff, flashsize);
+	memset(mask, 0x00, flashsize);
 
 
-	printf( "Flashing file: %s\n", filename );
+	printf("Flashing file: %s\n", filename);
 	FILE *fd = fopen(filename,"r");
 	
 	
 	size_t size, dst;
 	uint8_t *buf;
-	while ((buf = read_buf_from_hex(fd, &size, &dst)) != 0) {
-		memcpy( &mem[dst], buf, size);
-		memset( &mask[dst], 0xff, size );
+	while ((buf = read_buf_from_hex(fd, &size, &dst)) != 0)
+	{
+		memcpy(&mem[dst], buf, size);
+		memset(&mask[dst], 0xff, size);
 		free(buf);
 	}
 
 	if (size != 0)
 		goto fileerror;
 
-	int i,j;
+	int i, j;
 
-	for( i=0; i<flashsize; i += pagesize) {
-		for(j=i; j<i+pagesize; j++) {
-			if (mask[j] == 0xff) {
+	for (i = 0; i < flashsize; i += pagesize)
+	{
+		for (j = i; j < i + pagesize; j++)
+		{
+			if (mask[j] == 0xff)
+			{
 				// trasfer page stating at i
 				printf("Transmitting %4x...\n", i);
 				push_page(addr, &(mem[i]), i, pagesize);
@@ -183,8 +219,11 @@ void flash_atmel(unsigned char addr, unsigned int pagesize, char * filename){
 			}
 		}
 	}
-
+	
+	fclose(fd);
+	
 	printf("Sendig reset\n");
+	smsg = (sdo_message *)can_buffer_get();
 	smsg->addr_dst = addr;
 	smsg->addr_src = 0x00;  
 	smsg->port_src = PORT_SDO;
@@ -193,11 +232,15 @@ void flash_atmel(unsigned char addr, unsigned int pagesize, char * filename){
 	smsg->cmd      = SDO_CMD_READ;
 	smsg->index    = 0xff02;
 
-	can_transmit( (can_message *)smsg);
+	can_transmit((can_message *)smsg);
 
+	free(mem);
+	free(mask);
 	return;
 
 fileerror:
+	free(mem);
+	free(mask);
 	debug(0, "Given file is not in Intel Hex format");
 	return;
 
@@ -205,7 +248,8 @@ fileerror:
 
 
 
-void flash_commodore(unsigned char addr, char * filename){
+void flash_commodore(unsigned char addr, char * filename)
+{
 	sdo_message *smsg = (sdo_message *)can_buffer_get();
 	smsg->addr_dst = addr;
 	smsg->addr_src = 0x00;  
@@ -215,12 +259,14 @@ void flash_commodore(unsigned char addr, char * filename){
 	smsg->cmd      = SDO_CMD_READ;
 	smsg->index    = 0xff01;
 
-	can_transmit( (can_message *)smsg);
+	can_transmit((can_message *)smsg);
 
-	for(;;) {
+	for (;;)
+	{
 		smsg = (sdo_message *)can_get();
 
-		if (smsg->port_dst == PORT_SDO && smsg->addr_src == addr) {
+		if (smsg->port_dst == PORT_SDO && smsg->addr_src == addr)
+		{
 			break;
 		}
 	}
@@ -232,7 +278,7 @@ void flash_commodore(unsigned char addr, char * filename){
 	printf( "Flashing file: %s\n", filename );
 	FILE *fd = fopen(filename,"r");
 	
-	if(!fd) goto fileerror;
+	if (!fd) goto fileerror;
 	
 	struct stat mystat;
 	stat(filename, &mystat);
@@ -263,15 +309,18 @@ void flash_commodore(unsigned char addr, char * filename){
 	unsigned int missing = size;
 	unsigned int count = 0;
 
-	while(missing > 0) {
-		while(1) {
+	while (missing > 0)
+	{
+		while (1)
+		{
 			can_message *incoming = can_get();
 			if (incoming->data[0]  == SDO_CMD_WRITE_BLK_ACK &&
 			    incoming->addr_src == addr)
 				break;
 		}
 		
-		if((count%0x400) == 0){
+		if ((count%0x400) == 0)
+		{
 			printf("Transmitting %X\n", offset+count);
 		}
 
@@ -281,9 +330,9 @@ void flash_commodore(unsigned char addr, char * filename){
 		to_transmit->port_src = PORT_SDO;
 		to_transmit->port_dst = PORT_SDO_DATA;
 		if (missing > 8)
-			to_transmit->dlc   = 8;
+			to_transmit->dlc = 8;
 		else
-			to_transmit->dlc   = missing;
+			to_transmit->dlc = missing;
 		fread(to_transmit->data, 1, to_transmit->dlc, fd);
 
 		count += to_transmit->dlc;
@@ -292,7 +341,8 @@ void flash_commodore(unsigned char addr, char * filename){
 		can_transmit(to_transmit);
 	}
 
-	while(1) {
+	while (1)
+	{
 		can_message *incoming = can_get();
 		if (incoming->data[0]  == SDO_CMD_WRITE_BLK_ACK &&
 		    incoming->addr_src == addr)
@@ -320,34 +370,36 @@ fileerror:
 }
 
 
-
-
 void cmd_flash(int argc, char *argv[]) 
 {
-	can_addr addr;
+	can_addr addr = 0;
 
 	pdo_message *msg;
 
 	if (argc != 3)
 		goto argerror;
 
-       	if (sscanf(argv[1], "%i", &addr) != 1)
+       	if (sscanf(argv[1], "%i", (int*)&addr) != 1)
 		goto argerror;
 
 	lap_reset(addr);
 
-	for(;;) {
+	for (;;)
+	{
 		msg = (pdo_message *)can_get();
 
 
 		if (msg->port_dst == PORT_MGT &&  
 		    msg->cmd      == FKT_MGT_AWAKE && 
-		    msg->addr_src == addr) {
+		    msg->addr_src == addr)
+		{
 			break;
 		}
 	}
 
-	printf( "Awake from %d...\n", msg->addr_src );
+	printf("Awake from %d...\n", msg->addr_src);
+	
+	free(msg);
 
 	sdo_message *smsg = (sdo_message *)can_buffer_get();
 	smsg->addr_dst = addr;
@@ -358,33 +410,38 @@ void cmd_flash(int argc, char *argv[])
 	smsg->cmd      = SDO_CMD_READ;
 	smsg->index    = 0xff00;
 
-	can_transmit( (can_message *)smsg);
+	can_transmit((can_message *)smsg);
 
-	for(;;) {
+	for (;;)
+	{
 		smsg = (sdo_message *)can_get();
 
-		if (smsg->port_dst == PORT_SDO && smsg->addr_src == addr) {
+		if (smsg->port_dst == PORT_SDO && smsg->addr_src == addr)
+		{
 			break;
 		}
 	}
 
-	if (smsg->cmd != SDO_CMD_REPLY ) {
+	if (smsg->cmd != SDO_CMD_REPLY)
+	{
 		debug(0, "Kaputt!" );
-		exit(1);
+		free(smsg);
+		exit(EXIT_FAILURE);
 	}
-
 	can_message *msg2 = (can_message *)smsg;
-	uint16_t pagesize = (uint16_t)(msg2->data[3]<<8) + (uint16_t)msg2->data[2];
+	uint16_t pagesize = (uint16_t)(msg2->data[3] << 8) + (uint16_t)msg2->data[2];
 
-	if(msg2->data[5] == 0){
+	if (msg2->data[5] == 0)
+	{
 		printf("Hardware: ATMEGA %d\n", msg2->data[4]);
-		printf("Pagesize: 0x%x\n",pagesize);
+		printf("Pagesize: 0x%x\n", pagesize);
 		flash_atmel(addr, pagesize, argv[2]);
-	}else if(msg2->data[5] == 1){
+	} else if (msg2->data[5] == 1)
+	{
 		printf("Hardware: Commodore %d\n", msg2->data[4]);
 		flash_commodore(addr, argv[2]);
-	}else goto wronghardware;
-	
+	} else goto wronghardware;
+	free(smsg);
 	return;
 	
 argerror:
