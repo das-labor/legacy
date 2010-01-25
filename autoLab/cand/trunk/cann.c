@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -89,23 +90,30 @@ cann_conn_t *cann_connect(char *server, int port)
 	struct sockaddr_in addr;
 	
 	// initialize client struct
-	client = (cann_conn_t *)malloc(sizeof(cann_conn_t));
+	client = malloc(sizeof(cann_conn_t));
+	if (client == NULL)
+	{
+		printf("ERROR: Could not allocate client buffer!\n");
+		free(client);
+		exit(EXIT_FAILURE);
+	}
 	client->state = CANN_LEN;
 	client->missing_bytes = 0;
 	client->error = 0;
 
 	// get socket
 	ret = client->fd = socket(AF_INET, SOCK_STREAM, 0);
-	debug_assert( ret >= 0, "Could not open socket: ");
+	debug_assert(ret >= 0, "Could not open socket: ");
 
 	// connect
-	memcpy( &(addr.sin_addr), atoaddr(server), sizeof(in_addr_t) );
-	addr.sin_port = htons( port );
+	memcpy(&(addr.sin_addr), atoaddr(server), sizeof(in_addr_t));
+	addr.sin_port = htons(port);
 	addr.sin_family = AF_INET;
 
-	if ( connect(client->fd, (struct sockaddr *)&addr, sizeof(addr)) <0 ) {
-		debug_perror( 0, "Connect failed" );
-		exit(1);
+	if (connect(client->fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+		debug_perror(0, "Connect failed");
+		free(client);
+		exit(EXIT_FAILURE);
 	}
 
 	// set some options on socket
@@ -129,7 +137,7 @@ int cann_fdset(fd_set *set)
 	// socket for new connections
 	FD_SET(listen_socket, set);
 
-	while(client) {
+	while (client) {
 		if (!(client->error)) {
 			FD_SET(client->fd, set);
 			maxfd = max(maxfd, client->fd);
@@ -167,6 +175,11 @@ cann_conn_t *cann_accept(fd_set *set)
 
 	// initialize client struct
 	client = (cann_conn_t *)malloc(sizeof(cann_conn_t));
+	if (client == NULL)
+	{
+		printf("ERROR: Could not allocate client buffer!\n");
+		exit(EXIT_FAILURE);
+	}
 	client->next  = cann_conns_head;
 	client->fd    = fd;
 	client->missing_bytes = 0;
@@ -181,7 +194,7 @@ void cann_close_errors()
 {
 	cann_conn_t **client = &cann_conns_head;
 
-	while(*client) {
+	while (*client) {
 		if ( (*client)->error) {
 			cann_conn_t *del = (*client);
 
@@ -202,10 +215,11 @@ void cann_close(cann_conn_t *conn)
 {
 	// close all connections?
 	if (!conn) {
+		printf("trying to close socket");
 		conn = cann_conns_head;
-		while(conn) {
+		while (conn) {
 			cann_conn_t *oldconn = conn;
-			
+			printf("close socket");
 			shutdown(conn->fd, SHUT_RDWR);
 			close(conn->fd);
 			conn = conn->next;
@@ -219,7 +233,7 @@ cann_conn_t *cann_activity(fd_set *set)
 {
 	cann_conn_t *client = cann_conns_head;
 
-	while(client) {
+	while (client) {
 		if (FD_ISSET(client->fd, set) && !client->error) {
 			FD_CLR(client->fd, set);
 			return client;
@@ -237,7 +251,14 @@ cann_conn_t *cann_activity(fd_set *set)
 
 rs232can_msg *cann_buffer_get()
 {
-	return (rs232can_msg *)malloc( sizeof(rs232can_msg) );
+	rs232can_msg *cmsg = malloc(sizeof(rs232can_msg));
+	if (cmsg == NULL)
+	{
+		printf("ERROR: cann_buffer_get malloc fail!\n");
+		exit(EXIT_FAILURE);
+	}
+	else
+		return cmsg;
 }
 
 void cann_free(rs232can_msg *rmsg)
@@ -250,7 +271,7 @@ void cann_dumpconn()
 {
 	cann_conn_t *client = cann_conns_head;
 
-	while(client) {
+	while (client) {
 		debug(9, "CANN connection: fd=%d error=%d", client->fd, client->error);
 		client = client->next;
 	}
@@ -308,7 +329,7 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 		debug(10, "Next packet on %d: cmd=%d", client->fd, client->msg.cmd);
 		client->state = CANN_PAYLOAD;
 	}
-	
+
 	// read data
 	ret = read(client->fd, client->rcv_ptr, client->missing_bytes);
 
@@ -323,7 +344,13 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 
 	// message complete?
 	if (client->missing_bytes == 0) {
-		rs232can_msg *rmsg = cann_buffer_get();
+		rs232can_msg *rmsg = malloc(sizeof(rs232can_msg));
+
+		if (rmsg == NULL)
+		{
+			printf("ERROR: Could not allocate rmsg buffer!\n");
+			exit(EXIT_FAILURE);
+		}
 
 		memcpy(rmsg, &(client->msg), sizeof(rs232can_msg));
 		client->state = CANN_LEN;
@@ -348,7 +375,7 @@ rs232can_msg *cann_get(cann_conn_t *client)
 	fd_set rset;
 	rs232can_msg *rmsg;
 
-	for(;;) {
+	for (;;) {
 		FD_ZERO(&rset);
 		FD_SET(client->fd, &rset);
 
@@ -377,19 +404,19 @@ void cann_transmit(cann_conn_t *conn, rs232can_msg *msg)
 		return;
 	}
 
-	if( send(conn->fd, &(msg->len), 1, MSG_NOSIGNAL) != 1 ) 
+	if (send(conn->fd, &(msg->len), 1, MSG_NOSIGNAL) != 1) 
 		goto error;
 	
-	if( send(conn->fd, &(msg->cmd), 1, MSG_NOSIGNAL) != 1 )
+	if (send(conn->fd, &(msg->cmd), 1, MSG_NOSIGNAL) != 1)
 		goto error;
 
-	if(send(conn->fd, msg->data, msg->len, MSG_NOSIGNAL) != msg->len )
+	if (send(conn->fd, msg->data, msg->len, MSG_NOSIGNAL) != msg->len)
 		goto error;
 
 	return;
 error:
 	conn->error = 1;
-	debug_perror( 5, "Error sending fd %d", conn->fd );
+	debug_perror(5, "Error sending fd %d", conn->fd);
 	return;
 
 }
