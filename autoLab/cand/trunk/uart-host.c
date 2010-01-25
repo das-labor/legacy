@@ -1,6 +1,7 @@
 #include "config.h"
 
-
+#include <stdlib.h>
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -23,7 +24,6 @@ static void install_signalhandler ( void )
 }
 
 
-
 void uart_init(char *sport) {
 	int rc;
 	struct termios options;
@@ -37,7 +37,7 @@ void uart_init(char *sport) {
 	 * O_NDELAY -- don't block for DTR, we're not talking to a modem
 	 */
 	uart_fd = open(sport, O_RDWR | O_NOCTTY | O_NDELAY);
-	if ( uart_fd == -1 ){
+	if (uart_fd == -1) {
         	debug_perror("Error opening serial port %s", sport);
 	}
 
@@ -75,16 +75,21 @@ void uart_init(char *sport) {
 	}
 }
 
-void uart_close(){
+void uart_close() {
 	close(uart_fd);
 }
 
 void uart_putc(char c) {
-	write(uart_fd, &c, 1);
+	ssize_t ret = write(uart_fd, &c, 1);
+	if (ret != 1)
+	{
+		printf("uart_putc faild: %s\n", strerror(errno));
+		exit(EXIT_FAILURE);
+	}
 }
 
 void uart_putstr(char *str) {
-	while(*str) {
+	while (*str) {
 		uart_putc(*str++);
 	}
 }
@@ -111,7 +116,7 @@ char uart_getc(void)
 	FD_SET(uart_fd, &rset);
 
 	ret = select(uart_fd + 1, &rset, (fd_set*)NULL, (fd_set*)NULL, NULL);
-	debug_assert( ret >= 0, "uart-host.c: select failed" );
+	debug_assert(ret >= 0, "uart-host.c: select failed");
 
 	uart_getc_nb(&c);
 
