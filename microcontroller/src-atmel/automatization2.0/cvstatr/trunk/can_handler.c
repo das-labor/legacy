@@ -44,7 +44,7 @@ extern void can_handler()
 						break;
 				}
 			}
-			else if (rx_msg->port_dst == 3)
+/*			else if (rx_msg->port_dst == 3)
 			{
 				uint8_t data[2] = {0, 0};
 				get_temp(data);
@@ -56,7 +56,7 @@ extern void can_handler()
 				msg.addr_src = myaddr;
 				msg.addr_dst = rx_msg->addr_src;
 				can_transmit(&msg);
-			}
+			}*/
 		}
 	}
 }
@@ -69,12 +69,12 @@ void read_can_addr()
 void switch_handler()
 {
 // Hauptschalter
-	if (!(PINB & _BV(PB0)) && stat_switches.switches.klingel && stat_switches.switches.tuerkontakt)
+	if (!(PIND & _BV(PD6)) && stat_switches.switches.klingel)
 	{
 		stat_switches.switches.klingel = 0;
 		_delay_ms(100);
 	}
-	if ((PINB & _BV(PB0)) && stat_switches.switches.klingel == 0)
+	if ((PIND & _BV(PD6)) && stat_switches.switches.klingel == 0 && stat_switches.switches.tuerkontakt)
 	{
 		stat_switches.switches.klingel = 1;
 
@@ -86,17 +86,17 @@ void switch_handler()
 
 		_delay_ms(100);
 	}
-	if (!(PINB & _BV(PB1)) && stat_switches.switches.tuerkontakt)
+	if ((PIND & _BV(PD7)) && stat_switches.switches.tuerkontakt)
 	{
 		static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
-		
+		stat_switches.switches.tuerkontakt = 0;		
 		msg.data[0] = stat_switches.bla;
 		msg.addr_src = myaddr;
 		can_transmit(&msg);
-		stat_switches.switches.tuerkontakt = 0;
+
 		_delay_ms(100);
 	}
-	if ((PINB & _BV(PB1)) && stat_switches.switches.tuerkontakt == 0)
+	if (!(PIND & _BV(PD7)) && stat_switches.switches.tuerkontakt == 0)
 	{
 		stat_switches.switches.tuerkontakt = 1;
 
