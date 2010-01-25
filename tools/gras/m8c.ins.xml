@@ -1,0 +1,627 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<systeminformation>
+  <cpu>
+  </cpu>
+  <parameters>
+  </parameters>
+  <instructionset>
+    <instruction name="ADC">
+      <code name="[expr],expr">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x0E</opcode>
+      </code>
+      <code name="[X+expr],A">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x0D</opcode>
+      </code>
+      <code name="A,expr">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x09</opcode>
+      </code>
+      <code name="[expr],A">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x0C</opcode>
+      </code>
+      <code name="A,[expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x0A</opcode>
+      </code>
+      <code name="A,[X+expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x0B</opcode>
+      </code>
+      <code name="[X+expr],expr">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x0F</opcode>
+      </code>
+    </instruction>
+    <instruction name="SUB">
+      <code name="[expr],expr">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x16</opcode>
+      </code>
+      <code name="[X+expr],A">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x15</opcode>
+      </code>
+      <code name="A,expr">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x11</opcode>
+      </code>
+      <code name="[expr],A">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x14</opcode>
+      </code>
+      <code name="A,[expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x12</opcode>
+      </code>
+      <code name="A,[X+expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x13</opcode>
+      </code>
+      <code name="[X+expr],expr">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x17</opcode>
+      </code>
+    </instruction>
+    <instruction name="MVI">
+      <code name="A,[[expr]++]">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x3E</opcode>
+      </code>
+      <code name="[[expr]++],A">
+        <modify_flags></modify_flags>
+        <opcode>0x3F</opcode>
+      </code>
+    </instruction>
+    <instruction name="ASR">
+      <code name="A">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x67</opcode>
+      </code>
+      <code name="[expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x68</opcode>
+      </code>
+      <code name="[X+expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x69</opcode>
+      </code>
+    </instruction>
+    <instruction name="JNZ">
+      <code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0xBx</opcode>
+      </code>
+    </instruction>
+    <instruction name="LCALL">
+      <code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0x7C</opcode>
+      </code>
+    </instruction>
+    <instruction name="ADD">
+      <code name="[expr],expr">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x06</opcode>
+      </code>
+      <code name="[X+expr],A">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x05</opcode>
+      </code>
+      <code name="A,expr">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x01</opcode>
+      </code>
+      <code name="[expr],A">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x04</opcode>
+      </code>
+      <code name="SP,expr">
+        <modify_flags></modify_flags>
+        <opcode>0x38</opcode>
+      </code>
+      <code name="A,[expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x02</opcode>
+      </code>
+      <code name="A,[X+expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x03</opcode>
+      </code>
+      <code name="[X+expr],expr">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x07</opcode>
+      </code>
+    </instruction>
+    <instruction name="AND">
+      <code name="[expr],expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x26</opcode>
+      </code>
+      <code name="[X+expr],A">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x25</opcode>
+      </code>
+      <code name="reg[expr],expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x41</opcode>
+      </code>
+      <code name="A,expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x21</opcode>
+      </code>
+      <code name="[expr],A">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x24</opcode>
+      </code>
+      <code name="A,[expr]">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x22</opcode>
+      </code>
+      <code name="A,[X+expr]">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x23</opcode>
+      </code>
+      <code name="F,expr">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x70</opcode>
+      </code>
+      <code name="[X+expr],expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x27</opcode>
+      </code>
+      <code name="reg[X+expr],expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x42</opcode>
+      </code>
+    </instruction>
+    <instruction name="HALT">
+      <code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0x30</opcode>
+      </code>
+    </instruction>
+    <instruction name="RET">
+      <code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0x7F</opcode>
+      </code>
+    </instruction>
+    <instruction name="DEC">
+      <code name="A">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x78</opcode>
+      </code>
+      <code name="X">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x79</opcode>
+      </code>
+      <code name="[expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x7A</opcode>
+      </code>
+      <code name="[X+expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x7B</opcode>
+      </code>
+    </instruction>
+    <instruction name="JMP">
+      <code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0x8x</opcode>
+      </code>
+    </instruction>
+    <instruction name="JACC">
+      <code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0xEx</opcode>
+      </code>
+    </instruction>
+    <instruction name="SSC">
+      <code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0x00</opcode>
+      </code>
+    </instruction>
+    <instruction name="OR">
+      <code name="[expr],expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x2E</opcode>
+      </code>
+      <code name="[X+expr],A">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x2D</opcode>
+      </code>
+      <code name="reg[expr],expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x43</opcode>
+      </code>
+      <code name="A,expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x29</opcode>
+      </code>
+      <code name="[expr],A">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x2C</opcode>
+      </code>
+      <code name="A,[expr]">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x2A</opcode>
+      </code>
+      <code name="A,[X+expr]">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x2B</opcode>
+      </code>
+      <code name="F,expr">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x71</opcode>
+      </code>
+      <code name="[X+expr],expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x2F</opcode>
+      </code>
+      <code name="reg[X+expr],expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x44</opcode>
+      </code>
+    </instruction>
+    <instruction name="RRC">
+      <code name="A">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x6D</opcode>
+      </code>
+      <code name="[expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x6E</opcode>
+      </code>
+      <code name="[X+expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x6F</opcode>
+      </code>
+    </instruction>
+    <instruction name="JC">
+      <code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0xCx</opcode>
+      </code>
+    </instruction>
+    <instruction name="NOP">
+      <code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0x40</opcode>
+      </code>
+    </instruction>
+    <instruction name="ASL">
+      <code name="A">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x64</opcode>
+      </code>
+      <code name="[expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x65</opcode>
+      </code>
+      <code name="[X+expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x66</opcode>
+      </code>
+    </instruction>
+    <instruction name="XOR">
+      <code name="[expr],expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x36</opcode>
+      </code>
+      <code name="[X+expr],A">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x35</opcode>
+      </code>
+      <code name="reg[expr],expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x45</opcode>
+      </code>
+      <code name="A,expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x31</opcode>
+      </code>
+      <code name="[expr],A">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x34</opcode>
+      </code>
+      <code name="A,[expr]">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x32</opcode>
+      </code>
+      <code name="A,[X+expr]">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x33</opcode>
+      </code>
+      <code name="F,expr">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x72</opcode>
+      </code>
+      <code name="[X+expr],expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x37</opcode>
+      </code>
+      <code name="reg[X+expr],expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x46</opcode>
+      </code>
+    </instruction>
+    <instruction name="LJMP">
+      <code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0x7D</opcode>
+      </code>
+    </instruction>
+    <instruction name="JZ">
+      <code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0xAx</opcode>
+      </code>
+    </instruction>
+    <instruction name="PUSH">
+      <code name="A">
+        <modify_flags></modify_flags>
+        <opcode>0x08</opcode>
+      </code>
+      <code name="X">
+        <modify_flags></modify_flags>
+        <opcode>0x10</opcode>
+      </code>
+    </instruction>
+    <instruction name="POP">
+      <code name="A">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x18</opcode>
+      </code>
+      <code name="X">
+        <modify_flags></modify_flags>
+        <opcode>0x20</opcode>
+      </code>
+    </instruction>
+    <instruction name="CMP">
+      <code name="[expr],expr">
+        <modify_flags>ZC</modify_flags>
+        <opcode>0x3C</opcode>
+      </code>
+      <code name="A,expr">
+        <modify_flags>ZC</modify_flags>
+        <opcode>0x39</opcode>
+      </code>
+      <code name="A,[expr]">
+        <modify_flags>ZC</modify_flags>
+        <opcode>0x3A</opcode>
+      </code>
+      <code name="A,[X+expr]">
+        <modify_flags>ZC</modify_flags>
+        <opcode>0x3B</opcode>
+      </code>
+      <code name="[X+expr],expr">
+        <modify_flags>ZC</modify_flags>
+        <opcode>0x3D</opcode>
+      </code>
+    </instruction>
+    <instruction name="SBB">
+      <code name="[expr],expr">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x1E</opcode>
+      </code>
+      <code name="[X+expr],A">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x1D</opcode>
+      </code>
+      <code name="A,expr">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x19</opcode>
+      </code>
+      <code name="[expr],A">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x1C</opcode>
+      </code>
+      <code name="A,[expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x1A</opcode>
+      </code>
+      <code name="A,[X+expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x1B</opcode>
+      </code>
+      <code name="[X+expr],expr">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x1F</opcode>
+      </code>
+    </instruction>
+    <instruction name="ROMX">
+      <code name="none">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x28</opcode>
+      </code>
+    </instruction>
+    <instruction name="INC">
+      <code name="A">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x74</opcode>
+      </code>
+      <code name="X">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x75</opcode>
+      </code>
+      <code name="[expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x76</opcode>
+      </code>
+      <code name="[X+expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x77</opcode>
+      </code>
+    </instruction>
+    <instruction name="RETI">
+      <code name="none">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x7E</opcode>
+      </code>
+    </instruction>
+    <instruction name="MOV">
+      <code name="[expr],expr">
+        <modify_flags></modify_flags>
+        <opcode>0x55</opcode>
+      </code>
+      <code name="reg[expr],A">
+        <modify_flags></modify_flags>
+        <opcode>0x60</opcode>
+      </code>
+      <code name="[X+expr],A">
+        <modify_flags></modify_flags>
+        <opcode>0x54</opcode>
+      </code>
+      <code name="A,reg[expr]">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x5D</opcode>
+      </code>
+      <code name="X,expr">
+        <modify_flags></modify_flags>
+        <opcode>0x57</opcode>
+      </code>
+      <code name="A,X">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x5B</opcode>
+      </code>
+      <code name="X,A">
+        <modify_flags></modify_flags>
+        <opcode>0x5C</opcode>
+      </code>
+      <code name="reg[expr],expr">
+        <modify_flags></modify_flags>
+        <opcode>0x62</opcode>
+      </code>
+      <code name="X,[expr]">
+        <modify_flags></modify_flags>
+        <opcode>0x58</opcode>
+      </code>
+      <code name="reg[X+expr],A">
+        <modify_flags></modify_flags>
+        <opcode>0x61</opcode>
+      </code>
+      <code name="[expr],[expr]">
+        <modify_flags></modify_flags>
+        <opcode>0x5F</opcode>
+      </code>
+      <code name="A,expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x50</opcode>
+      </code>
+      <code name="[expr],A">
+        <modify_flags></modify_flags>
+        <opcode>0x53</opcode>
+      </code>
+      <code name="X,[X+expr]">
+        <modify_flags></modify_flags>
+        <opcode>0x59</opcode>
+      </code>
+      <code name="[expr],X">
+        <modify_flags></modify_flags>
+        <opcode>0x5A</opcode>
+      </code>
+      <code name="X,SP">
+        <modify_flags></modify_flags>
+        <opcode>0x4F</opcode>
+      </code>
+      <code name="A,[expr]">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x51</opcode>
+      </code>
+      <code name="A,reg[X+expr]">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x5E</opcode>
+      </code>
+      <code name="A,[X+expr]">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x52</opcode>
+      </code>
+      <code name="[X+expr],expr">
+        <modify_flags></modify_flags>
+        <opcode>0x56</opcode>
+      </code>
+      <code name="reg[X+expr],expr">
+        <modify_flags></modify_flags>
+        <opcode>0x63</opcode>
+      </code>
+    </instruction>
+    <instruction name="RLC">
+      <code name="A">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x6A</opcode>
+      </code>
+      <code name="[expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x6B</opcode>
+      </code>
+      <code name="[X+expr]">
+        <modify_flags>CZ</modify_flags>
+        <opcode>0x6C</opcode>
+      </code>
+    </instruction>
+    <instruction name="CPL">
+      <code name="A">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x73</opcode>
+      </code>
+    </instruction>
+    <instruction name="JNC">
+      <code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0xDx</opcode>
+      </code>
+    </instruction>
+    <instruction name="INDEX">
+      <code name="none">
+        <modify_flags>Z</modify_flags>
+        <opcode>0xFx</opcode>
+      </code>
+    </instruction>
+    <instruction name="TST">
+      <code name="[expr],expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x47</opcode>
+      </code>
+      <code name="reg[expr],expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x49</opcode>
+      </code>
+      <code name="[X+expr],expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x48</opcode>
+      </code>
+      <code name="reg[X+expr],expr">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x4A</opcode>
+      </code>
+    </instruction>
+    <instruction name="SWAP">
+      <code name="A,SP">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x4E</opcode>
+      </code>
+      <code name="A,X">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x4B</opcode>
+      </code>
+      <code name="X,[expr]">
+        <modify_flags></modify_flags>
+        <opcode>0x4D</opcode>
+      </code>
+      <code name="A,[expr]">
+        <modify_flags>Z</modify_flags>
+        <opcode>0x4C</opcode>
+      </code>
+    </instruction>
+    <instruction name="CALL">
+      <code name="none">
+        <modify_flags></modify_flags>
+        <opcode>0x9x</opcode>
+      </code>
+    </instruction>
+  </instructionset>
+</systeminformation>

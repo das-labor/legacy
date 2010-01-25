@@ -1,0 +1,817 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<systeminformation>
+  <cpu>
+    <flags>C,Z,OV,AC</flags>
+    <registers>A,B,R[0..7]</registers>
+  </cpu>
+  <parameters>
+    <first>msb</first>
+    <param name="direct">
+      <name>[0.255]</name>
+      <lmap>0.255</lmap>
+    </param>
+    <param name="@Ri">
+      <name>@R[0..1]</name>
+      <lmap>0..1</lmap>
+    </param>
+    <param name="AB">
+      <name>"AB"</name>
+    </param>
+    <param name="A">
+      <name>"A"</name>
+    </param>
+    <param name="-bit">
+      <name>[0.255]</name>
+      <lmap>0.255</lmap>
+    </param>
+    <param name="bit">
+      <name>[0.255]</name>
+      <lmap>0.255</lmap>
+    </param>
+    <param name="addr16">
+      <name>[0..65535]</name>
+      <lmap>0..65535</lmap>
+    </param>
+    <param name="B">
+      <name>"B"</name>
+    </param>
+    <param name="rel">
+      <name>[-128..127]</name>
+      <lmap>-128..127</lmap>
+    </param>
+    <param name="C">
+      <name>"C"</name>
+    </param>
+    <param name="#data">
+      <name>[-128..256]</name>
+      <lmap>-128..-1,0..255</lmap>
+    </param>
+    <param name="Rn">
+      <name>R[0..7]</name>
+      <lmap>0..7</lmap>
+    </param>
+    <param name="addr11">
+      <name>[0..2047]</name>
+      <lmap>0..2047</lmap>
+    </param>
+    <param name="@DPTR">
+      <name>"@DPTR"</name>
+    </param>
+  </parameters>
+  <instructionset>
+    <instruction name="SETB">
+      <param_code name="bit">
+        <opcode>0b1101.0010_bbbb.bbbb</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Set direct bit"</description>
+      </param_code>
+      <param_code name="C">
+        <opcode>0b1101.0011</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Set Carry"</description>
+      </param_code>
+    </instruction>
+    <instruction name="RR">
+      <param_code name="A">
+        <opcode>0b0000.0011</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Rotate Accumulator Right"</description>
+      </param_code>
+    </instruction>
+    <instruction name="JNZ">
+      <param_code name="rel">
+        <opcode>0b0111.0000_rrrr.rrrr</opcode>
+        <cycles>24</cycles>
+        <length>16</length>
+        <description>"Jump if Accumulator is Not Zero"</description>
+      </param_code>
+    </instruction>
+    <instruction name="JBC">
+      <param_code name="bit,rel">
+        <opcode>0b0001.0000_bbbb.bbbb_rrrr.rrrr</opcode>
+        <cycles>24</cycles>
+        <length>24</length>
+        <description>"Jump if direct Bit is set clear bit"</description>
+      </param_code>
+    </instruction>
+    <instruction name="ACALL">
+      <param_code name="addr11">
+        <opcode>0baaa1.0001_aaaa.aaaa</opcode>
+        <cycles>24</cycles>
+        <length>16</length>
+        <description>"Absolute Subroutine Call"</description>
+      </param_code>
+    </instruction>
+    <instruction name="RET">
+      <param_code name="none">
+        <opcode>0b0010.0010</opcode>
+        <cycles>24</cycles>
+        <Length>8</Length>
+        <description>"Return from Subroutine"</description>
+      </param_code>
+    </instruction>
+    <instruction name="LCALL">
+      <param_code name="addr16">
+        <opcode>0b0001.0010_aaaa.aaaa_aaaa.aaaa</opcode>
+        <cycles>24</cycles>
+        <length>24</length>
+        <description>"Long Subroutine Call"</description>
+      </param_code>
+    </instruction>
+    <instruction name="ADD">
+      <param_code name="A,Rn">
+        <opcode>0b0010.1rrr</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Add register to Accumulator"</description>
+      </param_code>
+      <param_code name="A,direct">
+        <opcode>0b0010.0101_aaaa.aaaa</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Add direct byte to Accumulator"</description>
+      </param_code>
+      <param_code name="A,@Ri">
+        <opcode>0b0010.011i</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Add indirect RAM to Accumulator"</description>
+      </param_code>
+      <param_code name="A,#data">
+        <opcode>0b0010.0100_dddd.dddd</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Add immediate data to Accumulator"</description>
+      </param_code>
+    </instruction>
+    <instruction name="JMP">
+      <param_code name="@A+DPTR">
+        <opcode>0b0111.0011</opcode>
+        <cycles>24</cycles>
+        <Length>8</Length>
+        <description>"Jump indirect relative to the DPTR"</description>
+      </param_code>
+    </instruction>
+    <instruction name="JB">
+      <param_code name="bit,rel">
+        <opcode>0b0010.0000_bbbb.bbbb_rrrr.rrrr</opcode>
+        <cycles>24</cycles>
+        <length>24</length>
+        <description>"Jump if direct Bit is set"</description>
+      </param_code>
+    </instruction>
+    <instruction name="DJNZ">
+      <param_code name="direct,rel">
+        <opcode>0b1101.0101_aaaa.aaaa_rrrr.rrrr</opcode>
+        <cycles>24</cycles>
+        <length>24</length>
+        <description>"Decrement direct byte and Jump if Not Zero"</description>
+      </param_code>
+      <param_code name="Rn,rel">
+        <opcode>0b1101.1aaa_rrrr.rrrr</opcode>
+        <cycles>24</cycles>
+        <length>16</length>
+        <description>"Decrement register and Jump if Not Zero"</description>
+      </param_code>
+    </instruction>
+    <instruction name="DEC">
+      <param_code name="direct">
+        <opcode>0b0001.0101_aaaa.aaaa</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Decrement direct byte"</description>
+      </param_code>
+      <param_code name="@Ri">
+        <opcode>0b0001.011i</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Decrement indirect RAM"</description>
+      </param_code>
+      <param_code name="A">
+        <opcode>0b0001.0100</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Decrement Accumulator"</description>
+      </param_code>
+      <param_code name="Rn">
+        <opcode>0b0001.1rrr</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Decrement Register"</description>
+      </param_code>
+    </instruction>
+    <instruction name="RRC">
+      <param_code name="A">
+        <opcode>0b0001.0011</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Rotate Accumulator Right through the Carry"</description>
+      </param_code>
+    </instruction>
+    <instruction name="JC">
+      <param_code name="rel">
+        <opcode>0b0100.0000_rrrr.rrrr</opcode>
+        <cycles>24</cycles>
+        <length>16</length>
+        <description>"Jump if Carry is set"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SUBB">
+      <param_code name="A,Rn">
+        <opcode>0b1001.1rrr</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Subtract Register from Accumulator with borrow"</description>
+      </param_code>
+      <param_code name="A,direct">
+        <opcode>0b1001.0101_dddd.dddd</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Subtract direct byte from Accumulator with borrow"</description>
+      </param_code>
+      <param_code name="A,@Ri">
+        <opcode>0b1001.011i</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Subtract indirect RAM from Accumulator with borrow"</description>
+      </param_code>
+      <param_code name="A,#data">
+        <opcode>0b1001.0100_dddd.dddd</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Subtract immediate data from  Accumulator with borrow"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SJMP">
+      <param_code name="rel">
+        <opcode>0b1000.0000_rrrr.rrrr</opcode>
+        <cycles>24</cycles>
+        <length>16</length>
+        <description>"Short Jump (relative addr)"</description>
+      </param_code>
+    </instruction>
+    <instruction name="RL">
+      <param_code name="A">
+        <opcode>0b0010.0011</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Rotate Accumulator Left"</description>
+      </param_code>
+    </instruction>
+    <instruction name="NOP">
+      <param_code name="none">
+        <opcode>0b0000.0000</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"No Operation"</description>
+      </param_code>
+    </instruction>
+    <instruction name="MUL">
+      <param_code name="AB">
+        <opcode>0b1010.0100</opcode>
+        <cycles>48</cycles>
+        <Length>8</Length>
+        <description>"Multiply A &amp; B"</description>
+      </param_code>
+    </instruction>
+    <instruction name="MOVX">
+      <param_code name="A,@DPTR">
+        <opcode>0b1110.0000</opcode>
+        <cycles>24</cycles>
+        <Length>8</Length>
+        <description>"Move Exernal RAM (16-bit addr) to Accumulator"</description>
+      </param_code>
+      <param_code name="@Ri,A">
+        <opcode>0b1111.001i</opcode>
+        <cycles>24</cycles>
+        <Length>8</Length>
+        <description>"Move Acc to External RAM (8-bit addr)"</description>
+      </param_code>
+      <param_code name="A,@Ri">
+        <opcode>0b1110.001i</opcode>
+        <cycles>24</cycles>
+        <Length>8</Length>
+        <description>"Move External RAM (8-bit addr) to Accumulator"</description>
+      </param_code>
+      <param_code name="@DPTR,A">
+        <opcode>0b1111.0000</opcode>
+        <cycles>24</cycles>
+        <Length>8</Length>
+        <description>"Move Acc to External RAM (16-bit addr)"</description>
+      </param_code>
+    </instruction>
+    <instruction name="MOVC">
+      <param_code name="A,@A+DPTR">
+        <opcode>0b1001.0011</opcode>
+        <cycles>24</cycles>
+        <Length>8</Length>
+        <description>"Move Code byte relative to DPTR to Accumulator"</description>
+      </param_code>
+      <param_code name="A,@A+PC">
+        <opcode>0b1000.0011</opcode>
+        <cycles>24</cycles>
+        <Length>8</Length>
+        <description>"Move Code byte relative to PC to Accumulator"</description>
+      </param_code>
+    </instruction>
+    <instruction name="LJMP">
+      <param_code name="addr16">
+        <opcode>0b0000.0010_aaaa.aaaa_aaaa.aaaa</opcode>
+        <cycles>24</cycles>
+        <length>24</length>
+        <description>"Long Jump"</description>
+      </param_code>
+    </instruction>
+    <instruction name="JZ">
+      <param_code name="rel">
+        <opcode>0b0110.0000_rrrr.rrrr</opcode>
+        <cycles>24</cycles>
+        <length>16</length>
+        <description>"Jump if Accumulator is Zero"</description>
+      </param_code>
+    </instruction>
+    <instruction name="AJMP">
+      <param_code name="addr11">
+        <opcode>0baaa0.0001_aaaa.aaaa</opcode>
+        <cycles>24</cycles>
+        <length>16</length>
+        <description>"Absolute Jump"</description>
+      </param_code>
+    </instruction>
+    <instruction name="PUSH">
+      <param_code name="direct">
+        <opcode>0b1100.0000_aaaa.aaaa</opcode>
+        <cycles>24</cycles>
+        <length>16</length>
+        <description>"Push direct byte onto stack"</description>
+      </param_code>
+    </instruction>
+    <instruction name="POP">
+      <param_code name="direct">
+        <opcode>0b1101.0000_aaaa.aaaa</opcode>
+        <cycles>24</cycles>
+        <length>16</length>
+        <description>"Pop direct byte from stack"</description>
+      </param_code>
+    </instruction>
+    <instruction name="DIV">
+      <param_code name="AB">
+        <opcode>0b1000.0100</opcode>
+        <cycles>48</cycles>
+        <Length>8</Length>
+        <description>"Divide A by B"</description>
+      </param_code>
+    </instruction>
+    <instruction name="ADDC">
+      <param_code name="A,Rn">
+        <opcode>0b0011.1rrr</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Add register to Accumulator with Carry"</description>
+      </param_code>
+      <param_code name="A,direct">
+        <opcode>0b0011.0101_aaaa.aaaa</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Add direct byte to Accumulator with Carry"</description>
+      </param_code>
+      <param_code name="A,@Ri">
+        <opcode>0b0011.011i</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Add indirect RAM to Accumulator with Carry"</description>
+      </param_code>
+      <param_code name="A,#data">
+        <opcode>0b0011.0100_dddd.dddd</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Add immediate data to Accumulator with Carry"</description>
+      </param_code>
+    </instruction>
+    <instruction name="XRL">
+      <param_code name="A,Rn">
+        <opcode>0b0110.1rrr</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Exclusive-OR register to Accumulator"</description>
+      </param_code>
+      <param_code name="A,direct">
+        <opcode>0b0110.0101_aaaa.aaaa</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Exclusive-OR direct byte to Accumulator"</description>
+      </param_code>
+      <param_code name="A,@Ri">
+        <opcode>0b0110.011i</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Exclusive-OR indirect RAM to Accumulator"</description>
+      </param_code>
+      <param_code name="A,#data">
+        <opcode>0b0110.0100_dddd.dddd</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Exclusive-OR immediate data to Accumulator"</description>
+      </param_code>
+      <param_code name="direct,#data">
+        <opcode>0b0110.0011_aaaa.aaaa_dddd.dddd</opcode>
+        <cycles>24</cycles>
+        <length>24</length>
+        <description>"Exclusive-OR immediate data to direct byte"</description>
+      </param_code>
+      <param_code name="direct,A">
+        <opcode>0b0110.0010_aaaa.aaaa</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Exclusive-OR Accumulator to direct byte"</description>
+      </param_code>
+    </instruction>
+    <instruction name="XCH">
+      <param_code name="A,Rn">
+        <opcode>0b1100.1rrr</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Exchange register with Accumulator"</description>
+      </param_code>
+      <param_code name="A,direct">
+        <opcode>0b1100.0101_aaaa.aaaa</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Exchange direct byte with Accumulator"</description>
+      </param_code>
+      <param_code name="A,@Ri">
+        <opcode>0b1100.011i</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Exchange indirect RAM with Accumulator"</description>
+      </param_code>
+    </instruction>
+    <instruction name="XCHD">
+      <param_code name="A,@Ri">
+        <opcode>0b1101.011i</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Exchange low-order Digit indirect RAM with Accumulator"</description>
+      </param_code>
+    </instruction>
+    <instruction name="DA">
+      <param_code name="A">
+        <opcode>0b1101.0100</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Decimal Adjust Accumulator"</description>
+      </param_code>
+    </instruction>
+    <instruction name="RETI">
+      <param_code name="none">
+        <opcode>0b0011.0010</opcode>
+        <cycles>24</cycles>
+        <Length>8</Length>
+        <description>"Return from interrupt"</description>
+      </param_code>
+    </instruction>
+    <instruction name="JNB">
+      <param_code name="bit,rel">
+        <opcode>0b0011.0000_bbbb.bbbb_rrrr.rrrr</opcode>
+        <cycles>24</cycles>
+        <length>24</length>
+        <description>"Jump if direct Bit is Not set"</description>
+      </param_code>
+    </instruction>
+    <instruction name="INC">
+      <param_code name="direct">
+        <opcode>0b0000.0101_aaaa.aaaa</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Increment direct byte"</description>
+      </param_code>
+      <param_code name="@Ri">
+        <opcode>0b0000.011i</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Increment direct RAM"</description>
+      </param_code>
+      <param_code name="A">
+        <opcode>0b0000.0100</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Increment Accumulator"</description>
+      </param_code>
+      <param_code name="DPTR">
+        <opcode>0b1010.0011</opcode>
+        <cycles>24</cycles>
+        <Length>8</Length>
+        <description>"Increment Data Pointer"</description>
+      </param_code>
+      <param_code name="Rn">
+        <opcode>0b0000.1rrr</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Increment register"</description>
+      </param_code>
+    </instruction>
+    <instruction name="RLC">
+      <param_code name="A">
+        <opcode>0b0011.0011</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Rotate Accumulator Left through the Carry"</description>
+      </param_code>
+    </instruction>
+    <instruction name="ORL">
+      <param_code name="A,Rn">
+        <opcode>0b0100.1rrr</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"OR register to Accumulator"</description>
+      </param_code>
+      <param_code name="A,direct">
+        <opcode>0b0100.0101_aaaa.aaaa</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"OR direct byte to Accumulator"</description>
+      </param_code>
+      <param_code name="C,-bit">
+        <opcode>0b1010.0000_bbbb.bbbb</opcode>
+        <cycles>24</cycles>
+        <length>16</length>
+        <description>"OR complement of direct bit to Carry"</description>
+      </param_code>
+      <param_code name="A,@Ri">
+        <opcode>0b0100.011i</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"OR indirect RAM to Accumulator"</description>
+      </param_code>
+      <param_code name="A,#data">
+        <opcode>0b0100.0100_dddd.dddd</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"OR immediate data to Accumulator"</description>
+      </param_code>
+      <param_code name="C,bit">
+        <opcode>0b0111.0010_bbbb.bbbb</opcode>
+        <cycles>24</cycles>
+        <length>16</length>
+        <description>"OR direct bit to Carry"</description>
+      </param_code>
+      <param_code name="direct,#data">
+        <opcode>0b0100.0011_aaaa.aaaa_dddd.dddd</opcode>
+        <cycles>24</cycles>
+        <length>24</length>
+        <description>"OR immediate data to direct byte"</description>
+      </param_code>
+      <param_code name="direct,A">
+        <opcode>0b0100.0010_aaaa.aaaa</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"OR Accumulator to direct byte"</description>
+      </param_code>
+    </instruction>
+    <instruction name="MOV">
+      <param_code name="direct,@Ri">
+        <opcode>0b1000.011i_aaaa.aaaa</opcode>
+        <cycles>24</cycles>
+        <length>16</length>
+        <description>"Move indirect RAM to direct byte"</description>
+      </param_code>
+      <param_code name="A,Rn">
+        <opcode>0b1110.1rrr</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Move register to Accumulator"</description>
+      </param_code>
+      <param_code name="A,direct">
+        <opcode>0b1110.0101_aaaa.aaaa</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Move direct byte to Accumulator"</description>
+      </param_code>
+      <param_code name="@Ri,A">
+        <opcode>0b1111.011i</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Move Accumulator to indirect RAM"</description>
+      </param_code>
+      <param_code name="direct,Rn">
+        <opcode>0b1000.1rrr_aaaa.aaaa</opcode>
+        <cycles>24</cycles>
+        <length>16</length>
+        <description>"Move register to direct byte"</description>
+      </param_code>
+      <param_code name="direct,direct">
+        <opcode>0b1000.0101_aaaa.aaaa_dddd.dddd</opcode>
+        <cycles>24</cycles>
+        <length>24</length>
+        <description>"Move direct byte to direct"</description>
+      </param_code>
+      <param_code name="A,@Ri">
+        <opcode>0b1110.011i</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Move indirect RAM to Accumulator"</description>
+      </param_code>
+      <param_code name="@Ri,#data">
+        <opcode>0b0111.011i_zzzz.zzzz</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Move immediate data to indirect RAM"</description>
+      </param_code>
+      <param_code name="Rn,A">
+        <opcode>0b1111.1rrr</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Move Accumulator to register"</description>
+      </param_code>
+      <param_code name="bit,C">
+        <opcode>0b1001.0010_bbbb.bbbb</opcode>
+        <cycles>24</cycles>
+        <length>16</length>
+        <description>"Move Carry to direct bit"</description>
+      </param_code>
+      <param_code name="A,#data">
+        <opcode>0b0111.0100_dddd.dddd</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Move immediate data to Accumulator"</description>
+      </param_code>
+      <param_code name="Rn,direct">
+        <opcode>0b1010.1rrr_zzzz.zzzz</opcode>
+        <cycles>24</cycles>
+        <length>16</length>
+        <description>"Move direct byte to register"</description>
+      </param_code>
+      <param_code name="DPTR,#data16">
+        <opcode>0b1001.0000_dddd.dddd_dddd.dddd</opcode>
+        <cycles>24</cycles>
+        <length>24</length>
+        <description>"Load Data Pointer with a 16-bit constant"</description>
+      </param_code>
+      <param_code name="@Ri,direct">
+        <opcode>0b1010.011i_zzzz.zzzz</opcode>
+        <cycles>24</cycles>
+        <length>16</length>
+        <description>"Move direct byte to indirect RAM"</description>
+      </param_code>
+      <param_code name="C,bit">
+        <opcode>0b1010.0010_bbbb.bbbb</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Move direct bit to Carry"</description>
+      </param_code>
+      <param_code name="Rn,#data">
+        <opcode>0b0111.1rrr_zzzz.zzzz</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Move immediate data to register"</description>
+      </param_code>
+      <param_code name="direct,#data">
+        <opcode>0b0111.0101_aaaa.aaaa_dddd.dddd</opcode>
+        <cycles>24</cycles>
+        <length>24</length>
+        <description>"Move immediate data to direct byte"</description>
+      </param_code>
+      <param_code name="direct,A">
+        <opcode>0b1111.0101_aaaa.aaaa</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Move Accumulator to direct byte"</description>
+      </param_code>
+    </instruction>
+    <instruction name="JNC">
+      <param_code name="rel">
+        <opcode>0b0101.0000_rrrr.rrrr</opcode>
+        <cycles>24</cycles>
+        <length>16</length>
+        <description>"Jump if Carry not set"</description>
+      </param_code>
+    </instruction>
+    <instruction name="CPL">
+      <param_code name="A">
+        <opcode>0b1111.0100</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Complement Accumulator"</description>
+      </param_code>
+      <param_code name="bit">
+        <opcode>0b1011.0010_bbbb.bbbb</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Complement direct bit"</description>
+      </param_code>
+      <param_code name="C">
+        <opcode>0b1011.0011</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Complement Carry"</description>
+      </param_code>
+    </instruction>
+    <instruction name="CLR">
+      <param_code name="A">
+        <opcode>0b1110.0100</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Clear Accumulator"</description>
+      </param_code>
+      <param_code name="bit">
+        <opcode>0b1100.0010_bbbb.bbbb</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"Clear direct bit"</description>
+      </param_code>
+      <param_code name="C">
+        <opcode>0b1100.0011</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Clear Carry"</description>
+      </param_code>
+    </instruction>
+    <instruction name="ANL">
+      <param_code name="A,Rn">
+        <opcode>0b0101.1rrr</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"AND Register to Accumulator"</description>
+      </param_code>
+      <param_code name="A,direct">
+        <opcode>0b0101.0101_aaaa.aaaa</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"AND direct byte to Accumulator"</description>
+      </param_code>
+      <param_code name="C,-bit">
+        <opcode>0b1011.0000_bbbb.bbbb</opcode>
+        <cycles>24</cycles>
+        <length>16</length>
+        <description>"AND complement of direct bit to Carry"</description>
+      </param_code>
+      <param_code name="A,@Ri">
+        <opcode>0b0101.011i</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"AND indirect RAM to Accumulator"</description>
+      </param_code>
+      <param_code name="A,#data">
+        <opcode>0b0101.0100_dddd.dddd</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"AND immediate data to Accumulator"</description>
+      </param_code>
+      <param_code name="C,bit">
+        <opcode>0b1000.0010_bbbb.bbbb</opcode>
+        <cycles>24</cycles>
+        <length>16</length>
+        <description>"AND direct bit to CARRY"</description>
+      </param_code>
+      <param_code name="direct,#data">
+        <opcode>0b0101.0011_aaaa.aaaa_dddd.dddd</opcode>
+        <cycles>24</cycles>
+        <length>24</length>
+        <description>"AND immediate data to direct byte"</description>
+      </param_code>
+      <param_code name="direct,A">
+        <opcode>0b0101.0010_aaaa.aaaa</opcode>
+        <cycles>12</cycles>
+        <length>16</length>
+        <description>"AND Accumulator to direct byte"</description>
+      </param_code>
+    </instruction>
+    <instruction name="SWAP">
+      <param_code name="A">
+        <opcode>0b1100.0100</opcode>
+        <cycles>12</cycles>
+        <Length>8</Length>
+        <description>"Swap nibbles within the Accumulator"</description>
+      </param_code>
+    </instruction>
+    <instruction name="CJNE">
+      <param_code name="Rn,#data,rel">
+        <opcode>0b1011.1aaa_dddd.dddd_rrrr.rrrr</opcode>
+        <cycles>24</cycles>
+        <length>24</length>
+        <description>"Compare immediate to register and Jump if Not Equal"</description>
+      </param_code>
+      <param_code name="A,#data,rel">
+        <opcode>0b1011.0100_dddd.dddd_rrrr.rrrr</opcode>
+        <cycles>24</cycles>
+        <length>24</length>
+        <description>"Compare immediate to Acc and Jump if Not Equal"</description>
+      </param_code>
+      <param_code name="@Ri,#data,rel">
+        <opcode>0b1011.011a_dddd.dddd_rrrr.rrrr</opcode>
+        <cycles>24</cycles>
+        <length>24</length>
+        <description>"Compare immediate to indirect and Jump if Not Equal"</description>
+      </param_code>
+      <param_code name="A,direct,rel">
+        <opcode>0b1011.0101_aaaa.aaaa_rrrr.rrrr</opcode>
+        <cycles>24</cycles>
+        <length>24</length>
+        <description>"Compare direct byte to Acc and Jump if Not Equal"</description>
+      </param_code>
+    </instruction>
+  </instructionset>
+</systeminformation>

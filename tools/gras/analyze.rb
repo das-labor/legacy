@@ -66,7 +66,7 @@ def length_hist(iset)
   }
   hist.each_pair{|key,value|
     puts(key.to_s + " => " + value.to_s)
-    max = key if max<key
+     max = key if max<key
     min = key if min>key 
   }
   [hist,min,max]

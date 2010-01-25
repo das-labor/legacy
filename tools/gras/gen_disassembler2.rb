@@ -18,7 +18,6 @@
 
 
 require 'mnemonic.rb'
-require 'blockparser.rb'
 require 'gen_assembler.rb'
 require 'analyze.rb'
 
@@ -128,6 +127,10 @@ class DasmTable
   end
   
   def add_instructionset(instructionset)
+    if instructionset.class==Instructionset
+      instructionset.instructions.each{ |i| self.add_instruction(i) }
+      self.finalize  
+    end
     if instructionset.class==Hash
       instructionset.each_value do |m|
         m.instructions.each_value { |i| self.add_instruction(i) }

@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<systeminformation>
+  <cpu>
+  </cpu>
+  <parameters>
+    <msb>first</msb>
+    <param name="pp">
+      <name>[0..255]</name>
+      <lmap>0..255</lmap>
+    </param>
+    <param name="aa">
+      <name>[0..262143]</name>
+      <lmap>0..262143</lmap>
+    </param>
+    <param name="ss">
+    </param>
+    <param name="kk">
+      <name>[-128..255]</name>
+      <map>byte</map>
+    </param>
+    <param name="NZ">
+      <name>"NZ"</name>
+    </param>
+    <param name="C">
+      <name>"C"</name>
+    </param>
+    <param name="Z">
+      <name>"Z"</name>
+    </param>
+    <param name="sX">
+      <name>s[0..9,A..F]</name>
+      <lmap>0..15</lmap>
+    </param>
+    <param name="NC">
+      <name>"NC"</name>
+    </param>
+  </parameters>
+  <instructionset>
+    <cycles>2</cycles>
+    <instruction name="SUB">
+      <param_code name="sX,sX">
+        <opcode>0b011101xxxxyyyy0000</opcode>
+      </param_code>
+      <param_code name="sX,kk">
+        <opcode>0b011100xxxxzzzzzzzz</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="RR">
+      <param_code name="sX">
+        <opcode>0b100000xxxx00001100</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="ENABLE_INTERRUPT">
+      <param_code name="none">
+        <opcode>0b111100000000000001</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="SL0">
+      <param_code name="sX">
+        <opcode>0b100000xxxx00000110</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="INPUT">
+      <param_code name="sX,(sX)">
+        <opcode>0b000101xxxxyyyy0000</opcode>
+      </param_code>
+      <param_code name="sX,pp">
+        <opcode>0b000100xxxxzzzzzzzz</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="AND">
+      <param_code name="sX,sX">
+        <opcode>0b001011xxxxyyyy0000</opcode>
+      </param_code>
+      <param_code name="sX,kk">
+        <opcode>0b001010xxxxzzzzzzzz</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="ADD">
+      <description>"Add Operand to Register"</description>
+      <param_code name="sX,sX">
+        <opcode>0b011001xxxxyyyy0000</opcode>
+      </param_code>
+      <param_code name="sX,kk">
+        <opcode>0b011000xxxxzzzzzzzz</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="SUBCY">
+      <param_code name="sX,sX">
+        <opcode>0b011111xxxxyyyy0000</opcode>
+      </param_code>
+      <param_code name="sX,kk">
+        <opcode>0b011110xxxxzzzzzzzz</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="SRA">
+      <param_code name="sX">
+        <opcode>0b100000xxxx00001000</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="SL1">
+      <param_code name="sX">
+        <opcode>0b100000xxxx00000111</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="RETURNI_ENABLE">
+      <param_code name="none">
+        <opcode>0b111000000000000001</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="STORE">
+      <param_code name="sX,(sX)">
+        <opcode>0b101111xxxxyyyy0000</opcode>
+      </param_code>
+      <param_code name="sX,ss">
+        <opcode>0b101110xxxx00zzzzzz</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="SRX">
+      <param_code name="sX">
+        <opcode>0b100000xxxx00001010</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="OR">
+      <param_code name="sX,sX">
+        <opcode>0b001101xxxxyyyy0000</opcode>
+      </param_code>
+      <param_code name="sX,kk">
+        <opcode>0b001100xxxxzzzzzzzz</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="DISABLE_INTERRUPT">
+      <param_code name="none">
+        <opcode>0b111100000000000000</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="ADDCY">
+      <param_code name="sX,sX">
+        <opcode>0b011011xxxxyyyy0000</opcode>
+      </param_code>
+      <param_code name="sX,kk">
+        <opcode>0b011010xxxxzzzzzzzz</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="RL">
+      <param_code name="sX">
+        <opcode>0b100000xxxx00000010</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="XOR">
+      <param_code name="sX,sX">
+        <opcode>0b001111xxxxyyyy0000</opcode>
+      </param_code>
+      <param_code name="sX,kk">
+        <opcode>0b001110xxxxzzzzzzzz</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="OUTPUT">
+      <param_code name="sX,(sX)">
+        <opcode>0b101101xxxxyyyy0000</opcode>
+      </param_code>
+      <param_code name="sX,pp">
+        <opcode>0b101100xxxxzzzzzzzz</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="JUMP">
+      <param_code name="NZ,aa">
+        <opcode>0b11010101aaaaaaaaaa</opcode>
+      </param_code>
+      <param_code name="C,aa">
+        <opcode>0b11010110aaaaaaaaaa</opcode>
+      </param_code>
+      <param_code name="aa">
+        <opcode>0b11010000aaaaaaaaaa</opcode>
+      </param_code>
+      <param_code name="NC,aa">
+        <opcode>0b11010111aaaaaaaaaa</opcode>
+      </param_code>
+      <param_code name="Z,aa">
+        <opcode>0b11010100aaaaaaaaaa</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="SR0">
+      <param_code name="sX">
+        <opcode>0b100000xxxx00001110</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="RETURNI_DISABLE">
+      <param_code name="none">
+        <opcode>0b111000000000000000</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="FETCH">
+      <param_code name="sX,(sX)">
+        <opcode>0b000111xxxxyyyy0000</opcode>
+      </param_code>
+      <param_code name="sX,ss">
+        <opcode>0b000110xxxx00zzzzzz</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="SR1">
+      <param_code name="sX">
+        <opcode>0b100000xxxx00001111</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="SLA">
+      <param_code name="sX">
+        <opcode>0b100000xxxx00000000</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="TEST">
+      <param_code name="sX,sX">
+        <opcode>0b010011xxxxyyyy0000</opcode>
+      </param_code>
+      <param_code name="sX,kk">
+        <opcode>0b010010xxxxzzzzzzzz</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="SLX">
+      <param_code name="sX">
+        <opcode>0b100000xxxx00000100</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="RETURN">
+      <param_code name="NZ">
+        <opcode>0b101011010000000000</opcode>
+      </param_code>
+      <param_code name="none">
+        <opcode>0b101010000000000000</opcode>
+      </param_code>
+      <param_code name="C">
+        <opcode>0b101011100000000000</opcode>
+      </param_code>
+      <param_code name="Z">
+        <opcode>0b101011000000000000</opcode>
+      </param_code>
+      <param_code name="NC">
+        <opcode>0b101011110000000000</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="COMPARE">
+      <param_code name="sX,sX">
+        <opcode>0b010101xxxxyyyy0000</opcode>
+      </param_code>
+      <param_code name="sX,kk">
+        <opcode>0b010100xxxxzzzzzzzz</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="LOAD">
+      <param_code name="sX,sX">
+        <opcode>0b000001xxxxyyyy0000</opcode>
+      </param_code>
+      <param_code name="sX,kk">
+        <opcode>0b000000xxxxzzzzzzzz</opcode>
+      </param_code>
+    </instruction>
+    <instruction name="CALL">
+      <param_code name="NZ,aa">
+        <opcode>0b11000101aaaaaaaaaa</opcode>
+      </param_code>
+      <param_code name="C,aa">
+        <opcode>0b11000110aaaaaaaaaa</opcode>
+      </param_code>
+      <param_code name="aa">
+        <opcode>0b11000000aaaaaaaaaa</opcode>
+      </param_code>
+      <param_code name="NC,aa">
+        <opcode>0b11000111aaaaaaaaaa</opcode>
+      </param_code>
+      <param_code name="Z,aa">
+        <opcode>0b11000100aaaaaaaaaa</opcode>
+      </param_code>
+    </instruction>
+  </instructionset>
+</systeminformation>
