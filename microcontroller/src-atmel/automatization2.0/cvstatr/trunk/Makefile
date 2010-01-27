@@ -1,5 +1,4 @@
-OBJ = main.o can_handler.o can/can.o can/spi.o 
-
+OBJ = main.o can_handler.o can/can.o can/spi.o twi_master/twi_master.o i2c_temp.o
 # Default values
 OUT           ?= image
 MCU_TARGET    ?= atmega8

@@ -44,10 +44,10 @@ extern void can_handler()
 						break;
 				}
 			}
-/*			else if (rx_msg->port_dst == 3)
+			else if (rx_msg->port_dst == 0x10)
 			{
 				uint8_t data[2] = {0, 0};
-				get_temp(data);
+				get_temp(data, 0x96);	
 				msg.data[0] = data[0];
 				msg.data[1] = data[1];
 				msg.dlc = 2;
@@ -56,7 +56,7 @@ extern void can_handler()
 				msg.addr_src = myaddr;
 				msg.addr_dst = rx_msg->addr_src;
 				can_transmit(&msg);
-			}*/
+			}
 		}
 	}
 }
