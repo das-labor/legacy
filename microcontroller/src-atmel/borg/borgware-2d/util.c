@@ -49,7 +49,12 @@ void wait(int ms){
 		}
 #endif
 
+#ifdef __AVR_ATmega644P__
+		while(!(TIFR1&(1<<OCF1A)));	//wait for compare match flag
+		TIFR1=(1<<OCF1A);		//reset flag
+#else
 		while(!(TIFR&(1<<OCF1A)));	//wait for compare match flag
 		TIFR=(1<<OCF1A);		//reset flag
+#endif
 	}
 }

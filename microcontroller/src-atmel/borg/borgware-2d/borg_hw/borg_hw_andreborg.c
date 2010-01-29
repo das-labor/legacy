@@ -33,6 +33,13 @@
 #define COLDDR2  DDR(COLPORT2)
 #define ROWDDR   DDR(ROWPORT)
 
+#ifdef __AVR_ATmega644P__
+/* more ifdef magic :-( */
+#define OCR0 OCR0A
+#define SIG_OUTPUT_COMPARE0 SIG_OUTPUT_COMPARE0A
+#endif
+
+
 //Der Puffer, in dem das aktuelle Bild gespeichert wird
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
@@ -122,7 +129,12 @@ void timer0_off(){
 	COLPORT2 = 0;
 	ROWPORT = 0;
 
+#ifdef __AVR_ATmega644P__
+        TCCR0A = 0x00;
+        TCCR0B = 0x00;
+#else
 	TCCR0 = 0x00;
+#endif
 	sei();
 }
 
@@ -139,10 +151,19 @@ void timer0_on(){
 		 1    0    1       clk/1024
 	
 */
+
+#ifdef __AVR_ATmega644P__
+        TCCR0A = 0x02;  // CTC Mode
+        TCCR0B = 0x03;  // clk/64
+	TCNT0  = 0;	// reset timer
+	OCR0   = 20;	// Compare with this value
+	TIMSK0 = 0x02;	// Compare match Interrupt on
+#else
 	TCCR0 = 0x0B;	// CTC Mode, clk/64
 	TCNT0 = 0;	// reset timer
 	OCR0  = 20;	// Compare with this value
 	TIMSK = 0x02;	// Compare match Interrupt on
+#endif
 }
 
 void borg_hw_init(){
