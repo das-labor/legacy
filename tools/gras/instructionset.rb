@@ -30,7 +30,7 @@ class Instructionset
     @parameters = Array.new
     @parameters_by_code = Hash.new
     @is_simple=true
-    @simple_violater=Array.new
+    @simple_violator=Array.new
     @param_range_by_mnemonic=Hash.new
   end
   
@@ -50,7 +50,7 @@ class Instructionset
       end
       if @param_range_by_mnemonic[instruction.name][1]!=@param_range_by_mnemonic[instruction.name][0]
         @is_simple = false
-        @simple_violater << instruction.name
+        @simple_violator << instruction.name unless @simple_violator.find_index(instruction.name)
       end
     end
     return true

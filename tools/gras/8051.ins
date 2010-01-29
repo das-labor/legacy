@@ -47,8 +47,8 @@ parameters{
     lmap=0..7;
   }
   \#data{
-    name=[-128..256];
-    lmap=-128..-1,0..255;
+    name=[0..255];
+    lmap=0..255,-128..127;
   }
   addr11{
     name=[0..2047];
@@ -63,16 +63,16 @@ parameters{
     lmap=-128..127;
   }
   direct{
-    name=[0.255];
-    lmap=0.255;
+    name=[0..255];
+    lmap=0..255;
   }
   bit{
-    name=[0.255];
-    lmap=0.255;
+    name=[0..255];
+    lmap=0..255;
   }
   -bit{
-    name=[0.255];
-    lmap=0.255;
+    name=[0..255];
+    lmap=0..255;
   }
 }  
 

@@ -28,6 +28,7 @@ def get_fallback(tables, key)
   tables.each do |t|
     return t[key] if t[key]!=nil
   end
+  return nil
 end
 
 def load_instructionset_from_xml(file)
@@ -77,12 +78,29 @@ def load_instructionset_from_xml(file)
                                 get_fallback([local, secondary, globals], 'clear_flags'),
                                 get_fallback([local, secondary, globals], 'description') )
           instructionset.add_instruction(ins)                      
-       else
-         secondary[i.name]=i.get_text.to_s
-       end
-      end
-    end
-  end
+        else
+          secondary[i.name]=i.get_text.to_s
+        end # if i.name == 'param_code'
+      end # e.each_element do ... 
+    end # if e.name=='instruction'
+  end # xmld.elements.each('/systeminformation/instructionset/*') do ...
+  primary = Hash.new 
+  xmld.elements.each('/systeminformation/parameters/*') do |e|
+    if e.name=='param'
+      param_code = e.attributes['name'].to_s
+      local = Hash.new
+      e.each_element_with_text{ |n| local[n.name]=n.get_text.to_s }
+      p = Parameter.new(param_code, local['name'], 
+                        get_fallback([local, primary], 'lmap'),
+                        get_fallback([local, primary], 'type'),
+                        get_fallback([local, primary], 'first') )
+      instructionset.add_parameter(p)
+    else
+      primary[e.name] = e.get_text.to_s
+    end # if e.name=='param'
+  end # xmld.elements.each('/systeminformation/parameters/*') do |e|
+
   return instructionset
+
 end
 
