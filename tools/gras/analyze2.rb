@@ -31,8 +31,9 @@ def analyze(iset)
     puts "Instructionset is simple"
   else
     puts "Instructionset is not simple, violating instructions are:"
-    iset.simple_violater.each { |i| puts "  "+i.name}
+    iset.simple_violator.each { |i| puts "  "+i}
   end
+  iset.parameters.each { |p| p.generate_c_decoder(STDOUT)}
 end
 
 irb

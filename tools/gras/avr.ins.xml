@@ -8,7 +8,7 @@
     <first>msb</first>
     <param name="K6">
       <name>[0..63]</name>
-      <lamp>0..63</lamp>
+      <lmap>0..63</lmap>
     </param>
     <param name="M64K">
       <name>[0..65535]</name>
@@ -17,7 +17,7 @@
     </param>
     <param name="Z+q">
       <name>"Z+"[0..63]</name>
-      <lamp>0..63</lamp>
+      <lmap>0..63</lmap>
     </param>
     <param name="-X">
       <name>"-X"</name>
@@ -105,7 +105,7 @@
     </param>
     <param name="Y+q">
       <name>"Y+"[0..63]</name>
-      <lamp>0..63</lamp>
+      <lmap>0..63</lmap>
     </param>
     <param name="ADDR4M">
       <name>[0..4194303]</name>
@@ -209,7 +209,7 @@
     <instruction name="SBRC">
       <param_code name="R,b">
         <modify_flags></modify_flags>
-        <opcode>0b1111.110r_rrrr.0bbb</opcode>
+        <opcode>0b1111.110r_rrrr.0xxx</opcode>
         <cycles>1,2,3</cycles>
         <description>"Skip if Bit in Register Cleared"</description>
       </param_code>

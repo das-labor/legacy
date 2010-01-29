@@ -7,8 +7,8 @@
   <parameters>
     <first>msb</first>
     <param name="direct">
-      <name>[0.255]</name>
-      <lmap>0.255</lmap>
+      <name>[0..255]</name>
+      <lmap>0..255</lmap>
     </param>
     <param name="@Ri">
       <name>@R[0..1]</name>
@@ -21,12 +21,12 @@
       <name>"A"</name>
     </param>
     <param name="-bit">
-      <name>[0.255]</name>
-      <lmap>0.255</lmap>
+      <name>[0..255]</name>
+      <lmap>0..255</lmap>
     </param>
     <param name="bit">
-      <name>[0.255]</name>
-      <lmap>0.255</lmap>
+      <name>[0..255]</name>
+      <lmap>0..255</lmap>
     </param>
     <param name="addr16">
       <name>[0..65535]</name>
@@ -43,8 +43,8 @@
       <name>"C"</name>
     </param>
     <param name="#data">
-      <name>[-128..256]</name>
-      <lmap>-128..-1,0..255</lmap>
+      <name>[0..255],[-128..127]</name>
+      <lmap>-0..255</lmap>
     </param>
     <param name="Rn">
       <name>R[0..7]</name>

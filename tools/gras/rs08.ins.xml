@@ -42,7 +42,7 @@
       <lmap>0..15</lmap>
     </param>
     <param name="DX">
-      <name>"D[X]" | ",X"</name>
+      <name>"D[X]",",X"</name>
     </param>
   </parameters>
   <instructionset>
