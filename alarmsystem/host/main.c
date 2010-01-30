@@ -34,18 +34,124 @@
 rfmusb_packetbuffer packetBuffer;
 rfmusb_dev_handle *udhandle = NULL;
 
-//usage
-void usage()
+uint8_t
+	opt_daemon = 0,
+	opt_reset = 0,
+	dst_addr = 0,
+	opt_dumpall = 0,
+	opt_resetall = 0,
+	opt_dump = 0;
+
+void print_usage();
+
+
+void dump_data (size_t in_len, uint8_t *in_data);
+void dump_data (size_t in_len, uint8_t *in_data)
+{
+	uint_fast32_t i;
+	for (i=0;i<in_len;i++)
+	{
+		printf("%02x", in_data[i]);
+		if (i && !(i % 32))
+			printf("\r\n");
+		else if (!(i % 4))
+			printf(" ");
+	}
+	printf("\r\n");
+}
+
+uint8_t gethexfromchar (char in_c)
+{
+	if (in_c >= '0' && in_c <= '9')
+	{
+		return in_c - '0';
+	} else if (in_c >= 'A' && in_c <= 'F')
+	{
+		return 10 + (in_c - 'A');
+	} else if (in_c >= 'a' && in_c<= 'f')
+	{
+		return 10 + (in_c - 'a');
+	}
+
+	return 0;
+}
+
+void print_usage()
 {
 	printf(
-		"NakkaFlash Utility\r\n\r\n"
-		"  Usage: nakkaflash -f firmware-file -a device_address\r\n\r\n"
-		"  -f Specifies the Firmware file (binary formwat)\r\n"
-		"  -a Specifies the device Address (in hex)\r\n\r\n"
-		"Example: nakkaflash foo.bin 0xba\r\n"
+		"Alert Control Utility\r\n\r\n"
+		"Invocation: alertctrl <options>\r\n"
+		"Options:\r\n"
+		"  -d run as daemon\r\n\r\n"
+		"  -v dump alarm system packets\r\n"
+		"  -a dump ALL packets\r\n"
+		"  -r <addr> Reset device at addr (format: 0xXX (hex))\r\n"
 	);
 }
 
+int parse_args (int argc, char* argv[])
+{
+	int i;
+	uint8_t tmp;
+
+	for (i=1;i<argc;i++)
+	{
+		if (argv[i][0] != '-')
+		{
+			printf ("Argument #%i not understood.\r\n", i);
+			continue;
+		}
+
+		switch (argv[i][1])
+		{
+			case 'v':
+				opt_dump = 1;
+			break;
+			case 'd':
+				opt_daemon = 1;
+				opt_reset = 0;
+			break;
+			case 'r':
+				if (++i == argc)
+				{
+					printf("You must specify an address.\r\n");
+					return -1;
+				}
+
+				if (strlen(argv[i]) > 2 && argv[i][0] == '0' &&
+					tolower(argv[i][1]) == 'x')
+				{
+					tmp = 2;
+				} else if (strlen(argv[i]) == 2)
+				{
+					tmp = 0;
+				}
+
+				dst_addr = gethexfromchar (argv[i][tmp]) * 16;
+				dst_addr += gethexfromchar (argv[i][++tmp]);
+				
+				opt_reset = 1;
+				opt_daemon = 0;
+				printf("dst addr: %2x\r\n", dst_addr);
+			break;
+			case 'R': /* reset all devices */
+				opt_resetall = 1;
+				opt_reset = 1;
+				opt_daemon = 0;
+			break;
+			case 'a':
+				opt_dumpall = 1;
+				opt_dump = 1;
+			break;
+			default:
+				printf ("Argument #%i not understood.\r\n", i);
+				print_usage();
+				return -1;
+			break;
+		}
+	}
+	return 11;
+}
 
 void myexit (int in_signal)
 {
@@ -54,19 +160,26 @@ void myexit (int in_signal)
         exit (in_signal);
 }
 
-int tx_packet (rfmusb_dev_handle *udhandle, uint8_t in_type, uint8_t addr, uint8_t len, uint8_t * data)
+int tx_packet (rfmusb_dev_handle *in_udh, uint8_t in_dst, uint8_t in_cmd, uint8_t in_len, uint8_t *in_data)
 {
 	uint8_t pkt[256];
 	uint8_t i = 0;
 
-	//form packet
-	pkt[i++] = PROTO_TYPE0;
-	pkt[i++] = PROTO_TYPE1;
-	memcpy(pkt + i, data, len);
+	pkt[F_T0] = PROTO_TYPE0;
+	pkt[F_T1] = PROTO_TYPE1;
+	pkt[F_SRC] = 0x00;
+	pkt[F_DST] = in_dst;
+	pkt[F_CMD] = in_cmd;
 
-	//transmit packet
-	printf("trans: %2x%2x%2x, len %i\n", pkt[0], pkt[1], pkt[2], i + len);
-	return rfmusb_TxPacket (udhandle, in_type, len + i, (unsigned char *) pkt);
+	memcpy(pkt + F_DATA, in_data, in_len);
+	if (opt_dump)
+	{
+		printf("TX:\r\n");
+		dump_data (in_len, in_data);
+		printf("\r\n");
+	}
+
+	return rfmusb_TxPacket (in_udh, RFM12_PROTO_TYPE, PACKET_MINLEN + in_len, (unsigned char *) pkt);
 }
 
 
@@ -98,12 +211,15 @@ int main (int argc, char* argv[])
 	uint8_t txbuf[256];
 	uint_fast32_t i;
 
+	if (parse_args (argc, argv) < 0)
+	{
+		return -1;
+	}
+
         //try to open the device
 	if (rfmusb_Connect(&udhandle) != 0)
 	{
 		printf ("Can't find RfmUSB Device!\r\n");
-                //FIXME -> what's this?
-		//sig_cleanup(__LINE__ * -1);
 		return __LINE__ * -1;
 	}
 
@@ -128,14 +244,18 @@ int main (int argc, char* argv[])
 				printf("**** MOTION **** (count = %10i\n", mc);
 				if (mc > 5) system ("su -c \"mocp -p\" sh");
 			}
+			printf("\t\tMC=%i", mc);
+			printf("\n");
+		}
+		if (tmp > 0 && opt_dumpall)
+		{
 			
 			printf("RX\t");
-			for (i=0;i<16;i++)
+			for (i=0;i<tmp;i++)
 			{
 				printf("%02x ", packetBuffer.buffer[i]);
 			}
-			printf("\t\tMC=%i", mc);
-			printf("\n");
+			printf("\r\n");
 		}
 
 		//if an error occurs...
@@ -146,14 +266,28 @@ int main (int argc, char* argv[])
 			exit (__LINE__ * -1);
 		}
 		
-		txbuf[0] = CMD_RESET;
-		txbuf[1] = CMD_RESET;
-		txbuf[2] = CMD_RESET;
-		txbuf[3] = CMD_RESET;
-		#if 0
-		tx_packet (udhandle, PROTO_TYPE0, PROTO_TYPE1, 4, txbuf);
-		return;
-		#endif
+		if (opt_reset)
+		{
+			static uint8_t resetcount = 0, resetaddr = 0;
+
+			if (opt_resetall)
+				dst_addr = resetaddr;
+				
+			txbuf[0] = CMD_RESET;
+
+			tx_packet (udhandle, dst_addr, CMD_RESET, 0, txbuf);
+			printf("rst to %x\r\n", dst_addr);
+			resetcount++;
+			if (resetcount > 1)
+			{
+				if (!opt_resetall)
+					return;
+				resetaddr++;
+				resetcount = 0;
+			}
+			if (resetcount > 1 && resetaddr == 0xff)
+				return;
+		}
 
 		
 		//this is done to prevent stressing the usb connection too much

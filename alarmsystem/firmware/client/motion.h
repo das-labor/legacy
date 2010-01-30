@@ -13,6 +13,6 @@ void mtd_enable();
 #define MTD_STATE_DISABLED 0x00
 #define MTD_STATE_ENABLED 0x01
 #define MTD_TRESHOLD 0x40
-#define MTD_MINVAL 0x10
+#define MTD_MINVAL 0x20
 
 #endif /* MOTION_H */

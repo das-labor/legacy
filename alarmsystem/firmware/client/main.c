@@ -28,10 +28,11 @@ void send_packet (uint8_t in_dst, uint8_t in_cmd, uint8_t in_len, uint8_t *in_da
 
 	txbuf[F_T0]  = PROTO_TYPE0;
 	txbuf[F_T1]  = PROTO_TYPE0;
+	txbuf[F_SRC] = in_dst;
 	txbuf[F_DST] = in_dst;
 	txbuf[F_CMD] = in_cmd;
 	
-	for (i=0;i<(sizeof(txbuf)-PACKET_MINLEN);i++)
+	for (i=F_DATA+1;i<(sizeof(txbuf)-PACKET_MINLEN);i++)
 	{
 		if (i >= in_len) break;
 		txbuf[i] = in_data[i];
