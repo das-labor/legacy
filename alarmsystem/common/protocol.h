@@ -8,7 +8,6 @@
 #define CMD_ERROR	0xEE
 #define PROTO_TYPE0	0x09
 #define PROTO_TYPE1	0x12
-#define PACKET_MINLEN	5
 
 #define RFM12_PROTO_TYPE 0xA0
 
@@ -18,6 +17,10 @@
 #define F_SRC (F_T1+1)
 #define F_DST (F_SRC+1)
 #define F_CMD (F_DST+1)
+#define F_DATA (F_CMD+1)
+
+/* minimum length of a packet */
+#define PACKET_MINLEN	F_DATA
 
 /* broadcast addr */
 #define ADDR_BCAST 0xff
@@ -33,5 +36,5 @@ typedef struct alert_packet_s
 
 
 /*
-  packet: TYPE0 TYPE1 DST SRC COMMAND [other stuff]
+  packet: TYPE0 TYPE1 SRC DST COMMAND [other stuff]
  */

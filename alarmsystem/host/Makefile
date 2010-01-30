@@ -1,5 +1,5 @@
 CC = gcc
-PROGNAME = nakkaflash
+PROGNAME = alarmctl
 
 LIBS = -lusb
 
