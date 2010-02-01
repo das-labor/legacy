@@ -3,12 +3,13 @@ TOPDIR = ..
 
 include $(TOPDIR)/defaults.mk
 
-SRC  = joystick.c
 SRC_SIM =
 
-ifeq ($(JOYSTICK_TYPE), JOYSTICK_NES)
+ifeq ($(NES_PAD_SUPPORT), y)
   SRC = nes_pad.c
 endif
-
+ifeq ($(PARALLEL_JOYSTICK_SUPPORT), y)
+  SRC  = joystick.c
+endif
 
 include $(TOPDIR)/rules.mk

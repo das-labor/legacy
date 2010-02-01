@@ -1,11 +1,5 @@
 dep_bool_menu "joystick support" JOYSTICK_SUPPORT y
 
-choice 'Joystick type'			\
-   "NES-Pad  JOYSTICK_NES \
-    Parallel  JOYSTICK_PARALLEL" \
-   'JOYSTICK_PARALLEL' JOYSTICK_TYPE
-
-
 ###################### Parallel joystick menu #################################
 dep_bool_menu "parallel joystick support" PARALLEL_JOYSTICK_SUPPORT y
 
