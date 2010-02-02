@@ -98,6 +98,9 @@ int main(int argc, char *argv[])
 	size_t txbuflen = 0, rxbuflen = 0;
 	struct tcp2air_t *tmphdr;
 
+	extern uint8_t opt_rfm12usb, opt_canusb, opt_dump, opt_debug, opt_foreground;
+	extern char opt_port[], *progname;
+
 	opt_debug = 0;
 	opt_foreground = 0;
 	opt_rfm12usb = 0;
@@ -105,7 +108,8 @@ int main(int argc, char *argv[])
 	opt_dump = 0;
 	progname = argv[0];
 
-	parse_args (argc, argv);
+	if (parse_args (argc, argv) < 0)
+		return -1 * __LINE__;
 	
 	/* alloc buffers */
 	rxbuf = malloc (BUF_MAXLEN);
@@ -131,7 +135,8 @@ int main(int argc, char *argv[])
 
 	if (!(opt_canusb | opt_rfm12usb))
 	{
-		printf("neither CAN, nor rfm12 selected... what am i supposed to do?");
+		printf("neither CAN, nor rfm12 selected... what am i supposed to do?\r\n");
+		print_usage();
 		return -1 * __LINE__;
 	}
 
