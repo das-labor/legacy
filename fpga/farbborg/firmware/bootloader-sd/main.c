@@ -76,20 +76,20 @@ void writeint(uint8_t nibbles, uint32_t val)
 	}
 }
 
-/*
+
 void memtest()
 {
 	volatile uint32_t *p;
 
 	uart_putstr("\r\nMEMTEST...");
 
-	for (p=(uint32_t *)RAM_START; p<(uint32_t *)(RAM_START+RAM_SIZE); p++) {
+	for (p=(uint32_t *)RAM_START; p<(uint32_t *)(RAM_START+1024*(512 - 16)); p++) {
 		*p = (uint32_t) p;  
 	}
 	
 	uart_putstr("...");
 
-	for (p=(uint32_t *)RAM_START; p<(uint32_t *)(RAM_START+RAM_SIZE); p++) {
+	for (p=(uint32_t *)RAM_START; p<(uint32_t *)(RAM_START+1024*(512 - 16)); p++) {
 		if (*p != (uint32_t)p) {
 			uart_putstr("\r\nMEMTEST ERROR: ");
 			writeint(8,(uint32_t)p);
@@ -97,7 +97,7 @@ void memtest()
 	}
 	uart_putstr("OK\n\r");
 }
-*/
+
 
 FATFS fs;				/* File system object */
 FIL fil;
@@ -108,6 +108,7 @@ int main()
 	WORD fsize;
 	FRESULT fresult;
 	int8_t  *p;
+	uint32_t i;
 //	int32_t *p32, i, tmp;	
 	
  	// Initialize stuff
@@ -149,8 +150,8 @@ int main()
 	}
 
 	uart_putstr("loading\n\r");
-	
-	f_read (&fil, (uint8_t*) 0x40000000, 64*1024 - 1, &fsize);
+	for (i = 0; i < fil.fsize && i < 1024*(512 - 16); i += 64*1024)	
+		f_read (&fil, (uint8_t*) (0x40000000+i), 64*1024 - 1, &fsize);
 	
 	jump(0x40000000);		
 uartmode: 
@@ -165,6 +166,10 @@ uartmode:
     			jump(0x00000000);
     			break;
 
+			case 'm': // memtest
+				memtest();
+				break;
+
     		case 'u': // Upload programm
       			checksum = 0;
       			// read size 
@@ -177,6 +182,7 @@ uartmode:
     			}
     			writeint(2, ~checksum);
     			break;
+    			
     		case 'g': // go
     			start = readint(8, (uint8_t *) &checksum);
     			jump(start);
