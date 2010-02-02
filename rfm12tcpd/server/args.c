@@ -1,5 +1,4 @@
 #include "args.h"
-/* XXX */
 
 void print_usage ()
 {
@@ -41,6 +40,7 @@ int parse_args (int argc, char* argv[])
 			break;
 			default:
 				printf ("Argument #%i not understood.\r\n", i);
+			case 'h':
 				print_usage();
 				return -1;
 			break;

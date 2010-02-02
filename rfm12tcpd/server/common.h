@@ -12,15 +12,15 @@
 /* absoloute maximum length for rx/tx buffers */
 #define BUF_MAXLEN 16384
 
-static uint8_t
+uint8_t
 	opt_debug,
 	opt_foreground,
 	opt_rfm12usb,
 	opt_canusb,     /* not yet implemented - any volounteers? */
 	opt_dump;
 
-static char* progname;
-static char
+char* progname;
+char
 	opt_port[6];
 
 #include "rfmusb.h"
