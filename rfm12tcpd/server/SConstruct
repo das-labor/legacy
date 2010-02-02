@@ -1,0 +1,5 @@
+import sys,glob,os
+env = Environment()
+env.Append( LIBS = [ 'usb' ] )
+daemonbuild = env.Program ('rfm12tcpd', [glob.glob('*.h'), glob.glob('*.c'), glob.glob('../common/*.c')])
+
