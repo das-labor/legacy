@@ -31,6 +31,10 @@
 			<Add library="winmm" />
 			<Add library="gdi32" />
 		</Linker>
+		<Unit filename="Makefile" />
+		<Unit filename="Makefile.inc.common" />
+		<Unit filename="Makefile.inc.footer" />
+		<Unit filename="Makefile.win" />
 		<Unit filename="anim_fnordlicht.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -47,7 +51,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="colorSnake.h" />
-		<Unit filename="common.mk" />
 		<Unit filename="config.h" />
 		<Unit filename="displayLoop.c">
 			<Option compilerVar="CC" />

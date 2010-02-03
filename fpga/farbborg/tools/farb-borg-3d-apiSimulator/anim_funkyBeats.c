@@ -33,6 +33,7 @@ typedef struct {
 	unsigned char time;  // 128 is a full note - 32 is 1/4 - 16 is 1/8
 } beat;
 
+#define MAX_ENTRYS 46
 
 static void drawCube(int size, voxel center, color curColor)
 {
@@ -40,64 +41,63 @@ static void drawCube(int size, voxel center, color curColor)
 	for (h.z = center.z - size; h.z <= center.z + size; h.z++) {
 		for (h.y = center.y - size; h.y <= center.y + size; h.y++) {
 			for (h.x = center.x - size; h.x <= center.x + size; h.x++) {
-				setVoxel(h, curColor);
+					setVoxel(h, curColor);
 			}
 		}
 	}	
 }
 
 void funkyBeats() {
-	beat beats[31] = { // erster Takt
+	beat beats[MAX_ENTRYS] = { // erster Takt
 					  {blockDiagonal,   Red,     16},
-					  {blockDown,       Blue,     8},
-					  {blockUp,  		Green,    8},	
-					  {cube0,      		Green, 	 16}, 
-				  	  {cube1,   		Blue, 	 16},
+					  {blockDown,       Blue,    16},
+					  {blockUp,  		Green,   12},	
+					  {cube0,      		Green, 	 12}, 
+				  	  {cube1,   		Blue, 	 12},
 					  {cube2,        	C3,	 	 16},
 					  {blockDiagonal,   C2,      16},
-					  {cube1,   		C1,      16},	
+					  {cube1,   		C1,      8},	
 					  {cube0,      		C2,      16},
 					  {cube1,      		Blue,    16},
 					  {cube2,   		C2,      16},
-					  {chess,      		C1,      16},
+					  {chess,      		C1,      8},
 					  {chessInv,   		C2,      16},  
 					  {chess,    		C3,  	 16},
 					  {chessInv,       	White,   16},
-					  {chess,      		White,   16},
+					  {chess,      		White,   8},
 
-					  {chessInv,      	White,    8}, 
+					  {chessInv,      	White,   12}, 
 				  	  {cube0,   		C2,      12},
-					  {all,        		C1,	      4},
-					  {cube1,     	    C2,       6},
-					  {chessInv,   		Yellow,  10},	
-					  {cube2,      		C3,      12},
-					  {all,      		Yellow,  16},
+					  {all,        		C1,	     12},
+					  {cube1,     	    C2,      16},
+					  {chessInv,   		Yellow,   8},	
+					  {cube2,      		C3,       8},
+					  {all,      		Yellow,  12},
 					  {cube3,   		Red,      8},
 					  {chess,      		Black,    8},
 					  {blockDiagonal,   Red,      8},
-					  {blockDown,       White,    8},
-					  {cube1,  			Red,     12},
-					  {chessInv,   		Blue,     4},  
-					  {all,        		Green,    6},
-					  {all,        		Black,    2},
+					  {blockDown,       White,   12},
+					  {cube1,  			Red,      8},
+					  {chessInv,   		Blue,     8},  
+					  {all,        		Green,    8},
+					  {all,        		Black,   16},
 					  {chess,      		Yellow,   8},
-/*					  
-					   // zeiter Takt
+
 					  {all,       		Black,   8},
-					  {cube1,  			White,  10},
-					  {chess,      		Black,   6},
-					  {chessInv,   		C3,      2},
+					  {cube1,  			White,  16},
+					  {chess,      		Black,  16},
+					  {chessInv,   		C3,     16},
 					  {blockDiagonal, 	Green,   8},
 					  {cube1,  			Black,   8},
 					  {chess,      		Red,     8},
-					  {all,        		Black,   8},
-					  {cube1,  			Yellow,  8},
-					  {all,        		Black,   8},
+					  {all,        		Black,  12},
+					  {cube1,  			Yellow, 12},
+					  {all,        		Black,  12},
 					  {fade1,       	C2,     16},
-					  {cube1,  			White,   4},
-					  {chessInv,   		Red,     6},
-					  {blockUp,    		Green,   2},
-					  {chess,      		C1,      8}  */
+					  {cube1,  			White,   8},
+					  {chessInv,   		Red,     8},
+					  {blockUp,    		Green,   4},
+					  {chess,      		C1,      8}  
 					};
 
 	unsigned char i, j, b, x, y, z;
@@ -105,8 +105,8 @@ void funkyBeats() {
 	uint32_t *im;
 	voxel centerPos = {2, 2, 2};
 
-	for (j = 0; j < 10; j++) {
-		for (b = 0; b < 31; b++) {
+	for (j = 0; j < 3; j++) {
+		for (b = 0; b < MAX_ENTRYS; b++) {
 			clearImage(black);
 			switch (beats[b].bC) {
 			
@@ -218,10 +218,12 @@ void funkyBeats() {
 					break;
 			}
 			
-			if (beats[b].pP == fade1)
-				fade(16, beats[b].time);
-			else 
-				swapAndWait(beats[b].time * 16);
+			//if (beats[b].pP == fade1)
+			//	fade(16, beats[b].time);
+			//else 
+				fade(8, beats[b].time);
+				swapAndWait(beats[b].time * 8);
+				
 		}
 	}
 }

@@ -6,6 +6,7 @@ ANIM_OBJ += plasmaAnims.o
 PRG  = farbborgSim
 OBJ_FOLDER = obj
 DEP_FOLDER = dep
+
 # Objets needed anyway
 MAIN_OBJ = main.o trackball.o fileParser.o slh.o util.o api.o displayLoop.o 
 
