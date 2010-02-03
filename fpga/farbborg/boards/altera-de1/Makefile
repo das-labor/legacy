@@ -110,7 +110,7 @@ system.qsf: $(SRC)
 # clean: remove output files and database
 # clean_all: removes settings files as well as clean.
 ################################################################
-syn: system.qsf smart.log $(PROJECT).asm.rpt $(PROJECT).tan.rpt
+syn: system.qsf $(PROJECT).asm.rpt $(PROJECT).tan.rpt
 
 map: smart.log $(PROJECT).map.rpt
 fit: smart.log $(PROJECT).fit.rpt
