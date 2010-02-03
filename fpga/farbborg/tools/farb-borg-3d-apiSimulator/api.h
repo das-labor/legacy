@@ -95,9 +95,11 @@ void fade(unsigned int msProStep, unsigned int steps);
  *  for example: t = 34; dP("t", t);
  *  prints: t = 34 on stdout
  *  val is display a signed number.
+ *  insted use DEBUG_VARIABLE(x)
  *  Its only available in simulator, so please remove if not needed!!!
  */
 void dP(char* txt, int32_t val);
+#define DEBUG_VARIABLE(x) dP("" # x "", x);
 
 // ADVANCED API ----------------------------------------------------------------
 
