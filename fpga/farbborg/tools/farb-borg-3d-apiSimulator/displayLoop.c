@@ -12,20 +12,21 @@ extern unsigned int curFrame;
 
 // THIS Makro starts a animation through a function pointer.
 // Due to preprocessor trix it genarates to strings
-// The first sets the animation name to the name of the function. 
+// The first sets the animation name to the name of the function.
 // (And resets the wait counter and stops the skipping.)
 // And the secound string is displayes "playing" and the function
 // name on the terminal.
 #define ADD_ANIMATION(function_ptr) \
         uart_putstr("playing " #function_ptr ""); \
         setAnimName("" #function_ptr ""); \
-		function_ptr (); 
+		function_ptr ();
 
-//typedef struct  
+//typedef struct
 
 // Playlist
 void *display_loop(void * unused)  {
 	ADD_ANIMATION(funkyBeats);
+	ADD_ANIMATION(took);
 	ADD_ANIMATION(Benny);
 	ADD_ANIMATION(police);
 	ADD_ANIMATION(took);
