@@ -20,9 +20,16 @@ void cmd_cantemp(int argc, char *argv[])
 	msg = can_buffer_get();
 	can_message *result;
 
-	if (argc != 2) goto argerror;
-       	if (sscanf(argv[1], "%x", (unsigned int*)&addr) != 1)
-		goto argerror;
+	unsigned int mode = 0;
+
+	unsigned int scanned = 0;
+
+	//	if (argc <2 || argc > 3) goto argerror;
+	scanned = sscanf(argv[1], "%x", (unsigned int*)&addr);
+	scanned += sscanf(argv[2], "%x", (unsigned int*)&mode);
+       	if (scanned <1 || scanned > 2)
+	  goto argerror;
+	
 
 
 	msg->addr_src = 0x00;
@@ -41,13 +48,18 @@ void cmd_cantemp(int argc, char *argv[])
 
 		if (result->addr_src == addr)
 		{
+		  if(mode == 0){
 			printf("Temp is %d\n", result->data[0]);
 			return;
+		  }
+		  if(mode == 1){
+		    printf("Temp is %d\n", result->data[1]);
+		  }
+		  return;
 		}
 	}
 
-	return;
 argerror:
-	debug(0, "cantemp <addr>");
+	debug(0, "cantemp <addr> [mode]");
 };
 
