@@ -1,6 +1,6 @@
 
 DEFS = -DF_CPU=16000000l
-OBJ = main.o laborlogo.o gui.o graphics.o ./fonts/font_uni53.o lcd_hardware.o com.o draw_pixmap.o
+OBJ = main.o laborlogo.o graphics.o ./fonts/font_uni53.o lcd_hardware.o com.o draw_pixmap.o
 
 
 # Default values

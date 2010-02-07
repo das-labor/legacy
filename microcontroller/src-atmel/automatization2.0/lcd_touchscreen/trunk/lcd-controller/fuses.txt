@@ -1,0 +1,10 @@
+Atmega162 fuses:
+(jtag off, external clock)
+
+hfuse = 0xd1
+lfuse = 0xe0
+
+Atmega128 fuses:
+efuse = 0xff
+hfuse = 0xd1
+lfuse = 0xe0

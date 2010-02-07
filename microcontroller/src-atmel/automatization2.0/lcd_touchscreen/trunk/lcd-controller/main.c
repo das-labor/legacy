@@ -14,23 +14,21 @@ int main(){
 
 	g_clear_screen();
 
+	draw_color = PIXEL_ON;
+	
 	
 	uint16_t xc=0,yc=0;
 	for(xc=0;xc<40;xc+=8)
 		for(yc=0;yc<240;yc+=64)
 			copy_logo(yc,xc);
+
+
 	sei();
 	
 	lcd_on();
 
-	
 	//while(1);
 
-		
-
-	draw_color = PIXEL_ON;
-	//g_draw_cross(100,100);
-	
 	
 	while(1){
 		handle_com();

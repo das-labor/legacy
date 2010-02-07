@@ -1,6 +1,7 @@
 
 #include <avr/io.h>
 #include "graphics.h"
+#include "draw_pixmap.h"
 #include "../include/dc_commands.h"
 
 #define PIN_DATA        PINB
@@ -53,9 +54,27 @@ static uint16_t read_uint16_t(){
 	return i;
 }
 
+static void read_bytes(uint8_t size, void * dest){
+	while(size--){
+		*((uint8_t*)dest) = read_byte();
+		dest = dest+1;		
+	}
+}
+
+static void read_string(char * dest){
+	char b;
+	do{
+		b = read_byte();
+		*dest++ = b;
+	}while(b);
+}
+
+
 
 void handle_com(){
 	uint8_t cmd;
+	char buf[128];
+	
 	
 	if(TEST_ATN() == 0){
 	
@@ -74,6 +93,40 @@ void handle_com(){
 			case DC_CLEAR_SCREEN:
 				g_clear_screen();
 				break;
+			case DC_DRAW_RECTANGLE:
+				{
+					rectangle_t r;
+					
+					read_bytes(8,&r);
+					
+					g_draw_rectangle(&r);
+					break;
+				}
+			case DC_FILL_RECTANGLE:
+				{
+					rectangle_t r;
+					read_bytes(8,&r);
+					g_fill_rectangle(&r);
+					break;
+				}
+			case DC_DRAW_STRING_IN_RECT:	
+				{
+					rectangle_t r;
+					read_bytes(8,&r);
+					read_string(buf);
+					g_draw_string_in_rect(&r,buf);
+					break;
+				}
+			case DC_DRAW_STRING_IN_RECT_VERT:	
+				{
+					rectangle_t r;
+					read_bytes(8,&r);
+					read_string(buf);
+					g_draw_string_in_rect_vert(&r,buf);
+					break;
+				}
+				
+				
 		}
 	
 	}
