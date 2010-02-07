@@ -1,6 +1,6 @@
 
 DEFS = -DF_CPU=16000000l
-OBJ = main.o dc_com.o touchscreen.o gui.o
+OBJ = main.o dc_com.o touchscreen.o gui.o calibrate_touch.o
 
 
 # Default values
@@ -17,6 +17,7 @@ CANADDR       ?= XXX
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
 FLASHCMD      ?= avrdude -c usbasp -p m128 -U flash:w:$(OUT).hex
+RESETCMD      ?= avrdude -c usbasp -p m128
 LAPFLASHCMD   ?= lapcontrol -s rl
 
 
@@ -35,8 +36,11 @@ clean:
 	rm -rf *.srec $(OUT).elf
 
 flash: $(OUT).hex
-	$(ERASECMD)
 	$(FLASHCMD)
+
+reset:
+	$(RESETCMD)	
+	
 
 canflash: $(OUT).hex
 	$(LAPFLASHCMD) flash $(CANADDR) $(OUT).hex

@@ -30,8 +30,12 @@ int main (void)
 
 	g_clear_screen();
 	
-	menu_test();
 	
+	
+	calibrate_touch();
+	
+	
+	menu_test();
 	
 	while(1){
 

@@ -6,3 +6,4 @@ typedef struct{
 } pixel;
 
 void handle_touchscreen();
+pixel read_touch_raw();
