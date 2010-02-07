@@ -1,6 +1,7 @@
 
-//#include "lc7981.h"
-#include "graphics.h"
+#include <stdint.h>
+#include <util/delay.h>
+#include "dc_com.h"
 
 #define TYPE_BUTTON 1 
 #define TYPE_SLIDER 2 
@@ -121,7 +122,7 @@ menu_item_t * main_menu[]={
 
 void draw_slider(slider_t * self, uint16_t x, uint16_t y){
 	rectangle_t r ={ x, y, 30, 58};
-	draw_color = PIXEL_ON;
+	g_set_draw_color (PIXEL_ON);
 	g_draw_rectangle(&r);
 	
 	uint8_t wert = self->value;
@@ -137,11 +138,11 @@ void draw_slider(slider_t * self, uint16_t x, uint16_t y){
 	
 	if(b.h > 56) b.h=0;
 	
-	draw_color = PIXEL_OFF;
+	g_set_draw_color(PIXEL_OFF);
 	g_fill_rectangle(&b);
 	
 	
-	draw_color = PIXEL_OFF;
+	g_set_draw_color (PIXEL_OFF);
 	
 	
 	
@@ -156,14 +157,14 @@ void draw_button(button_t * self, uint16_t x, uint16_t y){
 	rectangle_t r ={ x, y, 30, 28};
 	
 	if(self->state){
-		draw_color = PIXEL_ON;
+		g_set_draw_color(PIXEL_ON);
 		g_fill_rectangle(&r);
-		draw_color = PIXEL_OFF;
+		g_set_draw_color(PIXEL_OFF);
 		g_draw_string_in_rect(&r, self->text);
 	}else{
-		draw_color = PIXEL_OFF;
+		g_set_draw_color(PIXEL_OFF);
 		g_fill_rectangle(&r);
-		draw_color = PIXEL_ON;
+		g_set_draw_color(PIXEL_ON);
 		g_draw_rectangle(&r);
 		g_draw_string_in_rect(&r, self->text);
 	}
@@ -171,12 +172,12 @@ void draw_button(button_t * self, uint16_t x, uint16_t y){
 
 void button_touched(button_t * self, uint8_t click){
 	if(click){
-		DDRA |= 0x08;
-		PORTA &= ~0x08;
+//		DDRA |= 0x08;
+//		PORTA &= ~0x08;
 		self->state ^= 1;
 		self->redraw = 1;
-		delay_ms_long(30);
-		PORTA |= 0x08;
+		_delay_ms(30);
+//		PORTA |= 0x08;
 	}
 }
 

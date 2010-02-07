@@ -1,6 +1,6 @@
 
 DEFS = -DF_CPU=16000000l
-OBJ = main.o
+OBJ = main.o dc_com.o touchscreen.o gui.o
 
 
 # Default values
