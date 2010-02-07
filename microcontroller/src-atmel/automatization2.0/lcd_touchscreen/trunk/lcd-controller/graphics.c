@@ -310,10 +310,10 @@ void g_draw_string(unsigned short x, unsigned short y, const char *str) {
 void g_draw_cross(uint16_t x, uint16_t y){
 	x -= 4;
 	y -= 4;
-//	g_draw_line(x,y,x+8,y+8);
-//	g_draw_line(x,y+8,x+8,y);
+	g_draw_line(x,y,x+8,y+8);
+	g_draw_line(x,y+8,x+8,y);
 
-	lcd_graphics_plot_pixel(x, y, draw_color);
+//	lcd_graphics_plot_pixel(x, y, draw_color);
 
 
 }

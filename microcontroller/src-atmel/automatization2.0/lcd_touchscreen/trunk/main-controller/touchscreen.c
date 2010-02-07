@@ -224,7 +224,8 @@ void handle_touchscreen(){
 			p.x = (p.x / 4)+ p.x/16;
 			p.y = (p.y /4) ;
 		}
-		
+
+//#define MOUSE_TEST
 #ifdef MOUSE_TEST
 
 		//mouse cursor
@@ -262,7 +263,7 @@ void handle_touchscreen(){
 		
 		if(p.x != -1 && p1.x == -1 && click_timer == 0){
 			click = 1;
-			click_timer = 1000;
+			click_timer = 500;
 		}
 
 
