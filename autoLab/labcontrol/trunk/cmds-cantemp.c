@@ -24,13 +24,11 @@ void cmd_cantemp(int argc, char *argv[])
 
 	unsigned int scanned = 0;
 
-	//	if (argc <2 || argc > 3) goto argerror;
+	if (argc < 2 || argc > 3)
+		goto argerror;
 	scanned = sscanf(argv[1], "%x", (unsigned int*)&addr);
-	scanned += sscanf(argv[2], "%x", (unsigned int*)&mode);
-       	if (scanned <1 || scanned > 2)
-	  goto argerror;
-	
-
+	if (argc == 3)
+		scanned += sscanf(argv[2], "%x", (unsigned int*)&mode);
 
 	msg->addr_src = 0x00;
 	msg->addr_dst = addr;
@@ -38,7 +36,7 @@ void cmd_cantemp(int argc, char *argv[])
 	msg->port_dst = 0x10;
 	msg->dlc      = 1;
 	msg->data[0]  = 0;
-	
+
 
 	can_transmit(msg);
 
