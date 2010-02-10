@@ -24,6 +24,8 @@ void cmd_cantemp(int argc, char *argv[])
 
 	unsigned int scanned = 0;
 
+	char temperatur=0;
+
 	if (argc < 2 || argc > 3)
 		goto argerror;
 	scanned = sscanf(argv[1], "%x", (unsigned int*)&addr);
@@ -47,12 +49,26 @@ void cmd_cantemp(int argc, char *argv[])
 		if (result->addr_src == addr)
 		{
 		  if(mode == 0){
-			printf("Temp is %d\n", result->data[0]);
-			return;
+		    if(result->data[0] > 127) 
+		      {
+			temperatur = (char)((   (unsigned char)( ((result->data[0]) ^0xff)+1)) *(-1));
+		      }
+		    else
+		      {
+			temperatur = result->data[0];
+		      }
 		  }
 		  if(mode == 1){
-		    printf("Temp is %d\n", result->data[1]);
+		    if(result->data[1] > 127) 
+		      {
+			temperatur = (char)((   (unsigned char)( ((result->data[1]) ^0xff)+1)) *(-1));
+		      }
+		    else
+		      {
+			temperatur = (char)result->data[1];
+		      }
 		  }
+		  printf("Temp is %d\n", temperatur);
 		  return;
 		}
 	}
