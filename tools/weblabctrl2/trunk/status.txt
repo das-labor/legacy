@@ -1,0 +1,1 @@
+<? $status = array( "TAFEL" => "31", "BEAMER" => "255", "SCHRANK" => "0", "FLIPPER" => "51", "LOUNGE" => "0", "KUECHE" => "98"); ?>
