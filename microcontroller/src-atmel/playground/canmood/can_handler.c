@@ -22,17 +22,17 @@ extern void can_handler()
 			{
 				switch (rx_msg->data[0])
 				{
-				case FKT_MGT_RESET:
-					TCCR2 = 0;
-					wdt_enable(0);
-					while(1);
+					case FKT_MGT_RESET:
+						TCCR2 = 0;
+						wdt_enable(0);
+						while (1);
 			
-				case FKT_MGT_PING:
+					case FKT_MGT_PING:
 
-					msg.addr_src = myaddr;
-					msg.addr_dst = rx_msg->addr_src;
-					can_transmit(&msg);
-					break;
+						msg.addr_src = myaddr;
+						msg.addr_dst = rx_msg->addr_src;
+						can_transmit(&msg);
+						break;
 				}
 			}
 			else if (rx_msg->port_dst == 1)
@@ -56,7 +56,6 @@ extern void can_handler()
 						can_transmit(&msg);
 						break;
 				}
-
 			}
 		}
 	}
@@ -66,3 +65,4 @@ void read_can_addr()
 {
 	myaddr = eeprom_read_byte(0x00);
 }
+
