@@ -25,8 +25,8 @@ void cmd_cantemp(int argc, char *argv[])
 	unsigned int scanned = 0;
 
 	int temperatur = 0;
-	unsigned int temp_msb = 0;
-	unsigned int temp_lsb = 0;
+	unsigned char temp_msb = 0;
+	unsigned char temp_lsb = 0;
 
 	if (argc < 2 || argc > 3)
 		goto argerror;
@@ -48,7 +48,7 @@ void cmd_cantemp(int argc, char *argv[])
 	{
 		result = can_get();
 
-		if (result->addr_src == addr)
+		if (result->addr_src == addr && result->addr_dst == 0x00)
 		{
 			if (mode)
 			{
@@ -60,7 +60,8 @@ void cmd_cantemp(int argc, char *argv[])
 				temp_msb = result->data[1];
 				temp_lsb = result->data[2];
 			}
-			temperatur = (((temp_msb << 8) + temp_lsb) >> 4);
+			printf("msb: 0x%x lsb: 0x%x\n", temp_msb, temp_lsb);
+			temperatur = ((temp_msb << 4) + (temp_lsb >> 4));
 			if (temp_msb >= 0x80) //if sign bit is set, then temp is negative
 				temperatur -= 4096;
 				
