@@ -6,7 +6,7 @@
 #include "can_handler.h"
 #include "can/lap.h"
 #include "pwm.h"
-
+#include "static_scripts.h"
 
 static uint8_t myaddr;
 
@@ -16,7 +16,7 @@ extern void can_handler()
 	can_message *rx_msg;
 	if ((rx_msg = can_get_nb()) != 0)			//get next canmessage in rx_msg
 	{
-		if ((rx_msg->addr_dst == myaddr))
+		if (rx_msg->addr_dst == myaddr)
 		{
 			if (rx_msg->port_dst == PORT_MGT)
 			{
@@ -43,7 +43,7 @@ extern void can_handler()
 					case 0x00: //FKT_MOOD_SET_B
 						global_pwm.channels[rx_msg->data[1]].target_brightness = rx_msg->data[2];
 						break;
-					case 0x01://spped
+					case 0x01://speed
 						global_pwm.channels[rx_msg->data[1]].speed = 100 * rx_msg->data[2];
 						break;
 					case 0x03://FKT_MOOD_GET_B
@@ -58,6 +58,20 @@ extern void can_handler()
 				}
 			}
 		}
+#ifdef LABOR_MOOD
+		if (rx_msg->addr_src == 0x02 && rx_msg->addr_dst == 0x00 && rx_msg->port_dst == 0x01)
+		{
+			if (!(rx_msg->data[0] & 0x01))
+			{
+				script_threads[0].flags.disabled = 1;
+				global_pwm.channels[0].target_brightness = 0;
+				global_pwm.channels[1].target_brightness = 0;
+				global_pwm.channels[1].target_brightness = 0;
+			}
+			if (rx_msg->data[0] & 0x01)
+				script_threads[0].flags.disabled = 0;
+		}
+#endif
 	}
 }
 
