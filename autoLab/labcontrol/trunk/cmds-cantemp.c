@@ -50,7 +50,7 @@ void cmd_cantemp(int argc, char *argv[])
 
 		if (result->addr_src == addr && result->addr_dst == 0x00)
 		{
-			if (mode)
+			if (!mode)
 			{
 				temp_msb = result->data[0];
 				temp_lsb = result->data[1];
