@@ -17,5 +17,8 @@
 
 #define F_MCP F_CPU
 
+// switch off with hauptschalter
+//#define LABOR_MOOD
+
 
 #endif // ifndef CONFIG_H
