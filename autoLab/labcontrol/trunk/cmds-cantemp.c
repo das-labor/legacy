@@ -60,7 +60,7 @@ void cmd_cantemp(int argc, char *argv[])
 				temp_msb = result->data[1];
 				temp_lsb = result->data[2];
 			}
-			printf("msb: 0x%x lsb: 0x%x\n", temp_msb, temp_lsb);
+
 			temperatur = ((temp_msb << 4) + (temp_lsb >> 4));
 			if (temp_msb >= 0x80) //if sign bit is set, then temp is negative
 				temperatur -= 4096;
