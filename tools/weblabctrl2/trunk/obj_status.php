@@ -192,16 +192,16 @@ class c_status extends c_content{
 	 $syscommand = $timeoutscript." lapcontrol cantemp 0x23 0x01";
 	 exec($syscommand,$status3);
 
-	 $indata = sscanf  ( $status1[1] , "Temp is %d" );
+	 $indata = sscanf  ( $status1[1] , "Temp is %f" );
 	 if ( !isset($indata[0]) || $indate[0] > 127 || $indata[0] < -128 ) $value1 = 'Fail';
 	 else $value1= $indata[0];
 
-	 $indata = sscanf  ( $status2[1] , "Temp is %d" );
+	 $indata = sscanf  ( $status2[1] , "Temp is %f" );
 	 if ( !isset($indata[0]) || $indate[0] > 127 || $indata[0] < -128) $value2 = 'Fail';
 	 else $value2= $indata[0];
 
 	 
-	 $indata = sscanf  ( $status3[1] , "Temp is %d" );
+	 $indata = sscanf  ( $status3[1] , "Temp is %f" );
 	 if ( !isset($indata[0]) || $indate[0] > 127 || $indata[0] < -128 ) $value3 = 'Fail';
 	 else $value3= $indata[0];
 	
