@@ -96,7 +96,8 @@ int main(int argc, char *argv[])
 	int i, j, rv;
 	struct addrinfo hints, *ai, *p;
 	size_t txbuflen = 0, rxbuflen = 0;
-	struct tcp2air_t *tmphdr;
+	tcp2air_t *tmphdr;
+	rfmusb_packetbuffer pbuf;
 
 	extern uint8_t opt_rfm12usb, opt_canusb, opt_dump, opt_debug, opt_foreground;
 	extern char opt_port[], *progname;
@@ -171,7 +172,7 @@ int main(int argc, char *argv[])
 	// if we got here, it means we didn't get bound
 	if (p == NULL)
 	{
-		fprintf(stderr, "selectserver: failed to bind\n");
+		fprintf(stderr, "Failed to bind()\n");
 		exit(2);
 	}
 	freeaddrinfo(ai); // all done with this
@@ -197,7 +198,7 @@ int main(int argc, char *argv[])
 		// run through the existing connections looking for data to read
 		for(i = 0; i <= fdmax; i++)
 		{
-			nbytes = rfmusb_rxpacket (udhandle, (rfmusb_packetbuffer*) tmpbuf);
+			nbytes = rfmusb_rxpacket (udhandle, &pbuf);
 			if (PREDICT_ENCAPSIZE(nbytes + txbuflen) > BUF_MAXLEN)
 			{
 				printf("Warning: Dropping data.\n");
@@ -205,7 +206,7 @@ int main(int argc, char *argv[])
 			{
 				/* XXX hardcoded frequency & bandwidth for now - until there's a proper interface */
 				tmphdr = prep_packet (DIR_RX, 433000000, 1000, 9600, nbytes,
-						((rfmusb_packetbuffer *) tmpbuf)->buffer);
+						(uint8_t *) pbuf.buffer);
 				tmpbuf = encap_packet (&nbytes, (tcp2air_t *) tmpbuf);
 				txbuflen += nbytes;
 			}
