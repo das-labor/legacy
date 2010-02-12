@@ -1,6 +1,7 @@
 
 #include <stdint.h>
 #include <util/delay.h>
+#include "touchscreen.h"
 #include "dc_com.h"
 
 #define TYPE_BUTTON 1 
@@ -278,3 +279,32 @@ void menu_test(){
 	setup_menu(main_menu);
 	draw_menu(1);
 }
+
+
+void handle_touchscreen(){
+	static uint16_t click_timer = 0;	
+  	static pixel p1 = {-1,-1};
+  	
+	pixel p;
+	p = read_touch_screen_coordinates();
+
+	uint8_t click = 0;
+	
+	if(p.x != -1 && p1.x == -1 && click_timer == 0){
+		click = 1;
+		click_timer = 500;
+	}
+
+	if(p.x != -1){
+		menu_handle_touch(p.x,p.y,click);
+	}
+
+	if(click_timer>0){
+		click_timer--;
+	}
+	
+	draw_menu(0);
+
+	p1 = p;
+}
+

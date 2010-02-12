@@ -6,39 +6,6 @@
 #include "dc_com.h"
 
 
-typedef struct{
-	uint16_t xz;
-	uint16_t xg;
-	uint16_t yz;
-	uint16_t yg;
-}calibration_values_t;
-
-calibration_values_t calibration_values;
-
-
-pixel read_touch_screen_coordinates(){
-	pixel p;
-	p = read_touch_raw();
-
-	if(p.x == -1){
-		return p;
-	}
-
-	if(p.x < calibration_values.xz){
-		p.x = 0;
-	}else{
-		p.x = ((uint32_t)(p.x-calibration_values.xz) * calibration_values.xg) / 1024;
-	}
-
-	if(p.y < calibration_values.yz){
-		p.y = 0;
-	}else{
-		p.y = ((uint32_t)(p.y-calibration_values.yz) * calibration_values.yg) / 1024;
-	}
-	
-	return p;
-
-}
 
 pixel read_mean(){
 	pixel p;
@@ -151,8 +118,34 @@ void test_touchscreen(){
 		}
 
 
-		if((p1.x == -1 )&& (p.x != -1))			g_clear_screen();
-	
+		if((p1.x == -1 )&& (p.x != -1)){
+			g_clear_screen();
+			
+			g_draw_rectangle(&(rectangle_t){10,10,50,20});
+			g_draw_string_in_rect(&(rectangle_t){10,10,50,20}, "Exit");
+
+			if(p.x < 60 && p.x > 10 && p.y < 30 && p.y > 10){
+				break;
+			}
+		}
+		
+	#ifdef OSZI
+	//Oszi
+		static uint16_t xc=0;
+
+		if(p.x != -1 ) g_draw_cross(xc , p.x);
+
+
+		xc++;
+		if(xc==320){
+			xc=0;
+		}
+	#endif
+		
+
+		
+		
+		
 		p1 = p;
 	}
 

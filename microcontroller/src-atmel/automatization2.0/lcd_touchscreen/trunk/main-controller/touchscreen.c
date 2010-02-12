@@ -43,8 +43,8 @@ int analogRead(uint8_t pin)
 	#define MSK_YH  _BV(PF1)
 	#define MSK_XL  _BV(PF0)
 	
-	#define TOUCH_Y_CHANNEL PF1
-	#define TOUCH_X_CHANNEL PF2
+	#define TOUCH_Y_CHANNEL PF1 //Must be YH pin
+	#define TOUCH_X_CHANNEL PF2 //Must be XH pin
 #else
 	#define MSK_YL  _BV(PF0)
 	#define MSK_XH  _BV(PF1)
@@ -58,8 +58,8 @@ int analogRead(uint8_t pin)
 
 #define TOUCH_OFF_MSK (~(MSK_YH|MSK_YL|MSK_XH|MSK_XL))
 
-#define TOUCH_CLEAR_PORT() {DDR_TOUCH  &= TOUCH_OFF_MSK;}
-#define TOUCH_CLEAR_DDR()  {PORT_TOUCH &= TOUCH_OFF_MSK;}
+#define TOUCH_CLEAR_PORT() {PORT_TOUCH  &= TOUCH_OFF_MSK;}
+#define TOUCH_CLEAR_DDR()  {DDR_TOUCH   &= TOUCH_OFF_MSK;}
 
 #define TOUCH_SET_DDR_TO_READ_Y()         {DDR_TOUCH  |= MSK_YH|MSK_YL;}
 #define TOUCH_SET_PORT_TO_READ_Y()        {PORT_TOUCH |= MSK_YH;}
@@ -143,6 +143,7 @@ uint16_t read_filtered(uint8_t channel){
 	*/	
 }
 
+#define TOUCH_THRESHOLD 600
 
 pixel read_touch_raw(){
 	pixel p;
@@ -150,14 +151,17 @@ pixel read_touch_raw(){
 	TOUCH_CLEAR_DDR();
 	TOUCH_CLEAR_PORT();
 	
-	TOUCH_SET_DDR_TO_READ_Y();
-  	TOUCH_SET_PORT_TO_READ_X();
-	
-	__asm("nop;");__asm("nop;");__asm("nop;");
+	TOUCH_SET_PORT_TO_READ_Y();
+	TOUCH_SET_DDR_TO_READ_Y();//charge cap
 	_delay_us(100);
+	TOUCH_CLEAR_DDR();
 
+	TOUCH_SET_DDR_TO_READ_X();
+  	
 	
-	if(analogRead(TOUCH_X_CHANNEL) > 200){
+	_delay_us(100);
+	
+	if(analogRead(TOUCH_Y_CHANNEL) > TOUCH_THRESHOLD){
 		p.x = -1;
 		p.y = -1;
 		return p;
@@ -180,104 +184,57 @@ pixel read_touch_raw(){
 	TOUCH_SET_PORT_TO_READ_Y();
 		
 	_delay_us(100);
-/*
-	akku = analogRead(TOUCH_X_CHANNEL)*SCALE*FILTER;
-	
-	for(i=0;i<FILTER;i++){
-		akku+=analogRead(TOUCH_X_CHANNEL) * SCALE;
-		akku -= akku/FILTER;
-	}
-*/
+
 	p.y = read_filtered(TOUCH_X_CHANNEL);
 	
 	TOUCH_CLEAR_DDR();
 	TOUCH_CLEAR_PORT();
 	
-	TOUCH_SET_DDR_TO_READ_Y();
-  TOUCH_SET_PORT_TO_READ_X();
-
-	__asm("nop;");__asm("nop;");__asm("nop;");
-
+	TOUCH_SET_PORT_TO_READ_Y();
+	TOUCH_SET_DDR_TO_READ_Y();//charge cap
 	_delay_us(100);
+	TOUCH_CLEAR_DDR();
 
+	TOUCH_SET_DDR_TO_READ_X();
+  	
 	
-	if(analogRead(TOUCH_X_CHANNEL) > 400){
+	_delay_us(100);
+	
+	if(analogRead(TOUCH_Y_CHANNEL) > TOUCH_THRESHOLD){
 		p.x = -1;
 		p.y = -1;
 		return p;
 	}
-	
-	
 	return p;
 }
 
-uint16_t click_timer = 0;	
-  	pixel p1 = {-1,-1}, p2;
 
-void handle_touchscreen(){
+calibration_values_t calibration_values;
+
+pixel read_touch_screen_coordinates(){
 	pixel p;
-		p = read_touch_raw();
+	p = read_touch_raw();
 
-		if(p.x != -1){
-//			p.x = ((p.x-200) * 16) /64;
-//			p.y = ((p.y-260) * 20) /128;
-			p.x = (p.x / 4)+ p.x/16;
-			p.y = (p.y /4) ;
-		}
+	if(p.x == -1){
+		return p;
+	}
 
-//#define MOUSE_TEST
-#ifdef MOUSE_TEST
+	if(p.x < calibration_values.xz){
+		p.x = 0;
+	}else{
+		p.x = ((uint32_t)(p.x-calibration_values.xz) * calibration_values.xg) / 1024;
+	}
 
-		//mouse cursor
-		if( ((p1.x != p.x) || (p1.y != p.y ))  ){
-			g_set_draw_color(0);
-			//g_draw_cross(p1.x , p1.y);
-		}
-		
-		if(p.x != -1){
-			g_set_draw_color(1);
-			g_draw_cross(p.x , p.y);
-		}
-
-
-		if((p1.x == -1 )&& (p.x != -1))			g_clear_screen();
-#endif
-
-
-
-#ifdef OSZI
-	//Oszi
-		static uint16_t xc=0;
-
-		if(p.x != -1 ) g_draw_cross(xc , p.x);
-
-
-		xc++;
-		if(xc==320){
-			xc=0;
-		}
-#endif
-		
-
-		uint8_t click = 0;
-		
-		if(p.x != -1 && p1.x == -1 && click_timer == 0){
-			click = 1;
-			click_timer = 500;
-		}
-
-
-		if(p.x != -1){
-			menu_handle_touch(p.x,p.y,click);
-		}
-
+	if(p.y < calibration_values.yz){
+		p.y = 0;
+	}else{
+		p.y = ((uint32_t)(p.y-calibration_values.yz) * calibration_values.yg) / 1024;
+	}
 	
-		if(click_timer>0){
-			click_timer--;
-		}
-		
-		draw_menu(0);
-
-  		p1 = p;
+	return p;
 
 }
+
+
+
+
