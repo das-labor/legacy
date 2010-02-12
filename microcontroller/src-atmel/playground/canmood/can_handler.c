@@ -59,7 +59,7 @@ extern void can_handler()
 			}
 		}
 #ifdef LABOR_MOOD
-		if (rx_msg->addr_src == 0x02 && rx_msg->addr_dst == 0x00 && rx_msg->port_dst == 0x01)
+		if (rx_msg->addr_src == 0x02 && rx_msg->addr_dst == 0x00 && rx_msg->port_dst == 0x02)
 		{
 			if (!(rx_msg->data[0] & 0x01))
 			{
