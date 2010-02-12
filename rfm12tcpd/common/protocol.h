@@ -3,6 +3,9 @@
 #ifndef COMMON_PROTOCOL_H
 #define COMMON_PROTOCOL_H
 
+#define DEFAULT_PORT 14142
+#define DEFAULT_HOST "localhost"
+
 #define DIR_TX 1
 #define DIR_RX 0
 
@@ -15,5 +18,9 @@ typedef struct
 	uint32_t len;    /* payload len */
 	uint8_t  *data;  /* data ptr */
 } tcp2air_t;
+
+#ifndef MIN
+	#define MIN(a,b) ((a>b)?b:a)
+#endif
 
 #endif
