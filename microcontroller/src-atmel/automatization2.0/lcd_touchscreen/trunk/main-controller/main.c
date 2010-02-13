@@ -1,19 +1,20 @@
-
 #include <avr/io.h>
 #include <stdlib.h>
 #include <util/delay.h>
+
 #include "dc_com.h"
 #include "touchscreen.h"
+#include "calibrate_touch.h"
+#include "gui.h"
 
-
-void init(){
+void init() {
 	//Backlight on
 	DDRF |= _BV(PF4);
-	PORTF |= _BV(PF4);	
+	PORTF |= _BV(PF4);
 }
 
 int main (void)
-{	
+{
 
 	init();
 	init_dc_com();
@@ -37,7 +38,7 @@ int main (void)
 	
 	menu_test();
 	
-	while(1){
+	while (1) {
 
 		handle_touchscreen();
 

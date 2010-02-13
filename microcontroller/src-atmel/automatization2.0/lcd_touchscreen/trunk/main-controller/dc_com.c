@@ -1,5 +1,5 @@
-
 #include <avr/io.h>
+
 #include "dc_com.h"
 #include "../include/dc_commands.h"
 
@@ -25,12 +25,13 @@
 #define WAIT_ATN_HIGH()    {while((PIN_HANDSHAKE & _BV(BIT_ATN))==0);}
 
 
-void init_dc_com(){
+void init_dc_com() {
 	DDR_HANDSHAKE  &= ~(_BV(BIT_ATN)|_BV(BIT_ACK));
 	PORT_HANDSHAKE |=  (_BV(BIT_ATN)|_BV(BIT_ACK));
 }
 
-void dc_byte_put(uint8_t b){
+
+void dc_byte_put(uint8_t b) {
 	DDRA = 0xff;
 	PORTA = b;
 
@@ -39,83 +40,85 @@ void dc_byte_put(uint8_t b){
 	WAIT_ACK_LOW();
 	ATN_RELEASE();
 	WAIT_ACK_HIGH();
-
 }
 
-void transmit_to_dc(uint8_t command, uint16_t size, void * data){
+
+void transmit_to_dc(uint8_t command, uint16_t size, void * data) {
 	uint16_t i;
 
 	dc_byte_put(command);
 
-	if(command >= 0x80){
+	if (command >= 0x80) {
 		dc_byte_put(size);
-		dc_byte_put(size>>8);
+		dc_byte_put(size >> 8);
 	}
 
-	for(i=0;i<size;i++){
+	for (i = 0; i < size; i++) {
 		dc_byte_put(((uint8_t*)data)[i]);
 	}
 }
 
-void transmit_to_dc_raw(uint16_t size, void * data){
+
+void transmit_to_dc_raw(uint16_t size, void * data) {
 	uint16_t i;
-	for(i=0;i<size;i++){
+	for (i = 0; i < size; i++) {
 		dc_byte_put(((uint8_t*)data)[i]);
 	}
 }
 
-void transmit_to_dc_string(const char * data){
+
+void transmit_to_dc_string(const char * data) {
 	char c;
-	do{
+	do {
 		c = *data++;
 		dc_byte_put(c);
-	}while(c != 0);
+	} while (c != 0);
 }
 
 
-void g_draw_cross(uint16_t x, uint16_t y){
+void g_draw_cross(uint16_t x, uint16_t y) {
 	uint16_t data[2];
 	data[0] = x;
 	data[1] = y;
-	
-	transmit_to_dc(DC_DRAW_CROSS, 4, data); 
+
+	transmit_to_dc(DC_DRAW_CROSS, 4, data);
 }
 
-void g_set_draw_color(uint8_t color){
+
+void g_set_draw_color(uint8_t color) {
 	uint8_t data[1];
 	data[0] = color;
 
-	transmit_to_dc(DC_SET_COLOR, 1, data); 
-
-}
-
-void g_clear_screen(){
-
-	transmit_to_dc(DC_CLEAR_SCREEN, 0, 0); 
-}
-
-void g_draw_rectangle(rectangle_t * r){
-	transmit_to_dc(DC_DRAW_RECTANGLE, 8, r); 
-}
-
-void g_fill_rectangle(rectangle_t * r){
-	transmit_to_dc(DC_FILL_RECTANGLE, 8, r); 
+	transmit_to_dc(DC_SET_COLOR, 1, data);
 }
 
 
-void g_draw_string_in_rect(rectangle_t * r, const char *str){
+void g_clear_screen() {
+	transmit_to_dc(DC_CLEAR_SCREEN, 0, 0);
+}
+
+
+void g_draw_rectangle(rectangle_t * r) {
+	transmit_to_dc(DC_DRAW_RECTANGLE, 8, r);
+}
+
+
+void g_fill_rectangle(rectangle_t * r) {
+	transmit_to_dc(DC_FILL_RECTANGLE, 8, r);
+}
+
+
+void g_draw_string_in_rect(rectangle_t * r, const char *str) {
 	dc_byte_put(DC_DRAW_STRING_IN_RECT);
 
 	transmit_to_dc_raw(8, r);
 	transmit_to_dc_string(str);
-	 
 }
 
 
-void g_draw_string_in_rect_vert(rectangle_t * r, const char *str){
+void g_draw_string_in_rect_vert(rectangle_t * r, const char *str) {
 	dc_byte_put(DC_DRAW_STRING_IN_RECT_VERT);
 
 	transmit_to_dc_raw(8, r);
 	transmit_to_dc_string(str);
-	 
 }
