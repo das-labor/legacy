@@ -1,5 +1,5 @@
-
 #include <avr/io.h>
+
 #include "graphics.h"
 #include "draw_pixmap.h"
 #include "../include/dc_commands.h"
@@ -29,13 +29,13 @@
 
 #define TEST_ATN()        (PIN_HANDSHAKE & _BV(BIT_ATN))
 
-void init_com(){
+void init_com() {
 	DDR_HANDSHAKE  &= ~(_BV(BIT_ATN)|_BV(BIT_ACK));
 	PORT_HANDSHAKE |=  (_BV(BIT_ATN)|_BV(BIT_ACK));
 }
 
 
-static uint8_t read_byte(){
+static uint8_t read_byte() {
 	uint8_t b;
 
 	WAIT_ATN_LOW();
@@ -43,43 +43,43 @@ static uint8_t read_byte(){
 	ACK_PULL();
 	WAIT_ATN_HIGH();
 	ACK_RELEASE();
-	return b;	
+	return b;
 }
 
-static uint16_t read_uint16_t(){
+static uint16_t read_uint16_t() {
 	uint16_t i;
 	i = read_byte();
-	i |= read_byte()<<8;
+	i |= read_byte() << 8;
 	
 	return i;
 }
 
-static void read_bytes(uint8_t size, void * dest){
-	while(size--){
+static void read_bytes(uint8_t size, void * dest) {
+	while (size--) {
 		*((uint8_t*)dest) = read_byte();
-		dest = dest+1;		
+		dest = dest + 1;
 	}
 }
 
-static void read_string(char * dest){
+static void read_string(char * dest) {
 	char b;
-	do{
+	do {
 		b = read_byte();
 		*dest++ = b;
-	}while(b);
+	} while (b);
 }
 
 
 
-void handle_com(){
+void handle_com() {
 	uint8_t cmd;
 	char buf[128];
 	
 	
-	if(TEST_ATN() == 0){
+	if (TEST_ATN() == 0) {
 	
 		cmd = read_byte();
-		switch(cmd){
+		switch (cmd) {
 			case DC_SET_COLOR:
 				draw_color = read_byte();
 				break;
@@ -87,7 +87,7 @@ void handle_com(){
 				{
 					uint16_t x = read_uint16_t();
 					uint16_t y = read_uint16_t();
-					g_draw_cross(x,y);
+					g_draw_cross(x, y);
 				}
 				break;
 			case DC_CLEAR_SCREEN:
@@ -97,7 +97,7 @@ void handle_com(){
 				{
 					rectangle_t r;
 					
-					read_bytes(8,&r);
+					read_bytes(8, &r);
 					
 					g_draw_rectangle(&r);
 					break;
@@ -105,31 +105,26 @@ void handle_com(){
 			case DC_FILL_RECTANGLE:
 				{
 					rectangle_t r;
-					read_bytes(8,&r);
+					read_bytes(8, &r);
 					g_fill_rectangle(&r);
 					break;
 				}
 			case DC_DRAW_STRING_IN_RECT:	
 				{
 					rectangle_t r;
-					read_bytes(8,&r);
+					read_bytes(8, &r);
 					read_string(buf);
-					g_draw_string_in_rect(&r,buf);
+					g_draw_string_in_rect(&r, buf);
 					break;
 				}
 			case DC_DRAW_STRING_IN_RECT_VERT:	
 				{
 					rectangle_t r;
-					read_bytes(8,&r);
+					read_bytes(8, &r);
 					read_string(buf);
-					g_draw_string_in_rect_vert(&r,buf);
+					g_draw_string_in_rect_vert(&r, buf);
 					break;
-				}
-				
-				
-		}
-	
+				}		
+		}	
 	}
-
-
 }

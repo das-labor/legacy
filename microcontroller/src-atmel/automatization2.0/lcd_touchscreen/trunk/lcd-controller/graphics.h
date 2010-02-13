@@ -6,8 +6,8 @@
  * font5x7.h header file comes from Procyon AVRlib.
  */
 
-#ifndef _GRAPHICS_H
-#define _GRAPHICS_H
+#ifndef _H_GRAPHICS
+#define _H_GRAPHICS
 
 #include "fonts/font.h"
 
@@ -43,4 +43,5 @@ void g_draw_cross(uint16_t x, uint16_t y);
 #define PIXEL_ON 1
 #define PIXEL_OFF 0
 
-#endif
+#endif //_H_GRAPHICS
+
