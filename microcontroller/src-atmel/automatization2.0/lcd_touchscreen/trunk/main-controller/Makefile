@@ -59,7 +59,7 @@ $(OUT).elf: $(OBJ)
 	$(MCU_CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 %.o: %.c
-	$(MCU_CC) $(CFLAGS) -c $<
+	$(MCU_CC) $(CFLAGS) -c $< -o $@
 
 
 lst: $(OUT).lst
