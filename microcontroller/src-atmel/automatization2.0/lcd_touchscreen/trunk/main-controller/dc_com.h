@@ -1,4 +1,5 @@
-
+#ifndef _H_DC_COM
+#define _H_DC_COM
 
 void init_dc_com();
 
@@ -31,4 +32,5 @@ void g_draw_cross(uint16_t x, uint16_t y);
 
 #define PIXEL_ON 1
 #define PIXEL_OFF 0
+#endif // _H_DC_COM
 
