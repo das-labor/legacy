@@ -25,8 +25,8 @@
 #define FRAME_RATE 75 //in Hz
 
 
-void init_lcd_hardware(){
-	MCUCR = (1<<SRE)|(1<<ISC01);//xram on	
+void init_lcd_hardware() {
+	MCUCR = _BV(SRE) | _BV(ISC01); //xram on	
 
 	DDR_CONTROL |= _BV(BIT_DISPLAY_ON) |_BV(BIT_LP) |_BV(BIT_FLM) |_BV(BIT_XCK_ENABLE) ;
 	
@@ -37,37 +37,35 @@ void init_lcd_hardware(){
 	DDR_M |= _BV(BIT_M);
 
 
-	TCCR0 = (1<<WGM01)|2;//clk/8, ctc								
-	OCR0 = (F_CPU/8/(FRAME_RATE*Y_SIZE))-1;
+	TCCR0 = _BV(WGM01) | 2; //clk/8, ctc								
+	OCR0 = (F_CPU / 8 / (FRAME_RATE * Y_SIZE)) - 1;
 
-	TIMSK |= _BV(OCIE0);//overflow interrupt on
-
-
+	TIMSK |= _BV(OCIE0); //overflow interrupt on
 }
 
-void lcd_on(){
-
+void lcd_on() {
 	PORT_CONTROL |= _BV(BIT_DISPLAY_ON);
 	PORT_POWER &= ~_BV(BIT_POWER);
 }
 
-ISR(TIMER0_COMP_vect){
+ISR(TIMER0_COMP_vect) {
 	volatile uint8_t* mempt;
 	
 	static uint8_t line;
 	uint8_t cd;
 
-	mempt = &pixmap[line * (X_SIZE/INTERFACE_BITS) ];
+	mempt = &pixmap[line * (X_SIZE / INTERFACE_BITS)];
 
 	PORT_M ^= _BV(BIT_M);
 
-	if(line==1)	PORT_CONTROL |=  _BV(BIT_FLM);
+	if (line == 1)
+		PORT_CONTROL |=  _BV(BIT_FLM);
 
 	PORT_CONTROL |=  _BV(BIT_LP);
 	PORT_CONTROL &= ~_BV(BIT_LP);
 	PORT_CONTROL &= ~_BV(BIT_FLM);
 
-	for(cd=0;cd<(X_SIZE/(INTERFACE_BITS*8));cd++){
+	for (cd = 0; cd < (X_SIZE / (INTERFACE_BITS * 8)); cd++) {
 		*mempt++;
 		*mempt++;
 		*mempt++;
@@ -75,9 +73,10 @@ ISR(TIMER0_COMP_vect){
 		*mempt++;
 		*mempt++;
 		*mempt++;
-		*mempt++;				
+		*mempt++;
 	}
 
 	line++;
-	if(line == Y_SIZE) line=0;	
+	if (line == Y_SIZE)
+		line = 0;
 }

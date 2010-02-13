@@ -1,4 +1,5 @@
-
+#ifndef _H_LCD_HARDWARE
+#define _H_LCD_HARDWARE
 
 #define pixmap ((uint8_t*)0x2000)
 
@@ -23,3 +24,6 @@ void lcd_on();
 #define INTERFACE_BITS 4
 
 #endif
+
+#endif //_H_LCD_HARDWARE
+
