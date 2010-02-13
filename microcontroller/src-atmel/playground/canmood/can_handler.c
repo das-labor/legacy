@@ -66,7 +66,7 @@ extern void can_handler()
 				script_threads[0].flags.disabled = 1;
 				global_pwm.channels[0].target_brightness = 0;
 				global_pwm.channels[1].target_brightness = 0;
-				global_pwm.channels[1].target_brightness = 0;
+				global_pwm.channels[2].target_brightness = 0;
 			}
 			if (rx_msg->data[0] & 0x01)
 				script_threads[0].flags.disabled = 0;
