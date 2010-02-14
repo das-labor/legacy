@@ -14,9 +14,8 @@ void lcd_on();
 #define LCD_WIDTH  X_SIZE
 #define LCD_HEIGHT Y_SIZE
 
-#define BIG_DISPLAY
+//#define BIG_DISPLAY
 
-#define BIG_DISPLAY
 
 #ifdef BIG_DISPLAY
 #define INTERFACE_BITS 8
