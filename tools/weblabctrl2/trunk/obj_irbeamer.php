@@ -113,11 +113,11 @@ class c_irbeamer extends c_content{
 
   protected function initContent()
   {
-    $this->content = "<table width=\"100%\"><tr>";
+    $this->content = "<table class=\"".$this->myid."_table\" width=\"100%\"><tr class=\"".$this->myid."_tr\">";
 
 
-    $this->content .= "<td>";
-    $this->content .= "<input type=\"image\" ";
+    $this->content .= "<td class=\"".$this->myid."_td\">";
+    $this->content .= "<input class=\"".$this->myid."_input_MainPower\" type=\"image\" ";
     $this->content .= "src=\"icons/mainpower.png\" ";
     $this->content .= "name=\"".$this->myid."_mp_img\"";
     $this->content .= "id=\"".$this->myid."_mp_img\"";
@@ -126,8 +126,8 @@ class c_irbeamer extends c_content{
     $this->content .= "</td> ";
 
 
-    $this->content .= "<td>";
-    $this->content .= "<input type=\"image\" ";
+    $this->content .= "<td class=\"".$this->myid."_td\">";
+    $this->content .= "<input class=\"".$this->myid."_input_suspend\" type=\"image\" ";
     $this->content .= "src=\"icons/suspend.png\" ";
     $this->content .= "name=\"".$this->myid."_suspend_img\"";
     $this->content .= "id=\"".$this->myid."_suspend_img\"";
@@ -136,8 +136,8 @@ class c_irbeamer extends c_content{
     $this->content .= "</td> ";
 
 
-    $this->content .= "<td>";
-    $this->content .= "<input type=\"image\" ";
+    $this->content .= "<td class=\"".$this->myid."_td\">";
+    $this->content .= "<input class=\"".$this->myid."_input_scan\" type=\"image\" ";
     $this->content .= "src=\"icons/scan.png\" ";
     $this->content .= "name=\"".$this->myid."_scan_img\"";
     $this->content .= "id=\"".$this->myid."_scan_img\"";
@@ -146,8 +146,8 @@ class c_irbeamer extends c_content{
     $this->content .= "</td> ";
 
 
-    $this->content .= "<td>";
-    $this->content .= "<input type=\"image\" ";
+    $this->content .= "<td class=\"".$this->myid."_td\">";
+    $this->content .= "<input class=\"".$this->myid."_input_blank\" type=\"image\" ";
     $this->content .= "src=\"icons/blank.png\" ";
     $this->content .= "name=\"".$this->myid."_blank_img\"";
     $this->content .= "id=\"".$this->myid."_blank_img\"";
@@ -156,9 +156,9 @@ class c_irbeamer extends c_content{
     $this->content .= "</td></tr> ";
 
 
-
-    $this->content .= "<td>";
-    $this->content .= "<input type=\"image\" ";
+    $this->content .= "<tr class=\"".$this->myid."_tr\">";
+    $this->content .= "<td class=\"".$this->myid."_td\">";
+    $this->content .= "<input class=\"".$this->myid."_input_vga\" type=\"image\" ";
     $this->content .= "src=\"icons/vga.png\" ";
     $this->content .= "name=\"".$this->myid."_vga_img\"";
     $this->content .= "id=\"".$this->myid."_vga_img\"";
@@ -167,8 +167,8 @@ class c_irbeamer extends c_content{
     $this->content .= "</td> ";
 
 
-    $this->content .= "<td>";
-    $this->content .= "<input type=\"image\" ";
+    $this->content .= "<td class=\"".$this->myid."_td\">";
+    $this->content .= "<input class=\"".$this->myid."_input_dvi\" type=\"image\" ";
     $this->content .= "src=\"icons/dvi.png\" ";
     $this->content .= "name=\"".$this->myid."_dvi_img\"";
     $this->content .= "id=\"".$this->myid."_dvi_img\"";
@@ -176,8 +176,8 @@ class c_irbeamer extends c_content{
     $this->content .= "onmousedown=\"".$this->myid."down_dvi();\" >";
     $this->content .= "</td> ";
 
-    $this->content .= "<td>";
-    $this->content .= "<input type=\"image\" ";
+    $this->content .= "<td class=\"".$this->myid."_td\">";
+    $this->content .= "<input class=\"".$this->myid."_input_component\" type=\"image\" ";
     $this->content .= "src=\"icons/component.png\" ";
     $this->content .= "name=\"".$this->myid."_comp_img\"";
     $this->content .= "id=\"".$this->myid."_comp_img\"";
@@ -186,8 +186,8 @@ class c_irbeamer extends c_content{
     $this->content .= "</td> ";
 
 
-    $this->content .= "<td>";
-    $this->content .= "<input type=\"image\" ";
+    $this->content .= "<td class=\"".$this->myid."_td\">";
+    $this->content .= "<input class=\"".$this->myid."_input_svideo\" type=\"image\" ";
     $this->content .= "src=\"icons/svideo.png\" ";
     $this->content .= "name=\"".$this->myid."_svideo_img\"";
     $this->content .= "id=\"".$this->myid."_svideo_img\"";
@@ -307,6 +307,17 @@ class c_irbeamer extends c_content{
   }
 
   public function getcss(){
+    $this->cssstr = "";
+    $this->cssstr .= ".".$this->myid."_table\" {}\n";
+    $this->cssstr .= ".".$this->myid."_td\" {}\n";
+    $this->cssstr .= ".".$this->myid."_input_MainPower\" {}\n";
+    $this->cssstr .= ".".$this->myid."_input_suspend\" {}\n";
+    $this->cssstr .= ".".$this->myid."_input_scan\" {}\n";
+    $this->cssstr .= ".".$this->myid."_input_blank\" {}\n";
+    $this->cssstr .= ".".$this->myid."_input_vga\" {}\n";
+    $this->cssstr .= ".".$this->myid."_input_dvi\" {}\n";
+    $this->cssstr .= ".".$this->myid."_input_component\" {}\n";
+    $this->cssstr .= ".".$this->myid."_input_svideo\" {}\n";
     return $this->cssstr;
   }
   public function getjs(){
