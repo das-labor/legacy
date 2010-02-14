@@ -197,5 +197,5 @@ void calibrate_touch() {
 	g_draw_cross(p.x,p.y);
 */
 
-	test_touchscreen();
+	//test_touchscreen();
 }

@@ -1,6 +1,6 @@
 
 DEFS = -DF_CPU=16000000l
-OBJ = main.o dc_com.o touchscreen.o gui.o calibrate_touch.o
+OBJ = main.o dc_com.o touchscreen.o gui.o calibrate_touch.o can/spi.o can/can.o can_handler.o
 
 
 # Default values
