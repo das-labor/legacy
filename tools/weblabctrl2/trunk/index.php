@@ -10,6 +10,7 @@ echo "<html>
 
 <style type=\"text/css\">\n";
 
+
 echo "img#bg {\n";
 echo " position:fixed;\n";
 echo " top:0;\n";
@@ -40,7 +41,21 @@ echo $labstatus->getcss();
 
 echo "</style></head><body style=\"margin: 0px; padding: 0px; \">";
 
+
 echo "<img src=\"bg/".$defaults['backgroundimage'].".jpg\" alt=\"background image\" id=\"bg\" />";
+
+echo "<style type=\"text/css\">\n";
+echo "@font-face {\n";
+echo "  font-family: Kaffeesatz;\n";
+echo "  font-weight: normal;\n";
+echo " src: url(\"/weblabctrl2/fonts/ae_Kayrawan.ttf\");\n"; #
+echo "}\n";
+echo "div {\n";
+echo " font: normal Kaffeesatz;\n";
+echo "  text-shadow: 2px 2px 5px #008;\n";
+echo "  font-size: 11px;\n";
+echo "}\n";
+echo "</style>";
 
 
 echo $musik->getctx();

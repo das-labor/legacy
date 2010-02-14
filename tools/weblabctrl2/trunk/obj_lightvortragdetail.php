@@ -126,7 +126,7 @@ class c_lightvortragdetail extends c_content{
     $this->content .= "    <td>";
     
     $this->content .= "	 <div id=\"".$this->myid."_slider_t\" style=\"width:235px; height:15px; background-image:url(sliderbg.png); background-repeat:repeat-x; background-color: transparent;\" class=\"slider\">";
-    $this->content .= "   <div class=\"handle\" style=\"width:15px; background-image:url(icons/1up.png); background-repeat:no-repeat; background-color: transparent; \"></div>";
+    $this->content .= "   <div class=\"handle\" style=\"width:15px; background-image:url(icons/1up.png); background-repeat:no-repeat; background-color: transparent; \"></div><div style=\"position:relative; top:-15px; left:170px;\">Tafel</div>";
     $this->content .= "  </div>";
     
     $this->content .= "  </tr>";
@@ -148,7 +148,7 @@ class c_lightvortragdetail extends c_content{
     $this->content .= "    <td>";
     
     $this->content .= "	 <div id=\"".$this->myid."_slider_b\" style=\"width:235px; height:15px; background-image:url(sliderbg.png); background-repeat:repeat-x; background-color: transparent;\" class=\"slider\">";
-    $this->content .= "   <div class=\"handle\" style=\"width:15px; background-image:url(icons/1up.png); background-repeat:no-repeat; background-color: transparent; \"></div>";
+    $this->content .= "   <div class=\"handle\" style=\"width:15px; background-image:url(icons/1up.png); background-repeat:no-repeat; background-color: transparent; \"></div><div style=\"position:relative; top:-15px; left:170px;\">Beamer</div>";
     $this->content .= "  </div>";
     
     $this->content .= "  </tr>";
@@ -169,7 +169,7 @@ class c_lightvortragdetail extends c_content{
     $this->content .= "    <td>";
     
     $this->content .= "	 <div id=\"".$this->myid."_slider_s\" style=\"width:235px; height:15px; background-image:url(sliderbg.png); background-repeat:repeat-x; background-color: transparent;\" class=\"slider\">";
-    $this->content .= "   <div class=\"handle\" style=\"width:15px; background-image:url(icons/1up.png); background-repeat:no-repeat; background-color: transparent; \"></div>";
+    $this->content .= "   <div class=\"handle\" style=\"width:15px; background-image:url(icons/1up.png); background-repeat:no-repeat; background-color: transparent; \"></div><div style=\"position:relative; top:-15px; left:170px;\">Schrank</div>";
     $this->content .= "  </div>";
     
     $this->content .= "  </tr>";
@@ -190,7 +190,7 @@ class c_lightvortragdetail extends c_content{
     $this->content .= "    <td>";
     
     $this->content .= "	 <div id=\"".$this->myid."_slider_f\" style=\"width:235px; height:15px; background-image:url(sliderbg.png); background-repeat:repeat-x; background-color: transparent;\" class=\"slider\">";
-    $this->content .= "   <div class=\"handle\" style=\"width:15px; background-image:url(icons/1up.png); background-repeat:no-repeat; background-color: transparent; \"></div>";
+    $this->content .= "   <div class=\"handle\" style=\"width:15px; background-image:url(icons/1up.png); background-repeat:no-repeat; background-color: transparent; \"></div><div style=\"position:relative; top:-15px; left:170px;\">Flipper</div>";
     $this->content .= "  </div>";
     
     $this->content .= "  </tr>";
