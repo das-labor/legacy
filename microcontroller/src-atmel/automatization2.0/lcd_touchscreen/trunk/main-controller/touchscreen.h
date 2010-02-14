@@ -1,4 +1,5 @@
-
+#ifndef _H_TOUCHSCREEN
+#define _H_TOUCHSCREEN
 
 typedef struct {
 	int16_t x;
@@ -19,3 +20,5 @@ extern calibration_values_t calibration_values;
 void handle_touchscreen();
 pixel read_touch_raw();
 pixel read_touch_screen_coordinates();
+#endif // ifndef _H_TOUCHSCREEN
+
