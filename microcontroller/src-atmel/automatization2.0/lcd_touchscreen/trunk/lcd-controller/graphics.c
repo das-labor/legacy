@@ -31,7 +31,7 @@ font * draw_font = &font_uni53;
  */
 void g_draw_horizontal_line(unsigned short x, unsigned short y, unsigned short length) {
 	unsigned short i;
-	for (i = x; i <= x+length; i++)
+	for (i = x; i <= x + length; i++)
 		lcd_graphics_plot_pixel(i, y, draw_color);
 }
 

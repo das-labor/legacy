@@ -20,12 +20,10 @@ int main() {
 		for (yc = 0; yc < 240; yc += 64)
 			copy_logo(yc, xc);
 
-
 	sei();
 	
 	lcd_on();
 
-	
 	while (1) {
 		handle_com();
 	}
