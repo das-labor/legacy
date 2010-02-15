@@ -4,7 +4,12 @@
 
 #include "touchscreen.h"
 #include "dc_com.h"
+
+//define BIG DISPLAY in here
+#include "../include/personal_config.h"
+
 #include "config.h"
+
 
 uint8_t analog_reference = 1;
 
