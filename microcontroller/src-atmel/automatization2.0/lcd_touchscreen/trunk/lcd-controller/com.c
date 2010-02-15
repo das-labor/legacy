@@ -3,17 +3,8 @@
 #include "graphics.h"
 #include "draw_pixmap.h"
 #include "../include/dc_commands.h"
+#include "config.h"
 
-#define PIN_DATA        PINB
-#define DDR_DATA        DDRB
-#define PORT_DATA       PORTB
-
-#define PORT_HANDSHAKE  PORTD
-#define DDR_HANDSHAKE   DDRD
-#define PIN_HANDSHAKE   PIND
-
-#define BIT_ATN PD0
-#define BIT_ACK PD1
 
 #define ATN_PULL()    {PORT_HANDSHAKE &= ~_BV(BIT_ATN);DDR_HANDSHAKE |= _BV(BIT_ATN);}
 #define ATN_RELEASE() {DDR_HANDSHAKE &= ~_BV(BIT_ATN);PORT_HANDSHAKE |= _BV(BIT_ATN);}
@@ -27,7 +18,6 @@
 #define WAIT_ATN_LOW()     {while(PIN_HANDSHAKE & _BV(BIT_ATN));}
 #define WAIT_ATN_HIGH()    {while((PIN_HANDSHAKE & _BV(BIT_ATN))==0);}
 
-#define TEST_ATN()        (PIN_HANDSHAKE & _BV(BIT_ATN))
 
 void init_com() {
 	DDR_HANDSHAKE  &= ~(_BV(BIT_ATN)|_BV(BIT_ACK));
