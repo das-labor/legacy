@@ -74,11 +74,11 @@ eye_t eye6 = {pattern2,3,104,23};
 extern uint8_t hypnotoad_data[];
 extern volatile uint8_t display_line;
 
-void hypnotoad(){
-	g_copy_logo(hypnotoad_data, 30,195,hypnotoad_x/8,hypnotoad_y);
+void hypnotoad() {
+	g_copy_logo(hypnotoad_data, 30, 195, hypnotoad_x/8, hypnotoad_y);
 	
 	
-	while(1){
+	while (1) {
 		while(display_line != 40);
 		clear_eye(&eye1);
 		clear_eye(&eye2);
@@ -108,6 +108,5 @@ void hypnotoad(){
 	
 	//g_fill_circle(100, 100, 5);
 
-
-
 }
+
