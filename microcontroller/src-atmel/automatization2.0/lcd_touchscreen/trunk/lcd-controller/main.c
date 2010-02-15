@@ -5,6 +5,7 @@
 #include "com.h"
 #include "lcd_hardware.h"
 #include "draw_pixmap.h"
+#include "hypnotoad.h"
 
 int main() {
 	init_com();
