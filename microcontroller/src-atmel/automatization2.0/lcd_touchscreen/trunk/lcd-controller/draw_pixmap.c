@@ -38,17 +38,19 @@ void g_clear_screen(void) {
 extern uint8_t laborlogo[];
 
 
-void copy_logo(uint8_t yc, uint8_t xc) {
-	uint8_t x, y;
+
+
+void g_copy_logo(void * logo, uint8_t x_bytes, uint8_t y_size, uint16_t xc, uint16_t yc){
+	uint8_t x,y;
 	
-	for (y = 0; y < 64; y++) {
-		for (x = 0; x < 8; x++) {
+	for(y=0;y<y_size;y++){
+		for(x=0;x<x_bytes;x++){
 #     if INTERFACE_BITS==4
-			pixmap[(X_SIZE / INTERFACE_BITS) * (y + yc) + (x + xc) * (8 / INTERFACE_BITS)] = pgm_read_byte(laborlogo + y * 8 + x) << 4;
-			pixmap[(X_SIZE / INTERFACE_BITS) * (y + yc) + (x + xc) * (8 / INTERFACE_BITS) + 1] = pgm_read_byte(laborlogo + y * 8 + x);
+			pixmap[(X_SIZE/INTERFACE_BITS)*(y+yc) + (x+xc)*(8/INTERFACE_BITS)] = pgm_read_byte(logo)<<4;
+			pixmap[(X_SIZE/INTERFACE_BITS)*(y+yc) + (x+xc)*(8/INTERFACE_BITS) + 1] = pgm_read_byte(logo++);
 #     endif
 #     if INTERFACE_BITS==8
-			pixmap[(X_SIZE / INTERFACE_BITS) * (y + yc) + (x + xc) * (8 / INTERFACE_BITS)] = pgm_read_byte(laborlogo + y * 8 + x);
+			pixmap[(X_SIZE/INTERFACE_BITS)*(y+yc) + (x+xc)*(8/INTERFACE_BITS)] = pgm_read_byte(logo++);
 #     endif
 		}
 	}
