@@ -3,6 +3,7 @@
 #include "graphics.h"
 #include "draw_pixmap.h"
 #include "util/delay.h"
+#include "config.h"
 
 
 
@@ -101,6 +102,7 @@ void hypnotoad(){
 
 		_delay_ms(100);
 
+		if(TEST_ATN() == 0)break;
 
 	}
 	
