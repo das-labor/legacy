@@ -4,6 +4,7 @@
 
 #include "touchscreen.h"
 #include "dc_com.h"
+#include "config.h"
 
 uint8_t analog_reference = 1;
 
@@ -31,31 +32,6 @@ int analogRead(uint8_t pin)
 }
 
 
-
-//#define BIG_DISPLAY
-
-#define PORT_TOUCH PORTF
-#define DDR_TOUCH DDRF
-
-#ifdef BIG_DISPLAY
-	#define MSK_YL  _BV(PF3)
-	#define MSK_XH  _BV(PF2)
-	#define MSK_YH  _BV(PF1)
-	#define MSK_XL  _BV(PF0)
-	
-	#define TOUCH_Y_CHANNEL PF1 //Must be YH pin
-	#define TOUCH_X_CHANNEL PF2 //Must be XH pin
-#else
-	#define MSK_YL  _BV(PF0)
-	#define MSK_XH  _BV(PF1)
-	#define MSK_YH  _BV(PF2)
-	#define MSK_XL  _BV(PF3)
-	
-	#define TOUCH_Y_CHANNEL PF2
-	#define TOUCH_X_CHANNEL PF1
-#endif
-
-
 #define TOUCH_OFF_MSK (~(MSK_YH|MSK_YL|MSK_XH|MSK_XL))
 
 #define TOUCH_CLEAR_PORT() {PORT_TOUCH  &= TOUCH_OFF_MSK;}
@@ -68,7 +44,7 @@ int analogRead(uint8_t pin)
 #define TOUCH_SET_PORT_TO_READ_X()        {PORT_TOUCH |= MSK_XH;}
 
 
-uint8_t sqrt_table[] = {0,10,14,17,20,22,24,26,28,30,32,33};
+uint8_t sqrt_table[] = {0, 10, 14, 17, 20, 22, 24, 26, 28, 30, 32, 33};
 
 uint16_t my_sqrt(uint16_t d) {
 	if (d <= 11) {
@@ -130,9 +106,9 @@ uint16_t read_filtered(uint8_t channel) {
 	/*
 	uint16_t min_variance_guess;
 	uint16_t guess;
-	for(guess=min;guess<=max;guess++){
-		uint32_t var = variance(guess,readings,FILTER);
-		if(var < min_variance){
+	for (guess = min; guess <= max; guess++) {
+		uint32_t var = variance(guess, readings, FILTER);
+		if (var < min_variance) {
 			min_variance = var;
 			min_variance_guess = guess;
 		}
@@ -159,7 +135,7 @@ pixel read_touch_raw() {
 	
 	_delay_us(100);
 	
-	if(analogRead(TOUCH_Y_CHANNEL) > TOUCH_THRESHOLD) {
+	if (analogRead(TOUCH_Y_CHANNEL) > TOUCH_THRESHOLD) {
 		p.x = -1;
 		p.y = -1;
 		return p;

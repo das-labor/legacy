@@ -41,14 +41,16 @@ int main (void)
 
 	g_clear_screen();
 	
-	calibrate_touch();
+
+	if (read_calibration_data_from_eeprom())
+		calibrate_touch();
 	
 	can_setled(0, 1);
-//	menu_test();
+	menu_test();
 	
 	while (1) {
 
-		//handle_touchscreen();
+		handle_touchscreen();
 		can_handler();
 	}
 	return 0;
