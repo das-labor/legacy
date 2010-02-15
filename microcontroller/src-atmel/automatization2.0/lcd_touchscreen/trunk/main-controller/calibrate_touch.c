@@ -1,11 +1,12 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <avr/eeprom.h>
 
 #include "calibrate_touch.h"
 #include "touchscreen.h"
 #include "dc_com.h"
 
-
+#define EEPROM_TOUCHCAL_DATA_OFFSET 1
 
 pixel read_mean() {
 	pixel p;
@@ -152,6 +153,7 @@ void draw_crosses() {
 	}
 }
 
+
 void calibrate_touch() {
 	g_clear_screen();
 
@@ -183,6 +185,10 @@ void calibrate_touch() {
 	calibration_values.yz = yz;
 	calibration_values.yg = yg;
 	
+	eeprom_write_block(&calibration_values,
+		           (void *)EEPROM_TOUCHCAL_DATA_OFFSET,
+		           sizeof(calibration_values_t));
+	
 	char textbuf[100];
 	sprintf(textbuf,"xg:%d  xz:%d", xg, xz);
 	g_draw_string_in_rect(&(rectangle_t){200,200,100,100}, textbuf);
@@ -199,3 +205,15 @@ void calibrate_touch() {
 
 	//test_touchscreen();
 }
+
+uint8_t read_calibration_data_from_eeprom() {
+	eeprom_read_block(&calibration_values,
+			  (void *)EEPROM_TOUCHCAL_DATA_OFFSET,
+			  sizeof(calibration_values_t));
+	if (calibration_values.xz == 0xff && calibration_values.xg == 0xff
+	     && calibration_values.yz == 0xff && calibration_values.yg == 0xff)
+		return 1;
+	else
+		return 0;
+}
+
