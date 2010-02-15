@@ -1,4 +1,5 @@
-
+#ifndef _H_DC_COMMANDS
+#define _H_DC_COMMANDS
 
 #define PIXEL_OFF 0
 #define PIXEL_ON 1
@@ -11,6 +12,5 @@
 #define DC_DRAW_STRING_IN_RECT             0x06 //(rectangle_t + string)
 #define DC_DRAW_STRING_IN_RECT_VERT        0x07 //(rectangle_t + string)
 
-
-
+#endif // _H_DC_COMMANDS
 

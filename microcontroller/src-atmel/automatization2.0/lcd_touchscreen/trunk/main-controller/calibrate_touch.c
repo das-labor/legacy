@@ -155,7 +155,7 @@ void draw_crosses() {
 
 
 void calibrate_touch() {
-	g_clear_screen();
+	//g_clear_screen();
 
 	draw_crosses();
 	
@@ -186,7 +186,7 @@ void calibrate_touch() {
 	calibration_values.yg = yg;
 	
 	eeprom_write_block(&calibration_values,
-		           (void *)EEPROM_TOUCHCAL_DATA_OFFSET,
+			  (void *)EEPROM_TOUCHCAL_DATA_OFFSET,
 		           sizeof(calibration_values_t));
 	
 	char textbuf[100];
@@ -208,10 +208,10 @@ void calibrate_touch() {
 
 uint8_t read_calibration_data_from_eeprom() {
 	eeprom_read_block(&calibration_values,
-			  (void *)EEPROM_TOUCHCAL_DATA_OFFSET,
+			  (void *)EEPROM_TOUCHCAL_DATA_OFFSET, 
 			  sizeof(calibration_values_t));
-	if (calibration_values.xz == 0xff && calibration_values.xg == 0xff
-	     && calibration_values.yz == 0xff && calibration_values.yg == 0xff)
+	if (calibration_values.xz == 0xffff && calibration_values.xg == 0xffff
+	     && calibration_values.yz == 0xffff && calibration_values.yg == 0xffff)
 		return 1;
 	else
 		return 0;

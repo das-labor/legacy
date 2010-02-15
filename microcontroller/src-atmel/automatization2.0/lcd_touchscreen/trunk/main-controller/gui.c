@@ -206,9 +206,9 @@ void setup_menu(menu_item_t * m[]) {
 			} else {
 				akt_menu[i].y = (i % 2) * 30 + 10;
 				akt_menu[i].x = (i / 2) * 32 + 16;
-				akt_menu[i+1].item = item;
-				akt_menu[i+1].y = (i % 2) * 30 + 10;
-				akt_menu[i+1].x = (i / 2) * 32 + 16;
+				akt_menu[i + 1].item = item;
+				akt_menu[i + 1].y = (i % 2) * 30 + 10;
+				akt_menu[i + 1].x = (i / 2) * 32 + 16;
 				i++;
 				j++;
 			}
