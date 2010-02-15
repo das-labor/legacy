@@ -5,20 +5,31 @@
 #include "dc_com.h"
 
 #define TYPE_BUTTON 1 
-#define TYPE_SLIDER 2 
+#define TYPE_SLIDER 2
+
+/*
+ * Quick hack to enable light switching!
+ * Better use message queue or something alike to schedule can packets...
+ */
+void self_destruct(void* self, uint16_t x, uint16_t y);
+void self_slider(void* self, uint16_t x, uint16_t y);
+#include "can/can.h"
+#include "can/lap.h"
+
 
 typedef struct {
 	uint8_t type;
 	uint8_t redraw;
-	//void * self;
+	void(*touched)(void* self, uint16_t x, uint16_t y);
 	
+	//void * self;
 	//void(*touched)(void* self, uint16_t x, uint16_t y);
 	//void(*draw)(void* self, uint16_t x, uint16_t y);
 } menu_item_t;
 
 
 typedef struct {
-	menu_item_t * item;
+	menu_item_t *item;
 	uint16_t x;
 	uint16_t y;
 } menu_entry_t;
@@ -26,14 +37,16 @@ typedef struct {
 typedef struct {
 	uint8_t type;
 	uint8_t redraw;
-	char * text;
+	void(*touched)(void* self, uint16_t x, uint16_t y);
+	char *text;
 	uint8_t state;
 } button_t;
 
 typedef struct {
 	uint8_t type;
 	uint8_t redraw;
-	char * text;
+	void(*touched)(void* self, uint16_t x, uint16_t y);
+	char *text;
 	uint8_t value;
 } slider_t;
 
@@ -41,6 +54,7 @@ typedef struct {
 slider_t test_slider1 = {
 	TYPE_SLIDER,
 	0,
+	self_slider,
 	"Licht Raum 5",
 	30
 };
@@ -49,12 +63,14 @@ slider_t test_slider1 = {
 button_t test_button1 = {
 	TYPE_BUTTON,
 	0,
+	0,
 	"Licht Raum 5",
 	0
 };
 
 button_t test_button2={
 	TYPE_BUTTON,
+	0,
 	0,
 	"Licht Raum 2",
 	0
@@ -63,12 +79,14 @@ button_t test_button2={
 button_t test_button3={
 	TYPE_BUTTON,
 	0,
+	0,
 	"Protonenbeschleuniger",
 	0
 };
 
 button_t test_button4={
 	TYPE_BUTTON,
+	0,
 	0,
 	"Reaktor Dampf",
 	0
@@ -77,12 +95,14 @@ button_t test_button4={
 button_t test_button5={
 	TYPE_BUTTON,
 	0,
+	self_destruct,
 	"Selbstzerstörung",
 	0
 };
 
 button_t test_button6={
 	TYPE_BUTTON,
+	0,
 	0,
 	"Test Button",
 	0
@@ -91,12 +111,14 @@ button_t test_button6={
 button_t test_button7={
 	TYPE_BUTTON,
 	0,
+	0,
 	"foo",
 	0
 };
 
 button_t test_button8={
 	TYPE_BUTTON,
+	0,
 	0,
 	"Sinnlos",
 	0
@@ -121,22 +143,51 @@ menu_item_t * main_menu[] = {
 	0
 };
 
-void draw_slider(slider_t * self, uint16_t x, uint16_t y) {
-	rectangle_t r = {x, y, 30, 58};
+
+void self_destruct(void* self, uint16_t x, uint16_t y) {
+	static can_message msg = {0, 0, 1, 1, 4, {0,0,0,0}};
+	
+	msg.addr_src = 0xd0;
+	msg.addr_dst = 0x02;
+	msg.data[0] = 0;
+	msg.data[1] = 2;
+	msg.data[2] = ((button_t *)self)->state;
+	msg.data[3] = 0;
+	can_transmit(&msg);
+}
+
+
+void self_slider(void* self, uint16_t x, uint16_t y) {
+	static can_message msg = {0, 0, 1, 1, 4, {0,0,0,0}};
+	uint16_t v = ((slider_t *)self)->value;
+	v *= 255;
+	v /= 112;
+	
+	msg.addr_src = 0xd0;
+	msg.addr_dst = 0x02;
+	msg.data[0] = 2;
+	msg.data[1] = 2;
+	msg.data[2] = 0;
+	msg.data[3] = (uint8_t)(v&0xff);
+	can_transmit(&msg);
+}
+
+void draw_slider(slider_t *self, uint16_t x, uint16_t y) {
+	rectangle_t r = {x, y, 60, 116};
 	g_set_draw_color(PIXEL_ON);
 	g_draw_rectangle(&r);
 
 	uint8_t wert = self->value;
 
-	rectangle_t b = {x + 10, y + (57 - wert), 19, wert};
+	rectangle_t b = {x + 10, y + (115 - wert), 38, wert};
 	g_fill_rectangle(&b);
 
 	g_draw_string_in_rect_vert(&r, self->text);
 
 	b.y = y + 1;
-	b.h = (56 - wert);
+	b.h = (114 - wert);
 
-	if (b.h > 56)
+	if (b.h > 114)
 		b.h = 0;
 
 	g_set_draw_color(PIXEL_OFF);
@@ -148,8 +199,8 @@ void draw_slider(slider_t * self, uint16_t x, uint16_t y) {
 }
 
 
-void draw_button(button_t * self, uint16_t x, uint16_t y) {
-	rectangle_t r = { x, y, 30, 28};
+void draw_button(button_t *self, uint16_t x, uint16_t y) {
+	rectangle_t r = { x, y, 60, 56};
 
 	if (self->state) {
 		g_set_draw_color(PIXEL_ON);
@@ -168,12 +219,12 @@ void draw_button(button_t * self, uint16_t x, uint16_t y) {
 
 void button_touched(button_t * self, uint8_t click) {
 	if (click) {
-//		DDRA |= 0x08;
-//		PORTA &= ~0x08;
 		self->state ^= 1;
 		self->redraw = 1;
+		if (self->touched != 0) {
+			self->touched(self, click, 0);
+		}
 		_delay_ms(30);
-//		PORTA |= 0x08;
 	}
 }
 
@@ -181,11 +232,15 @@ void button_touched(button_t * self, uint8_t click) {
 void slider_touched(slider_t * self, uint16_t x, uint16_t y, uint8_t click) {
 	uint8_t oldvalue = self->value;
 	
-	if (y > 56) y = 56;
-	self->value = 56 - y;
+	if (y > 112) y = 112;
+	self->value = 112 - y;
 	
 	if (self->value != oldvalue) {
 		self->redraw = 1;
+		
+		if (self->touched != 0) {
+			self->touched(self, x, y);
+		}
 	}
 }
 
@@ -204,17 +259,17 @@ void setup_menu(menu_item_t * m[]) {
 			if ((i % 2) == 1) {
 				 continue;
 			} else {
-				akt_menu[i].y = (i % 2) * 30 + 10;
-				akt_menu[i].x = (i / 2) * 32 + 16;
+				akt_menu[i].y = (i % 2) * 60 + 10;
+				akt_menu[i].x = (i / 2) * 64 + 16;
 				akt_menu[i + 1].item = item;
-				akt_menu[i + 1].y = (i % 2) * 30 + 10;
-				akt_menu[i + 1].x = (i / 2) * 32 + 16;
+				akt_menu[i + 1].y = (i % 2) * 60 + 10;
+				akt_menu[i + 1].x = (i / 2) * 64 + 16;
 				i++;
 				j++;
 			}
 		} else {
-			akt_menu[i].y = (i % 2) * 30 + 10;
-			akt_menu[i].x = (i / 2) * 32 + 16;
+			akt_menu[i].y = (i % 2) * 60 + 10;
+			akt_menu[i].x = (i / 2) * 64 + 16;
 			j++;
 		}
 	}
@@ -246,10 +301,10 @@ void draw_menu(uint8_t force_draw) {
 void menu_handle_touch(uint16_t x, uint16_t y, uint8_t click) {
 	uint8_t i;
 	for (i = 0; i < 8; i++) {
-		uint16_t start_x = (i / 2) * 32 + 16;
-		uint16_t end_x   = (i / 2) * 32 + 16 + 30;
-		uint16_t start_y = (i % 2) * 30 + 10;
-		uint16_t end_y   = (i % 2) * 30 + 10 + 30;
+		uint16_t start_x = (i / 2) * 64 + 16;
+		uint16_t end_x   = (i / 2) * 64 + 16 + 60;
+		uint16_t start_y = (i % 2) * 64 + 10;
+		uint16_t end_y   = (i % 2) * 64 + 10 + 60;
 		
 		menu_item_t * item = akt_menu[i].item;
 		
