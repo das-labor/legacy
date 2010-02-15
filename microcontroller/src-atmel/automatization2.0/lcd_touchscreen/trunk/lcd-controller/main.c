@@ -14,17 +14,26 @@ int main() {
 
 	draw_color = PIXEL_ON;
 	
-	
+	/*
 	uint16_t xc = 0, yc = 0;
 	for (xc = 0; xc < 40; xc += 8)
 		for (yc = 0; yc < 240; yc += 64)
 			copy_logo(yc, xc);
+	*/
+	
+
 
 	sei();
 	
 	lcd_on();
 
-	while (1) {
+	hypnotoad();
+
+
+	while(1);
+
+	
+	while(1){
 		handle_com();
 	}
 }

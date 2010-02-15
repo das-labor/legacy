@@ -40,6 +40,8 @@ void g_fill_rectangle(rectangle_t * r);
 
 void g_draw_cross(uint16_t x, uint16_t y);
 
+void g_fill_circle(uint16_t x, uint16_t y, uint8_t r);
+
 #define PIXEL_ON 1
 #define PIXEL_OFF 0
 

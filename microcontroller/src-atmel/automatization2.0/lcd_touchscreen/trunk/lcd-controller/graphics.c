@@ -307,3 +307,26 @@ void g_draw_cross(uint16_t x, uint16_t y) {
 //	lcd_graphics_plot_pixel(x, y, draw_color);
 }
 
+void g_fill_circle(uint16_t x, uint16_t y, uint8_t r){
+	uint8_t xc,yc;
+	uint16_t r2 = r*r -r/2;
+	for(yc = 0;yc <=r;yc++){
+		for(xc = 0;xc <=yc;xc++){
+			if(((xc*xc)+(yc*yc)) <= r2){
+				lcd_graphics_plot_pixel(x+xc, y+yc, draw_color);
+				lcd_graphics_plot_pixel(x+yc, y+xc, draw_color);
+
+				lcd_graphics_plot_pixel(x+xc, y-yc, draw_color);
+				lcd_graphics_plot_pixel(x+yc, y-xc, draw_color);
+
+				lcd_graphics_plot_pixel(x-xc, y+yc, draw_color);
+				lcd_graphics_plot_pixel(x-yc, y+xc, draw_color);
+
+				lcd_graphics_plot_pixel(x-xc, y-yc, draw_color);
+				lcd_graphics_plot_pixel(x-yc, y-xc, draw_color);
+				
+			}
+		
+		}
+	}
+}
