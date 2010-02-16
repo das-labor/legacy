@@ -1,5 +1,5 @@
 LOBJ = zloader.o zImage.o
-ZOBJ = main.o spike_hw.o mmc.o ff.o
+ZOBJ = spike_hw.o main.o mmc.o ff.o 
 
 LM32_CC=lm32-elf-gcc
 LM32_LD=lm32-elf-ld
@@ -13,7 +13,9 @@ VRAMFILE=image.ram
 CPU_FLAGS=-mbarrel-shift-enabled -mmultiply-enabled -msign-extend-enabled \
           -mdivide-enabled
 
-CFLAGS=-MMD -Os -Wall -g -s -fomit-frame-pointer $(CPU_FLAGS)
+CFLAGSL=-MMD -Os -Wall -g -s -fomit-frame-pointer $(CPU_FLAGS)
+CFLAGSZ=-MMD -Os -Wall -g -s -fomit-frame-pointer $(CPU_FLAGS)
+
 LLDFLAGS=-nostdlib -nodefaultlibs -Tlinkerloader.ld 
 ZLDFLAGS=-nostdlib -nodefaultlibs -Tlinker.ld 
 SEGMENTS = -j .text -j .rodata -j .data -j .bss
@@ -23,13 +25,28 @@ all: $(VRAMFILE) image.bin
 crt0ram.o: crt0ram.S
 	$(LM32_CC) $(CFLAGS) -c crt0ram.S
 
-%.o: %.c
-	$(LM32_CC) $(CFLAGS) -c $<
+zloader.o: zloader.c
+	$(LM32_CC) $(CFLAGSL) -c $<
+
+zImage.o: zImage.c compress convert
+	$(LM32_CC) $(CFLAGSL) -c $<
+
+main.o: main.c
+	$(LM32_CC) $(CFLAGSZ) -c $<
+	
+spike_hw.o: spike_hw.c 
+	$(LM32_CC) $(CFLAGSZ) -c $<
+	
+mmc.o: mmc.c
+	$(LM32_CC) $(CFLAGSZ) -c $<
+	
+ff.o: ff.c
+	$(LM32_CC) $(CFLAGSZ) -c $<
 
 zImage.c: convert zimage.zbin
 	./convert
 
-zimage.zbin: zimage.bin compress zimage.lst
+zimage.zbin: compress zimage.bin zimage.lst
 	./compress e zimage.bin zimage.zbin
 
 convert: convert-pc.c zimage.bin
@@ -46,9 +63,11 @@ image.lst: image
 
 image.bin: image
 	$(LM32_OBJCOPY) $(SEGMENTS) -O binary image image.bin
-
+	wc -c image.bin
+	
 zimage: crt0ram.o $(ZOBJ)
 	$(LM32_LD) $(ZLDFLAGS) -Map zimage.map -N -o zimage crt0ram.o $(ZOBJ)
+	@lm32-elf-size zimage
 
 zimage.lst: zimage
 	$(LM32_OBJDUMP) -h -S $< > $@
