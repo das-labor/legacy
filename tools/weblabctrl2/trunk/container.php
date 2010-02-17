@@ -19,6 +19,7 @@ include "obj_musikbastel.php";
 include "obj_musiklounge.php";
 include "obj_musikkeller.php";
 include "obj_status.php";
+include "obj_speek.php";
 
 
 $objlist = array();
@@ -94,9 +95,10 @@ $ctrlelement_labstatus->setdisplayname("Temperaturen");
 array_push($objlist,$ctrlelement_labstatus);
 $encap_labstatus = new c_identifier($ctrlelement_labstatus);
 
-
-
-
+$ctrlelement_speach = new c_speek();
+$ctrlelement_speach->setdisplayname("Text To Speach");
+array_push($objlist,$ctrlelement_speach);
+$encap_speach = new c_identifier($ctrlelement_speach);
 
 
 $ctrlelement_musikvortrag2 = new c_musikvortrag();
@@ -271,6 +273,7 @@ $licht->addcontentOBJ($encap_lightvortragdetail2);
 $spielzeug->addcontentOBJ($encap_moodbar);
 $spielzeug->addcontentOBJ($encap_lsborg);
 $spielzeug->addcontentOBJ($encap_treppenblink);
+$spielzeug->addcontentOBJ($encap_speach);
 
 $weblabinterface->addcontentOBJ($encap_stylepannel);
 $weblabinterface->addcontentOBJ($encap_stylebg);
