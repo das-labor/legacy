@@ -178,9 +178,9 @@ class c_status extends c_content{
     $value2 = 0;
     $value3 = 0;
 
-     if((!isset($localstate["status_last"])) ||
-        (((int)$localstate["status_last"] + 100) < time()))
-       {
+    if((!isset($localstate["status_last"])) ||
+       (((int)$localstate["status_last"] + 100) < time()))
+      {
 
 	 $timeoutscript="./exec_timeout.sh 1 ";
 	 $syscommand = $timeoutscript." lapcontrol cantemp 0x25 0x01";
@@ -209,7 +209,7 @@ class c_status extends c_content{
 	 $localstate["status_temp2"] = $value2;
 	 $localstate["status_temp3"] = $value3;
 	 $localstate["status_last"]= time();
-       }
+      }
 
      if( !isset($localstate["status_temp1"]) || ($localstate["status_temp1"] < -128) || ($localstate["status_temp1"] > 127)) $value1='Fail';
      else  $value1 = $localstate["status_temp1"];
@@ -221,9 +221,9 @@ class c_status extends c_content{
      else  $value3 = $localstate["status_temp3"];
 
     
-     $updatejs .= $this->myid."setcputemp1(".$value1.");\n";
-     $updatejs .= $this->myid."setcputemp2(".$value2.");\n";
-     $updatejs .= $this->myid."setcputemp3(".$value3.");\n";
+     $updatejs .= $this->myid."setcputemp1(\"".$value1."\");\n";
+     $updatejs .= $this->myid."setcputemp2(\"".$value2."\");\n";
+     $updatejs .= $this->myid."setcputemp3(\"".$value3."\");\n";
 
      //     var_dump($localstate);
 
