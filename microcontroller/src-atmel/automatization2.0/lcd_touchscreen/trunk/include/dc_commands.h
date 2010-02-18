@@ -11,6 +11,8 @@
 #define DC_FILL_RECTANGLE                  0x05 //(rectangle_t)
 #define DC_DRAW_STRING_IN_RECT             0x06 //(rectangle_t + string)
 #define DC_DRAW_STRING_IN_RECT_VERT        0x07 //(rectangle_t + string)
+#define DC_DRAW_ICON                       0x08 //(x,y,size,icon_t)
+
 
 #endif // _H_DC_COMMANDS
 

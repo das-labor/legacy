@@ -1,6 +1,11 @@
+//
+// This file is part of the gui-library for microcontrollers 
+// by Peter Fuhrmann.
+//
 
 #include <stdint.h>
 #include <util/delay.h>
+#include "gui.h"
 #include "touchscreen.h"
 #include "dc_com.h"
 
@@ -332,6 +337,80 @@ void menu_test() {
 }
 
 
+
+
+
+
+
+
+
+
+extern icon_t room_icon;
+extern icon_t escape_icon;
+extern icon_t main_icon;
+
+gui_container_t * bar;
+
+void gui_test(){
+	bar = new_gui_container();
+	bar->box.w = 320;
+	bar->box.h = 30;
+	bar->frame_size = 0x80;
+	
+	gui_button_t * button = new_gui_button();
+	button->box.w = 32;
+	button->box.h = 30;
+	button->text = "esc";
+	button->icon = &escape_icon;
+	
+	
+	gui_container_add(bar, button);
+	
+	
+	
+	button = new_gui_button();
+	button->box.w = 32;
+	button->box.h = 30;
+	button->text = "room";
+	button->icon = &room_icon;
+
+	gui_container_add(bar, button);
+	
+	
+	button = new_gui_button();
+	button->box.w = 32;
+	button->box.h = 30;
+	button->text = "main";
+	button->icon = &main_icon;
+	
+	
+	gui_container_add(bar, button);
+	
+	
+	bar->draw(bar,0);
+
+
+	
+	//g_draw_icon(100,100, &room_icon);
+
+
+
+	//while(1);
+}
+
+
+
+void gui_handle_touch(uint16_t x, uint16_t y, uint8_t click){
+	touch_event_t t;
+	t.x = x;
+	t.y = y;
+	t.click = click;
+	bar->touch_handler(bar, t);
+}
+
+
+
+
 void handle_touchscreen() {
 	static uint16_t click_timer = 0;
   	static pixel p1 = {-1, -1};
@@ -343,11 +422,11 @@ void handle_touchscreen() {
 
 	if (p.x != -1 && p1.x == -1 && click_timer == 0) {
 		click = 1;
-		click_timer = 500;
+		click_timer = 20;
 	}
 
 	if (p.x != -1) {
-		menu_handle_touch(p.x, p.y, click);
+		gui_handle_touch(p.x, p.y, click);
 	}
 
 	if (click_timer > 0) {
@@ -359,3 +438,20 @@ void handle_touchscreen() {
 	p1 = p;
 }
 
+
+#define BUTTON_WIDTH 32
+
+const rectangle_t navigation_bar_rect = {0,0,320,30};
+
+void draw_navigation_bar(){
+	g_draw_rectangle(&navigation_bar_rect);
+	
+	uint8_t x;
+	for(x=0;x<3;x++){
+		
+	}
+	
+	
+	while(1);
+
+}

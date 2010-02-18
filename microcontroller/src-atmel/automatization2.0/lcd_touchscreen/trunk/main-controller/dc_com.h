@@ -1,15 +1,12 @@
 #ifndef _H_DC_COM
 #define _H_DC_COM
 
+#include "../include/dc_commands.h"
+#include "../include/icon.h"
+#include "rectangle.h"
+
+
 void init_dc_com();
-
-typedef struct{
-	uint16_t x;
-	uint16_t y;
-	uint16_t w;
-	uint16_t h;
-}rectangle_t;
-
 
 void g_draw_horizontal_line(unsigned short x, unsigned short y, unsigned short length);
 void g_draw_vertical_line(unsigned short x, unsigned short y, unsigned short length);
@@ -30,7 +27,10 @@ void g_draw_string_in_rect_vert(rectangle_t * r, const char *str);
 
 void g_draw_cross(uint16_t x, uint16_t y);
 
+void g_draw_icon(uint16_t x, uint16_t y, icon_t * i);
+
 #define PIXEL_ON 1
 #define PIXEL_OFF 0
-#endif // _H_DC_COM
+
+#endif // _H_DC_COM
 
