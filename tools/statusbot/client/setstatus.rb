@@ -20,7 +20,7 @@ require 'xmpp4r/roster/helper/roster'
 require 'xmpp4r/version/iq/version'
 require 'date'
 require 'ftools'
-require '/usr/local/status-client/config.rb'
+require './config.rb'
 
 def setup_connection
         # Mit Jabber-Server verbinden
@@ -87,7 +87,32 @@ def startup
 
 end
 
-startup()
-checkandsend()
-Thread.stop
-@client.close
+# So far we're been developing code in Pleasantville, a wonderful place where 
+# nothing ever, ever goes wrong. Every library call succeeds, users never enter 
+# incorrect data, and resources are plentiful and cheap. Well, that's about to 
+# change. Welcome to the real world!
+begin
+  # connect
+  startup()
+  # create initial message
+  @m = Jabber::Message.new(@statusdaemon, 'status=off').set_type(:chat).set_id('1') 
+  # try to send
+  @client.send(@m)
+  i=1
+  #enter endless loop since connect and send was fine
+  while i > 0 
+    begin
+      checkandsend()
+    rescue Exception
+      @client.close unless @client.nil? 
+    end
+    sleep(@interval)
+    startup()
+  end
+  # we failed on senderror or on connect
+rescue Exception
+  puts "fail"
+  @client.close unless @client.nil? 
+end
+# we should not reach this
+
