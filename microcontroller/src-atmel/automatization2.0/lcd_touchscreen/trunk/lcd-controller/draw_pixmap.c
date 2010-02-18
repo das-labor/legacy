@@ -2,6 +2,7 @@
 #include <avr/pgmspace.h>
 
 #include "lcd_hardware.h"
+#include "../include/icon.h"
 
 uint8_t lsl_table[] =  {(1<<0), (1<<1), (1<<2), (1<<3), (1<<4), (1<<5), (1<<6), (1<<7)};
 //uint8_t nlsl_table[] = {(uint8_t)~(1<<0),(uint8_t)~(1<<1),(uint8_t)~(1<<2),(uint8_t)~(1<<3),(uint8_t)~(1<<4),(uint8_t)~(1<<5),(uint8_t)~(1<<6),(uint8_t)~(1<<7)};
@@ -56,3 +57,31 @@ void g_copy_logo(void * logo, uint8_t x_bytes, uint8_t y_size, uint16_t xc, uint
 	}
 }
 
+extern uint8_t draw_color;
+void g_draw_icon(uint16_t x, uint16_t y, icon_t * i){
+	uint16_t w;
+	uint16_t h;
+	
+	uint16_t byte_cnt = 0;
+	uint8_t msk;
+	uint8_t d = 0;
+	
+	h = i->height;
+	while(h--){
+		uint16_t xi = x;
+		msk = 0x00;
+		w = i->width;
+		while(w--){
+			if(msk == 0x00){
+				d = i->data[byte_cnt++];
+				msk = 0x01;
+			}
+			if(d & msk){
+				lcd_graphics_plot_pixel(xi,y,draw_color);
+			}
+			xi++;
+			msk <<= 1;
+		}
+		y++;
+	}
+}

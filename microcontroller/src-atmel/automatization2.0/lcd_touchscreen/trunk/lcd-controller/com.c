@@ -115,6 +115,17 @@ void handle_com() {
 					g_draw_string_in_rect_vert(&r, buf);
 					break;
 				}		
+			case DC_DRAW_ICON:	
+				{
+					uint16_t x,y,size;
+					read_bytes(2, &x);
+					read_bytes(2, &y);
+					read_bytes(2, &size);
+					read_bytes(size, buf);
+					g_draw_icon(x, y, (icon_t*)buf);
+					
+				}
+				break;
 		}	
 	}
 }

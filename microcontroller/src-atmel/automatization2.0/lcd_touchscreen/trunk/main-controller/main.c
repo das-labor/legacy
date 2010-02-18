@@ -45,8 +45,14 @@ int main (void)
 	if (read_calibration_data_from_eeprom())
 		calibrate_touch();
 	
+	
 	can_setled(0, 1);
-	menu_test();
+	
+	//draw_navigation_bar();
+	gui_test();
+	//menu_test();
+
+	
 	
 	while (1) {
 

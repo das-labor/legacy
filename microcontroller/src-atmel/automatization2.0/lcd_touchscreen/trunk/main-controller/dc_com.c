@@ -43,15 +43,11 @@ void dc_byte_put(uint8_t b) {
 }
 
 
+
 void transmit_to_dc(uint8_t command, uint16_t size, void * data) {
 	uint16_t i;
 
 	dc_byte_put(command);
-
-	if (command >= 0x80) {
-		dc_byte_put(size);
-		dc_byte_put(size >> 8);
-	}
 
 	for (i = 0; i < size; i++) {
 		dc_byte_put(((uint8_t*)data)[i]);
@@ -59,7 +55,20 @@ void transmit_to_dc(uint8_t command, uint16_t size, void * data) {
 }
 
 
-void transmit_to_dc_raw(uint16_t size, void * data) {
+void transmit_to_dc_data(void * data, uint16_t size) {
+	uint16_t i;
+
+	dc_byte_put(size);
+	dc_byte_put(size >> 8);
+
+	for (i = 0; i < size; i++) {
+		dc_byte_put(((uint8_t*)data)[i]);
+	}
+}
+
+
+
+void transmit_to_dc_raw(void * data, uint16_t size) {
 	uint16_t i;
 	for (i = 0; i < size; i++) {
 		dc_byte_put(((uint8_t*)data)[i]);
@@ -111,7 +120,7 @@ void g_fill_rectangle(rectangle_t * r) {
 void g_draw_string_in_rect(rectangle_t * r, const char *str) {
 	dc_byte_put(DC_DRAW_STRING_IN_RECT);
 
-	transmit_to_dc_raw(8, r);
+	transmit_to_dc_raw(r, 8);
 	transmit_to_dc_string(str);
 }
 
@@ -119,6 +128,13 @@ void g_draw_string_in_rect(rectangle_t * r, const char *str) {
 void g_draw_string_in_rect_vert(rectangle_t * r, const char *str) {
 	dc_byte_put(DC_DRAW_STRING_IN_RECT_VERT);
 
-	transmit_to_dc_raw(8, r);
+	transmit_to_dc_raw(r, 8);
 	transmit_to_dc_string(str);
+}
+
+void g_draw_icon(uint16_t x, uint16_t y, icon_t * i) {	
+	dc_byte_put(DC_DRAW_ICON);
+	transmit_to_dc_raw(&x      , 2);
+	transmit_to_dc_raw(&y      , 2);
+	transmit_to_dc_data(i      , i->size);
 }

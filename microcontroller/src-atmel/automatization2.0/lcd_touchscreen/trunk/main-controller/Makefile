@@ -1,6 +1,6 @@
 
 DEFS = -DF_CPU=16000000l
-OBJ = main.o dc_com.o touchscreen.o gui.o calibrate_touch.o can/spi.o can/can.o can_handler.o
+OBJ = main.o dc_com.o touchscreen.o gui.o calibrate_touch.o can/spi.o can/can.o can_handler.o gui_container.o list.o icons/room_icon.o icons/main_icon.o icons/escape_icon.o rectangle.o gui_button.o
 
 
 # Default values
@@ -16,7 +16,7 @@ CANADDR       ?= XXX
 # External Tools
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
-FLASHCMD      ?= avrdude -c usbasp -p m128 -U flash:w:$(OUT).hex
+FLASHCMD      ?= avrdude -c usbasp -p m128 -V -U flash:w:$(OUT).hex
 RESETCMD      ?= avrdude -c usbasp -p m128
 LAPFLASHCMD   ?= lapcontrol -s rl
 

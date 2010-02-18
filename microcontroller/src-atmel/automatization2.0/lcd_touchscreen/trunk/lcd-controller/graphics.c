@@ -236,6 +236,30 @@ uint8_t char_width(char ch) {
 }
 
 
+void g_draw_string(unsigned short x, unsigned short y, const char *str) {
+		   char c;
+
+	text_x = x;
+	text_y = y;
+
+	while ((c = *str++)) {
+		g_draw_char(c);
+	}
+}
+
+void g_draw_string_n(unsigned short x, unsigned short y, const char *str, uint16_t strlen) {
+	char c;
+
+	text_x = x;
+	text_y = y;
+
+	while (((c = *str++)) && (strlen--)) {
+		g_draw_char(c);
+	}
+}
+
+
+/*
 void g_draw_string_in_rect(rectangle_t * r, const char *str) {
 	int16_t start_x = r->x + 2;
 	int16_t right_x = start_x + r->w - 4;
@@ -259,7 +283,60 @@ void g_draw_string_in_rect(rectangle_t * r, const char *str) {
 		text_y += draw_font->fontHeight;
 	} while(c);
 }
+*/
 
+void g_draw_string_in_rect(rectangle_t * r, const char *str) {
+	int16_t start_x = r->x + 2;
+	int16_t bottom_y = r->y + r->h - 2;
+	char c;
+	
+	text_y = r->y + 2;
+	
+	uint16_t rect_width = r->w -4;
+	
+	do {
+		if (text_y + draw_font->fontHeight > bottom_y) {
+			break;
+		}
+		const char * p = str;
+		const char * word_end = 0;
+		uint16_t width = 0;
+		uint16_t line_width = 0;
+		
+		while (1) {
+			c = *p;
+			if(c == ' '){
+				word_end = p;
+				line_width = width;
+			}
+			if(c == 0){
+				word_end = p;
+				line_width = width;
+				break;
+			}
+			
+			uint8_t cw = char_width(c);
+			if ((width + cw) > rect_width) {
+				break;
+			}
+			
+			width += cw;
+			p++;
+		}
+		
+		//if(word_end != 0){
+			uint16_t x_offset = (rect_width - line_width)/2;//center
+			g_draw_string_n(start_x + x_offset,text_y, str, word_end - str);
+
+			str = word_end + 1;
+		//}
+		
+		//g_draw_string();
+		//g_draw_char(c);
+
+		text_y += draw_font->fontHeight;
+	} while(c);
+}
 
 void g_draw_string_in_rect_vert(rectangle_t * r, const char *str) {
 	int16_t start_y = r->y + r->h - 2;
@@ -285,17 +362,6 @@ void g_draw_string_in_rect_vert(rectangle_t * r, const char *str) {
 	} while(c);
 }
 
-
-void g_draw_string(unsigned short x, unsigned short y, const char *str) {
-		   char c;
-
-	text_x = x;
-	text_y = y;
-
-	while ((c = *str++)) {
-		g_draw_char(c);
-	}
-}
 
 
 void g_draw_cross(uint16_t x, uint16_t y) {

@@ -16,6 +16,8 @@ CANADDR       ?= XXX
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
 FLASHCMD      ?= avrdude -c usbasp -p m162 -V -U flash:w:$(OUT).hex
+RESETCMD      ?= avrdude -c usbasp -p m128
+
 LAPFLASHCMD   ?= lapcontrol -s rl
 
 
@@ -36,6 +38,9 @@ clean:
 flash: $(OUT).hex
 	$(ERASECMD)
 	$(FLASHCMD)
+
+reset:
+	$(RESETCMD)
 
 canflash: $(OUT).hex
 	$(LAPFLASHCMD) flash $(CANADDR) $(OUT).hex

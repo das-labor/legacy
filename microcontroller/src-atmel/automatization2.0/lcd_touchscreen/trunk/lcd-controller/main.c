@@ -7,6 +7,10 @@
 #include "draw_pixmap.h"
 #include "hypnotoad.h"
 
+
+
+icon_t icon = {16, 16, 5,{0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,}};
+
 int main() {
 	init_com();
 	init_lcd_hardware();
@@ -22,12 +26,10 @@ int main() {
 			copy_logo(yc, xc);
 	*/
 	
-
-
 	sei();
 	
 	lcd_on();
-
+	
 	hypnotoad();
 
 	while(1){
