@@ -14,6 +14,10 @@ typedef struct {
 } list_t;
 
 void init_list(list_t * l);
+
+void delete_list(list_t * l);//destructor
+void uninit_list(list_t * l);//destructor
+
 list_t * new_list();
 void list_append(list_t * l, void * child) ;
 void list_foreach_begin(list_t * l);

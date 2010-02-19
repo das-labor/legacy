@@ -28,6 +28,8 @@ struct gui_element_t_s {
 	void(*draw)(gui_element_t * self, uint8_t redraw);
 	void(*set_on_screen)(gui_element_t *self, uint8_t state);
 	void(*touch_handler)(gui_element_t *self, touch_event_t t);
+	void(*update_position)(gui_element_t *self, int16_t x_diff, int16_t y_diff); //moves an element and all sub elements.
+	void(*delete)(gui_element_t *self); //not necessarily a destructor - it might only remove the object from the screen
 	rectangle_t box;//gui element sets height and width, container sets x and y.
 };
 
@@ -43,6 +45,8 @@ typedef struct {
 	void(*draw)(gui_element_t * self, uint8_t redraw);
 	void(*set_on_screen)(gui_element_t *self, uint8_t state);
 	void(*touch_handler)(gui_element_t *self, touch_event_t t);
+	void(*update_position)(gui_element_t *self, int16_t x_diff, int16_t y_diff); //moves an element and all sub elements.
+	void(*delete)(gui_element_t *self);
 	rectangle_t box;//gui element sets height and width, container sets x and y.
 
 	uint8_t on_screen;
@@ -58,6 +62,7 @@ typedef struct {
 
 gui_container_t * new_gui_container();  //constructor
 void gui_container_add (gui_container_t * c, gui_element_t * e);
+void gui_container_delete_all_childs (gui_container_t * self);
 void gui_container_draw (gui_element_t * self, uint8_t redraw);
 void gui_container_set_on_screen (gui_element_t *self, uint8_t state);
 void gui_container_touch_handler (gui_element_t *self, touch_event_t t);
@@ -70,6 +75,8 @@ typedef struct {
 	void(*draw)(gui_element_t * self, uint8_t redraw);
 	void(*set_on_screen)(gui_element_t *self, uint8_t state);
 	void(*touch_handler)(gui_element_t *self, touch_event_t t);
+	void(*update_position)(gui_element_t *self, int16_t x_diff, int16_t y_diff); //moves an element and all sub elements.
+	void(*delete)(gui_element_t *self);
 	rectangle_t box;//gui element sets height and width, container sets x and y.
 
 	char * text;

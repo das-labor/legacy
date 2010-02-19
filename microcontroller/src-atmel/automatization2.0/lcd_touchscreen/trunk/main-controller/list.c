@@ -15,6 +15,16 @@ void init_list(list_t * l){
 	l->num_childs = 0;
 }
 
+//destructors
+void uninit_list(list_t * l){
+	free(l->childs);
+}
+
+void delete_list (list_t * l) {
+	free(l->childs);
+	free(l);
+}
+
 list_t * new_list() {
 	list_t * l;
 	l = malloc(sizeof(list_t));
