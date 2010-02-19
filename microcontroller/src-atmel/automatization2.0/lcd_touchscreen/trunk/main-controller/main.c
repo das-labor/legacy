@@ -49,10 +49,10 @@ int main (void)
 	can_setled(0, 1);
 	
 	//draw_navigation_bar();
-	gui_test();
+	//gui_test();
 	//menu_test();
 
-	
+	init_menu();	
 	
 	while (1) {
 
