@@ -51,16 +51,16 @@ void lcd_on() {
 
 uint8_t display_line;
 
-ISR(TIMER0_COMP_vect){
+ISR(TIMER0_COMP_vect) {
 	volatile uint8_t* mempt;
 	
 	uint8_t cd;
 
-	mempt = &pixmap[display_line * (X_SIZE/INTERFACE_BITS) ];
+	mempt = &pixmap[display_line * (X_SIZE / INTERFACE_BITS)];
 
 	PORT_M ^= _BV(BIT_M);
 
-	if(display_line==1)	PORT_CONTROL |=  _BV(BIT_FLM);
+	if (display_line == 1)	PORT_CONTROL |=  _BV(BIT_FLM);
 
 	PORT_CONTROL |=  _BV(BIT_LP);
 	PORT_CONTROL &= ~_BV(BIT_LP);
@@ -78,5 +78,5 @@ ISR(TIMER0_COMP_vect){
 	}
 
 	display_line++;
-	if(display_line == Y_SIZE) display_line=0;	
+	if (display_line == Y_SIZE) display_line = 0;	
 }

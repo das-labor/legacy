@@ -32,7 +32,7 @@ int main() {
 	
 	hypnotoad();
 
-	while(1){
+	while (1) {
 		handle_com();
 	}
 }

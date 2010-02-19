@@ -16,10 +16,9 @@
 
 #define F_MCP F_CPU
 
+// Display config
 
-
-
-//#define BIG_DISPLAY
+// Touchscreen
 
 #define PORT_TOUCH PORTF
 #define DDR_TOUCH DDRF
@@ -44,10 +43,19 @@
 #endif
 
 
+// Display Controller Communication
+
+#define PORT_HANDSHAKE  PORTC
+#define DDR_HANDSHAKE   DDRC
+#define PIN_HANDSHAKE   PINC
+
+#define BIT_ATN PC7
+#define BIT_ACK PC6
 
 
 
-
+#define DDR_DC_DATA  DDRA
+#define PORT_DC_DATA PORTA
 
 
 #endif // ifndef _H_CONFIG

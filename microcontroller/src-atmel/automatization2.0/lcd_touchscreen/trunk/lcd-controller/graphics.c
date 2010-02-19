@@ -108,7 +108,7 @@ void g_draw_line(unsigned short x, unsigned short y, unsigned short x1, unsigned
  * @param width The width of the rectangle, in pixels.
  * @param height The height of the rectangle, in pixels.
  */ 
-void g_draw_rectangle(rectangle_t * r) {
+void g_draw_rectangle(rectangle_t *r) {
 	/* Adjust width and height because x and y coordinates start on 0,0 */
 	uint16_t width  = r->w - 1;
 	uint16_t height = r->h - 1;
@@ -122,7 +122,7 @@ void g_draw_rectangle(rectangle_t * r) {
 }
 
 
-void g_fill_rectangle(rectangle_t * r) {
+void g_fill_rectangle(rectangle_t *r) {
 	uint16_t x = r->x;
 	uint16_t y = r->y;
 	uint16_t w = r->w - 1;
@@ -338,7 +338,7 @@ void g_draw_string_in_rect(rectangle_t * r, const char *str) {
 	} while(c);
 }
 
-void g_draw_string_in_rect_vert(rectangle_t * r, const char *str) {
+void g_draw_string_in_rect_vert(rectangle_t *r, const char *str) {
 	int16_t start_y = r->y + r->h - 2;
 	int16_t right_y = r->y + 2;
 	int16_t bottom_x = r->x + r->w - 2;
@@ -373,12 +373,13 @@ void g_draw_cross(uint16_t x, uint16_t y) {
 //	lcd_graphics_plot_pixel(x, y, draw_color);
 }
 
-void g_fill_circle(uint16_t x, uint16_t y, uint8_t r){
-	uint8_t xc,yc;
+
+void g_fill_circle(uint16_t x, uint16_t y, uint8_t r) {
+	uint8_t xc, yc;
 	uint16_t r2 = r*r -r/2;
-	for(yc = 0;yc <=r;yc++){
-		for(xc = 0;xc <=yc;xc++){
-			if(((xc*xc)+(yc*yc)) <= r2){
+	for (yc = 0; yc <=r; yc++) {
+		for (xc = 0; xc <=yc; xc++) {
+			if (((xc * xc) + (yc * yc)) <= r2) {
 				lcd_graphics_plot_pixel(x+xc, y+yc, draw_color);
 				lcd_graphics_plot_pixel(x+yc, y+xc, draw_color);
 
@@ -390,7 +391,6 @@ void g_fill_circle(uint16_t x, uint16_t y, uint8_t r){
 
 				lcd_graphics_plot_pixel(x-xc, y-yc, draw_color);
 				lcd_graphics_plot_pixel(x-yc, y-xc, draw_color);
-				
 			}
 		
 		}

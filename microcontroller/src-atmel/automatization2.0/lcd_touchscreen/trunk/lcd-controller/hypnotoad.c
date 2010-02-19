@@ -7,12 +7,12 @@
 
 
 
-typedef struct{
-	uint8_t * pattern;
+typedef struct {
+	uint8_t *pattern;
 	uint8_t anim_step;
 	uint8_t x;
 	uint8_t y;
-}eye_t;
+} eye_t;
 
 
 
@@ -21,15 +21,15 @@ static uint16_t hypnotoad_x = 40;
 static uint16_t hypnotoad_y = 0;
 
 
-void clear_eye(eye_t * e){
+void clear_eye(eye_t *e) {
 	draw_color = 0;
-	g_fill_circle(e->x+hypnotoad_x,e->y+hypnotoad_y,6);
+	g_fill_circle(e->x + hypnotoad_x, e->y + hypnotoad_y, 6);
 }
 
-void animate_eye(eye_t * e){
+void animate_eye(eye_t *e) {
 	draw_color = 1;
 
-	switch(e->pattern[e->anim_step]){
+	switch(e->pattern[e->anim_step]) {
 		case 1:
 			e->y++;
 		case 0:
@@ -52,8 +52,9 @@ void animate_eye(eye_t * e){
 			break;
 	}
 	e->anim_step ++;
-	if(e->pattern[e->anim_step] == 8) e->anim_step = 0;
-	g_fill_circle(e->x+hypnotoad_x,e->y+hypnotoad_y,6);
+	if (e->pattern[e->anim_step] == 8)
+		e->anim_step = 0;
+	g_fill_circle(e->x + hypnotoad_x, e->y + hypnotoad_y, 6);
 	
 }
 
@@ -79,7 +80,7 @@ void hypnotoad() {
 	
 	
 	while (1) {
-		while(display_line != 40);
+		while (display_line != 40);
 		clear_eye(&eye1);
 		clear_eye(&eye2);
 		clear_eye(&eye3);
@@ -88,7 +89,7 @@ void hypnotoad() {
 		animate_eye(&eye2);
 		animate_eye(&eye3);
 		
-		while(display_line != 40);
+		while (display_line != 40);
 		clear_eye(&eye4);
 		clear_eye(&eye5);
 		clear_eye(&eye6);
@@ -102,7 +103,8 @@ void hypnotoad() {
 
 		_delay_ms(100);
 
-		if(TEST_ATN() == 0)break;
+		if (TEST_ATN() == 0)
+			break;
 
 	}
 	
