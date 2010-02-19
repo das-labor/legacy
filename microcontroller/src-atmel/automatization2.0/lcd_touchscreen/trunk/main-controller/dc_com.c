@@ -2,15 +2,9 @@
 
 #include "dc_com.h"
 #include "../include/dc_commands.h"
+#include "config.h"
 
 
-#define PORT_HANDSHAKE  PORTC
-#define DDR_HANDSHAKE   DDRC
-#define PIN_HANDSHAKE   PINC
-
-
-#define BIT_ATN PC7
-#define BIT_ACK PC6
 
 #define ATN_PULL()    {PORT_HANDSHAKE &= ~_BV(BIT_ATN);DDR_HANDSHAKE |= _BV(BIT_ATN);}
 #define ATN_RELEASE() {DDR_HANDSHAKE &= ~_BV(BIT_ATN);PORT_HANDSHAKE |= _BV(BIT_ATN);}
@@ -18,22 +12,22 @@
 #define ACK_PULL()    {PORT_HANDSHAKE &= ~_BV(BIT_ACK);DDR_HANDSHAKE |= _BV(BIT_ACK);}
 #define ACK_RELEASE() {DDR_HANDSHAKE &= ~_BV(BIT_ACK);PORT_HANDSHAKE |= _BV(BIT_ACK);}
 
-#define WAIT_ACK_LOW()     {while(PIN_HANDSHAKE & _BV(BIT_ACK));}
-#define WAIT_ACK_HIGH()    {while((PIN_HANDSHAKE & _BV(BIT_ACK))==0);}
+#define WAIT_ACK_LOW()     {while (PIN_HANDSHAKE & _BV(BIT_ACK));}
+#define WAIT_ACK_HIGH()    {while ((PIN_HANDSHAKE & _BV(BIT_ACK)) == 0);}
 
-#define WAIT_ATN_LOW()     {while(PIN_HANDSHAKE & _BV(BIT_ATN));}
-#define WAIT_ATN_HIGH()    {while((PIN_HANDSHAKE & _BV(BIT_ATN))==0);}
+#define WAIT_ATN_LOW()     {while (PIN_HANDSHAKE & _BV(BIT_ATN));}
+#define WAIT_ATN_HIGH()    {while ((PIN_HANDSHAKE & _BV(BIT_ATN)) == 0);}
 
 
 void init_dc_com() {
-	DDR_HANDSHAKE  &= ~(_BV(BIT_ATN)|_BV(BIT_ACK));
-	PORT_HANDSHAKE |=  (_BV(BIT_ATN)|_BV(BIT_ACK));
+	DDR_HANDSHAKE  &= ~(_BV(BIT_ATN) | _BV(BIT_ACK));
+	PORT_HANDSHAKE |=  (_BV(BIT_ATN) | _BV(BIT_ACK));
+	DDR_DC_DATA = 0xff;
 }
 
 
 void dc_byte_put(uint8_t b) {
-	DDRA = 0xff;
-	PORTA = b;
+	PORT_DC_DATA = b;
 
 	WAIT_ATN_HIGH();
 	ATN_PULL();
@@ -44,7 +38,7 @@ void dc_byte_put(uint8_t b) {
 
 
 
-void transmit_to_dc(uint8_t command, uint16_t size, void * data) {
+void transmit_to_dc(uint8_t command, uint16_t size, void *data) {
 	uint16_t i;
 
 	dc_byte_put(command);
@@ -68,7 +62,7 @@ void transmit_to_dc_data(void * data, uint16_t size) {
 
 
 
-void transmit_to_dc_raw(void * data, uint16_t size) {
+void transmit_to_dc_raw(void *data, uint16_t size) {
 	uint16_t i;
 	for (i = 0; i < size; i++) {
 		dc_byte_put(((uint8_t*)data)[i]);
@@ -76,7 +70,7 @@ void transmit_to_dc_raw(void * data, uint16_t size) {
 }
 
 
-void transmit_to_dc_string(const char * data) {
+void transmit_to_dc_string(const char *data) {
 	char c;
 	do {
 		c = *data++;
@@ -107,17 +101,17 @@ void g_clear_screen() {
 }
 
 
-void g_draw_rectangle(rectangle_t * r) {
+void g_draw_rectangle(rectangle_t *r) {
 	transmit_to_dc(DC_DRAW_RECTANGLE, 8, r);
 }
 
 
-void g_fill_rectangle(rectangle_t * r) {
+void g_fill_rectangle(rectangle_t *r) {
 	transmit_to_dc(DC_FILL_RECTANGLE, 8, r);
 }
 
 
-void g_draw_string_in_rect(rectangle_t * r, const char *str) {
+void g_draw_string_in_rect(rectangle_t *r, const char *str) {
 	dc_byte_put(DC_DRAW_STRING_IN_RECT);
 
 	transmit_to_dc_raw(r, 8);
@@ -125,7 +119,7 @@ void g_draw_string_in_rect(rectangle_t * r, const char *str) {
 }
 
 
-void g_draw_string_in_rect_vert(rectangle_t * r, const char *str) {
+void g_draw_string_in_rect_vert(rectangle_t *r, const char *str) {
 	dc_byte_put(DC_DRAW_STRING_IN_RECT_VERT);
 
 	transmit_to_dc_raw(r, 8);
