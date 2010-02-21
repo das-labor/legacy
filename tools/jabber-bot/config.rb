@@ -7,7 +7,7 @@
 @interval=30    # keep-alive interval
 @account = 'terminbot@das-labor.org/LABOR-Termine'  # the bots account / resource
 @remaccount = 'terminbot@das-labor.org/Reminder'  # the bots account / reminder reesource
-@password = 'foobar123'  # password (ah, no! just kidding! password must have a different meaning)
+@password = 'foobar321'  # password (ah, no! just kidding! password must have a different meaning)
 @status = 'waiting for your requests'   # the bots status message
 @remstatus = 'on reminding duty'	# the bots status message when reminding
 
