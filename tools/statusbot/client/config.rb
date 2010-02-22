@@ -8,6 +8,6 @@
 
 @interval = 60
 @statusdaemon = 'statusdaemon@das-labor.org'	# where to send status messages
-@checkhost = "10.0.1.3"
+@checkerscript = "/etc/statusclient/status.sh"
 ######################################
 
