@@ -34,10 +34,10 @@ def connect
 end
 
 def pingtest
-	if @debug == 1
-	        puts("ping -c 2 "+@checkhost+" > /dev/null")
-	end
-        system("ping -c 2 "+@checkhost+" > /dev/null")
+        if @debug == 1
+                puts("ping -c 2 "+@checkhost+" > /dev/null")
+        end
+        system(@checkerscript+" > /dev/null")
         if $? == 0 then
                 return true
         else
