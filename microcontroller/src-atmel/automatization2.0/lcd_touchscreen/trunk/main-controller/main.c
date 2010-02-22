@@ -52,7 +52,7 @@ int main (void)
 	//gui_test();
 	//menu_test();
 
-	init_menu();	
+	init_main_window();	
 	
 	while (1) {
 
