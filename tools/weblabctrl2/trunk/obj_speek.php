@@ -20,6 +20,14 @@ class c_speek extends c_content{
     $this->setfile = "";
     $this->setfilecmd = "";
     $this->validmodes=array("text");
+    $this->validvoices=array("cmu_us_bdl_arctic_clunits","cmu_us_clb_arctic_clunits",
+			     "cmu_us_jmk_arctic_clunits","cmu_us_slt_arctic_clunits",
+			     "cmu_us_rms_arctic_clunits","us1_mbrola","don_diphone",
+			     "kal_diphone","ked_diphone","rab_diphone","us2_mbrola",
+			     "us3_mbrola","el_diphone","nitech_us_awb_arctic_hts",
+			     "nitech_us_bdl_arctic_hts","nitech_us_clb_arctic_hts",
+			     "nitech_us_jmk_arctic_hts","nitech_us_rms_arctic_hts",
+			     "nitech_us_slt_arctic_hts");
     $this->initENV();
     # nothing
   }
@@ -32,6 +40,12 @@ class c_speek extends c_content{
   {
     if(in_array($mode,$this->validmodes)) return $mode;
     return "hacker";
+  }
+
+  public function isvalidvoice($mode)
+  {
+    if(in_array($mode,$this->validvoices)) return $mode;
+    return "us1_mbrola";
   }
 
   protected function initENV()
@@ -100,13 +114,24 @@ class c_speek extends c_content{
 
   protected function initContent()
   {
-    $this->content = "<table width=\"100%\"><tr>";
+    $this->content = "";
+    $this->content .= "<table width=\"100%\"><tr>";
 
-    $this->content .= "<td colspan=\"3\">";
-    $this->content .= "<input type=\"text\"  onchange=\"".$this->myid."_cmd(this.value,'text');this.value='';\" value=\"\">";
+    $this->content .= "<td colspan=\"4\">";
+    $this->content .= "<input type=\"text\"  onchange=\"".$this->myid."_cmd(this.value,'text',".$this->myid."_voiceselected);this.value='';\" value=\"\">";
     $this->content .= "</td>";
+    $this->content .= "</tr>";
 
-    $this->content .= "</tr></table>";
+    $this->content .= "<tr colspan=4>";
+    $this->content .= "<td>";
+    foreach($this->validvoices as $voice){
+      $this->content .= "<input type=\"radio\" name=\"".$this->myid."_voice_radio\" onclick=\"".$this->myid."_voiceselected='".$voice."'\">";
+    }
+
+    $this->content .= "</td>";
+    $this->content .= "</tr>";
+
+    $this->content .= "</table>";
   }
 
   protected function initCSS()
@@ -117,10 +142,11 @@ class c_speek extends c_content{
   protected function initJS()
   {
     $this->jsstr = "";
-
-    $this->jsstr .= "\nfunction ".$this->myid."_cmd(value,funct)\n";
+    
+    $this->jsstr .= $this->myid."_voiceselected='".$this->validvoices[0]."'";
+    $this->jsstr .= "\nfunction ".$this->myid."_cmd(value,funct,myvoice)\n";
     $this->jsstr .= "{\n";
-    $this->jsstr .= "    new Ajax.Updater('ajax', '".$this->actorfile."?doit=1&function='+funct+'&value='+value,{method:'get', onComplete:function() {done=true;}} );\n";
+    $this->jsstr .= "    new Ajax.Updater('ajax', '".$this->actorfile."?doit=1&voice='+myvoice+'&function='+funct+'&value='+value,{method:'get', onComplete:function() {done=true;}} );\n";
     $this->jsstr .= "}\n";
 
   }
