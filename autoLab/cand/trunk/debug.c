@@ -36,7 +36,7 @@ void debug_perror( int level, char *format, ... )
 		fprintf(stderr, "ERROR: ");
 
         //debug
-        fprintf(stderr, "1: %u\n", ap);
+        fprintf(stderr, "1: %i\n", level);
         fprintf(stderr, "2: %u, %s\n", format, format);
 
 	va_start(ap, format);
