@@ -58,9 +58,10 @@ ISR(TIMER0_COMP_vect) {
 
 	mempt = &pixmap[display_line * (X_SIZE / INTERFACE_BITS)];
 
-	PORT_M ^= _BV(BIT_M);
-
-	if (display_line == 1)	PORT_CONTROL |=  _BV(BIT_FLM);
+	if (display_line == 1) {
+		PORT_CONTROL |=  _BV(BIT_FLM);
+		PORT_M ^= _BV(BIT_M);
+	}
 
 	PORT_CONTROL |=  _BV(BIT_LP);
 	PORT_CONTROL &= ~_BV(BIT_LP);
