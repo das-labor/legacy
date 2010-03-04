@@ -4,11 +4,13 @@
 
 #include "can/can.h"
 #include "can/spi.h"
+#include "can_handler.h"
 
 #include "dc_com.h"
 #include "touchscreen.h"
 #include "calibrate_touch.h"
 #include "gui.h"
+#include "main_window.h"
 
 void init() {
 	//Backlight on
@@ -26,8 +28,7 @@ void init() {
 	read_can_addr();
 }
 
-int main (void)
-{
+int main(void) {
 	init();
 	init_dc_com();
 
