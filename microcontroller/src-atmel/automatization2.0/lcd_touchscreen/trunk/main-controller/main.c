@@ -53,12 +53,30 @@ int main(void) {
 	//gui_test();
 	//menu_test();
 
-	init_main_window();	
+	init_main_window();
+	
+	
+	TCCR1A = (1<<COM1A1) | (1<<WGM10);
+	TCCR1B = (1<<WGM12) | 1;
+	
+	DDRB |= (1<<PB5);
+	
+	int16_t x, y;
+	
+	
 	
 	while (1) {
 
-		handle_touchscreen();
-		can_handler();
+		for(x=255;x>100;x--){
+			OCR1A = x;
+//			_delay_ms(10);
+			for(y=0;y<100;y++){
+				handle_touchscreen();
+				can_handler();
+			}
+
+		}
+
 	}
 	return 0;
 }
