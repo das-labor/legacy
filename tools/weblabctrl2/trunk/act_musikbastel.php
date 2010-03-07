@@ -36,7 +36,7 @@ if($_GET["doit"])
 	{
 	  if($localstate["musik_bastel_status"]!="playing")
 	    {
-	      if($control=="enabled") exec("MPD_PORT=6602 mpc play") ;
+	      if($control=="enabled") exec("MPD_PORT=6602 MPD_HOST=10.0.1.3 mpc play") ;
 	      $localstate["musik_bastel_status"]="playing";
 	    }
 	  foreach($sortedobjects[$tmpobj->getObjName()] as $myobj)
@@ -51,7 +51,7 @@ if($_GET["doit"])
 	{
 	  if($localstate["musik_bastel_status"]!="stop")
 	    {
-	      if($control=="enabled") exec("MPD_PORT=6602 mpc stop") ;
+	      if($control=="enabled") exec("MPD_PORT=6602 MPD_HOST=10.0.1.3 mpc stop") ;
 	      $localstate["musik_bastel_status"]="stop";
 	    }
 	  foreach($sortedobjects[$tmpobj->getObjName()] as $myobj)
@@ -66,7 +66,7 @@ if($_GET["doit"])
 	{
 	  if($localstate["musik_bastel_status"]!="paused")
 	    {
-	      if($control=="enabled") exec("MPD_PORT=6602 mpc pause") ;
+	      if($control=="enabled") exec("MPD_PORT=6602 MPD_HOST=10.0.1.3 mpc pause") ;
 	      $localstate["musik_bastel_status"]="paused";
 	    }
 	  foreach($sortedobjects[$tmpobj->getObjName()] as $myobj)
@@ -79,19 +79,19 @@ if($_GET["doit"])
 	break;
       case "prev":
 	{
-	  if($control=="enabled") exec("MPD_PORT=6601 mpc prev") ;
+	  if($control=="enabled") exec("MPD_PORT=6601 MPD_HOST=10.0.1.3 mpc prev") ;
 	}
 	break;
       case "next":
 	{
-	  if($control=="enabled") exec("MPD_PORT=6601 mpc next") ;
+	  if($control=="enabled") exec("MPD_PORT=6601 MPD_HOST=10.0.1.3 mpc next") ;
 	}
 	break;
       case "volume":
 	{
 	  if ( $localstate["musik_bastel_volume"]!=$value_dec)
 	    {
-	      if($control=="enabled") exec("MPD_PORT=6602 mpc volume ".$value_dec) ;
+	      if($control=="enabled") exec("MPD_PORT=6602 MPD_HOST=10.0.1.3 mpc volume ".$value_dec) ;
 	      $localstate["musik_bastel_volume"]=$value_dec;
 	    }
 
@@ -101,7 +101,7 @@ if($_GET["doit"])
 	{
 	  if ( $localstate["musik_bastel_pos"]!=$value_dec)
 	    {
-	      if($control=="enabled") exec("MPD_PORT=6602 mpc seek ".$value_dec."\%") ;
+	      if($control=="enabled") exec("MPD_PORT=6602 MPD_HOST=10.0.1.3 mpc seek ".$value_dec."\%") ;
 	      $localstate["musik_bastel_pos"]=$value_dec;
 	    }
 
