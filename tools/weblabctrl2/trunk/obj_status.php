@@ -183,13 +183,13 @@ class c_status extends c_content{
       {
 
 	 $timeoutscript="./exec_timeout.sh 1 ";
-	 $syscommand = $timeoutscript." lapcontrol cantemp 0x25 0x01";
+	 $syscommand = $timeoutscript." powercommander.lapcontrol cantemp 0x25 0x01";
 	 exec($syscommand,$status1);
 
-	 $syscommand = $timeoutscript." lapcontrol cantemp 0x04 0x00";
+	 $syscommand = $timeoutscript." powercommander.lapcontrol cantemp 0x04 0x00";
 	 exec($syscommand,$status2);
 
-	 $syscommand = $timeoutscript." lapcontrol cantemp 0x23 0x01";
+	 $syscommand = $timeoutscript." powercommander.lapcontrol cantemp 0x23 0x01";
 	 exec($syscommand,$status3);
 
 	 $indata = sscanf  ( $status1[1] , "Temp is %f" );

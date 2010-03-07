@@ -10,15 +10,15 @@ if($_GET["doit"])
       {
 	$coin = 'number';
 	if (rand(0,1) == '0') $coin = 'head';
-	exec("lapcontrol -s rl borg scroll 0x24 '2<5|+30/#I fliped a coin and got ".$coin."'");
-	exec("lapcontrol -s rl borg mode 0x24 1");
+	exec("powercommander.lapcontrol -s rl borg scroll 0x24 '2<5|+30/#I fliped a coin and got ".$coin."'");
+	exec("powercommander.lapcontrol -s rl borg mode 0x24 1");
       }
     elseif($cmd=="dice")
       {
 	srand (time() );
 	$dicevalue=rand(1,6);
-	exec("lapcontrol -s rl borg scroll 0x24 '2<5|+30/#I rolled a dice and got ".$dicevalue."'");
-	exec("lapcontrol -s rl borg mode 0x24 1");
+	exec("powercommander.lapcontrol -s rl borg scroll 0x24 '2<5|+30/#I rolled a dice and got ".$dicevalue."'");
+	exec("powercommander.lapcontrol -s rl borg mode 0x24 1");
       }
     elseif($cmd=="w20")
       {
@@ -26,18 +26,18 @@ if($_GET["doit"])
 	$dicevalue=rand(1,20);
 	if($dicevalue == 20) $dicevalue = 'FULL FAIL';
 	if($dicevalue == 1) $dicevalue = 'Perfect';
-	exec("lapcontrol -s rl borg scroll 0x24 '2<5|+30/#I rolled a W20 and got ".$dicevalue."'");
-	exec("lapcontrol -s rl borg mode 0x24 1");
+	exec("powercommander.lapcontrol -s rl borg scroll 0x24 '2<5|+30/#I rolled a W20 and got ".$dicevalue."'");
+	exec("powercommander.lapcontrol -s rl borg mode 0x24 1");
       }
     elseif($cmd=="text")
       {
-	exec("lapcontrol -s rl borg scroll 0x24 '2<5|+30/#".escapeshellcmd($_GET["value"])."'");
-	exec("lapcontrol -s rl borg mode 0x24 1");
+	exec("powercommander.lapcontrol -s rl borg scroll 0x24 '2<5|+30/#".escapeshellcmd($_GET["value"])."'");
+	exec("powercommander.lapcontrol -s rl borg mode 0x24 1");
       }
     else
       {
-	exec("lapcontrol -s rl borg scroll 0x24 '2<5|+30/#Ich glaub es ist ein Hacker!'");
-	exec("lapcontrol -s rl borg mode 0x24 1");
+	exec("powercommander.lapcontrol -s rl borg scroll 0x24 '2<5|+30/#Ich glaub es ist ein Hacker!'");
+	exec("powercommander.lapcontrol -s rl borg mode 0x24 1");
       }
     file_put_contents($file, serialize( $localstate )); 
     
