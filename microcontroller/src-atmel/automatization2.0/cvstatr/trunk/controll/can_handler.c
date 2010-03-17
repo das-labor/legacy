@@ -12,12 +12,12 @@ static uint8_t myaddr;
 
 union {
 	struct {
-		uint8_t klingel:1; // 1 Bit für bStatus_1
-		uint8_t nachtmodus:1;    // Dieses Feld ist 2 Bits breit
+		uint8_t klingel:1;
+		uint8_t nachtmodus:1;
 		uint8_t tuerkontakt:1;
 		uint8_t schloss:1;
 	} switches;
-	uint8_t bla;
+	uint8_t stat_sw;
 } stat_switches;
 
 extern void can_handler()
@@ -51,8 +51,8 @@ extern void can_handler()
 				msg.data[0] = data[0];
 				msg.data[1] = data[1];
 				msg.dlc = 2;
-				msg.port_dst = 3;
-				msg.port_src = 3;
+				msg.port_dst = 0x10;
+				msg.port_src = 0x10;
 				msg.addr_src = myaddr;
 				msg.addr_dst = rx_msg->addr_src;
 				can_transmit(&msg);
@@ -80,7 +80,7 @@ void switch_handler()
 
 		static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
 		
-		msg.data[0] = stat_switches.bla;
+		msg.data[0] = stat_switches.stat_sw;
 		msg.addr_src = myaddr;
 		can_transmit(&msg);
 
@@ -90,7 +90,7 @@ void switch_handler()
 	{
 		static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
 		stat_switches.switches.tuerkontakt = 0;		
-		msg.data[0] = stat_switches.bla;
+		msg.data[0] = stat_switches.stat_sw;
 		msg.addr_src = myaddr;
 		can_transmit(&msg);
 
@@ -102,7 +102,7 @@ void switch_handler()
 
 		static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
 		
-		msg.data[0] = stat_switches.bla;
+		msg.data[0] = stat_switches.stat_sw;
 		msg.addr_src = myaddr;
 		can_transmit(&msg);
 
