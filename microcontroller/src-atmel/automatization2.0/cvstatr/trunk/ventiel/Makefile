@@ -1,4 +1,4 @@
-OBJ = main.o
+OBJ = main.o twi_slave/twi_slave.o
 # Default values
 OUT           ?= image
 MCU_TARGET    ?= atmega8
