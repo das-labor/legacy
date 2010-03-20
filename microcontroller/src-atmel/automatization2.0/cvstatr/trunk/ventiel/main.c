@@ -3,7 +3,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
-
+#include <uart.h>
 #include <stdlib.h>
 
 #include "config.h"
@@ -16,28 +16,33 @@
 
 #define SCHRITTE 420
 
+#define UART_BAUD_RATE 19200
+
 
 ISR(TIMER1_COMPA_vect)
 {
 	FREILAUF();
+	TCNT1H = 0;
+	TCNT1L = 0;
 }
 
 
 void fahre_ventiel_zu() {
-	uint8_t ct_last = TCNT1L;
-	uint8_t ct_act = 0;
+	uint16_t ct_last = TCNT1;
+	uint16_t ct_act = 0;
 
 	V_SCHLIESSEN();
-	_delay_ms(50);
+	_delay_ms(45);
 
 	while (1) {
-		ct_act = TCNT1L;
+		ct_act = TCNT1;
 		if (ct_last == ct_act)
 			break;
 		
-		ct_last = TCNT1L;
+		ct_last = TCNT1;
 		_delay_ms(25);
 	}
+//	eeprom_write_word(1, ct_last);
 	FREILAUF();
 }
 
@@ -60,25 +65,23 @@ void init(void)
 
 	fahre_ventiel_zu();
 
-	OCR1AH = 0x00;
-	OCR1AL = 0xff;
-
 	//turn on interrupts
   sei();
 }
-	 
+
 int main(void)
 {
 	uint8_t TWIS_ResponseType;
-	uint8_t ist_pos = 0, ziel_pos;
+	int8_t ist_pos = 0, ziel_pos = 0;
 	
+	uart_init(UART_BAUD_SELECT(UART_BAUD_RATE, F_CPU));
 	//system initialization
 	init();
 
 	TWIS_Init();
 
-	//V_OEFFNEN();
-
+	uint16_t ct_last = TCNT1;
+	uint16_t ct_act = 0;
 	//the main loop continuously handles can messages
 	while (1)
 	{
@@ -89,15 +92,23 @@ int main(void)
 				// Slave is requests to read bytes from the master. 
 				case TW_SR_SLA_ACK:
 					ziel_pos = TWIS_ReadNack();
+					uart_putc(ziel_pos);
+
 					TWIS_Stop();
-					
-					OCR1A = abs(ist_pos - ziel_pos) * SCHRITTE;
-					
+
+					OCR1A = abs(ziel_pos - ist_pos) * SCHRITTE;
+
 					if (ist_pos < ziel_pos)
+					{
 						V_OEFFNEN();
+						ist_pos = ziel_pos;
+					}
 					if (ist_pos > ziel_pos)
+					{
 						V_SCHLIESSEN();
-						
+						ist_pos = ziel_pos;
+					}
+					_delay_ms(50);
 					break;
 
 				case TW_ST_SLA_ACK:
@@ -109,18 +120,15 @@ int main(void)
 					break;
 			}
 		}
-/*		FREILAUF();
-		V_OEFFNEN();
-		_delay_ms(5000);
-		BREAK();
-		_delay_ms(500);
-		FREE();
-		V_CLOSE();
-		_delay_ms(5000);
-		BREAK();
-		_delay_ms(500);*/
+	// prüfen ob motor läuft - bei ende pos speichern
+		ct_act = TCNT1;
+		if (ct_last == ct_act)
+			FREILAUF();
+
+		ct_last = TCNT1;
+		_delay_ms(30);
 	}
-	
+
 	return 1;
 }
 

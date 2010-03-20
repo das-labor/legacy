@@ -1,4 +1,4 @@
-OBJ = main.o twi_slave/twi_slave.o
+OBJ = main.o twi_slave/twi_slave.o uart.o
 # Default values
 OUT           ?= image
 MCU_TARGET    ?= atmega8
@@ -6,7 +6,7 @@ MCU_CC        ?= avr-gcc
 MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall -Winline
-DEFS          ?= -DF_CPU=8000000
+DEFS          ?= -DF_CPU=8000000UL
 CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I.
 ASFLAGS	      += -mmcu=avr5
 LDFLAGS        = -Wl,-Map,$(OUT).map
