@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 2 -*- */
 
 #include <avr/io.h>
+#include <util/delay.h>
 
 #include "config.h"
 
@@ -14,9 +15,8 @@
 
 void init(void)
 {
-	/*
-	** Initiate TWI Master Interface
-	*/
+	// Initiate TWI Master Interface
+
 	if (!TWIM_Init())
 	{
 		while (1);
@@ -24,11 +24,11 @@ void init(void)
 	
 	//init_sensor(0x9e);
 	init_sensor(0x96);
-	
+
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
 
-	DDRD &= ~_BV(PD7);
-	PORTD |= _BV(PD7);
+	DDRD &= ~(_BV(PD7) | _BV(PD5));
+	PORTD |= _BV(PD7) | _BV(PD5);
 
 	//initialize spi port
 	spi_init();
@@ -37,7 +37,7 @@ void init(void)
 	can_init();
 	read_can_addr();
 	//turn on interrupts
-  //	sei();
+  //sei();
 }
 	 
 int main(void)
@@ -51,7 +51,6 @@ int main(void)
 		can_handler();
 		switch_handler();
 	}
-	
 	return 1;
 }
 
