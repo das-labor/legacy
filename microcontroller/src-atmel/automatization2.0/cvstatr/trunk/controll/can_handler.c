@@ -108,5 +108,27 @@ void switch_handler()
 
 		_delay_ms(100);
 	}
+	if ((PIND & _BV(PD5)) && stat_switches.switches.nachtmodus)
+	{
+		static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
+		stat_switches.switches.nachtmodus = 0;		
+		msg.data[0] = stat_switches.stat_sw;
+		msg.addr_src = myaddr;
+		can_transmit(&msg);
+
+		_delay_ms(100);
+	}
+	if (!(PIND & _BV(PD5)) && stat_switches.switches.nachtmodus == 0)
+	{
+		stat_switches.switches.nachtmodus = 1;
+
+		static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
+		
+		msg.data[0] = stat_switches.stat_sw;
+		msg.addr_src = myaddr;
+		can_transmit(&msg);
+
+		_delay_ms(100);
+	}
 }
 
