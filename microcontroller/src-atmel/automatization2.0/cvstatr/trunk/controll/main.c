@@ -50,6 +50,7 @@ int main(void)
 	{
 		can_handler();
 		switch_handler();
+		temp_regler();
 	}
 	return 1;
 }
