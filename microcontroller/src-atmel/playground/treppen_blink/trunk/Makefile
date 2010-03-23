@@ -1,4 +1,4 @@
-FEMTOOS_AVR_TOOLDIR=/home/alex/labor/femtoos-toolchain/
+FEMTOOS_AVR_TOOLDIR=/home/pl4nkton/avr/FemtoOS_0.92/IDE/proc
 
 FEMTOOS_SOURCE=./
 FEMTOOS_APPLICATION_CONFIG_DIR=./

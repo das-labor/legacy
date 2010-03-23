@@ -50,6 +50,11 @@
 #define LAMPS 50
 
 
+Tuint16 gammatable[] PROGMEM = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20, 23, 25, 28, 30, 33, 36, 39, 43, 46, 49, 53, 57, 61, 64, 69, 73, 77, 82, 86, 91, 96, 101, 106, 111, 116, 122, 128, 133, 139, 145, 151, 157, 164, 170, 177, 184, 191, 197, 205, 212, 219, 227, 234, 242, 250, 258, 266, 274, 283, 291, 300, 309, 317, 326, 336, 345, 354, 364, 373, 383, 393, 403, 413, 423, 434, 444, 455, 466, 477, 488, 499, 510, 522, 533, 545, 556, 568, 580, 593, 605, 617, 630, 642, 655, 668, 681, 694, 708, 721, 735, 748, 762, 776, 790, 804, 818, 833, 847, 862, 877, 892, 907, 922, 937, 953, 968, 984, 1000, 1016, 1032, 1048, 1064, 1081, 1097, 1114, 1131, 1148, 1165, 1182, 1199, 1217, 1234, 1252, 1270, 1288, 1306, 1324, 1342, 1361, 1379, 1398, 1417, 1436, 1455, 1474, 1494, 1513, 1533, 1552, 1572, 1592, 1612, 1632, 1653, 1673, 1694, 1715, 1735, 1756, 1777, 1799, 1820, 1841, 1863, 1885, 1907, 1929, 1951, 1973, 1995, 2018, 2040, 2063, 2086, 2109, 2132, 2155, 2179, 2202, 2226, 2250, 2273, 2297, 2322, 2346, 2370, 2395, 2419, 2444, 2469, 2494, 2519, 2544, 2570, 2595, 2621, 2647, 2672, 2698, 2725, 2751, 2777, 2804, 2830, 2857, 2884, 2911, 2938, 2965, 2993, 3020, 3048, 3076, 3104, 3132, 3160, 3188, 3217, 3245, 3274, 3303, 3331, 3360, 3390, 3419, 3448, 3478, 3507, 3537, 3567, 3597, 3627, 3658, 3688, 3719, 3749, 3780, 3811, 3842, 3873, 3905, 3936, 3968, 3999, 4031, 4063, 4095};
+
+
+
+
 typedef struct {
 	Tuint16 red;
 	Tuint16 green;
@@ -57,7 +62,7 @@ typedef struct {
 } element_t;
 Tuint16 callnumber=0;
 
-Tuint08 blinkmode=0;
+Tuint08 blinkmode=8;
 
 
 
@@ -173,53 +178,52 @@ static void pushValue(Tuint16 red,Tuint16 green,Tuint16 blue)
   Tuint08 k;
   taskEnterGlobalCritical();
   for (k = 0 ; k< BITSPERLAMP; k++)
-    {
-      if( ((blue >> (BITSPERLAMP-k-1)) & 1 ) ==1)
 	{
-	  OUTPORT |= _BV(DATA);
-	} 
-      else 
-	{ 
-	  OUTPORT &= ~_BV(DATA);
+		if ( ((blue >> (BITSPERLAMP-k-1)) & 1 ) ==1)
+		{
+			OUTPORT |= _BV(DATA);
+		} 
+		else 
+		{ 
+			OUTPORT &= ~_BV(DATA);
+		}
+		PORTD |= _BV(CLK);
+		PORTD &= ~_BV(CLK);
 	}
-      PORTD |= _BV(CLK);
-      PORTD &= ~_BV(CLK);
-    }
-  for (k = 0; k < BITSPERLAMP; k++)
-    {
-      if( ((green >> (BITSPERLAMP-k-1)) & 1 ) ==1)
+	for (k = 0; k < BITSPERLAMP; k++)
 	{
-	  OUTPORT |= _BV(DATA);
-	} 
-      else 
-	{ 
-	  OUTPORT &= ~_BV(DATA);
-	}
-      
-      PORTD |= _BV(CLK);
-      PORTD &= ~_BV(CLK);
-    }
-  for (k = 0; k < BITSPERLAMP; k++)
-    {
-      if ( ((red >> (BITSPERLAMP-k-1)) & 1 ) == 1 )
-	{
-	  OUTPORT |= _BV(DATA);
-	}
-      else 
-	{
-	  OUTPORT &= ~_BV(DATA);
-	}
-      PORTD |= _BV(CLK);
-      PORTD &= ~_BV(CLK);
-    }
-  taskExitGlobalCritical();
+		if ( ((green >> (BITSPERLAMP-k-1)) & 1 ) ==1)
+		{
+			OUTPORT |= _BV(DATA);
+		} 
+		else 
+		{ 
+			OUTPORT &= ~_BV(DATA);
+		}
 
+		PORTD |= _BV(CLK);
+		PORTD &= ~_BV(CLK);
+	}
+	for (k = 0; k < BITSPERLAMP; k++)
+	{
+		if ( ((red >> (BITSPERLAMP-k-1)) & 1 ) == 1 )
+		{
+			OUTPORT |= _BV(DATA);
+		}
+		else 
+		{
+			OUTPORT &= ~_BV(DATA);
+		}
+		PORTD |= _BV(CLK);
+		PORTD &= ~_BV(CLK);
+	}
+  taskExitGlobalCritical();
 }
 
 static void setWhite(element_t *point, Tuint16 pos)
 {
-  if(pos<25)
-    switch(pos - (callnumber % 25)){
+  if (pos<25)
+    switch (pos - (callnumber % 25)){
     case 2:
       point->red = MAXCOLORVALUE;
       point->green = MAXCOLORVALUE;
@@ -238,8 +242,8 @@ static void setWhite(element_t *point, Tuint16 pos)
     default:
       break;
   }
-  if(pos>=25)
-  switch(pos + (callnumber % 25)){
+  if (pos>=25)
+  switch (pos + (callnumber % 25)){
   case 49:
     point->red = MAXCOLORVALUE;
     point->green = MAXCOLORVALUE;
@@ -445,90 +449,89 @@ void appLoop_rgbled(void)
 void appLoop_taster(void)
 {
   can_message dstpower = {0x25,0x02,0x00,0x01,0x04, {0x00,0x00,0x00,0x00}};
-  Tuint08 counter_0=0;
+  Tuint08 counter_0 = 0;
   Tuint08 clicked_0 = 0;
   Tuint08 held_0    = 0;
-  Tuint08 last_held_0=0;
+  Tuint08 last_held_0 = 0;
   
-  while(true)
+  while (true)
     {
 			clicked_0=0;
 			held_0=0;
-			if(!(PINB & _BV(PB0))) 
+			if (!(PINB & _BV(PB0))) 
+			{
+				counter_0++;
+				if (counter_0 > HOLD_THRESHOLD)
 				{
-					counter_0++;
-					if(counter_0 > HOLD_THRESHOLD)
-						{
-							held_0 = 1;
-							counter_0 = HOLD_THRESHOLD;
-						}
-				} 
+					held_0 = 1;
+					counter_0 = HOLD_THRESHOLD;
+				}
+			} 
 			else
+			{
+				if (counter_0 > CLICK_THRESHOLD)
 				{
-					if(counter_0 > CLICK_THRESHOLD)
-						{
-							if(counter_0 < HOLD_THRESHOLD)
-								{
-									clicked_0 = 1;
-								}
-						}
-					counter_0 = 0;
+					if (counter_0 < HOLD_THRESHOLD)
+					{
+						clicked_0 = 1;
+					}
 				}
+				counter_0 = 0;
+			}
 			
-			if(clicked_0 == 1)
+			if (clicked_0 == 1)
+			{
+				dstpower.data[0] = C_VIRT;
+				dstpower.data[1] = VIRT_VORTRAG;
+				dstpower.data[2] = F_SW_TOGGLE;
+				if(rgbled_stat==R_LED)
 				{
-					dstpower.data[0] = C_VIRT;
-					dstpower.data[1] = VIRT_VORTRAG;
-					dstpower.data[2] = F_SW_TOGGLE;
-					if(rgbled_stat==R_LED)
-						{
-							rgbled_stat=G_LED;
-						}
-					else
-						{
-							rgbled_stat=R_LED;
-						}
-					can_transmit(&dstpower);
+					rgbled_stat=G_LED;
 				}
+				else
+				{
+					rgbled_stat=R_LED;
+				}
+				can_transmit(&dstpower);
+			}
 			
-			if(held_0)
-				{
-					dstpower.data[0] = C_VIRT;
-					dstpower.data[1] = VIRT_VORTRAG_PWM;
-					dstpower.data[2] = F_PWM_MOD;
-					can_transmit(&dstpower);
-				}
-			else if(last_held_0)
-				{
-					dstpower.data[0] = C_VIRT;
-					dstpower.data[1] = VIRT_VORTRAG_PWM;
-					dstpower.data[2] = F_PWM_DIR;
-					can_transmit(&dstpower);
-				}
+			if (held_0)
+			{
+				dstpower.data[0] = C_VIRT;
+				dstpower.data[1] = VIRT_VORTRAG_PWM;
+				dstpower.data[2] = F_PWM_MOD;
+				can_transmit(&dstpower);
+			}
+			else if (last_held_0)
+			{
+				dstpower.data[0] = C_VIRT;
+				dstpower.data[1] = VIRT_VORTRAG_PWM;
+				dstpower.data[2] = F_PWM_DIR;
+				can_transmit(&dstpower);
+			}
 			
 			last_held_0 = held_0;
 
-      if((PINB & _BV(PB1)) && (mode==0))
+      if ((PINB & _BV(PB1)) && (mode==0))
+			{
+				mode=1;
+			}
+      if (!(PINB & _BV(PB1)) && (mode==1))
+			{
+				mode=2;
+			}
+      if (mode==2)
+			{
+				if (blinkmode <= 8)
 				{
-					mode=1;
+					blinkmode++;
 				}
-      if(!(PINB & _BV(PB1)) && (mode==1))
+				else 
 				{
-					mode=2;
+					blinkmode = 0;
 				}
-      if(mode==2)
-				{
-					if(blinkmode <= 6)
-						{
-							blinkmode++;
-						}
-					else 
-						{
-							blinkmode=0;
-						}
-					mode=0;
-				}
-			
+				mode = 0;
+			}
       taskDelayFromNow(100);
     }
 }
@@ -539,106 +542,152 @@ void appLoop_taster(void)
 void appLoop_rundown(void)
 { 
   Tuint08 i=0;
+  Tuint08 start_r = 0;
+  Tuint08 start_b = LAMPS;
+  Tuint08 start_g = 25;
+  Tuint16 count_r = 50 * 256;
+  Tuint16 count_g = 50 * 256;
+  Tuint16 count_b = 50 * 256;
+  
   element_t myelement={0,0,0};
   //taskDelayFromNow(1000);
 	init_sensor();
-  while (true)
-  { 
-    while(blinkmode == 0){
-      for(i=0;i<LAMPS;i++){
-	makeBlue(&myelement);
-	setWhite(&myelement,i);
-	pushValue(myelement.red,myelement.green,myelement.blue);
-      }
-      taskDelayFromNow(1);
-      updateLEDs();
-      callnumber++;
-      taskDelayFromNow(100);
-    } 
-    while(blinkmode == 1){
-      // call it stop
-      taskDelayFromNow(100);
-    }
-    while(blinkmode == 2){
-      for(i=0;i<LAMPS;i++){
-	makeWhite(&myelement);
-	pushValue(myelement.red,myelement.green,myelement.blue);
-      }
-      taskDelayFromNow(1);
-      updateLEDs();
-      taskDelayFromNow(100);
-    }
-    while(blinkmode == 3){
-      for(i=0;i<LAMPS;i++){
-	makeGray(&myelement);
-	pushValue(myelement.red,myelement.green,myelement.blue);
-      }
-      taskDelayFromNow(1);
-      updateLEDs();
-      taskDelayFromNow(100);
-    }
-    while(blinkmode == 4){
-      for(i=0;i<LAMPS;i++){
-	makeOFF(&myelement);
-	pushValue(myelement.red,myelement.green,myelement.blue);
-      }
-      taskDelayFromNow(1);
-      updateLEDs();
-      taskDelayFromNow(100);
-    }
-    while(blinkmode == 5){
-      for(i=0;i<LAMPS;i++){
-	makeGreen(&myelement);
-	setWhite(&myelement,i);
-	pushValue(myelement.red,myelement.green,myelement.blue);
-      }
-      taskDelayFromNow(1);
-      updateLEDs();
-      callnumber++;
-      taskDelayFromNow(100);
-    } 
-    while(blinkmode == 6){
-      for(i=0;i<LAMPS;i++){
-	makeRed(&myelement);
-	setWhite(&myelement,i);
-	pushValue(myelement.red,myelement.green,myelement.blue);
-      }
-      taskDelayFromNow(1);
-      updateLEDs();
-      callnumber++;
-      taskDelayFromNow(100);
-    } 
+	while (true) { 
+		while (blinkmode == 0) {
+			for (i = 0; i < LAMPS; i++) {
+				makeBlue(&myelement);
+				setWhite(&myelement, i);
+				pushValue(myelement.red, myelement.green, myelement.blue);
+			}
+			taskDelayFromNow(1);
+			updateLEDs();
+			callnumber++;
+			taskDelayFromNow(100);
+		} 
+		while (blinkmode == 1) {
+			// call it stop
+			taskDelayFromNow(100);
+		}
+		while (blinkmode == 2) {
+			for (i = 0; i < LAMPS; i++) {
+				makeWhite(&myelement);
+				pushValue(myelement.red, myelement.green, myelement.blue);
+			}
+			taskDelayFromNow(1);
+			updateLEDs();
+			taskDelayFromNow(100);
+		}
+    while (blinkmode == 3) {
+			for (i = 0; i < LAMPS; i++) {
+				makeGray(&myelement);
+				pushValue(myelement.red, myelement.green, myelement.blue);
+			}
+			taskDelayFromNow(1);
+			updateLEDs();
+			taskDelayFromNow(100);
+		}
+		while(blinkmode == 4) {
+			for(i = 0; i < LAMPS; i++) {
+				makeOFF(&myelement);
+				pushValue(myelement.red, myelement.green, myelement.blue);
+			}
+			taskDelayFromNow(1);
+			updateLEDs();
+			taskDelayFromNow(100);
+		}
+		while (blinkmode == 5) {
+      for (i = 0; i < LAMPS; i++) {
+				makeGreen(&myelement);
+				setWhite(&myelement, i);
+				pushValue(myelement.red, myelement.green, myelement.blue);
+			}
+			taskDelayFromNow(1);
+			updateLEDs();
+			callnumber++;
+			taskDelayFromNow(100);
+		} 
+		while (blinkmode == 6) {
+			for (i = 0; i < LAMPS; i++) {
+				makeRed(&myelement);
+				setWhite(&myelement, i);
+				pushValue(myelement.red, myelement.green, myelement.blue);
+			}
+			taskDelayFromNow(1);
+			updateLEDs();
+			callnumber++;
+			taskDelayFromNow(100);
+		} 
 
-    while(blinkmode == 7){
-      for(i=0;i<LAMPS;i++){
-	makeRed(&myelement);
-	pushValue(myelement.red,myelement.green,myelement.blue);
+		while (blinkmode == 7) {
+			for (i = 0; i < LAMPS; i++) {
+				makeRed(&myelement);
+				pushValue(myelement.red,myelement.green,myelement.blue);
+			}
+      taskDelayFromNow(1);
+      updateLEDs();
+      taskDelayFromNow(20);
+
+      for (i = 0; i < LAMPS; i++) {
+				makeGreen(&myelement);
+				pushValue(myelement.red, myelement.green, myelement.blue);
       }
       taskDelayFromNow(1);
       updateLEDs();
       taskDelayFromNow(20);
 
-      for(i=0;i<LAMPS;i++){
-	makeGreen(&myelement);
-	pushValue(myelement.red,myelement.green,myelement.blue);
-      }
-      taskDelayFromNow(1);
-      updateLEDs();
-      taskDelayFromNow(20);
+      for (i = 0; i < LAMPS; i++) {
+				makeBlue(&myelement);
+				pushValue(myelement.red,myelement.green,myelement.blue);
+			}
+			taskDelayFromNow(1);
+			updateLEDs();
+			taskDelayFromNow(20);
+		} 
+		while (blinkmode == 8) {
+    	Tuint16 lightblob[] = {0x03f, 0x009f, 0x00ff, 0x01ff, 0x03ff, 0x06ff, 0x0fff, 0x0fff, 0x06ff, 0x3ff, 0x01ff, 0x00ff, 0x009f, 0x003f};
+    	#define lb_len 14
 
-      for(i=0;i<LAMPS;i++){
-	makeBlue(&myelement);
-	pushValue(myelement.red,myelement.green,myelement.blue);
-      }
-      taskDelayFromNow(1);
-      updateLEDs();
-      taskDelayFromNow(20);
-    } 
-    
+    	for (i = 0; i < LAMPS; i++) {
+				myelement.red = 0x00;
+				myelement.green = 0x00;
+				myelement.blue = 0x00;
+
+    		if ( (uint8_t)((LAMPS + i - start_r)%LAMPS) < lb_len)
+					myelement.red = lightblob[(LAMPS + i - start_r)%LAMPS];
+
+    		if ( (uint8_t)((LAMPS + i - start_g)%LAMPS) < lb_len)
+					myelement.green = lightblob[(LAMPS + i - start_g)%LAMPS];
+
+    		if ( (uint8_t)((LAMPS + i - start_b)%LAMPS) < lb_len)
+					myelement.blue = lightblob[(LAMPS + i - start_b)%LAMPS];
+
+				pushValue(myelement.red, myelement.green, myelement.blue);
+			}
+			
+			count_r += 200;
+			count_b += 150;
+			count_g -= 175;
+
+			count_r = (count_r + (LAMPS*256))%(LAMPS*256);
+			count_b = (count_b + (LAMPS*256))%(LAMPS*256);
+			count_g = (count_g + (LAMPS*256))%(LAMPS*256);
+			
+			start_r = count_r >> 8;
+			start_b = count_b >> 8;
+			start_g = count_g >> 8;
+
+			taskDelayFromNow(1);
+			updateLEDs();
+			taskDelayFromNow(70);
+    }
+    // zufällige farben an zufälligen stellen einfügen
+    //while (blinkmode == 9) {
+    //}
+    // angerger pixel mit nachschwingen in eigenfrequenz
+    //while (blinkmode == 10) {
+    //}
   }
 }
 
 #endif
-
-
 
