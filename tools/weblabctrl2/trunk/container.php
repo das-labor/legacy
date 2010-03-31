@@ -20,7 +20,8 @@ include "obj_musiklounge.php";
 include "obj_musikkeller.php";
 include "obj_status.php";
 include "obj_speek.php";
-
+include "obj_sound.php";
+include "obj_muell.php";
 
 $objlist = array();
 $sortedobjects = array();
@@ -163,6 +164,16 @@ $ctrlelement_stylebg->setid("id_stylebg");
 array_push($objlist,$ctrlelement_stylebg);
 $encap_stylebg = new c_identifier($ctrlelement_stylebg);
 
+$ctrlelement_sound = new c_sound();
+$ctrlelement_sound->setdisplayname("Play Sound");
+array_push($objlist,$ctrlelement_sound);
+$encap_sound = new c_identifier($ctrlelement_sound);
+
+$ctrlelement_muell = new c_muell();
+$ctrlelement_muell->setdisplayname("Muell");
+array_push($objlist,$ctrlelement_muell);
+$encap_muell = new c_identifier($ctrlelement_muell);
+
 
 
 
@@ -249,10 +260,12 @@ $vortrag->addcontentOBJ($encap_lightvortragdetail);
 $vortrag->addcontentOBJ($encap_musikvortrag);
 
 $labstatus->addcontentOBJ($encap_labstatus);
+$labstatus->addcontentOBJ($encap_muell);
 
 $lounge->addcontentOBJ($encap_lightkueche);
 $lounge->addcontentOBJ($encap_lightlounge);
 $lounge->addcontentOBJ($encap_musiklounge);
+$lounge->addcontentOBJ($encap_sound);
 
 
 $bastel->addcontentOBJ($encap_musikbastel);

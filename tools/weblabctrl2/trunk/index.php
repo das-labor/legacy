@@ -118,6 +118,6 @@ echo "</body></html>\n";
 #finaly store state
 echo $file;
 
-var_dump($localstate);
+//var_dump($localstate);
 file_put_contents($file, serialize( $localstate )); 
 ?>
