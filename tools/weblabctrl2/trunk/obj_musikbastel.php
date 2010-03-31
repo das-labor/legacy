@@ -102,6 +102,7 @@ class c_musikbastel extends c_content{
 
     $this->content  = "<div style=\"margin:5px; padding: 5px; background-image:url(icons/subpanelbg.png);\">\n";
     $this->content .= "<div id=\"".$this->myid."_slider_status\" name=\"".$this->myid."_slider_status\"></div>";
+    $this->content .= "<div name=\"".$this->myid."link\" id=\"".$this->myid."link\" style=\"font-size:small\"> <a href=\"http://wl/bastel/index.php\">webinterface</a></div>";
     $this->content .= "<div name=\"".$this->myid."title\" id=\"".$this->myid."title\" style=\"font-size:small\"> </div>";
     $this->content .= "<table cellpassing=0 cellspacing=0 border=0>";
     $this->content .= "<tr>";
