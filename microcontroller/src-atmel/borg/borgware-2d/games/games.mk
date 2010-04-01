@@ -1,5 +1,5 @@
 
-ifeq ($(GAME_TETRIS),y)
+ifeq ($(GAME_TETRIS_CORE),y)
   SUBDIRS += games/tetris
 endif
 

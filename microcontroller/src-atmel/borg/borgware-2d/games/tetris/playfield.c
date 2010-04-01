@@ -11,10 +11,10 @@
  * non-interface functions *
  ***************************/
 
-/* Function:         tetris_playfield_hoverStatus;
- * Description:      determines if piece is either hovering or gliding
- * Argument pPl:     the playfield we want information from
- * Return value:     TETRIS_PFS_HOVERING or TETRIS_PFS_GLIDING
+/**
+ * determines if piece is either hovering or gliding
+ * @param pPl the playfield we want information from
+ * @eturn TETRIS_PFS_HOVERING or TETRIS_PFS_GLIDING
  */
 tetris_playfield_status_t tetris_playfield_hoverStatus(tetris_playfield_t* pPl)
 {
@@ -35,12 +35,6 @@ tetris_playfield_status_t tetris_playfield_hoverStatus(tetris_playfield_t* pPl)
  * construction/destruction *
  ****************************/
 
-/* Function:         tetris_playfield_construct
- * Description:      constructs a playfield with the given dimensions
- * Argument nWidth:  width of playfield (4 <= n <= 16)
- * Argument nHeight: height of playfield (4 <= n <= 124)
- * Return value:     pointer to a newly created playfield
- */
 tetris_playfield_t *tetris_playfield_construct(int8_t nWidth,
                                                int8_t nHeight)
 {
@@ -75,11 +69,6 @@ tetris_playfield_t *tetris_playfield_construct(int8_t nWidth,
 }
 
 
-/* Function:     tetris_playfield_destruct
- * Description:  destructs a playfield
- * Argument pPl: pointer to the playfield to be destructed
- * Return value: void
- */
 void tetris_playfield_destruct(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
@@ -97,11 +86,23 @@ void tetris_playfield_destruct(tetris_playfield_t *pPl)
  * playfield related functions *
  *******************************/
 
-/* Function:     tetris_playfield_reset
- * Description:  resets playfield to begin a new game
- * Argument pPl: playfield to perform action on
- * Return value: void
- */
+uint8_t tetris_playfield_calculateLines(uint8_t nRowMask)
+{
+	uint8_t nMask = 0x0001;
+	uint8_t nLines = 0;
+	for (uint8_t i = 0; i < 4; ++i)
+	{
+		if ((nMask & nRowMask) != 0)
+		{
+			++nLines;
+		}
+		nMask <<= 1;
+	}
+
+	return nLines;
+}
+
+
 void tetris_playfield_reset(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
@@ -141,13 +142,6 @@ int8_t tetris_playfield_getPieceStartPos(tetris_piece_t *pPiece)
 }
 
 
-/* Function:            tetris_playfield_insertPiece
- * Description:         inserts a new piece
- * Argument pPl:        playfield to perform action on
- * Argument pPiece:     piece to be inserted
- * Argument ppOldPiece: [out] indirect pointer to former piece for deallocation
- * Return value:        void
- */
 void tetris_playfield_insertPiece(tetris_playfield_t *pPl,
                                   tetris_piece_t *pPiece,
                                   tetris_piece_t** ppOldPiece)
@@ -184,13 +178,6 @@ void tetris_playfield_insertPiece(tetris_playfield_t *pPl,
 }
 
 
-/* Function:         tetris_playfield_collision
- * Description:      detects if piece collides with s.th. at a given position
- * Argument pPl:     playfield to perform action on
- * Argument nColumn: column where the piece should be moved
- * Argument nRow:    row where the piece should be moved
- * Return value:     1 for collision, 0 otherwise
- */
 uint8_t tetris_playfield_collision(tetris_playfield_t *pPl,
                                    int8_t nColumn,
                                    int8_t nRow)
@@ -290,11 +277,6 @@ uint8_t tetris_playfield_collision(tetris_playfield_t *pPl,
 }
 
 
-/* Function:     tetris_playfield_advancePiece
- * Description:  lowers piece by one row or finally docks it
- * Argument pPl: playfield to perform action on
- * Return value: void
- */
 void tetris_playfield_advancePiece(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
@@ -367,12 +349,6 @@ void tetris_playfield_advancePiece(tetris_playfield_t *pPl)
 }
 
 
-/* Function:           tetris_playfield_movePiece
- * Description:        moves piece to the given direction
- * Argument pPl:       playfield to perform action on
- * Argument direction: direction (see tetris_playfield_direction_t)
- * Return value:       1 if piece could be moved, 0 otherwise
- */
 uint8_t tetris_playfield_movePiece(tetris_playfield_t *pPl,
                                    tetris_playfield_direction_t direction)
 {
@@ -396,12 +372,6 @@ uint8_t tetris_playfield_movePiece(tetris_playfield_t *pPl,
 }
 
 
-/* Function:     tetris_playfield_rotatePiece
- * Description:  rotates piece to the given direction
- * Argument pPl: playfield to perform action on
- * Argument r:   type of rotation (see tetris_piece_rotation_t)
- * Return value: 1 if piece could be rotated, 0 otherwise
- */
 uint8_t tetris_playfield_rotatePiece(tetris_playfield_t *pPl,
                                      tetris_piece_rotation_t rotation)
 {
@@ -436,11 +406,6 @@ uint8_t tetris_playfield_rotatePiece(tetris_playfield_t *pPl,
 }
 
 
-/* Function:     tetris_playfield_removeCompletedLines
- * Description:  removes completed lines (if any) and lowers the dump
- * Argument pPl: playfield to perform action on
- * Return value: void
- */
 void tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
@@ -524,11 +489,6 @@ void tetris_playfield_removeCompleteLines(tetris_playfield_t *pPl)
  * get functions *
  *****************/
 
-/* Function:     tetris_playfield_getWidth
- * Description:  returns the width of the playfield
- * Argument pPl: the playfield we want information from
- * Return value: width of the playfield
- */
 int8_t tetris_playfield_getWidth(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
@@ -547,11 +507,6 @@ int8_t tetris_playfield_getHeight(tetris_playfield_t *pPl)
 }
 
 
-/* Function:     tetris_playfield_getPiece
- * Description:  returns the currently falling piece
- * Argument pPl: the playfield we want information from
- * Return value: pointer to the currently falling piece
- */
 tetris_piece_t *tetris_playfield_getPiece(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
@@ -559,11 +514,6 @@ tetris_piece_t *tetris_playfield_getPiece(tetris_playfield_t *pPl)
 }
 
 
-/* Function:     tetris_playfield_getColumn
- * Description:  returns the column of the currently falling piece
- * Argument pPl: the playfield we want information from
- * Return value: column of the currently falling piece
- */
 int8_t tetris_playfield_getColumn(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
@@ -571,11 +521,6 @@ int8_t tetris_playfield_getColumn(tetris_playfield_t *pPl)
 }
 
 
-/* Function:     tetris_playfield_getRow
- * Description:  returns the row of the currently falling piece
- * Argument pPl: the playfield we want information from
- * Return value: row of the currently falling piece
- */
 int8_t tetris_playfield_getRow(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
@@ -583,13 +528,6 @@ int8_t tetris_playfield_getRow(tetris_playfield_t *pPl)
 }
 
 
-/* Function:     tetris_playfield_getRowMask
- * Description:  returns the row mask relative to nRow
- * Argument pPl: the playfield we want information from
- * Return value: the first 4 bits indicate which lines (relative to nRow)
- *               have been removed if we are in status TETRIS_PFS_READY
- *               LSB is the highest line
- */
 uint8_t tetris_playfield_getRowMask(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
@@ -597,11 +535,6 @@ uint8_t tetris_playfield_getRowMask(tetris_playfield_t *pPl)
 }
 
 
-/* Function:     tetris_playfield_getStatus
- * Description:  returns the status of the playfield
- * Argument pPl: the playfield we want information from
- * Return value: status of the playfield (see tetris_playfield_status_t)
- */
 tetris_playfield_status_t tetris_playfield_getStatus(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);
@@ -609,12 +542,6 @@ tetris_playfield_status_t tetris_playfield_getStatus(tetris_playfield_t *pPl)
 }
 
 
-/* Function:      tetris_playfield_getDumpRow
- * Description:   returns the given row of the dump (as bitmap)
- * Argument pPl:  the playfield we want information from
- * Argument nRow: the number of the row (0 <= nRow < height of playfield)
- * Return value:  bitmap of the requested row (LSB is leftmost column)
- */
 uint16_t tetris_playfield_getDumpRow(tetris_playfield_t *pPl,
                                      int8_t nRow)
 {
@@ -626,13 +553,6 @@ uint16_t tetris_playfield_getDumpRow(tetris_playfield_t *pPl,
 
 #ifdef GAME_BASTET
 
-/* Function:         tetris_playfield_predictDeepestRow
- * Description:      returns the deepest possible row of a given piece
- * Argument pPl:     the playfield on which we want to test a piece
- * Argument pPiece:  the piece which should be tested
- * Argument nColumn: the column where the piece should be dropped
- * Return value:     the row of the piece (playfield compliant coordinates)
- */
 int8_t tetris_playfield_predictDeepestRow(tetris_playfield_t *pPl,
                                           tetris_piece_t *pPiece,
                                           int8_t nColumn)
@@ -665,15 +585,7 @@ int8_t tetris_playfield_predictDeepestRow(tetris_playfield_t *pPl,
 	return nRow;
 }
 
-/* Function:         tetris_playfield_predictCompleteLines
- * Description:      predicts the number of complete lines for a piece at
- *                   a given column
- * Argument pPl:     the playfield on which we want to test a piece
- * Argument pPiece:  the piece which should be tested
- * Argument nRow:    the row where the given piece collides
- * Argument nColumn: the column where the piece should be dropped
- * Return value:     amount of complete lines
- */
+
 int8_t tetris_playfield_predictCompleteLines(tetris_playfield_t *pPl,
                                              tetris_piece_t *pPiece,
                                              int8_t nRow,
@@ -724,17 +636,6 @@ int8_t tetris_playfield_predictCompleteLines(tetris_playfield_t *pPl,
 }
 
 
-/* Function:         tetris_playfield_predictBottomRow
- * Description:      predicts the appearance of the bottom row of the
- *                   playfield (for a piece at a given column) and
- *                   initializes an iterator structure
- * Argument pIt:     [out] a pointer to an iterator which should be initialized
- * Argument pPl:     the playfield on which we want to test a piece
- * Argument pPiece:  the piece which should be tested
- * Argument nRow:    the row where the given piece collides
- * Argument nColumn: the column where the piece should be dropped
- * Return value:     appearance of the predicted dump row at the bottom
- */
 uint16_t* tetris_playfield_predictBottomRow(tetris_playfield_iterator_t *pIt,
                                             tetris_playfield_t *pPl,
                                             tetris_piece_t *pPiece,
@@ -761,12 +662,6 @@ uint16_t* tetris_playfield_predictBottomRow(tetris_playfield_iterator_t *pIt,
 }
 
 
-/* Function:         tetris_playfield_predictNextRow
- * Description:      predicts the appearance of the next row of the playfield
- *                   (for a given iterator)
- * Argument pIt:     a pointer to a dump iterator
- * Return value:     appearance of next predicted row (or NULL -> no next line)
- */
 uint16_t* tetris_playfield_predictNextRow(tetris_playfield_iterator_t *pIt)
 {
 	uint16_t nPieceMap = 0;

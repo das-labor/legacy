@@ -14,12 +14,6 @@
  *  construction/destruction *
  *****************************/
 
-/* Function:     tetris_piece_construct
- * Description:  constructs a piece with the given attributes
- * Argument s:   shape of the piece (see tetris_piece_shape_t)
- * Argument a:   its angle (see tetris_piece_angel_t)
- * Return value: pointer to a newly created piece
- */
 tetris_piece_t *tetris_piece_construct(tetris_piece_shape_t s,
                                        tetris_piece_angle_t a)
 {
@@ -32,11 +26,6 @@ tetris_piece_t *tetris_piece_construct(tetris_piece_shape_t s,
 	return p_piece;
 }
 
-/* Function:     tetris_piece_destruct
- * Description:  destructs a piece
- * Argument pPc: pointer to the piece to be destructed
- * Return value: void
- */
 void tetris_piece_destruct(tetris_piece_t *pPc)
 {
 	assert(pPc != NULL);
@@ -48,13 +37,6 @@ void tetris_piece_destruct(tetris_piece_t *pPc)
  *  piece related functions *
  ****************************/
 
-/* Function:     tetris_piece_getBitmap
- * Description:  returns bitfield representation of the piece
- * Argument pPc: piece from which the bitfield shuld be retrieved
- * Return value: bitfield representation of the piece
- *               - nth nibble is nth row of the piece (from upper left)
- *               - the LSB of a nibble represents the left side of a row
- */
 uint16_t tetris_piece_getBitmap(tetris_piece_t *pPc)
 {
 	assert(pPc != NULL);
@@ -79,12 +61,6 @@ uint16_t tetris_piece_getBitmap(tetris_piece_t *pPc)
 }
 
 
-/* Function:     tetris_piece_rotate
- * Description:  rotates a piece
- * Argument pPc: piece to rotate
- * Argument r:   type of rotation (see tetris_piece_rotation_t)
- * Return value: void
- */
 void tetris_piece_rotate(tetris_piece_t *pPc,
                          tetris_piece_rotation_t r)
 {
@@ -117,14 +93,9 @@ void tetris_piece_rotate(tetris_piece_t *pPc,
 	}
 }
 
-/* Function:       tetris_piece_changeShape
- * Description:    changes the shape of a piece
- * Argument pPc:   piece to change
- * Argument shape: the shape of interest
- * Return value:   void
- */
-void tetris_piece_changeShape(tetris_piece_t *pPc,
-                              tetris_piece_shape_t shape)
+
+void tetris_piece_setShape(tetris_piece_t *pPc,
+                           tetris_piece_shape_t shape)
 {
 	assert(pPc != NULL);
 	assert((shape >= 0) && (shape <= TETRIS_PC_Z));
@@ -133,14 +104,8 @@ void tetris_piece_changeShape(tetris_piece_t *pPc,
 }
 
 
-/* Function:       tetris_piece_changeAngle
- * Description:    changes the angle of a piece
- * Argument pPc:   piece to change
- * Argument angle: the angle of interest
- * Return value:   void
- */
-void tetris_piece_changeAngle(tetris_piece_t *pPc,
-                              tetris_piece_angle_t angle)
+void tetris_piece_setAngle(tetris_piece_t *pPc,
+                           tetris_piece_angle_t angle)
 {
 	assert(pPc != NULL);
 	assert((angle >= TETRIS_PC_ANGLE_0) && (angle <= TETRIS_PC_ANGLE_270));
@@ -149,12 +114,7 @@ void tetris_piece_changeAngle(tetris_piece_t *pPc,
 }
 
 
-/* Function:     tetris_piece_angleCount
- * Description:  returns the number of different angles
- * Argument pPc: piece whose angle count is of interest
- * Return value: number of different angles
- */
-int8_t tetris_piece_angleCount(tetris_piece_t *pPc)
+int8_t tetris_piece_getAngleCount(tetris_piece_t *pPc)
 {
 	assert(pPc != NULL);
 

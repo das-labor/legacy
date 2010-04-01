@@ -3,60 +3,202 @@
 #include <stdio.h>
 #include <assert.h>
 #include <inttypes.h>
-#include "../../config.h"
+#include "../../autoconf.h"
 #include "../../pixel.h"
 #include "../../util.h"
 #include "../../scrolltext/scrolltext.h"
-#include "logic.h"
+#include "variants.h"
 #include "piece.h"
 #include "playfield.h"
 #include "view.h"
 
 #define WAIT(ms) wait(ms)
 
-#ifdef GAME_TETRIS_FP
-uint8_t tetris_screendir;
-#endif
-
-void (*setpixel_wrapper)(pixel p, unsigned char value);
-
+/**
+ * \defgroup TetrisViewDefinesPrivate View: Internal constants
+ */
+/*@{*/
 
 /***********
  * defines *
  ***********/
 
-// how often should the border blink (to indicate level up)
+/** how often should the border blink (to indicate level up) */
 #define TETRIS_VIEW_BORDER_BLINK_COUNT 2
-// amount of time (in ms) between border color changes
+/** amount of time (in ms) between border color changes */
 #define TETRIS_VIEW_BORDER_BLINK_DELAY 100
 
-// how often should the lines blink when they get removed
+/** how often should the lines blink when they get removed */
 #define TETRIS_VIEW_LINE_BLINK_COUNT 3
-// amount of time (in ms) between line color changes
+/** amount of time (in ms) between line color changes */
 #define TETRIS_VIEW_LINE_BLINK_DELAY 75
 
-// colors of game elements
+/** color of space */
 #define TETRIS_VIEW_COLORSPACE   0
+/** color of border */
 #define TETRIS_VIEW_COLORBORDER  1
+/** color of fading lines */
 #define TETRIS_VIEW_COLORFADE    2
+/** color of a piece */
 #define TETRIS_VIEW_COLORPIECE   3
+/** color of pause mode */
 #define TETRIS_VIEW_COLORPAUSE   1
+/** color of line counter */
 #define TETRIS_VIEW_COLORCOUNTER 2
 
 
+#ifdef GAME_TETRIS_FP
+	#if NUM_ROWS < NUM_COLS
+		#define VIEWCOLS NUM_ROWS
+		#define VIEWROWS NUM_ROWS
+	#elif NUM_ROWS > NUM_COLS
+		#define VIEWCOLS NUM_COLS
+		#define VIEWROWS NUM_COLS
+	#else
+		#define VIEWCOLS NUM_COLS
+		#define VIEWROWS NUM_ROWS
+	#endif
+#else
+	#define VIEWCOLS NUM_COLS
+	#define VIEWROWS NUM_ROWS
+#endif
 
 
+#if VIEWROWS >= 20
+	#define TETRIS_VIEW_YOFFSET_DUMP         ((VIEWROWS - 20) / 2)
+	#define TETRIS_VIEW_HEIGHT_DUMP          20
+#else
+	#define TETRIS_VIEW_YOFFSET_DUMP         0
+	#define TETRIS_VIEW_HEIGHT_DUMP          VIEWROWS
+#endif
+
+
+#if VIEWCOLS >= 16
+	#define TETRIS_VIEW_XOFFSET_DUMP         (((VIEWCOLS - 16) / 2) + 1)
+	#define TETRIS_VIEW_WIDTH_DUMP           10
+
+	#if VIEWROWS >= 16
+		#define TETRIS_VIEW_XOFFSET_COUNTER \
+				(TETRIS_VIEW_XOFFSET_DUMP + TETRIS_VIEW_WIDTH_DUMP + 1)
+		#define TETRIS_VIEW_YOFFSET_COUNT100 ((VIEWCOLS - 14) / 2)
+		#define TETRIS_VIEW_YOFFSET_COUNT10  (TETRIS_VIEW_YOFFSET_COUNT100 + 2)
+		#define TETRIS_VIEW_YOFFSET_COUNT1   (TETRIS_VIEW_YOFFSET_COUNT10 + 4)
+
+		#define TETRIS_VIEW_XOFFSET_PREVIEW \
+				(TETRIS_VIEW_XOFFSET_DUMP + TETRIS_VIEW_WIDTH_DUMP + 1)
+		#define TETRIS_VIEW_YOFFSET_PREVIEW (TETRIS_VIEW_YOFFSET_COUNT1 + 4)
+	#elif VIEWROWS < 16 && VIEWROWS >= 4
+		#define TETRIS_VIEW_XOFFSET_PREVIEW \
+				(TETRIS_VIEW_XOFFSET_DUMP + TETRIS_VIEW_WIDTH_DUMP + 1)
+		#define TETRIS_VIEW_YOFFSET_PREVIEW  ((VIEWROWS - 4) / 2)
+	#endif
+#elif (VIEWCOLS < 16) && (VIEWCOLS >= 12)
+	#define TETRIS_VIEW_XOFFSET_DUMP         ((VIEWCOLS - 10) / 2)
+	#define TETRIS_VIEW_WIDTH_DUMP           10
+#elif VIEWCOLS == 11
+	#define TETRIS_VIEW_XOFFSET_DUMP         1
+	#define TETRIS_VIEW_WIDTH_DUMP           10
+#else
+	#define TETRIS_VIEW_XOFFSET_DUMP         0
+	#define TETRIS_VIEW_WIDTH_DUMP           VIEWCOLS
+#endif
+
+
+/*@}*/
+
+
+/**
+ * \defgroup TetrisViewNoInterface View: Internal non-interface functions
+ */
+/*@{*/
 
 /***************************
  * non-interface functions *
  ***************************/
 
-/* Function:      tetris_view_getPieceColor
- * Description:   helper function to dim the piece color if game is paused
- * Argument pV:   pointer to the view whose pause status is of interest
- * Return value:  void
+/**
+ * setpixel replacement which may transform the pixel coordinates
+ * @param pV pointer to the view we want to draw on
+ * @param x x-coordinate of the pixel
+ * @param y y-coordinate of the pixel
+ * @param nColor Color of the pixel
  */
-uint8_t tetris_view_getPieceColor (tetris_view_t *pV)
+void tetris_view_setpixel(tetris_orientation_t nOrientation,
+                          uint8_t x,
+                          uint8_t y,
+                          uint8_t nColor)
+{
+	x = VIEWCOLS - 1 - x;
+
+	switch (nOrientation)
+	{
+	case TETRIS_ORIENTATION_0:
+		setpixel((pixel){x, y}, nColor);
+		break;
+	case TETRIS_ORIENTATION_90:
+		setpixel((pixel){y, VIEWCOLS - 1 - x}, nColor);
+		break;
+	case TETRIS_ORIENTATION_180:
+		setpixel((pixel){VIEWCOLS - 1 - x, VIEWROWS - 1 - y}, nColor);
+		break;
+	case TETRIS_ORIENTATION_270:
+		setpixel((pixel){VIEWROWS - 1 - y, x}, nColor);
+		break;
+	}
+}
+
+
+/**
+ * draws a horizontal line
+ * @param nOrient orientation of the view
+ * @param x1 first x-coordinate of the line
+ * @param x2 second x-coordinate of the line
+ * @param y y-coordinate of the line
+ * @param nColor Color of the line
+ */
+void tetris_view_drawHLine(tetris_orientation_t nOrient,
+                           uint8_t x1,
+                           uint8_t x2,
+                           uint8_t y,
+                           uint8_t nColor)
+{
+	assert(x1 <= x2);
+
+	for (uint8_t x = x1; x <= x2; ++x)
+	{
+		tetris_view_setpixel(nOrient, x, y, nColor);
+	}
+}
+
+
+/**
+ * draws a vertical line
+ * @param nOrient orientation of the view
+ * @param x x-coordinate of the line
+ * @param y1 first y-coordinate of the line
+ * @param y2 second y-coordinate of the line
+ * @param nColor Color of the line
+ */
+void tetris_view_drawVLine(tetris_orientation_t nOrient,
+                           uint8_t x,
+                           uint8_t y1,
+                           uint8_t y2,
+                           uint8_t nColor)
+{
+	assert(y1 <= y2);
+
+	for (uint8_t y = y1; y <= y2; ++y)
+	{
+		tetris_view_setpixel(nOrient, x, y, nColor);
+	}
+}
+
+
+/**
+ * helper function to dim the piece color if game is paused
+ * @param pV pointer to the view whose pause status is of interest
+ */
+uint8_t tetris_view_getPieceColor(tetris_view_t *pV)
 {
 	if (pV->modeCurrent == TETRIS_VIMO_RUNNING)
 	{
@@ -69,10 +211,9 @@ uint8_t tetris_view_getPieceColor (tetris_view_t *pV)
 }
 
 
-/* Function:      tetris_view_drawDump
- * Description:   redraws the dump and the falling piece (if necessary)
- * Argument pV:   pointer to the view on which the dump should be drawn
- * Return value:  void
+/**
+ * redraws the dump and the falling piece (if necessary)
+ * @param pV pointer to the view on which the dump should be drawn
  */
 void tetris_view_drawDump(tetris_view_t *pV)
 {
@@ -82,24 +223,15 @@ void tetris_view_drawDump(tetris_view_t *pV)
 		return;
 	}
 
+	tetris_orientation_t nOrient =
+			pV->pVariantMethods->getOrientation(pV->pVariant);
+
 	int8_t nPieceRow = tetris_playfield_getRow(pV->pPl);
-
-	// only redraw dump completely if the view mode has been changed
-	int8_t nStartRow;
-	if (pV->modeCurrent == pV->modeOld)
-	{
-		nStartRow = ((nPieceRow + 3) < 16) ? (nPieceRow + 3) : 15;
-	}
-	else
-	{
-		nStartRow = 15;
-	}
-
 	uint16_t nRowMap;
 	uint16_t nElementMask;
 
 	tetris_playfield_status_t status = tetris_playfield_getStatus(pV->pPl);
-	for (int8_t nRow = nStartRow; nRow >= 0; --nRow)
+	for (int8_t nRow = TETRIS_VIEW_HEIGHT_DUMP - 1; nRow >= 0; --nRow)
 	{
 		nRowMap = tetris_playfield_getDumpRow(pV->pPl, nRow);
 
@@ -126,7 +258,7 @@ void tetris_view_drawDump(tetris_view_t *pV)
 					nPieceMap >>= -nColumn;
 				}
 				// cut off unwanted stuff
-				nPieceMap &= 0x03ff;
+				// nPieceMap &= 0x03ff;
 				// finally embed piece into the view
 				nRowMap |= nPieceMap;
 			}
@@ -134,7 +266,7 @@ void tetris_view_drawDump(tetris_view_t *pV)
 
 		nElementMask = 0x0001;
 
-		for (int8_t x = 0; x < 10; ++x)
+		for (int8_t x = 0; x < TETRIS_VIEW_WIDTH_DUMP; ++x)
 		{
 			unsigned char nColor;
 			if ((nRowMap & nElementMask) != 0)
@@ -145,21 +277,24 @@ void tetris_view_drawDump(tetris_view_t *pV)
 			{
 				nColor = TETRIS_VIEW_COLORSPACE;
 			}
-			setpixel_wrapper((pixel){14-x,nRow}, nColor);
+			tetris_view_setpixel(nOrient, TETRIS_VIEW_XOFFSET_DUMP + x,
+					TETRIS_VIEW_YOFFSET_DUMP + nRow, nColor);
 			nElementMask <<= 1;
 		}
 	}
 }
 
-
-/* Function:      tetris_view_drawPreviewPiece
- * Description:   redraws the preview window
- * Argument pV:   pointer to the view on which the piece should be drawn
- * Argmument pPc: pointer to the piece for the preview window (may be NULL)
- * Return value:  void
+#ifdef TETRIS_VIEW_XOFFSET_PREVIEW
+/**
+ * redraws the preview window
+ * @param pV pointer to the view on which the piece should be drawn
+ * @param pPc pointer to the piece for the preview window (may be NULL)
  */
 void tetris_view_drawPreviewPiece(tetris_view_t *pV, tetris_piece_t *pPc)
 {
+	tetris_orientation_t nOrient =
+			pV->pVariantMethods->getOrientation(pV->pVariant);
+
 	if (pPc != NULL)
 	{
 		uint8_t nColor;
@@ -171,6 +306,7 @@ void tetris_view_drawPreviewPiece(tetris_view_t *pV, tetris_piece_t *pPc)
 		}
 		else
 		{
+			// an iconized "P"
 			nPieceMap = 0x26a6;
 		}
 
@@ -186,7 +322,10 @@ void tetris_view_drawPreviewPiece(tetris_view_t *pV, tetris_piece_t *pPc)
 				{
 					nColor = TETRIS_VIEW_COLORSPACE;
 				}
-				setpixel_wrapper((pixel) {3 - x, y + 6}, nColor);
+				tetris_view_setpixel(nOrient,
+						TETRIS_VIEW_XOFFSET_PREVIEW + x,
+						TETRIS_VIEW_YOFFSET_PREVIEW + y,
+						nColor);
 				nElementMask <<= 1;
 			}
 		}
@@ -197,74 +336,153 @@ void tetris_view_drawPreviewPiece(tetris_view_t *pV, tetris_piece_t *pPc)
 		{
 			for (uint8_t x = 0; x < 4; ++x)
 			{
-				setpixel_wrapper((pixel) {3 - x, y + 6}, TETRIS_VIEW_COLORSPACE);
+				tetris_view_setpixel(nOrient,
+						TETRIS_VIEW_XOFFSET_PREVIEW + x,
+						TETRIS_VIEW_YOFFSET_PREVIEW + y,
+						TETRIS_VIEW_COLORSPACE);
 			}
 		}
 	}
 }
+#endif
 
-
-/* Function:         tetris_view_drawBorders
- * Description:      draws borders in the given color
- * Argument nColor:  the color for the border
- * Return value:     void
+/**
+ * draws borders in the given color
+ * @param pV pointer to the view on which the borders should be drawn
+ * @param nColor the color for the border
  */
-void tetris_view_drawBorders(uint8_t nColor)
+void tetris_view_drawBorders(tetris_view_t *pV,
+                             uint8_t nColor)
 {
-	// drawing playfield
-	uint8_t x, y;
-	for (y = 0; y < 16; ++y)
+	tetris_orientation_t nOrient =
+			pV->pVariantMethods->getOrientation(pV->pVariant);
+
+#if TETRIS_VIEW_YOFFSET_DUMP != 0
+	// fill upper space if required
+	for (uint8_t y = 0; y < TETRIS_VIEW_YOFFSET_DUMP; ++y)
 	{
-		setpixel_wrapper((pixel){4, y}, nColor);
-		setpixel_wrapper((pixel){15, y}, nColor);
+		tetris_view_drawHLine(nOrient, 0, VIEWCOLS - 1, y, nColor);
+	}
+#endif
+
+#if VIEWROWS > TETRIS_VIEW_HEIGHT_DUMP
+	// fill lower space if required
+	uint8_t y = TETRIS_VIEW_YOFFSET_DUMP + TETRIS_VIEW_HEIGHT_DUMP;
+	for (; y < VIEWROWS; ++y)
+	{
+		tetris_view_drawHLine(nOrient, 0, VIEWCOLS - 1, y, nColor);
+	}
+#endif
+
+#if	TETRIS_VIEW_XOFFSET_DUMP != 0
+	// fill left space if required
+	for (uint8_t x = 0; x < TETRIS_VIEW_XOFFSET_DUMP; ++x)
+	{
+		tetris_view_drawVLine(nOrient, x, TETRIS_VIEW_YOFFSET_DUMP,
+				TETRIS_VIEW_YOFFSET_DUMP + TETRIS_VIEW_HEIGHT_DUMP - 1, nColor);
+	}
+#endif
+
+#if VIEWCOLS > 16
+	// fill right space if required
+	uint8_t x = TETRIS_VIEW_XOFFSET_DUMP + TETRIS_VIEW_WIDTH_DUMP + 5;
+	for (; x < VIEWCOLS; ++x)
+	{
+		tetris_view_drawVLine(nOrient, x, TETRIS_VIEW_YOFFSET_DUMP,
+				TETRIS_VIEW_YOFFSET_DUMP + TETRIS_VIEW_HEIGHT_DUMP - 1, nColor);
+	}
+#endif
+
+
+#ifdef TETRIS_VIEW_XOFFSET_COUNTER
+	tetris_view_drawVLine(nOrient, TETRIS_VIEW_XOFFSET_COUNTER - 1,
+			TETRIS_VIEW_YOFFSET_DUMP,
+			TETRIS_VIEW_YOFFSET_DUMP + TETRIS_VIEW_HEIGHT_DUMP - 1, nColor);
+
+	for (uint8_t x = TETRIS_VIEW_XOFFSET_COUNTER;
+			x < TETRIS_VIEW_XOFFSET_COUNTER + 3; ++x)
+	{
+		tetris_view_drawVLine(nOrient, x, TETRIS_VIEW_YOFFSET_DUMP,
+				TETRIS_VIEW_YOFFSET_COUNT100 - 1, nColor);
+		tetris_view_drawVLine(nOrient, x, TETRIS_VIEW_YOFFSET_PREVIEW + 4,
+				TETRIS_VIEW_YOFFSET_DUMP + TETRIS_VIEW_HEIGHT_DUMP - 1, nColor);
 	}
 
-	for (y = 0; y < 5; ++y)
+	tetris_view_drawVLine(nOrient, TETRIS_VIEW_XOFFSET_COUNTER + 3,
+			TETRIS_VIEW_YOFFSET_DUMP, TETRIS_VIEW_YOFFSET_COUNT1 + 3, nColor);
+
+	tetris_view_drawVLine(nOrient, TETRIS_VIEW_XOFFSET_COUNTER + 3,
+			TETRIS_VIEW_YOFFSET_PREVIEW + 4,
+			TETRIS_VIEW_YOFFSET_DUMP + TETRIS_VIEW_HEIGHT_DUMP - 1, nColor);
+
+	tetris_view_drawHLine(nOrient, TETRIS_VIEW_XOFFSET_COUNTER,
+			TETRIS_VIEW_XOFFSET_COUNTER + 3, TETRIS_VIEW_YOFFSET_COUNT100 + 1,
+			nColor);
+
+	tetris_view_drawHLine(nOrient, TETRIS_VIEW_XOFFSET_COUNTER,
+			TETRIS_VIEW_XOFFSET_COUNTER + 3, TETRIS_VIEW_YOFFSET_COUNT10 + 3,
+			nColor);
+
+	tetris_view_drawHLine(nOrient, TETRIS_VIEW_XOFFSET_COUNTER,
+			TETRIS_VIEW_XOFFSET_COUNTER + 3, TETRIS_VIEW_YOFFSET_COUNT1 + 3,
+			nColor);
+#elif defined TETRIS_VIEW_XOFFSET_PREVIEW
+	tetris_view_drawVLine(nOrient, TETRIS_VIEW_XOFFSET_PREVIEW - 1,
+			TETRIS_VIEW_YOFFSET_DUMP,
+			TETRIS_VIEW_YOFFSET_DUMP + TETRIS_VIEW_HEIGHT_DUMP - 1, nColor);
+
+	for (uint8_t x = TETRIS_VIEW_XOFFSET_PREVIEW;
+			x < TETRIS_VIEW_XOFFSET_PREVIEW + 4; ++x)
 	{
-		for (x = 0; x <= 3; ++x)
-		{
-			if ((y < 1 || y > 3) || (x < 1 || y > 3))
-			{
-				setpixel_wrapper((pixel){x, y}, nColor);
-				setpixel_wrapper((pixel){x, y + 11}, nColor);
-			}
-		}
+		tetris_view_drawVLine(nOrient, x, TETRIS_VIEW_YOFFSET_DUMP,
+				TETRIS_VIEW_YOFFSET_PREVIEW - 1, nColor);
+		tetris_view_drawVLine(nOrient, x, TETRIS_VIEW_YOFFSET_PREVIEW + 4,
+				TETRIS_VIEW_YOFFSET_DUMP + TETRIS_VIEW_HEIGHT_DUMP - 1, nColor);
 	}
+#elif TETRIS_VIEW_WIDTH_DUMP < VIEWCOLS
+	for (uint8_t x = TETRIS_VIEW_XOFFSET_DUMP + TETRIS_VIEW_WIDTH_DUMP;
+			x < VIEWCOLS; ++x)
+	{
+		tetris_view_drawVLine(nOrient, x, TETRIS_VIEW_YOFFSET_DUMP,
+				TETRIS_VIEW_YOFFSET_DUMP + TETRIS_VIEW_HEIGHT_DUMP - 1, nColor);
+	}
+#endif
 }
 
 
-/* Function:     tetris_view_blinkBorders
- * Description:  lets the borders blink to notify player of a level change
- * Return value: void
+/**
+ * lets the borders blink to notify player of a level change
+ * @param pV pointer to the view whose borders should blink
  */
-void tetris_view_blinkBorders()
+void tetris_view_blinkBorders(tetris_view_t *pV)
 {
 	for (uint8_t i = 0; i < TETRIS_VIEW_BORDER_BLINK_COUNT; ++i)
 	{
-		tetris_view_drawBorders(TETRIS_VIEW_COLORPIECE);
+		tetris_view_drawBorders(pV, TETRIS_VIEW_COLORPIECE);
 		WAIT(TETRIS_VIEW_BORDER_BLINK_DELAY);
-		tetris_view_drawBorders(TETRIS_VIEW_COLORBORDER);
+		tetris_view_drawBorders(pV, TETRIS_VIEW_COLORBORDER);
 		WAIT(TETRIS_VIEW_BORDER_BLINK_DELAY);
 	}
 }
 
 
-/* Function:      tetris_view_blinkLines
- * Description:   lets complete lines blink to emphasize their removal
- * Argmument pPl: pointer to the playfield whose complete lines should blink
- * Return value:  void
+/**
+ * lets complete lines blink to emphasize their removal
+ * @param pPl pointer to the view whose complete lines should blink
  */
-
-
-void tetris_view_blinkLines(tetris_playfield_t *pPl)
+void tetris_view_blinkLines(tetris_view_t *pV)
 {
+
 	// reduce necessity of pointer arithmetic
-	int8_t nRow = tetris_playfield_getRow(pPl);
-	uint8_t nRowMask = tetris_playfield_getRowMask(pPl);
+	int8_t nRow = tetris_playfield_getRow(pV->pPl);
+	uint8_t nRowMask = tetris_playfield_getRowMask(pV->pPl);
+
+	tetris_orientation_t nOrient =
+			pV->pVariantMethods->getOrientation(pV->pVariant);
 
 	// don't try to draw below the border
-	int8_t nDeepestRowOffset = ((nRow + 3) < tetris_playfield_getHeight(pPl) ?
-			3 : tetris_playfield_getHeight(pPl) - (nRow + 1));
+	int8_t nDeepestRowOffset = ((nRow + 3) < TETRIS_VIEW_HEIGHT_DUMP ?
+			3 : TETRIS_VIEW_HEIGHT_DUMP - (nRow + 1));
 
 	// this loop controls how often the lines should blink
 	for (uint8_t i = 0; i < TETRIS_VIEW_LINE_BLINK_COUNT; ++i)
@@ -285,7 +503,11 @@ void tetris_view_blinkLines(tetris_playfield_t *pPl)
 
 						uint8_t nColor = (nColIdx == 0 ? TETRIS_VIEW_COLORFADE
 								: TETRIS_VIEW_COLORPIECE);
-						setpixel_wrapper((pixel){14 - x, y}, nColor);
+						// setpixel((pixel){14 - x, y}, nColor);
+						tetris_view_setpixel(nOrient,
+								TETRIS_VIEW_XOFFSET_DUMP + x,
+								TETRIS_VIEW_YOFFSET_DUMP + y,
+								nColor);
 					}
 				}
 			}
@@ -296,92 +518,122 @@ void tetris_view_blinkLines(tetris_playfield_t *pPl)
 }
 
 
-/* Function:        tetris_view_showLineNumbers
- * Description:     displays completed Lines (0-99)
- * Argmument pV:    pointer to the view
- * Return value:    void
+#ifdef TETRIS_VIEW_XOFFSET_COUNTER
+/**
+ * displays completed Lines (0-99)
+ * @param pV pointer to the view
  */
 void tetris_view_showLineNumbers(tetris_view_t *pV)
 {
+
+	tetris_orientation_t nOrient =
+			pV->pVariantMethods->getOrientation(pV->pVariant);
+
 	// get number of completed lines
-	uint16_t nLines = tetris_logic_getLines(pV->pLogic);
+	uint16_t nLines = pV->pVariantMethods->getLines(pV->pVariant);
 
 	// get decimal places
 	int8_t nOnes = nLines % 10;
 	int8_t nTens = (nLines / 10) % 10;
+	int8_t nHundreds = (nLines / 100) % 10;
 
 	// draws the decimal places as 3x3 squares with 9 pixels
-	for (int i = 0, x = 1, y = 1; i < 9; ++i)
+	for (int i = 0, x = 0, y = 0; i < 9; ++i)
 	{
-		// pick drawing color
+		// pick drawing color for the ones
 		uint8_t nOnesPen = nOnes > i ?
 			TETRIS_VIEW_COLORCOUNTER : TETRIS_VIEW_COLORSPACE;
+		tetris_view_setpixel(nOrient, TETRIS_VIEW_XOFFSET_COUNTER + x,
+				TETRIS_VIEW_YOFFSET_COUNT1 + y, nOnesPen);
+
+		// pick drawing color for the tens
 		uint8_t nTensPen = nTens > i ?
 			TETRIS_VIEW_COLORCOUNTER : TETRIS_VIEW_COLORSPACE;
-		// wrap lines if required
-		if ((x % 4) == 0)
+		tetris_view_setpixel(nOrient, TETRIS_VIEW_XOFFSET_COUNTER + x,
+				TETRIS_VIEW_YOFFSET_COUNT10 + y, nTensPen);
+
+		// a maximum of 399 lines can be displayed
+		if (i < 3)
 		{
-			y++;
-			x = 1;
+			// pick drawing color for the hundreds
+			uint8_t nHundredsPen = nHundreds > i ?
+				TETRIS_VIEW_COLORCOUNTER : TETRIS_VIEW_COLORSPACE;
+			tetris_view_setpixel(nOrient, TETRIS_VIEW_XOFFSET_COUNTER + x,
+					TETRIS_VIEW_YOFFSET_COUNT100 + y, nHundredsPen);
+
 		}
-		// ones
-		setpixel_wrapper((pixel){x, y}, nOnesPen);
-		// tens (increment x, add vertical offset for lower part of the border)
-		setpixel_wrapper((pixel){x++, y + 11}, nTensPen);
+
+		// wrap lines if required
+		if ((++x % 3) == 0)
+		{
+			++y;
+			x = 0;
+		}
 	}
 }
+#endif
+
+
+/**
+ * unpacks the champion's initials from the uint16_t packed form
+ * @param nHighscoreName the champion's initials packed into a uint16_t
+ * @param pszName pointer to an array of char for the unpacked initials
+ */
+void tetris_view_formatHighscoreName(uint16_t nHighscoreName,
+                                     char *pszName)
+{
+	pszName[0] = ((nHighscoreName >> 10) & 0x1F) + 65;
+	if (pszName[0] == '_')
+	{
+		pszName[0] = ' ';
+	}
+
+	pszName[1] = ((nHighscoreName >> 5) & 0x1F) + 65;
+	if (pszName[1] == '_')
+	{
+		pszName[1] = ' ';
+	}
+
+	pszName[2] = (nHighscoreName & 0x1F) + 65;
+	if (pszName[2] == '_')
+	{
+		pszName[2] = ' ';
+	}
+
+	pszName[3] = '\0';
+}
+/*@}*/
 
 
 /****************************
  * construction/destruction *
  ****************************/
 
-/* Function:     tetris_view_construct
- * Description:  constructs a view for André's borg
- * Argument pPl: pointer to logic object which should be observed
- * Argument pPl: pointer to playfield which should be observed
- * Return value: pointer to a newly created view
- */
-tetris_view_t *tetris_view_construct(tetris_logic_t *pLogic,
-                                     tetris_playfield_t *pPl,
-                                     uint8_t nFirstPerson)
+tetris_view_t *tetris_view_construct(const tetris_variant_t *const pVarMethods,
+                                     void *pVariantData,
+                                     tetris_playfield_t *pPl)
 {
 	// memory allocation
-	assert((pLogic != NULL) && (pPl != NULL));
+	assert((pVariantData != NULL) && (pPl != NULL));
 	tetris_view_t *pView =
 		(tetris_view_t *) malloc(sizeof(tetris_view_t));
 	assert(pView != NULL);
 
 	// init
 	memset(pView, 0, sizeof(tetris_view_t));
-	pView->pLogic = pLogic;
+	pView->pVariantMethods = pVarMethods;
+	pView->pVariant = pVariantData;
 	pView->pPl = pPl;
-	pView->modeCurrent = TETRIS_VIMO_RUNNING;
-	pView->modeOld = TETRIS_VIMO_RUNNING;
-
-#ifdef GAME_TETRIS_FP
-	// set setpixel wrapper
-	if (nFirstPerson)
-		setpixel_wrapper = tetris_view_setpixel_fp;
-	else
-		setpixel_wrapper = setpixel;
-#else
-	setpixel_wrapper = setpixel;
-#endif
+	pView->modeCurrent = pView->modeOld = TETRIS_VIMO_RUNNING;
 
 	// drawing some first stuff
 	clear_screen(0);
-	tetris_view_drawBorders(TETRIS_VIEW_COLORBORDER);
+	tetris_view_drawBorders(pView, TETRIS_VIEW_COLORBORDER);
 
 	return pView;
 }
 
 
-/* Function:       tetris_view_destruct
- * Description:    destructs a view
- * Argument pView: pointer to the view which should be destructed
- * Return value:   void
- */
 void tetris_view_destruct(tetris_view_t *pView)
 {
 	assert(pView != NULL);
@@ -393,27 +645,15 @@ void tetris_view_destruct(tetris_view_t *pView)
  *  view related functions *
  ***************************/
 
-/* Function:     tetris_view_getDimensions
- * Description:  destructs a view
- * Argument w:   [out] pointer to an int8_t to store the playfield width
- * Argument h:   [out] pointer to an int8_t to store the playfield height
- * Return value: void
- */
 void tetris_view_getDimensions(int8_t *w,
                                int8_t *h)
 {
 	assert((w != NULL) && (h != NULL));
-	*w = 10;
-	*h = 16;
+	*w = TETRIS_VIEW_WIDTH_DUMP;
+	*h = TETRIS_VIEW_HEIGHT_DUMP;
 }
 
 
-/* Function:     tetris_view_setViewMode
- * Description:  sets the view mode (pause or running)
- * Argument pV:  pointer to the view whose mode should be set
- * Argument vm:  see definition of tetris_view_mode_t
- * Return value: void
- */
 void tetris_view_setViewMode(tetris_view_t *pV, tetris_view_mode_t vm)
 {
 	pV->modeOld = pV->modeCurrent;
@@ -421,75 +661,52 @@ void tetris_view_setViewMode(tetris_view_t *pV, tetris_view_mode_t vm)
 }
 
 
-/* Function:     tetris_view_update
- * Description:  informs a view about changes in the game
- * Argument pV:  pointer to the view which should be updated
- * Return value: void
- */
 void tetris_view_update(tetris_view_t *pV)
 {
 	assert(pV != NULL);
 
+	tetris_view_drawBorders(pV, TETRIS_VIEW_COLORBORDER);
+
+#ifdef TETRIS_VIEW_XOFFSET_PREVIEW
+	// draw preview piece
+	tetris_view_drawPreviewPiece(pV,
+			pV->pVariantMethods->getPreviewPiece(pV->pVariant));
+#endif
+
 	// let complete lines blink (if there are any)
 	if (tetris_playfield_getRowMask(pV->pPl) != 0)
 	{
-		tetris_view_blinkLines(pV->pPl);
-		tetris_view_showLineNumbers(pV);
+		tetris_view_blinkLines(pV);
 	}
 
-	// draw preview piece
-	tetris_view_drawPreviewPiece(pV, tetris_logic_getPreviewPiece(pV->pLogic));
+#ifdef TETRIS_VIEW_XOFFSET_COUNTER
+	// update line counter
+	tetris_view_showLineNumbers(pV);
+#endif
 
 	// draw dump
 	tetris_view_drawDump(pV);
 
 	// visual feedback to inform about a level change
-	uint8_t nLevel = tetris_logic_getLevel(pV->pLogic);
+	uint8_t nLevel = pV->pVariantMethods->getLevel(pV->pVariant);
 	if (nLevel != pV->nOldLevel)
 	{
-		tetris_view_blinkBorders();
+		tetris_view_blinkBorders(pV);
 		pV->nOldLevel = nLevel;
 	}
 	
 }
 
 
-/* Function:                tetris_view_formatHighscoreName
- * Description:             convert uint16_t into ascii Highscore
- *                          (only used internally in view.c)
- * Argument nHighscoreName: packed integer with highscoreName
- * Argument pszName:        pointer to a char array where result is stored
- * Return value:            void
- */
-void tetris_view_formatHighscoreName(uint16_t nHighscoreName, char *pszName)
-{
-  pszName[0] = ((nHighscoreName>>10)&0x1F) + 65;
-  if (pszName[0] == '_') pszName[0] = ' ';
-
-  pszName[1] = ((nHighscoreName>> 5)&0x1F) + 65;
-  if (pszName[1] == '_') pszName[1] = ' ';
-
-  pszName[2] = ( nHighscoreName     &0x1F) + 65;
-  if (pszName[2] == '_') pszName[2] = ' ';
-
-  pszName[3] = 0;
-}
-
-
-/* Function:     tetris_view_showResults
- * Description:  shows results after game
- * Argument pV:  pointer to the view which should show the reults
- * Return value: void
- */
 void tetris_view_showResults(tetris_view_t *pV)
 {
 #ifdef SCROLLTEXT_SUPPORT
 	char pszResults[54], pszHighscoreName[4];
-	uint16_t nScore = tetris_logic_getScore(pV->pLogic);
-	uint16_t nHighscore = tetris_logic_getHighscore(pV->pLogic);
-	uint16_t nLines = tetris_logic_getLines(pV->pLogic);
-
-	uint16_t nHighscoreName = tetris_logic_getHighscoreName(pV->pLogic);
+	uint16_t nScore = pV->pVariantMethods->getScore(pV->pVariant);
+	uint16_t nHighscore = pV->pVariantMethods->getHighscore(pV->pVariant);
+	uint16_t nLines = pV->pVariantMethods->getLines(pV->pVariant);
+	uint16_t nHighscoreName =
+			pV->pVariantMethods->getHighscoreName(pV->pVariant);
 	tetris_view_formatHighscoreName(nHighscoreName, pszHighscoreName);
 
 	if (nScore <= nHighscore)
@@ -506,60 +723,3 @@ void tetris_view_showResults(tetris_view_t *pV)
 	scrolltext(pszResults);
 #endif
 }
-
-
-#ifdef GAME_TETRIS_FP
-/* Function:     tetris_view_setpixel_fp
- * Description:  own setpixel wrapper for first person mode
- * Return value: void
- */
-void tetris_view_setpixel_fp(pixel p, unsigned char value) {
-  switch (tetris_screendir) {
-    case 0: setpixel(p,value); break;
-    case 1: setpixel((pixel){p.y,15-p.x}, value); break;
-    case 2: setpixel((pixel){15-p.x,15-p.y}, value); break;
-    case 3: setpixel((pixel){15-p.y,p.x}, value); break;
-  }
-}
-
-/* Function:     tetris_view_rotate
- * Description:  rotate view for first person mode
- * Return value: void
- */
-void tetris_view_rotate(void) {
-  unsigned char plane, row, byte, shift, off, sbyte, hrow;
-  unsigned char new_pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
-
-  tetris_screendir = (tetris_screendir+1)%4;
-	
-// if ( NUM_ROWS != 16 || LINEBYTES != 2 ) return;
-
-  memset(&new_pixmap, 0, sizeof(new_pixmap));
-  for(plane=0; plane<NUMPLANE; plane++){
-    for(row=0;row<NUM_ROWS; row++){
-      for(byte=0;byte<LINEBYTES;byte++){
-        hrow = row%8;
-	shift = 7-hrow;
-	off = ((byte==0)?15:7);
-	sbyte = (row<8) ? 1 : 0;
-			  
-	new_pixmap[plane][row][1-byte] = 
-	(
-	  ( ((pixmap[plane][off  ][sbyte] >> shift)&1) << 7 ) |
-	  ( ((pixmap[plane][off-1][sbyte] >> shift)&1) << 6 ) |
-	  ( ((pixmap[plane][off-2][sbyte] >> shift)&1) << 5 ) |
-	  ( ((pixmap[plane][off-3][sbyte] >> shift)&1) << 4 ) |
-	  ( ((pixmap[plane][off-4][sbyte] >> shift)&1) << 3 ) |
-	  ( ((pixmap[plane][off-5][sbyte] >> shift)&1) << 2 ) |
-	  ( ((pixmap[plane][off-6][sbyte] >> shift)&1) << 1 ) |
-	  ( ((pixmap[plane][off-7][sbyte] >> shift)&1) << 0 )
-	);
-
-      }
-    }
-  }
-
-  memcpy(&pixmap, &new_pixmap, sizeof(pixmap));
-}
-
-#endif
