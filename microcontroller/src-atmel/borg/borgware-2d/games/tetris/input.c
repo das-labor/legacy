@@ -5,12 +5,13 @@
 #include "../../config.h"
 #include "../../joystick/joystick.h"
 #include "../../util.h"
+#include "../../scrolltext/scrolltext.h"
 #include "input.h"
 #include "orientation.h"
 
 #include "../../compat/pgmspace.h"
 #define WAIT(ms) wait(ms)
-#define PM(value) pgm_read_word(&value)
+#define PM(value) pgm_read_byte(&value)
 
 /**
  * \defgroup TetrisInputDefinesPrivate Input: Internal constants
@@ -243,7 +244,7 @@ tetris_input_t *tetris_input_construct(void)
 
 	pIn->cmdRawLast = pIn->cmdLast = TETRIS_INCMD_NONE;
 	pIn->nOrientation = TETRIS_ORIENTATION_0;
-	// pIn->nLevel = 0xFF;
+	pIn->nLevel = 0xFF;
 	tetris_input_setLevel(pIn, 0);
 	pIn->nLoopCycles = 0;
 	pIn->nRepeatCount = -TETRIS_INPUT_REPEAT_INITIALDELAY;
@@ -419,12 +420,12 @@ void tetris_input_setLevel(tetris_input_t *pIn,
 	assert(pIn != NULL);
 	assert(nLvl <= TETRIS_INPUT_LEVELS - 1);
 
-	static const uint8_t nCycles[] = {TETRIS_INPUT_LVL_CYCLES};
+	static const uint8_t nCycles[] PROGMEM = {TETRIS_INPUT_LVL_CYCLES};
 
 	if (pIn->nLevel != nLvl)
 	{
 		pIn->nLevel = nLvl;
-		pIn->nMaxCycles = nCycles[nLvl];
+		pIn->nMaxCycles = PM(nCycles[nLvl]);
 	}
 }
 
