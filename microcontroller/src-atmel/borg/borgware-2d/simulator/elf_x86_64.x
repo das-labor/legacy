@@ -140,9 +140,10 @@ SECTIONS
   .data           :
   {
     *(.data .data.* .gnu.linkonce.d.*)
+    . = ALIGN(16);
     PROVIDE (_eeprom_start__ = .);
     *(.eeprom)
-    . = ALIGN(8) ;
+    . = ALIGN(16);
     PROVIDE (_game_descriptors_start__ = .);
     *(.game_descriptors)
     PROVIDE (_game_descriptors_end__ = .);
