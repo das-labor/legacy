@@ -3,122 +3,135 @@
 
 #include <inttypes.h>
 
+/**
+ * \defgroup TetrisPieceTypes Piece: Data types
+ */
+/*@{*/
 
 /*********
  * types *
  *********/
 
+/** shape attributes for a piece */
 typedef enum tetris_piece_shape_t
 {
-	TETRIS_PC_LINE,
-	TETRIS_PC_T,
-	TETRIS_PC_SQUARE,
-	TETRIS_PC_L,
-	TETRIS_PC_LBACK,
-	TETRIS_PC_S,
-	TETRIS_PC_Z
+	TETRIS_PC_LINE,   /**< the I shaped brick */
+	TETRIS_PC_T,      /**< the T shaped brick */
+	TETRIS_PC_SQUARE, /**< the sqare shaped brick */
+	TETRIS_PC_L,      /**< the L shaped brick */
+	TETRIS_PC_LBACK,  /**< the reverse L shaped brick */
+	TETRIS_PC_S,      /**< the S shaped brick */
+	TETRIS_PC_Z       /**< the Z shaped brick */
 }
 tetris_piece_shape_t;
 
 
+/** possible angles for a brick */
 typedef enum tetris_piece_angle_t
 {
-	TETRIS_PC_ANGLE_0,
-	TETRIS_PC_ANGLE_90,
-	TETRIS_PC_ANGLE_180,
-	TETRIS_PC_ANGLE_270
+	TETRIS_PC_ANGLE_0,   /**< standard angle */
+	TETRIS_PC_ANGLE_90,  /**< rotated by 90 degrees */
+	TETRIS_PC_ANGLE_180, /**< rotated by 180 degrees */
+	TETRIS_PC_ANGLE_270  /**< rotated by 270 degrees */
 }
 tetris_piece_angle_t;
 
 
+/** rotation attributes */
 typedef enum tetris_piece_rotation_t
 {
-	TETRIS_PC_ROT_CW, // clockwise rotation
-	TETRIS_PC_ROT_CCW // counter clockwise rotation
+	TETRIS_PC_ROT_CW, /**< clockwise rotation */
+	TETRIS_PC_ROT_CCW /**< counter clockwise rotation */
 }
 tetris_piece_rotation_t;
 
-
+/**
+ * describes the attributes of a piece
+ * @see tetris_piece_shape_t
+ * @see tetris_piece_angle_t
+ */
 typedef struct tetris_piece_t
 {
-	tetris_piece_shape_t shape; // specifies the shape of the piece
-	tetris_piece_angle_t angle; // specifies one of 4 angels
+	tetris_piece_shape_t shape; /**< specifies the shape of the piece */
+	tetris_piece_angle_t angle; /**< specifies one of 4 angels */
 }
 tetris_piece_t;
 
+/*@}*/
+
+
+/**
+ * \defgroup TetrisPieceRelated Piece: Interface functions
+ */
+/*@{*/
 
 /*****************************
  *  construction/destruction *
  *****************************/
 
-/* Function:     tetris_piece_construct
- * Description:  constructs a piece with the given attributes
- * Argument s:   shape of the piece (see tetris_piece_shape_t)
- * Argument a:   its angle (see tetris_piece_angel_t)
- * Return value: pointer to a newly created piece
+/**
+ * constructs a piece with the given attributes
+ * @param s shape of the piece (see tetris_piece_shape_t)
+ * @param a its angle (see tetris_piece_angel_t)
+ * @return pointer to a newly created piece
  */
 tetris_piece_t *tetris_piece_construct(tetris_piece_shape_t s,
                                        tetris_piece_angle_t a);
 
 
-/* Function:     tetris_piece_destruct
- * Description:  destructs a piece
- * Argument pPc: pointer to the piece to be destructed
- * Return value: void
+/**
+ * destructs a piece
+ * @param pPc pointer to the piece to be destructed
  */
  void tetris_piece_destruct(tetris_piece_t *pPc);
 
 
-/****************************
- *  piece related functions *
- ****************************/
+/***************************
+ * piece related functions *
+ ***************************/
 
-/* Function:     tetris_piece_getBitmap
- * Description:  returns bitfield representation of the piece
- * Argument pPc: piece from which the bitfield shuld be retrieved
- * Return value: bitfield representation of the piece
- *               - nth nibble is nth row of the piece (from upper left)
- *               - the LSB of a nibble represents the left side of a row
+/**
+ * returns bitfield representation of the piece
+ * @param pPc piece from which the bitfield shuld be retrieved
+ * @return bitfield representation of the piece
  */
 uint16_t tetris_piece_getBitmap(tetris_piece_t *pPc);
 
 
-/* Function:     tetris_piece_rotate
- * Description:  rotates a piece
- * Argument pPc: piece to rotate
- * Argument r:   type of rotation (see tetris_piece_rotation_t)
- * Return value: void
+/**
+ * rotates a piece
+ * @param pPc piece to rotate
+ * @param r type of rotation (see tetris_piece_rotation_t)
  */
 void tetris_piece_rotate(tetris_piece_t *pPc,
                          tetris_piece_rotation_t r);
 
 
-/* Function:       tetris_piece_changeShape
- * Description:    changes the shape of a piece
- * Argument pPc:   piece to change
- * Argument shape: the shape of interest
- * Return value:   void
+/**
+ * changes the shape of a piece
+ * @param pPc piece to change
+ * @param shape the shape of interest
  */
-void tetris_piece_changeShape(tetris_piece_t *pPc,
-                              tetris_piece_shape_t shape);
+void tetris_piece_setShape(tetris_piece_t *pPc,
+                           tetris_piece_shape_t shape);
 
 
-/* Function:       tetris_piece_changeAngle
- * Description:    changes the angle of a piece
- * Argument pPc:   piece to change
- * Argument angle: the angle of interest
- * Return value:   void
+/**
+ * changes the angle of a piece
+ * @param pPc piece to change
+ * @param angle the angle of interest
  */
-void tetris_piece_changeAngle(tetris_piece_t *pPc,
-                              tetris_piece_angle_t angle);
+void tetris_piece_setAngle(tetris_piece_t *pPc,
+                           tetris_piece_angle_t angle);
 
 
-/* Function:     tetris_piece_angleCount
- * Description:  returns the number of different angles
- * Argument pPc: piece whose angle count is of interest
- * Return value: number of different angles
+/**
+ * returns the number of different angles
+ * @param pPc piece whose angle count we want to know
+ * @return number of different angles
  */
-int8_t tetris_piece_angleCount(tetris_piece_t *pPc);
+int8_t tetris_piece_getAngleCount(tetris_piece_t *pPc);
 
+/*@}*/
 
 #endif /*TETRIS_PIECE_H_*/

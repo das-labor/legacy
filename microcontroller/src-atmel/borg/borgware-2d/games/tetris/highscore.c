@@ -2,16 +2,19 @@
 #include <string.h>
 #include <stdio.h>
 #include <inttypes.h>
+#include "highscore.h"
 #include "../../config.h"
 #include "../../scrolltext/scrolltext.h"
 #include "../../joystick/joystick.h"
-#include "highscore.h"
+#include "../../compat/eeprom.h"
+
+// global array for the highscores
+uint16_t tetris_highscore[TETRIS_HISCORE_END] EEMEM;
+
+// global array for the champions' initials
+uint16_t tetris_highscore_name[TETRIS_HISCORE_END] EEMEM;
 
 
-/* Function:     tetris_highscore_inputName
- * Description:  let user input a three character name
- * Return value: name packed into a uint16_t
- */
 uint16_t tetris_highscore_inputName(void)
 {
 #ifdef SCROLLTEXT_SUPPORT
@@ -110,4 +113,51 @@ uint16_t tetris_highscore_inputName(void)
 #else
 	return (0);
 #endif
+}
+
+
+uint16_t tetris_highscore_retrieveHighscore(tetris_highscore_index_t nIndex)
+{
+	uint16_t nHighscore = 0;
+	nHighscore = eeprom_read_word(&tetris_highscore[nIndex]);
+
+	// a score of 65535 is most likely caused by uninitialized EEPROM addresses
+	if (nHighscore == 65535)
+	{
+		nHighscore = 0;
+	}
+
+	return nHighscore;
+}
+
+
+void tetris_highscore_saveHighscore(tetris_highscore_index_t nIndex,
+                                    uint16_t nHighscore)
+{
+	if (nHighscore > tetris_highscore_retrieveHighscore(nIndex))
+	{
+		eeprom_write_word(&tetris_highscore[nIndex], nHighscore);
+	}
+}
+
+
+uint16_t tetris_highscore_retrieveHighscoreName(tetris_highscore_index_t nIdx)
+{
+	uint16_t nHighscoreName = 0;
+	nHighscoreName = eeprom_read_word(&tetris_highscore_name[nIdx]);
+
+	// a score of 65535 is most likely caused by uninitialized EEPROM addresses
+	if (nHighscoreName == 65535)
+	{
+		nHighscoreName = 0;
+	}
+
+	return nHighscoreName;
+}
+
+
+void tetris_highscore_saveHighscoreName(tetris_highscore_index_t nIndex,
+                                        uint16_t nHighscoreName)
+{
+	eeprom_write_word(&tetris_highscore_name[nIndex], nHighscoreName);
 }
