@@ -170,7 +170,7 @@ array_push($objlist,$ctrlelement_sound);
 $encap_sound = new c_identifier($ctrlelement_sound);
 
 $ctrlelement_muell = new c_muell();
-$ctrlelement_muell->setdisplayname("Muell");
+$ctrlelement_muell->setdisplayname("Muell - An diesm Tag rausstellen - Abholung ist x+1");
 array_push($objlist,$ctrlelement_muell);
 $encap_muell = new c_identifier($ctrlelement_muell);
 
