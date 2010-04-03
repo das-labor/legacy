@@ -107,8 +107,8 @@ class c_muell extends c_content{
     $ical = new ICSReader();
     $ical->readfromfile('muell.ics');
     $events = $ical->getEvents();
-    $ctime = time()-(60*60*24);
-    $showevents = 2;
+    $ctime = time()-(60*60*48);
+    $showevents = 3;
     $i=0;
     
     $this->content ="";

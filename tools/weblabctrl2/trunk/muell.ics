@@ -1,12 +1,6 @@
 BEGIN:VCALENDAR
 VERSION:2.0
 BEGIN:VEVENT
-DTSTART;VALUE=DATE:20100330
-DTEND;VALUE=DATE:20100330
-SUMMARY:foooREMONDIS DSD, Abholung am Folgetag: gelbe Tonnen (grosse und kleine
- ) zur Strasse!
-END:VEVENT
-BEGIN:VEVENT
 DTSTART;VALUE=DATE:20100101
 DTEND;VALUE=DATE:20100101
 SUMMARY:REMONDIS DSD, Abholung am Folgetag: gelbe Tonnen (grosse und kleine
@@ -169,20 +163,314 @@ SUMMARY:REMONDIS DSD, Abholung am Folgetag: gelbe Tonnen (grosse und kleine
  ) zur Strasse!
 END:VEVENT
 BEGIN:VEVENT
-DTSTART;VALUE=DATE:20100315
-DTEND;VALUE=DATE:20100315
-RRULE:FREQ=WEEKLY;UNTIL=20110101;INTERVAL=1;BYDAY=MO;WKST=MO
-RDATE:20100328,20100406,20100525,20101102
-EXDATE:20100329,20100405,20100524,20101101
+DTSTART;VALUE=DATE:20100328
+DTEND;VALUE=DATE:20100328
 SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
  den!
 END:VEVENT
 BEGIN:VEVENT
 DTSTART;VALUE=DATE:20100406
 DTEND;VALUE=DATE:20100406
-RRULE:FREQ=WEEKLY;UNTIL=20101218;INTERVAL=4;BYDAY=TU;WKST=MO
-RDATE:20100407
-EXDATE:20100406
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100525
+DTEND;VALUE=DATE:20100525
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20101102
+DTEND;VALUE=DATE:20101102
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100315
+DTEND;VALUE=DATE:20100315
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100322
+DTEND;VALUE=DATE:20100322
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100412
+DTEND;VALUE=DATE:20100412
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100419
+DTEND;VALUE=DATE:20100419
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100426
+DTEND;VALUE=DATE:20100426
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100503
+DTEND;VALUE=DATE:20100503
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100510
+DTEND;VALUE=DATE:20100510
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100517
+DTEND;VALUE=DATE:20100517
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100531
+DTEND;VALUE=DATE:20100531
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100607
+DTEND;VALUE=DATE:20100607
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100614
+DTEND;VALUE=DATE:20100614
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100621
+DTEND;VALUE=DATE:20100621
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100628
+DTEND;VALUE=DATE:20100628
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100705
+DTEND;VALUE=DATE:20100705
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100712
+DTEND;VALUE=DATE:20100712
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100719
+DTEND;VALUE=DATE:20100719
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100726
+DTEND;VALUE=DATE:20100726
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100802
+DTEND;VALUE=DATE:20100802
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100809
+DTEND;VALUE=DATE:20100809
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100816
+DTEND;VALUE=DATE:20100816
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100823
+DTEND;VALUE=DATE:20100823
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100830
+DTEND;VALUE=DATE:20100830
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100906
+DTEND;VALUE=DATE:20100906
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100913
+DTEND;VALUE=DATE:20100913
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100920
+DTEND;VALUE=DATE:20100920
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100927
+DTEND;VALUE=DATE:20100927
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20101004
+DTEND;VALUE=DATE:20101004
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20101011
+DTEND;VALUE=DATE:20101011
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20101018
+DTEND;VALUE=DATE:20101018
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20101025
+DTEND;VALUE=DATE:20101025
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20101108
+DTEND;VALUE=DATE:20101108
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20101115
+DTEND;VALUE=DATE:20101115
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20101122
+DTEND;VALUE=DATE:20101122
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20101129
+DTEND;VALUE=DATE:20101129
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20101206
+DTEND;VALUE=DATE:20101206
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20101213
+DTEND;VALUE=DATE:20101213
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20101220
+DTEND;VALUE=DATE:20101220
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20101227
+DTEND;VALUE=DATE:20101227
+SUMMARY:USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wur
+ den!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100407
+DTEND;VALUE=DATE:20100407
+SUMMARY:USB Altpapier, Abholung am Folgetag: Tonnen (grosse und kleine) zur
+  Strasse!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100504
+DTEND;VALUE=DATE:20100504
+SUMMARY:USB Altpapier, Abholung am Folgetag: Tonnen (grosse und kleine) zur
+  Strasse!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100601
+DTEND;VALUE=DATE:20100601
+SUMMARY:USB Altpapier, Abholung am Folgetag: Tonnen (grosse und kleine) zur
+  Strasse!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100629
+DTEND;VALUE=DATE:20100629
+SUMMARY:USB Altpapier, Abholung am Folgetag: Tonnen (grosse und kleine) zur
+  Strasse!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100727
+DTEND;VALUE=DATE:20100727
+SUMMARY:USB Altpapier, Abholung am Folgetag: Tonnen (grosse und kleine) zur
+  Strasse!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100824
+DTEND;VALUE=DATE:20100824
+SUMMARY:USB Altpapier, Abholung am Folgetag: Tonnen (grosse und kleine) zur
+  Strasse!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20100921
+DTEND;VALUE=DATE:20100921
+SUMMARY:USB Altpapier, Abholung am Folgetag: Tonnen (grosse und kleine) zur
+  Strasse!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20101019
+DTEND;VALUE=DATE:20101019
+SUMMARY:USB Altpapier, Abholung am Folgetag: Tonnen (grosse und kleine) zur
+  Strasse!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20101116
+DTEND;VALUE=DATE:20101116
+SUMMARY:USB Altpapier, Abholung am Folgetag: Tonnen (grosse und kleine) zur
+  Strasse!
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20101214
+DTEND;VALUE=DATE:20101214
 SUMMARY:USB Altpapier, Abholung am Folgetag: Tonnen (grosse und kleine) zur
   Strasse!
 END:VEVENT
