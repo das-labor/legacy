@@ -11,8 +11,8 @@ class c_treppenblink extends c_content{
   protected $myid;
   protected $setfilecmd;
   protected $objname;
-  protected $treppenblink_modes=array("blau" => "0x00", "stop" => "0x01", "weiss" => "0x02", "grau" => "0x03" , "aus" => "0x04", "gruen" => "0x05", "rot" => "0x06", "hurtz" => "0x07");
-  protected $treppenblink_order=array("blau","rot","gruen","weiss","grau","stop","aus","hurtz");
+  protected $treppenblink_modes=array("blau" => "0x00", "stop" => "0x01", "weiss" => "0x02", "grau" => "0x03" , "aus" => "0x04", "gruen" => "0x05", "rot" => "0x06", "hurtz" => "0x07", "borg" => "0x08");
+  protected $treppenblink_order=array("blau","rot","gruen","weiss","grau","stop","aus","hurtz","borg");
   function __construct() {
     $this->divstr = "";
     $this->cssstr = "";
@@ -112,7 +112,8 @@ class c_treppenblink extends c_content{
     $this->content .= "<td><input type=\"image\" src=\"icons/grau.png\" onclick=\"".$this->myid."_cmd('".$this->treppenblink_modes["grau"]."');\"></td> ";
     $this->content .= "<td><input type=\"image\" src=\"icons/pause.png\" onclick=\"".$this->myid."_cmd('".$this->treppenblink_modes["stop"]."');\"></td> ";
     $this->content .= "<td><input type=\"image\" src=\"icons/aus.png\" onclick=\"".$this->myid."_cmd('".$this->treppenblink_modes["aus"]."');\"></td> ";
-    $this->content .= "<td><input type=\"image\" src=\"icons/hurts.png\" onclick=\"".$this->myid."_cmd('".$this->treppenblink_modes["hurtz"]."');\"></td> ";
+    $this->content .= "<td><input type=\"image\" src=\"icons/hurts.png\" onclick=\"".$this->myid."_cmd('".$this->treppenblink_modes["hurtz"]."');\"></td></tr><tr> ";
+    $this->content .= "<td><input type=\"image\" src=\"icons/borg.png\" onclick=\"".$this->myid."_cmd('".$this->treppenblink_modes["borg"]."');\"></td> ";
     $this->content .= "</tr></table>";
   }
 
