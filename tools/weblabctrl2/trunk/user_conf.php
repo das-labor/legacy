@@ -53,7 +53,7 @@ $defaults = array( "Lounge" => array("xpos" => "300px",
 					 "ypos" => "220px",
 					 "xpos_small" => "0px",
 					 "ypos_small" => "200px",
-					 'closed' => "closed",
+					 'closed' => "open",
 					 "ctrl" => array()
 					 ),
 		   "WebLabInterface" => array("xpos" => "900px",
