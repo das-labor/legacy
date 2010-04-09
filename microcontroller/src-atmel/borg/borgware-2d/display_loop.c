@@ -9,6 +9,7 @@
 #include "animations/gameoflife.h"
 #include "animations/stonefly.h" 
 #include "animations/flyingdots.h"
+#include "animations/breakout_demo.h"
 #include "borg_hw/borg_hw.h"
 #include "can/borg_can.h"
 #include "random/prng.h"
@@ -117,8 +118,14 @@ void display_loop(){
 			break;
 #endif
 
-#ifdef ANIMATION_MHERWEG
+#ifdef ANIMATION_BREAKOUT
 		case 12:
+			breakout_demo();
+			break;
+#endif
+
+#ifdef ANIMATION_MHERWEG
+		case 13:
 			lines1();
 			dots1();
 			movinglines();

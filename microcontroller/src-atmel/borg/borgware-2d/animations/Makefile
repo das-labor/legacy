@@ -25,5 +25,8 @@ ifeq ($(ANIMATION_GAMEOFLIFE),y)
   SRC += gameoflife.c
 endif
 
+ifeq ($(ANIMATION_BREAKOUT),y)
+  SRC += breakout_demo.c
+endif
 
 include $(TOPDIR)/rules.mk
