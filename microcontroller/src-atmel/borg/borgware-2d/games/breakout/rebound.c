@@ -54,18 +54,30 @@ void rebound_draw ()
 		printf("rpos: %i\n", rbpos);
 }
 
-void rebound_tick()
+void rebound_tick(ball_t *ball)
 {
-	/* directions are inverted (JOYISLEFT means RIGHT) */
-	if (JOYISRIGHT && rbpos)
+	if (ball != NULL)
 	{
-		rbpos--;
+		rbpos = (uint8_t) abs(ball->x / 256);
+		if (rbpos < 0)
+			rbpos = 0;
+		if (rbpos > (NUM_COLS - REBOUND_SIZE))
+			rbpos = NUM_COLS - REBOUND_SIZE;
 		rebound_draw();
 	}
-
-	if (JOYISLEFT && rbpos < (NUM_COLS - (REBOUND_SIZE)))
+	else
 	{
-		rbpos++;
-		rebound_draw();
+		/* directions are inverted (JOYISLEFT means RIGHT) */
+		if (JOYISRIGHT && rbpos)
+		{
+			rbpos--;
+			rebound_draw();
+		}
+
+		if (JOYISLEFT && rbpos < (NUM_COLS - (REBOUND_SIZE)))
+		{
+			rbpos++;
+			rebound_draw();
+		}
 	}
 }

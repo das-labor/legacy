@@ -17,7 +17,7 @@
  */
 
 #include "common.h"
-static void borg_breakout();
+#include "breakout.h"
 
 #ifdef MENU_SUPPORT
 //static uint8_t breakout_icon[8] PROGMEM = {0x03, 0x03, 0x00, 0x00, 0xff, 0xff, 0x00, 0x00}; /* our Icon */
@@ -25,14 +25,34 @@ static uint8_t breakout_icon[8] PROGMEM = {0x00, 0x18, 0x18, 0x00, 0x00, 0xff, 0
 
 game_descriptor_t breakout_game_descriptor __attribute__((section(".game_descriptors"))) =
 {
-	&borg_breakout,
+	&borg_breakout_game,
 	breakout_icon
 };
 #endif
 
-void borg_breakout()
+
+void borg_breakout_game()
 {
-	uint8_t level = 0;
+	borg_breakout(0);
+}
+
+
+void borg_breakout(uint8_t demomode)
+{
+	uint8_t ignorescore_buffer = ignorescore;
+	uint16_t cycles = DEMO_CYCLES;
+	uint8_t level;
+	if (demomode)
+	{
+		level = 4;
+		ignorescore = 1;
+	}
+	else
+	{
+		level = 0;
+		ignorescore = 0;
+	}
+
 	ball_t balls[1];
 
 	/* spawn a ball in the middle bottom of the field, let it move upwards with random speed & direction */
@@ -41,10 +61,15 @@ void borg_breakout()
 	level_init(level);
 	rebound_init();
 
-	while (23)
+	while (cycles != 0)
 	{
 		wait(50);
-		rebound_tick();
+
+		if (demomode)
+			rebound_tick(&balls[0]);
+		else
+			rebound_tick(NULL);
+
 		ball_think(&(balls[0]));
 		playfield_draw();
 		ball_draw(&(balls[0]));
@@ -63,5 +88,10 @@ void borg_breakout()
 			level_init(level);
 			rebound_init();
 		}
+
+		if (demomode)
+			--cycles;
 	}
+
+	ignorescore = ignorescore_buffer;
 }

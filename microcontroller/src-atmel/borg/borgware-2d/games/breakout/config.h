@@ -30,5 +30,7 @@ static const int8_t rebound_reflection[6][2] =
 	{ 72, -20}   /* offside right */
 };
 
+#define DEMO_CYCLES 1200;
+
 #endif /* CONFIG_H */
 

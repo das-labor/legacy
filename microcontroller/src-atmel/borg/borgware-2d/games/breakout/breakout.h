@@ -15,13 +15,14 @@
  * Author & Copyright (C) 2010: Soeren Heisrath (forename@surename.org)
  *
  */
-#include "common.h"
 
-#ifndef REBOUND_H
-#define REBOUND_H
-void rebound_init();
-void rebound_tick(ball_t *ball);
-void rebound_draw();
-uint8_t rebound_getpos();
-void rebound_reflect(ball_t *b, int8_t in_x);
-#endif /* REBOUND_H */
+#ifndef BREAKOUT_H_
+#define BREAKOUT_H_
+
+#include <stdint.h>
+
+void borg_breakout_game();
+
+void borg_breakout(uint8_t demomode);
+
+#endif /* BREAKOUT_H_ */

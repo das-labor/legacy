@@ -74,6 +74,7 @@ comment "Animations"
 	dep_bool "Stonefly"		 ANIMATION_STONEFLY		 $RANDOM_SUPPORT  $GAME_TETRIS_CORE
 	dep_bool "Flying Dots"	 ANIMATION_FLYINGDOTS	 $RANDOM_SUPPORT
 	dep_bool "Game of Life"  ANIMATION_GAMEOFLIFE    $RANDOM_SUPPORT
+	dep_bool "Breakout Demo" ANIMATION_BREAKOUT      $GAME_BREAKOUT
 	bool     "M Herweg"      ANIMATION_MHERWEG
 	
 	comment "Special Animations"
