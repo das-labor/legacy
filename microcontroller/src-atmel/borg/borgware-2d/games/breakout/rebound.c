@@ -59,8 +59,6 @@ void rebound_tick(ball_t *ball)
 	if (ball != NULL)
 	{
 		rbpos = (uint8_t) abs(ball->x / 256);
-		if (rbpos < 0)
-			rbpos = 0;
 		if (rbpos > (NUM_COLS - REBOUND_SIZE))
 			rbpos = NUM_COLS - REBOUND_SIZE;
 		rebound_draw();
