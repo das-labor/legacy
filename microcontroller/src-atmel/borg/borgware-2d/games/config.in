@@ -1,7 +1,9 @@
 mainmenu_option next_comment
 comment "Games"
 
-dep_bool_menu "Tetris Core"    GAME_TETRIS_CORE      $JOYSTICK_SUPPORT $RANDOM_SUPPORT
+mainmenu_option next_comment
+comment "Tetris"
+dep_bool "Tetris Core (please select at least one of the below, too)" GAME_TETRIS_CORE $JOYSTICK_SUPPORT $RANDOM_SUPPORT
 dep_bool "Standard Tetris"     GAME_TETRIS           $GAME_TETRIS_CORE
 dep_bool "Bastard Tetris"      GAME_BASTET           $GAME_TETRIS_CORE
 dep_bool "First Person Tetris" GAME_TETRIS_FP        $GAME_TETRIS_CORE
