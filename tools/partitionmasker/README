@@ -1,3 +1,5 @@
+partitionmasker version 0.0.2
+
 partitionmasker is a script for Linux to ease the creation of
 virtual block devices that map an existing device with a BIOS disk
 label (MBR, partition table), mapping some parts read-only and some
