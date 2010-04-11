@@ -528,6 +528,13 @@ int8_t tetris_playfield_getRow(tetris_playfield_t *pPl)
 }
 
 
+int8_t tetris_playfield_getFirstMatterRow(tetris_playfield_t *pPl)
+{
+	assert(pPl != NULL);
+	return pPl->nFirstMatterRow;
+}
+
+
 uint8_t tetris_playfield_getRowMask(tetris_playfield_t *pPl)
 {
 	assert(pPl != NULL);

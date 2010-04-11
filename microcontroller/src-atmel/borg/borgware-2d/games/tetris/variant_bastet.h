@@ -39,7 +39,8 @@ typedef struct tetris_bastet_variant_t
 	uint16_t nLines;                           /** number of completed lines */
 	tetris_piece_t *pPreviewPiece;             /** the piece for the preview */
 	tetris_playfield_t *pPlayfield;            /** playfield to be examined */
-	int8_t *pColHeights;                       /** calculated heights */
+	int8_t *pActualColHeights;                 /** actual columns heights */
+	int8_t *pColHeights;                       /** predicted column heights */
 	tetris_bastet_scorepair_t nPieceScores[7]; /** score for every piece */
 }
 tetris_bastet_variant_t;
@@ -74,7 +75,7 @@ void tetris_bastet_destruct(void *pVariantData);
  * calculates a score for a piece at a given column
  * @param pBastet the bastet instance of interest
  * @param pPiece the piece to be tested
- * @param pnColum the column where the piece should be dropped
+ * @param nColum the column where the piece should be dropped
  * @return score for the given move
  */
 int16_t tetris_bastet_evaluateMove(tetris_bastet_variant_t *pBastet,

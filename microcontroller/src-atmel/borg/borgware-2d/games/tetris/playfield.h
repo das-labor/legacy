@@ -204,6 +204,14 @@ int8_t tetris_playfield_getRow(tetris_playfield_t *pPl);
 
 
 /**
+ * returns the row of the currently falling piece
+ * @param pPl the playfield we want information from
+ * @return highest row with matter
+ */
+int8_t tetris_playfield_getFirstMatterRow(tetris_playfield_t *pPl);
+
+
+/**
  * returns the row mask relative to nRow
  * @param pPl the playfield we want information from
  * @return bit mask of removed lines (relative to current position)
