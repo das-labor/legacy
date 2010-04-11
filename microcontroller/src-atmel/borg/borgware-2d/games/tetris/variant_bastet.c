@@ -38,6 +38,75 @@ void tetris_bastet_clearColHeights(tetris_bastet_variant_t *pBastet,
 
 
 /**
+ * calculate the actual column heights (without any prediction)
+ * @param pBastet bastet instance whose column heights should be calculated
+ */
+void tetris_bastet_calcActualColHeights(tetris_bastet_variant_t *pBastet)
+{
+	int8_t nWidth = tetris_playfield_getWidth(pBastet->pPlayfield);
+	int8_t nStartRow = tetris_playfield_getHeight(pBastet->pPlayfield) - 1;
+	int8_t nStopRow = tetris_playfield_getFirstMatterRow(pBastet->pPlayfield);
+	for (int8_t y = nStartRow; y >= nStopRow; --y)
+	{
+		uint16_t nDumpRow = tetris_playfield_getDumpRow(pBastet->pPlayfield, y);
+		uint16_t nColMask = 0x0001;
+		for (int8_t x = 0; x < nWidth; ++x)
+		{
+			if ((nDumpRow & nColMask) != 0)
+			{
+				pBastet->pActualColHeights[x] = nStartRow - y + 1;
+			}
+			nColMask <<= 1;
+		}
+	}
+}
+
+
+/**
+ * calculate the predicted column heights for a given column range
+ * @param pBastet bastet instance whose column heights should be predicted
+ * @param pPiece the piece to be tested
+ * @param nColum the column where the piece should be dropped
+ * @param nStartCol the first column of the range to be predicted
+ * @param nStopCol the last column of the range to be predicted
+ * @return 0 if dropped piece would cause an overflow, 1 if prediction succeeds
+ */
+uint8_t tetris_bastet_calcPredictedColHeights(tetris_bastet_variant_t *pBastet,
+                                              tetris_piece_t *pPiece,
+                                              int8_t nDeepestRow,
+                                              int8_t nColumn,
+                                              int8_t nStartCol,
+                                              int8_t nStopCol)
+{
+	// go through every row and calculate column heights
+	tetris_playfield_iterator_t iterator;
+	int8_t nHeight = 1;
+	uint16_t *pDump = tetris_playfield_predictBottomRow(&iterator,
+			pBastet->pPlayfield, pPiece, nDeepestRow, nColumn);
+	if (pDump == NULL)
+	{
+		// an immediately returned NULL is caused by a full dump -> low score
+		return 0;
+	}
+	while (pDump != NULL)
+	{
+		uint16_t nColMask = 0x0001 << nStartCol;
+		for (int x = nStartCol; x <= nStopCol; ++x)
+		{
+			if ((*pDump & nColMask) != 0)
+			{
+				pBastet->pColHeights[x] = nHeight;
+			}
+			nColMask <<= 1;
+		}
+		pDump = tetris_playfield_predictNextRow(&iterator);
+		++nHeight;
+	}
+	return 1;
+}
+
+
+/**
  * compare function for quick sorting the pieces by score
  * @param pa the first value to compare
  * @param pb the second value to compare
@@ -119,6 +188,7 @@ void *tetris_bastet_construct(tetris_playfield_t *pPl)
 	pBastet->pPlayfield = pPl;
 
 	int8_t nWidth = tetris_playfield_getWidth(pBastet->pPlayfield);
+	pBastet->pActualColHeights = (int8_t*) calloc(nWidth, sizeof(int8_t));
 	pBastet->pColHeights = (int8_t*) calloc(nWidth, sizeof(int8_t));
 	tetris_bastet_clearColHeights(pBastet, 0, nWidth - 1);
 
@@ -131,6 +201,10 @@ void tetris_bastet_destruct(void *pVariantData)
 	assert(pVariantData != 0);
 	tetris_bastet_variant_t *pBastetVariant =
 			(tetris_bastet_variant_t *)pVariantData;
+	if (pBastetVariant->pActualColHeights != NULL)
+	{
+		free(pBastetVariant->pActualColHeights);
+	}
 	if (pBastetVariant->pColHeights != NULL)
 	{
 		free(pBastetVariant->pColHeights);
@@ -152,66 +226,53 @@ int16_t tetris_bastet_evaluateMove(tetris_bastet_variant_t *pBastet,
                                    tetris_piece_t *pPiece,
                                    int8_t nColumn)
 {
+	// initial score of the given piece
+	int16_t nScore = -32000;
+
 	// the row where the given piece collides
 	int8_t nDeepestRow = tetris_playfield_predictDeepestRow(pBastet->pPlayfield,
 			pPiece, nColumn);
-
-	// initial score of the given piece
-	int16_t nScore = -32000;
 
 	// modify score based on complete lines
 	int8_t nLines =	tetris_playfield_predictCompleteLines(pBastet->pPlayfield,
 			pPiece, nDeepestRow, nColumn);
 	nScore += 5000 * nLines;
 
-	// determine sane start and stop columns whose heights we want to calculate
+	// determine a sane range of columns whose heights we want to predict
 	int8_t nWidth = tetris_playfield_getWidth(pBastet->pPlayfield);
-	int8_t nStartCol = ((nColumn - 1) < 0) ? 0 : nColumn - 1;
-	int8_t nStopCol;
-	// Do we start at the left most position?
-	// If we do we MUST calculate the heights of ALL columns (initial step)
-	if (nColumn <= -3)
+	int8_t nStartCol, nStopCol;
+	// if lines have been removed, we need to recalculate all column heights
+	if (nLines != 0)
 	{
+		nStartCol = 0;
 		nStopCol = nWidth - 1;
-		// reset all column heights to zero
-		tetris_bastet_clearColHeights(pBastet, 0 , nWidth);
 	}
-	// If not, only calculate columns which are affected by the moved piece.
+	// if no lines were removed, we only need to recalculate a few columns
 	else
 	{
+		nStartCol = (nColumn < 0) ? 0 : nColumn;
 		nStopCol = (nColumn + 3) < nWidth ? nColumn + 3 : nWidth - 1;
-		// clear affected column heights to prevent miscalculations
-		tetris_bastet_clearColHeights(pBastet, nStartCol, nStopCol);
 	}
 
-	// go through every row and calculate column heights
-	tetris_playfield_iterator_t iterator;
-	int8_t nHeight = 1;
-	uint16_t *pDump = tetris_playfield_predictBottomRow(&iterator,
-			pBastet->pPlayfield, pPiece, nDeepestRow, nColumn);
-	if (pDump == NULL)
+	// predicted column heights
+	if (!tetris_bastet_calcPredictedColHeights(pBastet, pPiece, nDeepestRow,
+			nColumn, nStartCol, nStopCol))
 	{
-		// an immediately returned NULL is caused by a full dump -> low score
+		// in case the prediction fails we return the lowest possible score
 		return -32766;
 	}
-	while (pDump != NULL)
-	{
-		uint16_t nColMask = 0x0001 << nStartCol;
-		for (int x = nStartCol; x <= nStopCol; ++x)
-		{
-			if ((*pDump & nColMask) != 0)
-			{
-				pBastet->pColHeights[x] = nHeight;
-			}
-			nColMask <<= 1;
-		}
-		pDump = tetris_playfield_predictNextRow(&iterator);
-		++nHeight;
-	}
+
 	// modify score based on predicted column heights
 	for (int x = 0; x < nWidth; ++x)
 	{
-		nScore -= 5 * pBastet->pColHeights[x];
+		if ((x >= nStartCol) && (x <= nStopCol))
+		{
+			nScore -= 5 * pBastet->pColHeights[x];
+		}
+		else
+		{
+			nScore -= 5 * pBastet->pActualColHeights[x];
+		}
 	}
 
 	return nScore;
@@ -220,6 +281,8 @@ int16_t tetris_bastet_evaluateMove(tetris_bastet_variant_t *pBastet,
 
 void tetris_bastet_evaluatePieces(tetris_bastet_variant_t *pBastet)
 {
+	// precache actual column heights
+	tetris_bastet_calcActualColHeights(pBastet);
 	int8_t nWidth = tetris_playfield_getWidth(pBastet->pPlayfield);
 	tetris_piece_t *pPiece = tetris_piece_construct(TETRIS_PC_LINE,
 			TETRIS_PC_ANGLE_0);
