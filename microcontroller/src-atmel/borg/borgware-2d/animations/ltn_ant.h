@@ -1,0 +1,1 @@
+void ltn_ant();
