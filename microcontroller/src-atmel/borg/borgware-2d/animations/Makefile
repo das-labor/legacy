@@ -29,4 +29,8 @@ ifeq ($(ANIMATION_BREAKOUT),y)
   SRC += breakout_demo.c
 endif
 
+ifeq ($(ANIMATION_LTN_ANT),y)
+  SRC += ltn_ant.c
+endif
+
 include $(TOPDIR)/rules.mk
