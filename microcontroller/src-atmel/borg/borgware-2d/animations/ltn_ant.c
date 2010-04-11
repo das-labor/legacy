@@ -1,4 +1,4 @@
-/*Copyright (c) 2010 Jan Lieven
+/* Copyright (c) 2010 Jan Lieven
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -29,11 +29,12 @@ void ltn_ant() {
 	clear_screen(0);
 
 	struct {
-		char x, y;
+		char x ,  y;
 		char dx, dy; /* Vector can only be: (0,1),(1,0),(0,-1),(-1,0) */
+		char ox, oy; /* Used to set old pixels so brightness 2 */
 	} ant; 
 		                    
-	int temp;
+	char temp, i = 0;
 
 	/* Random startposition and direction */
 	ant.x  = random8() % NUM_COLS;
@@ -53,23 +54,36 @@ void ltn_ant() {
 	do { 
 		if(get_pixel((pixel) {ant.x, ant.y}) == 0) { /* If the pixel is not set turn it on */
 			setpixel((pixel) {ant.x, ant.y}, 3);
-			temp = ant.dx;
+			
+			temp   = ant.dx;
 			ant.dx = ant.dy;
-			ant.dy = -temp; /* Turn 90 degrees to the right */
+			ant.dy =  -temp; /* Turn 90 degrees to the right */
+			
+			/* Lets the last pixel be darker than the latest */
+			if(i == 1) 
+				setpixel((pixel) {ant.ox, ant.oy}, 2);
+			i = 1;
+			ant.ox = ant.x;
+			ant.oy = ant.y;
+
 		} else {
 			setpixel((pixel) {ant.x, ant.y}, 0);
-			temp = ant.dy;
+			
+			temp   = ant.dy;
 			ant.dy = ant.dx;
-			ant.dx = -temp; /* Turn 90 degrees to the left */
+			ant.dx =  -temp; /* Turn 90 degrees to the left */
 		}
-		wait(100);
-									              
-		ant.x = ant.x + ant.dx;
-		ant.y = ant.y + ant.dy;
-											            
 
-	} while (ant.x >= 0 && ant.x < NUM_COLS && ant.y >= 0 && ant.y < NUM_ROWS); /* Make sure we won't leave the matrix
-										     * (Mr. Smith hates it outside the matrix, you know?)
-										     */       
+		wait(100);
+
+		ant.x += ant.dx;
+		ant.y += ant.dy;
+
+	} while(ant.x >= 0       && 
+		ant.x < NUM_COLS && 
+		ant.y >= 0       && 
+		ant.y < NUM_ROWS); /* Make sure we won't leave the matrix. (Mr. Smith hates it outside the matrix, you know?) */
+				    
+	wait(300);
 
 }
