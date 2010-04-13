@@ -44,7 +44,7 @@ void borg_breakout(uint8_t demomode)
 	uint8_t level;
 	if (demomode)
 	{
-		level = 4;
+		level = random8() % 5;
 		ignorescore = 1;
 	}
 	else
