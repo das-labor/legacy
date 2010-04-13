@@ -3,7 +3,8 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
-#include <uart.h>
+#include <avr/wdt.h>
+//#include <uart.h>
 #include <stdlib.h>
 
 #include "config.h"
@@ -18,9 +19,11 @@
 
 #define UART_BAUD_RATE 19200
 
+#define VENTIL_STEP  0
+#define VENTIL_RESET 1
 
-ISR(TIMER1_COMPA_vect)
-{
+
+ISR(TIMER1_COMPA_vect) {
 	FREILAUF();
 	TCNT1H = 0;
 	TCNT1L = 0;
@@ -48,8 +51,7 @@ void fahre_ventiel_zu() {
 
 
 
-void init(void)
-{
+void init(void) {
 	// Output for h-bridge
 	DDRC  |= _BV(PC0) | _BV(PC1) | _BV(PC2) | _BV(PC3);
 	// Freilauf
@@ -69,12 +71,11 @@ void init(void)
   sei();
 }
 
-int main(void)
-{
+int main(void) {
 	uint8_t TWIS_ResponseType;
-	int8_t ist_pos = 0, ziel_pos = 0, temp;
+	int8_t ist_pos = 0, ziel_pos = 0, data[2];
 	
-	uart_init(UART_BAUD_SELECT(UART_BAUD_RATE, F_CPU));
+//	uart_init(UART_BAUD_SELECT(UART_BAUD_RATE, F_CPU));
 	//system initialization
 	init();
 
@@ -83,34 +84,40 @@ int main(void)
 	uint16_t ct_last = TCNT1;
 	uint16_t ct_act = 0;
 	//the main loop continuously handles can messages
-	while (1)
-	{
-		if (TWIS_ResponseRequired(&TWIS_ResponseType))
-		{
-			switch (TWIS_ResponseType)
-			{
+	while (1) {
+		if (TWIS_ResponseRequired(&TWIS_ResponseType)) {
+			switch (TWIS_ResponseType) {
 				// Slave is requests to read bytes from the master. 
 				case TW_SR_SLA_ACK:
-					temp = TWIS_ReadNack();
+					data[0] = TWIS_ReadAck();
+					data[1] = TWIS_ReadNack();
 					TWIS_Stop();
 
-					if (temp < 6)
-						ziel_pos = temp;
-					OCR1A = abs(ziel_pos - ist_pos) * SCHRITTE;
+					switch (data[0]) {
+						case VENTIL_STEP:
+							if (data[1] < 6)
+								ziel_pos = data[1];
+							OCR1A = abs(ziel_pos - ist_pos) * SCHRITTE;
 
-					if (ist_pos < ziel_pos)
-					{
-						V_OEFFNEN();
-						ist_pos = ziel_pos;
-					}
-					if (ist_pos > ziel_pos)
-					{
-						V_SCHLIESSEN();
-						ist_pos = ziel_pos;
-					}
-					_delay_ms(50);
+							if (ist_pos < ziel_pos)
+							{
+								V_OEFFNEN();
+								ist_pos = ziel_pos;
+							}
+							if (ist_pos > ziel_pos)
+							{
+								V_SCHLIESSEN();
+								ist_pos = ziel_pos;
+							}
+							_delay_ms(50);
+							break;
+						case VENTIL_RESET:
+							//TCCR2 = 0;
+							wdt_enable(0);
+							while (1);
+							break;
 					break;
-
+				}
 				case TW_ST_SLA_ACK:
 					TWIS_Stop();
 					break;
