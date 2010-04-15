@@ -47,6 +47,9 @@ void ltn_ant() {
 		ant.dy = (random8() % 3) - 1;
 	} while(ant.dx == ant.dy);
 
+	ant.ox = 0;
+	ant.oy = 0;
+
 	while(cycles != 0) { 
 		if(get_pixel((pixel) {ant.x, ant.y}) == 0) { /* If the pixel is not set turn it on */
 			setpixel((pixel) {ant.x, ant.y}, 3);
