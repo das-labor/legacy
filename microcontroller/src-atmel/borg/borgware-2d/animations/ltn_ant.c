@@ -34,7 +34,7 @@ void ltn_ant() {
 		char ox, oy; /* Used to set old pixels so brightness 2 */
 	} ant; 
 		                    
-	char temp, i = 0, refill = 0;
+	char temp, i = 0;
 	uint16_t cycles = 500;
 
 	/* Random startposition and direction */
