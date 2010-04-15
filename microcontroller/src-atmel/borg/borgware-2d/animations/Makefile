@@ -33,4 +33,8 @@ ifeq ($(ANIMATION_LTN_ANT),y)
   SRC += ltn_ant.c
 endif
 
+ifeq ($(ANIMATION_LABORLOGO),y)
+  SRC += laborlogo.c
+endif
+
 include $(TOPDIR)/rules.mk

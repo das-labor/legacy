@@ -11,6 +11,7 @@
 #include "animations/flyingdots.h"
 #include "animations/breakout_demo.h"
 #include "animations/ltn_ant.h"
+#include "animations/laborlogo.h"
 #include "borg_hw/borg_hw.h"
 #include "can/borg_can.h"
 #include "random/prng.h"
@@ -139,6 +140,12 @@ void display_loop(){
 #ifdef ANIMATION_LTN_ANT
 		case 14:
 			ltn_ant();
+			break;
+#endif
+
+#ifdef ANIMATION_LABORLOGO
+		case 15:
+			laborlogo();;
 			break;
 #endif
 
