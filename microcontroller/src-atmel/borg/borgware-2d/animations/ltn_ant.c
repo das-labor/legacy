@@ -34,7 +34,8 @@ void ltn_ant() {
 		char ox, oy; /* Used to set old pixels so brightness 2 */
 	} ant; 
 		                    
-	char temp, i = 0;
+	char temp, i = 0, refill = 0;
+	uint16_t cycles = 500;
 
 	/* Random startposition and direction */
 	ant.x  = random8() % NUM_COLS;
@@ -42,16 +43,11 @@ void ltn_ant() {
 
 	/* Make sure we do have a valid vector */	
 	do {	
-		ant.dx = random8() % 2;
-		ant.dy = random8() % 2;
-		/* We need negative directions, too */
-		if(ant.dx == 2)
-			ant.dx = -1;
-		if(ant.dy == 2)
-			ant.dy = -1;
+		ant.dx = (random8() % 3) - 1;
+		ant.dy = (random8() % 3) - 1;
 	} while(ant.dx == ant.dy);
 
-	do { 
+	while(cycles != 0) { 
 		if(get_pixel((pixel) {ant.x, ant.y}) == 0) { /* If the pixel is not set turn it on */
 			setpixel((pixel) {ant.x, ant.y}, 3);
 			
@@ -62,7 +58,8 @@ void ltn_ant() {
 			/* Lets the last pixel be darker than the latest */
 			if(i == 1) 
 				setpixel((pixel) {ant.ox, ant.oy}, 2);
-			i = 1;
+			else
+				i = 1;
 			ant.ox = ant.x;
 			ant.oy = ant.y;
 
@@ -79,11 +76,18 @@ void ltn_ant() {
 		ant.x += ant.dx;
 		ant.y += ant.dy;
 
-	} while(ant.x >= 0       && 
-		ant.x < NUM_COLS && 
-		ant.y >= 0       && 
-		ant.y < NUM_ROWS); /* Make sure we won't leave the matrix. (Mr. Smith hates it outside the matrix, you know?) */
-				    
+		/* The ant will appear on the oppisite side of the field if it would leave */
+		if(ant.x <= 0)
+			ant.x += (NUM_ROWS - 1);
+		if(ant.x >= NUM_ROWS)
+			ant.x -= (NUM_ROWS + 1);
+		if(ant.y <= 0)
+			ant.y += (NUM_COLS - 1);
+		if(ant.y >= NUM_COLS)
+			ant.y -= (NUM_COLS + 1);
+
+		cycles--;
+	}
 	wait(300);
 
 }
