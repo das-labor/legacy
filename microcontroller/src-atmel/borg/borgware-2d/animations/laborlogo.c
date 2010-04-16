@@ -6,14 +6,19 @@
 #include "../autoconf.h"
 #include "../pixel.h"
 
+#define PRB(a) pgm_read_byte(&(a))
+
 #define BITMAP_WIDTH   48
 #define BITMAP_HEIGHT  48
 #define VIEWPORT_WIDTH  16
 #define VIEWPORT_HEIGHT 16
 #define XDOMAIN (BITMAP_WIDTH - VIEWPORT_WIDTH)
 #define YDOMAIN (BITMAP_HEIGHT - VIEWPORT_HEIGHT)
+#define FRAME_TICK 75
+#define FRAMECOUNT 400
 
-static uint16_t laborlogo_getLine(uint8_t x, uint8_t y)
+static uint16_t laborlogo_getLine(const uint8_t x,
+                                  const uint8_t y)
 {
 	assert(x <= BITMAP_WIDTH - VIEWPORT_WIDTH);
 	assert(y < BITMAP_HEIGHT);
@@ -73,23 +78,25 @@ static uint16_t laborlogo_getLine(uint8_t x, uint8_t y)
 
 	if (nAlignment == 0)
 	{
-		nLine = nBitmap[y][x / 8] << 8 | (nBitmap[y][x / 8 + 1]);
+		nLine = PRB(nBitmap[y][x / 8]) << 8;
+		nLine |= PRB((nBitmap[y][x / 8 + 1]));
 	}
 	else
 	{
-		nLine = pgm_read_byte(&nBitmap[y][x / 8]) << (8 + nAlignment);
-		nLine |= pgm_read_byte(&nBitmap[y][x / 8 + 1]) << nAlignment;
-		nLine |= pgm_read_byte(&nBitmap[y][x / 8 + 2]) >> (8 - nAlignment);
+		nLine = PRB(nBitmap[y][x / 8]) << (8 + nAlignment);
+		nLine |= PRB(nBitmap[y][x / 8 + 1]) << nAlignment;
+		nLine |= PRB(nBitmap[y][x / 8 + 2]) >> (8 - nAlignment);
 	}
 
 	return nLine;
 }
 
 
-void laborlogo_drawViewport(uint8_t nBitmapX, uint8_t nBitmapY)
+static void laborlogo_drawViewport(const uint8_t nBitmapX,
+                                   const uint8_t nBitmapY)
 {
-	assert(nBitmapX <= 32);
-	assert(nBitmapY <= 32);
+	assert(nBitmapX <= XDOMAIN);
+	assert(nBitmapY <= YDOMAIN);
 
 	for (uint8_t nVPortY = 0; nVPortY < 16; ++nVPortY)
 	{
@@ -108,29 +115,29 @@ void laborlogo_drawViewport(uint8_t nBitmapX, uint8_t nBitmapY)
 	}
 }
 
-void laborlogo_recalcVectors(int8_t *px, int8_t *py, int8_t *pdx, int8_t *pdy)
+static void laborlogo_recalcVectors(const int8_t x,
+                                    const int8_t y,
+                                    int8_t *const pdx,
+                                    int8_t *const pdy)
 {
-	if (((*px + *pdx) > (XDOMAIN)) || ((*px + *pdx) < 0))
+	if (((x + *pdx) > (XDOMAIN)) || ((x + *pdx) < 0))
 	{
-		*pdx = random8() % 2 * (*px < (XDOMAIN / 2) ? 1 : -1);
+		*pdx = random8() % 2 * (x < (XDOMAIN / 2) ? 1 : -1);
 	}
-	if (((*py + *pdy) > (YDOMAIN)) || ((*py + *pdy) < 0))
+	if (((y + *pdy) > (YDOMAIN)) || ((y + *pdy) < 0))
 	{
-		*pdy = random8() % 2 * (*py < (YDOMAIN / 2) ? 1 : -1);
+		*pdy = random8() % 2 * (y < (YDOMAIN / 2) ? 1 : -1);
 	}
 	if (*pdx == 0 && *pdy == 0)
 	{
-		*pdx = (*px < (XDOMAIN / 2) ? 1 : -1);
-		*pdy = (*py < (YDOMAIN / 2) ? 1 : -1);
+		*pdx = (x < (XDOMAIN / 2) ? 1 : -1);
+		*pdy = (y < (YDOMAIN / 2) ? 1 : -1);
 	}
-	*px += *pdx;
-	*py += *pdy;
-//	printf("%d, %d\n", *px , *py);
 }
 
 void laborlogo()
 {
-	uint16_t nCycles = 500;
+	uint16_t nCycles = FRAMECOUNT;
 	int8_t x = random8() % (XDOMAIN + 1);
 	int8_t y = random8() % (YDOMAIN + 1);
 	int8_t dx = 0;
@@ -139,7 +146,9 @@ void laborlogo()
 	while (nCycles-- != 0)
 	{
 		laborlogo_drawViewport(x ,y);
-		wait(75);
-		laborlogo_recalcVectors(&x, &y, &dx, &dy);
+		laborlogo_recalcVectors(x, y, &dx, &dy);
+		x += dx;
+		y += dy;
+		wait(FRAME_TICK);
 	}
 }
