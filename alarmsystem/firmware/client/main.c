@@ -12,7 +12,7 @@
 #include "rfm12_config.h"
 #include "rfm12.h"
 
-uint8_t myaddr = 0x00;
+volatile uint8_t myaddr = 0x00;
 
 void fill_adcvals (uint8_t *in_buf)
 {
@@ -22,20 +22,22 @@ void fill_adcvals (uint8_t *in_buf)
 	in_buf[3] = get_adc(1) & 0xff;
 }
 
+
 void send_packet (uint8_t in_dst, uint8_t in_cmd, uint8_t in_len, uint8_t *in_data)
 {
-	uint8_t txbuf[16], i;
+	uint8_t txbuf[16], i, k=0;
 
 	txbuf[F_T0]  = PROTO_TYPE0;
-	txbuf[F_T1]  = PROTO_TYPE0;
-	txbuf[F_SRC] = in_dst;
+	txbuf[F_T1]  = PROTO_TYPE1;
+	txbuf[F_SRC] = myaddr;
 	txbuf[F_DST] = in_dst;
 	txbuf[F_CMD] = in_cmd;
 	
-	for (i=F_DATA+1;i<(sizeof(txbuf)-PACKET_MINLEN);i++)
+	for (i=F_DATA;i<(sizeof(txbuf)-PACKET_MINLEN);i++)
 	{
 		if (i >= in_len) break;
-		txbuf[i] = in_data[i];
+		txbuf[i] = in_data[k];
+		k++;
 	}
 
 	rfm12_tx (in_len + PACKET_MINLEN, RFM12_PROTO_TYPE, txbuf);
@@ -100,7 +102,7 @@ int main (void)
 {
 	uint8_t i;
 	uint8_t txbuf[12];
-	uint16_t t = 0;
+	uint16_t t = 0, tmp;
 
 	DDRB |= 0x03;
 	PORTB = 0x01;
@@ -113,7 +115,6 @@ int main (void)
 	eeprom_busy_wait();
 	myaddr = eeprom_read_byte(0);
 
-	motion_set_refval();
 	rfm12_init();
 	rfm12_rx_clear();
 	wdt_enable(WDTO_120MS);
@@ -129,15 +130,17 @@ int main (void)
 			PORTB ^= 0x03;
 			fill_adcvals (txbuf);
 			send_packet (ADDR_BCAST, CMD_ALIVE, 4, txbuf);
-			motion_set_refval();
 			t = 0;
 		}
 		process_packet();
 		motiond_tick();
-		if (motion_check())
+		tmp = motion_check();
+
+		if (tmp)
 		{
-			fill_adcvals (txbuf);
-			send_packet (ADDR_BCAST, CMD_MOTION, 4, txbuf);
+			txbuf[0] = (uint8_t) (tmp >> 8);
+			txbuf[1] = tmp & 0xFF;
+			send_packet (ADDR_BCAST, CMD_MOTION, 2, txbuf);
 		}
 		wdt_reset();
 		rfm12_tick();
