@@ -1,30 +1,47 @@
 #include <avr/io.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "motion.h"
 
-static uint16_t adcval[2];
-static uint8_t mtd_state = MTD_STATE_ENABLED;
-static uint16_t refval[2] = { 0x00, 0x00 };
+volatile static uint16_t adcval[2];
+volatile static uint8_t mtd_state = MTD_STATE_ENABLED;
 
-void motion_set_refval()
+uint16_t filter (uint8_t in_idx, uint16_t in_val)
 {
-	refval[0] = adcval[0];
-	refval[1] = adcval[1];
+	static int32_t fval[2];
+	static uint8_t init_done = 0;
+	int32_t delta[2];
+
+	if (init_done != 0x03)
+	{
+		fval[in_idx] = in_val * 65536;
+		init_done |= (0x01 << in_idx);
+		return 0;
+	}
+	delta[in_idx] = ((in_val * 65536) - fval[in_idx]);
+	fval[in_idx] += delta[in_idx] / 1024;
+	return abs(delta[in_idx] / 65536);
 }
+
 
 uint8_t motion_check()
 {
-	uint8_t i;
+	uint8_t i, tmp;
 
 	for (i=0;i<2;i++)
 	{
+		tmp = filter (i, adcval[i]);
+		if (tmp > MTD_TRESHOLD)
+			return tmp;
+/*
 		if (adcval[i] > (refval[i] + MTD_TRESHOLD) || adcval[i] < (refval[i] - MTD_TRESHOLD))
 //		if (adcval[i] < MTD_TRESHOLD)
 			return 1 + i;
 
 		if (adcval[i] < MTD_MINVAL)
 			return i+1;
+*/
 	}
 	return 0;
 }
