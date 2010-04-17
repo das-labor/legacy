@@ -1,162 +1,168 @@
 dep_bool_menu "joystick support" JOYSTICK_SUPPORT y
 
+if [ "$JOYSTICK_SUPPORT" = "y" ]; then
+PARALLEL_JOYSTICK_SUPPORT=y
 ###################### Parallel joystick menu #################################
-dep_bool_menu "parallel joystick support" PARALLEL_JOYSTICK_SUPPORT y
+   dep_bool_menu "parallel joystick support" PARALLEL_JOYSTICK_SUPPORT y
 
-choice 'Pin up'			\
-   "PINA  PINA \
-    PINB  PINB \
-    PINC  PINC \
-    PIND  PIND" \
-   'PINB' JOYSTICK_PIN_UP
+   if [ "$PARALLEL_JOYSTICK_SUPPORT" = "y" ]; then
+      choice 'Pin up'			\
+         "PINA  PINA \
+          PINB  PINB \
+          PINC  PINC \
+          PIND  PIND" \
+         'PINB' JOYSTICK_PIN_UP
 
-choice 'Bit up'			\
-   "Bit0 0 \
-    Bit1 1 \
-    Bit2 2 \
-    Bit3 3 \
-    Bit4 4 \
-    Bit5 5 \
-    Bit6 6 \
-    Bit7 7" \
-   'Bit0' JOYSTICK_BIT_UP
+      choice 'Bit up'			\
+         "Bit0 0 \
+          Bit1 1 \
+          Bit2 2 \
+          Bit3 3 \
+          Bit4 4 \
+          Bit5 5 \
+          Bit6 6 \
+          Bit7 7" \
+         'Bit0' JOYSTICK_BIT_UP
 
-choice 'Pin down'			\
-   "PINA  PINA \
-    PINB  PINB \
-    PINC  PINC \
-    PIND  PIND" \
-   'PINB' JOYSTICK_PIN_DOWN
+      choice 'Pin down'			\
+         "PINA  PINA \
+          PINB  PINB \
+          PINC  PINC \
+          PIND  PIND" \
+         'PINB' JOYSTICK_PIN_DOWN
 
-choice 'Bit down'			\
-   "Bit0 0 \
-    Bit1 1 \
-    Bit2 2 \
-    Bit3 3 \
-    Bit4 4 \
-    Bit5 5 \
-    Bit6 6 \
-    Bit7 7" \
-   'Bit1' JOYSTICK_BIT_DOWN
+      choice 'Bit down'			\
+         "Bit0 0 \
+          Bit1 1 \
+          Bit2 2 \
+          Bit3 3 \
+          Bit4 4 \
+          Bit5 5 \
+          Bit6 6 \
+          Bit7 7" \
+         'Bit1' JOYSTICK_BIT_DOWN
 
-choice 'Pin left'			\
-   "PINA  PINA \
-    PINB  PINB \
-    PINC  PINC \
-    PIND  PIND" \
-   'PINB' JOYSTICK_PIN_LEFT
+      choice 'Pin left'			\
+         "PINA  PINA \
+          PINB  PINB \
+          PINC  PINC \
+          PIND  PIND" \
+         'PINB' JOYSTICK_PIN_LEFT
 
-choice 'Bit left'			\
-   "Bit0 0 \
-    Bit1 1 \
-    Bit2 2 \
-    Bit3 3 \
-    Bit4 4 \
-    Bit5 5 \
-    Bit6 6 \
-    Bit7 7" \
-   'Bit2' JOYSTICK_BIT_LEFT
+      choice 'Bit left'			\
+         "Bit0 0 \
+          Bit1 1 \
+          Bit2 2 \
+          Bit3 3 \
+          Bit4 4 \
+          Bit5 5 \
+          Bit6 6 \
+          Bit7 7" \
+         'Bit2' JOYSTICK_BIT_LEFT
 
-choice 'Pin right'			\
-   "PINA  PINA \
-    PINB  PINB \
-    PINC  PINC \
-    PIND  PIND" \
-   'PINB' JOYSTICK_PIN_RIGHT
+      choice 'Pin right'			\
+         "PINA  PINA \
+          PINB  PINB \
+          PINC  PINC \
+          PIND  PIND" \
+         'PINB' JOYSTICK_PIN_RIGHT
 
-choice 'Bit right'			\
-   "Bit0 0 \
-    Bit1 1 \
-    Bit2 2 \
-    Bit3 3 \
-    Bit4 4 \
-    Bit5 5 \
-    Bit6 6 \
-    Bit7 7" \
-   'Bit3' JOYSTICK_BIT_RIGHT
+      choice 'Bit right'			\
+         "Bit0 0 \
+          Bit1 1 \
+          Bit2 2 \
+          Bit3 3 \
+          Bit4 4 \
+          Bit5 5 \
+          Bit6 6 \
+          Bit7 7" \
+         'Bit3' JOYSTICK_BIT_RIGHT
 
-choice 'Pin fire'			\
-   "PINA  PINA \
-    PINB  PINB \
-    PINC  PINC \
-    PIND  PIND" \
-   'PIND' JOYSTICK_PIN_FIRE
+      choice 'Pin fire'			\
+         "PINA  PINA \
+          PINB  PINB \
+          PINC  PINC \
+          PIND  PIND" \
+         'PIND' JOYSTICK_PIN_FIRE
 
-choice 'Bit fire'			\
-   "Bit0 0 \
-    Bit1 1 \
-    Bit2 2 \
-    Bit3 3 \
-    Bit4 4 \
-    Bit5 5 \
-    Bit6 6 \
-    Bit7 7" \
-   'Bit3' JOYSTICK_BIT_FIRE
-   
-endmenu
+      choice 'Bit fire'			\
+         "Bit0 0 \
+          Bit1 1 \
+          Bit2 2 \
+          Bit3 3 \
+          Bit4 4 \
+          Bit5 5 \
+          Bit6 6 \
+          Bit7 7" \
+         'Bit3' JOYSTICK_BIT_FIRE
+   fi
+
+   endmenu
 ###############################################################################
 
 ###################### NES-Pad menu #################################
-dep_bool_menu "nes-pad support" NES_PAD_SUPPORT y
+   dep_bool_menu "nes-pad support" NES_PAD_SUPPORT y
 
-choice 'Port clk'			\
-   "PORTA  PORTA \
-    PORTB  PORTB \
-    PORTC  PORTC \
-    PORTD  PORTD" \
-   'PORTB' NES_PAD_PORT_CLK
+   if [ "$NES_PAD_SUPPORT" = "y" ]; then
+      choice 'Port clk'			\
+         "PORTA  PORTA \
+          PORTB  PORTB \
+          PORTC  PORTC \
+          PORTD  PORTD" \
+         'PORTB' NES_PAD_PORT_CLK
 
-choice 'Port ds'			\
-   "PORTA  PORTA \
-    PORTB  PORTB \
-    PORTC  PORTC \
-    PORTD  PORTD" \
-   'PORTB' NES_PAD_PORT_PL 
+      choice 'Port ds'			\
+         "PORTA  PORTA \
+          PORTB  PORTB \
+          PORTC  PORTC \
+          PORTD  PORTD" \
+         'PORTB' NES_PAD_PORT_PL 
 
-choice 'Pin pl'			\
-   "PORTA  PORTA \
-    PORTB  PORTB \
-    PORTC  PORTC \
-    PORTD  PORTD" \
-   'PORTB' NES_PAD_PORT_DS
+      choice 'Pin pl'			\
+         "PORTA  PORTA \
+          PORTB  PORTB \
+          PORTC  PORTC \
+          PORTD  PORTD" \
+         'PORTB' NES_PAD_PORT_DS
 
+      choice 'Bit clk'			\
+         "Bit0 0 \
+          Bit1 1 \
+          Bit2 2 \
+          Bit3 3 \
+          Bit4 4 \
+          Bit5 5 \
+          Bit6 6 \
+          Bit7 7" \
+         'Bit0' NES_PAD_BIT_CLK
 
-choice 'Bit clk'			\
-   "Bit0 0 \
-    Bit1 1 \
-    Bit2 2 \
-    Bit3 3 \
-    Bit4 4 \
-    Bit5 5 \
-    Bit6 6 \
-    Bit7 7" \
-   'Bit0' NES_PAD_BIT_CLK
+      choice 'Bit pl'			\
+         "Bit0 0 \
+          Bit1 1 \
+          Bit2 2 \
+          Bit3 3 \
+          Bit4 4 \
+          Bit5 5 \
+          Bit6 6 \
+          Bit7 7" \
+         'Bit1' NES_PAD_BIT_PL
 
-choice 'Bit pl'			\
-   "Bit0 0 \
-    Bit1 1 \
-    Bit2 2 \
-    Bit3 3 \
-    Bit4 4 \
-    Bit5 5 \
-    Bit6 6 \
-    Bit7 7" \
-   'Bit1' NES_PAD_BIT_PL
+      choice 'Bit ds'			\
+         "Bit0 0 \
+          Bit1 1 \
+          Bit2 2 \
+          Bit3 3 \
+          Bit4 4 \
+          Bit5 5 \
+          Bit6 6 \
+          Bit7 7" \
+         'Bit2' NES_PAD_BIT_DS
 
-choice 'Bit ds'			\
-   "Bit0 0 \
-    Bit1 1 \
-    Bit2 2 \
-    Bit3 3 \
-    Bit4 4 \
-    Bit5 5 \
-    Bit6 6 \
-    Bit7 7" \
-   'Bit2' NES_PAD_BIT_DS
+   fi
 
-  
-endmenu
+   endmenu
 ###############################################################################
 
+fi
 
 endmenu
