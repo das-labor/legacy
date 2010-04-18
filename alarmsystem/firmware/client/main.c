@@ -35,7 +35,7 @@ void send_packet (uint8_t in_dst, uint8_t in_cmd, uint8_t in_len, uint8_t *in_da
 	
 	for (i=F_DATA;i<(sizeof(txbuf)-PACKET_MINLEN);i++)
 	{
-		if (i >= in_len) break;
+		if (i >= in_len + PACKET_MINLEN) break;
 		txbuf[i] = in_data[k];
 		k++;
 	}
@@ -93,6 +93,9 @@ void process_packet ()
 				mtd_disable();
 			}
 		break;
+		case CMD_MOTION_TRESH_SET:
+			mtd_set_treshold(rxbuf[F_CMD+1]);
+		break;
 	}
 	rfm12_rx_clear();
 }
@@ -106,8 +109,13 @@ int main (void)
 
 	DDRB |= 0x03;
 	PORTB = 0x01;
+	
+	/* pwrfail sense */
+	DDRC &= ~(_BV(PC0));
+	PORTC &= ~(_BV(PC0));
 
 	rfm12_init();
+	mtd_init();
 	
 	for (i=0;i<4;i++)
 		_delay_ms(250);
@@ -129,19 +137,25 @@ int main (void)
 		{
 			PORTB ^= 0x03;
 			fill_adcvals (txbuf);
-			send_packet (ADDR_BCAST, CMD_ALIVE, 4, txbuf);
+			txbuf[4] = mtd_get_treshold();
+			send_packet (ADDR_BCAST, CMD_ALIVE, 5, txbuf);
 			t = 0;
 		}
 		process_packet();
 		motiond_tick();
 		tmp = motion_check();
+		
+		if (!(PINC & _BV(PC0)))
+			send_packet (ADDR_BCAST, CMD_PWRFAIL, 2, txbuf);
 
 		if (tmp)
 		{
 			txbuf[0] = (uint8_t) (tmp >> 8);
 			txbuf[1] = tmp & 0xFF;
-			send_packet (ADDR_BCAST, CMD_MOTION, 2, txbuf);
+			txbuf[2] = mtd_get_treshold();
+			send_packet (ADDR_BCAST, CMD_MOTION, 3, txbuf);
 		}
+
 		wdt_reset();
 		rfm12_tick();
 	}
