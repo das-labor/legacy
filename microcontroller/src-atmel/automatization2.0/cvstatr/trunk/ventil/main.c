@@ -27,13 +27,15 @@ ISR(TIMER1_COMPA_vect) {
 	FREILAUF();
 	TCNT1H = 0;
 	TCNT1L = 0;
+	PORTD &= ~_BV(PD6);
 }
 
 
 void fahre_ventiel_zu() {
 	uint16_t ct_last = TCNT1;
 	uint16_t ct_act = 0;
-
+	
+	PORTD |= _BV(PD6);
 	V_SCHLIESSEN();
 	_delay_ms(45);
 
@@ -45,8 +47,8 @@ void fahre_ventiel_zu() {
 		ct_last = TCNT1;
 		_delay_ms(25);
 	}
-//	eeprom_write_word(1, ct_last);
 	FREILAUF();
+	PORTD &= ~_BV(PD6);
 }
 
 
@@ -58,10 +60,13 @@ void init(void) {
 	FREILAUF();
 	
 	// CTC Modus OCR1A Reg 16 bit, ext clock rising edge
-	TCCR1B |= (WGM12) | _BV(CS12) | _BV(CS11) | _BV(CS10);
+	TCCR1B |= _BV(WGM12) | _BV(CS12) | _BV(CS11) | _BV(CS10);
 	
 	// Output Compare Interrupt Timer 1 OC REG A
 	TIMSK |= _BV(OCF1A);
+
+	// LED Output
+	DDRD |= _BV(PD6);
 	
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
 
@@ -102,11 +107,13 @@ int main(void) {
 							if (ist_pos < ziel_pos)
 							{
 								V_OEFFNEN();
+								PORTD |= _BV(PD6);
 								ist_pos = ziel_pos;
 							}
 							if (ist_pos > ziel_pos)
 							{
 								V_SCHLIESSEN();
+								PORTD |= _BV(PD6);
 								ist_pos = ziel_pos;
 							}
 							_delay_ms(50);
@@ -129,9 +136,10 @@ int main(void) {
 		}
 	// prüfen ob motor läuft - bei ende pos speichern
 		ct_act = TCNT1;
-		if (ct_last == ct_act)
+		if (ct_last == ct_act) {
 			FREILAUF();
-
+			PORTD &= ~_BV(PD6);
+		}
 		ct_last = TCNT1;
 		_delay_ms(30);
 	}
