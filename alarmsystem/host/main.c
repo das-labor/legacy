@@ -40,10 +40,12 @@ uint8_t
 	dst_addr = 0,
 	opt_dumpall = 0,
 	opt_resetall = 0,
+	opt_set_treshold = 0,
 	opt_dump = 0;
 
 void print_usage();
 
+int parse_address_arg (char* in_str);
 
 void dump_data (size_t in_len, uint8_t *in_data);
 void dump_data (size_t in_len, uint8_t *in_data)
@@ -117,18 +119,7 @@ int parse_args (int argc, char* argv[])
 					printf("You must specify an address.\r\n");
 					return -1;
 				}
-
-				if (strlen(argv[i]) > 2 && argv[i][0] == '0' &&
-					tolower(argv[i][1]) == 'x')
-				{
-					tmp = 2;
-				} else if (strlen(argv[i]) == 2)
-				{
-					tmp = 0;
-				}
-
-				dst_addr = gethexfromchar (argv[i][tmp]) * 16;
-				dst_addr += gethexfromchar (argv[i][++tmp]);
+				dst_addr = parse_address_arg(argv[i]);
 				
 				opt_reset = 1;
 				opt_daemon = 0;
@@ -142,6 +133,26 @@ int parse_args (int argc, char* argv[])
 			case 'a':
 				opt_dumpall = 1;
 				opt_dump = 1;
+			break;
+			case 't':
+			{
+				int tmpaddr;
+				++i;
+				if (i+1 == argc)
+				{
+					printf("syntax is: -t address treshold\r\n");
+					return -1;
+				}
+				tmpaddr = parse_address_arg(argv[i]);
+				if (tmpaddr < 0)
+				{
+					printf("error parsing address\r\n");
+					return -1;
+				}
+				dst_addr = abs(tmpaddr);
+				i++;
+				opt_set_treshold = abs(atoi(argv[i]));
+			}
 			break;
 			default:
 				printf ("Argument #%i not understood.\r\n", i);
@@ -190,8 +201,32 @@ void winexit(void)
 }
 #endif
 
+int parse_address_arg (char* in_str)
+{
+	uint8_t tmp;
+	int retval;
+
+	if (strlen(in_str) > 2 && in_str[0] == '0' &&
+		tolower(in_str[1]) == 'x')
+	{
+		tmp = 2;
+	} else if (strlen(in_str) == 2)
+	{
+		tmp = 0;
+	} else
+	{
+		return -1;
+	}
+
+	retval = gethexfromchar (in_str[tmp]) * 16;
+	retval += gethexfromchar (in_str[++tmp]);
+	
+	return retval;
+}
+
 uint8_t match_packet (uint8_t *in_packet)
 {
+	return 1;
 	if (in_packet[0] == PROTO_TYPE0 && in_packet[1] == PROTO_TYPE1)
 		return 1;
 	return 0;
@@ -238,14 +273,12 @@ int main (int argc, char* argv[])
 
 		if(tmp > 0 && match_packet(packetBuffer.buffer))
 		{
-			if (packetBuffer.buffer[2] == CMD_MOTION)
+			if (packetBuffer.buffer[4] == CMD_MOTION || packetBuffer.buffer[4] == CMD_PWRFAIL)
 			{
 				mc++;
-				printf("**** MOTION **** (count = %10i\n", mc);
-				if (mc > 5) system ("su -c \"mocp -p\" sh");
+				printf("**** MOTION **** (count = %10i)\n", mc);
+				system ("su -c \"mocp -p\" sh");
 			}
-			printf("\t\tMC=%i", mc);
-			printf("\n");
 		}
 		if (tmp > 0 && opt_dumpall)
 		{
@@ -278,17 +311,29 @@ int main (int argc, char* argv[])
 			tx_packet (udhandle, dst_addr, CMD_RESET, 0, txbuf);
 			printf("rst to %x\r\n", dst_addr);
 			resetcount++;
-			if (resetcount > 1)
+			if (resetcount > 5)
 			{
 				if (!opt_resetall)
 					return;
 				resetaddr++;
 				resetcount = 0;
 			}
-			if (resetcount > 1 && resetaddr == 0xff)
+			if (resetcount > 1 && resetaddr == 0xff && opt_resetall)
 				return;
 		}
+		
+		if (opt_set_treshold)
+		{
+			txbuf[0] = opt_set_treshold;
+			txbuf[1] = opt_set_treshold;
+			txbuf[2] = opt_set_treshold;
+			txbuf[3] = opt_set_treshold;
 
+			printf("setting treshold value %x for address %2x\r\n", opt_set_treshold, dst_addr);
+
+			tx_packet (udhandle, dst_addr, CMD_MOTION_TRESH_SET, 2, txbuf);
+			return;
+		}
 		
 		//this is done to prevent stressing the usb connection too much
 		usleep (1000);

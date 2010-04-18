@@ -1,10 +1,12 @@
 #define CMD_RESET	0x7A
 #define CMD_PING	0x01
 #define CMD_PONG	0x81
-#define CMD_ALIVE	0x42
-#define CMD_STATE	0x19
-#define CMD_STATE_SET   0x21
-#define CMD_MOTION	0x22
+#define CMD_ALIVE		0x42
+#define CMD_STATE		0x19
+#define CMD_STATE_SET   	0x21
+#define CMD_MOTION		0x22
+#define CMD_MOTION_TRESH_SET	0x25
+#define CMD_PWRFAIL	0x60
 #define CMD_ERROR	0xEE
 #define PROTO_TYPE0	0x09
 #define PROTO_TYPE1	0x12
@@ -20,7 +22,7 @@
 #define F_DATA (F_CMD+1)
 
 /* minimum length of a packet */
-#define PACKET_MINLEN	F_DATA
+#define PACKET_MINLEN	F_DATA+1
 
 /* broadcast addr */
 #define ADDR_BCAST 0xff
