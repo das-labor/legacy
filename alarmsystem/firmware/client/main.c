@@ -13,14 +13,15 @@
 #include "rfm12.h"
 
 volatile uint8_t myaddr = 0x00;
+volatile uint16_t modelta = 0x0000;
 
 void timer0_init()
 {
 	/* 
-		CLK/64
-		=> 976 ticks, 244 measurements per second per ADC
+		CLK/8
+		=> 7812 ticks, 1953 measurements per second per ADC
 	*/
-	TCCR0 = (_BV(CS01) | _BV(CS00));
+	TCCR0 = (_BV(CS01));
 	TIMSK |= _BV(TOIE0);
 }
 
@@ -113,6 +114,7 @@ void process_packet ()
 ISR(TIMER0_OVF_vect) 
 {
 	motiond_tick();
+	modelta = motion_check();
 }
 
 
@@ -120,7 +122,7 @@ int main (void)
 {
 	uint8_t i;
 	uint8_t txbuf[12];
-	uint16_t t = 0, tmp;
+	uint16_t t = 0;
 
 	DDRB |= 0x03;
 	PORTB = 0x01;
@@ -162,12 +164,11 @@ int main (void)
 		if (!(PINC & _BV(PC0)))
 			send_packet (ADDR_BCAST, CMD_PWRFAIL, 2, txbuf);
 
-		tmp = motion_check();
 
-		if (tmp)
+		if (modelta)
 		{
-			txbuf[0] = (uint8_t) (tmp >> 8);
-			txbuf[1] = tmp & 0xFF;
+			txbuf[0] = (uint8_t) (modelta >> 8);
+			txbuf[1] = modelta & 0xFF;
 			txbuf[2] = mtd_get_treshold();
 			send_packet (ADDR_BCAST, CMD_MOTION, 3, txbuf);
 		}
