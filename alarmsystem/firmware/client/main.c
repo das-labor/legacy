@@ -14,6 +14,16 @@
 
 volatile uint8_t myaddr = 0x00;
 
+void timer0_init()
+{
+	/* 
+		CLK/64
+		=> 976 ticks, 244 measurements per second per ADC
+	*/
+	TCCR0 = (_BV(CS01) | _BV(CS00));
+	TIMSK |= _BV(TOIE0);
+}
+
 void fill_adcvals (uint8_t *in_buf)
 {
 	in_buf[0] = get_adc(0) >> 8;
@@ -100,6 +110,11 @@ void process_packet ()
 	rfm12_rx_clear();
 }
 
+ISR(TIMER0_OVF_vect) 
+{
+	motiond_tick();
+}
+
 
 int main (void)
 {
@@ -127,6 +142,7 @@ int main (void)
 	rfm12_rx_clear();
 	wdt_enable(WDTO_120MS);
 	mtd_enable();
+	timer0_init();
 	sei();
 
 	while (23)
@@ -142,11 +158,11 @@ int main (void)
 			t = 0;
 		}
 		process_packet();
-		motiond_tick();
-		tmp = motion_check();
 		
 		if (!(PINC & _BV(PC0)))
 			send_packet (ADDR_BCAST, CMD_PWRFAIL, 2, txbuf);
+
+		tmp = motion_check();
 
 		if (tmp)
 		{
