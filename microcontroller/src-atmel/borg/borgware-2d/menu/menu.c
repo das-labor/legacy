@@ -21,7 +21,7 @@ extern game_descriptor_t _game_descriptors_start__[];
 extern game_descriptor_t _game_descriptors_end__[];
 
 // defines
-#define MENU_ITEM_MAX (((unsigned int)_game_descriptors_end__ - (unsigned int)_game_descriptors_start__)/sizeof(game_descriptor_t))
+#define MENU_ITEM_MAX ((uint8_t)(((size_t)_game_descriptors_end__ - (size_t)_game_descriptors_start__) / sizeof(game_descriptor_t)))
 
 #define MENU_WIDTH_ICON 8
 #define MENU_HEIGHT_ICON 8
@@ -71,7 +71,6 @@ void menu()
 				wait(MENU_WAIT_CHATTER);
 
 				// call corresponding function
-
 				_game_descriptors_start__[miSelection].run();
 
 				break;
@@ -214,7 +213,7 @@ void menu_animate(uint8_t miInitial, menu_direction_t direction)
 
 		// wait between the frames so that the animation can be seen
 		wait(nWait);
-		// animation speed can be throtteled
+		// animation speed can be throttled
 		nWait += MENU_WAIT_INCREMENT;
 	}
 }

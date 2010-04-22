@@ -35,9 +35,9 @@ static void init(){
 
 extern uint8_t _eeprom_start__[];
 
-uint16_t conv_addr(uint8_t * p){
+uint16_t conv_addr(void * p){
 	uint16_t addr;
-	addr = (unsigned int)p - (unsigned int)_eeprom_start__;
+	addr = (unsigned long)p - (unsigned long)_eeprom_start__;
 	if(addr >= EEPROM_SIZE){
 		printf ("warning: eeprom write to %X\n",addr);
 	}

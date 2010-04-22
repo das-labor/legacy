@@ -127,7 +127,7 @@ void stonefly(void)
 	stone_t stones[MAX_STONES];
 	uint8_t stoneCount = 0;
 	uint16_t counter = 622; /* run 622 cycles */
-	uint8_t invax, invay, invasion = 0;
+	uint8_t invax = 0, invay = 0, invasion = 0;
 	uint8_t draw;
 
 	//init all stones to zero
