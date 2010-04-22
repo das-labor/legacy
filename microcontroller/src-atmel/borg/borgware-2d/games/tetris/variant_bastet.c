@@ -335,7 +335,7 @@ tetris_piece_t* tetris_bastet_choosePiece(void *pVariantData)
 			tetris_piece_construct(pBastet->nPieceScores[6].shape,
 					TETRIS_PC_ANGLE_0);
 
-	tetris_piece_t *pPiece;
+	tetris_piece_t *pPiece = NULL;
 	const uint8_t nPercent[4] = {75, 92, 98, 100};
 	uint8_t nRnd = rand() % 100;
 	for (uint8_t i = 0; i < 4; ++i)

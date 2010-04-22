@@ -37,7 +37,7 @@ uint16_t tetris_highscore_inputName(void)
 		case 1:
 			nOffset = 19;
 			break;
-		case 2:
+		default:
 			nOffset = 23;
 			break;
 		}

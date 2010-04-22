@@ -1,5 +1,7 @@
 #define SCROLLTEXT_C
 
+#define _XOPEN_SOURCE 600
+
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
@@ -316,7 +318,7 @@ blob_t * setupBlob(char * str){
 		blob->commands = lastcommands;
 	}
 
-	blob->str = strtok_r (0, delim, &last);
+	blob->str = strtok_r (NULL, delim, &last);
 
 	if ( blob->str == 0) goto fail;
 

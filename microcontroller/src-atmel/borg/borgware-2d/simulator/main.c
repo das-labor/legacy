@@ -1,24 +1,24 @@
+#ifdef _WIN32
+	#include <GL/glut.h>
+	#include <windows.h>
+	#include <process.h>
+#define pthread_t int
+#else
+	#define _XOPEN_SOURCE 500
+	#ifdef OSX_
+		#include <GLUT/glut.h>
+	#else
+		#include <GL/glut.h>
+	#endif
+	#include <pthread.h>   // for threads in linux
+	#include <stdlib.h>
+	#include <sys/time.h>
+	#include <sys/types.h>
+	#include <unistd.h>
+#endif
 
 #include <stdio.h>
 #include <setjmp.h>
-
-#ifdef _WIN32
-#  include <GL/glut.h>
-#  include <windows.h>
-#  include <process.h>
-#  define pthread_t int
-#else
-#  ifdef OSX_
-#    include <GLUT/glut.h>
-#  else
-#    include <GL/glut.h>
-#  endif
-#  include <pthread.h>   // for threads in linux
-#  include <stdlib.h>
-#  include <sys/time.h>
-#  include <sys/types.h>
-#  include <unistd.h>
-#endif
 
 #include "../config.h"
 #include "../display_loop.h"
