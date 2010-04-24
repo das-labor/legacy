@@ -16,8 +16,25 @@
 #define URSEL UMSEL
 #endif
 
+#ifdef ATMEGA48
+#define UCSRB UCSR0B
+#define UCSRC UCSR0C
+#define UDR UDR0
+#define UBRRH UBRR0H
+#define UBRRL UBRR0L
+#define TXEN TXEN0
+#define RXEN RXEN0
+#define UCSRA UCSR0A
+#define UDRIE UDRIE0
+#define UCSZ0 UCSZ00
+#define RXCIE RXCIE0
+#define TXCIE TXCIE0
+#define RXC RXC0
+#define UDRE UDRE0
+#endif
 
-#define UART_BAUD_CALC(UART_BAUD_RATE,F_OSC) ((F_OSC)/((UART_BAUD_RATE)*16L)-1)
+
+#define UART_BAUD_CALC(UART_BAUD_RATE,F_OSC) ((F_OSC+(UART_BAUD_RATE)*8L)/((UART_BAUD_RATE)*16L)-1)
 
 
 #ifdef UART_INTERRUPT
@@ -26,13 +43,18 @@ volatile static char txbuf[UART_TXBUFSIZE];
 volatile static char *volatile rxhead, *volatile rxtail;
 volatile static char *volatile txhead, *volatile txtail;
 
-
+#ifdef ATMEGA128
 SIGNAL(SIG_UART_DATA) {
+#endif
+#ifdef ATMEGA48
+SIGNAL(USART_UDRE_vect) {
+#endif	
+
+	if ( txhead == txtail ) {
 #ifdef UART_LEDS	
 	PORTC ^= 0x01;
 #endif
 	
-	if ( txhead == txtail ) {
 		UCSRB &= ~(1 << UDRIE);		/* disable data register empty IRQ */
 	} else {
 		UDR = *txtail;			/* schreibt das Zeichen x auf die Schnittstelle */
@@ -40,7 +62,13 @@ SIGNAL(SIG_UART_DATA) {
 	}
 }
 
+#ifdef ATMEGA128
 SIGNAL(SIG_UART_RECV) {
+#endif
+#ifdef ATMEGA48
+SIGNAL(USART_RX_vect) {
+#endif
+
 	int diff; 
 
 #ifdef UART_LEDS
@@ -63,12 +91,15 @@ SIGNAL(SIG_UART_RECV) {
 
 
 void uart_init() {
+#ifdef UART_LEDS	
+	DDRC |= 0x07; 	// Port C all outputs
+#endif
 	PORTD |= 0x01;				//Pullup an RXD an
 
 	UCSRB |= (1<<TXEN);			//UART TX einschalten
-	UCSRC |= (1<<URSEL)|(3<<UCSZ0);		//Asynchron 8N1
+	UCSRC |= (3<<UCSZ0);		//Asynchron 8N1
 
-	UCSRB |= ( 1 << RXEN );			//Uart RX einschalten
+	UCSRB |= ( 1 << RXEN);			//Uart RX einschalten
 
 	UBRRH=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU)>>8);
 	UBRRL=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU));
@@ -84,7 +115,7 @@ void uart_init() {
 }
 
 #ifdef UART_INTERRUPT
-void uart_putc(char c) {
+void uart_putc(unsigned char c) {
 	volatile int diff;
 
 	/* buffer full? */
@@ -101,7 +132,7 @@ void uart_putc(char c) {
 	sei();
 }
 #else  // WITHOUT INTERRUPT
-void uart_putc(char c) {
+void uart_putc(unsigned char c) {
 	while (!(UCSRA & (1<<UDRE))); /* warten bis Senden moeglich                   */
 	UDR = c;                      /* schreibt das Zeichen x auf die Schnittstelle */
 }
@@ -122,7 +153,7 @@ void uart_putstr_P(PGM_P str) {
 	}
 }
 
-void uart_hexdump(char *buf, int len)
+void uart_hexdump(unsigned char *buf, int len)
 {
 	unsigned char x=0;
 	char sbuf[3];
@@ -151,11 +182,13 @@ char uart_getc()
  	if (++rxtail == (rxbuf + UART_RXBUFSIZE)) rxtail = rxbuf;
 
 	return val;
+
 }
 #else  // WITHOUT INTERRUPT
 char uart_getc()
 {
 	while (!(UCSRA & (1<<RXC)));	// warten bis Zeichen verfuegbar
+	
 	return UDR;			// Zeichen aus UDR zurueckgeben
 }
 #endif // UART_INTERRUPT
