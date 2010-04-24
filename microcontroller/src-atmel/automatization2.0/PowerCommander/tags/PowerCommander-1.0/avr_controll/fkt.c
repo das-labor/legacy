@@ -11,6 +11,7 @@ static uint8_t virt_vortrag_stat;
 static uint8_t virt_vortrag_pwm_dir;
 
 static uint8_t virt_lounge_pwm_dir;
+static uint8_t virt_kueche_pwm_dir;
 
 void switch_fkt(struct t_i2cproto* i2cproto)
 {
@@ -55,8 +56,6 @@ void switch_fkt(struct t_i2cproto* i2cproto)
 
 void pwm_fkt(struct t_i2cproto* i2cproto)
 {
-	uint8_t virt_lounge_pwm_value;
-
 	switch (i2cproto->fkt)
 	{
 		case F_PWM_SET:
@@ -71,36 +70,58 @@ void pwm_fkt(struct t_i2cproto* i2cproto)
 		}
 		break;
 		case F_PWM_MOD:{
-			pwm_get(pwm_matrix[i2cproto->object].port, &virt_lounge_pwm_value);
+			uint8_t port_power, port_pwm_value;
+			if (i2cproto->object == PWM_LOUNGE) {
+				pwm_get(pwm_matrix[i2cproto->object].port, &port_pwm_value);
+				switch_status(sw_matrix[SWL_LOUNGE].port, sw_matrix[SWL_LOUNGE].pin, &port_power);
+				if (!port_power) {
+					switch_on(sw_matrix[SWL_LOUNGE].port, sw_matrix[SWL_LOUNGE].pin);
+					port_pwm_value = 0;
+				}
 			
-			uint8_t lounge_power;
-			switch_status(sw_matrix[SWL_LOUNGE].port, sw_matrix[SWL_LOUNGE].pin, &lounge_power);
+				if (port_pwm_value == 255)
+					virt_lounge_pwm_dir = 0;
+				if (port_pwm_value == 0)
+					virt_lounge_pwm_dir = 1;
+				if (virt_lounge_pwm_dir)
+					port_pwm_value += 1;
+				else
+					port_pwm_value -= 1;
+				pwm_set(pwm_matrix[i2cproto->object].port, port_pwm_value);
+			}
+			if (i2cproto->object == PWM_KUECHE) {
+				pwm_get(pwm_matrix[i2cproto->object].port, &port_pwm_value);
+				switch_status(sw_matrix[SWL_KUECHE].port, sw_matrix[SWL_KUECHE].pin, &port_power);
+				if (!port_power) {
+					switch_on(sw_matrix[SWL_KUECHE].port, sw_matrix[SWL_KUECHE].pin);
+					port_pwm_value = 0;
+				}
 			
-			if(!lounge_power){
-				switch_on(sw_matrix[SWL_LOUNGE].port, sw_matrix[SWL_LOUNGE].pin);
-				virt_lounge_pwm_value = 0;
-			}
-			
-			if (virt_lounge_pwm_value == 255)
-				virt_lounge_pwm_dir = 0;
-			if (virt_lounge_pwm_value == 0)
-				virt_lounge_pwm_dir = 1;
-			if (virt_lounge_pwm_dir)
-			{
-				virt_lounge_pwm_value += 1;
-			}
-			else
-			{
-				virt_lounge_pwm_value -= 1;
-			}
-			pwm_set(pwm_matrix[i2cproto->object].port, virt_lounge_pwm_value);
+				if (port_pwm_value == 255)
+					virt_kueche_pwm_dir = 0;
+				if (port_pwm_value == 0)
+					virt_kueche_pwm_dir = 1;
+				if (virt_kueche_pwm_dir)
+					port_pwm_value += 1;
+				else
+					port_pwm_value -= 1;
+				pwm_set(pwm_matrix[i2cproto->object].port, port_pwm_value);
+				}
 			break;
 		}
 		case F_PWM_DIR:
-			if (virt_lounge_pwm_dir)
-				virt_lounge_pwm_dir = 0;
-			else
-				virt_lounge_pwm_dir = 1;
+			if (i2cproto->object == PWM_KUECHE) {
+				if (virt_kueche_pwm_dir)
+					virt_kueche_pwm_dir = 0;
+				else
+					virt_kueche_pwm_dir = 1;
+			}
+			if (i2cproto->object == PWM_LOUNGE) {
+				if (virt_lounge_pwm_dir)
+					virt_lounge_pwm_dir = 0;
+				else
+					virt_lounge_pwm_dir = 1;
+			}
 			break;
 		default:
 		break;
@@ -179,37 +200,42 @@ void virt_vortrag_pwm_set_all(uint8_t min, uint8_t max)
 	uint8_t tmp;
 	uint8_t x;
 
-	for(x=0;x<sizeof(objs);x++){
+	for (x=0;x<sizeof(objs);x++)
+	{
 		pwm_get(pwm_matrix[objs[x]].port, &tmp);
-		if(tmp < min) tmp = min;
-		if(tmp > max) tmp = max;
+		if (tmp < min) tmp = min;
+		if (tmp > max) tmp = max;
 		pwm_set(pwm_matrix[objs[x]].port, tmp);
 	}
 }
 
-uint8_t pwm_vortrag_get_min(){
+uint8_t pwm_vortrag_get_min()
+{
 	uint8_t objs[] = {PWM_TAFEL, PWM_BEAMER, PWM_SCHRANK, PWM_FLIPPER};
 	uint8_t tmp;
 	uint8_t x;
 	uint8_t min = 255;
 
-	for(x=0;x<sizeof(objs);x++){
+	for (x = 0; x < sizeof(objs); x++)
+	{
 		pwm_get(pwm_matrix[objs[x]].port, &tmp);
-		if(tmp < min) min = tmp;
+		if (tmp < min) min = tmp;
 	}
 	
 	return min;
 }
 
-uint8_t pwm_vortrag_get_max(){
+uint8_t pwm_vortrag_get_max()
+{
 	uint8_t objs[] = {PWM_TAFEL, PWM_BEAMER, PWM_SCHRANK, PWM_FLIPPER};
 	uint8_t tmp;
 	uint8_t x;
 	uint8_t max = 0;
 
-	for(x=0;x<sizeof(objs);x++){
+	for (x = 0; x < sizeof(objs); x++)
+	{
 		pwm_get(pwm_matrix[objs[x]].port, &tmp);
-		if(tmp > max) max = tmp;
+		if (tmp > max) max = tmp;
 	}
 	
 	return max;
@@ -223,31 +249,38 @@ void virt_vortrag_pwm_set(struct t_i2cproto* i2cproto)
 		case F_PWM_SET:
 			virt_vortrag_pwm_set_all(i2cproto->in_data, i2cproto->in_data);
 			break;
-		case F_PWM_MOD:{
-			uint8_t val;
+		case F_PWM_MOD: {
+				uint8_t val;
 
-			if(virt_vortrag_stat == 0){
-				virt_vortrag_on();
-				virt_vortrag_pwm_set_all(0,0);
-			}
+				if (virt_vortrag_stat == 0)
+				{
+					virt_vortrag_on();
+					virt_vortrag_pwm_set_all(0, 0);
+				}
 
-			if(virt_vortrag_pwm_dir == 1){
-				val = pwm_vortrag_get_min();
-				if(val == 255){
-					virt_vortrag_pwm_dir = 0;
-				}else{
-					virt_vortrag_pwm_set_all(val+1, 255);
-				}
-			}else{
-				val = pwm_vortrag_get_max();
-				if(val == 0){
-					virt_vortrag_pwm_dir = 1;
-				}else{
-					virt_vortrag_pwm_set_all(0, val-1);
+				if (virt_vortrag_pwm_dir == 1)
+				{
+					val = pwm_vortrag_get_min();
+					if (val == 255)
+					{
+						virt_vortrag_pwm_dir = 0;
+					} else
+					{
+						virt_vortrag_pwm_set_all(val+1, 255);
+					}
+				} else
+				{
+					val = pwm_vortrag_get_max();
+					if (val == 0)
+					{
+						virt_vortrag_pwm_dir = 1;
+					} else
+					{
+						virt_vortrag_pwm_set_all(0, val-1);
+					}
 				}
 			}
-			
-			}break;
+			break;
 		case F_PWM_DIR:
 			if (virt_vortrag_pwm_dir)
 				virt_vortrag_pwm_dir = 0;
@@ -265,6 +298,9 @@ void virt_power_on()
 	switch_on(sw_matrix[SWA_KLO].port, sw_matrix[SWA_KLO].pin);
 	switch_on(sw_matrix[SWA_HS].port, sw_matrix[SWA_HS].pin);
 	switch_on(sw_matrix[SWA_STECKDOSEN].port, sw_matrix[SWA_STECKDOSEN].pin);
+	virt_vortrag_pwm_set_all(0xff, 0xff);
+	pwm_set(pwm_matrix[PWM_LOUNGE].port, 0xff);
+	pwm_set(pwm_matrix[PWM_KUECHE].port, 0xff);
 	power_stat = 1;
 }
 
