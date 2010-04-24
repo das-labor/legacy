@@ -1,5 +1,5 @@
 /* USART-Init beim ATmegaXX */
-
+/* modified by siro 25.4.2010 to add atmega48 support */
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -14,9 +14,7 @@
 #define UBRRH UBRR0H
 #define UBRRL UBRR0L
 #define URSEL UMSEL
-#endif
-
-#ifdef ATMEGA48
+#else
 #define UCSRB UCSR0B
 #define UCSRC UCSR0C
 #define UDR UDR0
@@ -45,8 +43,7 @@ volatile static char *volatile txhead, *volatile txtail;
 
 #ifdef ATMEGA128
 SIGNAL(SIG_UART_DATA) {
-#endif
-#ifdef ATMEGA48
+#else
 SIGNAL(USART_UDRE_vect) {
 #endif	
 
@@ -64,8 +61,7 @@ SIGNAL(USART_UDRE_vect) {
 
 #ifdef ATMEGA128
 SIGNAL(SIG_UART_RECV) {
-#endif
-#ifdef ATMEGA48
+#else
 SIGNAL(USART_RX_vect) {
 #endif
 
