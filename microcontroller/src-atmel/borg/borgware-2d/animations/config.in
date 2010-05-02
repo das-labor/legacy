@@ -1,0 +1,25 @@
+mainmenu_option next_comment
+comment "Animations"
+        comment  "selects which animations are displayed in main loop"
+
+        dep_bool "Scrolltext"       ANIMATION_SCROLLTEXT    $SCROLLTEXT_SUPPORT
+        bool     "Spirale"          ANIMATION_SPIRALE
+        bool     "Joern1"           ANIMATION_JOERN1
+        dep_bool "Snake"            ANIMATION_SNAKE         $RANDOM_SUPPORT
+        bool     "Schachbrett"      ANIMATION_SCHACHBRETT
+        dep_bool "Feuer"            ANIMATION_FEUER         $RANDOM_SUPPORT
+        dep_bool "Matrix"           ANIMATION_MATRIX        $RANDOM_SUPPORT
+        dep_bool "Random Bright"    ANIMATION_RANDOM_BRIGHT $RANDOM_SUPPORT
+        dep_bool "Stonefly"         ANIMATION_STONEFLY      $RANDOM_SUPPORT $GAME_TETRIS_CORE
+	dep_bool "Flying Dots"      ANIMATION_FLYINGDOTS    $RANDOM_SUPPORT
+        dep_bool "Game of Life"     ANIMATION_GAMEOFLIFE    $RANDOM_SUPPORT
+        dep_bool "Breakout Demo"    ANIMATION_BREAKOUT      $GAME_BREAKOUT
+        bool     "M Herweg"         ANIMATION_MHERWEG
+        dep_bool "Langton Ant"      ANIMATION_LTN_ANT       $RANDOM_SUPPORT
+        dep_bool "LABOR Logo"       ANIMATION_LABORLOGO     $RANDOM_SUPPORT
+
+        comment  "Special Animations"
+        bool     "Test Animations"  ANIMATION_TESTS
+        bool     "Display off mode" ANIMATION_OFF
+
+endmenu
