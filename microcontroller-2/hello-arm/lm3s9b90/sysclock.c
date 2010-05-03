@@ -1,7 +1,7 @@
 /* sysclock.c */
 /*
     This file is part of the OpenARMWare.
-    Copyright (C) 2010 Daniel Otte (daniel.otte@rub.de)
+    Copyright (C) 2006-2010  Daniel Otte (daniel.otte@rub.de)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,7 +20,13 @@
 #include <stdint.h>
 #include "hw_regs.h"
 
-void sysclk_setrawclock(void){
+
+#define CRYSTAL_FREQ 16000000UL
+#define CRYSTAL_CODE 0x15 /* 16 MHz */
+
+#define PIOSC_FREQ 16000000UL
+
+void sysclk_set_rawclock(void){
 	uint32_t tmp_rcc;
 	tmp_rcc = 0; //HW_REG(SYSCTL_BASE+RCC_OFFSET);
 	tmp_rcc &= ~(_BV(RCC_IOSCDIS) | _BV(RCC_MOSCDIS) | _BV(RCC_USESYSDIV));
@@ -38,4 +44,51 @@ void sysclk_mosc_verify_enable(void){
 
 void sysclk_mosc_verify_disable(void){
 	HW_REG(SYSCTL_BASE+MOSCCTL_OFFSET) &= ~1UL; // turn on main oscillator verify circuit
+}
+
+void sysclk_set_80MHz(void){
+	uint32_t rcc1, rcc2=0;
+	sysclk_set_rawclock();
+	rcc1 = HW_REG(SYSCTL_BASE+RCC_OFFSET);
+//	rcc2 = HW_REG(SYSCTL_BASE+RCC2_OFFSET);
+	rcc1 &= ~(0x1f<<RCC_XTAL);
+	rcc1 |= CRYSTAL_CODE<<RCC_XTAL;
+	rcc2 = _BV(RCC2_USERCC2) | _BV(RCC2_PWRDN2) | _BV(RCC2_BYPASS2) | _BV(RCC2_USBPWRDN); /* OSCSRC2 is set to 0 */
+	HW_REG(SYSCTL_BASE+RCC_OFFSET)  = rcc1;
+	HW_REG(SYSCTL_BASE+RCC2_OFFSET) = rcc2;
+	rcc2 &= ~_BV(RCC2_PWRDN2);
+	HW_REG(SYSCTL_BASE+RCC2_OFFSET) = rcc2;
+	rcc2 |= _BV(RCC2_DIV400) | 0x04<<RCC2_SYSDIV2LSB;
+	HW_REG(SYSCTL_BASE+RCC2_OFFSET) = rcc2;
+	while(!(HW_REG(SYSCTL_BASE+RIS_OFFSET)&_BV(RIS_PLLLRIS))){
+	}
+	rcc2 &= ~_BV(RCC2_BYPASS2);
+	HW_REG(SYSCTL_BASE+RCC2_OFFSET) = rcc2;
+}
+
+uint32_t sysclk_get_freq(void){
+	uint32_t rcc1, rcc2, basefreq=400000000UL, divider=1;
+	const uint32_t bypass_freq[] = {
+			CRYSTAL_FREQ, PIOSC_FREQ,  PIOSC_FREQ/4, 30000,
+			0, 0, 4194304, 32768 };
+	rcc1 = HW_REG(SYSCTL_BASE+RCC_OFFSET);
+	rcc2 = HW_REG(SYSCTL_BASE+RCC2_OFFSET);
+	if(rcc2&_BV(RCC2_USERCC2)){
+		/* use RCC2 */
+		if(rcc2&_BV(RCC2_BYPASS2)){
+			basefreq = bypass_freq[(rcc2>>RCC2_OSCSR2)&0x07];
+		}
+		if(rcc2&_BV(RCC2_DIV400)){
+			divider = ((rcc2>>RCC2_SYSDIV2LSB)&0x7F)+1;
+		}else{
+			divider = ((rcc2>>RCC2_SYSDIV2)&0x3F)+1;
+		}
+	}else{
+		/* use RCC */
+		if(rcc1&_BV(RCC_BYPASS)){
+			 basefreq = bypass_freq[(rcc1>>RCC_OSCSRC)&0x03];
+		}
+		divider = ((rcc1>>RCC_SYSDIV)&0xf)+1;
+	}
+	return basefreq/divider;
 }

@@ -1,7 +1,7 @@
 /* dump.c */
 /*
-    This file is part of the AVR-Crypto-Lib.
-    Copyright (C) 2008  Daniel Otte (daniel.otte@rub.de)
+    This file is part of the ARM-Crypto-Lib.
+    Copyright (C) 2006-2010  Daniel Otte (daniel.otte@rub.de)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -65,22 +65,23 @@ void print_aligned(unsigned long value, uint8_t align){
 void dump(char* s){
 	uint8_t readlen;
 	uint32_t addr=0;
-	uint32_t size=128;
+	uint32_t size=32;
 	uint8_t buffer[DUMP_WIDTH];
 	char tstr[9];
-	s=strstrip(s);
-
-	if(isalpha(*s)){
-		while(isalpha(*s))
-			++s;
+	if(s){
+		s=strstrip(s);
+		if(isalpha(*s)){
+			while(isalpha(*s))
+				++s;
+		}
+		char* eptr;
+		if(*s)
+			addr = strtoul(s, &eptr, 0);
+		if(eptr)
+			size = strtoul(eptr, NULL, 0);
+		if(!size)
+			size = 32;
 	}
-	char* eptr;
-	if(*s)
-		addr = strtoul(s, &eptr, 0);
-	if(eptr)
-		size = strtoul(eptr, NULL, 0);
-	if(!size)
-		size = 32;	
 	cli_putstr("\r\ndumping ");
 	ultoa(size, tstr, 10);
 	cli_putstr(tstr);

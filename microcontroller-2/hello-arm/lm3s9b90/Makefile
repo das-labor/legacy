@@ -20,12 +20,15 @@ SHELL = sh
 TARGET = main.elf
 OBJECTS = main.o \
           startup.o \
-          uart_lowlevel.o \
+          circularbytebuffer.o \
+          uart_i.o \
           sysclock.o \
           hexdigit_tab.o \
           cli.o \
           string-extras.o \
-          dump.o
+          dump.o \
+          hw_gptm.o
+          
 LINKERSCRIPT = lm3s9b90.ld
 MAPFILE = main.map
 DEP_DIR = deps/
@@ -34,7 +37,7 @@ CFLAGS = -mthumb -mcpu=cortex-m3 \
          -Os \
          -ffunction-sections -fdata-sections \
          -MMD -MF$(DEP_DIR)$(patsubst %.o,%.d,$(notdir $@))
-         -std=c99 -Wall -pedantic -g -c
+         -std=gnu99 -Wall -pedantic -g -c
 		
 CLDFLAGS = -Wl,--entry=reset_isr -Wl,--gc-sections -Wl,-Map=main.map -lc -lgcc \
           -T $(LINKERSCRIPT) -mthumb -mcpu=cortex-m3

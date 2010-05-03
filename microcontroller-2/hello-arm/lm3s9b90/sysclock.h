@@ -22,8 +22,10 @@
 
 #include <stdint.h>
 
-void sysclk_setrawclock(void);
+void sysclk_set_rawclock(void);
 void sysclk_mosc_verify_enable(void);
 void sysclk_mosc_verify_disable(void);
+void sysclk_set_80MHz(void);
+uint32_t sysclk_get_freq(void);
 
 #endif /* SYSCLOCK_H_ */
