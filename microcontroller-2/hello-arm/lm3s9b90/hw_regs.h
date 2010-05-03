@@ -78,6 +78,20 @@
 #define RCC_IOSCDIS    1
 #define RCC_MOSCDIS    0
 
+#define RCC2_USERCC2     31
+#define RCC2_DIV400      30
+#define RCC2_SYSDIV2     23
+#define RCC2_SYSDIV2LSB  22
+#define RCC2_USBPWRDN    14
+#define RCC2_PWRDN2      13
+#define RCC2_BYPASS2     11
+#define RCC2_OSCSR2       4
+
+#define RIS_MOSCPUPRIS   8
+#define RIS_USBPLLLRIS   7
+#define RIS_PLLLRIS      6
+#define RIS BORRIS       1
+
 #define GPIOA  0
 #define GPIOB  1
 #define GPIOC  2
@@ -133,5 +147,7 @@
 #define GPIO_PCellID2_OFFSET     0xFF8
 #define GPIO_PCellID3_OFFSET     0xFFC
 
+
+#define ISR_ENABLE_VECTOR    0xE000E100
 
 #endif /* HW_REGS_H_ */

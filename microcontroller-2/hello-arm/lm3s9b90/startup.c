@@ -25,6 +25,7 @@
 #define RAM_SIZE (96*1024)
 
 int main(void);
+void uart0_isr(void);
 
 /* the following are defined by the linker */
 extern char _text;
@@ -80,7 +81,7 @@ isr_fpt isr_vector[] __attribute__ ((section(".isr_vectors"))) = {
 		default_isr, /* GPIO Port C */
 		default_isr, /* GPIO Port D */
 		default_isr, /* GPIO Port E */
-		default_isr, /* UART0 */
+		uart0_isr, /* UART0 */
 		default_isr, /* UART1 */
 		default_isr, /* SSI0 */
 		default_isr, /* I2C0 */
