@@ -31,13 +31,6 @@ void G_disown (gentity_t *in_ent)
 }
 
 
-void G_thinkvoid (gentity_t *in_ent)
-{
-//	G_disown (in_ent);
-	in_ent->nextthink = 10000 + level.time;
-	return;
-}
-
 
 /*
 ================
@@ -107,11 +100,159 @@ void G_ExplodeMissile( gentity_t *ent ) {
 	trap_LinkEntity( ent );
 }
 
+/* trace for solid objects, return true if found, false if all found objects are in the air
+ */
+int G_foamtrace (gentity_t *in_ent)
+{
+	trace_t tr;
+	gentity_t *stuck_ent;
+	vec3_t tdir;
+
+	/* trivial cases: directly stuck to solid entity */
+	trap_Trace( &tr, in_ent->r.currentOrigin, in_ent->r.mins, in_ent->r.maxs, in_ent->r.currentOrigin,
+		ENTITYNUM_NONE, in_ent->clipmask);
+	
+	if (tr.entityNum == ENTITYNUM_NONE)
+	{
+		trap_Printf ("enone\n");
+		return 0;
+	}
+	
+	if (!(tr.startsolid || tr.allsolid ))
+	{
+		trap_Printf ("not solid\n");
+		return 0;
+	}
+
+	stuck_ent = &g_entities[tr.entityNum];
+	//if (!(stuck_ent->s.eFlags & EF_STICK) || tr.entityNum == ENTITYNUM_WORLD || tr.startsolid || tr.allsolid )
+	if (!(stuck_ent->s.eFlags & EF_STICK) && (tr.content & CONTENTS_SOLID))
+	//if (!(stuck_ent->s.eFlags & EF_STICK) && tr.fraction != 1 )
+	{
+		if (stuck_ent == in_ent)
+			trap_Printf("self!!!\n");
+
+		trap_Printf ("stuck on world\n");
+		return 100;
+	}
+	
+	/* vector pointing upwards */
+	tdir[0] = 0; tdir[2] = 0;
+	tdir[1] = (in_ent->r.maxs[1] + in_ent->r.mins[1]) / 2;
+//	tdir[1] += 1.0f;
+
+	trap_Trace( &tr, in_ent->r.currentOrigin, in_ent->r.mins, in_ent->r.maxs, tdir,
+		ENTITYNUM_NONE, in_ent->clipmask);
+	
+	stuck_ent = &g_entities[tr.entityNum];
+	if (tr.entityNum != ENTITYNUM_NONE)
+	{
+		trap_Printf ("dn... i don't get it!\n");
+		if (stuck_ent == in_ent)
+			trap_Printf ("self.\n");
+			
+		if (stuck_ent->s.eFlags & EF_STICK)
+			return stuck_ent->count -15;
+	}
+
+	/* trace down */
+	tdir[1] *= -1;
+	trap_Trace( &tr, in_ent->r.currentOrigin, in_ent->r.mins, in_ent->r.maxs, tdir,
+		ENTITYNUM_NONE, in_ent->clipmask);
+	
+	if (tr.entityNum != ENTITYNUM_NONE)
+	{
+	trap_Printf ("up\n");
+		stuck_ent = &g_entities[tr.entityNum];
+		if (stuck_ent->s.eFlags & EF_STICK)
+			return stuck_ent->count -5;
+	}
+	
+	/* trace sideways */
+	trap_Trace( &tr, in_ent->r.currentOrigin, in_ent->r.mins, in_ent->r.maxs, in_ent->r.currentOrigin,
+		ENTITYNUM_NONE, in_ent->clipmask);
+	
+	if (tr.entityNum != ENTITYNUM_NONE)
+	{
+	trap_Printf ("sd\n");
+		stuck_ent = &g_entities[tr.entityNum];
+		if (stuck_ent->s.eFlags & EF_STICK)
+			return stuck_ent->count -25;
+	}
+
+	trap_Printf ("none, wtf?\n");
+	return -1;
+}
+
+void G_foamthink (gentity_t *in_ent)
+{
+	trace_t tr;
+	vec3_t dst = {0.0f, -0.01f, 0.0f};
+	
+	in_ent->nextthink = 45 + level.time;
+	
+#if 1
+	/* we haven't not landed (yet) - don't even bother checking */
+	if (!(in_ent->count) == -1)
+		return;
+	
+	in_ent->count = G_foamtrace(in_ent);
+	if (in_ent->count > 0)
+		return;
+
+	in_ent->count = 0;
+#endif
+
+#if 0
+	/* trace for objects nearby */
+	trap_Trace( &tr, in_ent->r.currentOrigin, in_ent->r.mins, in_ent->r.maxs, in_ent->r.currentOrigin, ENTITYNUM_NONE,
+		in_ent->clipmask);
+	
+	if (tr.entityNum == ENTITYNUM_WORLD) /* we're directly stuck on non-moveable surface */
+	{
+		in_ent->count = 2;
+		return;
+	}
+
+	/* we need to know a little more about the entity we're stuck on... */
+	if (!tr.startsolid || tr.entityNum != in_ent->r.ownerNum)
+	{
+		gentity_t *stuck_ent;
+		stuck_ent = &g_entities[tr.entityNum];
+
+		/* the other entity is of another type... we assume it's sticky */
+		if ((stuck_ent->s.eFlags & EF_STICK))
+			return;
+	#if 0	
+		/* we're stuck on another foam entity */
+		if (stuck_ent->count > 1)
+		{
+			
+			trap_Printf ("parent stuck\n");
+			return; /* all right, the other one is on a surface as well... */
+		}
+	#endif
+	}
+#endif
+	trap_Printf (">> mid-air\n");
+	/* dst is just to tip it off gravity will do the rest */
+	VectorCopy(dst, in_ent->s.pos.trDelta );
+	VectorCopy( in_ent->r.currentOrigin, in_ent->s.pos.trBase );
+//	in_ent->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
+//	G_RunMissile (in_ent);
+	/* we're floating in free air! fall down (move towards -y) */
+//	trap_LinkEntity(fire_foam (in_ent, in_ent->r.currentOrigin, dst));
+//	G_RunThink( in_ent );
+//	G_ExplodeMissile (in_ent);
+}
+
+
 void G_foamdestroy ( gentity_t *in_self, gentity_t *in_inf, gentity_t *in_att, int in_damage, int in_mod)
 {
 	if (in_inf == in_self)
 		return;
 	in_self->takedamage = qfalse;
+	in_self->count = 0;
 	in_self->think = G_ExplodeMissile;
 	in_self->nextthink = level.time + 10;
 }
@@ -291,12 +432,13 @@ static void ProximityMine_Player( gentity_t *mine, gentity_t *player ) {
 G_MissileImpact
 ================
 */
-void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
+void G_MissileImpact( gentity_t *ent, trace_t *trace )
+{
 	gentity_t		*other;
 	qboolean		hitClient = qfalse;
 #ifdef MISSIONPACK
 	vec3_t			forward, impactpoint, bouncedir;
-	int				eFlags;
+	int			eFlags;
 #endif
 	other = &g_entities[trace->entityNum];
 
@@ -305,17 +447,22 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 	{
 		SnapVectorTowards( trace->endpos, ent->s.pos.trBase );
 		G_SetOrigin( ent, trace->endpos );
-		ent->s.pos.trType = TR_STATIONARY;
 		VectorClear( ent->s.pos.trDelta );
 
-		vectoangles( trace->plane.normal, ent->s.angles );
-		ent->s.angles[0] += 90;
+		//vectoangles( trace->plane.normal, ent->s.angles );
+		//ent->s.angles[0] += 90;
 
 		// link the prox mine to the other entity
+		if (other->s.eFlags & EF_STICK)
+		{
+			trap_Printf("stuck on foam\n");
+			ent->count = other->count-10;
+		} else /* connected to world */
+		{
+			ent->count = 100;
+		}
 		ent->enemy = other;
 		VectorCopy(trace->plane.normal, ent->movedir);
-		VectorSet(ent->r.mins, -4, -4, -4);
-		VectorSet(ent->r.maxs, 4, 4, 4);
 		G_disown (ent);
 		trap_LinkEntity(ent);
 
@@ -493,7 +640,8 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 G_RunMissile
 ================
 */
-void G_RunMissile( gentity_t *ent ) {
+void G_RunMissile( gentity_t *ent )
+{
 	vec3_t		origin;
 	trace_t		tr;
 	int			passent;
@@ -539,14 +687,16 @@ void G_RunMissile( gentity_t *ent ) {
 		}
 	}
 	// if the prox mine wasn't yet outside the player body
-	if (ent->s.eFlags & EF_STICK && !ent->count)
+	if (ent->s.eFlags & EF_STICK && ent->count < 0)
 	{
 		// check if the prox mine is outside the owner bbox
-		trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, ent->r.currentOrigin, ENTITYNUM_NONE, ent->clipmask);
+		trap_Trace(&tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, ent->r.currentOrigin,
+			ENTITYNUM_NONE, ent->clipmask);
+		
 		if (!tr.startsolid || tr.entityNum != ent->r.ownerNum)
 		{
 //			ent->s.pos.trType = TR_STATIONARY;
-			ent->count = 1;
+			ent->count = 2;
 		}
 	}
 	// check think function after bouncing
@@ -641,8 +791,8 @@ gentity_t *fire_foam (gentity_t *self, vec3_t start, vec3_t dir)
 
 	bolt = G_Spawn();
 	bolt->classname = "foam";
-	bolt->nextthink = 1000 + level.time;		/* we don't need a thinker function */
-	bolt->think = G_thinkvoid;	/* doesn't really matter, since this is never executed */
+	bolt->nextthink = 450 + level.time;
+	bolt->think = G_foamthink;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_FOAMGUN;
@@ -659,9 +809,7 @@ gentity_t *fire_foam (gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->splashMethodOfDeath = MOD_FOAMGUN;
 	bolt->clipmask = MASK_SHOT;
 	bolt->target_ent = NULL;
-	bolt->physicsObject = qtrue;
-	bolt->physicsBounce = 1.0;
-	bolt->count = 0;
+	bolt->count = -1;
 
 	bolt->s.pos.trType = TR_GRAVITY;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
@@ -670,9 +818,9 @@ gentity_t *fire_foam (gentity_t *self, vec3_t start, vec3_t dir)
 	SnapVector( bolt->s.pos.trDelta );			// save net bandwidth
 	bolt->die = G_foamdestroy;
 
-	/* make foam a 10^3 block */
-	VectorSet (bolt->r.mins, -5,-5,-5);
-	VectorSet (bolt->r.maxs, 5,5, 5);
+	/* make foam a 16^3 block */
+	VectorSet (bolt->r.mins, -8,-8,-8);
+	VectorSet (bolt->r.maxs,  8, 8, 8);
 	VectorCopy(bolt->r.maxs, bolt->r.absmax);
 	VectorCopy (start, bolt->r.currentOrigin);
 	return bolt;
