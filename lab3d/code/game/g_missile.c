@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_local.h"
 
 #define	MISSILE_PRESTEP_TIME	50
+#define FOAM_SPAWN_VAL 1337
 
 
 void G_disown (gentity_t *in_ent)
@@ -30,6 +31,68 @@ void G_disown (gentity_t *in_ent)
 	in_ent->r.ownerNum = ENTITYNUM_NONE;
 }
 
+void fall_down (gentity_t *in_ent)
+{
+	vec3_t new_origin;
+
+	vec3_t dir = {0.0f, 0.0f, 550.0f}; /* move a little upwards for the bump-effect */
+
+	BG_EvaluateTrajectory (&in_ent->s.pos, level.time, new_origin);
+	SnapVector (new_origin);
+	G_SetOrigin (in_ent, new_origin);
+
+	VectorCopy (dir, in_ent->s.pos.trDelta);
+//	VectorCopy (new_origin, in_ent->s.pos.trBase);
+	SnapVector (in_ent->s.pos.trDelta);			// save net bandwidth
+	in_ent->s.pos.trType = TR_GRAVITY;
+}
+
+void foam_updatecount (gentity_t *in_ent)
+{
+	int i, num, max = 0, matches[8];
+	vec3_t vmin, vmax;
+	gentity_t *stuck_ent;
+
+	VectorScale (in_ent->r.maxs, 1.1f, vmax);
+	VectorScale (in_ent->r.mins, 1.1f, vmin);
+	
+	trap_UnlinkEntity (in_ent);
+	num = trap_EntitiesInBox (vmin, vmax, matches, 8);
+	trap_LinkEntity (in_ent);
+	for (i=0;i<num;i++)
+	{
+		if (matches[i] == ENTITYNUM_WORLD)
+		{
+			in_ent->count = 100;
+			in_ent->enemy = &g_entities[matches[i]];
+			break;
+		}
+		
+		stuck_ent = &g_entities[matches[i]];
+		
+		if (!(stuck_ent->r.contents & CONTENTS_SOLID))
+			continue;
+
+		if (stuck_ent == in_ent) /* skip entity itself */
+		{
+			G_Printf("fupdate: found myself - wtf?\n");
+			continue;
+		}
+
+		/* stuck on foam */
+		if (stuck_ent->s.eFlags & EF_STICK)
+		{
+			if (max < stuck_ent->count)
+			{
+				max = stuck_ent->count;
+	 			in_ent->enemy = &g_entities[matches[i]];
+			}
+		}
+	}
+	in_ent->count = max;
+	if (in_ent->count <= 0)
+		in_ent->enemy = NULL;
+}
 
 
 /*
@@ -100,98 +163,54 @@ void G_ExplodeMissile( gentity_t *ent ) {
 	trap_LinkEntity( ent );
 }
 
-/* trace for solid objects, return true if found, false if all found objects are in the air
+/* trace nearby objects
  */
-int G_foamtrace (gentity_t *in_ent)
+void foamtrace (gentity_t *in_ent)
 {
-	trace_t tr;
-	gentity_t *stuck_ent;
-	vec3_t tdir;
 
-	/* trivial cases: directly stuck to solid entity */
-	trap_Trace( &tr, in_ent->r.currentOrigin, in_ent->r.mins, in_ent->r.maxs, in_ent->r.currentOrigin,
-		ENTITYNUM_NONE, in_ent->clipmask);
-	
-	if (tr.entityNum == ENTITYNUM_NONE)
-	{
-		trap_Printf ("enone\n");
-		return 0;
-	}
-	
-	if (!(tr.startsolid || tr.allsolid ))
-	{
-		trap_Printf ("not solid\n");
-		return 0;
-	}
-
-	stuck_ent = &g_entities[tr.entityNum];
-	//if (!(stuck_ent->s.eFlags & EF_STICK) || tr.entityNum == ENTITYNUM_WORLD || tr.startsolid || tr.allsolid )
-	if (!(stuck_ent->s.eFlags & EF_STICK) && (tr.content & CONTENTS_SOLID))
-	//if (!(stuck_ent->s.eFlags & EF_STICK) && tr.fraction != 1 )
-	{
-		if (stuck_ent == in_ent)
-			trap_Printf("self!!!\n");
-
-		trap_Printf ("stuck on world\n");
-		return 100;
-	}
-	
-	/* vector pointing upwards */
-	tdir[0] = 0; tdir[2] = 0;
-	tdir[1] = (in_ent->r.maxs[1] + in_ent->r.mins[1]) / 2;
-//	tdir[1] += 1.0f;
-
-	trap_Trace( &tr, in_ent->r.currentOrigin, in_ent->r.mins, in_ent->r.maxs, tdir,
-		ENTITYNUM_NONE, in_ent->clipmask);
-	
-	stuck_ent = &g_entities[tr.entityNum];
-	if (tr.entityNum != ENTITYNUM_NONE)
-	{
-		trap_Printf ("dn... i don't get it!\n");
-		if (stuck_ent == in_ent)
-			trap_Printf ("self.\n");
-			
-		if (stuck_ent->s.eFlags & EF_STICK)
-			return stuck_ent->count -15;
-	}
-
-	/* trace down */
-	tdir[1] *= -1;
-	trap_Trace( &tr, in_ent->r.currentOrigin, in_ent->r.mins, in_ent->r.maxs, tdir,
-		ENTITYNUM_NONE, in_ent->clipmask);
-	
-	if (tr.entityNum != ENTITYNUM_NONE)
-	{
-	trap_Printf ("up\n");
-		stuck_ent = &g_entities[tr.entityNum];
-		if (stuck_ent->s.eFlags & EF_STICK)
-			return stuck_ent->count -5;
-	}
-	
-	/* trace sideways */
-	trap_Trace( &tr, in_ent->r.currentOrigin, in_ent->r.mins, in_ent->r.maxs, in_ent->r.currentOrigin,
-		ENTITYNUM_NONE, in_ent->clipmask);
-	
-	if (tr.entityNum != ENTITYNUM_NONE)
-	{
-	trap_Printf ("sd\n");
-		stuck_ent = &g_entities[tr.entityNum];
-		if (stuck_ent->s.eFlags & EF_STICK)
-			return stuck_ent->count -25;
-	}
-
-	trap_Printf ("none, wtf?\n");
-	return -1;
 }
 
 void G_foamthink (gentity_t *in_ent)
 {
 	trace_t tr;
-	vec3_t dst = {0.0f, -0.01f, 0.0f};
+	int num, i, ctop = 0;
+	int matches[8];
+	gentity_t *stuck_ent, *target;
 	
 	in_ent->nextthink = 45 + level.time;
-	
-#if 1
+	//foam_updatecount(in_ent);
+
+	if (in_ent->enemy == NULL)
+	{
+		/* not landed (yet) */
+		return;
+	}
+
+	if ((in_ent->enemy->s.eFlags & EF_STICK) && in_ent->enemy->count <= 10)
+	{
+		//G_Printf("fthink: fall! me: %x, en: %x, enc: %i\n", in_ent, in_ent->enemy, in_ent->enemy->count);
+		in_ent->count = 0;
+		fall_down (in_ent);
+		return;
+	}
+
+
+
+#if 0
+#endif
+#if 0
+	if (in_ent->count > 0)
+	{
+//		SnapVectorTowards( target->endpos, in_ent->s.pos.trBase );
+//		G_SetOrigin( ent, trace->endpos );
+		VectorClear( in_ent->s.pos.trDelta );
+		return;
+	}
+#endif	
+	/* no neighbour found, fall down */
+//	VectorCopy(dst, in_ent->s.pos.trDelta );
+//	VectorCopy( in_ent->r.currentOrigin, in_ent->s.pos.trBase );
+#if 0
 	/* we haven't not landed (yet) - don't even bother checking */
 	if (!(in_ent->count) == -1)
 		return;
@@ -233,7 +252,6 @@ void G_foamthink (gentity_t *in_ent)
 		}
 	#endif
 	}
-#endif
 	trap_Printf (">> mid-air\n");
 	/* dst is just to tip it off gravity will do the rest */
 	VectorCopy(dst, in_ent->s.pos.trDelta );
@@ -244,6 +262,7 @@ void G_foamthink (gentity_t *in_ent)
 //	trap_LinkEntity(fire_foam (in_ent, in_ent->r.currentOrigin, dst));
 //	G_RunThink( in_ent );
 //	G_ExplodeMissile (in_ent);
+#endif
 }
 
 
@@ -441,31 +460,39 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	int			eFlags;
 #endif
 	other = &g_entities[trace->entityNum];
+	if (other == ent)
+		trap_Printf("trace on self, gaaah\n");
 
 	/* stick to surface */
-	if (ent->s.eFlags & EF_STICK && ent->count)
+	if (ent->s.eFlags & EF_STICK)
 	{
-		SnapVectorTowards( trace->endpos, ent->s.pos.trBase );
-		G_SetOrigin( ent, trace->endpos );
-		VectorClear( ent->s.pos.trDelta );
-
-		//vectoangles( trace->plane.normal, ent->s.angles );
-		//ent->s.angles[0] += 90;
-
-		// link the prox mine to the other entity
-		if (other->s.eFlags & EF_STICK)
-		{
-			trap_Printf("stuck on foam\n");
-			ent->count = other->count-10;
-		} else /* connected to world */
-		{
-			ent->count = 100;
-		}
+//		foam_updatecount (ent);
 		ent->enemy = other;
-		VectorCopy(trace->plane.normal, ent->movedir);
-		G_disown (ent);
+	#if 1
+		if (!(ent->enemy->s.eFlags & EF_STICK))
+		{
+			ent->count = 100; /* stuck on world */
+		} else
+		{
+			ent->count = ent->enemy->count - 10;
+		}
+	#endif
+	
+		if (ent->count > 0)
+		{
+			SnapVectorTowards( trace->endpos, ent->s.pos.trBase );
+			G_SetOrigin( ent, trace->endpos );
+			VectorClear( ent->s.pos.trDelta );
+			
+		} else
+		{
+			ent->count = 0;
+			fall_down(ent);
+		}
+		G_disown(ent);
 		trap_LinkEntity(ent);
 
+		G_RunThink( ent );
 		return;
 	}
 
@@ -658,11 +685,13 @@ void G_RunMissile( gentity_t *ent )
 		passent = ent->r.ownerNum;
 	}
 	// trace a line from the previous position to the current position
+	trap_UnlinkEntity(ent);
 	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, passent, ent->clipmask );
 
-	if ( tr.startsolid || tr.allsolid ) {
+	if ( tr.startsolid || tr.allsolid )
+	{
 		// make sure the tr.entityNum is set to the entity we're stuck in
-		trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, ent->r.currentOrigin, passent, ent->clipmask );
+		trap_Trace (&tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, ent->r.currentOrigin, passent, ent->clipmask);
 		tr.fraction = 0;
 	}
 	else {
@@ -681,13 +710,19 @@ void G_RunMissile( gentity_t *ent )
 			G_FreeEntity( ent );
 			return;
 		}
+
 		G_MissileImpact( ent, &tr );
 		if ( ent->s.eType != ET_MISSILE ) {
 			return;		// exploded
 		}
+	} else if (ent->s.eFlags & EF_STICK)
+	{
+		/* no impact, reset enemy */
+//		ent->enemy = NULL;
+//		ent->count = 0;
 	}
 	// if the prox mine wasn't yet outside the player body
-	if (ent->s.eFlags & EF_STICK && ent->count < 0)
+	if (ent->s.eFlags & EF_STICK && ent->count == FOAM_SPAWN_VAL)
 	{
 		// check if the prox mine is outside the owner bbox
 		trap_Trace(&tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, ent->r.currentOrigin,
@@ -696,7 +731,7 @@ void G_RunMissile( gentity_t *ent )
 		if (!tr.startsolid || tr.entityNum != ent->r.ownerNum)
 		{
 //			ent->s.pos.trType = TR_STATIONARY;
-			ent->count = 2;
+			ent->count = 0;
 		}
 	}
 	// check think function after bouncing
@@ -709,19 +744,47 @@ void G_ExplodeFoam (gentity_t *ent)
 {
 	vec3_t		dir;
 	vec3_t		origin;
+	vec3_t vmin, vmax;
+	gentity_t *stuck_ent;
+	int matches[8], num, i;
+	
+	VectorScale (ent->r.maxs, 1.1f, vmax);
+	VectorScale (ent->r.mins, 1.1f, vmin);
 
 	BG_EvaluateTrajectory (&ent->s.pos, level.time, origin);
 	SnapVector (origin);
 	G_SetOrigin (ent, origin);
 
-	// we don't have a valid direction, so just point straight up
-	dir[0] = dir[1] = 0;
-	dir[2] = 1;
+	num = trap_EntitiesInBox (vmin, vmax, matches, 8);
+	for (i=0;i<num;i++)
+	{
+		if (matches[i] == ENTITYNUM_WORLD)
+			continue;
+
+		stuck_ent = &g_entities[matches[i]];
+
+		if (stuck_ent == ent) /* skip entity itself */
+			continue;
+
+		/* stuck on foam */
+		if (stuck_ent->s.eFlags & EF_STICK)
+		{
+			if (stuck_ent->enemy == ent)
+			{
+				stuck_ent->enemy = NULL;
+				stuck_ent->count = 0;
+				fall_down(stuck_ent);
+			}
+		}
+	}
+
 
 	ent->s.eType = ET_GENERAL;
+	ent->count = 0;
 	ent->freeAfterEvent = qtrue;
 
 	trap_LinkEntity (ent);
+	G_Printf("foam dead");
 }
 
 void G_FoamDie (gentity_t *in_self, gentity_t *in_inflictor, gentity_t *in_attacker, int in_damage, int in_mod)
@@ -791,7 +854,7 @@ gentity_t *fire_foam (gentity_t *self, vec3_t start, vec3_t dir)
 
 	bolt = G_Spawn();
 	bolt->classname = "foam";
-	bolt->nextthink = 450 + level.time;
+	bolt->nextthink = 10000 + level.time;
 	bolt->think = G_foamthink;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
@@ -799,8 +862,8 @@ gentity_t *fire_foam (gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->s.eFlags = EF_STICK;	/* make it sticky */
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
-	bolt->damage = 1;                 /* yes foam is bad for your health ;) */
-	bolt->health = 15;                 /* foam is destroyable */
+	bolt->damage = 0;
+	bolt->health = 5;                 /* foam is destroyable */
 	bolt->r.contents = (CONTENTS_SOLID); // | CONTENTS_BODY); /* make foam a solid body */
 	bolt->takedamage = qtrue;
 	bolt->splashDamage = 0;
@@ -809,14 +872,15 @@ gentity_t *fire_foam (gentity_t *self, vec3_t start, vec3_t dir)
 	bolt->splashMethodOfDeath = MOD_FOAMGUN;
 	bolt->clipmask = MASK_SHOT;
 	bolt->target_ent = NULL;
-	bolt->count = -1;
+	bolt->count = FOAM_SPAWN_VAL;
+	bolt->enemy = NULL;
 
 	bolt->s.pos.trType = TR_GRAVITY;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
 	VectorCopy( start, bolt->s.pos.trBase );
 	VectorScale( dir, 500, bolt->s.pos.trDelta );
 	SnapVector( bolt->s.pos.trDelta );			// save net bandwidth
-	bolt->die = G_foamdestroy;
+	bolt->die = G_FoamDie;
 
 	/* make foam a 16^3 block */
 	VectorSet (bolt->r.mins, -8,-8,-8);
