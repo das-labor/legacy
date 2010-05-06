@@ -826,12 +826,14 @@ void CG_RegisterWeapon( int weaponNum ) {
 		weaponInfo->missileSound = trap_S_RegisterSound( "sound/click.wav", qfalse );
 		break;
 
-	case WP_FOAMGUN: /* TODO */
-		weaponInfo->missileModel = trap_R_RegisterModel( "models/ammo/grenade1.md3" );
+	case WP_FOAMGUN:
+		weaponInfo->missileModel = trap_R_RegisterModel( "models/ammo/pu-foam1.md3" );
+		weaponInfo->extraMissileModel[0] = trap_R_RegisterModel( "models/ammo/pu-foam2.md3" );
+		weaponInfo->numExtraMissileModels = 1;
 		weaponInfo->missileTrailFunc = CG_GrenadeTrail;
-		weaponInfo->wiTrailTime = 1700;
+		weaponInfo->wiTrailTime = 1000;
 		weaponInfo->trailRadius = 16;
-		MAKERGB( weaponInfo->flashDlightColor, 1, 0.90f, 0 );
+		MAKERGB( weaponInfo->flashDlightColor, 0, 0, 0 );
 		weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/click.wav", qfalse );
 		cgs.media.grenadeExplosionShader = trap_R_RegisterShader( "grenadeExplosion" );
 		cgs.media.railRingsShader = trap_R_RegisterShader( "railDisc" );
