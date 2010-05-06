@@ -92,6 +92,9 @@ int foam_expand (gentity_t *ent)
 
 	if (ent->splashRadius >= 9)
 		return 0;
+	
+	if (ent->splashRadius > 4)
+		ent->s.modelindex = 1;
 
 	ent->splashRadius++;
 	ent->health += 4*ent->splashRadius;
@@ -780,6 +783,7 @@ gentity_t *fire_foam (gentity_t *self, vec3_t start, vec3_t dir)
 
 	bolt = G_Spawn();
 	bolt->classname = "foam";
+	bolt->s.modelindex = 0;
 	bolt->nextthink = 10000 + level.time; /* thinker function is executed as soons as the foam hits something */
 	bolt->think = G_foamthink;
 	bolt->s.eType = ET_MISSILE;

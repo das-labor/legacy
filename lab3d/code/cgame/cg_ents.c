@@ -476,6 +476,7 @@ static void CG_Missile( centity_t *cent ) {
 	if ( cent->currentState.weapon == WP_FOAMGUN )
 	{
 		/* TODO */
+		ent.hModel = weapon->extraMissileModel[s1->modelindex];
 	}
 
 #ifdef MISSIONPACK
