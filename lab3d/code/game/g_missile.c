@@ -87,7 +87,7 @@ int foam_expand (gentity_t *ent)
 	const vec3_t bbox_base = {-2.0f, -2.0f, -2.0f};
 
 	/* expand with 50% probability */
-	if ((int) random() & 0x01)
+	if (random() > 0.5f)
 		return 0;
 
 	if (ent->splashRadius >= 9)

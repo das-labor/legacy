@@ -401,6 +401,8 @@ typedef struct weaponInfo_s {
 	qhandle_t		ammoModel;
 
 	qhandle_t		missileModel;
+	qhandle_t		extraMissileModel[10];
+	int			numExtraMissileModels;
 	sfxHandle_t		missileSound;
 	void			(*missileTrailFunc)( centity_t *, const struct weaponInfo_s *wi );
 	float			missileDlight;
