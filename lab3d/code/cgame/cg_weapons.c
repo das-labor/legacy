@@ -828,8 +828,9 @@ void CG_RegisterWeapon( int weaponNum ) {
 
 	case WP_FOAMGUN:
 		weaponInfo->missileModel = trap_R_RegisterModel( "models/ammo/pu-foam1.md3" );
-		weaponInfo->extraMissileModel[0] = trap_R_RegisterModel( "models/ammo/pu-foam2.md3" );
-		weaponInfo->numExtraMissileModels = 1;
+		weaponInfo->extraMissileModel[0] = trap_R_RegisterModel( "models/ammo/pu-foam1.md3" );
+		weaponInfo->extraMissileModel[1] = trap_R_RegisterModel( "models/ammo/pu-foam2.md3" );
+		weaponInfo->numExtraMissileModels = 2;
 		weaponInfo->missileTrailFunc = CG_GrenadeTrail;
 		weaponInfo->wiTrailTime = 1000;
 		weaponInfo->trailRadius = 16;
