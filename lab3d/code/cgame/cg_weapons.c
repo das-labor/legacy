@@ -2039,7 +2039,7 @@ static void CG_ShotgunPellet( vec3_t start, vec3_t end, int skipNum ) {
 
 	// FIXME: should probably move this cruft into CG_BubbleTrail
 	if ( sourceContentType == destContentType ) {
-		if ( sourceContentType & CONTENTS_WATER ) {
+		if ( sourceContentType & CONTENTS_WATER || 1) { /* BUBBBLES!!!! */
 			CG_BubbleTrail( start, tr.endpos, 32 );
 		}
 	} else if ( sourceContentType & CONTENTS_WATER ) {
@@ -2279,7 +2279,7 @@ void CG_Bullet( vec3_t end, int sourceEntityNum, vec3_t normal, qboolean flesh, 
 			destContentType = trap_CM_PointContents( end, 0 );
 
 			// do a complete bubble trail if necessary
-			if ( ( sourceContentType == destContentType ) && ( sourceContentType & CONTENTS_WATER ) ) {
+			if ( ( sourceContentType == destContentType ) && ( sourceContentType & CONTENTS_WATER ) || 1 ) {
 				CG_BubbleTrail( start, end, 32 );
 			}
 			// bubble trail from water into air
