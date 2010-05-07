@@ -496,6 +496,9 @@ static void CG_Missile( centity_t *cent ) {
 	if ( s1->pos.trType != TR_STATIONARY ) {
 		RotateAroundDirection( ent.axis, cg.time / 4 );
 	} else {
+		if ( s1->weapon == WP_FOAMGUN ) {
+			AnglesToAxis( cent->lerpAngles, ent.axis );
+		}
 #ifdef MISSIONPACK
 		if ( s1->weapon == WP_PROX_LAUNCHER ) {
 			AnglesToAxis( cent->lerpAngles, ent.axis );

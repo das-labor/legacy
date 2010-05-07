@@ -67,22 +67,17 @@ void notify_linked_neighbours (gentity_t *ent)
 
 }
 
+#define NUM_FOAM_BBOXES 5
 /* expands an existing foam blob if possible */
 int foam_expand (gentity_t *ent)
 {
-	const vec3_t bboxes[10] =
+	const vec3_t bboxes[NUM_FOAM_BBOXES][2] =
 	{
-		{1.5f,1.5f, 1.5f},
-		{2.8f,2.8f, 2.8f},
-		{4.0f,4.2f, 4.0f},
-		{5.4f,5.3f, 5.3f},
-		{6.5f,6.7f, 6.5f},
-
-		{7.7f,7.8f, 7.8f},
-		{8.8f,8.9f, 8.9f},
-		{10.5f,10.2f, 10.0f},
-		{12.5f,12.5f, 12.5f},
-		{14.5f,14.2f, 14.7f}
+		{ {2.5f,2.5f, 2.5f}, {-2.5f, -2.5f, -2.5f} },
+		{ {5.5f,5.5f, 5.5f}, {-5.5f, -5.5f, -5.5f} },
+		{ {12.25f,12.25f, 12.25f}, {-12.25f, -12.25f, -12.25f} },
+		{ {18.25f,18.25f, 18.25f}, {-18.25f, -18.25f, -18.25f} },
+		{ {27.25f,27.25f, 27.25f}, {-27.25f, -27.25f, -27.25f} }
 	};
 	const vec3_t bbox_base = {-2.0f, -2.0f, -2.0f};
 
@@ -90,16 +85,16 @@ int foam_expand (gentity_t *ent)
 	if (random() > 0.5f)
 		return 0;
 
-	if (ent->splashRadius >= 9)
+	if (ent->splashRadius >= NUM_FOAM_BBOXES-1)
 		return 0;
 	
-	if (ent->splashRadius > 4)
+	if (ent->splashRadius > (NUM_FOAM_BBOXES/2))
 		ent->s.modelindex = 1;
 
 	ent->splashRadius++;
 	ent->health += 4*ent->splashRadius;
-	VectorCopy (bbox_base, ent->r.mins);
-	VectorCopy (bboxes[ent->splashRadius], ent->r.mins);
+	VectorCopy (bboxes[ent->splashRadius][0], ent->r.mins);
+	VectorCopy (bboxes[ent->splashRadius][1], ent->r.mins);
 	trap_LinkEntity(ent);
 
 	return ent->splashRadius;
@@ -446,6 +441,11 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 			ent->count = 0;
 			fall_down(ent);
 		}
+
+		ent->s.pos.trType = TR_STATIONARY;
+		vectoangles( trace->plane.normal, ent->s.angles );
+		ent->s.angles[0] = 360.0f * random();
+
 		G_disown(ent);
 		trap_LinkEntity(ent);
 
@@ -713,7 +713,6 @@ void G_ExplodeFoam (gentity_t *ent)
 	ent->freeAfterEvent = qtrue;
 
 	trap_LinkEntity (ent);
-	G_Printf("foam dead");
 }
 
 void G_FoamDie (gentity_t *in_self, gentity_t *in_inflictor, gentity_t *in_attacker, int in_damage, int in_mod)
