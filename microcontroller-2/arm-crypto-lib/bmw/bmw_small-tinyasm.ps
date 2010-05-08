@@ -1,0 +1,3456 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 18 36 577 806
+%%Title: Enscript Output
+%%Creator: GNU enscript 1.6.4
+%%CreationDate: Tue Apr  6 12:07:47 2010
+%%Orientation: Landscape
+%%Pages: (atend)
+%%DocumentMedia: A4 595 842 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6 4
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/MF_PS { % fontname newfontname -> -	make a new font preserving its enc
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/SUF_PS { % fontname width height -> -	set a new user font preserving its enc
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF_PS
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+/bgcs { % x y height blskip red green blue str -> -  show string with bg color
+  /str exch def
+  /blue exch def
+  /green exch def
+  /red exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    red green blue setrgbcolor
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6 4
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 7 7 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [595 842] 
+  >> setpagedevice
+} if
+%%BeginResource: procset Enscript-Header-simple 1.6 4
+
+/do_header {	% print default simple header
+  gsave
+    d_header_x d_header_y HFpt_h 3 div add translate
+
+    HF setfont
+    user_header_p {
+      5 0 moveto user_header_left_str show
+
+      d_header_w user_header_center_str stringwidth pop sub 2 div
+      0 moveto user_header_center_str show
+
+      d_header_w user_header_right_str stringwidth pop sub 5 sub
+      0 moveto user_header_right_str show
+    } {
+      5 0 moveto fname show
+      45 0 rmoveto fmodstr show
+      45 0 rmoveto pagenumstr show
+    } ifelse
+
+  grestore
+} def
+%%EndResource
+/d_page_w 770 def
+/d_page_h 559 def
+/d_header_x 0 def
+/d_header_y 544 def
+/d_header_w 770 def
+/d_header_h 15 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 770 def
+/d_footer_h 0 def
+/d_output_w 770 def
+/d_output_h 544 def
+/cols 3 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+90 rotate
+36 -577 translate
+/pagenum 1 def
+/fname (bmw_small-tinyasm.S) def
+/fdir () def
+/ftail (bmw_small-tinyasm.S) def
+% User defined strings:
+/fmodstr (Mo Apr 05 09:57:29 2010) def
+/pagenumstr (1) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+column_lines
+column_borders
+do_header
+5 534 M
+(/* bmw_small-tinyasm.S */) s
+5 526 M
+(/*) s
+5 518 M
+(    This file is part of the AVR-Crypto-Lib.) s
+5 510 M
+(    Copyright \(C\) 2009  Daniel Otte \(daniel.otte@rub.de\)) s
+5 494 M
+(    This program is free software: you can redistribute it) s
+5 486 M
+( and/or modify) s
+5 478 M
+(    it under the terms of the GNU General Public License a) s
+5 470 M
+(s published by) s
+5 462 M
+(    the Free Software Foundation, either version 3 of the ) s
+5 454 M
+(License, or) s
+5 446 M
+(    \(at your option\) any later version.) s
+5 430 M
+(    This program is distributed in the hope that it will b) s
+5 422 M
+(e useful,) s
+5 414 M
+(    but WITHOUT ANY WARRANTY; without even the implied war) s
+5 406 M
+(ranty of) s
+5 398 M
+(    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  ) s
+5 390 M
+(See the) s
+5 382 M
+(    GNU General Public License for more details.) s
+5 366 M
+(    You should have received a copy of the GNU General Pub) s
+5 358 M
+(lic License) s
+5 350 M
+(    along with this program.  If not, see <http://www.gnu.) s
+5 342 M
+(org/licenses/>.) s
+5 334 M
+(*/) s
+5 318 M
+(/*) s
+5 310 M
+( * File:        bmw_small-tinyasm.S) s
+5 302 M
+( * Author:      Daniel Otte) s
+5 294 M
+( * Date:        2010-03-28) s
+5 286 M
+( * License:     GPLv3 or later) s
+5 278 M
+( * Description: implementation of BlueMidnightWish) s
+5 270 M
+( *) s
+5 262 M
+( */) s
+5 246 M
+(#include "avr-asm-macros.S") s
+5 230 M
+(/*********************************************************) s
+5 222 M
+(*********************/) s
+5 214 M
+(/*) s
+5 206 M
+(  param a: r22:r23:r24:r25) s
+5 198 M
+(  param s: r20) s
+5 190 M
+(*/) s
+5 182 M
+(shiftleft32:) s
+5 174 M
+(        clr r0) s
+5 166 M
+(        cpi r20, 8) s
+5 158 M
+(        brlo bitrotateleft_1) s
+5 150 M
+(        mov r25, r24) s
+5 142 M
+(        mov r24, r23) s
+5 134 M
+(        mov r23, r22) s
+5 126 M
+(        clr r22) s
+5 118 M
+(        subi r20, 8) s
+5 110 M
+(        rjmp shiftleft32) s
+5 94 M
+(/*********************************************************) s
+5 86 M
+(*********************/) s
+5 78 M
+(/*) s
+5 70 M
+(  param a: r22:r23:r24:r25) s
+5 62 M
+(  param s: r20) s
+5 54 M
+(*/) s
+5 46 M
+(shiftright32:) s
+5 38 M
+(        cpi r20, 8) s
+5 30 M
+(        brlo bitshiftright) s
+5 22 M
+(        mov r22, r23) s
+5 14 M
+(        mov r23, r24) s
+5 6 M
+(        mov r24, r25) s
+261.667 534 M
+(        clr r25) s
+261.667 526 M
+(        subi r20, 8) s
+261.667 518 M
+(        rjmp shiftright32) s
+261.667 510 M
+(bitshiftright:) s
+261.667 502 M
+(        tst r20) s
+261.667 494 M
+(        breq 20f) s
+261.667 486 M
+(10:     lsr r25) s
+261.667 478 M
+(        ror r24) s
+261.667 470 M
+(        ror r23) s
+261.667 462 M
+(        ror r22) s
+261.667 454 M
+(        dec r20) s
+261.667 446 M
+(        brne 10b) s
+261.667 438 M
+(20: ret) s
+261.667 422 M
+(/*********************************************************) s
+261.667 414 M
+(*********************/) s
+261.667 406 M
+(/*) s
+261.667 398 M
+(  param a: r22:r23:r24:r25) s
+261.667 390 M
+(  param s: r20) s
+261.667 382 M
+(*/) s
+261.667 374 M
+(rotateleft32:) s
+261.667 366 M
+(        cpi r20, 8) s
+261.667 358 M
+(        brlo bitrotateleft) s
+261.667 350 M
+(        mov r0, r25) s
+261.667 342 M
+(        mov r25, r24) s
+261.667 334 M
+(        mov r24, r23) s
+261.667 326 M
+(        mov r23, r22) s
+261.667 318 M
+(        mov r22, r0) s
+261.667 310 M
+(        subi r20, 8) s
+261.667 302 M
+(        rjmp rotateleft32) s
+261.667 294 M
+(bitrotateleft:) s
+261.667 286 M
+(    mov r0, r25) s
+261.667 278 M
+(bitrotateleft_1:) s
+261.667 270 M
+(        tst r20) s
+261.667 262 M
+(        breq 20f) s
+261.667 254 M
+(10:) s
+261.667 246 M
+(        lsl r0) s
+261.667 238 M
+(        rol r22) s
+261.667 230 M
+(        rol r23) s
+261.667 222 M
+(        rol r24) s
+261.667 214 M
+(        rol r25) s
+261.667 206 M
+(        dec r20) s
+261.667 198 M
+(        brne 10b) s
+261.667 190 M
+(20: ret) s
+261.667 166 M
+(/*********************************************************) s
+261.667 158 M
+(*********************/) s
+261.667 142 M
+(s_table:) s
+261.667 134 M
+(s0:  .byte 1, 3, 4,19) s
+261.667 126 M
+(s1:  .byte 1, 2, 8,23) s
+261.667 118 M
+(s2:  .byte 2, 1,12,25) s
+261.667 110 M
+(s3:  .byte 2, 2,15,29) s
+261.667 102 M
+(s4:  .byte 1, 0, 0, 0) s
+261.667 94 M
+(s5:  .byte 2, 0, 0, 0) s
+261.667 78 M
+(eor_r22_in_r16:) s
+261.667 70 M
+(        eor r16, r22) s
+261.667 62 M
+(        eor r17, r23) s
+261.667 54 M
+(        eor r18, r24) s
+261.667 46 M
+(        eor r19, r25) s
+261.667 38 M
+(        ret) s
+261.667 22 M
+(/*) s
+261.667 14 M
+(  param x: r22:r23:r24:25) s
+261.667 6 M
+(  param s: r20) s
+518.333 534 M
+(*/) s
+518.333 526 M
+(sn:) s
+518.333 518 M
+(        push_range 2, 5) s
+518.333 510 M
+(        push r17) s
+518.333 502 M
+(        push r19) s
+518.333 494 M
+(        ldi r30, lo8\(s_table\)) s
+518.333 486 M
+(        ldi r31, hi8\(s_table\)) s
+518.333 478 M
+(        lsl r20) s
+518.333 470 M
+(        lsl r20) s
+518.333 462 M
+(        add r30, r20) s
+518.333 454 M
+(        adc r31, r1) s
+518.333 446 M
+(        movw r2, r22) s
+518.333 438 M
+(        movw r4, r24) s
+518.333 430 M
+(        lpm r20, Z+) s
+518.333 422 M
+(        rcall shiftright32) s
+518.333 414 M
+(        movw r16, r22) s
+518.333 406 M
+(        movw r18, r24) s
+518.333 398 M
+(;---) s
+518.333 390 M
+(        movw r22, r2) s
+518.333 382 M
+(        movw r24, r4) s
+518.333 374 M
+(        lpm r20, Z+) s
+518.333 366 M
+(        rcall shiftleft32) s
+518.333 358 M
+(        rcall eor_r22_in_r16) s
+518.333 350 M
+(;---) s
+518.333 342 M
+(        movw r22, r2) s
+518.333 334 M
+(        movw r24, r4) s
+518.333 326 M
+(        lpm r20, Z+) s
+518.333 318 M
+(        rcall rotateleft32) s
+518.333 310 M
+(        rcall eor_r22_in_r16) s
+518.333 302 M
+(;---) s
+518.333 294 M
+(        movw r22, r2) s
+518.333 286 M
+(        movw r24, r4) s
+518.333 278 M
+(        lpm r20, Z+) s
+518.333 270 M
+(        rcall rotateleft32) s
+518.333 262 M
+(        eor r22, r16) s
+518.333 254 M
+(        eor r23, r17) s
+518.333 246 M
+(        eor r24, r18) s
+518.333 238 M
+(        eor r25, r19) s
+518.333 230 M
+(        pop r19) s
+518.333 222 M
+(        pop r17) s
+518.333 214 M
+(        pop_range 2, 5) s
+518.333 206 M
+(        ret) s
+518.333 190 M
+(/*********************************************************) s
+518.333 182 M
+(*********************/) s
+518.333 174 M
+(/*) s
+518.333 166 M
+(  param dest: r26:r27 \(X\)) s
+518.333 158 M
+(  param src:  r30:r31 \(Z\)) s
+518.333 150 M
+(  param len:  r20) s
+518.333 142 M
+(*/) s
+518.333 134 M
+(memxor_short:) s
+518.333 126 M
+(;       tst r20) s
+518.333 118 M
+(;       breq memxor_exit) s
+518.333 110 M
+(10: ld r21, X) s
+518.333 102 M
+(        ld r22, Z+) s
+518.333 94 M
+(        eor r21, r22) s
+518.333 86 M
+(        st X+, r21) s
+518.333 78 M
+(        dec r20) s
+518.333 70 M
+(        brne 10b) s
+518.333 62 M
+(memxor_exit:) s
+518.333 54 M
+(        ret) s
+518.333 38 M
+(/*********************************************************) s
+518.333 30 M
+(*********************/) s
+518.333 22 M
+(q0 = 2) s
+518.333 14 M
+(q1 = 3) s
+518.333 6 M
+(h0 = 4) s
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+90 rotate
+36 -577 translate
+/pagenum 2 def
+/fname (bmw_small-tinyasm.S) def
+/fdir () def
+/ftail (bmw_small-tinyasm.S) def
+% User defined strings:
+/fmodstr (Mo Apr 05 09:57:29 2010) def
+/pagenumstr (2) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+column_lines
+column_borders
+do_header
+5 534 M
+(h1 = 5) s
+5 526 M
+(m0 = 6) s
+5 518 M
+(m1 = 7) s
+5 502 M
+(add_hx_to_w:) s
+5 494 M
+(        movw r26, h0) s
+5 486 M
+(        add r26, r16) s
+5 478 M
+(        adc r27, r1) s
+5 470 M
+(        ld r22, Y) s
+5 462 M
+(        ldd r23, Y+1) s
+5 454 M
+(        ldd r24, Y+2) s
+5 446 M
+(        ldd r25, Y+3) s
+5 438 M
+(        lsl r20) s
+5 430 M
+(        rol r21) s
+5 422 M
+(        brcs 30f) s
+5 414 M
+(        /* addition */) s
+5 406 M
+(        ld r0, X+) s
+5 398 M
+(        add r22, r0) s
+5 390 M
+(        ld r0, X+) s
+5 382 M
+(        adc r23, r0) s
+5 374 M
+(        ld r0, X+) s
+5 366 M
+(        adc r24, r0) s
+5 358 M
+(        ld r0, X+) s
+5 350 M
+(        adc r25, r0) s
+5 342 M
+(        rjmp 50f) s
+5 334 M
+(30: /* substract */) s
+5 326 M
+(        ld r0, X+) s
+5 318 M
+(        sub r22, r0) s
+5 310 M
+(        ld r0, X+) s
+5 302 M
+(        sbc r23, r0) s
+5 294 M
+(        ld r0, X+) s
+5 286 M
+(        sbc r24, r0) s
+5 278 M
+(        ld r0, X+) s
+5 270 M
+(        sbc r25, r0) s
+5 262 M
+(50:) s
+5 254 M
+(        st Y+, r22) s
+5 246 M
+(        st Y+, r23) s
+5 238 M
+(        st Y+, r24) s
+5 230 M
+(        st Y+, r25) s
+5 222 M
+(        ret) s
+5 206 M
+(/*********************************************************) s
+5 198 M
+(*********************/) s
+5 190 M
+(load32_from_X:) s
+5 182 M
+(        ld r22, X+) s
+5 174 M
+(        ld r23, X+) s
+5 166 M
+(        ld r24, X+) s
+5 158 M
+(        ld r25, X+) s
+5 150 M
+(        ret) s
+5 134 M
+(load32_from_Y:) s
+5 126 M
+(        ld r22, Y+) s
+5 118 M
+(        ld r23, Y+) s
+5 110 M
+(        ld r24, Y+) s
+5 102 M
+(        ld r25, Y+) s
+5 94 M
+(        ret) s
+5 78 M
+(add_X_to_32:) s
+5 70 M
+(        ld r0, X+) s
+5 62 M
+(        add r22, r0) s
+5 54 M
+(        ld r0, X+) s
+5 46 M
+(        adc r23, r0) s
+5 38 M
+(        ld r0, X+) s
+5 30 M
+(        adc r24, r0) s
+5 22 M
+(        ld r0, X+) s
+5 14 M
+(        adc r25, r0) s
+5 6 M
+(        ret) s
+261.667 534 M
+(/*********************************************************) s
+261.667 526 M
+(*********************/) s
+261.667 518 M
+(/*) s
+261.667 510 M
+(  param q:  r28:r29 \(Y\)) s
+261.667 502 M
+(  param h:  r26:r27 \(X\)) s
+261.667 494 M
+(  param m:  r30:r31 \(Z\)) s
+261.667 486 M
+(*/) s
+261.667 470 M
+(f0_hacktable:) s
+261.667 462 M
+(        .byte 0x03, 0x11) s
+261.667 454 M
+(        .byte 0xDD, 0xB3) s
+261.667 446 M
+(        .byte 0x2A, 0x79) s
+261.667 438 M
+(        .byte 0x07, 0xAA) s
+261.667 430 M
+(        .byte 0x51, 0xC2) s
+261.667 422 M
+(f0_indextable:) s
+261.667 414 M
+(        .byte 5*4,7*4,10*4,13*4,14*4) s
+261.667 406 M
+(;       .byte 0 ; just for alignment) s
+261.667 398 M
+(f0_s_table:) s
+261.667 390 M
+(        .byte 0,1,2,3,4) s
+261.667 382 M
+(        .byte 0,1,2,3,4) s
+261.667 374 M
+(        .byte 0,1,2,3,4) s
+261.667 366 M
+(;       .byte 0) s
+261.667 350 M
+(f0:) s
+261.667 342 M
+(        movw h0, r26) s
+261.667 334 M
+(        movw q0, r28) s
+261.667 326 M
+(        movw m0, r30) s
+261.667 318 M
+(;--- DBG) s
+261.667 310 M
+(;       push_range 22, 25) s
+261.667 302 M
+(;       movw r24, r26) s
+261.667 294 M
+(;       ldi r22, 'H') s
+261.667 286 M
+(;       rcall printX) s
+261.667 278 M
+(;       pop_range  22, 25) s
+261.667 270 M
+(;--- END DBG) s
+261.667 262 M
+(;--- DBG) s
+261.667 254 M
+(;       push_range 22, 25) s
+261.667 246 M
+(;       movw r24, r30) s
+261.667 238 M
+(;       ldi r22, 'M') s
+261.667 230 M
+(;       rcall printX) s
+261.667 222 M
+(;       pop_range  22, 25) s
+261.667 214 M
+(;--- END DBG) s
+261.667 206 M
+(        /* xor m into h */) s
+261.667 198 M
+(        ldi r20, 64) s
+261.667 190 M
+(        rcall memxor_short) s
+261.667 182 M
+(        movw r30, m0) s
+261.667 174 M
+(        movw r26, h0) s
+261.667 158 M
+(        /* set q to zero */) s
+261.667 150 M
+(        ldi r22, 64) s
+261.667 142 M
+(10:     st Y+, r1) s
+261.667 134 M
+(        dec r22) s
+261.667 126 M
+(        brne 10b) s
+261.667 118 M
+(        movw r28, q0) s
+261.667 110 M
+(        /* calculate W and store it in Q */) s
+261.667 102 M
+(        ldi r19, 5) s
+261.667 94 M
+(30:) s
+261.667 86 M
+(        ldi r18, 16) s
+261.667 78 M
+(        /* load initial index */) s
+261.667 70 M
+(        ldi r30, lo8\(f0_indextable-1\)) s
+261.667 62 M
+(        ldi r31, hi8\(f0_indextable-1\)) s
+261.667 54 M
+(        add r30, r19) s
+261.667 46 M
+(        adc r31, r1) s
+261.667 38 M
+(        lpm r16, Z) s
+261.667 30 M
+(        /* load values from hacktable */) s
+261.667 22 M
+(        ldi r30, lo8\(f0_hacktable-2\)) s
+261.667 14 M
+(        ldi r31, hi8\(f0_hacktable-2\)) s
+261.667 6 M
+(        lsl r19) s
+518.333 534 M
+(        add r30, r19) s
+518.333 526 M
+(        adc r31, r1) s
+518.333 518 M
+(        lsr r19) s
+518.333 510 M
+(        lpm r21, Z+) s
+518.333 502 M
+(        lpm r20, Z) s
+518.333 494 M
+(40:) s
+518.333 486 M
+(        call add_hx_to_w) s
+518.333 478 M
+(        subi r16, -4) s
+518.333 470 M
+(        andi r16, 0x0f<<2) s
+518.333 462 M
+(        dec r18) s
+518.333 454 M
+(        brne 40b) s
+518.333 446 M
+(        movw r28, q0) s
+518.333 438 M
+(        dec r19) s
+518.333 430 M
+(        brne 30b) s
+518.333 422 M
+(        movw r26, h0) s
+518.333 414 M
+(;--- DBG) s
+518.333 406 M
+(;       push_range 22, 25) s
+518.333 398 M
+(;       movw r24, r28) s
+518.333 390 M
+(;       ldi r22, 'W') s
+518.333 382 M
+(;       rcall printX) s
+518.333 374 M
+(;       pop_range  22, 25) s
+518.333 366 M
+(;--- END DBG) s
+518.333 358 M
+(        /* xor m into h */) s
+518.333 350 M
+(        ldi r20, 64) s
+518.333 342 M
+(        movw r26, h0) s
+518.333 334 M
+(        movw r30, m0) s
+518.333 326 M
+(        rcall memxor_short) s
+518.333 318 M
+(        sbiw r26, 60) s
+518.333 310 M
+(;---) s
+518.333 302 M
+(        ldi r30, lo8\(f0_s_table\)) s
+518.333 294 M
+(        ldi r31, hi8\(f0_s_table\)) s
+518.333 286 M
+(        ldi r21, 15) s
+518.333 278 M
+(        mov r8, r21) s
+518.333 270 M
+(50:) s
+518.333 262 M
+(        ldd r22, Y+0) s
+518.333 254 M
+(        ldd r23, Y+1) s
+518.333 246 M
+(        ldd r24, Y+2) s
+518.333 238 M
+(        ldd r25, Y+3) s
+518.333 230 M
+(        lpm r20, Z+) s
+518.333 222 M
+(        movw r2, r30) s
+518.333 214 M
+(        rcall sn) s
+518.333 206 M
+(        movw r30, r2) s
+518.333 190 M
+(        rcall add_X_to_32) s
+518.333 174 M
+(        st Y+, r22) s
+518.333 166 M
+(        st Y+, r23) s
+518.333 158 M
+(        st Y+, r24) s
+518.333 150 M
+(        st Y+, r25) s
+518.333 142 M
+(        dec r8) s
+518.333 134 M
+(        brne 50b) s
+518.333 126 M
+(;---) s
+518.333 118 M
+(        ldd r22, Y+0) s
+518.333 110 M
+(        ldd r23, Y+1) s
+518.333 102 M
+(        ldd r24, Y+2) s
+518.333 94 M
+(        ldd r25, Y+3) s
+518.333 86 M
+(        clr r20) s
+518.333 78 M
+(        rcall sn) s
+518.333 70 M
+(        movw r30, r2) s
+518.333 62 M
+(        movw r26, h0) s
+518.333 54 M
+(        rcall add_X_to_32) s
+518.333 46 M
+(        sbiw r26, 4) s
+518.333 38 M
+(        std Y+0, r22) s
+518.333 30 M
+(        std Y+1, r23) s
+518.333 22 M
+(        std Y+2, r24) s
+518.333 14 M
+(        std Y+3, r25) s
+518.333 6 M
+(        sbiw r28, 15*4) s
+_R
+S
+%%Page: (3) 3
+%%BeginPageSetup
+_S
+90 rotate
+36 -577 translate
+/pagenum 3 def
+/fname (bmw_small-tinyasm.S) def
+/fdir () def
+/ftail (bmw_small-tinyasm.S) def
+% User defined strings:
+/fmodstr (Mo Apr 05 09:57:29 2010) def
+/pagenumstr (3) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+column_lines
+column_borders
+do_header
+5 534 M
+(        movw r20, h0) s
+5 526 M
+(        movw r22, m0) s
+5 518 M
+(        ret) s
+5 502 M
+(/*********************************************************) s
+5 494 M
+(*********************/) s
+5 478 M
+(const_lut:) s
+5 470 M
+(        .long 0x55555550, 0x5aaaaaa5, 0x5ffffffa, 0x655555) s
+5 462 M
+(4f) s
+5 454 M
+(        .long 0x6aaaaaa4, 0x6ffffff9, 0x7555554e, 0x7aaaaa) s
+5 446 M
+(a3) s
+5 438 M
+(        .long 0x7ffffff8, 0x8555554d, 0x8aaaaaa2, 0x8fffff) s
+5 430 M
+(f7) s
+5 422 M
+(        .long 0x9555554c, 0x9aaaaaa1, 0x9ffffff6, 0xa55555) s
+5 414 M
+(4b) s
+5 398 M
+(/*********************************************************) s
+5 390 M
+(**********************) s
+5 382 M
+(* uint32_t addelment\(uint8_t j, const uint32_t* m, const u) s
+5 374 M
+(int32_t* h\){) s
+5 366 M
+(*       uint32_t r;) s
+5 358 M
+(*       r  = pgm_read_dword\(k_lut+j\);) s
+5 350 M
+(*       r += rotl_addel\(\(\(uint32_t*\)m\)[j&0xf], j+0\);) s
+5 342 M
+(*       r += rotl_addel\(\(\(uint32_t*\)m\)[\(j+3\)&0xf], j+3\);) s
+5 334 M
+(*       r -= rotl_addel\(\(\(uint32_t*\)m\)[\(j+10\)&0xf], j+10\);) s
+5 326 M
+(*       r ^= \(\(uint32_t*\)h\)[\(j+7\)&0xf];) s
+5 318 M
+(*       return r;) s
+5 310 M
+(* }) s
+5 302 M
+(* param j: r24) s
+5 294 M
+(* param m: r22:r23) s
+5 286 M
+(* param h: r20:r21) s
+5 278 M
+(*/) s
+5 270 M
+(j    = 16) s
+5 262 M
+(acc2 =  8) s
+5 254 M
+(acc3 =  9) s
+5 246 M
+(h0   = 10) s
+5 238 M
+(h1   = 11) s
+5 230 M
+(m0   = 12) s
+5 222 M
+(m1   = 13) s
+5 214 M
+(acc0 = 14) s
+5 206 M
+(acc1 = 15) s
+5 190 M
+(add32_to_acc:) s
+5 182 M
+(        add acc0, r22) s
+5 174 M
+(        adc acc1, r23) s
+5 166 M
+(        adc acc2, r24) s
+5 158 M
+(        adc acc3, r25) s
+5 150 M
+(        ret) s
+5 134 M
+(eor32_to_acc:) s
+5 126 M
+(        eor acc0, r22) s
+5 118 M
+(        eor acc1, r23) s
+5 110 M
+(        eor acc2, r24) s
+5 102 M
+(        eor acc3, r25) s
+5 94 M
+(        ret) s
+5 78 M
+(load_acc_from_X:) s
+5 70 M
+(        ld acc0, X+) s
+5 62 M
+(        ld acc1, X+) s
+5 54 M
+(        ld acc2, X+) s
+5 46 M
+(        ld acc3, X+) s
+5 38 M
+(        ret) s
+5 22 M
+(add_acc_to_Z:) s
+5 14 M
+(        ld r0, Z) s
+5 6 M
+(        add r0, acc0) s
+261.667 534 M
+(        st Z+, r0) s
+261.667 526 M
+(        ld r0, Z) s
+261.667 518 M
+(        adc r0, acc1) s
+261.667 510 M
+(        st Z+, r0) s
+261.667 502 M
+(        ld r0, Z) s
+261.667 494 M
+(        adc r0, acc2) s
+261.667 486 M
+(        st Z+, r0) s
+261.667 478 M
+(        ld r0, Z) s
+261.667 470 M
+(        adc r0, acc3) s
+261.667 462 M
+(        st Z+, r0) s
+261.667 454 M
+(        ret) s
+261.667 438 M
+(load_rotate_add_M:) s
+261.667 430 M
+(        andi r20, 0x0f) s
+261.667 422 M
+(        mov r0, r20) s
+261.667 414 M
+(        lsl r0) s
+261.667 406 M
+(        lsl r0) s
+261.667 398 M
+(        movw r26, m0) s
+261.667 390 M
+(        add r26, r0) s
+261.667 382 M
+(        adc r27, r1) s
+261.667 374 M
+(        ld r22, X+) s
+261.667 366 M
+(        ld r23, X+) s
+261.667 358 M
+(        ld r24, X+) s
+261.667 350 M
+(        ld r25, X+) s
+261.667 342 M
+(        inc r20) s
+261.667 334 M
+(        rcall rotateleft32) s
+261.667 326 M
+(        brts 10f) s
+261.667 318 M
+(        rcall add32_to_acc) s
+261.667 310 M
+(        ret) s
+261.667 302 M
+(10:     sub acc0, r22) s
+261.667 294 M
+(        sbc acc1, r23) s
+261.667 286 M
+(        sbc acc2, r24) s
+261.667 278 M
+(        sbc acc3, r25) s
+261.667 270 M
+(        ret) s
+261.667 254 M
+(addelement:) s
+261.667 246 M
+(        mov j, r24) s
+261.667 238 M
+(        movw h0, r20) s
+261.667 230 M
+(        movw m0, r22) s
+261.667 222 M
+(        lsl r24) s
+261.667 214 M
+(        lsl r24) s
+261.667 206 M
+(        mov r28, r24) s
+261.667 198 M
+(        ldi r30, lo8\(const_lut\)) s
+261.667 190 M
+(        ldi r31, hi8\(const_lut\)) s
+261.667 182 M
+(        add r30, r24) s
+261.667 174 M
+(        adc r31, r1) s
+261.667 166 M
+(        lpm acc0, Z+) s
+261.667 158 M
+(        lpm acc1, Z+) s
+261.667 150 M
+(        lpm acc2, Z+) s
+261.667 142 M
+(        lpm acc3, Z+) s
+261.667 134 M
+(        clt) s
+261.667 126 M
+(        mov r20, j) s
+261.667 118 M
+(        rcall load_rotate_add_M) s
+261.667 110 M
+(        mov r20, j) s
+261.667 102 M
+(        subi r20, -3) s
+261.667 94 M
+(        rcall load_rotate_add_M) s
+261.667 86 M
+(        mov r20, j) s
+261.667 78 M
+(        set) s
+261.667 70 M
+(        subi r20, -10) s
+261.667 62 M
+(        rcall load_rotate_add_M) s
+261.667 54 M
+(        lsl j) s
+261.667 46 M
+(        lsl j) s
+261.667 38 M
+(        subi j, -7*4) s
+261.667 30 M
+(        andi j, 0x3f) s
+261.667 22 M
+(        movw r26, h0) s
+261.667 14 M
+(        add r26, j) s
+261.667 6 M
+(        adc r27, r1) s
+518.333 534 M
+(        ld r0, X+) s
+518.333 526 M
+(        eor acc0, r0) s
+518.333 518 M
+(        ld r0, X+) s
+518.333 510 M
+(        eor acc1, r0) s
+518.333 502 M
+(        ld r0, X+) s
+518.333 494 M
+(        eor acc2, r0) s
+518.333 486 M
+(        ld r0, X+) s
+518.333 478 M
+(        eor acc3, r0) s
+518.333 470 M
+(;---) s
+518.333 462 M
+(        ret) s
+518.333 446 M
+(/*********************************************************) s
+518.333 438 M
+(*********************/) s
+518.333 430 M
+(/*) s
+518.333 422 M
+(  param q: r26:r27) s
+518.333 414 M
+(  param m: r22:r23) s
+518.333 406 M
+(  param h: r20:r21) s
+518.333 398 M
+(  param j: r24) s
+518.333 390 M
+(*/) s
+518.333 374 M
+(expand_intro:) s
+518.333 366 M
+(        push_range 20, 27) s
+518.333 358 M
+(;       push r24) s
+518.333 350 M
+(        rcall addelement) s
+518.333 342 M
+(;       pop r24) s
+518.333 334 M
+(        pop_range 20, 27) s
+518.333 326 M
+(        lsl r24) s
+518.333 318 M
+(        lsl r24) s
+518.333 310 M
+(        add r26, r24) s
+518.333 302 M
+(        adc r27, r1) s
+518.333 294 M
+(        ret) s
+518.333 286 M
+(expand1:) s
+518.333 278 M
+(        rcall expand_intro) s
+518.333 270 M
+(        ldi r19, 1) s
+518.333 262 M
+(10:) s
+518.333 254 M
+(        rcall load32_from_X) s
+518.333 246 M
+(        mov r20, r19) s
+518.333 238 M
+(        andi r20, 3) s
+518.333 230 M
+(        rcall sn) s
+518.333 222 M
+(        rcall add32_to_acc) s
+518.333 214 M
+(        inc r19) s
+518.333 206 M
+(        cpi r19, 17) s
+518.333 198 M
+(        brne 10b) s
+518.333 190 M
+(expand1_exit:) s
+518.333 182 M
+(;       adiw r26, 63) s
+518.333 174 M
+(        st X+, acc0) s
+518.333 166 M
+(        st X+, acc1) s
+518.333 158 M
+(        st X+, acc2) s
+518.333 150 M
+(        st X+, acc3) s
+518.333 142 M
+(        ret) s
+518.333 126 M
+(/*********************************************************) s
+518.333 118 M
+(*********************/) s
+518.333 110 M
+(/*) s
+518.333 102 M
+(  param q: r26:r27) s
+518.333 94 M
+(  param m: r22:r23) s
+518.333 86 M
+(  param h: r20:r21) s
+518.333 78 M
+(  param j: r24) s
+518.333 70 M
+(*/) s
+518.333 54 M
+(expand2_rot_table:) s
+518.333 46 M
+(        .byte 0,3,0,7,0,13,0,16,0,19,0,23,0,27) s
+518.333 30 M
+(expand2:) s
+518.333 22 M
+(        rcall expand_intro) s
+518.333 14 M
+(        ldi r19, 14) s
+518.333 6 M
+(        ldi r30, lo8\(expand2_rot_table\)) s
+_R
+S
+%%Page: (4) 4
+%%BeginPageSetup
+_S
+90 rotate
+36 -577 translate
+/pagenum 4 def
+/fname (bmw_small-tinyasm.S) def
+/fdir () def
+/ftail (bmw_small-tinyasm.S) def
+% User defined strings:
+/fmodstr (Mo Apr 05 09:57:29 2010) def
+/pagenumstr (4) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+column_lines
+column_borders
+do_header
+5 534 M
+(        ldi r31, hi8\(expand2_rot_table\)) s
+5 526 M
+(10:) s
+5 518 M
+(        rcall load32_from_X) s
+5 510 M
+(        mov r20, r19) s
+5 502 M
+(        lpm r20, Z+) s
+5 494 M
+(        rcall rotateleft32) s
+5 486 M
+(        rcall add32_to_acc) s
+5 478 M
+(        dec r19) s
+5 470 M
+(        brne 10b) s
+5 462 M
+(        rcall load32_from_X) s
+5 454 M
+(        ldi r20, 4) s
+5 446 M
+(        rcall sn) s
+5 438 M
+(        rcall add32_to_acc) s
+5 430 M
+(        rcall load32_from_X) s
+5 422 M
+(        ldi r20, 5) s
+5 414 M
+(        rcall sn) s
+5 406 M
+(        rcall add32_to_acc) s
+5 390 M
+(        rjmp expand1_exit) s
+5 374 M
+(/*********************************************************) s
+5 366 M
+(*********************/) s
+5 358 M
+(/*) s
+5 350 M
+(  param q: r24:r25) s
+5 342 M
+(  param m: r22:r23) s
+5 334 M
+(  param h: r20:r21) s
+5 326 M
+(*/) s
+5 318 M
+(/* for calling expand1/2) s
+5 310 M
+(  param q: r26:r27) s
+5 302 M
+(  param m: r22:r23) s
+5 294 M
+(  param h: r20:r21) s
+5 286 M
+(  param j: r24) s
+5 278 M
+(*/) s
+5 270 M
+(f1:) s
+5 262 M
+(        movw r2, r24) s
+5 254 M
+(        movw r4, r22) s
+5 246 M
+(        movw r6, r20) s
+5 238 M
+(        movw r26, r2) s
+5 230 M
+(;       movw r22, r4) s
+5 222 M
+(;   movw r20, r6) s
+5 214 M
+(        clr r24) s
+5 206 M
+(        rcall expand1) s
+5 198 M
+(        movw r26, r2) s
+5 190 M
+(        movw r22, r4) s
+5 182 M
+(    movw r20, r6) s
+5 174 M
+(        ldi r24, 1) s
+5 166 M
+(        rcall expand1) s
+5 158 M
+(        ldi r17, 2) s
+5 150 M
+(10:     movw r26, r2) s
+5 142 M
+(        movw r22, r4) s
+5 134 M
+(        movw r20, r6) s
+5 126 M
+(        mov r24, r17) s
+5 118 M
+(        rcall expand2) s
+5 110 M
+(        inc r17) s
+5 102 M
+(        sbrs r17, 4) s
+5 94 M
+(        rjmp 10b) s
+5 86 M
+(        movw r24, r2) s
+5 78 M
+(        movw r22, r4) s
+5 70 M
+(        movw r20, r6) s
+5 62 M
+(        ret) s
+5 46 M
+(/*********************************************************) s
+5 38 M
+(*********************/) s
+5 30 M
+(/*) s
+5 22 M
+(  param q: r24:r25) s
+5 14 M
+(  param m: r22:r23) s
+5 6 M
+(  param h: r20:r21) s
+261.667 534 M
+(*/) s
+261.667 526 M
+(f2_1_shift_table:) s
+261.667 518 M
+(        .byte 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x) s
+261.667 510 M
+(00) s
+261.667 502 M
+(        .byte 0x2B, 0x64, 0x66, 0x03, 0x51, 0x55, 0x87, 0x) s
+261.667 494 M
+(55) s
+261.667 486 M
+(f2_2_shift_table:) s
+261.667 478 M
+(        .byte \(2<<1\), \(7<<1\), \(4<<1\), \(3<<1\), \(4<<1\)+1, \(6) s
+261.667 470 M
+(<<1\)+1, \(6<<1\)) s
+261.667 462 M
+(        .byte 0 ; just for alignment) s
+261.667 454 M
+(acc2  =  8) s
+261.667 446 M
+(acc3  =  9) s
+261.667 438 M
+(acc0  = 14) s
+261.667 430 M
+(acc1  = 15) s
+261.667 422 M
+(xl0   =  2) s
+261.667 414 M
+(xl1   =  3) s
+261.667 406 M
+(xl2   =  4) s
+261.667 398 M
+(xl3   =  5) s
+261.667 390 M
+(xh0   =  6) s
+261.667 382 M
+(xh1   =  7) s
+261.667 374 M
+(xh2   = 10) s
+261.667 366 M
+(xh3   = 11) s
+261.667 358 M
+(q16_0 = 12) s
+261.667 350 M
+(q16_1 = 13) s
+261.667 342 M
+(h0   =  18) s
+261.667 334 M
+(h1   =  19) s
+261.667 326 M
+(f2:) s
+261.667 318 M
+(        movw r26, r24) s
+261.667 310 M
+(        /* calc XL */) s
+261.667 302 M
+(        adiw r26, 63) s
+261.667 294 M
+(        adiw r26,  1) s
+261.667 286 M
+(        movw q16_0, r26) s
+261.667 278 M
+(        clr xl0) s
+261.667 270 M
+(        clr xl1) s
+261.667 262 M
+(        clr xl2) s
+261.667 254 M
+(        clr xl3) s
+261.667 246 M
+(        ldi r17, 8) s
+261.667 238 M
+(10:     ld r0, X+) s
+261.667 230 M
+(        eor xl0, r0) s
+261.667 222 M
+(        ld r0, X+) s
+261.667 214 M
+(        eor xl1, r0) s
+261.667 206 M
+(        ld r0, X+) s
+261.667 198 M
+(        eor xl2, r0) s
+261.667 190 M
+(        ld r0, X+) s
+261.667 182 M
+(        eor xl3, r0) s
+261.667 174 M
+(        dec r17) s
+261.667 166 M
+(        brne 10b) s
+261.667 158 M
+(;--- /* calc XH */) s
+261.667 150 M
+(        movw xh0, xl0) s
+261.667 142 M
+(        movw xh2, xl2) s
+261.667 134 M
+(        ldi r17, 8) s
+261.667 126 M
+(10:     ld r0, X+) s
+261.667 118 M
+(        eor xh0, r0) s
+261.667 110 M
+(        ld r0, X+) s
+261.667 102 M
+(        eor xh1, r0) s
+261.667 94 M
+(        ld r0, X+) s
+261.667 86 M
+(        eor xh2, r0) s
+261.667 78 M
+(        ld r0, X+) s
+261.667 70 M
+(        eor xh3, r0) s
+261.667 62 M
+(        dec r17) s
+261.667 54 M
+(        brne 10b) s
+261.667 46 M
+(;--- DBG) s
+261.667 38 M
+(;       push_range 22, 25) s
+261.667 30 M
+(;       movw r22, xl0) s
+261.667 22 M
+(;       movw r24, xl2) s
+261.667 14 M
+(;       rcall print32) s
+261.667 6 M
+(;       movw r22, xh0) s
+518.333 534 M
+(;       movw r24, xh2) s
+518.333 526 M
+(;       rcall print32) s
+518.333 518 M
+(;       pop_range 22, 25) s
+518.333 510 M
+(;--- END DBG) s
+518.333 494 M
+(;--- /* calc first half of h0..h15 */) s
+518.333 486 M
+(        movw h0, r20) s
+518.333 478 M
+(        movw r28, r22) s
+518.333 470 M
+(        movw r26, q16_0) s
+518.333 462 M
+(        ldi r17, 16) s
+518.333 454 M
+(10:) s
+518.333 446 M
+(        ld acc0, Y+) s
+518.333 438 M
+(        ld acc1, Y+) s
+518.333 430 M
+(        ld acc2, Y+) s
+518.333 422 M
+(        ld acc3, Y+) s
+518.333 414 M
+(;---) s
+518.333 406 M
+(        ldi r30, lo8\(f2_1_shift_table-1\)) s
+518.333 398 M
+(        ldi r31, hi8\(f2_1_shift_table-1\)) s
+518.333 390 M
+(        movw r22, xh0) s
+518.333 382 M
+(        movw r24, xh2) s
+518.333 374 M
+(        add r30, r17) s
+518.333 366 M
+(        adc r31, r1) s
+518.333 358 M
+(        lpm r20, Z) s
+518.333 350 M
+(        mov r1, r20) s
+518.333 342 M
+(        andi r20, 0x0f) s
+518.333 334 M
+(        clt) s
+518.333 326 M
+(        cpi r17, 16) s
+518.333 318 M
+(        breq 20f) s
+518.333 310 M
+(        cpi r17, 11) s
+518.333 302 M
+(        brne 21f) s
+518.333 294 M
+(20:     set) s
+518.333 286 M
+(21:     brts 25f) s
+518.333 278 M
+(        rcall shiftright32) s
+518.333 270 M
+(        rjmp 26f) s
+518.333 262 M
+(25:     rcall shiftleft32) s
+518.333 254 M
+(26: rcall eor32_to_acc) s
+518.333 246 M
+(;---) s
+518.333 238 M
+(        rcall load32_from_X) s
+518.333 230 M
+(        mov r20, r1) s
+518.333 222 M
+(        clr r1) s
+518.333 214 M
+(        swap r20) s
+518.333 206 M
+(        andi r20, 0x0f) s
+518.333 198 M
+(        brts 27f) s
+518.333 190 M
+(        rcall shiftleft32) s
+518.333 182 M
+(        rjmp 28f) s
+518.333 174 M
+(27:     rcall shiftright32) s
+518.333 166 M
+(28:     rcall eor32_to_acc) s
+518.333 158 M
+(;---) s
+518.333 150 M
+(        movw r30, h0) s
+518.333 142 M
+(        st Z+, acc0) s
+518.333 134 M
+(        st Z+, acc1) s
+518.333 126 M
+(        st Z+, acc2) s
+518.333 118 M
+(        st Z+, acc3) s
+518.333 110 M
+(        movw h0, r30) s
+518.333 102 M
+(;---) s
+518.333 94 M
+(        dec r17) s
+518.333 86 M
+(        brne 10b) s
+518.333 78 M
+(;-----) s
+518.333 70 M
+(        sbiw r26, 4*8 /* X points to q[24] */) s
+518.333 62 M
+(        movw r28, r26) s
+518.333 54 M
+(        sbiw r28, 63) s
+518.333 46 M
+(        sbiw r28, 33 /* Y points to q[0] */) s
+518.333 38 M
+(        sbiw r30, 63) s
+518.333 30 M
+(        sbiw r30,  1 /* Z points to h0 */) s
+518.333 22 M
+(        ldi r17, 8) s
+518.333 14 M
+(10:     movw acc0, xl0) s
+518.333 6 M
+(        movw acc2, xl2) s
+_R
+S
+%%Page: (5) 5
+%%BeginPageSetup
+_S
+90 rotate
+36 -577 translate
+/pagenum 5 def
+/fname (bmw_small-tinyasm.S) def
+/fdir () def
+/ftail (bmw_small-tinyasm.S) def
+% User defined strings:
+/fmodstr (Mo Apr 05 09:57:29 2010) def
+/pagenumstr (5) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+column_lines
+column_borders
+do_header
+5 534 M
+(        rcall load32_from_X) s
+5 526 M
+(        rcall eor32_to_acc) s
+5 518 M
+(        rcall load32_from_Y) s
+5 510 M
+(        rcall eor32_to_acc) s
+5 502 M
+(        rcall add_acc_to_Z) s
+5 494 M
+(        dec r17) s
+5 486 M
+(        brne 10b) s
+5 478 M
+(        sbiw r26, 9*4 /* X points to q[23] */) s
+5 470 M
+(        rcall load_acc_from_X) s
+5 462 M
+(        eor acc1, xl0) s
+5 454 M
+(        eor acc2, xl1) s
+5 446 M
+(        eor acc3, xl2) s
+5 438 M
+(        rcall load32_from_Y) s
+5 430 M
+(        rcall eor32_to_acc) s
+5 422 M
+(        rcall add_acc_to_Z) s
+5 414 M
+(;---) s
+5 406 M
+(        sbiw r26, 8*4 /* X points to q[16] */) s
+5 398 M
+(        mov h0, r30) s
+5 390 M
+(        ldi r17, 7) s
+5 382 M
+(10:) s
+5 374 M
+(        ldi r30, lo8\(f2_2_shift_table-1\)) s
+5 366 M
+(        ldi r31, hi8\(f2_2_shift_table-1\)) s
+5 358 M
+(        add r30, r17) s
+5 350 M
+(        adc r31, r1) s
+5 342 M
+(        lpm r20, Z) s
+5 334 M
+(        rcall load_acc_from_X) s
+5 326 M
+(        movw r22, xl0) s
+5 318 M
+(        movw r24, xl2) s
+5 310 M
+(        lsr r20) s
+5 302 M
+(        brcc 20f) s
+5 294 M
+(        rcall shiftleft32) s
+5 286 M
+(        rjmp 21f) s
+5 278 M
+(20:     rcall shiftright32) s
+5 270 M
+(21:) s
+5 262 M
+(        rcall eor32_to_acc) s
+5 254 M
+(        rcall load32_from_Y) s
+5 246 M
+(        rcall eor32_to_acc) s
+5 238 M
+(        movw r30, h0) s
+5 230 M
+(        rcall add_acc_to_Z) s
+5 222 M
+(        movw h0, r30) s
+5 214 M
+(        dec r17) s
+5 206 M
+(        brne 10b) s
+5 198 M
+(;-----) s
+5 190 M
+(        sbiw r30, 8*4 /* Z points to h8 */) s
+5 182 M
+(        movw r26, r30) s
+5 174 M
+(        sbiw r26, 4*4 /* X points to h4 */) s
+5 166 M
+(        ldi r17, 8) s
+5 158 M
+(        ldi r18, 9) s
+5 150 M
+(10:) s
+5 142 M
+(        rcall load32_from_X) s
+5 134 M
+(        mov r20, r18) s
+5 126 M
+(        rcall rotateleft32) s
+5 118 M
+(        movw acc0, r22) s
+5 110 M
+(        movw acc2, r24) s
+5 102 M
+(        rcall add_acc_to_Z) s
+5 94 M
+(        inc r18) s
+5 86 M
+(        cpi r17, 5) s
+5 78 M
+(        breq 20f) s
+5 70 M
+(        dec r17) s
+5 62 M
+(        brne 10b) s
+5 54 M
+(        ret) s
+5 46 M
+(20: sbiw r26, 8*4) s
+5 38 M
+(        dec r17) s
+5 30 M
+(        rjmp 10b) s
+5 14 M
+(/*********************************************************) s
+5 6 M
+(*********************/) s
+261.667 534 M
+(/*) s
+261.667 526 M
+(  param ctx:  r24:r25) s
+261.667 518 M
+(  param msg:  r22:r23) s
+261.667 510 M
+(*/) s
+261.667 502 M
+(/* f0) s
+261.667 494 M
+(  param q:  r28:r29 \(Y\)) s
+261.667 486 M
+(  param h:  r26:r27 \(X\)) s
+261.667 478 M
+(  param m:  r30:r31 \(Z\)) s
+261.667 470 M
+(*/) s
+261.667 462 M
+(/* f1) s
+261.667 454 M
+(  param q: r24:r25) s
+261.667 446 M
+(  param m: r22:r23) s
+261.667 438 M
+(  param h: r20:r21) s
+261.667 430 M
+(*/) s
+261.667 422 M
+(/* f2) s
+261.667 414 M
+(  param q: r24:r25) s
+261.667 406 M
+(  param m: r22:r23) s
+261.667 398 M
+(  param h: r20:r21) s
+261.667 390 M
+(*/) s
+261.667 382 M
+(.global bmw_small_nextBlock) s
+261.667 374 M
+(.global bmw224_nextBlock) s
+261.667 366 M
+(.global bmw256_nextBlock) s
+261.667 358 M
+(bmw_small_nextBlock:) s
+261.667 350 M
+(bmw224_nextBlock:) s
+261.667 342 M
+(bmw256_nextBlock:) s
+261.667 334 M
+(        push_range 28, 29) s
+261.667 326 M
+(        push_range  2, 17) s
+261.667 318 M
+(        stack_alloc_large 32*4, r28, r29) s
+261.667 310 M
+(        adiw r28, 1) s
+261.667 302 M
+(;       push_range 28, 29 /* push Q */) s
+261.667 294 M
+(;       push_range 22, 25 /* push M & H */) s
+261.667 286 M
+(        /* increment counter */) s
+261.667 278 M
+(        movw r26, r24) s
+261.667 270 M
+(        movw r2, r26) s
+261.667 262 M
+(        adiw r26, 63) s
+261.667 254 M
+(        adiw r26,  1) s
+261.667 246 M
+(        rcall load_acc_from_X) s
+261.667 238 M
+(        ldi r19, 1) s
+261.667 230 M
+(        add acc0, r19) s
+261.667 222 M
+(        adc acc1, r1) s
+261.667 214 M
+(        adc acc2, r1) s
+261.667 206 M
+(        adc acc3, r1) s
+261.667 198 M
+(        st -X, acc3) s
+261.667 190 M
+(        st -X, acc2) s
+261.667 182 M
+(        st -X, acc1) s
+261.667 174 M
+(        st -X, acc0) s
+261.667 166 M
+(        /* call f0 */) s
+261.667 158 M
+(        movw r30, r22) s
+261.667 150 M
+(        movw r26, r24) s
+261.667 142 M
+(        rcall f0) s
+261.667 134 M
+(        /* call f1*/) s
+261.667 126 M
+(        movw r24, r28) s
+261.667 110 M
+(;       rcall printQ) s
+261.667 102 M
+(        rcall f1) s
+261.667 94 M
+(        /* call f2 */) s
+261.667 86 M
+(;       pop_range 20, 25) s
+261.667 78 M
+(;       push_range 20, 25) s
+261.667 70 M
+(;       rcall printQ) s
+261.667 62 M
+(;       push r20) s
+261.667 54 M
+(;       push r21) s
+261.667 46 M
+(        call f2) s
+261.667 38 M
+(;--- DBG) s
+261.667 30 M
+(;       pop r25) s
+261.667 22 M
+(;       pop r24) s
+261.667 14 M
+(;       ldi r22, 'H') s
+261.667 6 M
+(;       rcall printX) s
+518.333 534 M
+(;--- END DBG) s
+518.333 526 M
+(        stack_free_large3 32*4) s
+518.333 518 M
+(        pop_range  2, 17) s
+518.333 510 M
+(        pop_range 28, 29) s
+518.333 502 M
+(        ret) s
+518.333 486 M
+(/*********************************************************) s
+518.333 478 M
+(*********************/) s
+518.333 470 M
+(/*) s
+518.333 462 M
+(  param ctx:  r24:r25) s
+518.333 454 M
+(  param msg:  r22:r23) s
+518.333 446 M
+(  param len:  r20:r21) s
+518.333 438 M
+(*/) s
+518.333 430 M
+(ctx0 =  2) s
+518.333 422 M
+(ctx1 =  3) s
+518.333 414 M
+(blc0 =  4) s
+518.333 406 M
+(blc1 =  5) s
+518.333 398 M
+(len0 = 28) s
+518.333 390 M
+(len1 = 29) s
+518.333 382 M
+(buf0 =  6) s
+518.333 374 M
+(buf1 =  7) s
+518.333 358 M
+(.global bmw_small_lastBlock) s
+518.333 350 M
+(.global bmw224_lastBlock) s
+518.333 342 M
+(.global bmw256_lastBlock) s
+518.333 334 M
+(bmw_small_lastBlock:) s
+518.333 326 M
+(bmw224_lastBlock:) s
+518.333 318 M
+(bmw256_lastBlock:) s
+518.333 310 M
+(/*      while\(length_b >= BMW_SMALL_BLOCKSIZE\){) s
+518.333 302 M
+(                bmw_small_nextBlock\(ctx, block\);) s
+518.333 294 M
+(                length_b -= BMW_SMALL_BLOCKSIZE;) s
+518.333 286 M
+(                block = \(uint8_t*\)block + BMW_SMALL_BLOCKS) s
+518.333 278 M
+(IZE_B;) s
+518.333 270 M
+(        }) s
+518.333 262 M
+(*/) s
+518.333 254 M
+(        push_range 2, 7) s
+518.333 246 M
+(        push_range 28, 29) s
+518.333 238 M
+(        movw ctx0, r24) s
+518.333 230 M
+(        movw blc0, r22) s
+518.333 222 M
+(        movw len0, r20) s
+518.333 214 M
+(1:) s
+518.333 206 M
+(        cpi len1, hi8\(512\)) s
+518.333 198 M
+(        brlo 2f) s
+518.333 190 M
+(        movw r24, ctx0) s
+518.333 182 M
+(        movw r22, blc0) s
+518.333 174 M
+(        rcall bmw_small_nextBlock) s
+518.333 166 M
+(        ldi r24, 64) s
+518.333 158 M
+(        add blc0, r24) s
+518.333 150 M
+(        adc blc1, r1) s
+518.333 142 M
+(        subi len1, hi8\(512\)) s
+518.333 134 M
+(        rjmp 1b) s
+518.333 126 M
+(2:) s
+518.333 118 M
+(/*      struct {) s
+518.333 110 M
+(                uint8_t  buffer[64];) s
+518.333 102 M
+(                uint32_t ctr;) s
+518.333 94 M
+(        } pctx;) s
+518.333 86 M
+(*/) s
+518.333 78 M
+(        stack_alloc_large 68) s
+518.333 70 M
+(        adiw r30, 1) s
+518.333 62 M
+(        movw buf0, r30) s
+518.333 54 M
+(/*      memset\(pctx.buffer, 0, 64\);) s
+518.333 46 M
+(        memcpy\(pctx.buffer, block, \(length_b+7\)/8\);) s
+518.333 38 M
+(        pctx.buffer[length_b>>3] |= 0x80 >> \(length_b&0x07) s
+518.333 30 M
+(\);) s
+518.333 22 M
+(*/      movw r24, len0) s
+518.333 14 M
+(        lsr r25) s
+518.333 6 M
+(        ror r24) s
+_R
+S
+%%Page: (6) 6
+%%BeginPageSetup
+_S
+90 rotate
+36 -577 translate
+/pagenum 6 def
+/fname (bmw_small-tinyasm.S) def
+/fdir () def
+/ftail (bmw_small-tinyasm.S) def
+% User defined strings:
+/fmodstr (Mo Apr 05 09:57:29 2010) def
+/pagenumstr (6) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+column_lines
+column_borders
+do_header
+5 534 M
+(        lsr r24) s
+5 526 M
+(        lsr r24) s
+5 518 M
+(        ldi r23, 63) s
+5 510 M
+(        sub r23, r24) s
+5 502 M
+(        movw r26, blc0) s
+5 494 M
+(        tst r24) s
+5 486 M
+(        breq 301f) s
+5 478 M
+(        /* copy \(#r24\) bytes to stack buffer */) s
+5 470 M
+(30: ld r20, X+) s
+5 462 M
+(        st Z+, r20) s
+5 454 M
+(        dec r24) s
+5 446 M
+(        brne 30b) s
+5 438 M
+(301: /* calculate the appended byte */) s
+5 430 M
+(        clr r20) s
+5 422 M
+(        mov r21, len0) s
+5 414 M
+(        ldi r24, 0x80) s
+5 406 M
+(        andi r21, 0x07) s
+5 398 M
+(        breq 305f) s
+5 390 M
+(        ld r20, X+) s
+5 382 M
+(303:) s
+5 374 M
+(        lsr r24) s
+5 366 M
+(        dec r21) s
+5 358 M
+(        brne 303b) s
+5 350 M
+(305:) s
+5 342 M
+(        or r20, r24) s
+5 334 M
+(        st Z+, r20) s
+5 326 M
+(        tst r23) s
+5 318 M
+(        breq 32f) s
+5 310 M
+(31: st Z+, r1) s
+5 302 M
+(        dec r23) s
+5 294 M
+(        brne 31b) s
+5 286 M
+(32:) s
+5 278 M
+(/*      if\(length_b+1>64*8-64\){ ; = 64*7-1 = 447 max\(lengt) s
+5 270 M
+(h_b\)=511) s
+5 262 M
+(                bmw_small_nextBlock\(ctx, pctx.buffer\);) s
+5 254 M
+(                memset\(pctx.buffer, 0, 64-8\);) s
+5 246 M
+(                ctx->counter -= 1;) s
+5 238 M
+(        }) s
+5 230 M
+(*/) s
+5 222 M
+(        tst len1) s
+5 214 M
+(        breq 400f) s
+5 206 M
+(        cpi len0, 192) s
+5 198 M
+(        brlo 400f) s
+5 190 M
+(        movw r24, ctx0) s
+5 182 M
+(        movw r22, buf0) s
+5 174 M
+(        rcall bmw_small_nextBlock) s
+5 166 M
+(        movw r26, buf0) s
+5 158 M
+(        ldi r20, 64-8) s
+5 150 M
+(350:) s
+5 142 M
+(        st X+, r1) s
+5 134 M
+(        dec r20) s
+5 126 M
+(        brne 350b) s
+5 118 M
+(        movw r30, ctx0) s
+5 110 M
+(        adiw r30, 60) s
+5 102 M
+(        ldd r21, Z+4) s
+5 94 M
+(        ldd r22, Z+5) s
+5 86 M
+(        ldd r23, Z+6) s
+5 78 M
+(        ldd r24, Z+7) s
+5 70 M
+(        subi r21, 1) s
+5 62 M
+(        sbc r22, r1) s
+5 54 M
+(        sbc r23, r1) s
+5 46 M
+(        sbc r24, r1) s
+5 38 M
+(        rjmp 410f) s
+5 30 M
+(/*      *\(\(uint64_t*\)&\(pctx.buffer[64-8]\)\) = \(uint64_t\)\(ct) s
+5 22 M
+(x->counter*512LL\)+\(uint64_t\)length_b;) s
+5 14 M
+(        bmw_small_nextBlock\(ctx, pctx.buffer\);) s
+5 6 M
+(*/) s
+261.667 534 M
+(400:) s
+261.667 526 M
+(        movw r30, ctx0) s
+261.667 518 M
+(        adiw r30, 60) s
+261.667 510 M
+(        ldd r21, Z+4) s
+261.667 502 M
+(        ldd r22, Z+5) s
+261.667 494 M
+(        ldd r23, Z+6) s
+261.667 486 M
+(        ldd r24, Z+7) s
+261.667 478 M
+(410:) s
+261.667 470 M
+(        clr r25) s
+261.667 462 M
+(        lsl r21) s
+261.667 454 M
+(        rol r22) s
+261.667 446 M
+(        rol r23) s
+261.667 438 M
+(        rol r24) s
+261.667 430 M
+(        rol r25) s
+261.667 422 M
+(        mov r20, len0) s
+261.667 414 M
+(        add r21, len1) s
+261.667 406 M
+(        adc r22, r1) s
+261.667 398 M
+(        adc r23, r1) s
+261.667 390 M
+(        adc r24, r1) s
+261.667 382 M
+(        adc r25, r1) s
+261.667 374 M
+(        movw r30, buf0) s
+261.667 366 M
+(        adiw r30, 64-8) s
+261.667 358 M
+(        st Z+, r20) s
+261.667 350 M
+(        st Z+, r21) s
+261.667 342 M
+(        st Z+, r22) s
+261.667 334 M
+(        st Z+, r23) s
+261.667 326 M
+(        st Z+, r24) s
+261.667 318 M
+(        st Z+, r25) s
+261.667 310 M
+(        st Z+, r1) s
+261.667 302 M
+(        st Z+, r1) s
+261.667 294 M
+(        movw r24, ctx0) s
+261.667 286 M
+(        movw r22, buf0) s
+261.667 278 M
+(        rcall bmw_small_nextBlock) s
+261.667 270 M
+(/*      memset\(pctx.buffer, 0xaa, 64\);) s
+261.667 262 M
+(        for\(i=0; i<16;++i\){) s
+261.667 254 M
+(                pctx.buffer[i*4] = i+0xa0;) s
+261.667 246 M
+(        }) s
+261.667 238 M
+(*/) s
+261.667 230 M
+(        ldi r18, 0xa0) s
+261.667 222 M
+(        ldi r19, 0xaa) s
+261.667 214 M
+(        movw r26, buf0) s
+261.667 206 M
+(500:) s
+261.667 198 M
+(        st X+, r18) s
+261.667 190 M
+(        st X+, r19) s
+261.667 182 M
+(        st X+, r19) s
+261.667 174 M
+(        st X+, r19) s
+261.667 166 M
+(        inc r18) s
+261.667 158 M
+(        sbrs r18, 4) s
+261.667 150 M
+(        rjmp 500b) s
+261.667 142 M
+(/*      bmw_small_nextBlock\(\(bmw_small_ctx_t*\)&pctx, ctx->) s
+261.667 134 M
+(h\);) s
+261.667 126 M
+(        memcpy\(ctx->h, pctx.buffer, 64\);) s
+261.667 118 M
+(*/) s
+261.667 110 M
+(        movw r24, buf0) s
+261.667 102 M
+(        movw r22, ctx0) s
+261.667 94 M
+(        rcall bmw_small_nextBlock) s
+261.667 86 M
+(        ldi r18, 64) s
+261.667 78 M
+(        movw r26, ctx0) s
+261.667 70 M
+(        movw r30, buf0) s
+261.667 62 M
+(600:) s
+261.667 54 M
+(        ld r20, Z+) s
+261.667 46 M
+(        st X+, r20) s
+261.667 38 M
+(        dec r18) s
+261.667 30 M
+(        brne 600b) s
+261.667 14 M
+(        stack_free_large 68) s
+261.667 6 M
+(        pop_range 28, 29) s
+518.333 534 M
+(        pop_range 2, 7) s
+518.333 526 M
+(        ret) s
+518.333 502 M
+(/*********************************************************) s
+518.333 494 M
+(**********************) s
+518.333 486 M
+(* void bmw224_ctx2hash\(void* dest, const bmw224_ctx_t* ctx) s
+518.333 478 M
+(\){) s
+518.333 470 M
+(*       memcpy\(dest, &\(ctx->h[9]\), 224/8\);) s
+518.333 462 M
+(* }) s
+518.333 454 M
+(*) s
+518.333 446 M
+(* param dest:  r24:r25) s
+518.333 438 M
+(* param ctx:   r22:r23) s
+518.333 430 M
+(*/) s
+518.333 422 M
+(.global bmw224_ctx2hash) s
+518.333 414 M
+(bmw224_ctx2hash:) s
+518.333 406 M
+(        movw r26, r24) s
+518.333 398 M
+(        movw r30, r22) s
+518.333 390 M
+(        adiw r30, 9*4) s
+518.333 382 M
+(        ldi r22, 28) s
+518.333 374 M
+(        rjmp 1f) s
+518.333 358 M
+(/*********************************************************) s
+518.333 350 M
+(**********************) s
+518.333 342 M
+(* void bmw256_ctx2hash\(void* dest, const bmw256_ctx_t* ctx) s
+518.333 334 M
+(\){) s
+518.333 326 M
+(*       memcpy\(dest, &\(ctx->h[8]\), 256/8\);) s
+518.333 318 M
+(* }) s
+518.333 310 M
+(*) s
+518.333 302 M
+(* param dest:  r24:r25) s
+518.333 294 M
+(* param ctx:   r22:r23) s
+518.333 286 M
+(*/) s
+518.333 278 M
+(.global bmw256_ctx2hash) s
+518.333 270 M
+(bmw256_ctx2hash:) s
+518.333 262 M
+(        movw r26, r24) s
+518.333 254 M
+(        movw r30, r22) s
+518.333 246 M
+(        adiw r30, 8*4) s
+518.333 238 M
+(        ldi r22, 32) s
+518.333 230 M
+(1:) s
+518.333 222 M
+(        ld r23, Z+) s
+518.333 214 M
+(        st X+, r23) s
+518.333 206 M
+(        dec r22) s
+518.333 198 M
+(        brne 1b) s
+518.333 190 M
+(        ret) s
+518.333 174 M
+(/*********************************************************) s
+518.333 166 M
+(**********************) s
+518.333 158 M
+(* void bmw256\(void* dest, const void* msg, uint32_t length) s
+518.333 150 M
+(_b\){) s
+518.333 142 M
+(*       bmw_small_ctx_t ctx;) s
+518.333 134 M
+(*       bmw256_init\(&ctx\);) s
+518.333 126 M
+(*       while\(length_b>=BMW_SMALL_BLOCKSIZE\){) s
+518.333 118 M
+(*               bmw_small_nextBlock\(&ctx, msg\);) s
+518.333 110 M
+(*               length_b -= BMW_SMALL_BLOCKSIZE;) s
+518.333 102 M
+(*               msg = \(uint8_t*\)msg + BMW_SMALL_BLOCKSIZE_) s
+518.333 94 M
+(B;) s
+518.333 86 M
+(*       }) s
+518.333 78 M
+(*       bmw_small_lastBlock\(&ctx, msg, length_b\);) s
+518.333 70 M
+(*       bmw256_ctx2hash\(dest, &ctx\);) s
+518.333 62 M
+(* }) s
+518.333 54 M
+(*) s
+518.333 46 M
+(* param dest:     r24:r25) s
+518.333 38 M
+(* param msg:      r22:r23) s
+518.333 30 M
+(* param length_b: r18:r21) s
+518.333 22 M
+(*/) s
+518.333 14 M
+(ctx0 =   2) s
+518.333 6 M
+(ctx1 =   3) s
+_R
+S
+%%Page: (7) 7
+%%BeginPageSetup
+_S
+90 rotate
+36 -577 translate
+/pagenum 7 def
+/fname (bmw_small-tinyasm.S) def
+/fdir () def
+/ftail (bmw_small-tinyasm.S) def
+% User defined strings:
+/fmodstr (Mo Apr 05 09:57:29 2010) def
+/pagenumstr (7) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+column_lines
+column_borders
+do_header
+5 534 M
+(msg0 =   4) s
+5 526 M
+(msg1 =   5) s
+5 518 M
+(len0 =   6) s
+5 510 M
+(len1 =   7) s
+5 502 M
+(len2 =   8) s
+5 494 M
+(len3 =   9) s
+5 486 M
+(dst0 =  10) s
+5 478 M
+(dst1 =  11) s
+5 470 M
+(.global bmw256) s
+5 462 M
+(bmw256:) s
+5 454 M
+(        push r16) s
+5 446 M
+(        ldi r16, 1) s
+5 438 M
+(        rjmp bmw_small_all) s
+5 422 M
+(/*********************************************************) s
+5 414 M
+(**********************) s
+5 406 M
+(* void bmw224\(void* dest, const void* msg, uint32_t length) s
+5 398 M
+(_b\){) s
+5 390 M
+(*       bmw_small_ctx_t ctx;) s
+5 382 M
+(*       bmw224_init\(&ctx\);) s
+5 374 M
+(*       while\(length_b>=BMW_SMALL_BLOCKSIZE\){) s
+5 366 M
+(*               bmw_small_nextBlock\(&ctx, msg\);) s
+5 358 M
+(*               length_b -= BMW_SMALL_BLOCKSIZE;) s
+5 350 M
+(*               msg = \(uint8_t*\)msg + BMW_SMALL_BLOCKSIZE_) s
+5 342 M
+(B;) s
+5 334 M
+(*       }) s
+5 326 M
+(*       bmw_small_lastBlock\(&ctx, msg, length_b\);) s
+5 318 M
+(*       bmw224_ctx2hash\(dest, &ctx\);) s
+5 310 M
+(* }) s
+5 302 M
+(*) s
+5 294 M
+(* param dest:     r24:r25) s
+5 286 M
+(* param msg:      r22:r23) s
+5 278 M
+(* param length_b: r18:r21) s
+5 270 M
+(*/) s
+5 262 M
+(ctx0 =   2) s
+5 254 M
+(ctx1 =   3) s
+5 246 M
+(msg0 =   4) s
+5 238 M
+(msg1 =   5) s
+5 230 M
+(len0 =   6) s
+5 222 M
+(len1 =   7) s
+5 214 M
+(len2 =   8) s
+5 206 M
+(len3 =   9) s
+5 198 M
+(dst0 =  10) s
+5 190 M
+(dst1 =  11) s
+5 182 M
+(.global bmw224) s
+5 174 M
+(bmw224:) s
+5 166 M
+(        push r16) s
+5 158 M
+(        clr r16) s
+5 142 M
+(bmw_small_all:) s
+5 134 M
+(        push_range 2, 11) s
+5 126 M
+(        stack_alloc_large 64+4) s
+5 118 M
+(        adiw r30, 1) s
+5 110 M
+(        movw ctx0, r30) s
+5 102 M
+(        movw dst0, r24) s
+5 94 M
+(        movw msg0, r22) s
+5 86 M
+(        movw len0, r18) s
+5 78 M
+(        movw len2, r20) s
+5 70 M
+(        movw r24, ctx0) s
+5 62 M
+(        ldi r30, pm_lo8\(init_lut\)) s
+5 54 M
+(        ldi r31, pm_hi8\(init_lut\)) s
+5 46 M
+(        add r30, r16) s
+5 38 M
+(        adc r31, r1) s
+5 30 M
+(        icall) s
+5 22 M
+(20:) s
+5 14 M
+(        mov r18, len2) s
+5 6 M
+(        or  r18, len3) s
+261.667 534 M
+(        breq 50f) s
+261.667 526 M
+(        movw r24, ctx0) s
+261.667 518 M
+(        movw r22, msg0) s
+261.667 510 M
+(        rcall bmw_small_nextBlock) s
+261.667 502 M
+(        ldi r20, 2) s
+261.667 494 M
+(        sub len1, r20) s
+261.667 486 M
+(        sbc len2, r1) s
+261.667 478 M
+(        sbc len3, r1) s
+261.667 470 M
+(        ldi r20, 64) s
+261.667 462 M
+(        add msg0, r20) s
+261.667 454 M
+(        adc msg1, r1) s
+261.667 446 M
+(        rjmp 20b) s
+261.667 438 M
+(50:) s
+261.667 430 M
+(        movw r24, ctx0) s
+261.667 422 M
+(        movw r22, msg0) s
+261.667 414 M
+(        movw r20, len0) s
+261.667 406 M
+(        rcall bmw_small_lastBlock) s
+261.667 398 M
+(        movw r24, dst0) s
+261.667 390 M
+(        movw r22, ctx0) s
+261.667 382 M
+(        ldi r30, pm_lo8\(c2h_lut\)) s
+261.667 374 M
+(        ldi r31, pm_hi8\(c2h_lut\)) s
+261.667 366 M
+(        add r30, r16) s
+261.667 358 M
+(        adc r31, r1) s
+261.667 350 M
+(        icall) s
+261.667 342 M
+(        stack_free_large 64+4) s
+261.667 334 M
+(        pop_range 2, 11) s
+261.667 326 M
+(        pop r16) s
+261.667 318 M
+(        ret) s
+261.667 302 M
+(init_lut:) s
+261.667 294 M
+(        rjmp bmw224_init) s
+261.667 286 M
+(        rjmp bmw256_init) s
+261.667 278 M
+(c2h_lut:) s
+261.667 270 M
+(        rjmp bmw224_ctx2hash) s
+261.667 262 M
+(        rjmp bmw256_ctx2hash) s
+261.667 246 M
+(/*********************************************************) s
+261.667 238 M
+(**********************) s
+261.667 230 M
+(* void bmw224_init\(bmw224_ctx_t* ctx\){) s
+261.667 222 M
+(*       uint8_t i;) s
+261.667 214 M
+(*       ctx->h[0] = 0x00010203;) s
+261.667 206 M
+(*       for\(i=1; i<16; ++i\){) s
+261.667 198 M
+(*               ctx->h[i] = ctx->h[i-1]+ 0x04040404;) s
+261.667 190 M
+(*       }) s
+261.667 182 M
+(*       ctx->counter=0;) s
+261.667 174 M
+(* }) s
+261.667 166 M
+(*) s
+261.667 158 M
+(* param ctx:  r24:r25) s
+261.667 150 M
+(*/) s
+261.667 142 M
+(.global bmw224_init) s
+261.667 134 M
+(bmw224_init:) s
+261.667 126 M
+(        movw r26, r24) s
+261.667 118 M
+(        ldi r22, 0x03) s
+261.667 110 M
+(        ldi r23, 0x02) s
+261.667 102 M
+(        ldi r24, 0x01) s
+261.667 94 M
+(        ldi r25, 0x00) s
+261.667 86 M
+(bmw_small_init:) s
+261.667 78 M
+(        st X+, r22) s
+261.667 70 M
+(        st X+, r23) s
+261.667 62 M
+(        st X+, r24) s
+261.667 54 M
+(        st X+, r25) s
+261.667 46 M
+(        ldi r18, 16-1) s
+261.667 38 M
+(        ldi r20, 0x04) s
+261.667 30 M
+(1:) s
+261.667 22 M
+(        add r22, r20) s
+261.667 14 M
+(        adc r23, r20) s
+261.667 6 M
+(        adc r24, r20) s
+518.333 534 M
+(        adc r25, r20) s
+518.333 526 M
+(        st X+, r22) s
+518.333 518 M
+(        st X+, r23) s
+518.333 510 M
+(        st X+, r24) s
+518.333 502 M
+(        st X+, r25) s
+518.333 494 M
+(        dec r18) s
+518.333 486 M
+(        brne 1b) s
+518.333 478 M
+(        st X+, r1) s
+518.333 470 M
+(        st X+, r1) s
+518.333 462 M
+(        st X+, r1) s
+518.333 454 M
+(        st X+, r1) s
+518.333 446 M
+(        ret) s
+518.333 430 M
+(.global bmw256_init) s
+518.333 422 M
+(bmw256_init:) s
+518.333 414 M
+(        movw r26, r24) s
+518.333 406 M
+(        ldi r22, 0x43) s
+518.333 398 M
+(        ldi r23, 0x42) s
+518.333 390 M
+(        ldi r24, 0x41) s
+518.333 382 M
+(        ldi r25, 0x40) s
+518.333 374 M
+(        rjmp bmw_small_init) s
+518.333 350 M
+(/*********************************************************) s
+518.333 342 M
+(*********************/) s
+518.333 326 M
+(#if DEBUG) s
+518.333 310 M
+(printQ:) s
+518.333 302 M
+(        push_range 20, 25) s
+518.333 294 M
+(        ldi r16, 4) s
+518.333 286 M
+(        mov r9, r16) s
+518.333 278 M
+(        movw r16, r24) s
+518.333 270 M
+(        ldi r24, lo8\(qdbg_str\)) s
+518.333 262 M
+(        ldi r25, hi8\(qdbg_str\)) s
+518.333 254 M
+(        call cli_putstr_P) s
+518.333 246 M
+(        clr r8) s
+518.333 238 M
+(10:     ldi r24, lo8\(qdbg_str1\)) s
+518.333 230 M
+(        ldi r25, hi8\(qdbg_str1\)) s
+518.333 222 M
+(        call cli_putstr_P) s
+518.333 214 M
+(        mov r24, r8) s
+518.333 206 M
+(        call cli_hexdump_byte) s
+518.333 198 M
+(        ldi r24, lo8\(qdbg_str2\)) s
+518.333 190 M
+(        ldi r25, hi8\(qdbg_str2\)) s
+518.333 182 M
+(        call cli_putstr_P) s
+518.333 174 M
+(        movw r24, r16) s
+518.333 166 M
+(        clr r23) s
+518.333 158 M
+(        ldi r22, 4) s
+518.333 150 M
+(        call cli_hexdump_rev) s
+518.333 142 M
+(        add r16, r9) s
+518.333 134 M
+(        adc r17, r1) s
+518.333 126 M
+(        inc r8) s
+518.333 118 M
+(        sbrs r8, 5) s
+518.333 110 M
+(        rjmp 10b) s
+518.333 102 M
+(        pop_range 20, 25) s
+518.333 94 M
+(        ret) s
+518.333 86 M
+(qdbg_str:  .asciz "\\r\\nDBG Q: ") s
+518.333 78 M
+(qdbg_str1: .asciz "\\r\\n Q[") s
+518.333 70 M
+(qdbg_str2: .asciz "] =  ") s
+518.333 46 M
+(printX:) s
+518.333 38 M
+(        push_range 6, 9) s
+518.333 30 M
+(        push_range 16, 27) s
+518.333 22 M
+(        push_range 30, 31) s
+518.333 14 M
+(        ldi r16, 4) s
+518.333 6 M
+(        mov r6, r22) s
+_R
+S
+%%Page: (8) 8
+%%BeginPageSetup
+_S
+90 rotate
+36 -577 translate
+/pagenum 8 def
+/fname (bmw_small-tinyasm.S) def
+/fdir () def
+/ftail (bmw_small-tinyasm.S) def
+% User defined strings:
+/fmodstr (Mo Apr 05 09:57:29 2010) def
+/pagenumstr (8) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+column_lines
+column_borders
+do_header
+5 534 M
+(        mov r9, r16) s
+5 526 M
+(        movw r16, r24) s
+5 518 M
+(        ldi r24, lo8\(Xdbg_str\)) s
+5 510 M
+(        ldi r25, hi8\(Xdbg_str\)) s
+5 502 M
+(        call cli_putstr_P) s
+5 494 M
+(        mov r24, r6) s
+5 486 M
+(        call cli_putc) s
+5 478 M
+(        ldi r24, ':') s
+5 470 M
+(        call cli_putc) s
+5 462 M
+(        clr r8) s
+5 454 M
+(10:     ldi r24, lo8\(Xdbg_str1\)) s
+5 446 M
+(        ldi r25, hi8\(Xdbg_str1\)) s
+5 438 M
+(        call cli_putstr_P) s
+5 430 M
+(        mov r24, r6) s
+5 422 M
+(        call cli_putc) s
+5 414 M
+(        ldi r24, '[') s
+5 406 M
+(        call cli_putc) s
+5 398 M
+(        mov r24, r8) s
+5 390 M
+(        call cli_hexdump_byte) s
+5 382 M
+(        ldi r24, lo8\(Xdbg_str2\)) s
+5 374 M
+(        ldi r25, hi8\(Xdbg_str2\)) s
+5 366 M
+(        call cli_putstr_P) s
+5 358 M
+(        movw r24, r16) s
+5 350 M
+(        clr r23) s
+5 342 M
+(        ldi r22, 4) s
+5 334 M
+(        call cli_hexdump_rev) s
+5 326 M
+(        add r16, r9) s
+5 318 M
+(        adc r17, r1) s
+5 310 M
+(        inc r8) s
+5 302 M
+(        sbrs r8, 4) s
+5 294 M
+(        rjmp 10b) s
+5 286 M
+(        pop_range 30, 31) s
+5 278 M
+(        pop_range 16, 27) s
+5 270 M
+(        pop_range 6, 9) s
+5 262 M
+(        ret) s
+5 254 M
+(Xdbg_str:  .asciz "\\r\\nDBG ") s
+5 246 M
+(Xdbg_str1: .asciz "\\r\\n ") s
+5 238 M
+(Xdbg_str2: .asciz "] = ") s
+5 222 M
+(print32:) s
+5 214 M
+(        push_range 6, 9) s
+5 206 M
+(        push_range 16, 27) s
+5 198 M
+(        push_range 30, 31) s
+5 190 M
+(        movw r6, r22) s
+5 182 M
+(        movw r8, r24) s
+5 174 M
+(        ldi r24, lo8\(Xdbg_str\)) s
+5 166 M
+(        ldi r25, hi8\(Xdbg_str\)) s
+5 158 M
+(        call cli_putstr_P) s
+5 150 M
+(        mov r24, r9) s
+5 142 M
+(        call cli_hexdump_byte) s
+5 134 M
+(        mov r24, r8) s
+5 126 M
+(        call cli_hexdump_byte) s
+5 118 M
+(        mov r24, r7) s
+5 110 M
+(        call cli_hexdump_byte) s
+5 102 M
+(        mov r24, r6) s
+5 94 M
+(        call cli_hexdump_byte) s
+5 86 M
+(        pop_range 30, 31) s
+5 78 M
+(        pop_range 16, 27) s
+5 70 M
+(        pop_range 6, 9) s
+5 62 M
+(        ret) s
+5 38 M
+(print_acc:) s
+5 30 M
+(        push_range 16, 27) s
+5 22 M
+(        push_range 30, 31) s
+5 14 M
+(        ldi r24, lo8\(Xdbg_str\)) s
+5 6 M
+(        ldi r25, hi8\(Xdbg_str\)) s
+261.667 534 M
+(        call cli_putstr_P) s
+261.667 526 M
+(        mov r24, r9) s
+261.667 518 M
+(        call cli_hexdump_byte) s
+261.667 510 M
+(        mov r24, r8) s
+261.667 502 M
+(        call cli_hexdump_byte) s
+261.667 494 M
+(        mov r24, r15) s
+261.667 486 M
+(        call cli_hexdump_byte) s
+261.667 478 M
+(        mov r24, r14) s
+261.667 470 M
+(        call cli_hexdump_byte) s
+261.667 462 M
+(        pop_range 30, 31) s
+261.667 454 M
+(        pop_range 16, 27) s
+261.667 446 M
+(        ret) s
+261.667 430 M
+(#endif) s
+_R
+S
+%%Trailer
+%%Pages: 8
+%%DocumentNeededResources: font Courier-Bold Courier 
+%%EOF
