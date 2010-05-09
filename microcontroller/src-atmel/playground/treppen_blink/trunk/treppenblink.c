@@ -105,7 +105,7 @@ void appBoot(void)
   PORTD |= _BV(DATA) | _BV(CLK);
 
   // RGB-LED als ausgang
-  DDRD |= _BV(PD1) | _BV(PD3) | _BV(PD4);
+  DDRD |= R_LED | G_LED | B_LED;
   // Taster als eingang
   DDRB &= ~(_BV(PB0) | _BV(PB1));
 
@@ -418,27 +418,27 @@ void appLoop_rgbled(void)
     {
       if((rgbled_stat & R_LED) !=0)
 	{
-	  PORTC |= R_LED;
+	  PORTD |= R_LED;
 	}
       else
 	{
-	  PORTC &= ~R_LED;
+	  PORTD &= ~R_LED;
 	}
       if((rgbled_stat & G_LED) !=0)
 	{
-	  PORTC |= G_LED;
+	  PORTD |= G_LED;
 	}
       else
 	{
-	  PORTC &= ~G_LED;
+	  PORTD &= ~G_LED;
 	}
       if( (rgbled_stat & B_LED) !=0)
 	{
-	  PORTC |= B_LED;
+	  PORTD |= B_LED;
 	}
       else
 	{
-	  PORTC &= ~B_LED;
+	  PORTD &= ~B_LED;
 	}
       taskDelayFromNow(100);
     }
