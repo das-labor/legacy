@@ -66,9 +66,9 @@ Tuint08 blinkmode=8;
 
 
 
-#define R_LED _BV(PC1)
-#define G_LED _BV(PC2)
-#define B_LED _BV(PC3)
+#define R_LED _BV(PD1)
+#define G_LED _BV(PD3)
+#define B_LED _BV(PD4)
 
 #define HOLD_THRESHOLD 18
 #define CLICK_THRESHOLD 0
@@ -105,7 +105,7 @@ void appBoot(void)
   PORTD |= _BV(DATA) | _BV(CLK);
 
   // RGB-LED als ausgang
-  DDRC |= _BV(PC1) | _BV(PC2) | _BV(PC3);
+  DDRD |= _BV(PD1) | _BV(PD3) | _BV(PD4);
   // Taster als eingang
   DDRB &= ~(_BV(PB0) | _BV(PB1));
 
