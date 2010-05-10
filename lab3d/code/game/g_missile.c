@@ -59,8 +59,8 @@ void notify_linked_neighbours (gentity_t *ent)
 			if (stuck_ent->enemy == ent)
 			{
 				stuck_ent->enemy = NULL;
-				stuck_ent->count = 0;
-				fall_down(stuck_ent);
+//				stuck_ent->count = 0;
+				//fall_down(stuck_ent);
 			}
 		}
 	}
@@ -79,7 +79,6 @@ int foam_expand (gentity_t *ent)
 		{ {18.25f,18.25f, 18.25f}, {-18.25f, -18.25f, -18.25f} },
 		{ {27.25f,27.25f, 27.25f}, {-27.25f, -27.25f, -27.25f} }
 	};
-	const vec3_t bbox_base = {-2.0f, -2.0f, -2.0f};
 
 	/* expand with 50% probability */
 	if (random() > 0.5f)
@@ -188,25 +187,45 @@ void G_ExplodeMissile( gentity_t *ent ) {
 
 void G_foamthink (gentity_t *in_ent)
 {
-	trace_t tr;
-	int num, i, ctop = 0;
+	int num, i;
 	int matches[8];
-	gentity_t *stuck_ent, *target;
+	gentity_t *stuck_ent;
+	vec3_t vmin, vmax;
+
+	VectorScale(in_ent->r.maxs, 1.1f, vmax);
+	VectorScale(in_ent->r.mins, 1.1f, vmin);
+
 	
 	in_ent->nextthink = 45 + level.time;
-
-	if (in_ent->enemy == NULL)
+	
+	/* enemy ent removed from parent */
+	if (in_ent->enemy == NULL && in_ent->count > 0)
 	{
-		/* not landed (yet) */
-		return;
-	}
-
-	if ((in_ent->enemy->s.eFlags & EF_STICK) && in_ent->enemy->count <= 10)
-	{
-		//G_Printf("fthink: fall! me: %x, en: %x, enc: %i\n", in_ent, in_ent->enemy, in_ent->enemy->count);
 		in_ent->count = 0;
-		fall_down (in_ent);
-		return;
+		/* notify children */
+		num = trap_EntitiesInBox (vmin, vmax, matches, (sizeof(matches) / sizeof(int)));
+		for (i=0;i<num;i++)
+		{
+			stuck_ent = &g_entities[matches[i]];
+			if (!(in_ent->enemy->s.eFlags & EF_STICK))
+				continue;
+
+			if (stuck_ent == in_ent)
+				continue;
+
+			if (stuck_ent->enemy == in_ent)
+			{
+				stuck_ent->enemy = NULL;
+				continue;
+			}
+			if (stuck_ent->enemy != NULL && stuck_ent->count > in_ent->count)
+			{
+				in_ent->enemy = stuck_ent;
+				in_ent->count = stuck_ent->count-10;
+			}
+		}
+		if (in_ent->count <= 0)
+			fall_down(in_ent);
 	}
 }
 
@@ -441,10 +460,13 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 			ent->count = 0;
 			fall_down(ent);
 		}
-
-		ent->s.pos.trType = TR_STATIONARY;
-		vectoangles( trace->plane.normal, ent->s.angles );
-		ent->s.angles[0] = 360.0f * random();
+		
+		if (ent->r.ownerNum != ENTITYNUM_NONE) /* we change the angles only once */
+		{
+			ent->s.pos.trType = TR_STATIONARY;
+			vectoangles( trace->plane.normal, ent->s.angles );
+			ent->s.angles[0] = 360.0f * random();
+		}
 
 		G_disown(ent);
 		trap_LinkEntity(ent);
@@ -699,7 +721,6 @@ void G_RunMissile( gentity_t *ent )
  */
 void G_ExplodeFoam (gentity_t *ent)
 {
-	vec3_t		dir;
 	vec3_t		origin;
 	
 	BG_EvaluateTrajectory (&ent->s.pos, level.time, origin);
