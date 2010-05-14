@@ -278,6 +278,7 @@
 #define  CN_02                                   twim
 #define  CN_03                                   rgbled
 #define  CN_04                                   taster
+#define  CN_05                                   motiond
 
 
 
@@ -293,6 +294,7 @@
 #define  TaskInclude_rundown                     cfgStartRunning
 #define  TaskInclude_rgbled                     cfgStartRunning
 #define  TaskInclude_taster                     cfgStartRunning
+#define  TaskInclude_motiond			cfgStartRunning
 //#define  TaskInclude_blueout                    cfgStartRunning
 //#define  TaskInclude_update                     cfgStartRunning
 
@@ -307,6 +309,7 @@
 #define  Capabilities_twim                    cfgCapAll
 #define  Capabilities_rgbled                    cfgCapAll
 #define  Capabilities_taster                    cfgCapAll
+#define  Capabilities_motiond                    cfgCapAll
 
 
 /* ========================================================================= */
@@ -324,6 +327,7 @@
 #define StackSize_twim 50
 #define StackSize_rgbled 100
 #define StackSize_taster 100
+#define StackSize_motiond 200
 
 /* ========================================================================= */
 /* TIMES SLICES ============================================================ */
@@ -355,6 +359,7 @@
 #define  RegisterUse_rundown                      registersAll
 #define  RegisterUse_rgbled                      registersAll
 #define  RegisterUse_taster                      registersAll
+#define  RegisterUse_motiond                      registersAll
 //#define  RegisterUse_blueout                     registersAll
 //#define  RegisterUse_update                      registersAll
 
