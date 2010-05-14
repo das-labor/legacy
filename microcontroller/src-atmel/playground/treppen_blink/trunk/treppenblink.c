@@ -42,10 +42,13 @@
 #include "twi_master.h"
 #include "i2ctempsens.h"
 
-#define DATA PD6
-#define CLK  PD7
+#include "motion.h"
+
+#define RGB_DATA _BV(PD6)
+#define RGB_CLK  _BV(PD7)
 #define MAXCOLORVALUE (0x0FFF)
-#define OUTPORT PORTD
+#define RGB_PORT PORTD
+#define RGB_DDR  DDRD
 #define BITSPERLAMP 12
 #define LAMPS 50
 
@@ -69,6 +72,8 @@ Tuint08 blinkmode=8;
 #define G_LED _BV(PD1)
 #define R_LED _BV(PD3)
 #define B_LED _BV(PD4)
+#define PORT_LED PORTD
+#define DDR_LED DDRD
 
 #define HOLD_THRESHOLD 18
 #define CLICK_THRESHOLD 0
@@ -101,18 +106,18 @@ void appBoot(void)
 { 
   spi_init();
   can_init();
-  DDRD |= _BV(DATA) | _BV(CLK);
-  PORTD |= _BV(DATA) | _BV(CLK);
+  RGB_DDR |= RGB_DATA | RGB_CLK;
+  RGB_PORT |= RGB_DATA | RGB_CLK;
 
   // RGB-LED als ausgang
-  DDRD |= R_LED | G_LED | B_LED;
+  DDR_LED |= R_LED | G_LED | B_LED;
   // Taster als eingang
   DDRB &= ~(_BV(PB0) | _BV(PB1));
 
   // pullups aktivieren
   PORTB |= (_BV(PB0) | _BV(PB1));
-  //  PORTC |= R_LED;
-	
+
+	mtd_init();
 }
 
 /*
@@ -181,41 +186,41 @@ static void pushValue(Tuint16 red,Tuint16 green,Tuint16 blue)
 	{
 		if ( ((blue >> (BITSPERLAMP-k-1)) & 1 ) ==1)
 		{
-			OUTPORT |= _BV(DATA);
+			RGB_PORT |= RGB_DATA;
 		} 
 		else 
 		{ 
-			OUTPORT &= ~_BV(DATA);
+			RGB_PORT &= ~RGB_DATA;
 		}
-		PORTD |= _BV(CLK);
-		PORTD &= ~_BV(CLK);
+		RGB_PORT |= RGB_CLK;
+		RGB_PORT &= ~RGB_CLK;
 	}
 	for (k = 0; k < BITSPERLAMP; k++)
 	{
 		if ( ((green >> (BITSPERLAMP-k-1)) & 1 ) ==1)
 		{
-			OUTPORT |= _BV(DATA);
+			RGB_PORT |= RGB_DATA;
 		} 
 		else 
 		{ 
-			OUTPORT &= ~_BV(DATA);
+			RGB_PORT &= ~RGB_DATA;
 		}
 
-		PORTD |= _BV(CLK);
-		PORTD &= ~_BV(CLK);
+		RGB_PORT |= RGB_CLK;
+		RGB_PORT &= ~RGB_CLK;
 	}
 	for (k = 0; k < BITSPERLAMP; k++)
 	{
 		if ( ((red >> (BITSPERLAMP-k-1)) & 1 ) == 1 )
 		{
-			OUTPORT |= _BV(DATA);
+			RGB_PORT |= RGB_DATA;
 		}
 		else 
 		{
-			OUTPORT &= ~_BV(DATA);
+			RGB_PORT &= ~RGB_DATA;
 		}
-		PORTD |= _BV(CLK);
-		PORTD &= ~_BV(CLK);
+		RGB_PORT |= RGB_CLK;
+		RGB_PORT &= ~RGB_CLK;
 	}
   taskExitGlobalCritical();
 }
@@ -272,8 +277,8 @@ static void updateLEDs()
 
   for (i = 0; i < 5; i++)
     {
-      PORTD |= _BV(DATA);
-      PORTD &= ~_BV(DATA);
+      RGB_PORT |= RGB_DATA;
+      RGB_PORT &= ~RGB_DATA;
     }
   //  taskExitGlobalCritical();
 }
@@ -298,10 +303,10 @@ void twi_mhandler_read(i2c_message *indata)
 	can_message dstrl = {0x25,0x00,0x10,0x10,0x08, {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}};
 	dstrl.dlc=indata->dlc+1;
 	dstrl.data[0]=indata->process;
-	for(i=0;i<indata->dlc;i++)
-		{
-			dstrl.data[i+1]=indata->data[i];
-		}
+	for (i=0; i < indata->dlc; i++)
+	{
+		dstrl.data[i+1]=indata->data[i];
+	}
 	
 	can_transmit(&dstrl);
 }
@@ -320,12 +325,11 @@ void twi_mhandler_error(Tuint08 error,i2c_message *errdata)
 
 void init_sensor()
 {
-	if(TWIM_Init()==0)
-		{
-			can_message dstrl = {0x25,0x00,0x10,0x10,0x06, {0x33,0x33,0x33,0x33,0x33,0x33}};
-			can_transmit(&dstrl);
-			
-		}
+	if (TWIM_Init()==0)
+	{
+		can_message dstrl = {0x25,0x00,0x10,0x10,0x06, {0x33,0x33,0x33,0x33,0x33,0x33}};
+		can_transmit(&dstrl);
+	}
 
 	commblock.addr_dst = 0x9e;
 	commblock.dlc = 1;
@@ -333,10 +337,10 @@ void init_sensor()
 	// set command last 
 	commblock.process=PROCESSI2CWRITE;
 
-	while(commblock.process != PROCESSI2CNONE)
-		{
-			taskDelayFromNow(10);
-		}
+	while (commblock.process != PROCESSI2CNONE)
+	{
+		taskDelayFromNow(10);
+	}
 	
 	commblock.addr_dst = 0x9e;
 	commblock.dlc = 2;
@@ -344,20 +348,20 @@ void init_sensor()
 	commblock.data[1]=I2CDEFAULTCONFIG; 
 	commblock.process=PROCESSI2CWRITE;
 
-	while(commblock.process != PROCESSI2CNONE)
-		{
-			taskDelayFromNow(10);
-		}
+	while (commblock.process != PROCESSI2CNONE)
+	{
+		taskDelayFromNow(10);
+	}
 
 	commblock.addr_dst = 0x9e;
 	commblock.dlc = 1;
 	commblock.data[0]=START_CONVERT;
 	commblock.process=PROCESSI2CWRITE;
 
-	while(commblock.process != PROCESSI2CNONE)
-		{
-			taskDelayFromNow(10);
-		}
+	while (commblock.process != PROCESSI2CNONE)
+	{
+		taskDelayFromNow(10);
+	}
 
 }
 /* data: 0x9e 0x01 0x02 0x22 0x8c 0x00  */
@@ -373,10 +377,10 @@ void read_sensor()
 	// set command last 
 	commblock.process=PROCESSI2CWRITE;
 
-	while(commblock.process != PROCESSI2CNONE)
-		{
-			taskDelayFromNow(10);
-		}
+	while (commblock.process != PROCESSI2CNONE)
+	{
+		taskDelayFromNow(10);
+	}
 
 	commblock.addr_dst = 0x9e;
 	commblock.dlc = 1;
@@ -384,29 +388,29 @@ void read_sensor()
 	// set command last 
 	commblock.process=PROCESSI2CWRITE;
 
-	while(commblock.process != PROCESSI2CNONE)
-		{
-			taskDelayFromNow(10);
-		}
+	while (commblock.process != PROCESSI2CNONE)
+	{
+		taskDelayFromNow(10);
+	}
 
 	commblock.addr_dst = 0x9e;
 	commblock.dlc = 2;
 	commblock.process=PROCESSI2CREAD;
 
-	while(commblock.process != PROCESSI2CNONE)
-		{
-			taskDelayFromNow(10);
-		}
+	while (commblock.process != PROCESSI2CNONE)
+	{
+		taskDelayFromNow(10);
+	}
 
 	commblock.addr_dst = 0x9e;
 	commblock.dlc = 1;
 	commblock.data[0]=START_CONVERT;
 	commblock.process=PROCESSI2CWRITE;
 
-	while(commblock.process != PROCESSI2CNONE)
-		{
-			taskDelayFromNow(10);
-		}
+	while (commblock.process != PROCESSI2CNONE)
+	{
+		taskDelayFromNow(10);
+	}
 
 }
 
@@ -414,34 +418,34 @@ void read_sensor()
 #if (preTaskDefined(rgbled))
 void appLoop_rgbled(void)
 {
-  while(true)
-    {
-      if((rgbled_stat & R_LED) !=0)
-	{
-	  PORTD |= R_LED;
-	}
-      else
-	{
-	  PORTD &= ~R_LED;
-	}
-      if((rgbled_stat & G_LED) !=0)
-	{
-	  PORTD |= G_LED;
-	}
-      else
-	{
-	  PORTD &= ~G_LED;
-	}
-      if( (rgbled_stat & B_LED) !=0)
-	{
-	  PORTD |= B_LED;
-	}
-      else
-	{
-	  PORTD &= ~B_LED;
-	}
-      taskDelayFromNow(100);
-    }
+  while (true)
+  {
+		if ((rgbled_stat & R_LED) !=0)
+		{
+			PORT_LED |= R_LED;
+		}
+		else
+		{
+			PORT_LED &= ~R_LED;
+		}
+		if ((rgbled_stat & G_LED) !=0)
+		{
+			PORT_LED |= G_LED;
+		}
+		else
+		{
+			PORT_LED &= ~G_LED;
+		}
+		if ((rgbled_stat & B_LED) !=0)
+		{
+			PORT_LED |= B_LED;
+		}
+		else
+		{
+			PORT_LED &= ~B_LED;
+		}
+		taskDelayFromNow(100);
+  }
 }
 #endif
 
@@ -455,85 +459,85 @@ void appLoop_taster(void)
   Tuint08 last_held_0 = 0;
   
   while (true)
-    {
-			clicked_0=0;
-			held_0=0;
-			if (!(PINB & _BV(PB0))) 
+  {
+		clicked_0=0;
+		held_0=0;
+		if (!(PINB & _BV(PB0))) 
+		{
+			counter_0++;
+			if (counter_0 > HOLD_THRESHOLD)
 			{
-				counter_0++;
-				if (counter_0 > HOLD_THRESHOLD)
+				held_0 = 1;
+				counter_0 = HOLD_THRESHOLD;
+			}
+		} 
+		else
+		{
+			if (counter_0 > CLICK_THRESHOLD)
+			{
+				if (counter_0 < HOLD_THRESHOLD)
 				{
-					held_0 = 1;
-					counter_0 = HOLD_THRESHOLD;
+					clicked_0 = 1;
 				}
-			} 
+			}
+			counter_0 = 0;
+		}
+		
+		if (clicked_0 == 1)
+		{
+			dstpower.data[0] = C_VIRT;
+			dstpower.data[1] = VIRT_VORTRAG;
+			dstpower.data[2] = F_SW_TOGGLE;
+			if (rgbled_stat==R_LED)
+			{
+				rgbled_stat=G_LED;
+			}
 			else
 			{
-				if (counter_0 > CLICK_THRESHOLD)
-				{
-					if (counter_0 < HOLD_THRESHOLD)
-					{
-						clicked_0 = 1;
-					}
-				}
-				counter_0 = 0;
+				rgbled_stat=R_LED;
 			}
-			
-			if (clicked_0 == 1)
-			{
-				dstpower.data[0] = C_VIRT;
-				dstpower.data[1] = VIRT_VORTRAG;
-				dstpower.data[2] = F_SW_TOGGLE;
-				if(rgbled_stat==R_LED)
-				{
-					rgbled_stat=G_LED;
-				}
-				else
-				{
-					rgbled_stat=R_LED;
-				}
-				can_transmit(&dstpower);
-			}
-			
-			if (held_0)
-			{
-				dstpower.data[0] = C_VIRT;
-				dstpower.data[1] = VIRT_VORTRAG_PWM;
-				dstpower.data[2] = F_PWM_MOD;
-				can_transmit(&dstpower);
-			}
-			else if (last_held_0)
-			{
-				dstpower.data[0] = C_VIRT;
-				dstpower.data[1] = VIRT_VORTRAG_PWM;
-				dstpower.data[2] = F_PWM_DIR;
-				can_transmit(&dstpower);
-			}
-			
-			last_held_0 = held_0;
+			can_transmit(&dstpower);
+		}
+		
+		if (held_0)
+		{
+			dstpower.data[0] = C_VIRT;
+			dstpower.data[1] = VIRT_VORTRAG_PWM;
+			dstpower.data[2] = F_PWM_MOD;
+			can_transmit(&dstpower);
+		}
+		else if (last_held_0)
+		{
+			dstpower.data[0] = C_VIRT;
+			dstpower.data[1] = VIRT_VORTRAG_PWM;
+			dstpower.data[2] = F_PWM_DIR;
+			can_transmit(&dstpower);
+		}
+		
+		last_held_0 = held_0;
 
-      if ((PINB & _BV(PB1)) && (mode==0))
+    if ((PINB & _BV(PB1)) && (mode==0))
+		{
+			mode=1;
+		}
+    if (!(PINB & _BV(PB1)) && (mode==1))
+		{
+			mode=2;
+		}
+    if (mode==2)
+		{
+			if (blinkmode <= 8)
 			{
-				mode=1;
+				blinkmode++;
 			}
-      if (!(PINB & _BV(PB1)) && (mode==1))
+			else 
 			{
-				mode=2;
+				blinkmode = 0;
 			}
-      if (mode==2)
-			{
-				if (blinkmode <= 8)
-				{
-					blinkmode++;
-				}
-				else 
-				{
-					blinkmode = 0;
-				}
-				mode = 0;
-			}
-      taskDelayFromNow(100);
-    }
+			mode = 0;
+		}
+    taskDelayFromNow(100);
+  }
 }
 #endif
 
@@ -691,7 +695,8 @@ void appLoop_rundown(void)
 
 #endif
 
-#include "motion.h"
+
+
 
 volatile static uint16_t adcval[2];
 volatile static uint8_t mtd_state = MTD_STATE_ENABLED;
@@ -701,7 +706,8 @@ volatile static uint16_t mtd_treshold;
 void mtd_init()
 {
 	mtd_treshold = 0;
-	mtd_treshold += eeprom_read_byte (MTD_EEPROM_BYTE);
+//	mtd_treshold += eeprom_read_byte (MTD_EEPROM_BYTE);
+	mtd_treshold = 10;
 	mtd_enable();
 }
 
@@ -713,10 +719,10 @@ uint8_t mtd_get_treshold()
 	return mtd_treshold & 0xff;
 }
 
-uint16_t filter (uint8_t in_idx, uint16_t in_val)
+Tuint16 filter (Tuint08 in_idx, Tuint16 in_val)
 {
 	static int32_t fval[2];
-	static uint8_t init_done = 0;
+	static Tuint08 init_done = 0;
 	int32_t delta[2];
 
 	if (init_done != 0x03)
@@ -731,17 +737,17 @@ uint16_t filter (uint8_t in_idx, uint16_t in_val)
 }
 
 
-uint16_t motion_check()
+Tuint16 motion_check()
 {
-	uint8_t i;
-	uint16_t tmp;
+	Tuint08 i;
+	Tuint16 tmp;
 	
-	for (i=0;i<2;i++)
+	for (i = 0; i < 2; i++)
 	{
-		if (!(val_new & (i+1)))
+		if (!(val_new & (i + 1)))
 			continue;
 		
-		val_new &= ~(i+1);
+		val_new &= ~(i + 1);
 		tmp = filter (i, adcval[i]);
 		if (tmp > mtd_treshold)
 			return tmp;
@@ -749,10 +755,10 @@ uint16_t motion_check()
 	return 0;
 }
 
-void mtd_set_treshold (uint8_t in_t)
+void mtd_set_treshold (Tuint08 in_t)
 {
 	mtd_treshold = in_t;
-	eeprom_write_byte(MTD_EEPROM_BYTE, in_t);
+	//eeprom_write_byte(MTD_EEPROM_BYTE, in_t);
 }
 
 void mtd_enable()
@@ -769,16 +775,25 @@ void mtd_disable()
 
 void appLoop_motiond(void)
 {
-	while (true) {
+  can_message bla = {0x25,0x00,0x00,0x00,0x04, {0x00,0x00,0x00,0x00}};
+  Tuint16 foo;
+	while (true)
+	{
 		motiond_tick();
-		taskDelayFromNow(1);
+		foo = motion_check();
+		if (foo)
+		{
+			bla.data[0] = foo;
+			can_transmit(&bla);
+		}
+		taskDelayFromNow(100);
 	}
 }
 #endif
 
 void motiond_tick()
 {
-	static uint8_t mystate = 0;
+	static Tuint08 mystate = 0;
 
 	if (!(mtd_state & MTD_STATE_ENABLED)) return;
 	
@@ -812,7 +827,7 @@ void motiond_tick()
 	mystate++;
 }
 
-uint16_t get_adc (uint8_t in_num)
+Tuint16 get_adc (Tuint08 in_num)
 {
 	return adcval[in_num];
 }
