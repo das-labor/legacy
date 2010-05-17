@@ -3,10 +3,10 @@
 
 extern void can_handler();
 
-extern void twi_send(uint8_t *p);
-
 void can_send(uint8_t port, uint8_t *p);
 
 void read_can_addr();
+
+extern uint8_t myaddr;
 
 #endif // _CAN_HANDLER
