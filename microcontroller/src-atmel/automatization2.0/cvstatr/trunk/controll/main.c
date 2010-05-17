@@ -11,6 +11,9 @@
 #include "can/spi.h"
 #include "can/lap.h"
 #include "i2c_temp.h"
+#include "temp_regler.h"
+
+// int regler_tick = true
 
 
 void init(void)
@@ -24,6 +27,9 @@ void init(void)
 	
 	//init_sensor(0x9e);
 	init_sensor(0x96);
+
+  //TCCR0 |= _BV(CS02) | _BV(CS00);
+  //TIMSK |= _BV(TOIE0);
 
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
 
