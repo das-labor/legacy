@@ -6,4 +6,6 @@ void switch_handler();
 
 void read_can_addr();
 
+static uint8_t myaddr;
+
 #endif // _CAN_HANDLER

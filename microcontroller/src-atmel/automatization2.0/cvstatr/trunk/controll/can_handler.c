@@ -1,3 +1,5 @@
+/* -*- Mode: C; tab-width: 2 -*- */
+
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
@@ -7,18 +9,9 @@
 #include "can_handler.h"
 #include "can/lap.h"
 #include "i2c_temp.h"
+#include "temp_regler.h"
 
 static uint8_t myaddr;
-
-union {
-	struct {
-		uint8_t klingel:1;
-		uint8_t nachtmodus:1;
-		uint8_t tuerkontakt:1;
-		uint8_t schloss:1;
-	} switches;
-	uint8_t stat_sw;
-} stat_switches;
 
 extern void can_handler()
 {
@@ -26,7 +19,7 @@ extern void can_handler()
 	can_message *rx_msg;
 	if ((rx_msg = can_get_nb()) != 0) //get next canmessage in rx_msg
 	{
-		if ((rx_msg->addr_dst == myaddr))
+		if (rx_msg->addr_dst == myaddr)
 		{
 			if (rx_msg->port_dst == PORT_MGT)
 			{
@@ -44,6 +37,12 @@ extern void can_handler()
 						break;
 				}
 			}
+			else if (rx_msg->port_dst == 0x04) {
+				temp_soll = rx_msg->data[0];
+			}
+			else if (rx_msg->port_dst == 0x05) {
+				set_ventil(rx_msg->data[0]);
+			}
 			else if (rx_msg->port_dst == 0x10)
 			{
 				uint8_t data[2] = {0, 0};
@@ -58,77 +57,15 @@ extern void can_handler()
 				can_transmit(&msg);
 			}
 		}
+		if (rx_msg->addr_dst == 0x23 && rx_msg->port_dst == 0x10)
+		{
+			temp_ist = rx_msg->data[0];
+		}
 	}
 }
 
 void read_can_addr()
 {
 	myaddr = eeprom_read_byte(0x00);
-}
-
-void switch_handler()
-{
-// Hauptschalter
-	if (!(PIND & _BV(PD6)) && stat_switches.switches.klingel)
-	{
-		stat_switches.switches.klingel = 0;
-		_delay_ms(100);
-	}
-	if ((PIND & _BV(PD6)) && stat_switches.switches.klingel == 0 && stat_switches.switches.tuerkontakt)
-	{
-		stat_switches.switches.klingel = 1;
-
-		static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
-		
-		msg.data[0] = stat_switches.stat_sw;
-		msg.addr_src = myaddr;
-		can_transmit(&msg);
-
-		_delay_ms(100);
-	}
-	if ((PIND & _BV(PD7)) && stat_switches.switches.tuerkontakt)
-	{
-		static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
-		stat_switches.switches.tuerkontakt = 0;		
-		msg.data[0] = stat_switches.stat_sw;
-		msg.addr_src = myaddr;
-		can_transmit(&msg);
-
-		_delay_ms(100);
-	}
-	if (!(PIND & _BV(PD7)) && stat_switches.switches.tuerkontakt == 0)
-	{
-		stat_switches.switches.tuerkontakt = 1;
-
-		static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
-		
-		msg.data[0] = stat_switches.stat_sw;
-		msg.addr_src = myaddr;
-		can_transmit(&msg);
-
-		_delay_ms(100);
-	}
-	if ((PIND & _BV(PD5)) && stat_switches.switches.nachtmodus)
-	{
-		static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
-		stat_switches.switches.nachtmodus = 0;		
-		msg.data[0] = stat_switches.stat_sw;
-		msg.addr_src = myaddr;
-		can_transmit(&msg);
-
-		_delay_ms(100);
-	}
-	if (!(PIND & _BV(PD5)) && stat_switches.switches.nachtmodus == 0)
-	{
-		stat_switches.switches.nachtmodus = 1;
-
-		static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
-		
-		msg.data[0] = stat_switches.stat_sw;
-		msg.addr_src = myaddr;
-		can_transmit(&msg);
-
-		_delay_ms(100);
-	}
 }
 
