@@ -7,16 +7,17 @@
 #include <util/delay.h>
 
 #include "config.h"
+#include "../include/PowerCommander.h"
 
 #include "twi_master/twi_master.h"
 #include "can/can.h"
 #include "can_handler.h"
 #include "can/spi.h"
 #include "can/lap.h"
-
-#include "../include/PowerCommander.h"
-
 #include "switch.h"
+#include "i2c_funktionen.h"
+
+
 
 void init(void)
 {
@@ -35,10 +36,6 @@ void init(void)
 
 	DDRB &= ~_BV(PB2); // Eingang Lounge Taster
 	DDRD &= ~_BV(PD3); // Eingang Vortrag Taster
-	
-	//Pullups werden nichtmehr gebraucht
-	//PORTB |= _BV(PB2);
-	//PORTD |= _BV(PD3);
 
 /*
 ** Initiate TWI Master Interface with bitrate of 100000 Hz
@@ -48,6 +45,9 @@ void init(void)
 		while (1);
 	}
 
+	// get output states
+	sync_stat_cache();
+	
 	//initialize spi port
 	spi_init();
 	
