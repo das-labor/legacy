@@ -107,6 +107,7 @@ uint8_t TWIM_Init()
 ** Set TWI bitrate
 ** If bitrate is too high, then error return
 */
+	TWSR = 0;
 	TWBR = ((F_CPU / TWI_BITRATE) - 16) / 2;
 	if (TWBR < 11)
 		return 0;
