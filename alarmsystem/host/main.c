@@ -41,6 +41,7 @@ uint8_t
 	opt_dumpall = 0,
 	opt_resetall = 0,
 	opt_set_treshold = 0,
+	opt_emit_test = 0,
 	opt_dump = 0;
 
 void print_usage();
@@ -154,6 +155,9 @@ int parse_args (int argc, char* argv[])
 				opt_set_treshold = abs(atoi(argv[i]));
 			}
 			break;
+			case 'T': /* emit test signal */
+				opt_emit_test = 1;
+			break;
 			default:
 				printf ("Argument #%i not understood.\r\n", i);
 				print_usage();
@@ -167,7 +171,7 @@ int parse_args (int argc, char* argv[])
 void myexit (int in_signal)
 {
 
-        printf ("\r\nNakkaflash closing...\r\n");
+        printf ("\r\nSignal %i received, closing app...\r\n", in_signal);
         exit (in_signal);
 }
 
@@ -259,7 +263,7 @@ int main (int argc, char* argv[])
 	}
 
 #ifndef WIN32
-	signal (SIGINT, myexit);
+//	signal (SIGINT, myexit);
 	signal (SIGKILL, myexit);
 	signal (SIGHUP, myexit);
 #else
@@ -276,8 +280,9 @@ int main (int argc, char* argv[])
 			if (packetBuffer.buffer[4] == CMD_MOTION || packetBuffer.buffer[4] == CMD_PWRFAIL)
 			{
 				mc++;
-				printf("**** MOTION **** (count = %10i)\n", mc);
+				printf("**** MOTION **** (count = %10u)\r\n", mc);
 				system ("su -c \"mocp -p\" sh");
+				fflush(stdout);
 			}
 		}
 		if (tmp > 0 && opt_dumpall)
@@ -289,6 +294,7 @@ int main (int argc, char* argv[])
 				printf("%02x ", packetBuffer.buffer[i]);
 			}
 			printf("\r\n");
+			fflush(stdout);
 		}
 
 		//if an error occurs...
@@ -334,6 +340,17 @@ int main (int argc, char* argv[])
 			tx_packet (udhandle, dst_addr, CMD_MOTION_TRESH_SET, 2, txbuf);
 			return;
 		}
+		
+		if (opt_emit_test)
+		{
+			txbuf[0] = CMD_MOTION;
+			txbuf[1] = CMD_MOTION;
+			txbuf[2] = CMD_MOTION;
+			printf("sending motion command\r\n", opt_set_treshold, dst_addr);
+			tx_packet (udhandle, 0xff, CMD_MOTION, 2, txbuf);
+			return;
+		}
+
 		
 		//this is done to prevent stressing the usb connection too much
 		usleep (1000);
