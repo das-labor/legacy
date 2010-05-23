@@ -17,8 +17,6 @@
 
 #define SCHRITTE 420
 
-#define UART_BAUD_RATE 19200
-
 #define VENTIL_STEP  0
 #define VENTIL_RESET 1
 
@@ -35,7 +33,7 @@ void fahre_ventiel_zu() {
 	uint16_t ct_last = TCNT1;
 	uint16_t ct_act = 0;
 	
-	PORTD |= _BV(PD6);
+//	PORTD |= _BV(PD6);
 	V_SCHLIESSEN();
 	_delay_ms(45);
 
@@ -43,12 +41,12 @@ void fahre_ventiel_zu() {
 		ct_act = TCNT1;
 		if (ct_last == ct_act)
 			break;
-		
+
 		ct_last = TCNT1;
 		_delay_ms(25);
 	}
 	FREILAUF();
-	PORTD &= ~_BV(PD6);
+//	PORTD &= ~_BV(PD6);
 }
 
 
@@ -60,7 +58,7 @@ void init(void) {
 	FREILAUF();
 	
 	// CTC Modus OCR1A Reg 16 bit, ext clock rising edge
-	TCCR1B |= _BV(WGM12) | _BV(CS12) | _BV(CS11) | _BV(CS10);
+	TCCR1B |= (WGM12) | _BV(CS12) | _BV(CS11) | _BV(CS10);
 	
 	// Output Compare Interrupt Timer 1 OC REG A
 	TIMSK |= _BV(OCF1A);
@@ -72,6 +70,8 @@ void init(void) {
 
 	fahre_ventiel_zu();
 
+	TWIS_Init();
+
 	//turn on interrupts
   sei();
 }
@@ -80,23 +80,23 @@ int main(void) {
 	uint8_t TWIS_ResponseType;
 	int8_t ist_pos = 0, ziel_pos = 0, data[2];
 	
-//	uart_init(UART_BAUD_SELECT(UART_BAUD_RATE, F_CPU));
 	//system initialization
 	init();
-
-	TWIS_Init();
 
 	uint16_t ct_last = TCNT1;
 	uint16_t ct_act = 0;
 	//the main loop continuously handles can messages
 	while (1) {
+		//TWIS_Init();
 		if (TWIS_ResponseRequired(&TWIS_ResponseType)) {
 			switch (TWIS_ResponseType) {
-				// Slave is requests to read bytes from the master. 
+				// Slave is requests to read bytes from the master.
 				case TW_SR_SLA_ACK:
+					cli();
 					data[0] = TWIS_ReadAck();
 					data[1] = TWIS_ReadNack();
 					TWIS_Stop();
+					sei();
 
 					switch (data[0]) {
 						case VENTIL_STEP:
