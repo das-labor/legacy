@@ -77,13 +77,7 @@ int main (void)
 
 uint8_t TWIS_Init()
 {
-/*
-** Set the TWI bitrate
-** If TWBR is less 11, then error
-*/
-	TWBR = ((F_CPU / TWI_BITRATE) - 16) / 2;
-	if (TWBR < 11)
-		return 0;
+
 /*
 ** Set the TWI slave address
 */
@@ -91,33 +85,37 @@ uint8_t TWIS_Init()
 /*
 ** Activate TWI interface
 */
-	TWCR = _BV(TWEN)|_BV(TWEA);
+	TWSR = 0;
+	TWBR = 0;
+	TWCR = _BV(TWEN) | _BV(TWEA);
 
 	return 1;
 }
 
 void TWIS_Stop()
 {
-	TWCR = _BV(TWINT)|_BV(TWEN)|_BV(TWSTO)|_BV(TWEA);
+	TWCR = _BV(TWEN) | _BV(TWEA) | _BV(TWINT) | _BV(TWSTO);
+	while (TWCR & _BV(TWINT));
+	TWCR = _BV(TWEN) | _BV(TWEA);
 }
 
 void TWIS_Write(uint8_t byte)
 {
 	TWDR = byte;
-	TWCR = _BV(TWINT)|_BV(TWEN)|_BV(TWEA);
+	TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWEA);
 	while (!(TWCR & _BV(TWINT)));
 }
 
 uint8_t	TWIS_ReadAck()
 {
-	TWCR = _BV(TWINT)|_BV(TWEN)|_BV(TWEA);
+	TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWEA);
 	while (!(TWCR & _BV(TWINT)));
 	return TWDR;
 }
 
 uint8_t	TWIS_ReadNack()
 {
-	TWCR = _BV(TWINT)|_BV(TWEN);
+	TWCR = _BV(TWINT) | _BV(TWEN);
 	while (!(TWCR & _BV(TWINT)));
 	return TWDR;
 }

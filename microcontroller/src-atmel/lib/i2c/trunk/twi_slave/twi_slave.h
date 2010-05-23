@@ -13,10 +13,6 @@
 #include <util/twi.h>
 #include "../config.h"
 
-// default bitrate
-#ifndef TWI_BITRATE
-#define TWI_BITRATE 100000L
-#endif
 
 // default Address
 #ifndef TWI_ADDRESS
