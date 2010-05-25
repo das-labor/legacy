@@ -23,7 +23,7 @@ ERASECMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -e
 all: $(OUT).elf lst text eeprom
 
 clean:
-	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec can/*.o
+	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec can/*.o twi_master/*.o
 	rm -rf *.srec $(OUT).elf
 
 flash: $(OUT).hex
