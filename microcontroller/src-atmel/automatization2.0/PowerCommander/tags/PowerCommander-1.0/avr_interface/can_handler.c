@@ -77,11 +77,7 @@ extern void can_handler()
 void twi_send(uint8_t *p)
 {
 	uint8_t i;
-	if (!TWIM_Start(TWI_ADDRESS, TW_WRITE))
-	{
-		TWIM_Stop();
-	}
-	else
+	if (TWIM_Start(TWI_ADDRESS + TW_WRITE))
 	{
 		/*
 			daten wirklich raus schreiben
@@ -90,19 +86,14 @@ void twi_send(uint8_t *p)
 		{
 			TWIM_Write(p[i]);
 		}
-		
-		TWIM_Stop();
 	}
+	TWIM_Stop();
 }
 
 void twi_get(uint8_t *p)
 {
 	uint8_t i;
-	if (!TWIM_Start(TWI_ADDRESS, TW_READ))
-	{
-		TWIM_Stop();
-	}
-	else
+	if (TWIM_Start(TWI_ADDRESS + TW_READ))
 	{
 		for (i = 0; i < (I2C_INDATACOUNT - 1); i++)
 		{
@@ -112,8 +103,8 @@ void twi_get(uint8_t *p)
 		//	die letzte via ReadNack
 
 		p[i] = TWIM_ReadNack();
-		TWIM_Stop();
 	}
+	TWIM_Stop();
 }
 
 void can_send(uint8_t port, uint8_t *p)
