@@ -62,7 +62,7 @@ flash: main.hex
 
 # rule for deleting dependent files (those which can be built by Make):
 clean:
-	rm -f main.hex main.lst main.obj main.cof main.list main.map main.eep.hex main.elf *.o 
+	rm -f main.hex main.lst main.obj main.cof main.list main.map main.eep.hex main.elf *.o twi_slave/*.o 
 # Generic rule for compiling C files:
 .c.o:
 	$(COMPILE) -c $< -o $@
