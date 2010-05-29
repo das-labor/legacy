@@ -111,9 +111,9 @@ def process_hashfunction(fin, name, impl)
     stack = 0
   end  
   size = get_size_string(impl, name)
-  printf("| %20s || %6s || %3s || %6d || %7d || %7d || %7d || %7d ||" +
+  printf("| %20s || %6s || %3s || %6d || %7d || %7s || %7d || %7d ||" +
          " %7d || %7d || %9.2f || %7d || || || \n|-\n" , 
-        name, $variant, $lang, size, ctxsize, stack, hashsize, blocksize, 
+        name, $variant, $lang, size, ctxsize, '', hashsize, blocksize, 
 	    inittime, nextblocktime, nextblocktime.to_f/(blocksize/8),
 		lastblocktime+convtime)
 end

@@ -25,21 +25,23 @@ AUTOASM_OPT    = -S
 CC	       = arm-elf-gcc
 CSTD           = gnu99
 
-override CFLAGS_A	= -mthumb -ffunction-sections -fdata-sections -MMD \
+override CFLAGS_A	= -fomit-frame-pointer  \
+                      -mthumb -ffunction-sections -fdata-sections -MMD \
                       -MF$(DEP_DIR)$(patsubst %.o,%.d,$(notdir $(1)))  \
                       -I. -Itest_src -g -pedantic -std=$(CSTD)         \
                       -Wall  $(OPTIMIZE) -Wstrict-prototypes           \
-                      -mcpu=$(MCU_TARGET) $(DEFS) 
-override CFLAGS 	= -mthumb -ffunction-sections -fdata-sections -MMD \
+                      -mcpu=$(MCU_TARGET) -Wa,-mthumb $(DEFS) 
+override CFLAGS 	= -fomit-frame-pointer   \
+                      -mthumb -ffunction-sections -fdata-sections -MMD \
                       -MF$(DEP_DIR)$(patsubst %.o,%.d,$(notdir $@))    \
                       -I. -Itest_src -g -pedantic -std=$(CSTD)         \
                       -Wall   $(OPTIMIZE) -Wstrict-prototypes          \
-                      -mcpu=$(MCU_TARGET) $(DEFS)  
+                      -mcpu=$(MCU_TARGET) -Wa,-mthumb $(DEFS)  
 
 override LDFLAGS       = -g -T lm3s9b90.ld -Wl,--gc-sections    \
                          -Wl,--entry=reset_isr -lc -lgcc        \
-                         -Wl,-Map,# no space at the end
-override ASFLAGS	   = -mthumb -mcpu=$(MCU_TARGET) -Wa,--g
+                          -Wl,-Map,# no space at the end
+override ASFLAGS	   = -mthumb -mcpu=$(MCU_TARGET) -Wa,--g -Wa,-mthumb
 
 SIZESTAT_FILE = sizestats.txt
 
