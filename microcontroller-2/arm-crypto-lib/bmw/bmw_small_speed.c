@@ -105,104 +105,87 @@
 #define R32_5(x)   (ROTR32((x), 13))
 #define R32_6(x)   (ROTR32((x),  9))
 #define R32_7(x)   (ROTR32((x),  5))
-/*
-#define K 0x05555555L
-static
-uint32_t k_lut[] PROGMEM = {
-	16L*K, 17L*K, 18L*K, 19L*K, 20L*K, 21L*K, 22L*K, 23L*K,
-	24L*K, 25L*K, 26L*K, 27L*K, 28L*K, 29L*K, 30L*K, 31L*K
-};
-*/
-/* same as above but precomputed to avoid compiler warnings */
-
-static
-uint32_t k_lut[] = {
-	0x55555550L, 0x5aaaaaa5L, 0x5ffffffaL,
-	0x6555554fL, 0x6aaaaaa4L, 0x6ffffff9L,
-	0x7555554eL, 0x7aaaaaa3L, 0x7ffffff8L,
-	0x8555554dL, 0x8aaaaaa2L, 0x8ffffff7L,
-	0x9555554cL, 0x9aaaaaa1L, 0x9ffffff6L,
-	0xa555554bL };
-
-static
-uint32_t bmw_small_expand1(uint8_t j, const uint32_t* q, const void* m, const void* h){
-	uint32_t r;
-	/* r = 0x05555555*(j+16); */
-	r = (   ROTL32(((uint32_t*)m)[j&0xf],      ((j+0)&0xf)+1  )
-	       + ROTL32(((uint32_t*)m)[(j+3)&0xf],  ((j+3)&0xf)+1  )
-	       - ROTL32(((uint32_t*)m)[(j+10)&0xf], ((j+10)&0xf)+1 )
-	       + k_lut[j]
-	     ) ^ ((uint32_t*)h)[(j+7)&0xf];
-	r += S32_1(q[j+ 0]) + S32_2(q[j+ 1]) + S32_3(q[j+ 2]) + S32_0(q[j+ 3]) +
-		 S32_1(q[j+ 4]) + S32_2(q[j+ 5]) + S32_3(q[j+ 6]) + S32_0(q[j+ 7]) +
-		 S32_1(q[j+ 8]) + S32_2(q[j+ 9]) + S32_3(q[j+10]) + S32_0(q[j+11]) +
-		 S32_1(q[j+12]) + S32_2(q[j+13]) + S32_3(q[j+14]) + S32_0(q[j+15]);
-
-	return r;
-}
-
-static
-uint32_t bmw_small_expand2(uint8_t j, const uint32_t* q, const void* m, const void* h){
-	uint32_t r;
-	r = (   ROTL32(((uint32_t*)m)[j&0xf],      ((j+0)&0xf)+1  )
-	       + ROTL32(((uint32_t*)m)[(j+3)&0xf],  ((j+3)&0xf)+1  )
-	       - ROTL32(((uint32_t*)m)[(j+10)&0xf], ((j+10)&0xf)+1 )
-	       + k_lut[j]
-	     ) ^ ((uint32_t*)h)[(j+7)&0xf];
-	r += (q[j+ 0]) + R32_1(q[j+ 1]) + (q[j+ 2]) + R32_2(q[j+ 3]) +
-		 (q[j+ 4]) + R32_3(q[j+ 5]) + (q[j+ 6]) + R32_4(q[j+ 7]) +
-		 (q[j+ 8]) + R32_5(q[j+ 9]) + (q[j+10]) + R32_6(q[j+11]) +
-		 (q[j+12]) + R32_7(q[j+13]) + S32_4(q[j+14]) + S32_5(q[j+15]);
-	return r;
-}
 
 
-static
-void bmw_small_f0(uint32_t* q, uint32_t* h, const void* m){
-	uint8_t i;
-	i=15;
-	do{
-		((uint32_t*)h)[i] ^= ((uint32_t*)m)[i];
-	}while(i--);
-	dump_x(h, 16, 'T');
-	q[ 0] = (h[ 5] - h[ 7] + h[10] + h[13] + h[14]);
-	q[ 3] = (h[ 0] - h[ 1] + h[ 8] - h[10] + h[13]);
-	q[ 6] = (h[ 4] - h[ 0] - h[ 3] - h[11] + h[13]);
-	q[ 9] = (h[ 0] - h[ 3] + h[ 6] - h[ 7] + h[14]);
-	q[12] = (h[ 1] + h[ 3] - h[ 6] - h[ 9] + h[10]);
-	q[15] = (h[12] - h[ 4] - h[ 6] - h[ 9] + h[13]);
-	q[ 2] = (h[ 0] + h[ 7] + h[ 9] - h[12] + h[15]);
-	q[ 5] = (h[ 3] - h[ 2] + h[10] - h[12] + h[15]);
-	q[ 8] = (h[ 2] - h[ 5] - h[ 6] + h[13] - h[15]);
-	q[11] = (h[ 8] - h[ 0] - h[ 2] - h[ 5] + h[ 9]);
-	q[14] = (h[ 3] - h[ 5] + h[ 8] - h[11] - h[12]);
-	q[ 1] = (h[ 6] - h[ 8] + h[11] + h[14] - h[15]);
-	q[ 4] = (h[ 1] + h[ 2] + h[ 9] - h[11] - h[14]);
-	q[ 7] = (h[ 1] - h[ 4] - h[ 5] - h[12] - h[14]);
-	q[10] = (h[ 8] - h[ 1] - h[ 4] - h[ 7] + h[15]);
-	q[13] = (h[ 2] + h[ 4] + h[ 7] + h[10] + h[11]);
+#include "f1_autogen.c"
+
+static inline
+void bmw_small_f0(uint32_t* q, uint32_t* h, const uint32_t* m){
+	uint32_t t[16];
+	uint32_t tr0, tr1, tr2;
+	t[ 0] = h[ 0] ^ m[ 0];
+	t[ 1] = h[ 1] ^ m[ 1];
+	t[ 2] = h[ 2] ^ m[ 2];
+	t[ 3] = h[ 3] ^ m[ 3];
+	t[ 4] = h[ 4] ^ m[ 4];
+	t[ 5] = h[ 5] ^ m[ 5];
+	t[ 6] = h[ 6] ^ m[ 6];
+	t[ 7] = h[ 7] ^ m[ 7];
+	t[ 8] = h[ 8] ^ m[ 8];
+	t[ 9] = h[ 9] ^ m[ 9];
+	t[10] = h[10] ^ m[10];
+	t[11] = h[11] ^ m[11];
+	t[12] = h[12] ^ m[12];
+	t[13] = h[13] ^ m[13];
+	t[14] = h[14] ^ m[14];
+	t[15] = h[15] ^ m[15];
+
+	dump_x(t, 16, 'T');
+	/*
+	q[ 0] = (t[ 5] - t[ 7] + t[10] + t[13] + t[14]);
+	q[ 3] = (t[ 0] - t[ 1] + t[ 8] - t[10] + t[13]);
+	q[ 6] = (t[ 4] - t[ 0] - t[ 3] - t[11] + t[13]);
+	q[ 9] = (t[ 0] - t[ 3] + t[ 6] - t[ 7] + t[14]);
+	q[12] = (t[ 1] + t[ 3] - t[ 6] - t[ 9] + t[10]);
+	q[15] = (t[12] - t[ 4] - t[ 6] - t[ 9] + t[13]);
+	q[ 2] = (t[ 0] + t[ 7] + t[ 9] - t[12] + t[15]);
+	q[ 5] = (t[ 3] - t[ 2] + t[10] - t[12] + t[15]);
+	q[ 8] = (t[ 2] - t[ 5] - t[ 6] + t[13] - t[15]);
+	q[11] = (t[ 8] - t[ 0] - t[ 2] - t[ 5] + t[ 9]);
+	q[14] = (t[ 3] - t[ 5] + t[ 8] - t[11] - t[12]);
+	q[ 1] = (t[ 6] - t[ 8] + t[11] + t[14] - t[15]);
+	q[ 4] = (t[ 1] + t[ 2] + t[ 9] - t[11] - t[14]);
+	q[ 7] = (t[ 1] - t[ 4] - t[ 5] - t[12] - t[14]);
+	q[10] = (t[ 8] - t[ 1] - t[ 4] - t[ 7] + t[15]);
+	q[13] = (t[ 2] + t[ 4] + t[ 7] + t[10] + t[11]);
+	*/
+	q[ 0] = +t[ 5] +t[10] +t[13] +(tr1=-t[ 7]+t[14]) ;
+	q[ 3] = +t[ 8] +t[13] +t[ 0] +(tr2=-t[ 1]-t[10]) ;
+	q[ 6] = -t[11] +t[13] -t[ 0] -t[ 3] +t[ 4] ;
+	q[ 9] = +t[ 0] +(tr0=-t[ 3]+t[ 6]) +(tr1) ;
+	q[12] = -t[ 9] -(tr0) -(tr2) ;
+	q[15] = -t[ 4] +(tr0=-t[ 9]+t[12]) +(tr1=-t[ 6]+t[13]) ;
+	q[ 2] = +t[ 7] +t[15] +t[ 0] -(tr0) ;
+	q[ 5] = +t[10] +(tr0=-t[ 2]+t[15]) +(tr2=+t[ 3]-t[12]) ;
+	q[ 8] = -t[ 5] -(tr0) +(tr1) ;
+	q[11] = -t[ 0] -t[ 2] +t[ 9] +(tr0=-t[ 5]+t[ 8]) ;
+	q[14] = -t[11] +(tr0) +(tr2) ;
+	q[ 1] = +t[ 6] +(tr0=+t[11]+t[14]) +(tr1=-t[ 8]-t[15]) ;
+	q[ 4] = +t[ 9] +t[ 1] +t[ 2] -(tr0) ;
+	q[ 7] = -t[12] -t[14] +t[ 1] -t[ 4] -t[ 5] ;
+	q[10] = -t[ 1] +(tr0=-t[ 4]-t[ 7]) -(tr1) ;
+	q[13] = +t[ 2] +t[10] +t[11] -(tr0) ;
+
 	dump_x(q, 16, 'W');
-	q[ 0] = S32_0(q[ 0]); q[ 1] = S32_1(q[ 1]); q[ 2] = S32_2(q[ 2]); q[ 3] = S32_3(q[ 3]); q[ 4] = S32_4(q[ 4]);
-	q[ 5] = S32_0(q[ 5]); q[ 6] = S32_1(q[ 6]); q[ 7] = S32_2(q[ 7]); q[ 8] = S32_3(q[ 8]); q[ 9] = S32_4(q[ 9]);
-	q[10] = S32_0(q[10]); q[11] = S32_1(q[11]); q[12] = S32_2(q[12]); q[13] = S32_3(q[13]); q[14] = S32_4(q[14]);
-	q[15] = S32_0(q[15]);
-	i=15;
-	do{
-		q[(i+15)&15] += ((uint32_t*)h)[i] ^= ((uint32_t*)m)[i];
-	}while(i--);
+	q[ 0] = S32_0(q[ 0]) + h[ 1];
+	q[ 1] = S32_1(q[ 1]) + h[ 2];
+	q[ 2] = S32_2(q[ 2]) + h[ 3];
+	q[ 3] = S32_3(q[ 3]) + h[ 4];
+	q[ 4] = S32_4(q[ 4]) + h[ 5];
+	q[ 5] = S32_0(q[ 5]) + h[ 6];
+	q[ 6] = S32_1(q[ 6]) + h[ 7];
+	q[ 7] = S32_2(q[ 7]) + h[ 8];
+	q[ 8] = S32_3(q[ 8]) + h[ 9];
+	q[ 9] = S32_4(q[ 9]) + h[10];
+	q[10] = S32_0(q[10]) + h[11];
+	q[11] = S32_1(q[11]) + h[12];
+	q[12] = S32_2(q[12]) + h[13];
+	q[13] = S32_3(q[13]) + h[14];
+	q[14] = S32_4(q[14]) + h[15];
+	q[15] = S32_0(q[15]) + h[ 0];
 }
 
-static
-void bmw_small_f1(uint32_t* q, const void* m, const void* h){
-	uint8_t i;
-	q[16] = bmw_small_expand1(0, q, m, h);
-	q[17] = bmw_small_expand1(1, q, m, h);
-	for(i=2; i<16; ++i){
-		q[16+i] = bmw_small_expand2(i, q, m, h);
-	}
-}
-
-static
+static inline
 void bmw_small_f2(uint32_t* h, uint32_t* q, const uint32_t* m){
 	uint32_t xl, xh;
 	xl =      q[16] ^ q[17] ^ q[18] ^ q[19] ^ q[20] ^ q[21] ^ q[22] ^ q[23];
@@ -239,7 +222,7 @@ void bmw_small_nextBlock(bmw_small_ctx_t* ctx, const void* block){
 	bmw_small_f0(q, ctx->h, block);
 	dump_x(q, 16, 'Q');
 	bmw_small_f1(q, block, ctx->h);
-	dump_x(q, 32, 'Q');
+	dump_x(q+16, 16, 'Q');
 	bmw_small_f2(ctx->h, q, block);
 	ctx->counter += 1;
 	ctx_dump(ctx);

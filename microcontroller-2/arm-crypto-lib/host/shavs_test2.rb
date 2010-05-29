@@ -122,20 +122,37 @@ end
 ################################################################################
 # send_md                                                                      #
 ################################################################################
-
+=begin
 def send_md(md_string)
   $sp.print("Msg = ")
   for i in 0..md_string.length-1
     $sp.print(md_string[i].chr)
-#	print("DBG s: "+ md_string[i].chr) if $debug
-#   sleep(0.001)
-	if((i%($buffer_size*2)==0)&&(i!=0))
-	  begin
-		line=$sp.gets()
-	  end while not /\./.match(line)
-	end
+	  if((i%($buffer_size*2)==0)&&(i!=0))
+	    begin
+		    line=$sp.gets()
+	    end while not /\./.match(line)
+ 	  end
   end
 end
+=end
+def send_md(md_string)
+#  puts 'DBG: send_md; md_string.length = '+md_string.length.to_s+'; buffer_size = '+$buffer_size.to_s
+  bs = $buffer_size*2
+  $sp.print("Msg = ")
+  for i in 0..((md_string.length-1)/bs)
+#    puts 'DBG bulk send'
+    if(md_string.length-i*bs<bs)
+ #     puts "DBG: i="+i.to_s()
+      $sp.print(md_string[(i*bs)..-1]) 
+      return
+    end
+    $sp.print(md_string[(i*bs)..((i+1)*bs-1)])
+    begin
+      line=$sp.gets()
+    end while not /\./.match(line) 
+  end
+end
+
 
 ################################################################################
 # run_test                                                                     #

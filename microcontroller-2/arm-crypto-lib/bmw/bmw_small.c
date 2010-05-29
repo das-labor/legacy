@@ -43,7 +43,7 @@
 #  define BUG24   1
 #endif
 
-#define F0_HACK 2
+#define F0_HACK 0
 
 #define DEBUG 0
 
@@ -86,110 +86,37 @@
  #define dump_x(a,b,c)
 #endif
 
-static
-uint32_t bmw_small_s0(uint32_t x){
-	uint32_t r;
-	r =   SHR32(x, 1)
-		^ SHL32(x, 3)
-		^ ROTL32(x, 4)
-		^ ROTR32(x, 13);
-	return r;
-}
+#define S32_0(x) ( (SHR32((x),   1)) ^ \
+	               (SHL32((x),   3)) ^ \
+	               (ROTL32((x),  4)) ^ \
+	               (ROTR32((x), 13)) )
 
-static
-uint32_t bmw_small_s1(uint32_t x){
-	uint32_t r;
-	r =   SHR32(x, 1)
-		^ SHL32(x, 2)
-		^ ROTL32(x, 8)
-		^ ROTR32(x, 9);
-	return r;
-}
+#define S32_1(x) ( (SHR32((x),   1)) ^ \
+	               (SHL32((x),   2)) ^ \
+	               (ROTL32((x),  8)) ^ \
+	               (ROTR32((x),  9)) )
 
-static
-uint32_t bmw_small_s2(uint32_t x){
-	uint32_t r;
-	r =   SHR32(x, 2)
-		^ SHL32(x, 1)
-		^ ROTL32(x, 12)
-		^ ROTR32(x, 7);
-	return r;
-}
+#define S32_2(x) ( (SHR32((x),   2)) ^ \
+	               (SHL32((x),   1)) ^ \
+	               (ROTL32((x), 12)) ^ \
+	               (ROTR32((x),  7)) )
 
-static
-uint32_t bmw_small_s3(uint32_t x){
-	uint32_t r;
-	r =   SHR32(x, 2)
-		^ SHL32(x, 2)
-		^ ROTL32(x, 15)
-		^ ROTR32(x, 3);
-	return r;
-}
+#define S32_3(x) ( (SHR32((x),   2)) ^ \
+	               (SHL32((x),   2)) ^ \
+	               (ROTL32((x), 15)) ^ \
+	               (ROTR32((x),  3)) )
 
-static
-uint32_t bmw_small_s4(uint32_t x){
-	uint32_t r;
-	r =   SHR32(x, 1)
-		^ x;
-	return r;
-}
+#define S32_4(x) ( (SHR32((x),   1)) ^ (x))
 
-static
-uint32_t bmw_small_s5(uint32_t x){
-	uint32_t r;
-	r =   SHR32(x, 2)
-		^ x;
-	return r;
-}
+#define S32_5(x) ( (SHR32((x),   2)) ^ (x))
 
-static
-uint32_t bmw_small_r1(uint32_t x){
-	uint32_t r;
-	r =   ROTL32(x, 3);
-	return r;
-}
-
-static
-uint32_t bmw_small_r2(uint32_t x){
-	uint32_t r;
-	r =   ROTL32(x, 7);
-	return r;
-}
-
-static
-uint32_t bmw_small_r3(uint32_t x){
-	uint32_t r;
-	r =   ROTL32(x, 13);
-	return r;
-}
-
-static
-uint32_t bmw_small_r4(uint32_t x){
-	uint32_t r;
-	r =   ROTL32(x, 16);
-	return r;
-}
-
-static
-uint32_t bmw_small_r5(uint32_t x){
-	uint32_t r;
-	r =   ROTR32(x, 13);
-	return r;
-}
-
-static
-uint32_t bmw_small_r6(uint32_t x){
-	uint32_t r;
-	r =   ROTR32(x, 9);
-	return r;
-}
-
-static
-uint32_t bmw_small_r7(uint32_t x){
-	uint32_t r;
-	r =   ROTR32(x, 5);
-	return r;
-}
+#define R32_1(x)   (ROTL32((x),  3))
+#define R32_2(x)   (ROTL32((x),  7))
+#define R32_3(x)   (ROTL32((x), 13))
+#define R32_4(x)   (ROTL32((x), 16))
+#define R32_5(x)   (ROTR32((x), 13))
+#define R32_6(x)   (ROTR32((x),  9))
+#define R32_7(x)   (ROTR32((x),  5))
 /*
 #define K 0x05555555L
 static
@@ -211,61 +138,33 @@ uint32_t k_lut[] = {
 
 static
 uint32_t bmw_small_expand1(uint8_t j, const uint32_t* q, const void* m, const void* h){
-	uint32_t(*s[])(uint32_t) = {bmw_small_s1, bmw_small_s2, bmw_small_s3, bmw_small_s0};
 	uint32_t r;
-	uint8_t i;
 	/* r = 0x05555555*(j+16); */
 
-#if TWEAK
 	r = (   ROTL32(((uint32_t*)m)[j&0xf],      ((j+0)&0xf)+1  )
 	       + ROTL32(((uint32_t*)m)[(j+3)&0xf],  ((j+3)&0xf)+1  )
 	       - ROTL32(((uint32_t*)m)[(j+10)&0xf], ((j+10)&0xf)+1 )
 	       + k_lut[j]
 	     ) ^ ((uint32_t*)h)[(j+7)&0xf];
-#else
-	r = k_lut[j];
-	r += ((uint32_t*)m)[j&0xf];
-	r += ((uint32_t*)m)[(j+3)&0xf];
-	r -= ((uint32_t*)m)[(j+10)&0xf];
-#endif
-	for(i=0; i<16; ++i){
-		r += s[i%4](q[j+i]);
-	}
+	r += S32_1(q[j+ 0]) + S32_2(q[j+ 1]) + S32_3(q[j+ 2]) + S32_0(q[j+ 3])
+       + S32_1(q[j+ 4]) + S32_2(q[j+ 5]) + S32_3(q[j+ 6]) + S32_0(q[j+ 7])
+	   + S32_1(q[j+ 8]) + S32_2(q[j+ 9]) + S32_3(q[j+10]) + S32_0(q[j+11])
+       + S32_1(q[j+12]) + S32_2(q[j+13]) + S32_3(q[j+14]) + S32_0(q[j+15]);
 	return r;
 }
 
 static
 uint32_t bmw_small_expand2(uint8_t j, const uint32_t* q, const void* m, const void* h){
-	uint32_t(*rf[])(uint32_t) = {bmw_small_r1, bmw_small_r2, bmw_small_r3,
-	                             bmw_small_r4, bmw_small_r5, bmw_small_r6,
-							     bmw_small_r7};
-	uint32_t r=0;
-	uint8_t i;
-	for(i=0; i<14; i+=2){
-		r += q[j+i];
-	}
-	for(i=0; i<14; i+=2){
-		r += rf[i/2](q[j+i+1]);
-	}
-#if TWEAK
-	r += bmw_small_s4(q[j+14]);
-	r += bmw_small_s5(q[j+15]);
-#else
-	r += bmw_small_s5(q[j+14]);
-	r += bmw_small_s4(q[j+15]);
-#endif
-#if TWEAK
-	r += (   ROTL32(((uint32_t*)m)[j&0xf],      ((j+0)&0xf)+1  )
+	uint32_t r;
+	r  = (   ROTL32(((uint32_t*)m)[j&0xf],      ((j+0)&0xf)+1  )
 	       + ROTL32(((uint32_t*)m)[(j+3)&0xf],  ((j+3)&0xf)+1  )
 	       - ROTL32(((uint32_t*)m)[(j+10)&0xf], ((j+10)&0xf)+1 )
 	       + k_lut[j]
 	     ) ^ ((uint32_t*)h)[(j+7)&0xf];
-#else
-	r += k_lut[j];
-	r += ((uint32_t*)m)[j&0xf];
-	r += ((uint32_t*)m)[(j+3)&0xf];
-	r -= ((uint32_t*)m)[(j+10)&0xf];
-#endif
+	r +=      (q[j+ 0]) + R32_1(q[j+ 1]) +      (q[j+ 2]) + R32_2(q[j+ 3])
+       +      (q[j+ 4]) + R32_3(q[j+ 5]) +      (q[j+ 6]) + R32_4(q[j+ 7])
+	   +      (q[j+ 8]) + R32_5(q[j+ 9]) +      (q[j+10]) + R32_6(q[j+11])
+       +      (q[j+12]) + R32_7(q[j+13]) + S32_4(q[j+14]) + S32_5(q[j+15]);
 	return r;
 }
 
@@ -304,14 +203,12 @@ void bmw_small_f0(uint32_t* q, uint32_t* h, const void* m){
 	for(i=0; i<16; ++i){
 		q[i] = s[i%5](q[i]);
 	}
-#if TWEAK
 	for(i=0; i<16; ++i){
 		((uint32_t*)h)[i] ^= ((uint32_t*)m)[i];
 	}
 	for(i=0; i<16; ++i){
 		q[i] += h[(i+1)&0xf];
 	}
-#endif
 }
 #endif /* F0_HACK==2*/
 
@@ -366,14 +263,12 @@ void bmw_small_f0(uint32_t* q, uint32_t* h, const void* m){
 	for(i=0; i<16; ++i){
 		q[i] = s[i%5](q[i]);
 	}
-#if TWEAK
 	for(i=0; i<16; ++i){
 		((uint32_t*)h)[i] ^= ((uint32_t*)m)[i];
 	}
 	for(i=0; i<16; ++i){
 		q[i] += h[(i+1)&0xf];
 	}
-#endif /* TWEAK */
 }
 #endif /* F0_HACK==1 */
 
@@ -381,8 +276,6 @@ void bmw_small_f0(uint32_t* q, uint32_t* h, const void* m){
 static
 void bmw_small_f0(uint32_t* q, uint32_t* h, const void* m){
 	uint8_t i;
-	uint32_t(*s[])(uint32_t)={ bmw_small_s0, bmw_small_s1, bmw_small_s2,
-	                           bmw_small_s3, bmw_small_s4 };
 	for(i=0; i<16; ++i){
 		((uint32_t*)h)[i] ^= ((uint32_t*)m)[i];
 	}
@@ -404,17 +297,28 @@ void bmw_small_f0(uint32_t* q, uint32_t* h, const void* m){
 	q[14] = (h[ 3] - h[ 5] + h[ 8] - h[11] - h[12]);
 	q[15] = (h[12] - h[ 4] - h[ 6] - h[ 9] + h[13]);
 	dump_x(q, 16, 'W');
-	for(i=0; i<16; ++i){
-		q[i] = s[i%5](q[i]);
-	}
-#if TWEAK
+    q[ 0] = S32_0(q[ 0]);
+    q[ 1] = S32_1(q[ 1]);
+    q[ 2] = S32_2(q[ 2]);
+    q[ 3] = S32_3(q[ 3]);
+    q[ 4] = S32_4(q[ 4]);
+    q[ 5] = S32_0(q[ 5]);
+    q[ 6] = S32_1(q[ 6]);
+    q[ 7] = S32_2(q[ 7]);
+    q[ 8] = S32_3(q[ 8]);
+    q[ 9] = S32_4(q[ 9]);
+    q[10] = S32_0(q[10]);
+    q[11] = S32_1(q[11]);
+    q[12] = S32_2(q[12]);
+    q[13] = S32_3(q[13]);
+    q[14] = S32_4(q[14]);
+    q[15] = S32_0(q[15]);
 	for(i=0; i<16; ++i){
 		((uint32_t*)h)[i] ^= ((uint32_t*)m)[i];
 	}
 	for(i=0; i<16; ++i){
 		q[i] += h[(i+1)&0xf];
 	}
-#endif /* TWEAK */
 }
 #endif /* F0_HACK==0 */
 
