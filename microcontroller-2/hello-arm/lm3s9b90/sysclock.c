@@ -19,7 +19,7 @@
 
 #include <stdint.h>
 #include "hw_regs.h"
-
+#include "sysclock.h"
 
 #define CRYSTAL_FREQ 16000000UL
 #define CRYSTAL_CODE 0x15 /* 16 MHz */
@@ -46,7 +46,7 @@ void sysclk_mosc_verify_disable(void){
 	HW_REG(SYSCTL_BASE+MOSCCTL_OFFSET) &= ~1UL; // turn on main oscillator verify circuit
 }
 
-void sysclk_set_80MHz(void){
+void sysclk_set_freq(uint8_t freq_id){
 	uint32_t rcc1, rcc2=0;
 	sysclk_set_rawclock();
 	rcc1 = HW_REG(SYSCTL_BASE+RCC_OFFSET);
@@ -58,12 +58,16 @@ void sysclk_set_80MHz(void){
 	HW_REG(SYSCTL_BASE+RCC2_OFFSET) = rcc2;
 	rcc2 &= ~_BV(RCC2_PWRDN2);
 	HW_REG(SYSCTL_BASE+RCC2_OFFSET) = rcc2;
-	rcc2 |= _BV(RCC2_DIV400) | 0x04<<RCC2_SYSDIV2LSB;
+	rcc2 |= _BV(RCC2_DIV400) | freq_id<<RCC2_SYSDIV2LSB;
 	HW_REG(SYSCTL_BASE+RCC2_OFFSET) = rcc2;
 	while(!(HW_REG(SYSCTL_BASE+RIS_OFFSET)&_BV(RIS_PLLLRIS))){
 	}
 	rcc2 &= ~_BV(RCC2_BYPASS2);
 	HW_REG(SYSCTL_BASE+RCC2_OFFSET) = rcc2;
+}
+
+void sysclk_set_80MHz(void){
+	sysclk_set_freq(SYS_FREQ_80MHZ000);
 }
 
 uint32_t sysclk_get_freq(void){

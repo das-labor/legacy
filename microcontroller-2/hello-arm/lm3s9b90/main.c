@@ -73,6 +73,14 @@ void rcc_dump(void){
 	cli_putstr("\r\n");
 }
 
+void print_freq(void){
+	uint32_t freq;
+	freq = sysclk_get_freq();
+	cli_putstr("\r\nCPU freq  = 0x");
+	cli_hexdump_rev(&freq, 4);
+	cli_putstr("\r\n");
+}
+
 static const
 cmdlist_entry_t cmdlist[] = {
 	{ "Hello",          NULL,  hello},
@@ -83,6 +91,7 @@ cmdlist_entry_t cmdlist[] = {
 	{ "stop",           NULL,  cli_stop_timer},
 	{ "time",           NULL,  cli_dump_timer},
 	{ "reset",          NULL,  cli_reset_timer},
+	{ "freq",           NULL,  print_freq},
 	{ "dump",       (void*)1, (void_fpt)dump},
 	{ "echo",       (void*)1, (void_fpt)echo_ctrl},
 	{ NULL,             NULL, NULL}
@@ -91,7 +100,7 @@ cmdlist_entry_t cmdlist[] = {
 int main(void) {
 
 	//sysclk_set_rawclock();
-	sysclk_set_80MHz();
+	sysclk_set_freq(SYS_FREQ_40MHZ000);
 	sysclk_mosc_verify_enable();
 
 

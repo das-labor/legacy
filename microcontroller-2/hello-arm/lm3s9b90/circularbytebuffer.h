@@ -53,6 +53,6 @@ uint16_t circularbytebuffer_get_fifo(circularbytebuffer_t* cb);
 uint8_t  circularbytebuffer_append(uint8_t, circularbytebuffer_t* cb);
 uint8_t  circularbytebuffer_push(uint8_t, circularbytebuffer_t* cb);
 uint32_t circularbytebuffer_cnt(circularbytebuffer_t* cb);
-void circularbytebuffer_free(circularbytebuffer_t* cb);
+void     circularbytebuffer_free(circularbytebuffer_t* cb);
 
 #endif /* CIRCULARBYTEBUFFER_H_ */
