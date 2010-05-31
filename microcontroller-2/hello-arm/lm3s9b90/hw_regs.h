@@ -87,6 +87,48 @@
 #define RCC2_BYPASS2     11
 #define RCC2_OSCSR2       4
 
+#define RCGC0_WDT0        3
+#define RCGC0_HIB         6
+#define RCGC0_MAXADC0SPD  8
+#define RCGC0_MAXADC1SPD 10
+#define RCGC0_ADC0       16
+#define RCGC0_ADC1       17
+#define RCGC0_CAN0       24
+#define RCGC0_CAN1       25
+#define RCGC0_WDT1       28
+
+#define RCGC1_UART0       0
+#define RCGC1_UART1       1
+#define RCGC1_UART2       2
+#define RCGC1_SSI0        4
+#define RCGC1_SSI1        5
+#define RCGC1_I2C0       12
+#define RCGC1_I2C1       14
+#define RCGC1_TIMER0     16
+#define RCGC1_TIMER1     17
+#define RCGC1_TIMER2     18
+#define RCGC1_TIMER3     19
+#define RCGC1_COMP0      24
+#define RCGC1_COMP1      25
+#define RCGC1_COMP2      26
+#define RCGC1_I2S0       28
+#define RCGC1_EPI0       30
+
+#define RCGC2_GPIOA       0
+#define RCGC2_GPIOB       1
+#define RCGC2_GPIOC       2
+#define RCGC2_GPIOD       3
+#define RCGC2_GPIOE       4
+#define RCGC2_GPIOF       5
+#define RCGC2_GPIOG       6
+#define RCGC2_GPIOH       7
+#define RCGC2_GPIOJ       8
+#define RCGC2_UDMA       13
+#define RCGC2_USB0       16
+#define RCGC2_EMAC0      28
+#define RCGC2_EPHY0      30
+
+
 #define RIS_MOSCPUPRIS   8
 #define RIS_USBPLLLRIS   7
 #define RIS_PLLLRIS      6
