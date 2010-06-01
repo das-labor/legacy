@@ -27,7 +27,8 @@ OBJECTS = main.o \
           cli.o \
           string-extras.o \
           dump.o \
-          hw_gptm.o
+          hw_gptm.o \
+          ethernet.o
           
 LINKERSCRIPT = lm3s9b90.ld
 MAPFILE = main.map

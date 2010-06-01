@@ -6,6 +6,7 @@
 #include "uart_lowlevel.h"
 #include "sysclock.h"
 #include "hw_gptm.h"
+#include "ethernet.h"
 
 void uart0_putc(char byte){
 	uart_putc(UART_0, byte);
@@ -81,6 +82,21 @@ void print_freq(void){
 	cli_putstr("\r\n");
 }
 
+void send_eth_packet(void){
+	uint8_t packet[] = {
+			0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+			0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+			0x00, 6*8,
+			0x0b, 0xad, 0xc0, 0xde, 0xca, 0xfe, 0xba, 0xbe,
+			0x0b, 0xad, 0xc0, 0xde, 0xca, 0xfe, 0xba, 0xbe,
+			0x0b, 0xad, 0xc0, 0xde, 0xca, 0xfe, 0xba, 0xbe,
+			0x0b, 0xad, 0xc0, 0xde, 0xca, 0xfe, 0xba, 0xbe,
+			0x0b, 0xad, 0xc0, 0xde, 0xca, 0xfe, 0xba, 0xbe,
+			0x0b, 0xad, 0xc0, 0xde, 0xca, 0xfe, 0xba, 0xbe
+	};
+	ethernet_tx_packet(6*8, packet);
+}
+
 static const
 cmdlist_entry_t cmdlist[] = {
 	{ "Hello",          NULL,  hello},
@@ -92,6 +108,7 @@ cmdlist_entry_t cmdlist[] = {
 	{ "time",           NULL,  cli_dump_timer},
 	{ "reset",          NULL,  cli_reset_timer},
 	{ "freq",           NULL,  print_freq},
+	{ "tx",             NULL,  send_eth_packet},
 	{ "dump",       (void*)1, (void_fpt)dump},
 	{ "echo",       (void*)1, (void_fpt)echo_ctrl},
 	{ NULL,             NULL, NULL}
@@ -108,6 +125,7 @@ int main(void) {
     uart_init(UART_0, 115200, 8, UART_PARATY_NONE, UART_STOPBITS_ONE);
     gptm_set_timer_32periodic(TIMER0);
 
+    ethernet_init("\xff\xff\xff\xff\xff\xff");
 	cli_rx = uart0_getc;
     cli_tx = uart0_putc;
 
