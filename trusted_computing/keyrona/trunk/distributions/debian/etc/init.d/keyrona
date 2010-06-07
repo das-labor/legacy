@@ -1,0 +1,71 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          keyrona
+# Required-Start:    $syslog $remote_fs
+# Required-Stop:     $syslog $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: keyrona initscript
+# Description:       This file is the initscript of the
+#		     keyrona key manager.
+### END INIT INFO
+
+# Author: Sirrix AG security technologies <keyrona@sirrix.com>
+
+SOCKETS=/var/run/keyrona/
+PATH=/sbin:/usr/sbin
+NAME=keyrona_keyproviderd
+BIN=/usr/bin/
+DAEMON=/usr/sbin/$NAME
+SCRIPTNAME=/etc/init.d/$NAME
+PRUNEOPTION="--prune"
+
+# Exit if the package is not installed
+[ -x "$DAEMON" ] || exit 0
+
+case "$1" in
+  start)
+	/bin/pidof $NAME > /dev/null
+	result=$?
+	if [ $result -eq 0 ] && [ -e $SOCKETS/server.socket ]
+	then
+		echo "$NAME already running."
+		exit 0
+	fi
+	if [ $result -eq 0 ] && [ ! -e $SOCKETS/server.socket ]
+	then
+		PRUNEOPTION=""
+	else
+		PRUNEOPTION="--prune"
+	fi
+
+	$BIN/killall $NAME
+	echo "Starting $NAME"
+	/bin/mkdir -p $SOCKETS 
+	$DAEMON $PRUNEOPTION
+	;;
+  stop)
+        /bin/pidof $NAME > /dev/null
+        result=$?
+        if [ $result -eq 0 ]
+        then
+                echo "Stopping $NAME"
+                $BIN/killall $NAME
+	else
+              	echo "No $NAME is running."
+	fi
+	;;
+  restart)
+	    echo "Stopping $NAME"
+	    $BIN/killall $NAME
+	    echo "Starting $NAME"
+	    $DAEMON
+	;;
+  reload|force-reload)
+        echo "Error: argument '$1' not supported" >&2
+        exit 3
+        ;;
+  *)
+	echo "Using start/stop as argument."
+	;;
+esac
