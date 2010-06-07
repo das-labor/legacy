@@ -44,8 +44,6 @@ namespace keyrona
     {
         private:
             bool            valid;
-            string          myCryptKeysetFile;
-            string          myCryptKeyLabel;
 
         public:
 	    /*!
@@ -53,21 +51,21 @@ namespace keyrona
 	     *  @param, &keyfile, string, contains path to the keyfile
 	     *  @param &label, string, 
              */
-            KeyronaKey(string &keyfile, string &label);
+            KeyronaKey(string &keyfile, int &bindkeynum);
 
             /*!
 	     *  @brief constructor, generate new subject key
              *  @param, *Subject, KeyronaSubject, object class of the subject, the key is created for
 	     *  @param &myPassword, string, password to encrypt the key
              */
-            KeyronaKey(KeyronaSubject *Subject, string &myPassword);
+            KeyronaKey(KeyronaSubject *Subject, string &subjectpassword, int &type);
 
             /*!
 	     *  @brief constructor, generate new group key
              *  @param, *Group, KeyronaGroup, object class of the group, the key is created for
 	     *  @param &GroupKeyPassword, string, password to encrypt the key
              */
-            KeyronaKey(KeyronaGroup *Group, string &groupKeyPassword);
+            KeyronaKey(KeyronaGroup *Group, string &grouppassword);
 
             ~KeyronaKey();
 
@@ -84,25 +82,10 @@ namespace keyrona
 
             /*!
 	     *  @brief encrypts with the public key
-             *	@param &toEncrypt, vector of UInt8, contains the data to be encrypted
-             *	@return, vector of UInt8, contains the encrypted data
-             */
-            vector<UInt8>         encrypt(vector<UInt8> &toEncrypt);
-
-            /*!
-	     *  @brief decrypts with the private key
-             *	@param &toDecrypt, vector of UInt8, contains the data to be decrypted
-	     *	@param &myPassword, string, the password for the private key
-             *	@return, vector of UInt8, contains the decrypted data
-             */
-            vector<UInt8>         decrypt(vector<UInt8> &toDecrypt, string &myPassword);
-
-            /*!
-	     *  @brief encrypts with the public key
              *	@param &toEncrypt, vector of ByteVector, contains the data to be encrypted
              *	@return, vector of ByteVector, contains the encrypted data
              */
-            ByteVector  encrypt(ByteVector &toEncrypt);
+            ByteVector  encrypt(ByteVector &toEncrypt, int &bindkeynum);
 
             /*!
 	     *  @brief decrypts with the private key
@@ -110,7 +93,7 @@ namespace keyrona
 	     *	@param &myPassword, string, the password for the private key
              *	@return, vector of ByteVector, contains the decrypted data
              */
-            ByteVector  decrypt(ByteVector &toDecrypt, string &myPassword);
+            ByteVector  decrypt(ByteVector &toDecrypt, int &bindkeynum, string &password);
 
             /*!
 	     *  @brief changes the password of the private key
