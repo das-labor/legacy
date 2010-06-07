@@ -1,0 +1,174 @@
+diff -pruN orig/context/ctx_hsha.c new/context/ctx_hsha.c
+--- orig/context/ctx_hsha.c	2008-06-01 06:31:40.000000000 +0200
++++ new/context/ctx_hsha.c	2009-04-03 10:33:11.058137380 +0200
+@@ -171,7 +171,7 @@ static int hash( CONTEXT_INFO *contextIn
+ 		}
+ 
+ 	if( noBytes > 0 )
+-		SHA1_Update( shaInfo, buffer, noBytes );
++		cryptlib_SHA1_Update( shaInfo, buffer, noBytes );
+ 	else
+ 		{
+ 		BYTE hashBuffer[ SHA_CBLOCK + 8 ];
+@@ -179,7 +179,7 @@ static int hash( CONTEXT_INFO *contextIn
+ 		int i;
+ 
+ 		/* Complete the inner hash and extract the digest */
+-		SHA1_Final( digestBuffer, shaInfo );
++		cryptlib_SHA1_Final( digestBuffer, shaInfo );
+ 
+ 		/* Perform the of the outer hash using the zero-padded key XOR'd
+ 		   with the opad value followed by the digest from the inner hash */
+@@ -188,12 +188,12 @@ static int hash( CONTEXT_INFO *contextIn
+ 				macInfo->userKeyLength );
+ 		for( i = 0; i < macInfo->userKeyLength; i++ )
+ 			hashBuffer[ i ] ^= HMAC_OPAD;
+-		SHA1_Init( shaInfo );
+-		SHA1_Update( shaInfo, hashBuffer, SHA_CBLOCK );
++		cryptlib_SHA1_Init( shaInfo );
++		cryptlib_SHA1_Update( shaInfo, hashBuffer, SHA_CBLOCK );
+ 		memset( hashBuffer, 0, SHA_CBLOCK );
+-		SHA1_Update( shaInfo, digestBuffer, SHA_DIGEST_LENGTH );
++		cryptlib_SHA1_Update( shaInfo, digestBuffer, SHA_DIGEST_LENGTH );
+ 		memset( digestBuffer, 0, SHA_DIGEST_LENGTH );
+-		SHA1_Final( macInfo->mac, shaInfo );
++		cryptlib_SHA1_Final( macInfo->mac, shaInfo );
+ 		}
+ 
+ 	return( CRYPT_OK );
+@@ -215,7 +215,7 @@ static int initKey( CONTEXT_INFO *contex
+ 	BYTE hashBuffer[ SHA_CBLOCK + 8 ];
+ 	int i;
+ 
+-	SHA1_Init( shaInfo );
++	cryptlib_SHA1_Init( shaInfo );
+ 
+ 	/* If the key size is larger than tha SHA data size, reduce it to the
+ 	   SHA hash size before processing it (yuck.  You're required to do this
+@@ -225,12 +225,12 @@ static int initKey( CONTEXT_INFO *contex
+ 		/* Hash the user key down to the hash size (SHA1_Init() has already
+ 		   been called when the context was created) and use the hashed form
+ 		   of the key */
+-		SHA1_Update( shaInfo, ( void * ) key, keyLength );
+-		SHA1_Final( macInfo->userKey, shaInfo );
++		cryptlib_SHA1_Update( shaInfo, ( void * ) key, keyLength );
++		cryptlib_SHA1_Final( macInfo->userKey, shaInfo );
+ 		macInfo->userKeyLength = SHA_DIGEST_LENGTH;
+ 
+ 		/* Reset the SHA state */
+-		SHA1_Init( shaInfo );
++		cryptlib_SHA1_Init( shaInfo );
+ 		}
+ 	else
+ 		{
+@@ -246,7 +246,7 @@ static int initKey( CONTEXT_INFO *contex
+ 			macInfo->userKeyLength );
+ 	for( i = 0; i < macInfo->userKeyLength; i++ )
+ 		hashBuffer[ i ] ^= HMAC_IPAD;
+-	SHA1_Update( shaInfo, hashBuffer, SHA_CBLOCK );
++	cryptlib_SHA1_Update( shaInfo, hashBuffer, SHA_CBLOCK );
+ 	memset( hashBuffer, 0, SHA_CBLOCK );
+ 	contextInfoPtr->flags |= CONTEXT_FLAG_HASH_INITED;
+ 
+diff -pruN orig/context/ctx_sha.c new/context/ctx_sha.c
+--- orig/context/ctx_sha.c	2008-06-01 06:31:06.000000000 +0200
++++ new/context/ctx_sha.c	2009-04-03 10:34:02.151138148 +0200
+@@ -101,12 +101,12 @@ static int hash( CONTEXT_INFO *contextIn
+ 	/* If the hash state was reset to allow another round of hashing,
+ 	   reinitialise things */
+ 	if( !( contextInfoPtr->flags & CONTEXT_FLAG_HASH_INITED ) )
+-		SHA1_Init( shaInfo );
++		cryptlib_SHA1_Init( shaInfo );
+ 
+ 	if( noBytes > 0 )
+-		SHA1_Update( shaInfo, buffer, noBytes );
++		cryptlib_SHA1_Update( shaInfo, buffer, noBytes );
+ 	else
+-		SHA1_Final( contextInfoPtr->ctxHash->hash, shaInfo );
++		cryptlib_SHA1_Final( contextInfoPtr->ctxHash->hash, shaInfo );
+ 
+ 	return( CRYPT_OK );
+ 	}
+@@ -135,17 +135,17 @@ void shaHashBuffer( HASHINFO hashInfo, B
+ 	switch( hashState )
+ 		{
+ 		case HASH_STATE_START:
+-			SHA1_Init( shaInfo );
++			cryptlib_SHA1_Init( shaInfo );
+ 			/* Drop through */
+ 
+ 		case HASH_STATE_CONTINUE:
+-			SHA1_Update( shaInfo, ( BYTE * ) inBuffer, inLength );
++			cryptlib_SHA1_Update( shaInfo, ( BYTE * ) inBuffer, inLength );
+ 			break;
+ 
+ 		case HASH_STATE_END:
+ 			if( inBuffer != NULL )
+-				SHA1_Update( shaInfo, ( BYTE * ) inBuffer, inLength );
+-			SHA1_Final( outBuffer, shaInfo );
++				cryptlib_SHA1_Update( shaInfo, ( BYTE * ) inBuffer, inLength );
++			cryptlib_SHA1_Final( outBuffer, shaInfo );
+ 			break;
+ 
+ 		default:
+@@ -165,9 +165,9 @@ void shaHashBufferAtomic( BYTE *outBuffe
+ 	if( outBufMaxLength < 20 || inLength <= 0 )
+ 		retIntError_Void();
+ 
+-	SHA1_Init( &shaInfo );
+-	SHA1_Update( &shaInfo, ( BYTE * ) inBuffer, inLength );
+-	SHA1_Final( outBuffer, &shaInfo );
++	cryptlib_SHA1_Init( &shaInfo );
++	cryptlib_SHA1_Update( &shaInfo, ( BYTE * ) inBuffer, inLength );
++	cryptlib_SHA1_Final( outBuffer, &shaInfo );
+ 	zeroise( &shaInfo, sizeof( SHA_CTX ) );
+ 	}
+ 
+diff -pruN orig/crypt/sha1locl.h new/crypt/sha1locl.h
+--- orig/crypt/sha1locl.h	2002-02-13 03:36:00.000000000 +0100
++++ new/crypt/sha1locl.h	2009-04-03 10:31:45.713137171 +0200
+@@ -102,10 +102,10 @@
+ 
+ #elif defined(SHA_1)
+ 
+-# define HASH_UPDATE             	SHA1_Update
+-# define HASH_TRANSFORM          	SHA1_Transform
+-# define HASH_FINAL              	SHA1_Final
+-# define HASH_INIT			SHA1_Init
++# define HASH_UPDATE             	cryptlib_SHA1_Update
++# define HASH_TRANSFORM          	cryptlib_SHA1_Transform
++# define HASH_FINAL              	cryptlib_SHA1_Final
++# define HASH_INIT			cryptlib_SHA1_Init
+ # define HASH_BLOCK_HOST_ORDER   	sha1_block_host_order
+ # define HASH_BLOCK_DATA_ORDER   	sha1_block_data_order
+ # if defined(__MWERKS__) && defined(__MC68K__)
+diff -pruN orig/crypt/sha.h new/crypt/sha.h
+--- orig/crypt/sha.h	2006-04-26 03:50:02.000000000 +0200
++++ new/crypt/sha.h	2009-04-03 10:31:18.654147647 +0200
+@@ -99,18 +99,18 @@ typedef struct SHAstate_st
+ 	} SHA_CTX;
+ 
+ #ifndef NO_SHA0
+-void SHA_Init(SHA_CTX *c);
+-void SHA_Update(SHA_CTX *c, const void *data, unsigned long len);
+-void SHA_Final(unsigned char *md, SHA_CTX *c);
++void cryptlib_SHA_Init(SHA_CTX *c);
++void cryptlib_SHA_Update(SHA_CTX *c, const void *data, unsigned long len);
++void cryptlib_SHA_Final(unsigned char *md, SHA_CTX *c);
+ unsigned char *SHA(const unsigned char *d, unsigned long n,unsigned char *md);
+ void SHA_Transform(SHA_CTX *c, const unsigned char *data);
+ #endif
+ #ifndef NO_SHA1
+-void SHA1_Init(SHA_CTX *c);
+-void SHA1_Update(SHA_CTX *c, const void *data, unsigned long len);
+-void SHA1_Final(unsigned char *md, SHA_CTX *c);
+-unsigned char *SHA1(const unsigned char *d, unsigned long n,unsigned char *md);
+-void SHA1_Transform(SHA_CTX *c, const unsigned char *data);
++void cryptlib_SHA1_Init(SHA_CTX *c);
++void cryptlib_SHA1_Update(SHA_CTX *c, const void *data, unsigned long len);
++void cryptlib_SHA1_Final(unsigned char *md, SHA_CTX *c);
++unsigned char *cryptlib_SHA1(const unsigned char *d, unsigned long n,unsigned char *md);
++void cryptlib_SHA1_Transform(SHA_CTX *c, const unsigned char *data);
+ #endif
+ #ifdef  __cplusplus
+ }

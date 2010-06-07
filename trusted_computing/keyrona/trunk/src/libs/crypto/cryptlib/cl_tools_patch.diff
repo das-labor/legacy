@@ -1,0 +1,58 @@
+diff -pruN orig/tools/buildall.sh new/tools/buildall.sh
+--- orig/tools/buildall.sh	2008-06-30 19:31:02.000000000 +0200
++++ new/tools/buildall.sh	2009-04-03 12:04:00.776137380 +0200
+@@ -32,7 +32,7 @@ shift
+ MAJ="3"
+ MIN="3"
+ PLV="2"
+-PROJ="cl"
++PROJ="keyronacl"
+ SHARED_OBJ_PATH="./shared-obj/"
+ if [ $OSNAME = "Darwin" ] ; then
+ 	SLIBNAME="lib$PROJ.$MAJ.$MIN.dylib" ;
+diff -pruN orig/tools/buildsharedlib.sh new/tools/buildsharedlib.sh
+--- orig/tools/buildsharedlib.sh	2008-01-17 19:05:12.000000000 +0100
++++ new/tools/buildsharedlib.sh	2009-04-03 11:58:31.877137869 +0200
+@@ -86,10 +86,10 @@ echo $* > $LINKFILE
+ 
+ case $OSNAME in
+ 	'AIX')
+-		$LD -o shrlibcl.o -bE:cryptlib.exp -bM:SRE -bnoentry -lpthread \
++		$LD -o shrlibkeyronacl.o -bE:cryptlib.exp -bM:SRE -bnoentry -lpthread \
+ 			`cat $LINKFILE` `./tools/getlibs.sh AIX` ;
+-		ar -q $LIBNAME.a shrlibcl.o;
+-		rm -f shrlibcl.o;
++		ar -q $LIBNAME.a shrlibkeyronacl.o;
++		rm -f shrlibkeyronacl.o;
+ 		chmod 750 $LIBNAME.a ;;
+ 
+ 	'BeOS' )
+@@ -98,11 +98,11 @@ case $OSNAME in
+ 
+ 	'HP-UX')
+ 		if [ $LD = "gcc" ] ; then
+-			$LD -shared -o libcl.sl `cat $LINKFILE` `./tools/getlibs.sh HP-UX` ;
++			$LD -shared -o libkeyronacl.sl `cat $LINKFILE` `./tools/getlibs.sh HP-UX` ;
+ 		else
+-			$LD -b -o libcl.sl `cat $LINKFILE` `./tools/getlibs.sh HP-UX` ;
++			$LD -b -o libkeyronacl.sl `cat $LINKFILE` `./tools/getlibs.sh HP-UX` ;
+ 		fi
+-		strip libcl.sl ;;
++		strip libkeyronacl.sl ;;
+ 
+ 	'SunOS')
+ 		if [ $LD = "gcc" ] ; then
+diff -pruN orig/tools/GenPas.pl new/tools/GenPas.pl
+--- orig/tools/GenPas.pl	2005-09-07 01:13:32.000000000 +0200
++++ new/tools/GenPas.pl	2009-04-03 11:58:19.297134656 +0200
+@@ -269,8 +269,8 @@ const
+   {\$IFDEF WIN32}
+     cryptlibname = 'CL32.DLL';  { dynamic linkname for Windows (Delphi) }
+   {\$ELSE}
+-    cryptlibname = 'libcl.so';  { library name for Unix/Linux  (Kylix) }
+-                 { symbolic link should be used for libcl.so -> libcl.so.3.x.y }
++    cryptlibname = 'libkeyronacl.so';  { library name for Unix/Linux  (Kylix) }
++                 { symbolic link should be used for libkeyronacl.so -> libkeyronacl.so.3.x.y }
+   {\$ENDIF}
+ 
+ ENDOFHEADER

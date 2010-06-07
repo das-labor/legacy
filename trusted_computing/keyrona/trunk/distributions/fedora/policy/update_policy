@@ -1,0 +1,5 @@
+#!/bin/bash
+POLICYDIR="/etc/keyrona/policy"
+checkmodule -M -m -o $POLICYDIR/keyrona.mod $POLICYDIR/keyrona.te
+semodule_package -o $POLICYDIR/keyrona.pp -m $POLICYDIR/keyrona.mod
+semodule -i $POLICYDIR/keyrona.pp
