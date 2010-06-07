@@ -1,0 +1,66 @@
+#!/bin/ash
+
+keyrona_login() {
+	good_msg "Begin with Authentification"
+	read -p 'Please enter device: ' kdev
+	read -p 'Login with SSS ?: ' ksss
+	if [ ${ksss} = yes ]
+	then
+		read -p 'Please enter your Name: ' kuser
+		read -p 'Please enter platform Name: ' kplatform
+	else
+		read -p 'Please enter your Name: ' kuser
+	fi
+}
+
+keyrona_initialize() {
+	if [ ! -e /var/run/keyrona/server.socket ]
+	then		
+		/sbin/keyrona_keyproviderd -p
+		good_msg "Keyrona Enviroment started successfully"
+	fi
+}
+
+keyrona_mount_esd() {
+	if [ ! -e /etc/keyrona/keyrona.cfg ]
+	then
+		mount ${kdev} /etc/keyrona
+		good_msg "Successfully mounted External Storage Device"
+	fi
+}
+
+keyrona_mount_sss() {
+	/bin/keyrona_mount -m -u ${kuser},Platform_${kplatform} -v root -p /mnt/root/
+}
+
+keyrona_mount_user() {
+	/bin/keyrona_mount -m -u ${kuser} -v root -p /mnt/root/
+}
+
+keyrona_mount() {
+	message="->Success"
+	if [ ${ksss} = yes ]
+	then
+		if keyrona_mount_sss 
+		then
+			good_msg "Keyrona SSS Device successfully mounted"
+		else
+			bad_msg "Can't mount keyrona device"
+			keyrona_login
+			keyrona_mount_esd
+			keyrona_initialize
+			keyrona_mount
+		fi
+	else
+		if keyrona_mount_user
+		then
+			good_msg "Mounting keyrona device"
+		else
+			bad_msg "Keyrona User Device successfully mounted"
+			keyrona_login
+			keyrona_mount_esd
+			keyrona_initialize
+			keyrona_mount
+		fi
+	fi
+}

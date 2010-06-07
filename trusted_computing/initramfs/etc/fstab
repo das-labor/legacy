@@ -1,0 +1,2 @@
+/dev/ram0     /           ext2    defaults	0 0
+proc          /proc       proc    defaults    0 0

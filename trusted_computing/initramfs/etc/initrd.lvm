@@ -1,0 +1,7 @@
+#!/bin/ash
+
+lvm_check() {
+	/sbin/lvm vgscan --mknodes >/dev/null
+	/sbin/lvm vgchange -ay >/dev/null
+	good_msg "LVM Scan successfully done"
+}
