@@ -45,7 +45,7 @@ valid (false)
 // create a new key
 //================================================================================
 //
-KeyronaKey::KeyronaKey(KeyronaSubject *Subject, string &password, int &type) :
+KeyronaKey::KeyronaKey(KeyronaSubject *Subject, string &subjectpassword, int &type) :
 valid (false)
 {
 	KeyronaTPM;
@@ -58,7 +58,7 @@ valid (false)
 
 //================================================================================
 //
-KeyronaKey::KeyronaKey(KeyronaGroup *Group, string &groupKeyPassword) :
+KeyronaKey::KeyronaKey(KeyronaGroup *Group, string &grouppassword) :
 valid (false)
 {
 
@@ -89,22 +89,22 @@ ByteVector  KeyronaKey::encrypt(ByteVector &toEncrypt, int &bindkeynum)
 {
    	KeyronaTPM;
 
-	vector<ByteVector> mySealedDataWithKey = myTPM.bind(toEncrypt, bindkeynum);
-    ByteVector result = mySealedDataWithKey.back();
-    mySealedDataWithKey.pop_back();
+	vector<ByteVector> binddata = myTPM.bind(toEncrypt, bindkeynum);
+    ByteVector result = binddata.back();
+    binddata.pop_back();
     
     return result;
 };
 
 //================================================================================
 //
-ByteVector  KeyronaKey::decrypt(ByteVector &toDecrypt,int &bindkeynum, string &myPassword)
+ByteVector  KeyronaKey::decrypt(ByteVector &toDecrypt,int &bindkeynum, string &password)
 {
 	KeyronaTPM;
 
-	vector<ByteVector> mySealedDataWithKey = myTPM.unbind(toDecrypt, bindkeynum, password);
-    ByteVector result = mySealedDataWithKey.back();
-    mySealedDataWithKey.pop_back();
+	vector<ByteVector> binddata = myTPM.unbind(toDecrypt, bindkeynum, password);
+    ByteVector result = binddata.back();
+    binddata.pop_back();
 
     return result;
 };
