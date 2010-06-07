@@ -1,0 +1,10 @@
+pcmcia
+pcmcia_core
+yenta_socket
+pd6729
+i82092
+i82365
+tcic
+ds
+ide-cs
+firmware_class

@@ -1,0 +1,64 @@
+#!/bin/ash
+
+PATH="/usr/sbin:/usr/bin:/sbin:/bin"
+
+NORMAL="\033[0m"
+WARN="\033[33;1m"
+BAD="\033[31;1m"
+BOLD="\033[1m"
+GOOD="\033[32;1m"
+
+good_msg() {	
+	msg_string=$1
+	msg_string="${msg_string:-...}"
+	[ "$2" != 1 ] && echo -e "${GOOD}>>${NORMAL}${BOLD} ${msg_string} ${NORMAL}"
+}
+
+bad_msg() {
+	msg_string=$1
+	msg_string="${msg_string:-...}"
+	if [ "$2" != 1 ]
+	then
+		echo -e "${BAD}!!${NORMAL}${BOLD} ${msg_string} ${NORMAL}"
+	fi
+} 
+
+warn_msg() {
+	msg_string=$1
+	msg_string="${msg_string:-...}"
+	[ "$2" != 1 ] && echo -e "${WARN}**${NORMAL}${BOLD} ${msg_string} ${NORMAL}"
+}
+
+parse_opt() {
+	case "$1" in
+		*\=*)
+			echo "$1" | cut -d= -f2-
+		;;
+	esac
+}
+
+keymap_check() {
+	if [ -e /lib/keymaps/${keymap}.map ]
+	then
+		good_msg "Loading the ''${keymap}'' keymap"
+		loadkmap < /lib/keymaps/${keymap}.map
+		mkdir -p /etc/sysconfig
+		echo "XKEYBOARD=${keymap}" > /etc/sysconfig/keyboard
+	elif [ -z "${keymap}" ]
+	then
+		echo
+		good_msg "Keeping default keymap"
+	else
+		bad_msg "Sorry, but keymap ''${keymap}'' is invalid!"
+		unset keymap
+	fi
+}
+
+cleaning_up() {
+	killall -q keyrona_keyprovided
+	killall -q tcsd
+	umount -lf /etc/keyrona
+	good_msg "Killing and Dismounting"
+}
+
+

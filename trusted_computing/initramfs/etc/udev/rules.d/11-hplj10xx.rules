@@ -1,0 +1,9 @@
+ACTION=="add", KERNEL=="lp*", SUBSYSTEM=="usb", ATTRS{idVendor}=="03f0", \
+   ATTRS{idProduct}=="0517", RUN+="/sbin/foo2zjs-loadfw 1000 $tempnode"
+ACTION=="add", KERNEL=="lp*", SUBSYSTEM=="usb", ATTRS{idVendor}=="03f0", \
+   ATTRS{idProduct}=="1317", RUN+="/sbin/foo2zjs-loadfw 1005 $tempnode"
+ACTION=="add", KERNEL=="lp*", SUBSYSTEM=="usb", ATTRS{idVendor}=="03f0", \
+   ATTRS{idProduct}=="4117", RUN+="/sbin/foo2zjs-loadfw 1018 $tempnode"
+ACTION=="add", KERNEL=="lp*", SUBSYSTEM=="usb", ATTRS{idVendor}=="03f0", \
+   ATTRS{idProduct}=="2b17", RUN+="/sbin/foo2zjs-loadfw 1020 $tempnode"
+

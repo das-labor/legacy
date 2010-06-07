@@ -1,0 +1,878 @@
+# UDEV-style hotplug map for libmtp
+# Put this file in /etc/udev/rules.d
+
+ACTION!="add", GOTO="libmtp_rules_end"
+ATTR{dev}!="?*", GOTO="libmtp_rules_end"
+SUBSYSTEM=="usb", GOTO="libmtp_usb_rules"
+# The following thing will be deprecated when older kernels are phased out.
+SUBSYSTEM=="usb_device", GOTO="libmtp_usb_device_rules"
+GOTO="libmtp_rules_end"
+
+LABEL="libmtp_usb_rules"
+
+# Creative ZEN Vision
+ATTR{idVendor}=="041e", ATTR{idProduct}=="411f", SYMLINK+="libmtp-%k", MODE="666"
+# Creative Portable Media Center
+ATTR{idVendor}=="041e", ATTR{idProduct}=="4123", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN Xtra (MTP mode)
+ATTR{idVendor}=="041e", ATTR{idProduct}=="4128", SYMLINK+="libmtp-%k", MODE="666"
+# Dell DJ (2nd generation)
+ATTR{idVendor}=="041e", ATTR{idProduct}=="412f", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN Micro (MTP mode)
+ATTR{idVendor}=="041e", ATTR{idProduct}=="4130", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN Touch (MTP mode)
+ATTR{idVendor}=="041e", ATTR{idProduct}=="4131", SYMLINK+="libmtp-%k", MODE="666"
+# Dell Dell Pocket DJ (MTP mode)
+ATTR{idVendor}=="041e", ATTR{idProduct}=="4132", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN Sleek (MTP mode)
+ATTR{idVendor}=="041e", ATTR{idProduct}=="4137", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN MicroPhoto
+ATTR{idVendor}=="041e", ATTR{idProduct}=="413c", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN Sleek Photo
+ATTR{idVendor}=="041e", ATTR{idProduct}=="413d", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN Vision:M
+ATTR{idVendor}=="041e", ATTR{idProduct}=="413e", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN V
+ATTR{idVendor}=="041e", ATTR{idProduct}=="4150", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN Vision:M (DVP-HD0004)
+ATTR{idVendor}=="041e", ATTR{idProduct}=="4151", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN V Plus
+ATTR{idVendor}=="041e", ATTR{idProduct}=="4152", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN Vision W
+ATTR{idVendor}=="041e", ATTR{idProduct}=="4153", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN
+ATTR{idVendor}=="041e", ATTR{idProduct}=="4157", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN V 2GB
+ATTR{idVendor}=="041e", ATTR{idProduct}=="4158", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN Mozaic
+ATTR{idVendor}=="041e", ATTR{idProduct}=="4161", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN X-Fi
+ATTR{idVendor}=="041e", ATTR{idProduct}=="4162", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-900
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="0409", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung I550W Phone
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="04a4", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YH-920 (501d)
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="501d", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YH-920 (5022)
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="5022", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YH-925GS
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="5024", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YH-820
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="502e", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YH-925(-GS)
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="502f", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YH-J70J
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="5033", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-Z5
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="503c", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-T7J
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="5047", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-U2J (YP-U2JXB/XAA)
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="5054", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-F2J
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="5057", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-K5
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="505a", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-U3
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="507d", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-T9
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="507f", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-K3
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="5081", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-P2
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="5083", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-T10
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="508a", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-S5
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="508b", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-S3
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="5091", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-U4
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="5093", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-Q1
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="5115", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YH-999 Portable Media Center/SGH-A707/SGH-L760V/SGH-U900
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="5a0f", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung X830 Mobile Phone
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="6702", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung U600 Mobile Phone
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="6709", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung F250 Mobile Phone
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="6727", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung Juke (SCH-U470)
+ATTR{idVendor}=="04e8", ATTR{idProduct}=="6734", SYMLINK+="libmtp-%k", MODE="666"
+# Intel Bandon Portable Media Center
+ATTR{idVendor}=="045e", ATTR{idProduct}=="00c9", SYMLINK+="libmtp-%k", MODE="666"
+# Microsoft Windows MTP Simulator
+ATTR{idVendor}=="045e", ATTR{idProduct}=="0622", SYMLINK+="libmtp-%k", MODE="666"
+# JVC Alneo XA-HD500
+ATTR{idVendor}=="04f1", ATTR{idProduct}=="6105", SYMLINK+="libmtp-%k", MODE="666"
+# Philips HDD6320/00 or HDD6330/17
+ATTR{idVendor}=="0471", ATTR{idProduct}=="014b", SYMLINK+="libmtp-%k", MODE="666"
+# Philips HDD14XX,HDD1620 or HDD1630/17
+ATTR{idVendor}=="0471", ATTR{idProduct}=="014c", SYMLINK+="libmtp-%k", MODE="666"
+# Philips HDD085/00 or HDD082/17
+ATTR{idVendor}=="0471", ATTR{idProduct}=="014d", SYMLINK+="libmtp-%k", MODE="666"
+# Philips GoGear SA9200
+ATTR{idVendor}=="0471", ATTR{idProduct}=="014f", SYMLINK+="libmtp-%k", MODE="666"
+# Philips SA1115/55
+ATTR{idVendor}=="0471", ATTR{idProduct}=="0164", SYMLINK+="libmtp-%k", MODE="666"
+# Philips GoGear Audio
+ATTR{idVendor}=="0471", ATTR{idProduct}=="0165", SYMLINK+="libmtp-%k", MODE="666"
+# Philips Shoqbox
+ATTR{idVendor}=="0471", ATTR{idProduct}=="0172", SYMLINK+="libmtp-%k", MODE="666"
+# Philips PSA610
+ATTR{idVendor}=="0471", ATTR{idProduct}=="0181", SYMLINK+="libmtp-%k", MODE="666"
+# Philips HDD6320
+ATTR{idVendor}=="0471", ATTR{idProduct}=="01eb", SYMLINK+="libmtp-%k", MODE="666"
+# Philips GoGear SA6014/SA6015/SA6024/SA6025/SA6044/SA6045
+ATTR{idVendor}=="0471", ATTR{idProduct}=="084e", SYMLINK+="libmtp-%k", MODE="666"
+# Philips GoGear SA5145
+ATTR{idVendor}=="0471", ATTR{idProduct}=="0857", SYMLINK+="libmtp-%k", MODE="666"
+# Philips GoGear SA6125/SA6145/SA6185
+ATTR{idVendor}=="0471", ATTR{idProduct}=="2002", SYMLINK+="libmtp-%k", MODE="666"
+# Philips GoGear SA3345
+ATTR{idVendor}=="0471", ATTR{idProduct}=="2004", SYMLINK+="libmtp-%k", MODE="666"
+# Philips SA5285
+ATTR{idVendor}=="0471", ATTR{idProduct}=="2022", SYMLINK+="libmtp-%k", MODE="666"
+# Philips PSA235
+ATTR{idVendor}=="0471", ATTR{idProduct}=="7e01", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa m230/m240
+ATTR{idVendor}=="0781", ATTR{idProduct}=="7400", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa c150
+ATTR{idVendor}=="0781", ATTR{idProduct}=="7410", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa e200/e250/e260/e270/e280
+ATTR{idVendor}=="0781", ATTR{idProduct}=="7420", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa e280
+ATTR{idVendor}=="0781", ATTR{idProduct}=="7421", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa e260/e280 v2
+ATTR{idVendor}=="0781", ATTR{idProduct}=="7422", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa m240/m250
+ATTR{idVendor}=="0781", ATTR{idProduct}=="7430", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa Clip
+ATTR{idVendor}=="0781", ATTR{idProduct}=="7432", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa Clip v2
+ATTR{idVendor}=="0781", ATTR{idProduct}=="7434", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa c240/c250
+ATTR{idVendor}=="0781", ATTR{idProduct}=="7450", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa c250 v2
+ATTR{idVendor}=="0781", ATTR{idProduct}=="7452", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa Express
+ATTR{idVendor}=="0781", ATTR{idProduct}=="7460", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa Connect
+ATTR{idVendor}=="0781", ATTR{idProduct}=="7480", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa View
+ATTR{idVendor}=="0781", ATTR{idProduct}=="74b0", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa Fuze
+ATTR{idVendor}=="0781", ATTR{idProduct}=="74c0", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa Fuze v2
+ATTR{idVendor}=="0781", ATTR{idProduct}=="74c2", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver Portable Media Center
+ATTR{idVendor}=="1006", ATTR{idProduct}=="4002", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver Portable Media Center
+ATTR{idVendor}=="1006", ATTR{idProduct}=="4003", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver T7 Volcano
+ATTR{idVendor}=="1042", ATTR{idProduct}=="1143", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver iFP-880
+ATTR{idVendor}=="4102", ATTR{idProduct}=="1008", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver T10
+ATTR{idVendor}=="4102", ATTR{idProduct}=="1113", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver T20 FM
+ATTR{idVendor}=="4102", ATTR{idProduct}=="1114", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver T20
+ATTR{idVendor}=="4102", ATTR{idProduct}=="1115", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver U10
+ATTR{idVendor}=="4102", ATTR{idProduct}=="1116", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver T10a
+ATTR{idVendor}=="4102", ATTR{idProduct}=="1117", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver T20
+ATTR{idVendor}=="4102", ATTR{idProduct}=="1118", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver T30
+ATTR{idVendor}=="4102", ATTR{idProduct}=="1119", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver T10 2GB
+ATTR{idVendor}=="4102", ATTR{idProduct}=="1120", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver N12
+ATTR{idVendor}=="4102", ATTR{idProduct}=="1122", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver Clix2
+ATTR{idVendor}=="4102", ATTR{idProduct}=="1126", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver Clix
+ATTR{idVendor}=="4102", ATTR{idProduct}=="112a", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver X20
+ATTR{idVendor}=="4102", ATTR{idProduct}=="1132", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver T60
+ATTR{idVendor}=="4102", ATTR{idProduct}=="1134", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver E100
+ATTR{idVendor}=="4102", ATTR{idProduct}=="1141", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver E100 v2/Lplayer
+ATTR{idVendor}=="4102", ATTR{idProduct}=="1142", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver Spinn
+ATTR{idVendor}=="4102", ATTR{idProduct}=="1147", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver H10 20GB
+ATTR{idVendor}=="4102", ATTR{idProduct}=="2101", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver H10
+ATTR{idVendor}=="4102", ATTR{idProduct}=="2102", SYMLINK+="libmtp-%k", MODE="666"
+# Dell, Inc DJ Itty
+ATTR{idVendor}=="413c", ATTR{idProduct}=="4500", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat MEGF-40
+ATTR{idVendor}=="0930", ATTR{idProduct}=="0009", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat
+ATTR{idVendor}=="0930", ATTR{idProduct}=="000c", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat P20
+ATTR{idVendor}=="0930", ATTR{idProduct}=="000f", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat S
+ATTR{idVendor}=="0930", ATTR{idProduct}=="0010", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat P10
+ATTR{idVendor}=="0930", ATTR{idProduct}=="0011", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat V30
+ATTR{idVendor}=="0930", ATTR{idProduct}=="0014", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat U
+ATTR{idVendor}=="0930", ATTR{idProduct}=="0016", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat MEU202
+ATTR{idVendor}=="0930", ATTR{idProduct}=="0018", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat T
+ATTR{idVendor}=="0930", ATTR{idProduct}=="0019", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat MEU201
+ATTR{idVendor}=="0930", ATTR{idProduct}=="001a", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat MET401
+ATTR{idVendor}=="0930", ATTR{idProduct}=="001d", SYMLINK+="libmtp-%k", MODE="666"
+# Archos Gmini XS100
+ATTR{idVendor}=="0e79", ATTR{idProduct}=="1207", SYMLINK+="libmtp-%k", MODE="666"
+# Archos XS202 (MTP mode)
+ATTR{idVendor}=="0e79", ATTR{idProduct}=="1208", SYMLINK+="libmtp-%k", MODE="666"
+# Archos 104 (MTP mode)
+ATTR{idVendor}=="0e79", ATTR{idProduct}=="120a", SYMLINK+="libmtp-%k", MODE="666"
+# Archos 404 (MTP mode)
+ATTR{idVendor}=="0e79", ATTR{idProduct}=="1301", SYMLINK+="libmtp-%k", MODE="666"
+# Archos 504 (MTP mode)
+ATTR{idVendor}=="0e79", ATTR{idProduct}=="1307", SYMLINK+="libmtp-%k", MODE="666"
+# Archos 704 mobile dvr
+ATTR{idVendor}=="0e79", ATTR{idProduct}=="130d", SYMLINK+="libmtp-%k", MODE="666"
+# Archos 605 (MTP mode)
+ATTR{idVendor}=="0e79", ATTR{idProduct}=="1313", SYMLINK+="libmtp-%k", MODE="666"
+# Archos 5 (MTP mode)
+ATTR{idVendor}=="0e79", ATTR{idProduct}=="1333", SYMLINK+="libmtp-%k", MODE="666"
+# Dunlop MP3 player 1GB / EGOMAN MD223AFD
+ATTR{idVendor}=="10d6", ATTR{idProduct}=="2200", SYMLINK+="libmtp-%k", MODE="666"
+# Memorex MMP 8585/8586
+ATTR{idVendor}=="10d6", ATTR{idProduct}=="2300", SYMLINK+="libmtp-%k", MODE="666"
+# Microsoft Zune
+ATTR{idVendor}=="045e", ATTR{idProduct}=="0710", SYMLINK+="libmtp-%k", MODE="666"
+# Sirius Stiletto
+ATTR{idVendor}=="18f6", ATTR{idProduct}=="0102", SYMLINK+="libmtp-%k", MODE="666"
+# Sirius Stiletto 2
+ATTR{idVendor}=="18f6", ATTR{idProduct}=="0110", SYMLINK+="libmtp-%k", MODE="666"
+# Canon PowerShot A640 (PTP/MTP mode)
+ATTR{idVendor}=="04a9", ATTR{idProduct}=="3139", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N81 Mobile Phone
+ATTR{idVendor}=="0421", ATTR{idProduct}=="000a", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 6120c Classic Mobile Phone
+ATTR{idVendor}=="0421", ATTR{idProduct}=="002e", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N96 Mobile Phone
+ATTR{idVendor}=="0421", ATTR{idProduct}=="0039", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 6500c Classic Mobile Phone
+ATTR{idVendor}=="0421", ATTR{idProduct}=="003c", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 3110c Mobile Phone
+ATTR{idVendor}=="0421", ATTR{idProduct}=="005f", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 3109c Mobile Phone
+ATTR{idVendor}=="0421", ATTR{idProduct}=="0065", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 5310 XpressMusic
+ATTR{idVendor}=="0421", ATTR{idProduct}=="006c", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N95 Mobile Phone 8GB
+ATTR{idVendor}=="0421", ATTR{idProduct}=="006e", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N82 Mobile Phone
+ATTR{idVendor}=="0421", ATTR{idProduct}=="0074", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N78 Mobile Phone
+ATTR{idVendor}=="0421", ATTR{idProduct}=="0079", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 6220 Classic
+ATTR{idVendor}=="0421", ATTR{idProduct}=="008d", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N85 Mobile Phone
+ATTR{idVendor}=="0421", ATTR{idProduct}=="0092", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia E71
+ATTR{idVendor}=="0421", ATTR{idProduct}=="00e4", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia E66
+ATTR{idVendor}=="0421", ATTR{idProduct}=="00e5", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 5800 XpressMusic
+ATTR{idVendor}=="0421", ATTR{idProduct}=="0155", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia E63
+ATTR{idVendor}=="0421", ATTR{idProduct}=="0179", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 3250 Mobile Phone
+ATTR{idVendor}=="0421", ATTR{idProduct}=="0462", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N93 Mobile Phone
+ATTR{idVendor}=="0421", ATTR{idProduct}=="0478", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 5500 Sport Mobile Phone
+ATTR{idVendor}=="0421", ATTR{idProduct}=="047e", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N91 Mobile Phone
+ATTR{idVendor}=="0421", ATTR{idProduct}=="0485", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 5700 XpressMusic Mobile Phone
+ATTR{idVendor}=="0421", ATTR{idProduct}=="04b4", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 5300 Mobile Phone
+ATTR{idVendor}=="0421", ATTR{idProduct}=="04ba", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N73 Mobile Phone
+ATTR{idVendor}=="0421", ATTR{idProduct}=="04d1", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N75 Mobile Phone
+ATTR{idVendor}=="0421", ATTR{idProduct}=="04e1", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N93i Mobile Phone
+ATTR{idVendor}=="0421", ATTR{idProduct}=="04e5", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N95 Mobile Phone
+ATTR{idVendor}=="0421", ATTR{idProduct}=="04ef", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N80 Internet Edition (Media Player)
+ATTR{idVendor}=="0421", ATTR{idProduct}=="04f1", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia/Verizon 6205 Balboa/Verizon Music Phone
+ATTR{idVendor}=="05c6", ATTR{idProduct}=="3196", SYMLINK+="libmtp-%k", MODE="666"
+# Logik LOG DAX MP3 and DAB Player
+ATTR{idVendor}=="13d1", ATTR{idProduct}=="7002", SYMLINK+="libmtp-%k", MODE="666"
+# Thomson EM28 Series
+ATTR{idVendor}=="069b", ATTR{idProduct}=="0774", SYMLINK+="libmtp-%k", MODE="666"
+# Thomson / RCA Opal / Lyra MC4002
+ATTR{idVendor}=="069b", ATTR{idProduct}=="0777", SYMLINK+="libmtp-%k", MODE="666"
+# Thomson Lyra MC5104B (M51 Series)
+ATTR{idVendor}=="069b", ATTR{idProduct}=="077c", SYMLINK+="libmtp-%k", MODE="666"
+# Thomson RCA H106
+ATTR{idVendor}=="069b", ATTR{idProduct}=="301a", SYMLINK+="libmtp-%k", MODE="666"
+# Thomson scenium E308
+ATTR{idVendor}=="069b", ATTR{idProduct}=="3028", SYMLINK+="libmtp-%k", MODE="666"
+# Thomson / RCA Lyra HC308A
+ATTR{idVendor}=="069b", ATTR{idProduct}=="3035", SYMLINK+="libmtp-%k", MODE="666"
+# FOMA F903iX HIGH-SPEED
+ATTR{idVendor}=="04c5", ATTR{idProduct}=="1140", SYMLINK+="libmtp-%k", MODE="666"
+# NormSoft, Inc. Pocket Tunes
+ATTR{idVendor}=="1703", ATTR{idProduct}=="0001", SYMLINK+="libmtp-%k", MODE="666"
+# NormSoft, Inc. Pocket Tunes 4
+ATTR{idVendor}=="1703", ATTR{idProduct}=="0002", SYMLINK+="libmtp-%k", MODE="666"
+# TrekStor Vibez 8/12GB
+ATTR{idVendor}=="066f", ATTR{idProduct}=="842a", SYMLINK+="libmtp-%k", MODE="666"
+# Medion MD8333
+ATTR{idVendor}=="066f", ATTR{idProduct}=="8550", SYMLINK+="libmtp-%k", MODE="666"
+# Medion MD8333
+ATTR{idVendor}=="066f", ATTR{idProduct}=="8588", SYMLINK+="libmtp-%k", MODE="666"
+# TrekStor i.Beat Sweez FM
+ATTR{idVendor}=="0402", ATTR{idProduct}=="0611", SYMLINK+="libmtp-%k", MODE="666"
+# Disney MixMax
+ATTR{idVendor}=="0aa6", ATTR{idProduct}=="6021", SYMLINK+="libmtp-%k", MODE="666"
+# Tevion MD 81488
+ATTR{idVendor}=="0aa6", ATTR{idProduct}=="3011", SYMLINK+="libmtp-%k", MODE="666"
+# Cowon iAudio U3 (MTP mode)
+ATTR{idVendor}=="0e21", ATTR{idProduct}=="0701", SYMLINK+="libmtp-%k", MODE="666"
+# Cowon iAudio 6 (MTP mode)
+ATTR{idVendor}=="0e21", ATTR{idProduct}=="0711", SYMLINK+="libmtp-%k", MODE="666"
+# Cowon iAudio 7 (MTP mode)
+ATTR{idVendor}=="0e21", ATTR{idProduct}=="0751", SYMLINK+="libmtp-%k", MODE="666"
+# Cowon iAudio U5 (MTP mode)
+ATTR{idVendor}=="0e21", ATTR{idProduct}=="0761", SYMLINK+="libmtp-%k", MODE="666"
+# Cowon iAudio D2 (MTP mode)
+ATTR{idVendor}=="0e21", ATTR{idProduct}=="0801", SYMLINK+="libmtp-%k", MODE="666"
+# Insignia NS-DV45
+ATTR{idVendor}=="19ff", ATTR{idProduct}=="0303", SYMLINK+="libmtp-%k", MODE="666"
+# Insignia Sport Player
+ATTR{idVendor}=="19ff", ATTR{idProduct}=="0307", SYMLINK+="libmtp-%k", MODE="666"
+# Insignia Pilot 4GB
+ATTR{idVendor}=="19ff", ATTR{idProduct}=="0309", SYMLINK+="libmtp-%k", MODE="666"
+# LG Electronics Inc. UP3
+ATTR{idVendor}=="043e", ATTR{idProduct}=="70b1", SYMLINK+="libmtp-%k", MODE="666"
+# LG Electronics Inc. VX8550 V CAST Mobile Phone
+ATTR{idVendor}=="1004", ATTR{idProduct}=="6010", SYMLINK+="libmtp-%k", MODE="666"
+# LG Electronics Inc. KC910 Renoir Mobile Phone
+ATTR{idVendor}=="1004", ATTR{idProduct}=="608f", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-A815/NWZ-A818
+ATTR{idVendor}=="054c", ATTR{idProduct}=="0325", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-S516
+ATTR{idVendor}=="054c", ATTR{idProduct}=="0326", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-S615F/NWZ-S616F/NWZ-S618F
+ATTR{idVendor}=="054c", ATTR{idProduct}=="0327", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-S716F
+ATTR{idVendor}=="054c", ATTR{idProduct}=="035a", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-A826/NWZ-A828/NWZ-A829
+ATTR{idVendor}=="054c", ATTR{idProduct}=="035b", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-A726/NWZ-A728/NWZ-A768
+ATTR{idVendor}=="054c", ATTR{idProduct}=="035c", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-B135
+ATTR{idVendor}=="054c", ATTR{idProduct}=="036e", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-E436F
+ATTR{idVendor}=="054c", ATTR{idProduct}=="0385", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-S739F
+ATTR{idVendor}=="054c", ATTR{idProduct}=="038c", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-S638F
+ATTR{idVendor}=="054c", ATTR{idProduct}=="038e", SYMLINK+="libmtp-%k", MODE="666"
+# SonyEricsson K850i
+ATTR{idVendor}=="0fce", ATTR{idProduct}=="0075", SYMLINK+="libmtp-%k", MODE="666"
+# SonyEricsson W910
+ATTR{idVendor}=="0fce", ATTR{idProduct}=="0076", SYMLINK+="libmtp-%k", MODE="666"
+# SonyEricsson W890i
+ATTR{idVendor}=="0fce", ATTR{idProduct}=="00b3", SYMLINK+="libmtp-%k", MODE="666"
+# SonyEricsson W760i
+ATTR{idVendor}=="0fce", ATTR{idProduct}=="00c6", SYMLINK+="libmtp-%k", MODE="666"
+# SonyEricsson C902
+ATTR{idVendor}=="0fce", ATTR{idProduct}=="00d4", SYMLINK+="libmtp-%k", MODE="666"
+# SonyEricsson C702
+ATTR{idVendor}=="0fce", ATTR{idProduct}=="00d9", SYMLINK+="libmtp-%k", MODE="666"
+# SonyEricsson W980
+ATTR{idVendor}=="0fce", ATTR{idProduct}=="00da", SYMLINK+="libmtp-%k", MODE="666"
+# SonyEricsson W902
+ATTR{idVendor}=="0fce", ATTR{idProduct}=="00f5", SYMLINK+="libmtp-%k", MODE="666"
+# Motorola V3m/V750 verizon
+ATTR{idVendor}=="22b8", ATTR{idProduct}=="2a65", SYMLINK+="libmtp-%k", MODE="666"
+# Motorola K1
+ATTR{idVendor}=="22b8", ATTR{idProduct}=="4811", SYMLINK+="libmtp-%k", MODE="666"
+# Motorola A1200
+ATTR{idVendor}=="22b8", ATTR{idProduct}=="60ca", SYMLINK+="libmtp-%k", MODE="666"
+# Motorola MTP Test Command Interface
+ATTR{idVendor}=="22b8", ATTR{idProduct}=="6413", SYMLINK+="libmtp-%k", MODE="666"
+# Motorola RAZR2 V8/U9/Z6
+ATTR{idVendor}=="22b8", ATTR{idProduct}=="6415", SYMLINK+="libmtp-%k", MODE="666"
+# Kenwood Media Keg HD10GB7 Sport Player
+ATTR{idVendor}=="0b28", ATTR{idProduct}=="100c", SYMLINK+="libmtp-%k", MODE="666"
+# Micro-Star International P610/Model MS-5557
+ATTR{idVendor}=="0db0", ATTR{idProduct}=="5572", SYMLINK+="libmtp-%k", MODE="666"
+# FOMA D905i
+ATTR{idVendor}=="06d3", ATTR{idProduct}=="21ba", SYMLINK+="libmtp-%k", MODE="666"
+# Haier Ibiza Rhapsody
+ATTR{idVendor}=="1302", ATTR{idProduct}=="1016", SYMLINK+="libmtp-%k", MODE="666"
+# Haier Ibiza Rhapsody
+ATTR{idVendor}=="1302", ATTR{idProduct}=="1017", SYMLINK+="libmtp-%k", MODE="666"
+# Panasonic P905i
+ATTR{idVendor}=="04da", ATTR{idProduct}=="2145", SYMLINK+="libmtp-%k", MODE="666"
+# Polaroid Freescape/MPU-433158
+ATTR{idVendor}=="0546", ATTR{idProduct}=="2035", SYMLINK+="libmtp-%k", MODE="666"
+# Pioneer XMP3
+ATTR{idVendor}=="08e4", ATTR{idProduct}=="0148", SYMLINK+="libmtp-%k", MODE="666"
+# Slacker Inc. Slacker Portable Media Player
+ATTR{idVendor}=="1bdc", ATTR{idProduct}=="fabf", SYMLINK+="libmtp-%k", MODE="666"
+# Isabella Her Prototype
+ATTR{idVendor}=="0b20", ATTR{idProduct}=="ddee", SYMLINK+="libmtp-%k", MODE="666"
+GOTO="libmtp_rules_end"
+
+LABEL="libmtp_usb_device_rules"
+# Creative ZEN Vision
+ATTRS{idVendor}=="041e", ATTRS{idProduct}=="411f", SYMLINK+="libmtp-%k", MODE="666"
+# Creative Portable Media Center
+ATTRS{idVendor}=="041e", ATTRS{idProduct}=="4123", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN Xtra (MTP mode)
+ATTRS{idVendor}=="041e", ATTRS{idProduct}=="4128", SYMLINK+="libmtp-%k", MODE="666"
+# Dell DJ (2nd generation)
+ATTRS{idVendor}=="041e", ATTRS{idProduct}=="412f", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN Micro (MTP mode)
+ATTRS{idVendor}=="041e", ATTRS{idProduct}=="4130", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN Touch (MTP mode)
+ATTRS{idVendor}=="041e", ATTRS{idProduct}=="4131", SYMLINK+="libmtp-%k", MODE="666"
+# Dell Dell Pocket DJ (MTP mode)
+ATTRS{idVendor}=="041e", ATTRS{idProduct}=="4132", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN Sleek (MTP mode)
+ATTRS{idVendor}=="041e", ATTRS{idProduct}=="4137", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN MicroPhoto
+ATTRS{idVendor}=="041e", ATTRS{idProduct}=="413c", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN Sleek Photo
+ATTRS{idVendor}=="041e", ATTRS{idProduct}=="413d", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN Vision:M
+ATTRS{idVendor}=="041e", ATTRS{idProduct}=="413e", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN V
+ATTRS{idVendor}=="041e", ATTRS{idProduct}=="4150", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN Vision:M (DVP-HD0004)
+ATTRS{idVendor}=="041e", ATTRS{idProduct}=="4151", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN V Plus
+ATTRS{idVendor}=="041e", ATTRS{idProduct}=="4152", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN Vision W
+ATTRS{idVendor}=="041e", ATTRS{idProduct}=="4153", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN
+ATTRS{idVendor}=="041e", ATTRS{idProduct}=="4157", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN V 2GB
+ATTRS{idVendor}=="041e", ATTRS{idProduct}=="4158", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN Mozaic
+ATTRS{idVendor}=="041e", ATTRS{idProduct}=="4161", SYMLINK+="libmtp-%k", MODE="666"
+# Creative ZEN X-Fi
+ATTRS{idVendor}=="041e", ATTRS{idProduct}=="4162", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-900
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="0409", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung I550W Phone
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="04a4", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YH-920 (501d)
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="501d", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YH-920 (5022)
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="5022", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YH-925GS
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="5024", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YH-820
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="502e", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YH-925(-GS)
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="502f", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YH-J70J
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="5033", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-Z5
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="503c", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-T7J
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="5047", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-U2J (YP-U2JXB/XAA)
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="5054", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-F2J
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="5057", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-K5
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="505a", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-U3
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="507d", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-T9
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="507f", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-K3
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="5081", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-P2
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="5083", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-T10
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="508a", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-S5
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="508b", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-S3
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="5091", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-U4
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="5093", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YP-Q1
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="5115", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung YH-999 Portable Media Center/SGH-A707/SGH-L760V/SGH-U900
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="5a0f", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung X830 Mobile Phone
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="6702", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung U600 Mobile Phone
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="6709", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung F250 Mobile Phone
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="6727", SYMLINK+="libmtp-%k", MODE="666"
+# Samsung Juke (SCH-U470)
+ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="6734", SYMLINK+="libmtp-%k", MODE="666"
+# Intel Bandon Portable Media Center
+ATTRS{idVendor}=="045e", ATTRS{idProduct}=="00c9", SYMLINK+="libmtp-%k", MODE="666"
+# Microsoft Windows MTP Simulator
+ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0622", SYMLINK+="libmtp-%k", MODE="666"
+# JVC Alneo XA-HD500
+ATTRS{idVendor}=="04f1", ATTRS{idProduct}=="6105", SYMLINK+="libmtp-%k", MODE="666"
+# Philips HDD6320/00 or HDD6330/17
+ATTRS{idVendor}=="0471", ATTRS{idProduct}=="014b", SYMLINK+="libmtp-%k", MODE="666"
+# Philips HDD14XX,HDD1620 or HDD1630/17
+ATTRS{idVendor}=="0471", ATTRS{idProduct}=="014c", SYMLINK+="libmtp-%k", MODE="666"
+# Philips HDD085/00 or HDD082/17
+ATTRS{idVendor}=="0471", ATTRS{idProduct}=="014d", SYMLINK+="libmtp-%k", MODE="666"
+# Philips GoGear SA9200
+ATTRS{idVendor}=="0471", ATTRS{idProduct}=="014f", SYMLINK+="libmtp-%k", MODE="666"
+# Philips SA1115/55
+ATTRS{idVendor}=="0471", ATTRS{idProduct}=="0164", SYMLINK+="libmtp-%k", MODE="666"
+# Philips GoGear Audio
+ATTRS{idVendor}=="0471", ATTRS{idProduct}=="0165", SYMLINK+="libmtp-%k", MODE="666"
+# Philips Shoqbox
+ATTRS{idVendor}=="0471", ATTRS{idProduct}=="0172", SYMLINK+="libmtp-%k", MODE="666"
+# Philips PSA610
+ATTRS{idVendor}=="0471", ATTRS{idProduct}=="0181", SYMLINK+="libmtp-%k", MODE="666"
+# Philips HDD6320
+ATTRS{idVendor}=="0471", ATTRS{idProduct}=="01eb", SYMLINK+="libmtp-%k", MODE="666"
+# Philips GoGear SA6014/SA6015/SA6024/SA6025/SA6044/SA6045
+ATTRS{idVendor}=="0471", ATTRS{idProduct}=="084e", SYMLINK+="libmtp-%k", MODE="666"
+# Philips GoGear SA5145
+ATTRS{idVendor}=="0471", ATTRS{idProduct}=="0857", SYMLINK+="libmtp-%k", MODE="666"
+# Philips GoGear SA6125/SA6145/SA6185
+ATTRS{idVendor}=="0471", ATTRS{idProduct}=="2002", SYMLINK+="libmtp-%k", MODE="666"
+# Philips GoGear SA3345
+ATTRS{idVendor}=="0471", ATTRS{idProduct}=="2004", SYMLINK+="libmtp-%k", MODE="666"
+# Philips SA5285
+ATTRS{idVendor}=="0471", ATTRS{idProduct}=="2022", SYMLINK+="libmtp-%k", MODE="666"
+# Philips PSA235
+ATTRS{idVendor}=="0471", ATTRS{idProduct}=="7e01", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa m230/m240
+ATTRS{idVendor}=="0781", ATTRS{idProduct}=="7400", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa c150
+ATTRS{idVendor}=="0781", ATTRS{idProduct}=="7410", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa e200/e250/e260/e270/e280
+ATTRS{idVendor}=="0781", ATTRS{idProduct}=="7420", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa e280
+ATTRS{idVendor}=="0781", ATTRS{idProduct}=="7421", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa e260/e280 v2
+ATTRS{idVendor}=="0781", ATTRS{idProduct}=="7422", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa m240/m250
+ATTRS{idVendor}=="0781", ATTRS{idProduct}=="7430", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa Clip
+ATTRS{idVendor}=="0781", ATTRS{idProduct}=="7432", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa Clip v2
+ATTRS{idVendor}=="0781", ATTRS{idProduct}=="7434", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa c240/c250
+ATTRS{idVendor}=="0781", ATTRS{idProduct}=="7450", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa c250 v2
+ATTRS{idVendor}=="0781", ATTRS{idProduct}=="7452", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa Express
+ATTRS{idVendor}=="0781", ATTRS{idProduct}=="7460", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa Connect
+ATTRS{idVendor}=="0781", ATTRS{idProduct}=="7480", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa View
+ATTRS{idVendor}=="0781", ATTRS{idProduct}=="74b0", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa Fuze
+ATTRS{idVendor}=="0781", ATTRS{idProduct}=="74c0", SYMLINK+="libmtp-%k", MODE="666"
+# SanDisk Sansa Fuze v2
+ATTRS{idVendor}=="0781", ATTRS{idProduct}=="74c2", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver Portable Media Center
+ATTRS{idVendor}=="1006", ATTRS{idProduct}=="4002", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver Portable Media Center
+ATTRS{idVendor}=="1006", ATTRS{idProduct}=="4003", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver T7 Volcano
+ATTRS{idVendor}=="1042", ATTRS{idProduct}=="1143", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver iFP-880
+ATTRS{idVendor}=="4102", ATTRS{idProduct}=="1008", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver T10
+ATTRS{idVendor}=="4102", ATTRS{idProduct}=="1113", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver T20 FM
+ATTRS{idVendor}=="4102", ATTRS{idProduct}=="1114", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver T20
+ATTRS{idVendor}=="4102", ATTRS{idProduct}=="1115", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver U10
+ATTRS{idVendor}=="4102", ATTRS{idProduct}=="1116", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver T10a
+ATTRS{idVendor}=="4102", ATTRS{idProduct}=="1117", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver T20
+ATTRS{idVendor}=="4102", ATTRS{idProduct}=="1118", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver T30
+ATTRS{idVendor}=="4102", ATTRS{idProduct}=="1119", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver T10 2GB
+ATTRS{idVendor}=="4102", ATTRS{idProduct}=="1120", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver N12
+ATTRS{idVendor}=="4102", ATTRS{idProduct}=="1122", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver Clix2
+ATTRS{idVendor}=="4102", ATTRS{idProduct}=="1126", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver Clix
+ATTRS{idVendor}=="4102", ATTRS{idProduct}=="112a", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver X20
+ATTRS{idVendor}=="4102", ATTRS{idProduct}=="1132", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver T60
+ATTRS{idVendor}=="4102", ATTRS{idProduct}=="1134", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver E100
+ATTRS{idVendor}=="4102", ATTRS{idProduct}=="1141", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver E100 v2/Lplayer
+ATTRS{idVendor}=="4102", ATTRS{idProduct}=="1142", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver Spinn
+ATTRS{idVendor}=="4102", ATTRS{idProduct}=="1147", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver H10 20GB
+ATTRS{idVendor}=="4102", ATTRS{idProduct}=="2101", SYMLINK+="libmtp-%k", MODE="666"
+# iRiver H10
+ATTRS{idVendor}=="4102", ATTRS{idProduct}=="2102", SYMLINK+="libmtp-%k", MODE="666"
+# Dell, Inc DJ Itty
+ATTRS{idVendor}=="413c", ATTRS{idProduct}=="4500", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat MEGF-40
+ATTRS{idVendor}=="0930", ATTRS{idProduct}=="0009", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat
+ATTRS{idVendor}=="0930", ATTRS{idProduct}=="000c", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat P20
+ATTRS{idVendor}=="0930", ATTRS{idProduct}=="000f", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat S
+ATTRS{idVendor}=="0930", ATTRS{idProduct}=="0010", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat P10
+ATTRS{idVendor}=="0930", ATTRS{idProduct}=="0011", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat V30
+ATTRS{idVendor}=="0930", ATTRS{idProduct}=="0014", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat U
+ATTRS{idVendor}=="0930", ATTRS{idProduct}=="0016", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat MEU202
+ATTRS{idVendor}=="0930", ATTRS{idProduct}=="0018", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat T
+ATTRS{idVendor}=="0930", ATTRS{idProduct}=="0019", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat MEU201
+ATTRS{idVendor}=="0930", ATTRS{idProduct}=="001a", SYMLINK+="libmtp-%k", MODE="666"
+# Toshiba Gigabeat MET401
+ATTRS{idVendor}=="0930", ATTRS{idProduct}=="001d", SYMLINK+="libmtp-%k", MODE="666"
+# Archos Gmini XS100
+ATTRS{idVendor}=="0e79", ATTRS{idProduct}=="1207", SYMLINK+="libmtp-%k", MODE="666"
+# Archos XS202 (MTP mode)
+ATTRS{idVendor}=="0e79", ATTRS{idProduct}=="1208", SYMLINK+="libmtp-%k", MODE="666"
+# Archos 104 (MTP mode)
+ATTRS{idVendor}=="0e79", ATTRS{idProduct}=="120a", SYMLINK+="libmtp-%k", MODE="666"
+# Archos 404 (MTP mode)
+ATTRS{idVendor}=="0e79", ATTRS{idProduct}=="1301", SYMLINK+="libmtp-%k", MODE="666"
+# Archos 504 (MTP mode)
+ATTRS{idVendor}=="0e79", ATTRS{idProduct}=="1307", SYMLINK+="libmtp-%k", MODE="666"
+# Archos 704 mobile dvr
+ATTRS{idVendor}=="0e79", ATTRS{idProduct}=="130d", SYMLINK+="libmtp-%k", MODE="666"
+# Archos 605 (MTP mode)
+ATTRS{idVendor}=="0e79", ATTRS{idProduct}=="1313", SYMLINK+="libmtp-%k", MODE="666"
+# Archos 5 (MTP mode)
+ATTRS{idVendor}=="0e79", ATTRS{idProduct}=="1333", SYMLINK+="libmtp-%k", MODE="666"
+# Dunlop MP3 player 1GB / EGOMAN MD223AFD
+ATTRS{idVendor}=="10d6", ATTRS{idProduct}=="2200", SYMLINK+="libmtp-%k", MODE="666"
+# Memorex MMP 8585/8586
+ATTRS{idVendor}=="10d6", ATTRS{idProduct}=="2300", SYMLINK+="libmtp-%k", MODE="666"
+# Microsoft Zune
+ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0710", SYMLINK+="libmtp-%k", MODE="666"
+# Sirius Stiletto
+ATTRS{idVendor}=="18f6", ATTRS{idProduct}=="0102", SYMLINK+="libmtp-%k", MODE="666"
+# Sirius Stiletto 2
+ATTRS{idVendor}=="18f6", ATTRS{idProduct}=="0110", SYMLINK+="libmtp-%k", MODE="666"
+# Canon PowerShot A640 (PTP/MTP mode)
+ATTRS{idVendor}=="04a9", ATTRS{idProduct}=="3139", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N81 Mobile Phone
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="000a", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 6120c Classic Mobile Phone
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="002e", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N96 Mobile Phone
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="0039", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 6500c Classic Mobile Phone
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="003c", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 3110c Mobile Phone
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="005f", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 3109c Mobile Phone
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="0065", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 5310 XpressMusic
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="006c", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N95 Mobile Phone 8GB
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="006e", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N82 Mobile Phone
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="0074", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N78 Mobile Phone
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="0079", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 6220 Classic
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="008d", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N85 Mobile Phone
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="0092", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia E71
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="00e4", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia E66
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="00e5", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 5800 XpressMusic
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="0155", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia E63
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="0179", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 3250 Mobile Phone
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="0462", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N93 Mobile Phone
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="0478", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 5500 Sport Mobile Phone
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="047e", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N91 Mobile Phone
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="0485", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 5700 XpressMusic Mobile Phone
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="04b4", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia 5300 Mobile Phone
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="04ba", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N73 Mobile Phone
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="04d1", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N75 Mobile Phone
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="04e1", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N93i Mobile Phone
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="04e5", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N95 Mobile Phone
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="04ef", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia N80 Internet Edition (Media Player)
+ATTRS{idVendor}=="0421", ATTRS{idProduct}=="04f1", SYMLINK+="libmtp-%k", MODE="666"
+# Nokia/Verizon 6205 Balboa/Verizon Music Phone
+ATTRS{idVendor}=="05c6", ATTRS{idProduct}=="3196", SYMLINK+="libmtp-%k", MODE="666"
+# Logik LOG DAX MP3 and DAB Player
+ATTRS{idVendor}=="13d1", ATTRS{idProduct}=="7002", SYMLINK+="libmtp-%k", MODE="666"
+# Thomson EM28 Series
+ATTRS{idVendor}=="069b", ATTRS{idProduct}=="0774", SYMLINK+="libmtp-%k", MODE="666"
+# Thomson / RCA Opal / Lyra MC4002
+ATTRS{idVendor}=="069b", ATTRS{idProduct}=="0777", SYMLINK+="libmtp-%k", MODE="666"
+# Thomson Lyra MC5104B (M51 Series)
+ATTRS{idVendor}=="069b", ATTRS{idProduct}=="077c", SYMLINK+="libmtp-%k", MODE="666"
+# Thomson RCA H106
+ATTRS{idVendor}=="069b", ATTRS{idProduct}=="301a", SYMLINK+="libmtp-%k", MODE="666"
+# Thomson scenium E308
+ATTRS{idVendor}=="069b", ATTRS{idProduct}=="3028", SYMLINK+="libmtp-%k", MODE="666"
+# Thomson / RCA Lyra HC308A
+ATTRS{idVendor}=="069b", ATTRS{idProduct}=="3035", SYMLINK+="libmtp-%k", MODE="666"
+# FOMA F903iX HIGH-SPEED
+ATTRS{idVendor}=="04c5", ATTRS{idProduct}=="1140", SYMLINK+="libmtp-%k", MODE="666"
+# NormSoft, Inc. Pocket Tunes
+ATTRS{idVendor}=="1703", ATTRS{idProduct}=="0001", SYMLINK+="libmtp-%k", MODE="666"
+# NormSoft, Inc. Pocket Tunes 4
+ATTRS{idVendor}=="1703", ATTRS{idProduct}=="0002", SYMLINK+="libmtp-%k", MODE="666"
+# TrekStor Vibez 8/12GB
+ATTRS{idVendor}=="066f", ATTRS{idProduct}=="842a", SYMLINK+="libmtp-%k", MODE="666"
+# Medion MD8333
+ATTRS{idVendor}=="066f", ATTRS{idProduct}=="8550", SYMLINK+="libmtp-%k", MODE="666"
+# Medion MD8333
+ATTRS{idVendor}=="066f", ATTRS{idProduct}=="8588", SYMLINK+="libmtp-%k", MODE="666"
+# TrekStor i.Beat Sweez FM
+ATTRS{idVendor}=="0402", ATTRS{idProduct}=="0611", SYMLINK+="libmtp-%k", MODE="666"
+# Disney MixMax
+ATTRS{idVendor}=="0aa6", ATTRS{idProduct}=="6021", SYMLINK+="libmtp-%k", MODE="666"
+# Tevion MD 81488
+ATTRS{idVendor}=="0aa6", ATTRS{idProduct}=="3011", SYMLINK+="libmtp-%k", MODE="666"
+# Cowon iAudio U3 (MTP mode)
+ATTRS{idVendor}=="0e21", ATTRS{idProduct}=="0701", SYMLINK+="libmtp-%k", MODE="666"
+# Cowon iAudio 6 (MTP mode)
+ATTRS{idVendor}=="0e21", ATTRS{idProduct}=="0711", SYMLINK+="libmtp-%k", MODE="666"
+# Cowon iAudio 7 (MTP mode)
+ATTRS{idVendor}=="0e21", ATTRS{idProduct}=="0751", SYMLINK+="libmtp-%k", MODE="666"
+# Cowon iAudio U5 (MTP mode)
+ATTRS{idVendor}=="0e21", ATTRS{idProduct}=="0761", SYMLINK+="libmtp-%k", MODE="666"
+# Cowon iAudio D2 (MTP mode)
+ATTRS{idVendor}=="0e21", ATTRS{idProduct}=="0801", SYMLINK+="libmtp-%k", MODE="666"
+# Insignia NS-DV45
+ATTRS{idVendor}=="19ff", ATTRS{idProduct}=="0303", SYMLINK+="libmtp-%k", MODE="666"
+# Insignia Sport Player
+ATTRS{idVendor}=="19ff", ATTRS{idProduct}=="0307", SYMLINK+="libmtp-%k", MODE="666"
+# Insignia Pilot 4GB
+ATTRS{idVendor}=="19ff", ATTRS{idProduct}=="0309", SYMLINK+="libmtp-%k", MODE="666"
+# LG Electronics Inc. UP3
+ATTRS{idVendor}=="043e", ATTRS{idProduct}=="70b1", SYMLINK+="libmtp-%k", MODE="666"
+# LG Electronics Inc. VX8550 V CAST Mobile Phone
+ATTRS{idVendor}=="1004", ATTRS{idProduct}=="6010", SYMLINK+="libmtp-%k", MODE="666"
+# LG Electronics Inc. KC910 Renoir Mobile Phone
+ATTRS{idVendor}=="1004", ATTRS{idProduct}=="608f", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-A815/NWZ-A818
+ATTRS{idVendor}=="054c", ATTRS{idProduct}=="0325", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-S516
+ATTRS{idVendor}=="054c", ATTRS{idProduct}=="0326", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-S615F/NWZ-S616F/NWZ-S618F
+ATTRS{idVendor}=="054c", ATTRS{idProduct}=="0327", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-S716F
+ATTRS{idVendor}=="054c", ATTRS{idProduct}=="035a", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-A826/NWZ-A828/NWZ-A829
+ATTRS{idVendor}=="054c", ATTRS{idProduct}=="035b", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-A726/NWZ-A728/NWZ-A768
+ATTRS{idVendor}=="054c", ATTRS{idProduct}=="035c", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-B135
+ATTRS{idVendor}=="054c", ATTRS{idProduct}=="036e", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-E436F
+ATTRS{idVendor}=="054c", ATTRS{idProduct}=="0385", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-S739F
+ATTRS{idVendor}=="054c", ATTRS{idProduct}=="038c", SYMLINK+="libmtp-%k", MODE="666"
+# Sony Walkman NWZ-S638F
+ATTRS{idVendor}=="054c", ATTRS{idProduct}=="038e", SYMLINK+="libmtp-%k", MODE="666"
+# SonyEricsson K850i
+ATTRS{idVendor}=="0fce", ATTRS{idProduct}=="0075", SYMLINK+="libmtp-%k", MODE="666"
+# SonyEricsson W910
+ATTRS{idVendor}=="0fce", ATTRS{idProduct}=="0076", SYMLINK+="libmtp-%k", MODE="666"
+# SonyEricsson W890i
+ATTRS{idVendor}=="0fce", ATTRS{idProduct}=="00b3", SYMLINK+="libmtp-%k", MODE="666"
+# SonyEricsson W760i
+ATTRS{idVendor}=="0fce", ATTRS{idProduct}=="00c6", SYMLINK+="libmtp-%k", MODE="666"
+# SonyEricsson C902
+ATTRS{idVendor}=="0fce", ATTRS{idProduct}=="00d4", SYMLINK+="libmtp-%k", MODE="666"
+# SonyEricsson C702
+ATTRS{idVendor}=="0fce", ATTRS{idProduct}=="00d9", SYMLINK+="libmtp-%k", MODE="666"
+# SonyEricsson W980
+ATTRS{idVendor}=="0fce", ATTRS{idProduct}=="00da", SYMLINK+="libmtp-%k", MODE="666"
+# SonyEricsson W902
+ATTRS{idVendor}=="0fce", ATTRS{idProduct}=="00f5", SYMLINK+="libmtp-%k", MODE="666"
+# Motorola V3m/V750 verizon
+ATTRS{idVendor}=="22b8", ATTRS{idProduct}=="2a65", SYMLINK+="libmtp-%k", MODE="666"
+# Motorola K1
+ATTRS{idVendor}=="22b8", ATTRS{idProduct}=="4811", SYMLINK+="libmtp-%k", MODE="666"
+# Motorola A1200
+ATTRS{idVendor}=="22b8", ATTRS{idProduct}=="60ca", SYMLINK+="libmtp-%k", MODE="666"
+# Motorola MTP Test Command Interface
+ATTRS{idVendor}=="22b8", ATTRS{idProduct}=="6413", SYMLINK+="libmtp-%k", MODE="666"
+# Motorola RAZR2 V8/U9/Z6
+ATTRS{idVendor}=="22b8", ATTRS{idProduct}=="6415", SYMLINK+="libmtp-%k", MODE="666"
+# Kenwood Media Keg HD10GB7 Sport Player
+ATTRS{idVendor}=="0b28", ATTRS{idProduct}=="100c", SYMLINK+="libmtp-%k", MODE="666"
+# Micro-Star International P610/Model MS-5557
+ATTRS{idVendor}=="0db0", ATTRS{idProduct}=="5572", SYMLINK+="libmtp-%k", MODE="666"
+# FOMA D905i
+ATTRS{idVendor}=="06d3", ATTRS{idProduct}=="21ba", SYMLINK+="libmtp-%k", MODE="666"
+# Haier Ibiza Rhapsody
+ATTRS{idVendor}=="1302", ATTRS{idProduct}=="1016", SYMLINK+="libmtp-%k", MODE="666"
+# Haier Ibiza Rhapsody
+ATTRS{idVendor}=="1302", ATTRS{idProduct}=="1017", SYMLINK+="libmtp-%k", MODE="666"
+# Panasonic P905i
+ATTRS{idVendor}=="04da", ATTRS{idProduct}=="2145", SYMLINK+="libmtp-%k", MODE="666"
+# Polaroid Freescape/MPU-433158
+ATTRS{idVendor}=="0546", ATTRS{idProduct}=="2035", SYMLINK+="libmtp-%k", MODE="666"
+# Pioneer XMP3
+ATTRS{idVendor}=="08e4", ATTRS{idProduct}=="0148", SYMLINK+="libmtp-%k", MODE="666"
+# Slacker Inc. Slacker Portable Media Player
+ATTRS{idVendor}=="1bdc", ATTRS{idProduct}=="fabf", SYMLINK+="libmtp-%k", MODE="666"
+# Isabella Her Prototype
+ATTRS{idVendor}=="0b20", ATTRS{idProduct}=="ddee", SYMLINK+="libmtp-%k", MODE="666"
+GOTO="libmtp_rules_end"
+
+LABEL="libmtp_rules_end"

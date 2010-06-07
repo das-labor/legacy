@@ -1,0 +1,11 @@
+#!/bin/ash
+
+cryptsetup_check() {
+	cryptsetup isLuks ${CRYPT_ROOT}
+	if [ "$?" -eq '0' ]
+	then
+		good_msg "Encrypted Root Device found"
+	else
+		bad_msg "Can't find encrypted root device"
+	fi
+}

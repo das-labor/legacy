@@ -1,0 +1,11 @@
+# Load hp firmware for this printer.
+
+ACTION!="add", GOTO="hpmud_rules_end"
+
+# hp_laserjet_1018 for Suse 10.3
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", SYSFS{idVendor}=="03f0", SYSFS{idProduct}=="4117", PROGRAM="/bin/sh -c 'logger -p user.info loading hp_laserjet_1018 firmware $env{BUSNUM} $env{DEVNUM}'", RUN+="/bin/sh -c '/usr/bin/hp-firmware -y3 -s$env{BUSNUM}:$env{DEVNUM} &'"
+
+# hp_laserjet_1018
+SUBSYSTEM=="usb_device", SYSFS{idVendor}=="03f0", SYSFS{idProduct}=="4117", PROGRAM="/bin/sh -c 'X=%k; X=$${X#usbdev}; B=$${X%%%%.*}; D=$${X#*.}; logger -p user.info loading hp_laserjet_1018 firmware $$B $$D; printf %%03i:%%03i $$B $$D'", RUN+="/bin/sh -c '/usr/bin/hp-firmware -y3 -s%c &'"
+
+LABEL="hpmud_rules_end"

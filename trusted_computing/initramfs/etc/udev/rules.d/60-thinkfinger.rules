@@ -1,0 +1,17 @@
+#
+# udev rules file for the thinkfinger fingerprint scanner
+# 
+# gives access to the fingerprint reader to those in the "fingerprint" group
+#
+# Taken from:
+#  http://www.thinkwiki.org/wiki/How_to_enable_the_fingerprint_reader_with_ThinkFinger
+# which was taken and modified from:
+#  http://article.gmane.org/gmane.linux.drivers.thinkfinger/329
+#
+
+# SGS Thomson Microelectronics Fingerprint Reader
+SYSFS{idVendor}=="0483", SYSFS{idProduct}=="2016", SYMLINK+="input/thinkfinger-%k", MODE="0660", GROUP="fingerprint"
+
+# the also-needed uinput device
+KERNEL=="uinput", MODE="0660", GROUP="fingerprint"
+
