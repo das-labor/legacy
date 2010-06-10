@@ -33,6 +33,9 @@ do
 		keymap\=*)
 			keymap=`parse_opt "${x}"`
 		;;
+		swap\=*)
+			swap=`parse_opt "${x}"`
+		;;
 	esac
 done
 
@@ -46,6 +49,7 @@ cryptsetup_check
 tpm_initialize
 keyrona_login
 keyrona_mount_esd 
+ask_resume
 keyrona_initialize 
 keyrona_mount
 cleaning_up
@@ -53,7 +57,7 @@ cleaning_up
 #Change to real_root
 umount /proc
 umount /sys
-exec /sbin/switch_root /mnt/root/ /sbin/init
+switch_root
 
 #Urggh not good.
 exec sh

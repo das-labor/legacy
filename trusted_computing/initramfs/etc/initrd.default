@@ -61,4 +61,19 @@ cleaning_up() {
 	good_msg "Killing and Dismounting"
 }
 
+ask_resume()
+{
+	good_msg "Swap..."
+	read -p 'Do you want resume from swap device ?: ' switch
+	cryptsetup_swapopen
+}
+
+switch_root() {
+	if [ ${switch} == yes ]
+	then
+		exec /sbin/switch_root /mnt/root/ /usr/lib64/suspend/resume -r /dev/mapper/keyrona-swap
+	else
+		exec /sbin/switch_root /mnt/root/ /sbin/init
+	fi
+}
 

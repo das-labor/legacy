@@ -7,5 +7,17 @@ cryptsetup_check() {
 		good_msg "Encrypted Root Device found"
 	else
 		bad_msg "Can't find encrypted root device"
+		exec sh
 	fi
 }
+
+cryptsetup_swapopen() {
+	if [ -e ${swap} ] && [ ! -e /dev/mapper/keyrona-swap ] ; 
+	then
+		cryptsetup luksOpen ${swap} keyrona-swap --key-file /etc/keyrona/keyrona-swap.key
+	else
+		bad_msg "Keyrona Swap already in use"
+		exit -1
+	fi
+}
+		
