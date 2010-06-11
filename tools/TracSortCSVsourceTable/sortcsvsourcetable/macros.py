@@ -29,7 +29,7 @@ class SortCSVsourceTableMacro(WikiMacroBase):
     
     # IWikiMacroProvider methods
     def render_macro(self, req, name, content):
-        args = [x.strip() for x in content.split(',')]
+        args = [x.strip() for x in content.split(';')]
         if len(args) == 1:
             args.append(None)
         elif len(args) != 2:
