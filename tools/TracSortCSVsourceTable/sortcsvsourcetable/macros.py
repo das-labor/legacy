@@ -44,8 +44,11 @@ class SortCSVsourceTableMacro(WikiMacroBase):
             source_format, source_obj = 'source', source
             
         # Apply a default format if needed
-        if theader is not None:
-            isTheader, theader_content = theader.split("=",1)
+        try:
+            if theader is not None:
+                isTheader, theader_content = theader.split("=",1)
+        except AttributeError:
+            pass
 
         try:
             dest_format = self.default_formats[source_format]
@@ -74,17 +77,20 @@ class SortCSVsourceTableMacro(WikiMacroBase):
 #                out = HTMLParser(StringIO(out)).parse() | HTMLSanitizer()
 #            except ParseError:
 #                out = escape(out)
-        reader = str(out).split("||")
+#        reader = str(out).split("||")
         need_header=1;
         foo=''
         foo+='<table class="sortable"  style="border:1px solid #000;">'
-        if theader is not None:
-            if isTheader == "header":
-                custom_theader = theader_content.split(";")
-                foo+='<tr>'
-                for theader_cell in custom_theader:
-                    foo+='<th style="border:1px solid #000;">'+str(theader_cell)+'</th>'
-                foo+="</tr>\n"
+        try:
+            if theader is not None:
+                if isTheader == "header":
+                    custom_theader = theader_content.split(";")
+                    foo+='<tr>'
+                    for theader_cell in custom_theader:
+                        foo+='<th style="border:1px solid #000;">'+str(theader_cell)+'</th>'
+                    foo+="</tr>\n"
+        except AttributeError:
+            pass
 
         for row in str(out).splitlines():
             foo += "<tr>\n"
