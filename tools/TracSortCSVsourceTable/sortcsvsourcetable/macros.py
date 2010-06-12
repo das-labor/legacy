@@ -24,12 +24,13 @@ class SortCSVsourceTableMacro(WikiMacroBase):
     
     # Default output formats for sources that need them
     default_formats = {
-        'wiki': 'text/x-trac-wiki',
+        'source': 'text/x-trac-wiki',
     }
     
     # IWikiMacroProvider methods
     def render_macro(self, req, name, content):
-        args = [x.strip() for x in content.split(';')]
+        args = [x.strip() for x in content.split(',')]
+#        return args
         if len(args) == 1:
             args.append(None)
         elif len(args) != 2:
@@ -43,13 +44,13 @@ class SortCSVsourceTableMacro(WikiMacroBase):
             source_format, source_obj = 'source', source
             
         # Apply a default format if needed
-        isTheader, theader_content = theader.split("=",1)
-        
-        if dest_format is None:
-            try:
-                dest_format = self.default_formats[source_format]
-            except KeyError:
-                pass
+        if theader is not None:
+            isTheader, theader_content = theader.split("=",1)
+
+        try:
+            dest_format = self.default_formats[source_format]
+        except KeyError:
+            pass
         
         if source_format == 'source':
             if not req.perm.has_permission('FILE_VIEW'):
@@ -66,8 +67,6 @@ class SortCSVsourceTableMacro(WikiMacroBase):
             return system_message('Unsupported include source %s'%source)
             
         # If we have a preview format, use it
-        if dest_format:
-            out = Mimeview(self.env).render(ctxt, dest_format, out)
         
         # Escape if needed
 #        if not self.config.getbool('wiki', 'render_unsafe_content', False):
@@ -79,26 +78,35 @@ class SortCSVsourceTableMacro(WikiMacroBase):
         need_header=1;
         foo=''
         foo+='<table class="sortable"  style="border:1px solid #000;">'
-        foo+='<tr>'
-        if isTheader == "header":
-            custom_theader = theader_content.split(",")
-            for theader_cell in custim_theader:
-                foo+='<th style="border:1px solid #000;">'+str(theader_cell)+'</th>'
+        if theader is not None:
+            if isTheader == "header":
+                custom_theader = theader_content.split(";")
+                foo+='<tr>'
+                for theader_cell in custom_theader:
+                    foo+='<th style="border:1px solid #000;">'+str(theader_cell)+'</th>'
+                foo+="</tr>\n"
 
         for row in str(out).splitlines():
-            foo += "</tr><tr>\n"
+            foo += "<tr>\n"
             for cell in row.split("||"):
                 if cell.startswith("|"):
-                    foo+='<td align="right" style="border:1px solid #000;">'+cell.lstrip("|")+"</td>"
+                    foo+='<td align="right" style="border:1px solid #000;">'
+                    if dest_format:
+                        foo+= (str(Mimeview(self.env).render(None, "text/x-trac-wiki", str(cell.lstrip("|"))))[16:])[:-19]
+
+                    foo+="</td>"
                 else:
-                    foo+='<td align="right" style="border:1px solid #000;">'+cell+"</td>"
+                    foo+='<td align="right" style="border:1px solid #000;">'
+                    if dest_format:
+                        foo+= (str(Mimeview(self.env).render(None, "text/x-trac-wiki", str(cell))).lstrip("<p>")[16:])[:-19]
+                    foo+="</td>"
 #            foo +=str(row)
 #            for cell in row:
 #                foo += cell
 #                foo += "-"
         foo +="</tr></table>"
         
-        return foo            
+        return foo
     # IPermissionRequestor methods
     def get_permission_actions(self):
         yield 'INCLUDE_URL'
