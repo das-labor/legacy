@@ -1,0 +1,22 @@
+Notes
+=====
+
+* This macro lets you include wikipage from the sourcecode 
+* we will always include the HEAD-Revision
+* its for trac 0.11.x
+
+
+Usage
+======
+
+[[SourceWikiInclude(file_in_repor)]]
+
+
+
+
+
+Build EGG
+=========
+
+python setup.py bdist_egg
+ls -al dist/
