@@ -46,19 +46,12 @@ namespace keyrona
             bool            valid;
 
         public:
-	    /*!
-	     *  @brief constructor, opens an existing (subject or group) key
-	     *  @param, &keyfile, string, contains path to the keyfile
-	     *  @param &label, string, 
-             */
-            KeyronaKey(string &keyfile, int &bindkeynum);
-
             /*!
 	     *  @brief constructor, generate new subject key
              *  @param, *Subject, KeyronaSubject, object class of the subject, the key is created for
 	     *  @param &myPassword, string, password to encrypt the key
              */
-            KeyronaKey(KeyronaSubject *Subject, string &subjectpassword, int &type);
+            KeyronaKey(KeyronaSubject *Subject, string &password);
 
             /*!
 	     *  @brief constructor, generate new group key
@@ -78,14 +71,14 @@ namespace keyrona
             /*!
 	     *  @brief prints the information about a key to the screen
              */
-            void            printKeyInformation();
+            void            printKeyInformation(KeyronaSubject *Subject);
 
             /*!
 	     *  @brief encrypts with the public key
              *	@param &toEncrypt, vector of ByteVector, contains the data to be encrypted
              *	@return, vector of ByteVector, contains the encrypted data
              */
-            ByteVector  encrypt(ByteVector &toEncrypt, int &bindkeynum);
+            ByteVector  encrypt(KeyronaSubject *Subject, ByteVector &toEncrypt);
 
             /*!
 	     *  @brief decrypts with the private key
@@ -93,7 +86,7 @@ namespace keyrona
 	     *	@param &myPassword, string, the password for the private key
              *	@return, vector of ByteVector, contains the decrypted data
              */
-            ByteVector  decrypt(ByteVector &toDecrypt, int &bindkeynum, string &password);
+            ByteVector  decrypt(KeyronaSubject *Subject, ByteVector &toDecrypt, string &myPassword);
 
             /*!
 	     *  @brief changes the password of the private key
@@ -101,7 +94,7 @@ namespace keyrona
              *	@param &newPassword, string, contains the new password
              *  @return, boolean, determines whether or not the operation was successful
              */
-            bool        changePassword(string &oldPassword, string &newPassword);
+            bool        changePassword(KeyronaSubject *Subject, string &oldPassword, string &newPassword);
 
         private:
             /*!

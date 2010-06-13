@@ -86,10 +86,39 @@ KeyronaSubject::KeyronaSubject( UInt32 subjectID, KeyronaStorage &storageDB ) :
 
 //================================================================================
 //
+string KeyronaSubject::setKeyOption()
+{
+	int choose = 0;
+	string keytype;
+	
+	cout << "Choose the key type:" << endl;
+	cout << "1. Binding Key used for Binding" << endl;
+	cout << "2. Storage Key used key trees" << endl;
+	cout << "3. Signing Key used for Signing" << endl;
+	scanf("%i", &choose);
+	switch(choose) {
+					case 1:
+							keytype = "BIND";
+					break;
+					
+					case 2: 
+							keytype = "STORAGE";
+					break;
+					
+					case 3: 
+							keytype = "SIGNING";
+					break;
+	}
+	return keytype;
+};
+
+
+//================================================================================
+//
 // create new subject incl. key generation
 KeyronaSubject::KeyronaSubject( UInt8 subjectType,
                             string &subjectName,
-                            int    &subjectKeyUUID,
+                            string &subjectKeyUUID,
                             string &subjectKeyType,
                             string &subjectEMail,
                             string &subjectCountryCode,
@@ -252,7 +281,7 @@ KeyronaSubject::KeyronaSubject( UInt8 subjectType,
 // import subject without key generation
 KeyronaSubject::KeyronaSubject( UInt8 subjectType,
                             string &subjectName,
-                            int    &subjectKeyUUID,
+                            string &subjectKeyUUID,
                             string &subjectKeyType,
                             string &subjectEMail,
                             string &subjectCountryCode,
@@ -542,8 +571,8 @@ void KeyronaSubject::deleteSubject()
     mySubjectType = SUBJECTTYPE_UNDEFINED;
     mySubjectID = 0;
     mySubjectName.clear();
-    mySubjectKeyType.clear();
     mySubjectKeyUUID.clear();
+    mySubjectKeyType.clear();
     mySubjectEMail.clear();
     mySubjectKeyfile.clear();
     mySubjectCountrycode.clear();
@@ -632,36 +661,7 @@ void KeyronaSubject::setLastLogin(KeyronaDate &LoginDate)
 
 //================================================================================
 //
-string KeyronaSubject::setKeyOption()
-{
-	int choose = 0;
-	string keytype;
-	
-	cout << "Choose the key type:" << endl;
-	cout << "1. Binding Key used for Binding" << endl;
-	cout << "2. Storage Key used key trees" << endl;
-	cout << "3. Signing Key used for Signing" << endl;
-	scanf("%i", &choose);
-	switch(choose) {
-					case 1:
-							keytype = BIND;
-					break;
-					
-					case 2: 
-							keytype = STORAGE;
-					break;
-					
-					case 3: 
-							keytype = SIGNING;
-					break;
-	}
-	return keytype;
-};
-
-
-//================================================================================
-//
-ByteVector  KeyronaSubject::encryptForSubject(ByteVector &toEncrypt, int &bindkeynum)
+ByteVector  KeyronaSubject::encryptForSubject(ByteVector &toEncrypt)
 {
     if (! toEncrypt.size())
         throw DecryptionFailed("KeyonaSubject|encryptForSubject(): No data supplied to be encrypted!");
@@ -673,7 +673,7 @@ ByteVector  KeyronaSubject::encryptForSubject(ByteVector &toEncrypt, int &bindke
 
 //================================================================================
 //
-ByteVector  KeyronaSubject::decryptBySubject(ByteVector &toDecrypt, int &bindkeynum, string &myPassword)
+ByteVector  KeyronaSubject::decryptBySubject(ByteVector &toDecrypt, string &myPassword)
 {
   string password;
     if (mySubjectType == SUBJECTTYPE_PLATFORM)
@@ -744,7 +744,7 @@ bool KeyronaSubject::verifyPassword(string &myPassword)
     // decrypted password magic
     try
     {
-        myPasswordMagicVector = mySubjectKey->decrypt(myPasswordMagicVector, bindkeynum, myPassword);
+        myPasswordMagicVector = mySubjectKey->decrypt(this, myPasswordMagicVector, myPassword);
     }
     catch ( std::exception &e )
     {
@@ -759,7 +759,7 @@ bool KeyronaSubject::verifyPassword(string &myPassword)
 
 //================================================================================
 //
-bool KeyronaSubject::changePassword(string &oldPassword, string &newPassword)
+bool KeyronaSubject::changePassword( string &oldPassword, string &newPassword)
 {
     if (!verifyPassword(oldPassword))
         throw InvalidPassword("KeyronaSubject|changePassword(): Invalid (old) password supplied!");
@@ -768,7 +768,7 @@ bool KeyronaSubject::changePassword(string &oldPassword, string &newPassword)
         throw InvalidPassword("KeyronaSubject|changePassword(): Empty (new) password supplied!");
 
     if ((mySubjectKey) && (mySubjectKey->isValid()))
-        return mySubjectKey->changePassword(oldPassword, newPassword);
+        return mySubjectKey->changePassword(this, oldPassword, newPassword);
 
     throw InvalidKey("KeyonaSubject|changePassword(): Invalid key for subject '" + mySubjectName + "'");
 };
