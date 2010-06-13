@@ -122,7 +122,7 @@ namespace keyrona
              */
             KeyronaSubject( UInt8 subjectType,
                             string &subjectName,
-                            int    &subjectKeyUUID,
+                            string    &subjectKeyUUID,
                             string &subjectKeyType,
                             string &subjectEMail,
                             string &subjectCountryCode,
@@ -150,7 +150,7 @@ namespace keyrona
              */
             KeyronaSubject( UInt8 subjectType,
                             string &subjectName,
-                            int    &subjectKeyUUID,
+                            string    &subjectKeyUUID,
                             string &subjectKeyType,
                             string &subjectEMail,
                             string &subjectCountryCode,
@@ -196,13 +196,13 @@ namespace keyrona
              *  @brief get the keyuuid of a subject
 	     *  @return int, keyuuid of the subject
              */
-	    int getMySubjectKeyUUID()   { return mySubjectKeyUUID; };
+	    string getMySubjectKeyUUID()   { return mySubjectKeyUUID; };
 	   
 	        /*!
              *  @brief get the keytype of a subject
 	     *  @return string, keytype of the subject
              */
-	    string getMySubjectKeyType()   { return mySubjectKeyType; };
+	    string getMySubjectKeyType()  { return mySubjectKeyType; };
 	    
             /*!
              *  @brief get the email of a subject
@@ -268,30 +268,14 @@ namespace keyrona
 	     *  @return KeyronaDate, contains the time stamp of the last login.
 	     */
 	    KeyronaDate getMyLastLogin();
+	    
+	    string setKeyOption();
 
             /*!
              *  @brief sets the date of the last login
 	     *  @param &LoginDate, KeyronaDate, contains the time stamp of the last login.
 	     */	    
             void setLastLogin(KeyronaDate &LoginDate);
-
-            /*!
-             *  @brief encrypts data with the public key of the current subject
-	     *  @param &toEncrypt, vector of UInt8, contains the data to be encrypted
-	     * 	@return vector of UInt8, contains the encrypted data
-	     */
-	    
-			string KeyronaSubject::setKeyOption();
-			
-	    vector<UInt8>   encryptForSubject(vector<UInt8> &toEncrypt);
-
-            /*!
-             *  @brief decrypts data with the private key of the current subject
-	     *  @param &toDecrypt, vector of UInt8, contains the data to be decrypted
-	     * 	@param &myPassword, contains the password for the private key of the user
-	     * 	@return vector of UInt8, contains the decrypted data
-	     */
-	    vector<UInt8>   decryptBySubject(vector<UInt8> &toDecrypt, string &myPassword);
 
             /*!
              *  @brief encrypts data with the public key of the current subject
@@ -321,7 +305,7 @@ namespace keyrona
 	     * 	@param &newPassword, string, contains the new password for the private key of the user
 	     * 	@return boolean, determines whether or not password change succeeded
 	     */
-	    bool changePassword(string &oldPassword, string &newPassword);
+	    bool changePassword( string &oldPassword, string &newPassword);
 
             /*!
              *  @brief adds a new message for a user
@@ -365,8 +349,8 @@ namespace keyrona
             UInt32  mySubjectID;
             string  mySubjectIDString;
             string  mySubjectName;
-            int		mySubjectKeyUUID;
-            int     mySubjectKeyType;
+            string	mySubjectKeyUUID;
+            string  mySubjectKeyType;
             string  mySubjectEMail;
             string  mySubjectKeyfile;
             string  mySubjectCountrycode;

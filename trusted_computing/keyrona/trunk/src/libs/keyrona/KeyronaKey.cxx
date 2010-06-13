@@ -73,8 +73,62 @@ type ("")
 //================================================================================
 //
 KeyronaKey::KeyronaKey(KeyronaGroup *Group, string &groupKeyPassword) :
-valid (false)
+valid (false),
+myCryptKeysetFile (""),
+myCryptKeyLabel ("")
 {
+    CRYPT_CONTEXT   cryptContext;
+    CRYPT_KEYSET    cryptKeyset;
+
+    if (!Group)
+        throw InvalidGroup("KeyronaKey|Group-Constructor(): Invalid Group pointer given!");
+
+    if (!KeyCounter)
+    {
+        // initialize cryptlib
+        debug << "KeyronaKey|Group-Constructor(): Initializing cryptlib" << endl;
+        cryptlibCheck(cryptInit(), "Initialization failed!");
+    }
+
+    if (groupKeyPassword.empty())
+        throw InvalidPassword("KeyronaKey|Group-Constructor(): Invalid password supplied!");
+
+    if (Group->getMyGroupKeyfile().empty())
+        throw NoFilename("KeyronaKey|Group-Constructor(): The supplied key filename was empty!");
+    else
+        myCryptKeysetFile = Group->getMyGroupKeyfile();
+
+    if (Group->getMyGroupID().empty())
+        throw InvalidGroup("KeyronaKey|Group-Constructor(): The supplied groupID was empty!");
+    else
+        myCryptKeyLabel = Group->getMyGroupID();
+
+    cout << "Creating new key with label '" << Group->getMyGroupID() << "'" << endl;
+
+    debug << "KeyronaKey|Group-Constructor(): Creating crypto context" << endl;
+    cryptlibCheck(cryptCreateContext( &cryptContext, CRYPT_UNUSED, CRYPT_ALGO_RSA ), "Creating crypto context");
+
+    debug << "KeyronaKey|Group-Constructor(): Setting crypto label to '" << myCryptKeyLabel << "'" << endl;
+    cryptlibCheck(cryptSetAttributeString( cryptContext, CRYPT_CTXINFO_LABEL, myCryptKeyLabel.c_str(), myCryptKeyLabel.length()), "Setting crypto label to '" + myCryptKeyLabel + "'");
+
+    debug << "KeyronaKey|Group-Constructor(): Setting keylength to '" << RSA_2048_BIT << "'" << endl;
+    cryptlibCheck(cryptSetAttribute( cryptContext, CRYPT_CTXINFO_KEYSIZE, RSA_2048_BIT), "Setting keylength to '" + convertUInt32toString(RSA_2048_BIT) + "'");
+
+    debug << "KeyronaKey|Group-Constructor(): Generating new RSA key" << endl;
+    cryptlibCheck(cryptGenerateKey( cryptContext ), "Generating new RSA key");
+
+    // Storing Key 
+    debug << "KeyronaKey|Group-Constructor(): Opening keyset with file '" << myCryptKeysetFile << "'" << endl;
+    cryptlibCheck(cryptKeysetOpen( &cryptKeyset, CRYPT_UNUSED, CRYPT_KEYSET_FILE, myCryptKeysetFile.c_str(), CRYPT_KEYOPT_CREATE ), "Opening keyset with file '" + myCryptKeysetFile + "'");
+
+    debug << "KeyronaKey|Group-Constructor(): Adding private key to keyset" << endl;
+    cryptlibCheck(cryptAddPrivateKey( cryptKeyset, cryptContext, groupKeyPassword.c_str() ), "Adding private key to keyset");
+
+    debug << "KeyronaKey|Group-Constructor(): Closing keyfile" << endl;
+    cryptlibCheck(cryptKeysetClose( cryptKeyset ), "Closing keyfile");
+
+    debug << "KeyronaKey|Group-Constructor(): Destroying context" << endl;
+    cryptlibCheck(cryptDestroyContext( cryptContext ), "Destroying context");
 
     valid = true;
     KeyCounter++;
@@ -161,11 +215,16 @@ keynum (""),
 
 //================================================================================
 //
-bool KeyronaKey::changePassword(string &oldPassword, string &newPassword)
+bool KeyronaKey::changePassword(KeyronaSubject *Subject, string &oldPassword, string &newPassword) :
+keynum ("")
 {
+    if (Subject->getMySubjectKeyUUID().empty())
+        throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
+    else
+        keynum = Subject->getMySubjectKeyUUID();
    
-   
+	KeyronaTPM;
+	myTPM.change_key_auth(newPassword, oldPassword, keynum);
    
     return true;
-  
 };

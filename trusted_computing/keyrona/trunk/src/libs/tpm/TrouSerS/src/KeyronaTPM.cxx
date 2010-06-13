@@ -582,7 +582,7 @@ ByteVector KeyronaTPM::unbind(vector<ByteVector> &dataToUnbind, int &bindkeynum,
 
 };
 
-vector<ByteVector> KeyronaTPM::create_key(string &password, int &keynum, int &type)
+vector<ByteVector> KeyronaTPM::create_key(string &password, int &keynum, string &type)
 {
     TSS_HCONTEXT hContext;
 	TSS_HTPM	 hTPM;
@@ -727,7 +727,7 @@ vector<ByteVector> KeyronaTPM::create_key(string &password, int &keynum, int &ty
 
 };
 
-bool KeyronaTPM::change_key_auth(string &password, string &password_old, int &keynum)
+void KeyronaTPM::change_key_auth(string &password, string &password_old, int &keynum)
 {
 	TSS_HCONTEXT hContext;
 	TSS_HTPM	 hTPM;
@@ -819,9 +819,6 @@ bool KeyronaTPM::change_key_auth(string &password, string &password_old, int &ke
     
     Tspi_Context_FreeMemory(hContext, NULL);
     Tspi_Context_Close(hContext);
-        
-    return true;
-
 };
 
 vector<ByteVector> KeyronaTPM::delete_key(int &keynum)

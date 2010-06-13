@@ -255,7 +255,7 @@ string KeyronaVolume::getDecryptedVolumeKey(KeyronaSubject *Subject, string &pas
     debug << "KeyronaVolume|getDecryptedVolumeKey(): decoding BASE64-encoded key" << endl;
     vector<UInt8> myDecode = DecodeBASE64StringToUInt8Vector(myBase64EncodedPassword);
     debug << "KeyronaVolume|getDecryptedVolumeKey(): decrypting key" << endl;
-    myDecode = Subject->decryptBySubject(myDecode, bindkeynum, password);
+    myDecode = Subject->decryptBySubject(this, myDecode, password);
 
     return convertUInt8VectorToString(&myDecode);
 };
