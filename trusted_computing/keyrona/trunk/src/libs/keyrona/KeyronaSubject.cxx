@@ -38,6 +38,8 @@ KeyronaSubject::KeyronaSubject( string subjectIdentifier, KeyronaStorage &storag
             mySubjectID (0),
             mySubjectIDString(""),
             mySubjectName (""),
+            mySubjectKeyUUID (""),
+            mySubjectKeyType (""),
             mySubjectEMail (""),
             mySubjectKeyfile (""),
             mySubjectCountrycode (""),
@@ -62,6 +64,8 @@ KeyronaSubject::KeyronaSubject( UInt32 subjectID, KeyronaStorage &storageDB ) :
             mySubjectID (0),
             mySubjectIDString(""),
             mySubjectName (""),
+            mySubjectKeyUUID (""),
+            mySubjectKeyType (""),
             mySubjectEMail (""),
             mySubjectKeyfile (""),
             mySubjectCountrycode (""),
@@ -85,6 +89,8 @@ KeyronaSubject::KeyronaSubject( UInt32 subjectID, KeyronaStorage &storageDB ) :
 // create new subject incl. key generation
 KeyronaSubject::KeyronaSubject( UInt8 subjectType,
                             string &subjectName,
+                            int    &subjectKeyUUID,
+                            string &subjectKeyType,
                             string &subjectEMail,
                             string &subjectCountryCode,
                             string &subjectOrganisation,
@@ -98,6 +104,8 @@ KeyronaSubject::KeyronaSubject( UInt8 subjectType,
             mySubjectID (0),
             mySubjectIDString(""),
             mySubjectName (subjectName),
+            mySubjectKeyUUID (subjectKeyUUID),
+            mySubjectKeyType (subjectKeyType),
             mySubjectEMail (subjectEMail),
             mySubjectKeyfile (""),
             mySubjectCountrycode (subjectCountryCode),
@@ -188,6 +196,7 @@ KeyronaSubject::KeyronaSubject( UInt8 subjectType,
                 myPassword = getPasswordVerified("Please enter passphrase for new admin '" + mySubjectName + "': ");
             else
                 myPassword = getPasswordVerified("Please enter passphrase for new user '" + mySubjectName + "': ");
+            mySubjectKeyType = setKeyOption();
             break;
         }
         case SUBJECTTYPE_TOKEN:
@@ -209,21 +218,16 @@ KeyronaSubject::KeyronaSubject( UInt8 subjectType,
         }
         case SUBJECTTYPE_PLATFORM:
         {
-			
             mySubjectKeyfile = myKeyDirectory + KeyronaPathSeparator + "Keyrona" + KeyronaSubjectType_Platform + KeyronaFileSeparator + mySubjectIDString  + KeyronaFileSeparator + mySubjectName + KeyronaP15FileExtension;
             // generating random password for new key
             myPassword = generateRandomString(KEYRONA_MINIMUM_PASSWORD_LENGTH);
 			int local;
+			
             // sealing it to current platform
             KeyronaTPM myTPM;
-            string password = "1234";
-            string password_old = "12345";
-            int keynum = 30;
-            int type = 1;
             ByteVector myPlainPassword(myPassword);
-            //vector<ByteVector> mySealssasedDataWithKey = myTPM.create_key(password, keynum, type);
-            vector<ByteVector> mySealedDataWithKey = myTPM.change_key_auth(password, password_old, keynum);
-			/*
+            vector<ByteVector> mySealedDataWithKey = myTPM.seal(myPlainPassword,local);
+
             // storing sealed data
             ByteVector Data = mySealedDataWithKey.back();
             mySealedDataWithKey.pop_back();
@@ -235,7 +239,6 @@ KeyronaSubject::KeyronaSubject( UInt8 subjectType,
             mySealedDataWithKey.pop_back();
             string KeyFile = mySubjectKeyfile + KEYRONA_TPM_KEY_EXTENSION;
             storeByteVectorInFile(KeyFile, Key);
-            */
             break;
         }
     }
@@ -249,6 +252,8 @@ KeyronaSubject::KeyronaSubject( UInt8 subjectType,
 // import subject without key generation
 KeyronaSubject::KeyronaSubject( UInt8 subjectType,
                             string &subjectName,
+                            int    &subjectKeyUUID,
+                            string &subjectKeyType,
                             string &subjectEMail,
                             string &subjectCountryCode,
                             string &subjectOrganisation,
@@ -264,6 +269,8 @@ KeyronaSubject::KeyronaSubject( UInt8 subjectType,
             mySubjectID (0),
             mySubjectIDString(""),
             mySubjectName (subjectName),
+            mySubjectKeyUUID (subjectKeyUUID),
+            mySubjectKeyType (subjectKeyType),           
             mySubjectEMail (subjectEMail),
             mySubjectKeyfile (""),
             mySubjectCountrycode (subjectCountryCode),
@@ -379,11 +386,15 @@ void KeyronaSubject::printSubject(bool verbose)
     if (! verbose)
     {
         cout << "Name: '" << mySubjectName << "' (ID: " << mySubjectID << ")" << endl;
+        cout << "KeyUUID: '" << mySubjectKeyUUID << endl;
+        cout << "KeyType: '" << mySubjectKeyType << endl;
         return;
     }
 
     // and here the full info
     cout << "Name: '" << mySubjectName << "' (ID: " << mySubjectID << ")" << endl;
+    cout << "KeyUUID: '" << mySubjectKeyUUID << endl;
+    cout << "KeyType: '" << mySubjectKeyType << endl;
     cout << "\t" << "Type: '" << KeyronaSubjectType[mySubjectType] << "'" << endl;
 
     if ((EnterpriseMode) && (mySubjectType == SUBJECTTYPE_USER))
@@ -409,7 +420,7 @@ void KeyronaSubject::printSubject(bool verbose)
     {
         cout << "\t" << "Subject's key information: "<< endl;
         if (mySubjectKey->isValid())
-            mySubjectKey->printKeyInformation();
+            mySubjectKey->printKeyInformation(this);
         else
             cout << "\t\t<invalid key>" << endl;
     }
@@ -457,6 +468,8 @@ bool KeyronaSubject::loadSubject(string &subjectIdentifier)
     mySubjectStorage.selectSection(mySubjectIDString);
     mySubjectStorage.selectSubSection(KeyronaSubject_SubjectProperties);
     mySubjectName = mySubjectStorage.getEntry(KeyronaSubject_SubjectName);
+    mySubjectKeyUUID = mySubjectStorage.getEntry(KeyronaSubject_SubjectKeyUUID);
+    mySubjectKeyType = mySubjectStorage.getEntry(KeyronaSubject_SubjectKeyType);
     mySubjectType = KeyronaSubjectType[mySubjectStorage.getEntry(KeyronaSubject_SubjectType)];
     mySubjectEMail = mySubjectStorage.getEntry(KeyronaSubject_SubjectEMail);
     mySubjectCountrycode = mySubjectStorage.getEntry(KeyronaSubject_SubjectCountrycode);
@@ -488,6 +501,8 @@ bool KeyronaSubject::storeSubject()
     mySubjectStorage.selectSubSection(KeyronaSubject_SubjectProperties);
     mySubjectStorage.setEntry(KeyronaSubject_isSubject, KeyronaSubject_isSubject_true);
     mySubjectStorage.setEntry(KeyronaSubject_SubjectName, mySubjectName);
+    mySubjectStorage.setEntry(KeyronaSubject_SubjectKeyUUID, mySubjectKeyUUID);
+    mySubjectStorage.setEntry(KeyronaSubject_SubjectKeyType, mySubjectKeyType);
     mySubjectStorage.setEntry(KeyronaSubject_SubjectType, KeyronaSubjectType[mySubjectType]);
     mySubjectStorage.setEntry(KeyronaSubject_SubjectEMail, mySubjectEMail);
     mySubjectStorage.setEntry(KeyronaSubject_SubjectKeyfile, mySubjectKeyfile);
@@ -527,6 +542,8 @@ void KeyronaSubject::deleteSubject()
     mySubjectType = SUBJECTTYPE_UNDEFINED;
     mySubjectID = 0;
     mySubjectName.clear();
+    mySubjectKeyType.clear();
+    mySubjectKeyUUID.clear();
     mySubjectEMail.clear();
     mySubjectKeyfile.clear();
     mySubjectCountrycode.clear();
@@ -615,13 +632,42 @@ void KeyronaSubject::setLastLogin(KeyronaDate &LoginDate)
 
 //================================================================================
 //
+string KeyronaSubject::setKeyOption()
+{
+	int choose = 0;
+	string keytype;
+	
+	cout << "Choose the key type:" << endl;
+	cout << "1. Binding Key used for Binding" << endl;
+	cout << "2. Storage Key used key trees" << endl;
+	cout << "3. Signing Key used for Signing" << endl;
+	scanf("%i", &choose);
+	switch(choose) {
+					case 1:
+							keytype = BIND;
+					break;
+					
+					case 2: 
+							keytype = STORAGE;
+					break;
+					
+					case 3: 
+							keytype = SIGNING;
+					break;
+	}
+	return keytype;
+};
+
+
+//================================================================================
+//
 ByteVector  KeyronaSubject::encryptForSubject(ByteVector &toEncrypt, int &bindkeynum)
 {
     if (! toEncrypt.size())
         throw DecryptionFailed("KeyonaSubject|encryptForSubject(): No data supplied to be encrypted!");
 
     if ((mySubjectKey) && (mySubjectKey->isValid()))
-        return mySubjectKey->encrypt(toEncrypt, bindkeynum);
+        return mySubjectKey->encrypt(this, toEncrypt);
     throw InvalidKey("KeyonaSubject|encryptForSubject(): Invalid key for subject '" + mySubjectName + "'");
 };
 
@@ -629,30 +675,35 @@ ByteVector  KeyronaSubject::encryptForSubject(ByteVector &toEncrypt, int &bindke
 //
 ByteVector  KeyronaSubject::decryptBySubject(ByteVector &toDecrypt, int &bindkeynum, string &myPassword)
 {
-    string password;
-    KeyronaTPM myTPM;
-    vector<ByteVector> mySealedDataWithKey;
-        
-    // Loading sealing key
-    string KeyFile = mySubjectKeyfile + KEYRONA_TPM_KEY_EXTENSION;
-    ByteVector Key = loadByteVectorFromFile(KeyFile);
-    mySealedDataWithKey.push_back(Key);
+  string password;
+    if (mySubjectType == SUBJECTTYPE_PLATFORM)
+    {
+        KeyronaTPM myTPM;
+        vector<ByteVector> mySealedDataWithKey;
 
-    // Loading sealed data
-    string DataFile = mySubjectKeyfile + KEYRONA_TPM_DATA_EXTENSION;
-    ByteVector Data = loadByteVectorFromFile(DataFile);
-    mySealedDataWithKey.push_back(Data);
-    
-    ByteVector myPlainPassword = myTPM.unbind(mySealedDataWithKey, bindkeynum, myPassword);
+            // Loading sealing key
+            string KeyFile = mySubjectKeyfile + KEYRONA_TPM_KEY_EXTENSION;
+            ByteVector Key = loadByteVectorFromFile(KeyFile);
+            mySealedDataWithKey.push_back(Key);
 
-    string x( (const char*) myPlainPassword.toCArray(), myPlainPassword.size() );
-    if (!verifyPassword(x))
-         throw InvalidPassword("KeyronaSubject|decryptBySubject(): Could not retrieve the password from TPM!");
-    password = x;
-    
-    if (myPassword.empty())
+            // Loading sealed data
+            string DataFile = mySubjectKeyfile + KEYRONA_TPM_DATA_EXTENSION;
+            ByteVector Data = loadByteVectorFromFile(DataFile);
+            mySealedDataWithKey.push_back(Data);
+
+            ByteVector myPlainPassword = myTPM.unseal(mySealedDataWithKey);
+
+            string x( (const char*) myPlainPassword.toCArray(), myPlainPassword.size() );
+            if (!verifyPassword(x))
+                throw InvalidPassword("KeyronaSubject|decryptBySubject(): Could not retrieve the password from TPM!");
+            password = x;
+    }
+    else
+    {
+        if (myPassword.empty())
             throw InvalidPassword("KeyonaSubject|decryptBySubject(): Invalid password for subject '" + mySubjectName + "'");
         password = myPassword;
+    }
 
     if (!(verifyPassword(password)))
         throw InvalidPassword("KeyonaSubject|decryptBySubject(): Invalid password for subject '" + mySubjectName + "'");
@@ -665,7 +716,7 @@ ByteVector  KeyronaSubject::decryptBySubject(ByteVector &toDecrypt, int &bindkey
     setLastLogin(myCurrentSystemTime);
 
     if ((mySubjectKey) && (mySubjectKey->isValid()))
-        return mySubjectKey->decrypt(toDecrypt, bindkeynum, password);
+        return mySubjectKey->decrypt(this, toDecrypt, password);
     throw InvalidKey("KeyonaSubject|decryptBySubject(): Invalid key for subject '" + mySubjectName + "'");
 };
 

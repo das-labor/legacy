@@ -124,11 +124,6 @@ void KeyronaCreatePlatform(KeyronaStorage &mySubjectStorage)
         cout << "Admin successfully logged in!" << endl;
 
     vector<string> myPlatforms = KeyronaFindAllPlatforms(mySubjectStorage);
-    if (myPlatforms.size())
-    {
-        cout << "A platform '" + myPlatforms[0] + "' already exists! Currently only one platform is supported!" << endl;
-        return;
-    }
 
     string myPlatformname = getStringFromUser("Please enter name for new Platform: ");
     if (KeyronaFindPlatform(mySubjectStorage, myPlatformname))

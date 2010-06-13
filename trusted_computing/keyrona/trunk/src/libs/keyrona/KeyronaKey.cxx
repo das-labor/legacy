@@ -30,28 +30,42 @@ using namespace keyrona;
 
 static UInt32 KeyCounter = 0;
 
-// load existing key
-//================================================================================
-//
-KeyronaKey::KeyronaKey(string &keyfile, int &bindkeynum) :
-valid (false)
-{
-	
-	
-    valid = true;
-    KeyCounter++;
-};
-
 // create a new key
 //================================================================================
 //
-KeyronaKey::KeyronaKey(KeyronaSubject *Subject, string &password, int &type) :
-valid (false)
+KeyronaKey::KeyronaKey(KeyronaSubject *Subject, string &password) :
+valid (false),
+keyfile (""),
+keynum (""),
+type ("")
 {
-	KeyronaTPM;
-	
-	myTPM.create_key(toEncrypt, bindkeynum);
+	if (!Subject)
+        throw InvalidSubjectID("KeyronaKey|Constructor(): Invalid Subject pointer given!");
 
+    if (Subject->getMySubjectKeyfile().empty())
+        throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
+    else
+        keyfile = Subject->getMySubjectKeyfile();
+        
+    if (Subject->getMySubjectKeyUUID().empty())
+        throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
+    else
+        keynum = Subject->getMySubjectKeyUUID();
+        
+    if (Subject->getMySubjectKeyType().empty())
+        throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
+    else
+        type = Subject->getMySubjectKeyType();
+        	
+	KeyronaTPM;
+	vector<ByteVector> keyinfo = myTPM.create_key(password, keynum, type);
+	
+    // data
+    ByteVector Data = keyinfo.back();
+    keyinfo.pop_back();
+    string DataFile = keyfile + keynum + KEYRONA_TPM_KEY_EXTENSION;
+    storeByteVectorInFile(DataFile, Data);
+    
     valid = true;
     KeyCounter++;
 };
@@ -85,11 +99,16 @@ KeyronaKey::~KeyronaKey()
 
 //================================================================================
 //
-vector<ByteVector>  KeyronaKey::encrypt(ByteVector &toEncrypt, int &bindkeynum)
+vector<ByteVector>  KeyronaKey::encrypt(KeyronaSubject *Subject, ByteVector &toEncrypt) :
+keynum ("")
 {
+	if (Subject->getMySubjectKeyUUID().empty())
+        throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
+    else
+        keynum = Subject->getMySubjectKeyUUID();
+        
    	KeyronaTPM;
-
-	vector<ByteVector> mySealedDataWithKey = myTPM.bind(toEncrypt, bindkeynum);
+	vector<ByteVector> mySealedDataWithKey = myTPM.bind(toEncrypt, keynum);
     ByteVector result = mySealedDataWithKey.back();
     mySealedDataWithKey.pop_back();
     
@@ -98,11 +117,16 @@ vector<ByteVector>  KeyronaKey::encrypt(ByteVector &toEncrypt, int &bindkeynum)
 
 //================================================================================
 //
-ByteVector  KeyronaKey::decrypt(vector<ByteVector> &toDecrypt,int &bindkeynum, string &myPassword)
+ByteVector  KeyronaKey::decrypt(KeyronaSubject *Subject, vector<ByteVector> &toDecrypt, string &myPassword) :
+keynum ("")
 {
+	if (Subject->getMySubjectKeyUUID().empty())
+        throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
+    else
+        keynum = Subject->getMySubjectKeyUUID();	
+	
 	KeyronaTPM;
-
-	vector<ByteVector> mySealedDataWithKey = myTPM.unbind(toDecrypt, bindkeynum, password);
+	vector<ByteVector> mySealedDataWithKey = myTPM.unbind(toDecrypt, keynum, myPassword);
     ByteVector result = mySealedDataWithKey.back();
     mySealedDataWithKey.pop_back();
 
@@ -111,9 +135,28 @@ ByteVector  KeyronaKey::decrypt(vector<ByteVector> &toDecrypt,int &bindkeynum, s
 
 //================================================================================
 //
-void KeyronaKey::printKeyInformation()
+void KeyronaKey::printKeyInformation(KeyronaSubject *Subject) :
+keyfile (""),
+keynum (""),
 {
-
+    if (Subject->getMySubjectKeyfile().empty())
+        throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
+    else
+        keyfile = Subject->getMySubjectKeyfile();	
+	
+	if (Subject->getMySubjectKeyUUID().empty())
+        throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
+    else
+        keynum = Subject->getMySubjectKeyUUID();
+	
+	 string KeyFile = keyfile + keynum + KEYRONA_TPM_KEY_EXTENSION;
+     ByteVector Key = loadByteVectorFromFile(KeyFile);
+     mySealedDataWithKey.push_back(Key);
+     
+     UInt8 Key_conv = convertByteVector2UInt8Vector(Key);
+     string result = convertUInt8VectorToString(Key_conv);
+     
+     cout << result << endl;
 };
 
 //================================================================================

@@ -599,16 +599,16 @@ vector<ByteVector> KeyronaTPM::create_key(string &password, int &keynum, int &ty
     
     // Choose between Bind, Storage or Legacy Key.
     switch(type) {
-					default :
-							flags = TSS_KEY_TYPE_LEGACY | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE | TSS_KEY_AUTHORIZATION;
-					break;
-					
-					case 1: 
+					case BIND: 
 							flags = TSS_KEY_TYPE_BIND | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE | TSS_KEY_AUTHORIZATION;
 					break;
 					
-					case 2:
+					case STORAGE:
 							flags = TSS_KEY_TYPE_STORAGE | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE | TSS_KEY_AUTHORIZATION;
+					break;
+					
+					case SIGNING:
+							flags = TSS_KEY_TYPE_SIGNING | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE | TSS_KEY_AUTHORIZATION;
 					break;
 	}
 	

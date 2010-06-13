@@ -55,6 +55,8 @@ const std::string KeyronaSubject_PasswordSection = "Password";
 const std::string KeyronaSubject_PasswordMagicEntry = "Magic";
 
 const std::string KeyronaSubject_SubjectName    = "Name";
+const std::string KeyronaSubject_SubjectKeyUUID = "KeyUUID";
+const std::string KeyronaSubject_SubjectKeyType = "KeyType";
 const std::string KeyronaSubject_SubjectEMail   = "EMail";
 const std::string KeyronaSubject_SubjectKeyfile = "Keyfile";
 const std::string KeyronaSubject_SubjectCountrycode = "Country";
@@ -120,6 +122,8 @@ namespace keyrona
              */
             KeyronaSubject( UInt8 subjectType,
                             string &subjectName,
+                            int    &subjectKeyUUID,
+                            string &subjectKeyType,
                             string &subjectEMail,
                             string &subjectCountryCode,
                             string &subjectOrganisation,
@@ -146,6 +150,8 @@ namespace keyrona
              */
             KeyronaSubject( UInt8 subjectType,
                             string &subjectName,
+                            int    &subjectKeyUUID,
+                            string &subjectKeyType,
                             string &subjectEMail,
                             string &subjectCountryCode,
                             string &subjectOrganisation,
@@ -185,7 +191,19 @@ namespace keyrona
 	     *  @return string, name of the subject
              */
 	    string getMySubjectName()   { return mySubjectName; };
-
+	    
+	        /*!
+             *  @brief get the keyuuid of a subject
+	     *  @return int, keyuuid of the subject
+             */
+	    int getMySubjectKeyUUID()   { return mySubjectKeyUUID; };
+	   
+	        /*!
+             *  @brief get the keytype of a subject
+	     *  @return string, keytype of the subject
+             */
+	    string getMySubjectKeyType()   { return mySubjectKeyType; };
+	    
             /*!
              *  @brief get the email of a subject
 	     *  @return string, email of the subject
@@ -262,6 +280,9 @@ namespace keyrona
 	     *  @param &toEncrypt, vector of UInt8, contains the data to be encrypted
 	     * 	@return vector of UInt8, contains the encrypted data
 	     */
+	    
+			string KeyronaSubject::setKeyOption();
+			
 	    vector<UInt8>   encryptForSubject(vector<UInt8> &toEncrypt);
 
             /*!
@@ -344,6 +365,8 @@ namespace keyrona
             UInt32  mySubjectID;
             string  mySubjectIDString;
             string  mySubjectName;
+            int		mySubjectKeyUUID;
+            int     mySubjectKeyType;
             string  mySubjectEMail;
             string  mySubjectKeyfile;
             string  mySubjectCountrycode;
