@@ -120,8 +120,8 @@ uint8_t TWIM_Init()
  Purpose: Start the TWI Master Interface
 
  Input Parameter:
- 	- uint8_t	Device address
- 	- uint8_t	Type of required Operation:
+ 	- uint8_t	Device address + 
+ 			Type of required Operation:
 				TWIM_READ: Read data from the slave
 				TWIM_WRITE: Write data to the slave
 
@@ -130,13 +130,13 @@ uint8_t TWIM_Init()
  	- FALSE:	Error in starting TWI Master
 
 *******************************************************/
-uint8_t TWIM_Start(uint8_t address, uint8_t TWIM_Type)
+uint8_t TWIM_Start(uint8_t address)
 {
 	uint8_t twst;
 /*
 ** Send START condition
 */
-	TWCR = _BV(TWINT)|_BV(TWSTA)|_BV(TWEN);
+	TWCR = _BV(TWINT) | _BV(TWSTA) | _BV(TWEN);
 /*
 ** Wait until transmission completed
 */
@@ -150,8 +150,8 @@ uint8_t TWIM_Start(uint8_t address, uint8_t TWIM_Type)
 /*
 ** Send device address
 */
-	TWDR = address + TWIM_Type;
-	TWCR = _BV(TWINT)|_BV(TWEN);
+	TWDR = address;
+	TWCR = _BV(TWINT) | _BV(TWEN);
 /*
 ** Wait until transmission completed and ACK/NACK has been received
 */
@@ -180,7 +180,7 @@ void TWIM_Stop()
 /*
 ** Send stop condition
 */
-	TWCR = _BV(TWINT)|_BV(TWEN)|_BV(TWSTO);
+	TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWSTO);
 /*
 ** Wait until stop condition is executed and bus released
 */
@@ -206,7 +206,7 @@ uint8_t TWIM_Write(uint8_t byte)
 ** Send data to the previously addressed device
 */
 	TWDR = byte;
-	TWCR = _BV(TWINT)|_BV(TWEN);
+	TWCR = _BV(TWINT) | _BV(TWEN);
 /*
 ** Wait until transmission completed
 */
@@ -233,7 +233,7 @@ uint8_t TWIM_Write(uint8_t byte)
 *******************************************************/
 uint8_t TWIM_ReadAck()
 {
-	TWCR = _BV(TWINT)|_BV(TWEN)|_BV(TWEA);
+	TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWEA);
 	while (!(TWCR & _BV(TWINT)));
 
 	return TWDR;
@@ -251,7 +251,7 @@ uint8_t TWIM_ReadAck()
 *******************************************************/
 uint8_t TWIM_ReadNack()
 {
-	TWCR = _BV(TWINT)|_BV(TWEN);
+	TWCR = _BV(TWINT) | _BV(TWEN);
 	while (!(TWCR & _BV(TWINT)));
 
 	return TWDR;

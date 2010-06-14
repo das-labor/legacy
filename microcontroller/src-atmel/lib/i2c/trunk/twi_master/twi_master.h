@@ -16,12 +16,12 @@
 
 // default bitrate
 #ifndef TWI_BITRATE
-#define TWI_BITRATE 100000L
+#define TWI_BITRATE 100000UL
 #endif
 
 
 uint8_t TWIM_Init();
-uint8_t TWIM_Start(uint8_t address, uint8_t TWIM_Type);
+uint8_t TWIM_Start(uint8_t address);
 void TWIM_Stop();
 uint8_t TWIM_Write(uint8_t byte);
 uint8_t TWIM_ReadAck();
