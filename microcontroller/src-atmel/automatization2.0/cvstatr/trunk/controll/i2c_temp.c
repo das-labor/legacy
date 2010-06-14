@@ -7,7 +7,7 @@
 
 void init_sensor(uint8_t addr)
 {
-	if (!TWIM_Start(addr, TW_WRITE))
+	if (!TWIM_Start(addr + TW_WRITE))
 	{
 		TWIM_Stop();
 	}
@@ -16,7 +16,7 @@ void init_sensor(uint8_t addr)
 		TWIM_Write(SOFTWARE_POR);
 		TWIM_Stop();
 	}
-	if (!TWIM_Start(addr, TW_WRITE))
+	if (!TWIM_Start(addr + TW_WRITE))
 	{
 		TWIM_Stop();
 	}
@@ -26,7 +26,7 @@ void init_sensor(uint8_t addr)
 		TWIM_Write(0b10001100);
 		TWIM_Stop();
 	}
-	if (!TWIM_Start(addr, TW_WRITE))
+	if (!TWIM_Start(addr + TW_WRITE))
 	{
 		TWIM_Stop();
 	}
@@ -39,7 +39,7 @@ void init_sensor(uint8_t addr)
 
 void get_temp(uint8_t *p, uint8_t addr)
 {
-	if (!TWIM_Start(addr, TW_WRITE))
+	if (!TWIM_Start(addr + TW_WRITE))
 	{
 		TWIM_Stop();
 	}
@@ -48,7 +48,7 @@ void get_temp(uint8_t *p, uint8_t addr)
 		TWIM_Write(STOP_CONVERT);
 		TWIM_Stop();
 	}
-	if (!TWIM_Start(addr, TW_WRITE))
+	if (!TWIM_Start(addr + TW_WRITE))
 	{
 		TWIM_Stop();
 	}
@@ -57,7 +57,7 @@ void get_temp(uint8_t *p, uint8_t addr)
 		TWIM_Write(READ_TEMPERATURE);
 		//TWIM_Stop();
 	}
-	if (!TWIM_Start(addr, TW_READ))
+	if (!TWIM_Start(addr + TW_READ))
 	{
 		TWIM_Stop();
 	}
@@ -67,7 +67,7 @@ void get_temp(uint8_t *p, uint8_t addr)
 		p[1] = TWIM_ReadNack();
 		TWIM_Stop();
 	}
-	if (!TWIM_Start(addr, TW_WRITE))
+	if (!TWIM_Start(addr + TW_WRITE))
 	{
 		TWIM_Stop();
 	}
@@ -80,7 +80,7 @@ void get_temp(uint8_t *p, uint8_t addr)
 
 void get_reg(uint8_t *p)
 {
-	if (!TWIM_Start(I2CADRESSE, TW_WRITE))
+	if (!TWIM_Start(I2CADRESSE + TW_WRITE))
 	{
 		TWIM_Stop();
 	}
@@ -89,7 +89,7 @@ void get_reg(uint8_t *p)
 		TWIM_Write(ACCESS_CONFIG);
 		//TWIM_Stop();
 	}
-	if (!TWIM_Start(I2CADRESSE, TW_READ))
+	if (!TWIM_Start(I2CADRESSE + TW_READ))
 	{
 		TWIM_Stop();
 	}

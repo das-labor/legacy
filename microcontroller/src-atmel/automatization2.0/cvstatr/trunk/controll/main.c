@@ -2,6 +2,7 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
 
 #include "config.h"
 
@@ -15,6 +16,16 @@
 
 // int regler_tick = true
 
+volatile uint8_t tickscounter;
+
+ISR(TIMER1_COMPA_vect)
+{
+	//1 Hz
+	
+	// ueberlaeufe sind ok!	
+	tickscounter++;
+	
+}
 
 void init(void)
 {
@@ -36,6 +47,12 @@ void init(void)
 	DDRD &= ~(_BV(PD7) | _BV(PD5));
 	PORTD |= _BV(PD7) | _BV(PD5);
 
+	TCCR1B |= _BV(CS12) | _BV(CS10) | _BV(WGM12);
+	TCCR1A = 0;
+	OCR1A = 0xffff;
+	TIFR |= _BV(TOIE1);
+
+
 	//initialize spi port
 	spi_init();
 	
@@ -43,7 +60,7 @@ void init(void)
 	can_init();
 	read_can_addr();
 	//turn on interrupts
-  //sei();
+  sei();
 }
 	 
 int main(void)
@@ -57,6 +74,10 @@ int main(void)
 		can_handler();
 		switch_handler();
 		temp_regler();
+		if (tickscounter == 10) {
+			temp_sensor_read();
+		tickscounter = 0;
+		}
 	}
 	return 1;
 }
