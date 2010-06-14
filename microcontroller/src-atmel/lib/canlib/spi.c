@@ -21,3 +21,4 @@ extern uint8_t spi_send(uint8_t data)
 	while (!(SPSR & _BV(SPIF)));
 	return SPDR;
 }
+
