@@ -17,7 +17,7 @@ void set_ventil(uint8_t stufe)
 	uint8_t i = 0;
 	while (i < 2)
 	{
-		if (!TWIM_Start(ventile[i++], TW_WRITE))
+		if (!TWIM_Start(ventile[i++] + TW_WRITE))
 		{
 			TWIM_Stop();
 		}
@@ -35,7 +35,7 @@ void set_reset()
 	uint8_t i = 0;
 	while (i < 2)
 	{
-		if (!TWIM_Start(ventile[i++], TW_WRITE))
+		if (!TWIM_Start(ventile[i++] + TW_WRITE))
 		{
 			TWIM_Stop();
 		}

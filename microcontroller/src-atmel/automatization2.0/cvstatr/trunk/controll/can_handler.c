@@ -46,7 +46,7 @@ extern void can_handler()
 			else if (rx_msg->port_dst == 0x10)
 			{
 				uint8_t data[2] = {0, 0};
-				get_temp(data, 0x96);	
+				get_temp(data, 0x96);
 				msg.data[0] = data[0];
 				msg.data[1] = data[1];
 				msg.dlc = 2;
