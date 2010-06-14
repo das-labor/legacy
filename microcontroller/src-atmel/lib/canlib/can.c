@@ -224,7 +224,6 @@ void can_init()
 	{
 		TX_BUFFER[x].flags = 0;
 	}
-	myaddr = eeprom_read_byte(0x00);
 #endif	
 
 #ifdef CAN_HANDLEERROR
