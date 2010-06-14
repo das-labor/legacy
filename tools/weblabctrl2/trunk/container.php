@@ -22,6 +22,7 @@ include "obj_status.php";
 include "obj_speek.php";
 include "obj_sound.php";
 include "obj_muell.php";
+include "obj_lightbasteldetail.php";
 
 $objlist = array();
 $sortedobjects = array();
@@ -55,6 +56,19 @@ $ctrlelement_lightvortragmeta = new c_lightvortragmeta();
 $ctrlelement_lightvortragmeta->setdisplayname("Vortragslicht");
 array_push($objlist,$ctrlelement_lightvortragmeta);
 $encap_lightvortragmeta = new c_identifier($ctrlelement_lightvortragmeta);
+
+$ctrlelement_lightbasteldetail = new c_lightbasteldetail();
+$ctrlelement_lightbasteldetail->setdisplayname("Bastellicht Details");
+array_push($objlist,$ctrlelement_lightbasteldetail);
+$encap_lightbasteldetail = new c_identifier($ctrlelement_lightbasteldetail);
+
+$ctrlelement_lightbasteldetail2 = new c_lightbasteldetail();
+$ctrlelement_lightbasteldetail2->setdisplayname("Bastellicht Details");
+$ctrlelement_lightbasteldetail2->setid("lightbasteldetail2");
+array_push($objlist,$ctrlelement_lightbasteldetail2);
+$encap_lightbasteldetail2 = new c_identifier($ctrlelement_lightbasteldetail2);
+
+
 
 $ctrlelement_lightvortragdetail = new c_lightvortragdetail();
 $ctrlelement_lightvortragdetail->setdisplayname("Vortragslicht Details");
@@ -100,6 +114,7 @@ $ctrlelement_speach = new c_speek();
 $ctrlelement_speach->setdisplayname("Text To Speach");
 array_push($objlist,$ctrlelement_speach);
 $encap_speach = new c_identifier($ctrlelement_speach);
+
 
 
 $ctrlelement_musikvortrag2 = new c_musikvortrag();
@@ -269,6 +284,8 @@ $lounge->addcontentOBJ($encap_sound);
 
 
 $bastel->addcontentOBJ($encap_musikbastel);
+$bastel->addcontentOBJ($encap_lightbasteldetail);
+
 
 $keller->addcontentOBJ($encap_musikkeller);
 
@@ -282,6 +299,7 @@ $licht->addcontentOBJ($encap_lightkueche2);
 $licht->addcontentOBJ($encap_lightlounge2);
 $licht->addcontentOBJ($encap_lightvortragmeta2);
 $licht->addcontentOBJ($encap_lightvortragdetail2);
+$licht->addcontentOBJ($encap_lightbasteldetail2);
 
 $spielzeug->addcontentOBJ($encap_moodbar);
 $spielzeug->addcontentOBJ($encap_lsborg);
