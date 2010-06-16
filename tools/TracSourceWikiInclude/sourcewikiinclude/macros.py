@@ -56,7 +56,7 @@ class SourceWikiIncludeMacro(WikiMacroBase):
 #                out = escape(out)
 #        reader = str(out).split("||")
         need_header=1;
-        foo=(str(Mimeview(self.env).render(None, "text/x-trac-wiki", str(out))))
+        foo=(str(WikiTextRenderer(self.env).render(ctxt, "text/x-trac-wiki", str(out))))
         
         
         return foo
