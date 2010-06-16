@@ -7,7 +7,7 @@ from trac.core import *
 from trac.wiki.macros import WikiMacroBase
 from trac.wiki.formatter import system_message
 from trac.wiki.model import WikiPage
-from trac.mimeview.api import Mimeview, get_mimetype, Context
+from trac.mimeview.api import Mimeview, get_mimetype, Context, WikiTextRenderer
 from trac.perm import IPermissionRequestor
 from genshi.core import escape
 from genshi.input import HTMLParser, ParseError
