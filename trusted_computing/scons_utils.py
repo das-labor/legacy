@@ -1,0 +1,192 @@
+##################################################################################
+# New Auto-Configuration Functions
+##################################################################################
+
+##################################################################################
+# This code was tested on Intel, AMD 64, and Cell (Playstation 3)
+# Python already knows what endian it is, just ask Python.
+def checkEndian(context):
+    context.Message("Checking endianness ... ")
+
+    import struct
+
+    array = struct.pack('cccc', '\x01', '\x02', '\x03', '\x04')
+
+    i = struct.unpack('i', array)
+
+    # Little Endian
+    if i == struct.unpack('<i', array):
+        context.Result("little")
+        return "little"
+
+    # Big Endian
+    elif i == struct.unpack('>i', array):
+        context.Result("big")
+        return "big"
+
+    context.Result("unknown")
+    return "unknown"
+    
+##################################################################################
+# Check type size
+
+# Sensible default for common types on common platforms.
+_DEFAULTS = {
+    'short' : [2,],
+    'int' : [4, 2],
+    'long' : [4, 8],
+    'long long' : [8, 4],
+    # Normally, there is no need to check unsigned types, because they are
+    # guaranteed to be of the same size than their signed counterpart.
+    'unsigned short' : [2,],
+    'unsigned int' : [4, 2],
+    'unsigned long' : [4, 8],
+    'unsigned long long' : [8, 4],
+    'float' : [4,],
+    'double' : [8,],
+    'long double' : [12,],
+    'size_t' : [4,],
+}
+
+def checkTypeSize(context, type, includes = None, language = 'C++', size = None):
+    """This check can be used to get the size of a given type, or to check whether
+    the type is of expected size.
+
+    Arguments:
+        - type : str
+            the type to check
+        - includes : sequence
+            list of headers to include in the test code before testing the type
+        - language : str
+            'C' or 'C++'
+        - size : int
+            if given, will test wether the type has the given number of bytes.
+            If not given, will test against a list of sizes (all sizes between
+            0 and 16 bytes are tested).
+
+        Returns:
+                status : int
+                        0 if the check failed, or the found size of the type if the check succeeded."""
+    minsz = 0
+    maxsz = 16
+
+    if includes:
+        src = "\n".join([r"#include <%s>\n" % i for i in includes])
+    else:
+        src = ""
+
+    if language == 'C':
+        ext = '.c'
+    elif language == 'C++':
+        ext = '.cxx'
+    else:
+        raise NotImplementedError("%s is not a recognized language" % language)
+
+    # test code taken from autoconf: this is a pretty clever hack to find that
+    # a type is of a given size using only compilation. This speeds things up
+    # quite a bit compared to straightforward code using TryRun
+    src += r"""
+typedef %s scons_check_type;
+
+int main()
+{
+    static int test_array[1 - 2 * !(((long int) (sizeof(scons_check_type))) <= %d)];
+    test_array[0] = 0;
+
+    return 0;
+}
+"""
+        
+    if size:
+        # Only check if the given size is the right one
+        context.Message('Checking %s is %d bytes... ' % (type, size))
+        st = context.TryCompile(src % (type, size), ext)
+        context.Result(st)
+
+        if st:
+            return size
+        else:
+            return 0
+    else:
+        # Only check if the given size is the right one
+        context.Message('Checking size of %s ... ' % type)
+
+        # Try sensible defaults first
+        try:
+            szrange = _DEFAULTS[type]
+        except KeyError:
+            szrange = []
+        szrange.extend(xrange(minsz, maxsz))
+        st = 0
+
+        # Actual test
+        for sz in szrange:
+            st = context.TryCompile(src % (type, sz), ext)
+            if st:
+                break
+
+        if st:
+            context.Result('%d' % sz)
+            return sz
+        else:
+            context.Result('Failed !')
+            return 0    
+            
+##################################################################################
+# Managing config.hxx
+##################################################################################
+
+import os
+
+config_content = ''
+config_name = ''
+
+#=================================================================================
+def writeToFile(filename, lines, append = False):
+  " utility function: write or append lines to filename "
+  if append:
+    file = open(filename, 'a')
+  else:
+    file = open(filename, 'w')
+  file.write(lines)
+  file.close()
+          
+#=================================================================================
+def startConfig( name ):
+  ''' Write the first part of Config.hxx'''
+  global config_name
+  config_name = name + '.hxx'
+  global config_content
+  config_content = '''
+/* Header file generated by scons */
+
+#ifndef ''' + name + '''_hxx_included
+#define ''' + name + '''_hxx_included
+
+
+'''
+
+
+#=================================================================================
+def addToConfig(lines, newline=2, comment=''):
+  ''' utility function: shortcut for appending lines to outfile
+    add newline at the end of lines.
+  '''
+  global config_content
+ 
+  	
+  if lines.strip() != '':
+	if comment.strip() != '':
+  		config_content += comment + '\n'
+	config_content += lines + '\n'*newline
+
+#=================================================================================
+def endConfig( top_src_dir ):
+  ''' Write the last part of config file '''
+  global config_content
+  global config_name
+  
+  writeToFile( os.path.join( top_src_dir, config_name ), config_content + 
+'''
+#endif
+''')
