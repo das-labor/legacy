@@ -1,0 +1,14 @@
+diff -pruN orig/bindings/cryptlib.pas new/bindings/cryptlib.pas
+--- orig/bindings/cryptlib.pas	2008-02-17 03:17:36.000000000 +0100
++++ new/bindings/cryptlib.pas	2009-04-03 12:01:06.068168390 +0200
+@@ -36,8 +36,8 @@ const
+   {$IFDEF WIN32}
+     cryptlibname = 'CL32.DLL';  { dynamic linkname for Windows (Delphi) }
+   {$ELSE}
+-    cryptlibname = 'libcl.so';  { library name for Unix/Linux  (Kylix) }
+-                 { symbolic link should be used for libcl.so -> libcl.so.3.x.y }
++    cryptlibname = 'libkeyronacl.so';  { library name for Unix/Linux  (Kylix) }
++                 { symbolic link should be used for libkeyronacl.so -> libkeyronacl.so.3.x.y }
+   {$ENDIF}
+ 
+ 
