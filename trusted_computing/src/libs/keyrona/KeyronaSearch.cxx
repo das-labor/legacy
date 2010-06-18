@@ -116,7 +116,6 @@ bool KeyronaFindUser(KeyronaStorage &mySubjectStorage, const string &subjectIden
         catch ( UnknownSubject &e )
         {
             debug << "KeyronaFindUser(): user '" << subjectIdentifier << "' not found" << endl;
-            exit(-1);
         }
         Iterator++;
     }

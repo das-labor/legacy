@@ -134,24 +134,26 @@ KeyronaKey::~KeyronaKey()
 //
 ByteVector  KeyronaKey::encrypt(KeyronaSubject *Subject, KeyronaGroup *Group, ByteVector &toEncrypt) 
 {
-	if(Group == NULL) {					
+	if (Group == NULL) {					
 		if (Subject->getMySubjectKeyUUID().empty())
 			throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
 		else
-			keynum = Subject->getMySubjectKeyUUID();
+			keyuuid = Subject->getMySubjectKeyUUID();
 	}
 	if(Subject == NULL) {
 		if (Group->getMyGroupKeyUUID().empty())
 			throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
 		else
-			keynum = Group->getMyGroupKeyUUID();
+			keyuuid = Group->getMyGroupKeyUUID();
     }
-    cout << "mist" << endl;
-    UInt32 uuid = convertStringtoUInt32(keynum);    
         
+    UInt32 uuid = convertStringtoUInt32(keyuuid);    
+
    	KeyronaTPM myTPM;
     ByteVector result = myTPM.bind(toEncrypt, uuid);
-    
+	
+	keyuuid.clear();
+	
     return result;
 };
 
@@ -163,20 +165,22 @@ ByteVector  KeyronaKey::decrypt(KeyronaSubject *Subject, KeyronaGroup *Group, By
 		if (Subject->getMySubjectKeyUUID().empty())
 			throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
 		else
-			keynum = Subject->getMySubjectKeyUUID();
+			keyuuid = Subject->getMySubjectKeyUUID();
 	}
-	else {
+	if(Subject == NULL) {
 		if (Group->getMyGroupKeyUUID().empty())
 			throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
 		else
-			keynum = Group->getMyGroupKeyUUID();
-    };
+			keyuuid = Group->getMyGroupKeyUUID();
+    }
     	
-	UInt32 uuid = convertStringtoUInt32(keynum);
+	UInt32 uuid = convertStringtoUInt32(keyuuid);
 	
 	KeyronaTPM myTPM;
     ByteVector result = myTPM.unbind(toDecrypt, uuid, myPassword);
-
+	
+	keyuuid.clear();
+	
     return result;
 };
 
@@ -194,12 +198,35 @@ void KeyronaKey::printKeyInformation(KeyronaSubject *Subject)
     else
         keynum = Subject->getMySubjectKeyUUID();
 	
-	 string KeyFile = keyfile + keynum + KEYRONA_TPM_KEY_EXTENSION;
+	 string KeyFile = keyfile; // + keynum + KEYRONA_TPM_KEY_EXTENSION;
      ByteVector Key = loadByteVectorFromFile(KeyFile);
      
 	 string result = convertByteVector2String(Key);
      
      cout << result << endl;
+};
+
+//================================================================================
+//
+void KeyronaKey::deleteKey(KeyronaSubject *Subject, KeyronaGroup *Group)
+{
+	if (Group == NULL) {					
+		if (Subject->getMySubjectKeyUUID().empty())
+			throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
+		else
+			keyuuid = Subject->getMySubjectKeyUUID();
+	}
+	else {
+		if (Group->getMyGroupKeyUUID().empty())
+			throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
+		else
+			keyuuid = Group->getMyGroupKeyUUID();
+    }			
+        
+    UInt32 uuid = convertStringtoUInt32(keyuuid);  
+    
+    KeyronaTPM myTPM;
+    myTPM.delete_key(uuid);    
 };
 
 //================================================================================

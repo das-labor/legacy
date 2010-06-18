@@ -80,7 +80,7 @@ namespace keyrona
 	    
 	    void change_key_auth(string &password, string &password_old, UInt32 &keynum);
 	    
-	    vector<ByteVector> delete_key(UInt32 &keynum);
+	    void delete_key(UInt32 &keynum);
 	   
 	    
 	    ByteVector getRandom(UInt8 amountOfRandomBytes);

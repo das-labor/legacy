@@ -414,6 +414,7 @@ void KeyronaCreateVolume(KeyronaStorage &myVolumeStorage, KeyronaStorage &mySubj
     debug << "Generating new volume password" << endl;
 
     string VolumePassword = generateRandomString(KEYRONA_MINIMUM_PASSWORD_LENGTH);
+    cout << VolumePassword << endl;
     if (verifySelection())
     {
         string myCommand;
@@ -828,7 +829,7 @@ void KeyronaAddGroupToVolume(KeyronaStorage &myVolumeStorage, KeyronaStorage &my
 
     // load the volume key
     string myVolumeKey = myVolume.getDecryptedVolumeKey(&myAdminGroup, myAdminGroupKeyPassword);
-
+	cout << myVolumeKey << endl;
     // finally, add the group
     myVolume.addGroup(&myGroup, myVolumeKey);
     cout << "Successfully added group '" << groupID << "' to volume '" << volumeID << "'." << endl;
