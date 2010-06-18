@@ -517,7 +517,7 @@ bool KeyronaSubject::storeSubject()
     ByteVector passwordMagicVectorByteVector = encryptForSubject(this, passwordMagicVector);
     string myBase64EncodedPasswordMagicVector = EncodeByteVectorToBASE64(passwordMagicVectorByteVector);
     mySubjectStorage.setEntry(KeyronaSubject_PasswordMagicEntry, myBase64EncodedPasswordMagicVector);
-
+    
     // assigning group and file permission
     try
     {
@@ -631,12 +631,13 @@ void KeyronaSubject::setLastLogin(KeyronaDate &LoginDate)
 //
 ByteVector  KeyronaSubject::encryptForSubject(KeyronaSubject *Subject, ByteVector &toEncrypt)
 {
-    //if (! toEncrypt.size())
-     //   throw DecryptionFailed("KeyonaSubject|encryptForSubject(): No data supplied to be encrypted!");
+    if (! toEncrypt.size())
+       throw DecryptionFailed("KeyonaSubject|encryptForSubject(): No data supplied to be encrypted!");
 
     //if((mySubjectKey) && (mySubjectKey->isValid()))
+
     return mySubjectKey->encrypt(this, NULL, toEncrypt);
-    //throw InvalidKey("KeyonaSubject|encryptForSubject(): Invalid key for subject '" + mySubjectName + "'");
+	//	throw InvalidKey("KeyonaSubject|encryptForSubject(): Invalid key for subject '" + mySubjectName + "'");
 };
 
 //================================================================================
@@ -667,12 +668,12 @@ ByteVector  KeyronaSubject::decryptBySubject(KeyronaSubject *Subject, ByteVector
             password = x;
     }
     else
+    
     {
         if (myPassword.empty())
             throw InvalidPassword("KeyonaSubject|decryptBySubject(): Invalid password for subject '" + mySubjectName + "'");
         password = myPassword;
     }
-
     if (!(verifyPassword(password)))
         throw InvalidPassword("KeyonaSubject|decryptBySubject(): Invalid password for subject '" + mySubjectName + "'");
 
@@ -682,10 +683,11 @@ ByteVector  KeyronaSubject::decryptBySubject(KeyronaSubject *Subject, ByteVector
     debug << "KeyonaSubject|decryptBySubject(): Updating subject's last login with current system time" << endl;
     KeyronaDate myCurrentSystemTime;
     setLastLogin(myCurrentSystemTime);
+        		cout << " njaaa" << endl;
 
-    if ((mySubjectKey) && (mySubjectKey->isValid()))
-        return mySubjectKey->decrypt(this, NULL, toDecrypt, password);
-    throw InvalidKey("KeyonaSubject|decryptBySubject(): Invalid key for subject '" + mySubjectName + "'");
+    //if ((mySubjectKey) && (mySubjectKey->isValid()))
+        return mySubjectKey->decrypt(Subject , NULL, toDecrypt, password);
+    //throw InvalidKey("KeyonaSubject|decryptBySubject(): Invalid key for subject '" + mySubjectName + "'");
 };
 
 //================================================================================

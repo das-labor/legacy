@@ -86,7 +86,6 @@ namespace keyrona
              *	@return, vector of ByteVector, contains the encrypted data
              */
             ByteVector  encrypt(KeyronaSubject *Subject, KeyronaGroup *Group, ByteVector &toEncrypt);
-
             /*!
 	     *  @brief decrypts with the private key
              *	@param &toDecrypt, vector of ByteVector, contains the data to be decrypted
@@ -102,6 +101,8 @@ namespace keyrona
              *  @return, boolean, determines whether or not the operation was successful
              */
             bool        changePassword(KeyronaSubject *Subject, string &oldPassword, string &newPassword);
+            
+            void deleteKey(KeyronaSubject *Subject, KeyronaGroup *Group);
 
         private:
             /*!

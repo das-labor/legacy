@@ -387,6 +387,8 @@ void KeyronaGroup::storeGroup()
     myGroupStorage.selectSubSection(KeyronaGroup_GroupProperties);
     myGroupStorage.setEntry(KeyronaGroup_isGroup, KeyronaGroup_isGroup_true);
     myGroupStorage.setEntry(KeyronaGroup_GroupKeyfile, myGroupKeyfile);
+	myGroupStorage.setEntry(KeyronaGroup_GroupKeyUUID, myGroupKeyUUID);
+	myGroupStorage.setEntry(KeyronaGroup_GroupKeyType, myGroupKeyType);
 
     // assigning group and file permission
     assignFilePermission(myGroupKeyfile, KEYFILEPERMISSION);
@@ -400,6 +402,8 @@ void KeyronaGroup::loadGroup()
     debug << "KeyronaGroup[" << myGroupID << "|loadGroup()] called!" << endl;
     myGroupStorage.selectSection(myGroupID);
     myGroupStorage.selectSubSection(KeyronaGroup_GroupProperties);
+    myGroupKeyUUID = myGroupStorage.getEntry(KeyronaGroup_GroupKeyUUID);
+    myGroupKeyType = myGroupStorage.getEntry(KeyronaGroup_GroupKeyType);
     myGroupKeyfile = myGroupStorage.getEntry(KeyronaGroup_GroupKeyfile);
     loadSubjectList();
 };
@@ -416,15 +420,20 @@ string  KeyronaGroup::getDecryptedGroupKey(KeyronaSubject *Subject, string &pass
 
     debug << "KeyronaGroup|getDecryptedGroupKey(): receiving BASE64-encoded key" << endl;
     string myBase64EncodedPassword = myGroupStorage.getEntry(Subject->getMySubjectIDString());
+	cout << "seg" << endl;
 
     debug << "KeyronaGroup|getDecryptedGroupKey(): decoding BASE64-encoded key" << endl;
     ByteVector myDecode = DecodeBASE64StringToByteVector(myBase64EncodedPassword);
+    	cout << "seg2" << endl;
+
     debug << "KeyronaGroup|getDecryptedGroupKey(): decrypting key" << endl;
-    myDecode = Subject->decryptBySubject(Subject, myDecode, password);
+    ByteVector blub = Subject->decryptBySubject(Subject, myDecode, password);
+    	cout << "seg00" << endl;
+
     if (! myDecode.size() )
         throw DecryptionFailed("KeyronaGroup|getDecryptedGroupKey(): decryption failed for subject '" + Subject->getMySubjectName() + "'!");
 
-    return convertByteVector2String(myDecode);
+    return convertByteVector2String(blub);
 };
 
 //================================================================================
@@ -448,9 +457,8 @@ string  KeyronaGroup::getDecryptedGroupKeyByAdmin(string &AdminKeyPassword)
 
     // opening admin group
     KeyronaGroup myAdminGroup(KEYRONA_ADMIN_GROUP, myGroupStorage, mySubjectStorage);
-
     // decrypting group key password with admin key
-    //decodedGroupKeyPassword = myAdminGroup.decryptByGroup(decodedGroupKeyPassword, AdminKeyPassword);
+    decodedGroupKeyPassword = myAdminGroup.decryptByGroup(this, decodedGroupKeyPassword, AdminKeyPassword);
 
     return convertByteVector2String(decodedGroupKeyPassword);
 };
@@ -467,9 +475,10 @@ ByteVector  KeyronaGroup::encryptForGroup(KeyronaGroup *Group, ByteVector &toEnc
 //
 ByteVector  KeyronaGroup::decryptByGroup(KeyronaGroup *Group, ByteVector &toDecrypt, string &myPassword)
 {
-    if ((myGroupKey) && (myGroupKey->isValid()))
+	cout << myGroupKey << endl;
+    //if ((myGroupKey) && (myGroupKey->isValid()))
         return myGroupKey->decrypt(NULL, this, toDecrypt, myPassword);
-    throw InvalidKey("KeyronaGroup|decryptByGroup(): Invalid key for group '" + myGroupID + "'");
+    //throw InvalidKey("KeyronaGroup|decryptByGroup(): Invalid key for group '" + myGroupID + "'");
 };
 
 void KeyronaGroup::addMessageForGroupMembers(string message)

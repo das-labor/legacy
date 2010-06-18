@@ -173,7 +173,7 @@ void   KeyronaVolume::addGroup(KeyronaGroup *Group, const string &VolumePassword
     if (VolumePassword.empty())
         throw InvalidPassword("KeyronaVolume|addGroup(): The supplied password was empty!");
     ByteVector passwordVector = convertStringToByteVector(VolumePassword);
-
+	cout << "top" << endl;
     debug << "KeyronaVolume|addGroup(): Encrypting volume key for group '" << Group->getMyGroupID() << "'" << endl;
     ByteVector passwordVectorByteVector = Group->encryptForGroup(Group, passwordVector);
     if (!passwordVector.size())

@@ -815,7 +815,7 @@ void KeyronaTPM::change_key_auth(string &password, string &password_old, UInt32 
     Tspi_Context_Close(hContext);
 };
 
-vector<ByteVector> KeyronaTPM::delete_key(UInt32 &keynum)
+void KeyronaTPM::delete_key(UInt32 &keynum)
 {
 	
 	TSS_HCONTEXT hContext;
@@ -843,20 +843,10 @@ vector<ByteVector> KeyronaTPM::delete_key(UInt32 &keynum)
         throw TPMConnectError("KeyronaTPM[TrouSerS]|unseal(): Could not connect to TPM!");
     }
 	
-	if (Tspi_Context_UnregisterKey(hContext, TSS_PS_TYPE_USER, hKey_UUID, &hKey) != TSS_SUCCESS)
-    {
-        Tspi_Context_FreeMemory(hContext, NULL);
-        Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|unseal(): Error setting SRK secret!");
-    }
+	Tspi_Context_UnregisterKey(hContext, TSS_PS_TYPE_USER, hKey_UUID, &hKey);
     
     Tspi_Context_FreeMemory(hContext, NULL);
-    Tspi_Context_Close(hContext);
-    
-   vector<ByteVector> test;
-    
-    return test;
-	
+    Tspi_Context_Close(hContext);	
 };
 
 ByteVector KeyronaTPM::getRandom(UInt8 amountOfRandomBytes)
