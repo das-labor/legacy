@@ -17,14 +17,14 @@
 	ATMEGA644
 	PB0 v deflector UP
 	PB1 v deflector DOWN
-	PB5(MOSI)->SPI->laser
+	PB5(MOSI)->SPI->laser	
 	PD2(INT0)<-hsync
 	PD3(INT1)<-vsync
 	
 	PD4 h motor rpm input 
-	PD5 shield output always GND
+	PD5 status LED (shield)
 	PD6 debug output
-	PD7 shield output always GND
+	PD7 motor enable (shield)
 	<>Motor X
 	<>I2C->ATMEGA32
 		->GLCD
@@ -110,6 +110,7 @@ static void initdeflector_v();
 static void init_soft_vsync();
 static void deflector_handle();
 static void TIMER1_COMPB_VECT();
+static void start_motor_h();
 
 void hw_init(void)
 {
@@ -197,7 +198,7 @@ void hw_init(void)
 	// PORTD DDR
 	//******************
 	
-	DDRD = ~ (_BV(PD2) | _BV(PD3));	//Port D 2 & 3 input 
+	DDRD = ~ (_BV(PD2) | _BV(PD3) | _BV(PD4));	//Port D 2 & 3 input 
 	PORTD |= _BV(PD3) | _BV(PD2) | _BV(PD4);	//Internal Pullups on pin 2&3&4
 	
 	//******************
@@ -213,24 +214,31 @@ void hw_init(void)
 	
 int main (void)
 {
+
   hw_init();
+
 #ifdef __DEBUG
   uart_init();
   uart_putstr_P(PSTR("ATMEGA644 LASERPROJECTOR\n"));
   uart_putstr_P(PSTR("no console yet\nHELP\n1: laserwait_h\n2: laserwait_v\ns: Status\nw: stretchstrength_h\nh: print this text\n"));
+  char buffer[2];
+  char RS232cmd=0;
 #endif  
+
   calc_h_stretch();
 
   //start deflector_v
   initdeflector_v();
   init_soft_vsync();
-  char buffer[2];
-  char RS232cmd=0;
+
+  //start h motor
+  start_motor_h();
   
-   sei();
+  //enable interrupts
+  sei();
    
-   //while(laserON == 0)//wait until h-motor is fast enough
-   //  wait(100);
+   while(laserON == 0) //wait until h-motor is fast enough
+     wait(100);
 
    PORTD |= _BV(PD6);//laser on	 
 	 
@@ -306,6 +314,7 @@ int main (void)
     wait(200);
     PORTD |= _BV(PD5);
     wait(800);
+
     test=5;
     //test++;
     soft_vsync();
@@ -432,7 +441,7 @@ static void hsync(){			//called by hardware, laser is in position now
 		 asm("nop");
 	}
 
-	//if(laserON != 0)
+	if(laserON != 0)
 	  PORTD |= _BV(PD6); //laser on
 }
 
@@ -662,6 +671,19 @@ ISR (TIMER2_OVF_vect)
    deflectorStatus++; //next step
  }
 
+static void start_motor_h()
+{
+  //drive high and keep low
+  PORTD |= _BV(PD7);
+  wait(1000);
+  PORTD &= ~_BV(PD7);
+}
+
+static void stop_motor_h()
+{
+  //drive high and keep
+  PORTD |= _BV(PD7);
+}
 
 void i2controlstuff(){
   unsigned char ret=0;
