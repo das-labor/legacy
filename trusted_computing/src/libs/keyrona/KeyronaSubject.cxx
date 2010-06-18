@@ -511,12 +511,14 @@ bool KeyronaSubject::storeSubject()
     mySubjectStorage.setEntry(KeyronaSubject_SubjectAdmin, mySubjectisAdmin ? KeyronaSubject_TRUE : KeyronaSubject_FALSE);
 
     mySubjectStorage.selectSubSection(KeyronaSubject_PasswordSection);
+    if (mySubjectType == SUBJECTTYPE_USER) {
 	ByteVector passwordMagicVector;
     // creating password magic test vector
     passwordMagicVector = convertStringToByteVector(mySubjectIDString);
     ByteVector passwordMagicVectorByteVector = encryptForSubject(this, passwordMagicVector);
     string myBase64EncodedPasswordMagicVector = EncodeByteVectorToBASE64(passwordMagicVectorByteVector);
     mySubjectStorage.setEntry(KeyronaSubject_PasswordMagicEntry, myBase64EncodedPasswordMagicVector);
+	}
     
     // assigning group and file permission
     try

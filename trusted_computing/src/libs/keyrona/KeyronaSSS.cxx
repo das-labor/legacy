@@ -70,6 +70,8 @@ KeyronaSSS::KeyronaSSS (KeyronaStorage &SSSStorage, string SSSID, UInt32 n, vect
     for(int i = 0; i<P; i++ )
     {
         string currentParticipant = Participants[i]->getMySubjectName();
+        string currentParticipantkey = Participants[i]->getMySubjectKeyUUID();
+        cout << currentParticipantkey << endl;
         ByteVector currentX = x.back();
         ByteVector currentY = y.back();
 
