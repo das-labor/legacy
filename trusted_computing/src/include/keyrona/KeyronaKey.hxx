@@ -50,6 +50,7 @@ namespace keyrona
             string			keyfile;
             string			keynum;
             string			type;
+            string 			keyuuid;
 
         public:
         

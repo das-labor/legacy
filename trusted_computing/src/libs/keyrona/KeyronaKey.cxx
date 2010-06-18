@@ -134,25 +134,37 @@ KeyronaKey::~KeyronaKey()
 //
 ByteVector  KeyronaKey::encrypt(KeyronaSubject *Subject, KeyronaGroup *Group, ByteVector &toEncrypt) 
 {
-	if (Group == NULL) {					
-		if (Subject->getMySubjectKeyUUID().empty())
-			throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
-		else
-			keyuuid = Subject->getMySubjectKeyUUID();
+	ByteVector result;
+	string keyuuid;
+	if (Group == NULL & (Subject->getMySubjectType = SUBJECTTYPE_USER)) {	
+			if (Subject->getMySubjectKeyUUID().empty())
+				throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
+			else
+				keyuuid = Subject->getMySubjectKeyUUID();
+			    
+			    UInt32 uuid = convertStringtoUInt32(keyuuid);    
+
+				KeyronaTPM myTPM;
+				result = myTPM.bind(toEncrypt, uuid);
 	}
+	
 	if(Subject == NULL) {
 		if (Group->getMyGroupKeyUUID().empty())
 			throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
 		else
 			keyuuid = Group->getMyGroupKeyUUID();
-    }
-        
-    UInt32 uuid = convertStringtoUInt32(keyuuid);    
+		
+		    UInt32 uuid = convertStringtoUInt32(keyuuid);    
 
-   	KeyronaTPM myTPM;
-    ByteVector result = myTPM.bind(toEncrypt, uuid);
-	
-	keyuuid.clear();
+			KeyronaTPM myTPM;
+			result = myTPM.bind(toEncrypt, uuid);
+    }
+    
+    if (Subject->getMySubjectType = "SUBJECTTYPE_PLATFORM") {
+			int local;
+			KeyronaTPM myTPM;
+			vector<ByteVector> result = myTPM.seal(toEncrypt,local);
+	}
 	
     return result;
 };
@@ -161,6 +173,7 @@ ByteVector  KeyronaKey::encrypt(KeyronaSubject *Subject, KeyronaGroup *Group, By
 //
 ByteVector  KeyronaKey::decrypt(KeyronaSubject *Subject, KeyronaGroup *Group, ByteVector &toDecrypt, string &myPassword) 
 {
+	string keyuuid;
     if (Group == NULL) {					
 		if (Subject->getMySubjectKeyUUID().empty())
 			throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
@@ -188,6 +201,7 @@ ByteVector  KeyronaKey::decrypt(KeyronaSubject *Subject, KeyronaGroup *Group, By
 //
 void KeyronaKey::printKeyInformation(KeyronaSubject *Subject) 
 {
+	string keyfile, keynum;
     if (Subject->getMySubjectKeyfile().empty())
         throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
     else
@@ -210,6 +224,8 @@ void KeyronaKey::printKeyInformation(KeyronaSubject *Subject)
 //
 void KeyronaKey::deleteKey(KeyronaSubject *Subject, KeyronaGroup *Group)
 {
+		string keyuuid;
+
 	if (Group == NULL) {					
 		if (Subject->getMySubjectKeyUUID().empty())
 			throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
@@ -233,6 +249,7 @@ void KeyronaKey::deleteKey(KeyronaSubject *Subject, KeyronaGroup *Group)
 //
 bool KeyronaKey::changePassword(KeyronaSubject *Subject, string &oldPassword, string &newPassword) 
 {
+	string keynum;
     if (Subject->getMySubjectKeyUUID().empty())
         throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
     else
