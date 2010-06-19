@@ -37,7 +37,7 @@
 */
 
 
-#define __DEBUG 1
+//#define __DEBUG 1
 
 //define commands
 #define SETLASERON  PORTD |= _BV(PD6);//turn on Pin6
