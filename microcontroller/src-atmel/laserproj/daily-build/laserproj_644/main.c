@@ -14,6 +14,9 @@
 #include "./i2cmaster.h"
 
 /*
+  last change 18.06.2010
+  by siro
+
 	ATMEGA644
 	PB0 v deflector UP
 	PB1 v deflector DOWN
@@ -36,12 +39,20 @@
 
 #define __DEBUG 1
 
+//define commands
+#define SETLASERON  PORTD |= _BV(PD6);//turn on Pin6
+#define SETLASEROFF PORTD &= ~ _BV(PD6);//turn of Pin6
+#define SETLEDON PORTD |= _BV(PD5);
+#define SETLEDOFF PORTD &= ~ _BV(PD5);  
+#define SETMOTORENABLEHIGH PORTD |= _BV(PD7);
+#define SETMOTORENABLELOW PORTD &= ~ _BV(PD7);
+
 //hardware definitions
 #define mirrordutycyle 30 //in percent
 #define mirrorcount_h 4	//mirrors on h disc
 
-#define deflect_v_TIME_ON 200	//mirrors on v disc
-#define deflect_v_TIME_WAIT 300
+unsigned int deflect_v_TIME_ON = 200;	//mirrors on v disc
+unsigned int deflect_v_TIME_WAIT = 300;
 
 //????
 #define rpm_interval_v 20
@@ -57,7 +68,6 @@ volatile int fps=1;
 
 //current position of the laser point
 volatile unsigned int cpixel_v=0;		
-volatile unsigned int cpixel_h=0;
 
 //output buffer
 volatile unsigned char array[maxpixel_h/8];
@@ -68,15 +78,15 @@ volatile unsigned char test=0;		//current test running
 volatile unsigned int laserwait_h = 200;	//how long to wait from h_sync to start to display
 volatile unsigned int laserwait_v = 100;	//how long to wait from v_sync to start to display
 
-volatile unsigned int rpm_h=0;		//store the current rpm
-volatile unsigned int rps_h_cnt=0;		//counts current rpm (always <= rmp_h)
-volatile unsigned int rps_h =0;
+volatile unsigned int rpm_h = 0;		//store the current rpm
+volatile unsigned int rps_h_cnt = 0;		//counts current rpm (always <= rmp_h)
+volatile unsigned int rps_h = 0;
 
-volatile unsigned int rps_h_cnt_m=0; //rps from h-motor controller
-volatile unsigned int rps_h_m=0;
+volatile unsigned int rps_h_cnt_m = 0; //rps from h-motor controller
+volatile unsigned int rps_h_m = 0;
 
-volatile unsigned int rpm_v_cnt=0;
-volatile unsigned int rpm_v=0;
+volatile unsigned int rpm_v_cnt = 0;
+volatile unsigned int rpm_v = 0;
 
 volatile unsigned char timecounter=0;  //to get 1Hz sync
 volatile unsigned int timecounter2=0;
@@ -85,6 +95,8 @@ volatile unsigned int timecounter3=0;
 volatile unsigned char laserON=0; //laser diode status
 
 volatile unsigned char deflectorStatus=0;
+
+volatile unsigned char hsyncstart=0; //set by hsync() to start the drawing
 
 //reduce stretching
 //precalculate values and store them here
@@ -111,6 +123,7 @@ static void init_soft_vsync();
 static void deflector_handle();
 static void TIMER1_COMPB_VECT();
 static void start_motor_h();
+
 
 void hw_init(void)
 {
@@ -182,7 +195,7 @@ void hw_init(void)
 	//MOSI PIN output ?
 	DDRB |= _BV(PB5);
 	
-	SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR1)|(1<<SPR0); //SPI enable,master mode,speed at 1/128
+	SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR1); //SPI enable,master mode,speed at 1/64
 	
 	//DORD: LSB/MSB first ?
 	//Double speed on
@@ -214,6 +227,7 @@ void hw_init(void)
 	
 int main (void)
 {
+  unsigned long waittimer=0;
 
   hw_init();
 
@@ -240,7 +254,7 @@ int main (void)
    while(laserON == 0) //wait until h-motor is fast enough
      wait(100);
 
-   PORTD |= _BV(PD6);//laser on	 
+   PORTD |= _BV(PD6);//set laser on	 
 	 
    while (1) {
 
@@ -310,16 +324,42 @@ int main (void)
 #endif
 
     //LED blink
-    PORTD &= ~ _BV(PD5);
-    wait(200);
-    PORTD |= _BV(PD5);
-    wait(800);
+    SETLEDOFF
+
+    //wait if hsync-flag is set call hsync
+    waittimer = 0;
+    while((waittimer < 0xD80000)){
+      if(hsyncstart != 0)
+	hsync();
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    waittimer ++;
+    }
+
+    SETLEDON
+    
+    //wait if hsync-flag is set call hsync
+    waittimer = 0;
+    while((waittimer < 0x200B20)){
+       if(hsyncstart != 0)
+	hsync();
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    waittimer ++;
+    }
+
 
     test=5;
     //test++;
     soft_vsync();
     if (test > 7)
       test = 1;
+
+    
   }
 }
 
@@ -335,8 +375,8 @@ static void calc_h_stretch()
 // -- hsync
 ISR (SIG_INTERRUPT0)
 {
-  //if(laserON == 0)
-  //  return;
+  if(laserON == 0)
+    return;
 
   //now wait until laser is in position
   //use timer0 interrupt
@@ -367,60 +407,105 @@ ISR (TIMER0_COMPA_vect)
 {
   TIMSK0=0;//disable timer0 interrupt
   TCCR0B=0;//disable timer0
-
-  hsync();
+  if(hsyncstart != 0)
+    hsyncstart=1;
 }
 
 static void hsync(){			//called by hardware, laser is in position now
-
-	//cpixel_h=0;		//h pointer to 0
-
+ 
 	//wait nops
-	unsigned long waitloops=0;
-	unsigned int waitfor=0;
+	register unsigned int waitloops=0;
+	register unsigned int waitfor=0;
+	register unsigned int cpixel_h=0;
+	register unsigned char arraytemp=0;
 
-	//now we got 8*8 ops
-        //calculate how long to wait (horizontal)
-        //in der zeit die der spiegel braucht max_resolution_h pixel anzeigen
-        //zeit die der laser pro zeile proj.: mirrordutycyle/100 * 1/(rps_h*mirrorcount_h)
-        //zeit zu warten: t1 = mirrordutycyle/(rps_h*mirrorcount_h*max_resolution_h*100)
-        //(
-	//cnt = t1/(1/F_CPU)
-	//-----------------------------------
-        //mirror moves faster on the edges
-        //slower in the middle -> compensate
-        //wait longer in the middle
-        //( h_stretch[cpixel_h*maxstretchsteps/maxpixel_h] *mirrordutycyle/(rpm_h*mirrorcount_h*max_resolution_h*100)
-	//
 	waitfor=(mirrordutycyle*F_CPU)/(rps_h*mirrorcount_h*max_resolution_h*100);
 
 #ifdef __DEBUG
 	
-	for(cpixel_h=0;cpixel_h < max_resolution_h;cpixel_h++){
-	    
-	  if ((array[(unsigned int)(cpixel_h/8)]&(1<<(cpixel_h%8))) > 0)
-	    PORTD |= _BV(PD6);//turn on Pin6
-	  else
-	    PORTD &= ~ _BV(PD6);//turn of Pin6
-
-	if((TIFR1 & (1<<OCF1B))>0)
-		TIMER1_COMPB_VECT();
+	for(cpixel_h=0;cpixel_h < max_resolution_h/8;cpixel_h++){
+	  arraytemp=array[cpixel_h];
 	  
+	if ((arraytemp&(1<<0)) != 0)
+	  SETLASERON
+	else
+	  SETLASEROFF
+	  
+	for(waitloops=0;waitloops<50;waitloops++)
+	  asm("nop");
+
+	if ((arraytemp&(1<<1)) != 0)
+	  SETLASERON
+	else
+	  SETLASEROFF
+	  
+	for(waitloops=0;waitloops<50;waitloops++)
+	  asm("nop");
+
+	if ((arraytemp&(1<<2)) != 0)
+	  SETLASERON
+	else
+	  SETLASEROFF
+	  
+	for(waitloops=0;waitloops<50;waitloops++)
+	  asm("nop");
+
+	if ((arraytemp&(1<<3)) != 0)
+	  SETLASERON
+	else
+	  SETLASEROFF
+	  
+	for(waitloops=0;waitloops<50;waitloops++)
+	  asm("nop");
+
+	if ((arraytemp&(1<<4)) != 0)
+	  SETLASERON
+	else
+	  SETLASEROFF
+	  
+	for(waitloops=0;waitloops<50;waitloops++)
+	  asm("nop");
+
+	if ((arraytemp&(1<<5)) != 0)
+	  SETLASERON
+	else
+	  SETLASEROFF
+	  
+	for(waitloops=0;waitloops<50;waitloops++)
+	  asm("nop");
+
+	if ((arraytemp&(1<<6)) != 0)
+	  SETLASERON
+	else
+	  SETLASEROFF
+	
+	for(waitloops=0;waitloops<50;waitloops++)
+	  asm("nop");
+
+	if ((arraytemp&(1<<7)) != 0)
+	  SETLASERON
+	else
+	  SETLASEROFF
+	  
+	for(waitloops=0;waitloops<50;waitloops++)
+	  asm("nop");
+
 #else	
 	//we draw 8 pixel at once
-  	for(cpixel_h=0;cpixel_h < max_resolution_h;cpixel_h+=8){
+  	for(cpixel_h=0;cpixel_h < max_resolution_h;cpixel_h++){
 		//draw stuff here
 
-
 		/* Wait for SPI transmission complete */
-		//while(!(SPSR & (1<<SPIF)))
-		//  asm("nop");
+		while(!(SPSR & (1<<SPIF)))
+		  asm("nop");
 		  
 
 		//write 1 byte to SPI register
 		//SPI sends it serialized to the laser
 		/* Start transmission */
-		//SPDR = array[cpixel_h / 8];	//because we load 8 bit at once
+		SPDR = array[cpixel_h];	//because we load 8 bit at once
+		for(waitloops=0;waitloops<400;waitloops++)
+		 asm("nop");
 		
 #endif
 		//now we got 8*8 ops
@@ -437,21 +522,21 @@ static void hsync(){			//called by hardware, laser is in position now
 	    
 		//später mit ISR ?
 		//	for(waitloops=0;waitloops<h_stretch[(unsigned char)(cpixel_h*maxstretchsteps/maxpixel_h)]+waitfor;waitloops++)
-		for(waitloops=0;waitloops<50;waitloops++)
-		 asm("nop");
+	
 	}
 
 	if(laserON != 0)
-	  PORTD |= _BV(PD6); //laser on
+	  SETLASERON
+
+	hsyncstart = 0;
 }
 
-	static void init_soft_vsync(){
-	  //called with 24khz
-	  //Vlines per sec= fps*Max_resolution_V
-	  //use virtual Timer1
-	  OCR1Av=24000/(fps*max_resolution_v);
-	}
-
+static void init_soft_vsync(){
+  //called with 24khz
+  //Vlines per sec= fps*Max_resolution_V
+  //use virtual Timer1
+  OCR1Av=24000/(fps*max_resolution_v);
+}
 
 static void soft_vsync(){		//generated by software after line change
 
@@ -544,9 +629,6 @@ ISR (SIG_INTERRUPT1)
 	//reset laser position
 	//cpixel_v=0;
 
-	//count rpm_v
-	rpm_v_cnt++;
-
 	//wait nops
 	unsigned int waitloops=0;
 	//now wait until laser is in position
@@ -585,12 +667,12 @@ ISR (TIMER2_OVF_vect)
   char buffer[2];
   timecounter++;
   if( timecounter > (F_CPU/(0x40000)) ){	//execute once a second
-    rps_h=(unsigned int)(rps_h_cnt/mirrorcount_h);
-    rps_h_m =(unsigned int)(rps_h_cnt_m / 12);
-    rpm_h=rps_h*60;
-    rpm_v=rpm_v_cnt;
+    rps_h=(unsigned int)(rps_h_cnt/mirrorcount_h); // rotations per second, messured by photo diode
+    rps_h_m =(unsigned int)(rps_h_cnt_m / 12); // rotations per second, messured by motor
+    rpm_h=rps_h*60; //rotates per minute, messured by photodiode
+    
     rps_h_cnt = 0;
-    rpm_v_cnt = 0;
+    
     rps_h_cnt_m=0;
     timecounter = 0;
     uart_putstr_P(PSTR("\nrps_h: "));
@@ -601,14 +683,13 @@ ISR (TIMER2_OVF_vect)
     if(rps_h_m > 30)
       laserON=1;
     else
-      laserON=1;//laserON=0;
-           
+      laserON=0;
   }
 }
 
  ISR(PCINT3_vect)
  {
-   rps_h_cnt_m++;
+   rps_h_cnt_m++; //count rotations per second, messured by motor
  }
 
  //configure timer1 for soft_vsync
@@ -622,9 +703,6 @@ ISR (TIMER2_OVF_vect)
 
    OCR1B=1024; // init Timer1, emulates two virtual Timers
    OCR1Bv=deflect_v_TIME_ON;
-
-   //count rpm_v
-   rpm_v_cnt++;
 
    deflectorStatus=1; //ON up
  }
@@ -674,15 +752,15 @@ ISR (TIMER2_OVF_vect)
 static void start_motor_h()
 {
   //drive high and keep low
-  PORTD |= _BV(PD7);
+  SETMOTORENABLEHIGH
   wait(1000);
-  PORTD &= ~_BV(PD7);
+  SETMOTORENABLELOW
 }
 
 static void stop_motor_h()
 {
   //drive high and keep
-  PORTD |= _BV(PD7);
+  SETMOTORENABLEHIGH
 }
 
 void i2controlstuff(){
