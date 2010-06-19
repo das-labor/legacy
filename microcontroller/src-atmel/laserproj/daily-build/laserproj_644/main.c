@@ -42,10 +42,10 @@
 //define commands
 #define SETLASERON  PORTD |= _BV(PD6);//turn on Pin6
 #define SETLASEROFF PORTD &= ~ _BV(PD6);//turn of Pin6
-#define SETLEDON PORTD |= _BV(PD5);
-#define SETLEDOFF PORTD &= ~ _BV(PD5);  
-#define SETMOTORENABLEHIGH PORTD |= _BV(PD7);
-#define SETMOTORENABLELOW PORTD &= ~ _BV(PD7);
+#define SETLEDON PORTD |= _BV(PD5);//turn on Pin5
+#define SETLEDOFF PORTD &= ~ _BV(PD5);//turn off Pin5  
+#define SETMOTORENABLEHIGH PORTD |= _BV(PD7);//turn on Pin7
+#define SETMOTORENABLELOW PORTD &= ~ _BV(PD7);//turn off Pin7
 
 //hardware definitions
 #define mirrordutycyle 30 //in percent
@@ -55,7 +55,7 @@ unsigned int deflect_v_TIME_ON = 200;	//mirrors on v disc
 unsigned int deflect_v_TIME_WAIT = 300;
 
 //????
-#define rpm_interval_v 20
+//#define rpm_interval_v 20
 
 volatile int fps=1;
 
@@ -115,20 +115,19 @@ volatile unsigned int OCR1Av=0;
 
 static void hsync();
 void vsync();
-void hw_init();
+static void hw_init();
 static void calc_h_stretch();
 static void soft_vsync();
 static void initdeflector_v();
 static void init_soft_vsync();
 static void deflector_handle();
-static void TIMER1_COMPB_VECT();
 static void start_motor_h();
+static void stop_motor_h();
+static void deflector_v_off();
 
-
-void hw_init(void)
+//initialize hardware
+static void hw_init(void)
 {
-
-//	MCUCR |= _BV(SE); // Enable "sleep" mode (low power when idle)
 
 	//******************
 	//ANALOG COMP 
@@ -220,8 +219,8 @@ void hw_init(void)
 	PORTA = 0x00;	//Internal Pullups all off
 	
 	//PORTD interrupt pin change
-	PCICR=(1<<PCIE3);//enable pin change int on PD
-	PCMSK3=(1<<PCINT28);//enable pin change int on PD4
+	PCICR=(1<<PCIE3);//enable pin change int on PortD
+	PCMSK3=(1<<PCINT28);//enable pin change int on Pin4
 	
 }
 	
@@ -229,10 +228,12 @@ int main (void)
 {
   unsigned long waittimer=0;
 
-  hw_init();
+  hw_init(); //init the hardware
+
+  stop_motor_h(); //stop the motor
 
 #ifdef __DEBUG
-  uart_init();
+  uart_init(); //init uart
   uart_putstr_P(PSTR("ATMEGA644 LASERPROJECTOR\n"));
   uart_putstr_P(PSTR("no console yet\nHELP\n1: laserwait_h\n2: laserwait_v\ns: Status\nw: stretchstrength_h\nh: print this text\n"));
   char buffer[2];
@@ -241,20 +242,18 @@ int main (void)
 
   calc_h_stretch();
 
-  //start deflector_v
-  initdeflector_v();
-  init_soft_vsync();
+  initdeflector_v();//start deflector_v
 
-  //start h motor
-  start_motor_h();
+  init_soft_vsync(); //init timer to call soft_vsync
+
+  start_motor_h(); //start h motor
   
-  //enable interrupts
-  sei();
+  sei(); //enable interrupts
    
    while(laserON == 0) //wait until h-motor is fast enough
      wait(100);
 
-   PORTD |= _BV(PD6);//set laser on	 
+   SETLASERON //set laser on	 
 	 
    while (1) {
 
@@ -352,10 +351,8 @@ int main (void)
     waittimer ++;
     }
 
-
-    test=5;
-    //test++;
-    soft_vsync();
+    test++;
+    
     if (test > 7)
       test = 1;
 
@@ -371,7 +368,7 @@ static void calc_h_stretch()
 }
 
 
-//called by hardware
+//triggered by photodiode
 // -- hsync
 ISR (SIG_INTERRUPT0)
 {
@@ -413,16 +410,23 @@ ISR (TIMER0_COMPA_vect)
 
 static void hsync(){			//called by hardware, laser is in position now
  
-	//wait nops
 	register unsigned int waitloops=0;
-	register unsigned int waitfor=0;
+	unsigned int waitfor=0;
 	register unsigned int cpixel_h=0;
-	register unsigned char arraytemp=0;
 
-	waitfor=(mirrordutycyle*F_CPU)/(rps_h*mirrorcount_h*max_resolution_h*100);
-
+	//calculate how long to wait (horizontal)
+	//in der zeit die der spiegel braucht max_resolution_h pixel anzeigen
+	//zeit die der laser pro zeile proj.: 1/rps_h
+	//zeit zu warten: t1 = mirrordutycycle/100* 1/rps_h * 1/max_resolution_h
+	//zeit pro instruction: t2 = 1/F_CPU
+	//wartebefehle: n = t1 / t2 = (mirrordutycycle*F_CPU)/(100*rps_h*max_resolution_h)
+	//mirrordutycycle/(100 * rps_h * max_resolution_h)
+	//waitfor=(mirrordutycyle*F_CPU)/(rps_h*max_resolution_h*100);
+	waitfor=50;
 #ifdef __DEBUG
-	
+
+	register unsigned char arraytemp=0;//store the current value in a register
+
 	for(cpixel_h=0;cpixel_h < max_resolution_h/8;cpixel_h++){
 	  arraytemp=array[cpixel_h];
 	  
@@ -431,7 +435,7 @@ static void hsync(){			//called by hardware, laser is in position now
 	else
 	  SETLASEROFF
 	  
-	for(waitloops=0;waitloops<50;waitloops++)
+	for(waitloops=0;waitloops<waitfor;waitloops++)
 	  asm("nop");
 
 	if ((arraytemp&(1<<1)) != 0)
@@ -439,7 +443,7 @@ static void hsync(){			//called by hardware, laser is in position now
 	else
 	  SETLASEROFF
 	  
-	for(waitloops=0;waitloops<50;waitloops++)
+	for(waitloops=0;waitloops<waitfor;waitloops++)
 	  asm("nop");
 
 	if ((arraytemp&(1<<2)) != 0)
@@ -447,7 +451,7 @@ static void hsync(){			//called by hardware, laser is in position now
 	else
 	  SETLASEROFF
 	  
-	for(waitloops=0;waitloops<50;waitloops++)
+	for(waitloops=0;waitloops<waitfor;waitloops++)
 	  asm("nop");
 
 	if ((arraytemp&(1<<3)) != 0)
@@ -455,7 +459,7 @@ static void hsync(){			//called by hardware, laser is in position now
 	else
 	  SETLASEROFF
 	  
-	for(waitloops=0;waitloops<50;waitloops++)
+	for(waitloops=0;waitloops<waitfor;waitloops++)
 	  asm("nop");
 
 	if ((arraytemp&(1<<4)) != 0)
@@ -463,7 +467,7 @@ static void hsync(){			//called by hardware, laser is in position now
 	else
 	  SETLASEROFF
 	  
-	for(waitloops=0;waitloops<50;waitloops++)
+	for(waitloops=0;waitloops<waitfor;waitloops++)
 	  asm("nop");
 
 	if ((arraytemp&(1<<5)) != 0)
@@ -471,7 +475,7 @@ static void hsync(){			//called by hardware, laser is in position now
 	else
 	  SETLASEROFF
 	  
-	for(waitloops=0;waitloops<50;waitloops++)
+	for(waitloops=0;waitloops<waitfor;waitloops++)
 	  asm("nop");
 
 	if ((arraytemp&(1<<6)) != 0)
@@ -479,7 +483,7 @@ static void hsync(){			//called by hardware, laser is in position now
 	else
 	  SETLASEROFF
 	
-	for(waitloops=0;waitloops<50;waitloops++)
+	for(waitloops=0;waitloops<waitfor;waitloops++)
 	  asm("nop");
 
 	if ((arraytemp&(1<<7)) != 0)
@@ -487,12 +491,12 @@ static void hsync(){			//called by hardware, laser is in position now
 	else
 	  SETLASEROFF
 	  
-	for(waitloops=0;waitloops<50;waitloops++)
+	for(waitloops=0;waitloops<waitfor;waitloops++)
 	  asm("nop");
 
 #else	
 	//we draw 8 pixel at once
-  	for(cpixel_h=0;cpixel_h < max_resolution_h;cpixel_h++){
+  	for(cpixel_h=0;cpixel_h < max_resolution_h/8;cpixel_h++){
 		//draw stuff here
 
 		/* Wait for SPI transmission complete */
@@ -504,24 +508,10 @@ static void hsync(){			//called by hardware, laser is in position now
 		//SPI sends it serialized to the laser
 		/* Start transmission */
 		SPDR = array[cpixel_h];	//because we load 8 bit at once
-		for(waitloops=0;waitloops<400;waitloops++)
+		for(waitloops=0;waitloops<waitfor*8;waitloops++)
 		 asm("nop");
 		
 #endif
-		//now we got 8*8 ops
-		//calculate how long to wait (horizontal)
-		//in der zeit die der spiegel braucht max_resolution_h pixel anzeigen
-		//zeit die der laser pro zeile proj.: mirrordutycyle/(rpm_h*mirrorcount_h*100)
-		//zeit zu warten: mirrordutycyle/(rpm_h*mirrorcount_h*max_resolution_h*100)
-		//-----------------------------------
-		//mirror moves faster on the edges
-		//slower in the middle -> compensate
-		//wait longer in the middle
-		//( h_stretch[cpixel_h*maxstretchsteps/maxpixel_h] *mirrordutycyle/(rpm_h*mirrorcount_h*max_resolution_h*100)
-		
-	    
-		//später mit ISR ?
-		//	for(waitloops=0;waitloops<h_stretch[(unsigned char)(cpixel_h*maxstretchsteps/maxpixel_h)]+waitfor;waitloops++)
 	
 	}
 
@@ -551,7 +541,7 @@ static void soft_vsync(){		//generated by software after line change
 
 	//now calculate next line
 
-	int i=0;
+	register unsigned int i=0;
 	if(test == 1){
 	  //test triangles
 	  for(i=0;i < max_resolution_h/8;i++)
@@ -586,7 +576,11 @@ static void soft_vsync(){		//generated by software after line change
 	}
 
 	if(test == 5){
-	//test first & last 8
+	//test first & last 
+	  for(i=1;i < max_resolution_h/8-1;i++)
+	    {
+	      array[i]= (unsigned char)0x00;
+	    }
     	  array[0]=(unsigned char) 0x01;
 	  array[max_resolution_h/8]=(unsigned char) 0xF0;
 	}
@@ -606,13 +600,16 @@ static void soft_vsync(){		//generated by software after line change
 	  if(cpixel_v == 0 || cpixel_v == max_resolution_v)
 	    for(i=0;i < max_resolution_h/8;i++)
 	      array[i]=(unsigned char) 0xFF;
+	  else
+	    for(i=0;i < max_resolution_h/8;i++)
+	      array[i]=(unsigned char) 0x00;
 	}
 }
 
 
 //called by hardware
 //-- vsync
-//TODO: change to soft
+//
 ISR (SIG_INTERRUPT1)
 {
 	//configure timer1 to call soft_vsync in def. time intervall
@@ -630,7 +627,7 @@ ISR (SIG_INTERRUPT1)
 	//cpixel_v=0;
 
 	//wait nops
-	unsigned int waitloops=0;
+	register unsigned int waitloops=0;
 	//now wait until laser is in position
 	for(waitloops=0;waitloops<laserwait_v;waitloops++);
 }
@@ -640,10 +637,6 @@ ISR (SIG_INTERRUPT1)
 //needed for correct vertical display
 ISR (TIMER1_COMPB_vect)
 {
-	TIMER1_COMPB_VECT();
-}
-
-static void TIMER1_COMPB_VECT(){
  TCNT1=0;
  TIFR1&= ~(1<<OCF1B);
  timecounter2++;
@@ -656,7 +649,6 @@ static void TIMER1_COMPB_VECT(){
   soft_vsync();
   timecounter3=0;
  } 
-
 }
 
 //Timer2 Overflow interrupt
@@ -687,10 +679,13 @@ ISR (TIMER2_OVF_vect)
   }
 }
 
- ISR(PCINT3_vect)
- {
+
+//PORTD pin change interrupt
+//triggered by motor_h tach output
+ISR(PCINT3_vect)
+{
    rps_h_cnt_m++; //count rotations per second, messured by motor
- }
+}
 
  //configure timer1 for soft_vsync
  static void initdeflector_v(){
