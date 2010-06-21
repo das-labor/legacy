@@ -50,7 +50,7 @@ KeyronaSSS::KeyronaSSS (KeyronaStorage &SSSStorage, string SSSID, UInt32 n, vect
 
     ByteVector Participant( I2OSP(P, P.size()));
     ByteVector Access( I2OSP(A, A.size()));
-    ByteVector Key ((const unsigned char*)SSSKey.c_str(), SSSKey.length());
+    ByteVector Key = convertStringToByteVector(SSSKey); //((const unsigned char*)SSSKey.c_str(), SSSKey.length());
 
     debug << "KeyronaSSS|Constructor(): Minimum Participants: " << A << endl;
     debug << "KeyronaSSS|Constructor(): Overall Participants: " << P << endl;
@@ -70,11 +70,10 @@ KeyronaSSS::KeyronaSSS (KeyronaStorage &SSSStorage, string SSSID, UInt32 n, vect
     for(int i = 0; i<P; i++ )
     {
         string currentParticipant = Participants[i]->getMySubjectName();
-        string currentParticipantkey = Participants[i]->getMySubjectKeyUUID();
-        cout << currentParticipantkey << endl;
+        
         ByteVector currentX = x.back();
         ByteVector currentY = y.back();
-
+		
         ByteVector encryptedX = Participants[i]->encryptForSubject(Participants[i], currentX);
         ByteVector encryptedY = Participants[i]->encryptForSubject(Participants[i], currentY);
 
@@ -241,12 +240,11 @@ string KeyronaSSS::retrieveKey(vector<KeyronaSubject*> AvailableParticipants, ve
         x.push_back(decodedX);
         y.push_back(decodedY);
     }
-
+	cout << "yep" << endl;
     // reconstruction
     debug << "KeyronaSSS|retrieveKey(): Reconstruction..." << endl;
     ByteVector myReconstructedKey = mySSS.reconstruction(x, y, Modul);
-    vector<UInt8> myReconstructedPassword = convertByteVector2UInt8Vector(myReconstructedKey);
-    return convertUInt8VectorToString(&myReconstructedPassword);
+    return convertByteVector2String(myReconstructedKey);
 };
 
 //================================================================================

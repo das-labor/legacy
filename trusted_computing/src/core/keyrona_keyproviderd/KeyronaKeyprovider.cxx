@@ -466,7 +466,7 @@ void KeyronaKeyprovider::mountBySSS(KeyronaConfigfile &myConfigfile, KeyronaVolu
     clientCommunication(KEYRONA_ISC_MESG_MESSAGE, "Now decrypting secret-sharing-scheme (n/m = " + n + "/" + m + ") with " + usernames);
     if (platformIncluded)
         clientCommunication(KEYRONA_ISC_MESG_MESSAGE,"Note: A Platform is included in this SSS. The decryption process might require some additional time due to TPM access.");
-
+	cout << "yep until here" << endl;
     // and decrypt the SSS
     debug << "Retrieving key from SSS" << endl;
     if (myGroup)

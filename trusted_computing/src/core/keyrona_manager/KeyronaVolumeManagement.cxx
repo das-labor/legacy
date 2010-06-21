@@ -1083,6 +1083,7 @@ void KeyronaAddSSSToVolume(KeyronaStorage &myVolumeStorage, KeyronaStorage &mySu
         // otherwise, add only subjects
         else
         {
+			cout << myVolumeKey << endl;
             mySSS = new KeyronaSSS(mySSSStorage, SSSID, n, Participants, myVolumeKey);
         }
 

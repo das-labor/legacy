@@ -136,16 +136,21 @@ ByteVector  KeyronaKey::encrypt(KeyronaSubject *Subject, KeyronaGroup *Group, By
 {
 	ByteVector result;
 	string keyuuid;
-	UInt8 typ = Subject->getMySubjectType();
-	if ((Group == NULL) && ( typ = SUBJECTTYPE_USER)) {	
+	UInt32 uuid;
+	UInt8 mySubjectType;
+	if (Group == NULL ) {
+	mySubjectType = Subject->getMySubjectType();
+	}
+	KeyronaTPM myTPM;
+	int local;
+	if ((Group == NULL) && ( mySubjectType == SUBJECTTYPE_USER)) {	
 			if (Subject->getMySubjectKeyUUID().empty())
 				throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
 			else
 				keyuuid = Subject->getMySubjectKeyUUID();
 			    
-			    UInt32 uuid = convertStringtoUInt32(keyuuid);    
+			    uuid = convertStringtoUInt32(keyuuid);    
 
-				KeyronaTPM myTPM;
 				result = myTPM.bind(toEncrypt, uuid);
 	}
 	
@@ -155,18 +160,15 @@ ByteVector  KeyronaKey::encrypt(KeyronaSubject *Subject, KeyronaGroup *Group, By
 		else
 			keyuuid = Group->getMyGroupKeyUUID();
 		
-		    UInt32 uuid = convertStringtoUInt32(keyuuid);    
+		    uuid = convertStringtoUInt32(keyuuid);    
 
-			KeyronaTPM myTPM;
 			result = myTPM.bind(toEncrypt, uuid);
     }
     
-    if ( typ = SUBJECTTYPE_PLATFORM) {
-			int local;
-			KeyronaTPM myTPM;
+   /* if ( mySubjectType == SUBJECTTYPE_PLATFORM) {
 			vector<ByteVector> handle = myTPM.seal(toEncrypt,local);
-			ByteVector result = handle.back();
-	}
+			result = handle.back();
+	}*/
 	
     return result;
 };
@@ -175,18 +177,23 @@ ByteVector  KeyronaKey::encrypt(KeyronaSubject *Subject, KeyronaGroup *Group, By
 //
 ByteVector  KeyronaKey::decrypt(KeyronaSubject *Subject, KeyronaGroup *Group, ByteVector &toDecrypt, string &myPassword) 
 {
-		ByteVector result;
+	ByteVector result;
 	string keyuuid;
-	UInt8 typ = Subject->getMySubjectType();
-	if ((Group == NULL) && ( typ = SUBJECTTYPE_USER)) {	
+	UInt32 uuid;
+	UInt8 mySubjectType;
+	if (Group == NULL ) {
+	mySubjectType = Subject->getMySubjectType();
+	}
+	KeyronaTPM myTPM;
+	int local;
+	if ((Group == NULL) && ( mySubjectType == SUBJECTTYPE_USER)) {	
 			if (Subject->getMySubjectKeyUUID().empty())
 				throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
 			else
 				keyuuid = Subject->getMySubjectKeyUUID();
 			    
-			    UInt32 uuid = convertStringtoUInt32(keyuuid);    
+			    uuid = convertStringtoUInt32(keyuuid);    
 
-				KeyronaTPM myTPM;
 				result = myTPM.unbind(toDecrypt, uuid, myPassword);
 	}
 	
@@ -196,20 +203,18 @@ ByteVector  KeyronaKey::decrypt(KeyronaSubject *Subject, KeyronaGroup *Group, By
 		else
 			keyuuid = Group->getMyGroupKeyUUID();
 		
-		    UInt32 uuid = convertStringtoUInt32(keyuuid);    
+		    uuid = convertStringtoUInt32(keyuuid);    
 
-			KeyronaTPM myTPM;
 			result = myTPM.unbind(toDecrypt, uuid, myPassword);
     }
     
-    if ( typ = SUBJECTTYPE_PLATFORM) {
-			vector<ByteVector> decrypthandle;
+    /*if ( mySubjectType == SUBJECTTYPE_PLATFORM) {
+		    vector<ByteVector> decrypthandle;
 			decrypthandle.push_back(toDecrypt);
-			KeyronaTPM myTPM;
-			ByteVector result = myTPM.unseal(decrypthandle);
-	}
+			result = myTPM.unseal(decrypthandle);
+	}*/
 	
-	return result;
+    return result;
 };
 
 //================================================================================

@@ -65,7 +65,6 @@ KeyronaGroup::KeyronaGroup(const string GroupID, KeyronaStorage &GroupStorage, K
 
     // creating new group key
     myGroupKey = new KeyronaKey(this, myGroupKeyPassword);
-
     // creating test vector
     ByteVector testVector = convertStringToByteVector(myGroupID);
     ByteVector testVectorByteVector = encryptForGroup(this, testVector);
@@ -93,9 +92,6 @@ KeyronaGroup::KeyronaGroup(const string GroupID, KeyronaStorage &GroupStorage, K
             {
                 KeyronaSubject *mySubject = new KeyronaSubject (Iterator->first, mySubjectStorage);
                 cout << "\tEncrypting group password for admin: " << mySubject->getMySubjectName() << " (" << mySubject->getMySubjectIDString() << ")" << endl;
-                                cout << "muahaha" << endl;
-				string test = mySubject->getMySubjectKeyUUID();
-				cout << test << endl;
                 addSubjectToGroup(mySubject, myGroupKeyPassword);
                 delete mySubject;
                 Iterator++;
