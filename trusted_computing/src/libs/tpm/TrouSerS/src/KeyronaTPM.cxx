@@ -229,7 +229,7 @@ vector<ByteVector> KeyronaTPM::seal(ByteVector &dataToSeal, int &local)
     ByteVector sealedData((UInt8*)encData, encLen);
 
     vector<ByteVector> myData;
-    myData.push_back(trousers);
+    //myData.push_back(trousers);
     myData.push_back(sealedData);
 
     Tspi_Context_CloseObject(hContext, hEncData);
@@ -246,10 +246,10 @@ vector<ByteVector> KeyronaTPM::seal(ByteVector &dataToSeal, int &local)
 
 ByteVector KeyronaTPM::unseal(vector<ByteVector> &dataToUnseal)
 {
-    if (trousers != dataToUnseal[0])
-        throw NotImplemented("KeyronaTPM[TrouSerS]|unseal(): Supplied data are not valid TrouSerS objects!");
+    //if (trousers != dataToUnseal[0])
+       // throw NotImplemented("KeyronaTPM[TrouSerS]|unseal(): Supplied data are not valid TrouSerS objects!");
 
-    ByteVector   sealedData = dataToUnseal[1];
+    ByteVector   sealedData = dataToUnseal[0];
     TSS_HCONTEXT hContext;
     TSS_HTPM     hTPM;
     TSS_HKEY	 hSRK;

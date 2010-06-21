@@ -220,30 +220,9 @@ KeyronaSubject::KeyronaSubject( UInt8 subjectType,
         case SUBJECTTYPE_PLATFORM:
         {
             mySubjectKeyfile = myKeyDirectory + KeyronaPathSeparator + "Keyrona" + KeyronaSubjectType_Platform + KeyronaFileSeparator + mySubjectIDString  + KeyronaFileSeparator + mySubjectName + KeyronaP15FileExtension;
-            // generating random password for new key
-            myPassword = generateRandomString(KEYRONA_MINIMUM_PASSWORD_LENGTH);
-			int local;
-			
-            // sealing it to current platform
-            KeyronaTPM myTPM;
-            ByteVector myPlainPassword(myPassword);
-            vector<ByteVector> mySealedDataWithKey = myTPM.seal(myPlainPassword,local);
-
-            // storing sealed data
-            ByteVector Data = mySealedDataWithKey.back();
-            mySealedDataWithKey.pop_back();
-            string DataFile = mySubjectKeyfile + KEYRONA_TPM_DATA_EXTENSION;
-            storeByteVectorInFile(DataFile, Data);
-
-            // storing sealing key
-            ByteVector Key = mySealedDataWithKey.back();
-            mySealedDataWithKey.pop_back();
-            string KeyFile = mySubjectKeyfile + KEYRONA_TPM_KEY_EXTENSION;
-            storeByteVectorInFile(KeyFile, Key);
             break;
         }
     }
-
     storeSubject();
 };
 
@@ -523,7 +502,11 @@ bool KeyronaSubject::storeSubject()
     // assigning group and file permission
     try
     {
+		if (mySubjectType == SUBJECTTYPE_PLATFORM) {
+	    }
+		else {
         assignFilePermission(mySubjectKeyfile, KEYFILEPERMISSION);
+		}	
     }
     catch ( std::exception &e )
     {
@@ -635,11 +618,35 @@ ByteVector  KeyronaSubject::encryptForSubject(KeyronaSubject *Subject, ByteVecto
 {
     if (! toEncrypt.size())
        throw DecryptionFailed("KeyonaSubject|encryptForSubject(): No data supplied to be encrypted!");
+	
+	if (mySubjectType == SUBJECTTYPE_PLATFORM)
+			{
+			int local=0;
+            // sealing it to current platform
+            KeyronaTPM myTPM;
+            vector<ByteVector> mySealedDataWithKey = myTPM.seal(toEncrypt,local); // XXX see kyronatpm.hxx
+			
+            // storing sealed data
+            ByteVector Data = mySealedDataWithKey.back();
+            mySealedDataWithKey.pop_back();
+            /*string DataFile = mySubjectKeyfile + KEYRONA_TPM_DATA_EXTENSION;
+            storeByteVectorInFile(DataFile, Data);
 
+            // storing sealing key
+            ByteVector Key = mySealedDataWithKey.back();
+            mySealedDataWithKey.pop_back();
+            string KeyFile = mySubjectKeyfile + KEYRONA_TPM_KEY_EXTENSION;
+            storeByteVectorInFile(KeyFile, Key);
+            */
+            return Data;
+    }
+	else {
+				
     //if((mySubjectKey) && (mySubjectKey->isValid()))
-
+	
     return mySubjectKey->encrypt(this, NULL, toEncrypt);
 	//	throw InvalidKey("KeyonaSubject|encryptForSubject(): Invalid key for subject '" + mySubjectName + "'");
+	}
 };
 
 //================================================================================
@@ -651,8 +658,9 @@ ByteVector  KeyronaSubject::decryptBySubject(KeyronaSubject *Subject, ByteVector
     {
         KeyronaTPM myTPM;
         vector<ByteVector> mySealedDataWithKey;
-
-            // Loading sealing key
+		mySealedDataWithKey.push_back(toDecrypt);
+		cout << "help" << endl;
+            /*// Loading sealing key
             string KeyFile = mySubjectKeyfile + KEYRONA_TPM_KEY_EXTENSION;
             ByteVector Key = loadByteVectorFromFile(KeyFile);
             mySealedDataWithKey.push_back(Key);
@@ -660,25 +668,28 @@ ByteVector  KeyronaSubject::decryptBySubject(KeyronaSubject *Subject, ByteVector
             // Loading sealed data
             string DataFile = mySubjectKeyfile + KEYRONA_TPM_DATA_EXTENSION;
             ByteVector Data = loadByteVectorFromFile(DataFile);
-            mySealedDataWithKey.push_back(Data);
+            mySealedDataWithKey.push_back(Data);*/
 
             ByteVector myPlainPassword = myTPM.unseal(mySealedDataWithKey);
-
+            mySealedDataWithKey.pop_back();
+            cout << "blub" << endl;
+            return myPlainPassword;
+/*
             string x( (const char*) myPlainPassword.toCArray(), myPlainPassword.size() );
-            if (!verifyPassword(x))
-                throw InvalidPassword("KeyronaSubject|decryptBySubject(): Could not retrieve the password from TPM!");
+            //if (!verifyPassword(x))
+             //  throw InvalidPassword("KeyronaSubject|decryptBySubject(): Could not retrieve the password from TPM!");
             password = x;
+            cout << password << endl;*/
     }
-    else
-    
+    else    
     {
         if (myPassword.empty())
             throw InvalidPassword("KeyonaSubject|decryptBySubject(): Invalid password for subject '" + mySubjectName + "'");
         password = myPassword;
-    }
-    if (!(verifyPassword(password)))
-        throw InvalidPassword("KeyonaSubject|decryptBySubject(): Invalid password for subject '" + mySubjectName + "'");
-
+    
+   // if (!(verifyPassword(password)))
+    //   throw InvalidPassword("KeyonaSubject|decryptBySubject(): Invalid password for subject '" + mySubjectName + "'");
+	
     if (! toDecrypt.size())
         throw DecryptionFailed("KeyonaSubject|decryptBySubject(): No data supplied to be decrypted!");
 
@@ -690,6 +701,8 @@ ByteVector  KeyronaSubject::decryptBySubject(KeyronaSubject *Subject, ByteVector
     //if ((mySubjectKey) && (mySubjectKey->isValid()))
         return mySubjectKey->decrypt(Subject , NULL, toDecrypt, password);
     //throw InvalidKey("KeyonaSubject|decryptBySubject(): Invalid key for subject '" + mySubjectName + "'");
+}
+
 };
 
 //================================================================================

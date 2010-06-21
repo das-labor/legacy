@@ -98,6 +98,7 @@ void KeyronaKeyproviderMount::mountLUKS(string device, string destination, strin
     {// there is no other device mounted under destination
         debug << "device: " << device << "\t destination: " << destination << endl;
         string myCommand = (myScriptDirectory + KeyronaPathSeparator + "mount_cryptsetup_luks.sh " + device + " \"keyrona-" + uuid + "\"" + " " + key + " " + destination + " " + logfile);
+        cout << myCommand << endl;
         int ret = system(myCommand.c_str());
         if (ret)
             throw MountError("An error occured while trying to mount device '" + device + "'. Please look into Keyrona's logfile: '" + logfile + "'");

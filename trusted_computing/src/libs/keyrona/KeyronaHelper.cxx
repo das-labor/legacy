@@ -821,16 +821,16 @@ void assignFilePermission(string &filename, UInt32 permission)
         throw NoFilename("Invalid filename submitted!");
     if (!permission)
         throw InvalidFilePermissions("Invalid file permissions!");
-    // assigning group and file permission
-    string myCommand = "/bin/chgrp -f " + KEYRONA_LINUX_SYSTEM_GROUP + " \"" + filename + "\"";
-    debug << "Executing: " << myCommand << endl;
-    if (system(myCommand.c_str()))
-        throw RuntimeError("Keyrona::assignFilePermission(): Could not assign group '" + KEYRONA_LINUX_SYSTEM_GROUP + "' to '" + filename + "'");
+			// assigning group and file permission
+			string myCommand = "/bin/chgrp -f " + KEYRONA_LINUX_SYSTEM_GROUP + " \"" + filename + "\"";
+			debug << "Executing: " << myCommand << endl;
+			if (system(myCommand.c_str()))
+				throw RuntimeError("Keyrona::assignFilePermission(): Could not assign group '" + KEYRONA_LINUX_SYSTEM_GROUP + "' to '" + filename + "'");
 
-    myCommand = "/bin/chmod -f " + convertUInt32toString(permission) + " \"" + filename + "\"";
-    debug << "Executing: " << myCommand << endl;
-    if (system(myCommand.c_str()))
-        throw RuntimeError("Keyrona::assignFilePermission(): Could not assign permission '" + convertUInt32toString(permission) + "' to '" + filename + "'");
+			myCommand = "/bin/chmod -f " + convertUInt32toString(permission) + " \"" + filename + "\"";
+			debug << "Executing: " << myCommand << endl;
+			if (system(myCommand.c_str()))
+			throw RuntimeError("Keyrona::assignFilePermission(): Could not assign permission '" + convertUInt32toString(permission) + "' to '" + filename + "'");
 
 };
 
