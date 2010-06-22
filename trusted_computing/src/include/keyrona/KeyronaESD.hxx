@@ -38,16 +38,9 @@ const std::string KeyronaESD_isESD        = "isESD";
 const std::string KeyronaESD_isESD_true    = "true";
 const std::string KeyronaESD_isESD_false   = "false";
 
-const std::string KeyronaSubject_ESDName    = "Name";
-const std::string KeyronaSubject_ESDUUID = "UUID";
-const std::string KeyronaSubject_ESD = "KeyType";
-const std::string KeyronaSubject_SubjectEMail   = "EMail";
-const std::string KeyronaSubject_SubjectKeyfile = "Keyfile";
-const std::string KeyronaSubject_SubjectCountrycode = "Country";
-const std::string KeyronaSubject_SubjectOrganisation = "Organisation";
-const std::string KeyronaSubject_SubjectOrganisationUnit = "OrganisationUnit";
-const std::string KeyronaSubject_SubjectState = "State";
-const std::string KeyronaSubject_SubjectLocality = "Locality";
+const std::string KeyronaESD_ESDName    = "Name";
+const std::string KeyronaESD_ESDUUID = "UUID";
+const std::string KeyronaESD_ESDDevice = "Device";
 
 namespace keyrona
 {
