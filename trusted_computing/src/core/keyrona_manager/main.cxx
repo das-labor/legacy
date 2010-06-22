@@ -44,6 +44,7 @@ const string volumeOptionDesc	= "Keyrona volume management.\n\tValid parameters 
 const string platformOptionDesc	= "Keyrona platform management.\n\tValid parameters are:\n\t\tcreatePlatform (cp)\n\t\timportPlatform (ip)\n\t\tdeletePlatform (dp)\n\t\tlistPlatforms (lp)\n\t\texportPlatform (ep)\n";
 const string tokenOptionDesc	= "Keyrona token management.\n\tValid parameters are:\n\t\tcreateToken (ct)\n\t\tdeleteToken (dt)\n\t\tlistToken (lt)\n";
 const string configFileOptionDesc = "Keyrona configuration file.\n";
+const string esdOptionDesc	= "Keyrona ESD management.\n\tValid parameters are:\n\t\tcreateESD (ce)\n\t\tshowESD (se)\n";
 
 enum ReturnValues 
 {
@@ -86,6 +87,7 @@ int main(int argc, const char *argv[])
                 Option<string>  platformOption  ( optionList, "platform","p", BaseOption::multi,      platformOptionDesc );
                 Option<string>  tokenOption     ( optionList, "token","t",   BaseOption::multi,      tokenOptionDesc );
                 Option<string>  volumeOption    ( optionList, "volume", "v",  BaseOption::multi,      volumeOptionDesc );
+                Option<string>  esdOption		( optionList, "esd", "e",  BaseOption::multi,      esdOptionDesc );
 
 		CmdLineParser parser( optionList );
 		parser.parseCmdLine( argc, argv );
@@ -97,7 +99,8 @@ int main(int argc, const char *argv[])
                         groupOption.hasValue() |
                         platformOption.hasValue() |
                         tokenOption.hasValue() |
-                        volumeOption.hasValue()
+                        volumeOption.hasValue() |
+                        esdOption.hasValue()
                     )) ||
                         ( helpOption.getValue() )
                    )
@@ -187,6 +190,12 @@ int main(int argc, const char *argv[])
                     KeyronaVolumeManagement( volumeOption.getValue(), myKeyronaConfig );
                     return SUCCESS;
                 }
+        
+        if ( esdOption.hasValue() )
+                {
+                    KeyronaESDManagement( esdOption.getValue(), myKeyronaConfig );
+                    return SUCCESS;
+                }         
                 
 		if ( platformOption.hasValue() )
                 {
