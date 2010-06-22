@@ -327,6 +327,12 @@ void KeyronaUserManagement       ( string userParam, KeyronaConfigfile &myConfig
   */
 void KeyronaVolumeManagement     ( string volumeParam, KeyronaConfigfile &myConfigfile );
 
+void KeyronaESD      			 ( string esdParam, KeyronaConfigfile &myConfigfile );
+
+void KeyronaCreateESD			 ( KeyronaStorage &mySubjectStorage );
+
+void KeyronaShowESD				 ( KeyronaStorage &mySubjectStorage );
+
 // this method is actually implemented in KeyronaLogin.cxx
 KeyronaSubject* getCurrentAdmin(KeyronaStorage &mySubjectStorage);
 
