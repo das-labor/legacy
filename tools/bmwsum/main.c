@@ -17,6 +17,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#define  _LARGEFILE64_SOURCE
+
 #include <stdint.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -24,6 +26,8 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <string.h>
+#include <fcntl.h>
+
 #include "hash.h"
 
 unsigned digest_size;
@@ -49,9 +53,9 @@ void print_digest(void* digest){
 void process_file(char* fname){
 	int fd;
 	struct stat stats;
-	fd = open(fname, 0);
+	fd = open(fname, O_LARGEFILE);
 	if(fd==-1){
-		fprintf(stderr, "Error while opening file '%s'", fname);
+		fprintf(stderr, "Error while opening file '%s'\n", fname);
 		return;
 	}
 	fstat(fd, &stats);
@@ -87,7 +91,7 @@ void process_dir(char* dirname){
 	struct dirent *direntry;
 	dir = opendir(dirname);
 	if(dir==NULL){
-		fprintf(stderr, "Error while opening directory '%s'", dirname);
+		fprintf(stderr, "Error while opening directory '%s'\n", dirname);
 		return;
 	}
 	while((direntry = readdir(dir))){
