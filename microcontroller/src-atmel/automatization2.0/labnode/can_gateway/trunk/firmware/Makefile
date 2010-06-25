@@ -1,5 +1,5 @@
 
-OBJ            = main.o uart.o util.o can/can.o can/spi.o cantun.o can-uart.o
+OBJ            = main.o uart/uart.o canlib/can.o canlib/spi.o
 
 # Default values
 OUT           ?= main
@@ -24,7 +24,7 @@ ERASECMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -e
 all: $(OUT).elf lst text eeprom
 
 clean:
-	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec can/*.o twi_master/*.o
+	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec canlib/*.o uart/*.o
 	rm -rf *.srec $(OUT).elf
 
 flash: $(OUT).hex
