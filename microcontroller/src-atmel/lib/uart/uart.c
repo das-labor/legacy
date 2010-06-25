@@ -138,7 +138,7 @@ void uart_putc(char c) {
 	sei();
 }
 #else  // WITHOUT INTERRUPT
-void uart_putc(unsigned char c) {
+void uart_putc(char c) {
 	while (!(UCSRA & (1<<UDRE))); /* warten bis Senden moeglich                   */
 	UDR = c;                      /* schreibt das Zeichen x auf die Schnittstelle */
 }
