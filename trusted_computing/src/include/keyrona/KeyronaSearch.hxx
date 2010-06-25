@@ -28,6 +28,7 @@
 #include <KeyronaSubject.hxx>
 #include <KeyronaGroup.hxx>
 #include <KeyronaVolume.hxx>
+#include <KeyronaESD.hxx>
 
 using namespace std;
 using namespace utils;
@@ -67,6 +68,9 @@ bool KeyronaFindPlatform(KeyronaStorage &mySubjectStorage, const string &Subject
  *  @return bool, determines whether or not the given subject exists
  */
 bool KeyronaFindSubject(KeyronaStorage &mySubjectStorage, const string &SubjectID);
+
+
+bool KeyronaFindESD(KeyronaStorage &myESDStorage, const string &ESDID);
 
 /*!
  *  @brief determines whether or not the given token exists in the database
@@ -144,6 +148,9 @@ vector<string> KeyronaFindAllSSS(KeyronaStorage &mySSSStorage);
  *  @return vector of string, contains the tokens that have been found
  */
 vector<string> KeyronaFindAllToken(KeyronaStorage &mySubjectStorage);
+
+vector<string> KeyronaFindAllESDs(KeyronaStorage &myESDStorage);
+
 
 #endif	/* _KEYRONASEARCH_HXX */
 

@@ -596,6 +596,26 @@ string convertUInt8VectorToString(vector<UInt8> *toConvert)
     return string(myString, length);
 };
 
+void findAvailableFilesystems(string fs, vector<string>* AvailableFilesystems)
+{
+    string mkfs;
+
+    mkfs = "/sbin/mkfs." + fs;
+    if (fileExists(mkfs))
+    {
+        debug << "Found '" << fs << "' at '" << mkfs << "'." << endl;
+        AvailableFilesystems->push_back(fs);
+    }
+
+    mkfs.clear();
+    mkfs = "/usr/sbin/mkfs." + fs;
+    if (fileExists(mkfs))
+    {
+        debug << "Found '" << fs << "' at '" << mkfs << "'." << endl;
+        AvailableFilesystems->push_back(fs);
+    }
+};
+
 //================================================================================
 //
 string getUUID(string volume, string &UUIDpath)

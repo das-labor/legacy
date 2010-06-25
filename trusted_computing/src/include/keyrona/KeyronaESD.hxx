@@ -17,13 +17,13 @@
 
 /**
  * @file        KeyronaESD.hxx
- * @brief       Implementation of the Keyrona subject class.
+ * @brief       Implementation of the Keyrona ESD class.
  * @version     $Revision: 790 $
  * @date        Last modification at $Date: 2009-08-04 15:07:58 +0200 (Tue, 04 Aug 2009) $ by $Author: goericke $
  */
 
-#ifndef _KEYRONASUBJECT_HXX
-#define	_KEYRONASUBJECT_HXX
+#ifndef _KEYRONAESD_HXX
+#define	_KEYRONAESD_HXX
 
 #include <Keyrona.hxx>
 #include <KeyronaStorage.hxx>
@@ -48,17 +48,47 @@ namespace keyrona
     {
         public:
         
+        KeyronaESD( string ESDIdentifier, KeyronaStorage &storageDB );
+        
+        KeyronaESD( UInt32 ESDID, KeyronaStorage &storageDB );
+        
+        KeyronaESD( string &ESDName, string &ESDDevice, string &ESDUUID, KeyronaStorage &storageDB );
+        
+        void deleteESD();
+        
+        ~KeyronaESD();
+        
+        UInt32 getMyESDID()     { return myESDID; };
+        
+        string getMyESDIDString()   { return myESDIDString; };
+
+		string getMyESDName()   { return myESDName; };
+		
+		string getMyESDUUID()   { return myESDUUID; };
+
+		string getMyESDDevice()   { return myESDDevice; };
+        
         private:
 	    /*!
-             *  @brief stores subject in the database
+             *  @brief stores ESD in the database
 	     */
             bool storeESD();
 	    
 	    /*!
-             *  @brief loads subject from the database
+             *  @brief loads ESD from the database
 	     */
             bool loadESD(string &ESDIdentifier);
+            
+			//void checkUsername();
 
+            UInt32  myESDID;
+            string  myESDIDString;
+            string  myESDName;
+            string	myESDUUID;
+            string  myESDDevice;
+
+            KeyronaStorage &myESDStorage;
+			
             /*!
              *  @brief  disabled copy constructor
              */
@@ -70,3 +100,4 @@ namespace keyrona
             KeyronaESD& operator=( const KeyronaESD& );
     };
 };
+#endif	/* _KEYRONAESD_HXX */

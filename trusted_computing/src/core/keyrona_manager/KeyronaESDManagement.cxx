@@ -33,6 +33,7 @@ using namespace keyrona;
 enum myMenu
 {
     createESD,
+    deleteESD,
     showESD
 };
 
@@ -43,48 +44,200 @@ typedef map<string, int> t_StringMap;
 //
 void KeyronaCreateESD(KeyronaStorage &myESDStorage)
 {
+
+	t_StringMap KeyronaVolumeFilesystemMap;
+    KeyronaVolumeFilesystemMap["ext2"] = FSTYPE_EXT2;
+    KeyronaVolumeFilesystemMap["vfat"] = FSTYPE_VFAT;
+    KeyronaVolumeFilesystemMap["xfs"] = FSTYPE_XFS;
+
+    vector<string> AvailableFilesystems;
+    findAvailableFilesystems("ext2", &AvailableFilesystems);
+    findAvailableFilesystems("vfat", &AvailableFilesystems);
+    findAvailableFilesystems("xfs", &AvailableFilesystems);
+	
 	if (loginSuperUser())
         cout << "Superuser successfully logged in!" << endl;
 
     string myESD = getStringFromUser("Please enter name for new ESD: ");
 
-    /*if (KeyronaFindESD(mySubjectStorage, myESD))
+    if (KeyronaFindESD(myESDStorage, myESD))
         throw InvalidUsername("KeyronaCreateESD(): ESD already exists!");
+    string myESDDevice;    
+    try
+        {
+            vector<StringPair> AvailableVolumes = getAvailableVolumes(UUIDpath);
+            vector<string> AvailableDevices;
+            while (AvailableVolumes.size())
+            {
+                StringPair current = AvailableVolumes.back();
+                AvailableVolumes.pop_back();
+                if (! isDeviceMounted(current.first))
+                    AvailableDevices.push_back(current.first);
+            }
+
+            myESDDevice = selectFromStringVector(AvailableDevices, "Number:\t\tDevice:", "[Note: If the desired device has not been identified automatically, you can still enter the correct device (e.g., /dev/sdb1) below.]\nPlease select the device to be created:");
+        }
+    catch ( NoVolume &e)
+        {
+            cout << "Error: Could not identify any valid volumes." << endl;
+            myESDDevice = getStringFromUser("Please enter the device to be created: ");
+        }
+        if (isDeviceMounted(myESDDevice))
+            throw InvalidFilename("The device you selected is currently mounted. Please unmount it first, before re-creating the volume.");
+        cout << "Selected device '" << myESDDevice << "'" << endl << endl;
+    
+    string myESDUUID = getStringFromUser("Please enter name for ESD Device: ");
+        if (myESDUUID.empty())
+        throw NotCreated("Please enter a valid identifier!");
+
+    if (KeyronaFindESD(myESDStorage, myESDUUID))
+        throw VolumeExists("KeyronaCreateVolume: The desired volume already exists in our database!\n");
+    bool FileSystem;
+    cout << "WARNING: All data will be permanently lost on device '" << myESDDevice << "'" << endl;
+        // get the desired filesystem
+        string FSString = selectFromStringVector(AvailableFilesystems, "Number:\t\tFilesystem:", "Please enter the desired filesystem for volume '" + myESDUUID + "': ");
+        cout << "Selected filesystem scheme '" << FSString << "'" << endl << endl;
+        switch(KeyronaVolumeFilesystemMap[FSString])
+        {
+            case FSTYPE_EXT2: FileSystem = FSTYPE_EXT2; break;
+            case FSTYPE_VFAT: FileSystem = FSTYPE_VFAT; break;
+            case FSTYPE_XFS: FileSystem = FSTYPE_XFS; break;
+        }
+        if (!FileSystem)
+            throw NotCreated("Please enter valid filesystem!");
+    
+    string mountpath = getStringFromUser("Please enter a mount path for ESD Device: ");
+    
+        string myCommand = ("mkfs." + FSString + " " + myESDDevice + " && " + "mount " + myESDDevice + " " + mountpath);
         
-    KeyronaSubject newESD(, myESD, myEMail, myC, myO, myOU, mySP, myL, false, myKeyDirectory, mySubjectStorage);
+        // note: we don't need a setup script for ecryptfs
+        if (myCommand.size())
+        {
+            debug << "Now executing: " << myCommand << endl;
+            int ret = system(myCommand.c_str());
+            if (ret)
+                throw NotCreated("Volume could not be created!");
+        }
+    
+    KeyronaESD newESD(myESD, myESDDevice, myESDUUID, myESDStorage);
         if (! newESD.getMyESDID())
             throw NotCreated("ESD could not be created!");
-        cout << "Successfully created new admin with SubjectID '" << newAdmin.getMySubjectID() << "'." << endl;
-        printToSyslog("KEYRONA: Admin '" + myUsername + "' was added to this system");
-        cout << "Creating new admin group..." << endl;
-*/
+        cout << "Successfully created new ESD'" << newESD.getMyESDID() << "'." << endl;
+        printToSyslog("KEYRONA: ESD '" + myESD + "' was added to this system");
+
+	        string myCommand2 = ("umount " + mountpath);
+        
+        // note: we don't need a setup script for ecryptfs
+        if (myCommand2.size())
+        {
+            debug << "Now executing: " << myCommand2 << endl;
+            int ret = system(myCommand2.c_str());
+            if (ret)
+                throw NotCreated("Volume could not be created!");
+        }
+};
+
+void KeyronaDeleteESD(KeyronaStorage &myESDStorage)
+{
+	if (loginAdmin(myESDStorage))
+        cout << "Admin successfully logged in!" << endl;
+
+    if (! KeyronaListUsers(myESDStorage, false))
+        return;
+
+    vector<string> myESDs = KeyronaFindAllESDs(myESDStorage);
+    if (! myESDs.size())
+    {
+        cout << "No users found." << endl;
+        return;
+    }
+    string esdToDelete = selectFromStringVector(myESDs, "\nNumber:\t\tUser:", "Please select the user to be deleted:");
+
+    if (!KeyronaFindSubject(myESDStorage, esdToDelete))
+        throw UnknownESD("ESD '" + esdToDelete + "' not found.");
+        
+    string myESDDevice;    
+    try
+        {
+            vector<StringPair> AvailableVolumes = getAvailableVolumes(UUIDpath);
+            vector<string> AvailableDevices;
+            while (AvailableVolumes.size())
+            {
+                StringPair current = AvailableVolumes.back();
+                AvailableVolumes.pop_back();
+                if (! isDeviceMounted(current.first))
+                    AvailableDevices.push_back(current.first);
+            }
+
+            myESDDevice = selectFromStringVector(AvailableDevices, "Number:\t\tDevice:", "[Note: If the desired device has not been identified automatically, you can still enter the correct device (e.g., /dev/sdb1) below.]\nPlease select the device to be created:");
+        }
+    catch ( NoVolume &e)
+        {
+            cout << "Error: Could not identify any valid volumes." << endl;
+            myESDDevice = getStringFromUser("Please enter the device to be created: ");
+        }
+        if (isDeviceMounted(myESDDevice))
+            throw InvalidFilename("The device you selected is currently mounted. Please unmount it first, before re-creating the volume.");
+        cout << "Selected device '" << myESDDevice << "'" << endl << endl;
+        string mountpath = getStringFromUser("Please enter a mount path for ESD Device: ");
+
+    string myCommand = ("mount " + myESDDevice + " " + mountpath + " && " + "wipe -l2 -p8 -r -x8 -v " + mountpath + "/*" );
+        
+        // note: we don't need a setup script for ecryptfs
+        if (myCommand.size())
+        {
+            debug << "Now executing: " << myCommand << endl;
+            int ret = system(myCommand.c_str());
+            if (ret)
+                throw NotCreated("Volume could not be created!");
+        }
+
+    KeyronaESD *myESD = new KeyronaESD(esdToDelete, myESDStorage);
+    myESD->deleteESD();
+    
+    	        string myCommand2 = ("umount " + mountpath);
+        
+        // note: we don't need a setup script for ecryptfs
+        if (myCommand2.size())
+        {
+            debug << "Now executing: " << myCommand2 << endl;
+            int ret = system(myCommand2.c_str());
+            if (ret)
+                throw NotCreated("Volume could not be created!");
+        }
 };
 
 void KeyronaShowESD(KeyronaStorage &myESDStorage)
 {
-	
+	int test;
 };
 
 void KeyronaESDManagement( string esdParam, KeyronaConfigfile &myConfigfile )
 {
     t_StringMap KeyronaESDMap;
-    KeyronaInitMap["createESD"]   = createESD;
-    KeyronaInitMap["ce"]          = createESD;
-    KeyronaInitMap["showESD"]     = showESD;
-    KeyronaInitMap["se"]          = showESD;
+    KeyronaESDMap["createESD"]   = createESD;
+    KeyronaESDMap["ce"]          = createESD;
+    KeyronaESDMap["deleteESD"]   = deleteESD;
+    KeyronaESDMap["de"]          = deleteESD;
+    KeyronaESDMap["showESD"]     = showESD;
+    KeyronaESDMap["se"]          = showESD;
 
     // Create User database storage object
-    KeyronaStorage mySubjectStorage( "ESDDB", myConfigfile.getConfigfileEntry(KeyronaConfigfile_ESDDBIdentifier) );
+    KeyronaStorage myESDStorage( "ESDDB", myConfigfile.getConfigfileEntry(KeyronaConfigfile_ESDDBIdentifier) );
     
     switch(KeyronaESDMap[esdParam])
     {
         case createESD:
             KeyronaCreateESD(myESDStorage);
             break;
+        case deleteESD:
+			KeyronaDeleteESD(myESDStorage);
+			break;
         case showESD:
             KeyronaShowESD(myESDStorage);
             break;
         default:
             throw ParseError("invalid parameter");
     }
+
 };

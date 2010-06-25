@@ -213,28 +213,6 @@ void KeyronaDeleteVolume(KeyronaStorage &myVolumeStorage, KeyronaStorage &mySubj
 
 //================================================================================
 //
-void findAvailableFilesystems(string fs, vector<string>* AvailableFilesystems)
-{
-    string mkfs;
-
-    mkfs = "/sbin/mkfs." + fs;
-    if (fileExists(mkfs))
-    {
-        debug << "Found '" << fs << "' at '" << mkfs << "'." << endl;
-        AvailableFilesystems->push_back(fs);
-    }
-
-    mkfs.clear();
-    mkfs = "/usr/sbin/mkfs." + fs;
-    if (fileExists(mkfs))
-    {
-        debug << "Found '" << fs << "' at '" << mkfs << "'." << endl;
-        AvailableFilesystems->push_back(fs);
-    }
-};
-
-//================================================================================
-//
 void findAvailableCryptosystems(string cs, string binary, vector<string>* AvailableCryptoSystems)
 {
     string crypto;
