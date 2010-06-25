@@ -10,26 +10,36 @@
  * #define UART_RXBUFSIZE 16
  * #define UART_TXBUFSIZE 16
  * #define UART_LINE_BUFFER_SIZE 40
- * #define UART_LEDS             // LED1 and LED2 toggle on tx and rx interrupt
+ * #define UART_LEDS             // PC0 and PC1 toggle on tx and rx interrupt
  *
  */
+
+//read config
+#include "../config.h"
 
 #include <inttypes.h>
 #include <avr/pgmspace.h>
 
+//prototypes
 void uart_init();
 
 void uart_putc(char c);
 void uart_putstr(char * str);
 void uart_putstr_P(PGM_P str);
-void uart_hexdump(char *buf, int len);
 
 char uart_getc();
-char uart_getc_nb(char *c);		// returns 1 on success
+char uart_getc_nb(char *c);		// non blocking, returns 1 on success
 
-//get one Cariage return terminated line
-//echo charakters back on Uart
-//returns buffer with zero terminated line on success, 0 pointer otherwise
-char * uart_getline_nb();
+#ifdef UART_HEXDUMP
+	//hexdump utility
+	void uart_hexdump(char *buf, int len);
+#endif
+
+#ifdef UART_GETLINE
+	//get one Cariage return terminated line
+	//echo charakters back on Uart
+	//returns buffer with zero terminated line on success, 0 pointer otherwise
+	char * uart_getline_nb();
+#endif
 
 #endif
