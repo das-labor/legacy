@@ -13,19 +13,22 @@
 //#define UART_LEDS
 
 
-
-
-//interrupt pin of MCP2515 for non interrupt drive can
-#define SPI_PIN_MCP_INT PD2
-	
+#define MC_MOSI PB5
+#define MC_CLK  PB7
 
 // can.[ch] defines
+#define CAN_RAW
+
 #define F_MCP F_CPU
 
 #define MCP_CMD_PORT PORTB
 #define MCP_CS       PB4
 
-#define CAN_INTERRUPT		//set this to enable interrupt driven and buffering version
+#define SPI_REG_PIN_MCP_INT  PINB
+#define SPI_PIN_MCP_INT      PB2
+
+
+//#define CAN_INTERRUPT		//set this to enable interrupt driven and buffering version
 #define CAN_RX_BUFFER_SIZE 8	//only used for Interrupt
 #define CAN_TX_BUFFER_SIZE 8	//only used for Interrupt
 
