@@ -239,6 +239,9 @@ string removeDelimiter(string myEntry);
  */
 string getUUID(string volume, string &UUIDpath);
 
+void findAvailableFilesystems(string fs, vector<string>* AvailableFilesystems);
+
+
 /*!
  *  @brief returns all available volume
  *  @param &UUIDpath, string, contains the path to the folder with the volume -> UUID mapping

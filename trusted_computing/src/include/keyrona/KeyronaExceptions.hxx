@@ -84,7 +84,11 @@ namespace keyrona
       UnknownSubject( const std::string &what ) :
 		std::runtime_error( "UnknownSubject: " + what ) {};
     };
-
+	    class UnknownESD : public std::runtime_error {
+    public:
+      UnknownESD( const std::string &what ) :
+		std::runtime_error( "UnknownESD: " + what ) {};
+    };
     /**
      * @brief Exception that is thrown when group is not found...
      */

@@ -31,6 +31,7 @@
 #include <KeyronaStorage.hxx>
 #include <KeyronaSubject.hxx>
 #include <KeyronaGroup.hxx>
+#include <KeyronaESD.hxx>
 #include <KeyronaSearch.hxx>
 #include <KeyronaVolume.hxx>
 
@@ -104,6 +105,8 @@ void KeyronaCreateToken(KeyronaStorage &mySubjectStorage);
   *  @param &mySubjectStorage, KeyronaStorage, points to the current subject database
   */
 void KeyronaCreateUser(KeyronaStorage &mySubjectStorage);
+
+void KeyronaCreateESD			 ( KeyronaStorage &myESDStorage );
 
 /*!
   *  @brief deletes a user from a volume
@@ -285,6 +288,9 @@ void KeyronaListSubjectsInGroup(KeyronaStorage &myGroupStorage, KeyronaStorage &
   */
 void KeyronaListSubjectsInVolume(KeyronaStorage &myVolumeStorage, KeyronaStorage &mySubjectStorage, KeyronaStorage &myGroupStorage);
 
+void KeyronaShowESD				 ( KeyronaStorage &myESDStorage );
+
+
 /*!
   *  @brief prints all tokens to the screen
   *  @param &mySubjectStorage, KeyronaStorage, points to the current subject database
@@ -327,11 +333,9 @@ void KeyronaUserManagement       ( string userParam, KeyronaConfigfile &myConfig
   */
 void KeyronaVolumeManagement     ( string volumeParam, KeyronaConfigfile &myConfigfile );
 
-void KeyronaESD      			 ( string esdParam, KeyronaConfigfile &myConfigfile );
+void KeyronaESDManagement		 ( string esdParam, KeyronaConfigfile &myConfigfile );
 
-void KeyronaCreateESD			 ( KeyronaStorage &mySubjectStorage );
 
-void KeyronaShowESD				 ( KeyronaStorage &mySubjectStorage );
 
 // this method is actually implemented in KeyronaLogin.cxx
 KeyronaSubject* getCurrentAdmin(KeyronaStorage &mySubjectStorage);

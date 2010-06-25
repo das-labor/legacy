@@ -33,6 +33,7 @@ static const std::string KeyronaConfigfile_VolumeDBIdentifier           = "VOLUM
 static const std::string KeyronaConfigfile_SubjectDBIdentifier          = "SUBJECT_DB";
 static const std::string KeyronaConfigfile_GroupDBIdentifier            = "GROUP_DB";
 static const std::string KeyronaConfigfile_SSSDBIdentifier              = "SSS_DB";
+static const std::string KeyronaConfigfile_ESDDBIdentifier              = "ESD_DB";
 static const std::string KeyronaConfigfile_KeyproviderDBIdentifier      = "KEYPROVIDER_DB";
 static const std::string KeyronaConfigfile_KeyPathIdentifier            = "KEYRONA_KEY_PATH";
 static const std::string KeyronaConfigfile_KeyronaScriptPathIdentifier  = "KEYRONA_SCRIPT_PATH";

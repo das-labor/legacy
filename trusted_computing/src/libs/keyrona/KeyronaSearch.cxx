@@ -97,6 +97,37 @@ bool KeyronaFindSubject(KeyronaStorage &mySubjectStorage, const string &subjectI
 
 //================================================================================
 //
+bool KeyronaFindESD(KeyronaStorage &myESDStorage, const string &ESDIdentifier)
+{
+    vector<StringPair> myESDIDs=myESDStorage.findAllEntries(KeyronaESD_isESD, KeyronaESD_isESD_true);
+    vector<utils::StringPair>::const_iterator Iterator;
+    if (myESDIDs.size())
+    {
+        Iterator=myESDIDs.begin();
+        while ( Iterator != myESDIDs.end())
+        {
+            StringPair myStringpair = *(Iterator);
+            try
+            {
+                debug << "KeyronaFindESD: Looking for ESD '" << ESDIdentifier << "'" << endl;
+                KeyronaESD *myESD = new KeyronaESD(ESDIdentifier, myESDStorage);
+                debug << "KeyronaFindESD(): found ESD '" << ESDIdentifier << "'" << endl;
+                delete myESD;
+                return true;
+            }
+            catch ( UnknownESD &e )
+            {
+                debug << "KeyronaFindESD(): ESD '" << ESDIdentifier << "' not found" << endl;
+                exit(-1);
+            }
+            Iterator++;
+        }
+    }
+    return false;
+};
+
+//================================================================================
+//
 bool KeyronaFindUser(KeyronaStorage &mySubjectStorage, const string &subjectIdentifier)
 {
     vector<StringPair> mySubjectIDs=mySubjectStorage.findAllEntries(KeyronaSubject_SubjectType, KeyronaSubjectType_User);
@@ -283,6 +314,26 @@ vector<string> KeyronaFindAllUsers(KeyronaStorage &mySubjectStorage, bool withAd
         Iterator++;
     }
     return myUsers;
+};
+
+//================================================================================
+//
+vector<string> KeyronaFindAllESDs(KeyronaStorage &myESDStorage)
+{
+    vector<StringPair> myESDIDs=myESDStorage.findAllEntries(KeyronaESD_isESD, KeyronaESD_isESD_true);
+    vector<string> myESDs;
+    vector<utils::StringPair>::const_iterator Iterator;
+    Iterator=myESDIDs.begin();
+    while ( Iterator != myESDIDs.end())
+    {
+        StringPair myStringpair = *(Iterator);
+        KeyronaESD *myESD = new KeyronaESD(Iterator->first, myESDStorage);
+        myESDs.push_back(myESD->getMyESDName());
+        
+        delete myESD;
+        Iterator++;
+    }
+    return myESDs;
 };
 
 //================================================================================
