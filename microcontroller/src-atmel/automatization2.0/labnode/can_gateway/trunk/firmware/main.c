@@ -1,22 +1,21 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <avr/signal.h>
 #include <stdlib.h>
 
 
 #include "config.h"
-#include "util.h"
-#include "spi.h"
-#include "can.h"
+//#include "util.h"
+#include "canlib/spi.h"
+#include "canlib/can.h"
 
-#include "uart.h"
+//#include "uart.h"
 #include "cantun.h"
 #include "can-uart.h"
 
 void process_cantun_msg(cantun_msg_t *msg)
 {
-	can_message_t *cmsg;
+	can_message *cmsg;
 
 	switch(msg->type) {
 		case CANTUN_SETFILTER:
@@ -32,7 +31,7 @@ void process_cantun_msg(cantun_msg_t *msg)
 	}
 }
 
-void process_can_msg(can_message_t *msg){
+void process_can_msg(can_message *msg){
 	cantun_msg_t tunmsg;
 
 	cantun_wrap(&tunmsg, msg);
@@ -53,7 +52,7 @@ int main(){
 
 	while(1) {
 		cantun_msg_t  *rmsg;
-		can_message_t *cmsg;
+		can_message *cmsg;
 
 
 		rmsg = canu_get_nb();

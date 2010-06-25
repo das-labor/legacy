@@ -10,29 +10,28 @@
 #define UART_RXBUFSIZE 50
 #define UART_TXBUFSIZE 50
 #define UART_LINE_BUFFER_SIZE 40
-#define UART_LEDS
+//#define UART_LEDS
 
 
-// spi.[ch] defines
-#define SPI_HARDWARE
-#define SPI_PORT PORTB		//for slave select
-#define SPI_PIN PINB		//for slave select
-#define SPI_DDR DDRB
 
-#define SPI_PIN_MOSI PB5
-#define SPI_PIN_MISO PB6
-#define SPI_PIN_SCK PB7
-#define SPI_PIN_SS PB4		// for slave select
 
 //interrupt pin of MCP2515 for non interrupt drive can
 #define SPI_PIN_MCP_INT PD2
 	
 
 // can.[ch] defines
+#define F_MCP F_CPU
+
+#define MCP_CMD_PORT PORTB
+#define MCP_CS       PB4
+
 #define CAN_INTERRUPT		//set this to enable interrupt driven and buffering version
 #define CAN_RX_BUFFER_SIZE 8	//only used for Interrupt
 #define CAN_TX_BUFFER_SIZE 8	//only used for Interrupt
-#define F_MCP F_CPU
+
+#define ENABLE_CAN_INT()   GICR |= (1<<INT2)
+#define MCP_INT_VEC        INT2_vect
+
 
 
 // lap.[ch] defines
