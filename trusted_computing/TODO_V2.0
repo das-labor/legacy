@@ -1,12 +1,12 @@
-+ Real Enterprise and Personal Mode
-+ New Key Management (Wallet Mode)
-+ Improve old Key Management
-+ Add TPM Migration feature
-+ Add TPM DAA feature
-+ Add TPM Binding and Unbinding
-+ Add TPM Sealing and Unsealing with PCR's
-+ Add TPM Key Management
-+ Bug fixes and other Improvements
-+ Improve All Managements
-+ Add ESD Management
-+ Add Security fixes
++ Real Enterprise and Personal Mode -- Not Done
++ New Key Management (Wallet Mode) -- working in progress
++ Improve old Key Management -- Done
++ Add TPM Migration feature -- Not Done
++ Add TPM DAA feature -- Not Done
++ Add TPM Binding and Unbinding -- Done
++ Add TPM Sealing and Unsealing with PCR's -- Done
++ Add TPM Key Management -- Done
++ Bug fixes and other Improvements -- Not Done
++ Improve All Managements -- working in progress
++ Add ESD Management -- working in progress
++ Add Security fixes -- working in progress
