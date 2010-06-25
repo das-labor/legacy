@@ -7,28 +7,48 @@
 
 #include "uart.h"
 
-#ifdef ATMEGA128
-#define UCSRB UCSR0B
-#define UCSRC UCSR0C
-#define UDR UDR0
-#define UBRRH UBRR0H
-#define UBRRL UBRR0L
-#define URSEL UMSEL
+#if defined(__AVR_ATmega128__)
+	#define UCSRB UCSR0B
+	#define UCSRC UCSR0C
+	#define UDR UDR0
+	#define UBRRH UBRR0H
+	#define UBRRL UBRR0L
+	#define URSEL UMSEL
+	#define UART_UDRE_VECTOR SIG_UART_DATA
+	#define UART_RECV_VECTOR SIG_UART_RECV
+#elif defined(__AVR_ATmega48__)
+	#define UCSRB UCSR0B
+	#define UCSRC UCSR0C
+	#define UDR UDR0
+	#define UBRRH UBRR0H
+	#define UBRRL UBRR0L
+	#define TXEN TXEN0
+	#define RXEN RXEN0
+	#define UCSRA UCSR0A
+	#define UDRIE UDRIE0
+	#define UCSZ0 UCSZ00
+	#define RXCIE RXCIE0
+	#define TXCIE TXCIE0
+	#define RXC RXC0
+	#define UDRE UDRE0
+	#define UART_UDRE_VECTOR USART_UDRE_vect
+	#define UART_RECV_VECTOR USART_RX_vect
+#elif defined(__AVR_ATmega8__) | defined(__AVR_ATmega32__) 
+	#define UART_UDRE_VECTOR USART_UDRE_vect
+	#define UART_RECV_VECTOR USART_RXC_vect
 #else
-#define UCSRB UCSR0B
-#define UCSRC UCSR0C
-#define UDR UDR0
-#define UBRRH UBRR0H
-#define UBRRL UBRR0L
-#define TXEN TXEN0
-#define RXEN RXEN0
-#define UCSRA UCSR0A
-#define UDRIE UDRIE0
-#define UCSZ0 UCSZ00
-#define RXCIE RXCIE0
-#define TXCIE TXCIE0
-#define RXC RXC0
-#define UDRE UDRE0
+	#define UART_UDRE_VECTOR USART_UDRE_vect
+	#define UART_RECV_VECTOR USART_RXC_vect
+
+	#warning Your AVR is not officially supported by the uart-lib, it might not work.
+#endif
+
+
+
+
+
+#ifdef UART_LEDS
+	#warning UART_LEDS is truned on, which means that PC0 and PC1 will be toggled by receiving/transmitting bytes!!
 #endif
 
 
@@ -41,30 +61,20 @@ volatile static char txbuf[UART_TXBUFSIZE];
 volatile static char *volatile rxhead, *volatile rxtail;
 volatile static char *volatile txhead, *volatile txtail;
 
-#ifdef ATMEGA128
-SIGNAL(SIG_UART_DATA) {
-#else
-SIGNAL(USART_UDRE_vect) {
-#endif	
-
+ISR(UART_UDRE_VECTOR) {
 	if ( txhead == txtail ) {
 #ifdef UART_LEDS	
 	PORTC ^= 0x01;
 #endif
 	
-		UCSRB &= ~(1 << UDRIE);		/* disable data register empty IRQ */
+	UCSRB &= ~(1 << UDRIE);		/* disable data register empty IRQ */
 	} else {
 		UDR = *txtail;			/* schreibt das Zeichen x auf die Schnittstelle */
 		if (++txtail == (txbuf + UART_TXBUFSIZE)) txtail = txbuf;
 	}
 }
 
-#ifdef ATMEGA128
-SIGNAL(SIG_UART_RECV) {
-#else
-SIGNAL(USART_RX_vect) {
-#endif
-
+ISR(UART_RECV_VECTOR) {
 	int diff; 
 
 #ifdef UART_LEDS
@@ -88,7 +98,7 @@ SIGNAL(USART_RX_vect) {
 
 void uart_init() {
 #ifdef UART_LEDS	
-	DDRC |= 0x07; 	// Port C all outputs
+	DDRC |= 0x03; 	// Port C LED outputs
 #endif
 	PORTD |= 0x01;				//Pullup an RXD an
 
@@ -111,7 +121,7 @@ void uart_init() {
 }
 
 #ifdef UART_INTERRUPT
-void uart_putc(unsigned char c) {
+void uart_putc(char c) {
 	volatile int diff;
 
 	/* buffer full? */
@@ -148,24 +158,6 @@ void uart_putstr_P(PGM_P str) {
 		str++;
 	}
 }
-
-void uart_hexdump(unsigned char *buf, int len)
-{
-	unsigned char x=0;
-	char sbuf[3];
-
-	while(len--){
-		itoa(*buf++, sbuf, 16);
-		if (sbuf[1] == 0) uart_putc(' ');
-		uart_putstr(sbuf);
-		uart_putc(' ');
-		if(++x == 16) {
-			uart_putstr_P(PSTR("\r\n"));
-			x = 0;
-		}
-	}
-}
-
 
 #ifdef UART_INTERRUPT
 char uart_getc()
@@ -211,3 +203,24 @@ char uart_getc_nb(char *c)
 	return 0;
 }
 #endif // UART_INTERRUPT
+
+
+#ifdef UART_HEXDUMP
+//hexdump utility
+void uart_hexdump(unsigned char *buf, int len)
+{
+	unsigned char x=0;
+	char sbuf[3];
+
+	while(len--){
+		itoa(*buf++, sbuf, 16);
+		if (sbuf[1] == 0) uart_putc(' ');
+		uart_putstr(sbuf);
+		uart_putc(' ');
+		if(++x == 16) {
+			uart_putstr_P(PSTR("\r\n"));
+			x = 0;
+		}
+	}
+}
+#endif
