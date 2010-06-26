@@ -224,14 +224,14 @@ void can_setled(unsigned char led, unsigned char state)
 
 /*******************************************************************/
 
-#define DDR(port) (*((&(port))+1))
+#define DDR(port) (*((&(port))-1))
 
 void can_init()
 {
 	//set Slave select DDR to output
 	DDR(MCP_CMD_PORT) |= _BV(MCP_CS);
 	//set Slave select high
-	MCP_CMD_PORT &= ~_BV(MCP_CS);
+	MCP_CMD_PORT      |= _BV(MCP_CS);
 
 	
 #ifdef CAN_INTERRUPT	
