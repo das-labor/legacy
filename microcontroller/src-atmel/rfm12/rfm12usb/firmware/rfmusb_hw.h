@@ -9,13 +9,26 @@
  * HWREF = 2 is the newer SMD-version of this
  * board.
  *
+ * HWREF = LABNODE is for the LABNODE 
  */
 
 #ifndef HWREF
 	#define HWREF 2
 #endif
 
-#if (HWREF == 2)
+#if (HWREF == LABNODE)
+	/* LEDs */
+	#define LED_PORT_DDR      DDRB
+	#define LED_PORT_OUTPUT   PORTB
+	#define LED_BIT_RED       (_BV(PB0))
+	#define LED_BIT_GREEN     (_BV(PB0))
+
+	/* RFM12 slave select pin */
+	#define DDR_SS DDRB
+	#define PORT_SS PORTB
+	#define BIT_SS 3
+
+#elif (HWREF == 2)
 	/* LEDs */
 	#define LED_PORT_DDR      DDRD
 	#define LED_PORT_OUTPUT   PORTD
