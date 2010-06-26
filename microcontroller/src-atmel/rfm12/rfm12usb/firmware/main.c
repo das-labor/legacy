@@ -11,8 +11,6 @@
  * OBJECTIVE DEVELOPMENT Software GmbH.
  */
 
-//use hardware version 1
-#define HWREF 2
 
 #include <avr/io.h>
 #include <avr/wdt.h>

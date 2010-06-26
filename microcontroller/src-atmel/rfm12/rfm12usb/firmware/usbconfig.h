@@ -12,6 +12,7 @@
 #define __usbconfig_h_included__
 
 #include "../common/usb_id.h"
+#include "rfmusb_hw.h"
 
 /*
 General Description:
@@ -24,6 +25,12 @@ section at the end of this file).
 */
 
 /* ---------------------------- Hardware Config ---------------------------- */
+
+#if HWREF == LABNODE
+#define USB_CFG_IOPORTNAME      C
+#define USB_CFG_DMINUS_BIT      3
+#define USB_CFG_DPLUS_BIT       2
+#else
 
 #define USB_CFG_IOPORTNAME      D
 /* This is the port where the USB bus is connected. When you configure it to
@@ -42,6 +49,8 @@ section at the end of this file).
  * interrupt, the USB interrupt will also be triggered at Start-Of-Frame
  * markers every millisecond.]
  */
+#endif
+ 
 #define USB_CFG_CLOCK_KHZ       (F_CPU/1000)
 /* Clock rate of the AVR in MHz. Legal values are 12000, 15000, 16000, 16500
  * and 20000. The 16.5 MHz version of the code requires no crystal, it
