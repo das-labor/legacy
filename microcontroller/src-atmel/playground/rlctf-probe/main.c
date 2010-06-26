@@ -11,6 +11,10 @@ ISR(TIMER0_OVF_vect)
 	static uint16_t seconds = 0;
 	static char msg[] = "Nakka Nakka   ";
 
+	msg[11] ^= 0x55;
+	if (qms % 32 == 0)
+		rfm12_tx (sizeof(msg), 0, msg);
+
         if (qms < 61) /* the timer produces approx. 61 overflows per sec */
         {
                 qms++;
@@ -25,8 +29,7 @@ ISR(TIMER0_OVF_vect)
 	msg[13] = (seconds & 0xff);
 
 	if (seconds & 0x01)
-	{	
-		rfm12_tx (sizeof(msg), 0, msg);
+	{
 	}
 }
 
@@ -42,6 +45,7 @@ int main (void)
 	DDRC |= (_BV(PC0) | _BV(PC1));
 	timer0_init();
 	rfm12_init();
+	sei();
 
 	while (23)
 	{
