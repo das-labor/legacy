@@ -1,3 +1,5 @@
+#ifndef RFM12_CONFIG_H__
+#define RFM12_CONFIG_H__
 /**** RFM 12 library for Atmel AVR Microcontrollers *******
  * 
  * This software is free software; you can redistribute it and/or modify
@@ -77,6 +79,7 @@
 
 //center frequency to use (+-125kHz FSK frequency shift)
 #define FREQ 433175000UL
+//#define FREQ 433000000UL
 
 //use this for datarates >= 2700 Baud
 #define DATARATE_VALUE RFM12_DATARATE_CALC_HIGH(9600.0)
@@ -97,22 +100,22 @@
  */
  
 //the interrupt vector
-#define RFM12_INT_VECT (INT1_vect)
+#define RFM12_INT_VECT (INT0_vect)
 
 //the interrupt mask register
 #define RFM12_INT_MSK GICR
 
 //the interrupt bit in the mask register
-#define RFM12_INT_BIT (INT1)
+#define RFM12_INT_BIT (INT0)
 
 //the interrupt flag register
 #define RFM12_INT_FLAG GIFR
 
 //the interrupt bit in the flag register
-#define RFM12_FLAG_BIT (INTF1)
+#define RFM12_FLAG_BIT (INTF0)
 
 //setup the interrupt to trigger on negative edge
-#define RFM12_INT_SETUP()   MCUCR |= (1<<ISC11)
+#define RFM12_INT_SETUP()   MCUCR |= (1<<ISC01)
 
 
 /************************
@@ -139,6 +142,6 @@
 #define RFM12_UART_DEBUG 0
 
 /* RXEN / TXEN Hooks for rfm12bp */
-#define RFM12_RXEN_HOOK (PORTC &= ~(_BV(PC0)); PORTC |= (_BV(PC1)))
-#define RFM12_TX_HOOK (PORTC &= ~(_BV(PC1)); PORTC |= (_BV(PC0)))
-
+#define RFM12_RXEN_HOOK PORTC &= ~(_BV(PC0)); PORTC |= (_BV(PC1))
+#define RFM12_TX_HOOK PORTC &= ~(_BV(PC1)); PORTC |= (_BV(PC0))
+#endif

@@ -10,11 +10,11 @@
 DEVICE  = atmega8
 F_CPU   = 16000000	# in Hz
 FUSE_L  = 0x9f
-FUSE_H  = 0xc9
+FUSE_H  = 0xca
 AVRDUDE = avrdude -c usbasp -p $(DEVICE) # edit this line for your programmer
 
-CFLAGS  = -I. -DDEBUG_LEVEL=0
-OBJECTS = main.o rfm12.o rfm12/src/rfm12.o
+CFLAGS  = -Iusbdrv -I. -DDEBUG_LEVEL=0
+OBJECTS = main.o rfm12.o
 
 COMPILE = avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE)
 
@@ -122,7 +122,7 @@ flash: main.hex
 
 # rule for deleting dependent files (those which can be built by Make):
 clean:
-	rm -f main.hex main.lst main.obj main.cof main.list main.map main.eep.hex main.elf *.o main.s
+	rm -f main.hex main.lst main.obj main.cof main.list main.map main.eep.hex main.elf *.o
 
 # Generic rule for compiling C files:
 .c.o:

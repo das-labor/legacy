@@ -4,7 +4,6 @@
 #include "rfm12_config.h"
 #include "rfm12.h"
 
-static char msg[] = "Nakka Nakka   ";
 
 ISR(TIMER0_OVF_vect)
 {
