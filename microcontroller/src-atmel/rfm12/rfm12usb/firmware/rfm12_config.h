@@ -59,9 +59,9 @@
  */
 
 //Pin that the RFM12's slave select is connected to
-#define DDR_SS DDRC
-#define PORT_SS PORTC
-#define BIT_SS 2
+#define DDR_SS DDRB
+#define PORT_SS PORTB
+#define BIT_SS 0
 
 //SPI port
 #define DDR_SPI DDRB
@@ -87,7 +87,7 @@
 #define FREQ 433175000UL
 
 //use this for datarates >= 2700 Baud
-#define DATARATE_VALUE RFM12_DATARATE_CALC_HIGH(19200.0)
+#define DATARATE_VALUE RFM12_DATARATE_CALC_HIGH(9600.0)
 
 //use this for 340 Baud < datarate < 2700 Baud
 //#define DATARATE_VALUE RFM12_DATARATE_CALC_LOW(1200.0)
