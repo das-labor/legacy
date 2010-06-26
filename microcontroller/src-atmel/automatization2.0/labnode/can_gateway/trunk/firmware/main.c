@@ -122,6 +122,8 @@ void process_cantun_msg(rs232can_msg *msg)
 }
 
 int main(){
+	DDRB |= (1<<PB0); //LED-Pin to output
+
 	uart_init();
 	spi_init();
 	can_init();
@@ -136,13 +138,14 @@ int main(){
 
 
 		rmsg = canu_get_nb();
-		if (rmsg){ 
+		if (rmsg){
+			PORTB ^= 0x01;
 			process_cantun_msg(rmsg);
 		}
 		
 		cmsg = can_get_nb();
 		if (cmsg){
-			PORTC ^= 0x80;
+			PORTB ^= 0x01;
 			write_can_message_to_uart(cmsg);
 			can_free(cmsg);
 		}

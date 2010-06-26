@@ -9,7 +9,6 @@
 #define UART_BAUD_RATE 57600
 #define UART_RXBUFSIZE 50
 #define UART_TXBUFSIZE 50
-#define UART_LINE_BUFFER_SIZE 40
 //#define UART_LEDS
 
 
