@@ -1,6 +1,0 @@
-# USB-Blaster
-BUS=="usb", SYSFS{idVendor}=="09fb", SYSFS{idProduct}=="6001", MODE="0666", \
-PROGRAM="/bin/sh -c 'K=%k; K=$${K#usbdev}; \
-printf /proc/bus/usb/%%03i/%%03i$${K%%%%.*} $${K#*.}'", \
-RUN+="/bin/chmod 0666 %c"
-
