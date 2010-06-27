@@ -71,7 +71,7 @@ ask_resume()
 switch_root() {
 	if [ ${switch} == yes ]
 	then
-		exec /sbin/switch_root /mnt/root/ /usr/lib64/suspend/resume -r /dev/mapper/keyrona-swap
+		exec /usr/lib64/suspend/resume -r /dev/mapper/keyrona-swap
 	else
 		exec /sbin/switch_root /mnt/root/ /sbin/init
 	fi
