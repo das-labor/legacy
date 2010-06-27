@@ -1,3 +1,0 @@
-KERNEL=="vboxdrv", NAME="vboxdrv", OWNER="root", GROUP="", MODE=""
-SUBSYSTEM=="usb_device", GROUP="", MODE=""
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", GROUP="", MODE=""
