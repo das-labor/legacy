@@ -108,3 +108,4 @@ static inline uint8_t ir_genENEC(uint16_t *destCode, uint32_t bitCode, uint8_t c
 }
 
 #endif //_H_LAB_IRKIT
+
