@@ -779,13 +779,13 @@ void appLoop_motiond(void)
   Tuint16 foo;
 	while (true)
 	{
-		motiond_tick();
+/*		motiond_tick();
 		foo = motion_check();
 		if (foo)
 		{
 			bla.data[0] = foo;
 			can_transmit(&bla);
-		}
+		}*/
 		taskDelayFromNow(100);
 	}
 }
