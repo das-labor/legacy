@@ -43,10 +43,10 @@ extern void can_handler()
 					case 0x00: //FKT_MOOD_SET_B
 						global_pwm.channels[rx_msg->data[1]].target_brightness = rx_msg->data[2];
 						break;
-					case 0x01://speed
+					case 0x01: //speed
 						global_pwm.channels[rx_msg->data[1]].speed = 100 * rx_msg->data[2];
 						break;
-					case 0x03://FKT_MOOD_GET_B
+					case 0x03: //FKT_MOOD_GET_B
 						msg.addr_src = myaddr;
 						msg.addr_dst = rx_msg->addr_src;
 						msg.dlc = 3;
