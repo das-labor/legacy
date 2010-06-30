@@ -1,5 +1,5 @@
 
-OBJ            = main.o uart/uart.o canlib/can.o canlib/spi.o
+OBJ            = main.o uart/uart.o canlib/can.o canlib/spi.o usbdrv/usbdrv.o usbdrv/usbdrvasm.o usbdrv/oddebug.o
 
 # Default values
 OUT           ?= main
@@ -39,8 +39,19 @@ $(OUT).elf: $(OBJ)
 %.o: %.c
 	$(MCU_CC) $(CFLAGS) -c $< -o $@ 
 
+#%.o: %.S
+#	$(MCU_AS) $(ASFLAGS) -o $@ $<
+#
+
+# Generic rule for assembling Assembler source files:
 %.o: %.S
-	$(MCU_AS) $(ASFLAGS) -o $@ $<
+	$(MCU_CC) $(CFLAGS) -x assembler-with-cpp -c $< -o $@
+# "-x assembler-with-cpp" should not be necessary since this is the default
+# file type for the .S (with capital S) extension. However, upper case
+# characters are not always preserved on Windows. To ensure WinAVR
+# compatibility define the file type manually.
+
+
 
 lst: $(OUT).lst
 

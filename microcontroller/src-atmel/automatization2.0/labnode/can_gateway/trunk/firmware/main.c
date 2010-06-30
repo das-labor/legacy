@@ -9,6 +9,8 @@
 #include "canlib/can.h"
 
 #include "uart/uart.h"
+#include "usbdrv/usbdrv.h"
+#include "requests.h"
 
 
 typedef enum { RS232CAN_RESET=0x00,
@@ -22,6 +24,174 @@ typedef struct {
 	unsigned char len;
 	char data[RS232CAN_MAXLENGTH];
 } rs232can_msg;
+
+
+
+
+////////
+// global variables
+////////
+
+//notify buffer
+rfmusb_notifyPacket rfmusb_notifyBuf;
+
+//buffer for transmitting usb data to the host
+uint8_t rfmusb_usbTxLen = 0;
+uint8_t rfmusb_usbTxBuf[RFMUSB_USBTXBUFFER_SIZE];
+
+//buffer for receiving usb data from the host
+uint8_t rfmusb_usbRxLen = 0, rfmusb_usbRxCnt = 0;
+uint8_t rfmusb_usbRxBuf[RFMUSB_USBRXBUFFER_SIZE];
+
+
+
+
+/* ------------------------------------------------------------------------- */
+/* ----------------------------- USB interface ----------------------------- */
+/* ------------------------------------------------------------------------- */
+
+usbMsgLen_t usbFunctionSetup(uchar data[8])
+{
+	usbRequest_t *rq = (void *)data;
+
+	//switch through requests
+	//don't expect the cases to break, they may also return
+	switch(rq->bRequest)
+	{
+		//host wants to write a raw packet to the rfm12
+		case RFMUSB_RQ_RFM12_PUT:
+			// initialize position index
+			rfmusb_usbRxCnt = 0;
+
+			// store the amount of data to be received
+			rfmusb_usbRxLen = rq->wLength.bytes[0];
+
+			// limit to buffer size
+			if(rfmusb_usbRxLen > RFMUSB_USBRXBUFFER_SIZE)
+				rfmusb_usbRxLen = RFMUSB_USBRXBUFFER_SIZE;
+
+			//toggle status led
+			LED_STATUS_TOGGLE;
+
+			// tell driver to use usbFunctionWrite()
+			return USB_NO_MSG;
+			
+		//send a single character
+		//FIXME: please cleanup define name and location
+		case USB_SENDCHAR:
+			//copy data
+			rfmusb_usbRxBuf[0] = rq->wIndex.bytes[0];
+
+			//send
+			rfm12_tx (1, 0, rfmusb_usbRxBuf);
+
+			//toggle led
+			LED_STATUS_TOGGLE;
+
+			//use default return value
+			break;			
+
+		//host wants to read rfm12 packet data
+		case RFMUSB_RQ_RFM12_GET:
+			//if there is data to transmit
+			if(rfmusb_usbTxLen)
+			{
+				uint8_t tmp;
+
+				//set usb message pointer
+				usbMsgPtr = (uchar *)rfmusb_usbTxBuf;
+
+				//free buffer
+				tmp = rfmusb_usbTxLen;
+				rfmusb_usbTxLen = 0;
+
+				//switch led
+				LED_STATUS_TOGGLE;
+
+				//tell the driver to send n bytes
+				return tmp;
+			}
+			else
+			{
+				//use default return value
+				break;
+			}
+
+		//host polls for notifications
+		case RFMUSB_RQ_GETNOTIFICATION:
+			//if there is any
+			if(rfmusb_notifyBuf.len)
+			{
+				uint8_t tmp;
+
+				//set usb message pointer
+				usbMsgPtr = (uchar *)&rfmusb_notifyBuf;
+
+				//free buffer
+				tmp = rfmusb_notifyBuf.len;
+				rfmusb_notifyBuf.len = 0;
+
+				//tell driver to send n bytes
+				return tmp;
+			}
+
+		//use default return value
+		default:
+			break;
+	}
+
+	return 0;   /* default for not implemented requests: return no data back to host */
+}
+
+
+//receive raw packet data from the host
+//FIXME: to allow different modes, one should check the current mode and call appropriate subfunctions
+uchar usbFunctionWrite(uchar *data, uchar len)
+{
+    uchar i;
+
+	LED_STATUS_TOGGLE;
+
+    //if this is the last incomplete chunk
+    if(len > rfmusb_usbRxLen)
+    {
+		//limit to the amount we can store
+        len = rfmusb_usbRxLen;
+	}
+
+	//copy data
+	rfmusb_usbRxLen -= len;
+    for(i = 0; i < len; i++)
+    {
+        rfmusb_usbRxBuf[rfmusb_usbRxCnt++] = data[i];
+	}
+
+    if(rfmusb_usbRxLen == 0)
+    {
+		//tx packet
+		//FIXME: test if the transmit buffer is free and issue tx rate limit notification to host if not
+		rfm12_tx(rfmusb_usbRxBuf[0], rfmusb_usbRxBuf[1], &rfmusb_usbRxBuf[2]);
+
+		//return 1 if we have all data
+		return 1;
+	}
+	else
+	{
+    	return 0;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*****************************************************************************
