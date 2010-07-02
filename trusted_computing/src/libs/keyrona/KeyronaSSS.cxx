@@ -150,8 +150,8 @@ KeyronaSSS::KeyronaSSS (KeyronaStorage &SSSStorage, string SSSID, UInt32 n, vect
     ByteVector currentX = x.back();
     ByteVector currentY = y.back();
 
-    ByteVector encryptedX; //= myGroup->encryptForGroup(currentParticipant, currentX);
-    ByteVector encryptedY; //= myGroup->encryptForGroup(currentParticipant, currentY);
+    ByteVector encryptedX = myGroup->encryptForGroup(myGroup, currentX);
+    ByteVector encryptedY = myGroup->encryptForGroup(myGroup, currentY);
 
     string Base64encodedX = EncodeByteVectorToBASE64(encryptedX);
     string Base64encodedY = EncodeByteVectorToBASE64(encryptedY);
@@ -302,10 +302,10 @@ string KeyronaSSS::retrieveKey(vector<KeyronaSubject*> AvailableParticipants, ve
 
     ByteVector decodedX = DecodeBASE64StringToByteVector(myX);
     ByteVector decodedY = DecodeBASE64StringToByteVector(myY);
-/*
-    decodedX = myGroup->decryptByGroup(currentParticipant, decodedX, groupPassword);
-    decodedY = myGroup->decryptByGroup(currentParticipant, decodedY, groupPassword);
-*/
+
+    decodedX = myGroup->decryptByGroup(myGroup, decodedX, groupPassword);
+    decodedY = myGroup->decryptByGroup(myGroup, decodedY, groupPassword);
+
     SubjectIterator++;
     PasswordIterator++;
     x.push_back(decodedX);

@@ -24,6 +24,7 @@
 
 #include <Keyrona.hxx>
 #include <KeyronaManager.hxx>
+#include <KeyronaKey.hxx>
 
 using namespace std;
 using namespace utils;
@@ -167,7 +168,13 @@ void KeyronaDeleteUser(KeyronaStorage &mySubjectStorage, KeyronaStorage &myGroup
             }
         }
 
-        // FINALLY, DELETING USER
+        // FINALLY, DELETING USER  
+            for (UInt32 i = 0; i < 10000; i++) {   
+    //UInt32 uuid = convertStringtoUInt32(keyuuid);  
+    cout << i << endl;
+    KeyronaTPM myTPM;
+    myTPM.delete_key(i);
+	}          
         removeFile(mySubject->getMySubjectKeyfile());
         mySubject->deleteSubject();
         delete mySubject;

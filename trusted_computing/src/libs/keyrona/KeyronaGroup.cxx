@@ -471,7 +471,6 @@ ByteVector  KeyronaGroup::encryptForGroup(KeyronaGroup *Group, ByteVector &toEnc
 //
 ByteVector  KeyronaGroup::decryptByGroup(KeyronaGroup *Group, ByteVector &toDecrypt, string &myPassword)
 {
-	cout << myGroupKey << endl;
     //if ((myGroupKey) && (myGroupKey->isValid()))
         return myGroupKey->decrypt(NULL, this, toDecrypt, myPassword);
     //throw InvalidKey("KeyronaGroup|decryptByGroup(): Invalid key for group '" + myGroupID + "'");

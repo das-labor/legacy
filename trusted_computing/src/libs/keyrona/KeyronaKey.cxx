@@ -138,12 +138,10 @@ ByteVector  KeyronaKey::encrypt(KeyronaSubject *Subject, KeyronaGroup *Group, By
 	string keyuuid;
 	UInt32 uuid;
 	UInt8 mySubjectType;
-	if (Group == NULL ) {
-	mySubjectType = Subject->getMySubjectType();
-	}
+
 	KeyronaTPM myTPM;
-	int local;
-	if ((Group == NULL) && ( mySubjectType == SUBJECTTYPE_USER)) {	
+
+	if (Group == NULL) {	
 			if (Subject->getMySubjectKeyUUID().empty())
 				throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
 			else
@@ -164,11 +162,6 @@ ByteVector  KeyronaKey::encrypt(KeyronaSubject *Subject, KeyronaGroup *Group, By
 
 			result = myTPM.bind(toEncrypt, uuid);
     }
-    
-   /* if ( mySubjectType == SUBJECTTYPE_PLATFORM) {
-			vector<ByteVector> handle = myTPM.seal(toEncrypt,local);
-			result = handle.back();
-	}*/
 	
     return result;
 };
@@ -181,12 +174,10 @@ ByteVector  KeyronaKey::decrypt(KeyronaSubject *Subject, KeyronaGroup *Group, By
 	string keyuuid;
 	UInt32 uuid;
 	UInt8 mySubjectType;
-	if (Group == NULL ) {
-	mySubjectType = Subject->getMySubjectType();
-	}
+
 	KeyronaTPM myTPM;
-	int local;
-	if ((Group == NULL) && ( mySubjectType == SUBJECTTYPE_USER)) {	
+	
+	if (Group == NULL) {	
 			if (Subject->getMySubjectKeyUUID().empty())
 				throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
 			else
@@ -208,12 +199,6 @@ ByteVector  KeyronaKey::decrypt(KeyronaSubject *Subject, KeyronaGroup *Group, By
 			result = myTPM.unbind(toDecrypt, uuid, myPassword);
     }
     
-    /*if ( mySubjectType == SUBJECTTYPE_PLATFORM) {
-		    vector<ByteVector> decrypthandle;
-			decrypthandle.push_back(toDecrypt);
-			result = myTPM.unseal(decrypthandle);
-	}*/
-	
     return result;
 };
 
@@ -244,7 +229,7 @@ void KeyronaKey::printKeyInformation(KeyronaSubject *Subject)
 //
 void KeyronaKey::deleteKey(KeyronaSubject *Subject, KeyronaGroup *Group)
 {
-		string keyuuid;
+	string keyuuid;
 
 	if (Group == NULL) {					
 		if (Subject->getMySubjectKeyUUID().empty())
@@ -257,12 +242,14 @@ void KeyronaKey::deleteKey(KeyronaSubject *Subject, KeyronaGroup *Group)
 			throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
 		else
 			keyuuid = Group->getMyGroupKeyUUID();
-    }			
-        
+    }
+    			
     UInt32 uuid = convertStringtoUInt32(keyuuid);  
-    
+
     KeyronaTPM myTPM;
-    myTPM.delete_key(uuid);    
+
+    myTPM.delete_key(uuid);
+
 };
 
 //================================================================================
@@ -278,6 +265,7 @@ bool KeyronaKey::changePassword(KeyronaSubject *Subject, string &oldPassword, st
 	UInt32 uuid = convertStringtoUInt32(keynum);
    
 	KeyronaTPM myTPM;
+	
 	myTPM.change_key_auth(newPassword, oldPassword, uuid);
    
     return true;

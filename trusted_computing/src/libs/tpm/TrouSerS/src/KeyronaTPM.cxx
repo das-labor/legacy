@@ -389,7 +389,7 @@ ByteVector KeyronaTPM::bind(ByteVector &dataToBind, UInt32 &bindkeynum)
         throw TSSError("KeyronaTPM[TrouSerS]|unseal(): Error loading SRK key object.");
     }
 	// Get Key by UUID
-	TSS_RESULT boo = Tspi_Context_GetKeyByUUID( hContext, TSS_PS_TYPE_USER, hBindKey_UUID, &hBindKey);
+	TSS_RESULT boo = Tspi_Context_GetKeyByUUID( hContext, TSS_PS_TYPE_SYSTEM, hBindKey_UUID, &hBindKey);
 	if( boo != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
@@ -522,7 +522,7 @@ ByteVector KeyronaTPM::unbind(ByteVector &dataToUnbind, UInt32 &bindkeynum, stri
         throw TSSError("KeyronaTPM[TrouSerS]|unseal(): Error creating sealed data object.");
     }
 	// Get Key by UUID
-    TSS_RESULT boo = Tspi_Context_GetKeyByUUID( hContext, TSS_PS_TYPE_USER, hBindKey_UUID, &hBindKey);
+    TSS_RESULT boo = Tspi_Context_GetKeyByUUID( hContext, TSS_PS_TYPE_SYSTEM, hBindKey_UUID, &hBindKey);
 	if( boo != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
@@ -656,13 +656,13 @@ vector<ByteVector> KeyronaTPM::create_key(string &password, UInt32 &keynum, stri
        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error create AIK object.");
     }
 	
-	if (Tspi_SetAttribUint32(hKey, TSS_TSPATTRIB_KEY_INFO, TSS_TSPATTRIB_KEYINFO_ENCSCHEME, TSS_ES_RSAESOAEP_SHA1_MGF1) != TSS_SUCCESS )
+	/*if (Tspi_SetAttribUint32(hKey, TSS_TSPATTRIB_KEY_INFO, TSS_TSPATTRIB_KEYINFO_ENCSCHEME, TSS_ES_RSAESOAEP_SHA1_MGF1) != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
         throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error create AIK object.");
     }
-	
+	*/
     if (Tspi_Context_CreateObject( hContext, TSS_OBJECT_TYPE_POLICY, TSS_POLICY_USAGE, &hKeyPolicy ) != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
@@ -693,7 +693,7 @@ vector<ByteVector> KeyronaTPM::create_key(string &password, UInt32 &keynum, stri
         throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error binding data. (" + getTSSError(blub) + ")");
     }
     
-    TSS_RESULT blub3 = Tspi_Context_RegisterKey(hContext, hKey, TSS_PS_TYPE_USER, hKey_UUID, TSS_PS_TYPE_SYSTEM, SRK_UUID);
+    TSS_RESULT blub3 = Tspi_Context_RegisterKey(hContext, hKey, TSS_PS_TYPE_SYSTEM, hKey_UUID, TSS_PS_TYPE_SYSTEM, SRK_UUID);
     if( blub3 != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
@@ -770,7 +770,7 @@ void KeyronaTPM::change_key_auth(string &password, string &password_old, UInt32 
     }
     
 	// Get Key by UUID
-	TSS_RESULT boo = Tspi_Context_GetKeyByUUID( hContext, TSS_PS_TYPE_USER, hKey_UUID, &hKey);
+	TSS_RESULT boo = Tspi_Context_GetKeyByUUID( hContext, TSS_PS_TYPE_SYSTEM, hKey_UUID, &hKey);
 	if( boo != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
@@ -843,7 +843,7 @@ void KeyronaTPM::delete_key(UInt32 &keynum)
         throw TPMConnectError("KeyronaTPM[TrouSerS]|unseal(): Could not connect to TPM!");
     }
 	
-	Tspi_Context_UnregisterKey(hContext, TSS_PS_TYPE_USER, hKey_UUID, &hKey);
+	Tspi_Context_UnregisterKey(hContext, TSS_PS_TYPE_SYSTEM, hKey_UUID, &hKey);
     
     Tspi_Context_FreeMemory(hContext, NULL);
     Tspi_Context_Close(hContext);	
