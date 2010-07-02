@@ -270,10 +270,7 @@ void KeyronaKeyprovider::mountBySubject(KeyronaConfigfile &myConfigfile, Keyrona
     string myVolumePath = myVolume.getMyVolumePath();
     UInt8 myCryptoSystem = myVolume.getMyVolumeType();
     string username = parameter.back();
-    KeyronaTPM myTPM;
 
-    // get datatounbind and myPasswort
-    vector<ByteVector> myDataToUnbind;
     KeyronaSubject mySubject(username, mySubjectStorage);
     string myPassword = getSubjectPassword(&mySubject);
     // get key
