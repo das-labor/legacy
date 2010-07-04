@@ -4,7 +4,7 @@
 
 #include "i2c_funktionen.h"
 #include "twi_master/twi_master.h"
-#include "../include/PowerCommander.h"
+#include "config.h"
 
 #define I2C_INDATACOUNT 1
 
@@ -17,7 +17,7 @@ void sync_stat_cache()
 void twi_send(uint8_t *p)
 {
 	uint8_t i;
-	if (!TWIM_Start(TWI_ADDRESS, TW_WRITE))
+	if (!TWIM_Start(TWI_ADDRESS + TW_WRITE))
 	{
 		TWIM_Stop();
 	}
@@ -38,7 +38,7 @@ void twi_send(uint8_t *p)
 void twi_get(uint8_t *p)
 {
 	uint8_t i;
-	if (!TWIM_Start(TWI_ADDRESS, TW_READ))
+	if (!TWIM_Start(TWI_ADDRESS + TW_READ))
 	{
 		TWIM_Stop();
 	}

@@ -13,7 +13,7 @@
 #include "can_handler.h"
 #include "can/spi.h"
 #include "can/lap.h"
-#include "switch.h"
+#include "io.h"
 #include "i2c_funktionen.h"
 
 
@@ -37,12 +37,12 @@ void init(void)
 /*
 ** Initiate TWI Master Interface with bitrate of 100000 Hz
 */
-	if (!TWIM_Init())
+/*	if (!TWIM_Init())
 	{
 		while (1);
 	}
-
-	
+*/
+	DDRB |= _BV(PB0);
 	//initialize spi port
 	spi_init();
 	
@@ -51,9 +51,8 @@ void init(void)
 	
 	read_can_addr();
 
-	
 	//turn on interrupts
-	sei();
+//	sei();
 }
 	 
 int main(void)
@@ -66,7 +65,15 @@ int main(void)
 	while (1)
 	{
 		can_handler();
+		PORTB |= _BV(PB0);
+		_delay_ms(200);
+		PORTB &= ~_BV(PB0);
+		_delay_ms(200);
 		switch_handler();
+/*		if (tickscounter == 10) {
+			temp_sensor_read();
+			tickscounter = 0;
+		}*/
 	}
 	return 1;
 };
