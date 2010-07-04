@@ -10,3 +10,4 @@ void read_can_addr();
 extern uint8_t myaddr;
 
 #endif // _CAN_HANDLER
+

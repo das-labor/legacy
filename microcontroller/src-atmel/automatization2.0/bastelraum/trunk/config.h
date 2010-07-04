@@ -22,5 +22,9 @@
 #define LED_ROT _BV(PA3)
 #define LED_BLAU  _BV(PA4)
 
+
+#define TWI_ADDRESS 42
+
+
 #endif // ifndef CONFIG_H
 

@@ -6,13 +6,14 @@
 #include "can_handler.h"
 #include "can/lap.h"
 #include "twi_master/twi_master.h"
-#include "../include/PowerCommander.h"
 #include "i2c_funktionen.h"
-
+#include "io.h"
 
 uint8_t myaddr;
 
 void twi_get(uint8_t *p);
+uint8_t sreg;
+uint8_t status[10][10];
 
 extern void can_handler()
 {
@@ -27,7 +28,7 @@ extern void can_handler()
 				switch (rx_msg->data[0])
 				{
 					case FKT_MGT_RESET:
-						TCCR2 = 0;
+//						TCCR2 = 0;
 						wdt_enable(0);
 						while (1);
 			
@@ -41,34 +42,21 @@ extern void can_handler()
 			}
 			else if (rx_msg->port_dst == 1)
 			{
-				/*
-					unterbinden, dass ueber can ein paar sachen umgelegt werden koennen
-				*/
-				if ( ( (rx_msg->data[0] == C_VIRT) &&	(rx_msg->data[1] == VIRT_POWER)) ||
-					( (rx_msg->data[0] == C_SW) &&
-					( (rx_msg->data[1] == SWA_HS) ||
-					(rx_msg->data[1] == SWA_STECKDOSEN) ||
-					(rx_msg->data[1] == SWA_KLO))))
-				{
+				//save to array
+				switch (rx_msg->data[0]) {
+				
+					case 1:
+						pwm_set(pwm_matrix[rx_msg->data[1]].port, rx_msg->data[2]);
+						break;
+					case 2:
+						if (rx_msg->data[2])
+							sreg |= 1 << rx_msg->data[1];
+						else
+							sreg &= ~(1 << rx_msg->data[1]);
+						change_shift_reg(sreg);
+						break;
 				}
-
-				/*
-					gehe davon aus, dass genau so viele daten die
-					via can reingekommen sind auch wieder auf i2c raus sollen
-								
-					XXX - check mit rx_msg->cmd und data[i] was steht wirklich wo
-				*/
-				else
-				{
-					twi_send(rx_msg->data);
-					if (((rx_msg->data[0] == C_SW) && (rx_msg->data[2] == F_SW_STATUS)) ||
-					    ((rx_msg->data[0] == C_PWM) && (rx_msg->data[2] == F_PWM_GET)))
-					{
-						uint8_t msg_tx[1];
-						twi_get(msg_tx);
-						can_send(0x01, msg_tx);
-					}
-				}
+				//state_to_output();
 			}
 		}
 	}
