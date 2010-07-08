@@ -1,0 +1,36 @@
+HiMed Chipkartenkontaktierer 896
+
+Smart Card contacts are wirde to 16 pin connector like this:
+
+       ___________________________
+       |  VCC        |  GND       |
+       |         8   |      7     |
+       |-------------|------------|
+       |             |            |
+       |         6   |      5     |
+       |-------------|------------|
+       | SCL         |    SDA     |
+       |         4   |      3     |
+       |-------------|------------|
+       |             |  (MODE)    |
+       |         2   |      1     |
+       |_____________|____________|
+
+rest of the contacts:
+9  - S1
+10 - GND
+11 - S2
+12 - 
+13 - S3
+14 - +12V
+15 - dir1    has  10k pullup
+16 - dir2    has  10k pullup
+
+the signals of the three Opto switches are marked as S in the Table.
+
+Normally the Motor is controlled by pulling dir1 or dir2 low.
+I (Tixiv) have hacked our Unit, so that the Motor controller is inhibited
+when both lines are pulled low simultaneously. That saves 15mA supply current.
+I have also changed the Suplly Voltage to the Optos from 12V to 5V, so that they
+also consume less current.
+
