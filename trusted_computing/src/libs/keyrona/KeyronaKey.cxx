@@ -204,25 +204,20 @@ ByteVector  KeyronaKey::decrypt(KeyronaSubject *Subject, KeyronaGroup *Group, By
 
 //================================================================================
 //
-void KeyronaKey::printKeyInformation(KeyronaSubject *Subject) 
+string KeyronaKey::printKeyInformation(KeyronaSubject *Subject) 
 {
 	string keyfile, keynum;
     if (Subject->getMySubjectKeyfile().empty())
         throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
     else
         keyfile = Subject->getMySubjectKeyfile();	
-	
-	if (Subject->getMySubjectKeyUUID().empty())
-        throw NoFilename("KeyronaKey|Constructor(): The supplied key filename was empty!");
-    else
-        keynum = Subject->getMySubjectKeyUUID();
-	
+
 	 string KeyFile = keyfile; // + keynum + KEYRONA_TPM_KEY_EXTENSION;
      ByteVector Key = loadByteVectorFromFile(KeyFile);
      
 	 string result = convertByteVector2String(Key);
      
-     cout << result << endl;
+     return result;
 };
 
 //================================================================================
@@ -252,6 +247,18 @@ void KeyronaKey::deleteKey(KeyronaSubject *Subject, KeyronaGroup *Group)
 
 };
 
+//================================================================================
+//
+void KeyronaKey::deleteAllKeys()
+{
+	KeyronaTPM myTPM;
+	
+	for(UInt32 i = 0; i < 1000; i++)
+	{
+		myTPM.delete_key(i);
+		cout << "Deleting Key: " << i << endl;
+	}
+};
 //================================================================================
 //
 bool KeyronaKey::changePassword(KeyronaSubject *Subject, string &oldPassword, string &newPassword) 

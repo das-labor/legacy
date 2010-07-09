@@ -804,11 +804,23 @@ string selectFromStringVector(vector<string> &AvailableStrings, string whatToSel
 //
 string generateUUID()
 {
-	srand ( time(NULL) );
-	UInt32 uuid = rand() % 10000;
-	string test = convertUInt32toString(uuid);
-	
-	return test;
+	string uuidstr;
+	ByteVector uuidbv;
+	string filename = "/etc/keyrona/database/keycounter.db";
+	uuidbv = loadByteVectorFromFile(filename);
+	uuidstr = convertByteVector2String(uuidbv);
+	UInt32 UUID_Counter = convertStringtoUInt32(uuidstr);
+	uuidstr.clear();
+	if(UUID_Counter == 1000)
+	{
+		cout << "You registered 1000 Keys, do you really want and need this mass of keys" << endl << "If you want more keys edit the sourcecode in src/libs/KeyronaHelper.cxx, Function: generateUUID()" << endl;
+		exit(-1);
+	} 
+	UUID_Counter++;
+	uuidstr = convertUInt32toString (UUID_Counter);
+	uuidbv = convertStringToByteVector(uuidstr);
+	storeByteVectorInFile(filename, uuidbv);
+	return uuidstr;	
 };
 
 //================================================================================

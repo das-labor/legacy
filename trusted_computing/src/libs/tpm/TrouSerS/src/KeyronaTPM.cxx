@@ -703,14 +703,13 @@ vector<ByteVector> KeyronaTPM::create_key(string &password, UInt32 &keynum, stri
     
 	Tspi_Key_LoadKey(hKey, hSRK);
 	
-	Tspi_GetAttribData (hKey, TSS_TSPATTRIB_KEY_INFO, TSS_TSPATTRIB_KEYINFO_KEYSTRUCT, &blobLen, &blob);
+	Tspi_GetAttribData (hKey, TSS_TSPATTRIB_KEY_INFO, TSS_TSPATTRIB_KEYINFO_SIZE, &blobLen, &blob);
 		
 	Tspi_Key_UnloadKey(hKey);
 	
 	ByteVector keyData((UInt8*)blob, blobLen);
 
     vector<ByteVector> myData;
-    myData.push_back(trousers);
     myData.push_back(keyData);
 	
 	Tspi_Context_FreeMemory (hContext, blob);

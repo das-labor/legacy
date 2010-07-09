@@ -240,7 +240,6 @@ string KeyronaSSS::retrieveKey(vector<KeyronaSubject*> AvailableParticipants, ve
         x.push_back(decodedX);
         y.push_back(decodedY);
     }
-	cout << "yep" << endl;
     // reconstruction
     debug << "KeyronaSSS|retrieveKey(): Reconstruction..." << endl;
     ByteVector myReconstructedKey = mySSS.reconstruction(x, y, Modul);
