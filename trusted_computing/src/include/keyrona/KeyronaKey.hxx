@@ -79,7 +79,7 @@ namespace keyrona
             /*!
 	     *  @brief prints the information about a key to the screen
              */
-            void            printKeyInformation(KeyronaSubject *Subject);
+            string            printKeyInformation(KeyronaSubject *Subject);
 
             /*!
 	     *  @brief encrypts with the public key
@@ -104,6 +104,8 @@ namespace keyrona
             bool        changePassword(KeyronaSubject *Subject, string &oldPassword, string &newPassword);
             
             void deleteKey(KeyronaSubject *Subject, KeyronaGroup *Group);
+            
+            void deleteAllKeys();
 
         private:
             /*!

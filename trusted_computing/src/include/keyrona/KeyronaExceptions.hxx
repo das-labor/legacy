@@ -223,6 +223,15 @@ namespace keyrona
       InvalidEMail( const std::string &what ) :
 		std::runtime_error( what ) {};
     };
+    
+    /**
+     * @brief Exception that is thrown when invalid country code supplied
+     */
+    class InvalidKeyUUID : public std::runtime_error {
+    public:
+      InvalidKeyUUID( const std::string &what ) :
+		std::runtime_error( what ) {};
+    };
 
     /**
      * @brief Exception that is thrown when invalid country code supplied

@@ -136,7 +136,10 @@ KeyronaSubject::KeyronaSubject( UInt8 subjectType,
         throw DirNotWritable("KeyronaSubject: The supplied key directory is not writable!");
 	
 	mySubjectKeyUUID = generateUUID();
-    mySubjectKeyType = "blah";
+	if (mySubjectKeyUUID.empty()) 
+		throw InvalidKeyUUID("KeyronaSubject: The supplied Key UUID was invalid");
+		
+    mySubjectKeyType = "cdda";
 
     string myKeyDirectory = keyDirectory;
 
@@ -372,6 +375,7 @@ void KeyronaSubject::printSubject(bool verbose)
     cout << "Name: '" << mySubjectName << "' (ID: " << mySubjectID << ")" << endl;
     cout << "KeyUUID: '" << mySubjectKeyUUID << endl;
     cout << "KeyType: '" << mySubjectKeyType << endl;
+    cout << mySubjectKey->printKeyInformation(this) << endl;
     cout << "\t" << "Type: '" << KeyronaSubjectType[mySubjectType] << "'" << endl;
 
     if ((EnterpriseMode) && (mySubjectType == SUBJECTTYPE_USER))
@@ -392,15 +396,7 @@ void KeyronaSubject::printSubject(bool verbose)
         myLastLogin.printDate();
     else
         cout << "Subject has not logged in, yet!" << endl;
-
-    if (mySubjectKey)
-    {
-        cout << "\t" << "Subject's key information: "<< endl;
-        if (mySubjectKey->isValid())
-            mySubjectKey->printKeyInformation(this);
-        else
-            cout << "\t\t<invalid key>" << endl;
-    }
+        
     if (mySubjectType == SUBJECTTYPE_USER)
         printCurrentMessagesForUser();
 };
@@ -659,8 +655,7 @@ ByteVector  KeyronaSubject::decryptBySubject(KeyronaSubject *Subject, ByteVector
         KeyronaTPM myTPM;
         vector<ByteVector> mySealedDataWithKey;
 		mySealedDataWithKey.push_back(toDecrypt);
-		cout << "help" << endl;
-            /*// Loading sealing key
+		/*// Loading sealing key
             string KeyFile = mySubjectKeyfile + KEYRONA_TPM_KEY_EXTENSION;
             ByteVector Key = loadByteVectorFromFile(KeyFile);
             mySealedDataWithKey.push_back(Key);
@@ -672,7 +667,7 @@ ByteVector  KeyronaSubject::decryptBySubject(KeyronaSubject *Subject, ByteVector
 
             ByteVector myPlainPassword = myTPM.unseal(mySealedDataWithKey);
             mySealedDataWithKey.pop_back();
-            cout << "blub" << endl;
+
             return myPlainPassword;
 /*
             string x( (const char*) myPlainPassword.toCArray(), myPlainPassword.size() );
@@ -696,7 +691,6 @@ ByteVector  KeyronaSubject::decryptBySubject(KeyronaSubject *Subject, ByteVector
     debug << "KeyonaSubject|decryptBySubject(): Updating subject's last login with current system time" << endl;
     KeyronaDate myCurrentSystemTime;
     setLastLogin(myCurrentSystemTime);
-        		cout << " njaaa" << endl;
 
     //if ((mySubjectKey) && (mySubjectKey->isValid()))
         return mySubjectKey->decrypt(Subject , NULL, toDecrypt, password);
@@ -752,10 +746,10 @@ bool KeyronaSubject::changePassword( string &oldPassword, string &newPassword)
     if (! newPassword.size())
         throw InvalidPassword("KeyronaSubject|changePassword(): Empty (new) password supplied!");
 
-    if ((mySubjectKey) && (mySubjectKey->isValid()))
+    //if ((mySubjectKey) && (mySubjectKey->isValid()))
         return mySubjectKey->changePassword(this, oldPassword, newPassword);
 
-    throw InvalidKey("KeyonaSubject|changePassword(): Invalid key for subject '" + mySubjectName + "'");
+    //throw InvalidKey("KeyonaSubject|changePassword(): Invalid key for subject '" + mySubjectName + "'");
 };
 
 //================================================================================
