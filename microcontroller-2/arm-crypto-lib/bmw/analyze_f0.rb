@@ -118,7 +118,8 @@ def print_reg_map(map, regs, length, indent=0)
       if map[x][r]==nil
         print ' '
       else 
-        print map[x][r]
+        print map[x][r] if map[x][r].class == String
+        print map[x][r].to_s(36) if map[x][r].class == Fixnum
       end
     end
     print "\n"
@@ -195,7 +196,8 @@ def bits_set_simple(x)
 end
 
 def init_bitcount_lut
-  (0..(2**8-1)).each {|x| $bitcount_lut[x] = bits_set_simple(x)}
+  (0..(2**4-1)).each  {|x| $bitcount_lut[x] = bits_set_simple(x)}
+  ((2**4)..(2**8-1)).each  {|x| $bitcount_lut[x] = bits_set(x, 4)}
   ((2**8)..(2**16-1)).each {|x| $bitcount_lut[x] = bits_set(x, 8)}
 end
 
@@ -221,7 +223,7 @@ def decode_word(word)
   return r
 end
 
-def generate_c_code(fout, func, optimizations=[], reg_map=[])
+def generate_c_code(fout, func, optimizations=[], reg_map=[], use_map=[])
   out_interval = 3
   out_modulus = 16
   out_idx = 0
@@ -259,10 +261,10 @@ def generate_c_code(fout, func, optimizations=[], reg_map=[])
       opt_table[step] << [sign_a, sign_b, sign_out, reg_name, reg_a, reg_b, set, free]
     end
   end
-  puts 'DBG: '+opt_table.inspect
   (0..(func.length-1)).each do |i|
     fout.printf("q[%2d] = ", out_idx)
     out_idx = (out_idx+out_interval)%out_modulus
+    use_map << Array.new
     func[i].each do |j|
       skip = 0
       if opt_table[i]
@@ -271,12 +273,15 @@ def generate_c_code(fout, func, optimizations=[], reg_map=[])
         end
       end
       fout.printf("%st[%2d] ", j[0].chr, j[1..-1].to_i) if skip==0
+      use_map[-1] << j[1..-1].to_i if skip==0
     end
     if opt_table[i]
       opt_table[i].each do |opt|
         fout.print(opt[2]+'('+opt[3])
         if opt[6]
           fout.printf('=%st[%2d]%st[%2d]',opt[0],opt[4].to_i,opt[1],opt[5].to_i)
+          use_map[-1] << opt[4].to_i
+          use_map[-1] << opt[5].to_i
         end
         fout.print(') ')
       end
@@ -284,6 +289,67 @@ def generate_c_code(fout, func, optimizations=[], reg_map=[])
     fout.print(";\n")
   end
 end
+
+class Array
+  def find_max_index
+    return nil if self.length==0
+    maxidx=0
+    max=self[0]
+    self.each do |i|
+      if(self[i]!=nil && max<self[i])
+        maxidx = i
+        max = self[i]
+      end
+    end
+    return maxidx
+  end
+
+end
+
+def calculate_load_pressure(use_map, use_locations, regs, steps)
+  loads=0
+  reg_map = Array.new(steps)
+  (0..(reg_map.length-1)).each{|i| reg_map[i]=Array.new(regs)}
+  (0..(steps-1)).each do |step|
+    use_locations.each do |e|
+      e.pop if e[-1] && e[-1]<step
+    end
+    local_use_map = Array.new(regs)
+    reg_map[step] = reg_map[step-1].clone if step>0
+    #(0..(regs-1)).each {|i| reg_map[step][i] = reg_map[step-1][i]}
+    use_map[step].each do |entry|
+#      print 'DBG: step='+step.to_s+' entry='+entry.to_s
+      found = reg_map[step].find_index(entry)
+      if found!=nil
+#        print ' (direct)'
+        reg_map[step][found] = entry
+        local_use_map[found] = 1
+      else 
+        loads += 1
+        if t0=reg_map[step].find_index(nil)
+#          print ' (found unsused slot)'
+          reg_map[step][t0] = entry
+          local_use_map[t0] = 1
+        else
+          # find a register to clear
+          a = reg_map[step].collect {|e| use_locations[e][-1]}
+          if t1 = a.find_index(nil)
+#            print ' (found not further used slot)'
+            reg_map[step][t1] = entry
+          else
+#            print ' (reassigned slot)'
+            reg_map[step][a.find_max_index] = entry
+          end
+        end
+      end
+#      print "\n"
+    end
+#    puts 'DBG: map part ('+step.to_s+'): '+reg_map[step].inspect
+  end
+  return loads, reg_map
+end
+
+################################################################################
 
 (0..15).each do |i|
   (0..3). each do |j|
@@ -355,25 +421,31 @@ puts "initializing bitcount table..."
 init_bitcount_lut
 
 puts "collision free combinations:"
-max = 0
-combinations = Array.new
-percent = 0
-percent_step =(2**dublets.length-1)/10000.0
-next_step = (2**dublets.length-1)
-puts ''
-(2**dublets.length-1).downto(0) do |x|
-  if(x<=next_step)
-    print "\x1b[s "+sprintf("%5.2f%%", percent/100.0)+"\x1b[u"
-    percent += 1
-    next_step -= percent_step
-  end
-  if check_collision(x, collision_lut) == false
-    if bits_set(x)>= max
-      combinations = Array.new if bits_set(x)>max
-      combinations << x
-      max = bits_set(x)
+puts "(from cache)"
+combinations = [354997, 94005, 93877]
+if combinations==nil
+  max = 0
+  combinations = Array.new
+  percent = 0
+  percent_step =(2**dublets.length-1)/10000.0
+  next_step = (2**dublets.length-1)
+  puts ''
+  (2**dublets.length-1).downto(0) do |x|
+    if(x<=next_step)
+      print "\x1b[s "+sprintf("%5.2f%%", percent/100.0)+"\x1b[u"
+      percent += 1
+      next_step -= percent_step
+    end
+    if check_collision(x, collision_lut) == false
+      if bits_set(x)>= max
+        combinations = Array.new if bits_set(x)>max
+        combinations << x
+        max = bits_set(x)
+      end
     end
   end
+  
+  puts 'DBG: combinations: '+combinations.inspect
 end
 
 combinations.each do |c|
@@ -383,4 +455,33 @@ combinations.each do |c|
 end
 steps = word_to_steps(combinations[-1], dublets)
 regs, reg_map = reg_map(steps, f0_def.length)
-generate_c_code(STDOUT, f0_def,steps, reg_map)
+use_map = []
+generate_c_code(STDOUT, f0_def,steps, reg_map, use_map)
+puts 'DBG: '
+use_map.each do |q|
+  print "\t[ "
+  print q.collect {|v| v.to_s(16)}.join(', ')
+  print " ]\n"
+end
+reg_use_locations = Array.new(f0_def.length)
+(0..(reg_use_locations.length-1)).each{|x| reg_use_locations[x] = Array.new}
+
+(0..(f0_def.length-1)).each do |i|
+  use_map[i].each do |x|
+    reg_use_locations[x]  << i
+  end
+end
+
+reg_use_locations.each{|x| x.reverse!}
+#puts 'DBG: '+reg_use_locations.inspect
+#puts 'DBG: (16 regs) '+calculate_load_pressure(use_map, reg_use_locations, 16, 16).inspect
+#puts 'DBG: ( 8 regs) '+calculate_load_pressure(use_map, reg_use_locations,  8, 16).inspect
+(4..16).each do |regs|
+  p,m = calculate_load_pressure(use_map, reg_use_locations, regs, 16)
+  puts "=#{regs} registers="
+  puts "  load pressure: " +p.to_s
+  puts "  map: "
+  print_reg_map(m, regs, 16, 4)
+#  puts "DBG: reg_map: "+m.inspect
+#  puts "DBG: use_map: "+use_map.inspect
+end
