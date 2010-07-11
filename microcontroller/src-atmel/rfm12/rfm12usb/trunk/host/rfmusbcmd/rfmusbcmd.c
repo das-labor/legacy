@@ -14,6 +14,7 @@
 #include <usb.h>
 #include <unistd.h>
 #include <signal.h>
+#include <time.h>
 
 //for simple usbOpenDevice
 #include "../common/opendevice.h"
@@ -49,13 +50,15 @@ void UI_send_raw(void);
 //dump packets
 int radio_rx_dump(void)
 {
-    uint_fast16_t i;
+	uint_fast16_t i;
 	uint_fast32_t packetCnt = 0;
 	int packetLen;
+	time_t cur_time;
+	char *timeStr;
 
 	printf("dumping packets:\n");
 
-    do
+	do
 	{
         //rate limit (don't be faster than 10us for a 16MHz device
         usleep(10);
@@ -69,14 +72,20 @@ int radio_rx_dump(void)
             //increment packet counter
         	packetCnt++;
 
+		//get time
+		cur_time = time(NULL);
+		timeStr = ctime(&cur_time);
+
         	//dump packet
         	printf ("--RX--  len: %02i, type: %02x, num: #%010u  --RX--\r\n", packetBuffer.len, packetBuffer.type, packetCnt);
+		timeStr[strlen(timeStr)-1] = 0;
+		printf("%s:\t", timeStr);
         	for (i = 0;(i < packetBuffer.len) && (i < RFM12_BUFFER_SIZE); i++)
         	{
         		printf("%.2x ", packetBuffer.buffer[i]); //hex
         		//printf("%c", packetBuffer.buffer[i]); //char
         	}
-        	printf("\r\n");
+        	printf("\r\n----\r\n");
         }
         else if (packetLen < 0)
         {
