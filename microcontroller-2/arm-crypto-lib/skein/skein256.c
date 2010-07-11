@@ -29,7 +29,6 @@
 #include "ubi.h"
 #include "skein.h"
 
-#include "cli.h"
 
 void skein256_init(skein256_ctx_t* ctx, uint16_t outsize_b){
 	skein_config_t conf;
