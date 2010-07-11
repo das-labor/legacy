@@ -22,13 +22,20 @@
  */
 
 //put data into the rfm12 transmit buffer
-#define RFMUSB_RQ_RFM12_PUT			0x01
+#define RFMUSB_RQ_RFM12_PUT		0x01
 
 //poll for rfm12 received data
-#define RFMUSB_RQ_RFM12_GET			0x02
+#define RFMUSB_RQ_RFM12_GET		0x02
 
 //poll for notifications
 #define RFMUSB_RQ_GETNOTIFICATION	0x03
 
+//configure the rfm12 module
+#define RFMUSB_RQ_RFM12_CONFIGURE	0x04
+
+///////////////// here come the config commands
+#define RFMUSB_CONF_TX_POWER	0x01
+#define RFMUSB_CONF_FREQUENCY	0x02
+#define RFMUSB_CONF_BAUDRATE	0x03
 
 #endif /* __REQUESTS_H_INCLUDED__ */
