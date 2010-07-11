@@ -107,7 +107,7 @@
 #define R32_7(x)   (ROTR32((x),  5))
 
 
-#include "f1_autogen.c"
+#include "f1_autogen.i"
 
 static inline
 void bmw_small_f0(uint32_t* q, uint32_t* h, const uint32_t* m){
