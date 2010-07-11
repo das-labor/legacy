@@ -2,5 +2,5 @@
  * defines the rfm12 default buffer size
  */
 
-#define RFM12_BUFFER_SIZE 30
+#define RFM12_BUFFER_SIZE 64
 

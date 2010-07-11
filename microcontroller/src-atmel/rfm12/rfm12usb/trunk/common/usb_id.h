@@ -5,8 +5,8 @@
 #ifndef __USB_ID_H_INCLUDED__
 #define __USB_ID_H_INCLUDED__
 
-#define USB_CFG_VENDOR_NAME     'o', 'b', 'd', 'e', 'v', '.', 'a', 't'
-#define USB_CFG_VENDOR_NAME_LEN 8
+#define USB_CFG_VENDOR_NAME     'd', 'a', 's', '-', 'l', 'a', 'b', 'o', 'r', '.', 'o', 'r', 'g'
+#define USB_CFG_VENDOR_NAME_LEN 13
 /* These two values define the vendor name returned by the USB device. The name
  * must be given as a list of characters under single quotes. The characters
  * are interpreted as Unicode (UTF-16) entities.
@@ -16,8 +16,8 @@
  * details.
  */
 
-#define USB_CFG_DEVICE_NAME     'L', 'E', 'D', 'C', 'o', 'n', 't', 'r', 'o', 'l'
-#define USB_CFG_DEVICE_NAME_LEN 10
+#define USB_CFG_DEVICE_NAME     'R', 'F', 'M', '1', '2', 'U', 'S', 'B'
+#define USB_CFG_DEVICE_NAME_LEN 8
 /* Same as above for the device name. If you don't want a device name, undefine
  * the macros. See the file USBID-License.txt before you assign a name if you
  * use a shared VID/PID.
