@@ -12,7 +12,7 @@
 //#define UART_LEDS
 
 
-#define HWREF LABNODE
+#define LABNODE
 
 #define MC_MOSI PB5
 #define MC_CLK  PB7
