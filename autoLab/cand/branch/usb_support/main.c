@@ -10,6 +10,9 @@
 #include <time.h>
 #include <locale.h>
 #include <langinfo.h>
+#include <usb.h>
+
+#include "usb_id.h"
 
 #include "cann.h"
 #include "debug.h"
@@ -19,6 +22,7 @@
 
 #include "uart-host.h"
 #include "can-uart.h"
+#include "opendevice.h"
 
 #ifndef max
  #define max(a,b) (((a) > (b)) ? (a) : (b))
@@ -26,18 +30,21 @@
 
 
 char *progname;
-char *serial; 
+char *serial;
+char *usb_parm;
 char *logfile=NULL;
 char *scriptfile=NULL;
 
+usb_dev_handle *udhandle = NULL;
 
-static char *optstring = "hdv::S:p:l:s:";
+static char *optstring = "hdv::S:U:p:l:s:";
 struct option longopts[] =
 {
   { "help", no_argument, NULL, 'h' },
   { "daemon", no_argument, NULL, 'd' },
   { "verbose", optional_argument, NULL, 'v' },
   { "serial", required_argument, NULL, 'S' },
+  { "usb", required_argument, NULL, 'U' },
   { "port", required_argument, NULL, 'p' },
   { "logfile", required_argument, NULL, 'l'},
   { "scriptfile", required_argument, NULL, 's'},
@@ -52,6 +59,7 @@ void help()
    -v, --verbose           be more verbose and display a CAN packet dump\n\
    -d, --daemon            become daemon\n\
    -S, --serial PORT       use specified serial port\n\
+   -U, --usb PORT          use specified usb port\n\
    -s, --scriptfile FILE   use a scripte file to execute cmds on package\n\
    -l, --logfile FILE      log every package to a logfile\n\
    -p, --port PORT         use specified TCP/IP port (default: 2342)\n\n" );
@@ -306,6 +314,18 @@ void new_client( cann_conn_t *client )
 	// XXX
 }
 
+
+int poll_usb(){
+	debug( 9, "IN POLL_USB" );
+	char packetBuffer[1000];
+ return usb_control_msg (udhandle,
+            USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
+            0x17, 0, 0, (char *)packetBuffer, 1000,
+            10);
+
+
+}
+
 void event_loop()
 {
 	for(;;) {
@@ -314,22 +334,45 @@ void event_loop()
 		fd_set rset;
 		cann_conn_t *client;
 
-		FD_ZERO(&rset);
+		struct timeval tv;
+		tv.tv_sec = 0;
+		tv.tv_usec = 10000;
 
+		FD_ZERO(&rset);
+		
+		
+
+		//add serial connection to rset
 		if (serial) {
 			highfd = uart_fd;
 			FD_SET(uart_fd, &rset);
 		};
+		
+		//add network connections to rset
 		highfd = max(highfd, cann_fdset(&rset));
 
 
 		debug( 9, "VOR SELECT" );
 		cann_dumpconn();
-
-		num = select(highfd+1, &rset, (fd_set *)NULL, (fd_set *)NULL, NULL);
-		debug_assert( num >= 0, "select failed" );
-		debug( 10, "Select returned %d", num);
+		
+		fd_set fd_tmp = rset;
+		
+		do{
+			rset = fd_tmp;
+			
+			poll_usb();
+			
+			
+			//poll fd_set
+			num = select(highfd+1, &rset, (fd_set *)NULL, (fd_set *)NULL, &tv);
+			debug_assert( num >= 0, "select failed" );
+		}while(num == 0);
+		debug( 10, "%08x %08x", ((int*)&rset)[1], ((int*)&rset)[0]);
+		debug( 10, "Select returned %d", num);	
 		cann_dumpconn();
+
+		
+
 
 		// check activity on uart_fd
 		if (serial && FD_ISSET(uart_fd, &rset))
@@ -389,6 +432,9 @@ int main(int argc, char *argv[])
 			case 'S':
 				serial = optarg;
 				break;
+			case 'U':
+				usb_parm = optarg;
+				break;
 			case 'p':
 				tcpport = atoi(optarg);
 				break;
@@ -411,7 +457,46 @@ int main(int argc, char *argv[])
 	if (serial) {
 		canu_init(serial);
 		debug(1, "Serial CAN communication established" );
-	};
+	}
+	
+	if (usb_parm) {
+		//////////HACKHACK FOR MULTIPLE DEVICES
+		int vid, pid;
+		unsigned tmp = 0;
+	
+		const unsigned char rawVid[2] =
+		{
+			USB_CFG_VENDOR_ID
+		},
+		rawPid[2] =
+		{
+			USB_CFG_DEVICE_ID
+		};
+	
+		vid = rawVid[1] * 256 + rawVid[0];
+		pid = rawPid[1] * 256 + rawPid[0];
+	
+		usb_init();
+	
+	    int devcnt = usbCountDevices(vid, pid);
+	    printf("Found %i devices..\n", devcnt);
+	
+		debug_assert( devcnt != 0, "Can't find RfmUSB Device\r\n" );
+	
+	    struct usb_device **devices = malloc(sizeof(void *) * devcnt);
+	    usbListDevices(devices, vid, pid);
+	
+	    if(devcnt > 1)
+	    {
+	        printf("Which device (num)? ");
+	        scanf("%u", &tmp);
+	        fflush(stdin);
+	    }
+	
+	    udhandle = usb_open(devices[tmp]);
+	
+	    ///////////////////HACK END
+	}
 
 	// setup network socket
 	cann_listen(tcpport);
