@@ -11,7 +11,7 @@
 #include "uart/uart.h"
 #include "usbdrv/usbdrv.h"
 #include "requests.h"
-
+#include "util/delay.h"
 
 typedef enum { RS232CAN_RESET=0x00,
 		RS232CAN_SETFILTER=0x10, RS232CAN_PKT=0x11, RS232CAN_SETMODE=0x12, RS232CAN_ERROR=0x13
@@ -26,6 +26,36 @@ typedef struct {
 } rs232can_msg;
 
 
+#define LED_STATUS_TOGGLE \
+	PORTB ^= 0x01
+	
+#define RFMUSB_USBTXBUFFER_SIZE 20
+#define RFMUSB_USBRXBUFFER_SIZE 20
+//size of the notify buffer
+#define RFMUSB_NOTIFYBUFFER_SIZE 7
+
+//and its header size
+#define RFMUSB_NOTIFYBUFFER_OVERHEAD 1
+
+
+////////
+// notify buffer states
+////////
+
+#define USBRFM_NOTIFYBUF_FREE 0
+#define USBRFM_NOTIFYBUF_OCCUPIED 1
+
+
+////////
+// notify buffer data structures
+////////
+
+typedef struct
+{
+	uint8_t notifyType;
+	uchar data[RFMUSB_NOTIFYBUFFER_SIZE];
+	uint8_t len;
+} rfmusb_notifyPacket;
 
 
 ////////
@@ -83,7 +113,7 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 			rfmusb_usbRxBuf[0] = rq->wIndex.bytes[0];
 
 			//send
-			rfm12_tx (1, 0, rfmusb_usbRxBuf);
+			//rfm12_tx (1, 0, rfmusb_usbRxBuf);
 
 			//toggle led
 			LED_STATUS_TOGGLE;
@@ -170,7 +200,7 @@ uchar usbFunctionWrite(uchar *data, uchar len)
     {
 		//tx packet
 		//FIXME: test if the transmit buffer is free and issue tx rate limit notification to host if not
-		rfm12_tx(rfmusb_usbRxBuf[0], rfmusb_usbRxBuf[1], &rfmusb_usbRxBuf[2]);
+		//rfm12_tx(rfmusb_usbRxBuf[0], rfmusb_usbRxBuf[1], &rfmusb_usbRxBuf[2]);
 
 		//return 1 if we have all data
 		return 1;
@@ -291,12 +321,37 @@ void process_cantun_msg(rs232can_msg *msg)
 	}
 }
 
+
+void usb_init()
+{
+	uchar i;
+
+	/* RESET status: all port bits are inputs without pull-up.
+	* That's the way we need D+ and D-. Therefore we don't need any
+	* additional hardware initialization.
+	*/
+	usbInit();
+
+	usbDeviceDisconnect();  /* enforce re-enumeration, do this while interrupts are disabled! */
+ 	i = 0;
+	while(--i)
+	{             /* fake USB disconnect for > 250 ms */
+		//wdt_reset();
+		_delay_ms(1);
+	}
+	usbDeviceConnect();
+}
+
 int main(){
 	DDRB |= (1<<PB0); //LED-Pin to output
+
+	usb_init();
+
 
 	uart_init();
 	spi_init();
 	can_init();
+
 
 	sei();
 
@@ -306,6 +361,7 @@ int main(){
 		rs232can_msg  *rmsg;
 		can_message *cmsg;
 
+		usbPoll();
 
 		rmsg = canu_get_nb();
 		if (rmsg){

@@ -26,12 +26,11 @@ section at the end of this file).
 
 /* ---------------------------- Hardware Config ---------------------------- */
 
-#if HWREF == LABNODE
+#ifdef LABNODE
 #define USB_CFG_IOPORTNAME      C
 #define USB_CFG_DMINUS_BIT      3
 #define USB_CFG_DPLUS_BIT       2
 #else
-
 #define USB_CFG_IOPORTNAME      D
 /* This is the port where the USB bus is connected. When you configure it to
  * "B", the registers PORTB, PINB and DDRB will be used.

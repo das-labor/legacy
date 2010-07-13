@@ -31,4 +31,8 @@
 #define RFMUSB_RQ_GETNOTIFICATION	0x03
 
 
+//FIXME: rework packet transmission system (full packet, short/fast (1byte packet))
+#define USB_SENDCHAR 0x23
+
+
 #endif /* __REQUESTS_H_INCLUDED__ */
