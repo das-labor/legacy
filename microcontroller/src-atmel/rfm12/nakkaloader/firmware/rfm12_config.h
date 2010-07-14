@@ -51,9 +51,9 @@
  */
 
 //Pin that the RFM12's slave select is connected to
-#define DDR_SS DDRC
-#define PORT_SS PORTC
-#define BIT_SS 0
+#define DDR_SS DDRB
+#define PORT_SS PORTB
+#define BIT_SS 4
 
 //SPI port
 #define DDR_SPI DDRB
@@ -85,14 +85,14 @@
 //#define DATARATE_VALUE RFM12_DATARATE_CALC_LOW(1200.0)
 
 //TX BUFFER SIZE
-#define RFM12_TX_BUFFER_SIZE 30
+#define RFM12_TX_BUFFER_SIZE 78
 
 /*
  * RX BUFFER SIZE
  * there are going to be 2 Buffers of this size
  * (double_buffering)
  */
-#define RFM12_RX_BUFFER_SIZE 30
+#define RFM12_RX_BUFFER_SIZE 78
 
 
 /************************
@@ -101,22 +101,22 @@
  */
  
 //the interrupt vector
-#define RFM12_INT_VECT (INT2_vect)
+#define RFM12_INT_VECT (INT1_vect)
 
 //the interrupt mask register
 #define RFM12_INT_MSK GICR
 
 //the interrupt bit in the mask register
-#define RFM12_INT_BIT (INT2)
+#define RFM12_INT_BIT (INT1)
 
 //the interrupt flag register
 #define RFM12_INT_FLAG GIFR
 
 //the interrupt bit in the flag register
-#define RFM12_FLAG_BIT (INTF2)
+#define RFM12_FLAG_BIT (INTF1)
 
 //setup the interrupt to trigger on negative edge
-#define RFM12_INT_SETUP() MCUCSR &= ~(1<<ISC2)
+#define RFM12_INT_SETUP() MCUCR &= ~(1<<ISC11)
 
 
 /************************
@@ -133,7 +133,7 @@ FIXME: noreturn stuff here
  * this setting will certainly add a bit code
  **/
 #define RFM12_LIVECTRL 0
-#define RFM12_NORETURNS 0
+#define RFM12_NORETURNS 1
 #define RFM12_NOCOLLISIONDETECTION 0
 #define RFM12_TRANSMIT_ONLY 0
 #define RFM12_SPI_SOFTWARE 0
