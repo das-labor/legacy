@@ -6,7 +6,7 @@
 
 
 /* Current Keyrona version */
-#define VERSION "1.0-r4012M"
+#define VERSION "1.5"
 
 
 #endif

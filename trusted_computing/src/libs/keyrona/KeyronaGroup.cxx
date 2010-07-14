@@ -58,7 +58,7 @@ KeyronaGroup::KeyronaGroup(const string GroupID, KeyronaStorage &GroupStorage, K
     myGroupKeyfile = myKeyDirectory + KeyronaPathSeparator + KeyronaGroup_GroupKeyIdentifier  + KeyronaFileSeparator + myGroupID + KeyronaP15FileExtension;
         
     myGroupKeyUUID = generateUUID();
-    myGroupKeyType = "blah";
+    myGroupKeyType = "group";
         
     // generating random password for new key
     string myGroupKeyPassword = generateRandomString(KEYRONA_MINIMUM_PASSWORD_LENGTH);

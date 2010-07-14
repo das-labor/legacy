@@ -139,7 +139,7 @@ KeyronaSubject::KeyronaSubject( UInt8 subjectType,
 	if (mySubjectKeyUUID.empty()) 
 		throw InvalidKeyUUID("KeyronaSubject: The supplied Key UUID was invalid");
 		
-    mySubjectKeyType = "cdda";
+    mySubjectKeyType = "subject";
 
     string myKeyDirectory = keyDirectory;
 
@@ -740,8 +740,8 @@ bool KeyronaSubject::verifyPassword(string &myPassword)
 //
 bool KeyronaSubject::changePassword( string &oldPassword, string &newPassword)
 {
-    if (!verifyPassword(oldPassword))
-        throw InvalidPassword("KeyronaSubject|changePassword(): Invalid (old) password supplied!");
+    //if (!verifyPassword(oldPassword))
+     //   throw InvalidPassword("KeyronaSubject|changePassword(): Invalid (old) password supplied!");
 
     if (! newPassword.size())
         throw InvalidPassword("KeyronaSubject|changePassword(): Empty (new) password supplied!");

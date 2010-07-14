@@ -119,6 +119,8 @@ vector<ByteVector> KeyronaTPM::seal(ByteVector &dataToSeal, int &local)
     UINT32		 locality;
     BYTE 	     *pcrvalue;
     BYTE 		 *encData;
+    
+    cout << local << endl;
 
     if (Tspi_Context_Create(&hContext) != TSS_SUCCESS)
         throw ContextError("KeyronaTPM[TrouSerS]|seal(): Could not create context!");
@@ -586,6 +588,9 @@ vector<ByteVector> KeyronaTPM::create_key(string &password, UInt32 &keynum, stri
     TSS_HCONTEXT hContext;
 	TSS_HTPM	 hTPM;
     TSS_HKEY	 hKey;
+    TSS_HKEY	 htkey;
+    TSS_HKEY	 htendkey;
+    TSS_HPOLICY	 htkeyp;
     TSS_HPOLICY  hKeyPolicy;
     TSS_HPOLICY  hPolicy;
 	TSS_HKEY	 hSRK;
@@ -595,17 +600,20 @@ vector<ByteVector> KeyronaTPM::create_key(string &password, UInt32 &keynum, stri
     BYTE         well_known_secret[TPM_SHA1_160_HASH_LEN] = TSS_WELL_KNOWN_SECRET;
     UINT32 		 blobLen;
     UINT32		 flags = NULL;
-    
+    UINT32       test = TSS_KEY_TYPE_STORAGE | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE | TSS_KEY_AUTHORIZATION;
+    UINT32		 wusa = TSS_KEY_TYPE_SIGNING | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE | TSS_KEY_AUTHORIZATION;
+	string 		 password_htkey = "1234";
+
     // Choose between Bind, Storage or Legacy Key. 
+    if(type == "subject") {
 							flags = TSS_KEY_TYPE_BIND | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE | TSS_KEY_AUTHORIZATION;
-	/*
-	if( type == "STORAGE" ) {				
-							flags = TSS_KEY_TYPE_STORAGE | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE | TSS_KEY_AUTHORIZATION;
 	}
-	else {
-							flags = TSS_KEY_TYPE_SIGNING | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE | TSS_KEY_AUTHORIZATION;
+	if( type == "group" ) {				
+							flags = TSS_KEY_TYPE_STORAGE | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE;
 	}
-	*/
+
+	cout << flags << endl;
+	
 	// Allocate Key UUID number.
 	memset (&hKey_UUID, 0, sizeof(hKey_UUID));
 	hKey_UUID.rgbNode[5] = keynum & 0xff;
@@ -656,13 +664,56 @@ vector<ByteVector> KeyronaTPM::create_key(string &password, UInt32 &keynum, stri
        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error create AIK object.");
     }
 	
-	/*if (Tspi_SetAttribUint32(hKey, TSS_TSPATTRIB_KEY_INFO, TSS_TSPATTRIB_KEYINFO_ENCSCHEME, TSS_ES_RSAESOAEP_SHA1_MGF1) != TSS_SUCCESS )
+	if (Tspi_Context_CreateObject( hContext, TSS_OBJECT_TYPE_RSAKEY, test, &htkey ) != TSS_SUCCESS )
+	{
+        Tspi_Context_FreeMemory(hContext, NULL);
+        Tspi_Context_Close(hContext);
+       throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error create AIK object.");
+    }
+    
+        if (Tspi_Context_CreateObject( hContext, TSS_OBJECT_TYPE_POLICY, TSS_POLICY_USAGE, &htkeyp ) != TSS_SUCCESS )
+	{
+        Tspi_Context_FreeMemory(hContext, NULL);
+        Tspi_Context_Close(hContext);
+        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error create AIK policy object.");
+    }
+	
+	if (Tspi_Policy_AssignToObject( htkeyp, htkey ) != TSS_SUCCESS )
+	{
+        Tspi_Context_FreeMemory(hContext, NULL);
+        Tspi_Context_Close(hContext);
+        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error assign AIK to AIK policy Object.");
+    }
+
+    // SetPolicySecret
+    if (Tspi_Policy_SetSecret( htkeyp, TSS_SECRET_MODE_PLAIN, password_htkey.length(), (BYTE*)password_htkey.c_str()  ) != TSS_SUCCESS )
+    {
+        Tspi_Context_FreeMemory(hContext, NULL);
+        Tspi_Context_Close(hContext);
+        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error loading TPM policy object.");
+    }
+    
+    if (Tspi_Context_SetTransEncryptionKey( hContext, htkey ) != TSS_SUCCESS)
+    {
+        Tspi_Context_FreeMemory(hContext, NULL);
+        Tspi_Context_Close(hContext);
+        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error loading TPM policy object.");
+    }
+    
+	if (Tspi_Context_CreateObject( hContext, TSS_OBJECT_TYPE_RSAKEY, wusa, &htendkey ) != TSS_SUCCESS )
+	{
+        Tspi_Context_FreeMemory(hContext, NULL);
+        Tspi_Context_Close(hContext);
+       throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error create AIK object.");
+    }
+	
+	if (Tspi_SetAttribUint32(hKey, TSS_TSPATTRIB_KEY_INFO, TSS_TSPATTRIB_KEYINFO_ENCSCHEME, TSS_ES_RSAESOAEP_SHA1_MGF1) != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
         throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error create AIK object.");
     }
-	*/
+	
     if (Tspi_Context_CreateObject( hContext, TSS_OBJECT_TYPE_POLICY, TSS_POLICY_USAGE, &hKeyPolicy ) != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
@@ -707,6 +758,8 @@ vector<ByteVector> KeyronaTPM::create_key(string &password, UInt32 &keynum, stri
 		
 	Tspi_Key_UnloadKey(hKey);
 	
+	Tspi_Context_CloseSignTransport(hContext, htendkey, NULL);
+	
 	ByteVector keyData((UInt8*)blob, blobLen);
 
     vector<ByteVector> myData;
@@ -732,7 +785,7 @@ void KeyronaTPM::change_key_auth(string &password, string &password_old, UInt32 
 	TSS_UUID	 hKey_UUID;
 	TSS_UUID     SRK_UUID = TSS_UUID_SRK;
 	BYTE well_known_secret[TPM_SHA1_160_HASH_LEN] = TSS_WELL_KNOWN_SECRET;
-
+	cout << password << endl << password_old << endl;
 	memset (&hKey_UUID, 0, sizeof(hKey_UUID));
 	hKey_UUID.rgbNode[5] = keynum & 0xff;
 	
@@ -766,6 +819,20 @@ void KeyronaTPM::change_key_auth(string &password, string &password_old, UInt32 
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
         throw TSSError("KeyronaTPM[TrouSerS]|unseal(): Error loading SRK key object.");
+    }
+    
+    if ( Tspi_GetPolicyObject(hSRK, TSS_POLICY_USAGE, &hPolicy) != TSS_SUCCESS)
+    {
+        Tspi_Context_FreeMemory(hContext, NULL);
+        Tspi_Context_Close(hContext);
+        throw TSSError("KeyronaTPM[TrouSerS]|unseal(): Error creating policy object!");
+    }
+	// Set SRK secret
+    if (Tspi_Policy_SetSecret(hPolicy, TSS_SECRET_MODE_SHA1, TPM_SHA1_160_HASH_LEN, well_known_secret) != TSS_SUCCESS)
+    {
+        Tspi_Context_FreeMemory(hContext, NULL);
+        Tspi_Context_Close(hContext);
+        throw TSSError("KeyronaTPM[TrouSerS]|unseal(): Error setting SRK secret!");
     }
     
 	// Get Key by UUID
