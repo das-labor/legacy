@@ -1,4 +1,5 @@
 // Copyright (C) 2008, 2009 by Sirrix AG security technologies
+// Copyright (C) 2010 by Philipp Deppenwiese
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -15,12 +16,6 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 
-/**
- * @file        KeyronaUserManagement.cxx
- * @brief       Implementation of the command line tool 'keyrona_manager'.
- * @version     $Revision: 681 $
- * @date        Last modification at $Date: 2009-06-25 19:51:48 +0200 (Thu, 25 Jun 2009) $ by $Author: selhorst $
- */
 
 #include <Keyrona.hxx>
 #include <KeyronaManager.hxx>
@@ -422,8 +417,8 @@ void KeyronaChangeUserCredential(KeyronaStorage &mySubjectStorage)
 
     string currentSubject = mySubject->getMySubjectName();
     string oldPassword = getPassword("Please enter current password for user '" + currentSubject + "': ");
-    if (!mySubject->verifyPassword(oldPassword))
-        throw InvalidPassword("Invalid password for user '" + currentSubject + "'!");
+    //if (!mySubject->verifyPassword(oldPassword))
+      //  throw InvalidPassword("Invalid password for user '" + currentSubject + "'!");
     string newPassword = getPasswordVerified("Please enter new password for user '" + currentSubject + "': ");
     if (!mySubject->changePassword(oldPassword, newPassword))
     {

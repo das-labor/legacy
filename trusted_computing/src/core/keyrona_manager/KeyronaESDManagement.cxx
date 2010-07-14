@@ -1,4 +1,5 @@
 // Copyright (C) 2008, 2009 by Sirrix AG security technologies
+// Copyright (C) 2010 by Philipp Deppenwiese
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -15,12 +16,6 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 
-/**
- * @file        KeyronaESD.cxx
- * @brief       Implementation of the command line tool 'keyrona_manager'.
- * @version     $Revision: 673 $
- * @date        Last modification at $Date: 2009-06-25 15:14:43 +0200 (Thu, 25 Jun 2009) $ by $Author: selhorst $
- */
 
 #include <Keyrona.hxx>
 #include <KeyronaManager.hxx>

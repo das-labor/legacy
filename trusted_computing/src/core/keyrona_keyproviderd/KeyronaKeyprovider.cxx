@@ -1,4 +1,5 @@
 // Copyright (C) 2008, 2009 by Sirrix AG security technologies
+// Copyright (C) 2010 by Philipp Deppenwiese
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -15,12 +16,6 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 
-/**
- * @file        KeyronaKeyprovider.cxx
- * @brief       Implementation of the Keyrona Keyprovider Service.
- * @version     $Revision: 721 $
- * @date        Last modification at $Date: 2009-07-15 12:03:49 +0200 (Wed, 15 Jul 2009) $ by $Author: selhorst $
- */
 
 #include <KeyronaKeyprovider.hxx>
 #include <KeyronaSearch.hxx>
@@ -299,6 +294,7 @@ void KeyronaKeyprovider::mountByGroup(KeyronaConfigfile &myConfigfile, KeyronaVo
     if (!myVolumeGroups.size())
     {
         throw NoKeyAvailable("No key available to mount volume '" + myVolume.getMyVolumeUUID()  + "' by group '" + groupname + "'");
+        exit(-1);
     }
 
     vector<string>::const_iterator Iterator;
@@ -324,6 +320,7 @@ void KeyronaKeyprovider::mountByGroup(KeyronaConfigfile &myConfigfile, KeyronaVo
         }
     }
     throw NoKeyAvailable("No key available to mount volume '" + myVolume.getMyVolumeUUID()  + "' by group '" + groupname + "'");
+    exit(-1);
 };
 
 //================================================================================
@@ -463,7 +460,6 @@ void KeyronaKeyprovider::mountBySSS(KeyronaConfigfile &myConfigfile, KeyronaVolu
     clientCommunication(KEYRONA_ISC_MESG_MESSAGE, "Now decrypting secret-sharing-scheme (n/m = " + n + "/" + m + ") with " + usernames);
     if (platformIncluded)
         clientCommunication(KEYRONA_ISC_MESG_MESSAGE,"Note: A Platform is included in this SSS. The decryption process might require some additional time due to TPM access.");
-	cout << "yep until here" << endl;
     // and decrypt the SSS
     debug << "Retrieving key from SSS" << endl;
     if (myGroup)

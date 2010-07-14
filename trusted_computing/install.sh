@@ -1,5 +1,6 @@
 #!/bin/bash
 # Copyright (C) 2008, 2009 by Sirrix AG security technologies
+# Copyright (C) 2010 by Philipp Deppenwiese
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
