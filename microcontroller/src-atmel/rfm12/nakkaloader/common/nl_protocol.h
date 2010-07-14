@@ -1,7 +1,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "../../rfm12usb/common/rfm12_buffer_size.h"
+#include "../firmware/rfm12_config.h"
+#define RFM12_BUFFER_SIZE RFM12_RX_BUFFER_SIZE
 
 #ifndef NL_PROTOCOL_H
 #define NL_PROTOCOL_H
