@@ -124,8 +124,6 @@ int main (void)
 	nl_config myconfig = {SPM_PAGESIZE, RFM12_RX_BUFFER_SIZE, NL_VERSION};
 	nl_flashcmd *mycmd;
 
-	DDRD |= (_BV(PD7));
-	PORTD |= _BV(PD7); /* FSK for pollin board - uncomment */
 #if 0
 	/* fill config variables */
 	myconfig.pagesize = (uint16_t) SPM_PAGESIZE;
