@@ -42,6 +42,8 @@ uint8_t
 	opt_resetall = 0,
 	opt_set_treshold = 0,
 	opt_emit_test = 0,
+	opt_lightmode = 0xff,
+	opt_lightnum = 0xff,
 	opt_dump = 0;
 
 void print_usage();
@@ -157,6 +159,29 @@ int parse_args (int argc, char* argv[])
 			break;
 			case 'T': /* emit test signal */
 				opt_emit_test = 1;
+			break;
+			case 'l':
+				i++;
+				if (i+1 == argc)
+				{
+					printf("syntax is: -l light_number [0|1|on|off]\r\n");
+					return -1;
+				}
+				
+				opt_lightnum = abs(atoi(argv[i]));
+				i++;
+
+				if (!strncasecmp ("on", argv[i], 2) || argv[i][0] == '1')
+				{
+					opt_lightmode = 1;
+				} else if (!strncasecmp ("off", argv[i], 3) || argv[i][0] == '0')
+				{
+					opt_lightmode = 0;
+				} else
+				{
+					printf("light mode not understood. enter either one of {0,1,on,off}\r\n");
+					return -1;
+				}
 			break;
 			default:
 				printf ("Argument #%i not understood.\r\n", i);
@@ -349,6 +374,13 @@ int main (int argc, char* argv[])
 			printf("sending motion command\r\n", opt_set_treshold, dst_addr);
 			tx_packet (udhandle, 0xff, CMD_MOTION, 2, txbuf);
 			return;
+		}
+
+		if (opt_lightmode != 0xff)
+		{
+			txbuf[0] = opt_lightnum;
+			txbuf[1] = opt_lightmode;
+			tx_packet (udhandle, 0xff, CMD_LIGHT, 2, txbuf);
 		}
 
 		
