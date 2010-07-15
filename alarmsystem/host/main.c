@@ -14,7 +14,7 @@
 //#include <endian.h>
 
 //include rfmusb c driver interface
-#include "../../rfm12usb/host/CDriver/RfmUsb.h"
+#include "../../rfm12usb/trunk/host/CDriver/RfmUsb.h"
 #include "../common/protocol.h"
 
 
