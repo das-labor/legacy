@@ -78,6 +78,8 @@ namespace keyrona
 	     */
 	    vector<ByteVector> create_key(string &password, UInt32 &keynum, string &type);
 	    
+	    ByteVector get_keys_by_uuid();
+	    
 	    void change_key_auth(string &password, string &password_old, UInt32 &keynum);
 	    
 	    void delete_key(UInt32 &keynum);

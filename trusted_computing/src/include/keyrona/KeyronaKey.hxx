@@ -105,6 +105,8 @@ namespace keyrona
             
             void deleteKey(KeyronaSubject *Subject, KeyronaGroup *Group);
             
+            void getKeysUUID();
+            
             void deleteAllKeys();
 
         private:

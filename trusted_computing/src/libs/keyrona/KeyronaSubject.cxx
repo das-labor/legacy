@@ -363,12 +363,11 @@ void KeyronaSubject::printSubject(bool verbose)
     KeyronaDate myLastLogin = getMyLastLogin();
 
     // if not verbose, print small subject info
-    if (! verbose)
+   if (! verbose)
     {
         cout << "Name: '" << mySubjectName << "' (ID: " << mySubjectID << ")" << endl;
         cout << "KeyUUID: '" << mySubjectKeyUUID << endl;
         cout << "KeyType: '" << mySubjectKeyType << endl;
-        return;
     }
 
     // and here the full info
@@ -399,6 +398,7 @@ void KeyronaSubject::printSubject(bool verbose)
         
     if (mySubjectType == SUBJECTTYPE_USER)
         printCurrentMessagesForUser();
+
 };
 
 //================================================================================
