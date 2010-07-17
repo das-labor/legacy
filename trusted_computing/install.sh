@@ -157,71 +157,6 @@ check_binary "patch"
 check_binary "ldconfig"
 check_binary "dos2unix"
 
-### VERIFYING EXISTENCE OF KEYRONA CRYPTLIB PORT
-colored_output "cyan" "Verifying existence of Keyronas cryptlib port"
-if [ ! -e "$INCLUDEDIR/keyrona_cryptlib.h" ] || [ ! -e $LIBDIR/libkeyronacl.so ] ; then
-    colored_output "yellow" "Keyrona include not available, installing it..."
-    cd src/libs/crypto/cryptlib
-    check_result $? "CD cryptlib"
-
-    colored_output "white" "Creating cryptlib temp directory"
-    mkdir -p temp
-    check_result $? "Creating cryptlib temp directory"
-
-    colored_output "white" "Changing into cryptlib temp directory"
-    cd temp
-    check_result $? "Changing into  cryptlib temp directory"
-
-    colored_output "white" "Unzipping cryptlib"
-    unzip -o ../cl332.zip
-    check_result $? "Unzipping cryptlib"
-
-    colored_output "white" "Patching cryptlib [1/4]"
-    patch -p1 < ../cl_sha1_patch.diff
-    check_result $? "Patching cryptlib [1/4]"
-
-    colored_output "white" "Patching cryptlib [2/4]"
-    patch -p1 < ../cl_bindings_patch.diff
-    check_result $? "Patching cryptlib [2/4]"
-
-    colored_output "white" "Patching cryptlib [3/4]"
-    patch -p1 < ../cl_tools_patch.diff
-    check_result $? "Patching cryptlib [3/4]"
-
-    colored_output "white" "Patching cryptlib [4/4]"
-    patch -p1 < ../cl_makefile_patch.diff
-    check_result $? "Patching cryptlib [4/4]"
-
-    colored_output "white" "dos2unix cryptlib/tools"
-    dos2unix tools/*
-    check_result $? "dos2unix cryptlib/tools"
-
-    colored_output "white" "Building cryptlib"
-    make shared
-    check_result $? "Building cryptlib"
-    
-    colored_output "white" "Installing cryptlib header to $INCLUDEDIR"
-    cp cryptlib.h $INCLUDEDIR/keyrona_cryptlib.h
-    check_result $? "Installing cryptlib header"
-    if [ ! -e libkeyronacl.so.3.3.2 ] ; then
-	colored_output "red" "Building of cryptlib failed!"
-	exit -1
-    fi
-
-    colored_output "white" "Installing cryptlib library to $LIBDIR"
-    cp libkeyronacl.so.3.3.2 $LIBDIR/libkeyronacl.so
-    check_result $? "Installing cryptlib library"
-
-    colored_output "white" "Removing cryptlib temp directory"
-    cd ..
-    rm -rf temp
-    check_result $? "Removing cryptlib temp directory"
-
-    
-    cd ../../../../
-    colored_output "green" "Successfully installed cryptlib library"
-fi
-
 ### BUILD
 colored_output "cyan" "Compiling Keyrona"
 scons
@@ -314,18 +249,6 @@ chown -f $KEYRONA_SUPERUSER:$KEYRONA_GROUP $SBINDIR/keyrona_keyproviderd
 chown -f $KEYRONA_SUPERUSER:$KEYRONA_GROUP $KEYDIR
 chown -f $KEYRONA_SUPERUSER:$KEYRONA_GROUP $KEYDIR/* -R 2>/dev/null
 chown -f $KEYRONA_SUPERUSER:$KEYRONA_GROUP $LOGFILE
-
-### APPLYING SE-LINUX RULES
-which "sestatus" 2>/dev/null 1>/dev/null
-if [ $? -eq 0 ] ; then
-    colored_output "cyan" "Applying SE-Linux rules"
-    check_binary "semanage"
-    check_binary "restorecon"
-    check_binary "getenforce"
-    colored_output "white" "Current SE-Linux status: $(getenforce)"
-    semanage fcontext -a -t textrel_shlib_t /usr/lib/libkeyronacl.so
-    restorecon -R /usr/lib/libkeyronacl.so 
-fi
 
 ### DONE
 colored_output "green" "Done... ;)"

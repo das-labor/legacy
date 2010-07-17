@@ -19,7 +19,7 @@
 import scons_utils as utils
 import os
           
-Version = "1.0"
+Version = "1.5"
 
 ##################################################################################
 # Scons configuration
@@ -57,10 +57,6 @@ if not env.GetOption('clean'):
 		'checkTypeSize' : utils.checkTypeSize 
 	} )
 	##############################################################################
-	# Check for SSL library
-	if not conf.CheckLibWithHeader('ssl', 'openssl/rsa.h', 'c'):
-		print 'Did not find an SSL library, exiting!'
-		Exit(1)
 	if env["trousers"]:
 	    ##############################################################################
 	    # Check for TSS library

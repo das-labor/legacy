@@ -1,4 +1,5 @@
 // Copyright (C) 2008, 2009 by Sirrix AG security technologies
+// Copyright (C) 2010 by Philipp Deppenwiese
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -15,18 +16,10 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 
-/**
- * @file        KeyronaTPM.cxx
- * @brief       Implementation of the Keyrona TPM class.
- * @version     $Revision: 759 $
- * @date        Last modification at $Date: 2009-07-29 12:03:10 +0200 (Wed, 29 Jul 2009) $ by $Author: selhorst $
- */
 
 #include <KeyronaTPM.hxx>
 #include <trousers/tss.h>
 #include <trousers/trousers.h>
-#include <openssl/rsa.h>
-#include <openssl/pem.h>
 #include <unistd.h>
 
 
@@ -771,6 +764,75 @@ vector<ByteVector> KeyronaTPM::create_key(string &password, UInt32 &keynum, stri
 
 	return  myData;
 
+};
+
+ByteVector KeyronaTPM::get_keys_by_uuid()
+{
+	TSS_HCONTEXT hContext;
+	TSS_HTPM	 hTPM;
+	UINT32 		 keyblobsize;
+	TSS_KM_KEYINFO2 *keyblob;
+	
+	
+	if (Tspi_Context_Create(&hContext) != TSS_SUCCESS)
+		throw ContextError("KeyronaTPM[TrouSerS]|unseal(): Could not create context!");
+
+    if (Tspi_Context_Connect(hContext, NULL) != TSS_SUCCESS)
+    {
+        Tspi_Context_FreeMemory(hContext, NULL);
+        Tspi_Context_Close(hContext);
+        throw NoTCSD("KeyronaTPM[TrouSerS]|unseal(): Could not connect! Is TrouSerS 'tcsd' running?");
+    }
+
+    if (Tspi_Context_GetTpmObject(hContext, &hTPM) != TSS_SUCCESS)
+    {
+        Tspi_Context_FreeMemory(hContext, NULL);
+        Tspi_Context_Close(hContext);
+        throw TPMConnectError("KeyronaTPM[TrouSerS]|unseal(): Could not connect to TPM!");
+    }
+    
+    TSS_RESULT blub = Tspi_Context_GetRegisteredKeysByUUID2(hContext, TSS_PS_TYPE_SYSTEM, NULL, &keyblobsize, &keyblob);
+	if ( blub != TSS_SUCCESS )
+    {
+        Tspi_Context_FreeMemory(hContext, NULL);
+        Tspi_Context_Close(hContext);
+        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error sealing data. (" + getTSSError(blub) + ")");
+    }
+    
+    	for( UInt32 i = 0; i<keyblobsize; i++) {
+printf("Version      : %hhu.%hhu.%hhu.%hhu\n", keyblob[i].versionInfo.bMajor, keyblob[i].versionInfo.bMinor,
+	       keyblob[i].versionInfo.bRevMajor, keyblob[i].versionInfo.bRevMinor);
+	cout << (keyblob[i].keyUUID.rgbNode[5] & 0xff) << endl;
+	printf("parent UUID  : %08x-%04hx-%04hx-%02hhx%02hhx-%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n",
+	       keyblob[i].parentKeyUUID.ulTimeLow, keyblob[i].parentKeyUUID.usTimeMid, keyblob[i].parentKeyUUID.usTimeHigh,
+	       keyblob[i].parentKeyUUID.bClockSeqHigh, keyblob[i].parentKeyUUID.bClockSeqLow,
+	       keyblob[i].parentKeyUUID.rgbNode[0] & 0xff, keyblob[i].parentKeyUUID.rgbNode[1] & 0xff,
+	       keyblob[i].parentKeyUUID.rgbNode[2] & 0xff, keyblob[i].parentKeyUUID.rgbNode[3] & 0xff,
+	       keyblob[i].parentKeyUUID.rgbNode[4] & 0xff, keyblob[i].parentKeyUUID.rgbNode[5] & 0xff);
+	printf("Auth?        : %s\n", keyblob[i].bAuthDataUsage ? "YES" : "NO");
+
+	if	(keyblob[i].persistentStorageType == TSS_PS_TYPE_SYSTEM)	printf("Store        : System\n");
+	else if (keyblob[i].persistentStorageType == TSS_PS_TYPE_USER)		printf("Store        : User\n");
+	else 								printf("Store        : Error\n");
+
+	if	(keyblob[i].persistentStorageTypeParent == TSS_PS_TYPE_SYSTEM)	printf("Parent Store : System\n");
+	else if	(keyblob[i].persistentStorageTypeParent == TSS_PS_TYPE_USER)	printf("Parent Store : User\n");
+	else								printf("Parent Store : Error\n");
+
+	if	(keyblob[i].ulVendorDataLength)					printf("Vendor Data  : \"%s\" (%u bytes)\n", keyblob[i].rgbVendorData, keyblob[i].ulVendorDataLength);
+	else								printf("Vendor Data  : (0 bytes)\n");
+
+	/* custom additions below */
+	printf("Loaded?      : %s\n", keyblob[i].fIsLoaded ? "YES" : "NO");
+	printf("\n");	       	}
+    
+    ByteVector keydata((UInt8*)keyblob, keyblobsize);
+    
+	Tspi_Context_FreeMemory (hContext, (BYTE*)keyblob);
+    Tspi_Context_FreeMemory(hContext, NULL);
+    Tspi_Context_Close(hContext);
+    
+    return keydata;
 };
 
 void KeyronaTPM::change_key_auth(string &password, string &password_old, UInt32 &keynum)
