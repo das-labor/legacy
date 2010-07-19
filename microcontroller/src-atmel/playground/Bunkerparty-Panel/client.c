@@ -647,28 +647,88 @@ u08 admin_menu(){
 
 u08 foobuf[40];
 
+u08 tries[5];
+
 void handle_card_inserted(){
 		
+		int i;
 		
-		
-		seg_putstr_P(PSTR("\r" "thank you"));
+		seg_putstr_P(PSTR("\r" "cardtest"));
 
-		AvrXDelay(&client_timer, 2000);
-
+		if(0){
+				//Hackhack: write to card
+				
+				//com_read(foobuf, 40);
+				foobuf[0] = 0x13;
+				foobuf[1] = 0x37;
+				foobuf[2] = 0x01;
+				
+				CARD_POWER_ON();
+				i2cEeWrite(4,foobuf,3);
+				CARD_POWER_OFF();
+		}
 		
 		//read from card
 		CARD_POWER_ON();
 		i2cEeRead(foobuf,4,40);
 		CARD_POWER_OFF();
-		
-		seg_putstr_P(PSTR("\r" "card ok"));
 
-		AvrXDelay(&client_timer, 2000);
+		char person = foobuf[2]; 
+
+		if( (foobuf[0] == 0x13)  &&  (foobuf[1] == 0x37) ){
+			switch( person ){
+				case 0:
+					seg_putstr_P(PSTR("\r" "helo ed"));
+					break;
+				case 1:
+					seg_putstr_P(PSTR("\r" "helo edna"));
+					break;
+				case 2:
+					seg_putstr_P(PSTR("\r" "helodr fred"));
+					break;
+			}
 		
-		seg_putstr_P(PSTR("\r" "pin "));
+			AvrXDelay(&client_timer, 2000);
+				
+			seg_putstr_P(PSTR("\r" "pin "));
+			i = numeric_input(0);
+
+			if(i == 3302){
+				seg_putstr_P(PSTR("\r" "door open"));
+				DDRB |= (1<<3);
+				PORTB |= (1<<3);
+				
+				AvrXDelay(&client_timer, 5000);
+				PORTB &= ~(1<<3);
+				
+			}else{
+				seg_putstr_P(PSTR("\r" "bad   pin"));
+				AvrXDelay(&client_timer, 3000);
+				if(tries[person] == 2){
+					seg_putstr_P(PSTR("\r" "    locked"));
+					char x;
+					for(x=0;x<30;x++){
+						AvrXDelay(&client_timer, 60000);			
+					}
+				}else{
+					tries[person]++;
+					
+				
+				}
+			
+			}
+					
+		}else{
+			seg_putstr_P(PSTR("\r" "bad card"));	
+			AvrXDelay(&client_timer, 2000);
+
+		}
+
+
 		
-		numeric_input(0);
+		goto eject;
 		
+eject:		
 		eject_card();
 		
 		seg_putstr_P(PSTR("\r" "insert card"));
