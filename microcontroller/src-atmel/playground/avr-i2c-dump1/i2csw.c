@@ -1,6 +1,8 @@
 
 #include <avr/io.h>
+#include "config.h"
 #include "i2csw.h"
+
 
 // This Library uses slow (100kHz) Bus timing
 
@@ -202,7 +204,8 @@ void i2cEeRead(uint8_t *data, uint16_t address, uint16_t len)
 
 		do{
 			//keep on going until all bytes are sent, or the end of a field is reached
-			ack = (len != 1) && (addr.b[0] != 0xff); 
+			//ack = (len != 1) && (addr.b[0] != 0xff) && (addr.b[0] != 0x7f)&& (addr.b[0] != 0x3f )&& (addr.b[0] != 0xcf); 
+			ack = 0;
 			*data++ = i2cGetbyte(ack);//send no ack on last byte
 			addr.w++;
 			len--;
