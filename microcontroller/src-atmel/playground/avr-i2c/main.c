@@ -12,7 +12,7 @@
 
 #include "config.h"
 #include "debug.h"
-#include "uart.h"
+#include "uart/uart.h"
 #include "i2c.h"
 #include "main_tools.h"
 
@@ -45,7 +45,8 @@ int main (void)
 	i2c_detect_t dev_table;
 	uart_init();
     // DEBUG_INIT();
-    uart_putstr("\r\nMAIN\r\n");
+  uart_putstr("\r\nMAIN\r\n");
+	
 	main_tools_init();
     /*******************/
     i2c_set_speed(I2C_SPEED_100);
@@ -62,7 +63,7 @@ int main (void)
     		switch (uart_getc()){
     			case 't': thermo_dump(0x90); break;
     			case 'a': i2c_detect(dev_table); break;
-    			case 'd': eeprom_dump_page(0xA0, 0, 8*1024); break;
+    			case 'd': eeprom_dump_page(0xA8, 0, 8*1024); break;
     			case 'c': console_dbg(); break;
     			default: uart_putstr(HELP_STR); break;
     		}	
