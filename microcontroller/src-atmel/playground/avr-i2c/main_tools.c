@@ -2,7 +2,7 @@
 
 #include "config.h"
 #include "debug.h"
-#include "uart.h"
+#include "uart/uart.h"
 #include <inttypes.h>
 #include <avr/io.h>
 //#include <util/delay.h>

@@ -6,7 +6,7 @@
 #include "config.h"
 
 #if DEBUG == uart
- #include "uart.h"
+ #include "uart/uart.h"
 #else
   #error "Your DEBUG methode is not suported!"
 #endif

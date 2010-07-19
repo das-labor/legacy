@@ -1,5 +1,5 @@
 PRG	    = i2c-test
-OBJ	    = i2c.o i2c_tools.o 24Cxxx.o main.o debug.o uart.o main_tools.o mcp9800.o
+OBJ	    = i2c.o i2c_tools.o 24Cxxx.o main.o debug.o uart/uart.o main_tools.o mcp9800.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 
