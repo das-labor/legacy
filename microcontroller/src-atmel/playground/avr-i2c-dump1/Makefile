@@ -1,6 +1,6 @@
 PRG            = image
-OBJ            = main.o i2csw.o
-MCU_TARGET     = atmega8
+OBJ            = main.o i2csw.o uart/uart.o
+MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 
 FLASHCMD       = uisp -dprog=bsd -dlpt=/dev/parport1 --upload if=$(PRG).hex
