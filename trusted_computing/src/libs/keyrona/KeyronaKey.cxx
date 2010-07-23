@@ -120,15 +120,6 @@ type ("")
 //
 KeyronaKey::~KeyronaKey()
 {
-    if (KeyCounter == 1)
-    {
-        // garbage collection and destroying of cryptlib objects
-        debug << "KeyronaKey|Destructor(): Cleaning up cryptlib..." << endl;
-//        cryptlibCheck(cryptEnd(), "Cryptlib cleanup process failed!");
-    }
-    else
-        debug << "KeyronaKey|Destructor(): Not finishing cryptlib, since we still have " << KeyCounter << " open objects!" << endl;
-
     KeyCounter--;
 };
 

@@ -41,7 +41,7 @@ vars.Add( BoolVariable('trousers', 'Set to 0 to use internal microtss', 1) )
 ##################################################################################
 env = Environment(
 	variables = vars,
-	CPPPATH = ['#src/include', '#src/include/utils', '#src/include/crypto/cryptomanager', '#src/include/crypto', '#src/include/crypto/openssl', '#src/include/keyrona', '.']
+	CPPPATH = ['#src/include', '#src/include/utils', '#src/include/crypto/cryptomanager', '#src/include/crypto', '#src/include/keyrona', '.']
 )
 
 cflags = " -Wall"
@@ -88,9 +88,7 @@ if not env.GetOption('clean'):
                 Exit(1)
 	##############################################################################
 	# Check for cryptlib library
-	if not conf.CheckLibWithHeader('keyronacl', 'keyrona_cryptlib.h', 'c'):
-		print 'Did not find the patched cryptlib library. Please build it via Keyrona\'s \'install.sh\' first. Exiting!'
-		Exit(1)
+	
 	##############################################################################
 	# Check byteorder
 	endian = conf.checkEndian()
