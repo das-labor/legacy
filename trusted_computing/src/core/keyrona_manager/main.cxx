@@ -222,10 +222,8 @@ int main(int argc, const char *argv[])
 	catch ( std::exception &e )
         {
                 cout << "Error: " << e.what() << endl;
-                cryptEnd();
                 return ERROR;
         }
         // explicitly close cryptolib
-        cryptEnd();
         return SUCCESS;
 };

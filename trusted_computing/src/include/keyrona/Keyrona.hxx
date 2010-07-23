@@ -52,7 +52,6 @@
 #include <ByteVector.hxx>
 #include <binstream.hxx>
 #include <base64.h>
-#include <KeyronaCryptlib.hxx>
 #include <KeyronaHelper.hxx>
 
 
@@ -66,6 +65,7 @@
 #define KEYRONA_MAX_PASSWORD_TRIES       3
 #define KEYRONA_ALWAYS_REQUIRE_LOGIN     0
 
+const int ETIMEDOUT = 30;
 
 const UInt32 KEYFILEPERMISSION = 660;
 const UInt32 DBFILEPERMISSION = 660;
