@@ -121,9 +121,57 @@ void process_cantun_msg(rs232can_msg *msg)
 	}
 }
 
-int main(){
-	DDRB |= (1<<PB0); //LED-Pin to output
 
+#define PORT_LEDS PORTD
+#define DDR_LEDS DDRD
+#define PIN_LEDCL PD5
+#define PIN_LEDCK PD6
+#define PIN_LEDD PD7
+
+
+#define PORT_BUSPOWER PORTD
+#define DDR_BUSPOWER DDRD
+#define BIT_BUSPOWER PD4
+
+void buspower_on(){
+	DDR_BUSPOWER |= (1<<BIT_BUSPOWER);
+	PORT_BUSPOWER |= (1<<BIT_BUSPOWER);
+}
+
+void led_init(){
+	DDR_LEDS |= (1<<PIN_LEDD)|(1<<PIN_LEDCL)|(1<<PIN_LEDCK);
+	PORT_LEDS |= (1<<PIN_LEDCL);
+}
+
+void led_set(unsigned int stat){
+	unsigned char x;
+	for(x=0;x<16;x++){
+		if(stat & 0x01){
+			PORT_LEDS |= (1<<PIN_LEDD);
+		}else{
+			PORT_LEDS &= ~(1<<PIN_LEDD);
+		}
+		stat>>=1;
+		PORT_LEDS |= (1<<PIN_LEDCK);
+		PORT_LEDS &= ~(1<<PIN_LEDCK);
+	}
+}
+
+void adc_init(){
+	DDRC = 0xCF;
+	ADMUX = 0;
+	ADCSRA = 0x07; //slowest adc clock
+	ADCSRA |= (1<<ADEN) | (1<<ADSC) | (1<<ADIF);
+}
+
+
+uint16_t leds, leds_old;
+
+int main(){
+	led_init();
+
+	buspower_on();
+	
 	uart_init();
 	spi_init();
 	can_init();
@@ -131,6 +179,11 @@ int main(){
 	sei();
 
 	can_setmode(normal);
+	can_setled(0,1);
+
+
+	uint8_t r_count = 1, t_count = 1;
+	
 
 	while(1) {
 		rs232can_msg  *rmsg;
@@ -139,16 +192,23 @@ int main(){
 
 		rmsg = canu_get_nb();
 		if (rmsg){
-			PORTB ^= 0x01;
+			r_count ++;
 			process_cantun_msg(rmsg);
 		}
 		
 		cmsg = can_get_nb();
 		if (cmsg){
-			PORTB ^= 0x01;
+			t_count ++;
 			write_can_message_to_uart(cmsg);
 			can_free(cmsg);
 		}
+		
+		leds = (r_count << 8) | t_count;
+		if(leds != leds_old){
+			leds_old = leds;
+			led_set(leds);
+		}
+		
 	}
 
 	return 0;
