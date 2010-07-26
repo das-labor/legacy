@@ -3,12 +3,12 @@ OBJ            = main.o uart/uart.o canlib/can.o canlib/spi.o
 
 # Default values
 OUT           ?= main
-MCU_TARGET    ?= atmega32
+MCU_TARGET    ?= atmega8
 MCU_CC        ?= avr-gcc
 MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall -Winline
-DEFS          ?= -DF_CPU=16000000
+DEFS          ?= -DF_CPU=18432000
 CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I.
 ASFLAGS	      += -mmcu=avr5
 LDFLAGS        = -Wl,-Map,$(OUT).map
