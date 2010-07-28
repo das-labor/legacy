@@ -17,19 +17,6 @@
 #define F_MCP F_CPU
 
 
-#define MEGA8
-
-#ifdef MEGA8
-#	define SPI_PORT PORTB
-#	define SPI_DDR DDRB
-#	define SPI_PIN_SCK PB5
-#	define SPI_PIN_MOSI PB3
-#else
-#	define SPI_PORT PORTB
-#	define SPI_DDR DDRB
-#	define SPI_PIN_SCK PB7
-#	define SPI_PIN_MOSI PB5
-#endif
 
 
 

@@ -36,10 +36,10 @@ static struct t_pin_parameter {
 };
 
 void send_stat() {
-	static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
+	static can_message msg = {0x04, 0x00, 0x00, 0x01, 1, {0}};
 	msg.data[0] = stat_switches.stat_sw;
 	// send changed bit oder beim ziel mit tab vergleichen
-	msg.addr_src = myaddr;
+	//msg.addr_src = myaddr;
 	can_transmit(&msg);
 }
 
