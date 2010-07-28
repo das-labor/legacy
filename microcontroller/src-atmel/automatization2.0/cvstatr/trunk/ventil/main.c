@@ -11,9 +11,10 @@
 #include "twi_slave/twi_slave.h"
 
 
-#define V_OEFFNEN() PORTC |= _BV(PC0) | _BV(PC1); PORTC &= ~(_BV(PC2) | _BV(PC3))
-#define V_SCHLIESSEN() PORTC |= _BV(PC2) | _BV(PC3); PORTC &= ~(_BV(PC0) | _BV(PC1))
-#define FREILAUF()	PORTC &= ~(_BV(PC0) | _BV(PC1) | _BV(PC2) | _BV(PC3))
+#define V_OEFFNEN()    PORTC &= ~(_BV(PC2) | _BV(PC3)); PORTC |= _BV(PC0) | _BV(PC1)
+#define V_SCHLIESSEN() PORTC &= ~(_BV(PC0) | _BV(PC1)); PORTC |= _BV(PC2) | _BV(PC3)
+#define FREILAUF()	   PORTC &= ~(_BV(PC1) | _BV(PC2)); PORTC |= _BV(PC0) | _BV(PC3)
+
 
 #define SCHRITTE 420
 
@@ -56,7 +57,7 @@ void init(void) {
 	DDRC  |= _BV(PC0) | _BV(PC1) | _BV(PC2) | _BV(PC3);
 	// Freilauf
 	FREILAUF();
-	
+
 	// CTC Modus OCR1A Reg 16 bit, ext clock rising edge
 	TCCR1B |= (WGM12) | _BV(CS12) | _BV(CS11) | _BV(CS10);
 	
@@ -79,7 +80,7 @@ void init(void) {
 int main(void) {
 	uint8_t TWIS_ResponseType;
 	int8_t ist_pos = 0, ziel_pos = 0, data[2];
-	
+
 	//system initialization
 	init();
 
@@ -87,16 +88,13 @@ int main(void) {
 	uint16_t ct_act = 0;
 	//the main loop continuously handles can messages
 	while (1) {
-		//TWIS_Init();
 		if (TWIS_ResponseRequired(&TWIS_ResponseType)) {
 			switch (TWIS_ResponseType) {
 				// Slave is requests to read bytes from the master.
 				case TW_SR_SLA_ACK:
-					cli();
 					data[0] = TWIS_ReadAck();
 					data[1] = TWIS_ReadNack();
 					TWIS_Stop();
-					sei();
 
 					switch (data[0]) {
 						case VENTIL_STEP:
@@ -141,7 +139,8 @@ int main(void) {
 			PORTD &= ~_BV(PD6);
 		}
 		ct_last = TCNT1;
-		_delay_ms(30);
+		_delay_ms(30); //XXX durch timer ersetzen
+
 	}
 
 	return 1;
