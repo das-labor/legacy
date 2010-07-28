@@ -18,7 +18,7 @@
 
 volatile uint8_t tickscounter;
 
-ISR(TIMER1_COMPA_vect)
+ISR(TIMER1_OVF_vect)
 {
 	//1 Hz
 	
@@ -47,10 +47,9 @@ void init(void)
 	DDRD &= ~(_BV(PD7) | _BV(PD5));
 	PORTD |= _BV(PD7) | _BV(PD5);
 
-	TCCR1B |= _BV(CS12) | _BV(CS10) | _BV(WGM12);
+	TCCR1B = _BV(CS12) | _BV(CS10);
 	TCCR1A = 0;
-	OCR1A = 0xffff;
-	TIFR |= _BV(TOIE1);
+	TIMSK |= _BV(TOIE1);
 
 
 	//initialize spi port
@@ -76,7 +75,7 @@ int main(void)
 		temp_regler();
 		if (tickscounter == 10) {
 			temp_sensor_read();
-		tickscounter = 0;
+			tickscounter = 0;
 		}
 	}
 	return 1;
