@@ -59,7 +59,8 @@
  */
 
 
-#if HWREF == LABNODE
+#if HWREF == 3
+	//Labnode (Atmega32)
 
 	//SPI port
 	#define DDR_SPI DDRB
@@ -69,8 +70,10 @@
 	#define BIT_MISO 6
 	#define BIT_SCK  7
 	#define BIT_SPI_SS 4
+	/* RFM12 slave select pin is *NOT*  BIT_SPI_SS - it is defined in rfmusb_hw.h */
 #else
-
+	//Other revisions (Atmega 8)
+	
 	//SPI port
 	#define DDR_SPI DDRB
 	#define PORT_SPI PORTB
@@ -82,6 +85,8 @@
 	//this is the hardware SS pin of the AVR - it 
 	//needs to be set to output for the spi-interface to work 
 	//correctly, independently of the CS pin used for the RFM12
+	
+	/* RFM12 slave select pin is *NOT*  BIT_SPI_SS - it is defined in rfmusb_hw.h */
 #endif
 
 

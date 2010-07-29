@@ -9,14 +9,15 @@
  * HWREF = 2 is the newer SMD-version of this
  * board.
  *
- * HWREF = LABNODE is for the LABNODE 
+ * HWREF = 3 is for the LABNODE 
  */
 
 #ifndef HWREF
 	#define HWREF 2
 #endif
 
-#if (HWREF == LABNODE)
+#if (HWREF == 3)
+	//Labnode
 	/* LEDs */
 	#define LED_PORT_DDR      DDRB
 	#define LED_PORT_OUTPUT   PORTB
