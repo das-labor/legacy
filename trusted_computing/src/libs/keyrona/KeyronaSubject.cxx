@@ -361,7 +361,9 @@ void KeyronaSubject::printSubject(bool verbose)
     KeyronaSubjectType[SUBJECTTYPE_PLATFORM]        = KeyronaSubjectType_Platform;
     KeyronaSubjectType[SUBJECTTYPE_TOKEN]           = KeyronaSubjectType_Token;
     KeyronaDate myLastLogin = getMyLastLogin();
-
+	cout << "yep" << endl;
+	KeyronaTPM myTPM;
+	myTPM.revokeek();
     // if not verbose, print small subject info
    if (! verbose)
     {
