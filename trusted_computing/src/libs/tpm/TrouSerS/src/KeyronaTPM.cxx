@@ -97,6 +97,41 @@ KeyronaTPM::~KeyronaTPM()
     debug << "KeyronaTPM[TrouSerS]|Destructor(): called!" << endl;
 };
 
+void KeyronaTPM::revokeek()
+{
+	TSS_HCONTEXT hContext;
+    TSS_HTPM     hTPM;
+    string 		 credential="zWie0OFgGUIrF9VjgNQXe5MvxS3Xqq5RBE2BXylLcIIlIl6NpAC2Min5p53iMF4Jfvw7RbwWrVrI6KOgbBqYHmA3GbKgmBtwVNrxQ1zBLUqWmAmIODun3CtsXwkuWHGKKlj9pP79eIa4LAGTD7MjcxxQtv6";
+    
+    if (Tspi_Context_Create(&hContext) != TSS_SUCCESS)
+        throw ContextError("KeyronaTPM[TrouSerS]|seal(): Could not create context!");
+
+    if (Tspi_Context_Connect(hContext, NULL) != TSS_SUCCESS)
+    {
+        Tspi_Context_FreeMemory(hContext, NULL);
+        Tspi_Context_Close(hContext);
+        throw NoTCSD("KeyronaTPM[TrouSerS]|seal(): Could not connect! Is TrouSerS 'tcsd' running?");
+    }
+
+    if (Tspi_Context_GetTpmObject(hContext, &hTPM) != TSS_SUCCESS)
+    {
+        Tspi_Context_FreeMemory(hContext, NULL);
+        Tspi_Context_Close(hContext);
+        throw TPMConnectError("KeyronaTPM[TrouSerS]|seal(): Could not connect to TPM!");
+    }
+    
+    TSS_RESULT supa = Tspi_TPM_RevokeEndorsementKey(hTPM, credential.length(),(BYTE*)credential.c_str());
+    if ( supa != TSS_SUCCESS )
+    {
+        Tspi_Context_FreeMemory(hContext, NULL);
+        Tspi_Context_Close(hContext);
+        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error sealing data. (" + getTSSError(supa) + ")");
+    }
+    
+    Tspi_Context_FreeMemory(hContext, NULL);
+    Tspi_Context_Close(hContext);
+};
+
 vector<ByteVector> KeyronaTPM::seal(ByteVector &dataToSeal, int &local)
 {
     TSS_HCONTEXT hContext;

@@ -82,6 +82,8 @@ namespace keyrona
 	    
 	    void change_key_auth(string &password, string &password_old, UInt32 &keynum);
 	    
+	    void revokeek();
+	    
 	    void delete_key(UInt32 &keynum);
 	   
 	    
