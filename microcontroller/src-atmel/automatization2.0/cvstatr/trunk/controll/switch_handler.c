@@ -12,6 +12,7 @@
 #define KLINGEL	(PD6)
 #define STANDBY	(PD5)
 #define TUER	(PD7)
+#define SCHLOSS (PD0) //XXX
 
 #define SIGNAL_PIN	(&(PIND))
 
@@ -32,7 +33,8 @@ static struct t_pin_parameter {
 } pin_matrix[] = {
 	{ SIGNAL_PIN , KLINGEL},
 	{ SIGNAL_PIN , STANDBY},
-	{ SIGNAL_PIN , TUER}
+	{ SIGNAL_PIN , TUER},
+	{ SIGNAL_PIN , SCHLOSS}
 };
 
 void send_stat() {
@@ -46,7 +48,7 @@ void send_stat() {
 void get_switches() {
 	uint8_t i;
 	
-	for (i = 0; i < 5; i++) {
+	for (i = 0; i < 3; i++) {
 		if (((*pin_matrix[i].pin) & _BV(pin_matrix[i].bit)) && (((stat_switches.stat_sw >> i) & 1) == 0)) {
 			stat_switches.stat_sw |= (1 << i);
 			send_stat();
