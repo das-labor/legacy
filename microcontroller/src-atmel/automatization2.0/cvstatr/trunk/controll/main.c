@@ -39,8 +39,8 @@ void init(void)
 	//init_sensor(0x9e);
 	init_sensor(0x96);
 
-  //TCCR0 |= _BV(CS02) | _BV(CS00);
-  //TIMSK |= _BV(TOIE0);
+  TCCR0 |= _BV(CS02) | _BV(CS00);
+  TIMSK |= _BV(TOIE0);
 
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
 
@@ -59,7 +59,7 @@ void init(void)
 	can_init();
 	read_can_addr();
 	//turn on interrupts
-  sei();
+	sei();
 }
 	 
 int main(void)
