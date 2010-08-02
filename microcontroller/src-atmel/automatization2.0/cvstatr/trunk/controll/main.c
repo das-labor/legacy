@@ -39,8 +39,8 @@ void init(void)
 	//init_sensor(0x9e);
 	init_sensor(0x96);
 
-  TCCR0 |= _BV(CS02) | _BV(CS00);
-  TIMSK |= _BV(TOIE0);
+  //TCCR0 |= _BV(CS02) | _BV(CS00);
+  //TIMSK |= _BV(TOIE0);
 
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
 
@@ -72,7 +72,7 @@ int main(void)
 	{
 		can_handler();
 		switch_handler();
-		temp_regler();
+//		temp_regler();
 		if (tickscounter == 10) {
 			temp_sensor_read();
 			tickscounter = 0;
