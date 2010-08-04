@@ -26,12 +26,9 @@ void init(void)
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
 	
 	
-	DDRA &= ~(_BV(PA4) | _BV(PA5)); // Eingänge Türkontakt, Bewegungsmelder
-	DDRC |= _BV(PC4) | _BV(PC5); // Schieberegister clk, data
-	DDRA |= _BV(PA6); // Schieberegister Strobe
-		
-	DDRD |= _BV(PD4) | _BV(PD5) | _BV(PD6) | _BV(PD7); // Pins mit pwm als Ausgänge
-
+//	DDRA &= ~(_BV(PA4)); // Eingänge Türkontakt
+//	DDRC |= _BV(PC4) | _BV(PC5); // Schieberegister clk, data
+//	DDRA |= _BV(PA5); // Schieberegister Strobe
 
 
 /*
@@ -42,7 +39,11 @@ void init(void)
 		while (1);
 	}
 */
-	DDRB |= _BV(PB0);
+	DDRB |= _BV(PB0); // LED out
+	
+	init_io();
+	
+	
 	//initialize spi port
 	spi_init();
 	
@@ -65,10 +66,7 @@ int main(void)
 	while (1)
 	{
 		can_handler();
-		PORTB |= _BV(PB0);
-		_delay_ms(200);
-		PORTB &= ~_BV(PB0);
-		_delay_ms(200);
+
 		switch_handler();
 /*		if (tickscounter == 10) {
 			temp_sensor_read();

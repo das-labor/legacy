@@ -4,7 +4,7 @@
 
 // SPI
 #define MC_MOSI    PB5
-#define MC_CLK     PB7
+#define MC_SCK     PB7
 
 // Pin PB2 muss Ausgang sein wenn nicht als SS verwendet
 #define MCP_CS        PB4

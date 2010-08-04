@@ -12,7 +12,7 @@
 uint8_t myaddr;
 
 void twi_get(uint8_t *p);
-uint8_t sreg;
+volatile uint8_t sreg;
 uint8_t status[10][10];
 
 extern void can_handler()
@@ -44,13 +44,13 @@ extern void can_handler()
 			{
 				//save to array
 				switch (rx_msg->data[0]) {
-				
-					case 1:
+					case 0:
+						PORTB |= _BV(PB0); //XXX
 						pwm_set(pwm_matrix[rx_msg->data[1]].port, rx_msg->data[2]);
 						break;
-					case 2:
+					case 1:
 						if (rx_msg->data[2])
-							sreg |= 1 << rx_msg->data[1];
+							sreg |= (1 << rx_msg->data[1]);
 						else
 							sreg &= ~(1 << rx_msg->data[1]);
 						change_shift_reg(sreg);
@@ -66,7 +66,7 @@ void can_send(uint8_t port, uint8_t *p)
 {
 	static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
 	uint8_t i;
-	for (i = 0; i < 1; i++)
+	for (i = 0; i < 2; i++)
 		msg.data[i] = p[i];
 	msg.addr_src = myaddr;
 	msg.port_dst = port;
