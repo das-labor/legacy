@@ -57,8 +57,7 @@ name_value_t nametovalue[] = {
 };
 
 
-void cmd_powercommander_help()
-{
+void cmd_powercommander_help() {
 	int i = 0;
 	printf("Das ganze setzt sich wie folgt zusammen:\n\n");
 	printf("lapcontrol powercommander <class> <object> <function> <value>\n\n");
@@ -66,8 +65,7 @@ void cmd_powercommander_help()
 	printf("es findet keine logische ueberpruefung statt... d.h. man kann das auch falsch zusammenstellen, also bitte die eigene logik ueberpruefen. Es macht beispielsweise keinen Sinn die Klasse PWMs auszuwaehlen und dann ein Switchobjekt zu definiern und dieses am ende setzen zu wollen auf einen wert von 0xff oder so.\n\n");
 	printf("Was aber geht ist in etwa folgendes: alle switche haben ein, aus, status; alle pwms haben set, get; virtuelle Objekte sind eigenstaendig definiert\n\n");
 	
-	for (i = 0; strcmp(nametovalue[i].name, "D_NDEF") !=0; i++)
-	{
+	for (i = 0; strcmp(nametovalue[i].name, "D_NDEF") !=0; i++) {
 		printf("%s \t%s\n", nametovalue[i].name, nametovalue[i].desc);
 	}
 	printf("\n");
@@ -81,8 +79,7 @@ void cmd_powercommander_help()
 	printf("\t- schalte die Helligkeit der Schranklampe auf niedrigste Stufe\n");
 	printf("");
 }
-void cmd_powercommander(int argc, char **argv)
-{
+void cmd_powercommander(int argc, char **argv) {
 	char *arg = argv[1];
 	
 	pdo_message *msg;
@@ -90,8 +87,7 @@ void cmd_powercommander(int argc, char **argv)
 	int i = 0;
 	int k = 0;
 	
-	if (argc == 5)
-	{ 
+	if (argc == 5) {
 		msg = (pdo_message *)can_buffer_get();
 		msg->addr_src = POWERCMD_SENDER_ADDR;
 		msg->addr_dst = POWERCMD_IFACE_ADDR;
@@ -102,38 +98,31 @@ void cmd_powercommander(int argc, char **argv)
 		msg->data[0] = O_NDEF;
 		msg->data[1] = F_NDEF;
 		msg->data[2] = D_NDEF;
-		for (k = 0; strcmp(nametovalue[k].name, "D_NDEF") !=0 ; k++)
-		{
-			if (strcmp(nametovalue[k].name, argv[1]) == 0)
-			{
+		for (k = 0; strcmp(nametovalue[k].name, "D_NDEF") !=0 ; k++) {
+			if (strcmp(nametovalue[k].name, argv[1]) == 0) {
 				msg->cmd = nametovalue[k].value;
 			}
 		}
-		for (i = 0; i < 2; i++)
-		{
-			for (k = 0;  strcmp(nametovalue[k].name, "D_NDEF") !=0 ; k++)
-			{
+		for (i = 0; i < 2; i++) {
+			for (k = 0;  strcmp(nametovalue[k].name, "D_NDEF") !=0 ; k++) {
 				//	printf("%s %s - res %d \n\n", argv[i+2], nametovalue[k].name, strcmp(nametovalue[k].name, argv[i + 2]));
-				if (strcmp(nametovalue[k].name, argv[i + 2]) == 0)
-				{
+				if (strcmp(nametovalue[k].name, argv[i + 2]) == 0) {
 					msg->data[i] = nametovalue[k].value;
 					//		printf("%s %d - %d\n", argv[i + 2], i, msg->data[i]);
 				}
 			}
 		}
-		if (sscanf(argv[4], "%x", &i) != 1)
-		{
+		if (sscanf(argv[4], "%x", &i) != 1) {
 			cmd_powercommander_help();
 			return;
 		}
-		msg->data[2]=i;
+		msg->data[2] = i;
 		printf("translated: %s - %s - %s - %s\n",argv[1],argv[2],argv[3],argv[4]);
 		printf("to:         %d - %d - %d - %d\n",msg->cmd,msg->data[0],msg->data[1],msg->data[2]);
 
 		if ( msg->cmd == C_NDEF ||
 				 msg->data[0] == O_NDEF ||
-				 msg->data[1] == F_NDEF)
-		{
+				 msg->data[1] == F_NDEF) {
 			printf("%d - %d - %d - %d : ", msg->cmd, msg->data[0], msg->data[1], msg->data[2]);
 			cmd_powercommander_help();
 			return;
@@ -144,15 +133,14 @@ void cmd_powercommander(int argc, char **argv)
 			wann muss ne meldung raus gehen
 		*/
 		if ( ( ( msg->cmd == C_PWM ) && ( msg->data[1] == F_PWM_GET)) ||
-				 ( ( msg->cmd == C_SW ) && (msg->data[1] == F_SW_STATUS)) )
-			{
+				 ( ( msg->cmd == C_SW ) && (msg->data[1] == F_SW_STATUS)) ) {
 				/*
 					empfange nachrichten - mache das aber maximal 100 mal
 				*/
 				can_message *rx_msg;
-				for(i=0;i<MAX_CAN_GET_TRY;i++) {
+				for (i = 0; i < MAX_CAN_GET_TRY; i++) {
 					rx_msg = can_get();
-					if(rx_msg) {
+					if (rx_msg) {
 
 						if ( (rx_msg->addr_dst == POWERCMD_SENDER_ADDR) &&  
 								 (rx_msg->port_dst == POWERCMD_IFACE_PORT) &&
@@ -161,13 +149,13 @@ void cmd_powercommander(int argc, char **argv)
 								 )
 							{
 								printf("returned: 0x%02x\n",rx_msg->data[0]);
-								i=MAX_CAN_GET_TRY+1;
+								i = MAX_CAN_GET_TRY + 1;
 							}
 						can_free(rx_msg);
 					}
 					usleep(100);
 				}
-				if(i==MAX_CAN_GET_TRY) {
+				if (i == MAX_CAN_GET_TRY) {
 					printf("returned: (none)\n");
 				}
 			}

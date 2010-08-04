@@ -22,6 +22,7 @@
 #include "cmds-canir.h"
 #include "cmds-cantemp.h"
 #include "cmds-powercommander.h"
+#include "cmds-bastel.h"
 // Atmel ; LAP includes
 // #include "config.h"
 
@@ -57,6 +58,7 @@ cmd_t cmds[] = {
   { &cmd_canir, "canir", "canir", "control thinks supposed to accept ir-commands only via can" },
   { &cmd_powercommander, "powercommander", "powercommander", "powercommander class object function value ... wiki->Powercommander" },
   { &cmd_cantemp, "cantemp", "cantemp", "Temperatur fuer Sensor" },
+  { &cmd_bastel, "bastelcmd", "bastelcmd", "bastelcontrol class object function value ... wiki->Bastelraum" },
   { NULL, NULL, NULL, NULL }
 };
 
