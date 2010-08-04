@@ -25,6 +25,8 @@
 
 #define TWI_ADDRESS 42
 
+#define PORT_BASTEL 0x01
+
 
 #endif // ifndef CONFIG_H
 

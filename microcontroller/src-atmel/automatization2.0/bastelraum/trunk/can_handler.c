@@ -9,6 +9,8 @@
 #include "i2c_funktionen.h"
 #include "io.h"
 
+#include "Bastelcmd.h"
+
 uint8_t myaddr;
 
 void twi_get(uint8_t *p);
@@ -40,20 +42,20 @@ extern void can_handler()
 						break;
 				}
 			}
-			else if (rx_msg->port_dst == 1)
+			else if (rx_msg->port_dst == PORT_BASTEL)
 			{
 				//save to array
 				switch (rx_msg->data[0]) {
-					case 0:
-						PORTB |= _BV(PB0); //XXX
-						pwm_set(pwm_matrix[rx_msg->data[1]].port, rx_msg->data[2]);
-						break;
-					case 1:
+					case C_SW:
 						if (rx_msg->data[2])
 							sreg |= (1 << rx_msg->data[1]);
 						else
 							sreg &= ~(1 << rx_msg->data[1]);
 						change_shift_reg(sreg);
+						break;
+					case C_PWM:
+						PORTB |= _BV(PB0); //XXX
+						pwm_set(pwm_matrix[rx_msg->data[1]].port, rx_msg->data[2]);
 						break;
 				}
 				//state_to_output();
@@ -64,7 +66,7 @@ extern void can_handler()
 
 void can_send(uint8_t port, uint8_t *p)
 {
-	static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
+	static can_message msg = {0xa9, 0x00, 0x00, 0x01, 1, {0}};
 	uint8_t i;
 	for (i = 0; i < 2; i++)
 		msg.data[i] = p[i];
