@@ -27,8 +27,6 @@ void init(void)
 	
 	
 //	DDRA &= ~(_BV(PA4)); // Eingänge Türkontakt
-//	DDRC |= _BV(PC4) | _BV(PC5); // Schieberegister clk, data
-//	DDRA |= _BV(PA5); // Schieberegister Strobe
 
 
 /*
