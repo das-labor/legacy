@@ -14,7 +14,6 @@
 uint8_t myaddr;
 
 void twi_get(uint8_t *p);
-volatile uint8_t sreg;
 uint8_t status[10][10];
 
 extern void can_handler()
@@ -25,6 +24,7 @@ extern void can_handler()
 	{
 		if ((rx_msg->addr_dst == myaddr))
 		{
+		PORTB |= _BV(PB0);
 			if (rx_msg->port_dst == PORT_MGT)
 			{
 				switch (rx_msg->data[0])
