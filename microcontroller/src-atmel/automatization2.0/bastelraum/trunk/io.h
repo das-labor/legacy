@@ -14,6 +14,8 @@
 #define O_PWM03_PORT (&(OCR1BL))
 
 
+extern volatile uint8_t sreg;
+
 // das gleiche fuer die PWMs
 static struct t_pwm_parameter {
 	volatile uint8_t *port;

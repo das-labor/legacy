@@ -2,8 +2,11 @@
 #include <util/delay.h>
 #include "io.h"
 
+volatile uint8_t sreg;
 
 void change_shift_reg(uint8_t sreg);
+
+uint8_t stat_licht = 0;
 
 void init_io() {
 	DDRA |= SREG_STROBE;
@@ -11,7 +14,7 @@ void init_io() {
 	DDRC |= SREG_CK | SREG_DATA;
 	SREG_PORT |= SREG_CK;
 	
-	change_shift_reg(0);
+	change_shift_reg(sreg);
 	DDRD |= _BV(PD4) | _BV(PD5) | _BV(PD6) | _BV(PD7); // Pins mit pwm als Ausgänge
 	
 	TCCR2A |= _BV(WGM21) | _BV(WGM20) | _BV(COM2A1) | _BV(COM2B1);	// FastPWM, Set OC2X on Compare Match, clear OC2X at BOTTOM, (non inverting mode).
@@ -30,8 +33,8 @@ void init_io() {
 	OCR1A = 255;   // pwm timer compare target
 	OCR1B = 255;   // pwm timer compare target
 
-	DDRA &= ~(_BV(PA4)); // Eingänge Türkontakt
-	PORTA |= _BV(PA4);	// PULLUP
+	DDRA &= ~(_BV(PA4) | _BV(PA7)); // Eingänge Türkontakt
+	PORTA |= _BV(PA4) | _BV(PA7);	// PULLUP
 
 }
 
@@ -51,7 +54,24 @@ void change_shift_reg(uint8_t sreg) {
 }
 
 void switch_handler() {
-	
+
+	if (!(PINA & _BV(PA7)))
+	{
+		if (stat_licht) {
+			sreg = 0;
+			change_shift_reg(sreg);
+			stat_licht = 0;
+		}
+		else {
+			stat_licht = 1;
+			sreg = 254;
+			change_shift_reg(sreg);
+			pwm_set(pwm_matrix[0].port, 255);
+			pwm_set(pwm_matrix[1].port, 255);
+			pwm_set(pwm_matrix[3].port, 255);
+		}
+		_delay_ms(250);
+	}
 }
 
 
