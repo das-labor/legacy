@@ -14,7 +14,7 @@
 #include "util/delay.h"
 
 typedef enum { RS232CAN_RESET=0x00,
-		RS232CAN_SETFILTER=0x10, RS232CAN_PKT=0x11, RS232CAN_SETMODE=0x12, RS232CAN_ERROR=0x13
+		RS232CAN_SETFILTER=0x10, RS232CAN_PKT=0x11, RS232CAN_SETMODE=0x12, RS232CAN_ERROR=0x13, OVERFLOW=0x14
 } rs232can_cmd;
 
 #define RS232CAN_MAXLENGTH 20
@@ -75,6 +75,71 @@ uint8_t rfmusb_usbRxBuf[RFMUSB_USBRXBUFFER_SIZE];
 
 
 
+
+
+/*****************************************************************************
+ * CAN to UART
+ */
+
+void can_message_encap(char * dest, can_message * cmsg){
+	uint8_t len = sizeof(can_message) + cmsg->dlc - 8;//actual size of can message
+
+	*dest++ = (RS232CAN_PKT);  //command
+	*dest++ = (len);           //length
+	
+	uint8_t i;
+	uint8_t * buf = cmsg->data;
+	for (i=0; i<len; i++) {
+		*dest++ = ( *buf++);
+	}
+			
+	*dest++ = (0x23);		// XXX CRC
+}
+
+void put_overflow_message(char * dest){
+	*dest++ = (OVERFLOW);  //command
+	*dest++ = (0);           //length
+	*dest++ = 0x23;
+}
+
+char usb_out_buf [32][16];
+
+uint8_t usb_out_buf_head;
+uint8_t usb_out_buf_tail;
+
+void write_can_message_to_usb_buf(can_message * cmsg){
+	if( ((usb_out_buf_head + 2) % 32) == usb_out_buf_tail){
+	
+		put_overflow_message(usb_out_buf [usb_out_buf_head]);
+		usb_out_buf_head = (usb_out_buf_head +1 ) % 32;
+		
+	} else if( ((usb_out_buf_head + 1) % 32) != usb_out_buf_tail){
+		can_message_encap(usb_out_buf [usb_out_buf_head], cmsg);
+		usb_out_buf_head = (usb_out_buf_head +1 ) % 32;
+	}
+}
+
+uint8_t get_messages_from_usb_out_buf(char * buf, uint8_t max_size){
+	uint8_t len = 0;
+	while(usb_out_buf_tail != usb_out_buf_head){
+		uint8_t this_len = usb_out_buf[usb_out_buf_tail][1] + 2; 
+		if((len + this_len) > max_size) break;
+		
+		memcpy(buf, usb_out_buf[usb_out_buf_tail], this_len);
+		buf += this_len;
+		len += this_len;
+		usb_out_buf_tail = (usb_out_buf_tail + 1) % 32;
+	
+	}
+	return len;
+
+}
+
+
+/*****************************************************************************/
+
+
+char  usb_tx_buffer[128];
 
 /* ------------------------------------------------------------------------- */
 /* ----------------------------- USB interface ----------------------------- */
@@ -146,6 +211,15 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 				//use default return value
 				break;
 			}
+
+		case 0x17:{
+		    uint8_t len = get_messages_from_usb_out_buf(usb_tx_buffer, 127);
+			usbMsgPtr = usb_tx_buffer;
+			return len;
+
+		}
+		break;
+
 
 		//host polls for notifications
 		case RFMUSB_RQ_GETNOTIFICATION:
@@ -221,32 +295,6 @@ uchar usbFunctionWrite(uchar *data, uchar len)
 
 
 
-
-
-
-/*****************************************************************************
- * CAN to UART
- */
-void write_buffer_to_uart(char* buf, uint8_t len)
-{
-	uint8_t i;
-
-	for (i=0; i<len; i++) {
-		uart_putc( *buf++);
-	}
-}
-
-void write_can_message_to_uart(can_message * cmsg){
-	uint8_t len = sizeof(can_message) + cmsg->dlc - 8;//actual size of can message
-
-	uart_putc(RS232CAN_PKT);  //command
-	uart_putc(len);           //length
-	
-	write_buffer_to_uart((char*)cmsg, len); //data
-
-	uart_putc(0x23);		// XXX CRC
-}
-/*****************************************************************************/
 
 
 
@@ -372,7 +420,8 @@ int main(){
 		cmsg = can_get_nb();
 		if (cmsg){
 			PORTB ^= 0x01;
-			write_can_message_to_uart(cmsg);
+			write_can_message_to_usb_buf(cmsg);
+			//write_can_message_to_uart(cmsg);
 			can_free(cmsg);
 		}
 	}

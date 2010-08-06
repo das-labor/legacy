@@ -14,9 +14,6 @@
 
 #define LABNODE
 
-#define MC_MOSI PB5
-#define MC_CLK  PB7
-
 // can.[ch] defines
 #define CAN_RAW
 
