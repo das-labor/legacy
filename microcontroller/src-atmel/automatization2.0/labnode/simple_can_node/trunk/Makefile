@@ -1,30 +1,29 @@
-
-OBJ            = main.o uart/uart.o canlib/can.o canlib/spi.o usbdrv/usbdrv.o usbdrv/usbdrvasm.o usbdrv/oddebug.o
+OBJ = main.o can/can.o can/spi.o can_handler.o twi_master/twi_master.o io.o i2c_funktionen.o
 
 # Default values
 OUT           ?= main
-MCU_TARGET    ?= atmega32
+MCU_TARGET    ?= atmega644
 MCU_CC        ?= avr-gcc
 MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall -Winline
-DEFS          ?= -DF_CPU=16000000
-CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I.
+DEFS          ?= -DF_CPU=20000000
+CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -std=c99 -I.
 ASFLAGS	      += -mmcu=avr5
 LDFLAGS        = -Wl,-Map,$(OUT).map
 
 # External Tools
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
-FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U flash:w:main.hex
-ERASECMD      ?=
+FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U flash:w:image.hex
+ERASECMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -e
 
 #############################################################################
 # Rules
 all: $(OUT).elf lst text eeprom
 
 clean:
-	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec canlib/*.o uart/*.o usbdrv/*.o
+	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec can/*.o
 	rm -rf *.srec $(OUT).elf
 
 flash: $(OUT).hex
@@ -39,19 +38,8 @@ $(OUT).elf: $(OBJ)
 %.o: %.c
 	$(MCU_CC) $(CFLAGS) -c $< -o $@ 
 
-#%.o: %.S
-#	$(MCU_AS) $(ASFLAGS) -o $@ $<
-#
-
-# Generic rule for assembling Assembler source files:
 %.o: %.S
-	$(MCU_CC) $(CFLAGS) -x assembler-with-cpp -c $< -o $@
-# "-x assembler-with-cpp" should not be necessary since this is the default
-# file type for the .S (with capital S) extension. However, upper case
-# characters are not always preserved on Windows. To ensure WinAVR
-# compatibility define the file type manually.
-
-
+	$(MCU_AS) $(ASFLAGS) -o $@ $<
 
 lst: $(OUT).lst
 
