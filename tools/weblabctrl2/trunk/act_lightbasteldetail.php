@@ -29,10 +29,10 @@ if($_GET["doit"])
 	//	echo "powercommander.lapcontrol powercommander VIRT VORTRAG ON 0x00";
 	  switch($object)
 	    {
-	    case "tafel":
+	    case "banner":
 	      {
-		if ($control == "enabled") exec("powercommander.lapcontrol powercommander SW LAMP_TAFEL ON 0x00");
-		$localstate["SW_LAMP_TAFEL"]=1;
+		if ($control == "enabled") exec("powercommander.lapcontrol bastelcmd SW LAMP_BANNER 1");
+		$localstate["SW_LAMP_BANNER"]=1;
 		foreach($sortedobjects[$tmpobj->getObjName()] as $myobj2)
 		  {
 		    $jsstr .= $myobj2->getid()."button_show_on_t();\n";
@@ -40,10 +40,10 @@ if($_GET["doit"])
 
 	      }
 	      break;
-	    case "beamer":
+	    case "fenster":
 	      {
-		if ($control == "enabled") exec("powercommander.lapcontrol powercommander SW LAMP_BEAMER ON 0x00");
-		$localstate["SW_LAMP_BEAMER"]=1;
+		if ($control == "enabled") exec("powercommander.lapcontrol bastelcmd SW LAMP_FENSTER 1");
+		$localstate["SW_LAMP_FENSTER"]=1;
 		foreach($sortedobjects[$tmpobj->getObjName()] as $myobj2)
 		  {
 		    $jsstr .= $myobj2->getid()."button_show_on_b();\n";
@@ -51,10 +51,10 @@ if($_GET["doit"])
 
 	      }
 	      break;
-	    case "schrank":
+	    case "orgatisch":
 	      {
-		if ($control == "enabled") exec("powercommander.lapcontrol powercommander SW LAMP_SCHRANK ON 0x00");
-		$localstate["SW_LAMP_SCHRANK"]=1;
+		if ($control == "enabled") exec("powercommander.lapcontrol bastelcmd SW LAMP_ORGATISCH 1");
+		$localstate["SW_LAMP_ORGATISCH"]=1;
 		foreach($sortedobjects[$tmpobj->getObjName()] as $myobj2)
 		  {
 		    $jsstr .= $myobj2->getid()."button_show_on_s();\n";
@@ -62,10 +62,43 @@ if($_GET["doit"])
 
 	      }
 	      break;
-	    case "flipper":
+	    case "drucker1":
 	      {
-		if ($control == "enabled") exec("powercommander.lapcontrol powercommander SW LAMP_FLIPPER ON 0x00");
-		$localstate["SW_LAMP_FLIPPER"]=1;
+		if ($control == "enabled") exec("powercommander.lapcontrol bastelcmd SW LAMP_DRUCKER_1 1");
+		$localstate["SW_LAMP_DRUCKER_1"]=1;
+		foreach($sortedobjects[$tmpobj->getObjName()] as $myobj2)
+		  {
+		    $jsstr .= $myobj2->getid()."button_show_on_f();\n";
+		  }
+
+	      }
+	      break;
+	    case "drucker2":
+	      {
+		if ($control == "enabled") exec("powercommander.lapcontrol bastelcmd SW LAMP_DRUCKER_2 1");
+		$localstate["SW_LAMP_DRUCKER_2"]=1;
+		foreach($sortedobjects[$tmpobj->getObjName()] as $myobj2)
+		  {
+		    $jsstr .= $myobj2->getid()."button_show_on_f();\n";
+		  }
+
+	      }
+	      break;
+	    case "helmer1":
+	      {
+		if ($control == "enabled") exec("powercommander.lapcontrol bastelcmd SW LAMP_HELMER_1 1");
+		$localstate["SW_LAMP_HELMER_1"]=1;
+		foreach($sortedobjects[$tmpobj->getObjName()] as $myobj2)
+		  {
+		    $jsstr .= $myobj2->getid()."button_show_on_f();\n";
+		  }
+
+	      }
+	      break;
+	    case "helmer2":
+	      {
+		if ($control == "enabled") exec("powercommander.lapcontrol bastelcmd SW LAMP_HELMER_2 1");
+		$localstate["SW_LAMP_HELMER_2"]=1;
 		foreach($sortedobjects[$tmpobj->getObjName()] as $myobj2)
 		  {
 		    $jsstr .= $myobj2->getid()."button_show_on_f();\n";
@@ -90,46 +123,79 @@ if($_GET["doit"])
       {
 	  switch($object)
 	    {
-	    case "tafel":
+	    case "banner":
 	      {
-		if ($control == "enabled") exec("powercommander.lapcontrol powercommander SW LAMP_TAFEL OFF 0x00");
-		$localstate["SW_LAMP_TAFEL"]=0;
+		if ($control == "enabled") exec("powercommander.lapcontrol bastelcmd SW LAMP_BANNER 0");
+		$localstate["SW_LAMP_BANNER"]=1;
 		foreach($sortedobjects[$tmpobj->getObjName()] as $myobj2)
 		  {
-		    $jsstr .= $myobj2->getid()."button_show_off_t();\n";
+		    $jsstr .= $myobj2->getid()."button_show_on_t();\n";
 		  }
 
 	      }
 	      break;
-	    case "beamer":
+	    case "fenster":
 	      {
-		if ($control == "enabled") exec("powercommander.lapcontrol powercommander SW LAMP_BEAMER OFF 0x00");
-		$localstate["SW_LAMP_BEAMER"]=0;
+		if ($control == "enabled") exec("powercommander.lapcontrol bastelcmd SW LAMP_FENSTER 0");
+		$localstate["SW_LAMP_FENSTER"]=1;
 		foreach($sortedobjects[$tmpobj->getObjName()] as $myobj2)
 		  {
-		    $jsstr .= $myobj2->getid()."button_show_off_b();\n";
+		    $jsstr .= $myobj2->getid()."button_show_on_b();\n";
 		  }
 
 	      }
 	      break;
-	    case "schrank":
+	    case "orgatisch":
 	      {
-		if ($control == "enabled") exec("powercommander.lapcontrol powercommander SW LAMP_SCHRANK OFF 0x00");
-		$localstate["SW_LAMP_SCHRANK"]=0;
+		if ($control == "enabled") exec("powercommander.lapcontrol bastelcmd SW LAMP_ORGATISCH 0");
+		$localstate["SW_LAMP_ORGATISCH"]=1;
 		foreach($sortedobjects[$tmpobj->getObjName()] as $myobj2)
 		  {
-		    $jsstr .= $myobj2->getid()."button_show_off_s();\n";
+		    $jsstr .= $myobj2->getid()."button_show_on_s();\n";
 		  }
 
 	      }
 	      break;
-	    case "flipper":
+	    case "drucker1":
 	      {
-		if ($control == "enabled") exec("powercommander.lapcontrol powercommander SW LAMP_FLIPPER OFF 0x00");
-		$localstate["SW_LAMP_FLIPPER"]=0;
+		if ($control == "enabled") exec("powercommander.lapcontrol bastelcmd SW LAMP_DRUCKER_1 0");
+		$localstate["SW_LAMP_DRUCKER_1"]=1;
 		foreach($sortedobjects[$tmpobj->getObjName()] as $myobj2)
 		  {
-		    $jsstr .= $myobj2->getid()."button_show_off_f();\n";
+		    $jsstr .= $myobj2->getid()."button_show_on_f();\n";
+		  }
+
+	      }
+	      break;
+	    case "drucker2":
+	      {
+		if ($control == "enabled") exec("powercommander.lapcontrol bastelcmd SW LAMP_DRUCKER_2 0");
+		$localstate["SW_LAMP_DRUCKER_2"]=1;
+		foreach($sortedobjects[$tmpobj->getObjName()] as $myobj2)
+		  {
+		    $jsstr .= $myobj2->getid()."button_show_on_f();\n";
+		  }
+
+	      }
+	      break;
+	    case "helmer1":
+	      {
+		if ($control == "enabled") exec("powercommander.lapcontrol bastelcmd SW LAMP_HELMER_1 0");
+		$localstate["SW_LAMP_HELMER_1"]=1;
+		foreach($sortedobjects[$tmpobj->getObjName()] as $myobj2)
+		  {
+		    $jsstr .= $myobj2->getid()."button_show_on_f();\n";
+		  }
+
+	      }
+	      break;
+	    case "helmer2":
+	      {
+		if ($control == "enabled") exec("powercommander.lapcontrol bastelcmd SW LAMP_HELMER_2 0");
+		$localstate["SW_LAMP_HELMER_2"]=1;
+		foreach($sortedobjects[$tmpobj->getObjName()] as $myobj2)
+		  {
+		    $jsstr .= $myobj2->getid()."button_show_on_f();\n";
 		  }
 
 	      }
@@ -150,42 +216,34 @@ if($_GET["doit"])
       {
 	  switch($object)
 	    {
-	    case "tafel":
+	    case "fenster":
 	      {
-		if ($localstate["TAFEL_PWM"] != $value_dec)
+		if ($localstate["FENSTER_PWM"] != $value_dec)
 		  {
-		    if ($control == "enabled") exec("powercommander.lapcontrol powercommander PWM TAFEL SET ".$value);
-		    $localstate["TAFEL_PWM"]=$value_dec;
+		    if ($control == "enabled") exec("powercommander.lapcontrol bastelcmd PWM FENSTER ".$value);
+		    $localstate["FENSTER_PWM"]=$value_dec;
 		  }
 	      }
 	      break;
-	    case "beamer":
+	    case "banner":
 	      {
-		if($localstate["BEAMER_PWM"]!=$value_dec)
+		if($localstate["BANNER_PWM"]!=$value_dec)
 		  {
-		    if ($control == "enabled") exec("powercommander.lapcontrol powercommander PWM BEAMER SET ".$value);
-		    $localstate["BEAMER_PWM"]=$value_dec;
+		    if ($control == "enabled") exec("powercommander.lapcontrol bastelcmd PWM BANNER ".$value);
+		    $localstate["BANNER_PWM"]=$value_dec;
 		  }
 	      }
 	      break;
-	    case "schrank":
+	    case "orgatisch":
 	      {
-		if ( $localstate["SCHRANK_PWM"]!=$value_dec)
+		if ( $localstate["ORGATISCH_PWM"]!=$value_dec)
 		  {
-		    if ($control == "enabled") exec("powercommander.lapcontrol powercommander PWM SCHRANK SET ".$value);
-		    $localstate["SCHRANK_PWM"]=$value_dec;
+		    if ($control == "enabled") exec("powercommander.lapcontrol bastelcmd PWM ORGATISCH ".$value);
+		    $localstate["ORGATISCH_PWM"]=$value_dec;
 		  }
 	      }
 	      break;
-	    case "flipper":
-	      {
-		if ( $localstate["FLIPPER_PWM"]!=$value_dec)
-		  {
-		    if ($control == "enabled") exec("powercommander.lapcontrol powercommander PWM FLIPPER SET ".$value);
-		    $localstate["FLIPPER_PWM"]=$value_dec;
-		  }
-	      }
-	      break;
+
 	    case "hacker":
 	      {
 		echo "I think it's a hacker";
