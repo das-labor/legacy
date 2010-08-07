@@ -35,7 +35,7 @@ if($_GET["doit"])
 	{
 	  if($localstate["musik_keller_status"]!="playing")
 	    {
-	      if($control=="enabled") exec("MPD_PORT=6601 MPD_HOST=10.0.1.3 mpc play") ;
+	      if($control=="enabled") exec("MPD_PORT=6601 MPD_HOST=10.0.1.6 mpc play") ;
 	      $localstate["musik_keller_status"]="playing";
 	    }
 	  foreach($sortedobjects[$tmpobj->getObjName()] as $myobj)
@@ -50,7 +50,7 @@ if($_GET["doit"])
 	{
 	  if($localstate["musik_keller_status"]!="stop")
 	    {
-	      if($control=="enabled") exec("MPD_PORT=6601 MPD_HOST=10.0.1.3 mpc stop") ;
+	      if($control=="enabled") exec("MPD_PORT=6601 MPD_HOST=10.0.1.6 mpc stop") ;
 	      $localstate["musik_keller_status"]="stop";
 	    }
 	  foreach($sortedobjects[$tmpobj->getObjName()] as $myobj)
@@ -65,7 +65,7 @@ if($_GET["doit"])
 	{
 	  if($localstate["musik_keller_status"]!="paused")
 	    {
-	      if($control=="enabled") exec("MPD_PORT=6601 MPD_HOST=10.0.1.3 mpc pause") ;
+	      if($control=="enabled") exec("MPD_PORT=6601 MPD_HOST=10.0.1.6 mpc pause") ;
 	      $localstate["musik_keller_status"]="paused";
 	    }
 	  foreach($sortedobjects[$tmpobj->getObjName()] as $myobj)
@@ -78,19 +78,19 @@ if($_GET["doit"])
 	break;
       case "prev":
 	{
-	  if($control=="enabled") exec("MPD_PORT=6601 MPD_HOST=10.0.1.3 mpc prev") ;
+	  if($control=="enabled") exec("MPD_PORT=6601 MPD_HOST=10.0.1.6 mpc prev") ;
 	}
 	break;
       case "next":
 	{
-	  if($control=="enabled") exec("MPD_PORT=6601 MPD_HOST=10.0.1.3 mpc next") ;
+	  if($control=="enabled") exec("MPD_PORT=6601 MPD_HOST=10.0.1.6 mpc next") ;
 	}
 	break;
       case "volume":
 	{
 	  if ( $localstate["musik_keller_volume"]!=$value_dec)
 	    {
-	      if($control=="enabled") exec("MPD_PORT=6601 MPD_HOST=10.0.1.3 mpc volume ".$value_dec) ;
+	      if($control=="enabled") exec("MPD_PORT=6601 MPD_HOST=10.0.1.6 mpc volume ".$value_dec) ;
 	      $localstate["musik_keller_volume"]=$value_dec;
 	    }
 
@@ -100,7 +100,7 @@ if($_GET["doit"])
 	{
 	  if ( $localstate["musik_keller_pos"]!=$value_dec)
 	    {
-	      if($control=="enabled") exec("MPD_PORT=6601 MPD_HOST=10.0.1.3 mpc seek ".$value_dec."\%") ;
+	      if($control=="enabled") exec("MPD_PORT=6601 MPD_HOST=10.0.1.6 mpc seek ".$value_dec."\%") ;
 	      $localstate["musik_keller_pos"]=$value_dec;
 	    }
 
