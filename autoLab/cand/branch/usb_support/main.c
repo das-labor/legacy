@@ -237,19 +237,14 @@ void customscripts(rs232can_msg *msg)
 
 }
 
-void process_uart_msg()
-{
+void process_msg(rs232can_msg *msg){
 	cann_conn_t *ac;
-	debug( 10, "Activity on uart_fd" );
-
-	rs232can_msg *msg = canu_get_nb();
-	if(!msg) return;
 	
-	debug(3, "Processing message from uart..." );
-	
-	if(msg->cmd != RS232CAN_PKT){
+	if(msg->cmd == 0x14){
+		debug(1, "Buffer overrun from CAN to USB");
+		return;
+	}else if(msg->cmd != RS232CAN_PKT){
 		debug(0, "Whats going on? Received other than PKT type on Uart");
-		canu_free(msg);
 		return;
 	}
 
@@ -263,9 +258,30 @@ void process_uart_msg()
 		
 		ac = ac->next;
 	}
+}
+
+
+void process_uart_msg()
+{
+	debug( 10, "Activity on uart_fd" );
+
+	rs232can_msg *msg = canu_get_nb();
+	if(!msg) return;
+	
+	debug(3, "Processing message from uart..." );
+	
+	process_msg(msg);
 	
 	canu_free(msg);
 	debug(3, "...processing done.");
+}
+
+void canusb_transmit(rs232can_msg * msg){
+	int r = usb_control_msg (udhandle,
+            USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
+            0x18, 0, 0, (char *)msg, msg->len + 2,
+            100);
+
 }
 
 void process_client_msg( cann_conn_t *client )
@@ -295,6 +311,8 @@ void process_client_msg( cann_conn_t *client )
 			// to UART
 			if (serial) canu_transmit(msg);
 
+			if (usb_parm) canusb_transmit(msg);
+
 			// foreach client
 			ac = cann_conns_head;
 			while(ac) {
@@ -318,12 +336,30 @@ void new_client( cann_conn_t *client )
 int poll_usb(){
 	debug( 9, "IN POLL_USB" );
 	char packetBuffer[1000];
- return usb_control_msg (udhandle,
+ 	
+ 	int r;
+ 	
+	 
+	 r = usb_control_msg (udhandle,
             USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
             0x17, 0, 0, (char *)packetBuffer, 1000,
-            10);
+            100);
 
 
+	if(r > 0){
+		debug( 8, "RECEIVED DATA FROM USB" );
+		int p = 0;
+	
+		//hexdump(packetBuffer, r);
+	
+		while((p+packetBuffer[p+1] + 2) <= r){
+			
+			process_msg((rs232can_msg *) &packetBuffer[p]);
+			p += packetBuffer[p+1] + 2;
+				
+		}	
+	}
+	return 0;
 }
 
 void event_loop()
@@ -360,8 +396,9 @@ void event_loop()
 		do{
 			rset = fd_tmp;
 			
-			poll_usb();
-			
+			if(usb_parm){
+				poll_usb();
+			}
 			
 			//poll fd_set
 			num = select(highfd+1, &rset, (fd_set *)NULL, (fd_set *)NULL, &tv);
@@ -501,7 +538,6 @@ int main(int argc, char *argv[])
 	// setup network socket
 	cann_listen(tcpport);
 	debug(1, "Listenig for network connections on port %d", tcpport );
-
 	event_loop();  // does not return
 
 	return 1;  
