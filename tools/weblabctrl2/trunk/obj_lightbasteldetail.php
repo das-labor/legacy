@@ -330,7 +330,7 @@ class c_lightbasteldetail extends c_content{
 
     $this->jsstr .= "\nfunction ".$this->myid."button_on_b()\n";
     $this->jsstr .= "{\n";
-    $this->jsstr .=      $this->myid."_cmd('beamer','on',0);\n";
+    $this->jsstr .=      $this->myid."_cmd('banner','on',0);\n";
     $this->jsstr .= "    document.getElementById(\"".$this->myid."_bo_img\").src=\"icons/dotON.png\"; \n";
     $this->jsstr .= "}\n";
 
@@ -341,7 +341,7 @@ class c_lightbasteldetail extends c_content{
 
     $this->jsstr .= "\nfunction ".$this->myid."button_off_b()\n";
     $this->jsstr .= "{\n";
-    $this->jsstr .=      $this->myid."_cmd('beamer','off',0);\n";
+    $this->jsstr .=      $this->myid."_cmd('banner','off',0);\n";
     $this->jsstr .= "    document.getElementById(\"".$this->myid."_bo_img\").src=\"icons/dotOFF.png\";\n";
     $this->jsstr .= "}\n";
 
@@ -610,8 +610,8 @@ class c_lightbasteldetail extends c_content{
   {
     global $localstate;
     $updaterjs = "";
-    $updaterjs .= $this->myid."_obj_slider_t.setValue('".$localstate["TAFEL_PWM"]."'); \n";
-    if( $localstate["SW_LAMP_TAFEL"]==1 ) 
+    $updaterjs .= $this->myid."_obj_slider_t.setValue('".$localstate["FENSTER_PWM"]."'); \n";
+    if( $localstate["SW_LAMP_FENSTER"]==1 ) 
       {
 	$updaterjs .= $this->myid."button_show_on_t();";
       } 
@@ -620,7 +620,7 @@ class c_lightbasteldetail extends c_content{
 	    $updaterjs .= $this->myid."button_show_off_t();";
       }
 
-    $updaterjs .= $this->myid."_obj_slider_b.setValue('".$localstate["BEAMER_PWM"]."'); \n";
+    $updaterjs .= $this->myid."_obj_slider_b.setValue('".$localstate["BANNER_PWM"]."'); \n";
     if($localstate["SW_LAMP_BEAMER"]==1)
       {
 	$updaterjs .= $this->myid."button_show_on_b();";
@@ -630,8 +630,8 @@ class c_lightbasteldetail extends c_content{
 	$updaterjs .= $this->myid."button_show_off_b();";
       }
 
-    $updaterjs .= $this->myid."_obj_slider_s.setValue('".$localstate["SCHRANK_PWM"]."'); \n";
-    if($localstate["SW_LAMP_SCHRANK"]==1)
+    $updaterjs .= $this->myid."_obj_slider_s.setValue('".$localstate["ORGATISCH_PWM"]."'); \n";
+    if($localstate["SW_LAMP_ORGATISCH"]==1)
       {
 	$updaterjs .= $this->myid."button_show_on_s();";
       } 
@@ -640,15 +640,6 @@ class c_lightbasteldetail extends c_content{
 	$updaterjs .= $this->myid."button_show_off_s();";
       }
 
-    $updaterjs .= $this->myid."_obj_slider_f.setValue('".$localstate["FLIPPER_PWM"]."'); \n";
-    if($localstate["SW_LAMP_FLIPPER"]==1)
-      {
-	$updaterjs .= $this->myid."button_show_on_f();";
-      } 
-    else 
-      {
-	$updaterjs .= $this->myid."button_show_off_f();";
-      }
 
     return $updaterjs;
   }
