@@ -26,8 +26,10 @@ typedef struct {
 } rs232can_msg;
 
 
+/*
 #define LED_STATUS_TOGGLE \
 	PORTB ^= 0x01
+*/
 	
 #define RFMUSB_USBTXBUFFER_SIZE 20
 #define RFMUSB_USBRXBUFFER_SIZE 20
@@ -88,7 +90,7 @@ void can_message_encap(char * dest, can_message * cmsg){
 	*dest++ = (len);           //length
 	
 	uint8_t i;
-	uint8_t * buf = cmsg->data;
+	uint8_t * buf = (uint8_t *)cmsg;
 	for (i=0; i<len; i++) {
 		*dest++ = ( *buf++);
 	}
@@ -132,7 +134,7 @@ uint8_t get_messages_from_usb_out_buf(char * buf, uint8_t max_size){
 	
 	}
 	return len;
-
+	
 }
 
 
@@ -153,93 +155,33 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 	//don't expect the cases to break, they may also return
 	switch(rq->bRequest)
 	{
-		//host wants to write a raw packet to the rfm12
-		case RFMUSB_RQ_RFM12_PUT:
-			// initialize position index
-			rfmusb_usbRxCnt = 0;
-
-			// store the amount of data to be received
-			rfmusb_usbRxLen = rq->wLength.bytes[0];
-
-			// limit to buffer size
-			if(rfmusb_usbRxLen > RFMUSB_USBRXBUFFER_SIZE)
-				rfmusb_usbRxLen = RFMUSB_USBRXBUFFER_SIZE;
-
-			//toggle status led
-			LED_STATUS_TOGGLE;
-
-			// tell driver to use usbFunctionWrite()
-			return USB_NO_MSG;
-			
-		//send a single character
-		//FIXME: please cleanup define name and location
-		case USB_SENDCHAR:
-			//copy data
-			rfmusb_usbRxBuf[0] = rq->wIndex.bytes[0];
-
-			//send
-			//rfm12_tx (1, 0, rfmusb_usbRxBuf);
-
-			//toggle led
-			LED_STATUS_TOGGLE;
-
-			//use default return value
-			break;			
-
-		//host wants to read rfm12 packet data
-		case RFMUSB_RQ_RFM12_GET:
-			//if there is data to transmit
-			if(rfmusb_usbTxLen)
-			{
-				uint8_t tmp;
-
-				//set usb message pointer
-				usbMsgPtr = (uchar *)rfmusb_usbTxBuf;
-
-				//free buffer
-				tmp = rfmusb_usbTxLen;
-				rfmusb_usbTxLen = 0;
-
-				//switch led
-				LED_STATUS_TOGGLE;
-
-				//tell the driver to send n bytes
-				return tmp;
-			}
-			else
-			{
-				//use default return value
-				break;
-			}
-
 		case 0x17:{
 		    uint8_t len = get_messages_from_usb_out_buf(usb_tx_buffer, 127);
 			usbMsgPtr = usb_tx_buffer;
 			return len;
 
 		}
-		break;
+		
+		//host wants to write a raw packet
+		case 0x18:
+			// initialize position index
+			rfmusb_usbRxCnt = 0;
+			
+			// store the amount of data to be received
+			rfmusb_usbRxLen = rq->wLength.bytes[0];
 
+			
+			// limit to buffer size
+			if(rfmusb_usbRxLen > RFMUSB_USBRXBUFFER_SIZE)
+				rfmusb_usbRxLen = RFMUSB_USBRXBUFFER_SIZE;
 
-		//host polls for notifications
-		case RFMUSB_RQ_GETNOTIFICATION:
-			//if there is any
-			if(rfmusb_notifyBuf.len)
-			{
-				uint8_t tmp;
+			//toggle status led
+			//LED_STATUS_TOGGLE;
+			
 
-				//set usb message pointer
-				usbMsgPtr = (uchar *)&rfmusb_notifyBuf;
+			// tell driver to use usbFunctionWrite()
+			return USB_NO_MSG;
 
-				//free buffer
-				tmp = rfmusb_notifyBuf.len;
-				rfmusb_notifyBuf.len = 0;
-
-				//tell driver to send n bytes
-				return tmp;
-			}
-
-		//use default return value
 		default:
 			break;
 	}
@@ -248,13 +190,15 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 }
 
 
+uint8_t usb_got_packet;
+
 //receive raw packet data from the host
 //FIXME: to allow different modes, one should check the current mode and call appropriate subfunctions
 uchar usbFunctionWrite(uchar *data, uchar len)
 {
     uchar i;
 
-	LED_STATUS_TOGGLE;
+	//LED_STATUS_TOGGLE;
 
     //if this is the last incomplete chunk
     if(len > rfmusb_usbRxLen)
@@ -276,6 +220,9 @@ uchar usbFunctionWrite(uchar *data, uchar len)
 		//FIXME: test if the transmit buffer is free and issue tx rate limit notification to host if not
 		//rfm12_tx(rfmusb_usbRxBuf[0], rfmusb_usbRxBuf[1], &rfmusb_usbRxBuf[2]);
 
+		
+		usb_got_packet = 1;
+		
 		//return 1 if we have all data
 		return 1;
 	}
@@ -284,19 +231,6 @@ uchar usbFunctionWrite(uchar *data, uchar len)
     	return 0;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*****************************************************************************
  * Receive a message from uart non blocking.
@@ -391,12 +325,16 @@ void usb_init()
 }
 
 int main(){
-	DDRB |= (1<<PB0); //LED-Pin to output
+	DDR_LED |= (1<<BIT_LED); //LED-Pin to output
+	PORT_LED |= (1<<BIT_LED); //LED on during init
 
 	usb_init();
 
 
+#ifdef WANT_UART
 	uart_init();
+#endif
+
 	spi_init();
 	can_init();
 
@@ -405,24 +343,47 @@ int main(){
 
 	can_setmode(normal);
 
+	PORT_LED &= ~(1<<BIT_LED); //LED off after init
+
+
+	uint16_t led_count = 0;
+
 	while(1) {
 		rs232can_msg  *rmsg;
 		can_message *cmsg;
 
 		usbPoll();
 
+#ifdef WANT_UART
 		rmsg = canu_get_nb();
 		if (rmsg){
-			PORTB ^= 0x01;
 			process_cantun_msg(rmsg);
 		}
+#endif
 		
+		if(usb_got_packet){
+			usb_got_packet = 0;
+			led_count = 2000;
+			process_cantun_msg((rs232can_msg *) rfmusb_usbRxBuf);
+		}
+			
 		cmsg = can_get_nb();
 		if (cmsg){
-			PORTB ^= 0x01;
+			led_count = 2000;
+			
 			write_can_message_to_usb_buf(cmsg);
-			//write_can_message_to_uart(cmsg);
+#ifdef WANT_UART
+			write_can_message_to_uart(cmsg);
+#endif
 			can_free(cmsg);
+		}
+		
+		if(led_count){
+			PORT_LED |= (1<<BIT_LED); //LED on
+			led_count--;
+			
+		}else{
+			PORT_LED &= ~(1<<BIT_LED); //LED off
 		}
 	}
 

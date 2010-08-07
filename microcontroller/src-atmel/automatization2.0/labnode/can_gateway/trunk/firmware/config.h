@@ -14,6 +14,11 @@
 
 #define LABNODE
 
+#define DDR_LED DDRB
+#define PORT_LED PORTB
+#define BIT_LED PB0
+
+
 // can.[ch] defines
 #define CAN_RAW
 
