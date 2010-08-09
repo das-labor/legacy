@@ -15,9 +15,7 @@
 #include "font_arial8.h"
 // #include "font_small6.h"
 // #include "font_uni53.h"
-#ifdef __CYGWIN__
-	#define strtok_r(a, b, c) strtok((a), (b))
-#endif
+#define strtok_r(a, b, c) strtok((a), (b))
 
 #define MAX_FONTS 1
 font fonts[MAX_FONTS];
