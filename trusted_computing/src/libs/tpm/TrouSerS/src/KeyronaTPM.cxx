@@ -611,7 +611,7 @@ ByteVector KeyronaTPM::unbind(ByteVector &dataToUnbind, UInt32 &bindkeynum, stri
 
 };
 
-vector<ByteVector> KeyronaTPM::create_key(string &password, UInt32 &keynum, string &type)
+ByteVector KeyronaTPM::create_key(string &password, UInt32 &keynum, string &type)
 {
     TSS_HCONTEXT hContext;
 	TSS_HTPM	 hTPM;
@@ -627,12 +627,12 @@ vector<ByteVector> KeyronaTPM::create_key(string &password, UInt32 &keynum, stri
     UINT32		 flags = NULL;
 
     //Choose between Bind, Storage or Legacy Key. 
-    if(type == "subject") {
+//    if(type == "subject") {
 							flags = TSS_KEY_TYPE_BIND | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE | TSS_KEY_AUTHORIZATION;
-	}
-	if( type == "group" ) {				
-							flags = TSS_KEY_TYPE_STORAGE | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE;
-	}
+//	}
+//	if( type == "group" ) {				
+//							flags = TSS_KEY_TYPE_STORAGE | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE;
+//	}
 
 	// Allocate Key UUID number.
 	memset (&hKey_UUID, 0, sizeof(hKey_UUID));
@@ -729,24 +729,21 @@ vector<ByteVector> KeyronaTPM::create_key(string &password, UInt32 &keynum, stri
         Tspi_Context_Close(hContext);
         throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error binding data. (" + getTSSError(blub3) + ")");
     }
-    
+    /*
 	Tspi_Key_LoadKey(hKey, hSRK);
 	
-	Tspi_GetAttribData (hKey, TSS_TSPATTRIB_KEY_INFO, TSS_TSPATTRIB_KEYINFO_SIZE, &blobLen, &blob);
+	Tspi_GetAttribData (hKey, TSS_TSPATTRIB_KEY_INFO, NULL, &blobLen, &blob);
 		
 	Tspi_Key_UnloadKey(hKey);
 	
-	
-	ByteVector keyData((UInt8*)blob, blobLen);
+*/	
+	ByteVector keyData;
 
-    vector<ByteVector> myData;
-    myData.push_back(keyData);
 	
-	Tspi_Context_FreeMemory (hContext, blob);
     Tspi_Context_FreeMemory(hContext, NULL);
     Tspi_Context_Close(hContext);
 	cout << "shit" << endl;
-	return  myData;
+	return keyData;
 
 };
 
