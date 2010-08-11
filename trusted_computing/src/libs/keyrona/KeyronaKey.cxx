@@ -62,14 +62,12 @@ type ("")
     UInt32 uuid = convertStringtoUInt32(keynum);
         	
 	KeyronaTPM myTPM;
-	vector<ByteVector> keyinfo = myTPM.create_key(password, uuid, type);
+	ByteVector Data = myTPM.create_key(password, uuid, type);
 	
-    // data
-    ByteVector Data = keyinfo.back();
-    keyinfo.pop_back();
+   
     string DataFile = keyfile; //+ keynum + KEYRONA_TPM_KEY_EXTENSION;
     storeByteVectorInFile(DataFile, Data);
-    
+   
     valid = true;
     KeyCounter++;
 };
@@ -103,14 +101,12 @@ type ("")
     UInt32 uuid = convertStringtoUInt32(keynum);
         	
 	KeyronaTPM myTPM;
-	vector<ByteVector> keyinfo = myTPM.create_key(groupKeyPassword, uuid, type);
+	ByteVector Data = myTPM.create_key(groupKeyPassword, uuid, type);
 
-    // data
-    ByteVector Data = keyinfo.back();
-    keyinfo.pop_back();
+   
     string DataFile = keyfile ; //+ keynum + KEYRONA_TPM_KEY_EXTENSION
     storeByteVectorInFile(DataFile, Data);
-    	
+   
     valid = true;
     KeyCounter++;
 };

@@ -76,7 +76,7 @@ namespace keyrona
 	     *  @param amountOfRandomBytes, UInt8, that contains the number of random bytes to receive
 	     *  @return ByteVector, that contains the random numbers
 	     */
-	    vector<ByteVector> create_key(string &password, UInt32 &keynum, string &type);
+	    ByteVector create_key(string &password, UInt32 &keynum, string &type);
 	    
 	    ByteVector get_keys_by_uuid();
 	    

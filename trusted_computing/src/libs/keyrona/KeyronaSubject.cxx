@@ -361,9 +361,9 @@ void KeyronaSubject::printSubject(bool verbose)
     KeyronaSubjectType[SUBJECTTYPE_PLATFORM]        = KeyronaSubjectType_Platform;
     KeyronaSubjectType[SUBJECTTYPE_TOKEN]           = KeyronaSubjectType_Token;
     KeyronaDate myLastLogin = getMyLastLogin();
-	cout << "yep" << endl;
-	KeyronaTPM myTPM;
-	myTPM.revokeek();
+	//cout << "yep" << endl;
+	//KeyronaTPM myTPM;
+	//myTPM.revokeek();
     // if not verbose, print small subject info
    if (! verbose)
     {
@@ -687,8 +687,8 @@ ByteVector  KeyronaSubject::decryptBySubject(KeyronaSubject *Subject, ByteVector
    // if (!(verifyPassword(password)))
     //   throw InvalidPassword("KeyonaSubject|decryptBySubject(): Invalid password for subject '" + mySubjectName + "'");
 	
-    if (! toDecrypt.size())
-        throw DecryptionFailed("KeyonaSubject|decryptBySubject(): No data supplied to be decrypted!");
+   //if (! toDecrypt.size())
+     //   throw DecryptionFailed("KeyonaSubject|decryptBySubject(): No data supplied to be decrypted!");
 
     debug << "KeyonaSubject|decryptBySubject(): Updating subject's last login with current system time" << endl;
     KeyronaDate myCurrentSystemTime;
