@@ -32,14 +32,56 @@ int main(void) {
 	init();
 	init_dc_com();
 
+
+//	TCCR1A = (1<<COM1A1) | (1<<WGM10);
+//	TCCR1B = (1<<WGM12) | 1;
+	
+	DDRB |= (1<<PB5);
+	
+	int16_t x, y;
+	
+	
+	int16_t ist, soll, diff, olddiff=0,  p, d, out = 0;
+	int32_t i = 0;
+	
+	
+	while(1){
+		for(x=1024;x>0;x--){
+			soll = x;
+			for(y=0;y<10;y++){
+				ist = analogRead(5);
+				
+				diff = soll-ist;
+				
+				/*
+				p = diff;
+				i += diff;
+				d = diff-olddiff;
+				
+				if(i > (4096l*256l)) i = (4096l*256l);
+				
+				out = p/32 + i/4096 + d/16;
+				
+				if(out > 255) out = 255;
+				if(out < 0) out = 0;
+				*/
+				
+				if(diff > 0) PORTB |=   1<<5;
+				if(diff < 0) PORTB &= ~(1<<5);
+				
+				if(out > 255) out = 255;
+				if(out < 0) out = 0;
+				
+				
+				
+				//OCR1A = out;
+				olddiff = diff;
+			}
+			_delay_ms(10);
+		}	
+	}
+	
 	g_set_draw_color(1);
-
-
-/*	rectangle_t r = {10,10,10,10};	
-	g_draw_rectangle(&r);
-	while(1);
-*/
-
 	g_clear_screen();
 	
 
@@ -56,12 +98,6 @@ int main(void) {
 	init_main_window();
 	
 	
-	TCCR1A = (1<<COM1A1) | (1<<WGM10);
-	TCCR1B = (1<<WGM12) | 1;
-	
-	DDRB |= (1<<PB5);
-	
-	int16_t x, y;
 	
 	
 	
