@@ -1,13 +1,13 @@
-OBJ = main.o can/can.o can/spi.o can_handler.o twi_master/twi_master.o io.o i2c_funktionen.o
+OBJ = main.o can/can.o can/spi.o can_handler.o
 
 # Default values
 OUT           ?= main
-MCU_TARGET    ?= atmega644
+MCU_TARGET    ?= atmega32
 MCU_CC        ?= avr-gcc
 MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall -Winline
-DEFS          ?= -DF_CPU=20000000
+DEFS          ?= -DF_CPU=16000000
 CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -std=c99 -I.
 ASFLAGS	      += -mmcu=avr5
 LDFLAGS        = -Wl,-Map,$(OUT).map

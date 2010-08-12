@@ -5,11 +5,6 @@
 #include "can/can.h"
 #include "can_handler.h"
 #include "can/lap.h"
-#include "twi_master/twi_master.h"
-#include "i2c_funktionen.h"
-#include "io.h"
-
-#include "Bastelcmd.h"
 
 uint8_t myaddr;
 
@@ -24,7 +19,7 @@ extern void can_handler()
 	{
 		if ((rx_msg->addr_dst == myaddr))
 		{
-		PORTB |= _BV(PB0);
+			PORTB ^= _BV(PB0);
 			if (rx_msg->port_dst == PORT_MGT)
 			{
 				switch (rx_msg->data[0])
@@ -41,24 +36,6 @@ extern void can_handler()
 						can_transmit(&msg);
 						break;
 				}
-			}
-			else if (rx_msg->port_dst == PORT_BASTEL)
-			{
-				//save to array
-				switch (rx_msg->data[0]) {
-					case C_SW:
-						if (rx_msg->data[2])
-							sreg |= (1 << rx_msg->data[1]);
-						else
-							sreg &= ~(1 << rx_msg->data[1]);
-						change_shift_reg(sreg);
-						break;
-					case C_PWM:
-						PORTB |= _BV(PB0); //XXX
-						pwm_set(pwm_matrix[rx_msg->data[1]].port, rx_msg->data[2]);
-						break;
-				}
-				//state_to_output();
 			}
 		}
 	}
