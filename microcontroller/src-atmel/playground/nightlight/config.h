@@ -3,8 +3,7 @@
 
 
 // SPI
-#define MC_MOSI    PB3
-#define MC_CLK     PB5
+
 
 // LS20 config
 
@@ -24,24 +23,6 @@
 //#define CAN_INTERRUPT
 #define F_MCP F_CPU
 
-
-#define MEGA8
-
-#ifdef MEGA8
-#	define SPI_PORT PORTB
-#	define SPI_PIN_CS PB0
-#	define SPI_HARDWARE
-#	define SPI_DDR DDRB
-#	define SPI_PIN_SCK PB5
-#	define SPI_PIN_MOSI PB3
-#else
-#	define SPI_PORT PORTB
-#	define SPI_PIN_CS PB4
-#	define SPI_HARDWARE
-#	define SPI_DDR DDRB
-#	define SPI_PIN_SCK PB7
-#	define SPI_PIN_MOSI PB5
-#endif
 
 
 /* ATMega32 / 8*/

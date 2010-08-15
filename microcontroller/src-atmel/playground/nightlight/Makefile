@@ -1,4 +1,4 @@
-OBJ = main.o ls020/glcd.o ls020/ls020.o can/can.o can/spi.o
+OBJ = main.o ls020/glcd.o ls020/ls020.o can/can.o can/spi.o can_handler.o
 
 # Default values
 OUT           ?= image
