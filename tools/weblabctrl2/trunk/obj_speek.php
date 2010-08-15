@@ -20,14 +20,17 @@ class c_speek extends c_content{
     $this->setfile = "";
     $this->setfilecmd = "";
     $this->validmodes=array("text");
-    $this->validvoices=array("cmu_us_bdl_arctic_clunits","cmu_us_clb_arctic_clunits",
-			     "cmu_us_jmk_arctic_clunits","cmu_us_slt_arctic_clunits",
-			     "cmu_us_rms_arctic_clunits","us1_mbrola","don_diphone",
-			     "kal_diphone","ked_diphone","rab_diphone","us2_mbrola",
-			     "us3_mbrola","el_diphone","nitech_us_awb_arctic_hts",
-			     "nitech_us_bdl_arctic_hts","nitech_us_clb_arctic_hts",
-			     "nitech_us_jmk_arctic_hts","nitech_us_rms_arctic_hts",
-			     "nitech_us_slt_arctic_hts");
+    $this->validvoices=array("cmu_us_awb_arctic_clunits", "cmu_us_bdl_arctic_clunits",
+                             "cmu_us_clb_arctic_clunits", "cmu_us_jmk_arctic_clunits",
+                             "cmu_us_rms_arctic_clunits", "cmu_us_slt_arctic_clunits",
+                             "czech_ph", "hy_fi_mv_diphone",
+                             "kal_diphone", "ked_diphone",
+                             "lp_diphone", "nitech_us_awb_arctic_hts",
+                             "nitech_us_bdl_arctic_hts", "nitech_us_clb_arctic_hts",
+                             "nitech_us_jmk_arctic_hts", "nitech_us_rms_arctic_hts",
+                             "nitech_us_slt_arctic_hts", "pc_diphone",
+                             "suo_fi_lj_diphone");
+
     $this->initENV();
     # nothing
   }
