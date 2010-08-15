@@ -1,0 +1,66 @@
+bool MyDlg::SendCommand(int command, int wert1, int wert2, int wert3, int wert4, int wert5)
+{
+   bool ok=true;
+   CString Wert1,Wert2,Wert3,Wert4,Wert5;
+   Wert1.Format("%d",wert1);
+   Wert2.Format("%d",wert2);
+   Wert3.Format("%d",wert3);
+   CString sendstring;
+   CHAR* ccb;
+   CHAR* fccb;
+   //Nest
+   if (command == 1){fccb="N";ccb="T\r";}
+   //Move
+   if (command == 2){fccb="M";sendstring="O "+Wert1+"\r";ccb=sendstring.GetBuffer();}
+   //GripPressure
+   if (command == 3){fccb="G";sendstring="P "+Wert1+","+Wert2+","+Wert3+"\r";ccb=sendstring.GetBuffer();}
+   //GripClose
+   if (command == 4){fccb="G";ccb="O\r";}
+   //GripOpen
+   if (command == 5){fccb="G";ccb="C\r";}
+   //Speed
+   if (command == 6)
+   {
+      fccb="S";
+      sendstring="P "+Wert1+"\r";
+      ccb=sendstring.GetBuffer();
+      m_speed.SetPos(wert1);
+   }
+   //Reset
+   if (command == 20){fccb="R";ccb="S\r";}
+   //Senden über Com Port
+   int timeout=robotimeout;
+   if (command < 7 || command==20)
+   {
+      DWORD reward;
+      int lang=strlen(ccb);
+      bWriteRC = WriteFile(m_hCom, fccb,1,&iBytesWritten,NULL);
+      Sleep(200);
+      bool fertig=false;
+      while(fertig==false)
+      {
+         GetCommModemStatus(m_hCom,&reward);
+         if (reward & MS_CTS_ON)
+         {
+            fertig=true;
+         }
+         Sleep(1);
+         timeout--;
+         if (timeout < 0){AfxMessageBox("Timeout bei der Kommunikation mit dem Roboter",0,NULL);ok=false;break;}
+      }
+      bWriteRC = WriteFile(m_hCom, ccb,lang,&iBytesWritten,NULL);
+   }
+
+   return ok;
+}
+
+
+please make m_hCom your create handle of your used comport.
+Also use the Comport Settings like I described here for my software.
+Notice the 200ms after FIRST byte !!
+it is very stable, we run about a half year with that.
+
+SW1: 1,2,4,5,6,7,8=Off     3=On
+SW2: 1,3,4,8=Off     2,5,6,7=On
+
+perhaps u can translate the API in Delphi ? don't know ...
