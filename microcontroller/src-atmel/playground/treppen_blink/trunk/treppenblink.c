@@ -117,7 +117,6 @@ void appBoot(void)
   // pullups aktivieren
   PORTB |= (_BV(PB0) | _BV(PB1));
 
-	mtd_init();
 }
 
 /*
@@ -701,23 +700,7 @@ void appLoop_rundown(void)
 volatile static uint16_t adcval[2];
 volatile static uint8_t mtd_state = MTD_STATE_ENABLED;
 volatile static uint8_t val_new = 0;
-volatile static uint16_t mtd_treshold;
 
-void mtd_init()
-{
-	mtd_treshold = 0;
-//	mtd_treshold += eeprom_read_byte (MTD_EEPROM_BYTE);
-	mtd_treshold = 10;
-	mtd_enable();
-}
-
-uint8_t mtd_get_treshold()
-{
-	if (mtd_treshold > 0xff)
-		return 0xff;
-
-	return mtd_treshold & 0xff;
-}
 
 Tuint16 filter (Tuint08 in_idx, Tuint16 in_val)
 {
@@ -725,11 +708,11 @@ Tuint16 filter (Tuint08 in_idx, Tuint16 in_val)
 	static Tuint08 init_done = 0;
 	int32_t delta[2];
 
-	if (init_done != 0x03)
+	if (init_done != 0x01)
 	{
 		fval[in_idx] = in_val * 65536;
 		init_done |= (0x01 << in_idx);
-		return 0xffff;
+		return 0x00;
 	}
 	delta[in_idx] = ((in_val * 65536) - fval[in_idx]);
 	fval[in_idx] += delta[in_idx] / 1024;
@@ -741,6 +724,7 @@ Tuint16 motion_check()
 {
 	Tuint08 i;
 	Tuint16 tmp;
+
 	
 	for (i = 0; i < 2; i++)
 	{
@@ -749,43 +733,28 @@ Tuint16 motion_check()
 		
 		val_new &= ~(i + 1);
 		tmp = filter (i, adcval[i]);
-		if (tmp > mtd_treshold)
+		if (tmp > 28)
 			return tmp;
 	}
 	return 0;
 }
 
-void mtd_set_treshold (Tuint08 in_t)
-{
-	mtd_treshold = in_t;
-	//eeprom_write_byte(MTD_EEPROM_BYTE, in_t);
-}
-
-void mtd_enable()
-{
-	mtd_state |= MTD_STATE_ENABLED;
-}
-
-void mtd_disable()
-{
-	mtd_state &= ~(MTD_STATE_ENABLED);
-}
 
 #if (preTaskDefined(motiond))
 
 void appLoop_motiond(void)
 {
-  can_message bla = {0x25,0x00,0x00,0x00,0x04, {0x00,0x00,0x00,0x00}};
+  can_message bla = {0x25,0x00,0x00,0x00,0x01, {0x00}};
   Tuint16 foo;
 	while (true)
 	{
-/*		motiond_tick();
+		motiond_tick();
 		foo = motion_check();
 		if (foo)
 		{
 			bla.data[0] = foo;
 			can_transmit(&bla);
-		}*/
+		}
 		taskDelayFromNow(100);
 	}
 }
@@ -794,8 +763,6 @@ void appLoop_motiond(void)
 void motiond_tick()
 {
 	static Tuint08 mystate = 0;
-
-	if (!(mtd_state & MTD_STATE_ENABLED)) return;
 	
 	switch  (mystate)
 	{
@@ -808,18 +775,7 @@ void motiond_tick()
 			
 			val_new |= 0x01;
 			adcval[0] = ADC;
-		break;
-		case 0x02:
-			ADMUX = (_BV(REFS0) | _BV(REFS1) | 0x03); // int. 2.56V ref, left adjust result, channel 2 adc3
-			ADCSRA = (_BV(ADEN) | _BV(ADSC) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0));
-		break;
-		case 0x03:
-			if (ADCSRA & _BV(ADSC)) return; /* conversion is not done yet */
-			
-			val_new |= 0x02;
-			adcval[1] = ADC;
-			mystate = 0;
-		break;
+			/* intentional fallthrough - reset (and don't increment) counter */
 		default:
 			mystate = 0;
 			return;
