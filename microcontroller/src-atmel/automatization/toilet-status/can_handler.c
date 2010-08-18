@@ -39,7 +39,7 @@ extern void can_handler()
 		}
 	} else if (rx_msg->port_dst == 1)
 	{
-		static can_message msg = {0, 0, 0x0, PORT_REMOTE, 6, {0}};
+	//	static can_message msg = {0, 0, 0x0, PORT_REMOTE, 6, {0}};
 		switch (rx_msg->data[0])
 		{
 			case TOILET_SET_RAW:
