@@ -97,11 +97,12 @@ KeyronaTPM::~KeyronaTPM()
     debug << "KeyronaTPM[TrouSerS]|Destructor(): called!" << endl;
 };
 
-void KeyronaTPM::revokeek(string &credential)
+void KeyronaTPM::revokeek()
 {
 	TSS_HCONTEXT hContext;
     TSS_HTPM     hTPM; 
-       
+    string credential;
+    
     if (Tspi_Context_Create(&hContext) != TSS_SUCCESS)
         throw ContextError("KeyronaTPM[TrouSerS]|revokeek(): Could not create context!");
 
@@ -816,7 +817,7 @@ void KeyronaTPM::change_key_auth(string &password, string &password_old, UInt32 
 	TSS_UUID	 hKey_UUID;
 	TSS_UUID     SRK_UUID = TSS_UUID_SRK;
 	BYTE well_known_secret[TPM_SHA1_160_HASH_LEN] = TSS_WELL_KNOWN_SECRET;
-	cout << password << endl << password_old << endl;
+
 	memset (&hKey_UUID, 0, sizeof(hKey_UUID));
 	hKey_UUID.rgbNode[5] = keynum & 0xff;
 	
@@ -874,7 +875,7 @@ void KeyronaTPM::change_key_auth(string &password, string &password_old, UInt32 
         Tspi_Context_Close(hContext);
         throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error binding data. (" + getTSSError(boo) + ")");
     }
-    
+
     if (Tspi_GetPolicyObject(hKey, TSS_POLICY_USAGE, &hKeyPolicyOld) != TSS_SUCCESS )
     {
         Tspi_Context_FreeMemory(hContext, NULL);
@@ -899,7 +900,7 @@ void KeyronaTPM::change_key_auth(string &password, string &password_old, UInt32 
     }
     
     Tspi_Key_LoadKey(hKey, hSRK);
-    
+        
     TSS_RESULT result = Tspi_ChangeAuth( hKey, hSRK, hKeyPolicy );
     if ( result != TSS_SUCCESS )
     {
