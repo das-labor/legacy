@@ -97,35 +97,34 @@ KeyronaTPM::~KeyronaTPM()
     debug << "KeyronaTPM[TrouSerS]|Destructor(): called!" << endl;
 };
 
-void KeyronaTPM::revokeek()
+void KeyronaTPM::revokeek(string &credential)
 {
 	TSS_HCONTEXT hContext;
-    TSS_HTPM     hTPM;
-    string 		 credential="zWie0OFgGUIrF9VjgNQXe5MvxS3Xqq5RBE2BXylLcIIlIl6NpAC2Min5p53iMF4Jfvw7RbwWrVrI6KOgbBqYHmA3GbKgmBtwVNrxQ1zBLUqWmAmIODun3CtsXwkuWHGKKlj9pP79eIa4LAGTD7MjcxxQtv6";
-    
+    TSS_HTPM     hTPM; 
+       
     if (Tspi_Context_Create(&hContext) != TSS_SUCCESS)
-        throw ContextError("KeyronaTPM[TrouSerS]|seal(): Could not create context!");
+        throw ContextError("KeyronaTPM[TrouSerS]|revokeek(): Could not create context!");
 
     if (Tspi_Context_Connect(hContext, NULL) != TSS_SUCCESS)
     {
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw NoTCSD("KeyronaTPM[TrouSerS]|seal(): Could not connect! Is TrouSerS 'tcsd' running?");
+        throw NoTCSD("KeyronaTPM[TrouSerS]|revokeek(): Could not connect! Is TrouSerS 'tcsd' running?");
     }
 
     if (Tspi_Context_GetTpmObject(hContext, &hTPM) != TSS_SUCCESS)
     {
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TPMConnectError("KeyronaTPM[TrouSerS]|seal(): Could not connect to TPM!");
+        throw TPMConnectError("KeyronaTPM[TrouSerS]|revokeek(): Could not connect to TPM!");
     }
     
-    TSS_RESULT supa = Tspi_TPM_RevokeEndorsementKey(hTPM, credential.length(),(BYTE*)credential.c_str());
-    if ( supa != TSS_SUCCESS )
+    TSS_RESULT error0 = Tspi_TPM_RevokeEndorsementKey(hTPM, credential.length(),(BYTE*)credential.c_str());
+    if ( error0 != TSS_SUCCESS )
     {
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error sealing data. (" + getTSSError(supa) + ")");
+        throw TSSError("KeyronaTPM[TrouSerS]|revokeek(): Error revoking Endorsement Key. (" + getTSSError(error0) + ")");
     }
     
     Tspi_Context_FreeMemory(hContext, NULL);
@@ -148,7 +147,6 @@ vector<ByteVector> KeyronaTPM::seal(ByteVector &dataToSeal, int &local)
     BYTE 	     *pcrvalue;
     BYTE 		 *encData;
     
-    cout << local << endl;
 
     if (Tspi_Context_Create(&hContext) != TSS_SUCCESS)
         throw ContextError("KeyronaTPM[TrouSerS]|seal(): Could not create context!");
@@ -223,28 +221,28 @@ vector<ByteVector> KeyronaTPM::seal(ByteVector &dataToSeal, int &local)
 		{
 			Tspi_Context_FreeMemory(hContext, NULL);
 			Tspi_Context_Close(hContext);
-			throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error select PCR Index");
+			throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error can't read PCR value");
 		}
 		
 		if (Tspi_PcrComposite_SetPcrValue (hPCR , pcr_index, pcrvaluelength, pcrvalue ) != TSS_SUCCESS )
 		{
 			Tspi_Context_FreeMemory(hContext, NULL);
 			Tspi_Context_Close(hContext);
-			throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error select PCR Index");
+			throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error can't set PCR value");
 		}
 		pcrvaluelength=NULL;
 		pcrvalue=NULL;
-		cout << "Added PCR" << pcr_index << " digest value to PCR Object for seal" << endl;
+		cout << "Added PCR" << pcr_index << " digest value to PCR Object for sealing" << endl;
 	}
 
     // Data Seal
-    TSS_RESULT result = Tspi_Data_Seal( hEncData, hSRK, dataToSeal.size(), (BYTE*) dataToSeal.toCArray(), hPCR );
-    if ( result != TSS_SUCCESS )
+    TSS_RESULT error0 = Tspi_Data_Seal( hEncData, hSRK, dataToSeal.size(), (BYTE*) dataToSeal.toCArray(), hPCR );
+    if ( error0 != TSS_SUCCESS )
     {
         Tspi_Context_CloseObject(hContext, hEncData);
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error sealing data. (" + getTSSError(result) + ")");
+        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error sealing data. (" + getTSSError(error0) + ")");
     }
 
     if ( Tspi_GetAttribData(hEncData, TSS_TSPATTRIB_ENCDATA_BLOB, TSS_TSPATTRIB_ENCDATABLOB_BLOB, &encLen, &encData) != TSS_SUCCESS)
@@ -259,7 +257,6 @@ vector<ByteVector> KeyronaTPM::seal(ByteVector &dataToSeal, int &local)
     ByteVector sealedData((UInt8*)encData, encLen);
 
     vector<ByteVector> myData;
-    //myData.push_back(trousers);
     myData.push_back(sealedData);
 
     Tspi_Context_CloseObject(hContext, hEncData);
@@ -276,9 +273,6 @@ vector<ByteVector> KeyronaTPM::seal(ByteVector &dataToSeal, int &local)
 
 ByteVector KeyronaTPM::unseal(vector<ByteVector> &dataToUnseal)
 {
-    //if (trousers != dataToUnseal[0])
-       // throw NotImplemented("KeyronaTPM[TrouSerS]|unseal(): Supplied data are not valid TrouSerS objects!");
-
     ByteVector   sealedData = dataToUnseal[0];
     TSS_HCONTEXT hContext;
     TSS_HTPM     hTPM;
@@ -332,9 +326,8 @@ ByteVector KeyronaTPM::unseal(vector<ByteVector> &dataToUnseal)
         throw TSSError("KeyronaTPM[TrouSerS]|unseal(): Error loading SRK key object.");
     }
 
-    /* Don't create a new policy for the SRK's secret, just use the context's
-     * default policy */
-  if ( Tspi_GetPolicyObject(hSRK, TSS_POLICY_USAGE, &hPolicy) != TSS_SUCCESS)
+    
+    if ( Tspi_GetPolicyObject(hSRK, TSS_POLICY_USAGE, &hPolicy) != TSS_SUCCESS)
     {
         Tspi_Context_CloseObject(hContext, hEncData);
         Tspi_Context_FreeMemory(hContext, NULL);
@@ -351,13 +344,13 @@ ByteVector KeyronaTPM::unseal(vector<ByteVector> &dataToUnseal)
     }
     
     // Data Unseal
-    TSS_RESULT result = Tspi_Data_Unseal(hEncData, hSRK, &plainLen, &plainData);
-    if ( result != TSS_SUCCESS )
+    TSS_RESULT error0 = Tspi_Data_Unseal(hEncData, hSRK, &plainLen, &plainData);
+    if ( error0 != TSS_SUCCESS )
     {
         Tspi_Context_CloseObject(hContext, hEncData);
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|unseal(): Error unsealing data. (" + getTSSError(result) + ")");
+        throw TSSError("KeyronaTPM[TrouSerS]|unseal(): Error unsealing data. (" + getTSSError(error0) + ")");
     }
 
     debug << "KeyronaTPM[TrouSerS]|unseal(): Successfully unsealed data." << endl;
@@ -387,20 +380,20 @@ ByteVector KeyronaTPM::bind(ByteVector &dataToBind, UInt32 &bindkeynum)
 	hBindKey_UUID.rgbNode[5] = bindkeynum & 0xff;
 
     if (Tspi_Context_Create(&hContext) != TSS_SUCCESS)
-        throw ContextError("KeyronaTPM[TrouSerS]|unseal(): Could not create context!");
+        throw ContextError("KeyronaTPM[TrouSerS]|bind(): Could not create context!");
 
     if (Tspi_Context_Connect(hContext, NULL) != TSS_SUCCESS)
     {
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw NoTCSD("KeyronaTPM[TrouSerS]|unseal(): Could not connect! Is TrouSerS 'tcsd' running?");
+        throw NoTCSD("KeyronaTPM[TrouSerS]|bind(): Could not connect! Is TrouSerS 'tcsd' running?");
     }
 
     if (Tspi_Context_GetTpmObject(hContext, &hTPM) != TSS_SUCCESS)
     {
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TPMConnectError("KeyronaTPM[TrouSerS]|unseal(): Could not connect to TPM!");
+        throw TPMConnectError("KeyronaTPM[TrouSerS]|bind(): Could not connect to TPM!");
     }
     
     // create hEncData
@@ -408,7 +401,7 @@ ByteVector KeyronaTPM::bind(ByteVector &dataToBind, UInt32 &bindkeynum)
     {
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error creating data object.");
+        throw TSSError("KeyronaTPM[TrouSerS]|bind(): Error creating data object.");
     }      
     // Load SRK by UUID
     if (Tspi_Context_LoadKeyByUUID( hContext, TSS_PS_TYPE_SYSTEM, SRK_UUID, &hSRK ) != TSS_SUCCESS )
@@ -416,32 +409,32 @@ ByteVector KeyronaTPM::bind(ByteVector &dataToBind, UInt32 &bindkeynum)
         Tspi_Context_CloseObject(hContext, hEncData);
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|unseal(): Error loading SRK key object.");
+        throw TSSError("KeyronaTPM[TrouSerS]|bind(): Error loading SRK key object.");
     }
 	// Get Key by UUID
-	TSS_RESULT boo = Tspi_Context_GetKeyByUUID( hContext, TSS_PS_TYPE_SYSTEM, hBindKey_UUID, &hBindKey);
-	if( boo != TSS_SUCCESS )
+	TSS_RESULT error0 = Tspi_Context_GetKeyByUUID( hContext, TSS_PS_TYPE_SYSTEM, hBindKey_UUID, &hBindKey);
+	if( error0 != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error binding data. (" + getTSSError(boo) + ")");
+        throw TSSError("KeyronaTPM[TrouSerS]|bind(): Error get Key by UUID. (" + getTSSError(error0) + ")");
     }
 	// Load Key by UUID
-    TSS_RESULT blub2 = Tspi_Key_LoadKey(hBindKey, hSRK);
-	if( blub2 != TSS_SUCCESS )
+    TSS_RESULT error1 = Tspi_Key_LoadKey(hBindKey, hSRK);
+	if( error1 != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error binding data. (" + getTSSError(blub2) + ")");
+        throw TSSError("KeyronaTPM[TrouSerS]|bind(): Error load Key by UUID. (" + getTSSError(error1) + ")");
     }
 	// Data Bind 
-    TSS_RESULT result = Tspi_Data_Bind( hEncData, hBindKey, dataToBind.size(), (BYTE*) dataToBind.toCArray());
-    if ( result != TSS_SUCCESS )
+    TSS_RESULT error2 = Tspi_Data_Bind( hEncData, hBindKey, dataToBind.size(), (BYTE*) dataToBind.toCArray());
+    if ( error2 != TSS_SUCCESS )
     {
         Tspi_Context_CloseObject(hContext, hEncData);
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error binding data. (" + getTSSError(result) + ")");
+        throw TSSError("KeyronaTPM[TrouSerS]|bind(): Error binding data. (" + getTSSError(error2) + ")");
     }
 
     if ( Tspi_GetAttribData(hEncData, TSS_TSPATTRIB_ENCDATA_BLOB, TSS_TSPATTRIB_ENCDATABLOB_BLOB, &encLen, &encData) != TSS_SUCCESS)
@@ -449,7 +442,7 @@ ByteVector KeyronaTPM::bind(ByteVector &dataToBind, UInt32 &bindkeynum)
         Tspi_Context_CloseObject(hContext, hEncData);
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error retrieving binded data.");
+        throw TSSError("KeyronaTPM[TrouSerS]|bind(): Error retrieving binded data.");
     }
     
     if (Tspi_Key_UnloadKey(hBindKey) != TSS_SUCCESS )
@@ -457,23 +450,17 @@ ByteVector KeyronaTPM::bind(ByteVector &dataToBind, UInt32 &bindkeynum)
         Tspi_Context_CloseObject(hContext, hEncData);
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error retrieving binded data.");
+        throw TSSError("KeyronaTPM[TrouSerS]|bind(): Error unload Bind Key.");
     }
     
-    debug << "KeyronaTPM[TrouSerS]|seal(): Successfully sealed data." << endl;
-    ByteVector blub((UInt8*)encData, encLen);
-	
-    /*vector<ByteVector> myData;
-    myData.push_back(trousers);
-    myData.push_back(bindedData);*/
-
+    debug << "KeyronaTPM[TrouSerS]|bind(): Successfully binded data." << endl;
+    ByteVector bindedData((UInt8*)encData, encLen);
 
     Tspi_Context_CloseObject(hContext, hEncData);
     Tspi_Context_FreeMemory(hContext, NULL);
     Tspi_Context_Close(hContext);
    
-    return blub;
-    
+    return bindedData;
 };
 
 ByteVector KeyronaTPM::unbind(ByteVector &dataToUnbind, UInt32 &bindkeynum, string &password)
@@ -496,20 +483,20 @@ ByteVector KeyronaTPM::unbind(ByteVector &dataToUnbind, UInt32 &bindkeynum, stri
 	hBindKey_UUID.rgbNode[5] = bindkeynum & 0xff;
 	
     if (Tspi_Context_Create(&hContext) != TSS_SUCCESS)
-        throw ContextError("KeyronaTPM[TrouSerS]|unseal(): Could not create context!");
+        throw ContextError("KeyronaTPM[TrouSerS]|unbind(): Could not create context!");
 
     if (Tspi_Context_Connect(hContext, NULL) != TSS_SUCCESS)
     {
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw NoTCSD("KeyronaTPM[TrouSerS]|unseal(): Could not connect! Is TrouSerS 'tcsd' running?");
+        throw NoTCSD("KeyronaTPM[TrouSerS]|unbind(): Could not connect! Is TrouSerS 'tcsd' running?");
     }
 
     if (Tspi_Context_GetTpmObject(hContext, &hTPM) != TSS_SUCCESS)
     {
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TPMConnectError("KeyronaTPM[TrouSerS]|unseal(): Could not connect to TPM!");
+        throw TPMConnectError("KeyronaTPM[TrouSerS]|unbind(): Could not connect to TPM!");
     }
 
     // create hEncData
@@ -517,7 +504,7 @@ ByteVector KeyronaTPM::unbind(ByteVector &dataToUnbind, UInt32 &bindkeynum, stri
     {
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|unseal(): Error creating data object.");
+        throw TSSError("KeyronaTPM[TrouSerS]|unbind(): Error creating data object.");
     }
     // Load SRK
     if (Tspi_Context_LoadKeyByUUID( hContext, TSS_PS_TYPE_SYSTEM, SRK_UUID, &hSRK ) != TSS_SUCCESS )
@@ -525,7 +512,7 @@ ByteVector KeyronaTPM::unbind(ByteVector &dataToUnbind, UInt32 &bindkeynum, stri
         Tspi_Context_CloseObject(hContext, hEncData);
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|unseal(): Error loading SRK key object.");
+        throw TSSError("KeyronaTPM[TrouSerS]|unbind(): Error loading SRK key object.");
     }
 
     if ( Tspi_GetPolicyObject(hSRK, TSS_POLICY_USAGE, &hPolicy) != TSS_SUCCESS)
@@ -533,7 +520,7 @@ ByteVector KeyronaTPM::unbind(ByteVector &dataToUnbind, UInt32 &bindkeynum, stri
         Tspi_Context_CloseObject(hContext, hEncData);
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|unseal(): Error creating policy object!");
+        throw TSSError("KeyronaTPM[TrouSerS]|unbind(): Error creating policy object!");
     }
 	// Set SRK secret
     if (Tspi_Policy_SetSecret(hPolicy, TSS_SECRET_MODE_SHA1, TPM_SHA1_160_HASH_LEN, well_known_secret) != TSS_SUCCESS)
@@ -541,7 +528,7 @@ ByteVector KeyronaTPM::unbind(ByteVector &dataToUnbind, UInt32 &bindkeynum, stri
         Tspi_Context_CloseObject(hContext, hEncData);
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|unseal(): Error setting SRK secret!");
+        throw TSSError("KeyronaTPM[TrouSerS]|unbind(): Error setting SRK secret!");
     }
 
     if ( Tspi_SetAttribData(hEncData, TSS_TSPATTRIB_ENCDATA_BLOB, TSS_TSPATTRIB_ENCDATABLOB_BLOB, dataToUnbind.size(), (BYTE*) dataToUnbind.toCArray()) != TSS_SUCCESS)
@@ -549,22 +536,22 @@ ByteVector KeyronaTPM::unbind(ByteVector &dataToUnbind, UInt32 &bindkeynum, stri
         Tspi_Context_CloseObject(hContext, hEncData);
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|unseal(): Error creating sealed data object.");
+        throw TSSError("KeyronaTPM[TrouSerS]|unbind(): Error creating binded data object.");
     }
 	// Get Key by UUID
-    TSS_RESULT boo = Tspi_Context_GetKeyByUUID( hContext, TSS_PS_TYPE_SYSTEM, hBindKey_UUID, &hBindKey);
-	if( boo != TSS_SUCCESS )
+    TSS_RESULT error0 = Tspi_Context_GetKeyByUUID( hContext, TSS_PS_TYPE_SYSTEM, hBindKey_UUID, &hBindKey);
+	if( error0 != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error binding data. (" + getTSSError(boo) + ")");
+        throw TSSError("KeyronaTPM[TrouSerS]|unbind(): Error get Key by UUID. (" + getTSSError(error0) + ")");
     }
     
     if (Tspi_GetPolicyObject(hBindKey, TSS_POLICY_USAGE, &hBindKeyPolicy) != TSS_SUCCESS )
     {
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error loading TPM policy object.");
+        throw TSSError("KeyronaTPM[TrouSerS]|unbind(): Error loading policy object.");
     }
 
     // SetPolicySecret
@@ -572,24 +559,24 @@ ByteVector KeyronaTPM::unbind(ByteVector &dataToUnbind, UInt32 &bindkeynum, stri
     {
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error loading TPM policy object.");
+        throw TSSError("KeyronaTPM[TrouSerS]|unbind(): Error set policy secret.");
     }
 	// Load Key
-    TSS_RESULT blub2 = Tspi_Key_LoadKey(hBindKey, hSRK);
-	if( blub2 != TSS_SUCCESS )
+    TSS_RESULT error1 = Tspi_Key_LoadKey(hBindKey, hSRK);
+	if( error1 != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error binding data. (" + getTSSError(blub2) + ")");
+        throw TSSError("KeyronaTPM[TrouSerS]|unbind(): Error loading Key. (" + getTSSError(error1) + ")");
     }
 	// Data Unbind
-	TSS_RESULT result = Tspi_Data_Unbind(hEncData, hBindKey, &plainLen, &plainData);
-    if ( result != TSS_SUCCESS )
+	TSS_RESULT error2 = Tspi_Data_Unbind(hEncData, hBindKey, &plainLen, &plainData);
+    if ( error2 != TSS_SUCCESS )
     {
         Tspi_Context_CloseObject(hContext, hEncData);
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|unseal(): Error unsealing data. (" + getTSSError(result) + ")");
+        throw TSSError("KeyronaTPM[TrouSerS]|unbind(): Error unbind data. (" + getTSSError(error2) + ")");
     }
     
     if (Tspi_Key_UnloadKey(hBindKey) != TSS_SUCCESS )
@@ -597,10 +584,10 @@ ByteVector KeyronaTPM::unbind(ByteVector &dataToUnbind, UInt32 &bindkeynum, stri
         Tspi_Context_CloseObject(hContext, hEncData);
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error retrieving binded data.");
+        throw TSSError("KeyronaTPM[TrouSerS]|unbind(): Error unload Key.");
     }
 
-    debug << "KeyronaTPM[TrouSerS]|unseal(): Successfully unsealed data." << endl;
+    debug << "KeyronaTPM[TrouSerS]|unbind(): Successfully unbinded data." << endl;
     ByteVector unbindedData((UInt8*)plainData, plainLen);
 
     Tspi_Context_CloseObject(hContext, hEncData);
@@ -608,7 +595,6 @@ ByteVector KeyronaTPM::unbind(ByteVector &dataToUnbind, UInt32 &bindkeynum, stri
     Tspi_Context_Close(hContext);
 
     return unbindedData;
-
 };
 
 ByteVector KeyronaTPM::create_key(string &password, UInt32 &keynum, string &type)
@@ -627,83 +613,85 @@ ByteVector KeyronaTPM::create_key(string &password, UInt32 &keynum, string &type
     UINT32		 flags = NULL;
 
     //Choose between Bind, Storage or Legacy Key. 
-//    if(type == "subject") {
-							flags = TSS_KEY_TYPE_BIND | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE | TSS_KEY_AUTHORIZATION;
-//	}
-//	if( type == "group" ) {				
-//							flags = TSS_KEY_TYPE_STORAGE | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE;
-//	}
+    if(type == "subject") 
+    {
+		flags = TSS_KEY_TYPE_BIND | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE | TSS_KEY_AUTHORIZATION;
+	}
+	if( type == "group" ) 
+	{				
+		flags = TSS_KEY_TYPE_STORAGE | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE;
+	}
 
 	// Allocate Key UUID number.
 	memset (&hKey_UUID, 0, sizeof(hKey_UUID));
 	hKey_UUID.rgbNode[5] = keynum & 0xff;
 
     if (Tspi_Context_Create(&hContext) != TSS_SUCCESS)
-        throw ContextError("KeyronaTPM[TrouSerS]|unseal(): Could not create context!");
+        throw ContextError("KeyronaTPM[TrouSerS]|create_key(): Could not create context!");
 
     if (Tspi_Context_Connect(hContext, NULL) != TSS_SUCCESS)
     {
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw NoTCSD("KeyronaTPM[TrouSerS]|unseal(): Could not connect! Is TrouSerS 'tcsd' running?");
+        throw NoTCSD("KeyronaTPM[TrouSerS]|create_key(): Could not connect! Is TrouSerS 'tcsd' running?");
     }
 
     if (Tspi_Context_GetTpmObject(hContext, &hTPM) != TSS_SUCCESS)
     {
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TPMConnectError("KeyronaTPM[TrouSerS]|unseal(): Could not connect to TPM!");
+        throw TPMConnectError("KeyronaTPM[TrouSerS]|create_key(): Could not connect to TPM!");
     }
     
-	TSS_RESULT shit = Tspi_Context_LoadKeyByUUID( hContext, TSS_PS_TYPE_SYSTEM, SRK_UUID, &hSRK );
-	if( shit != TSS_SUCCESS )
+	TSS_RESULT error0 = Tspi_Context_LoadKeyByUUID( hContext, TSS_PS_TYPE_SYSTEM, SRK_UUID, &hSRK );
+	if( error0 != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error binding data. (" + getTSSError(shit) + ")");
+        throw TSSError("KeyronaTPM[TrouSerS]|create_key(): Error load Key by UUID. (" + getTSSError(error0) + ")");
     }
 
     if ( Tspi_GetPolicyObject(hSRK, TSS_POLICY_USAGE, &hPolicy) != TSS_SUCCESS)
     {
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|unseal(): Error creating policy object!");
+        throw TSSError("KeyronaTPM[TrouSerS]|create_key(): Error creating policy object!");
     }
 
-    TSS_RESULT gg = Tspi_Policy_SetSecret(hPolicy, TSS_SECRET_MODE_SHA1, TPM_SHA1_160_HASH_LEN, well_known_secret);
-	if( gg != TSS_SUCCESS )
+    TSS_RESULT error1 = Tspi_Policy_SetSecret(hPolicy, TSS_SECRET_MODE_SHA1, TPM_SHA1_160_HASH_LEN, well_known_secret);
+	if( error1 != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error binding data. (" + getTSSError(gg) + ")");
+        throw TSSError("KeyronaTPM[TrouSerS]|create_key(): Error set policy secret. (" + getTSSError(error1) + ")");
     }
     
     if (Tspi_Context_CreateObject( hContext, TSS_OBJECT_TYPE_RSAKEY, flags, &hKey ) != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-       throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error create AIK object.");
+       throw TSSError("KeyronaTPM[TrouSerS]|create_key(): Error create Key object.");
     }
 	
 	if (Tspi_SetAttribUint32(hKey, TSS_TSPATTRIB_KEY_INFO, TSS_TSPATTRIB_KEYINFO_ENCSCHEME, TSS_ES_RSAESOAEP_SHA1_MGF1) != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error create AIK object.");
+        throw TSSError("KeyronaTPM[TrouSerS]|create_key(): Error set attributes.");
     }
 	
     if (Tspi_Context_CreateObject( hContext, TSS_OBJECT_TYPE_POLICY, TSS_POLICY_USAGE, &hKeyPolicy ) != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error create AIK policy object.");
+        throw TSSError("KeyronaTPM[TrouSerS]|create_key(): Error create policy object.");
     }
 	
 	if (Tspi_Policy_AssignToObject( hKeyPolicy, hKey ) != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error assign AIK to AIK policy Object.");
+        throw TSSError("KeyronaTPM[TrouSerS]|create_key(): Error assign policy Object.");
     }
 
     // SetPolicySecret
@@ -711,40 +699,39 @@ ByteVector KeyronaTPM::create_key(string &password, UInt32 &keynum, string &type
     {
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error loading TPM policy object.");
+        throw TSSError("KeyronaTPM[TrouSerS]|create_key(): Error set policy secret.");
     }
 	
-    TSS_RESULT blub = Tspi_Key_CreateKey(hKey, hSRK, NULL);
-	if( blub != TSS_SUCCESS )
+    TSS_RESULT error2 = Tspi_Key_CreateKey(hKey, hSRK, NULL);
+	if( error2 != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error binding data. (" + getTSSError(blub) + ")");
+        throw TSSError("KeyronaTPM[TrouSerS]|create_key(): Error create key. (" + getTSSError(error2) + ")");
     }
     
-    TSS_RESULT blub3 = Tspi_Context_RegisterKey(hContext, hKey, TSS_PS_TYPE_SYSTEM, hKey_UUID, TSS_PS_TYPE_SYSTEM, SRK_UUID);
-    if( blub3 != TSS_SUCCESS )
+    TSS_RESULT error4 = Tspi_Context_RegisterKey(hContext, hKey, TSS_PS_TYPE_SYSTEM, hKey_UUID, TSS_PS_TYPE_SYSTEM, SRK_UUID);
+    if( error4 != TSS_SUCCESS )
 	{
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error binding data. (" + getTSSError(blub3) + ")");
+        throw TSSError("KeyronaTPM[TrouSerS]|create_key(): Error register key. (" + getTSSError(error4) + ")");
     }
-    /*
+
+/*
 	Tspi_Key_LoadKey(hKey, hSRK);
 	
 	Tspi_GetAttribData (hKey, TSS_TSPATTRIB_KEY_INFO, NULL, &blobLen, &blob);
 		
 	Tspi_Key_UnloadKey(hKey);
-	
 */	
+	
 	ByteVector keyData;
-
 	
     Tspi_Context_FreeMemory(hContext, NULL);
     Tspi_Context_Close(hContext);
-	cout << "shit" << endl;
-	return keyData;
 
+	return keyData;
 };
 
 ByteVector KeyronaTPM::get_keys_by_uuid()
@@ -756,28 +743,28 @@ ByteVector KeyronaTPM::get_keys_by_uuid()
 	
 	
 	if (Tspi_Context_Create(&hContext) != TSS_SUCCESS)
-		throw ContextError("KeyronaTPM[TrouSerS]|unseal(): Could not create context!");
+		throw ContextError("KeyronaTPM[TrouSerS]|get_keys_by_uuid(): Could not create context!");
 
     if (Tspi_Context_Connect(hContext, NULL) != TSS_SUCCESS)
     {
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw NoTCSD("KeyronaTPM[TrouSerS]|unseal(): Could not connect! Is TrouSerS 'tcsd' running?");
+        throw NoTCSD("KeyronaTPM[TrouSerS]|get_keys_by_uuid(): Could not connect! Is TrouSerS 'tcsd' running?");
     }
 
     if (Tspi_Context_GetTpmObject(hContext, &hTPM) != TSS_SUCCESS)
     {
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TPMConnectError("KeyronaTPM[TrouSerS]|unseal(): Could not connect to TPM!");
+        throw TPMConnectError("KeyronaTPM[TrouSerS]|get_keys_by_uuid(): Could not connect to TPM!");
     }
     
-    TSS_RESULT blub = Tspi_Context_GetRegisteredKeysByUUID2(hContext, TSS_PS_TYPE_SYSTEM, NULL, &keyblobsize, &keyblob);
-	if ( blub != TSS_SUCCESS )
+    TSS_RESULT error0 = Tspi_Context_GetRegisteredKeysByUUID2(hContext, TSS_PS_TYPE_SYSTEM, NULL, &keyblobsize, &keyblob);
+	if ( error0 != TSS_SUCCESS )
     {
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
-        throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error sealing data. (" + getTSSError(blub) + ")");
+        throw TSSError("KeyronaTPM[TrouSerS]|get_keys_by_uuid(): Error get registered keys by UUID. (" + getTSSError(error0) + ")");
     }
     
     	for( UInt32 i = 0; i<keyblobsize; i++) {
@@ -805,7 +792,8 @@ printf("Version      : %hhu.%hhu.%hhu.%hhu\n", keyblob[i].versionInfo.bMajor, ke
 
 	/* custom additions below */
 	printf("Loaded?      : %s\n", keyblob[i].fIsLoaded ? "YES" : "NO");
-	printf("\n");	       	}
+	printf("\n");	       	
+	}
     
     ByteVector keydata((UInt8*)keyblob, keyblobsize);
     
