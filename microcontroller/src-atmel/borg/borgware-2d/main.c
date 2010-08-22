@@ -45,5 +45,5 @@ int main (void){
 
 	display_loop();
 
-
+	return 0;
 }
