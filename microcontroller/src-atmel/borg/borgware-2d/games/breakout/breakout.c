@@ -59,38 +59,43 @@ void borg_breakout(uint8_t demomode)
 	ball_spawn_default(&(balls[0]));
 	balls[0].strength = START_LIFES;
 	level_init(level);
+	uint8_t tick_divider = 0;
 	rebound_init();
 
 	while (cycles != 0)
 	{
-		wait(50);
+		wait(25);
 
-		if (demomode)
-			rebound_tick(&balls[0]);
-		else
-			rebound_tick(NULL);
+		if ((tick_divider % 2) || JOYISFIRE)
+			rebound_tick(demomode ? &balls[0] : NULL);
 
-		ball_think(&(balls[0]));
-		playfield_draw();
-		ball_draw(&(balls[0]));
-		if (!balls[0].strength)
+		if (tick_divider % 2)
 		{
-			print_score();
-			break;
-		}
+			ball_think(&(balls[0]));
+			playfield_draw();
+			ball_draw(&(balls[0]));
+			if (!balls[0].strength)
+			{
+				print_score();
+				break;
+			}
 
-		if (!level_getscorediff())
-		{
-			level++;
-			/* respawn ball at rebound position */
-			ball_spawn_default (&(balls[0]));
-			balls[0].strength++;
-			level_init(level);
-			rebound_init();
+			if (!level_getscorediff())
+			{
+				level++;
+				/* respawn ball at rebound position */
+				ball_spawn_default (&(balls[0]));
+				balls[0].strength++;
+				level_init(level);
+				rebound_init();
+			}
 		}
 
 		if (demomode)
 			--cycles;
+
+		// alternate the value of the tick divider
+		tick_divider = tick_divider ? 0 : 1;
 	}
 
 	ignorescore = ignorescore_buffer;
