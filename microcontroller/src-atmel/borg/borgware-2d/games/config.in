@@ -1,19 +1,12 @@
 mainmenu_option next_comment
 comment "Games"
-
-mainmenu_option next_comment
-dep_bool_menu "Tetris" GAME_TETRIS_CORE y $JOYSTICK_SUPPORT
-if [ "$GAME_TETRIS_CORE" = "y" ]; then
-   GAME_TETRIS=y
-   dep_bool "Standard Tetris"     GAME_TETRIS           $GAME_TETRIS_CORE
-   dep_bool "Bastard Tetris"      GAME_BASTET           $GAME_TETRIS_CORE
-   dep_bool "First Person Tetris" GAME_TETRIS_FP        $GAME_TETRIS_CORE
-fi
-endmenu
-
-dep_bool "space invaders"      GAME_SPACE_INVADERS   $JOYSTICK_SUPPORT $RANDOM_SUPPORT
-dep_bool "snake"               GAME_SNAKE            $JOYSTICK_SUPPORT $RANDOM_SUPPORT
-dep_bool "breakout"            GAME_BREAKOUT         $JOYSTICK_SUPPORT $RANDOM_SUPPORT
-
-
+	dep_bool_menu "Tetris" GAME_TETRIS_CORE y $JOYSTICK_SUPPORT $RANDOM_SUPPORT
+	   dep_bool "Standard Tetris"     GAME_TETRIS           $GAME_TETRIS_CORE
+	   dep_bool "Bastard Tetris"      GAME_BASTET           $GAME_TETRIS_CORE
+	   dep_bool "First Person Tetris" GAME_TETRIS_FP        $GAME_TETRIS_CORE
+	endmenu
+	
+	dep_bool "Space Invaders" GAME_SPACE_INVADERS $JOYSTICK_SUPPORT $RANDOM_SUPPORT
+	dep_bool "Snake"          GAME_SNAKE          $JOYSTICK_SUPPORT $RANDOM_SUPPORT
+	dep_bool "Breakout"       GAME_BREAKOUT       $JOYSTICK_SUPPORT $RANDOM_SUPPORT
 endmenu
