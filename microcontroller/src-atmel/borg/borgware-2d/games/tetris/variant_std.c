@@ -16,9 +16,9 @@
 #include "variants.h"
 #include "tetris_main.h"
 #include "piece.h"
-#include "playfield.h"
+#include "bucket.h"
 #include "highscore.h"
-#include "orientation.h"
+#include "bearing.h"
 #include "input.h"
 
 
@@ -69,12 +69,12 @@ const tetris_variant_t tetrisStdVariant =
 	&tetris_std_getPreviewPiece,
 	&tetris_std_getHighscoreIndex,
 	&tetris_std_setLastInput,
-	&tetris_std_getOrientation
+	&tetris_std_getBearing
 };
 #endif
 
 
-void *tetris_std_construct(tetris_playfield_t *pPl)
+void *tetris_std_construct(tetris_bucket_t *pBucket)
 {
 	tetris_standard_variant_t *pStdVariant = (tetris_standard_variant_t *)
 			malloc(sizeof(tetris_standard_variant_t));
@@ -150,7 +150,7 @@ void tetris_std_removedLines(void *pVariantData,
 	assert(pVariantData != 0);
 	tetris_standard_variant_t *pStdVariant =
 			(tetris_standard_variant_t *)pVariantData;
-	uint8_t nLines = tetris_playfield_calculateLines(nRowMask);
+	uint8_t nLines = tetris_bucket_calculateLines(nRowMask);
 	pStdVariant->nLines += nLines;
 	pStdVariant->nLevel = ((pStdVariant->nLines / 10) < TETRIS_INPUT_LEVELS) ?
 		(pStdVariant->nLines / 10) : (TETRIS_INPUT_LEVELS - 1);
@@ -263,11 +263,11 @@ void tetris_std_setLastInput(void *pVariantData,
 }
 
 
-tetris_orientation_t tetris_std_getOrientation(void *pVariantData)
+tetris_bearing_t tetris_std_getBearing(void *pVariantData)
 {
 	assert (pVariantData != NULL);
 	tetris_standard_variant_t *pStdVariant =
 			(tetris_standard_variant_t *)pVariantData;
 
-	return pStdVariant->nOrient;
+	return pStdVariant->nBearing;
 }

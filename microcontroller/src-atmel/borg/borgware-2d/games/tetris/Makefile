@@ -3,7 +3,7 @@ TOPDIR = ../..
 
 include $(TOPDIR)/defaults.mk
 
-SRC = tetris_main.c piece.c playfield.c view.c input.c highscore.c
+SRC = tetris_main.c piece.c bucket.c view.c input.c highscore.c
 
 ifeq ($(GAME_TETRIS),y)
   SRC += variant_std.c

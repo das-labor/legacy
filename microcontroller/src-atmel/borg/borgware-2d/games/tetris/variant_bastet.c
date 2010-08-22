@@ -11,8 +11,8 @@
 #include "tetris_main.h"
 #include "input.h"
 #include "piece.h"
-#include "playfield.h"
-#include "orientation.h"
+#include "bucket.h"
+#include "bearing.h"
 #include "input.h"
 
 
@@ -43,12 +43,12 @@ void tetris_bastet_clearColHeights(tetris_bastet_variant_t *pBastet,
  */
 void tetris_bastet_calcActualColHeights(tetris_bastet_variant_t *pBastet)
 {
-	int8_t nWidth = tetris_playfield_getWidth(pBastet->pPlayfield);
-	int8_t nStartRow = tetris_playfield_getHeight(pBastet->pPlayfield) - 1;
-	int8_t nStopRow = tetris_playfield_getFirstMatterRow(pBastet->pPlayfield);
+	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
+	int8_t nStartRow = tetris_bucket_getHeight(pBastet->pBucket) - 1;
+	int8_t nStopRow = tetris_bucket_getFirstMatterRow(pBastet->pBucket);
 	for (int8_t y = nStartRow; y >= nStopRow; --y)
 	{
-		uint16_t nDumpRow = tetris_playfield_getDumpRow(pBastet->pPlayfield, y);
+		uint16_t nDumpRow = tetris_bucket_getDumpRow(pBastet->pBucket, y);
 		uint16_t nColMask = 0x0001;
 		for (int8_t x = 0; x < nWidth; ++x)
 		{
@@ -79,10 +79,10 @@ uint8_t tetris_bastet_calcPredictedColHeights(tetris_bastet_variant_t *pBastet,
                                               int8_t nStopCol)
 {
 	// go through every row and calculate column heights
-	tetris_playfield_iterator_t iterator;
+	tetris_bucket_iterator_t iterator;
 	int8_t nHeight = 1;
-	uint16_t *pDump = tetris_playfield_predictBottomRow(&iterator,
-			pBastet->pPlayfield, pPiece, nDeepestRow, nColumn);
+	uint16_t *pDump = tetris_bucket_predictBottomRow(&iterator,
+			pBastet->pBucket, pPiece, nDeepestRow, nColumn);
 	if (pDump == NULL)
 	{
 		// an immediately returned NULL is caused by a full dump -> low score
@@ -99,7 +99,7 @@ uint8_t tetris_bastet_calcPredictedColHeights(tetris_bastet_variant_t *pBastet,
 			}
 			nColMask <<= 1;
 		}
-		pDump = tetris_playfield_predictNextRow(&iterator);
+		pDump = tetris_bucket_predictNextRow(&iterator);
 		++nHeight;
 	}
 	return 1;
@@ -111,7 +111,8 @@ uint8_t tetris_bastet_calcPredictedColHeights(tetris_bastet_variant_t *pBastet,
  * @param pa the first value to compare
  * @param pb the second value to compare
  */
-int tetris_bastet_qsortCompare(const void *pa, const void *pb)
+int tetris_bastet_qsortCompare(const void *pa,
+                               const void *pb)
 {
 	tetris_bastet_scorepair_t *pScorePairA = (tetris_bastet_scorepair_t *)pa;
 	tetris_bastet_scorepair_t *pScorePairB = (tetris_bastet_scorepair_t *)pb;
@@ -175,19 +176,19 @@ const tetris_variant_t tetrisBastetVariant =
 	&tetris_bastet_getPreviewPiece,
 	&tetris_bastet_getHighscoreIndex,
 	&tetris_bastet_setLastInput,
-	&tetris_bastet_getOrientation
+	&tetris_bastet_getBearing
 };
 
 
-void *tetris_bastet_construct(tetris_playfield_t *pPl)
+void *tetris_bastet_construct(tetris_bucket_t *pBucket)
 {
 	tetris_bastet_variant_t *pBastet =
 		(tetris_bastet_variant_t *) malloc(sizeof(tetris_bastet_variant_t));
 	memset(pBastet, 0, sizeof(tetris_bastet_variant_t));
 
-	pBastet->pPlayfield = pPl;
+	pBastet->pBucket = pBucket;
 
-	int8_t nWidth = tetris_playfield_getWidth(pBastet->pPlayfield);
+	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
 	pBastet->pActualColHeights = (int8_t*) calloc(nWidth, sizeof(int8_t));
 	pBastet->pColHeights = (int8_t*) calloc(nWidth, sizeof(int8_t));
 	tetris_bastet_clearColHeights(pBastet, 0, nWidth - 1);
@@ -230,16 +231,16 @@ int16_t tetris_bastet_evaluateMove(tetris_bastet_variant_t *pBastet,
 	int16_t nScore = -32000;
 
 	// the row where the given piece collides
-	int8_t nDeepestRow = tetris_playfield_predictDeepestRow(pBastet->pPlayfield,
+	int8_t nDeepestRow = tetris_bucket_predictDeepestRow(pBastet->pBucket,
 			pPiece, nColumn);
 
 	// modify score based on complete lines
-	int8_t nLines =	tetris_playfield_predictCompleteLines(pBastet->pPlayfield,
+	int8_t nLines =	tetris_bucket_predictCompleteLines(pBastet->pBucket,
 			pPiece, nDeepestRow, nColumn);
 	nScore += 5000 * nLines;
 
 	// determine a sane range of columns whose heights we want to predict
-	int8_t nWidth = tetris_playfield_getWidth(pBastet->pPlayfield);
+	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
 	int8_t nStartCol, nStopCol;
 	// if lines have been removed, we need to recalculate all column heights
 	if (nLines != 0)
@@ -283,7 +284,7 @@ void tetris_bastet_evaluatePieces(tetris_bastet_variant_t *pBastet)
 {
 	// precache actual column heights
 	tetris_bastet_calcActualColHeights(pBastet);
-	int8_t nWidth = tetris_playfield_getWidth(pBastet->pPlayfield);
+	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
 	tetris_piece_t *pPiece = tetris_piece_construct(TETRIS_PC_LINE,
 			TETRIS_PC_ANGLE_0);
 	for (int8_t nBlock = TETRIS_PC_LINE; nBlock <= TETRIS_PC_Z; ++nBlock)
@@ -371,7 +372,7 @@ void tetris_bastet_removedLines(void *pVariantData,
 	assert(pVariantData != 0);
 	tetris_bastet_variant_t *pBastet =
 			(tetris_bastet_variant_t *)pVariantData;
-	uint8_t nLines = tetris_playfield_calculateLines(nRowMask);
+	uint8_t nLines = tetris_bucket_calculateLines(nRowMask);
 
 	pBastet->nLines += nLines;
 	pBastet->nLevel = ((pBastet->nLines / 10) < TETRIS_INPUT_LEVELS) ?
@@ -473,7 +474,7 @@ void tetris_bastet_setLastInput(void *pVariantData,
 }
 
 
-tetris_orientation_t tetris_bastet_getOrientation(void *pVariantData)
+tetris_bearing_t tetris_bastet_getBearing(void *pVariantData)
 {
-	return TETRIS_ORIENTATION_0;
+	return TETRIS_BEARING_0;
 }

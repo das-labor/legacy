@@ -3,9 +3,9 @@
 
 #include <inttypes.h>
 #include "variants.h"
-#include "playfield.h"
+#include "bucket.h"
 #include "piece.h"
-#include "orientation.h"
+#include "bearing.h"
 #include "input.h"
 
 /***************
@@ -38,7 +38,7 @@ typedef struct tetris_bastet_variant_t
 	uint8_t nLevel;                            /** current level */
 	uint16_t nLines;                           /** number of completed lines */
 	tetris_piece_t *pPreviewPiece;             /** the piece for the preview */
-	tetris_playfield_t *pPlayfield;            /** playfield to be examined */
+	tetris_bucket_t *pBucket;                  /** bucket to be examined */
 	int8_t *pActualColHeights;                 /** actual columns heights */
 	int8_t *pColHeights;                       /** predicted column heights */
 	tetris_bastet_scorepair_t nPieceScores[7]; /** score for every piece */
@@ -53,11 +53,11 @@ const tetris_variant_t tetrisBastetVariant;
  ****************************/
 
 /**
- * constructs a bastet instance for a given playfield
- * @param pPlayfield the playfield to be observed
+ * constructs a bastet instance for a given bucket
+ * @param pBucket the bucket to be observed
  * @return pointer to a newly created bastet instance
  */
-void* tetris_bastet_construct(tetris_playfield_t *pPl);
+void* tetris_bastet_construct(tetris_bucket_t *pBucket);
 
 
 /**
@@ -210,10 +210,20 @@ tetris_piece_t* tetris_bastet_getPreviewPiece(void *pVariantData);
 tetris_highscore_index_t tetris_bastet_getHighscoreIndex(void *pVariantData);
 
 
+/**
+ * informs the bastet instance about the player's last move
+ * @param pVariantData the variant data object we want to modify
+ * @param inCmd player's last command
+ */
 void tetris_bastet_setLastInput(void *pVariantData,
                                 tetris_input_command_t inCmd);
 
 
-tetris_orientation_t tetris_bastet_getOrientation(void *pVariantData);
+/**
+ * returns the bearing which is requested by the Bastet instance (always 0)
+ * @param pVariantData the variant data object we want information from
+ * @return always TETRIS_BEARING_0 as we don't change the bearing in Bastet
+ */
+tetris_bearing_t tetris_bastet_getBearing(void *pVariantData);
 
 #endif /* BAST_H_ */
