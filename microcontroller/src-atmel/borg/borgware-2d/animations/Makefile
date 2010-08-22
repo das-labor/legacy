@@ -33,8 +33,16 @@ ifeq ($(ANIMATION_LTN_ANT),y)
   SRC += ltn_ant.c
 endif
 
+ifeq ($(ANIMATION_BMSCROLLER),y)
+  SRC += bitmapscroller.c
+endif
+
 ifeq ($(ANIMATION_LABORLOGO),y)
   SRC += laborlogo.c
+endif
+
+ifeq ($(ANIMATION_AMPHIBIAN),y)
+  SRC += amphibian.c
 endif
 
 include $(TOPDIR)/rules.mk

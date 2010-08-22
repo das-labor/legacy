@@ -11,6 +11,7 @@
 #include "animations/flyingdots.h"
 #include "animations/breakout_demo.h"
 #include "animations/ltn_ant.h"
+#include "animations/amphibian.h"
 #include "animations/laborlogo.h"
 #include "borg_hw/borg_hw.h"
 #include "can/borg_can.h"
@@ -145,7 +146,13 @@ void display_loop(){
 
 #ifdef ANIMATION_LABORLOGO
 		case 15:
-			laborlogo();;
+			laborlogo();
+			break;
+#endif
+
+#ifdef ANIMATION_AMPHIBIAN
+		case 16:
+			amphibian();
 			break;
 #endif
 
