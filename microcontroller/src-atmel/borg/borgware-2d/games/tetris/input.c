@@ -7,7 +7,7 @@
 #include "../../util.h"
 #include "../../scrolltext/scrolltext.h"
 #include "input.h"
-#include "orientation.h"
+#include "bearing.h"
 
 #include "../../compat/pgmspace.h"
 #define WAIT(ms) wait(ms)
@@ -134,13 +134,13 @@ void tetris_input_chatterProtect(tetris_input_t *pIn,
 
 
 /**
- * remaps tetris commands according to current orientation
- * @param pIn pointer to an input object
+ * remaps tetris commands according to current bearing of the bucket
+ * @param nBearing bearing of the bucket
  * @param nCmd command which has to be mapped
  * @return mapped tetris command
  * @see tetris_input_command_t
  */
-tetris_input_command_t tetris_input_mapCommand(tetris_orientation_t nOrient,
+tetris_input_command_t tetris_input_mapCommand(tetris_bearing_t nBearing,
                                                tetris_input_command_t nCmd)
 {
 	const tetris_input_command_t nMapping[] =
@@ -155,8 +155,8 @@ tetris_input_command_t tetris_input_mapCommand(tetris_orientation_t nOrient,
 		TETRIS_INCMD_RIGHT
 	};
 
-	return (nOrient == TETRIS_ORIENTATION_0) || (nCmd >= TETRIS_INCMD_ROT_CCW) ?
-			nCmd : (nMapping[(nOrient - 1) * 4 + nCmd]);
+	return (nBearing == TETRIS_BEARING_0) || (nCmd >= TETRIS_INCMD_ROT_CCW) ?
+			nCmd : (nMapping[(nBearing - 1) * 4 + nCmd]);
 }
 
 
@@ -225,8 +225,8 @@ tetris_input_command_t tetris_input_queryJoystick(tetris_input_t *pIn)
 	pIn->cmdRawLast = cmdJoystick;
 
 	tetris_input_command_t cmdReturn =
-			tetris_input_mapCommand(pIn->nOrientation, cmdJoystick);
-	// remap command according to current orientation
+			tetris_input_mapCommand(pIn->nBearing, cmdJoystick);
+	// remap command according to current bearing
 	return cmdReturn;
 }
 
@@ -243,7 +243,7 @@ tetris_input_t *tetris_input_construct(void)
 	assert(pIn != NULL);
 
 	pIn->cmdRawLast = pIn->cmdLast = TETRIS_INCMD_NONE;
-	pIn->nOrientation = TETRIS_ORIENTATION_0;
+	pIn->nBearing = TETRIS_BEARING_0;
 	pIn->nLevel = 0xFF;
 	tetris_input_setLevel(pIn, 0);
 	pIn->nLoopCycles = 0;
@@ -440,17 +440,16 @@ void tetris_input_resetDownKeyRepeat(tetris_input_t *pIn)
 }
 
 
-void tetris_input_setOrientation(tetris_input_t *pIn,
-                                 tetris_orientation_t nOrient)
+void tetris_input_setBearing(tetris_input_t *pIn,
+                             tetris_bearing_t nBearing)
 {
-	if (pIn->nOrientation != nOrient)
+	if (pIn->nBearing != nBearing)
 	{
-		pIn->nOrientation = nOrient;
+		pIn->nBearing = nBearing;
 
 		// avoid weird key repeating effects because the currently pressed
-		// button changes its meaning as soon as the orientation changes
-		pIn->cmdLast = tetris_input_mapCommand(pIn->nOrientation,
-				pIn->cmdRawLast);
+		// button changes its meaning as soon as the bearing changes
+		pIn->cmdLast = tetris_input_mapCommand(pIn->nBearing, pIn->cmdRawLast);
 		pIn->nRepeatCount = -TETRIS_INPUT_REPEAT_INITIALDELAY;
 	}
 }

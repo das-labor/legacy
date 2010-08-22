@@ -2,20 +2,20 @@
 #define VARIANTS_H_
 
 #include <inttypes.h>
-#include "playfield.h"
+#include "bucket.h"
 #include "piece.h"
 #include "highscore.h"
-#include "orientation.h"
+#include "bearing.h"
 #include "input.h"
 
 typedef struct tetris_variant_t
 {
 	/**
 	 * constructs a variant data object
-	 * @param pPl related playfield object
+	 * @param pBucket related bucket object
 	 * @return pointer to a newly created variant data object
 	 */
-	void* (*construct)(tetris_playfield_t *pPl);
+	void* (*construct)(tetris_bucket_t *pBucket);
 
 
 	/**
@@ -132,10 +132,19 @@ typedef struct tetris_variant_t
 	 */
 	tetris_highscore_index_t (*getHighscoreIndex)(void *pVariantData);
 
+	/**
+	 * inform the variant about the player's last input
+	 * @param pVariantData the variant data object we want to modify
+	 * @param inCmd the last issued command
+	 */
 	void (*setLastInput)(void *pVariantData,
 			             tetris_input_command_t inCmd);
 
-	tetris_orientation_t (*getOrientation)(void *pVariantData);
+	/**
+	 * retrieves the variant's preferred bearing of the bucket
+	 * @param pVariantData the variant data object we want information from
+	 */
+	tetris_bearing_t (*getBearing)(void *pVariantData);
 }
 tetris_variant_t;
 

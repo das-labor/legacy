@@ -6,7 +6,7 @@
 #include "variants.h"
 #include "highscore.h"
 #include "piece.h"
-#include "orientation.h"
+#include "bearing.h"
 #include "input.h"
 
 

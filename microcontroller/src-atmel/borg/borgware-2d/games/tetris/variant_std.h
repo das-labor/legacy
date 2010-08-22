@@ -5,7 +5,7 @@
 #include "../../autoconf.h"
 #include "variants.h"
 #include "piece.h"
-#include "orientation.h"
+#include "bearing.h"
 #include "input.h"
 
 
@@ -34,7 +34,7 @@ typedef struct tetris_standard_variant_t
 	uint8_t nLevel;                /** current level */
 	uint16_t nLines;               /** number of completed lines */
 	tetris_piece_t *pPreviewPiece; /** the piece intended to be the next one */
-	tetris_orientation_t nOrient;  /** desired orientation of the playfield */
+	tetris_bearing_t nBearing;     /** bearing of the bucket */
 }
 tetris_standard_variant_t;
 
@@ -48,10 +48,10 @@ const tetris_variant_t tetrisStdVariant;
 
 /**
  * constructs a variant data object
- * @param pPl related playfield object
+ * @param pBucket related bucket object
  * @return pointer to a newly created variant data object
  */
-void *tetris_std_construct(tetris_playfield_t *pPl);
+void *tetris_std_construct(tetris_bucket_t *pBucket);
 
 
 /**
@@ -181,6 +181,6 @@ void tetris_std_setLastInput(void *pVariantData,
                              tetris_input_command_t inCmd);
 
 
-tetris_orientation_t tetris_std_getOrientation(void *pVariantData);
+tetris_bearing_t tetris_std_getBearing(void *pVariantData);
 
 #endif /*VARIANT_STD_H_*/

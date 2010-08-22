@@ -2,7 +2,7 @@
 #define INPUT_H_
 
 #include <inttypes.h>
-#include "orientation.h"
+#include "bearing.h"
 
 /**
  * \defgroup TetrisInputDefinesPublic Input: Public constants
@@ -123,9 +123,9 @@ typedef struct tetris_input_t
 	uint8_t nIgnoreCmdCounter[TETRIS_INCMD_NONE];
 
 	/**
-	 * orientation of the direction mapping
+	 * bearing of the bucket (for mapping directions)
 	 */
-	tetris_orientation_t nOrientation;
+	tetris_bearing_t nBearing;
 }
 tetris_input_t;
 
@@ -173,7 +173,7 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 /**
  * modifies time interval of input events
  * @param pIn pointer to an input object
- * @param nLvl desired level (0 <= nLvl <= TETRIS_INPUT_LEVELS - 1)
+ * @param nLvl requested level (0 <= nLvl <= TETRIS_INPUT_LEVELS - 1)
  */
 void tetris_input_setLevel(tetris_input_t *pIn,
                            uint8_t nLvl);
@@ -187,12 +187,12 @@ void tetris_input_resetDownKeyRepeat(tetris_input_t *pIn);
 
 
 /**
- * set the orientation of the direction control mapping
+ * set the bearing for mapping the direction controls
  * @param pIn pointer to an input object
- * @param nOrient desired orientation
+ * @param nBearing requested bearing
  */
-void tetris_input_setOrientation(tetris_input_t *pIn,
-                                 tetris_orientation_t nOrient);
+void tetris_input_setBearing(tetris_input_t *pIn,
+                             tetris_bearing_t nBearing);
 
 /*@}*/
 

@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <inttypes.h>
@@ -8,21 +7,21 @@
 #include "../../joystick/joystick.h"
 #include "../../compat/eeprom.h"
 
-// global array for the highscores
+// global array for the high score
 uint16_t tetris_highscore[TETRIS_HISCORE_END] EEMEM;
 
-// global array for the champions' initials
+// global array for the champion's initials
 uint16_t tetris_highscore_name[TETRIS_HISCORE_END] EEMEM;
 
 
 uint16_t tetris_highscore_inputName(void)
 {
 #ifdef SCROLLTEXT_SUPPORT
-	char pszNick[4], pszTmp[40];
-	uint8_t nOffset;
+	char pszNick[4], pszTmp[26];
+	unsigned int nOffset;
 	uint8_t nPos = 0, nBlink = 0, nDone = 0, nHadfire = 0;
 
-	sprintf(pszNick, "AAA");
+	strncpy(pszNick, "AAA", sizeof(pszNick));
 	while (!nDone)
 	{
 		// we need our own blink interval
@@ -43,10 +42,10 @@ uint16_t tetris_highscore_inputName(void)
 		}
 
 		// construct command for scrolltext and execute
-		sprintf(pszTmp, "x%d+p1#%c#x%d+p1#%c#x%dp1#%c", nOffset,
-				(!nBlink && nPos == 0) ? ' ' : pszNick[0], nOffset - 8,
-				(!nBlink && nPos == 1) ? ' ' : pszNick[1], nOffset - 15,
-				(!nBlink && nPos == 2) ? ' ' : pszNick[2]);
+		snprintf(pszTmp, sizeof(pszTmp), "x%u+p1#%c#x%u+p1#%c#x%up1#%c",
+				nOffset     , (!nBlink && nPos == 0) ? ' ' : pszNick[0],
+				nOffset -  8, (!nBlink && nPos == 1) ? ' ' : pszNick[1],
+				nOffset - 15, (!nBlink && nPos == 2) ? ' ' : pszNick[2]);
 		scrolltext(pszTmp);
 
 		// up and down control current char
@@ -57,7 +56,7 @@ uint16_t tetris_highscore_inputName(void)
 			{
 				pszNick[nPos] = 'A';
 			}
-			if (pszNick[nPos] == '[')
+			else if (pszNick[nPos] == '[')
 			{
 				pszNick[nPos] = '_';
 			}
@@ -69,7 +68,7 @@ uint16_t tetris_highscore_inputName(void)
 			{
 				pszNick[nPos] = '_';
 			}
-			if (pszNick[nPos] == '^')
+			else if (pszNick[nPos] == '^')
 			{
 				pszNick[nPos] = 'Z';
 			}

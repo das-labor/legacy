@@ -6,7 +6,7 @@
 #include "tetris_main.h"
 #include "variants.h"
 #include "piece.h"
-#include "playfield.h"
+#include "bucket.h"
 #include "view.h"
 #include "input.h"
 #include "highscore.h"
@@ -14,7 +14,7 @@
 
 void tetris_main(const tetris_variant_t *const pVariantMethods)
 {
-	// get view dependent dimensions of the playfield
+	// get view dependent dimensions of the bucket
 	int8_t nWidth;
 	int8_t nHeight;
 	tetris_view_getDimensions(&nWidth, &nHeight);
@@ -23,11 +23,11 @@ void tetris_main(const tetris_variant_t *const pVariantMethods)
 	tetris_input_command_t inCmd;
 
 	// prepare data structures that drive the game...
-	tetris_playfield_t *pPl = tetris_playfield_construct(nWidth, nHeight);
-	void *pVariantData = pVariantMethods->construct(pPl);
+	tetris_bucket_t *pBucket = tetris_bucket_construct(nWidth, nHeight);
+	void *pVariantData = pVariantMethods->construct(pBucket);
 	tetris_input_t *pIn = tetris_input_construct();
 	tetris_view_t *pView = tetris_view_construct(pVariantMethods,
-			pVariantData, pPl);
+			pVariantData, pBucket);
 
 	// retrieve highscore
 	tetris_highscore_index_t nHighscoreIndex =
@@ -37,7 +37,7 @@ void tetris_main(const tetris_variant_t *const pVariantMethods)
 	uint16_t nHighscoreName =
 			tetris_highscore_retrieveHighscoreName(nHighscoreIndex);
 
-	// the view only monitors the variant data and the playfield object for the
+	// the view only monitors the variant data and the bucket object for the
 	// game status so we must put information like the next piece or the current
 	// highscore to a place where the view can find it
 	pVariantMethods->setHighscore(pVariantData, nHighscore);
@@ -48,16 +48,16 @@ void tetris_main(const tetris_variant_t *const pVariantMethods)
 	tetris_input_pace_t inPace; // pace flag
 
 	// game loop, runs as long as the game is not over
-	while (tetris_playfield_getStatus(pPl) != TETRIS_PFS_GAMEOVER)
+	while (tetris_bucket_getStatus(pBucket) != TETRIS_BUS_GAMEOVER)
 	{
-		// what we do strongly depends on the status of the playfield
-		switch (tetris_playfield_getStatus(pPl))
+		// what we do strongly depends on the status of the bucket
+		switch (tetris_bucket_getStatus(pBucket))
 		{
-		// the playfield awaits a new piece
-		case TETRIS_PFS_READY:
+		// the bucket awaits a new piece
+		case TETRIS_BUS_READY:
 			pPiece = pVariantMethods->choosePiece(pVariantData);
 			tetris_piece_t *pOldPiece;
-			tetris_playfield_insertPiece(pPl, pPiece, &pOldPiece);
+			tetris_bucket_insertPiece(pBucket, pPiece, &pOldPiece);
 			// destruct old piece (if it exists) since we don't need it anymore
 			if (pOldPiece != NULL)
 			{
@@ -67,11 +67,11 @@ void tetris_main(const tetris_variant_t *const pVariantMethods)
 			break;
 
 		// a piece is hovering and can be controlled by the player
-		case TETRIS_PFS_HOVERING:
-		case TETRIS_PFS_GLIDING:
+		case TETRIS_BUS_HOVERING:
+		case TETRIS_BUS_GLIDING:
 			// if the piece is gliding the input module has to grant us
 			// a minimum amount of time to move it
-			if (tetris_playfield_getStatus(pPl) == TETRIS_PFS_GLIDING)
+			if (tetris_bucket_getStatus(pBucket) == TETRIS_BUS_GLIDING)
 			{
 				inPace = TETRIS_INPACE_GLIDING;
 			}
@@ -98,14 +98,14 @@ void tetris_main(const tetris_variant_t *const pVariantMethods)
 
 			// the piece was pulled down by the almighty gravity
 			case TETRIS_INCMD_GRAVITY:
-				tetris_playfield_advancePiece(pPl);
+				tetris_bucket_advancePiece(pBucket);
 				break;
 
 			// the player has pulled down the piece herself/himself
 			case TETRIS_INCMD_DOWN:
-				tetris_playfield_advancePiece(pPl);
+				tetris_bucket_advancePiece(pBucket);
 				// if the game still runs, reward the player with extra points
-				if (tetris_playfield_getStatus(pPl) != TETRIS_PFS_GAMEOVER)
+				if (tetris_bucket_getStatus(pBucket) != TETRIS_BUS_GAMEOVER)
 				{
 					pVariantMethods->singleDrop(pVariantData, 1);
 				}
@@ -113,38 +113,38 @@ void tetris_main(const tetris_variant_t *const pVariantMethods)
 
 			// player shifted the piece to the left
 			case TETRIS_INCMD_LEFT:
-				tetris_playfield_movePiece(pPl, TETRIS_PFD_LEFT);
+				tetris_bucket_movePiece(pBucket, TETRIS_BUD_LEFT);
 				break;
 
 			// player shifted the piece to the right
 			case TETRIS_INCMD_RIGHT:
-				tetris_playfield_movePiece(pPl, TETRIS_PFD_RIGHT);
+				tetris_bucket_movePiece(pBucket, TETRIS_BUD_RIGHT);
 				break;
 
 			// player rotated the piece clockwise
 			case TETRIS_INCMD_ROT_CW:
-				tetris_playfield_rotatePiece(pPl, TETRIS_PC_ROT_CW);
+				tetris_bucket_rotatePiece(pBucket, TETRIS_PC_ROT_CW);
 				break;
 
 			// player rotated the piece counter clockwise
 			case TETRIS_INCMD_ROT_CCW:
-				tetris_playfield_rotatePiece(pPl, TETRIS_PC_ROT_CCW);
+				tetris_bucket_rotatePiece(pBucket, TETRIS_PC_ROT_CCW);
 				break;
 
 			// the player decided to make an immediate drop
 			case TETRIS_INCMD_DROP:
-				nPieceRow = tetris_playfield_getRow(pPl);
+				nPieceRow = tetris_bucket_getRow(pBucket);
 				// emulate immediate drop
-				while((tetris_playfield_getStatus(pPl) == TETRIS_PFS_GLIDING) ||
-					(tetris_playfield_getStatus(pPl) == TETRIS_PFS_HOVERING))
+				while(tetris_bucket_getStatus(pBucket) == TETRIS_BUS_GLIDING ||
+					tetris_bucket_getStatus(pBucket) == TETRIS_BUS_HOVERING)
 				{
-					tetris_playfield_advancePiece(pPl);
+					tetris_bucket_advancePiece(pBucket);
 				}
 				// if the game still runs, reward the player with extra points
-				if (tetris_playfield_getStatus(pPl) != TETRIS_PFS_GAMEOVER)
+				if (tetris_bucket_getStatus(pBucket) != TETRIS_BUS_GAMEOVER)
 				{
 					pVariantMethods->completeDrop(pVariantData,
-						tetris_playfield_getRow(pPl) - nPieceRow);
+						tetris_bucket_getRow(pBucket) - nPieceRow);
 				}
 				break;
 
@@ -153,24 +153,28 @@ void tetris_main(const tetris_variant_t *const pVariantMethods)
 				break;
 			}
 
+			// inform variant object about the user's last move
 			pVariantMethods->setLastInput(pVariantData, inCmd);
-			tetris_input_setOrientation(pIn,
-					pVariantMethods->getOrientation(pVariantData));
+
+			// inform the input module about the requested bearing of the
+			// variant object
+			tetris_input_setBearing(pIn,
+					pVariantMethods->getBearing(pVariantData));
 
 			break;
 
 		// the piece has irrevocably hit the ground
-		case TETRIS_PFS_DOCKED:
+		case TETRIS_BUS_DOCKED:
 			// avoid accidentally issued "down" commands
 			tetris_input_resetDownKeyRepeat(pIn);
 
 			// remove complete lines (if any)
-			tetris_playfield_removeCompleteLines(pPl);
+			tetris_bucket_removeCompleteLines(pBucket);
 
 			// let the variant object decide how many points the player gets and
 			// whether the level gets changed
 			pVariantMethods->removedLines(pVariantData,
-					tetris_playfield_getRowMask(pPl));
+					tetris_bucket_getRowMask(pBucket));
 			tetris_input_setLevel(pIn, pVariantMethods->getLevel(pVariantData));
 			break;
 
@@ -200,6 +204,6 @@ void tetris_main(const tetris_variant_t *const pVariantMethods)
 	tetris_view_destruct(pView);
 	tetris_input_destruct(pIn);
 	pVariantMethods->destruct(pVariantData);
-	tetris_playfield_destruct(pPl);
+	tetris_bucket_destruct(pBucket);
 	tetris_piece_destruct(pPiece);
 }

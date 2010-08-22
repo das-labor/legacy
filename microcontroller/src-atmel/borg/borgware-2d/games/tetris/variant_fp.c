@@ -11,9 +11,9 @@
 #include "variants.h"
 #include "tetris_main.h"
 #include "piece.h"
-#include "playfield.h"
+#include "bucket.h"
 #include "highscore.h"
-#include "orientation.h"
+#include "bearing.h"
 #include "input.h"
 
 
@@ -62,7 +62,7 @@ const tetris_variant_t tetrisFpVariant =
 	&tetris_std_getPreviewPiece,
 	&tetris_fp_getHighscoreIndex,
 	&tetris_fp_setLastInput,
-	&tetris_std_getOrientation
+	&tetris_std_getBearing
 };
 
 
@@ -85,10 +85,10 @@ void tetris_fp_setLastInput(void *pVariantData,
 
 	if (inCmd == TETRIS_INCMD_ROT_CW)
 	{
-		pStdVariant->nOrient = (pStdVariant->nOrient + 1) % 4;
+		pStdVariant->nBearing = (pStdVariant->nBearing + 1) % 4;
 	}
 	else if (inCmd == TETRIS_INCMD_ROT_CCW)
 	{
-		pStdVariant->nOrient = (pStdVariant->nOrient + 3) % 4;
+		pStdVariant->nBearing = (pStdVariant->nBearing + 3) % 4;
 	}
 }
