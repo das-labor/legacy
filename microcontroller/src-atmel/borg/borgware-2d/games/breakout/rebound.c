@@ -51,7 +51,7 @@ void rebound_draw ()
 		else
 			playfield_set (i, NUM_ROWS-1, sp); /* space */
 	}
-		printf("rpos: %i\n", rbpos);
+//		printf("rpos: %i\n", rbpos);
 }
 
 void rebound_tick(ball_t *ball)
