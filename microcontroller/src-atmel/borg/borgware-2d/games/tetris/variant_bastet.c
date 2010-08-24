@@ -1,12 +1,10 @@
-#include <inttypes.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-
 #include "../../random/prng.h"
 #include "../../compat/pgmspace.h"
 #include "../../menu/menu.h"
-#include "variant_bastet.h"
 #include "variants.h"
 #include "tetris_main.h"
 #include "input.h"
@@ -14,6 +12,14 @@
 #include "bucket.h"
 #include "bearing.h"
 #include "input.h"
+#include "variant_bastet.h"
+
+
+/***********
+ * defines *
+ ***********/
+
+#define TETRIS_BASTET_HEIGHT_FACTOR 5
 
 
 /***************************
@@ -21,31 +27,17 @@
  ***************************/
 
 /**
- * resets the array for the column heights
- * @param pBastet bastet instance whose array should be reset
- * @param nStart start index
- * @param nStop stop index
- */
-void tetris_bastet_clearColHeights(tetris_bastet_variant_t *pBastet,
-                                   int8_t nStart,
-                                   int8_t nStop)
-{
-	for (int i = nStart; i <= nStop; ++i)
-	{
-		pBastet->pColHeights[i] = 0;
-	}
-}
-
-
-/**
- * calculate the actual column heights (without any prediction)
+ * calculate the score impact of every column (without any prediction)
  * @param pBastet bastet instance whose column heights should be calculated
  */
-void tetris_bastet_calcActualColHeights(tetris_bastet_variant_t *pBastet)
+void tetris_bastet_calcActualColumnsScoreImpact(tetris_bastet_variant_t *pBastet)
 {
+	// retrieve sane start and stop values for the column and row indices
 	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
 	int8_t nStartRow = tetris_bucket_getHeight(pBastet->pBucket) - 1;
 	int8_t nStopRow = tetris_bucket_getFirstMatterRow(pBastet->pBucket);
+
+	// calculate the column heights of the actual bucket configuration
 	for (int8_t y = nStartRow; y >= nStopRow; --y)
 	{
 		uint16_t nDumpRow = tetris_bucket_getDumpRow(pBastet->pBucket, y);
@@ -54,10 +46,15 @@ void tetris_bastet_calcActualColHeights(tetris_bastet_variant_t *pBastet)
 		{
 			if ((nDumpRow & nColMask) != 0)
 			{
-				pBastet->pActualColHeights[x] = nStartRow - y + 1;
+				pBastet->pActualColScoreImpact[x] = nStartRow - y + 1;
 			}
 			nColMask <<= 1;
 		}
+	}
+	// calculate the score impact of every column
+	for (int x = 0; x < nWidth; ++x)
+	{
+		pBastet->pActualColScoreImpact[x] *= TETRIS_BASTET_HEIGHT_FACTOR;
 	}
 }
 
@@ -111,8 +108,8 @@ uint8_t tetris_bastet_calcPredictedColHeights(tetris_bastet_variant_t *pBastet,
  * @param pa the first value to compare
  * @param pb the second value to compare
  */
-int tetris_bastet_qsortCompare(const void *pa,
-                               const void *pb)
+int tetris_bastet_qsortCompare(void const *pa,
+                               void const *pb)
 {
 	tetris_bastet_scorepair_t *pScorePairA = (tetris_bastet_scorepair_t *)pa;
 	tetris_bastet_scorepair_t *pScorePairB = (tetris_bastet_scorepair_t *)pb;
@@ -158,7 +155,7 @@ void tetris_bastet(void)
  * construction/destruction *
  ****************************/
 
-const tetris_variant_t tetrisBastetVariant =
+tetris_variant_t const tetrisBastetVariant =
 {
 	&tetris_bastet_construct,
 	&tetris_bastet_destruct,
@@ -189,9 +186,8 @@ void *tetris_bastet_construct(tetris_bucket_t *pBucket)
 	pBastet->pBucket = pBucket;
 
 	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
-	pBastet->pActualColHeights = (int8_t*) calloc(nWidth, sizeof(int8_t));
+	pBastet->pActualColScoreImpact = (int8_t*) calloc(nWidth, sizeof(int8_t));
 	pBastet->pColHeights = (int8_t*) calloc(nWidth, sizeof(int8_t));
-	tetris_bastet_clearColHeights(pBastet, 0, nWidth - 1);
 
 	return pBastet;
 }
@@ -202,9 +198,9 @@ void tetris_bastet_destruct(void *pVariantData)
 	assert(pVariantData != 0);
 	tetris_bastet_variant_t *pBastetVariant =
 			(tetris_bastet_variant_t *)pVariantData;
-	if (pBastetVariant->pActualColHeights != NULL)
+	if (pBastetVariant->pActualColScoreImpact != NULL)
 	{
-		free(pBastetVariant->pActualColHeights);
+		free(pBastetVariant->pActualColScoreImpact);
 	}
 	if (pBastetVariant->pColHeights != NULL)
 	{
@@ -268,11 +264,11 @@ int16_t tetris_bastet_evaluateMove(tetris_bastet_variant_t *pBastet,
 	{
 		if ((x >= nStartCol) && (x <= nStopCol))
 		{
-			nScore -= 5 * pBastet->pColHeights[x];
+			nScore -= TETRIS_BASTET_HEIGHT_FACTOR * pBastet->pColHeights[x];
 		}
 		else
 		{
-			nScore -= 5 * pBastet->pActualColHeights[x];
+			nScore -= pBastet->pActualColScoreImpact[x];
 		}
 	}
 
@@ -283,7 +279,7 @@ int16_t tetris_bastet_evaluateMove(tetris_bastet_variant_t *pBastet,
 void tetris_bastet_evaluatePieces(tetris_bastet_variant_t *pBastet)
 {
 	// precache actual column heights
-	tetris_bastet_calcActualColHeights(pBastet);
+	tetris_bastet_calcActualColumnsScoreImpact(pBastet);
 	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
 	tetris_piece_t *pPiece = tetris_piece_construct(TETRIS_PC_LINE,
 			TETRIS_PC_ANGLE_0);
@@ -295,6 +291,7 @@ void tetris_bastet_evaluatePieces(tetris_bastet_variant_t *pBastet)
 		for (int8_t nAngle = TETRIS_PC_ANGLE_0; nAngle < nAngleCount; ++nAngle)
 		{
 			tetris_piece_setAngle(pPiece, nAngle);
+			tetris_piece_rotate(pPiece, TETRIS_PC_ROT_CW);
 			for (int8_t nCol = -3; nCol < nWidth; ++nCol)
 			{
 				int16_t nScore = tetris_bastet_evaluateMove(pBastet,
@@ -302,8 +299,8 @@ void tetris_bastet_evaluatePieces(tetris_bastet_variant_t *pBastet)
 				nMaxScore = nMaxScore > nScore ? nMaxScore : nScore;
 			}
 		}
-		pBastet->nPieceScores[nBlock].shape = nBlock;
-		pBastet->nPieceScores[nBlock].nScore = nMaxScore;
+		pBastet->nPieceScore[nBlock].shape = nBlock;
+		pBastet->nPieceScore[nBlock].nScore = nMaxScore;
 	}
 	tetris_piece_destruct(pPiece);
 }
@@ -320,11 +317,11 @@ tetris_piece_t* tetris_bastet_choosePiece(void *pVariantData)
 	// perturb score (-2 to +2) to avoid stupid tie handling
 	for (uint8_t i = 0; i < 7; ++i)
 	{
-		pBastet->nPieceScores[i].nScore += random8() % 5 - 2;
+		pBastet->nPieceScore[i].nScore += random8() % 5 - 2;
 	}
 
 	// sort pieces by their score in ascending order
-	qsort(pBastet->nPieceScores, 7, sizeof(tetris_bastet_scorepair_t),
+	qsort(pBastet->nPieceScore, 7, sizeof(tetris_bastet_scorepair_t),
 		&tetris_bastet_qsortCompare);
 
 	// new "preview" piece (AKA "won't give you this one")
@@ -333,18 +330,26 @@ tetris_piece_t* tetris_bastet_choosePiece(void *pVariantData)
 		tetris_piece_destruct(pBastet->pPreviewPiece);
 	}
 	pBastet->pPreviewPiece =
-			tetris_piece_construct(pBastet->nPieceScores[6].shape,
+			tetris_piece_construct(pBastet->nPieceScore[6].shape,
 					TETRIS_PC_ANGLE_0);
 
 	tetris_piece_t *pPiece = NULL;
-	const uint8_t nPercent[4] = {75, 92, 98, 100};
+	uint8_t const nPercent[4] = {75, 92, 98, 100};
 	uint8_t nRnd = rand() % 100;
 	for (uint8_t i = 0; i < 4; ++i)
 	{
 		if (nRnd < nPercent[i])
 		{
-			pPiece = tetris_piece_construct(pBastet->nPieceScores[i].shape,
-					TETRIS_PC_ANGLE_0);
+			// circumvent a trick where the line piece consecutively gets the
+			// lowest score although it removes a line every time
+			if ((pBastet->nPieceScore[i].shape == TETRIS_PC_LINE) &&
+					(pBastet->nPieceScore[i].nScore >= -28000))
+			{
+				i += ((i == 0) ? 1 : -1);
+			}
+
+			pPiece = tetris_piece_construct(pBastet->nPieceScore[i].shape,
+						TETRIS_PC_ANGLE_0);
 			break;
 		}
 	}

@@ -8,7 +8,7 @@
  * runs the tetris game
  * @param pVariantMethods struct of function pointers for a game variant
  */
-void tetris_main(const tetris_variant_t *const pVariantMethods);
+void tetris_main(tetris_variant_t const *const pVariantMethods);
 
 
 #endif /* TETRIS_MAIN_H_ */

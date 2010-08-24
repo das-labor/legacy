@@ -1,15 +1,15 @@
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
-#include <inttypes.h>
 #include <assert.h>
-#include "../../config.h"
-#include "../../joystick/joystick.h"
-#include "../../util.h"
-#include "../../scrolltext/scrolltext.h"
-#include "input.h"
-#include "bearing.h"
-
 #include "../../compat/pgmspace.h"
+#include "../../joystick/joystick.h"
+#include "../../scrolltext/scrolltext.h"
+#include "../../util.h"
+#include "../../config.h"
+#include "bearing.h"
+#include "input.h"
+
 #define WAIT(ms) wait(ms)
 #define PM(value) pgm_read_byte(&value)
 
@@ -86,7 +86,7 @@ void tetris_input_chatterProtect(tetris_input_t *pIn,
 
 	// amount of loop cycles a command is ignored after its button has been
 	// released (every command has its own counter)
-	static const uint8_t nInitialIgnoreValue[TETRIS_INCMD_NONE] PROGMEM =
+	static uint8_t const nInitialIgnoreValue[TETRIS_INCMD_NONE] PROGMEM =
 	{
 		TETRIS_INPUT_CHATTER_TICKS_LEFT,
 		TETRIS_INPUT_CHATTER_TICKS_RIGHT,
@@ -143,7 +143,7 @@ void tetris_input_chatterProtect(tetris_input_t *pIn,
 tetris_input_command_t tetris_input_mapCommand(tetris_bearing_t nBearing,
                                                tetris_input_command_t nCmd)
 {
-	const tetris_input_command_t nMapping[] =
+	tetris_input_command_t const nMapping[] =
 	{
 		TETRIS_INCMD_DOWN, TETRIS_INCMD_ROT_CW, TETRIS_INCMD_RIGHT,
 		TETRIS_INCMD_LEFT,
@@ -224,9 +224,10 @@ tetris_input_command_t tetris_input_queryJoystick(tetris_input_t *pIn)
 	// memorize current command (for detecting prolonged key presses)
 	pIn->cmdRawLast = cmdJoystick;
 
+	// remap command according to current bearing
 	tetris_input_command_t cmdReturn =
 			tetris_input_mapCommand(pIn->nBearing, cmdJoystick);
-	// remap command according to current bearing
+
 	return cmdReturn;
 }
 
@@ -420,7 +421,7 @@ void tetris_input_setLevel(tetris_input_t *pIn,
 	assert(pIn != NULL);
 	assert(nLvl <= TETRIS_INPUT_LEVELS - 1);
 
-	static const uint8_t nCycles[] PROGMEM = {TETRIS_INPUT_LVL_CYCLES};
+	static uint8_t const nCycles[] PROGMEM = {TETRIS_INPUT_LVL_CYCLES};
 
 	if (pIn->nLevel != nLvl)
 	{

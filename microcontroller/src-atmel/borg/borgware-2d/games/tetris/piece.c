@@ -1,13 +1,9 @@
 #include <stdlib.h>
 #include <assert.h>
-#include <inttypes.h>
-#include "piece.h"
+#include <stdint.h>
 
-#ifdef __AVR__
-	#include <avr/pgmspace.h>
-#else
-	#define PROGMEM
-#endif
+#include "../../compat/pgmspace.h"
+#include "piece.h"
 
 
 /*****************************
@@ -26,6 +22,7 @@ tetris_piece_t *tetris_piece_construct(tetris_piece_shape_t s,
 	return p_piece;
 }
 
+
 void tetris_piece_destruct(tetris_piece_t *pPc)
 {
 	assert(pPc != NULL);
@@ -40,11 +37,12 @@ void tetris_piece_destruct(tetris_piece_t *pPc)
 uint16_t tetris_piece_getBitmap(tetris_piece_t *pPc)
 {
 	assert(pPc != NULL);
+	assert((pPc->angle < 4) && (pPc->shape < 7));
 
 	// Lookup table:
 	// A value in an array represents a piece in a specific angle (rotating
 	// clockwise from index 0).
-	static const uint16_t piece[][4] PROGMEM =
+	static uint16_t const piece[][4] PROGMEM =
 		{{0x0F00, 0x2222, 0x0F00, 0x2222},  // LINE
 		 {0x4E00, 0x4640, 0x0E40, 0x4C40},  // T
 		 {0x0660, 0x0660, 0x0660, 0x0660},  // SQUARE
@@ -53,44 +51,19 @@ uint16_t tetris_piece_getBitmap(tetris_piece_t *pPc)
 		 {0x6C00, 0x4620, 0x6C00, 0x4620},  // S
 		 {0xC600, 0x4C80, 0xC600, 0x4C80}}; // Z
 
-	#ifdef __AVR__
-		return pgm_read_word(&piece[pPc->shape][pPc->angle]);
-	#else
-		return piece[pPc->shape][pPc->angle];
-	#endif
+	return pgm_read_word(&piece[pPc->shape][pPc->angle]);
 }
 
 
 void tetris_piece_rotate(tetris_piece_t *pPc,
-                         tetris_piece_rotation_t r)
+                         tetris_piece_rotation_t nRotation)
 {
 	assert(pPc != NULL);
+	assert(nRotation < 2);
 
 	// we just rotate through the available angles in the given direction and
-	// make wrap arounds where appropriate
-	switch (r)
-	{
-	case TETRIS_PC_ROT_CW:
-		if (pPc->angle == TETRIS_PC_ANGLE_270)
-		{
-			pPc->angle = TETRIS_PC_ANGLE_0;
-		}
-		else
-		{
-			++pPc->angle;
-		}
-		break;
-	case TETRIS_PC_ROT_CCW:
-		if (pPc->angle == TETRIS_PC_ANGLE_0)
-		{
-			pPc->angle = TETRIS_PC_ANGLE_270;
-		}
-		else
-		{
-			--pPc->angle;
-		}
-		break;
-	}
+	// wrap around (via modulo) where appropriate
+	pPc->angle = (pPc->angle + ((nRotation == TETRIS_PC_ROT_CW) ? 1 : 3)) % 4;
 }
 
 
@@ -118,11 +91,7 @@ int8_t tetris_piece_getAngleCount(tetris_piece_t *pPc)
 {
 	assert(pPc != NULL);
 
-	static const int8_t angleCounts[] PROGMEM = {2, 4, 1, 4, 4, 2, 2};
+	static int8_t const angleCounts[] PROGMEM = {2, 4, 1, 4, 4, 2, 2};
 
-#ifdef __AVR__
-	return pgm_read_word(&angleCounts[pPc->shape]);
-#else
-	return angleCounts[pPc->shape];
-#endif
+	return pgm_read_byte(&angleCounts[pPc->shape]);
 }

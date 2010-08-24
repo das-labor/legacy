@@ -1,7 +1,7 @@
 #ifndef BUCKET_H_
 #define BUCKET_H_
 
-#include <inttypes.h>
+#include <stdint.h>
 #include "../../autoconf.h"
 #include "piece.h"
 

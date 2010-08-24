@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <inttypes.h>
+#include <stdint.h>
 
 #include "../../random/prng.h"
 #include "../../compat/pgmspace.h"
@@ -44,7 +44,7 @@ void tetris_fp(void)
  * construction/destruction *
  ****************************/
 
-const tetris_variant_t tetrisFpVariant =
+tetris_variant_t const tetrisFpVariant =
 {
 	&tetris_std_construct,
 	&tetris_std_destruct,

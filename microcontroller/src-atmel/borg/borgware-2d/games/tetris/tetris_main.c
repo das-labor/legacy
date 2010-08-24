@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <inttypes.h>
+#include <stdint.h>
 
 #include "tetris_main.h"
 #include "variants.h"
@@ -12,7 +12,7 @@
 #include "highscore.h"
 
 
-void tetris_main(const tetris_variant_t *const pVariantMethods)
+void tetris_main(tetris_variant_t const *const pVariantMethods)
 {
 	// get view dependent dimensions of the bucket
 	int8_t nWidth;

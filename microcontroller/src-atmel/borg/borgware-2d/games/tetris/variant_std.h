@@ -1,7 +1,7 @@
 #ifndef VARIANT_STD_H_
 #define VARIANT_STD_H_
 
-#include <inttypes.h>
+#include <stdint.h>
 #include "../../autoconf.h"
 #include "variants.h"
 #include "piece.h"
@@ -39,7 +39,7 @@ typedef struct tetris_standard_variant_t
 tetris_standard_variant_t;
 
 
-const tetris_variant_t tetrisStdVariant;
+tetris_variant_t const tetrisStdVariant;
 
 
 /****************************

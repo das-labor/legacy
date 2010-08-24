@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <inttypes.h>
+#include <stdint.h>
 
 #include "../../autoconf.h"
 #include "../../random/prng.h"
@@ -51,7 +51,7 @@ void tetris(void)
  ****************************/
 
 #ifdef GAME_TETRIS
-const tetris_variant_t tetrisStdVariant =
+tetris_variant_t const tetrisStdVariant =
 {
 	&tetris_std_construct,
 	&tetris_std_destruct,
