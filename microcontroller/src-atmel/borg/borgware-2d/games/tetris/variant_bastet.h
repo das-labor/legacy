@@ -1,7 +1,7 @@
 #ifndef BAST_H_
 #define BAST_H_
 
-#include <inttypes.h>
+#include <stdint.h>
 #include "variants.h"
 #include "bucket.h"
 #include "piece.h"
@@ -32,20 +32,20 @@ tetris_bastet_scorepair_t;
 
 typedef struct tetris_bastet_variant_t
 {
-	uint16_t nScore;                           /** score of the player */
-	uint16_t nHighscore;                       /** highscore */
-	uint16_t nHighscoreName;                   /** champion's initials */
-	uint8_t nLevel;                            /** current level */
-	uint16_t nLines;                           /** number of completed lines */
-	tetris_piece_t *pPreviewPiece;             /** the piece for the preview */
-	tetris_bucket_t *pBucket;                  /** bucket to be examined */
-	int8_t *pActualColHeights;                 /** actual columns heights */
-	int8_t *pColHeights;                       /** predicted column heights */
-	tetris_bastet_scorepair_t nPieceScores[7]; /** score for every piece */
+	uint16_t nScore;                          /** score of the player */
+	uint16_t nHighscore;                      /** highscore */
+	uint16_t nHighscoreName;                  /** champion's initials */
+	uint8_t nLevel;                           /** current level */
+	uint16_t nLines;                          /** number of completed lines */
+	tetris_piece_t *pPreviewPiece;            /** the piece for the preview */
+	tetris_bucket_t *pBucket;                 /** bucket to be examined */
+	int8_t *pActualColScoreImpact;            /** score impact of every column*/
+	int8_t *pColHeights;                      /** predicted column heights */
+	tetris_bastet_scorepair_t nPieceScore[7]; /** score for every piece */
 }
 tetris_bastet_variant_t;
 
-const tetris_variant_t tetrisBastetVariant;
+tetris_variant_t const tetrisBastetVariant;
 
 
 /****************************

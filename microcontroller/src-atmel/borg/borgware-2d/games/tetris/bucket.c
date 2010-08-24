@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include "../../autoconf.h"
 #include "bucket.h"
 #include "piece.h"

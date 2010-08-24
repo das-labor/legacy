@@ -1,6 +1,6 @@
 #include <string.h>
 #include <stdio.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include "highscore.h"
 #include "../../config.h"
 #include "../../scrolltext/scrolltext.h"

@@ -1,7 +1,7 @@
 #ifndef TETRIS_VIEW_H_
 #define TETRIS_VIEW_H_
 
-#include <inttypes.h>
+#include <stdint.h>
 #include "variants.h"
 #include "piece.h"
 #include "bucket.h"
@@ -28,9 +28,9 @@ tetris_view_mode_t;
 /** data structure that drives the view module */
 typedef struct tetris_view_t
 {
-	const tetris_variant_t *pVariantMethods; /** variant function pointers */
+	tetris_variant_t const *pVariantMethods; /** variant function pointers */
 	void *pVariant;                          /** associated variant object */
-	tetris_bucket_t *pBucket;                 /** associated bucket */
+	tetris_bucket_t *pBucket;                /** associated bucket */
 	tetris_view_mode_t modeCurrent;          /** current presentation mode */
 	tetris_view_mode_t modeOld;              /** old presentation mode */
 	uint8_t nOldLevel;                       /** for detecting level changes */
@@ -57,7 +57,7 @@ tetris_view_t;
  * @param pBucket pointer to bucket which should be observed
  * @return pointer to a newly created view
  */
-tetris_view_t *tetris_view_construct(const tetris_variant_t *const pVarMethods,
+tetris_view_t *tetris_view_construct(tetris_variant_t const *const pVarMethods,
                                      void *pVariantData,
                                      tetris_bucket_t *pBucket);
 

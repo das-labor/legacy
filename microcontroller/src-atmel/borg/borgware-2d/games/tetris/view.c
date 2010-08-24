@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include "../../autoconf.h"
 #include "../../pixel.h"
 #include "../../util.h"
@@ -609,7 +609,7 @@ void tetris_view_formatHighscoreName(uint16_t nHighscoreName,
  * construction/destruction *
  ****************************/
 
-tetris_view_t *tetris_view_construct(const tetris_variant_t *const pVarMethods,
+tetris_view_t *tetris_view_construct(tetris_variant_t const *const pVarMethods,
                                      void *pVariantData,
                                      tetris_bucket_t *pBucket)
 {

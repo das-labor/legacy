@@ -1,7 +1,7 @@
 #ifndef TETRIS_PIECE_H_
 #define TETRIS_PIECE_H_
 
-#include <inttypes.h>
+#include <stdint.h>
 
 /**
  * \defgroup TetrisPieceTypes Piece: Data types
@@ -17,7 +17,7 @@ typedef enum tetris_piece_shape_t
 {
 	TETRIS_PC_LINE,   /**< the I shaped brick */
 	TETRIS_PC_T,      /**< the T shaped brick */
-	TETRIS_PC_SQUARE, /**< the sqare shaped brick */
+	TETRIS_PC_SQUARE, /**< the square shaped brick */
 	TETRIS_PC_L,      /**< the L shaped brick */
 	TETRIS_PC_LBACK,  /**< the reverse L shaped brick */
 	TETRIS_PC_S,      /**< the S shaped brick */
@@ -101,10 +101,10 @@ uint16_t tetris_piece_getBitmap(tetris_piece_t *pPc);
 /**
  * rotates a piece
  * @param pPc piece to rotate
- * @param r type of rotation (see tetris_piece_rotation_t)
+ * @param nRotation type of rotation (see tetris_piece_rotation_t)
  */
 void tetris_piece_rotate(tetris_piece_t *pPc,
-                         tetris_piece_rotation_t r);
+                         tetris_piece_rotation_t nRotation);
 
 
 /**

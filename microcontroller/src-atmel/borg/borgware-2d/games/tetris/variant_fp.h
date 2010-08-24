@@ -1,7 +1,7 @@
 #ifndef VARIANT_FP_H_
 #define VARIANT_FP_H_
 
-#include <inttypes.h>
+#include <stdint.h>
 #include "variant_std.h"
 #include "variants.h"
 #include "highscore.h"
@@ -20,7 +20,7 @@
 void tetris_fp(void);
 
 
-const tetris_variant_t tetrisFpVariant;
+tetris_variant_t const tetrisFpVariant;
 
 
 /*********************

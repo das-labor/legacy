@@ -1,7 +1,7 @@
 #ifndef VARIANTS_H_
 #define VARIANTS_H_
 
-#include <inttypes.h>
+#include <stdint.h>
 #include "bucket.h"
 #include "piece.h"
 #include "highscore.h"
