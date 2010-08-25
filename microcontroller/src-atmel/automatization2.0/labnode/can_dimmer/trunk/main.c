@@ -32,10 +32,15 @@ int main(void)
 	//system initialization
 	init();
 
+	dimmer_init();
+
+	sei();
+
 	//the main loop continuously handles can messages
 	while (1)
 	{
 		can_handler();
+		
 		
 		/*
 
