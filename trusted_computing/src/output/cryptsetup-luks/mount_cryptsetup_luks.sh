@@ -53,6 +53,6 @@ echo "$DATESTRING Opening device ${args[0]} as ${args[1]}" >> ${logfile}
 echo ${args[2]} | /sbin/cryptsetup luksOpen ${args[0]} ${args[1]}  2>> ${logfile} 1>> ${logfile}
 check_result $?
 
-echo  "$DATESTRING Mounting device /dev/mapper/${args[1]} to ${args[3]}" >> ${logfile}
-/bin/mount /dev/mapper/${args[1]} ${args[3]} 2>> ${logfile} 1>> ${logfile}
-check_result $?
+#echo  "$DATESTRING Mounting device /dev/mapper/${args[1]} to ${args[3]}" >> ${logfile}
+#/bin/mount /dev/mapper/${args[1]} ${args[3]} 2>> ${logfile} 1>> ${logfile}
+#check_result $?
