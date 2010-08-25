@@ -562,13 +562,15 @@ void KeyronaAddSubjectToVolume(KeyronaStorage &myVolumeStorage, KeyronaStorage &
     vector<string> myUsers = KeyronaFindAllUsers(mySubjectStorage, false);
     // get all Token
     vector<string> myToken = KeyronaFindAllToken(mySubjectStorage);
+	// get all Platforms
+	vector<string> myPlatform = KeyronaFindAllPlatforms(mySubjectStorage);
 
     // add Token to Userlist
     myUsers.insert(myUsers.end(), myToken.begin(), myToken.end());
-
+	myUsers.insert(myUsers.end(), myPlatform.begin(), myPlatform.end());
     if (!myUsers.size())
     {
-        cout << "No users / token available!" << endl;
+        cout << "No users / platforms / token available!" << endl;
         return;
     }
 
