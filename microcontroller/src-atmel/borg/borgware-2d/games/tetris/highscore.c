@@ -1,11 +1,11 @@
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdint.h>
-#include "highscore.h"
 #include "../../config.h"
 #include "../../scrolltext/scrolltext.h"
 #include "../../joystick/joystick.h"
 #include "../../compat/eeprom.h"
+#include "highscore.h"
 
 // global array for the high score
 uint16_t tetris_highscore[TETRIS_HISCORE_END] EEMEM;

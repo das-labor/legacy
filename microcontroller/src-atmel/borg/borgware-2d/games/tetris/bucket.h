@@ -2,7 +2,7 @@
 #define BUCKET_H_
 
 #include <stdint.h>
-#include "../../autoconf.h"
+#include "../../config.h"
 #include "piece.h"
 
 

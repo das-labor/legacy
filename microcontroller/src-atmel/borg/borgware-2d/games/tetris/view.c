@@ -1,18 +1,17 @@
 #include <stdlib.h>
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 #include <assert.h>
 #include <stdint.h>
-#include "../../autoconf.h"
+#include "../../config.h"
 #include "../../pixel.h"
 #include "../../util.h"
 #include "../../scrolltext/scrolltext.h"
-#include "variants.h"
-#include "piece.h"
 #include "bucket.h"
+#include "piece.h"
+#include "variants.h"
 #include "view.h"
 
-#define WAIT(ms) wait(ms)
 
 /**
  * \defgroup TetrisViewDefinesPrivate View: Internal constants
@@ -459,9 +458,9 @@ void tetris_view_blinkBorders(tetris_view_t *pV)
 	for (uint8_t i = 0; i < TETRIS_VIEW_BORDER_BLINK_COUNT; ++i)
 	{
 		tetris_view_drawBorders(pV, TETRIS_VIEW_COLORPIECE);
-		WAIT(TETRIS_VIEW_BORDER_BLINK_DELAY);
+		wait(TETRIS_VIEW_BORDER_BLINK_DELAY);
 		tetris_view_drawBorders(pV, TETRIS_VIEW_COLORBORDER);
-		WAIT(TETRIS_VIEW_BORDER_BLINK_DELAY);
+		wait(TETRIS_VIEW_BORDER_BLINK_DELAY);
 	}
 }
 
@@ -512,7 +511,7 @@ void tetris_view_blinkLines(tetris_view_t *pV)
 				}
 			}
 			// wait a few ms to make the blink effect visible
-			WAIT(TETRIS_VIEW_LINE_BLINK_DELAY);
+			wait(TETRIS_VIEW_LINE_BLINK_DELAY);
 		}
 	}
 }

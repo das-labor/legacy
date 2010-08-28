@@ -2,10 +2,10 @@
 #define VARIANTS_H_
 
 #include <stdint.h>
-#include "bucket.h"
+#include "bearing.h"
 #include "piece.h"
 #include "highscore.h"
-#include "bearing.h"
+#include "bucket.h"
 #include "input.h"
 
 typedef struct tetris_variant_t
@@ -132,6 +132,7 @@ typedef struct tetris_variant_t
 	 */
 	tetris_highscore_index_t (*getHighscoreIndex)(void *pVariantData);
 
+
 	/**
 	 * inform the variant about the player's last input
 	 * @param pVariantData the variant data object we want to modify
@@ -148,4 +149,4 @@ typedef struct tetris_variant_t
 }
 tetris_variant_t;
 
-#endif /* VARIANTS_H_ */
+#endif /*VARIANTS_H_*/

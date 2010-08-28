@@ -2,9 +2,10 @@
 #define TETRIS_VIEW_H_
 
 #include <stdint.h>
-#include "variants.h"
+#include "bearing.h"
 #include "piece.h"
 #include "bucket.h"
+#include "variants.h"
 
 
 /**

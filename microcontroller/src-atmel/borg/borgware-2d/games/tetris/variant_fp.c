@@ -1,20 +1,18 @@
 #include <stdlib.h>
-#include <string.h>
 #include <assert.h>
 #include <stdint.h>
-
 #include "../../random/prng.h"
 #include "../../compat/pgmspace.h"
 #include "../../menu/menu.h"
-#include "variant_fp.h"
-#include "variant_std.h"
+#include "bearing.h"
+#include "piece.h"
+#include "highscore.h"
+#include "bucket.h"
+#include "input.h"
 #include "variants.h"
 #include "tetris_main.h"
-#include "piece.h"
-#include "bucket.h"
-#include "highscore.h"
-#include "bearing.h"
-#include "input.h"
+#include "variant_std.h"
+#include "variant_fp.h"
 
 
 /***************
@@ -83,12 +81,6 @@ void tetris_fp_setLastInput(void *pVariantData,
 	tetris_standard_variant_t *pStdVariant =
 			(tetris_standard_variant_t *)pVariantData;
 
-	if (inCmd == TETRIS_INCMD_ROT_CW)
-	{
-		pStdVariant->nBearing = (pStdVariant->nBearing + 1) % 4;
-	}
-	else if (inCmd == TETRIS_INCMD_ROT_CCW)
-	{
-		pStdVariant->nBearing = (pStdVariant->nBearing + 3) % 4;
-	}
+	pStdVariant->nBearing =
+			(pStdVariant->nBearing + (TETRIS_INCMD_ROT_CW ? 1 : 3)) % 4;
 }

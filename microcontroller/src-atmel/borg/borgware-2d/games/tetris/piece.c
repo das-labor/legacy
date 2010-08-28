@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdint.h>
-
 #include "../../compat/pgmspace.h"
 #include "piece.h"
 
