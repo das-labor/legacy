@@ -25,7 +25,7 @@ extern void can_handler()
 				switch (rx_msg->data[0])
 				{
 					case FKT_MGT_RESET:
-//						TCCR2 = 0;
+//						TCCR2 = 0
 						wdt_enable(0);
 						while (1);
 			
@@ -36,6 +36,21 @@ extern void can_handler()
 						can_transmit(&msg);
 						break;
 				}
+			}
+		}
+		if ((rx_msg->addr_dst == 2)){
+			if (rx_msg->port_dst == 1)
+			{
+				//save to array
+				switch (rx_msg->data[0]) {
+					case 0: //C_SW:
+						break;
+					case 1://C_PWM:
+						PORTB |= _BV(PB0); //XXX
+						set_dimmer ( rx_msg->data[1], rx_msg->data[3] ) ;
+						break;
+				}
+				//state_to_output();
 			}
 		}
 	}
