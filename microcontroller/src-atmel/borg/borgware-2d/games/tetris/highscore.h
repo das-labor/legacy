@@ -1,6 +1,8 @@
 #ifndef TETRIS_HIGHSCORE_H_
 #define TETRIS_HIGHSCORE_H_
 
+#include <stdint.h>
+
 /**
  * indexes for different tetris variants
  */

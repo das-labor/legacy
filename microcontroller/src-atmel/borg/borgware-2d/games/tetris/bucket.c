@@ -2,7 +2,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stdint.h>
-#include "../../autoconf.h"
+#include "../../config.h"
 #include "bucket.h"
 #include "piece.h"
 
@@ -144,7 +144,7 @@ int8_t tetris_bucket_getPieceStartPos(tetris_piece_t *pPiece)
 
 void tetris_bucket_insertPiece(tetris_bucket_t *pBucket,
                                tetris_piece_t *pPiece,
-                               tetris_piece_t** ppOldPiece)
+                               tetris_piece_t **ppOldPiece)
 {
 	assert((pBucket != NULL) && (pPiece != NULL) && (ppOldPiece != NULL));
 
@@ -290,7 +290,8 @@ void tetris_bucket_advancePiece(tetris_bucket_t *pBucket)
 		uint16_t nPiece = tetris_piece_getBitmap(pBucket->pPiece);
 
 		// Is the bucket filled up?
-		if ((pBucket->nRow < 0) && (nPiece & (0x0FFF >> ((3 + pBucket->nRow) << 2))) != 0)
+		if ((pBucket->nRow < 0) &&
+				(nPiece & (0x0FFF >> ((3 + pBucket->nRow) << 2))) != 0)
 		{
 			pBucket->status = TETRIS_BUS_GAMEOVER;
 		}

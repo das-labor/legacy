@@ -1,12 +1,13 @@
-#ifndef BAST_H_
-#define BAST_H_
+#ifndef VARIANT_BASTET_H_
+#define VARIANT_BASTET_H_
 
 #include <stdint.h>
-#include "variants.h"
-#include "bucket.h"
-#include "piece.h"
 #include "bearing.h"
+#include "piece.h"
+#include "highscore.h"
+#include "bucket.h"
 #include "input.h"
+#include "variants.h"
 
 /***************
  * entry point *
@@ -226,4 +227,4 @@ void tetris_bastet_setLastInput(void *pVariantData,
  */
 tetris_bearing_t tetris_bastet_getBearing(void *pVariantData);
 
-#endif /* BAST_H_ */
+#endif /*VARIANT_BASTET_H_*/

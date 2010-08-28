@@ -1,17 +1,17 @@
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <stdint.h>
 #include "../../random/prng.h"
 #include "../../compat/pgmspace.h"
 #include "../../menu/menu.h"
+#include "bearing.h"
+#include "piece.h"
+#include "highscore.h"
+#include "bucket.h"
+#include "input.h"
 #include "variants.h"
 #include "tetris_main.h"
-#include "input.h"
-#include "piece.h"
-#include "bucket.h"
-#include "bearing.h"
-#include "input.h"
 #include "variant_bastet.h"
 
 
