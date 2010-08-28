@@ -81,6 +81,13 @@ void tetris_fp_setLastInput(void *pVariantData,
 	tetris_standard_variant_t *pStdVariant =
 			(tetris_standard_variant_t *)pVariantData;
 
-	pStdVariant->nBearing =
-			(pStdVariant->nBearing + (TETRIS_INCMD_ROT_CW ? 1 : 3)) % 4;
+	if (inCmd == TETRIS_INCMD_ROT_CW)
+	{
+		pStdVariant->nBearing += 1;
+	}
+	else if (inCmd == TETRIS_INCMD_ROT_CCW)
+	{
+		pStdVariant->nBearing += 3;
+	}
+	pStdVariant->nBearing %= 4;
 }
