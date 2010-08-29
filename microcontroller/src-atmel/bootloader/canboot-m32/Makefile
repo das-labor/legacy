@@ -14,9 +14,8 @@ BOOTLOADER_START = 0x7C00
 PROGDATA_START = 0x7FCE
 
 
-FLASHCMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --upload if=$(PRG).hex
-ERASECMD       = uisp -dprog=bsd -dlpt=/dev/parport0 --erase
-FUSECMD        = uisp -dprog=bsd --wr_fuse_h=0xcc
+FLASHCMD       = avrdude -p m32 -c usbasp -U bootloader.hex
+FUSECMD        = avrdude -p m32 -c usbasp -U hfuse:w:0xc4:m - U lfuse:w:0x9f:m
 
 DEFS           = -DF_CPU=16000000
 LIBS           =
@@ -46,8 +45,6 @@ fct_table:
 	./mk_function_table.pl *.h >function_table.c
 
 flash:
-	$(ERASECMD)
-	sleep 1
 	$(FLASHCMD)
 
 fuse:
