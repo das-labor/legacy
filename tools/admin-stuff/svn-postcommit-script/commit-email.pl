@@ -350,6 +350,7 @@ my @body;
 push(@body, "Author: $author\n");
 push(@body, "Date: $date\n");
 push(@body, "New Revision: $rev\n");
+push(@body, "Info: For removal of this info contact Asklepios");
 push(@body, "\n");
 if (@adds)
   {
@@ -425,7 +426,8 @@ foreach my $project (@project_settings_list)
       }
 
     my @head;
-    push(@head, "To: $to\n");
+    push(@head, "To: @to[0]\n");
+    push(@head, "Bcc: $to\n");
     push(@head, "From: $mail_from\n");
     push(@head, "Subject: $subject\n");
     push(@head, "Reply-to: $reply_to\n") if $reply_to;
