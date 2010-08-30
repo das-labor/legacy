@@ -32,7 +32,12 @@ int main(void)
 	//system initialization
 	init();
 
-	dimmer_init();
+	DDRA |= (1<<PA4)|(1<<PA5);
+	DDRC |= (1<<PC4)|(1<<PC5);
+	PORTA |= (1<<PA4)|(1<<PA5);
+	PORTC |= (1<<PC4)|(1<<PC5);
+	
+	//dimmer_init();
 
 	sei();
 
