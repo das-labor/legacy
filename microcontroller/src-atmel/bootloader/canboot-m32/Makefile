@@ -1,5 +1,6 @@
 PRG            = bootloader
-OBJ            = bootloader.o util.o can.o main.o
+#OBJ            = bootloader.o util.o can.o main.o
+SRC            = bootloader.c util.c can.c main.c
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os -fshort-enums
 
@@ -11,10 +12,8 @@ OPTIMIZE       = -Os -fshort-enums
 
 # this is for atmega32
 BOOTLOADER_START = 0x7C00
-PROGDATA_START = 0x7FCE
 
-
-FLASHCMD       = avrdude -p m32 -c usbasp -U bootloader.hex
+FLASHCMD       = avrdude -p m32 -c usbasp -V -U bootloader.hex
 FUSECMD        = avrdude -p m32 -c usbasp -U hfuse:w:0xc4:m - U lfuse:w:0x9f:m
 
 DEFS           = -DF_CPU=16000000
@@ -26,23 +25,24 @@ CC             = avr-gcc
 
 # Override is only needed by avr-lib build system.
 
-override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) 
-override LDFLAGS       = -Wl,-Map,$(PRG).map,--section-start=.bootloader=$(BOOTLOADER_START),--section-start=.progdata=$(PROGDATA_START)
+override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS)
+override LDFLAGS       = -T ./avr5.x -Wl,-Map,$(PRG).map,--section-start=.bootloader=$(BOOTLOADER_START)
+#override LDFLAGS       = -Wl,-Map,$(PRG).map
 
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
 
 all: $(PRG).elf lst text eeprom
 
-$(PRG).elf: $(OBJ)
+$(PRG).elf: $(SRC)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+#image.o: $(SRC)
+#	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
 	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak 
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
-
-fct_table:
-	./mk_function_table.pl *.h >function_table.c
 
 flash:
 	$(FLASHCMD)
