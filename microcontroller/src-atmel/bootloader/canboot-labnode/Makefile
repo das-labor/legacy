@@ -13,9 +13,6 @@ OPTIMIZE       = -Os -fshort-enums
 # this is for atmega32
 BOOTLOADER_START = 0x7C00
 
-#BOOTLOADER_START = 0x7B00
-
-
 FLASHCMD       = avrdude -p m32 -c usbasp -V -U bootloader.hex
 FUSECMD        = avrdude -p m32 -c usbasp -U hfuse:w:0xc4:m - U lfuse:w:0x9f:m
 
