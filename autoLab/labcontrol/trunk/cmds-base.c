@@ -94,6 +94,28 @@ void hexdump(unsigned char * addr, int size)
 
 extern unsigned int debug_level;
 
+void dump_packet_v2(can_message_v2 *msg){
+	time_t muh = time(0);
+	struct tm *tme = localtime(&muh);
+	printf( "%02d:%02d.%02d:  %03x,%x:  %02x -> %02x    ",
+		tme->tm_hour, tme->tm_min, tme->tm_sec,
+		msg->channel, msg->subchannel,
+		msg->addr_src, msg->addr_dst );
+	hexdump(msg->data, msg->dlc);
+	printf("\n");
+}
+
+void dump_packet(can_message *msg){
+	time_t muh = time(0);
+	struct tm *tme = localtime(&muh);
+	printf( "%02d:%02d.%02d:  %02x:%02x -> %02x:%02x    ",
+		tme->tm_hour, tme->tm_min, tme->tm_sec,
+		msg->addr_src, msg->port_src,
+		msg->addr_dst, msg->port_dst );
+	hexdump(msg->data, msg->dlc);
+	printf("\n");
+}
+
 void cmd_dump(int argc, char *argv[]) 
 {
 	
@@ -107,15 +129,7 @@ void cmd_dump(int argc, char *argv[])
 			
 			if (msg)
 			{
-				time_t muh = time(0);
-				struct tm *tme = localtime(&muh);
-				printf( "%02d:%02d.%02d:  %03x,%x:  %02x -> %02x    ",
-					tme->tm_hour, tme->tm_min, tme->tm_sec,
-					msg->channel, msg->subchannel,
-					msg->addr_src, msg->addr_dst );
-				hexdump(msg->data, msg->dlc);
-				printf("\n");
-				
+				dump_packet_v2(msg);
 				can_free_v2(msg);
 			}
 			usleep(100);
@@ -130,15 +144,7 @@ void cmd_dump(int argc, char *argv[])
 			
 			if (msg)
 			{
-				time_t muh = time(0);
-				struct tm *tme = localtime(&muh);
-				printf( "%02d:%02d.%02d:  %02x:%02x -> %02x:%02x    ",
-					tme->tm_hour, tme->tm_min, tme->tm_sec,
-					msg->addr_src, msg->port_src,
-					msg->addr_dst, msg->port_dst );
-				hexdump(msg->data, msg->dlc);
-				printf("\n");
-				
+				dump_packet(msg);
 				can_free(msg);
 			}
 		}

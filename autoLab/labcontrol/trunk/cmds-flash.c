@@ -22,55 +22,70 @@
     * cc is the checksum field that represents the checksum of the record. The checksum is calculated by summing the values of all hexadecimal digit pairs in the record modulo 256 and taking the two's complement.
 */
 
-uint8_t *read_buf_from_hex(FILE *f, size_t *size, size_t *offset)
+//reads one line from a hex file.
+//result is stored in the returned buffer, which is supposed to be freed
+//by the caller.
+//size and offset return the size of the line and the address offset
+//of the line respectivly.
+uint8_t *read_line_from_hex(FILE *f, size_t *size, size_t *offset)
 {
-	unsigned int tt;
-	size_t i; //i was int, but size_t has 8 byte on 64bit, int not - hansi
+	uint32_t tmp;
 	uint8_t *buf;
 
+	uint8_t checksum = 0;
+	
 	//for 64-bit systems the fscanf below will only fill
-	//the lower 32bit of size, so let it be zero
-	*size = 0;
+	//the lower 32bit, so use temporary int
 
-	if (fscanf(f, ":%2x", (unsigned int *)size) != 1)
+	if (fscanf(f, ":%2x", &tmp) != 1)
 		goto error;
+	*size = tmp;
+	checksum += tmp;
 
-	if (fscanf(f, "%4x", (unsigned int *)offset) != 1)
+	if (fscanf(f, "%4x", &tmp) != 1)
 		goto error;
+	*offset = tmp;
+	checksum += tmp;	
+	checksum += tmp>>8;
 
-	if (fscanf(f, "%2x", &tt) != 1)
+	if (fscanf(f, "%2x", &tmp) != 1)
 		goto error;
+	checksum += tmp;
 
-	if (tt == 1) // end of file mark
+	if (tmp == 1) // end of file mark
 	{
 		*size  = 0;
 		return 0;
 	}
+	
+	buf = malloc( *size * sizeof(uint8_t) );
+	debug_assert(buf != 0, "Could not allocate hex image data buffer!");
 
-	i = *size;
-	buf = malloc(1 + ((*size) * sizeof(uint8_t))); // why +1 XXX braucht mehr nachdenken
-
-	if (buf == NULL)
-	{
-		printf("ERROR: Could not allocate hex image data buffer!\n");
-		goto error;
-	}
-
+	size_t i = *size;
 	uint8_t *ptr = buf;
+	
 	for (;i > 0; i--)
 	{
-		if (fscanf(f, "%2hx", (short unsigned int *)ptr++) != 1)  // XXX read 2 byte wrote 4 needs better fix
+		if (fscanf(f, "%2hx", &tmp) != 1)
 			goto error;
+	
+		checksum += tmp;		
+		*ptr++ = tmp;
 	}
-	if (fscanf(f, "%2x", &tt) != 1)	 // checksum
+
+	if (fscanf(f, "%2x", &tmp) != 1)	 // checksum  //XXX: checksumm is only fetched and not checked
 		goto error;
+	
+	checksum = -checksum;
+	
+	debug_assert(checksum == tmp, "Checksum Error while reading hex file, offset = 0x%x, 0x%02x != 0x%02x", *offset, checksum, tmp);
 
 	fscanf(f, "\n"); // XXX fetch error
 
 	return buf;
 
 error:
-	*size = -1;
+	debug_assert(0, "Format Error while reading hex file");
 	return 0;
 }
 
@@ -173,37 +188,27 @@ void flash_atmel(unsigned char addr, unsigned int pagesize, char * filename)
 	
 	// allocate ATMega memory
 	uint8_t *mem  = malloc(flashsize);
-	if (mem == NULL)
-	{
-		printf("ERROR: Could not allocate mem data buffer!\n");
-		exit(EXIT_FAILURE);
-	}
+	debug_assert(mem != 0, "Could not allocate mem data buffer!");
+	
 	uint8_t *mask = malloc(flashsize);
-	if (mask == NULL)
-	{
-		printf("ERROR: Could not allocate mask buffer!\n");
-		exit(EXIT_FAILURE);
-	}
+	debug_assert(mask != 0, "Could not allocate mask buffer!");
+	
 	memset(mem,  0xff, flashsize);
 	memset(mask, 0x00, flashsize);
-
 
 	printf("Flashing file: %s\n", filename);
 	FILE *fd = fopen(filename,"r");
 	
-	
-	size_t size, dst;
+	size_t size, offset;
 	uint8_t *buf;
-	while ((buf = read_buf_from_hex(fd, &size, &dst)) != 0)
+	while ((buf = read_line_from_hex(fd, &size, &offset)) != 0)
 	{
-		memcpy(&mem[dst], buf, size);
-		memset(&mask[dst], 0xff, size);
+		debug_assert((size+offset) <= flashsize, "hex file contains addresses larger than AVR Flashsize!");
+		memcpy(&mem[offset], buf, size);    //copy the section to our buffer
+		memset(&mask[offset], 0xff, size);  //remember that these bytes need to be programmed by setting mask
 		free(buf);
 	}
-
-	if (size != 0)
-		goto fileerror;
-
+	
 	int i, j;
 
 	for (i = 0; i < flashsize; i += pagesize)
@@ -212,7 +217,8 @@ void flash_atmel(unsigned char addr, unsigned int pagesize, char * filename)
 		{
 			if (mask[j] == 0xff)
 			{
-				// trasfer page stating at i
+				// if at least one byte in the page is used
+				// we trasfer the page stating at i
 				printf("Transmitting %4x...\n", i);
 				push_page(addr, &(mem[i]), i, pagesize);
 				break;
@@ -221,6 +227,10 @@ void flash_atmel(unsigned char addr, unsigned int pagesize, char * filename)
 	}
 	
 	fclose(fd);
+
+	free(mem);
+	free(mask);
+
 	
 	printf("Sendig reset\n");
 	smsg = (sdo_message *)can_buffer_get();
@@ -233,17 +243,7 @@ void flash_atmel(unsigned char addr, unsigned int pagesize, char * filename)
 	smsg->index    = 0xff02;
 
 	can_transmit((can_message *)smsg);
-
-	free(mem);
-	free(mask);
-	return;
-
-fileerror:
-	free(mem);
-	free(mask);
-	debug(0, "Given file is not in Intel Hex format");
-	return;
-
+	
 }
 
 
