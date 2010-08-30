@@ -94,7 +94,7 @@ void set_dimmer(uint8_t channel, uint8_t bright){
 
 	uint16_t dimval = 512 - bright * 2;
 	if(bright == 0) dimval = MAX_VAL;
-	if(bright == 255) dim_max[channel] = 1;
+	if(bright == 255) dim_max[channel] = 1; else dim_max[channel] = 0;
 
 
 
