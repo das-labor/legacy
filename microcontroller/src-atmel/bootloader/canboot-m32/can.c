@@ -11,16 +11,16 @@ can_message Rx_msg, Tx_msg;
 
 /* MCP */
 void mcp_write(unsigned char reg, unsigned char data) BOOTLOADER_SECTION;
-void mcp_write_b(PGM_P stream) BOOTLOADER_SECTION;
+void mcp_write_b(prog_uint8_t * stream) BOOTLOADER_SECTION;
 unsigned char mcp_read(unsigned char reg) BOOTLOADER_SECTION;
 
 
 // Functions
 
-#define spi_clear_ss() SPI_PORT |= _BV(SPI_PIN_SS)
-#define spi_set_ss() SPI_PORT &= ~_BV(SPI_PIN_SS)
+#define spi_release_ss() SPI_PORT |= _BV(SPI_PIN_SS)
+#define spi_assert_ss() SPI_PORT &= ~_BV(SPI_PIN_SS)
 
-unsigned char spi_data(unsigned char c) BOOTLOADER_SECTION;
+unsigned char spi_data(unsigned char c)  __attribute__ ((noinline)) __attribute__ ((section (".bootloader")));
 
 unsigned char spi_data(unsigned char c)
 {
@@ -31,58 +31,61 @@ unsigned char spi_data(unsigned char c)
 
 inline static void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val)
 {
-	spi_set_ss();
+	spi_assert_ss();
 	spi_data(BIT_MODIFY);
 	spi_data(reg);
 	spi_data(mask);
 	spi_data(val);
-	spi_clear_ss();
+	spi_release_ss();
 }
 
 unsigned char mcp_read(unsigned char reg)
 {
 	unsigned char d;
-	spi_set_ss();
+	spi_assert_ss();
 	spi_data(READ);
 	spi_data(reg);
 	d = spi_data(0);
-	spi_clear_ss();
+	spi_release_ss();
 	return d;
 }
 
 void mcp_write(unsigned char reg, unsigned char data)
 {
-	spi_set_ss();
+	spi_assert_ss();
 	spi_data(WRITE);
 	spi_data(reg);
 	spi_data(data);
-	spi_clear_ss();
+	spi_release_ss();
 }
 
-void mcp_write_b(PGM_P stream)
+void mcp_write_b(prog_uint8_t * stream)
 {
 	unsigned char len;
 	
 	while ((len = pgm_read_byte(stream++)))
 	{
-		spi_set_ss();
+		spi_assert_ss();
+		spi_data(WRITE);
+		
 		while (len--)
 		{
-			SPDR = (pgm_read_byte(stream++));
-			while (!(SPSR & _BV(SPIF)));
+			spi_data(pgm_read_byte(stream++));
 		}
-		spi_clear_ss();
+		spi_release_ss();
 	}
 }
 
-unsigned char mcp_txreq_str[] __attribute__ ((section (".progdata"))) = {
+//unsigned char mcp_txreq_str[] __attribute__ ((section (".progdata"))) = {
+unsigned char mcp_txreq_str[] PROGMEM = {
 	2, TXB0CTRL, _BV(TXREQ), 0, 0
 };
 
 //load a message to mcp2515 and start transmission
 void can_transmit()
 {
-	spi_set_ss();
+	uint8_t x;
+	spi_assert_ss();
 	spi_data(WRITE);
 	spi_data(TXB0SIDH);
 
@@ -91,9 +94,11 @@ void can_transmit()
 	spi_data(Tx_msg.addr_src);
 	spi_data(Tx_msg.addr_dst);
 	spi_data(Tx_msg.dlc);
-	while (Tx_msg.dlc)
-		spi_data(Tx_msg.data[Tx_msg.dlc--]);
-	spi_clear_ss();
+	
+	for(x=0;x<Tx_msg.dlc;x++){
+		spi_data(Tx_msg.data[x]);
+	}
+	spi_release_ss();
 
 	mcp_write_b(mcp_txreq_str);
 }
@@ -105,7 +110,7 @@ static inline void message_fetch()
 	unsigned char tmp1, tmp2, tmp3;
 	unsigned char x;
 
-	spi_set_ss();
+	spi_assert_ss();
 	spi_data(READ);
 	spi_data(RXB0SIDH);
 	tmp1 = spi_data(0);
@@ -119,7 +124,7 @@ static inline void message_fetch()
 	Rx_msg.dlc = spi_data(0) & 0x0F;	
 	for (x = 0; x < Rx_msg.dlc; x++)
 		Rx_msg.data[x] = spi_data(0);
-	spi_clear_ss();
+	spi_release_ss();
 
 	mcp_bitmod(CANINTF, _BV(RX0IF), 0x00);
 }
@@ -154,7 +159,8 @@ static inline void message_fetch()
 #endif 
 
 
-unsigned char mcp_config_str1[] __attribute__ ((section (".progdata"))) = {
+//unsigned char mcp_config_str1[] __attribute__ ((section (".progdata"))) = {
+unsigned char mcp_config_str1[] PROGMEM = {
 	2, BFPCTRL, 0x0C,		//RXBF Pins to Output
 	4, CNF3,
 		0x05,			//CNF3
@@ -179,24 +185,32 @@ unsigned char mcp_config_str1[] __attribute__ ((section (".progdata"))) = {
 };
 	
 	
-unsigned char mcp_config_str2[] __attribute__ ((section (".progdata"))) = {	
+//unsigned char mcp_config_str2[] __attribute__ ((section (".progdata"))) = {	
+unsigned char mcp_config_str2[] PROGMEM = {	
 	2, CANCTRL, 0,
 	2, CANINTE, _BV(RX0IE),
 	0
 };
 
+#define BIT_CS_EXT PB1
+
 void can_init()
 {
+	//set Slave select high
+	spi_release_ss();
+	
+	//PORTB |= (1<<SPI_PIN_MISO); //MISO pullup for debugging
+		
 	//set output SPI pins to output
 	SPI_DDR = _BV(SPI_PIN_MOSI) | _BV(SPI_PIN_SCK) | _BV(SPI_PIN_SS);
 	SPCR = _BV(SPE) | _BV(MSTR);
 	//Double speed on
 	SPSR = _BV(SPI2X);
 	
-	//set Slave select high
-	spi_set_ss();
+	
+	spi_assert_ss();
 	spi_data(RESET);
-	spi_clear_ss();
+	spi_release_ss();
 	
 	mcp_write_b(mcp_config_str1);
 
@@ -204,6 +218,11 @@ void can_init()
 	mcp_write(RXF1EID0, Station_id);
 
 	mcp_write_b(mcp_config_str2);
+
+	PORTB &= ~(1<<BIT_CS_EXT);
+
+	
+	
 }
 
 
