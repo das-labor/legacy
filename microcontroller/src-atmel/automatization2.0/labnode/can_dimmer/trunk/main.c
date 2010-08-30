@@ -8,6 +8,8 @@
 
 #include "config.h"
 
+#include "dimmer.h"
+
 #include "can/can.h"
 #include "can_handler.h"
 #include "can/spi.h"
@@ -28,16 +30,17 @@ void init(void)
 	 
 int main(void)
 {
-	volatile uint16_t foo = 0;
+	//volatile uint16_t foo = 0;
 	//system initialization
 	init();
 
+	/*
 	DDRA |= (1<<PA4)|(1<<PA5);
 	DDRC |= (1<<PC4)|(1<<PC5);
 	PORTA |= (1<<PA4)|(1<<PA5);
 	PORTC |= (1<<PC4)|(1<<PC5);
-	
-	//dimmer_init();
+	*/
+	dimmer_init();
 
 	sei();
 

@@ -6,6 +6,8 @@
 #include "can_handler.h"
 #include "can/lap.h"
 
+#include "dimmer.h"
+
 uint8_t myaddr;
 
 void twi_get(uint8_t *p);

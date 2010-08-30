@@ -11,6 +11,8 @@ ISR(TIMER1_CAPT_vect){
 }
 
 volatile uint8_t update_in_progress;
+uint8_t dim_max[NUM_CHANNELS];
+
 uint16_t dim_vals_sorted[NUM_CHANNELS];
 uint8_t channels_sorted[NUM_CHANNELS];
 
@@ -31,9 +33,11 @@ ISR(TIMER1_COMPB_vect){
 			}
 		}
 		next = 0;
-		PORTA &= ~((1<<PA4)|(1<<PA5));
-		PORTC &= ~((1<<PC4)|(1<<PC5));
-
+		if(dim_max[0]) PORTA |= (1<<PA4); else PORTA &= ~(1<<PA4);
+		if(dim_max[1]) PORTA |= (1<<PA5); else PORTA &= ~(1<<PA5);
+		if(dim_max[2]) PORTC |= (1<<PC4); else PORTC &= ~(1<<PC4);
+		if(dim_max[3]) PORTC |= (1<<PC5); else PORTC &= ~(1<<PC5);
+		
 		OCR1B = dim_vals[0];
 		if(dim_vals[0] != MAX_VAL){ //exept case where all lamps are off
 			state = 1;
@@ -85,8 +89,14 @@ void dimmer_init(){
 
 
 void set_dimmer(uint8_t channel, uint8_t bright){
+
+	if(channel == 3) bright = (bright>128) ? 255:0;//only allow full or no brighnes for evg on channel 3
+
 	uint16_t dimval = 512 - bright * 2;
 	if(bright == 0) dimval = MAX_VAL;
+	if(bright == 255) dim_max[channel] = 1;
+
+
 
 	update_in_progress = 1;
 
