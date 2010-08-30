@@ -1,12 +1,13 @@
 #include <avr/boot.h>
+//#include "pgmspace.h"
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <inttypes.h>
 
-//#include "config.h"
-//#include "bootloader.h"
+#include "config.h"
+#include "bootloader.h"
 
 #include "can.h"
 #include "util.h"
@@ -14,6 +15,7 @@
 #define PORT_MGT 0x30
 #define FKT_MGT_AWAKE 0x03
 
+unsigned char Station_id __attribute__ ((section (".eeprom"))) = 0x34;
 
 #define SDO_CMD_READ 		0x20
 #define SDO_CMD_REPLY 		0x21
@@ -38,7 +40,7 @@
 
 typedef struct
 {
-	uint8_t cmd;
+	unsigned char cmd;
 	unsigned int index;
 	unsigned int size;
 	unsigned int address;
@@ -46,45 +48,57 @@ typedef struct
 
 typedef struct
 {
-	unsigned int data[3];
+	unsigned int data[4];
 } sdo_data_message;
 
-uint8_t Device_info_msg[] =
+
+//unsigned char Device_info_msg[] __attribute__ ((section (".progdata"))) =
+unsigned char Device_info_msg[] PROGMEM =
 {
 	SDO_CMD_REPLY,
 	SDO_TYPE_UINT32_RO,
-	(uint8_t)SPM_PAGESIZE,
-	(uint8_t)(SPM_PAGESIZE >> 8),
-	32,
+	(unsigned char)SPM_PAGESIZE,
+	(unsigned char)SPM_PAGESIZE>>8,
+	64,
 	0
 };
 
-uint8_t Flash_info_msg[] =
+//unsigned char Flash_info_msg[] __attribute__ ((section (".progdata"))) =
+unsigned char Flash_info_msg[] PROGMEM =
 {
 	SDO_CMD_REPLY,
 	SDO_TYPE_STRING_WO,
-	(uint8_t)((uint8_t)FLASHEND + 1),
-	((unsigned int)FLASHEND + 1) >> 8
+	(unsigned char)((unsigned char)FLASHEND+1),
+	((unsigned int)FLASHEND+1)>>8
 };
 
 
-int main (void)
-{
-	
-	uint16_t Address;
+unsigned char Station_id;
 
+
+void bootloader(void){
+	uint16_t Address;
+	uint16_t Size;
+	unsigned char x;
 	
 	cli();
-/*	
+	
 	asm volatile(
 		"out 0x3e, %A0\n\t"
 		"out 0x3d, %B0\n\t"
 		::"w" (RAMEND)
 	);
-*/
+	
+	EEAR = EEPR_ADDR_NODE;
+	EECR = (1<<EERE);
+	Station_id = EEDR;
+		
 	can_init();
 	
-	Tx_msg.addr = 0;
+	
+	
+	Tx_msg.addr_src = EEDR;
+	Tx_msg.addr_dst = 0;
 	Tx_msg.port_src = PORT_MGT;
 	Tx_msg.port_dst = PORT_MGT;
 	Tx_msg.dlc = 1;
@@ -92,39 +106,42 @@ int main (void)
 	
 	can_transmit();
 	
-//	uint8_t toggle = 0x1C;
-	uint8_t count = 20;
-	do {
-	
-		//mcp_write(BFPCTRL, toggle);
-	  // toggle ^= 0x10;
+	unsigned char count=20;
+	#if defined(TOGGLE_MCP_LED)
+		unsigned char toggle=0x1C;
+	#elif defined(TOGGLE_PORT_LED)
+		DDR_LED |= (1<<BIT_LED);
+	#endif
+	while(count--){
+		#if defined(TOGGLE_MCP_LED)
+			mcp_write(BFPCTRL, toggle);
+			toggle ^= 0x10;
+		#elif defined(TOGGLE_PORT_LED)
+			PORT_LED ^= (1<<BIT_LED);
+		#endif
 		_delay_ms(100);
-
-		if (can_get_nb())
+		
+		if(can_get_nb()){
 			goto sdo_server;
-		count--;
-	} while (count);
-
+		}
+	}
+	
 	start_app:
 	asm volatile("jmp 0");
-
+	
 	sdo_server:
-
-	for (;;)
-	{
-		if (Rx_msg.port_dst == PORT_SDO_CMD)
-		{
+	
+	while(1){
+		if(Rx_msg.port_dst == PORT_SDO_CMD){
 			sdo_message * msg = (sdo_message*)Rx_msg.data;
 			
 			Tx_msg.port_src = PORT_SDO_CMD;
-			Tx_msg.addr = Rx_msg.addr;
+			Tx_msg.addr_dst = Rx_msg.addr_src;
 			Tx_msg.port_dst = Rx_msg.port_src;
-			Tx_msg.dlc = 1;	
 			
-			if (msg->cmd == SDO_CMD_READ)
-			{
-				switch (msg->index)
-				{
+			
+			if(msg->cmd == SDO_CMD_READ){
+				switch(msg->index){
 					case 0xFF00:	//device information
 						my_memcpy_P(sizeof(Device_info_msg), Tx_msg.data, Device_info_msg);
 						Tx_msg.dlc = sizeof(Device_info_msg);
@@ -136,57 +153,52 @@ int main (void)
 					case 0xFF02:
 						goto start_app;
 					default:
+						Tx_msg.dlc = 1;
 						Tx_msg.data[0] = SDO_CMD_ERROR_INDEX;
+						break;
 				}
 				can_transmit();
-			}
-			else if (msg->cmd == SDO_CMD_WRITE_BLK)
-			{
-				if (msg->index == 0xFF01)
-				{
+			}else if(msg->cmd == SDO_CMD_WRITE_BLK){
+				if(msg->index==0xFF01){
 					Address = msg->address;
+					Size = msg->size;
+					Tx_msg.dlc = 1;
 					Tx_msg.data[0] = SDO_CMD_WRITE_BLK_ACK;
 					can_transmit();
 					goto programm;
-				}
-				else
-				{
+				}else{
+					Tx_msg.dlc = 1;
 					Tx_msg.data[0] = SDO_CMD_ERROR_INDEX;
 					can_transmit();
 				}
+			
+			
 			}
 		}
-		while (!can_get_nb());
+		while(!can_get_nb());
 	}
-
+	
 	programm:
-
-	for (;;) {
-		while (!can_get_nb());
-		if (Rx_msg.port_dst != PORT_SDO_DATA)
-		{
-			boot_rww_enable();
+	
+	while(1){
+		while(!can_get_nb());
+		if(Rx_msg.port_dst != PORT_SDO_DATA){
+			boot_rww_enable ();
 			goto sdo_server;
-		}
-		else
-		{
-		  uint8_t i;
-			for (i = 0; i < 4; i++)
-			{
-				boot_page_fill(Address, ((sdo_data_message*)Rx_msg.data)->data[i]);
+		}else{
+			for(x=0;x<4;x++){
+				boot_page_fill (Address,((sdo_data_message*)Rx_msg.data)->data[x] );
 				Address += 2;
 			}
 			
-			if ((Address%SPM_PAGESIZE) == 0)
-			{
-				boot_page_erase(Address - SPM_PAGESIZE);
-				boot_spm_busy_wait();      // Wait until the memory is erased.
-				boot_page_write(Address - SPM_PAGESIZE);     // Store buffer in flash page.
+			if((Address%SPM_PAGESIZE)==0){
+				boot_page_erase (Address-SPM_PAGESIZE);
+				boot_spm_busy_wait ();      // Wait until the memory is erased.
+				boot_page_write (Address-SPM_PAGESIZE);     // Store buffer in flash page.
 				boot_spm_busy_wait();       // Wait until the memory is written.
 			}
 			
-			can_transmit();		//this will repeat the ACK message
+			can_transmit();//this will repeat the ACK message
 		}
 	}
-	return 0;
 }
