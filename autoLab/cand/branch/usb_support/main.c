@@ -237,15 +237,15 @@ void customscripts(rs232can_msg *msg)
 
 }
 
-void process_msg(rs232can_msg *msg){
+int process_msg(rs232can_msg *msg){
 	cann_conn_t *ac;
 	
 	if(msg->cmd == 0x14){
 		debug(1, "Buffer overrun from CAN to USB");
-		return;
+		return -2;
 	}else if(msg->cmd != RS232CAN_PKT){
 		debug(0, "Whats going on? Received other than PKT type on Uart");
-		return;
+		return -1;
 	}
 
 	customscripts(msg);
@@ -258,6 +258,7 @@ void process_msg(rs232can_msg *msg){
 		
 		ac = ac->next;
 	}
+	return 0;
 }
 
 
@@ -348,15 +349,21 @@ int poll_usb(){
 
 	if(r > 0){
 		debug( 8, "RECEIVED DATA FROM USB" );
-		int p = 0;
-	
-		//hexdump(packetBuffer, r);
-	
-		while((p+packetBuffer[p+1] + 2) <= r){
-			
-			process_msg((rs232can_msg *) &packetBuffer[p]);
-			p += packetBuffer[p+1] + 2;
+		
+		if(debug_level >= 8){
+			hexdump(packetBuffer, r);
+		}
 				
+		int p = 0;
+		
+		
+	
+		while ( (p < r) && ((p+packetBuffer[p+1]+2) <= r) ){
+			debug(11, "p=%x\n", p);
+			int status = process_msg((rs232can_msg *) &packetBuffer[p]);
+			debug_assert( status >= 0, "reveived schrott" );
+			
+			p += packetBuffer[p+1] + 2;
 		}	
 	}
 	return 0;
