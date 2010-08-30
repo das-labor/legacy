@@ -52,7 +52,8 @@ typedef struct
 } sdo_data_message;
 
 
-unsigned char Device_info_msg[] __attribute__ ((section (".progdata"))) =
+//unsigned char Device_info_msg[] __attribute__ ((section (".progdata"))) =
+unsigned char Device_info_msg[] PROGMEM =
 {
 	SDO_CMD_REPLY,
 	SDO_TYPE_UINT32_RO,
@@ -62,7 +63,8 @@ unsigned char Device_info_msg[] __attribute__ ((section (".progdata"))) =
 	0
 };
 
-unsigned char Flash_info_msg[] __attribute__ ((section (".progdata"))) =
+//unsigned char Flash_info_msg[] __attribute__ ((section (".progdata"))) =
+unsigned char Flash_info_msg[] PROGMEM =
 {
 	SDO_CMD_REPLY,
 	SDO_TYPE_STRING_WO,
@@ -74,7 +76,7 @@ unsigned char Flash_info_msg[] __attribute__ ((section (".progdata"))) =
 unsigned char Station_id;
 
 
-int bootloader(void){
+void bootloader(void){
 	uint16_t Address;
 	uint16_t Size;
 	unsigned char x;
@@ -93,6 +95,8 @@ int bootloader(void){
 		
 	can_init();
 	
+	
+	
 	Tx_msg.addr_src = EEDR;
 	Tx_msg.addr_dst = 0;
 	Tx_msg.port_src = PORT_MGT;
@@ -102,10 +106,19 @@ int bootloader(void){
 	
 	can_transmit();
 	
-	unsigned char count=20, toggle=0x1C;
+	unsigned char count=20;
+	#if defined(TOGGLE_MCP_LED)
+		unsigned char toggle=0x1C;
+	#elif defined(TOGGLE_PORT_LED)
+		DDR_LED |= (1<<BIT_LED);
+	#endif
 	while(count--){
-		mcp_write(BFPCTRL, toggle);
-		toggle ^= 0x10;
+		#if defined(TOGGLE_MCP_LED)
+			mcp_write(BFPCTRL, toggle);
+			toggle ^= 0x10;
+		#elif defined(TOGGLE_PORT_LED)
+			PORT_LED ^= (1<<BIT_LED);
+		#endif
 		_delay_ms(100);
 		
 		if(can_get_nb()){
