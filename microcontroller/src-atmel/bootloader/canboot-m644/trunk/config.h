@@ -1,8 +1,14 @@
-#ifndef _CONFIG_H
-#define _CONFIG_H
+#ifndef CONFIG_H
+#define CONFIG_H
 
 // Bootloader defines
 #define EEPR_ADDR_NODE 0x00
+
+//#define TOGGLE_MCP_LED
+#define TOGGLE_PORT_LED
+#define PORT_LED PORTB
+#define DDR_LED DDRB
+#define BIT_LED  PB0
 
 // spi.[ch] defines
 #define SPI_HARDWARE
@@ -16,8 +22,8 @@
 #define SPI_PIN_SS PB4		// for slave select
 
 //interrupt pin of MCP2515 for non interrupt drive can
-#define SPI_PIN_MCP_INT PD2
-#define SPI_REG_PIN_MCP_INT PIND
+#define SPI_PIN_MCP_INT PB2        //int2 pin for labnode
+#define SPI_REG_PIN_MCP_INT PINB   //int2 pin for labnode
 	
 
 // can.[ch] defines
@@ -25,6 +31,5 @@
 
 #define PORT_SDO_CMD 21
 #define PORT_SDO_DATA 22
-
 
 #endif
