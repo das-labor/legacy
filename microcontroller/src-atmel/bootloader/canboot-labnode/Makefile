@@ -4,17 +4,14 @@ SRC            = bootloader.c util.c can.c main.c
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os -fshort-enums
 
-# this is for atmega128
-#BOOTLOADER_START = 0x1E000
-
-# this is for atmega64
-#BOOTLOADER_START = 0xE000
 
 # this is for atmega32
 BOOTLOADER_START = 0x7C00
+HFUSE            = 0xc4
+LFUSE            = 0x9f
 
 FLASHCMD       = avrdude -p m32 -c usbasp -V -U bootloader.hex
-FUSECMD        = avrdude -p m32 -c usbasp -U hfuse:w:0xc4:m - U lfuse:w:0x9f:m
+FUSECMD        = avrdude -p m32 -c usbasp -U hfuse:w:$(HFUSE):m -U lfuse:w:$(LFUSE):m
 
 DEFS           = -DF_CPU=16000000
 LIBS           =
