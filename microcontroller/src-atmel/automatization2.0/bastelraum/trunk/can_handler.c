@@ -11,8 +11,8 @@
 
 #include "Bastelcmd.h"
 
-uint8_t myaddr;
 
+uint8_t myaddr;
 void twi_get(uint8_t *p);
 uint8_t status[10][10];
 
