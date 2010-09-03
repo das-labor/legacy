@@ -5,6 +5,9 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <inttypes.h>
+#include <avr/eeprom.h>
+#include <avr/wdt.h>
+
 
 #include "config.h"
 #include "bootloader.h"
@@ -15,7 +18,7 @@
 #define PORT_MGT 0x30
 #define FKT_MGT_AWAKE 0x03
 
-unsigned char Station_id __attribute__ ((section (".eeprom"))) = 0x34;
+unsigned char Station_id;
 
 #define SDO_CMD_READ 		0x20
 #define SDO_CMD_REPLY 		0x21
@@ -57,8 +60,8 @@ unsigned char Device_info_msg[] PROGMEM =
 {
 	SDO_CMD_REPLY,
 	SDO_TYPE_UINT32_RO,
-	(unsigned char)SPM_PAGESIZE,
-	(unsigned char)SPM_PAGESIZE>>8,
+	(unsigned char)(SPM_PAGESIZE),
+	(unsigned char)(SPM_PAGESIZE>>8),
 	64,
 	0
 };
@@ -68,8 +71,9 @@ unsigned char Flash_info_msg[] PROGMEM =
 {
 	SDO_CMD_REPLY,
 	SDO_TYPE_STRING_WO,
-	(unsigned char)((unsigned char)FLASHEND+1),
-	((unsigned int)FLASHEND+1)>>8
+	//(unsigned char)((unsigned char)FLASHEND+1),
+	//((unsigned int)FLASHEND+1)>>8
+	0xff,0xff //dirty hack : return 65535 bytes instead of 65536 because we used to small sized integer...
 };
 
 
@@ -81,23 +85,29 @@ void bootloader(void){
 	uint16_t Size;
 	unsigned char x;
 	
-	cli();
-	
 	asm volatile(
-		"out 0x3e, %A0\n\t"
-		"out 0x3d, %B0\n\t"
+		"eor r1,r1    \n\t"
+		"out 0x3f, r0 \n\t"
+		"out 0x3e, %B0\n\t"
+		"out 0x3d, %A0\n\t"
 		::"w" (RAMEND)
 	);
+
+	//disable watchdog (it is NOT turned off on mega 644 through reset)
+	wdt_reset();
+	MCUSR = 0;
+	_WD_CONTROL_REG = _BV(_WD_CHANGE_BIT) | _BV(WDE);
+	_WD_CONTROL_REG = 0;
 	
+	//don't use library function to read eeprom
+	//because it wouldn't end up in bootloader section
 	EEAR = EEPR_ADDR_NODE;
 	EECR = (1<<EERE);
 	Station_id = EEDR;
 		
 	can_init();
 	
-	
-	
-	Tx_msg.addr_src = EEDR;
+	Tx_msg.addr_src = Station_id;
 	Tx_msg.addr_dst = 0;
 	Tx_msg.port_src = PORT_MGT;
 	Tx_msg.port_dst = PORT_MGT;
