@@ -31,7 +31,7 @@ section at the end of this file).
 #define USB_CFG_IOPORTNAME      C
 #define USB_CFG_DMINUS_BIT      3
 #define USB_CFG_DPLUS_BIT       2
-#elsif HWREF == 2
+#elif HWREF == 2
 #define USB_CFG_IOPORTNAME      D
 #define USB_CFG_DMINUS_BIT      1
 #define USB_CFG_DPLUS_BIT       2
