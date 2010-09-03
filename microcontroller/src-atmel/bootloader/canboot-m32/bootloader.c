@@ -15,7 +15,7 @@
 #define PORT_MGT 0x30
 #define FKT_MGT_AWAKE 0x03
 
-unsigned char Station_id __attribute__ ((section (".eeprom"))) = 0x34;
+unsigned char Station_id;
 
 #define SDO_CMD_READ 		0x20
 #define SDO_CMD_REPLY 		0x21
@@ -81,14 +81,14 @@ void bootloader(void){
 	uint16_t Size;
 	unsigned char x;
 	
-	cli();
-	
 	asm volatile(
-		"out 0x3e, %A0\n\t"
-		"out 0x3d, %B0\n\t"
+		"eor r1,r1    \n\t"
+		"out 0x3f, r0 \n\t"
+		"out 0x3e, %B0\n\t"
+		"out 0x3d, %A0\n\t"
 		::"w" (RAMEND)
 	);
-	
+		
 	EEAR = EEPR_ADDR_NODE;
 	EECR = (1<<EERE);
 	Station_id = EEDR;
@@ -97,7 +97,7 @@ void bootloader(void){
 	
 	
 	
-	Tx_msg.addr_src = EEDR;
+	Tx_msg.addr_src = Station_id;
 	Tx_msg.addr_dst = 0;
 	Tx_msg.port_src = PORT_MGT;
 	Tx_msg.port_dst = PORT_MGT;
