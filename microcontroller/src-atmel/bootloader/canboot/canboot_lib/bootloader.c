@@ -5,8 +5,11 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <inttypes.h>
+#include <avr/eeprom.h>
+#include <avr/wdt.h>
 
-#include "config.h"
+
+#include "../config.h"
 #include "bootloader.h"
 
 #include "can.h"
@@ -57,9 +60,9 @@ unsigned char Device_info_msg[] PROGMEM =
 {
 	SDO_CMD_REPLY,
 	SDO_TYPE_UINT32_RO,
-	(unsigned char)SPM_PAGESIZE,
-	(unsigned char)SPM_PAGESIZE>>8,
-	32,
+	(unsigned char)(SPM_PAGESIZE),
+	(unsigned char)(SPM_PAGESIZE>>8),
+	(FLASHEND+1)/1024, //changed this from Atmega number to real Flash-size in kB
 	0
 };
 
@@ -68,8 +71,12 @@ unsigned char Flash_info_msg[] PROGMEM =
 {
 	SDO_CMD_REPLY,
 	SDO_TYPE_STRING_WO,
+#if (FLASHEND >= 0xffff)
+	0xff,0xff //dirty hack : return 65535 bytes instead of 65536 because we used to small sized integer...
+#else
 	(unsigned char)((unsigned char)FLASHEND+1),
 	((unsigned int)FLASHEND+1)>>8
+#endif
 };
 
 
@@ -81,21 +88,29 @@ void bootloader(void){
 	uint16_t Size;
 	unsigned char x;
 	
-		asm volatile(
+	asm volatile(
 		"eor r1,r1    \n\t"
 		"out 0x3f, r0 \n\t"
 		"out 0x3e, %B0\n\t"
 		"out 0x3d, %A0\n\t"
 		::"w" (RAMEND)
 	);
-		
+
+#ifdef TURN_OFF_WATCHDOG
+	//disable watchdog (it is NOT turned off on mega 644 through reset)
+	wdt_reset();
+	MCUSR = 0;
+	_WD_CONTROL_REG = _BV(_WD_CHANGE_BIT) | _BV(WDE);
+	_WD_CONTROL_REG = 0;
+#endif
+
+	//don't use library function to read eeprom
+	//because it wouldn't end up in bootloader section
 	EEAR = EEPR_ADDR_NODE;
 	EECR = (1<<EERE);
 	Station_id = EEDR;
 		
 	can_init();
-	
-	
 	
 	Tx_msg.addr_src = Station_id;
 	Tx_msg.addr_dst = 0;
@@ -127,7 +142,7 @@ void bootloader(void){
 	}
 	
 	start_app:
-	asm volatile("jmp 0");
+	asm volatile(JUMP_OPCODE " 0\r\t");
 	
 	sdo_server:
 	
