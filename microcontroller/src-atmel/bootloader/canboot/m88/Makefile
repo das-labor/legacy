@@ -1,6 +1,6 @@
 PRG            = bootloader
 #OBJ            = bootloader.o util.o can.o main.o
-SRC            = bootloader.c util.c can.c main.c
+SRC            = ../bootloader.c ../util.c ../can.c ../main.c
 MCU_TARGET     = atmega88
 OPTIMIZE       = -Os -fshort-enums
 
