@@ -9,9 +9,16 @@
 
 can_message Rx_msg, Tx_msg;
 
+typedef uint16_t pgm_p_t;
+
+#ifdef pgm_read_byte_far
+	#undef pgm_read_byte
+	#define pgm_read_byte(x) pgm_read_byte_far(0x10000l | (x)) 
+#endif
+
 /* MCP */
 void mcp_write(unsigned char reg, unsigned char data) BOOTLOADER_SECTION;
-void mcp_write_b(prog_uint8_t * stream) BOOTLOADER_SECTION;
+void mcp_write_b(pgm_p_t stream) BOOTLOADER_SECTION;
 unsigned char mcp_read(unsigned char reg) BOOTLOADER_SECTION;
 
 
@@ -59,7 +66,7 @@ void mcp_write(unsigned char reg, unsigned char data)
 	spi_release_ss();
 }
 
-void mcp_write_b(prog_uint8_t * stream)
+void mcp_write_b(pgm_p_t stream)
 {
 	unsigned char len;
 	
@@ -100,7 +107,7 @@ void can_transmit()
 	}
 	spi_release_ss();
 
-	mcp_write_b(mcp_txreq_str);
+	mcp_write_b((pgm_p_t) mcp_txreq_str);
 }
 
 
@@ -202,7 +209,11 @@ void can_init()
 	//PORTB |= (1<<SPI_PIN_MISO); //MISO pullup for debugging
 		
 	//set output SPI pins to output
-	SPI_DDR = _BV(SPI_PIN_MOSI) | _BV(SPI_PIN_SCK) | _BV(SPI_PIN_SS);
+	#ifdef SPI_PIN_SS_AVR
+		SPI_DDR = _BV(SPI_PIN_MOSI) | _BV(SPI_PIN_SCK) | _BV(SPI_PIN_SS) | _BV(SPI_PIN_SS_AVR);
+	#else
+		SPI_DDR = _BV(SPI_PIN_MOSI) | _BV(SPI_PIN_SCK) | _BV(SPI_PIN_SS);
+	#endif
 	SPCR = _BV(SPE) | _BV(MSTR);
 	//Double speed on
 	SPSR = _BV(SPI2X);
@@ -212,12 +223,12 @@ void can_init()
 	spi_data(RESET);
 	spi_release_ss();
 	
-	mcp_write_b(mcp_config_str1);
+	mcp_write_b((pgm_p_t) mcp_config_str1);
 
 	mcp_write(RXF0EID0, Station_id);
 	mcp_write(RXF1EID0, Station_id);
 
-	mcp_write_b(mcp_config_str2);
+	mcp_write_b((pgm_p_t) mcp_config_str2);
 
 	PORTB &= ~(1<<BIT_CS_EXT);
 
