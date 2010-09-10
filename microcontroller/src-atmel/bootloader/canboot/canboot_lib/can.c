@@ -2,7 +2,7 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 
-#include "config.h"
+#include "../config.h"
 #include "can.h"
 #include "mcp2515reg.h"
 #include "bootloader.h"

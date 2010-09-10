@@ -12,7 +12,7 @@
  * #define CAN_TX_BUFFER_SIZE 2	//only used for Interrupt
  */
 
-#include "config.h"
+#include "../config.h"
 
 /*****************************************************************************
  * Types
