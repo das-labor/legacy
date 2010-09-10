@@ -1,23 +1,9 @@
 PRG            = bootloader
-#OBJ            = bootloader.o util.o can.o main.o
 SRC            = canboot_lib/bootloader.c canboot_lib/util.c canboot_lib/can.c canboot_lib/main.c
-MCU_TARGET     = atmega88
 OPTIMIZE       = -Os -fshort-enums
 
-# this is for atmega32
-#BOOTLOADER_START = 0x7C00
-HFUSE            = 0xc4
-LFUSE            = 0x9f
-
-
-#this is for atmega644
-BOOTLOADER_START = 0xfC00
-HFUSE            = 0xd6
-LFUSE            = 0xd7
-EFUSE            = 0xfc
-
-FLASHCMD       = avrdude -p m88 -c usbasp -V -U bootloader.hex
-FUSECMD        = avrdude -p m88 -c usbasp -U hfuse:w:$(HFUSE):m -U lfuse:w:$(LFUSE):m -U efuse:w:$(EFUSE):m
+FLASHCMD       = avrdude -p $(MCU_TARGET) -c usbasp -V -U bootloader.hex
+FUSECMD        = avrdude -p $(MCU_TARGET) -c usbasp -U hfuse:w:$(HFUSE):m -U lfuse:w:$(LFUSE):m -U efuse:w:$(EFUSE):m
 
 DEFS           = -DF_CPU=16000000
 LIBS           =
@@ -30,7 +16,6 @@ CC             = avr-gcc
 
 override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS)
 override LDFLAGS       = -T ./canboot_lib/avr5.x -Wl,-Map,$(PRG).map,--section-start=.bootloader=$(BOOTLOADER_START)
-#override LDFLAGS       = -Wl,-Map,$(PRG).map
 
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
