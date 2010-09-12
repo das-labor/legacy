@@ -135,7 +135,11 @@ KeyronaSubject::KeyronaSubject( UInt8 subjectType,
     if (!dirWritable(keyDirectory))
         throw DirNotWritable("KeyronaSubject: The supplied key directory is not writable!");
 	
-	mySubjectKeyUUID = generateUUID();
+	// Initialize RNG
+    srand(time(NULL));
+
+    // generate new random subjectID
+    mySubjectKeyUUID = convertUInt32toString((rand() % 100000 + 1));
 	if (mySubjectKeyUUID.empty()) 
 		throw InvalidKeyUUID("KeyronaSubject: The supplied Key UUID was invalid");
 		
@@ -223,6 +227,7 @@ KeyronaSubject::KeyronaSubject( UInt8 subjectType,
         case SUBJECTTYPE_PLATFORM:
         {
             mySubjectKeyfile = myKeyDirectory + KeyronaPathSeparator + "Keyrona" + KeyronaSubjectType_Platform + KeyronaFileSeparator + mySubjectIDString  + KeyronaFileSeparator + mySubjectName + KeyronaP15FileExtension;
+            cout << "top" << endl;
             break;
         }
     }
@@ -361,9 +366,7 @@ void KeyronaSubject::printSubject(bool verbose)
     KeyronaSubjectType[SUBJECTTYPE_PLATFORM]        = KeyronaSubjectType_Platform;
     KeyronaSubjectType[SUBJECTTYPE_TOKEN]           = KeyronaSubjectType_Token;
     KeyronaDate myLastLogin = getMyLastLogin();
-	//cout << "yep" << endl;
-	//KeyronaTPM myTPM;
-	//myTPM.revokeek();
+	//cout << "yep" << endl;hg
     // if not verbose, print small subject info
    if (! verbose)
     {
@@ -611,7 +614,7 @@ void KeyronaSubject::setLastLogin(KeyronaDate &LoginDate)
 };
 
 //================================================================================
-//
+//   
 ByteVector  KeyronaSubject::encryptForSubject(KeyronaSubject *Subject, ByteVector &toEncrypt)
 {
     if (! toEncrypt.size())
@@ -619,10 +622,18 @@ ByteVector  KeyronaSubject::encryptForSubject(KeyronaSubject *Subject, ByteVecto
 	
 	if (mySubjectType == SUBJECTTYPE_PLATFORM)
 			{
+			std::vector<int> pcr;
+			int x;
+			do {
+			cout << "please enter value: ";
+			scanf("%i", &x);
+			pcr.push_back(x);
+			}
+			while(x = -1);	
 			int local=0;
             // sealing it to current platform
             KeyronaTPM myTPM;
-            vector<ByteVector> mySealedDataWithKey = myTPM.seal(toEncrypt,local); // XXX see kyronatpm.hxx
+            vector<ByteVector> mySealedDataWithKey = myTPM.seal(toEncrypt,local,pcr); // XXX see kyronatpm.hxx
 			
             // storing sealed data
             ByteVector Data = mySealedDataWithKey.back();

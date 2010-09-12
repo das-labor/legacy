@@ -230,8 +230,12 @@ string KeyronaKeyprovider::getSubjectPassword(KeyronaSubject *mySubject)
             myPassword = "";
         }
     }
+    
+     if (mySubject->getMySubjectType() == SUBJECTTYPE_PLATFORM)
+    {
+	}
 
-    if (myPassword.empty())
+    if (mySubject->getMySubjectType() == SUBJECTTYPE_USER)
     {
         try
         {

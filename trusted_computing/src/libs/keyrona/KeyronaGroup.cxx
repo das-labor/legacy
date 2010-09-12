@@ -57,7 +57,11 @@ KeyronaGroup::KeyronaGroup(const string GroupID, KeyronaStorage &GroupStorage, K
     debug << "KeyronaGroup[" + myGroupID + "|Constructor()]: Group '" + myGroupID + "' does not exist, creating new group." << endl;
     myGroupKeyfile = myKeyDirectory + KeyronaPathSeparator + KeyronaGroup_GroupKeyIdentifier  + KeyronaFileSeparator + myGroupID + KeyronaP15FileExtension;
         
-    myGroupKeyUUID = generateUUID();
+    // Initialize RNG
+    srand(time(NULL));
+
+    // generate new random subjectID
+    myGroupKeyUUID = convertUInt32toString((rand() % 100000 + 1));
     myGroupKeyType = "group";
         
     // generating random password for new key
@@ -249,16 +253,12 @@ void    KeyronaGroup::addSubjectToGroup(KeyronaSubject *Subject, string &groupKe
     debug << "KeyronaGroup["+myGroupID+"|addSubjectToGroup()]: verification successful!" << endl;
 
     debug << "KeyronaGroup["+myGroupID+"|addSubjectToGroup()]: encrypting group key for new subject: '" << Subject->getMySubjectName() << "'" << endl;
-    cout << "test" << endl;
+
     // encrypt group key password for subject
-    cout <<" test4" << endl;
-    				string test = Subject->getMySubjectKeyUUID();
-				cout << test << endl;
     ByteVector passwordVector = convertStringToByteVector(groupKeyPassword);
     ByteVector passwordVectorByteVector = Subject->encryptForSubject(Subject, passwordVector);
     if (!passwordVector.size())
         throw EncryptionFailed("KeyronaGroup[" + myGroupID + "|Constructor()]: Encryption failed for admin '" + Subject->getMySubjectName() + "'!");
-    cout <<" test5" << endl;
 
     // convert it into Base64
     string myBase64EncodedPassword = EncodeByteVectorToBASE64(passwordVectorByteVector);

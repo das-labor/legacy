@@ -239,19 +239,7 @@ void KeyronaKey::deleteKey(KeyronaSubject *Subject, KeyronaGroup *Group)
 //
 void KeyronaKey::getKeysUUID()
 {
-	KeyronaTPM myTPM;
-	
-	ByteVector keys = myTPM.get_keys_by_uuid();
-	TSS_KM_KEYINFO2 k((const tdTSS_KM_KEYINFO2&) keys);
-	UInt32 keysslength = keys.size();
-	for( UInt32 i = 0; i<keysslength; i++) {
-	printf("UUID         : %08x-%04hx-%04hx-%02hhx%02hhx-%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n",
-	       k.keyUUID.ulTimeLow, k.keyUUID.usTimeMid, k.keyUUID.usTimeHigh,
-	       k.keyUUID.bClockSeqHigh, k.keyUUID.bClockSeqLow,
-	       k.keyUUID.rgbNode[0] & 0xff, k.keyUUID.rgbNode[1] & 0xff,
-	       k.keyUUID.rgbNode[2] & 0xff, k.keyUUID.rgbNode[3] & 0xff,
-	       k.keyUUID.rgbNode[4] & 0xff, k.keyUUID.rgbNode[5] & 0xff);
-	       	}
+
 	
 };
 
