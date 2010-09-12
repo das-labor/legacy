@@ -623,13 +623,13 @@ ByteVector  KeyronaSubject::encryptForSubject(KeyronaSubject *Subject, ByteVecto
 	if (mySubjectType == SUBJECTTYPE_PLATFORM)
 			{
 			std::vector<int> pcr;
-			int x;
-			do {
-			cout << "please enter value: ";
-			scanf("%i", &x);
-			pcr.push_back(x);
-			}
-			while(x = -1);	
+			//int x;
+			//do {
+			//cout << "please enter value: ";
+			//scanf("%i", &x);
+			//pcr.push_back(x);
+			//}
+			//while(x == 24);	
 			int local=0;
             // sealing it to current platform
             KeyronaTPM myTPM;
