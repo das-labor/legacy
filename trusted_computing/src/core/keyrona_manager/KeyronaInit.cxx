@@ -169,7 +169,8 @@ void KeyronaCreateAdmin(KeyronaStorage &mySubjectStorage, KeyronaStorage &myGrou
         cout << "not present!" << endl;
         cout << "Deleting already registered keys of TPM" << endl;
         cout << "Please be patient, this can take some time..." << endl;
-        KeyronaKey deleteAllKeys();
+        KeyronaTPM myTPM;
+        myTPM.remove_all_keys_by_uuid();
 
         KeyronaSubject newAdmin(SUBJECTTYPE_USER, myUsername, myEMail, myC, myO, myOU, mySP, myL, true, myKeyDirectory, mySubjectStorage);
         if (! newAdmin.getMySubjectID())
