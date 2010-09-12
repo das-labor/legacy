@@ -381,6 +381,7 @@ ByteVector KeyronaTPM::bind(ByteVector &dataToBind, UInt32 &bindkeynum)
 	memset (&hBindKey_UUID, 0, sizeof(hBindKey_UUID));
 	hBindKey_UUID.rgbNode[5] = bindkeynum & 0xff;
 
+	cout << bindkeynum << endl;
     if (Tspi_Context_Create(&hContext) != TSS_SUCCESS)
         throw ContextError("KeyronaTPM[TrouSerS]|bind(): Could not create context!");
 
