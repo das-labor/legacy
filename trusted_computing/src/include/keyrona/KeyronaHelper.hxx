@@ -267,9 +267,6 @@ string selectFromStringPairVector(vector<StringPair> &AvailablePairs, string wha
  */
 string selectFromStringVector(vector<string> &AvailableStrings, string whatToSelect, string messageToUser);
 
-string generateUUID();
-
-
 /*!
  *  @brief creates a random string
  *  @param iLength, int, defines the length of the random string

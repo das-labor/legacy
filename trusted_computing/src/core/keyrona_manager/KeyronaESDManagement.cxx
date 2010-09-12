@@ -58,7 +58,7 @@ void KeyronaCreateESD(KeyronaStorage &myESDStorage)
         throw InvalidUsername("KeyronaCreateESD(): ESD already exists!");
     	KeyronaTPM myTPM;
 	
-	ByteVector blub = myTPM.get_keys_by_uuid();
+	//ByteVector blub = myTPM.get_keys_by_uuid();
 	exit(-1);
     string myESDDevice;    
     

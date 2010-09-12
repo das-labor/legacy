@@ -55,8 +55,8 @@ const std::string KeyronaSubject_PasswordSection = "Password";
 const std::string KeyronaSubject_PasswordMagicEntry = "Magic";
 
 const std::string KeyronaSubject_SubjectName    = "Name";
-const std::string KeyronaSubject_SubjectKeyUUID = "KeyUUID";
 const std::string KeyronaSubject_SubjectKeyType = "KeyType";
+const std::string KeyronaSubject_SubjectKeyUUID = "KeyUUID";
 const std::string KeyronaSubject_SubjectEMail   = "EMail";
 const std::string KeyronaSubject_SubjectKeyfile = "Keyfile";
 const std::string KeyronaSubject_SubjectCountrycode = "Country";

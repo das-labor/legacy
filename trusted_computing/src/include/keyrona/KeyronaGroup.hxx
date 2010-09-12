@@ -40,10 +40,9 @@ const std::string KeyronaGroup_isGroup        = "isGroup";
 const std::string KeyronaGroup_isGroup_true    = "true";
 const std::string KeyronaGroup_isGroup_false   = "false";
 const std::string KeyronaGroup_GroupKeyfile = "GroupKey";
-const std::string KeyronaGroup_GroupKeyUUID = "GroupKeyUUID";
 const std::string KeyronaGroup_GroupKeyType = "GroupKeyType";
+const std::string KeyronaGroup_GroupKeyUUID = "GroupKeyUUID";
 const std::string KeyronaGroup_TestVector = "TestVector";
-
 const std::string KeyronaGroup_GroupKeyIdentifier = "KeyronaGroup";
 const std::string KeyronaGroup_SubjectList    = "Subjects";
 const std::string KeyronaGroup_SubjectKeys    = "SubjectKeys";
@@ -90,7 +89,7 @@ namespace keyrona
              *  @returns string, contains the groups key file
              */
             string getMyGroupKeyfile()      { return myGroupKeyfile; };
-            
+                        
             string getMyGroupKeyUUID()      { return myGroupKeyUUID; };
 
             string getMyGroupKeyType()      { return myGroupKeyType; };

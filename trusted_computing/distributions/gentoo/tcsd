@@ -1,0 +1,20 @@
+#!/sbin/runscript
+# Copyright 1999-2005 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /var/cvsroot/gentoo-x86/app-crypt/trousers/files/tcsd.initd,v 1.2 2005/06/23 13:03:55 dragonheart Exp $
+
+start() {
+	ebegin "Starting TrouSerS' TCS daemon (tcsd)"
+	mount /dev/mmcblk0p1 /etc/keyrona
+	chown tss:tss /dev/tpm0
+	chmod 600 /dev/tpm0
+	start-stop-daemon --start --background --exec /usr/sbin/tcsd
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping TrouSerS' TCS daemon (tcsd)"
+        start-stop-daemon --stop --exec /usr/sbin/tcsd 
+	umount -lf /etc/keyrona
+	eend $?
+}

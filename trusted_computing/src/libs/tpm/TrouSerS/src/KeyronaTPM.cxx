@@ -132,7 +132,7 @@ void KeyronaTPM::revokeek()
     Tspi_Context_Close(hContext);
 };
 
-vector<ByteVector> KeyronaTPM::seal(ByteVector &dataToSeal, int &local)
+vector<ByteVector> KeyronaTPM::seal(ByteVector &dataToSeal, int &local, vector<int> &pcr)
 {
     TSS_HCONTEXT hContext;
     TSS_HTPM     hTPM;
@@ -217,20 +217,21 @@ vector<ByteVector> KeyronaTPM::seal(ByteVector &dataToSeal, int &local)
     }
     
     //Choose PCR's 
-	for( pcr_index = 0; pcr_index < 24; pcr_index++) {
-		if (Tspi_TPM_PcrRead (hTPM, pcr_index, &pcrvaluelength, &pcrvalue ) != TSS_SUCCESS )
+	for( pcr_index = 0; pcr_index < pcr.size(); pcr_index++) {
+		if (Tspi_TPM_PcrRead (hTPM, pcr[pcr_index], &pcrvaluelength, &pcrvalue ) != TSS_SUCCESS )
 		{
 			Tspi_Context_FreeMemory(hContext, NULL);
 			Tspi_Context_Close(hContext);
 			throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error can't read PCR value");
 		}
 		
-		if (Tspi_PcrComposite_SetPcrValue (hPCR , pcr_index, pcrvaluelength, pcrvalue ) != TSS_SUCCESS )
+		if (Tspi_PcrComposite_SetPcrValue (hPCR , pcr[pcr_index], pcrvaluelength, pcrvalue ) != TSS_SUCCESS )
 		{
 			Tspi_Context_FreeMemory(hContext, NULL);
 			Tspi_Context_Close(hContext);
 			throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error can't set PCR value");
 		}
+		cout << pcr[pcr_index] << endl;
 		pcrvaluelength=NULL;
 		pcrvalue=NULL;
 		cout << "Added PCR" << pcr_index << " digest value to PCR Object for sealing" << endl;
@@ -735,7 +736,7 @@ ByteVector KeyronaTPM::create_key(string &password, UInt32 &keynum, string &type
 	return keyData;
 };
 
-ByteVector KeyronaTPM::get_keys_by_uuid()
+void KeyronaTPM::remove_all_keys_by_uuid()
 {
 	TSS_HCONTEXT hContext;
 	TSS_HTPM	 hTPM;
@@ -768,41 +769,15 @@ ByteVector KeyronaTPM::get_keys_by_uuid()
         throw TSSError("KeyronaTPM[TrouSerS]|get_keys_by_uuid(): Error get registered keys by UUID. (" + getTSSError(error0) + ")");
     }
     
-    	for( UInt32 i = 0; i<keyblobsize; i++) {
-printf("Version      : %hhu.%hhu.%hhu.%hhu\n", keyblob[i].versionInfo.bMajor, keyblob[i].versionInfo.bMinor,
-	       keyblob[i].versionInfo.bRevMajor, keyblob[i].versionInfo.bRevMinor);
-	cout << (keyblob[i].keyUUID.rgbNode[5] & 0xff) << endl;
-	printf("parent UUID  : %08x-%04hx-%04hx-%02hhx%02hhx-%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n",
-	       keyblob[i].parentKeyUUID.ulTimeLow, keyblob[i].parentKeyUUID.usTimeMid, keyblob[i].parentKeyUUID.usTimeHigh,
-	       keyblob[i].parentKeyUUID.bClockSeqHigh, keyblob[i].parentKeyUUID.bClockSeqLow,
-	       keyblob[i].parentKeyUUID.rgbNode[0] & 0xff, keyblob[i].parentKeyUUID.rgbNode[1] & 0xff,
-	       keyblob[i].parentKeyUUID.rgbNode[2] & 0xff, keyblob[i].parentKeyUUID.rgbNode[3] & 0xff,
-	       keyblob[i].parentKeyUUID.rgbNode[4] & 0xff, keyblob[i].parentKeyUUID.rgbNode[5] & 0xff);
-	printf("Auth?        : %s\n", keyblob[i].bAuthDataUsage ? "YES" : "NO");
-
-	if	(keyblob[i].persistentStorageType == TSS_PS_TYPE_SYSTEM)	printf("Store        : System\n");
-	else if (keyblob[i].persistentStorageType == TSS_PS_TYPE_USER)		printf("Store        : User\n");
-	else 								printf("Store        : Error\n");
-
-	if	(keyblob[i].persistentStorageTypeParent == TSS_PS_TYPE_SYSTEM)	printf("Parent Store : System\n");
-	else if	(keyblob[i].persistentStorageTypeParent == TSS_PS_TYPE_USER)	printf("Parent Store : User\n");
-	else								printf("Parent Store : Error\n");
-
-	if	(keyblob[i].ulVendorDataLength)					printf("Vendor Data  : \"%s\" (%u bytes)\n", keyblob[i].rgbVendorData, keyblob[i].ulVendorDataLength);
-	else								printf("Vendor Data  : (0 bytes)\n");
-
-	/* custom additions below */
-	printf("Loaded?      : %s\n", keyblob[i].fIsLoaded ? "YES" : "NO");
-	printf("\n");	       	
+    for( UInt32 i = 0; i<keyblobsize; i++) 
+    {
+		UInt32 keynum = (keyblob[i].keyUUID.rgbNode[5] & 0xff);
+		delete_key(keynum);
 	}
-    
-    ByteVector keydata((UInt8*)keyblob, keyblobsize);
     
 	Tspi_Context_FreeMemory (hContext, (BYTE*)keyblob);
     Tspi_Context_FreeMemory(hContext, NULL);
     Tspi_Context_Close(hContext);
-    
-    return keydata;
 };
 
 void KeyronaTPM::change_key_auth(string &password, string &password_old, UInt32 &keynum)

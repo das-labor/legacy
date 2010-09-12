@@ -52,7 +52,7 @@ namespace keyrona
 	     *  @param dataToSeal, address of ByteVector, that contains the data to be sealed
 	     *  @return vector of ByteVector, that contains the sealed data
              */
-            vector<ByteVector> seal(ByteVector &dataToSeal, int &local);
+            vector<ByteVector> seal(ByteVector &dataToSeal, int &local, vector<int> &pcr);
 	    
             /*!
              *  @brief unseals data with the TPM
@@ -78,7 +78,7 @@ namespace keyrona
 	     */
 	    ByteVector create_key(string &password, UInt32 &keynum, string &type);
 	    
-	    ByteVector get_keys_by_uuid();
+	    void remove_all_keys_by_uuid();
 	    
 	    void change_key_auth(string &password, string &password_old, UInt32 &keynum);
 	    
