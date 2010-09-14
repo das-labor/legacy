@@ -30,8 +30,13 @@
 void pwm_handler();
 
 
-
-#define _TIMSK_TIMER1 TIMSK
+#if defined(__AVR_ATmega8__)
+	#define _TIMSK_TIMER1 TIMSK
+#elif defined(__AVR_ATmega88__)
+	#define _TIMSK_TIMER1 TIMSK1
+#else
+	#error The _TIMSK_TIMER1 is not defined for your AVR. Please add your AVR here.
+#endif
 
 /* color <-> channel assignment */
 #define CHANNEL_RED     0
@@ -116,4 +121,5 @@ void init_timer1(void);
 void init_pwm(void);
 void update_pwm_timeslots(void);
 void update_brightness(void);
-#endif
+
+#endif

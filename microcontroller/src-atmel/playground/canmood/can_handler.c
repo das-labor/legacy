@@ -23,7 +23,6 @@ extern void can_handler()
 				switch (rx_msg->data[0])
 				{
 					case FKT_MGT_RESET:
-						TCCR2 = 0;
 						wdt_enable(0);
 						while (1);
 			
@@ -35,11 +34,9 @@ extern void can_handler()
 						break;
 				}
 			}
-			else if (rx_msg->port_dst == 1)
-			{
+			else if (rx_msg->port_dst == 1) {
 				static can_message msg = {0, 0, 0x0, PORT_REMOTE, 6, {0}};
-				switch (rx_msg->data[0])
-				{
+				switch (rx_msg->data[0]) {
 					case 0x00: //FKT_MOOD_SET_B
 						global_pwm.channels[rx_msg->data[1]].target_brightness = rx_msg->data[2];
 						break;
@@ -55,6 +52,17 @@ extern void can_handler()
 						msg.data[2] = global_pwm.channels[2].brightness;
 						can_transmit(&msg);
 						break;
+				}
+			}
+			else if (rx_msg->port_dst == 2) {
+				if (!(rx_msg->data[0] & 0x01)) {
+					script_threads[0].flags.disabled = 1;
+					global_pwm.channels[0].target_brightness = 0;
+					global_pwm.channels[1].target_brightness = 0;
+					global_pwm.channels[2].target_brightness = 0;
+				}
+				if (rx_msg->data[0] & 0x01) {
+					script_threads[0].flags.disabled = 0;
 				}
 			}
 		}
