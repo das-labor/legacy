@@ -4,7 +4,7 @@
 #include "../config.h"
 
 
-#if defined(__AVR_ATmega48__) | defined(__AVR_ATmega168__) | defined(__AVR_ATmega8__)
+#if defined(__AVR_ATmega48__) | defined(__AVR_ATmega168__) | defined(__AVR_ATmega8__) | defined(__AVR_ATmega88__)
 	#define AVR_SS_BIT PB2
 	#define AVR_MOSI_BIT PB3
 	#define AVR_MISO_BIT PB4	
