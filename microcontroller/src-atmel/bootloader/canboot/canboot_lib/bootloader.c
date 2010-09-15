@@ -15,31 +15,9 @@
 #include "can.h"
 #include "util.h"
 
-#define PORT_MGT 0x30
-#define FKT_MGT_AWAKE 0x03
 
 unsigned char Station_id;
 
-#define SDO_CMD_READ 		0x20
-#define SDO_CMD_REPLY 		0x21
-#define SDO_CMD_INFO 		0x22
-#define SDO_CMD_READ_BLK	0x40
-#define SDO_CMD_READ_BLK_ACK	0x41
-#define SDO_CMD_WRITE_BLK	0x48
-#define SDO_CMD_WRITE_BLK_ACK	0x49
-
-
-#define SDO_CMD_ERROR_INDEX 	0x80
-
-#define SDO_TYPE_UINT8_RO 0x00
-#define SDO_TYPE_UINT8_RW 0x01
-#define SDO_TYPE_UINT16_RO 0x04
-#define SDO_TYPE_UINT16_RW 0x05
-#define SDO_TYPE_UINT32_RO 0x08
-#define SDO_TYPE_UINT32_RW 0x09
-#define SDO_TYPE_STRING_RO 0x80
-#define SDO_TYPE_STRING_RW 0x81
-#define SDO_TYPE_STRING_WO 0x82
 
 typedef struct
 {
@@ -61,8 +39,8 @@ unsigned char Device_info_msg[] PROGMEM =
 	SDO_CMD_REPLY,
 	SDO_TYPE_UINT32_RO,
 	(unsigned char)(SPM_PAGESIZE),
-	(unsigned char)(SPM_PAGESIZE>>8),
-	(FLASHEND+1)/1024, //changed this from Atmega number to real Flash-size in kB
+	(unsigned char)(SPM_PAGESIZE >> 8),
+	(FLASHEND + 1) / 1024, //changed this from Atmega number to real Flash-size in kB
 	0
 };
 
@@ -74,16 +52,14 @@ unsigned char Flash_info_msg[] PROGMEM =
 #if (FLASHEND >= 0xffff)
 	0xff,0xff //dirty hack : return 65535 bytes instead of 65536 because we used to small sized integer...
 #else
-	(unsigned char)((unsigned char)FLASHEND+1),
-	((unsigned int)FLASHEND+1)>>8
+	(unsigned char)((unsigned char)FLASHEND + 1),
+	((unsigned int)FLASHEND + 1) >> 8
 #endif
 };
 
 
-unsigned char Station_id;
 
-
-void bootloader(void){
+void bootloader(void) {
 	uint16_t Address;
 	uint16_t Size;
 	unsigned char x;
@@ -121,13 +97,13 @@ void bootloader(void){
 	
 	can_transmit();
 	
-	unsigned char count=20;
+	unsigned char count = 20;
 	#if defined(TOGGLE_MCP_LED)
-		unsigned char toggle=0x1C;
+		unsigned char toggle = 0x1C;
 	#elif defined(TOGGLE_PORT_LED)
 		DDR_LED |= (1<<BIT_LED);
 	#endif
-	while(count--){
+	while (count--) {
 		#if defined(TOGGLE_MCP_LED)
 			mcp_write(BFPCTRL, toggle);
 			toggle ^= 0x10;
@@ -136,18 +112,18 @@ void bootloader(void){
 		#endif
 		_delay_ms(100);
 		
-		if(can_get_nb()){
+		if (can_get_nb()) {
 			goto sdo_server;
 		}
 	}
 	
 	start_app:
-	asm volatile(JUMP_OPCODE " 0\r\t");
+	asm volatile(JUMP_OPCODE " __vectors\r\t");
 	
 	sdo_server:
 	
-	while(1){
-		if(Rx_msg.port_dst == PORT_SDO_CMD){
+	while (1) {
+		if (Rx_msg.port_dst == PORT_SDO_CMD) {
 			sdo_message * msg = (sdo_message*)Rx_msg.data;
 			
 			Tx_msg.port_src = PORT_SDO_CMD;
@@ -155,8 +131,8 @@ void bootloader(void){
 			Tx_msg.port_dst = Rx_msg.port_src;
 			
 			
-			if(msg->cmd == SDO_CMD_READ){
-				switch(msg->index){
+			if (msg->cmd == SDO_CMD_READ) {
+				switch (msg->index) {
 					case 0xFF00:	//device information
 						my_memcpy_P(sizeof(Device_info_msg), Tx_msg.data, Device_info_msg);
 						Tx_msg.dlc = sizeof(Device_info_msg);
@@ -173,47 +149,46 @@ void bootloader(void){
 						break;
 				}
 				can_transmit();
-			}else if(msg->cmd == SDO_CMD_WRITE_BLK){
-				if(msg->index==0xFF01){
+			} else if (msg->cmd == SDO_CMD_WRITE_BLK) {
+				if (msg->index == 0xFF01) {
 					Address = msg->address;
 					Size = msg->size;
 					Tx_msg.dlc = 1;
 					Tx_msg.data[0] = SDO_CMD_WRITE_BLK_ACK;
 					can_transmit();
 					goto programm;
-				}else{
+				} else {
 					Tx_msg.dlc = 1;
 					Tx_msg.data[0] = SDO_CMD_ERROR_INDEX;
 					can_transmit();
 				}
-			
-			
 			}
 		}
-		while(!can_get_nb());
+		while (!can_get_nb());
 	}
-	
+
 	programm:
-	
-	while(1){
-		while(!can_get_nb());
-		if(Rx_msg.port_dst != PORT_SDO_DATA){
+
+	while (1) {
+		while (!can_get_nb());
+		if (Rx_msg.port_dst != PORT_SDO_DATA) {
 			boot_rww_enable ();
 			goto sdo_server;
-		}else{
-			for(x=0;x<4;x++){
-				boot_page_fill (Address,((sdo_data_message*)Rx_msg.data)->data[x] );
+		} else {
+			for (x = 0; x < 4; x++) {
+				boot_page_fill(Address, ((sdo_data_message*)Rx_msg.data)->data[x]);
 				Address += 2;
 			}
-			
-			if((Address%SPM_PAGESIZE)==0){
-				boot_page_erase (Address-SPM_PAGESIZE);
+
+			if ((Address % SPM_PAGESIZE) == 0) {
+				boot_page_erase (Address - SPM_PAGESIZE);
 				boot_spm_busy_wait ();      // Wait until the memory is erased.
-				boot_page_write (Address-SPM_PAGESIZE);     // Store buffer in flash page.
+				boot_page_write (Address - SPM_PAGESIZE);     // Store buffer in flash page.
 				boot_spm_busy_wait();       // Wait until the memory is written.
 			}
-			
-			can_transmit();//this will repeat the ACK message
+
+			can_transmit();		//this will repeat the ACK message
 		}
 	}
 }
+
