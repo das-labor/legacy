@@ -1,7 +1,7 @@
 #include <avr/io.h>
 int bootloader(void);
 
-int main(){
+int main() {
 	bootloader();
 	return 0;
 }
