@@ -96,15 +96,14 @@ void can_transmit()
 	spi_data(WRITE);
 	spi_data(TXB0SIDH);
 
-	spi_data(((unsigned char)(Tx_msg.port_src << 2)) | (Tx_msg.port_dst >> 4 ));
-	spi_data((unsigned char)((Tx_msg.port_dst & 0x0C) << 3) | (1<<EXIDE) | (Tx_msg.port_dst & 0x03) );
+	spi_data(((unsigned char)(Tx_msg.port_src << 2)) | (Tx_msg.port_dst >> 4));
+	spi_data((unsigned char)((Tx_msg.port_dst & 0x0C) << 3) | (1 << EXIDE) | (Tx_msg.port_dst & 0x03));
 	spi_data(Tx_msg.addr_src);
 	spi_data(Tx_msg.addr_dst);
 	spi_data(Tx_msg.dlc);
 	
-	for(x=0;x<Tx_msg.dlc;x++){
+	for (x = 0; x < Tx_msg.dlc; x++)
 		spi_data(Tx_msg.data[x]);
-	}
 	spi_release_ss();
 
 	mcp_write_b((pgm_p_t) mcp_txreq_str);
@@ -175,16 +174,16 @@ unsigned char mcp_config_str1[] PROGMEM = {
 		0x40 | CNF1_T,		//CNF1
 	2, RXB0CTRL,(0<<RXM1) | (0<<RXM0),
 	9, RXF0SIDH,
-		(FLT_PORT_SRC << 2) | (FLT_PORT_DST1 >> 4 ),
+		(FLT_PORT_SRC << 2) | (FLT_PORT_DST1 >> 4),
 		((FLT_PORT_DST1 & 0x0C) << 3) | (1<<EXIDE) | (FLT_PORT_DST1 & 0x03),
 		FLT_ADDR_SRC,
 		0x35,
-		(FLT_PORT_SRC << 2) | (FLT_PORT_DST2 >> 4 ),
+		(FLT_PORT_SRC << 2) | (FLT_PORT_DST2 >> 4),
 		((FLT_PORT_DST2 & 0x0C) << 3) | (1<<EXIDE) | (FLT_PORT_DST2 & 0x03),
 		FLT_ADDR_SRC,
 		0x35,
 	5, RXM0SIDH,
-		(MSK_PORT_SRC << 2) | (MSK_PORT_DST >> 4 ),
+		(MSK_PORT_SRC << 2) | (MSK_PORT_DST >> 4),
 		((MSK_PORT_DST & 0x0C) << 3) | (MSK_PORT_DST & 0x03),
 		MSK_ADDR_SRC,
 		MSK_ADDR_DST,
@@ -199,13 +198,8 @@ unsigned char mcp_config_str2[] PROGMEM = {
 	0
 };
 
-#define BIT_CS_EXT PB1
-
 void can_init()
-{
-	//set Slave select high
-
-	
+{	
 	//PORTB |= (1<<SPI_PIN_MISO); //MISO pullup for debugging
 		
 	//set output SPI pins to output
@@ -214,12 +208,13 @@ void can_init()
 	#else
 		SPI_DDR = _BV(SPI_PIN_MOSI) | _BV(SPI_PIN_SCK) | _BV(SPI_PIN_SS);
 	#endif
+
+	//set Slave select high
 	spi_release_ss();
 	SPCR = _BV(SPE) | _BV(MSTR);
 	//Double speed on
 	SPSR = _BV(SPI2X);
-	
-	
+
 	spi_assert_ss();
 	spi_data(RESET);
 	spi_release_ss();
@@ -230,11 +225,6 @@ void can_init()
 	mcp_write(RXF1EID0, Station_id);
 
 	mcp_write_b((pgm_p_t) mcp_config_str2);
-
-	PORTB &= ~(1<<BIT_CS_EXT);
-
-	
-	
 }
 
 
