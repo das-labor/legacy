@@ -204,7 +204,7 @@ unsigned char mcp_config_str2[] PROGMEM = {
 void can_init()
 {
 	//set Slave select high
-	spi_release_ss();
+
 	
 	//PORTB |= (1<<SPI_PIN_MISO); //MISO pullup for debugging
 		
@@ -214,6 +214,7 @@ void can_init()
 	#else
 		SPI_DDR = _BV(SPI_PIN_MOSI) | _BV(SPI_PIN_SCK) | _BV(SPI_PIN_SS);
 	#endif
+	spi_release_ss();
 	SPCR = _BV(SPE) | _BV(MSTR);
 	//Double speed on
 	SPSR = _BV(SPI2X);

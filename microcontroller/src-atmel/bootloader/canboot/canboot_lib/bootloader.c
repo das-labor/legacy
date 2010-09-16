@@ -85,7 +85,7 @@ void bootloader(void) {
 	EEAR = EEPR_ADDR_NODE;
 	EECR = (1<<EERE);
 	Station_id = EEDR;
-		
+
 	can_init();
 	
 	Tx_msg.addr_src = Station_id;
