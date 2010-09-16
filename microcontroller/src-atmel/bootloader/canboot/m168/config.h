@@ -20,6 +20,7 @@
 #define SPI_PIN_MISO PB4
 #define SPI_PIN_SCK PB5
 #define SPI_PIN_SS PB2		// for slave select
+//#define SPI_PIN_SS_AVR PB2	// make sure PB2 is set to output for spi logic master/slave select if used e.g. for pwm
 
 //interrupt pin of MCP2515 for non interrupt drive can
 #define SPI_PIN_MCP_INT PD2        //int0 pin
