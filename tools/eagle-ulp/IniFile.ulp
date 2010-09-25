@@ -1,0 +1,373 @@
+#usage "en:  <h3>Functions for reading/ writing INI Files</h3>\n"
+            "<b>Note:</b> IniFile.ulp does not work alone. In order to use the ULP's functionality, you have to include "
+            "it in an existing ULP: <code><pre>#include &quot;IniFile.ulp&quot;</pre></code><br>"
+            "This ULP helps preserving your ULP's settings between consecutive runs.<br>"
+            "<br>Reading settings:<br>"
+            "<code>string Settings_GetString(string ValueName, string Default);</code><br>"
+            "<code>int Settings_GetInteger(string ValueName, int Default);</code><br>"
+            "<code>real Settings_GetReal(string ValueName, real Default);</code><br>"
+            "<br>Parameters:<ul>"
+            "<li><i>ValueName</i><br>"
+            "This is the name of the value to read (case-sensisitive).<br>"
+            "<li><i>Default</i><br>"
+            "If the value can not be read, this value is returned instead.<br>"
+            "</ul>"
+            "<br>Writing settings:<br>"
+            "<code>void Settings_PutString(string ValueName, string Value);</code><br>"
+            "<code>void Settings_PutInteger(string ValueName, int Value);</code><br>"
+            "<code>void Settings_PutReal(string ValueName, real Value);</code><br>"
+            "<br>Parameters:<ul>"
+            "<li><i>ValueName</i><br>"
+            "This is the name of the value to write (case-sensisitive).<br>"
+            "<li><i>Value</i><br>"
+            "This is the value to write.<br>"
+            "</ul><br><br>"
+            "If the former functions don't fit your needs, you can also modify an INI-File directly.<br>"
+            "<br>Reading from an INI-File:<br>"
+            "<code>string INI_GetString(string SectionName, string KeyName, string Default, string IniFileName);</code><br>"
+            "<code>int INI_GetInteger(string SectionName, string KeyName, int Default, string IniFileName);</code><br>"
+            "<code>real INI_GetReal(string SectionName, string KeyName, real Default, string IniFileName);</code><br>"
+            "<br>Parameters:<ul>"
+            "<li><i>SectionName</i><br>"
+            "Specifies the name of the section to read from. This name is case-sensitive.<br>"
+            "<li><i>KeyName</i><br>"
+            "Specifies the name of the value to read. The character '[' and the character '=' is not allowed in key names."
+            "This name is case-sensitive.<br>"
+            "<li><i>Default</i><br>"
+            "If the value cannot be read from the file, this value will be returned.<br>"
+            "<li><i>IniFileName</i><br>"
+            "This is the file to read from.<br>"
+            "</ul>"
+            "<br>Writing to an INI-File:<br>"
+            "<code>void INI_PutString(string SectionName, string KeyName, string StringToAdd, string IniFileName);</code><br>"
+            "<code>void INI_PutInteger(string SectionName, string KeyName, int IntToAdd, string IniFileName);</code><br>"
+            "<code>void INI_PutReal(string SectionName, string KeyName, real RealToAdd, string IniFileName);</code><br>"
+            "<br>Paramters:<ul>"
+            "<li><i>SectionName</i><br>"
+            "Gives the name of the section to write to. This name is case-sensitive.<br>"
+            "<li><i>KeyName</i><br>"
+            "Gives the name of the value to write. The character '[' is not allowed in key names.<br>"
+            "<li><i>StringToAdd</i><br>"
+            "(INI_PutString only) This is the value to write. An empty string removes <i>KeyName</i> from the file.<br>"
+            "<li><i>IntToAdd</i><br>"
+            "(INI_PutInteger only) This is the value to write.<br>"
+            "<li><i>RealToAdd</i><br>"
+            "(INI_PutReal only) This is the value to write.<br>"
+            "<li><i>IniFileName</i><br>"
+            "This is the file to write to. If the file does not exist, it gets created.<br>"
+            "</ul><br>"
+            "<p><author>Author: Rene Koenig, rk@tbkoenig.de</author></p>",
+       "de:  <h3>Funktionen zum Schreiben/ Lesen von INI-Dateien</h3>\n"
+            "<b>Achtung:</b> IniFile.ulp funktioniert nicht 'allein'. M&ouml;chten Sie die Funktionalit&auml;t dieses ULPs nutzen, m&uuml;ssen Sie "
+            "es in Ihr bestendens ULP inkludieren: <code><pre>#include &quot;IniFile.ulp&quot;</pre></code><br><br>"
+            "Dieses ULP soll das Sichern von ULP-Einstellungen zwischen verschiedener Aufrufe vereinfachen. Es werden sechs Funktionen "
+            "zur Verf&uuml;gung gestellt, die das Schreiben/ Lesen von Integern, Reals oder Strings erm&ouml;glichen. Die Daten werden in einer "
+            "INI-Datei gesichert, die sich im Ordner der ULPs befindet. Alle ULPs im selben Ordner teilen sich diese Datei.<br>"
+            "<br>Einstellungen lesen:<br>"
+            "<code>string Settings_GetString(string ValueName, string Default);</code><br>"
+            "<code>int Settings_GetInteger(string ValueName, int Default);</code><br>"
+            "<code>real Settings_GetReal(string ValueName, real Default);</code><br>"
+            "<br>Parameter:<ul>"
+            "<li><i>ValueName</i><br>"
+            "Spezifiziert den Namen des zu lesenden Wertes (case-sensisitive).<br>"
+            "<li><i>Default</i><br>"
+            "Kann der gew&uuml;nschte Wert nicht gelesen werden, so wird an seiner Stelle der Default-Wert zur&uuml;ckgeliefert.<br>"
+            "</ul>"
+            "<br>Einstellungen sichern:<br>"
+            "<code>void Settings_PutString(string ValueName, string Value);</code><br>"
+            "<code>void Settings_PutInteger(string ValueName, int Value);</code><br>"
+            "<code>void Settings_PutReal(string ValueName, real Value);</code><br>"
+            "<br>Parameter:<ul>"
+            "<li><i>ValueName</i><br>"
+            "Spezifiziert den Namen des zu sichernden Wertes (case-sensisitive).<br>"
+            "<li><i>Value</i><br>"
+            "Dies ist der zu sichernde Wert.<br>"
+            "</ul><br><br>"
+            "Wird dieser allgemeine Ansatz den aktuellen Erfordernissen nicht gerecht, kann auch direkt mit dieser oder einer anderen "
+            "INI-Datei gearbeitet werden. Das ULP stellt zu diesem Zwecke sechs weitere Funktionen zur Verf&uuml;gung.<br>"
+            "<br>Aus einer INI-Datei lesen:<br>"
+            "<code>string INI_GetString(string SectionName, string KeyName, string Default, string IniFileName);</code><br>"
+            "<code>int INI_GetInteger(string SectionName, string KeyName, int Default, string IniFileName);</code><br>"
+            "<code>real INI_GetReal(string SectionName, string KeyName, real Default, string IniFileName);</code><br>"
+            "<br>Parameter:<ul>"
+            "<li><i>SectionName</i><br>"
+            "Spezifiziert den Namen der Sektion, aus der gelesen werden soll. Dieser Name ist case-sensitive.<br>"
+            "<li><i>KeyName</i><br>"
+            "Spezifiziert den Namen des Wertes, der gelesen werden soll. Bis auf Zeichen '[' und '=' ist alles erlaubt."
+            "Dieser Name ist case-sensitive.<br>"
+            "<li><i>Default</i><br>"
+            "Kann der angegebene Wert aus der angegebenen Sektion des angegebenen INI-Files nicht gelesen werden,"
+            "wird dieser Wert zur&uuml;ckgeliefert.<br>"
+            "<li><i>IniFileName</i><br>"
+            "Spezifiziert das File, aus dem gelesen werden soll.<br>"
+            "</ul>"
+            "<br>In eine INI-Datei schreiben:<br>"
+            "<code>void INI_PutString(string SectionName, string KeyName, string StringToAdd, string IniFileName);</code><br>"
+            "<code>void INI_PutInteger(string SectionName, string KeyName, int IntToAdd, string IniFileName);</code><br>"
+            "<code>void INI_PutReal(string SectionName, string KeyName, real RealToAdd, string IniFileName);</code><br>"
+            "<br>Paramter:<ul>"
+            "<li><i>SectionName</i><br>"
+            "Spezifiziert den Namen der Sektion, in die geschrieben werden soll. Dieser Name ist case-sensitive.<br>"
+            "<li><i>KeyName</i><br>"
+            "Spezifiziert den Namen des Wertes, der geschrieben werden soll. Bis auf das Zeichen '[' ist alles erlaubt."
+            "Dieser Name ist case-sensitive.<br>"
+            "<li><i>StringToAddt</i><br>"
+            "(nur INI_PutString) Dies ist der Wert, der geschrieben wird. Ein leerer String entfernt den Eintrag <i>KeyName</i>aus der Datei.<br>"
+            "<li><i>IntToAddt</i><br>"
+            "(nur INI_PutInteger) Dies ist der Wert, der geschrieben wird."
+            "<li><i>IntToAddt</i><br>"
+            "(nur INI_PutReal) Dies ist der Wert, der geschrieben wird."
+            "<li><i>IniFileName</i><br>"
+            "Spezifiziert das File, in das geschrieben werden soll. Existiert die Datei nicht, wird sie angelegt.<br>"
+            "</ul><br>"
+            "<p><author>Autor: Rene Koenig, rk@tbkoenig.de</author></p>"
+
+int Private_INI_FileExists(string strName)
+{
+    string strFiles[];
+    return (fileglob(strFiles, strName) != 0);
+}
+
+int Private_INI_IsComment(string str)
+{
+    int nIndex, nPos = strchr(str, ';');
+
+    if(nPos < 0)
+        return 0;
+
+    for(nIndex = 0; nIndex < nPos; ++nIndex)
+        if((str[nIndex] != ' ') && (str[nIndex] != '\t'))
+            return 0;
+
+    return 1;
+}
+
+int Private_INI_IsSectionHeader(string str)
+{
+    int nPos1, nPos2;
+
+    if(Private_INI_IsComment(str))
+        return 0;
+
+    if(0 > (nPos1 = strchr(str, '[')))
+        return 0;
+
+    if(0 > (nPos2 = strchr(str, '=')))
+        return 1;
+
+    return (nPos1 < nPos2);
+}
+
+string Private_INI_ExtractSectionName(string strHeader)
+{
+    string str = strHeader;
+
+    while(0 != strchr(str, '['))
+    {
+        if((str[0] != ' ') && (str[0] != '\t'))
+            return "";
+
+        str = strsub(str, 1);
+    }
+
+    int nPos = strchr(str, ']');
+
+    if(nPos < 0)
+        return "";
+
+    string strExtra = strsub(str, nPos + 1);
+
+    while(strExtra != "")
+    {
+        if((strExtra[0] != ' ') && (strExtra[0] != '\t'))
+        {
+            if(!Private_INI_IsComment(strExtra))
+                return "";
+
+            break;
+        }
+
+        strExtra = strsub(strExtra, 1);
+    }
+
+    return strsub(str, 1, nPos - 1);
+}
+
+string INI_GetString(string SectionName, string KeyName, string strDefault, string IniFileName)
+{
+    if(!Private_INI_FileExists(IniFileName))
+        return strDefault;
+
+    string strLine[];
+    int nLines, nLine, nPos;
+
+    nLines = fileread(strLine, IniFileName);
+
+    for(nLine = 0; nLines > nLine; ++nLine)
+    {
+        if(Private_INI_IsSectionHeader(strLine[nLine]))
+        {
+            if(Private_INI_ExtractSectionName(strLine[nLine]) == SectionName)
+                break;
+        }
+    }
+
+    for(++nLine; nLines > nLine; ++nLine)
+    {
+        if(Private_INI_IsSectionHeader(strLine[nLine]))
+            return(strDefault);
+
+        if(Private_INI_IsComment(strLine[nLine]))
+            continue;
+
+        if(0 > (nPos = strchr(strLine[nLine], '=')))
+            continue;
+
+        if(strsub(strLine[nLine], 0, nPos) != KeyName)
+            continue;
+
+        return(strsub(strLine[nLine], nPos + 1));
+    }
+
+    return(strDefault);
+}
+
+int INI_GetInteger(string SectionName, string KeyName, int Default, string IniFileName)
+{
+    string strDefault;
+    sprintf(strDefault, "%d", Default);
+    return strtol(INI_GetString(SectionName, KeyName, strDefault, IniFileName));
+}
+
+real INI_GetReal(string SectionName, string KeyName, real Default, string IniFileName)
+{
+    string strDefault;
+    sprintf(strDefault, "%f", Default);
+    return strtod(INI_GetString(SectionName, KeyName, strDefault, IniFileName));
+}
+
+void INI_PutString(string SectionName, string KeyName, string StringToAdd, string IniFileName)
+{
+    int nLines, nLine, nPos, bSectionExists = 0, bDone = 0;
+    string strLine[];
+
+    nLines = (Private_INI_FileExists(IniFileName)) ? fileread(strLine, IniFileName) : 0;
+
+    output(IniFileName)
+    {
+        for(nLine = 0; nLine < nLines; ++nLine)
+        {
+            if(!bSectionExists)
+            {
+                if(Private_INI_IsSectionHeader(strLine[nLine]))
+                {
+                    if(Private_INI_ExtractSectionName(strLine[nLine]) == SectionName)
+                    {
+                        bSectionExists = 1;
+
+                        do
+                        {
+                            if(strLine[nLine] != "")
+                                printf("%s\n", strLine[nLine]);
+
+                            if(Private_INI_IsSectionHeader(strLine[++nLine]))
+                            {
+                                if(StringToAdd != "")
+                                    printf("%s=%s\n", KeyName, StringToAdd);
+
+                                bDone = 1;
+                                break;
+                            }
+
+                            if(!Private_INI_IsComment(strLine[nLine]))
+                            {
+                                if(0 <= (nPos = strchr(strLine[nLine], '=')))
+                                {
+                                    if(strsub(strLine[nLine], 0, nPos) == KeyName)
+                                    {
+                                        strLine[nLine] = (StringToAdd != "") ? (KeyName + "=" + StringToAdd) : "";
+                                        bDone = 1;
+                                        break;
+                                    }
+                                }
+                            }
+                        } while(nLine < nLines);
+                    }
+                }
+            }
+
+            if(strLine[nLine] != "")
+                printf("%s\n", strLine[nLine]);
+        }
+
+        if(!bDone)
+        {
+            if(StringToAdd != "")
+            {
+                if(!bSectionExists)
+                {
+                    printf("[%s]\n", SectionName);
+                }
+                printf("%s=%s\n", KeyName, StringToAdd);
+            }
+        }
+    }
+
+    return;
+}
+
+void INI_PutInteger(string SectionName, string KeyName, int IntToAdd, string IniFileName)
+{
+    string StringToAdd;
+    sprintf(StringToAdd, "%d", IntToAdd);
+    INI_PutString(SectionName, KeyName, StringToAdd, IniFileName);
+}
+
+void INI_PutReal(string SectionName, string KeyName, real RealToAdd, string IniFileName)
+{
+    string StringToAdd;
+    sprintf(StringToAdd, "%f", RealToAdd);
+    INI_PutString(SectionName, KeyName, StringToAdd, IniFileName);
+}
+
+// Settings are stored here
+string Settings_GetFileName(void)
+{
+    return(filedir(argv[0]) + "Settings.ini");
+}
+
+// This is the section in the INI-File, in which the settings are stored
+string Settings_GetSectionName(void)
+{
+    return(strlwr(filename(argv[0])));
+}
+
+void Settings_PutString(string ValueName, string Value)
+{
+    INI_PutString(Settings_GetSectionName(), ValueName, Value, Settings_GetFileName());
+}
+
+void Settings_PutInteger(string ValueName, int Value)
+{
+    INI_PutInteger(Settings_GetSectionName(), ValueName, Value, Settings_GetFileName());
+}
+
+void Settings_PutReal(string ValueName, real Value)
+{
+    INI_PutReal(Settings_GetSectionName(), ValueName, Value, Settings_GetFileName());
+}
+
+string Settings_GetString(string ValueName, string DefaultValue)
+{
+    return(INI_GetString(Settings_GetSectionName(), ValueName, DefaultValue, Settings_GetFileName()));
+}
+
+int Settings_GetInteger(string ValueName, int DefaultValue)
+{
+    return(INI_GetInteger(Settings_GetSectionName(), ValueName, DefaultValue, Settings_GetFileName()));
+}
+
+real Settings_GetReal(string ValueName, real DefaultValue)
+{
+    return(INI_GetReal(Settings_GetSectionName(), ValueName, DefaultValue, Settings_GetFileName()));
+}

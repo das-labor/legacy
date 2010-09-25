@@ -1,0 +1,91 @@
+
+string s;
+
+int nWidths, Widths[];
+int nDrills, Drills[];
+int i;
+
+void EnterWidth(int Width)
+{
+int i;
+  for( i=0 ; i<nWidths ; i++) {
+     if( Widths[i]==Width ) return;
+  };
+  Widths[nWidths] = Width;
+  nWidths++;
+};
+
+void EnterDrill(int Drill)
+{
+int i;
+  for( i=0 ; i<nDrills ; i++) {
+     if( Drills[i]==Drill ) return;
+  };
+  Drills[nDrills] = Drill;
+  nDrills++;
+};
+
+board(BOARD) {
+  BOARD.signals(SIGNAL) {
+     SIGNAL.polygons(P)  EnterWidth(P.width);
+     SIGNAL.wires(W)     EnterWidth(W.width);
+     SIGNAL.vias(V)      EnterDrill(V.drill);
+  }
+
+  BOARD.elements(E) E.package.holes(H)              EnterDrill(H.drill);
+  BOARD.elements(E) E.package.contacts(C) if(C.pad) EnterDrill(C.pad.drill);
+
+  BOARD.holes(H)         EnterDrill(H.drill);
+}
+
+  sort( nWidths, Widths );
+  sort( nDrills, Drills );
+
+
+  s = "grid mic;\n";
+  s = s + "SET WIDTH_MENU ";
+  for( i=0 ; i<nWidths ; i++ ) {
+    sprintf(s,"%s %f",s, u2mic(Widths[i]) );
+  };
+  sprintf(s,"%s;\n",s);
+
+  s = s + "SET DRILL_MENU ";
+  for( i=0 ; i<nDrills ; i++ ) {
+    sprintf(s,"%s %f",s, u2mic(Drills[i]) );
+  };
+  sprintf(s,"%s;\n",s);
+
+  sprintf(s,"%sgrid last;\n",s);
+
+//  output("$tmp.txt") printf("%s",s);
+
+  exit(s);
+
+/*
+	SET WIDTH_MENU value..;
+	SET DIAMETER_MENU value..;
+	SET DRILL_MENU value..;
+	SET SMD_MENU value..;
+	SET SIZE_MENU value..;
+	
+int nDrillsymbols, Drillsymbols[];
+
+void EnterDrillsymbol(int Drillsymbol)
+{
+int i;
+  for( i=0 ; i<nDrillsymbols ; i++) {
+     if( Drillsymbols[i]==Drillsymbol ) return;
+  };
+  Drillsymbols[nDrillsymbols] = Drillsymbol;
+  nDrillsymbols++;
+};
+
+     SIGNAL.vias(V)      EnterDrillsymbol(V.drillsymbol);
+  BOARD.holes(H)         EnterDrillsymbol(H.drillsymbol);
+
+  BOARD.elements(E) E.package(P) P.contacts(C) if(C.pad) C.pad.drillsymbol	int
+
+  sort( nDrillsymbols, Drillsymbols );
+
+*/
+

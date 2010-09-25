@@ -1,0 +1,91 @@
+#usage "<b>Show object and zoom in</b>\n"
+       "<p>"
+       "Implemented for parts and signals on a board. "
+       "Could be extended for schematics."
+       "<p>"
+       "<author>Author: support@cadsoft.de</author>"
+
+// THIS PROGRAM IS PROVIDED AS IS AND WITHOUT WARRANTY OF ANY KIND, EXPRESSED OR IMPLIED
+
+string   h, cmd = "", sname = "";
+real     x, y, zoom_win = 10;
+int      part = 1, xmin, xmax, ymin, ymax, found = 0;
+
+zoom_win = zoom_win/2;
+
+if (board) board(B) {
+   cmd = "grid mm finest;\n";
+   int Result = dlgDialog("Show and zoom in") {
+   dlgHBoxLayout {
+      dlgGroup("Include") {
+         dlgRadioButton("&Signals", part);
+         dlgRadioButton("&Parts",   part);
+         }
+      }
+   dlgLabel("&Enter Name");
+   dlgStringEdit(sname);
+   dlgHBoxLayout {
+      dlgPushButton("+OK") dlgAccept();
+      dlgPushButton("-Cancel") dlgReject();
+      }
+   };
+   if (Result == 0) exit (0);
+
+   if (!part) { // if signals checked
+      B.signals(S) {
+        if (strupr(sname)==strupr(S.name)) {
+           found = 1;
+           S.wires(W) {
+             xmin = min(W.x1, W.x2);
+             ymin = min(W.y1, W.y2);
+             xmax = max(W.x1, W.x2);
+             ymax = max(W.y1, W.y2);
+             break;
+             }
+           S.wires(W) {
+             xmin = min(xmin, W.x1);
+             xmin = min(xmin, W.x2);
+             ymin = min(ymin, W.y1);
+             ymin = min(ymin, W.y2);
+             xmax = max(xmax, W.x1);
+             xmax = max(xmax, W.x2);
+             ymax = max(ymax, W.y1);
+             ymax = max(ymax, W.y2);
+             }
+           xmin = u2mm(xmin);
+           xmax = u2mm(xmax);
+           ymin = u2mm(ymin);
+           ymax = u2mm(ymax);
+           }
+        }
+      h = "";
+      sprintf(h, "Window (%f %f)(%f %f);\n",
+                  xmin-zoom_win, ymin-zoom_win, xmax+zoom_win, ymax+zoom_win);
+      }
+
+   if (part) { // if parts checked
+      B.elements(E) {
+        if (strupr(sname)==strupr(E.name)) {
+           found = 1;
+           x = u2mm(E.x);
+           y = u2mm(E.y);
+           }
+        }
+      h = "";
+      sprintf(h, "Window (%f %f)(%f %f);\n",
+                  x-zoom_win, y-zoom_win, x+zoom_win, y+zoom_win);
+      }
+
+   if (!found) {
+      dlgMessageBox("Name not found!", "&OK");
+      exit(1);
+      }
+   cmd += h;
+   cmd += "Show " + sname + ";\n";
+   cmd += "grid last;\n";
+   exit(cmd);
+   }
+else {
+   dlgMessageBox("No board loaded!");
+   exit(1);
+   }

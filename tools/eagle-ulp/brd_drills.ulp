@@ -1,0 +1,78 @@
+// BOARD :
+//
+// Erzeugt:
+//  <name>.Drills.txt
+
+//---------------------------------------------------------------------------
+int  DKdrills[];
+int  DKdrillsnums[];
+int  DKindex[];
+int  nDKdrills;
+
+int  NDKdrills[];
+int  NDKdrillsnums[];
+int  NDKindex[];
+int  nNDKdrills;
+
+void enterdrill( int aDrill, int aDK )
+{
+int i;
+  if( aDK ) {
+    for(i=0;i<nDKdrills;i++) {
+      if( DKdrills[i]==aDrill ) {
+        DKdrillsnums[i]++;
+        return;
+      };
+    };
+
+    DKdrills[    nDKdrills] = aDrill;
+    DKdrillsnums[nDKdrills] = 1;
+    nDKdrills++;
+    
+  }else{
+    for(i=0;i<nNDKdrills;i++) {
+      if( NDKdrills[i]==aDrill ) {
+        NDKdrillsnums[i]++;
+        return;
+      };
+    };
+
+    NDKdrills[    nNDKdrills] = aDrill;
+    NDKdrillsnums[nNDKdrills] = 1;
+    nNDKdrills++;
+  };
+}
+
+//---------------------------------------------------------------------------
+
+project.board(B) {
+int i, j;
+
+  nDKdrills = 0;
+
+  B.holes(H)                           enterdrill(H.drill, 0);
+  B.signals(S) S.vias(V)               enterdrill(V.drill, 1);
+  B.elements(E) {
+    E.package.holes(H)                 enterdrill(H.drill, 0);
+    E.package.contacts(C)  if (C.pad)  enterdrill(C.pad.drill, 1);
+  }
+
+  //---------------------------------------------------------------------------
+
+  sort(nDKdrills,  DKindex,  DKdrills  );
+  sort(nNDKdrills, NDKindex, NDKdrills );
+
+  //---------------------------------------------------------------------------
+  output(filesetext(B.name, ".drills.txt")) {
+
+    for(i=0; i<nDKdrills; i++ ){
+      j = DKindex[i];
+      printf("%2.2f mm DK : %d\n", u2mm(DKdrills[j]), DKdrillsnums[j] );
+    };
+
+    for(i=0; i<nNDKdrills; i++ ){
+      j = NDKindex[i];
+      printf("%2.2f mm NDK : %d\n", u2mm(NDKdrills[j]), NDKdrillsnums[j] );
+    };
+  };
+}

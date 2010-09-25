@@ -1,0 +1,66 @@
+/*
+ *  This EAGLE User Language Program
+ *  creates a script file 0tmp.SCR that
+ *  SMASHes
+ *  - all elements of the current board  or
+ *  - all parts on the current schematic sheets
+ *
+ *  usage :
+ *  RUN smashall
+ *  SCR 0tmp
+ */
+
+
+//===========================================================
+// return location as (x y) in mil
+
+string locstr( int x, int y )
+{
+string result;
+  sprintf( result,"(%f %f)", u2mil(x), u2mil(y) );
+  return result;
+}
+
+//===========================================================
+// MAIN
+
+string TmpName = filedir(argv[0]) + "$$$" + filename(argv[0]) + ".SCR";
+
+if (board || schematic)
+output(TmpName) {
+  printf( "GRID mil;\n" );
+
+  //---------------------------------------------------------
+  // BOARD
+
+  if (board) {
+    printf( "dis none bOrigins;" );
+    board(B) B.elements(E)  if( E.mirror) printf("SMASH %s;\n", locstr(E.x,E.y) );
+
+    printf( "dis none tOrigins;" );
+    board(B) B.elements(E)  if(!E.mirror) printf("SMASH %s;\n", locstr(E.x,E.y) );
+
+    printf( "dis none Top Bottom Pads Vias Unrouted Dimension tPlace -tDocu -tNames -tValues;" );
+
+    exit( "scr " + TmpName );
+  };
+
+  //---------------------------------------------------------
+  // SCHEMATIC
+
+  if (schematic) schematic(SCH) {
+    SCH.sheets(S) {
+      printf( "EDIT .s%d;\n", S.number );
+
+      printf( "dis none Symbols -Names -Values;" );
+
+      S.parts(P)
+        P.instances(I)  printf("SMASH %s;\n", locstr(I.x,I.y) );
+
+      printf( "dis all -Pins;" );
+    };
+
+    exit( "scr " + TmpName );
+  };
+}
+

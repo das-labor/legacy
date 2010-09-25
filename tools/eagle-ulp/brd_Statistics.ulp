@@ -1,0 +1,117 @@
+// brd_Statistics.ulp
+//
+// BOARD :
+//
+// Erzeugt:
+//  <name>.Statistics.txt
+//
+//  Enthält Info über
+//  o Bohrstatistik
+//    - Drills DK
+//    - Drills NDK
+//  o Electrical Check Statistik  -- ignoriert SMD Pads <= 8x8 mil !
+//    - SMD Pads oben
+//    - SMD Pads unten
+//    - Through Hole Pads
+
+int MinPad = 2032; // 8x8 mil  * 254 in 0.1 um Einheien ("finest")
+
+//---------------------------------------------------------------------------
+int DrillDiameter[];
+int DrillCountDK[];
+int DrillCountNDK[];
+int nDrills;
+
+int PadCount;
+int TopSmdCount;
+int BotSmdCount;
+
+//---------------------------------------------------------------------------
+void enterdrill( int aDrill, int aDK )
+{
+int i, j;
+  for( j=0 ; (j < nDrills)  &&  (DrillDiameter[j] < aDrill) ; j++ );
+
+  if( j>=nDrills ) {
+     nDrills++;
+     DrillDiameter[j] = aDrill;
+  }else
+  if( DrillDiameter[j] > aDrill ) {
+     for( i=nDrills ; i>=j ; i-- ) {
+       DrillDiameter[i+1] = DrillDiameter[i];
+       DrillCountDK [i+1] = DrillCountDK [i];
+       DrillCountNDK[i+1] = DrillCountNDK[i];
+     };
+     DrillDiameter[j] = aDrill;
+     DrillCountDK [j] = 0;
+     DrillCountNDK[j] = 0;
+     nDrills++;
+  };
+
+  if(aDK) DrillCountDK[ j]++;
+  else    DrillCountNDK[j]++;
+}
+
+//---------------------------------------------------------------------------
+project.board(B) {
+int i, j, sum;
+string s;
+
+  sprintf(s,"%s  Bohrungen, Electrical Check -Kontakte:\n\n",s);
+
+  //---------------------------------------------------------------------------
+
+  B.holes(H)                           enterdrill(H.drill, 0);
+  B.signals(S) S.vias(V)               enterdrill(V.drill, 1);
+  B.elements(E) {
+    E.package.holes(H)                 enterdrill(H.drill, 0);
+    E.package.contacts(C)  if (C.pad)  enterdrill(C.pad.drill, 1);
+  }
+  sum=0; for(i=0; i<nDrills; i++ ) sum += DrillCountDK[i];
+  if(sum) {
+      sprintf(s,"%s  - Bohrungen, durchkontaktiert:\n",s);
+    for(i=0; i<nDrills; i++ ) if(DrillCountDK[i]) {
+      sprintf(s,"%s    %5.2f mm: %4d\n",s, u2mm(DrillDiameter[i]), DrillCountDK[i] );
+    };
+      sprintf(s,"%s     Summe  : %4d\n",s, sum );
+  };
+
+  sum=0; for(i=0; i<nDrills; i++ ) sum += DrillCountNDK[i];
+  if(sum) {
+      sprintf(s,"%s  - Bohrungen, nicht durchkontaktiert:\n",s);
+    for(i=0; i<nDrills; i++ ) if(DrillCountNDK[i]) {
+      sprintf(s,"%s    %5.2f mm: %4d\n",s, u2mm(DrillDiameter[i]), DrillCountNDK[i] );
+    };
+      sprintf(s,"%s     Summe  : %4d\n",s, sum );
+  };
+
+  //---------------------------------------------------------------------------
+
+  sprintf(s,"%s\n",s);
+
+  project.board(B) B.elements(E) E.package.contacts(C) {
+    if(C.pad) PadCount++;
+    if(C.smd) {
+       if( C.smd.layer == LAYER_TOP ) {
+         if( C.smd.dx >MinPad )
+         if( C.smd.dy >MinPad ) TopSmdCount++;
+       };
+       if( C.smd.layer == LAYER_BOTTOM ) {
+         if( C.smd.dx >MinPad )
+         if( C.smd.dy >MinPad ) BotSmdCount++;
+       };
+    };
+  };
+
+  sprintf(s,"%s  - SMD Pads oben    :%5d\n",s, TopSmdCount );
+  sprintf(s,"%s    SMD Pads unten   :%5d\n",s, BotSmdCount );
+  sprintf(s,"%s    Through Hole Pads:%5d\n",s, PadCount    );
+  
+//  output(filesetext(B.name, ".Statistics.txt")) printf("%s",s);
+  
+  dlgDialog("Statistik"){ 
+    dlgGridLayout {
+      dlgCell(0,0,100, 60) dlgTextEdit(s);
+    }
+  };
+}

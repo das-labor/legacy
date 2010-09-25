@@ -1,0 +1,38 @@
+/*  Example: * /
+
+string BoardLayers;  project.board(B)  BoardLayers = Board_GetLayers(B);
+
+  BoardLayers[LAYER_TPLACE] = '1';  // tPlace on
+  BoardLayers[LAYER_BPLACE] = '0';  // bPlace off
+
+  exit( Layers_Display(BoardLayers) );
+
+/ **/
+
+string Board_GetLayers(UL_BOARD X)
+{
+string result; int i;
+  X.layers(L) if(i<L.number) i=L.number;
+  for(;i>=0;i--) result[i]='.';  // nonzero = mark that string not ending here
+  X.layers(L) if(L.used) result[L.number]='0'+L.visible;
+  return result;
+}
+
+string Schematic_GetLayers(UL_SCHEMATIC X)
+{
+string result; int i;
+  X.layers(L) if(i<L.number) i=L.number;
+  for(;i>=0;i--) result[i]='.';  // nonzero = mark that string not ending here
+  X.layers(L) if(L.used) result[L.number]='0'+L.visible;
+  return result;
+}
+
+string Layers_Display(string Layers)
+{
+string result; int i;
+  while(Layers[++i]) if(Layers[i]>='0') {
+    if( Layers[i]<'1' ) result +='-';
+    sprintf(result,"%s%d ",result,i);
+  };
+  return "DISPLAY " + result + ";\n";
+}
