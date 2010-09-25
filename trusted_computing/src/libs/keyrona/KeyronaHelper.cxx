@@ -495,6 +495,29 @@ bool convertUInt8VectorToChar(vector<UInt8> *toConvert, char *dest, int &length)
 
 //================================================================================
 //
+bool convertIntVectorToChar(vector<int> *toConvert, char *dest, int &length)
+{
+    vector<int>::const_iterator Iterator;
+    if (toConvert->size())
+    {
+        length=toConvert->size();
+        Iterator=toConvert->begin();
+        while ( Iterator != toConvert->end())
+        {
+            *dest = *(Iterator);
+            dest++;
+            Iterator++;
+        }
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+};
+
+//================================================================================
+//
 bool convertCharToUInt8Vector(vector<UInt8> *toConvert, char *src, int length)
 {
     if (length < 0)
@@ -513,6 +536,17 @@ bool convertCharToUInt8Vector(vector<UInt8> *toConvert, char *src, int length)
 vector<UInt8> convertStringToUInt8Vector(const string &toConvert)
 {
     vector<UInt8> myString;
+    int length = toConvert.length();
+    for (int i=0; i<length; i++)
+        myString.push_back(toConvert[i]);
+    return myString;
+};
+
+//================================================================================
+//
+vector<int> convertStringToIntVector(const string &toConvert)
+{
+    vector<int> myString;
     int length = toConvert.length();
     for (int i=0; i<length; i++)
         myString.push_back(toConvert[i]);
@@ -593,6 +627,18 @@ string convertUInt8VectorToString(vector<UInt8> *toConvert)
         return "";
     char myString[length];
     convertUInt8VectorToChar(toConvert, myString, length);
+    return string(myString, length);
+};
+
+//================================================================================
+//
+string convertIntVectorToString(vector<int> *toConvert)
+{
+    int length = toConvert->size();
+    if (!length)
+        return "";
+    char myString[length];
+    convertIntVectorToChar(toConvert, myString, length);
     return string(myString, length);
 };
 

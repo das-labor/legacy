@@ -35,6 +35,63 @@
 #include <KeyronaSearch.hxx>
 #include <KeyronaVolume.hxx>
 
+// Volume Types
+enum myKeyronaPlatformType
+{
+    PLATFORMTYPE_BEGIN = 0,
+    PLATFORMTYPE_PCR0,
+    PLATFORMTYPE_PCR1,
+    PLATFORMTYPE_PCR2,
+    PLATFORMTYPE_PCR3,
+    PLATFORMTYPE_PCR4,
+    PLATFORMTYPE_PCR5,
+    PLATFORMTYPE_PCR6,
+    PLATFORMTYPE_PCR7,
+    PLATFORMTYPE_PCR8,
+    PLATFORMTYPE_PCR9,
+    PLATFORMTYPE_PCR10,
+    PLATFORMTYPE_PCR11,
+    PLATFORMTYPE_PCR12,
+    PLATFORMTYPE_PCR13,
+    PLATFORMTYPE_PCR14,
+    PLATFORMTYPE_PCR15,
+    PLATFORMTYPE_PCR16,
+    PLATFORMTYPE_PCR17,
+    PLATFORMTYPE_PCR18,
+    PLATFORMTYPE_PCR19,
+    PLATFORMTYPE_PCR20,
+    PLATFORMTYPE_PCR21,
+    PLATFORMTYPE_PCR22,
+    PLATFORMTYPE_PCR23,
+    PLATFORMTYPE_END
+};
+
+const std::string KeyronaPlatformType_PCR0    = "PCR0";
+const std::string KeyronaPlatformType_PCR1    = "PCR1";
+const std::string KeyronaPlatformType_PCR2    = "PCR2";
+const std::string KeyronaPlatformType_PCR3    = "PCR3";
+const std::string KeyronaPlatformType_PCR4    = "PCR4";
+const std::string KeyronaPlatformType_PCR5    = "PCR5";
+const std::string KeyronaPlatformType_PCR6    = "PCR6";
+const std::string KeyronaPlatformType_PCR7    = "PCR7";
+const std::string KeyronaPlatformType_PCR8    = "PCR8";
+const std::string KeyronaPlatformType_PCR9    = "PCR9";
+const std::string KeyronaPlatformType_PCR10    = "PCR10";
+const std::string KeyronaPlatformType_PCR11    = "PCR11";
+const std::string KeyronaPlatformType_PCR12    = "PCR12";
+const std::string KeyronaPlatformType_PCR13    = "PCR13";
+const std::string KeyronaPlatformType_PCR14    = "PCR14";
+const std::string KeyronaPlatformType_PCR15    = "PCR15";
+const std::string KeyronaPlatformType_PCR16    = "PCR16";
+const std::string KeyronaPlatformType_PCR17   = "PCR17";
+const std::string KeyronaPlatformType_PCR18   = "PCR18";
+const std::string KeyronaPlatformType_PCR19   = "PCR19";
+const std::string KeyronaPlatformType_PCR20   = "PCR20";
+const std::string KeyronaPlatformType_PCR21   = "PCR21";
+const std::string KeyronaPlatformType_PCR22   = "PCR22";
+const std::string KeyronaPlatformType_PCR23   = "PCR23";
+
+
 /*!
   *  @brief adds a group to a volume in the database
   *  @param &myVolumeStorage, KeyronaStorage, points to the current volume database
@@ -107,6 +164,8 @@ void KeyronaCreateToken(KeyronaStorage &mySubjectStorage);
 void KeyronaCreateUser(KeyronaStorage &mySubjectStorage);
 
 void KeyronaCreateESD			 ( KeyronaStorage &myESDStorage );
+
+
 
 /*!
   *  @brief deletes a user from a volume
@@ -290,6 +349,7 @@ void KeyronaListSubjectsInVolume(KeyronaStorage &myVolumeStorage, KeyronaStorage
 
 void KeyronaShowESD				 ( KeyronaStorage &myESDStorage );
 
+vector<int> KeyronaChooseAllPCR();
 
 /*!
   *  @brief prints all tokens to the screen

@@ -40,9 +40,7 @@ using namespace keyrona;
 #define NULL_HDELFAMILY NULL_HOBJECT
 #define NULL_HPOLICY    NULL_HOBJECT
 
-const UInt32    TPM_HASH_SIZE       = 20;
-const ByteVector trousers("TrouSerS");
-
+const UInt32 TPM_HASH_SIZE = 20;
 string getTSSError(TSS_RESULT r);
 
 KeyronaTPM::KeyronaTPM()
@@ -217,24 +215,23 @@ vector<ByteVector> KeyronaTPM::seal(ByteVector &dataToSeal, int &local, vector<i
     }
     
     //Choose PCR's 
-	for( pcr_index = 0; pcr_index < 24/*pcr.size()*/; pcr_index++) {
-		if (Tspi_TPM_PcrRead (hTPM, pcr_index, &pcrvaluelength, &pcrvalue ) != TSS_SUCCESS )
+	for( pcr_index = 0; pcr_index < pcr.size(); pcr_index++) {
+		if (Tspi_TPM_PcrRead (hTPM, pcr[pcr_index], &pcrvaluelength, &pcrvalue ) != TSS_SUCCESS )
 		{
 			Tspi_Context_FreeMemory(hContext, NULL);
 			Tspi_Context_Close(hContext);
 			throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error can't read PCR value");
 		}
 		
-		if (Tspi_PcrComposite_SetPcrValue (hPCR , pcr_index, pcrvaluelength, pcrvalue ) != TSS_SUCCESS )
+		if (Tspi_PcrComposite_SetPcrValue (hPCR , pcr[pcr_index], pcrvaluelength, pcrvalue ) != TSS_SUCCESS )
 		{
 			Tspi_Context_FreeMemory(hContext, NULL);
 			Tspi_Context_Close(hContext);
 			throw TSSError("KeyronaTPM[TrouSerS]|seal(): Error can't set PCR value");
 		}
-		//cout << pcr[pcr_index] << endl;
 		pcrvaluelength=NULL;
 		pcrvalue=NULL;
-		cout << "Added PCR" << pcr_index << " digest value to PCR Object for sealing" << endl;
+		cout << "Added PCR" << pcr[pcr_index] << " digest value to PCR Object for sealing" << endl;
 	}
 
     // Data Seal

@@ -155,8 +155,8 @@ void KeyronaCreateAdmin(KeyronaStorage &mySubjectStorage, KeyronaStorage &myGrou
 
         string adminPassword = getPassword("Please enter the according password for admin '" + myExistingAdmin->getMySubjectName() + "' (" + myExistingAdmin->getMySubjectIDString() + "): ");
         string groupKeyPassword = myAdminGroup.getDecryptedGroupKey(myExistingAdmin, adminPassword);
-
-        KeyronaSubject newAdmin(SUBJECTTYPE_USER, myUsername, myEMail, myC, myO, myOU, mySP, myL, true, myKeyDirectory, mySubjectStorage);
+		string null;
+        KeyronaSubject newAdmin(SUBJECTTYPE_USER, myUsername, null, myEMail, myC, myO, myOU, mySP, myL, true, myKeyDirectory, mySubjectStorage);
         if (! newAdmin.getMySubjectID())
             throw NotCreated("Admin could not be created!");
         cout << "Successfully created new admin with SubjectID '" << newAdmin.getMySubjectID() << "'." << endl;
@@ -171,8 +171,8 @@ void KeyronaCreateAdmin(KeyronaStorage &mySubjectStorage, KeyronaStorage &myGrou
         cout << "Please be patient, this can take some time..." << endl;
         KeyronaTPM myTPM;
         myTPM.remove_all_keys_by_uuid();
-
-        KeyronaSubject newAdmin(SUBJECTTYPE_USER, myUsername, myEMail, myC, myO, myOU, mySP, myL, true, myKeyDirectory, mySubjectStorage);
+		string null;
+        KeyronaSubject newAdmin(SUBJECTTYPE_USER, myUsername, null, myEMail, myC, myO, myOU, mySP, myL, true, myKeyDirectory, mySubjectStorage);
         if (! newAdmin.getMySubjectID())
             throw NotCreated("Admin could not be created!");
         cout << "Successfully created new admin with SubjectID '" << newAdmin.getMySubjectID() << "'." << endl;
