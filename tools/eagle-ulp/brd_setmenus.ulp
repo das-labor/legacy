@@ -1,0 +1,129 @@
+// brd_setmenus.ulp
+//
+// alle im Board schon vorhandenen  Wirewidths und Via Drills sammeln, damit dann:
+// SET WIDTH_MENU  und SET DRILL_MENU.
+
+string s;
+
+int nWidths, Widths[], NumOfWidth[];
+int nDrills, Drills[], NumOfDrill[];
+int i;
+
+//---------------------------------------------------------------------------
+string real2str( real aArg )
+{
+string iResult;
+int    i;
+  sprintf( iResult, "%f", aArg );
+  for( i=strlen(iResult)-1 ; i>0 ; i-- ) {
+    if( iResult[i]=='0' ) {iResult[i]=0;  continue; };
+    if( iResult[i]=='.' )  iResult[i]=0;  break;
+  };
+  return iResult;
+}
+
+//----------------------------------------------------------------------------
+void EnterWidth(int Width)
+{
+int i;
+  for( i=0 ; i<nWidths ; i++) {
+     if( Widths[i]==Width ) { ++NumOfWidth[i]; return; };
+  };
+  Widths[nWidths]     = Width;
+  NumOfWidth[nWidths] = 1;
+  nWidths++;
+}
+
+//----------------------------------------------------------------------------
+void EnterDrill(int Drill)
+{
+int i;
+  for( i=0 ; i<nDrills ; i++) {
+     if( Drills[i]==Drill ) return;
+  };
+  Drills[nDrills] = Drill;
+  nDrills++;
+};
+
+//----------------------------------------------------------------------------
+board(BOARD) {
+  BOARD.signals(SIGNAL) {
+     SIGNAL.polygons(P)  EnterWidth(P.width);
+     SIGNAL.wires(W)     EnterWidth(W.width);
+     SIGNAL.vias(V)      EnterDrill(V.drill);
+  }
+
+  BOARD.elements(E) E.package.holes(H)              EnterDrill(H.drill);
+  BOARD.elements(E) E.package.contacts(C) if(C.pad) EnterDrill(C.pad.drill);
+
+  BOARD.holes(H)         EnterDrill(H.drill);
+}
+
+//----------------------------------------------------------------------------
+  if(nWidths>16) {
+    int Index[], i, j;
+    sort( nWidths, Index, NumOfWidth );
+    for(i=0; i<nWidths-16; i++) NumOfWidth[Index[i]] = 0;
+    for(i=j=0; i<nWidths; i++) if(NumOfWidth[i]) Widths[j++] = Widths[i];
+    nWidths=j;
+  };
+  if(nDrills>16) {
+    int Index[], i, j;
+    sort( nDrills, Index, NumOfDrill );
+    for(i=0; i<nDrills-16; i++) NumOfDrill[Index[i]] = 0;
+    for(i=j=0; i<nDrills; i++) if(NumOfDrill[i]) Drills[j++] = Drills[i];
+    nDrills=j;
+  };
+
+  sort( nWidths, Widths );
+  sort( nDrills, Drills );
+
+  string cmd = "grid mic;\n";
+  cmd = cmd + "SET WIDTH_MENU ";
+  for( i=0 ; i<nWidths ; i++ ) {
+    sprintf(cmd,"%s %s",cmd, real2str(u2mic(Widths[i])) );
+  };
+  cmd = cmd + ";\n";
+
+  cmd = cmd + "SET DRILL_MENU ";
+  for( i=0 ; i<nDrills ; i++ ) {
+    sprintf(cmd,"%s %s",cmd, real2str(u2mic(Drills[i])) );
+  };
+  cmd = cmd + ";\n";
+
+  cmd = cmd + "grid last;\n";
+
+//----------------------------------------------------------------------------
+//
+  s = "---- brd_setmenus.scr ----\n\n" + cmd + "\n\n---- eagle.epf entries ----\n\n";
+
+  s = s + "WireWidths=\"" ;
+  for( i=0 ; i<nWidths ; i++ )  sprintf(s,"%s %d",s, Widths[i] );
+  s = s + "\"\n";
+
+  s = s + "ViaDrills=\"";
+  for( i=0 ; i<nDrills ; i++ )  sprintf(s,"%s %d",s, Drills[i] );
+  s = s + "\"\n";
+
+  int Result = dlgDialog("result") {
+    dlgGridLayout {
+      dlgCell(1, 1, 200, 200)     dlgTextView(s);
+    };
+    dlgSpacing(10);
+    dlgHBoxLayout {
+      dlgStretch(1);
+      dlgPushButton("+OK") {
+         dlgAccept();
+         exit(cmd);
+      };
+
+      dlgPushButton("Script 'brd_setmenus.scr' erzeugen") {
+         dlgAccept();
+         output("brd_setmenus.scr") printf("%s",cmd);
+      };
+
+      dlgPushButton("Cancel") {
+        dlgReject();
+      };
+    };
+  };

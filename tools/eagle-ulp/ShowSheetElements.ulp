@@ -1,0 +1,91 @@
+//############################################################################
+string Frame_device_name_Contains = "SheetFrame"; // case ignored
+string         SheetValue[];
+int            SheetCount;
+numeric string ListViewText[];
+
+void FindFrames(void)
+{
+int i;
+string iFrameName = strlwr(Frame_device_name_Contains);
+  project.schematic(SCH) SCH.sheets(SH) {
+    int     iFound=0;
+    string  iValue;
+    int     iX1,iY1,iX2,iY2, iSwap;
+    SH.parts(P) {
+      if( strstr(strlwr(P.device.name), iFrameName) < 0 ) continue;
+      iFound = 1;
+      iValue = P.value;
+      P.instances(I) {
+        iX1 = I.x + I.gate.symbol.area.x1;  iY1 = I.y + I.gate.symbol.area.y1;
+        iX2 = I.x + I.gate.symbol.area.x2;  iY2 = I.y + I.gate.symbol.area.y2;
+      };
+      break;
+    };
+    if(!iFound) {
+      iValue="<No " + Frame_device_name_Contains + ">";
+      iX1 = SH.area.x1;  iY1 = SH.area.y1;
+      iX2 = SH.area.x2;  iY2 = SH.area.y2;
+    };
+    if( iX1 > iX2 ) { iSwap = iX1; iX1 = iX2; iX2 = iSwap; };
+    if( iY1 > iY2 ) { iSwap = iY1; iY1 = iY2; iY2 = iSwap; };
+
+    SheetValue[SheetCount] = iValue;
+    SheetCount++;
+  };
+
+  // MakeListViewText
+  for( i=0 ; i<SheetCount ; i++ ) {
+    sprintf( ListViewText[i], "      %d\t%s", i+1, SheetValue[i] );
+  };
+}
+
+//---------------------------------------------------------------------------
+int RunDialog(void)
+{
+int iSelected = 0;
+//  sheet(SH) iSelected = SH.number-1;
+
+  dlgDialog("Cnt.ulp") {
+    dlgLabel("&Sheet");
+    dlgListView("Number\tValue", ListViewText, iSelected) {
+      dlgAccept();
+      return iSelected+1;
+    };
+
+    dlgHBoxLayout {
+      dlgPushButton("+OK")    {
+      dlgAccept();
+      return iSelected+1;
+      };
+      dlgPushButton("Cancel") { exit(0); };
+    };
+  };
+}
+
+//###########################################################################
+
+
+int SheetNo = strtol( argv[1] );
+
+  if(!SheetNo) {
+    FindFrames();
+    SheetNo = RunDialog();
+  };
+  
+//###########################################################################
+string ElementNames[];
+int nElementNames;
+board(B) B.elements(E) {ElementNames[nElementNames] = E.name; ++nElementNames; }
+
+//###########################################################################
+string cmd = "window; ";
+
+project.schematic(SCH) SCH.sheets(S) if(S.number==SheetNo) S.parts(P) {
+  for(int i=0; i<nElementNames; i++)
+    if( P.name==ElementNames[i] )
+      cmd += "show " + P.name + ";";
+}
+
+ exit(cmd);
+ 

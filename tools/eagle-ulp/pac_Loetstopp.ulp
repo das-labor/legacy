@@ -1,0 +1,36 @@
+
+
+string result;
+
+
+//output("loetstopp.scr", "t"){
+  sprintf (result,  "grid mm;\n" 
+                    "grid finest;\n"
+                    "layer tstop;\n"
+          );
+  
+  package(P) {
+  	P.contacts(S) {
+		  string coord, acoord;
+		  sprintf(coord, "(%f %f) " ,(S.x/10000.0), (S.y/10000.0) );
+		  sprintf(acoord, "(%f %f) " ,(((S.x+(S.smd.dx/2))/10000.0)), (S.y/10000.0) );
+		   
+		  sprintf(result, "%schange stop off %s;\n", result, coord);
+		  sprintf(result, "%scircle 0 %s %s;\n", result, coord, acoord );
+		} 
+			
+	}
+//}
+
+
+exit( result);
+
+
+dlgDialog("Blah") {
+  dlgVBoxLayout {
+    dlgHBoxLayout {
+      dlgSpacing(200);}
+     dlgTextView(result);
+         dlgPushButton("+Ok") dlgAccept();
+  }
+ };

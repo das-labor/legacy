@@ -1,0 +1,1356 @@
+// In *.sch oder *.brd:
+//
+//  run infos
+//
+
+#include "IniFile.ulp"
+
+string PrevPartName = Settings_GetString("PrevPartName", "");
+string PrevNetName  = Settings_GetString("PrevNetName" , "");
+string PrevPinName  = Settings_GetString("PrevPinName" , "");
+int GlobalsOnly     = Settings_GetInteger("GlobalsOnly", 1 );
+int PhysicalsOnly   = Settings_GetInteger("PhysicalsOnly", 1 );
+int SelectedTab     = Settings_GetInteger("SelectedTab", 0 );
+
+void Settings_PutPart( string aName )
+{
+  Settings_PutInteger("SelectedTab", 0 );
+  Settings_PutInteger("GlobalsOnly", GlobalsOnly );
+  Settings_PutInteger("PhysicalsOnly", PhysicalsOnly );
+  Settings_PutString("PrevPartName", aName);
+}
+
+void Settings_PutNet( string aName )
+{
+  Settings_PutInteger("SelectedTab", 1 );
+  Settings_PutInteger("GlobalsOnly", GlobalsOnly );
+  Settings_PutInteger("PhysicalsOnly", PhysicalsOnly );
+  Settings_PutString("PrevNetName", aName);
+}
+
+void Settings_PutPartPin( string aPartName, string aPinName )
+{
+  Settings_PutInteger("SelectedTab", 0 );
+  Settings_PutInteger("GlobalsOnly", GlobalsOnly );
+  Settings_PutInteger("PhysicalsOnly", PhysicalsOnly );
+  Settings_PutString("PrevPartName", aPartName);
+  Settings_PutString("PrevPinName", aPinName);
+}
+
+void Settings_PutNetPin( string aNetName, string aPinName )
+{
+  Settings_PutInteger("SelectedTab", 1 );
+  Settings_PutInteger("GlobalsOnly", GlobalsOnly );
+  Settings_PutInteger("PhysicalsOnly", PhysicalsOnly );
+  Settings_PutString("PrevNetName", aNetName);
+  Settings_PutString("PrevPinName", aPinName);
+}
+
+//############################################################################
+string int2str( int aValue )
+{
+string iResult;
+  sprintf(iResult,"%d",aValue);
+  return iResult;
+}
+
+//---------------------------------------------------------------------------
+string real2str( real aArg )
+{
+string iResult;
+int    i;
+  sprintf( iResult, "%f", aArg );
+  for( i=strlen(iResult)-1 ; i>0 ; i-- ) {
+    if( iResult[i]=='0' ) {iResult[i]=0;  continue; };
+    if( iResult[i]=='.' )  iResult[i]=0;  break;
+  };
+
+  return iResult;
+}
+
+//---------------------------------------------------------------------------
+string RealCoord( real aX, real aY )
+{
+  return "(" + real2str(aX) + " " + real2str(aY) + ")" ;
+}
+
+//---------------------------------------------------------------------------
+void TextDialog( string s )
+{
+int i, j, k, m, maxk;
+string lines[], bufs[];
+int nlines;
+char ch;
+int maxlen[];
+string lengths[];
+string spaces = "                                                         ";
+
+  nlines = strsplit( lines, s, '\n' );
+
+  for(i=0;i<nlines;i++) {
+    string line = lines[i];
+    k = strsplit( bufs, lines[i], '\t' );
+    for( j=0; j<k; j++ ) {
+      m = strlen( bufs[j] );
+      if( maxlen[j] < m ) maxlen[j] = m;
+    };
+  };
+
+  for(i=0;i<nlines;i++) {
+    string line = lines[i];
+    k = strsplit( bufs, lines[i], '\t' );
+    for( j=0; j<k; j++ ) {
+      m = strlen( bufs[j] );
+      bufs[j] = bufs[j] + strsub(spaces, 0, maxlen[j]-m );
+    };
+    lines[i] = strjoin( bufs, ' ' );
+  };
+
+  s = strjoin(lines, '\n');
+
+  dlgDialog(""){
+    dlgGridLayout {
+      dlgCell(0,0,150,140) // dlgCell(0,0,200,150)
+      dlgTextEdit(s) };
+  };
+}
+
+//############################################################################
+string Board_GetLayers(UL_BOARD BOARD)
+{
+string result; int i;
+  BOARD.layers(L) if(i<L.number) i=L.number;
+  for(;i>=0;i--) result[i]='.';  // not string end
+  BOARD.layers(L) if(L.used) result[L.number]='0'+L.visible;
+  return result;
+}
+
+string BoardLayers;
+
+  project.board(B) BoardLayers = Board_GetLayers(B);
+
+//----------------------------------------------------------------------------
+string Layers_Display(string Layers)
+{
+string result; int i;
+  while(Layers[++i]) if(Layers[i]>='0') {
+    if( Layers[i]<'1' ) result +='-';
+    sprintf(result,"%s%d ",result,i);
+  };
+  return "DISPLAY " + result + ";\n";
+}
+
+//############################################################################
+//############################################################################
+// SHEET
+
+int            Sheet_Count;
+numeric string Sheet_ListViewText[];   // "number \t name";  [0]='all'
+//void         Sheet_Init(void)
+//string       Sheet_EditCmd( int aSheetNo )
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+string Frame_device_name_Contains = "SheetFrame"; // case ignored
+string ContentsFrame_value_Contains = "Contents"; // case ignored
+
+//############################################################################
+string Sheet_Names[];          // 1-based
+int    Sheet_Areas_X1[];
+int    Sheet_Areas_Y1[];
+int    Sheet_Areas_X2[];
+int    Sheet_Areas_Y2[];
+
+//---------------------------------------------------------------------------
+void Sheet_Init(void)
+{
+int i;
+string iFrameName = strlwr(Frame_device_name_Contains);
+
+  Sheet_Count = 0;
+
+  project.schematic(SCH) SCH.sheets(SH) {
+    int     iFound=0;
+    string  iValue;
+    int     iX1,iY1,iX2,iY2, iSwap;
+    int     iSheetNo = SH.number;
+    SH.parts(P) {
+      if( strstr(strlwr(P.device.name), iFrameName) < 0 ) continue;
+      iFound = 1;
+      iValue = P.value;
+      P.instances(I) {
+        iX1 = I.x + I.gate.symbol.area.x1;  iY1 = I.y + I.gate.symbol.area.y1;
+        iX2 = I.x + I.gate.symbol.area.x2;  iY2 = I.y + I.gate.symbol.area.y2;
+      };
+      break;
+    };
+    if(!iFound) {
+      iValue="<No " + Frame_device_name_Contains + ">";
+      iX1 = SH.area.x1;  iY1 = SH.area.y1;
+      iX2 = SH.area.x2;  iY2 = SH.area.y2;
+    };
+    if( iX1 > iX2 ) { iSwap = iX1; iX1 = iX2; iX2 = iSwap; };
+    if( iY1 > iY2 ) { iSwap = iY1; iY1 = iY2; iY2 = iSwap; };
+
+    Sheet_Names[   iSheetNo] = iValue;
+    Sheet_Areas_X1[iSheetNo] = iX1;
+    Sheet_Areas_Y1[iSheetNo] = iY1;
+    Sheet_Areas_X2[iSheetNo] = iX2;
+    Sheet_Areas_Y2[iSheetNo] = iY2;
+
+    Sheet_Count++;
+  };
+
+  // Make ListViewText
+    sprintf( Sheet_ListViewText[0], "      %d\t%s", 0, "All"          );
+  for( i=1 ; i<=Sheet_Count ; i++ ) {
+    sprintf( Sheet_ListViewText[i], "      %d\t%s", i, Sheet_Names[i] );
+  };
+}
+
+//---------------------------------------------------------------------------
+string Sheet_EditCmd( int aSheetNo )
+{
+string iVisibleLayers;
+string iResult;
+string iAreaBuf;
+
+  project.schematic(SCH) SCH.layers(L) {
+    string iBuf;
+    if( ! L.visible ) continue;
+
+    if( L.number == 94 ) sprintf(iBuf, " 94 -95 -96"   );
+    else                 sprintf(iBuf, " %d", L.number );
+
+    iVisibleLayers += iBuf;
+  };
+
+  if( board ) {
+    sprintf( iResult, "edit .s%d;\n"
+                      "grid inch;\n"
+                      "dis  none;\n"
+                      "win  %s %s;\n"
+                      "dis  %s;\n"
+                     , aSheetNo
+                     , RealCoord( u2inch( Sheet_Areas_X1[aSheetNo]),
+                                  u2inch( Sheet_Areas_Y1[aSheetNo])-0.02 )
+                     , RealCoord( u2inch( Sheet_Areas_X2[aSheetNo]),
+                                  u2inch( Sheet_Areas_Y2[aSheetNo])+0.02 )
+                     , iVisibleLayers );
+  }else{
+    sprintf( iResult, "grid inch;\n"
+                      "dis  none;\n"
+                      "edit .s%d;\n"
+                      "win  %s %s;\n"
+                      "dis  %s;\n"
+                     , aSheetNo
+                     , RealCoord( u2inch( Sheet_Areas_X1[aSheetNo]),
+                                  u2inch( Sheet_Areas_Y1[aSheetNo])-0.02 )
+                     , RealCoord( u2inch( Sheet_Areas_X2[aSheetNo]),
+                                  u2inch( Sheet_Areas_Y2[aSheetNo])+0.02 )
+                     , iVisibleLayers );
+  };
+  return iResult;
+}
+
+
+//############################################################################
+//############################################################################
+// NETs
+
+int            Nets_Count;
+numeric string Nets_Names[];
+string         Nets_SheetLists[];// X_*__ X:net on.. '0'=no, '1'=one, '2'=2+ sheet
+//void         Nets_Init(void);
+//int          Nets_Index( string aNet );
+
+int            Nets_ListviewCount;
+numeric string Nets_ListviewNetName[];  // "name"
+numeric string Nets_ListviewText[];     // "name \t sheetlist"
+//int          Nets_ListviewInit( int aSheetNo, int aGlobalsOnly )
+                 // (aSheetNo==0) = all;
+                 // return index of PrevNetName or -1
+
+//############################################################################
+void   Nets_Init(void)
+{
+string iSheetListsInit = "";
+int    i;
+int    iSortIndex[];
+string iTmp[];
+
+  //-------------------------------
+  // Build iSheetListsInit
+  for( i=0 ; i<=Sheet_Count ; i++ ) iSheetListsInit += "_";
+
+  //-------------------------------
+  // Gasther Nets
+  project.schematic(SCH) {
+    SCH.sheets(SH) {
+      int iSheetNo = SH.number;
+      SH.nets(N) {
+        string iNetName = N.name;
+        string iSheetLists;
+        int    iNet, i;
+
+        // enter net into  Nets_Names[], Nets_SheetLists[]
+        for(iNet=0; iNet<Nets_Count; iNet++ ) {
+          if(Nets_Names[iNet]==iNetName) break;
+        };
+        if(iNet>=Nets_Count) {
+          Nets_Count++;
+          Nets_Names     [iNet] = iNetName       ;
+          Nets_SheetLists[iNet] = iSheetListsInit;
+        };
+
+        // mark sheet in Nets_SheetLists[]
+        iSheetLists=Nets_SheetLists[iNet];
+        iSheetLists[iSheetNo]='*';
+        Nets_SheetLists[iNet]=iSheetLists;
+      };
+    };
+  };
+
+  //-------------------------------
+  // Sort Nets
+  sort( Nets_Count, iSortIndex, Nets_Names );
+
+  for(i=0;i<Nets_Count;i++) iTmp[i] = Nets_Names[iSortIndex[i]];
+  for(i=0;i<Nets_Count;i++) Nets_Names[i] = iTmp[i];
+
+  for(i=0;i<Nets_Count;i++) iTmp[i] = Nets_SheetLists[iSortIndex[i]];
+  for(i=0;i<Nets_Count;i++) Nets_SheetLists[i] = iTmp[i];
+
+  //-------------------------------
+  // Find Singular Sheet Nets
+  for(i=0;i<Nets_Count;i++) {
+    string iSheetLists = Nets_SheetLists[i];
+    int j, iCount=0;
+    for( j=1 ; j<=Sheet_Count ; j++ ) {
+      if( iSheetLists[j]=='*' ) iCount++;
+    };
+    switch(iCount) {
+      case 0 : iSheetLists[0] = '0'; break;
+      case 1 : iSheetLists[0] = '1'; break;
+      default: iSheetLists[0] = '2'; break;
+    };
+    Nets_SheetLists[i] = iSheetLists;
+  };
+}
+
+//---------------------------------------------------------------------------
+int Nets_Index( string aNet )
+{
+int i;
+  for( i=0 ; i<Nets_Count ; i++ ) {
+    if( aNet == Nets_Names[i] ) return i;
+  };
+  return -1;
+}
+
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+int Nets_ListviewInit( int aSheetNo, int aGlobalsOnly )
+{
+int iNet, iSel=-1;
+  for(iNet=0;iNet<Nets_ListviewCount;iNet++) Nets_ListviewText[iNet] = "";
+
+  Nets_ListviewCount = 0;
+
+  for( iNet=0 ; iNet<Nets_Count ; iNet++ ) {
+    string iSheetLists = Nets_SheetLists[iNet];
+    string iNets_ListviewText;
+    int    i;
+    if( aGlobalsOnly && (iSheetLists[0]<'2') ) continue;
+    if( aSheetNo && (iSheetLists[aSheetNo] != '*') ) continue;
+
+    iNets_ListviewText = Nets_Names[iNet] + "\t";
+    for( i=1 ; i<=Sheet_Count ; i++ ) {
+      if( iSheetLists[i] != '*' ) continue;
+      if( i==aSheetNo) continue;
+      iNets_ListviewText += " " + int2str(i);
+    };
+
+    Nets_ListviewNetName[Nets_ListviewCount] = Nets_Names[iNet];
+    Nets_ListviewText   [Nets_ListviewCount] = iNets_ListviewText;
+    if( Nets_Names[iNet]==PrevNetName )
+      iSel=Nets_ListviewCount;
+    Nets_ListviewCount++;
+  };
+
+    Nets_ListviewText[Nets_ListviewCount  ] = "";
+    Nets_ListviewText[Nets_ListviewCount+1] = "";
+  return iSel;
+}
+
+
+//############################################################################
+//############################################################################
+// PARTs
+
+numeric string Parts_Name      [];
+numeric string Parts_Value     [];
+string         Parts_Package   [];
+numeric string Parts_MountType [];
+numeric string Parts_DeviceName[];
+numeric string Parts_Library   [];
+string         Parts_SheetList [];// X_*__*_  X: part on.. '0'=no, '1'=one, '2'=2+ sheet
+numeric string Parts_Prefix    [];
+int            Parts_Count;
+//void         Parts_Init()
+
+numeric string Parts_ListviewText[]; // Part Value Device Package Sheet ListNo
+int            Parts_ListviewIndex[];
+int            Parts_ListviewCount;
+//int          Parts_ListviewInit( int aSheetNo, int aPhysicalsOnly )
+
+//############################################################################
+string Package_MountType( UL_PACKAGE aPackage )
+{
+int iHasPads = 0;
+int iHasSmds = 0;
+
+  if( !aPackage ) return "-";
+
+  aPackage.contacts(C) {
+    if( !iHasPads && C.pad ) iHasPads=1;
+    if( !iHasSmds && C.smd ) iHasSmds=1;
+  };
+
+  switch( iHasPads + iHasSmds+iHasSmds ) {
+    case 0: return "-";
+    case 1: return "T";
+    case 2: return "S";
+    case 3: return "B";
+  };
+}
+
+//---------------------------------------------------------------------------
+void Parts_Init()
+{
+string iSheetListsInit = "";
+int    i;
+int    iSortIndex[];
+string iTmp[];
+string iBuf;
+int    Parts_Sort[];
+//string Parts_DeviceName [];
+
+  //-------------------------------
+  // Build iSheetListsInit
+
+  for( i=0 ; i<=Sheet_Count ; i++ ) iSheetListsInit += "_";
+
+  //-------------------------------
+  // Gather Parts from board
+
+  project.board(B) {
+    B.elements(E) {
+      string iPartName = E.name;
+
+      string iPartPackage;
+      if( E.package ) iPartPackage = E.package.name;
+      else            iPartPackage = "";
+
+      Parts_Name       [Parts_Count] = iPartName      ;
+      Parts_Value      [Parts_Count] = E.value        ;
+      Parts_DeviceName [Parts_Count] = ""             ;
+      Parts_Package    [Parts_Count] = iPartPackage   ;
+      Parts_MountType  [Parts_Count] = Package_MountType( E.package );
+      Parts_DeviceName [Parts_Count] = ""   ;
+      Parts_SheetList  [Parts_Count] = iSheetListsInit;
+      Parts_Library    [Parts_Count] = E.package.library;
+
+      Parts_Count++;
+    };
+  };
+
+  //-------------------------------
+  // Gather Parts from sheet
+  /**/
+  project. schematic(SCH) {
+    SCH.sheets(SH) {
+      int iSheetNo = SH.number;
+      SH.parts(P) {
+        string iPartName = P.name;
+        string iSheetLists;
+        int    iPart;
+
+        for(iPart=0; iPart<Parts_Count; iPart++ ) {
+          if(Parts_Name[iPart]==iPartName) break;
+        };
+
+          Parts_DeviceName [iPart] = P.device.name;
+
+        if(iPart>=Parts_Count) {
+          string iPartPackage;
+          if( P.device.package ) iPartPackage = P.device.package.name;
+          else                   iPartPackage = "";
+
+          Parts_Count++;
+          Parts_Name       [iPart] = iPartName    ;
+          Parts_Value      [iPart] = P.value      ;
+//&       Parts_DeviceName [Parts_Count] = ""             ;
+          Parts_DeviceName [iPart] = P.device.name;
+          Parts_Package    [iPart] = iPartPackage ;
+          Parts_MountType  [iPart] = Package_MountType( P.device.package );
+
+          Parts_SheetList  [iPart] = iSheetListsInit;
+        };
+
+        iSheetLists=Parts_SheetList[iPart];
+        iSheetLists[iSheetNo]='*';
+        Parts_SheetList[iPart]=iSheetLists;
+      };
+    };
+  };
+
+  //-------------------------------
+  // Sort Parts
+
+  sort( Parts_Count, Parts_Sort, Parts_Name ); // , Parts_SheetList );
+
+  //-------------------------------
+  // Find Singular Sheet Parts
+
+  for(i=0;i<Parts_Count;i++) {
+    string iSheetLists = Parts_SheetList[i];
+    int j, iCount=0;
+    for( j=1 ; j<=Sheet_Count ; j++ ) {
+      if( iSheetLists[j]=='*' ) iCount++;
+    };
+    switch(iCount) {
+      case 0 : iSheetLists[0] = '0'; break;
+      case 1 : iSheetLists[0] = '1'; break;
+      default: iSheetLists[0] = '2'; break;
+    };
+    Parts_SheetList[i] = iSheetLists;
+  };
+
+  //-------------------------------
+  // Prefix, Mount
+
+  for( i=0 ; i<Parts_Count ; i++ ) {
+    string iBuf = Parts_Name[i];
+    int j;
+    for( j=0 ; iBuf[j] ; j++ ) {
+      if( ('0'<=iBuf[j]) && (iBuf[j]<='9') ) {
+        iBuf[j] = 0;
+        break;
+      };
+    };
+    Parts_Prefix[i] = iBuf;
+  };
+}
+
+//---------------------------------------------------------------------------
+int Parts_ListviewInit( int aSheetNo, int aPhysicalsOnly )
+{
+int iPart, iSel=-1;
+  for( iPart=0 ; iPart<Parts_ListviewCount ; iPart++ )
+    Parts_ListviewText[iPart] = "";
+
+  Parts_ListviewCount = 0;
+
+  for( iPart=0 ; iPart<Parts_Count ; iPart++ ) {
+    string iSheetLists = Parts_SheetList[iPart];
+    string iPartsOnSheet;
+    string iSheetList   ;
+    string iBuf         ;
+    int    i;
+    if( aSheetNo && (iSheetLists[aSheetNo] != '*') ) continue;
+    if( aPhysicalsOnly && (Parts_Package[iPart]=="") ) continue;
+
+    iSheetList ="";
+    for( i=1 ; i<=Sheet_Count ; i++ ) {
+      if( iSheetLists[i] != '*' ) continue;
+      if( i==aSheetNo) continue;
+      sprintf( iBuf , " %d" , i );
+      iSheetList += iBuf;
+    };
+
+    sprintf(iBuf,"%d", Parts_ListviewCount+1 );
+    iPartsOnSheet = iBuf                    + "\t"
+                  + Parts_Name[iPart]       + "\t"
+                  + Parts_Prefix[iPart] + " "
+                  + Parts_Value[iPart]      + "\t"
+                  + Parts_DeviceName[iPart] + "\t"  // + "bla\t" //
+                  + Parts_MountType[iPart]+" "
+                  + Parts_Package[iPart]    + "\t"
+                  + iSheetList              + "\t"
+                  + Parts_Library[iPart]
+                  ;
+
+    Parts_ListviewIndex[Parts_ListviewCount] = iPart;
+    Parts_ListviewText[ Parts_ListviewCount] = iPartsOnSheet;
+    if( Parts_Name[iPart]==PrevPartName )
+      iSel=Parts_ListviewCount;
+    Parts_ListviewCount++;
+  };
+  
+//  dlgMessageBox( int2str(iSel) );
+  return iSel;
+}
+
+//############################################################################
+//###########################################################################
+int MinX, MaxX, MinY, MaxY, MidX, MidY, DeltaXY;
+
+void MinMaxXY( int x, int y )
+{
+  MinX=min(MinX,x);  MaxX=max(MaxX,x);
+  MinY=min(MinY,y);  MaxY=max(MaxY,y);
+}
+
+//--------------------------------------------------
+void StartMinMaxXY()
+{
+  MinX = 2147483647;    MaxX = -2147483648;
+  MinY = 2147483647;    MaxY = -2147483648;
+}
+
+//--------------------------------------------------
+void GetMidXYDeltaXY()
+{
+  MidX = (MinX+MaxX) / 2;
+  MidY = (MinY+MaxY) / 2;
+  DeltaXY  = max( MaxX-MidX , MaxY-MidY );
+}
+
+//############################################################################
+string ZoomToSheet( string aName, int aSheet, int aX, int aY, int aDeltaXY )
+{
+real   x = u2mm(aX), y = u2mm(aY);
+string cmd = "", h = "";
+real   zoom_win = 50;
+  if(zoom_win < u2mm(aDeltaXY)) zoom_win = u2mm(aDeltaXY);
+
+  sprintf(cmd, "edit .s%d;\ngrid mm finest;\nWindow (%f %f)(%f %f);\n",
+    aSheet,
+    x-zoom_win, y-zoom_win, x+zoom_win, y+zoom_win);
+
+  cmd += "grid last;\n";
+  if( aName!="" ) {
+    cmd += "Show " + aName + "\n";
+  }
+  return cmd;
+}
+
+//--------------------------------------------------------------
+string ZoomToBoard( string aName, int aX, int aY, int aDeltaXY )
+{
+real   x = u2mm(aX), y = u2mm(aY);
+string cmd = "";
+real   zoom_win = 10;
+  if(zoom_win < u2mm(aDeltaXY)) zoom_win = u2mm(aDeltaXY);
+
+  sprintf(cmd, "edit .brd;\ngrid mm finest;\nWindow (%f %f)(%f %f);\n",
+    x-zoom_win, y-zoom_win, x+zoom_win, y+zoom_win);
+  cmd += "grid last;\n" + Layers_Display(BoardLayers);
+  if( aName!="" ) cmd += "Show " + aName + "\n";
+  return cmd;
+}
+
+//###########################################################################
+void ZoomToPartPin( string aPartName )
+{
+string InstName[], ListViewText[], InstPins[], InstContacts[], InstSignals[];
+int InstSheet[],  PinX[], PinY[], ContactX[], ContactY[];
+int iSel = 0;
+int PinCount=0;
+string PartValue;
+string iFilter;
+int FilterIndex[];
+
+  project.schematic(SCH) SCH.parts(P) {
+    if(P.name!=aPartName) continue;
+    PartValue = P.value;
+    P.instances(I) if(I.sheet) {
+       I.gate.symbol.pins(PIN) {
+         if(PIN.name==PrevPinName) iSel=PinCount;
+
+         InstPins    [PinCount] = PIN.name;
+         PinX        [PinCount] = PIN.x  ;
+         PinY        [PinCount] = PIN.y  ;
+         InstContacts[PinCount] = PIN.contact.name;
+         InstSignals [PinCount] = PIN.contact.signal;
+         ContactX    [PinCount] = PIN.contact.x     ;
+         ContactY    [PinCount] = PIN.contact.y     ;
+
+         InstName    [PinCount] = I.name ;
+         InstSheet   [PinCount] = I.sheet;
+/*
+*/
+         PinCount++;
+       };
+    };
+  };
+  
+  dlgDialog("Select Pin") {
+    int j=0;
+    int i;
+    for( i=j=0; i<PinCount ; i++ ) {
+      if( strstr(strupr(InstPins[i]+InstSignals[i]),strupr(iFilter)) >= 0 ){
+        sprintf(ListViewText[j], "%5d\t%s\t%s \t%s \t%s \t%s",
+          j+1, InstPins[i], InstContacts[i],
+          InstSignals[i] , InstName[i], Sheet_ListViewText[InstSheet[i]]
+        );
+        FilterIndex[j] = i;
+        j++;
+      };
+    };
+    ListViewText[j] = "";
+
+    dlgGridLayout {
+      dlgCell(0,0,200,140) // dlgCell(0,0,200,150)
+      dlgVBoxLayout {
+        dlgLabel(aPartName + "   " + PartValue);
+        dlgListView(" \tPin\tContact\tSignal\tInstance\tSheet\tSheet", ListViewText, iSel) {
+         iSel = FilterIndex[iSel];
+           Settings_PutPartPin(aPartName,InstPins[iSel]);
+           dlgReject();
+           if(board)
+             exit( ZoomToBoard(InstSignals[iSel], ContactX[iSel], ContactY[iSel], 0 ) );
+           else
+             exit( ZoomToSheet(InstSignals[iSel], InstSheet[iSel], PinX[iSel], PinY[iSel], 0) );
+        };
+      };
+    };
+
+    dlgHBoxLayout{
+      dlgGridLayout{
+        dlgCell(0,0,1,2) {
+          dlgLabel("&Filter ");
+          dlgStringEdit(iFilter);
+          dlgPushButton("&Apply") {
+    for( i=j=0; i<PinCount ; i++ ) {
+      if( strstr(strupr(InstPins[i]+InstSignals[i]),strupr(iFilter)) >= 0 ){
+        sprintf(ListViewText[j], "%5d\t%s\t%s \t%s \t%s \t%s",
+          j+1, InstPins[i], InstContacts[i],
+          InstSignals[i] , InstName[i], Sheet_ListViewText[InstSheet[i]]
+        );
+        FilterIndex[j] = i;
+        j++;
+      };
+    };
+    ListViewText[j] = "";
+    dlgRedisplay();
+          };
+        };
+      };
+
+      dlgPushButton("&Text") { TextDialog(strjoin(ListViewText, '\n')); };
+
+      dlgPushButton("Goto &Schematic") {
+       if(iSel>=0) {
+         iSel = FilterIndex[iSel];
+         Settings_PutPartPin(aPartName,InstPins[iSel]);
+         dlgReject();
+         exit( ZoomToSheet(InstSignals[iSel], InstSheet[iSel], PinX[iSel], PinY[iSel], 0) );
+       };
+      };
+
+      dlgPushButton("Goto &Board") {
+       if(iSel>=0) {
+         iSel = FilterIndex[iSel];
+         Settings_PutPartPin(aPartName,InstPins[iSel] );
+         dlgReject();
+         exit( ZoomToBoard(InstSignals[iSel], ContactX[iSel], ContactY[iSel], 0 ) );
+       };
+      };
+    };
+  };
+}
+
+//--------------------------------------------------------------
+void ZoomToNetPin( string aNetName )
+{
+string InstName[], ListViewText[], InstPins[], InstContacts[], InstSignals[], InstValue[];
+int InstSheet[],  PinX[], PinY[], ContactX[], ContactY[];
+int iSel = 0;
+int PinCount=0;
+
+  project.schematic(SCH) SCH.nets(N) {
+    if(N.name!=aNetName) continue;
+    N.pinrefs(PR) {
+       if(PR.pin.name==PrevPinName) iSel=PinCount;
+       
+       InstPins    [PinCount] = PR.pin.name;
+       PinX        [PinCount] = PR.pin.x  ;
+       PinY        [PinCount] = PR.pin.y  ;
+       InstContacts[PinCount] = PR.pin.contact.name;
+       InstSignals [PinCount] = PR.pin.contact.signal;
+       ContactX    [PinCount] = PR.pin.contact.x     ;
+       ContactY    [PinCount] = PR.pin.contact.y     ;
+
+       InstName    [PinCount] = PR.instance.name ;
+       InstValue   [PinCount] = PR.instance.value;
+       InstSheet   [PinCount] = PR.instance.sheet;
+
+       sprintf(ListViewText[PinCount], "%5d\t%s\t%s \t%s \t%s \t%s \t%s",
+         PinCount+1, InstPins[PinCount], InstContacts[PinCount],
+         InstSignals[PinCount], InstName[PinCount], InstValue[PinCount],
+         Sheet_ListViewText[InstSheet[PinCount]]
+       );
+       PinCount++;
+    };
+  };
+
+  dlgDialog("Select Pin") {
+    dlgGridLayout {
+      dlgCell(0,0,200,140) // dlgCell(0,0,200,150)
+      dlgVBoxLayout {
+        dlgLabel(aNetName);
+        dlgListView(" \tPin\tContact\tSignal\tInstance\tValue\tSheet\tSheet", ListViewText, iSel) {
+           Settings_PutNetPin(aNetName,InstPins[iSel]);
+           dlgReject();
+           if(board)
+             exit( ZoomToBoard(InstSignals[iSel], ContactX[iSel], ContactY[iSel], 0 ) );
+           else
+             exit( ZoomToSheet(InstSignals[iSel], InstSheet[iSel], PinX[iSel], PinY[iSel], 0) );
+        };
+      };
+    };
+
+    dlgHBoxLayout{
+      dlgPushButton("&Text") { TextDialog(strjoin(ListViewText, '\n')); };
+
+      dlgPushButton("Goto &Schematic") {
+       if(iSel>=0) {
+         Settings_PutNetPin(aNetName,InstPins[iSel]);
+         dlgReject();
+         exit( ZoomToSheet(InstSignals[iSel], InstSheet[iSel], PinX[iSel], PinY[iSel], 0) );
+       };
+      };
+
+      dlgPushButton("Goto &Board") {
+       if(iSel>=0) {
+         Settings_PutNetPin(aNetName,InstPins[iSel] );
+         dlgReject();
+         exit( ZoomToBoard(InstSignals[iSel], ContactX[iSel], ContactY[iSel], 0 ) );
+       };
+      };
+    };
+  };
+}
+
+//###########################################################################
+void ZoomToPart( string aName )
+{
+string InstName[], ListViewText[];
+int InstSheet[],  InstX[], InstY[];
+int InstCount=0;
+int iSel = 0;
+
+  project.schematic(SCH) SCH.parts(P) {
+    if(P.name!=aName) continue;
+    P.instances(I) if(I.sheet) {
+       InstName [InstCount] = I.name ;
+       InstSheet[InstCount] = I.sheet;
+       InstX    [InstCount] = I.x    ;
+       InstY    [InstCount] = I.y    ;
+       sprintf(ListViewText[InstCount], "%s\t%s \t%s \t%s",
+         I.name, Sheet_ListViewText[I.sheet], real2str(u2mm(I.x)), real2str(u2mm(I.y))
+       );
+       InstCount++;
+    };
+  };
+
+  if( InstCount==0 ) return;
+
+  if( InstCount==1 ) {
+        Settings_PutPart(aName);
+        dlgReject();
+        exit( ZoomToSheet(aName, InstSheet[0], InstX[0], InstY[0], 0) );
+  };
+
+  dlgDialog("Select Instance") {
+     dlgLabel(aName);
+
+     dlgListView("Instance\tSheet\tName\tX\tY", ListViewText, iSel) {
+        Settings_PutPart(aName);
+        dlgReject();
+        exit( ZoomToSheet(aName, InstSheet[iSel], InstX[iSel], InstY[iSel], 0) );
+     };
+
+     dlgPushButton("+OK") {
+      if(iSel>=0) {
+        Settings_PutPart(aName);
+        dlgReject();
+        exit( ZoomToSheet(aName, InstSheet[iSel], InstX[iSel], InstY[iSel], 0) );
+      };
+     };
+  };
+}
+
+//############################################################################
+void ZoomToElement( string aName )
+{
+  project.board(B) B.elements(E) {
+    if(E.name!=aName) continue;
+    
+    int smdlayer = (E.mirror)? 16 : 1;
+    E.package.contacts(C) {
+       if( C.pad ) BoardLayers[17      ]='1';
+       if( C.smd ) BoardLayers[smdlayer]='1';
+    };
+
+    Settings_PutPart(aName);
+    dlgReject();
+    exit( ZoomToBoard(aName, E.x, E.y, 0 ) );
+  };
+}
+
+//############################################################################
+void LibraryScript(string aName)
+{
+string iBuf, iTxt = "";
+  project.schematic(SCH) SCH.parts(P) {
+    if(P.name!=aName) continue;
+    UL_PACKAGE PAC = P.device.package;
+    iTxt = "GRID mm finest\n";
+    iTxt += "\nEDIT " + PAC.name + ".pac\n\n";
+    PAC.circles(C) {
+      sprintf(iBuf, "CHANGE LAYER %s\n", C.layer );
+      iTxt+=iBuf;
+      sprintf(iBuf, "CIRCLE %f (%f %f) (%f %f)\n\n",
+        u2mm(C.width), u2mm(C.x), u2mm(C.y), u2mm(C.x+C.radius), u2mm(C.y) );
+      iTxt+=iBuf;
+    };
+    PAC.contacts(C) {
+      if(C.pad) {
+
+      };
+    };
+    
+/*
+    P.device.gates(G) {
+      for(i=0;i<n;i++) { if( SymbolNames[i]==G.symbol.name) break; };
+      if(i==n) {
+        SymbolNames[n++] = G.symbol.name;
+        sprintf(ListViewText[i+2], "Symbol:\t%s", G.symbol.name );
+      };
+    };
+    
+    P.deviceset.name
+*/
+
+  };
+  TextDialog(iTxt);
+}
+
+//############################################################################
+void ZoomToLibrary( string aName )
+{
+numeric string ListViewText[];
+numeric string SymbolNames[];
+int i, j, n, iSel=0;
+
+  project.schematic(SCH) SCH.parts(P) {
+    if(P.name!=aName) continue;
+
+    sprintf(ListViewText[0], "Device:\t%s" , P.deviceset.name      );
+    if( P.device.package ) 
+      sprintf(ListViewText[1], "Package:\t%s", P.device.package.name );
+    else
+      sprintf(ListViewText[1], "Package:\t%s", "" );
+    n=0;
+    P.device.gates(G) {
+      for(i=0;i<n;i++) { if( SymbolNames[i]==G.symbol.name) break; };
+      if(i==n) {
+        SymbolNames[n++] = G.symbol.name;
+        sprintf(ListViewText[i+2], "Symbol:\t%s", G.symbol.name );
+      };
+    };
+
+    dlgDialog("Select Library Object") {
+      dlgLabel("Library: " + P.device.library);
+      dlgListView("\tObject", ListViewText, iSel) {
+        string a[], iEdit, iLibName, LibList[], iDummy[], iLibPathName;  int nLibList=0;
+
+        n = strsplit(a, ListViewText[iSel], '\t');
+        iEdit = "EDIT " + a[1];
+        if(a[0]=="Device:")  iEdit += ".dev;\n";
+        if(a[0]=="Package:") iEdit += ".pac;\n";
+        if(a[0]=="Symbol:")  iEdit += ".sym;\n";
+
+        iLibName = P.device.library + ".lbr";
+        for(i=0;;i++) {
+          if( used_libraries[i]=="" ) break;
+          if( strstr( strlwr(used_libraries[i]) , "/"+strlwr(iLibName) )  >=0 ) {
+             LibList[nLibList++] = used_libraries[i];
+          };
+        };
+        for(i=0;;i++) {
+          if( path_lbr[i]=="" ) break;
+          iLibPathName = path_lbr[i] + "/" + iLibName;
+          for(j=0;j<nLibList;j++) if(LibList[j]==iLibPathName) break;
+          if(j==nLibList)
+            if( fileglob(iDummy, iLibPathName) ) {
+              LibList[nLibList++] = iLibPathName;
+          };
+        };
+        iLibPathName = "";
+        switch( nLibList ) {
+          case 0 : break;
+          case 1 : iLibPathName = LibList[0]; break;
+          default: dlgDialog("Libraries") {
+                     string ListViewText[];
+                     for(i=0;LibList[i];i++) ListViewText[i]=int2str(i+1)+"\t"+LibList[i];
+                     i=0;
+                     dlgListView("N\tPath", ListViewText, i) {
+                        iLibPathName=LibList[i];   dlgReject();
+                     };
+                   };
+        };
+
+        if(iLibPathName) {
+          Settings_PutPart(aName);
+          exit("open " + iLibPathName + ";\n" + iEdit);
+        };
+      };
+/*
+      dlgPushButton("Library Script") {
+        LibraryScript(aName);
+        dlgAccept();
+      };
+*/
+    };
+  };
+}
+
+//###########################################################################
+void ZoomToNet( string aName )
+{
+int SheetNum[], SheetX[], SheetY[], SheetDxy[], SheetSegs[],
+    LastSheet=0, SheetCount=0, iSel=0, CurrentSheetNo=-1;
+string iBuf, ListViewText[];
+
+  if(schematic) {
+    sheet(SCH) CurrentSheetNo = SCH.number;
+  };
+  project.schematic(SCHEM) SCHEM.sheets(SCH) SCH.nets(N)  if(N.name==aName) {
+    int iSheetNo = SCH.number, iSegs=0;
+
+    StartMinMaxXY();
+    N.segments(SEG) {
+      iSegs++;
+      SEG.wires(W) {
+        MinMaxXY( W.x1, W.y1 );
+        MinMaxXY( W.x2, W.y2 );
+      };
+      SEG.pinrefs(PR) {
+        MinMaxXY( PR.pin.x, PR.pin.y );
+      };
+    };
+    GetMidXYDeltaXY();
+
+    SheetX[iSheetNo]   = MidX;
+    SheetY[iSheetNo]   = MidY;
+    SheetDxy[iSheetNo] = DeltaXY;
+    SheetSegs[iSheetNo] = iSegs;
+    sprintf( ListViewText[SheetCount], "%s", Sheet_ListViewText[iSheetNo] );
+    LastSheet = iSheetNo;
+    if( iSheetNo==CurrentSheetNo ) iSel=SheetCount;
+    SheetCount++;
+  };
+
+  if( SheetCount==1 ) {
+    int iX   = SheetX[LastSheet];
+    int iY   = SheetY[LastSheet];
+    int iDxy = SheetDxy[LastSheet];
+    Settings_PutNet(aName);
+    dlgReject();
+    exit( ZoomToSheet(aName, LastSheet, iX,iY,iDxy) );
+  };
+
+  dlgDialog("Select Sheet") {
+     dlgLabel(aName);
+
+     dlgListView("Sheet\tName", ListViewText, iSel) {
+        int Sel = strtol(ListViewText[iSel]);
+        int iX   = SheetX[Sel];
+        int iY   = SheetY[Sel];
+        int iDxy = SheetDxy[Sel];
+        Settings_PutNet(aName);
+        dlgReject();
+        exit( ZoomToSheet(aName, Sel, iX,iY,iDxy) );
+     };
+
+     dlgPushButton("+OK") { dlgAccept();
+        int Sel = strtol(ListViewText[iSel]);
+        int iX   = SheetX[Sel];
+        int iY   = SheetY[Sel];
+        int iDxy = SheetDxy[Sel];
+        Settings_PutNet(aName);
+        dlgReject();
+        exit( ZoomToSheet(aName, Sel, iX,iY,iDxy) );
+     };
+  };
+}
+
+//###########################################################################
+void ZoomToSignal( string aName )
+{
+  StartMinMaxXY();
+  project.board(B) B.signals(S) {
+    if(S.name!=aName) continue;
+
+    S.contactrefs(C)         { MinMaxXY(C.contact.x, C.contact.y); };
+    S.wires(W)               { MinMaxXY(W.x1, W.y1);  MinMaxXY(W.x2, W.y2); BoardLayers[W.layer]='1';};
+    S.polygons(P) P.wires(W) { MinMaxXY(W.x1, W.y1);  MinMaxXY(W.x2, W.y2); BoardLayers[W.layer]='1';};
+    S.vias(V)                { MinMaxXY(V.x, V.y); };
+    GetMidXYDeltaXY();
+
+    Settings_PutNet(aName);
+    dlgReject();
+    exit( ZoomToBoard(aName, MidX, MidY, DeltaXY) );
+  };
+}
+
+/*
+//###########################################################################
+void FindNetDialog()
+{
+}
+
+//---------------------------------------------------------------------------
+void FindPartDialog()
+{
+}
+*/
+
+//###########################################################################
+int iSelectedSheet = 0;
+int iSelectedPart = -1;
+int iSelectedNet  = -1;
+
+string SheetLabelText;
+int i;
+
+//---------------------------------------------------------------------------
+void PartTabPage()
+{
+  dlgTabPage("Parts") {
+//    SelectedTab=0;
+    dlgSpacing(5);
+    dlgHBoxLayout{
+      dlgLabel( SheetLabelText, 1 );
+      dlgCheckBox("Physicals only", PhysicalsOnly ) {
+        iSelectedPart=Parts_ListviewInit( iSelectedSheet, PhysicalsOnly );
+        dlgRedisplay();
+      };
+    };
+    dlgSpacing(5);
+    dlgListView( "Part\tName\tValue\tDevice\tPackage\tSheet\tLibrary"  // \tDevice \tListNo
+                 , Parts_ListviewText, iSelectedPart )
+    {
+       if(schematic)
+         ZoomToPart( Parts_Name[Parts_ListviewIndex[iSelectedPart] ] );
+       else
+         ZoomToElement( Parts_Name[Parts_ListviewIndex[iSelectedPart] ] );
+    };
+    dlgSpacing(5);
+    dlgHBoxLayout {
+//      dlgSpacing(5);
+//      dlgPushButton("&Find Part") {
+//         FindPartDialog();
+//      };
+      dlgSpacing(5);
+      dlgPushButton("Find &Pin") {
+        if( iSelectedPart>=0 ) ZoomToPartPin( Parts_Name[Parts_ListviewIndex[iSelectedPart] ] );
+      };
+      dlgSpacing(5);
+      dlgPushButton("&Text") { TextDialog(strjoin(Parts_ListviewText, '\n')); };
+      dlgSpacing(5);
+      dlgPushButton("Goto &Schematic")    {
+        if( iSelectedPart>=0 ) ZoomToPart( Parts_Name[Parts_ListviewIndex[iSelectedPart] ] );
+      };
+      dlgSpacing(5);
+      dlgPushButton("Goto &Board")    {
+        if( iSelectedPart>=0 ) ZoomToElement( Parts_Name[Parts_ListviewIndex[iSelectedPart] ] );
+      };
+      dlgSpacing(5);
+      dlgPushButton("Goto &Library")    {
+        if( iSelectedPart>=0 ) ZoomToLibrary( Parts_Name[Parts_ListviewIndex[iSelectedPart] ] );
+      };
+      dlgSpacing(5);
+    };
+    dlgSpacing(5);
+  };
+}
+
+//---------------------------------------------------------------------------
+int MultiShow = 0;
+void NetTabPage()
+{
+string ListViewTitle;
+  dlgTabPage("Nets") {
+//    SelectedTab=1;
+    dlgSpacing(5);
+    dlgHBoxLayout{
+      dlgLabel( SheetLabelText, 1 );
+      dlgCheckBox("Globals only", GlobalsOnly) {
+        iSelectedNet=Nets_ListviewInit( iSelectedSheet, GlobalsOnly );
+        dlgRedisplay();
+      };
+    };
+    dlgSpacing(5);
+    if(MultiShow) ListViewTitle = "Net\tSheet\tShow"; else ListViewTitle = "Net\tSheet";
+    dlgListView(ListViewTitle, Nets_ListviewText, iSelectedNet )
+    {
+       if( MultiShow ) {
+       }else{
+         if(schematic)
+           ZoomToNet( Nets_ListviewNetName[iSelectedNet]  );
+         else
+           ZoomToSignal( Nets_ListviewNetName[iSelectedNet]  );
+       };
+    };
+    dlgSpacing(5);
+    dlgHBoxLayout {
+//      dlgSpacing(5);
+//      dlgPushButton("&Find Net") {
+//         FindNetDialog();
+//      };
+      dlgSpacing(5);
+      dlgPushButton("Find &Pin") {
+        if( iSelectedNet>=0 ) ZoomToNetPin( Nets_ListviewNetName[iSelectedNet] );
+      };
+      dlgSpacing(5);
+      dlgPushButton("&Text") { TextDialog(strjoin(Nets_ListviewText, '\n')); };
+      dlgSpacing(5);
+      dlgPushButton("Goto &Schematic")    {
+        if( iSelectedNet>=0 ) ZoomToNet(    Nets_ListviewNetName[iSelectedNet] );
+      };
+      dlgSpacing(5);
+      dlgPushButton("Goto &Board")    {
+        if( iSelectedNet>=0 ) ZoomToSignal( Nets_ListviewNetName[iSelectedNet] );
+      };
+      dlgSpacing(5);
+    };
+    dlgSpacing(5);
+  };
+}
+
+//---------------------------------------------------------------------------
+/*
+path_lbr[]	Libraries
+used_libraries[]  Die im Moment durch den USE-Befehl benutzten Bibliotheken
+path_dru[]	Design Rules
+path_ulp[]	User Language Programs
+path_scr[]	Scripts
+path_cam[]	CAM Jobs
+path_epf[]	Projects
+*/
+
+void GeneralDialog()
+{
+  dlgDialog("Path Info") {
+    dlgPushButton("Libraries") {
+        dlgDialog("Libraries") { dlgListView("Path", path_lbr, i) {};};
+    };
+
+    dlgPushButton("USED Libraries") {
+        dlgDialog("USED Libraries") { dlgListView("Path", used_libraries, i) {};};
+    };
+
+    dlgPushButton("Design Rules") {
+        dlgDialog("Design Rules") { dlgListView("Path", path_dru, i) {};};
+    };
+
+    dlgPushButton("User Language Programs") {
+        dlgDialog("User Language Programs") { dlgListView("Path", path_ulp, i) {};};
+    };
+
+    dlgPushButton("Scripts") {
+        dlgDialog("Scripts") { dlgListView("Path", path_scr, i) {};};
+    };
+
+    dlgPushButton("CAM Jobs") {
+        dlgDialog("CAM Jobs") { dlgListView("Path", path_cam, i) {};};
+    };
+
+    dlgPushButton("Projects") {
+        dlgDialog("Projects") { dlgListView("Path", path_epf, i) {};};
+    };
+  };
+}
+
+//---------------------------------------------------------------------------
+void RunDialog(void)
+{
+string bla = "bla";
+ /*
+int iSelectedSheet = 0;
+int iSelectedPart = -1;
+int iSelectedNet  = -1;
+
+string SheetLabelText;
+int i;
+  */
+  
+  if(schematic)  sheet(SH) iSelectedSheet = SH.number;
+
+  iSelectedNet=Nets_ListviewInit( iSelectedSheet, GlobalsOnly );
+  if(iSelectedSheet) { SheetLabelText = " on Sheet " + int2str(iSelectedSheet) + "        "; }
+  else               { SheetLabelText = " on any Sheet                               ";      };
+  iSelectedPart=Parts_ListviewInit( iSelectedSheet, PhysicalsOnly );
+
+//  dlgDialog(argv[0]) {
+  dlgDialog("Infos") {
+    dlgHBoxLayout {
+      //-- Sheet ----
+      dlgVBoxLayout {
+        dlgLabel("&Sheet");
+        dlgListView("Number\tValue", Sheet_ListViewText, iSelectedSheet) {
+          iSelectedNet=Nets_ListviewInit( iSelectedSheet, GlobalsOnly );
+          if(iSelectedSheet) { SheetLabelText = " on Sheet " + int2str(iSelectedSheet) + "        "; }
+          else               { SheetLabelText = " on any Sheet                               ";      };
+          iSelectedPart=Parts_ListviewInit( iSelectedSheet, PhysicalsOnly );
+          dlgRedisplay();
+        };
+
+        dlgHBoxLayout {
+          dlgPushButton("+&Goto Sheet")    {
+            if( iSelectedSheet ) {
+              dlgReject();
+              exit( Sheet_EditCmd(iSelectedSheet) );
+            };
+          };
+
+          dlgPushButton("Cancel") { dlgReject(); };
+
+          dlgPushButton("else..") {
+             GeneralDialog();
+          }
+        };
+      };
+
+      dlgGridLayout {
+        dlgCell(0,0,150,140) // dlgCell(0,0,200,150)
+        dlgVBoxLayout {
+          dlgTabWidget {
+            if(!SelectedTab) {
+              PartTabPage();
+              NetTabPage();
+            }else{
+              NetTabPage();
+              PartTabPage();
+            };
+          };
+        };
+      };
+    };
+  };
+}
+
+//############################################################################
+//############################################################################
+void main()
+{
+  Sheet_Init();
+  Nets_Init();
+  Parts_Init();
+
+  RunDialog();
+}

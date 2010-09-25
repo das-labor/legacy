@@ -1,0 +1,223 @@
+#usage "This EAGLE User Language Program generates a Script\n"
+       "file that can be used to renumber the parts of a\n"
+       "board. In a board editor window you can Run this ULP\n"
+       "and then execute the command 'script renumber'."
+
+int SheetNo;
+
+numeric string BoardNames[], OldNames[], NewNames[];
+int    NameAlphaNos[];
+int    NewNr[];
+int    nrBoardNames;
+int    BoardUsed[];
+int    InstSheet[];
+int    InstX[], InstY[], InstI[];
+int    nrNames = 0;
+string NameAlphas[];
+int    nrNameAlphas;
+
+string CommandString;
+
+//-----------------------------------------------------------------------------
+int GetNumberIndex(string Name)
+{
+  // Returns the index of the first digit of the numeric part of Name
+  // -1 indicates there is no numeric part in Name
+  int l = strlen(Name) - 1;
+  for (int i = l; i >= 0; --i) {
+      if (!isdigit(Name[i]))
+         return i < l ? i + 1 : -1;
+      }
+  return 0;
+}
+
+//-----------------------------------------------------------------------------
+void Rename(string Old, string New)
+{
+string iBuf;
+  // Generates the EAGLE command necessary to change element name Old to New
+
+  sprintf(iBuf,"Name '%s' '%s';\n", Old, New);
+  CommandString += iBuf;
+}
+
+//-----------------------------------------------------------------------------
+void GenerateScript(void)
+{
+  // Generates an EAGLE script file that does the whole renumbering.
+  // The tricky part here is that we cannot rename an element to a name
+  // that already exists in the board (which, e.g. might be necessary if
+  // we had to swap the names of two elements). Therefore we have to
+  // use a ScratchName wherever this is necessary.
+
+  // If there is nothing to do, the resulting script file will be empty.
+
+  sort(nrNames, InstI, NewNames);
+  int ScratchIndex = 0;
+  string ScratchName;
+  for (int n = 0; n < nrNames; ++n) {
+    if (OldNames[InstI[n]] != NewNames[InstI[n]]) {
+      for (int k = n + 1; k < nrNames; ++k) {
+        if (OldNames[InstI[k]] == NewNames[InstI[n]]) {
+          sprintf(ScratchName, "$%0*d", ELEMENT_NAME_LENGTH - 1, ++ScratchIndex);
+          Rename(OldNames[InstI[k]], ScratchName);
+          OldNames[InstI[k]] = ScratchName;
+          break;
+        }
+      }
+      Rename(OldNames[InstI[n]], NewNames[InstI[n]]);
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
+int HasDollar( string s )
+{
+  return strchr(s,'$')  > 0;
+}
+
+//====================================================================================================
+// main()
+
+  int pok;
+  int minsheet;
+  int maxSheet;
+
+  //-----------------------------------------------------------------------------
+  // gather names
+  
+  project.board(B) {
+    B.elements(E) {
+      if( HasDollar(E.name) ) continue;
+      BoardNames[nrBoardNames] = E.name;
+      nrBoardNames++;
+    };
+  };
+
+  project.schematic(Sch) {
+    int UnkSheet;
+    Sch.sheets(Sh) {
+      UnkSheet=Sh.number;
+    };
+    UnkSheet++;
+
+    Sch.parts(P) {
+      int i,found;
+      if( HasDollar(P.name) ) continue;
+
+      for(i=0,found=0;i<nrBoardNames;i++) {
+        if( P.name==BoardNames[i] ) {
+          BoardUsed[i]=1;
+          found=1;
+          break;
+        };
+      };
+      if(!found) continue;
+
+      minsheet =UnkSheet;
+      P.instances(Inst) {
+        int isheet = Inst.sheet;
+        if( (isheet!=0) && (isheet<minsheet) ) {
+          minsheet=isheet;
+          InstX[nrNames] = u2mil(Inst.x); // cannot use E.x/y directly because of
+          InstY[nrNames] = u2mil(Inst.y); // sort() problem with integers > 32767
+        };                                // in version 3.50
+      };
+
+      int n = GetNumberIndex(P.name);
+      if( n>0 ) {
+        InstSheet[nrNames] = minsheet;
+        OldNames[nrNames] = P.name;
+        NewNames[nrNames] = strsub(P.name, 0, n);
+        ++nrNames;
+      };
+    };
+
+    for(int i=0;i<nrBoardNames;i++) {
+      if(BoardUsed[i]) continue;
+
+      int n = GetNumberIndex(BoardNames[i]);
+      if( n>0 ) {
+        InstSheet[nrNames] = UnkSheet;
+        OldNames[nrNames] = BoardNames[i];
+        NewNames[nrNames] = strsub(BoardNames[i], 0, n);
+        ++nrNames;
+      };
+    };
+  };
+
+  //-----------------------------------------------------------------------------
+  // generate new numbers
+
+  sort(nrNames, InstI, InstSheet, InstX, InstY);
+
+  int j;
+  for(j=0; j<nrNames;j++) {
+    int foundno=nrNameAlphas;
+    for(int k=0;k<nrNameAlphas;k++) {
+      if(NameAlphas[k]==NewNames[j]) { foundno=k; break; };
+    };
+    if(foundno==nrNameAlphas) {
+      NameAlphas[nrNameAlphas]=NewNames[j];
+      nrNameAlphas++;
+    };
+    NameAlphaNos[j] = foundno;
+  };
+
+  for(int a=0;a<nrNameAlphas;a++) {
+    int Nr=0;
+    for(j=0;j<nrNames;j++) {
+      int ptr = InstI[j];
+      if( NameAlphaNos[ptr]!=a ) continue;
+      if( Nr < (InstSheet[ptr]*100) )
+          Nr = (InstSheet[ptr]*100);
+      NewNr[ptr] = Nr;
+      Nr++;
+
+      if (sprintf(NewNames[InstI[j]], "%s%d", NewNames[InstI[j]], Nr) > ELEMENT_NAME_LENGTH) {
+        string iBuf;
+        sprintf(iBuf,"ERROR: name too long: '%s'\n", NewNames[InstI[j]]);
+        dlgMessageBox(iBuf, "OK");
+        exit(EXIT_FAILURE);
+      };
+    };
+  };
+
+//====================================================================================================
+// Dialog
+
+  string ListViewText[]; int nListView=0, iSelected=-1;
+  for (int n = 0; n < nrNames; ++n) {
+      if (OldNames[InstI[n]] != NewNames[InstI[n]]) {
+         ListViewText[nListView] = OldNames[InstI[n]] + "\t" + NewNames[InstI[n]];
+         nListView++;
+      };
+  };
+  int result = dlgDialog("Geänderte Namen") {
+     dlgListView("Alt \tNeu", ListViewText, iSelected) {};
+     dlgHBoxLayout {
+       if(nListView) {
+         dlgSpacing(5);
+         dlgPushButton("+Rename") dlgAccept();
+         dlgSpacing(5);
+         dlgPushButton("-Cancel") dlgReject();
+         dlgSpacing(5);
+       }else{
+         dlgSpacing(50);
+         dlgPushButton("-Cancel") dlgReject();
+         dlgSpacing(50);
+       };
+     };
+  };
+  if( (!nListView) || (!result) ) exit(0);
+
+//====================================================================================================
+// Do it
+
+  CommandString = "e .brd;";
+  GenerateScript();
+  if( schematic ) { CommandString += "e .sch;"; };
+
+  exit(CommandString);
+  
+  output("0tmp.SCR") { printf( CommandString );  }

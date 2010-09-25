@@ -1,0 +1,70 @@
+# Menu Configuration Script
+
+###############################################################################
+BRD:
+
+Menu 'Fit : run Fit '\
+     'Poly: set POLYGON_RATSNEST ON; ratsnest; set POLYGON_RATSNEST OFF;' \
+     'Dis : run brd_DisplaySets' \
+     'Grid { 0.005 mm 20 : grid mm 0.005 20 ALT mil 1;|\
+             0.05 mm 2 : grid mm 0.050 2 ALT mil 1;|\
+             0.5 mm 1  : grid mm 0.50 1 ALT mil 1;|\
+             1 mil 8  : grid mil 1  8 ALT mm 0.050;|\
+             5 mil 2  : grid mil 5  2 ALT mm 0.050;|\
+             25 mil 2 : grid mil 25 2 ALT mm 0.050; \
+           }'\
+     'Infos: run INFOS'\
+     'More.. { Save: e .sch; write; e .brd; write; }';
+
+#     'More.. { Save: run SaveBoth }';
+SET WIRE_BEND @ 0 1 2 3 4;
+
+###############################################################################
+SCH:
+
+Menu 'Fit: run Fit' \
+     'Cnt: run sch_Contents' \
+     'Infos: run INFOS' \
+     'More.. { Save: e .brd; write; e .sch; write; }';
+
+#     'More.. { Save: run SaveBoth }';
+SET WIRE_BEND @ 0 1 2 3 4;
+
+###############################################################################
+#LBR:
+#
+#Menu Close Export Open Script Write Edit 'run X';
+#
+#
+#
+# Grid Default;
+# Change Width 0.006;
+# #Menu Add Bus Change Copy Delete Display Gateswap Grid Group Invoke Junction \
+# #     Label Move Name Net Pinswap Quit Script Show Split Value Window ';' \
+# #     Wire Write Edit;
+#
+# LBR:
+#
+# #Menu Close Export Open Script Write ';' Edit;
+#
+# DEV:
+#
+# Grid Default;
+# #Menu Add Change Copy Connect Delete Display Export Grid Move Name Package \
+# #     Prefix Quit Script Show Value Window ';' Write Edit;
+#
+# SYM:
+#
+# Grid Default On;
+# Change Width 0.010;
+# #Menu Arc Change Copy Cut Delete Display Export Grid Group Move Name Paste \
+# #     Pin Quit Script Show Split Text Value Window ';' Wire Write Edit;
+#
+# PAC:
+#
+# Grid Default On;
+# Change Width 0.005;
+# Change Size 0.050;
+# #Menu Add Change Copy Delete Display Grid Group Move Name Pad Quit \
+# #     Script Show Smd Split Text Window ';' Wire Write Edit;
+

@@ -1,0 +1,57 @@
+// sch_Fit.ulp -- EAGLE 4.0 User Language Program                    RS 7.Feb 2003
+
+#usage "Zoom to dimension of board or sheet";
+
+
+
+int    CurrentGridUnit;
+int    x0=2147483647, x1=-2147483647,  y0=2147483647, y1=-2147483647;
+string s;
+
+void EnterPoint( int x, int y )
+{
+  if(x0>x) x0=x;  if(x1<x) x1=x;  if(y0>y) y0=y;  if(y1<y) y1=y;
+}
+
+if(board) {
+  board(B) {
+    CurrentGridUnit = B.grid.unit;
+
+    B.wires(W) if(W.layer==20) {  // dimension
+       EnterPoint(W.x1,W.y1);     EnterPoint(W.x2,W.y2);
+    };
+
+    B.elements(E)  E.package.wires(W) if(W.layer==20) {  // dimension
+       EnterPoint(W.x1,W.y1);     EnterPoint(W.x2,W.y2);
+    };
+  }
+  y0 -= 7000;
+  x1 += 7000;
+}else{
+  schematic(S)  CurrentGridUnit = S.grid.unit;
+
+  sheet(S) {
+    S.parts(P) P.instances(I)
+    I.gate.symbol.wires(W) {
+       EnterPoint(W.x1,W.y1);     EnterPoint(W.x2,W.y2);
+    };
+  }
+}
+
+
+real u2unit(int aCoord)
+{ switch( CurrentGridUnit )
+  { case GRID_UNIT_MM  : return u2mm(   aCoord );
+    case GRID_UNIT_MIL : return u2mil(  aCoord );
+    case GRID_UNIT_INCH: return u2inch( aCoord );
+    case GRID_UNIT_MIC : return u2mic(  aCoord );
+  };
+}
+
+  sprintf(s, "win (%f %f) (%f %f);", u2unit(x0), u2unit(y0),
+                                     u2unit(x1), u2unit(y1) );
+
+  exit(s);
+
+  output("$tmp.txt") printf( "%d %d %d %d", x0,x1,y0,y1);
+  

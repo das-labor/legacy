@@ -1,0 +1,119 @@
+// THIS PROGRAM IS PROVIDED AS IS AND WITHOUT WARRANTY OF ANY KIND,
+// EXPRESSED OR IMPLIED.
+
+/* Dieses ULP berechnet alle Signallaengen eines Layouts 
+ * (nur Layer 1 bis 16) und die zugehoerige Frequenz (f=c/l)
+ * und erzeugt eine Textdatei LENGTH-RI.TXT, die alle Signale nach
+ * Frequenz bzw Laenge sortiert enthaelt.
+ * Bei der Frequenzberechnung handelt es sich um eine ganz einfache
+ * Umrechnung, die eine erste Abschaetzung bzgl. Stoerstrahlung erlaubt.
+ *
+ * This ULP outputs a list LENGTH-RI.TXT of all signals of a layout sorted
+ * by its length and shows the corresponding frequency.
+ * This is a very simplified calcualtion for a first evaluation
+ * of the layout.
+ *
+ * Richard Hammerl 17.08.1998
+ */
+
+/*
+ * Zusaetzlich wird die minimale und maximale Leiterbahnbreite ermittelt
+ * und die daraus resultierende Strombelastung.
+ * Bei der Widerstands- und Strombelastbarkeits-Berechnung wird die
+ * minimale Leiterbahnbreite herangezogen.
+ * Es wird auch nicht eine Parallelführung bzw. Fläche (Polygon)
+ * berücksichtigt.
+ *
+ * Added the determination of minimum and maximum wire width
+ * and the calculation of the maximum allowed amperage
+ * Parallel tracks and polygons are not taken into consideration.
+ *
+ *
+ * A. Zaffran 05.04.2000 alf@cadsoft.de
+ */
+
+
+
+real f, WL, WLtotal ;
+int index[];
+
+    //  ** aus "Mechanik der Elektronik"
+    // mm  <1  1  2  3  4  5  6  7  8  9 10 11 12 13 mm Leiterbreite bei 35 µm Cu
+
+real k[] = { 9, 8.8, 6, 4, 3.2, 2.9, 2.9, 2.9, 2.9, 2.9, 2.9, 2.9, 2.9, 2.9, 2.9 };
+
+    //                _______________________
+    //   Imax ~ 5.25 V [d x b x (d + b)] x k      ||  (tL ~60°)
+    //
+    //  d = µm Cu-Kaschierung
+    //  b = Breite mm  
+    //  k = Korrekturwert aus Tabelle      02.02.2000 alf
+    //  ** aus "Mechanik der Elektronik"
+
+real Length[];
+string Signal[];
+string uprarg[];
+
+int n = 0;
+
+
+real WireLength(real x1,real x2,real y1,real y2) {
+   WL = sqrt(pow(x2-x1,2) + pow(y2-y1,2));  //Berechnung der Wirelaenge WL
+   return WL;
+}
+                                        
+int InArg(string name)
+{
+  if(argc<2) return 1;
+
+  name = strupr(name);
+
+  for(int i=1; i<=argc; i++ ){
+    if( name == uprarg[i] ) return 1;
+  };
+
+  return 0;
+}
+
+if (board) board(B) {output ("LENGTH-RI.txt") {
+
+   printf("%s\n\n", EAGLE_SIGNATURE);
+   printf("List of signal length\n");
+   printf("exported from %s\n at %s\n\n", B.name, t2string(time()));
+
+   for( int iii=0; iii<argc; iii++ ) {
+     uprarg[iii] = strupr(argv[iii]);
+   };
+
+   B.signals(S) {
+     if( InArg( S.name ) ) {
+       WLtotal = 0;
+       S.wires(W) {
+         if (W.layer < 17) {                                 // nur Kupfer-Layer
+            WL = WireLength(u2mm(W.x2),u2mm(W.x1),u2mm(W.y2),u2mm(W.y1));
+            WLtotal += WL;
+         }
+       }
+       if (WLtotal != 0) {
+         Signal[n] = S.name;
+         Length[n] = WLtotal;
+         ++n;
+       }
+     }
+   }
+
+   printf("Signal        l [mm]    [mil] \n\n");
+
+   for (int i = 0; i < n; ++i) {
+      printf("%-10s %8.4f  %8.4f\n",
+        Signal[i], Length[i], Length[i] / 0.0254 );
+   }
+}}
+
+if(n==2) {
+string buf;
+real diff=Length[1] - Length[0];
+  sprintf( buf,  "Delta= %8.4fmm (%8.4fmil)", diff, diff/0.0254 );
+  status(buf+"\n");
+  dlgMessageBox(buf);
+};

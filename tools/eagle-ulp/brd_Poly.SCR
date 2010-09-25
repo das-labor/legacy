@@ -1,0 +1,3 @@
+set POLYGON_RATSNEST ON;
+ratsnest;
+set POLYGON_RATSNEST OFF;

@@ -1,0 +1,123 @@
+// brd_UseLayers.ulp
+
+#usage "SET USED_LAYERS by dialog"
+
+int    LayerNumbers[];
+string LayerNames[];
+int    LayerUsed[];
+int    LayerVisible[];
+int    Layer_Use[];
+int    LayerAlwaysUsed[];
+string ListViewText[];
+int    nLayers;
+
+//---------------------------------------------------------------------------
+int AlwaysUsed[] = {1,16,17,18,19,20,44,45,0};
+int IsAlwaysUsed(int aLayerNo)
+{
+int i;
+  for( i=0 ; AlwaysUsed[i] ; i++ ) {
+    if( AlwaysUsed[i]==aLayerNo ) return 1;
+  };
+  return 0;
+}
+
+//---------------------------------------------------------------------------
+void GetLayers(void)
+{
+  board(B) B.layers(L) {
+    LayerNumbers   [nLayers] = L.number ;
+    LayerNames     [nLayers] = L.name   ;
+    LayerUsed      [nLayers] = L.used   ;
+    LayerVisible   [nLayers] = L.visible;
+    LayerAlwaysUsed[nLayers] = IsAlwaysUsed(L.number);
+    nLayers++;
+  };
+}
+
+//---------------------------------------------------------------------------
+string ListViewHeader="Number\tName\tUsed\tUSE\tVisible";
+
+void GetListViewText(void)
+{
+int i;
+  for( i=0 ; i<nLayers ; i++ ) {
+    sprintf( ListViewText[i], "%3d\t%s\t%s\t%s\t%s"
+                            , LayerNumbers[i]
+                            , LayerNames[i]
+                            , (LayerUsed[i]   )? "  +"  : ""
+                            , (Layer_Use[i]   )? " [X]" : " [  ]"
+                            , (LayerVisible[i])? "  +"  : ""       );
+  };
+}
+
+//---------------------------------------------------------------------------
+void Exit_Set_Used_Layers(void)
+{
+int    i;
+int    iSortList[];
+string iCmd = "";
+
+  sort( nLayers, iSortList, LayerNumbers );
+
+  for( i=0 ; i<nLayers ; i++ ) {
+    int j = iSortList[i];
+    if( Layer_Use[j] )  sprintf( iCmd, "%s %d", iCmd, LayerNumbers[j] );
+  };
+
+  exit( "set used_layers " + iCmd + ";" );
+}
+
+//---------------------------------------------------------------------------
+void RunDialog(void)
+{
+int iSelected = 0;
+int i;
+  for(i=0;i<nLayers;i++) Layer_Use[i] = LayerUsed[i] | LayerAlwaysUsed[i];
+
+  dlgDialog("Set Used Layers") {
+
+    dlgLabel("&Layers:");
+    GetListViewText();
+
+    dlgGridLayout {
+      dlgCell(0,0,180,80)
+      dlgListView(ListViewHeader, ListViewText, iSelected ) {
+        Layer_Use[iSelected] =  (! Layer_Use[iSelected])
+                                 | LayerAlwaysUsed[iSelected];
+        GetListViewText();
+      };
+    };
+
+    dlgSpacing(5);
+
+    dlgHBoxLayout {
+      dlgPushButton("&All"  ) {
+        for(i=0;i<nLayers;i++) Layer_Use[i]=1;
+        GetListViewText();
+      };
+      dlgPushButton("&Used" ) {
+        for(i=0;i<nLayers;i++) Layer_Use[i] = LayerUsed[i]    | LayerAlwaysUsed[i];
+        GetListViewText();
+      };
+      dlgPushButton("&Visible" ) {
+        for(i=0;i<nLayers;i++) Layer_Use[i] = LayerVisible[i] | LayerAlwaysUsed[i];
+        GetListViewText();
+      };
+    };
+    dlgHBoxLayout {
+      dlgPushButton("+&OK"  ) Exit_Set_Used_Layers();
+      dlgPushButton("Cancel") dlgReject();
+    };
+  };
+}
+
+//###########################################################################
+// main()
+{
+  GetLayers();
+
+  RunDialog();
+}
+
+
