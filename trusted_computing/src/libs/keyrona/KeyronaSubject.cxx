@@ -40,6 +40,7 @@ KeyronaSubject::KeyronaSubject( string subjectIdentifier, KeyronaStorage &storag
             mySubjectName (""),
             mySubjectKeyUUID (""),
             mySubjectKeyType (""),
+            mySubjectPlatformSelection (""),
             mySubjectEMail (""),
             mySubjectKeyfile (""),
             mySubjectCountrycode (""),
@@ -66,6 +67,7 @@ KeyronaSubject::KeyronaSubject( UInt32 subjectID, KeyronaStorage &storageDB ) :
             mySubjectName (""),
             mySubjectKeyUUID (""),
             mySubjectKeyType (""),
+            mySubjectPlatformSelection (""),
             mySubjectEMail (""),
             mySubjectKeyfile (""),
             mySubjectCountrycode (""),
@@ -89,6 +91,7 @@ KeyronaSubject::KeyronaSubject( UInt32 subjectID, KeyronaStorage &storageDB ) :
 // create new subject incl. key generation
 KeyronaSubject::KeyronaSubject( UInt8 subjectType,
                             string &subjectName,
+                            string &pcr_string,
                             string &subjectEMail,
                             string &subjectCountryCode,
                             string &subjectOrganisation,
@@ -104,6 +107,7 @@ KeyronaSubject::KeyronaSubject( UInt8 subjectType,
             mySubjectName (subjectName),
             mySubjectKeyUUID (""),
             mySubjectKeyType (""),
+            mySubjectPlatformSelection (pcr_string),
             mySubjectEMail (subjectEMail),
             mySubjectKeyfile (""),
             mySubjectCountrycode (subjectCountryCode),
@@ -227,8 +231,7 @@ KeyronaSubject::KeyronaSubject( UInt8 subjectType,
         case SUBJECTTYPE_PLATFORM:
         {
             mySubjectKeyfile = myKeyDirectory + KeyronaPathSeparator + "Keyrona" + KeyronaSubjectType_Platform + KeyronaFileSeparator + mySubjectIDString  + KeyronaFileSeparator + mySubjectName + KeyronaP15FileExtension;
-            cout << "top" << endl;
-            break;
+			break;
         }
     }
     storeSubject();
@@ -239,6 +242,7 @@ KeyronaSubject::KeyronaSubject( UInt8 subjectType,
 // import subject without key generation
 KeyronaSubject::KeyronaSubject( UInt8 subjectType,
                             string &subjectName,
+                            string &pcr_string,
                             string &subjectEMail,
                             string &subjectCountryCode,
                             string &subjectOrganisation,
@@ -255,7 +259,8 @@ KeyronaSubject::KeyronaSubject( UInt8 subjectType,
             mySubjectIDString(""),
             mySubjectName (subjectName),
             mySubjectKeyUUID (""),
-            mySubjectKeyType (""),           
+            mySubjectKeyType (""),  
+            mySubjectPlatformSelection (pcr_string),         
             mySubjectEMail (subjectEMail),
             mySubjectKeyfile (""),
             mySubjectCountrycode (subjectCountryCode),
@@ -366,14 +371,6 @@ void KeyronaSubject::printSubject(bool verbose)
     KeyronaSubjectType[SUBJECTTYPE_PLATFORM]        = KeyronaSubjectType_Platform;
     KeyronaSubjectType[SUBJECTTYPE_TOKEN]           = KeyronaSubjectType_Token;
     KeyronaDate myLastLogin = getMyLastLogin();
-	//cout << "yep" << endl;hg
-    // if not verbose, print small subject info
-   if (! verbose)
-    {
-        cout << "Name: '" << mySubjectName << "' (ID: " << mySubjectID << ")" << endl;
-        cout << "KeyUUID: '" << mySubjectKeyUUID << endl;
-        cout << "KeyType: '" << mySubjectKeyType << endl;
-    }
 
     // and here the full info
     cout << "Name: '" << mySubjectName << "' (ID: " << mySubjectID << ")" << endl;
@@ -381,7 +378,18 @@ void KeyronaSubject::printSubject(bool verbose)
     cout << "KeyType: '" << mySubjectKeyType << endl;
     cout << mySubjectKey->printKeyInformation(this) << endl;
     cout << "\t" << "Type: '" << KeyronaSubjectType[mySubjectType] << "'" << endl;
-
+	
+	if( mySubjectType == SUBJECTTYPE_PLATFORM )
+	{
+		vector<int>::iterator it;
+		vector<int> pcr_info = convertStringToIntVector(mySubjectPlatformSelection);
+		cout << "Platform Configuration register:" << endl;
+		for (it=pcr_info.begin(); it!=pcr_info.end(); ++it)
+		{
+			cout << "PCR: " << *it << endl;
+		}
+	}
+	
     if ((EnterpriseMode) && (mySubjectType == SUBJECTTYPE_USER))
     {
         cout << "\t" << "EMail: '" << mySubjectEMail << "'" << endl;
@@ -449,6 +457,7 @@ bool KeyronaSubject::loadSubject(string &subjectIdentifier)
     mySubjectKeyUUID = mySubjectStorage.getEntry(KeyronaSubject_SubjectKeyUUID);
     mySubjectKeyType = mySubjectStorage.getEntry(KeyronaSubject_SubjectKeyType);
     mySubjectType = KeyronaSubjectType[mySubjectStorage.getEntry(KeyronaSubject_SubjectType)];
+    mySubjectPlatformSelection = mySubjectStorage.getEntry(KeyronaSubject_SubjectPlatformSelection);
     mySubjectEMail = mySubjectStorage.getEntry(KeyronaSubject_SubjectEMail);
     mySubjectCountrycode = mySubjectStorage.getEntry(KeyronaSubject_SubjectCountrycode);
     mySubjectOrganisation = mySubjectStorage.getEntry(KeyronaSubject_SubjectOrganisation);
@@ -480,6 +489,7 @@ bool KeyronaSubject::storeSubject()
     mySubjectStorage.setEntry(KeyronaSubject_SubjectName, mySubjectName);
     mySubjectStorage.setEntry(KeyronaSubject_SubjectKeyUUID, mySubjectKeyUUID);
     mySubjectStorage.setEntry(KeyronaSubject_SubjectKeyType, mySubjectKeyType);
+    mySubjectStorage.setEntry(KeyronaSubject_SubjectPlatformSelection, mySubjectPlatformSelection);
     mySubjectStorage.setEntry(KeyronaSubject_SubjectType, KeyronaSubjectType[mySubjectType]);
     mySubjectStorage.setEntry(KeyronaSubject_SubjectEMail, mySubjectEMail);
     mySubjectStorage.setEntry(KeyronaSubject_SubjectKeyfile, mySubjectKeyfile);
@@ -621,15 +631,8 @@ ByteVector  KeyronaSubject::encryptForSubject(KeyronaSubject *Subject, ByteVecto
        throw DecryptionFailed("KeyonaSubject|encryptForSubject(): No data supplied to be encrypted!");
 	
 	if (mySubjectType == SUBJECTTYPE_PLATFORM)
-			{
-			std::vector<int> pcr;
-			//int x;
-			//do {
-			//cout << "please enter value: ";
-			//scanf("%i", &x);
-			//pcr.push_back(x);
-			//}
-			//while(x == 24);	
+			{	
+			vector<int> pcr = convertStringToIntVector(mySubjectPlatformSelection);
 			int local=0;
             // sealing it to current platform
             KeyronaTPM myTPM;

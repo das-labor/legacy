@@ -85,6 +85,7 @@ const std::string KeyronaSubjectLastLogin_Second= "LastLoginSecond";
 const std::string KeyronaSubject_TRUE           = "true";
 const std::string KeyronaSubject_FALSE          = "false";
 const std::string KeyronaSubject_Messages       = "Message";
+const std::string KeyronaSubject_SubjectPlatformSelection = "PCR";
 
 namespace keyrona
 {
@@ -122,6 +123,7 @@ namespace keyrona
              */
             KeyronaSubject( UInt8 subjectType,
                             string &subjectName,
+                            string &pcr_string,
                             string &subjectEMail,
                             string &subjectCountryCode,
                             string &subjectOrganisation,
@@ -148,6 +150,7 @@ namespace keyrona
              */
             KeyronaSubject( UInt8 subjectType,
                             string &subjectName,
+                            string &pcr_string,
                             string &subjectEMail,
                             string &subjectCountryCode,
                             string &subjectOrganisation,
@@ -204,6 +207,8 @@ namespace keyrona
              *  @brief get the email of a subject
 	     *  @return string, email of the subject
              */
+        string getMySubjectPlatformSelection() { return mySubjectPlatformSelection; };     
+         
 	    string getMySubjectEMail()  { return mySubjectEMail; };
 
             /*!
@@ -345,6 +350,7 @@ namespace keyrona
             string  mySubjectName;
             string	mySubjectKeyUUID;
             string  mySubjectKeyType;
+            string  mySubjectPlatformSelection;
             string  mySubjectEMail;
             string  mySubjectKeyfile;
             string  mySubjectCountrycode;

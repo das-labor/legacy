@@ -235,8 +235,8 @@ void KeyronaCreateUser(KeyronaStorage &mySubjectStorage)
         mySP= getStringFromUser("Please enter state/province for new user: ");
         myL = getStringFromUser("Please enter locality for new user: ");
     }
-
-    KeyronaSubject newUser(SUBJECTTYPE_USER, myUsername, myEMail, myC, myO, myOU, mySP, myL, false, myKeyDirectory, mySubjectStorage);
+	string null;
+    KeyronaSubject newUser(SUBJECTTYPE_USER, myUsername, null, myEMail, myC, myO, myOU, mySP, myL, false, myKeyDirectory, mySubjectStorage);
     if (! newUser.getMySubjectID())
         throw NotCreated("User could not be created!");
 

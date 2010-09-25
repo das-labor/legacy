@@ -34,6 +34,8 @@ enum myMenu
     exportPlatform
 };
 
+typedef map<string, int> t_StringMap;
+
 //================================================================================
 //
 bool KeyronaListPlatforms(KeyronaStorage &mySubjectStorage)
@@ -120,8 +122,8 @@ void KeyronaCreatePlatform(KeyronaStorage &mySubjectStorage)
     vector<string> myPlatforms = KeyronaFindAllPlatforms(mySubjectStorage);
 
     string myPlatformname = getStringFromUser("Please enter name for new Platform: ");
-    if (KeyronaFindPlatform(mySubjectStorage, myPlatformname))
-        throw InvalidPlatform("KeyronaCreatePlatform(): Platform already exists!");
+    //if (!KeyronaFindPlatform(mySubjectStorage, myPlatformname))
+     //   throw InvalidPlatform("KeyronaCreatePlatform(): Platform already exists!");
 
     string myEMail = KEYRONA_PRIVATE_MODE_ADMIN_MAIL;
     string myC  = KEYRONA_PRIVATE_MODE_C;
@@ -129,10 +131,10 @@ void KeyronaCreatePlatform(KeyronaStorage &mySubjectStorage)
     string myOU = KeyronaSubjectType_Platform;
     string mySP = KeyronaSubjectType_Platform;
     string myL  = KeyronaSubjectType_Platform;
-
-    cout << "Please wait while creating new platform." << endl;
-    cout << "Note: This step might require some additional time due to TPM access. Please be patient..." << endl;
-    KeyronaSubject newPlatform(SUBJECTTYPE_PLATFORM, myPlatformname, myEMail, myC, myO, myOU, mySP, myL, false, myKeyDirectory, mySubjectStorage);
+	vector<int> pcr = KeyronaChooseAllPCR();
+	string pcr_string = convertIntVectorToString(&pcr);
+    
+    KeyronaSubject newPlatform(SUBJECTTYPE_PLATFORM, myPlatformname, pcr_string, myEMail, myC, myO, myOU, mySP, myL, false, myKeyDirectory, mySubjectStorage);
     if (! newPlatform.getMySubjectID())
         throw NotCreated("Platform could not be created!");
 
@@ -141,9 +143,103 @@ void KeyronaCreatePlatform(KeyronaStorage &mySubjectStorage)
     newPlatform.printSubject(printVerbose);
 };
 
+//================================================================================
+//
+vector<int> KeyronaChooseAllPCR()
+{	
+	vector<int> final;
+	t_StringMap KeyronaPlatformTypeMap;
+    KeyronaPlatformTypeMap["PCR0"] = PLATFORMTYPE_PCR0;
+    KeyronaPlatformTypeMap["PCR1"] = PLATFORMTYPE_PCR1;
+    KeyronaPlatformTypeMap["PCR2"] = PLATFORMTYPE_PCR2;
+    KeyronaPlatformTypeMap["PCR3"] = PLATFORMTYPE_PCR3;
+    KeyronaPlatformTypeMap["PCR4"] = PLATFORMTYPE_PCR4;
+    KeyronaPlatformTypeMap["PCR5"] = PLATFORMTYPE_PCR5;
+    KeyronaPlatformTypeMap["PCR6"] = PLATFORMTYPE_PCR6;
+    KeyronaPlatformTypeMap["PCR7"] = PLATFORMTYPE_PCR7;
+    KeyronaPlatformTypeMap["PCR8"] = PLATFORMTYPE_PCR8;
+    KeyronaPlatformTypeMap["PCR9"] = PLATFORMTYPE_PCR9;
+    KeyronaPlatformTypeMap["PCR10"] = PLATFORMTYPE_PCR10;
+    KeyronaPlatformTypeMap["PCR11"] = PLATFORMTYPE_PCR11;
+    KeyronaPlatformTypeMap["PCR12"] = PLATFORMTYPE_PCR12;
+    KeyronaPlatformTypeMap["PCR13"] = PLATFORMTYPE_PCR13;
+    KeyronaPlatformTypeMap["PCR14"] = PLATFORMTYPE_PCR14;
+    KeyronaPlatformTypeMap["PCR15"] = PLATFORMTYPE_PCR15;
+    KeyronaPlatformTypeMap["PCR16"] = PLATFORMTYPE_PCR16;
+    KeyronaPlatformTypeMap["PCR17"] = PLATFORMTYPE_PCR17;
+    KeyronaPlatformTypeMap["PCR18"] = PLATFORMTYPE_PCR18;
+    KeyronaPlatformTypeMap["PCR19"] = PLATFORMTYPE_PCR19;
+    KeyronaPlatformTypeMap["PCR20"] = PLATFORMTYPE_PCR20;
+    KeyronaPlatformTypeMap["PCR21"] = PLATFORMTYPE_PCR21;
+    KeyronaPlatformTypeMap["PCR22"] = PLATFORMTYPE_PCR22;
+    KeyronaPlatformTypeMap["PCR23"] = PLATFORMTYPE_PCR23;
+    
+    vector<string> AvailablePCR;
+	AvailablePCR.push_back("PCR0");
+	AvailablePCR.push_back("PCR1");
+	AvailablePCR.push_back("PCR2");
+	AvailablePCR.push_back("PCR3");
+	AvailablePCR.push_back("PCR4");
+	AvailablePCR.push_back("PCR5");
+	AvailablePCR.push_back("PCR6");
+	AvailablePCR.push_back("PCR7");
+	AvailablePCR.push_back("PCR8");
+	AvailablePCR.push_back("PCR9");
+	AvailablePCR.push_back("PCR10");
+	AvailablePCR.push_back("PCR11");
+	AvailablePCR.push_back("PCR12");
+	AvailablePCR.push_back("PCR13");
+	AvailablePCR.push_back("PCR14");
+	AvailablePCR.push_back("PCR15");
+	AvailablePCR.push_back("PCR16");
+	AvailablePCR.push_back("PCR17");
+	AvailablePCR.push_back("PCR18");
+	AvailablePCR.push_back("PCR19");
+	AvailablePCR.push_back("PCR20");
+	AvailablePCR.push_back("PCR21");
+	AvailablePCR.push_back("PCR22");
+	AvailablePCR.push_back("PCR23");
 
-// mapping between strings and int values
-typedef map<string, int> t_StringMap;
+    string toStop = "-1";
+    string pcrid;
+    int x = 0;
+    while ((pcrid.compare(0, toStop.length(), toStop)) && (AvailablePCR.size()))
+    {
+		pcrid = selectFromStringVector(AvailablePCR, "Please choose the Platform Configuration Register:  ", "Enter a number: ");
+		if (pcrid == toStop)
+            break;
+		switch(KeyronaPlatformTypeMap[pcrid])
+		{
+				case PLATFORMTYPE_PCR0: final.push_back(x); break;
+				case PLATFORMTYPE_PCR1: x = 1; final.push_back(x); break;
+				case PLATFORMTYPE_PCR2: x = 2; final.push_back(x); break;
+				case PLATFORMTYPE_PCR3: x = 3; final.push_back(x); break;
+				case PLATFORMTYPE_PCR4: x = 4; final.push_back(x); break;
+				case PLATFORMTYPE_PCR5: x = 5; final.push_back(x); break;
+				case PLATFORMTYPE_PCR6: x = 6; final.push_back(x); break;
+				case PLATFORMTYPE_PCR7: x = 7; final.push_back(x); break;
+				case PLATFORMTYPE_PCR8: x = 8; final.push_back(x); break;
+				case PLATFORMTYPE_PCR9: x = 9; final.push_back(x); break;
+				case PLATFORMTYPE_PCR10: x = 10; final.push_back(x); break;
+				case PLATFORMTYPE_PCR11: x = 11; final.push_back(x); break;
+				case PLATFORMTYPE_PCR12: x = 12; final.push_back(x); break;
+				case PLATFORMTYPE_PCR13: x = 13; final.push_back(x); break;
+				case PLATFORMTYPE_PCR14: x = 14; final.push_back(x); break;
+				case PLATFORMTYPE_PCR15: x = 15; final.push_back(x); break;
+				case PLATFORMTYPE_PCR16: x = 16; final.push_back(x); break;
+				case PLATFORMTYPE_PCR17: x = 17; final.push_back(x); break;
+				case PLATFORMTYPE_PCR18: x = 18; final.push_back(x); break;
+				case PLATFORMTYPE_PCR19: x = 19; final.push_back(x); break;
+				case PLATFORMTYPE_PCR20: x = 20; final.push_back(x); break;
+				case PLATFORMTYPE_PCR21: x = 21; final.push_back(x); break;
+				case PLATFORMTYPE_PCR22: x = 22; final.push_back(x); break;
+				case PLATFORMTYPE_PCR23: x = 23; final.push_back(x); break;
+		}
+		removeStringFromStringVector(&AvailablePCR, pcrid);
+	}
+	
+	return final;
+};
 
 //================================================================================
 //

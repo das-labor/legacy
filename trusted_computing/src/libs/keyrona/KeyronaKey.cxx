@@ -23,14 +23,10 @@
  */
 
 #include <KeyronaKey.hxx>
-#include <trousers/tss.h>
-#include <trousers/trousers.h>
 
 using namespace std;
 using namespace utils;
 using namespace keyrona;
-
-static UInt32 KeyCounter = 0;
 
 // create a new key
 //================================================================================
@@ -65,11 +61,10 @@ type ("")
 	ByteVector Data = myTPM.create_key(password, uuid, type);
 	
    
-    string DataFile = keyfile; //+ keynum + KEYRONA_TPM_KEY_EXTENSION;
+    string DataFile = keyfile;
     storeByteVectorInFile(DataFile, Data);
    
     valid = true;
-    KeyCounter++;
 };
 
 //================================================================================
@@ -104,11 +99,10 @@ type ("")
 	ByteVector Data = myTPM.create_key(groupKeyPassword, uuid, type);
 
    
-    string DataFile = keyfile ; //+ keynum + KEYRONA_TPM_KEY_EXTENSION
+    string DataFile = keyfile ; 
     storeByteVectorInFile(DataFile, Data);
    
     valid = true;
-    KeyCounter++;
 };
 
 
@@ -116,7 +110,6 @@ type ("")
 //
 KeyronaKey::~KeyronaKey()
 {
-    KeyCounter--;
 };
 
 //================================================================================
