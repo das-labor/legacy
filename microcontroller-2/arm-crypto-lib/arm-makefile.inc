@@ -6,7 +6,6 @@ FLASHCMD       = arm-elf-gdb -x gdb-flash  #
 DEP_DIR        = deps/
 TEST_DIR       = test/
 BIN_DIR        = bin/
-TESTBIN_DIR    = test_bin/
 TESTSRC_DIR    = test_src/
 ERASECMD       =
 TESTPORT       = /dev/ttyUSB1

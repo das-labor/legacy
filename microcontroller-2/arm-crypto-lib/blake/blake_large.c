@@ -27,7 +27,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "memxor.h"
+#include "memxor/memxor.h"
 #include "blake_large.h"
 #include "blake_common.h"
 

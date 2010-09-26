@@ -19,8 +19,8 @@
 
 #include <stdint.h>
 #include "aes_enc_round.h"
-#include "gf256mul.h"
-#include "aes_sbox.h"
+#include "gf256mul/gf256mul.h"
+#include "aes/aes_sbox.h"
 
 static
 void aes_shiftcol(void* data, uint8_t shift){
