@@ -28,7 +28,6 @@
 #include <stdint.h>
 #include <string.h>
 #include "bmw_small.h"
-#include "memxor.h"
 
 #define SHL32(a,n) ((a)<<(n))
 #define SHR32(a,n) ((a)>>(n))

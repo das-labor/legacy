@@ -26,21 +26,22 @@
  */
 
 
-#include "memxor.h"
+#include "memxor/memxor.h"
 #include "cubehash.h"
 #include <string.h>
 #include <stdint.h>
 
+inline
 static uint32_t rol32(uint32_t a, uint8_t r){
 	return (a<<r)|(a>>(32-r));
 }
 /*
-• Add    x_0jklm into    x_1jklm modulo 232 , for each (j, k, l, m).
+• Add    x_0jklm into    x_1jklm modulo 2**32 , for each (j, k, l, m).
 • Rotate x_0jklm upwards by 7 bits, for each (j, k, l, m).
 • Swap   x_00klm with    x_01klm , for each (k, l, m).
 • Xor    x_1jklm into    x_0jklm , for each (j, k, l, m).
 • Swap   x_1jk0m with    x_1jk1m , for each (j, k, m).
-• Add    x_0jklm into    x_1jklm modulo 232 , for each (j, k, l, m).
+• Add    x_0jklm into    x_1jklm modulo 2**32 , for each (j, k, l, m).
 • Rotate x_0jklm upwards by 11 bits, for each (j, k, l, m).
 • Swap   x_0j0lm with    x_0j1lm , for each (j, l, m).
 • Xor    x_1jklm into    x_0jklm , for each (j, k, l, m).
@@ -52,8 +53,6 @@ static void cubehash_round(cubehash_ctx_t* ctx){
 	uint32_t t;
 	for(i=0; i<16; ++i){
 		ctx->a[i+16] += ctx->a[i];
-	}
-	for(i=0; i<16; ++i){
 		ctx->a[i] = rol32(ctx->a[i], 7);
 	}
 	for(i=0; i<8; ++i){
@@ -74,8 +73,6 @@ static void cubehash_round(cubehash_ctx_t* ctx){
 	}
 	for(i=0; i<16; ++i){
 		ctx->a[i+16] += ctx->a[i];
-	}
-	for(i=0; i<16; ++i){
 		ctx->a[i] = rol32(ctx->a[i], 11);
 	}
 	for(i=0; i<4; ++i){

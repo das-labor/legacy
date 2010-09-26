@@ -1,4 +1,4 @@
-# Makefile for the AVR-Crypto-Lib project
+# Makefile for the ARM-Crypto-Lib project
 #
 #    This file is part of the AVR-Crypto-Lib.
 #    Copyright (C) 2010 Daniel Otte (daniel.otte@rub.de)
@@ -28,9 +28,13 @@ SIGNATURE      :=
 PK_CIPHERS     :=
 AUX            :=
 
+
 # we use the gnu make standard library
 include gmsl
 include arm-makefile.inc
+
+
+GLOBAL_INCDIR := ./ $(TESTSRC_DIR)
 
 #-------------------------------------------------------------------------------
 # inclusion of make stubs
@@ -59,29 +63,8 @@ $(foreach a, $(ALGORITHMS), $(eval $(call Assert_Template, \
 )))
 
 
-#$(foreach a, $(ALGORITHMS), \
-#    $(if $(def $(a)_DIR), \
-#    $(eval $(call Assert_Template, \
-#        $(a)_DIR, \
-#        . \
-#    ) \
-#    )) \
-#)
-#
-#$(foreach a, $(ALGORITHMS), \
-#    $(if $(call seq($(strip($($(a)_DIR))),)), \
-#    $(eval $(call Assert_Template, \
-#        $(a)_DIR, \
-#        . \
-#    ) \
-#    )) \
-#)
 
 #-------------------------------------------------------------------------------
-#
-###	ifeq 'blafoo' ''
-###	    $(error no source ($(2)) for $(1) in TargetSource_Template)
-###	endif
 
 define TargetSource_Template
 $(1): $(2)
@@ -90,11 +73,26 @@ $(1): $(2)
 	@$(CC) $(CFLAGS_A) -I./$(strip $(3)) -c -o $(1) $(2)
 endef
 
+# ----------------------------------------------------------------------------
+# Function:  find_source_file
+# Arguments: 1: name of the binary file (.o extension) to search
+#            2: list of directorys to search for file
+# Returns:   Returns paths to source file (mathing the pattern in 
+#            $(SOURCE_PATTERN)
+# ----------------------------------------------------------------------------
+SOURCE_PATTERN := %.S %.c 
+find_source_file = $(firstword $(foreach d, $(2), \
+                     $(filter $(SOURCE_PATTERN),  \
+                       $(wildcard $(d)$(notdir $(patsubst %.o,%,$1)).*) \
+                     ) \
+                   ) )
+              
+              
 $(foreach a, $(ALGORITHMS), \
   $(foreach b, $($(a)_OBJ), \
     $(eval $(call TargetSource_Template, \
       $(BIN_DIR)$(call lc, $(a))/$(b), \
-      $(filter %.S %.c, $(wildcard $($(a)_DIR)$(notdir $(patsubst %.o,%,$(b))).*)), \
+       $(call find_source_file, $(b), $($(a)_DIR) $($(a)_INCDIR) $(GLOBAL_INCDIR) ),\
       $($(a)_DIR) \
     )) \
   ) \
@@ -103,15 +101,13 @@ $(foreach a, $(ALGORITHMS), \
 $(foreach a, $(ALGORITHMS), \
   $(foreach b, $($(a)_TEST_BIN), \
     $(eval $(call TargetSource_Template, \
-	  $(BIN_DIR)$(call lc, $(a))/$(TEST_DIR)$(b), \
-      $(if $(call sne,$(strip $(filter %.S %.c, $(wildcard $(TESTSRC_DIR)$(notdir $(patsubst %.o,%,$(b))).*))),), \
-          $(filter %.S %.c, $(wildcard $(TESTSRC_DIR)$(notdir $(patsubst %.o,%,$(b))).*)), \
-          $(filter %.S %.c, $(wildcard ./$(notdir $(patsubst %.o,%,$(b))).*))\
-	  ), \
+      $(BIN_DIR)$(call lc, $(a))/$(TEST_DIR)$(b), \
+       $(call find_source_file, $(b), $($(a)_DIR) $($(a)_INCDIR) $(GLOBAL_INCDIR) ),\
       $($(a)_DIR) \
     )) \
   ) \
 )
+
 #-------------------------------------------------------------------------------
 
 define MainTestElf_Template
@@ -162,7 +158,7 @@ endef
 
 $(foreach algo, $(ALGORITHMS), $(eval $(call Flash_Template, \
     $(algo), \
-    $(BIN_DIR)$(call lc, $(algo))/$(TEST_DIR)main-$(call lc, $(algo))-test.elf \
+    $(BIN_DIR)$(call lc, $(algo))/$(TEST_DIR)main-$(call lc, $(algo))-test.hex \
 )))
 
 #-------------------------------------------------------------------------------
@@ -179,6 +175,8 @@ $(foreach algo, $(ALGORITHMS), $(eval $(call Speed_Template, \
 .PHONY: hash_speed
 hash_speed: $(foreach algo, $(HASHES), $(algo)_SPEED)
 
+.PHONY: blockcipher_speed
+blockcipher_speed: $(foreach algo, $(BLOCK_CIPHERS), $(algo)_SPEED)
 #-------------------------------------------------------------------------------
 
 
@@ -194,6 +192,9 @@ $(foreach algo, $(ALGORITHMS), $(eval $(call Size_Template, \
 
 .PHONY: hash_size
 hash_size: $(foreach algo, $(HASHES), $(algo)_SIZE)
+
+.PHONY: blockcipher_size
+blockcipher_size: $(foreach algo, $(BLOCK_CIPHERS), $(algo)_SIZE)
 
 #-------------------------------------------------------------------------------
 
@@ -277,27 +278,29 @@ info:
 	@echo "  auxiliary functions:"
 	@echo "    $(AUX)"
 	@echo " targets:"
-	@echo "  all           - all algorithm cores"
-	@echo "  cores         - all algorithm cores"
-	@echo "  listings      - all algorithm core listings"
-	@echo "  tests         - all algorithm test programs"
-	@echo "  stats         - all algorithm size statistics"
-	@echo "  blockciphers  - all blockcipher cores"
-	@echo "  streamciphers - all streamcipher cores"
-	@echo "  hashes        - all hash cores"
-	@echo "  macs          - all MAC cores"
-	@echo "  prngs         - all PRNG cores"
-	@echo "  all_testrun   - testrun all algorithms"
-	@echo "  hash_size     - measure size of all hash functions"
-	@echo "  hash_speed    - measure performance of all hash functions"
-	@echo "  docu          - build doxygen documentation"
-	@echo "  clean         - remove a lot of builded files"
-	@echo "  depclean      - also remove dependency files"
-	@echo "  *_TEST_BIN    - build test program"
-	@echo "  *_TESTRUN     - run nessie test"
-	@echo "  *_OBJ         - build algorithm core"
-	@echo "  *_FLASH       - flash test program"
-	@echo "  *_LIST        - build assembler listing"
+	@echo "  all                - all algorithm cores"
+	@echo "  cores              - all algorithm cores"
+	@echo "  listings           - all algorithm core listings"
+	@echo "  tests              - all algorithm test programs"
+	@echo "  stats              - all algorithm size statistics"
+	@echo "  blockciphers       - all blockcipher cores"
+	@echo "  streamciphers      - all streamcipher cores"
+	@echo "  hashes             - all hash cores"
+	@echo "  macs               - all MAC cores"
+	@echo "  prngs              - all PRNG cores"
+	@echo "  all_testrun        - testrun all algorithms"
+	@echo "  hash_size          - measure size of all hash functions"
+	@echo "  hash_speed         - measure performance of all hash functions"
+	@echo "  blockcipher_size   - measure size of all blockciphers"
+	@echo "  blockcipher_speed  - measure performance of all blockciphers"
+	@echo "  docu               - build doxygen documentation"
+	@echo "  clean              - remove a lot of builded files"
+	@echo "  depclean           - also remove dependency files"
+	@echo "  *_TEST_BIN         - build test program"
+	@echo "  *_TESTRUN          - run nessie test"
+	@echo "  *_OBJ              - build algorithm core"
+	@echo "  *_FLASH            - flash test program"
+	@echo "  *_LIST             - build assembler listing"
 
 
 #-------------------------------------------------------------------------------
@@ -308,7 +311,7 @@ clean:
 
 .PHONY: depclean
 depclean: clean
-	rm $(DEP_DIR)*.d
+	rm -f $(DEP_DIR)*.d
 
 #-------------------------------------------------------------------------------
 # dependency inclusion

@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include "memxor.h"
+#include "memxor/memxor.h"
 #include "keccak.h"
 
 #ifdef DEBUG
@@ -74,6 +74,7 @@ static const uint64_t rc[] = {
        0x0000000080000001LL, 0x8000000080008008LL
 };
 
+static inline
 uint64_t rotl64(uint64_t a, uint8_t r){
 	 return (a<<r)|(a>>(64-r));
 }
@@ -95,8 +96,6 @@ void keccak_round(uint64_t a[5][5], uint8_t rci){
 	}
 	for(i=0; i<5; ++i){
 		b[i][1] = b[(4+i)%5][0] ^ rotl64(b[(i+1)%5][0], 1);
-	}
-	for(i=0; i<5; ++i){
 		for(j=0; j<5; ++j){
 			a[j][i] ^= b[i][1];
 		}
