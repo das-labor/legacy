@@ -5,14 +5,14 @@ depend() {
 }
 
 start() {
-	ebegin "Starting Keyrona's keyproviderd"
-	killall -q keyrona_keyproviderd
-	start-stop-daemon --start --background --exec /usr/sbin/keyrona_keyproviderd -- --prune
+	ebegin "Starting TpmCrypt's keyproviderd"
+	killall -q tpmcrypt_keyproviderd
+	start-stop-daemon --start --background --exec /usr/sbin/tpmcrypt_keyproviderd -- --prune
 	eend $?
 }
 
 stop() {
-	ebegin "Stopping Keyrona's keyproviderd"
-	killall -q keyrona_keyproviderd 
+	ebegin "Stopping TpmCrypt's keyproviderd"
+	killall -q tpmcrypt_keyproviderd 
 	eend 0
 }
