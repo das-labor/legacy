@@ -23,7 +23,7 @@
 
 using namespace std;
 using namespace utils;
-using namespace keyrona;
+using namespace tpmcrypt;
 
 enum myMenu
 {
@@ -1000,7 +1000,7 @@ void TpmCryptAddSSSToVolume(TpmCryptStorage &myVolumeStorage, TpmCryptStorage &m
             // load user group
             myGroup = new TpmCryptGroup(groupID, myGroupStorage, mySubjectStorage);
             m++;
-            cout << "Please add the group to the userlist while mounting, e.g., 'keyrona_mount --mount --user myUser," << groupID << " --volume /dev/sdxy --path /some/mointpoint" << endl;
+            cout << "Please add the group to the userlist while mounting, e.g., 'tpmcrypt_mount --mount --user myUser," << groupID << " --volume /dev/sdxy --path /some/mointpoint" << endl;
         }
     }
 

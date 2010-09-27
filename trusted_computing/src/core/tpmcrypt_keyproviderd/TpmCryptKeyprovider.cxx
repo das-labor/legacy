@@ -28,7 +28,7 @@
 #include <string>
 
 using namespace std;
-using namespace keyrona;
+using namespace tpmcrypt;
 using namespace utils;
 
 //================================================================================
@@ -81,7 +81,7 @@ void TpmCryptKeyprovider::startKeyprovider(TpmCryptConfigfile &myTpmCryptConfig)
    servlen=strlen(serv_addr.sun_path) + sizeof(serv_addr.sun_family);
    if(bind(sockfd,(struct sockaddr *)&serv_addr,servlen)<0)
        throw SocketBindError("Binding Server socket failed");
-   // setting the socket permission to 760, to allow the access of keyrona_mount
+   // setting the socket permission to 760, to allow the access of tpmcrypt_mount
    changepermission();
    // now the daemon is ready to get input
 
@@ -562,7 +562,7 @@ void TpmCryptKeyprovider::mount(vector<string> parameter, TpmCryptConfigfile &my
     catch ( MountError &e)
     {
         clientCommunication(TPMCRYPT_ISC_MESG_MESSAGE, e.what());
-        clientCommunication(TPMCRYPT_ISC_QUIT_MESSAGE, "\nNote:\tPlease verify, that your volume '" + volume + "' is really connected to its volume path.\n\tIf the device location has changed (e.g., for portable devices), you can attach the device to the new location via\n\t'keyrona_mount [...] --attach /dev/sdXY' or via\n\t'keyrona_manager -v av'");
+        clientCommunication(TPMCRYPT_ISC_QUIT_MESSAGE, "\nNote:\tPlease verify, that your volume '" + volume + "' is really connected to its volume path.\n\tIf the device location has changed (e.g., for portable devices), you can attach the device to the new location via\n\t'tpmcrypt_mount [...] --attach /dev/sdXY' or via\n\t'tpmcrypt_manager -v av'");
         exit(-1);
     }
     catch ( std::exception &e )

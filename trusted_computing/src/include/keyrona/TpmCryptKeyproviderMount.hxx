@@ -43,7 +43,7 @@ const std::string TpmCryptKeyproviderDB_Identifier = "KeyproviderDB";
 const std::string TpmCryptKeyproviderCrypt_Entry = "CryptoSystem";
 const std::string TpmCryptKeyproviderDevice = "Device";
         
-namespace keyrona
+namespace tpmcrypt
 {
     class TpmCryptKeyproviderMount
     {

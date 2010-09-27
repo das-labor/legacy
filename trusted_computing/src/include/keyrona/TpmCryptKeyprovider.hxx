@@ -40,10 +40,10 @@
 #include <TpmCryptSubject.hxx>
 
 using namespace std;
-using namespace keyrona;
+using namespace tpmcrypt;
 using namespace utils;
 
-namespace keyrona
+namespace tpmcrypt
 {
     class TpmCryptKeyprovider
     {

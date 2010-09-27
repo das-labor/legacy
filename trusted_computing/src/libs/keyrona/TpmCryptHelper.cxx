@@ -1035,13 +1035,13 @@ string convertByteVector2String(ByteVector &toConvert)
 void printToSyslog(string message)
 {
     TpmCryptDate currentDate;
-    FILE* keyrona_logfile;
-    keyrona_logfile = fopen(logfile.c_str(), "a+");
-    if (keyrona_logfile)
-        fprintf(keyrona_logfile, "%s: %s\n", currentDate.getDateString().c_str(), message.c_str());
+    FILE* tpmcrypt_logfile;
+    tpmcrypt_logfile = fopen(logfile.c_str(), "a+");
+    if (tpmcrypt_logfile)
+        fprintf(tpmcrypt_logfile, "%s: %s\n", currentDate.getDateString().c_str(), message.c_str());
     else
         fprintf(stderr, "TPMCRYPT: Can't write to logfile!\n");
-    fclose(keyrona_logfile);
+    fclose(tpmcrypt_logfile);
 };
 
 //================================================================================

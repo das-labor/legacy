@@ -41,7 +41,7 @@
 
 using namespace std;
 using namespace utils;
-using namespace keyrona;
+using namespace tpmcrypt;
 
 // Value-Defintions of the different String values
 #define RETURNKEY   10

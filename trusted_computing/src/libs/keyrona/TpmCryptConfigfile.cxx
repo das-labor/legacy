@@ -27,9 +27,9 @@
 
 using namespace std;
 using namespace utils;
-using namespace keyrona;
+using namespace tpmcrypt;
 
-namespace keyrona
+namespace tpmcrypt
 {
 
 //================================================================================

@@ -16,6 +16,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 
-SConscript("keyrona_manager/SConscript")
-SConscript("keyrona_keyproviderd/SConscript")
-SConscript("keyrona_mount/SConscript")
+SConscript("tpmcrypt_manager/SConscript")
+SConscript("tpmcrypt_keyproviderd/SConscript")
+SConscript("tpmcrypt_mount/SConscript")

@@ -31,7 +31,7 @@
 
 using namespace std;
 using namespace utils;
-using namespace keyrona;
+using namespace tpmcrypt;
 
 // ESD entries
 const std::string TpmCryptESD_ESDProperties= "ESDProperties";
@@ -43,7 +43,7 @@ const std::string TpmCryptESD_ESDName    = "Name";
 const std::string TpmCryptESD_ESDUUID = "UUID";
 const std::string TpmCryptESD_ESDDevice = "Device";
 
-namespace keyrona
+namespace tpmcrypt
 {
     class TpmCryptESD
     {

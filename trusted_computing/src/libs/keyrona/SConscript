@@ -17,6 +17,6 @@
 
 Import( "env" )
 
-env.libkeyrona = env.StaticLibrary( 'keyrona', Glob('*.cxx') )
-env.Prepend( LIBS = env.libkeyrona, CPPPATH = [Dir('.')] )
+env.libtpmcrypt = env.StaticLibrary( 'tpmcrypt', Glob('*.cxx') )
+env.Prepend( LIBS = env.libtpmcrypt, CPPPATH = [Dir('.')] )
 

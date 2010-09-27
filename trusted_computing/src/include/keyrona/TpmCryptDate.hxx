@@ -28,7 +28,7 @@
 
 #include <TpmCrypt.hxx>
 
-namespace keyrona
+namespace tpmcrypt
 {
     class TpmCryptDate
     {

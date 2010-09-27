@@ -24,5 +24,5 @@ local = env.Clone()
 local.Append( LINKFLAGS = '-Wl,-whole-archive -Wl,-no-whole-archive')
 
 
-local.Program( 'keyrona_keyproviderd', Glob('*.cxx') )
+local.Program( 'tpmcrypt_keyproviderd', Glob('*.cxx') )
 

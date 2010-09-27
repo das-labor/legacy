@@ -46,7 +46,7 @@ const std::string TpmCryptSSS_ParticipantsXKey = "SSSParticipantXKey";
 const std::string TpmCryptSSS_ParticipantsYKey = "SSSParticipantYKey";
 
 
-namespace keyrona
+namespace tpmcrypt
 {
     class TpmCryptSSS
     {

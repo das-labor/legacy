@@ -33,9 +33,9 @@ const std::string TPMCRYPT_TPM_KEY_EXTENSION             =".TPMKEY";
 
 using namespace std;
 using namespace utils;
-using namespace keyrona;
+using namespace tpmcrypt;
 
-namespace keyrona
+namespace tpmcrypt
 {
     // required for cross-reference between TpmCryptKey and TpmCryptSubject
     class TpmCryptTPM
