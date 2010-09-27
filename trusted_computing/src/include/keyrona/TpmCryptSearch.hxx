@@ -33,7 +33,7 @@
 
 using namespace std;
 using namespace utils;
-using namespace keyrona;
+using namespace tpmcrypt;
 
 #ifndef _TPMCRYPTSEARCH_HXX
 #define	_TPMCRYPTSEARCH_HXX

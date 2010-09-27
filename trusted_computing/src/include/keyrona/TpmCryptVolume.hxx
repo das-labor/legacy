@@ -80,7 +80,7 @@ const std::string TpmCryptVolume_SSSDB           = "Secret-Sharing-Schemes";
 const std::string TpmCryptVolume_SSSDB_valid     = "true";
 
 
-namespace keyrona
+namespace tpmcrypt
 {
     class TpmCryptVolume
     {

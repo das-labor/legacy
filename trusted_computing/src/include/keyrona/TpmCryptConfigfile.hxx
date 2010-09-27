@@ -51,7 +51,7 @@ static const std::string TpmCryptConfigfile_TpmCryptRNGDevice             = "TPM
 using namespace std;
 using namespace utils;
 
-namespace keyrona
+namespace tpmcrypt
 {
 
     class TpmCryptConfigfile

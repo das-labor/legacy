@@ -24,7 +24,7 @@
 #include <sys/time.h>
 #include <time.h> 
 
-using namespace keyrona;
+using namespace tpmcrypt;
 
 pthread_mutex_t condition_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t  condition_cond  = PTHREAD_COND_INITIALIZER;

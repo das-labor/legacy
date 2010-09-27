@@ -43,7 +43,7 @@ using namespace utils;
 
 extern termios terminalBackup;
 
-namespace keyrona
+namespace tpmcrypt
 {
     class MountHelper
     {

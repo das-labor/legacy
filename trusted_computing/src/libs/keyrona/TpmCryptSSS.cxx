@@ -26,7 +26,7 @@
 #include <TpmCryptSSS.hxx>
 
 using namespace std;
-using namespace keyrona;
+using namespace tpmcrypt;
 using namespace utils;
 using namespace algo;
 using namespace integer;

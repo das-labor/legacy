@@ -17,5 +17,5 @@
 
 Import( "env" )
 
-env.libkeyronatpm = env.StaticLibrary( 'keyronatpm', Glob('*.cxx') )
-env.Prepend( LIBS = env.libkeyronatpm, CPPPATH = [Dir('.')] )
+env.libtpmcrypttpm = env.StaticLibrary( 'tpmcrypttpm', Glob('*.cxx') )
+env.Prepend( LIBS = env.libtpmcrypttpm, CPPPATH = [Dir('.')] )

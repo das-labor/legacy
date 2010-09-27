@@ -25,7 +25,7 @@
 
 using namespace std;
 using namespace utils;
-using namespace keyrona;
+using namespace tpmcrypt;
 
 #define TSS_ERROR_CODE(x)       (x & 0xFFF)
 #define TSS_ERROR_LAYER(x)      (x & 0x3000)

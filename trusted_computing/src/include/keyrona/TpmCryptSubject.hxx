@@ -33,7 +33,7 @@
 
 using namespace std;
 using namespace utils;
-using namespace keyrona;
+using namespace tpmcrypt;
 
 // Subject Types
 enum myTpmCryptSubjects
@@ -88,7 +88,7 @@ const std::string TpmCryptSubject_FALSE          = "false";
 const std::string TpmCryptSubject_Messages       = "Message";
 const std::string TpmCryptSubject_SubjectPlatformSelection = "PCR";
 
-namespace keyrona
+namespace tpmcrypt
 {
     // required for cross-reference between KeryonaKey and TpmCryptSubject
     class TpmCryptKey;

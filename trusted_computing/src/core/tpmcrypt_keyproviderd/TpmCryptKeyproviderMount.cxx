@@ -19,7 +19,7 @@
 
 #include <TpmCryptKeyproviderMount.hxx>
 
-using namespace keyrona;
+using namespace tpmcrypt;
 
 TpmCryptKeyproviderMount::TpmCryptKeyproviderMount(UInt8 cryptoSystem, string device, string destination, string key, TpmCryptConfigfile &aTpmCryptConfig, string user, string uuid )
 {
@@ -92,7 +92,7 @@ void TpmCryptKeyproviderMount::mountLUKS(string device, string destination, stri
     if ( !myKeyproviderStorage.findSubSection(destination))
     {// there is no other device mounted under destination
         debug << "device: " << device << "\t destination: " << destination << endl;
-        string myCommand = (myScriptDirectory + TpmCryptPathSeparator + "mount_cryptsetup_luks.sh " + device + " \"keyrona-" + uuid + "\"" + " " + key + " " + destination + " " + logfile);
+        string myCommand = (myScriptDirectory + TpmCryptPathSeparator + "mount_cryptsetup_luks.sh " + device + " \"tpmcrypt-" + uuid + "\"" + " " + key + " " + destination + " " + logfile);
         cout << myCommand << endl;
         int ret = system(myCommand.c_str());
         if (ret)
@@ -113,7 +113,7 @@ void TpmCryptKeyproviderMount::mountLUKS(string device, string destination, stri
 void TpmCryptKeyproviderMount::unmountLUKS(string destination, TpmCryptStorage &myKeyproviderStorage, string user)
 {
     string uuid = myKeyproviderStorage.getEntry(TpmCryptKeyproviderDevice);
-    string myCommand = (myScriptDirectory + TpmCryptPathSeparator + "unmount_cryptsetup_luks.sh " + destination + " \"keyrona-" + uuid + "\"" + " " + logfile);
+    string myCommand = (myScriptDirectory + TpmCryptPathSeparator + "unmount_cryptsetup_luks.sh " + destination + " \"tpmcrypt-" + uuid + "\"" + " " + logfile);
     int ret = system(myCommand.c_str());
     if (ret)
         throw UnmountError("An error occured while trying to unmount  '" + destination + "'. Please look into TpmCrypt's logfile: '" + logfile + "'");
@@ -127,7 +127,7 @@ void TpmCryptKeyproviderMount::mountDMCRYPT(string device, string destination, s
     if ( !myKeyproviderStorage.findSubSection(destination))
     {// there is no other device mounted under destination
         debug << "device: " << device << "\t destination: " << destination << endl;
-        string myCommand = (myScriptDirectory + TpmCryptPathSeparator + "mount_dmcrypt.sh " + device + " \"keyrona-" + uuid + "\"" + " " + key + " " + destination + " " + logfile );
+        string myCommand = (myScriptDirectory + TpmCryptPathSeparator + "mount_dmcrypt.sh " + device + " \"tpmcrypt-" + uuid + "\"" + " " + key + " " + destination + " " + logfile );
         int ret = system(myCommand.c_str());
         if (ret)
             throw MountError("An error occured while trying to mount device '" + device + "'. Please look into TpmCrypt's logfile: '" + logfile + "'");
@@ -147,7 +147,7 @@ void TpmCryptKeyproviderMount::mountDMCRYPT(string device, string destination, s
 void TpmCryptKeyproviderMount::unmountDMCRYPT(string destination, TpmCryptStorage &myKeyproviderStorage, string user)
 {
     string uuid = myKeyproviderStorage.getEntry(TpmCryptKeyproviderDevice);
-    string myCommand = (myScriptDirectory + TpmCryptPathSeparator + "unmount_dmcrypt.sh " + destination + " \"keyrona-" + uuid + "\"" + " " + logfile);
+    string myCommand = (myScriptDirectory + TpmCryptPathSeparator + "unmount_dmcrypt.sh " + destination + " \"tpmcrypt-" + uuid + "\"" + " " + logfile);
     int ret = system(myCommand.c_str());
     if (ret)
         throw UnmountError("An error occured while trying to unmount '" + destination + "'. Please look into TpmCrypt's logfile: '" + logfile + "'");

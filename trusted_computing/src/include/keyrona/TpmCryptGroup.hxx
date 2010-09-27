@@ -33,7 +33,7 @@
 
 using namespace std;
 using namespace utils;
-using namespace keyrona;
+using namespace tpmcrypt;
 
 // Subject entries
 const std::string TpmCryptGroup_GroupProperties= "GroupProperties";
@@ -51,7 +51,7 @@ const std::string TpmCryptGroup_GroupKeys      = "GroupKeys";
 
 typedef std::pair<std::string, std::string> SubjectKeyCombination;
 
-namespace keyrona
+namespace tpmcrypt
 {
     class TpmCryptKey;
     class TpmCryptSubject;

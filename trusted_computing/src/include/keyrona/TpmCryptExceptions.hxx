@@ -28,7 +28,7 @@
 
 #include <stdexcept>
 
-namespace keyrona
+namespace tpmcrypt
 {
 // ===========================
 // TpmCrypt Manager Exceptions:

@@ -43,7 +43,7 @@ const std::string TpmCryptDatabase_ValueIdentifier               =	"Value";
 using namespace std;
 using namespace utils;
 
-namespace keyrona
+namespace tpmcrypt
 {
     class TpmCryptStorage
     {

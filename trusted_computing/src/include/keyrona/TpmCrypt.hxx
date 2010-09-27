@@ -77,11 +77,11 @@ const std::string TPMCRYPT_ISC_MESG_MESSAGE = "MESG";
 const std::string TPMCRYPT_ISC_GET_STRING_MESSAGE = "STRG";
 
 const std::string TPMCRYPT_ADMIN_GROUP       = "Admin";
-const std::string TPMCRYPT_LINUX_SYSTEM_GROUP = "keyrona";
+const std::string TPMCRYPT_LINUX_SYSTEM_GROUP = "tpmcrypt";
 const std::string TPMCRYPT_PRIVATE_MODE      = "TpmCrypt Private Mode User";
 const std::string TPMCRYPT_PRIVATE_MODE_C            = "DE";
-const std::string TPMCRYPT_PRIVATE_MODE_USER_MAIL    = "keyrona.user@keyrona.org";
-const std::string TPMCRYPT_PRIVATE_MODE_ADMIN_MAIL   = "keyrona.admin@keyrona.org";
+const std::string TPMCRYPT_PRIVATE_MODE_USER_MAIL    = "tpmcrypt.user@tpmcrypt.org";
+const std::string TPMCRYPT_PRIVATE_MODE_ADMIN_MAIL   = "tpmcrypt.admin@tpmcrypt.org";
 const std::string TPMCRYPT_TOKEN_STANDARD_PASSWD     = "TpmCryptTokenStandardPassword";
 
 extern std::string myKeyDirectory;
@@ -101,7 +101,7 @@ static const UInt8       TpmCryptPathSeparatorChar   = '/';
 static const std::string TpmCryptFileSeparator       = "_";
 static const UInt8       TpmCryptFileSeparatorChar   = '_';
 static const std::string TpmCryptP15FileExtension    = ".p15";
-static const std::string TpmCryptDefaultConfigfile   = "/etc/keyrona/keyrona.cfg";
+static const std::string TpmCryptDefaultConfigfile   = "/etc/tpmcrypt/tpmcrypt.cfg";
 static const std::string moveCommandOption          = "-b"; // perform backup
 
 #define bzero(ptr, len)  memset((ptr), NULL, (len))

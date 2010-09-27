@@ -18,4 +18,4 @@
 SConscript("utils/SConscript")
 SConscript("crypto/SConscript")
 SConscript("tpm/SConscript")
-SConscript("keyrona/SConscript")
+SConscript("tpmcrypt/SConscript")

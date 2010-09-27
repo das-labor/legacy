@@ -22,4 +22,4 @@ local = env.Clone()
 
 # Ensure that all objects are linked to the main program
 local.Append( LINKFLAGS = '-Wl,-whole-archive -Wl,-no-whole-archive')
-local.Program( 'keyrona_manager', Glob('*.cxx') )
+local.Program( 'tpmcrypt_manager', Glob('*.cxx') )

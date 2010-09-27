@@ -25,7 +25,7 @@
 
 using namespace std;
 using namespace utils;
-using namespace keyrona;
+using namespace tpmcrypt;
 
 const string helpOptionDesc	= "Shows the help string.\n";
 #ifdef DEBUG

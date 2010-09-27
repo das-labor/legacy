@@ -27,7 +27,7 @@
 
 using namespace std;
 using namespace utils;
-using namespace keyrona;
+using namespace tpmcrypt;
 
 typedef map<string, int> t_StringMap;
 
