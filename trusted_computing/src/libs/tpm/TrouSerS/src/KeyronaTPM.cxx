@@ -770,7 +770,14 @@ void KeyronaTPM::remove_all_keys_by_uuid()
     for( UInt32 i = 0; i<keyblobsize; i++) 
     {
 		UInt32 keynum = (keyblob[i].keyUUID.rgbNode[5] & 0xff);
-		delete_key(keynum);
+		if(keynum >= 1)
+		{
+			delete_key(keynum);
+		}
+		else
+		{
+		}
+		
 	}
     
 	Tspi_Context_FreeMemory (hContext, (BYTE*)keyblob);
