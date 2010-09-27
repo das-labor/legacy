@@ -1,17 +1,22 @@
 /* this keyboard interface is based on avr appnote 313 
-   modified by siro 2010
 	keyboard connected to PORTD
 	CLOCK   PIND2 (int0)
 	DATAPIN PIND4
 	to use call init_kb(); sei(); in main
 	to get a char getcharkb or getcharx
+
+ modified by Patrick Rudolph 2010
+   changed:
+   INT1-Interrupt can now be used (was blocked)
+   enable pullups in init_kb()
+
 */
 
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 #include "kb.h"
 
-#define  BUFF_SIZE 64
+#define  BUFF_SIZE 16
 
 void decode(unsigned char sc);
 void put_kbbuff(unsigned char c);
@@ -28,10 +33,11 @@ void init_kb(void)
     inpt =  kb_buffer;                        // Initialize buffer
     outpt = kb_buffer;
     buffcnt = 0;
-    GIMSK=(1<<INT0);
-    MCUCR = 2;                                // INT0 interrupt on falling edge
+    GIMSK|=_BV(INT0);
+    MCUCR |= _BV(ISC01); // Set interrupt on falling edge
     edge = 0;                                // 0 = falling edge  1 = rising edge
     bitcount = 11;
+    KB_EN_PULLUPS   //enable pullups
 }
 
 ISR (INT0_vect)
@@ -48,13 +54,17 @@ ISR (INT0_vect)
             }
         }
 
-        MCUCR = 3;                            // Set interrupt on rising edge
+	 MCUCR |= _BV(ISC01); // Set interrupt on rising edge
+	 MCUCR |= _BV(ISC00); // Set interrupt on rising edge
+      
         edge = 1;
     } 
     else
     {                                // Routine entered at rising edge
         
-        MCUCR = 2;                            // Set interrupt on falling edge
+      MCUCR &= ~_BV(ISC00);  // Set interrupt on falling edge
+      MCUCR |= _BV(ISC01); // Set interrupt on falling edge
+
         edge = 0;
         bitcount-=1;
         if(bitcount == 0)                    // All bits received
@@ -191,9 +201,9 @@ int getcharkb(void)
     return byte;
 }
 
-int getcharx(void)
+unsigned char getcharx(void)
 {
-    int byte=0;
+    unsigned char byte=0;
 
     if(buffcnt > 0)                        // Wait for data
     {

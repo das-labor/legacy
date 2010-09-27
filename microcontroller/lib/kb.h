@@ -14,12 +14,14 @@
 #define CLOCK   PIND2 //Connected to int0, don't change
 #define DATAPIN PIND4
 
+#define KB_EN_PULLUPS PORTD|=_BV(PD2)|_BV(PD4);
+
 void init_kb(void);
 
 // getchar with blocking
 int   getcharkb(void);
 
 // getchar without blocking, returns 0, if no char is availlable
-int getcharx(void);
+unsigned char getcharx(void);
 #endif
 
