@@ -1,4 +1,5 @@
 // Copyright (C) 2008, 2009 by Sirrix AG security technologies
+// Copyright (C) 2010 by Philipp Deppenwiese
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -236,18 +237,6 @@ void KeyronaKey::getKeysUUID()
 	
 };
 
-//================================================================================
-//
-void KeyronaKey::deleteAllKeys()
-{
-	KeyronaTPM myTPM;
-	
-	for(UInt32 i = 0; i < 1000; i++)
-	{
-		myTPM.delete_key(i);
-		cout << "Deleting Key: " << i << endl;
-	}
-};
 //================================================================================
 //
 bool KeyronaKey::changePassword(KeyronaSubject *Subject, string &oldPassword, string &newPassword) 

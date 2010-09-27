@@ -1,4 +1,5 @@
 // Copyright (C) 2008, 2009 by Sirrix AG security technologies
+// Copyright (C) 2010 by Philipp Deppenwiese
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -69,6 +70,7 @@ KeyronaGroup::KeyronaGroup(const string GroupID, KeyronaStorage &GroupStorage, K
 
     // creating new group key
     myGroupKey = new KeyronaKey(this, myGroupKeyPassword);
+    
     // creating test vector
     ByteVector testVector = convertStringToByteVector(myGroupID);
     ByteVector testVectorByteVector = encryptForGroup(this, testVector);
@@ -146,7 +148,7 @@ void    KeyronaGroup::printGroup(bool verbose)
     {
         cout << "\tGroupKeyfile: '" << myGroupKeyfile << "'" << endl;
         cout << "\tKey details:" << endl;
-        // myGroupKey->printKeyInformation();
+        myGroupKey->printKeyInformation();
     }
 };
 
@@ -205,6 +207,7 @@ void    KeyronaGroup::addSubjectToGroup(KeyronaSubject *Subject, string &groupKe
     // check if we are admin group and if subject is admin
     if ((myGroupID == KEYRONA_ADMIN_GROUP) && (! Subject->isAdmin()))
             throw InvalidSubjectID("KeyronaGroup["+myGroupID+"|addSubjectToGroup()]: You are not allowed to add non-admin subjects to the admin group!");
+    
     // add subject to group
     UInt32 mySID = Subject->getMySubjectID();
     vector<UInt32>::const_iterator Iterator;
@@ -235,7 +238,6 @@ void    KeyronaGroup::addSubjectToGroup(KeyronaSubject *Subject, string &groupKe
 	
     debug << "KeyronaGroup["+myGroupID+"|addSubjectToGroup()]: decrypting testvector from database with given password" << endl;
     // decrypted testVector
-    cout <<" test2" << endl;
     try
     {
         decodedTestVectorByteVector = decryptByGroup(this, decodedTestVector, groupKeyPassword);
@@ -298,8 +300,10 @@ void    KeyronaGroup::deleteSubjectFromGroup(KeyronaSubject *Subject)
             // deleting subject-encrypted groupkey
             myGroupStorage.selectSection(myGroupID);
             myGroupStorage.selectSubSection(KeyronaGroup_SubjectKeys);
+            
             // delete encrypted group key for subject
             myGroupStorage.deleteEntry(Subject->getMySubjectIDString());
+            
             // deleting subject from groups subject list
             myGroupSubjectIDs.erase(Iterator);
             storeSubjectList();
@@ -416,15 +420,12 @@ string  KeyronaGroup::getDecryptedGroupKey(KeyronaSubject *Subject, string &pass
 
     debug << "KeyronaGroup|getDecryptedGroupKey(): receiving BASE64-encoded key" << endl;
     string myBase64EncodedPassword = myGroupStorage.getEntry(Subject->getMySubjectIDString());
-	cout << "seg" << endl;
 
     debug << "KeyronaGroup|getDecryptedGroupKey(): decoding BASE64-encoded key" << endl;
     ByteVector myDecode = DecodeBASE64StringToByteVector(myBase64EncodedPassword);
-    	cout << "seg2" << endl;
 
     debug << "KeyronaGroup|getDecryptedGroupKey(): decrypting key" << endl;
     ByteVector blub = Subject->decryptBySubject(Subject, myDecode, password);
-    	cout << "seg00" << endl;
 
     if (! myDecode.size() )
         throw DecryptionFailed("KeyronaGroup|getDecryptedGroupKey(): decryption failed for subject '" + Subject->getMySubjectName() + "'!");
@@ -453,6 +454,7 @@ string  KeyronaGroup::getDecryptedGroupKeyByAdmin(string &AdminKeyPassword)
 
     // opening admin group
     KeyronaGroup myAdminGroup(KEYRONA_ADMIN_GROUP, myGroupStorage, mySubjectStorage);
+    
     // decrypting group key password with admin key
     decodedGroupKeyPassword = myAdminGroup.decryptByGroup(this, decodedGroupKeyPassword, AdminKeyPassword);
 
@@ -462,18 +464,14 @@ string  KeyronaGroup::getDecryptedGroupKeyByAdmin(string &AdminKeyPassword)
 //
 ByteVector  KeyronaGroup::encryptForGroup(KeyronaGroup *Group, ByteVector &toEncrypt)
 {
-    //if ((myGroupKey) && (myGroupKey->isValid()))
-        return myGroupKey->encrypt(NULL, this, toEncrypt);
-    //throw InvalidKey("KeyronaGroup|encryptForGroup(): Invalid key for group '" + myGroupID + "'");
+    return myGroupKey->encrypt(NULL, this, toEncrypt);
 };
 
 //================================================================================
 //
 ByteVector  KeyronaGroup::decryptByGroup(KeyronaGroup *Group, ByteVector &toDecrypt, string &myPassword)
 {
-    //if ((myGroupKey) && (myGroupKey->isValid()))
-        return myGroupKey->decrypt(NULL, this, toDecrypt, myPassword);
-    //throw InvalidKey("KeyronaGroup|decryptByGroup(): Invalid key for group '" + myGroupID + "'");
+	return myGroupKey->decrypt(NULL, this, toDecrypt, myPassword);
 };
 
 void KeyronaGroup::addMessageForGroupMembers(string message)

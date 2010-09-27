@@ -1,4 +1,5 @@
 // Copyright (C) 2008, 2009 by Sirrix AG security technologies
+// Copyright (C) 2010 by Philipp Deppenwiese
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -756,16 +757,10 @@ bool KeyronaSubject::verifyPassword(string &myPassword)
 //
 bool KeyronaSubject::changePassword( string &oldPassword, string &newPassword)
 {
-    //if (!verifyPassword(oldPassword))
-     //   throw InvalidPassword("KeyronaSubject|changePassword(): Invalid (old) password supplied!");
-
     if (! newPassword.size())
         throw InvalidPassword("KeyronaSubject|changePassword(): Empty (new) password supplied!");
 
-    //if ((mySubjectKey) && (mySubjectKey->isValid()))
         return mySubjectKey->changePassword(this, oldPassword, newPassword);
-
-    //throw InvalidKey("KeyonaSubject|changePassword(): Invalid key for subject '" + mySubjectName + "'");
 };
 
 //================================================================================

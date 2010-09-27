@@ -270,8 +270,6 @@ void KeyronaChangeUserCredential(KeyronaStorage &mySubjectStorage)
 
     string currentSubject = mySubject->getMySubjectName();
     string oldPassword = getPassword("Please enter current password for user '" + currentSubject + "': ");
-    //if (!mySubject->verifyPassword(oldPassword))
-      //  throw InvalidPassword("Invalid password for user '" + currentSubject + "'!");
     string newPassword = getPasswordVerified("Please enter new password for user '" + currentSubject + "': ");
     if (!mySubject->changePassword(oldPassword, newPassword))
     {

@@ -122,8 +122,8 @@ void KeyronaCreatePlatform(KeyronaStorage &mySubjectStorage)
     vector<string> myPlatforms = KeyronaFindAllPlatforms(mySubjectStorage);
 
     string myPlatformname = getStringFromUser("Please enter name for new Platform: ");
-    //if (!KeyronaFindPlatform(mySubjectStorage, myPlatformname))
-     //   throw InvalidPlatform("KeyronaCreatePlatform(): Platform already exists!");
+    if (KeyronaFindPlatform(mySubjectStorage, myPlatformname))
+       throw InvalidPlatform("KeyronaCreatePlatform(): Platform already exists!");
 
     string myEMail = KEYRONA_PRIVATE_MODE_ADMIN_MAIL;
     string myC  = KEYRONA_PRIVATE_MODE_C;
