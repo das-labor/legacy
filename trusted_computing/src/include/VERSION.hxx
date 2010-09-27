@@ -5,7 +5,7 @@
 #define VERSION_hxx_included
 
 
-/* Current Keyrona version */
+/* Current TpmCrypt version */
 #define VERSION "1.5-r4094M"
 
 

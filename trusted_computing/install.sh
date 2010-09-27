@@ -16,16 +16,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-KEYRONA_GROUP="keyrona"
-KEYRONA_SUPERUSER="root"
-INSTALLDIR="/etc/keyrona"
+TPMCRYPT_GROUP="tpmcrypt"
+TPMCRYPT_SUPERUSER="root"
+INSTALLDIR="/etc/tpmcrypt"
 BINDIR="/usr/bin"
 SBINDIR="/usr/sbin"
-KEYDIR="/etc/keyrona/keys"
-DATABASEDIR="/etc/keyrona/database"
-SCRIPTDIR="/etc/keyrona/scripts"
-SOCKETDIR="/var/run/keyrona"
-LOGFILE="/var/log/keyrona.log"
+KEYDIR="/etc/tpmcrypt/keys"
+DATABASEDIR="/etc/tpmcrypt/database"
+SCRIPTDIR="/etc/tpmcrypt/scripts"
+SOCKETDIR="/var/run/tpmcrypt"
+LOGFILE="/var/log/tpmcrypt.log"
 LIBDIR="/usr/lib"
 INCLUDEDIR="/usr/include"
 MANDIR="/usr/share/man/man1"
@@ -158,18 +158,18 @@ check_binary "ldconfig"
 check_binary "dos2unix"
 
 ### BUILD
-colored_output "cyan" "Compiling Keyrona"
+colored_output "cyan" "Compiling TpmCrypt"
 scons
 check_result $? "Build"
 
 ### CHECK FOR RUNNING KEYPROVIDER
-if [[ $(pidof keyrona_keyproviderd) ]] ; then
-    colored_output "yellow" "Keyrona Keyprovider is running, terminating it..."
-    killall keyrona_keyproviderd
+if [[ $(pidof tpmcrypt_keyproviderd) ]] ; then
+    colored_output "yellow" "TpmCrypt Keyprovider is running, terminating it..."
+    killall tpmcrypt_keyproviderd
 fi
 
 ### INSTALL
-colored_output "cyan" "Installing Keyrona to $INSTALLDIR"
+colored_output "cyan" "Installing TpmCrypt to $INSTALLDIR"
 
 ### CREATING DIRECTORIES
 create_dir $INSTALLDIR
@@ -179,7 +179,7 @@ create_dir $DATABASEDIR
 create_dir $SOCKETDIR
 
 ### CREATING DATABASES
-colored_output "cyan" "Installing Keyrona databases to $DATABASEDIR"
+colored_output "cyan" "Installing TpmCrypt databases to $DATABASEDIR"
 touch $DATABASEDIR/group.db
 touch $DATABASEDIR/subject.db
 touch $DATABASEDIR/volume.db
@@ -189,11 +189,11 @@ touch $DATABASEDIR/keyprovider.db
 touch $LOGFILE
 
 ### COPYING CONFIGFILE
-colored_output "cyan" "Installing Keyrona configuration"
-copy_file src/config/keyrona.cfg $INSTALLDIR
+colored_output "cyan" "Installing TpmCrypt configuration"
+copy_file src/config/tpmcrypt.cfg $INSTALLDIR
 
 ### INSTALLING MODULES
-colored_output "cyan" "Installing Keyrona modules"
+colored_output "cyan" "Installing TpmCrypt modules"
 for i in $(find src/output/) ;
 do
     if [ $(echo $i | grep "\.sh" | grep -v "\.svn" | grep -v $0 | grep -v "\.cxx" | grep -v "\.hxx" | grep -v "\.o") ] ; then
@@ -202,26 +202,26 @@ do
 done
 
 ### INSTALLING BINARIES
-colored_output "cyan" "Installing Keyrona binaries"
-copy_file src/core/keyrona_manager/keyrona_manager $BINDIR
-copy_file src/core/keyrona_mount/keyrona_mount $BINDIR
-copy_file src/core/keyrona_keyproviderd/keyrona_keyproviderd $SBINDIR
+colored_output "cyan" "Installing TpmCrypt binaries"
+copy_file src/core/tpmcrypt_manager/tpmcrypt_manager $BINDIR
+copy_file src/core/tpmcrypt_mount/tpmcrypt_mount $BINDIR
+copy_file src/core/tpmcrypt_keyproviderd/tpmcrypt_keyproviderd $SBINDIR
 
 ### INSTALLING MAN-PAGES
-colored_output "cyan" "Installing Keyrona man-pages"
-copy_file manpage/keyrona_manager.1.bz2 $MANDIR
-copy_file manpage/keyrona_mount.1.bz2 $MANDIR
-copy_file manpage/keyrona_keyproviderd.1.bz2 $MANDIR
+colored_output "cyan" "Installing TpmCrypt man-pages"
+copy_file manpage/tpmcrypt_manager.1.bz2 $MANDIR
+copy_file manpage/tpmcrypt_mount.1.bz2 $MANDIR
+copy_file manpage/tpmcrypt_keyproviderd.1.bz2 $MANDIR
 
 ### STRIPPING BINARIES
 colored_output "cyan" "Stripping binaries"
-strip -s $BINDIR/keyrona_*
-strip -s $SBINDIR/keyrona_keyproviderd
+strip -s $BINDIR/tpmcrypt_*
+strip -s $SBINDIR/tpmcrypt_keyproviderd
 
-### CREATING KEYRONA GROUP
-colored_output "cyan" "Adding Keyrona group '$KEYRONA_GROUP'"
-groupadd -f keyrona
-colored_output "yellow" "Please add the local Linux users to the Keyrona group"
+### CREATING TPMCRYPT GROUP
+colored_output "cyan" "Adding TpmCrypt group '$TPMCRYPT_GROUP'"
+groupadd -f tpmcrypt
+colored_output "yellow" "Please add the local Linux users to the TpmCrypt group"
 
 ### ASSIGNING PERMISSIONS
 colored_output "cyan" "Assigning permissions"
@@ -229,55 +229,55 @@ chmod -f 770 $SOCKETDIR
 chmod -f 750 $INSTALLDIR
 chmod -f 700 $SCRIPTDIR
 chmod -f 500 $SCRIPTDIR/*
-chmod -f 640 $INSTALLDIR/keyrona.cfg
-chmod -f 500 $SBINDIR/keyrona_keyproviderd
-chmod -f 550 $BINDIR/keyrona_*
+chmod -f 640 $INSTALLDIR/tpmcrypt.cfg
+chmod -f 500 $SBINDIR/tpmcrypt_keyproviderd
+chmod -f 550 $BINDIR/tpmcrypt_*
 chmod -f 770 $DATABASEDIR
 chmod -f 660 $DATABASEDIR/*.db
 chmod -f 770 $KEYDIR
 chmod -f 660 $KEYDIR/* 2>/dev/null
 chmod -f 660 $LOGFILE
 
-chown -f $KEYRONA_SUPERUSER:$KEYRONA_GROUP $SOCKETDIR
-chown -f $KEYRONA_SUPERUSER:$KEYRONA_GROUP $INSTALLDIR
-chown -f $KEYRONA_SUPERUSER:$KEYRONA_GROUP $INSTALLDIR/* -R
-chown -f $KEYRONA_SUPERUSER:$KEYRONA_GROUP $SCRIPTDIR/* -R
-chown -f $KEYRONA_SUPERUSER:$KEYRONA_GROUP $DATABASEDIR
-chown -f $KEYRONA_SUPERUSER:$KEYRONA_GROUP $DATABASEDIR/* -R
-chown -f $KEYRONA_SUPERUSER:$KEYRONA_GROUP $BINDIR/keyrona_*
-chown -f $KEYRONA_SUPERUSER:$KEYRONA_GROUP $SBINDIR/keyrona_keyproviderd
-chown -f $KEYRONA_SUPERUSER:$KEYRONA_GROUP $KEYDIR
-chown -f $KEYRONA_SUPERUSER:$KEYRONA_GROUP $KEYDIR/* -R 2>/dev/null
-chown -f $KEYRONA_SUPERUSER:$KEYRONA_GROUP $LOGFILE
+chown -f $TPMCRYPT_SUPERUSER:$TPMCRYPT_GROUP $SOCKETDIR
+chown -f $TPMCRYPT_SUPERUSER:$TPMCRYPT_GROUP $INSTALLDIR
+chown -f $TPMCRYPT_SUPERUSER:$TPMCRYPT_GROUP $INSTALLDIR/* -R
+chown -f $TPMCRYPT_SUPERUSER:$TPMCRYPT_GROUP $SCRIPTDIR/* -R
+chown -f $TPMCRYPT_SUPERUSER:$TPMCRYPT_GROUP $DATABASEDIR
+chown -f $TPMCRYPT_SUPERUSER:$TPMCRYPT_GROUP $DATABASEDIR/* -R
+chown -f $TPMCRYPT_SUPERUSER:$TPMCRYPT_GROUP $BINDIR/tpmcrypt_*
+chown -f $TPMCRYPT_SUPERUSER:$TPMCRYPT_GROUP $SBINDIR/tpmcrypt_keyproviderd
+chown -f $TPMCRYPT_SUPERUSER:$TPMCRYPT_GROUP $KEYDIR
+chown -f $TPMCRYPT_SUPERUSER:$TPMCRYPT_GROUP $KEYDIR/* -R 2>/dev/null
+chown -f $TPMCRYPT_SUPERUSER:$TPMCRYPT_GROUP $LOGFILE
 
 ### DONE
 colored_output "green" "Done... ;)"
-colored_output "yellow" "In order to automatically start the Keyrona keyprovider upon system boot or within /etc/fstab, you have to add it to the according runlevels. Please execute the following commands according to your distribution:"
+colored_output "yellow" "In order to automatically start the TpmCrypt keyprovider upon system boot or within /etc/fstab, you have to add it to the according runlevels. Please execute the following commands according to your distribution:"
 colored_output "white" " ==== Gentoo ==== "
-colored_output "yellow" "Gentoo: '# cp distributions/gentoo/etc/init.d/keyrona /etc/init.d'"
-colored_output "yellow" "Gentoo: '# chmod 550 /etc/init.d/keyrona'"
-colored_output "yellow" "Gentoo: '# chown root:keyrona /etc/init.d/keyrona'"
-colored_output "yellow" "Gentoo: '# cp distributions/gentoo/sbin/mount.keyrona /sbin'"
-colored_output "yellow" "Gentoo: '# chmod 550 /sbin/mount.keyrona'"
-colored_output "yellow" "Gentoo: '# chown root:keyrona /sbin/mount.keyrona'"
-colored_output "yellow" "Gentoo: '# rc-update add keyrona'"
+colored_output "yellow" "Gentoo: '# cp distributions/gentoo/etc/init.d/tpmcrypt /etc/init.d'"
+colored_output "yellow" "Gentoo: '# chmod 550 /etc/init.d/tpmcrypt'"
+colored_output "yellow" "Gentoo: '# chown root:tpmcrypt /etc/init.d/tpmcrypt'"
+colored_output "yellow" "Gentoo: '# cp distributions/gentoo/sbin/mount.tpmcrypt /sbin'"
+colored_output "yellow" "Gentoo: '# chmod 550 /sbin/mount.tpmcrypt'"
+colored_output "yellow" "Gentoo: '# chown root:tpmcrypt /sbin/mount.tpmcrypt'"
+colored_output "yellow" "Gentoo: '# rc-update add tpmcrypt'"
 colored_output "white" " ==== Fedora ==== "
-colored_output "yellow" "Fedora: '# cp distributions/fedora/etc/init.d/keyrona /etc/init.d'"
-colored_output "yellow" "Fedora: '# chmod 550 /etc/init.d/keyrona'"
-colored_output "yellow" "Fedora: '# chown root:keyrona /etc/init.d/keyrona'"
-colored_output "yellow" "Fedora: '# cp distributions/fedora/sbin/mount.keyrona /sbin'"
-colored_output "yellow" "Fedora: '# chmod 550 /sbin/mount.keyrona'"
-colored_output "yellow" "Fedora: '# chown root:keyrona /sbin/mount.keyrona'"
-colored_output "yellow" "Fedora: '# chkconfig --add keyrona'"
+colored_output "yellow" "Fedora: '# cp distributions/fedora/etc/init.d/tpmcrypt /etc/init.d'"
+colored_output "yellow" "Fedora: '# chmod 550 /etc/init.d/tpmcrypt'"
+colored_output "yellow" "Fedora: '# chown root:tpmcrypt /etc/init.d/tpmcrypt'"
+colored_output "yellow" "Fedora: '# cp distributions/fedora/sbin/mount.tpmcrypt /sbin'"
+colored_output "yellow" "Fedora: '# chmod 550 /sbin/mount.tpmcrypt'"
+colored_output "yellow" "Fedora: '# chown root:tpmcrypt /sbin/mount.tpmcrypt'"
+colored_output "yellow" "Fedora: '# chkconfig --add tpmcrypt'"
 colored_output "white" " ==== Debian ==== "
-colored_output "yellow" "Debian: '# cp distributions/debian/etc/init.d/keyrona /etc/init.d'"
-colored_output "yellow" "Debian: '# chmod 550 /etc/init.d/keyrona'"
-colored_output "yellow" "Debian: '# chown root:keyrona /etc/init.d/keyrona'"
-colored_output "yellow" "Debian: '# cp distributions/debian/sbin/mount.keyrona /sbin'"
-colored_output "yellow" "Debian: '# chmod 550 /sbin/mount.keyrona'"
-colored_output "yellow" "Debian: '# chown root:keyrona /sbin/mount.keyrona'"
-colored_output "yellow" "Debian: '# update-rc.d keyrona defaults'"
+colored_output "yellow" "Debian: '# cp distributions/debian/etc/init.d/tpmcrypt /etc/init.d'"
+colored_output "yellow" "Debian: '# chmod 550 /etc/init.d/tpmcrypt'"
+colored_output "yellow" "Debian: '# chown root:tpmcrypt /etc/init.d/tpmcrypt'"
+colored_output "yellow" "Debian: '# cp distributions/debian/sbin/mount.tpmcrypt /sbin'"
+colored_output "yellow" "Debian: '# chmod 550 /sbin/mount.tpmcrypt'"
+colored_output "yellow" "Debian: '# chown root:tpmcrypt /sbin/mount.tpmcrypt'"
+colored_output "yellow" "Debian: '# update-rc.d tpmcrypt defaults'"
 
-if [ -x /etc/init.d/keyrona ] ; then
-    /etc/init.d/keyrona restart
+if [ -x /etc/init.d/tpmcrypt ] ; then
+    /etc/init.d/tpmcrypt restart
 fi

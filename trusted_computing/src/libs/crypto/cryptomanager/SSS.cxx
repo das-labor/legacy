@@ -28,7 +28,7 @@
 #include <iostream>
 #include <ConversionPrimitives.hxx>
 #include <stdlib.h>
-#include <KeyronaHelper.hxx>
+#include <TpmCryptHelper.hxx>
 
 //--------------------------------------------------------------------------------
 using namespace algo;

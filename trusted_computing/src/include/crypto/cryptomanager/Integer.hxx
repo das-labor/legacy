@@ -27,7 +27,7 @@
 #include <ByteVector.hxx>
 #include <Streamable.hxx>
 #include <babinstream.hxx>
-#include <KeyronaTPM.hxx>
+#include <TpmCryptTPM.hxx>
 
 // include libgmp C library
 #if defined __cplusplus

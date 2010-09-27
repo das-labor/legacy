@@ -41,7 +41,7 @@ vars.Add( BoolVariable('trousers', 'Set to 0 to use internal microtss', 1) )
 ##################################################################################
 env = Environment(
 	variables = vars,
-	CPPPATH = ['#src/include', '#src/include/utils', '#src/include/crypto/cryptomanager', '#src/include/crypto', '#src/include/keyrona', '.']
+	CPPPATH = ['#src/include', '#src/include/utils', '#src/include/crypto/cryptomanager', '#src/include/crypto', '#src/include/tpmcrypt', '.']
 )
 
 cflags = " -Wall"
@@ -132,7 +132,7 @@ if not env.GetOption('clean'):
 	# Set VERSION string
 	utils.startConfig( 'VERSION' )
 	revision = os.popen( 'svnversion' )
-	utils.addToConfig( '#define VERSION "'+Version+'-r'+revision.read().strip()+'"', comment='/* Current Keyrona version */' )
+	utils.addToConfig( '#define VERSION "'+Version+'-r'+revision.read().strip()+'"', comment='/* Current TpmCrypt version */' )
 	utils.endConfig( 'src/include' ) 
 	
 
@@ -140,7 +140,7 @@ if not env.GetOption('clean'):
 Export( "env" )
 
 ##################################################################################
-# Keyrona
+# TpmCrypt
 SConscript( "src/SConscript" )
 
 # Generate the help text
