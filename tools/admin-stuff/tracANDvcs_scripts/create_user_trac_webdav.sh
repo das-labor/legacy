@@ -112,6 +112,7 @@ Alias /userwebdav/${TRACSHORT} "/srv/WEBDAVs/${TRACSHORT}/"
         AuthType Basic
 	AuthName "${TRACSHORT} Bazaar Repository"
         AuthUserFile ${TRACBASEDIR}/${TRACSHORT}/conf/htpasswd.labor
+php_admin_value engine Off
 
         <LimitExcept GET OPTIONS>
                 Require valid-user
