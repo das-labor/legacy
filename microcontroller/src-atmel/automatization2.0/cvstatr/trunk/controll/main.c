@@ -3,6 +3,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
+#include <avr/wdt.h>
 
 #include "config.h"
 
@@ -13,6 +14,7 @@
 #include "can/lap.h"
 #include "i2c_temp.h"
 #include "temp_regler.h"
+#include "temp_read.h"
 
 // int regler_tick = true
 
@@ -60,8 +62,9 @@ void init(void)
 	read_can_addr();
 	//turn on interrupts
 	sei();
+	wdt_enable(5); // 500ms
 }
-	 
+
 int main(void)
 {
 	//system initialization
@@ -77,6 +80,7 @@ int main(void)
 			temp_sensor_read();
 			tickscounter = 0;
 		}
+		wdt_reset();
 	}
 	return 1;
 }
