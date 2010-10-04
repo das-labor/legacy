@@ -4,7 +4,15 @@
 #include "lcd_hardware.h"
 #include "../include/icon.h"
 
-uint8_t lsl_table[] =  {(1<<0), (1<<1), (1<<2), (1<<3), (1<<4), (1<<5), (1<<6), (1<<7)};
+#ifdef HW_REV_2
+	#define DATABUS_REVERSED
+#endif
+
+#ifdef DATABUS_REVERSED
+	uint8_t lsl_table[] =  {(1<<7), (1<<6), (1<<5), (1<<4), (1<<3), (1<<2), (1<<1), (1<<0)};
+#else
+	uint8_t lsl_table[] =  {(1<<0), (1<<1), (1<<2), (1<<3), (1<<4), (1<<5), (1<<6), (1<<7)};
+#endif
 //uint8_t nlsl_table[] = {(uint8_t)~(1<<0),(uint8_t)~(1<<1),(uint8_t)~(1<<2),(uint8_t)~(1<<3),(uint8_t)~(1<<4),(uint8_t)~(1<<5),(uint8_t)~(1<<6),(uint8_t)~(1<<7)};
 
 
@@ -39,8 +47,6 @@ void g_clear_screen(void) {
 extern uint8_t laborlogo[];
 
 
-
-
 void g_copy_logo(void * logo, uint8_t x_bytes, uint8_t y_size, uint16_t xc, uint16_t yc){
 	uint8_t x,y;
 	
@@ -51,7 +57,18 @@ void g_copy_logo(void * logo, uint8_t x_bytes, uint8_t y_size, uint16_t xc, uint
 			pixmap[(X_SIZE/INTERFACE_BITS)*(y+yc) + (x+xc)*(8/INTERFACE_BITS) + 1] = pgm_read_byte(logo++);
 #     endif
 #     if INTERFACE_BITS==8
-			pixmap[(X_SIZE/INTERFACE_BITS)*(y+yc) + (x+xc)*(8/INTERFACE_BITS)] = pgm_read_byte(logo++);
+#     	ifdef DATABUS_REVERSED
+				uint8_t d;
+				d = pgm_read_byte(logo++);
+				d = (d<<4) | (d>>4);
+				d = ((d & 0xCC) >>2) | ((d & 0x33)<<2);
+				d = ((d & 0xAA) >>1) | ((d & 0x55)<<1);
+				
+				pixmap[(X_SIZE/INTERFACE_BITS)*(y+yc) + (x+xc)*(8/INTERFACE_BITS)] = d; 
+
+#				else
+				pixmap[(X_SIZE/INTERFACE_BITS)*(y+yc) + (x+xc)*(8/INTERFACE_BITS)] = pgm_read_byte(logo++);
+#				endif
 #     endif
 		}
 	}

@@ -4,22 +4,44 @@
 #include "lcd_hardware.h"
 
 
-#define PORT_CONTROL PORTD
-#define DDR_CONTROL DDRD
-
-
-#define BIT_DISPLAY_ON PD2
-#define BIT_LP PD3
-#define BIT_FLM PD4
-#define BIT_XCK_ENABLE PD5
-
-#define DDR_M DDRE
-#define PORT_M PORTE
-#define BIT_M PE2
-
-#define DDR_POWER DDRE
-#define PORT_POWER PORTE
-#define BIT_POWER PE0
+#ifdef HW_REV_2
+	#define PORT_CONTROL PORTD
+	#define DDR_CONTROL DDRD
+	
+	#define BIT_LP PD2
+	#define BIT_FLM PD3
+	#define BIT_XCK_ENABLE PD5
+	
+	#define DDR_DISPLAY_ON DDRE
+	#define PORT_DISPLAY_ON PORTE
+	#define BIT_DISPLAY_ON PE2
+	
+	#define DDR_M DDRD
+	#define PORT_M PORTD
+	#define BIT_M PD4
+	
+	#define DDR_POWER DDRE
+	#define PORT_POWER PORTE
+	#define BIT_POWER PE0
+#else
+	#define PORT_CONTROL PORTD
+	#define DDR_CONTROL DDRD
+	
+	#define DDR_DISPLAY_ON DDRD
+	#define PORT_DISPLAY_ON PORTD
+	#define BIT_DISPLAY_ON PD2
+	#define BIT_LP PD3
+	#define BIT_FLM PD4
+	#define BIT_XCK_ENABLE PD5
+	
+	#define DDR_M DDRE
+	#define PORT_M PORTE
+	#define BIT_M PE2
+	
+	#define DDR_POWER DDRE
+	#define PORT_POWER PORTE
+	#define BIT_POWER PE0
+#endif
 
 
 #define FRAME_RATE 75 //in Hz
@@ -28,7 +50,9 @@
 void init_lcd_hardware() {
 	MCUCR = _BV(SRE) | _BV(ISC01); //xram on	
 
-	DDR_CONTROL |= _BV(BIT_DISPLAY_ON) |_BV(BIT_LP) |_BV(BIT_FLM) |_BV(BIT_XCK_ENABLE) ;
+	DDR_CONTROL |= _BV(BIT_LP) |_BV(BIT_FLM) |_BV(BIT_XCK_ENABLE) ;
+	
+	DDR_DISPLAY_ON |= _BV(BIT_DISPLAY_ON);
 	
 	//power off
 	PORT_POWER |= _BV(BIT_POWER);
@@ -44,7 +68,7 @@ void init_lcd_hardware() {
 }
 
 void lcd_on() {
-	PORT_CONTROL |= _BV(BIT_DISPLAY_ON);
+	PORT_DISPLAY_ON |= _BV(BIT_DISPLAY_ON);
 	PORT_POWER &= ~_BV(BIT_POWER);
 }
 
