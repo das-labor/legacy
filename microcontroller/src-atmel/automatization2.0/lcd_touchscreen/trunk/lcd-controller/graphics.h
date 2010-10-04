@@ -11,6 +11,7 @@
 
 #include "fonts/font.h"
 
+void g_draw_pixel(uint16_t x, uint16_t y);
 void g_draw_horizontal_line(unsigned short x, unsigned short y, unsigned short length);
 void g_draw_vertical_line(unsigned short x, unsigned short y, unsigned short length);
 void g_draw_line(unsigned short x, unsigned short y, unsigned short x1, unsigned short y1);

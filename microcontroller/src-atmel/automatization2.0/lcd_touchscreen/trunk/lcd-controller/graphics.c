@@ -396,3 +396,7 @@ void g_fill_circle(uint16_t x, uint16_t y, uint8_t r) {
 		}
 	}
 }
+
+void g_draw_pixel(uint16_t x, uint16_t y) {	
+	lcd_graphics_plot_pixel(x, y, draw_color);
+}
