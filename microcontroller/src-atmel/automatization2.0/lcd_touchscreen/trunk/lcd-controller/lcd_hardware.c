@@ -1,48 +1,12 @@
 #include <avr/io.h>
 
 #include <avr/interrupt.h>
+
+//define BIG DISPLAY in here
+#include "../include/personal_config.h"
+#include "config.h"
+
 #include "lcd_hardware.h"
-
-
-#ifdef HW_REV_2
-	#define PORT_CONTROL PORTD
-	#define DDR_CONTROL DDRD
-	
-	#define BIT_LP PD2
-	#define BIT_FLM PD3
-	#define BIT_XCK_ENABLE PD5
-	
-	#define DDR_DISPLAY_ON DDRE
-	#define PORT_DISPLAY_ON PORTE
-	#define BIT_DISPLAY_ON PE2
-	
-	#define DDR_M DDRD
-	#define PORT_M PORTD
-	#define BIT_M PD4
-	
-	#define DDR_POWER DDRE
-	#define PORT_POWER PORTE
-	#define BIT_POWER PE0
-#else
-	#define PORT_CONTROL PORTD
-	#define DDR_CONTROL DDRD
-	
-	#define DDR_DISPLAY_ON DDRD
-	#define PORT_DISPLAY_ON PORTD
-	#define BIT_DISPLAY_ON PD2
-	#define BIT_LP PD3
-	#define BIT_FLM PD4
-	#define BIT_XCK_ENABLE PD5
-	
-	#define DDR_M DDRE
-	#define PORT_M PORTE
-	#define BIT_M PE2
-	
-	#define DDR_POWER DDRE
-	#define PORT_POWER PORTE
-	#define BIT_POWER PE0
-#endif
-
 
 #define FRAME_RATE 75 //in Hz
 

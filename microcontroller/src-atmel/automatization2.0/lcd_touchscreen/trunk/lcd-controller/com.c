@@ -125,6 +125,13 @@ void handle_com() {
 					g_draw_icon(x, y, (icon_t*)buf);
 					
 				}
+			case DC_DRAW_PIXEL:
+				{
+					uint16_t x,y;
+					read_bytes(2, &x);
+					read_bytes(2, &y);
+					g_draw_pixel(x,y);	
+				}
 				break;
 		}	
 	}

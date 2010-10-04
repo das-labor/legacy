@@ -1,12 +1,12 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 
+//define BIG DISPLAY in here
+#include "../include/personal_config.h"
+#include "config.h"
+
 #include "lcd_hardware.h"
 #include "../include/icon.h"
-
-#ifdef HW_REV_2
-	#define DATABUS_REVERSED
-#endif
 
 #ifdef DATABUS_REVERSED
 	uint8_t lsl_table[] =  {(1<<7), (1<<6), (1<<5), (1<<4), (1<<3), (1<<2), (1<<1), (1<<0)};
