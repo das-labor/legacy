@@ -1,6 +1,10 @@
 
 DEFS = -DF_CPU=16000000l
-OBJ = main.o dc_com.o adc.o touchscreen.o gui.o calibrate_touch.o can/spi.o can/can.o can_handler.o gui_container.o list.o icons/room_icon.o icons/main_icon.o icons/escape_icon.o rectangle.o gui_button.o menu_browser.o main_window.o backlight.o
+OBJ = main.o dc_com.o adc.o backlight.o touchscreen.o \
+      menu_browser.o main_window.o calibrate_touch.o \
+      can/spi.o can/can.o can_handler.o \
+      gui_lib/gui.o  gui_lib/rectangle.o gui_lib/gui_container.o gui_lib/list.o gui/gui_button.o \
+      icons/room_icon.o icons/main_icon.o icons/escape_icon.o
 
 
 # Default values

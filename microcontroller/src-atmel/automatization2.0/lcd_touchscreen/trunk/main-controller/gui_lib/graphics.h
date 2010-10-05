@@ -1,8 +1,7 @@
 #ifndef _H_DC_COM
 #define _H_DC_COM
 
-#include "../include/dc_commands.h"
-#include "../include/icon.h"
+#include "../../include/icon.h"
 #include "rectangle.h"
 
 
