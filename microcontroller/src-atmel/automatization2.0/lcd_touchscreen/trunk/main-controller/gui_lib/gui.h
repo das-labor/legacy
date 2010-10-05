@@ -10,7 +10,7 @@
 
 #include "rectangle.h"
 #include "list.h"
-#include "dc_com.h"
+#include "graphics.h"
 
 //needed for touchscreen ///////////////////////////////////////////////////////
 typedef struct{

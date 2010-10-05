@@ -7,10 +7,10 @@
 #include "can/spi.h"
 #include "can_handler.h"
 
-#include "dc_com.h"
+//#include "dc_com.h"
 #include "touchscreen.h"
 #include "calibrate_touch.h"
-#include "gui.h"
+#include "gui_lib/gui.h"
 #include "main_window.h"
 #include "backlight.h"
 #include "adc.h"
