@@ -1,7 +1,7 @@
 
 #include <stdint.h>
 #include "dc_com.h"
-#include "gui.h"
+#include "gui_lib/gui.h"
 #include "touchscreen.h"
 #include "menu_browser.h"
 

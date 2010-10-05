@@ -6,8 +6,10 @@
 #include <stdint.h>
 #include <util/delay.h>
 #include "gui.h"
-#include "touchscreen.h"
-#include "dc_com.h"
+//#include "touchscreen.h"
+//#include "dc_com.h"
+//#include "can/can.h"
+//#include "can/lap.h"
 
 #define TYPE_BUTTON 1 
 #define TYPE_SLIDER 2
@@ -18,8 +20,6 @@
  */
 void self_destruct(void* self, uint16_t x, uint16_t y);
 void self_slider(void* self, uint16_t x, uint16_t y);
-#include "can/can.h"
-#include "can/lap.h"
 
 /*
 typedef struct {
