@@ -9,7 +9,9 @@
 #include "../include/personal_config.h"
 
 #include "config.h"
+#include "adc.h"
 
+#if 0
 
 uint8_t analog_reference = 1;
 
@@ -65,13 +67,6 @@ uint32_t variance(uint16_t val, uint16_t * data, uint8_t data_size) {
 	for (i = 0; i < data_size; i++) {
 		int16_t diff = data[i] - val;
 		if (diff < 0) diff = - diff;
-		/*
-		if (diff > 8) {
-			var += 8;
-		} else {
-			var += diff;
-		}
-		*/
 		var += my_sqrt(diff);
 		//var += (data[i] - val) * (data[i] - val);
 	}
@@ -187,12 +182,18 @@ pixel read_touch_raw() {
 	return p;
 }
 
+#endif
 
 calibration_values_t calibration_values;
+
+pixel read_touch_raw() {
+	return touchscreen_position_raw;
+}
 
 pixel read_touch_screen_coordinates() {
 	pixel p;
 	p = read_touch_raw();
+
 
 	if (p.x == -1) {
 		return p;
