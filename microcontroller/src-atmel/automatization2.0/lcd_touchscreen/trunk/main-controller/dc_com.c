@@ -132,3 +132,9 @@ void g_draw_icon(uint16_t x, uint16_t y, icon_t * i) {
 	transmit_to_dc_raw(&y      , 2);
 	transmit_to_dc_data(i      , i->size);
 }
+
+void g_draw_pixel(uint16_t x, uint16_t y) {	
+	dc_byte_put(DC_DRAW_PIXEL);
+	transmit_to_dc_raw(&x      , 2);
+	transmit_to_dc_raw(&y      , 2);
+}

@@ -13,6 +13,7 @@
 #include "gui.h"
 #include "main_window.h"
 #include "backlight.h"
+#include "adc.h"
 
 
 volatile uint8_t ticks_in_ms;
@@ -23,10 +24,8 @@ ISR (TIMER0_COMP_vect){
 	ticks++;
 	if(ticks == 5){
 		ticks = 0;
-		backlight();		
+		//backlight();		
 	}
-	
-	
 }
 
 void init_timer(){
@@ -38,8 +37,8 @@ void init_timer(){
 
 void init() {
 	//LED Backlight on
-	DDRF |= _BV(PF4);
-	PORTF |= _BV(PF4);
+	//DDRF |= _BV(PF4);
+	//PORTF |= _BV(PF4);
 
 	// SS als Ausgang sonst geht SPI nicht
 	DDRB |= _BV(PB0);
@@ -54,11 +53,36 @@ void init() {
 
 
 
+void test(){
+	pixel p;
+	static uint16_t x;
+	uint16_t y;
+
+	/*
+	p = read_touch_raw();
+	y = p.y;
+	y -= 512;
+	if(y>239) y = 239;
+	g_draw_pixel(x, y);
+	x++;
+	if(x == 320) x = 0;
+	*/
+	
+	//p = read_touch_screen_coordinates();
+	
+	//g_draw_cross(p.x, p.y);
+}
+
+
+extern icon_t room_icon;
+
 int main(void) {
 	init();
 	init_dc_com();
 	init_timer();
 	init_backlight();
+	
+	init_adc();
 	
 	sei();
 
@@ -78,15 +102,12 @@ int main(void) {
 
 	init_main_window();
 	
-	DDRB |= (1<<PB5);
-
-	uint8_t foo;
 	while (1) {
 		if(ticks_in_ms >= 10){
 			cli();
 			ticks_in_ms -= 10;
 			sei();
-						
+					
 			handle_touchscreen();
 			can_handler();
 		}

@@ -1,9 +1,11 @@
 
 #include <avr/io.h>
+#include "touchscreen.h"
+#include "adc.h"
 
 uint8_t backlight_brightnes = 32;
 
-#define I_CONST 16l
+#define I_CONST 8192l
 #define P_CONST 16l 
 
 #define PWM_MAX 1024l
@@ -13,7 +15,7 @@ void backlight(){
 	static int32_t i = 0;
 
 	soll = backlight_brightnes * 4;
-	ist = analogRead(5);
+	ist = adc_backlight;
 				
 	diff = soll-ist;
 	
@@ -34,6 +36,14 @@ void backlight(){
 	
 		
 	OCR1A = out;
+
+	/*	
+	static uint8_t foo;
+	if(foo--==0){
+		foo = 200;
+		backlight_brightnes ++;
+	}
+	*/
 }
 
 
