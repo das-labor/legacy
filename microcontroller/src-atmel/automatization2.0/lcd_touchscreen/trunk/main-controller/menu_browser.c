@@ -1,9 +1,8 @@
 #include <stdint.h>
 #include <util/delay.h>
 #include <string.h>
-#include "gui.h"
+#include "gui_lib/gui.h"
 #include "touchscreen.h"
-#include "dc_com.h"
 #include "menu_browser.h"
 
 

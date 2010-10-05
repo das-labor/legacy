@@ -5,7 +5,6 @@
 
 #include <stdlib.h>
 #include <stdint.h>
-#include "dc_com.h"
 #include "gui.h"
 #include "list.h"
 
