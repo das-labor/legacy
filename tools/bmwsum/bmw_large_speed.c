@@ -104,7 +104,7 @@
 #define R64_6(x)    (ROTR64((x), 21))
 #define R64_7(x)    (ROTR64((x), 11))
 
-#include "f1_autogen_large.c"
+#include "f1_autogen_large.i"
 
 static inline
 void bmw_large_f0(uint64_t* q, uint64_t* h, const uint64_t* m){
