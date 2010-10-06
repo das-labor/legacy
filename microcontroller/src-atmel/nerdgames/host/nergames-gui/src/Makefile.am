@@ -11,7 +11,8 @@ nerdgames_gui_SOURCES = \
 	main.c \
 	support.c support.h \
 	interface.c interface.h \
-	callbacks.c callbacks.h
+	callbacks.c callbacks.h \
+	votestuff.c votestuff.h
 
 nerdgames_gui_LDADD = @PACKAGE_LIBS@ $(INTLLIBS)
 
