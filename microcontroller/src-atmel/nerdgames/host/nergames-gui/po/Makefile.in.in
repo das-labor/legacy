@@ -16,7 +16,7 @@ GETTEXT_PACKAGE = @GETTEXT_PACKAGE@
 PACKAGE = @PACKAGE@
 VERSION = @VERSION@
 
-SHELL = /bin/sh
+SHELL = @SHELL@
 @SET_MAKE@
 
 srcdir = @srcdir@
@@ -56,7 +56,7 @@ COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) $(XCFLAGS)
 SOURCES = 
 POFILES = @POFILES@
 GMOFILES = @GMOFILES@
-DISTFILES = ChangeLog Makefile.in.in POTFILES.in $(GETTEXT_PACKAGE).pot \
+DISTFILES = LINGUAS ChangeLog Makefile.in.in POTFILES.in $(GETTEXT_PACKAGE).pot \
 $(POFILES) $(GMOFILES) $(SOURCES)
 
 POTFILES = \
@@ -95,6 +95,13 @@ all-no:
 $(srcdir)/$(GETTEXT_PACKAGE).pot: $(POTFILES)
 	$(XGETTEXT) --default-domain=$(GETTEXT_PACKAGE) --directory=$(top_srcdir) \
 	  --add-comments --keyword=_ --keyword=N_ \
+	  --keyword=C_:1c,2 \
+	  --keyword=NC_:1c,2 \
+	  --keyword=g_dngettext:2,3 \
+	  --flag=N_:1:pass-c-format \
+	  --flag=C_:2:pass-c-format \
+	  --flag=NC_:2:pass-c-format \
+	  --flag=g_dngettext:2:pass-c-format \
           --flag=g_strdup_printf:1:c-format \
           --flag=g_string_printf:2:c-format \
           --flag=g_string_append_printf:2:c-format \
@@ -263,8 +270,7 @@ POTFILES: POTFILES.in
 
 Makefile: Makefile.in.in ../config.status POTFILES
 	cd .. \
-	  && CONFIG_FILES=$(subdir)/$@.in CONFIG_HEADERS= \
-	       $(SHELL) ./config.status
+	  && $(SHELL) ./config.status $(subdir)/$@.in
 
 # Tell versions [3.59,3.63) of GNU make not to export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
