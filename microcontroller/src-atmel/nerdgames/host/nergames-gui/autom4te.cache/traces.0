@@ -9,9 +9,12 @@ m4_ifvaln([$4], [else $4])dnl
 echo "$as_me: failed input was:" >&AS_MESSAGE_LOG_FD
 sed 's/^/| /' conftest.foo >&AS_MESSAGE_LOG_FD
 fi])
-m4trace:/usr/share/aclocal/pkg.m4:26: -1- AC_DEFUN([PKG_PROG_PKG_CONFIG], [m4_pattern_forbid([^_?PKG_[A-Z_]+$])
+m4trace:/usr/share/aclocal/pkg.m4:27: -1- AC_DEFUN([PKG_PROG_PKG_CONFIG], [m4_pattern_forbid([^_?PKG_[A-Z_]+$])
 m4_pattern_allow([^PKG_CONFIG(_PATH)?$])
-AC_ARG_VAR([PKG_CONFIG], [path to pkg-config utility])dnl
+AC_ARG_VAR([PKG_CONFIG], [path to pkg-config utility])
+AC_ARG_VAR([PKG_CONFIG_PATH], [directories to add to pkg-config's search path])
+AC_ARG_VAR([PKG_CONFIG_LIBDIR], [path overriding pkg-config's built-in search path])
+
 if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
 	AC_PATH_TOOL([PKG_CONFIG], [pkg-config])
 fi
@@ -24,13 +27,12 @@ if test -n "$PKG_CONFIG"; then
 		AC_MSG_RESULT([no])
 		PKG_CONFIG=""
 	fi
-		
 fi[]dnl
 ])
-m4trace:/usr/share/aclocal/pkg.m4:56: -1- AC_DEFUN([PKG_CHECK_EXISTS], [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
+m4trace:/usr/share/aclocal/pkg.m4:59: -1- AC_DEFUN([PKG_CHECK_EXISTS], [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
 if test -n "$PKG_CONFIG" && \
     AC_RUN_LOG([$PKG_CONFIG --exists --print-errors "$1"]); then
-  m4_ifval([$2], [$2], [:])
+  m4_default([$2], [:])
 m4_ifvaln([$3], [else
   $3])dnl
 fi])
@@ -56,16 +58,17 @@ and $1[]_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.])
 
 if test $pkg_failed = yes; then
+   	AC_MSG_RESULT([no])
         _PKG_SHORT_ERRORS_SUPPORTED
         if test $_pkg_short_errors_supported = yes; then
-	        $1[]_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "$2"`
+	        $1[]_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "$2" 2>&1`
         else 
-	        $1[]_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "$2"`
+	        $1[]_PKG_ERRORS=`$PKG_CONFIG --print-errors "$2" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$$1[]_PKG_ERRORS" >&AS_MESSAGE_LOG_FD
 
-	ifelse([$4], , [AC_MSG_ERROR(dnl
+	m4_default([$4], [AC_MSG_ERROR(
 [Package requirements ($2) were not met:
 
 $$1_PKG_ERRORS
@@ -73,37 +76,36 @@ $$1_PKG_ERRORS
 Consider adjusting the PKG_CONFIG_PATH environment variable if you
 installed software in a non-standard prefix.
 
-_PKG_TEXT
-])],
-		[AC_MSG_RESULT([no])
-                $4])
+_PKG_TEXT])[]dnl
+        ])
 elif test $pkg_failed = untried; then
-	ifelse([$4], , [AC_MSG_FAILURE(dnl
+     	AC_MSG_RESULT([no])
+	m4_default([$4], [AC_MSG_FAILURE(
 [The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
 path to pkg-config.
 
 _PKG_TEXT
 
-To get pkg-config, see <http://pkg-config.freedesktop.org/>.])],
-		[$4])
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.])dnl
+        ])
 else
 	$1[]_CFLAGS=$pkg_cv_[]$1[]_CFLAGS
 	$1[]_LIBS=$pkg_cv_[]$1[]_LIBS
         AC_MSG_RESULT([yes])
-	ifelse([$3], , :, [$3])
+	$3
 fi[]dnl
 ])
 m4trace:/usr/share/aclocal-1.10/amversion.m4:14: -1- AC_DEFUN([AM_AUTOMAKE_VERSION], [am__api_version='1.10'
 dnl Some users find AM_AUTOMAKE_VERSION and mistake it for a way to
 dnl require some minimum version.  Point them to the right macro.
-m4_if([$1], [1.10.1], [],
+m4_if([$1], [1.10.3], [],
       [AC_FATAL([Do not call $0, use AM_INIT_AUTOMAKE([$1]).])])dnl
 ])
-m4trace:/usr/share/aclocal-1.10/amversion.m4:33: -1- AC_DEFUN([AM_SET_CURRENT_AUTOMAKE_VERSION], [AM_AUTOMAKE_VERSION([1.10.1])dnl
+m4trace:/usr/share/aclocal-1.10/amversion.m4:33: -1- AC_DEFUN([AM_SET_CURRENT_AUTOMAKE_VERSION], [AM_AUTOMAKE_VERSION([1.10.3])dnl
 m4_ifndef([AC_AUTOCONF_VERSION],
   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
-_AM_AUTOCONF_VERSION(AC_AUTOCONF_VERSION)])
+_AM_AUTOCONF_VERSION(m4_defn([AC_AUTOCONF_VERSION]))])
 m4trace:/usr/share/aclocal-1.10/auxdir.m4:47: -1- AC_DEFUN([AM_AUX_DIR_EXPAND], [dnl Rely on autoconf to set up CDPATH properly.
 AC_PREREQ([2.50])dnl
 # expand $ac_aux_dir to an absolute path
@@ -187,6 +189,16 @@ AC_CACHE_CHECK([dependency style of $depcc],
   if test "$am_compiler_list" = ""; then
      am_compiler_list=`sed -n ['s/^#*\([a-zA-Z0-9]*\))$/\1/p'] < ./depcomp`
   fi
+  am__universal=false
+  m4_case([$1], [CC],
+    [case " $depcc " in #(
+     *\ -arch\ *\ -arch\ *) am__universal=true ;;
+     esac],
+    [CXX],
+    [case " $depcc " in #(
+     *\ -arch\ *\ -arch\ *) am__universal=true ;;
+     esac])
+
   for depmode in $am_compiler_list; do
     # Setup a source with many dependencies, because some compilers
     # like to wrap large dependency lists on column 80 (with \), and
@@ -204,7 +216,17 @@ AC_CACHE_CHECK([dependency style of $depcc],
     done
     echo "${am__include} ${am__quote}sub/conftest.Po${am__quote}" > confmf
 
+    # We check with `-c' and `-o' for the sake of the "dashmstdout"
+    # mode.  It turns out that the SunPro C++ compiler does not properly
+    # handle `-M -o', and we need to detect this.  Also, some Intel
+    # versions had trouble with output in subdirs
+    am__obj=sub/conftest.${OBJEXT-o}
+    am__minus_obj="-o $am__obj"
     case $depmode in
+    gcc)
+      # This depmode causes a compiler race in universal mode.
+      test "$am__universal" = false || continue
+      ;;
     nosideeffect)
       # after this tag, mechanisms are not by side-effect, so they'll
       # only be used when explicitly requested
@@ -214,19 +236,23 @@ AC_CACHE_CHECK([dependency style of $depcc],
 	break
       fi
       ;;
+    msvisualcpp | msvcmsys)
+      # This compiler won't grok `-c -o', but also, the minuso test has
+      # not run yet.  These depmodes are late enough in the game, and
+      # so weak that their functioning should not be impacted.
+      am__obj=conftest.${OBJEXT-o}
+      am__minus_obj=
+      ;;
     none) break ;;
     esac
-    # We check with `-c' and `-o' for the sake of the "dashmstdout"
-    # mode.  It turns out that the SunPro C++ compiler does not properly
-    # handle `-M -o', and we need to detect this.
     if depmode=$depmode \
-       source=sub/conftest.c object=sub/conftest.${OBJEXT-o} \
+       source=sub/conftest.c object=$am__obj \
        depfile=sub/conftest.Po tmpdepfile=sub/conftest.TPo \
-       $SHELL ./depcomp $depcc -c -o sub/conftest.${OBJEXT-o} sub/conftest.c \
+       $SHELL ./depcomp $depcc -c $am__minus_obj sub/conftest.c \
          >/dev/null 2>conftest.err &&
        grep sub/conftst1.h sub/conftest.Po > /dev/null 2>&1 &&
        grep sub/conftst6.h sub/conftest.Po > /dev/null 2>&1 &&
-       grep sub/conftest.${OBJEXT-o} sub/conftest.Po > /dev/null 2>&1 &&
+       grep $am__obj sub/conftest.Po > /dev/null 2>&1 &&
        ${MAKE-make} -s -f confmf > /dev/null 2>&1; then
       # icc doesn't choke on unknown options, it will just issue warnings
       # or remarks (even with -Werror).  So we grep stderr for any message
@@ -254,10 +280,10 @@ AM_CONDITIONAL([am__fastdep$1], [
   test "x$enable_dependency_tracking" != xno \
   && test "$am_cv_$1_dependencies_compiler_type" = gcc3])
 ])
-m4trace:/usr/share/aclocal-1.10/depend.m4:139: -1- AC_DEFUN([AM_SET_DEPDIR], [AC_REQUIRE([AM_SET_LEADING_DOT])dnl
+m4trace:/usr/share/aclocal-1.10/depend.m4:163: -1- AC_DEFUN([AM_SET_DEPDIR], [AC_REQUIRE([AM_SET_LEADING_DOT])dnl
 AC_SUBST([DEPDIR], ["${am__leading_dot}deps"])dnl
 ])
-m4trace:/usr/share/aclocal-1.10/depend.m4:147: -1- AC_DEFUN([AM_DEP_TRACK], [AC_ARG_ENABLE(dependency-tracking,
+m4trace:/usr/share/aclocal-1.10/depend.m4:171: -1- AC_DEFUN([AM_DEP_TRACK], [AC_ARG_ENABLE(dependency-tracking,
 [  --disable-dependency-tracking  speeds up one-time build
   --enable-dependency-tracking   do not reject slow dependency extractors])
 if test "x$enable_dependency_tracking" != xno; then
@@ -268,47 +294,58 @@ AM_CONDITIONAL([AMDEP], [test "x$enable_dependency_tracking" != xno])
 AC_SUBST([AMDEPBACKSLASH])dnl
 _AM_SUBST_NOTMAKE([AMDEPBACKSLASH])dnl
 ])
-m4trace:/usr/share/aclocal-1.10/depout.m4:14: -1- AC_DEFUN([_AM_OUTPUT_DEPENDENCY_COMMANDS], [for mf in $CONFIG_FILES; do
-  # Strip MF so we end up with the name of the file.
-  mf=`echo "$mf" | sed -e 's/:.*$//'`
-  # Check whether this is an Automake generated Makefile or not.
-  # We used to match only the files named `Makefile.in', but
-  # some people rename them; so instead we look at the file content.
-  # Grep'ing the first line is not enough: some people post-process
-  # each Makefile.in and add a new line on top of each file to say so.
-  # Grep'ing the whole file is not good either: AIX grep has a line
-  # limit of 2048, but all sed's we know have understand at least 4000.
-  if sed -n 's,^#.*generated by automake.*,X,p' "$mf" | grep X >/dev/null 2>&1; then
-    dirpart=`AS_DIRNAME("$mf")`
-  else
-    continue
-  fi
-  # Extract the definition of DEPDIR, am__include, and am__quote
-  # from the Makefile without running `make'.
-  DEPDIR=`sed -n 's/^DEPDIR = //p' < "$mf"`
-  test -z "$DEPDIR" && continue
-  am__include=`sed -n 's/^am__include = //p' < "$mf"`
-  test -z "am__include" && continue
-  am__quote=`sed -n 's/^am__quote = //p' < "$mf"`
-  # When using ansi2knr, U may be empty or an underscore; expand it
-  U=`sed -n 's/^U = //p' < "$mf"`
-  # Find all dependency output files, they are included files with
-  # $(DEPDIR) in their names.  We invoke sed twice because it is the
-  # simplest approach to changing $(DEPDIR) to its actual value in the
-  # expansion.
-  for file in `sed -n "
-    s/^$am__include $am__quote\(.*(DEPDIR).*\)$am__quote"'$/\1/p' <"$mf" | \
-       sed -e 's/\$(DEPDIR)/'"$DEPDIR"'/g' -e 's/\$U/'"$U"'/g'`; do
-    # Make sure the directory exists.
-    test -f "$dirpart/$file" && continue
-    fdir=`AS_DIRNAME(["$file"])`
-    AS_MKDIR_P([$dirpart/$fdir])
-    # echo "creating $dirpart/$file"
-    echo '# dummy' > "$dirpart/$file"
+m4trace:/usr/share/aclocal-1.10/depout.m4:14: -1- AC_DEFUN([_AM_OUTPUT_DEPENDENCY_COMMANDS], [{
+  # Autoconf 2.62 quotes --file arguments for eval, but not when files
+  # are listed without --file.  Let's play safe and only enable the eval
+  # if we detect the quoting.
+  case $CONFIG_FILES in
+  *\'*) eval set x "$CONFIG_FILES" ;;
+  *)   set x $CONFIG_FILES ;;
+  esac
+  shift
+  for mf
+  do
+    # Strip MF so we end up with the name of the file.
+    mf=`echo "$mf" | sed -e 's/:.*$//'`
+    # Check whether this is an Automake generated Makefile or not.
+    # We used to match only the files named `Makefile.in', but
+    # some people rename them; so instead we look at the file content.
+    # Grep'ing the first line is not enough: some people post-process
+    # each Makefile.in and add a new line on top of each file to say so.
+    # Grep'ing the whole file is not good either: AIX grep has a line
+    # limit of 2048, but all sed's we know have understand at least 4000.
+    if sed -n 's,^#.*generated by automake.*,X,p' "$mf" | grep X >/dev/null 2>&1; then
+      dirpart=`AS_DIRNAME("$mf")`
+    else
+      continue
+    fi
+    # Extract the definition of DEPDIR, am__include, and am__quote
+    # from the Makefile without running `make'.
+    DEPDIR=`sed -n 's/^DEPDIR = //p' < "$mf"`
+    test -z "$DEPDIR" && continue
+    am__include=`sed -n 's/^am__include = //p' < "$mf"`
+    test -z "am__include" && continue
+    am__quote=`sed -n 's/^am__quote = //p' < "$mf"`
+    # When using ansi2knr, U may be empty or an underscore; expand it
+    U=`sed -n 's/^U = //p' < "$mf"`
+    # Find all dependency output files, they are included files with
+    # $(DEPDIR) in their names.  We invoke sed twice because it is the
+    # simplest approach to changing $(DEPDIR) to its actual value in the
+    # expansion.
+    for file in `sed -n "
+      s/^$am__include $am__quote\(.*(DEPDIR).*\)$am__quote"'$/\1/p' <"$mf" | \
+	 sed -e 's/\$(DEPDIR)/'"$DEPDIR"'/g' -e 's/\$U/'"$U"'/g'`; do
+      # Make sure the directory exists.
+      test -f "$dirpart/$file" && continue
+      fdir=`AS_DIRNAME(["$file"])`
+      AS_MKDIR_P([$dirpart/$fdir])
+      # echo "creating $dirpart/$file"
+      echo '# dummy' > "$dirpart/$file"
+    done
   done
-done
+}
 ])
-m4trace:/usr/share/aclocal-1.10/depout.m4:64: -1- AC_DEFUN([AM_OUTPUT_DEPENDENCY_COMMANDS], [AC_CONFIG_COMMANDS([depfiles],
+m4trace:/usr/share/aclocal-1.10/depout.m4:75: -1- AC_DEFUN([AM_OUTPUT_DEPENDENCY_COMMANDS], [AC_CONFIG_COMMANDS([depfiles],
      [test x"$AMDEP_TRUE" != x"" || _AM_OUTPUT_DEPENDENCY_COMMANDS],
      [AMDEP_TRUE="$AMDEP_TRUE" ac_aux_dir="$ac_aux_dir"])
 ])
@@ -367,8 +404,8 @@ AM_MISSING_PROG(AUTOCONF, autoconf)
 AM_MISSING_PROG(AUTOMAKE, automake-${am__api_version})
 AM_MISSING_PROG(AUTOHEADER, autoheader)
 AM_MISSING_PROG(MAKEINFO, makeinfo)
-AM_PROG_INSTALL_SH
-AM_PROG_INSTALL_STRIP
+AC_REQUIRE([AM_PROG_INSTALL_SH])dnl
+AC_REQUIRE([AM_PROG_INSTALL_STRIP])dnl
 AC_REQUIRE([AM_PROG_MKDIR_P])dnl
 # We need awk for the "check" target.  The system "awk" is bad on
 # some platforms.
@@ -502,7 +539,7 @@ esac
 ])
 m4trace:/usr/share/aclocal-1.10/options.m4:13: -1- AC_DEFUN([_AM_MANGLE_OPTION], [[_AM_OPTION_]m4_bpatsubst($1, [[^a-zA-Z0-9_]], [_])])
 m4trace:/usr/share/aclocal-1.10/options.m4:19: -1- AC_DEFUN([_AM_SET_OPTION], [m4_define(_AM_MANGLE_OPTION([$1]), 1)])
-m4trace:/usr/share/aclocal-1.10/options.m4:25: -1- AC_DEFUN([_AM_SET_OPTIONS], [AC_FOREACH([_AM_Option], [$1], [_AM_SET_OPTION(_AM_Option)])])
+m4trace:/usr/share/aclocal-1.10/options.m4:25: -1- AC_DEFUN([_AM_SET_OPTIONS], [m4_foreach_w([_AM_Option], [$1], [_AM_SET_OPTION(_AM_Option)])])
 m4trace:/usr/share/aclocal-1.10/options.m4:31: -1- AC_DEFUN([_AM_IF_OPTION], [m4_ifset(_AM_MANGLE_OPTION([$1]), [$2], [$3])])
 m4trace:/usr/share/aclocal-1.10/runlog.m4:12: -1- AC_DEFUN([AM_RUN_LOG], [{ echo "$as_me:$LINENO: $1" >&AS_MESSAGE_LOG_FD
    ($1) >&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
@@ -643,6 +680,7 @@ m4trace:configure.in:3: -1- m4_pattern_allow([^PACKAGE_TARNAME$])
 m4trace:configure.in:3: -1- m4_pattern_allow([^PACKAGE_VERSION$])
 m4trace:configure.in:3: -1- m4_pattern_allow([^PACKAGE_STRING$])
 m4trace:configure.in:3: -1- m4_pattern_allow([^PACKAGE_BUGREPORT$])
+m4trace:configure.in:3: -1- m4_pattern_allow([^PACKAGE_URL$])
 m4trace:configure.in:3: -1- m4_pattern_allow([^exec_prefix$])
 m4trace:configure.in:3: -1- m4_pattern_allow([^prefix$])
 m4trace:configure.in:3: -1- m4_pattern_allow([^program_transform_name$])
@@ -670,6 +708,7 @@ m4trace:configure.in:3: -1- m4_pattern_allow([^PACKAGE_TARNAME$])
 m4trace:configure.in:3: -1- m4_pattern_allow([^PACKAGE_VERSION$])
 m4trace:configure.in:3: -1- m4_pattern_allow([^PACKAGE_STRING$])
 m4trace:configure.in:3: -1- m4_pattern_allow([^PACKAGE_BUGREPORT$])
+m4trace:configure.in:3: -1- m4_pattern_allow([^PACKAGE_URL$])
 m4trace:configure.in:3: -1- m4_pattern_allow([^DEFS$])
 m4trace:configure.in:3: -1- m4_pattern_allow([^ECHO_C$])
 m4trace:configure.in:3: -1- m4_pattern_allow([^ECHO_N$])
@@ -681,8 +720,8 @@ m4trace:configure.in:3: -1- m4_pattern_allow([^target_alias$])
 m4trace:configure.in:4: -1- AM_INIT_AUTOMAKE([nergames-gui], [0.1])
 m4trace:configure.in:4: -1- m4_pattern_allow([^AM_[A-Z]+FLAGS$])
 m4trace:configure.in:4: -1- AM_SET_CURRENT_AUTOMAKE_VERSION
-m4trace:configure.in:4: -1- AM_AUTOMAKE_VERSION([1.10.1])
-m4trace:configure.in:4: -1- _AM_AUTOCONF_VERSION([2.61])
+m4trace:configure.in:4: -1- AM_AUTOMAKE_VERSION([1.10.3])
+m4trace:configure.in:4: -1- _AM_AUTOCONF_VERSION([2.65])
 m4trace:configure.in:4: -1- m4_pattern_allow([^INSTALL_PROGRAM$])
 m4trace:configure.in:4: -1- m4_pattern_allow([^INSTALL_SCRIPT$])
 m4trace:configure.in:4: -1- m4_pattern_allow([^INSTALL_DATA$])
@@ -715,6 +754,7 @@ m4trace:configure.in:4: -1- AM_PROG_INSTALL_STRIP
 m4trace:configure.in:4: -1- m4_pattern_allow([^STRIP$])
 m4trace:configure.in:4: -1- m4_pattern_allow([^INSTALL_STRIP_PROGRAM$])
 m4trace:configure.in:4: -1- AM_PROG_MKDIR_P
+m4trace:configure.in:4: -1- m4_pattern_allow([^MKDIR_P$])
 m4trace:configure.in:4: -1- m4_pattern_allow([^mkdir_p$])
 m4trace:configure.in:4: -1- m4_pattern_allow([^AWK$])
 m4trace:configure.in:4: -1- m4_pattern_allow([^SET_MAKE$])
@@ -755,6 +795,9 @@ m4trace:configure.in:6: -1- m4_pattern_allow([^MAINTAINER_MODE_FALSE$])
 m4trace:configure.in:6: -1- _AM_SUBST_NOTMAKE([MAINTAINER_MODE_TRUE])
 m4trace:configure.in:6: -1- _AM_SUBST_NOTMAKE([MAINTAINER_MODE_FALSE])
 m4trace:configure.in:6: -1- m4_pattern_allow([^MAINT$])
+m4trace:configure.in:8: -1- _m4_warn([obsolete], [The macro `AC_ISC_POSIX' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/specific.m4:442: AC_ISC_POSIX is expanded from...
+configure.in:8: the top level])
 m4trace:configure.in:8: -1- m4_pattern_allow([^CC$])
 m4trace:configure.in:8: -1- m4_pattern_allow([^CFLAGS$])
 m4trace:configure.in:8: -1- m4_pattern_allow([^LDFLAGS$])
@@ -842,8 +885,6 @@ m4trace:configure.in:11: -1- m4_pattern_allow([^CPP$])
 m4trace:configure.in:11: -1- m4_pattern_allow([^CPPFLAGS$])
 m4trace:configure.in:11: -1- m4_pattern_allow([^CPP$])
 m4trace:configure.in:11: -1- m4_pattern_allow([^GREP$])
-m4trace:configure.in:11: -1- m4_pattern_allow([^GREP$])
-m4trace:configure.in:11: -1- m4_pattern_allow([^EGREP$])
 m4trace:configure.in:11: -1- m4_pattern_allow([^EGREP$])
 m4trace:configure.in:11: -1- m4_pattern_allow([^STDC_HEADERS$])
 m4trace:configure.in:14: -1- PKG_CHECK_MODULES([PACKAGE], [$pkg_modules])
@@ -851,6 +892,8 @@ m4trace:configure.in:14: -1- PKG_PROG_PKG_CONFIG
 m4trace:configure.in:14: -1- m4_pattern_forbid([^_?PKG_[A-Z_]+$])
 m4trace:configure.in:14: -1- m4_pattern_allow([^PKG_CONFIG(_PATH)?$])
 m4trace:configure.in:14: -1- m4_pattern_allow([^PKG_CONFIG$])
+m4trace:configure.in:14: -1- m4_pattern_allow([^PKG_CONFIG_PATH$])
+m4trace:configure.in:14: -1- m4_pattern_allow([^PKG_CONFIG_LIBDIR$])
 m4trace:configure.in:14: -1- m4_pattern_allow([^PKG_CONFIG$])
 m4trace:configure.in:14: -1- m4_pattern_allow([^PACKAGE_CFLAGS$])
 m4trace:configure.in:14: -1- m4_pattern_allow([^PACKAGE_LIBS$])
@@ -862,11 +905,12 @@ m4trace:configure.in:16: -1- m4_pattern_allow([^PACKAGE_LIBS$])
 m4trace:configure.in:19: -1- m4_pattern_allow([^GETTEXT_PACKAGE$])
 m4trace:configure.in:20: -1- m4_pattern_allow([^GETTEXT_PACKAGE$])
 m4trace:configure.in:24: -1- AM_GLIB_GNU_GETTEXT
+m4trace:configure.in:24: -1- m4_pattern_allow([^HAVE_LOCALE_H$])
 m4trace:configure.in:24: -1- _m4_warn([obsolete], [The macro `AC_TRY_LINK' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2414: AC_TRY_LINK is expanded from...
-../../lib/m4sugar/m4sh.m4:516: AS_IF is expanded from...
-../../lib/autoconf/general.m4:1898: AC_CACHE_VAL is expanded from...
-../../lib/autoconf/general.m4:1911: AC_CACHE_CHECK is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2654: AC_TRY_LINK is expanded from...
+../../lib/m4sugar/m4sh.m4:598: AS_IF is expanded from...
+../../lib/autoconf/general.m4:1998: AC_CACHE_VAL is expanded from...
+../../lib/autoconf/general.m4:2019: AC_CACHE_CHECK is expanded from...
 /usr/share/aclocal/glib-gettext.m4:48: GLIB_LC_MESSAGES is expanded from...
 /usr/share/aclocal/glib-gettext.m4:312: GLIB_GNU_GETTEXT is expanded from...
 /usr/share/aclocal/glib-gettext.m4:412: AM_GLIB_GNU_GETTEXT is expanded from...
@@ -874,29 +918,34 @@ configure.in:24: the top level])
 m4trace:configure.in:24: -1- m4_pattern_allow([^HAVE_LC_MESSAGES$])
 m4trace:configure.in:24: -1- m4_pattern_allow([^USE_NLS$])
 m4trace:configure.in:24: -1- _m4_warn([obsolete], [The macro `AC_TRY_LINK' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2414: AC_TRY_LINK is expanded from...
-../../lib/m4sugar/m4sh.m4:516: AS_IF is expanded from...
-../../lib/autoconf/general.m4:1898: AC_CACHE_VAL is expanded from...
-../../lib/autoconf/general.m4:1911: AC_CACHE_CHECK is expanded from...
-../../lib/m4sugar/m4sh.m4:516: AS_IF is expanded from...
-../../lib/autoconf/headers.m4:87: AC_CHECK_HEADER is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2654: AC_TRY_LINK is expanded from...
+../../lib/m4sugar/m4sh.m4:598: AS_IF is expanded from...
+../../lib/autoconf/general.m4:1998: AC_CACHE_VAL is expanded from...
+../../lib/autoconf/general.m4:2019: AC_CACHE_CHECK is expanded from...
+../../lib/m4sugar/m4sh.m4:598: AS_IF is expanded from...
+../../lib/autoconf/headers.m4:129: _AC_CHECK_HEADER_MONGREL is expanded from...
+../../lib/autoconf/headers.m4:67: AC_CHECK_HEADER is expanded from...
 /usr/share/aclocal/glib-gettext.m4:102: GLIB_WITH_NLS is expanded from...
 /usr/share/aclocal/glib-gettext.m4:312: GLIB_GNU_GETTEXT is expanded from...
 /usr/share/aclocal/glib-gettext.m4:412: AM_GLIB_GNU_GETTEXT is expanded from...
 configure.in:24: the top level])
 m4trace:configure.in:24: -1- _m4_warn([obsolete], [The macro `AC_TRY_LINK' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2414: AC_TRY_LINK is expanded from...
-../../lib/m4sugar/m4sh.m4:516: AS_IF is expanded from...
-../../lib/autoconf/general.m4:1898: AC_CACHE_VAL is expanded from...
-../../lib/autoconf/general.m4:1911: AC_CACHE_CHECK is expanded from...
-../../lib/m4sugar/m4sh.m4:516: AS_IF is expanded from...
-../../lib/autoconf/headers.m4:87: AC_CHECK_HEADER is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2654: AC_TRY_LINK is expanded from...
+../../lib/m4sugar/m4sh.m4:598: AS_IF is expanded from...
+../../lib/autoconf/general.m4:1998: AC_CACHE_VAL is expanded from...
+../../lib/autoconf/general.m4:2019: AC_CACHE_CHECK is expanded from...
+../../lib/m4sugar/m4sh.m4:598: AS_IF is expanded from...
+../../lib/autoconf/headers.m4:129: _AC_CHECK_HEADER_MONGREL is expanded from...
+../../lib/autoconf/headers.m4:67: AC_CHECK_HEADER is expanded from...
 /usr/share/aclocal/glib-gettext.m4:102: GLIB_WITH_NLS is expanded from...
 /usr/share/aclocal/glib-gettext.m4:312: GLIB_GNU_GETTEXT is expanded from...
 /usr/share/aclocal/glib-gettext.m4:412: AM_GLIB_GNU_GETTEXT is expanded from...
 configure.in:24: the top level])
+m4trace:configure.in:24: -1- m4_pattern_allow([^HAVE_BIND_TEXTDOMAIN_CODESET$])
+m4trace:configure.in:24: -1- m4_pattern_allow([^HAVE_BIND_TEXTDOMAIN_CODESET$])
 m4trace:configure.in:24: -1- m4_pattern_allow([^HAVE_GETTEXT$])
 m4trace:configure.in:24: -1- m4_pattern_allow([^MSGFMT$])
+m4trace:configure.in:24: -1- m4_pattern_allow([^HAVE_DCGETTEXT$])
 m4trace:configure.in:24: -1- GLIB_RUN_PROG([$MSGFMT -c -o /dev/null], [
 msgid ""
 msgstr ""
@@ -912,16 +961,17 @@ m4trace:configure.in:24: -1- m4_pattern_allow([^MSGFMT_OPTS$])
 m4trace:configure.in:24: -1- m4_pattern_allow([^GMSGFMT$])
 m4trace:configure.in:24: -1- m4_pattern_allow([^XGETTEXT$])
 m4trace:configure.in:24: -1- _m4_warn([obsolete], [The macro `AC_TRY_LINK' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2414: AC_TRY_LINK is expanded from...
-../../lib/m4sugar/m4sh.m4:516: AS_IF is expanded from...
-../../lib/autoconf/headers.m4:87: AC_CHECK_HEADER is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2654: AC_TRY_LINK is expanded from...
+../../lib/m4sugar/m4sh.m4:598: AS_IF is expanded from...
+../../lib/autoconf/headers.m4:129: _AC_CHECK_HEADER_MONGREL is expanded from...
+../../lib/autoconf/headers.m4:67: AC_CHECK_HEADER is expanded from...
 /usr/share/aclocal/glib-gettext.m4:102: GLIB_WITH_NLS is expanded from...
 /usr/share/aclocal/glib-gettext.m4:312: GLIB_GNU_GETTEXT is expanded from...
 /usr/share/aclocal/glib-gettext.m4:412: AM_GLIB_GNU_GETTEXT is expanded from...
 configure.in:24: the top level])
 m4trace:configure.in:24: -1- m4_pattern_allow([^ENABLE_NLS$])
 m4trace:configure.in:24: -1- _m4_warn([obsolete], [The macro `AC_OUTPUT_COMMANDS' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/status.m4:848: AC_OUTPUT_COMMANDS is expanded from...
+You should run autoupdate.], [../../lib/autoconf/status.m4:1019: AC_OUTPUT_COMMANDS is expanded from...
 /usr/share/aclocal/glib-gettext.m4:102: GLIB_WITH_NLS is expanded from...
 /usr/share/aclocal/glib-gettext.m4:312: GLIB_GNU_GETTEXT is expanded from...
 /usr/share/aclocal/glib-gettext.m4:412: AM_GLIB_GNU_GETTEXT is expanded from...
@@ -941,5 +991,5 @@ m4trace:configure.in:26: -1- _m4_warn([obsolete], [AC_OUTPUT should be used with
 You should run autoupdate.], [])
 m4trace:configure.in:26: -1- m4_pattern_allow([^LIB@&t@OBJS$])
 m4trace:configure.in:26: -1- m4_pattern_allow([^LTLIBOBJS$])
-m4trace:configure.in:26: -1- _AC_AM_CONFIG_HEADER_HOOK([$ac_file])
+m4trace:configure.in:26: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
 m4trace:configure.in:26: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
