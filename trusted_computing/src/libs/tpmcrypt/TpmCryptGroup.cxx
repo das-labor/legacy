@@ -148,7 +148,6 @@ void    TpmCryptGroup::printGroup(bool verbose)
     {
         cout << "\tGroupKeyfile: '" << myGroupKeyfile << "'" << endl;
         cout << "\tKey details:" << endl;
-        myGroupKey->printKeyInformation();
     }
 };
 

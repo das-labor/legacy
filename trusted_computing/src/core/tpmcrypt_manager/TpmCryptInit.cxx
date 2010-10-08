@@ -155,7 +155,7 @@ void TpmCryptCreateAdmin(TpmCryptStorage &mySubjectStorage, TpmCryptStorage &myG
 
         string adminPassword = getPassword("Please enter the according password for admin '" + myExistingAdmin->getMySubjectName() + "' (" + myExistingAdmin->getMySubjectIDString() + "): ");
         string groupKeyPassword = myAdminGroup.getDecryptedGroupKey(myExistingAdmin, adminPassword);
-		string null;
+		string null = "0";
         TpmCryptSubject newAdmin(SUBJECTTYPE_USER, myUsername, null, myEMail, myC, myO, myOU, mySP, myL, true, myKeyDirectory, mySubjectStorage);
         if (! newAdmin.getMySubjectID())
             throw NotCreated("Admin could not be created!");
@@ -171,7 +171,7 @@ void TpmCryptCreateAdmin(TpmCryptStorage &mySubjectStorage, TpmCryptStorage &myG
         cout << "Please be patient, this can take some time..." << endl;
         TpmCryptTPM myTPM;
         myTPM.remove_all_keys_by_uuid();
-		string null;
+		string null = "0";
         TpmCryptSubject newAdmin(SUBJECTTYPE_USER, myUsername, null, myEMail, myC, myO, myOU, mySP, myL, true, myKeyDirectory, mySubjectStorage);
         if (! newAdmin.getMySubjectID())
             throw NotCreated("Admin could not be created!");

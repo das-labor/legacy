@@ -122,8 +122,8 @@ void TpmCryptCreatePlatform(TpmCryptStorage &mySubjectStorage)
     vector<string> myPlatforms = TpmCryptFindAllPlatforms(mySubjectStorage);
 
     string myPlatformname = getStringFromUser("Please enter name for new Platform: ");
-    if (TpmCryptFindPlatform(mySubjectStorage, myPlatformname))
-       throw InvalidPlatform("TpmCryptCreatePlatform(): Platform already exists!");
+    //if (!TpmCryptFindPlatform(mySubjectStorage, myPlatformname))
+      // throw InvalidPlatform("TpmCryptCreatePlatform(): Platform already exists!");
 
     string myEMail = TPMCRYPT_PRIVATE_MODE_ADMIN_MAIL;
     string myC  = TPMCRYPT_PRIVATE_MODE_C;
@@ -132,7 +132,7 @@ void TpmCryptCreatePlatform(TpmCryptStorage &mySubjectStorage)
     string mySP = TpmCryptSubjectType_Platform;
     string myL  = TpmCryptSubjectType_Platform;
 	vector<int> pcr = TpmCryptChooseAllPCR();
-	string pcr_string = convertIntVectorToString(&pcr);
+	string pcr_string = convertIntVectorToString(pcr);
     
     TpmCryptSubject newPlatform(SUBJECTTYPE_PLATFORM, myPlatformname, pcr_string, myEMail, myC, myO, myOU, mySP, myL, false, myKeyDirectory, mySubjectStorage);
     if (! newPlatform.getMySubjectID())
@@ -149,16 +149,16 @@ vector<int> TpmCryptChooseAllPCR()
 {	
 	vector<int> final;
 	t_StringMap TpmCryptPlatformTypeMap;
-    TpmCryptPlatformTypeMap["PCR0"] = PLATFORMTYPE_PCR0;
-    TpmCryptPlatformTypeMap["PCR1"] = PLATFORMTYPE_PCR1;
-    TpmCryptPlatformTypeMap["PCR2"] = PLATFORMTYPE_PCR2;
-    TpmCryptPlatformTypeMap["PCR3"] = PLATFORMTYPE_PCR3;
-    TpmCryptPlatformTypeMap["PCR4"] = PLATFORMTYPE_PCR4;
-    TpmCryptPlatformTypeMap["PCR5"] = PLATFORMTYPE_PCR5;
-    TpmCryptPlatformTypeMap["PCR6"] = PLATFORMTYPE_PCR6;
-    TpmCryptPlatformTypeMap["PCR7"] = PLATFORMTYPE_PCR7;
-    TpmCryptPlatformTypeMap["PCR8"] = PLATFORMTYPE_PCR8;
-    TpmCryptPlatformTypeMap["PCR9"] = PLATFORMTYPE_PCR9;
+    TpmCryptPlatformTypeMap["PCR00"] = PLATFORMTYPE_PCR00;
+    TpmCryptPlatformTypeMap["PCR01"] = PLATFORMTYPE_PCR01;
+    TpmCryptPlatformTypeMap["PCR02"] = PLATFORMTYPE_PCR02;
+    TpmCryptPlatformTypeMap["PCR03"] = PLATFORMTYPE_PCR03;
+    TpmCryptPlatformTypeMap["PCR04"] = PLATFORMTYPE_PCR04;
+    TpmCryptPlatformTypeMap["PCR05"] = PLATFORMTYPE_PCR05;
+    TpmCryptPlatformTypeMap["PCR06"] = PLATFORMTYPE_PCR06;
+    TpmCryptPlatformTypeMap["PCR07"] = PLATFORMTYPE_PCR07;
+    TpmCryptPlatformTypeMap["PCR08"] = PLATFORMTYPE_PCR08;
+    TpmCryptPlatformTypeMap["PCR09"] = PLATFORMTYPE_PCR09;
     TpmCryptPlatformTypeMap["PCR10"] = PLATFORMTYPE_PCR10;
     TpmCryptPlatformTypeMap["PCR11"] = PLATFORMTYPE_PCR11;
     TpmCryptPlatformTypeMap["PCR12"] = PLATFORMTYPE_PCR12;
@@ -175,16 +175,16 @@ vector<int> TpmCryptChooseAllPCR()
     TpmCryptPlatformTypeMap["PCR23"] = PLATFORMTYPE_PCR23;
     
     vector<string> AvailablePCR;
-	AvailablePCR.push_back("PCR0");
-	AvailablePCR.push_back("PCR1");
-	AvailablePCR.push_back("PCR2");
-	AvailablePCR.push_back("PCR3");
-	AvailablePCR.push_back("PCR4");
-	AvailablePCR.push_back("PCR5");
-	AvailablePCR.push_back("PCR6");
-	AvailablePCR.push_back("PCR7");
-	AvailablePCR.push_back("PCR8");
-	AvailablePCR.push_back("PCR9");
+	AvailablePCR.push_back("PCR00");
+	AvailablePCR.push_back("PCR01");
+	AvailablePCR.push_back("PCR02");
+	AvailablePCR.push_back("PCR03");
+	AvailablePCR.push_back("PCR04");
+	AvailablePCR.push_back("PCR05");
+	AvailablePCR.push_back("PCR06");
+	AvailablePCR.push_back("PCR07");
+	AvailablePCR.push_back("PCR08");
+	AvailablePCR.push_back("PCR09");
 	AvailablePCR.push_back("PCR10");
 	AvailablePCR.push_back("PCR11");
 	AvailablePCR.push_back("PCR12");
@@ -210,16 +210,16 @@ vector<int> TpmCryptChooseAllPCR()
             break;
 		switch(TpmCryptPlatformTypeMap[pcrid])
 		{
-				case PLATFORMTYPE_PCR0: final.push_back(x); break;
-				case PLATFORMTYPE_PCR1: x = 1; final.push_back(x); break;
-				case PLATFORMTYPE_PCR2: x = 2; final.push_back(x); break;
-				case PLATFORMTYPE_PCR3: x = 3; final.push_back(x); break;
-				case PLATFORMTYPE_PCR4: x = 4; final.push_back(x); break;
-				case PLATFORMTYPE_PCR5: x = 5; final.push_back(x); break;
-				case PLATFORMTYPE_PCR6: x = 6; final.push_back(x); break;
-				case PLATFORMTYPE_PCR7: x = 7; final.push_back(x); break;
-				case PLATFORMTYPE_PCR8: x = 8; final.push_back(x); break;
-				case PLATFORMTYPE_PCR9: x = 9; final.push_back(x); break;
+				case PLATFORMTYPE_PCR00: final.push_back(x); break;
+				case PLATFORMTYPE_PCR01: x = 1; final.push_back(x); break;
+				case PLATFORMTYPE_PCR02: x = 2; final.push_back(x); break;
+				case PLATFORMTYPE_PCR03: x = 3; final.push_back(x); break;
+				case PLATFORMTYPE_PCR04: x = 4; final.push_back(x); break;
+				case PLATFORMTYPE_PCR05: x = 5; final.push_back(x); break;
+				case PLATFORMTYPE_PCR06: x = 6; final.push_back(x); break;
+				case PLATFORMTYPE_PCR07: x = 7; final.push_back(x); break;
+				case PLATFORMTYPE_PCR08: x = 8; final.push_back(x); break;
+				case PLATFORMTYPE_PCR09: x = 9; final.push_back(x); break;
 				case PLATFORMTYPE_PCR10: x = 10; final.push_back(x); break;
 				case PLATFORMTYPE_PCR11: x = 11; final.push_back(x); break;
 				case PLATFORMTYPE_PCR12: x = 12; final.push_back(x); break;
@@ -237,7 +237,12 @@ vector<int> TpmCryptChooseAllPCR()
 		}
 		removeStringFromStringVector(&AvailablePCR, pcrid);
 	}
-	
+	vector<int>::const_iterator i;
+	for(i = final.begin(); i != final.end(); i++)
+	{
+		cout << *(i) << endl;
+		
+	}
 	return final;
 };
 
