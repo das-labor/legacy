@@ -547,10 +547,20 @@ vector<UInt8> convertStringToUInt8Vector(const string &toConvert)
 //
 vector<int> convertStringToIntVector(const string &toConvert)
 {
+	vector<int>::const_iterator it;
     vector<int> myString;
+    char mychar[50];
+    char com[]= "/";
+    char *blub;
+    int xyz;
     int length = toConvert.length();
     for (int i=0; i<length; i++)
-        myString.push_back(toConvert[i]);
+    {
+        mychar[i]=toConvert[i];
+		cout << toConvert[i] << endl;
+	}
+	xyz = strtoken(mychar, com, &blub);
+	cout << xyz << endl;
     return myString;
 };
 
@@ -633,15 +643,38 @@ string convertUInt8VectorToString(vector<UInt8> *toConvert)
 
 //================================================================================
 //
-string convertIntVectorToString(vector<int> *toConvert)
+string convertIntVectorToString(vector<int> &toConvert)
 {
-    int length = toConvert->size();
+	int i = 0;
+	string s;
+	std::stringstream out;
+	vector<int>::const_iterator it;
+    int length = toConvert.size();
     if (!length)
         return "";
-    char myString[length];
-    convertIntVectorToChar(toConvert, myString, length);
-    return string(myString, length);
+	for(it = toConvert.begin(); it != toConvert.end(); ++it)
+	{
+		out << (*it) << "/";
+	}
+    //convertIntVectorToChar(toConvert, myString, length);
+    s = out.str();
+    cout << s << endl;
+    return s;
 };
+
+//
+int strtoken(char *str, char *separator, char *token[24])
+{
+  int i = 0;
+
+  token[0] = strtok(str, separator);
+
+  while ( token[i] ) {
+    i++;
+    token[i] = strtok(NULL, separator);
+  }
+  return i;
+}
 
 void findAvailableFilesystems(string fs, vector<string>* AvailableFilesystems)
 {

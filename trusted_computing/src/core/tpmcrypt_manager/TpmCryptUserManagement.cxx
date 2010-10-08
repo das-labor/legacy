@@ -235,7 +235,7 @@ void TpmCryptCreateUser(TpmCryptStorage &mySubjectStorage)
         mySP= getStringFromUser("Please enter state/province for new user: ");
         myL = getStringFromUser("Please enter locality for new user: ");
     }
-	string null;
+	string null = "0";
     TpmCryptSubject newUser(SUBJECTTYPE_USER, myUsername, null, myEMail, myC, myO, myOU, mySP, myL, false, myKeyDirectory, mySubjectStorage);
     if (! newUser.getMySubjectID())
         throw NotCreated("User could not be created!");

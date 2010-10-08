@@ -180,7 +180,7 @@ void TpmCryptCreateToken(TpmCryptStorage &mySubjectStorage)
 
     cout << "Please wait while creating new token." << endl;
     myTokenDirectory = removeDelimiter(myTokenDirectory);
-    string null;
+    string null = "0";
     TpmCryptSubject newToken(SUBJECTTYPE_TOKEN, myTokenname, null,  myEMail, myC, myO, myOU, mySP, myL, false, myTokenDirectory, mySubjectStorage);
     if (! newToken.getMySubjectID())
         throw NotCreated("Token could not be created!");

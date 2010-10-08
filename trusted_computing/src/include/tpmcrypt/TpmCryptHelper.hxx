@@ -182,7 +182,9 @@ string convertUInt8VectorToString(vector<UInt8> *toConvert);
  
 vector<int> convertStringToIntVector(const string &toConvert);
 bool convertIntVectorToChar(vector<int> *toConvert, char *dest, int &length);
-string convertIntVectorToString(vector<int> *toConvert);
+string convertIntVectorToString(vector<int> &toConvert);
+int strtoken(char *str, char *separator, char *token[24]);
+
 
 bool convertCharToUInt8Vector(vector<UInt8> *toConvert, char *src, int length);
 

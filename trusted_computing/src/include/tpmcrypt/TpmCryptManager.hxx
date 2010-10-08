@@ -40,16 +40,16 @@
 enum myTpmCryptPlatformType
 {
     PLATFORMTYPE_BEGIN = 0,
-    PLATFORMTYPE_PCR0,
-    PLATFORMTYPE_PCR1,
-    PLATFORMTYPE_PCR2,
-    PLATFORMTYPE_PCR3,
-    PLATFORMTYPE_PCR4,
-    PLATFORMTYPE_PCR5,
-    PLATFORMTYPE_PCR6,
-    PLATFORMTYPE_PCR7,
-    PLATFORMTYPE_PCR8,
-    PLATFORMTYPE_PCR9,
+    PLATFORMTYPE_PCR00,
+    PLATFORMTYPE_PCR01,
+    PLATFORMTYPE_PCR02,
+    PLATFORMTYPE_PCR03,
+    PLATFORMTYPE_PCR04,
+    PLATFORMTYPE_PCR05,
+    PLATFORMTYPE_PCR06,
+    PLATFORMTYPE_PCR07,
+    PLATFORMTYPE_PCR08,
+    PLATFORMTYPE_PCR09,
     PLATFORMTYPE_PCR10,
     PLATFORMTYPE_PCR11,
     PLATFORMTYPE_PCR12,
@@ -67,16 +67,16 @@ enum myTpmCryptPlatformType
     PLATFORMTYPE_END
 };
 
-const std::string TpmCryptPlatformType_PCR0    = "PCR0";
-const std::string TpmCryptPlatformType_PCR1    = "PCR1";
-const std::string TpmCryptPlatformType_PCR2    = "PCR2";
-const std::string TpmCryptPlatformType_PCR3    = "PCR3";
-const std::string TpmCryptPlatformType_PCR4    = "PCR4";
-const std::string TpmCryptPlatformType_PCR5    = "PCR5";
-const std::string TpmCryptPlatformType_PCR6    = "PCR6";
-const std::string TpmCryptPlatformType_PCR7    = "PCR7";
-const std::string TpmCryptPlatformType_PCR8    = "PCR8";
-const std::string TpmCryptPlatformType_PCR9    = "PCR9";
+const std::string TpmCryptPlatformType_PCR00    = "PCR00";
+const std::string TpmCryptPlatformType_PCR01    = "PCR01";
+const std::string TpmCryptPlatformType_PCR02    = "PCR02";
+const std::string TpmCryptPlatformType_PCR03    = "PCR03";
+const std::string TpmCryptPlatformType_PCR04    = "PCR04";
+const std::string TpmCryptPlatformType_PCR05    = "PCR05";
+const std::string TpmCryptPlatformType_PCR06    = "PCR06";
+const std::string TpmCryptPlatformType_PCR07    = "PCR07";
+const std::string TpmCryptPlatformType_PCR08    = "PCR08";
+const std::string TpmCryptPlatformType_PCR09    = "PCR09";
 const std::string TpmCryptPlatformType_PCR10    = "PCR10";
 const std::string TpmCryptPlatformType_PCR11    = "PCR11";
 const std::string TpmCryptPlatformType_PCR12    = "PCR12";

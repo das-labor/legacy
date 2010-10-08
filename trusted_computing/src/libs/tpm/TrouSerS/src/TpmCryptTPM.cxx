@@ -139,7 +139,7 @@ vector<ByteVector> TpmCryptTPM::seal(ByteVector &dataToSeal, int &local, vector<
     TSS_UUID     SRK_UUID = TSS_UUID_SRK;
     TSS_HPCRS	 hPCR;
     TSS_HPOLICY  hPolicy;
-    UINT32 	     pcr_index;
+    int 	     pcr_index;
     UINT32 		 encLen;
     UINT32		 pcrvaluelength;
     UINT32		 locality;
@@ -214,16 +214,20 @@ vector<ByteVector> TpmCryptTPM::seal(ByteVector &dataToSeal, int &local, vector<
         throw TSSError("TpmCryptTPM[TrouSerS]|seal(): Error create PCR Object");
     }
     
+ //#define foreach(type, container, var) for(type::iterator var = container.begin(); var != container.end(); ++var)
+    
     //Choose PCR's 
-	for( pcr_index = 0; pcr_index < pcr.size(); pcr_index++) {
-		if (Tspi_TPM_PcrRead (hTPM, pcr[pcr_index], &pcrvaluelength, &pcrvalue ) != TSS_SUCCESS )
+	//foreach(vector<int>, pcr, i)
+		vector<int>::const_iterator blub;
+	for(blub = pcr.begin(); blub != pcr.end(); blub++) {
+		if (Tspi_TPM_PcrRead (hTPM, *blub, &pcrvaluelength, &pcrvalue ) != TSS_SUCCESS )
 		{
 			Tspi_Context_FreeMemory(hContext, NULL);
 			Tspi_Context_Close(hContext);
 			throw TSSError("TpmCryptTPM[TrouSerS]|seal(): Error can't read PCR value");
 		}
 		
-		if (Tspi_PcrComposite_SetPcrValue (hPCR , pcr[pcr_index], pcrvaluelength, pcrvalue ) != TSS_SUCCESS )
+		if (Tspi_PcrComposite_SetPcrValue (hPCR , *blub, pcrvaluelength, pcrvalue ) != TSS_SUCCESS )
 		{
 			Tspi_Context_FreeMemory(hContext, NULL);
 			Tspi_Context_Close(hContext);
@@ -231,7 +235,7 @@ vector<ByteVector> TpmCryptTPM::seal(ByteVector &dataToSeal, int &local, vector<
 		}
 		pcrvaluelength=NULL;
 		pcrvalue=NULL;
-		cout << "Added PCR" << pcr[pcr_index] << " digest value to PCR Object for sealing" << endl;
+		cout << "Added PCR" << *blub << " digest value to PCR Object for sealing" << endl;
 	}
 
     // Data Seal
@@ -613,14 +617,14 @@ ByteVector TpmCryptTPM::create_key(string &password, UInt32 &keynum, string &typ
     UINT32		 flags = NULL;
 
     //Choose between Bind, Storage or Legacy Key. 
-    if(type == "subject") 
-    {
+  //  if(type == "subject") 
+    //{
 		flags = TSS_KEY_TYPE_BIND | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE | TSS_KEY_AUTHORIZATION;
-	}
-	if( type == "group" ) 
+	//}
+	/*if( type == "group" ) 
 	{				
 		flags = TSS_KEY_TYPE_STORAGE | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE;
-	}
+	}*/
 
 	// Allocate Key UUID number.
 	memset (&hKey_UUID, 0, sizeof(hKey_UUID));
@@ -770,7 +774,7 @@ void TpmCryptTPM::remove_all_keys_by_uuid()
     for( UInt32 i = 0; i<keyblobsize; i++) 
     {
 		UInt32 keynum = (keyblob[i].keyUUID.rgbNode[5] & 0xff);
-		if(keynum >= 1)
+		if(keynum >= 2)
 		{
 			delete_key(keynum);
 		}
@@ -796,7 +800,7 @@ void TpmCryptTPM::change_key_auth(string &password, string &password_old, UInt32
     TSS_HPOLICY  hKeyPolicyOld;
 	TSS_UUID	 hKey_UUID;
 	TSS_UUID     SRK_UUID = TSS_UUID_SRK;
-	BYTE well_known_secret[TPM_SHA1_160_HASH_LEN] = TSS_WELL_KNOWN_SECRET;
+	BYTE 		 well_known_secret[TPM_SHA1_160_HASH_LEN] = TSS_WELL_KNOWN_SECRET;
 
 	memset (&hKey_UUID, 0, sizeof(hKey_UUID));
 	hKey_UUID.rgbNode[5] = keynum & 0xff;
@@ -871,14 +875,6 @@ void TpmCryptTPM::change_key_auth(string &password, string &password_old, UInt32
         throw TSSError("TpmCryptTPM[TrouSerS]|seal(): Error loading TPM policy object.");
     }
     
-    // SetPolicySecret
-    if (Tspi_Policy_SetSecret( hKeyPolicy, TSS_SECRET_MODE_PLAIN, password.length(), (BYTE*)password.c_str()  ) != TSS_SUCCESS )
-    {
-        Tspi_Context_FreeMemory(hContext, NULL);
-        Tspi_Context_Close(hContext);
-        throw TSSError("TpmCryptTPM[TrouSerS]|seal(): Error loading TPM policy object.");
-    }
-    
     Tspi_Key_LoadKey(hKey, hSRK);
         
     TSS_RESULT result = Tspi_ChangeAuth( hKey, hSRK, hKeyPolicy );
@@ -887,6 +883,14 @@ void TpmCryptTPM::change_key_auth(string &password, string &password_old, UInt32
         Tspi_Context_FreeMemory(hContext, NULL);
         Tspi_Context_Close(hContext);
         throw TSSError("TpmCryptTPM[TrouSerS]|seal(): Error sealing data. (" + getTSSError(result) + ")");
+    }
+    
+        // SetPolicySecret
+    if (Tspi_Policy_SetSecret( hKeyPolicy, TSS_SECRET_MODE_PLAIN, password.length(), (BYTE*)password.c_str()  ) != TSS_SUCCESS )
+    {
+        Tspi_Context_FreeMemory(hContext, NULL);
+        Tspi_Context_Close(hContext);
+        throw TSSError("TpmCryptTPM[TrouSerS]|seal(): Error loading TPM policy object.");
     }
     
     Tspi_Context_FreeMemory(hContext, NULL);
