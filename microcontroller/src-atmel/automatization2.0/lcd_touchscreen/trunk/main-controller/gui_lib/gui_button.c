@@ -47,9 +47,13 @@ void gui_button_touch_handler (gui_element_t *self, touch_event_t t) {
 	gui_button_t * s = (gui_button_t*)self;
 	
 	if(t.click){
-		s->state ^= 1;	
+		s->state ^= 1;
+		if(s->click_handler){
+			s->click_handler(self);
+		}
+		self->draw(self, 0);
 	}
-	self->draw(self, 0);
+	
 }
 
 
@@ -64,6 +68,7 @@ void gui_button_update_position(gui_element_t * self, int16_t x_diff, int16_t y_
 	s->box.y += y_diff;
 }
 
+
 //constructor
 gui_button_t * new_gui_button(){
 	gui_button_t * b = malloc(sizeof(gui_button_t));
@@ -75,6 +80,7 @@ gui_button_t * new_gui_button(){
 	b->box = (rectangle_t){0,0,0,0};
 	b->icon = 0;
 	b->state = 0;
+	b->click_handler = 0;
 	return b;
 }
 

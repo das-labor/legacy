@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include "list.h"
 
-#define LIST_ALLOCATION_BLOCK_SIZE 8
+#define LIST_ALLOCATION_BLOCK_SIZE 4
 
 void init_list(list_t * l){
 	l->childs = malloc(sizeof(uint16_t) * LIST_ALLOCATION_BLOCK_SIZE );
@@ -41,15 +41,15 @@ void list_append(list_t * l, void * child) {
 	l->num_childs++;
 }
 
-void list_foreach_begin(list_t * l){
-	l->akt_foreach = 0;
+void list_foreach_begin(list_iterator_t * it, list_t * l){
+	*it = 0;
 }
 
-void * list_foreach(list_t * l){
+void * list_foreach(list_iterator_t * it, list_t * l){
 	void * e = 0;
-	if(l->akt_foreach < l->num_childs){
-		e = l->childs[l->akt_foreach];
-		l->akt_foreach ++;
+	if(*it < l->num_childs){
+		e = l->childs[*it];
+		(*it)++;
 	}
 	return e;
 }

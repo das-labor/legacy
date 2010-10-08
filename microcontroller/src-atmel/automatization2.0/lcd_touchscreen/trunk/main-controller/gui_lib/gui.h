@@ -8,6 +8,7 @@
 #ifndef _H_GUI
 #define _H_GUI
 
+#include <stdint.h>
 #include "rectangle.h"
 #include "list.h"
 #include "graphics.h"
@@ -80,14 +81,16 @@ typedef struct {
 	rectangle_t box;//gui element sets height and width, container sets x and y.
 
 	char * text;
-
 	icon_t * icon;
 	uint8_t state;
+
+	void(*click_handler)(gui_element_t *);
 } gui_button_t;
 
 void gui_button_draw (gui_element_t * self, uint8_t redraw);
 void gui_button_set_on_screen (gui_element_t *self, uint8_t state);
 void gui_button_touch_handler (gui_element_t *self, touch_event_t t);
+void gui_button_update_position(gui_element_t * self, int16_t x_diff, int16_t y_diff);
 gui_button_t * new_gui_button(); //constructor
 
 ////////////////////////////////////////////////////////////////////////////////
