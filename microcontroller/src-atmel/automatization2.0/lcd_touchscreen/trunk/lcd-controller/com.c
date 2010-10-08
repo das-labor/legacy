@@ -44,7 +44,7 @@ static uint16_t read_uint16_t() {
 	return i;
 }
 
-static void read_bytes(uint8_t size, void * dest) {
+static void read_bytes(uint16_t size, void * dest) {
 	while (size--) {
 		*((uint8_t*)dest) = read_byte();
 		dest = dest + 1;
@@ -123,16 +123,17 @@ void handle_com() {
 					read_bytes(2, &size);
 					read_bytes(size, buf);
 					g_draw_icon(x, y, (icon_t*)buf);
-					
+					break;	
 				}
+				
 			case DC_DRAW_PIXEL:
 				{
 					uint16_t x,y;
 					read_bytes(2, &x);
 					read_bytes(2, &y);
 					g_draw_pixel(x,y);	
+					break;
 				}
-				break;
-		}	
+		}
 	}
 }
