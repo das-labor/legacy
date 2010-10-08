@@ -12,7 +12,7 @@
 #define DC_DRAW_STRING_IN_RECT             0x06 //(rectangle_t + string)
 #define DC_DRAW_STRING_IN_RECT_VERT        0x07 //(rectangle_t + string)
 #define DC_DRAW_ICON                       0x08 //(x,y,size,icon_t)
-
+#define DC_DRAW_PIXEL                      0x09 //(x,y)
 
 #endif // _H_DC_COMMANDS
 
