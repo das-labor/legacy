@@ -13,6 +13,7 @@ typedef struct {
 	uint16_t akt_foreach;
 } list_t;
 
+
 void init_list(list_t * l);
 
 void delete_list(list_t * l);//destructor
@@ -20,7 +21,11 @@ void uninit_list(list_t * l);//destructor
 
 list_t * new_list();
 void list_append(list_t * l, void * child) ;
-void list_foreach_begin(list_t * l);
-void * list_foreach(list_t * l);
+
+
+typedef uint16_t list_iterator_t;
+
+void list_foreach_begin(list_iterator_t * it, list_t * l);
+void * list_foreach(list_iterator_t * it, list_t * l);
 
 #endif
