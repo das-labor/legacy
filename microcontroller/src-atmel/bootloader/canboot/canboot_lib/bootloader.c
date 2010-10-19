@@ -40,7 +40,7 @@ unsigned char Device_info_msg[] PROGMEM =
 	SDO_TYPE_UINT32_RO,
 	(unsigned char)(SPM_PAGESIZE),
 	(unsigned char)(SPM_PAGESIZE >> 8),
-	(FLASHEND + 1) / 1024, //changed this from Atmega number to real Flash-size in kB
+	(FLASHEND + 1ul) / 1024ul, //changed this from Atmega number to real Flash-size in kB
 	0
 };
 
