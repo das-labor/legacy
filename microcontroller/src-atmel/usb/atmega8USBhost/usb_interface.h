@@ -1,0 +1,3 @@
+#define USBPIN PINC
+#define USBPORT PORTC
+#define UBSDDR DDRC
