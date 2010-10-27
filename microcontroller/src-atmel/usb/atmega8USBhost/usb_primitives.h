@@ -63,9 +63,10 @@
 #define CHAR_BITS (sizeof(char) * 8)
 #define INT_BITS (sizeof(int) * 8)
 #define TOCKEN_PACKET_LENGTH (TOKEN_PACKET_SIZE * CHAR_BITS)
-
+#define SYNC 0xAB   // = 10101011
 #define TRANSFER_MAX_RETRIES 3 
-
+#define TRANSACTIONERROR 1
+#define TRANSACTIONSUCCESS 0
 /***********/
 /* GLOBALS */
 /***********/
