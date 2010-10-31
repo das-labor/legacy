@@ -1,4 +1,4 @@
-OBJ = main.o
+OBJ = main.o adc_driver.o
 
 # Default values
 OUT           ?= main
@@ -8,7 +8,7 @@ MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall -Winline
 DEFS          ?= -DF_CPU=32000000
-CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I.
+CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=c99
 ASFLAGS	      += -mmcu=avr5
 LDFLAGS        = -Wl,-Map,$(OUT).map
 
