@@ -26,7 +26,7 @@
  */
 
 
-#include "memxor/memxor.h"
+#include "memxor.h"
 #include "cubehash.h"
 #include <string.h>
 #include <stdint.h>
