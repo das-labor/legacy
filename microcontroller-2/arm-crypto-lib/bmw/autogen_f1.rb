@@ -22,6 +22,7 @@ header = <<EOF
 
 static inline
 void bmw_small_f1(uint32_t* q, const void* m, const void* h){ 
+  uint32_t even, odd;
 EOF
 
 footer = <<EOF
@@ -63,7 +64,7 @@ def expand_1(j)
 end
 
 
-def expand_2(j)
+def expand_2(j,start)
   s = sprintf("/* expand_2(%2d) */\n", j)
   s += sprintf("\tq[%2d] = \n", j+16)
   s += sprintf("\t\t((  ROTL32(((uint32_t*)m)[%2d], %d) \n", j%16,      (j%16)+1)
@@ -71,16 +72,29 @@ def expand_2(j)
   s += sprintf("\t\t  - ROTL32(((uint32_t*)m)[%2d], %d) \n", (j+10)%16, ((j+10)%16)+1)
   s += sprintf("\t\t  + 0x%08xUL \n", 0x0555_5555*(16+j))
   s += sprintf("\t\t )^ ((uint32_t*)h)[%2d] \n", (j+7)%16)
-  s += sprintf("\t\t)");
-  (0..13).each do |x|
-    s += (x%4==0)?"\n\t\t":" "
-    if x%2==0
-      s += sprintf("+       q[%2d] ",  x+j)
+  s += sprintf("\t\t)")
+  if(j-1<=start) 
+    if(j%2==0)
+      # even
+      s += sprintf("\n\t\t + ( even =  q[%2d] + q[%2d] + q[%2d]",j,j+2,j+4)
+      s += sprintf("\n\t\t           + q[%2d] + q[%2d] + q[%2d] + q[%2d] )",j+6,j+8,j+10,j+12)
+      s += sprintf("\n\t\t + R32_1(q[%2d]) + R32_2(q[%2d]) + R32_3(q[%2d])",j+1,j+3,j+5)
+      s += sprintf("\n\t\t + R32_4(q[%2d]) + R32_5(q[%2d]) + R32_6(q[%2d])",j+7,j+9,j+11)
+      s += sprintf("\n\t\t + R32_7(q[%2d]) + S32_4(q[%2d]) + S32_5(q[%2d])",j+13,j+14,j+15)
     else
-      s += sprintf("+ R32_%d(q[%2d])", (x+1)/2, x+j)
-    end
-  end
-  s += sprintf(" + S32_4(q[%2d]) + S32_5(q[%2d])", j+14, j+15)
+      # odd
+      s += sprintf("\n\t\t + ( odd  =  q[%2d] + q[%2d] + q[%2d]",j,j+2,j+4)
+      s += sprintf("\n\t\t           + q[%2d] + q[%2d] + q[%2d] + q[%2d] )",j+6,j+8,j+10,j+12)
+      s += sprintf("\n\t\t + R32_1(q[%2d]) + R32_2(q[%2d]) + R32_3(q[%2d])",j+1,j+3,j+5)
+      s += sprintf("\n\t\t + R32_4(q[%2d]) + R32_5(q[%2d]) + R32_6(q[%2d])",j+7,j+9,j+11)
+      s += sprintf("\n\t\t + R32_7(q[%2d]) + S32_4(q[%2d]) + S32_5(q[%2d])",j+13,j+14,j+15)
+    end 
+  else 
+    s += sprintf("\n\t\t + ( %s  +=  q[%2d] - q[%2d] )",(j%2==0)?"even":"odd ",j+12,j-2)    
+    s += sprintf("\n\t\t + R32_1(q[%2d]) + R32_2(q[%2d]) + R32_3(q[%2d])",j+1,j+3,j+5)
+    s += sprintf("\n\t\t + R32_4(q[%2d]) + R32_5(q[%2d]) + R32_6(q[%2d])",j+7,j+9,j+11)
+    s += sprintf("\n\t\t + R32_7(q[%2d]) + S32_4(q[%2d]) + S32_5(q[%2d])",j+13,j+14,j+15)  
+  end 
   s += ';'
   return s
 end
@@ -88,5 +102,5 @@ end
 
 puts header
 (0..1).each  {|x| puts expand_1(x)}
-(2..15).each {|x| puts expand_2(x)}
+(2..15).each {|x| puts expand_2(x, 2)}
 puts footer

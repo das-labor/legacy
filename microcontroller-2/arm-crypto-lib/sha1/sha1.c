@@ -88,7 +88,7 @@ uint32_t parity(uint32_t x, uint32_t y, uint32_t z){
 
 #define MASK 0x0000000f
 
-typedef uint32_t (*pf_t)(uint32_t x, uint32_t y, uint32_t z);
+typedef const uint32_t (*pf_t)(uint32_t x, uint32_t y, uint32_t z);
 
 void sha1_nextBlock (sha1_ctx_t *state, const void* block){
 	uint32_t a[5];

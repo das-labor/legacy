@@ -1,6 +1,8 @@
 
 MCU_TARGET     = cortex-m3  
 OPTIMIZE       = -O2
+DEBUG          = -g
+WARNING        = -pedantic -Wall -Wstrict-prototypes
 DEFS           = -D$(call uc, $(subst -,_,$(MCU_TARGET)))
 FLASHCMD       = arm-elf-gdb -x gdb-flash  #
 DEP_DIR        = deps/
@@ -27,14 +29,12 @@ CSTD           = gnu99
 override CFLAGS_A	= -fomit-frame-pointer  \
                       -mthumb -ffunction-sections -fdata-sections -MMD \
                       -MF$(DEP_DIR)$(patsubst %.o,%.d,$(notdir $(1)))  \
-                      -I. -Itest_src -g -pedantic -std=$(CSTD)         \
-                      -Wall  $(OPTIMIZE) -Wstrict-prototypes           \
+                      $(DEBUG) $(WARNING) -std=$(CSTD) $(OPTIMIZE)     \
                       -mcpu=$(MCU_TARGET) -Wa,-mthumb $(DEFS) 
 override CFLAGS 	= -fomit-frame-pointer   \
                       -mthumb -ffunction-sections -fdata-sections -MMD \
                       -MF$(DEP_DIR)$(patsubst %.o,%.d,$(notdir $@))    \
-                      -I. -Itest_src -g -pedantic -std=$(CSTD)         \
-                      -Wall   $(OPTIMIZE) -Wstrict-prototypes          \
+                      $(DEBUG) $(WARNING) -std=$(CSTD) $(OPTIMIZE)     \
                       -mcpu=$(MCU_TARGET) -Wa,-mthumb $(DEFS)  
 
 override LDFLAGS       = -g -T lm3s9b90.ld -Wl,--gc-sections    \

@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include "memxor/memxor.h"
+#include "memxor.h"
 #include "keccak.h"
 
 #ifdef DEBUG
