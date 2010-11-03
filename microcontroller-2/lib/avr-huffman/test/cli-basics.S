@@ -137,7 +137,7 @@ cli_getsn:
 	st Y+, r24
 	movw r26, r16
 	sbiw r26, 1
-	movw r16, r24
+	movw r16, r26
 	brne 2b
 9:
 	clr r25
@@ -177,6 +177,6 @@ cli_getsn_cecho:
 	st Y+, r24
 	movw r26, r16
 	sbiw r26, 1
-	movw r16, r24
+	movw r16, r26
 	brne 2b
 	rjmp 9b
