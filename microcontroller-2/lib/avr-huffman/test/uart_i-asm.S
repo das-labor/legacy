@@ -19,7 +19,7 @@
 /**
  * \file     uart_i-asm.S
  * \email    daniel.otte@rub.de
- * \author   Daniel Otte
+ * \author   Daniel Otte 
  * \date     2009-07-24
  * \license  GPLv3 or later
  * \ingroup  uart_i
@@ -53,14 +53,12 @@
 
 #ifdef UDR
 # define OLD_UART
-#  warning "OLD-UART selected"
 # ifdef UDR0
 #  error "can not decide which registernames to use, UDR and UDR0 are defined"
 # endif
 #endif
 
 #ifdef OLD_UART
-#  warning "OLD-UART selected (2)"
 # define UCSR0A UCSRA
 # define UCSR0B UCSRB
 # define UCSR0C UCSRC
@@ -73,7 +71,6 @@
 # define RXC0   RXC
 # define TXB80  TXB8
 # define RXB80  RXB8
-# define UDRIE0 UDRIE
 # define U2X0   U2X
 # define UDRIE0 UDRIE
 # define RXCIE0 RXCIE
@@ -133,22 +130,18 @@ uart0_txbuffer:
 	.fill UART0_TXBUFFER_SIZE, 1, 0
 .global uart0_ctx
 uart0_ctx:
-	.fill UART0_CTX_SIZE, 1, 0
-/******************************************************************************/
+	.fill UART0_CTX_SIZE, 1, 0	
+/******************************************************************************/	
 /* Baudrate calculation */
 #ifdef BAUD
 #undef BAUD
-#endif
-
-#ifndef U2X0
-#define USE_2X 0
 #endif
 
 #define BAUD UART0_BAUD_RATE
 #include "setbaud_asm.inc"
 
 	.section .text
-/******************************************************************************/
+/******************************************************************************/	
 /*
  *	void uart0_init(void){
  *		circularbytebuffer_init2(UART0_RXBUFFER_SIZE, &(uart0_ctx.rxb), uart0_rxbuffer);
@@ -162,7 +155,7 @@ uart0_ctx:
  *		uart0_ctx.rxon = 1;
  *	#endif
  *		#define BAUD UART0_BAUD_RATE
- *		#include <util/setbaud.h>
+ *		#include <util/setbaud.h>	
  *		UBRR0H = UBRRH_VALUE;
  *		UBRR0L = UBRRL_VALUE;
  *		#if USE_2X
@@ -198,7 +191,7 @@ uart0_init:
 	ldi r24, 1
 	std Z+UART0_TXON_OFFSET, r24
 	std Z+UART0_RXON_OFFSET, r24
-#endif
+#endif	
 	ldi r24, UBRRH_VALUE
 	STORE_IO UBRR0H, r24
 	ldi r24, UBRRL_VALUE
@@ -206,18 +199,16 @@ uart0_init:
 #if USE_2X
 	SET_BIT_IO UCSR0A, U2X0, r24
 #else
-#  if U2X0
-  	  CLEAR_BIT_IO UCSR0A, U2X0, r24
-#  endif
+  	CLEAR_BIT_IO UCSR0A, U2X0, r24
 #endif
 	ldi r24, (UART0_PARATY<<4)|(UART0_STOPBITS<<3)|((UART0_DATABITS&3)<<1)
 	STORE_IO UCSR0C, r24
-	ldi r24, _BV(RXCIE0) | _BV(UDRIE0) | _BV(RXEN0) | _BV(TXEN0)
+	ldi r24, _BV(RXCIE0) | _BV(UDRIE0) | _BV(RXEN0) | _BV(TXEN0)  
 	STORE_IO UCSR0B, r24
 	sei
 	ret
-
-/******************************************************************************/
+	
+/******************************************************************************/	
 /*
  * 	ISR(USART0_UDRE_vect){
  *		uint16_t x;
@@ -230,11 +221,11 @@ uart0_init:
  *	#if UART0_SWFLOWCTRL
  *		while(!uart0_ctx.txon)
  *			;
- *	#endif
+ *	#endif		
  *		UDR0 = x;
  *	}
- */
-
+ */ 
+ 
 .global TX_ISR
 TX_ISR:
 	push r1
@@ -271,17 +262,17 @@ TX_ISR:
 	pop_range 21, 27
 	pop r1
 	ret
-
+	
 /******************************************************************************/
 /*
  *	void uart0_putc (uint16_t c){
  *	#if UART0_SWFLOWCTRL
  *		while(!uart0_ctx.txon)
  *			;
- *	#endif
+ *	#endif	
  *		while(circularbytebuffer_cnt(&(uart0_ctx.txb))==UART0_TXBUFFER_SIZE)
  *			;
- *		cli();
+ *		cli();		
  *		circularbytebuffer_append((uint8_t)c, &(uart0_ctx.txb));
  *		sei();
  *		UCSR0B |= (uint8_t)_BV(UDRIE0);
@@ -335,7 +326,7 @@ uart0_putc:
  *			uart0_ctx.txon = 0;
  *			return;
  *		}
- *	#endif
+ *	#endif		
  *	#if	UART0_HOOK
  *		if((!uart0_ctx.hook_running) && uart0_ctx.hook){
  *			uart0_ctx.hook_running=1;
@@ -361,7 +352,7 @@ uart0_putc:
  *			circularbytebuffer_push(XON_VALUE, &(uart0_ctx.txb));
  *			UCSR0B |= (uint8_t)_BV(UDRIE0);
  *		}
- *	#endif
+ *	#endif		
  *	}
  *
  */
@@ -380,14 +371,14 @@ uart0_putc:
 	ldi r24, 1
 	st X, r24
 	rjmp 99f
-10:
+10:	
 	cpi r24, XOFF_VALUE
 	brne 20f
 	clr r24
 	st X, r24
 	rjmp 99f
-#endif /* UART0_SWFLOWCTRL */
-20:
+#endif /* UART0_SWFLOWCTRL */	
+20:	
 #if UART0_HOOK
 	ldi r30, lo8(uart0_ctx)
 	ldi r31, hi8(uart0_ctx)
@@ -407,7 +398,7 @@ uart0_putc:
 	clr r25
 	icall
 	movw r24, r16
-	rcall circularbytebuffer_get_fifo
+	rcall circularbytebuffer_get_fifo 
 	cpi r25, 0xff
 	brne 30b
 	clr r24
@@ -445,7 +436,7 @@ uart0_putc:
 	rcall circularbytebuffer_push
 	SET_BIT_IO UCSR0B, UDRIE0, r24
 #endif /* UART0_SWFLOWCTRL */
-99:
+99:	
 	out _SFR_IO_ADDR(SREG), r16
 	pop_range 16, 31
 	pop_range 0, 1
@@ -457,7 +448,7 @@ uart0_putc:
  *		uint8_t ret;
  *		while(circularbytebuffer_cnt(&(uart0_ctx.rxb))==0)
  *			;
- *		cli();
+ *		cli();	
  *		ret = circularbytebuffer_get_fifo(&(uart0_ctx.rxb));
  *		sei();
  *		return 	ret;
@@ -477,7 +468,7 @@ uart0_putc:
 	rcall circularbytebuffer_get_fifo
 	clr r25
 	reti
-
+	
 /******************************************************************************/
 /*
  *	uint8_t uart0_dataavail(void){
@@ -489,7 +480,7 @@ uart0_dataavail:
  	ldi r24, lo8(uart0_ctx+UART0_CBB_RX_OFFSET)
  	ldi r25, hi8(uart0_ctx+UART0_CBB_RX_OFFSET)
  	rjmp circularbytebuffer_cnt
-
+	
 /******************************************************************************/
 #if	UART0_HOOK
 /*
@@ -505,5 +496,5 @@ uart0_sethook:
 	st X+, r25
 	ret
 #endif
-
+	
 #endif /* UART0_I */
