@@ -3,7 +3,7 @@ OBJ            =  main-huffman-test.o string-extras-asm.o \
                   cli-stub.o cli-core.o cli-basics.o cli-hexdump.o \
                   avr-huffman-decode-asm.o dump-decl.o dump-asm.o \
                   circularbytebuffer-asm.o uart_i-asm.o \
-		          hexdigit_tab.o data/test.txt.hfm.elf \
+		  hexdigit_tab.o data/test.txt.hfm.elf \
                   data/hacker_manifesto_borg.txt.hfm.elf \
                   data/COPYING.gpl3.hfm.elf \
                   data/hexdump_example.hfm.elf 
@@ -11,9 +11,9 @@ OBJ            =  main-huffman-test.o string-extras-asm.o \
 MCU_TARGET     = atmega644
 OPTIMIZE       = 
 PROGRAMMER     = avr911
-FLASHCMD       = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB2 -c $(PROGRAMMER) -U flash:w:$(PRG).hex  
+FLASHCMD       = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB0 -c $(PROGRAMMER) -U flash:w:$(PRG).hex  
 ERASECMD       = 
-EEPROM_FLASHCMD = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB2 -c $(PROGRAMMER) -U eeprom:w:$(PRG)_eeprom.hex
+EEPROM_FLASHCMD = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB0 -c $(PROGRAMMER) -U eeprom:w:$(PRG)_eeprom.hex
 
 #uisp -dprog=bsd -dlpt=/dev/parport1 --erase
 

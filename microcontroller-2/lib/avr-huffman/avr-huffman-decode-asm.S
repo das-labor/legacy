@@ -37,9 +37,7 @@ typedef struct {
 /*
  * param ctx: r24:r25
  */
-.global read_bit
 read_bit:
-	movw r26, r24
 	adiw r26, 3		/* X points at rbuffer_index */
 	ld r25, X		/* load rbuffer_index to r25 */
 	cpi r25, 8
@@ -63,7 +61,6 @@ read_bit:
 	tst r25
 	breq 2f
 	/* we got EOF */
-	ser r24
 	ser r25
 	ret
 2:
@@ -76,26 +73,22 @@ read_bit:
 6:
 	lsl r22
 	st X+, r22
-	clr r24
-	rol r24
+	clr r23
+	rol r23
 	inc r25
 	st X, r25
 	clr r25
 	ret
 
-V_EOF_HIGH = 0x02
-V_EOF_LOW  = 0xff
-V_NODE_HIGH = 0x01
-V_NODE_LOW  = 0xff
 
 /******************************************************************************/
 /* uint16_t huffman_dec_byte(huffman_dec_ctx_t* ctx)
  * param ctx: r24:r25
-*/
+ */
 NODE_PTR_0 = 28
 NODE_PTR_1 = 29
-CTX_0 = 16
-CTX_1 = 17
+TREE_PTR_0 = 16
+TREE_PTR_1 = 17
 .global huffman_dec_byte
 huffman_dec_byte:
 	push r28
@@ -121,27 +114,24 @@ huffman_dec_byte:
 	ld  r28, Z
 	ldd r29, Z+1
 5: /* tree is there and pointed to by Y */
-	push CTX_0
-	push CTX_1
-	movw CTX_0, r30
+	push TREE_PTR_0
+	push TREE_PTR_1
+	movw TREE_PTR_0, r30
 6:
-	movw r24, CTX_0
+	movw r26, TREE_PTR_0
 	rcall read_bit
 	tst r25
 	brne 9f /* eof occured */
 	ldd r25, Y+0
-	sbrc r24, 0
-	rjmp load_right
 load_left:
-	andi r25, 0x0f
 	ldd r24, Y+1
+	sbrs r23, 0
 	rjmp post_load_dec
 load_right:
-	andi r25, 0xf0
 	swap r25
 	ldd r24, Y+2
 post_load_dec:
-	tst r25
+	andi r25, 0x0f
 	breq 8f /* value found */
 	cpi r25, 0x0f
 	brne link_found
@@ -152,17 +142,17 @@ link_found:
 	add NODE_PTR_0, r24
 	adc NODE_PTR_1, r25
 	rjmp 6b
-8:	pop CTX_1
-	pop CTX_0
+8:	pop TREE_PTR_1
+	pop TREE_PTR_0
 	pop r29
 	pop r28
 	ret
 9:
-	movw r30, CTX_0
+	movw r30, TREE_PTR_0
 	ld r24, Z+
 	ld r25, Z+
 	call free
-;	movw r30, CTX_0 ; xxx
+;	movw r30, TREE_PTR_0 ; xxx
 ;	st Z+, r1       ; xxx
 ;	st Z+, r1       ; xxx
 	ser r25
