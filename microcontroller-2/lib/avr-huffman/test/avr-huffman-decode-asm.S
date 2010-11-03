@@ -19,18 +19,15 @@
 
 #include "avr-asm-macros.S"
 
+#define AUTO_LPM_ZERO 0 /* this allows automatic load from flash if read-function pointer is zero */
+
 /*
 typedef struct {
 	void* tree;
 	uint8_t  rbuffer;
 	uint8_t  rbuffer_index;
-#if HUFFMAN_USE_ADDR_16
 	uint16_t(*read_byte)(uint16_t addr);
 	uint16_t addr;
-#else
-	uint16_t(*read_byte)(uint32_t addr);
-	uint32_t addr;
-#endif
 } huffman_dec_ctx_t;
 */
 
@@ -46,16 +43,7 @@ read_bit:
 	push r26
 	push r27
 	adiw r26, 1
-	ld r30, X+		/* load function pointer */
-	ld r31, X+
-	ld r24, X+		/* load addr */
-	ld r25, X+
-	movw r22, r24
-	adiw r24, 1
-	st -X, r25		/* store incremented addr */
-	st -X, r24
-	movw r24, r22
-	icall
+	rcall read_byte_core
 	pop r27
 	pop r26
 	tst r25
@@ -181,6 +169,20 @@ huffman_dec_init:
 /******************************************************************************/
 /* uint8_t build_tree(huffman_dec_ctx_t* ctx)
  *  param ctx: r24:r25
+ *
+ *        +----*----+--------+--------+
+ * node:  |  head   | left   | right  |
+ *        +----*----+--------+--------+
+ *          |    |      |        |
+ *          |    V      V        |
+ *          |  +-------------+   |
+ *          |  |    left     |   |
+ *          |  +-------------+   |
+ *          |                    V
+ *          |          +-------------+
+ *          +--------->|    right    |
+ *                     +-------------+
+ *
  */
 LEFT_USED        =  9
 T_0              = 10
@@ -322,19 +324,9 @@ tree_build_end:
 	ret
 
 read_byte:
-	push_range 28, 29
-	movw r28, CTX_0
-	ldd r30, Y+4
-	ldd r31, Y+5
-	ldd r24, Y+6
-	ldd r25, Y+7
-	movw r22, r24
-	adiw r24, 1
-	std Y+6, r24
-	std Y+7, r25
-	movw r24, r22
-	icall
-	pop_range 28, 29
+	movw r26, CTX_0
+	adiw r26, 4
+	rcall read_byte_core
 	sbrs r25, 0
 	ret
 1:
@@ -342,6 +334,26 @@ read_byte:
 	pop r30 /* remove old return addr from stack */
 	pop r30
 	rjmp 90b
+
+read_byte_core:
+	ld r30, X+
+	ld r31, X+
+	ld r24, X+
+	ld r25, X+
+	movw r22, r24
+	adiw r24, 1
+	st -X, r25
+	st -X, r24
+#if AUTO_LPM_ZERO
+	adiw r30, 0
+	brne 2f
+	movw r30, r22
+	lpm
+	ret
+#endif
+2:
+	movw r24, r22
+	ijmp
 
 
 /******************************************************************************/

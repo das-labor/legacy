@@ -3,7 +3,7 @@ OBJ            =  main-huffman-test.o string-extras-asm.o \
                   cli-stub.o cli-core.o cli-basics.o cli-hexdump.o \
                   avr-huffman-decode-asm.o dump-decl.o dump-asm.o \
                   circularbytebuffer-asm.o uart_i-asm.o \
-		  hexdigit_tab.o data/test.txt.hfm.elf \
+                  hexdigit_tab.o data/test.txt.hfm.elf \
                   data/hacker_manifesto_borg.txt.hfm.elf \
                   data/COPYING.gpl3.hfm.elf \
                   data/hexdump_example.hfm.elf 
