@@ -88,11 +88,43 @@ void decompress_GPL(void){
 	decompress(&_binary_data_COPYING_gpl3_hfm_start, read_byte_pgm);
 }
 
+uint16_t eeof_read_byte_pgm(uint16_t addr){
+	if (addr==(uint16_t)&_binary_data_hacker_manifesto_borg_txt_hfm_start+20){
+		return 0xffff;
+	}
+	return pgm_read_byte((PGM_VOID_P)addr);
+}
+
+void eeof_test(void){
+	huffman_dec_ctx_t ctx;
+	uint16_t c;
+	uint16_t addr = (uint16_t)&_binary_data_hacker_manifesto_borg_txt_hfm_start;
+	huffman_dec_init(&ctx, eeof_read_byte_pgm);
+	huffman_dec_set_addr(&ctx, addr);
+	cli_putstr_P(PSTR("\r\ndecompressing data at 0x"));
+	cli_hexdump_rev(&addr, 2);
+	cli_putstr_P(PSTR("\r\n"));
+	for(;;){
+		c=huffman_dec_byte(&ctx);
+		if(c>0xff){
+			cli_putstr_P(PSTR("\r\n"));
+			return;
+		}
+		c&=0xff;
+		if(c=='\n'){
+			cli_putc('\r');
+		}
+		cli_putc(c);
+	}
+
+}
+
 /******************************************************************************/
 
 const char hacker_str[]  PROGMEM = "hacker_manifesto";
 const char test_str[]    PROGMEM = "test";
 const char hextest_str[] PROGMEM = "hextest";
+const char eeoftest_str[] PROGMEM = "eeoftest";
 const char GPL_str[]     PROGMEM = "gpl_license";
 const char dump_str[]    PROGMEM = "dump";
 const char echo_str[]    PROGMEM = "echo";
@@ -100,6 +132,7 @@ const char echo_str[]    PROGMEM = "echo";
 cmdlist_entry_t cmdlist[] PROGMEM = {
 	{ test_str,        NULL, decompress_test},
 	{ hextest_str,     NULL, decompress_hex},
+	{ eeoftest_str,    NULL, eeof_test},
 	{ hacker_str,      NULL, decompress_hacker },
 	{ GPL_str,         NULL, decompress_GPL},
 	{ dump_str,    (void*)1, (void_fpt)dump},
