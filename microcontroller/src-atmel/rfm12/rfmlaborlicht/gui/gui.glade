@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<interface>
+  <requires lib="gtk+" version="2.16"/>
+  <!-- interface-naming-policy project-wide -->
+  <object class="GtkWindow" id="win_main">
+    <property name="title" translatable="yes">LaborLichtCTRL</property>
+    <property name="resizable">False</property>
+    <property name="icon">logo.png</property>
+    <signal name="destroy" handler="on_gui_exit"/>
+    <signal name="destroy_event" handler="on_gui_exit"/>
+    <child>
+      <object class="GtkVBox" id="vbox1">
+        <property name="visible">True</property>
+        <child>
+          <object class="GtkHBox" id="hbox1">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkVBox" id="vbox2">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkLabel" id="lbl_title">
+                    <property name="visible">True</property>
+                    <property name="xalign">0.44999998807907104</property>
+                    <property name="label" translatable="yes">&lt;span size="x-large"&gt;LaborLichtCTRL&lt;/span&gt;
+&lt;span size="small"&gt;Version 1.1&lt;/span&gt;</property>
+                    <property name="use_markup">True</property>
+                  </object>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="lbl_select_device">
+                    <property name="label" translatable="yes">Device Address</property>
+                    <property name="single_line_mode">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkComboBoxEntry" id="addressfield"/>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkImage" id="image1">
+                <property name="visible">True</property>
+                <property name="xalign">1</property>
+                <property name="xpad">10</property>
+                <property name="ypad">10</property>
+                <property name="pixbuf">logo.png</property>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkColorSelection" id="colorselection1">
+            <property name="visible">True</property>
+            <property name="has_palette">True</property>
+            <property name="current_color">#000000000000</property>
+            <signal name="color_changed" handler="on_colorselection_color_changed"/>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkStatusbar" id="statusbar">
+            <property name="visible">True</property>
+            <property name="spacing">1</property>
+            <property name="homogeneous">True</property>
+            <property name="has_resize_grip">False</property>
+            <child>
+              <object class="GtkLabel" id="lbl_status">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="padding">10</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkListStore" id="liststore1"/>
+</interface>
