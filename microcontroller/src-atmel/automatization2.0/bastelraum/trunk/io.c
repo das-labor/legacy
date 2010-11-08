@@ -34,7 +34,7 @@ void init_io() {
 	OCR1B = 255;   // pwm timer compare target
 
 	DDRA &= ~(_BV(PA4) | _BV(PA7)); // Eingänge Türkontakt
-	PORTA |= _BV(PA4) | _BV(PA7);	// PULLUP
+	PORTA |= _BV(PA4);	// PULLUP
 
 }
 
