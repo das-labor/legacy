@@ -39,6 +39,48 @@ void flight_iterate_percent (froute_t *io_flight_p, float in_percent)
 	}
 }
 
+froute_t* froute_around_point (vec3_t in_p, int num_points)
+{
+	froute_t *new_r = malloc (sizeof(froute_t));
+	froute_t *tmp = new_r;
+	int i;
+	
+	for (i=0;i<num_points;i++)
+	{
+		tmp->p = malloc(sizeof(fpoint_t));
+		memcpy (&tmp->p->target, in_p, sizeof(vec3_t));
+		
+		tmp->progress = 0.0f;
+
+		tmp->p->eye[0] = in_p[0] + sin(((float) i/ (float) num_points) * 2 * M_PI) * 8.0f;
+		tmp->p->eye[1] = in_p[1] + cos(((float) i/ (float) num_points) * 2 * M_PI) * 8.0f;
+		tmp->p->eye[2] = 4.0f;
+
+		tmp->p->up[0] = 0.0f;
+		tmp->p->up[1] = 0.0f;
+		tmp->p->up[2] = 1.0f;
+
+		if (i != num_points-1)
+		{
+			tmp->next = malloc(sizeof(froute_t));
+		} else
+		{
+			tmp->next = new_r; /* link to first node */
+		}
+		tmp = tmp->next;
+	}
+	
+	/* generate transition vectors */
+	tmp = new_r;
+	for (i=0;i<num_points;i++)
+	{
+		flight_gen_transv (tmp);
+		printf("\t\t %p %p\n", tmp->next, tmp);
+		tmp = tmp->next;
+	}
+	return new_r;
+}
+
 void flight_set_view (froute_t *in_p)
 {
 	/*
