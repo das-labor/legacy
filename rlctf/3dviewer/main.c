@@ -167,11 +167,19 @@ int main (int argc, char* argv[])
 
 	for (i=0;i<4;i++)
 		flight_gen_transv (&myroute[i]);
-
+	
+#if 0
 	memcpy (&route_ref, &myroute[0], sizeof(froute_t));
 	route_ref.p = malloc(sizeof(fpoint_t));
 	memcpy (route_ref.p, myroute[0].p, sizeof(fpoint_t));
-	
+#else	
+	froute_t *htest;
+	vec3_t labpos = {26.8f, 18.8f, 0.0f};
+	htest = froute_around_point (labpos, 40);
+	memcpy (&route_ref, htest, sizeof(froute_t));
+	route_ref.p = malloc(sizeof(fpoint_t));
+	memcpy (route_ref.p, htest->p, sizeof(fpoint_t));
+#endif	
 	sdlstuff_init();
 	view_init(&views[0]);
 	view_init(&views[1]);
@@ -310,7 +318,7 @@ int main (int argc, char* argv[])
 			view_set(&views[0]);
 		} else
 		{
-			flight_iterate_percent (&route_ref, 0.002f);
+			flight_iterate_percent (&route_ref, 0.05f);
 			flight_set_view (&route_ref);
 		}
 		

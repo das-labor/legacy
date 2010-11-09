@@ -34,3 +34,7 @@ void flight_set_view (froute_t *in_point);
 /* calc transition vector
  */
 void flight_gen_transv (froute_t *in_route);
+
+/* generate a flight route around a point
+ */
+froute_t* froute_around_point (vec3_t in_p, int num_points);
