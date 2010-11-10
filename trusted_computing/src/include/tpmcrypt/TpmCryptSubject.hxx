@@ -57,6 +57,7 @@ const std::string TpmCryptSubject_PasswordMagicEntry = "Magic";
 
 const std::string TpmCryptSubject_SubjectName    = "Name";
 const std::string TpmCryptSubject_SubjectKeyType = "KeyType";
+const std::string TpmCryptSubject_SubjectAuth    = "Auth";
 const std::string TpmCryptSubject_SubjectKeyUUID = "KeyUUID";
 const std::string TpmCryptSubject_SubjectEMail   = "EMail";
 const std::string TpmCryptSubject_SubjectKeyfile = "Keyfile";
@@ -203,6 +204,7 @@ namespace tpmcrypt
 	     *  @return string, keytype of the subject
              */
 	    string getMySubjectKeyType()  { return mySubjectKeyType; };
+	    string getMySubjectAuth() { return mySubjectAuth; };
 	    
             /*!
              *  @brief get the email of a subject
@@ -298,6 +300,8 @@ namespace tpmcrypt
 	     * 	@return boolean, determines whether or not the given password was valid
 	     */
 	    bool verifyPassword(string &myPassword);
+	    
+	    string verifyAuth(TpmCryptSubject *Subject);
 
             /*!
              *  @brief changes the current password of a subject
@@ -351,6 +355,7 @@ namespace tpmcrypt
             string  mySubjectName;
             string	mySubjectKeyUUID;
             string  mySubjectKeyType;
+            string  mySubjectAuth;
             string  mySubjectPlatformSelection;
             string  mySubjectEMail;
             string  mySubjectKeyfile;

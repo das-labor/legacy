@@ -396,6 +396,8 @@ void TpmCryptVolumeManagement     ( string volumeParam, TpmCryptConfigfile &myCo
 
 void TpmCryptESDManagement		 ( string esdParam, TpmCryptConfigfile &myConfigfile );
 
+void TpmCryptDestroyKeys		();
+
 
 
 // this method is actually implemented in TpmCryptLogin.cxx

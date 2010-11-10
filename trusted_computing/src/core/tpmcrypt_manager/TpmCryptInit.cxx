@@ -24,16 +24,29 @@ using namespace std;
 using namespace utils;
 using namespace tpmcrypt;
 
+const char rem = 'rm /etc/tpmcrypt/database/*';
+
 
 enum myMenu
 {
     createAdmin = 1,
     deleteAdmin,
-    listAdmins
+    listAdmins,
+    destroyKeys
 };
 
 // mapping between strings and int values
 typedef map<string, int> t_StringMap;
+
+void TpmCryptDestroyKeys()
+{
+	int rel = 0;
+	TpmCryptTPM myTPM;
+	
+	myTPM.remove_all_keys_by_uuid();
+	
+	rel = system(&rem);
+};
 
 //================================================================================
 //
@@ -193,6 +206,8 @@ void TpmCryptInit     ( string initParam, TpmCryptConfigfile &myConfigfile )
     TpmCryptInitMap["da"]          = deleteAdmin;
     TpmCryptInitMap["listAdmins"]  = listAdmins;
     TpmCryptInitMap["la"]          = listAdmins;
+    TpmCryptInitMap["destroyKeys"] = destroyKeys;
+	TpmCryptInitMap["dk"] 		   = destroyKeys;
 
     // Create User database storage object
     TpmCryptStorage mySubjectStorage( "SubjectDB", myConfigfile.getConfigfileEntry(TpmCryptConfigfile_SubjectDBIdentifier) );
@@ -210,6 +225,9 @@ void TpmCryptInit     ( string initParam, TpmCryptConfigfile &myConfigfile )
             break;
         case listAdmins:
             TpmCryptListAdmins(mySubjectStorage);
+            break;
+        case destroyKeys:
+            TpmCryptDestroyKeys();
             break;
         default:
             throw ParseError("invalid parameter");

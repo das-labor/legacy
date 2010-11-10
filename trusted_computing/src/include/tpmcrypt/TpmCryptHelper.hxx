@@ -180,10 +180,10 @@ string convertUInt8VectorToString(vector<UInt8> *toConvert);
  *  @return, boolean, determines wheter or not the operation was successful
  */
  
-vector<int> convertStringToIntVector(const string &toConvert);
+vector<int> convertStringToIntVector(string &toConvert);
 bool convertIntVectorToChar(vector<int> *toConvert, char *dest, int &length);
 string convertIntVectorToString(vector<int> &toConvert);
-int strtoken(char *str, char *separator, char *token[24]);
+vector<int> strtoken(string str, const char *separator);
 
 
 bool convertCharToUInt8Vector(vector<UInt8> *toConvert, char *src, int length);
@@ -337,6 +337,8 @@ vector<UInt8> convertByteVector2UInt8Vector(ByteVector &toConvert);
  */
 
 string convertByteVector2String(ByteVector &toConvert);
+
+vector<string> getPlatforms(string str);
 
 
 void printToSyslog(string message);

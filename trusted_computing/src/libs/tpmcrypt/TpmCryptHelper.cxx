@@ -545,23 +545,13 @@ vector<UInt8> convertStringToUInt8Vector(const string &toConvert)
 
 //================================================================================
 //
-vector<int> convertStringToIntVector(const string &toConvert)
+vector<int> convertStringToIntVector(string &toConvert)
 {
-	vector<int>::const_iterator it;
-    vector<int> myString;
-    char mychar[50];
-    char com[]= "/";
-    char *blub;
-    int xyz;
-    int length = toConvert.length();
-    for (int i=0; i<length; i++)
-    {
-        mychar[i]=toConvert[i];
-		cout << toConvert[i] << endl;
-	}
-	xyz = strtoken(mychar, com, &blub);
-	cout << xyz << endl;
-    return myString;
+    vector<int> xyz;
+    const char com[]="/";
+    xyz = strtoken(toConvert, com);
+    
+    return xyz;
 };
 
 //================================================================================
@@ -663,18 +653,56 @@ string convertIntVectorToString(vector<int> &toConvert)
 };
 
 //
-int strtoken(char *str, char *separator, char *token[24])
+vector<string> getPlatforms(string str)
 {
-  int i = 0;
+	string match = ("Platform_"), komma = (","), found;
+	size_t info = 0;
+	size_t info2 = 0;
+	size_t info3 = 0;
+	vector<string> ret;
+	do
+	{
+		info = str.find(match, info2);
+		if (info!=string::npos)
+		{
+			info3 = info + match.size();
+			info2 = str.find(komma,info);
+			if(info2 != string::npos)
+			{
+				found = str.substr(info3, info2 - info3);
+				ret.push_back(found);
+			}
+			else
+			{
+				found = str.substr(info3, str.size() - info3);
+				ret.push_back(found);
+			break;
+			}
+		}
+	}
+	while(info != string::npos);
+	
+	return ret;
+};
 
-  token[0] = strtok(str, separator);
-
-  while ( token[i] ) {
-    i++;
-    token[i] = strtok(NULL, separator);
-  }
-  return i;
-}
+//
+vector<int> strtoken(string str, const char *separator)
+{
+	vector<int> test;
+	char *top;
+	char *token;
+	top = (char *)(str.c_str());
+	cout << top << endl;
+    token = strtok(top, separator);
+    while( token != NULL )
+    {
+       // Convert the token into an int and store it into a vector of int.
+       test.push_back(atoi(token));
+      // Get next token.
+       token = strtok(NULL, separator);
+    }
+	return test;
+};
 
 void findAvailableFilesystems(string fs, vector<string>* AvailableFilesystems)
 {
