@@ -41,6 +41,7 @@ TpmCryptSubject::TpmCryptSubject( string subjectIdentifier, TpmCryptStorage &sto
             mySubjectName (""),
             mySubjectKeyUUID (""),
             mySubjectKeyType (""),
+            mySubjectAuth (""),
             mySubjectPlatformSelection (""),
             mySubjectEMail (""),
             mySubjectKeyfile (""),
@@ -68,6 +69,7 @@ TpmCryptSubject::TpmCryptSubject( UInt32 subjectID, TpmCryptStorage &storageDB )
             mySubjectName (""),
             mySubjectKeyUUID (""),
             mySubjectKeyType (""),
+            mySubjectAuth (""),
             mySubjectPlatformSelection (""),
             mySubjectEMail (""),
             mySubjectKeyfile (""),
@@ -108,6 +110,7 @@ TpmCryptSubject::TpmCryptSubject( UInt8 subjectType,
             mySubjectName (subjectName),
             mySubjectKeyUUID (""),
             mySubjectKeyType (""),
+            mySubjectAuth (""),
             mySubjectPlatformSelection (pcr_string),
             mySubjectEMail (subjectEMail),
             mySubjectKeyfile (""),
@@ -260,7 +263,8 @@ TpmCryptSubject::TpmCryptSubject( UInt8 subjectType,
             mySubjectIDString(""),
             mySubjectName (subjectName),
             mySubjectKeyUUID (""),
-            mySubjectKeyType (""),  
+            mySubjectKeyType (""),
+            mySubjectAuth (""),  
             mySubjectPlatformSelection (pcr_string),         
             mySubjectEMail (subjectEMail),
             mySubjectKeyfile (""),
@@ -457,6 +461,7 @@ bool TpmCryptSubject::loadSubject(string &subjectIdentifier)
     mySubjectName = mySubjectStorage.getEntry(TpmCryptSubject_SubjectName);
     mySubjectKeyUUID = mySubjectStorage.getEntry(TpmCryptSubject_SubjectKeyUUID);
     mySubjectKeyType = mySubjectStorage.getEntry(TpmCryptSubject_SubjectKeyType);
+    mySubjectAuth = mySubjectStorage.getEntry(TpmCryptSubject_SubjectAuth);
     mySubjectType = TpmCryptSubjectType[mySubjectStorage.getEntry(TpmCryptSubject_SubjectType)];
     mySubjectPlatformSelection = mySubjectStorage.getEntry(TpmCryptSubject_SubjectPlatformSelection);
     mySubjectEMail = mySubjectStorage.getEntry(TpmCryptSubject_SubjectEMail);
@@ -490,6 +495,7 @@ bool TpmCryptSubject::storeSubject()
     mySubjectStorage.setEntry(TpmCryptSubject_SubjectName, mySubjectName);
     mySubjectStorage.setEntry(TpmCryptSubject_SubjectKeyUUID, mySubjectKeyUUID);
     mySubjectStorage.setEntry(TpmCryptSubject_SubjectKeyType, mySubjectKeyType);
+    mySubjectStorage.setEntry(TpmCryptSubject_SubjectAuth, mySubjectAuth);
     mySubjectStorage.setEntry(TpmCryptSubject_SubjectPlatformSelection, mySubjectPlatformSelection);
     mySubjectStorage.setEntry(TpmCryptSubject_SubjectType, TpmCryptSubjectType[mySubjectType]);
     mySubjectStorage.setEntry(TpmCryptSubject_SubjectEMail, mySubjectEMail);
@@ -538,6 +544,7 @@ void TpmCryptSubject::deleteSubject()
     mySubjectName.clear();
     mySubjectKeyUUID.clear();
     mySubjectKeyType.clear();
+    mySubjectAuth.clear();
     mySubjectEMail.clear();
     mySubjectKeyfile.clear();
     mySubjectCountrycode.clear();
@@ -632,7 +639,8 @@ ByteVector  TpmCryptSubject::encryptForSubject(TpmCryptSubject *Subject, ByteVec
        throw DecryptionFailed("KeyonaSubject|encryptForSubject(): No data supplied to be encrypted!");
 	
 	if (mySubjectType == SUBJECTTYPE_PLATFORM)
-			{	
+	{	
+			loadSubject(mySubjectIDString);
 			vector<int> pcr = convertStringToIntVector(mySubjectPlatformSelection);
 			int local=0;
             // sealing it to current platform
@@ -642,6 +650,24 @@ ByteVector  TpmCryptSubject::encryptForSubject(TpmCryptSubject *Subject, ByteVec
             // storing sealed data
             ByteVector Data = mySealedDataWithKey.back();
             mySealedDataWithKey.pop_back();
+            pcr.clear();
+            
+            
+            //if(mySubjectAuth = NULL)
+			//{
+				loadSubject(mySubjectIDString);
+				pcr = convertStringToIntVector(mySubjectPlatformSelection);
+				string test = generateRandomString(6);
+				cout << "Authentifikation Data: " << test << "\tBitte merken oder notieren sie sich diese 6 Zeichen" << endl;
+				ByteVector random = convertStringToByteVector(test);
+				vector<ByteVector> mySealedDataWithAuth = myTPM.seal(random,local,pcr); // XXX see kyronatpm.hxx
+				ByteVector AuthData = mySealedDataWithAuth.back();
+				mySubjectAuth = convertByteVector2String(AuthData);
+				mySealedDataWithKey.pop_back();
+				pcr.clear();
+			//}
+             
+            
             /*string DataFile = mySubjectKeyfile + TPMCRYPT_TPM_DATA_EXTENSION;
             storeByteVectorInFile(DataFile, Data);
 
@@ -660,6 +686,21 @@ ByteVector  TpmCryptSubject::encryptForSubject(TpmCryptSubject *Subject, ByteVec
     return mySubjectKey->encrypt(this, NULL, toEncrypt);
 	//	throw InvalidKey("KeyonaSubject|encryptForSubject(): Invalid key for subject '" + mySubjectName + "'");
 	}
+};
+
+//================================================================================
+//
+string  TpmCryptSubject::verifyAuth(TpmCryptSubject *Subject)
+{
+	TpmCryptTPM myTPM;
+	ByteVector test2 = convertStringToByteVector(Subject->mySubjectAuth);
+	vector<ByteVector> mySealedDataWithAuth;
+	mySealedDataWithAuth.push_back(test2);
+	ByteVector mhh = myTPM.unseal(mySealedDataWithAuth);
+	mySealedDataWithAuth.pop_back();
+	string test3 = convertByteVector2String(mhh);
+
+	return test3;
 };
 
 //================================================================================
@@ -684,8 +725,16 @@ ByteVector  TpmCryptSubject::decryptBySubject(TpmCryptSubject *Subject, ByteVect
 
             ByteVector myPlainPassword = myTPM.unseal(mySealedDataWithKey);
             mySealedDataWithKey.pop_back();
-
+            
+            
+            /*if(mySubjectAuth != 0)
+            {
+     
+			}*/
+			
             return myPlainPassword;
+            
+        
 /*
             string x( (const char*) myPlainPassword.toCArray(), myPlainPassword.size() );
             //if (!verifyPassword(x))

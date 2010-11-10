@@ -63,7 +63,6 @@ void* getStringThread(void* message)
    pthread_mutex_unlock( &condition_mutex );
    return NULL;
 };
-
 void MountHelper::sendMessage(string tosend)
 {
     int sock, sockfd, newsock, servlen, n;

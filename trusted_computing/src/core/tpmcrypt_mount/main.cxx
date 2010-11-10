@@ -204,6 +204,23 @@ int main(int argc, const char *argv[])
                                 cout << "Volume '" << volumeOption.getValue() << "' is now attached to: '" << myVolume.getMyVolumePath() << "'." << endl;
                             }
                         }
+                        
+                        if (userOption.hasValue()) 
+                        {
+							string verified;
+							string compare = userOption.getValue();
+							vector<string> platforms = getPlatforms(compare);
+							vector<string>::const_iterator i;
+							for(i = platforms.begin(); i != platforms.end(); i++)
+							{
+								verified = TpmCryptSubject verifyAuth(*(i));
+								cout << "***************************************************************" << endl << "************" << "Please verify the Auth Secret" << "************" << endl; 
+								cout << "****************************" << verified << "****************************" << endl;
+								cout << "***************************************************************" << endl;
+							}
+							exit(-1);
+						}
+                        
                         MountHelper( mountOption.getValue(), userOption.getValue(), volumeOption.getValue(), removeDelimiter(pathOption.getValue()) );
                         return SUCCESS;
                     }
