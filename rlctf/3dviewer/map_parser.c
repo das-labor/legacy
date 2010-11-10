@@ -160,7 +160,7 @@ void draw_entites (void)
 	if (wobble > M_PI)
 		wobble = M_PI/360;
 
-	glBlendFunc (GL_ONE, GL_ONE);
+	glBlendFunc (GL_ONE, GL_ZERO);
 	for (i=0;i<num_ents;i++)
 	{
 		glTranslated (ents[i].pos[0], ents[i].pos[1], ents[i].pos[2]);
@@ -591,8 +591,8 @@ void map_draw ()
 	uint_fast32_t i, k, o;
 	float fcol[3] = {0.0f, 0.0f, 0.0f};
 	
-	//glBlendFunc (GL_ONE, GL_ZERO);
-	glBlendFunc (GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
+	glBlendFunc (GL_ONE, GL_ZERO);
+	//glBlendFunc (GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
 	glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
 	glDisable(GL_TEXTURE_2D);
 	glBegin(GL_QUADS);
