@@ -25,11 +25,22 @@ typedef struct froute_s
 
 } froute_t;
 
+typedef struct flight_s
+{
+	fpoint_t dir;
+	vec3_t tilt;
+	float speed;
+} flight_t;
+
 /* move further towards the next point on the route in percent.
  */
-void flight_iterate_percent (froute_t *io_flight_p, float in_percent);
+void flightroute_iterate_percent (froute_t *io_flight_p, float in_percent);
 
-void flight_set_view (froute_t *in_point);
+void flightroute_set_view (froute_t *in_point);
+void flight_set_view (flight_t *in_f);
+void flight_set_xydelta (flight_t *in_f, int in_x, int in_y);
+void flight_iterate_percent (flight_t *in_f, float in_percent);
+void flight_init (flight_t *in_f);
 
 /* calc transition vector
  */

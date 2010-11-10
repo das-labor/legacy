@@ -111,7 +111,7 @@ void sdlstuff_init ()
 	}
 
 	SDL_EnableKeyRepeat(25, SDL_DEFAULT_REPEAT_INTERVAL);
-
+	SDL_ShowCursor (0);
 
 	/* ...finally... let's power up the gl stuff... */
 
@@ -128,9 +128,11 @@ void scene_init ()
 int main (int argc, char* argv[])
 {
 	SDL_Event sdlev;
-	uint8_t dodraw = 1, draw_minimap = 0, opt_editmode = 0;
+	uint8_t dodraw = 1, draw_minimap = 0, opt_editmode = 0, opt_flightmode = 1;
 	uint_fast8_t i;
 	float lz = 0.0f, lx = 0.0f, ly = 10.0f;
+	float fspeed = 0.0001f;
+	flight_t flights[1];
 
 	froute_t myroute[4];
 	fpoint_t routepoints[4] =
@@ -174,11 +176,13 @@ int main (int argc, char* argv[])
 	memcpy (route_ref.p, myroute[0].p, sizeof(fpoint_t));
 #else	
 	froute_t *htest;
-	vec3_t labpos = {26.8f, 18.8f, 0.0f};
+	vec3_t labpos = {26.884160f, 11.829100f, 0.0f};
 	htest = froute_around_point (labpos, 40);
 	memcpy (&route_ref, htest, sizeof(froute_t));
 	route_ref.p = malloc(sizeof(fpoint_t));
 	memcpy (route_ref.p, htest->p, sizeof(fpoint_t));
+
+	flight_init (&flights[0]);
 #endif	
 	sdlstuff_init();
 	view_init(&views[0]);
@@ -270,6 +274,19 @@ int main (int argc, char* argv[])
 						case SDLK_e:
 							opt_editmode ^= 0x01;
 						break;
+						case SDLK_f:
+							opt_flightmode ^= 0x01;
+						break;
+						case SDLK_a:
+							if (opt_flightmode) fspeed += 0.0001f;
+						break;
+						case SDLK_y:
+							if (opt_flightmode) fspeed -= 0.0001f;
+						break;
+
+						case SDLK_F1:
+							SDL_WM_ToggleFullScreen (mysurface);
+						break;
 
 
 						default:
@@ -282,6 +299,11 @@ int main (int argc, char* argv[])
 					set_rot (sdlev.button.x / 4);
 					if (SDL_GetMouseState (NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT))
 						map_set_pos_delta (sdlev.motion.xrel / 8, sdlev.motion.yrel / 8, 0.0f);
+
+					if (opt_flightmode)
+					{
+						flight_set_xydelta (&flights[0], sdlev.motion.xrel, sdlev.motion.yrel);
+					}
 				break;
 
 				case SDL_MOUSEBUTTONDOWN:
@@ -316,10 +338,15 @@ int main (int argc, char* argv[])
 		if (opt_editmode)
 		{
 			view_set(&views[0]);
+		} else if (opt_flightmode)
+		{
+			flight_set_xydelta (&flights[0], 0,0);
+			flight_iterate_percent (&flights[0], fspeed);
+			flight_set_view (&flights[0]);
 		} else
 		{
-			flight_iterate_percent (&route_ref, 0.05f);
-			flight_set_view (&route_ref);
+			flightroute_iterate_percent (&route_ref, 0.005f);
+			flightroute_set_view (&route_ref);
 		}
 		
 		glColor3f (1.0f, 0.0f, 0.0f);
