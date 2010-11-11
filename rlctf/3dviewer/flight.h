@@ -28,8 +28,9 @@ typedef struct froute_s
 typedef struct flight_s
 {
 	fpoint_t dir;
-	vec3_t tilt;
+	float pitch, roll, yaw;
 	float speed;
+	vec3_t left;
 } flight_t;
 
 /* move further towards the next point on the route in percent.
@@ -41,6 +42,9 @@ void flight_set_view (flight_t *in_f);
 void flight_set_xydelta (flight_t *in_f, int in_x, int in_y);
 void flight_iterate_percent (flight_t *in_f, float in_percent);
 void flight_init (flight_t *in_f);
+
+void flight_set_pitch (flight_t *fp, int);
+void flight_set_roll (flight_t *fp, int);
 
 /* calc transition vector
  */

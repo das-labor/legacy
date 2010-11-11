@@ -104,50 +104,34 @@ void flightroute_set_view (froute_t *in_p)
 		
 }
 
-void flight_set_xydelta (flight_t *in_f, int in_x, int in_y)
+/* rotate the plane coords around given axis */
+void rotate_plane_axis (flight_t *fp, vec3_t in_axis, float in_angle)
 {
-	static float dy = 0.0f;
-	static float dx = 0.0f;
-	float xyrel;
-	vec3_t addv, dirv, tiltv = {0.0f, 0.0f, 1.0f};
-	float tlen, tilt;
-
-	if (in_x != 0)
-		dx += (float) in_x / 1024.0f;
-	if (in_y != 0)
-		dy += (float) in_y / 4096.0f;
 	
-	if (dx > 1.0f)
-		dx = 1.0f;
-	else if (dx < -1.0f)
-		dx = -1.0f;
-
-	if (dy > 0.1f)
-		dy = 0.1f;
-	else if (dy < -0.1f)
-		dy = -0.1f;
-	
-	
-
-	vec3xyortho (addv, in_f->dir.eye, in_f->dir.target);
-	
-	tiltv[0] = (sin(M_PI * addv[0]) * dx);
-	tiltv[1] = (sin(M_PI * addv[1]) * dx);
-	tiltv[2] = 1.0f;
-
-	vec3normalize (tiltv);
-	memcpy (&in_f->dir.up, tiltv, sizeof(vec3_t));
-	
-	vec3scale (addv, (double) dx);
-	addv[2] = 0.0f;
-	if (dx != 0.0f)
-		vec3add (in_f->dir.target, in_f->dir.target, addv);
-
-	addv[0] = addv[1] = 0.0f;
-	if (dy != 0.0f)
-		in_f->dir.target[2] += dy / 2.0f;
 }
 
+void flight_set_roll (flight_t *fp, int in_roll)
+{
+	fp->roll += ((float) in_roll / 256.0f);
+	if (fp->roll > 1.0f)
+		fp->roll = 1.0f;
+	if (fp->roll < -1.0f)
+		fp->roll = -1.0f;
+}
+
+void flight_set_pitch (flight_t *fp, int in_pitch)
+{
+	fp->pitch += ((float) in_pitch / 256.0f);
+	if (fp->pitch > 1.0f)
+		fp->pitch = 1.0f;
+	if (fp->pitch < -1.0f)
+		fp->pitch = -1.0f;
+}
+
+void flight_set_xydelta (flight_t *in_f, int in_x, int in_y)
+{
+	return;
+}
 void flight_gen_transv (froute_t *in_r)
 {
 	if (in_r->next == NULL)
@@ -161,11 +145,37 @@ void flight_gen_transv (froute_t *in_r)
 
 void flight_iterate_percent (flight_t *in_f, float in_percent)
 {
-	vec3_t dirv;
+	vec3_t dirv, tmp;
 	vec3sub (dirv, in_f->dir.target, in_f->dir.eye);
+	vec3normalize (dirv);
+
+	vec3rotateaxis (in_f->dir.up, dirv, in_f->dir.up, in_f->roll);
+	vec3rotateaxis (in_f->left, dirv, in_f->left, in_f->roll);
+	vec3normalize (in_f->left);
+	vec3normalize (in_f->dir.up);
+//	vec3normalize (dirv);
+	vec3rotateaxis (in_f->dir.target, in_f->left, in_f->dir.target, in_f->pitch);
+	vec3rotateaxis (in_f->dir.up, in_f->left, in_f->dir.up, in_f->pitch);
+	printf("pitch: %010f , roll: %010f, speed %010f\n", in_f->pitch, in_f->roll, in_f->speed);
+	vec3ortho (dirv, in_f->left, in_f->dir.up);
+	if (in_f->speed != 0.0f)
+	{
+		vec3normalize(dirv);
+		vec3scale (dirv, (double) in_percent * - in_f->speed);
+		vec3add (in_f->dir.eye, in_f->dir.eye, dirv);
+		vec3add (in_f->dir.target, in_f->dir.eye, dirv);
+		printf("dv: %f %f %f", dirv[0], dirv[1], dirv[2]);
+	}
+	in_f->roll *= 0.8f;
+	in_f->pitch *= 0.8f;
+	//vec3normalize(dirv);
+	//vec3add (in_f->dir.target, in_f->dir.eye, dirv);
+	return;
+/*
 	vec3scale (dirv, (double) in_percent);
 	vec3add (in_f->dir.eye, in_f->dir.eye, dirv);
 	vec3add (in_f->dir.target, in_f->dir.target, dirv);
+*/
 }
 
 void flight_set_view (flight_t *in_f)
@@ -181,11 +191,22 @@ void flight_init (flight_t *in_f)
 {
 	in_f->dir.eye[0] = 0.0f;
 	in_f->dir.eye[1] = 0.0f;
-	in_f->dir.eye[2] = 10.0f;
-	in_f->dir.target[0] = 10.0f;
-	in_f->dir.target[1] = 10.0f;
+	in_f->dir.eye[2] = 1.0f;
+	in_f->dir.target[0] = 1.0f;
+	in_f->dir.target[1] = 0.0f;
 	in_f->dir.target[2] = 1.0f;
 	in_f->dir.up[0] = 0.0f;
 	in_f->dir.up[1] = 0.0f;
 	in_f->dir.up[2] = 1.0f;
+
+	in_f->pitch = 0.0000f;
+	in_f->roll = 0.0f;
+	in_f->yaw = 0.0f;
+	in_f->speed = 0.00000f;
+
+	in_f->left[0] = 0.0f;
+	in_f->left[1] = -1.0f;
+	in_f->left[2] = 0.0f;
 }
+
+

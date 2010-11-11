@@ -43,6 +43,14 @@ void vec3xyortho (vec3_t out_result, vec3_t in_v0, vec3_t in_v1)
 	vec3normalize (out_result);
 }
 
+void vec3ortho (vec3_t out_res, vec3_t in_v0, vec3_t in_v1)
+{
+	out_res[0] = in_v0[1] * in_v1[2] - in_v0[2] * in_v1[1];
+	out_res[1] = in_v0[2] * in_v1[0] - in_v0[0] * in_v1[2];
+	out_res[2] = in_v0[0] * in_v1[1] - in_v0[1] * in_v1[0];
+	vec3normalize (out_res);
+}
+
 void vec3inv (vec3_t in_v)
 {
 	in_v[0] *= -1;
@@ -152,4 +160,47 @@ void vec3sort4clockwise2d (vec3_t *out_result, vec3_t *in_v)
 
 	memcpy (tmp[3], in_v[i], sizeof(vec3_t));
 	memcpy (out_result, tmp, sizeof(vec3_t)*4);
+}
+
+void vec3rotateaxis (vec3_t out_res, vec3_t in_axis,
+	vec3_t in_v, float in_angle)
+{
+	uint_fast8_t i;
+
+	/* rotation matrix */
+	static vec3_t rm[3]; 
+
+	/* sin(a), 1-cos(a) */
+	double omca = 1.0f - cos(in_angle);
+	double ca = cos(in_angle);
+	double sa = sin(in_angle);
+	
+	/* products */
+	double vxy = in_axis[0] * in_axis[1];
+	double vyz = in_axis[2] * in_axis[1];
+	double vxz = in_axis[0] * in_axis[2];
+
+	double vxx = in_axis[0] * in_axis[0];
+	double vyy = in_axis[1] * in_axis[1];
+	double vzz = in_axis[2] * in_axis[2];
+
+	rm[0][0] = ca + vxx * omca;
+	rm[0][1] = vxy * omca - in_axis[2] * sa;
+	rm[0][2] = vxz * omca + in_axis[1] * sa;
+	
+	rm[1][0] = vxy * omca + in_axis[2] * sa;
+	rm[1][1] = ca + vyy * omca;
+	rm[1][2] = vyz * omca - in_axis[0] * sa;
+	
+	rm[2][0] = vxz * omca - in_axis[1] * sa;
+	rm[2][1] = vyz * omca + in_axis[0] * sa;
+	rm[2][2] = ca + vzz * omca;
+
+	for (i=0;i<3;i++)
+	{
+		out_res[i] =
+			in_v[0] * rm[i][0] +
+			in_v[1] * rm[i][1] +
+			in_v[2] * rm[i][2];
+	}
 }
