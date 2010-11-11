@@ -11,7 +11,7 @@
 #define XML_FMT_INT_MOD "l"
 #endif
 
-#define BUFFSIZE        8000000
+#define BUFFSIZE        10*1024*1024
 
 /* base size of point database (will be realloc()'ed */
 #define PDB_BASESIZE 8192
@@ -160,7 +160,7 @@ void draw_entites (void)
 	if (wobble > M_PI)
 		wobble = M_PI/360;
 
-	glBlendFunc (GL_ONE, GL_ZERO);
+	glBlendFunc (GL_ONE, GL_ONE);
 	for (i=0;i<num_ents;i++)
 	{
 		glTranslated (ents[i].pos[0], ents[i].pos[1], ents[i].pos[2]);
@@ -230,7 +230,7 @@ void add_building (uint_fast32_t w)
 		roof[p%4][1] = waydb[w]->points[p]->lat * map_scalef;
 		roof[p%4][2] = (waydb[w]->points[p]->ele + 0.25f);
 		
-		if (p>0 && !(p%4))
+		if (p>0 && !(p%4) && 0)
 		{
 			memcpy (tiles[ti].coords, roof, sizeof(vec3_t)*4);
 			tiles[ti].ccode = 0;
@@ -591,8 +591,8 @@ void map_draw ()
 	uint_fast32_t i, k, o;
 	float fcol[3] = {0.0f, 0.0f, 0.0f};
 	
-	glBlendFunc (GL_ONE, GL_ZERO);
-	//glBlendFunc (GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
+	//glBlendFunc (GL_ONE, GL_ZERO);
+	glBlendFunc (GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
 	glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
 	glDisable(GL_TEXTURE_2D);
 	glBegin(GL_QUADS);
@@ -626,35 +626,45 @@ void map_load (const char* in_mapname)
 		exit(-1);
 	}
 
+		printf("L %i\n", __LINE__);
 	XML_SetElementHandler(xp, start, end);
+		printf("L %i\n", __LINE__);
 
+		FILE *fp;
+		fp = fopen (in_mapname, "r");
 	for (;;)
 	{
 		int done;
 		int len;
-		FILE *fp;
-		
-		fp = fopen (in_mapname, "r");
+		printf("L %i\n", __LINE__);
 		len = (int)fread(Buff, 1, BUFFSIZE, fp);
+		printf("L %i\n", __LINE__);
 		if (ferror(fp))
 		{
 			fprintf(stderr, "Read error\n");
 			exit(-1);
 		}
+		printf("L %i\n", __LINE__);
 		done = feof(fp);
 
+		printf("L %i, %p, %p, %i\n", __LINE__, xp, Buff, len);
 		if (XML_Parse(xp, Buff, len, done) == XML_STATUS_ERROR)
 		{
+		printf("L %i\n", __LINE__);
 			fprintf(stderr, "Parse error at line %" XML_FMT_INT_MOD "u:\n%s\n",
-			XML_GetCurrentLineNumber(xp),
-			XML_ErrorString(XML_GetErrorCode(xp)));
+				XML_GetCurrentLineNumber(xp),
+				XML_ErrorString(XML_GetErrorCode(xp)));
+		printf("L %i\n", __LINE__);
 			exit(-1);
 		}
+		printf("L %i\n", __LINE__);
 
 		if (done)
 			break;
 	}
+		printf("L %i\n", __LINE__);
 	XML_ParserFree(xp);
+		printf("L %i\n", __LINE__);
 
 	printf("processed %lu points, %lu ways\n", pointdb_numpoints, num_ways);
 	
@@ -675,6 +685,10 @@ void map_load (const char* in_mapname)
 		num_tiles += (2*waydb[w]->numpoints)-3;
 
 		tiles = realloc(tiles, num_tiles * sizeof(maptile_t));
+		if (tiles == NULL)
+		{
+			printf("ralloc fault line %i %s\n", __LINE__, __FILE__);
+		}
 //		memset (tiles + (ti*sizeof(maptile_t)), 0x00, ((2*waydb[w]->numpoints)-3) * sizeof(maptile_t));
 
 		for (p=0;p<waydb[w]->numpoints-1;p++)

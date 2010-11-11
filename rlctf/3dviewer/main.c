@@ -183,6 +183,7 @@ int main (int argc, char* argv[])
 	memcpy (route_ref.p, htest->p, sizeof(fpoint_t));
 
 	flight_init (&flights[0]);
+	flight_init (&flights[1]);
 #endif	
 	sdlstuff_init();
 	view_init(&views[0]);
@@ -193,7 +194,11 @@ int main (int argc, char* argv[])
 	initgl();
 
 	map_load ("map.osm");
-	
+	map_load ("map2.osm");
+	map_load ("map3.osm");
+	map_load ("map4.osm");
+//	map_load ("map5.osm");
+	printf("L %i\n", __LINE__);	
 
 	buildFont (120);
 	select_font (120);
@@ -232,6 +237,7 @@ int main (int argc, char* argv[])
 							lz+=0.1f;
 							view_move (&views[0], 0.0f, 0.4f, -0.076604444f);
 							view_move (&views[1], 0.0f, 0.4f, 0.0f);
+							flight_set_pitch (&flights[0], 1);
 						break;
 
 						case SDLK_UP:
@@ -239,18 +245,21 @@ int main (int argc, char* argv[])
 
 							view_move (&views[0], 0.0f, -0.4f, 0.076604444f);
 							view_move (&views[1], 0.0f, -0.4f, 0.0f);
+							flight_set_pitch (&flights[0], -1);
 						break;
 
 						case SDLK_LEFT:
 							lx-= 0.1f;
 							view_move (&views[0], 0.4f, 0.0f, 0.0f);
 							view_move (&views[1], 0.4f, 0.0f, 0.0f);
+							flight_set_roll (&flights[0], -1);
 						break;
 						
 						case SDLK_RIGHT:
 							lx+= 0.1f;
 							view_move (&views[0], -0.4f, 0.0f, 0.0f);
 							view_move (&views[1], -0.4f, 0.0f, 0.0f);
+							flight_set_roll (&flights[0], 1);
 						break;
 
 						case SDLK_PAGEUP:
@@ -278,14 +287,17 @@ int main (int argc, char* argv[])
 							opt_flightmode ^= 0x01;
 						break;
 						case SDLK_a:
-							if (opt_flightmode) fspeed += 0.0001f;
+							if (opt_flightmode) flights[0].speed += 0.001f;
 						break;
 						case SDLK_y:
-							if (opt_flightmode) fspeed -= 0.0001f;
+							if (opt_flightmode) flights[0].speed -= 0.0001f;
 						break;
 
 						case SDLK_F1:
 							SDL_WM_ToggleFullScreen (mysurface);
+						break;
+						case SDLK_r:
+							flight_init(&flights[0]);
 						break;
 
 
@@ -302,7 +314,9 @@ int main (int argc, char* argv[])
 
 					if (opt_flightmode)
 					{
-						flight_set_xydelta (&flights[0], sdlev.motion.xrel, sdlev.motion.yrel);
+					//	flight_set_roll (&flights[0], sdlev.motion.xrel);
+					//	flight_set_pitch (&flights[0], sdlev.motion.yrel);
+						//flight_set_xydelta (&flights[0], sdlev.motion.xrel, sdlev.motion.yrel);
 					}
 				break;
 
@@ -359,9 +373,27 @@ int main (int argc, char* argv[])
 		glEnd();
 		
 		map_draw();
+		float r = 1000.0f / (float) rand();
+
+		vec3_t t[3] = {{-r, 0.0f, r}, {r, 0.0f, r}, {0.0f, 0.0f, 0.0f}};
+	//	vec3normalize (t[0]);
+	//	vec3normalize (t[1]);
+		vec3ortho (t[2], t[0], t[1]);
+//		printf("v: [%10f %10f %10f] [%10f %10f %10f] [%10f %10f %10f]\n",
+//			t[0][0], t[0][1], t[0][2], t[1][0], t[1][1], t[1][2], t[2][0], t[2][1], t[2][2]);
+		glBegin(GL_LINES);
+			for (i=0;i<3;i++)
+			{
+				glColor3f ((i+1) * 0.33f, i * 0.33f, i* 0.33f);
+				glColor3dv (t[i]);
+				glVertex3dv (t[i]);
+				glVertex3f (0.0f, 0.0f, 0.0f);
+			}
+		glEnd();
 
 
-		if (draw_minimap)
+
+		if (draw_minimap || 1)
 		{
 			/* minimap */
 			glViewport (1266, 668, 100, 100);
