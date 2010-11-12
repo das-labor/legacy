@@ -1,0 +1,97 @@
+#!/bin/bash
+#
+# Termin-Bot init-script
+
+#set +e   # Don't exit on error status
+
+PATH=/usr/local/lib/statusbot:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/local/sbin/mybot.py
+#DAEMON=/usr/local/lib/statusbot/run_for_ever.sh
+NAME=statusbot
+DESC="LABOR Statusbot"
+USER="www-data"
+
+start()
+{
+        # Return
+        #   0 if daemon has been started
+        #   1 if daemon was already running
+        #   2 if daemon could not be started
+        start-stop-daemon --start -d /usr/local/lib/statusbot -c www-data --quiet --make-pidfile --pidfile /var/run/$NAME.pid --exec $DAEMON --background > /dev/null || return 1
+#        start-stop-daemon --start -d /usr/local/lib/statusbot -c www-data --quiet --pidfile /var/run/$NAME.pid --exec $DAEMON --background || return 2
+}
+
+stop()
+{
+        # Return
+        #   0 if daemon has been stopped
+        #   1 if daemon was already stopped
+        #   2 if daemon could not be stopped
+        #   other if a failure occurred
+        start-stop-daemon --stop  -m --user www-data  --pidfile /var/run/$NAME.pid 
+        RETVAL="$?"
+        return "$RETVAL"
+}
+
+case "$1" in
+  start)
+        echo -n "Starting $DESC: $NAME"
+        start
+        case "$?" in
+                0)
+                        echo "."
+                        exit 0
+                        ;;
+                1)
+                        echo " (already running)."
+                        exit 0
+                        ;;
+                *)
+                        echo " (failed)."
+                        exit 1
+                        ;;
+        esac
+        ;;
+  stop)
+        echo -n "Stopping $DESC: $NAME"
+        stop
+        case "$?" in
+                0) echo "." ; exit 0 ;;
+                1) echo " ()." ; exit 0 ;;
+                *) echo " (failed)." ; exit 1 ;;
+        esac
+        ;;
+  restart)
+        echo -n "Restarting $DESC: $NAME"
+        stop
+        case "$?" in
+                0|1)
+                        start
+                        case "$?" in
+                                0)
+                                        echo "."
+                                        exit 0
+                                        ;;
+                                1)
+                                        echo " (failed -- old process is still running)."
+                                        exit 1
+                                        ;;
+                                *)
+                                        echo " (failed to start)."
+                                        exit 1
+                                        ;;
+                        esac
+                        ;;
+                *)
+                        echo " (failed to stop)."
+                        exit 1
+                        ;;
+        esac
+        ;;
+  *)
+        echo "Usage: /etc/init.d/$NAME {start|stop|restart}" >&2
+        exit 3
+        ;;
+esac
+
+exit 0
