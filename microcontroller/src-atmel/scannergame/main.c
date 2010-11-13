@@ -14,7 +14,7 @@ void init()
 	//ACSR |= _BV(ACD);
 
 	//debug LED output
-	DDRB |= _BV(PB7);
+	DDRD |= _BV(PD6);
 	
 	// Must be output else SPI will fail
 //	DDRB |= _BV(PB2);
@@ -36,14 +36,20 @@ int main(void)
 	uint8_t codelength=0;
 	ir_genHeader(0, IR_NEC_header, IR_NEC_headerlength);
 	codelength=ir_genCode(IR_NEC_headerlength,0,IR_NEC_oneCode,IR_NEC_oneCodelength,IR_NEC_zeroCode,IR_NEC_zeroCodelength,0b00010000110010001110000100011110, 32);
-	ir_sendCode(codelength);	
+	//ir_sendCode(codelength);	
 	//the main loop continuously handles can messages
 	while (1)
 	{	
 		//check uart: TODO
 
-		PORTB &= ~_BV(PB7);
+		PORTD &= ~_BV(PD6);
 		ir_sendCode(codelength);
+		_delay_ms(50);
+		PORTD |= _BV(PD6);
+		_delay_ms(50);
+		PORTD |= _BV(PD6);
+		_delay_ms(50);
+		PORTD |= _BV(PD6);
 		_delay_ms(50);
 	}
 }
