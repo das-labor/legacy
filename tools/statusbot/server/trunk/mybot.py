@@ -112,6 +112,6 @@ bot.commands["*miau*"]=bot.mauz
 bot.commands["kratze?"]=bot.kratze
 
 
-bot.join_room("labor@conference.das-labor.org")
+bot.join_room("labor@conference.das-labor.org",username="#ChanServ")
 #bot.send("admin@conference.das-labor.org","foo",message_type='groupchat')
 bot.serve_forever(connect_callback)
