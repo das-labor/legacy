@@ -6,7 +6,7 @@ typedef struct{
 	uint8_t sidx;
 	uint8_t size;
 	uint8_t * data;
-	uin8_t flags;
+	uint8_t flags;
 	list_t * handlers; //pointer to list of handler_descriptor_t pointers
 }netvar_desc;
 
