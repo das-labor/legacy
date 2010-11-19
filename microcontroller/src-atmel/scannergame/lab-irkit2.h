@@ -155,10 +155,11 @@ int main(void)
 //function prototypes
 uint8_t ir_init(uint16_t freq, uint16_t pulselength);
 void ir_disable(void);
-uint8_t ir_genCode(uint8_t headerlength, uint8_t channel, uint8_t oneCode, uint8_t oneCode_length, uint8_t zeroCode,uint8_t zeroCode_length, uint32_t bitCode, uint8_t codeLen);
+uint16_t ir_genCode(uint8_t headerlength, uint8_t channel, uint8_t oneCode, uint8_t oneCode_length, uint8_t zeroCode,uint8_t zeroCode_length, uint32_t bitCode, uint8_t codeLen);
 uint8_t ir_genHeader(uint8_t channel, uint32_t headerCode, uint8_t headerLen);
 uint8_t ir_freqInit(uint16_t freq, uint16_t pulselength);
-void ir_sendCode(uint8_t codeLen);
+void ir_sendCode(uint16_t codeLen);
+uint8_t transmission_pending(void);
 
 //work in progress
 /*typedef struct {
