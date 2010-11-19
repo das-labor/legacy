@@ -30,12 +30,15 @@
 #include "lab-irkit2.h"
 #include <avr/interrupt.h>
 
+//set to 1 to debug
+#define IR_DEBUG 0
+
 //infrared current code array
 uint16_t *volatile ir_curCode;
 //length of current code
-volatile uint8_t ir_curCodeLen;
+volatile uint16_t ir_curCodeLen;
 //index into current code
-volatile uint8_t ir_curCodeIdx;
+volatile uint16_t ir_curCodeIdx;
 //ir tick counter
 volatile uint8_t ir_pulse_length;
 //store which pin will be set next high/low
@@ -43,25 +46,6 @@ volatile uint8_t ir_port_buffer;
 
 //store the code here
 uint8_t code[IR_MAX_SRAM];
-
-//setup timer interrupt for tick counting
-//timer runs with full ioclk (hopefully 16MHz)
-//timer overflow will be every 255 counts,
-//resulting in an interrupt frequency of 62.5KHz
-//i don't think I need that
-/*
-void ir_timer0Init(void)
-{
-	//reset ir tick counter
-	ir_tickCnt = 0;
-
-	//setup timer
-	TCNT0 = 0; //reset counter
-	TIMSK |= _BV(TOIE0); //timer 0 overflow int on
-	TIFR |= _BV(TOV0); //clear overflow flag
-	TCCR0 = _BV(CS00); //clk / 1 (int call @ clk/256)
-}
-*/
 
 //setup timer1 for frequency generation
 //our frequency is stored in freq
@@ -137,11 +121,12 @@ ISR(TIMER0_OVF_vect)
 	{
  		//load the new value into the port_buffer
  		ir_port_buffer = code[ir_curCodeIdx];
-		if((ir_port_buffer & 1)>0)
-		  PORTD|=4;
-		else
-		  PORTD&=~4;
-
+		#if IR_DEBUG == 1
+		 if((ir_port_buffer & 1)>0)
+		   PORTD|=4;
+		 else
+		   PORTD&=~4;
+		#endif
  		//restore the counter buffer
  		TCNT0=ir_pulse_length;
 	}
@@ -157,7 +142,7 @@ void ir_disable(void)
 	ir_curCodeIdx = 0;
 	TCCR0=0; //turn off Timer0
 	TIMSK&=~ _BV(TOIE0);  //disable TIMER0 Overflow interrupt
-	//ir_curCode = 0;	
+	IRPORT&=~IRUSEDPORTS;  //set low level on used ports, just for sure	
 }
 
 //this function converts a bit-encoded code into
@@ -209,7 +194,7 @@ uint8_t ir_genHeader(uint8_t channel, uint32_t headerCode, uint8_t headerLen)
 //bitCode <binary encoded> bit 1 will be replaced by oneCode, bit 0 will be replaced by zeroCode
 //bitCode must be > 0
 //0 means an error has occured
-uint8_t ir_genCode(uint8_t headerlength, uint8_t channel, uint8_t oneCode, uint8_t oneCode_length, uint8_t zeroCode,uint8_t zeroCode_length, uint32_t bitCode, uint8_t codeLen)
+uint16_t ir_genCode(uint8_t headerlength, uint8_t channel, uint8_t oneCode, uint8_t oneCode_length, uint8_t zeroCode,uint8_t zeroCode_length, uint32_t bitCode, uint8_t codeLen)
 {
 	//check if everything is errorfree
         if((oneCode == 0) || (oneCode == zeroCode) || (zeroCode == 0) || (bitCode == 0) || (codeLen == 0)||(oneCode_length == 0)||(zeroCode_length == 0))
@@ -305,8 +290,12 @@ uint8_t ir_genCode_old(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOffti
 }
 
 //send an ir code, please never use a code length of zero
-void ir_sendCode(uint8_t codeLen)
+void ir_sendCode(uint16_t codeLen)
 {
+  //we have to send 0 bytes ?
+        if(codeLen == 0)
+	  return; //OK done :)
+
 	//turn off code sending completely while modifying the code
 	//turn of Timer1
 	FREQGEN_OFF();
@@ -338,6 +327,17 @@ void ir_sendCode(uint8_t codeLen)
 	TIMSK|= _BV(TOIE0);
 }
 
+
+//returns 1 if transmission is pending
+//else 0
+uint8_t transmission_pending(void)
+{
+  if(((TCCR1B & _BV(CS10))> 0 )&& (ir_curCodeLen > 0))
+    return 1;
+  
+  return 0;
+}
+
 //all-in-one initialization
 //returns 0 on error
 uint8_t ir_init(uint16_t freq, uint16_t pulselength)
@@ -345,7 +345,6 @@ uint8_t ir_init(uint16_t freq, uint16_t pulselength)
 	//disable ir code generator
 	ir_disable();
 
-	DDRD|=12;
 	//ir LED output - NPN tansistor needs low output or LED will die - overcurrent driven
 	IRDDR|=IRUSEDPORTS; //set used ports to output
 	IRPORT&=~IRUSEDPORTS;  //set low level on used ports
