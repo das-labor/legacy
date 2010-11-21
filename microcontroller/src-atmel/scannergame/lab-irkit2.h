@@ -48,17 +48,28 @@
 #endif
 
 //define output PORT
-#define IRPORT PORTD
-#define IRDDR DDRD
+#define IRPORT PORTA
+#define IRDDR DDRA
 #define IRUSEDPORTS 0x3 
 
 //define how long a carrier pulse last 0..1
 //select 0.5 for normal LED mode or
 //less values if you overcurrent the IR LEDs 
-#define IR_pulse_width 0.1f
+#define IR_pulse_width 0.2f
 
 //max SRAM usage
 #define IR_MAX_SRAM 512
+
+
+//see datasheet: http://www.princeton.com.tw/downloadprocess/downloadfile.asp?mydownload=PT2248.pdf
+#define IR_PT2248_Carrier IR_FREQ38K
+#define IR_PT2248_pulselength 422
+#define IR_PT2248_oneCode 0b0001
+#define IR_PT2248_oneCodelength 4
+#define IR_PT2248_zeroCode 0b0111
+#define IR_PT2248_zeroCodelength 4
+#define IR_PT2248_header 0
+#define IR_PT2248_headerlength 0
 
 #define IR_PhilipsRC5_Carrier IR_FREQ36K
 #define IR_PhilipsRC5_pulselength 889
@@ -170,24 +181,5 @@ uint16_t zeroOfftime;
 
 } ir_proto;*/
 
-
-//function to generate extended nec encodings
-//destCode is the destination array
-//bitCode is the input code
-//codeLen is the bit count
-/*
-static inline uint8_t ir_genENEC(uint16_t *destCode, uint32_t bitCode, uint8_t codeLen)
-{
-	//create nec preamble
-	destCode[0] = PNEC_AGC_ON;
-	destCode[1] = PNEC_AGC_OFF;
-
-	//add a short trailing on pulse
-	destCode[codeLen * 2 + 2] = (560 / IR_TICK_US);
-
-	//generate the code, add 4 to the length (for preamble and footer) and return
-	return ir_genCode(&destCode[2], PNEC_ON, PNEC_OFF, bitCode, codeLen) + 4;
-}
-*/
 #endif //_H_LAB_IRKIT
 
