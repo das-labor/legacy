@@ -63,7 +63,7 @@ uint8_t ir_freqInit(uint16_t freq, uint16_t pulselength)
 	
 	//timer1 TOP = freq, we're setting IRPORT high on OCR1B match, low on OCR1A match, PWM :)
 	  OCR1A = freq; //store freq in OCR1A
-	  OCR1B = (freq - (freq*IR_pulse_width)); //store pulse length in OCR1B
+	  OCR1B =(uint16_t)((float)freq - ((float)freq*(float)IR_pulse_width)); //store pulse length in OCR1B
 
 	//toggle OC1A on match  - not needet here only doku
 	//TCCR1A = _BV(COM1A0);
@@ -123,9 +123,9 @@ ISR(TIMER0_OVF_vect)
  		ir_port_buffer = code[ir_curCodeIdx];
 		#if IR_DEBUG == 1
 		 if((ir_port_buffer & 1)>0)
-		   PORTD|=4;
+		   PORTC|=4;
 		 else
-		   PORTD&=~4;
+		   PORTC&=~4;
 		#endif
  		//restore the counter buffer
  		TCNT0=ir_pulse_length;
