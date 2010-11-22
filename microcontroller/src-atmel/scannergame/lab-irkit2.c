@@ -75,9 +75,9 @@ uint8_t ir_freqInit(uint16_t freq, uint16_t pulselength)
 	TIMSK|= _BV(TOIE0);
 
 	//check if pulse_length is in range
-	if((ir_pulse_length < F_CPU/0x4000) && (ir_pulse_length > 0)) 
+	if((pulse_length < F_CPU/0x4000) && (pulse_length > 0)) 
 	{
- 		ir_pulse_length=0xFF-(ir_pulse_length/0x40); //calculate advanced prescaler
+ 		ir_pulse_length=0xFF-(pulse_length/0x40); //calculate advanced prescaler
 	}
 	else
 	{
