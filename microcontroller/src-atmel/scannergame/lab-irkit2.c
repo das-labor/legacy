@@ -31,18 +31,18 @@
 #include <avr/interrupt.h>
 
 //set to 1 to debug
-#define IR_DEBUG 0
+#define IR_DEBUG 1
 
 //infrared current code array
 uint16_t *volatile ir_curCode;
 //length of current code
-volatile uint16_t ir_curCodeLen;
+volatile uint16_t ir_curCodeLen=0;
 //index into current code
-volatile uint16_t ir_curCodeIdx;
+volatile uint16_t ir_curCodeIdx=0;
 //ir tick counter
-volatile uint8_t ir_pulse_length;
+volatile uint8_t ir_pulse_length=0;
 //store which pin will be set next high/low
-volatile uint8_t ir_port_buffer;
+volatile uint8_t ir_port_buffer=0;
 
 //store the code here
 uint8_t code[IR_MAX_SRAM];
@@ -77,7 +77,7 @@ uint8_t ir_freqInit(uint16_t freq, uint16_t pulselength)
 	//check if pulse_length is in range
 	if((pulselength < F_CPU/0x4000) && (pulselength > 0)) 
 	{
- 		ir_pulse_length=0xFF-(pulselength/0x40); //calculate advanced prescaler
+	  ir_pulse_length=0xFF-((uint8_t)((F_CPU/64E6) *(pulselength)+1)); //calculate advanced prescaler
 	}
 	else
 	{
@@ -142,7 +142,10 @@ void ir_disable(void)
 	ir_curCodeIdx = 0;
 	TCCR0=0; //turn off Timer0
 	TIMSK&=~ _BV(TOIE0);  //disable TIMER0 Overflow interrupt
-	IRPORT&=~IRUSEDPORTS;  //set low level on used ports, just for sure	
+	IRPORT&=~IRUSEDPORTS;  //set low level on used ports, just for sure
+	asm("nop\t\n");
+	asm("nop\t\n");
+	
 }
 
 //this function converts a bit-encoded code into
@@ -221,11 +224,11 @@ uint16_t ir_genCode(uint8_t headerlength, uint8_t channel, uint8_t oneCode, uint
 				
 				if((oneCode & (1<<j))!=0)
 				{
-			 		code[k+j] |= (1<<channel);
+			 		code[k+(oneCode_length-j)] |= (1<<channel);
 				}
 				else
 				{
-					code[k+j] &= ~(1<<channel);
+					code[k+(oneCode_length-j)] &= ~(1<<channel);
 				}
 			}
 		k+=oneCode_length;
@@ -238,11 +241,11 @@ uint16_t ir_genCode(uint8_t headerlength, uint8_t channel, uint8_t oneCode, uint
 				
 				if((zeroCode & (1<<j))!=0)
 				{
-			 		code[k+j] |= (1<<channel);
+				  code[k+(zeroCode_length-j)] |= (1<<channel);
 				}
 				else
 				{
-					code[k+j] &= ~(1<<channel);
+					code[k+(zeroCode_length-j)] &= ~(1<<channel);
 				}
 			}
 		k+=zeroCode_length;
@@ -274,13 +277,14 @@ void ir_sendCode(uint16_t codeLen)
 	//   overflow after the last bit has been sent
 	//this makes even numbers the next smaller uneven ones
 	//ir_curCodeLen = (codeLen-1) | 0x01;
-	ir_curCodeLen = codeLen;
+	ir_curCodeLen = codeLen-1;
 
 	//reset timer count to be in sync
 	TCNT0=ir_pulse_length;
 
 	//enable code sending by setting the index to zero
 	ir_curCodeIdx = 0;
+	ir_port_buffer =0;
 
 	//enable frequency generation
 	FREQGEN_ON();
