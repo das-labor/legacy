@@ -63,7 +63,7 @@ uint8_t ir_freqInit(uint16_t freq, uint16_t pulselength)
 	
 	//timer1 TOP = freq, we're setting IRPORT high on OCR1B match, low on OCR1A match, PWM :)
 	  OCR1A = freq; //store freq in OCR1A
-	  OCR1B =(uint16_t)((float)freq - ((float)freq*(float)IR_pulse_width)); //store pulse length in OCR1B
+	  OCR1B =(uint16_t)((float)freq - (((float)freq) *((float)IR_pulse_width))); //store pulse length in OCR1B
 
 	//toggle OC1A on match  - not needet here only doku
 	//TCCR1A = _BV(COM1A0);
@@ -75,9 +75,9 @@ uint8_t ir_freqInit(uint16_t freq, uint16_t pulselength)
 	TIMSK|= _BV(TOIE0);
 
 	//check if pulse_length is in range
-	if((pulse_length < F_CPU/0x4000) && (pulse_length > 0)) 
+	if((pulselength < F_CPU/0x4000) && (pulselength > 0)) 
 	{
- 		ir_pulse_length=0xFF-(pulse_length/0x40); //calculate advanced prescaler
+ 		ir_pulse_length=0xFF-(pulselength/0x40); //calculate advanced prescaler
 	}
 	else
 	{
@@ -255,39 +255,7 @@ uint16_t ir_genCode(uint8_t headerlength, uint8_t channel, uint8_t oneCode, uint
 	return k;
 }
 
-uint8_t ir_genCode_old(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime, uint16_t zeroOntime, uint16_t zeroOfftime, uint32_t bitCode, uint8_t codeLen)
-{
-	uint8_t i;
-	
-	//failsafe
-	if(codeLen > 32)
-	{
-		return 0;
-	}
-	
-	i = codeLen;
-	
-	//convert bitcode
-	while(i--)
-	{
-		if(bitCode & 1)
-		{
-			//encode a one
-			destCode[i*2] = oneOntime;
-			destCode[(i*2)+1] = oneOfftime;
-		}
-		else
-		{
-			//encode a zero
-			destCode[i*2] = zeroOntime;
-			destCode[(i*2)+1] = zeroOfftime;
-		}
-		
-		bitCode >>= 1;
-	}
-	
-	return (codeLen * 2) - 1;
-}
+
 
 //send an ir code, please never use a code length of zero
 void ir_sendCode(uint16_t codeLen)
@@ -308,9 +276,6 @@ void ir_sendCode(uint16_t codeLen)
 	//ir_curCodeLen = (codeLen-1) | 0x01;
 	ir_curCodeLen = codeLen;
 
-	//save code pointer
-	//ir_curCode = code;
-	
 	//reset timer count to be in sync
 	TCNT0=ir_pulse_length;
 
