@@ -319,7 +319,7 @@ void maze::setRandom(unsigned cx, unsigned cy){
 void maze::setRandom(){
 	unsigned x,y;
 	x = random() % width;
-	y = random() & height;
+	y = random() % height;
 	setRandom(x,y);
 }
 
