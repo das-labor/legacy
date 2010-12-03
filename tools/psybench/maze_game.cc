@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <time.h>
 #include "sdl_maze.hh"
 #include "sdl_helper.h"
 
@@ -32,6 +33,8 @@
 #define SCREEN_BBP     32
 #define SCREEN_METHOD  SDL_HWSURFACE
 
+#define REPEAT_DELAY      100
+#define REPEAT_INIT_DELAY 175
 
 
 SDL_Surface *init_screen(){
@@ -100,22 +103,32 @@ void display_start_msg(SDL_Surface* sf){
 	TTF_CloseFont(font);
 }
 
-void display_end_msg(SDL_Surface* sf, uint32_t time){
+int display_end_msg(SDL_Surface* sf, uint32_t time, bool success){
 	const char *msg_a[] = {
 			"Congratulations!",
 			"You mastered the maze in",
 			"",
+			"Press [Enter] for new game or [Q] to quit.",
+			""
+	};
+	const char *msg_b[] = {
+			"Fail!",
+			"You did not succeed in mastering the maze.",
+			"You tried for"
+			"",
+			"Press [Enter] for new game or [Q] to quit.",
 			""
 	};
 	char time_str[35];
-	const char **msg = msg_a;
+	const char **msg = success?msg_a:msg_b;
 	TTF_Font *font=NULL;
 	SDL_Color msgcolor = {0xFF, 0xFF, 0xFF};
 	SDL_Surface *msg_sf;
 	SDL_Rect rect;
 	SDL_Event event;
+	int r=0;
 
-	msg_a[2]=time_str;
+	msg[success?2:3]=time_str;
 	if(time>=60*1000){
 		sprintf(time_str,"%d min and %.2f seconds", time/(60*1000), (time%(60*1000))/1000.0);
 	}else{
@@ -145,11 +158,17 @@ void display_end_msg(SDL_Surface* sf, uint32_t time){
 		SDL_PollEvent(&event);
 		if(event.type == SDL_KEYDOWN){
 			if(event.key.keysym.sym == SDLK_RETURN){
+				r=1;
+				break;
+			}
+			if(event.key.keysym.sym == SDLK_q){
+				r=0;
 				break;
 			}
 		}
 	}
 	TTF_CloseFont(font);
+	return r;
 }
 
 
@@ -157,11 +176,20 @@ int main(int argc, char** argv){
 	SDL_Surface *screen = NULL;
 	SDL_Event event;
 	bool change=true;
-	bool quit=false;
+	bool quit=false, success=false;
 	uint32_t start_time;
 	uint32_t time_elapsed;
+	uint32_t keydown_time;
+	uint32_t next_keyevent_time=0;
+	unsigned keyrepeat_count;
+	SDLKey last_key_down=SDLK_UP;
+	orientation_t direction=north_ot;
 	SDL_Rect maze_pos;
+
+	srandom(time(NULL));
+
 	screen = init_screen();
+	SDL_ShowCursor(SDL_DISABLE);
 
 	display_start_msg(screen);
 
@@ -173,53 +201,77 @@ int main(int argc, char** argv){
 	maze_pos.y = (screen->h - maze_surface->h)/2;
 	maze_pos.w = maze_surface->w;
 	maze_pos.h = maze_surface->h;
-	playmaze.setRandom();
-	playmaze.print(stdout);
-	playmaze.set_player_pos(0, -1);
-	playmaze.set_target_pos(19, -1);
 	playmaze.load_player_image_from_file("player20.png");
 	playmaze.load_target_image_from_file("target20.png");
-	playmaze.render_maze();
-	SDL_FillRect(screen, NULL, 0);
-
-	start_time=SDL_GetTicks();
-	while(quit==false){
-		while(SDL_PollEvent(&event)){
-			if(event.type == SDL_QUIT){
-				quit=true;
-			}
-			if(event.type == SDL_KEYDOWN){
-				switch(event.key.keysym.sym){
-					case SDLK_UP:    change=true;
-					                 playmaze.move(north_ot);
-					                 break;
-					case SDLK_DOWN:  change=true;
-					                 playmaze.move(south_ot);
-					                 break;
-					case SDLK_LEFT:  change=true;
-					                 playmaze.move(west_ot);
-					                 break;
-					case SDLK_RIGHT: change=true;
-					                 playmaze.move(east_ot);
-					                 break;
-					case SDLK_q:	 quit=true;
-					                 break;
-					default : break;
+	do{
+		quit = success = false;
+		keydown_time = 0;
+		change = true;
+		playmaze.reset();
+		playmaze.setRandom();
+	//	playmaze.print(stdout);
+		playmaze.set_player_pos(0, -1);
+		playmaze.set_target_pos(19, -1);
+		playmaze.render_maze();
+		SDL_FillRect(screen, NULL, 0);
+		start_time=SDL_GetTicks();
+		do{
+			success = false;
+			while(SDL_PollEvent(&event)){
+				if(event.type == SDL_QUIT){
+					quit=true;
+				}
+				if(event.type == SDL_KEYDOWN){
+					switch(last_key_down = event.key.keysym.sym){
+						case SDLK_UP:    change=true;
+										 direction=north_ot;
+										 keydown_time = SDL_GetTicks();
+										 break;
+						case SDLK_DOWN:  change=true;
+										 direction=south_ot;
+										 keydown_time = SDL_GetTicks();
+										 break;
+						case SDLK_LEFT:  change=true;
+										 direction=west_ot;
+										 keydown_time = SDL_GetTicks();
+										 break;
+						case SDLK_RIGHT: change=true;
+										 direction=east_ot;
+										 keydown_time = SDL_GetTicks();
+										 break;
+						case SDLK_q:	 quit=true;
+										 break;
+						default : break;
+					}
+					if(keydown_time){
+						playmaze.move(direction);
+						next_keyevent_time = keydown_time + REPEAT_INIT_DELAY;
+						keyrepeat_count = 0;
+					}
+				}
+				if(event.type == SDL_KEYUP){
+					if(event.key.keysym.sym == last_key_down){
+						keydown_time = 0;
+					}
 				}
 			}
-		}
-		if(change){
-			playmaze.render_game();
-			SDL_BlitSurface(maze_surface, NULL, screen, &maze_pos);
-			SDL_Flip(screen);
-			change=false;
-			quit=playmaze.game_finished();
-		}
+			if(keydown_time && (next_keyevent_time<SDL_GetTicks())){
+				playmaze.move(direction);
+				++keyrepeat_count;
+				next_keyevent_time += REPEAT_DELAY;
+				change = true;
+			}
+			if(change){
+				playmaze.render_game();
+				SDL_BlitSurface(maze_surface, NULL, screen, &maze_pos);
+				SDL_Flip(screen);
+				change=false;
+				quit=success=playmaze.game_finished();
+			}
+		}while(!quit);
+		time_elapsed = SDL_GetTicks() - start_time;
+	}while(display_end_msg(screen, time_elapsed, success));
 
-	}
-	time_elapsed = SDL_GetTicks() - start_time;
-
-	display_end_msg(screen, time_elapsed);
 
 	clean_up();
 
