@@ -6,6 +6,13 @@
 #include "piece.h"
 
 
+/***********
+ * defines *
+ ***********/
+
+#define TETRIS_BUCKET_INVALIDROW -4
+
+
 /*********
  * types *
  *********/
@@ -245,11 +252,13 @@ uint16_t tetris_bucket_getDumpRow(tetris_bucket_t *pBucket,
  * returns the deepest possible row for a given piece
  * @param pBucket the bucket on which we want to test a piece
  * @param pPiece the piece which should be tested
+ * @param nStartingRow the row where the collision detection should start
  * @param nColumn the column where the piece should be dropped
  * @return the row of the piece (bucket compliant coordinates)
  */
 int8_t tetris_bucket_predictDeepestRow(tetris_bucket_t *pBucket,
                                        tetris_piece_t *pPiece,
+                                       int8_t nStartingRow,
                                        int8_t nColumn);
 
 

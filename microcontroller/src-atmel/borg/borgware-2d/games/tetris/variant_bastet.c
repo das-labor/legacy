@@ -27,17 +27,21 @@
  ***************************/
 
 /**
- * calculate the score impact of every column (without any prediction)
- * @param pBastet bastet instance whose column heights should be calculated
+ * Preprocess values like sane starting points for the collision detection or
+ * the score impact of every unchanged column to speed up prediction routines.
+ * @param pBastet bastet instance which should be preprocessed
  */
-void tetris_bastet_calcActualColumnsScoreImpact(tetris_bastet_variant_t *pBastet)
+void tetris_bastet_doPreprocessing(tetris_bastet_variant_t *pBastet)
 {
 	// retrieve sane start and stop values for the column and row indices
 	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
 	int8_t nStartRow = tetris_bucket_getHeight(pBastet->pBucket) - 1;
 	int8_t nStopRow = tetris_bucket_getFirstMatterRow(pBastet->pBucket);
+//	printf("%d ", nStopRow);
 
 	// calculate the column heights of the actual bucket configuration
+	// NOTE: in this loop, pColScore contains the actual column heights,
+	//       later it will contain the "score impact" of every unchanged column
 	for (int8_t y = nStartRow; y >= nStopRow; --y)
 	{
 		uint16_t nDumpRow = tetris_bucket_getDumpRow(pBastet->pBucket, y);
@@ -46,16 +50,65 @@ void tetris_bastet_calcActualColumnsScoreImpact(tetris_bastet_variant_t *pBastet
 		{
 			if ((nDumpRow & nColMask) != 0)
 			{
-				pBastet->pActualColScoreImpact[x] = nStartRow - y + 1;
+				pBastet->pColScore[x] = nStartRow - y + 1;
 			}
 			nColMask <<= 1;
 		}
 	}
+
+//	printf("-------------------------------------------\n           ");
+//	for (int i = 0; i < nWidth; ++i)
+//	{
+//		printf("%2d ", pBastet->pColScore[i]);
+//	}
+//	printf("\n");
+
+
+	// starting points for collision detection (to speedup things)
+	// calculate the maxima of the 4-tuples from column -3 to -1
+	pBastet->pStartingRow[0] = pBastet->pColScore[0];
+	pBastet->pStartingRow[1] = pBastet->pColScore[0] > pBastet->pColScore[1] ?
+			pBastet->pColScore[0] : pBastet->pColScore[1];
+	pBastet->pStartingRow[2] = pBastet->pStartingRow[1] > pBastet->pColScore[2]?
+			pBastet->pStartingRow[1] : pBastet->pColScore[2];
+	// calculate the maxima of the 4-tuples from column 0 to width-1
+	for (int8_t i = 0; i < nWidth; ++i)
+	{
+		int8_t t0 = pBastet->pColScore[i] > pBastet->pColScore[i + 1] ?
+				i : i + 1;
+		int8_t t1 = pBastet->pColScore[i + 2] > pBastet->pColScore[i + 3] ?
+				i + 2 : i + 3;
+		pBastet->pStartingRow[i + 3] =
+				pBastet->pColScore[t0] > pBastet->pColScore[t1] ?
+				pBastet->pColScore[t0] : pBastet->pColScore[t1];
+	}
+//	for (int i = 0; i < nWidth + 3; ++i)
+//	{
+//		printf("%2d ", pBastet->pStartingRow[i]);
+//		if (i == 2)
+//			printf("| ");
+//	}
+//	printf("\n");
+	// normalize to bucket geometry
+	for (uint8_t i = 0; i < nWidth + 3; ++i)
+	{
+		pBastet->pStartingRow[i] = nStartRow - pBastet->pStartingRow[i];
+	}
+
 	// calculate the score impact of every column
 	for (int x = 0; x < nWidth; ++x)
 	{
-		pBastet->pActualColScoreImpact[x] *= TETRIS_BASTET_HEIGHT_FACTOR;
+		pBastet->pColScore[x] *= TETRIS_BASTET_HEIGHT_FACTOR;
 	}
+
+//	for (int i = 0; i < nWidth + 3; ++i)
+//	{
+//		printf("%2d ", pBastet->pStartingRow[i]);
+//		if (i == 2)
+//			printf("| ");
+//	}
+//	printf("\n");
+
 }
 
 
@@ -66,9 +119,8 @@ void tetris_bastet_calcActualColumnsScoreImpact(tetris_bastet_variant_t *pBastet
  * @param nColum the column where the piece should be dropped
  * @param nStartCol the first column of the range to be predicted
  * @param nStopCol the last column of the range to be predicted
- * @return 0 if dropped piece would cause an overflow, 1 if prediction succeeds
  */
-uint8_t tetris_bastet_calcPredictedColHeights(tetris_bastet_variant_t *pBastet,
+void tetris_bastet_calcPredictedColHeights(tetris_bastet_variant_t *pBastet,
                                               tetris_piece_t *pPiece,
                                               int8_t nDeepestRow,
                                               int8_t nColumn,
@@ -80,11 +132,6 @@ uint8_t tetris_bastet_calcPredictedColHeights(tetris_bastet_variant_t *pBastet,
 	int8_t nHeight = 1;
 	uint16_t *pDump = tetris_bucket_predictBottomRow(&iterator,
 			pBastet->pBucket, pPiece, nDeepestRow, nColumn);
-	if (pDump == NULL)
-	{
-		// an immediately returned NULL is caused by a full dump -> low score
-		return 0;
-	}
 	while (pDump != NULL)
 	{
 		uint16_t nColMask = 0x0001 << nStartCol;
@@ -99,7 +146,6 @@ uint8_t tetris_bastet_calcPredictedColHeights(tetris_bastet_variant_t *pBastet,
 		pDump = tetris_bucket_predictNextRow(&iterator);
 		++nHeight;
 	}
-	return 1;
 }
 
 
@@ -186,7 +232,8 @@ void *tetris_bastet_construct(tetris_bucket_t *pBucket)
 	pBastet->pBucket = pBucket;
 
 	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
-	pBastet->pActualColScoreImpact = (int8_t*) calloc(nWidth, sizeof(int8_t));
+	pBastet->pColScore = (uint16_t*) calloc(nWidth + 3, sizeof(uint16_t));
+	pBastet->pStartingRow = (int8_t*) calloc(nWidth + 3, sizeof(int8_t));
 	pBastet->pColHeights = (int8_t*) calloc(nWidth, sizeof(int8_t));
 
 	return pBastet;
@@ -198,9 +245,9 @@ void tetris_bastet_destruct(void *pVariantData)
 	assert(pVariantData != 0);
 	tetris_bastet_variant_t *pBastetVariant =
 			(tetris_bastet_variant_t *)pVariantData;
-	if (pBastetVariant->pActualColScoreImpact != NULL)
+	if (pBastetVariant->pColScore != NULL)
 	{
-		free(pBastetVariant->pActualColScoreImpact);
+		free(pBastetVariant->pColScore);
 	}
 	if (pBastetVariant->pColHeights != NULL)
 	{
@@ -228,7 +275,13 @@ int16_t tetris_bastet_evaluateMove(tetris_bastet_variant_t *pBastet,
 
 	// the row where the given piece collides
 	int8_t nDeepestRow = tetris_bucket_predictDeepestRow(pBastet->pBucket,
-			pPiece, nColumn);
+			pPiece, pBastet->pStartingRow[nColumn], nColumn);
+
+	// in case the prediction fails we return the lowest possible score
+	if (nDeepestRow == TETRIS_BUCKET_INVALIDROW)
+	{
+		return -32766;
+	}
 
 	// modify score based on complete lines
 	int8_t nLines =	tetris_bucket_predictCompleteLines(pBastet->pBucket,
@@ -251,13 +304,9 @@ int16_t tetris_bastet_evaluateMove(tetris_bastet_variant_t *pBastet,
 		nStopCol = (nColumn + 3) < nWidth ? nColumn + 3 : nWidth - 1;
 	}
 
-	// predicted column heights
-	if (!tetris_bastet_calcPredictedColHeights(pBastet, pPiece, nDeepestRow,
-			nColumn, nStartCol, nStopCol))
-	{
-		// in case the prediction fails we return the lowest possible score
-		return -32766;
-	}
+	// predict column heights of this move
+	tetris_bastet_calcPredictedColHeights(pBastet, pPiece, nDeepestRow,	nColumn,
+			nStartCol, nStopCol);
 
 	// modify score based on predicted column heights
 	for (int x = 0; x < nWidth; ++x)
@@ -268,7 +317,7 @@ int16_t tetris_bastet_evaluateMove(tetris_bastet_variant_t *pBastet,
 		}
 		else
 		{
-			nScore -= pBastet->pActualColScoreImpact[x];
+			nScore -= pBastet->pColScore[x];
 		}
 	}
 
@@ -279,7 +328,7 @@ int16_t tetris_bastet_evaluateMove(tetris_bastet_variant_t *pBastet,
 void tetris_bastet_evaluatePieces(tetris_bastet_variant_t *pBastet)
 {
 	// precache actual column heights
-	tetris_bastet_calcActualColumnsScoreImpact(pBastet);
+	tetris_bastet_doPreprocessing(pBastet);
 	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
 	tetris_piece_t *pPiece = tetris_piece_construct(TETRIS_PC_LINE,
 			TETRIS_PC_ANGLE_0);
