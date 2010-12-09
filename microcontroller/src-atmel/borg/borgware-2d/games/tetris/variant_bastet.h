@@ -40,7 +40,8 @@ typedef struct tetris_bastet_variant_t
 	uint16_t nLines;                          /** number of completed lines */
 	tetris_piece_t *pPreviewPiece;            /** the piece for the preview */
 	tetris_bucket_t *pBucket;                 /** bucket to be examined */
-	int8_t *pActualColScoreImpact;            /** score impact of every column*/
+	uint16_t *pColScore;                      /** score impact of every column*/
+	int8_t *pStartingRow;                     /** starting point for collision*/
 	int8_t *pColHeights;                      /** predicted column heights */
 	tetris_bastet_scorepair_t nPieceScore[7]; /** score for every piece */
 }

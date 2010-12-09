@@ -1,14 +1,14 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdint.h>
-
-#include "tetris_main.h"
-#include "variants.h"
+#include "bearing.h"
 #include "piece.h"
-#include "bucket.h"
-#include "view.h"
-#include "input.h"
 #include "highscore.h"
+#include "bucket.h"
+#include "input.h"
+#include "variants.h"
+#include "view.h"
+#include "tetris_main.h"
 
 
 void tetris_main(tetris_variant_t const *const pVariantMethods)
