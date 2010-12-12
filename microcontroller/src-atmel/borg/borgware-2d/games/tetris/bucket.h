@@ -48,7 +48,8 @@ typedef struct tetris_bucket_t
 	int8_t nRow;                    /** vert. piece pos. (0 is top) */
 	uint8_t nRowMask;               /** removed lines relative to nRow */
 	tetris_bucket_status_t status;  /** status of the bucket */
-	int8_t nFirstMatterRow;         /** top most row which has matter */
+	int8_t nFirstTaintedRow;        /** top most row which has matter */
+	uint16_t nFullRow;              /** value of a full row */
 	uint16_t *dump;                 /** bucket itself */
 }
 tetris_bucket_t;
@@ -60,7 +61,6 @@ typedef struct tetris_bucket_iterator_t
 	tetris_bucket_t *pBucket; /** bucket to be examined */
 	tetris_piece_t *pPiece;   /** piece which should be tested */
 	int8_t nColumn;           /** column where piece should be dropped */
-	uint16_t nFullRow;        /** value of a full row */
 	int8_t nCurrentRow;       /** the actual row in the bucket */
 	int8_t nPieceHighestRow;  /** the highest row index of the piece */
 	int8_t nPieceLowestRow;   /** the lowest row index of the piece */
@@ -177,7 +177,11 @@ void tetris_bucket_removeCompleteLines(tetris_bucket_t *pBucket);
  * @param pBucket the bucket we want information from
  * @return width of the bucket
  */
-int8_t tetris_bucket_getWidth(tetris_bucket_t *pBucket);
+inline static int8_t tetris_bucket_getWidth(tetris_bucket_t *pBucket)
+{
+	assert(pBucket != NULL);
+	return pBucket->nWidth;
+}
 
 
 /**
@@ -185,7 +189,11 @@ int8_t tetris_bucket_getWidth(tetris_bucket_t *pBucket);
  * @param pBucket the bucket we want information from
  * @return height of the bucket
  */
-int8_t tetris_bucket_getHeight(tetris_bucket_t *pBucket);
+inline static int8_t tetris_bucket_getHeight(tetris_bucket_t *pBucket)
+{
+	assert(pBucket != NULL);
+	return pBucket->nHeight;
+}
 
 
 /**
@@ -193,7 +201,11 @@ int8_t tetris_bucket_getHeight(tetris_bucket_t *pBucket);
  * @param pBucket the bucket we want information from
  * @return pointer to the currently falling piece
  */
-tetris_piece_t *tetris_bucket_getPiece(tetris_bucket_t *pBucket);
+inline static tetris_piece_t *tetris_bucket_getPiece(tetris_bucket_t *pBucket)
+{
+	assert(pBucket != NULL);
+	return pBucket->pPiece;
+}
 
 
 /**
@@ -201,7 +213,11 @@ tetris_piece_t *tetris_bucket_getPiece(tetris_bucket_t *pBucket);
  * @param pBucket the bucket we want information from
  * @return column of the currently falling piece
  */
-int8_t tetris_bucket_getColumn(tetris_bucket_t *pBucket);
+inline static int8_t tetris_bucket_getColumn(tetris_bucket_t *pBucket)
+{
+	assert(pBucket != NULL);
+	return pBucket->nColumn;
+}
 
 
 /**
@@ -209,7 +225,11 @@ int8_t tetris_bucket_getColumn(tetris_bucket_t *pBucket);
  * @param pBucket the bucket we want information from
  * @return row of the currently falling piece
  */
-int8_t tetris_bucket_getRow(tetris_bucket_t *pBucket);
+inline static int8_t tetris_bucket_getRow(tetris_bucket_t *pBucket)
+{
+	assert(pBucket != NULL);
+	return pBucket->nRow;
+}
 
 
 /**
@@ -217,7 +237,11 @@ int8_t tetris_bucket_getRow(tetris_bucket_t *pBucket);
  * @param pBucket the bucket we want information from
  * @return highest row with matter
  */
-int8_t tetris_bucket_getFirstMatterRow(tetris_bucket_t *pBucket);
+inline static int8_t tetris_bucket_getFirstTaintedRow(tetris_bucket_t *pBucket)
+{
+	assert(pBucket != NULL);
+	return pBucket->nFirstTaintedRow;
+}
 
 
 /**
@@ -225,7 +249,11 @@ int8_t tetris_bucket_getFirstMatterRow(tetris_bucket_t *pBucket);
  * @param pBucket the bucket we want information from
  * @return bit mask of removed lines (relative to current position)
  */
-uint8_t tetris_bucket_getRowMask(tetris_bucket_t *pBucket);
+inline static uint8_t tetris_bucket_getRowMask(tetris_bucket_t *pBucket)
+{
+	assert(pBucket != NULL);
+	return pBucket->nRowMask;
+}
 
 
 /**
@@ -233,7 +261,11 @@ uint8_t tetris_bucket_getRowMask(tetris_bucket_t *pBucket);
  * @param pBucket the bucket we want information from
  * @return status of the bucket (see tetris_bucket_status_t)
  */
-tetris_bucket_status_t tetris_bucket_getStatus(tetris_bucket_t *pBucket);
+inline static tetris_bucket_status_t tetris_bucket_getStatus(tetris_bucket_t *p)
+{
+	assert(p != NULL);
+	return p->status;
+}
 
 
 /**
@@ -242,8 +274,13 @@ tetris_bucket_status_t tetris_bucket_getStatus(tetris_bucket_t *pBucket);
  * @param nRow the number of the row (0 <= nRow <= 124)
  * @return bitmap of the requested row (LSB is leftmost column)
  */
-uint16_t tetris_bucket_getDumpRow(tetris_bucket_t *pBucket,
-                                  int8_t nRow);
+inline static uint16_t tetris_bucket_getDumpRow(tetris_bucket_t *pBucket,
+                                                int8_t nRow)
+{
+	assert(pBucket != NULL);
+	assert((0 <= nRow) && (nRow < pBucket->nHeight));
+	return pBucket->dump[nRow];
+}
 
 
 #ifdef GAME_BASTET
