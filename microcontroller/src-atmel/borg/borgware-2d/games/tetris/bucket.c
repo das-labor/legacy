@@ -55,9 +55,12 @@ tetris_bucket_t *tetris_bucket_construct(int8_t nWidth,
 		if (pBucket->dump != NULL)
 		{
 			// setting requested attributes
-			pBucket->nFirstMatterRow = nHeight - 1;
+			pBucket->nFirstTaintedRow = nHeight;
 			pBucket->nWidth = nWidth;
 			pBucket->nHeight = nHeight;
+			// bit mask of a full row
+			pBucket->nFullRow = 0xFFFF >> (16 - pBucket->nWidth);
+
 			tetris_bucket_reset(pBucket);
 
 			return pBucket;
@@ -290,8 +293,8 @@ void tetris_bucket_advancePiece(tetris_bucket_t *pBucket)
 					break;
 				}
 			}
-			pBucket->nFirstMatterRow = (pBucket->nFirstMatterRow > nPieceRow) ?
-					nPieceRow : pBucket->nFirstMatterRow;
+			pBucket->nFirstTaintedRow = (pBucket->nFirstTaintedRow > nPieceRow) ?
+					nPieceRow : pBucket->nFirstTaintedRow;
 
 			// the piece has finally been docked
 			pBucket->status = TETRIS_BUS_DOCKED;
@@ -374,144 +377,53 @@ void tetris_bucket_removeCompleteLines(tetris_bucket_t *pBucket)
 	// rows can only be removed if we are in state TETRIS_BUS_DOCKED
 	assert(pBucket->status == TETRIS_BUS_DOCKED);
 
-	// bit mask of a full row
-	uint16_t nFullRow = 0xFFFF >> (16 - pBucket->nWidth);
-
 	// bit mask (only 4 bits) that tells us if the n-th row after the
 	// current nRow is complete (n-th bit set to 1, LSB represents nRow itself)
-	uint8_t nRowMask = 0;
+	pBucket->nRowMask = 0;
 
-	// determine sane start and stop values for the dump' index
-	int8_t nStartRow = ((pBucket->nRow + 3) >= pBucket->nHeight) ?
-			pBucket->nHeight - 1 : pBucket->nRow + 3;
-	int8_t nStopRow = (pBucket->nRow < 0) ? 0 : pBucket->nRow;
-
-	// dump index variables
-	//   for incomplete rows, both variables will be decremented
+	// only consider rows which are affected by the piece (from low to high)
+	//   for incomplete rows, both i and nShiftIndex will be decremented
 	//   for complete rows, only i gets decremented
-	int8_t nLowestRow = nStartRow;
-
-	// save old value for the first dump index with matter
-	int8_t nFormerFirstMatterRow = pBucket->nFirstMatterRow;
-
-	// this loop only considers rows which are affected by the piece
-	for (int8_t i = nStartRow; i >= nStopRow; --i)
+	int8_t nLowestRow = (pBucket->nRow + 3) < pBucket->nHeight ?
+			pBucket->nRow + 3 : pBucket->nHeight - 1;
+	int8_t nShiftIndex = nLowestRow;
+	for (int8_t i = nLowestRow; i >= pBucket->nFirstTaintedRow; --i)
 	{
 		// is current row a full row?
-		if ((nFullRow & pBucket->dump[i]) == nFullRow)
+		if ((pBucket->nFullRow & pBucket->dump[i]) == pBucket->nFullRow)
 		{
-			// adjust value for the highest row with matter
-			pBucket->nFirstMatterRow++;
-
 			// set corresponding bit for the row mask
-			// nRowMask |= 0x08 >> (nStartRow - i);
-			nRowMask |= 0x01 <<  (i - pBucket->nRow);
+			pBucket->nRowMask |= 0x01 <<  (i - pBucket->nRow);
 		}
 		else
 		{
-			// if nLowestRow and i differ, the dump has to be shifted
-			if (i < nLowestRow)
+			// if nShiftIndex and i differ, the dump has to be shifted
+			if (i < nShiftIndex)
 			{
-				pBucket->dump[nLowestRow] = pBucket->dump[i];
+				pBucket->dump[nShiftIndex] = pBucket->dump[i];
 			}
-			--nLowestRow;
+			// if there were no completed lines within the range covered by the
+			// piece, we don't need to look for those any further
+			else if ((nLowestRow - i) >= 3)
+			{
+				break;
+			}
+			--nShiftIndex;
 		}
 	}
-
-	// if rows have been removed, this loop shifts the rest of the dump
-	uint8_t nComplete = nLowestRow - nStopRow + 1;
-	if (nComplete > 0)
+	// any completed rows removed?
+	if (pBucket->nRowMask != 0)
 	{
-		for (int8_t i = nStopRow - 1; nLowestRow >= nFormerFirstMatterRow; --i)
+		// clear space from which the rows have been shifted away
+		for (int8_t i = nShiftIndex; i >= pBucket->nFirstTaintedRow; --i)
 		{
-			// is the row we are copying from below the upper border?
-			if (i >= nFormerFirstMatterRow)
-			{
-				// just copy from that row
-				pBucket->dump[nLowestRow] = pBucket->dump[i];
-			}
-			else
-			{
-				// rows above the upper border are always empty
-				pBucket->dump[nLowestRow] = 0;
-			}
-			--nLowestRow;
+			pBucket->dump[i] = 0;
 		}
+		pBucket->nFirstTaintedRow = nShiftIndex + 1;
 	}
 
 	// ready to get the next piece
 	pBucket->status = TETRIS_BUS_READY;
-
-	pBucket->nRowMask = nRowMask;
-}
-
-
-/*****************
- * get functions *
- *****************/
-
-int8_t tetris_bucket_getWidth(tetris_bucket_t *pBucket)
-{
-	assert(pBucket != NULL);
-	return pBucket->nWidth;
-}
-
-
-int8_t tetris_bucket_getHeight(tetris_bucket_t *pBucket)
-{
-	assert(pBucket != NULL);
-	return pBucket->nHeight;
-}
-
-
-tetris_piece_t *tetris_bucket_getPiece(tetris_bucket_t *pBucket)
-{
-	assert(pBucket != NULL);
-	return pBucket->pPiece;
-}
-
-
-int8_t tetris_bucket_getColumn(tetris_bucket_t *pBucket)
-{
-	assert(pBucket != NULL);
-	return pBucket->nColumn;
-}
-
-
-int8_t tetris_bucket_getRow(tetris_bucket_t *pBucket)
-{
-	assert(pBucket != NULL);
-	return pBucket->nRow;
-}
-
-
-int8_t tetris_bucket_getFirstMatterRow(tetris_bucket_t *pBucket)
-{
-	assert(pBucket != NULL);
-	return pBucket->nFirstMatterRow;
-}
-
-
-uint8_t tetris_bucket_getRowMask(tetris_bucket_t *pBucket)
-{
-	assert(pBucket != NULL);
-	return pBucket->nRowMask;
-}
-
-
-tetris_bucket_status_t tetris_bucket_getStatus(tetris_bucket_t *pBucket)
-{
-	assert(pBucket != NULL);
-	return pBucket->status;
-}
-
-
-uint16_t tetris_bucket_getDumpRow(tetris_bucket_t *pBucket,
-                                  int8_t nRow)
-{
-	assert(pBucket != NULL);
-	assert((0 <= nRow) && (nRow < pBucket->nHeight));
-	return pBucket->dump[nRow];
 }
 
 
@@ -625,7 +537,6 @@ uint16_t* tetris_bucket_predictBottomRow(tetris_bucket_iterator_t *pIt,
 	pIt->pBucket = pBucket;
 	pIt->pPiece = pPiece;
 	pIt->nColumn = nColumn;
-	pIt->nFullRow = 0xFFFF >> (16 - pBucket->nWidth);
 	pIt->nCurrentRow = pBucket->nHeight - 1;
 	pIt->nRowBuffer = 0;
 
@@ -635,8 +546,8 @@ uint16_t* tetris_bucket_predictBottomRow(tetris_bucket_iterator_t *pIt,
 			(pIt->nPieceHighestRow + 3) : pBucket->nHeight - 1;
 
 	// don't return any trailing rows which are empty, so we look for a stop row
-	pIt->nStopRow = pBucket->nFirstMatterRow < nRow ?
-			pBucket->nFirstMatterRow : nRow;
+	pIt->nStopRow = pBucket->nFirstTaintedRow < nRow ?
+			pBucket->nFirstTaintedRow : nRow;
 	pIt->nStopRow = pIt->nStopRow < 0 ? 0 : pIt->nStopRow;
 
 	return tetris_bucket_predictNextRow(pIt);
@@ -672,7 +583,7 @@ uint16_t* tetris_bucket_predictNextRow(tetris_bucket_iterator_t *pIt)
 
 		pIt->nRowBuffer = pIt->pBucket->dump[pIt->nCurrentRow--] | nPieceMap;
 		// don't return full (and therefore removed) rows
-		if (pIt->nRowBuffer == pIt->nFullRow)
+		if (pIt->nRowBuffer == pIt->pBucket->nFullRow)
 		{
 			// recursively determine next (?) row instead
 			return tetris_bucket_predictNextRow(pIt);
