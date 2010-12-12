@@ -59,8 +59,8 @@ tetris_bucket_t;
 typedef struct tetris_bucket_iterator_t
 {
 	tetris_bucket_t *pBucket; /** bucket to be examined */
-	tetris_piece_t *pPiece;   /** piece which should be tested */
-	int8_t nColumn;           /** column where piece should be dropped */
+	uint16_t nPieceMap;       /** piece bitmap */
+	int8_t nShift;            /** helper variable for piece bitmap shifts */
 	int8_t nCurrentRow;       /** the actual row in the bucket */
 	int8_t nPieceHighestRow;  /** the highest row index of the piece */
 	int8_t nPieceLowestRow;   /** the lowest row index of the piece */

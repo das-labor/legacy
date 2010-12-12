@@ -199,6 +199,7 @@ uint8_t tetris_bucket_collision(tetris_bucket_t *pBucket,
 	assert((nRow > -4) && (nRow < pBucket->nHeight));
 
 	// left and right borders
+	uint16_t const nPieceMap = tetris_piece_getBitmap(pBucket->pPiece);
 	uint16_t nBucketPart = 0;
 	if (nColumn < 0)
 	{
@@ -226,7 +227,7 @@ uint8_t tetris_bucket_collision(tetris_bucket_t *pBucket,
 	{
 		uint16_t nTemp = pBucket->dump[y] & nDumpMask;
 		nBucketPart |= nShift >= 0 ? nTemp << nShift : nTemp >> -nShift;
-		if ((tetris_piece_getBitmap(pBucket->pPiece) & nBucketPart) != 0)
+		if ((nPieceMap & nBucketPart) != 0)
 		{
 			// collision
 			return 1;
@@ -485,43 +486,32 @@ int8_t tetris_bucket_predictCompleteLines(tetris_bucket_t *pBucket,
                                           int8_t nRow,
                                           int8_t nColumn)
 {
-	assert(nRow > -4);
+	assert(pBucket != NULL);
+	assert(pPiece != NULL);
+	assert(nRow > -4 && nRow < pBucket->nHeight);
+	assert(nColumn > -4 && nColumn < pBucket->nWidth);
+
+	// initialization
 	int8_t nCompleteRows = 0;
-
-	// bit mask of a full row
-	uint16_t nFullRow = 0xFFFF >> (16 - pBucket->nWidth);
-
-	// determine sane start and stop values for the dump's index
-	int8_t nStartRow = ((nRow + 3) >= pBucket->nHeight) ?
+	uint16_t nPieceMap = tetris_piece_getBitmap(pPiece);
+	int8_t nStartRow = nRow;
+	int8_t const nStopRow = (nRow + 3) >= pBucket->nHeight ?
 			pBucket->nHeight - 1 : nRow + 3;
-	int8_t nStopRow = (nRow < 0) ? 0 : nRow;
-
-	uint16_t nPiece = tetris_piece_getBitmap(pPiece);
-
-	for (int8_t i = nStartRow; i >= nStopRow; --i)
+	if (nRow < 0)
 	{
-		int8_t y = i - nRow;
+		nPieceMap >>= -nRow * 4;
+		nStartRow = 0;
+	}
 
-		// clear all bits of the piece we are not interested in and align the
-		// rest to LSB
-		uint16_t nPieceMap = (nPiece & (0x000F << (y << 2))) >> (y << 2);
-		// shift the remaining content to the current column
-		if (nColumn >= 0)
-		{
-			nPieceMap <<= nColumn;
-		}
-		else
-		{
-			nPieceMap >>= -nColumn;
-		}
-		// embed piece in dump map
-		uint16_t nDumpMap = pBucket->dump[i] | nPieceMap;
-
-		// is current row a full row?
-		if ((nFullRow & nDumpMap) == nFullRow)
+	for (int8_t y = nStartRow; y <= nStopRow; ++y)
+	{
+		uint16_t nTemp = nPieceMap & 0x000F;
+		nTemp = nColumn >= 0 ? nTemp << nColumn : nTemp >> -nColumn;
+		if ((pBucket->dump[y] ^ nTemp) == pBucket->nFullRow)
 		{
 			++nCompleteRows;
 		}
+		nPieceMap >>= 4;
 	}
 
 	return nCompleteRows;
@@ -535,8 +525,6 @@ uint16_t* tetris_bucket_predictBottomRow(tetris_bucket_iterator_t *pIt,
                                          int8_t nColumn)
 {
 	pIt->pBucket = pBucket;
-	pIt->pPiece = pPiece;
-	pIt->nColumn = nColumn;
 	pIt->nCurrentRow = pBucket->nHeight - 1;
 	pIt->nRowBuffer = 0;
 
@@ -544,6 +532,14 @@ uint16_t* tetris_bucket_predictBottomRow(tetris_bucket_iterator_t *pIt,
 	pIt->nPieceHighestRow = nRow;
 	pIt->nPieceLowestRow = ((pIt->nPieceHighestRow + 3) < pBucket->nHeight) ?
 			(pIt->nPieceHighestRow + 3) : pBucket->nHeight - 1;
+
+	// prepare piece bitmap for faster detection of complete lines
+	pIt->nPieceMap = tetris_piece_getBitmap(pPiece);
+	if ((nRow + 3) >= pBucket->nHeight)
+	{
+		pIt->nPieceMap <<= (nRow + 4 - pBucket->nHeight) * 4;
+	}
+	pIt->nShift = nColumn - 12;
 
 	// don't return any trailing rows which are empty, so we look for a stop row
 	pIt->nStopRow = pBucket->nFirstTaintedRow < nRow ?
@@ -556,32 +552,19 @@ uint16_t* tetris_bucket_predictBottomRow(tetris_bucket_iterator_t *pIt,
 
 uint16_t* tetris_bucket_predictNextRow(tetris_bucket_iterator_t *pIt)
 {
-	uint16_t nPieceMap = 0;
-
 	if ((pIt->nPieceHighestRow > -4) && (pIt->nCurrentRow >= pIt->nStopRow))
 	{
-		uint16_t nPiece = tetris_piece_getBitmap(pIt->pPiece);
-
+		uint16_t nTemp = 0;
+		// embed piece if it is there
 		if ((pIt->nCurrentRow <= pIt->nPieceLowestRow) &&
 				(pIt->nCurrentRow >= pIt->nPieceHighestRow))
 		{
-			int8_t y = pIt->nCurrentRow - pIt->nPieceHighestRow;
-
-			// clear all bits of the piece we are not interested in and
-			// align the rest to LSB
-			nPieceMap = (nPiece & (0x000F << (y << 2))) >> (y << 2);
-			// shift the remaining content to the current column
-			if (pIt->nColumn >= 0)
-			{
-				nPieceMap <<= pIt->nColumn;
-			}
-			else
-			{
-				nPieceMap >>= -pIt->nColumn;
-			}
+			uint16_t nTemp = pIt->nPieceMap & 0xF000;
+			nTemp |= pIt->nShift >= 0 ?
+					nTemp << pIt->nShift : nTemp >> -pIt->nShift;
+			pIt->nPieceMap <<= 4;
 		}
-
-		pIt->nRowBuffer = pIt->pBucket->dump[pIt->nCurrentRow--] | nPieceMap;
+		pIt->nCurrentRow = pIt->pBucket->dump[pIt->nCurrentRow--] | nTemp;
 		// don't return full (and therefore removed) rows
 		if (pIt->nRowBuffer == pIt->pBucket->nFullRow)
 		{
