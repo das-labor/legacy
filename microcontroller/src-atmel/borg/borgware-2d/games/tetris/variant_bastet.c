@@ -36,9 +36,13 @@ void tetris_bastet_doPreprocessing(tetris_bastet_variant_t *pBastet)
 	// retrieve sane start and stop values for the column and row indices
 	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
 	int8_t nStartRow = tetris_bucket_getHeight(pBastet->pBucket) - 1;
-	int8_t nStopRow = tetris_bucket_getFirstMatterRow(pBastet->pBucket);
-//	printf("%d ", nStopRow);
+	int8_t nStopRow = tetris_bucket_getFirstTaintedRow(pBastet->pBucket);
 
+	// clear old precalculated scores
+	for (int i = 0; i < nWidth + 3; ++i)
+	{
+		pBastet->pColScore[i] = 0;
+	}
 	// calculate the column heights of the actual bucket configuration
 	// NOTE: in this loop, pColScore contains the actual column heights,
 	//       later it will contain the "score impact" of every unchanged column
@@ -55,14 +59,6 @@ void tetris_bastet_doPreprocessing(tetris_bastet_variant_t *pBastet)
 			nColMask <<= 1;
 		}
 	}
-
-//	printf("-------------------------------------------\n           ");
-//	for (int i = 0; i < nWidth; ++i)
-//	{
-//		printf("%2d ", pBastet->pColScore[i]);
-//	}
-//	printf("\n");
-
 
 	// starting points for collision detection (to speedup things)
 	// calculate the maxima of the 4-tuples from column -3 to -1
@@ -82,13 +78,6 @@ void tetris_bastet_doPreprocessing(tetris_bastet_variant_t *pBastet)
 				pBastet->pColScore[t0] > pBastet->pColScore[t1] ?
 				pBastet->pColScore[t0] : pBastet->pColScore[t1];
 	}
-//	for (int i = 0; i < nWidth + 3; ++i)
-//	{
-//		printf("%2d ", pBastet->pStartingRow[i]);
-//		if (i == 2)
-//			printf("| ");
-//	}
-//	printf("\n");
 	// normalize to bucket geometry
 	for (uint8_t i = 0; i < nWidth + 3; ++i)
 	{
@@ -100,15 +89,6 @@ void tetris_bastet_doPreprocessing(tetris_bastet_variant_t *pBastet)
 	{
 		pBastet->pColScore[x] *= TETRIS_BASTET_HEIGHT_FACTOR;
 	}
-
-//	for (int i = 0; i < nWidth + 3; ++i)
-//	{
-//		printf("%2d ", pBastet->pStartingRow[i]);
-//		if (i == 2)
-//			printf("| ");
-//	}
-//	printf("\n");
-
 }
 
 
