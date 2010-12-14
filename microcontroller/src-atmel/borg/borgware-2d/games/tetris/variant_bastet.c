@@ -78,6 +78,7 @@ void tetris_bastet_doPreprocessing(tetris_bastet_variant_t *pBastet)
 				pBastet->pColScore[t0] > pBastet->pColScore[t1] ?
 				pBastet->pColScore[t0] : pBastet->pColScore[t1];
 	}
+
 	// normalize to bucket geometry
 	for (uint8_t i = 0; i < nWidth + 3; ++i)
 	{
@@ -255,7 +256,7 @@ int16_t tetris_bastet_evaluateMove(tetris_bastet_variant_t *pBastet,
 
 	// the row where the given piece collides
 	int8_t nDeepestRow = tetris_bucket_predictDeepestRow(pBastet->pBucket,
-			pPiece, pBastet->pStartingRow[nColumn], nColumn);
+			pPiece, pBastet->pStartingRow[nColumn + 3], nColumn);
 
 	// in case the prediction fails we return the lowest possible score
 	if (nDeepestRow == TETRIS_BUCKET_INVALIDROW)
@@ -320,7 +321,6 @@ void tetris_bastet_evaluatePieces(tetris_bastet_variant_t *pBastet)
 		for (int8_t nAngle = TETRIS_PC_ANGLE_0; nAngle < nAngleCount; ++nAngle)
 		{
 			tetris_piece_setAngle(pPiece, nAngle);
-			tetris_piece_rotate(pPiece, TETRIS_PC_ROT_CW);
 			for (int8_t nCol = -3; nCol < nWidth; ++nCol)
 			{
 				int16_t nScore = tetris_bastet_evaluateMove(pBastet,
