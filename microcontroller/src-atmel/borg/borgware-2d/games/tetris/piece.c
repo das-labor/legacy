@@ -66,26 +66,6 @@ void tetris_piece_rotate(tetris_piece_t *pPc,
 }
 
 
-void tetris_piece_setShape(tetris_piece_t *pPc,
-                           tetris_piece_shape_t shape)
-{
-	assert(pPc != NULL);
-	assert((shape >= 0) && (shape <= TETRIS_PC_Z));
-
-	pPc->shape = shape;
-}
-
-
-void tetris_piece_setAngle(tetris_piece_t *pPc,
-                           tetris_piece_angle_t angle)
-{
-	assert(pPc != NULL);
-	assert((angle >= TETRIS_PC_ANGLE_0) && (angle <= TETRIS_PC_ANGLE_270));
-
-	pPc->angle = angle;
-}
-
-
 int8_t tetris_piece_getAngleCount(tetris_piece_t *pPc)
 {
 	assert(pPc != NULL);

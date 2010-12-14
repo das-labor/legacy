@@ -112,8 +112,14 @@ void tetris_piece_rotate(tetris_piece_t *pPc,
  * @param pPc piece to change
  * @param shape the shape of interest
  */
-void tetris_piece_setShape(tetris_piece_t *pPc,
-                           tetris_piece_shape_t shape);
+inline static void tetris_piece_setShape(tetris_piece_t *pPc,
+                                         tetris_piece_shape_t shape)
+{
+	assert(pPc != NULL);
+	assert((shape >= 0) && (shape <= TETRIS_PC_Z));
+
+	pPc->shape = shape;
+}
 
 
 /**
@@ -121,8 +127,14 @@ void tetris_piece_setShape(tetris_piece_t *pPc,
  * @param pPc piece to change
  * @param angle the angle of interest
  */
-void tetris_piece_setAngle(tetris_piece_t *pPc,
-                           tetris_piece_angle_t angle);
+inline static void tetris_piece_setAngle(tetris_piece_t *pPc,
+                                         tetris_piece_angle_t angle)
+{
+	assert(pPc != NULL);
+	assert((angle >= TETRIS_PC_ANGLE_0) && (angle <= TETRIS_PC_ANGLE_270));
+
+	pPc->angle = angle;
+}
 
 
 /**
