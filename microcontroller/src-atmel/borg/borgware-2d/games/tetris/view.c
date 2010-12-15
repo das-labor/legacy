@@ -122,28 +122,30 @@
  * @param y y-coordinate of the pixel
  * @param nColor Color of the pixel
  */
-void tetris_view_setpixel(tetris_bearing_t nBearing,
-                          uint8_t x,
-                          uint8_t y,
-                          uint8_t nColor)
+static void tetris_view_setpixel(tetris_bearing_t nBearing,
+                                 uint8_t x,
+                                 uint8_t y,
+                                 uint8_t nColor)
 {
 	x = VIEWCOLS - 1 - x;
 
+	pixel px;
 	switch (nBearing)
 	{
 	case TETRIS_BEARING_0:
-		setpixel((pixel){x, y}, nColor);
+		px = (pixel){x, y};
 		break;
 	case TETRIS_BEARING_90:
-		setpixel((pixel){y, VIEWCOLS - 1 - x}, nColor);
+		px = (pixel){y, VIEWCOLS - 1 - x};
 		break;
 	case TETRIS_BEARING_180:
-		setpixel((pixel){VIEWCOLS - 1 - x, VIEWROWS - 1 - y}, nColor);
+		px = (pixel){VIEWCOLS - 1 - x, VIEWROWS - 1 - y};
 		break;
 	case TETRIS_BEARING_270:
-		setpixel((pixel){VIEWROWS - 1 - y, x}, nColor);
+		px = (pixel){VIEWROWS - 1 - y, x};
 		break;
 	}
+	setpixel(px, nColor);
 }
 
 
@@ -155,7 +157,7 @@ void tetris_view_setpixel(tetris_bearing_t nBearing,
  * @param y y-coordinate of the line
  * @param nColor Color of the line
  */
-void tetris_view_drawHLine(tetris_bearing_t nBearing,
+inline static void tetris_view_drawHLine(tetris_bearing_t nBearing,
                            uint8_t x1,
                            uint8_t x2,
                            uint8_t y,
@@ -178,11 +180,11 @@ void tetris_view_drawHLine(tetris_bearing_t nBearing,
  * @param y2 second y-coordinate of the line
  * @param nColor Color of the line
  */
-void tetris_view_drawVLine(tetris_bearing_t nBearing,
-                           uint8_t x,
-                           uint8_t y1,
-                           uint8_t y2,
-                           uint8_t nColor)
+inline static void tetris_view_drawVLine(tetris_bearing_t nBearing,
+                                         uint8_t x,
+                                         uint8_t y1,
+                                         uint8_t y2,
+                                         uint8_t nColor)
 {
 	assert(y1 <= y2);
 
@@ -197,7 +199,7 @@ void tetris_view_drawVLine(tetris_bearing_t nBearing,
  * helper function to dim the piece color if game is paused
  * @param pV pointer to the view whose pause status is of interest
  */
-uint8_t tetris_view_getPieceColor(tetris_view_t *pV)
+inline static uint8_t tetris_view_getPieceColor(tetris_view_t *pV)
 {
 	if (pV->modeCurrent == TETRIS_VIMO_RUNNING)
 	{
@@ -214,7 +216,7 @@ uint8_t tetris_view_getPieceColor(tetris_view_t *pV)
  * redraws the dump and the falling piece (if necessary)
  * @param pV pointer to the view on which the dump should be drawn
  */
-void tetris_view_drawDump(tetris_view_t *pV)
+static void tetris_view_drawDump(tetris_view_t *pV)
 {
 	assert(pV->pBucket != NULL);
 	if (tetris_bucket_getRow(pV->pBucket) <= -4)
@@ -222,60 +224,36 @@ void tetris_view_drawDump(tetris_view_t *pV)
 		return;
 	}
 
-	tetris_bearing_t nBearing =
-			pV->pVariantMethods->getBearing(pV->pVariant);
-
-	int8_t nPieceRow = tetris_bucket_getRow(pV->pBucket);
-	uint16_t nRowMap;
-	uint16_t nElementMask;
-
-	tetris_bucket_status_t status = tetris_bucket_getStatus(pV->pBucket);
 	for (int8_t nRow = TETRIS_VIEW_HEIGHT_DUMP - 1; nRow >= 0; --nRow)
 	{
-		nRowMap = tetris_bucket_getDumpRow(pV->pBucket, nRow);
+		uint16_t nRowMap = tetris_bucket_getDumpRow(pV->pBucket, nRow);
 
 		// if a piece is hovering or gliding it needs to be drawn
-		if ((status == TETRIS_BUS_HOVERING) || (status == TETRIS_BUS_GLIDING) ||
-			(status == TETRIS_BUS_GAMEOVER))
+		int8_t nPieceRow = tetris_bucket_getRow(pV->pBucket);
+		tetris_bucket_status_t status = tetris_bucket_getStatus(pV->pBucket);
+		if (((status == TETRIS_BUS_HOVERING) || (status == TETRIS_BUS_GLIDING)
+				|| (status == TETRIS_BUS_GAMEOVER)) && (nRow >= nPieceRow)
+				&& (nRow <= nPieceRow + 3))
 		{
-			if ((nRow >= nPieceRow) && (nRow <= nPieceRow + 3))
-			{
-				int8_t y = nRow - nPieceRow;
-				int8_t nColumn = tetris_bucket_getColumn(pV->pBucket);
-				uint16_t nPieceMap =
+			int8_t nColumn = tetris_bucket_getColumn(pV->pBucket);
+			uint16_t nPieceMap =
 					tetris_piece_getBitmap(tetris_bucket_getPiece(pV->pBucket));
-				// clear all bits of the piece we are not interested in and
-				// align the remaining row to LSB
-				nPieceMap = (nPieceMap & (0x000F << (y << 2))) >> (y << 2);
-				// shift remaining part to current column
-				if (nColumn >= 0)
-				{
-					nPieceMap <<= nColumn;
-				}
-				else
-				{
-					nPieceMap >>= -nColumn;
-				}
-				// cut off unwanted stuff
-				// nPieceMap &= 0x03ff;
-				// finally embed piece into the view
-				nRowMap |= nPieceMap;
-			}
+			// clear all bits of the piece we are not interested in and
+			// align the remaining row to LSB
+			int8_t y = nRow - nPieceRow;
+			nPieceMap = (nPieceMap & (0x000F << (y << 2))) >> (y << 2);
+			// shift remaining part to current column and embed piece into view
+			nRowMap |= nColumn >= 0 ?
+					nPieceMap << nColumn : nPieceMap >> -nColumn;
 		}
 
-		nElementMask = 0x0001;
-
+		uint16_t nElementMask = 0x0001;
 		for (int8_t x = 0; x < TETRIS_VIEW_WIDTH_DUMP; ++x)
 		{
-			unsigned char nColor;
-			if ((nRowMap & nElementMask) != 0)
-			{
-				nColor = tetris_view_getPieceColor(pV);
-			}
-			else
-			{
-				nColor = TETRIS_VIEW_COLORSPACE;
-			}
+			unsigned char nColor = (nRowMap & nElementMask) ?
+					tetris_view_getPieceColor(pV) : TETRIS_VIEW_COLORSPACE;
+			tetris_bearing_t const nBearing =
+					pV->pVariantMethods->getBearing(pV->pVariant);
 			tetris_view_setpixel(nBearing, TETRIS_VIEW_XOFFSET_DUMP + x,
 					TETRIS_VIEW_YOFFSET_DUMP + nRow, nColor);
 			nElementMask <<= 1;
@@ -283,13 +261,14 @@ void tetris_view_drawDump(tetris_view_t *pV)
 	}
 }
 
+
 #ifdef TETRIS_VIEW_XOFFSET_PREVIEW
 /**
  * redraws the preview window
  * @param pV pointer to the view on which the piece should be drawn
  * @param pPc pointer to the piece for the preview window (may be NULL)
  */
-void tetris_view_drawPreviewPiece(tetris_view_t *pV, tetris_piece_t *pPc)
+static void tetris_view_drawPreviewPiece(tetris_view_t *pV, tetris_piece_t *pPc)
 {
 	tetris_bearing_t nBearing =
 			pV->pVariantMethods->getBearing(pV->pVariant);
@@ -350,7 +329,7 @@ void tetris_view_drawPreviewPiece(tetris_view_t *pV, tetris_piece_t *pPc)
  * @param pV pointer to the view on which the borders should be drawn
  * @param nColor the color for the border
  */
-void tetris_view_drawBorders(tetris_view_t *pV,
+static void tetris_view_drawBorders(tetris_view_t *pV,
                              uint8_t nColor)
 {
 	tetris_bearing_t nBearing =
@@ -453,7 +432,7 @@ void tetris_view_drawBorders(tetris_view_t *pV,
  * lets the borders blink to notify player of a level change
  * @param pV pointer to the view whose borders should blink
  */
-void tetris_view_blinkBorders(tetris_view_t *pV)
+static void tetris_view_blinkBorders(tetris_view_t *pV)
 {
 	for (uint8_t i = 0; i < TETRIS_VIEW_BORDER_BLINK_COUNT; ++i)
 	{
@@ -469,12 +448,13 @@ void tetris_view_blinkBorders(tetris_view_t *pV)
  * lets complete lines blink to emphasize their removal
  * @param pV pointer to the view whose complete lines should blink
  */
-void tetris_view_blinkLines(tetris_view_t *pV)
+static void tetris_view_blinkLines(tetris_view_t *pV)
 {
 
 	// reduce necessity of pointer arithmetic
 	int8_t nRow = tetris_bucket_getRow(pV->pBucket);
 	uint8_t nRowMask = tetris_bucket_getRowMask(pV->pBucket);
+	int8_t nMask = 0x01;
 
 	tetris_bearing_t nBearing =
 			pV->pVariantMethods->getBearing(pV->pVariant);
@@ -493,7 +473,7 @@ void tetris_view_blinkLines(tetris_view_t *pV)
 			for (uint8_t j = 0; j <= nDeepestRowOffset; ++j)
 			{
 				// is current line a complete line?
-				if ((nRowMask & (0x01 << j)) != 0)
+				if ((nRowMask & (nMask << j)) != 0)
 				{
 					// draw line in current color
 					uint8_t y = nRow + j;
@@ -502,7 +482,6 @@ void tetris_view_blinkLines(tetris_view_t *pV)
 
 						uint8_t nColor = (nColIdx == 0 ? TETRIS_VIEW_COLORFADE
 								: TETRIS_VIEW_COLORPIECE);
-						// setpixel((pixel){14 - x, y}, nColor);
 						tetris_view_setpixel(nBearing,
 								TETRIS_VIEW_XOFFSET_DUMP + x,
 								TETRIS_VIEW_YOFFSET_DUMP + y,
@@ -522,7 +501,7 @@ void tetris_view_blinkLines(tetris_view_t *pV)
  * displays completed Lines (0-99)
  * @param pV pointer to the view
  */
-void tetris_view_showLineNumbers(tetris_view_t *pV)
+static void tetris_view_showLineNumbers(tetris_view_t *pV)
 {
 
 	tetris_bearing_t nBearing =
@@ -578,8 +557,8 @@ void tetris_view_showLineNumbers(tetris_view_t *pV)
  * @param nHighscoreName the champion's initials packed into a uint16_t
  * @param pszName pointer to an array of char for the unpacked initials
  */
-void tetris_view_formatHighscoreName(uint16_t nHighscoreName,
-                                     char *pszName)
+static void tetris_view_formatHighscoreName(uint16_t nHighscoreName,
+                                            char *pszName)
 {
 	pszName[0] = ((nHighscoreName >> 10) & 0x1F) + 65;
 	if (pszName[0] == '_')
@@ -650,13 +629,6 @@ void tetris_view_getDimensions(int8_t *w,
 	assert((w != NULL) && (h != NULL));
 	*w = TETRIS_VIEW_WIDTH_DUMP;
 	*h = TETRIS_VIEW_HEIGHT_DUMP;
-}
-
-
-void tetris_view_setViewMode(tetris_view_t *pV, tetris_view_mode_t vm)
-{
-	pV->modeOld = pV->modeCurrent;
-	pV->modeCurrent = vm;
 }
 
 

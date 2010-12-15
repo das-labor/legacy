@@ -88,7 +88,12 @@ void tetris_view_getDimensions(int8_t *w,
  * @param pV  pointer to the view whose mode should be set
  * @param vm  see definition of tetris_view_mode_t
  */
-void tetris_view_setViewMode(tetris_view_t *pV, tetris_view_mode_t vm);
+inline static void tetris_view_setViewMode(tetris_view_t *const pV,
+                                           tetris_view_mode_t const vm)
+{
+	pV->modeOld = pV->modeCurrent;
+	pV->modeCurrent = vm;
+}
 
 
 /**
