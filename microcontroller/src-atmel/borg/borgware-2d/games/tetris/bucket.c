@@ -498,8 +498,8 @@ uint16_t* tetris_bucket_predictNextRow(tetris_bucket_iterator_t *pIt)
 		if ((pIt->nCurrentRow <= pIt->nPieceLowestRow) &&
 				(pIt->nCurrentRow >= pIt->nPieceHighestRow))
 		{
-			uint16_t nTemp = pIt->nPieceMap & 0xF000;
-			nTemp |= pIt->nShift >= 0 ?
+			nTemp = pIt->nPieceMap & 0xF000;
+			nTemp = pIt->nShift >= 0 ?
 					nTemp << pIt->nShift : nTemp >> -pIt->nShift;
 			pIt->nPieceMap <<= 4;
 		}
