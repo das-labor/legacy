@@ -102,11 +102,11 @@ void tetris_bastet_doPreprocessing(tetris_bastet_variant_t *pBastet)
  * @param nStopCol the last column of the range to be predicted
  */
 void tetris_bastet_calcPredictedColHeights(tetris_bastet_variant_t *pBastet,
-                                              tetris_piece_t *pPiece,
-                                              int8_t nDeepestRow,
-                                              int8_t nColumn,
-                                              int8_t nStartCol,
-                                              int8_t nStopCol)
+                                           tetris_piece_t *pPiece,
+                                           int8_t nDeepestRow,
+                                           int8_t nColumn,
+                                           int8_t nStartCol,
+                                           int8_t nStopCol)
 {
 	// go through every row and calculate column heights
 	tetris_bucket_iterator_t iterator;
@@ -174,7 +174,7 @@ static int16_t tetris_bastet_evaluateMove(tetris_bastet_variant_t *pBastet,
 			pPiece, pBastet->pStartingRow[nColumn + 3], nColumn);
 
 	// in case the prediction fails we return the lowest possible score
-	if (nDeepestRow == TETRIS_BUCKET_INVALIDROW)
+	if (nDeepestRow <= TETRIS_BUCKET_INVALIDROW)
 	{
 		return -32766;
 	}
