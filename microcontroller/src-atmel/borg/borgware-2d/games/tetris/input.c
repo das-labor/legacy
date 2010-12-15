@@ -78,8 +78,8 @@
  * @param pIn pointer to an input object
  * @param cmd the command whose counter should be set
  */
-void tetris_input_chatterProtect(tetris_input_t *pIn,
-                                 tetris_input_command_t cmd)
+static void tetris_input_chatterProtect(tetris_input_t *pIn,
+                                        tetris_input_command_t cmd)
 {
 	// never exceed the index
 	assert(cmd < TETRIS_INCMD_NONE);
@@ -165,7 +165,7 @@ tetris_input_command_t tetris_input_mapCommand(tetris_bearing_t nBearing,
  * @return interpreted joystick command
  * @see tetris_input_command_t
  */
-tetris_input_command_t tetris_input_queryJoystick(tetris_input_t *pIn)
+static tetris_input_command_t tetris_input_queryJoystick(tetris_input_t *pIn)
 {
 	// map port input to a tetris command
 	tetris_input_command_t cmdJoystick;

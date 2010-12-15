@@ -74,25 +74,6 @@ void tetris_bastet_destruct(void *pVariantData);
  ****************************/
 
 /**
- * calculates a score for a piece at a given column
- * @param pBastet the bastet instance of interest
- * @param pPiece the piece to be tested
- * @param nColum the column where the piece should be dropped
- * @return score for the given move
- */
-int16_t tetris_bastet_evaluateMove(tetris_bastet_variant_t *pBastet,
-                                   tetris_piece_t *pPiece,
-                                   int8_t nColumn);
-
-
-/**
- * calculates the best possible score for every piece
- * @param pBastet the bastet instance of interest
- */
-void tetris_bastet_evaluatePieces(tetris_bastet_variant_t *pBastet);
-
-
-/**
  * chooses a new worst possible piece
  * @param pVariantData the variant instance of interest
  * @return a tetris piece

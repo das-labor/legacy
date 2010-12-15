@@ -100,7 +100,27 @@ void tetris_bucket_destruct(tetris_bucket_t *pBucket);
  * @param nRowMask row mask from which the no. of lines will be calculated
  * @return number of lines of the row mask
  */
-uint8_t tetris_bucket_calculateLines(uint8_t nRowMask);
+inline static uint8_t tetris_bucket_calculateLines(uint8_t nRowMask)
+{
+	uint8_t nLines = 0;
+	if (nRowMask & 0x01)
+	{
+		++nLines;
+	}
+	if (nRowMask & 0x02)
+	{
+		++nLines;
+	}
+	if (nRowMask & 0x04)
+	{
+		++nLines;
+	}
+	if (nRowMask & 0x08)
+	{
+		++nLines;
+	}
+	return nLines;
+}
 
 
 /**

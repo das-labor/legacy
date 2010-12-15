@@ -17,7 +17,7 @@
  * @param pBucket the bucket we want information from
  * @return TETRIS_BUS_HOVERING or TETRIS_BUS_GLIDING
  */
-tetris_bucket_status_t tetris_bucket_hoverStatus(tetris_bucket_t* pBucket)
+static tetris_bucket_status_t tetris_bucket_hoverStatus(tetris_bucket_t* pBucket)
 {
 	assert(pBucket != NULL);
 
@@ -91,23 +91,6 @@ void tetris_bucket_destruct(tetris_bucket_t *pBucket)
 /*******************************
  * bucket related functions *
  *******************************/
-
-uint8_t tetris_bucket_calculateLines(uint8_t nRowMask)
-{
-	uint8_t nMask = 0x0001;
-	uint8_t nLines = 0;
-	for (uint8_t i = 0; i < 4; ++i)
-	{
-		if ((nMask & nRowMask) != 0)
-		{
-			++nLines;
-		}
-		nMask <<= 1;
-	}
-
-	return nLines;
-}
-
 
 void tetris_bucket_reset(tetris_bucket_t *pBucket)
 {
@@ -520,7 +503,7 @@ uint16_t* tetris_bucket_predictNextRow(tetris_bucket_iterator_t *pIt)
 					nTemp << pIt->nShift : nTemp >> -pIt->nShift;
 			pIt->nPieceMap <<= 4;
 		}
-		pIt->nCurrentRow = pIt->pBucket->dump[pIt->nCurrentRow--] | nTemp;
+		pIt->nRowBuffer = pIt->pBucket->dump[pIt->nCurrentRow--] | nTemp;
 		// don't return full (and therefore removed) rows
 		if (pIt->nRowBuffer == pIt->pBucket->nFullRow)
 		{

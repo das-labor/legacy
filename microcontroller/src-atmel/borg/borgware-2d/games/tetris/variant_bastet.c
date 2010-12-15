@@ -155,6 +155,105 @@ int tetris_bastet_qsortCompare(void const *pa,
 }
 
 
+/**
+ * calculates a score for a piece at a given column
+ * @param pBastet the bastet instance of interest
+ * @param pPiece the piece to be tested
+ * @param nColum the column where the piece should be dropped
+ * @return score for the given move
+ */
+static int16_t tetris_bastet_evaluateMove(tetris_bastet_variant_t *pBastet,
+                                          tetris_piece_t *pPiece,
+                                          int8_t nColumn)
+{
+	// initial score of the given piece
+	int16_t nScore = -32000;
+
+	// the row where the given piece collides
+	int8_t nDeepestRow = tetris_bucket_predictDeepestRow(pBastet->pBucket,
+			pPiece, pBastet->pStartingRow[nColumn + 3], nColumn);
+
+	// in case the prediction fails we return the lowest possible score
+	if (nDeepestRow == TETRIS_BUCKET_INVALIDROW)
+	{
+		return -32766;
+	}
+
+	// modify score based on complete lines
+	int8_t nLines =	tetris_bucket_predictCompleteLines(pBastet->pBucket,
+			pPiece, nDeepestRow, nColumn);
+	nScore += 5000 * nLines;
+
+	// determine a sane range of columns whose heights we want to predict
+	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
+	int8_t nStartCol, nStopCol;
+	// if lines have been removed, we need to recalculate all column heights
+	if (nLines != 0)
+	{
+		nStartCol = 0;
+		nStopCol = nWidth - 1;
+	}
+	// if no lines were removed, we only need to recalculate a few columns
+	else
+	{
+		nStartCol = (nColumn < 0) ? 0 : nColumn;
+		nStopCol = (nColumn + 3) < nWidth ? nColumn + 3 : nWidth - 1;
+	}
+
+	// predict column heights of this move
+	tetris_bastet_calcPredictedColHeights(pBastet, pPiece, nDeepestRow,	nColumn,
+			nStartCol, nStopCol);
+
+	// modify score based on predicted column heights
+	for (int x = 0; x < nWidth; ++x)
+	{
+		if ((x >= nStartCol) && (x <= nStopCol))
+		{
+			nScore -= TETRIS_BASTET_HEIGHT_FACTOR * pBastet->pColHeights[x];
+		}
+		else
+		{
+			nScore -= pBastet->pColScore[x];
+		}
+	}
+
+	return nScore;
+}
+
+
+/**
+ * calculates the best possible score for every piece
+ * @param pBastet the bastet instance of interest
+ */
+static void tetris_bastet_evaluatePieces(tetris_bastet_variant_t *pBastet)
+{
+	// precache actual column heights
+	tetris_bastet_doPreprocessing(pBastet);
+	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
+	tetris_piece_t *pPiece = tetris_piece_construct(TETRIS_PC_LINE,
+			TETRIS_PC_ANGLE_0);
+	for (int8_t nBlock = TETRIS_PC_LINE; nBlock <= TETRIS_PC_Z; ++nBlock)
+	{
+		int16_t nMaxScore = -32768;
+		tetris_piece_setShape(pPiece, nBlock);
+		int8_t nAngleCount = tetris_piece_getAngleCount(pPiece);
+		for (int8_t nAngle = TETRIS_PC_ANGLE_0; nAngle < nAngleCount; ++nAngle)
+		{
+			tetris_piece_setAngle(pPiece, nAngle);
+			for (int8_t nCol = -3; nCol < nWidth; ++nCol)
+			{
+				int16_t nScore = tetris_bastet_evaluateMove(pBastet,
+						pPiece, nCol);
+				nMaxScore = nMaxScore > nScore ? nMaxScore : nScore;
+			}
+		}
+		pBastet->nPieceScore[nBlock].shape = nBlock;
+		pBastet->nPieceScore[nBlock].nScore = nMaxScore;
+	}
+	tetris_piece_destruct(pPiece);
+}
+
+
 /***************
  * entry point *
  ***************/
@@ -246,94 +345,6 @@ void tetris_bastet_destruct(void *pVariantData)
 /****************************
  * bastet related functions *
  ****************************/
-
-int16_t tetris_bastet_evaluateMove(tetris_bastet_variant_t *pBastet,
-                                   tetris_piece_t *pPiece,
-                                   int8_t nColumn)
-{
-	// initial score of the given piece
-	int16_t nScore = -32000;
-
-	// the row where the given piece collides
-	int8_t nDeepestRow = tetris_bucket_predictDeepestRow(pBastet->pBucket,
-			pPiece, pBastet->pStartingRow[nColumn + 3], nColumn);
-
-	// in case the prediction fails we return the lowest possible score
-	if (nDeepestRow == TETRIS_BUCKET_INVALIDROW)
-	{
-		return -32766;
-	}
-
-	// modify score based on complete lines
-	int8_t nLines =	tetris_bucket_predictCompleteLines(pBastet->pBucket,
-			pPiece, nDeepestRow, nColumn);
-	nScore += 5000 * nLines;
-
-	// determine a sane range of columns whose heights we want to predict
-	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
-	int8_t nStartCol, nStopCol;
-	// if lines have been removed, we need to recalculate all column heights
-	if (nLines != 0)
-	{
-		nStartCol = 0;
-		nStopCol = nWidth - 1;
-	}
-	// if no lines were removed, we only need to recalculate a few columns
-	else
-	{
-		nStartCol = (nColumn < 0) ? 0 : nColumn;
-		nStopCol = (nColumn + 3) < nWidth ? nColumn + 3 : nWidth - 1;
-	}
-
-	// predict column heights of this move
-	tetris_bastet_calcPredictedColHeights(pBastet, pPiece, nDeepestRow,	nColumn,
-			nStartCol, nStopCol);
-
-	// modify score based on predicted column heights
-	for (int x = 0; x < nWidth; ++x)
-	{
-		if ((x >= nStartCol) && (x <= nStopCol))
-		{
-			nScore -= TETRIS_BASTET_HEIGHT_FACTOR * pBastet->pColHeights[x];
-		}
-		else
-		{
-			nScore -= pBastet->pColScore[x];
-		}
-	}
-
-	return nScore;
-}
-
-
-void tetris_bastet_evaluatePieces(tetris_bastet_variant_t *pBastet)
-{
-	// precache actual column heights
-	tetris_bastet_doPreprocessing(pBastet);
-	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
-	tetris_piece_t *pPiece = tetris_piece_construct(TETRIS_PC_LINE,
-			TETRIS_PC_ANGLE_0);
-	for (int8_t nBlock = TETRIS_PC_LINE; nBlock <= TETRIS_PC_Z; ++nBlock)
-	{
-		int16_t nMaxScore = -32768;
-		tetris_piece_setShape(pPiece, nBlock);
-		int8_t nAngleCount = tetris_piece_getAngleCount(pPiece);
-		for (int8_t nAngle = TETRIS_PC_ANGLE_0; nAngle < nAngleCount; ++nAngle)
-		{
-			tetris_piece_setAngle(pPiece, nAngle);
-			for (int8_t nCol = -3; nCol < nWidth; ++nCol)
-			{
-				int16_t nScore = tetris_bastet_evaluateMove(pBastet,
-						pPiece, nCol);
-				nMaxScore = nMaxScore > nScore ? nMaxScore : nScore;
-			}
-		}
-		pBastet->nPieceScore[nBlock].shape = nBlock;
-		pBastet->nPieceScore[nBlock].nScore = nMaxScore;
-	}
-	tetris_piece_destruct(pPiece);
-}
-
 
 tetris_piece_t* tetris_bastet_choosePiece(void *pVariantData)
 {
