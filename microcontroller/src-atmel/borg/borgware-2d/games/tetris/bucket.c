@@ -465,22 +465,20 @@ uint16_t* tetris_bucket_predictBottomRow(tetris_bucket_iterator_t *pIt,
 	pIt->nCurrentRow = pBucket->nHeight - 1;
 	pIt->nRowBuffer = 0;
 
-	// determine sane start and stop values for the piece's row indices
-	pIt->nPieceHighestRow = nRow;
-	pIt->nPieceLowestRow = ((pIt->nPieceHighestRow + 3) < pBucket->nHeight) ?
-			(pIt->nPieceHighestRow + 3) : pBucket->nHeight - 1;
-
-	// prepare piece bitmap for faster detection of complete lines
 	pIt->nPieceMap = tetris_piece_getBitmap(pPiece);
-	if ((nRow + 3) >= pBucket->nHeight)
-	{
-		pIt->nPieceMap <<= (nRow + 4 - pBucket->nHeight) * 4;
-	}
+
+	// determine sane start and stop values for the piece's row indices
+	pIt->nPieceHighestRow = nRow + tetris_piece_getTopRow(pIt->nPieceMap);
+	int8_t nBottomOffset = tetris_piece_getBottomOffset(pIt->nPieceMap);
+	pIt->nPieceLowestRow = (nRow + nBottomOffset) < pBucket->nHeight ?
+			nRow + nBottomOffset : pBucket->nHeight - 1;
+	// accelerate detection of full rows
+	pIt->nPieceMap <<= (nRow + 3 - pIt->nPieceLowestRow) * 4;
 	pIt->nShift = nColumn - 12;
 
 	// don't return any trailing rows which are empty, so we look for a stop row
-	pIt->nStopRow = pBucket->nFirstTaintedRow < nRow ?
-			pBucket->nFirstTaintedRow : nRow;
+	pIt->nStopRow = pBucket->nFirstTaintedRow < pIt->nPieceHighestRow ?
+			pBucket->nFirstTaintedRow : pIt->nPieceHighestRow;
 	pIt->nStopRow = pIt->nStopRow < 0 ? 0 : pIt->nStopRow;
 
 	return tetris_bucket_predictNextRow(pIt);
