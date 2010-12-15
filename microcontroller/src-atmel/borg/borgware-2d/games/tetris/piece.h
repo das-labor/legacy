@@ -2,6 +2,7 @@
 #define TETRIS_PIECE_H_
 
 #include <stdint.h>
+#include <assert.h>
 
 /**
  * \defgroup TetrisPieceTypes Piece: Data types
@@ -116,7 +117,7 @@ inline static void tetris_piece_setShape(tetris_piece_t *pPc,
                                          tetris_piece_shape_t shape)
 {
 	assert(pPc != NULL);
-	assert((shape >= 0) && (shape <= TETRIS_PC_Z));
+	assert(shape <= TETRIS_PC_Z);
 
 	pPc->shape = shape;
 }
@@ -131,7 +132,7 @@ inline static void tetris_piece_setAngle(tetris_piece_t *pPc,
                                          tetris_piece_angle_t angle)
 {
 	assert(pPc != NULL);
-	assert((angle >= TETRIS_PC_ANGLE_0) && (angle <= TETRIS_PC_ANGLE_270));
+	assert(angle <= TETRIS_PC_ANGLE_270);
 
 	pPc->angle = angle;
 }
@@ -143,6 +144,52 @@ inline static void tetris_piece_setAngle(tetris_piece_t *pPc,
  * @return number of different angles
  */
 int8_t tetris_piece_getAngleCount(tetris_piece_t *pPc);
+
+
+/**
+ * returns the index of the first filled row of a piece
+ * @param nBitmap the bitmap of the piece of interest
+ * @return index of the first filled row
+ */
+inline static int8_t tetris_piece_getTopRow(uint16_t const nBitmap)
+{
+	if (!(nBitmap & 0x0FFF))
+	{
+		return 3; // first three rows can be skipped
+	}
+	else if (!(nBitmap & 0x00FF))
+	{
+		return 2; // first two rows can be skipped
+	}
+	else if (!(nBitmap & 0x000F))
+	{
+		return 1; // first row can be skipped
+	}
+	return 0;     // no row can be skipped
+}
+
+
+/**
+ * returns the offset to the last filled row of a piece
+ * @param nBitmap the bitmap of the piece of interest
+ * @return offset to the last filled row
+ */
+inline static int8_t tetris_piece_getBottomOffset(uint16_t const nBitmap)
+{
+	if (nBitmap > 0x0FFF)
+	{
+		return 3; // piece spans over 4 rows
+	}
+	else if (nBitmap > 0x00FF)
+	{
+		return 2; // last row of the piece is empty
+	}
+	else if (nBitmap > 0x000F)
+	{
+		return 1; // last two rows of the piece are empty
+	}
+	return 0;     // last three rows of the piece are empty
+}
 
 /*@}*/
 

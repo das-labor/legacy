@@ -128,26 +128,6 @@ void tetris_bucket_reset(tetris_bucket_t *pBucket)
 }
 
 
-int8_t tetris_bucket_getPieceStartPos(tetris_piece_t *pPiece)
-{
-	// set vertical start position (first piece row with matter at pos. 1)
-	uint16_t nPieceMap = tetris_piece_getBitmap(pPiece);
-	uint16_t nElementMask = 0xF000;
-	int8_t nRow = -3;
-	while ((nPieceMap & nElementMask) == 0)
-	{
-		++nRow;
-		nElementMask >>= 4;
-	}
-	if (nRow < 0)
-	{
-		++nRow;
-	}
-
-	return nRow;
-}
-
-
 void tetris_bucket_insertPiece(tetris_bucket_t *pBucket,
                                tetris_piece_t *pPiece,
                                tetris_piece_t **ppOldPiece)
@@ -168,7 +148,8 @@ void tetris_bucket_insertPiece(tetris_bucket_t *pBucket,
 	pBucket->nColumn = (pBucket->nWidth - 2) / 2;
 
 	// set vertical start position (first piece row with matter at pos. 1)
-	pBucket->nRow = tetris_bucket_getPieceStartPos(pBucket->pPiece);
+	pBucket->nRow =
+			1 - tetris_piece_getBottomOffset(tetris_piece_getBitmap(pPiece));
 
 	// did we already collide with something?
 	if (tetris_bucket_collision(pBucket, pBucket->nColumn, pBucket->nRow) == 1)
@@ -185,7 +166,7 @@ void tetris_bucket_insertPiece(tetris_bucket_t *pBucket,
 
 
 uint8_t tetris_bucket_collision(tetris_bucket_t *pBucket,
-                                int8_t nColumn,
+                                int8_t nCol,
                                 int8_t nRow)
 {
 	// A piece is represented by 16 bits (4 bits per row where the LSB marks the
@@ -195,21 +176,21 @@ uint8_t tetris_bucket_collision(tetris_bucket_t *pBucket,
 
 	// only allow coordinates which are within sane ranges
 	assert(pBucket != NULL);
-	assert((nColumn > -4) && (nColumn < pBucket->nWidth));
+	assert((nCol > -4) && (nCol < pBucket->nWidth));
 	assert((nRow > -4) && (nRow < pBucket->nHeight));
 
 	// left and right borders
 	uint16_t const nPieceMap = tetris_piece_getBitmap(pBucket->pPiece);
 	uint16_t nBucketPart = 0;
-	if (nColumn < 0)
+	if (nCol < 0)
 	{
 		static uint16_t const nLeftPart[] PROGMEM = {0x7777, 0x3333, 0x1111};
-		nBucketPart = pgm_read_word(&nLeftPart[nColumn + 3]);
+		nBucketPart = pgm_read_word(&nLeftPart[nCol + 3]);
 	}
-	else if (nColumn >= pBucket->nWidth - 3)
+	else if (nCol >= pBucket->nWidth - 3)
 	{
 		static uint16_t const nRightPart[] PROGMEM = {0xEEEE, 0xCCCC, 0x8888};
-		nBucketPart = pgm_read_word(&nRightPart[pBucket->nWidth - nColumn - 1]);
+		nBucketPart = pgm_read_word(&nRightPart[pBucket->nWidth - nCol - 1]);
 	}
 	// lower border
 	if (nRow > pBucket->nHeight - 4)
@@ -225,25 +206,12 @@ uint8_t tetris_bucket_collision(tetris_bucket_t *pBucket,
 	}
 
 	// range for inspecting the piece row by row (starting at the bottom)
-	int8_t nStart = nRow;
-	// skip empty rows at the bottom at the piece
-	if (nPieceMap > 0x0FFF)
-	{
-		nStart += 3; // piece spans over 4 rows
-	}
-	else if (nPieceMap > 0x00FF)
-	{
-		nStart += 2; // last row of the piece is empty
-	}
-	else if (nPieceMap > 0x000F)
-	{
-		nStart += 1; // last two rows of the piece are empty
-	}
+	int8_t const nStart = nRow + tetris_piece_getBottomOffset(nPieceMap);
 	int8_t const nStop = nRow >= 0 ? nRow : 0;
 	// mask those blocks which are not covered by the piece
-	uint16_t nDumpMask = nColumn >= 0 ? 0x000F << nColumn : 0x000F >> -nColumn;
+	uint16_t const nDumpMask = nCol >= 0 ? 0x000F << nCol : 0x000F >> -nCol;
 	// value for shifting blocks to the corresponding part of the piece
-	int8_t nShift = 12 - nColumn - 4 * (nRow + 3 - nStart);
+	int8_t nShift = 12 - nCol - 4 * (nRow + 3 - nStart);
 	// compare piece with dump
 	for (int8_t y = nStart; y >= nStop; --y)
 	{
@@ -274,19 +242,7 @@ void tetris_bucket_advancePiece(tetris_bucket_t *pBucket)
 	{
 		uint16_t nPieceMap = tetris_piece_getBitmap(pBucket->pPiece);
 		// determine first row of the piece (skipping empty lines at the top)
-		int8_t nPieceTop = pBucket->nRow;
-		if (!(nPieceMap & 0x0FFF))
-		{
-			nPieceTop += 3;
-		}
-		else if (!(nPieceMap & 0x00FF))
-		{
-			nPieceTop += 2;
-		}
-		else if (!(nPieceMap & 0x000F))
-		{
-			nPieceTop += 1;
-		}
+		int8_t nPieceTop = pBucket->nRow + tetris_piece_getTopRow(nPieceMap);
 
 		// Is the bucket filled up?
 		if (nPieceTop < 0)
@@ -450,18 +406,7 @@ int8_t tetris_bucket_predictDeepestRow(tetris_bucket_t *pBucket,
 
 	// skip empty rows at the bottom of the piece which may overlap the dump
 	uint16_t nMap = tetris_piece_getBitmap(pPiece);
-	if (nMap > 0x0FFF)
-	{
-		nStartingRow -= 3; // piece spans over 4 rows
-	}
-	else if (nMap > 0x00FF)
-	{
-		nStartingRow -= 2; // last row of the piece is empty
-	}
-	else if (nMap > 0x000F)
-	{
-		nStartingRow -= 1; // last two rows of the piece are empty
-	}
+	nStartingRow -= tetris_piece_getBottomOffset(nMap);
 
 	// check if the piece collides with one of the side borders
 	if (nStartingRow >= -3)
