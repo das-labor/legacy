@@ -13,23 +13,21 @@
  ***************************/
 
 /**
- * determines if piece is either hovering or gliding
+ * determines if piece is either hovering or gliding and sets the bucket's state
  * @param pBucket the bucket we want information from
- * @return TETRIS_BUS_HOVERING or TETRIS_BUS_GLIDING
  */
-static tetris_bucket_status_t tetris_bucket_hoverStatus(tetris_bucket_t* pBucket)
+inline static void tetris_bucket_hoverStatus(tetris_bucket_t *pBucket)
 {
 	assert(pBucket != NULL);
 
 	// if the piece touches the dump we ensure that the status is "gliding"
 	if (tetris_bucket_collision(pBucket, pBucket->nColumn, pBucket->nRow + 1))
 	{
-		return TETRIS_BUS_GLIDING;
+		pBucket->status = TETRIS_BUS_GLIDING;
 	}
-	// otherwise the status must be "hovering"
 	else
 	{
-		return TETRIS_BUS_HOVERING;
+		pBucket->status = TETRIS_BUS_HOVERING;
 	}
 }
 
@@ -143,7 +141,7 @@ void tetris_bucket_insertPiece(tetris_bucket_t *pBucket,
 	else
 	{
 		// bring it on!
-		pBucket->status = tetris_bucket_hoverStatus(pBucket);
+		tetris_bucket_hoverStatus(pBucket);
 	}
 }
 
@@ -259,7 +257,7 @@ void tetris_bucket_advancePiece(tetris_bucket_t *pBucket)
 		// no collision: piece may continue its travel to the ground...
 		pBucket->nRow++;
 		// are we gliding?
-		pBucket->status = tetris_bucket_hoverStatus(pBucket);
+		tetris_bucket_hoverStatus(pBucket);
 	}
 }
 
@@ -280,7 +278,7 @@ uint8_t tetris_bucket_movePiece(tetris_bucket_t *pBucket,
 		pBucket->nColumn += nOffset;
 
 		// are we gliding?
-		pBucket->status = tetris_bucket_hoverStatus(pBucket);
+		tetris_bucket_hoverStatus(pBucket);
 		return 1;
 	}
 
@@ -309,7 +307,7 @@ uint8_t tetris_bucket_rotatePiece(tetris_bucket_t *pBucket,
 	}
 
 	// are we gliding?
-	pBucket->status = tetris_bucket_hoverStatus(pBucket);
+	tetris_bucket_hoverStatus(pBucket);
 	return 1;
 }
 
@@ -375,12 +373,12 @@ void tetris_bucket_removeCompleteLines(tetris_bucket_t *pBucket)
 
 int8_t tetris_bucket_predictDeepestRow(tetris_bucket_t *pBucket,
                                        tetris_piece_t *pPiece,
-                                       int8_t nStartingRow,
+                                       int8_t nStartRow,
                                        int8_t nColumn)
 {
 	assert(pBucket != NULL);
 	assert(pPiece != NULL);
-	assert(nStartingRow >= -1 && nStartingRow < pBucket->nHeight);
+	assert(nStartRow >= -1 && nStartRow < pBucket->nHeight);
 	assert(nColumn >= -3 && nColumn < pBucket->nWidth);
 
 	// exchange current piece of the bucket (to use its collision detection)
@@ -389,26 +387,26 @@ int8_t tetris_bucket_predictDeepestRow(tetris_bucket_t *pBucket,
 
 	// skip empty rows at the bottom of the piece which may overlap the dump
 	uint16_t nMap = tetris_piece_getBitmap(pPiece);
-	nStartingRow -= tetris_piece_getBottomOffset(nMap);
+	nStartRow -= tetris_piece_getBottomOffset(nMap);
 
 	// check if the piece collides with one of the side borders
-	if (nStartingRow >= -3)
+	if (nStartRow >= -3)
 	{
-		while (!tetris_bucket_collision(pBucket, nColumn, nStartingRow + 1))
+		while (!tetris_bucket_collision(pBucket, nColumn, nStartRow + 1))
 		{
-			++nStartingRow;
+			++nStartRow;
 		}
 		// bucket overflow?
-		if (nStartingRow < 0 && ((0xFFFF >> (((4 + nStartingRow) * 4))) & nMap))
+		if (nStartRow < 0 && ((0xFFFF >> (((4 + nStartRow) * 4))) & nMap))
 		{
-			nStartingRow = TETRIS_BUCKET_INVALIDROW;
+			nStartRow = TETRIS_BUCKET_INVALIDROW;
 		}
 	}
 
 	// restore actual bucket piece
 	pBucket->pPiece = pActualPiece;
 
-	return nStartingRow;
+	return nStartRow;
 }
 
 
@@ -468,17 +466,19 @@ uint16_t* tetris_bucket_predictBottomRow(tetris_bucket_iterator_t *pIt,
 	pIt->nPieceMap = tetris_piece_getBitmap(pPiece);
 
 	// determine sane start and stop values for the piece's row indices
-	pIt->nPieceHighestRow = nRow + tetris_piece_getTopRow(pIt->nPieceMap);
-	int8_t nBottomOffset = tetris_piece_getBottomOffset(pIt->nPieceMap);
-	pIt->nPieceLowestRow = (nRow + nBottomOffset) < pBucket->nHeight ?
-			nRow + nBottomOffset : pBucket->nHeight - 1;
+	pIt->nPieceTopRow = nRow + tetris_piece_getTopRow(pIt->nPieceMap);
+	pIt->nPieceBottomRow = nRow + tetris_piece_getBottomOffset(pIt->nPieceMap);
+	if (pIt->nPieceBottomRow >= pBucket->nHeight)
+	{
+		pIt->nPieceBottomRow = pBucket->nHeight - 1;
+	}
 	// accelerate detection of full rows
-	pIt->nPieceMap <<= (nRow + 3 - pIt->nPieceLowestRow) * 4;
+	pIt->nPieceMap <<= (nRow + 3 - pIt->nPieceBottomRow) * 4;
 	pIt->nShift = nColumn - 12;
 
 	// don't return any trailing rows which are empty, so we look for a stop row
-	pIt->nStopRow = pBucket->nFirstTaintedRow < pIt->nPieceHighestRow ?
-			pBucket->nFirstTaintedRow : pIt->nPieceHighestRow;
+	pIt->nStopRow = pBucket->nFirstTaintedRow < pIt->nPieceTopRow ?
+			pBucket->nFirstTaintedRow : pIt->nPieceTopRow;
 	pIt->nStopRow = pIt->nStopRow < 0 ? 0 : pIt->nStopRow;
 
 	return tetris_bucket_predictNextRow(pIt);
@@ -489,12 +489,12 @@ uint16_t* tetris_bucket_predictNextRow(tetris_bucket_iterator_t *pIt)
 {
 	assert(pIt != NULL);
 
-	if ((pIt->nPieceHighestRow > -4) && (pIt->nCurrentRow >= pIt->nStopRow))
+	if (pIt->nCurrentRow >= pIt->nStopRow)
 	{
 		uint16_t nTemp = 0;
 		// embed piece if it is there
-		if ((pIt->nCurrentRow <= pIt->nPieceLowestRow) &&
-				(pIt->nCurrentRow >= pIt->nPieceHighestRow))
+		if ((pIt->nCurrentRow <= pIt->nPieceBottomRow) &&
+				(pIt->nCurrentRow >= pIt->nPieceTopRow))
 		{
 			nTemp = pIt->nPieceMap & 0xF000;
 			nTemp = pIt->nShift >= 0 ?

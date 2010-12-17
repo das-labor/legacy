@@ -60,12 +60,12 @@ typedef struct tetris_bucket_iterator_t
 {
 	tetris_bucket_t *pBucket; /** bucket to be examined */
 	uint16_t nPieceMap;       /** piece bitmap */
-	int8_t nShift;            /** helper variable for piece bitmap shifts */
+	int8_t nShift;            /** helper variable for shifting piece bitmaps */
 	int8_t nCurrentRow;       /** the actual row in the bucket */
-	int8_t nPieceHighestRow;  /** the highest row index of the piece */
-	int8_t nPieceLowestRow;   /** the lowest row index of the piece */
+	int8_t nPieceTopRow;      /** the highest row index of the piece */
+	int8_t nPieceBottomRow;   /** the lowest row index of the piece */
 	int8_t nStopRow;          /** the last row to be examined */
-	uint16_t nRowBuffer;      /** internal buffer for returned rows */
+	uint16_t nRowBuffer;      /** buffer for returned row */
 }
 tetris_bucket_iterator_t;
 
@@ -166,9 +166,8 @@ void tetris_bucket_advancePiece(tetris_bucket_t *pBucket);
  * @param direction direction (see tetris_bucket_direction_t)
  * @return 1 if piece could be moved, 0 otherwise
  */
-uint8_t
-tetris_bucket_movePiece(tetris_bucket_t *pBucket,
-                        tetris_bucket_direction_t direction);
+uint8_t tetris_bucket_movePiece(tetris_bucket_t *pBucket,
+                                tetris_bucket_direction_t direction);
 
 
 /**
@@ -309,13 +308,13 @@ inline static uint16_t tetris_bucket_getDumpRow(tetris_bucket_t *pBucket,
  * returns the deepest possible row for a given piece
  * @param pBucket the bucket on which we want to test a piece
  * @param pPiece the piece which should be tested
- * @param nStartingRow the row where the collision detection should start
+ * @param nStartRow the row where the collision detection should start
  * @param nColumn the column where the piece should be dropped
  * @return the row of the piece (bucket compliant coordinates)
  */
 int8_t tetris_bucket_predictDeepestRow(tetris_bucket_t *pBucket,
                                        tetris_piece_t *pPiece,
-                                       int8_t nStartingRow,
+                                       int8_t nStartRow,
                                        int8_t nColumn);
 
 
