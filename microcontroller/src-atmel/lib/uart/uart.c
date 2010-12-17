@@ -16,7 +16,7 @@
 	#define URSEL UMSEL
 	#define UART_UDRE_VECTOR SIG_UART_DATA
 	#define UART_RECV_VECTOR SIG_UART_RECV
-#elif defined(__AVR_ATmega48__) | defined(__AVR_ATmega168__)
+#elif defined(__AVR_ATmega48__) | defined(__AVR_ATmega168__) | defined(__AVR_ATmega162__)
 	#define UCSRB UCSR0B
 	#define UCSRC UCSR0C
 	#define UDR UDR0
@@ -102,10 +102,10 @@ void uart_init() {
 #endif
 	PORTD |= 0x01;				//Pullup an RXD an
 
-	UCSRB |= (1<<TXEN);			//UART TX einschalten
-	UCSRC |= (3<<UCSZ0);		//Asynchron 8N1
+	UCSRA = 0;
+	UCSRB = (1<<TXEN) | ( 1 << RXEN); //UART RX und TX einschalten
+	UCSRC = (3<<UCSZ0);		//Asynchron 8N1
 
-	UCSRB |= ( 1 << RXEN);			//Uart RX einschalten
 
 	UBRRH=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU)>>8);
 	UBRRL=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU));
