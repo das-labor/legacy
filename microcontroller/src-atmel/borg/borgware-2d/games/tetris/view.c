@@ -223,6 +223,8 @@ static void tetris_view_drawDump(tetris_view_t *pV)
 	{
 		return;
 	}
+	tetris_bearing_t const nBearing =
+			pV->pVariantMethods->getBearing(pV->pVariant);
 
 	for (int8_t nRow = TETRIS_VIEW_HEIGHT_DUMP - 1; nRow >= 0; --nRow)
 	{
@@ -241,7 +243,7 @@ static void tetris_view_drawDump(tetris_view_t *pV)
 			// clear all bits of the piece we are not interested in and
 			// align the remaining row to LSB
 			int8_t y = nRow - nPieceRow;
-			nPieceMap = (nPieceMap & (0x000F << (y << 2))) >> (y << 2);
+			nPieceMap = (nPieceMap & (0x000F << (y * 4))) >> (y * 4);
 			// shift remaining part to current column and embed piece into view
 			nRowMap |= nColumn >= 0 ?
 					nPieceMap << nColumn : nPieceMap >> -nColumn;
@@ -252,8 +254,6 @@ static void tetris_view_drawDump(tetris_view_t *pV)
 		{
 			unsigned char nColor = (nRowMap & nElementMask) ?
 					tetris_view_getPieceColor(pV) : TETRIS_VIEW_COLORSPACE;
-			tetris_bearing_t const nBearing =
-					pV->pVariantMethods->getBearing(pV->pVariant);
 			tetris_view_setpixel(nBearing, TETRIS_VIEW_XOFFSET_DUMP + x,
 					TETRIS_VIEW_YOFFSET_DUMP + nRow, nColor);
 			nElementMask <<= 1;
@@ -498,7 +498,7 @@ static void tetris_view_blinkLines(tetris_view_t *pV)
 
 #ifdef TETRIS_VIEW_XOFFSET_COUNTER
 /**
- * displays completed Lines (0-99)
+ * displays completed Lines (0-399)
  * @param pV pointer to the view
  */
 static void tetris_view_showLineNumbers(tetris_view_t *pV)

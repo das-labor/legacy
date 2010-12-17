@@ -135,8 +135,8 @@ void tetris_bastet_calcPredictedColHeights(tetris_bastet_variant_t *pBastet,
  * @param pa the first value to compare
  * @param pb the second value to compare
  */
-int tetris_bastet_qsortCompare(void const *pa,
-                               void const *pb)
+static int tetris_bastet_qsortCompare(void const *pa,
+                                      void const *pb)
 {
 	tetris_bastet_scorepair_t *pScorePairA = (tetris_bastet_scorepair_t *)pa;
 	tetris_bastet_scorepair_t *pScorePairB = (tetris_bastet_scorepair_t *)pb;
