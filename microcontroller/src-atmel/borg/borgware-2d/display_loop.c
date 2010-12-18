@@ -13,6 +13,7 @@
 #include "animations/ltn_ant.h"
 #include "animations/amphibian.h"
 #include "animations/laborlogo.h"
+#include "animations/27c3.h"
 #include "borg_hw/borg_hw.h"
 #include "can/borg_can.h"
 #include "random/prng.h"
@@ -153,6 +154,12 @@ void display_loop(){
 #ifdef ANIMATION_AMPHIBIAN
 		case 16:
 			amphibian();
+			break;
+#endif
+
+#ifdef ANIMATION_LOGO_27C3
+		case 17:
+			logo_27c3();
 			break;
 #endif
 
