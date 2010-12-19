@@ -506,26 +506,32 @@ class JabberBot(object):
         """
         pass
 
-    def serve_forever( self, connect_callback = None, disconnect_callback = None):
+    def serve_forever( self, connect_callback = None, disconnect_callback = None,connects=2):
         """Connects to the server and handles messages."""
-        conn = self.connect()
-        if conn:
-            self.log.info('bot connected. serving forever.')
-        else:
-            self.log.warn('could not connect to server - aborting.')
-            return
+        while connects > 1 or connects == 0:
+            if connects > 1: connects = connects - 1
+            conn = self.connect()
+            if conn:
+                self.log.info('bot connected. serving forever.')
+            else:
+                self.log.warn('could not connect to server - aborting.')
+                return
 
-        if connect_callback:
-            connect_callback()
+            if connect_callback:
+                connect_callback()
 
-        while not self.__finished:
-            try:
-                conn.Process(1)
-                self.idle_proc()
-            except KeyboardInterrupt:
-                self.log.info('bot stopped by user request. shutting down.')
+            while not self.__finished:
+                try:
+                    conn.Process(1)
+                    self.idle_proc()
+                except KeyboardInterrupt:
+                    self.log.info('bot stopped by user request. shutting down.')
+                    connects = 1
+                    break
+                except:
+                    pass
+            if connects == 1:
                 break
-
         self.shutdown()
 
         if disconnect_callback:

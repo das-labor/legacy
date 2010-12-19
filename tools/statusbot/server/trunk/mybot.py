@@ -44,9 +44,16 @@ class SystemInfoJabberBot(JabberBot):
                   '/me bindet die Kratze ans Channeltopic',
                   '/me klebt ne Gummiemaus an die Decke',
                   '/me verteilt Katzenminze im Channel',
-                  'kommm kitty kitty kommm ... ich hab da was feines',
+                  'komm kitty kitty komm ... ich hab da was feines',
                   '/me hebt das Schild "Niedliche Katze zu verschenken!" hoch',
                   'KATZLA!',
+                  '/me wirft ein supraleitendes Wollknaeul in den Channel',
+                  '/me spielt mit The Schaumstoffball from Hell',
+                  'http://www.youtube.com/watch?v=7dBUJI-Axz0',
+                  'miauuuu',
+                  '/me verteilt Antistatiktueten',
+                  '/me macht das Licht aus',
+                  'Wauh grrr Wauh',
                   'http://www.cuisine.at/rezept_0886450_katze_in_sahne_auf_polnische_art.php']
         if mess.getFrom() == "labor@conference.das-labor.org/channelkatze":
             return str(random.choice(response))
@@ -97,8 +104,10 @@ def connect_callback():
         bot.set_status(bot.NODATA)
 
 
+
 username = 'status@das-labor.org/statusdaemon'
 password = 'password'
+
 bot = SystemInfoJabberBot(username,password)
 #register some commands
 bot.commands["*mauz*"]=bot.mauz
@@ -110,8 +119,8 @@ bot.commands["miau"]=bot.mauz
 bot.commands["miau!"]=bot.mauz
 bot.commands["*miau*"]=bot.mauz
 bot.commands["kratze?"]=bot.kratze
-
-
 bot.join_room("labor@conference.das-labor.org",username="#ChanServ")
-#bot.send("admin@conference.das-labor.org","foo",message_type='groupchat')
-bot.serve_forever(connect_callback)
+bot.serve_forever(connect_callback,connects=0)
+
+
+
