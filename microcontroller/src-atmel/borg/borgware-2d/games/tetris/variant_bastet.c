@@ -131,26 +131,63 @@ void tetris_bastet_calcPredictedColHeights(tetris_bastet_variant_t *pBastet,
 
 
 /**
- * compare function for quick sorting the pieces by score
- * @param pa the first value to compare
- * @param pb the second value to compare
+ * this function is part of the heapsort algorithm for sorting pieces by score
+ * @param pBastet the Bastet instance whose evaluated pieces should be sorted
+ * @param nRoot start of the sift
+ * @param nEnd how far down the heap to sift
  */
-static int tetris_bastet_qsortCompare(void const *pa,
-                                      void const *pb)
+static void tetris_bastet_siftDownPieces(tetris_bastet_variant_t *pBastet,
+                                         int8_t nRoot,
+                                         int8_t nEnd)
 {
-	tetris_bastet_scorepair_t *pScorePairA = (tetris_bastet_scorepair_t *)pa;
-	tetris_bastet_scorepair_t *pScorePairB = (tetris_bastet_scorepair_t *)pb;
-	if (pScorePairA->nScore == pScorePairB->nScore)
+	while ((nRoot * 2 + 1) <= nEnd)
 	{
-		return 0;
+		int8_t nChild = nRoot * 2 + 1;
+		int8_t nSwap = nRoot;
+		if (pBastet->nPieceScore[nSwap].nScore <
+				pBastet->nPieceScore[nChild].nScore)
+		{
+			nSwap = nChild;
+		}
+		if ((nChild < nEnd) && (pBastet->nPieceScore[nSwap].nScore <
+				pBastet->nPieceScore[nChild + 1].nScore))
+		{
+			nSwap = nChild + 1;
+		}
+		if (nSwap != nRoot)
+		{
+			tetris_bastet_scorepair_t scTmp = pBastet->nPieceScore[nRoot];
+			pBastet->nPieceScore[nRoot] = pBastet->nPieceScore[nSwap];
+			pBastet->nPieceScore[nSwap] = scTmp;
+			nRoot = nSwap;
+		}
+		else
+		{
+			return;
+		}
 	}
-	else if (pScorePairA->nScore < pScorePairB->nScore)
+}
+
+
+/**
+ * sorts the evaluated pieces by score in ascending order (via heapsort algo)
+ * @param pBastet the Bastet instance whose evaluated pieces should be sorted
+ */
+static void tetris_bastet_sortPieces(tetris_bastet_variant_t *pBastet)
+{
+	int8_t const nCount = 7;
+	// heapify
+	for (int8_t nStart = nCount / 2 - 1; nStart >= 0; --nStart)
 	{
-		return -1;
+		tetris_bastet_siftDownPieces(pBastet, nStart, nCount - 1);
 	}
-	else
+	// sorting the heap
+	for (int8_t nEnd = nCount - 1; nEnd > 0; --nEnd)
 	{
-		return 1;
+		tetris_bastet_scorepair_t scTmp = pBastet->nPieceScore[nEnd];
+		pBastet->nPieceScore[nEnd] = pBastet->nPieceScore[0];
+		pBastet->nPieceScore[0] = scTmp;
+		tetris_bastet_siftDownPieces(pBastet, 0, nEnd - 1);
 	}
 }
 
@@ -354,6 +391,7 @@ tetris_piece_t* tetris_bastet_choosePiece(void *pVariantData)
 
 	// determine the best score for every piece
 	tetris_bastet_evaluatePieces(pBastet);
+
 	// perturb score (-2 to +2) to avoid stupid tie handling
 	for (uint8_t i = 0; i < 7; ++i)
 	{
@@ -361,8 +399,7 @@ tetris_piece_t* tetris_bastet_choosePiece(void *pVariantData)
 	}
 
 	// sort pieces by their score in ascending order
-	qsort(pBastet->nPieceScore, 7, sizeof(tetris_bastet_scorepair_t),
-		&tetris_bastet_qsortCompare);
+	tetris_bastet_sortPieces(pBastet);
 
 	// new "preview" piece (AKA "won't give you this one")
 	if (pBastet->pPreviewPiece != NULL)
@@ -374,11 +411,11 @@ tetris_piece_t* tetris_bastet_choosePiece(void *pVariantData)
 					TETRIS_PC_ANGLE_0);
 
 	tetris_piece_t *pPiece = NULL;
-	uint8_t const nPercent[4] = {75, 92, 98, 100};
-	uint8_t nRnd = rand() % 100;
+	uint8_t const nPercent[4] = {191, 235, 250, 255};
+	uint8_t const nRnd = random8();
 	for (uint8_t i = 0; i < 4; ++i)
 	{
-		if (nRnd < nPercent[i])
+		if (nRnd <= nPercent[i])
 		{
 			// circumvent a trick where the line piece consecutively gets the
 			// lowest score although it removes a line every time
