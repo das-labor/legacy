@@ -39,6 +39,13 @@ void borg_breakout_game()
 
 void borg_breakout(uint8_t demomode)
 {
+	// save pointer address just in case that the breakout demo was previously
+	// running so it can reentered
+	char (*old_playfield)[NUM_COLS][NUM_ROWS] = playfield;
+	// new playing field
+	char my_playfield[NUM_COLS][NUM_ROWS];
+	playfield = &my_playfield;
+
 	uint8_t ignorescore_buffer = ignorescore;
 	uint16_t cycles = DEMO_CYCLES;
 	uint8_t level;
@@ -99,4 +106,6 @@ void borg_breakout(uint8_t demomode)
 	}
 
 	ignorescore = ignorescore_buffer;
+	// restore saved pointer
+	playfield = old_playfield;
 }
