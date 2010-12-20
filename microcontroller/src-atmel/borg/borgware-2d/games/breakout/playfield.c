@@ -17,7 +17,7 @@
  */
 
 #include "playfield.h"
-static enum game_field_t playfield[NUM_COLS][NUM_ROWS];
+char (*playfield)[NUM_COLS][NUM_ROWS];
 
 void playfield_set (uint8_t in_x, uint8_t in_y, enum game_field_t in_field)
 {
@@ -25,15 +25,15 @@ void playfield_set (uint8_t in_x, uint8_t in_y, enum game_field_t in_field)
 	{
 		return;
 	}
-	playfield[in_x][in_y] = in_field;
+	(*playfield)[in_x][in_y] = in_field;
 }
 
 void brick_damage (uint8_t in_x, uint8_t in_y)
 {
-	if (playfield[in_x][in_y] >= bs || playfield[in_x][in_y] == 0)
+	if ((*playfield)[in_x][in_y] >= bs || (*playfield)[in_x][in_y] == 0)
 		return;
 
-	playfield[in_x][in_y] -= 1;
+	(*playfield)[in_x][in_y] -= 1;
 	score_add (1);
 }
 
@@ -53,7 +53,7 @@ uint8_t check_bounce (int8_t in_x, int8_t in_y)
 	}
 
 	/* collisions with real objects */
-	switch (playfield[abs(in_x)][abs(in_y)])
+	switch ((*playfield)[abs(in_x)][abs(in_y)])
 	{
 		case b2:
 		case b3:
@@ -119,7 +119,7 @@ void playfield_draw ()
 	{
 		for (y=0;y<NUM_COLS;y++)
 		{
-			draw_single_field (x,y, playfield[x][y]);
+			draw_single_field (x,y, (*playfield)[x][y]);
 		}
 	}
 }

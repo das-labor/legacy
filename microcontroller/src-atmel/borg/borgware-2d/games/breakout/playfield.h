@@ -37,6 +37,7 @@ enum game_field_t
 	rb /* rebound */
 };
 
+extern char (*playfield)[NUM_COLS][NUM_ROWS];
 
 /* @description draw the current field
  */
