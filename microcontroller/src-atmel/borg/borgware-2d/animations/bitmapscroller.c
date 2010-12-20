@@ -194,8 +194,8 @@ void bitmap_scroll(unsigned int const nWidth,
 	bitmap.nChunkCount = (((bitmap.nViewportWidth - 1) / 8) + 1);
 
 	// initial starting point
-	int x = random8() % (bitmap.nXDomain + 1);
-	int y = random8() % (bitmap.nYDomain + 1);
+	int x = bitmap.nXDomain > 0 ? random8() % bitmap.nXDomain : 0;
+	int y = bitmap.nYDomain > 0 ? random8() % bitmap.nYDomain : 0;
 	char dx = 0;
 	char dy = 0;
 
