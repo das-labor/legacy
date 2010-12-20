@@ -1,6 +1,8 @@
+#include <stdint.h>
+#include "../../compat/pgmspace.h"
 #include "invaders2.h"
 
-unsigned char peter[8][11] =
+uint8_t const peter[8][11] PROGMEM =
 {
 { 0, 0, P, 0, 0, 0, 0, 0, P, 0, 0 },
 { 0, 0, 0, P, 0, 0, 0, P, 0, 0, 0 },
@@ -11,7 +13,7 @@ unsigned char peter[8][11] =
 { P, 0, P, 0, 0, 0, 0, 0, P, 0, P },
 { 0, 0, 0, P, P, 0, P, P, 0, 0, 0 } };
 
-unsigned char hans[8][11] =
+uint8_t const hans[8][11] PROGMEM =
 {
 { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
 { 1, 2, 1, 1, 2, 2, 2, 1, 2, 2, 1 },
@@ -114,7 +116,7 @@ void initInvaders(Invaders * iv, unsigned char lv)
 		{
 			for (y = 0; y < 8; ++y)
 			{
-				if (hans[y][x] != 0)
+				if (pgm_read_byte(&hans[y][x]) != 0)
 				{
 					iv->map[x][y] = 2;
 				}
@@ -134,7 +136,7 @@ void initInvaders(Invaders * iv, unsigned char lv)
 		{
 			for (y = 0; y < 8; ++y)
 			{
-				if (peter[y][x] != 0)
+				if (pgm_read_byte(&peter[y][x]) != 0)
 				{
 					iv->map[x][y] = 2;
 				}
