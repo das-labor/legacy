@@ -11,6 +11,7 @@
 #define INVADERS2_H
 /* TEST PARTS NEW API */
 
+#include <stdint.h>
 #include "../../config.h"
 #include "../../pixel.h"
 
@@ -50,8 +51,8 @@ typedef struct
 /*                   GLOBALE VAR                                */
 /****************************************************************/
 #define P 3
-extern unsigned char peter[8][11];
-extern unsigned char hans[8][11];
+extern uint8_t const peter[8][11];
+extern uint8_t const hans[8][11];
 
 /****************************************************************/
 /*                          DEFINES                             */
