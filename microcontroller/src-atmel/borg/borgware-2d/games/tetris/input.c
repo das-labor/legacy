@@ -143,7 +143,7 @@ static void tetris_input_chatterProtect(tetris_input_t *pIn,
 tetris_input_command_t tetris_input_mapCommand(tetris_bearing_t nBearing,
                                                tetris_input_command_t nCmd)
 {
-	tetris_input_command_t const nMapping[] =
+	static uint8_t const nMapping[] PROGMEM =
 	{
 		TETRIS_INCMD_DOWN, TETRIS_INCMD_ROT_CW, TETRIS_INCMD_RIGHT,
 		TETRIS_INCMD_LEFT,
@@ -156,7 +156,7 @@ tetris_input_command_t tetris_input_mapCommand(tetris_bearing_t nBearing,
 	};
 
 	return (nBearing == TETRIS_BEARING_0) || (nCmd >= TETRIS_INCMD_ROT_CCW) ?
-			nCmd : (nMapping[(nBearing - 1) * 4 + nCmd]);
+			nCmd : (PM(nMapping[(nBearing - 1) * 4 + nCmd]));
 }
 
 

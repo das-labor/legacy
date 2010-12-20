@@ -498,10 +498,10 @@ static void tetris_view_blinkLines(tetris_view_t *pV)
 
 #ifdef TETRIS_VIEW_XOFFSET_COUNTER
 /**
- * displays completed Lines (0-399)
+ * draws counter of completed rows (0-399)
  * @param pV pointer to the view
  */
-static void tetris_view_showLineNumbers(tetris_view_t *pV)
+static void tetris_view_drawLineCounter(tetris_view_t *pV)
 {
 
 	tetris_bearing_t nBearing =
@@ -652,7 +652,7 @@ void tetris_view_update(tetris_view_t *pV)
 
 #ifdef TETRIS_VIEW_XOFFSET_COUNTER
 	// update line counter
-	tetris_view_showLineNumbers(pV);
+	tetris_view_drawLineCounter(pV);
 #endif
 
 	// draw dump

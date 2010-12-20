@@ -31,7 +31,7 @@
  * the score impact of every unchanged column to speed up prediction routines.
  * @param pBastet bastet instance which should be preprocessed
  */
-void tetris_bastet_doPreprocessing(tetris_bastet_variant_t *pBastet)
+static void tetris_bastet_doPreprocessing(tetris_bastet_variant_t *pBastet)
 {
 	// retrieve sane start and stop values for the column and row indices
 	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
@@ -101,12 +101,12 @@ void tetris_bastet_doPreprocessing(tetris_bastet_variant_t *pBastet)
  * @param nStartCol the first column of the range to be predicted
  * @param nStopCol the last column of the range to be predicted
  */
-void tetris_bastet_calcPredictedColHeights(tetris_bastet_variant_t *pBastet,
-                                           tetris_piece_t *pPiece,
-                                           int8_t nDeepestRow,
-                                           int8_t nColumn,
-                                           int8_t nStartCol,
-                                           int8_t nStopCol)
+static void tetris_bastet_predictColHeights(tetris_bastet_variant_t *pBastet,
+                                            tetris_piece_t *pPiece,
+                                            int8_t nDeepestRow,
+                                            int8_t nColumn,
+                                            int8_t nStartCol,
+                                            int8_t nStopCol)
 {
 	// go through every row and calculate column heights
 	tetris_bucket_iterator_t iterator;
@@ -238,7 +238,7 @@ static int16_t tetris_bastet_evaluateMove(tetris_bastet_variant_t *pBastet,
 	}
 
 	// predict column heights of this move
-	tetris_bastet_calcPredictedColHeights(pBastet, pPiece, nDeepestRow,	nColumn,
+	tetris_bastet_predictColHeights(pBastet, pPiece, nDeepestRow,	nColumn,
 			nStartCol, nStopCol);
 
 	// modify score based on predicted column heights
