@@ -175,8 +175,8 @@ char uart_getc()
 #else  // WITHOUT INTERRUPT
 char uart_getc()
 {
+		
 	while (!(UCSRA & (1<<RXC)));	// warten bis Zeichen verfuegbar
-	
 	return UDR;			// Zeichen aus UDR zurueckgeben
 }
 #endif // UART_INTERRUPT
@@ -222,5 +222,28 @@ void uart_hexdump(unsigned char *buf, int len)
 			x = 0;
 		}
 	}
+}
+#endif
+
+#ifdef UART_GETLINE
+//get one Cariage return terminated line
+//echo charakters back on Uart
+//returns buffer with zero terminated line on success, 0 pointer otherwise
+char * uart_getline(){
+	static char buffer[UART_LINE_BUFFER_SIZE];
+	static char * pos = buffer;
+	char tmp;
+	while((tmp = uart_getc())){
+		if(tmp == '\r'){
+			*pos = 0;	//terminate line
+			pos = buffer;   //reset pointer
+			return buffer;  //and return the buffer
+		}
+		if((tmp != '\n') && (pos < buffer+UART_LINE_BUFFER_SIZE-1)){ //buffer full?
+			*pos++ = tmp;		//no: write character to buffer
+			//uart_putc (tmp);
+		}
+	}
+	return 0;
 }
 #endif
