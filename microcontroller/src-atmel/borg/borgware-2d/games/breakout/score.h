@@ -20,8 +20,6 @@
 #ifndef SCORE_H
 #define SCORE_H
 
-uint8_t ignorescore;
-
 void score_add(uint8_t);
 uint16_t score_get();
 #endif

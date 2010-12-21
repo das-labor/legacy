@@ -39,27 +39,11 @@ void borg_breakout_game()
 
 void borg_breakout(uint8_t demomode)
 {
-	// save pointer address just in case that the breakout demo was previously
-	// running so it can reentered
-	char (*old_playfield)[NUM_COLS][NUM_ROWS] = playfield;
-	// new playing field
 	char my_playfield[NUM_COLS][NUM_ROWS];
 	playfield = &my_playfield;
 
-	uint8_t ignorescore_buffer = ignorescore;
 	uint16_t cycles = DEMO_CYCLES;
-	uint8_t level;
-	if (demomode)
-	{
-		level = random8() % 5;
-		ignorescore = 1;
-	}
-	else
-	{
-		level = 0;
-		ignorescore = 0;
-	}
-
+	uint8_t level = demomode ? random8() % 5 : 0;
 	ball_t balls[1];
 
 	/* spawn a ball in the middle bottom of the field, let it move upwards with random speed & direction */
@@ -104,8 +88,4 @@ void borg_breakout(uint8_t demomode)
 		// alternate the value of the tick divider
 		tick_divider = tick_divider ? 0 : 1;
 	}
-
-	ignorescore = ignorescore_buffer;
-	// restore saved pointer
-	playfield = old_playfield;
 }
