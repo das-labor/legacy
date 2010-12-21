@@ -34,6 +34,8 @@ void setpixel(pixel p, unsigned char value ){
 }
 
 
+#ifdef ANIMATION_MHERWEG
+
 void line(pixel p1, pixel p2 ,unsigned char value){
 	char dx, dy, stepx, stepy, fraction;
     
@@ -109,6 +111,7 @@ for (y=p1.y;y<(p1.y+h);y++){
 
 }
 
+#endif /* ANIMATION_HERWEG */
 
 //shifts pixmap left. It is really shifted right, but because col0 is left in the Display it's left.
 void shift_pixmap_l(){
