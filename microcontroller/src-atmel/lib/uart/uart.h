@@ -39,7 +39,7 @@ char uart_getc_nb(char *c);		// non blocking, returns 1 on success
 	//get one Cariage return terminated line
 	//echo charakters back on Uart
 	//returns buffer with zero terminated line on success, 0 pointer otherwise
-	char * uart_getline_nb();
+	char * uart_getline();
 #endif
 
 #endif
