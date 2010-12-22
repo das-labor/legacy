@@ -82,7 +82,7 @@ void display_loop(){
 
 #ifdef ANIMATION_SCHACHBRETT
 		case 5:
-			schachbrett(10);
+			schachbrett(20);
 			break;
 #endif
 
