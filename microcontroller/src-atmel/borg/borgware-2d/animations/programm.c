@@ -350,17 +350,11 @@ unsigned char i, j, x;
 #ifdef ANIMATION_SCHACHBRETT
 void schachbrett(unsigned char times){
 	clear_screen(0);
-	unsigned char j;
-	for(j=0;j<times;j++){
-		unsigned char i, x;
-		for(i = 0; i<NUM_ROWS; i++){
-			for(x=0;x<LINEBYTES;x++)
-				pixmap[2][i][x] = 0x55<<(i&0x01);
-		}
-		wait(200);
-		for(i = 0; i<NUM_ROWS; i++){
-			for(x=0;x<LINEBYTES;x++)
-				pixmap[2][i][x] = 0xAA>>(i&0x01);
+	for (unsigned char i = 0; i < times; ++i) {
+		for (unsigned char row = 0; row < NUM_ROWS; ++row) {
+			for (unsigned char col = 0; col < LINEBYTES; ++col) {
+				pixmap[2][row][col] = ((i ^ row) & 0x01) ? 0x55 : 0xAA;
+			}
 		}
 		wait(200);
 	}
