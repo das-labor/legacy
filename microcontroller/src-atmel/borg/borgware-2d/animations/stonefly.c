@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include "../config.h"
+#include "../compat/pgmspace.h"
 #include "../random/prng.h"
 #include "../pixel.h"
 #include "../games/tetris/piece.h"
@@ -19,7 +20,7 @@
 010000010 0x0082
 */
 
-uint16_t invader[] = {0x0044, 0x017D, 0x01BB, 0x00FE, 0x0082};
+static uint16_t const invader[] PROGMEM = {0x0044, 0x017D, 0x01BB, 0x00FE, 0x0082};
 
 #define INV_HEIGHT (sizeof(invader) / sizeof(uint16_t))
 
@@ -33,12 +34,12 @@ typedef struct
 } stone_t;
 
 //forward decls (not drunk yet!)
-void create_stone(stone_t *stone);
-void draw_stone(stone_t *stone);
+//void create_stone(stone_t *stone);
+//void draw_stone(stone_t *stone);
 
 
 //create a stone at a random x pos
-void create_stone(stone_t *stone)
+static void create_stone(stone_t *stone)
 {
 	//create stone at top position
 	stone->y = 0;
@@ -64,42 +65,42 @@ void draw_stone(stone_t *stone)
 {
 		uint8_t y, x, ydraw;
 		uint16_t nPieceMap = tetris_piece_getBitmap(&stone->piece);
-		uint16_t pieceLala;
 
 		for(y = 0; y < 4; y++)
 		{
 			// clear all bits of the piece we are not interested in and
 			// align the remaining row to LSB
 			// -> translates to: get the correct row out of the bitmap and right-align
-			pieceLala = (nPieceMap & (0x000F << (y << 2))  ) >> (y << 2);
-
 			// shift bitmap line to current x pos (this can be done faster... BUT I WANT IT SO!)
-			pieceLala <<= stone->x;
+			uint16_t pieceLala = (nPieceMap & 0x000F) << stone->x;
+			nPieceMap >>= 4;
 
 			//DRUUUUUUUUUUUWWWWWWWWWWWWWWW!!!!!!!!!!! eerrr /U/A/s
 			ydraw = (stone->y / YSCALE) + y;
 			if((ydraw < (NUM_ROWS + 4)) && (ydraw > 3)) //drawing begins @ 3, to make piece of height 4 scroll in
 			{
+				uint16_t mask = 0x0001;
 				for (x = 0; x < 16; ++x)
 				{
-					if(pieceLala & (1 << x))
+					if(pieceLala & mask)
 					{
 						setpixel((pixel){ x, ydraw - 4 }, stone->color);
 					}
+					mask <<= 1;
 				}
 			}
 		}
 }
 
 
-void draw_invader(uint8_t ypos, uint8_t xpos)
+static void draw_invader(uint8_t ypos, uint8_t xpos)
 {
 		uint8_t y, x, ydraw;
 		uint16_t pieceLala;
 
 		for(y = 0; y < INV_HEIGHT; y++)
 		{
-			pieceLala = invader[y];
+			pieceLala = pgm_read_word(&invader[y]);
 
 			// shift bitmap line to current x pos (this is nonsense overhead... BUT I LIKE IT!)
 			pieceLala <<= xpos;
@@ -108,12 +109,14 @@ void draw_invader(uint8_t ypos, uint8_t xpos)
 			ydraw = (ypos  / 2) + y;
 			if((ydraw < (NUM_ROWS + INV_HEIGHT)) && (ydraw > (INV_HEIGHT - 1))) //drawing begins @ 5, to make invader of height 6 scroll in
 			{
+				uint16_t mask = 0x0001;
 				for (x = 0; x < 16; ++x)
 				{
-					if(pieceLala & (1 << x))
+					if(pieceLala & mask)
 					{
 						setpixel((pixel){ x, ydraw - INV_HEIGHT }, 1);
 					}
+					mask <<= 1;
 				}
 			}
 		}
