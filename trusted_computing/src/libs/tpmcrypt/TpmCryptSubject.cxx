@@ -241,10 +241,10 @@ TpmCryptSubject::TpmCryptSubject( UInt8 subjectType,
 			if(mySubjectAuth.empty())
 			{
 				TpmCryptTPM myTPM;
-				cout << mySubjectPlatformSelection << endl;
-				vector<int> pcr = convertStringToIntVector(mySubjectPlatformSelection);
+				string use = mySubjectPlatformSelection;
+				vector<int> pcr = convertStringToIntVector(use);
 				int local = 0;
-				cout << mySubjectPlatformSelection << endl;
+				cout << use << endl;
 				string test = generateRandomString(6);
 				cout << "Authentifikation Data: " << test << "\tBitte merken oder notieren sie sich diese 6 Zeichen" << endl;
 				ByteVector random = convertStringToByteVector(test);
