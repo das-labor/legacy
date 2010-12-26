@@ -1,0 +1,5 @@
+* irgendwann in 2010
+  Erste Version fuer das Szenario "USB und REMONDIS"
+* 20101226
+  Recurrence set Algorithmus gefixt.
+  Makefile und Hauptskript auf Szenario "USB macht alles" umgestellt.

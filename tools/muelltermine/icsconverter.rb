@@ -1,7 +1,7 @@
-#Nutzung: <Skriptname> <RESTMUELL_ICS> <BLAUMUELL_ICS> <GELBMUELL_ICS_SNIPPET>
+#Nutzung: <Skriptname> <RESTMUELL_ICS> <BLAUMUELL_ICS> <GELBMUELL_ICS>
 #Das Skript gibt ein generiertes .ics aus.
-#RESTMUELL_ICS und BLAUMUELL_ICS sind die beiden .ics von der USB-Seite
-#GELBMUELL_ICS_SNIPPET ist das partielle .ics, welches das Skript gelbkalendersnippet.rb generiert.
+#Die drei *_ICS sind die .ics von der USB-Seite
+##GELBMUELL_ICS_SNIPPET ist das partielle .ics, welches das Skript gelbkalendersnippet.rb generiert.
 
 require 'common'
 
@@ -9,16 +9,18 @@ require 'common'
 
 RESTMUELL_SUMMARY = "USB Restmuell am Folgetag: Nachschauen, wieviele Tonnen geleert wurden!"
 BLAUMUELL_SUMMARY = "USB Altpapier, Abholung am Folgetag: Tonnen (grosse und kleine) zur Strasse!"
+GELBMUELL_SUMMARY = "USB KWTonne, Abholung am Folgetag: Tonnen zur Strasse!"
 
 #work begins here
 
-USAGE = "#{$0} <RESTMUELL_ICS> <BLAUMUELL_ICS> <GELBMUELL_ICS_SNIPPET>"
+#USAGE = "#{$0} <RESTMUELL_ICS> <BLAUMUELL_ICS> <GELBMUELL_ICS_SNIPPET>"
+USAGE = "#{$0} <RESTMUELL_ICS> <BLAUMUELL_ICS> <GELBMUELL_ICS>"
 die("Falsche Anzahl an Parametern", true) unless $*.length == 3
 
 #typical values:
 #RESTMUELL_ICS = "USB_1_586_Stand_20100316.ics"
 #BLAUMUELL_ICS = "USB_3_586_Stand_20100316.ics"
-RESTMUELL_ICS, BLAUMUELL_ICS, GELBMUELL_ICS_SNIPPET = $* #store arguments
+RESTMUELL_ICS, BLAUMUELL_ICS, GELBMUELL_ICS = $* #store arguments
 
 def dumpline(line)
   $stdout << ICS::fold_line(line)
@@ -53,12 +55,9 @@ def dumppartialcalender(fname, summary)
       case node
       when ICS::ContentLine
         case node.name
-        when "DTSTART"
+        when "DTSTART", "DTEND"
           #we ignore the TZID param
-          event[:dtstart] = Date.from_ics_datetime(node.values[0])
-        when "DTEND"
-          #we ignore the TZID param
-          event[:dtend] = Date.from_ics_datetime(node.values[0])
+          event[node.name.downcase.to_sym] = Date.from_ics_datetime(node.values[0])
         when "RRULE"
           hsh = ICS::parse_rrule(node.values[0])
           die("Unsupported repetition") unless
@@ -80,27 +79,30 @@ def dumppartialcalender(fname, summary)
     die("Repetition error: first occurence not aligned to pattern") unless
         event[:dtstart].wday == event[:rrule][:byday]
     
-    event[:rdate].each do |date|
-      datestr = (date - 1).to_icsdate
+    #compute recurrence set
+    original_dates = []
+    if event[:rdate].nil? then
+      original_dates = [event[:dtstart]]
+    else
+      original_dates = event[:rdate].clone << event[:dtstart]
+    end
+
+    Range.new(RepeatedDate.new(event[:dtstart], event[:rrule][:interval]),
+        RepeatedDate.new(event[:rrule][:until], event[:rrule][:interval])).each do |repdate|
+      original_dates << repdate.date
+    end
+    
+    original_dates.uniq!
+    original_dates -= event[:exdate] unless event[:exdate].nil?
+    
+    #dump our events now
+    original_dates.sort.each do |date|
+      datestr = (date - 1).to_icsdate #shift one day back, need to move trashcans the day BEFORE!
       dumpline("BEGIN:VEVENT")
       dumpline("DTSTART;VALUE=DATE:#{datestr}")
       dumpline("DTEND;VALUE=DATE:#{datestr}")
       dumpline("SUMMARY:#{summary}")
       dumpline("END:VEVENT")
-    end
-
-    event[:exdate].map! { |d| d - 1 } #shift all exdates one day back
-    rng = Range.new(RepeatedDate.new(event[:dtstart] - 1, event[:rrule][:interval]),
-                    RepeatedDate.new(event[:rrule][:until] - 1, event[:rrule][:interval]))
-    rng.each do |wdate|
-      if event[:exdate].index(wdate.date).nil? then
-        datestr = wdate.date.to_icsdate
-        dumpline("BEGIN:VEVENT")
-        dumpline("DTSTART;VALUE=DATE:#{datestr}")
-        dumpline("DTEND;VALUE=DATE:#{datestr}")
-        dumpline("SUMMARY:#{summary}")
-        dumpline("END:VEVENT")
-      end
     end
   end
 end
@@ -108,12 +110,14 @@ end
 dumpline("BEGIN:VCALENDAR")
 dumpline("VERSION:2.0")
 
-snippet_file = File.open(GELBMUELL_ICS_SNIPPET)
-snippet = snippet_file.read
-snippet_file.close
-$stdout << snippet
+##Old code for REMONDIS currently not needed, but keep it
+# snippet_file = File.open(GELBMUELL_ICS_SNIPPET)
+# snippet = snippet_file.read
+# snippet_file.close
+# $stdout << snippet
 
 dumppartialcalender(RESTMUELL_ICS, RESTMUELL_SUMMARY)
 dumppartialcalender(BLAUMUELL_ICS, BLAUMUELL_SUMMARY)
+dumppartialcalender(GELBMUELL_ICS, GELBMUELL_SUMMARY)
 
 dumpline("END:VCALENDAR")
