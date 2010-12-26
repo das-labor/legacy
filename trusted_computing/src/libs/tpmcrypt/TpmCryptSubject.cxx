@@ -213,6 +213,8 @@ TpmCryptSubject::TpmCryptSubject( UInt8 subjectType,
                 myPassword = getPasswordVerified("Please enter passphrase for new user '" + mySubjectName + "': ");
                 
                 mySubjectKey = new TpmCryptKey(this, myPassword);
+            
+            mySubjectAuth = "0";
             break;
         }
         case SUBJECTTYPE_TOKEN:
@@ -235,6 +237,23 @@ TpmCryptSubject::TpmCryptSubject( UInt8 subjectType,
         case SUBJECTTYPE_PLATFORM:
         {
             mySubjectKeyfile = myKeyDirectory + TpmCryptPathSeparator + "TpmCrypt" + TpmCryptSubjectType_Platform + TpmCryptFileSeparator + mySubjectIDString  + TpmCryptFileSeparator + mySubjectName + TpmCryptP15FileExtension;
+
+			if(mySubjectAuth.empty())
+			{
+				TpmCryptTPM myTPM;
+				cout << mySubjectPlatformSelection << endl;
+				vector<int> pcr = convertStringToIntVector(mySubjectPlatformSelection);
+				int local = 0;
+				cout << mySubjectPlatformSelection << endl;
+				string test = generateRandomString(6);
+				cout << "Authentifikation Data: " << test << "\tBitte merken oder notieren sie sich diese 6 Zeichen" << endl;
+				ByteVector random = convertStringToByteVector(test);
+				vector<ByteVector> mySealedDataWithAuth = myTPM.seal(random,local,pcr); // XXX see kyronatpm.hxx
+				ByteVector AuthData = mySealedDataWithAuth.back();
+				mySubjectAuth = EncodeByteVectorToBASE64(AuthData);
+				mySealedDataWithAuth.pop_back();
+				pcr.clear();
+			}
 			break;
         }
     }
@@ -641,6 +660,7 @@ ByteVector  TpmCryptSubject::encryptForSubject(TpmCryptSubject *Subject, ByteVec
 	if (mySubjectType == SUBJECTTYPE_PLATFORM)
 	{	
 			loadSubject(mySubjectIDString);
+			cout << mySubjectPlatformSelection << endl;
 			vector<int> pcr = convertStringToIntVector(mySubjectPlatformSelection);
 			int local=0;
             // sealing it to current platform
@@ -651,23 +671,7 @@ ByteVector  TpmCryptSubject::encryptForSubject(TpmCryptSubject *Subject, ByteVec
             ByteVector Data = mySealedDataWithKey.back();
             mySealedDataWithKey.pop_back();
             pcr.clear();
-            
-            
-            //if(mySubjectAuth = NULL)
-			//{
-				loadSubject(mySubjectIDString);
-				pcr = convertStringToIntVector(mySubjectPlatformSelection);
-				string test = generateRandomString(6);
-				cout << "Authentifikation Data: " << test << "\tBitte merken oder notieren sie sich diese 6 Zeichen" << endl;
-				ByteVector random = convertStringToByteVector(test);
-				vector<ByteVector> mySealedDataWithAuth = myTPM.seal(random,local,pcr); // XXX see kyronatpm.hxx
-				ByteVector AuthData = mySealedDataWithAuth.back();
-				mySubjectAuth = convertByteVector2String(AuthData);
-				mySealedDataWithKey.pop_back();
-				pcr.clear();
-			//}
-             
-            
+
             /*string DataFile = mySubjectKeyfile + TPMCRYPT_TPM_DATA_EXTENSION;
             storeByteVectorInFile(DataFile, Data);
 
@@ -690,10 +694,11 @@ ByteVector  TpmCryptSubject::encryptForSubject(TpmCryptSubject *Subject, ByteVec
 
 //================================================================================
 //
-string  TpmCryptSubject::verifyAuth(TpmCryptSubject *Subject)
+string  TpmCryptSubject::verifyAuth(string &top)
 {
+	loadSubject(top);
 	TpmCryptTPM myTPM;
-	ByteVector test2 = convertStringToByteVector(Subject->mySubjectAuth);
+	ByteVector test2 = DecodeBASE64StringToByteVector(mySubjectAuth);
 	vector<ByteVector> mySealedDataWithAuth;
 	mySealedDataWithAuth.push_back(test2);
 	ByteVector mhh = myTPM.unseal(mySealedDataWithAuth);

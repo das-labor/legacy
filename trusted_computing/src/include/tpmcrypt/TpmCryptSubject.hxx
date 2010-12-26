@@ -301,7 +301,7 @@ namespace tpmcrypt
 	     */
 	    bool verifyPassword(string &myPassword);
 	    
-	    string verifyAuth(TpmCryptSubject *Subject);
+	    string verifyAuth(string &top);
 
             /*!
              *  @brief changes the current password of a subject
@@ -333,7 +333,7 @@ namespace tpmcrypt
 	     */
 	    void deleteUserMessages();
 
-        private:
+       // private:
 	    /*!
              *  @brief stores subject in the database
 	     */
