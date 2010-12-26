@@ -241,7 +241,8 @@ TpmCryptSubject::TpmCryptSubject( UInt8 subjectType,
 			if(mySubjectAuth.empty())
 			{
 				TpmCryptTPM myTPM;
-				string use = mySubjectPlatformSelection;
+				string use = "";
+				use += mySubjectPlatformSelection;
 				vector<int> pcr = convertStringToIntVector(use);
 				int local = 0;
 				cout << use << endl;
