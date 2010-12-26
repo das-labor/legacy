@@ -46,7 +46,7 @@ module ICS
     return segments
   end
   
-  FREQUENCIES = "SECONDLY,MINUTELY,HOURLY,DAILY,WEEKLY,MONTHLY,YEARLY".split(",")
+  FREQUENCIES = %w{SECONDLY MINUTELY HOURLY DAILY WEEKLY MONTHLY YEARLY}
   WEEKDAYS = Date::DAYNAMES.map { |s| s[0..1].upcase }
 
   #returns hash
