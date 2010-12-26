@@ -23,6 +23,7 @@
 #include <TpmCryptSubject.hxx>
 #include <TpmCryptConfigfile.hxx>
 #include <TpmCryptMountHelper.hxx>
+#include <TpmCryptSubject.hxx>
 
 using namespace std;
 using namespace utils;
@@ -207,18 +208,25 @@ int main(int argc, const char *argv[])
                         
                         if (userOption.hasValue()) 
                         {
-							string verified;
+							TpmCryptStorage mySubjectStorage( "SubjectDB", myTpmCryptConfig.getConfigfileEntry(TpmCryptConfigfile_SubjectDBIdentifier) );
+							string verified, platformName, platform;
+							
 							string compare = userOption.getValue();
 							vector<string> platforms = getPlatforms(compare);
 							vector<string>::const_iterator i;
 							for(i = platforms.begin(); i != platforms.end(); i++)
 							{
-								verified = TpmCryptSubject verifyAuth(*(i));
+								platform = "Platform_" + (*i);
+								TpmCryptSubject mySubject(platform, mySubjectStorage);
+								platformName = mySubject.getMySubjectName();
+							    verified = mySubject.verifyAuth(platformName);
 								cout << "***************************************************************" << endl << "************" << "Please verify the Auth Secret" << "************" << endl; 
 								cout << "****************************" << verified << "****************************" << endl;
 								cout << "***************************************************************" << endl;
+								sleep(2);
+								platform.clear();
+								platformName.clear();
 							}
-							exit(-1);
 						}
                         
                         MountHelper( mountOption.getValue(), userOption.getValue(), volumeOption.getValue(), removeDelimiter(pathOption.getValue()) );
