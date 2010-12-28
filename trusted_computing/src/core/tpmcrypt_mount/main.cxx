@@ -213,19 +213,25 @@ int main(int argc, const char *argv[])
 							
 							string compare = userOption.getValue();
 							vector<string> platforms = getPlatforms(compare);
-							vector<string>::const_iterator i;
-							for(i = platforms.begin(); i != platforms.end(); i++)
+							if( platforms.size() != 0 )
 							{
-								platform = "Platform_" + (*i);
-								TpmCryptSubject mySubject(platform, mySubjectStorage);
-								platformName = mySubject.getMySubjectName();
-							    verified = mySubject.verifyAuth(platformName);
-								cout << "***************************************************************" << endl << "************" << "Please verify the Auth Secret" << "************" << endl; 
-								cout << "****************************" << verified << "****************************" << endl;
-								cout << "***************************************************************" << endl;
-								sleep(2);
-								platform.clear();
-								platformName.clear();
+								vector<string>::const_iterator i;
+								for(i = platforms.begin(); i != platforms.end(); i++)
+								{
+									platform = "Platform_" + (*i);
+									TpmCryptSubject mySubject(platform, mySubjectStorage);
+									platformName = mySubject.getMySubjectName();
+									verified = mySubject.verifyAuth(platformName);
+									cout << "***************************************************************" << endl << "************" << "Please verify the Auth Secret" << "************" << endl; 
+									cout << "****************************" << verified << "****************************" << endl;
+									cout << "***************************************************************" << endl;
+									sleep(2);
+									platform.clear();
+									platformName.clear();
+								}
+							}
+							else
+							{
 							}
 						}
                         
