@@ -619,7 +619,7 @@ ByteVector TpmCryptTPM::create_key(string &password, UInt32 &keynum, string &typ
     //Choose between Bind, Storage or Legacy Key. 
   //  if(type == "subject") 
     //{
-		flags = TSS_KEY_TYPE_BIND | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_2048 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE | TSS_KEY_AUTHORIZATION;
+		flags = TSS_KEY_TYPE_BIND | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_4096 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE | TSS_KEY_AUTHORIZATION;
 	//}
 	/*if( type == "group" ) 
 	{				
