@@ -279,17 +279,17 @@ class c_musiklounge extends c_content{
       {
 	unset($status);
   
-	exec("MPD_HOST=10.0.1.3 MPD_PORT=6600 mpc current",$status);
+	exec("mpc -h jukebox.lan.labor-bochum.net -p 6600 current",$status);
 	$title = $status[0];
 	
 	$localstate["musik_lounge_title"] = $status[0];
 
 	unset($status);
-	exec("MPD_PORT=6600 mpc volume",$status);
+	exec("mpc -h jukebox.lan.labor-bochum.net -p 6600 volume",$status);
 	$volume = sscanf($status[0],"volume: %d");
 	
 	unset($status);
-	exec("MPD_HOST=10.0.1.3 MPD_PORT=6600 mpc",$status);
+	exec("mpc -h jukebox.lan.labor-bochum.net -p 6600 mpc",$status);
 
 	if(strcmp($title,$status[0])==0) 
 	  {

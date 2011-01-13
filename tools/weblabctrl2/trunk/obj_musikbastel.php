@@ -274,20 +274,20 @@ class c_musikbastel extends c_content{
       {
 	  unset($status);
   
-	  exec("MPD_PORT=6602 MPD_HOST=10.0.1.6 mpc current",$status);
+	  exec("mpc -h jukebox.lan.labor-bochum.net -p 6602 current ",$status);
 	
 	  $titel = $status[0];
 	  $localstate["musik_bastel_title"] = $status[0];
 
 	  unset($status);
 
-	  exec("MPD_PORT=6602 MPD_HOST=10.0.1.6 mpc volume",$status);
+	  exec("mpc -h jukebox.lan.labor-bochum.net -p 6602 volume",$status);
   
 	  $volume = sscanf($status[0],"volume: %d");
 	
 	  unset($status);
     
-	  exec("MPD_PORT=6602 MPD_HOST=10.0.1.6 mpc",$status);
+	  exec("mpc -h jukebox.lan.labor-bochum.net -p 6602",$status);
 
 	  if(strcmp($status[0],$titel)==0) 
 	    {

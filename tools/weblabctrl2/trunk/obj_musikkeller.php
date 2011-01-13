@@ -275,7 +275,7 @@ class c_musikkeller extends c_content{
     {
       unset($status);
   
-      exec("MPD_PORT=6601 MPD_HOST=10.0.1.3 mpc current",$status);
+      exec("mpc -h jukebox.lan.labor-bochum.net -p 6601 current",$status);
 	
       $titel = $status[0];
 
@@ -283,13 +283,13 @@ class c_musikkeller extends c_content{
 
       unset($status);
 
-      exec("MPD_PORT=6601 MPD_HOST=10.0.1.3 mpc volume",$status);
+      exec("mpc -h jukebox.lan.labor-bochum.net -p 6601 mpc volume",$status);
   
       $volume = sscanf($status[0],"volume: %d");
       
       unset($status);
     
-      exec("MPD_PORT=6601 MPD_HOST=10.0.1.3 mpc",$status);
+      exec("mpc -h jukebox.lan.labor-bochum.net -p 6601 mpc",$status);
 
       if(strcmp($status[0],$titel)==0) 
 	{

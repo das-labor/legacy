@@ -182,7 +182,7 @@ class c_status extends c_content{
        (((int)$localstate["status_last"] + 100) < time()))
       {
 
-	 $timeoutscript="./exec_timeout.sh 1 ";
+	 $timeoutscript="/usr/src/weblabctrl/exec_timeout.sh 1 ";
 	 $syscommand = $timeoutscript." powercommander.lapcontrol cantemp 0x25 0x01";
 	 exec($syscommand,$status1);
 
@@ -192,33 +192,39 @@ class c_status extends c_content{
 	 $syscommand = $timeoutscript." powercommander.lapcontrol cantemp 0x23 0x01";
 	 exec($syscommand,$status3);
 
-	 $indata = sscanf  ( $status1[1] , "Temp is %f" );
-	 if ( !isset($indata[0]) || $indate[0] > 127 || $indata[0] < -128 ) $value1 = 'Fail';
-	 else $value1= $indata[0];
+	 $value1 = sscanf  ( $status1[1] , "Temp is %f" );
+	 $value1=$value1[0];
+//	 $indata = sscanf  ( $status1[1] , "Temp is %f" );
+// 	 if ( !isset($indata[0]) || $indate[0] > float(127.0) || $indata[0] < float(-128.0) ) $value1 = 'Fail';
+// 	 else $value1= $indata[0];
 
-	 $indata = sscanf  ( $status2[1] , "Temp is %f" );
-	 if ( !isset($indata[0]) || $indate[0] > 127 || $indata[0] < -128) $value2 = 'Fail';
-	 else $value2= $indata[0];
+	 $value2 = sscanf  ( $status2[1] , "Temp is %f" );
+	 $value2=$value2[0];
+//	 $indata = sscanf  ( $status2[1] , "Temp is %f" );
+// 	 if ( !isset($indata[0]) || $indate[0] > float(127.0) || $indata[0] < float(-128.0)) $value2 = 'Fail';
+// 	 else $value2= $indata[0];
 
-	 
-	 $indata = sscanf  ( $status3[1] , "Temp is %f" );
-	 if ( !isset($indata[0]) || $indate[0] > 127 || $indata[0] < -128 ) $value3 = 'Fail';
-	 else $value3= $indata[0];
+	 $value3 = sscanf  ( $status3[1] , "Temp is %f" );
+	 $value3=$value3[0];
+//	 $indata = sscanf  ( $status3[1] , "Temp is %f" );
+// 	 if ( !isset($indata[0]) || $indate[0] > float(127.0) || $indata[0] < float(-128.0) ) $value3 = 'Fail';
+// 	 else $value3= $indata[0];
 	
 	 $localstate["status_temp1"] = $value1;
 	 $localstate["status_temp2"] = $value2;
 	 $localstate["status_temp3"] = $value3;
-	 $localstate["status_last"]= time();
+	 //	 $localstate["status_last"]= time();
+	 $localstate["status_last"]= 0;
       }
 
-     if( !isset($localstate["status_temp1"]) || ($localstate["status_temp1"] < -128) || ($localstate["status_temp1"] > 127)) $value1='Fail';
-     else  $value1 = $localstate["status_temp1"];
+//      if( !isset($localstate["status_temp1"]) || ($localstate["status_temp1"] < -128) || ($localstate["status_temp1"] > 127)) $value1='Fail';
+//      else  $value1 = $localstate["status_temp1"];
 
-     if((!isset($localstate["status_temp2"]) || $localstate["status_temp2"] < -128) || ($localstate["status_temp2"] > 127)) $value2='Fail';
-     else  $value2 = $localstate["status_temp2"];
+//      if((!isset($localstate["status_temp2"]) || $localstate["status_temp2"] < -128) || ($localstate["status_temp2"] > 127)) $value2='Fail';
+//      else  $value2 = $localstate["status_temp2"];
 
-     if((!isset($localstate["status_temp3"]) || $localstate["status_temp3"] < -128) || ($localstate["status_temp3"] > 127)) $value3='Fail';
-     else  $value3 = $localstate["status_temp3"];
+//      if((!isset($localstate["status_temp3"]) || $localstate["status_temp3"] < -128) || ($localstate["status_temp3"] > 127)) $value3='Fail';
+//      else  $value3 = $localstate["status_temp3"];
 
     
      $updatejs .= $this->myid."setcputemp1(\"".$value1."\");\n";

@@ -308,16 +308,16 @@ class c_irbeamer extends c_content{
 
   public function getcss(){
     $this->cssstr = "";
-    $this->cssstr .= ".".$this->myid."_table\" {}\n";
-    $this->cssstr .= ".".$this->myid."_td\" {}\n";
-    $this->cssstr .= ".".$this->myid."_input_MainPower\" {}\n";
-    $this->cssstr .= ".".$this->myid."_input_suspend\" {}\n";
-    $this->cssstr .= ".".$this->myid."_input_scan\" {}\n";
-    $this->cssstr .= ".".$this->myid."_input_blank\" {}\n";
-    $this->cssstr .= ".".$this->myid."_input_vga\" {}\n";
-    $this->cssstr .= ".".$this->myid."_input_dvi\" {}\n";
-    $this->cssstr .= ".".$this->myid."_input_component\" {}\n";
-    $this->cssstr .= ".".$this->myid."_input_svideo\" {}\n";
+    $this->cssstr .= ".".$this->myid."_table {}\n";
+    $this->cssstr .= ".".$this->myid."_td {}\n";
+    $this->cssstr .= ".".$this->myid."_input_MainPower {}\n";
+    $this->cssstr .= ".".$this->myid."_input_suspend {}\n";
+    $this->cssstr .= ".".$this->myid."_input_scan {}\n";
+    $this->cssstr .= ".".$this->myid."_input_blank {}\n";
+    $this->cssstr .= ".".$this->myid."_input_vga {}\n";
+    $this->cssstr .= ".".$this->myid."_input_dvi {}\n";
+    $this->cssstr .= ".".$this->myid."_input_component {}\n";
+    $this->cssstr .= ".".$this->myid."_input_svideo {}\n";
     return $this->cssstr;
   }
   public function getjs(){

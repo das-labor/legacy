@@ -51,7 +51,8 @@ echo "  font-weight: normal;\n";
 echo " src: url(\"/weblabctrl2/fonts/ae_Kayrawan.ttf\");\n"; #
 echo "}\n";
 echo "div {\n";
-echo " font: normal Kaffeesatz;\n";
+echo "  font-family: Kaffeesatz;\n";
+echo "  font-weight: normal;\n";
 echo "  text-shadow: 2px 2px 5px #008;\n";
 echo "  font-size: 11px;\n";
 echo "}\n";
@@ -105,7 +106,7 @@ echo "new Ajax.Updater(\"global_updater_status\",\"general_update.php?";
 echo "update=1\",";
 echo "{method:'get', evalScripts: true});\n";
 echo "}\n";
-echo "var global_updater_interval = window.setInterval(\"global_updater()\", 10000);";
+echo "var global_updater_interval = window.setInterval(\"global_updater()\", 60000);";
     //initial beim laden der seite
 echo "global_updater()\n";
 echo "</script>";
