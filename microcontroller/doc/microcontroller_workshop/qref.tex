@@ -1,0 +1,181 @@
+\documentclass[11pt,a4paper,smallheadings,twocolumn,headexclude,footexclude]{scrartcl}
+%\documentclass[11pt,a4paper,smallheadings,headexclude,footexclude]{scrartcl}
+%\documentclass[10pt,a4paper,smallheadings,headexclude,footexclude]{scrartcl}
+%\usepackage[utf8]{inputenc}
+\usepackage{a4wide}
+%\usepackage{ucs}
+\usepackage{longtable}
+\usepackage{amssymb,amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[latin1]{inputenc}
+\usepackage{ngerman}
+\usepackage{graphicx}
+
+% Hiermit werden wichtige Thesen gekennzeichnet
+\newcommand{\these}[1]{\begin{quotation}\vspace{0.5cm}\framebox{\parbox{135mm}{\begin{center}#1\end{center}}}\marginpar{\begin{Huge}\textbf{!}\end{Huge}}\vspace{0.5cm}\end{quotation}}
+
+
+% Hier kann man Abbildungen einbetten
+\newenvironment{abbildung}[1]{\begin{figure}[h]  \caption{#1}\hline \vspace{0.25cm} \begin{center} }{\end{center} \vspace{0.25cm} \hline \end{figure} }
+
+\begin{document}
+\begin{center}
+\begin{huge}
+MICROCONTROLLER PROGRAMMIERUNG
+\end{huge}\\\vspace{2mm}
+\large{- Eine kurze Anleitung -}
+\end{center}
+\vspace{2mm}
+\section*{Bit Arithmetik}
+{\bf Logisches UND ''\&'':}
+	Das logische \& setzt nur Bits, die rechts- UND linksseitig logisch \texttt{1}
+	sind.
+	\\\texttt{0101 \& 0011 $\rightarrow$ 0001}
+
+\vspace{2mm}
+
+{\bf Logisches ODER ''$|$'':}
+Das logische Oder setzt alle Bits die links- und/oder rechtsseitig gesetzt sind.
+\\\texttt{0101 $|$ 0011 $\rightarrow$ 0111}
+
+\vspace{2mm}
+
+{\bf Invertierung ''$\sim$'':}
+Die Tilde ($\sim$) negiert das folgende Argument.
+\\\texttt{$\sim$0101 $\rightarrow$ 1010}
+
+\vspace{2mm}
+
+{\bf Das XOR ''\textasciicircum'':}
+Die XOR Funktion setzt alle Bits, die nur links- ODER rechtsseitig
+gesetzt sind. Beidseitig gleich gesetzte Bits werden zu \texttt{0}.
+\\\texttt{0101{\textasciicircum}0011 $\rightarrow$ 0110}
+
+\vspace{2mm}
+
+{\bf Der Shift-Operator ''$>>$'' und ''$<<$'':}
+Mit dem Shift Operator lassen sich Bits nach Links oder Rechts verschieben. Das Argument rechtsseitig des
+Operators gibt dabei an, wie oft geschoben werden soll. "Uberstehende Bits fallen dabei weg und neue Bits
+werden auf \texttt{0} gesetzt.
+\\\texttt{0101$<<$1 $\rightarrow$ 1010}
+\\\texttt{0101$>>$2 $\rightarrow$ 0001}
+
+\subsection*{Operatoren und Variablen}
+Es ist auch m"oglich, alle Operatoren auf eine Variable oder Port anzuwenden. Die
+Instruktion ''\texttt{PORTA$>>=$2}'' verschiebt alle Bits des Port A um 2 Stellen nach rechts.
+\\
+Die Instruktion ''\texttt{PORTA$|=$4}'' setzt das 3. Bit von rechts auf \texttt{1}.
+
+\subsection*{Das Byte}
+Ein Byte besteht aus 8 Bits:\\
+\begin{centering}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+$2^7$ &
+$2^6$ &
+$2^5$ &
+$2^4$ &
+$2^3$ &
+$2^2$ &
+$2^1$ &
+$2^0$ \\
+\hline
+\end{tabular}
+\end{centering}
+
+\section*{Hexadezimalschreibweise}
+In C ist es nicht m"oglich, direkt Bit-Variablen zu setzen. Daher ist es n"otig, diese entweder
+im Dezimalsystem oder Hexadezimalsystem anzugeben. Das Hexadezimalsystem eignet sich besonders
+gut, da man relativ einfach umrechnen kann.\\
+\begin{tabular}{c c c | c c c}
+Dez. & Hex & Bit & Dez. & Hex & Bit \\
+\hline
+0 & 0 & 0000 & 8 & 8 & 1000 \\
+1 & 1 & 0001 & 9 & 9 & 1001 \\
+2 & 2 & 0010 &10 & A & 1010 \\
+3 & 3 & 0011 &11 & B & 1011 \\
+4 & 4 & 0100 &12 & C & 1100 \\
+5 & 5 & 0101 &13 & D & 1101 \\
+6 & 6 & 0110 &14 & E & 1110 \\
+7 & 7 & 0111 &15 & F & 1111 \\
+\end{tabular}
+\subsection*{Beispiele}
+\begin{tabular}{c | c}
+\texttt{0xA5 $\leftrightarrow$ 1010 0101} &
+\texttt{0x17 $\leftrightarrow$ 0001 0111} \\
+
+\texttt{0x00 $\leftrightarrow$ 0000 0000} &
+\texttt{0xFF $\leftrightarrow$ 1111 1111} \\
+
+\texttt{0x0F $\leftrightarrow$ 0000 1111} &
+\texttt{0x64 $\leftrightarrow$ 0110 0100} \\
+\end{tabular}
+\section*{Ports \& Pins}
+Als ein \emph{Port} werden immer 8 (oder weniger) Pinne zusammengefasst. Bei AVR Controllern
+sind diese ''\texttt{PORTA, PORTB}'' usw. benannt.
+\begin{itemize}
+	\item Pin A1 auf Ausgang schalten:\\\texttt{DDRA |= \_BV(PA1);}
+	\item Pullup an Pin D0 anschalten: \\\texttt{PORTD |= \_BV(PD0)}
+		\\\emph{Wichtig: Der Pullup kann erst eingeschaltet werden, NACHDEM
+		der Pin auf Eingang geschaltet wurde}
+	\item Pin A4 auslesen: \\\texttt{if (PINA \& \_BV(PA4)) \{ ... }
+	\item Pin A3 auf high schalten:\\\texttt{PORTA |= \_BV(PA3)}
+	\item Pin A3 auf low schalten:\\\texttt{PORTA \&= $\sim$(\_BV(PA3))}
+	\item Pin A3 umschalten (toggle):\\\texttt{PORTA {\textasciicircum}= \_BV(PA3)}
+\end{itemize}
+
+\section*{Interrupts}
+Interrupts unterbrechen den Fluss des Hauptprogramms. Sie k"onnen durch verschiedenste
+Quellen ausgel"ost werden (z.B. Timer oder Signal am Interrupt Pin). Um einen Interrupt
+zu benutzen muss man in der Regel folgende Dinge tun:
+\begin{enumerate}
+	\item Interrupt Routine definieren und mit Code f"ullen:
+		\\\texttt{ISR(...) \{ ... \}}
+	\item Entsprechende Bits in entsprechenden Registern setzen ($\rightarrow$ siehe Datenblatt).
+		z.B. f"ur den ext. Interrupt 0:\\
+		\texttt{MCUCR |= \_BV(ISC01);\\GICR |= \_BV(INT0);}
+		\\
+		Meist muss man hier 2 oder 3 Register setzen.
+	\item Interrupts anschalten: \texttt{sei();}
+\end{enumerate}
+
+\section*{Toolchain benutzen}
+\begin{enumerate}
+	\item Einstellungen f"ur Deinen Programmer setzen
+		$\rightarrow$ \texttt{Makefile} editieren
+	\item Compilieren mit dem Befehl {\bf\texttt{make}}.
+	\item Controller flashen (entweder mit avrdude oder \texttt{make flash} (je nach Makefile))
+\end{enumerate}
+
+\section*{Fuse Bits}
+Fuse bits setzen die wichtigsten Einstellung des Controllers - z.B. mit welchem Takt
+er laufen soll und aus welcher Quelle er seinen Takt beziehen soll (intern, externer
+Quartz, ...).\\
+Wie die Fuse bits zu setzen sind, ist dem Datenblatt zu entnehmen. Vorsicht:
+\emph{Falsche Einstellungen k"onnen den Controller unbrauchbar machen}.
+\subsection*{Fuse Bits mit avrdude setzen}
+\texttt{avrdude -p m32 -c usbasp $\backslash$\\-U lfuse:w:0x9F:m -U hfuse:w:0xC9:m}
+
+
+\section*{Checkliste mit den h"auftigsten Fehlern}
+\begin{itemize}
+	\item \emph{Nutzereingaben funktionieren nicht wie gew"unscht.}
+		$\rightarrow$ Taster entprellt? Pullup an? Liest Du auch wirklich
+		das \texttt{PIN} Register (und nicht \texttt{PORT}) aus?
+	\item \emph{Programm l"auft langsam / Ausg"ange verhalten sich komisch.}
+		$\rightarrow$ Fuses richtig gesetzt?
+	\item \emph{Der ADC verh"alt sich komisch / misst nicht richtig / ''zappelt''.}
+		$\rightarrow$ Kondensator an AVCC geschaltet?
+	\item \emph{Der Timer funktioniert nicht.}
+		$\rightarrow$ Interrupts eingeschaltet (\texttt{sei()})? Bit im \texttt{TIMSK} Register gesetzt?
+\end{itemize}
+
+\section*{Wichtige Links}
+{\bf Laborboard Dokumentation}:\\\texttt{https://das-labor.org/wiki/Laborboard}\\
+\\
+{\bf Laborboard Beispielcode}:\\
+\texttt{https://www.das-labor.org/trac/browser/\\microcontroller/src-atmel/tests/helloboard}
+
+
+\end{document}
