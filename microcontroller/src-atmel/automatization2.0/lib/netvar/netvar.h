@@ -11,7 +11,7 @@ typedef struct {
 } netvar_desc;
 
 typedef struct {
-	void (*fkt)(void *);
+	void (*fkt)(netvar_desc *, void *);
 	void *ref;
 } handler_descriptor_t;
 

@@ -1,8 +1,14 @@
 
+#include <string.h>
+#include <malloc.h>
+
+#include "../gui_lib/gui.h"
 #include "netvar.h"
 
 typedef struct{
-	uint16_t idx, uint8_t sidx, netvar_desc * nd;
+	uint16_t idx;
+	uint8_t sidx;
+	 netvar_desc * nd;
 }netvar_dir_element_t;
 
 netvar_dir_element_t netvar_dir[100];
@@ -64,9 +70,32 @@ void netvar_insert(uint8_t pos, uint16_t idx, uint8_t sidx, netvar_desc * nd){
 	netvar_dir[pos].nd = nd;
 }
 
+
+/*
+typedef struct {
+	uint16_t idx;
+	uint8_t sidx;
+	uint8_t size;
+	uint8_t *data;
+	uint8_t flags;
+	list_t *handlers; //pointer to list of handler_descriptor_t pointers
+} netvar_desc;
+*/
+
+netvar_desc * new_netvar(uint16_t idx, uint8_t sidx, uint8_t size ){
+	netvar_desc * nd = malloc(sizeof(netvar_desc));
+	nd->idx = idx;
+	nd->sidx = sidx;
+	nd->size = size;
+	nd->data = malloc(size);
+	nd->flags = 0;
+	nd->handlers = 0;
+	return nd;
+}
+
 //register a netvar. returns the same handle if a netvar is registered multiple times.
 netvar_desc * netvar_register(uint16_t idx, uint8_t sidx, uint8_t size){
-	netvar_desc nd;
+	netvar_desc * nd;
 
 	uint8_t i = find_netvar_position(idx, sidx);
 	if((netvar_dir[i].idx == idx) && (netvar_dir[i].sidx == sidx) ){
@@ -128,6 +157,7 @@ void netvar_write(netvar_desc * nd, void * data){
 
 uint8_t netvar_read(netvar_desc * nd, void * data){
 	memcpy(data, nd->data, nd->size);
+	return 0;
 }
 
 void netvar_transmit(netvar_desc * nd){
