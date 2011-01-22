@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include "../../include/icon.h"
+#include "../icon.h"
 
 icon_t main_icon = {
 	38,

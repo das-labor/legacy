@@ -11,8 +11,8 @@
 
 #include "gui_lib/graphics.h"
 //#include "draw_pixmap.h"
-#include "fonts/font.h"
-#include "fonts/font_uni53.h"
+#include "gui_lib/fonts/font.h"
+#include "gui_lib/fonts/font_uni53.h"
 
 
 //color in which new pixels are drawn
