@@ -19,6 +19,7 @@ int threadFunktion(void *nichtVerwendet)
 	
 	while(!quit_thread){
 		handle_touchscreen();
+		netvar_handle_events();
 		sleep(10);
 	}
 
@@ -35,7 +36,6 @@ int WinMain(int argc, char* argv[])
 	SDL_Event event;
 	
 	int keypress = 0;
-	int h=0; 
 	
 	if (SDL_Init(SDL_INIT_VIDEO) < 0 ) return 1;
 	
@@ -46,12 +46,11 @@ int WinMain(int argc, char* argv[])
 	}
 	
 	SDL_Thread *thread;
-	int i;
 	
 	thread = SDL_CreateThread(threadFunktion, NULL);
 	if ( thread == NULL ) {
 	    fprintf(stderr, "Thread konnte nicht gestartet werden: %s\n", SDL_GetError());
-	    return;
+	    return 1;
 	}
 	
 	uint8_t mouse_down = 0;

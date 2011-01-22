@@ -124,13 +124,13 @@ netvar_desc * netvar_register(uint16_t idx, uint8_t sidx, uint8_t size){
 void netvar_add_handler(netvar_desc * nd, void (*fkt)(netvar_desc *, void *), void * ref){
 	if(nd->handlers == 0){
 		//need to create handler list
-		nd-> handlers = new_list();
+		nd->handlers = new_list();
 	}
 	handler_descriptor_t * hd = malloc(sizeof(handler_descriptor_t));
 	hd->fkt = fkt;
 	hd->ref = ref;
 	
-	list_append(nd->handlers, hd);
+	list_append(nd->handlers, hd);	
 }
 
 
@@ -190,17 +190,18 @@ void netvar_transmit(netvar_desc * nd){
 }
 
 
+extern void lap_button_nv_handler(void);
 
 void netvar_handle_events(){
 	uint8_t i;
 	uint8_t event_table_size = event_table_index;
-	event_table_size = 0;
+	event_table_index = 0;
 	
 	//swap buffers
 	in_buffer_select ^= 1;
 	
 	//update data and transmit can message for each event
-	for (i = 0; i < event_table_index; i++ ) {
+	for (i = 0; i < event_table_size; i++ ) {
 		netvar_desc * nd = event_nd_table[in_buffer_select ^ 1][i];
 		memcpy(nd->data, event_data_table[i].data, nd->size); //update netvar data from event data
 		netvar_transmit(nd);
@@ -208,13 +209,15 @@ void netvar_handle_events(){
 	
 	
 	//call event handlers if any
-	for (i = 0; i < event_table_index; i++ ) {
+	for (i = 0; i < event_table_size; i++ ) {
 		netvar_desc * nd = event_nd_table[in_buffer_select ^ 1][i];
 		if(nd->handlers){
+			//printf("calling handlers for %d, %X\r\n", i, nd->handlers);
 			list_iterator_t it;
 			list_foreach_begin(&it, nd->handlers);
 			handler_descriptor_t * hd;
 			while(((hd = list_foreach(&it, nd->handlers)) != 0)){
+				//printf("calling %X, ref=%X\r\n", hd->fkt, hd->ref );
 				hd->fkt(nd, hd->ref);
 			}
 		}
