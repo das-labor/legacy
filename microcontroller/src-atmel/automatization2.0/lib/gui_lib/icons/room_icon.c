@@ -1,6 +1,6 @@
 
 #include <stdint.h>
-#include "../../include/icon.h"
+#include "../icon.h"
 
 icon_t room_icon = {
 	38,

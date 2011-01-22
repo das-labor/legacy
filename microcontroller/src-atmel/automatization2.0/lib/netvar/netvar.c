@@ -5,6 +5,16 @@
 #include "../gui_lib/gui.h"
 #include "netvar.h"
 
+#ifdef AVR
+	#include "../can/can.h"
+#else
+	#include "../can_pc/can.h"
+#endif
+
+#define PORT_NETVAR 0x37
+
+extern uint8_t myaddr;
+
 typedef struct{
 	uint16_t idx;
 	uint8_t sidx;
@@ -192,7 +202,7 @@ void netvar_handle_events(){
 	//update data and transmit can message for each event
 	for (i = 0; i < event_table_index; i++ ) {
 		netvar_desc * nd = event_nd_table[in_buffer_select ^ 1][i];
-		memcpy(nd->data, event_table[i].data, nd->size); //update netvar data from event data
+		memcpy(nd->data, event_data_table[i].data, nd->size); //update netvar data from event data
 		netvar_transmit(nd);
 	}
 	
@@ -204,12 +214,11 @@ void netvar_handle_events(){
 			list_iterator_t it;
 			list_foreach_begin(&it, nd->handlers);
 			handler_descriptor_t * hd;
-			while((hd = list_foreach(&it, nd->handlers) != 0){
-				hd->fkt(hd->ref);
+			while(((hd = list_foreach(&it, nd->handlers)) != 0)){
+				hd->fkt(nd, hd->ref);
 			}
 		}
 	}
-	
 }
 
 
