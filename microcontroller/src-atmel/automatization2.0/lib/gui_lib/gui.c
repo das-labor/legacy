@@ -3,8 +3,13 @@
 // by Peter Fuhrmann.
 //
 
-#include <stdint.h>
-#include <util/delay.h>
+#ifdef AVR
+	#include <stdint.h>
+	#include <util/delay.h>
+#else
+	#include <stdint.h>
+#endif
+
 #include "gui.h"
 //#include "touchscreen.h"
 //#include "dc_com.h"

@@ -10,7 +10,7 @@
 #define LIST_ALLOCATION_BLOCK_SIZE 4
 
 void init_list(list_t * l){
-	l->childs = malloc(sizeof(uint16_t) * LIST_ALLOCATION_BLOCK_SIZE );
+	l->childs = malloc(sizeof(void*) * LIST_ALLOCATION_BLOCK_SIZE );
 	l->allocated = LIST_ALLOCATION_BLOCK_SIZE;
 	l->num_childs = 0;
 }

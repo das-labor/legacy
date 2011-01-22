@@ -37,10 +37,11 @@ void gui_container_update_position(gui_element_t * self, int16_t x_diff, int16_t
 	s->box.x += x_diff;
 	s->box.y += y_diff;
 	
+	list_iterator_t it;
 	gui_element_t * child;
-	list_foreach_begin(&s->childs);
+	list_foreach_begin(&it, &s->childs);
 	
-	while ( (child = list_foreach(&s->childs)) != 0 ) {
+	while ( (child = list_foreach(&it, &s->childs)) != 0 ) {
 		child->update_position(child, x_diff, y_diff);
 	}
 	
@@ -49,10 +50,11 @@ void gui_container_update_position(gui_element_t * self, int16_t x_diff, int16_t
 }
 
 static gui_element_t * child_at (gui_container_t * s,uint16_t x, uint16_t y){
+	list_iterator_t it;
 	gui_element_t * child;
-	list_foreach_begin(&s->childs);
+	list_foreach_begin(&it, &s->childs);
 	
-	while ( (child = list_foreach(&s->childs)) != 0 ) {
+	while ( (child = list_foreach(&it, &s->childs)) != 0 ) {
 		if(rectangle_contains(child->box, x, y)){
 			return child;
 		}
@@ -62,18 +64,57 @@ static gui_element_t * child_at (gui_container_t * s,uint16_t x, uint16_t y){
 	
 }
 
+//#define DEBUG_GUI_CONTAINER
+
+
+#ifdef DEBUG_GUI_CONTAINER
+
+	extern void gui_button_draw (gui_element_t * self, uint8_t redraw);
+	extern void gui_container_draw (gui_element_t * self, uint8_t redraw);
+	
+	void gui_object_info(gui_element_t * obj){
+		printf("%08X: draw=%08X sos=%08X th=%08X up=%08X", obj, obj->draw, obj->set_on_screen, obj->touch_handler, obj->update_position);
+		
+		if(obj->draw == gui_button_draw ){
+			printf(" type=button");
+		}else if(obj->draw == gui_container_draw ){
+			printf(" type=container");
+		}
+		
+	}
+#endif
+
 void gui_container_draw (gui_element_t * self, uint8_t redraw) {
 	gui_container_t * s = (gui_container_t*)self;
+
+	list_iterator_t it;
+	gui_element_t * child;
+	
+	#ifdef DEBUG_GUI_CONTAINER
+		printf("gui_container_draw ", s);
+		gui_object_info(s);
+		printf("\r\n");
+
+		list_foreach_begin(&it, &s->childs);
+	
+		while ( (child = list_foreach(&it, &s->childs)) != 0 ) {
+			gui_object_info(child);
+			printf("\r\n");			
+			//hexdump(child, 0x10);
+		}
+	#endif
 	
 	if (s->frame_size & 0x80) {
 		g_set_draw_color(1);
 		g_draw_rectangle(&s->box);
 	}
 	
-	gui_element_t * child;
-	list_foreach_begin(&s->childs);
+	list_foreach_begin(&it, &s->childs);
 	
-	while ( (child = list_foreach(&s->childs)) != 0 ) {
+	while ( (child = list_foreach(&it, &s->childs)) != 0 ) {
+		#ifdef DEBUG_GUI_CONTAINER
+			printf("     drawing child %08X\r\n", child);
+		#endif
 		child->draw(child, 0);
 	}
 
@@ -95,10 +136,11 @@ void gui_container_touch_handler (gui_element_t *self, touch_event_t t) {
 void gui_container_delete_all_childs (gui_container_t * self) {
 	gui_container_t * s = self;
 
+	list_iterator_t it;
 	gui_element_t * child;
-	list_foreach_begin(&s->childs);
+	list_foreach_begin(&it, &s->childs);
 	
-	while ( (child = list_foreach(&s->childs)) != 0 ) {
+	while ( (child = list_foreach(&it, &s->childs)) != 0 ) {
 		child->delete(child);
 	}
 }
