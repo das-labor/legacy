@@ -55,7 +55,6 @@ void g_draw_icon(uint16_t x, uint16_t y, icon_t * i){
 
 void draw_virtual_lcd(SDL_Surface *screen)
 {
-    Uint32 *pixmem32;
     Uint32 bg_color;
 	Uint32 fg_color;
 

@@ -47,11 +47,12 @@ void gui_button_touch_handler (gui_element_t *self, touch_event_t t) {
 	gui_button_t * s = (gui_button_t*)self;
 	
 	if(t.click){
-		s->state ^= 1;
 		if(s->click_handler){
 			s->click_handler(self);
+		}else{
+			s->state ^= 1;
+			self->draw(self, 0);
 		}
-		self->draw(self, 0);
 	}
 	
 }
