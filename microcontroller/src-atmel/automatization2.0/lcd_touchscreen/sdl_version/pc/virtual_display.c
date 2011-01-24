@@ -2,8 +2,8 @@
 #include <stdint.h>
 #include <SDL/SDL.h>
 
-#include "gui_lib/graphics.h"
-#include "config.h"
+#include "../gui_lib/graphics.h"
+#include "../config.h"
 
 
 extern uint8_t draw_color;

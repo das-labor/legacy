@@ -4,15 +4,15 @@
 
 #include <SDL/SDL_thread.h>
 
-#include "config.h"
+#include "../config.h"
 
-#include "touchscreen.h"
-#include "can_pc/debug.h"
-#include "can_pc/can.h"
-#include "main_window.h"
-#include "can_handler.h"
-#include "gui_lib/gui.h"
-#include "netvar/netvar.h"
+#include "../touchscreen.h"
+#include "../can_pc/debug.h"
+#include "../can_pc/can.h"
+#include "../main_window.h"
+#include "../can_handler.h"
+#include "../gui_lib/gui.h"
+#include "../netvar/netvar.h"
 
 #define BPP 4
 #define DEPTH 32

@@ -7,10 +7,10 @@
 	#include <stdint.h>
 #endif
 
-#include "touchscreen.h"
-#include "gui_lib/graphics.h"
+#include "../touchscreen.h"
+#include "../gui_lib/graphics.h"
 
-#include "config.h"
+#include "../config.h"
 
 
 calibration_values_t calibration_values;
