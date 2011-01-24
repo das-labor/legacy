@@ -1,15 +1,27 @@
-#include <avr/io.h>
-#include <avr/wdt.h>
-#include <avr/eeprom.h>
-#include <util/delay.h>
 
-#include "can/can.h"
+#ifdef AVR
+	#include <avr/io.h>
+	#include <avr/wdt.h>
+	#include <avr/eeprom.h>
+	#include <util/delay.h>
+	#include "can/can.h"
+	#include "can/lap.h"
+#else
+	#include <stdint.h>
+	#include <stdio.h>
+	uint8_t dummy;
+	#define TCCR2 printf("reset\r\n"); dummy
+	#define wdt_enable(a)
+	#define eeprom_read_byte(a) 0x88
+	#include "can_pc/can.h"
+	#include "can_pc/lap.h"
+#endif
+
 #include "can_handler.h"
-#include "can/lap.h"
 
-uint8_t myaddr;
+static uint8_t myaddr;
 
-extern void can_handler()
+void can_handler()
 {
 	static can_message msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
 	can_message *rx_msg;
@@ -32,8 +44,10 @@ extern void can_handler()
 						break;
 				}
 			}
-			else if (rx_msg->port_dst == 0x10)
+			else if (rx_msg->port_dst == 0x37)
 			{
+				printf("netvar received\r\n");
+				netvar_received(rx_msg);
 			}
 		}
 	}

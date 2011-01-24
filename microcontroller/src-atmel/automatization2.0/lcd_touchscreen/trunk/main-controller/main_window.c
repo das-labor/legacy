@@ -1,40 +1,41 @@
 
 #include <stdint.h>
-#include "dc_com.h"
+
+#include "gui_lib/graphics.h"
 #include "gui_lib/gui.h"
 #include "touchscreen.h"
 #include "menu_browser.h"
 
 uint8_t test_dir[] = {
 	V_CONTAINER,
-		CAN_BUTTON, 'H','a','l','l','o',0,
-		CAN_BUTTON, 'H','a','l','l','o','1',0,
+		CAN_BUTTON, 'H','a','l','l','o',0, 0x11, 0x11,
+		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x11,
 	END_CONTAINER,
 	V_CONTAINER,
 	V_CONTAINER,
-		CAN_BUTTON, 'H','a','l','l','o',0,
-		CAN_BUTTON, 'H','a','l','l','o','1',0,
-		CAN_BUTTON, 'H','a','l','l','o',0,
-		CAN_BUTTON, 'H','a','l','l','o','1',0,
+		CAN_BUTTON, 'H','a','l','l','o',0, 0x11, 0x11,
+		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x11,
+		CAN_BUTTON, 'H','a','l','l','o',0, 0x11, 0x11,
+		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x11,
 	END_CONTAINER,
 	END_CONTAINER,
 	V_CONTAINER,
-		CAN_BUTTON, 'H','a','l','l','o',0,
-		CAN_BUTTON, 'H','a','l','l','o','1',0,
-		CAN_BUTTON, 'H','a','l','l','o',0,
-		CAN_BUTTON, 'H','a','l','l','o','1',0,
-		CAN_BUTTON, 'H','a','l','l','o',0,
-		CAN_BUTTON, 'H','a','l','l','o','1',0,
+		CAN_BUTTON, 'H','a','l','l','o',0, 0x11, 0x11,
+		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x11,
+		CAN_BUTTON, 'H','a','l','l','o',0, 0x11, 0x11,
+		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x11,
+		CAN_BUTTON, 'H','a','l','l','o',0, 0x10, 0x11,
+		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x11,
 	END_CONTAINER,
 	V_CONTAINER,
-		CAN_BUTTON, 'H','a','l','l','o',0,
-		CAN_BUTTON, 'H','a','l','l','o','1',0,
-		CAN_BUTTON, 'H','a','l','l','o',0,
-		CAN_BUTTON, 'H','a','l','l','o','1',0,
+		CAN_BUTTON, 'H','a','l','l','o',0, 0x10, 0x11,
+		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x11,
+		CAN_BUTTON, 'H','a','l','l','o',0, 0x11, 0x11,
+		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x10,
 	END_CONTAINER,
 	V_CONTAINER,
-		CAN_BUTTON, 'H','a','l','l','o',0,
-		CAN_BUTTON, 'H','a','l','l','o','1',0,
+		CAN_BUTTON, 'H','a','l','l','o',0, 0x11, 0x11,
+		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x10,
 	END_CONTAINER,
 	0
 };
@@ -92,9 +93,12 @@ void navigation_bar_draw () {
 void init_main_window() {
 	navigation_bar_init();
 	navigation_bar_draw();
+	//while(1);
 	
 	menu_browser_init();
+
 	menu_browser_set_dir(test_dir);
+
 	menu_browser_draw();	
 }
 

@@ -1,9 +1,15 @@
 #include <stdint.h>
-#include <util/delay.h>
+
+#ifdef AVR
+	#include <util/delay.h>
+#endif
+
 #include <string.h>
 #include "gui_lib/gui.h"
 #include "touchscreen.h"
 #include "menu_browser.h"
+#include "netvar/netvar.h"
+#include "lap_button.h"
 
 
 typedef struct {
@@ -28,14 +34,25 @@ void parse_dir_to_main_container (uint8_t * dir_data) {
 		
 	while((b = *dir_data++) != 0){
 		switch(b){
-			case CAN_BUTTON: {
+			/*case CAN_BUTTON: {
 				gui_button_t * b = new_gui_button();
 				b->box.w = 32;
 				b->box.h = 30;
 				b->text = (char *) dir_data;
 				dir_data += strlen((char *) dir_data) + 1;
 				gui_container_add(akt_container,(gui_element_t *) b);
+			} break;*/
+			case CAN_BUTTON: {
+				char * txt = (char *) dir_data;
+				dir_data += strlen(txt) + 1;
+				uint16_t idx = *(uint16_t*)dir_data;
+				dir_data += 2;
+				lap_button_t * b = new_lap_button(txt, idx);
+				b->box.w = 32;
+				b->box.h = 30;
+				gui_container_add(akt_container,(gui_element_t *) b);
 			} break;
+			
 			case V_CONTAINER: {
 				gui_container_t * c = new_gui_container();
 				c->orientation = ORIENTATION_VERTICAL;
@@ -71,100 +88,6 @@ void menu_browser_init () {
 	state.main_container->box.y = 32;
 	state.main_container->box.w = 320;
 	state.main_container->box.h = 210;
-	
-	
-	
-	
-	/*
-	
-	gui_container_t * akt_container;
-	
-	
-	
-	
-	{
-				gui_container_t * c = new_gui_container();
-				c->orientation = ORIENTATION_VERTICAL;
-				akt_container = c;
-	}
-	
-	
-	
-	{
-				gui_button_t * b = new_gui_button();
-				b->box.w = 32;
-				b->box.h = 30;
-
-				b->text = "Hallo";
-				gui_container_add(akt_container,(gui_element_t *) b);
-	}{
-				gui_button_t * b = new_gui_button();
-				b->box.w = 32;
-				b->box.h = 30;
-
-				b->text = "Hallo";
-				gui_container_add(akt_container,(gui_element_t *) b);
-	}
-	gui_container_add(state.main_container, akt_container);
-
-
-
-	{
-				gui_container_t * c = new_gui_container();
-				c->orientation = ORIENTATION_VERTICAL;
-				akt_container = c;
-	}
-	
-	//menu_browser_set_dir(test_dir);
-	
-	{
-				gui_button_t * b = new_gui_button();
-				b->box.w = 32;
-				b->box.h = 30;
-
-				b->text = "Hallo1";
-				gui_container_add(akt_container,(gui_element_t *) b);
-	}
-	gui_container_add(state.main_container, akt_container);
-
-	{
-				gui_container_t * c = new_gui_container();
-				c->orientation = ORIENTATION_VERTICAL;
-				akt_container = c;
-	}
-	
-	//menu_browser_set_dir(test_dir);
-	
-	{
-				gui_button_t * b = new_gui_button();
-				b->box.w = 32;
-				b->box.h = 30;
-
-				b->text = "Hall2";
-				gui_container_add(akt_container,(gui_element_t *) b);
-	}{
-				gui_button_t * b = new_gui_button();
-				b->box.w = 32;
-				b->box.h = 30;
-
-				b->text = "Hallo 345678";
-				gui_container_add(akt_container,(gui_element_t *) b);
-	}
-	
-		{
-				gui_button_t * b = new_gui_button();
-				b->box.w = 32;
-				b->box.h = 30;
-
-				b->text = "Test";
-				gui_container_add(state.main_container,(gui_element_t *) b);
-	}
-	
-
-	
-	gui_container_add(state.main_container, akt_container);
-	*/
-
 }
 
 
