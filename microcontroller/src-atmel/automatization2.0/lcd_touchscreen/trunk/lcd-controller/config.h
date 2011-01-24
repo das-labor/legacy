@@ -67,3 +67,7 @@
 #endif
 
 #define TEST_ATN()        (PIN_HANDSHAKE & _BV(BIT_ATN))
+
+#define GRAPHICS_NO_DRAW_HORIZONTAL_LINE
+#define GRAPHICS_NO_FILL_RECTANGLE
+
