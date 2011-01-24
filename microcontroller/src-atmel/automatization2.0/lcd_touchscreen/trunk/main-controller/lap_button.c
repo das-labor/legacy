@@ -23,12 +23,21 @@ typedef struct {
 
 void lap_button_click_handler(gui_element_t * self){
 	lap_button_t * s = (lap_button_t*)self;
-	netvar_write(s->nv, &s->state);
+	uint8_t new_state = s->state ^ 1;
+	netvar_write(s->nv, &new_state);
+}
+
+void lap_button_nv_handler(netvar_desc * nd, void * ref){
+	lap_button_t * s = (lap_button_t*) ref;
+	s->state = nd->data[0];
+	//printf("nv_handler nd=%X, ref=%X\r\n", nd, ref);
+	s->draw(s, 0);
 }
 
 void lap_button_delete (gui_element_t *self) {
 	free (self);
 }
+
 
 
 //constructor
@@ -47,7 +56,7 @@ lap_button_t * new_lap_button(char * text, uint16_t idx ){
 	b->click_handler = lap_button_click_handler;
 	
 	b->nv = netvar_register(idx,0,1);
-	
+	netvar_add_handler(b->nv, lap_button_nv_handler, b);
 	
 	return b;
 	
