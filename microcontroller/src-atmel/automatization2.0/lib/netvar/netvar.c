@@ -1,13 +1,14 @@
 
 #include <string.h>
-#include <malloc.h>
 
 #include "../gui_lib/gui.h"
 
 #ifdef AVR
+	#include <stdlib.h>
 	#include "../can/can.h"
 #else
 	#include "../can_pc/can.h"
+	#include <malloc.h>
 #endif
 
 #include "netvar.h"
@@ -22,7 +23,7 @@ typedef struct{
 	 netvar_desc * nd;
 }netvar_dir_element_t;
 
-netvar_dir_element_t netvar_dir[100];
+netvar_dir_element_t netvar_dir[40];
 
 uint8_t netvar_dir_size;
 
