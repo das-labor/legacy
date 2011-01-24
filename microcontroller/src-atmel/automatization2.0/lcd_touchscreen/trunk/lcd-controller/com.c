@@ -99,6 +99,15 @@ void handle_com() {
 					g_fill_rectangle(&r);
 					break;
 				}
+			case DC_DRAW_STRING:	
+				{
+					uint16_t x,y;
+					read_bytes(2, &x);
+					read_bytes(2, &y);
+					read_string(buf);
+					g_draw_string(x, y, buf);
+					break;
+				}
 			case DC_DRAW_STRING_IN_RECT:	
 				{
 					rectangle_t r;
