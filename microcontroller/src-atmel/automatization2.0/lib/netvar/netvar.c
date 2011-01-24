@@ -3,13 +3,14 @@
 #include <malloc.h>
 
 #include "../gui_lib/gui.h"
-#include "netvar.h"
 
 #ifdef AVR
 	#include "../can/can.h"
 #else
 	#include "../can_pc/can.h"
 #endif
+
+#include "netvar.h"
 
 #define PORT_NETVAR 0x37
 
@@ -136,7 +137,7 @@ void netvar_add_handler(netvar_desc * nd, void (*fkt)(netvar_desc *, void *), vo
 
 typedef struct{
 	uint8_t data[8];
-}netvar_event_store_t;
+}netvar_data_store_t;
 
 //double buffered nd table.
 //one is used to store the events we are working on, while the other one is filled with the new events.
@@ -145,7 +146,7 @@ typedef struct{
 //the new events are processed.
 netvar_desc *          event_nd_table[2][32];
 
-netvar_event_store_t   event_data_table[32];
+netvar_data_store_t   event_data_table[32];
 
 //selects which of the two nd buffer stores the new events
 uint8_t in_buffer_select;
@@ -158,6 +159,44 @@ void netvar_store_event(netvar_desc * nd, void * data){
 	event_nd_table[in_buffer_select][event_table_index] = nd;
 	memcpy(event_data_table[event_table_index].data, data, 5);
 	event_table_index++;
+}
+
+
+#define IN_FIFO_SIZE 32
+
+uint8_t in_fifo_head, in_fifo_tail;
+
+netvar_data_store_t in_fifo_data[IN_FIFO_SIZE];
+netvar_desc * in_fifo_nd[IN_FIFO_SIZE];
+
+
+
+
+void in_fifo_store(netvar_desc * nd, void * data){
+	in_fifo_nd[in_fifo_head] = nd;
+	memcpy(in_fifo_data[in_fifo_head].data, data, 5);
+	in_fifo_head++;
+	if(in_fifo_head == IN_FIFO_SIZE){
+		in_fifo_head = 0;
+	}
+}
+
+
+//called when can message on netvar port is received
+void netvar_received(can_message * msg){
+	uint16_t idx;
+	uint8_t sidx;
+	idx = msg->data[0] | ((uint16_t)(msg->data[1])<<8);
+	sidx = msg->data[2];
+	
+	//find the netvar
+	netvar_desc * nd;
+	nd = get_netvar_by_idx(idx,sidx);
+	
+	if(nd){
+		//found
+		in_fifo_store(nd, &msg->data[3]);
+	}
 }
 
 
@@ -222,6 +261,30 @@ void netvar_handle_events(){
 			}
 		}
 	}
+	
+	//handle in fifo
+	while(in_fifo_tail != in_fifo_head){
+		netvar_desc * nd = in_fifo_nd[in_fifo_tail];
+		memcpy(nd->data, in_fifo_data[in_fifo_tail].data, nd->size); //update netvar data from event data
+		
+		if(nd->handlers){
+			//printf("calling handlers for %d, %X\r\n", i, nd->handlers);
+			list_iterator_t it;
+			list_foreach_begin(&it, nd->handlers);
+			handler_descriptor_t * hd;
+			while(((hd = list_foreach(&it, nd->handlers)) != 0)){
+				//printf("calling %X, ref=%X\r\n", hd->fkt, hd->ref );
+				hd->fkt(nd, hd->ref);
+			}
+		}
+	
+		in_fifo_tail++;
+		if(in_fifo_tail == IN_FIFO_SIZE){
+			in_fifo_tail = 0;
+		}
+	}
+	
+	
 }
 
 

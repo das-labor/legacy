@@ -33,6 +33,13 @@ typedef uint8_t can_subchannel_t;
 
 #else
 
+	typedef struct
+	{
+		uint32_t id;
+		uint8_t dlc;
+		uint8_t data[8];
+	} can_message_raw;
+
 	typedef struct {
 		can_addr      addr_src;
 		can_addr      addr_dst;
