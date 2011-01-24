@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 #include <SDL/SDL.h>
 
 #include <SDL/SDL_thread.h>
@@ -6,6 +7,12 @@
 #include "config.h"
 
 #include "touchscreen.h"
+#include "can_pc/debug.h"
+#include "can_pc/can.h"
+#include "main_window.h"
+#include "can_handler.h"
+#include "gui_lib/gui.h"
+#include "netvar/netvar.h"
 
 #define BPP 4
 #define DEPTH 32
@@ -15,10 +22,13 @@ volatile uint8_t quit_thread;
 int threadFunktion(void *nichtVerwendet)
 {
     
+    can_init();
     init_main_window();
 	
 	while(!quit_thread){
 		handle_touchscreen();
+		can_handler();
+
 		netvar_handle_events();
 		sleep(10);
 	}
@@ -34,6 +44,8 @@ int WinMain(int argc, char* argv[])
 {
 	SDL_Surface *screen;
 	SDL_Event event;
+	
+	debug_level = 10;
 	
 	int keypress = 0;
 	
