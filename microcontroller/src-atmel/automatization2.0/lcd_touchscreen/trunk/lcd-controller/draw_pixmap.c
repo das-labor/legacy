@@ -7,6 +7,7 @@
 
 #include "lcd_hardware.h"
 #include "../include/icon.h"
+#include "graphics.h"
 
 #ifdef DATABUS_REVERSED
 	uint8_t lsl_table[] =  {(1<<7), (1<<6), (1<<5), (1<<4), (1<<3), (1<<2), (1<<1), (1<<0)};
@@ -100,5 +101,86 @@ void g_draw_icon(uint16_t x, uint16_t y, icon_t * i){
 			msk <<= 1;
 		}
 		y++;
+	}
+}
+
+/**
+ * Draws a horizontal line, left to right, at the specified coordinates and of
+ * the specified length.
+ * @param x The x coordinante of the line's origin.
+ * @param y The y coordinante of the line's origin.
+ * @param length The length of the line, in pixels.
+ */
+void g_draw_horizontal_line(unsigned short x, unsigned short y, unsigned short length) {
+	uint16_t  addr = y * (X_SIZE / INTERFACE_BITS) + (x / INTERFACE_BITS);
+	uint16_t eaddr = y * (X_SIZE / INTERFACE_BITS) + ((x + length-1) / INTERFACE_BITS);
+	
+	#ifdef DATABUS_REVERSED
+		uint8_t emsk = 0xff << (7-((x+length-1)%INTERFACE_BITS));
+		uint8_t msk = 0xff >> (x%INTERFACE_BITS);
+	#else
+		uint8_t emsk = 0xff >> (7-((x+length-1)%INTERFACE_BITS));
+		uint8_t msk = 0xff << (x%INTERFACE_BITS);	
+	#endif
+		
+	if(draw_color){
+		for( ;addr <= eaddr ; addr++){
+			if(addr == eaddr) msk &= emsk;
+			pixmap[addr] |= msk;
+			msk = 0xff;
+		}
+	}else{
+		msk = ~msk;
+		for( ;addr <=eaddr ; addr++){
+			if(addr == eaddr) msk |= ~emsk;
+			pixmap[addr] &= msk;
+			msk = 0;
+		}	
+	}
+}
+
+void g_fill_rectangle(rectangle_t *r) {
+	uint16_t x = r->x;
+	uint16_t y = r->y;
+	uint16_t w = r->w - 1;
+	uint16_t h = r->h;
+	
+	uint16_t saddr = y * (X_SIZE / INTERFACE_BITS) + (x / INTERFACE_BITS);
+	uint16_t eaddr = y * (X_SIZE / INTERFACE_BITS) + ((x + w-1) / INTERFACE_BITS);
+	
+	#ifdef DATABUS_REVERSED
+		uint8_t emsk = 0xff << (7-((x+w-1)%INTERFACE_BITS));
+		uint8_t smsk = 0xff >> (x%INTERFACE_BITS);
+	#else
+		uint8_t emsk = 0xff >> (7-((x+w-1)%INTERFACE_BITS));
+		uint8_t smsk = 0xff << (x%INTERFACE_BITS);	
+	#endif
+	
+	if(draw_color){
+		while (h--) {
+			uint8_t msk;
+			uint16_t addr;
+			for(msk = smsk, addr=saddr; addr <= eaddr ; addr++){
+				if(addr == eaddr) msk &= emsk;
+				pixmap[addr] |= msk;
+				msk = 0xff;
+			}
+			saddr += (X_SIZE / INTERFACE_BITS);
+			eaddr += (X_SIZE / INTERFACE_BITS);
+		}
+	}else{
+		smsk = ~smsk;
+		emsk = ~emsk;
+		while (h--) {
+			uint8_t msk;
+			uint16_t addr;
+			for(msk = smsk, addr=saddr; addr <=eaddr ; addr++){
+				if(addr == eaddr) msk |= emsk;
+				pixmap[addr] &= msk;
+				msk = 0;
+			}		
+			saddr += (X_SIZE / INTERFACE_BITS);
+			eaddr += (X_SIZE / INTERFACE_BITS);
+		}
 	}
 }

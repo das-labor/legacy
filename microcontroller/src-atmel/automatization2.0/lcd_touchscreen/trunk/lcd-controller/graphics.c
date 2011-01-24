@@ -11,6 +11,7 @@
 #include "draw_pixmap.h"
 #include "fonts/font.h"
 #include "fonts/font_uni53.h"
+#include "config.h"
 
 
 //color in which new pixels are drawn
@@ -22,6 +23,7 @@ font * draw_font = &font_uni53;
 #define PB(a) pgm_read_byte(&(a))
 
 
+#ifndef GRAPHICS_NO_DRAW_HORIZONTAL_LINE
 /**
  * Draws a horizontal line, left to right, at the specified coordinates and of
  * the specified length.
@@ -34,7 +36,7 @@ void g_draw_horizontal_line(unsigned short x, unsigned short y, unsigned short l
 	for (i = x; i <= x + length; i++)
 		lcd_graphics_plot_pixel(i, y, draw_color);
 }
-
+#endif
 
 /**
  * Draws a vertical line, top to bottom, at the specified coordinates and of 
@@ -122,6 +124,7 @@ void g_draw_rectangle(rectangle_t *r) {
 }
 
 
+#ifndef GRAPHICS_NO_DRAW_HORIZONTAL_LINE
 void g_fill_rectangle(rectangle_t *r) {
 	uint16_t x = r->x;
 	uint16_t y = r->y;
@@ -133,7 +136,7 @@ void g_fill_rectangle(rectangle_t *r) {
 		y++;
 	}
 }
-
+#endif
 
 uint16_t text_x, text_y;
 
