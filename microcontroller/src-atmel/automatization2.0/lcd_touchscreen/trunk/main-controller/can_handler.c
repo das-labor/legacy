@@ -7,7 +7,7 @@
 #include "can_handler.h"
 #include "can/lap.h"
 
-static uint8_t myaddr;
+uint8_t myaddr;
 
 extern void can_handler()
 {
