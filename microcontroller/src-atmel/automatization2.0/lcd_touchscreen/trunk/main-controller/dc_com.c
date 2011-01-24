@@ -19,11 +19,6 @@
 #define WAIT_ATN_HIGH()    {while ((PIN_HANDSHAKE & _BV(BIT_ATN)) == 0);}
 
 
-void init_dc_com() {
-	DDR_HANDSHAKE  &= ~(_BV(BIT_ATN) | _BV(BIT_ACK));
-	PORT_HANDSHAKE |=  (_BV(BIT_ATN) | _BV(BIT_ACK));
-	DDR_DC_DATA = 0xff;
-}
 
 
 void dc_byte_put(uint8_t b) {
@@ -35,6 +30,18 @@ void dc_byte_put(uint8_t b) {
 	ATN_RELEASE();
 	WAIT_ACK_HIGH();
 }
+
+void init_dc_com() {
+	DDR_HANDSHAKE  &= ~(_BV(BIT_ATN) | _BV(BIT_ACK));
+	PORT_HANDSHAKE |=  (_BV(BIT_ATN) | _BV(BIT_ACK));
+	DDR_DC_DATA = 0xff;
+	int x;
+	for(x=0;x<32;x++){
+		dc_byte_put(DC_RESET);
+	}
+}
+
+
 
 
 
@@ -110,6 +117,12 @@ void g_fill_rectangle(rectangle_t *r) {
 	transmit_to_dc(DC_FILL_RECTANGLE, 8, r);
 }
 
+void g_draw_string(uint16_t x, uint16_t y, const char *str) {
+	dc_byte_put(DC_DRAW_STRING);
+	transmit_to_dc_raw(&x      , 2);
+	transmit_to_dc_raw(&y      , 2);
+	transmit_to_dc_string(str);
+}
 
 void g_draw_string_in_rect(rectangle_t *r, const char *str) {
 	dc_byte_put(DC_DRAW_STRING_IN_RECT);

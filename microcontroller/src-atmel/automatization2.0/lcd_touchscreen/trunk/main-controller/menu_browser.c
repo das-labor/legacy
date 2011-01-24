@@ -34,14 +34,14 @@ void parse_dir_to_main_container (uint8_t * dir_data) {
 		
 	while((b = *dir_data++) != 0){
 		switch(b){
-			/*case CAN_BUTTON: {
+			case GUI_BUTTON: {
 				gui_button_t * b = new_gui_button();
 				b->box.w = 32;
 				b->box.h = 30;
 				b->text = (char *) dir_data;
 				dir_data += strlen((char *) dir_data) + 1;
 				gui_container_add(akt_container,(gui_element_t *) b);
-			} break;*/
+			} break;
 			case CAN_BUTTON: {
 				char * txt = (char *) dir_data;
 				dir_data += strlen(txt) + 1;
