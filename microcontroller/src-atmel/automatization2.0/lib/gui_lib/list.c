@@ -35,8 +35,8 @@ list_t * new_list() {
 
 void list_append(list_t * l, void * child) {
 	if(l->num_childs >= l->allocated){
-		l->allocated += sizeof(void*) * LIST_ALLOCATION_BLOCK_SIZE;
-		l->childs = realloc(l->childs, l->allocated);		
+		l->allocated += LIST_ALLOCATION_BLOCK_SIZE;
+		l->childs = realloc(l->childs, sizeof(void*) * l->allocated);		
 	}
 	l->childs[l->num_childs] = child;
 	l->num_childs++;
