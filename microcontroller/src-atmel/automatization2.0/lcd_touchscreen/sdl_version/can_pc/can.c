@@ -2,13 +2,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#define WINDOWS
-#ifdef WINDOWS
-	#include <winsock.h>
-#else
-	#include <socket.h>
-#endif
-
 #include "can.h"
 #include "cann.h"
 

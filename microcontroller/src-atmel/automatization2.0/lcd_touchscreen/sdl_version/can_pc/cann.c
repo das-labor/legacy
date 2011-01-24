@@ -5,17 +5,6 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
-#define WINDOWS
-
-#ifdef WINDOWS
-	#include <winsock.h>
-#else
-	#include <sys/socket.h>
-	#include <sys/select.h>
-	#include <netinet/in.h>
-	#include <netinet/tcp.h>
-	#include <netdb.h>
-#endif
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -66,7 +55,7 @@ void cann_listen(int port)
 	int ret, flags;
 	char one=1; 
 
-	#ifndef WINDOWS
+	#ifndef USE_WINSOCK
 		signal(SIGPIPE, SIG_IGN);
 	#endif
 
@@ -84,7 +73,7 @@ void cann_listen(int port)
 	ret = bind(listen_socket, (struct sockaddr *)&serv_addr, sizeof(struct in_addr));
 	debug_assert( ret >= 0, "Could not bind listening socket"  );
 	
-	#ifndef WINDOWS
+	#ifndef USE_WINSOCK
 		flags = fcntl( listen_socket, F_GETFL, 0 );
 		fcntl( listen_socket, F_SETFL, flags | O_NDELAY );
 	#endif
@@ -114,7 +103,7 @@ cann_conn_t *cann_connect(char *server, int port)
 	client->missing_bytes = 0;
 	client->error = 0;
 
-	#ifdef WINDOWS
+	#ifdef USE_WINSOCK
 		WSADATA wsaData;
     	int err;
 
@@ -142,7 +131,7 @@ cann_conn_t *cann_connect(char *server, int port)
 		exit(EXIT_FAILURE);
 	}
 
-	#ifdef WINDOWS
+	#ifdef USE_WINSOCK
 		u_long option = 1;
 		ioctlsocket(client->fd, FIONBIO, &option);
 	#else
@@ -198,7 +187,7 @@ cann_conn_t *cann_accept(fd_set *set)
 	len = sizeof(struct sockaddr_in);
 	fd = accept(listen_socket, (struct sockaddr*)&remote, &len);
 
-	#ifndef WINDOWS
+	#ifndef USE_WINSOCK
 		// set some options on socket
 		fcntl(fd, F_SETFL, O_NONBLOCK);
 	#endif
@@ -257,7 +246,7 @@ void cann_close(cann_conn_t *conn)
 		while (conn) {
 			cann_conn_t *oldconn = conn;
 			printf("close socket");
-			#ifndef WINDOWS
+			#ifndef USE_WINSOCK
 				shutdown(conn->fd, SHUT_RDWR);
 			#endif
 			close(conn->fd);
@@ -445,7 +434,7 @@ void cann_transmit(cann_conn_t *conn, rs232can_msg *msg)
 	
 	
 
-	#ifndef WINDOWS
+	#ifndef USE_WINSOCK
 		int flags = MSG_NOSIGNAL;
 	#else
 		int flags = 0;

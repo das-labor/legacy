@@ -1,6 +1,20 @@
 #ifndef CANN_H
 #define CANN_H
 
+#ifdef __MINGW32__
+	#define USE_WINSOCK
+#endif
+
+#ifdef USE_WINSOCK
+	#include <winsock.h>
+#else
+	#include <sys/socket.h>
+	#include <sys/select.h>
+	#include <netinet/in.h>
+	#include <netinet/tcp.h>
+	#include <netdb.h>
+#endif
+
 /******************************************************************************
  * Encapsulated CAN messages over TCP/IP -- low level functions
  *
