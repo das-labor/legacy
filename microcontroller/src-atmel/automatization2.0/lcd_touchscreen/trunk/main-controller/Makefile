@@ -5,7 +5,7 @@ OBJ = main.o dc_com.o adc.o backlight.o touchscreen.o \
       lap_button.o \
       can/spi.o can/can.o can_handler.o netvar/netvar.o \
       gui_lib/gui.o  gui_lib/rectangle.o gui_lib/gui_container.o gui_lib/list.o gui_lib/gui_button.o \
-      icons/room_icon.o icons/main_icon.o icons/escape_icon.o
+      gui_lib/icons/icons.o
 
 
 # Default values

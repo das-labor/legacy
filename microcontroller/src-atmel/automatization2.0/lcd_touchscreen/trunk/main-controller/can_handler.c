@@ -19,7 +19,7 @@
 
 #include "can_handler.h"
 
-static uint8_t myaddr;
+uint8_t myaddr;
 
 void can_handler()
 {
@@ -44,11 +44,12 @@ void can_handler()
 						break;
 				}
 			}
-			else if (rx_msg->port_dst == 0x37)
-			{
-				printf("netvar received\r\n");
-				netvar_received(rx_msg);
-			}
+			
+		}
+		if (rx_msg->port_dst == 0x37)
+		{
+			//printf("netvar received\r\n");
+			netvar_received(rx_msg);
 		}
 	}
 }

@@ -7,13 +7,14 @@
 #include "can/spi.h"
 #include "can_handler.h"
 
-//#include "dc_com.h"
+#include "gui_lib/graphics.h"
 #include "touchscreen.h"
 #include "calibrate_touch.h"
 #include "gui_lib/gui.h"
 #include "main_window.h"
 #include "backlight.h"
 #include "adc.h"
+#include "netvar/netvar.h"
 
 
 volatile uint8_t ticks_in_ms;
@@ -76,6 +77,14 @@ void test(){
 
 extern icon_t room_icon;
 
+void print(char * s){
+	static uint8_t line = 0;
+		g_set_draw_color(1);
+
+	g_draw_string(120, line*8, s);
+	line++;	
+}
+
 int main(void) {
 	init();
 	init_dc_com();
@@ -96,10 +105,6 @@ int main(void) {
 	
 	can_setled(0, 1);
 	
-	//draw_navigation_bar();
-	//gui_test();
-	//menu_test();
-
 	init_main_window();
 	
 	while (1) {
@@ -110,6 +115,7 @@ int main(void) {
 					
 			handle_touchscreen();
 			can_handler();
+			netvar_handle_events();
 		}
 	}
 	return 0;
