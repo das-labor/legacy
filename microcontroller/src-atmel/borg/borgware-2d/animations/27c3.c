@@ -6,9 +6,9 @@
 #include "27c3.h"
 
 
-static uint8_t logo_27c3_getChunk(unsigned int const nBitPlane,
-                                  unsigned int const nChunkX,
-                                  unsigned int const nChunkY,
+static uint8_t logo_27c3_getChunk(unsigned char const nBitPlane,
+                                  unsigned char const nChunkX,
+                                  unsigned char const nChunkY,
                                   unsigned int const nFrame)
 {
 	assert(nBitPlane < 2);

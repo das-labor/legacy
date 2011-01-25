@@ -6,9 +6,9 @@
 #include "laborlogo.h"
 
 
-static uint8_t laborlogo_getChunk(unsigned int const nBitPlane,
-                                  unsigned int const nChunkX,
-                                  unsigned int const nChunkY,
+static uint8_t laborlogo_getChunk(unsigned char const nBitPlane,
+                                  unsigned char const nChunkX,
+                                  unsigned char const nChunkY,
                                   unsigned int const nFrame)
 {
 	assert(nChunkX < 6);

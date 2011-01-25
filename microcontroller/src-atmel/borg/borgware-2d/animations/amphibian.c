@@ -6,9 +6,9 @@
 #include "amphibian.h"
 
 
-static uint8_t amphibian_getChunk(unsigned int const nBitPlane,
-                                  unsigned int const nChunkX,
-                                  unsigned int const nChunkY,
+static uint8_t amphibian_getChunk(unsigned char const nBitPlane,
+                                  unsigned char const nChunkX,
+                                  unsigned char const nChunkY,
                                   unsigned int const nFrame)
 {
 	assert(nChunkX < 6);
@@ -129,7 +129,7 @@ static uint8_t amphibian_getChunk(unsigned int const nBitPlane,
 		  {0x07, 0xF0, 0xFE}}};
 
 
-	if ((nChunkX >= 0) && (nChunkX <= 2) && (nChunkY >= 2) && (nChunkY <= 5)
+	if ((nChunkX <= 2) && (nChunkY >= 2) && (nChunkY <= 5)
 			&& (((nFrame >> 1) % 8) != 0))
 	{
 		uint8_t nOffset;
@@ -148,6 +148,7 @@ static uint8_t amphibian_getChunk(unsigned int const nBitPlane,
 			nOffset = 8;
 			break;
 		case 4:
+		default:
 			nOffset = 12;
 			break;
 		}
