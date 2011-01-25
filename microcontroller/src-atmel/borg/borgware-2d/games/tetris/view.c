@@ -250,7 +250,7 @@ static void tetris_view_drawDump(tetris_view_t *pV)
 		}
 
 		uint16_t nElementMask = 0x0001;
-		for (int8_t x = 0; x < TETRIS_VIEW_WIDTH_DUMP; ++x)
+		for (uint8_t x = 0; x < TETRIS_VIEW_WIDTH_DUMP; ++x)
 		{
 			unsigned char nColor = (nRowMap & nElementMask) ?
 					tetris_view_getPieceColor(pV) : TETRIS_VIEW_COLORSPACE;
@@ -516,7 +516,7 @@ static void tetris_view_drawLineCounter(tetris_view_t *pV)
 	int8_t nHundreds = (nLines / 100) % 10;
 
 	// draws the decimal places as 3x3 squares with 9 pixels
-	for (int i = 0, x = 0, y = 0; i < 9; ++i)
+	for (uint8_t i = 0, x = 0, y = 0; i < 9; ++i)
 	{
 		// pick drawing color for the ones
 		uint8_t nOnesPen = nOnes > i ?
