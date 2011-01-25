@@ -119,8 +119,8 @@ void g_draw_horizontal_line(unsigned short x, unsigned short y, unsigned short l
 		uint8_t emsk = 0xff << (7-((x+length-1)%INTERFACE_BITS));
 		uint8_t msk = 0xff >> (x%INTERFACE_BITS);
 	#else
-		uint8_t emsk = 0xff >> (7-((x+length-1)%INTERFACE_BITS));
-		uint8_t msk = 0xff << (x%INTERFACE_BITS);	
+		uint8_t emsk = 0xff >> (((INTERFACE_BITS==4)?3:7)-((x+length-1)%INTERFACE_BITS));
+		uint8_t msk = ((INTERFACE_BITS==4)?0xf0:0xff) << (x%INTERFACE_BITS );	
 	#endif
 		
 	if(draw_color){
@@ -152,8 +152,8 @@ void g_fill_rectangle(rectangle_t *r) {
 		uint8_t emsk = 0xff << (7-((x+w-1)%INTERFACE_BITS));
 		uint8_t smsk = 0xff >> (x%INTERFACE_BITS);
 	#else
-		uint8_t emsk = 0xff >> (7-((x+w-1)%INTERFACE_BITS));
-		uint8_t smsk = 0xff << (x%INTERFACE_BITS);	
+		uint8_t emsk = 0xff >> (((INTERFACE_BITS==4)?3:7)-((x+w-1)%INTERFACE_BITS));
+		uint8_t smsk = ((INTERFACE_BITS==4)?0xf0:0xff) << (x%INTERFACE_BITS );	
 	#endif
 	
 	if(draw_color){
