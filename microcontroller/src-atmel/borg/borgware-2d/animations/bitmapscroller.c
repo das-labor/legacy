@@ -6,7 +6,6 @@
 #include "../util.h"
 #include "../autoconf.h"
 #include "../pixel.h"
-#include "../joystick/joystick.h"
 #include "bitmapscroller.h"
 
 
@@ -26,7 +25,7 @@ typedef struct bitmap_t
 	unsigned char nXDomain;        /**< Last valid x-coordinate for viewport. */
 	unsigned char nYDomain;        /**< Last valid y-coordinate for viewport. */
 	unsigned char nChunkDomain;    /**< Last valid chunk for viewport. */
-	unsigned char nChunkCount;      /**< Amount of horiz. chunks of the bitmap. */
+	unsigned char nChunkCount;     /**< Amount of horiz. chunks of the bitmap. */
 }
 bitmap_t;
 
