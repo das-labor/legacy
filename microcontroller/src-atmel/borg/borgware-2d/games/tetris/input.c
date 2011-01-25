@@ -200,7 +200,7 @@ static tetris_input_command_t tetris_input_queryJoystick(tetris_input_t *pIn)
 	}
 
 	// decrement all ignore counters
-	for (int nIgnIndex = 0; nIgnIndex < TETRIS_INCMD_NONE; ++nIgnIndex)
+	for (uint8_t nIgnIndex = 0; nIgnIndex < TETRIS_INCMD_NONE; ++nIgnIndex)
 	{
 		if (pIn->nIgnoreCmdCounter[nIgnIndex] != 0)
 		{

@@ -39,7 +39,7 @@ static void tetris_bastet_doPreprocessing(tetris_bastet_variant_t *pBastet)
 	int8_t nStopRow = tetris_bucket_getFirstTaintedRow(pBastet->pBucket);
 
 	// clear old precalculated scores
-	for (int i = 0; i < nWidth + 3; ++i)
+	for (uint8_t i = 0; i < nWidth + 3; ++i)
 	{
 		pBastet->pColScore[i] = 0;
 	}
@@ -50,7 +50,7 @@ static void tetris_bastet_doPreprocessing(tetris_bastet_variant_t *pBastet)
 	{
 		uint16_t nDumpRow = tetris_bucket_getDumpRow(pBastet->pBucket, y);
 		uint16_t nColMask = 0x0001;
-		for (int8_t x = 0; x < nWidth; ++x)
+		for (uint8_t x = 0; x < nWidth; ++x)
 		{
 			if ((nDumpRow & nColMask) != 0)
 			{
@@ -68,7 +68,7 @@ static void tetris_bastet_doPreprocessing(tetris_bastet_variant_t *pBastet)
 	pBastet->pStartingRow[2] = pBastet->pStartingRow[1] > pBastet->pColScore[2]?
 			pBastet->pStartingRow[1] : pBastet->pColScore[2];
 	// calculate the maxima of the 4-tuples from column 0 to width-1
-	for (int8_t i = 0; i < nWidth; ++i)
+	for (uint8_t i = 0; i < nWidth; ++i)
 	{
 		int8_t t0 = pBastet->pColScore[i] > pBastet->pColScore[i + 1] ?
 				i : i + 1;
@@ -86,7 +86,7 @@ static void tetris_bastet_doPreprocessing(tetris_bastet_variant_t *pBastet)
 	}
 
 	// calculate the score impact of every column
-	for (int x = 0; x < nWidth; ++x)
+	for (uint8_t x = 0; x < nWidth; ++x)
 	{
 		pBastet->pColScore[x] *= TETRIS_BASTET_HEIGHT_FACTOR;
 	}
@@ -116,7 +116,7 @@ static void tetris_bastet_predictColHeights(tetris_bastet_variant_t *pBastet,
 	while (pDump != NULL)
 	{
 		uint16_t nColMask = 0x0001 << nStartCol;
-		for (int x = nStartCol; x <= nStopCol; ++x)
+		for (uint8_t x = nStartCol; x <= nStopCol; ++x)
 		{
 			if ((*pDump & nColMask) != 0)
 			{
@@ -242,7 +242,7 @@ static int16_t tetris_bastet_evaluateMove(tetris_bastet_variant_t *pBastet,
 			nStartCol, nStopCol);
 
 	// modify score based on predicted column heights
-	for (int x = 0; x < nWidth; ++x)
+	for (uint8_t x = 0; x < nWidth; ++x)
 	{
 		if ((x >= nStartCol) && (x <= nStopCol))
 		{
@@ -269,12 +269,12 @@ static void tetris_bastet_evaluatePieces(tetris_bastet_variant_t *pBastet)
 	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
 	tetris_piece_t *pPiece = tetris_piece_construct(TETRIS_PC_LINE,
 			TETRIS_PC_ANGLE_0);
-	for (int8_t nBlock = TETRIS_PC_LINE; nBlock <= TETRIS_PC_Z; ++nBlock)
+	for (uint8_t nBlock = TETRIS_PC_LINE; nBlock <= TETRIS_PC_Z; ++nBlock)
 	{
 		int16_t nMaxScore = -32768;
 		tetris_piece_setShape(pPiece, nBlock);
 		int8_t nAngleCount = tetris_piece_getAngleCount(pPiece);
-		for (int8_t nAngle = TETRIS_PC_ANGLE_0; nAngle < nAngleCount; ++nAngle)
+		for (uint8_t nAngle = TETRIS_PC_ANGLE_0; nAngle < nAngleCount; ++nAngle)
 		{
 			tetris_piece_setAngle(pPiece, nAngle);
 			for (int8_t nCol = -3; nCol < nWidth; ++nCol)
