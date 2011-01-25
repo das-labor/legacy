@@ -17,14 +17,14 @@
  * @param nFrame The current frame number (in case you want to animate sth.).
  * @return an eight-by-one chunk of the bitmap packed into an uint8_t typed
  */
-typedef uint8_t (*bitmap_getChunk_t)(unsigned int const nBitPlane,
-                                     unsigned int const nChunkX,
-                                     unsigned int const nChunkY,
+typedef uint8_t (*bitmap_getChunk_t)(unsigned char const nBitPlane,
+                                     unsigned char const nChunkX,
+                                     unsigned char const nChunkY,
                                      unsigned int const nFrame);
 
 
-void bitmap_scroll(unsigned int const nWidth,
-                   unsigned int const nHeight,
+void bitmap_scroll(unsigned char const nWidth,
+                   unsigned char const nHeight,
                    unsigned char const nBitPlanes,
                    unsigned int const nFrameCount,
                    unsigned int const nFrameTick,

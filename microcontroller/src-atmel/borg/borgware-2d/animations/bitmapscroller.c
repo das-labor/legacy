@@ -6,6 +6,7 @@
 #include "../util.h"
 #include "../autoconf.h"
 #include "../pixel.h"
+#include "../joystick/joystick.h"
 #include "bitmapscroller.h"
 
 
@@ -15,17 +16,17 @@
  */
 typedef struct bitmap_t
 {
-	unsigned int nWidth;          /**< Width of the bitmap. */
-	unsigned int nHeight;         /**< Height of the bitmap. */
-	unsigned char nBitPlanes;     /**< Number of bit planes. */
-	bitmap_getChunk_t fpGetChunk; /**< Bitmap chunk retrieving function. */
-	unsigned int nFrame;          /**< Current frame number. */
-	unsigned int nViewportWidth;  /**< Width of the displayed content. */
-	unsigned int nViewportHeight; /**< Height of the displayed content. */
-	unsigned int nXDomain;        /**< Last valid x-coordinate for viewport. */
-	unsigned int nYDomain;        /**< Last valid y-coordinate for viewport. */
-	unsigned int nChunkDomain;    /**< Last valid chunk for viewport. */
-	unsigned int nChunkCount;     /**< Amount of horiz. chunks of the bitmap. */
+	unsigned char nWidth;          /**< Width of the bitmap. */
+	unsigned char nHeight;         /**< Height of the bitmap. */
+	unsigned char nBitPlanes;      /**< Number of bit planes. */
+	bitmap_getChunk_t fpGetChunk;  /**< Bitmap chunk retrieving function. */
+	unsigned int nFrame;           /**< Current frame number. */
+	unsigned char nViewportWidth;  /**< Width of the displayed content. */
+	unsigned char nViewportHeight; /**< Height of the displayed content. */
+	unsigned char nXDomain;        /**< Last valid x-coordinate for viewport. */
+	unsigned char nYDomain;        /**< Last valid y-coordinate for viewport. */
+	unsigned char nChunkDomain;    /**< Last valid chunk for viewport. */
+	unsigned char nChunkCount;      /**< Amount of horiz. chunks of the bitmap. */
 }
 bitmap_t;
 
@@ -57,7 +58,7 @@ static unsigned char bitmap_getAlignedChunk(bitmap_t const *const pBitmap,
 	unsigned char nAlignment = x % 8;
 
 	// we have to go through every bit plane
-	for (int i = 0; i < pBitmap->nBitPlanes; ++i)
+	for (unsigned char  i = 0; i < pBitmap->nBitPlanes; ++i)
 	{
 		// generate chunk
 		unsigned char nPlaneChunk;
@@ -104,24 +105,28 @@ static void bitmap_drawViewport(bitmap_t const *const pBitmap,
 	unsigned char nPlanes = nBitmapHwPlanes > NUMPLANE ?
 			NUMPLANE : nBitmapHwPlanes;
 
-	for (int8_t y = 0; y < pBitmap->nViewportHeight; ++y)
+	for (unsigned char y = 0; y < pBitmap->nViewportHeight; ++y)
 	{
-		for (int8_t x = pBitmap->nViewportWidth; x > 0; x -= 8)
+		for (unsigned char x = 0; x < pBitmap->nViewportWidth; x += 8)
 		{
-			for (int8_t p = NUMPLANE - nPlanes; p < NUMPLANE; ++p)
+			for (unsigned char p = NUMPLANE - nPlanes; p < NUMPLANE; ++p)
 			{
-				uint8_t nChunk;
-				if ((nX + x - 8) >= 0)
-				{
-					nChunk = bitmap_getAlignedChunk(pBitmap, p, nX+x-8, nY + y);
-					pixmap[p][y][pBitmap->nChunkCount - 1 - ((x-1)/8)] = nChunk;
-				}
-				else
-				{
-					nChunk = bitmap_getAlignedChunk(pBitmap, p, nX, nY + y)
-							>> (8-x);
-					pixmap[p][y][pBitmap->nChunkCount - 1] = nChunk;
-				}
+				unsigned char nChunk;
+#if ((NUM_COLS % 8) != 0)
+				if ((x + nX) > (8 - NUM_COLS % 8))
+                {
+					nChunk = bitmap_getAlignedChunk(pBitmap, p,
+							nX + x - (8 - NUM_COLS % 8), nY + y);
+                }
+                else
+                {
+                    nChunk = bitmap_getAlignedChunk(pBitmap, p,
+                    		nX, nY + y) >> (8 - NUM_COLS % 8);
+                }
+#else
+				nChunk = bitmap_getAlignedChunk(pBitmap, p, nX + x, nY + y);
+#endif
+				pixmap[p][y][pBitmap->nChunkCount - 1 - (x / 8)] = nChunk;
 			}
 		}
 	}
@@ -138,8 +143,8 @@ static void bitmap_drawViewport(bitmap_t const *const pBitmap,
  * @param pdy Pointer to a variable which shall hold the vertical offset.
  */
 static void bitmap_recalculateVector(bitmap_t const *const pBitmap,
-                                     unsigned int const x,
-                                     unsigned int const y,
+                                     unsigned char const x,
+                                     unsigned char const y,
                                      char *const pdx,
                                      char *const pdy)
 {
@@ -168,8 +173,8 @@ static void bitmap_recalculateVector(bitmap_t const *const pBitmap,
  * @param nFrameTick Duration of a displayed frame in milliseconds.
  * @param fpGetChunk Function that returns an eight-by-one chunk of a bitmap.
  */
-void bitmap_scroll(unsigned int const nWidth,
-                   unsigned int const nHeight,
+void bitmap_scroll(unsigned char const nWidth,
+                   unsigned char const nHeight,
                    unsigned char const nBitPlanes,
                    unsigned int const nFrameCount,
                    unsigned int const nFrameTick,
@@ -205,7 +210,6 @@ void bitmap_scroll(unsigned int const nWidth,
 	for (bitmap.nFrame = 0; bitmap.nFrame < nFrameCount; ++bitmap.nFrame)
 	{
 		bitmap_drawViewport(&bitmap, x, y);
-
 		bitmap_recalculateVector(&bitmap, x, y, &dx, &dy);
 		x += bitmap.nWidth > bitmap.nViewportWidth ? dx : 0;
 		y += bitmap.nHeight > bitmap.nViewportHeight ? dy : 0;
