@@ -1,9 +1,10 @@
 #define UART_BAUD_RATE 19200
 
-#define NUM_ROWS 12
-#define NUM_COLS 16
-#define NUM_PLANES 1
-#define NUMPLANE 3
+#define NUM_ROWS 4
+#define NUM_COLS 4
+#define NUMPLANE 1
+
+#define NUM_DISPLAYS 1
 
 #define SCROLLTXT_DELAY 60
 #define STREAMER_NUM 30
