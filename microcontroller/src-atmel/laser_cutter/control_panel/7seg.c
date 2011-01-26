@@ -1,5 +1,5 @@
 #include <avr/pgmspace.h>
-#include "pixel.h"
+#include "borg_hw.h"
 
 
 
@@ -38,18 +38,15 @@ unsigned char field[] PROGMEM ={
 
 #define PGMB(a) pgm_read_byte(&(a))
 
-void seg_print(unsigned char* txt){
-	unsigned char c, fp = 6, dat, row;
-	while((c=*txt++)){
+void seg_print(uint8_t disp_num, unsigned char* txt){
+	unsigned char c, fp = 3, dat;
+	while((c=*txt++) && (fp < 4) ){
 			if (c >= 'a'){
 				dat	= PGMB(letters[c-'a']);
 			}else{
 				dat = PGMB(numbers[c-'0']);	
 			}
-			row = PGMB(field[fp]);
-			pixmap[0][row][0] = dat;
-			pixmap[1][row][0] = dat;
-			pixmap[2][row][0] = dat;
+			display[disp_num][fp] = dat;
 			fp--;
 	}
 }

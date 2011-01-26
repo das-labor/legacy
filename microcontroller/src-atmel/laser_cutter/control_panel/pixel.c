@@ -3,7 +3,7 @@
 
 #include "borg_hw.h"
 
-#include "util.h"
+//#include "util.h"
 #include "config.h"
 
 unsigned char shl_table[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};

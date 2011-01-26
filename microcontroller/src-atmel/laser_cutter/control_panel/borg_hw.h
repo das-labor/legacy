@@ -11,7 +11,9 @@
 
 extern unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
-extern volatile uint8_t keys[8];
+extern uint8_t display[NUM_DISPLAYS][NUM_ROWS];
+
+extern volatile uint8_t keys[4];
 
 void watchdog_enable();
 void borg_hw_init();
