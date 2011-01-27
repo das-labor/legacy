@@ -162,3 +162,15 @@ void borg_hw_init(){
 	wdt_reset();
 	wdt_enable(0x00);	// 17ms Watchdog
 }
+
+void set_led(uint8_t num, uint8_t value){
+	uint8_t mask;
+	uint8_t row = num / 4;
+	mask = (1<<(num%4));
+	
+	if(value){
+		pixmap[0][row][0] |= mask;
+	}else{
+		pixmap[0][row][0] &= ~mask;
+	}
+}
