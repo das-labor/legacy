@@ -19,4 +19,6 @@ void watchdog_enable();
 void borg_hw_init();
 void timer0_off();
 
+void set_led(uint8_t num, uint8_t value);
+
 #endif
