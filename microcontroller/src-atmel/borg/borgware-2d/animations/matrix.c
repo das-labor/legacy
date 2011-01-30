@@ -73,8 +73,8 @@ void matrix() {
 			}						
 		}
 		
-		for(y=0;y<NUM_ROWS;y++)
-			for(x=0;x<NUM_COLS;x++){
+		for(y=NUM_ROWS;y--;)
+			for(x=NUM_COLS;x--;){
 				setpixel((pixel){x,y}, get_bright(&matrix_bright,x,y));
 			}
 					

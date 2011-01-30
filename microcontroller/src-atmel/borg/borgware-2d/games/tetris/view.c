@@ -132,6 +132,7 @@ static void tetris_view_setpixel(tetris_bearing_t nBearing,
 	pixel px;
 	switch (nBearing)
 	{
+	default:
 	case TETRIS_BEARING_0:
 		px = (pixel){x, y};
 		break;
@@ -158,10 +159,10 @@ static void tetris_view_setpixel(tetris_bearing_t nBearing,
  * @param nColor Color of the line
  */
 inline static void tetris_view_drawHLine(tetris_bearing_t nBearing,
-                           uint8_t x1,
-                           uint8_t x2,
-                           uint8_t y,
-                           uint8_t nColor)
+                                         uint8_t x1,
+                                         uint8_t x2,
+                                         uint8_t y,
+                                         uint8_t nColor)
 {
 	assert(x1 <= x2);
 
@@ -434,11 +435,10 @@ static void tetris_view_drawBorders(tetris_view_t *pV,
  */
 static void tetris_view_blinkBorders(tetris_view_t *pV)
 {
-	for (uint8_t i = 0; i < TETRIS_VIEW_BORDER_BLINK_COUNT; ++i)
+	for (uint8_t i = TETRIS_VIEW_BORDER_BLINK_COUNT * 2; i--;)
 	{
-		tetris_view_drawBorders(pV, TETRIS_VIEW_COLORPIECE);
-		wait(TETRIS_VIEW_BORDER_BLINK_DELAY);
-		tetris_view_drawBorders(pV, TETRIS_VIEW_COLORBORDER);
+		tetris_view_drawBorders(pV, (i & 0x01) ?
+				TETRIS_VIEW_COLORBORDER : TETRIS_VIEW_COLORPIECE);
 		wait(TETRIS_VIEW_BORDER_BLINK_DELAY);
 	}
 }
@@ -453,8 +453,6 @@ static void tetris_view_blinkLines(tetris_view_t *pV)
 
 	// reduce necessity of pointer arithmetic
 	int8_t nRow = tetris_bucket_getRow(pV->pBucket);
-	uint8_t nRowMask = tetris_bucket_getRowMask(pV->pBucket);
-	int8_t nMask = 0x01;
 
 	tetris_bearing_t nBearing =
 			pV->pVariantMethods->getBearing(pV->pVariant);
@@ -470,14 +468,14 @@ static void tetris_view_blinkLines(tetris_view_t *pV)
 		for (uint8_t nColIdx = 0; nColIdx < 2; ++nColIdx)
 		{
 			// iterate through the possibly complete lines
-			for (uint8_t j = 0; j <= nDeepestRowOffset; ++j)
+			for (uint8_t j = 0, nMask = 0x01; j <= nDeepestRowOffset; ++j)
 			{
 				// is current line a complete line?
-				if ((nRowMask & (nMask << j)) != 0)
+				if ((tetris_bucket_getRowMask(pV->pBucket) & nMask) != 0)
 				{
 					// draw line in current color
-					uint8_t y = nRow + j;
-					for (uint8_t x = 0; x < 10; ++x)
+					int8_t y = nRow + j;
+					for (int8_t x = tetris_bucket_getWidth(pV->pBucket); x--;)
 					{
 
 						uint8_t nColor = (nColIdx == 0 ? TETRIS_VIEW_COLORFADE
@@ -488,6 +486,7 @@ static void tetris_view_blinkLines(tetris_view_t *pV)
 								nColor);
 					}
 				}
+				nMask <<= 1;
 			}
 			// wait a few ms to make the blink effect visible
 			wait(TETRIS_VIEW_LINE_BLINK_DELAY);
@@ -511,9 +510,9 @@ static void tetris_view_drawLineCounter(tetris_view_t *pV)
 	uint16_t nLines = pV->pVariantMethods->getLines(pV->pVariant);
 
 	// get decimal places
-	int8_t nOnes = nLines % 10;
-	int8_t nTens = (nLines / 10) % 10;
-	int8_t nHundreds = (nLines / 100) % 10;
+	uint8_t nOnes = nLines % 10;
+	uint8_t nTens = (nLines / 10) % 10;
+	uint8_t nHundreds = (nLines / 100) % 10;
 
 	// draws the decimal places as 3x3 squares with 9 pixels
 	for (uint8_t i = 0, x = 0, y = 0; i < 9; ++i)
@@ -560,24 +559,13 @@ static void tetris_view_drawLineCounter(tetris_view_t *pV)
 static void tetris_view_formatHighscoreName(uint16_t nHighscoreName,
                                             char *pszName)
 {
-	pszName[0] = ((nHighscoreName >> 10) & 0x1F) + 65;
-	if (pszName[0] == '_')
+	for (uint8_t i = 3; i--; nHighscoreName >>= 5)
 	{
-		pszName[0] = ' ';
+		if ((pszName[i] = (nHighscoreName & 0x1F) + 65) == '_')
+		{
+			pszName[i] = ' ';
+		}
 	}
-
-	pszName[1] = ((nHighscoreName >> 5) & 0x1F) + 65;
-	if (pszName[1] == '_')
-	{
-		pszName[1] = ' ';
-	}
-
-	pszName[2] = (nHighscoreName & 0x1F) + 65;
-	if (pszName[2] == '_')
-	{
-		pszName[2] = ' ';
-	}
-
 	pszName[3] = '\0';
 }
 /*@}*/
@@ -665,7 +653,6 @@ void tetris_view_update(tetris_view_t *pV)
 		tetris_view_blinkBorders(pV);
 		pV->nOldLevel = nLevel;
 	}
-	
 }
 
 

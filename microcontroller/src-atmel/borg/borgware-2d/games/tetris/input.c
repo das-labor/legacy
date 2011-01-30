@@ -124,8 +124,8 @@ static void tetris_input_chatterProtect(tetris_input_t *pIn,
 	if ((cmd == TETRIS_INCMD_ROT_CW) || (cmd == TETRIS_INCMD_DOWN))
 	{
 		// helper variables (which the compiler hopefully optimizes away)
-		uint8_t nRotCw = pIn->nIgnoreCmdCounter[TETRIS_INCMD_ROT_CW];
-		uint8_t nDown = pIn->nIgnoreCmdCounter[TETRIS_INCMD_DOWN];
+		uint8_t const nRotCw = pIn->nIgnoreCmdCounter[TETRIS_INCMD_ROT_CW];
+		uint8_t const nDown = pIn->nIgnoreCmdCounter[TETRIS_INCMD_DOWN];
 
 		pIn->nIgnoreCmdCounter[TETRIS_INCMD_PAUSE] =
 				(nRotCw > nDown ? nRotCw : nDown);

@@ -50,17 +50,17 @@ void borg_breakout(uint8_t demomode)
 	ball_spawn_default(&(balls[0]));
 	balls[0].strength = START_LIFES;
 	level_init(level);
-	uint8_t tick_divider = 0;
+	uint8_t tick_divider = 1;
 	rebound_init();
 
 	while (cycles != 0)
 	{
 		wait(25);
 
-		if ((tick_divider % 2) || JOYISFIRE)
+		if (tick_divider || JOYISFIRE)
 			rebound_tick(demomode ? &balls[0] : NULL);
 
-		if (tick_divider % 2)
+		if (tick_divider)
 		{
 			ball_think(&(balls[0]));
 			playfield_draw();

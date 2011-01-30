@@ -55,8 +55,8 @@ void text_setpixel(pixel p, unsigned char value ){
 
 void clear_text_pixmap(unsigned char value){
 	unsigned char y, z;
-	for(y=0;y<NUM_ROWS;y++){
-		for(z=0;z<LINEBYTES;z++){
+	for(y=NUM_ROWS;y--;){
+		for(z=LINEBYTES;z--;){
 			(*text_pixmap)[y][z] = 0;
 		}
 	}
@@ -65,9 +65,9 @@ void clear_text_pixmap(unsigned char value){
 
 void update_pixmap(){
 	unsigned char x, y, z;
-	for(x=0;x<NUMPLANE;x++){
-		for(y=0;y<NUM_ROWS;y++){
-			for(z=0;z<LINEBYTES;z++){
+	for(x=NUMPLANE;x--;){
+		for(y=NUM_ROWS;y--;){
+			for(z=LINEBYTES;z--;){
 				pixmap[x][y][z] = (*text_pixmap)[y][z];
 			}
 		}
