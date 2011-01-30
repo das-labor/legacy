@@ -143,7 +143,7 @@ inline static void tetris_piece_setAngle(tetris_piece_t *pPc,
  * @param pPc piece whose angle count we want to know
  * @return number of different angles
  */
-int8_t tetris_piece_getAngleCount(tetris_piece_t *pPc);
+uint8_t tetris_piece_getAngleCount(tetris_piece_t *pPc);
 
 
 /**

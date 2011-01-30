@@ -66,7 +66,7 @@ void tetris_piece_rotate(tetris_piece_t *pPc,
 }
 
 
-int8_t tetris_piece_getAngleCount(tetris_piece_t *pPc)
+uint8_t tetris_piece_getAngleCount(tetris_piece_t *pPc)
 {
 	assert(pPc != NULL);
 

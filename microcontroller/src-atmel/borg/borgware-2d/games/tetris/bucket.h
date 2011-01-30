@@ -134,23 +134,10 @@ void tetris_bucket_reset(tetris_bucket_t *pBucket);
  * inserts a new piece
  * @param pBucket bucket to perform action on
  * @param pPiece piece to be inserted
- * @param ppOldPiece [out] indirect pointer to former piece for deallocation
+ * @return pointer to former piece for deallocation
  */
-void tetris_bucket_insertPiece(tetris_bucket_t *pBucket,
-                               tetris_piece_t *pPiece,
-                               tetris_piece_t** ppOldPiece);
-
-
-/**
- * detects if piece collides with s.th. at a given position
- * @param pBucket bucket to perform action on
- * @param nColumn column where the piece should be moved
- * @param nRow row where the piece should be moved
- * @return 1 for collision, 0 otherwise
- */
-uint8_t tetris_bucket_collision(tetris_bucket_t *pBucket,
-                                int8_t nColumn,
-                                int8_t nRow);
+tetris_piece_t *tetris_bucket_insertPiece(tetris_bucket_t *pBucket,
+                                          tetris_piece_t *pPiece);
 
 
 /**

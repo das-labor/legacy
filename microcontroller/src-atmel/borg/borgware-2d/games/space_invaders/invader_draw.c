@@ -43,7 +43,7 @@ void draw(Invaders * iv, Spaceship * sc, Player * pl, Cannon * cn,
 {
 	clearScreen ();
 
-	int x, y;
+	unsigned char x, y;
 
 	/*---SPACESHIP---*/
 	if (sc->pos < RIGHT_BORDER)
@@ -56,9 +56,11 @@ void draw(Invaders * iv, Spaceship * sc, Player * pl, Cannon * cn,
 	}
 
 	/*---INVADERS--*/
-	for (y = 0; y < MAX_INVADER_HEIGHT; y++)
+//	for (y = 0; y < MAX_INVADER_HEIGHT; y++)
+	for (y = MAX_INVADER_HEIGHT; y--;)
 	{
-		for (x = 0; x < MAX_INVADER_WIDTH; x++)
+//		for (x = 0; x < MAX_INVADER_WIDTH; x++)
+		for (x = MAX_INVADER_WIDTH; x--;)
 		{
 			//mal in oder  statement umwandeln ;-)
 			if (iv->map[x][y] == 0)
@@ -73,7 +75,7 @@ void draw(Invaders * iv, Spaceship * sc, Player * pl, Cannon * cn,
 	}
 
 	/*---GUARDS---*/
-	for (x = 0; x < BORG_WIDTH; ++x)
+	for (x = BORG_WIDTH; x--;)
 	{
 		if (guards[x] != 0)
 		{
@@ -82,8 +84,8 @@ void draw(Invaders * iv, Spaceship * sc, Player * pl, Cannon * cn,
 	}
 
 	/*---SHOTS--*/
-	int i;
-	for (i = 0; i < MAX_SHOTS; ++i)
+	unsigned char i;
+	for (i = MAX_SHOTS; i--;)
 	{
 		if (st[i].x < BORG_WIDTH && st[i].y < BORG_HEIGHT)
 		{

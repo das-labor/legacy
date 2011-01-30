@@ -116,7 +116,7 @@ static void tetris_bastet_predictColHeights(tetris_bastet_variant_t *pBastet,
 	while (pDump != NULL)
 	{
 		uint16_t nColMask = 0x0001 << nStartCol;
-		for (uint8_t x = nStartCol; x <= nStopCol; ++x)
+		for (int8_t x = nStartCol; x <= nStopCol; ++x)
 		{
 			if ((*pDump & nColMask) != 0)
 			{
@@ -131,63 +131,23 @@ static void tetris_bastet_predictColHeights(tetris_bastet_variant_t *pBastet,
 
 
 /**
- * this function is part of the heapsort algorithm for sorting pieces by score
- * @param pBastet the Bastet instance whose evaluated pieces should be sorted
- * @param nRoot start of the sift
- * @param nEnd how far down the heap to sift
- */
-static void tetris_bastet_siftDownPieces(tetris_bastet_variant_t *pBastet,
-                                         int8_t nRoot,
-                                         int8_t nEnd)
-{
-	while ((nRoot * 2 + 1) <= nEnd)
-	{
-		int8_t nChild = nRoot * 2 + 1;
-		int8_t nSwap = nRoot;
-		if (pBastet->nPieceScore[nSwap].nScore <
-				pBastet->nPieceScore[nChild].nScore)
-		{
-			nSwap = nChild;
-		}
-		if ((nChild < nEnd) && (pBastet->nPieceScore[nSwap].nScore <
-				pBastet->nPieceScore[nChild + 1].nScore))
-		{
-			nSwap = nChild + 1;
-		}
-		if (nSwap != nRoot)
-		{
-			tetris_bastet_scorepair_t scTmp = pBastet->nPieceScore[nRoot];
-			pBastet->nPieceScore[nRoot] = pBastet->nPieceScore[nSwap];
-			pBastet->nPieceScore[nSwap] = scTmp;
-			nRoot = nSwap;
-		}
-		else
-		{
-			return;
-		}
-	}
-}
-
-
-/**
- * sorts the evaluated pieces by score in ascending order (via heapsort algo)
+ * sorts the evaluated pieces by score in ascending order (via bubble sort)
  * @param pBastet the Bastet instance whose evaluated pieces should be sorted
  */
 static void tetris_bastet_sortPieces(tetris_bastet_variant_t *pBastet)
 {
-	int8_t const nCount = 7;
-	// heapify
-	for (int8_t nStart = nCount / 2 - 1; nStart >= 0; --nStart)
+	for (uint8_t i = 7; i--;)
 	{
-		tetris_bastet_siftDownPieces(pBastet, nStart, nCount - 1);
-	}
-	// sorting the heap
-	for (int8_t nEnd = nCount - 1; nEnd > 0; --nEnd)
-	{
-		tetris_bastet_scorepair_t scTmp = pBastet->nPieceScore[nEnd];
-		pBastet->nPieceScore[nEnd] = pBastet->nPieceScore[0];
-		pBastet->nPieceScore[0] = scTmp;
-		tetris_bastet_siftDownPieces(pBastet, 0, nEnd - 1);
+		for (uint8_t j = 0; j < i; ++j)
+		{
+			if (pBastet->nPieceScore[j].nScore >
+				pBastet->nPieceScore[j + 1].nScore)
+			{
+				tetris_bastet_scorepair_t tmp = pBastet->nPieceScore[j];
+				pBastet->nPieceScore[j] = pBastet->nPieceScore[j + 1];
+				pBastet->nPieceScore[j + 1] = tmp;
+			}
+		}
 	}
 }
 
@@ -238,11 +198,11 @@ static int16_t tetris_bastet_evaluateMove(tetris_bastet_variant_t *pBastet,
 	}
 
 	// predict column heights of this move
-	tetris_bastet_predictColHeights(pBastet, pPiece, nDeepestRow,	nColumn,
+	tetris_bastet_predictColHeights(pBastet, pPiece, nDeepestRow, nColumn,
 			nStartCol, nStopCol);
 
 	// modify score based on predicted column heights
-	for (uint8_t x = 0; x < nWidth; ++x)
+	for (int8_t x = nWidth; x--;)
 	{
 		if ((x >= nStartCol) && (x <= nStopCol))
 		{

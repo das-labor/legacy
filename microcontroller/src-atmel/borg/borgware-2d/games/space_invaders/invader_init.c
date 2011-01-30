@@ -26,8 +26,8 @@ uint8_t const hans[8][11] PROGMEM =
 
 void initGuards(unsigned char guards[BORG_WIDTH])
 {
-	int x;
-	for (x = 0; x < BORG_WIDTH; ++x)
+	unsigned char x;
+	for (x = BORG_WIDTH; x--;)
 	{
 		guards[x] = 0;
 	}
@@ -44,9 +44,9 @@ void initInvaders(Invaders * iv, unsigned char lv)
 	unsigned char x, y;
 
 	// first zero out map!
-	for (x = 0; x < MAX_INVADER_WIDTH; ++x)
+	for (x = MAX_INVADER_WIDTH; x--;)
 	{
-		for (y = 0; y < MAX_INVADER_HEIGHT; ++y)
+		for (y = MAX_INVADER_HEIGHT; y--;)
 		{
 			iv->map[x][y] = 0;
 		}
@@ -112,9 +112,9 @@ void initInvaders(Invaders * iv, unsigned char lv)
 		break;
 
 	case 3:
-		for (x = 0; x < 11; ++x)
+		for (x = 11; x--;)
 		{
-			for (y = 0; y < 8; ++y)
+			for (y = 8; y--;)
 			{
 				if (pgm_read_byte(&hans[y][x]) != 0)
 				{
@@ -132,9 +132,9 @@ void initInvaders(Invaders * iv, unsigned char lv)
 		break;
 
 	case 4:
-		for (x = 0; x < 11; ++x)
+		for (x = 11; x--;)
 		{
-			for (y = 0; y < 8; ++y)
+			for (y = 8; y--;)
 			{
 				if (pgm_read_byte(&peter[y][x]) != 0)
 				{

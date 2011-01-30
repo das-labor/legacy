@@ -45,7 +45,7 @@ void procCannon(Cannon * cn, uPixel * shot)
 
 unsigned char areAtBorder(Invaders * iv)
 {
-	int y;
+	unsigned char y;
 	for (y = SPACESHIP_LINE + 1; y <= GUARD_LINE; ++y)
 	{
 		if (getInvaderPixel(iv, LEFT_BORDER, y) || getInvaderPixel(iv,
@@ -113,8 +113,7 @@ void procInvaders(Invaders * iv, uPixel st[MAX_SHOTS])
 void procShots(Invaders * iv, Player * pl, Cannon * cn, Spaceship * sc,
 		unsigned char guards[BORG_WIDTH], uPixel st[MAX_SHOTS], uPixel * shot)
 {
-
-	int i;
+	unsigned char i;
 	static unsigned char cmv = 0, imv = 0;
 
 	// shuß mit einen struct mit dem shuß!!
@@ -136,7 +135,7 @@ void procShots(Invaders * iv, Player * pl, Cannon * cn, Spaceship * sc,
 	{
 		imv = 0;
 
-		for (i = 0; i < MAX_SHOTS; ++i)
+		for (i = MAX_SHOTS; i--;)
 		{
 			if ( /*st[i].x < BORG_WIDTH && */st[i].y < BORG_HEIGHT)
 			{
@@ -157,7 +156,7 @@ void procShots(Invaders * iv, Player * pl, Cannon * cn, Spaceship * sc,
 	unsigned char tmp;
 	if (!(cn->ready))
 	{
-		for (i = 0; i < MAX_SHOTS; ++i)
+		for (i = MAX_SHOTS; i--;)
 		{
 			if (shot->x == st[i].x && shot->y == st[i].y)
 			{
@@ -282,9 +281,9 @@ unsigned char getStatus(Invaders * iv)
 
 	//count Invader!
 	unsigned char x, y, inv = 0;
-	for (x = 0; x < MAX_INVADER_WIDTH; ++x)
+	for (x = MAX_INVADER_WIDTH; x--;)
 	{
-		for (y = 0; y < MAX_INVADER_HEIGHT; ++y)
+		for (y = MAX_INVADER_HEIGHT; y--;)
 		{
 			if (iv->map[x][y] != 0)
 				inv++;
@@ -296,7 +295,7 @@ unsigned char getStatus(Invaders * iv)
 		return 1;
 
 	//INVADERS REACHED EARTH
-	for (x = 0; x < BORG_WIDTH; ++x)
+	for (x = BORG_WIDTH; x--;)
 	{
 		if (getInvaderPixel(iv, x, GUARD_LINE + 1))
 			return 2;

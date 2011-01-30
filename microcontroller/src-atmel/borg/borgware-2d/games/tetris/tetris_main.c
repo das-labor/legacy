@@ -55,13 +55,11 @@ void tetris_main(tetris_variant_t const *const pVariantMethods)
 		// the bucket awaits a new piece
 		case TETRIS_BUS_READY:
 			pPiece = pVariantMethods->choosePiece(pVariantData);
-			tetris_piece_t *pOldPiece;
-			tetris_bucket_insertPiece(pBucket, pPiece, &pOldPiece);
 			// destruct old piece (if it exists) since we don't need it anymore
-			if (pOldPiece != NULL)
+			tetris_piece_t *pOld;
+			if ((pOld = tetris_bucket_insertPiece(pBucket, pPiece)) != NULL)
 			{
-				tetris_piece_destruct(pOldPiece);
-				pOldPiece = NULL;
+				tetris_piece_destruct(pOld);
 			}
 			break;
 

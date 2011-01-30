@@ -17,35 +17,21 @@ uint16_t tetris_highscore_name[TETRIS_HISCORE_END] EEMEM;
 uint16_t tetris_highscore_inputName(void)
 {
 #ifdef SCROLLTEXT_SUPPORT
-	char pszNick[4], pszTmp[26];
-	unsigned int nOffset;
-	uint8_t nPos = 0, nBlink = 0, nDone = 0, nHadfire = 0;
+	char pszNick[4] = {'A', 'A', 'A', '\0'};
+	char pszTmp[26];
+	uint8_t nPos = 0, nBlink = 0, nHadfire = 0;
 
-	strncpy(pszNick, "AAA", sizeof(pszNick));
-	while (!nDone)
+	while (1)
 	{
 		// we need our own blink interval
 		nBlink = (nBlink + 1) % 4;
 
-		// determine start position on screen depending on active character
-		switch (nPos)
-		{
-		case 0:
-			nOffset = 15;
-			break;
-		case 1:
-			nOffset = 19;
-			break;
-		default:
-			nOffset = 23;
-			break;
-		}
-
 		// construct command for scrolltext and execute
+		static uint8_t const nOffset[3] = {15, 19, 23};
 		snprintf(pszTmp, sizeof(pszTmp), "x%u+p1#%c#x%u+p1#%c#x%up1#%c",
-				nOffset     , (!nBlink && nPos == 0) ? ' ' : pszNick[0],
-				nOffset -  8, (!nBlink && nPos == 1) ? ' ' : pszNick[1],
-				nOffset - 15, (!nBlink && nPos == 2) ? ' ' : pszNick[2]);
+				nOffset[nPos]     , (!nBlink && nPos == 0) ? ' ' : pszNick[0],
+				nOffset[nPos] -  8, (!nBlink && nPos == 1) ? ' ' : pszNick[1],
+				nOffset[nPos] - 15, (!nBlink && nPos == 2) ? ' ' : pszNick[2]);
 		scrolltext(pszTmp);
 
 		// up and down control current char
@@ -73,8 +59,9 @@ uint16_t tetris_highscore_inputName(void)
 				pszNick[nPos] = 'Z';
 			}
 		}
+
 		// left and right control char selections
-		else if (JOYISLEFT && nPos > 0)
+		if (JOYISLEFT && nPos > 0)
 		{
 			nPos--;
 		}
@@ -87,21 +74,13 @@ uint16_t tetris_highscore_inputName(void)
 		if (JOYISFIRE && !nHadfire)
 		{
 			nHadfire = 1;
-			switch (nPos)
+			if (nPos++ == 2)
 			{
-			case 0:
-				nPos = 1;
-				break;
-			case 1:
-				nPos = 2;
-				break;
-			case 2:
-				nDone = 1;
 				break;
 			}
 		}
 
-		if (nHadfire && !JOYISFIRE)
+		if (!JOYISFIRE)
 		{
 			nHadfire = 0;
 		}
@@ -117,8 +96,8 @@ uint16_t tetris_highscore_inputName(void)
 
 uint16_t tetris_highscore_retrieveHighscore(tetris_highscore_index_t nIndex)
 {
-	uint16_t nHighscore = 0;
-	nHighscore = eeprom_read_word(&tetris_highscore[nIndex]);
+	uint16_t nHighscore =
+			eeprom_read_word(&tetris_highscore[nIndex]);
 
 	// a score of 65535 is most likely caused by uninitialized EEPROM addresses
 	if (nHighscore == 65535)
@@ -142,10 +121,10 @@ void tetris_highscore_saveHighscore(tetris_highscore_index_t nIndex,
 
 uint16_t tetris_highscore_retrieveHighscoreName(tetris_highscore_index_t nIdx)
 {
-	uint16_t nHighscoreName = 0;
-	nHighscoreName = eeprom_read_word(&tetris_highscore_name[nIdx]);
+	uint16_t nHighscoreName =
+			eeprom_read_word(&tetris_highscore_name[nIdx]);
 
-	// a score of 65535 is most likely caused by uninitialized EEPROM addresses
+	// a value of 65535 is most likely caused by uninitialized EEPROM addresses
 	if (nHighscoreName == 65535)
 	{
 		nHighscoreName = 0;

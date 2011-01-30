@@ -13,10 +13,82 @@
  ***************************/
 
 /**
+ * detects if piece collides with s.th. at a given position
+ * @param pBucket bucket to perform action on
+ * @param nColumn column where the piece should be moved
+ * @param nRow row where the piece should be moved
+ * @return 1 for collision, 0 otherwise
+ */
+static uint8_t tetris_bucket_collision(tetris_bucket_t *pBucket,
+                                       int8_t nCol,
+                                       int8_t nRow)
+{
+	// A piece is represented by 16 bits (4 bits per row where the LSB marks the
+	// left most position). The part of the bucket which is covered by the piece
+	// is converted to this format (including the bucket borders) so that a
+	// simple bitwise 'AND' tells us if the piece and the dump overlap.
+
+	// only allow coordinates which are within sane ranges
+	assert(pBucket != NULL);
+	assert((nCol > -4) && (nCol < pBucket->nWidth));
+	assert((nRow > -4) && (nRow < pBucket->nHeight));
+
+	// left and right borders
+	uint16_t const nPieceMap = tetris_piece_getBitmap(pBucket->pPiece);
+	uint16_t nBucketPart = 0;
+	if (nCol < 0)
+	{
+		static uint16_t const nLeftPart[] PROGMEM = {0x7777, 0x3333, 0x1111};
+		nBucketPart = pgm_read_word(&nLeftPart[nCol + 3]);
+	}
+	else if (nCol >= pBucket->nWidth - 3)
+	{
+		static uint16_t const nRightPart[] PROGMEM = {0xEEEE, 0xCCCC, 0x8888};
+		nBucketPart = pgm_read_word(&nRightPart[pBucket->nWidth - nCol - 1]);
+	}
+	// lower border
+	if (nRow > pBucket->nHeight - 4)
+	{
+		nBucketPart |= 0xFFFF << ((pBucket->nHeight - nRow) * 4);
+	}
+
+	// return if the piece already collides with the border
+	if (nPieceMap & nBucketPart)
+	{
+		// collision
+		return 1;
+	}
+
+	// range for inspecting the piece row by row (starting at the bottom)
+	int8_t const nStart = nRow + tetris_piece_getBottomOffset(nPieceMap);
+	int8_t const nStop = nRow >= 0 ? nRow : 0;
+	// mask those blocks which are not covered by the piece
+	uint16_t const nDumpMask = nCol >= 0 ? 0x000F << nCol : 0x000F >> -nCol;
+	// value for shifting blocks to the corresponding part of the piece
+	int8_t nShift = 12 - nCol - 4 * (nRow + 3 - nStart);
+	// compare piece with dump
+	for (int8_t y = nStart; y >= nStop; --y)
+	{
+		uint16_t nTemp = pBucket->dump[y] & nDumpMask;
+		nBucketPart |= nShift >= 0 ? nTemp << nShift : nTemp >> -nShift;
+		if (nPieceMap & nBucketPart)
+		{
+			// collision
+			return 1;
+		}
+		nShift -= 4;
+	}
+
+	// if we reach here, no collision was detected
+	return 0;
+}
+
+
+/**
  * determines if piece is either hovering or gliding and sets the bucket's state
  * @param pBucket the bucket we want information from
  */
-inline static void tetris_bucket_hoverStatus(tetris_bucket_t *pBucket)
+static void tetris_bucket_hoverStatus(tetris_bucket_t *pBucket)
 {
 	assert(pBucket != NULL);
 
@@ -109,11 +181,10 @@ void tetris_bucket_reset(tetris_bucket_t *pBucket)
 }
 
 
-void tetris_bucket_insertPiece(tetris_bucket_t *pBucket,
-                               tetris_piece_t *pPiece,
-                               tetris_piece_t **ppOldPiece)
+tetris_piece_t *tetris_bucket_insertPiece(tetris_bucket_t *pBucket,
+                                          tetris_piece_t *pPiece)
 {
-	assert((pBucket != NULL) && (pPiece != NULL) && (ppOldPiece != NULL));
+	assert((pBucket != NULL) && (pPiece != NULL));
 
 	// a piece can only be inserted in state TETRIS_BUS_READY
 	assert(pBucket->status == TETRIS_BUS_READY);
@@ -121,16 +192,16 @@ void tetris_bucket_insertPiece(tetris_bucket_t *pBucket,
 	// row mask is now meaningless
 	pBucket->nRowMask = 0;
 
-	// replace old piece
-	*ppOldPiece = pBucket->pPiece;
-	pBucket->pPiece = pPiece;
-
 	// set horizontal start position (in the middle of the top line)
 	pBucket->nColumn = (pBucket->nWidth - 2) / 2;
 
 	// set vertical start position (first piece row with matter at pos. 1)
 	pBucket->nRow =
 			1 - tetris_piece_getBottomOffset(tetris_piece_getBitmap(pPiece));
+
+	// replace old piece
+	tetris_piece_t *pOldPiece = pBucket->pPiece;
+	pBucket->pPiece = pPiece;
 
 	// did we already collide with something?
 	if (tetris_bucket_collision(pBucket, pBucket->nColumn, pBucket->nRow) == 1)
@@ -143,71 +214,7 @@ void tetris_bucket_insertPiece(tetris_bucket_t *pBucket,
 		// bring it on!
 		tetris_bucket_hoverStatus(pBucket);
 	}
-}
-
-
-uint8_t tetris_bucket_collision(tetris_bucket_t *pBucket,
-                                int8_t nCol,
-                                int8_t nRow)
-{
-	// A piece is represented by 16 bits (4 bits per row where the LSB marks the
-	// left most position). The part of the bucket which is covered by the piece
-	// is converted to this format (including the bucket borders) so that a
-	// simple bitwise 'AND' tells us if the piece and the dump overlap.
-
-	// only allow coordinates which are within sane ranges
-	assert(pBucket != NULL);
-	assert((nCol > -4) && (nCol < pBucket->nWidth));
-	assert((nRow > -4) && (nRow < pBucket->nHeight));
-
-	// left and right borders
-	uint16_t const nPieceMap = tetris_piece_getBitmap(pBucket->pPiece);
-	uint16_t nBucketPart = 0;
-	if (nCol < 0)
-	{
-		static uint16_t const nLeftPart[] PROGMEM = {0x7777, 0x3333, 0x1111};
-		nBucketPart = pgm_read_word(&nLeftPart[nCol + 3]);
-	}
-	else if (nCol >= pBucket->nWidth - 3)
-	{
-		static uint16_t const nRightPart[] PROGMEM = {0xEEEE, 0xCCCC, 0x8888};
-		nBucketPart = pgm_read_word(&nRightPart[pBucket->nWidth - nCol - 1]);
-	}
-	// lower border
-	if (nRow > pBucket->nHeight - 4)
-	{
-		nBucketPart |= 0xFFFF << ((pBucket->nHeight - nRow) * 4);
-	}
-
-	// return if the piece already collides with the border
-	if (nPieceMap & nBucketPart)
-	{
-		// collision
-		return 1;
-	}
-
-	// range for inspecting the piece row by row (starting at the bottom)
-	int8_t const nStart = nRow + tetris_piece_getBottomOffset(nPieceMap);
-	int8_t const nStop = nRow >= 0 ? nRow : 0;
-	// mask those blocks which are not covered by the piece
-	uint16_t const nDumpMask = nCol >= 0 ? 0x000F << nCol : 0x000F >> -nCol;
-	// value for shifting blocks to the corresponding part of the piece
-	int8_t nShift = 12 - nCol - 4 * (nRow + 3 - nStart);
-	// compare piece with dump
-	for (int8_t y = nStart; y >= nStop; --y)
-	{
-		uint16_t nTemp = pBucket->dump[y] & nDumpMask;
-		nBucketPart |= nShift >= 0 ? nTemp << nShift : nTemp >> -nShift;
-		if (nPieceMap & nBucketPart)
-		{
-			// collision
-			return 1;
-		}
-		nShift -= 4;
-	}
-
-	// if we reach here, no collision was detected
-	return 0;
+	return pOldPiece;
 }
 
 
