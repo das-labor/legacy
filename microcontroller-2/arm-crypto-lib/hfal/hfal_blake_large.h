@@ -30,7 +30,7 @@
 
 #include "hashfunction_descriptor.h"
 
-extern const hfdesc_t blake48_desc;
-extern const hfdesc_t blake64_desc;
+extern const hfdesc_t blake384_desc;
+extern const hfdesc_t blake512_desc;
 
 #endif /* HFAL_BLAKE_LARGE_H_ */

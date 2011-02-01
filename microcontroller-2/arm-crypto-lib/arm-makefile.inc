@@ -1,10 +1,10 @@
-
+TOOLCHAIN      = arm-elf-
 MCU_TARGET     = cortex-m3  
 OPTIMIZE       = -O2
 DEBUG          = -g
 WARNING        = -pedantic -Wall -Wstrict-prototypes
 DEFS           = -D$(call uc, $(subst -,_,$(MCU_TARGET)))
-FLASHCMD       = arm-elf-gdb -x gdb-flash  #
+FLASHCMD       = $(TOOLCHAIN)gdb -x gdb-flash  #
 DEP_DIR        = deps/
 TEST_DIR       = test/
 BIN_DIR        = bin/
@@ -23,7 +23,7 @@ LIST_DIR       = listings/#
 STAT_DIR       = stats/#
 AUTOASM_DIR    = autoasm/#
 AUTOASM_OPT    = -S
-CC	       = arm-elf-gcc
+CC	       = $(TOOLCHAIN)gcc
 CSTD           = gnu99
 
 override CFLAGS_A	= -fomit-frame-pointer  \
@@ -44,9 +44,9 @@ override ASFLAGS	   = -mthumb -mcpu=$(MCU_TARGET) -Wa,--g -Wa,-mthumb
 
 SIZESTAT_FILE = sizestats.txt
 
-OBJCOPY         = arm-elf-objcopy
-OBJDUMP         = arm-elf-objdump
-SIZE            = arm-elf-size
+OBJCOPY         = $(TOOLCHAIN)objcopy
+OBJDUMP         = $(TOOLCHAIN)objdump
+SIZE            = $(TOOLCHAIN)size
 READELF         = readelf
 RUBY            = ruby
 GET_TEST        = host/get_test.rb
