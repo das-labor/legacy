@@ -64,14 +64,43 @@ static const uint8_t matrix[] = {
  2, 3, 4, 5, 3, 5, 7, 2
 };
 
+static
+void shift_columns(uint8_t* a, const uint8_t *shifts){
+	uint8_t tmp[8];
+	uint8_t i,j,s;
+	for(i=0; i<8; ++i){
+		s = *shifts++;
+		if(s==0){
+			continue;
+		}
+		for(j=0;j<8;++j){
+			tmp[j] = a[i+j*8];
+		}
+		for(j=0;j<8;++j){
+			a[i+((j-s+8)%8)*8] = tmp[j];
+		}
+	}
+}
+
+static const uint8_t p_shifts[8] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+static const uint8_t q_shifts[8] = { 1, 3, 5, 7, 0, 2, 4, 6 };
+
+static
 void groestl_small_rounds(uint8_t *m, uint8_t q){
 	uint8_t r,i,j;
 	uint8_t tmp[8];
 	for(r=0; r<ROUNDS; ++r){
 		if(q){
-			m[7] ^= 0xff ^ r;
+			for(i=0; i<64/4; ++i){
+				((uint32_t*)m)[i] ^= 0xffffffff;
+			}
+			for(i=0;i<8; ++i){
+				m[7+i*8] ^= r ^ (i<<4);
+			}
 		}else{
-			m[0] ^= r;
+			for(i=0;i<8; ++i){
+				m[i*8] ^= r ^ (i<<4);
+			}
 		}
 #if DEBUG
 		if(r<2){
@@ -82,12 +111,10 @@ void groestl_small_rounds(uint8_t *m, uint8_t q){
 		for(i=0;i<8*8; ++i){
 			m[i] = aes_sbox[m[i]];
 		}
-		for(i=1; i<8; ++i){
-			for(j=0; j<8; ++j)
-				tmp[j] = m[i+8*j];
-			for(j=0; j<8; ++j){
-				m[i+((j-i+8)%8)*8] = tmp[j];
-			}
+		if(q){
+			shift_columns(m, q_shifts);
+		}else{
+			shift_columns(m, p_shifts);
 		}
 #if DEBUG
 		if(r<2){
