@@ -1,7 +1,7 @@
-/* bcal_tdes.h */
+/* hfal_jh.h */
 /*
     This file is part of the ARM-Crypto-Lib.
-    Copyright (C) 2008  Daniel Otte (daniel.otte@rub.de)
+    Copyright (C) 2010 Daniel Otte (daniel.otte@rub.de)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,18 +16,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-/**
- * \file     bcal_tdes.h
- * \email    daniel.otte@rub.de
- * \author   Daniel Otte 
- * \date     2009-01-09
- * \license  GPLv3 or later
- * 
- */
 
-#include <avr/pgmspace.h>
-#include "blockcipher_descriptor.h"
-#include "des.h"
-#include "keysize_descriptor.h"
+#ifndef HFAL_JH_H_
+#define HFAL_JH_H_
 
-extern const bcdesc_t tdes_desc;
+#include "hashfunction_descriptor.h"
+
+extern const hfdesc_t jh224_desc;
+extern const hfdesc_t jh256_desc;
+extern const hfdesc_t jh384_desc;
+extern const hfdesc_t jh512_desc;
+
+
+#endif /* HFAL_JH_H_ */
