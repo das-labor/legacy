@@ -32,7 +32,7 @@ char uart_getc_nb(char *c);		// non blocking, returns 1 on success
 
 #ifdef UART_HEXDUMP
 	//hexdump utility
-	void uart_hexdump(char *buf, int len);
+	void uart_hexdump(uint8_t *buf, int len);
 #endif
 
 #ifdef UART_GETLINE
