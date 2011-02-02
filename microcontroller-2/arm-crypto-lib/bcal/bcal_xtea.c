@@ -25,16 +25,15 @@
  * 
  */
 
-#include <avr/pgmspace.h>
 #include <stdlib.h>
 #include "blockcipher_descriptor.h"
 #include "xtea.h"
 #include "keysize_descriptor.h"
 
-const char xtea_str[]   PROGMEM = "XTEA";
+const char xtea_str[] = "XTEA";
 
-const uint8_t xtea_keysize_desc[] PROGMEM = { KS_TYPE_LIST, 1, KS_INT(128), 
-                                                KS_TYPE_TERMINATOR    };
+const uint8_t xtea_keysize_desc[] = { KS_TYPE_LIST, 1, KS_INT(128),
+                                      KS_TYPE_TERMINATOR    };
 
 static
 void xtea_dummy_enc(void* block, void* key){
@@ -46,7 +45,7 @@ void xtea_dummy_dec(void* block, void* key){
 	xtea_dec(block, block, key);
 }
 
-const bcdesc_t xtea_desc PROGMEM = {
+const bcdesc_t xtea_desc = {
 	BCDESC_TYPE_BLOCKCIPHER,
 	BC_INIT_TYPE_2,
 	xtea_str,
