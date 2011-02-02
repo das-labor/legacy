@@ -25,7 +25,6 @@
  * 
  */
 
-#include <avr/pgmspace.h>
 #include "blockcipher_descriptor.h"
 #include "cast5.h"
 #include "keysize_descriptor.h"

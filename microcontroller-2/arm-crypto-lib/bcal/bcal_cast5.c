@@ -25,18 +25,17 @@
  * 
  */
 
-#include <avr/pgmspace.h>
 #include <stdlib.h>
 #include "blockcipher_descriptor.h"
 #include "cast5.h"
 #include "keysize_descriptor.h"
 
-const char cast5_str[]   PROGMEM = "CAST5";
+const char cast5_str[] = "CAST5";
 
-const uint8_t cast5_keysize_desc[] PROGMEM = { KS_TYPE_RANGE, KS_INT(0), KS_INT(128), 
-                                                KS_TYPE_TERMINATOR    };
+const uint8_t cast5_keysize_desc[] = { KS_TYPE_RANGE, KS_INT(0), KS_INT(128),
+                                       KS_TYPE_TERMINATOR    };
 
-const bcdesc_t cast5_desc PROGMEM = {
+const bcdesc_t cast5_desc = {
 	BCDESC_TYPE_BLOCKCIPHER,
 	BC_INIT_TYPE_2,
 	cast5_str,

@@ -25,7 +25,6 @@
  * 
  */
 
-#include <avr/pgmspace.h>
 #include <stdlib.h>
 #include "blockcipher_descriptor.h"
 #include "rc5.h"
@@ -33,17 +32,17 @@
 
 #define RC5_ROUNDS 12
 
-const char rc5_str[]   PROGMEM = "RC5";
+const char rc5_str[] = "RC5";
 
-const uint8_t rc5_keysize_desc[] PROGMEM = { KS_TYPE_RANGE, KS_INT(1), KS_INT(2040), 
-                                                KS_TYPE_TERMINATOR    };
+const uint8_t rc5_keysize_desc[] = { KS_TYPE_RANGE, KS_INT(1), KS_INT(2040),
+                                     KS_TYPE_TERMINATOR    };
 
 static
 void rc5_dummy_init(void* key, uint16_t keysize_b, void* ctx){
 	rc5_init(key, keysize_b, RC5_ROUNDS, ctx);
 }
 
-const bcdesc_t rc5_desc PROGMEM = {
+const bcdesc_t rc5_desc = {
 	BCDESC_TYPE_BLOCKCIPHER,
 	BC_INIT_TYPE_2,
 	rc5_str,
