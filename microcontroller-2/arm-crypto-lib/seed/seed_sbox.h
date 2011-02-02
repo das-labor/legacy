@@ -1,7 +1,7 @@
-/* bcal_seed.c */
+/* seed_sbox.h */
 /*
     This file is part of the ARM-Crypto-Lib.
-    Copyright (C) 2006-2010  Daniel Otte (daniel.otte@rub.de)
+    Copyright (C) 2008  Daniel Otte (daniel.otte@rub.de)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,35 +17,23 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
- * \file     bcal_seed.c
- * \email    daniel.otte@rub.de
- * \author   Daniel Otte 
- * \date     2009-01-09
- * \license  GPLv3 or later
+ * \file	seed_sbox.h
+ * \author	Daniel Otte 
+ * \date	2007-06-1
+ * \brief 	sboxes and constants for seed
+ * \par License	
+ * GPL
  * 
  */
+ 
+#ifndef SEED_SBOX_H_
+#define SEED_SBOX_H_
 
-#include <stdlib.h>
-#include "blockcipher_descriptor.h"
-#include "seed.h"
-#include "keysize_descriptor.h"
+#include <stdint.h>
 
-const char seed_str[] = "SEED";
+extern const uint8_t seed_sbox1[256];
+extern const uint8_t seed_sbox2[256];
+/* key constants */
+extern const uint32_t seed_kc[16];
 
-const uint8_t seed_keysize_desc[] = { KS_TYPE_LIST, 1, KS_INT(128),
-                                      KS_TYPE_TERMINATOR    };
-
-const bcdesc_t seed_desc = {
-	BCDESC_TYPE_BLOCKCIPHER,
-	BC_INIT_TYPE_1,
-	seed_str,
-	sizeof(seed_ctx_t),
-	128,
-	{(void_fpt)seed_init},
-	{(void_fpt)seed_enc},
-	{(void_fpt)seed_dec},
-	(bc_free_fpt)NULL,
-	seed_keysize_desc
-};
-
-
+#endif /*SEED_SBOX_H_*/
