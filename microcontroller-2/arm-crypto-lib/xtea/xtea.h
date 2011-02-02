@@ -1,4 +1,4 @@
-/* bcal_xtea.h */
+/* xtea.h */
 /*
     This file is part of the ARM-Crypto-Lib.
     Copyright (C) 2008  Daniel Otte (daniel.otte@rub.de)
@@ -16,17 +16,34 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-/**
- * \file     bcal_xtea.h
- * \email    daniel.otte@rub.de
- * \author   Daniel Otte 
- * \date     2009-01-09
- * \license  GPLv3 or later
- * 
+/*
+ * Author:	Daniel Otte
+ * Date:		06.06.2006
+ * License:	GPL
  */
 
-#include "blockcipher_descriptor.h"
-#include "xtea.h"
-#include "keysize_descriptor.h"
+#ifndef XTEA_H_
+#define XTEA_H_
 
-extern const bcdesc_t xtea_desc;
+#include <stdint.h> 
+ 
+/*
+ * this fits for xtea.c and xtea-asm.S
+ * 
+ */
+#define XTEA_BLOCKSIZE 64
+#define XTEA_BLOCKSIZEB ((XTEA_BLOCKSIZE+7)/8)
+#define XTEA_KEYSIZE 128
+#define XTEA_KEYSIZEB ((XTEA_KEYSIZE+7)/8)
+
+
+/*
+ * dest: the destination where result of operation will be placed (64 bit)
+ * v:	 the block to operate on (64 bit)
+ * k:	 the key for en/decryption (128 bit)
+ */
+void xtea_enc(void* dest, const void* v, const void* k);
+void xtea_dec(void* dest, const void* v, const void* k);
+
+
+#endif /*XTEA_H_*/
