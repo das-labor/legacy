@@ -27,7 +27,7 @@ def read_line(error_msg=true)
     puts("ERROR: read timeout!\n") if error_msg
 	return nil
   end	
-  s.gsub(/\006/, '');	
+  return s.delete("\006");	
 end
 
 def readTestVector(param)
@@ -77,7 +77,7 @@ def readTestVector(param)
 	set=m[1].to_i;
 	print("\nSet "+m[1]+":");
       end
-      if (m=/Set [0-9]*, vector#[\s]*([0-9]+):/.match(lb))
+      if (m=/Set [0-9], vector#[\s]*([0-9]+):/.match(lb))
         vector=m[1].to_i;
 	#print(" "+m[1]);
 	if(vector!=0 && vector % $linewidth==0)
