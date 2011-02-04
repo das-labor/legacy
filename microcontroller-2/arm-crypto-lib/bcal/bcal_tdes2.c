@@ -25,28 +25,26 @@
  * 
  */
 
-#include <avr/pgmspace.h>
 #include <stdlib.h>
 #include "blockcipher_descriptor.h"
 #include "des.h"
 #include "keysize_descriptor.h"
 
-const char tdes2_str[]   PROGMEM = "TDES-2";
+#include <string.h>
 
-const uint8_t tdes2_keysize_desc[] PROGMEM = { KS_TYPE_LIST, 1, KS_INT(128),
-                                                KS_TYPE_TERMINATOR    };
+const char tdes2_str[]   = "TDES-2";
 
-static
-void tdes_dummy_enc(void* block, void* key){
+const uint8_t tdes2_keysize_desc[] = { KS_TYPE_LIST, 1, KS_INT(128),
+                                       KS_TYPE_TERMINATOR    };
+
+void tdes2_dummy_enc(void* block, const void* key){
 	tdes_enc(block, block, key);
 }
 
-static
-void tdes_dummy_dec(void* block, void* key){
+void tdes2_dummy_dec(void* block, const void* key){
 	tdes_dec(block, block, key);
 }
 
-static
 void tdes2_init(void* key, void* ctx){
 	memcpy(ctx, key, 16);
 	memcpy((uint8_t*)ctx+16, key, 8);
@@ -54,15 +52,15 @@ void tdes2_init(void* key, void* ctx){
 
 
 
-const bcdesc_t tdes2_desc PROGMEM = {
+const bcdesc_t tdes2_desc = {
 	BCDESC_TYPE_BLOCKCIPHER,
 	BC_INIT_TYPE_1,
 	tdes2_str,
 	24,
 	64,
 	{(void_fpt)tdes2_init},
-	{(void_fpt)tdes_dummy_enc},
-	{(void_fpt)tdes_dummy_dec},
+	{(void_fpt)tdes2_dummy_enc},
+	{(void_fpt)tdes2_dummy_dec},
 	(bc_free_fpt)NULL,
 	tdes2_keysize_desc
 };
