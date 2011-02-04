@@ -28,7 +28,6 @@
 #ifndef BCAL_TDES2_H_
 #define BCAL_TDES2_H_
 
-#include <avr/pgmspace.h>
 #include "blockcipher_descriptor.h"
 #include "des.h"
 #include "keysize_descriptor.h"

@@ -25,18 +25,17 @@
  * 
  */
 
-#include <avr/pgmspace.h>
 #include <stdlib.h>
 #include "blockcipher_descriptor.h"
 #include "serpent.h"
 #include "keysize_descriptor.h"
 
-const char serpent_str[]   PROGMEM = "serpent";
+const char serpent_str[]  = "serpent";
 
-const uint8_t serpent_keysize_desc[] PROGMEM = { KS_TYPE_RANGE, KS_INT(1), KS_INT(256), 
-                                                 KS_TYPE_TERMINATOR    };
+const uint8_t serpent_keysize_desc[] = { KS_TYPE_RANGE, KS_INT(1), KS_INT(256),
+                                         KS_TYPE_TERMINATOR    };
 
-const bcdesc_t serpent_desc PROGMEM = {
+const bcdesc_t serpent_desc = {
 	BCDESC_TYPE_BLOCKCIPHER,
 	BC_INIT_TYPE_2,
 	serpent_str,

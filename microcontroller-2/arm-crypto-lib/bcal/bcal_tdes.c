@@ -25,28 +25,26 @@
  * 
  */
 
-#include <avr/pgmspace.h>
 #include <stdlib.h>
 #include "blockcipher_descriptor.h"
 #include "des.h"
 #include "keysize_descriptor.h"
 
-const char tdes_str[]   PROGMEM = "TDES";
+const char tdes_str[]  = "TDES";
 
-const uint8_t tdes_keysize_desc[] PROGMEM = { KS_TYPE_LIST, 1, KS_INT(192), 
-                                                KS_TYPE_TERMINATOR    };
+const uint8_t tdes_keysize_desc[] = { KS_TYPE_LIST, 1, KS_INT(192),
+                                      KS_TYPE_TERMINATOR    };
 
-static
-void tdes_dummy_enc(void* block, void* key){
+
+void tdes_dummy_enc(void* block, const void* key){
 	tdes_enc(block, block, key);
 }
 
-static
-void tdes_dummy_dec(void* block, void* key){
+void tdes_dummy_dec(void* block, const void* key){
 	tdes_dec(block, block, key);
 }
 
-const bcdesc_t tdes_desc PROGMEM = {
+const bcdesc_t tdes_desc = {
 	BCDESC_TYPE_BLOCKCIPHER,
 	BC_INIT_TYPE_1,
 	tdes_str,
