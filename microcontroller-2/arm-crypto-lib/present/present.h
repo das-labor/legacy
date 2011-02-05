@@ -1,4 +1,4 @@
-/* bcal_present.h */
+/* present.h */
 /*
     This file is part of the ARM-Crypto-Lib.
     Copyright (C) 2008  Daniel Otte (daniel.otte@rub.de)
@@ -16,17 +16,19 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-/**
- * \file     bcal_present.h
- * \email    daniel.otte@rub.de
- * \author   Daniel Otte 
- * \date     2009-01-09
- * \license  GPLv3 or later
- * 
- */
+#ifndef PRESENT_H_
+#define PRESENT_H_
 
-#include "blockcipher_descriptor.h"
-#include "present.h"
-#include "keysize_descriptor.h"
+#include <stdint.h>
 
-extern const bcdesc_t present_desc;
+typedef struct present_ctx_st{
+	uint64_t k[32];
+} present_ctx_t;
+
+
+void present_init(const uint8_t* key, uint8_t keysize_b, present_ctx_t* ctx);
+void present_enc(void* buffer, present_ctx_t* ctx);
+void present_dec(void* buffer, present_ctx_t* ctx);
+
+
+#endif /*PRESENT_H_*/

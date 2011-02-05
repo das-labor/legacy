@@ -20,7 +20,7 @@
  * \file	seed_c.c
  * \author	Daniel Otte 
  * \date	2007-06-1
- * \brief	SEED parts in C for AVR
+ * \brief	SEED parts in C for ARM
  * \par License	
  * GPL
  * 
