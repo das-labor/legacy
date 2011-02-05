@@ -25,18 +25,17 @@
  * 
  */
 
-#include <avr/pgmspace.h>
 #include <stdlib.h>
 #include "blockcipher_descriptor.h"
 #include "present.h"
 #include "keysize_descriptor.h"
 
-const char present_str[]   PROGMEM = "Present";
+const char present_str[] = "Present";
 
-const uint8_t present_keysize_desc[] PROGMEM = { KS_TYPE_LIST, 1, KS_INT(80), 
-                                                KS_TYPE_TERMINATOR    };
+const uint8_t present_keysize_desc[] = { KS_TYPE_LIST, 1, KS_INT(80),
+                                         KS_TYPE_TERMINATOR    };
 
-const bcdesc_t present_desc PROGMEM = {
+const bcdesc_t present_desc = {
 	BCDESC_TYPE_BLOCKCIPHER,
 	BC_INIT_TYPE_1,
 	present_str,
