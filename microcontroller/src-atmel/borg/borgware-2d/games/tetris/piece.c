@@ -22,13 +22,6 @@ tetris_piece_t *tetris_piece_construct(tetris_piece_shape_t s,
 }
 
 
-void tetris_piece_destruct(tetris_piece_t *pPc)
-{
-	assert(pPc != NULL);
-	free(pPc);
-}
-
-
 /****************************
  *  piece related functions *
  ****************************/

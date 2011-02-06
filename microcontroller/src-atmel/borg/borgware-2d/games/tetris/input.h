@@ -152,7 +152,11 @@ tetris_input_t *tetris_input_construct(void);
  * destructs an input object
  * @param pIn pointer to the input object which should be destructed
  */
-void tetris_input_destruct(tetris_input_t *pIn);
+inline static void tetris_input_destruct(tetris_input_t *pIn)
+{
+	assert(pIn != NULL);
+	free(pIn);
+}
 
 
 /***************************

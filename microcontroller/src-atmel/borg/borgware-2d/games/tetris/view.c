@@ -600,13 +600,6 @@ tetris_view_t *tetris_view_construct(tetris_variant_t const *const pVarMethods,
 }
 
 
-void tetris_view_destruct(tetris_view_t *pView)
-{
-	assert(pView != NULL);
-	free(pView);
-}
-
-
 /***************************
  *  view related functions *
  ***************************/

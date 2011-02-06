@@ -92,10 +92,8 @@ tetris_piece_t* tetris_bastet_choosePreviewPiece(void *pBastet);
 /**
  * add points which result from single step dropping
  * @param pVariantData the variant data object we want to modify
- * @param nLines the number of rows involved
  */
-void tetris_bastet_singleDrop(void *pVariantData,
-                              uint8_t nLines);
+void tetris_bastet_singleDrop(void *pVariantData);
 
 
 /**

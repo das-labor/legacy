@@ -14,8 +14,7 @@
 void tetris_main(tetris_variant_t const *const pVariantMethods)
 {
 	// get view dependent dimensions of the bucket
-	int8_t nWidth;
-	int8_t nHeight;
+	int8_t nWidth, nHeight;
 	tetris_view_getDimensions(&nWidth, &nHeight);
 
 	// holds the current user command which should be processed
@@ -104,7 +103,7 @@ void tetris_main(tetris_variant_t const *const pVariantMethods)
 				// if the game still runs, reward the player with extra points
 				if (tetris_bucket_getStatus(pBucket) != TETRIS_BUS_GAMEOVER)
 				{
-					pVariantMethods->singleDrop(pVariantData, 1);
+					pVariantMethods->singleDrop(pVariantData);
 				}
 				break;
 

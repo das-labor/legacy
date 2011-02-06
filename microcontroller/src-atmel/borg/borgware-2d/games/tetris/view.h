@@ -67,7 +67,11 @@ tetris_view_t *tetris_view_construct(tetris_variant_t const *const pVarMethods,
  * destructs a view
  * @param pView: pointer to the view to be destructed
  */
-void tetris_view_destruct(tetris_view_t *pView);
+inline static void tetris_view_destruct(tetris_view_t *pView)
+{
+	assert(pView != NULL);
+	free(pView);
+}
 
 
 /***************************

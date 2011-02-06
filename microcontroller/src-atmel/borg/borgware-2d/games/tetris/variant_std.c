@@ -118,13 +118,12 @@ tetris_piece_t* tetris_std_choosePiece(void *pVariantData)
 }
 
 
-void tetris_std_singleDrop(void *pVariantData,
-                           uint8_t nLines)
+void tetris_std_singleDrop(void *pVariantData)
 {
 	assert(pVariantData != 0);
 	tetris_standard_variant_t *pStdVariant =
 			(tetris_standard_variant_t *)pVariantData;
-	pStdVariant->nScore += nLines;
+	++pStdVariant->nScore;
 }
 
 
