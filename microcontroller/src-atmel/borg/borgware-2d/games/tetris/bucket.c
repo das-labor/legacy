@@ -114,47 +114,23 @@ tetris_bucket_t *tetris_bucket_construct(int8_t nWidth,
 	assert((nWidth >= 4) && (nWidth <= 16));
 	assert((nHeight >= 4) && (nHeight <= 124));
 
+	// allocating memory
 	tetris_bucket_t *pBucket =
 			(tetris_bucket_t *)malloc(sizeof(tetris_bucket_t));
-
-	if (pBucket != NULL)
-	{
-		// allocating memory for dump array
-		pBucket->dump = (uint16_t*) calloc(nHeight, sizeof(uint16_t));
-
-		if (pBucket->dump != NULL)
-		{
-			// setting requested attributes
-			pBucket->nFirstTaintedRow = nHeight;
-			pBucket->nWidth = nWidth;
-			pBucket->nHeight = nHeight;
-			// bit mask of a full row
-			pBucket->nFullRow = 0xFFFF >> (16 - pBucket->nWidth);
-
-			tetris_bucket_reset(pBucket);
-
-			return pBucket;
-		}
-		else
-		{
-			free(pBucket);
-			pBucket = NULL;
-		}
-	}
-	return NULL;
-}
-
-
-void tetris_bucket_destruct(tetris_bucket_t *pBucket)
-{
 	assert(pBucket != NULL);
+	pBucket->dump = (uint16_t*) calloc(nHeight, sizeof(uint16_t));
+	assert(pBucket->dump != NULL);
 
-	// if memory for the dump array has been allocated, free it
-	if (pBucket->dump != NULL)
-	{
-		free(pBucket->dump);
-	}
-	free(pBucket);
+	// setting requested attributes
+	pBucket->nHeight = pBucket->nFirstTaintedRow = nHeight;
+	pBucket->nWidth = nWidth;
+
+	// bit mask of a full row
+	pBucket->nFullRow = 0xFFFF >> (16 - pBucket->nWidth);
+
+	tetris_bucket_reset(pBucket);
+
+	return pBucket;
 }
 
 
@@ -165,19 +141,16 @@ void tetris_bucket_destruct(tetris_bucket_t *pBucket)
 void tetris_bucket_reset(tetris_bucket_t *pBucket)
 {
 	assert(pBucket != NULL);
+	assert(pBucket->dump != NULL);
 
 	pBucket->pPiece = NULL;
 	pBucket->nColumn = 0;
 	pBucket->nRow = 0;
 	pBucket->nRowMask = 0;
-
-	// clear dump if it has been allocated in memory
-	if (pBucket->dump != NULL)
-	{
-		memset(pBucket->dump, 0, pBucket->nHeight * sizeof(uint16_t));
-	}
-
 	pBucket->status = TETRIS_BUS_READY;
+
+	// clear dump
+	memset(pBucket->dump, 0, pBucket->nHeight * sizeof(uint16_t));
 }
 
 

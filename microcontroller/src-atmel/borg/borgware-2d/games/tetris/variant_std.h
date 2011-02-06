@@ -76,10 +76,8 @@ tetris_piece_t* tetris_std_choosePiece(void *pVariantData);
 /**
  * add points which result from single step dropping
  * @param pVariantData the variant data object we want to modify
- * @param nLines the number of rows involved
  */
-void tetris_std_singleDrop(void *pVariantData,
-                           uint8_t nLines);
+void tetris_std_singleDrop(void *pVariantData);
 
 
 /**

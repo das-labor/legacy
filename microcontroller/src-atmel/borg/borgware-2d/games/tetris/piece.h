@@ -84,7 +84,11 @@ tetris_piece_t *tetris_piece_construct(tetris_piece_shape_t s,
  * destructs a piece
  * @param pPc pointer to the piece to be destructed
  */
- void tetris_piece_destruct(tetris_piece_t *pPc);
+inline static void tetris_piece_destruct(tetris_piece_t *pPc)
+{
+	assert(pPc != NULL);
+	free(pPc);
+}
 
 
 /***************************

@@ -36,11 +36,8 @@ typedef struct tetris_variant_t
 	/**
 	 * add points which result from single step dropping
 	 * @param pVariantData the variant data object we want to modify
-	 * @param nLines the number of rows involved
 	 */
-	void (*singleDrop)(void *pVariantData,
-	                   uint8_t nLines);
-
+	void (*singleDrop)(void *pVariantData);
 
 	/**
 	 * add points which result from a complete drop

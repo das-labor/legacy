@@ -88,7 +88,13 @@ tetris_bucket_t *tetris_bucket_construct(int8_t nWidth,
  * destructs a bucket
  * @param pBucket pointer to the bucket to be destructed
  */
-void tetris_bucket_destruct(tetris_bucket_t *pBucket);
+inline static void tetris_bucket_destruct(tetris_bucket_t *pBucket)
+{
+	assert(pBucket != NULL);
+	assert(pBucket->dump != NULL);
+	free(pBucket->dump);
+	free(pBucket);
+}
 
 
 /*******************************

@@ -256,13 +256,6 @@ tetris_input_t *tetris_input_construct(void)
 }
 
 
-void tetris_input_destruct(tetris_input_t *pIn)
-{
-	assert(pIn != NULL);
-	free(pIn);
-}
-
-
 /***************************
  * input related functions *
  ***************************/

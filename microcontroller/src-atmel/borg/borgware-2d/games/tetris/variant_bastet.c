@@ -322,14 +322,8 @@ void tetris_bastet_destruct(void *pVariantData)
 	assert(pVariantData != 0);
 	tetris_bastet_variant_t *pBastetVariant =
 			(tetris_bastet_variant_t *)pVariantData;
-	if (pBastetVariant->pColScore != NULL)
-	{
-		free(pBastetVariant->pColScore);
-	}
-	if (pBastetVariant->pColHeights != NULL)
-	{
-		free(pBastetVariant->pColHeights);
-	}
+	free(pBastetVariant->pColScore);
+	free(pBastetVariant->pColHeights);
 	if (pBastetVariant->pPreviewPiece != NULL)
 	{
 		tetris_piece_destruct(pBastetVariant->pPreviewPiece);
@@ -394,8 +388,7 @@ tetris_piece_t* tetris_bastet_choosePiece(void *pVariantData)
 }
 
 
-void tetris_bastet_singleDrop(void *pVariantData,
-                              uint8_t nLines)
+void tetris_bastet_singleDrop(void *pVariantData)
 {
 	return;
 }
