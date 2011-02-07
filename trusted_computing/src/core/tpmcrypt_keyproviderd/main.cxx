@@ -46,7 +46,6 @@ enum ReturnValues
 
 ////////////////////////////////
 // EXTERN DECLARED VARIABLES!
-string myKeyDirectory;
 string myScriptDirectory;
 string myServerSocket;
 string myClientSocket;
@@ -115,8 +114,6 @@ int main(int argc, const char *argv[])
 		}
 #endif
                 // get my directories
-                myKeyDirectory = removeDelimiter(myTpmCryptConfig.getConfigfileEntry(TpmCryptConfigfile_KeyPathIdentifier));
-                debug << "Key Directory: " << myKeyDirectory << endl;
                 myScriptDirectory = removeDelimiter(myTpmCryptConfig.getConfigfileEntry(TpmCryptConfigfile_TpmCryptScriptPathIdentifier));
                 debug << "Script Directory: " << myScriptDirectory << endl;
                 myServerSocket = removeDelimiter(myTpmCryptConfig.getConfigfileEntry(TpmCryptConfigfile_TpmCryptServerSocketIdentifier));
@@ -147,7 +144,7 @@ int main(int argc, const char *argv[])
                 if (pruneOption.getValue())
                 {
 			debug << "Prune option was specified, clearing database..." << endl;
-			TpmCryptStorage myDB( TpmCryptKeyproviderDB_Identifier, myTpmCryptConfig.getConfigfileEntry(TpmCryptConfigfile_KeyproviderDBIdentifier), true);
+			TpmCryptStorage myDB();
                 }
 
                 // if debug-option is set, start the daemon in foreground-mode

@@ -21,10 +21,8 @@
 
 using namespace tpmcrypt;
 
-TpmCryptKeyproviderMount::TpmCryptKeyproviderMount(UInt8 cryptoSystem, string device, string destination, string key, TpmCryptConfigfile &aTpmCryptConfig, string user, string uuid )
+TpmCryptKeyproviderMount::TpmCryptKeyproviderMount(TpmCryptStorage &myKeyproviderStorage, UInt8 cryptoSystem, string device, string destination, string key, TpmCryptConfigfile &aTpmCryptConfig, string user, string uuid )
 {
-    TpmCryptStorage myKeyproviderStorage( TpmCryptKeyproviderDB_Identifier, aTpmCryptConfig.getConfigfileEntry(TpmCryptConfigfile_KeyproviderDBIdentifier) );
-
     debug << "Converting probably invalid UUID: " << uuid << endl;
     replaceCharInString(&uuid, TpmCryptPathSeparatorChar, TpmCryptFileSeparatorChar);
     debug << "UUID after conversion: " << uuid << endl;
@@ -51,68 +49,55 @@ TpmCryptKeyproviderMount::TpmCryptKeyproviderMount(UInt8 cryptoSystem, string de
     }
 };
 
-TpmCryptKeyproviderMount::TpmCryptKeyproviderMount(string destination, TpmCryptConfigfile &aTpmCryptConfig, string user )
+TpmCryptKeyproviderMount::TpmCryptKeyproviderMount(TpmCryptStorage &myKeyproviderStorage, UInt8 cryptoSystem, string device, string destination, string key, TpmCryptConfigfile &aTpmCryptConfig, string user, string uuid )
 {
-    TpmCryptStorage myKeyproviderStorage( TpmCryptKeyproviderDB_Identifier, aTpmCryptConfig.getConfigfileEntry(TpmCryptConfigfile_KeyproviderDBIdentifier) );
-    myKeyproviderStorage.selectSection(user);
-    if ( myKeyproviderStorage.findSubSection(destination)){// there is a device mounted under destination
-        myKeyproviderStorage.selectSubSection(destination);
-        UInt8 cryptoSystem = convertStringtoUInt32(myKeyproviderStorage.getEntry(TpmCryptKeyproviderCrypt_Entry));
-        switch(cryptoSystem)
-        {
-            case VOLUMETYPE_LUKS:
-                unmountLUKS(destination, myKeyproviderStorage, user);
-                break;
-            case VOLUMETYPE_TRUECRYPT:
-                unmountTRUECRYPT(destination, myKeyproviderStorage, user);
-                break;
-            case VOLUMETYPE_DMCRYPT:
-                unmountDMCRYPT(destination, myKeyproviderStorage, user);
-                break;
-            case VOLUMETYPE_ECRYPTFS:
-                unmountECRYPTFS(destination, myKeyproviderStorage, user);
-                break;
-            case VOLUMETYPE_ENCFS:
-                unmountENCFS(destination, myKeyproviderStorage, user);
-                break;
-            default:
-            cout << "The desired cryptosystem has not been implemented!" << endl;
-        }
-    }
-    else
+    debug << "Converting probably invalid UUID: " << uuid << endl;
+    replaceCharInString(&uuid, TpmCryptPathSeparatorChar, TpmCryptFileSeparatorChar);
+    debug << "UUID after conversion: " << uuid << endl;
+
+    switch(cryptoSystem)
     {
-        throw NotMounted("According to database, user has not mounted '" + destination + "'");
+        case VOLUMETYPE_LUKS:
+            umountLUKS(device, destination, key, myKeyproviderStorage, user, uuid);
+            break;
+        case VOLUMETYPE_TRUECRYPT:
+            umountTRUECRYPT(device, destination, key, myKeyproviderStorage, user, uuid);
+            break;
+        case VOLUMETYPE_DMCRYPT:
+            umountDMCRYPT(device, destination, key, myKeyproviderStorage, user, uuid);
+            break;
+        case VOLUMETYPE_ECRYPTFS:
+            umountECRYPTFS(device, destination, key, myKeyproviderStorage, user, uuid);
+            break;
+        case VOLUMETYPE_ENCFS:
+            umountENCFS(device, destination, key, myKeyproviderStorage, user, uuid);
+            break;
+        default:
+            cout << "The desired cryptosystem has not been implemented!" << endl;
     }
 };
 
-void TpmCryptKeyproviderMount::mountLUKS(string device, string destination, string key, TpmCryptStorage &myKeyproviderStorage, string user, string uuid)
+void TpmCryptKeyproviderMount::mounted(string destination)
 {
-    
-    myKeyproviderStorage.selectSection(user);
-    if ( !myKeyproviderStorage.findSubSection(destination))
-    {// there is no other device mounted under destination
-        debug << "device: " << device << "\t destination: " << destination << endl;
-        string myCommand = (myScriptDirectory + TpmCryptPathSeparator + "mount_cryptsetup_luks.sh " + device + " \"tpmcrypt-" + uuid + "\"" + " " + key + " " + destination + " " + logfile);
-        cout << myCommand << endl;
-        int ret = system(myCommand.c_str());
-        if (ret)
-            throw MountError("An error occured while trying to mount device '" + device + "'. Please look into TpmCrypt's logfile: '" + logfile + "'");
-
-        myKeyproviderStorage.selectSubSection(destination);
-        myKeyproviderStorage.setEntry(TpmCryptKeyproviderDevice,uuid);
-        myKeyproviderStorage.setEntry(TpmCryptKeyproviderCrypt_Entry,convertUInt32toString(VOLUMETYPE_LUKS));
-    }
-    else
-    {
-        string myMessage = "Device '" + device + "' already mounted on destination '" + destination + "'";
-        debug << myMessage << endl;
-        throw AlreadyMounted(myMessage);
-    }
+	FILE *command;
+	
+	command = popen("mountpoint " + destination ,"r");
+	
+	if(!command)
+		throw InvalidMountPoint("TpmCryptKeyproviderMount: Path already mounted by another device!");
 }
 
-void TpmCryptKeyproviderMount::unmountLUKS(string destination, TpmCryptStorage &myKeyproviderStorage, string user)
+void TpmCryptKeyproviderMount::mountLUKS(string device, string destination, string key, TpmCryptStorage &myKeyproviderStorage, string user, string uuid)
 {
-    string uuid = myKeyproviderStorage.getEntry(TpmCryptKeyproviderDevice);
+	mounted(destination);
+    string myCommand = (myScriptDirectory + TpmCryptPathSeparator + "mount_cryptsetup_luks.sh " + device + " \"tpmcrypt-" + uuid + "\"" + " " + key + " " + destination + " " + logfile);
+    int ret = system(myCommand.c_str());
+    if (ret)
+		throw MountError("An error occured while trying to mount device '" + device + "'. Please look into TpmCrypt's logfile: '" + logfile + "'");
+}
+
+void TpmCryptKeyproviderMount::unmountLUKS(string destination, TpmCryptStorage &myKeyproviderStorage, string user, string uuid)
+{
     string myCommand = (myScriptDirectory + TpmCryptPathSeparator + "unmount_cryptsetup_luks.sh " + destination + " \"tpmcrypt-" + uuid + "\"" + " " + logfile);
     int ret = system(myCommand.c_str());
     if (ret)
@@ -122,7 +107,7 @@ void TpmCryptKeyproviderMount::unmountLUKS(string destination, TpmCryptStorage &
 
 void TpmCryptKeyproviderMount::mountDMCRYPT(string device, string destination, string key, TpmCryptStorage &myKeyproviderStorage, string user, string uuid)
 {
-    
+    mounted(destination);
     myKeyproviderStorage.selectSection(user);
     if ( !myKeyproviderStorage.findSubSection(destination))
     {// there is no other device mounted under destination
@@ -156,6 +141,7 @@ void TpmCryptKeyproviderMount::unmountDMCRYPT(string destination, TpmCryptStorag
 
 void TpmCryptKeyproviderMount::mountTRUECRYPT(string device, string destination, string key, TpmCryptStorage &myKeyproviderStorage, string user, string uuid)
 {
+	mounted(destination);
     
     myKeyproviderStorage.selectSection(user);
     if ( !myKeyproviderStorage.findSubSection(destination))
@@ -190,7 +176,7 @@ void TpmCryptKeyproviderMount::unmountTRUECRYPT(string destination, TpmCryptStor
 
 void TpmCryptKeyproviderMount::mountECRYPTFS(string device, string destination, string key, TpmCryptStorage &myKeyproviderStorage, string user, string uuid)
 {
-    
+	mounted(destination);
     myKeyproviderStorage.selectSection(user);
     if ( !myKeyproviderStorage.findSubSection(destination))
     {// there is no other device mounted under destination
@@ -224,6 +210,7 @@ void TpmCryptKeyproviderMount::unmountECRYPTFS(string destination, TpmCryptStora
 
 void TpmCryptKeyproviderMount::mountENCFS(string device, string destination, string key, TpmCryptStorage &myKeyproviderStorage, string user, string uuid)
 {
+	mounted(destination);
     myKeyproviderStorage.selectSection(user);
     if ( !myKeyproviderStorage.findSubSection(destination))
     {// there is no other device mounted under destination

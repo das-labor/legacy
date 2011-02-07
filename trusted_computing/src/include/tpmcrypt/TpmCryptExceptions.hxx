@@ -133,6 +133,33 @@ namespace tpmcrypt
       InvalidGroup( const std::string &what ) :
 		std::runtime_error( what ) {};
     };
+    
+    /**
+     * @brief Exception that is thrown when invalid username supplied
+     */
+    class InvalidData : public std::runtime_error {
+    public:
+      InvalidData( const std::string &what ) :
+		std::runtime_error( what ) {};
+    };
+
+    /**
+     * @brief Exception that is thrown when invalid username supplied
+     */
+    class InvalidDB : public std::runtime_error {
+    public:
+      InvalidDB( const std::string &what ) :
+		std::runtime_error( what ) {};
+    };
+    
+   /**
+     * @brief Exception that is thrown when invalid username supplied
+     */
+    class InvalidMountPoint : public std::runtime_error {
+    public:
+      InvalidMountPoint( const std::string &what ) :
+		std::runtime_error( what ) {};
+    };
 
     /**
      * @brief Exception that is thrown when invalid username supplied

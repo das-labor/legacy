@@ -30,13 +30,6 @@
 
 // Configfile entries
 static const std::string TpmCryptConfigfile_CommentaryChar               = "#";
-static const std::string TpmCryptConfigfile_VolumeDBIdentifier           = "VOLUME_DB";
-static const std::string TpmCryptConfigfile_SubjectDBIdentifier          = "SUBJECT_DB";
-static const std::string TpmCryptConfigfile_GroupDBIdentifier            = "GROUP_DB";
-static const std::string TpmCryptConfigfile_SSSDBIdentifier              = "SSS_DB";
-static const std::string TpmCryptConfigfile_ESDDBIdentifier              = "ESD_DB";
-static const std::string TpmCryptConfigfile_KeyproviderDBIdentifier      = "KEYPROVIDER_DB";
-static const std::string TpmCryptConfigfile_KeyPathIdentifier            = "TPMCRYPT_KEY_PATH";
 static const std::string TpmCryptConfigfile_TpmCryptScriptPathIdentifier  = "TPMCRYPT_SCRIPT_PATH";
 static const std::string TpmCryptConfigfile_TpmCryptSocketPathIdentifier  = "TPMCRYPT_SOCKET_PATH";
 static const std::string TpmCryptConfigfile_TpmCryptServerSocketIdentifier= "TPMCRYPT_SERVER_SOCKET";

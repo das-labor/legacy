@@ -29,17 +29,17 @@
 //
 bool TpmCryptFindVolume(TpmCryptStorage &myVolumeStorage, const string &VolumeUUID)
 {
-    vector<StringPair> myVolumes = myVolumeStorage.findAllEntries(TpmCryptVolume_isVolume, TpmCryptVolume_isVolume_true);
-    vector<utils::StringPair>::const_iterator Iterator;
+	vector<string> myVolumes = myVolumeStorage.queryAllEntryDB("volumes","v_uuid");
+    vector<string>::const_iterator it;
     if (myVolumes.size())
     {
-        Iterator=myVolumes.begin();
-        while ( Iterator != myVolumes.end())
+        it=myVolumes.begin();
+        while ( it != myVolumes.end())
         {
-            StringPair myStringpair = *(Iterator);
-            if (myStringpair.first == VolumeUUID)
+            
+            if (VolumeUUID == *(it))
                 return true;
-            Iterator++;
+            it++;
         }
     }
     return false;
@@ -47,19 +47,18 @@ bool TpmCryptFindVolume(TpmCryptStorage &myVolumeStorage, const string &VolumeUU
 
 //================================================================================
 //
-bool TpmCryptFindGroup(TpmCryptStorage &myGroupStorage, const string &GroupName)
+bool TpmCryptFindESD(TpmCryptStorage &myESDStorage, const string &esdIdentifier)
 {
-    vector<StringPair> myGroups = myGroupStorage.findAllEntries(TpmCryptGroup_isGroup, TpmCryptGroup_isGroup_true);
-    vector<utils::StringPair>::const_iterator Iterator;
-    if (myGroups.size())
+    vector<string> myESD = myESDStorage.queryAllEntryDB("esd","name");
+    vector<string>::const_iterator it;
+    if (myESD.size())
     {
-        Iterator=myGroups.begin();
-        while ( Iterator != myGroups.end())
+        it = myESD.begin();
+        while ( it != myESD.end())
         {
-            StringPair myStringpair = *(Iterator);
-            if (myStringpair.first == GroupName)
-                return true;
-            Iterator++;
+			if( esdIdentifier == *(it) )
+				return true;
+            it++;
         }
     }
     return false;
@@ -67,347 +66,168 @@ bool TpmCryptFindGroup(TpmCryptStorage &myGroupStorage, const string &GroupName)
 
 //================================================================================
 //
-bool TpmCryptFindSubject(TpmCryptStorage &mySubjectStorage, const string &subjectIdentifier)
+bool TpmCryptFindUser(TpmCryptStorage &myUserStorage, const string &userIdentifier)
 {
-    vector<StringPair> mySubjectIDs=mySubjectStorage.findAllEntries(TpmCryptSubject_isSubject, TpmCryptSubject_isSubject_true);
-    vector<utils::StringPair>::const_iterator Iterator;
-    if (mySubjectIDs.size())
+	vector<string> myUser = myUserStorage.queryAllEntryDB("users","name");
+    vector<string>::const_iterator it;
+    if (myUser.size())
     {
-        Iterator=mySubjectIDs.begin();
-        while ( Iterator != mySubjectIDs.end())
-        {
-            StringPair myStringpair = *(Iterator);
-            try
-            {
-                debug << "TpmCryptFindSubject: Looking for subject '" << subjectIdentifier << "'" << endl;
-                TpmCryptSubject *mySubject = new TpmCryptSubject(subjectIdentifier, mySubjectStorage);
-                debug << "TpmCryptFindSubject(): found subject '" << subjectIdentifier << "'" << endl;
-                delete mySubject;
-                return true;
-            }
-            catch ( UnknownSubject &e )
-            {
-                debug << "TpmCryptFindSubject(): subject '" << subjectIdentifier << "' not found" << endl;
-                exit(-1);
-            }
-            Iterator++;
-        }
-    }
-    return false;
-};
-
-//================================================================================
-//
-bool TpmCryptFindESD(TpmCryptStorage &myESDStorage, const string &ESDIdentifier)
-{
-    vector<StringPair> myESDIDs=myESDStorage.findAllEntries(TpmCryptESD_isESD, TpmCryptESD_isESD_true);
-    vector<utils::StringPair>::const_iterator Iterator;
-    if (myESDIDs.size())
-    {
-        Iterator=myESDIDs.begin();
-        while ( Iterator != myESDIDs.end())
-        {
-            StringPair myStringpair = *(Iterator);
-            try
-            {
-                debug << "TpmCryptFindESD: Looking for ESD '" << ESDIdentifier << "'" << endl;
-                TpmCryptESD *myESD = new TpmCryptESD(ESDIdentifier, myESDStorage);
-                debug << "TpmCryptFindESD(): found ESD '" << ESDIdentifier << "'" << endl;
-                delete myESD;
-                return true;
-            }
-            catch ( UnknownESD &e )
-            {
-                debug << "TpmCryptFindESD(): ESD '" << ESDIdentifier << "' not found" << endl;
-                exit(-1);
-            }
-            Iterator++;
-        }
-    }
-    return false;
-};
-
-//================================================================================
-//
-bool TpmCryptFindUser(TpmCryptStorage &mySubjectStorage, const string &subjectIdentifier)
-{
-    vector<StringPair> mySubjectIDs=mySubjectStorage.findAllEntries(TpmCryptSubject_SubjectType, TpmCryptSubjectType_User);
-    vector<utils::StringPair>::const_iterator Iterator;
-    Iterator=mySubjectIDs.begin();
-    while ( Iterator != mySubjectIDs.end())
-    {
-        StringPair myStringpair = *(Iterator);
-        try
-        {
-            debug << "TpmCryptFindUser: Looking for user '" << subjectIdentifier << "'" << endl;
-            TpmCryptSubject *mySubject = new TpmCryptSubject(subjectIdentifier, mySubjectStorage);
-            debug << "TpmCryptFindUser(): found user '" << subjectIdentifier << "'" << endl;
-            delete mySubject;
-            return true;
-        }
-        catch ( UnknownSubject &e )
-        {
-            debug << "TpmCryptFindUser(): user '" << subjectIdentifier << "' not found" << endl;
-        }
-        Iterator++;
-    }
-    return false;
+		it = myUser.begin();
+		while ( it != myUser.end())
+		{
+			if( userIdentifier == *(it) )
+				return true;
+			it++;
+		}
+	}
+	return false;
 };
 
 
 //================================================================================
 //
-bool TpmCryptFindAdmin(TpmCryptStorage &mySubjectStorage, const string &subjectIdentifier)
+bool TpmCryptFindAdmin(TpmCryptStorage &myUserStorage, const string &userIdentifier)
 {
-    vector<StringPair> mySubjectIDs=mySubjectStorage.findAllEntries(TpmCryptSubject_SubjectAdmin, TpmCryptSubject_TRUE);
-    vector<utils::StringPair>::const_iterator Iterator;
-    if (mySubjectIDs.size())
+	vector<string> myUser = myUserStorage.queryDB("users","isAdmin","name",userIdentifier);
+    vector<string>::const_iterator it;
+    if (myUser.size())
     {
-        Iterator=mySubjectIDs.begin();
-        while ( Iterator != mySubjectIDs.end())
-        {
-            StringPair myStringpair = *(Iterator);
-            try
-            {
-                debug << "TpmCryptFindSubject: Looking for subject '" << subjectIdentifier << "'" << endl;
-                TpmCryptSubject *mySubject = new TpmCryptSubject(subjectIdentifier, mySubjectStorage);
-                debug << "TpmCryptFindSubject(): found subject '" << subjectIdentifier << "'" << endl;
-                delete mySubject;
-                return true;
-            }
-            catch ( UnknownSubject &e )
-            {
-                debug << "TpmCryptFindSubject(): subject '" << subjectIdentifier << "' not found" << endl;
-            }
-            Iterator++;
-        }
-    }
-    return false;
+		it = myUser.begin();
+		while ( it != myUser.end())
+		{
+			if( *(it) = "1" )
+				return true;
+			it++;
+		}
+	}
+		
+	return false;
 };
 
 //================================================================================
 //
 bool TpmCryptFindSSS(TpmCryptStorage &mySSSStorage, const string &SSSID)
 {
-    vector<string> myAvailableSSSs = mySSSStorage.getAvailableSections();
-    vector<string>::const_iterator Iterator;
-    if (myAvailableSSSs.size())
+	vector<string> mySSS = mySSSStorage.queryAllEntryDB("sss","sss_uuid");
+    vector<string>::const_iterator it;
+    if (mySSS.size())
     {
-        Iterator=myAvailableSSSs.begin();
-        while ( Iterator != myAvailableSSSs.end())
-        {
-            string SSS = *(Iterator);
-            if (SSS == SSSID)
-                return true;
-            Iterator++;
-        }
-    }
-    return false;
+		it = mySSS.begin();
+		while ( it != mySSS.end())
+		{
+			if( SSSID == *(it) )
+				return true;
+			it++;
+		}
+	}
+	return false;
 };
 
 //================================================================================
 //
-bool TpmCryptFindPlatform(TpmCryptStorage &mySubjectStorage, const string &subjectIdentifier)
+bool TpmCryptFindPlatform(TpmCryptStorage &myPlatformStorage, const string &platformIdentifier)
 {
-    vector<StringPair> mySubjectIDs=mySubjectStorage.findAllEntries(TpmCryptSubject_SubjectType, TpmCryptSubjectType_Platform);
-
-    vector<utils::StringPair>::const_iterator Iterator;
-    if (mySubjectIDs.size())
+	vector<string> myPlatform = myPlatformStorage.queryAllEntryDB("platforms","name");
+    vector<string>::const_iterator it;
+    if (myPlatform.size())
     {
-        Iterator=mySubjectIDs.begin();
-        while ( Iterator != mySubjectIDs.end())
-        {
-            StringPair myStringpair = *(Iterator);
-            try
-            {
-                debug << "TpmCryptFindSubject: Looking for subject '" << subjectIdentifier << "'" << endl;
-                TpmCryptSubject *mySubject = new TpmCryptSubject(subjectIdentifier, mySubjectStorage);
-                debug << "TpmCryptFindSubject(): found subject '" << subjectIdentifier << "'" << endl;
-                delete mySubject;
-                return true;
-            }
-            catch ( UnknownSubject &e )
-            {
-                debug << "TpmCryptFindSubject(): subject '" << subjectIdentifier << "' not found" << endl;
-                exit(-1);
-            }
-            Iterator++;
-        }
-    }
-    return false;
+		it = myPlatform.begin();
+		while ( it != myPlatform.end())
+		{
+			if( platformIdentifier == *(it) )
+				return true;
+			it++;
+		}
+	}
+	return false;
 };
 
 //================================================================================
 //
-bool TpmCryptFindToken(TpmCryptStorage &mySubjectStorage, const string &subjectIdentifier)
+bool TpmCryptFindToken(TpmCryptStorage &myTokenStorage, const string &tokenIdentifier)
 {
-    vector<StringPair> mySubjectIDs=mySubjectStorage.findAllEntries(TpmCryptSubject_SubjectType, TpmCryptSubjectType_Token);
-
-    vector<utils::StringPair>::const_iterator Iterator;
-    if (mySubjectIDs.size())
+	vector<string> myToken = myTokenStorage.queryAllEntryDB("token","name");
+    vector<string>::const_iterator it;
+    if (myToken.size())
     {
-        Iterator=mySubjectIDs.begin();
-        while ( Iterator != mySubjectIDs.end())
-        {
-            StringPair myStringpair = *(Iterator);
-            try
-            {
-                debug << "TpmCryptFindSubject: Looking for subject '" << subjectIdentifier << "'" << endl;
-                TpmCryptSubject *mySubject = new TpmCryptSubject(subjectIdentifier, mySubjectStorage);
-                debug << "TpmCryptFindSubject(): found subject '" << subjectIdentifier << "'" << endl;
-                delete mySubject;
-                return true;
-            }
-            catch ( UnknownSubject &e )
-            {
-                debug << "TpmCryptFindSubject(): subject '" << subjectIdentifier << "' not found" << endl;
-                exit(-1);
-            }
-            Iterator++;
-        }
-    }
-    return false;
+		it = myToken.begin();
+		while ( it != myToken.end())
+		{
+			if( tokenIdentifier == *(it) )
+				return true;
+			it++;
+		}
+	}
+	return false;
 };
 
 //================================================================================
 //
-vector<string> TpmCryptFindAllAdmins(TpmCryptStorage &mySubjectStorage)
+vector<string> TpmCryptFindAllAdmins(TpmCryptStorage &myUserStorage)
 {
-    vector<StringPair> mySubjectIDs=mySubjectStorage.findAllEntries(TpmCryptSubject_SubjectType, TpmCryptSubjectType_User);
-    vector<string> myAdmins;
-    vector<utils::StringPair>::const_iterator Iterator;
-    Iterator=mySubjectIDs.begin();
-    while ( Iterator != mySubjectIDs.end())
-    {
-        StringPair myStringpair = *(Iterator);
-        TpmCryptSubject *mySubject = new TpmCryptSubject(Iterator->first, mySubjectStorage);
-        if (mySubject->isAdmin())
-            myAdmins.push_back(mySubject->getMySubjectName());
-        delete mySubject;
-        Iterator++;
-    }
-    return myAdmins;
+	vector<string> myAdmins = myUserStorage.queryDB("users","name","isAdmin","1");
+	
+	return myAdmins;
 };
 
 
 //================================================================================
 //
-vector<string> TpmCryptFindAllUsers(TpmCryptStorage &mySubjectStorage, bool withAdmins)
+vector<string> TpmCryptFindAllUsers(TpmCryptStorage &myUserStorage, bool withAdmins)
 {
-    vector<StringPair> mySubjectIDs=mySubjectStorage.findAllEntries(TpmCryptSubject_SubjectType, TpmCryptSubjectType_User);
-    vector<string> myUsers;
-    vector<utils::StringPair>::const_iterator Iterator;
-    Iterator=mySubjectIDs.begin();
-    while ( Iterator != mySubjectIDs.end())
-    {
-        StringPair myStringpair = *(Iterator);
-        TpmCryptSubject *mySubject = new TpmCryptSubject(Iterator->first, mySubjectStorage);
-        if (mySubject->isAdmin())
-        {
-            if (withAdmins)
-                myUsers.push_back(mySubject->getMySubjectName());
-        }
-        else
-        {
-            myUsers.push_back(mySubject->getMySubjectName());
-        }
-        delete mySubject;
-        Iterator++;
-    }
-    return myUsers;
+	if(withAdmins)
+	{
+		vector<string> myUsers = myUserStorage.queryAllEntryDB("users","name");
+		return myUsers;
+	}
+	else
+	{
+		vector<string> myUsers = myUserStorage.queryDB("users","name","isAdmin","0");
+		return myUsers;
+	}
 };
 
 //================================================================================
 //
 vector<string> TpmCryptFindAllESDs(TpmCryptStorage &myESDStorage)
 {
-    vector<StringPair> myESDIDs=myESDStorage.findAllEntries(TpmCryptESD_isESD, TpmCryptESD_isESD_true);
-    vector<string> myESDs;
-    vector<utils::StringPair>::const_iterator Iterator;
-    Iterator=myESDIDs.begin();
-    while ( Iterator != myESDIDs.end())
-    {
-        StringPair myStringpair = *(Iterator);
-        TpmCryptESD *myESD = new TpmCryptESD(Iterator->first, myESDStorage);
-        myESDs.push_back(myESD->getMyESDName());
-        
-        delete myESD;
-        Iterator++;
-    }
-    return myESDs;
+	vector<string> myESDs = myESDStorage.queryAllEntryDB("esd","name");
+	
+	return myESDs;
 };
 
 //================================================================================
 //
-vector<string> TpmCryptFindAllGroups(TpmCryptStorage &myGroupStorage, TpmCryptStorage &mySubjectStorage, bool withAdminGroup)
+vector<string> TpmCryptFindAllVolumes(TpmCryptStorage &myVolumeStorage)
 {
-    vector<StringPair> myGroups = myGroupStorage.findAllEntries(TpmCryptGroup_isGroup, TpmCryptGroup_isGroup_true);
-    vector<string> myGroupVector;
-
-    vector<utils::StringPair>::const_iterator Iterator;
-    if (myGroups.size())
-    {
-        Iterator=myGroups.begin();
-        while ( Iterator != myGroups.end())
-        {
-            TpmCryptGroup *myGroup = new TpmCryptGroup (Iterator->first, myGroupStorage, mySubjectStorage);
-            if (myGroup->getMyGroupID() == TPMCRYPT_ADMIN_GROUP)
-            {
-                if (withAdminGroup)
-                    myGroupVector.push_back(Iterator->first);
-            }
-            else
-            {
-                myGroupVector.push_back(Iterator->first);
-            }
-            delete myGroup;
-            Iterator++;
-        }
-    }
-    return myGroupVector;
+	vector<string> myVolumes = myVolumeStorage.queryAllEntryDB("volumes","name");
+	
+	return myVolumes;
 };
 
 //================================================================================
 //
 vector<string> TpmCryptFindAllSSS(TpmCryptStorage &mySSSStorage)
 {
-    return mySSSStorage.getAvailableSections();
+    vector<string> mySSSs = mySSSStorage.queryAllEntryDB("sss","name");
+    
+    return mySSSs;
 };
 
 //================================================================================
 //
-vector<string> TpmCryptFindAllPlatforms(TpmCryptStorage &mySubjectStorage)
+vector<string> TpmCryptFindAllPlatforms(TpmCryptStorage &myPlatformStorage)
 {
-    vector<StringPair> mySubjectIDs=mySubjectStorage.findAllEntries(TpmCryptSubject_SubjectType, TpmCryptSubjectType_Platform);
-    vector<string> myPlatforms;
-    vector<utils::StringPair>::const_iterator Iterator;
-    Iterator=mySubjectIDs.begin();
-    while ( Iterator != mySubjectIDs.end())
-    {
-        StringPair myStringpair = *(Iterator);
-        TpmCryptSubject *mySubject = new TpmCryptSubject(Iterator->first, mySubjectStorage);
-        myPlatforms.push_back(mySubject->getMySubjectName());
-        delete mySubject;
-        Iterator++;
-    }
+	vector<string> myPlatforms = myPlatformStorage.queryAllEntryDB("platforms","name");
+    
     return myPlatforms;
 };
 
 //================================================================================
 //
-vector<string> TpmCryptFindAllToken(TpmCryptStorage &mySubjectStorage)
+vector<string> TpmCryptFindAllToken(TpmCryptStorage &myTokenStorage)
 {
-    vector<StringPair> mySubjectIDs=mySubjectStorage.findAllEntries(TpmCryptSubject_SubjectType, TpmCryptSubjectType_Token);
-    vector<string> myToken;
-    vector<utils::StringPair>::const_iterator Iterator;
-    Iterator=mySubjectIDs.begin();
-    while ( Iterator != mySubjectIDs.end())
-    {
-        StringPair myStringpair = *(Iterator);
-        TpmCryptSubject *mySubject = new TpmCryptSubject(Iterator->first, mySubjectStorage);
-        myToken.push_back(mySubject->getMySubjectName());
-        delete mySubject;
-        Iterator++;
-    }
+	vector<string> myToken = myTokenStorage.queryAllEntryDB("token","name");
+	
     return myToken;
 };

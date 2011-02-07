@@ -39,7 +39,6 @@
 
 using namespace std;
 
-const std::string TpmCryptKeyproviderDB_Identifier = "KeyproviderDB";
 const std::string TpmCryptKeyproviderCrypt_Entry = "CryptoSystem";
 const std::string TpmCryptKeyproviderDevice = "Device";
         
@@ -58,7 +57,7 @@ namespace tpmcrypt
 	 *  @param user, string, the user or users, that wish to perform the mount operation
 	 *  @param uuid, string, the uuid of the device
 	 */
-        TpmCryptKeyproviderMount(UInt8 cryptoSystem, string device, string destination, string key, TpmCryptConfigfile &aTpmCryptConfig, string user, string uuid ); // mount
+        TpmCryptKeyproviderMount(TpmCryptStorage &myKeyproviderStorage, UInt8 cryptoSystem, string device, string destination, string key, TpmCryptConfigfile &aTpmCryptConfig, string user, string uuid ); // mount
         
 	/*!
 	 *  @brief constructor for unmount operations
@@ -66,7 +65,7 @@ namespace tpmcrypt
 	 *  @param &aTpmCryptConfig, TpmCryptConfigfile, points to the current TpmCrypt configuration
 	 *  @param user, string, the user or users, that wish to perform the unmount operation
 	 */
-	TpmCryptKeyproviderMount(string destination, TpmCryptConfigfile &aTpmCryptConfig, string user ); // unmount
+	TpmCryptKeyproviderMount(TpmCryptStorage &myKeyproviderStorage, string destination, TpmCryptConfigfile &aTpmCryptConfig, string user ); // unmount
         
     private:        
 	/*!
@@ -77,7 +76,10 @@ namespace tpmcrypt
 	 *  @param &myKeyproviderStorage, TpmCryptStorage, points to the current volume database
 	 *  @param user, string, the user or users, that wish to perform the mount operation
 	 *  @param uuid, string, the uuid of the device
-	 */        
+	 */   
+	 
+	void mounted(string destination);
+	      
 	void mountLUKS(string device, string destination, string key, TpmCryptStorage &myKeyproviderStorage, string user, string uuid);
         
 	/*!
