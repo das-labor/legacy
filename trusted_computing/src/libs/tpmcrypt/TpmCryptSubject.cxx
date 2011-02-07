@@ -880,6 +880,7 @@ void TpmCryptSubject::deleteUserMessages()
 void TpmCryptSubject::checkUsername()
 {
     std::vector<std::string> TpmCryptSubject_invalidUsernames;
+    std::vector<std::string> TpmCryptSubject_check;
     TpmCryptSubject_invalidUsernames.push_back("async");
     TpmCryptSubject_invalidUsernames.push_back("atime");
     TpmCryptSubject_invalidUsernames.push_back("noatime");
@@ -937,4 +938,19 @@ void TpmCryptSubject::checkUsername()
                 Iterator++;
         }
     }
+    
+    vector<string>::const_iterator it;
+    TpmCryptSubject_check = TpmCryptStorage.queryAllEntryDB("users", "name");
+    if (TpmCryptSubject_check.size())
+    {
+        it=TpmCryptSubject_check.begin();
+        while ( it != TpmCryptSubject_check.end())
+        {
+            if (mySubjectName == *(it))
+                throw InvalidUsername("TpmCryptSubject: The supplied subjectname was found in the Database!");
+            else
+                i++;
+        }
+    }
+    
 };

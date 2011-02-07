@@ -101,7 +101,7 @@ static const UInt8       TpmCryptPathSeparatorChar   = '/';
 static const std::string TpmCryptFileSeparator       = "_";
 static const UInt8       TpmCryptFileSeparatorChar   = '_';
 static const std::string TpmCryptP15FileExtension    = ".p15";
-static const std::string TpmCryptDefaultConfigfile   = "/etc/tpmcrypt/tpmcrypt.cfg";
+static const std::string TpmCryptDefaultConfigfile   = "/etc/tpmcrypt/tpmcrypt.db";
 static const std::string moveCommandOption          = "-b"; // perform backup
 
 #define bzero(ptr, len)  memset((ptr), NULL, (len))

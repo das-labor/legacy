@@ -121,7 +121,7 @@ namespace tpmcrypt
 	 *  @param &volume, string, contains current location path of the volume
 	 *  @param &mountName, string, contains mount name
 	 */        
-        void mountBySSS(TpmCryptConfigfile &myConfigfile, TpmCryptVolume &myVolume, TpmCryptStorage &mySSSStorage, TpmCryptStorage &mySubjectStorage, TpmCryptStorage &myGroupStorage, vector<string> &parameter, string &path, string &volume, string &mountName );
+        void mountBySSS(TpmCryptConfigfile &myConfigfile, TpmCryptVolume &myVolume, TpmCryptStorage &mySSSStorage, TpmCryptStorage &mySubjectStorage, vector<string> &parameter, string &path, string &volume, string &mountName );
 
 	/*!
 	 *  @brief mounts a volume with a user identification
@@ -134,19 +134,7 @@ namespace tpmcrypt
 	 *  @param &mountName, string, contains mount name
 	 */        
         void mountBySubject(TpmCryptConfigfile &myConfigfile, TpmCryptVolume &myVolume, TpmCryptStorage &mySubjectStorage, vector<string> &parameter, string &path, string &volume, string &mountName );
-
-	/*!
-	 *  @brief mounts a volume with a group identification
-	 *  @param &myConfigfile, TpmCryptConfigfile, points to the current TpmCrypt configuration
-	 *  @param &myVolume, TpmCryptVolume, points to the volume to be mounted
-	 *  @param &mySubjectStorage, TpmCryptStorage, points to the current subject database
-	 *  @param &myGroupStorage, TpmCryptStorage, points to the current group database
-	 *  @param &parameter, vector of string, contains all parameters send by the client
-	 *  @param &path, string, contains the path for the mount operation
-	 *  @param &volume, string, contains current location path of the volume
-	 *  @param &mountName, string, contains mount name
-	 */        
-        void mountByGroup(TpmCryptConfigfile &myConfigfile, TpmCryptVolume &myVolume, TpmCryptStorage &mySubjectStorage, TpmCryptStorage &myGroupStorage, vector<string> &parameter, string &path, string &volume, string &mountName );
+      
 
 	/*!
 	 *  @brief sends system message to a user
@@ -161,13 +149,7 @@ namespace tpmcrypt
 	 */   
         string getSubjectPassword(TpmCryptSubject *mySubject);
 
-	/*!
-	 *  @brief gets the password from a group
-	 *  @param, *myGroup, TpmCryptGroup, the subject class of the group, the password is retrieved from
-	 *  @param &mySubjectStorage, TpmCryptStorage, points to the current subject database
-	 *  @return string, contains the password of the group
-	 */
-        string getGroupPassword(TpmCryptGroup *myGroup, TpmCryptStorage &mySubjectStorage);
+ 
     };
 }
 

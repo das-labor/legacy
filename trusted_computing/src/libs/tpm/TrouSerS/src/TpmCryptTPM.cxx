@@ -22,7 +22,6 @@
 #include <trousers/trousers.h>
 #include <unistd.h>
 
-
 using namespace std;
 using namespace utils;
 using namespace tpmcrypt;
@@ -93,41 +92,6 @@ TpmCryptTPM::TpmCryptTPM()
 TpmCryptTPM::~TpmCryptTPM()
 {
     debug << "TpmCryptTPM[TrouSerS]|Destructor(): called!" << endl;
-};
-
-void TpmCryptTPM::revokeek()
-{
-	TSS_HCONTEXT hContext;
-    TSS_HTPM     hTPM; 
-    string credential;
-    
-    if (Tspi_Context_Create(&hContext) != TSS_SUCCESS)
-        throw ContextError("TpmCryptTPM[TrouSerS]|revokeek(): Could not create context!");
-
-    if (Tspi_Context_Connect(hContext, NULL) != TSS_SUCCESS)
-    {
-        Tspi_Context_FreeMemory(hContext, NULL);
-        Tspi_Context_Close(hContext);
-        throw NoTCSD("TpmCryptTPM[TrouSerS]|revokeek(): Could not connect! Is TrouSerS 'tcsd' running?");
-    }
-
-    if (Tspi_Context_GetTpmObject(hContext, &hTPM) != TSS_SUCCESS)
-    {
-        Tspi_Context_FreeMemory(hContext, NULL);
-        Tspi_Context_Close(hContext);
-        throw TPMConnectError("TpmCryptTPM[TrouSerS]|revokeek(): Could not connect to TPM!");
-    }
-    
-    TSS_RESULT error0 = Tspi_TPM_RevokeEndorsementKey(hTPM, credential.length(),(BYTE*)credential.c_str());
-    if ( error0 != TSS_SUCCESS )
-    {
-        Tspi_Context_FreeMemory(hContext, NULL);
-        Tspi_Context_Close(hContext);
-        throw TSSError("TpmCryptTPM[TrouSerS]|revokeek(): Error revoking Endorsement Key. (" + getTSSError(error0) + ")");
-    }
-    
-    Tspi_Context_FreeMemory(hContext, NULL);
-    Tspi_Context_Close(hContext);
 };
 
 vector<ByteVector> TpmCryptTPM::seal(ByteVector &dataToSeal, int &local, vector<int> &pcr)
@@ -214,11 +178,7 @@ vector<ByteVector> TpmCryptTPM::seal(ByteVector &dataToSeal, int &local, vector<
         throw TSSError("TpmCryptTPM[TrouSerS]|seal(): Error create PCR Object");
     }
     
- //#define foreach(type, container, var) for(type::iterator var = container.begin(); var != container.end(); ++var)
-    
-    //Choose PCR's 
-	//foreach(vector<int>, pcr, i)
-		vector<int>::const_iterator blub;
+	vector<int>::const_iterator blub;
 	for(blub = pcr.begin(); blub != pcr.end(); blub++) {
 		if (Tspi_TPM_PcrRead (hTPM, *blub, &pcrvaluelength, &pcrvalue ) != TSS_SUCCESS )
 		{
@@ -382,7 +342,6 @@ ByteVector TpmCryptTPM::bind(ByteVector &dataToBind, UInt32 &bindkeynum)
 	memset (&hBindKey_UUID, 0, sizeof(hBindKey_UUID));
 	hBindKey_UUID.rgbNode[5] = bindkeynum & 0xff;
 
-	cout << bindkeynum << endl;
     if (Tspi_Context_Create(&hContext) != TSS_SUCCESS)
         throw ContextError("TpmCryptTPM[TrouSerS]|bind(): Could not create context!");
 
@@ -619,7 +578,7 @@ ByteVector TpmCryptTPM::create_key(string &password, UInt32 &keynum, string &typ
     //Choose between Bind, Storage or Legacy Key. 
   //  if(type == "subject") 
     //{
-		flags = TSS_KEY_TYPE_BIND | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_4096 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE | TSS_KEY_AUTHORIZATION;
+		flags = TSS_KEY_TYPE_BIND | TSS_KEY_STRUCT_KEY12 | TSS_KEY_SIZE_8192 | TSS_KEY_NON_VOLATILE | TSS_KEY_NOT_MIGRATABLE | TSS_KEY_AUTHORIZATION;
 	//}
 	/*if( type == "group" ) 
 	{				

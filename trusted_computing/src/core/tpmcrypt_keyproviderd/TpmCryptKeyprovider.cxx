@@ -179,33 +179,10 @@ void TpmCryptKeyprovider::quitDaemon(int sig)
    exit(0);
 }
 
-//================================================================================
-//
-string TpmCryptKeyprovider::getGroupPassword(TpmCryptGroup *myGroup, TpmCryptStorage &mySubjectStorage)
-{
-    vector<UInt32> subjectsInGroup = myGroup->getMySubjects();
-    if (!subjectsInGroup.size())
-    {
-        throw InvalidGroup("No subjects in group '" + myGroup->getMyGroupID() +"'");
-    }
-
-    string username = clientCommunication(TPMCRYPT_ISC_GET_STRING_MESSAGE,"Please enter a username of group '" + myGroup->getMyGroupID() + "': ");
-    if (username.empty())
-        throw InvalidUsername("No valid username supplied!");
-
-    TpmCryptSubject *mySubject = new TpmCryptSubject(username, mySubjectStorage);
-
-    // verify the entered user
-    if (! myGroup->isSubjectInGroup(mySubject))
-        throw InvalidUsername("Subject '" + username + "' is not in group '" + myGroup->getMyGroupID() + "'!");
-
-    string subjectPassword = getSubjectPassword(mySubject);
-    return (myGroup->getDecryptedGroupKey(mySubject, subjectPassword));
-};
 
 //================================================================================
 //
-string TpmCryptKeyprovider::getSubjectPassword(TpmCryptSubject *mySubject)
+string TpmCryptKeyprovider::getUserPassword(TpmCryptSubject *mySubject)
 {
     string myPassword;
 
@@ -282,54 +259,7 @@ void TpmCryptKeyprovider::mountBySubject(TpmCryptConfigfile &myConfigfile, TpmCr
 
 //================================================================================
 //
-void TpmCryptKeyprovider::mountByGroup(TpmCryptConfigfile &myConfigfile, TpmCryptVolume &myVolume, TpmCryptStorage &mySubjectStorage, TpmCryptStorage &myGroupStorage, vector<string> &parameter, string &path, string &volume, string &mountName )
-{
-    string myVolumePath = myVolume.getMyVolumePath();
-    UInt8 myCryptoSystem = myVolume.getMyVolumeType();
-    string groupname = parameter.back();
-
-    if (! TpmCryptFindGroup(myGroupStorage, groupname))
-    {
-        throw InvalidGroup("Group '" + groupname + "' does not exist!");
-    }
-
-    // let's browse the groups
-    vector<string> myVolumeGroups = myVolume.getGroups();
-    if (!myVolumeGroups.size())
-    {
-        throw NoKeyAvailable("No key available to mount volume '" + myVolume.getMyVolumeUUID()  + "' by group '" + groupname + "'");
-        exit(-1);
-    }
-
-    vector<string>::const_iterator Iterator;
-    Iterator=myVolumeGroups.begin();
-    while ( Iterator != myVolumeGroups.end())
-    {
-        if ((*Iterator) == groupname)
-        {
-            // load group and get group password
-            TpmCryptGroup *myGroup = new TpmCryptGroup(*(Iterator), myGroupStorage, mySubjectStorage);
-            string myPassword = getGroupPassword(myGroup, mySubjectStorage);
-            // get key
-            string myVolumeKey = myVolume.getDecryptedVolumeKey(myGroup, myPassword);
-            // mount
-            TpmCryptKeyproviderMount(myCryptoSystem, myVolumePath, path, myVolumeKey, myConfigfile, mountName, volume);
-            clientCommunication(TPMCRYPT_ISC_QUIT_MESSAGE,"-> success!");
-            delete myGroup;
-            exit(0);
-        }
-        else
-        {
-            Iterator++;
-        }
-    }
-    throw NoKeyAvailable("No key available to mount volume '" + myVolume.getMyVolumeUUID()  + "' by group '" + groupname + "'");
-    exit(-1);
-};
-
-//================================================================================
-//
-void TpmCryptKeyprovider::mountBySSS(TpmCryptConfigfile &myConfigfile, TpmCryptVolume &myVolume, TpmCryptStorage &mySSSStorage, TpmCryptStorage &mySubjectStorage, TpmCryptStorage &myGroupStorage, vector<string> &parameter, string &path, string &volume, string &mountName )
+void TpmCryptKeyprovider::mountBySSS(TpmCryptConfigfile &myConfigfile, TpmCryptVolume &myVolume, TpmCryptStorage &mySSSStorage, TpmCryptStorage &mySubjectStorage, vector<string> &parameter, string &path, string &volume, string &mountName )
 {
     // --------------------------------------
     // FIND THE SSS
@@ -409,8 +339,6 @@ void TpmCryptKeyprovider::mountBySSS(TpmCryptConfigfile &myConfigfile, TpmCryptV
     debug << "Found valid SSS " << SSSID << " for given users" << endl;
     vector<TpmCryptSubject*> Participants;
     vector<string> subjectPasswords;
-    TpmCryptGroup *myGroup = NULL;
-    string myGroupPassword;
     bool platformIncluded = false;
     string usernames;
     
@@ -422,33 +350,24 @@ void TpmCryptKeyprovider::mountBySSS(TpmCryptConfigfile &myConfigfile, TpmCryptV
             usernames += ",";
         parameter.pop_back();
 
-        // check if the current participant is a group
-        if (currentSubjectName.rfind("Group_") != string::npos)
+        if (!TpmCryptFindSubject(mySubjectStorage, currentSubjectName))
         {
-            myGroup = new TpmCryptGroup(currentSubjectName, myGroupStorage, mySubjectStorage);
-            myGroupPassword = getGroupPassword(myGroup, mySubjectStorage);
+			clientCommunication(TPMCRYPT_ISC_QUIT_MESSAGE,"Subject '" + currentSubjectName + "' not found!");
+            exit(-1);
+        }
+        TpmCryptSubject *currentSubject = new TpmCryptSubject(currentSubjectName, mySubjectStorage);
+
+        Participants.push_back ( currentSubject );
+
+        if ((currentSubject->getMySubjectType() == SUBJECTTYPE_USER) || (currentSubject->getMySubjectType() == SUBJECTTYPE_TOKEN))
+        {
+            string myPassword = getSubjectPassword(currentSubject);
+            subjectPasswords.push_back(myPassword);
         }
         else
         {
-            if (!TpmCryptFindSubject(mySubjectStorage, currentSubjectName))
-            {
-                clientCommunication(TPMCRYPT_ISC_QUIT_MESSAGE,"Subject '" + currentSubjectName + "' not found!");
-                exit(-1);
-            }
-            TpmCryptSubject *currentSubject = new TpmCryptSubject(currentSubjectName, mySubjectStorage);
-
-            Participants.push_back ( currentSubject );
-
-            if ((currentSubject->getMySubjectType() == SUBJECTTYPE_USER) || (currentSubject->getMySubjectType() == SUBJECTTYPE_TOKEN))
-            {
-                string myPassword = getSubjectPassword(currentSubject);
-                subjectPasswords.push_back(myPassword);
-            }
-            else
-            {
-                platformIncluded = true;
-                subjectPasswords.push_back("");
-            }
+            platformIncluded = true;
+            subjectPasswords.push_back("");
         }
     }
 
@@ -466,14 +385,8 @@ void TpmCryptKeyprovider::mountBySSS(TpmCryptConfigfile &myConfigfile, TpmCryptV
         clientCommunication(TPMCRYPT_ISC_MESG_MESSAGE,"Note: A Platform is included in this SSS. The decryption process might require some additional time due to TPM access.");
     // and decrypt the SSS
     debug << "Retrieving key from SSS" << endl;
-    if (myGroup)
-    {
-        myVolumeKey = mySSS.retrieveKey(Participants, subjectPasswords, myGroup, myGroupPassword);
-    }
-    else
-    {
-        myVolumeKey = mySSS.retrieveKey(Participants, subjectPasswords);
-    }
+
+    myVolumeKey = mySSS.retrieveKey(Participants, subjectPasswords);
 
     // Finally, try the mount
     TpmCryptKeyproviderMount(myCryptoSystem, myVolumePath, path, myVolumeKey, myConfigfile, mountName, volume);
@@ -482,10 +395,7 @@ void TpmCryptKeyprovider::mountBySSS(TpmCryptConfigfile &myConfigfile, TpmCryptV
     {
         delete Participants[i-1];
     }
-    if (myGroup)
-    {
-        delete myGroup;
-    }
+
     exit(0);
 };
 
@@ -503,15 +413,6 @@ void TpmCryptKeyprovider::mount(vector<string> parameter, TpmCryptConfigfile &my
     // setup databases
     try
     {
-        // Create Volume database storage object
-        TpmCryptStorage myVolumeStorage( "VolumeDB", myConfigfile.getConfigfileEntry(TpmCryptConfigfile_VolumeDBIdentifier) );
-        // Create User database storage object
-        TpmCryptStorage mySubjectStorage( "SubjectDB", myConfigfile.getConfigfileEntry(TpmCryptConfigfile_SubjectDBIdentifier) );
-        // Create Group database storage object
-        TpmCryptStorage myGroupStorage( "GroupDB", myConfigfile.getConfigfileEntry(TpmCryptConfigfile_GroupDBIdentifier) );
-        // Create SSS database storage object
-        TpmCryptStorage mySSSStorage( "SSSDB", myConfigfile.getConfigfileEntry(TpmCryptConfigfile_SSSDBIdentifier) );
-
         TpmCryptVolume myVolume(volume, myVolumeStorage);
 
         //////////////////////////////////////////////////////////////
@@ -520,14 +421,9 @@ void TpmCryptKeyprovider::mount(vector<string> parameter, TpmCryptConfigfile &my
         {
             mountName = createMountName(parameter);
             debug << "More than one user supplied, assuming Secret-Sharing-Scheme for " << mountName << endl;
-            mountBySSS(myConfigfile, myVolume, mySSSStorage, mySubjectStorage, myGroupStorage, parameter, path, volume, mountName );
+            mountBySSS(myConfigfile, myVolume, mySSSStorage, mySubjectStorage, parameter, path, volume, mountName );
         }
 
-        // check, whether we shall mount by group
-        if (parameter.back().rfind("Group_") != string::npos)
-        {
-            mountByGroup(myConfigfile, myVolume, mySubjectStorage, myGroupStorage, parameter, path, volume, mountName );
-        }
         // else try to mount via user directly
         else
         {

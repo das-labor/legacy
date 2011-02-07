@@ -27,18 +27,23 @@
 #define _TPMCRYPTSTORAGE_HXX
 
 #include <TpmCrypt.hxx>
+#include <sqlite3.h>
+
+sqlite3 *handle = NULL;
+sqlite3_stmt *stmt;
 
 // Database entries
-const std::string TpmCryptDatabase_SectionIdentifier_Start       =	"<Section>";
-const std::string TpmCryptDatabase_SectionIdentifier_Stop        =	"</Section>";
-const std::string TpmCryptDatabase_SectionNameIdentifier         =       "SectionName";
-const std::string TpmCryptDatabase_SubSectionIdentifier_Start    =	"<SubSection>";
-const std::string TpmCryptDatabase_SubSectionIdentifier_Stop     =	"</SubSection>";
-const std::string TpmCryptDatabase_SubSectionNameIdentifier      =       "SubSectionName";
-const std::string TpmCryptDatabase_EntryIdentifier_Start         =	"<Entry>";
-const std::string TpmCryptDatabase_EntryIdentifier_Stop          =	"</Entry>";
-const std::string TpmCryptDatabase_EntryNameIdentifier           =	"EntryName";
-const std::string TpmCryptDatabase_ValueIdentifier               =	"Value";
+const std::string keys = "CREATE TABLE IF NOT EXISTS keys(uuid INTEGER PRIMARY KEY ASC, key_type TEXT,key_size INTEGER, valid_until DATETIME)";
+const std::string users = "CREATE TABLE IF NOT EXISTS users(uuid INTEGER PRIMARY KEY ASC, name TEXT UNIQUE NOT NULL, email TEXT, country TEXT, organization TEXT, is_admin BOOL)";
+const std::string user_keys = "CREATE TABLE IF NOT EXISTS user_keys(id INTEGER PRIMARY KEY ASC, user_uuid INTEGER NOT NULL, key_uuid INTEGER NOT NULL)";
+const std::string volumes = "CREATE TABLE IF NOT EXISTS volumes(uuid INTEGER PRIMARY KEY ASC, name TEXT UNIQUE, path TEXT, key_blob BLOB, enc_tool TEXT)";
+const std::string sss = "CREATE TABLE IF NOT EXISTS sss(uuid INTEGER PRIMARY KEY ASC, name TEXT UNIQUE, min_participants INTEGER NOT NULL, last_x_val INTEGER NOT NULL)";
+const std::string sss_entries = "CREATE TABLE IF NOT EXISTS sss_entries(uuid INTEGER PRIMARY KEY, sss_uuid INTEGER NOT NULL, user_uuid INTEGER NOT NULL, x_val TEXT NOT NULL, y_val TEXT NOT NULL)";
+const std::string volumes_users = "CREATE TABLE IF NOT EXISTS volumes_users(uuid INTEGER PRIMARY KEY, u_uuid INTEGER NOT NULL)";
+const std::string volumes_sss = "CREATE TABLE IF NOT EXISTS volumes_sss(uuid INTEGER PRIMARY KEY, sss_uuid INTEGER NOT NULL)";
+const std::string esd = "CREATE TABLE IF NOT EXISTS esd(uuid INTEGER PRIMARY KEY, sss_uuid INTEGER NOT NULL)";
+const std::string platform = "CREATE TABLE IF NOT EXISTS esd(uuid INTEGER PRIMARY KEY, sss_uuid INTEGER NOT NULL)";
+const std::string token = "CREATE TABLE IF NOT EXISTS esd(uuid INTEGER PRIMARY KEY, sss_uuid INTEGER NOT NULL)";
 
 using namespace std;
 using namespace utils;
@@ -54,183 +59,41 @@ namespace tpmcrypt
 	     * 	@param &StorageFile, const string, path to the database
 	     *	@param clear, bool, determines whether or not the database should be reset
 	     */
-            TpmCryptStorage( const string &StorageName, const string &StorageFile );
-            TpmCryptStorage( const string &StorageName, const string &StorageFile, bool clear);
+            TpmCryptStorage();
 
             ~TpmCryptStorage();
 
 
-	    /*!
-             *  @brief selects a section in the database
-	     *  @param &section, const string, contains name of the section to be selected
-	     */
-            void selectSection(const string &section);
-
-            /*!
-             *  @brief finds a section in the database
-	     *  @param &section, const string, contains name of the section to be found
-	     *	@return bool, determines whether or not the section exists
-	     */
-	    bool findSection(const string &section);
-
-            /*!
-             *  @brief deletes a section from the database
-	     *  @param &section, const string, contains name of the section to be deleted
-	     *	@return bool, determines whether or not the deletion was successful
-	     */
-	    bool deleteSection(const string &section);
-
-
-	    /*!
-             *  @brief selects a subsection in the database
-	     *  @param &subSection, const string, contains name of the subsection to be selected
-	     */
-            void selectSubSection(const string &subSection);
-
-            /*!
-             *  @brief finds a subsection in the database
-	     *  @param &subSection, const string, contains name of the subsection to be found
-	     *	@return bool, determines whether or not the subsection exists
-	     */	    
-            bool findSubSection(const string &subsection);
-
-            /*!
-             *  @brief deletes a subsection from the database
-	     *  @param &subSection, const string, contains name of the subsection to be deleted
-	     *	@return bool, determines whether or not the deletion was successful
-	     */
-            bool deleteSubSection(const string &subsection);
-
-            /*!
-             *  @brief sets an entry in the database to a specified value
-	     *  @param &entry, const string, contains name of the entry to be changed
-	     *  @param &value, const string, contains value to be set
-	     *	@return bool, determines whether or not the operation was successful
-	     */
-            bool setEntry(const string &entry, const string &value);
-	    	    
-            /*!
-             *  @brief finds an entry in the database
-	     *  @param &entry, const string, contains name of the entry
-	     *	@return bool, determines whether or not the entry is found
-	     */
-            bool findEntry(const string &entry);
-
-	    /*!
-             *  @brief gets the value for an entry
-	     *  @param &entry, const string, contains name of the entry
-	     *	@return string, contains the value of the entry
-	     */	    
-            string getEntry(const string &entry);
-
-	    /*!
-             *  @brief deletes an entry from the database
-	     *  @param &entry, const string, contains name of the entry to be deleted
-	     *	@return bool, determines whether or not the deletion was successful
-	     */
-            bool deleteEntry(const string &entry);
-
-	    /*!
-             *  @brief returns the available sections from the storage database
-	     *	@return vector of string, contains the available sections
-	     */
-            vector<string> getAvailableSections();
-
-            /*!
-             *  @brief returns the available subsections from the storage database
-	     *	@return vector of string, contains the available subsections
-	     */
-	    vector<string> getAvailableSubSections();
-
-	    /*!
-             *  @brief returns the available entries
-	     *	@return vector of string, contains the available entries
-	     */
-            vector<string> getAllEntries();
-
-	    /*!
-             *  @brief returns the available entries and their corresponding values
-	     *	@return vector of StringPair, contains the available entries and their corresponding values
-	     */
-            vector<StringPair> getAllEntriesWithValues();
-
-	    /*!
-             *  @brief finds all entries with the same name in a database
-	     *  @param &entry, const string, contains name of the entry to be found
-	     *	@return vector of StringPair, contains the matching entries and their corresponding values
-	     */
-            vector<StringPair> findAllEntries(const string &entry);
-
-            /*!
-             *  @brief finds all entries with the same name in a database with a certain value
-	     *  @param &entry, const string, contains name of the entry to be found
-	     *  @param &value, const string, contains the value of the entry to be found
-	     *	@return vector of StringPair, contains the matching entries and their corresponding values
-	     */
-	    vector<StringPair> findAllEntries(const string &entry, const string &value);
-
-        private:
+        bool openDB();
+        
+        vector<string> queryDB(string table, string select, string column, string data);
+        
+        void storeDB(string table, string select, string column, string new_data, string old_data);
+        
+        vector<string> queryAllEntryDB(string table, string select);
 	    
-	    /*!
-             *  @brief opens a database file
-	     *	@return boolean, determines whether or not the operation was successful
-	     */
-            bool openFile();
+	    void usersDB(long uuid, string name, string email, string country, string company, bool isAdmin);
+	    
+	    void keysDB(long uuid, string type, int size, string valid);
+	    
+	    void user_keysDB(long id, long u_uuid, long k_uuid);
+	    
+	    void volumesDB(long uuid, string name, string path, string blob, string enc);
+	    
+	    void sssDB(long uuid, string name, int participants, int x);
+	    
+	    void sssEntriesDB(long uuid, long sss_uuid, long u_uuid, string x, string y);
+	    
+	    void volumes_usersDB(long v_uuid, long u_uuid);
+	    
+	    void volumes_sssDB(long v_uuid, long sss_uuid);
+	    
+	    private:
+	    
+	    int protectDB(string command);
 
-            /*!
-             *  @brief truncates a file at a specified position
-	     * 	@param truncatePosition, UInt32, position where the file should be truncated
-	     *	@return boolean, determines whether or not the operation was successful
-	     */
-	    bool truncateFile( UInt32 truncatePosition );
-
-            /*!
-             *  @brief checks for sections in a database
-	     */
-	    void queryDBforSections(void);
-
-            /*!
-             *  @brief checks for subsections in a database
-	     */
-	    void queryDBforSubSections(void);
-
-            /*!
-             *  @brief checks for entries in a database
-	     */
-	    void queryDBforEntries(void);
-
-            /*!
-             *  @brief adds a section to a database
-	     *	@param &section, string, contains the name of the section to be added
-	     */
-	    bool addSection(const string &section);
-
-            /*!
-             *  @brief adds a subsection to a database
-	     *	@param &subsection, string, contains the name of the subsection to be created
-	     */
-	    bool addSubSection(const string &subsection);
-
-            string  myStorageName;
-            string  myStorageFile;
-            string  mySection;
-            string  mySubSection;
-            fstream myDB;
-
-            vector<string> mySections;
-            vector<string>::const_iterator SectionIterator;
-            vector<UInt32> mySectionPositions;
-            vector<UInt32>::const_iterator SectionPositionsIterator;
-
-            vector<string> mySubSections;
-            vector<string>::const_iterator SubSectionIterator;
-            vector<UInt32> mySubSectionPositions;
-            vector<UInt32>::const_iterator SubSectionPositionsIterator;
-
-            vector<string> myEntries;
-            vector<string>::const_iterator EntryIterator;
-            vector<UInt32> myEntryPositions;
-            vector<UInt32>::const_iterator EntryPositionsIterator;
+	    
+	    TpmCryptStorage &myDB;
 
         /*!
          *  @brief  disabled copy constructor
