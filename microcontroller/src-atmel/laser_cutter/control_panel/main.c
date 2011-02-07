@@ -30,9 +30,6 @@
 #define CTRL_RESERVED_3      6
 
 
-
-
-
 void test1(){
 	while(1){
 		uint8_t x;
