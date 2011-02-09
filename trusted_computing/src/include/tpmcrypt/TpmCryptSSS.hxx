@@ -59,18 +59,7 @@ namespace tpmcrypt
 	     *  @param Participants, vector of TpmCryptSubject, contains the participants of the secret sharing scheme
 	     *	@param VolumeKey, string, contains the decrypted volume key, that is the shared secret of the sss
 	     */	   
-            TpmCryptSSS (TpmCryptStorage &SSSStorage, string SSSID, UInt32 n, vector<TpmCryptSubject*> Participants, string VolumeKey);
-
-            /*!
-             *  @brief create new secret sharing scheme including one group
-	     *  @param &SSSStorage, TpmCryptStorage, contains address of the pointer to the current SSSStorage
-	     *	@param SSSID, string, contains the ID of the secret sharing scheme
-	     *	@param n, UInt32, contains the number of participants
-	     *  @param Participants, vector of *TpmCryptSubject, contains the participants of the secret sharing scheme
-	     *  @param *myGroup, TpmCryptGroup, contains the group that becomes part of the sss
-	     *	@param VolumeKey, string, contains the decrypted volume key, that is the shared secret of the sss
-	     */
-	    TpmCryptSSS (TpmCryptStorage &SSSStorage, string SSSID, UInt32 n, vector<TpmCryptSubject*> Participants, TpmCryptGroup* myGroup, string VolumeKey);
+            TpmCryptSSS (TpmCryptStorage &SSSStorage, string SSSID, UInt32 n, vector<TpmCryptUser*> Participants, string VolumeKey);
 
             /*!
              *  @brief load existing secret sharing scheme
@@ -113,17 +102,7 @@ namespace tpmcrypt
 	     *	@param subjectPasswords, vector of string, contains the passwords of the subjects
 	     *  @return vector of string, containing the subjects
 	     */
-            string retrieveKey(vector<TpmCryptSubject*> AvailableParticipants, vector<string> subjectPasswords);
-
-            /*!
-             *  @brief retrieve the key by n subjects and a group
-	     *	@param AvailablePArticipants, vector of *TpmCryptSubject, contains the list of subjects
-	     *	@param subjectPasswords, vector of string, contains the passwords of the subjects
-	     *	@param *myGroup, TpmCryptGroup, contains the group
-	     *	@param groupPassword, string, contains the passwords of the group
-	     *  @return vector of string, containing the subjects
-	     */
-	    string retrieveKey(vector<TpmCryptSubject*> AvailableParticipants, vector<string> subjectPasswords, TpmCryptGroup *myGroup, string groupPassword);
+            string retrieveKey(vector<TpmCryptUser*> AvailableParticipants, vector<string> userPasswords);
 
     private:
             /*!
@@ -137,7 +116,7 @@ namespace tpmcrypt
 	     * 	@param &X, string, contains part one of the participants key 
 	     * 	@param &Y, string, contains part two of the participants key
 	     */
-            void storeParticipantKey(string &Participant, string &X, string &Y);
+        void storeParticipantKey(string &Participant, string &X, string &Y);
 
             /*!
              *  @brief loads the key of a participant from the database

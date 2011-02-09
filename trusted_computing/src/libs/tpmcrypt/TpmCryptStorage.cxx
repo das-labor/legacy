@@ -89,7 +89,7 @@ int TpmCryptStorage::protectDB(string command)
 	return 0;
 }
 
-vector<string> TpmCryptStorage::queryDB(string table, string select, string column, string data)
+vector<string> TpmCryptStorage::queryDB(string &table, string &select, string &column, string &data)
 {
 	int cols = 0;
 	vector<string> blob;
@@ -109,22 +109,48 @@ vector<string> TpmCryptStorage::queryDB(string table, string select, string colu
 		blob.push_back(sqlite3_column_blob(stmt,i));
 	}
 	
+	sqlite3_finalize(stmt);
+	
 	return blob;
 }
 
-void TpmCryptStorage::storeDB(string table, string select, string column, string new_data, string old_data)
+void TpmCryptStorage::storeDB(string &table, string &select, string &column, string &new_data, string &old_data)
 {
 	string queries = "UPDATE " + table + " SET " + select + " IS " + new_data + " WHERE " + column + " IS " + old_data;
 	
 	if(protectDB(new_data) != 0)
 		throw InvalidData("SQL Injection");
 	
-	sqlite3_exec(handle,queries,0,0,0);
-	
-	return 0;
+	if(!sqlite3_exec(handle,queries,0,0,0))
+	{
+		string val = sqlite3_errmsg(handle);
+		throw InvalidDB("TpmCryptStorage: SQLite says " + val);
+	}
 }
 
-vector<string> TpmCryptStorage::queryAllEntryDB(string table, string select)
+void TpmCryptStorage::deleteDB(string &table, string &column, string &identifier)
+{
+	string queries = "DELETE FROM " + table + " WHERE " + column + " IS " + identifier;
+	
+	if(!sqlite3_exec(handle,queries,0,0,0))
+	{
+		string val = sqlite3_errmsg(handle);
+		throw InvalidDB("TpmCryptStorage: SQLite says " + val);
+	}
+}
+
+void TpmCryptStorage::deleteAllEntryDB(string &column, string &identifier)
+{
+	string queries = "DELETE FROM * WHERE " + column + " IS " + identifier;
+	
+	if(!sqlite3_exec(handle,queries,0,0,0))
+	{
+		string val = sqlite3_errmsg(handle);
+		throw InvalidDB("TpmCryptStorage: SQLite says " + val);
+	}
+}
+
+vector<string> TpmCryptStorage::queryAllEntryDB(string &table, string &select)
 {
 	int cols;
 	vector<string> blob;
@@ -141,10 +167,12 @@ vector<string> TpmCryptStorage::queryAllEntryDB(string table, string select)
 		blob.push_back(sqlite3_column_blob(stmt,i));
 	}
 	
+	sqlite3_finalize(stmt);
+	
 	return blob;
 }
 
-void TpmCryptStorage::usersDB(long uuid, string name, string email, string country, string company, bool isAdmin)
+void TpmCryptStorage::usersDB(long uuid, string &name, string &email, string &country, string &company, bool isAdmin)
 {
 	string queries = "INSERT INTO users VALUES(" + uuid + ",'" + name + "','" + email + "','" + country + "','" + company + "'," + isAdmin + ")";
 	
@@ -167,7 +195,7 @@ void TpmCryptStorage::usersDB(long uuid, string name, string email, string count
 	}
 }
 
-void TpmCryptStorage::keysDB(long uuid, string type, int size, string valid)
+void TpmCryptStorage::keysDB(long uuid, string &type, int size, string &valid)
 {
 	string queries = "INSERT INTO keys VALUES(" + uuid + ",'" + type + "'," + size + ",'" + valid + "')";
 	
@@ -189,7 +217,7 @@ void TpmCryptStorage::user_keysDB(long id, long u_uuid, long k_uuid)
 	}
 }
 
-void TpmCryptStorage::volumesDB(long uuid, string name, string path, string blob, string enc)
+void TpmCryptStorage::volumesDB(long uuid, string &name, string &path, string &blob, string &enc)
 {
 	string queries = "INSERT INTO volumes VALUES(" + uuid + ",'" + name + "','" + path + "','" + blob + "','" + enc + "')";
 	
@@ -203,7 +231,7 @@ void TpmCryptStorage::volumesDB(long uuid, string name, string path, string blob
 	}
 }
 
-void TpmCryptStorage::sssDB(long uuid, string name, int participants, int x)
+void TpmCryptStorage::sssDB(long uuid, string &name, int participants, int x)
 {
 	string queries = "INSERT INTO sss VALUES(" + uuid + ",'" + name + "'," + participants + "," + x + ")";
 	
@@ -214,7 +242,7 @@ void TpmCryptStorage::sssDB(long uuid, string name, int participants, int x)
 	}
 }
 
-void TpmCryptStorage::sssEntriesDB(long uuid, long sss_uuid, long u_uuid, string x, string y)
+void TpmCryptStorage::sssEntriesDB(long uuid, long sss_uuid, long u_uuid, string &x, string &y)
 {
 	string queries = "INSERT INTO sss_entries VALUES(" + uuid + "," + sss_uuid + "," + u_uuid + ",'" + x + "','" + y + "')";
 	

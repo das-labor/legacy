@@ -52,6 +52,10 @@ bool TpmCryptFindPlatform(TpmCryptStorage &myPlatformStorage, const string &plat
 
 bool TpmCryptFindToken(TpmCryptStorage &myTokenStorage, const string &tokenIdentifier);
 
+bool TpmCryptFindUserInVolume(TpmCryptStorage &myVolumeStorage, const string &userIdentifier, const string &volumeIdentifier);
+
+vector<string> TpmCryptFindAllUsersInVolume(TpmCryptStorage &myVolumeStorage, const string &volumeIdentifier);
+
 vector<string> TpmCryptFindAllAdmins(TpmCryptStorage &myUserStorage);
 
 vector<string> TpmCryptFindAllUsers(TpmCryptStorage &myUserStorage, bool withAdmins);

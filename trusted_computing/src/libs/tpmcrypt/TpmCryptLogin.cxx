@@ -195,10 +195,10 @@ bool loginSuperUser()
 
 //================================================================================
 //
-TpmCryptSubject* getCurrentAdmin(TpmCryptStorage &mySubjectStorage)
+TpmCryptSubject* getCurrentAdmin(TpmCryptStorage &myUserStorage)
 {
     // loading admin
-    vector<string> myAdmins = TpmCryptFindAllAdmins(mySubjectStorage);
+    vector<string> myAdmins = TpmCryptFindAllAdmins(myUserStorage);
     if (!myAdmins.size())
         throw NoAdminAvailable("No admins found, please add an administrator first!");
 
@@ -213,22 +213,22 @@ TpmCryptSubject* getCurrentAdmin(TpmCryptStorage &mySubjectStorage)
         existingAdmin = selectFromStringVector(myAdmins, "Number:\t\tAdmin:", "Please select an administrator to continue:");
     }
 
-    if (!TpmCryptFindAdmin(mySubjectStorage, existingAdmin))
-        throw UnknownSubject("Subject '" + existingAdmin + "' is not an admin.");
+    if (!TpmCryptFindAdmin(myUserStorage, existingAdmin))
+        throw UnknownSubject("User '" + existingAdmin + "' is not an admin.");
 
-    TpmCryptSubject *myExistingAdmin = new TpmCryptSubject(existingAdmin, mySubjectStorage);
+    TpmCryptUser *myExistingAdmin = new TpmCryptUser(existingAdmin, myUserStorage);
     return myExistingAdmin;
 };
 
 //================================================================================
 //
-bool loginAdmin(TpmCryptStorage &mySubjectStorage)
+bool loginAdmin(TpmCryptStorage &myUserStorage)
 {
     int myUID = getuid();
     debug << "TpmCryptLogin: My userID = " << myUID << endl;
 
     // loading admin
-    vector<string> myAdmins = TpmCryptFindAllAdmins(mySubjectStorage);
+    vector<string> myAdmins = TpmCryptFindAllAdmins(myUserStorage);
     if (!myAdmins.size())
         throw NoAdminAvailable("No admins found, please add an administrator first!");
 
@@ -239,8 +239,8 @@ bool loginAdmin(TpmCryptStorage &mySubjectStorage)
     }
 
     // load admin
-    TpmCryptSubject *myAdmin = getCurrentAdmin(mySubjectStorage);
-    string myPassword = getPassword("Please enter the according password for admin '" + myAdmin->getMySubjectName() + "' (" + myAdmin->getMySubjectIDString() + "): ");
+    TpmCryptUser *myAdmin = getCurrentAdmin(myUserStorage);
+    string myPassword = getPassword("Please enter the according password for admin '" + myAdmin->getMyUserName() + "' (" + myAdmin->getMyUserIDString() + "): ");
     return myAdmin->verifyPassword(myPassword);
 };
 

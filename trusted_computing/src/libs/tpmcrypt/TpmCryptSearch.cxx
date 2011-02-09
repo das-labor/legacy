@@ -163,6 +163,45 @@ bool TpmCryptFindToken(TpmCryptStorage &myTokenStorage, const string &tokenIdent
 
 //================================================================================
 //
+bool TpmCryptFindUserInVolume(TpmCryptStorage &myVolumeStorage, const string &userIdentifier, const string &volumeIdentifier)
+{
+	vector<string> myVolume = myVolumeStorage.queryDB("volume_users","u_uuid","v_uuid",volumeIdentifier);
+    vector<string>::const_iterator it;
+    if (myVolume.size())
+    {
+		it = myVolume.begin();
+		while ( it != myVolume.end())
+		{
+			if( userIdentifier == *(it) )
+				return true;
+			it++;
+		}
+	}
+	return false;
+};
+
+//================================================================================
+//
+
+vector<string> TpmCryptFindAllUsersInVolume(TpmCryptStorage &myVolumeStorage, const string &volumeIdentifier)
+{
+	vector<string> myUserNames;
+	vector<string> myUsers = myVolumeStorage.queryDB("volume_users","u_uuid","v_uuid",volumeIdentifier);
+	vector<string>::const_iterator it;
+    if (myUsers.size())
+    {
+		it = myUsers.begin();
+		while ( it != myUsers.end())
+		{
+			myUserNames += myVolumeStorage.queryDB("users","name","u_uuid",*(it));
+			it++;
+		}
+	}
+	return myUserNames;
+};
+
+//================================================================================
+//
 vector<string> TpmCryptFindAllAdmins(TpmCryptStorage &myUserStorage)
 {
 	vector<string> myAdmins = myUserStorage.queryDB("users","name","isAdmin","1");

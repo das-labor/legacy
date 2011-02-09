@@ -37,7 +37,7 @@ ByteVector Modul(myModulus, 64);
 
 //================================================================================
 // create new secret sharing scheme
-TpmCryptSSS::TpmCryptSSS (TpmCryptStorage &SSSStorage, string SSSID, UInt32 n, vector<TpmCryptSubject*> Participants, string SSSKey) :
+TpmCryptSSS::TpmCryptSSS (TpmCryptStorage &SSSStorage, string SSSID, UInt32 n, vector<TpmCryptUser*> Participants, string SSSKey) :
     mySSSID(SSSID),
     mySubjectsInSSS(),
     mySSSStorage(SSSStorage),
@@ -65,23 +65,23 @@ TpmCryptSSS::TpmCryptSSS (TpmCryptStorage &SSSStorage, string SSSID, UInt32 n, v
     debug << "TpmCryptSSS|Constructor(): Retrieving keys" << endl;
     vector<ByteVector> x=mySSS.getX();
     vector<ByteVector> y=mySSS.getY();
-
+	
     // assigning key for each participant
     // and encrypting it
     for(int i = 0; i<P; i++ )
     {
-        string currentParticipant = Participants[i]->getMySubjectName();
+        string currentParticipant = Participants[i]->getMyUserUUID;
         
         ByteVector currentX = x.back();
         ByteVector currentY = y.back();
 		
-        ByteVector encryptedX = Participants[i]->encryptForSubject(Participants[i], currentX);
-        ByteVector encryptedY = Participants[i]->encryptForSubject(Participants[i], currentY);
+        ByteVector encryptedX = Participants[i]->encryptForUser(Participants[i], currentX);
+        ByteVector encryptedY = Participants[i]->encryptForUser(Participants[i], currentY);
 
         string Base64encodedX = EncodeByteVectorToBASE64(encryptedX);
         string Base64encodedY = EncodeByteVectorToBASE64(encryptedY);
 
-        storeParticipantKey(currentParticipant, Base64encodedX, Base64encodedY);
+        storeParticipantKey(Participant[i],Base64encodedX,Base64encodedY);
 
         mySubjectsInSSS.push_back(currentParticipant);
         x.pop_back();
@@ -89,80 +89,6 @@ TpmCryptSSS::TpmCryptSSS (TpmCryptStorage &SSSStorage, string SSSID, UInt32 n, v
         string message = "You have been added to secret-sharing-scheme '" + SSSID + "'";
         Participants[i]->addMessageForUser(message);
     }
-    storeSSS();
-};
-
-//================================================================================
-// create new secret sharing scheme including one group
-TpmCryptSSS::TpmCryptSSS (TpmCryptStorage &SSSStorage, string SSSID, UInt32 n, vector<TpmCryptSubject*> Participants, TpmCryptGroup* myGroup, string SSSKey) :
-    mySSSID(SSSID),
-    mySubjectsInSSS(),
-    mySSSStorage(SSSStorage),
-    minimumParticipants(n)
-{
-    debug << "TpmCryptSSS|Constructor(): Creating new secret-sharing-scheme with ID '" << mySSSID << "'" << endl;
-
-    UInt32 OverallParticipants = Participants.size() + 1; // +1 for the group
-    Integer P(OverallParticipants);
-    Integer A(n);
-
-    ByteVector Participant( I2OSP(P, P.size()));
-    ByteVector Access( I2OSP(A, A.size()));
-    ByteVector Key ((const unsigned char*)SSSKey.c_str(), SSSKey.length());
-
-    debug << "TpmCryptSSS|Constructor(): Minimum Participants: " << A << endl;
-    debug << "TpmCryptSSS|Constructor(): Overall Participants: " << P << endl;
-    debug << "TpmCryptSSS|Constructor(): Modulus: " << Modul << endl;
-
-    debug << "TpmCryptSSS|Constructor(): Initializing SSS" << endl;
-    SSS mySSS;
-    mySSS.initialisation(Participant,Access,Key,Modul);
-
-    // retrieving keys
-    debug << "TpmCryptSSS|Constructor(): Retrieving keys" << endl;
-    vector<ByteVector> x=mySSS.getX();
-    vector<ByteVector> y=mySSS.getY();
-
-    // assigning key for each participant (-1 due to group)
-    // and encrypting it
-    for(int i = 0; i < (P - 1); i++ )
-    {
-        string currentParticipant = Participants[i]->getMySubjectName();
-        ByteVector currentX = x.back();
-        ByteVector currentY = y.back();
-
-        ByteVector encryptedX = Participants[i]->encryptForSubject(Participants[i], currentX);
-        ByteVector encryptedY = Participants[i]->encryptForSubject(Participants[i], currentY);
-
-        string Base64encodedX = EncodeByteVectorToBASE64(encryptedX);
-        string Base64encodedY = EncodeByteVectorToBASE64(encryptedY);
-
-        storeParticipantKey(currentParticipant, Base64encodedX, Base64encodedY);
-
-        mySubjectsInSSS.push_back(currentParticipant);
-        x.pop_back();
-        y.pop_back();
-        string message = "You have been added to secret-sharing-scheme '" + SSSID + "'";
-        Participants[i]->addMessageForUser(message);
-    }
-
-    // now the last participant is the group, so encrypt it for the Group!
-    string currentParticipant = myGroup->getMyGroupID();
-    ByteVector currentX = x.back();
-    ByteVector currentY = y.back();
-
-    ByteVector encryptedX = myGroup->encryptForGroup(myGroup, currentX);
-    ByteVector encryptedY = myGroup->encryptForGroup(myGroup, currentY);
-
-    string Base64encodedX = EncodeByteVectorToBASE64(encryptedX);
-    string Base64encodedY = EncodeByteVectorToBASE64(encryptedY);
-
-    storeParticipantKey(currentParticipant, Base64encodedX, Base64encodedY);
-
-    mySubjectsInSSS.push_back(currentParticipant);
-    x.pop_back();
-    y.pop_back();
-
     storeSSS();
 };
 
@@ -200,7 +126,7 @@ void TpmCryptSSS::deleteSSS()
 
 //================================================================================
 // retrieve the key by n subjects
-string TpmCryptSSS::retrieveKey(vector<TpmCryptSubject*> AvailableParticipants, vector<string> subjectPasswords)
+string TpmCryptSSS::retrieveKey(vector<TpmCryptUser*> AvailableParticipants, vector<string> subjectPasswords)
 {
     debug << "TpmCryptSSS|retrieveKey(): Retrieving key from secret-sharing-scheme with ID '" << mySSSID << "'" << endl;
     if (AvailableParticipants.size() < minimumParticipants)
@@ -214,18 +140,18 @@ string TpmCryptSSS::retrieveKey(vector<TpmCryptSubject*> AvailableParticipants, 
     vector<ByteVector> x;
     vector<ByteVector> y;
 
-    vector<TpmCryptSubject*>::const_iterator SubjectIterator;
+    vector<TpmCryptUser*>::const_iterator UserIterator;
     vector<string>::const_iterator PasswordIterator;
 
-    SubjectIterator=AvailableParticipants.begin();
-    PasswordIterator=subjectPasswords.begin();
+    UserIterator=AvailableParticipants.begin();
+    PasswordIterator=userPasswords.begin();
 
-    while ( SubjectIterator != AvailableParticipants.end())
+    while ( UserIterator != AvailableParticipants.end())
     {
-        TpmCryptSubject *mySubject = *(SubjectIterator);
-        string currentParticipantsName = mySubject->getMySubjectName();
+        TpmCryptUser *myUser = *(UserIterator);
+        string currentParticipantsUUID = myUser->getMyUserUUID();
         string currentParticipantsPassword = *(PasswordIterator);
-        StringPair myXY = loadParticipantKey(currentParticipantsName);
+        StringPair myXY = loadParticipantKey(currentParticipantsUUID);
 
         string myX = myXY.first;
         string myY = myXY.second;
@@ -233,10 +159,10 @@ string TpmCryptSSS::retrieveKey(vector<TpmCryptSubject*> AvailableParticipants, 
         ByteVector decodedX = DecodeBASE64StringToByteVector(myX);
         ByteVector decodedY = DecodeBASE64StringToByteVector(myY);
 
-        decodedX = mySubject->decryptBySubject(mySubject, decodedX, currentParticipantsPassword);
-        decodedY = mySubject->decryptBySubject(mySubject, decodedY, currentParticipantsPassword);
+        decodedX = myUser->decryptByUser(myUser, decodedX, currentParticipantsPassword);
+        decodedY = myUser->decryptByUser(myUser, decodedY, currentParticipantsPassword);
 
-        SubjectIterator++;
+        UserIterator++;
         PasswordIterator++;
         x.push_back(decodedX);
         y.push_back(decodedY);
@@ -248,120 +174,40 @@ string TpmCryptSSS::retrieveKey(vector<TpmCryptSubject*> AvailableParticipants, 
 };
 
 //================================================================================
-// retrieve the key by n subjects and a group
-string TpmCryptSSS::retrieveKey(vector<TpmCryptSubject*> AvailableParticipants, vector<string> subjectPasswords, TpmCryptGroup *myGroup, string groupPassword)
-{
-    debug << "TpmCryptSSS|retrieveKey(): Retrieving key from secret-sharing-scheme with ID '" << mySSSID << "'" << endl;
-    // +1 for the group!
-    if ((AvailableParticipants.size() + 1) < minimumParticipants)
-     throw NotEnoughParticipants("TpmCryptSSS|retrieveKey(): Not enough participants to retrieve key for SSSID '" + mySSSID + "'");
-
-    if (AvailableParticipants.size() != subjectPasswords.size())
-        throw InvalidPassword("TpmCryptSSS|retrieveKey(): Amount of participants and passwords do not match!");
-
-    SSS mySSS;
-
-    vector<ByteVector> x;
-    vector<ByteVector> y;
-
-    vector<TpmCryptSubject*>::const_iterator SubjectIterator;
-    vector<string>::const_iterator PasswordIterator;
-
-    SubjectIterator=AvailableParticipants.begin();
-    PasswordIterator=subjectPasswords.begin();
-
-    // first get the keys from the participants
-    while ( SubjectIterator != AvailableParticipants.end())
-    {
-        TpmCryptSubject *mySubject = *(SubjectIterator);
-        string currentParticipantsName = mySubject->getMySubjectName();
-        string currentParticipantsPassword = *(PasswordIterator);
-        StringPair myXY = loadParticipantKey(currentParticipantsName);
-
-        string myX = myXY.first;
-        string myY = myXY.second;
-
-        ByteVector decodedX = DecodeBASE64StringToByteVector(myX);
-        ByteVector decodedY = DecodeBASE64StringToByteVector(myY);
-
-        decodedX = mySubject->decryptBySubject(mySubject, decodedX, currentParticipantsPassword);
-        decodedY = mySubject->decryptBySubject(mySubject, decodedY, currentParticipantsPassword);
-
-        SubjectIterator++;
-        PasswordIterator++;
-        x.push_back(decodedX);
-        y.push_back(decodedY);
-    }
-
-    // now get the key encrypted for the group
-    string currentParticipantsName = myGroup->getMyGroupID();
-    StringPair myXY = loadParticipantKey(currentParticipantsName);
-
-    string myX = myXY.first;
-    string myY = myXY.second;
-
-    ByteVector decodedX = DecodeBASE64StringToByteVector(myX);
-    ByteVector decodedY = DecodeBASE64StringToByteVector(myY);
-
-    decodedX = myGroup->decryptByGroup(myGroup, decodedX, groupPassword);
-    decodedY = myGroup->decryptByGroup(myGroup, decodedY, groupPassword);
-
-    SubjectIterator++;
-    PasswordIterator++;
-    x.push_back(decodedX);
-    y.push_back(decodedY);
-
-    // reconstruction
-    debug << "TpmCryptSSS|retrieveKey(): Reconstruction..." << endl;
-    ByteVector myReconstructedKey = mySSS.reconstruction(x, y, Modul);
-    vector<UInt8> myReconstructedPassword = convertByteVector2UInt8Vector(myReconstructedKey);
-    return convertUInt8VectorToString(&myReconstructedPassword);
-};
-
-//================================================================================
 void TpmCryptSSS::storeSSS()
 {
-    debug << "TpmCryptSSS|storeSSS(): Storing secret-sharing-scheme with ID '" << mySSSID << "'" << endl;
-    mySSSStorage.selectSection(mySSSID);
-    mySSSStorage.selectSubSection(TpmCryptSSS_Properties);
-    mySSSStorage.setEntry(TpmCryptSSS_SSS_MinimumParticipants, convertUInt32toString(minimumParticipants));
-
-    mySSSStorage.selectSubSection(TpmCryptSSS_Participants);
-    vector<string>::const_iterator Iterator;
-    Iterator=mySubjectsInSSS.begin();
-    while ( Iterator != mySubjectsInSSS.end())
-    {
-        mySSSStorage.setEntry(*(Iterator) , TpmCryptSSS_ParticipantValid);
-        Iterator++;
-    }
-
-};
+	mySSSStorage.storeDB("sss","min_participants",convertUInt32toString(minimumParticipants),"uuid",mySSSID);
+}
 
 //================================================================================
 void TpmCryptSSS::storeParticipantKey(string &Participant, string &X, string &Y)
 {
-    debug << "TpmCryptSSS|storeParticipantKey(): Storing participant key in secret-sharing-scheme with ID '" << mySSSID << "'" << endl;
-    mySSSStorage.selectSection(mySSSID);
-    mySSSStorage.selectSubSection(TpmCryptSSS_ParticipantsXKey);
-    mySSSStorage.setEntry(Participant, X);
-    mySSSStorage.selectSubSection(TpmCryptSSS_ParticipantsYKey);
-    mySSSStorage.setEntry(Participant, Y);
+    debug << "TpmCryptSSS|storeSSS(): Storing secret-sharing-scheme with ID '" << mySSSID << "'" << endl;
+    bool found = true;
+    string uuid;
+    
+    srand(time(NULL));
+    
+    while(found)
+    {
+		uuid = convertUInt32toString((rand() % 100000 + 1));
+		found = TpmCryptFindSSS(mySSSStorage,uuid);
+	}
+	
+	mySSSStorage.sssEntriesDB(uuid,SSSID,*(Iterator),X,Y);
 };
 
 //================================================================================
 void TpmCryptSSS::loadSSS()
 {
     debug << "TpmCryptSSS|storeSSS(): Loading secret-sharing-scheme with ID '" << mySSSID << "'" << endl;
-    if (! mySSSStorage.findSection(mySSSID))
+    if (! TpmCryptFindSSS(mySSSStorage,SSSID))
         throw InvalidSSSID("TpmCryptSSS|loadSSS(): Error loading SSS, invalid SSSID supplied!");
-    mySSSStorage.selectSection(mySSSID);
-    mySSSStorage.selectSubSection(TpmCryptSSS_Properties);
-    minimumParticipants = convertStringtoUInt32(mySSSStorage.getEntry(TpmCryptSSS_SSS_MinimumParticipants));
+    minimumParticipants = convertStringtoUInt32(mySSSStorage.queryDB("sss","min_participants","uuid",SSSID));
     if (!minimumParticipants)
         throw NotEnoughParticipants("TpmCryptSSS|loadSSS(): Error loading SSS, n is zero!");
 
-    mySSSStorage.selectSubSection(TpmCryptSSS_Participants);
-    mySubjectsInSSS = mySSSStorage.getAllEntries();
+    mySubjectsInSSS = mySSSStorage.queryDB("sss_entries","u_uuid","sss_uuid",SSSID);
     if (!(mySubjectsInSSS.size()) || (mySubjectsInSSS.size() < minimumParticipants))
         throw NotEnoughParticipants("TpmCryptSSS|loadSSS(): Error loading SSS, n is bigger than participant list!");
 };
@@ -370,11 +216,8 @@ void TpmCryptSSS::loadSSS()
 StringPair TpmCryptSSS::loadParticipantKey(string &Participant)
 {
     debug << "TpmCryptSSS|loadParticipantKey(): Storing participant key in secret-sharing-scheme with ID '" << mySSSID << "'" << endl;
-    mySSSStorage.selectSection(mySSSID);
-    mySSSStorage.selectSubSection(TpmCryptSSS_ParticipantsXKey);
-    string X = mySSSStorage.getEntry(Participant);
-    mySSSStorage.selectSubSection(TpmCryptSSS_ParticipantsYKey);
-    string Y = mySSSStorage.getEntry(Participant);
+    string X = mySSSStorage.queryDB("sss_entries","x","u_uuid",Participant);
+    string Y = mySSSStorage.queryDB("sss_entries","y","u_uuid",Participant);
     StringPair xy(X,Y);
     return xy;
 };

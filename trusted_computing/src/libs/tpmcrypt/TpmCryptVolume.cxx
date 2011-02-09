@@ -43,18 +43,18 @@ myVolumeStorage (storageDB)
     if (VolumeUUID.empty())
         throw InvalidUUID("TpmCryptVolume|Constructor(): The supplied UUID was empty!");
 
-    if (!myVolumeStorage.findSection(VolumeUUID))
+    if (!TpmCryptFindVolume(storeDB,VolumeUUID))
         throw InvalidUUID("TpmCryptVolume|Constructor(): Volume does not exist!");
     loadVolume();
 };
 
 //================================================================================
 //
-TpmCryptVolume::TpmCryptVolume(   const string &VolumeUUID,
+TpmCryptVolume::TpmCryptVolume( const string &VolumeUUID,
                                 const string &VolumePath,
                                 const string &VolumePass,
                                 UInt8 VolumeEncryptionSystem,
-                                TpmCryptGroup *AdminGroup,
+                                TpmCryptUser	*myAdmin,
                                 TpmCryptStorage &storageDB) :
 myVolumeUUID (VolumeUUID),
 myVolumePath (VolumePath),
@@ -63,7 +63,7 @@ myVolumeStorage (storageDB)
 {
     debug << "TpmCryptVolume|Constructor(): Creating new volume!" << endl;
 
-    if (myVolumeStorage.findSection(VolumeUUID))
+    if (TpmCryptFindVolume(storeDB,VolumeUUID))
         throw InvalidUUID("TpmCryptVolume|Constructor(): Volume already exists!");
 
     if (VolumeUUID.empty())
@@ -78,11 +78,7 @@ myVolumeStorage (storageDB)
     if (VolumePass.empty())
         throw InvalidKey("TpmCryptVolume|Constructor(): The supplied password was invalid!");
 
-    if (AdminGroup->getMyGroupID() != TPMCRYPT_ADMIN_GROUP)
-        throw InvalidGroup("TpmCryptVolume|Constructor(): Invalid admin group supplied!");
-
-    // Encrypt VolumePass for admin group
-    addGroup(AdminGroup, VolumePass);
+    // Damit encrypt mutiple volumes with admin pw TODO TODO TODO
     storeVolume();
 };
 
@@ -96,32 +92,30 @@ TpmCryptVolume::~TpmCryptVolume()
 
 //================================================================================
 //
-void   TpmCryptVolume::addSubject(TpmCryptSubject *Subject, const string &VolumePassword)
+void   TpmCryptVolume::addUser(TpmCryptUser *User, const string &VolumePassword)
 {
-    if (Subject->isAdmin())
+    if (TpmCryptFindAdmin(storeDB,User->getMyUserUUID())
         throw InvalidSubjectID("TpmCryptVolume|addSubject(): You are not allowed to add an admin-subject!");
     
-    debug << "TpmCryptVolume|addSubject(): Adding subject '" << Subject->getMySubjectIDString() << "'" << endl;
+    debug << "TpmCryptVolume|addSubject(): Adding subject '" << User->getMyUserIDString() << "'" << endl;
 
     if (VolumePassword.empty())
         throw InvalidPassword("TpmCryptVolume|addSubject(): The supplied password was empty!");
     ByteVector passwordVector = convertStringToByteVector(VolumePassword);    
 
-    debug << "TpmCryptVolume|addSubject(): Encrypting volume key for subject '" << Subject->getMySubjectIDString() << "'" << endl;
-    ByteVector passwordVectorByteVector = Subject->encryptForSubject(Subject, passwordVector);
+    debug << "TpmCryptVolume|addSubject(): Encrypting volume key for subject '" << User->getMyUserUUID() << "'" << endl;
+    ByteVector passwordVectorByteVector = User->encryptForUser(Subject, passwordVector);
     if (!passwordVector.size())
-        throw EncryptionFailed("TpmCryptVolume|addSubject(): Encryption for subject '" + Subject->getMySubjectName() + "' failed!");
+        throw EncryptionFailed("TpmCryptVolume|addSubject(): Encryption for subject '" + User->getMyUserName() + "' failed!");
 
-    debug << "TpmCryptVolume|addSubject(): Storing volume key for subject '" << Subject->getMySubjectIDString() << "'" << endl;
+    debug << "TpmCryptVolume|addSubject(): Storing volume key for subject '" << User->getMyUserUUID() << "'" << endl;
     string myBase64EncodedPassword = EncodeByteVectorToBASE64(passwordVectorByteVector);
     debug << "TpmCryptVolume|addSubject(): BASE64 encoded encrypted passphrase: " << myBase64EncodedPassword << endl;
 
-    myVolumeStorage.selectSection(myVolumeUUID);
-    myVolumeStorage.selectSubSection(TpmCryptVolume_SubjectKeyDB);
-    if (myVolumeStorage.findEntry(Subject->getMySubjectIDString()))
-        debug << "TpmCryptVolume|addSubject(): Subject '" << Subject->getMySubjectIDString() << "' was already in volume" << endl;
+    if (TpmCryptFindUserInVolume(myVolumeStorage,User->getMyUserUUID(),myVolumeUUID))
+        debug << "TpmCryptVolume|addSubject(): Subject '" << User->getMyUserUUID() << "' was already in volume" << endl;
         
-    myVolumeStorage.setEntry(Subject->getMySubjectIDString(), myBase64EncodedPassword);
+    myVolumeStorage.storeDB("user_keys","key_blob","u_uuid",myBase64EncodedPassword,User->getMyUserUUID());
     string message = "You have been added to volume '" + myVolumeUUID + "'";
     Subject->addMessageForUser(message);
 };
@@ -129,114 +123,26 @@ void   TpmCryptVolume::addSubject(TpmCryptSubject *Subject, const string &Volume
 
 //================================================================================
 //
-void   TpmCryptVolume::deleteSubject(TpmCryptSubject *Subject)
+void TpmCryptVolume::deleteUser(TpmCryptUser *User)
 {
-    debug << "TpmCryptVolume|deleteSubject(): deleting subject '" << Subject->getMySubjectIDString() << "'" << endl;
-    myVolumeStorage.selectSection(myVolumeUUID);
-    myVolumeStorage.selectSubSection(TpmCryptVolume_SubjectKeyDB);
-    myVolumeStorage.deleteEntry(Subject->getMySubjectIDString());
+    debug << "TpmCryptVolume|deleteSubject(): deleting subject '" << User->getMyUserUUID() << "'" << endl;
+    myVolumeStorage.deleteDB("volume_users","u_uuid",User->getMyUserUUID());
     string message = "You have been deleted from volume '" + myVolumeUUID + "'";
-    Subject->addMessageForUser(message);
+    User->addMessageForUser(message);
 };
 
 //================================================================================
 //
-void TpmCryptVolume::listSubjects()
+void TpmCryptVolume::listUsers()
 {
     debug << "TpmCryptVolume|listSubjects(): Listing all subjects" << endl;
     cout << "\t" << "The following subjects are available in volume '" << myVolumeUUID << "':" << endl;
-    vector<string> myAvailableSubjects = getSubjects();
-    if (myAvailableSubjects.size())
-        printStringVector(&myAvailableSubjects);
+    vector<string> myAvailableUsers = TpmCryptFindAllUsersInVolume(myVolumeStorage,VolumeUUID);
+    if (myAvailableUsers.size())
+        printStringVector(&myAvailableUsers);
     else
         cout << "\tnone" << endl;
 };
-
-
-//================================================================================
-//
-vector<string> TpmCryptVolume::getSubjects()
-{
-    debug << "TpmCryptVolume|getSubjects(): Retrieving all subjects" << endl;
-    myVolumeStorage.selectSection(myVolumeUUID);
-    myVolumeStorage.selectSubSection(TpmCryptVolume_SubjectKeyDB);
-    vector<string> myAvailableSubjects = myVolumeStorage.getAllEntries();
-    return myAvailableSubjects;
-};
-
-
-//================================================================================
-//
-void   TpmCryptVolume::addGroup(TpmCryptGroup *Group, const string &VolumePassword)
-{
-    debug << "TpmCryptVolume|addGroup(): Adding group '" << Group->getMyGroupID() << "'" << endl;
-
-    if (VolumePassword.empty())
-        throw InvalidPassword("TpmCryptVolume|addGroup(): The supplied password was empty!");
-    ByteVector passwordVector = convertStringToByteVector(VolumePassword);
-	cout << "top" << endl;
-    debug << "TpmCryptVolume|addGroup(): Encrypting volume key for group '" << Group->getMyGroupID() << "'" << endl;
-    ByteVector passwordVectorByteVector = Group->encryptForGroup(Group, passwordVector);
-    if (!passwordVector.size())
-        throw EncryptionFailed("TpmCryptVolume|addGroup(): Encryption for group '" + Group->getMyGroupID() + "' failed!");
-
-    debug << "TpmCryptVolume|addGroup(): Storing volume key for group '" << Group->getMyGroupID() << "'" << endl;
-    string myBase64EncodedPassword = EncodeByteVectorToBASE64(passwordVectorByteVector);
-    debug << "TpmCryptVolume|addGroup(): BASE64 encoded encrypted passphrase: " << myBase64EncodedPassword << endl;
-
-    myVolumeStorage.selectSection(myVolumeUUID);
-    myVolumeStorage.selectSubSection(TpmCryptVolume_GroupKeyDB);
-    if (myVolumeStorage.findEntry(Group->getMyGroupID()))
-        debug << "TpmCryptVolume|addGroup(): Group '" << Group->getMyGroupID() << "' was already in volume, overwriting..." << endl;
-
-    myVolumeStorage.setEntry(Group->getMyGroupID(), myBase64EncodedPassword);
-    string message = "Group '" + Group->getMyGroupID() + "' has been added to volume '" + myVolumeUUID + "'";
-    Group->addMessageForGroupMembers(message);
-
-};
-
-
-//================================================================================
-//
-void   TpmCryptVolume::deleteGroup(TpmCryptGroup *Group)
-{
-    debug << "TpmCryptVolume|deleteGroup(): deleting group '" << Group->getMyGroupID() << "'" << endl;
-    myVolumeStorage.selectSection(myVolumeUUID);
-    myVolumeStorage.selectSubSection(TpmCryptVolume_GroupKeyDB);
-
-    if (Group->getMyGroupID() == TPMCRYPT_ADMIN_GROUP)
-        throw InvalidGroup("The admin group cannot be deleted!");
-    else
-        myVolumeStorage.deleteEntry(Group->getMyGroupID());
-    string message = "Group '" + Group->getMyGroupID() + "' has been deleted from volume '" + myVolumeUUID + "'";
-    Group->addMessageForGroupMembers(message);
-};
-
-//================================================================================
-//
-void TpmCryptVolume::listGroups()
-{
-    debug << "TpmCryptVolume|listGroups(): Listing all groups" << endl;
-    cout << "\t" << "The following groups are available in volume '" << myVolumeUUID << "':" << endl;
-    vector<string> myAvailableGroups = getGroups();
-    if (myAvailableGroups.size())
-        printStringVector(&myAvailableGroups);
-    else
-        cout << "\tnone" << endl;
-};
-
-
-//================================================================================
-//
-vector<string> TpmCryptVolume::getGroups()
-{
-    debug << "TpmCryptVolume|getGroups(): Retrieving all groups" << endl;
-    myVolumeStorage.selectSection(myVolumeUUID);
-    myVolumeStorage.selectSubSection(TpmCryptVolume_GroupKeyDB);
-    vector<string> myAvailableGroups = myVolumeStorage.getAllEntries();
-    return myAvailableGroups;
-};
-
 
 //================================================================================
 //
@@ -258,29 +164,6 @@ string TpmCryptVolume::getDecryptedVolumeKey(TpmCryptSubject *Subject, string &p
     ByteVector myBase64EncodedPasswordByteVector = DecodeBASE64StringToByteVector(myBase64EncodedPassword);
     debug << "TpmCryptVolume|getDecryptedVolumeKey(): decrypting key" << endl;
     ByteVector myDecode = Subject->decryptBySubject(Subject, myBase64EncodedPasswordByteVector, password);
-
-    return convertByteVector2String(myDecode);
-};
-
-//================================================================================
-//
-string TpmCryptVolume::getDecryptedVolumeKey(TpmCryptGroup *Group, string &password)
-{
-    if (password.empty())
-        throw InvalidPassword("TpmCryptVolume|getDecryptedVolumeKey(): Empty password supplied!");
-
-    myVolumeStorage.selectSection(myVolumeUUID);
-    myVolumeStorage.selectSubSection(TpmCryptVolume_GroupKeyDB);
-
-    debug << "TpmCryptVolume|getDecryptedVolumeKey(): receiving BASE64-encoded key" << endl;
-    string myBase64EncodedPassword = myVolumeStorage.getEntry(Group->getMyGroupID());
-
-    debug << "TpmCryptVolume|getDecryptedVolumeKey(): decoding BASE64-encoded key" << endl;
-    ByteVector myDecodeByteVector = DecodeBASE64StringToByteVector(myBase64EncodedPassword);
-
-    debug << "TpmCryptVolume|getDecryptedVolumeKey(): decrypting key" << endl;
-
-    ByteVector myDecode = Group->decryptByGroup(Group, myDecodeByteVector, password);
 
     return convertByteVector2String(myDecode);
 };
@@ -428,20 +311,3 @@ bool TpmCryptVolume::isSubjectInVolume(TpmCryptSubject *Subject)
     return false;
 };
 
-//================================================================================
-//
-bool TpmCryptVolume::isGroupInVolume(TpmCryptGroup *Group)
-{
-    // load all groups already in volume
-    vector<string> myGroupsInVolume = getGroups();
-
-    vector<string>::const_iterator Iterator;
-    Iterator=myGroupsInVolume.begin();
-    while ( Iterator != myGroupsInVolume.end())
-    {
-        if (*(Iterator) == Group->getMyGroupID())
-            return true;
-        Iterator++;
-    }
-    return false;
-};
