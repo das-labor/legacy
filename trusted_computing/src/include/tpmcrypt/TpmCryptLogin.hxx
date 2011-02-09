@@ -72,7 +72,7 @@ bool loginSuperUser();
  *  @param &mySubjectStorage, TpmCryptStorage, the database with the admin credentials
  *  @return determines whether or not the login was successful 
  */
-bool loginAdmin(TpmCryptStorage &mySubjectStorage);
+bool loginAdmin(TpmCryptStorage &myUserStorage);
 
 /*!
  *  @brief asks the user about the correctness of the selection ( upper case YES )
