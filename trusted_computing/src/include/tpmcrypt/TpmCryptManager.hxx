@@ -31,7 +31,6 @@
 #include <TpmCryptLogin.hxx>
 #include <TpmCryptStorage.hxx>
 #include <TpmCryptSubject.hxx>
-#include <TpmCryptGroup.hxx>
 #include <TpmCryptESD.hxx>
 #include <TpmCryptSearch.hxx>
 #include <TpmCryptVolume.hxx>
@@ -94,14 +93,6 @@ const std::string TpmCryptPlatformType_PCR23   = "PCR23";
 
 
 /*!
-  *  @brief adds a group to a volume in the database
-  *  @param &myVolumeStorage, TpmCryptStorage, points to the current volume database
-  *  @param &mySubjectStorage, TpmCryptStorage, points to the current subject database
-  *  @param &myGroupStorage, TpmCryptStorage, points to the current group database
-  */   
-void TpmCryptAddGroupToVolume(TpmCryptStorage &myVolumeStorage, TpmCryptStorage &mySubjectStorage, TpmCryptStorage &myGroupStorage);
-
-/*!
   *  @brief adds a secret sharing sheme to a volume in the database
   *  @param &myVolumeStorage, TpmCryptStorage, points to the current volume database
   *  @param &mySubjectStorage, TpmCryptStorage, points to the current subject database
@@ -115,14 +106,7 @@ void TpmCryptAddSSSToVolume(TpmCryptStorage &myVolumeStorage, TpmCryptStorage &m
   *  @param &mySubjectStorage, TpmCryptStorage, points to the current subject database
   *  @param &myGroupStorage, TpmCryptStorage, points to the current group database
   */   
-void TpmCryptAddSubjectToGroup(TpmCryptStorage &myGroupStorage, TpmCryptStorage &mySubjectStorage);
 
-/*!
-  *  @brief adds a subject to a volume in the database
-  *  @param &myVolumeStorage, TpmCryptStorage, points to the current volume database
-  *  @param &mySubjectStorage, TpmCryptStorage, points to the current subject database
-  *  @param &myGroupStorage, TpmCryptStorage, points to the current group database
-  */ 
 void TpmCryptAddSubjectToVolume(TpmCryptStorage &myVolumeStorage, TpmCryptStorage &mySubjectStorage, TpmCryptStorage &myGroupStorage);
 
 /*!
@@ -144,12 +128,7 @@ void TpmCryptCreateAdmin(TpmCryptStorage &mySubjectStorage);
   *  @param &mySubjectStorage, TpmCryptStorage, points to the current subject database
   *  @param &myGroupStorage, TpmCryptStorage, points to the current group database
   */
-void TpmCryptCreateGroup(TpmCryptStorage &myGroupStorage, TpmCryptStorage &mySubjectStorage);
 
-/*!
-  *  @brief creates a new platform
-  *  @param &mySubjectStorage, TpmCryptStorage, points to the current subject database
-  */
 void TpmCryptCreatePlatform(TpmCryptStorage &mySubjectStorage);
 
 /*!
@@ -189,20 +168,7 @@ void TpmCryptDeleteAdmin(TpmCryptStorage &mySubjectStorage, TpmCryptStorage &myG
   *  @param &mySubjectStorage, TpmCryptStorage, points to the current subject database
   *  @param &myGroupStorage, TpmCryptStorage, points to the current group database
   */
-void TpmCryptDeleteGroupFromVolume(TpmCryptStorage &myVolumeStorage, TpmCryptStorage &mySubjectStorage, TpmCryptStorage &myGroupStorage);
 
-/*!
-  *  @brief deletes a group in the database
-  *  @param &myVolumeStorage, TpmCryptStorage, points to the current volume database
-  *  @param &mySubjectStorage, TpmCryptStorage, points to the current subject database
-  *  @param &myGroupStorage, TpmCryptStorage, points to the current group database
-  */
-void TpmCryptDeleteGroup(TpmCryptStorage &myGroupStorage, TpmCryptStorage &mySubjectStorage, TpmCryptStorage &myVolumeStorage);
-
-/*!
-  *  @brief deletes a platform from the database
-  *  @param &mySubjectStorage, TpmCryptStorage, points to the current subject database
-  */
 void TpmCryptDeletePlatform(TpmCryptStorage &mySubjectStorage);
 
 /*!
@@ -255,12 +221,7 @@ void TpmCryptDeleteVolume(TpmCryptStorage &myVolumeStorage, TpmCryptStorage &myS
   *  @param groupParam, string, contains the calling parameter
   *  @param &myConfigfile, TpmCryptConfigfile, contains the current TpmCrypt configuration
   */
-void TpmCryptGroupManagement     ( string groupParam, TpmCryptConfigfile &myConfigfile );
 
-/*!
-  *  @brief imports a user in the database
-  *  @param &mySubjectStorage, TpmCryptStorage, points to the current subject database
-  */
 void TpmCryptImportUser(TpmCryptStorage &mySubjectStorage);
 
 /*!
@@ -291,14 +252,7 @@ bool TpmCryptListAdmins(TpmCryptStorage &mySubjectStorage);
   *  @param &myGroupStorage, TpmCryptStorage, points to the current group database
   *  @return bool, determines whether or not the operation was successful
   */
-bool TpmCryptListGroups(TpmCryptStorage &myGroupStorage, TpmCryptStorage &mySubjectStorage);
 
-/*!
-  *  @brief prints all users to the screen
-  *  @param &mySubjectStorage, TpmCryptStorage, points to the current subject database
-  *  @param includeAdmins, determines wether or not admins should be included
-  *  @return bool, determines whether or not the operation was successful
-  */
 bool TpmCryptListUsers(TpmCryptStorage &mySubjectStorage, bool includeAdmins);
 
 /*!
@@ -314,13 +268,7 @@ bool TpmCryptListVolumes(TpmCryptStorage &myVolumeStorage);
   *  @param &mySubjectStorage, TpmCryptStorage, points to the current subject database
   *  @param &myGroupStorage, TpmCryptStorage, points to the current group database
   */
-void TpmCryptListGroupsInVolume(TpmCryptStorage &myVolumeStorage, TpmCryptStorage &mySubjectStorage, TpmCryptStorage &myGroupStorage);
 
-/*!
-  *  @brief prints all platforms to the screen
-  *  @param &mySubjectStorage, TpmCryptStorage, points to the current subject database
-  *  @return bool, determines whether or not the operation was successful
-  */
 bool TpmCryptListPlatforms(TpmCryptStorage &mySubjectStorage);
 
 /*!
@@ -338,14 +286,7 @@ string TpmCryptListSSSInVolume(TpmCryptStorage &myVolumeStorage, TpmCryptStorage
   *  @param &mySubjectStorage, TpmCryptStorage, points to the current subject database
   *  @param &myGroupStorage, TpmCryptStorage, points to the current group database
   */
-void TpmCryptListSubjectsInGroup(TpmCryptStorage &myGroupStorage, TpmCryptStorage &mySubjectStorage);
 
-/*!
-  *  @brief prints all subjects, that have access to given volume to the screen
-  *  @param &myVolumeStorage, TpmCryptStorage, points to the current volume database
-  *  @param &mySubjectStorage, TpmCryptStorage, points to the current subject database
-  *  @param &myGroupStorage, TpmCryptStorage, points to the current group database
-  */
 void TpmCryptListSubjectsInVolume(TpmCryptStorage &myVolumeStorage, TpmCryptStorage &mySubjectStorage, TpmCryptStorage &myGroupStorage);
 
 void TpmCryptShowESD				 ( TpmCryptStorage &myESDStorage );

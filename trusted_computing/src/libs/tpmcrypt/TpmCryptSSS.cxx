@@ -118,8 +118,9 @@ TpmCryptSSS::~TpmCryptSSS()
 void TpmCryptSSS::deleteSSS()
 {
     debug << "TpmCryptSSS|delete(): Deleting secret-sharing-scheme with ID '" << mySSSID << "'" << endl;
-    mySSSStorage.deleteSection(mySSSID);
-    mySSSID.empty();
+	myVolumeStorage.deleteDB("sss_entries","sss_uuid",SSSID);
+	myVolumeStorage.deleteDB("sss","sss_uuid",SSSID);
+	mySSSID.empty();
     mySubjectsInSSS.empty();
     minimumParticipants = 0;
 };

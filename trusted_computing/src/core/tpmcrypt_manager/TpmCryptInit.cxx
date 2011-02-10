@@ -24,9 +24,6 @@ using namespace std;
 using namespace utils;
 using namespace tpmcrypt;
 
-const char rem = 'rm /etc/tpmcrypt/database/*';
-
-
 enum myMenu
 {
     createAdmin = 1,
@@ -40,21 +37,18 @@ typedef map<string, int> t_StringMap;
 
 void TpmCryptDestroyKeys()
 {
-	int rel = 0;
 	TpmCryptTPM myTPM;
 	
 	myTPM.remove_all_keys_by_uuid();
-	
-	rel = system(&rem);
 };
 
 //================================================================================
 //
-bool TpmCryptListAdmins(TpmCryptStorage &mySubjectStorage)
+bool TpmCryptListAdmins(TpmCryptStorage &myUserStorage)
 {
-    vector<StringPair> myAdmins = mySubjectStorage.findAllEntries(TpmCryptSubject_SubjectAdmin, TpmCryptSubject_TRUE);
+    vector<string> myAdmins = mySubjectStorage.TpmCryptFindAllAdmins(myUserStorage);
 
-    vector<utils::StringPair>::const_iterator Iterator;
+    vector<string>::const_iterator Iterator;
     if (myAdmins.size())
     {
         cout << "We have the following admins: " << endl;
@@ -62,8 +56,8 @@ bool TpmCryptListAdmins(TpmCryptStorage &mySubjectStorage)
         Iterator=myAdmins.begin();
         while ( Iterator != myAdmins.end())
         {
-            TpmCryptSubject mySubject(Iterator->first, mySubjectStorage);
-            mySubject.printSubject(printVerbose);
+            TpmCryptUser myUser(Iterator->first, myUserStorage);
+            myUser.printUser(printVerbose);
             Iterator++;
         }
         return true;
@@ -77,15 +71,15 @@ bool TpmCryptListAdmins(TpmCryptStorage &mySubjectStorage)
 
 //================================================================================
 //
-void TpmCryptDeleteAdmin(TpmCryptStorage &mySubjectStorage, TpmCryptStorage &myGroupStorage)
+void TpmCryptDeleteAdmin(TpmCryptStorage &mySubjectStorage)
 {
-    if (loginAdmin(mySubjectStorage))
+    if (loginAdmin(myUserStorage))
         cout << "Superuser successfully logged in!" << endl;
 
-    if (!TpmCryptListAdmins(mySubjectStorage))
+    if (!TpmCryptListAdmins(myUserStorage))
         return;
 
-    vector<string> myAdmins = TpmCryptFindAllAdmins(mySubjectStorage);
+    vector<string> myAdmins = TpmCryptFindAllAdmins(myUserStorage);
     if (! myAdmins.size())
     {
         throw NoAdminAvailable("No admins found, please add an administrator first!");
@@ -102,22 +96,16 @@ void TpmCryptDeleteAdmin(TpmCryptStorage &mySubjectStorage, TpmCryptStorage &myG
     string adminID;
     adminID = selectFromStringVector(myAdmins, "\nNumber:\t\tAdmin:", "Please select the administrator to be deleted:");
 
-    if (!TpmCryptFindAdmin(mySubjectStorage, adminID))
+    if (!TpmCryptFindAdmin(myUserStorage, adminID))
         throw UnknownSubject("Subject '" + adminID + "' is not an admin.");
 
     if (verifySelection())
     {
-        // load admin group
-        TpmCryptGroup myAdminGroup(TPMCRYPT_ADMIN_GROUP, myGroupStorage, mySubjectStorage);
-
         // load admin subject
-        TpmCryptSubject myAdmin(adminID, mySubjectStorage);
-
-        // delete admin from admin group
-        myAdminGroup.deleteSubjectFromGroup(&myAdmin);
+        TpmCryptSubject myAdmin(adminID, myUserStorage);
 
         // delete admin
-        myAdmin.deleteSubject();
+        myAdmin.deleteUser();
 
         cout << "Successfully deleted admin '" << adminID << "'." << endl;
         printToSyslog("TPMCRYPT: Admin '" + adminID + "' was removed from this system");
@@ -127,7 +115,7 @@ void TpmCryptDeleteAdmin(TpmCryptStorage &mySubjectStorage, TpmCryptStorage &myG
 
 //================================================================================
 //
-void TpmCryptCreateAdmin(TpmCryptStorage &mySubjectStorage, TpmCryptStorage &myGroupStorage)
+void TpmCryptCreateAdmin(TpmCryptStorage &myUserStorage)
 {
     if (loginSuperUser())
         cout << "Superuser successfully logged in!" << endl;
@@ -152,47 +140,22 @@ void TpmCryptCreateAdmin(TpmCryptStorage &mySubjectStorage, TpmCryptStorage &myG
         mySP= getStringFromUser("Please enter state/province for new admin: ");
         myL = getStringFromUser("Please enter locality for new admin: ");
     }
+	
+	vector<string> possibleAdmins = TpmCryptFindAllAdmins(myUserStorage);
+	
+	if(possibleAdmins.size() = 0)
+	{
+		string del = getStringFromUser("Do you want delete all TPM Keys (Yes/No): ");
+		if(del = "Yes")
+			TpmCryptDestroyKeys();
+	}
 
-    // Check, whether we have an admin group
-    cout << "Checking existence of admin-group '" << TPMCRYPT_ADMIN_GROUP << "': ";
-    if (TpmCryptFindGroup(myGroupStorage, TPMCRYPT_ADMIN_GROUP))
-    {
-        cout << "present!" << endl;
-        // load admin group
-        TpmCryptGroup myAdminGroup(TPMCRYPT_ADMIN_GROUP, myGroupStorage, mySubjectStorage);
-        // first, get the group key from an existing admin group member
-        myAdminGroup.printSubjectsInGroup(printVerbose);
-
-        // load admin
-        TpmCryptSubject *myExistingAdmin = getCurrentAdmin(mySubjectStorage);
-
-        string adminPassword = getPassword("Please enter the according password for admin '" + myExistingAdmin->getMySubjectName() + "' (" + myExistingAdmin->getMySubjectIDString() + "): ");
-        string groupKeyPassword = myAdminGroup.getDecryptedGroupKey(myExistingAdmin, adminPassword);
-		string null = "0";
-        TpmCryptSubject newAdmin(SUBJECTTYPE_USER, myUsername, null, myEMail, myC, myO, myOU, mySP, myL, true, myKeyDirectory, mySubjectStorage);
-        if (! newAdmin.getMySubjectID())
-            throw NotCreated("Admin could not be created!");
-        cout << "Successfully created new admin with SubjectID '" << newAdmin.getMySubjectID() << "'." << endl;
-        printToSyslog("TPMCRYPT: Admin '" + myUsername + "' was added to this system");
-        myAdminGroup.addSubjectToGroup(&newAdmin, groupKeyPassword);
-        cout << "Successfully added new admin '" << newAdmin.getMySubjectName() << "' to admin group!" << endl;
-    }
-    else
-    {
-        cout << "not present!" << endl;
-        cout << "Deleting already registered keys of TPM" << endl;
-        cout << "Please be patient, this can take some time..." << endl;
-        TpmCryptTPM myTPM;
-        myTPM.remove_all_keys_by_uuid();
-		string null = "0";
-        TpmCryptSubject newAdmin(SUBJECTTYPE_USER, myUsername, null, myEMail, myC, myO, myOU, mySP, myL, true, myKeyDirectory, mySubjectStorage);
-        if (! newAdmin.getMySubjectID())
-            throw NotCreated("Admin could not be created!");
-        cout << "Successfully created new admin with SubjectID '" << newAdmin.getMySubjectID() << "'." << endl;
-        printToSyslog("TPMCRYPT: Admin '" + myUsername + "' was added to this system");
-        cout << "Creating new admin group..." << endl;
-        TpmCryptGroup myAdminGroup(TPMCRYPT_ADMIN_GROUP, myGroupStorage, mySubjectStorage);
-    }
+    TpmCryptUser newAdmin(SUBJECTTYPE_USER, myUsername, "0", myEMail, myC, myO, myOU, mySP, myL, true, myKeyDirectory, mySubjectStorage);
+    if (! newAdmin.getMyUserUUID())
+		throw NotCreated("Admin could not be created!");
+    cout << "Successfully created new admin with SubjectID '" << newAdmin.getMySubjectID() << "'." << endl;
+    printToSyslog("TPMCRYPT: Admin '" + myUsername + "' was added to this system");
+    cout << "Creating new admin group..." << endl;    
 }
 
 //================================================================================
@@ -210,21 +173,18 @@ void TpmCryptInit     ( string initParam, TpmCryptConfigfile &myConfigfile )
 	TpmCryptInitMap["dk"] 		   = destroyKeys;
 
     // Create User database storage object
-    TpmCryptStorage mySubjectStorage( "SubjectDB", myConfigfile.getConfigfileEntry(TpmCryptConfigfile_SubjectDBIdentifier) );
-
-    // Create Group database storage object
-    TpmCryptStorage myGroupStorage( "GroupDB", myConfigfile.getConfigfileEntry(TpmCryptConfigfile_GroupDBIdentifier) );
+    TpmCryptStorage myUserStorage();
 
     switch(TpmCryptInitMap[initParam])
     {
         case createAdmin:
-            TpmCryptCreateAdmin(mySubjectStorage, myGroupStorage);
+            TpmCryptCreateAdmin(myUserStorage);
             break;
         case deleteAdmin:
-            TpmCryptDeleteAdmin(mySubjectStorage, myGroupStorage);
+            TpmCryptDeleteAdmin(myUserStorage);
             break;
         case listAdmins:
-            TpmCryptListAdmins(mySubjectStorage);
+            TpmCryptListAdmins(myUserStorage);
             break;
         case destroyKeys:
             TpmCryptDestroyKeys();

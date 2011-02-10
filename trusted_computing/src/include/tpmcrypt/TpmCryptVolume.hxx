@@ -60,6 +60,7 @@ enum myTpmCryptFilesystemTypes
 };
 
 // Volume entries
+/*
 const std::string TpmCryptVolume_GenericDB       = "Generic";
 const std::string TpmCryptVolume_isVolume        = "isVolume";
 const std::string TpmCryptVolume_isVolume_true   = "true";
@@ -78,7 +79,7 @@ const std::string TpmCryptVolume_SubjectKeyDB    = "SubjectKeys";
 const std::string TpmCryptVolume_GroupKeyDB      = "GroupKeys";
 const std::string TpmCryptVolume_SSSDB           = "Secret-Sharing-Schemes";
 const std::string TpmCryptVolume_SSSDB_valid     = "true";
-
+*/
 
 namespace tpmcrypt
 {
@@ -110,80 +111,27 @@ namespace tpmcrypt
 	     *  @param Subject, pointer of TpmCryptSubject, that contains the subject to be added
 	     *  @param VolumePassword, the password for the currently selected volume
              */
-            void   addSubject(TpmCryptSubject *Subject, const string &VolumePassword);	    
+            void   addSubject(TpmCryptUser *User, const string &VolumePassword);	    
 	    
 	    /*!
              *  @brief removes subject from volume
 	     *  @param Subject, pointer of TpmCryptSubject, that contains the subject to be removed
              */
-            void   deleteSubject(TpmCryptSubject *Subject);            
+            void   deleteSubject(TpmCryptUser *User);            
 	    
 	    /*!
              *  @brief prints all subjects to the screen, that have access to the currently selected volume
              */
-            void   listSubjects();	    
-	    
-	    /*!
-             *  @brief returns the subjects that have access to the currently selected volume
-	     *  @return vector of string, that contains the names of subjects in volume
-             */
-            vector<string> getSubjects();
-	    
-	    /*!
-             *  @brief checks if a subject has access to a volume
-	     *  @param Subject, pointer of TpmCryptSubject, that contains the subject to be checked
-	     *  @return boolean, that indicates, if the subject has access to a volume
-             */
-            bool isSubjectInVolume(TpmCryptSubject *Subject);
+            void   listUsers();	    
 
-	    /*!
-             *  @brief adds a group to a volume
-	     *  @param Group, pointer of TpmCryptGroup, that contains the group to be added
-	     *  @param VolumePassword, the password for the currently selected volume
-             */
-            void   addGroup(TpmCryptGroup *Group, const string &VolumePassword);
-	    
-	    /*!
-             *  @brief removes group from volume
-	     *  @param Group, pointer of TpmCryptGroup, that contains the group to be removed
-             */
-            void   deleteGroup(TpmCryptGroup *Group);
-            
-	    /*!
-             *  @brief prints all groups to the screen, that have access to the currently selected volume
-             */
-	     void   listGroups();
-	    
-	    /*!
-             *  @brief returns the groups that have access to the currently selected volume
-	     *  @return vector of string, that contains the names of groups in volume
-             */
-	    vector<string> getGroups();
-
-	    /*!
-             *  @brief checks if a group has access to a volume
-	     *  @param Group, pointer of TpmCryptGroup, that contains the group, that is checked
-	     *  @return boolean, that indicates, if the group has access to a volume
-             */
-            bool isGroupInVolume(TpmCryptGroup *Group);
-	    
-
-            /*!
+        /*!
              *  @brief returns the decrypted volume key of a volume
 	     *  @param Subject, pointer of TpmCryptSubject, that wants to access the volume
 	     *  @param password, address of a string, that contains the subject's password
 	     *  @return string, that contains the decrypted volume key
              */
-	     string getDecryptedVolumeKey(TpmCryptSubject *Subject, string &password);
+	     string getDecryptedVolumeKey(TpmCryptUser *User, string &password);
 	    
-            /*!
-             *  @brief returns the decrypted volume key of a volume
-	     *  @param Group, pointer of TpmCryptGroup, that contains the group, that wants to access the volume
-	     *  @param password, address of a string, that contains the group's password
-	     *  @return string, that contains the decrypted volume key
-             */
-            string getDecryptedVolumeKey(TpmCryptGroup *Group, string &password);
-
             /*!
              *  @brief prints the information about a volume to the screen
 	     */

@@ -34,7 +34,6 @@ const string debugOptionDesc	= "Enables debugging output.\n";
 #endif
 const string initOptionDesc	= "Initialize TpmCrypt.\n\tValid parameters are:\n\t\tcreateAdmin (ca)\n\t\tdeleteAdmin (da)\n\t\tlistAdmins (la)\n";
 const string userOptionDesc	= "TpmCrypt user management.\n\tValid parameters are:\n\t\tcreateUser (cu)\n\t\timportUser (iu)\n\t\tdeleteUser (du)\n\t\tlistUsers (lu)\n\t\tchangeUserCredential (cuc)\n";
-const string groupOptionDesc	= "TpmCrypt group management.\n\tValid parameters are:\n\t\tcreateGroup (cg)\n\t\tdeleteGroup (dg)\n\t\tlistGroups (lg)\n\t\t-----\n\t\taddSubjectToGroup (astg)\n\t\tdeleteSubjectFromGroup (dsfg)\n\t\tlistSubjectsInGroup (lsig)\n";
 const string volumeOptionDesc	= "TpmCrypt volume management.\n\tValid parameters are:\n\t\tcreateVolume (cv)\n\t\timportVolume (iv)\n\t\tattachVolume (av)\n\t\tdeleteVolume (dv)\n\t\tlistVolumes (lv)\n\t\t-----\n\t\taddSubjectToVolume (astv)\n\t\tdeleteSubjectFromVolume (dsfv)\n\t\tlistSubjectsInVolume(lsiv)\n\t\t-----\n\t\taddGroupToVolume (agtv)\n\t\tdeleteGroupFromVolume(dgfv)\n\t\tlistGroupsInVolume(lgiv)\n\t\t-----\n\t\taddSSSToVolume (assstv)\n\t\tdeleteSSSFromVolume (dsssfv)\n\t\tlistSSSInVolume (lsssiv)\n";
 const string platformOptionDesc	= "TpmCrypt platform management.\n\tValid parameters are:\n\t\tcreatePlatform (cp)\n\t\timportPlatform (ip)\n\t\tdeletePlatform (dp)\n\t\tlistPlatforms (lp)\n\t\texportPlatform (ep)\n";
 const string tokenOptionDesc	= "TpmCrypt token management.\n\tValid parameters are:\n\t\tcreateToken (ct)\n\t\tdeleteToken (dt)\n\t\tlistToken (lt)\n";
@@ -78,7 +77,6 @@ int main(int argc, const char *argv[])
                 // add categories to OptionList
                 Option<string>  initOption      ( optionList, "init",   "i",  BaseOption::multi,      initOptionDesc   );
                 Option<string>  userOption      ( optionList, "user",   "u",  BaseOption::multi,      userOptionDesc   );
-                Option<string>  groupOption     ( optionList, "group",  "g",  BaseOption::multi,      groupOptionDesc  );
                 Option<string>  platformOption  ( optionList, "platform","p", BaseOption::multi,      platformOptionDesc );
                 Option<string>  tokenOption     ( optionList, "token","t",   BaseOption::multi,      tokenOptionDesc );
                 Option<string>  volumeOption    ( optionList, "volume", "v",  BaseOption::multi,      volumeOptionDesc );
@@ -91,7 +89,6 @@ int main(int argc, const char *argv[])
                     (!(
                         initOption.hasValue() |
                         userOption.hasValue() |
-                        groupOption.hasValue() |
                         platformOption.hasValue() |
                         tokenOption.hasValue() |
                         volumeOption.hasValue() |
@@ -139,9 +136,6 @@ int main(int argc, const char *argv[])
                 // Check our configuration file
             	TpmCryptConfigfile myTpmCryptConfig (myConfigfile);
 
-                // get myKeyDirectory
-                myKeyDirectory = removeDelimiter(myTpmCryptConfig.getConfigfileEntry(TpmCryptConfigfile_KeyPathIdentifier));
-                debug << "Key Directory: " << myKeyDirectory << endl;
                 UUIDpath = removeDelimiter(myTpmCryptConfig.getConfigfileEntry(TpmCryptConfigfile_TpmCryptUUIDPath));
                 debug << "UUID Directory: " << UUIDpath << endl;
                 myScriptDirectory = removeDelimiter(myTpmCryptConfig.getConfigfileEntry(TpmCryptConfigfile_TpmCryptScriptPathIdentifier));
@@ -171,12 +165,6 @@ int main(int argc, const char *argv[])
 		if ( userOption.hasValue() )
                 {
                     TpmCryptUserManagement( userOption.getValue(), myTpmCryptConfig );
-                    return SUCCESS;
-                }
-
-		if ( groupOption.hasValue() )
-                {
-                    TpmCryptGroupManagement( groupOption.getValue(), myTpmCryptConfig );
                     return SUCCESS;
                 }
 

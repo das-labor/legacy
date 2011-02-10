@@ -193,7 +193,27 @@ vector<string> TpmCryptFindAllUsersInVolume(TpmCryptStorage &myVolumeStorage, co
 		it = myUsers.begin();
 		while ( it != myUsers.end())
 		{
-			myUserNames += myVolumeStorage.queryDB("users","name","u_uuid",*(it));
+			myUserNames.push_back(myVolumeStorage.queryDB("users","name","u_uuid",*(it)));
+			it++;
+		}
+	}
+	return myUserNames;
+};
+
+//================================================================================
+//
+
+vector<string> TpmCryptFindAllSSSInVolume(TpmCryptStorage &myVolumeStorage, const string &volumeIdentifier)
+{
+	vector<string> myUserNames;
+	vector<string> myUsers = myVolumeStorage.queryDB("volume_sss","sss_uuid","v_uuid",volumeIdentifier);
+	vector<string>::const_iterator it;
+    if (myUsers.size())
+    {
+		it = myUsers.begin();
+		while ( it != myUsers.end())
+		{
+			myUserNames.push_back(myVolumeStorage.queryDB("sss","name","u_uuid",*(it)));
 			it++;
 		}
 	}

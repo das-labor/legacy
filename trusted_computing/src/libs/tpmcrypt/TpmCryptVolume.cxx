@@ -96,6 +96,9 @@ void   TpmCryptVolume::addUser(TpmCryptUser *User, const string &VolumePassword)
 {
     if (TpmCryptFindAdmin(storeDB,User->getMyUserUUID())
         throw InvalidSubjectID("TpmCryptVolume|addSubject(): You are not allowed to add an admin-subject!");
+        
+    if (TpmCryptFindUserInVolume(storeDB,User->getMyUserUUID(),myVolumeUUID)
+        throw InvalidSubjectID("TpmCryptVolume|addSubject(): You are not allowed to add an admin-subject!");
     
     debug << "TpmCryptVolume|addSubject(): Adding subject '" << User->getMyUserIDString() << "'" << endl;
 
@@ -146,24 +149,20 @@ void TpmCryptVolume::listUsers()
 
 //================================================================================
 //
-string TpmCryptVolume::getDecryptedVolumeKey(TpmCryptSubject *Subject, string &password)
+string TpmCryptVolume::getDecryptedVolumeKey(TpmCryptSubject *User, string &password)
 {
-    if (!Subject->getMySubjectID())
+    if (!User->getMyUserUUID)
         throw InvalidSubjectID("TpmCryptVolume|getDecryptedVolumeKey(): Invalid Subject ID supplied!");
-
-    if (Subject->isAdmin())
-        throw InvalidSubjectID("TpmCryptVolume|getDecryptedVolumeKey(): As admin, you are not allowed to use this method. Please use 'getDecryptedVolumeKeyByAdmin'");
 
     myVolumeStorage.selectSection(myVolumeUUID);
     myVolumeStorage.selectSubSection(TpmCryptVolume_SubjectKeyDB);
 
     debug << "TpmCryptVolume|getDecryptedVolumeKey(): receiving BASE64-encoded key" << endl;
-    string myBase64EncodedPassword = myVolumeStorage.getEntry(Subject->getMySubjectIDString());
-
+    string myBase64EncodedPassword = myVolumeStorage.queryDoubleDB("user_keys","key_blob","u_uuid",User->getMyUserUUID,"v_uuid",myVolumeUUID);
     debug << "TpmCryptVolume|getDecryptedVolumeKey(): decoding BASE64-encoded key" << endl;
     ByteVector myBase64EncodedPasswordByteVector = DecodeBASE64StringToByteVector(myBase64EncodedPassword);
     debug << "TpmCryptVolume|getDecryptedVolumeKey(): decrypting key" << endl;
-    ByteVector myDecode = Subject->decryptBySubject(Subject, myBase64EncodedPasswordByteVector, password);
+    ByteVector myDecode = User->decryptByUser(User, myBase64EncodedPasswordByteVector, password);
 
     return convertByteVector2String(myDecode);
 };
@@ -193,7 +192,10 @@ void   TpmCryptVolume::printVolume()
 void   TpmCryptVolume::deleteVolume()
 {
     debug << "TpmCryptVolume|deleteVolume(): Deleting volume '" + myVolumeUUID + "'" << endl;
-    myVolumeStorage.deleteSection(myVolumeUUID);
+    myVolumeStorage.deleteDB("volumes","v_uuid",myVolumeUUID);
+    myVolumeStorage.deleteDB("volumes_users","v_uuid",myVolumeUUID);
+    myVolumeStorage.deleteDB("volumes_sss","v_uuid",myVolumeUUID);
+    myVolumeStorage.deleteDB("user_keys","v_uuid",myVolumeUUID);
 };
 
 //================================================================================
@@ -201,19 +203,16 @@ void   TpmCryptVolume::deleteVolume()
 void TpmCryptVolume::storeVolume()
 {
     debug << "TpmCryptVolume|storeVolume(): Storing volume '" + myVolumeUUID + "'" << endl;
-    myVolumeStorage.selectSection(myVolumeUUID);
-    myVolumeStorage.selectSubSection(TpmCryptVolume_GenericDB);
-    myVolumeStorage.setEntry(TpmCryptVolume_isVolume, TpmCryptVolume_isVolume_true);
-    myVolumeStorage.setEntry(TpmCryptVolume_VolumeUUID, myVolumeUUID);
-    myVolumeStorage.setEntry(TpmCryptVolume_VolumePATH, myVolumePath);
+
+    myVolumeStorage.storeDB("volumes","path","v_uuid",myVolumePath,myVolumeUUID);
 
     switch(myVolumeType)
     {
-        case VOLUMETYPE_DMCRYPT: myVolumeStorage.setEntry(TpmCryptVolume_VolumeType, TpmCryptVolumeType_DMCRYPT); break;
-        case VOLUMETYPE_TRUECRYPT: myVolumeStorage.setEntry(TpmCryptVolume_VolumeType, TpmCryptVolumeType_TRUECRYPT); break;
-        case VOLUMETYPE_ECRYPTFS: myVolumeStorage.setEntry(TpmCryptVolume_VolumeType, TpmCryptVolumeType_ECRYPTFS); break;
-        case VOLUMETYPE_LUKS: myVolumeStorage.setEntry(TpmCryptVolume_VolumeType, TpmCryptVolumeType_LUKS); break;
-        case VOLUMETYPE_ENCFS: myVolumeStorage.setEntry(TpmCryptVolume_VolumeType, TpmCryptVolumeType_ENCFS); break;
+        case VOLUMETYPE_DMCRYPT: myVolumeStorage.storeDB("volumes","type","v_uuid",TpmCryptVolumeType_DMCRYPT,myVolumeUUID); break;
+        case VOLUMETYPE_TRUECRYPT: myVolumeStorage.storeDB("volumes","type","v_uuid",TpmCryptVolumeType_TRUECRYPT,myVolumeUUID); break;
+        case VOLUMETYPE_ECRYPTFS: myVolumeStorage.storeDB("volumes","type","v_uuid",TpmCryptVolumeType_ECRYPTFS,myVolumeUUID); break;
+        case VOLUMETYPE_LUKS: myVolumeStorage.storeDB("volumes","type","v_uuid",TpmCryptVolumeType_LUKS,myVolumeUUID); break;
+        case VOLUMETYPE_ENCFS: myVolumeStorage.storeDB("volumes","type","v_uuid",TpmCryptVolumeType_ENCFS,myVolumeUUID); break;
 
     }
 };
@@ -230,12 +229,9 @@ void TpmCryptVolume::loadVolume()
     TpmCryptVolumeTypeMap["ECRYPTFS"] = VOLUMETYPE_ECRYPTFS;
     TpmCryptVolumeTypeMap["LUKS"] = VOLUMETYPE_LUKS;
     TpmCryptVolumeTypeMap["ENCFS"] = VOLUMETYPE_ENCFS;
-    
-    myVolumeStorage.selectSection(myVolumeUUID);
-    myVolumeStorage.selectSubSection(TpmCryptVolume_GenericDB);
-    myVolumeTypeString = myVolumeStorage.getEntry(TpmCryptVolume_VolumeType);
-    myVolumePath = myVolumeStorage.getEntry(TpmCryptVolume_VolumePATH);
 
+    myVolumeTypeString = myVolumeStorage.queryDB("volumes","type","v_uuid",myVolumeUUID);
+    myVolumePath = myVolumeStorage.queryDB("volumes","path","v_uuid",myVolumeUUID);
     switch(TpmCryptVolumeTypeMap[myVolumeTypeString])
     {
         case VOLUMETYPE_DMCRYPT: myVolumeType = VOLUMETYPE_DMCRYPT; break;
@@ -252,18 +248,18 @@ void TpmCryptVolume::addSSS(string &SSSID)
 {
     if (SSSID.empty())
         throw InvalidSSSID("TpmCryptVolume|addSSS(): Empty SSSID supplied!");
-    myVolumeStorage.selectSection(myVolumeUUID);
-    myVolumeStorage.selectSubSection(TpmCryptVolume_SSSDB);
-    myVolumeStorage.setEntry(SSSID, TpmCryptVolume_SSSDB_valid);
+	
+	if(TpmCryptFindSSS(myVolumeStorage,SSSID);
+		throw InvalidSSSID("Already in Volume");
+	
+    myVolumeStorage.volumes_sssDB(myVolumeUUID,SSSID);
 };
 
 //================================================================================
 //
 vector<string> TpmCryptVolume::getAvailableSSS()
 {
-    myVolumeStorage.selectSection(myVolumeUUID);
-    myVolumeStorage.selectSubSection(TpmCryptVolume_SSSDB);
-    return myVolumeStorage.getAllEntries();
+    return TpmCryptFindAllSSSInVolume(myVolumeStorage,myVolumeUUID);
 };
 
 //================================================================================
@@ -272,9 +268,8 @@ void TpmCryptVolume::deleteSSS(string &SSSID)
 {
     if (SSSID.empty())
         throw InvalidSSSID("TpmCryptVolume|deleteSSS(): Empty SSSID supplied!");
-    myVolumeStorage.selectSection(myVolumeUUID);
-    myVolumeStorage.selectSubSection(TpmCryptVolume_SSSDB);
-    myVolumeStorage.deleteEntry(SSSID);
+        
+	myVolumeStorage.deleteDB("volumes_sss","sss_uuid",SSSID);
 };
 
 //================================================================================
@@ -288,26 +283,7 @@ void TpmCryptVolume::updateDevicePath(string &newDevicePath)
     myVolumePath = newDevicePath;
 
     // store new value to database
-    myVolumeStorage.selectSection(myVolumeUUID);
-    myVolumeStorage.selectSubSection(TpmCryptVolume_GenericDB);
-    myVolumeStorage.setEntry(TpmCryptVolume_VolumePATH, myVolumePath);
+    myVolumeStorage.storeDB("volumes","path","v_uuid",myVolumePath,myVolumeUUID);
 };
 
-//================================================================================
-//
-bool TpmCryptVolume::isSubjectInVolume(TpmCryptSubject *Subject)
-{
-    // load all subjects already in volume
-    vector<string> mySubjectsInVolume = getSubjects();
-
-    vector<string>::const_iterator Iterator;
-    Iterator=mySubjectsInVolume.begin();
-    while ( Iterator != mySubjectsInVolume.end())
-    {
-        if (*(Iterator) == Subject->getMySubjectIDString())
-            return true;
-        Iterator++;
-    }
-    return false;
-};
 
