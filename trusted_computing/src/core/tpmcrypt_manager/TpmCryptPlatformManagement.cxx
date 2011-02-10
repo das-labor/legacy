@@ -38,11 +38,11 @@ typedef map<string, int> t_StringMap;
 
 //================================================================================
 //
-bool TpmCryptListPlatforms(TpmCryptStorage &mySubjectStorage)
+bool TpmCryptListPlatforms(TpmCryptStorage &myPlatformStorage)
 {
-    vector<StringPair> myPlatforms = mySubjectStorage.findAllEntries(TpmCryptSubject_SubjectType, TpmCryptSubjectType_Platform);
+    vector<string> myPlatforms = mySubjectStorage.TpmCryptFindAllPlatforms(myPlatformStorage);
 
-    vector<utils::StringPair>::const_iterator Iterator;
+    vector<string>::const_iterator Iterator;
     if (myPlatforms.size())
     {
         cout << "We have the following Platforms: " << endl;
@@ -50,14 +50,14 @@ bool TpmCryptListPlatforms(TpmCryptStorage &mySubjectStorage)
         Iterator=myPlatforms.begin();
         while ( Iterator != myPlatforms.end())
         {
-            if (!TpmCryptFindPlatform(mySubjectStorage, Iterator->first))
+            if (!TpmCryptFindPlatform(myPlatformStorage, Iterator->first))
             {
                 Iterator++;
                 continue;
             }
 
-            TpmCryptSubject mySubject(Iterator->first, mySubjectStorage);
-            mySubject.printSubject(printVerbose);
+            TpmCryptPlatform myPlatform(Iterator->first, myPlatformStorage);
+            myPlatform.printPlatform(printVerbose);
             Iterator++;
         }
         return true;

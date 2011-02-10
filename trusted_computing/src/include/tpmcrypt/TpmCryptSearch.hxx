@@ -54,6 +54,8 @@ bool TpmCryptFindToken(TpmCryptStorage &myTokenStorage, const string &tokenIdent
 
 bool TpmCryptFindUserInVolume(TpmCryptStorage &myVolumeStorage, const string &userIdentifier, const string &volumeIdentifier);
 
+vector<string> TpmCryptFindAllSSSInVolume(TpmCryptStorage &myVolumeStorage, const string &volumeIdentifier);
+
 vector<string> TpmCryptFindAllUsersInVolume(TpmCryptStorage &myVolumeStorage, const string &volumeIdentifier);
 
 vector<string> TpmCryptFindAllAdmins(TpmCryptStorage &myUserStorage);

@@ -114,6 +114,31 @@ vector<string> TpmCryptStorage::queryDB(string &table, string &select, string &c
 	return blob;
 }
 
+vector<string> TpmCryptStorage::queryDoubleDB(string &table, string &select, string &column1, string &data1, string &column2, string &data2)
+{
+	int cols = 0;
+	vector<string> blob;
+	string queries = "SELECT " + select + " FROM " + table + " WHERE " + column1 + " IS " + data1 + " AND WHERE " + column2 + " IS " + data2;
+		
+	if(protectDB(data) != 0)
+		throw InvalidData("SQL Injection");
+		
+	sqlite3_prepare_v2(handle,queries,100, &stmt,0 );
+	
+	sqlite3_step(stmt);
+	
+	cols = sqlite3_column_count(stmt);
+	
+	for( int i = 0; i < cols; i++)
+	{
+		blob.push_back(sqlite3_column_blob(stmt,i));
+	}
+	
+	sqlite3_finalize(stmt);
+	
+	return blob;
+}
+
 void TpmCryptStorage::storeDB(string &table, string &select, string &column, string &new_data, string &old_data)
 {
 	string queries = "UPDATE " + table + " SET " + select + " IS " + new_data + " WHERE " + column + " IS " + old_data;
