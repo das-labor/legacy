@@ -128,12 +128,12 @@ uint16_t simmer_i_soll;
 
 
 
-void do_master_com(){
+void master_com(){
   static uint8_t simmer_poll_num;  
   uint8_t cmd1, cmd2;
   cmd1 = (state_main_on      ? MSK_MAIN_CMD     : 0)
         |(command_auto       ? MSK_AUTO_CMD     : 0)
-        |(command_500V_psu   ? MSK_500V_CMD     : 0)
+        |(command_500V_psu   ? MSK_500V_PSU_CMD : 0)
         |(command_zuenden    ? MSK_ZUEND_CMD    : 0)
         |(command_simmer_psu ? MSK_SIMMER_CMD   : 0) ;
   
@@ -172,15 +172,16 @@ void do_master_com(){
       }
     }
     _delay_ms(1);
+    timeout++;
   }while(timeout < 10);
   
   if(success){
     simmer_control_error = 0;
     uint8_t stat = c[0];
     
-    state_500V_psu    = (stat & MSK_500V_STATE  ) ? 1:0;
-    state_zuenden     = (stat & MSK_ZUEND_STATE ) ? 1:0;
-    state_simmer_psu  = (stat & MSK_SIMMER_STATE) ? 1:0;
+    state_500V_psu    = (stat & MSK_500V_PSU_STATE) ? 1:0;
+    state_zuenden     = (stat & MSK_ZUEND_STATE )   ? 1:0;
+    state_simmer_psu  = (stat & MSK_SIMMER_STATE)   ? 1:0;
      
     simmer_values[simmer_poll_num] = *(uint16_t *)&c[1];
     simmer_poll_num++;
@@ -234,6 +235,7 @@ void test_keys_and_display(){
 
 int main(){
 	borg_hw_init();
+	uart_init();
 
 	sei();
 	
@@ -241,11 +243,11 @@ int main(){
 
 	while(1){
 		uint8_t x;
-		for(x=0;x<16;x++){
-			//_delay_ms(100);
-		}
 		statemachine();
+		master_com();
 		display_states();
-		
+
+		_delay_ms(50);
+				
 	}
 }

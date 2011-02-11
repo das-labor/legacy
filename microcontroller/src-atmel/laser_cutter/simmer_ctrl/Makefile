@@ -3,13 +3,7 @@ OBJ            = main.o uart/uart.o
 MCU_TARGET     = atmega8
 OPTIMIZE       = -Os
 
-FLASHCMD       = uisp -dprog=bsd --upload if=$(PRG).hex
-ERASECMD       = uisp -dprog=bsd --erase
-LAUNCH_BOOTLOADER = foodloader-0.21/launcher/launch-bootloader
-
-#SERIAL = /dev/ttyS0
-SERIAL = /dev/ttyUSB0
-
+FLASHCMD       = avrdude -p $(MCU_TARGET) -c usbasp -U $(PRG).hex
 
 DEFS           = -DF_CPU=8000000
 LIBS           =

@@ -2,12 +2,6 @@
 #include "uart/uart.h"
 #include "../lib/com/com.h"
 
-#define CS_WAIT_SYNC  0x00
-#define CS_CMD1       0x01
-#define CS_CMD2       0x02
-#define CS_SLAVE1_REQ 0x03
-
-
 uint8_t state_main_on;
 
 uint8_t command_auto;
@@ -22,62 +16,82 @@ uint8_t command_simmer_psu;
 uint8_t state_simmer_psu;
 
 
-/*
-//Command byte 1:
-#define MSK_MAIN_CMD       0x01
-#define MSK_AUTO_CMD       0x02
-#define MSK_500V_PSU_CMD   0x08
-#define MSK_ZUEND_CMD      0x10
-#define MSK_SIMMER_CMD     0x20
+#define CS_WAIT_SYNC  0
+#define CS_CMD1       1
+#define CS_CMD2       2
+#define CS_CHK1       3
+#define CS_CHK2       4
+#define CS_SLAVE1_REQ 5
 
-//Command byte 2:
-#define MSK_PUMPE_CMD      0x01
-#define MSK_POWER_CMD      0x02
-#define MSK_BRUECKEN_CMD   0x04
-#define MSK_DUMP_CMD       0x08
-#define MSK_FIRE_CMD       0x10
-
-//Simmer Slave response byte
-#define MSK_500V_PSU_STATE 0x08
-#define MSK_ZUEND_STATE    0x10
-#define MSK_SIMMER_STATE   0x20
-*/
 
 void slave_com(){
-  uint8_t c, res;
-  static uint8_t cmd1, cmd2;
-  res = uart_getc_nb(&c);
-  if(res == 1){
-    switch(com_state){
-      case CS_WAIT_SYNC:
-        if(c == 0x42){
-          com_state = CS_CMD1;
-        }
-        break;
-      case CS_CMD1:
-        cmd1 = c;
-        com_state = CS_CMD2;
-        break;
-      case CS_CMD2:
-        cmd2 = c;
-        state_main_on = 
-        com_state = CS_SLAVE1_REQ;
-        break;
-      case CS_SLAVE1_REQ:
-        break;
-        
-      
-    
-    }
-  
-  
-  }
+	uint8_t c, res;
+	static uint8_t com_state;
+	static uint8_t cmd1, cmd2, chk1, chk2;
+	static uint8_t poll_num;
+	res = uart_getc_nb(&c);
+	if(res == 1){
+		switch(com_state){
+			case CS_WAIT_SYNC:
+				if(c == 0x42){
+					com_state = CS_CMD1;
+				}
+				break;
+			case CS_CMD1:
+				cmd1 = c;
+				com_state = CS_CMD2;
+				break;
+			case CS_CMD2:
+				cmd2 = c;
+				com_state = CS_CHK1;
+				break;
+			case CS_CHK1:
+				chk1 = c;
+				com_state = CS_CHK2;
+				break;
+			case CS_CHK2:
+				chk2 = c;
+				if( (cmd1 == (chk1 ^ 0xff)) && (cmd2 == (chk2 ^ 0xff)) ) {								
+					state_main_on      = (cmd1 & MSK_MAIN_CMD)     ? 1:0;
+					command_auto       = (cmd1 & MSK_AUTO_CMD)     ? 1:0;
+					command_zuenden    = (cmd1 & MSK_ZUEND_CMD)    ? 1:0;
+					command_500V_psu   = (cmd1 & MSK_500V_PSU_CMD) ? 1:0;
+					command_simmer_psu = (cmd1 & MSK_SIMMER_CMD)   ? 1:0;
+				}
+				com_state = CS_SLAVE1_REQ;
+				break;
+				
+			case CS_SLAVE1_REQ:{
+				uint8_t stat;
+				stat =   (state_500V_psu        ? MSK_500V_PSU_STATE  : 0)
+	        			|(state_zuenden         ? MSK_ZUEND_STATE     : 0)
+	        			|(state_simmer_psu      ? MSK_SIMMER_STATE    : 0);
+	        			
+				poll_num = c & 0x0f;
+				
+				uart_putc(stat);
+				uart_putc(0x12);
+				uart_putc(0x34);
+				com_state = CS_WAIT_SYNC;
+				}break;
+		}
+	}	
+}
+
+void statemachine (){
+	state_simmer_psu = command_simmer_psu;
+	state_500V_psu   = command_500V_psu;
 
 }
 
-
-
 int main(){
-  uart_init();
-  uart_putstr("Hellow World\r\n");
+	uart_init();
+	
+	while(1){
+		slave_com();
+		statemachine();
+	
+	}
+	
+
 }

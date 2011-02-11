@@ -1,6 +1,6 @@
 PRG            = image
 OBJ            = main.o uart/uart.o pixel.o borg_hw.o 7seg.o
-MCU_TARGET     = atmega32
+MCU_TARGET     = atmega644
 OPTIMIZE       = -Os
 
 DEFS           = -DF_CPU=8000000
