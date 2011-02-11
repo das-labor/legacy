@@ -16,7 +16,7 @@
 	#define URSEL UMSEL
 	#define UART_UDRE_VECTOR SIG_UART_DATA
 	#define UART_RECV_VECTOR SIG_UART_RECV
-#elif defined(__AVR_ATmega48__) | defined(__AVR_ATmega168__) | defined(__AVR_ATmega162__)
+#elif defined(__AVR_ATmega48__) | defined(__AVR_ATmega168__) | defined(__AVR_ATmega162__) | defined(__AVR_ATmega644__)
 	#define UCSRB UCSR0B
 	#define UCSRC UCSR0C
 	#define UDR UDR0
