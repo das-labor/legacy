@@ -83,8 +83,11 @@ inline void checkkeys(uint8_t row){
 	keys[row] = SWITCH_PIN & SWITCH_MASK;
 }
 
-//Dieser Interrupt wird je nach Ebene mit 50kHz 31,25kHz oder 12,5kHz ausgeführt
-SIGNAL(SIG_OUTPUT_COMPARE0)
+#ifdef __AVR_ATmega644__
+	SIGNAL(SIG_OUTPUT_COMPARE0A)
+#else
+	SIGNAL(SIG_OUTPUT_COMPARE0)
+#endif
 {
 	static unsigned char plane = 0;
 	static unsigned char row = 0;
@@ -98,18 +101,7 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 	//Zeile und Ebene inkrementieren
 	if(++row == NUM_ROWS){
 		row = 0;
-	    if(++plane==NUMPLANE) plane=0;
-		switch(plane){
-			case 0: 
-					OCR0 = 5;
-					break;
-			case 1:
-					OCR0 = 12;
-					break;
-			case 2:
-					OCR0 = 20;
-					break;
-		}
+		if(++plane==NUMPLANE) plane=0;
 	}
 
 	//Die aktuelle Zeile in der aktuellen Ebene ausgeben
@@ -117,30 +109,31 @@ SIGNAL(SIG_OUTPUT_COMPARE0)
 }
 
 
-void timer0_off(){
-	cli();
-
-	TCCR0 = 0x00;
-	sei();
-}
-
 
 // Den Timer, der denn Interrupt auslöst, initialisieren
 void timer0_on(){
-/* 	TCCR0: FOC0 WGM00 COM01 COM00 WGM01 CS02 CS01 CS00
-		CS02 CS01 CS00
-		 0    0    0	       stop
-		 0    0    1       clk
-		 0    1    0       clk/8
-		 0    1    1       clk/64
-		 1    0    0       clk/256
-		 1    0    1       clk/1024
-	
-*/
-	TCCR0 = 0x0C;	// CTC Mode, clk/64
-	TCNT0 = 0;	// reset timer
-	OCR0  = 20;	// Compare with this value
-	TIMSK = 0x02;	// Compare match Interrupt on
+#ifdef __AVR_ATmega644__
+  TCCR0A = (1<<WGM01);//CTC
+  TCCR0B = (1<<CS02); //clk / 256
+  OCR0A = 20;
+  TIMSK0 |= (1<<OCIE0A);
+
+#else
+  /* 	TCCR0: FOC0 WGM00 COM01 COM00 WGM01 CS02 CS01 CS00
+  		CS02 CS01 CS00
+  		 0    0    0	       stop
+  		 0    0    1       clk
+  		 0    1    0       clk/8
+  		 0    1    1       clk/64
+  		 1    0    0       clk/256
+  		 1    0    1       clk/1024
+  	
+  */
+  	TCCR0 = 0x0C;	// CTC Mode, clk/256
+  	TCNT0 = 0;	// reset timer
+  	OCR0  = 20;	// Compare with this value
+  	TIMSK = 0x02;	// Compare match Interrupt on
+#endif
 }
 
 void borg_hw_init(){
