@@ -32,12 +32,9 @@ enum myMenu
     deleteVolume,
     attachVolume,
     listVolumes,
-    addSubjectToVolume,
-    deleteSubjectFromVolume,
-    listSubjectsInVolume,
-    addGroupToVolume,
-    deleteGroupFromVolume,
-    listGroupsInVolume,
+    addUserToVolume,
+    deleteUserFromVolume,
+    listUsersInVolume,
     addSSSToVolume,
     listSSSInVolume,
     deleteSSSFromVolume
@@ -50,9 +47,9 @@ typedef map<string, int> t_StringMap;
 //
 bool TpmCryptListVolumes(TpmCryptStorage &myVolumeStorage)
 {
-    vector<StringPair> myVolumes = myVolumeStorage.findAllEntries(TpmCryptVolume_isVolume, TpmCryptVolume_isVolume_true);
+    vector<string> myVolumes = myVolumeStorage.queryAllEntryDB("volumes","name");
 
-    vector<utils::StringPair>::const_iterator Iterator;
+    vector<string>::const_iterator Iterator;
     if (myVolumes.size())
     {
         cout << "We have the following volumes: " << endl;
@@ -60,12 +57,6 @@ bool TpmCryptListVolumes(TpmCryptStorage &myVolumeStorage)
         Iterator=myVolumes.begin();
         while ( Iterator != myVolumes.end())
         {
-            if (!TpmCryptFindVolume(myVolumeStorage, Iterator->first))
-            {
-                Iterator++;
-                continue;
-            }
-
             TpmCryptVolume myVolume(Iterator->first, myVolumeStorage);
             myVolume.printVolume();
             Iterator++;
