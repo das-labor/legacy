@@ -6,7 +6,7 @@
 
 
 /* Current TpmCrypt version */
-#define VERSION "1.5-r4248:4321M"
+#define VERSION "1.5-r4394M"
 
 
 #endif

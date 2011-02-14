@@ -26,24 +26,42 @@
 #ifndef _TPMCRYPTPLATFORM_HXX
 #define	_TPMCRYPTPLATFORM_HXX
 
+#include <string>
+#include <vector>
+
+#include <TpmCryptObject.hxx>
+
 #include <TpmCrypt.hxx>
 #include <TpmCryptStorage.hxx>
 #include <TpmCryptDate.hxx>
 #include <TpmCryptKey.hxx>
 
-using namespace std;
-using namespace utils;
-using namespace tpmcrypt;
 
 namespace tpmcrypt
 {
     // required for cross-reference between KeryonaKey and TpmCryptSubject
     class TpmCryptKey;
-    class TpmCryptPlatform
+    
+    class TpmCryptPlatform : public TpmCryptObject
     {
        public:
+			TpmCryptPlatform();
+			TpmCryptPlatform(std::string &name);
+			TpmCryptPlatform(UInt32 uuid);
+			TpmCryptPlatform(std::string &name, std::vector<UInt8> pcrs);
+			TpmCryptPlatform(cpnst TpmCryptPlatform &copy);
+			
+			virtual void load(std::string &name, UInt32 uuid);
+			virtual void store();
+			virtual void print();
+			virtual void remove();
+			virtual bool check();
+			
+			
 
        private:
+			std::vector<UInt8> m_pcrs;
+			std::string m_authSecret;
 
     };
 };

@@ -23,9 +23,80 @@
  * @date        Last modification at $Date: 2009-07-29 15:33:10 +0200 (Wed, 29 Jul 2009) $ by $Author: selhorst $
  */
 
+#include <iostream>
+
 #include <TpmCryptPlatform.hxx>
 #include <TpmCryptTPM.hxx>
+#include <TpmCryptStorage.hxx>
 
 
 using namespace std;
-using namespace utils;
+using namespace tpmcrypt;
+
+
+TpmCryptPlatform::TpmCryptPlatform()
+{
+}
+
+TpmCryptPlatform::TpmCryptPlatform(std::string &name)
+	: m_name(name)
+{
+	// load configuration represented by given name
+}
+
+TpmCryptPlatform::TpmCryptPlatform(UInt32 uuid)
+	: m_uuid(uuid)
+{
+	// load configuration represented by given UUID
+}
+
+TpmCryptPlatform::TpmCryptPlatform(std::string &name, std::vector<UInt8> pcrs)
+	: m_name(name)
+	, m_pcrs(pcrs)
+{
+	
+}
+
+TpmCryptPlatform::TpmCryptPlatform(cpnst TpmCryptPlatform &copy)
+	: m_name(copy.m_name)
+	, m_uuid(copy.m_uuid)
+	, m_creationDate(copy.m_creationDate)
+	, m_pcrs(copy.m_pcrs)
+	, m_authSecret(copy.m_authSecret)
+{
+}
+
+void TpmCryptPlatform::load(std::string &name, UInt32 uuid)
+{
+}
+
+void TpmCryptPlatform::store()
+{
+}
+
+void TpmCryptPlatform::print()
+{
+	// convert time_t to string
+	char buffer[20];
+	strftime(buffer, 20, "%Y-%m-%d %H:%M:%S", m_creationDate);
+	
+	// print platform configuration
+	cout << "PLATFORM: " << m_name << "(" << m_uuid << ")" << endl;
+	cout << "\tcreation date: " << buffer << endl;
+	cout << "\tauthentication secret: " << m_authSecret << endl;
+	cout << "\tPCRs:";
+	vector<UInt8>::iterator it = m_pcrs.begin();
+	for(; it != m_pcrs.end(); it++)
+	{
+		cout << " " << (*it);
+	}
+	cout << endl;
+}
+
+void TpmCryptPlatform::unstore()
+{
+}
+
+bool TpmCryptPlatform::check()
+{
+}
