@@ -18,10 +18,10 @@
 #define SIZEOF_INT 4
 
 /* Size of type int* in bytes */
-#define SIZEOF_INTP 8
+#define SIZEOF_INTP 4
 
 /* Size of type long in bytes */
-#define SIZEOF_LONG 8
+#define SIZEOF_LONG 4
 
 /* Size of type long long in bytes */
 #define SIZEOF_LONG_LONG 8
