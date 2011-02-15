@@ -42,8 +42,38 @@ namespace tpmcrypt
     class TpmCryptUser
     {
        public:
+       
+       UInt32 getMyUserUUID()  { return myUserUUID; };
+       
+       vector<UInt32> getMyUserKeysUUID() { return myUserKeysUUID; };
+       
+       string getMyUserKeyType() 
+       
+       string getMyUserName()  { return myUserName; };
+       
+       string getMyUserEmail()  { return myUserEmail; };
+       
+       string getMyUserCountry()  { return myUserCountry; };
+       
+       string getMyUserOrganization()  { return myUserOragnization; };
+       
+       bool getMyUserIsAdmin()  { return myUserIsAdmin; };
 
        private:
+       
+       UInt32			myUserUUID;
+       vector<UInt32>	myUserKeysUUID;
+       string			myUserKeyType;
+       int				myUserKeySize;
+       string			myUserKeyValid;
+       string			myUserName;
+       string			myUserEmail;
+       string			myUserCountry;
+       string			myUserOrganization;
+       bool 			myUserIsAdmin;
+       
+       TpmCryptKey     *myUserKey;
+       TpmCryptStorage &myUserStorage;
 
     };
 };
