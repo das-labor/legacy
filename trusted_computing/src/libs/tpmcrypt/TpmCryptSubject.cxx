@@ -428,11 +428,7 @@ void TpmCryptSubject::printSubject(bool verbose)
     if (mySubjectType == SUBJECTTYPE_USER)
         cout << "\t" << "Subject is admin: '" << (mySubjectisAdmin ? TpmCryptSubject_TRUE:TpmCryptSubject_FALSE) << "'" << endl;
 
-    cout << "\t" << "Subject's last login: ";
-    if (myLastLogin.isValid())
-        myLastLogin.printDate();
-    else
-        cout << "Subject has not logged in, yet!" << endl;
+
         
     if (mySubjectType == SUBJECTTYPE_USER)
         printCurrentMessagesForUser();

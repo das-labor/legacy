@@ -35,7 +35,7 @@ sqlite3_stmt *stmt;
 // Database entries
 const std::string keys = "CREATE TABLE IF NOT EXISTS keys(uuid INTEGER PRIMARY KEY ASC, key_type TEXT,key_size INTEGER, valid_until DATETIME)";
 const std::string users = "CREATE TABLE IF NOT EXISTS users(uuid INTEGER PRIMARY KEY ASC, name TEXT UNIQUE NOT NULL, email TEXT, country TEXT, organization TEXT, is_admin BOOL)";
-const std::string user_keys = "CREATE TABLE IF NOT EXISTS user_keys(id INTEGER PRIMARY KEY ASC, u_uuid INTEGER NOT NULL,v_uuid INTEGER NOT NULL, key_uuid INTEGER NOT NULL, key_blob BLOB NOT NULL)";
+const std::string user_keys = "CREATE TABLE IF NOT EXISTS user_keys(uuid INTEGER PRIMARY KEY ASC, u_uuid INTEGER NOT NULL,v_uuid INTEGER NOT NULL, key_uuid INTEGER NOT NULL, key_blob BLOB NOT NULL)";
 const std::string volumes = "CREATE TABLE IF NOT EXISTS volumes(uuid INTEGER PRIMARY KEY ASC, name TEXT UNIQUE, path TEXT, enc_tool TEXT)";
 const std::string sss = "CREATE TABLE IF NOT EXISTS sss(uuid INTEGER PRIMARY KEY ASC, name TEXT UNIQUE, min_participants INTEGER NOT NULL, last_x_val INTEGER NOT NULL)";
 const std::string sss_entries = "CREATE TABLE IF NOT EXISTS sss_entries(uuid INTEGER PRIMARY KEY, sss_uuid INTEGER NOT NULL, user_uuid INTEGER NOT NULL, x_val TEXT NOT NULL, y_val TEXT NOT NULL)";
