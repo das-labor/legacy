@@ -79,12 +79,40 @@ void slave_com(){
 }
 
 void statemachine (){
-	state_simmer_psu = command_simmer_psu;
-	state_500V_psu   = command_500V_psu;
+	if(state_main_on){
+		state_simmer_psu = command_simmer_psu;
+		state_500V_psu   = command_500V_psu;
+	}else{
+		state_simmer_psu = 0;
+		state_500V_psu   = 0;
+	}
+}
 
+#define SIMMER_ON()     PORTC |=  (1<<PC1)
+#define SIMMER_OFF()    PORTC &= ~(1<<PC1)
+#define SIMMER_OUTPUT() PORTC |=  (1<<PC1)
+
+void set_outputs(){
+	if(state_simmer_psu){
+		SIMMER_ON();
+	}else{
+		SIMMER_OFF();
+	}
+}
+
+void io_init(){
+	SIMMER_OUTPUT();
+}
+
+void pwm_init(){
+	TCCR1A = (1<<COM1A1) | (1<<WGM10); //Fast PWM 8 bit
+	TCCR1B = (1<<WGM12)  | (1<<CS10) ; //clk/1
+	OCR1A  = 30; // a little bit of current 
 }
 
 int main(){
+	io_init();
+	pwm_init();
 	uart_init();
 	
 	while(1){
@@ -92,6 +120,4 @@ int main(){
 		statemachine();
 	
 	}
-	
-
 }
