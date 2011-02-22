@@ -18,23 +18,28 @@
 */
 
 #include <stdint.h>
-#include "sysclock.h"
 #include "hw_regs.h"
 #include "hw_uart_regs.h"
 #include "uart_defines.h"
+#include "sysclock.h"
 
 void calc_baud_values(uint32_t baudrate, uint16_t* intdivider, uint8_t* fracdivider, uint8_t* highspeed){
 	uint32_t tmp;
 	uint32_t uart_freq;
+	if(baudrate==0){
+		return;
+	}
 	uart_freq = sysclk_get_freq();
-	*highspeed = (baudrate*16>uart_freq)?1:0;
-	tmp = (uint64_t)uart_freq*128/((*highspeed?8:16)*baudrate);
+	*highspeed = ((baudrate*16L)>uart_freq)?1:0;
+//	tmp = (((uint64_t)UART_FREQ)*128LL)/(((*highspeed)?8L:16L)*baudrate);
+	tmp = uart_freq<<((*highspeed)?(7-3):(7-4));
+	tmp /= baudrate;
 	tmp++;
 	tmp>>=1;
 	*fracdivider = (uint8_t)(tmp&0x3f);
-	*intdivider = tmp>>6;
+	*intdivider = (uint16_t)(tmp>>6);
 }
-
+//*/
 static const
 uint32_t uart_base[] = { UART0_BASE, UART1_BASE, UART2_BASE };
 
@@ -109,13 +114,16 @@ uint8_t uart_init(uint8_t uartno, uint32_t baudrate, uint8_t databits, uint8_t p
 	HW_REG(gpio_base[uart_tx_gpio[uartno]]+GPIO_DIR_OFFSET) |= _BV(uart_tx_pin[uartno]);
 
 	/* disable uart */
-	HW_REG(uart_base[uartno]+UARTCTL_OFFSET) &= ~_BV(UARTEN);
+	HW_REG(uart_base[uartno]+UARTCTL_OFFSET) &= ~_BV(UART_UARTEN);
 	/* set baudrate parameters */
 	uint8_t highspeed;
-	calc_baud_values(baudrate,
-			         (uint16_t*)&HW_REG(uart_base[uartno]+UARTIBRD_OFFSET),
-			         (uint8_t*)&HW_REG(uart_base[uartno]+UARTFBRD_OFFSET),
-			         &highspeed);
+	uint16_t ibrd;
+	uint8_t fbrd;
+	calc_baud_values(baudrate, &ibrd, &fbrd, &highspeed);
+	tmp=HW_REG(uart_base[uartno]+UARTLCRH_OFFSET);
+	HW16_REG(uart_base[uartno]+UARTIBRD_OFFSET) = ibrd;
+    HW8_REG(uart_base[uartno]+UARTFBRD_OFFSET) = fbrd;
+    HW_REG(uart_base[uartno]+UARTLCRH_OFFSET) = tmp;
 	/* wait until uart is no longer busy */
 	while(HW_REG(uart_base[uartno]+UARTFR_OFFSET)&_BV(UART_BUSY))
 		;
@@ -139,7 +147,7 @@ uint8_t uart_init(uint8_t uartno, uint32_t baudrate, uint8_t databits, uint8_t p
 	}
 	HW_REG(uart_base[uartno]+UARTFR_OFFSET) = 0;
 	HW_REG(uart_base[uartno]+UARTCTL_OFFSET) |= _BV(UART_RXE) | _BV(UART_TXE);
-	HW_REG(uart_base[uartno]+UARTCTL_OFFSET) |= _BV(UARTEN);
+	HW_REG(uart_base[uartno]+UARTCTL_OFFSET) |= _BV(UART_UARTEN);
 
 	return UART_ERROR_OK;
 }

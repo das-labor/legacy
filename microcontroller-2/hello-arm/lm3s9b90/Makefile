@@ -35,20 +35,21 @@ MAPFILE = main.map
 DEP_DIR = deps/
 
 CFLAGS = -mthumb -mcpu=cortex-m3 \
-         -Os \
+         -O0 \
          -ffunction-sections -fdata-sections \
-         -MMD -MF$(DEP_DIR)$(patsubst %.o,%.d,$(notdir $@))
-         -std=gnu99 -Wall -pedantic -g -c
+         -MMD -MF$(DEP_DIR)$(patsubst %.o,%.d,$(notdir $@)) \
+         -std=gnu99 -Wall -pedantic -gdwarf-2 
 		
-CLDFLAGS = -Wl,--entry=reset_isr -Wl,--gc-sections -Wl,-Map=main.map -lc -lgcc \
+CLDFLAGS = -gdwarf-2 -Wl,--entry=reset_isr -Wl,--gc-sections -Wl,-Map=main.map -lc -lgcc \
           -T $(LINKERSCRIPT) -mthumb -mcpu=cortex-m3
-LDFLAGS = --entry=reset_isr --gc-sections -Map=$(MAPFILE) -lc -lgcc \
+LDFLAGS = -gdwarf-2 --entry=reset_isr --gc-sections -Map=$(MAPFILE) -lc -lgcc \
           -T $(LINKERSCRIPT) -mthumb -mcpu=cortex-m3
 
-CC = arm-elf-gcc
-LD = arm-elf-ld
-AS = arm-elf-as
-GDB = arm-elf-gdb
+PREFIX = arm-none-eabi-#
+CC=$(PREFIX)gcc
+LD=$(PREFIX)ld
+AS=$(PREFIX)as
+GDB=$(PREFIX)gdb
 
 all: $(TARGET)
 

@@ -75,7 +75,7 @@ void ethernet_tx_packet(uint16_t payload_length, void* packet){
 		packet = (uint8_t*)packet +4;
 		HW_REG(ETHERNET0_BASE+ETH_MACDATA_OFFSET) = tmp;
 	}while((len-=4)>4);
-	while(HW_REG(ETHERNET0_BASE+ETH_MACTR_OFFSET)&1 == 0){
+	while((HW_REG(ETHERNET0_BASE+ETH_MACTR_OFFSET)&1) == 0){
 	}
 	HW_REG(ETHERNET0_BASE+ETH_MACTR_OFFSET) = 1;
 }

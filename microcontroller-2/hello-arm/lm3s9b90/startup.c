@@ -82,6 +82,7 @@ isr_fpt isr_vector[] __attribute__ ((section(".isr_vectors"))) = {
 		default_isr, /* GPIO Port D */
 		default_isr, /* GPIO Port E */
 		uart0_isr, /* UART0 */
+	//	default_isr, /* UART0 */
 		default_isr, /* UART1 */
 		default_isr, /* SSI0 */
 		default_isr, /* I2C0 */

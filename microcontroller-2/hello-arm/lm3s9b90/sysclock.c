@@ -27,12 +27,14 @@
 #define PIOSC_FREQ 16000000UL
 
 void sysclk_set_rawclock(void){
-	uint32_t tmp_rcc;
+	volatile uint32_t tmp_rcc;
 	tmp_rcc = 0; //HW_REG(SYSCTL_BASE+RCC_OFFSET);
 	tmp_rcc &= ~(_BV(RCC_IOSCDIS) | _BV(RCC_MOSCDIS) | _BV(RCC_USESYSDIV));
 	tmp_rcc |= _BV(RCC_BYPASS) | _BV(RCC_PWRDN);
 	tmp_rcc &= ~(3<<RCC_OSCSRC);
 	tmp_rcc |=  (0<<RCC_OSCSRC);
+	HW_REG(SYSCTL_BASE+RCC_OFFSET) = tmp_rcc;
+//	tmp_rcc |= _BV(RCC_PWRDN);
 	HW_REG(SYSCTL_BASE+RCC_OFFSET) = tmp_rcc;
 	HW_REG(SYSCTL_BASE+RCC2_OFFSET) &= ~(_BV(31));
 
@@ -58,10 +60,11 @@ void sysclk_set_freq(uint8_t freq_id){
 	HW_REG(SYSCTL_BASE+RCC2_OFFSET) = rcc2;
 	rcc2 &= ~_BV(RCC2_PWRDN2);
 	HW_REG(SYSCTL_BASE+RCC2_OFFSET) = rcc2;
-	rcc2 |= _BV(RCC2_DIV400) | freq_id<<RCC2_SYSDIV2LSB;
+	rcc2 |= _BV(RCC2_DIV400) | (freq_id<<RCC2_SYSDIV2LSB);
 	HW_REG(SYSCTL_BASE+RCC2_OFFSET) = rcc2;
 	while(!(HW_REG(SYSCTL_BASE+RIS_OFFSET)&_BV(RIS_PLLLRIS))){
 	}
+//	return;
 	rcc2 &= ~_BV(RCC2_BYPASS2);
 	HW_REG(SYSCTL_BASE+RCC2_OFFSET) = rcc2;
 }

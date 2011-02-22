@@ -91,7 +91,7 @@ void uart_tx_isr(uint8_t uartno){
 static
 void uart_rx_isr(uint8_t uartno){
 	uint8_t c;
-	while(!HW_REG(uart_base[uartno]+UARTFR_OFFSET)&_BV(UART_RXFE)){
+	while(!(HW_REG(uart_base[uartno]+UARTFR_OFFSET)&_BV(UART_RXFE))){
 		c = HW_REG(uart_base[uartno]+UARTDR_OFFSET);
 		circularbytebuffer_append(c, &(uart_rx_buffer[uartno]));
 	}
@@ -101,13 +101,18 @@ void uart_rx_isr(uint8_t uartno){
 void calc_baud_values(uint32_t baudrate, uint16_t* intdivider, uint8_t* fracdivider, uint8_t* highspeed){
 	uint32_t tmp;
 	uint32_t uart_freq;
+	if(baudrate==0){
+		return;
+	}
 	uart_freq = sysclk_get_freq();
-	*highspeed = (baudrate*16>uart_freq)?1:0;
-	tmp = (uint64_t)uart_freq*128/((*highspeed?8:16)*baudrate);
+	*highspeed = ((baudrate*16L)>uart_freq)?1:0;
+//	tmp = (((uint64_t)UART_FREQ)*128LL)/(((*highspeed)?8L:16L)*baudrate);
+	tmp = uart_freq<<((*highspeed)?(7-3):(7-4));
+	tmp /= baudrate;
 	tmp++;
 	tmp>>=1;
 	*fracdivider = (uint8_t)(tmp&0x3f);
-	*intdivider = tmp>>6;
+	*intdivider = (uint16_t)(tmp>>6);
 }
 
 uint8_t uart_init(uint8_t uartno, uint32_t baudrate, uint8_t databits, uint8_t paraty, uint8_t stopbits){
@@ -133,12 +138,17 @@ uint8_t uart_init(uint8_t uartno, uint32_t baudrate, uint8_t databits, uint8_t p
 	if(0==circularbytebuffer_init(uart_tx_buffersize[uartno], &(uart_tx_buffer[uartno]))){
 		return UART_ERROR_TX_BUFFER_INIT;
 	}
-	/* enable clock for uart */
-	HW_REG(SYSCTL_BASE+RCGC1_OFFSET) |= _BV(uartno);
 	/* enable clock for gpio*/
 	HW_REG(SYSCTL_BASE+RCGC2_OFFSET) |= _BV(uart_rx_gpio[uartno]) | _BV(uart_tx_gpio[uartno]);
+    for(tmp=0; tmp<100; ++tmp)
+    	;
     HW_REG(SYSCTL_BASE+RCGC2_OFFSET) |= 1;
-
+    for(tmp=0; tmp<100; ++tmp)
+    	;
+	/* enable clock for uart */
+	HW_REG(SYSCTL_BASE+RCGC1_OFFSET) |= _BV(uartno);
+    for(tmp=0; tmp<100; ++tmp)
+    	;
     HW_REG(gpio_base[uart_rx_gpio[uartno]] + GPIO_ODR_OFFSET) &= ~_BV(uart_rx_pin[uartno]); /* open drain */
     HW_REG(gpio_base[uart_tx_gpio[uartno]] + GPIO_ODR_OFFSET) &= ~_BV(uart_tx_pin[uartno]); /* open drain */
     HW_REG(gpio_base[uart_rx_gpio[uartno]] + GPIO_PUR_OFFSET) &= ~_BV(uart_rx_pin[uartno]); /* pull-up */
@@ -165,20 +175,25 @@ uint8_t uart_init(uint8_t uartno, uint32_t baudrate, uint8_t databits, uint8_t p
 	HW_REG(gpio_base[uart_rx_gpio[uartno]]+GPIO_DIR_OFFSET) &= ~_BV(uart_rx_pin[uartno]);
 	/* configure tx pin as output */
 	HW_REG(gpio_base[uart_tx_gpio[uartno]]+GPIO_DIR_OFFSET) |= _BV(uart_tx_pin[uartno]);
-
+    for(tmp=0; tmp<100; ++tmp)
+    	;
 	/* disable uart */
 	HW_REG(uart_base[uartno]+UARTCTL_OFFSET) &= ~_BV(UART_UARTEN);
 	/* set baudrate parameters */
-	uint8_t highspeed;
-	calc_baud_values(baudrate,
-			         (uint16_t*)&HW_REG(uart_base[uartno]+UARTIBRD_OFFSET),
-			         (uint8_t*)&HW_REG(uart_base[uartno]+UARTFBRD_OFFSET),
-			         &highspeed);
+	uint8_t highspeed, fbrd;
+	uint16_t ibrd;
+	calc_baud_values(baudrate, &ibrd, &fbrd, &highspeed);
+	tmp=HW_REG(uart_base[uartno]+UARTLCRH_OFFSET);
+	HW16_REG(uart_base[uartno]+UARTIBRD_OFFSET) = ibrd;
+    HW8_REG(uart_base[uartno]+UARTFBRD_OFFSET) = fbrd;
+    HW_REG(uart_base[uartno]+UARTLCRH_OFFSET) = tmp;
 	/* wait until uart is no longer busy */
 	while(HW_REG(uart_base[uartno]+UARTFR_OFFSET)&_BV(UART_BUSY))
 		;
+
 	/* flush FIFOs */
 	HW_REG(uart_base[uartno]+UARTLCRH_OFFSET) &= ~_BV(UART_FEN);
+
 	/* set line parameters (bits, paraty, stopbits*/
 	tmp = HW_REG(uart_base[uartno]+UARTLCRH_OFFSET);
 	tmp &= ~0xff;
