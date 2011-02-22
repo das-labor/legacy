@@ -25,7 +25,9 @@
 #define SET_REG(r,v) (*((volatile uint32_t*)(r))) = (v)
 #define GET_REG(r)   (*((volatile uint32_t*)(r)))
 #define HW_REG(r)    (*((volatile uint32_t*)(r)))
-#define _BV(x)       (1<<(x))
+#define HW16_REG(r)  (*((volatile uint16_t*)(r)))
+#define HW8_REG(r)   (*((volatile uint8_t*)(r)))
+#define _BV(x)       (1UL<<(x))
 
 #define SYSCTL_BASE 0x400FE000
 #define DID0_OFFSET           0x000

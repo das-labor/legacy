@@ -42,7 +42,7 @@ uint32_t stridentcnt(const char* a, const char* b){
 
 uint16_t firstword_length(const char* s){
 	uint16_t ret=0;
-	while(isgraph(*s++))
+	while(isgraph((uint8_t)(*s++)))
 		ret++;
 	return ret; 
 }

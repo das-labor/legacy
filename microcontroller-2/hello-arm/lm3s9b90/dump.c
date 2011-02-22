@@ -70,8 +70,8 @@ void dump(char* s){
 	char tstr[9];
 	if(s){
 		s=strstrip(s);
-		if(isalpha(*s)){
-			while(isalpha(*s))
+		if(isalpha((uint8_t)(*s))){
+			while(isalpha((uint8_t)(*s)))
 				++s;
 		}
 		char* eptr;

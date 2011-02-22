@@ -309,7 +309,7 @@ uint8_t cli_completion(char* buffer, uint16_t maxcmdlength, const cmdlist_entry_
 	ref[0]='\0';
 	/* check if we are behind the first word */
 	while(buffer[i]){
-		if(!isgraph(buffer[i++]))
+		if(!isgraph((uint8_t)(buffer[i++])))
 			return 0;
 	}
 	for(;;){

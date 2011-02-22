@@ -28,10 +28,26 @@ SECTIONS {
 		KEEP(*(.isr_vectors))
 		*(.text*)
 		*(.rodata*)
-		_text_end = .;
 	} > flash
+     /* .ARM.exidx is sorted, so has to go in its own output section.
+*/
+    .ARM.exidx : {
+        __exidx_start = .;
+        *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+        __exidx_end = .;
+    } > flash
+
+  . = ALIGN(4);
+    .ARM.extab : {
+        __extab_start = .;
+        *(.ARM.extab* .gnu.linkonce.armextab.*)
+        __extab_end = .;
+    } > flash
+
+  . = ALIGN(4);
 	
-	.data : AT ( ADDR(.text) + SIZEOF(.text) ) {
+	_text_end = .;
+	.data : AT ( ADDR(.ARM.extab) + SIZEOF(.ARM.extab) ) {
 		_data = .;
 		*(.data*)
 		_data_end = .;
