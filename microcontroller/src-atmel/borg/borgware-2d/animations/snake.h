@@ -1,8 +1,6 @@
 #ifndef SNAKE_H_
 #define SNAKE_H_
 
-void snake();
-void snake_game();
-
+void snake_animation(void);
 
 #endif /* SNAKE_H_ */
