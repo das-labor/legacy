@@ -4,6 +4,7 @@
 
 #include "config.h"
 #include "scrolltext/scrolltext.h"
+#include "animations/snake.h"
 #include "animations/programm.h"
 #include "animations/matrix.h"
 #include "animations/gameoflife.h"
@@ -76,7 +77,7 @@ void display_loop(){
 
 #ifdef ANIMATION_SNAKE
 		case 4:
-			snake();
+			snake_animation();
 			break;
 #endif
 
