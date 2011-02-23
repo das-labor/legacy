@@ -1,7 +1,7 @@
-TOOLCHAIN      = arm-elf-
+TOOLCHAIN      = arm-none-eabi-#
 MCU_TARGET     = cortex-m3  
-OPTIMIZE       = -O2
-DEBUG          = -g
+OPTIMIZE       = -O0
+DEBUG          = -gdwarf-2
 WARNING        = -pedantic -Wall -Wstrict-prototypes -Werror
 DEFS           = -D$(call uc, $(subst -,_,$(MCU_TARGET)))
 FLASHCMD       = $(TOOLCHAIN)gdb -x gdb-flash  #

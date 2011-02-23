@@ -106,7 +106,6 @@ void testrun_self_present(void){
 	memset(buffer, 0xFF, 8);
 	memset(key, 0xFF, 10);
 	testrun_selfenc(key, buffer);
-	
 }
 
 void testrun_performance_present(void){
