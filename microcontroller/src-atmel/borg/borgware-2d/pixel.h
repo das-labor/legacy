@@ -12,7 +12,7 @@ typedef struct {
 } pixel;
 
 
-typedef enum {right,left,up,down} direction;
+typedef enum {up, right, down, left} direction;
 typedef struct {
 	pixel pos;
 	direction dir;
@@ -22,6 +22,23 @@ typedef struct {
 /****************************************************************************
  * Pixel routines
  */
+
+unsigned char get_pixel(pixel p);
+
+static inline pixel next_pixel(pixel pix, direction dir){
+	static char const nDelta[] = {0, -1, 0, 1, 0};
+	return (pixel){pix.x + nDelta[dir], pix.y + nDelta[dir + 1]};
+}
+
+static inline unsigned char get_next_pixel(pixel p, direction dir){
+	return get_pixel(next_pixel(p, dir));
+}
+
+static inline direction direction_r(direction dir){
+	return (dir + 1) % 4;
+}
+
+
 void clear_screen(unsigned char value);
 void setpixel(pixel p, unsigned char value);
 #define clearpixel(p) setpixel(p, 0);
@@ -35,18 +52,12 @@ void line(pixel p1, pixel p2 ,unsigned char value);
 void filled_rectangle(pixel p1, unsigned char w, unsigned char h ,unsigned char value);
 
 
-
-
-unsigned char get_pixel(pixel p);
-unsigned char get_next_pixel(pixel p, direction dir);
-
-pixel next_pixel(pixel pix, direction dir);
-
-direction direction_r(direction dir);
-
 void shift_pixmap_l();
 
 
-void set_cursor(cursor* cur, pixel p);
+static inline void set_cursor(cursor* cur, pixel p){
+	cur->pos = p;
+	setpixel(p, cur->mode ? 3 : 0);
+}
 
 #endif // PIXEL_H
