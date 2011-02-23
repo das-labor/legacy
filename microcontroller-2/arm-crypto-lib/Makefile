@@ -160,7 +160,7 @@ endef
 
 $(foreach algo, $(ALGORITHMS), $(eval $(call Flash_Template, \
     $(algo), \
-    $(BIN_DIR)$(call lc, $(algo))/$(TEST_DIR)main-$(call lc, $(algo))-test.hex \
+    $(BIN_DIR)$(call lc, $(algo))/$(TEST_DIR)main-$(call lc, $(algo))-test.elf \
 )))
 
 #-------------------------------------------------------------------------------
