@@ -30,9 +30,11 @@ static inline pixel next_pixel(pixel pix, direction dir){
 	return (pixel){pix.x + nDelta[dir], pix.y + nDelta[dir + 1]};
 }
 
+
 static inline unsigned char get_next_pixel(pixel p, direction dir){
 	return get_pixel(next_pixel(p, dir));
 }
+
 
 static inline direction direction_r(direction dir){
 	return (dir + 1) % 4;
@@ -40,16 +42,10 @@ static inline direction direction_r(direction dir){
 
 
 void clear_screen(unsigned char value);
+
+
 void setpixel(pixel p, unsigned char value);
 #define clearpixel(p) setpixel(p, 0);
-
-// straight or non straight line from one point to the other
-// value=brightness
-void line(pixel p1, pixel p2 ,unsigned char value);
-
-// filled_rectangle p1=upper right corner, w=width, h=height , 
-// value=brightness
-void filled_rectangle(pixel p1, unsigned char w, unsigned char h ,unsigned char value);
 
 
 void shift_pixmap_l();

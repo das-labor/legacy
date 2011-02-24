@@ -15,6 +15,7 @@
 #include "animations/amphibian.h"
 #include "animations/laborlogo.h"
 #include "animations/27c3.h"
+#include "animations/mherweg.h"
 #include "borg_hw/borg_hw.h"
 #include "can/borg_can.h"
 #include "random/prng.h"

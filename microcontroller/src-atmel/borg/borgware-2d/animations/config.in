@@ -12,7 +12,7 @@ comment "Animations"
 	dep_bool "Flying Dots"	 ANIMATION_FLYINGDOTS    $RANDOM_SUPPORT
 	dep_bool "Game of Life"  ANIMATION_GAMEOFLIFE    $RANDOM_SUPPORT
 	dep_bool "Breakout Demo" ANIMATION_BREAKOUT      $GAME_BREAKOUT
-	bool     "Martin Herweg" ANIMATION_MHERWEG
+	bool     "Martin Herweg" ANIMATION_MHERWEG       $RANDOM_SUPPORT
 	dep_bool "Langton Ant"   ANIMATION_LTN_ANT       $RANDOM_SUPPORT
 	
 	dep_bool_menu "Bitmap Scroller" ANIMATION_BMSCROLLER y $RANDOM_SUPPORT
