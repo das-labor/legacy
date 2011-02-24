@@ -675,9 +675,9 @@ void bigint_expmod_u(bigint_t* dest, const bigint_t* a, const bigint_t* exp, con
 	}
 
 	bigint_t res, base;
-	bigint_word_t base_b[MAX(a->length_B,r->length_B*2)], res_b[r->length_B*2];
+	bigint_word_t t, base_b[MAX(a->length_B,r->length_B*2)], res_b[r->length_B*2];
 	uint16_t i;
-	uint8_t j, t;
+	uint8_t j;
 	res.wordv = res_b;
 	base.wordv = base_b;
 	bigint_copy(&base, a);
@@ -688,7 +688,7 @@ void bigint_expmod_u(bigint_t* dest, const bigint_t* a, const bigint_t* exp, con
 	bigint_adjust(&res);
 	for(i=0; i+1<exp->length_B; ++i){
 		t=exp->wordv[i];
-		for(j=0; j<8; ++j){
+		for(j=0; j<BIGINT_WORD_SIZE; ++j){
 			if(t&1){
 				bigint_mul_u(&res, &res, &base);
 				bigint_reduce(&res, r);
@@ -738,8 +738,8 @@ void bigint_gcdext(bigint_t* gcd, bigint_t* a, bigint_t* b, const bigint_t* x, c
 	 x_.info = y_.info = 0;
 	 x_.length_B = x->length_B-i;
 	 y_.length_B = y->length_B-i;
-	 memcpy(x_.wordv, x->wordv+i, x_.length_B);
-	 memcpy(y_.wordv, y->wordv+i, y_.length_B);
+	 memcpy(x_.wordv, x->wordv+i, x_.length_B*sizeof(bigint_word_t));
+	 memcpy(y_.wordv, y->wordv+i, y_.length_B*sizeof(bigint_word_t));
 	 for(i=0; (x_.wordv[0]&(1<<i))==0 && (y_.wordv[0]&(1<<i))==0; ++i){
 	 }
 
