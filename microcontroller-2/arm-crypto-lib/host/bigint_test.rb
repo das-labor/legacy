@@ -482,16 +482,14 @@ def gcdext_test(a,b)
   $sp.print(b.to_s(16)+" ")
   line=''
   begin
-    line_tmp = $sp.gets()
-    line_tmp = '' if line_tmp==nil
-    line = ''  if line.end_with?('\n')
-    line += line_tmp
+    line = $sp.gets()
+    line = '' if line==nil
     puts("DBG got: "+line) if $debug
     if /^Error:.*/.match(line)
       puts line
       return false
     end
-  end while not m=/gcdext\([\s]*([+-]?[0-9a-fA-F]*)[\s]*,[\s]*([+-]?[0-9a-fA-F]*)[\s]*\)[\s]*=> a = ([+-]?[0-9a-fA-F]+); b = ([+-]?[0-9a-fA-F]+); gcd = ([+-]?[0-9a-fA-F]+)/.match(line)
+  end while not m=/gcdext\([\s]*([+-]?[0-9a-fA-F]*)[\s]*,[\s]*([+-]?[0-9a-fA-F]*)[\s]*\)[\s]*=>[\s]*a[\s]*=[\s]*([+-]?[0-9a-fA-F]+);[\s]*b[\s]*=[\s]*([+-]?[0-9a-fA-F]+);[\s]*gcd[\s]*=[\s]*([+-]?[0-9a-fA-F]+)/.match(line)
   a_ = m[1].to_i(16)
   b_ = m[2].to_i(16)
   c_ = m[3].to_i(16)
@@ -669,7 +667,7 @@ def run_test_gcdext(skip=0)
   begin
     $size = length_a_B
     (0..16).each do |i|
-      a = rand(256**length_a_B)
+      a = rand(256**length_a_B)+1
       b = rand(256**length_a_B)+1
       v = gcdext_test(a, b)
       $logfile.flush()
@@ -677,7 +675,7 @@ def run_test_gcdext(skip=0)
       end
     (0..16).each do |i|
       b_size = rand(length_b_B+1)
-      a = rand(256**length_a_B)
+      a = rand(256**length_a_B)+1
       b = rand(256**b_size)+1 
       v = gcdext_test(a, b)
       $logfile.flush()

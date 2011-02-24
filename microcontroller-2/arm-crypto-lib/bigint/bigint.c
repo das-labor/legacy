@@ -381,7 +381,7 @@ void bigint_shiftright(bigint_t* a, uint16_t shift){
 		t |= ((bigint_wordplus_t)(a->wordv[0]))<<(BIGINT_WORD_SIZE-bitshift);
 		a->wordv[0] = (bigint_word_t)(t>>BIGINT_WORD_SIZE);
 	}
-	a->length_B -= ((shift/8)+sizeof(bigint_word_t)-1)/sizeof(bigint_word_t);
+    a->length_B -= ((shift/8)+sizeof(bigint_word_t)-1)/sizeof(bigint_word_t);
 	bigint_adjust(a);
 }
 
@@ -574,12 +574,6 @@ void bigint_square(bigint_t* dest, const bigint_t* a){
 }
 
 /******************************************************************************/
-
-#define cli_putstr(a)
-#define bigint_print_hex(a)
-#define cli_hexdump_rev(a,b)
-#define uart_flush(a)
-
 void bigint_sub_u_bitscale(bigint_t* a, const bigint_t* b, uint16_t bitscale){
 	bigint_t tmp;
 	bigint_word_t tmp_b[b->length_B+4];
@@ -595,7 +589,7 @@ void bigint_sub_u_bitscale(bigint_t* a, const bigint_t* b, uint16_t bitscale){
 	tmp.wordv = tmp_b;
 	bigint_copy(&tmp, b);
 	bigint_shiftleft(&tmp, bitscale&(BIGINT_WORD_SIZE-1));
-	cli_putstr("\r\nDBG(sub_ub.0) tmp_shift    = "); bigint_print_hex(&tmp);
+//	cli_putstr("\r\nDBG(sub_ub.0) tmp_shift    = "); bigint_print_hex(&tmp);
 	for(j=0,i=word_shift; i<tmp.length_B+word_shift; ++i, ++j){
 		t = a->wordv[i];
 		t -= tmp.wordv[j];
@@ -628,7 +622,7 @@ void bigint_reduce(bigint_t* a, const bigint_t* r){
 //	bigint_adjust(r);
 	uint8_t rfbs = GET_FBS(r);
 
-	cli_putstr("\r\nDBG: (a) = "); bigint_print_hex(a);
+//	cli_putstr("\r\nDBG: (a) = "); bigint_print_hex(a);
 	if(r->length_B==0 || a->length_B==0){
 		return;
 	}
@@ -639,30 +633,30 @@ void bigint_reduce(bigint_t* a, const bigint_t* r){
 		p %= q;
 		memcpy(a->wordv, &p, a->length_B*sizeof(bigint_word_t));
 		bigint_adjust(a);
-		cli_putstr("\r\nDBG: (0) = "); bigint_print_hex(a);
+//		cli_putstr("\r\nDBG: (0) = "); bigint_print_hex(a);
 		return;
 	}
 	uint16_t shift;
 	while(a->length_B > r->length_B){
 		shift = (a->length_B-r->length_B)*8*sizeof(bigint_word_t)+GET_FBS(a)-rfbs-1;
-		cli_putstr("\r\nDBG: (p) shift = "); cli_hexdump_rev(&shift, 2);
-		uart_flush(0);
+//		cli_putstr("\r\nDBG: (p) shift = "); cli_hexdump_rev(&shift, 2);
+//		uart_flush(0);
 		bigint_sub_u_bitscale(a, r, shift);
-		cli_putstr("\r\nDBG: (1) = "); bigint_print_hex(a);
+//		cli_putstr("\r\nDBG: (1) = "); bigint_print_hex(a);
 	}
 	while((GET_FBS(a) > rfbs+1) && (a->length_B == r->length_B)){
 		shift = GET_FBS(a)-rfbs-1;
-		cli_putstr("\r\nDBG: (q) shift = "); cli_hexdump_rev(&shift, 2);
+//		cli_putstr("\r\nDBG: (q) shift = "); cli_hexdump_rev(&shift, 2);
 		bigint_sub_u_bitscale(a, r, GET_FBS(a)-rfbs-1);
-		cli_putstr("\r\nDBG: (2) = "); bigint_print_hex(a);
+//		cli_putstr("\r\nDBG: (2) = "); bigint_print_hex(a);
 	}
 	while(bigint_cmp_u(a,r)>=0){
 		bigint_sub_u(a,a,r);
-		cli_putstr("\r\nDBG: (3) = "); bigint_print_hex(a);
+//		cli_putstr("\r\nDBG: (3) = "); bigint_print_hex(a);
 	}
 	bigint_adjust(a);
-	cli_putstr("\r\nDBG: (a) = "); bigint_print_hex(a);
-	cli_putstr("\r\n");
+//	cli_putstr("\r\nDBG: (a) = "); bigint_print_hex(a);
+//	cli_putstr("\r\n");
 }
 
 /******************************************************************************/
@@ -713,13 +707,48 @@ void bigint_expmod_u(bigint_t* dest, const bigint_t* a, const bigint_t* exp, con
 }
 
 /******************************************************************************/
+
+#define cli_putstr(a)
+#define bigint_print_hex(a)
+#define cli_hexdump_rev(a,b)
+#define uart_flush(a)
+
 /* gcd <-- gcd(x,y) a*x+b*y=gcd */
 void bigint_gcdext(bigint_t* gcd, bigint_t* a, bigint_t* b, const bigint_t* x, const bigint_t* y){
 	 bigint_t g, x_, y_, u, v, a_, b_, c_, d_;
-	 volatile uint16_t i=0;
+	 uint16_t i=0;
 	 if(x->length_B==0 || y->length_B==0){
 		 return;
 	 }
+	 if(x->length_B==1 && x->wordv[0]==1){
+		 gcd->length_B = 1;
+		 gcd->wordv[0] = 1;
+		 if(a){
+			 a->length_B = 1;
+			 a->wordv[0] = 1;
+			 SET_POS(a);
+			 bigint_adjust(a);
+		 }
+		 if(b){
+			 bigint_set_zero(b);
+		 }
+		 return;
+	 }
+	 if(y->length_B==1 && y->wordv[0]==1){
+		 gcd->length_B = 1;
+		 gcd->wordv[0] = 1;
+		 if(b){
+			 b->length_B = 1;
+			 b->wordv[0] = 1;
+			 SET_POS(b);
+			 bigint_adjust(b);
+		 }
+		 if(a){
+			 bigint_set_zero(a);
+		 }
+		 return;
+	 }
+
 	 while(x->wordv[i]==0 && y->wordv[i]==0){
 		 ++i;
 	 }
@@ -731,7 +760,7 @@ void bigint_gcdext(bigint_t* gcd, bigint_t* a, bigint_t* b, const bigint_t* x, c
 	 g.wordv = g_b;
 	 x_.wordv = x_b;
 	 y_.wordv = y_b;
-	 memset(g_b, 0, i);
+	 memset(g_b, 0, i*sizeof(bigint_word_t));
 	 g_b[i]=1;
 	 g.length_B = i+1;
 	 g.info=0;
@@ -751,6 +780,7 @@ void bigint_gcdext(bigint_t* gcd, bigint_t* a, bigint_t* b, const bigint_t* x, c
 		 bigint_shiftright(&x_, i);
 		 bigint_shiftright(&y_, i);
 	 }
+
 	 u.wordv = u_b;
 	 v.wordv = v_b;
 	 a_.wordv = a_b;
@@ -769,7 +799,9 @@ void bigint_gcdext(bigint_t* gcd, bigint_t* a, bigint_t* b, const bigint_t* x, c
 	 bigint_set_zero(&b_);
 	 bigint_set_zero(&c_);
 	 do{
+		 cli_putstr("\r\nDBG (gcdext) 0");
 		 while((u.wordv[0]&1)==0){
+			 cli_putstr("\r\nDBG (gcdext) 0.1");
 			 bigint_shiftright(&u, 1);
 			 if((a_.wordv[0]&1) || (b_.wordv[0]&1)){
 				 bigint_add_s(&a_, &a_, &y_);
@@ -779,6 +811,7 @@ void bigint_gcdext(bigint_t* gcd, bigint_t* a, bigint_t* b, const bigint_t* x, c
 			 bigint_shiftright(&b_, 1);
 		 }
 		 while((v.wordv[0]&1)==0){
+			 cli_putstr("\r\nDBG (gcdext) 0.2");
 			 bigint_shiftright(&v, 1);
 			 if((c_.wordv[0]&1) || (d_.wordv[0]&1)){
 				 bigint_add_s(&c_, &c_, &y_);
