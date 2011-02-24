@@ -1,6 +1,6 @@
 
 DEFS = -DF_CPU=16000000l
-OBJ = main.o
+OBJ = main.o uart/uart.o
 
 
 # Default values
@@ -36,7 +36,7 @@ $(OUT).elf: $(OBJ)
 	$(MCU_CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 %.o: %.c
-	$(MCU_CC) $(CFLAGS) -c $<
+	$(MCU_CC) $(CFLAGS) -o $@ -c $<
 
 
 lst: $(OUT).lst
