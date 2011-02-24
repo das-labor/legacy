@@ -1,6 +1,8 @@
 
 #include "uart/uart.h"
+#include "ioport.h"
 #include "../lib/com/com.h"
+
 
 uint8_t state_main_on;
 
@@ -88,20 +90,34 @@ void statemachine (){
 	}
 }
 
-#define SIMMER_ON()     PORTC |=  (1<<PC1)
-#define SIMMER_OFF()    PORTC &= ~(1<<PC1)
-#define SIMMER_OUTPUT() PORTC |=  (1<<PC1)
+#define SIMMER_PORT C
+#define SIMMER_BIT  1
+
+#define PSU_500V_PORT C
+#define PSU_500V_BIT  2
+
+#define ZUENDUNG_PORT C
+#define ZUENDUNG_BIT  3
+
 
 void set_outputs(){
 	if(state_simmer_psu){
-		SIMMER_ON();
+		OUTPUT_ON(SIMMER);
 	}else{
-		SIMMER_OFF();
+		OUTPUT_OFF(SIMMER);
+	}
+	if(state_500V_psu){
+		OUTPUT_ON(PSU_500V);
+	}else{
+		OUTPUT_OFF(PSU_500V);
 	}
 }
 
 void io_init(){
-	SIMMER_OUTPUT();
+	SET_DDR(SIMMER);
+	SET_DDR(PSU_500V);
+	SET_DDR(ZUENDUNG);
+	
 }
 
 void pwm_init(){
@@ -118,6 +134,7 @@ int main(){
 	while(1){
 		slave_com();
 		statemachine();
+		set_outputs();
 	
 	}
 }
