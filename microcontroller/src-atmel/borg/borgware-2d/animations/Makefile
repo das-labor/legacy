@@ -25,6 +25,10 @@ ifeq ($(ANIMATION_GAMEOFLIFE),y)
   SRC += gameoflife.c
 endif
 
+ifeq ($(ANIMATION_MHERWEG),y)
+  SRC += mherweg.c
+endif
+
 ifeq ($(ANIMATION_BREAKOUT),y)
   SRC += breakout_demo.c
 endif
