@@ -5,7 +5,7 @@ OBJ = main.o rfm12.o
 
 # Default values
 OUT           ?= image
-MCU_TARGET    ?= atmega8
+MCU_TARGET    ?= atmega32
 MCU_CC        ?= avr-gcc
 OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall

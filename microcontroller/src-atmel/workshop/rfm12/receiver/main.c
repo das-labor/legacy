@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
+#include <string.h>
 
 #include "rfm12.h"
 #include "ioport.h"
@@ -8,11 +9,9 @@
 #define TASTER_PORT C
 #define TASTER_BIT  5
 
-#define LED_RED_PORT D
-#define LED_RED_BIT  6
+#define LED_RED_PORT B
+#define LED_RED_BIT  0
 
-#define LED_GREEN_PORT D
-#define LED_GREEN_BIT  7
 
 
 void timer_init () {
@@ -45,11 +44,7 @@ int main ( void )
 {
 	uint8_t *bufcontents;
 	
-	uint8_t tx_data[] = "foobar\x00";
-
 	SET_DDR(LED_RED);
-	SET_DDR(LED_GREEN);
-	OUTPUT_ON(TASTER); //pullup
 
 	_delay_ms(250);
 	_delay_ms(250);
@@ -62,38 +57,26 @@ int main ( void )
 	//Hauptschleife
 	while(1){
 		if (ms_over) {
-			static uint8_t old_taster;
-			uint8_t taster;
 			
 			if (rfm12_rx_status() == STATUS_COMPLETE)
 			{
-	
 				bufcontents = rfm12_rx_buffer();
-					
+				
+				if(strncmp((char*)bufcontents, "foobar", 6) == 0){
+					if(bufcontents[6]){
+						OUTPUT_ON(LED_RED);
+					}else{
+						OUTPUT_OFF(LED_RED);
+					}
+	
+				}
+								
 				// tell the implementation that the buffer
 				// can be reused for the next data.
 				rfm12_rx_clear();
 	
 			}
-			
-			taster = ! INPUT(TASTER);
-			
-			if (taster != old_taster)
-			{
-				old_taster = taster;
 				
-				if(taster){
-					OUTPUT_ON(LED_RED);
-				}else{
-					OUTPUT_OFF(LED_RED);
-				}
-				
-				tx_data[6] = taster;//taster wert hinter "foobar"
-				
-				rfm12_tx (sizeof(tx_data), 0, tx_data);
-				
-			}
-	
 			rfm12_tick();
 		}
 	}
