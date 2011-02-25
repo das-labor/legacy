@@ -47,13 +47,13 @@ Wenn der Command abgearbeitet ist wird automatisch das nächste Token eingelesen
 
 unsigned char (*text_pixmap)[NUM_ROWS][LINEBYTES];
 
-void text_setpixel(pixel p, unsigned char value ){
+static void text_setpixel(pixel p, unsigned char value ){
 	if(value){
 		(*text_pixmap)[p.y%NUM_ROWS][p.x/8] |= shl_table[p.x%8];
 	}
 }
 
-void clear_text_pixmap(unsigned char value){
+static void clear_text_pixmap(unsigned char value){
 	unsigned char y, z;
 	for(y=NUM_ROWS;y--;){
 		for(z=LINEBYTES;z--;){
@@ -151,7 +151,7 @@ void showBlob(blob_t * blob){
 #define PW(a) pgm_read_word(&(a))
 #define PB(a) pgm_read_byte(&(a))
 
-unsigned int getLen(blob_t *blob) {
+static unsigned int getLen(blob_t *blob) {
 	unsigned char glyph;
 	unsigned int strLen = 0;
 	unsigned char * str = (unsigned char*)blob->str;
@@ -166,7 +166,7 @@ unsigned int getLen(blob_t *blob) {
 }
 
 
-unsigned int getnum(blob_t * blob){
+static unsigned int getnum(blob_t * blob){
 	unsigned int num=0;
 	unsigned char gotnum = 0;
 
@@ -523,9 +523,9 @@ void scrolltext(char *str) {
 
 	text_pixmap = malloc(NUM_ROWS * LINEBYTES);
 
-  if(scrolltext_text[0] == 0){
-    strcpy_P(scrolltext_text, default_text);
-  }
+	if(scrolltext_text[0] == 0){
+		strcpy_P(scrolltext_text, default_text);
+	}
 	memcpy(tmp_str, str, SCROLLTEXT_BUFFER_SIZE);
 
 	blob_t *startblob=0, *aktblob, *nextblob=0;

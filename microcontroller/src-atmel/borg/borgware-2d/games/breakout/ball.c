@@ -18,9 +18,30 @@
 
 #include "ball.h"
 
+/* internal functions */
+
+static void ball_spawn (ball_t *in_ball, uint16_t in_x, uint16_t in_y, int16_t in_dir_x, int16_t in_dir_y)
+{
+	in_ball->x = in_x;
+	in_ball->y = in_y;
+	in_ball->dir_x = in_dir_x;
+	in_ball->dir_y = in_dir_y;
+}
+
+static void ball_die (ball_t *in_b)
+{
+	in_b->strength--;
+
+	/* respawn ball with random direction */
+	if (in_b->strength)
+	{
+		print_ballsleft(in_b);
+		ball_spawn_default (in_b);
+	}
+}
+
 /* modify a vecotor according to given type of bouncing */
-void bounce_rand_vector (ball_t *in_b, uint8_t in_bouncetype);
-void bounce_rand_vector (ball_t *in_b, uint8_t in_bouncetype)
+static void bounce_rand_vector (ball_t *in_b, uint8_t in_bouncetype)
 {
 	uint8_t rval = random8();
 	
@@ -56,6 +77,9 @@ void bounce_rand_vector (ball_t *in_b, uint8_t in_bouncetype)
 	if (!in_b->dir_y)
 		in_b->dir_y = 217;
 }
+
+
+/* interface functions */
 
 void ball_think (ball_t *b)
 {
@@ -141,18 +165,6 @@ void ball_think (ball_t *b)
 	b->y += b->dir_y;
 	b->x += b->dir_x;
 }
-	
-void ball_die (ball_t *in_b)
-{
-	in_b->strength--;
-
-	/* respawn ball with random direction */
-	if (in_b->strength)
-	{
-		print_ballsleft(in_b);
-		ball_spawn_default (in_b);
-	}
-}
 
 void ball_draw (ball_t *b)
 {
@@ -161,14 +173,6 @@ void ball_draw (ball_t *b)
 	p.y = (uint8_t) abs(b->y / 256);
 
 	setpixel (p, 3);
-}
-
-void ball_spawn (ball_t *in_ball, uint16_t in_x, uint16_t in_y, int16_t in_dir_x, int16_t in_dir_y)
-{
-	in_ball->x = in_x;
-	in_ball->y = in_y;
-	in_ball->dir_x = in_dir_x;
-	in_ball->dir_y = in_dir_y;
 }
 
 void ball_spawn_default (ball_t *in_b)

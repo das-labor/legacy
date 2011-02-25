@@ -20,9 +20,10 @@
 
 static uint16_t maxscore;
 
+/* internal functions */
+
 /* real level definition */
-game_field_t level_field (uint8_t in_x, uint8_t in_y, uint8_t in_lvl);
-game_field_t level_field (uint8_t in_x, uint8_t in_y, uint8_t in_lvl)
+static game_field_t level_field (uint8_t in_x, uint8_t in_y, uint8_t in_lvl)
 {
 	switch (in_lvl)
 	{
@@ -78,6 +79,8 @@ game_field_t level_field (uint8_t in_x, uint8_t in_y, uint8_t in_lvl)
 		break;
 	}
 }
+
+/* interface functions */
 
 void level_init (uint8_t in_levelnum)
 {

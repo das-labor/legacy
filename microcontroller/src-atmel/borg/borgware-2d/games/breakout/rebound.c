@@ -17,7 +17,7 @@
  */
 #include "rebound.h"
 
-static uint8_t rbpos;
+uint8_t rbpos;
 
 void rebound_reflect (ball_t *b, int8_t in_x)
 {
@@ -27,17 +27,6 @@ void rebound_reflect (ball_t *b, int8_t in_x)
 	
 	b->dir_x += rebound_reflection[tmpidx][0];
 	b->dir_y += rebound_reflection[tmpidx][1];
-}
-
-uint8_t rebound_getpos ()
-{
-	return (rbpos + (REBOUND_SIZE / 2));
-}
-
-void rebound_init()
-{
-	rbpos = (NUM_ROWS / 2) - (REBOUND_SIZE / 2);
-	rebound_draw();
 }
 
 void rebound_draw ()
