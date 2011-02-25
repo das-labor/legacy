@@ -34,7 +34,9 @@ jmp_buf newmode_jmpbuf;
 void snake_game(void);
 void tetris(void);
 void tetris_bastet(void);
+void tetris_fp(void);
 void borg_invaders(void);
+void borg_breakout(unsigned char demomode);
 #endif
 
 void display_loop(){
@@ -48,6 +50,9 @@ void display_loop(){
 #endif
 
 	for(;;){
+#ifndef MENU_SUPPORT
+		clear_screen(0);
+#endif
 		oldMode = mode;
 		switch(mode++) {
 
@@ -56,7 +61,8 @@ void display_loop(){
 			scrolltext(scrolltext_text);
 
 #ifdef RANDOM_SUPPORT
-			{ char a[28];
+			{
+				char a[28];
 				sprintf(a,"</# counter == %lu  ", (unsigned long) percnt_get());
 				scrolltext(a);
 			}
@@ -184,33 +190,80 @@ void display_loop(){
 
 			break;
 #endif
-		case 42: 
-		mode = 1; 
-		break;
-
 #ifdef MENU_SUPPORT
+		case 42: 
+			mode = 1;
+			break;
+
 		case 43:
 			menu();
 			mode = oldOldmode;
 #else
 #ifdef GAME_TETRIS
+		case 42:
+			if (JOYISFIRE)
+				mode = 43;
+			else
+				mode = 1;
+			break;
+
 		case 43:
+			waitForFire = 0;
+			while (JOYISFIRE);
 			tetris();
+			while (JOYISFIRE);
+			mode = oldOldmode;
+			waitForFire = 1;
 			break;
 #endif
 #ifdef GAME_BASTET
 		case 44:
+			waitForFire = 0;
+			while (JOYISFIRE);
 			tetris_bastet();
+			while (JOYISFIRE);
+			mode = oldOldmode;
+			waitForFire = 1;
+			break;
+#endif
+#ifdef GAME_TETRIS_FP
+		case 45:
+			waitForFire = 0;
+			while (JOYISFIRE);
+			tetris_fp();
+			while (JOYISFIRE);
+			mode = oldOldmode;
+			waitForFire = 1;
 			break;
 #endif
 #ifdef GAME_SPACE_INVADERS
 		case 45:
+			waitForFire = 0;
+			while (JOYISFIRE);
 			borg_invaders();
+			while (JOYISFIRE);
+			mode = oldOldmode;
+			waitForFire = 1;
 			break;
 #endif
 #ifdef GAME_SNAKE
 		case 46:
+			waitForFire = 0;
+			while (JOYISFIRE);
 			snake_game();
+			while (JOYISFIRE);
+			mode = oldOldmode;
+			waitForFire = 1;
+			break;
+#endif
+#ifdef GAME_BREAKOUT
+		case 47:
+			waitForFire = 0;
+			while (JOYISFIRE);
+			borg_breakout(0);
+			while (JOYISFIRE);
+			mode = oldOldmode;
+			waitForFire = 1;
 			break;
 #endif
 #endif
