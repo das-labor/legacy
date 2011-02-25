@@ -21,4 +21,6 @@ void timer0_off();
 
 void set_led(uint8_t num, uint8_t value);
 
+int8_t encoder_read( void );
+
 #endif

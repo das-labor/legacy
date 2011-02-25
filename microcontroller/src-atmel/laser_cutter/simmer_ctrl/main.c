@@ -1,8 +1,10 @@
 
+#include <avr/interrupt.h>
 #include "uart/uart.h"
 #include "ioport.h"
 #include "../lib/com/com.h"
 
+#include "adc.h"
 
 uint8_t state_main_on;
 
@@ -17,21 +19,32 @@ uint8_t state_500V_psu;
 uint8_t command_simmer_psu;
 uint8_t state_simmer_psu;
 
+uint16_t simmer_i_soll;
+uint16_t simmer_i_ist;
+uint16_t simmer_u;
 
-#define CS_WAIT_SYNC  0
-#define CS_CMD1       1
-#define CS_CMD2       2
-#define CS_CHK1       3
-#define CS_CHK2       4
-#define CS_SLAVE1_REQ 5
+#define CS_WAIT_SYNC     0
+#define CS_CMD1          1
+#define CS_CMD2          2
+#define CS_CHK1          3
+#define CS_CHK2          4
+#define CS_SIMMER_SOLL_L 5
+#define CS_SIMMER_SOLL_H 6
+#define CS_SLAVE1_REQ    7
 
+
+void put_uint16(uint16_t i){
+	uart_putc(i & 0xff);
+	uart_putc(i>>8);
+}
 
 void slave_com(){
 	uint8_t c, res;
+	static uint8_t tmp;
 	static uint8_t com_state;
 	static uint8_t cmd1, cmd2, chk1, chk2;
 	static uint8_t poll_num;
-	res = uart_getc_nb(&c);
+	res = uart_getc_nb((char*)&c);
 	if(res == 1){
 		switch(com_state){
 			case CS_WAIT_SYNC:
@@ -60,6 +73,15 @@ void slave_com(){
 					command_500V_psu   = (cmd1 & MSK_500V_PSU_CMD) ? 1:0;
 					command_simmer_psu = (cmd1 & MSK_SIMMER_CMD)   ? 1:0;
 				}
+				com_state = CS_SIMMER_SOLL_L;
+				break;
+				
+			case CS_SIMMER_SOLL_L:
+				tmp = c;
+				com_state = CS_SIMMER_SOLL_H;
+				break;
+			case CS_SIMMER_SOLL_H:
+				simmer_i_soll = ((uint16_t)c<<8) | tmp;
 				com_state = CS_SLAVE1_REQ;
 				break;
 				
@@ -72,8 +94,11 @@ void slave_com(){
 				poll_num = c & 0x0f;
 				
 				uart_putc(stat);
-				uart_putc(0x12);
-				uart_putc(0x34);
+				if(poll_num == 0){
+					put_uint16(simmer_i_ist);	
+				}else if(poll_num == 1){
+					put_uint16(simmer_u);
+				}
 				com_state = CS_WAIT_SYNC;
 				}break;
 		}
@@ -130,11 +155,16 @@ int main(){
 	io_init();
 	pwm_init();
 	uart_init();
+	init_adc();
+	
+	sei();
+	
 	
 	while(1){
+		simmer_i_ist = adc_i;
+	
 		slave_com();
 		statemachine();
-		set_outputs();
-	
+		set_outputs();	
 	}
 }
