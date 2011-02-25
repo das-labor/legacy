@@ -215,9 +215,6 @@ void rectangles()
 // schräge linien die aufblitzen
 void lines1()
 {
-	line((pixel){0, 15}, (pixel){15, 15}, 3);
-	wait(10000);
-
 	unsigned char value, n, x, y, h, w;
 	unsigned int delay = 500;
 	clear_screen(0);
