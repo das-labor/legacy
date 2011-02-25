@@ -19,9 +19,20 @@
 
 #ifndef REBOUND_H
 #define REBOUND_H
-void rebound_init();
 void rebound_tick(ball_t *ball);
 void rebound_draw();
-uint8_t rebound_getpos();
+
+extern unsigned char rbpos;
+inline static uint8_t rebound_getpos ()
+{
+	return (rbpos + (REBOUND_SIZE / 2));
+}
+
+inline static void rebound_init()
+{
+	rbpos = (NUM_ROWS / 2) - (REBOUND_SIZE / 2);
+	rebound_draw();
+}
+
 void rebound_reflect(ball_t *b, int8_t in_x);
 #endif /* REBOUND_H */

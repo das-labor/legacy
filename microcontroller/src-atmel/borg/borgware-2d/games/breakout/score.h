@@ -20,6 +20,14 @@
 #ifndef SCORE_H
 #define SCORE_H
 
-void score_add(uint8_t);
-uint16_t score_get();
+extern unsigned short score;
+inline static void score_add (uint8_t in_score)
+{
+	score += in_score;
+}
+
+inline static unsigned short score_get()
+{
+	return score;
+}
 #endif

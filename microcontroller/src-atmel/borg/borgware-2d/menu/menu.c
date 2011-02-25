@@ -91,7 +91,7 @@ static uint8_t menu_getIconPixel(uint8_t item, uint8_t x, uint8_t y)
 	{
 		// return pixel
 		return (0x80 >> x) &
-			pgm_read_word(&_game_descriptors_start__[item].icon[y]);
+			pgm_read_byte(&_game_descriptors_start__[item].icon[y]);
 	}
 	else
 	{
