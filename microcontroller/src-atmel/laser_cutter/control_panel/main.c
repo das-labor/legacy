@@ -29,23 +29,6 @@
 #define CTRL_RESERVED_2     14
 #define CTRL_RESERVED_3      6
 
-
-void test1(){
-	while(1){
-		uint8_t x;
-		for(x=0;x<16;x++){
-			_delay_ms(100);
-			setpixel(x,1);
-		}
-		for(x=0;x<16;x++){
-			_delay_ms(100);
-			setpixel(x,0);
-		}
-	}
-
-}
-
-
 #define key_down(k) ((keys[((k)/4)] & (1<<((k)%4))) ? 0:1)
 
 
@@ -87,10 +70,140 @@ void statemachine(){
 		if(key_down(CTRL_500V_PSU_OFF)){
 			command_500V_psu = 0;
 		}
+		
+		if(key_down(CTRL_SIMMER_PSU_ON)){
+			command_simmer_psu = 1;
+		}
+		
+		if(key_down(CTRL_SIMMER_PSU_OFF)){
+			command_simmer_psu = 0;
+		}
+		
+		if(key_down(CTRL_ZUENDEN)){
+			command_zuenden = 1;
+		}else{
+			command_zuenden = 0;
+		}
+		
 	
 	}else{
 		command_500V_psu = 0;
 		command_simmer_psu = 0;
+		command_zuenden = 0;
+	}
+}
+
+
+void display_states(){
+	set_led(CTRL_MAIN_ON,    state_main_on);
+	set_led(CTRL_MAIN_OFF, ! state_main_on);
+	
+	set_led(CTRL_500V_PSU_ON,    state_500V_psu);
+	set_led(CTRL_SIMMER_PSU_ON,  state_simmer_psu);
+
+	set_led(CTRL_ZUENDEN, state_zuenden);
+
+	if(state_main_on){
+	
+		set_led(CTRL_500V_PSU_OFF,   ! state_500V_psu);
+		set_led(CTRL_SIMMER_PSU_OFF, ! state_simmer_psu);
+	}else{
+		//Mute off LEDs when main is off
+		set_led(CTRL_500V_PSU_OFF, 0);
+		set_led(CTRL_SIMMER_PSU_OFF, 0);
+	
+	}
+	
+}
+
+
+int16_t simmer_i_ist;
+int16_t simmer_u;
+
+int16_t simmer_i_soll;
+
+extern volatile int8_t enc_delta;
+
+void update_menu(){
+	uint8_t mkeys[3];
+	static uint8_t keys_old[3];
+	static uint8_t selected = 0xff, old_selected = 0xff;
+	
+	static uint16_t disp_value[3];
+	static uint16_t disp_value_old[3] = {0xffff, 0xffff, 0xffff};
+	
+	
+	mkeys[0] = key_down(CTRL_RESERVED_1);
+	mkeys[1] = key_down(CTRL_RESERVED_2);
+	mkeys[2] = key_down(CTRL_RESERVED_3);
+	
+	uint8_t x;
+	uint8_t edge = 0xff;
+	
+	for(x=0; x<3; x++){
+		if(mkeys[x] && ! keys_old[x]){
+			edge = x;
+		}
+		keys_old[x] = mkeys[x];
+	}
+	
+	if(edge != 0xff){
+		if(selected == edge){
+			selected = 0xff;
+		}else{
+			selected = edge;
+		}
+	}
+	
+	if(selected != old_selected){
+		
+		switch(selected){
+			case 0:
+				set_led(CTRL_RESERVED_1, 1);
+				set_led(CTRL_RESERVED_2, 0);
+				set_led(CTRL_RESERVED_3, 0);
+				break;
+			case 1:
+				set_led(CTRL_RESERVED_1, 0);
+				set_led(CTRL_RESERVED_2, 1);
+				set_led(CTRL_RESERVED_3, 0);
+				break;
+			case 2:
+				set_led(CTRL_RESERVED_1, 0);
+				set_led(CTRL_RESERVED_2, 0);
+				set_led(CTRL_RESERVED_3, 1);
+				break;
+			default:
+				set_led(CTRL_RESERVED_1, 0);
+				set_led(CTRL_RESERVED_2, 0);
+				set_led(CTRL_RESERVED_3, 0);
+				break;
+		}
+		
+		old_selected = selected;
+	}
+	
+	int8_t enc = encoder_read();
+	
+	if(selected == 0){
+		simmer_i_soll += enc;
+		if(simmer_i_soll > 250){
+			simmer_i_soll = 250;
+		}else if(simmer_i_soll < 0){
+			simmer_i_soll = 0;
+		}
+		disp_value[0] = simmer_i_soll;
+	}else{
+		disp_value[0] = simmer_i_ist;
+	}
+		
+	for(x=0;x<1;x++){
+		if(disp_value[x] != disp_value_old[x]){
+			disp_value_old[x] = disp_value[x];
+			char strbuf[5];
+			sprintf(strbuf, "%4d", disp_value[x]);
+			seg_print(x, strbuf);
+		}
 	}
 }
 
@@ -116,16 +229,10 @@ void statemachine(){
 #define MSK_SIMMER_STATE   0x20
 */
 
-
 #define NUM_SIMMER_VALUES 2
-
-uint16_t simmer_values[2];
-
-uint16_t simmer_i_soll;
 
 #define SIMMER_VALUE_U 0
 #define SIMMER_VALUE_I 1
-
 
 
 void master_com(){
@@ -153,12 +260,12 @@ void master_com(){
   
   uart_putc(chk1);
   uart_putc(chk2);
+
+  uart_putc(simmer_i_soll & 0xff);
+  uart_putc(simmer_i_soll >> 8);
   
   //slave request 1
   uart_putc(0x10 | simmer_poll_num);
-  
-  uart_putc(simmer_i_soll & 0xff);
-  uart_putc(simmer_i_soll >> 8);
   
   uint16_t timeout = 0;
   uint8_t c[3], num = 0, success;
@@ -182,8 +289,13 @@ void master_com(){
     state_500V_psu    = (stat & MSK_500V_PSU_STATE) ? 1:0;
     state_zuenden     = (stat & MSK_ZUEND_STATE )   ? 1:0;
     state_simmer_psu  = (stat & MSK_SIMMER_STATE)   ? 1:0;
-     
-    simmer_values[simmer_poll_num] = *(uint16_t *)&c[1];
+    
+	if(simmer_poll_num == 0){
+		simmer_i_ist = *(uint16_t *)&c[1];
+	}else if(simmer_poll_num == 1){
+		simmer_u = *(uint16_t *)&c[1];
+	}
+	
     simmer_poll_num++;
     if(simmer_poll_num == NUM_SIMMER_VALUES){
       simmer_poll_num = 0;
@@ -193,61 +305,17 @@ void master_com(){
   }
 }
 
-
-
-void display_states(){
-	set_led(CTRL_MAIN_ON,    state_main_on);
-	set_led(CTRL_MAIN_OFF, ! state_main_on);
-	
-	set_led(CTRL_500V_PSU_ON,    state_500V_psu);
-
-
-	if(state_main_on){
-	
-		set_led(CTRL_500V_PSU_OFF, ! state_500V_psu);
-	}else{
-		//Mute off LEDs when main is off
-		set_led(CTRL_500V_PSU_OFF, 0);
-	
-	}
-	
-}
-
-
-void test_keys_and_display(){
-	while(1){
-		uint8_t x;
-		for(x=0;x<16;x++){
-			//_delay_ms(100);
-			uint8_t value = (keys[(x/4)] & (1<<(x%4))) ? 0:1;
-			
-			setpixel(x, value);
-			
-			if(value){
-				int8_t sbuf[10];
-				sprintf(sbuf, "%04d",x);
-				seg_print(0, sbuf);
-			}
-			
-		}
-	}
-}
-
 int main(){
 	borg_hw_init();
 	uart_init();
 
 	sei();
 	
-	//test_keys_and_display();
-
 	while(1){
-		uint8_t x;
 		statemachine();
 		master_com();
 		display_states();
-
-		_delay_ms(50);
+		update_menu();
 				
 	}
 }

@@ -3,7 +3,7 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include "borg_hw.h"
-
+#include "ioport.h"
 
 //Row port
 #define ROW_PORT  PORTC
@@ -26,6 +26,13 @@
 #define BIT_SCK  PB7
 #define BIT_MOSI PB5
 #define BIT_SS   PB4
+
+
+#define PHASE_A_PORT D
+#define PHASE_A_BIT  2
+
+#define PHASE_B_PORT D
+#define PHASE_B_BIT  3
 
 
 void spi_out(uint8_t d){
@@ -68,7 +75,7 @@ inline void busywait() {
 inline void rowshow(unsigned char row, unsigned char plane){
 	ROW_PORT = (ROW_PORT & ~ROW_MASK); //blank
 
-	LED_PORT = (LED_PORT & ~LED_MASK) | LED_MASK & pixmap[0][row][0];//set LED pins to new value
+	LED_PORT = (LED_PORT & ~LED_MASK) | (LED_MASK & pixmap[0][row][0]);//set LED pins to new value
 
 	uint8_t x;
 	for(x=0;x<NUM_DISPLAYS;x++){
@@ -81,6 +88,24 @@ inline void rowshow(unsigned char row, unsigned char plane){
 
 inline void checkkeys(uint8_t row){
 	keys[row] = SWITCH_PIN & SWITCH_MASK;
+}
+
+volatile uint8_t enc_delta;
+
+inline void update_encoder(){
+	static int8_t last;
+	int8_t new, diff;
+
+	new = 0;
+	if( INPUT(PHASE_A) )
+		new = 3;
+	if( INPUT(PHASE_B) )
+		new ^= 1;					// convert gray to binary
+	diff = last - new;				// difference last - new
+	if( diff & 1 ){				    // bit 0 = value (1)
+		last = new;					// store new as next last
+		enc_delta += (diff & 2) - 1;// bit 1 = direction (+/-)
+	}
 }
 
 #ifdef __AVR_ATmega644__
@@ -105,9 +130,22 @@ inline void checkkeys(uint8_t row){
 	}
 
 	//Die aktuelle Zeile in der aktuellen Ebene ausgeben
-	rowshow(row, plane);	
+	rowshow(row, plane);
+	
+	update_encoder();	
 }
 
+
+int8_t encoder_read( void )			// read two step encoders
+{
+  int8_t val;
+
+  cli();
+  val = enc_delta;
+  enc_delta &= 1;
+  sei();
+  return val >> 1;
+}
 
 
 // Den Timer, der denn Interrupt auslöst, initialisieren
@@ -145,6 +183,9 @@ void borg_hw_init(){
 								//damit die ersten Tasten beim ersten
 								//Interrupt schon gelesen werden können
 
+	OUTPUT_ON(PHASE_A); //Pullups for rotary encoder
+	OUTPUT_ON(PHASE_B); //Pullups for rotary encoder
+	
 	spi_init();
 
 	timer0_on();

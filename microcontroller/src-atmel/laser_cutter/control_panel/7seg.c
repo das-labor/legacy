@@ -32,16 +32,15 @@ unsigned char letters[] PROGMEM = {
 	0x38,//L	
 };
 
-unsigned char field[] PROGMEM ={
-	9,4,8,3,7,2,10,6,1,5,0
-};
 
 #define PGMB(a) pgm_read_byte(&(a))
 
-void seg_print(uint8_t disp_num, unsigned char* txt){
+void seg_print(uint8_t disp_num, char* txt){
 	unsigned char c, fp = 3, dat;
 	while((c=*txt++) && (fp < 4) ){
-			if (c >= 'a'){
+			if( c == ' '){
+				dat = 0;
+			}else if (c >= 'a'){
 				dat	= PGMB(letters[c-'a']);
 			}else{
 				dat = PGMB(numbers[c-'0']);	

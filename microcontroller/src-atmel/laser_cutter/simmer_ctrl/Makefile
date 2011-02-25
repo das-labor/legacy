@@ -1,5 +1,5 @@
 PRG            = image
-OBJ            = main.o uart/uart.o
+OBJ            = main.o uart/uart.o adc.o
 MCU_TARGET     = atmega8
 OPTIMIZE       = -Os
 
@@ -29,9 +29,7 @@ clean:
 	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak 
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
 
-flash:
-	$(ERASECMD)
-	sleep 1
+flash: $(PRG).hex
 	$(FLASHCMD)
 
 sflash: $(PRG).hex
