@@ -110,7 +110,7 @@ void off()
 
 #ifdef ANIMATION_SPIRALE
 
-static void walk(cursor* cur, unsigned char steps, unsigned int delay){
+static void walk(cursor_t* cur, unsigned char steps, unsigned int delay){
 	unsigned char x;
 	for(x=steps;x--;){
 		set_cursor(cur, next_pixel(cur->pos, cur->dir));
@@ -121,7 +121,7 @@ static void walk(cursor* cur, unsigned char steps, unsigned int delay){
 void spirale(unsigned int delay){
 	clear_screen(0);
 
-	cursor cur;
+	cursor_t cur;
 	cur.dir = right;
 	cur.mode = set;
 	set_cursor (&cur, (pixel){NUM_COLS-1,0});

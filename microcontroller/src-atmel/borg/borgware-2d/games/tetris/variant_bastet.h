@@ -23,7 +23,7 @@ void tetris_bastet(void);
  * types *
  *********/
 
-typedef struct tetris_bastet_scorepair_t
+typedef struct tetris_bastet_scorepair
 {
 	tetris_piece_shape_t shape;
 	int16_t nScore;
@@ -31,7 +31,7 @@ typedef struct tetris_bastet_scorepair_t
 tetris_bastet_scorepair_t;
 
 
-typedef struct tetris_bastet_variant_t
+typedef struct tetris_bastet_variant
 {
 	uint16_t nScore;                          /** score of the player */
 	uint16_t nHighscore;                      /** highscore */

@@ -83,6 +83,13 @@ enum waitfor_e{
 	wait_col_l,
 	wait_col_r
 };
+#ifdef NDEBUG
+	typedef unsigned char waitfor_e_t;
+#else
+	typedef enum waitfor_e waitfor_e_t;
+#endif
+
+
 #define DIRECTION_RIGHT 0x01
 #define DIRECTION_DOWN 0x02
 
@@ -91,7 +98,7 @@ typedef struct blob_t_struct{
 	struct blob_t_struct * next, * last;
 	char *str;
 	char *commands;
-	enum waitfor_e waitfor;
+	waitfor_e_t waitfor;
 	int sizex;
 	char sizey;
 	int posx;

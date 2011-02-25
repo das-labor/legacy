@@ -8,7 +8,7 @@
 #include "bucket.h"
 #include "input.h"
 
-typedef struct tetris_variant_t
+typedef struct tetris_variant
 {
 	/**
 	 * constructs a variant data object

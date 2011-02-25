@@ -14,7 +14,7 @@
  *********/
 
 /** shape attributes for a piece */
-typedef enum tetris_piece_shape_t
+enum tetris_piece_shape
 {
 	TETRIS_PC_LINE,   /**< the I shaped brick */
 	TETRIS_PC_T,      /**< the T shaped brick */
@@ -23,35 +23,46 @@ typedef enum tetris_piece_shape_t
 	TETRIS_PC_LBACK,  /**< the reverse L shaped brick */
 	TETRIS_PC_S,      /**< the S shaped brick */
 	TETRIS_PC_Z       /**< the Z shaped brick */
-}
-tetris_piece_shape_t;
+};
+#ifdef NDEBUG
+	typedef uint8_t tetris_piece_shape_t;
+#else
+	typedef enum tetris_piece_shape tetris_piece_shape_t;
+#endif
 
 
 /** possible angles for a brick */
-typedef enum tetris_piece_angle_t
+enum tetris_piece_angle
 {
 	TETRIS_PC_ANGLE_0,   /**< standard angle */
 	TETRIS_PC_ANGLE_90,  /**< rotated by 90 degrees */
 	TETRIS_PC_ANGLE_180, /**< rotated by 180 degrees */
 	TETRIS_PC_ANGLE_270  /**< rotated by 270 degrees */
-}
-tetris_piece_angle_t;
-
+};
+#ifdef NDEBUG
+	typedef uint8_t tetris_piece_angle_t;
+#else
+	typedef enum tetris_piece_angle tetris_piece_angle_t;
+#endif
 
 /** rotation attributes */
-typedef enum tetris_piece_rotation_t
+enum tetris_piece_rotation
 {
 	TETRIS_PC_ROT_CW, /**< clockwise rotation */
 	TETRIS_PC_ROT_CCW /**< counter clockwise rotation */
-}
-tetris_piece_rotation_t;
+};
+#ifdef NDEBUG
+	typedef uint8_t tetris_piece_rotation_t;
+#else
+	typedef enum tetris_piece_rotation tetris_piece_rotation_t;
+#endif
 
 /**
  * describes the attributes of a piece
  * @see tetris_piece_shape_t
  * @see tetris_piece_angle_t
  */
-typedef struct tetris_piece_t
+typedef struct tetris_piece
 {
 	tetris_piece_shape_t shape; /**< specifies the shape of the piece */
 	tetris_piece_angle_t angle; /**< specifies one of 4 angels */
