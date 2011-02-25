@@ -18,16 +18,20 @@
  *********/
 
 /** presentation modes */
-typedef enum tetris_view_mode_t
+enum tetris_view_mode
 {
 	TETRIS_VIMO_PAUSED,
 	TETRIS_VIMO_RUNNING
-}
-tetris_view_mode_t;
+};
+#ifdef NDEBUG
+	typedef uint8_t tetris_view_mode_t;
+#else
+	typedef enum tetris_view_mode tetris_view_mode_t;
+#endif
 
 
 /** data structure that drives the view module */
-typedef struct tetris_view_t
+typedef struct tetris_view
 {
 	tetris_variant_t const *pVariantMethods; /** variant function pointers */
 	void *pVariant;                          /** associated variant object */

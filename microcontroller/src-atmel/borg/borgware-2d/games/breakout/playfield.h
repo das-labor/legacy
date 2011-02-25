@@ -28,7 +28,7 @@
 #define BOUNCE_REBOUND 0x10
 
 /* entries for the playing field */
-enum game_field_t
+enum game_field
 {
 	sp = 0, /* space */
 	b1 = 1, b2 = 2, b3 = 3, /* bricks */
@@ -36,8 +36,14 @@ enum game_field_t
 	bl, /* ball */
 	rb /* rebound */
 };
+#ifdef NDEBUG
+	typedef uint8_t game_field_t;
+#else
+	typedef enum game_field game_field_t;
+#endif
 
-extern char (*playfield)[NUM_COLS][NUM_ROWS];
+
+extern game_field_t (*playfield)[NUM_COLS][NUM_ROWS];
 
 /* @description draw the current field
  */
@@ -45,7 +51,7 @@ void playfield_draw();
 
 /* @description set a field with given property.
  */
-void playfield_set (uint8_t in_x, uint8_t in_y, enum game_field_t in_field);
+void playfield_set (uint8_t in_x, uint8_t in_y, game_field_t in_field);
 
 /* @description Checks if there is an object in the way. If so, it returns 1
  */

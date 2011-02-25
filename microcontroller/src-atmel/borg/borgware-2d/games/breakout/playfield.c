@@ -17,9 +17,9 @@
  */
 
 #include "playfield.h"
-char (*playfield)[NUM_COLS][NUM_ROWS];
+game_field_t (*playfield)[NUM_COLS][NUM_ROWS];
 
-void playfield_set (uint8_t in_x, uint8_t in_y, enum game_field_t in_field)
+void playfield_set (uint8_t in_x, uint8_t in_y, game_field_t in_field)
 {
 	if (in_x >= NUM_ROWS || in_y >= NUM_COLS)
 	{
@@ -80,7 +80,7 @@ uint8_t check_bounce (int8_t in_x, int8_t in_y)
 
 /* this is the actual draw function for a single field
  */
-static inline void draw_single_field (uint8_t in_x, uint8_t in_y, enum game_field_t in_f)
+static inline void draw_single_field (uint8_t in_x, uint8_t in_y, game_field_t in_f)
 {
 	pixel tmp;
 	uint8_t b;

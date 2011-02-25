@@ -21,8 +21,8 @@
 static uint16_t maxscore;
 
 /* real level definition */
-enum game_field_t level_field (uint8_t in_x, uint8_t in_y, uint8_t in_lvl);
-enum game_field_t level_field (uint8_t in_x, uint8_t in_y, uint8_t in_lvl)
+game_field_t level_field (uint8_t in_x, uint8_t in_y, uint8_t in_lvl);
+game_field_t level_field (uint8_t in_x, uint8_t in_y, uint8_t in_lvl)
 {
 	switch (in_lvl)
 	{
@@ -82,7 +82,7 @@ enum game_field_t level_field (uint8_t in_x, uint8_t in_y, uint8_t in_lvl)
 void level_init (uint8_t in_levelnum)
 {
 	uint8_t x,y;
-	enum game_field_t tmp;
+	game_field_t tmp;
 	maxscore = 0;
 
 	for (x=0;x<NUM_COLS;x++)

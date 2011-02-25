@@ -31,7 +31,7 @@
 /**
  * allowed input values
  */
-typedef enum tetris_input_command_t
+enum tetris_input_command
 {
 	TETRIS_INCMD_LEFT,    /**< move piece left */
 	TETRIS_INCMD_RIGHT,   /**< move piece right */
@@ -42,26 +42,34 @@ typedef enum tetris_input_command_t
 	TETRIS_INCMD_GRAVITY, /**< piece gets pulled by gravity */
 	TETRIS_INCMD_PAUSE,   /**< pause the game */
 	TETRIS_INCMD_NONE     /**< idle (must alway be the last one) */
-}
-tetris_input_command_t;
+};
+#ifdef NDEBUG
+	typedef uint8_t tetris_input_command_t;
+#else
+	typedef enum tetris_input_command tetris_input_command_t;
+#endif
 
 
 /**
  * values which influence the gravity time limit for a piece
  */
-typedef enum tetris_input_pace_t
+enum tetris_input_pace
 {
 	TETRIS_INPACE_HOVERING, /**< normal falling pace */
 	TETRIS_INPACE_GLIDING   /**< guarantees a minimum docking time to avoid
 	                             accidentally docked pieces in higher levels */
-}
-tetris_input_pace_t;
+};
+#ifdef NDEBUG
+	typedef uint8_t tetris_input_pace_t;
+#else
+	typedef enum tetris_input_pace tetris_input_pace_t;
+#endif
 
 
 /**
  * data structure for the input module
  */
-typedef struct tetris_input_t
+typedef struct tetris_input
 {
 	/**
 	 *  current level (determines falling speed)

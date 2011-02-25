@@ -43,15 +43,19 @@ game_descriptor_t snake_game_descriptor __attribute__((section(".game_descriptor
 /**
  * Directions of the snake.
  */
-typedef enum snake_dir
+enum snake_dir
 {
 	SNAKE_DIR_UP,   //!< SNAKE_DIR_UP    Snake is heading up.
 	SNAKE_DIR_RIGHT,//!< SNAKE_DIR_RIGHT Snake is heading right.
 	SNAKE_DIR_DOWN, //!< SNAKE_DIR_DOWN  Snake is heading down.
 	SNAKE_DIR_LEFT, //!< SNAKE_DIR_LEFT  Snake is heading left.
 	SNAKE_DIR_NONE  //!< SNAKE_DIR_NONE  Helper value for a "resting" joystick.
-} snake_dir_t;
-
+};
+#ifdef NDEBUG
+	typedef uint8_t snake_dir_t;
+#else
+	typedef enum snake_dir snake_dir_t;
+#endif
 
 /**
  * This structure represents the snake character itself. It keeps track of the
@@ -59,10 +63,10 @@ typedef enum snake_dir
  */
 typedef struct snake_protagonist
 {
-	pixel aSegments[SNAKE_MAX_LENGTH]; /** All segments of the snake. */
-	uint8_t nHeadIndex;                /** Index of the head segment. */
-	uint8_t nTailIndex;                /** Index of the tail segment. */
-	snake_dir_t dir;                   /** Direction of the snake.    */
+	pixel aSegments[SNAKE_MAX_LENGTH]; /**< All segments of the snake. */
+	uint8_t nHeadIndex;                /**< Index of the head segment. */
+	uint8_t nTailIndex;                /**< Index of the tail segment. */
+	snake_dir_t dir;                   /**< Direction of the snake.    */
 } snake_protagonist_t;
 
 
@@ -71,8 +75,8 @@ typedef struct snake_protagonist
  */
 typedef struct snake_apples
 {
-	pixel aApples[SNAKE_MAX_APPLES]; /** All apple positions */
-	uint8_t nAppleCount;             /** Counter of currently existing apples */
+	pixel aApples[SNAKE_MAX_APPLES]; /**< All apple positions */
+	uint8_t nAppleCount;             /**< Counter of currently existing apples*/
 } snake_apples_t;
 
 

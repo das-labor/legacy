@@ -6,15 +6,19 @@
 /**
  * indexes for different tetris variants
  */
-typedef enum tetris_highscore_index_t
+enum tetris_highscore_index
 {
 	TETRIS_HISCORE_TETRIS, /**< high score index for the standard variant */
 	TETRIS_HISCORE_BASTET, /**< high score index for the bastet variant */
 	TETRIS_HISCORE_FP,     /**< high score index for the first person variant */
 	TETRIS_HISCORE_PAD,    /**< don't use (padding for an even array boundary)*/
 	TETRIS_HISCORE_END     /**< boundary for the high score array */
-} tetris_highscore_index_t;
-
+};
+#ifdef NDEBUG
+	typedef uint8_t tetris_highscore_index_t;
+#else
+	typedef enum tetris_highscore_index tetris_highscore_index_t;
+#endif
 
 /**
  * lets the user enter his initials (three characters)

@@ -37,7 +37,7 @@ ifeq ($(OSTYPE),cygwin)
   LDFLAGS_SIM = -Wl -mno-cygwin -T simulator/i386pe.x
   LIBS_SIM    = -lglut32 -lglu32 -lopengl32
 else
-  CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O0
+  CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O0 -DNDEBUG
   ifeq ($(MACHINE),x86_64)
     LDFLAGS_SIM = -Wl -T simulator/elf_x86_64.x
   else

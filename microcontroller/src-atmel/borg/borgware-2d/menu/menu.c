@@ -36,13 +36,18 @@ extern game_descriptor_t _game_descriptors_end__[];
 #define MENU_PREVITEM(item) ((item + MENU_ITEM_MAX - 1) % MENU_ITEM_MAX)
 
 
-typedef enum menu_direction_t
+enum menu_direction
 {
 	MENU_DIRECTION_LEFT,
 	MENU_DIRECTION_RIGHT,
 	MENU_DIRECTION_STILL
-}
-menu_direction_t;
+};
+#ifdef NDEBUG
+	typedef uint8_t menu_direction_t;
+#else
+	typedef enum menu_direction menu_direction_t;
+#endif
+
 
 
 static void menu_setpixel(uint8_t x, uint8_t y, uint8_t isSet)

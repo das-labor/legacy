@@ -39,7 +39,7 @@ void borg_breakout_game()
 
 void borg_breakout(uint8_t demomode)
 {
-	char my_playfield[NUM_COLS][NUM_ROWS];
+	game_field_t my_playfield[NUM_COLS][NUM_ROWS];
 	playfield = &my_playfield;
 
 	uint16_t cycles = DEMO_CYCLES;

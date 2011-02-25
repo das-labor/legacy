@@ -18,28 +18,36 @@
  *********/
 
 // directions to which a piece can be moved
-typedef enum tetris_bucket_direction_t
+enum tetris_bucket_direction
 {
 	TETRIS_BUD_LEFT,
 	TETRIS_BUD_RIGHT
-}
-tetris_bucket_direction_t;
+};
+#ifdef NDEBUG
+	typedef uint8_t tetris_bucket_direction_t;
+#else
+	typedef enum tetris_bucket_direction tetris_bucket_direction_t;
+#endif
 
 
 // status of the bucket
-typedef enum tetris_bucket_status_t
+enum tetris_bucket_status
 {
 	TETRIS_BUS_READY,    /** ready to get next piece */
 	TETRIS_BUS_HOVERING, /** piece is still hovering */
 	TETRIS_BUS_GLIDING,  /** piece is gliding on the dump */
 	TETRIS_BUS_DOCKED,   /** piece has been docked */
 	TETRIS_BUS_GAMEOVER	 /** bucket is filled up */
-}
-tetris_bucket_status_t;
+};
+#ifdef NDEBUG
+	typedef uint8_t tetris_bucket_status_t;
+#else
+	typedef enum tetris_bucket_status tetris_bucket_status_t;
+#endif
 
 
 // tetris_bucket_t
-typedef struct tetris_bucket_t
+typedef struct tetris_bucket
 {
 	int8_t nWidth;                  /** width of bucket */
 	int8_t nHeight;                 /** height of bucket */
@@ -56,7 +64,7 @@ tetris_bucket_t;
 
 
 // iterator for predicted dump rows
-typedef struct tetris_bucket_iterator_t
+typedef struct tetris_bucket_iterator
 {
 	tetris_bucket_t *pBucket; /** bucket to be examined */
 	uint16_t nPieceMap;       /** piece bitmap */
