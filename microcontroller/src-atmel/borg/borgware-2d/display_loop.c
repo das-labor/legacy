@@ -173,23 +173,23 @@ void display_loop(){
 
 #ifdef ANIMATION_TESTS
 		case 31:
-			test_level1();
-
+			test_level(1);
 			break;
+
 		case 32:
-			test_level2();
-
+			test_level(2);
 			break;
+
 		case 33:
-			test_level3();
-
+			test_level(3);
 			break;
+
 		case 35:
 			test_palette();
 			test_palette2();
-
 			break;
 #endif
+
 #ifdef MENU_SUPPORT
 		case 42: 
 			mode = 1;

@@ -7,68 +7,21 @@
 #define RANDOM8() (random8())
 
 #ifdef ANIMATION_TESTS
-void test1(){
-	unsigned char x,y;
-        
-	for (y=0;y<NUM_ROWS;y++){
-		for (x=0;x<NUM_COLS;x++){
-			setpixel((pixel){x,y}, 3);
-			wait(100);
-		}
-	}
-}
 
-void test_level1(){
-	unsigned char x,y;
-	for (y=0;y<NUM_ROWS;y++){
-		for (x=0;x<NUM_COLS;x++){
-			setpixel((pixel){x,y}, 1);
+void test_level(unsigned char level){
+	for (unsigned char y=NUM_ROWS;y--;){
+		for (unsigned char x=NUM_COLS;x--;){
+			setpixel((pixel){x,y}, level);
 			wait(5);
 		}
 	}
 	wait(2000);
-}
-
-void test_level2(){
-	unsigned char x,y;
-	for (y=0;y<NUM_ROWS;y++){
-		for (x=0;x<NUM_COLS;x++){
-			setpixel((pixel){x,y}, 2);
-			wait(5);
-		}
-	}
-	wait(2000);
-}
-
-void test_level3(){
-	unsigned char x,y;
-	for (y=0;y<NUM_ROWS;y++){
-		for (x=0;x<NUM_COLS;x++){
-			setpixel((pixel){x,y}, 3);
-			wait(5);
-		}
-	}
-	wait(2000);
-}
-
-void test_levels(){
-	unsigned char x,y,b;
-	for(b=1;b<4;b++){
-		for (y=0;y<NUM_ROWS;y++){
-			for (x=0;x<NUM_COLS;x++){
-				setpixel((pixel){x,y}, b);
-				wait(5);
-			}
-		}
-	}
 }
 
 void test_palette(){
-	unsigned char x,y,b;
-	for (y=0;y<NUM_ROWS;y++){
-		b=y%4;
-		for (x=0;x<NUM_COLS;x++){
-			setpixel((pixel){x,y}, b);
+	for (unsigned char y=NUM_ROWS;y--;){
+		for (unsigned char x=NUM_COLS;x--;){
+			setpixel((pixel){x,y}, y%4);
 			// wait(1);
 		}
 	}
@@ -76,36 +29,20 @@ void test_palette(){
 }
 
 void test_palette2(){
-	unsigned char x,y,b;
-	for (x=0;x<NUM_COLS;x++){
-		b=x%4;
-		for (y=0;y<NUM_ROWS;y++){
-			setpixel((pixel){x,y}, b);
+	for (unsigned char x=NUM_COLS;x--;){
+		for (unsigned char y=NUM_ROWS;y--;){
+			setpixel((pixel){x,y}, x%4);
 			// wait(1);
 		}
 	}
-        wait(1000);
-        for (x=0;x<NUM_COLS;x++){
-         // shift image right                        
-        shift_pixmap_l();
-        wait(30);
-        }
-        
-
+	wait(1000);
+	for (unsigned char x=NUM_COLS;x--;){
+		// shift image right
+		shift_pixmap_l();
+		wait(30);
+	}
 }
 
-#endif
-
-
-#ifdef ANIMATION_OFF
-void off()
-{
-	clear_screen(0);
-
-	while(1)
-		wait(100);
-
-}
 #endif
 
 #ifdef ANIMATION_SPIRALE
@@ -153,6 +90,7 @@ void spirale(unsigned int delay){
 }
 #endif
 
+
 #ifdef ANIMATION_JOERN1
 void joern1(){
 unsigned char i, j, x;
@@ -170,6 +108,7 @@ unsigned char i, j, x;
 	}
 }
 #endif
+
 
 #ifdef ANIMATION_SCHACHBRETT
 void schachbrett(unsigned char times){
@@ -194,7 +133,6 @@ void feuer()
 	unsigned char y, x;
 	unsigned int  t;
 	unsigned char world[NUM_COLS][FEUER_Y];   // double buffer
-	
 
 	for(t=0; t<800; t++) {
 		// diffuse
@@ -228,8 +166,6 @@ void feuer()
 /**
  * void random_bright(void)
  *  by Daniel Otte
- * 
- * 
  */
 void random_bright(unsigned cycles){
 	uint8_t t,x,y;
