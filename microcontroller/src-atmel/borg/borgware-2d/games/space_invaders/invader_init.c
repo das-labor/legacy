@@ -1,42 +1,22 @@
 #include <stdint.h>
+#include <string.h>
 #include "../../compat/pgmspace.h"
 #include "invaders2.h"
 
-uint8_t const peter[8][11] PROGMEM =
-{
-{ 0, 0, P, 0, 0, 0, 0, 0, P, 0, 0 },
-{ 0, 0, 0, P, 0, 0, 0, P, 0, 0, 0 },
-{ 0, 0, P, P, P, P, P, P, P, 0, 0 },
-{ 0, P, P, 0, P, P, P, 0, P, P, 0 },
-{ P, P, P, P, P, P, P, P, P, P, P },
-{ P, 0, P, P, P, P, P, P, P, 0, P },
-{ P, 0, P, 0, 0, 0, 0, 0, P, 0, P },
-{ 0, 0, 0, P, P, 0, P, P, 0, 0, 0 } };
+uint16_t const peter[8] PROGMEM =
+		{0x0104, 0x0088, 0x01FC, 0x0376, 0x07FF, 0x05FD, 0x0505, 0x00D8};
 
-uint8_t const hans[8][11] PROGMEM =
-{
-{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-{ 1, 2, 1, 1, 2, 2, 2, 1, 2, 2, 1 },
-{ 1, 2, 1, 1, 2, 1, 2, 1, 2, 1, 2 },
-{ 1, 2, 1, 1, 2, 2, 2, 1, 2, 2, 1 },
-{ 1, 2, 1, 1, 2, 1, 2, 1, 2, 1, 2 },
-{ 1, 2, 2, 1, 2, 1, 2, 1, 2, 2, 2 },
-{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } };
+uint16_t const hans[7] PROGMEM =
+		{0x0000, 0x0372, 0x0552, 0x0372, 0x0552, 0x0356, 0x0000};
 
-void initGuards(unsigned char guards[BORG_WIDTH])
+void initGuards(unsigned char *guards)
 {
-	unsigned char x;
-	for (x = BORG_WIDTH; x--;)
-	{
-		guards[x] = 0;
-	}
+	memset(guards, 0, BORG_WIDTH);
 
 	guards[3] = 3;
 	guards[6] = 3;
 	guards[10] = 3;
 	guards[13] = 3;
-
 }
 
 void initInvaders(Invaders * iv, unsigned char lv)
@@ -44,13 +24,7 @@ void initInvaders(Invaders * iv, unsigned char lv)
 	unsigned char x, y;
 
 	// first zero out map!
-	for (x = MAX_INVADER_WIDTH; x--;)
-	{
-		for (y = MAX_INVADER_HEIGHT; y--;)
-		{
-			iv->map[x][y] = 0;
-		}
-	}
+	memset(iv->map, 0, sizeof(iv->map));
 
 	iv->speedinc = 0;
 	iv->isEdged = 0;
@@ -112,14 +86,14 @@ void initInvaders(Invaders * iv, unsigned char lv)
 		break;
 
 	case 3:
-		for (x = 11; x--;)
+		for (y = 7; y--;)
 		{
-			for (y = 8; y--;)
+			uint16_t hansrow = pgm_read_word(&hans[y]);
+			uint16_t mask = 0x0001;
+			for (x = 11; x--;)
 			{
-				if (pgm_read_byte(&hans[y][x]) != 0)
-				{
-					iv->map[x][y] = 2;
-				}
+				iv->map[x][y] = (hansrow & mask) ? 3 : 1;
+				mask <<= 1;
 			}
 		}
 
@@ -132,14 +106,17 @@ void initInvaders(Invaders * iv, unsigned char lv)
 		break;
 
 	case 4:
-		for (x = 11; x--;)
+		for (y = 8; y--;)
 		{
-			for (y = 8; y--;)
+			uint16_t peterrow = pgm_read_word(&peter[y]);
+			uint16_t mask = 0x0001;
+			for (x = 11; x--;)
 			{
-				if (pgm_read_byte(&peter[y][x]) != 0)
+				if (peterrow & mask)
 				{
 					iv->map[x][y] = 2;
 				}
+				mask <<= 1;
 			}
 		}
 

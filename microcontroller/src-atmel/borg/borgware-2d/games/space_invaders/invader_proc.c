@@ -43,7 +43,7 @@ void procCannon(Cannon * cn, uPixel * shot)
 
 }
 
-unsigned char areAtBorder(Invaders * iv)
+static unsigned char areAtBorder(Invaders * iv)
 {
 	unsigned char y;
 	for (y = SPACESHIP_LINE + 1; y <= GUARD_LINE; ++y)
@@ -58,7 +58,7 @@ unsigned char areAtBorder(Invaders * iv)
 
 }
 
-void procInvaders(Invaders * iv, uPixel st[MAX_SHOTS])
+void procInvaders(Invaders * iv, uPixel *st)
 {
 	static unsigned char mv = 0;
 
@@ -111,7 +111,7 @@ void procInvaders(Invaders * iv, uPixel st[MAX_SHOTS])
 }
 
 void procShots(Invaders * iv, Player * pl, Cannon * cn, Spaceship * sc,
-		unsigned char guards[BORG_WIDTH], uPixel st[MAX_SHOTS], uPixel * shot)
+		unsigned char *guards, uPixel *st, uPixel * shot)
 {
 	unsigned char i;
 	static unsigned char cmv = 0, imv = 0;

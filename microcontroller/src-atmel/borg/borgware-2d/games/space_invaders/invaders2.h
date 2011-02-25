@@ -51,8 +51,8 @@ typedef struct
 /*                   GLOBALE VAR                                */
 /****************************************************************/
 #define P 3
-extern uint8_t const peter[8][11];
-extern uint8_t const hans[8][11];
+extern uint16_t const peter[8];
+extern uint16_t const hans[7];
 
 /****************************************************************/
 /*                          DEFINES                             */
@@ -165,16 +165,21 @@ unsigned char getInvaderPixel(Invaders * iv, unsigned char x, unsigned char y);
 void setInvaderPixel(Invaders * iv, unsigned char x, unsigned char y,
 		unsigned char val);
 
-unsigned char getGuardPixel(unsigned char guards[BORG_WIDTH], unsigned char x,
-		unsigned char y);
-
-void setGuardPixel(unsigned char guards[BORG_WIDTH], unsigned char x,
+void setGuardPixel(unsigned char *guards, unsigned char x,
 		unsigned char y, unsigned char val);
+
+inline static unsigned char getGuardPixel(unsigned char *guards,
+		unsigned char x, unsigned char y)
+{
+	if (x < BORG_WIDTH && y == GUARD_LINE)
+		return guards[x];
+	return 0;
+}
 
 /*----------------------drawing Method---------------------------*/
 
 void draw(Invaders * iv, Spaceship * sc, Player * pl, Cannon * cn,
-		unsigned char guards[BORG_WIDTH], uPixel ishots[MAX_SHOTS],
+		unsigned char *guards, uPixel *ishots,
 		uPixel * shot);
 
 #endif

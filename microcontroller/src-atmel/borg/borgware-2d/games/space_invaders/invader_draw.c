@@ -21,15 +21,7 @@ void setInvaderPixel(Invaders * iv, unsigned char x, unsigned char y,
 	}
 }
 
-unsigned char getGuardPixel(unsigned char guards[BORG_WIDTH], unsigned char x,
-		unsigned char y)
-{
-	if (x < BORG_WIDTH && y == GUARD_LINE)
-		return guards[x];
-	return 0;
-}
-
-void setGuardPixel(unsigned char guards[BORG_WIDTH], unsigned char x,
+void setGuardPixel(unsigned char *guards, unsigned char x,
 		unsigned char y, unsigned char val)
 {
 	if (x < BORG_WIDTH && y == GUARD_LINE && val <= 3)
@@ -39,7 +31,7 @@ void setGuardPixel(unsigned char guards[BORG_WIDTH], unsigned char x,
 /*----------------------drawing Method---------------------------*/
 
 void draw(Invaders * iv, Spaceship * sc, Player * pl, Cannon * cn,
-		unsigned char guards[BORG_WIDTH], uPixel st[MAX_SHOTS], uPixel * shot)
+		unsigned char *guards, uPixel *st, uPixel * shot)
 {
 	clearScreen ();
 
