@@ -31,7 +31,7 @@
 
 static uint8_t random_state[16];
 static uint8_t random_key[16];
-static uint8_t i=0;
+static volatile uint8_t i=0;
 
 uint8_t random8(void){
 	static uint8_t sr[16];

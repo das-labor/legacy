@@ -37,10 +37,6 @@
 
 #include "performance_test.h"
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-
 char* algo_name = "BigInt";
 
 void uart0_putc(char byte){
