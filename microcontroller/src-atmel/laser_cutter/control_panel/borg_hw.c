@@ -28,11 +28,12 @@
 #define BIT_SS   PB4
 
 
+//encoder
 #define PHASE_A_PORT D
-#define PHASE_A_BIT  2
+#define PHASE_A_BIT  5
 
 #define PHASE_B_PORT D
-#define PHASE_B_BIT  3
+#define PHASE_B_BIT  4
 
 
 void spi_out(uint8_t d){
@@ -108,7 +109,7 @@ inline void update_encoder(){
 	}
 }
 
-#ifdef __AVR_ATmega644__
+#if defined(__AVR_ATmega644__) | defined(__AVR_ATmega644P__)
 	SIGNAL(SIG_OUTPUT_COMPARE0A)
 #else
 	SIGNAL(SIG_OUTPUT_COMPARE0)
@@ -150,7 +151,7 @@ int8_t encoder_read( void )			// read two step encoders
 
 // Den Timer, der denn Interrupt auslöst, initialisieren
 void timer0_on(){
-#ifdef __AVR_ATmega644__
+#if defined(__AVR_ATmega644__) | defined(__AVR_ATmega644P__)
   TCCR0A = (1<<WGM01);//CTC
   TCCR0B = (1<<CS02); //clk / 256
   OCR0A = 20;
