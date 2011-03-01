@@ -4,4 +4,4 @@
 #define NUM_COLS 4
 #define NUMPLANE 1
 
-#define NUM_DISPLAYS 1
+#define NUM_DISPLAYS 3

@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 #include "uart/uart.h"
+#include "uart1.h"
 #include "../lib/com/com.h"
 #include "borg_hw.h"
 #include "pixel.h"
@@ -16,12 +17,12 @@
 #define CTRL_PUMPE           2
 #define CTRL_500V_PSU_ON     3
 #define CTRL_500V_PSU_OFF    4
-#define CTRL_ZUENDEN          5
+#define CTRL_ZUENDEN         5
 #define CTRL_SIMMER_PSU_ON  12
 #define CTRL_SIMMER_PSU_OFF  7
 #define CTRL_POWER_PSU_ON   11
 #define CTRL_POWER_PSU_OFF   8
-#define CTRL_BRUECKEN        15
+#define CTRL_BRUECKEN       15
 #define CTRL_DUMP           13
 #define CTRL_FIRE            9
 
@@ -122,6 +123,10 @@ int16_t simmer_u;
 
 int16_t simmer_i_soll;
 
+int16_t main_u_ist;
+
+int16_t main_u_soll;
+
 extern volatile int8_t enc_delta;
 
 void update_menu(){
@@ -196,8 +201,23 @@ void update_menu(){
 	}else{
 		disp_value[0] = simmer_i_ist;
 	}
+	
+	if(selected == 1){
+		main_u_soll += enc * 5;
+		if(main_u_soll > 1300){
+			main_u_soll = 1300;
+		}else if(main_u_soll < 0){
+			main_u_soll = 0;
+		}
+		disp_value[1] = main_u_soll;
+	}else{
+		disp_value[1] = main_u_ist;
+	}
+	
+	
+	
 		
-	for(x=0;x<1;x++){
+	for(x=0;x<3;x++){
 		if(disp_value[x] != disp_value_old[x]){
 			disp_value_old[x] = disp_value[x];
 			char strbuf[5];
@@ -268,7 +288,7 @@ void master_com(){
   uart_putc(0x10 | simmer_poll_num);
   
   uint16_t timeout = 0;
-  uint8_t c[3], num = 0, success;
+  uint8_t c[3], num = 0, success = 0;
   
   do{
     if(uart_getc_nb((char*)&c[num])){
@@ -305,9 +325,20 @@ void master_com(){
   }
 }
 
+
+int my_putc(char c, FILE * f){
+	uart1_putc(c);
+	return 0;
+}
+
 int main(){
 	borg_hw_init();
 	uart_init();
+	uart1_init();
+
+	fdevopen(my_putc, 0);
+	
+	printf("Hello World");
 
 	sei();
 	
