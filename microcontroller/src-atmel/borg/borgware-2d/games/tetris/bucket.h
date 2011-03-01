@@ -20,11 +20,11 @@
 // directions to which a piece can be moved
 enum tetris_bucket_direction
 {
-	TETRIS_BUD_LEFT,
-	TETRIS_BUD_RIGHT
+	TETRIS_BUD_LEFT  = -1,
+	TETRIS_BUD_RIGHT = 1
 };
 #ifdef NDEBUG
-	typedef uint8_t tetris_bucket_direction_t;
+	typedef int8_t tetris_bucket_direction_t;
 #else
 	typedef enum tetris_bucket_direction tetris_bucket_direction_t;
 #endif
@@ -33,11 +33,11 @@ enum tetris_bucket_direction
 // status of the bucket
 enum tetris_bucket_status
 {
-	TETRIS_BUS_READY,    /** ready to get next piece */
-	TETRIS_BUS_HOVERING, /** piece is still hovering */
-	TETRIS_BUS_GLIDING,  /** piece is gliding on the dump */
-	TETRIS_BUS_DOCKED,   /** piece has been docked */
-	TETRIS_BUS_GAMEOVER	 /** bucket is filled up */
+	TETRIS_BUS_HOVERING = 0, /** piece is hovering */
+	TETRIS_BUS_GLIDING  = 1, /** piece is gliding on the dump */
+	TETRIS_BUS_DOCKED   = 2, /** piece has been docked */
+	TETRIS_BUS_READY    = 3, /** ready to get next piece */
+	TETRIS_BUS_GAMEOVER	= 4  /** bucket is filled up */
 };
 #ifdef NDEBUG
 	typedef uint8_t tetris_bucket_status_t;

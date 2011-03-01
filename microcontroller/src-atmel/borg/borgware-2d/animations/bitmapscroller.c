@@ -87,7 +87,8 @@ static unsigned char bitmap_getAlignedChunk(bitmap_t const *const pBitmap,
 
 
 /**
- * This function actually draws the bitmap onto the screen. The viewport is
+ * This function actually draws the bitmap onto the screen. The viewport is the
+ * part of the bitmap which can be seen on the display.
  * @param pBitmap The bitmap which shall be shown.
  * @param nX The x-coordinate of the bitmap which shall be displayed at the top
  *           left of the viewport.

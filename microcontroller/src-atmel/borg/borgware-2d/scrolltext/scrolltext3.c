@@ -53,14 +53,8 @@ static void text_setpixel(pixel p, unsigned char value ){
 	}
 }
 
-static void clear_text_pixmap(unsigned char value){
-	unsigned char y, z;
-	for(y=NUM_ROWS;y--;){
-		for(z=LINEBYTES;z--;){
-			(*text_pixmap)[y][z] = 0;
-		}
-	}
-
+static void clear_text_pixmap(){
+	memset(text_pixmap, 0, NUM_ROWS * LINEBYTES);
 }
 
 void update_pixmap(){
@@ -521,7 +515,8 @@ void scrolltext(char *str) {
 
 	fonts[0] = SCROLLTEXT_FONT;
 
-	text_pixmap = malloc(NUM_ROWS * LINEBYTES);
+	unsigned char auto_pixmap[NUM_ROWS][LINEBYTES];
+	text_pixmap = &auto_pixmap;
 
 	if(scrolltext_text[0] == 0){
 		strcpy_P(scrolltext_text, default_text);
@@ -531,15 +526,12 @@ void scrolltext(char *str) {
 	blob_t *startblob=0, *aktblob, *nextblob=0;
 
 	memcpy (tmp_jmpbuf, newmode_jmpbuf, sizeof(jmp_buf));
-
-
 	if((ljmp_retval = setjmp(newmode_jmpbuf))){
 		while(startblob){
 			aktblob = startblob;
 			startblob = aktblob->next;
 			free(aktblob);
 		}
-		free(text_pixmap);
 		memcpy (newmode_jmpbuf, tmp_jmpbuf, sizeof(jmp_buf));
 		longjmp(newmode_jmpbuf, ljmp_retval);
 	}
@@ -585,7 +577,7 @@ void scrolltext(char *str) {
 			}
 
 			aktblob = startblob;
-			clear_text_pixmap(0);
+			clear_text_pixmap();
 			while(aktblob){
 				drawBlob(aktblob);
 				aktblob = aktblob->next;
@@ -598,6 +590,5 @@ void scrolltext(char *str) {
 	}while(startblob);
 
 exit:
-	free(text_pixmap);
 	memcpy (newmode_jmpbuf, tmp_jmpbuf, sizeof(jmp_buf));
 }

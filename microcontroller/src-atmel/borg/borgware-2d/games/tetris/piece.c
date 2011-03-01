@@ -47,18 +47,6 @@ uint16_t tetris_piece_getBitmap(tetris_piece_t *pPc)
 }
 
 
-void tetris_piece_rotate(tetris_piece_t *pPc,
-                         tetris_piece_rotation_t nRotation)
-{
-	assert(pPc != NULL);
-	assert(nRotation < 2);
-
-	// we just rotate through the available angles in the given direction and
-	// wrap around (via modulo) where appropriate
-	pPc->angle = (pPc->angle + ((nRotation == TETRIS_PC_ROT_CW) ? 1 : 3)) % 4;
-}
-
-
 uint8_t tetris_piece_getAngleCount(tetris_piece_t *pPc)
 {
 	assert(pPc != NULL);
