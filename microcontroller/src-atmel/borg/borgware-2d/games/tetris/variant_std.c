@@ -74,6 +74,8 @@ void *tetris_std_construct(tetris_bucket_t *pBucket)
 			malloc(sizeof(tetris_standard_variant_t));
 	assert(pStdVariant != NULL);
 	memset(pStdVariant, 0, sizeof(tetris_standard_variant_t));
+	pStdVariant->pPreviewPiece =
+					tetris_piece_construct(random8() % 7, TETRIS_PC_ANGLE_0);
 
 	return pStdVariant;
 }
@@ -84,10 +86,7 @@ void tetris_std_destruct(void *pVariantData)
 	assert(pVariantData != 0);
 	tetris_standard_variant_t *pStdVariant =
 			(tetris_standard_variant_t *)pVariantData;
-	if (pStdVariant->pPreviewPiece != NULL)
-	{
-		tetris_piece_destruct(pStdVariant->pPreviewPiece);
-	}
+	tetris_piece_destruct(pStdVariant->pPreviewPiece);
 	free(pStdVariant);
 }
 
@@ -102,19 +101,10 @@ tetris_piece_t* tetris_std_choosePiece(void *pVariantData)
 	assert(pVariantData != 0);
 	tetris_standard_variant_t *pStdVariant =
 			(tetris_standard_variant_t *)pVariantData;
-	if (pStdVariant->pPreviewPiece == NULL)
-	{
-		pStdVariant->pPreviewPiece =
-				tetris_piece_construct(random8() % 7, TETRIS_PC_ANGLE_0);
-		return tetris_piece_construct(random8() % 7, TETRIS_PC_ANGLE_0);
-	}
-	else
-	{
-		tetris_piece_t *pPiece = pStdVariant->pPreviewPiece;
-		pStdVariant->pPreviewPiece =
-				tetris_piece_construct(random8() % 7, TETRIS_PC_ANGLE_0);
-		return pPiece;
-	}
+	tetris_piece_t *pPiece = pStdVariant->pPreviewPiece;
+	pStdVariant->pPreviewPiece =
+			tetris_piece_construct(random8() % 7, TETRIS_PC_ANGLE_0);
+	return pPiece;
 }
 
 

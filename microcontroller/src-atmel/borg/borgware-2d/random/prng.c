@@ -6,14 +6,12 @@
  * 
  */
 
-#include "noekeon.h"
-#include "memxor.h"
 #include <stdint.h>
 #include <string.h>
+#include "noekeon.h"
 
 uint8_t random_state[16];
 uint8_t random_key[16];
-
 
 uint8_t random8(void){
 	static uint8_t sr[16];
@@ -28,22 +26,3 @@ uint8_t random8(void){
 	--i;
 	return sr[i];
 }
-
-void random_block(void* dest){
-	noekeon_enc(random_state, random_key);
-	memcpy(dest, random_state, 16);
-}
-
-void srandom32(uint32_t seed){
-	memcpy(random_key, &seed, 4);
-}
-
-void random_seed(const void* buffer){
-	memcpy(random_key, buffer, 16);
-}
-
-void random_add(const void* buffer){
-	memxor(random_key, buffer, 16);
-}
-
-

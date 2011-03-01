@@ -48,8 +48,8 @@ enum tetris_piece_angle
 /** rotation attributes */
 enum tetris_piece_rotation
 {
-	TETRIS_PC_ROT_CW, /**< clockwise rotation */
-	TETRIS_PC_ROT_CCW /**< counter clockwise rotation */
+	TETRIS_PC_ROT_CW  = 1, /**< clockwise rotation */
+	TETRIS_PC_ROT_CCW = 3  /**< counter clockwise rotation */
 };
 #ifdef NDEBUG
 	typedef uint8_t tetris_piece_rotation_t;
@@ -119,8 +119,16 @@ uint16_t tetris_piece_getBitmap(tetris_piece_t *pPc);
  * @param pPc piece to rotate
  * @param nRotation type of rotation (see tetris_piece_rotation_t)
  */
-void tetris_piece_rotate(tetris_piece_t *pPc,
-                         tetris_piece_rotation_t nRotation);
+inline static void tetris_piece_rotate(tetris_piece_t *pPc,
+                                       tetris_piece_rotation_t nRotation)
+{
+	assert(pPc != NULL);
+	assert(nRotation == TETRIS_PC_ROT_CW || nRotation == TETRIS_PC_ROT_CCW);
+
+	// we just rotate through the available angles in the given direction and
+	// wrap around (via modulo) where appropriate
+	pPc->angle = (pPc->angle + nRotation) % 4;
+}
 
 
 /**

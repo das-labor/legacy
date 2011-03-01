@@ -92,15 +92,11 @@ static void tetris_bucket_hoverStatus(tetris_bucket_t *pBucket)
 {
 	assert(pBucket != NULL);
 
-	// if the piece touches the dump we ensure that the status is "gliding"
-	if (tetris_bucket_collision(pBucket, pBucket->nColumn, pBucket->nRow + 1))
-	{
-		pBucket->status = TETRIS_BUS_GLIDING;
-	}
-	else
-	{
-		pBucket->status = TETRIS_BUS_HOVERING;
-	}
+	// status depends on whether the piece touches the dump or not
+	// NOTE: 0 == TETRIS_BUS_HOVERING, 1 == TETRIS_BUS_GLIDING,
+	//       tetris_bucket_collision(...) either returns 0 or 1
+	pBucket->status = tetris_bucket_collision(pBucket, pBucket->nColumn,
+			pBucket->nRow + 1);
 }
 
 
@@ -177,7 +173,7 @@ tetris_piece_t *tetris_bucket_insertPiece(tetris_bucket_t *pBucket,
 	pBucket->pPiece = pPiece;
 
 	// did we already collide with something?
-	if (tetris_bucket_collision(pBucket, pBucket->nColumn, pBucket->nRow) == 1)
+	if (tetris_bucket_collision(pBucket, pBucket->nColumn, pBucket->nRow))
 	{
 		// game over man, game over!!
 		pBucket->status = TETRIS_BUS_GAMEOVER;
@@ -243,19 +239,20 @@ void tetris_bucket_advancePiece(tetris_bucket_t *pBucket)
 
 
 uint8_t tetris_bucket_movePiece(tetris_bucket_t *pBucket,
-                                tetris_bucket_direction_t direction)
+                                tetris_bucket_direction_t nDirection)
 {
 	assert(pBucket != NULL);
 
 	// a piece can only be moved if it is still hovering or gliding
 	assert((pBucket->status == TETRIS_BUS_HOVERING) ||
 		(pBucket->status == TETRIS_BUS_GLIDING));
+	// only the values of the direction enumeration are allowed
+	assert((nDirection == TETRIS_BUD_LEFT) || (nDirection = TETRIS_BUD_RIGHT));
 
-	int8_t nOffset = (direction == TETRIS_BUD_LEFT) ? -1 : 1;
-	if (tetris_bucket_collision(pBucket, pBucket->nColumn + nOffset,
+	if (tetris_bucket_collision(pBucket, pBucket->nColumn + nDirection,
 			pBucket->nRow) == 0)
 	{
-		pBucket->nColumn += nOffset;
+		pBucket->nColumn += nDirection;
 
 		// are we gliding?
 		tetris_bucket_hoverStatus(pBucket);
@@ -277,8 +274,8 @@ uint8_t tetris_bucket_rotatePiece(tetris_bucket_t *pBucket,
 
 	tetris_piece_rotate(pBucket->pPiece, rotation);
 
-	// does the rotated piece cause a collision?
-	if (tetris_bucket_collision(pBucket, pBucket->nColumn, pBucket->nRow) != 0)
+	// does the rotated piece collide with something?
+	if (tetris_bucket_collision(pBucket, pBucket->nColumn, pBucket->nRow))
 	{
 		// in that case we revert the rotation
 		tetris_piece_rotate(pBucket->pPiece, rotation == TETRIS_PC_ROT_CW ?
