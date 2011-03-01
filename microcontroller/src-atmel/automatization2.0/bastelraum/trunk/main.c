@@ -66,7 +66,7 @@ int main(void)
 		can_handler();
 
 		switch_handler();
-/*		if (tickscounter == 10) {
+/*		if (tickscounter_ == 10) {
 			temp_sensor_read();
 			tickscounter = 0;
 		}*/

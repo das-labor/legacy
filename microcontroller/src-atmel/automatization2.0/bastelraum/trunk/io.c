@@ -33,8 +33,8 @@ void init_io() {
 	OCR1A = 255;   // pwm timer compare target
 	OCR1B = 255;   // pwm timer compare target
 
-	DDRA &= ~(_BV(PA4) | _BV(PA7)); // Eingänge Türkontakt
-	PORTA |= _BV(PA4);	// PULLUP
+	DDRA &= ~(_BV(PA4) | _BV(PA7)); // Eingänge Taster / Türkontakt
+	PORTA |= _BV(PA4);	// PULLUP Türkontakt
 
 }
 
@@ -55,8 +55,7 @@ void change_shift_reg(uint8_t sreg) {
 
 void switch_handler() {
 
-	if (!(PINA & _BV(PA7)))
-	{
+	if (!(PINA & _BV(PA7))) {
 		if (stat_licht) {
 			sreg = 0;
 			change_shift_reg(sreg);
@@ -75,14 +74,12 @@ void switch_handler() {
 }
 
 
-void pwm_set(volatile uint8_t *port, uint8_t value)
-{
+void pwm_set(volatile uint8_t *port, uint8_t value) {
 	(*port) = value;
 }
 
 
-void pwm_get(volatile uint8_t *port, uint8_t *result)
-{
+void pwm_get(volatile uint8_t *port, uint8_t *result) {
 	(*result) = (*port);
 }
 
