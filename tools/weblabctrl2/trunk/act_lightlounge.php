@@ -26,6 +26,8 @@ if($_GET["doit"])
 	//	echo "powercommander.lapcontrol powercommander VIRT VORTRAG ON 0x00";
 	if ($control == "enabled"){
 	  exec("powercommander.lapcontrol powercommander SW LAMP_LOUNGE ON 0x00");
+	  exec("powercommander.lapcontrol packet 0x00:0x00 0x60:0x01 0x01,0x03,0xff");
+	  exec("powercommander.lapcontrol packet 0x00:0x00 0x61:0x01 0x01,0x03,0xff");
 	}
 	$localstate["SW_LAMP_LOUNGE"]=1;
 	foreach($sortedobjects[$tmpobj->getObjName()] as $myobj)
@@ -40,6 +42,8 @@ if($_GET["doit"])
 	//	echo "powercommander.lapcontrol powercommander VIRT VORTRAG OFF 0x00";
 	if ($control == "enabled"){
 	  exec("powercommander.lapcontrol powercommander SW LAMP_LOUNGE OFF 0x00");
+	  exec("powercommander.lapcontrol packet 0x00:0x00 0x60:0x01 0x01,0x03,0x00");
+	  exec("powercommander.lapcontrol packet 0x00:0x00 0x61:0x01 0x01,0x03,0x00");
 	}
 	$localstate["SW_LAMP_LOUNGE"]=0;
 	foreach($sortedobjects[$tmpobj->getObjName()] as $myobj)
@@ -55,6 +59,36 @@ if($_GET["doit"])
 	   exec("powercommander.lapcontrol powercommander PWM LOUNGE SET 0x".$value);
 	}
 	$localstate["LOUNGE_PWM"]=$value_dec;
+      }
+      break;
+    case "dimm_s1":
+      if ($control == "enabled"){
+	exec("powercommander.lapcontrol packet 0x00:0x00 0x60:0x01 0x01,0x00,0x".$value);
+      }
+      break;
+    case "dimm_s2":
+      if ($control == "enabled"){
+	exec("powercommander.lapcontrol packet 0x00:0x00 0x60:0x01 0x01,0x01,0x".$value);
+      }
+      break;
+    case "dimm_s3":
+      if ($control == "enabled"){
+	exec("powercommander.lapcontrol packet 0x00:0x00 0x60:0x01 0x01,0x02,0x".$value);
+      }
+      break;
+    case "dimm_s4":
+      if ($control == "enabled"){
+	exec("powercommander.lapcontrol packet 0x00:0x00 0x61:0x01 0x01,0x00,0x".$value);
+      }
+      break;
+    case "dimm_s5":
+      if ($control == "enabled"){
+	exec("powercommander.lapcontrol packet 0x00:0x00 0x61:0x01 0x01,0x01,0x".$value);
+      }
+      break;
+    case "dimm_s6":
+      if ($control == "enabled"){
+	exec("powercommander.lapcontrol packet 0x00:0x00 0x61:0x01 0x01,0x02,0x".$value);
       }
       break;
     case "hacker":

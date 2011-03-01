@@ -20,7 +20,7 @@ class c_lightlounge extends c_content{
     $this->content = "";
     $this->setfile = "";
     $this->setfilecmd = "";
-    $this->validmodes=array("on","off","dimm");
+    $this->validmodes=array("on","off","dimm","dimm_s1","dimm_s2","dimm_s3","dimm_s4","dimm_s5","dimm_s6");
     $this->initENV();
     # nothing
   }
@@ -119,10 +119,107 @@ class c_lightlounge extends c_content{
     
 
     $this->content .= "	 <div id=\"".$this->myid."_slider\" style=\"width:235px; height:15px; background-image:url(sliderbg.png); background-repeat:repeat-x; background-color: transparent;\" class=\"slider\">";
-    $this->content .= "   <div class=\"handle\" style=\"width:15px; background-image:url(icons/1up.png); background-repeat:no-repeat; background-color: transparent; \"></div>";
+    $this->content .= "   <div class=\"handle\" style=\"width:15px; background-image:url(icons/1up.png); background-repeat:no-repeat; background-color: transparent; \"></div><div style=\"position:relative; top:-15px; left:150px;\">Neon</div>";
     $this->content .= "  </div>";
-    
     $this->content .= "  </tr>";
+
+    $this->content .= "  <tr>";
+    $this->content .= "    <td>";
+    $this->content .= "<input type=\"image\" ";
+    $this->content .= "src=\"icons/dotOFF.png\" ";
+    $this->content .= "name=\"".$this->myid."_s3_img\"";
+    $this->content .= "id=\"".$this->myid."_s3_img\"";
+    $this->content .= "onclick=\"".$this->myid."switch_s3(); \" ";
+    $this->content .= "style=\"background-color: transparent;\">";
+    $this->content .= "    </td>";
+    $this->content .= "    <td>";
+    $this->content .= "	 <div id=\"".$this->myid."_slider_s3\" style=\"width:235px; height:15px; background-image:url(sliderbg.png); background-repeat:repeat-x; background-color: transparent;\" class=\"slider\">";
+    $this->content .= "   <div class=\"handle\" style=\"width:15px; background-image:url(icons/1up.png); background-repeat:no-repeat; background-color: transparent; \"></div><div style=\"position:relative; top:-15px; left:150px;\">Spot T&uuml;r 1</div>";
+    $this->content .= "  </div>";
+    $this->content .= "  </tr>";
+
+    $this->content .= "  <tr>";
+    $this->content .= "    <td>";
+    $this->content .= "<input type=\"image\" ";
+    $this->content .= "src=\"icons/dotOFF.png\" ";
+    $this->content .= "name=\"".$this->myid."_s1_img\"";
+    $this->content .= "id=\"".$this->myid."_s1_img\"";
+    $this->content .= "onclick=\"".$this->myid."switch_s1(); \" ";
+    $this->content .= "style=\"background-color: transparent;\">";
+    $this->content .= "    </td>";
+    $this->content .= "    <td>";
+    $this->content .= "	 <div id=\"".$this->myid."_slider_s1\" style=\"width:235px; height:15px; background-image:url(sliderbg.png); background-repeat:repeat-x; background-color: transparent;\" class=\"slider\">";
+    $this->content .= "   <div class=\"handle\" style=\"width:15px; background-image:url(icons/1up.png); background-repeat:no-repeat; background-color: transparent; \"></div><div style=\"position:relative; top:-15px; left:150px;\">Spot T&uuml;r 2</div>";
+    $this->content .= "  </div>";
+    $this->content .= "  </tr>";
+
+    $this->content .= "  <tr>";
+    $this->content .= "    <td>";
+    $this->content .= "<input type=\"image\" ";
+    $this->content .= "src=\"icons/dotOFF.png\" ";
+    $this->content .= "name=\"".$this->myid."_s2_img\"";
+    $this->content .= "id=\"".$this->myid."_s2_img\"";
+    $this->content .= "onclick=\"".$this->myid."switch_s2(); \" ";
+    $this->content .= "style=\"background-color: transparent;\">";
+    $this->content .= "    </td>";
+    $this->content .= "    <td>";
+    $this->content .= "	 <div id=\"".$this->myid."_slider_s2\" style=\"width:235px; height:15px; background-image:url(sliderbg.png); background-repeat:repeat-x; background-color: transparent;\" class=\"slider\">";
+    $this->content .= "   <div class=\"handle\" style=\"width:15px; background-image:url(icons/1up.png); background-repeat:no-repeat; background-color: transparent; \"></div><div style=\"position:relative; top:-15px; left:150px;\">Spot T&uuml;r 3</div>";
+    $this->content .= "  </div>";
+    $this->content .= "  </tr>";
+
+
+    $this->content .= "  <tr>";
+    $this->content .= "    <td>";
+    $this->content .= "<input type=\"image\" ";
+    $this->content .= "src=\"icons/dotOFF.png\" ";
+    $this->content .= "name=\"".$this->myid."_s5_img\"";
+    $this->content .= "id=\"".$this->myid."_s5_img\"";
+    $this->content .= "onclick=\"".$this->myid."switch_s5(); \" ";
+    $this->content .= "style=\"background-color: transparent;\">";
+    $this->content .= "    </td>";
+    $this->content .= "    <td>";
+    $this->content .= "	 <div id=\"".$this->myid."_slider_s5\" style=\"width:235px; height:15px; background-image:url(sliderbg.png); background-repeat:repeat-x; background-color: transparent;\" class=\"slider\">";
+    $this->content .= "   <div class=\"handle\" style=\"width:15px; background-image:url(icons/1up.png); background-repeat:no-repeat; background-color: transparent; \"></div><div style=\"position:relative; top:-15px; left:150px;\">Spot Wand 1</div>";
+    $this->content .= "  </div>";
+    $this->content .= "  </tr>";
+
+
+    $this->content .= "  <tr>";
+    $this->content .= "    <td>";
+    $this->content .= "<input type=\"image\" ";
+    $this->content .= "src=\"icons/dotOFF.png\" ";
+    $this->content .= "name=\"".$this->myid."_s6_img\"";
+    $this->content .= "id=\"".$this->myid."_s6_img\"";
+    $this->content .= "onclick=\"".$this->myid."switch_s6(); \" ";
+    $this->content .= "style=\"background-color: transparent;\">";
+    $this->content .= "    </td>";
+    $this->content .= "    <td>";
+    $this->content .= "	 <div id=\"".$this->myid."_slider_s6\" style=\"width:235px; height:15px; background-image:url(sliderbg.png); background-repeat:repeat-x; background-color: transparent;\" class=\"slider\">";
+    $this->content .= "   <div class=\"handle\" style=\"width:15px; background-image:url(icons/1up.png); background-repeat:no-repeat; background-color: transparent; \"></div><div style=\"position:relative; top:-15px; left:150px;\">Spot Wand 2</div>";
+    $this->content .= "  </div>";
+    $this->content .= "  </tr>";
+
+
+    $this->content .= "  <tr>";
+    $this->content .= "    <td>";
+    $this->content .= "<input type=\"image\" ";
+    $this->content .= "src=\"icons/dotOFF.png\" ";
+    $this->content .= "name=\"".$this->myid."_s4_img\"";
+    $this->content .= "id=\"".$this->myid."_s4_img\"";
+    $this->content .= "onclick=\"".$this->myid."switch_s4(); \" ";
+    $this->content .= "style=\"background-color: transparent;\">";
+    $this->content .= "    </td>";
+    $this->content .= "    <td>";
+    $this->content .= "	 <div id=\"".$this->myid."_slider_s4\" style=\"width:235px; height:15px; background-image:url(sliderbg.png); background-repeat:repeat-x; background-color: transparent;\" class=\"slider\">";
+    $this->content .= "   <div class=\"handle\" style=\"width:15px; background-image:url(icons/1up.png); background-repeat:no-repeat; background-color: transparent; \"></div><div style=\"position:relative; top:-15px; left:150px;\">Spot Wand 3</div>";
+    $this->content .= "  </div>";
+    $this->content .= "  </tr>";
+
+
+
+
+
     $this->content .= "</table>";
 
 
@@ -171,15 +268,15 @@ class c_lightlounge extends c_content{
     $this->jsstr .= "    document.getElementById(\"".$this->myid."_ko_img\").src=\"icons/dotON.png\"; \n";
     $this->jsstr .= "}\n";
 
-    $this->jsstr .= "\nfunction ".$this->myid."button_show_on()\n";
-    $this->jsstr .= "{\n";
-    $this->jsstr .= "    document.getElementById(\"".$this->myid."_ko_img\").src=\"icons/dotON.png\"; \n";
-    $this->jsstr .= "}\n";
-
     $this->jsstr .= "\nfunction ".$this->myid."button_off()\n";
     $this->jsstr .= "{\n";
     $this->jsstr .=      $this->myid."_cmd('off',0);\n";
     $this->jsstr .= "    document.getElementById(\"".$this->myid."_ko_img\").src=\"icons/dotOFF.png\";\n";
+    $this->jsstr .= "}\n";
+
+    $this->jsstr .= "\nfunction ".$this->myid."button_show_on()\n";
+    $this->jsstr .= "{\n";
+    $this->jsstr .= "    document.getElementById(\"".$this->myid."_ko_img\").src=\"icons/dotON.png\"; \n";
     $this->jsstr .= "}\n";
 
     $this->jsstr .= "\nfunction ".$this->myid."button_show_off()\n";
@@ -189,10 +286,10 @@ class c_lightlounge extends c_content{
 
 
 
+
     $this->jsstr .= "var ".$this->myid."value=100;\n";
 
     $this->jsstr .= "    var ".$this->myid."_slider = \$('".$this->myid."_slider');\n";
-
     $this->jsstr .= "\n";
     $this->jsstr .= "    var ".$this->myid."_obj_slider = new Control.Slider(".$this->myid."_slider.select('.handle'), ".$this->myid."_slider, \n";
     $this->jsstr .= "		       {\n";
@@ -207,6 +304,110 @@ class c_lightlounge extends c_content{
     $this->jsstr .= "			       }\n";
     $this->jsstr .= "		       });\n";
     $this->jsstr .= "\n";
+
+
+    $this->jsstr .= "    var ".$this->myid."_slider_s1 = \$('".$this->myid."_slider_s1');\n";
+    $this->jsstr .= "\n";
+    $this->jsstr .= "    var ".$this->myid."_obj_slider_s1 = new Control.Slider(".$this->myid."_slider_s1.select('.handle'), ".$this->myid."_slider_s1, \n";
+    $this->jsstr .= "		       {\n";
+    $this->jsstr .= "			   range: \$R(0, 255),\n";
+    $this->jsstr .= "			   increment: 1,\n";
+    $this->jsstr .= "			   sliderValue: [100],\n";
+    $this->jsstr .= "			   onSlide: function(values) \n";
+    $this->jsstr .= "			       {\n";
+    $this->jsstr .= "				   ".$this->myid."value=Math.round(values);\n";
+    $this->jsstr .= "				   if(done)".$this->myid."_cmd('dimm_s1',".$this->myid."value);\n";
+    $this->jsstr .= "                              done=false;";
+    $this->jsstr .= "			       }\n";
+    $this->jsstr .= "		       });\n";
+    $this->jsstr .= "\n";
+
+
+    $this->jsstr .= "    var ".$this->myid."_slider_s2 = \$('".$this->myid."_slider_s2');\n";
+    $this->jsstr .= "\n";
+    $this->jsstr .= "    var ".$this->myid."_obj_slider_s2 = new Control.Slider(".$this->myid."_slider_s2.select('.handle'), ".$this->myid."_slider_s2, \n";
+    $this->jsstr .= "		       {\n";
+    $this->jsstr .= "			   range: \$R(0, 255),\n";
+    $this->jsstr .= "			   increment: 1,\n";
+    $this->jsstr .= "			   sliderValue: [100],\n";
+    $this->jsstr .= "			   onSlide: function(values) \n";
+    $this->jsstr .= "			       {\n";
+    $this->jsstr .= "				   ".$this->myid."value=Math.round(values);\n";
+    $this->jsstr .= "				   if(done)".$this->myid."_cmd('dimm_s2',".$this->myid."value);\n";
+    $this->jsstr .= "                              done=false;";
+    $this->jsstr .= "			       }\n";
+    $this->jsstr .= "		       });\n";
+    $this->jsstr .= "\n";
+
+
+    $this->jsstr .= "    var ".$this->myid."_slider_s3 = \$('".$this->myid."_slider_s3');\n";
+    $this->jsstr .= "\n";
+    $this->jsstr .= "    var ".$this->myid."_obj_slider_s3 = new Control.Slider(".$this->myid."_slider_s3.select('.handle'), ".$this->myid."_slider_s3, \n";
+    $this->jsstr .= "		       {\n";
+    $this->jsstr .= "			   range: \$R(0, 255),\n";
+    $this->jsstr .= "			   increment: 1,\n";
+    $this->jsstr .= "			   sliderValue: [100],\n";
+    $this->jsstr .= "			   onSlide: function(values) \n";
+    $this->jsstr .= "			       {\n";
+    $this->jsstr .= "				   ".$this->myid."value=Math.round(values);\n";
+    $this->jsstr .= "				   if(done)".$this->myid."_cmd('dimm_s3',".$this->myid."value);\n";
+    $this->jsstr .= "                              done=false;";
+    $this->jsstr .= "			       }\n";
+    $this->jsstr .= "		       });\n";
+    $this->jsstr .= "\n";
+
+
+    $this->jsstr .= "    var ".$this->myid."_slider_s4 = \$('".$this->myid."_slider_s4');\n";
+    $this->jsstr .= "\n";
+    $this->jsstr .= "    var ".$this->myid."_obj_slider_s4 = new Control.Slider(".$this->myid."_slider_s4.select('.handle'), ".$this->myid."_slider_s4, \n";
+    $this->jsstr .= "		       {\n";
+    $this->jsstr .= "			   range: \$R(0, 255),\n";
+    $this->jsstr .= "			   increment: 1,\n";
+    $this->jsstr .= "			   sliderValue: [100],\n";
+    $this->jsstr .= "			   onSlide: function(values) \n";
+    $this->jsstr .= "			       {\n";
+    $this->jsstr .= "				   ".$this->myid."value=Math.round(values);\n";
+    $this->jsstr .= "				   if(done)".$this->myid."_cmd('dimm_s4',".$this->myid."value);\n";
+    $this->jsstr .= "                              done=false;";
+    $this->jsstr .= "			       }\n";
+    $this->jsstr .= "		       });\n";
+    $this->jsstr .= "\n";
+
+
+    $this->jsstr .= "    var ".$this->myid."_slider_s5 = \$('".$this->myid."_slider_s5');\n";
+    $this->jsstr .= "\n";
+    $this->jsstr .= "    var ".$this->myid."_obj_slider_s5 = new Control.Slider(".$this->myid."_slider_s5.select('.handle'), ".$this->myid."_slider_s5, \n";
+    $this->jsstr .= "		       {\n";
+    $this->jsstr .= "			   range: \$R(0, 255),\n";
+    $this->jsstr .= "			   increment: 1,\n";
+    $this->jsstr .= "			   sliderValue: [100],\n";
+    $this->jsstr .= "			   onSlide: function(values) \n";
+    $this->jsstr .= "			       {\n";
+    $this->jsstr .= "				   ".$this->myid."value=Math.round(values);\n";
+    $this->jsstr .= "				   if(done)".$this->myid."_cmd('dimm_s5',".$this->myid."value);\n";
+    $this->jsstr .= "                              done=false;";
+    $this->jsstr .= "			       }\n";
+    $this->jsstr .= "		       });\n";
+    $this->jsstr .= "\n";
+
+
+    $this->jsstr .= "    var ".$this->myid."_slider_s6 = \$('".$this->myid."_slider_s6');\n";
+    $this->jsstr .= "\n";
+    $this->jsstr .= "    var ".$this->myid."_obj_slider_s6 = new Control.Slider(".$this->myid."_slider_s6.select('.handle'), ".$this->myid."_slider_s6, \n";
+    $this->jsstr .= "		       {\n";
+    $this->jsstr .= "			   range: \$R(0, 255),\n";
+    $this->jsstr .= "			   increment: 1,\n";
+    $this->jsstr .= "			   sliderValue: [100],\n";
+    $this->jsstr .= "			   onSlide: function(values) \n";
+    $this->jsstr .= "			       {\n";
+    $this->jsstr .= "				   ".$this->myid."value=Math.round(values);\n";
+    $this->jsstr .= "				   if(done)".$this->myid."_cmd('dimm_s6',".$this->myid."value);\n";
+    $this->jsstr .= "                              done=false;";
+    $this->jsstr .= "			       }\n";
+    $this->jsstr .= "		       });\n";
+    $this->jsstr .= "\n";
+
+
 
     $this->jsstr .= "\nfunction ".$this->myid."_cmd(funct,value)\n";
     $this->jsstr .= "{\n";
