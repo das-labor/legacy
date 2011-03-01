@@ -13,6 +13,18 @@ uint8_t myaddr;
 void twi_get(uint8_t *p);
 uint8_t status[10][10];
 
+uint8_t virt_pwm_dir = 0;
+uint8_t virt_pwm_val = 255;
+uint8_t virt_stat = 0;
+
+void virt_pwm_set_all(uint8_t val) {
+
+	set_dimmer(0, val);
+	set_dimmer(1, val);
+	set_dimmer(2, val);
+}
+
+
 extern void can_handler()
 {
 	static can_message msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
@@ -39,20 +51,54 @@ extern void can_handler()
 						break;
 				}
 			}
-		}
-		if ((rx_msg->addr_dst == 2)){
+/*		}
+		if ((rx_msg->addr_dst == 2)) {*/
 			if (rx_msg->port_dst == 1)
 			{
-				//save to array
 				switch (rx_msg->data[0]) {
 					case 0: //C_SW:
+						if (virt_stat==0)
+							virt_stat = 255;
+						else 
+							virt_stat = 0;
+						set_dimmer(0, virt_stat);
+						set_dimmer(1, virt_stat);
+						set_dimmer(2, virt_stat);
+						set_dimmer(3, virt_stat);
 						break;
 					case 1://C_PWM:
-						PORTB |= _BV(PB0); //XXX
-						set_dimmer ( rx_msg->data[1], rx_msg->data[3] ) ;
+						set_dimmer(rx_msg->data[1], rx_msg->data[2]);
+						break;
+					case 2://PWM_MOD
+
+						if (virt_pwm_dir == 1)
+						{
+							if (virt_pwm_val == 255)
+							{
+								virt_pwm_dir = 0;
+							} else
+							{
+								virt_pwm_set_all(++virt_pwm_val);
+							}
+						} else
+						{
+
+							if (virt_pwm_val == 0)
+							{
+								virt_pwm_dir = 1;
+							} else
+							{
+								virt_pwm_set_all(--virt_pwm_val);
+							}
+						}
+						break;
+					case 3: //PWM_DIR
+						if (virt_pwm_dir)
+							virt_pwm_dir = 0;
+						else
+							virt_pwm_dir = 1;
 						break;
 				}
-				//state_to_output();
 			}
 		}
 	}
