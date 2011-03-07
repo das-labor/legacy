@@ -92,6 +92,10 @@ function define_int () {
 	eval $1=$2
 }
 
+function define_uint () {
+	eval $1=$2
+}
+
 function define_string () {
 	eval $1=\"$2\"
 }
@@ -236,6 +240,17 @@ function int () {
 	echo -ne "'$2' '($x) $1$info' " >>MCmenu
 
 	echo -e "function $2 () { l_int '$1' '$2' '$3' '$x' ;}" >>MCradiolists
+}
+
+#
+# Add a menu item which will call our local unsigned int function.
+# 
+function uint () {
+	set_x_info "$2" "$3"
+
+	echo -ne "'$2' '($x) $1$info' " >>MCmenu
+
+	echo -e "function $2 () { l_uint '$1' '$2' '$3' '$x' ;}" >>MCradiolists
 }
 
 #
@@ -562,6 +577,40 @@ function l_int () {
 			# Semantics of + and ? in GNU expr changed, so
 			# we avoid them:
 			if expr "$answer" : '0$' '|' "$answer" : '[1-9][0-9]*$' '|' "$answer" : '-[1-9][0-9]*$' >/dev/null
+			then
+				eval $2=\"$answer\"
+			else
+				eval $2=\"$3\"
+				echo -en "\007"
+				${DIALOG} --backtitle "$backtitle" \
+					--infobox "You have made an invalid entry." 3 43
+				sleep 2
+			fi
+
+			break
+		fi
+
+		help "$2" "$1"
+	done
+}
+
+#
+# Create a dialog for entering an unsigned integer into a kernel option.
+#
+function l_uint () {
+	while true
+	do
+		if $DIALOG --title "$1" \
+			--backtitle "$backtitle" \
+			--inputbox "$inputbox_instructions_int" \
+			10 75 "$4" 2>MCdialog.out
+		then
+			answer="`cat MCdialog.out`"
+			answer="${answer:-$3}"
+
+			# Semantics of + and ? in GNU expr changed, so
+			# we avoid them:
+			if expr "$answer" : '0$' '|' "$answer" : '[1-9][0-9]*$' >/dev/null
 			then
 				eval $2=\"$answer\"
 			else
@@ -1315,6 +1364,12 @@ save_configuration () {
 		echo "#define $2 ($x)"	>>$CONFIG_H
 	}
 
+	function uint () {
+		set_x_info "$2" "$3"
+		echo "$2=$x" 		>>$CONFIG
+		echo "#define $2 ($x""u)"	>>$CONFIG_H
+	}
+
 	function hex () {
 		set_x_info "$2" "$3"
 		echo "$2=$x" 			 >>$CONFIG
@@ -1358,6 +1413,12 @@ save_configuration () {
 		eval $1=\"$2\"
 		echo "$1=$2" 			>>$CONFIG
 		echo "#define $1 ($2)"		>>$CONFIG_H
+	}
+
+	function define_uint () {
+		eval $1=\"$2\"
+		echo "$1=$2" 			>>$CONFIG
+		echo "#define $1 ($2""u)"		>>$CONFIG_H
 	}
 
 	function define_symbol () {
