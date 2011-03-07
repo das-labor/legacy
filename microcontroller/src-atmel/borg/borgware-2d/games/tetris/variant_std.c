@@ -16,6 +16,17 @@
 #include "variant_std.h"
 
 
+/***********
+ * defines *
+ ***********/
+
+#ifdef RANDOM_SUPPORT
+	#define RANDOM8() random8()
+#else
+	#define RANDOM8() rand()
+#endif
+
+
 /***************
  * entry point *
  ***************/
@@ -74,8 +85,9 @@ void *tetris_std_construct(tetris_bucket_t *pBucket)
 			malloc(sizeof(tetris_standard_variant_t));
 	assert(pStdVariant != NULL);
 	memset(pStdVariant, 0, sizeof(tetris_standard_variant_t));
+	// don't begin with S and Z pieces according to official tetris guidelines
 	pStdVariant->pPreviewPiece =
-					tetris_piece_construct(random8() % 7, TETRIS_PC_ANGLE_0);
+					tetris_piece_construct(RANDOM8() % 5, TETRIS_PC_ANGLE_0);
 
 	return pStdVariant;
 }
@@ -103,7 +115,7 @@ tetris_piece_t* tetris_std_choosePiece(void *pVariantData)
 			(tetris_standard_variant_t *)pVariantData;
 	tetris_piece_t *pPiece = pStdVariant->pPreviewPiece;
 	pStdVariant->pPreviewPiece =
-			tetris_piece_construct(random8() % 7, TETRIS_PC_ANGLE_0);
+			tetris_piece_construct(RANDOM8() % 7, TETRIS_PC_ANGLE_0);
 	return pPiece;
 }
 
@@ -241,7 +253,8 @@ tetris_highscore_index_t tetris_std_getHighscoreIndex(void *pVariantData)
 
 
 void tetris_std_setLastInput(void *pVariantData,
-                             tetris_input_command_t inCmd)
+                             tetris_input_command_t inCmd,
+                             uint8_t bMoveOk)
 {
 }
 

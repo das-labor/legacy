@@ -175,10 +175,22 @@ tetris_piece_t* tetris_std_getPreviewPiece(void *pVariantData);
 tetris_highscore_index_t tetris_std_getHighscoreIndex(void *pVariantData);
 
 
+/**
+ * inform the Tetris instance about the player's last input
+ * @param pVariantData the Tetris data object we want to modify
+ * @param inCmd the last issued command
+ * @param bMoveOk 1 if the last move was possible, otherwise 0
+ */
 void tetris_std_setLastInput(void *pVariantData,
-                             tetris_input_command_t inCmd);
+                             tetris_input_command_t inCmd,
+                             uint8_t bMoveOk);
 
 
+/**
+ * returns the bearing which is requested by the Tetris instance
+ * @param pVariantData the variant data object we want information from
+ * @return always TETRIS_BEARING_0 as we don't change the bearing in Bastet
+ */
 tetris_bearing_t tetris_std_getBearing(void *pVariantData);
 
 #endif /*VARIANT_STD_H_*/

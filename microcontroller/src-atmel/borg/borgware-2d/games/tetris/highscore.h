@@ -2,6 +2,8 @@
 #define TETRIS_HIGHSCORE_H_
 
 #include <stdint.h>
+#include "../../compat/eeprom.h"
+
 
 /**
  * indexes for different tetris variants
@@ -20,6 +22,13 @@ enum tetris_highscore_index
 	typedef enum tetris_highscore_index tetris_highscore_index_t;
 #endif
 
+
+// global array for the high score
+extern uint16_t tetris_highscore[TETRIS_HISCORE_END] EEMEM;
+// global array for the champion's initials
+extern uint16_t tetris_highscore_name[TETRIS_HISCORE_END] EEMEM;
+
+
 /**
  * lets the user enter his initials (three characters)
  * @return name packed into a uint16_t
@@ -37,11 +46,18 @@ uint16_t tetris_highscore_retrieveHighscore(tetris_highscore_index_t nIndex);
 
 /**
  * saves the high score into the storage (EEPROM)
- * @param nIndex the variant dependent index of the high score
+ * @param nIdx the variant dependent index of the high score
  * @param nHighscoreName the high score
  */
+inline static
 void tetris_highscore_saveHighscore(tetris_highscore_index_t nIndex,
-                                    uint16_t nHighscore);
+                                    uint16_t nHighscore)
+{
+	if (nHighscore > tetris_highscore_retrieveHighscore(nIndex))
+	{
+		eeprom_write_word(&tetris_highscore[nIndex], nHighscore);
+	}
+}
 
 
 /**
@@ -49,7 +65,14 @@ void tetris_highscore_saveHighscore(tetris_highscore_index_t nIndex,
  * @param nIdx the variant dependent index of the high score
  * @return the initials of the champion packed into a uint16_t
  */
-uint16_t tetris_highscore_retrieveHighscoreName(tetris_highscore_index_t nIdx);
+inline static
+uint16_t tetris_highscore_retrieveHighscoreName(tetris_highscore_index_t nIdx)
+{
+	uint16_t nHighscoreName =
+			eeprom_read_word(&tetris_highscore_name[nIdx]);
+
+	return nHighscoreName;
+}
 
 
 /**
@@ -57,7 +80,12 @@ uint16_t tetris_highscore_retrieveHighscoreName(tetris_highscore_index_t nIdx);
  * @param nIndex the variant dependent index of the high score
  * @param nHighscoreName the initials of the champion packed into a uint16_t
  */
+inline static
 void tetris_highscore_saveHighscoreName(tetris_highscore_index_t nIndex,
-                                        uint16_t nHighscoreName);
+                                        uint16_t nHighscoreName)
+{
+	eeprom_write_word(&tetris_highscore_name[nIndex], nHighscoreName);
+}
+
 
 #endif /*TETRIS_HIGHSCORE_H_*/

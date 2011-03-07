@@ -2,6 +2,7 @@
 #define BUCKET_H_
 
 #include <stdint.h>
+#include <limits.h>
 #include "../../config.h"
 #include "piece.h"
 
@@ -11,6 +12,8 @@
  ***********/
 
 #define TETRIS_BUCKET_INVALIDROW -4
+#define TETRIS_BUCKET_MAX_COLUMNS (INT8_MAX - 4)
+#define TETRIS_BUCKET_MAX_ROWS
 
 
 /*********
@@ -85,7 +88,7 @@ tetris_bucket_iterator_t;
 /**
  * constructs a bucket with the given dimensions
  * @param nWidth width of bucket (4 <= n <= 16)
- * @param nHeight height of bucket (4 <= n <= 124)
+ * @param nHeight height of bucket (4 <= n <= TETRIS_BUCKET_MAX_COLUMNS)
  * @return pointer to a newly created bucket
  */
 tetris_bucket_t *tetris_bucket_construct(int8_t nWidth,
@@ -291,7 +294,7 @@ inline static tetris_bucket_status_t tetris_bucket_getStatus(tetris_bucket_t *p)
 /**
  * returns the given row of the dump (as bitmap)
  * @param pBucket the bucket we want information from
- * @param nRow the number of the row (0 <= nRow <= 124)
+ * @param nRow the number of the row (0 <= nRow <= TETRIS_BUCKET_MAX_COLUMNS)
  * @return bitmap of the requested row (LSB is leftmost column)
  */
 inline static uint16_t tetris_bucket_getDumpRow(tetris_bucket_t *pBucket,
