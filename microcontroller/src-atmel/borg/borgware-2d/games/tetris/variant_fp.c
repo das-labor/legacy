@@ -73,21 +73,32 @@ tetris_highscore_index_t tetris_fp_getHighscoreIndex(void *pVariantData)
 	return TETRIS_HISCORE_FP;
 }
 
-
+/**
+ * change bearing depending on player's last input
+ * @param pVariantData the variant data object we want to modify
+ * @param inCmd the last issued command
+ * @param bMoveOk 1 if the last move was possible, otherwise 0
+ */
 void tetris_fp_setLastInput(void *pVariantData,
-                            tetris_input_command_t inCmd)
+                            tetris_input_command_t inCmd,
+                            uint8_t bMoveOk)
 {
 	assert (pVariantData != NULL);
 	tetris_standard_variant_t *pStdVariant =
 			(tetris_standard_variant_t *)pVariantData;
 
-	if (inCmd == TETRIS_INCMD_ROT_CW)
+	if (bMoveOk)
 	{
-		pStdVariant->nBearing += 1;
-	}
-	else if (inCmd == TETRIS_INCMD_ROT_CCW)
-	{
-		pStdVariant->nBearing += 3;
+		if (inCmd == TETRIS_INCMD_ROT_CW)
+		{
+			// piece rotated clockwise -> rotate bucket counter-clockwise
+			pStdVariant->nBearing += 3;
+		}
+		else if (inCmd == TETRIS_INCMD_ROT_CCW)
+		{
+			// piece rotated counter-clockwise -> rotate bucket clockwise
+			pStdVariant->nBearing += 1;
+		}
 	}
 	pStdVariant->nBearing %= 4;
 }
