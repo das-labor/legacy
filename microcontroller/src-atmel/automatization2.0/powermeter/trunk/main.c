@@ -135,8 +135,7 @@ int main(void)
                 	adcSample = ADC_ResultCh_GetWord_Signed(&ADCA.CH0, offset);
                 	while (!ADC_Ch_Conversion_Complete(&ADCA.CH1));
                 	adcSample1 = ADC_ResultCh_GetWord_Signed(&ADCA.CH1, offset);
-                	
-                	
+
                 	akk += (int32_t)adcSample * adcSample1;
                 }	
         	
