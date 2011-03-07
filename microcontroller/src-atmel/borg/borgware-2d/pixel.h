@@ -60,7 +60,7 @@ inline static unsigned char get_next_pixel(pixel p, direction_t dir){
 
 
 inline static direction_t direction_r(direction_t dir){
-	return (dir + 1) % 4;
+	return (dir + 1) % 4u;
 }
 
 

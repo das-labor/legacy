@@ -150,11 +150,11 @@ static void bitmap_recalculateVector(bitmap_t const *const pBitmap,
 {
 	if (((x + *pdx) > (pBitmap->nXDomain)) || ((x + *pdx) < 0))
 	{
-		*pdx = random8() % 2 * (x < (pBitmap->nXDomain / 2) ? 1 : -1);
+		*pdx = random8() % 2u * (x < (pBitmap->nXDomain / 2) ? 1 : -1);
 	}
 	if (((y + *pdy) > (pBitmap->nYDomain)) || ((y + *pdy) < 0))
 	{
-		*pdy = random8() % 2 * (y < (pBitmap->nYDomain / 2) ? 1 : -1);
+		*pdy = random8() % 2u * (y < (pBitmap->nYDomain / 2) ? 1 : -1);
 	}
 	if (*pdx == 0 && *pdy == 0)
 	{

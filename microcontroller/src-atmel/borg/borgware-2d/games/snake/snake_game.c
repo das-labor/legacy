@@ -27,7 +27,7 @@ game_descriptor_t snake_game_descriptor __attribute__((section(".game_descriptor
 #define SNAKE_NEWCONTROL
 
 // limits
-#define SNAKE_MAX_LENGTH 64
+#define SNAKE_MAX_LENGTH 64u
 #define SNAKE_MAX_APPLES 10
 
 // delays (in milliseconds)
@@ -194,7 +194,7 @@ static void snake_userControl(snake_protagonist_t *pprotSnake,
 		{
 			// rotate through directions (either clockwise or counterclockwise)
 			pprotSnake->dir = (pprotSnake->dir +
-					(dirJoystick == SNAKE_DIR_LEFT ? 3 : 1)) % 4;
+					(dirJoystick == SNAKE_DIR_LEFT ? 3 : 1)) % 4u;
 		}
 	}
 	*pdirLast = dirJoystick;
@@ -273,7 +273,7 @@ static void snake_autoRoute(snake_protagonist_t *pprotSnake,
 					return;
 				}
 			}
-			pprotSnake->dir = (pprotSnake->dir + 1) % 4;
+			pprotSnake->dir = (pprotSnake->dir + 1) % 4u;
 		}
 		else
 		{
