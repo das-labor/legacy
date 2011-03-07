@@ -1,6 +1,10 @@
 #ifndef PROGRAMM_H_
 #define PROGRAMM_H_
 
+#include "../pixel.h"
+#include "../util.h"
+
+
 void test_level(unsigned char level);
 void test_palette();
 void test_palette2();
