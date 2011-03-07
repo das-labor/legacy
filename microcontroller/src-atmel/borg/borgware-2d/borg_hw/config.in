@@ -2,8 +2,8 @@
 mainmenu_option next_comment
 comment "Borg Hardware"
 
-int "Number of rows   " NUM_ROWS 16
-int "Number of columns" NUM_COLS 16
+uint "Number of rows   " NUM_ROWS 16
+uint "Number of columns" NUM_COLS 16
 int "Number of brightnes-levels" NUMPLANE 3
 
 
