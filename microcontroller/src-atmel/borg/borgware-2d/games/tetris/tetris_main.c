@@ -83,6 +83,9 @@ void tetris_main(tetris_variant_t const *const pVariantMethods)
 				tetris_view_setViewMode(pView, TETRIS_VIMO_RUNNING);
 			}
 
+			// helper variable which tells us whether the last move was possible
+			uint8_t bMoveOk = 1;
+
 			// what we do depends on what the input module tells us
 			switch (inCmd)
 			{
@@ -109,22 +112,22 @@ void tetris_main(tetris_variant_t const *const pVariantMethods)
 
 			// player shifted the piece to the left
 			case TETRIS_INCMD_LEFT:
-				tetris_bucket_movePiece(pBucket, TETRIS_BUD_LEFT);
+				bMoveOk = tetris_bucket_movePiece(pBucket, TETRIS_BUD_LEFT);
 				break;
 
 			// player shifted the piece to the right
 			case TETRIS_INCMD_RIGHT:
-				tetris_bucket_movePiece(pBucket, TETRIS_BUD_RIGHT);
+				bMoveOk = tetris_bucket_movePiece(pBucket, TETRIS_BUD_RIGHT);
 				break;
 
 			// player rotated the piece clockwise
 			case TETRIS_INCMD_ROT_CW:
-				tetris_bucket_rotatePiece(pBucket, TETRIS_PC_ROT_CW);
+				bMoveOk = tetris_bucket_rotatePiece(pBucket, TETRIS_PC_ROT_CW);
 				break;
 
 			// player rotated the piece counter clockwise
 			case TETRIS_INCMD_ROT_CCW:
-				tetris_bucket_rotatePiece(pBucket, TETRIS_PC_ROT_CCW);
+				bMoveOk = tetris_bucket_rotatePiece(pBucket, TETRIS_PC_ROT_CCW);
 				break;
 
 			// the player decided to make an immediate drop
@@ -150,7 +153,7 @@ void tetris_main(tetris_variant_t const *const pVariantMethods)
 			}
 
 			// inform variant object about the user's last move
-			pVariantMethods->setLastInput(pVariantData, inCmd);
+			pVariantMethods->setLastInput(pVariantData, inCmd, bMoveOk);
 
 			// inform the input module about the requested bearing of the
 			// variant object
