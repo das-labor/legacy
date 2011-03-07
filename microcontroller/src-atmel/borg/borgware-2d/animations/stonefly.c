@@ -7,6 +7,14 @@
 #include "../games/tetris/piece.h"
 #include "../util.h"
 
+
+#ifdef RANDOM_SUPPORT
+	#define RANDOM8() random8()
+#else
+	#define RANDOM8() rand()
+#endif
+
+
 #define MAX_STONES 8
 #define YSCALE 2		//y axis is scaled up, this allows for YSCALE different falling speeds
 
@@ -46,17 +54,17 @@ static void create_stone(stone_t *stone)
 
 	//random x
 	//4 is piece width
-	stone->x = random8() % (NUM_COLS - 4);
+	stone->x = RANDOM8() % (NUM_COLS - 4);
 
 	//random shape at random angle (untyped enums rock! yay!)
-	stone->piece.shape = random8() % 7;
-	stone->piece.angle = random8() % 4;
+	stone->piece.shape = RANDOM8() % 7;
+	stone->piece.angle = RANDOM8() % 4;
 
 	//chose a random speed from 1-2
-	stone->speed = (random8() % YSCALE) + 1;
+	stone->speed = (RANDOM8() % YSCALE) + 1;
 
 	//chose a random color
-	stone->color = (random8() % NUMPLANE) + 1;
+	stone->color = (RANDOM8() % NUMPLANE) + 1;
 }
 
 
@@ -196,16 +204,16 @@ void stonefly(void)
 		//if there are less than max_stones flying, there's a chance to spawn one
 		if((stoneCount < MAX_STONES) && (counter > 0))
 		{
-			if(random8() < 48)
+			if((RANDOM8() % (UINT8_MAX + 1)) < 48)
 			{
 				create_stone(&stones[stoneCount++]);
 			}
 
 			//invasion time!!!
-			if((random8() < 8) && (invasion == 0))
+			if((RANDOM8() < 8) && (invasion == 0))
 			{
 				//9 is invader width
-				invax = random8() % (NUM_COLS - 9);
+				invax = RANDOM8() % (NUM_COLS - 9);
 				invay = 0;
 				invasion = 1;
 			}
