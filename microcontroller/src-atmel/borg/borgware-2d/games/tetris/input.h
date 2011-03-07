@@ -43,13 +43,6 @@ enum tetris_input_command
 	TETRIS_INCMD_PAUSE,   /**< pause the game */
 	TETRIS_INCMD_NONE     /**< idle (must alway be the last one) */
 };
-/*        R    D    L    C
- * RDLC   0    1    2    3
- * DLCR  -1   -1   -1   -1
- * LCRD  -2   -2   -2   -2
- * CRDL  -3   -3   -3   -3
- */
-
 #ifdef NDEBUG
 	typedef uint8_t tetris_input_command_t;
 #else
