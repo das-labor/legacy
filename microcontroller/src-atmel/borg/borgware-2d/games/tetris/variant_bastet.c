@@ -2,6 +2,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stdint.h>
+#include <limits.h>
 #include "../../random/prng.h"
 #include "../../compat/pgmspace.h"
 #include "../../menu/menu.h"
@@ -21,6 +22,12 @@
 
 #define TETRIS_BASTET_HEIGHT_FACTOR 5
 
+#ifdef RANDOM_SUPPORT
+	#define RANDOM8() random8()
+#else
+	#define RANDOM8() (rand() % (UINT8_MAX + 1))
+#endif
+
 
 /***************************
  * non-interface functions *
@@ -34,21 +41,18 @@
 static void tetris_bastet_doPreprocessing(tetris_bastet_variant_t *pBastet)
 {
 	// retrieve sane start and stop values for the column and row indices
-	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
-	int8_t nStartRow = tetris_bucket_getHeight(pBastet->pBucket) - 1;
-	int8_t nStopRow = tetris_bucket_getFirstTaintedRow(pBastet->pBucket);
+	int8_t const nWidth = tetris_bucket_getWidth(pBastet->pBucket);
+	int8_t const nStartRow = tetris_bucket_getHeight(pBastet->pBucket) - 1;
+	int8_t const nStopRow = tetris_bucket_getFirstTaintedRow(pBastet->pBucket);
 
-	// clear old precalculated scores
-	for (uint8_t i = 0; i < nWidth + 3; ++i)
-	{
-		pBastet->pColScore[i] = 0;
-	}
+	// clear old precalculated scores (last three elements are always 0)
+	memset(pBastet->pColScore, 0, nWidth * sizeof(int16_t));
 	// calculate the column heights of the actual bucket configuration
-	// NOTE: in this loop, pColScore contains the actual column heights,
+	// NOTE: in this loop, pColScore stores the actual column heights,
 	//       later it will contain the "score impact" of every unchanged column
 	for (int8_t y = nStartRow; y >= nStopRow; --y)
 	{
-		uint16_t nDumpRow = tetris_bucket_getDumpRow(pBastet->pBucket, y);
+		uint16_t const nDumpRow = tetris_bucket_getDumpRow(pBastet->pBucket, y);
 		uint16_t nColMask = 0x0001;
 		for (uint8_t x = 0; x < nWidth; ++x)
 		{
@@ -70,25 +74,21 @@ static void tetris_bastet_doPreprocessing(tetris_bastet_variant_t *pBastet)
 	// calculate the maxima of the 4-tuples from column 0 to width-1
 	for (uint8_t i = 0; i < nWidth; ++i)
 	{
+		// casting from int16_t to int8_t is safe here, since at this point
+		// pColScore only contains column heights which never exceed INT8_MAX-4
 		int8_t t0 = pBastet->pColScore[i] > pBastet->pColScore[i + 1] ?
-				i : i + 1;
+				pBastet->pColScore[i] : pBastet->pColScore[i + 1];
 		int8_t t1 = pBastet->pColScore[i + 2] > pBastet->pColScore[i + 3] ?
-				i + 2 : i + 3;
-		pBastet->pStartingRow[i + 3] =
-				pBastet->pColScore[t0] > pBastet->pColScore[t1] ?
-				pBastet->pColScore[t0] : pBastet->pColScore[t1];
+				pBastet->pColScore[i + 2] : pBastet->pColScore[i + 3];
+		pBastet->pStartingRow[i + 3] = t0 > t1 ? t0 : t1;
 	}
 
-	// normalize to bucket geometry
-	for (uint8_t i = 0; i < nWidth + 3; ++i)
+	for (uint8_t i = nWidth + 3; i--;)
 	{
+		// normalize to bucket geometry
 		pBastet->pStartingRow[i] = nStartRow - pBastet->pStartingRow[i];
-	}
-
-	// calculate the score impact of every column
-	for (uint8_t x = 0; x < nWidth; ++x)
-	{
-		pBastet->pColScore[x] *= TETRIS_BASTET_HEIGHT_FACTOR;
+		// finally calculate the score impact of every column
+		pBastet->pColScore[i] *= TETRIS_BASTET_HEIGHT_FACTOR;
 	}
 }
 
@@ -309,7 +309,7 @@ void *tetris_bastet_construct(tetris_bucket_t *pBucket)
 	pBastet->pBucket = pBucket;
 
 	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
-	pBastet->pColScore = (uint16_t*) calloc(nWidth + 3, sizeof(uint16_t));
+	pBastet->pColScore = (int16_t*) calloc(nWidth + 3, sizeof(int16_t));
 	pBastet->pStartingRow = (int8_t*) calloc(nWidth + 3, sizeof(int8_t));
 	pBastet->pColHeights = (int8_t*) calloc(nWidth, sizeof(int8_t));
 
@@ -349,7 +349,7 @@ tetris_piece_t* tetris_bastet_choosePiece(void *pVariantData)
 	// perturb score (-2 to +2) to avoid stupid tie handling
 	for (uint8_t i = 0; i < 7; ++i)
 	{
-		pBastet->nPieceScore[i].nScore += random8() % 5 - 2;
+		pBastet->nPieceScore[i].nScore += RANDOM8() % 5 - 2;
 	}
 
 	// sort pieces by their score in ascending order
@@ -366,7 +366,7 @@ tetris_piece_t* tetris_bastet_choosePiece(void *pVariantData)
 
 	tetris_piece_t *pPiece = NULL;
 	uint8_t const nPercent[4] = {191, 235, 250, 255};
-	uint8_t const nRnd = random8();
+	uint8_t const nRnd = RANDOM8();
 	for (uint8_t i = 0; i < 4; ++i)
 	{
 		if (nRnd <= nPercent[i])
@@ -503,7 +503,8 @@ tetris_highscore_index_t tetris_bastet_getHighscoreIndex(void *pVariantData)
 
 
 void tetris_bastet_setLastInput(void *pVariantData,
-                                tetris_input_command_t inCmd)
+                                tetris_input_command_t inCmd,
+                                uint8_t bMoveOk)
 {
 	return;
 }

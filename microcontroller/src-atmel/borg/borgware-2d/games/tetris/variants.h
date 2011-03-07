@@ -134,9 +134,11 @@ typedef struct tetris_variant
 	 * inform the variant about the player's last input
 	 * @param pVariantData the variant data object we want to modify
 	 * @param inCmd the last issued command
+	 * @param bMoveOk 1 if the last move was possible, otherwise 0
 	 */
 	void (*setLastInput)(void *pVariantData,
-			             tetris_input_command_t inCmd);
+			             tetris_input_command_t inCmd,
+			             uint8_t bMoveOk);
 
 	/**
 	 * retrieves the variant's preferred bearing of the bucket

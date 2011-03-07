@@ -40,7 +40,7 @@ typedef struct tetris_bastet_variant
 	uint16_t nLines;                          /** number of completed lines */
 	tetris_piece_t *pPreviewPiece;            /** the piece for the preview */
 	tetris_bucket_t *pBucket;                 /** bucket to be examined */
-	uint16_t *pColScore;                      /** score impact of every column*/
+	int16_t *pColScore;                       /** score impact of every column*/
 	int8_t *pStartingRow;                     /** starting point for collision*/
 	int8_t *pColHeights;                      /** predicted column heights */
 	tetris_bastet_scorepair_t nPieceScore[7]; /** score for every piece */
@@ -192,12 +192,14 @@ tetris_highscore_index_t tetris_bastet_getHighscoreIndex(void *pVariantData);
 
 
 /**
- * informs the bastet instance about the player's last move
- * @param pVariantData the variant data object we want to modify
- * @param inCmd player's last command
+ * inform the Bastet instance about the player's last input
+ * @param pVariantData the Bastet object we want to modify
+ * @param inCmd the last issued command
+ * @param bMoveOk 1 if the last move was possible, otherwise 0
  */
 void tetris_bastet_setLastInput(void *pVariantData,
-                                tetris_input_command_t inCmd);
+                                tetris_input_command_t inCmd,
+                                uint8_t bMoveOk);
 
 
 /**

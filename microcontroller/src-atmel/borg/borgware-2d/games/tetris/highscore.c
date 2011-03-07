@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <limits.h>
 #include "../../config.h"
 #include "../../scrolltext/scrolltext.h"
 #include "../../joystick/joystick.h"
@@ -24,7 +25,7 @@ uint16_t tetris_highscore_inputName(void)
 	while (1)
 	{
 		// we need our own blink interval
-		nBlink = (nBlink + 1) % 4;
+		nBlink = (nBlink + 1) % 4u;
 
 		// construct command for scrolltext and execute
 		static uint8_t const nOffset[3] = {15, 19, 23};
@@ -100,42 +101,5 @@ uint16_t tetris_highscore_retrieveHighscore(tetris_highscore_index_t nIndex)
 			eeprom_read_word(&tetris_highscore[nIndex]);
 
 	// a score of 65535 is most likely caused by uninitialized EEPROM addresses
-	if (nHighscore == 65535)
-	{
-		nHighscore = 0;
-	}
-
-	return nHighscore;
-}
-
-
-void tetris_highscore_saveHighscore(tetris_highscore_index_t nIndex,
-                                    uint16_t nHighscore)
-{
-	if (nHighscore > tetris_highscore_retrieveHighscore(nIndex))
-	{
-		eeprom_write_word(&tetris_highscore[nIndex], nHighscore);
-	}
-}
-
-
-uint16_t tetris_highscore_retrieveHighscoreName(tetris_highscore_index_t nIdx)
-{
-	uint16_t nHighscoreName =
-			eeprom_read_word(&tetris_highscore_name[nIdx]);
-
-	// a value of 65535 is most likely caused by uninitialized EEPROM addresses
-	if (nHighscoreName == 65535)
-	{
-		nHighscoreName = 0;
-	}
-
-	return nHighscoreName;
-}
-
-
-void tetris_highscore_saveHighscoreName(tetris_highscore_index_t nIndex,
-                                        uint16_t nHighscoreName)
-{
-	eeprom_write_word(&tetris_highscore_name[nIndex], nHighscoreName);
+	return nHighscore == UINT16_MAX ? 0 : nHighscore;
 }

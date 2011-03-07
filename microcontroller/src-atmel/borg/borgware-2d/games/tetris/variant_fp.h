@@ -33,7 +33,14 @@ tetris_variant_t const tetrisFpVariant;
 tetris_highscore_index_t tetris_fp_getHighscoreIndex(void *pVariantData);
 
 
+/**
+ * inform the First Person Tetris instance about the player's last input
+ * @param pVariantData the First Person Tetris data object we want to modify
+ * @param inCmd the last issued command
+ * @param bMoveOk 1 if the last move was possible, otherwise 0
+ */
 void tetris_fp_setLastInput(void *pVariantData,
-                            tetris_input_command_t inCmd);
+                            tetris_input_command_t inCmd,
+                            uint8_t bMoveOk);
 
 #endif /*VARIANT_FP_H_*/
