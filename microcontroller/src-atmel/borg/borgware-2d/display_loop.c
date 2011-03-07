@@ -199,7 +199,6 @@ void display_loop(){
 			menu();
 			mode = oldOldmode;
 #else
-#ifdef GAME_TETRIS
 		case 42:
 			if (JOYISFIRE)
 				mode = 43;
@@ -208,64 +207,39 @@ void display_loop(){
 			break;
 
 		case 43:
-			waitForFire = 0;
-			while (JOYISFIRE);
+			waitForFire = 0;   // avoid circular jumps
+			while (JOYISFIRE); // wait until user released the fire button
+			wait(25);          // wait for button to settle
+
+#ifdef GAME_TETRIS
 			tetris();
-			while (JOYISFIRE);
-			mode = oldOldmode;
-			waitForFire = 1;
-			break;
 #endif
+
 #ifdef GAME_BASTET
-		case 44:
-			waitForFire = 0;
-			while (JOYISFIRE);
 			tetris_bastet();
-			while (JOYISFIRE);
-			mode = oldOldmode;
-			waitForFire = 1;
-			break;
 #endif
+
 #ifdef GAME_TETRIS_FP
-		case 45:
-			waitForFire = 0;
-			while (JOYISFIRE);
 			tetris_fp();
-			while (JOYISFIRE);
-			mode = oldOldmode;
-			waitForFire = 1;
-			break;
 #endif
+
 #ifdef GAME_SPACE_INVADERS
-		case 45:
-			waitForFire = 0;
-			while (JOYISFIRE);
 			borg_invaders();
-			while (JOYISFIRE);
-			mode = oldOldmode;
-			waitForFire = 1;
-			break;
 #endif
+
 #ifdef GAME_SNAKE
-		case 46:
-			waitForFire = 0;
-			while (JOYISFIRE);
 			snake_game();
-			while (JOYISFIRE);
-			mode = oldOldmode;
-			waitForFire = 1;
-			break;
 #endif
+
 #ifdef GAME_BREAKOUT
-		case 47:
-			waitForFire = 0;
-			while (JOYISFIRE);
 			borg_breakout(0);
-			while (JOYISFIRE);
-			mode = oldOldmode;
-			waitForFire = 1;
-			break;
 #endif
+
+			while (JOYISFIRE); // avoid an unwanted restart of the game loop
+			wait(25);          // wait for button to settle
+			mode = oldOldmode; // restore old animation mode
+			waitForFire = 1;   // reenable joystick query of the wait() function
+			break;
 #endif
 
 #ifdef ANIMATION_OFF
