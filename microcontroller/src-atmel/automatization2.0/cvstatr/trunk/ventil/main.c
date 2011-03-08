@@ -12,10 +12,10 @@
 #define IL1 _BV(PC1)
 #define IL2 _BV(PC2)
 #define IH1 _BV(PC0)
-#define IH2 _BV(PC4)
+#define IH2 _BV(PC3)
 
 
-#define FREILAUF()	   PORTC &= ~(_BV(PC1) | _BV(PC2)); PORTC |= _BV(PC0) | _BV(PC3)
+#define FREILAUF() PORTC &= ~(IL1 | IL2); PORTC |= IH1 | IH2
 
 #define LED _BV(PD6)
 
@@ -25,9 +25,8 @@
 #define VENTIL_RESET 1
 
 //XXX Todo
-// truth table h-br
 // pos tracking
-// disable int pos
+// i2c befehle
 // atmega48 version?
 
 volatile uint8_t mask = 0;
@@ -43,13 +42,13 @@ ISR(TIMER1_COMPA_vect) {
 }
 
 // Timer0 Motor PWM off
-ISR(TIMER2_COMPA_vect) {
-  PORTC &= ~mask;
+ISR(TIMER2_COMP_vect) {
+  PORTC |= mask;
 }
 
 // Timer0 Motor PWM on
 ISR(TIMER2_OVF_vect) {
-  PORTC |= mask;
+  PORTC &= ~mask;
   bit2ms = 1;
 }
 
@@ -61,20 +60,21 @@ ISR(TIMER2_OVF_vect) {
 void setPwm(int16_t val) {
   if (val > 0) {
     mask = IH1;
-    PORTC |= IL2;
-    PORTC &= ~(IL1|IH2);
-    PORTD &= LED;
+    PORTC |= IL2 | IH2;
+    PORTC &= ~(IL1);
+    PORTD |= LED;
     OCR2 = val;
   }
   else if (val < 0) {
     mask = IH2;
-    PORTC |= IL1;
-    PORTC &= ~(IL2|IH1);
+    PORTC |= IL1 | IH1;
+    PORTC &= ~(IL2);
     PORTD |= LED;
     OCR2 = -val;
   } else {
     mask = 0;
-    PORTC &= ~(IH1|IH2|IL1|IL2);
+    PORTC &= ~(IL1 | IL2);
+    PORTC |= IH1 | IH2;
     PORTD &= ~(LED);
   }
 }
@@ -139,22 +139,18 @@ void init(void) {
 	// Freilauf
 	FREILAUF();
 
+  // Timer 1 Zähler für Position
 	// CTC Modus OCR1A Reg 16 bit, ext clock rising edge
 	TCCR1B |= (WGM12) | _BV(CS12) | _BV(CS11) | _BV(CS10);
-	
-	// Output Compare Interrupt Timer 1 OC REG A
-	TIMSK |= _BV(OCF1A);
 
-  // Init Timer2
-  
+  // Init Timer2 Motor PWM und Regler Zeitschlitz
   TCCR2 = _BV(CS22); // 8MHz / 64
+  TIMSK |= _BV(OCF2) | _BV(TOV2); // Comparematch & Overflow
   
-  TIMSK |= _BV(OCF2) | _BV(TOV2);
 	// LED Output
 	DDRD |= LED;
 	
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
-
 
 	TWIS_Init();
 
@@ -167,7 +163,7 @@ void init(void) {
 int main(void) {
 	uint8_t TWIS_ResponseType;
 	int8_t ist_pos = 0, ziel_pos = 0, data[2];
-
+  uint8_t tim = 0;
 	//system initialization
 	init();
 
@@ -202,17 +198,15 @@ int main(void) {
 					break;
 			}
 		}
-		cli();
+/*		cli();
     tmppos16 = pos16;
     pos16 = 0;
     sei();
-    pos += tmppos16;
+    pos += tmppos16;*/
 
 		if (bit2ms) { // 1ms Routine
 		  tim++;
 		  bit2ms = 0;
-		  if (tim == 10)
-		    rampe();
 		  if (tim == 20) {
 		    tim = 0;
 		    posRegler();
@@ -228,6 +222,7 @@ int main(void) {
 		  } else {
 		    delay--;
 		  }*/
+		}
 	}
 
 	return 1;
