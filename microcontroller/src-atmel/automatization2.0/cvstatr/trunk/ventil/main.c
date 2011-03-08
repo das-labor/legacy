@@ -25,21 +25,13 @@
 #define VENTIL_RESET 1
 
 //XXX Todo
-// pos tracking
 // i2c befehle
 // atmega48 version?
 
 volatile uint8_t mask = 0;
-volatile int16_t pos16 = 0;
 int32_t pos = 0;
 volatile uint8_t bit2ms = 0;
 
-
-// abschalten bei erreichen eines Wertes
-ISR(TIMER1_COMPA_vect) {
-	FREILAUF();
-	TCNT1 = 0;
-}
 
 // Timer0 Motor PWM off
 ISR(TIMER2_COMP_vect) {
@@ -81,17 +73,13 @@ void setPwm(int16_t val) {
 
 //Positions Regler
 int32_t pos_reg_soll;    // wohin will ich?
-int32_t pos_soll;    //
-uint8_t pos_regeln;  // soll ich da jetzt hinfahren oder was?
-uint8_t ramp_state = 0;
 
 void go_pos(int32_t soll) {
-	pos_soll = soll;
-	ramp_state = 1;
+	pos_reg_soll = soll;
 }
 
-#define PWM_MAX 250
-#define PWM_MIN 14
+#define PWM_MAX 254
+#define PWM_MIN 60
 
 void posRegler() {
   int32_t regler_out;
@@ -99,7 +87,7 @@ void posRegler() {
 
   pos_abw = pos - pos_reg_soll; // Regeldifferenz
 
-  regler_out = pos_abw / 64; // P Anteil
+  regler_out = pos_abw * 2; // P Anteil
 
   if (regler_out > PWM_MAX)
     regler_out = PWM_MAX;
@@ -108,7 +96,7 @@ void posRegler() {
     
   if (regler_out < PWM_MIN && regler_out > 0)
     regler_out = PWM_MIN;
-  else if(regler_out > (-PWM_MIN)  && regler_out < 0)
+  else if(regler_out > (-PWM_MIN) && regler_out < 0)
     regler_out = -PWM_MIN;
 
   setPwm(regler_out); 
@@ -119,16 +107,20 @@ void fahre_ventiel_zu() {
 	uint16_t ct_last = TCNT1;
 	uint16_t ct_act = 0;
 	
-
+  setPwm(150);
+  _delay_ms(100);
 	while (1) {
 		ct_act = TCNT1;
 		if (ct_last == ct_act)
 			break;
 
 		ct_last = TCNT1;
-		_delay_ms(25);
+		_delay_ms(40);
 	}
-	FREILAUF();
+	setPwm(0);
+  _delay_ms(1000);
+	TCNT1 = 0;
+	pos = 0;
 }
 
 
@@ -152,7 +144,7 @@ void init(void) {
 	
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
 
-	TWIS_Init();
+//	TWIS_Init();
 
 	//turn on interrupts
   sei();
@@ -162,13 +154,14 @@ void init(void) {
 
 int main(void) {
 	uint8_t TWIS_ResponseType;
-	int8_t ist_pos = 0, ziel_pos = 0, data[2];
+	int8_t data[2];
   uint8_t tim = 0;
 	//system initialization
 	init();
 
-	uint16_t ct_last = TCNT1;
-	uint16_t ct_act = 0;
+  uint16_t delay = 0;
+  uint8_t toggle = 0;
+	
 	//the main loop continuously handles can messages
 	while (1) {
 		if (TWIS_ResponseRequired(&TWIS_ResponseType)) {
@@ -198,30 +191,32 @@ int main(void) {
 					break;
 			}
 		}
-/*		cli();
-    tmppos16 = pos16;
-    pos16 = 0;
-    sei();
-    pos += tmppos16;*/
+
 
 		if (bit2ms) { // 1ms Routine
+	    if (mask == IH1)
+        pos -= TCNT1;
+      else if (mask == IH2)
+        pos += TCNT1;
+      TCNT1 = 0;
+
 		  tim++;
 		  bit2ms = 0;
-		  if (tim == 20) {
+		  if (tim == 10) {
 		    tim = 0;
 		    posRegler();
 		  }
-/*		  if (delay == 0) {
+		  if (delay == 0) {
 		      toggle ^=1;
-		      delay = 8000;
+		      delay = 6000;
 		      if (toggle) {
-		        go_pos(418000);
+		        go_pos(300);
           } else {
             go_pos(0);
           }
 		  } else {
 		    delay--;
-		  }*/
+		  }
 		}
 	}
 
