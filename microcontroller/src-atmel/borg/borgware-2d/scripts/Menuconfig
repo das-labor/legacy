@@ -1367,7 +1367,6 @@ save_configuration () {
 	function uint () {
 		set_x_info "$2" "$3"
 		echo "$2=$x" 		>>$CONFIG
-		echo "#define $2 ($x""u)"	>>$CONFIG_H
 		echo -e "#define $2 ($x)\n#define U$2 ($x""u)"	>>$CONFIG_H
 	}
 
