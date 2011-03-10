@@ -1368,6 +1368,7 @@ save_configuration () {
 		set_x_info "$2" "$3"
 		echo "$2=$x" 		>>$CONFIG
 		echo "#define $2 ($x""u)"	>>$CONFIG_H
+		echo -e "#define $2 ($x)\n#define U$2 ($x""u)"	>>$CONFIG_H
 	}
 
 	function hex () {
@@ -1418,7 +1419,7 @@ save_configuration () {
 	function define_uint () {
 		eval $1=\"$2\"
 		echo "$1=$2" 			>>$CONFIG
-		echo "#define $1 ($2""u)"		>>$CONFIG_H
+		echo -e "#define $1 ($2)\n#define U$1 ($2""u)"		>>$CONFIG_H
 	}
 
 	function define_symbol () {
