@@ -20,16 +20,16 @@
 
 #undef DEBUG
  
-#define XSIZE NUM_COLS
-#define YSIZE NUM_ROWS
+#define XSIZE UNUM_COLS
+#define YSIZE UNUM_ROWS
 
 /* 
  *  last line is for debug information
  */
 #ifdef DEBUG 
  #undef YSIZE
- #define YSIZE (NUM_ROWS-1)
- #define DEBUG_ROW (NUM_ROWS-1)
+ #define YSIZE (UNUM_ROWS-1)
+ #define DEBUG_ROW (UNUM_ROWS-1)
  #define DEBUG_BIT(pos, val) \
   setpixel((pixel){(pos)%XSIZE,DEBUG_ROW+(pos)/XSIZE},(val)?3:0)
  #define DEBUG_BYTE(s,v) \
