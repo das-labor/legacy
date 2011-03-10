@@ -243,7 +243,7 @@ unsigned char blobNextCommand(blob_t * blob){
 			if((tmp = getnum(blob)) != 0xFFFF){
 				blob->tox = tmp;
 			}else{
-				blob->tox =  (NUM_COLS - 2 + blob->sizex)/2;
+				blob->tox = (NUM_COLS - 2 + blob->sizex)/2;
 			}
 			blob->waitfor = wait_posx;
 			return retval;
@@ -252,7 +252,7 @@ unsigned char blobNextCommand(blob_t * blob){
 			if((tmp = getnum(blob)) != 0xFFFF){
 				blob->toy = tmp;
 			}else{
-				blob->toy =  (NUM_ROWS-blob->sizey) / 2;
+				blob->toy = (UNUM_ROWS-blob->sizey) / 2; //MARK
 			}
 			blob->waitfor = wait_posy;
 			return retval;
@@ -351,20 +351,20 @@ blob_t * setupBlob(char * str){
 	blob->sizex = getLen(blob);
 	if(*blob->commands == '<'){
 		blob->posx = 0;
-		blob->posy = (NUM_ROWS-blob->sizey)/2;
+		blob->posy = (UNUM_ROWS-blob->sizey)/2; //MARK
 	}else if(*blob->commands == '>'){
 		blob->posx = NUM_COLS+blob->sizex;
-		blob->posy = (NUM_ROWS-blob->sizey)/2;
+		blob->posy = (UNUM_ROWS-blob->sizey)/2; //MARK
 	}else if(*blob->commands == 'd'){
 		blob->posy = -blob->sizey;
-		blob->posx = (NUM_COLS - 2 + blob->sizex)/2;
+		blob->posx = (UNUM_COLS - 2 + blob->sizex)/2; //MARK
 	}else if(*blob->commands == 'u'){
 		blob->posy = blob->sizey;
-		blob->posx = (NUM_COLS - 2 + blob->sizex)/2;
+		blob->posx = (UNUM_COLS - 2 + blob->sizex)/2; //MARK
 	}else if(*blob->commands == 'x'){
-		blob->posy = (NUM_ROWS-blob->sizey)/2;
+		blob->posy = (UNUM_ROWS-blob->sizey)/2; //MARK
 	}else if(*blob->commands == 'y'){
-		blob->posx = (NUM_COLS - 2 + blob->sizex)/2;
+		blob->posx = (UNUM_COLS - 2 + blob->sizex)/2; //MARK
 	}
 
 	blob->delayx_rld = 0;
