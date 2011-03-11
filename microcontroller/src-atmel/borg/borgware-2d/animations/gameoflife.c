@@ -128,11 +128,13 @@ static cell_t getcell(field_t pf, coord_t x, coord_t y){
 uint8_t countsurroundingalive(field_t pf, coord_t x, coord_t y){
 
 	static int8_t const offset[] = {-1, -1, 0, +1, +1, +1, 0, -1, -1, -1};
+	x += XSIZE;
+	y += YSIZE;
 	uint8_t i, ret=0;
 	for (i = 8; i--;)
 	{
 		// getcell(...) returns either 0 or 1
-		ret += getcell(pf,(XSIZE+x+offset[i+2])%XSIZE, (YSIZE+y+offset[i])%YSIZE);
+		ret += getcell(pf,(x+offset[i+2])%XSIZE, (y+offset[i])%YSIZE);
 	}
 
 	return ret;
