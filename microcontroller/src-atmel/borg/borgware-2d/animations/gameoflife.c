@@ -59,7 +59,7 @@ typedef unsigned int coord_t;
 #define LOOP_DETECT_BUFFER_SIZE 8U
 
 #ifndef GOL_DELAY
- #define GOL_DELAY 250 /* milliseconds */
+ #define GOL_DELAY 1 /* milliseconds */
 #endif
 
 #ifndef GOL_CYCLES
@@ -192,7 +192,7 @@ void pfcopy(field_t dest, field_t src){
 
 /******************************************************************************/
 #ifndef BITSTUFFED
-coord_t pfcmp(field_t dest, field_t src){
+uint8_t pfcmp(field_t dest, field_t src){
 	coord_t x,y;
 	for(y=YSIZE; y--;){
 		for(x=XSIZE; x--;){
@@ -205,7 +205,7 @@ coord_t pfcmp(field_t dest, field_t src){
 
 /******************************************************************************/
 
-uint8 pfempty(field_t src){
+uint8_t pfempty(field_t src){
 	coord_t x,y;
 	for(y=YSIZE; y--;){
 		for(x=XSIZE; x--;){
