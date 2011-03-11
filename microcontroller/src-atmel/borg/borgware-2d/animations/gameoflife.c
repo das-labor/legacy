@@ -23,6 +23,13 @@
 #define XSIZE UNUM_COLS
 #define YSIZE UNUM_ROWS
 
+// optimizing for 8 bit archs while retaining compatibility with dimensions >255
+#if UNUM_COLS < 256 && UNUM_ROWS < 256
+typedef uint8_t coord_t;
+#else
+typedef unsigned int coord_t;
+#endif
+
 /* 
  *  last line is for debug information
  */
@@ -49,10 +56,10 @@
 //#define GLIDER_TEST
 
 #define BITSTUFFED
-#define LOOP_DETECT_BUFFER_SIZE 8
+#define LOOP_DETECT_BUFFER_SIZE 8U
 
 #ifndef GOL_DELAY
- #define GOL_DELAY 1 /* milliseconds */
+ #define GOL_DELAY 250 /* milliseconds */
 #endif
 
 #ifndef GOL_CYCLES
@@ -62,7 +69,12 @@
 /******************************************************************************/
 /******************************************************************************/
 
-typedef enum{dead=0, alive=1} cell_t;
+enum cell_e {dead=0, alive=1};
+#ifdef NDEBUG
+	typedef uint8_t cell_t;
+#else
+	typedef enum cell_e cell_t;
+#endif
 
 #ifndef BITSTUFFED
 
@@ -73,13 +85,13 @@ typedef cell_t field_t[FIELD_XSIZE][FIELD_YSIZE];
 
 /******************************************************************************/
 
-void setcell(field_t  pf, int x, int y, cell_t value){
+void setcell(field_t  pf, coord_t x, coord_t y, cell_t value){
 	pf[(x+FIELD_XSIZE)%FIELD_XSIZE][(y+FIELD_YSIZE)%FIELD_YSIZE] = value;
 }
 
 /******************************************************************************/
 
-cell_t getcell(field_t pf, int x, int y){
+cell_t getcell(field_t pf, coord_t x, coord_t y){
 	return pf[(x+FIELD_XSIZE)%FIELD_XSIZE][(y+FIELD_YSIZE)%FIELD_YSIZE];
 }
 
@@ -92,10 +104,8 @@ typedef uint8_t field_t[FIELD_XSIZE][FIELD_YSIZE];
 
 /******************************************************************************/
 
-void setcell(field_t pf, int x, int y, cell_t value){
+void setcell(field_t pf, coord_t x, coord_t y, cell_t value){
 	uint8_t t;
-	x = (x+XSIZE) % XSIZE;
-	y = (y+YSIZE) % YSIZE; 
 
 	t = pf[x/8][y];
 	if(value==alive){
@@ -108,35 +118,30 @@ void setcell(field_t pf, int x, int y, cell_t value){
 
 /******************************************************************************/
 
-cell_t getcell(field_t pf, int x, int y){
-	x = (x+XSIZE) % XSIZE;
-	y = (y+YSIZE) % YSIZE; 
-
+static cell_t getcell(field_t pf, coord_t x, coord_t y){
 	return ((pf[x/8][y])&(1<<(x&7)))?alive:dead;
 }
 #endif
 
 /******************************************************************************/
 
-uint8_t countsurroundingalive(field_t pf, int x, int y){
-	uint8_t ret=0;
-	ret += (getcell(pf, x-1, y-1)==alive)?1:0;
-	ret += (getcell(pf, x  , y-1)==alive)?1:0;
-	ret += (getcell(pf, x+1, y-1)==alive)?1:0;
-	
-	ret += (getcell(pf, x-1, y  )==alive)?1:0;
-	ret += (getcell(pf, x+1, y  )==alive)?1:0;
-	
-	ret += (getcell(pf, x-1, y+1)==alive)?1:0;
-	ret += (getcell(pf, x  , y+1)==alive)?1:0;
-	ret += (getcell(pf, x+1, y+1)==alive)?1:0;
+uint8_t countsurroundingalive(field_t pf, coord_t x, coord_t y){
+
+	static int8_t const offset[] = {-1, -1, 0, +1, +1, +1, 0, -1, -1, -1};
+	uint8_t i, ret=0;
+	for (i = 8; i--;)
+	{
+		// getcell(...) returns either 0 or 1
+		ret += getcell(pf,(XSIZE+x+offset[i+2])%XSIZE, (YSIZE+y+offset[i])%YSIZE);
+	}
+
 	return ret;
 }
 
 /******************************************************************************/
 
 void nextiteration(field_t dest, field_t src){
-	int x,y;
+	coord_t x,y;
 	uint8_t tc;
 	for(y=0; y<YSIZE; ++y){
 		for(x=0; x<XSIZE; ++x){
@@ -166,10 +171,10 @@ void nextiteration(field_t dest, field_t src){
 /******************************************************************************/
 
 void printpf(field_t pf){
-	int x,y;
-	for(y=0; y<YSIZE; ++y){
-		for(x=0; x<XSIZE; ++x){
-			setpixel((pixel){x,y},(getcell(pf,x,y)==alive)?3:0);
+	coord_t x,y;
+	for(y=YSIZE; y--;){
+		for(x=XSIZE; x--;){
+			setpixel((pixel){x,y},getcell(pf,x,y)*3);
 		}
 	}
 }
@@ -177,9 +182,9 @@ void printpf(field_t pf){
 /******************************************************************************/
 
 void pfcopy(field_t dest, field_t src){
-	int x,y;	
-	for(y=0; y<YSIZE; ++y){
-		for(x=0; x<XSIZE; ++x){
+	coord_t x,y;
+	for(y=YSIZE; y--;){
+		for(x=XSIZE; x--;){
 			setcell(dest,x,y,getcell(src,x,y));
 		}
 	}
@@ -187,10 +192,10 @@ void pfcopy(field_t dest, field_t src){
 
 /******************************************************************************/
 #ifndef BITSTUFFED
-uint8_t pfcmp(field_t dest, field_t src){
-	int x,y;	
-	for(y=0; y<YSIZE; ++y){
-		for(x=0; x<XSIZE; ++x){
+coord_t pfcmp(field_t dest, field_t src){
+	coord_t x,y;
+	for(y=YSIZE; y--;){
+		for(x=XSIZE; x--;){
 			if (getcell(src,x,y) != getcell(dest,x,y))
 				return 1;
 		}
@@ -200,9 +205,10 @@ uint8_t pfcmp(field_t dest, field_t src){
 
 /******************************************************************************/
 
-uint8 pfempty(field_t src){	int x,y;	
-	for(y=0; y<YSIZE; ++y){
-		for(x=0; x<XSIZE; ++x){
+uint8 pfempty(field_t src){
+	coord_t x,y;
+	for(y=YSIZE; y--;){
+		for(x=XSIZE; x--;){
 			if (getcell(src,x,y)==alive)
 				return 0;
 		}
@@ -213,7 +219,7 @@ uint8 pfempty(field_t src){	int x,y;
 #else
 
 uint8_t pfcmp(field_t dest, field_t src){
-	int x,y;
+	coord_t x,y;
 	for(y=0; y<FIELD_YSIZE; ++y){
 		for(x=0; x<FIELD_XSIZE; ++x){
 			if (src[x][y] != dest[x][y])
@@ -226,7 +232,7 @@ uint8_t pfcmp(field_t dest, field_t src){
 /******************************************************************************/
 
 uint8_t pfempty(field_t src){	
-	int x,y;	
+	coord_t x,y;
 	for(y=0; y<FIELD_YSIZE; ++y){
 		for(x=0; x<FIELD_XSIZE; ++x){
 			if (src[x][y]!=0)
@@ -258,20 +264,20 @@ int gameoflife(){
 	field_t pf1,pf2;
 	field_t ldbuf[LOOP_DETECT_BUFFER_SIZE]={{{0}}}; // loop detect buffer
 	uint8_t ldbuf_idx=0;
-	int x,y;
+	coord_t x,y;
 	uint16_t cycle;
 	
 //start:	
 	/* initalise the field with random */
-	for(y=0;y<YSIZE;++y){
-		for(x=0;x<XSIZE; ++x){
+	for(y=YSIZE; y--;){
+		for(x=XSIZE; x--;){
 			setcell(pf1,x,y,(random8()&1)?alive:dead);
 		}
 	}
 #ifdef GLIDER_TEST	
 	/* initialise with glider */
-	for(y=0;y<YSIZE;++y){
-		for(x=0;x<XSIZE; ++x){
+	for(y=YSIZE; y--;){
+		for(x=XSIZE; x--;){
 			setcell(pf1,x,y,dead);
 		}
 	}
