@@ -14,11 +14,13 @@
 #include "../config.h"
 
 
-// default Address
+// default address
 #ifndef TWI_ADDRESS
 #define TWI_ADDRESS 42
 #endif
 
+// read address from eeprom define in config.h
+// #define TWI_EEPROM_ADDR 0
 
 /****************************************************************************
   Public Function definitions
