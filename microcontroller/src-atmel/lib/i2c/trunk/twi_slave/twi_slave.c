@@ -71,7 +71,7 @@ int main (void)
  ********************************************************/
 #include <avr/io.h>
 #include <avr/interrupt.h>
-
+#include <avr/eeprom.h>
 #include "twi_slave.h"
 
 
@@ -81,7 +81,11 @@ uint8_t TWIS_Init()
 /*
 ** Set the TWI slave address
 */
+#ifdef TWI_ADDR_EEPROM
+        TWAR = eeprom_read_byte(TWIS_ADDR_EEPROM);
+#else
 	TWAR = TWI_ADDRESS;
+#endif
 /*
 ** Activate TWI interface
 */
