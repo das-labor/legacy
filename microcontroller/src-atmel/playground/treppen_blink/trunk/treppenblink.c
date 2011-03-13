@@ -525,7 +525,7 @@ void appLoop_taster(void)
 		}
     if (mode==2)
 		{
-			if (blinkmode <= 8)
+			if (blinkmode < 8)
 			{
 				blinkmode++;
 			}
@@ -645,7 +645,7 @@ void appLoop_rundown(void)
 			taskDelayFromNow(1);
 			updateLEDs();
 			taskDelayFromNow(20);
-		} 
+		}
 		while (blinkmode == 8) {
     	Tuint16 lightblob[] = {0x03f, 0x009f, 0x00ff, 0x01ff, 0x03ff, 0x06ff, 0x0fff, 0x0fff, 0x06ff, 0x3ff, 0x01ff, 0x00ff, 0x009f, 0x003f};
     	#define lb_len 14
@@ -686,7 +686,7 @@ void appLoop_rundown(void)
     // zufällige farben an zufälligen stellen einfügen
     //while (blinkmode == 9) {
     //}
-    // angerger pixel mit nachschwingen in eigenfrequenz
+    // angereter pixel mit nachschwingen in eigenfrequenz
     //while (blinkmode == 10) {
     //}
   }

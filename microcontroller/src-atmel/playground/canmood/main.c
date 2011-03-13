@@ -13,8 +13,7 @@
 #include "testscript.h"
 
 
-void init(void)
-{
+void init(void) {
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
 
 	//initialize spi port
@@ -29,18 +28,16 @@ void init(void)
 }
 
 
-int main(void)
-{
+int main(void) {
 	init();
-	
-	
+
+
 	init_script_threads();
 	script_threads[0].handler.execute = &memory_handler_flash;
 	script_threads[0].handler.position = (uint16_t) &colorchange_red;
 	script_threads[0].flags.disabled = 0;
 
-	while (1)
-	{
+	while (1) {
 		can_handler();
 		pwm_handler();
 	}

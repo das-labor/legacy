@@ -24,8 +24,8 @@ int main(void)
 	// Disable Analog Comparator (power save)
 	ACSR = _BV(ACD);
 
-	DDRD &= ~(_BV(PD4)| _BV(PD5) | _BV(PD6) | _BV(PD7));
-	PORTD |= _BV(PD4)| _BV(PD5) | _BV(PD6) | _BV(PD7);
+	DDRD &= ~(_BV(PD4)| _BV(PD5) | _BV(PD6) | _BV(PD7)); // Taster
+	PORTD |= _BV(PD4)| _BV(PD5) | _BV(PD6) | _BV(PD7);   // Taster Pullup
 
 	DDRB = _BV(PB1) | _BV(PB2);  // set pb1 and PB2 as output for hardware PWM
 
