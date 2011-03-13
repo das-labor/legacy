@@ -7,12 +7,12 @@
 #if defined(__AVR_ATmega48__) | defined(__AVR_ATmega168__) | defined(__AVR_ATmega8__)
 	#define AVR_SS_BIT PB2
 	#define AVR_MOSI_BIT PB3
-	#define AVR_MISO_BIT PB4	
+	#define AVR_MISO_BIT PB4
 	#define AVR_SCK_BIT PB5
 #elif defined(__AVR_ATmega32__) | defined(__AVR_ATmega644__)
 	#define AVR_SS_BIT PB4
 	#define AVR_MOSI_BIT PB5
-	#define AVR_MISO_BIT PB6	
+	#define AVR_MISO_BIT PB6
 	#define AVR_SCK_BIT PB7
 
 #else

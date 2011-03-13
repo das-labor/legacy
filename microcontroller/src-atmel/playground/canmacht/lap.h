@@ -1,5 +1,5 @@
-#ifndef LAP_H
-#define LAP_H
+#ifndef _LAP_H
+#define _LAP_H
 
 /****************************************************************************
  * Labor Automation Protocol
