@@ -4,7 +4,6 @@
 	#include <process.h>
 #define pthread_t int
 #else
-	#define _XOPEN_SOURCE 500
 	#ifdef OSX_
 		#include <GLUT/glut.h>
 	#else

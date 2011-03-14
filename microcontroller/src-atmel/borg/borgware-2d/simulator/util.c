@@ -1,7 +1,5 @@
 #ifdef _WIN32
 	#include <windows.h>
-#else
-	#define _XOPEN_SOURCE 500
 #endif
 
 #include <stdlib.h>

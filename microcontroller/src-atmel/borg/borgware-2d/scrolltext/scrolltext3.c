@@ -1,7 +1,5 @@
 #define SCROLLTEXT_C
 
-#define _XOPEN_SOURCE 600
-
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
