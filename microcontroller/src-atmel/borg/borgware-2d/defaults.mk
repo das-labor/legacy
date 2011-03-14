@@ -17,12 +17,14 @@ STRIP = avr-strip
 HOSTCC := gcc
 export HOSTCC
 
+LIBS = -lm
+
 # flags for the compiler
 CFLAGS ?= -Wall -W -Wno-unused-parameter -Wno-sign-compare
-CFLAGS += -g -Os -std=gnu99 -fgnu89-inline -DNDEBUG
+CFLAGS += -g -Os -std=gnu99 -fgnu89-inline -D_XOPEN_SOURCE=600 -DNDEBUG
 
 # flags for the linker
-LDFLAGS += -T ./avr5.x -Wl,-Map,image.map -mmcu=$(MCU) 
+LDFLAGS += -T ./avr5.x -Wl,-Map,image.map -mmcu=$(MCU)
 
 
 #############################################################################
@@ -33,17 +35,17 @@ MACHINE = $(shell uname -m)
 #$(info $(OSTYPE))
 
 ifeq ($(OSTYPE),cygwin)  
-  CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O0 -D_WIN32 -mno-cygwin
+  CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O0 -D_WIN32 -mno-cygwin -D_XOPEN_SOURCE=600
   LDFLAGS_SIM = -Wl -mno-cygwin -T simulator/i386pe.x
-  LIBS_SIM    = -lglut32 -lglu32 -lopengl32
+  LIBS_SIM    = -lglut32 -lglu32 -lopengl32 -lm
 else
-  CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O0
+  CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O0 -D_XOPEN_SOURCE=600
   ifeq ($(MACHINE),x86_64)
     LDFLAGS_SIM = -Wl -T simulator/elf_x86_64.x
   else
     LDFLAGS_SIM = -Wl -T simulator/elf_i386.x
   endif
-  LIBS_SIM    = -lglut -lpthread -lGL -lGLU
+  LIBS_SIM    = -lglut -lpthread -lGL -lGLU -lm
 endif
 
 ##############################################################################
