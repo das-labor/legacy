@@ -24,7 +24,7 @@
 #define YSIZE UNUM_ROWS
 
 // optimizing for 8 bit archs while retaining compatibility with dimensions >255
-#if UNUM_COLS < 256 && UNUM_ROWS < 256
+#if UNUM_COLS < 128 && UNUM_ROWS < 128
 typedef uint8_t coord_t;
 #else
 typedef unsigned int coord_t;
