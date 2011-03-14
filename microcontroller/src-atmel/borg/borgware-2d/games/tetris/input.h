@@ -41,7 +41,7 @@ enum tetris_input_command
 	TETRIS_INCMD_DROP,    /**< move piece to the ground immediately */
 	TETRIS_INCMD_GRAVITY, /**< piece gets pulled by gravity */
 	TETRIS_INCMD_PAUSE,   /**< pause the game */
-	TETRIS_INCMD_NONE     /**< idle (must alway be the last one) */
+	TETRIS_INCMD_NONE     /**< idle (must always be the last one) */
 };
 #ifdef NDEBUG
 	typedef uint8_t tetris_input_command_t;
@@ -55,9 +55,9 @@ enum tetris_input_command
  */
 enum tetris_input_pace
 {
-	TETRIS_INPACE_HOVERING, /**< normal falling pace */
-	TETRIS_INPACE_GLIDING   /**< guarantees a minimum docking time to avoid
-	                             accidentally docked pieces in higher levels */
+	TETRIS_INPACE_HOVERING = 0, /**< normal falling pace */
+	TETRIS_INPACE_GLIDING  = 75 /**< guarantees a minimum docking time to avoid
+	                                 accidentally docked pieces at high speeds*/
 };
 #ifdef NDEBUG
 	typedef uint8_t tetris_input_pace_t;
@@ -71,11 +71,6 @@ enum tetris_input_pace
  */
 typedef struct tetris_input
 {
-	/**
-	 *  current level (determines falling speed)
-	 */
-	uint8_t nLevel;
-
 	/**
 	 * Amount of loop cycles between forced piece movements. This value gets
 	 * set via the tetris_input_setLevel() function.
@@ -106,18 +101,15 @@ typedef struct tetris_input
 	 */
 	uint16_t nPauseCount;
 
-
 	/**
 	 * last real command (important for key repeat and chatter protection)
 	 */
 	tetris_input_command_t cmdRawLast;
 
-
 	/**
 	 * last mapped command (important for key repeat)
 	 */
 	tetris_input_command_t cmdLast;
-
 
 	/**
 	 * Every command has its own counter. A command is ignored as long as its
