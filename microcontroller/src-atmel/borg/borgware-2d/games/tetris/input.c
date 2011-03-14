@@ -37,9 +37,6 @@
  */
 #define TETRIS_INPUT_PAUSE_CYCLES 60000
 
-/** minimum of cycles in gliding mode */
-#define TETRIS_INPUT_GLIDE_CYCLES 75
-
 /** initial delay (in loop cycles) for key repeat */
 #define TETRIS_INPUT_REPEAT_INITIALDELAY 35
 /** delay (in loop cycles) for key repeat */
@@ -128,7 +125,7 @@ static void tetris_input_chatterProtect(tetris_input_t *pIn,
 		uint8_t const nDown = pIn->nIgnoreCmdCounter[TETRIS_INCMD_DOWN];
 
 		pIn->nIgnoreCmdCounter[TETRIS_INCMD_PAUSE] =
-				(nRotCw > nDown ? nRotCw : nDown);
+				nRotCw > nDown ? nRotCw : nDown;
 	}
 }
 
@@ -233,7 +230,6 @@ tetris_input_t *tetris_input_construct(void)
 
 	pIn->cmdRawLast = pIn->cmdLast = TETRIS_INCMD_NONE;
 	pIn->nBearing = TETRIS_BEARING_0;
-	pIn->nLevel = 0xFF;
 	tetris_input_setLevel(pIn, 0);
 	pIn->nLoopCycles = 0;
 	pIn->nRepeatCount = -TETRIS_INPUT_REPEAT_INITIALDELAY;
@@ -253,41 +249,29 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 {
 	assert (pIn != NULL);
 
-	// holds the translated command value of the joystick
-	tetris_input_command_t cmdJoystick = TETRIS_INCMD_NONE;
-
 	// this variable both serves as the return value and as a flag for not
 	// leaving the function as long as its value is TETRIS_INCMD_NONE
 	tetris_input_command_t cmdReturn = TETRIS_INCMD_NONE;
 
-	uint8_t nMaxCycles;
-
 	// if the piece is gliding we grant the player a reasonable amount of time
 	// to make the game more controllable at higher falling speeds
-	if ((nPace == TETRIS_INPACE_GLIDING) &&
-			(pIn->nMaxCycles < TETRIS_INPUT_GLIDE_CYCLES))
-	{
-		nMaxCycles = TETRIS_INPUT_GLIDE_CYCLES;
-	}
-	else
-	{
-		nMaxCycles = pIn->nMaxCycles;
-	}
+	uint8_t nMaxCycles = pIn->nMaxCycles > nPace ? pIn->nMaxCycles : nPace;
 
 	while (pIn->nLoopCycles < nMaxCycles)
 	{
-		cmdJoystick = tetris_input_queryJoystick(pIn);
+		// holds the (mapped) command value of the joystick
+		tetris_input_command_t cmdJoystick = tetris_input_queryJoystick(pIn);
 
 		switch (cmdJoystick)
 		{
 		case TETRIS_INCMD_LEFT:
 		case TETRIS_INCMD_RIGHT:
 		case TETRIS_INCMD_DOWN:
-			// only react if either the current command differs from the
-			// last one or enough loop cycles have been run on the same
-			// command (for key repeat)
-			if ((pIn->cmdLast != cmdJoystick) || ((pIn->cmdLast == cmdJoystick)
-				&& (pIn->nRepeatCount >= TETRIS_INPUT_REPEAT_DELAY)))
+			// only react if either the current command differs from the last
+			// one or enough loop cycles have been run on the same command (for
+			// key repeat)
+			if (pIn->cmdLast != cmdJoystick ||
+					pIn->nRepeatCount++ >= TETRIS_INPUT_REPEAT_DELAY)
 			{
 				// reset repeat counter
 				if (pIn->cmdLast != cmdJoystick)
@@ -304,14 +288,6 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 				// update cmdLast and return value
 				pIn->cmdLast = cmdReturn = cmdJoystick;
 			}
-			else
-			{
-				// if not enough loop cycles have been run we increment the
-				// repeat counter, ensure that we continue the loop and
-				// keep the key repeat functioning
-				++pIn->nRepeatCount;
-				cmdReturn = TETRIS_INCMD_NONE;
-			}
 			break;
 
 		case TETRIS_INCMD_DROP:
@@ -321,11 +297,6 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 			if (pIn->cmdLast != cmdJoystick)
 			{
 				pIn->cmdLast = cmdReturn = cmdJoystick;
-			}
-			else
-			{
-				// if we reach here the command is ignored
-				cmdReturn = TETRIS_INCMD_NONE;
 			}
 			break;
 
@@ -337,20 +308,15 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 				pIn->cmdLast = cmdReturn = cmdJoystick;
 				pIn->nPauseCount = 0;
 			}
-			// consecutive pause commands should not cause the loop to leave
-			else
-			{
-				cmdReturn = TETRIS_INCMD_NONE;
-			}
 			break;
 
 		case TETRIS_INCMD_NONE:
-			// If the game is paused (last command was TETRIS_INCMD_PAUSE)
-			// we ensure that the variable which holds that last command
-			// isn't touched. We use this as a flag so that the loop cycle
-			// counter doesn't get incremented.
-			// We count the number of pause cycles, though. If enough cycles
-			// have been run, we enforce the continuation of the game.
+			// If the game is paused (last command was TETRIS_INCMD_PAUSE) we
+			// ensure that the variable which holds that last command isn't
+			// touched. We use this as a flag so that the loop cycle counter
+			// doesn't get incremented. We count the number of pause cycles,
+			// though. If enough cycles have been run, we enforce the
+			// continuation of the game.
 			if ((pIn->cmdLast != TETRIS_INCMD_PAUSE) ||
 				(++pIn->nPauseCount > TETRIS_INPUT_PAUSE_CYCLES))
 			{
@@ -359,9 +325,6 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 
 			// reset repeat counter
 			pIn->nRepeatCount = -TETRIS_INPUT_REPEAT_INITIALDELAY;
-
-			// using cmdReturn as a flag for not leaving the loop
-			cmdReturn = TETRIS_INCMD_NONE;
 			break;
 
 		default:
@@ -369,15 +332,12 @@ tetris_input_command_t tetris_input_getCommand(tetris_input_t *pIn,
 		}
 
 		// reset automatic falling if the player has dropped a piece
-		if ((cmdReturn == TETRIS_INCMD_DOWN)
-			|| (cmdReturn == TETRIS_INCMD_DROP))
+		if (cmdReturn == TETRIS_INCMD_DOWN || cmdReturn == TETRIS_INCMD_DROP)
 		{
 			pIn->nLoopCycles = 0;
 		}
 		// otherwise ensure automatic falling (unless the game is running)
-		else if ((cmdReturn != TETRIS_INCMD_PAUSE) &&
-				!((cmdReturn == TETRIS_INCMD_NONE) &&
-						(pIn->cmdLast == TETRIS_INCMD_PAUSE)))
+		else if (pIn->cmdLast != TETRIS_INCMD_PAUSE)
 		{
 			++pIn->nLoopCycles;
 		}
@@ -403,12 +363,7 @@ void tetris_input_setLevel(tetris_input_t *pIn,
 	assert(nLvl <= TETRIS_INPUT_LEVELS - 1);
 
 	static uint8_t const nCycles[] PROGMEM = {TETRIS_INPUT_LVL_CYCLES};
-
-	if (pIn->nLevel != nLvl)
-	{
-		pIn->nLevel = nLvl;
-		pIn->nMaxCycles = PM(nCycles[nLvl]);
-	}
+	pIn->nMaxCycles = PM(nCycles[nLvl]);
 }
 
 
@@ -425,13 +380,9 @@ void tetris_input_resetDownKeyRepeat(tetris_input_t *pIn)
 void tetris_input_setBearing(tetris_input_t *pIn,
                              tetris_bearing_t nBearing)
 {
-	if (pIn->nBearing != nBearing)
-	{
-		pIn->nBearing = nBearing;
+	pIn->nBearing = nBearing;
 
-		// avoid weird key repeating effects because the currently pressed
-		// button changes its meaning as soon as the bearing changes
-		pIn->cmdLast = tetris_input_mapCommand(pIn->nBearing, pIn->cmdRawLast);
-		pIn->nRepeatCount = -TETRIS_INPUT_REPEAT_INITIALDELAY;
-	}
+	// avoid weird key repeating effects because the currently pressed button
+	// changes its meaning as soon as the bearing changes
+	pIn->cmdLast = tetris_input_mapCommand(pIn->nBearing, pIn->cmdRawLast);
 }
