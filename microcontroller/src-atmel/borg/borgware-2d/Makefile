@@ -79,7 +79,7 @@ OBJECTS += $(patsubst %.c,./obj_avr/%.o,${SRC})
 SUBDIROBJECTS = $(foreach subdir,$(SUBDIRS_AVR),$(foreach object,$(shell cat $(subdir)/obj_avr/.objects 2>/dev/null),$(subdir)/$(object)))
 
 $(TARGET): $(OBJECTS) $(SUBDIROBJECTS)
-	$(CC) $(LDFLAGS) -o $@ $(OBJECTS) $(SUBDIROBJECTS)
+	$(CC) $(LDFLAGS) -o $@ $(OBJECTS) $(SUBDIROBJECTS) $(LIBS)
 
 
 ##############################################################################
