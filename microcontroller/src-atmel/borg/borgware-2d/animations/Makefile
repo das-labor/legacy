@@ -53,4 +53,8 @@ ifeq ($(ANIMATION_LOGO_27C3),y)
   SRC += 27c3.c
 endif
 
+ifeq ($(ANIMATION_PLASMA),y)
+  SRC += plasma.c
+endif
+
 include $(TOPDIR)/rules.mk

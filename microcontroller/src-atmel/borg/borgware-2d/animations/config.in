@@ -14,13 +14,15 @@ comment "Animations"
 	dep_bool "Breakout Demo" ANIMATION_BREAKOUT      $GAME_BREAKOUT
 	bool     "Martin Herweg" ANIMATION_MHERWEG       $RANDOM_SUPPORT
 	dep_bool "Langton Ant"   ANIMATION_LTN_ANT       $RANDOM_SUPPORT
-	
+
 	dep_bool_menu "Bitmap Scroller" ANIMATION_BMSCROLLER y $RANDOM_SUPPORT
-		dep_bool "LABOR Logo" ANIMATION_LABORLOGO $ANIMATION_BMSCROLLER
-		dep_bool "Amphibian"  ANIMATION_AMPHIBIAN $ANIMATION_BMSCROLLER
-		dep_bool "27c3 Logo"  ANIMATION_LOGO_27C3 $ANIMATION_BMSCROLLER
+		dep_bool "LABOR Logo"    ANIMATION_LABORLOGO     $ANIMATION_BMSCROLLER
+		dep_bool "Amphibian"     ANIMATION_AMPHIBIAN     $ANIMATION_BMSCROLLER
+		dep_bool "27c3 Logo"     ANIMATION_LOGO_27C3     $ANIMATION_BMSCROLLER
 	endmenu
-	
+
+	bool "Plasma"            ANIMATION_PLASMA
+
 	comment  "Special Animations"
 	bool     "Test Animations"  ANIMATION_TESTS
 	bool     "Display off mode" ANIMATION_OFF
