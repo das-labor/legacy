@@ -1,4 +1,4 @@
-#include <math.h>
+#include <math.h> // Floating point math is dog slow on AVR, but I don't care.
 #include <stdint.h>
 #include "../config.h"
 #include "../pixel.h"
@@ -6,8 +6,14 @@
 #include "plasma.h"
 
 
-#define FRAME_TICK 80
-#define FRAME_COUNT 750
+#ifndef __AVR__
+	#define FRAME_TICK 80
+	#define FRAME_COUNT 750
+#else
+	#define FRAME_TICK 1
+	#define FRAME_COUNT 600
+#endif
+
 #define PLASMA_X (1.0 / (NUM_COLS / (2.0 * M_PI)))
 
 
