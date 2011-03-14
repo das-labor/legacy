@@ -15,6 +15,7 @@
 #include "animations/amphibian.h"
 #include "animations/laborlogo.h"
 #include "animations/27c3.h"
+#include "animations/plasma.h"
 #include "animations/mherweg.h"
 #include "borg_hw/borg_hw.h"
 #include "can/borg_can.h"
@@ -170,6 +171,13 @@ void display_loop(){
 			logo_27c3();
 			break;
 #endif
+
+#ifdef ANIMATION_PLASMA
+		case 18:
+			plasma();
+			break;
+#endif
+
 
 #ifdef ANIMATION_TESTS
 		case 31:
