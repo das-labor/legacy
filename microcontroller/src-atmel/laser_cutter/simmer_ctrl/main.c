@@ -75,7 +75,6 @@ void slave_com(){
 				}
 				com_state = CS_SIMMER_SOLL_L;
 				break;
-				
 			case CS_SIMMER_SOLL_L:
 				tmp = c;
 				com_state = CS_SIMMER_SOLL_H;
@@ -115,8 +114,11 @@ void statemachine (){
 	}
 }
 
-#define SIMMER_PORT C
-#define SIMMER_BIT  1
+#define OCR1A_PORT B
+#define OCR1A_BIT  1
+
+#define SIMMER_PORT D
+#define SIMMER_BIT  2
 
 #define PSU_500V_PORT C
 #define PSU_500V_BIT  2
@@ -127,15 +129,17 @@ void statemachine (){
 
 void set_outputs(){
 	if(state_simmer_psu){
-		OUTPUT_ON(SIMMER);
+		OUTPUT_OFF(SIMMER); //is inverted (PS-ON of PC-PSU)
 	}else{
-		OUTPUT_OFF(SIMMER);
+		OUTPUT_ON(SIMMER);
 	}
 	if(state_500V_psu){
 		OUTPUT_ON(PSU_500V);
 	}else{
 		OUTPUT_OFF(PSU_500V);
 	}
+	
+	OCR1A = (simmer_i_soll * 192) / 256 ;
 }
 
 void io_init(){
@@ -145,10 +149,13 @@ void io_init(){
 	
 }
 
+
+
 void pwm_init(){
 	TCCR1A = (1<<COM1A1) | (1<<WGM10); //Fast PWM 8 bit
 	TCCR1B = (1<<WGM12)  | (1<<CS10) ; //clk/1
-	OCR1A  = 30; // a little bit of current 
+	OCR1A  = 0; // current off 
+	SET_DDR(OCR1A);
 }
 
 int main(){
@@ -161,7 +168,7 @@ int main(){
 	
 	
 	while(1){
-		simmer_i_ist = adc_i;
+		simmer_i_ist = (35 * adc_i) / 128;
 	
 		slave_com();
 		statemachine();
