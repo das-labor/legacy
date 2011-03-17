@@ -11,7 +11,7 @@
 #include "twi_slave/twi_slave.h"
 
 // XXX TODO
-// temeratur messen?
+// temperatur messen?
 
 // Pins for h-bridge
 #define IL1 _BV(PC3)
@@ -49,27 +49,27 @@ volatile uint8_t tick = 0; // Tick
 
 // INT 0 count position
 ISR(INT0_vect) {
-//  if (PIND & _BV(PD3)) // read direction from quadrature encoder
-  if (mask == IH2)
-    pos16++;
-  else
-    pos16--;
+//	if (PIND & _BV(PD3)) // read direction from quadrature encoder
+	if (mask == IH2)
+		pos16++;
+	else
+		pos16--;
 }
 
 // Timer0 PWM off IH1
 ISR(TIMER0_COMPA_vect) {
-  PORTC &= ~IH1;
+	PORTC &= ~IH1;
 }
 
 // Timer0 PWM off IH2
 ISR(TIMER0_COMPB_vect) {
-  PORTC &= ~IH2;
+	PORTC &= ~IH2;
 }
 
 // Timer 0 PWM on
 ISR(TIMER0_OVF_vect) {
-  PORTC |= mask;
-  tick = 1;
+	PORTC |= mask;
+	tick = 1;
 }
 
 // 0 Position Anfahren, erkennung durch Reflexlichtschranke
@@ -103,16 +103,17 @@ void init(void) {
 	TCCR0B = _BV(CS01) | _BV(CS00); // 8mhz clk/64
 	TCNT0 = 0;
 	TIMSK0 = _BV(TOIE0);
-  
+
 	//turn on interrupts
-  sei();
-  
-  // Fahre zu null pos Marker an Rollo (Reflexlichtschranke)
-  init_pos0();
-  
-  // External Interrupt 0 fuer pos bestimmung
-  EIMSK = _BV(INT0);
-  EICRA = _BV(ISC01);
+	sei();
+
+	// Fahre zu null pos Marker an Rollo (Reflexlichtschranke)
+	init_pos0();
+
+	// External Interrupt 0 fuer pos bestimmung
+	EIMSK = _BV(INT0);
+	EICRA = _BV(ISC01);
+	wdt_enable(5); // 500ms
 }
 
 // Setzt PWM fuer Motor
@@ -121,29 +122,30 @@ void init(void) {
 // negative Werte bis 255 rückwaerts
 // 0 stopp
 void setPwm(int16_t val) {
-  if (val > 0) {
-    mask = IH1;
-    PORTC |= IL2;
-    PORTC &= ~(IL1|IH2);
-    PORTD |= ROT;
+	if (val > 0) {
+		mask = IH1;
+		PORTC |= IL2;
+		PORTC &= ~(IL1|IH2);
+		PORTD |= ROT;
 		PORTD &= ~GRUEN;
-	  TIMSK0 = _BV(OCIE0A) | _BV(TOIE0);
-    OCR0A = val;
-  }
-  else if (val < 0) {
-    mask = IH2;
-    PORTC |= IL1;
-    PORTC &= ~(IL2|IH1);
-    PORTD &= ~ROT;
+		TIMSK0 = _BV(OCIE0A) | _BV(TOIE0);
+		OCR0A = val;
+	}
+	else if (val < 0) {
+		mask = IH2;
+		PORTC |= IL1;
+		PORTC &= ~(IL2|IH1);
+		PORTD &= ~ROT;
 		PORTD |= GRUEN;
-	  TIMSK0 = _BV(OCIE0B) | _BV(TOIE0);
-    OCR0B = -val;
-  } else {
-    mask = 0;
-    //TIMSK0 = 0;
-    PORTC &= ~(IH1|IH2|IL1|IL2);
-    PORTD &= ~(ROT | GRUEN);
-  }
+		TIMSK0 = _BV(OCIE0B) | _BV(TOIE0);
+		OCR0B = -val;
+	} else {
+		mask = 0;
+		//TIMSK0 = 0;
+		PORTC &= ~(IH1 | IH2);
+		PORTC |= IL1 | IL2;
+		PORTD &= ~(ROT | GRUEN);
+	}
 }
 
 // Positions Regler 
@@ -161,24 +163,24 @@ void go_pos(int32_t soll) {
 #define PWM_MIN 14  // Minimale Geschwindigkeit (sorgt für noetiges drehmoment)
 
 void posRegler() {
-  int32_t regler_out;
-  int32_t pos_abw; // Positionsabweichung
+	int32_t regler_out;
+	int32_t pos_abw; // Positionsabweichung
 
-  pos_abw = pos - pos_reg_soll; // Regeldifferenz
+	pos_abw = pos - pos_reg_soll; // Regeldifferenz
 
-  regler_out = pos_abw / 64; // P Anteil
+	regler_out = pos_abw / 64; // P Anteil
 
-  if (regler_out > PWM_MAX)
-    regler_out = PWM_MAX;
-  else if(regler_out < (-PWM_MAX))
-    regler_out = -PWM_MAX;
-    
-  if (regler_out < PWM_MIN && regler_out > 0)
-    regler_out = PWM_MIN;
-  else if(regler_out > (-PWM_MIN)  && regler_out < 0)
-    regler_out = -PWM_MIN;
+	if (regler_out > PWM_MAX)
+		regler_out = PWM_MAX;
+	else if(regler_out < (-PWM_MAX))
+		regler_out = -PWM_MAX;
 
-  setPwm(regler_out); 
+	if (regler_out < PWM_MIN && regler_out > 0)
+		regler_out = PWM_MIN;
+	else if(regler_out > (-PWM_MIN)  && regler_out < 0)
+		regler_out = -PWM_MIN;
+
+	setPwm(regler_out); 
 }
 // States der Rampe
 
@@ -189,64 +191,64 @@ void posRegler() {
 #define ACCEL 14
 
 void rampe() {
-  static int32_t v;
+	static int32_t v;
 
-  switch (ramp_state) {
-    case RMP_START:
-      v += ACCEL;
-      if (v >= 5000)
-        ramp_state = 2;
-      break;
-    case RMP_RUN:
-      break;
-    case RMP_END:
-      v -= ACCEL;
-      if (v <= 0) {
-        v = 0;
-        ramp_state = 0;
-      }
-      break;
+	switch (ramp_state) {
+		case RMP_START:
+			v += ACCEL;
+			if (v >= 5000)
+			ramp_state = 2;
+			break;
+		case RMP_RUN:
+			break;
+		case RMP_END:
+			v -= ACCEL;
+			if (v <= 0) {
+				v = 0;
+				ramp_state = 0;
+			}
+			break;
       
-    default:
-      break;
-  }
-  int32_t rest_strecke;
-  if (pos > pos_soll) {
-    pos_reg_soll -= v;
-    rest_strecke = -1 * (pos_soll - pos_reg_soll);
-   }
-  else {
-    pos_reg_soll += v;
-    rest_strecke = pos_soll - pos_reg_soll;
-  }
+		default:
+			break;
+	}
+	int32_t rest_strecke;
+	if (pos > pos_soll) {
+		pos_reg_soll -= v;
+		rest_strecke = -1 * (pos_soll - pos_reg_soll);
+	}
+	else {
+		pos_reg_soll += v;
+		rest_strecke = pos_soll - pos_reg_soll;
+	}
 
-  if ((ramp_state == RMP_START) || (ramp_state == RMP_RUN)) {
-    if ((v * v / ACCEL/2) >= rest_strecke) {
-      ramp_state = RMP_END;
-    }
-  }
+	if ((ramp_state == RMP_START) || (ramp_state == RMP_RUN)) {
+		if ((v * v / ACCEL/2) >= rest_strecke) {
+			ramp_state = RMP_END;
+		}
+	}
 }
 
 // 0 Position Anfahren, erkennung durch Reflexlichtschranke
 void init_pos0(void) {
-  setPwm(60);
-  while (PIND & _BV(PD5));
-  setPwm(0);
-  _delay_ms(1000);
-  pos = 0;
+	setPwm(60);
+	while (PIND & _BV(PD5));
+	setPwm(0);
+	_delay_ms(1000);
+	pos = 0;
 }
 
 int main(void) {
 	uint8_t TWIS_ResponseType;
 	uint8_t data[2];
-  int16_t tmppos16;
-  int32_t end_pos = (int32_t) eeprom_read_word((uint16_t*)1) * 1000; // Unterer Endpunkt / Maximale Position aus dem EEPROM lesen
-  uint8_t tim = 0;
+	int16_t tmppos16;
+	int32_t end_pos = (int32_t) eeprom_read_word((uint16_t*)1) * 1000; // Unterer Endpunkt / Maximale Position aus dem EEPROM lesen
+	uint8_t tim = 0;
 	//system initialization
 	init();
-  /* //test code
-  uint16_t delay = 0;
-  uint8_t toggle = 0;*/
+	/* //test code
+	uint16_t delay = 0;
+	uint8_t toggle = 0;*/
 
 	//the main loop continuously handles can messages
 	while (1) {
@@ -263,10 +265,10 @@ int main(void) {
 						    go_pos(end_pos);
 							break;
 						case CMD_HOCH:
-              go_pos(0);          
+							go_pos(0);          
 							break;
 						case CMD_STOP:
-              pos_soll = pos;
+							pos_soll = pos;
 							break;
 						case CMD_RESET:
 							wdt_enable(0);
@@ -284,33 +286,34 @@ int main(void) {
 			}
 		}
 		
-    cli();
-    tmppos16 = pos16;
-    pos16 = 0;
-    sei();
-    pos += tmppos16;
+		cli();
+		tmppos16 = pos16;
+		pos16 = 0;
+		sei();
+		pos += tmppos16;
 
 		if (tick) { // 1ms Routine
-		  tim++;
-		  tick = 0;
-		  if (tim == 10)
-		    rampe();
-		  if (tim == 20) {
-		    tim = 0;
-		    posRegler();
-		  }
-/*		  if (delay == 0) {
-		      toggle ^=1;
-		      delay = 8000;
-		      if (toggle) {
-		        go_pos(418000);
-          } else {
-            go_pos(0);
-          }
-		  } else {
-		    delay--;
-		  }*/
+			tim++;
+			tick = 0;
+			if (tim == 10)
+				rampe();
+			if (tim == 20) {
+				tim = 0;
+				posRegler();
+			}
+/*			if (delay == 0) {
+				toggle ^=1;
+				delay = 8000;
+				if (toggle) {
+					go_pos(418000);
+				} else {
+					go_pos(0);
+				}
+			} else {
+				delay--;
+			}*/
 		}
+		wdt_reset();
 	}
 
 	return 1;
