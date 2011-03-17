@@ -81,7 +81,7 @@ uint8_t TWIS_Init()
 /*
 ** Set the TWI slave address
 */
-#ifdef TWI_ADDR_EEPROM
+#ifdef TWIS_ADDR_EEPROM
         TWAR = eeprom_read_byte(TWIS_ADDR_EEPROM);
 #else
 	TWAR = TWI_ADDRESS;
