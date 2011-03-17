@@ -22,6 +22,7 @@ comment "Animations"
 	endmenu
 
 	bool "Plasma"            ANIMATION_PLASMA
+	bool "Psychedelic"       ANIMATION_PSYCHEDELIC
 
 	comment  "Special Animations"
 	bool     "Test Animations"  ANIMATION_TESTS
