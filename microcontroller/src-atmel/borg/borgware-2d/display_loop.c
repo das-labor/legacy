@@ -15,7 +15,6 @@
 #include "animations/amphibian.h"
 #include "animations/laborlogo.h"
 #include "animations/27c3.h"
-#include "animations/plasma.h"
 #include "animations/fpmath_patterns.h"
 #include "animations/mherweg.h"
 #include "borg_hw/borg_hw.h"
