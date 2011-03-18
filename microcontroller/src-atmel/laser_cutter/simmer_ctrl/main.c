@@ -120,14 +120,19 @@ void statemachine (){
 #define SIMMER_PORT D
 #define SIMMER_BIT  2
 
-#define PSU_500V_PORT C
-#define PSU_500V_BIT  2
+//13 - PD7: on
+#define PSU_500V_PORT D
+#define PSU_500V_BIT  7
 
-#define ZUENDUNG_PORT C
-#define ZUENDUNG_BIT  3
+//12 - PD6: ready
+
+//11 - PD5: zündung
+#define ZUENDUNG_PORT D
+#define ZUENDUNG_BIT  5
 
 
 void set_outputs(){
+	static uint8_t old_zuenden;
 	if(state_simmer_psu){
 		OUTPUT_OFF(SIMMER); //is inverted (PS-ON of PC-PSU)
 	}else{
@@ -138,6 +143,13 @@ void set_outputs(){
 	}else{
 		OUTPUT_OFF(PSU_500V);
 	}
+
+	if(command_zuenden && (! old_zuenden)){
+		OUTPUT_ON(ZUENDUNG);
+	}else{
+		OUTPUT_OFF(ZUENDUNG);
+	}
+	old_zuenden = command_zuenden;
 	
 	OCR1A = (simmer_i_soll * 192) / 256 ;
 }
@@ -169,6 +181,11 @@ int main(){
 	
 	while(1){
 		simmer_i_ist = (35 * adc_i) / 128;
+		if(simmer_i_ist > 20){
+			state_zuenden = 1;
+		}else{
+			state_zuenden = 0;
+		}
 	
 		slave_com();
 		statemachine();
