@@ -170,7 +170,6 @@ int main(void) {
 	uint8_t TWIS_ResponseType;
 	int8_t data[2];
 	uint8_t tim = 0;
-	int16_t tmppos16;
 	//system initialization
 	init();
 
@@ -194,8 +193,8 @@ int main(void) {
 							wdt_enable(0);
 							while (1);
 							break;
+					}
 					break;
-				}
 				case TW_ST_SLA_ACK:
 					TWIS_Stop();
 					break;
