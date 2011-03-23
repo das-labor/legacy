@@ -396,8 +396,8 @@ namespace PlotterCom {
             HPGLCode = _HPGL.ToString();
             stringStreamer = new System.IO.StringReader(HPGLCode);
 
-            SendeStreamAnNetzwetrk(stringStreamer, HPGLCode.Length);
-            //SendeStreamAnPlotter(stringStreamer, HPGLCode.Length);
+            //SendeStreamAnNetzwetrk(stringStreamer, HPGLCode.Length);
+            SendeStreamAnPlotter(stringStreamer, HPGLCode.Length);
             
             
 
