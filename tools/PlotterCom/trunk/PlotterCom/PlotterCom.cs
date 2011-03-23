@@ -345,7 +345,7 @@ namespace PlotterCom {
                             TimeSpan RestZeit;
                             Sekunden = Sekunden * (1D / Fortschritt);
                             RestZeit = TimeSpan.FromSeconds(Math.Abs(Sekunden - SendeZeit.TotalSeconds));
-                            label_ETA.Text = "ETA: " + RestZeit.ToString("hh\\:mm\\:ss") + " ";
+                            //label_ETA.Text = "ETA: " + RestZeit.ToString("hh\\:mm\\:ss") + " ";
                         }
                         else
                         {
@@ -486,8 +486,8 @@ namespace PlotterCom {
             _HPGL.Analyse();
             tsPlotDauer = TimeSpan.FromMilliseconds(_HPGL.PlotDauer);
 
-            MessageBox.Show("Simulierte Plotdauer: " + tsPlotDauer.ToString("hh\\:mm\\:ss"),
-                "Analyse", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //MessageBox.Show("Simulierte Plotdauer: " + tsPlotDauer.ToString("hh\\:mm\\:ss"),
+            //    "Analyse", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void button_DirektSenden_Click(object sender, EventArgs e) {
@@ -896,7 +896,7 @@ namespace PlotterCom {
                             TimeSpan RestZeit;
                             Sekunden = Sekunden * (1D / Fortschritt);
                             RestZeit = TimeSpan.FromSeconds(Math.Abs(Sekunden - SendeZeit.TotalSeconds));
-                            label_ETA.Text = "ETA: " + RestZeit.ToString("hh\\:mm\\:ss") + " ";
+                            //label_ETA.Text = "ETA: " + RestZeit.ToString("hh\\:mm\\:ss") + " ";
                         } else {
                             label_ETA.Text = "ETA: berechne...  ";
                         }
