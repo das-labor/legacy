@@ -9,7 +9,7 @@ using System.Windows.Forms;
 /*  PlotterCom - Tools for HPGL and plotters.
  *  Einstellungen.cs - Config-GUI for PlotterCom.
  * 
- *  Copyright (C) 2011  AndrÈ Matuschek
+ *  Copyright (C) 2011  Andr√© Matuschek
  *  
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ namespace PlotterCom {
 
         private System.IO.Ports.SerialPort _serialPort = null;
 
-        private bool _LogOrdnerGe‰ndert = false; // Wenn sich der Log-Ordner ‰ndert, beim speichern das
+        private bool _LogOrdnerGe√§ndert = false; // Wenn sich der Log-Ordner √§ndert, beim speichern das
                                                  // Log-System neu initialisieren!
 
         public Einstellungen() {
@@ -75,7 +75,7 @@ namespace PlotterCom {
         }
 
         private void button_LogOrdner_Click(object sender, EventArgs e) {
-            PlotterCom.StaticLogger.Log("Auswahldialog f¸r den LogOrdner wird angezeigt.", 6);
+            PlotterCom.StaticLogger.Log("Auswahldialog f√ºr den LogOrdner wird angezeigt.", 6);
 
             FolderBrowserDialog LogOrdnerWahl = new FolderBrowserDialog();
             LogOrdnerWahl.SelectedPath = System.Environment.CurrentDirectory;
@@ -91,7 +91,7 @@ namespace PlotterCom {
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
                 }
-                _LogOrdnerGe‰ndert = true;
+                _LogOrdnerGe√§ndert = true;
             }
         }
 
@@ -114,7 +114,7 @@ namespace PlotterCom {
             if (!PlotterCom.ConfigManager.Config.EinstellungenSpeichernInDatei(
                     PlotterCom.ConfigManager.Config.ConfigFile)) {
 
-                PlotterCom.StaticLogger.Log("EinstellungenSpeichernInDatei hat false zur¸ck gegeben. Informiere den Benutzer!", 4);
+                PlotterCom.StaticLogger.Log("EinstellungenSpeichernInDatei hat false zur√ºck gegeben. Informiere den Benutzer!", 4);
 
                 MessageBox.Show("Die Einstellungen konnte nicht abgespeichert werden!",
                     "Fehler beim speichern!", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -145,7 +145,7 @@ namespace PlotterCom {
             PlotterCom.StaticLogger.Log("Schreibe alle Einstellungen in den ConfigManager!", 6);
 
             // --- TabPage: Allgemein ---
-            PlotterCom.ConfigManager.Config.BeimBeendenBest‰tigen = radioButton_BeendenJa.Checked;
+            PlotterCom.ConfigManager.Config.BeimBeendenBest√§tigen = radioButton_BeendenJa.Checked;
 
             if (textBox_LogOrdner.Text.Length > 0) {
                 PlotterCom.ConfigManager.Config.LogOrdner = textBox_LogOrdner.Text;
@@ -168,7 +168,7 @@ namespace PlotterCom {
 
             // --- TabPage: Plotter ---
             PlotterCom.ConfigManager.Config.PlotterName = textBoxModell.Text;
-            PlotterCom.ConfigManager.Config.PlotterGrˆﬂe = comboBox_Grˆﬂe.SelectedItem.ToString();
+            PlotterCom.ConfigManager.Config.PlotterGr√∂√üe = comboBox_Gr√∂√üe.SelectedItem.ToString();
 
             try {
                 PlotterCom.ConfigManager.Config.PlotterMinX = System.Int32.Parse(textBox_P1X.Text);
@@ -219,7 +219,7 @@ namespace PlotterCom {
             try {
                 PlotterCom.ConfigManager.Config.HPGLVerbindenSchritte = System.Int32.Parse(textBox_JoinTicks.Text);
             } catch (Exception ex) {
-                PlotterCom.StaticLogger.Log("Konnte Wert f¸r Schrittweite zum Verbinden nicht lesen.", 4);
+                PlotterCom.StaticLogger.Log("Konnte Wert f√ºr Schrittweite zum Verbinden nicht lesen.", 4);
                 PlotterCom.StaticLogger.Log("Message: " + ex.Message, 4);
             }
 
@@ -230,15 +230,15 @@ namespace PlotterCom {
 
             // --- TabPage: Neztwerk ---
 
-            // ƒnderungen am Log-System sofort ausf¸hren!
+            // √Ñnderungen am Log-System sofort ausf√ºhren!
             PlotterCom.StaticLogger.LogLevel = PlotterCom.ConfigManager.Config.LogLevel;
 
-            if (_LogOrdnerGe‰ndert) {
-                PlotterCom.StaticLogger.Log("Der LogOrdner wurde ge‰ndert. ÷ffne Logdatei neu!", 1);
+            if (_LogOrdnerGe√§ndert) {
+                PlotterCom.StaticLogger.Log("Der LogOrdner wurde ge√§ndert. √ñffne Logdatei neu!", 1);
 
-                _LogOrdnerGe‰ndert = false;
+                _LogOrdnerGe√§ndert = false;
                 PlotterCom.StaticLogger.LogFileFolder = PlotterCom.ConfigManager.Config.LogOrdner;
-                PlotterCom.StaticLogger.LogDateiNeu÷ffnen();
+                PlotterCom.StaticLogger.LogDateiNeu√ñffnen();
             }
 
 
@@ -248,7 +248,7 @@ namespace PlotterCom {
             PlotterCom.StaticLogger.Log("Lese alle Einstellungen aus dem ConfigManager!", 6);
 
             // --- TabPage: Allgemein ---
-            if (PlotterCom.ConfigManager.Config.BeimBeendenBest‰tigen) {
+            if (PlotterCom.ConfigManager.Config.BeimBeendenBest√§tigen) {
                 radioButton_BeendenJa.Checked = true;
             } else {
                 radioButton_BeendenNein.Checked = true;
@@ -274,7 +274,7 @@ namespace PlotterCom {
 
             // --- TabPage: Plotter ---
             textBoxModell.Text = PlotterCom.ConfigManager.Config.PlotterName;
-            comboBox_Grˆﬂe.SelectedItem = PlotterCom.ConfigManager.Config.PlotterGrˆﬂe;
+            comboBox_Gr√∂√üe.SelectedItem = PlotterCom.ConfigManager.Config.PlotterGr√∂√üe;
             textBox_P1X.Text = PlotterCom.ConfigManager.Config.PlotterMinX.ToString();
             textBox_P1Y.Text = PlotterCom.ConfigManager.Config.PlotterMinY.ToString();
             textBox_P2X.Text = PlotterCom.ConfigManager.Config.PlotterMaxX.ToString();
@@ -313,7 +313,7 @@ namespace PlotterCom {
         }
 
         private void textBox_LogOrdner_TextChanged(object sender, EventArgs e) {
-            _LogOrdnerGe‰ndert = true;
+            _LogOrdnerGe√§ndert = true;
         }
 
         private void ComPortEinstellungenInitialisieren() {
@@ -361,8 +361,8 @@ namespace PlotterCom {
         }
 
 
-        private void button_Port÷ffnen_Click(object sender, EventArgs e) {
-            PlotterCom.StaticLogger.Log("ComPort soll geˆffnet werden.", 7);
+        private void button_Port√ñffnen_Click(object sender, EventArgs e) {
+            PlotterCom.StaticLogger.Log("ComPort soll ge√∂ffnet werden.", 7);
             bool flgOpenError = false;
 
             if (_serialPort != null && _serialPort.IsOpen) {
@@ -377,7 +377,7 @@ namespace PlotterCom {
             _serialPort = new System.IO.Ports.SerialPort();
 
             try {
-                PlotterCom.StaticLogger.Log("Weise dem ComPort die vom Benutzer gew‰hlten Eigenschaften zu.", 7);
+                PlotterCom.StaticLogger.Log("Weise dem ComPort die vom Benutzer gew√§hlten Eigenschaften zu.", 7);
                 _serialPort.BaudRate  = System.Int32.Parse(comboBox_Baud.Text);
                 _serialPort.DataBits  = System.Int32.Parse(comboBox_DataBits.Text);
                 _serialPort.StopBits  = (System.IO.Ports.StopBits) Enum.Parse(typeof(System.IO.Ports.StopBits), comboBox_StopBits.Text);
@@ -386,21 +386,21 @@ namespace PlotterCom {
                 _serialPort.Handshake = System.IO.Ports.Handshake.RequestToSend;
             } catch (System.ArgumentException aex) {
                 flgOpenError = true;
-                PlotterCom.StaticLogger.Log("Fehler beim Parsen der Einstellungen (ArgumentException)! ComPort kann nicht geˆffnet werden.", 4);
+                PlotterCom.StaticLogger.Log("Fehler beim Parsen der Einstellungen (ArgumentException)! ComPort kann nicht ge√∂ffnet werden.", 4);
                 PlotterCom.StaticLogger.Log("Fehler: " + aex.Message, 4);
             } catch (System.FormatException fex) {
                 flgOpenError = true;
-                PlotterCom.StaticLogger.Log("Fehler beim Parsen der Einstellungen (FormatException)! ComPort kann nicht geˆffnet werden.", 4);
+                PlotterCom.StaticLogger.Log("Fehler beim Parsen der Einstellungen (FormatException)! ComPort kann nicht ge√∂ffnet werden.", 4);
                 PlotterCom.StaticLogger.Log("Fehler: " + fex.Message, 4);
             }
 
             if (flgOpenError) {
-                PlotterCom.StaticLogger.Log("Comport ˆffnen wird mit einem Fehler abgebrochen!", 4);
+                PlotterCom.StaticLogger.Log("Comport √∂ffnen wird mit einem Fehler abgebrochen!", 4);
                 return;
             }
 
             try {
-                PlotterCom.StaticLogger.Log("Einstellungen wurde zugewiesen. ÷ffne Port!", 6);
+                PlotterCom.StaticLogger.Log("Einstellungen wurde zugewiesen. √ñffne Port!", 6);
 
                 _serialPort.Open();
 
@@ -420,7 +420,7 @@ namespace PlotterCom {
             }
 
             if (flgOpenError) {
-                PlotterCom.StaticLogger.Log("÷ffnen des ComPorts fehlgeschlagen! Breche ab.", 3);
+                PlotterCom.StaticLogger.Log("√ñffnen des ComPorts fehlgeschlagen! Breche ab.", 3);
                 return;
             }
 
@@ -434,7 +434,7 @@ namespace PlotterCom {
             comboBox_Parity.Enabled = false;
             comboBox_StopBits.Enabled = false;
 
-            button_Port÷ffnen.Enabled = false;
+            button_Port√ñffnen.Enabled = false;
             button_PortSchliessen.Enabled = true;
             button_Senden.Enabled = true;
 
@@ -460,7 +460,7 @@ namespace PlotterCom {
                 PlotterCom.StaticLogger.Log("Der ComPort wurde geschlossen!", 5);
 
                 button_PortSchliessen.Enabled = false;
-                button_Port÷ffnen.Enabled = true;
+                button_Port√ñffnen.Enabled = true;
                 button_Senden.Enabled = false;
 
                 comboBox_Baud.Enabled = true;
@@ -515,9 +515,9 @@ namespace PlotterCom {
             this.Close();
         }
 
-        private void ¸berEinstellungenToolStripMenuItem_Click(object sender, EventArgs e) {
+        private void √ºberEinstellungenToolStripMenuItem_Click(object sender, EventArgs e) {
             MessageBox.Show(
-                "PlotterCom Einstellungen  Copyright (C) 2011  AndrÈ Matuschek\n" +
+                "PlotterCom Einstellungen  Copyright (C) 2011  Andr√© Matuschek\n" +
                 "This program comes with ABSOLUTELY NO WARRANTY.\n" +
                 "This is free software, and you are welcome to redistribute it " +
                 "under certain conditions; see http://www.gnu.org/licenses/ for details.",

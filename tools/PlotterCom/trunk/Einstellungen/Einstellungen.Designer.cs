@@ -30,7 +30,7 @@ namespace PlotterCom {
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.beendenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.infoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.¸berEinstellungenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.√ºberEinstellungenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl_Hauptauswahl = new System.Windows.Forms.TabControl();
             this.tabPage_Allgemein = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel_Allgemein = new System.Windows.Forms.TableLayoutPanel();
@@ -51,7 +51,7 @@ namespace PlotterCom {
             this.button_Senden = new System.Windows.Forms.Button();
             this.textBox_HPGL = new System.Windows.Forms.TextBox();
             this.button_PortSchliessen = new System.Windows.Forms.Button();
-            this.button_Port÷ffnen = new System.Windows.Forms.Button();
+            this.button_Port√ñffnen = new System.Windows.Forms.Button();
             this.groupBox_ComPortEinstellungen = new System.Windows.Forms.GroupBox();
             this.label_HandShake = new System.Windows.Forms.Label();
             this.comboBox_HandShake = new System.Windows.Forms.ComboBox();
@@ -69,8 +69,8 @@ namespace PlotterCom {
             this.tableLayoutPanel_Plotter = new System.Windows.Forms.TableLayoutPanel();
             this.label_PlotterModell = new System.Windows.Forms.Label();
             this.textBoxModell = new System.Windows.Forms.TextBox();
-            this.label_Grˆﬂe = new System.Windows.Forms.Label();
-            this.comboBox_Grˆﬂe = new System.Windows.Forms.ComboBox();
+            this.label_Gr√∂√üe = new System.Windows.Forms.Label();
+            this.comboBox_Gr√∂√üe = new System.Windows.Forms.ComboBox();
             this.label_Koordinaten = new System.Windows.Forms.Label();
             this.flowLayoutPanel_Koordinaten = new System.Windows.Forms.FlowLayoutPanel();
             this.label_P1 = new System.Windows.Forms.Label();
@@ -110,7 +110,7 @@ namespace PlotterCom {
             this.tabPage_Ansicht = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel_Viewer = new System.Windows.Forms.TableLayoutPanel();
             this.label_HighQuality = new System.Windows.Forms.Label();
-            this.flowLayoutPanel_Qualit‰t = new System.Windows.Forms.FlowLayoutPanel();
+            this.flowLayoutPanel_Qualit√§t = new System.Windows.Forms.FlowLayoutPanel();
             this.radioButton_HQ = new System.Windows.Forms.RadioButton();
             this.radioButton_LQ = new System.Windows.Forms.RadioButton();
             this.label_Skalieren = new System.Windows.Forms.Label();
@@ -152,7 +152,7 @@ namespace PlotterCom {
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_Geschwindigkeit)).BeginInit();
             this.tabPage_Ansicht.SuspendLayout();
             this.tableLayoutPanel_Viewer.SuspendLayout();
-            this.flowLayoutPanel_Qualit‰t.SuspendLayout();
+            this.flowLayoutPanel_Qualit√§t.SuspendLayout();
             this.flowLayoutPanel_ButtonLeistenUnten.SuspendLayout();
             this.tableLayoutPanel_Hauptlayout.SuspendLayout();
             this.tabPage_Netzwerk.SuspendLayout();
@@ -213,17 +213,17 @@ namespace PlotterCom {
             // 
             this.infoToolStripMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.infoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.¸berEinstellungenToolStripMenuItem});
+            this.√ºberEinstellungenToolStripMenuItem});
             this.infoToolStripMenuItem.Name = "infoToolStripMenuItem";
             this.infoToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.infoToolStripMenuItem.Text = "Info";
             // 
-            // ¸berEinstellungenToolStripMenuItem
+            // √ºberEinstellungenToolStripMenuItem
             // 
-            this.¸berEinstellungenToolStripMenuItem.Name = "¸berEinstellungenToolStripMenuItem";
-            this.¸berEinstellungenToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
-            this.¸berEinstellungenToolStripMenuItem.Text = "‹ber Einstellungen";
-            this.¸berEinstellungenToolStripMenuItem.Click += new System.EventHandler(this.¸berEinstellungenToolStripMenuItem_Click);
+            this.√ºberEinstellungenToolStripMenuItem.Name = "√ºberEinstellungenToolStripMenuItem";
+            this.√ºberEinstellungenToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.√ºberEinstellungenToolStripMenuItem.Text = "√úber Einstellungen";
+            this.√ºberEinstellungenToolStripMenuItem.Click += new System.EventHandler(this.√ºberEinstellungenToolStripMenuItem_Click);
             // 
             // tabControl_Hauptauswahl
             // 
@@ -291,7 +291,7 @@ namespace PlotterCom {
             this.label_BeendenFragen.Name = "label_BeendenFragen";
             this.label_BeendenFragen.Size = new System.Drawing.Size(105, 30);
             this.label_BeendenFragen.TabIndex = 0;
-            this.label_BeendenFragen.Text = "Beenden best‰tigen:";
+            this.label_BeendenFragen.Text = "Beenden best√§tigen:";
             this.label_BeendenFragen.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // flowLayoutPanel_Beenden
@@ -407,7 +407,7 @@ namespace PlotterCom {
             this.comboBox_LogLevel.FormattingEnabled = true;
             this.comboBox_LogLevel.Items.AddRange(new object[] {
             "Logging abgeschaltet, Meldung wird nicht angezeigt.",
-            "Kritische Fehler und Programmabbr¸che.",
+            "Kritische Fehler und Programmabbr√ºche.",
             "Schwere Fehler.",
             "Normale Programmfehler.",
             "Weniger schwerwiegende Fehler.",
@@ -440,7 +440,7 @@ namespace PlotterCom {
             this.groupBox_ComTest.Controls.Add(this.button_Senden);
             this.groupBox_ComTest.Controls.Add(this.textBox_HPGL);
             this.groupBox_ComTest.Controls.Add(this.button_PortSchliessen);
-            this.groupBox_ComTest.Controls.Add(this.button_Port÷ffnen);
+            this.groupBox_ComTest.Controls.Add(this.button_Port√ñffnen);
             this.groupBox_ComTest.Location = new System.Drawing.Point(6, 87);
             this.groupBox_ComTest.Name = "groupBox_ComTest";
             this.groupBox_ComTest.Size = new System.Drawing.Size(590, 81);
@@ -477,19 +477,19 @@ namespace PlotterCom {
             this.button_PortSchliessen.Name = "button_PortSchliessen";
             this.button_PortSchliessen.Size = new System.Drawing.Size(86, 23);
             this.button_PortSchliessen.TabIndex = 1;
-            this.button_PortSchliessen.Text = "Port schlieﬂen";
+            this.button_PortSchliessen.Text = "Port schlie√üen";
             this.button_PortSchliessen.UseVisualStyleBackColor = true;
             this.button_PortSchliessen.Click += new System.EventHandler(this.button_PortSchliessen_Click);
             // 
-            // button_Port÷ffnen
+            // button_Port√ñffnen
             // 
-            this.button_Port÷ffnen.Location = new System.Drawing.Point(7, 20);
-            this.button_Port÷ffnen.Name = "button_Port÷ffnen";
-            this.button_Port÷ffnen.Size = new System.Drawing.Size(86, 23);
-            this.button_Port÷ffnen.TabIndex = 0;
-            this.button_Port÷ffnen.Text = "Port ˆffnen";
-            this.button_Port÷ffnen.UseVisualStyleBackColor = true;
-            this.button_Port÷ffnen.Click += new System.EventHandler(this.button_Port÷ffnen_Click);
+            this.button_Port√ñffnen.Location = new System.Drawing.Point(7, 20);
+            this.button_Port√ñffnen.Name = "button_Port√ñffnen";
+            this.button_Port√ñffnen.Size = new System.Drawing.Size(86, 23);
+            this.button_Port√ñffnen.TabIndex = 0;
+            this.button_Port√ñffnen.Text = "Port √∂ffnen";
+            this.button_Port√ñffnen.UseVisualStyleBackColor = true;
+            this.button_Port√ñffnen.Click += new System.EventHandler(this.button_Port√ñffnen_Click);
             // 
             // groupBox_ComPortEinstellungen
             // 
@@ -649,8 +649,8 @@ namespace PlotterCom {
             this.tableLayoutPanel_Plotter.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel_Plotter.Controls.Add(this.label_PlotterModell, 0, 0);
             this.tableLayoutPanel_Plotter.Controls.Add(this.textBoxModell, 1, 0);
-            this.tableLayoutPanel_Plotter.Controls.Add(this.label_Grˆﬂe, 0, 1);
-            this.tableLayoutPanel_Plotter.Controls.Add(this.comboBox_Grˆﬂe, 1, 1);
+            this.tableLayoutPanel_Plotter.Controls.Add(this.label_Gr√∂√üe, 0, 1);
+            this.tableLayoutPanel_Plotter.Controls.Add(this.comboBox_Gr√∂√üe, 1, 1);
             this.tableLayoutPanel_Plotter.Controls.Add(this.label_Koordinaten, 0, 2);
             this.tableLayoutPanel_Plotter.Controls.Add(this.flowLayoutPanel_Koordinaten, 1, 2);
             this.tableLayoutPanel_Plotter.Controls.Add(this.label_Schritt, 0, 3);
@@ -690,22 +690,22 @@ namespace PlotterCom {
             this.textBoxModell.TabIndex = 1;
             this.textBoxModell.Text = "Graphtec MP3200";
             // 
-            // label_Grˆﬂe
+            // label_Gr√∂√üe
             // 
-            this.label_Grˆﬂe.AutoSize = true;
-            this.label_Grˆﬂe.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label_Grˆﬂe.Location = new System.Drawing.Point(3, 30);
-            this.label_Grˆﬂe.Name = "label_Grˆﬂe";
-            this.label_Grˆﬂe.Size = new System.Drawing.Size(65, 30);
-            this.label_Grˆﬂe.TabIndex = 2;
-            this.label_Grˆﬂe.Text = "Grˆﬂe:";
-            this.label_Grˆﬂe.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label_Gr√∂√üe.AutoSize = true;
+            this.label_Gr√∂√üe.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label_Gr√∂√üe.Location = new System.Drawing.Point(3, 30);
+            this.label_Gr√∂√üe.Name = "label_Gr√∂√üe";
+            this.label_Gr√∂√üe.Size = new System.Drawing.Size(65, 30);
+            this.label_Gr√∂√üe.TabIndex = 2;
+            this.label_Gr√∂√üe.Text = "Gr√∂√üe:";
+            this.label_Gr√∂√üe.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // comboBox_Grˆﬂe
+            // comboBox_Gr√∂√üe
             // 
-            this.comboBox_Grˆﬂe.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.comboBox_Grˆﬂe.FormattingEnabled = true;
-            this.comboBox_Grˆﬂe.Items.AddRange(new object[] {
+            this.comboBox_Gr√∂√üe.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.comboBox_Gr√∂√üe.FormattingEnabled = true;
+            this.comboBox_Gr√∂√üe.Items.AddRange(new object[] {
             "DIN A 4",
             "DIN A 3",
             "DIN A 2",
@@ -716,11 +716,11 @@ namespace PlotterCom {
             "ANSI/ASME Y14.1 Broadsheet",
             "ANSI/ASME Y14.1 D",
             "ANSI/ASME Y14.1 E"});
-            this.comboBox_Grˆﬂe.Location = new System.Drawing.Point(76, 35);
-            this.comboBox_Grˆﬂe.Margin = new System.Windows.Forms.Padding(5, 5, 5, 2);
-            this.comboBox_Grˆﬂe.Name = "comboBox_Grˆﬂe";
-            this.comboBox_Grˆﬂe.Size = new System.Drawing.Size(517, 21);
-            this.comboBox_Grˆﬂe.TabIndex = 3;
+            this.comboBox_Gr√∂√üe.Location = new System.Drawing.Point(76, 35);
+            this.comboBox_Gr√∂√üe.Margin = new System.Windows.Forms.Padding(5, 5, 5, 2);
+            this.comboBox_Gr√∂√üe.Name = "comboBox_Gr√∂√üe";
+            this.comboBox_Gr√∂√üe.Size = new System.Drawing.Size(517, 21);
+            this.comboBox_Gr√∂√üe.TabIndex = 3;
             // 
             // label_Koordinaten
             // 
@@ -953,7 +953,7 @@ namespace PlotterCom {
             this.label_Warnung.Name = "label_Warnung";
             this.label_Warnung.Size = new System.Drawing.Size(57, 30);
             this.label_Warnung.TabIndex = 2;
-            this.label_Warnung.Text = "Grˆﬂe:";
+            this.label_Warnung.Text = "Gr√∂√üe:";
             this.label_Warnung.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // checkBox_Warnung
@@ -965,7 +965,7 @@ namespace PlotterCom {
             this.checkBox_Warnung.Name = "checkBox_Warnung";
             this.checkBox_Warnung.Size = new System.Drawing.Size(527, 24);
             this.checkBox_Warnung.TabIndex = 3;
-            this.checkBox_Warnung.Text = "Warnung wenn plotbarer Bereich ¸berschritten wird";
+            this.checkBox_Warnung.Text = "Warnung wenn plotbarer Bereich √ºberschritten wird";
             this.checkBox_Warnung.UseVisualStyleBackColor = true;
             // 
             // label_Stift
@@ -1171,7 +1171,7 @@ namespace PlotterCom {
             this.tableLayoutPanel_Viewer.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel_Viewer.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel_Viewer.Controls.Add(this.label_HighQuality, 0, 0);
-            this.tableLayoutPanel_Viewer.Controls.Add(this.flowLayoutPanel_Qualit‰t, 1, 0);
+            this.tableLayoutPanel_Viewer.Controls.Add(this.flowLayoutPanel_Qualit√§t, 1, 0);
             this.tableLayoutPanel_Viewer.Controls.Add(this.label_Skalieren, 0, 1);
             this.tableLayoutPanel_Viewer.Controls.Add(this.checkBox_Skalieren, 1, 1);
             this.tableLayoutPanel_Viewer.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1196,19 +1196,19 @@ namespace PlotterCom {
             this.label_HighQuality.Name = "label_HighQuality";
             this.label_HighQuality.Size = new System.Drawing.Size(77, 30);
             this.label_HighQuality.TabIndex = 0;
-            this.label_HighQuality.Text = "Zeichenqulit‰t:";
+            this.label_HighQuality.Text = "Zeichenqulit√§t:";
             this.label_HighQuality.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // flowLayoutPanel_Qualit‰t
+            // flowLayoutPanel_Qualit√§t
             // 
-            this.flowLayoutPanel_Qualit‰t.Controls.Add(this.radioButton_HQ);
-            this.flowLayoutPanel_Qualit‰t.Controls.Add(this.radioButton_LQ);
-            this.flowLayoutPanel_Qualit‰t.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel_Qualit‰t.Location = new System.Drawing.Point(83, 0);
-            this.flowLayoutPanel_Qualit‰t.Margin = new System.Windows.Forms.Padding(0);
-            this.flowLayoutPanel_Qualit‰t.Name = "flowLayoutPanel_Qualit‰t";
-            this.flowLayoutPanel_Qualit‰t.Size = new System.Drawing.Size(515, 30);
-            this.flowLayoutPanel_Qualit‰t.TabIndex = 1;
+            this.flowLayoutPanel_Qualit√§t.Controls.Add(this.radioButton_HQ);
+            this.flowLayoutPanel_Qualit√§t.Controls.Add(this.radioButton_LQ);
+            this.flowLayoutPanel_Qualit√§t.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel_Qualit√§t.Location = new System.Drawing.Point(83, 0);
+            this.flowLayoutPanel_Qualit√§t.Margin = new System.Windows.Forms.Padding(0);
+            this.flowLayoutPanel_Qualit√§t.Name = "flowLayoutPanel_Qualit√§t";
+            this.flowLayoutPanel_Qualit√§t.Size = new System.Drawing.Size(515, 30);
+            this.flowLayoutPanel_Qualit√§t.TabIndex = 1;
             // 
             // radioButton_HQ
             // 
@@ -1527,8 +1527,8 @@ namespace PlotterCom {
             this.tabPage_Ansicht.ResumeLayout(false);
             this.tableLayoutPanel_Viewer.ResumeLayout(false);
             this.tableLayoutPanel_Viewer.PerformLayout();
-            this.flowLayoutPanel_Qualit‰t.ResumeLayout(false);
-            this.flowLayoutPanel_Qualit‰t.PerformLayout();
+            this.flowLayoutPanel_Qualit√§t.ResumeLayout(false);
+            this.flowLayoutPanel_Qualit√§t.PerformLayout();
             this.flowLayoutPanel_ButtonLeistenUnten.ResumeLayout(false);
             this.tableLayoutPanel_Hauptlayout.ResumeLayout(false);
             this.tabPage_Netzwerk.ResumeLayout(false);
@@ -1552,7 +1552,7 @@ namespace PlotterCom {
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem beendenToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem infoToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem ¸berEinstellungenToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem √ºberEinstellungenToolStripMenuItem;
         private System.Windows.Forms.TabControl tabControl_Hauptauswahl;
         private System.Windows.Forms.TabPage tabPage_Allgemein;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_Allgemein;
@@ -1593,15 +1593,15 @@ namespace PlotterCom {
         private System.Windows.Forms.ComboBox comboBox_ComPort;
         private System.Windows.Forms.GroupBox groupBox_ComTest;
         private System.Windows.Forms.Button button_PortSchliessen;
-        private System.Windows.Forms.Button button_Port÷ffnen;
+        private System.Windows.Forms.Button button_Port√ñffnen;
         private System.Windows.Forms.Button button_Senden;
         private System.Windows.Forms.TextBox textBox_HPGL;
         private System.Windows.Forms.TabPage tabPage_Plotter;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_Plotter;
         private System.Windows.Forms.Label label_PlotterModell;
         private System.Windows.Forms.TextBox textBoxModell;
-        private System.Windows.Forms.Label label_Grˆﬂe;
-        private System.Windows.Forms.ComboBox comboBox_Grˆﬂe;
+        private System.Windows.Forms.Label label_Gr√∂√üe;
+        private System.Windows.Forms.ComboBox comboBox_Gr√∂√üe;
         private System.Windows.Forms.Label label_Koordinaten;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_HPGL;
         private System.Windows.Forms.Label label_Ursprung;
@@ -1624,7 +1624,7 @@ namespace PlotterCom {
         private System.Windows.Forms.Label label_Schritt;
         private System.Windows.Forms.TextBox textBox_Schrittweite;
         private System.Windows.Forms.Label label_HighQuality;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel_Qualit‰t;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel_Qualit√§t;
         private System.Windows.Forms.RadioButton radioButton_HQ;
         private System.Windows.Forms.RadioButton radioButton_LQ;
         private System.Windows.Forms.Label label_Skalieren;

@@ -5,7 +5,7 @@ using System.Text;
 /*  PlotterCom - Tools for HPGL and plotters.
  *  Configmanager.cs - The PlotterCom ConfigManager.
  * 
- *  Copyright (C) 2011  André Matuschek
+ *  Copyright (C) 2011  AndrÃ© Matuschek
  *  
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ namespace PlotterCom {
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         private System.Xml.Serialization.XmlSerializer _xmlSerialisierer = null;
 
-        public bool BeimBeendenBestätigen = false;
+        public bool BeimBeendenBestÃ¤tigen = false;
         public string LogOrdner = Environment.CurrentDirectory;
         public int LogLevel = 9;
         public string ConfigFile = System.IO.Path.Combine(Environment.CurrentDirectory, "PlotterCom.xml");
@@ -46,7 +46,7 @@ namespace PlotterCom {
         public string ComStopBits = "One";
 
         public string PlotterName = String.Empty;
-        public string PlotterGröße = "DIN A 4";
+        public string PlotterGrÃ¶ÃŸe = "DIN A 4";
         public int    PlotterMaxX = 15000;
         public int    PlotterMaxY = 10000;
         public int    PlotterMinX = 0;
@@ -115,7 +115,7 @@ namespace PlotterCom {
                 outStream = System.IO.File.Open(DateiName, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.Read);
                 configStreamWriter = new System.IO.StreamWriter(outStream);
             } catch (Exception ex) {
-                PlotterCom.StaticLogger.Log("Kann Einstellungsdatei nicht zum schreiben öffnen!", 4);
+                PlotterCom.StaticLogger.Log("Kann Einstellungsdatei nicht zum schreiben Ã¶ffnen!", 4);
                 PlotterCom.StaticLogger.Log("Fehler: " + ex.Message, 4);
                 return false;
             }
@@ -141,7 +141,7 @@ namespace PlotterCom {
                 inStream = System.IO.File.Open(DateiName, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read);
                 configStreamReader = new System.IO.StreamReader(inStream);
             }catch (Exception ex) {
-                PlotterCom.StaticLogger.Log("Kann Einstellungsdatei nicht zum lesen öffnen!", 4);
+                PlotterCom.StaticLogger.Log("Kann Einstellungsdatei nicht zum lesen Ã¶ffnen!", 4);
                 PlotterCom.StaticLogger.Log("Fehler: " + ex.Message, 4);
                 return false;
             }
@@ -153,7 +153,7 @@ namespace PlotterCom {
 
             PlotterCom.StaticLogger.LogLevel = PlotterCom.ConfigManager.Config.LogLevel;
             PlotterCom.StaticLogger.LogFileFolder = PlotterCom.ConfigManager.Config.LogOrdner;
-            PlotterCom.StaticLogger.LogDateiNeuÖffnen();
+            PlotterCom.StaticLogger.LogDateiNeuÃ–ffnen();
 
             
             return true;
@@ -165,7 +165,7 @@ namespace PlotterCom {
 
             try {
                 // Wenn der ConfigManager nicht neu erstellt wird, gibt er bei QueryStringValue
-                // einfach den alten Wert zurück statt den Wert neu aus der DB zu laden.
+                // einfach den alten Wert zurÃ¼ck statt den Wert neu aus der DB zu laden.
                 // Daher den ConfigManager neu erstellen. Dann muss er den aktuellen Wert aus der DB laden.
   
                 PlotterCom.ConfigManager.Config = (ConfigManager) (ErzeugeSerialisierer().Deserialize(strReader));
