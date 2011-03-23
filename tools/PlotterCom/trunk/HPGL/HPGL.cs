@@ -291,7 +291,8 @@ namespace PlotterCom {
         /// <param name="HPGLBefehl">Der Befehl mit Parametern.</param>
         private void ParseHPGLBefehl(string HPGLBefehl) {
 
-            if (String.IsNullOrWhiteSpace(HPGLBefehl)) {
+//            if (String.IsNullOrWhiteSpace(HPGLBefehl)) {
+			  if (String.IsNullOrEmpty(HPGLBefehl)) {
                 PlotterCom.StaticLogger.Log("Der HPGL-Befehl ist leer. Er wird ignoriert!", 9);
                 return;
             }
